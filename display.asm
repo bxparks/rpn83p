@@ -1,16 +1,6 @@
+;-----------------------------------------------------------------------------
 ; Display the RPN stack variables.
 ;
-; Reuse existing system variables to implement the RPN stack:
-;   RPN     TI      OS Routines
-;   ---     --      -----------
-;   T       T       StoT
-;   Z       Z       StoTheta  (TODO: Replace with 'Z')
-;   Y       Y       StoY, RclY
-;   X       X       StoX, RclX
-;   LastX   R       StoR
-;   ??      Ans     StoAns, RclAns
-;
-; Display format:
 ;   0: RPN83P (help msg)
 ;   1: Status line: (up|down) (bin|dec|hex) (deg|rad|grad) (small font)
 ;   2: Error msg: (overflow|invalid)
@@ -19,6 +9,7 @@
 ;   5: Y: yyyy
 ;   6: X: xxxx
 ;   7: [menu0][menu1][menu2][menu3][menu4] (small font)
+;-----------------------------------------------------------------------------
 
 ; Menu pixel columns:
 ;   - 96 px wide, 5 menus
