@@ -45,8 +45,13 @@ displayFlagsTitleDirty equ 1 ; set if the title bar is dirty
 displayFlagsStackDirty equ 2 ; set if the stack is dirty
 displayFlagsMenuDirty equ 3 ; set if the menu bar is dirty
 
+; Flags for RPN stack modes
+rpnFlags equ displayFlags + 1
+rpnFlagsEditing equ 1 ; set if in edit mode
+rpnFlagsLiftDisabled equ 1 ; set if stack lift is disabled (e.g. after ENTER)
+
 ; Flags for the inputBuf.
-inputBufFlags equ displayFlags + 1
+inputBufFlags equ rpnFlags + 1
 inputBufFlagsDecPnt equ 0 ; set if decimal point exists
 inputBufFlagsManSign equ 1 ; mantissa sign bit
 inputBufFlagsExpSign equ 2 ; exponent sign bit
@@ -154,6 +159,7 @@ readNumInit:
 
 ;-----------------------------------------------------------------------------
 
+#include "vars.asm"
 #include "handlers.asm"
 #include "pstring.asm"
 #include "parsenum.asm"

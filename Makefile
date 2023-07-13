@@ -10,7 +10,8 @@ SRCS := \
 	handlertab.asm \
 	parsenum.asm \
 	pstring.asm \
-	rpn83p.asm
+	rpn83p.asm \
+	vars.asm
 
 rpn83p.8xp: $(SRCS)
 	$(SPASM) -I $(SPASM_INC) -N rpn83p.asm $@

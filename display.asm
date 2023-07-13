@@ -45,19 +45,6 @@ menuPenColEnd   equ 96
 
 ;-----------------------------------------------------------------------------
 
-; Function: Initialize the RPN stack variables.
-; Destroys: all?
-stackInit:
-    bcall(_OP1Set0)
-    bcall(_StoT)
-    bcall(_StoTheta)
-    bcall(_StoY)
-    bcall(_StoX)
-    bcall(_StoR)
-    ret
-
-;-----------------------------------------------------------------------------
-
 ; Function: Set the display flags to dirty initially so that they are rendered.
 displayInit:
     ld hl, displayFlags
