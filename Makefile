@@ -5,6 +5,7 @@ SPASM_INC := $(SPASM_DIR)/inc
 SPASM := $(SPASM_DIR)/spasm
 SRCS := \
 	debug.asm \
+	display.asm \
 	handlers.asm \
 	handlertab.asm \
 	parsenum.asm \

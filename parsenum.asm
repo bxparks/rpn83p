@@ -4,20 +4,20 @@
 
 ; Function: Parse the input buffer into the parseBuf.
 ; Input: inputBuf filled with keyboard characters
-; Output: parseBuf filled
+; Output: OP1: floating point number
 ; Destroys: all registers?
 parseNum:
     call parseNumInit
     call checkZero
     ret z
     call calcDPPos
-    call debugSignedA ; Display the decimal point pos. TODO: Remove.
+    ; call debugSignedA ; Display the decimal point pos.
     call extractExponent
     call extractSign
     call extractMantissa ; extract digits into parseBuf
     call copyMantissa ; copy digits into floatBuf
     call copyFloatToOP1 ; copy floatBuf to OP1
-    call debugOP1
+    ; call debugOP1
     ret
 
 ; Function: Initialize the parseBuf.
@@ -49,6 +49,7 @@ clearParseBufLoop:
 clearFloatBuf:
     ld b, floatBufSizeOf
     ld hl, floatBuf
+    xor a
 clearFloatLoop:
     ld (hl), a
     inc hl

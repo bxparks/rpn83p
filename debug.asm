@@ -2,12 +2,12 @@
 ; Routines for debugging, displaying contents of buffers or registers.
 ;------------------------------------------------------------------------------
 
-; Function: Print out the parseBuf at stack Y register row 'stYCurRow'.
+; Function: Print out the parseBuf at status line.
 ; Input: parseBuf
 ; Output:
 ; Destroys: A, HL
-printParseBuf:
-    ld hl, stYCurCol*$100+stYCurRow ; $(col)(row) cursor
+debugParseBuf:
+    ld hl, statusCurCol*$100+statusCurRow ; $(curCol)(curRow)
     ld (CurRow), hl
     ld hl, parseBuf
     bcall(_PutPS)
@@ -19,9 +19,9 @@ printParseBuf:
 ; Function: Print out OP1 at stack Z register row 'stZCurRow'.
 ; Input: OP1
 ; Output:
-; Destroys: all
+; Destroys: all registers, OP3
 debugOP1:
-    ld hl, stZCurCol*$100+stZCurRow ; $(col)(row) cursor
+    ld hl, statusCurCol*$100+statusCurRow ; $(curCol)(curRow)
     ld (CurRow), hl
     ld a, 15 ; width of output
     bcall(_FormReal)
@@ -40,7 +40,7 @@ debugUnsignedA:
     push af
     push de
     push hl
-    ld hl, statusCurCol*$100+statusCurRow ; $(col)(row) cursor
+    ld hl, statusCurCol*$100+statusCurRow ; $(curCol)(curRow)
     ld (CurRow), hl
     ld l, a
     ld h, 0
@@ -60,7 +60,7 @@ debugSignedA:
     push af
     push de
     push hl
-    ld hl, statusCurCol*$100+statusCurRow ; $(col)(row) cursor
+    ld hl, statusCurCol*$100+statusCurRow ; $(curCol)(curRow)
     ld (CurRow), hl
     ld b, a ; save
     bit 7, a

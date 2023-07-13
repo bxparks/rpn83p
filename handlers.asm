@@ -188,11 +188,17 @@ handleKeyChsSetNegative:
     set inputBufFlagsManSign, (hl)
     ret
 
+;-----------------------------------------------------------------------------
+
 ; Function: Handle the ENTER key.
 ; Input: none
 ; Output: 
 ; Destroys: all
 handleKeyEnter:
     call parseNum
-    call printParseBuf
+    call debugOP1
+    ; call liftStack
+
+    ld hl, displayFlags
+    set displayFlagsDirty, (hl)
     ret

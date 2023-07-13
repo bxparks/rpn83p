@@ -38,8 +38,13 @@ stXCurRow equ 6
 stXCurCol equ 1
 stXPenRow equ stXCurRow*8
 
+; Flags for the display.
+displayFlags equ tempSwapArea
+displayFlagsDirty equ 0 ; set if the entire display is dirty
+displayFlagsInputDirty equ 1 ; set if the input buffer is dirty
+
 ; Flags for the inputBuf.
-inputBufFlags equ tempSwapArea
+inputBufFlags equ displayFlags + 1
 inputBufFlagsDecPnt equ 0 ; set if decimal point exists
 inputBufFlagsManSign equ 1 ; mantissa sign bit
 inputBufFlagsExpSign equ 2 ; exponent sign bit
@@ -97,15 +102,18 @@ cursorCharAlt equ LcurO
 
 .org userMem - 2
 .db t2ByteTok, tAsmCmp
+
+main:
     bcall(_RunIndicOff)
     bcall(_ClrLCDFull)
     res appAutoScroll, (iy + appFlags)
-
-applicationInit:
+    call stackInit
+    call displayInit
     call readNumInit
     call parseNumInit
 
 readLoop:
+    call display
     call printInputBuf
 
     ; Get the key code, and reset the ON flag right after. See TI-83 Plus SDK
@@ -119,20 +127,22 @@ readLoop:
 
     ; Check for 2nd-Quit, or ON.
     cp kQuit
-    jr z, applicationEnd
+    jr z, mainExit
     or a
-    jr z, applicationEnd
+    jr z, mainExit
 
     ; Handle key
     call lookupKey
     jr readLoop
 
 ; Clean up and exit app.
-applicationEnd:
+mainExit:
     set appAutoScroll, (iy + appFlags)
     bcall(_ClrLCDFull)
     bcall(_HomeUp)
     ret
+
+;-----------------------------------------------------------------------------
 
 readNumInit:
     xor a
@@ -142,25 +152,10 @@ readNumInit:
 
 ;-----------------------------------------------------------------------------
 
-; Function: Print the input buffer.
-; Input: none
-; Output: (CurCol) is updated
-; Destroys: A, HL; other regs prob destroyed by OS calls
-printInputBuf:
-    ld hl, stXCurCol*$100+stXCurRow ; $(col)(row) cursor
-    ld (CurRow), hl
-    ld hl, inputBuf
-    bcall(_PutPS)
-    ld a, cursorChar
-    bcall(_PutC)
-    bcall(_EraseEOL)
-    ret
-
-;-----------------------------------------------------------------------------
-
 #include "handlers.asm"
 #include "pstring.asm"
 #include "parsenum.asm"
+#include "display.asm"
 #include "debug.asm"
 #include "handlertab.asm"
 
