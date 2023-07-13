@@ -54,8 +54,8 @@ handleKeyNumber:
     ; Go into editing mode upon first number key.
     call handleKeyClear
     ; Lift the stack, unless disabled.
-    bit rpnFlagsLiftDisabled, (hl)
     push af
+    bit rpnFlagsLiftDisabled, (hl)
     call nz, liftStack
     pop af
 handleKeyNumberContinue:
@@ -186,9 +186,9 @@ handleKeyDelCheckMinus:
 ; Destroys: A
 handleKeyClear:
     call clearInputBuf
-
     ld hl, rpnFlags
     set rpnFlagsEditing, (hl)
+    set rpnFlagsLiftDisabled, (hl)
     ld hl, displayFlags
     set displayFlagsInputDirty, (hl)
     ret
@@ -227,10 +227,10 @@ handleKeyChsSetNegative:
 ; Function: Handle the ENTER key.
 ; Input: none
 ; Output: 
-; Destroys: all
+; Destroys: all, OP1, OP2, OP4
 handleKeyEnter:
     call parseNum
-    ; call debugOP1
+    bcall(_StoX) ; X=OP1
     call liftStack
     call clearInputBuf
 

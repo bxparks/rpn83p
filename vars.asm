@@ -32,7 +32,7 @@ initStack:
 ; Function: Lift the RPN stack, copying X to Y.
 ; Input: none
 ; Output: T=Z; Z=Y; Y=X; X=X
-; Destroys: HL, all
+; Destroys: all, OP1, OP2, OP4
 liftStack:
     ; T = Z
     bcall(_ThetaName)
@@ -55,7 +55,7 @@ liftStack:
 ; Function: Drop the RPN stack, copying T to Z.
 ; Input: none
 ; Output: X=Y; Y=Z; Z=T; T=T
-; Destroys: HL, all
+; Destroys: all, OP1, OP2, OP4
 dropStack:
     ; X = Y
     bcall(_RclY)
