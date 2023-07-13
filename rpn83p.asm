@@ -116,7 +116,7 @@ main:
     res appAutoScroll, (iy + appFlags)
     call stackInit
     call displayInit
-    call readNumInit
+    call clearInputBuf
 
 readLoop:
     call debugInputBuf
@@ -148,20 +148,6 @@ mainExit:
     set appAutoScroll, (iy + appFlags)
     bcall(_ClrLCDFull)
     bcall(_HomeUp)
-    ret
-
-;-----------------------------------------------------------------------------
-
-; Function: Clear the inputBuf.
-; Input: inputBuf
-; Output: inputBuf cleared
-; Destroys: none
-readNumInit: ; TODO: rename this to inputBufInit()
-    push af
-    xor a
-    ld (inputBuf), a
-    ld (inputBufFlags), a
-    pop af
     ret
 
 ;-----------------------------------------------------------------------------

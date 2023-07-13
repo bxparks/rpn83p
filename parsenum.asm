@@ -2,6 +2,20 @@
 ; Functions related to parsing the inputBuf into a floating point number.
 ;------------------------------------------------------------------------------
 
+; Function: Clear the inputBuf.
+; Input: inputBuf
+; Output: inputBuf cleared
+; Destroys: none
+clearInputBuf:
+    push af
+    xor a
+    ld (inputBuf), a
+    ld (inputBufFlags), a
+    pop af
+    ret
+
+;-----------------------------------------------------------------------------
+
 ; Function: Parse the input buffer into the parseBuf.
 ; Input: inputBuf filled with keyboard characters
 ; Output: OP1: floating point number

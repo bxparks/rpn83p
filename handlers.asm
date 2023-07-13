@@ -185,7 +185,7 @@ handleKeyDelCheckMinus:
 ; Output: A=0; inputBuf cleared, inputBufFlags cleared.
 ; Destroys: A
 handleKeyClear:
-    call readNumInit
+    call clearInputBuf
 
     ld hl, rpnFlags
     set rpnFlagsEditing, (hl)
@@ -232,7 +232,7 @@ handleKeyEnter:
     call parseNum
     ; call debugOP1
     call liftStack
-    call readNumInit
+    call clearInputBuf
 
     ld hl, rpnFlags
     set rpnFlagsLiftDisabled, (hl) ; Disable stack lift.
