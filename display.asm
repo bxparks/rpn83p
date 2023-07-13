@@ -46,7 +46,7 @@ menuPenColEnd   equ 96
 ;-----------------------------------------------------------------------------
 
 ; Function: Set the display flags to dirty initially so that they are rendered.
-displayInit:
+initDisplay:
     ld hl, displayFlags
     set displayFlagsTitleDirty, (hl)
     set displayFlagsStackDirty, (hl)

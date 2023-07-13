@@ -4,7 +4,7 @@
 
 ; Function: Initialize the RPN stack variables.
 ; Destroys: all?
-stackInit:
+initStack:
     bcall(_OP1Set0)
     bcall(_StoT)
     bcall(_StoTheta)

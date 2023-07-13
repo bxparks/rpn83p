@@ -48,7 +48,7 @@ displayFlagsMenuDirty equ 3 ; set if the menu bar is dirty
 ; Flags for RPN stack modes
 rpnFlags equ displayFlags + 1
 rpnFlagsEditing equ 1 ; set if in edit mode
-rpnFlagsLiftDisabled equ 1 ; set if stack lift is disabled (e.g. after ENTER)
+rpnFlagsLiftDisabled equ 2 ; set if stack lift is disabled (e.g. after ENTER)
 
 ; Flags for the inputBuf.
 inputBufFlags equ rpnFlags + 1
@@ -114,8 +114,8 @@ main:
     bcall(_RunIndicOff)
     bcall(_ClrLCDFull)
     res appAutoScroll, (iy + appFlags)
-    call stackInit
-    call displayInit
+    call initStack
+    call initDisplay
     call clearInputBuf
 
 readLoop:
