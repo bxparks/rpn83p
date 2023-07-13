@@ -129,7 +129,7 @@ debugFlags:
 
     ; Print Lift flag
     ld hl, rpnFlags
-    bit rpnFlagsLiftDisabled, (hl)
+    bit rpnFlagsLiftEnabled, (hl)
     ld a, 'L'
     call printFlag
 

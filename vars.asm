@@ -24,7 +24,7 @@ initStack:
 
     ld hl, rpnFlags
     res rpnFlagsEditing, (hl)
-    res rpnFlagsLiftDisabled, (hl)
+    set rpnFlagsLiftEnabled, (hl)
     ret
 
 ;-----------------------------------------------------------------------------

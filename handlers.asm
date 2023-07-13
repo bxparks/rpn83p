@@ -55,7 +55,7 @@ handleKeyNumber:
     call handleKeyClear
     ; Lift the stack, unless disabled.
     push af
-    bit rpnFlagsLiftDisabled, (hl)
+    bit rpnFlagsLiftEnabled, (hl)
     call nz, liftStack
     pop af
 handleKeyNumberContinue:
@@ -192,7 +192,7 @@ handleKeyClear:
     call clearInputBuf
     ld hl, rpnFlags
     set rpnFlagsEditing, (hl)
-    set rpnFlagsLiftDisabled, (hl)
+    res rpnFlagsLiftEnabled, (hl)
     ld hl, displayFlags
     set displayFlagsInputDirty, (hl)
     ret
@@ -241,7 +241,7 @@ handleKeyEnter:
     call clearInputBuf
 
     ld hl, rpnFlags
-    set rpnFlagsLiftDisabled, (hl) ; Disable stack lift.
+    res rpnFlagsLiftEnabled, (hl) ; Disable stack lift.
     res rpnFlagsEditing, (hl) ; Exit edit mode
     ret
 
@@ -260,7 +260,7 @@ closeInputBuf:
     bcall(_StoX) ; X=OP1
     ld hl, rpnFlags
     res rpnFlagsEditing, (hl)
-    res rpnFlagsLiftDisabled, (hl) ; Enable stack lift.
+    set rpnFlagsLiftEnabled, (hl) ; Enable stack lift.
     ret
 
 ; Function: Handle the + key.

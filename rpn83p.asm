@@ -53,7 +53,7 @@ displayFlagsMenuDirty equ 3 ; set if the menu bar is dirty
 ; Flags for RPN stack modes
 rpnFlags equ displayFlags + 1
 rpnFlagsEditing equ 1 ; set if in edit mode
-rpnFlagsLiftDisabled equ 2 ; set if stack lift is disabled (e.g. after ENTER)
+rpnFlagsLiftEnabled equ 2 ; set if stack lift is enabled (ENTER disables)
 
 ; Flags for the inputBuf.
 inputBufFlags equ rpnFlags + 1
