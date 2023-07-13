@@ -51,15 +51,16 @@ handleKeyNumber:
     ld hl, rpnFlags
     bit rpnFlagsEditing, (hl)
     jr nz, handleKeyNumberContinue
-    ; Go into editing mode upon first number key.
-    call handleKeyClear
+handleKeyNumberFirstDigit:
     ; Lift the stack, unless disabled.
     push af
     bit rpnFlagsLiftEnabled, (hl)
     call nz, liftStack
     pop af
+    ; Go into editing mode
+    call handleKeyClear
 handleKeyNumberContinue:
-    ; mark input line as dirty
+    ; Mark input line as dirty
     ld hl, displayFlags
     set displayFlagsInputDirty, (hl)
     jr appendInputBuf
