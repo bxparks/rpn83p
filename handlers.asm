@@ -200,11 +200,23 @@ handleKeyClear:
 
 ;-----------------------------------------------------------------------------
 
-; Function: Handle (-) change sign.
+; Function: Handle (-) change sign. If in edit mode, change the sign in the
+; inputBuf. Otherwise, change the sign of the X register.
 ; Input: none
-; Output: none
-; Destroys: all
+; Output: (inputBuf), X
+; Destroys: all, OP1
 handleKeyChs:
+    ld hl, rpnFlags
+    bit rpnFlagsEditing, (hl)
+    jr nz, handleKeyChsInputBuf
+handleKeyChsX:
+    bcall(_RclX)
+    bcall(_InvOP1S)
+    bcall(_StoX)
+    ld hl, displayFlags
+    bit displayFlagsStackDirty, (hl)
+    ret
+handleKeyChsInputBuf:
     ld hl, inputBufFlags
     bit inputBufFlagsManSign, (hl)
     jr z, handleKeyChsSetNegative
