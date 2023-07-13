@@ -1,5 +1,5 @@
 ; List of GetKey() codes and their jump table.
-keyCodeHandlerTableSize equ 15
+keyCodeHandlerTableSize equ 16
 keyCodeHandlerTable:
     .db k0
     .dw handleKey0
@@ -31,3 +31,5 @@ keyCodeHandlerTable:
     .dw handleKeyChs
     .db kEnter
     .dw handleKeyEnter
+    .db kAdd
+    .dw handleKeyAdd

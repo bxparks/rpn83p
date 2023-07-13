@@ -141,6 +141,8 @@ handleKeyDecPnt:
     set inputBufFlagsDecPnt, (hl)
     ret
 
+;-----------------------------------------------------------------------------
+
 ; Function: Delete the last character of inputBuf.
 ;   - If the deleted char was a '.', reset the decimal point flag.
 ;   - If the deleted char was a '-', reset the negative flag.
@@ -180,6 +182,8 @@ handleKeyDelCheckMinus:
     res inputBufFlagsManSign, (hl)
     ret
 
+;-----------------------------------------------------------------------------
+
 ; Function: Clear the input buffer.
 ; Input: none
 ; Output: A=0; inputBuf cleared, inputBufFlags cleared.
@@ -192,6 +196,8 @@ handleKeyClear:
     ld hl, displayFlags
     set displayFlagsInputDirty, (hl)
     ret
+
+;-----------------------------------------------------------------------------
 
 ; Function: Handle (-) change sign.
 ; Input: none
@@ -226,7 +232,7 @@ handleKeyChsSetNegative:
 
 ; Function: Handle the ENTER key.
 ; Input: none
-; Output: 
+; Output:
 ; Destroys: all, OP1, OP2, OP4
 handleKeyEnter:
     call parseNum
@@ -237,4 +243,37 @@ handleKeyEnter:
     ld hl, rpnFlags
     set rpnFlagsLiftDisabled, (hl) ; Disable stack lift.
     res rpnFlagsEditing, (hl) ; Exit edit mode
+    ret
+
+;-----------------------------------------------------------------------------
+
+; Function: If currently in edit mode, close the input buffer by parsing the
+; input, enable stack lift, then copying the float value into X.
+; Input: none
+; Output:
+; Destroys: all, OP1, OP2, OP4
+closeInputBuf:
+    ld hl, rpnFlags
+    bit rpnFlagsEditing, (hl)
+    ret z
+    call parseNum
+    bcall(_StoX) ; X=OP1
+    ld hl, rpnFlags
+    res rpnFlagsEditing, (hl)
+    res rpnFlagsLiftDisabled, (hl) ; Enable stack lift.
+    ret
+
+; Function: Handle the + key.
+; Input: none
+; Output:
+; Destroys: all, OP1, OP2, OP4, OP5
+handleKeyAdd:
+    call closeInputBuf
+    bcall(_RclX)
+    bcall(_OP1ToOP5) ; OP5=X
+    call dropStack
+    bcall(_RclX) ; OP1=Y
+    bcall(_OP5ToOP2) ; OP2=X
+    bcall(_FPAdd)
+    bcall(_StoX)
     ret

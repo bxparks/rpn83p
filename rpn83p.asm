@@ -14,9 +14,14 @@
 .list
 
 ; Display coordinates of the status line
-statusCurRow equ 2
+statusCurRow equ 1
 statusCurCol equ 0
-statusPenRow equ stTCurRow*8
+statusPenRow equ statusCurRow*8
+
+; Display coordinates of the error line
+errorCurRow equ 2
+errorCurCol equ 0
+errorPenRow equ errorCurRow*8
 
 ; Display coordinates of the stack T register.
 stTCurRow equ 3
@@ -120,7 +125,7 @@ main:
 
 readLoop:
     call debugInputBuf
-    ;call debugFlags
+    call debugFlags
 
     call displayAll
 

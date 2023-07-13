@@ -104,14 +104,18 @@ debugSignedAPrint:
 
 ;------------------------------------------------------------------------------
 
-; Function: Print some of the display and RPN flags.
+; Function: Print some of the display and RPN flags on the error line.
+;   - E: editting
+;   - L: lift disabled
+;   - I: input dirty
+;   - S: statck dirty
 ; Input: (displayFlags), (rpnFlags)
 ; Output: Flags printed on status line.
 ; Destroys: none
 debugFlags:
     push af
     push hl
-    ld hl, statusCurCol*$100+statusCurRow ; $(curCol)(curRow)
+    ld hl, errorCurCol*$100+errorCurRow ; $(curCol)(curRow)
     ld (CurRow), hl
 
     ; Print Editing flag
