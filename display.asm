@@ -61,30 +61,51 @@ stackInit:
 ; Function: Set the display flags to dirty initially so that they are rendered.
 displayInit:
     ld hl, displayFlags
-    set displayFlagsDirty, (hl)
+    set displayFlagsTitleDirty, (hl)
+    set displayFlagsStackDirty, (hl)
+    set displayFlagsMenuDirty, (hl)
     set displayFlagsInputDirty, (hl)
     ret
-
-; Function: Update the display if marked dirty.
-; Destroys: HL
-display:
-    ld hl, displayFlags
-    bit displayFlagsDirty, (hl)
-    ret z
 
 ; Function: Update the display, including the title, RPN stack variables,
 ; and the menu.
 ; Input: none
+; Output:
 ; Destroys: all
 displayAll:
-    ; print Title
+    call displayTitle
+    call displayStack
+    call displayMenu
+    ret
+
+; Function: Display the title bar.
+; Input: none
+; Output: (displayFlagsTitleDirty) reset
+; Destroys: A, HL
+displayTitle:
+    ld hl, displayFlags
+    bit displayFlagsTitleDirty, (hl)
+    ret z
+
     ld hl, 0 ; $(col)(row) cursor
     ld (CurRow), hl
     ld hl, msgTitle
     bcall(_PutS)
-    bcall(_NewLine)
-    bcall(_NewLine)
-    bcall(_NewLine)
+    bcall(_EraseEOL)
+
+    ; Reset dirty flag
+    ld hl, displayFlags
+    res displayFlagsTitleDirty, (hl)
+    ret
+
+; Function: Display the RPN stack variables
+; Input: none
+; Output: (displayFlagsMenuDirty) reset
+; Destroys: A, HL
+displayStack:
+    ld hl, displayFlags
+    bit displayFlagsStackDirty, (hl)
+    ret z
 
     ; print T label
     ld hl, stTPenRow*$100 ; $(penRow)(penCol)
@@ -145,30 +166,45 @@ displayAll:
     call printOP1
     bcall(_NewLine)
 
-    ; print menus
+    ; Reset dirty flag
+    ld hl, displayFlags
+    res displayFlagsStackDirty, (hl)
+
+    ret
+
+; Function: Display the bottom menus.
+; Input: none
+; Output: (displayFlagsMenuDirty) reset
+; Destroys: A, HL
+displayMenu:
+    ld hl, displayFlags
+    bit displayFlagsMenuDirty, (hl)
+    ret z
+
     call clearMenus
+
     ld a, menuPenCol0
-    ld hl, msgMenuABC
-    call printMenuAtA
-
-    ld a, menuPenCol1
-    ld hl, msgMenuDEF
-    call printMenuAtA
-
-    ld a, menuPenCol2
-    ld hl, msgMenuProb
-    call printMenuAtA
-
-    ld a, menuPenCol3
     ld hl, msgMenuBase
     call printMenuAtA
 
-    ld a, menuPenCol4
+    ld a, menuPenCol1
+    ld hl, msgMenuProb
+    call printMenuAtA
+
+    ld a, menuPenCol2
     ld hl, msgMenuHyp
     call printMenuAtA
 
+    ld a, menuPenCol3
+    ld hl, msgMenuUnit
+    call printMenuAtA
+
+    ld a, menuPenCol4
+    ld hl, msgMenuHelp
+    call printMenuAtA
+
     ld hl, displayFlags
-    res displayFlagsDirty, (hl)
+    res displayFlagsMenuDirty, (hl)
     ret
 
 ; Function: Print OP1 floating point number at the current cursor.
@@ -274,16 +310,16 @@ msgXLabel:
 msgMenuBlank: ; 18px wide
     .db SFourSpaces, SFourSpaces, SFourSpaces, SFourSpaces, Sspace, Sspace, 0
 
-msgMenuProb:
-    .db "PROB", 0
 msgMenuBase:
     .db "BASE", 0
+msgMenuProb:
+    .db "PROB", 0
 msgMenuHyp:
-    .db "  HYP", 0
-msgMenuABC:
-    .db "ABC", 0
-msgMenuDEF:
-    .db "DEF", 0
+    .db "HYP", 0
+msgMenuUnit:
+    .db "UNIT", 0
+msgMenuHelp:
+    .db "HELP", 0
 
 euler:
     .db $00, $80, $27, $18, $28, $18, $28, $45, $94 ; 2.7182818284594

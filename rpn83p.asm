@@ -40,8 +40,10 @@ stXPenRow equ stXCurRow*8
 
 ; Flags for the display.
 displayFlags equ tempSwapArea
-displayFlagsDirty equ 0 ; set if the entire display is dirty
-displayFlagsInputDirty equ 1 ; set if the input buffer is dirty
+displayFlagsInputDirty equ 0 ; set if the input buffer is dirty
+displayFlagsTitleDirty equ 1 ; set if the title bar is dirty
+displayFlagsStackDirty equ 2 ; set if the stack is dirty
+displayFlagsMenuDirty equ 3 ; set if the menu bar is dirty
 
 ; Flags for the inputBuf.
 inputBufFlags equ displayFlags + 1
@@ -113,7 +115,7 @@ main:
     call parseNumInit
 
 readLoop:
-    call display
+    call displayAll
     call printInputBuf
 
     ; Get the key code, and reset the ON flag right after. See TI-83 Plus SDK

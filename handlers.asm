@@ -198,9 +198,6 @@ handleKeyEnter:
     call parseNum
     ; call debugOP1
     call liftStack
-
-    ld hl, displayFlags
-    set displayFlagsDirty, (hl)
     ret
 
 ; Function: Move the OP1 register to X, and lift the RPN stack.
@@ -214,15 +211,20 @@ liftStack:
     bcall(_ThetaName)
     bcall(_RclVarSym)
     bcall(_StoT)
+
     ; Z = Y
     bcall(_RclY)
     bcall(_StoTheta)
+
     ; Y = X
     bcall(_RclX)
     bcall(_StoY)
+
     ; X = lastX
     bcall(_RName)
     bcall(_RclVarSym)
     bcall(_StoX)
 
+    ld hl, displayFlags
+    set displayFlagsStackDirty, (hl)
     ret
