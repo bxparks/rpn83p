@@ -48,21 +48,19 @@ appendInputBuf:
 ; Destroys: all
 handleKeyNumber:
     ; If not in edit mode: lift stack and go into edit mode
-    ld hl, rpnFlags
-    bit rpnFlagsEditing, (hl)
+    bit rpnFlagsEditing, (iy + rpnFlags)
     jr nz, handleKeyNumberContinue
 handleKeyNumberFirstDigit:
     ; Lift the stack, unless disabled.
     push af
-    bit rpnFlagsLiftEnabled, (hl)
+    bit rpnFlagsLiftEnabled, (iy + rpnFlags)
     call nz, liftStack
     pop af
     ; Go into editing mode
     call handleKeyClear
 handleKeyNumberContinue:
     ; Mark input line as dirty
-    ld hl, displayFlags
-    set displayFlagsInputDirty, (hl)
+    set displayFlagsInputDirty, (iy + displayFlags)
     jr appendInputBuf
 
 ; Function: Append '0' to inputBuf.
@@ -127,19 +125,17 @@ handleKey9:
 
 ; Function: Append a '.' if not already entered.
 ; Input: none
-; Output: (inputBufFlags) DecPnt set
+; Output: (iy+inputBufFlags) DecPnt set
 ; Destroys: A, DE, HL
 handleKeyDecPnt:
     ; do nothing if a decimal point already exists
-    ld hl, inputBufFlags
-    bit inputBufFlagsDecPnt, (hl)
+    bit inputBufFlagsDecPnt, (iy + inputBufFlags)
     ret nz
     ; try insert '.'
     ld a, '.'
     call handleKeyNumber
-    ret c ; If Carry: append failed so return without setting flag
-    ld hl, inputBufFlags
-    set inputBufFlagsDecPnt, (hl)
+    ret c ; If Carry: append failed so return without setting the DecPnt flag
+    set inputBufFlagsDecPnt, (iy + inputBufFlags)
     ret
 
 ;-----------------------------------------------------------------------------
@@ -148,11 +144,10 @@ handleKeyDecPnt:
 ;   - If the deleted char was a '.', reset the decimal point flag.
 ;   - If the deleted char was a '-', reset the negative flag.
 ; Input: none
-; Output: inputBufFlags updated
+; Output: (iy+inputBufFlags) updated
 ; Destroys: A, DE, HL
 handleKeyDel:
-    ld hl, rpnFlags
-    set rpnFlagsEditing, (hl)
+    set rpnFlagsEditing, (iy + rpnFlags)
 
     ld hl, inputBuf
     ld a, (hl) ; A = inputBufSize
@@ -166,36 +161,35 @@ handleKeyDel:
     ; retrieve the character deleted
     ld d, 0
     add hl, de
-    ld de, inputBufFlags
     ld a, (hl)
-handleKeyDelCheckDecPnt:
+handleKeyDelDecPnt:
     ; reset decimal point flag if the deleted character was a '.'
     cp a, '.'
-    jr nz, handleKeyDelCheckMinus
-    ex de, hl
-    res inputBufFlagsDecPnt, (hl)
+    jr nz, handleKeyDelMinus
+    res inputBufFlagsDecPnt, (iy + inputBufFlags)
     ret
-handleKeyDelCheckMinus:
+handleKeyDelMinus:
     ; reset negative flag if the deleted character was a '-'
     cp a, '-'
     ret nz
-    ex de, hl
-    res inputBufFlagsManSign, (hl)
+    res inputBufFlagsManSign, (iy + inputBufFlags)
     ret
 
 ;-----------------------------------------------------------------------------
 
 ; Function: Clear the input buffer.
 ; Input: none
-; Output: A=0; inputBuf cleared, inputBufFlags cleared.
+; Output:
+;   - A=0; inputBuf cleared
+;   - editing mode set
+;   - stack lift disabled
+;   - mark displayInput dirty
 ; Destroys: A
 handleKeyClear:
     call clearInputBuf
-    ld hl, rpnFlags
-    set rpnFlagsEditing, (hl)
-    res rpnFlagsLiftEnabled, (hl)
-    ld hl, displayFlags
-    set displayFlagsInputDirty, (hl)
+    set rpnFlagsEditing, (iy + rpnFlags)
+    res rpnFlagsLiftEnabled, (iy + rpnFlags)
+    set displayFlagsInputDirty, (iy + displayFlags)
     ret
 
 ;-----------------------------------------------------------------------------
@@ -206,21 +200,17 @@ handleKeyClear:
 ; Output: (inputBuf), X
 ; Destroys: all, OP1
 handleKeyChs:
-    ld hl, rpnFlags
-    bit rpnFlagsEditing, (hl)
+    bit rpnFlagsEditing, (iy + rpnFlags)
     jr nz, handleKeyChsInputBuf
 handleKeyChsX:
     bcall(_RclX)
     bcall(_InvOP1S)
     bcall(_StoX)
-    ld hl, displayFlags
-    set displayFlagsStackDirty, (hl)
+    set displayFlagsStackDirty, (iy + displayFlags)
     ret
 handleKeyChsInputBuf:
-    ld hl, displayFlags
-    set displayFlagsInputDirty, (hl)
-    ld hl, inputBufFlags
-    bit inputBufFlagsManSign, (hl)
+    set displayFlagsInputDirty, (iy + displayFlags)
+    bit inputBufFlagsManSign, (iy + inputBufFlags)
     jr z, handleKeyChsSetNegative
 handleKeyChsSetPositive:
     ; Currently negative, so set positive
@@ -239,8 +229,7 @@ handleKeyChsSetNegative:
     ; Insert '-' at beginning of string
     ld a, '-'
     ld (hl), a
-    ld hl, inputBufFlags
-    set inputBufFlagsManSign, (hl)
+    set inputBufFlagsManSign, (iy + inputBufFlags)
     ret
 
 ;-----------------------------------------------------------------------------
@@ -255,9 +244,8 @@ handleKeyEnter:
     call liftStack
     call clearInputBuf
 
-    ld hl, rpnFlags
-    res rpnFlagsLiftEnabled, (hl) ; Disable stack lift.
-    res rpnFlagsEditing, (hl) ; Exit edit mode
+    res rpnFlagsLiftEnabled, (iy + rpnFlags)
+    res rpnFlagsEditing, (iy + rpnFlags)
     ret
 
 ;-----------------------------------------------------------------------------
@@ -270,14 +258,12 @@ handleKeyEnter:
 ; Output:
 ; Destroys: all, OP1, OP2, OP4
 closeInputBuf:
-    ld hl, rpnFlags
-    bit rpnFlagsEditing, (hl)
-    set rpnFlagsLiftEnabled, (hl) ; Enable stack lift.
+    set rpnFlagsLiftEnabled, (iy + rpnFlags)
+    bit rpnFlagsEditing, (iy + rpnFlags)
     ret z
     call parseNum
     bcall(_StoX) ; X=OP1
-    ld hl, rpnFlags
-    res rpnFlagsEditing, (hl)
+    res rpnFlagsEditing, (iy + rpnFlags)
     ret
 
 ; Function: Handle the Add key.

@@ -43,20 +43,20 @@ stXCurRow equ 6
 stXCurCol equ 1
 stXPenRow equ stXCurRow*8
 
-; Flags for the display.
-displayFlags equ tempSwapArea
+; Flags for the display. Offset from IY register.
+displayFlags equ asm_Flag1
 displayFlagsInputDirty equ 0 ; set if the input buffer is dirty
 displayFlagsTitleDirty equ 1 ; set if the title bar is dirty
 displayFlagsStackDirty equ 2 ; set if the stack is dirty
 displayFlagsMenuDirty equ 3 ; set if the menu bar is dirty
 
-; Flags for RPN stack modes
-rpnFlags equ displayFlags + 1
+; Flags for RPN stack modes. Offset from IY register.
+rpnFlags equ asm_Flag2
 rpnFlagsEditing equ 1 ; set if in edit mode
 rpnFlagsLiftEnabled equ 2 ; set if stack lift is enabled (ENTER disables)
 
-; Flags for the inputBuf.
-inputBufFlags equ rpnFlags + 1
+; Flags for the inputBuf. Offset from IY register.
+inputBufFlags equ asm_Flag3
 inputBufFlagsDecPnt equ 0 ; set if decimal point exists
 inputBufFlagsManSign equ 1 ; mantissa sign bit
 inputBufFlagsExpSign equ 2 ; exponent sign bit
@@ -69,7 +69,7 @@ inputBufFlagsExpSign equ 2 ; exponent sign bit
 ;       uint8_t size;
 ;       char buf[inputBufMax];
 ;   };
-inputBuf equ inputBufFlags + 1
+inputBuf equ tempSwapArea
 inputBufSize equ inputBuf ; size byte of the pascal string
 inputBufBuf equ inputBuf + 1
 inputBufMax equ 14 ; maximum size of buffer, not including terminating cursor

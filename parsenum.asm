@@ -10,7 +10,7 @@ clearInputBuf:
     push af
     xor a
     ld (inputBuf), a
-    ld (inputBufFlags), a
+    ld (iy+inputBufFlags), a
     pop af
     ret
 
@@ -264,8 +264,7 @@ extractExponent:
 ; Output: floatBuf sign set
 ; Destroys: HL
 extractSign:
-    ld hl, inputBufFlags
-    bit inputBufFlagsManSign, (hl)
+    bit inputBufFlagsManSign, (iy + inputBufFlags)
     ret z
     ld hl, floatBufType
     set 7, (hl)

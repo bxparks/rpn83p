@@ -38,11 +38,10 @@ menuPenColEnd   equ 96
 
 ; Function: Set the display flags to dirty initially so that they are rendered.
 initDisplay:
-    ld hl, displayFlags
-    set displayFlagsTitleDirty, (hl)
-    set displayFlagsStackDirty, (hl)
-    set displayFlagsMenuDirty, (hl)
-    set displayFlagsInputDirty, (hl)
+    set displayFlagsTitleDirty, (iy + displayFlags)
+    set displayFlagsStackDirty, (iy + displayFlags)
+    set displayFlagsMenuDirty, (iy + displayFlags)
+    set displayFlagsInputDirty, (iy + displayFlags)
     ret
 
 ; Function: Update the display, including the title, RPN stack variables,
@@ -61,8 +60,7 @@ displayAll:
 ; Output: (displayFlagsTitleDirty) reset
 ; Destroys: A, HL
 displayTitle:
-    ld hl, displayFlags
-    bit displayFlagsTitleDirty, (hl)
+    bit displayFlagsTitleDirty, (iy + displayFlags)
     ret z
 
     ld hl, 0 ; $(col)(row) cursor
@@ -72,8 +70,7 @@ displayTitle:
     bcall(_EraseEOL)
 
     ; Reset dirty flag
-    ld hl, displayFlags
-    res displayFlagsTitleDirty, (hl)
+    res displayFlagsTitleDirty, (iy + displayFlags)
     ret
 
 ; Function: Display the RPN stack variables
@@ -82,10 +79,9 @@ displayTitle:
 ; Destroys: A, HL
 displayStack:
     ; Return if stack and input are clean.
-    ld hl, displayFlags
-    bit displayFlagsStackDirty, (hl)
+    bit displayFlagsStackDirty, (iy + displayFlags)
     jr nz, displayStackContinue
-    bit displayFlagsInputDirty, (hl)
+    bit displayFlagsInputDirty, (iy + displayFlags)
     ret z
 
 displayStackContinue:
@@ -146,8 +142,7 @@ displayStackContinue:
     call displayStackXNormal
 
     ; Reset dirty flag
-    ld hl, displayFlags
-    res displayFlagsStackDirty, (hl)
+    res displayFlagsStackDirty, (iy + displayFlags)
 
     ret
 
@@ -157,8 +152,7 @@ displayStackXNormal:
     ld hl, $0100 + stXCurRow ; $(curCol)(curRow)
     ld (CurRow), hl
     ; If in edit mode, display the inputBuf, otherwise display X.
-    ld hl, rpnFlags
-    bit rpnFlagsEditing, (hl)
+    bit rpnFlagsEditing, (iy + rpnFlags)
     jr z, displayStackXReg
 displayStackXInputBuf:
     jp printInputBuf
@@ -188,8 +182,7 @@ displayStackXDebug:
 ; Output: (displayFlagsMenuDirty) reset
 ; Destroys: A, HL
 displayMenu:
-    ld hl, displayFlags
-    bit displayFlagsMenuDirty, (hl)
+    bit displayFlagsMenuDirty, (iy + displayFlags)
     ret z
 
     call clearMenus
@@ -214,8 +207,7 @@ displayMenu:
     ld hl, msgMenuHelp
     call printMenuAtA
 
-    ld hl, displayFlags
-    res displayFlagsMenuDirty, (hl)
+    res displayFlagsMenuDirty, (iy + displayFlags)
     ret
 
 ; Function: Print OP1 floating point number at the current cursor.
@@ -294,8 +286,7 @@ clearMenus:
 ;   - (displayFlagsInputDirty) reset
 ; Destroys: A, HL; other regs prob destroyed by OS calls
 printInputBuf:
-    ld hl, displayFlags
-    bit displayFlagsInputDirty, (hl)
+    bit displayFlagsInputDirty, (iy + displayFlags)
     ret z
 
     ld hl, stXCurCol*$100+stXCurRow ; $(col)(row) cursor
@@ -306,8 +297,7 @@ printInputBuf:
     bcall(_PutC)
     bcall(_EraseEOL)
 
-    ld hl, displayFlags
-    res displayFlagsInputDirty, (hl)
+    res displayFlagsInputDirty, (iy + displayFlags)
     ret
 
 ;-----------------------------------------------------------------------------

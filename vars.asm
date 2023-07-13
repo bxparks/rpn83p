@@ -22,9 +22,8 @@ initStack:
     bcall(_StoX)
     bcall(_StoR)
 
-    ld hl, rpnFlags
-    res rpnFlagsEditing, (hl)
-    set rpnFlagsLiftEnabled, (hl)
+    res rpnFlagsEditing, (iy + rpnFlags)
+    set rpnFlagsLiftEnabled, (iy + rpnFlags)
     ret
 
 ;-----------------------------------------------------------------------------
@@ -46,8 +45,7 @@ liftStack:
     bcall(_StoY)
     ; X = X
 
-    ld hl, displayFlags
-    set displayFlagsStackDirty, (hl)
+    set displayFlagsStackDirty, (iy + displayFlags)
     ret
 
 ;-----------------------------------------------------------------------------
@@ -70,6 +68,5 @@ dropStack:
     bcall(_StoTheta)
     ; T = T
 
-    ld hl, displayFlags
-    set displayFlagsStackDirty, (hl)
+    set displayFlagsStackDirty, (iy + displayFlags)
     ret

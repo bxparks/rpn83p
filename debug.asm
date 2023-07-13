@@ -109,7 +109,7 @@ debugSignedAPrint:
 ;   - L: lift disabled
 ;   - I: input dirty
 ;   - S: statck dirty
-; Input: (displayFlags), (rpnFlags)
+; Input: (iy+displayFlags), (iy+rpnFlags)
 ; Output: Flags printed on status line.
 ; Destroys: none
 debugFlags:
@@ -119,8 +119,7 @@ debugFlags:
     ld (CurRow), hl
 
     ; Print Editing flag
-    ld hl, rpnFlags
-    bit rpnFlagsEditing, (hl)
+    bit rpnFlagsEditing, (iy + rpnFlags)
     ld a, 'E'
     call printFlag
 
@@ -128,8 +127,7 @@ debugFlags:
     bcall(_PutC)
 
     ; Print Lift flag
-    ld hl, rpnFlags
-    bit rpnFlagsLiftEnabled, (hl)
+    bit rpnFlagsLiftEnabled, (iy + rpnFlags)
     ld a, 'L'
     call printFlag
 
@@ -137,8 +135,7 @@ debugFlags:
     bcall(_PutC)
 
     ; Print Input dirty flag
-    ld hl, displayFlags
-    bit displayFlagsInputDirty, (hl)
+    bit displayFlagsInputDirty, (iy + displayFlags)
     ld a, 'I'
     call printFlag
 
@@ -146,8 +143,7 @@ debugFlags:
     bcall(_PutC)
 
     ; Print Stack dirty flag
-    ld hl, displayFlags
-    bit displayFlagsStackDirty, (hl)
+    bit displayFlagsStackDirty, (iy + displayFlags)
     ld a, 'S'
     call printFlag
 
