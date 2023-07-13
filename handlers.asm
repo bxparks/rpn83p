@@ -263,19 +263,21 @@ handleKeyEnter:
 ;-----------------------------------------------------------------------------
 
 ; Function: If currently in edit mode, close the input buffer by parsing the
-; input, enable stack lift, then copying the float value into X.
+; input, enable stack lift, then copying the float value into X. If not in edit
+; mode, no need to parse the inputBuf, but we still have to enable stack lift
+; because the previous keyCode could have been ENTER which disabled it.
 ; Input: none
 ; Output:
 ; Destroys: all, OP1, OP2, OP4
 closeInputBuf:
     ld hl, rpnFlags
     bit rpnFlagsEditing, (hl)
+    set rpnFlagsLiftEnabled, (hl) ; Enable stack lift.
     ret z
     call parseNum
     bcall(_StoX) ; X=OP1
     ld hl, rpnFlags
     res rpnFlagsEditing, (hl)
-    set rpnFlagsLiftEnabled, (hl) ; Enable stack lift.
     ret
 
 ; Function: Handle the Add key.
