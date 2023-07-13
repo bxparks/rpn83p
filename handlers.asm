@@ -38,65 +38,91 @@ appendInputBuf:
     ld b, inputBufMax
     jp appendString
 
+; Function: Append a number character to inputBuf, updating various flags.
+; Input:
+;   A: character to be appended
+; Output:
+;   Carry flag set when append fails.
+;   (rpnFlagsEditing) set.
+;   (displayFlagsInputDirty) set.
+; Destroys: all
+handleKeyNumber:
+    ; If not in edit mode: lift stack and go into edit mode
+    ld hl, rpnFlags
+    bit rpnFlagsEditing, (hl)
+    jr nz, handleKeyNumberContinue
+    ; Go into editing mode upon first number key.
+    call handleKeyClear
+    ; Lift the stack, unless disabled.
+    bit rpnFlagsLiftDisabled, (hl)
+    push af
+    call nz, liftStack
+    pop af
+handleKeyNumberContinue:
+    ; mark input line as dirty
+    ld hl, displayFlags
+    set displayFlagsInputDirty, (hl)
+    jr appendInputBuf
+
 ; Function: Append '0' to inputBuf.
-; See appendInputBuf()
+; See handleKeyNumber()
 handleKey0:
     ld a, '0'
-    jr appendInputBuf
+    jr handleKeyNumber
 
 ; Function: Append '1' to inputBuf.
-; See appendInputBuf()
+; See handleKeyNumber()
 handleKey1:
     ld a, '1'
-    jr appendInputBuf
+    jr handleKeyNumber
 
 ; Function: Append '2' to inputBuf.
-; See appendInputBuf()
+; See handleKeyNumber()
 handleKey2:
     ld a, '2'
-    jr appendInputBuf
+    jr handleKeyNumber
 
 ; Function: Append '3' to inputBuf.
-; See appendInputBuf()
+; See handleKeyNumber()
 handleKey3:
     ld a, '3'
-    jr appendInputBuf
+    jr handleKeyNumber
 
 ; Function: Append '4' to inputBuf.
-; See appendInputBuf()
+; See handleKeyNumber()
 handleKey4:
     ld a, '4'
-    jr appendInputBuf
+    jr handleKeyNumber
 
 ; Function: Append '5' to inputBuf.
-; See appendInputBuf()
+; See handleKeyNumber()
 handleKey5:
     ld a, '5'
-    jr appendInputBuf
+    jr handleKeyNumber
 
 ; Function: Append '6' to inputBuf.
-; See appendInputBuf()
+; See handleKeyNumber()
 handleKey6:
     ld a, '6'
-    jr appendInputBuf
+    jr handleKeyNumber
 
 ; Function: Append '7' to inputBuf.
-; See appendInputBuf()
+; See handleKeyNumber()
 handleKey7:
     ld a, '7'
-    jr appendInputBuf
+    jr handleKeyNumber
 
 ; Function: Append '8' to inputBuf.
-; See appendInputBuf()
+; See handleKeyNumber()
 handleKey8:
     ld a, '8'
-    jr appendInputBuf
+    jr handleKeyNumber
 
 ; Function: Append '9' to inputBuf.
-; See appendInputBuf()
+; See handleKeyNumber()
 handleKey9:
     ld a, '9'
-    jr appendInputBuf
+    jr handleKeyNumber
 
 ; Function: Append a '.' if not already entered.
 ; Input: none
@@ -109,7 +135,7 @@ handleKeyDecPnt:
     ret nz
     ; try insert '.'
     ld a, '.'
-    call appendInputBuf
+    call handleKeyNumber
     ret c ; If Carry: append failed so return without setting flag
     ld hl, inputBufFlags
     set inputBufFlagsDecPnt, (hl)
@@ -122,10 +148,14 @@ handleKeyDecPnt:
 ; Output: inputBufFlags updated
 ; Destroys: A, DE, HL
 handleKeyDel:
+    ld hl, rpnFlags
+    set rpnFlagsEditing, (hl)
+
     ld hl, inputBuf
     ld a, (hl) ; A = inputBufSize
     or a
     ret z ; do nothing if buffer empty
+
     ; remove last character
     ld e, a ; E = inputBufSize
     dec a
@@ -156,7 +186,11 @@ handleKeyDelCheckMinus:
 ; Destroys: A
 handleKeyClear:
     call readNumInit
-    call parseNumInit
+
+    ld hl, rpnFlags
+    set rpnFlagsEditing, (hl)
+    ld hl, displayFlags
+    set displayFlagsInputDirty, (hl)
     ret
 
 ; Function: Handle (-) change sign.
@@ -198,4 +232,9 @@ handleKeyEnter:
     call parseNum
     ; call debugOP1
     call liftStack
+    call readNumInit
+
+    ld hl, rpnFlags
+    set rpnFlagsLiftDisabled, (hl) ; Disable stack lift.
+    res rpnFlagsEditing, (hl) ; Exit edit mode
     ret

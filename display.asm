@@ -90,10 +90,14 @@ displayTitle:
 ; Output: (displayFlagsMenuDirty) reset
 ; Destroys: A, HL
 displayStack:
+    ; Return if stack and input are clean.
     ld hl, displayFlags
     bit displayFlagsStackDirty, (hl)
+    jr nz, displayStackContinue
+    bit displayFlagsInputDirty, (hl)
     ret z
 
+displayStackContinue:
     ; print T label
     ld hl, stTPenRow*$100 ; $(penRow)(penCol)
     ld (PenCol), hl
@@ -148,11 +152,21 @@ displayStack:
     ; print X value
     ld hl, $0100 + stXCurRow ; $(curCol)(curRow)
     ld (CurRow), hl
+;    ; If in edit mode, display the inputBuf, otherwise display X.
+;    ld hl, rpnFlags
+;    bit rpnFlagsEditing, (hl)
+;    jr z, displayStackPrintX
+;displayStackPrintInputBuf:
+;    call printInputBuf
+;    jr displayStackPrintXContinue
+;displayStackPrintX:
     bcall(_XName)
     bcall(_RclVarSym)
     call printOP1
+    bcall(_EraseEOL)
     bcall(_NewLine)
 
+displayStackPrintXContinue:
     ; Reset dirty flag
     ld hl, displayFlags
     res displayFlagsStackDirty, (hl)
@@ -263,12 +277,17 @@ clearMenus:
 ;-----------------------------------------------------------------------------
 
 ; Function: Print the input buffer.
-; Input: none
+; Input:
+;   (displayFlagsInputDirty)
 ; Output:
 ;   - (CurCol) is updated
 ;   - (displayFlagsInputDirty) reset
 ; Destroys: A, HL; other regs prob destroyed by OS calls
 printInputBuf:
+    ld hl, displayFlags
+    bit displayFlagsInputDirty, (hl)
+    ret z
+
     ld hl, stXCurCol*$100+stXCurRow ; $(col)(row) cursor
     ld (CurRow), hl
     ld hl, inputBuf

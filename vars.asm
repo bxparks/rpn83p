@@ -20,6 +20,7 @@ stackInit:
 ; Function: Move the OP1 register to X, and lift the RPN stack.
 ; Input: OP1
 ; Output: T=Z; Z=Y; Y=X; X=OP1
+; Destroys: HL, all
 liftStack:
     ; save OP1 in lastX
     bcall(_StoR)

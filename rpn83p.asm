@@ -117,11 +117,12 @@ main:
     call stackInit
     call displayInit
     call readNumInit
-    call parseNumInit
 
 readLoop:
+    call debugInputBuf
+    ;call debugFlags
+
     call displayAll
-    call printInputBuf
 
     ; Get the key code, and reset the ON flag right after. See TI-83 Plus SDK
     ; guide, p. 69. If this flag is not reset, then the next bcall(_DispHL)
@@ -151,10 +152,16 @@ mainExit:
 
 ;-----------------------------------------------------------------------------
 
-readNumInit:
+; Function: Clear the inputBuf.
+; Input: inputBuf
+; Output: inputBuf cleared
+; Destroys: none
+readNumInit: ; TODO: rename this to inputBufInit()
+    push af
     xor a
     ld (inputBuf), a
     ld (inputBufFlags), a
+    pop af
     ret
 
 ;-----------------------------------------------------------------------------

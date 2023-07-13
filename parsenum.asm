@@ -12,18 +12,20 @@ parseNum:
     ret z
     call calcDPPos
     ; call debugSignedA ; Display the decimal point pos.
-    call extractExponent
-    call extractSign
+    call extractExponent ; extract exponent to floatBuf
+    call extractSign ; extract sign to floatBuf
     call extractMantissa ; extract digits into parseBuf
     call copyMantissa ; copy digits into floatBuf
     call copyFloatToOP1 ; copy floatBuf to OP1
     ; call debugOP1
     ret
 
+;------------------------------------------------------------------------------
+
 ; Function: Initialize the parseBuf.
 ; Input: none
 ; Output: (parseBuf) cleared
-; Destroys: A, HL
+; Destroys: all
 parseNumInit:
     call clearParseBuf
     call clearFloatBuf
@@ -45,15 +47,11 @@ clearParseBufLoop:
     djnz clearParseBufLoop
     ret
 
-; Function: Clear floatBuf by setting every to $00.
+; Function: Set floatBuf to 0.0.
 clearFloatBuf:
-    ld b, floatBufSizeOf
-    ld hl, floatBuf
-    xor a
-clearFloatLoop:
-    ld (hl), a
-    inc hl
-    djnz clearFloatLoop
+    bcall(_OP1Set0)
+    ld de, floatBuf
+    bcall(_MovFrOP1)
     ret
 
 ;------------------------------------------------------------------------------
