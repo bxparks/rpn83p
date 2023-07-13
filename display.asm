@@ -140,29 +140,48 @@ displayStackContinue:
     ld hl, msgXLabel
     bcall(_VPutS)
 
-    ; print X value
-    ld hl, $0100 + stXCurRow ; $(curCol)(curRow)
-    ld (CurRow), hl
-;    ; If in edit mode, display the inputBuf, otherwise display X.
-;    ld hl, rpnFlags
-;    bit rpnFlagsEditing, (hl)
-;    jr z, displayStackPrintX
-;displayStackPrintInputBuf:
-;    call printInputBuf
-;    jr displayStackPrintXContinue
-;displayStackPrintX:
-    bcall(_XName)
-    bcall(_RclVarSym)
-    call printOP1
-    bcall(_EraseEOL)
-    bcall(_NewLine)
+    ; print X value.
+    ; NOTE: Use one (but not both) of the following.
+    ; call displayStackXDebug
+    call displayStackXNormal
 
-displayStackPrintXContinue:
     ; Reset dirty flag
     ld hl, displayFlags
     res displayFlagsStackDirty, (hl)
 
     ret
+
+; This is the normal, non-debug version, which combines the inputBuf and the X
+; register on a single line.
+displayStackXNormal:
+    ld hl, $0100 + stXCurRow ; $(curCol)(curRow)
+    ld (CurRow), hl
+    ; If in edit mode, display the inputBuf, otherwise display X.
+    ld hl, rpnFlags
+    bit rpnFlagsEditing, (hl)
+    jr z, displayStackXReg
+displayStackXInputBuf:
+    jp printInputBuf
+displayStackXReg:
+    bcall(_XName)
+    bcall(_RclVarSym)
+    call printOP1
+    bcall(_EraseEOL)
+    bcall(_NewLine)
+    ret
+
+; This is the debug version which always shows the current X register, and
+; prints the inputBuf on the error line.
+displayStackXDebug:
+    ld hl, $0100 + stXCurRow ; $(curCol)(curRow)
+    ld (CurRow), hl
+    bcall(_XName)
+    bcall(_RclVarSym)
+    call printOP1
+    bcall(_EraseEOL)
+    bcall(_NewLine)
+    ; print the inputBuf on the error line
+    jp debugInputBuf
 
 ; Function: Display the bottom menus.
 ; Input: none

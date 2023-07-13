@@ -214,9 +214,11 @@ handleKeyChsX:
     bcall(_InvOP1S)
     bcall(_StoX)
     ld hl, displayFlags
-    bit displayFlagsStackDirty, (hl)
+    set displayFlagsStackDirty, (hl)
     ret
 handleKeyChsInputBuf:
+    ld hl, displayFlags
+    set displayFlagsInputDirty, (hl)
     ld hl, inputBufFlags
     bit inputBufFlagsManSign, (hl)
     jr z, handleKeyChsSetNegative

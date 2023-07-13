@@ -124,9 +124,7 @@ main:
     call clearInputBuf
 
 readLoop:
-    call debugInputBuf
-    call debugFlags
-
+    ;call debugFlags
     call displayAll
 
     ; Get the key code, and reset the ON flag right after. See TI-83 Plus SDK
