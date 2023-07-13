@@ -264,8 +264,8 @@ closeInputBuf:
     set rpnFlagsLiftEnabled, (hl) ; Enable stack lift.
     ret
 
-; Function: Handle the + key.
-; Input: none
+; Function: Handle the Add key.
+; Input: inputBuf
 ; Output:
 ; Destroys: all, OP1, OP2, OP4, OP5
 handleKeyAdd:
@@ -276,5 +276,50 @@ handleKeyAdd:
     bcall(_RclX) ; OP1=Y
     bcall(_OP5ToOP2) ; OP2=X
     bcall(_FPAdd)
+    bcall(_StoX)
+    ret
+
+; Function: Handle the Sub key.
+; Input: inputBuf
+; Output:
+; Destroys: all, OP1, OP2, OP4, OP5
+handleKeySub:
+    call closeInputBuf
+    bcall(_RclX)
+    bcall(_OP1ToOP5) ; OP5=X
+    call dropStack
+    bcall(_RclX) ; OP1=Y
+    bcall(_OP5ToOP2) ; OP2=X
+    bcall(_FPSub)
+    bcall(_StoX)
+    ret
+
+; Function: Handle the Mul key.
+; Input: inputBuf
+; Output:
+; Destroys: all, OP1, OP2, OP4, OP5
+handleKeyMul:
+    call closeInputBuf
+    bcall(_RclX)
+    bcall(_OP1ToOP5) ; OP5=X
+    call dropStack
+    bcall(_RclX) ; OP1=Y
+    bcall(_OP5ToOP2) ; OP2=X
+    bcall(_FPMult)
+    bcall(_StoX)
+    ret
+
+; Function: Handle the Div key.
+; Input: inputBuf
+; Output:
+; Destroys: all, OP1, OP2, OP4, OP5
+handleKeyDiv:
+    call closeInputBuf
+    bcall(_RclX)
+    bcall(_OP1ToOP5) ; OP5=X
+    call dropStack
+    bcall(_RclX) ; OP1=Y
+    bcall(_OP5ToOP2) ; OP2=X
+    bcall(_FPDiv)
     bcall(_StoX)
     ret
