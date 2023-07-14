@@ -204,10 +204,9 @@ handleKeyChs:
     bit rpnFlagsEditing, (iy + rpnFlags)
     jr nz, handleKeyChsInputBuf
 handleKeyChsX:
-    bcall(_RclX)
+    call rclX
     bcall(_InvOP1S)
-    bcall(_StoX)
-    set displayFlagsStackDirty, (iy + displayFlags)
+    call stoX
     ret
 handleKeyChsInputBuf:
     set displayFlagsInputDirty, (iy + displayFlags)
@@ -241,7 +240,7 @@ handleKeyChsSetNegative:
 ; Destroys: all, OP1, OP2, OP4
 handleKeyEnter:
     call parseNum
-    bcall(_StoX) ; X=OP1
+    call stoX
     call liftStack
     call clearInputBuf
 
@@ -265,38 +264,38 @@ closeInputBuf:
     bit rpnFlagsEditing, (iy + rpnFlags)
     ret z
     call parseNum
-    bcall(_StoX) ; X=OP1
+    call stoX
     res rpnFlagsEditing, (iy + rpnFlags)
     ret
 
 ; Function: Handle the Add key.
 ; Input: inputBuf
 ; Output:
-; Destroys: all, OP1, OP2, OP4, OP5
+; Destroys: all, OP1, OP2, OP4
 handleKeyAdd:
     call closeInputBuf
-    bcall(_RclX)
-    bcall(_OP1ToOP5) ; OP5=X
+    call rclX
+    bcall(_OP1ExOP2)
     call dropStack
-    bcall(_RclX) ; OP1=Y
-    bcall(_OP5ToOP2) ; OP2=X
+    call rclX
+    bcall(_OP1ExOP2)
     bcall(_FPAdd)
-    bcall(_StoX)
+    call stoX
     ret
 
 ; Function: Handle the Sub key.
 ; Input: inputBuf
 ; Output:
-; Destroys: all, OP1, OP2, OP4, OP5
+; Destroys: all, OP1, OP2, OP4
 handleKeySub:
     call closeInputBuf
-    bcall(_RclX)
-    bcall(_OP1ToOP5) ; OP5=X
+    call rclX
+    bcall(_OP1ExOP2)
     call dropStack
-    bcall(_RclX) ; OP1=Y
-    bcall(_OP5ToOP2) ; OP2=X
+    call rclX
+    bcall(_OP1ExOP2)
     bcall(_FPSub)
-    bcall(_StoX)
+    call stoX
     ret
 
 ; Function: Handle the Mul key.
@@ -305,28 +304,28 @@ handleKeySub:
 ; Destroys: all, OP1, OP2, OP4, OP5
 handleKeyMul:
     call closeInputBuf
-    bcall(_RclX)
-    bcall(_OP1ToOP5) ; OP5=X
+    call rclX
+    bcall(_OP1ExOP2)
     call dropStack
-    bcall(_RclX) ; OP1=Y
-    bcall(_OP5ToOP2) ; OP2=X
+    call rclX
+    bcall(_OP1ExOP2)
     bcall(_FPMult)
-    bcall(_StoX)
+    call stoX
     ret
 
 ; Function: Handle the Div key.
 ; Input: inputBuf
 ; Output:
-; Destroys: all, OP1, OP2, OP4, OP5
+; Destroys: all, OP1, OP2, OP4
 handleKeyDiv:
     call closeInputBuf
-    bcall(_RclX)
-    bcall(_OP1ToOP5) ; OP5=X
+    call rclX
+    bcall(_OP1ExOP2)
     call dropStack
-    bcall(_RclX) ; OP1=Y
-    bcall(_OP5ToOP2) ; OP2=X
+    call rclX
+    bcall(_OP1ExOP2)
     bcall(_FPDiv)
-    bcall(_StoX)
+    call stoX
     ret
 
 ;-----------------------------------------------------------------------------
@@ -342,7 +341,7 @@ handleKeyPi:
     call liftStack
     ld hl, constPi
     bcall(_Mov9ToOP1)
-    bcall(_StoX)
+    call stoX
     ret
 
 handleKeyEuler:
@@ -350,7 +349,7 @@ handleKeyEuler:
     call liftStack
     ld hl, constEuler
     bcall(_Mov9ToOP1)
-    bcall(_StoX)
+    call stoX
     ret
 
 constPi:
@@ -372,40 +371,37 @@ constThousand:
 ; Function: y^x
 handleKeyExpon:
     call closeInputBuf
-    bcall(_RclX)
-    bcall(_OP1ToOP5) ; OP5=X
+    call rclX
+    bcall(_OP1ExOP2)
     call dropStack
-    bcall(_RclX) ; OP1=Y
-    bcall(_OP5ToOP2) ; OP2=X
+    call rclX
+    bcall(_OP1ExOP2)
     bcall(_YToX)
-    bcall(_StoX)
+    call stoX
     ret
 
 ; Function: 1/x
 handleKeyInv:
     call closeInputBuf
-    bcall(_RclX)
+    call rclX
     bcall(_FPRecip)
-    bcall(_StoX)
-    set displayFlagsStackDirty, (iy + displayFlags)
+    call stoX
     ret
 
 ; Function: x^2
 handleKeySquare:
     call closeInputBuf
-    bcall(_RclX)
+    call rclX
     bcall(_FPSquare)
-    bcall(_StoX)
-    set displayFlagsStackDirty, (iy + displayFlags)
+    call stoX
     ret
 
 ; Function: sqrt(x)
 handleKeySqrt:
     call closeInputBuf
-    bcall(_RclX)
+    call rclX
     bcall(_SqRoot)
-    bcall(_StoX)
-    set displayFlagsStackDirty, (iy + displayFlags)
+    call stoX
     ret
 
 ;-----------------------------------------------------------------------------
@@ -433,32 +429,28 @@ handleKeyExchangeXY:
 
 handleKeyLog:
     call closeInputBuf
-    bcall(_RclX)
+    call rclX
     bcall(_LogX)
-    bcall(_StoX)
-    set displayFlagsStackDirty, (iy + displayFlags)
+    call stoX
     ret
 
 handleKeyALog:
     call closeInputBuf
-    bcall(_RclX)
+    call rclX
     bcall(_TenX)
-    bcall(_StoX)
-    set displayFlagsStackDirty, (iy + displayFlags)
+    call stoX
     ret
 
 handleKeyLn:
     call closeInputBuf
-    bcall(_RclX)
+    call rclX
     bcall(_LnX)
-    bcall(_StoX)
-    set displayFlagsStackDirty, (iy + displayFlags)
+    call stoX
     ret
 
 handleKeyExp:
     call closeInputBuf
-    bcall(_RclX)
+    call rclX
     bcall(_EToX)
-    bcall(_StoX)
-    set displayFlagsStackDirty, (iy + displayFlags)
+    call stoX
     ret

@@ -94,8 +94,7 @@ displayStackContinue:
     ; print T value
     ld hl, $0100 + stTCurRow ; $(curCol)(curRow)
     ld (CurRow), hl
-    bcall(_TName)
-    bcall(_RclVarSym)
+    call rclT
     call printOP1
     bcall(_EraseEOL)
     bcall(_NewLine)
@@ -123,8 +122,7 @@ displayStackContinue:
     ; print Y value
     ld hl, $0100 + stYCurRow ; $(curCol)(curRow)
     ld (CurRow), hl
-    bcall(_YName)
-    bcall(_RclVarSym)
+    call rclY
     call printOP1
     bcall(_EraseEOL)
     bcall(_NewLine)
@@ -156,8 +154,7 @@ displayStackXNormal:
 displayStackXInputBuf:
     jp printInputBuf
 displayStackXReg:
-    bcall(_XName)
-    bcall(_RclVarSym)
+    call rclX
     call printOP1
     bcall(_EraseEOL)
     bcall(_NewLine)
@@ -168,8 +165,7 @@ displayStackXReg:
 displayStackXDebug:
     ld hl, $0100 + stXCurRow ; $(curCol)(curRow)
     ld (CurRow), hl
-    bcall(_XName)
-    bcall(_RclVarSym)
+    call rclX
     call printOP1
     bcall(_EraseEOL)
     bcall(_NewLine)
