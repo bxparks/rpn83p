@@ -100,6 +100,7 @@ stoY:
 
 ; Function: Recall stZ to OP1.
 ; Output; Z = 1 if Z is real.
+; Destroys: all, OP1
 rclZ:
     ld hl, zname
     bcall(_Mov9ToOP1)
@@ -108,7 +109,7 @@ rclZ:
 
 ; Function: Store OP1 to stZ variable.
 ; Output; CF = 1 if failed to store
-; Destroys: all, OP6
+; Destroys: all, OP1, OP6
 stoZ:
     set displayFlagsStackDirty, (iy + displayFlags)
     bcall(_OP1ToOP6) ; OP6=OP1 save
@@ -136,12 +137,14 @@ zName:
 ;-----------------------------------------------------------------------------
 
 ; Function: Copy stT to OP1.
+; Destroys: all, OP4
 rclT:
     bcall(_TName)
     bcall(_RclVarSym)
     ret
 
 ; Function: Store OP1 to stT, setting dirty flag.
+; Destroys: all, OP4
 stoT:
     bcall(_StoT)
     set displayFlagsStackDirty, (iy + displayFlags)
@@ -227,7 +230,7 @@ rotUpStack:
     call stoZ
     ; Y = X
     call rclX
-    call rclY
+    call stoY
     ; X = T
     bcall(_PopRealO1)
     call stoX
@@ -237,13 +240,13 @@ rotUpStack:
 
 ; Function: Exchange X<->Y.
 ; Input: none
-; Output: T=Z; Z=Y; Y=X; X=T
+; Output: X=Y; Y=X
 ; Destroys: all, OP1, OP2, OP4
 exchangeXYStack:
     call rclX
-    bcall(_OP1ExOP2)
+    bcall(_OP1ToOP2)
     call rclY
     call stoX
-    bcall(_OP1ExOP2)
+    bcall(_OP2ToOP1)
     call stoY
     ret

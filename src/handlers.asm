@@ -275,10 +275,9 @@ closeInputBuf:
 handleKeyAdd:
     call closeInputBuf
     call rclX
-    bcall(_OP1ExOP2)
+    bcall(_OP1ToOP2)
     call dropStack
     call rclX
-    bcall(_OP1ExOP2)
     bcall(_FPAdd)
     call stoX
     ret
@@ -290,10 +289,9 @@ handleKeyAdd:
 handleKeySub:
     call closeInputBuf
     call rclX
-    bcall(_OP1ExOP2)
+    bcall(_OP1ToOP2)
     call dropStack
     call rclX
-    bcall(_OP1ExOP2)
     bcall(_FPSub)
     call stoX
     ret
@@ -305,10 +303,9 @@ handleKeySub:
 handleKeyMul:
     call closeInputBuf
     call rclX
-    bcall(_OP1ExOP2)
+    bcall(_OP1ToOP2)
     call dropStack
     call rclX
-    bcall(_OP1ExOP2)
     bcall(_FPMult)
     call stoX
     ret
@@ -320,10 +317,9 @@ handleKeyMul:
 handleKeyDiv:
     call closeInputBuf
     call rclX
-    bcall(_OP1ExOP2)
+    bcall(_OP1ToOP2)
     call dropStack
     call rclX
-    bcall(_OP1ExOP2)
     bcall(_FPDiv)
     call stoX
     ret
@@ -372,10 +368,9 @@ constThousand:
 handleKeyExpon:
     call closeInputBuf
     call rclX
-    bcall(_OP1ExOP2)
+    bcall(_OP1ToOP2)
     call dropStack
     call rclX
-    bcall(_OP1ExOP2)
     bcall(_YToX)
     call stoX
     ret
