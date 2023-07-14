@@ -135,7 +135,7 @@ debugFlags:
     bcall(_PutC)
 
     ; Print Input dirty flag
-    bit displayFlagsInputDirty, (iy + displayFlags)
+    bit inputBufFlagsInputDirty, (iy + inputBufFlags)
     ld a, 'I'
     call printFlag
 

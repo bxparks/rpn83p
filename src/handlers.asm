@@ -28,23 +28,43 @@ lookupKeyMatched:
 
 ;-----------------------------------------------------------------------------
 
+; Function: Clear the inputBuf.
+; Input: inputBuf
+; Output:
+;   - inputBuf cleared
+;   - inputBufFlagsInputDirty set
+; Destroys: none
+clearInputBuf:
+    push af
+    xor a
+    ld (inputBuf), a
+    ld (iy+inputBufFlags), a
+    set inputBufFlagsInputDirty, (iy + inputBufFlags)
+    pop af
+    ret
+
 ; Function: Append character to inputBuf.
 ; Input:
 ;   A: character to be appended
-; Output: Carry flag set when append fails
+; Output:
+;   - Carry flag set when append fails
+;   - inputBufFlagsInputDirty set
 ; Destroys: all
 appendInputBuf:
     ld hl, inputBuf
     ld b, inputBufMax
+    set inputBufFlagsInputDirty, (iy + inputBufFlags)
     jp appendString
+
+;-----------------------------------------------------------------------------
 
 ; Function: Append a number character to inputBuf, updating various flags.
 ; Input:
 ;   A: character to be appended
 ; Output:
-;   Carry flag set when append fails.
-;   (rpnFlagsEditing) set.
-;   (displayFlagsInputDirty) set.
+;   - Carry flag set when append fails.
+;   - rpnFlagsEditing set.
+;   - inputBufFlagsInputDirty set.
 ; Destroys: all
 handleKeyNumber:
     ; If not in edit mode: lift stack and go into edit mode
@@ -59,8 +79,6 @@ handleKeyNumberFirstDigit:
     ; Go into editing mode
     call handleKeyClear
 handleKeyNumberContinue:
-    ; Mark input line as dirty
-    set displayFlagsInputDirty, (iy + displayFlags)
     jr appendInputBuf
 
 ; Function: Append '0' to inputBuf.
@@ -148,7 +166,7 @@ handleKeyDecPnt:
 ; Destroys: A, DE, HL
 handleKeyDel:
     set rpnFlagsEditing, (iy + rpnFlags)
-    set displayFlagsInputDirty, (iy + displayFlags)
+    set inputBufFlagsInputDirty, (iy + inputBufFlags)
 
     ld hl, inputBuf
     ld a, (hl) ; A = inputBufSize
@@ -190,7 +208,6 @@ handleKeyClear:
     call clearInputBuf
     set rpnFlagsEditing, (iy + rpnFlags)
     res rpnFlagsLiftEnabled, (iy + rpnFlags)
-    set displayFlagsInputDirty, (iy + displayFlags)
     ret
 
 ;-----------------------------------------------------------------------------
@@ -209,7 +226,7 @@ handleKeyChsX:
     call stoX
     ret
 handleKeyChsInputBuf:
-    set displayFlagsInputDirty, (iy + displayFlags)
+    set inputBufFlagsInputDirty, (iy + inputBufFlags)
     bit inputBufFlagsManSign, (iy + inputBufFlags)
     jr z, handleKeyChsSetNegative
 handleKeyChsSetPositive:

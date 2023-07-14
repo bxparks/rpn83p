@@ -45,7 +45,6 @@ stXPenRow equ stXCurRow*8
 
 ; Flags for the display. Offset from IY register.
 displayFlags equ asm_Flag1
-displayFlagsInputDirty equ 0 ; set if the input buffer is dirty
 displayFlagsTitleDirty equ 1 ; set if the title bar is dirty
 displayFlagsMenuDirty equ 3 ; set if the menu bar is dirty
 
@@ -57,9 +56,10 @@ rpnFlagsLiftEnabled equ 2 ; set if stack lift is enabled (ENTER disables)
 
 ; Flags for the inputBuf. Offset from IY register.
 inputBufFlags equ asm_Flag3
-inputBufFlagsDecPnt equ 0 ; set if decimal point exists
-inputBufFlagsManSign equ 1 ; mantissa sign bit
-inputBufFlagsExpSign equ 2 ; exponent sign bit
+inputBufFlagsInputDirty equ 0 ; set if the input buffer is dirty
+inputBufFlagsDecPnt equ 1 ; set if decimal point exists
+inputBufFlagsManSign equ 2 ; mantissa sign bit
+inputBufFlagsExpSign equ 3 ; exponent sign bit
 
 ; String buffer for keyboard entry. This is a Pascal-style with a single size
 ; byte at the start. It not include the cursor displayed at the end of the

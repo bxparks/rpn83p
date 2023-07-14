@@ -40,7 +40,7 @@ menuPenColEnd   equ 96
 initDisplay:
     set displayFlagsTitleDirty, (iy + displayFlags)
     set displayFlagsMenuDirty, (iy + displayFlags)
-    set displayFlagsInputDirty, (iy + displayFlags)
+    set inputBufFlagsInputDirty, (iy + inputBufFlags)
     ret
 
 ; Function: Update the display, including the title, RPN stack variables,
@@ -80,7 +80,7 @@ displayStack:
     ; Return if both stackDirty and inputDirty are clean.
     bit rpnFlagsStackDirty, (iy + rpnFlags)
     jr nz, displayStackContinue
-    bit displayFlagsInputDirty, (iy + displayFlags)
+    bit inputBufFlagsInputDirty, (iy + inputBufFlags)
     ret z
 
 displayStackContinue:
@@ -274,13 +274,13 @@ clearMenus:
 
 ; Function: Print the input buffer.
 ; Input:
-;   (displayFlagsInputDirty)
+;   inputBufFlagsInputDirty
 ; Output:
 ;   - (CurCol) is updated
-;   - (displayFlagsInputDirty) reset
+;   - inputBufFlagsInputDirty reset
 ; Destroys: A, HL; other regs prob destroyed by OS calls
 printInputBuf:
-    bit displayFlagsInputDirty, (iy + displayFlags)
+    bit inputBufFlagsInputDirty, (iy + inputBufFlags)
     ret z
 
     ld hl, stXCurCol*$100+stXCurRow ; $(col)(row) cursor
@@ -291,7 +291,7 @@ printInputBuf:
     bcall(_PutC)
     bcall(_EraseEOL)
 
-    res displayFlagsInputDirty, (iy + displayFlags)
+    res inputBufFlagsInputDirty, (iy + inputBufFlags)
     ret
 
 ;-----------------------------------------------------------------------------
