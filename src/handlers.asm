@@ -354,7 +354,7 @@ handleKeyInv:
     ret
 
 ; Function: x^2
-handleKeySquare
+handleKeySquare:
     call closeInputBuf
     bcall(_RclX)
     bcall(_FPSquare)
@@ -362,9 +362,28 @@ handleKeySquare
     ret
 
 ; Function: sqrt(x)
-handleKeySqrt
+handleKeySqrt:
     call closeInputBuf
     bcall(_RclX)
     bcall(_SqRoot)
     bcall(_StoX)
+    ret
+
+;-----------------------------------------------------------------------------
+; Stack operations
+;-----------------------------------------------------------------------------
+
+handleKeyRotDown:
+    call closeInputBuf
+    call rotDownStack
+    ret
+
+handleKeyRotUp:
+    call closeInputBuf
+    call rotUpStack
+    ret
+
+handleKeyExchangeXY:
+    call closeInputBuf
+    call exchangeXYStack
     ret

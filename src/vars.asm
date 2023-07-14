@@ -112,6 +112,76 @@ dropStack:
 
 ;-----------------------------------------------------------------------------
 
+; Function: Rotate the RPN stack *down*.
+; Input: none
+; Output: X=Y; Y=Z; Z=T; T=X
+; Destroys: all, OP1, OP2, OP4
+rotDownStack:
+    ; save X in FPS
+    bcall(_RclX)
+    bcall(_PushRealO1)
+    ; X = Y
+    bcall(_RclY)
+    bcall(_StoX)
+    ; Y = Z
+    call rclZ
+    bcall(_StoY)
+    ; Z = T
+    bcall(_TName)
+    bcall(_RclVarSym)
+    call stoZ
+    ; T = X
+    bcall(_PopRealO1)
+    bcall(_StoT)
+
+    set displayFlagsStackDirty, (iy + displayFlags)
+    ret
+
+;-----------------------------------------------------------------------------
+
+; Function: Rotate the RPN stack *up*.
+; Input: none
+; Output: T=Z; Z=Y; Y=X; X=T
+; Destroys: all, OP1, OP2, OP4
+rotUpStack:
+    ; save T in FPS
+    bcall(_TName)
+    bcall(_RclVarSym)
+    bcall(_PushRealO1)
+    ; T = Z
+    call rclZ
+    bcall(_StoT)
+    ; Z = Y
+    bcall(_RclY)
+    call stoZ
+    ; Y = X
+    bcall(_RclX)
+    bcall(_StoY)
+    ; X = T
+    bcall(_PopRealO1)
+    bcall(_StoX)
+
+    set displayFlagsStackDirty, (iy + displayFlags)
+    ret
+
+;-----------------------------------------------------------------------------
+
+; Function: Exchange X<->Y.
+; Input: none
+; Output: T=Z; Z=Y; Y=X; X=T
+; Destroys: all, OP1, OP2, OP4
+exchangeXYStack:
+    bcall(_RclX)
+    bcall(_PushRealO1)
+    bcall(_RclY)
+    bcall(_StoX)
+    bcall(_PopRealO1)
+    bcall(_StoY)
+    set displayFlagsStackDirty, (iy + displayFlags)
+    ret
+
+;-----------------------------------------------------------------------------
+
 ; Function: Store OP1 to Z variable.
 ; Output; CF = 1 if failed to store
 ; Destroys: all, OP6
