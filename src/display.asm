@@ -38,7 +38,7 @@ menuPenColEnd   equ 96
 
 ; Function: Set the display flags to dirty initially so that they are rendered.
 initDisplay:
-    set displayFlagsTitleDirty, (iy + displayFlags)
+    set rpnFlagsTitleDirty, (iy + rpnFlags)
     set displayFlagsMenuDirty, (iy + displayFlags)
     set inputBufFlagsInputDirty, (iy + inputBufFlags)
     ret
@@ -56,10 +56,10 @@ displayAll:
 
 ; Function: Display the title bar.
 ; Input: none
-; Output: (displayFlagsTitleDirty) reset
+; Output: rpnFlagsTitleDirty reset
 ; Destroys: A, HL
 displayTitle:
-    bit displayFlagsTitleDirty, (iy + displayFlags)
+    bit rpnFlagsTitleDirty, (iy + rpnFlags)
     ret z
 
     ld hl, 0 ; $(col)(row) cursor
@@ -69,7 +69,7 @@ displayTitle:
     bcall(_EraseEOL)
 
     ; Reset dirty flag
-    res displayFlagsTitleDirty, (iy + displayFlags)
+    res rpnFlagsTitleDirty, (iy + rpnFlags)
     ret
 
 ; Function: Display the RPN stack variables
