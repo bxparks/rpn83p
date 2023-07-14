@@ -1,6 +1,6 @@
 TARGETS := rpn83p.8xp
 
-SPASM_DIR := /home/brian/Downloads/TICalc/Z80/dev/spasm
+SPASM_DIR := ../../spasm
 SPASM_INC := $(SPASM_DIR)/inc
 SPASM := $(SPASM_DIR)/spasm
 SRCS := \
