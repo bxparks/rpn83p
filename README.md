@@ -12,7 +12,7 @@ RPN calculator app for TI-83 Plus and TI-84 Plus inspired by HP42S.
 - [Supported Hardware](#SupportedHardware)
 - [User Guide](#UserGuide)
 - [Compiling from Source](#Compiling)
-    - [Toolchain](#Toolchain)
+- [Tools and Resources](#ToolsResources)
 - [License](#License)
 - [Feedback](#Feedback)
 - [Author](#Author)
@@ -64,8 +64,8 @@ been verified only on my dev machine.
 - `$ make`
 - Should produce a file called `rpn83p.8xp`.
 
-<a name="Toolchain"></a>
-### Toolchain
+<a name="ToolsResources"></a>
+## Tools and Resources
 
 Here is what I use for development on Ubuntu Linux 22.04:
 
@@ -101,6 +101,9 @@ Here is what I use for development on Ubuntu Linux 22.04:
     - `$ apt install make` to install manually.
 - TI-83 SDK docs
     - https://archive.org/details/83psdk/83psysroutines/
+- Learn TI-83 Plus Assembly in 28 Days
+    - https://taricorp.gitlab.io/83pa28d/
+    - https://gitlab.com/taricorp/83pa28d/
 
 <a name="License"></a>
 ## License
