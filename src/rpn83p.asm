@@ -43,16 +43,13 @@ stXCurRow equ 6
 stXCurCol equ 1
 stXPenRow equ stXCurRow*8
 
-; Flags for the display. Offset from IY register.
-displayFlags equ asm_Flag1
-displayFlagsMenuDirty equ 3 ; set if the menu bar is dirty
-
 ; Flags for RPN stack modes. Offset from IY register.
 rpnFlags equ asm_Flag2
 rpnFlagsStackDirty equ 0 ; set if the stack is dirty
 rpnFlagsEditing equ 1 ; set if in edit mode
 rpnFlagsLiftEnabled equ 2 ; set if stack lift is enabled (ENTER disables)
 rpnFlagsTitleDirty equ 3 ; set if the title bar is dirty
+rpnFlagsMenuDirty equ 3 ; set if the menu bar is dirty
 
 ; Flags for the inputBuf. Offset from IY register.
 inputBufFlags equ asm_Flag3

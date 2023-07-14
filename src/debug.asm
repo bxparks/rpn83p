@@ -109,7 +109,7 @@ debugSignedAPrint:
 ;   - L: lift disabled
 ;   - I: input dirty
 ;   - S: statck dirty
-; Input: (iy+displayFlags), (iy+rpnFlags)
+; Input: (iy+rpnFlags), (iy+inputBufFlags)
 ; Output: Flags printed on status line.
 ; Destroys: none
 debugFlags:

@@ -39,7 +39,7 @@ menuPenColEnd   equ 96
 ; Function: Set the display flags to dirty initially so that they are rendered.
 initDisplay:
     set rpnFlagsTitleDirty, (iy + rpnFlags)
-    set displayFlagsMenuDirty, (iy + displayFlags)
+    set rpnFlagsMenuDirty, (iy + rpnFlags)
     set inputBufFlagsInputDirty, (iy + inputBufFlags)
     ret
 
@@ -74,7 +74,7 @@ displayTitle:
 
 ; Function: Display the RPN stack variables
 ; Input: none
-; Output: (displayFlagsMenuDirty) reset
+; Output: (rpnFlagsMenuDirty) reset
 ; Destroys: A, HL
 displayStack:
     ; Return if both stackDirty and inputDirty are clean.
@@ -173,10 +173,10 @@ displayStackXDebug:
 
 ; Function: Display the bottom menus.
 ; Input: none
-; Output: (displayFlagsMenuDirty) reset
+; Output: (rpnFlagsMenuDirty) reset
 ; Destroys: A, HL
 displayMenu:
-    bit displayFlagsMenuDirty, (iy + displayFlags)
+    bit rpnFlagsMenuDirty, (iy + rpnFlags)
     ret z
 
     call clearMenus
@@ -201,7 +201,7 @@ displayMenu:
     ld hl, msgMenuHelp
     call printMenuAtA
 
-    res displayFlagsMenuDirty, (iy + displayFlags)
+    res rpnFlagsMenuDirty, (iy + rpnFlags)
     ret
 
 ; Function: Print OP1 floating point number at the current cursor.
