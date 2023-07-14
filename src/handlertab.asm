@@ -1,5 +1,5 @@
 ; List of GetKey() codes and their jump table.
-keyCodeHandlerTableSize equ 30
+keyCodeHandlerTableSize equ 32
 keyCodeHandlerTable:
     ; number entry
     .db k0
@@ -45,6 +45,12 @@ keyCodeHandlerTable:
     .db kDiv
     .dw handleKeyDiv
 
+    ; constants
+    .db kPi ; pi
+    .dw handleKeyPi
+    .db kCONSTeA ; e
+    .dw handleKeyEuler
+
     ; algebraic
     .db kExpon
     .dw handleKeyExpon
@@ -55,7 +61,9 @@ keyCodeHandlerTable:
     .db kSqrt
     .dw handleKeySqrt
 
-    ; stack operations
+    ; stack operations. These key bindings were borrowed from the HP30b
+    ; calculator which supports both ALG and RPN modes, and places the R-down
+    ; on the (, and x<->y on the ).
     .db kLParen ; (
     .dw handleKeyRotDown
     .db kLBrace ; INV (

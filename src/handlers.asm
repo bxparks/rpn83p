@@ -330,6 +330,42 @@ handleKeyDiv:
     ret
 
 ;-----------------------------------------------------------------------------
+; Constants: pi and e. There does not seem to be an existing bcall() that loads
+; these constants. It's almost unbelievable, because these constants are shown
+; on the calculator keyboard, and there are dozens of bcall() functions to load
+; other values such as 0, 1, 2, 3 but I cannot find the bcall() to load these
+; constants.
+;-----------------------------------------------------------------------------
+
+handleKeyPi:
+    call closeInputBuf
+    call liftStack
+    ld hl, constPi
+    bcall(_Mov9ToOP1)
+    bcall(_StoX)
+    ret
+
+handleKeyEuler:
+    call closeInputBuf
+    call liftStack
+    ld hl, constEuler
+    bcall(_Mov9ToOP1)
+    bcall(_StoX)
+    ret
+
+constPi:
+    .db $00, $80, $31, $41, $59, $26, $53, $58, $98 ; 3.1415926535897(9323)
+
+constEuler:
+    .db $00, $80, $27, $18, $28, $18, $28, $45, $94 ; 2.7182818284594(0452)
+
+constTen:
+    .db $00, $81, $10, $00, $00, $00, $00, $00, $00 ; 10
+
+constThousand:
+    .db $00, $83, $10, $00, $00, $00, $00, $00, $00 ; 1000
+
+;-----------------------------------------------------------------------------
 ; Alegbraic functions.
 ;-----------------------------------------------------------------------------
 
@@ -397,6 +433,7 @@ handleKeyLog:
     bcall(_RclX)
     bcall(_LogX)
     bcall(_StoX)
+    set displayFlagsStackDirty, (iy + displayFlags)
     ret
 
 handleKeyALog:
@@ -404,6 +441,7 @@ handleKeyALog:
     bcall(_RclX)
     bcall(_TenX)
     bcall(_StoX)
+    set displayFlagsStackDirty, (iy + displayFlags)
     ret
 
 handleKeyLn:
@@ -411,6 +449,7 @@ handleKeyLn:
     bcall(_RclX)
     bcall(_LnX)
     bcall(_StoX)
+    set displayFlagsStackDirty, (iy + displayFlags)
     ret
 
 handleKeyExp:
@@ -418,4 +457,5 @@ handleKeyExp:
     bcall(_RclX)
     bcall(_EToX)
     bcall(_StoX)
+    set displayFlagsStackDirty, (iy + displayFlags)
     ret
