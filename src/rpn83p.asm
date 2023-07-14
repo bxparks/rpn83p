@@ -47,11 +47,11 @@ stXPenRow equ stXCurRow*8
 displayFlags equ asm_Flag1
 displayFlagsInputDirty equ 0 ; set if the input buffer is dirty
 displayFlagsTitleDirty equ 1 ; set if the title bar is dirty
-displayFlagsStackDirty equ 2 ; set if the stack is dirty
 displayFlagsMenuDirty equ 3 ; set if the menu bar is dirty
 
 ; Flags for RPN stack modes. Offset from IY register.
 rpnFlags equ asm_Flag2
+rpnFlagsStackDirty equ 0 ; set if the stack is dirty
 rpnFlagsEditing equ 1 ; set if in edit mode
 rpnFlagsLiftEnabled equ 2 ; set if stack lift is enabled (ENTER disables)
 

@@ -39,7 +39,6 @@ menuPenColEnd   equ 96
 ; Function: Set the display flags to dirty initially so that they are rendered.
 initDisplay:
     set displayFlagsTitleDirty, (iy + displayFlags)
-    set displayFlagsStackDirty, (iy + displayFlags)
     set displayFlagsMenuDirty, (iy + displayFlags)
     set displayFlagsInputDirty, (iy + displayFlags)
     ret
@@ -78,8 +77,8 @@ displayTitle:
 ; Output: (displayFlagsMenuDirty) reset
 ; Destroys: A, HL
 displayStack:
-    ; Return if stack and input are clean.
-    bit displayFlagsStackDirty, (iy + displayFlags)
+    ; Return if both stackDirty and inputDirty are clean.
+    bit rpnFlagsStackDirty, (iy + rpnFlags)
     jr nz, displayStackContinue
     bit displayFlagsInputDirty, (iy + displayFlags)
     ret z
@@ -139,7 +138,7 @@ displayStackContinue:
     call displayStackXNormal
 
     ; Reset dirty flag
-    res displayFlagsStackDirty, (iy + displayFlags)
+    res rpnFlagsStackDirty, (iy + rpnFlags)
 
     ret
 

@@ -22,6 +22,7 @@ initStack:
     call initX
     call initZ
     call initR
+    set rpnFlagsStackDirty, (iy + rpnFlags) ; force initial display
     res rpnFlagsEditing, (iy + rpnFlags)
     set rpnFlagsLiftEnabled, (iy + rpnFlags)
     ret
@@ -80,7 +81,7 @@ rclX:
 ; Function: Store OP1 to stX, setting dirty flag.
 stoX:
     bcall(_StoX)
-    set displayFlagsStackDirty, (iy + displayFlags)
+    set rpnFlagsStackDirty, (iy + rpnFlags)
     ret
 
 ;-----------------------------------------------------------------------------
@@ -93,7 +94,7 @@ rclY:
 ; Function: Store OP1 to stY, setting dirty flag.
 stoY:
     bcall(_StoY)
-    set displayFlagsStackDirty, (iy + displayFlags)
+    set rpnFlagsStackDirty, (iy + rpnFlags)
     ret
 
 ;-----------------------------------------------------------------------------
@@ -111,7 +112,7 @@ rclZ:
 ; Output; CF = 1 if failed to store
 ; Destroys: all, OP1, OP6
 stoZ:
-    set displayFlagsStackDirty, (iy + displayFlags)
+    set rpnFlagsStackDirty, (iy + rpnFlags)
     bcall(_OP1ToOP6) ; OP6=OP1 save
     bcall(_PushRealO1) ; push data to FPS
     ld hl, zName
@@ -147,7 +148,7 @@ rclT:
 ; Destroys: all, OP4
 stoT:
     bcall(_StoT)
-    set displayFlagsStackDirty, (iy + displayFlags)
+    set rpnFlagsStackDirty, (iy + rpnFlags)
     ret
 
 ;-----------------------------------------------------------------------------
