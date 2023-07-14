@@ -387,3 +387,35 @@ handleKeyExchangeXY:
     call closeInputBuf
     call exchangeXYStack
     ret
+
+;-----------------------------------------------------------------------------
+; Transcendentals
+;-----------------------------------------------------------------------------
+
+handleKeyLog:
+    call closeInputBuf
+    bcall(_RclX)
+    bcall(_LogX)
+    bcall(_StoX)
+    ret
+
+handleKeyALog:
+    call closeInputBuf
+    bcall(_RclX)
+    bcall(_TenX)
+    bcall(_StoX)
+    ret
+
+handleKeyLn:
+    call closeInputBuf
+    bcall(_RclX)
+    bcall(_LnX)
+    bcall(_StoX)
+    ret
+
+handleKeyExp:
+    call closeInputBuf
+    bcall(_RclX)
+    bcall(_EToX)
+    bcall(_StoX)
+    ret
