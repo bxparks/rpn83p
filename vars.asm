@@ -12,18 +12,59 @@
 ;   ??      Ans     StoAns, RclAns
 ;-----------------------------------------------------------------------------
 
-; Function: Initialize the RPN stack variables.
+; Function: Initialize the RPN stack variables. If X, Y, Z, T already exist,
+; the existing values will be used. Otherwise, set to zero.
+; TODO: Check if the variables are complex. If so, reinitialize them to be real.
 ; Destroys: all?
 initStack:
-    bcall(_OP1Set0)
-    bcall(_StoT)
-    call stoZ
-    bcall(_StoY)
-    bcall(_StoX)
-    bcall(_StoR)
-
+    call initT
+    call initY
+    call initX
+    call initZ
+    call initR
     res rpnFlagsEditing, (iy + rpnFlags)
     set rpnFlagsLiftEnabled, (iy + rpnFlags)
+    ret
+
+initX:
+    bcall(_XName)
+    bcall(_FindSym)
+    ret nc
+    bcall(_OP1Set0)
+    bcall(_StoX)
+    ret
+
+initY:
+    bcall(_YName)
+    bcall(_FindSym)
+    ret nc
+    bcall(_OP1Set0)
+    bcall(_StoY)
+    ret
+
+initZ:
+    ld hl, zname
+    bcall(_Mov9ToOP1)
+    bcall(_FindSym)
+    ret nc
+    bcall(_OP1Set0)
+    call stoZ
+    ret
+
+initT:
+    bcall(_TName)
+    bcall(_FindSym)
+    ret nc
+    bcall(_OP1Set0)
+    bcall(_StoT)
+    ret
+
+initR:
+    bcall(_RName)
+    bcall(_FindSym)
+    ret nc
+    bcall(_OP1Set0)
+    bcall(_StoR)
     ret
 
 ;-----------------------------------------------------------------------------
@@ -73,9 +114,9 @@ dropStack:
 
 ; Function: Store OP1 to Z variable.
 ; Output; CF = 1 if failed to store
-; Destroys: all, OP5
+; Destroys: all, OP6
 stoZ:
-    bcall(_OP1ToOP5) ; OP5=OP1 save
+    bcall(_OP1ToOP6) ; OP6=OP1 save
     bcall(_PushRealO1) ; push data to FPS
     ld hl, zName
     bcall(_Mov9ToOP1) ; OP1 = name of var, i.e. "Z"
@@ -85,11 +126,11 @@ stoZ:
     call APP_PUSH_ERRORH
     bcall(_StoOther)
     call APP_POP_ERRORH
-    bcall(_OP5ToOP1)
+    bcall(_OP6ToOP1)
     or a ; CF=0
     ret
 stoZFail:
-    bcall(_OP5ToOP1)
+    bcall(_OP6ToOP1)
     scf ; CF=1
     ret
 
