@@ -109,8 +109,7 @@ displayStackContinue:
     ; print Z value
     ld hl, $0100 + stZCurRow ; $(curCol)(curRow)
     ld (CurRow), hl
-    bcall(_ThetaName)
-    bcall(_RclVarSym)
+    call rclZ
     call printOP1
     bcall(_EraseEOL)
     bcall(_NewLine)
