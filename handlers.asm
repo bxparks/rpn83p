@@ -148,6 +148,7 @@ handleKeyDecPnt:
 ; Destroys: A, DE, HL
 handleKeyDel:
     set rpnFlagsEditing, (iy + rpnFlags)
+    set displayFlagsInputDirty, (iy + displayFlags)
 
     ld hl, inputBuf
     ld a, (hl) ; A = inputBufSize
