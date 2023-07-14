@@ -250,6 +250,8 @@ handleKeyEnter:
     ret
 
 ;-----------------------------------------------------------------------------
+; Arithmetic functions.
+;-----------------------------------------------------------------------------
 
 ; Function: If currently in edit mode, close the input buffer by parsing the
 ; input, enable stack lift, then copying the float value into X. If not in edit
@@ -324,5 +326,45 @@ handleKeyDiv:
     bcall(_RclX) ; OP1=Y
     bcall(_OP5ToOP2) ; OP2=X
     bcall(_FPDiv)
+    bcall(_StoX)
+    ret
+
+;-----------------------------------------------------------------------------
+; Alegbraic functions.
+;-----------------------------------------------------------------------------
+
+; Function: y^x
+handleKeyExpon:
+    call closeInputBuf
+    bcall(_RclX)
+    bcall(_OP1ToOP5) ; OP5=X
+    call dropStack
+    bcall(_RclX) ; OP1=Y
+    bcall(_OP5ToOP2) ; OP2=X
+    bcall(_YToX)
+    bcall(_StoX)
+    ret
+
+; Function: 1/x
+handleKeyInv:
+    call closeInputBuf
+    bcall(_RclX)
+    bcall(_FPRecip)
+    bcall(_StoX)
+    ret
+
+; Function: x^2
+handleKeySquare
+    call closeInputBuf
+    bcall(_RclX)
+    bcall(_FPSquare)
+    bcall(_StoX)
+    ret
+
+; Function: sqrt(x)
+handleKeySqrt
+    call closeInputBuf
+    bcall(_RclX)
+    bcall(_SqRoot)
     bcall(_StoX)
     ret
