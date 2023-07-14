@@ -387,6 +387,7 @@ handleKeyInv:
     bcall(_RclX)
     bcall(_FPRecip)
     bcall(_StoX)
+    set displayFlagsStackDirty, (iy + displayFlags)
     ret
 
 ; Function: x^2
@@ -395,6 +396,7 @@ handleKeySquare:
     bcall(_RclX)
     bcall(_FPSquare)
     bcall(_StoX)
+    set displayFlagsStackDirty, (iy + displayFlags)
     ret
 
 ; Function: sqrt(x)
@@ -403,6 +405,7 @@ handleKeySqrt:
     bcall(_RclX)
     bcall(_SqRoot)
     bcall(_StoX)
+    set displayFlagsStackDirty, (iy + displayFlags)
     ret
 
 ;-----------------------------------------------------------------------------
