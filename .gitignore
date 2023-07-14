@@ -1,0 +1,3 @@
+# Ignore TI-83, TI-84 assembly programs
+*.8xp
+*.lst
