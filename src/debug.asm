@@ -105,10 +105,10 @@ debugSignedAPrint:
 ;------------------------------------------------------------------------------
 
 ; Function: Print some of the display and RPN flags on the error line.
-;   - E: editting
-;   - L: lift disabled
 ;   - I: input dirty
-;   - S: statck dirty
+;   - E: editing
+;   - L: stack lift disabled
+;   - S: stack dirty
 ; Input: (iy+rpnFlags), (iy+inputBufFlags)
 ; Output: Flags printed on status line.
 ; Destroys: none
@@ -117,6 +117,11 @@ debugFlags:
     push hl
     ld hl, errorCurCol*$100+errorCurRow ; $(curCol)(curRow)
     ld (CurRow), hl
+
+    ; Print Input dirty flag
+    bit inputBufFlagsInputDirty, (iy + inputBufFlags)
+    ld a, 'I'
+    call printFlag
 
     ; Print Editing flag
     bit rpnFlagsEditing, (iy + rpnFlags)
@@ -133,11 +138,6 @@ debugFlags:
 
     ld a, ' '
     bcall(_PutC)
-
-    ; Print Input dirty flag
-    bit inputBufFlagsInputDirty, (iy + inputBufFlags)
-    ld a, 'I'
-    call printFlag
 
     ld a, ' '
     bcall(_PutC)
