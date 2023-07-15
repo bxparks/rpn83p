@@ -151,11 +151,23 @@ readLoop:
     or a
     jr z, mainExit
 
+    ; Install error handler
+    ld hl, mainError
+    call APP_PUSH_ERRORH
     ; Handle key
     call lookupKey
+    ; Uninstall error handler
+    call APP_POP_ERRORH
+
+    call clearErrorCode
     jr readLoop
 
-; Clean up and exit app.
+mainError:
+    ; Handle system error
+    call setErrorCode
+    jr readLoop
+
+    ; Clean up and exit app.
 mainExit:
     set appAutoScroll, (iy + appFlags)
     bcall(_ClrLCDFull)

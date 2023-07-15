@@ -83,16 +83,17 @@ displayErrorCode:
     call checkErrorCodeDisplayed
     ret z
 
-    ; clear row
+    ; Printing using large fonts for convenience, so that I can print the
+    ; numerical error code. Consider changing to small font, because it looks
+    ; better.
     ld hl, errorCurCol*$100 + errorCurRow ; $(curCol)(curRow)
     ld (CurRow), hl
-    bcall(_EraseEOL)
-
-    ; use small font to display error
-    ld hl, errorPenRow*$100 ; $(penRow)(penCol)
-    ld (PenCol), hl
     call getErrorString
-    bcall(_VPutS)
+    bcall(_PutS)
+    bcall(_EraseEOL)
+    ; TODO: remove debugging
+    ld a, (errorCode)
+    call debugUnsignedA
 
     call saveErrorCodeDisplayed
     ret

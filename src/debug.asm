@@ -2,12 +2,12 @@
 ; Routines for debugging, displaying contents of buffers or registers.
 ;------------------------------------------------------------------------------
 
-; Function: Print out the inputBuf on the status line.
+; Function: Print out the inputBuf on the debug line.
 ; Input: parseBuf
 ; Output:
 ; Destroys: A, HL
 debugInputBuf:
-    ld hl, statusCurCol*$100+statusCurRow ; $(curCol)(curRow)
+    ld hl, debugCurCol*$100+debugCurRow ; $(curCol)(curRow)
     ld (CurRow), hl
     ld hl, inputBuf
     bcall(_PutPS)
@@ -16,12 +16,12 @@ debugInputBuf:
     bcall(_EraseEOL)
     ret
 
-; Function: Print out the parseBuf on the status line.
+; Function: Print out the parseBuf on the debug line.
 ; Input: parseBuf
 ; Output:
 ; Destroys: A, HL
 debugParseBuf:
-    ld hl, statusCurCol*$100+statusCurRow ; $(curCol)(curRow)
+    ld hl, debugCurCol*$100+debugCurRow ; $(curCol)(curRow)
     ld (CurRow), hl
     ld hl, parseBuf
     bcall(_PutPS)
@@ -32,12 +32,12 @@ debugParseBuf:
 
 ;------------------------------------------------------------------------------
 
-; Function: Print out OP1 at status line.
+; Function: Print out OP1 at debug line.
 ; Input: OP1
 ; Output:
 ; Destroys: all registers, OP3
 debugOP1:
-    ld hl, statusCurCol*$100+statusCurRow ; $(curCol)(curRow)
+    ld hl, debugCurCol*$100+debugCurRow ; $(curCol)(curRow)
     ld (CurRow), hl
     ld a, 15 ; width of output
     bcall(_FormReal)
@@ -48,15 +48,15 @@ debugOP1:
 
 ;------------------------------------------------------------------------------
 
-; Function: Print the unsigned A on the status line.
+; Function: Print the unsigned A on the debug line.
 ; Input: A
-; Output: A printed on status line
+; Output: A printed on debug line
 ; Destroys: none
 debugUnsignedA:
     push af
     push de
     push hl
-    ld hl, statusCurCol*$100+statusCurRow ; $(curCol)(curRow)
+    ld hl, debugCurCol*$100+debugCurRow ; $(curCol)(curRow)
     ld (CurRow), hl
     ld l, a
     ld h, 0
@@ -68,16 +68,16 @@ debugUnsignedA:
 
 ;------------------------------------------------------------------------------
 
-; Function: Print the signed A on the status line.
+; Function: Print the signed A on the debug line.
 ; Input: A
-; Output: A printed on status line
+; Output: A printed on debug line
 ; Destroys: none
 debugSignedA:
     push af
     push bc
     push de
     push hl
-    ld hl, statusCurCol*$100+statusCurRow ; $(curCol)(curRow)
+    ld hl, debugCurCol*$100+debugCurRow ; $(curCol)(curRow)
     ld (CurRow), hl
     ld b, a ; save
     bit 7, a
@@ -110,7 +110,7 @@ debugSignedAPrint:
 ;   - L: stack lift disabled
 ;   - S: stack dirty
 ; Input: (iy+rpnFlags), (iy+inputBufFlags)
-; Output: Flags printed on status line.
+; Output: Flags printed on debug line.
 ; Destroys: none
 debugFlags:
     push af
