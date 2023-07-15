@@ -293,9 +293,9 @@ handleKeyAdd:
     call closeInputBuf
     call rclX
     bcall(_OP1ToOP2)
-    call dropStack
-    call rclX
-    bcall(_FPAdd)
+    call rclY
+    bcall(_FPAdd) ; Y + X
+    call dropStack ; drop stack only if no exception
     call stoX
     ret
 
@@ -307,9 +307,9 @@ handleKeySub:
     call closeInputBuf
     call rclX
     bcall(_OP1ToOP2)
-    call dropStack
-    call rclX
-    bcall(_FPSub)
+    call rclY
+    bcall(_FPSub) ; Y - X
+    call dropStack ; drop stack only if no exception
     call stoX
     ret
 
@@ -321,9 +321,9 @@ handleKeyMul:
     call closeInputBuf
     call rclX
     bcall(_OP1ToOP2)
-    call dropStack
-    call rclX
-    bcall(_FPMult)
+    call rclY
+    bcall(_FPMult) ; Y * X
+    call dropStack ; drop stack only if no exception
     call stoX
     ret
 
@@ -335,9 +335,9 @@ handleKeyDiv:
     call closeInputBuf
     call rclX
     bcall(_OP1ToOP2)
-    call dropStack
-    call rclX
-    bcall(_FPDiv)
+    call rclY
+    bcall(_FPDiv) ; Y / X
+    call dropStack ; drop stack only if no exception
     call stoX
     ret
 
@@ -351,17 +351,17 @@ handleKeyDiv:
 
 handleKeyPi:
     call closeInputBuf
-    call liftStack
     ld hl, constPi
     bcall(_Mov9ToOP1)
+    call liftStack
     call stoX
     ret
 
 handleKeyEuler:
     call closeInputBuf
-    call liftStack
     ld hl, constEuler
     bcall(_Mov9ToOP1)
+    call liftStack
     call stoX
     ret
 
@@ -386,9 +386,9 @@ handleKeyExpon:
     call closeInputBuf
     call rclX
     bcall(_OP1ToOP2)
-    call dropStack
-    call rclX
+    call rclY
     bcall(_YToX)
+    call dropStack ; drop stack only if no exception
     call stoX
     ret
 

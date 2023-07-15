@@ -155,9 +155,10 @@ stoT:
 
 ; Function: Lift the RPN stack, copying X to Y.
 ; Input: none
-; Output: T=Z; Z=Y; Y=X; X=X
+; Output: T=Z; Z=Y; Y=X; X=X; OP1 preserved
 ; Destroys: all, OP1, OP2, OP4
 liftStack:
+    bcall(_PushRealO1)
     ; T = Z
     call rclZ
     call stoT
@@ -168,15 +169,17 @@ liftStack:
     call rclX
     call stoY
     ; X = X
+    bcall(_PopRealO1)
     ret
 
 ;-----------------------------------------------------------------------------
 
 ; Function: Drop the RPN stack, copying T to Z.
 ; Input: none
-; Output: X=Y; Y=Z; Z=T; T=T
-; Destroys: all, OP1, OP2, OP4
+; Output: X=Y; Y=Z; Z=T; T=T; OP1 preserved
+; Destroys: all, OP2, OP4
 dropStack:
+    bcall(_PushRealO1)
     ; X = Y
     call rclY
     call stoX
@@ -187,6 +190,7 @@ dropStack:
     call rclT
     call stoZ
     ; T = T
+    bcall(_PopRealO1)
     ret
 
 ;-----------------------------------------------------------------------------
