@@ -83,17 +83,27 @@ displayErrorCode:
     call checkErrorCodeDisplayed
     ret z
 
-    ; Printing using large fonts for convenience, so that I can print the
-    ; numerical error code. Consider changing to small font, because it looks
-    ; better.
-    ld hl, errorCurCol*$100 + errorCurRow ; $(curCol)(curRow)
-    ld (CurRow), hl
+    ; Print error code string and its numerical code.
+    ld hl, errorPenRow*$100 ; $(penRow)(penCol)
+    ld (PenCol), hl
     call getErrorString
-    bcall(_PutS)
-    bcall(_EraseEOL)
-    ; TODO: remove debugging
+    bcall(_VPutS)
+    ld a, Sspace
+    bcall(_VPutMap)
+    ;
+    ld a, ' '
+    bcall(_VPutMap)
+    ld a, '('
+    bcall(_VPutMap)
+    ;
     ld a, (errorCode)
-    call debugUnsignedA
+    ld hl, OP1
+    call convertAToDec
+    bcall(_VPutS)
+    ;
+    ld a, ')'
+    bcall(_VPutMap)
+    call vEraseEOL
 
     call saveErrorCodeDisplayed
     ret
@@ -230,10 +240,10 @@ displayMenu:
     res rpnFlagsMenuDirty, (iy + rpnFlags)
     ret
 
-; Function: Print OP1 floating point number at the current cursor.
+; Function: Print floating point number at OP1 at the current cursor.
 ; Input: OP1: floating point number
 ; Destroys: A, HL, OP3
-printOP1:
+printOP1: ; TODO: rename to printFloatOP1
     ld a, 15 ; width of output
     bcall(_FormReal)
     ld hl, OP3
@@ -318,6 +328,86 @@ printInputBuf:
     bcall(_EraseEOL)
 
     res inputBufFlagsInputDirty, (iy + inputBufFlags)
+    ret
+
+;-----------------------------------------------------------------------------
+
+; Function: Convert A to 3-digit nul terminated C string at the buffer pointed
+; by HL. This is intended for debugging, so it is not optimized.
+; Input: HL: pointer to string buffer
+; Output: HL unchanged, with 1-3 ASCII string, terminated by NUL
+; Destroys: A, B, C
+convertAToDec:
+    push hl
+convertAToDec100:
+    ld b, 100
+    call divideAByB
+    or a
+    jr z, convertAToDec10
+    call convertAToChar
+    ld (hl), a
+    inc hl
+convertAToDec10:
+    ld a, b
+    ld b, 10
+    call divideAByB
+    or a
+    jr z, convertAToDec1
+    call convertAToChar
+    ld (hl), a
+    inc hl
+convertAToDec1:
+    ld a, b
+    call convertAToChar
+    ld (hl), a
+    inc hl
+convertAToDec0:
+    ld (hl), 0
+    pop hl
+    ret
+
+; Function: Return A / C using repeated substraction.
+; Input:
+;   - A: numerator
+;   - B: denominator
+; Output: A = A/B (quotient); B=A%B (remainder)
+; Destroys: C
+divideAByB:
+    ld c, 0
+divideAByBLoop:
+    sub b
+    jr c, divideAByBLoopEnd
+    inc c
+    jr divideAByBLoop
+divideAByBLoopEnd:
+    add a, b ; undo the last subtraction
+    ld b, a
+    ld a, c
+    ret
+
+; Function: Convert A into an Ascii Char ('0'-'9','A'-'F').
+; Destroys: A
+convertAToChar:
+    cp 10
+    jr c, convertAToCharDec
+    sub 10
+    add a, 'A'
+    ret
+convertAToCharDec:
+    add a, '0'
+    ret
+
+;-----------------------------------------------------------------------------
+
+; Function: Erase to end of line using small font. Same as bcall(_EraseEOL).
+; Prints a quad space (4 pixels side), 24 times, for 96 pixels.
+; Destroys: B
+vEraseEOL:
+    ld b, 24
+vEraseEOLLoop:
+    ld a, SFourSpaces
+    bcall(_VPutMap)
+    djnz vEraseEOLLoop
     ret
 
 ;-----------------------------------------------------------------------------
