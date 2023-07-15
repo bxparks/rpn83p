@@ -282,6 +282,7 @@ closeInputBuf:
     ret z
     call parseNum
     call stoX
+    call clearInputBuf
     res rpnFlagsEditing, (iy + rpnFlags)
     ret
 
