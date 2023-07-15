@@ -1,9 +1,9 @@
 ;-----------------------------------------------------------------------------
 ; Display the RPN stack variables.
 ;
-;   0: RPN83P (help msg)
-;   1: Status line: (up|down) (bin|dec|hex) (deg|rad|grad) (small font)
-;   2: Error msg: (overflow|invalid)
+;   0: Status line: (up|down) (bin|dec|hex) (deg|rad|grad) (small font)
+;   1: Debug line
+;   2: Error code line:
 ;   3: T: tttt
 ;   4: Z: zzzz
 ;   5: Y: yyyy
@@ -49,7 +49,8 @@ initDisplay:
 ; Output:
 ; Destroys: all
 displayAll:
-    call displayTitle
+    call displayStatus
+    call displayErrorCode
     call displayStack
     call displayMenu
     ret
@@ -58,11 +59,11 @@ displayAll:
 ; Input: none
 ; Output: rpnFlagsTitleDirty reset
 ; Destroys: A, HL
-displayTitle:
-    bit rpnFlagsTitleDirty, (iy + rpnFlags)
-    ret z
+displayStatus:
+    ;bit rpnFlagsTitleDirty, (iy + rpnFlags)
+    ;ret z
 
-    ld hl, 0 ; $(col)(row) cursor
+    ld hl, statusCurCol*$100 + statusCurRow ; $(curCol)(curRow)
     ld (CurRow), hl
     ld hl, msgTitle
     bcall(_PutS)
@@ -70,6 +71,30 @@ displayTitle:
 
     ; Reset dirty flag
     res rpnFlagsTitleDirty, (iy + rpnFlags)
+    ret
+
+; Function: Display the string corresponding to the current error code.
+; Input: errorCode, errorCodeDisplayed
+; Output:
+;   - string corresponding to errorCode displayed
+;   - errorCodeDisplayed updated
+; Destroys: A, DE, HL
+displayErrorCode:
+    call checkErrorCodeDisplayed
+    ret z
+
+    ; clear row
+    ld hl, errorCurCol*$100 + errorCurRow ; $(curCol)(curRow)
+    ld (CurRow), hl
+    bcall(_EraseEOL)
+
+    ; use small font to display error
+    ld hl, errorPenRow*$100 ; $(penRow)(penCol)
+    ld (PenCol), hl
+    call getErrorString
+    bcall(_VPutS)
+
+    call saveErrorCodeDisplayed
     ret
 
 ; Function: Display the RPN stack variables
@@ -91,7 +116,7 @@ displayStackContinue:
     bcall(_VPutS)
 
     ; print T value
-    ld hl, $0100 + stTCurRow ; $(curCol)(curRow)
+    ld hl, stTCurCol*$100 + stTCurRow ; $(curCol)(curRow)
     ld (CurRow), hl
     call rclT
     call printOP1
@@ -105,7 +130,7 @@ displayStackContinue:
     bcall(_VPutS)
 
     ; print Z value
-    ld hl, $0100 + stZCurRow ; $(curCol)(curRow)
+    ld hl, stZCurCol*$100 + stZCurRow ; $(curCol)(curRow)
     ld (CurRow), hl
     call rclZ
     call printOP1
@@ -119,7 +144,7 @@ displayStackContinue:
     bcall(_VPutS)
 
     ; print Y value
-    ld hl, $0100 + stYCurRow ; $(curCol)(curRow)
+    ld hl, stYCurCol*$100 + stYCurRow ; $(curCol)(curRow)
     ld (CurRow), hl
     call rclY
     call printOP1
@@ -145,7 +170,7 @@ displayStackContinue:
 ; This is the normal, non-debug version, which combines the inputBuf and the X
 ; register on a single line.
 displayStackXNormal:
-    ld hl, $0100 + stXCurRow ; $(curCol)(curRow)
+    ld hl, stXCurCol*$100 + stXCurRow ; $(curCol)(curRow)
     ld (CurRow), hl
     ; If in edit mode, display the inputBuf, otherwise display X.
     bit rpnFlagsEditing, (iy + rpnFlags)

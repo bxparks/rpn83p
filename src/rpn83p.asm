@@ -14,9 +14,14 @@
 .list
 
 ; Display coordinates of the status line
-statusCurRow equ 1
+statusCurRow equ 0
 statusCurCol equ 0
 statusPenRow equ statusCurRow*8
+
+; Display coordinates of the debug line
+debugCurRow equ 1
+debugCurCol equ 0
+debugPenRow equ debugCurRow*8
 
 ; Display coordinates of the error line
 errorCurRow equ 2
@@ -50,6 +55,7 @@ rpnFlagsEditing equ 1 ; set if in edit mode
 rpnFlagsLiftEnabled equ 2 ; set if stack lift is enabled (ENTER disables)
 rpnFlagsTitleDirty equ 3 ; set if the title bar is dirty
 rpnFlagsMenuDirty equ 4 ; set if the menu bar is dirty
+rpnFlagsErrorDirty equ 5 ; set if the error code
 
 ; Flags for the inputBuf. Offset from IY register.
 inputBufFlags equ asm_Flag3
@@ -57,6 +63,10 @@ inputBufFlagsInputDirty equ 0 ; set if the input buffer is dirty
 inputBufFlagsDecPnt equ 1 ; set if decimal point exists
 inputBufFlagsManSign equ 2 ; mantissa sign bit
 inputBufFlagsExpSign equ 3 ; exponent sign bit
+
+; Error code and handling.
+errorCode equ tempSwapArea ; current error code
+errorCodeDisplayed equ errorCode + 1 ; displayed error code
 
 ; String buffer for keyboard entry. This is a Pascal-style with a single size
 ; byte at the start. It not include the cursor displayed at the end of the
@@ -66,16 +76,17 @@ inputBufFlagsExpSign equ 3 ; exponent sign bit
 ;       uint8_t size;
 ;       char buf[inputBufMax];
 ;   };
-inputBuf equ tempSwapArea
+inputBuf equ errorCodeDisplayed + 1
 inputBufSize equ inputBuf ; size byte of the pascal string
 inputBufBuf equ inputBuf + 1
-inputBufMax equ 14 ; maximum size of buffer, not including terminating cursor
+inputBufMax equ 14 ; maximum size of buffer, not including appended cursor
 inputBufSizeOf equ inputBufMax + 1
 
 ; Temporary buffer for parsing keyboard input into a floating point number. This
-; contains the normalized floating point number, one character per digit. It's
-; a stepping stone before converting this into the packed floating point number
-; format used by TI-OS. The equivalent C struct is:
+; is a pascal string that contains the normalized floating point number, one
+; character per digit. It's a stepping stone before converting this into the
+; packed floating point number format used by TI-OS. The equivalent C struct
+; is:
 ;
 ;   struct parseBuf {
 ;       uint_t size; // number of digits in mantissa, 0 for 0.0
@@ -116,6 +127,7 @@ main:
     bcall(_RunIndicOff)
     bcall(_ClrLCDFull)
     res appAutoScroll, (iy + appFlags)
+    call initErrorCode
     call initStack
     call initDisplay
     call clearInputBuf
@@ -157,6 +169,7 @@ mainExit:
 #include "pstring.asm"
 #include "parsenum.asm"
 #include "display.asm"
+#include "errorcode.asm"
 #include "debug.asm"
 #include "handlertab.asm"
 

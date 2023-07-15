@@ -6,6 +6,7 @@ SPASM := $(SPASM_DIR)/spasm
 SRCS := \
 	debug.asm \
 	display.asm \
+	errorcode.asm \
 	handlers.asm \
 	handlertab.asm \
 	parsenum.asm \

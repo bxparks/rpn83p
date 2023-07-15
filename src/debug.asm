@@ -104,7 +104,7 @@ debugSignedAPrint:
 
 ;------------------------------------------------------------------------------
 
-; Function: Print some of the display and RPN flags on the error line.
+; Function: Print some of the display and RPN flags on the debug line.
 ;   - I: input dirty
 ;   - E: editing
 ;   - L: stack lift disabled
@@ -115,7 +115,7 @@ debugSignedAPrint:
 debugFlags:
     push af
     push hl
-    ld hl, errorCurCol*$100+errorCurRow ; $(curCol)(curRow)
+    ld hl, debugCurCol*$100+debugCurRow ; $(curCol)(curRow)
     ld (CurRow), hl
 
     ; Print Input dirty flag
