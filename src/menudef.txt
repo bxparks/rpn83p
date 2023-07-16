@@ -1,0 +1,184 @@
+# This defines the hiercharcy of menu items using a custom DSL (Domain Specific
+# Language). A script parses this file, then generates the Z80 assembly
+# language statements which define data that can be used by the menu subsystem.
+#
+# Grammar (I really should learn something like eBNF properly):
+#   node = (menuitem | menugroup)
+#   menuitem = 'MenuItem' label identifier
+#   menugroup =  'MenuGroup' label identifier '[' menustrip* ']'
+#   menustrip = 'MenuStrip' '[' node*5 ']'
+#   label = (alpha+ | '*')
+#   identifier = (alpha+ | '*')
+#   alpha = ( printableASCII | tag )
+#   tag = '{' identifier '}' # allows special tokens, e.g. Greek letters
+#
+# Parsing rules:
+#   - tokens are separated by spaces
+#   - newlines are white spaces with no other meaning or behavior
+#   - square brackets [ ] means "list of"
+#   - '*' indicates a blank MenuItem with no ID constant
+#   - {super2} replaced with superscript 2 symbol
+#   - {super3} replaced with superscript 3 symbol
+#   - {degree} replaced with degree symbol
+#   - {rightarrow} replaced with solid right arrow symbol
+#   - {Delta} replaced with Greek Delta symbol
+
+MenuGroup root mRoot [
+  MenuStrip [
+    MenuItem HELP mHelp
+    MenuGroup NUM mNum [
+      MenuStrip [
+        MenuItem ^3 mCube
+        MenuItem CBRT mCubeRoot # maybe use {super3}{root} ?
+        MenuItem ATN2 mAtan2
+        MenuItem % mPercent
+        MenuItem {Delta}% mDeltaPercent
+      ]
+      MenuStrip [ 
+        MenuItem ABS mAbs
+        MenuItem SIGN mSign
+        MenuItem MOD mMod
+        MenuItem LCM mLcm
+        MenuItem GCD mGcd
+      ]
+      MenuStrip [
+        MenuItem IP mIntPart
+        MenuItem FP mFracPart
+        MenuItem TRUN mTruncate
+        MenuItem ROND mRound
+        MenuItem INTG mIntDown
+      ]
+    ]
+    MenuItem BASE mBase # placeholder, unimplemented
+    MenuGroup PROB mProb [
+      MenuStrip [
+        MenuItem PERM mPermutation
+        MenuItem COMB mCombination
+        MenuItem N! mFactorial
+        MenuItem RND mRandom
+        MenuItem SEED mRandomSeed
+      ]
+    ]
+    MenuGroup CONV mConv [
+      MenuStrip [
+        MenuItem {rightarrow}DEG mRadToDeg
+        MenuItem {rightarrow}RAD mDegToRad
+        MenuItem * *
+        MenuItem {rightarrow}REC mPolarToRect
+        MenuItem {rightarrow}POL mRectToPolar
+      ]
+      MenuStrip [
+        MenuItem {rightarrow}HR mHmsToHour
+        MenuItem {rightarrow}HMS mHourToHms
+      ]
+      MenuStrip [
+        MenuItem {rightarrow}UNIX mDateToUnixSeconds
+        menuItem {rightarrow}DATE mUnixSecondsToDate
+        menuItem LEAP mIsLeapYear
+        menuItem {rightarrow}SEC mDaysToSeconds
+        menuItem {rightarrow}DAYS mSecondsToDays
+      ]
+    ]
+  ]
+  MenuStrip [
+    MenuGroup DISP mDisp [
+      MenuStrip [
+        MenuItem FIX mFix
+        MenuItem SCI mSci
+        MenuItem ENG mEng
+        MenuItem * *
+        MenuItem ALL mFloat
+      ]
+    ]
+    MenuGroup MODE mMode [
+      MenuStrip [
+        MenuItem DEG mDeg
+        MenuItem RAD mRad
+        MenuItem GRAD mGrad
+        MenuItem RECT mRect
+        MenuItem PLR mPolar
+      ]
+    ]
+    MenuGroup HYP mHyperbolic [
+      MenuStrip [
+        MenuItem * *
+        MenuItem SINH mSinh
+        MenuItem COSH mCosh
+        MenuItem TANH mTanh
+        MenuItem * *
+      ]
+      MenuStrip [
+        MenuItem * *
+        MenuItem ASNH mAsinh
+        MenuItem ACSH mAcosh
+        MenuItem ATNH mAtanh
+        MenuItem * *
+      ]
+    ]
+    MenuGroup UNIT mUnit [
+      MenuStrip [
+        MenuItem {rightarrow}{degree}F mCToF
+        MenuItem {rightarrow}{degree}C mFToC
+        MenuItem * *
+        MenuItem {rightarrow}km mMiToKm
+        MenuItem {rightarrow}mi mKmToMi
+      ]
+      MenuStrip [
+        MenuItem {rightarrow}cm mCmToIn
+        MenuItem {rightarrow}in mInToCm
+        MenuItem * *
+        MenuItem {rightarrow}m mFtToM
+        MenuItem {rightarrow}ft mMToFt
+      ]
+      MenuStrip [
+        MenuItem {rightarrow}kg mLbsToKg
+        MenuItem {rightarrow}lbs mKgToLbs
+        MenuItem * *
+        MenuItem {rightarrow}g mGToOz
+        MenuItem {rightarrow}oz mOzToG
+      ]
+      MenuStrip [
+        MenuItem {rightarrow}m{super2} mFt2ToM2
+        MenuItem {rightarrow}ft{super2} mM2ToFt2
+        MenuItem * *
+        MenuItem cm{super2} mIn2ToCm2
+        MenuItem in{super2} mCm2ToIn2
+      ]
+      MenuStrip [
+        MenuItem {rightarrow}ha mAcreToHectare
+        MenuItem {rightarrow}acr mHectareToAcre
+        MenuItem * *
+        MenuItem * *
+        MenuItem * *
+      ]
+      MenuStrip [
+        MenuItem {rightarrow}m{super3} mFt3ToM3
+        MenuItem {rightarrow}ft{super3} mM3ToFt3
+        MenuItem * *
+        MenuItem {rightarrow}cm{super3} mIn3ToCm3
+        MenuItem {rightarrow}in{super3} mCm3ToIn3
+        ]
+      MenuStrip [
+        MenuItem {rightarrow}L mGalToL
+        MenuItem {rightarrow}gal mLToGal
+        MenuItem * *
+        MenuItem {rightarrow}mL mFlozToMl
+        MenuItem {rightarrow}foz mMlToFloz
+      ]
+      MenuStrip [
+        MenuItem {rightarrow}kJ mKcalToKj
+        MenuItem {rightarrow}kCal mKjToKcal
+        MenuItem * *
+        MenuItem {rightarrow}hp mkWToHorsepower
+        MenuItem {rightarrow}kW mHorsepowerTokW
+      ]
+      MenuStrip [
+        MenuItem {rightarrow}mpg mMpgToL100km
+        MenuItem {rightarrow}Lkm mL100kmToMpg
+        MenuItem * *
+        MenuItem {rightarrow}psi mKpaToPsi
+        MenuItem {rightarrow}kPa mPsiToKpa
+      ]
+    ]
+  ]
+]
