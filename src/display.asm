@@ -217,24 +217,35 @@ displayMenu:
 
     call clearMenus
 
+    call getCurrentMenuStripBeginId
+    ld b, a
+
+    call getMenuName
     ld a, menuPenCol0
-    ld hl, msgMenuBase
     call printMenuAtA
+    inc b
 
+    ld a, b
+    call getMenuName
     ld a, menuPenCol1
-    ld hl, msgMenuProb
     call printMenuAtA
+    inc b
 
+    ld a, b
+    call getMenuName
     ld a, menuPenCol2
-    ld hl, msgMenuHyp
     call printMenuAtA
+    inc b
 
+    ld a, b
+    call getMenuName
     ld a, menuPenCol3
-    ld hl, msgMenuUnit
     call printMenuAtA
+    inc b
 
+    ld a, b
+    call getMenuName
     ld a, menuPenCol4
-    ld hl, msgMenuHelp
     call printMenuAtA
 
     res rpnFlagsMenuDirty, (iy + rpnFlags)
@@ -286,8 +297,8 @@ printMenuBlank:
 ; Function: Initialize the menu items with blanks, using inverted spaces.
 ; Destroys: A, HL
 clearMenus:
-    ld hl, menuCurRow ; $(curCol)(curRow)
-    bcall(_EraseEOL)
+    ; ld hl, menuCurRow ; $(curCol)(curRow)
+    ; bcall(_EraseEOL)
 
     ld a, menuPenCol0
     call printMenuBlank
@@ -425,14 +436,3 @@ msgXLabel:
 
 msgMenuBlank: ; 18px wide
     .db SFourSpaces, SFourSpaces, SFourSpaces, SFourSpaces, Sspace, Sspace, 0
-
-msgMenuBase:
-    .db "BASE", 0
-msgMenuProb:
-    .db "PROB", 0
-msgMenuHyp:
-    .db "HYP", 0
-msgMenuUnit:
-    .db "UNIT", 0
-msgMenuHelp:
-    .db "HELP", 0

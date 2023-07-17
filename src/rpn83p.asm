@@ -48,6 +48,10 @@ stXCurRow equ 6
 stXCurCol equ 1
 stXPenRow equ stXCurRow*8
 
+; Define the Cursor character
+cursorChar equ LcurI
+cursorCharAlt equ LcurO
+
 ; Flags for RPN stack modes. Offset from IY register.
 rpnFlags equ asm_Flag2
 rpnFlagsStackDirty equ 0 ; set if the stack is dirty
@@ -107,16 +111,20 @@ parseBufSizeOf equ parseBufMax + 1
 ;       uint_t exp;
 ;       uint_t man[7];
 ;   }
-;
 floatBuf equ parseBuf + parseBufSizeOf
 floatBufType equ floatBuf ; type
 floatBufExp equ floatBufType + 1 ; exponent, shifted by $80
 floatBufMan equ floatBufExp + 1 ; mantissa, 2 digits per byte
 floatBufSizeOf equ 9
 
-; Define the Cursor character
-cursorChar equ LcurI
-cursorCharAlt equ LcurO
+; Menu variables. The C equivalent is:
+;
+;   struct menu {
+;     uint8_t currentId;
+;     uint8_t stripIndex; // menu strip, groups of 5
+;   }
+menuCurrentId equ floatBuf + floatBufSizeOf
+menuStripIndex equ menuCurId
 
 ;-----------------------------------------------------------------------------
 
@@ -129,6 +137,7 @@ main:
     res appAutoScroll, (iy + appFlags)
     call initErrorCode
     call initStack
+    call initMenu
     call initDisplay
     call clearInputBuf
 
@@ -185,6 +194,7 @@ mainExit:
 #include "errorcode.asm"
 #include "debug.asm"
 #include "handlertab.asm"
+#include "menu.asm"
 #include "menudefsmall.asm"
 
 ;-----------------------------------------------------------------------------
