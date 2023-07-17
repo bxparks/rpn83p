@@ -177,7 +177,7 @@ mRandomSeedId equ 21
     .db 0 ; stripBeginId
 
 ; Table of 2-byte Offsets into Pool of Names
-mNameTable:
+mMenuNameTable:
 mNullNameId equ 0
     .dw mNullName
 mRootNameId equ 1
@@ -222,7 +222,6 @@ mRandomSeedNameId equ 18
     .dw mRandomSeedName
 
 ; Table of Names as NUL terminated C strings.
-mNameBase:
 mNullName:
     .db 0
 mRootName:
