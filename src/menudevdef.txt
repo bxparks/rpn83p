@@ -32,4 +32,11 @@ MenuGroup root mRoot [
     MenuItem * * # BASE
     MenuItem HELP mHelp
   ]
+  # Insert place holders for testing.
+  MenuStrip [
+    MenuItem DISP mDisp
+    MenuItem MODE mMode
+    MenuItem HYP mHyperbolic
+    MenuItem UNIT mUnit
+  ]
 ]

@@ -3,11 +3,11 @@
 ; menus. The equilvanet C struct for each MenuNode is the following:
 ;
 ; struct MenuNode {
-; 	u8 id; // root begins with 1
-; 	u8 parentId; // 0 indicates NONE
-; 	u8 nameId; // index into NameTable
-; 	u8 numStrips; // 0: Item; >=1: Group
-; 	u8 stripBeginId; // nodeId of the first node of first strip
+; 	uint8_t id; // root begins with 1
+; 	uint8_t parentId; // 0 indicates NONE
+; 	uint8_t nameId; // index into NameTable
+; 	uint8_t numStrips; // 0: Item; >=1: Group
+; 	uint8_t stripBeginId; // nodeId of the first node of first strip
 ; };
 ;
 ;-----------------------------------------------------------------------------

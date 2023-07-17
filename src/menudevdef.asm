@@ -1,16 +1,6 @@
 ;-----------------------------------------------------------------------------
 ; Menu hierarchy definitions, hand-generated from menudevdef.txt.
-;
-; The equivalent C struct declarations are the following:
-;
-; struct MenuNode {
-; 	u8 id; // root begins with 1
-; 	u8 parentId; // 0 indicates NONE
-; 	u8 nameId; // index into NameTable
-; 	u8 numStrips; // 0: Item; >=1: Group
-; 	u8 stripBeginId; // nodeId of the first node of first strip
-; };
-;
+; See menu.asm for the equivalent C struct declaration.
 ;-----------------------------------------------------------------------------
 
 ; Depth-first serialization of the menu hierarchy.
@@ -29,8 +19,8 @@ mRootId equ 1
     .db mRootId ; id
     .db mNullId ; parentId
     .db mRootNameId ; nameId
-    .db 1 ; numStrips
-    .db 2 ; stripBeginId
+    .db 2 ; numStrips
+    .db mNumId ; stripBeginId
 ; Root > Strip 0
 mNum:
 mNumId equ 2
@@ -38,14 +28,14 @@ mNumId equ 2
     .db mRootId ; parentId
     .db mNumNameId ; nameId
     .db 2 ; numStrips
-    .db 7 ; stripBeginId
+    .db mCubeId ; stripBeginId
 mProb:
 mProbId equ 3
     .db mProbId ; id
     .db mRootId ; parentId
     .db mProbNameId ; nameId
     .db 1 ; numStrips
-    .db 17 ; stripBeginId
+    .db mPermId ; stripBeginId
 mBlank01:
 mBlank01Id equ 4
 	.db mBlank00Id ; id
@@ -67,37 +57,73 @@ mHelpId equ 6
     .db mHelpNameId ; nameId
     .db 0 ; numStrips
     .db 0 ; stripBeginId
+; Root > Strip 1
+mDisp:
+mDispId equ 7
+    .db mDispId ; id
+    .db mRootId ; parentId
+    .db mDispNameId ; nameId
+    .db 0 ; numStrips
+    .db 0 ; stripBeginId
+mMode:
+mModeId equ 8
+    .db mModeId ; id
+    .db mRootId ; parentId
+    .db mModeNameId ; nameId
+    .db 0 ; numStrips
+    .db 0 ; stripBeginId
+mHyperbolic:
+mHyperbolicId equ 9
+	.db mHyperbolicId ; id
+	.db mRootId ; parentId
+	.db mHyperbolicNameId ; nameId
+	.db 0 ; numStrips
+	.db 0 ; stripBeginId
+mUnit:
+mUnitId equ 10
+    .db mUnitId ; id
+    .db mRootId ; parentId
+    .db mUnitNameId ; nameId
+    .db 0 ; numStrips
+    .db 0 ; stripBeginId
+mBlank03:
+mBlank03Id equ 11
+	.db mBlank03Id ; id
+	.db mRootId ; parentId
+	.db mNullNameId ; nameId
+	.db 0 ; numStrips
+	.db 0 ; stripBeginId
 ; Root > Num > Strip 0
 mCube:
-mCubeId equ 7
+mCubeId equ 12
     .db mCubeId ; id
     .db mNumId ; parentId
     .db mCubeNameId ; nameId
     .db 0 ; numStrips
     .db 0 ; stripBeginId
 mCubeRoot:
-mCubeRootId equ 8
+mCubeRootId equ 13
     .db mCubeRootId ; id
     .db mNumId ; parentId
     .db mCubeRootNameId ; nameId
     .db 0 ; numStrips
     .db 0 ; stripBeginId
 mAtan2:
-mAtan2Id equ 9
+mAtan2Id equ 14
     .db mAtan2Id ; id
     .db mNumId ; parentId
     .db mAtan2NameId ; nameId
     .db 0 ; numStrips
     .db 0 ; stripBeginId
 mPercent:
-mPercentId equ 10
+mPercentId equ 15
     .db mPercentId ; id
     .db mNumId ; parentId
     .db mPercentNameId ; nameId
     .db 0 ; numStrips
     .db 0 ; stripBeginId
 mBlank00:
-mBlank00Id equ 11
+mBlank00Id equ 16
 	.db mBlank00Id ; id
 	.db mNumId ; parentId
 	.db mNullNameId ; nameId
@@ -105,35 +131,35 @@ mBlank00Id equ 11
 	.db 0 ; stripBeginId
 ; Root > Num > Strip 1
 mAbs:
-mAbsId equ 12
+mAbsId equ 17
     .db mAbsId ; id
     .db mNumId ; parentId
     .db mAbsNameId ; nameId
     .db 0 ; numStrips
     .db 0 ; stripBeginId
 mSign:
-mSignId equ 13
+mSignId equ 18
     .db mSignId ; id
     .db mNumId ; parentId
     .db mSignNameId ; nameId
     .db 0 ; numStrips
     .db 0 ; stripBeginId
 mMod:
-mModId equ 14
+mModId equ 19
     .db mModId ; id
     .db mNumId ; parentId
     .db mModNameId ; nameId
     .db 0 ; numStrips
     .db 0 ; stripBeginId
 mLcm:
-mLcmId equ 15
+mLcmId equ 20
     .db mLcmId ; id
     .db mNumId ; parentId
     .db mLcmNameId ; nameId
     .db 0 ; numStrips
     .db 0 ; stripBeginId
 mGcd:
-mGcdId equ 16
+mGcdId equ 21
 	.db mGcdId ; id
 	.db mNumId ; parentId
 	.db mGcdNameId ; nameId
@@ -141,35 +167,35 @@ mGcdId equ 16
 	.db 0 ; stripBeginId
 ; Root > Prob > Strip 0
 mPerm:
-mPermId equ 17
+mPermId equ 22
     .db mPermId ; id
     .db mProbId ; parentId
     .db mPermNameId ; nameId
     .db 0 ; numStrips
     .db 0 ; stripBeginId
 mComb:
-mCombId equ 18
+mCombId equ 23
     .db mCombId ; id
     .db mProbId ; parentId
     .db mCombNameId ; nameId
     .db 0 ; numStrips
     .db 0 ; stripBeginId
 mFactorial:
-mFactorialId equ 19
+mFactorialId equ 24
     .db mFactorialId ; id
     .db mProbId ; parentId
     .db mFactorialNameId ; nameId
     .db 0 ; numStrips
     .db 0 ; stripBeginId
 mRandom:
-mRandomId equ 20
+mRandomId equ 25
     .db mRandomId ; id
     .db mProbId ; parentId
     .db mRandomNameId ; nameId
     .db 0 ; numStrips
     .db 0 ; stripBeginId
 mRandomSeed:
-mRandomSeedId equ 21
+mRandomSeedId equ 26
     .db mRandomSeedId ; id
     .db mProbId ; parentId
     .db mRandomSeedNameId ; nameId
@@ -189,36 +215,45 @@ mProbNameId equ 3
     .dw mProbName
 mHelpNameId equ 4
     .dw mHelpName
+; Root > Strip 1
+mDispNameId equ 5
+    .dw mDispName
+mModeNameId equ 6
+    .dw mModeName
+mHyperbolicNameId equ 7
+    .dw mHyperbolicName
+mUnitNameId equ 8
+    .dw mUnitName
 ; Root > Num > Strip 0
-mCubeNameId equ 5
+mCubeNameId equ 9
     .dw mCubeName
-mCubeRootNameId equ 6
+mCubeRootNameId equ 10
     .dw mCubeRootName
-mAtan2NameId equ 7
+mAtan2NameId equ 11
     .dw mAtan2Name
-mPercentNameId equ 8
+mPercentNameId equ 12
     .dw mPercentName
 ; Root > Num > Strip 1
-mAbsNameId equ 9
+mAbsNameId equ 13
     .dw mAbsName
-mSignNameId equ 10
+mSignNameId equ 14
     .dw mSignName
-mModNameId equ 11
+mModNameId equ 15
     .dw mModName
-mLcmNameId equ 12
+mLcmNameId equ 16
     .dw mLcmName
-mGcdNameId equ 13
+mGcdNameId equ 17
     .dw mGcdName
 ; Root > Prob > Strip 0
-mPermNameId equ 14
+mPermNameId equ 18
     .dw mPermName
-mCombNameId equ 15
+mCombNameId equ 19
     .dw mCombName
-mFactorialNameId equ 16
+mFactorialNameId equ 20
     .dw mFactorialName
-mRandomNameId equ 17
+mRandomNameId equ 21
     .dw mRandomName
-mRandomSeedNameId equ 18
+mRandomSeedNameId equ 22
     .dw mRandomSeedName
 
 ; Table of Names as NUL terminated C strings.
@@ -233,6 +268,15 @@ mProbName:
 	.db "PROB", 0
 mHelpName:
     .db "HELP", 0
+; Root > Strip 1
+mDispName:
+	.db "DISP", 0
+mModeName:
+	.db "Mode", 0
+mHyperbolicName:
+	.db "HYP", 0
+mUnitName:
+	.db "UNIT", 0
 ; Root > Num > Strip 0
 mCubeName:
     .db "^3", 0

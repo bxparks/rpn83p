@@ -124,7 +124,7 @@ floatBufSizeOf equ 9
 ;     uint8_t stripIndex; // menu strip, groups of 5
 ;   }
 menuCurrentId equ floatBuf + floatBufSizeOf
-menuStripIndex equ menuCurId
+menuStripIndex equ menuCurrentId + 1
 
 ;-----------------------------------------------------------------------------
 
