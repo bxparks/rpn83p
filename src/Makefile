@@ -4,6 +4,7 @@ SPASM_DIR := ../../spasm
 SPASM_INC := $(SPASM_DIR)/inc
 SPASM := $(SPASM_DIR)/spasm
 SRCS := \
+	common.asm \
 	debug.asm \
 	display.asm \
 	errorcode.asm \

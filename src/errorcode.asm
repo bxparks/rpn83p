@@ -36,21 +36,14 @@ setErrorCodeContinue:
     ld (errorCode), a
     ret
 
-; Function: Get the string for given error code.
+; Function: getErrorString(A) -> HL
+; Description: Get the string for given error code.
 ; Input: A: error code
 ; Output: HL: pointer to a C string
 ; Destroys: DE, HL
 getErrorString:
-    ld l, a
-    ld h, 0
-    add hl, hl
-    ld de, errorStrings
-    add hl, de
-    ld e, (hl)
-    inc hl
-    ld d, (hl)
-    ex de, hl
-    ret
+    ld hl, errorStrings
+    jp getString
 
 ; Function: Save the current errorCode to errorCodeDisplayed.
 ; Destroys: A, HL

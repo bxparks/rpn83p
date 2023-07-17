@@ -178,6 +178,7 @@ mainExit:
 
 #include "vars.asm"
 #include "handlers.asm"
+#include "common.asm"
 #include "pstring.asm"
 #include "parsenum.asm"
 #include "display.asm"
