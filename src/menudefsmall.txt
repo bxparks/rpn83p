@@ -3,14 +3,13 @@
 
 MenuGroup root mRoot [
   MenuStrip [
-    MenuItem HELP mHelp
     MenuGroup NUM mNum [
       MenuStrip [
         MenuItem ^3 mCube
-        MenuItem CBRT mCubeRoot # maybe use {super3}{root} ?
+        MenuItem CBRT mCubeRoot # maybe use <super3><root> ?
         MenuItem ATN2 mAtan2
         MenuItem % mPercent
-        MenuItem {Delta}% mDeltaPercent
+        MenuItem * *
       ]
       MenuStrip [ 
         MenuItem ABS mAbs
@@ -20,7 +19,6 @@ MenuGroup root mRoot [
         MenuItem GCD mGcd
       ]
     ]
-    MenuItem * *
     MenuGroup PROB mProb [
       MenuStrip [
         MenuItem PERM mPermutation
@@ -30,18 +28,8 @@ MenuGroup root mRoot [
         MenuItem SEED mRandomSeed
       ]
     ]
-    MenuGroup CONV mConv [
-       MenuStrip [
-         MenuItem {rightarrow}DEG mRadToDeg
-         MenuItem {rightarrow}RAD mDegToRad
-         MenuItem * *
-         MenuItem {rightarrow}REC mPolarToRect
-         MenuItem {rightarrow}POL mRectToPolar
-       ]
-       MenuStrip [
-         MenuItem {rightarrow}HR mHmsToHour
-         MenuItem {rightarrow}HMS mHourToHms
-      ]
-    ]
+    MenuItem * * # CONV
+    MenuItem * * # BASE
+    MenuItem HELP mHelp
   ]
 ]

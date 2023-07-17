@@ -184,6 +184,7 @@ mainExit:
 #include "errorcode.asm"
 #include "debug.asm"
 #include "handlertab.asm"
+#include "menudefsmall.asm"
 
 ;-----------------------------------------------------------------------------
 

@@ -9,6 +9,7 @@ SRCS := \
 	errorcode.asm \
 	handlers.asm \
 	handlertab.asm \
+	menudefsmall.asm \
 	parsenum.asm \
 	pstring.asm \
 	rpn83p.asm \
