@@ -266,6 +266,74 @@ handleKeyEnter:
     ret
 
 ;-----------------------------------------------------------------------------
+; Menu handlers.
+;-----------------------------------------------------------------------------
+
+; Function: Go to the previous menu strip, with stripIndex decreasing upwards.
+; Input: none
+; Output: (menuStripIndex) decremented, or wrapped around
+; Destroys: all
+handleKeyUp:
+    ld hl, menuCurrentId
+    ld a, (hl)
+    inc hl
+    ld b, (hl) ; menuStripIndex
+    call getMenuNode
+    inc hl
+    inc hl
+    inc hl
+    ld c, (hl) ; numStrips
+
+    ; Check for 1. TODO: Check for 0, but that should never happen.
+    ld a, c
+    cp 1
+    ret z
+
+    ; --(menuStripIndex) mod numStrips
+    ld a, (menuStripIndex)
+    or a
+    jr nz, handleKeyUpContinue
+    ld a, c
+handleKeyUpContinue:
+    dec a
+    ld (menuStripIndex), a
+
+    set rpnFlagsMenuDirty, (iy + rpnFlags)
+    ret
+
+; Function: Go to the next menu strip, with stripIndex increasing downwards.
+; Input: none
+; Output: (menuStripIndex) incremented mod numStrips
+; Destroys: all
+handleKeyDown:
+    ld hl, menuCurrentId
+    ld a, (hl)
+    inc hl
+    ld b, (hl) ; menuStripIndex
+    call getMenuNode
+    inc hl
+    inc hl
+    inc hl
+    ld c, (hl) ; numStrips
+
+    ; Check for 1. TODO: Check for 0, but that should never happen.
+    ld a, c
+    cp 1
+    ret z
+
+    ; ++(menuStripIndex) mod numStrips
+    ld a, (menuStripIndex)
+    inc a
+    cp c
+    jr c, handleKeyDownContinue
+    xor a
+handleKeyDownContinue:
+    ld (menuStripIndex), a
+
+    set rpnFlagsMenuDirty, (iy + rpnFlags)
+    ret
+
+;-----------------------------------------------------------------------------
 ; Arithmetic functions.
 ;-----------------------------------------------------------------------------
 
