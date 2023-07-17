@@ -11,7 +11,7 @@ SRCS := \
 	handlers.asm \
 	handlertab.asm \
 	menu.asm \
-	menudefsmall.asm \
+	menudevdef.asm \
 	parsenum.asm \
 	pstring.asm \
 	rpn83p.asm \

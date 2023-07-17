@@ -1,5 +1,5 @@
-# Same as menudef.txt, but reduced down to a proof of concept so that the
-# data tables can be hand coded for development.
+# Same as menudef.txt, but reduced down so that the assembly code data can be
+# hand coded during development.
 
 MenuGroup root mRoot [
   MenuStrip [

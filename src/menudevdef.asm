@@ -1,5 +1,5 @@
 ;-----------------------------------------------------------------------------
-; Menu hierarchy definitions, hand-generated from menudefsmall.txt.
+; Menu hierarchy definitions, hand-generated from menudevdef.txt.
 ;
 ; The equivalent C struct declarations are the following:
 ;

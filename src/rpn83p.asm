@@ -195,7 +195,7 @@ mainExit:
 #include "debug.asm"
 #include "handlertab.asm"
 #include "menu.asm"
-#include "menudefsmall.asm"
+#include "menudevdef.asm"
 
 ;-----------------------------------------------------------------------------
 
