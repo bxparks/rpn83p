@@ -215,6 +215,12 @@ displayMenu:
     bit rpnFlagsMenuDirty, (iy + rpnFlags)
     ret z
 
+    ; TODO: This causes a flash when the menu is updated. It is more noticeable
+    ; in an emulator than on a real caculator. A better way to implement this
+    ; is to overwrite the prev menu string with the next one, then call
+    ; something equivalent to 'eraseEndOfMenu()` to overwrite any trailing
+    ; pixels until the end of the current menu box. That would prevent the
+    ; flashing.
     call clearMenus
 
     call getCurrentMenuStripBeginId
