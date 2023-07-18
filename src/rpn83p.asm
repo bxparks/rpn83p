@@ -52,6 +52,13 @@ stXPenRow equ stXCurRow*8
 cursorChar equ LcurI
 cursorCharAlt equ LcurO
 
+; Menu keys, left to right
+keyMenu0 equ kYequ
+keyMenu1 equ kWindow
+keyMenu2 equ kZoom
+keyMenu3 equ kTrace
+keyMenu4 equ kGraph
+
 ; Flags for RPN stack modes. Offset from IY register.
 rpnFlags equ asm_Flag2
 rpnFlagsEditing equ 0 ; set if in edit mode

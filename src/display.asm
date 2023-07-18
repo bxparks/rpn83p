@@ -80,7 +80,6 @@ displayStatus:
     inc hl
     inc hl
     inc hl
-    inc hl
     ld c, (hl) ; C=numStrips
 
     ld hl, statusPenRow*$100 ; $(penRow)(penCol)
@@ -96,7 +95,7 @@ displayStatusMenuDownArrow:
     ld a, b
     dec c
     cp c
-    jr z, displayStatusMenuDownArrowNone
+    jr nc, displayStatusMenuDownArrowNone
     ld a, SdownArrow
     jr displayStatusMenuDownArrowDisplay
 displayStatusMenuDownArrowNone:

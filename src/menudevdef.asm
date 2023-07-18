@@ -13,6 +13,7 @@ mNullId equ 0
     .db mNullNameId ; nameId
     .db 0 ; numStrips
     .db 0 ; stripBeginId
+    .dw mNullHandler
 ; Root
 mRoot:
 mRootId equ 1
@@ -21,6 +22,7 @@ mRootId equ 1
     .db mRootNameId ; nameId
     .db 2 ; numStrips
     .db mNumId ; stripBeginId
+    .dw mGroupHandler
 ; Root > Strip 0
 mNum:
 mNumId equ 2
@@ -29,6 +31,7 @@ mNumId equ 2
     .db mNumNameId ; nameId
     .db 2 ; numStrips
     .db mCubeId ; stripBeginId
+    .dw mGroupHandler
 mProb:
 mProbId equ 3
     .db mProbId ; id
@@ -36,6 +39,7 @@ mProbId equ 3
     .db mProbNameId ; nameId
     .db 1 ; numStrips
     .db mPermId ; stripBeginId
+    .dw mGroupHandler
 mBlank01:
 mBlank01Id equ 4
 	.db mBlank00Id ; id
@@ -43,6 +47,7 @@ mBlank01Id equ 4
 	.db mNullNameId ; nameId
 	.db 0 ; numStrips
 	.db 0 ; stripBeginId
+    .dw mNullHandler
 mBlank02:
 mBlank02Id equ 5
 	.db mBlank00Id ; id
@@ -50,6 +55,7 @@ mBlank02Id equ 5
 	.db mNullNameId ; nameId
 	.db 0 ; numStrips
 	.db 0 ; stripBeginId
+    .dw mNullHandler
 mHelp:
 mHelpId equ 6
     .db mHelpId ; id
@@ -57,6 +63,7 @@ mHelpId equ 6
     .db mHelpNameId ; nameId
     .db 0 ; numStrips
     .db 0 ; stripBeginId
+    .dw mNullHandler
 ; Root > Strip 1
 mDisp:
 mDispId equ 7
@@ -65,6 +72,7 @@ mDispId equ 7
     .db mDispNameId ; nameId
     .db 0 ; numStrips
     .db 0 ; stripBeginId
+    .dw mNullHandler
 mMode:
 mModeId equ 8
     .db mModeId ; id
@@ -72,6 +80,7 @@ mModeId equ 8
     .db mModeNameId ; nameId
     .db 0 ; numStrips
     .db 0 ; stripBeginId
+    .dw mNullHandler
 mHyperbolic:
 mHyperbolicId equ 9
 	.db mHyperbolicId ; id
@@ -79,6 +88,7 @@ mHyperbolicId equ 9
 	.db mHyperbolicNameId ; nameId
 	.db 0 ; numStrips
 	.db 0 ; stripBeginId
+    .dw mNullHandler
 mUnit:
 mUnitId equ 10
     .db mUnitId ; id
@@ -86,6 +96,7 @@ mUnitId equ 10
     .db mUnitNameId ; nameId
     .db 0 ; numStrips
     .db 0 ; stripBeginId
+    .dw mNullHandler
 mBlank03:
 mBlank03Id equ 11
 	.db mBlank03Id ; id
@@ -93,6 +104,7 @@ mBlank03Id equ 11
 	.db mNullNameId ; nameId
 	.db 0 ; numStrips
 	.db 0 ; stripBeginId
+    .dw mNullHandler
 ; Root > Num > Strip 0
 mCube:
 mCubeId equ 12
@@ -101,6 +113,7 @@ mCubeId equ 12
     .db mCubeNameId ; nameId
     .db 0 ; numStrips
     .db 0 ; stripBeginId
+    .dw mNullHandler
 mCubeRoot:
 mCubeRootId equ 13
     .db mCubeRootId ; id
@@ -108,6 +121,7 @@ mCubeRootId equ 13
     .db mCubeRootNameId ; nameId
     .db 0 ; numStrips
     .db 0 ; stripBeginId
+    .dw mNullHandler
 mAtan2:
 mAtan2Id equ 14
     .db mAtan2Id ; id
@@ -115,6 +129,7 @@ mAtan2Id equ 14
     .db mAtan2NameId ; nameId
     .db 0 ; numStrips
     .db 0 ; stripBeginId
+    .dw mNullHandler
 mPercent:
 mPercentId equ 15
     .db mPercentId ; id
@@ -122,6 +137,7 @@ mPercentId equ 15
     .db mPercentNameId ; nameId
     .db 0 ; numStrips
     .db 0 ; stripBeginId
+    .dw mNullHandler
 mBlank00:
 mBlank00Id equ 16
 	.db mBlank00Id ; id
@@ -129,6 +145,7 @@ mBlank00Id equ 16
 	.db mNullNameId ; nameId
 	.db 0 ; numStrips
 	.db 0 ; stripBeginId
+    .dw mNullHandler
 ; Root > Num > Strip 1
 mAbs:
 mAbsId equ 17
@@ -137,6 +154,7 @@ mAbsId equ 17
     .db mAbsNameId ; nameId
     .db 0 ; numStrips
     .db 0 ; stripBeginId
+    .dw mNullHandler
 mSign:
 mSignId equ 18
     .db mSignId ; id
@@ -144,6 +162,7 @@ mSignId equ 18
     .db mSignNameId ; nameId
     .db 0 ; numStrips
     .db 0 ; stripBeginId
+    .dw mNullHandler
 mMod:
 mModId equ 19
     .db mModId ; id
@@ -151,6 +170,7 @@ mModId equ 19
     .db mModNameId ; nameId
     .db 0 ; numStrips
     .db 0 ; stripBeginId
+    .dw mNullHandler
 mLcm:
 mLcmId equ 20
     .db mLcmId ; id
@@ -158,6 +178,7 @@ mLcmId equ 20
     .db mLcmNameId ; nameId
     .db 0 ; numStrips
     .db 0 ; stripBeginId
+    .dw mNullHandler
 mGcd:
 mGcdId equ 21
 	.db mGcdId ; id
@@ -165,6 +186,7 @@ mGcdId equ 21
 	.db mGcdNameId ; nameId
 	.db 0 ; numStrips
 	.db 0 ; stripBeginId
+    .dw mNullHandler
 ; Root > Prob > Strip 0
 mPerm:
 mPermId equ 22
@@ -173,6 +195,7 @@ mPermId equ 22
     .db mPermNameId ; nameId
     .db 0 ; numStrips
     .db 0 ; stripBeginId
+    .dw mNullHandler
 mComb:
 mCombId equ 23
     .db mCombId ; id
@@ -180,6 +203,7 @@ mCombId equ 23
     .db mCombNameId ; nameId
     .db 0 ; numStrips
     .db 0 ; stripBeginId
+    .dw mNullHandler
 mFactorial:
 mFactorialId equ 24
     .db mFactorialId ; id
@@ -187,6 +211,7 @@ mFactorialId equ 24
     .db mFactorialNameId ; nameId
     .db 0 ; numStrips
     .db 0 ; stripBeginId
+    .dw mNullHandler
 mRandom:
 mRandomId equ 25
     .db mRandomId ; id
@@ -194,6 +219,7 @@ mRandomId equ 25
     .db mRandomNameId ; nameId
     .db 0 ; numStrips
     .db 0 ; stripBeginId
+    .dw mNullHandler
 mRandomSeed:
 mRandomSeedId equ 26
     .db mRandomSeedId ; id
@@ -201,6 +227,7 @@ mRandomSeedId equ 26
     .db mRandomSeedNameId ; nameId
     .db 0 ; numStrips
     .db 0 ; stripBeginId
+    .dw mNullHandler
 
 ; Table of 2-byte Offsets into Pool of Names
 mMenuNameTable:

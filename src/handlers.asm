@@ -266,7 +266,7 @@ handleKeyEnter:
     ret
 
 ;-----------------------------------------------------------------------------
-; Menu handlers.
+; Menu key handlers.
 ;-----------------------------------------------------------------------------
 
 ; Function: Go to the previous menu strip, with stripIndex decreasing upwards.
@@ -332,6 +332,71 @@ handleKeyDownContinue:
 
     set rpnFlagsMenuDirty, (iy + rpnFlags)
     ret
+
+; handleKeyMenu0() -> None
+; Description: Handle menu key 0 (left most).
+; Input: none
+; Destroys: all
+handleKeyMenu0:
+    ld a, 0
+    jr handleKeyMenuA
+
+; handleKeyMenu1() -> None
+; Description: Handle menu key 1 (2nd from left).
+; Input: none
+; Destroys: all
+handleKeyMenu1:
+    ld a, 1
+    jr handleKeyMenua
+
+; handleKeyMenu2() -> None
+; Description: Handle menu key 0 (middle).
+; Input: none
+; Destroys: all
+handleKeyMenu2:
+    ld a, 2
+    jr handleKeyMenuA
+
+; handleKeyMenu3() -> None
+; Description: Handle menu key 0 (2nd from right).
+; Input: none
+; Destroys: all
+handleKeyMenu3:
+    ld a, 3
+    jr handleKeyMenuA
+
+; handleKeyMenu4() -> None
+; Description: Handle menu key 0 (right most).
+; Input: none
+; Destroys: all
+handleKeyMenu4:
+    ld a, 4
+    ; [[fallthrough]]
+
+; handleKeyMenuA(A) -> None
+;
+; Description: Dispatch to the handler specified by the menu node at the menu
+; button indexed by A (0: left most, 4: right most).
+; Destroys: all
+handleKeyMenuA:
+    ld c, a
+    call getCurrentMenuStripBeginId
+    add a, c ; menu node ids are sequential starting with beginId
+    ; get menu node corresponding to pressed menu key
+    call getMenuNode
+    push hl ; save pointer to MenuNode
+    ; load and jump to the mXxxHandler
+    inc hl
+    inc hl
+    inc hl
+    inc hl
+    inc hl
+    ld e, (hl)
+    inc hl
+    ld d, (hl) ; DE=mXxxHandler of the current node
+    ex de, hl ; HL=mXxxHandler
+    ex (sp), hl
+    ret ; jump to mXxxHandler(HL=MenuNode)
 
 ;-----------------------------------------------------------------------------
 ; Arithmetic functions.
@@ -534,4 +599,29 @@ handleKeyExp:
     call rclX
     bcall(_EToX)
     call stoX
+    ret
+
+;-----------------------------------------------------------------------------
+; Menu handlers.
+; Input:
+;   HL: pointer to MenuNode that was activated
+;   A: menu button index (0 - 4)
+;-----------------------------------------------------------------------------
+
+mNullHandler: ; do nothing
+    ret
+
+; Description: General handler for menu nodes of type "MenuGroup". Selecting
+; this should cause the menuCurrentId to be set to this item, and the
+; menuStripIndex to be set to 0
+; Input:
+;   HL: pointer to the selected MenuNode
+;   A: the selected menuId
+; Output: (menuCurrentId) and (menuStripIndex) updated
+; Destroys: A
+mGroupHandler:
+    ld (menuCurrentId), a
+    xor a
+    ld (menuStripIndex), a
+    set rpnFlagsMenuDirty, (iy + rpnFlags)
     ret

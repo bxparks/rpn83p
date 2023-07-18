@@ -8,6 +8,7 @@
 ; 	uint8_t nameId; // index into NameTable
 ; 	uint8_t numStrips; // 0: Item; >=1: Group
 ; 	uint8_t stripBeginId; // nodeId of the first node of first strip
+; 	void *handler; // pointer to the handler function
 ; };
 ;
 ;-----------------------------------------------------------------------------
@@ -28,14 +29,14 @@ initMenu:
     ld (hl), a
     ret
 
-; getCurrentMenuStripBeginId(menuCurrentId, menuStripIndex) -> None
+; getCurrentMenuStripBeginId(menuCurrentId, menuStripIndex) -> A
 ;
 ; Description: Return the node id of the first item in the menu strip at
 ; `menuStripIndex` of the current menu node `menuCurrentId`. The next 4 node
 ; ids in sequential order define the other 4 menu buttons.
 ; Input: (menuCurrentId), (menuStripIndex)
 ; Output: A: strip begin id
-; Destroys: A, DE, HL
+; Destroys: A, B, DE, HL
 getCurrentMenuStripBeginId:
     ld hl, menuCurrentId
     ld a, (hl)
@@ -83,8 +84,10 @@ getMenuNode:
     ld d, h
     add hl, hl
     add hl, hl
-    add hl, de
-    ; HL = mMenuTable + 5*A
+    add hl, hl ; 8*A
+    or a ; clear Carry
+    sbc hl, de ; 7*A
+    ; HL = mMenuTable + 7*A
     ex de, hl
     ld hl, mMenuTable
     add hl, de
