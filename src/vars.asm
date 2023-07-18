@@ -23,7 +23,6 @@ initStack:
     call initZ
     call initR
     set rpnFlagsStackDirty, (iy + rpnFlags) ; force initial display
-    res rpnFlagsEditing, (iy + rpnFlags)
     set rpnFlagsLiftEnabled, (iy + rpnFlags)
     ret
 

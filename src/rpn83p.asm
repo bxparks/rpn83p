@@ -147,6 +147,7 @@ main:
     call initMenu
     call initDisplay
     call clearInputBuf
+    res rpnFlagsEditing, (iy + rpnFlags)
 
 readLoop:
     ;call debugFlags

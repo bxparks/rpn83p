@@ -77,7 +77,9 @@ handleKeyNumberFirstDigit:
     call nz, liftStack
     pop af
     ; Go into editing mode
-    call handleKeyClear
+    call clearInputBuf
+    set rpnFlagsEditing, (iy + rpnFlags)
+    res rpnFlagsLiftEnabled, (iy + rpnFlags)
 handleKeyNumberContinue:
     jr appendInputBuf
 
