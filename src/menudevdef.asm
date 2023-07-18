@@ -137,7 +137,7 @@ mPercentId equ 15
     .db mPercentNameId ; nameId
     .db 0 ; numStrips
     .db 0 ; stripBeginId
-    .dw mNullHandler
+    .dw mPercentHandler
 mBlank00:
 mBlank00Id equ 16
 	.db mBlank00Id ; id

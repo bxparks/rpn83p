@@ -598,6 +598,9 @@ constEuler:
 constTen:
     .db $00, $81, $10, $00, $00, $00, $00, $00, $00 ; 10
 
+constHundred:
+    .db $00, $82, $10, $00, $00, $00, $00, $00, $00 ; 100
+
 constThousand:
     .db $00, $83, $10, $00, $00, $00, $00, $00, $00 ; 1000
 
@@ -718,7 +721,7 @@ mGroupHandler:
 
 ;-----------------------------------------------------------------------------
 
-; mCubeHandler(Y) -> X
+; mCubeHandler(X) -> X^3
 ; Description: Calculate X^3.
 mCubeHandler:
     call closeInputBuf
@@ -739,9 +742,23 @@ mCubeRootHandler:
     call stoX
     ret
 
+; mPercentHandler(Y, X) -> (Y, Y*(X/100))
+; Description: Calculate the X percent of Y.
+mPercentHandler:
+    call closeInputBuf
+    call rclX
+    ld hl, constHundred
+    bcall(_Mov9ToOP2)
+    bcall(_FPDiv)
+    bcall(_OP1ToOP2)
+    call rclY
+    bcall(_FPMult)
+    call stoX
+    ret
+
 ;-----------------------------------------------------------------------------
 
-; mFactorialHandler(X)
+; mFactorialHandler(X) -> X!
 ; Description: Calculate the factorial of X.
 mFactorialHandler:
     call closeInputBuf
