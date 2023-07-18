@@ -209,8 +209,17 @@ handleKeyDelMinus:
 ;   - editing mode set
 ;   - stack lift disabled
 ;   - mark displayInput dirty
-; Destroys: A
+; Destroys: A, HL
 handleKeyClear:
+    ; Check for non-zero error code.
+    ld a, (errorCode)
+    or a
+    jr z, handleKeyClearNormal
+handleKeyClearErrorCode:
+    ; Clear the error code if non-zero
+    xor a
+    jp setErrorCode
+handleKeyClearNormal:
     ; Check if editing and inputBuf is empty.
     bit rpnFlagsEditing, (iy + rpnFlags)
     jr z, handleKeyClearHitOnce
