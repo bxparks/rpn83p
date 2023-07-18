@@ -38,7 +38,7 @@ menuPenColEnd   equ 96
 
 ; Function: Set the display flags to dirty initially so that they are rendered.
 initDisplay:
-    set rpnFlagsTitleDirty, (iy + rpnFlags)
+    set rpnFlagsStatusDirty, (iy + rpnFlags)
     set rpnFlagsMenuDirty, (iy + rpnFlags)
     set inputBufFlagsInputDirty, (iy + inputBufFlags)
     ret
@@ -55,22 +55,74 @@ displayAll:
     call displayMenu
     ret
 
-; Function: Display the title bar.
+; Function: Display the status bar, showing menu up/down arrows.
 ; Input: none
-; Output: rpnFlagsTitleDirty reset
-; Destroys: A, HL
+; Output: rpnFlagsStatusDirty reset
+; Destroys: A, BC, HL
 displayStatus:
-    ;bit rpnFlagsTitleDirty, (iy + rpnFlags)
+    ;bit rpnFlagsStatusDirty, (iy + rpnFlags)
     ;ret z
 
-    ld hl, statusCurCol*$100 + statusCurRow ; $(curCol)(curRow)
-    ld (CurRow), hl
-    ld hl, msgTitle
-    bcall(_PutS)
-    bcall(_EraseEOL)
+    ; TODO: maybe cache the numStrips of the current node to make this
+    ; calculation a little shorter and easier.
+
+    ; Determine if multiple menu strips exists.
+    ld hl, menuCurrentId
+    ld a, (hl) ; currentId
+    inc hl
+    ld b, (hl) ; B=stripIndex
+    call getMenuNode
+    inc hl
+    inc hl
+    inc hl
+    inc hl
+    ld c, (hl) ; C=numStrips
+
+    ld hl, statusPenRow*$100 ; $(penRow)(penCol)
+    ld (PenCol), hl
+
+    ; If numStrips==0: don't do anything. This should never happen if there
+    ; are no bugs in the program.
+    or a
+    jr z, displayStatusMenuClear
+
+displayStatusMenuDownArrow:
+    ; If stripIndex != (numStrips - 1): show Down arrow
+    ld a, b
+    dec c
+    cp c
+    jr z, displayStatusMenuDownArrowNone
+    ld a, SdownArrow
+    jr displayStatusMenuDownArrowDisplay
+displayStatusMenuDownArrowNone:
+    ld a, SFourSpaces
+displayStatusMenuDownArrowDisplay:
+    bcall(_VPutMap)
+
+displayStatusMenuUpArrow:
+    ; If stripIndex != 0: show Up arrow
+    ld a, b
+    or a
+    jr z, displayStatusMenuUpArrowNone
+    ld a, SupArrow
+    jr displayStatusMenuUpArrowDisplay
+displayStatusMenuUpArrowNone:
+    ld a, SFourSpaces
+displayStatusMenuUpArrowDisplay:
+    bcall(_VPutMap)
+
+    jr displayStatusEraseOfLine
+
+    ; clear 8 px
+displayStatusMenuClear:
+    ld hl, msgStatusMenuBlank
+    bcall(_VPutS)
+
+displayStatusEraseOfLine:
+    call vEraseEOL
 
     ; Reset dirty flag
-    res rpnFlagsTitleDirty, (iy + rpnFlags)
+    res rpnFlagsStatusDirty, (iy + rpnFlags)
     ret
 
 ; Function: Display the string corresponding to the current error code.
@@ -429,8 +481,14 @@ vEraseEOLLoop:
 
 ;-----------------------------------------------------------------------------
 
-msgTitle:
-    .db "RPN83P", 0
+; Up and Down arrows to indicate that there are additional menu options.
+msgStatusMenuUpDown:
+    .db SupArrow, SdownArrow, 0
+
+; 8 px of spaces.
+msgStatusMenuBlank:
+    .db SFourSpaces, SFourSpaces, 0
+
 msgTLabel:
     .db "T:", 0
 msgZLabel:

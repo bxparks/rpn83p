@@ -57,7 +57,7 @@ rpnFlags equ asm_Flag2
 rpnFlagsStackDirty equ 0 ; set if the stack is dirty
 rpnFlagsEditing equ 1 ; set if in edit mode
 rpnFlagsLiftEnabled equ 2 ; set if stack lift is enabled (ENTER disables)
-rpnFlagsTitleDirty equ 3 ; set if the title bar is dirty
+rpnFlagsStatusDirty equ 3 ; set if the title bar is dirty
 rpnFlagsMenuDirty equ 4 ; set if the menu bar is dirty
 rpnFlagsErrorDirty equ 5 ; set if the error code
 
