@@ -32,6 +32,15 @@ debugParseBuf:
 
 ;------------------------------------------------------------------------------
 
+; Description: Clear the debug line.
+debugClear:
+    ld hl, debugCurCol*$100+debugCurRow ; $(curCol)(curRow)
+    ld (CurRow), hl
+    bcall(_EraseEOL)
+    ret
+
+;------------------------------------------------------------------------------
+
 ; Function: Print out OP1 at debug line.
 ; Input: OP1
 ; Output:

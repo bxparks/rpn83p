@@ -198,15 +198,33 @@ handleKeyDelMinus:
 
 ;-----------------------------------------------------------------------------
 
-; Function: Clear the input buffer.
+; Function: Clear the input buffer. If the CLEAR key is hit when the input
+; buffer is already empty (e.g. hit twice), then trigger a refresh of the
+; entire display. This is useful for removing and recovering from rendering
+; bugs.
 ; Input: none
 ; Output:
-;   - A=0; inputBuf cleared
+;   - A=0
+;   - inputBuf cleared
 ;   - editing mode set
 ;   - stack lift disabled
 ;   - mark displayInput dirty
 ; Destroys: A
 handleKeyClear:
+    ; Check if editing and inputBuf is empty.
+    bit rpnFlagsEditing, (iy + rpnFlags)
+    jr z, handleKeyClearHitOnce
+    ld a, (inputBuf)
+    or a
+    jr nz, handleKeyClearHitOnce
+handleKeyClearHitTwice:
+    ; Trigger refresh of the entire display, to remove any artifacts from buggy
+    ; display code.
+    set rpnFlagsMenuDirty, (iy + rpnFlags)
+    set rpnFlagsStackDirty, (iy + rpnFlags)
+    set rpnFlagsErrorDirty, (iy + rpnFlags)
+    set rpnFlagsStatusDirty, (iy + rpnFlags)
+handleKeyClearHitOnce:
     call clearInputBuf
     set rpnFlagsEditing, (iy + rpnFlags)
     res rpnFlagsLiftEnabled, (iy + rpnFlags)
