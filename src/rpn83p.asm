@@ -54,12 +54,12 @@ cursorCharAlt equ LcurO
 
 ; Flags for RPN stack modes. Offset from IY register.
 rpnFlags equ asm_Flag2
-rpnFlagsStackDirty equ 0 ; set if the stack is dirty
-rpnFlagsEditing equ 1 ; set if in edit mode
-rpnFlagsLiftEnabled equ 2 ; set if stack lift is enabled (ENTER disables)
-rpnFlagsStatusDirty equ 3 ; set if the title bar is dirty
-rpnFlagsMenuDirty equ 4 ; set if the menu bar is dirty
-rpnFlagsErrorDirty equ 5 ; set if the error code
+rpnFlagsEditing equ 0 ; set if in edit mode
+rpnFlagsLiftEnabled equ 1 ; set if stack lift is enabled (ENTER disables)
+rpnFlagsStackDirty equ 2 ; set if the stack is dirty
+rpnFlagsMenuDirty equ 3 ; set if the menu selection is dirty
+rpnFlagsErrorDirty equ 4 ; set if the error code is dirty
+rpnFlagsStatusDirty equ 5 ; set if the status is dirty (TODO: not used)
 
 ; Flags for the inputBuf. Offset from IY register.
 inputBufFlags equ asm_Flag3

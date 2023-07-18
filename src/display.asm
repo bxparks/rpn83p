@@ -53,15 +53,20 @@ displayAll:
     call displayErrorCode
     call displayStack
     call displayMenu
+
+    ; Reset dirty flags
+    res rpnFlagsStatusDirty, (iy + rpnFlags)
+    res rpnFlagsStackDirty, (iy + rpnFlags)
+    res rpnFlagsMenuDirty, (iy + rpnFlags)
     ret
 
 ; Function: Display the status bar, showing menu up/down arrows.
 ; Input: none
-; Output: rpnFlagsStatusDirty reset
+; Output: status line displayed
 ; Destroys: A, BC, HL
 displayStatus:
-    ;bit rpnFlagsStatusDirty, (iy + rpnFlags)
-    ;ret z
+    bit rpnFlagsMenuDirty, (iy + rpnFlags)
+    ret z
 
     ; TODO: maybe cache the numStrips of the current node to make this
     ; calculation a little shorter and easier.
@@ -87,7 +92,7 @@ displayStatus:
     jr z, displayStatusMenuClear
 
 displayStatusMenuDownArrow:
-    ; If stripIndex != (numStrips - 1): show Down arrow
+    ; If stripIndex < (numStrips - 1): show Down arrow
     ld a, b
     dec c
     cp c
@@ -100,7 +105,7 @@ displayStatusMenuDownArrowDisplay:
     bcall(_VPutMap)
 
 displayStatusMenuUpArrow:
-    ; If stripIndex != 0: show Up arrow
+    ; If stripIndex > 0: show Up arrow
     ld a, b
     or a
     jr z, displayStatusMenuUpArrowNone
@@ -120,9 +125,6 @@ displayStatusMenuClear:
 
 displayStatusEraseOfLine:
     call vEraseEOL
-
-    ; Reset dirty flag
-    res rpnFlagsStatusDirty, (iy + rpnFlags)
     ret
 
 ; Function: Display the string corresponding to the current error code.
@@ -225,9 +227,6 @@ displayStackContinue:
     ; call displayStackXDebug
     call displayStackXNormal
 
-    ; Reset dirty flag
-    res rpnFlagsStackDirty, (iy + rpnFlags)
-
     ret
 
 ; This is the normal, non-debug version, which combines the inputBuf and the X
@@ -267,12 +266,12 @@ displayMenu:
     bit rpnFlagsMenuDirty, (iy + rpnFlags)
     ret z
 
-    ; TODO: This causes a flash when the menu is updated. It is more noticeable
-    ; in an emulator than on a real caculator. A better way to implement this
-    ; is to overwrite the prev menu string with the next one, then call
-    ; something equivalent to 'eraseEndOfMenu()` to overwrite any trailing
-    ; pixels until the end of the current menu box. That would prevent the
-    ; flashing.
+    ; TODO: This causes UI flickering when the menu is updated. It is more
+    ; noticeable in an emulator than on a real caculator. A better way to
+    ; implement this is to overwrite the prev menu string with the next one,
+    ; then call something equivalent to 'eraseEndOfMenu()` to overwrite any
+    ; trailing pixels until the end of the current menu box. That would prevent
+    ; the flashing.
     call clearMenus
 
     call getCurrentMenuStripBeginId
@@ -306,7 +305,6 @@ displayMenu:
     ld a, menuPenCol4
     call printMenuAtA
 
-    res rpnFlagsMenuDirty, (iy + rpnFlags)
     ret
 
 ; Function: Print floating point number at OP1 at the current cursor.
