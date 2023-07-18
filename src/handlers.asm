@@ -256,12 +256,26 @@ handleKeyChsSetNegative:
 ; Output:
 ; Destroys: all, OP1, OP2, OP4
 handleKeyEnter:
+    call closeInputBuf
+    call liftStack
+    res rpnFlagsLiftEnabled, (iy + rpnFlags)
+    ret
+
+; closeInputBuf() -> None
+; Description: If currently in edit mode, close the input buffer by parsing the
+; input, enable stack lift, then copying the float value into X. If not in edit
+; mode, no need to parse the inputBuf, but we still have to enable stack lift
+; because the previous keyCode could have been ENTER which disabled it.
+; Input: none
+; Output:
+; Destroys: all, OP1, OP2, OP4
+closeInputBuf:
+    set rpnFlagsLiftEnabled, (iy + rpnFlags)
+    bit rpnFlagsEditing, (iy + rpnFlags)
+    ret z
     call parseNum
     call stoX
-    call liftStack
     call clearInputBuf
-
-    res rpnFlagsLiftEnabled, (iy + rpnFlags)
     res rpnFlagsEditing, (iy + rpnFlags)
     ret
 
@@ -465,23 +479,6 @@ handleKeyMenuA:
 ;-----------------------------------------------------------------------------
 ; Arithmetic functions.
 ;-----------------------------------------------------------------------------
-
-; Function: If currently in edit mode, close the input buffer by parsing the
-; input, enable stack lift, then copying the float value into X. If not in edit
-; mode, no need to parse the inputBuf, but we still have to enable stack lift
-; because the previous keyCode could have been ENTER which disabled it.
-; Input: none
-; Output:
-; Destroys: all, OP1, OP2, OP4
-closeInputBuf:
-    set rpnFlagsLiftEnabled, (iy + rpnFlags)
-    bit rpnFlagsEditing, (iy + rpnFlags)
-    ret z
-    call parseNum
-    call stoX
-    call clearInputBuf
-    res rpnFlagsEditing, (iy + rpnFlags)
-    ret
 
 ; Function: Handle the Add key.
 ; Input: inputBuf
