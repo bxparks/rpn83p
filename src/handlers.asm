@@ -301,6 +301,8 @@ handleKeyUpContinue:
     set rpnFlagsMenuDirty, (iy + rpnFlags)
     ret
 
+;-----------------------------------------------------------------------------
+
 ; Function: Go to the next menu strip, with stripIndex increasing downwards.
 ; Input: none
 ; Output: (menuStripIndex) incremented mod numStrips
@@ -332,6 +334,68 @@ handleKeyDownContinue:
 
     set rpnFlagsMenuDirty, (iy + rpnFlags)
     ret
+
+;-----------------------------------------------------------------------------
+
+; Function: Go back to the parent menu group. Does nothing at the root menu
+; group.
+; Input: (menuCurrentId)
+; Output: (menuCurrentId) at parentId, (menuStripIndex) at strip of the current
+; menu group
+; Destroys: all
+handleKeyLeft:
+    ld hl, menuCurrentId
+    ld a, (hl)
+    ; do nothing if already at rootGroup
+    cp mRootId
+    ret z
+
+    ; Set menuCurrentId = child.parentId
+    ld c, a ; C=childId (saved)
+    call getMenuNode
+    inc hl
+    ld a, (hl) ; A=parentId
+    ld (menuCurrentId), a
+
+    ; Get the numStrips and stripBeginId of the parent.
+    inc hl
+    inc hl
+    ld d, (hl) ; numStrips
+    inc hl
+    ld a, (hl) ; stripBeginId
+
+    ; Deduce the stripIndex from the childId above. The `stripIndex =
+    ; int((childId - stripBeginId)/5)` but the Z80 does not have a divison
+    ; instruction so we use a loop that increments an `index` in increments of
+    ; 5 to determine the corresponding stripIndex.
+    ;
+    ; The complication is that we want to evaluate `(childId < nodeId)` but the
+    ; Z80 instruction can only increment the A register, so we have to store
+    ; the `nodeId` in A and the `childId` in C. Which forces us to reverse the
+    ; comparison. But checking for NC (no carry) is equivalent to a '>='
+    ; instead of a '<', so we are forced to start at `5-1` instead of `5`. I
+    ; hope my future self will understand this explanation.
+    add a, 4 ; nodeId = stripBeginId + 4
+    ld b, d ; B(DJNZ counter) = numStrips
+handleKeyLeftLoop:
+    cp c ; nodeId - childId
+    jr nc, handleKeyLeftStripFound ; nodeId >= childId
+    add a, 5 ; nodeId += 5
+    djnz handleKeyLeftLoop
+    ; We should never fall off the end of the loop, but if it does, set the
+    ; stripIndex to 0.
+    xor a
+    jr handleKeyLeftStripSave
+handleKeyLeftStripFound:
+    ld a, d ; numStrips
+    sub b ; numStrips - B
+handleKeyLeftStripSave:
+    ld (menuStripIndex), a
+
+    set rpnFlagsMenuDirty, (iy + rpnFlags)
+    ret
+
+;-----------------------------------------------------------------------------
 
 ; handleKeyMenu0() -> None
 ; Description: Handle menu key 0 (left most).
