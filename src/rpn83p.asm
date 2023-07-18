@@ -48,14 +48,25 @@ stXCurRow equ 6
 stXCurCol equ 1
 stXPenRow equ stXCurRow*8
 
+; Define the Cursor character
+cursorChar equ LcurI
+cursorCharAlt equ LcurO
+
+; Menu keys, left to right
+keyMenu0 equ kYequ
+keyMenu1 equ kWindow
+keyMenu2 equ kZoom
+keyMenu3 equ kTrace
+keyMenu4 equ kGraph
+
 ; Flags for RPN stack modes. Offset from IY register.
 rpnFlags equ asm_Flag2
-rpnFlagsStackDirty equ 0 ; set if the stack is dirty
-rpnFlagsEditing equ 1 ; set if in edit mode
-rpnFlagsLiftEnabled equ 2 ; set if stack lift is enabled (ENTER disables)
-rpnFlagsTitleDirty equ 3 ; set if the title bar is dirty
-rpnFlagsMenuDirty equ 4 ; set if the menu bar is dirty
-rpnFlagsErrorDirty equ 5 ; set if the error code
+rpnFlagsEditing equ 0 ; set if in edit mode
+rpnFlagsLiftEnabled equ 1 ; set if stack lift is enabled (ENTER disables)
+rpnFlagsStackDirty equ 2 ; set if the stack is dirty
+rpnFlagsMenuDirty equ 3 ; set if the menu selection is dirty
+rpnFlagsErrorDirty equ 4 ; set if the error code is dirty
+rpnFlagsStatusDirty equ 5 ; set if the status is dirty (TODO: not used)
 
 ; Flags for the inputBuf. Offset from IY register.
 inputBufFlags equ asm_Flag3
@@ -107,16 +118,20 @@ parseBufSizeOf equ parseBufMax + 1
 ;       uint_t exp;
 ;       uint_t man[7];
 ;   }
-;
 floatBuf equ parseBuf + parseBufSizeOf
 floatBufType equ floatBuf ; type
 floatBufExp equ floatBufType + 1 ; exponent, shifted by $80
 floatBufMan equ floatBufExp + 1 ; mantissa, 2 digits per byte
 floatBufSizeOf equ 9
 
-; Define the Cursor character
-cursorChar equ LcurI
-cursorCharAlt equ LcurO
+; Menu variables. The C equivalent is:
+;
+;   struct menu {
+;     uint8_t currentId;
+;     uint8_t stripIndex; // menu strip, groups of 5
+;   }
+menuCurrentId equ floatBuf + floatBufSizeOf
+menuStripIndex equ menuCurrentId + 1
 
 ;-----------------------------------------------------------------------------
 
@@ -129,6 +144,7 @@ main:
     res appAutoScroll, (iy + appFlags)
     call initErrorCode
     call initStack
+    call initMenu
     call initDisplay
     call clearInputBuf
 
@@ -178,12 +194,15 @@ mainExit:
 
 #include "vars.asm"
 #include "handlers.asm"
+#include "common.asm"
 #include "pstring.asm"
 #include "parsenum.asm"
 #include "display.asm"
 #include "errorcode.asm"
 #include "debug.asm"
 #include "handlertab.asm"
+#include "menu.asm"
+#include "menudevdef.asm"
 
 ;-----------------------------------------------------------------------------
 

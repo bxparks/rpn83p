@@ -38,7 +38,7 @@ menuPenColEnd   equ 96
 
 ; Function: Set the display flags to dirty initially so that they are rendered.
 initDisplay:
-    set rpnFlagsTitleDirty, (iy + rpnFlags)
+    set rpnFlagsStatusDirty, (iy + rpnFlags)
     set rpnFlagsMenuDirty, (iy + rpnFlags)
     set inputBufFlagsInputDirty, (iy + inputBufFlags)
     ret
@@ -53,24 +53,77 @@ displayAll:
     call displayErrorCode
     call displayStack
     call displayMenu
+
+    ; Reset dirty flags
+    res rpnFlagsStatusDirty, (iy + rpnFlags)
+    res rpnFlagsStackDirty, (iy + rpnFlags)
+    res rpnFlagsMenuDirty, (iy + rpnFlags)
     ret
 
-; Function: Display the title bar.
+; Function: Display the status bar, showing menu up/down arrows.
 ; Input: none
-; Output: rpnFlagsTitleDirty reset
-; Destroys: A, HL
+; Output: status line displayed
+; Destroys: A, BC, HL
 displayStatus:
-    ;bit rpnFlagsTitleDirty, (iy + rpnFlags)
-    ;ret z
+    bit rpnFlagsMenuDirty, (iy + rpnFlags)
+    ret z
 
-    ld hl, statusCurCol*$100 + statusCurRow ; $(curCol)(curRow)
-    ld (CurRow), hl
-    ld hl, msgTitle
-    bcall(_PutS)
-    bcall(_EraseEOL)
+    ; TODO: maybe cache the numStrips of the current node to make this
+    ; calculation a little shorter and easier.
 
-    ; Reset dirty flag
-    res rpnFlagsTitleDirty, (iy + rpnFlags)
+    ; Determine if multiple menu strips exists.
+    ld hl, menuCurrentId
+    ld a, (hl) ; currentId
+    inc hl
+    ld b, (hl) ; B=stripIndex
+    call getMenuNode
+    inc hl
+    inc hl
+    inc hl
+    ld c, (hl) ; C=numStrips
+
+    ld hl, statusPenRow*$100 ; $(penRow)(penCol)
+    ld (PenCol), hl
+
+    ; If numStrips==0: don't do anything. This should never happen if there
+    ; are no bugs in the program.
+    or a
+    jr z, displayStatusMenuClear
+
+displayStatusMenuDownArrow:
+    ; If stripIndex < (numStrips - 1): show Down arrow
+    ld a, b
+    dec c
+    cp c
+    jr nc, displayStatusMenuDownArrowNone
+    ld a, SdownArrow
+    jr displayStatusMenuDownArrowDisplay
+displayStatusMenuDownArrowNone:
+    ld a, SFourSpaces
+displayStatusMenuDownArrowDisplay:
+    bcall(_VPutMap)
+
+displayStatusMenuUpArrow:
+    ; If stripIndex > 0: show Up arrow
+    ld a, b
+    or a
+    jr z, displayStatusMenuUpArrowNone
+    ld a, SupArrow
+    jr displayStatusMenuUpArrowDisplay
+displayStatusMenuUpArrowNone:
+    ld a, SFourSpaces
+displayStatusMenuUpArrowDisplay:
+    bcall(_VPutMap)
+
+    jr displayStatusEraseOfLine
+
+    ; clear 8 px
+displayStatusMenuClear:
+    ld hl, msgStatusMenuBlank
+    bcall(_VPutS)
+
+displayStatusEraseOfLine:
+    call vEraseEOL
     ret
 
 ; Function: Display the string corresponding to the current error code.
@@ -173,9 +226,6 @@ displayStackContinue:
     ; call displayStackXDebug
     call displayStackXNormal
 
-    ; Reset dirty flag
-    res rpnFlagsStackDirty, (iy + rpnFlags)
-
     ret
 
 ; This is the normal, non-debug version, which combines the inputBuf and the X
@@ -215,29 +265,45 @@ displayMenu:
     bit rpnFlagsMenuDirty, (iy + rpnFlags)
     ret z
 
+    ; TODO: This causes UI flickering when the menu is updated. It is more
+    ; noticeable in an emulator than on a real caculator. A better way to
+    ; implement this is to overwrite the prev menu string with the next one,
+    ; then call something equivalent to 'eraseEndOfMenu()` to overwrite any
+    ; trailing pixels until the end of the current menu box. That would prevent
+    ; the flashing.
     call clearMenus
 
+    call getCurrentMenuStripBeginId
+    ld b, a
+
+    call getMenuName
     ld a, menuPenCol0
-    ld hl, msgMenuBase
     call printMenuAtA
+    inc b
 
+    ld a, b
+    call getMenuName
     ld a, menuPenCol1
-    ld hl, msgMenuProb
     call printMenuAtA
+    inc b
 
+    ld a, b
+    call getMenuName
     ld a, menuPenCol2
-    ld hl, msgMenuHyp
     call printMenuAtA
+    inc b
 
+    ld a, b
+    call getMenuName
     ld a, menuPenCol3
-    ld hl, msgMenuUnit
     call printMenuAtA
+    inc b
 
+    ld a, b
+    call getMenuName
     ld a, menuPenCol4
-    ld hl, msgMenuHelp
     call printMenuAtA
 
-    res rpnFlagsMenuDirty, (iy + rpnFlags)
     ret
 
 ; Function: Print floating point number at OP1 at the current cursor.
@@ -286,8 +352,8 @@ printMenuBlank:
 ; Function: Initialize the menu items with blanks, using inverted spaces.
 ; Destroys: A, HL
 clearMenus:
-    ld hl, menuCurRow ; $(curCol)(curRow)
-    bcall(_EraseEOL)
+    ; ld hl, menuCurRow ; $(curCol)(curRow)
+    ; bcall(_EraseEOL)
 
     ld a, menuPenCol0
     call printMenuBlank
@@ -412,8 +478,14 @@ vEraseEOLLoop:
 
 ;-----------------------------------------------------------------------------
 
-msgTitle:
-    .db "RPN83P", 0
+; Up and Down arrows to indicate that there are additional menu options.
+msgStatusMenuUpDown:
+    .db SupArrow, SdownArrow, 0
+
+; 8 px of spaces.
+msgStatusMenuBlank:
+    .db SFourSpaces, SFourSpaces, 0
+
 msgTLabel:
     .db "T:", 0
 msgZLabel:
@@ -425,14 +497,3 @@ msgXLabel:
 
 msgMenuBlank: ; 18px wide
     .db SFourSpaces, SFourSpaces, SFourSpaces, SFourSpaces, Sspace, Sspace, 0
-
-msgMenuBase:
-    .db "BASE", 0
-msgMenuProb:
-    .db "PROB", 0
-msgMenuHyp:
-    .db "HYP", 0
-msgMenuUnit:
-    .db "UNIT", 0
-msgMenuHelp:
-    .db "HELP", 0

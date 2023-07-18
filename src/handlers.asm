@@ -266,6 +266,203 @@ handleKeyEnter:
     ret
 
 ;-----------------------------------------------------------------------------
+; Menu key handlers.
+;-----------------------------------------------------------------------------
+
+; Function: Go to the previous menu strip, with stripIndex decreasing upwards.
+; Input: none
+; Output: (menuStripIndex) decremented, or wrapped around
+; Destroys: all
+handleKeyUp:
+    ld hl, menuCurrentId
+    ld a, (hl)
+    inc hl
+    ld b, (hl) ; menuStripIndex
+    call getMenuNode
+    inc hl
+    inc hl
+    inc hl
+    ld c, (hl) ; numStrips
+
+    ; Check for 1. TODO: Check for 0, but that should never happen.
+    ld a, c
+    cp 1
+    ret z
+
+    ; --(menuStripIndex) mod numStrips
+    ld a, (menuStripIndex)
+    or a
+    jr nz, handleKeyUpContinue
+    ld a, c
+handleKeyUpContinue:
+    dec a
+    ld (menuStripIndex), a
+
+    set rpnFlagsMenuDirty, (iy + rpnFlags)
+    ret
+
+;-----------------------------------------------------------------------------
+
+; Function: Go to the next menu strip, with stripIndex increasing downwards.
+; Input: none
+; Output: (menuStripIndex) incremented mod numStrips
+; Destroys: all
+handleKeyDown:
+    ld hl, menuCurrentId
+    ld a, (hl)
+    inc hl
+    ld b, (hl) ; menuStripIndex
+    call getMenuNode
+    inc hl
+    inc hl
+    inc hl
+    ld c, (hl) ; numStrips
+
+    ; Check for 1. TODO: Check for 0, but that should never happen.
+    ld a, c
+    cp 1
+    ret z
+
+    ; ++(menuStripIndex) mod numStrips
+    ld a, (menuStripIndex)
+    inc a
+    cp c
+    jr c, handleKeyDownContinue
+    xor a
+handleKeyDownContinue:
+    ld (menuStripIndex), a
+
+    set rpnFlagsMenuDirty, (iy + rpnFlags)
+    ret
+
+;-----------------------------------------------------------------------------
+
+; Function: Go back to the parent menu group. Does nothing at the root menu
+; group.
+; Input: (menuCurrentId)
+; Output: (menuCurrentId) at parentId, (menuStripIndex) at strip of the current
+; menu group
+; Destroys: all
+handleKeyLeft:
+    ld hl, menuCurrentId
+    ld a, (hl)
+    ; do nothing if already at rootGroup
+    cp mRootId
+    ret z
+
+    ; Set menuCurrentId = child.parentId
+    ld c, a ; C=childId (saved)
+    call getMenuNode
+    inc hl
+    ld a, (hl) ; A=parentId
+    ld (menuCurrentId), a
+
+    ; Get the numStrips and stripBeginId of the parent.
+    inc hl
+    inc hl
+    ld d, (hl) ; numStrips
+    inc hl
+    ld a, (hl) ; stripBeginId
+
+    ; Deduce the stripIndex from the childId above. The `stripIndex =
+    ; int((childId - stripBeginId)/5)` but the Z80 does not have a divison
+    ; instruction so we use a loop that increments an `index` in increments of
+    ; 5 to determine the corresponding stripIndex.
+    ;
+    ; The complication is that we want to evaluate `(childId < nodeId)` but the
+    ; Z80 instruction can only increment the A register, so we have to store
+    ; the `nodeId` in A and the `childId` in C. Which forces us to reverse the
+    ; comparison. But checking for NC (no carry) is equivalent to a '>='
+    ; instead of a '<', so we are forced to start at `5-1` instead of `5`. I
+    ; hope my future self will understand this explanation.
+    add a, 4 ; nodeId = stripBeginId + 4
+    ld b, d ; B(DJNZ counter) = numStrips
+handleKeyLeftLoop:
+    cp c ; nodeId - childId
+    jr nc, handleKeyLeftStripFound ; nodeId >= childId
+    add a, 5 ; nodeId += 5
+    djnz handleKeyLeftLoop
+    ; We should never fall off the end of the loop, but if it does, set the
+    ; stripIndex to 0.
+    xor a
+    jr handleKeyLeftStripSave
+handleKeyLeftStripFound:
+    ld a, d ; numStrips
+    sub b ; numStrips - B
+handleKeyLeftStripSave:
+    ld (menuStripIndex), a
+
+    set rpnFlagsMenuDirty, (iy + rpnFlags)
+    ret
+
+;-----------------------------------------------------------------------------
+
+; handleKeyMenu0() -> None
+; Description: Handle menu key 0 (left most).
+; Input: none
+; Destroys: all
+handleKeyMenu0:
+    ld a, 0
+    jr handleKeyMenuA
+
+; handleKeyMenu1() -> None
+; Description: Handle menu key 1 (2nd from left).
+; Input: none
+; Destroys: all
+handleKeyMenu1:
+    ld a, 1
+    jr handleKeyMenua
+
+; handleKeyMenu2() -> None
+; Description: Handle menu key 0 (middle).
+; Input: none
+; Destroys: all
+handleKeyMenu2:
+    ld a, 2
+    jr handleKeyMenuA
+
+; handleKeyMenu3() -> None
+; Description: Handle menu key 0 (2nd from right).
+; Input: none
+; Destroys: all
+handleKeyMenu3:
+    ld a, 3
+    jr handleKeyMenuA
+
+; handleKeyMenu4() -> None
+; Description: Handle menu key 0 (right most).
+; Input: none
+; Destroys: all
+handleKeyMenu4:
+    ld a, 4
+    ; [[fallthrough]]
+
+; handleKeyMenuA(A) -> None
+;
+; Description: Dispatch to the handler specified by the menu node at the menu
+; button indexed by A (0: left most, 4: right most).
+; Destroys: all
+handleKeyMenuA:
+    ld c, a
+    call getCurrentMenuStripBeginId
+    add a, c ; menu node ids are sequential starting with beginId
+    ; get menu node corresponding to pressed menu key
+    call getMenuNode
+    push hl ; save pointer to MenuNode
+    ; load and jump to the mXxxHandler
+    inc hl
+    inc hl
+    inc hl
+    inc hl
+    inc hl
+    ld e, (hl)
+    inc hl
+    ld d, (hl) ; DE=mXxxHandler of the current node
+    ex de, hl ; HL=mXxxHandler
+    ex (sp), hl
+    ret ; jump to mXxxHandler(HL=MenuNode)
+
+;-----------------------------------------------------------------------------
 ; Arithmetic functions.
 ;-----------------------------------------------------------------------------
 
@@ -466,4 +663,29 @@ handleKeyExp:
     call rclX
     bcall(_EToX)
     call stoX
+    ret
+
+;-----------------------------------------------------------------------------
+; Menu handlers.
+; Input:
+;   HL: pointer to MenuNode that was activated
+;   A: menu button index (0 - 4)
+;-----------------------------------------------------------------------------
+
+mNullHandler: ; do nothing
+    ret
+
+; Description: General handler for menu nodes of type "MenuGroup". Selecting
+; this should cause the menuCurrentId to be set to this item, and the
+; menuStripIndex to be set to 0
+; Input:
+;   HL: pointer to the selected MenuNode
+;   A: the selected menuId
+; Output: (menuCurrentId) and (menuStripIndex) updated
+; Destroys: A
+mGroupHandler:
+    ld (menuCurrentId), a
+    xor a
+    ld (menuStripIndex), a
+    set rpnFlagsMenuDirty, (iy + rpnFlags)
     ret
