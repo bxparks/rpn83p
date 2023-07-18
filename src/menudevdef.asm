@@ -113,7 +113,7 @@ mCubeId equ 12
     .db mCubeNameId ; nameId
     .db 0 ; numStrips
     .db 0 ; stripBeginId
-    .dw mNullHandler
+    .dw mCubeHandler
 mCubeRoot:
 mCubeRootId equ 13
     .db mCubeRootId ; id
@@ -121,7 +121,7 @@ mCubeRootId equ 13
     .db mCubeRootNameId ; nameId
     .db 0 ; numStrips
     .db 0 ; stripBeginId
-    .dw mNullHandler
+    .dw mCubeRootHandler
 mAtan2:
 mAtan2Id equ 14
     .db mAtan2Id ; id
@@ -211,7 +211,7 @@ mFactorialId equ 24
     .db mFactorialNameId ; nameId
     .db 0 ; numStrips
     .db 0 ; stripBeginId
-    .dw mNullHandler
+    .dw mFactorialHandler
 mRandom:
 mRandomId equ 25
     .db mRandomId ; id

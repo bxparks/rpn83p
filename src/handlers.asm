@@ -689,3 +689,37 @@ mGroupHandler:
     ld (menuStripIndex), a
     set rpnFlagsMenuDirty, (iy + rpnFlags)
     ret
+
+;-----------------------------------------------------------------------------
+
+; mCubeHandler(Y) -> X
+; Description: Calculate X^3.
+mCubeHandler:
+    call closeInputBuf
+    call rclX
+    bcall(_Cube)
+    call stoX
+    ret
+
+; mCubeRootHandler(X) -> X^(1/3)
+; Description: Calculate the cubic root of X. The SDK documentation has the OP1
+; and OP2 flipped.
+mCubeRootHandler:
+    call closeInputBuf
+    call rclX
+    bcall(_OP1ToOP2)
+    bcall(_OP1Set3)
+    bcall(_XRootY)
+    call stoX
+    ret
+
+;-----------------------------------------------------------------------------
+
+; mFactorialHandler(X)
+; Description: Calculate the factorial of X.
+mFactorialHandler:
+    call closeInputBuf
+    call rclX
+    bcall(_Factorial)
+    call stoX
+    ret
