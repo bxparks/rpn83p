@@ -786,5 +786,6 @@ mFactorialHandler:
     call closeInputBuf
     call rclX
     bcall(_Factorial)
+    bcall(_CkValidNum)
     call stoX
     ret
