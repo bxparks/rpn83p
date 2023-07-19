@@ -54,9 +54,8 @@ parseNum:
     call checkZero
     ret z
     call calcDPPos
-    ; call debugSignedA ; Display the decimal point pos.
-    call extractExponent ; extract exponent to floatBuf
-    call extractSign ; extract sign to floatBuf
+    call extractMantissaExponent ; extract mantissa exponent to floatBuf
+    call extractMantissaSign ; extract mantissa sign to floatBuf
     call extractMantissa ; extract digits into parseBuf
     call copyMantissa ; copy digits into floatBuf
     call copyFloatToOP1 ; copy floatBuf to OP1
@@ -132,8 +131,11 @@ checkZeroContinue:
 ;------------------------------------------------------------------------------
 
 ; Function: Extract the mantissa digits from inputBuf into parseBuf, ignoring
-; negative sign, leading zeros, and even the decimal point. For example, "0.1"
-; produces "1", and "-001.2" produces "12".
+; negative sign, leading zeros, the decimal point, and the EE symbol. For
+; example:
+;   - "0.1" produces "1"
+;   - "-001.2" produces "12"
+;   - "23E-1" produces "23"
 ; Input: inputBuf
 ; Output: parseBuf filled with mantissa digits
 ; Destroys: all registers
@@ -148,6 +150,8 @@ extractMantissa:
     inc hl
 extractMantissaLoop:
     ld a, (hl)
+    cp Lexponent
+    ret z ; terminate loop at "E"
     cp '-'
     jr z, extractMantissaContinue
     cp '.'
@@ -202,6 +206,7 @@ extractMantissaContinue:
 ;   int_t pos = 0;
 ;   for (int i = 0; i < stringSize; i++) {
 ;       char c = s[i];
+;       if (c == 'E') break; // hit exponent symbol
 ;       if (c == '-') continue;
 ;       if (c == '.') {
 ;           dotFound = true;
@@ -233,6 +238,9 @@ calcDPPos:
     inc hl
 calcDPLoop:
     ld a, (hl)
+    ; break if EE symbol
+    cp Lexponent
+    jr z, calcDPEnd
     ; ignore and skip '-'
     cp '-'
     jr z, calcDPContinue
@@ -278,23 +286,33 @@ appendParseBuf:
 
 ;------------------------------------------------------------------------------
 
-; Function: Set the exponent: exp = decimalPointPos - 1. But exp is shifted by
-; $80, so exp = decimalPointPos - 1 + $80 = deimalPointPos + $7F.
-; Input: A: decimalPointPos
-; Output: (floatBufExp) = decimalPoint + $7F
+; Function: Set the exponent from the mantissa. The mantissaExp =
+; decimalPointPos - 1. But the floating exponent is shifted by $80.
+;   mantissaExponent = decimalPointPos - 1
+;   floatingExponent = mantissaExponent + $80
+;                    = decimalPointPos + $7F
+;
+; Input: A: decimalPointPos (from calcDPPos())
+; Output: floatBufExp = decimalPointPos + $7F
 ; Destroys: A
-extractExponent:
+extractMantissaExponent:
     add a, $7F
     ld (floatBufExp), a
     ret
 
-; Function: Transfer the sign to the floatBuf.
+; Function: Extract mantissa sign from the first character in the inputBuf.
 ; Input: inputBuf
 ; Output: floatBuf sign set
 ; Destroys: HL
-extractSign:
-    bit inputBufFlagsManSign, (iy + inputBufFlags)
-    ret z
+extractMantissaSign:
+    ld hl, inputBuf
+    ld a, (hl)
+    or a
+    ret z ; empty string, assume positive
+    inc hl
+    ld a, (hl)
+    cp '-'
+    ret nz ; '-' not found at first character
     ld hl, floatBufType
     set 7, (hl)
     ret
