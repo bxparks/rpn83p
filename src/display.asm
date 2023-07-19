@@ -380,7 +380,7 @@ clearMenus:
 ; Output:
 ;   - (CurCol) is updated
 ;   - inputBufFlagsInputDirty reset
-; Destroys: A, HL; other regs prob destroyed by OS calls
+; Destroys: A, HL; BC destroyed by PutPS()
 printInputBuf:
     bit inputBufFlagsInputDirty, (iy + inputBufFlags)
     ret z
@@ -391,8 +391,12 @@ printInputBuf:
     bcall(_PutPS)
     ld a, cursorChar
     bcall(_PutC)
+    ; Skip EraseEOL() if the PutC() above wrapped to next line
+    ld a, (CurCol)
+    or a
+    jr z, printInputBufContinue
     bcall(_EraseEOL)
-
+printInputBufContinue:
     res inputBufFlagsInputDirty, (iy + inputBufFlags)
     ret
 
