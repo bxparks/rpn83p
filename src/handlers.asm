@@ -39,7 +39,7 @@ lookupKeyMatched:
 handleKeyNumber:
     ; If not in edit mode: lift stack and go into edit mode
     bit rpnFlagsEditing, (iy + rpnFlags)
-    jr nz, handleKeyNumberContinue
+    jr nz, handleKeyNumberEELen
 handleKeyNumberFirstDigit:
     ; Lift the stack, unless disabled.
     push af
@@ -50,7 +50,24 @@ handleKeyNumberFirstDigit:
     call clearInputBuf
     set rpnFlagsEditing, (iy + rpnFlags)
     res rpnFlagsLiftEnabled, (iy + rpnFlags)
-handleKeyNumberContinue:
+handleKeyNumberEELen:
+    ; Limit number of exponent digits to 2.
+    bit inputBufFlagsEE, (iy + inputBufFlags)
+    jr z, handleKeyNumberAppend
+    ; Check inputBufEELen, preserve the character in A.
+    ld b, a
+    ld a, (inputBufEELen)
+    cp inputBufEELenMax
+    ld a, b
+    ret nc ; prevent more than 2 exponent digits
+    ; Try to append. Check for buffer full before incrementing counter.
+    call appendInputBuf
+    ret c ; return if buffer full
+    ld hl, inputBufEELen
+    inc (hl)
+    ret
+handleKeyNumberAppend:
+    ; Unconditionally append character in A.
     jp appendInputBuf
 
 ; Function: Append '0' to inputBuf.
@@ -148,6 +165,10 @@ handleKeyEE:
     ; save the EE+1 position
     ld a, (inputBuf) ; position after the 'E'
     ld (inputBufEEPos), a
+    ; set the EE Len to 0
+    xor a
+    ld (inputBufEELen), a
+    ; set flag to indicate presence of EE
     set inputBufFlagsEE, (iy + inputBufFlags)
     ret
 
@@ -168,7 +189,7 @@ handleKeyDel:
     or a
     ret z ; do nothing if buffer empty
 
-    ; remove last character
+    ; shorten string by one
     ld e, a ; E = inputBufSize
     dec a
     ld (hl), a
@@ -190,11 +211,28 @@ handleKeyDelMinus:
     ret
 handleKeyDelEE:
     ; reset EE flag if the deleted character was an 'E'
-    cp a, Lexponent
-    ret nz
+    cp Lexponent
+    jr nz, handleKeyDelEEDigits
     xor a
     ld (inputBufEEPos), a
+    ld (inputBufEELen), a
     res inputBufFlagsEE, (iy + inputBufFlags)
+    ret
+handleKeyDelEEDigits:
+    ; decrement exponent len counter
+    bit inputBufFlagsEE, (iy + inputBufFlags)
+    jr z, handleKeyDelExit
+    cp '-'
+    jr z, handleKeyDelExit ; no special handling of '-' in exponent
+    ;
+    ld hl, inputBufEELen
+    ld a, (hl)
+    or a
+    jr z, handleKeyDelExit ; don't decrement len below 0
+    ;
+    dec a
+    ld (hl), a
+handleKeyDelExit:
     ret
 
 ;-----------------------------------------------------------------------------

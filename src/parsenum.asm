@@ -13,6 +13,7 @@ initInputBuf:
     res rpnFlagsEditing, (iy + rpnFlags)
     xor a
     ld (inputBufEEPos), a
+    ld (inputBufEELen), a
     ret
 
 ; Function: Clear the inputBuf.

@@ -52,7 +52,7 @@ stXPenRow equ stXCurRow*8
 cursorChar equ LcurI
 cursorCharAlt equ LcurO
 
-; Menu keys, left to right
+; Menu keys, left to right. TODO: Rename this Menu1 - Menu5 to match F1 - F5.
 keyMenu0 equ kYequ
 keyMenu1 equ kWindow
 keyMenu2 equ kZoom
@@ -73,7 +73,7 @@ inputBufFlags equ asm_Flag3
 inputBufFlagsInputDirty equ 0 ; set if the input buffer is dirty
 inputBufFlagsDecPnt equ 1 ; set if decimal point exists
 inputBufFlagsEE equ 2 ; set if EE symbol exists
-inputBufFlagsManSign equ 3 ; mantissa sign bit
+inputBufFlagsManSign equ 3 ; mantissa sign bit (TODO: not used)
 inputBufFlagsExpSign equ 4 ; exponent sign bit
 
 ; Error code and handling.
@@ -97,6 +97,10 @@ inputBufSizeOf equ inputBufMax + 1
 ; Location (offset index) of the one past the 'E' symbol if it exists. Zero
 ; indicates that 'E' does NOT exist.
 inputBufEEPos equ inputBuf + inputBufSizeOf
+; Length of EE digits. Maximum of 2.
+inputBufEELen equ inputBufEEPos + 1
+; Max number of digits allowed for exponent.
+inputBufEELenMax equ 2
 
 ; Temporary buffer for parsing keyboard input into a floating point number. This
 ; is a pascal string that contains the normalized floating point number, one
@@ -110,7 +114,7 @@ inputBufEEPos equ inputBuf + inputBufSizeOf
 ;   }
 ;
 ; A TI-OS floating number can have a mantissa of a maximum 14 digits.
-parseBuf equ inputBufEEPos + 1
+parseBuf equ inputBufEELen + 1
 parseBufSize equ parseBuf ; size byte of the pascal string
 parseBufMan equ parseBufSize + 1
 parseBufMax equ 14
