@@ -28,10 +28,10 @@ appendString10:
 
 ;-----------------------------------------------------------------------------
 
-; Function: Insert character at position 'A' from a pascal-string, shifting
-; characters to the right.
+; Function: Prepare to insert a character at position 'A' from a pascal-string,
+; shifting characters to the right.
 ; Input:
-;   A: insertPos (often 0, due to minus sign)
+;   A: insertPos, range of [0, stringSize]
 ;   HL: pascal string pointer
 ;   B: sizeMax of pascal string
 ; Output:
@@ -39,45 +39,41 @@ appendString10:
 ;   HL: pointer to position at A (if Carry false)
 ; Destroys: all
 insertAtPos:
-    ld d, a ; D = insertPos (save)
+    ld e, a ; E = insertPos (save)
     ; If stringSize == sizeMax: set Carry flag; return
     ld a, (hl) ; A = stringSize
-    cp b
-    ld b, d ; B = insertPos (save)
-    jr nz, insertAtPos10
+    cp b ; stringSize == sizeMax
+    jr nz, insertAtPosAppendOrShiftRight
     scf
     ret
-insertAtPos10:
-    ; If stringSize == 0: increment stringSize; return
-    or a
-    jr nz, insertAtPos20
+insertAtPosAppendOrShiftRight:
+    cp e ; If stringSize == insertPos
+    jr nz, insertAtPosShiftRight
+    ; Just append, no need to shift.
     ; stringSize++
-    inc a
-    ld (hl), a
-    ; HL = stringPointer+1, insertion address
+    inc (hl)
+    ; HL = stringPointer+1+insertPos
+    ld d, 0 ; No need to set E, it's already E = insertPos
+    add hl, de
     inc hl
     or a ; clear Carry
     ret
-insertAtPos20:
-    ; Loop to shift characters to the right.
-    ; C = stringSize
-    ld c, a
-    ; stringSize++
-    inc a
-    ld (hl), a
-    ; Setup LDDR parameters:
+insertAtPosShiftRight:
+    ; Loop to shift characters to the right, by setting up LDDR parameters:
     ;   HL = stringPointer + stringSize (last character)
     ;   DE = HL+1
     ;   BC = stringSize - insertPos
-    ; DE = stringSize
-    ld e, c
-    ld d, 0
-    ; BC = stringSize - insertPos
-    ld a, c
-    sub b
+    ;
+    inc (hl) ; stringSize++
+    ; BC = A = stringSize - insertPos
+    ld d, a ; save stringSize
+    sub e ; A = stringSize - insertPos
     ld c, a
     ld b, 0
-    ; HL = stringPointer + stringSize
+    ; DE = stringSize
+    ld e, d
+    ld d, 0
+    ; HL = stringPointer + stringSize = last character
     add hl, de
     ; DE = HL + 1
     ld d, h
@@ -94,36 +90,48 @@ insertAtPos20:
 ; Function: Delete character at position A from a pascal-string, shifting
 ; characters to the left.
 ; Input:
-;   A: insertPos (often 0, due to minus sign)
+;   A: deletePos, range of [0, stringSize-1]
 ;   HL: pascal string pointer
 ;   B: maxSize
 ; Output: none
 ; Destroys: all
 deleteAtPos:
-    ld d, a ; D = insertPos (save)
+    ld e, a ; E = deletePos (save)
     ; If stringSize == 0: return
     ld a, (hl) ; A = stringSize
     or a
-    ret z
-    ; stringSize--
+    ret z ; do nothing if string is empty
+deleteAtPosTruncateOrShiftLeft:
     dec a
     ld (hl), a
-    ; If --stringSize == 0: return
-    ret z
+    ld d, a ; E = stringSize-1
+    ; If deletePos >= stringSize-1: truncate
+    ; If !(deletePos < stringSize-1): truncate
+    ; If stringSize-1 <= deletePos: truncate
+    ; If !(stringSize-1 > deletePos): truncate
+    ld a, e ; A = deletePos
+    cp d ; If deletePos < stringSize-1: set Carry
+    ret nc
+    ; A = deletePos
+    ; E = deletePos
+    ; D = stringSize-1
+deleteAtPosShiftLeft:
     ; Set up LDIR parameters:
-    ;   DE = stringPointer + insertPos + 1
+    ;   DE = stringPointer + deletePos + 1
     ;   HL = DE+1
-    ;   BC = stringSize - 1
-    ; DE = insertPos
-    ld e, d
-    ld d, 0
-    ; BC = stringSize - 1
+    ;   BC = stringSize - 1 - deletePos
+    ;
+    ; BC = stringSize - 1 - deletePos
+    ld a, d ; A = stringSize-1
+    sub e ; A = stringSize-1 - deletePos
     ld c, a
-    ld b, d
-    ; HL = stringPointer + insertPos
+    ld b, 0
+    ; DE = deletePos
+    ld d, b ; D=0
+    ; HL = stringPointer + deletePos + 1
     add hl, de
     inc hl
-    ; DE = stringPointer + insertPos + 1
+    ; DE = HL
     ld d, h
     ld e, l
     ; HL = DE + 1
