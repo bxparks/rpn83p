@@ -742,6 +742,28 @@ mCubeRootHandler:
     call stoX
     ret
 
+; mAtan2Handler(Y, X) -> atan2(Y + Xi)
+;
+; Description: Calculate the angle of the (Y, X) number in complex plane.
+; Use bcall(_RToP) instead of bcall(_ATan2) because ATan2 does not seem produce
+; the correct results. There must be something wrong with the documentation, or
+; it is buggy and no one has bothered to fix it because I don't think this
+; function is exposed to the user through the normal TI-OS.
+;
+; The real part (i.e. x-axis) is assumed to be entered first, then the
+; imaginary part (i.e. y-axis). They becomes stored in the RPN stack variables
+; with X and Y flipped, which is bit confusing.
+mAtan2Handler:
+    call closeInputBuf
+    call rclX ; imaginary
+    bcall(_OP1ToOP2)
+    call rclY ; OP1=Y (real), OP2=X (imaginary)
+    bcall(_RToP) ; complex to polar
+    call dropStack
+    bcall(_OP2ToOP1) ; OP2 contains the angle with range of (-pi, pi]
+    call stoX
+    ret
+
 ; mPercentHandler(Y, X) -> (Y, Y*(X/100))
 ; Description: Calculate the X percent of Y.
 mPercentHandler:

@@ -129,7 +129,7 @@ mAtan2Id equ 14
     .db mAtan2NameId ; nameId
     .db 0 ; numStrips
     .db 0 ; stripBeginId
-    .dw mNullHandler
+    .dw mAtan2Handler
 mPercent:
 mPercentId equ 15
     .db mPercentId ; id
