@@ -1,6 +1,6 @@
 ; List of GetKey() codes and their jump table.
-keyCodeHandlerTableSize equ 40
-kOnExit equ 0
+keyCodeHandlerTableSize equ 42
+kOnExit equ 0 ; ON key generates 00 as the key code
 keyCodeHandlerTable:
     ; number entry
     .db k0
@@ -25,6 +25,11 @@ keyCodeHandlerTable:
     .dw handleKey9
     .db kDecPnt
     .dw handleKeyDecPnt
+    ; For convenience, both EE (2ND-COMMA) and COMMA are mapped to handleKeyEE.
+    .db kEE
+    .dw handleKeyEE
+    .db kComma
+    .dw handleKeyEE
 
     ; editing
     .db kDel

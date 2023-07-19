@@ -72,8 +72,9 @@ rpnFlagsStatusDirty equ 5 ; set if the status is dirty (TODO: not used)
 inputBufFlags equ asm_Flag3
 inputBufFlagsInputDirty equ 0 ; set if the input buffer is dirty
 inputBufFlagsDecPnt equ 1 ; set if decimal point exists
-inputBufFlagsManSign equ 2 ; mantissa sign bit
-inputBufFlagsExpSign equ 3 ; exponent sign bit
+inputBufFlagsEE equ 2 ; set if EE symbol exists
+inputBufFlagsManSign equ 3 ; mantissa sign bit
+inputBufFlagsExpSign equ 4 ; exponent sign bit
 
 ; Error code and handling.
 errorCode equ tempSwapArea ; current error code

@@ -158,6 +158,23 @@ handleKeyDecPnt:
     set inputBufFlagsDecPnt, (iy + inputBufFlags)
     ret
 
+; Description: Handle the EE for scientific notation. The 'EE' is mapped to
+; 2ND-COMMA by default on the calculator. For faster entry, we map the COMMA
+; key (withouth 2ND) to be EE as well.
+; Input: none
+; Output: (inputBufEEPos), (inputBufFlagsEEPos, iy+inputBufFlags)
+; Destroys: A, HL
+handleKeyEE:
+    ; do nothing if EE already exists
+    bit inputBufFlagsEE, (iy + inputBufFlags)
+    ret nz
+    ; try insert 'E'
+    ld a, Lexponent
+    call handleKeyNumber
+    ret c ; If Carry: append failed so return without setting the EE flag
+    set inputBufFlagsEE, (iy + inputBufFlags)
+    ret
+
 ;-----------------------------------------------------------------------------
 
 ; Function: Delete the last character of inputBuf.
@@ -192,8 +209,14 @@ handleKeyDelDecPnt:
 handleKeyDelMinus:
     ; reset negative flag if the deleted character was a '-'
     cp a, '-'
-    ret nz
+    jr nz, handleKeyDelEE
     res inputBufFlagsManSign, (iy + inputBufFlags)
+    ret
+handleKeyDelEE:
+    ; reset EE flag if the deleted character was an 'E'
+    cp a, Lexponent
+    ret nz
+    res inputBufFlagsEE, (iy + inputBufFlags)
     ret
 
 ;-----------------------------------------------------------------------------
