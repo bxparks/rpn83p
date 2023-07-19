@@ -227,7 +227,7 @@ mRandomSeedId equ 26
     .db mRandomSeedNameId ; nameId
     .db 0 ; numStrips
     .db 0 ; stripBeginId
-    .dw mNullHandler
+    .dw mRandomSeedHandler
 
 ; Table of 2-byte Offsets into Pool of Names
 mMenuNameTable:

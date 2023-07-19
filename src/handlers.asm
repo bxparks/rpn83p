@@ -798,3 +798,11 @@ mRandomHandler:
     call liftStack
     call stoX
     ret
+
+; mRandomSeedHandler(X) -> None
+; Description: Set X as the Random() seed.
+mRandomSeedHandler:
+    call closeInputBuf
+    call rclX
+    bcall(_StoRand)
+    ret
