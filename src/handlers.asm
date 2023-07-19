@@ -142,6 +142,9 @@ handleKeyEE:
     ld a, Lexponent
     call handleKeyNumber
     ret c ; If Carry: append failed so return without setting the EE flag
+    ; save the EE+1 position
+    ld a, (inputBuf) ; position after the 'E'
+    ld (inputBufEEPos), a
     set inputBufFlagsEE, (iy + inputBufFlags)
     ret
 
@@ -186,6 +189,8 @@ handleKeyDelEE:
     ; reset EE flag if the deleted character was an 'E'
     cp a, Lexponent
     ret nz
+    xor a
+    ld (inputBufEEPos), a
     res inputBufFlagsEE, (iy + inputBufFlags)
     ret
 
