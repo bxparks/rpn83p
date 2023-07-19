@@ -380,8 +380,10 @@ handleKeyDownContinue:
 
 ;-----------------------------------------------------------------------------
 
-; Function: Go back to the parent menu group. Does nothing at the root menu
-; group.
+; Description: Go back up the menu hierarchy to the parent menu group. If
+; already at the rootMenu, and the stripIndex is not 0, then reset the
+; stripIndex to 0 so that we return to the default, top-level view of the menu
+; hierarchy.
 ; Input: (menuCurrentId)
 ; Output: (menuCurrentId) at parentId, (menuStripIndex) at strip of the current
 ; menu group
@@ -389,10 +391,19 @@ handleKeyDownContinue:
 handleKeyMenuBack:
     ld hl, menuCurrentId
     ld a, (hl)
-    ; do nothing if already at rootGroup
+    ; Check if already at rootGroup
     cp mRootId
-    ret z
+    jr nz, handleKeyMenuBackToParent
 
+    ; If already at rootId, go to menuStrip0 if not already there.
+    inc hl
+    ld a, (hl) ; menuStripIndex
+    or a
+    ret z
+    xor a ; set stripIndex to 0
+    jr handleKeyMenuBackStripSave
+
+handleKeyMenuBackToParent:
     ; Set menuCurrentId = child.parentId
     ld c, a ; C=childId (saved)
     call getMenuNode
@@ -419,22 +430,21 @@ handleKeyMenuBack:
     ; instead of a '<', so we are forced to start at `5-1` instead of `5`. I
     ; hope my future self will understand this explanation.
     add a, 4 ; nodeId = stripBeginId + 4
-    ld b, d ; B(DJNZ counter) = numStrips
-handleKeyLeftLoop:
+    ld b, d ; B (DJNZ counter) = numStrips
+handleKeyMenuBackLoop:
     cp c ; nodeId - childId
-    jr nc, handleKeyLeftStripFound ; nodeId >= childId
+    jr nc, handleKeyMenuBackStripFound ; nodeId >= childId
     add a, 5 ; nodeId += 5
-    djnz handleKeyLeftLoop
+    djnz handleKeyMenuBackLoop
     ; We should never fall off the end of the loop, but if it does, set the
     ; stripIndex to 0.
     xor a
-    jr handleKeyLeftStripSave
-handleKeyLeftStripFound:
+    jr handleKeyMenuBackStripSave
+handleKeyMenuBackStripFound:
     ld a, d ; numStrips
     sub b ; numStrips - B
-handleKeyLeftStripSave:
+handleKeyMenuBackStripSave:
     ld (menuStripIndex), a
-
     set rpnFlagsMenuDirty, (iy + rpnFlags)
     ret
 
