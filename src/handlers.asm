@@ -789,3 +789,12 @@ mFactorialHandler:
     bcall(_CkValidNum)
     call stoX
     ret
+
+; mRandomHandler() -> rand()
+; Description: Calculate the factorial of X.
+mRandomHandler:
+    call closeInputBuf
+    bcall(_Random)
+    call liftStack
+    call stoX
+    ret

@@ -219,7 +219,7 @@ mRandomId equ 25
     .db mRandomNameId ; nameId
     .db 0 ; numStrips
     .db 0 ; stripBeginId
-    .dw mNullHandler
+    .dw mRandomHandler
 mRandomSeed:
 mRandomSeedId equ 26
     .db mRandomSeedId ; id
