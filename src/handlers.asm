@@ -386,7 +386,7 @@ handleKeyDownContinue:
 ; Output: (menuCurrentId) at parentId, (menuStripIndex) at strip of the current
 ; menu group
 ; Destroys: all
-handleKeyLeft:
+handleKeyMenuBack:
     ld hl, menuCurrentId
     ld a, (hl)
     ; do nothing if already at rootGroup

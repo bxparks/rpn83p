@@ -162,10 +162,9 @@ readLoop:
     bcall(_GetKey)
     res onInterrupt, (IY+onFlags)
 
-    ; Check for 2nd-Quit, or ON.
+    ; Check for 2nd-Quit to Quit. ON (0) will act like the ON/EXIT key on the
+    ; HP 42S.
     cp kQuit
-    jr z, mainExit
-    or a
     jr z, mainExit
 
     ; Install error handler

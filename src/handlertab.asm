@@ -1,5 +1,6 @@
 ; List of GetKey() codes and their jump table.
 keyCodeHandlerTableSize equ 40
+kOnExit equ 0
 keyCodeHandlerTable:
     ; number entry
     .db k0
@@ -40,8 +41,21 @@ keyCodeHandlerTable:
     .dw handleKeyUp
     .db kDown
     .dw handleKeyDown
-    .db kLeft
-    .dw handleKeyLeft
+
+    ; At first, the kLeft arrow button seems to be a good candiate to bind
+    ; the MenuBack function. But in the Tilem emulator, the keyboard Backspace
+    ; is mapped to send kLeft + kDel, so a Backspace will perform a MenuBack
+    ; functionality, as well as deleting the last character in the inputBuf.
+    ;
+    ; The HP42S uses the ON/EXIT button to exit out of nested menus. The Tilem
+    ; emulator exposes that button by mapping F12 to the ON button. But F12 is
+    ; an awkward key to use for menu navigation. Therefore, let's use
+    ; kAlphaUp which is bound to the PageUp key in Tilem.
+    .db kOnExit ; ON button on real calculator, F12 on Tilem
+    .dw handleKeyMenuBack
+    .db kAlphaUp ; PageUp on Tilem
+    .dw handleKeyMenuBack
+
     .db keyMenu0
     .dw handleKeyMenu0
     .db keyMenu1
