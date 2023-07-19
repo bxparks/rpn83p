@@ -118,8 +118,11 @@ handleKey9:
 ; Output: (iy+inputBufFlags) DecPnt set
 ; Destroys: A, DE, HL
 handleKeyDecPnt:
-    ; do nothing if a decimal point already exists
+    ; Do nothing if a decimal point already exists.
     bit inputBufFlagsDecPnt, (iy + inputBufFlags)
+    ret nz
+    ; Also do nothing if 'E' exists. Exponents cannot have a decimal point.
+    bit inputBufFlagsEE, (iy + inputBufFlags)
     ret nz
     ; try insert '.'
     ld a, '.'
@@ -132,7 +135,7 @@ handleKeyDecPnt:
 ; 2ND-COMMA by default on the calculator. For faster entry, we map the COMMA
 ; key (withouth 2ND) to be EE as well.
 ; Input: none
-; Output: (inputBufEEPos), (inputBufFlagsEEPos, iy+inputBufFlags)
+; Output: (inputBufEEPos), (inputBufFlagsEE, iy+inputBufFlags)
 ; Destroys: A, HL
 handleKeyEE:
     ; do nothing if EE already exists
