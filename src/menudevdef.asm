@@ -332,6 +332,6 @@ mCombName:
 mFactorialName:
 	.db "N!", 0
 mRandomName:
-	.db "RND", 0
+	.db "RAND", 0
 mRandomSeedName:
 	.db "SEED", 0
