@@ -2,6 +2,49 @@
 ; Functions related to parsing the inputBuf into a floating point number.
 ;------------------------------------------------------------------------------
 
+; Description: Initialize variables and flags related to the input buffer.
+; Output:
+;   - inputBuf set to empty
+;   - inputBufEEPos set to 0
+;   - rpnFlagsEditing reset
+; Destroys: A
+initInputBuf:
+    call clearInputBuf
+    res rpnFlagsEditing, (iy + rpnFlags)
+    xor a
+    ld (inputBufEEPos), a
+    ret
+
+; Function: Clear the inputBuf.
+; Input: inputBuf
+; Output:
+;   - inputBuf cleared
+;   - inputBufFlagsInputDirty set
+; Destroys: none
+clearInputBuf:
+    push af
+    xor a
+    ld (inputBuf), a
+    ld (iy+inputBufFlags), a
+    set inputBufFlagsInputDirty, (iy + inputBufFlags)
+    pop af
+    ret
+
+; Function: Append character to inputBuf.
+; Input:
+;   A: character to be appended
+; Output:
+;   - Carry flag set when append fails
+;   - inputBufFlagsInputDirty set
+; Destroys: all
+appendInputBuf:
+    ld hl, inputBuf
+    ld b, inputBufMax
+    set inputBufFlagsInputDirty, (iy + inputBufFlags)
+    jp appendString
+
+;------------------------------------------------------------------------------
+
 ; Function: Parse the input buffer into the parseBuf.
 ; Input: inputBuf filled with keyboard characters
 ; Output: OP1: floating point number

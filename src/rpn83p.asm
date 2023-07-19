@@ -81,7 +81,7 @@ errorCode equ tempSwapArea ; current error code
 errorCodeDisplayed equ errorCode + 1 ; displayed error code
 
 ; String buffer for keyboard entry. This is a Pascal-style with a single size
-; byte at the start. It not include the cursor displayed at the end of the
+; byte at the start. It does not include the cursor displayed at the end of the
 ; string. The equilvalent C struct is:
 ;
 ;   struct inputBuf {
@@ -93,6 +93,10 @@ inputBufSize equ inputBuf ; size byte of the pascal string
 inputBufBuf equ inputBuf + 1
 inputBufMax equ 14 ; maximum size of buffer, not including appended cursor
 inputBufSizeOf equ inputBufMax + 1
+
+; Location (offset index) of the one past the 'E' symbol if it exists. Zero
+; indicates that 'E' does NOT exist.
+inputBufEEPos equ inputBuf + inputBufSizeOf
 
 ; Temporary buffer for parsing keyboard input into a floating point number. This
 ; is a pascal string that contains the normalized floating point number, one
@@ -106,7 +110,7 @@ inputBufSizeOf equ inputBufMax + 1
 ;   }
 ;
 ; A TI-OS floating number can have a mantissa of a maximum 14 digits.
-parseBuf equ inputBuf + inputBufSizeOf
+parseBuf equ inputBufEEPos + 1
 parseBufSize equ parseBuf ; size byte of the pascal string
 parseBufMan equ parseBufSize + 1
 parseBufMax equ 14
@@ -144,11 +148,10 @@ main:
     bcall(_ClrLCDFull)
     res appAutoScroll, (iy + appFlags)
     call initErrorCode
+    call initInputBuf
     call initStack
     call initMenu
     call initDisplay
-    call clearInputBuf
-    res rpnFlagsEditing, (iy + rpnFlags)
 
 readLoop:
     ;call debugFlags

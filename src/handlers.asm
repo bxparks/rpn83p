@@ -28,36 +28,6 @@ lookupKeyMatched:
 
 ;-----------------------------------------------------------------------------
 
-; Function: Clear the inputBuf.
-; Input: inputBuf
-; Output:
-;   - inputBuf cleared
-;   - inputBufFlagsInputDirty set
-; Destroys: none
-clearInputBuf:
-    push af
-    xor a
-    ld (inputBuf), a
-    ld (iy+inputBufFlags), a
-    set inputBufFlagsInputDirty, (iy + inputBufFlags)
-    pop af
-    ret
-
-; Function: Append character to inputBuf.
-; Input:
-;   A: character to be appended
-; Output:
-;   - Carry flag set when append fails
-;   - inputBufFlagsInputDirty set
-; Destroys: all
-appendInputBuf:
-    ld hl, inputBuf
-    ld b, inputBufMax
-    set inputBufFlagsInputDirty, (iy + inputBufFlags)
-    jp appendString
-
-;-----------------------------------------------------------------------------
-
 ; Function: Append a number character to inputBuf, updating various flags.
 ; Input:
 ;   A: character to be appended
@@ -81,7 +51,7 @@ handleKeyNumberFirstDigit:
     set rpnFlagsEditing, (iy + rpnFlags)
     res rpnFlagsLiftEnabled, (iy + rpnFlags)
 handleKeyNumberContinue:
-    jr appendInputBuf
+    jp appendInputBuf
 
 ; Function: Append '0' to inputBuf.
 ; See handleKeyNumber()
