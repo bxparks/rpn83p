@@ -243,7 +243,8 @@ handleKeyClearHitOnce:
 ;-----------------------------------------------------------------------------
 
 ; Function: Handle (-) change sign. If in edit mode, change the sign in the
-; inputBuf. Otherwise, change the sign of the X register.
+; inputBuf. Otherwise, change the sign of the X register. If the EE symbol
+; exists, change the sign of the exponent instead of the mantissa.
 ; Input: none
 ; Output: (inputBuf), X
 ; Destroys: all, OP1
@@ -251,32 +252,80 @@ handleKeyChs:
     bit rpnFlagsEditing, (iy + rpnFlags)
     jr nz, handleKeyChsInputBuf
 handleKeyChsX:
+    ; CHS of X register
     call rclX
     bcall(_InvOP1S)
     call stoX
     ret
 handleKeyChsInputBuf:
     set inputBufFlagsInputDirty, (iy + inputBufFlags)
-    bit inputBufFlagsManSign, (iy + inputBufFlags)
-    jr z, handleKeyChsSetNegative
-handleKeyChsSetPositive:
-    ; Currently negative, so set positive
-    res inputBufFlagsManSign, (hl)
-    ld a, 0 ; string position 0
+    ; Check if EE symbol exists
     ld hl, inputBuf
     ld b, inputBufMax
-    jp deleteAtPos
-handleKeyChsSetNegative:
-    ; Currently positive, so set negative
-    ld a, 0 ; string position 0
-    ld hl, inputBuf
-    ld b, inputBufMax
+    ld a, (inputBufEEPos)
+    or a
+    jr z, handleKeyChsMan
+handleKeyChsExp:
+    call flipInputBufSign
+    jr c, handleKeyChsExpResetSign
+    set inputBufFlagsExpSign, (iy + inputBufFlags)
+    ret
+handleKeyChsExpResetSign:
+    res inputBufFlagsExpSign, (iy + inputBufFlags)
+    ret
+handleKeyChsMan:
+    call flipInputBufSign
+    jr c, handleKeyChsManResetSign
+    set inputBufFlagsManSign, (iy + inputBufFlags)
+    ret
+handleKeyChsManResetSign:
+    res inputBufFlagsManSign, (iy + inputBufFlags)
+    ret
+
+; Description: Add or remove the '-' char at position A of the Pascal string at
+; HL, with maximum length B.
+; Input:
+;   A: inputBuf offset where the sign ought to be
+;   HL: pointer to Pascal string
+;   B: max size of Pasal string
+; Output:
+;   (HL): updated with '-' removed or added
+;   Carry:
+;       - Set if positive (including if '-' could not be added due to size)
+;       - Clear if negative
+; Destroys:
+;   A, BC, DE, HL
+flipInputBufSign:
+    ld c, (hl) ; size of string
+    cp c
+    jr c, flipInputBufSignInside ; If A < inputBufSize: interior position
+    ld a, c ; set A = inputBufSize, just in case
+    jr flipInputBufSignAdd
+flipInputBufSignInside:
+    ; Check for the '-' and flip it.
+    push hl
+    inc hl ; skip size byte
+    ld e, a
+    ld d, 0
+    add hl, de
+    ld a, (hl)
+    cp '-'
+    pop hl
+    ld a, e ; A=sign position
+    jr nz, flipInputBufSignAdd
+flipInputBufSignRemove:
+    ; Remove existing '-' sign
+    call deleteAtPos
+    scf ; set Carry to indicate positive
+    ret
+flipInputBufSignAdd:
+    ; Add '-' sign.
     call insertAtPos
-    ret c ; Return if Carry set indicating string too long
-    ; Insert '-' at beginning of string
+    ret c ; Return if Carry is set, indicating insert '-' failed
+    ; Set newly created empty slot to '-'
     ld a, '-'
     ld (hl), a
-    set inputBufFlagsManSign, (iy + inputBufFlags)
+    or a ; clear Carry to indicate negative
     ret
 
 ;-----------------------------------------------------------------------------

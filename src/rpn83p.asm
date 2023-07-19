@@ -154,7 +154,7 @@ main:
     call initDisplay
 
 readLoop:
-    ;call debugFlags
+    ; call debugEEPos
     call displayAll
 
     ; Get the key code, and reset the ON flag right after. See TI-83 Plus SDK
