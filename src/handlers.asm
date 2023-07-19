@@ -436,13 +436,13 @@ handleKeyMenuBackLoop:
     jr nc, handleKeyMenuBackStripFound ; nodeId >= childId
     add a, 5 ; nodeId += 5
     djnz handleKeyMenuBackLoop
-    ; We should never fall off the end of the loop, but if it does, set the
+    ; We should never fall off the end of the loop, but if we do, set the
     ; stripIndex to 0.
     xor a
     jr handleKeyMenuBackStripSave
 handleKeyMenuBackStripFound:
     ld a, d ; numStrips
-    sub b ; numStrips - B
+    sub b ; stripIndex = numStrips - B
 handleKeyMenuBackStripSave:
     ld (menuStripIndex), a
     set rpnFlagsMenuDirty, (iy + rpnFlags)
