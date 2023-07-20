@@ -5,28 +5,27 @@
 ; Description: Initialize variables and flags related to the input buffer.
 ; Output:
 ;   - inputBuf set to empty
-;   - inputBufEEPos set to 0
 ;   - rpnFlagsEditing reset
 ; Destroys: A
 initInputBuf:
-    call clearInputBuf
     res rpnFlagsEditing, (iy + rpnFlags)
-    xor a
-    ld (inputBufEEPos), a
-    ld (inputBufEELen), a
-    ret
+    ; [[fallthrough]]
 
 ; Function: Clear the inputBuf.
 ; Input: inputBuf
 ; Output:
 ;   - inputBuf cleared
+;   - inputBufEEPos set to 0
+;   - inputBufEELen set to 0
 ;   - inputBufFlagsInputDirty set
 ; Destroys: none
 clearInputBuf:
     push af
     xor a
     ld (inputBuf), a
-    ld (iy+inputBufFlags), a
+    ld (inputBufEEPos), a
+    ld (inputBufEELen), a
+    ld (iy+inputBufFlags), a ; clear all flags
     set inputBufFlagsInputDirty, (iy + inputBufFlags)
     pop af
     ret
