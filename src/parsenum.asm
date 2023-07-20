@@ -56,10 +56,10 @@ parseNum:
     call calcDPPos
     call extractMantissaExponent ; extract mantissa exponent to floatBuf
     call extractMantissaSign ; extract mantissa sign to floatBuf
-    call extractMantissa ; extract digits into parseBuf TODO: rename to parseMantissa
-    call copyMantissa ; copy digits into floatBuf TODO: rename to extractMantissa
-    call extractExponent ; extract EE digits if E symbol exists
-    call addExponent ; add EE exponent to mantissa exponent
+    call parseMantissa ; parse mantissa digits from inputBuf into parseBuf
+    call extractMantissa ; copy mantissa digits from parseBuf into floatBuf
+    call parseExponent ; parse EE digits from inputBuf
+    call addExponent ; add EE exponent to floatBuf exponent
     call copyFloatToOP1 ; copy floatBuf to OP1
     ret
 
@@ -131,7 +131,7 @@ checkZeroContinue:
 
 ;------------------------------------------------------------------------------
 
-; Function: Extract the mantissa digits from inputBuf into parseBuf, ignoring
+; Function: Parse the mantissa digits from inputBuf into parseBuf, ignoring
 ; negative sign, leading zeros, the decimal point, and the EE symbol. For
 ; example:
 ;   - "0.1" produces "1"
@@ -140,38 +140,38 @@ checkZeroContinue:
 ; Input: inputBuf
 ; Output: parseBuf filled with mantissa digits
 ; Destroys: all registers
-extractMantissaLeadingFound equ 0 ; bit to set when lead digit found
-extractMantissa:
+parseMantissaLeadingFound equ 0 ; bit to set when lead digit found
+parseMantissa:
     ld hl, inputBuf
     ld a, (hl) ; A = inputBufSize
     or a
     ret z
     ld b, a ; B = inputBufSize
-    res extractMantissaLeadingFound, c
+    res parseMantissaLeadingFound, c
     inc hl
-extractMantissaLoop:
+parseMantissaLoop:
     ld a, (hl)
     cp Lexponent
     ret z ; terminate loop at "E"
     cp '-'
-    jr z, extractMantissaContinue
+    jr z, parseMantissaContinue
     cp '.'
-    jr z, extractMantissaContinue
+    jr z, parseMantissaContinue
     cp '0'
-    jr nz, extractMantissaNormalDigit
+    jr nz, parseMantissaNormalDigit
     ; Check if we found leading digit.
-    bit extractMantissaLeadingFound, c
-    jr z, extractMantissaContinue
-extractMantissaNormalDigit:
-    set extractMantissaLeadingFound, c
+    bit parseMantissaLeadingFound, c
+    jr z, parseMantissaContinue
+parseMantissaNormalDigit:
+    set parseMantissaLeadingFound, c
     push hl
     push bc
     call appendParseBuf
     pop bc
     pop hl
-extractMantissaContinue:
+parseMantissaContinue:
     inc hl
-    djnz extractMantissaLoop
+    djnz parseMantissaLoop
     ret
 
 ;------------------------------------------------------------------------------
@@ -318,12 +318,12 @@ extractMantissaSign:
     set 7, (hl)
     ret
 
-; Function: Copy normalized mantissa digits from parseBuf to floatBuf, 2 digits
-; per byte.
+; Function: Extract the normalized mantissa digits from parseBuf to floatBuf, 2
+; digits per byte.
 ; Input: parseBuf
 ; Output:
 ; Destroys: A, BC, DE, HL
-copyMantissa:
+extractMantissa:
     ld hl, parseBuf
     ld a, (hl)
     or a
@@ -331,7 +331,7 @@ copyMantissa:
     inc hl
     ld de, floatBufMan
     ld b, parseBufMax/2
-copyMantissaLoop:
+extractMantissaLoop:
     ; Loop 2 digits at a time.
     ld a, (hl)
     sub '0'
@@ -347,7 +347,7 @@ copyMantissaLoop:
     ld (de), a
     inc de
     inc hl
-    djnz copyMantissaLoop
+    djnz extractMantissaLoop
     ret
 
 ; Function: Copy floatBuf into OP1
@@ -358,10 +358,11 @@ copyFloatToOP1:
 
 ;-----------------------------------------------------------------------------
 
-; Description: Extract the digits after the 'E' symbol if it exists.
+; Description: Parse the digits after the 'E' symbol in the inputBuf.
+; Input: inputBuf
 ; Output: A: the exponent, in two's complement form
 ; Destroys: A, BC, DE, HL
-extractExponent:
+parseExponent:
     ld b, 0
     ; Return if no 'E' symbol
     ld a, (inputBufEEPos)
@@ -382,18 +383,18 @@ extractExponent:
     inc hl ; HL=pointer to first digit of EE
     ld a, (hl)
     cp '-'
-    jr z, extractExponentSetSign
+    jr z, parseExponentSetSign
     res inputBufFlagsExpSign, (iy+inputBufFlags)
-    jr extractExponentDigits
-extractExponentSetSign:
+    jr parseExponentDigits
+parseExponentSetSign:
     inc hl
     set inputBufFlagsExpSign, (iy+inputBufFlags)
-extractExponentDigits:
+parseExponentDigits:
     ; Convert 1 or 2 digits of the exponent to 2's complement number in A
     ld a, c ; A=EELen
     cp 1
-    jr z, extractExponentOneDigit
-extractExponentTwoDigits:
+    jr z, parseExponentOneDigit
+parseExponentTwoDigits:
     ld a, (hl) ; first of 2 digits
     inc hl
     sub '0'
@@ -404,11 +405,11 @@ extractExponentTwoDigits:
     add a, a ; A=8*A
     add a, c ; A=10*A
     ld b, a ; save B
-extractExponentOneDigit:
+parseExponentOneDigit:
     ld a, (hl) ; second of 2 digits,or first of 1 digit
     sub '0'
     add a, b
-extractExponentNegIfSign:
+parseExponentNegIfSign:
     bit inputBufFlagsExpSign, (iy+inputBufFlags)
     ret z
     neg
