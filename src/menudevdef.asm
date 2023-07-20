@@ -299,7 +299,7 @@ mHelpName:
 mDispName:
 	.db "DISP", 0
 mModeName:
-	.db "Mode", 0
+	.db "MODE", 0
 mHyperbolicName:
 	.db "HYP", 0
 mUnitName:
