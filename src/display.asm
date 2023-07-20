@@ -8,7 +8,7 @@
 ;   4: Z: zzzz
 ;   5: Y: yyyy
 ;   6: X: xxxx
-;   7: [menu0][menu1][menu2][menu3][menu4] (small font)
+;   7: [menu1][menu2][menu3][menu4][menu5] (small font)
 ;-----------------------------------------------------------------------------
 
 ; Menu pixel columns:

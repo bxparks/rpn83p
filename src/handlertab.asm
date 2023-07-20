@@ -61,8 +61,6 @@ keyCodeHandlerTable:
     .db kAlphaUp ; PageUp on Tilem
     .dw handleKeyMenuBack
 
-    .db keyMenu0
-    .dw handleKeyMenu0
     .db keyMenu1
     .dw handleKeyMenu1
     .db keyMenu2
@@ -71,6 +69,8 @@ keyCodeHandlerTable:
     .dw handleKeyMenu3
     .db keyMenu4
     .dw handleKeyMenu4
+    .db keyMenu5
+    .dw handleKeyMenu5
 
     ; arithmetic
     .db kAdd

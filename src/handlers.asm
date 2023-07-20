@@ -515,43 +515,43 @@ handleKeyMenuBackStripSave:
 
 ;-----------------------------------------------------------------------------
 
-; handleKeyMenu0() -> None
-; Description: Handle menu key 0 (left most).
-; Input: none
-; Destroys: all
-handleKeyMenu0:
-    ld a, 0
-    jr handleKeyMenuA
-
 ; handleKeyMenu1() -> None
-; Description: Handle menu key 1 (2nd from left).
+; Description: Handle menu key 1 (left most).
 ; Input: none
 ; Destroys: all
 handleKeyMenu1:
-    ld a, 1
-    jr handleKeyMenua
+    ld a, 0
+    jr handleKeyMenuA
 
 ; handleKeyMenu2() -> None
-; Description: Handle menu key 0 (middle).
+; Description: Handle menu key 2 (2nd from left).
 ; Input: none
 ; Destroys: all
 handleKeyMenu2:
-    ld a, 2
+    ld a, 1
     jr handleKeyMenuA
 
 ; handleKeyMenu3() -> None
-; Description: Handle menu key 0 (2nd from right).
+; Description: Handle menu key 3 (middle).
 ; Input: none
 ; Destroys: all
 handleKeyMenu3:
-    ld a, 3
+    ld a, 2
     jr handleKeyMenuA
 
 ; handleKeyMenu4() -> None
-; Description: Handle menu key 0 (right most).
+; Description: Handle menu key 4 (2nd from right).
 ; Input: none
 ; Destroys: all
 handleKeyMenu4:
+    ld a, 3
+    jr handleKeyMenuA
+
+; handleKeyMenu5() -> None
+; Description: Handle menu key 5 (right most).
+; Input: none
+; Destroys: all
+handleKeyMenu5:
     ld a, 4
     ; [[fallthrough]]
 

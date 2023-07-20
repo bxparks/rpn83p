@@ -53,12 +53,12 @@ cursorChar equ LcurI
 cursorCharAlt equ LcurO
 signChar equ Lneg ; different from '-' which is LDash
 
-; Menu keys, left to right. TODO: Rename this Menu1 - Menu5 to match F1 - F5.
-keyMenu0 equ kYequ
-keyMenu1 equ kWindow
-keyMenu2 equ kZoom
-keyMenu3 equ kTrace
-keyMenu4 equ kGraph
+; Menu keys, left to right.
+keyMenu1 equ kYequ
+keyMenu2 equ kWindow
+keyMenu3 equ kZoom
+keyMenu4 equ kTrace
+keyMenu5 equ kGraph
 
 ; Flags for RPN stack modes. Offset from IY register.
 rpnFlags equ asm_Flag2
