@@ -28,36 +28,6 @@ lookupKeyMatched:
 
 ;-----------------------------------------------------------------------------
 
-; Function: Clear the inputBuf.
-; Input: inputBuf
-; Output:
-;   - inputBuf cleared
-;   - inputBufFlagsInputDirty set
-; Destroys: none
-clearInputBuf:
-    push af
-    xor a
-    ld (inputBuf), a
-    ld (iy+inputBufFlags), a
-    set inputBufFlagsInputDirty, (iy + inputBufFlags)
-    pop af
-    ret
-
-; Function: Append character to inputBuf.
-; Input:
-;   A: character to be appended
-; Output:
-;   - Carry flag set when append fails
-;   - inputBufFlagsInputDirty set
-; Destroys: all
-appendInputBuf:
-    ld hl, inputBuf
-    ld b, inputBufMax
-    set inputBufFlagsInputDirty, (iy + inputBufFlags)
-    jp appendString
-
-;-----------------------------------------------------------------------------
-
 ; Function: Append a number character to inputBuf, updating various flags.
 ; Input:
 ;   A: character to be appended
@@ -69,7 +39,7 @@ appendInputBuf:
 handleKeyNumber:
     ; If not in edit mode: lift stack and go into edit mode
     bit rpnFlagsEditing, (iy + rpnFlags)
-    jr nz, handleKeyNumberContinue
+    jr nz, handleKeyNumberEELen
 handleKeyNumberFirstDigit:
     ; Lift the stack, unless disabled.
     push af
@@ -80,8 +50,25 @@ handleKeyNumberFirstDigit:
     call clearInputBuf
     set rpnFlagsEditing, (iy + rpnFlags)
     res rpnFlagsLiftEnabled, (iy + rpnFlags)
-handleKeyNumberContinue:
-    jr appendInputBuf
+handleKeyNumberEELen:
+    ; Limit number of exponent digits to 2.
+    bit inputBufFlagsEE, (iy + inputBufFlags)
+    jr z, handleKeyNumberAppend
+    ; Check inputBufEELen, preserve the character in A.
+    ld b, a
+    ld a, (inputBufEELen)
+    cp inputBufEELenMax
+    ld a, b
+    ret nc ; prevent more than 2 exponent digits
+    ; Try to append. Check for buffer full before incrementing counter.
+    call appendInputBuf
+    ret c ; return if buffer full
+    ld hl, inputBufEELen
+    inc (hl)
+    ret
+handleKeyNumberAppend:
+    ; Unconditionally append character in A.
+    jp appendInputBuf
 
 ; Function: Append '0' to inputBuf.
 ; See handleKeyNumber()
@@ -148,14 +135,41 @@ handleKey9:
 ; Output: (iy+inputBufFlags) DecPnt set
 ; Destroys: A, DE, HL
 handleKeyDecPnt:
-    ; do nothing if a decimal point already exists
+    ; Do nothing if a decimal point already exists.
     bit inputBufFlagsDecPnt, (iy + inputBufFlags)
+    ret nz
+    ; Also do nothing if 'E' exists. Exponents cannot have a decimal point.
+    bit inputBufFlagsEE, (iy + inputBufFlags)
     ret nz
     ; try insert '.'
     ld a, '.'
     call handleKeyNumber
     ret c ; If Carry: append failed so return without setting the DecPnt flag
     set inputBufFlagsDecPnt, (iy + inputBufFlags)
+    ret
+
+; Description: Handle the EE for scientific notation. The 'EE' is mapped to
+; 2ND-COMMA by default on the calculator. For faster entry, we map the COMMA
+; key (withouth 2ND) to be EE as well.
+; Input: none
+; Output: (inputBufEEPos), (inputBufFlagsEE, iy+inputBufFlags)
+; Destroys: A, HL
+handleKeyEE:
+    ; do nothing if EE already exists
+    bit inputBufFlagsEE, (iy + inputBufFlags)
+    ret nz
+    ; try insert 'E'
+    ld a, Lexponent
+    call handleKeyNumber
+    ret c ; If Carry: append failed so return without setting the EE flag
+    ; save the EE+1 position
+    ld a, (inputBuf) ; position after the 'E'
+    ld (inputBufEEPos), a
+    ; set the EE Len to 0
+    xor a
+    ld (inputBufEELen), a
+    ; set flag to indicate presence of EE
+    set inputBufFlagsEE, (iy + inputBufFlags)
     ret
 
 ;-----------------------------------------------------------------------------
@@ -175,7 +189,7 @@ handleKeyDel:
     or a
     ret z ; do nothing if buffer empty
 
-    ; remove last character
+    ; shorten string by one
     ld e, a ; E = inputBufSize
     dec a
     ld (hl), a
@@ -191,9 +205,34 @@ handleKeyDelDecPnt:
     ret
 handleKeyDelMinus:
     ; reset negative flag if the deleted character was a '-'
-    cp a, '-'
-    ret nz
+    cp a, signChar
+    jr nz, handleKeyDelEE
     res inputBufFlagsManSign, (iy + inputBufFlags)
+    ret
+handleKeyDelEE:
+    ; reset EE flag if the deleted character was an 'E'
+    cp Lexponent
+    jr nz, handleKeyDelEEDigits
+    xor a
+    ld (inputBufEEPos), a
+    ld (inputBufEELen), a
+    res inputBufFlagsEE, (iy + inputBufFlags)
+    ret
+handleKeyDelEEDigits:
+    ; decrement exponent len counter
+    bit inputBufFlagsEE, (iy + inputBufFlags)
+    jr z, handleKeyDelExit
+    cp signChar
+    jr z, handleKeyDelExit ; no special handling of '-' in exponent
+    ;
+    ld hl, inputBufEELen
+    ld a, (hl)
+    or a
+    jr z, handleKeyDelExit ; don't decrement len below 0
+    ;
+    dec a
+    ld (hl), a
+handleKeyDelExit:
     ret
 
 ;-----------------------------------------------------------------------------
@@ -242,7 +281,8 @@ handleKeyClearHitOnce:
 ;-----------------------------------------------------------------------------
 
 ; Function: Handle (-) change sign. If in edit mode, change the sign in the
-; inputBuf. Otherwise, change the sign of the X register.
+; inputBuf. Otherwise, change the sign of the X register. If the EE symbol
+; exists, change the sign of the exponent instead of the mantissa.
 ; Input: none
 ; Output: (inputBuf), X
 ; Destroys: all, OP1
@@ -250,32 +290,80 @@ handleKeyChs:
     bit rpnFlagsEditing, (iy + rpnFlags)
     jr nz, handleKeyChsInputBuf
 handleKeyChsX:
+    ; CHS of X register
     call rclX
     bcall(_InvOP1S)
     call stoX
     ret
 handleKeyChsInputBuf:
     set inputBufFlagsInputDirty, (iy + inputBufFlags)
-    bit inputBufFlagsManSign, (iy + inputBufFlags)
-    jr z, handleKeyChsSetNegative
-handleKeyChsSetPositive:
-    ; Currently negative, so set positive
-    res inputBufFlagsManSign, (hl)
-    ld a, 0 ; string position 0
+    ; Check if EE symbol exists
     ld hl, inputBuf
     ld b, inputBufMax
-    jp deleteAtPos
-handleKeyChsSetNegative:
-    ; Currently positive, so set negative
-    ld a, 0 ; string position 0
-    ld hl, inputBuf
-    ld b, inputBufMax
-    call insertAtPos
-    ret c ; Return if Carry set indicating string too long
-    ; Insert '-' at beginning of string
-    ld a, '-'
-    ld (hl), a
+    ld a, (inputBufEEPos)
+    or a
+    jr z, handleKeyChsMan
+handleKeyChsExp:
+    call flipInputBufSign
+    jr c, handleKeyChsExpResetSign
+    set inputBufFlagsExpSign, (iy + inputBufFlags)
+    ret
+handleKeyChsExpResetSign:
+    res inputBufFlagsExpSign, (iy + inputBufFlags)
+    ret
+handleKeyChsMan:
+    call flipInputBufSign
+    jr c, handleKeyChsManResetSign
     set inputBufFlagsManSign, (iy + inputBufFlags)
+    ret
+handleKeyChsManResetSign:
+    res inputBufFlagsManSign, (iy + inputBufFlags)
+    ret
+
+; Description: Add or remove the '-' char at position A of the Pascal string at
+; HL, with maximum length B.
+; Input:
+;   A: inputBuf offset where the sign ought to be
+;   HL: pointer to Pascal string
+;   B: max size of Pasal string
+; Output:
+;   (HL): updated with '-' removed or added
+;   Carry:
+;       - Set if positive (including if '-' could not be added due to size)
+;       - Clear if negative
+; Destroys:
+;   A, BC, DE, HL
+flipInputBufSign:
+    ld c, (hl) ; size of string
+    cp c
+    jr c, flipInputBufSignInside ; If A < inputBufSize: interior position
+    ld a, c ; set A = inputBufSize, just in case
+    jr flipInputBufSignAdd
+flipInputBufSignInside:
+    ; Check for the '-' and flip it.
+    push hl
+    inc hl ; skip size byte
+    ld e, a
+    ld d, 0
+    add hl, de
+    ld a, (hl)
+    cp signChar
+    pop hl
+    ld a, e ; A=sign position
+    jr nz, flipInputBufSignAdd
+flipInputBufSignRemove:
+    ; Remove existing '-' sign
+    call deleteAtPos
+    scf ; set Carry to indicate positive
+    ret
+flipInputBufSignAdd:
+    ; Add '-' sign.
+    call insertAtPos
+    ret c ; Return if Carry is set, indicating insert '-' failed
+    ; Set newly created empty slot to '-'
+    ld a, signChar
+    ld (hl), a
+    or a ; clear Carry to indicate negative
     ret
 
 ;-----------------------------------------------------------------------------

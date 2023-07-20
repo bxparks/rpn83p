@@ -51,8 +51,9 @@ stXPenRow equ stXCurRow*8
 ; Define the Cursor character
 cursorChar equ LcurI
 cursorCharAlt equ LcurO
+signChar equ Lneg ; different from '-' which is LDash
 
-; Menu keys, left to right
+; Menu keys, left to right. TODO: Rename this Menu1 - Menu5 to match F1 - F5.
 keyMenu0 equ kYequ
 keyMenu1 equ kWindow
 keyMenu2 equ kZoom
@@ -72,15 +73,16 @@ rpnFlagsStatusDirty equ 5 ; set if the status is dirty (TODO: not used)
 inputBufFlags equ asm_Flag3
 inputBufFlagsInputDirty equ 0 ; set if the input buffer is dirty
 inputBufFlagsDecPnt equ 1 ; set if decimal point exists
-inputBufFlagsManSign equ 2 ; mantissa sign bit
-inputBufFlagsExpSign equ 3 ; exponent sign bit
+inputBufFlagsEE equ 2 ; set if EE symbol exists
+inputBufFlagsManSign equ 3 ; mantissa sign bit (TODO: not used)
+inputBufFlagsExpSign equ 4 ; exponent sign bit
 
 ; Error code and handling.
 errorCode equ tempSwapArea ; current error code
 errorCodeDisplayed equ errorCode + 1 ; displayed error code
 
 ; String buffer for keyboard entry. This is a Pascal-style with a single size
-; byte at the start. It not include the cursor displayed at the end of the
+; byte at the start. It does not include the cursor displayed at the end of the
 ; string. The equilvalent C struct is:
 ;
 ;   struct inputBuf {
@@ -92,6 +94,14 @@ inputBufSize equ inputBuf ; size byte of the pascal string
 inputBufBuf equ inputBuf + 1
 inputBufMax equ 14 ; maximum size of buffer, not including appended cursor
 inputBufSizeOf equ inputBufMax + 1
+
+; Location (offset index) of the one past the 'E' symbol if it exists. Zero
+; indicates that 'E' does NOT exist.
+inputBufEEPos equ inputBuf + inputBufSizeOf
+; Length of EE digits. Maximum of 2.
+inputBufEELen equ inputBufEEPos + 1
+; Max number of digits allowed for exponent.
+inputBufEELenMax equ 2
 
 ; Temporary buffer for parsing keyboard input into a floating point number. This
 ; is a pascal string that contains the normalized floating point number, one
@@ -105,7 +115,7 @@ inputBufSizeOf equ inputBufMax + 1
 ;   }
 ;
 ; A TI-OS floating number can have a mantissa of a maximum 14 digits.
-parseBuf equ inputBuf + inputBufSizeOf
+parseBuf equ inputBufEELen + 1
 parseBufSize equ parseBuf ; size byte of the pascal string
 parseBufMan equ parseBufSize + 1
 parseBufMax equ 14
@@ -143,14 +153,13 @@ main:
     bcall(_ClrLCDFull)
     res appAutoScroll, (iy + appFlags)
     call initErrorCode
+    call initInputBuf
     call initStack
     call initMenu
     call initDisplay
-    call clearInputBuf
-    res rpnFlagsEditing, (iy + rpnFlags)
 
 readLoop:
-    ;call debugFlags
+    ; call debugEEPos
     call displayAll
 
     ; Get the key code, and reset the ON flag right after. See TI-83 Plus SDK

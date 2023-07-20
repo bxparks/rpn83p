@@ -5,8 +5,12 @@
 ; Function: Print out the inputBuf on the debug line.
 ; Input: parseBuf
 ; Output:
-; Destroys: A, HL
+; Destroys: none
 debugInputBuf:
+    push af
+    push bc
+    push de
+    push hl
     ld hl, debugCurCol*$100+debugCurRow ; $(curCol)(curRow)
     ld (CurRow), hl
     ld hl, inputBuf
@@ -14,13 +18,21 @@ debugInputBuf:
     ld a, cursorCharAlt
     bcall(_PutC)
     bcall(_EraseEOL)
+    pop hl
+    pop de
+    pop bc
+    pop af
     ret
 
 ; Function: Print out the parseBuf on the debug line.
 ; Input: parseBuf
 ; Output:
-; Destroys: A, HL
+; Destroys: none
 debugParseBuf:
+    push af
+    push bc
+    push de
+    push hl
     ld hl, debugCurCol*$100+debugCurRow ; $(curCol)(curRow)
     ld (CurRow), hl
     ld hl, parseBuf
@@ -28,15 +40,27 @@ debugParseBuf:
     ld a, cursorCharAlt
     bcall(_PutC)
     bcall(_EraseEOL)
+    pop hl
+    pop de
+    pop bc
+    pop af
     ret
+
+; Description: Print the value of (inputBufEEPos).
+; Input: inputBufEEPos
+; Destroys: none
+;
 
 ;------------------------------------------------------------------------------
 
 ; Description: Clear the debug line.
+; Destroys: none
 debugClear:
+    push hl
     ld hl, debugCurCol*$100+debugCurRow ; $(curCol)(curRow)
     ld (CurRow), hl
     bcall(_EraseEOL)
+    pop hl
     ret
 
 ;------------------------------------------------------------------------------
@@ -44,8 +68,12 @@ debugClear:
 ; Function: Print out OP1 at debug line.
 ; Input: OP1
 ; Output:
-; Destroys: all registers, OP3
+; Destroys: OP3
 debugOP1:
+    push af
+    push bc
+    push de
+    push hl
     ld hl, debugCurCol*$100+debugCurRow ; $(curCol)(curRow)
     ld (CurRow), hl
     ld a, 15 ; width of output
@@ -53,6 +81,23 @@ debugOP1:
     ld hl, OP3
     bcall(_PutS)
     bcall(_EraseEOL)
+    pop hl
+    pop de
+    pop bc
+    pop af
+    ret
+
+;------------------------------------------------------------------------------
+
+; Description: Print the value of the inputBufEEPos variable.
+; Input: none
+; Output: A printed on debug line
+; Destroys: none
+debugEEPos:
+    push af
+    ld a, (inputBufEEPos)
+    call debugUnsignedA
+    pop af
     ret
 
 ;------------------------------------------------------------------------------
@@ -63,6 +108,7 @@ debugOP1:
 ; Destroys: none
 debugUnsignedA:
     push af
+    push bc
     push de
     push hl
     ld hl, debugCurCol*$100+debugCurRow ; $(curCol)(curRow)
@@ -72,6 +118,7 @@ debugUnsignedA:
     bcall(_DispHL)
     pop hl
     pop de
+    pop bc
     pop af
     ret
 
@@ -92,7 +139,7 @@ debugSignedA:
     bit 7, a
     jr z, debugSignedAPositive
 debugSignedANegative:
-    ld a, '-'
+    ld a, signChar
     bcall(_PutC)
     ld a, b
     neg
@@ -123,7 +170,10 @@ debugSignedAPrint:
 ; Destroys: none
 debugFlags:
     push af
+    push bc
+    push de
     push hl
+
     ld hl, debugCurCol*$100+debugCurRow ; $(curCol)(curRow)
     ld (CurRow), hl
 
@@ -159,6 +209,8 @@ debugFlags:
     bcall(_EraseEOL)
 
     pop hl
+    pop de
+    pop bc
     pop af
     ret
 
@@ -178,6 +230,6 @@ printFlagPlus:
     ret
 printFlagMinus:
     bcall(_PutC)
-    ld a, '-'
+    ld a, signChar
     bcall(_PutC)
     ret

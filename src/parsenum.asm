@@ -2,6 +2,49 @@
 ; Functions related to parsing the inputBuf into a floating point number.
 ;------------------------------------------------------------------------------
 
+; Description: Initialize variables and flags related to the input buffer.
+; Output:
+;   - inputBuf set to empty
+;   - rpnFlagsEditing reset
+; Destroys: A
+initInputBuf:
+    res rpnFlagsEditing, (iy + rpnFlags)
+    ; [[fallthrough]]
+
+; Function: Clear the inputBuf.
+; Input: inputBuf
+; Output:
+;   - inputBuf cleared
+;   - inputBufEEPos set to 0
+;   - inputBufEELen set to 0
+;   - inputBufFlagsInputDirty set
+; Destroys: none
+clearInputBuf:
+    push af
+    xor a
+    ld (inputBuf), a
+    ld (inputBufEEPos), a
+    ld (inputBufEELen), a
+    ld (iy+inputBufFlags), a ; clear all flags
+    set inputBufFlagsInputDirty, (iy + inputBufFlags)
+    pop af
+    ret
+
+; Function: Append character to inputBuf.
+; Input:
+;   A: character to be appended
+; Output:
+;   - Carry flag set when append fails
+;   - inputBufFlagsInputDirty set
+; Destroys: all
+appendInputBuf:
+    ld hl, inputBuf
+    ld b, inputBufMax
+    set inputBufFlagsInputDirty, (iy + inputBufFlags)
+    jp appendString
+
+;------------------------------------------------------------------------------
+
 ; Function: Parse the input buffer into the parseBuf.
 ; Input: inputBuf filled with keyboard characters
 ; Output: OP1: floating point number
@@ -11,13 +54,13 @@ parseNum:
     call checkZero
     ret z
     call calcDPPos
-    ; call debugSignedA ; Display the decimal point pos.
-    call extractExponent ; extract exponent to floatBuf
-    call extractSign ; extract sign to floatBuf
-    call extractMantissa ; extract digits into parseBuf
-    call copyMantissa ; copy digits into floatBuf
+    call extractMantissaExponent ; extract mantissa exponent to floatBuf
+    call extractMantissaSign ; extract mantissa sign to floatBuf
+    call parseMantissa ; parse mantissa digits from inputBuf into parseBuf
+    call extractMantissa ; copy mantissa digits from parseBuf into floatBuf
+    call parseExponent ; parse EE digits from inputBuf
+    call addExponent ; add EE exponent to floatBuf exponent
     call copyFloatToOP1 ; copy floatBuf to OP1
-    ; call debugOP1
     ret
 
 ;------------------------------------------------------------------------------
@@ -75,7 +118,7 @@ checkZeroLoop:
     ld a, (hl)
     cp '0'
     jr z, checkZeroContinue
-    cp '-'
+    cp signChar
     jr z, checkZeroContinue
     cp '.'
     jr z, checkZeroContinue
@@ -88,42 +131,47 @@ checkZeroContinue:
 
 ;------------------------------------------------------------------------------
 
-; Function: Extract the mantissa digits from inputBuf into parseBuf, ignoring
-; negative sign, leading zeros, and even the decimal point. For example, "0.1"
-; produces "1", and "-001.2" produces "12".
+; Function: Parse the mantissa digits from inputBuf into parseBuf, ignoring
+; negative sign, leading zeros, the decimal point, and the EE symbol. For
+; example:
+;   - "0.1" produces "1"
+;   - "-001.2" produces "12"
+;   - "23E-1" produces "23"
 ; Input: inputBuf
 ; Output: parseBuf filled with mantissa digits
 ; Destroys: all registers
-extractMantissaLeadingFound equ 0 ; bit to set when lead digit found
-extractMantissa:
+parseMantissaLeadingFound equ 0 ; bit to set when lead digit found
+parseMantissa:
     ld hl, inputBuf
     ld a, (hl) ; A = inputBufSize
     or a
     ret z
     ld b, a ; B = inputBufSize
-    res extractMantissaLeadingFound, c
+    res parseMantissaLeadingFound, c
     inc hl
-extractMantissaLoop:
+parseMantissaLoop:
     ld a, (hl)
-    cp '-'
-    jr z, extractMantissaContinue
+    cp Lexponent
+    ret z ; terminate loop at "E"
+    cp signChar
+    jr z, parseMantissaContinue
     cp '.'
-    jr z, extractMantissaContinue
+    jr z, parseMantissaContinue
     cp '0'
-    jr nz, extractMantissaNormalDigit
+    jr nz, parseMantissaNormalDigit
     ; Check if we found leading digit.
-    bit extractMantissaLeadingFound, c
-    jr z, extractMantissaContinue
-extractMantissaNormalDigit:
-    set extractMantissaLeadingFound, c
+    bit parseMantissaLeadingFound, c
+    jr z, parseMantissaContinue
+parseMantissaNormalDigit:
+    set parseMantissaLeadingFound, c
     push hl
     push bc
     call appendParseBuf
     pop bc
     pop hl
-extractMantissaContinue:
+parseMantissaContinue:
     inc hl
-    djnz extractMantissaLoop
+    djnz parseMantissaLoop
     ret
 
 ;------------------------------------------------------------------------------
@@ -159,6 +207,7 @@ extractMantissaContinue:
 ;   int_t pos = 0;
 ;   for (int i = 0; i < stringSize; i++) {
 ;       char c = s[i];
+;       if (c == 'E') break; // hit exponent symbol
 ;       if (c == '-') continue;
 ;       if (c == '.') {
 ;           dotFound = true;
@@ -190,8 +239,11 @@ calcDPPos:
     inc hl
 calcDPLoop:
     ld a, (hl)
+    ; break if EE symbol
+    cp Lexponent
+    jr z, calcDPEnd
     ; ignore and skip '-'
-    cp '-'
+    cp signChar
     jr z, calcDPContinue
     ; check for '.'
     cp '.'
@@ -235,33 +287,43 @@ appendParseBuf:
 
 ;------------------------------------------------------------------------------
 
-; Function: Set the exponent: exp = decimalPointPos - 1. But exp is shifted by
-; $80, so exp = decimalPointPos - 1 + $80 = deimalPointPos + $7F.
-; Input: A: decimalPointPos
-; Output: (floatBufExp) = decimalPoint + $7F
+; Function: Set the exponent from the mantissa. The mantissaExp =
+; decimalPointPos - 1. But the floating exponent is shifted by $80.
+;   mantissaExponent = decimalPointPos - 1
+;   floatingExponent = mantissaExponent + $80
+;                    = decimalPointPos + $7F
+;
+; Input: A: decimalPointPos (from calcDPPos())
+; Output: floatBufExp = decimalPointPos + $7F
 ; Destroys: A
-extractExponent:
+extractMantissaExponent:
     add a, $7F
     ld (floatBufExp), a
     ret
 
-; Function: Transfer the sign to the floatBuf.
+; Function: Extract mantissa sign from the first character in the inputBuf.
 ; Input: inputBuf
 ; Output: floatBuf sign set
 ; Destroys: HL
-extractSign:
-    bit inputBufFlagsManSign, (iy + inputBufFlags)
-    ret z
+extractMantissaSign:
+    ld hl, inputBuf
+    ld a, (hl)
+    or a
+    ret z ; empty string, assume positive
+    inc hl
+    ld a, (hl)
+    cp signChar
+    ret nz ; '-' not found at first character
     ld hl, floatBufType
     set 7, (hl)
     ret
 
-; Function: Copy normalized mantissa digits from parseBuf to floatBuf, 2 digits
-; per byte.
+; Function: Extract the normalized mantissa digits from parseBuf to floatBuf, 2
+; digits per byte.
 ; Input: parseBuf
 ; Output:
 ; Destroys: A, BC, DE, HL
-copyMantissa:
+extractMantissa:
     ld hl, parseBuf
     ld a, (hl)
     or a
@@ -269,7 +331,7 @@ copyMantissa:
     inc hl
     ld de, floatBufMan
     ld b, parseBufMax/2
-copyMantissaLoop:
+extractMantissaLoop:
     ; Loop 2 digits at a time.
     ld a, (hl)
     sub '0'
@@ -285,11 +347,84 @@ copyMantissaLoop:
     ld (de), a
     inc de
     inc hl
-    djnz copyMantissaLoop
+    djnz extractMantissaLoop
     ret
 
 ; Function: Copy floatBuf into OP1
 copyFloatToOP1:
     ld hl, floatBuf
     bcall(_Mov9ToOP1)
+    ret
+
+;-----------------------------------------------------------------------------
+
+; Description: Parse the digits after the 'E' symbol in the inputBuf.
+; Input: inputBuf
+; Output: A: the exponent, in two's complement form
+; Destroys: A, BC, DE, HL
+parseExponent:
+    ld b, 0
+    ; Return if no 'E' symbol
+    ld a, (inputBufEEPos)
+    ld e, a ; E=EEpos
+    or a
+    ld a, b
+    ret z
+    ; Return if no digits after 'E'
+    ld a, (inputBufEELen)
+    ld c, a ; C=EELen
+    or a
+    ld a, b
+    ret z
+    ; Check for minus sign
+    ld hl, inputBuf
+    ld d, 0
+    add hl, de
+    inc hl ; HL=pointer to first digit of EE
+    ld a, (hl)
+    cp signChar
+    jr z, parseExponentSetSign
+    res inputBufFlagsExpSign, (iy+inputBufFlags)
+    jr parseExponentDigits
+parseExponentSetSign:
+    inc hl
+    set inputBufFlagsExpSign, (iy+inputBufFlags)
+parseExponentDigits:
+    ; Convert 1 or 2 digits of the exponent to 2's complement number in A
+    ld a, c ; A=EELen
+    cp 1
+    jr z, parseExponentOneDigit
+parseExponentTwoDigits:
+    ld a, (hl) ; first of 2 digits
+    inc hl
+    sub '0'
+    ; multiply by 10
+    add a, a
+    ld c, a ; C=2*A
+    add a, a
+    add a, a ; A=8*A
+    add a, c ; A=10*A
+    ld b, a ; save B
+parseExponentOneDigit:
+    ld a, (hl) ; second of 2 digits,or first of 1 digit
+    sub '0'
+    add a, b
+parseExponentNegIfSign:
+    bit inputBufFlagsExpSign, (iy+inputBufFlags)
+    ret z
+    neg
+    ret
+
+; Description: Add the exponent in A to the floatBuf exponent.
+; Input: A: EE exponent parsed from inputBuf
+; Output: (floatBuf exponent) += A
+; Destroys: A, B, HL
+addExponent:
+    ld b, a
+    ld hl, floatBufExp
+    ld a, (hl)
+    sub $80
+    add a, b ; 2's complement
+    add a, $80
+    ld (hl), a
     ret
