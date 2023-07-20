@@ -74,7 +74,7 @@ inputBufFlags equ asm_Flag3
 inputBufFlagsInputDirty equ 0 ; set if the input buffer is dirty
 inputBufFlagsDecPnt equ 1 ; set if decimal point exists
 inputBufFlagsEE equ 2 ; set if EE symbol exists
-inputBufFlagsExpSign equ 4 ; exponent sign bit detected
+inputBufFlagsExpSign equ 4 ; exponent sign bit detected during parsing
 
 ; Error code and handling.
 errorCode equ tempSwapArea ; current error code

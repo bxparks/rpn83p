@@ -291,23 +291,11 @@ handleKeyChsX:
     ret
 handleKeyChsInputBuf:
     set inputBufFlagsInputDirty, (iy + inputBufFlags)
-    ; Check if EE symbol exists
+    ; Change sign of Mantissa or Exponent.
     ld hl, inputBuf
     ld b, inputBufMax
-    ld a, (inputBufEEPos)
-    or a
-    jr z, handleKeyChsMan
-handleKeyChsExp:
-    call flipInputBufSign
-    jr c, handleKeyChsExpResetSign
-    set inputBufFlagsExpSign, (iy + inputBufFlags)
-    ret
-handleKeyChsExpResetSign:
-    res inputBufFlagsExpSign, (iy + inputBufFlags)
-    ret
-handleKeyChsMan:
-    call flipInputBufSign
-    ret
+    ld a, (inputBufEEPos) ; offset to EE digit, or 0 if 'E' does not exist
+    jp flipInputBufSign
 
 ; Description: Add or remove the '-' char at position A of the Pascal string at
 ; HL, with maximum length B.

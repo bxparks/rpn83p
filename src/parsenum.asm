@@ -362,6 +362,9 @@ copyFloatToOP1:
 ; Input: inputBuf
 ; Output: A: the exponent, in two's complement form
 ; Destroys: A, BC, DE, HL
+; TODO: Instead of relying on inputBufEEPos and inputBufEELen, scan for 'E' and
+; parse out the exponent digits. This would remove the dependency to those 2
+; variables, and decouple the parsing routines from the input/editing routines.
 parseExponent:
     ld b, 0 ; B=exponent value
     ; Return if no 'E' symbol
