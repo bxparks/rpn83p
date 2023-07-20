@@ -366,7 +366,20 @@ handleKeyEnter:
 closeInputBuf:
     set rpnFlagsLiftEnabled, (iy + rpnFlags)
     bit rpnFlagsEditing, (iy + rpnFlags)
-    ret z
+    jr nz, closeInputBufEditing
+closeInputBufNonEditing:
+    res inputBufFlagsClosedEmpty, (iy + inputBufFlags)
+    ret
+closeInputBufEditing:
+    ld a, (inputBuf)
+    or a
+    jr z, closeInputBufEmpty
+closeInputBufNonEmpty:
+    res inputBufFlagsClosedEmpty, (iy + inputBufFlags)
+    jr closeInputBufContinue
+closeInputBufEmpty:
+    set inputBufFlagsClosedEmpty, (iy + inputBufFlags)
+closeInputBufContinue:
     call parseNum
     call stoX
     call clearInputBuf
@@ -652,7 +665,7 @@ handleKeyPi:
     call closeInputBuf
     ld hl, constPi
     bcall(_Mov9ToOP1)
-    call liftStack
+    call liftStackNonEmpty
     call stoX
     ret
 
@@ -660,7 +673,7 @@ handleKeyEuler:
     call closeInputBuf
     ld hl, constEuler
     bcall(_Mov9ToOP1)
-    call liftStack
+    call liftStackNonEmpty
     call stoX
     ret
 
@@ -866,11 +879,11 @@ mFactorialHandler:
     ret
 
 ; mRandomHandler() -> rand()
-; Description: Calculate the factorial of X.
+; Description: Generate a random number [0,1) into the X register.
 mRandomHandler:
     call closeInputBuf
     bcall(_Random)
-    call liftStack
+    call liftStackNonEmpty
     call stoX
     ret
 

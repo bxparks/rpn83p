@@ -152,10 +152,19 @@ stoT:
 
 ;-----------------------------------------------------------------------------
 
-; Function: Lift the RPN stack, copying X to Y.
+; Function: Lift the RPN stack, if inputBuf was not empty when closed.
 ; Input: none
 ; Output: T=Z; Z=Y; Y=X; X=X; OP1 preserved
 ; Destroys: all, OP1, OP2, OP4
+liftStackNonEmpty:
+    bit inputBufFlagsClosedEmpty, (iy + inputBufFlags)
+    ret nz ; return doing nothing if closed empty
+    ; [[fallthrough]]
+
+; Function: Lift the RPN stack, copying X to Y.
+; Input: none
+; Output: T=Z; Z=Y; Y=X; X=X; OP1 preserved
+; Destroys: all, OP2, OP4
 liftStack:
     bcall(_PushRealO1)
     ; T = Z

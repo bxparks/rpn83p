@@ -187,16 +187,10 @@ debugFlags:
     ld a, 'E'
     call printFlag
 
-    ld a, ' '
-    bcall(_PutC)
-
-    ; Print Lift flag
-    bit rpnFlagsLiftEnabled, (iy + rpnFlags)
-    ld a, 'L'
+    ; Print ClosedEmpty flag
+    bit inputBufFlagsClosedEmpty, (iy + inputBufFlags)
+    ld a, 'Z'
     call printFlag
-
-    ld a, ' '
-    bcall(_PutC)
 
     ld a, ' '
     bcall(_PutC)
@@ -204,6 +198,11 @@ debugFlags:
     ; Print Stack dirty flag
     bit rpnFlagsStackDirty, (iy + rpnFlags)
     ld a, 'S'
+    call printFlag
+
+    ; Print Lift flag
+    bit rpnFlagsLiftEnabled, (iy + rpnFlags)
+    ld a, 'L'
     call printFlag
 
     bcall(_EraseEOL)
@@ -230,6 +229,6 @@ printFlagPlus:
     ret
 printFlagMinus:
     bcall(_PutC)
-    ld a, signChar
+    ld a, '-'
     bcall(_PutC)
     ret

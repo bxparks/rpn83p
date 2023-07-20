@@ -25,7 +25,8 @@ clearInputBuf:
     ld (inputBuf), a
     ld (inputBufEEPos), a
     ld (inputBufEELen), a
-    ld (iy+inputBufFlags), a ; clear all flags
+    res inputBufFlagsDecPnt, (iy + inputBufFlags)
+    res inputBufFlagsEE, (iy + inputBufFlags)
     set inputBufFlagsInputDirty, (iy + inputBufFlags)
     pop af
     ret
