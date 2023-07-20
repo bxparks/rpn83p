@@ -60,6 +60,8 @@ displayAll:
     res rpnFlagsMenuDirty, (iy + rpnFlags)
     ret
 
+;-----------------------------------------------------------------------------
+
 ; Function: Display the status bar, showing menu up/down arrows.
 ; Input: none
 ; Output: status line displayed
@@ -126,6 +128,8 @@ displayStatusEraseOfLine:
     call vEraseEOL
     ret
 
+;-----------------------------------------------------------------------------
+
 ; Function: Display the string corresponding to the current error code.
 ; Input: errorCode, errorCodeDisplayed
 ; Output:
@@ -161,6 +165,8 @@ displayErrorCode:
     call saveErrorCodeDisplayed
     ret
 
+;-----------------------------------------------------------------------------
+
 ; Function: Display the RPN stack variables
 ; Input: none
 ; Output: (rpnFlagsMenuDirty) reset
@@ -184,8 +190,6 @@ displayStackContinue:
     ld (CurRow), hl
     call rclT
     call printOP1
-    bcall(_EraseEOL)
-    bcall(_NewLine)
 
     ; print Z label
     ld hl, stZPenRow*$100 ; $(penRow)(penCol)
@@ -198,8 +202,6 @@ displayStackContinue:
     ld (CurRow), hl
     call rclZ
     call printOP1
-    bcall(_EraseEOL)
-    bcall(_NewLine)
 
     ; print Y label
     ld hl, stYPenRow*$100 ; $(penRow)(penCol)
@@ -212,8 +214,6 @@ displayStackContinue:
     ld (CurRow), hl
     call rclY
     call printOP1
-    bcall(_EraseEOL)
-    bcall(_NewLine)
 
     ; print X label
     ld hl, stXPenRow*$100 ; $(penRow)(penCol)
@@ -241,8 +241,6 @@ displayStackXInputBuf:
 displayStackXReg:
     call rclX
     call printOP1
-    bcall(_EraseEOL)
-    bcall(_NewLine)
     ret
 
 ; This is the debug version which always shows the current X register, and
@@ -252,10 +250,26 @@ displayStackXDebug:
     ld (CurRow), hl
     call rclX
     call printOP1
-    bcall(_EraseEOL)
-    bcall(_NewLine)
     ; print the inputBuf on the error line
     jp debugInputBuf
+
+; Function: Print floating point number at OP1 at the current cursor. Erase to
+; the end of line (but only if the floating point did not spill over to the
+; next line).
+; Input: OP1: floating point number
+; Destroys: A, HL, OP3
+printOP1:
+    ld a, 15 ; width of output
+    bcall(_FormReal)
+    ld hl, OP3
+    bcall(_PutS)
+    ld a, (CurCol)
+    or a
+    ret z ; if spilled to next line, don't call EraseEOL
+    bcall(_EraseEOL)
+    ret
+
+;-----------------------------------------------------------------------------
 
 ; Function: Display the bottom menus.
 ; Input: none
@@ -304,16 +318,6 @@ displayMenu:
     ld a, menuPenCol4
     call printMenuAtA
 
-    ret
-
-; Function: Print floating point number at OP1 at the current cursor.
-; Input: OP1: floating point number
-; Destroys: A, HL, OP3
-printOP1: ; TODO: rename to printFloatOP1
-    ld a, 15 ; width of output
-    bcall(_FormReal)
-    ld hl, OP3
-    bcall(_PutS)
     ret
 
 ;-----------------------------------------------------------------------------
