@@ -57,10 +57,11 @@ parseNum:
     call calcDPPos
     call extractMantissaExponent ; extract mantissa exponent to floatBuf
     call extractMantissaSign ; extract mantissa sign to floatBuf
-    call extractMantissa ; extract digits into parseBuf
-    call copyMantissa ; copy digits into floatBuf
+    call extractMantissa ; extract digits into parseBuf TODO: rename to parseMantissa
+    call copyMantissa ; copy digits into floatBuf TODO: rename to extractMantissa
+    call extractExponent ; extract EE digits if E symbol exists
+    call addExponent ; add EE exponent to mantissa exponent
     call copyFloatToOP1 ; copy floatBuf to OP1
-    ; call debugOP1
     ret
 
 ;------------------------------------------------------------------------------
@@ -354,4 +355,76 @@ copyMantissaLoop:
 copyFloatToOP1:
     ld hl, floatBuf
     bcall(_Mov9ToOP1)
+    ret
+
+;-----------------------------------------------------------------------------
+
+; Description: Extract the digits after the 'E' symbol if it exists.
+; Output: A: the exponent, in two's complement form
+; Destroys: A, BC, DE, HL
+extractExponent:
+    ld b, 0
+    ; Return if no 'E' symbol
+    ld a, (inputBufEEPos)
+    ld e, a ; E=EEpos
+    or a
+    ld a, b
+    ret z
+    ; Return if no digits after 'E'
+    ld a, (inputBufEELen)
+    ld c, a ; C=EELen
+    or a
+    ld a, b
+    ret z
+    ; Check for minus sign
+    ld hl, inputBuf
+    ld d, 0
+    add hl, de
+    inc hl ; HL=pointer to first digit of EE
+    ld a, (hl)
+    cp '-'
+    jr z, extractExponentSetSign
+    res inputBufFlagsExpSign, (iy+inputBufFlags)
+    jr extractExponentDigits
+extractExponentSetSign:
+    inc hl
+    set inputBufFlagsExpSign, (iy+inputBufFlags)
+extractExponentDigits:
+    ; Convert 1 or 2 digits of the exponent to 2's complement number in A
+    ld a, c ; A=EELen
+    cp 1
+    jr z, extractExponentOneDigit
+extractExponentTwoDigits:
+    ld a, (hl) ; first of 2 digits
+    inc hl
+    sub '0'
+    ; multiply by 10
+    add a, a
+    ld c, a ; C=2*A
+    add a, a
+    add a, a ; A=8*A
+    add a, c ; A=10*A
+    ld b, a ; save B
+extractExponentOneDigit:
+    ld a, (hl) ; second of 2 digits,or first of 1 digit
+    sub '0'
+    add a, b
+extractExponentNegIfSign:
+    bit inputBufFlagsExpSign, (iy+inputBufFlags)
+    ret z
+    neg
+    ret
+
+; Description: Add the exponent in A to the floatBuf exponent.
+; Input: A: EE exponent parsed from inputBuf
+; Output: (floatBuf exponent) += A
+; Destroys: A, B, HL
+addExponent:
+    ld b, a
+    ld hl, floatBufExp
+    ld a, (hl)
+    sub $80
+    add a, b ; 2's complement
+    add a, $80
+    ld (hl), a
     ret
