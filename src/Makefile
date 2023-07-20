@@ -20,5 +20,8 @@ SRCS := \
 rpn83p.8xp: $(SRCS)
 	$(SPASM) -I $(SPASM_INC) -N rpn83p.asm $@
 
+rpn83p.lst: $(SRCS)
+	$(SPASM) -I $(SPASM_INC) -N -T rpn83p.asm rpn83p.8xp
+
 clean:
 	rm -f $(TARGETS)
