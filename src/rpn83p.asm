@@ -150,8 +150,10 @@ menuStripIndex equ menuCurrentId + 1
 
 main:
     bcall(_RunIndicOff)
+    res appAutoScroll, (iy + appFlags) ; disable auto scroll
+    res appTextSave, (iy + appFlags) ; disable shawdow text
     bcall(_ClrLCDFull)
-    res appAutoScroll, (iy + appFlags)
+
     call initErrorCode
     call initInputBuf
     call initStack
