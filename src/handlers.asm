@@ -200,14 +200,8 @@ handleKeyDel:
 handleKeyDelDecPnt:
     ; reset decimal point flag if the deleted character was a '.'
     cp a, '.'
-    jr nz, handleKeyDelMinus
-    res inputBufFlagsDecPnt, (iy + inputBufFlags)
-    ret
-handleKeyDelMinus:
-    ; reset negative flag if the deleted character was a '-'
-    cp a, signChar
     jr nz, handleKeyDelEE
-    res inputBufFlagsManSign, (iy + inputBufFlags)
+    res inputBufFlagsDecPnt, (iy + inputBufFlags)
     ret
 handleKeyDelEE:
     ; reset EE flag if the deleted character was an 'E'
@@ -313,11 +307,6 @@ handleKeyChsExpResetSign:
     ret
 handleKeyChsMan:
     call flipInputBufSign
-    jr c, handleKeyChsManResetSign
-    set inputBufFlagsManSign, (iy + inputBufFlags)
-    ret
-handleKeyChsManResetSign:
-    res inputBufFlagsManSign, (iy + inputBufFlags)
     ret
 
 ; Description: Add or remove the '-' char at position A of the Pascal string at

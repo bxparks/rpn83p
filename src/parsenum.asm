@@ -363,7 +363,7 @@ copyFloatToOP1:
 ; Output: A: the exponent, in two's complement form
 ; Destroys: A, BC, DE, HL
 parseExponent:
-    ld b, 0
+    ld b, 0 ; B=exponent value
     ; Return if no 'E' symbol
     ld a, (inputBufEEPos)
     ld e, a ; E=EEpos
