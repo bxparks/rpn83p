@@ -51,6 +51,7 @@ stXPenRow equ stXCurRow*8
 ; Define the Cursor character
 cursorChar equ LcurI
 cursorCharAlt equ LcurO
+signChar equ Lneg ; different from '-' which is LDash
 
 ; Menu keys, left to right. TODO: Rename this Menu1 - Menu5 to match F1 - F5.
 keyMenu0 equ kYequ

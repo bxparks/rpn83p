@@ -205,7 +205,7 @@ handleKeyDelDecPnt:
     ret
 handleKeyDelMinus:
     ; reset negative flag if the deleted character was a '-'
-    cp a, '-'
+    cp a, signChar
     jr nz, handleKeyDelEE
     res inputBufFlagsManSign, (iy + inputBufFlags)
     ret
@@ -222,7 +222,7 @@ handleKeyDelEEDigits:
     ; decrement exponent len counter
     bit inputBufFlagsEE, (iy + inputBufFlags)
     jr z, handleKeyDelExit
-    cp '-'
+    cp signChar
     jr z, handleKeyDelExit ; no special handling of '-' in exponent
     ;
     ld hl, inputBufEELen
@@ -347,7 +347,7 @@ flipInputBufSignInside:
     ld d, 0
     add hl, de
     ld a, (hl)
-    cp '-'
+    cp signChar
     pop hl
     ld a, e ; A=sign position
     jr nz, flipInputBufSignAdd
@@ -361,7 +361,7 @@ flipInputBufSignAdd:
     call insertAtPos
     ret c ; Return if Carry is set, indicating insert '-' failed
     ; Set newly created empty slot to '-'
-    ld a, '-'
+    ld a, signChar
     ld (hl), a
     or a ; clear Carry to indicate negative
     ret

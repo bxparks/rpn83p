@@ -139,7 +139,7 @@ debugSignedA:
     bit 7, a
     jr z, debugSignedAPositive
 debugSignedANegative:
-    ld a, '-'
+    ld a, signChar
     bcall(_PutC)
     ld a, b
     neg
@@ -230,6 +230,6 @@ printFlagPlus:
     ret
 printFlagMinus:
     bcall(_PutC)
-    ld a, '-'
+    ld a, signChar
     bcall(_PutC)
     ret

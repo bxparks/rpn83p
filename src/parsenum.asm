@@ -118,7 +118,7 @@ checkZeroLoop:
     ld a, (hl)
     cp '0'
     jr z, checkZeroContinue
-    cp '-'
+    cp signChar
     jr z, checkZeroContinue
     cp '.'
     jr z, checkZeroContinue
@@ -153,7 +153,7 @@ parseMantissaLoop:
     ld a, (hl)
     cp Lexponent
     ret z ; terminate loop at "E"
-    cp '-'
+    cp signChar
     jr z, parseMantissaContinue
     cp '.'
     jr z, parseMantissaContinue
@@ -243,7 +243,7 @@ calcDPLoop:
     cp Lexponent
     jr z, calcDPEnd
     ; ignore and skip '-'
-    cp '-'
+    cp signChar
     jr z, calcDPContinue
     ; check for '.'
     cp '.'
@@ -312,7 +312,7 @@ extractMantissaSign:
     ret z ; empty string, assume positive
     inc hl
     ld a, (hl)
-    cp '-'
+    cp signChar
     ret nz ; '-' not found at first character
     ld hl, floatBufType
     set 7, (hl)
@@ -382,7 +382,7 @@ parseExponent:
     add hl, de
     inc hl ; HL=pointer to first digit of EE
     ld a, (hl)
-    cp '-'
+    cp signChar
     jr z, parseExponentSetSign
     res inputBufFlagsExpSign, (iy+inputBufFlags)
     jr parseExponentDigits
