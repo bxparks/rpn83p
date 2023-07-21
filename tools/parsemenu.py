@@ -370,9 +370,9 @@ class Validator:
 class SymbolGenerator:
     def __init__(self, root: MenuNode):
         self.root = root
-        self.id_map: Dict[int, MenuNode] = {}
-        self.name_map: Dict[str, MenuNode] = {}
-        self.prefix_map: Dict[str, MenuNode] = {}
+        self.id_map: Dict[int, MenuNode] = {}  # {node_id -> MenuNode}
+        self.name_map: Dict[str, MenuNode] = {}  # {node_name -> MenuNode}
+        self.prefix_map: Dict[str, MenuNode] = {}  # {label_prefix -> MenuNode}
         self.id_counter = 1  # Root starts at id=1
 
     def generate(self) -> None:
@@ -437,15 +437,20 @@ class CodeGenerator:
         self.inputfile = inputfile
         self.root = root
         self.id_map = symbols.id_map
-        self.name_map = symbols.name_map
-        self.prefix_map = symbols.prefix_map
+        self.name_map = symbols.name_map  # {node_name -> MenuNode}
+        self.flat_names: List[MenuNode] = []
 
     def generate(self, output: TextIO) -> None:
         self.output = output
-        self.generate_menu(self.root)
-        # self.generate_names(self.root)
 
-    def generate_menu(self, node: MenuNode) -> None:
+        logging.info("  Generating menu nodes")
+        self.generate_menus(self.root)
+        print(file=self.output)
+
+        logging.info("  Generating name strings")
+        self.generate_names(self.root)
+
+    def generate_menus(self, node: MenuNode) -> None:
         print(f"""\
 ;-----------------------------------------------------------------------------
 ; Menu hierarchy definitions, generated from {self.inputfile}.
@@ -458,7 +463,7 @@ class CodeGenerator:
 ;   - mNullHandler
 ;   - mGroupHandler
 ;
-; The following symbols are reserved, but recommended to be used
+; The following symbols are not reserved, but they recommended to be used
 ; for the root menu:
 ;   - mRootId
 ;   - mRootNameId
@@ -475,7 +480,7 @@ mNullId equ 0
     .db 0 ; numStrips
     .db 0 ; stripBeginId
     .dw mNullHandler
-""", file=self.output)
+""", file=self.output, end='')
         self.generate_menu_node(self.root)
         self.generate_menu_group(self.root)
 
@@ -514,7 +519,7 @@ mNullId equ 0
     .db {num_strips} ; numStrips
     .db {strip_begin_id} ; stripBeginId
     .dw {handler} ; handler
-""", file=self.output)
+""", file=self.output, end='')
 
     def generate_menu_group(self, node: MenuNode) -> None:
         # Process the direct children of the current group.
@@ -529,6 +534,70 @@ mNullId equ 0
                 mtype = slot["mtype"]
                 if mtype == MENU_TYPE_GROUP:
                     self.generate_menu_group(slot)
+
+    def generate_names(self, node: MenuNode) -> None:
+        # Collect the name strings into a list, so that we can generate
+        # continguous name ids.
+        names = self.flatten_names(node)
+
+        # Generate the array of pointers to the C-strings.
+        print("""\
+; Table of 2-byte Offsets into Pool of Names
+mMenuNameTable:
+mNullNameId equ 0
+    .dw mNullName
+""", file=self.output, end='')
+        name_index = 1
+        for node in names:
+            prefix = node["prefix"]
+            name = node["name"]
+            print(f"""\
+{prefix}NameId equ {name_index}
+    .dw {prefix}Name
+""", file=self.output, end='')
+            name_index += 1
+
+        print(file=self.output)
+
+        # Generate the pool of C-strings
+        print("""\
+; Table of names as NUL terminated C strings.
+mNullName:
+    .db 0
+""", file=self.output, end='')
+        name_index = 1
+        for node in names:
+            prefix = node["prefix"]
+            name = node["name"]
+            print(f"""\
+{prefix}Name:
+    .db "{name}", 0
+""", file=self.output, end='')
+            name_index += 1
+
+    def flatten_names(self, node: MenuNode) -> List[MenuNode]:
+        flat_names: List[MenuNode] = []
+        flat_names.append(node)
+        self.add_menu_group(flat_names, node)
+        return flat_names
+
+    def add_menu_group(
+        self, flat_names: List[MenuNode], node: MenuNode,
+    ) -> None:
+        # Process the direct children of the current group.
+        strips = node["strips"]
+        for strip in strips:
+            for slot in strip:
+                if slot["name"] == '*':
+                    continue
+                flat_names.append(slot)
+
+        # Recursively descend subgroups if any.
+        for strip in strips:
+            for slot in strip:
+                mtype = slot["mtype"]
+                if mtype == MENU_TYPE_GROUP:
+                    self.add_menu_group(flat_names, slot)
 
 # -----------------------------------------------------------------------------
 
