@@ -11,6 +11,7 @@ Usage:
 $ parsemenu.py < menusample.txt > menusample.asm
 """
 
+from typing import Dict
 from typing import List
 from typing import Optional
 from typing import TextIO
@@ -30,10 +31,33 @@ def main() -> None:
     #
     normalizer = Normalizer(root)
     normalizer.normalize()
+    #
+    generator = SymbolGenerator(root)
+    generator.generate()
+    #
     pp(root)
+
+# -----------------------------------------------------------------------------
+
+
+MENU_TYPE_ITEM = 0
+MENU_TYPE_GROUP = 1
+
+MenuStrip = List["MenuNode"]
+
+
+class MenuNode(TypedDict, total=False):
+    """Representation of the abstract syntax tree."""
+    mtype: int  # 0: item, 1: group
+    id: int  # TBD, except for Root which is always 1
+    parent: "MenuNode"
+    name: str
+    prefix: str
+    strips: List[MenuStrip]  # List of MenuNodes in groups of 5
 
 
 # -----------------------------------------------------------------------------
+
 
 class Lexer:
     """Read the sys.stdin and tokenize by spliting on white spaces. Comments
@@ -99,22 +123,6 @@ class Lexer:
 # -----------------------------------------------------------------------------
 
 
-MENU_TYPE_ITEM = 0
-MENU_TYPE_GROUP = 1
-
-MenuStrip = List["MenuNode"]
-
-
-class MenuNode(TypedDict, total=False):
-    """Representation of the abstract syntax tree."""
-    mtype: int  # 0: item, 1: group
-    id: int  # TBD, except for Root which is always 1
-    parent: "MenuNode"
-    name: str
-    id_prefix: str
-    strips: List[MenuStrip]  # List of MenuNodes in groups of 5
-
-
 class Parser:
     """Create an abstract syntax tree (AST) of MenuNodes that represents the
     items in the menu definition file.
@@ -143,7 +151,8 @@ class Parser:
         node = MenuNode()
         node["mtype"] = MENU_TYPE_GROUP
         node["name"] = self.lexer.get_token()
-        node["id_prefix"] = self.lexer.get_token()
+        node["prefix"] = self.lexer.get_token()
+        node["id"] = 0  # added early to help debugging with pprint.pp()
 
         token = self.lexer.get_token()
         if token != '[':
@@ -199,7 +208,7 @@ class Parser:
         item = MenuNode()
         item["mtype"] = MENU_TYPE_ITEM
         item["name"] = self.lexer.get_token()
-        item["id_prefix"] = self.lexer.get_token()
+        item["prefix"] = self.lexer.get_token()
         return item
 
 
@@ -210,22 +219,24 @@ class Normalizer:
     """
     def __init__(self, root: MenuNode):
         self.root = root
+        self.blank_counter = 0
 
     def normalize(self) -> None:
         self.normalize_group(self.root)
 
     def normalize_group(self, node: MenuNode) -> None:
+        # Process the current group.
         self.verify_at_least_one_strip(node)
         self.normalize_partial_strips(node)
+        self.add_blank_prefixes(node)
 
-        # Recursively validate/normalize submenus.
+        # Recursively descend the subgroups if any.
         strips = node["strips"]
-        assert strips is not None
         for strip in strips:
-            for node in strip:
-                mtype = node["mtype"]
+            for slot in strip:
+                mtype = slot["mtype"]
                 if mtype == MENU_TYPE_GROUP:
-                    self.normalize_group(node)
+                    self.normalize_group(slot)
 
     def verify_at_least_one_strip(self, node: MenuNode) -> None:
         """Verify that each ModeGroup has at least one MenuStrip."""
@@ -258,12 +269,67 @@ class Normalizer:
                 blank: MenuNode = {
                     "mtype": MENU_TYPE_ITEM,
                     "name": "*",
-                    "id_prefix": "*",
+                    "prefix": "*",
                 }
                 strip.append(blank)
 
+    def add_blank_prefixes(self, node: MenuNode) -> None:
+        """Add 'mBlankXX' as prefixes of blank menus."""
+        strips = node["strips"]
+        for strip in strips:
+            for slot in strip:
+                name = slot["name"]
+                if name == "*":
+                    prefix = f"mBlank{self.blank_counter:02}"
+                    slot["prefix"] = prefix
+                    self.blank_counter += 1
 
 # -----------------------------------------------------------------------------
+
+
+class SymbolGenerator:
+    def __init__(self, root: MenuNode):
+        self.root = root
+        self.id_map: Dict[int, MenuNode] = {}
+        self.name_map: Dict[str, MenuNode] = {}
+        self.id_counter = 1  # Root starts at id=1
+
+    def generate(self) -> None:
+        self.generate_entry(self.root)
+        self.generate_group(self.root)
+
+    def generate_group(self, node: MenuNode) -> None:
+        # Process the current group.
+        strips = node["strips"]
+        for strip in strips:
+            for slot in strip:
+                self.generate_entry(slot)
+
+        # Recursively descend subgroups if any.
+        for strip in strips:
+            for slot in strip:
+                mtype = slot["mtype"]
+                if mtype == MENU_TYPE_GROUP:
+                    self.generate_group(slot)
+
+    def generate_entry(self, node: MenuNode) -> None:
+        # Add menu name to the name_map[] table
+        name = node["name"]
+        if name != "*":
+            entry = self.name_map.get(name)
+            if entry is not None:
+                raise ValueError(
+                    f"MenuItem '{name}' already exists"
+                )
+        id = self.id_counter
+        node["id"] = id
+        self.name_map[name] = node
+        self.id_map[id] = node
+        self.id_counter += 1
+
+
+# -----------------------------------------------------------------------------
+
 
 if __name__ == '__main__':
     main()
