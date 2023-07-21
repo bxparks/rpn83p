@@ -11,31 +11,21 @@ Usage:
 $ parsemenu.py < menudef.txt > menudef.asm
 """
 
+from typing import Dict
 from typing import List
 from typing import Optional
 from typing import TextIO
+from typing import TypedDict
 
 # import argparse
 # import logging
 import sys
 
 
-# Monotonic counter for 'MenuItem * *' declarations.
-blank_menu_item_index = 0
-
-
 def main() -> None:
     lexer = Lexer(sys.stdin)
-    while True:
-        token = lexer.get_token()
-        if not token:
-            break
-        print(token)
-
-        # if token == 'MenuGroup':
-        # process_menugroup()
-        # else:
-        # raise ValueError(f"Unexpected token '{token}'")
+    parser = Parser(lexer)
+    parser.parse()
 
 
 class Lexer:
@@ -92,6 +82,58 @@ class Lexer:
                 continue
 
             return line
+
+
+class MenuNode(TypedDict, total=False):
+    type: int  # 0: item, 1: group
+    id: int
+    parent_id: int
+    id_prefix: str
+    name: str
+    num_strips: int
+    first_strip_id: int
+    children: List["MenuNode"]
+
+
+class Parser:
+    def __init__(self, lexer: Lexer):
+        self.lexer = lexer
+
+        # Monotonic counter for 'MenuItem * *' declarations.
+        self.blank_menu_item_index = 0
+
+        self.root_node: MenuNode = {
+            "type": 1,
+            "id": 1,
+            "parent_id": 0,
+            "name": "root",
+            "id_prefix": None,  # TDB
+            "num_strips": 0,  # TDB
+            "first_strip_id": 0,  # TDB
+            "children": [],
+        }
+
+        self.nodes: Dict[int, MenuNode] = {
+            1: self.root_node,
+        }
+
+    def parse(self) -> None:
+        while True:
+            token = self.lexer.get_token()
+            if not token:
+                break
+            print(token)
+
+            if token == 'MenuGroup':
+                self.process_menugroup()
+            else:
+                raise ValueError(
+                    f"Unexpected token '{token}' "
+                    f"at line {self.lexer.line_number}"
+                )
+
+    def process_menugroup(self) -> None:
+        pass
 
 
 if __name__ == '__main__':
