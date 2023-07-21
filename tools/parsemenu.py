@@ -330,12 +330,17 @@ class Validator:
             strip_index += 1
 
     def validate_prefix(self, node: MenuNode) -> None:
-        """Validate that the 'prefix' does not begin with reserved prefixes:
-        'mBlank', '*'
+        """Validate that the 'prefix' does not begin with reserved prefixes
+        ('mBlank', '*', 'mNull', ...). Verify that '* *' can be used by MenuItem
+        only.
         """
         name = node["name"]
         prefix = node["prefix"]
         if prefix.startswith("mBlank"):
+            raise ValueError(
+                f"Illegal prefix '{prefix}' for Menu '{name}'"
+            )
+        if prefix.startswith("mNull"):
             raise ValueError(
                 f"Illegal prefix '{prefix}' for Menu '{name}'"
             )
