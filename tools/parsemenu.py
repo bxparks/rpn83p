@@ -11,7 +11,6 @@ Usage:
 $ parsemenu.py < menudef.txt > menudef.asm
 """
 
-from typing import Dict
 from typing import List
 from typing import Optional
 from typing import TextIO
@@ -20,12 +19,14 @@ from typing import TypedDict
 # import argparse
 # import logging
 import sys
+from pprint import pp
 
 
 def main() -> None:
     lexer = Lexer(sys.stdin)
     parser = Parser(lexer)
-    parser.parse()
+    root = parser.parse()
+    pp(root)
 
 
 class Lexer:
@@ -84,56 +85,108 @@ class Lexer:
             return line
 
 
+MENU_TYPE_ITEM = 0
+MENU_TYPE_GROUP = 1
+
+MenuStrip = List["MenuNode"]
+
+
 class MenuNode(TypedDict, total=False):
-    type: int  # 0: item, 1: group
-    id: int
-    parent_id: int
-    id_prefix: str
+    """Representation of the abstract syntax tree."""
+    mtype: int  # 0: item, 1: group
+    id: int  # TBD, except for Root which is always 1
+    parent: "MenuNode"
     name: str
-    num_strips: int
-    first_strip_id: int
-    children: List["MenuNode"]
+    id_prefix: str
+    strips: List[MenuStrip]  # List of MenuNodes in groups of 5
 
 
 class Parser:
+    """Create an abstract syntax tree (AST) of MenuNodes that represents the
+    items in the menu definition file.
+    """
     def __init__(self, lexer: Lexer):
         self.lexer = lexer
 
-        # Monotonic counter for 'MenuItem * *' declarations.
-        self.blank_menu_item_index = 0
-
-        self.root_node: MenuNode = {
-            "type": 1,
-            "id": 1,
-            "parent_id": 0,
-            "name": "root",
-            "id_prefix": None,  # TDB
-            "num_strips": 0,  # TDB
-            "first_strip_id": 0,  # TDB
-            "children": [],
-        }
-
-        self.nodes: Dict[int, MenuNode] = {
-            1: self.root_node,
-        }
-
-    def parse(self) -> None:
+    def parse(self) -> MenuNode:
         while True:
             token = self.lexer.get_token()
             if not token:
                 break
-            print(token)
+            print(f"[{self.lexer.line_number}] {token}")
 
             if token == 'MenuGroup':
-                self.process_menugroup()
+                root = self.process_menugroup()
+            else:
+                raise ValueError(
+                    f"Unexpected root token '{token}' "
+                    f"at line {self.lexer.line_number}"
+                )
+        return root
+
+    def process_menugroup(self) -> MenuNode:
+        """A MenuGroup is a list of MenuStrips."""
+        node = MenuNode()
+        node["mtype"] = MENU_TYPE_GROUP
+        node["name"] = self.lexer.get_token()
+        node["id_prefix"] = self.lexer.get_token()
+
+        token = self.lexer.get_token()
+        if token != '[':
+            raise ValueError(
+                f"Unexpected token '{token}' "
+                f"at line {self.lexer.line_number}, should be '['"
+            )
+        # Process list of MenuStrip
+        strips: List[MenuStrip] = []
+        while True:
+            token = self.lexer.get_token()
+            if token == 'MenuStrip':
+                strip = self.process_menustrip()
+            elif token == ']':
+                break
+            else:
+                raise ValueError(
+                    f"Unexpected token '{token}' "
+                    f"at line {self.lexer.line_number}, should be 'MenuStrip'"
+                    " or ']'"
+                )
+            strips.append(strip)
+        node["strips"] = strips
+        return node
+
+    def process_menustrip(self) -> MenuStrip:
+        """A MenuStrip is a list of MenuItem or MenuGroup."""
+        strip: MenuStrip = []
+        token = self.lexer.get_token()
+        if token != '[':
+            raise ValueError(
+                f"Unexpected token '{token}' "
+                f"at line {self.lexer.line_number}, should be '['"
+            )
+        # Process list of MenuItems or MenuGroups
+        while True:
+            token = self.lexer.get_token()
+            if token == 'MenuItem':
+                node = self.process_menuitem()
+            elif token == 'MenuGroup':
+                node = self.process_menugroup()
+            elif token == ']':
+                break
             else:
                 raise ValueError(
                     f"Unexpected token '{token}' "
                     f"at line {self.lexer.line_number}"
                 )
+            strip.append(node)
+        return strip
 
-    def process_menugroup(self) -> None:
-        pass
+    def process_menuitem(self) -> MenuNode:
+        item = MenuNode()
+        item["mtype"] = MENU_TYPE_ITEM
+        item["name"] = self.lexer.get_token()
+        item["id_prefix"] = self.lexer.get_token()
+        return item
 
 
 if __name__ == '__main__':
