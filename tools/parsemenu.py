@@ -219,7 +219,6 @@ class Normalizer:
     """
     def __init__(self, root: MenuNode):
         self.root = root
-        self.blank_counter = 0
 
     def normalize(self) -> None:
         self.normalize_group(self.root)
@@ -228,7 +227,6 @@ class Normalizer:
         # Process the current group.
         self.verify_at_least_one_strip(node)
         self.normalize_partial_strips(node)
-        self.add_blank_prefixes(node)
 
         # Recursively descend the subgroups if any.
         strips = node["strips"]
@@ -272,17 +270,6 @@ class Normalizer:
                     "prefix": "*",
                 }
                 strip.append(blank)
-
-    def add_blank_prefixes(self, node: MenuNode) -> None:
-        """Add 'mBlankXX' as prefixes of blank menus."""
-        strips = node["strips"]
-        for strip in strips:
-            for slot in strip:
-                name = slot["name"]
-                if name == "*":
-                    prefix = f"mBlank{self.blank_counter:02}"
-                    slot["prefix"] = prefix
-                    self.blank_counter += 1
 
 # -----------------------------------------------------------------------------
 
@@ -329,12 +316,17 @@ class SymbolGenerator:
                 raise ValueError(f"Duplicate MenuItem.prefix '{prefix}'")
             self.prefix_map[prefix] = node
 
+        # Add id and parent_id.
         id = self.id_counter
         node["id"] = id
         node["parent_id"] = parent_id
         self.id_map[id] = node
         self.id_counter += 1
 
+        # Set prefix='mBlankXXX' for blank menus
+        if name == "*":
+            prefix = f"mBlank{id:03}"
+            node["prefix"] = prefix
 
 # -----------------------------------------------------------------------------
 
