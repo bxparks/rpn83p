@@ -18,5 +18,5 @@ mypy:
 test:
 	python3 -m unittest
 
-menusample.asm: menusample.txt
-	./parsemenu.py < $<
+menusample.asm: menusample.txt parsemenu.py
+	./parsemenu.py -o $@ $<
