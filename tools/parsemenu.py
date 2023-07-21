@@ -8,7 +8,7 @@ Parse the Menu Definition Language file and produce a TI-OS Z80 assembly
 language file.
 
 Usage:
-$ parsemenu.py < menudef.txt > menudef.asm
+$ parsemenu.py < menusample.txt > menusample.asm
 """
 
 from typing import List
@@ -24,10 +24,16 @@ from pprint import pp
 
 def main() -> None:
     lexer = Lexer(sys.stdin)
+    #
     parser = Parser(lexer)
     root = parser.parse()
+    #
+    normalizer = Normalizer(root)
+    normalizer.normalize()
     pp(root)
 
+
+# -----------------------------------------------------------------------------
 
 class Lexer:
     """Read the sys.stdin and tokenize by spliting on white spaces. Comments
@@ -41,7 +47,13 @@ class Lexer:
         # Internal buffer to hold batches of tokens from each line.
         self.current_tokens: List[str] = []
 
-    def get_token(self) -> Optional[str]:
+    def get_token(self) -> str:
+        token = self.get_token_or_none()
+        if token is None:
+            raise ValueError("Unexpected EOF")
+        return token
+
+    def get_token_or_none(self) -> Optional[str]:
         """Read the next token. Return None if EOF."""
         if len(self.current_tokens) == 0:
             current_line = self.read_line()
@@ -84,6 +96,8 @@ class Lexer:
 
             return line
 
+# -----------------------------------------------------------------------------
+
 
 MENU_TYPE_ITEM = 0
 MENU_TYPE_GROUP = 1
@@ -110,8 +124,8 @@ class Parser:
 
     def parse(self) -> MenuNode:
         while True:
-            token = self.lexer.get_token()
-            if not token:
+            token = self.lexer.get_token_or_none()
+            if token is None:
                 break
             print(f"[{self.lexer.line_number}] {token}")
 
@@ -188,6 +202,68 @@ class Parser:
         item["id_prefix"] = self.lexer.get_token()
         return item
 
+
+# -----------------------------------------------------------------------------
+
+class Normalizer:
+    """Normalize the AST, filling in various implicit nodes.
+    """
+    def __init__(self, root: MenuNode):
+        self.root = root
+
+    def normalize(self) -> None:
+        self.normalize_group(self.root)
+
+    def normalize_group(self, node: MenuNode) -> None:
+        self.verify_at_least_one_strip(node)
+        self.normalize_partial_strips(node)
+
+        # Recursively validate/normalize submenus.
+        strips = node["strips"]
+        assert strips is not None
+        for strip in strips:
+            for node in strip:
+                mtype = node["mtype"]
+                if mtype == MENU_TYPE_GROUP:
+                    self.normalize_group(node)
+
+    def verify_at_least_one_strip(self, node: MenuNode) -> None:
+        """Verify that each ModeGroup has at least one MenuStrip."""
+        name = node["name"]
+        strips = node["strips"]
+        if len(strips) == 0:
+            raise ValueError(
+                f"MenGroup {name} must have at least one MenuStrip"
+            )
+
+    def normalize_partial_strips(self, node: MenuNode) -> None:
+        """Add implicit MenuNodes to any partial MenuStrip (i.e. strips which do
+        not contain exact 5 MenuNodes)."""
+        name = node["name"]
+        strips = node["strips"]
+        strip_index = 1
+        for strip in strips:
+            num_nodes = len(strip)
+            if num_nodes > 5:
+                raise ValueError(
+                    f"MenGroup {name}, strip {strip_index} has too "
+                    f"many ({num_nodes}) nodes, must be <= 5"
+                )
+            if num_nodes == 0:
+                raise ValueError(
+                    f"MenGroup {name}, strip {strip_index} has 0 nodes"
+                )
+            # Add implicit blank menu items
+            for i in range(5 - num_nodes):
+                blank: MenuNode = {
+                    "mtype": MENU_TYPE_ITEM,
+                    "name": "*",
+                    "id_prefix": "*",
+                }
+                strip.append(blank)
+
+
+# -----------------------------------------------------------------------------
 
 if __name__ == '__main__':
     main()
