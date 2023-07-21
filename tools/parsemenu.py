@@ -50,7 +50,7 @@ class MenuNode(TypedDict, total=False):
     """Representation of the abstract syntax tree."""
     mtype: int  # 0: item, 1: group
     id: int  # TBD, except for Root which is always 1
-    parent: "MenuNode"
+    parent_id: int
     name: str
     prefix: str
     strips: List[MenuStrip]  # List of MenuNodes in groups of 5
@@ -135,7 +135,6 @@ class Parser:
             token = self.lexer.get_token_or_none()
             if token is None:
                 break
-            print(f"[{self.lexer.line_number}] {token}")
 
             if token == 'MenuGroup':
                 root = self.process_menugroup()
@@ -153,6 +152,7 @@ class Parser:
         node["name"] = self.lexer.get_token()
         node["prefix"] = self.lexer.get_token()
         node["id"] = 0  # added early to help debugging with pprint.pp()
+        node["parent_id"] = 0
 
         token = self.lexer.get_token()
         if token != '[':
@@ -295,15 +295,16 @@ class SymbolGenerator:
         self.id_counter = 1  # Root starts at id=1
 
     def generate(self) -> None:
-        self.generate_entry(self.root)
+        self.generate_entry(self.root, 0)
         self.generate_group(self.root)
 
     def generate_group(self, node: MenuNode) -> None:
         # Process the current group.
+        id = node["id"]
         strips = node["strips"]
         for strip in strips:
             for slot in strip:
-                self.generate_entry(slot)
+                self.generate_entry(slot, id)
 
         # Recursively descend subgroups if any.
         for strip in strips:
@@ -312,7 +313,7 @@ class SymbolGenerator:
                 if mtype == MENU_TYPE_GROUP:
                     self.generate_group(slot)
 
-    def generate_entry(self, node: MenuNode) -> None:
+    def generate_entry(self, node: MenuNode, parent_id: int) -> None:
         # Add menu name to the name_map[] table
         name = node["name"]
         if name != "*":
@@ -323,6 +324,7 @@ class SymbolGenerator:
                 )
         id = self.id_counter
         node["id"] = id
+        node["parent_id"] = parent_id
         self.name_map[name] = node
         self.id_map[id] = node
         self.id_counter += 1
