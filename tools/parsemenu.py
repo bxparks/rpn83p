@@ -255,7 +255,7 @@ class Normalizer:
         strips = node["strips"]
         if len(strips) == 0:
             raise ValueError(
-                f"MenGroup {name} must have at least one MenuStrip"
+                f"MenuGroup '{name}' must have at least one MenuStrip"
             )
 
     def normalize_partial_strips(self, node: MenuNode) -> None:
@@ -263,7 +263,7 @@ class Normalizer:
         not contain exact 5 MenuNodes)."""
         name = node["name"]
         strips = node["strips"]
-        strip_index = 1
+        strip_index = 0
         for strip in strips:
             num_nodes = len(strip)
             if num_nodes > 5:
@@ -284,6 +284,8 @@ class Normalizer:
                 }
                 strip.append(blank)
 
+            strip_index += 1
+
     def validate_prefix(self, node: MenuNode) -> None:
         """Validate that the 'prefix' does not begin with reserved prefixes:
         'mBlank', '*'
@@ -295,6 +297,11 @@ class Normalizer:
                 f"Illegal prefix '{prefix}' for Menu '{name}'"
             )
         if name == '*':
+            mtype = node["mtype"]
+            if mtype != MENU_TYPE_ITEM:
+                raise ValueError(
+                    f"Invalid name '{name}' for MenuGroup"
+                )
             if prefix != '*':
                 raise ValueError(
                     f"Illegal prefix '{prefix}' for blank Menu '{name}'"
