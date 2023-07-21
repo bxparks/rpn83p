@@ -24,7 +24,7 @@ MenuGroup root mRoot [
         MenuItem PERM mPermutation
         MenuItem COMB mCombination
         MenuItem N! mFactorial
-        MenuItem RND mRandom
+        MenuItem RAND mRandom
         MenuItem SEED mRandomSeed
       ]
     ]
