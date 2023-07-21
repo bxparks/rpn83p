@@ -29,8 +29,8 @@ def main() -> None:
     parser = Parser(lexer)
     root = parser.parse()
 
-    normalizer = Normalizer(root)
-    normalizer.normalize()
+    validator = Validator(root)
+    validator.validate()
 
     generator = SymbolGenerator(root)
     generator.generate()
@@ -214,40 +214,39 @@ class Parser:
 
 # -----------------------------------------------------------------------------
 
-class Normalizer:
-    """Normalize the AST, filling in various implicit nodes. Also perform some
-    validations.
+class Validator:
+    """Validate the AST, adding implicit blank MenuItem nodes if necessary.
     """
     def __init__(self, root: MenuNode):
         self.root = root
 
-    def normalize(self) -> None:
-        self.normalize_node(self.root)
-        self.normalize_group(self.root)
+    def validate(self) -> None:
+        self.validate_node(self.root)
+        self.validate_group(self.root)
 
-    def normalize_node(self, node: MenuNode) -> None:
-        """Normalize the current node, no recursion."""
+    def validate_node(self, node: MenuNode) -> None:
+        """Validate the current node, no recursion."""
         self.validate_prefix(node)
         if node["mtype"] == MENU_TYPE_GROUP:
             self.verify_at_least_one_strip(node)
             self.normalize_partial_strips(node)
 
-    def normalize_group(self, node: MenuNode) -> None:
-        """Process the strips of the current MenuGroup. Then recursively descend
-        any sub groups.
+    def validate_group(self, node: MenuNode) -> None:
+        """Validate the strips of the current MenuGroup. Then recursively
+        descend any sub groups.
         """
         # Process the current group.
         strips = node["strips"]
         for strip in strips:
             for slot in strip:
-                self.normalize_node(slot)
+                self.validate_node(slot)
 
         # Recursively descend the subgroups if any.
         for strip in strips:
             for slot in strip:
                 mtype = slot["mtype"]
                 if mtype == MENU_TYPE_GROUP:
-                    self.normalize_group(slot)
+                    self.validate_group(slot)
 
     def verify_at_least_one_strip(self, node: MenuNode) -> None:
         """Verify that each ModeGroup has at least one MenuStrip."""
