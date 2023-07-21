@@ -25,16 +25,16 @@ from pprint import pp
 
 def main() -> None:
     lexer = Lexer(sys.stdin)
-    #
+
     parser = Parser(lexer)
     root = parser.parse()
-    #
+
     normalizer = Normalizer(root)
     normalizer.normalize()
-    #
+
     generator = SymbolGenerator(root)
     generator.generate()
-    #
+
     pp(root)
 
 # -----------------------------------------------------------------------------
@@ -215,21 +215,34 @@ class Parser:
 # -----------------------------------------------------------------------------
 
 class Normalizer:
-    """Normalize the AST, filling in various implicit nodes.
+    """Normalize the AST, filling in various implicit nodes. Also perform some
+    validations.
     """
     def __init__(self, root: MenuNode):
         self.root = root
 
     def normalize(self) -> None:
+        self.normalize_node(self.root)
         self.normalize_group(self.root)
 
+    def normalize_node(self, node: MenuNode) -> None:
+        """Normalize the current node, no recursion."""
+        self.validate_prefix(node)
+        if node["mtype"] == MENU_TYPE_GROUP:
+            self.verify_at_least_one_strip(node)
+            self.normalize_partial_strips(node)
+
     def normalize_group(self, node: MenuNode) -> None:
+        """Process the strips of the current MenuGroup. Then recursively descend
+        any sub groups.
+        """
         # Process the current group.
-        self.verify_at_least_one_strip(node)
-        self.normalize_partial_strips(node)
+        strips = node["strips"]
+        for strip in strips:
+            for slot in strip:
+                self.normalize_node(slot)
 
         # Recursively descend the subgroups if any.
-        strips = node["strips"]
         for strip in strips:
             for slot in strip:
                 mtype = slot["mtype"]
@@ -271,6 +284,31 @@ class Normalizer:
                 }
                 strip.append(blank)
 
+    def validate_prefix(self, node: MenuNode) -> None:
+        """Validate that the 'prefix' does not begin with reserved prefixes:
+        'mBlank', '*'
+        """
+        name = node["name"]
+        prefix = node["prefix"]
+        if prefix.startswith("mBlank"):
+            raise ValueError(
+                f"Illegal prefix '{prefix}' for Menu '{name}'"
+            )
+        if name == '*':
+            if prefix != '*':
+                raise ValueError(
+                    f"Illegal prefix '{prefix}' for blank Menu '{name}'"
+                )
+        else:
+            if not prefix[0].isalpha():
+                raise ValueError(
+                    f"Illegal prefix '{prefix}' for regular Menu '{name}'"
+                )
+            if prefix == '*':
+                raise ValueError(
+                    f"Illegal prefix '{prefix}' for regular Menu '{name}'"
+                )
+
 # -----------------------------------------------------------------------------
 
 
@@ -283,16 +321,19 @@ class SymbolGenerator:
         self.id_counter = 1  # Root starts at id=1
 
     def generate(self) -> None:
-        self.generate_entry(self.root, 0)
+        self.generate_node(self.root, 0)
         self.generate_group(self.root)
 
     def generate_group(self, node: MenuNode) -> None:
+        """Process the strips of the current MenuGroup. Then recursively descend
+        any sub groups.
+        """
         # Process the current group.
         id = node["id"]
         strips = node["strips"]
         for strip in strips:
             for slot in strip:
-                self.generate_entry(slot, id)
+                self.generate_node(slot, id)
 
         # Recursively descend subgroups if any.
         for strip in strips:
@@ -301,7 +342,8 @@ class SymbolGenerator:
                 if mtype == MENU_TYPE_GROUP:
                     self.generate_group(slot)
 
-    def generate_entry(self, node: MenuNode, parent_id: int) -> None:
+    def generate_node(self, node: MenuNode, parent_id: int) -> None:
+        """Process the given node, no recursion."""
         # Add menu name to the name_map[] table
         name = node["name"]
         if name != "*":
