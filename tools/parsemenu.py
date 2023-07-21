@@ -292,6 +292,7 @@ class SymbolGenerator:
         self.root = root
         self.id_map: Dict[int, MenuNode] = {}
         self.name_map: Dict[str, MenuNode] = {}
+        self.prefix_map: Dict[str, MenuNode] = {}
         self.id_counter = 1  # Root starts at id=1
 
     def generate(self) -> None:
@@ -319,13 +320,18 @@ class SymbolGenerator:
         if name != "*":
             entry = self.name_map.get(name)
             if entry is not None:
-                raise ValueError(
-                    f"MenuItem '{name}' already exists"
-                )
+                raise ValueError(f"Duplicate MenuItem.name '{name}'")
+            self.name_map[name] = node
+
+            prefix = node["prefix"]
+            entry = self.prefix_map.get(prefix)
+            if entry is not None:
+                raise ValueError(f"Duplicate MenuItem.prefix '{prefix}'")
+            self.prefix_map[prefix] = node
+
         id = self.id_counter
         node["id"] = id
         node["parent_id"] = parent_id
-        self.name_map[name] = node
         self.id_map[id] = node
         self.id_counter += 1
 
