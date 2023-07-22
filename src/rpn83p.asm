@@ -216,6 +216,7 @@ mainExit:
 #include "handlertab.asm"
 #include "menu.asm"
 #include "menudevdef.asm"
+#include "menuhandlers.asm"
 
 ;-----------------------------------------------------------------------------
 

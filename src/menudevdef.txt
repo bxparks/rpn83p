@@ -21,8 +21,8 @@ MenuGroup root mRoot [
     ]
     MenuGroup PROB mProb [
       MenuStrip [
-        MenuItem PERM mPermutation
-        MenuItem COMB mCombination
+        MenuItem PERM mPerm
+        MenuItem COMB mComb
         MenuItem N! mFactorial
         MenuItem RAND mRandom
         MenuItem SEED mRandomSeed

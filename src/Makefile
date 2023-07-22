@@ -12,6 +12,7 @@ SRCS := \
 	handlertab.asm \
 	menu.asm \
 	menudevdef.asm \
+	menuhandlers.asm \
 	parsenum.asm \
 	pstring.asm \
 	rpn83p.asm \
@@ -22,6 +23,9 @@ rpn83p.8xp: $(SRCS)
 
 rpn83p.lst: $(SRCS)
 	$(SPASM) -I $(SPASM_INC) -N -T rpn83p.asm rpn83p.8xp
+
+menudevdef.asm: menudevdef.txt ../tools/parsemenu.py
+	../tools/parsemenu.py -o $@ $<
 
 clean:
 	rm -f $(TARGETS)
