@@ -4,13 +4,20 @@
 #
 # Grammar (I really should learn something like eBNF properly):
 #   node = (menuitem | menugroup)
-#   menuitem = 'MenuItem' label identifier
-#   menugroup =  'MenuGroup' label identifier '[' menustrip* ']'
+#   menuitem = 'MenuItem' name label
+#   menugroup =  'MenuGroup' name label '[' menustrip* ']'
 #   menustrip = 'MenuStrip' '[' node*5 ']'
+#   name = (alpha+ | '*')
 #   label = (alpha+ | '*')
-#   identifier = (alpha+ | '*')
 #   alpha = ( printableASCII | tag )
-#   tag = '<' identifier '>' # allows special tokens, e.g. Greek letters
+#   tag = '<' printableASCII+ '>'
+#
+# Semantics:
+#   name: the display name for the menu
+#   label: identifier for the node data in the assembly code, also used as
+#       prefix for other identifiers (e.g. if the label="mNum", there will be
+#       other identifiers such as "mNumId", "mNumNameId").
+#   tag: allows special tokens, e.g. Greek letters using "<delta>"
 #
 # Parsing rules:
 #   - tokens are separated by spaces
