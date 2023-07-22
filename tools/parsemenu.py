@@ -536,13 +536,19 @@ mNullId equ 0
 
     def generate_menu_group(self, node: MenuNode) -> None:
         group_name = node["name"]
-        print(f"; MenuGroup {group_name} > direct children", file=self.output)
+        print(f"; MenuGroup {group_name}: children", file=self.output)
 
         # Process the direct children of the current group.
         strips = node["strips"]
+        strip_index = 0
         for strip in strips:
+            print(
+                f"; MenuGroup {group_name}: children: strip {strip_index}",
+                file=self.output
+            )
             for slot in strip:
                 self.generate_menu_node(slot)
+            strip_index += 1
 
         # Recursively descend subgroups if any.
         for strip in strips:
