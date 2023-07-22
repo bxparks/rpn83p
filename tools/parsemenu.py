@@ -493,6 +493,7 @@ mNullId equ 0
         prefix = node["prefix"]
         id = node["id"]
         parent_id = node["parent_id"]
+
         if parent_id == 0:
             parent_node = None
             parent_node_prefix = "mNull"
@@ -504,12 +505,18 @@ mNullId equ 0
             num_strips = 0
             strip_begin_id = 0
             if name == '*':
+                node_id = f"{prefix}Id"
+                name_id = "mNullNameId"
                 handler = "mNullHandler"
                 handler_comment = "predefined"
             else:
+                node_id = f"{prefix}Id"
+                name_id = f"{prefix}NameId"
                 handler = f"{prefix}Handler"
                 handler_comment = "to be implemented"
         else:
+            node_id = f"{prefix}Id"
+            name_id = f"{prefix}NameId"
             strips = node["strips"]
             num_strips = len(strips)
             strip_begin_id = strips[0][0]["id"]
@@ -519,9 +526,9 @@ mNullId equ 0
         print(f"""\
 {prefix}:
 {prefix}Id equ {id}
-    .db {prefix}Id ; id
+    .db {node_id} ; id
     .db {parent_node_prefix}Id ; parentId
-    .db {prefix}NameId ; nameId
+    .db {name_id} ; nameId
     .db {num_strips} ; numStrips
     .db {strip_begin_id} ; stripBeginId
     .dw {handler} ; handler ({handler_comment})
