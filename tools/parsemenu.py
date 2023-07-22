@@ -436,7 +436,7 @@ class CodeGenerator:
     ):
         self.inputfile = inputfile
         self.root = root
-        self.id_map = symbols.id_map
+        self.id_map = symbols.id_map  # {node_id -> MenuNode}
         self.name_map = symbols.name_map  # {node_name -> MenuNode}
         self.flat_names: List[MenuNode] = []
 
@@ -503,7 +503,7 @@ mNullId equ 0
 
         if mtype == MENU_TYPE_ITEM:
             num_strips = 0
-            strip_begin_id = 0
+            strip_begin_id = "0"
             if name == '*':
                 node_id = f"{prefix}Id"
                 name_id = "mNullNameId"
@@ -519,7 +519,9 @@ mNullId equ 0
             name_id = f"{prefix}NameId"
             strips = node["strips"]
             num_strips = len(strips)
-            strip_begin_id = strips[0][0]["id"]
+            begin_id = strips[0][0]["id"]
+            strip_begin_node = self.id_map[begin_id]
+            strip_begin_id = strip_begin_node["prefix"] + "Id"
             handler = "mGroupHandler"
             handler_comment = "predefined"
 
