@@ -281,7 +281,6 @@ class MenuParser:
 
 class Validator:
     """Validate the AST, adding implicit blank MenuItem nodes if necessary.
-    TODO: Validate len(strips) == 0 for MenuItem.
     """
     def __init__(self, root: MenuNode):
         self.root = root
@@ -296,6 +295,8 @@ class Validator:
         if node["mtype"] == MENU_TYPE_GROUP:
             self.verify_at_least_one_strip(node)
             self.normalize_partial_strips(node)
+        else:
+            self.verify_no_strip(node)
 
     def validate_group(self, node: MenuNode) -> None:
         """Validate the strips of the current MenuGroup. Then recursively
@@ -313,6 +314,18 @@ class Validator:
                 mtype = slot["mtype"]
                 if mtype == MENU_TYPE_GROUP:
                     self.validate_group(slot)
+
+    def verify_no_strip(self, node: MenuNode) -> None:
+        """Verify that a MenuItem has no MenuStrip. The parser should detect a
+        syntax error if a MenuItem is followed by a '[' token, so in theory this
+        should never be triggered. But this provides another layer of defense.
+        """
+        name = node["name"]
+        strips = node["strips"]
+        if len(strips) != 0:
+            raise ValueError(
+                f"MenuItem '{name}' cannot have a MenuStrip"
+            )
 
     def verify_at_least_one_strip(self, node: MenuNode) -> None:
         """Verify that each ModeGroup has at least one MenuStrip."""
