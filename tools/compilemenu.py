@@ -117,7 +117,7 @@ class MenuNode(TypedDict, total=False):
     id: int  # TBD, except for Root which is always 1
     parent_id: int
     name: str
-    prefix: str
+    label: str
     strips: List[MenuStrip]  # List of MenuNodes in groups of 5
 
 
@@ -215,7 +215,7 @@ class MenuParser:
         node = MenuNode()
         node["mtype"] = MENU_TYPE_GROUP
         node["name"] = self.lexer.get_token()
-        node["prefix"] = self.lexer.get_token()
+        node["label"] = self.lexer.get_token()
         node["id"] = 0  # added early to help debugging with pprint.pp()
         node["parent_id"] = 0
 
@@ -273,7 +273,7 @@ class MenuParser:
         item = MenuNode()
         item["mtype"] = MENU_TYPE_ITEM
         item["name"] = self.lexer.get_token()
-        item["prefix"] = self.lexer.get_token()
+        item["label"] = self.lexer.get_token()
         return item
 
 
@@ -292,7 +292,7 @@ class Validator:
 
     def validate_node(self, node: MenuNode) -> None:
         """Validate the current node, no recursion."""
-        self.validate_prefix(node)
+        self.validate_label(node)
         if node["mtype"] == MENU_TYPE_GROUP:
             self.verify_at_least_one_strip(node)
             self.normalize_partial_strips(node)
@@ -345,26 +345,26 @@ class Validator:
                 blank: MenuNode = {
                     "mtype": MENU_TYPE_ITEM,
                     "name": "*",
-                    "prefix": "*",
+                    "label": "*",
                 }
                 strip.append(blank)
 
             strip_index += 1
 
-    def validate_prefix(self, node: MenuNode) -> None:
-        """Validate that the 'prefix' does not begin with reserved prefixes
-        ('mBlank', '*', 'mNull', ...). Verify that '* *' can be used by MenuItem
-        only.
+    def validate_label(self, node: MenuNode) -> None:
+        """Validate that the 'label' does not begin with reserved labels
+        ('mBlank', '*', 'mNull', ...).
+        Verify that (name, label) of (*, *) can be used by MenuItem only.
         """
         name = node["name"]
-        prefix = node["prefix"]
-        if prefix.startswith("mBlank"):
+        label = node["label"]
+        if label.startswith("mBlank"):
             raise ValueError(
-                f"Illegal prefix '{prefix}' for Menu '{name}'"
+                f"Illegal label '{label}' for Menu '{name}'"
             )
-        if prefix.startswith("mNull"):
+        if label.startswith("mNull"):
             raise ValueError(
-                f"Illegal prefix '{prefix}' for Menu '{name}'"
+                f"Illegal label '{label}' for Menu '{name}'"
             )
         if name == '*':
             mtype = node["mtype"]
@@ -372,18 +372,18 @@ class Validator:
                 raise ValueError(
                     f"Invalid name '{name}' for MenuGroup"
                 )
-            if prefix != '*':
+            if label != '*':
                 raise ValueError(
-                    f"Illegal prefix '{prefix}' for blank Menu '{name}'"
+                    f"Illegal label '{label}' for blank Menu '{name}'"
                 )
         else:
-            if not prefix[0].isalpha():
+            if not label[0].isalpha():
                 raise ValueError(
-                    f"Illegal prefix '{prefix}' for regular Menu '{name}'"
+                    f"Illegal label '{label}' for regular Menu '{name}'"
                 )
-            if prefix == '*':
+            if label == '*':
                 raise ValueError(
-                    f"Illegal prefix '{prefix}' for regular Menu '{name}'"
+                    f"Illegal label '{label}' for regular Menu '{name}'"
                 )
 
 # -----------------------------------------------------------------------------
@@ -394,7 +394,7 @@ class SymbolGenerator:
         self.root = root
         self.id_map: Dict[int, MenuNode] = {}  # {node_id -> MenuNode}
         self.name_map: Dict[str, MenuNode] = {}  # {node_name -> MenuNode}
-        self.prefix_map: Dict[str, MenuNode] = {}  # {label_prefix -> MenuNode}
+        self.label_map: Dict[str, MenuNode] = {}  # {label_label -> MenuNode}
         self.id_counter = 1  # Root starts at id=1
 
     def generate(self) -> None:
@@ -429,11 +429,11 @@ class SymbolGenerator:
                 raise ValueError(f"Duplicate MenuItem.name '{name}'")
             self.name_map[name] = node
 
-            prefix = node["prefix"]
-            entry = self.prefix_map.get(prefix)
+            label = node["label"]
+            entry = self.label_map.get(label)
             if entry is not None:
-                raise ValueError(f"Duplicate MenuItem.prefix '{prefix}'")
-            self.prefix_map[prefix] = node
+                raise ValueError(f"Duplicate MenuItem.label '{label}'")
+            self.label_map[label] = node
 
         # Add id and parent_id.
         id = self.id_counter
@@ -442,10 +442,10 @@ class SymbolGenerator:
         self.id_map[id] = node
         self.id_counter += 1
 
-        # Set prefix='mBlankXXX' for blank menus
+        # Set label='mBlankXXX' for blank menus
         if name == "*":
-            prefix = f"mBlank{id:03}"
-            node["prefix"] = prefix
+            label = f"mBlank{id:03}"
+            node["label"] = label
 
 # -----------------------------------------------------------------------------
 
@@ -513,46 +513,46 @@ mNullId equ 0
     def generate_menu_node(self, node: MenuNode) -> None:
         mtype = node["mtype"]
         name = node["name"]
-        prefix = node["prefix"]
+        label = node["label"]
         id = node["id"]
         parent_id = node["parent_id"]
 
         if parent_id == 0:
             parent_node = None
-            parent_node_prefix = "mNull"
+            parent_node_label = "mNull"
         else:
             parent_node = self.id_map[parent_id]
-            parent_node_prefix = parent_node["prefix"]
+            parent_node_label = parent_node["label"]
 
         if mtype == MENU_TYPE_ITEM:
             num_strips = 0
             strip_begin_id = "0"
             if name == '*':
-                node_id = f"{prefix}Id"
+                node_id = f"{label}Id"
                 name_id = "mNullNameId"
                 handler = "mNullHandler"
                 handler_comment = "predefined"
             else:
-                node_id = f"{prefix}Id"
-                name_id = f"{prefix}NameId"
-                handler = f"{prefix}Handler"
+                node_id = f"{label}Id"
+                name_id = f"{label}NameId"
+                handler = f"{label}Handler"
                 handler_comment = "to be implemented"
         else:
-            node_id = f"{prefix}Id"
-            name_id = f"{prefix}NameId"
+            node_id = f"{label}Id"
+            name_id = f"{label}NameId"
             strips = node["strips"]
             num_strips = len(strips)
             begin_id = strips[0][0]["id"]
             strip_begin_node = self.id_map[begin_id]
-            strip_begin_id = strip_begin_node["prefix"] + "Id"
+            strip_begin_id = strip_begin_node["label"] + "Id"
             handler = "mGroupHandler"
             handler_comment = "predefined"
 
         print(f"""\
-{prefix}:
-{prefix}Id equ {id}
+{label}:
+{label}Id equ {id}
     .db {node_id} ; id
-    .db {parent_node_prefix}Id ; parentId
+    .db {parent_node_label}Id ; parentId
     .db {name_id} ; nameId
     .db {num_strips} ; numStrips
     .db {strip_begin_id} ; stripBeginId
@@ -596,11 +596,11 @@ mNullNameId equ 0
 """, file=self.output, end='')
         name_index = 1
         for node in names:
-            prefix = node["prefix"]
+            label = node["label"]
             name = node["name"]
             print(f"""\
-{prefix}NameId equ {name_index}
-    .dw {prefix}Name
+{label}NameId equ {name_index}
+    .dw {label}Name
 """, file=self.output, end='')
             name_index += 1
 
@@ -614,10 +614,10 @@ mNullName:
 """, file=self.output, end='')
         name_index = 1
         for node in names:
-            prefix = node["prefix"]
+            label = node["label"]
             name = node["name"]
             print(f"""\
-{prefix}Name:
+{label}Name:
     .db "{name}", 0
 """, file=self.output, end='')
             name_index += 1
