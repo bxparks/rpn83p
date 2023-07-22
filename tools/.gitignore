@@ -1,0 +1,2 @@
+# Ignore *.asm files generated during develoment and testing.
+*.asm

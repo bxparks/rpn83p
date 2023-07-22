@@ -1,5 +1,4 @@
-# Same as menudef.txt, but reduced down so that the assembly code data can be
-# hand coded during development.
+# A slimmed-down menudef.txt file for development and testing.
 
 MenuGroup root mRoot [
   MenuStrip [
@@ -9,9 +8,9 @@ MenuGroup root mRoot [
         MenuItem CBRT mCubeRoot # maybe use <super3><root> ?
         MenuItem ATN2 mAtan2
         MenuItem % mPercent
-        MenuItem * *
+        # MenuItem * * will be auto-inserted here
       ]
-      MenuStrip [ 
+      MenuStrip [
         MenuItem ABS mAbs
         MenuItem SIGN mSign
         MenuItem MOD mMod
@@ -21,8 +20,8 @@ MenuGroup root mRoot [
     ]
     MenuGroup PROB mProb [
       MenuStrip [
-        MenuItem PERM mPerm
-        MenuItem COMB mComb
+        MenuItem PERM mPermutation
+        MenuItem COMB mCombination
         MenuItem N! mFactorial
         MenuItem RAND mRandom
         MenuItem SEED mRandomSeed
@@ -38,5 +37,6 @@ MenuGroup root mRoot [
     MenuItem MODE mMode
     MenuItem HYP mHyperbolic
     MenuItem UNIT mUnit
+    # MenuItem * * will be auto-inserted here
   ]
 ]
