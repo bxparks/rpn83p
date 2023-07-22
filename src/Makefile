@@ -24,8 +24,8 @@ rpn83p.8xp: $(SRCS)
 rpn83p.lst: $(SRCS)
 	$(SPASM) -I $(SPASM_INC) -N -T rpn83p.asm rpn83p.8xp
 
-menudevdef.asm: menudevdef.txt ../tools/parsemenu.py
-	../tools/parsemenu.py -o $@ $<
+menudevdef.asm: menudevdef.txt ../tools/compilemenu.py
+	../tools/compilemenu.py -o $@ $<
 
 clean:
 	rm -f $(TARGETS)
