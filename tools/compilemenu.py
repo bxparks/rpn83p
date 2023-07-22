@@ -9,6 +9,28 @@ file.
 
 Usage:
 $ compilemenu.py [--debug] [--output menudef.asm] menudef.txt
+
+Data Structure and Algorithm Note:
+
+The menus are represented as a hierchical tree of nodes. There are 2 types of
+MenuNodes: MenuGroup, and MenuItem. A MenuGroup is composed of 1 or more of
+MenuStrip. Each MenuStrip contains exectly 5 MenuItems corresponding to the 5
+bottons on the top row of a TI-83 Plus or a TI-84 Plus series calculator.
+
+The tree traversal of the menu hierarchy to serial into the the Z-80 assembly
+language file is slightly strange. It is not depth-first, nor breadth-first, but
+a hybrid of the two. Traversal occurs in 2 steps:
+1) The direct children of the MenuGroup, as stored in the list of MenuStrip, are
+serialized,
+2) Then the direct children are scanned a second time, and for each MenuNode
+which happens to be a MenuGroup, the traversal routine is recursively called.
+
+This hybrid traversal algorithm ensures that in the serialized form, all the
+children nodes of a given MenuGroup are clustered together into a *contiguous*
+series of MenuNodes. This means that a MenuGroup can capture its children nodes
+(in groups organized by MenuStrips) with just 2 additional fields (`numStrips`
+and `stripBeginId`), without using a secondary data structure. Signficant amount
+of memory can be saved using this representation.
 """
 
 from typing import Dict
