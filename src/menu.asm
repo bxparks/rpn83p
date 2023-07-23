@@ -11,6 +11,8 @@
 ; 	void *handler; // pointer to the handler function
 ; };
 ;
+; sizeof(MenuNode) == 7
+;
 ;-----------------------------------------------------------------------------
 
 ; initMenu() -> None
@@ -78,7 +80,7 @@ getMenuStripBeginId:
 ; Output: HL: address of node
 ; Destroys: DE, HL
 getMenuNode:
-    ; HL = A * 5
+    ; HL = A * sizeof(MenuNode) = 7*A
     ld l, a
     ld h, 0
     ld e, l

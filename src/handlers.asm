@@ -467,7 +467,7 @@ handleKeyDownContinue:
 ; Destroys: all
 handleKeyMenuBack:
     ld hl, menuCurrentId
-    ld a, (hl)
+    ld a, (hl) ; A = menuCurrentId
     ; Check if already at rootGroup
     cp mRootId
     jr nz, handleKeyMenuBackToParent
@@ -477,52 +477,67 @@ handleKeyMenuBack:
     ld a, (hl) ; menuStripIndex
     or a
     ret z
-    xor a ; set stripIndex to 0
+    xor a ; set stripIndex to 0, set dirty bit
     jr handleKeyMenuBackStripSave
 
 handleKeyMenuBackToParent:
     ; Set menuCurrentId = child.parentId
-    ld c, a ; C=childId (saved)
-    call getMenuNode
+    ld c, a ; C=menuCurrentId=childId (saved)
+    call getMenuNode ; get current (child) node
     inc hl
     ld a, (hl) ; A=parentId
     ld (menuCurrentId), a
 
-    ; Get the numStrips and stripBeginId of the parent.
+    ; Get numStrips and stripBeginId of the parent.
+    call getMenuNode ; get parentNode
     inc hl
     inc hl
-    ld d, (hl) ; numStrips
     inc hl
-    ld a, (hl) ; stripBeginId
+    ld d, (hl) ; D=parent.numStrips
+    inc hl
+    ld a, (hl) ; A=parent.stripBeginId
 
-    ; Deduce the stripIndex from the childId above. The `stripIndex =
-    ; int((childId - stripBeginId)/5)` but the Z80 does not have a divison
-    ; instruction so we use a loop that increments an `index` in increments of
-    ; 5 to determine the corresponding stripIndex.
-    ;
-    ; The complication is that we want to evaluate `(childId < nodeId)` but the
-    ; Z80 instruction can only increment the A register, so we have to store
-    ; the `nodeId` in A and the `childId` in C. Which forces us to reverse the
-    ; comparison. But checking for NC (no carry) is equivalent to a '>='
-    ; instead of a '<', so we are forced to start at `5-1` instead of `5`. I
-    ; hope my future self will understand this explanation.
-    add a, 4 ; nodeId = stripBeginId + 4
-    ld b, d ; B (DJNZ counter) = numStrips
-handleKeyMenuBackLoop:
-    cp c ; nodeId - childId
-    jr nc, handleKeyMenuBackStripFound ; nodeId >= childId
-    add a, 5 ; nodeId += 5
-    djnz handleKeyMenuBackLoop
-    ; We should never fall off the end of the loop, but if we do, set the
-    ; stripIndex to 0.
-    xor a
-    jr handleKeyMenuBackStripSave
-handleKeyMenuBackStripFound:
-    ld a, d ; numStrips
-    sub b ; stripIndex = numStrips - B
+    ; Deduce the parent's stripIndex which matches the childId.
+    call deduceStripIndex
+
 handleKeyMenuBackStripSave:
     ld (menuStripIndex), a
     set rpnFlagsMenuDirty, (iy + rpnFlags)
+    ret
+
+; Description: Deduce the stripIndex from the childId above. The `stripIndex =
+; int((childId - stripBeginId)/5)` but the Z80 does not have a divison
+; instruction so we use a loop that increments an `index` in increments of 5 to
+; determine the corresponding stripIndex.
+;
+; The complication is that we want to evaluate `(childId < nodeId)` but the
+; Z80 instruction can only increment the A register, so we have to store
+; the `nodeId` in A and the `childId` in C. Which forces us to reverse the
+; comparison. But checking for NC (no carry) is equivalent to a '>='
+; instead of a '<', so we are forced to start at `5-1` instead of `5`. I
+; hope my future self will understand this explanation.
+;
+; Input:
+;   A: stripBeginId
+;   D: numStrips
+;   C: childId
+; Output: A: stripIndex
+; Destroys: B; preserves C, D
+deduceStripIndex:
+    add a, 4 ; nodeId = stripBeginId + 4
+    ld b, d ; B (DJNZ counter) = numStrips
+deduceStripIndexLoop:
+    cp c ; If nodeId < childId: set Carry
+    jr nc, deduceStripIndexFound ; nodeId >= childId
+    add a, 5 ; nodeId += 5
+    djnz deduceStripIndexLoop
+    ; We should never fall off the end of the loop, but if we do, set the
+    ; stripIndex to 0.
+    xor a
+    ret
+deduceStripIndexFound:
+    ld a, d ; numStrips
+    sub b ; stripIndex = numStrips - B
     ret
 
 ;-----------------------------------------------------------------------------
