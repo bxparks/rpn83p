@@ -143,7 +143,7 @@ displayStatusTrigDeg:
     ld hl, msgStatusTrigDeg
     jr displayStatusTrigPutS
 displayStatusTrigRad:
-    ld hl, msgStatusTrigDeg
+    ld hl, msgStatusTrigRad
 displayStatusTrigPutS:
     bcall(_VPutS)
     ret

@@ -111,3 +111,17 @@ mModHandler:
 mLcmHandler:
 mGcdHandler:
     ret
+
+;-----------------------------------------------------------------------------
+; Children nodes of MODE menu.
+;-----------------------------------------------------------------------------
+
+mRadHandler:
+    res trigDeg, (iy + trigFlags)
+    set rpnFlagsTrigDirty, (iy + rpnFlags)
+    ret
+
+mDegHandler:
+    set trigDeg, (iy + trigFlags)
+    set rpnFlagsTrigDirty, (iy + rpnFlags)
+    ret

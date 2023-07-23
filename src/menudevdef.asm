@@ -80,22 +80,22 @@ mHelpId equ 6
     .db 0 ; stripBeginId
     .dw mHelpHandler ; handler (to be implemented)
 ; MenuGroup root: children: strip 1
+mMode:
+mModeId equ 7
+    .db mModeId ; id
+    .db mRootId ; parentId
+    .db mModeNameId ; nameId
+    .db 1 ; numStrips
+    .db mRadId ; stripBeginId
+    .dw mGroupHandler ; handler (predefined)
 mDisp:
-mDispId equ 7
+mDispId equ 8
     .db mDispId ; id
     .db mRootId ; parentId
     .db mDispNameId ; nameId
     .db 0 ; numStrips
     .db 0 ; stripBeginId
     .dw mDispHandler ; handler (to be implemented)
-mMode:
-mModeId equ 8
-    .db mModeId ; id
-    .db mRootId ; parentId
-    .db mModeNameId ; nameId
-    .db 0 ; numStrips
-    .db 0 ; stripBeginId
-    .dw mModeHandler ; handler (to be implemented)
 mHyperbolic:
 mHyperbolicId equ 9
     .db mHyperbolicId ; id
@@ -245,6 +245,48 @@ mRandomSeedId equ 26
     .db 0 ; numStrips
     .db 0 ; stripBeginId
     .dw mRandomSeedHandler ; handler (to be implemented)
+; MenuGroup MODE: children
+; MenuGroup MODE: children: strip 0
+mRad:
+mRadId equ 27
+    .db mRadId ; id
+    .db mModeId ; parentId
+    .db mRadNameId ; nameId
+    .db 0 ; numStrips
+    .db 0 ; stripBeginId
+    .dw mRadHandler ; handler (to be implemented)
+mDeg:
+mDegId equ 28
+    .db mDegId ; id
+    .db mModeId ; parentId
+    .db mDegNameId ; nameId
+    .db 0 ; numStrips
+    .db 0 ; stripBeginId
+    .dw mDegHandler ; handler (to be implemented)
+mBlank029:
+mBlank029Id equ 29
+    .db mBlank029Id ; id
+    .db mModeId ; parentId
+    .db mNullNameId ; nameId
+    .db 0 ; numStrips
+    .db 0 ; stripBeginId
+    .dw mNullHandler ; handler (predefined)
+mBlank030:
+mBlank030Id equ 30
+    .db mBlank030Id ; id
+    .db mModeId ; parentId
+    .db mNullNameId ; nameId
+    .db 0 ; numStrips
+    .db 0 ; stripBeginId
+    .dw mNullHandler ; handler (predefined)
+mBlank031:
+mBlank031Id equ 31
+    .db mBlank031Id ; id
+    .db mModeId ; parentId
+    .db mNullNameId ; nameId
+    .db 0 ; numStrips
+    .db 0 ; stripBeginId
+    .dw mNullHandler ; handler (predefined)
 
 ; Table of 2-byte pointers to names in the pool of strings below.
 mMenuNameTable:
@@ -258,10 +300,10 @@ mProbNameId equ 3
     .dw mProbName
 mHelpNameId equ 4
     .dw mHelpName
-mDispNameId equ 5
-    .dw mDispName
-mModeNameId equ 6
+mModeNameId equ 5
     .dw mModeName
+mDispNameId equ 6
+    .dw mDispName
 mHyperbolicNameId equ 7
     .dw mHyperbolicName
 mUnitNameId equ 8
@@ -294,6 +336,10 @@ mRandomNameId equ 21
     .dw mRandomName
 mRandomSeedNameId equ 22
     .dw mRandomSeedName
+mRadNameId equ 23
+    .dw mRadName
+mDegNameId equ 24
+    .dw mDegName
 
 ; Table of names as NUL terminated C strings.
 mNullName:
@@ -306,10 +352,10 @@ mProbName:
     .db "PROB", 0
 mHelpName:
     .db "HELP", 0
-mDispName:
-    .db "DISP", 0
 mModeName:
     .db "MODE", 0
+mDispName:
+    .db "DISP", 0
 mHyperbolicName:
     .db "HYP", 0
 mUnitName:
@@ -342,3 +388,7 @@ mRandomName:
     .db "RAND", 0
 mRandomSeedName:
     .db "SEED", 0
+mRadName:
+    .db "RAD", 0
+mDegName:
+    .db "DEG", 0

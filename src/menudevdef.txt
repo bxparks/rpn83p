@@ -6,7 +6,7 @@ MenuGroup root mRoot [
     MenuGroup NUM mNum [
       MenuStrip [
         MenuItem <Scaret>3 mCube
-        MenuItem CBRT mCubeRoot # maybe use <super3><root> ?
+        MenuItem CBRT mCubeRoot # maybe use <ScubeR><Sroot>
         MenuItem ATN2 mAtan2
         MenuItem <Spercent> mPercent
         MenuItem * *
@@ -32,10 +32,18 @@ MenuGroup root mRoot [
     MenuItem * * # BASE
     MenuItem HELP mHelp
   ]
-  # Insert place holders for testing.
+
   MenuStrip [
+    MenuGroup MODE mMode [
+      MenuStrip [
+        MenuItem RAD mRad
+        MenuItem DEG mDeg
+      MenuItem * *
+      MenuItem * *
+      MenuItem * *
+      ]
+    ]
     MenuItem DISP mDisp
-    MenuItem MODE mMode
     MenuItem HYP mHyperbolic
     MenuItem UNIT mUnit
     MenuItem * *
