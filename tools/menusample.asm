@@ -53,7 +53,7 @@ mProbId equ 3
     .db mRootId ; parentId
     .db mProbNameId ; nameId
     .db 1 ; numStrips
-    .db mPermutationId ; stripBeginId
+    .db mPermId ; stripBeginId
     .dw mGroupHandler ; handler (predefined)
 mBlank004:
 mBlank004Id equ 4
@@ -205,22 +205,22 @@ mGcdId equ 21
     .dw mGcdHandler ; handler (to be implemented)
 ; MenuGroup PROB: children
 ; MenuGroup PROB: children: strip 0
-mPermutation:
-mPermutationId equ 22
-    .db mPermutationId ; id
+mPerm:
+mPermId equ 22
+    .db mPermId ; id
     .db mProbId ; parentId
-    .db mPermutationNameId ; nameId
+    .db mPermNameId ; nameId
     .db 0 ; numStrips
     .db 0 ; stripBeginId
-    .dw mPermutationHandler ; handler (to be implemented)
-mCombination:
-mCombinationId equ 23
-    .db mCombinationId ; id
+    .dw mPermHandler ; handler (to be implemented)
+mComb:
+mCombId equ 23
+    .db mCombId ; id
     .db mProbId ; parentId
-    .db mCombinationNameId ; nameId
+    .db mCombNameId ; nameId
     .db 0 ; numStrips
     .db 0 ; stripBeginId
-    .dw mCombinationHandler ; handler (to be implemented)
+    .dw mCombHandler ; handler (to be implemented)
 mFactorial:
 mFactorialId equ 24
     .db mFactorialId ; id
@@ -284,10 +284,10 @@ mLcmNameId equ 16
     .dw mLcmName
 mGcdNameId equ 17
     .dw mGcdName
-mPermutationNameId equ 18
-    .dw mPermutationName
-mCombinationNameId equ 19
-    .dw mCombinationName
+mPermNameId equ 18
+    .dw mPermName
+mCombNameId equ 19
+    .dw mCombName
 mFactorialNameId equ 20
     .dw mFactorialName
 mRandomNameId equ 21
@@ -315,13 +315,13 @@ mHyperbolicName:
 mUnitName:
     .db "UNIT", 0
 mCubeName:
-    .db "^3", 0
+    .db Scaret, '3', 0
 mCubeRootName:
     .db "CBRT", 0
 mAtan2Name:
     .db "ATN2", 0
 mPercentName:
-    .db "%", 0
+    .db Spercent, 0
 mAbsName:
     .db "ABS", 0
 mSignName:
@@ -332,12 +332,12 @@ mLcmName:
     .db "LCM", 0
 mGcdName:
     .db "GCD", 0
-mPermutationName:
+mPermName:
     .db "PERM", 0
-mCombinationName:
+mCombName:
     .db "COMB", 0
 mFactorialName:
-    .db "N!", 0
+    .db 'N', Sexclam, 0
 mRandomName:
     .db "RAND", 0
 mRandomSeedName:

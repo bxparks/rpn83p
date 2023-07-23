@@ -17,11 +17,13 @@ MenuNodes: MenuGroup, and MenuItem. A MenuGroup is composed of 1 or more of
 MenuStrip. Each MenuStrip contains exectly 5 MenuItems corresponding to the 5
 bottons on the top row of a TI-83 Plus or a TI-84 Plus series calculator.
 
-The tree traversal of the menu hierarchy to serial into the the Z-80 assembly
+The tree traversal of the menu hierarchy to serial into the Z-80 assembly
 language file is slightly strange. It is not depth-first, nor breadth-first, but
 a hybrid of the two. Traversal occurs in 2 steps:
+
 1) The direct children of the MenuGroup, as stored in the list of MenuStrip, are
 serialized,
+
 2) Then the direct children are scanned a second time, and for each MenuNode
 which happens to be a MenuGroup, the traversal routine is recursively called.
 
@@ -86,6 +88,9 @@ def main() -> None:
     sym_generator = SymbolGenerator(root)
     sym_generator.generate()
 
+    exploder = StringExploder(root)
+    exploder.explode()
+
     if args.debug:
         pp(root, stream=sys.stderr)
 
@@ -117,6 +122,8 @@ class MenuNode(TypedDict, total=False):
     id: int  # TBD, except for Root which is always 1
     parent_id: int
     name: str
+    name_contains_special: bool  # name contains special characters
+    exploded_name: str  # name as a list of single characters
     label: str
     strips: List[MenuStrip]  # List of MenuNodes in groups of 5
 
@@ -321,8 +328,7 @@ class Validator:
         should never be triggered. But this provides another layer of defense.
         """
         name = node["name"]
-        strips = node["strips"]
-        if len(strips) != 0:
+        if "strips" in node:
             raise ValueError(
                 f"MenuItem '{name}' cannot have a MenuStrip"
             )
@@ -398,6 +404,87 @@ class Validator:
                 raise ValueError(
                     f"Illegal label '{label}' for regular Menu '{name}'"
                 )
+
+# -----------------------------------------------------------------------------
+
+
+class StringExploder:
+    """Determine if node name contains special characters, and explode the name
+    string into a list of single characters.
+
+    1) If the string contains only simple letters ([a-zA-Z0-9]), then the
+    CodeGenerator will use the string unchanged. For example, if the name is
+    "NUM", then the generated assembly code will look like:
+
+    .db "NUM", 0
+
+    2) If the string contains any special characters, those must be referenced
+    using the identifier from the Small Font table, and enclosed in '<' and '>'.
+    The CodeGenerator will generate a list of single characters for the name.
+    For example, if the menu name is "<Sdegree>F", then the exploded_name will
+    contain "Sdegree, 'F'", so that the .db statement in the generated assembly
+    code will look like:
+
+    .db Sdegree, 'F', 0
+    """
+    def __init__(self, root: MenuNode):
+        self.root = root
+
+    def explode(self) -> None:
+        self.explode_node(self.root)
+        self.explode_group(self.root)
+
+    def explode_node(self, node: MenuNode) -> None:
+        name = node["name"]
+        node["name_contains_special"] = (
+            name.find('<') >= 0 or name.find('>') >= 0
+        )
+        if name == '*':
+            return
+        try:
+            node["exploded_name"] = self.explode_str(name)
+        except ValueError as e:
+            raise ValueError(
+                f"Invalid syntax in menu '{name}': {str(e)}"
+            )
+
+    def explode_group(self, node: MenuNode) -> None:
+        # Process the direct children of the current group.
+        strips = node["strips"]
+        for strip in strips:
+            for slot in strip:
+                self.explode_node(slot)
+
+        # Recursively descend the subgroups if any.
+        for strip in strips:
+            for slot in strip:
+                mtype = slot["mtype"]
+                if mtype == MENU_TYPE_GROUP:
+                    self.explode_group(slot)
+
+    @staticmethod
+    def explode_str(s: str) -> str:
+        i = 0
+        chars: List[str] = []
+        while i < len(s):
+            c = s[i]
+            if (c >= 'a' and c <= 'z') or (c >= 'A' and c <= 'Z') or \
+                    (c >= '0' and c <= '9'):
+                chars.append(f"'{c}'")
+            elif c == '<':
+                j = s.find('>', i)
+                if j < 0:
+                    raise ValueError(f"Missing '>' in string '{s}'")
+                fonttag = s[i + 1:j]  # extract word inside <...>
+                if not fonttag:
+                    raise ValueError(f"Empty <> in string '{s}'")
+                chars.append(fonttag)
+                i = j
+            else:
+                raise ValueError(f"Unsupported character '{c}'")
+            i += 1
+        return ", ".join(chars)
+
 
 # -----------------------------------------------------------------------------
 
@@ -610,7 +697,6 @@ mNullNameId equ 0
         name_index = 1
         for node in names:
             label = node["label"]
-            name = node["name"]
             print(f"""\
 {label}NameId equ {name_index}
     .dw {label}Name
@@ -628,10 +714,15 @@ mNullName:
         name_index = 1
         for node in names:
             label = node["label"]
-            name = node["name"]
+            name_contains_special = node["name_contains_special"]
+            if name_contains_special:
+                display_name = node["exploded_name"]
+            else:
+                name = node["name"]
+                display_name = f'"{name}"'
             print(f"""\
 {label}Name:
-    .db "{name}", 0
+    .db {display_name}, 0
 """, file=self.output, end='')
             name_index += 1
 

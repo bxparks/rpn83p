@@ -5,10 +5,10 @@ MenuGroup root mRoot [
   MenuStrip [
     MenuGroup NUM mNum [
       MenuStrip [
-        MenuItem ^3 mCube
+        MenuItem <Scaret>3 mCube
         MenuItem CBRT mCubeRoot # maybe use <super3><root> ?
         MenuItem ATN2 mAtan2
-        MenuItem % mPercent
+        MenuItem <Spercent> mPercent
         MenuItem * *
       ]
       MenuStrip [ 
@@ -23,7 +23,7 @@ MenuGroup root mRoot [
       MenuStrip [
         MenuItem PERM mPerm
         MenuItem COMB mComb
-        MenuItem N! mFactorial
+        MenuItem N<Sexclam> mFactorial
         MenuItem RAND mRandom
         MenuItem SEED mRandomSeed
       ]
@@ -38,5 +38,6 @@ MenuGroup root mRoot [
     MenuItem MODE mMode
     MenuItem HYP mHyperbolic
     MenuItem UNIT mUnit
+    MenuItem * *
   ]
 ]
