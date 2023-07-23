@@ -299,17 +299,9 @@ displayMenu:
     bit rpnFlagsMenuDirty, (iy + rpnFlags)
     ret z
 
-    ; TODO: This causes UI flickering when the menu is updated. It is more
-    ; noticeable in an emulator than on a real caculator. A better way to
-    ; implement this is to overwrite the prev menu string with the next one,
-    ; then call something equivalent to 'eraseEndOfMenu()` to overwrite any
-    ; trailing pixels until the end of the current menu box. That would prevent
-    ; the flashing.
-    call clearMenus
+    call getCurrentMenuStripBeginId ; A=stripBeginId
 
-    call getCurrentMenuStripBeginId
     ld b, a
-
     call getMenuName
     ld a, menuPenCol0
     call printMenuAtA
@@ -348,16 +340,41 @@ displayMenu:
 ;   A: penCol
 ;   HL: C string
 ; Destroys: DE, HL
+; Preserves: BC
 printMenuAtA:
-    ex de, hl
-    ld h, menuPenRow
-    ld l, a
-    inc l
-    ld (PenCol), hl
-    ex de, hl
+    push bc
+    ld c, a ; C=A=menuPenCol (saved)
+
+    ; Set (PenCol,PenRow), preserving HL
+    ld (PenCol), a
+    ld a, menuPenRow
+    ld (PenRow), a
+
+    ; Print the menu string, inverted.
     set textInverse, (iy + textFlags)
+    ld a, Sspace
+    bcall(_VPutMap)
     bcall(_VPutS)
+
+    ; Calculate remaining space on the right
+    ld a, (PenCol)
+    sub c ; C=PenCol-startPenCol
+    ld c, a
+    ld a, menuPenWidth
+    sub c ; C = pixelsRemaining = menuPenWidth - pixelsWritten
+    jr z, printMenuAtAExit ; no space left
+    jr c, printMenuAtAExit ; wrote past the box; shouldn't happen but be safe
+
+    ; Overwrite trailing space.
+    ld b, a
+printMenuAtAOverwriteLoop:
+    ld a, Sspace
+    bcall(_VPutMap)
+    djnz printMenuAtAOverwriteLoop
+
+printMenuAtAExit:
     res textInverse, (iy + textFlags)
+    pop bc
     ret
 
 ; Function: Print blank (all black) at menuPenCol in A.
@@ -367,6 +384,7 @@ printMenuBlank:
     ld h, menuPenRow
     ld l, a
     ld (PenCol), hl
+
     ld hl, msgMenuBlank
     set textInverse, (iy + textFlags)
     bcall(_VPutS)
