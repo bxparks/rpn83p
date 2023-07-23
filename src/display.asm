@@ -1,7 +1,7 @@
 ;-----------------------------------------------------------------------------
 ; Display the RPN stack variables.
 ;
-;   0: Status line: (up|down) (bin|dec|hex) (deg|rad|grad) (small font)
+;   0: Status line: (up|down) (deg|rad) (bin|dec|hex) # small font
 ;   1: Debug line
 ;   2: Error code line:
 ;   3: T: tttt
@@ -38,8 +38,7 @@ menuPenColEnd   equ 96
 
 ; Function: Set the display flags to dirty initially so that they are rendered.
 initDisplay:
-    set rpnFlagsStatusDirty, (iy + rpnFlags)
-    set rpnFlagsMenuDirty, (iy + rpnFlags)
+    set rpnFlagsTrigDirty, (iy + rpnFlags)
     set inputBufFlagsInputDirty, (iy + inputBufFlags)
     ret
 
@@ -55,7 +54,7 @@ displayAll:
     call displayMenu
 
     ; Reset dirty flags
-    res rpnFlagsStatusDirty, (iy + rpnFlags)
+    res rpnFlagsTrigDirty, (iy + rpnFlags)
     res rpnFlagsStackDirty, (iy + rpnFlags)
     res rpnFlagsMenuDirty, (iy + rpnFlags)
     ret
@@ -67,6 +66,11 @@ displayAll:
 ; Output: status line displayed
 ; Destroys: A, BC, HL
 displayStatus:
+    call displayStatusMenu
+    call displayStatusTrig
+    ret
+
+displayStatusMenu:
     bit rpnFlagsMenuDirty, (iy + rpnFlags)
     ret z
 
@@ -84,7 +88,7 @@ displayStatus:
     inc hl
     ld c, (hl) ; C=numStrips
 
-    ld hl, statusPenRow*$100 ; $(penRow)(penCol)
+    ld hl, statusPenRow*$100 + statusMenuPenCol; $(penRow)(penCol)
     ld (PenCol), hl
 
     ; If numStrips==0: don't do anything. This should never happen if there
@@ -116,16 +120,32 @@ displayStatusMenuUpArrowNone:
     ld a, SFourSpaces
 displayStatusMenuUpArrowDisplay:
     bcall(_VPutMap)
-
-    jr displayStatusEraseOfLine
+    ret
 
     ; clear 8 px
 displayStatusMenuClear:
     ld hl, msgStatusMenuBlank
     bcall(_VPutS)
+    ret
 
-displayStatusEraseOfLine:
-    call vEraseEOL
+;-----------------------------------------------------------------------------
+
+; Description: Display the Degree or Radian trig mode.
+displayStatusTrig:
+    bit rpnFlagsTrigDirty, (iy + rpnFlags)
+    ret z
+displayStatusTrigUpdate:
+    ld hl, statusPenRow*$100 + statusTrigPenCol; $(penRow)(penCol)
+    ld (PenCol), hl
+    bit trigDeg, (iy + trigFlags)
+    jr z, displayStatusTrigRad
+displayStatusTrigDeg:
+    ld hl, msgStatusTrigDeg
+    jr displayStatusTrigPutS
+displayStatusTrigRad:
+    ld hl, msgStatusTrigDeg
+displayStatusTrigPutS:
+    bcall(_VPutS)
     ret
 
 ;-----------------------------------------------------------------------------
@@ -493,6 +513,12 @@ msgStatusMenuUpDown:
 ; 8 px of spaces.
 msgStatusMenuBlank:
     .db SFourSpaces, SFourSpaces, 0
+
+; "DEG" and "RAD" trig indicators
+msgStatusTrigDeg:
+    .db "DEG", 0
+msgStatusTrigRad:
+    .db "RAD", 0
 
 msgTLabel:
     .db "T:", 0

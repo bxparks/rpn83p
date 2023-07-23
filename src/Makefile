@@ -1,4 +1,4 @@
-TARGETS := rpn83p.8xp
+TARGETS := rpn83p.8xp rpn83p.lst
 
 SPASM_DIR := ../../spasm
 SPASM_INC := $(SPASM_DIR)/inc

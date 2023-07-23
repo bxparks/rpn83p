@@ -17,6 +17,8 @@
 statusCurRow equ 0
 statusCurCol equ 0
 statusPenRow equ statusCurRow*8
+statusMenuPenCol equ 0
+statusTrigPenCol equ 12
 
 ; Display coordinates of the debug line
 debugCurRow equ 1
@@ -66,8 +68,7 @@ rpnFlagsEditing equ 0 ; set if in edit mode
 rpnFlagsLiftEnabled equ 1 ; set if stack lift is enabled (ENTER disables)
 rpnFlagsStackDirty equ 2 ; set if the stack is dirty
 rpnFlagsMenuDirty equ 3 ; set if the menu selection is dirty
-rpnFlagsErrorDirty equ 4 ; set if the error code is dirty
-rpnFlagsStatusDirty equ 5 ; set if the status is dirty (TODO: not used)
+rpnFlagsTrigDirty equ 5 ; set if the trig status is dirty
 
 ; Flags for the inputBuf. Offset from IY register.
 inputBufFlags equ asm_Flag3

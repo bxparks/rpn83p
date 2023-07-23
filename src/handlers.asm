@@ -264,8 +264,7 @@ handleKeyClearHitTwice:
     ; display code.
     set rpnFlagsMenuDirty, (iy + rpnFlags)
     set rpnFlagsStackDirty, (iy + rpnFlags)
-    set rpnFlagsErrorDirty, (iy + rpnFlags)
-    set rpnFlagsStatusDirty, (iy + rpnFlags)
+    set rpnFlagsTrigDirty, (iy + rpnFlags)
 handleKeyClearHitOnce:
     call clearInputBuf
     set rpnFlagsEditing, (iy + rpnFlags)

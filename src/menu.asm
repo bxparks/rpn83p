@@ -27,6 +27,7 @@ initMenu:
     inc hl
     xor a
     ld (hl), a
+    set rpnFlagsMenuDirty, (iy + rpnFlags)
     ret
 
 ; getCurrentMenuStripBeginId(menuCurrentId, menuStripIndex) -> A
