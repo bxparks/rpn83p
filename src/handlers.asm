@@ -782,6 +782,52 @@ handleKeyExp:
     ret
 
 ;-----------------------------------------------------------------------------
+; Trignometric
+;-----------------------------------------------------------------------------
+
+handleKeySin:
+    call closeInputBuf
+    call rclX
+    bcall(_Sin)
+    call stoX
+    ret
+
+handleKeyCos:
+    call closeInputBuf
+    call rclX
+    bcall(_Cos)
+    call stoX
+    ret
+
+handleKeyTan:
+    call closeInputBuf
+    call rclX
+    bcall(_Tan)
+    call stoX
+    ret
+
+handleKeyASin:
+    call closeInputBuf
+    call rclX
+    bcall(_ASin)
+    call stoX
+    ret
+
+handleKeyACos:
+    call closeInputBuf
+    call rclX
+    bcall(_ACos)
+    call stoX
+    ret
+
+handleKeyATan:
+    call closeInputBuf
+    call rclX
+    bcall(_ATan)
+    call stoX
+    ret
+
+;-----------------------------------------------------------------------------
 ; Predefined Menu handlers.
 ;-----------------------------------------------------------------------------
 

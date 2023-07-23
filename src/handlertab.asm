@@ -1,5 +1,5 @@
 ; List of GetKey() codes and their jump table.
-keyCodeHandlerTableSize equ 42
+keyCodeHandlerTableSize equ 49
 kOnExit equ 0 ; ON key generates 00 as the key code
 keyCodeHandlerTable:
     ; number entry
@@ -89,11 +89,11 @@ keyCodeHandlerTable:
     .dw handleKeyEuler
 
     ; algebraic
-    .db kExpon
+    .db kExpon ; y^x
     .dw handleKeyExpon
-    .db kInv
+    .db kInv ; 1/x
     .dw handleKeyInv
-    .db kSquare
+    .db kSquare ; x^2
     .dw handleKeySquare
     .db kSqrt
     .dw handleKeySqrt
@@ -103,7 +103,7 @@ keyCodeHandlerTable:
     ; on the (, and x<->y on the ).
     .db kLParen ; (
     .dw handleKeyRotDown
-    .db kLBrace ; INV (
+    .db kLBrace ; { = 2ND (
     .dw handleKeyRotUp
     .db kRParen ; )
     .dw handleKeyExchangeXY
@@ -117,3 +117,17 @@ keyCodeHandlerTable:
     .dw handleKeyLn
     .db kExp ; e^x
     .dw handleKeyExp
+
+    ; trignometric
+    .db kSin ; SIN
+    .dw handleKeySin
+    .db kCos ; COS
+    .dw handleKeyCos
+    .db kTan ; TAN
+    .dw handleKeyTan
+    .db kASin ; SIN^{-1}
+    .dw handleKeyASin
+    .db kACos ; COS^{-1}
+    .dw handleKeyACos
+    .db kATan ; TAN^{-1}
+    .dw handleKeyATan
