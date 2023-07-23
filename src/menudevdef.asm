@@ -53,7 +53,7 @@ mProbId equ 3
     .db mRootId ; parentId
     .db mProbNameId ; nameId
     .db 1 ; numStrips
-    .db mPermId ; stripBeginId
+    .db mCombId ; stripBeginId
     .dw mGroupHandler ; handler (predefined)
 mBlank004:
 mBlank004Id equ 4
@@ -205,22 +205,22 @@ mGcdId equ 21
     .dw mGcdHandler ; handler (to be implemented)
 ; MenuGroup PROB: children
 ; MenuGroup PROB: children: strip 0
-mPerm:
-mPermId equ 22
-    .db mPermId ; id
-    .db mProbId ; parentId
-    .db mPermNameId ; nameId
-    .db 0 ; numStrips
-    .db 0 ; stripBeginId
-    .dw mPermHandler ; handler (to be implemented)
 mComb:
-mCombId equ 23
+mCombId equ 22
     .db mCombId ; id
     .db mProbId ; parentId
     .db mCombNameId ; nameId
     .db 0 ; numStrips
     .db 0 ; stripBeginId
     .dw mCombHandler ; handler (to be implemented)
+mPerm:
+mPermId equ 23
+    .db mPermId ; id
+    .db mProbId ; parentId
+    .db mPermNameId ; nameId
+    .db 0 ; numStrips
+    .db 0 ; stripBeginId
+    .dw mPermHandler ; handler (to be implemented)
 mFactorial:
 mFactorialId equ 24
     .db mFactorialId ; id
@@ -326,10 +326,10 @@ mLcmNameId equ 16
     .dw mLcmName
 mGcdNameId equ 17
     .dw mGcdName
-mPermNameId equ 18
-    .dw mPermName
-mCombNameId equ 19
+mCombNameId equ 18
     .dw mCombName
+mPermNameId equ 19
+    .dw mPermName
 mFactorialNameId equ 20
     .dw mFactorialName
 mRandomNameId equ 21
@@ -378,10 +378,10 @@ mLcmName:
     .db "LCM", 0
 mGcdName:
     .db "GCD", 0
-mPermName:
-    .db "PERM", 0
 mCombName:
     .db "COMB", 0
+mPermName:
+    .db "PERM", 0
 mFactorialName:
     .db 'N', Sexclam, 0
 mRandomName:
