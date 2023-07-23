@@ -315,13 +315,13 @@ mHyperbolicName:
 mUnitName:
     .db "UNIT", 0
 mCubeName:
-    .db "^3", 0
+    .db Scaret, '3', 0
 mCubeRootName:
     .db "CBRT", 0
 mAtan2Name:
     .db "ATN2", 0
 mPercentName:
-    .db "%", 0
+    .db Spercent, 0
 mAbsName:
     .db "ABS", 0
 mSignName:
@@ -337,7 +337,7 @@ mPermName:
 mCombName:
     .db "COMB", 0
 mFactorialName:
-    .db "N!", 0
+    .db 'N', Sexclam, 0
 mRandomName:
     .db "RAND", 0
 mRandomSeedName:

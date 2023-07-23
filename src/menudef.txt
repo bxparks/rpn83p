@@ -9,26 +9,21 @@
 #   menustrip = 'MenuStrip' '[' node*5 ']'
 #   name = (alpha+ | '*')
 #   label = (alpha+ | '*')
-#   alpha = ( printableASCII | tag )
-#   tag = '<' printableASCII+ '>'
+#   alpha = ( printableASCII | fonttag )
+#   fonttag = '<' printableASCII+ '>'
 #
 # Semantics:
 #   name: the display name for the menu
 #   label: identifier for the node data in the assembly code, also used as
 #       prefix for other identifiers (e.g. if the label="mNum", there will be
 #       other identifiers such as "mNumId", "mNumNameId").
-#   tag: allows special tokens, e.g. Greek letters using "<delta>"
+#   fonttag: a symbol from the TI-OS Small Font table, e.g. '<Sdegree>'
 #
 # Parsing rules:
 #   - tokens are separated by spaces
 #   - newlines are white spaces with no other meaning or behavior
 #   - square brackets [ ] means "list of"
 #   - '*' indicates a blank MenuItem with no ID constant
-#   - <super2> replaced with superscript 2 symbol
-#   - <super3> replaced with superscript 3 symbol
-#   - <degree> replaced with degree symbol
-#   - <rightarrow> replaced with solid right arrow symbol
-#   - <Delta> replaced with Greek Delta symbol
 
 MenuGroup root mRoot [
   MenuStrip [
