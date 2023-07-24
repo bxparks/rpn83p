@@ -38,7 +38,15 @@ MenuGroup root mRoot [
         MenuItem SEED mRandomSeed
       ]
     ]
-    MenuItem * * # CONV
+    MenuGroup UNIT mUnit [
+      MenuStrip [
+        MenuItem <Sconvert><Stemp>C mFToC
+        MenuItem <Sconvert><Stemp>F mCToF
+        MenuItem * *
+        MenuItem <Sconvert>km mMiToKm
+        MenuItem <Sconvert>mi mKmToMi
+      ]
+    ]
     MenuItem * * # BASE
     MenuItem HELP mHelp
   ]
@@ -55,7 +63,7 @@ MenuGroup root mRoot [
     ]
     MenuItem DISP mDisp
     MenuItem HYP mHyperbolic
-    MenuItem UNIT mUnit
+    MenuItem * * # CONV
     MenuItem * *
   ]
 ]

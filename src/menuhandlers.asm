@@ -229,6 +229,55 @@ mRandomSeedHandler:
     ret
 
 ;-----------------------------------------------------------------------------
+; Children nodes of UNIT menu.
+;-----------------------------------------------------------------------------
+
+mFToCHandler:
+    call closeInputBuf
+    call rclX
+    ld a, 32
+    bcall(_SetXXOP2) ; OP2 = 32
+    bcall(_FPSub) ; OP1 = X - 32
+    ld a, $18
+    bcall(_OP2SetA) ; OP2 = 1.8
+    bcall(_FPDiv) ; OP1 = (X - 32) / 1.8
+    call stoX
+    ret
+
+mCToFHandler:
+    call closeInputBuf
+    call rclX
+    ld a, $18
+    bcall(_OP2SetA) ; OP2 = 1.8
+    bcall(_FPMult) ; OP1 = X * 1.8
+    ld a, 32
+    bcall(_SetXXOP2) ; OP2 = 32
+    bcall(_FPAdd) ; OP1 = 1.8*X + 32
+    call stoX
+    ret
+
+mMiToKmHandler:
+    call closeInputBuf
+    call rclX
+    ld hl, constKmPerMi
+    bcall(_Mov9ToOP2)
+    bcall(_FPMult)
+    call stoX
+    ret
+
+mKmToMiHandler:
+    call closeInputBuf
+    call rclX
+    ld hl, constKmPerMi
+    bcall(_Mov9ToOP2)
+    bcall(_FPDiv)
+    call stoX
+    ret
+
+constKmPerMi:
+    .db $00, $80, $16, $09, $34, $40, $00, $00, $00 ; 1.609344 km/mi
+
+;-----------------------------------------------------------------------------
 ; Children nodes of MODE menu.
 ;-----------------------------------------------------------------------------
 

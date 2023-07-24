@@ -130,8 +130,8 @@ MenuGroup root mRoot [
         MenuItem <rightarrow>mi mKmToMi
       ]
       MenuStrip [
-        MenuItem <rightarrow>cm mCmToIn
         MenuItem <rightarrow>in mInToCm
+        MenuItem <rightarrow>cm mCmToIn
         MenuItem * *
         MenuItem <rightarrow>m mFtToM
         MenuItem <rightarrow>ft mMToFt
@@ -140,8 +140,8 @@ MenuGroup root mRoot [
         MenuItem <rightarrow>kg mLbsToKg
         MenuItem <rightarrow>lbs mKgToLbs
         MenuItem * *
-        MenuItem <rightarrow>g mGToOz
         MenuItem <rightarrow>oz mOzToG
+        MenuItem <rightarrow>g mGToOz
       ]
       MenuStrip [
         MenuItem <rightarrow>m<super2> mFt2ToM2
@@ -175,15 +175,15 @@ MenuGroup root mRoot [
         MenuItem <rightarrow>kJ mKcalToKj
         MenuItem <rightarrow>kCal mKjToKcal
         MenuItem * *
-        MenuItem <rightarrow>hp mkWToHorsepower
         MenuItem <rightarrow>kW mHorsepowerTokW
+        MenuItem <rightarrow>hp mkWToHorsepower
       ]
       MenuStrip [
         MenuItem <rightarrow>mpg mMpgToL100km
         MenuItem <rightarrow>Lkm mL100kmToMpg
         MenuItem * *
-        MenuItem <rightarrow>psi mKpaToPsi
         MenuItem <rightarrow>kPa mPsiToKpa
+        MenuItem <rightarrow>psi mKpaToPsi
       ]
     ]
   ]
