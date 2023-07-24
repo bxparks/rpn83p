@@ -7,9 +7,7 @@ MenuGroup root mRoot [
       MenuStrip [
         MenuItem <Scaret>3 mCube
         MenuItem CBRT mCubeRoot # maybe use <ScubeR><Sroot>
-        MenuItem ATN2 mAtan2
         MenuItem <Spercent> mPercent
-        MenuItem * *
       ]
       MenuStrip [
         MenuItem ABS mAbs
@@ -24,6 +22,11 @@ MenuGroup root mRoot [
         MenuItem FLR mFloor
         MenuItem CEIL mCeil
         MenuItem NEAR mNear
+      ]
+      MenuStrip [
+        MenuItem <Sconvert>DEG mRToD
+        MenuItem <Sconvert>RAD mDToR
+        MenuItem ATN2 mAtan2
       ]
     ]
     MenuGroup PROB mProb [
