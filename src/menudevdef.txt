@@ -65,9 +65,9 @@ MenuGroup root mRoot [
       MenuStrip [
         MenuItem RAD mRad
         MenuItem DEG mDeg
-      MenuItem * *
-      MenuItem * *
-      MenuItem * *
+        MenuItem * *
+        MenuItem * *
+        MenuItem * *
       ]
     ]
     MenuItem DISP mDisp
