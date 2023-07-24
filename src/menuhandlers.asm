@@ -46,6 +46,27 @@ mPercentHandler:
     call replaceX
     ret
 
+; mAtan2Handler(Y, X) -> atan2(Y + Xi)
+;
+; Description: Calculate the angle of the (Y, X) number in complex plane.
+; Use bcall(_RToP) instead of bcall(_ATan2) because ATan2 does not seem produce
+; the correct results. There must be something wrong with the documentation, or
+; it is buggy and no one has bothered to fix it because I don't think this
+; function is exposed to the user through the normal TI-OS.
+;
+; The real part (i.e. x-axis) is assumed to be entered first, then the
+; imaginary part (i.e. y-axis). They becomes stored in the RPN stack variables
+; with X and Y flipped, which is bit confusing.
+mAtan2Handler:
+    call closeInputBuf
+    call rclX ; imaginary
+    bcall(_OP1ToOP2)
+    call rclY ; OP1=Y (real), OP2=X (imaginary)
+    bcall(_RToP) ; complex to polar
+    bcall(_OP2ToOP1) ; OP2 contains the angle with range of (-pi, pi]
+    call replaceXY
+    ret
+
 ;-----------------------------------------------------------------------------
 
 ; mAbsHandler(X) -> Abs(X)
@@ -151,43 +172,6 @@ mNearHandler:
     ret
 
 ;-----------------------------------------------------------------------------
-
-mRToDHandler:
-    call closeInputBuf
-    call rclX
-    bcall(_RToD) ; RAD to DEG
-    call replaceX
-    ret
-
-mDToRHandler:
-    call closeInputBuf
-    call rclX
-    bcall(_DToR) ; DEG to RAD
-    call replaceX
-    ret
-
-; mAtan2Handler(Y, X) -> atan2(Y + Xi)
-;
-; Description: Calculate the angle of the (Y, X) number in complex plane.
-; Use bcall(_RToP) instead of bcall(_ATan2) because ATan2 does not seem produce
-; the correct results. There must be something wrong with the documentation, or
-; it is buggy and no one has bothered to fix it because I don't think this
-; function is exposed to the user through the normal TI-OS.
-;
-; The real part (i.e. x-axis) is assumed to be entered first, then the
-; imaginary part (i.e. y-axis). They becomes stored in the RPN stack variables
-; with X and Y flipped, which is bit confusing.
-mAtan2Handler:
-    call closeInputBuf
-    call rclX ; imaginary
-    bcall(_OP1ToOP2)
-    call rclY ; OP1=Y (real), OP2=X (imaginary)
-    bcall(_RToP) ; complex to polar
-    bcall(_OP2ToOP1) ; OP2 contains the angle with range of (-pi, pi]
-    call replaceXY
-    ret
-
-;-----------------------------------------------------------------------------
 ; Children nodes of PROB menu.
 ;-----------------------------------------------------------------------------
 
@@ -270,6 +254,38 @@ mKmToMiHandler:
 
 constKmPerMi:
     .db $00, $80, $16, $09, $34, $40, $00, $00, $00 ; 1.609344 km/mi
+
+;-----------------------------------------------------------------------------
+; Children nodes of CONV menu.
+;-----------------------------------------------------------------------------
+
+mRToDHandler:
+    call closeInputBuf
+    call rclX
+    bcall(_RToD) ; RAD to DEG
+    call replaceX
+    ret
+
+mDToRHandler:
+    call closeInputBuf
+    call rclX
+    bcall(_DToR) ; DEG to RAD
+    call replaceX
+    ret
+
+mHrToHmsHandler:
+    ; call closeInputBuf
+    ; call rclX
+    ; bcall(_DToR) ; DEG to RAD
+    ; call replaceX
+    ret
+
+mHmsToHrHandler:
+    ; call closeInputBuf
+    ; call rclX
+    ; bcall(_DToR) ; DEG to RAD
+    ; call replaceX
+    ret
 
 ;-----------------------------------------------------------------------------
 ; Children nodes of MODE menu.
