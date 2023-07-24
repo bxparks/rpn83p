@@ -102,6 +102,20 @@ mSignHandlerStoX:
     ret
 
 mModHandler:
+    call closeInputBuf
+    call rclX
+    bcall(_OP1ToOP2) ; OP2 = X
+    bcall(_OP1ToOP4) ; OP4 = X
+    call rclY ; OP1 = Y
+    bcall(_FPDiv) ; OP1 = OP1/OP2 = Y/X
+    bcall(_Intgr) ; OP1 = floor(OP1)
+    bcall(_OP4ToOP2) ; OP2 = X
+    bcall(_FPMult) ; OP1 = floor(Y/X) * X
+    bcall(_OP1ToOP2) ; OP2 = X
+    call rclY ; OP1 = Y
+    bcall(_FPSub) ; OP1 = Y - floor(Y/X) * X
+    call dropStack
+    call stoX
     ret
 
 mMinHandler:
