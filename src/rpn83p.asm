@@ -168,7 +168,13 @@ readLoop:
     call displayAll
 
     ; Clear the error code before calling lookupKey() to detect any custom
-    ; error code set directly by the handler.
+    ; error code set directly by the handler. This makes the implementation of
+    ; handleKeyClear() slightly more tricky because when a CLEAR is hit just
+    ; after a non-zero error code is displayed, the CLEAR key should simply
+    ; clear the error, instead of clearing the inputBuf. The solution is for
+    ; the handleKeyClear() function to check for errorCodeDisplayed, which is
+    ; the error code that was most recently rendered, which is not affected by
+    ; this call.
     call clearErrorCode
 
     ; Get the key code, and reset the ON flag right after. See TI-83 Plus SDK
@@ -200,7 +206,7 @@ readLoop:
 
     jr readLoop
 
-; Handle system error
+; Handle system error. Register A contains the error code.
 mainError:
     call setErrorCode
     jr readLoop

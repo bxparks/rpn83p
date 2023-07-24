@@ -244,8 +244,8 @@ handleKeyDelExit:
 ;   - mark displayInput dirty
 ; Destroys: A, HL
 handleKeyClear:
-    ; Check for non-zero error code.
-    ld a, (errorCode)
+    ; Check if non-zero error code is currently displayed.
+    ld a, (errorCodeDisplayed)
     or a
     jr z, handleKeyClearNormal
 handleKeyClearErrorCode:
