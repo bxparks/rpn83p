@@ -70,6 +70,40 @@ mPercentHandler:
     call stoX
     ret
 
+; mAbsHandler(X) -> Abs(X)
+mAbsHandler:
+    call closeInputBuf
+    call rclX
+    bcall(_ClrOP1S) ; clear sign bit of OP1
+    call stoX
+    ret
+
+; mSignHandler(X) -> Sign(X)
+mSignHandler:
+    call closeInputBuf
+    call rclX
+    bcall(_CkOP1FP0) ; check OP1 is float 0
+    jr z, mSignHandlerSetZero
+    bcall(_CkOP1Pos) ; check OP1 > 0
+    jr z, mSignHandlerSetOne
+mSignHandlerSetNegOne:
+    bcall(_OP1Set1)
+    bcall(_InvOP1S)
+    jr mSignHandlerStoX
+mSignHandlerSetOne:
+    bcall(_OP1Set1)
+    jr mSignHandlerStoX
+mSignHandlerSetZero:
+    bcall(_OP1Set0)
+mSignHandlerStoX:
+    call stoX
+    ret
+
+mModHandler:
+mLcmHandler:
+mGcdHandler:
+    ret
+
 ;-----------------------------------------------------------------------------
 ; Children nodes of PROB menu.
 ;-----------------------------------------------------------------------------
@@ -103,13 +137,6 @@ mRandomSeedHandler:
     call closeInputBuf
     call rclX
     bcall(_StoRand)
-    ret
-
-mAbsHandler:
-mSignHandler:
-mModHandler:
-mLcmHandler:
-mGcdHandler:
     ret
 
 ;-----------------------------------------------------------------------------
