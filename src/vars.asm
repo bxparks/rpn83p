@@ -5,14 +5,14 @@
 ;   RPN     TI      OS Routines
 ;   ---     --      -----------
 ;   T       T       StoT, TName + RclVarSym
-;   Z       Z       none
+;   Z       Z       StoOther, RclVarSym
 ;   Y       Y       StoY, RclY, YName
 ;   X       X       StoX, RclX, XName
 ;   LastX   R       StoR, RName + RclVarSym
 ;   ??      Ans     StoAns, RclAns
 ;-----------------------------------------------------------------------------
 
-; Function: Initialize the RPN stack variables. If X, Y, Z, T already exist,
+; Function: Initialize the RPN stack variables. If X, Y, Z, T, R already exist,
 ; the existing values will be used. Otherwise, set to zero.
 ; TODO: Check if the variables are complex. If so, reinitialize them to be real.
 ; Destroys: all?
@@ -72,8 +72,8 @@ initR:
 ; go through these functions, instead of calling _StoX, _RclX directly.
 ;-----------------------------------------------------------------------------
 
-; Description: Replace stX with OP1. Save previous stX to lastX, store OP1 to
-; stX, set dirty flag.
+; Description: Replace stX with OP1, saving previous stX to lastX, and
+; setting dirty flag.
 ; Preserves: OP1
 replaceX:
     bcall(_OP1ToOP2)
@@ -82,8 +82,8 @@ replaceX:
     bcall(_OP2ToOP1)
     jr stoX
 
-; Description: Replace (stX, stY) pair with OP1. Save previous stX to lastX,
-; drop stack, save OP1 to stX, set dirty flag.
+; Description: Replace (stX, stY) pair with OP1, saving previous stX to lastX,
+; and setting dirty flag.
 ; Preserves: OP1
 replaceXY:
     bcall(_OP1ToOP2)
@@ -101,7 +101,8 @@ rclX:
     bcall(_RclX)
     ret
 
-; Function: Store OP1 to stX.
+; Function: Store OP1 to stX, setting dirty flag.
+; Destroys: all, OP4
 ; Preserves: OP1, OP2
 stoX:
     bcall(_StoX)
@@ -111,7 +112,7 @@ stoX:
 ;-----------------------------------------------------------------------------
 
 ; Function: Copy stT to OP1.
-; Destroys: all, OP4
+; Destroys: all, OP1
 rclLastX:
     bcall(_RName)
     bcall(_RclVarSym)
@@ -127,11 +128,13 @@ stoLastX:
 ;-----------------------------------------------------------------------------
 
 ; Function: Copy stY to OP1.
+; Preserves: OP2
 rclY:
     bcall(_RclY)
     ret
 
 ; Function: Store OP1 to stY, setting dirty flag.
+; Destroys: all, OP4
 ; Preserves: OP1, OP2
 stoY:
     bcall(_StoY)
@@ -143,28 +146,32 @@ stoY:
 ; Function: Recall stZ to OP1.
 ; Output; Z = 1 if Z is real.
 ; Destroys: all, OP1
+; Preserves: OP2
 rclZ:
     ld hl, zname
     bcall(_Mov9ToOP1)
     bcall(_RclVarSym)
     ret
 
-; Function: Store OP1 to stZ variable.
+; Function: Store OP1 to stZ variable, setting dirty flag.
 ; Output; CF = 1 if failed to store
-; Destroys: all, OP1, OP6
+; Destroys: all, OP4, OP6
+; Preserves: OP1, OP2
 stoZ:
     set rpnFlagsStackDirty, (iy + rpnFlags)
     bcall(_OP1ToOP6) ; OP6=OP1 save
-    bcall(_PushRealO1) ; push data to FPS
+
+    bcall(_PushRealO1) ; _StoOther() wants the data in FPS(!)
     ld hl, zName
     bcall(_Mov9ToOP1) ; OP1 = name of var, i.e. "Z"
 
     ; AppOnErr macro does not seem to work on spasm-ng. So do it manually.
     ld hl, stoZFail
     call APP_PUSH_ERRORH
-    bcall(_StoOther)
+    bcall(_StoOther) ; _StoOther() implicitly pops the FPS(!)
     call APP_POP_ERRORH
-    bcall(_OP6ToOP1)
+
+    bcall(_OP6ToOP1) ; restore OP1
     or a ; CF=0
     ret
 stoZFail:
@@ -179,7 +186,8 @@ zName:
 ;-----------------------------------------------------------------------------
 
 ; Function: Copy stT to OP1.
-; Destroys: all, OP4
+; Destroys: all, OP1
+; Preserves: OP2
 rclT:
     bcall(_TName)
     bcall(_RclVarSym)
@@ -187,6 +195,7 @@ rclT:
 
 ; Function: Store OP1 to stT, setting dirty flag.
 ; Destroys: all, OP4
+; Preserves: OP1, OP2
 stoT:
     bcall(_StoT)
     set rpnFlagsStackDirty, (iy + rpnFlags)
@@ -197,7 +206,8 @@ stoT:
 ; Function: Lift the RPN stack, if inputBuf was not empty when closed.
 ; Input: none
 ; Output: T=Z; Z=Y; Y=X; X=X; OP1 preserved
-; Destroys: all, OP1, OP2, OP4
+; Destroys: all, OP4
+; Preserves: OP1, OP2
 liftStackNonEmpty:
     bit inputBufFlagsClosedEmpty, (iy + inputBufFlags)
     ret nz ; return doing nothing if closed empty
