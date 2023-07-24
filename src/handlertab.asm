@@ -47,18 +47,25 @@ keyCodeHandlerTable:
     .db kDown
     .dw handleKeyDown
 
-    ; At first, the kLeft arrow button seems to be a good candiate to bind
-    ; the MenuBack function. But in the Tilem emulator, the keyboard Backspace
-    ; is mapped to send kLeft + kDel, so a Backspace will perform a MenuBack
-    ; functionality, as well as deleting the last character in the inputBuf.
+    ; The MenuBack function is bound to multiple buttons until I can decide
+    ; on the one that seems most convenient. The best button would have been
+    ; the ESC button, but the TI-83 and TI-84 calculators don't have that
+    ; button (unlike the TI-92 series.)
     ;
-    ; The HP42S uses the ON/EXIT button to exit out of nested menus. The Tilem
-    ; emulator exposes that button by mapping F12 to the ON button. But F12 is
-    ; an awkward key to use for menu navigation. Therefore, let's use
-    ; kAlphaUp which is bound to the PageUp key in Tilem.
+    ; 1) The primary button is kLeft, because it has proximity to the kUp and
+    ; kDown button used to scroll through different menu strips at the same
+    ; level.
+    ;
+    ; 2) In the Tilem emulator, the keyboard Backspace is mapped to kLeft+kDel,
+    ; so a Backspace interfere. The DEL key should probably be used in the
+    ; emulator.
+    ;
+    ; 3) The HP42S uses the ON/EXIT button to exit out of nested menus. The
+    ; Tilem emulator exposes that button by mapping F12 to the ON button, but
+    ; F12 is an awkward key to use for menu navigation.
     .db kOnExit ; ON button on real calculator, F12 on Tilem
     .dw handleKeyMenuBack
-    .db kAlphaUp ; PageUp on Tilem
+    .db kLeft ; Left arrow
     .dw handleKeyMenuBack
 
     .db keyMenu1
