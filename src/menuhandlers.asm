@@ -29,7 +29,7 @@ mCubeRootHandler:
     bcall(_OP1ToOP2)
     bcall(_OP1Set3)
     bcall(_XRootY)
-    call replaceXY
+    call replaceX
     ret
 
 ; mPercentHandler(Y, X) -> (Y, Y*(X/100))
