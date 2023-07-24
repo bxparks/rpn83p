@@ -185,7 +185,6 @@ mFactorialHandler:
     call closeInputBuf
     call rclX
     bcall(_Factorial)
-    bcall(_CkValidNum)
     call replaceX
     ret
 
@@ -299,4 +298,50 @@ mRadHandler:
 mDegHandler:
     set trigDeg, (iy + trigFlags)
     set rpnFlagsTrigDirty, (iy + rpnFlags)
+    ret
+
+;-----------------------------------------------------------------------------
+; Children nodes of HYP menu.
+;-----------------------------------------------------------------------------
+
+mSinhHandler:
+    call closeInputBuf
+    call rclX
+    bcall(_SinH)
+    call replaceX
+    ret
+
+mCoshHandler:
+    call closeInputBuf
+    call rclX
+    bcall(_CosH)
+    call replaceX
+    ret
+
+mTanhHandler:
+    call closeInputBuf
+    call rclX
+    bcall(_TanH)
+    call replaceX
+    ret
+
+mAsinhHandler:
+    call closeInputBuf
+    call rclX
+    bcall(_ASinH)
+    call replaceX
+    ret
+
+mAcoshHandler:
+    call closeInputBuf
+    call rclX
+    bcall(_ACosH)
+    call replaceX
+    ret
+
+mAtanhHandler:
+    call closeInputBuf
+    call rclX
+    bcall(_ATanH)
+    call replaceX
     ret

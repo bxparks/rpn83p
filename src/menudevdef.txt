@@ -71,7 +71,22 @@ MenuGroup root mRoot [
       ]
     ]
     MenuItem DISP mDisp
-    MenuItem HYP mHyperbolic
+    MenuGroup HYP mHyperbolic [
+      MenuStrip [
+        MenuItem * *
+        MenuItem SINH mSinh
+        MenuItem COSH mCosh
+        MenuItem TANH mTanh
+        MenuItem * *
+      ]
+      MenuStrip [
+        MenuItem * *
+        MenuItem ASNH mAsinh
+        MenuItem ACSH mAcosh
+        MenuItem ATNH mAtanh
+        MenuItem * *
+      ]
+    ]
     MenuItem * *
   ]
 ]

@@ -101,9 +101,9 @@ mHyperbolicId equ 9
     .db mHyperbolicId ; id
     .db mRootId ; parentId
     .db mHyperbolicNameId ; nameId
-    .db 0 ; numStrips
-    .db 0 ; stripBeginId
-    .dw mHyperbolicHandler ; handler (to be implemented)
+    .db 2 ; numStrips
+    .db mBlank047Id ; stripBeginId
+    .dw mGroupHandler ; handler (predefined)
 mBlank010:
 mBlank010Id equ 10
     .db mBlank010Id ; id
@@ -412,6 +412,89 @@ mBlank046Id equ 46
     .db 0 ; numStrips
     .db 0 ; stripBeginId
     .dw mNullHandler ; handler (predefined)
+; MenuGroup HYP: children
+; MenuGroup HYP: children: strip 0
+mBlank047:
+mBlank047Id equ 47
+    .db mBlank047Id ; id
+    .db mHyperbolicId ; parentId
+    .db mNullNameId ; nameId
+    .db 0 ; numStrips
+    .db 0 ; stripBeginId
+    .dw mNullHandler ; handler (predefined)
+mSinh:
+mSinhId equ 48
+    .db mSinhId ; id
+    .db mHyperbolicId ; parentId
+    .db mSinhNameId ; nameId
+    .db 0 ; numStrips
+    .db 0 ; stripBeginId
+    .dw mSinhHandler ; handler (to be implemented)
+mCosh:
+mCoshId equ 49
+    .db mCoshId ; id
+    .db mHyperbolicId ; parentId
+    .db mCoshNameId ; nameId
+    .db 0 ; numStrips
+    .db 0 ; stripBeginId
+    .dw mCoshHandler ; handler (to be implemented)
+mTanh:
+mTanhId equ 50
+    .db mTanhId ; id
+    .db mHyperbolicId ; parentId
+    .db mTanhNameId ; nameId
+    .db 0 ; numStrips
+    .db 0 ; stripBeginId
+    .dw mTanhHandler ; handler (to be implemented)
+mBlank051:
+mBlank051Id equ 51
+    .db mBlank051Id ; id
+    .db mHyperbolicId ; parentId
+    .db mNullNameId ; nameId
+    .db 0 ; numStrips
+    .db 0 ; stripBeginId
+    .dw mNullHandler ; handler (predefined)
+; MenuGroup HYP: children: strip 1
+mBlank052:
+mBlank052Id equ 52
+    .db mBlank052Id ; id
+    .db mHyperbolicId ; parentId
+    .db mNullNameId ; nameId
+    .db 0 ; numStrips
+    .db 0 ; stripBeginId
+    .dw mNullHandler ; handler (predefined)
+mAsinh:
+mAsinhId equ 53
+    .db mAsinhId ; id
+    .db mHyperbolicId ; parentId
+    .db mAsinhNameId ; nameId
+    .db 0 ; numStrips
+    .db 0 ; stripBeginId
+    .dw mAsinhHandler ; handler (to be implemented)
+mAcosh:
+mAcoshId equ 54
+    .db mAcoshId ; id
+    .db mHyperbolicId ; parentId
+    .db mAcoshNameId ; nameId
+    .db 0 ; numStrips
+    .db 0 ; stripBeginId
+    .dw mAcoshHandler ; handler (to be implemented)
+mAtanh:
+mAtanhId equ 55
+    .db mAtanhId ; id
+    .db mHyperbolicId ; parentId
+    .db mAtanhNameId ; nameId
+    .db 0 ; numStrips
+    .db 0 ; stripBeginId
+    .dw mAtanhHandler ; handler (to be implemented)
+mBlank056:
+mBlank056Id equ 56
+    .db mBlank056Id ; id
+    .db mHyperbolicId ; parentId
+    .db mNullNameId ; nameId
+    .db 0 ; numStrips
+    .db 0 ; stripBeginId
+    .dw mNullHandler ; handler (predefined)
 
 ; Table of 2-byte pointers to names in the pool of strings below.
 mMenuNameTable:
@@ -493,6 +576,18 @@ mRadNameId equ 37
     .dw mRadName
 mDegNameId equ 38
     .dw mDegName
+mSinhNameId equ 39
+    .dw mSinhName
+mCoshNameId equ 40
+    .dw mCoshName
+mTanhNameId equ 41
+    .dw mTanhName
+mAsinhNameId equ 42
+    .dw mAsinhName
+mAcoshNameId equ 43
+    .dw mAcoshName
+mAtanhNameId equ 44
+    .dw mAtanhName
 
 ; Table of names as NUL terminated C strings.
 mNullName:
@@ -573,3 +668,15 @@ mRadName:
     .db "RAD", 0
 mDegName:
     .db "DEG", 0
+mSinhName:
+    .db "SINH", 0
+mCoshName:
+    .db "COSH", 0
+mTanhName:
+    .db "TANH", 0
+mAsinhName:
+    .db "ASNH", 0
+mAcoshName:
+    .db "ACSH", 0
+mAtanhName:
+    .db "ATNH", 0
