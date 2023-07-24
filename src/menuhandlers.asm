@@ -50,9 +50,12 @@ mPercentHandler:
 ;
 ; Description: Calculate the angle of the (Y, X) number in complex plane.
 ; Use bcall(_RToP) instead of bcall(_ATan2) because ATan2 does not seem produce
-; the correct results. There must be something wrong with the documentation, or
-; it is buggy and no one has bothered to fix it because I don't think this
-; function is exposed to the user through the normal TI-OS.
+; the correct results. There must be something wrong with the documentation.
+; (It turns out that the documentation does not describe the necessary values
+; of the D register which must be set before calling this. Normally D should be
+; set to 0. See https://wikiti.brandonw.net/index.php?title=83Plus:BCALLs:40D8
+; for more details. Although that page refers to ATan2Rad(), I suspect a
+; similar thing is happening for ATan2().)
 ;
 ; The real part (i.e. x-axis) is assumed to be entered first, then the
 ; imaginary part (i.e. y-axis). They becomes stored in the RPN stack variables
