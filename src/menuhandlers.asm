@@ -4,9 +4,7 @@
 
 mHelpHandler:
 mDispHandler:
-mModeHandler:
 mHyperbolicHandler:
-mUnitHandler:
     ret
 
 ;-----------------------------------------------------------------------------
@@ -19,7 +17,7 @@ mCubeHandler:
     call closeInputBuf
     call rclX
     bcall(_Cube)
-    call stoX
+    call replaceX
     ret
 
 ; mCubeRootHandler(X) -> X^(1/3)
@@ -31,7 +29,7 @@ mCubeRootHandler:
     bcall(_OP1ToOP2)
     bcall(_OP1Set3)
     bcall(_XRootY)
-    call stoX
+    call replaceXY
     ret
 
 ; mPercentHandler(Y, X) -> (Y, Y*(X/100))
@@ -45,7 +43,7 @@ mPercentHandler:
     bcall(_OP1ToOP2)
     call rclY
     bcall(_FPMult)
-    call stoX
+    call replaceX
     ret
 
 ;-----------------------------------------------------------------------------
@@ -55,7 +53,7 @@ mAbsHandler:
     call closeInputBuf
     call rclX
     bcall(_ClrOP1S) ; clear sign bit of OP1
-    call stoX
+    call replaceX
     ret
 
 ; mSignHandler(X) -> Sign(X)
@@ -76,7 +74,7 @@ mSignHandlerSetOne:
 mSignHandlerSetZero:
     bcall(_OP1Set0)
 mSignHandlerStoX:
-    call stoX
+    call replaceX
     ret
 
 mModHandler:
@@ -92,8 +90,7 @@ mModHandler:
     bcall(_OP1ToOP2) ; OP2 = X
     call rclY ; OP1 = Y
     bcall(_FPSub) ; OP1 = Y - floor(Y/X) * X
-    call dropStack
-    call stoX
+    call replaceXY
     ret
 
 mMinHandler:
@@ -102,8 +99,7 @@ mMinHandler:
     bcall(_OP1ToOP2)
     call rclY
     bcall(_Min)
-    call dropStack
-    call stoX
+    call replaceXY
     ret
 
 mMaxHandler:
@@ -112,8 +108,7 @@ mMaxHandler:
     bcall(_OP1ToOP2)
     call rclY
     bcall(_Max
-    call dropStack
-    call stoX
+    call replaceXY
     ret
 
 ;-----------------------------------------------------------------------------
@@ -122,21 +117,21 @@ mIntPartHandler:
     call closeInputBuf
     call rclX
     bcall(_Trunc) ; convert to int part, truncating towards 0.0, preserving sign
-    call stoX
+    call replaceX
     ret
 
 mFracPartHandler:
     call closeInputBuf
     call rclX
     bcall(_Frac) ; convert to frac part, preserving sign
-    call stoX
+    call replaceX
     ret
 
 mFloorHandler:
     call closeInputBuf
     call rclX
     bcall(_Intgr) ; convert to integer towards -Infinity
-    call stoX
+    call replaceX
     ret
 
 mCeilHandler:
@@ -145,14 +140,14 @@ mCeilHandler:
     bcall(_InvOP1S) ; invert sign
     bcall(_Intgr) ; convert to integer towards -Infinity
     bcall(_InvOP1S) ; invert sign
-    call stoX
+    call replaceX
     ret
 
 mNearHandler:
     call closeInputBuf
     call rclX
     bcall(_Int) ; round to nearest integer, irrespective of sign
-    call stoX
+    call replaceX
     ret
 
 ;-----------------------------------------------------------------------------
@@ -161,14 +156,14 @@ mRToDHandler:
     call closeInputBuf
     call rclX
     bcall(_RToD) ; RAD to DEG
-    call stoX
+    call replaceX
     ret
 
 mDToRHandler:
     call closeInputBuf
     call rclX
     bcall(_DToR) ; DEG to RAD
-    call stoX
+    call replaceX
     ret
 
 ; mAtan2Handler(Y, X) -> atan2(Y + Xi)
@@ -188,9 +183,8 @@ mAtan2Handler:
     bcall(_OP1ToOP2)
     call rclY ; OP1=Y (real), OP2=X (imaginary)
     bcall(_RToP) ; complex to polar
-    call dropStack
     bcall(_OP2ToOP1) ; OP2 contains the angle with range of (-pi, pi]
-    call stoX
+    call replaceXY
     ret
 
 ;-----------------------------------------------------------------------------
@@ -208,7 +202,7 @@ mFactorialHandler:
     call rclX
     bcall(_Factorial)
     bcall(_CkValidNum)
-    call stoX
+    call replaceX
     ret
 
 ; mRandomHandler() -> rand()
@@ -241,7 +235,7 @@ mFToCHandler:
     ld a, $18
     bcall(_OP2SetA) ; OP2 = 1.8
     bcall(_FPDiv) ; OP1 = (X - 32) / 1.8
-    call stoX
+    call replaceX
     ret
 
 mCToFHandler:
@@ -253,7 +247,7 @@ mCToFHandler:
     ld a, 32
     bcall(_SetXXOP2) ; OP2 = 32
     bcall(_FPAdd) ; OP1 = 1.8*X + 32
-    call stoX
+    call replaceX
     ret
 
 mMiToKmHandler:
@@ -262,7 +256,7 @@ mMiToKmHandler:
     ld hl, constKmPerMi
     bcall(_Mov9ToOP2)
     bcall(_FPMult)
-    call stoX
+    call replaceX
     ret
 
 mKmToMiHandler:
@@ -271,7 +265,7 @@ mKmToMiHandler:
     ld hl, constKmPerMi
     bcall(_Mov9ToOP2)
     bcall(_FPDiv)
-    call stoX
+    call replaceX
     ret
 
 constKmPerMi:

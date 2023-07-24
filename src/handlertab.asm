@@ -1,5 +1,5 @@
 ; List of GetKey() codes and their jump table.
-keyCodeHandlerTableSize equ 49
+keyCodeHandlerTableSize equ 50
 kOnExit equ 0 ; ON key generates 00 as the key code
 keyCodeHandlerTable:
     ; number entry
@@ -110,10 +110,13 @@ keyCodeHandlerTable:
     ; on the (, and x<->y on the ).
     .db kLParen ; (
     .dw handleKeyRotDown
-    .db kLBrace ; { = 2ND (
+    .db kLBrace ; {, 2ND (
     .dw handleKeyRotUp
     .db kRParen ; )
     .dw handleKeyExchangeXY
+    ; bind ANS to lastX.
+    .db kAns ; ANS
+    .dw handleKeyAns
 
     ; transcendentals
     .db kLog ; LOG

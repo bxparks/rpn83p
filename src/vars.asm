@@ -72,15 +72,56 @@ initR:
 ; go through these functions, instead of calling _StoX, _RclX directly.
 ;-----------------------------------------------------------------------------
 
+; Description: Replace stX with OP1. Save previous stX to lastX, store OP1 to
+; stX, set dirty flag.
+; Preserves: OP1
+replaceX:
+    bcall(_OP1ToOP2)
+    bcall(_RclX)
+    call stoLastX
+    bcall(_OP2ToOP1)
+    jr stoX
+
+; Description: Replace (stX, stY) pair with OP1. Save previous stX to lastX,
+; drop stack, save OP1 to stX, set dirty flag.
+; Preserves: OP1
+replaceXY:
+    bcall(_OP1ToOP2)
+    bcall(_RclX)
+    call stoLastX
+    bcall(_OP2ToOP1)
+    call dropStack
+    jr stoX
+
+;-----------------------------------------------------------------------------
+
 ; Function: Copy stX to OP1.
+; Preserves: OP2
 rclX:
     bcall(_RclX)
     ret
 
-; Function: Store OP1 to stX, setting dirty flag.
+; Function: Store OP1 to stX.
+; Preserves: OP1, OP2
 stoX:
     bcall(_StoX)
     set rpnFlagsStackDirty, (iy + rpnFlags)
+    ret
+
+;-----------------------------------------------------------------------------
+
+; Function: Copy stT to OP1.
+; Destroys: all, OP4
+rclLastX:
+    bcall(_RName)
+    bcall(_RclVarSym)
+    ret
+
+; Function: Store OP1 to lastX.
+; Destroys: all, OP4
+; Preserves: OP1, OP2
+stoLastX:
+    bcall(_StoR)
     ret
 
 ;-----------------------------------------------------------------------------
@@ -91,6 +132,7 @@ rclY:
     ret
 
 ; Function: Store OP1 to stY, setting dirty flag.
+; Preserves: OP1, OP2
 stoY:
     bcall(_StoY)
     set rpnFlagsStackDirty, (iy + rpnFlags)
@@ -164,7 +206,8 @@ liftStackNonEmpty:
 ; Function: Lift the RPN stack, copying X to Y.
 ; Input: none
 ; Output: T=Z; Z=Y; Y=X; X=X; OP1 preserved
-; Destroys: all, OP2, OP4
+; Destroys: all, OP4
+; Preserves: OP1, OP2
 liftStack:
     bcall(_PushRealO1)
     ; T = Z
@@ -185,7 +228,8 @@ liftStack:
 ; Function: Drop the RPN stack, copying T to Z.
 ; Input: none
 ; Output: X=Y; Y=Z; Z=T; T=T; OP1 preserved
-; Destroys: all, OP2, OP4
+; Destroys: all, OP4
+; Preserves: OP1, OP2
 dropStack:
     bcall(_PushRealO1)
     ; X = Y
@@ -207,6 +251,7 @@ dropStack:
 ; Input: none
 ; Output: X=Y; Y=Z; Z=T; T=X
 ; Destroys: all, OP1, OP2, OP4
+; Preserves: none
 rotDownStack:
     ; save X in FPS
     call rclX
@@ -231,6 +276,7 @@ rotDownStack:
 ; Input: none
 ; Output: T=Z; Z=Y; Y=X; X=T
 ; Destroys: all, OP1, OP2, OP4
+; Preserves: none
 rotUpStack:
     ; save T in FPS
     call rclT

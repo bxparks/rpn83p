@@ -621,8 +621,7 @@ handleKeyAdd:
     bcall(_OP1ToOP2)
     call rclY
     bcall(_FPAdd) ; Y + X
-    call dropStack ; drop stack only if no exception
-    call stoX
+    call replaceXY
     ret
 
 ; Function: Handle the Sub key.
@@ -635,8 +634,7 @@ handleKeySub:
     bcall(_OP1ToOP2)
     call rclY
     bcall(_FPSub) ; Y - X
-    call dropStack ; drop stack only if no exception
-    call stoX
+    call replaceXY
     ret
 
 ; Function: Handle the Mul key.
@@ -649,8 +647,7 @@ handleKeyMul:
     bcall(_OP1ToOP2)
     call rclY
     bcall(_FPMult) ; Y * X
-    call dropStack ; drop stack only if no exception
-    call stoX
+    call replaceXY
     ret
 
 ; Function: Handle the Div key.
@@ -663,8 +660,7 @@ handleKeyDiv:
     bcall(_OP1ToOP2)
     call rclY
     bcall(_FPDiv) ; Y / X
-    call dropStack ; drop stack only if no exception
-    call stoX
+    call replaceXY
     ret
 
 ;-----------------------------------------------------------------------------
@@ -717,8 +713,7 @@ handleKeyExpon:
     bcall(_OP1ToOP2)
     call rclY
     bcall(_YToX)
-    call dropStack ; drop stack only if no exception
-    call stoX
+    call replaceXY
     ret
 
 ; Function: 1/x
@@ -726,7 +721,7 @@ handleKeyInv:
     call closeInputBuf
     call rclX
     bcall(_FPRecip)
-    call stoX
+    call replaceX
     ret
 
 ; Function: x^2
@@ -734,7 +729,7 @@ handleKeySquare:
     call closeInputBuf
     call rclX
     bcall(_FPSquare)
-    call stoX
+    call replaceX
     ret
 
 ; Function: sqrt(x)
@@ -742,7 +737,7 @@ handleKeySqrt:
     call closeInputBuf
     call rclX
     bcall(_SqRoot)
-    call stoX
+    call replaceX
     ret
 
 ;-----------------------------------------------------------------------------
@@ -764,6 +759,13 @@ handleKeyExchangeXY:
     call exchangeXYStack
     ret
 
+handleKeyAns:
+    call closeInputBuf
+    call rclLastX
+    call liftStackNonEmpty
+    call stoX
+    ret
+
 ;-----------------------------------------------------------------------------
 ; Transcendentals
 ;-----------------------------------------------------------------------------
@@ -772,28 +774,28 @@ handleKeyLog:
     call closeInputBuf
     call rclX
     bcall(_LogX)
-    call stoX
+    call replaceX
     ret
 
 handleKeyALog:
     call closeInputBuf
     call rclX
     bcall(_TenX)
-    call stoX
+    call replaceX
     ret
 
 handleKeyLn:
     call closeInputBuf
     call rclX
     bcall(_LnX)
-    call stoX
+    call replaceX
     ret
 
 handleKeyExp:
     call closeInputBuf
     call rclX
     bcall(_EToX)
-    call stoX
+    call replaceX
     ret
 
 ;-----------------------------------------------------------------------------
@@ -804,42 +806,42 @@ handleKeySin:
     call closeInputBuf
     call rclX
     bcall(_Sin)
-    call stoX
+    call replaceX
     ret
 
 handleKeyCos:
     call closeInputBuf
     call rclX
     bcall(_Cos)
-    call stoX
+    call replaceX
     ret
 
 handleKeyTan:
     call closeInputBuf
     call rclX
     bcall(_Tan)
-    call stoX
+    call replaceX
     ret
 
 handleKeyASin:
     call closeInputBuf
     call rclX
     bcall(_ASin)
-    call stoX
+    call replaceX
     ret
 
 handleKeyACos:
     call closeInputBuf
     call rclX
     bcall(_ACos)
-    call stoX
+    call replaceX
     ret
 
 handleKeyATan:
     call closeInputBuf
     call rclX
     bcall(_ATan)
-    call stoX
+    call replaceX
     ret
 
 ;-----------------------------------------------------------------------------
