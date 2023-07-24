@@ -76,6 +76,7 @@ initR:
 ; setting dirty flag.
 ; Preserves: OP1
 replaceX:
+    bcall(_CkValidNum)
     bcall(_OP1ToOP2)
     bcall(_RclX)
     call stoLastX
@@ -86,6 +87,7 @@ replaceX:
 ; and setting dirty flag.
 ; Preserves: OP1
 replaceXY:
+    bcall(_CkValidNum)
     bcall(_OP1ToOP2)
     bcall(_RclX)
     call stoLastX
