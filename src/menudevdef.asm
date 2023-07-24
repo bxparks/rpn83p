@@ -44,7 +44,7 @@ mNumId equ 2
     .db mNumId ; id
     .db mRootId ; parentId
     .db mNumNameId ; nameId
-    .db 2 ; numStrips
+    .db 3 ; numStrips
     .db mCubeId ; stripBeginId
     .dw mGroupHandler ; handler (predefined)
 mProb:
@@ -203,10 +203,51 @@ mMaxId equ 21
     .db 0 ; numStrips
     .db 0 ; stripBeginId
     .dw mMaxHandler ; handler (to be implemented)
+; MenuGroup NUM: children: strip 2
+mIntPart:
+mIntPartId equ 22
+    .db mIntPartId ; id
+    .db mNumId ; parentId
+    .db mIntPartNameId ; nameId
+    .db 0 ; numStrips
+    .db 0 ; stripBeginId
+    .dw mIntPartHandler ; handler (to be implemented)
+mFracPart:
+mFracPartId equ 23
+    .db mFracPartId ; id
+    .db mNumId ; parentId
+    .db mFracPartNameId ; nameId
+    .db 0 ; numStrips
+    .db 0 ; stripBeginId
+    .dw mFracPartHandler ; handler (to be implemented)
+mFloor:
+mFloorId equ 24
+    .db mFloorId ; id
+    .db mNumId ; parentId
+    .db mFloorNameId ; nameId
+    .db 0 ; numStrips
+    .db 0 ; stripBeginId
+    .dw mFloorHandler ; handler (to be implemented)
+mCeil:
+mCeilId equ 25
+    .db mCeilId ; id
+    .db mNumId ; parentId
+    .db mCeilNameId ; nameId
+    .db 0 ; numStrips
+    .db 0 ; stripBeginId
+    .dw mCeilHandler ; handler (to be implemented)
+mNear:
+mNearId equ 26
+    .db mNearId ; id
+    .db mNumId ; parentId
+    .db mNearNameId ; nameId
+    .db 0 ; numStrips
+    .db 0 ; stripBeginId
+    .dw mNearHandler ; handler (to be implemented)
 ; MenuGroup PROB: children
 ; MenuGroup PROB: children: strip 0
 mComb:
-mCombId equ 22
+mCombId equ 27
     .db mCombId ; id
     .db mProbId ; parentId
     .db mCombNameId ; nameId
@@ -214,7 +255,7 @@ mCombId equ 22
     .db 0 ; stripBeginId
     .dw mCombHandler ; handler (to be implemented)
 mPerm:
-mPermId equ 23
+mPermId equ 28
     .db mPermId ; id
     .db mProbId ; parentId
     .db mPermNameId ; nameId
@@ -222,7 +263,7 @@ mPermId equ 23
     .db 0 ; stripBeginId
     .dw mPermHandler ; handler (to be implemented)
 mFactorial:
-mFactorialId equ 24
+mFactorialId equ 29
     .db mFactorialId ; id
     .db mProbId ; parentId
     .db mFactorialNameId ; nameId
@@ -230,7 +271,7 @@ mFactorialId equ 24
     .db 0 ; stripBeginId
     .dw mFactorialHandler ; handler (to be implemented)
 mRandom:
-mRandomId equ 25
+mRandomId equ 30
     .db mRandomId ; id
     .db mProbId ; parentId
     .db mRandomNameId ; nameId
@@ -238,7 +279,7 @@ mRandomId equ 25
     .db 0 ; stripBeginId
     .dw mRandomHandler ; handler (to be implemented)
 mRandomSeed:
-mRandomSeedId equ 26
+mRandomSeedId equ 31
     .db mRandomSeedId ; id
     .db mProbId ; parentId
     .db mRandomSeedNameId ; nameId
@@ -248,7 +289,7 @@ mRandomSeedId equ 26
 ; MenuGroup MODE: children
 ; MenuGroup MODE: children: strip 0
 mRad:
-mRadId equ 27
+mRadId equ 32
     .db mRadId ; id
     .db mModeId ; parentId
     .db mRadNameId ; nameId
@@ -256,32 +297,32 @@ mRadId equ 27
     .db 0 ; stripBeginId
     .dw mRadHandler ; handler (to be implemented)
 mDeg:
-mDegId equ 28
+mDegId equ 33
     .db mDegId ; id
     .db mModeId ; parentId
     .db mDegNameId ; nameId
     .db 0 ; numStrips
     .db 0 ; stripBeginId
     .dw mDegHandler ; handler (to be implemented)
-mBlank029:
-mBlank029Id equ 29
-    .db mBlank029Id ; id
+mBlank034:
+mBlank034Id equ 34
+    .db mBlank034Id ; id
     .db mModeId ; parentId
     .db mNullNameId ; nameId
     .db 0 ; numStrips
     .db 0 ; stripBeginId
     .dw mNullHandler ; handler (predefined)
-mBlank030:
-mBlank030Id equ 30
-    .db mBlank030Id ; id
+mBlank035:
+mBlank035Id equ 35
+    .db mBlank035Id ; id
     .db mModeId ; parentId
     .db mNullNameId ; nameId
     .db 0 ; numStrips
     .db 0 ; stripBeginId
     .dw mNullHandler ; handler (predefined)
-mBlank031:
-mBlank031Id equ 31
-    .db mBlank031Id ; id
+mBlank036:
+mBlank036Id equ 36
+    .db mBlank036Id ; id
     .db mModeId ; parentId
     .db mNullNameId ; nameId
     .db 0 ; numStrips
@@ -326,19 +367,29 @@ mMinNameId equ 16
     .dw mMinName
 mMaxNameId equ 17
     .dw mMaxName
-mCombNameId equ 18
+mIntPartNameId equ 18
+    .dw mIntPartName
+mFracPartNameId equ 19
+    .dw mFracPartName
+mFloorNameId equ 20
+    .dw mFloorName
+mCeilNameId equ 21
+    .dw mCeilName
+mNearNameId equ 22
+    .dw mNearName
+mCombNameId equ 23
     .dw mCombName
-mPermNameId equ 19
+mPermNameId equ 24
     .dw mPermName
-mFactorialNameId equ 20
+mFactorialNameId equ 25
     .dw mFactorialName
-mRandomNameId equ 21
+mRandomNameId equ 26
     .dw mRandomName
-mRandomSeedNameId equ 22
+mRandomSeedNameId equ 27
     .dw mRandomSeedName
-mRadNameId equ 23
+mRadNameId equ 28
     .dw mRadName
-mDegNameId equ 24
+mDegNameId equ 29
     .dw mDegName
 
 ; Table of names as NUL terminated C strings.
@@ -378,6 +429,16 @@ mMinName:
     .db "MIN", 0
 mMaxName:
     .db "MAX", 0
+mIntPartName:
+    .db "IP", 0
+mFracPartName:
+    .db "FP", 0
+mFloorName:
+    .db "FLR", 0
+mCeilName:
+    .db "CEIL", 0
+mNearName:
+    .db "NEAR", 0
 mCombName:
     .db "COMB", 0
 mPermName:

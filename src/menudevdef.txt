@@ -18,13 +18,13 @@ MenuGroup root mRoot [
         MenuItem MIN mMin
         MenuItem MAX mMax
       ]
-      # MenuStrip [
-      #   MenuItem IP mIntPart
-      #   MenuItem FP mFracPart
-      #   MenuItem TRUN mTruncate
-      #   MenuItem ROND mRound
-      #   MenuItem INTG mIntDown
-      # ]
+      MenuStrip [
+        MenuItem IP mIntPart
+        MenuItem FP mFracPart
+        MenuItem FLR mFloor
+        MenuItem CEIL mCeil
+        MenuItem NEAR mNear
+      ]
     ]
     MenuGroup PROB mProb [
       MenuStrip [

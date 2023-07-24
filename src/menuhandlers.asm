@@ -125,6 +125,45 @@ mMaxHandler:
     ret
 
 ;-----------------------------------------------------------------------------
+
+mIntPartHandler:
+    call closeInputBuf
+    call rclX
+    bcall(_Trunc) ; convert to int part, truncating towards 0.0, preserving sign
+    call stoX
+    ret
+
+mFracPartHandler:
+    call closeInputBuf
+    call rclX
+    bcall(_Frac) ; convert to frac part, preserving sign
+    call stoX
+    ret
+
+mFloorHandler:
+    call closeInputBuf
+    call rclX
+    bcall(_Intgr) ; convert to integer towards -Infinity
+    call stoX
+    ret
+
+mCeilHandler:
+    call closeInputBuf
+    call rclX
+    bcall(_InvOP1S) ; invert sign
+    bcall(_Intgr) ; convert to integer towards -Infinity
+    bcall(_InvOP1S) ; invert sign
+    call stoX
+    ret
+
+mNearHandler:
+    call closeInputBuf
+    call rclX
+    bcall(_Int) ; round to nearest integer, irrespective of sign
+    call stoX
+    ret
+
+;-----------------------------------------------------------------------------
 ; Children nodes of PROB menu.
 ;-----------------------------------------------------------------------------
 
