@@ -5,8 +5,8 @@ MenuGroup root mRoot [
   MenuStrip [
     MenuGroup NUM mNum [
       MenuStrip [
-        MenuItem <Scaret>3 mCube
-        MenuItem CBRT mCubeRoot # maybe use <ScubeR><Sroot>
+        MenuItem X<Scaret>3 mCube
+        MenuItem <ScubeR><Sroot>X mCubeRoot
         MenuItem <Spercent> mPercent
         MenuItem ATN2 mAtan2
       ]

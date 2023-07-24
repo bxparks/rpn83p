@@ -611,9 +611,9 @@ mDispName:
 mHyperbolicName:
     .db "HYP", 0
 mCubeName:
-    .db Scaret, '3', 0
+    .db 'X', Scaret, '3', 0
 mCubeRootName:
-    .db "CBRT", 0
+    .db ScubeR, Sroot, 'X', 0
 mPercentName:
     .db Spercent, 0
 mAtan2Name:
