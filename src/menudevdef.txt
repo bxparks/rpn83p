@@ -24,6 +24,11 @@ MenuGroup root mRoot [
         MenuItem CEIL mCeil
         MenuItem NEAR mNear
       ]
+      # MenuStrip [
+      #   MenuItem LCM mLcm
+      #   MenuItem GCD mGcd
+      #   MenuItem PRIM mPrime
+      # ]
     ]
     MenuGroup PROB mProb [
       MenuStrip [

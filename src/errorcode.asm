@@ -3,8 +3,11 @@
 ;-----------------------------------------------------------------------------
 
 errorCodeOk equ 0
-errorCodeDivByZero equ 1
-errorCodeCount equ 65 ; number of error codes
+; error codes added by RPN83P
+errorCodeNotYet equ 64 ; NOT YET
+errorCodeUnexpected equ 65 ; UNEXPECTED; any code >= errorCodeCount
+; total number of error codes
+errorCodeCount equ 66 ; total number of error codes
 
 ; Function: Initialize both errorCode and errorCodeDisplayed to 0.
 initErrorCode:
@@ -28,10 +31,10 @@ clearErrorCode:
 ; Output: (errorCode) set
 ; Destroys: HL
 setErrorCode:
-    res 7, a
-    cp $40
-    jr c, setErrorCodeContinue ; if a < $40
-    ld a, $40
+    res 7, a ; reset the GOTO flag
+    cp errorCodeCount
+    jr c, setErrorCodeContinue
+    ld a, errorCodeCount - 1 ; Unexpected
 setErrorCodeContinue:
     ld (errorCode), a
     ret
@@ -135,8 +138,9 @@ errorStrings:
     .dw errorStrUnknown         ; 60
     .dw errorStrUnknown         ; 61
     .dw errorStrUnknown         ; 62
-    .dw errorStrUnknown         ; 63
-    .dw errorStrUnsupported     ; 64, code unsupported
+    .dw errorStrUnknown         ; 63, hopefully the last TI-OS error code
+    .dw errorStrNotYet          ; 64, not yet implemented
+    .dw errorStrUnexpected      ; 65, unexpected error code
 
 ; The C strings for each error code. In alphabetical order, as listed in the TI
 ; 83 Plus SDK docs.
@@ -188,5 +192,7 @@ errorStrUndefined:
     .db "Err: Undefined", 0 ; indicates a system error "Undefined"
 errorStrUnknown:
     .db "Err: UNKNOWN", 0 ; not defined in this module
-errorStrUnsupported:
-    .db "Err: UNSUPPORTED", 0 ; code above $40
+errorStrNotYet:
+    .db "Err: NOT YET", 0 ; not implemented yet
+errorStrUnexpected:
+    .db "Err: UNEXPECTED", 0 ; code above $40

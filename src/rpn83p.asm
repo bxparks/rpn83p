@@ -167,6 +167,10 @@ readLoop:
     ; call debugFlags
     call displayAll
 
+    ; Clear the error code before calling lookupKey() to detect any custom
+    ; error code set directly by the handler.
+    call clearErrorCode
+
     ; Get the key code, and reset the ON flag right after. See TI-83 Plus SDK
     ; guide, p. 69. If this flag is not reset, then the next bcall(_DispHL)
     ; causes subsequent bcall(_GetKey) to always return 0. Interestingly, if
@@ -176,20 +180,24 @@ readLoop:
     bcall(_GetKey)
     res onInterrupt, (IY+onFlags)
 
-    ; Check for 2nd-Quit to Quit. ON (0) will act like the ON/EXIT key on the
-    ; HP 42S.
+    ; Check for 2nd-Quit to Quit. ON (0) triggers the handleKeyMenuBack() to
+    ; emulate the ON/EXIT key on the HP 42S which exits nested menus on that
+    ; calculator.
+    ; TODO: The LeftArrow is also bound to hanldeKeyMenuBack(), and that seems
+    ; convenient because LeftArrow is in close proximity to UpArrow and
+    ; DownArrow. Maybe on the TI-83/TI-84 calculators, the ON button should
+    ; just do nothing.
     cp kQuit
     jr z, mainExit
 
     ; Install error handler
     ld hl, mainError
     call APP_PUSH_ERRORH
-    ; Handle key
+    ; Handle the normal buttons or the menu F1-F5 buttons.
     call lookupKey
     ; Uninstall error handler
     call APP_POP_ERRORH
 
-    call clearErrorCode
     jr readLoop
 
 ; Handle system error

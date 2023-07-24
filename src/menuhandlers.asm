@@ -5,7 +5,7 @@
 mHelpHandler:
 mDispHandler:
 mHyperbolicHandler:
-    ret
+    jp mNotYetHandler
 
 ;-----------------------------------------------------------------------------
 ; Children nodes of NUM menu.
@@ -177,7 +177,7 @@ mNearHandler:
 
 mPermHandler:
 mCombHandler:
-    ret
+    jp mNotYetHandler
 
 ; mFactorialHandler(X) -> X!
 ; Description: Calculate the factorial of X.
@@ -278,14 +278,14 @@ mHrToHmsHandler:
     ; call rclX
     ; bcall(_DToR) ; DEG to RAD
     ; call replaceX
-    ret
+    jp mNotYetHandler
 
 mHmsToHrHandler:
     ; call closeInputBuf
     ; call rclX
     ; bcall(_DToR) ; DEG to RAD
     ; call replaceX
-    ret
+    jp mNotYetHandler
 
 ;-----------------------------------------------------------------------------
 ; Children nodes of MODE menu.

@@ -855,6 +855,14 @@ handleKeyATan:
 mNullHandler: ; do nothing
     ret
 
+; Description: Null handler. Does nothing.
+; Input:
+;   HL: pointer to MenuNode that was activated
+;   A: menu button index (0 - 4)
+mNotYetHandler:
+    ld a, errorCodeNotYet
+    jp setErrorCode
+
 ; Description: General handler for menu nodes of type "MenuGroup". Selecting
 ; this should cause the menuCurrentId to be set to this item, and the
 ; menuStripIndex to be set to 0
