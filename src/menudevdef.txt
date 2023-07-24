@@ -11,13 +11,20 @@ MenuGroup root mRoot [
         MenuItem <Spercent> mPercent
         MenuItem * *
       ]
-      MenuStrip [ 
+      MenuStrip [
         MenuItem ABS mAbs
         MenuItem SIGN mSign
         MenuItem MOD mMod
-        MenuItem LCM mLcm
-        MenuItem GCD mGcd
+        MenuItem MIN mMin
+        MenuItem MAX mMax
       ]
+      # MenuStrip [
+      #   MenuItem IP mIntPart
+      #   MenuItem FP mFracPart
+      #   MenuItem TRUN mTruncate
+      #   MenuItem ROND mRound
+      #   MenuItem INTG mIntDown
+      # ]
     ]
     MenuGroup PROB mProb [
       MenuStrip [

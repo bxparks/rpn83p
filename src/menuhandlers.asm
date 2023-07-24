@@ -70,6 +70,8 @@ mPercentHandler:
     call stoX
     ret
 
+;-----------------------------------------------------------------------------
+
 ; mAbsHandler(X) -> Abs(X)
 mAbsHandler:
     call closeInputBuf
@@ -100,8 +102,26 @@ mSignHandlerStoX:
     ret
 
 mModHandler:
-mLcmHandler:
-mGcdHandler:
+    ret
+
+mMinHandler:
+    call closeInputBuf
+    call rclX
+    bcall(_OP1ToOP2)
+    call rclY
+    bcall(_Min)
+    call dropStack
+    call stoX
+    ret
+
+mMaxHandler:
+    call closeInputBuf
+    call rclX
+    bcall(_OP1ToOP2)
+    call rclY
+    bcall(_Max
+    call dropStack
+    call stoX
     ret
 
 ;-----------------------------------------------------------------------------

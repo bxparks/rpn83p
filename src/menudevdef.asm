@@ -187,22 +187,22 @@ mModId equ 19
     .db 0 ; numStrips
     .db 0 ; stripBeginId
     .dw mModHandler ; handler (to be implemented)
-mLcm:
-mLcmId equ 20
-    .db mLcmId ; id
+mMin:
+mMinId equ 20
+    .db mMinId ; id
     .db mNumId ; parentId
-    .db mLcmNameId ; nameId
+    .db mMinNameId ; nameId
     .db 0 ; numStrips
     .db 0 ; stripBeginId
-    .dw mLcmHandler ; handler (to be implemented)
-mGcd:
-mGcdId equ 21
-    .db mGcdId ; id
+    .dw mMinHandler ; handler (to be implemented)
+mMax:
+mMaxId equ 21
+    .db mMaxId ; id
     .db mNumId ; parentId
-    .db mGcdNameId ; nameId
+    .db mMaxNameId ; nameId
     .db 0 ; numStrips
     .db 0 ; stripBeginId
-    .dw mGcdHandler ; handler (to be implemented)
+    .dw mMaxHandler ; handler (to be implemented)
 ; MenuGroup PROB: children
 ; MenuGroup PROB: children: strip 0
 mComb:
@@ -322,10 +322,10 @@ mSignNameId equ 14
     .dw mSignName
 mModNameId equ 15
     .dw mModName
-mLcmNameId equ 16
-    .dw mLcmName
-mGcdNameId equ 17
-    .dw mGcdName
+mMinNameId equ 16
+    .dw mMinName
+mMaxNameId equ 17
+    .dw mMaxName
 mCombNameId equ 18
     .dw mCombName
 mPermNameId equ 19
@@ -374,10 +374,10 @@ mSignName:
     .db "SIGN", 0
 mModName:
     .db "MOD", 0
-mLcmName:
-    .db "LCM", 0
-mGcdName:
-    .db "GCD", 0
+mMinName:
+    .db "MIN", 0
+mMaxName:
+    .db "MAX", 0
 mCombName:
     .db "COMB", 0
 mPermName:
