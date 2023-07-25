@@ -3,8 +3,6 @@
 ;-----------------------------------------------------------------------------
 
 mHelpHandler:
-mDispHandler:
-mHyperbolicHandler:
     jp mNotYetHandler
 
 ;-----------------------------------------------------------------------------
@@ -302,6 +300,15 @@ mDegHandler:
     set trigDeg, (iy + trigFlags)
     set rpnFlagsTrigDirty, (iy + rpnFlags)
     ret
+
+;-----------------------------------------------------------------------------
+; Children nodes of DISP menu.
+;-----------------------------------------------------------------------------
+
+mFixHandler:
+mSciHandler:
+mEngHandler:
+    jp mNotYetHandler
 
 ;-----------------------------------------------------------------------------
 ; Children nodes of HYP menu.

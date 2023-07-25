@@ -70,7 +70,15 @@ MenuGroup root mRoot [
         MenuItem * *
       ]
     ]
-    MenuItem DISP mDisp
+    MenuGroup DISP mDisp [
+      MenuStrip [
+        MenuItem FIX mFix
+        MenuItem SCI mSci
+        MenuItem ENG mEng
+        MenuItem * *
+        MenuItem * *
+      ]
+    ]
     MenuGroup HYP mHyperbolic [
       MenuStrip [
         MenuItem * *
