@@ -60,6 +60,8 @@ displayAll:
     ret
 
 ;-----------------------------------------------------------------------------
+; Routines for displaying the status bar at the top.
+;-----------------------------------------------------------------------------
 
 ; Function: Display the status bar, showing menu up/down arrows.
 ; Input: none
@@ -149,6 +151,8 @@ displayStatusTrigPutS:
     ret
 
 ;-----------------------------------------------------------------------------
+; Routines for displaying the error code and string.
+;-----------------------------------------------------------------------------
 
 ; Function: Display the string corresponding to the current error code.
 ; Input: errorCode, errorCodeDisplayed
@@ -185,6 +189,8 @@ displayErrorCode:
     call saveErrorCodeDisplayed
     ret
 
+;-----------------------------------------------------------------------------
+; Routines for displaying the RPN stack variables.
 ;-----------------------------------------------------------------------------
 
 ; Function: Display the RPN stack variables
@@ -248,20 +254,33 @@ displayStackContinue:
 
     ret
 
-; This is the normal, non-debug version, which combines the inputBuf and the X
-; register on a single line.
+; Display the X: register line using the normal, non-debug mode. The X: register
+; line is special: it can display one of 3 things, in order of precedence:
+; 1) The argBuf if active, otherwise
+; 2) The inputBuf if editting, otherwise
+; 3) the X register.
 displayStackXNormal:
     ld hl, stXCurCol*$100 + stXCurRow ; $(curCol)(curRow)
     ld (CurRow), hl
+
+    ; If in arg mode, display the argBuf.
+    ; bit rpnFlagsEditingArg, (iy + rpnFlags0
+    ; jr nz, displayStackXArgBuf
+
     ; If in edit mode, display the inputBuf, otherwise display X.
     bit rpnFlagsEditing, (iy + rpnFlags)
-    jr z, displayStackXReg
-displayStackXInputBuf:
-    jp printInputBuf
+    jr nz, displayStackXInputBuf
+
+    ; Else display the X register.
 displayStackXReg:
     call rclX
-    call printOP1
-    ret
+    jp printOP1
+
+displayStackXArgBuf:
+    ; jp printArgBuf
+
+displayStackXInputBuf:
+    jp printInputBuf
 
 ; This is the debug version which always shows the current X register, and
 ; prints the inputBuf on the error line.
@@ -273,22 +292,36 @@ displayStackXDebug:
     ; print the inputBuf on the error line
     jp debugInputBuf
 
-; Function: Print floating point number at OP1 at the current cursor. Erase to
-; the end of line (but only if the floating point did not spill over to the
-; next line).
-; Input: OP1: floating point number
-; Destroys: A, HL, OP3
-printOP1:
-    ld a, 15 ; width of output
-    bcall(_FormReal)
-    ld hl, OP3
-    bcall(_PutS)
+;-----------------------------------------------------------------------------
+
+; Function: Print the input buffer.
+; Input:
+;   inputBufFlagsInputDirty
+; Output:
+;   - (CurCol) is updated
+;   - inputBufFlagsInputDirty reset
+; Destroys: A, HL; BC destroyed by PutPS()
+printInputBuf:
+    bit inputBufFlagsInputDirty, (iy + inputBufFlags)
+    ret z
+
+    ld hl, stXCurCol*$100+stXCurRow ; $(col)(row) cursor
+    ld (CurRow), hl
+    ld hl, inputBuf
+    bcall(_PutPS)
+    ld a, cursorChar
+    bcall(_PutC)
+    ; Skip EraseEOL() if the PutC() above wrapped to next line
     ld a, (CurCol)
     or a
-    ret z ; if spilled to next line, don't call EraseEOL
+    jr z, printInputBufContinue
     bcall(_EraseEOL)
+printInputBufContinue:
+    res inputBufFlagsInputDirty, (iy + inputBufFlags)
     ret
 
+;-----------------------------------------------------------------------------
+; Routines for displaying the menu bar.
 ;-----------------------------------------------------------------------------
 
 ; Function: Display the bottom menus.
@@ -415,34 +448,24 @@ clearMenus:
     ret
 
 ;-----------------------------------------------------------------------------
+; Low-level helper routines.
+;-----------------------------------------------------------------------------
 
-; Function: Print the input buffer.
-; Input:
-;   inputBufFlagsInputDirty
-; Output:
-;   - (CurCol) is updated
-;   - inputBufFlagsInputDirty reset
-; Destroys: A, HL; BC destroyed by PutPS()
-printInputBuf:
-    bit inputBufFlagsInputDirty, (iy + inputBufFlags)
-    ret z
-
-    ld hl, stXCurCol*$100+stXCurRow ; $(col)(row) cursor
-    ld (CurRow), hl
-    ld hl, inputBuf
-    bcall(_PutPS)
-    ld a, cursorChar
-    bcall(_PutC)
-    ; Skip EraseEOL() if the PutC() above wrapped to next line
+; Function: Print floating point number at OP1 at the current cursor. Erase to
+; the end of line (but only if the floating point did not spill over to the
+; next line).
+; Input: OP1: floating point number
+; Destroys: A, HL, OP3
+printOP1:
+    ld a, 15 ; width of output
+    bcall(_FormReal)
+    ld hl, OP3
+    bcall(_PutS)
     ld a, (CurCol)
     or a
-    jr z, printInputBufContinue
+    ret z ; if spilled to next line, don't call EraseEOL
     bcall(_EraseEOL)
-printInputBufContinue:
-    res inputBufFlagsInputDirty, (iy + inputBufFlags)
     ret
-
-;-----------------------------------------------------------------------------
 
 ; Function: Convert A to 3-digit nul terminated C string at the buffer pointed
 ; by HL. This is intended for debugging, so it is not optimized.
