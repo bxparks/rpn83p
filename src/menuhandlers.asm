@@ -306,9 +306,37 @@ mDegHandler:
 ;-----------------------------------------------------------------------------
 
 mFixHandler:
+    ld (argHandler), hl
+    ld hl, msgFixLabel
+    jr enableArgMode
+
 mSciHandler:
+    ld (argHandler), hl
+    ld hl, msgSciLabel
+    jr enableArgMode
+
 mEngHandler:
-    jp mNotYetHandler
+    ld (argHandler), hl
+    ld hl, msgEngLabel
+    ; [[fallthrough]]
+
+; Input: HL: argBuf prompt
+enableArgMode:
+    ld (argPrompt), hl
+    xor a
+    ld (argBufSize), a
+    set rpnFlagsArgMode, (iy + rpnFlags)
+    set inputBufFlagsInputDirty, (iy + inputBufFlags)
+    ret
+
+msgFixLabel:
+    .db "FIX ", 0
+
+msgSciLabel:
+    .db "SCI ", 0
+
+msgEngLabel:
+    .db "ENG ", 0
 
 ;-----------------------------------------------------------------------------
 ; Children nodes of HYP menu.

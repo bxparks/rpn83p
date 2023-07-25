@@ -46,6 +46,31 @@ appendInputBuf:
 
 ;------------------------------------------------------------------------------
 
+initArgBuf:
+    res rpnFlagsArgMode, (iy + rpnFlags)
+    ; [[fallthrough]]
+
+clearArgBuf:
+    xor a
+    ld (argBuf), a
+    res rpnFlagsArgMode, (iy + rpnFlags)
+    ret
+
+; Input: A: character to append
+; Destroys: B, HL
+appendArgBuf:
+    set inputBufFlagsInputDirty, (iy + inputBufFlags)
+    ld hl, argBuf
+    ld b, a
+    ld a, (hl)
+    cp argBufSizeMax
+    ret nc ; limit total number of characters
+    ld a, b
+    ld b, argBufMax
+    jp appendString
+
+;------------------------------------------------------------------------------
+
 ; Function: Parse the input buffer into the parseBuf.
 ; Input: inputBuf filled with keyboard characters
 ; Output: OP1: floating point number

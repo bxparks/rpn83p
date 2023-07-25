@@ -50,6 +50,16 @@ stXCurRow equ 6
 stXCurCol equ 1
 stXPenRow equ stXCurRow*8
 
+; Display coordinates of the input buffer.
+inputCurRow equ stXCurRow
+inputCurCol equ stXCurCol
+inputPenRow equ inputCurRow*8
+
+; Display coordinates of the arg buffer.
+argCurRow equ 6
+argCurCol equ 0
+argPenRow equ argCurRow*8
+
 ; Define the Cursor character
 cursorChar equ LcurI
 cursorCharAlt equ LcurO
@@ -65,9 +75,10 @@ keyMenu5 equ kGraph
 ; Flags for RPN stack modes. Offset from IY register.
 rpnFlags equ asm_Flag2
 rpnFlagsEditing equ 0 ; set if in edit mode
-rpnFlagsLiftEnabled equ 1 ; set if stack lift is enabled (ENTER disables)
-rpnFlagsStackDirty equ 2 ; set if the stack is dirty
-rpnFlagsMenuDirty equ 3 ; set if the menu selection is dirty
+rpnFlagsArgMode equ 1 ; set if in command argument mode
+rpnFlagsLiftEnabled equ 2 ; set if stack lift is enabled (ENTER disables)
+rpnFlagsStackDirty equ 3 ; set if the stack is dirty
+rpnFlagsMenuDirty equ 4 ; set if the menu selection is dirty
 rpnFlagsTrigDirty equ 5 ; set if the trig status is dirty
 
 ; Flags for the inputBuf. Offset from IY register.
@@ -78,8 +89,15 @@ inputBufFlagsEE equ 2 ; set if EE symbol exists
 inputBufFlagsClosedEmpty equ 3 ; inputBuf empty when closeInputBuf() called
 inputBufFlagsExpSign equ 4 ; exponent sign bit detected during parsing
 
+;-----------------------------------------------------------------------------
+; Application variables and buffers.
+;-----------------------------------------------------------------------------
+
+; Begin RPN83P variables.
+rpnVarsBegin equ tempSwapArea
+
 ; Error code and handling.
-errorCode equ tempSwapArea ; current error code
+errorCode equ rpnVarsBegin ; current error code
 errorCodeDisplayed equ errorCode + 1 ; displayed error code
 
 ; String buffer for keyboard entry. This is a Pascal-style with a single size
@@ -111,7 +129,7 @@ inputBufEELenMax equ 2
 ; is:
 ;
 ;   struct parseBuf {
-;       uint_t size; // number of digits in mantissa, 0 for 0.0
+;       uint8_t size; // number of digits in mantissa, 0 for 0.0
 ;       char man[parseBufMax];  // mantissa, implicit starting decimal point
 ;   }
 ;
@@ -125,9 +143,9 @@ parseBufSizeOf equ parseBufMax + 1
 ; Floating point number buffer, 9 bytes for TI-OS:
 ;
 ;   struct floatBuf {
-;       uint_t type;
-;       uint_t exp;
-;       uint_t man[7];
+;       uint8_t type;
+;       uint8_t exp;
+;       uint8_t man[7];
 ;   }
 floatBuf equ parseBuf + parseBufSizeOf
 floatBufType equ floatBuf ; type
@@ -144,6 +162,25 @@ floatBufSizeOf equ 9
 menuCurrentId equ floatBuf + floatBufSizeOf
 menuStripIndex equ menuCurrentId + 1
 
+; When the inputBuf is used as a command argBuf, the maximum number of
+; characters in the buffer is 2.
+argBuf equ inputBuf
+argBufSize equ inputBufSize
+argBufMax equ inputBufMax
+argBufSizeMax equ 2
+
+; Pointer to a C string that prompts before the argBuf.
+; void *argPrompt;
+argPrompt equ menuStripIndex + 1
+argPromptSizeOf equ 2
+
+; Pointer to the command handler waiting for the arg.
+argHandler equ argPrompt + argPromptSizeOf
+argHandlerSizeOf equ 2
+
+; End RPN83P variables. Total size of vars = rpnVarsEnd - rpnVarsBegin.
+rpnVarsEnd equ argHandler + argHandlerSizeOf
+
 ;-----------------------------------------------------------------------------
 
 .org userMem - 2
@@ -157,6 +194,7 @@ main:
 
     call initErrorCode
     call initInputBuf
+    call initArgBuf
     call initStack
     call initMenu
     call initDisplay
@@ -228,10 +266,12 @@ mainExit:
 #include "display.asm"
 #include "errorcode.asm"
 #include "debug.asm"
-#include "handlertab.asm"
 #include "menu.asm"
-#include "menudevdef.asm"
 #include "menuhandlers.asm"
+; Place data files at the end, because the TI-OS prevents execution of assembly
+; code if it spills over to page $C000. The limitation does not apply to data.
+#include "handlertab.asm"
+#include "menudevdef.asm"
 
 ;-----------------------------------------------------------------------------
 

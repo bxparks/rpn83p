@@ -57,6 +57,7 @@ displayAll:
     res rpnFlagsTrigDirty, (iy + rpnFlags)
     res rpnFlagsStackDirty, (iy + rpnFlags)
     res rpnFlagsMenuDirty, (iy + rpnFlags)
+    res inputBufFlagsInputDirty, (iy + inputBufFlags)
     ret
 
 ;-----------------------------------------------------------------------------
@@ -198,13 +199,23 @@ displayErrorCode:
 ; Output: (rpnFlagsMenuDirty) reset
 ; Destroys: A, HL
 displayStack:
-    ; Return if both stackDirty and inputDirty are clean.
+    ; display YZT if stack is dirty
+    bit rpnFlagsStackDirty, (iy + rpnFlags)
+    call nz, displayStackYZT
+
+    ; display X if stack or inputBuf are dirty
     bit rpnFlagsStackDirty, (iy + rpnFlags)
     jr nz, displayStackContinue
     bit inputBufFlagsInputDirty, (iy + inputBufFlags)
-    ret z
-
+    jr nz, displayStackContinue
+    ret
 displayStackContinue:
+    call displayStackX
+    ret
+
+;-----------------------------------------------------------------------------
+
+displayStackYZT:
     ; print T label
     ld hl, stTPenRow*$100 ; $(penRow)(penCol)
     ld (PenCol), hl
@@ -241,49 +252,47 @@ displayStackContinue:
     call rclY
     call printOP1
 
+    ret
+
+;-----------------------------------------------------------------------------
+
+; Description: Render the X lines. There are 3 options:
+; 1) if rpnFlagsArgMode, print the inputbuf as a command argument,
+; 2) else if rpnFlagsEditing, print the inputBuf as a stack number,
+; 3) else print the stX variable.
+displayStackX:
+    bit rpnFlagsArgMode, (iy + rpnFlags)
+    jr nz, displayStackXArg
+    bit rpnFlagsEditing, (iy + rpnFlags)
+    jr nz, displayStackXInput
+    ; [[fallthrough]]
+
+displayStackXNormal:
     ; print X label
     ld hl, stXPenRow*$100 ; $(penRow)(penCol)
     ld (PenCol), hl
     ld hl, msgXLabel
     bcall(_VPutS)
-
-    ; print X value.
-    ; NOTE: Use one (but not both) of the following.
-    ; call displayStackXDebug
-    call displayStackXNormal
-
-    ret
-
-; Display the X: register line using the normal, non-debug mode. The X: register
-; line is special: it can display one of 3 things, in order of precedence:
-; 1) The argBuf if active, otherwise
-; 2) The inputBuf if editting, otherwise
-; 3) the X register.
-displayStackXNormal:
+    ; print the stX variable
     ld hl, stXCurCol*$100 + stXCurRow ; $(curCol)(curRow)
     ld (CurRow), hl
-
-    ; If in arg mode, display the argBuf.
-    ; bit rpnFlagsEditingArg, (iy + rpnFlags0
-    ; jr nz, displayStackXArgBuf
-
-    ; If in edit mode, display the inputBuf, otherwise display X.
-    bit rpnFlagsEditing, (iy + rpnFlags)
-    jr nz, displayStackXInputBuf
-
-    ; Else display the X register.
-displayStackXReg:
     call rclX
     jp printOP1
 
-displayStackXArgBuf:
-    ; jp printArgBuf
+displayStackXInput:
+    ; print X label
+    ld hl, inputPenRow*$100 ; $(penRow)(penCol)
+    ld (PenCol), hl
+    ld hl, msgXLabel
+    bcall(_VPutS)
+    ; print the inputBuf
+    ld hl, inputCurCol*$100 + inputCurRow ; $(curCol)(curRow)
+    ld (CurRow), hl
+    jr printInputBuf
 
-displayStackXInputBuf:
-    jp printInputBuf
-
+#ifdef DEBUG
 ; This is the debug version which always shows the current X register, and
-; prints the inputBuf on the error line.
+; prints the inputBuf on the debug line.
 displayStackXDebug:
     ld hl, $0100 + stXCurRow ; $(curCol)(curRow)
     ld (CurRow), hl
@@ -291,22 +300,58 @@ displayStackXDebug:
     call printOP1
     ; print the inputBuf on the error line
     jp debugInputBuf
+#endif
+
+; Display the argBuf in the X register line.
+displayStackXArg:
+    ld hl, argCurCol*$100 + argCurRow ; $(curCol)(curRow)
+    ld (CurRow), hl
+    jr printArgBuf
+
+;-----------------------------------------------------------------------------
+
+; Function: Print the arg buffer.
+; Input:
+;   - argBuf (same as inputBuf)
+;   - argBufPrompt
+;   - (CurCol) cursor position
+; Output:
+;   - (CurCol) is updated
+; Destroys: A, HL; BC destroyed by PutPS()
+printArgBuf:
+    ; Print prompt and contents of argBuf
+    ld hl, (argPrompt)
+    bcall(_PutS)
+    ld hl, argBuf
+    bcall(_PutPS)
+
+    ; Append cursor if needed.
+    ld a, (argBufSize)
+    or a
+    jr z, printArgBufTwoCursors
+    cp 1
+    jr z, printArgBufOneCursor
+    jr printArgBufZeroCursor
+printArgBufTwoCursors:
+    ld a, cursorChar
+    bcall(_PutC)
+printArgBufOneCursor:
+    ld a, cursorChar
+    bcall(_PutC)
+printArgBufZeroCursor:
+    bcall(_EraseEOL)
+    ret
 
 ;-----------------------------------------------------------------------------
 
 ; Function: Print the input buffer.
 ; Input:
-;   inputBufFlagsInputDirty
+;   - inputBuf
+;   - (CurCol) cursor position
 ; Output:
 ;   - (CurCol) is updated
-;   - inputBufFlagsInputDirty reset
 ; Destroys: A, HL; BC destroyed by PutPS()
 printInputBuf:
-    bit inputBufFlagsInputDirty, (iy + inputBufFlags)
-    ret z
-
-    ld hl, stXCurCol*$100+stXCurRow ; $(col)(row) cursor
-    ld (CurRow), hl
     ld hl, inputBuf
     bcall(_PutPS)
     ld a, cursorChar
@@ -314,10 +359,8 @@ printInputBuf:
     ; Skip EraseEOL() if the PutC() above wrapped to next line
     ld a, (CurCol)
     or a
-    jr z, printInputBufContinue
+    ret z
     bcall(_EraseEOL)
-printInputBufContinue:
-    res inputBufFlagsInputDirty, (iy + inputBufFlags)
     ret
 
 ;-----------------------------------------------------------------------------
