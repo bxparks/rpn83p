@@ -268,7 +268,7 @@ mainExit:
 #include "handlers.asm"
 #include "common.asm"
 #include "pstring.asm"
-#include "parsenum.asm"
+#include "input.asm"
 #include "display.asm"
 #include "errorcode.asm"
 #include "debug.asm"

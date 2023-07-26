@@ -10,10 +10,10 @@ SRCS := \
 	errorcode.asm \
 	handlers.asm \
 	handlertab.asm \
+	input.asm \
 	menu.asm \
 	menudevdef.asm \
 	menuhandlers.asm \
-	parsenum.asm \
 	pstring.asm \
 	rpn83p.asm \
 	vars.asm
