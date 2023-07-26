@@ -17,8 +17,9 @@
 statusCurRow equ 0
 statusCurCol equ 0
 statusPenRow equ statusCurRow*8
-statusMenuPenCol equ 0
-statusTrigPenCol equ 12
+statusMenuPenCol equ 0 ; 3 * 4px, (up | down) + quadspace
+statusTrigPenCol equ 12 ; 4 * 4px, (DEG | RAD) + quadspace
+statusFloatModePenCol equ 28 ; 6 * 4px (FIX|SCI|ENG) + [n]
 
 ; Display coordinates of the debug line
 debugCurRow equ 1
@@ -76,10 +77,11 @@ keyMenu5 equ kGraph
 rpnFlags equ asm_Flag2
 rpnFlagsEditing equ 0 ; set if in edit mode
 rpnFlagsArgMode equ 1 ; set if in command argument mode
-rpnFlagsLiftEnabled equ 2 ; set if stack lift is enabled (ENTER disables)
+rpnFlagsLiftEnabled equ 2 ; set if stack lift is enabled (ENTER disables it)
 rpnFlagsStackDirty equ 3 ; set if the stack is dirty
 rpnFlagsMenuDirty equ 4 ; set if the menu selection is dirty
 rpnFlagsTrigDirty equ 5 ; set if the trig status is dirty
+rpnFlagsFloatModeDirty equ 6 ; set if the floating mode is dirty
 
 ; Flags for the inputBuf. Offset from IY register.
 inputBufFlags equ asm_Flag3

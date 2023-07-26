@@ -1,7 +1,7 @@
 ;-----------------------------------------------------------------------------
 ; Display the RPN stack variables.
 ;
-;   0: Status line: (up|down) (deg|rad) (bin|dec|hex) # small font
+;   0: Status line: (up|down) (deg|rad) (fix|sci|eng) # small font
 ;   1: Debug line
 ;   2: Error code line:
 ;   3: T: tttt
@@ -39,6 +39,7 @@ menuPenColEnd   equ 96
 ; Function: Set the display flags to dirty initially so that they are rendered.
 initDisplay:
     set rpnFlagsTrigDirty, (iy + rpnFlags)
+    set rpnFlagsFloatModeDirty, (iy + rpnFlags)
     set inputBufFlagsInputDirty, (iy + inputBufFlags)
     ret
 
@@ -54,9 +55,10 @@ displayAll:
     call displayMenu
 
     ; Reset dirty flags
-    res rpnFlagsTrigDirty, (iy + rpnFlags)
     res rpnFlagsStackDirty, (iy + rpnFlags)
     res rpnFlagsMenuDirty, (iy + rpnFlags)
+    res rpnFlagsTrigDirty, (iy + rpnFlags)
+    res rpnFlagsFloatModeDirty, (iy + rpnFlags)
     res inputBufFlagsInputDirty, (iy + inputBufFlags)
     ret
 
@@ -71,6 +73,7 @@ displayAll:
 displayStatus:
     call displayStatusMenu
     call displayStatusTrig
+    call displayStatusFloatMode
     ret
 
 displayStatusMenu:
@@ -149,6 +152,48 @@ displayStatusTrigRad:
     ld hl, msgStatusTrigRad
 displayStatusTrigPutS:
     bcall(_VPutS)
+    ret
+
+;-----------------------------------------------------------------------------
+
+; Description: Display the floating point format: FIX, SCI, ENG
+; Destroys: A, HL
+displayStatusFloatMode:
+    bit rpnFlagsFloatModeDirty, (iy + rpnFlags)
+    ret z
+    ld hl, statusPenRow*$100 + statusFloatModePenCol; $(penRow)(penCol)
+    ld (PenCol), hl
+    ; check float mode
+    bit fmtExponent, (iy + fmtFlags)
+    jr nz, displayStatusFloatModeSciOrEng
+displayStatusFloatModeFix:
+    ld hl, mFixName
+    jr displayStatusFloatModeBracketDigit
+displayStatusFloatModeSciOrEng:
+    bit fmtEng, (iy + fmtFlags)
+    jr nz, displayStatusFloatModeEng
+displayStatusFloatModeSci:
+    ld hl, mSciName
+    jr displayStatusFloatModeBracketDigit
+displayStatusFloatModeEng:
+    ld hl, mEngName
+    ; [[fallthrough]]
+displayStatusFloatModeBracketDigit:
+    ; Print the number of digit
+    bcall(_VPutS)
+    ld a, SlParen
+    bcall(_VPutMap)
+    ld a, (fmtDigits)
+    cp 10
+    jr nc, displayStatusFloatModeFloating
+    add a, '0'
+    jr displayStatusFloatModeDigit
+displayStatusFloatModeFloating:
+    ld a, '-'
+displayStatusFloatModeDigit:
+    bcall(_VPutMap)
+    ld a, SrParen
+    bcall(_VPutMap)
     ret
 
 ;-----------------------------------------------------------------------------

@@ -46,10 +46,26 @@ debugParseBuf:
     pop af
     ret
 
-; Description: Print the value of (inputBufEEPos).
-; Input: inputBufEEPos
+; Description: Print the C string at HL.
+; Input: HL
+; Output:
 ; Destroys: none
-;
+debugString:
+    push af
+    push bc
+    push de
+    push hl
+    ld hl, debugCurCol*$100+debugCurRow ; $(curCol)(curRow)
+    ld (CurRow), hl
+    pop hl
+    push hl
+    bcall(_PutS)
+    bcall(_EraseEOL)
+    pop hl
+    pop de
+    pop bc
+    pop af
+    ret
 
 ;------------------------------------------------------------------------------
 

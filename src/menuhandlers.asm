@@ -356,8 +356,14 @@ enableArgMode:
     ret
 
 ; Description: Save the (argValue) to (fmtDigits).
+; Output:
+;   - rpnFlagsStackDirty set
+;   - rpnFlagsFloatModeDirty set
+;   - fmtDigits updated
+; Destroys: A
 saveFormatDigits:
     set rpnFlagsStackDirty, (iy + rpnFlags)
+    set rpnFlagsFloatModeDirty, (iy + rpnFlags)
     ld a, (argValue)
     cp 10
     jr c, saveFormatDigitsContinue
