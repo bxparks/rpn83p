@@ -178,6 +178,9 @@ mNearHandler:
 
 ; Calculate the Permutation function:
 ; P(y, x) = P(n, r) = n!/(n-r)! = n(n-1)...(n-r+1)
+;
+; TODO: (n,r) are limited to [0.255]. It should be relatively easy to extended
+; the range to [0,65535].
 mPermHandler:
     call closeInputBuf
     call validatePermComb
@@ -191,8 +194,9 @@ mPermHandler:
     ld b, a ; B = X, C = Y
 mPermHandlerLoop:
     push bc
-    ld a, c ; A = C = Y
-    bcall(_SetXXOP2)
+    ld l, c ; L = C = Y
+    ld h, 0 ; HL = Y
+    bcall(_SetXXXXOP2)
     bcall(_FPMult)
     pop bc
     dec c
@@ -204,7 +208,10 @@ mPermHandlerEnd:
 ;-----------------------------------------------------------------------------
 
 ; Calculate the Combintation function:
-; C(y, x) = C(n, r) = n!/(n-r)!r! = n(n-1)...(n-r+1)/(r)(r-1)...(1).
+; C(y, x) = C(n, r) = n!/(n-r)!/r! = n(n-1)...(n-r+1)/(r)(r-1)...(1).
+;
+; TODO: (n,r) are limited to [0.255]. It should be relatively easy to extended
+; the range to [0,65535].
 ;
 ; TODO: This algorithm below is a variation of the algorithm used for P(n,r)
 ; above, with a division operation inside the loop that corresponds to each
@@ -226,13 +233,15 @@ mCombHandler:
     ld b, a ; B = X, C = Y
 mCombHandlerLoop:
     push bc
-    ld a, c ; A = C = Y
-    bcall(_SetXXOP2)
+    ld l, c ; L = C = Y
+    ld h, 0 ; HL = Y
+    bcall(_SetXXXXOP2) ; OP2 = Y
     bcall(_FPMult)
     pop bc
     push bc
-    ld a, b
-    bcall(_SetXXOP2)
+    ld l, b ; L = B = X
+    ld h, 0 ; HL = X
+    bcall(_SetXXXXOP2) ; OP2 = X
     bcall(_FPDiv)
     pop bc
     dec c
@@ -243,10 +252,12 @@ mCombHandlerEnd:
 
 ;-----------------------------------------------------------------------------
 
-; Validate the n and r parameters of P(n,r) and C(n,r).
+; Validate the n and r parameters of P(n,r) and C(n,r):
+;   - n, r are integers in the range of [0,255]
+;   - n >= r
 ; Output:
-;   - C: int(Y)
-;   - E: int(X)
+;   - C: Y
+;   - E: X
 ; Destroys: A, BC, DE, HL
 validatePermComb:
     ; Validate X
@@ -258,27 +269,27 @@ validatePermComb:
 
     ; Convert X and Y into integers
     bcall(_ConvOP1) ; OP1 = Y
-    push de ; save int(Y)
+    push de ; save Y
     bcall(_OP1ToOP2) ; OP2 = Y
     call rclX
-    bcall(_ConvOP1) ; DE = int(X)
-    pop bc ; BC = int(Y)
+    bcall(_ConvOP1) ; E = X
+    pop bc ; C = Y
     ; Check that Y >= X
     ld a, c ; A = Y
     cp e ; Y - X
     jr c, validatePermCombError
     ret
 
-; Validate OP1 is an integer in the range of [0, 99].
+; Validate OP1 is an integer in the range of [0, 255].
 validatePermCombParam:
     bcall(_CkOP1FP0)
     ret z ; ok if OP1==0
     bcall(_CkPosInt)
     jr nz, validatePermCombError ; error if OP1 <= 0
-    ld hl, 100
-    bcall(_SetXXXXOP2) ; OP2=100
+    ld hl, 256
+    bcall(_SetXXXXOP2) ; OP2=256
     bcall(_CpOP1OP2)
-    ret c ; ok if OP1 < 100
+    ret c ; ok if OP1 < 255
 validatePermCombError:
     bjump(_ErrDomain) ; throw exception
 
