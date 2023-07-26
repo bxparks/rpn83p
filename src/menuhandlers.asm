@@ -306,22 +306,37 @@ mDegHandler:
 ;-----------------------------------------------------------------------------
 
 mFixHandler:
-    ld (argHandler), hl
     call closeInputBuf
+    ld hl, mFixCallback
+    ld (argHandler), hl
     ld hl, msgFixLabel
     jr enableArgMode
+mFixCallback:
+    res fmtExponent, (iy + fmtFlags)
+    res fmtEng, (iy + fmtFlags)
+    jr saveFormatDigits
 
 mSciHandler:
-    ld (argHandler), hl
     call closeInputBuf
+    ld hl, mSciCallback
+    ld (argHandler), hl
     ld hl, msgSciLabel
     jr enableArgMode
+mSciCallback:
+    set fmtExponent, (iy + fmtFlags)
+    res fmtEng, (iy + fmtFlags)
+    jr saveFormatDigits
 
 mEngHandler:
-    ld (argHandler), hl
     call closeInputBuf
+    ld hl, mEngCallback
+    ld (argHandler), hl
     ld hl, msgEngLabel
-    ; [[fallthrough]]
+    jr enableArgMode
+mEngCallback:
+    set fmtExponent, (iy + fmtFlags)
+    set fmtEng, (iy + fmtFlags)
+    jr saveFormatDigits
 
 ; Input: HL: argBuf prompt
 enableArgMode:
@@ -330,6 +345,15 @@ enableArgMode:
     ld (argBufSize), a
     set rpnFlagsArgMode, (iy + rpnFlags)
     set inputBufFlagsInputDirty, (iy + inputBufFlags)
+    ret
+
+saveFormatDigits:
+    ld a, (argValue)
+    cp 10
+    jr c, saveFormatDigitsContinue
+    ld a, $FF
+saveFormatDigitsContinue:
+    ld (fmtDigits), a
     ret
 
 msgFixLabel:

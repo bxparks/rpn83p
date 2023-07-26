@@ -387,10 +387,24 @@ flipInputBufSignAdd:
 ; Output:
 ; Destroys: all, OP1, OP2, OP4
 handleKeyEnter:
+    bit rpnFlagsArgMode, (iy + rpnFlags)
+    jr nz, handleKeyEnterArg
     call closeInputBuf
     call liftStack
     res rpnFlagsLiftEnabled, (iy + rpnFlags)
     ret
+
+; Description: Handle the ENTER key for arg input.
+; Input: argBuf
+; Output: argValue
+; Destroys: A, B, C, HL
+handleKeyEnterArg:
+    set inputBufFlagsInputDirty, (iy + inputBufFlags)
+    res rpnFlagsArgMode, (iy + rpnFlags)
+    call parseArgBuf
+    ld (argValue), a
+    ld hl, (argHandler)
+    jp (hl)
 
 ; closeInputBuf() -> None
 ; Description: If currently in edit mode, close the input buffer by parsing the

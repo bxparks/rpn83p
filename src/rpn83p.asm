@@ -178,8 +178,12 @@ argPromptSizeOf equ 2
 argHandler equ argPrompt + argPromptSizeOf
 argHandlerSizeOf equ 2
 
+; Parsed value of argBuf.
+argValue equ argHandler + argHandlerSizeOf
+argValueSizeOf equ 1
+
 ; End RPN83P variables. Total size of vars = rpnVarsEnd - rpnVarsBegin.
-rpnVarsEnd equ argHandler + argHandlerSizeOf
+rpnVarsEnd equ argValue + argValueSizeOf
 
 ;-----------------------------------------------------------------------------
 
