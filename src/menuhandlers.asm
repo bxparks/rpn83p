@@ -307,16 +307,19 @@ mDegHandler:
 
 mFixHandler:
     ld (argHandler), hl
+    call closeInputBuf
     ld hl, msgFixLabel
     jr enableArgMode
 
 mSciHandler:
     ld (argHandler), hl
+    call closeInputBuf
     ld hl, msgSciLabel
     jr enableArgMode
 
 mEngHandler:
     ld (argHandler), hl
+    call closeInputBuf
     ld hl, msgEngLabel
     ; [[fallthrough]]
 
