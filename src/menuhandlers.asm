@@ -179,28 +179,11 @@ mNearHandler:
 ; P(n, r) = P(y, x) = y!/(y-x)! => loop x times
 mPermHandler:
     call closeInputBuf
-    ; Validate X
-    call rclX
-    call mPermHandlerCheck
-    ; Validate Y
-    call rclY
-    call mPermHandlerCheck
-    ; Convert X and Y into integers
-    bcall(_ConvOP1) ; OP1 = Y
-    push de ; save int(Y)
-    bcall(_OP1ToOP2) ; OP2 = Y
-    call rclX
-    bcall(_ConvOP1) ; DE = int(X)
-    pop bc ; BC = int(Y)
-    ; Check that Y >= X
-    ld a, c ; A = Y
-    cp e ; Y - X
-    jr c, mPermHandlerError
+    call validatePermComb
 
-    ; Validation over. Now do the calculation.
-    ; Set initial Result to 1.0. P(N, 0) = 1
+    ; Do the calculation. Set initial Result to 1.0. P(N, 0) = 1
     bcall(_OP1Set1)
-    ld a, e
+    ld a, e ; A = X
     or a
     jr z, mPermHandlerEnd
     ; Loop x times, multiple by (y-i)
@@ -217,23 +200,76 @@ mPermHandlerEnd:
     call replaceXY
     ret
 
-; Validate OP1 is an integer in the range of [0, 255].
-mPermHandlerCheck:
-    bcall(_CkOP1FP0)
-    ret z
-    bcall(_CkPosInt)
-    jr nz, mPermHandlerError
-    ld hl, 100
-    bcall(_SetXXXXOP2) ; OP2=100
-    bcall(_CpOP1OP2)
-    ret c
-mPermHandlerError:
-    bjump(_ErrDomain) ; throw exception
-
 ;-----------------------------------------------------------------------------
 
 mCombHandler:
-    jp mNotYetHandler
+    call closeInputBuf
+    call validatePermComb
+
+    ; Do the calculation. Set initial Result to 1.0. C(N, 0) = 1
+    bcall(_OP1Set1)
+    ld a, e ; A = X
+    or a
+    jr z, mCombHandlerEnd
+    ; Loop X times, multiple by (Y-i), divide by i.
+    ld b, a ; B = X, C = Y
+mCombHandlerLoop:
+    push bc
+    ld a, c ; A = C = Y
+    bcall(_SetXXOP2)
+    bcall(_FPMult)
+    pop bc
+    push bc
+    ld a, b
+    bcall(_SetXXOP2)
+    bcall(_FPDiv)
+    pop bc
+    dec c
+    djnz mCombHandlerLoop
+mCombHandlerEnd:
+    call replaceXY
+    ret
+
+;-----------------------------------------------------------------------------
+
+; Validate the n and r parameters of P(n,r) and C(n,r).
+; Output:
+;   - C: int(Y)
+;   - E: int(X)
+; Destroys: A, BC, DE, HL
+validatePermComb:
+    ; Validate X
+    call rclX
+    call validatePermCombParam
+    ; Validate Y
+    call rclY
+    call validatePermCombParam
+
+    ; Convert X and Y into integers
+    bcall(_ConvOP1) ; OP1 = Y
+    push de ; save int(Y)
+    bcall(_OP1ToOP2) ; OP2 = Y
+    call rclX
+    bcall(_ConvOP1) ; DE = int(X)
+    pop bc ; BC = int(Y)
+    ; Check that Y >= X
+    ld a, c ; A = Y
+    cp e ; Y - X
+    jr c, validatePermCombError
+    ret
+
+; Validate OP1 is an integer in the range of [0, 99].
+validatePermCombParam:
+    bcall(_CkOP1FP0)
+    ret z ; ok if OP1==0
+    bcall(_CkPosInt)
+    jr nz, validatePermCombError ; error if OP1 <= 0
+    ld hl, 100
+    bcall(_SetXXXXOP2) ; OP2=100
+    bcall(_CpOP1OP2)
+    ret c ; ok if OP1 < 100
+validatePermCombError:
+    bjump(_ErrDomain) ; throw exception
 
 ;-----------------------------------------------------------------------------
 
