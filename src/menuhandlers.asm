@@ -176,9 +176,66 @@ mNearHandler:
 ; Children nodes of PROB menu.
 ;-----------------------------------------------------------------------------
 
+; P(n, r) = P(y, x) = y!/(y-x)! => loop x times
 mPermHandler:
+    call closeInputBuf
+    ; Validate X
+    call rclX
+    call mPermHandlerCheck
+    ; Validate Y
+    call rclY
+    call mPermHandlerCheck
+    ; Convert X and Y into integers
+    bcall(_ConvOP1) ; OP1 = Y
+    push de ; save int(Y)
+    bcall(_OP1ToOP2) ; OP2 = Y
+    call rclX
+    bcall(_ConvOP1) ; DE = int(X)
+    pop bc ; BC = int(Y)
+    ; Check that Y >= X
+    ld a, c ; A = Y
+    cp e ; Y - X
+    jr c, mPermHandlerError
+
+    ; Validation over. Now do the calculation.
+    ; Set initial Result to 1.0. P(N, 0) = 1
+    bcall(_OP1Set1)
+    ld a, e
+    or a
+    jr z, mPermHandlerEnd
+    ; Loop x times, multiple by (y-i)
+    ld b, a ; B = X, C = Y
+mPermHandlerLoop:
+    push bc
+    ld a, c ; A = C = Y
+    bcall(_SetXXOP2)
+    bcall(_FPMult)
+    pop bc
+    dec c
+    djnz mPermHandlerLoop
+mPermHandlerEnd:
+    call replaceXY
+    ret
+
+; Validate OP1 is an integer in the range of [0, 255].
+mPermHandlerCheck:
+    bcall(_CkOP1FP0)
+    ret z
+    bcall(_CkPosInt)
+    jr nz, mPermHandlerError
+    ld hl, 100
+    bcall(_SetXXXXOP2) ; OP2=100
+    bcall(_CpOP1OP2)
+    ret c
+mPermHandlerError:
+    bjump(_ErrDomain) ; throw exception
+
+;-----------------------------------------------------------------------------
+
 mCombHandler:
     jp mNotYetHandler
+
+;-----------------------------------------------------------------------------
 
 ; mFactorialHandler(X) -> X!
 ; Description: Calculate the factorial of X.
@@ -189,6 +246,8 @@ mFactorialHandler:
     call replaceX
     ret
 
+;-----------------------------------------------------------------------------
+
 ; mRandomHandler() -> rand()
 ; Description: Generate a random number [0,1) into the X register.
 mRandomHandler:
@@ -197,6 +256,8 @@ mRandomHandler:
     call liftStackNonEmpty
     call stoX
     ret
+
+;-----------------------------------------------------------------------------
 
 ; mRandomSeedHandler(X) -> None
 ; Description: Set X as the Random() seed.
