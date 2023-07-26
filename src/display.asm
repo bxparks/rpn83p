@@ -69,7 +69,7 @@ displayAll:
 ; Function: Display the status bar, showing menu up/down arrows.
 ; Input: none
 ; Output: status line displayed
-; Destroys: A, BC, HL
+; Destroys: A, B, C, HL
 displayStatus:
     call displayStatusMenu
     call displayStatusTrig
@@ -99,16 +99,22 @@ displayStatusMenu:
 
     ; If numStrips==0: don't do anything. This should never happen if there
     ; are no bugs in the program.
+    ld a, c ; A = numStrips
     or a
     jr z, displayStatusMenuClear
 
 displayStatusMenuDownArrow:
     ; If stripIndex < (numStrips - 1): show Down arrow
-    ld a, b
-    dec c
+    ld a, b ; A = stripIndex
+    dec c ; C = numStrips - 1
     cp c
     jr nc, displayStatusMenuDownArrowNone
     ld a, SdownArrow
+    bcall(_VPutMap)
+    ; Add an extra space after the downArrow because when an upArrow is
+    ; displayed immediately after, the 1px of space on the right side of the
+    ; downArrow character seems to ellided so the downArrow occupies only 3px.
+    ld a, Sspace
     jr displayStatusMenuDownArrowDisplay
 displayStatusMenuDownArrowNone:
     ld a, SFourSpaces
@@ -130,9 +136,8 @@ displayStatusMenuUpArrowDisplay:
 
     ; clear 8 px
 displayStatusMenuClear:
-    ld hl, msgStatusMenuBlank
-    bcall(_VPutS)
-    ret
+    call displayStatusMenuUpArrowNone
+    jr displayStatusMenuUpArrowNone
 
 ;-----------------------------------------------------------------------------
 
@@ -636,14 +641,6 @@ vEraseEOLLoop:
     ret
 
 ;-----------------------------------------------------------------------------
-
-; Up and Down arrows to indicate that there are additional menu options.
-msgStatusMenuUpDown:
-    .db SupArrow, SdownArrow, 0
-
-; 8 px of spaces.
-msgStatusMenuBlank:
-    .db SFourSpaces, SFourSpaces, 0
 
 ; "DEG" and "RAD" trig indicators
 msgStatusTrigDeg:
