@@ -35,8 +35,8 @@ mCubeRootHandler:
 mPercentHandler:
     call closeInputBuf
     call rclX
-    ld hl, constHundred
-    bcall(_Mov9ToOP2)
+    ld hl, 100
+    bcall(_SetXXXXOP2)
     bcall(_FPDiv)
     bcall(_OP1ToOP2)
     call rclY
