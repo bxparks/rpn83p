@@ -338,7 +338,15 @@ mEngCallback:
     set fmtEng, (iy + fmtFlags)
     jr saveFormatDigits
 
-; Input: HL: argBuf prompt
+; Description: Enter command argument input mode by prompting the user
+; for a numerical parameter.
+; Input: HL: argPrompt
+; Output:
+;   - argPrompt set with C string
+;   - argBufSize set to 0
+;   - rpnFlagsArgMode set
+;   - inputBufFlagsInputDirty set
+; Destroys: A, HL
 enableArgMode:
     ld (argPrompt), hl
     xor a
@@ -347,15 +355,19 @@ enableArgMode:
     set inputBufFlagsInputDirty, (iy + inputBufFlags)
     ret
 
+; Description: Save the (argValue) to (fmtDigits).
 saveFormatDigits:
+    set rpnFlagsStackDirty, (iy + rpnFlags)
     ld a, (argValue)
     cp 10
     jr c, saveFormatDigitsContinue
-    ld a, $FF
+    ld a, $FF ; variable number of digits, not fixed
 saveFormatDigitsContinue:
     ld (fmtDigits), a
     ret
 
+; TODO: I wonder if these could be replaced with the same label string as the
+; the menu that triggered it.
 msgFixLabel:
     .db "FIX ", 0
 
