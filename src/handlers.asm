@@ -28,7 +28,15 @@ lookupKeyMatched:
 
 ;-----------------------------------------------------------------------------
 
-; Function: Append a number character to inputBuf, updating various flags.
+; Description: Handle digit input in arg editing mode.
+; Input:
+;   A: character to be appended
+handleKeyNumberArg:
+    call appendArgBuf
+    ret
+
+; Function: Append a number character to inputBuf or argBuf, updating various
+; flags.
 ; Input:
 ;   A: character to be appended
 ; Output:
@@ -37,9 +45,12 @@ lookupKeyMatched:
 ;   - inputBufFlagsInputDirty set.
 ; Destroys: all
 handleKeyNumber:
-    ; If not in edit mode: lift stack and go into edit mode
+    ; Check if in arg editing mode.
+    bit rpnFlagsArgMode, (iy + rpnFlags)
+    jr nz, handleKeyNumberArg
+    ; If not in input editing mode: lift stack and go into edit mode
     bit rpnFlagsEditing, (iy + rpnFlags)
-    jr nz, handleKeyNumberEELen
+    jr nz, handleKeyNumberCheckAppend
 handleKeyNumberFirstDigit:
     ; Lift the stack, unless disabled.
     push af
@@ -50,7 +61,7 @@ handleKeyNumberFirstDigit:
     call clearInputBuf
     set rpnFlagsEditing, (iy + rpnFlags)
     res rpnFlagsLiftEnabled, (iy + rpnFlags)
-handleKeyNumberEELen:
+handleKeyNumberCheckAppend:
     ; Limit number of exponent digits to 2.
     bit inputBufFlagsEE, (iy + inputBufFlags)
     jr z, handleKeyNumberAppend
@@ -135,6 +146,9 @@ handleKey9:
 ; Output: (iy+inputBufFlags) DecPnt set
 ; Destroys: A, DE, HL
 handleKeyDecPnt:
+    ; Do nothing if in arg editing mode.
+    bit rpnFlagsArgMode, (iy + rpnFlags)
+    ret nz
     ; Do nothing if a decimal point already exists.
     bit inputBufFlagsDecPnt, (iy + inputBufFlags)
     ret nz
@@ -181,6 +195,9 @@ handleKeyEE:
 ; Output: (iy+inputBufFlags) updated
 ; Destroys: A, DE, HL
 handleKeyDel:
+    bit rpnFlagsArgMode, (iy + rpnFlags)
+    jr nz, handleKeyDelArg
+
     set rpnFlagsEditing, (iy + rpnFlags)
     set inputBufFlagsInputDirty, (iy + inputBufFlags)
 
@@ -229,7 +246,25 @@ handleKeyDelEEDigits:
 handleKeyDelExit:
     ret
 
+; Description: Handle the DEL key when in command arg mode by removing the last
+; character in the argBuf.
+handleKeyDelArg:
+    set inputBufFlagsInputDirty, (iy + inputBufFlags)
+    ld hl, argBuf
+    ld a, (hl) ; A = inputBufSize
+    or a
+    ret z ; do nothing if buffer empty
+    dec (hl)
+    ret
+
 ;-----------------------------------------------------------------------------
+
+; Description: Handle CLEAR key in arg editing mode.
+handleKeyClearArg:
+    call clearArgBuf
+    res rpnFlagsEditing, (iy + rpnFlags)
+    set rpnFlagsStackDirty, (iy + rpnFlags)
+    ret
 
 ; Function: Clear the input buffer. If the CLEAR key is hit when the input
 ; buffer is already empty (e.g. hit twice), then trigger a refresh of the
@@ -244,11 +279,14 @@ handleKeyDelExit:
 ;   - mark displayInput dirty
 ; Destroys: A, HL
 handleKeyClear:
+    ; Check if in arg editing mode.
+    bit rpnFlagsArgMode, (iy + rpnFlags)
+    jr nz, handleKeyClearArg
     ; Check if non-zero error code is currently displayed.
     ld a, (errorCodeDisplayed)
     or a
     jr z, handleKeyClearNormal
-handleKeyClearErrorCode:
+handleKeyClearErrorCode: ; TODO: Reverse jr z, and move this above.
     ; Clear the error code if non-zero
     xor a
     jp setErrorCode
@@ -264,7 +302,7 @@ handleKeyClearHitTwice:
     ; display code.
     set rpnFlagsMenuDirty, (iy + rpnFlags)
     set rpnFlagsStackDirty, (iy + rpnFlags)
-    set rpnFlagsTrigDirty, (iy + rpnFlags)
+    set rpnFlagsTrigModeDirty, (iy + rpnFlags)
 handleKeyClearHitOnce:
     call clearInputBuf
     set rpnFlagsEditing, (iy + rpnFlags)
@@ -349,10 +387,24 @@ flipInputBufSignAdd:
 ; Output:
 ; Destroys: all, OP1, OP2, OP4
 handleKeyEnter:
+    bit rpnFlagsArgMode, (iy + rpnFlags)
+    jr nz, handleKeyEnterArg
     call closeInputBuf
     call liftStack
     res rpnFlagsLiftEnabled, (iy + rpnFlags)
     ret
+
+; Description: Handle the ENTER key for arg input.
+; Input: argBuf
+; Output: argValue
+; Destroys: A, B, C, HL
+handleKeyEnterArg:
+    set inputBufFlagsInputDirty, (iy + inputBufFlags)
+    res rpnFlagsArgMode, (iy + rpnFlags)
+    call parseArgBuf
+    ld (argValue), a
+    ld hl, (argHandler)
+    jp (hl)
 
 ; closeInputBuf() -> None
 ; Description: If currently in edit mode, close the input buffer by parsing the

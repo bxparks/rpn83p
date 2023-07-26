@@ -1,7 +1,7 @@
 ;-----------------------------------------------------------------------------
 ; Display the RPN stack variables.
 ;
-;   0: Status line: (up|down) (deg|rad) (bin|dec|hex) # small font
+;   0: Status line: (up|down) (deg|rad) (fix|sci|eng) # small font
 ;   1: Debug line
 ;   2: Error code line:
 ;   3: T: tttt
@@ -38,7 +38,8 @@ menuPenColEnd   equ 96
 
 ; Function: Set the display flags to dirty initially so that they are rendered.
 initDisplay:
-    set rpnFlagsTrigDirty, (iy + rpnFlags)
+    set rpnFlagsTrigModeDirty, (iy + rpnFlags)
+    set rpnFlagsFloatModeDirty, (iy + rpnFlags)
     set inputBufFlagsInputDirty, (iy + inputBufFlags)
     ret
 
@@ -54,11 +55,15 @@ displayAll:
     call displayMenu
 
     ; Reset dirty flags
-    res rpnFlagsTrigDirty, (iy + rpnFlags)
     res rpnFlagsStackDirty, (iy + rpnFlags)
     res rpnFlagsMenuDirty, (iy + rpnFlags)
+    res rpnFlagsTrigModeDirty, (iy + rpnFlags)
+    res rpnFlagsFloatModeDirty, (iy + rpnFlags)
+    res inputBufFlagsInputDirty, (iy + inputBufFlags)
     ret
 
+;-----------------------------------------------------------------------------
+; Routines for displaying the status bar at the top.
 ;-----------------------------------------------------------------------------
 
 ; Function: Display the status bar, showing menu up/down arrows.
@@ -68,6 +73,7 @@ displayAll:
 displayStatus:
     call displayStatusMenu
     call displayStatusTrig
+    call displayStatusFloatMode
     ret
 
 displayStatusMenu:
@@ -132,7 +138,7 @@ displayStatusMenuClear:
 
 ; Description: Display the Degree or Radian trig mode.
 displayStatusTrig:
-    bit rpnFlagsTrigDirty, (iy + rpnFlags)
+    bit rpnFlagsTrigModeDirty, (iy + rpnFlags)
     ret z
 displayStatusTrigUpdate:
     ld hl, statusPenRow*$100 + statusTrigPenCol; $(penRow)(penCol)
@@ -148,6 +154,50 @@ displayStatusTrigPutS:
     bcall(_VPutS)
     ret
 
+;-----------------------------------------------------------------------------
+
+; Description: Display the floating point format: FIX, SCI, ENG
+; Destroys: A, HL
+displayStatusFloatMode:
+    bit rpnFlagsFloatModeDirty, (iy + rpnFlags)
+    ret z
+    ld hl, statusPenRow*$100 + statusFloatModePenCol; $(penRow)(penCol)
+    ld (PenCol), hl
+    ; check float mode
+    bit fmtExponent, (iy + fmtFlags)
+    jr nz, displayStatusFloatModeSciOrEng
+displayStatusFloatModeFix:
+    ld hl, mFixName
+    jr displayStatusFloatModeBracketDigit
+displayStatusFloatModeSciOrEng:
+    bit fmtEng, (iy + fmtFlags)
+    jr nz, displayStatusFloatModeEng
+displayStatusFloatModeSci:
+    ld hl, mSciName
+    jr displayStatusFloatModeBracketDigit
+displayStatusFloatModeEng:
+    ld hl, mEngName
+    ; [[fallthrough]]
+displayStatusFloatModeBracketDigit:
+    ; Print the number of digit
+    bcall(_VPutS)
+    ld a, SlParen
+    bcall(_VPutMap)
+    ld a, (fmtDigits)
+    cp 10
+    jr nc, displayStatusFloatModeFloating
+    add a, '0'
+    jr displayStatusFloatModeDigit
+displayStatusFloatModeFloating:
+    ld a, '-'
+displayStatusFloatModeDigit:
+    bcall(_VPutMap)
+    ld a, SrParen
+    bcall(_VPutMap)
+    ret
+
+;-----------------------------------------------------------------------------
+; Routines for displaying the error code and string.
 ;-----------------------------------------------------------------------------
 
 ; Function: Display the string corresponding to the current error code.
@@ -186,19 +236,31 @@ displayErrorCode:
     ret
 
 ;-----------------------------------------------------------------------------
+; Routines for displaying the RPN stack variables.
+;-----------------------------------------------------------------------------
 
 ; Function: Display the RPN stack variables
 ; Input: none
 ; Output: (rpnFlagsMenuDirty) reset
 ; Destroys: A, HL
 displayStack:
-    ; Return if both stackDirty and inputDirty are clean.
+    ; display YZT if stack is dirty
+    bit rpnFlagsStackDirty, (iy + rpnFlags)
+    call nz, displayStackYZT
+
+    ; display X if stack or inputBuf are dirty
     bit rpnFlagsStackDirty, (iy + rpnFlags)
     jr nz, displayStackContinue
     bit inputBufFlagsInputDirty, (iy + inputBufFlags)
-    ret z
-
+    jr nz, displayStackContinue
+    ret
 displayStackContinue:
+    call displayStackX
+    ret
+
+;-----------------------------------------------------------------------------
+
+displayStackYZT:
     ; print T label
     ld hl, stTPenRow*$100 ; $(penRow)(penCol)
     ld (PenCol), hl
@@ -235,36 +297,47 @@ displayStackContinue:
     call rclY
     call printOP1
 
+    ret
+
+;-----------------------------------------------------------------------------
+
+; Description: Render the X lines. There are 3 options:
+; 1) if rpnFlagsArgMode, print the inputbuf as a command argument,
+; 2) else if rpnFlagsEditing, print the inputBuf as a stack number,
+; 3) else print the stX variable.
+displayStackX:
+    bit rpnFlagsArgMode, (iy + rpnFlags)
+    jr nz, displayStackXArg
+    bit rpnFlagsEditing, (iy + rpnFlags)
+    jr nz, displayStackXInput
+    ; [[fallthrough]]
+
+displayStackXNormal:
     ; print X label
     ld hl, stXPenRow*$100 ; $(penRow)(penCol)
     ld (PenCol), hl
     ld hl, msgXLabel
     bcall(_VPutS)
-
-    ; print X value.
-    ; NOTE: Use one (but not both) of the following.
-    ; call displayStackXDebug
-    call displayStackXNormal
-
-    ret
-
-; This is the normal, non-debug version, which combines the inputBuf and the X
-; register on a single line.
-displayStackXNormal:
+    ; print the stX variable
     ld hl, stXCurCol*$100 + stXCurRow ; $(curCol)(curRow)
     ld (CurRow), hl
-    ; If in edit mode, display the inputBuf, otherwise display X.
-    bit rpnFlagsEditing, (iy + rpnFlags)
-    jr z, displayStackXReg
-displayStackXInputBuf:
-    jp printInputBuf
-displayStackXReg:
     call rclX
-    call printOP1
-    ret
+    jp printOP1
 
+displayStackXInput:
+    ; print X label
+    ld hl, inputPenRow*$100 ; $(penRow)(penCol)
+    ld (PenCol), hl
+    ld hl, msgXLabel
+    bcall(_VPutS)
+    ; print the inputBuf
+    ld hl, inputCurCol*$100 + inputCurRow ; $(curCol)(curRow)
+    ld (CurRow), hl
+    jr printInputBuf
+
+#ifdef DEBUG
 ; This is the debug version which always shows the current X register, and
-; prints the inputBuf on the error line.
+; prints the inputBuf on the debug line.
 displayStackXDebug:
     ld hl, $0100 + stXCurRow ; $(curCol)(curRow)
     ld (CurRow), hl
@@ -272,23 +345,73 @@ displayStackXDebug:
     call printOP1
     ; print the inputBuf on the error line
     jp debugInputBuf
+#endif
 
-; Function: Print floating point number at OP1 at the current cursor. Erase to
-; the end of line (but only if the floating point did not spill over to the
-; next line).
-; Input: OP1: floating point number
-; Destroys: A, HL, OP3
-printOP1:
-    ld a, 15 ; width of output
-    bcall(_FormReal)
-    ld hl, OP3
+; Display the argBuf in the X register line.
+displayStackXArg:
+    ld hl, argCurCol*$100 + argCurRow ; $(curCol)(curRow)
+    ld (CurRow), hl
+    jr printArgBuf
+
+;-----------------------------------------------------------------------------
+
+; Function: Print the arg buffer.
+; Input:
+;   - argBuf (same as inputBuf)
+;   - argBufPrompt
+;   - (CurCol) cursor position
+; Output:
+;   - (CurCol) is updated
+; Destroys: A, HL; BC destroyed by PutPS()
+printArgBuf:
+    ; Print prompt and contents of argBuf
+    ld hl, (argPrompt)
     bcall(_PutS)
-    ld a, (CurCol)
+    ld a, ' '
+    bcall(_PutC)
+    ld hl, argBuf
+    bcall(_PutPS)
+
+    ; Append cursor if needed.
+    ld a, (argBufSize)
     or a
-    ret z ; if spilled to next line, don't call EraseEOL
+    jr z, printArgBufTwoCursors
+    cp 1
+    jr z, printArgBufOneCursor
+    jr printArgBufZeroCursor
+printArgBufTwoCursors:
+    ld a, cursorChar
+    bcall(_PutC)
+printArgBufOneCursor:
+    ld a, cursorChar
+    bcall(_PutC)
+printArgBufZeroCursor:
     bcall(_EraseEOL)
     ret
 
+;-----------------------------------------------------------------------------
+
+; Function: Print the input buffer.
+; Input:
+;   - inputBuf
+;   - (CurCol) cursor position
+; Output:
+;   - (CurCol) is updated
+; Destroys: A, HL; BC destroyed by PutPS()
+printInputBuf:
+    ld hl, inputBuf
+    bcall(_PutPS)
+    ld a, cursorChar
+    bcall(_PutC)
+    ; Skip EraseEOL() if the PutC() above wrapped to next line
+    ld a, (CurCol)
+    or a
+    ret z
+    bcall(_EraseEOL)
+    ret
+
+;-----------------------------------------------------------------------------
+; Routines for displaying the menu bar.
 ;-----------------------------------------------------------------------------
 
 ; Function: Display the bottom menus.
@@ -415,34 +538,24 @@ clearMenus:
     ret
 
 ;-----------------------------------------------------------------------------
+; Low-level helper routines.
+;-----------------------------------------------------------------------------
 
-; Function: Print the input buffer.
-; Input:
-;   inputBufFlagsInputDirty
-; Output:
-;   - (CurCol) is updated
-;   - inputBufFlagsInputDirty reset
-; Destroys: A, HL; BC destroyed by PutPS()
-printInputBuf:
-    bit inputBufFlagsInputDirty, (iy + inputBufFlags)
-    ret z
-
-    ld hl, stXCurCol*$100+stXCurRow ; $(col)(row) cursor
-    ld (CurRow), hl
-    ld hl, inputBuf
-    bcall(_PutPS)
-    ld a, cursorChar
-    bcall(_PutC)
-    ; Skip EraseEOL() if the PutC() above wrapped to next line
+; Function: Print floating point number at OP1 at the current cursor. Erase to
+; the end of line (but only if the floating point did not spill over to the
+; next line).
+; Input: OP1: floating point number
+; Destroys: A, HL, OP3
+printOP1:
+    ld a, 15 ; width of output
+    bcall(_FormReal)
+    ld hl, OP3
+    bcall(_PutS)
     ld a, (CurCol)
     or a
-    jr z, printInputBufContinue
+    ret z ; if spilled to next line, don't call EraseEOL
     bcall(_EraseEOL)
-printInputBufContinue:
-    res inputBufFlagsInputDirty, (iy + inputBufFlags)
     ret
-
-;-----------------------------------------------------------------------------
 
 ; Function: Convert A to 3-digit nul terminated C string at the buffer pointed
 ; by HL. This is intended for debugging, so it is not optimized.

@@ -61,6 +61,15 @@ MenuGroup root mRoot [
   ]
 
   MenuStrip [
+    MenuGroup DISP mDisp [
+      MenuStrip [
+        MenuItem FIX mFix
+        MenuItem SCI mSci
+        MenuItem ENG mEng
+        MenuItem * *
+        MenuItem * *
+      ]
+    ]
     MenuGroup MODE mMode [
       MenuStrip [
         MenuItem RAD mRad
@@ -70,7 +79,6 @@ MenuGroup root mRoot [
         MenuItem * *
       ]
     ]
-    MenuItem DISP mDisp
     MenuGroup HYP mHyperbolic [
       MenuStrip [
         MenuItem * *

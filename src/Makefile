@@ -18,10 +18,10 @@ SRCS := \
 	rpn83p.asm \
 	vars.asm
 
-rpn83p.8xp: $(SRCS)
+rpn83p.8xp: $(SRCS) Makefile
 	$(SPASM) -I $(SPASM_INC) -N rpn83p.asm $@
 
-rpn83p.lst: $(SRCS)
+rpn83p.lst: $(SRCS) Makefile
 	$(SPASM) -I $(SPASM_INC) -N -T rpn83p.asm rpn83p.8xp
 
 menudevdef.asm: menudevdef.txt ../tools/compilemenu.py

@@ -3,8 +3,6 @@
 ;-----------------------------------------------------------------------------
 
 mHelpHandler:
-mDispHandler:
-mHyperbolicHandler:
     jp mNotYetHandler
 
 ;-----------------------------------------------------------------------------
@@ -295,12 +293,83 @@ mHmsToHrHandler:
 
 mRadHandler:
     res trigDeg, (iy + trigFlags)
-    set rpnFlagsTrigDirty, (iy + rpnFlags)
+    set rpnFlagsTrigModeDirty, (iy + rpnFlags)
     ret
 
 mDegHandler:
     set trigDeg, (iy + trigFlags)
-    set rpnFlagsTrigDirty, (iy + rpnFlags)
+    set rpnFlagsTrigModeDirty, (iy + rpnFlags)
+    ret
+
+;-----------------------------------------------------------------------------
+; Children nodes of DISP menu.
+;-----------------------------------------------------------------------------
+
+mFixHandler:
+    call closeInputBuf
+    ld hl, mFixCallback
+    ld (argHandler), hl
+    ld hl, mFixName
+    jr enableArgMode
+mFixCallback:
+    res fmtExponent, (iy + fmtFlags)
+    res fmtEng, (iy + fmtFlags)
+    jr saveFormatDigits
+
+mSciHandler:
+    call closeInputBuf
+    ld hl, mSciCallback
+    ld (argHandler), hl
+    ld hl, mSciName
+    jr enableArgMode
+mSciCallback:
+    set fmtExponent, (iy + fmtFlags)
+    res fmtEng, (iy + fmtFlags)
+    jr saveFormatDigits
+
+mEngHandler:
+    call closeInputBuf
+    ld hl, mEngCallback
+    ld (argHandler), hl
+    ld hl, mEngName
+    jr enableArgMode
+mEngCallback:
+    set fmtExponent, (iy + fmtFlags)
+    set fmtEng, (iy + fmtFlags)
+    jr saveFormatDigits
+
+; Description: Enter command argument input mode by prompting the user
+; for a numerical parameter.
+; Input: HL: argPrompt
+; Output:
+;   - argPrompt set with C string
+;   - argBufSize set to 0
+;   - rpnFlagsArgMode set
+;   - inputBufFlagsInputDirty set
+; Destroys: A, HL
+enableArgMode:
+    ld (argPrompt), hl
+    xor a
+    ld (argBufSize), a
+    set rpnFlagsArgMode, (iy + rpnFlags)
+    set inputBufFlagsInputDirty, (iy + inputBufFlags)
+    ret
+
+; Description: Save the (argValue) to (fmtDigits).
+; Output:
+;   - rpnFlagsStackDirty set
+;   - rpnFlagsFloatModeDirty set
+;   - fmtDigits updated
+; Destroys: A
+saveFormatDigits:
+    set rpnFlagsStackDirty, (iy + rpnFlags)
+    set rpnFlagsFloatModeDirty, (iy + rpnFlags)
+    ld a, (argValue)
+    cp 10
+    jr c, saveFormatDigitsContinue
+    ld a, $FF ; variable number of digits, not fixed
+saveFormatDigitsContinue:
+    ld (fmtDigits), a
     ret
 
 ;-----------------------------------------------------------------------------
