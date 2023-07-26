@@ -80,7 +80,7 @@ rpnFlagsArgMode equ 1 ; set if in command argument mode
 rpnFlagsLiftEnabled equ 2 ; set if stack lift is enabled (ENTER disables it)
 rpnFlagsStackDirty equ 3 ; set if the stack is dirty
 rpnFlagsMenuDirty equ 4 ; set if the menu selection is dirty
-rpnFlagsTrigDirty equ 5 ; set if the trig status is dirty
+rpnFlagsTrigModeDirty equ 5 ; set if the trig status is dirty
 rpnFlagsFloatModeDirty equ 6 ; set if the floating mode is dirty
 
 ; Flags for the inputBuf. Offset from IY register.

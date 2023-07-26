@@ -38,7 +38,7 @@ menuPenColEnd   equ 96
 
 ; Function: Set the display flags to dirty initially so that they are rendered.
 initDisplay:
-    set rpnFlagsTrigDirty, (iy + rpnFlags)
+    set rpnFlagsTrigModeDirty, (iy + rpnFlags)
     set rpnFlagsFloatModeDirty, (iy + rpnFlags)
     set inputBufFlagsInputDirty, (iy + inputBufFlags)
     ret
@@ -57,7 +57,7 @@ displayAll:
     ; Reset dirty flags
     res rpnFlagsStackDirty, (iy + rpnFlags)
     res rpnFlagsMenuDirty, (iy + rpnFlags)
-    res rpnFlagsTrigDirty, (iy + rpnFlags)
+    res rpnFlagsTrigModeDirty, (iy + rpnFlags)
     res rpnFlagsFloatModeDirty, (iy + rpnFlags)
     res inputBufFlagsInputDirty, (iy + inputBufFlags)
     ret
@@ -138,7 +138,7 @@ displayStatusMenuClear:
 
 ; Description: Display the Degree or Radian trig mode.
 displayStatusTrig:
-    bit rpnFlagsTrigDirty, (iy + rpnFlags)
+    bit rpnFlagsTrigModeDirty, (iy + rpnFlags)
     ret z
 displayStatusTrigUpdate:
     ld hl, statusPenRow*$100 + statusTrigPenCol; $(penRow)(penCol)

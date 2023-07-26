@@ -293,12 +293,12 @@ mHmsToHrHandler:
 
 mRadHandler:
     res trigDeg, (iy + trigFlags)
-    set rpnFlagsTrigDirty, (iy + rpnFlags)
+    set rpnFlagsTrigModeDirty, (iy + rpnFlags)
     ret
 
 mDegHandler:
     set trigDeg, (iy + trigFlags)
-    set rpnFlagsTrigDirty, (iy + rpnFlags)
+    set rpnFlagsTrigModeDirty, (iy + rpnFlags)
     ret
 
 ;-----------------------------------------------------------------------------

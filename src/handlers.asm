@@ -302,7 +302,7 @@ handleKeyClearHitTwice:
     ; display code.
     set rpnFlagsMenuDirty, (iy + rpnFlags)
     set rpnFlagsStackDirty, (iy + rpnFlags)
-    set rpnFlagsTrigDirty, (iy + rpnFlags)
+    set rpnFlagsTrigModeDirty, (iy + rpnFlags)
 handleKeyClearHitOnce:
     call clearInputBuf
     set rpnFlagsEditing, (iy + rpnFlags)
