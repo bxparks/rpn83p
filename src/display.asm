@@ -322,6 +322,8 @@ printArgBuf:
     ; Print prompt and contents of argBuf
     ld hl, (argPrompt)
     bcall(_PutS)
+    ld a, ' '
+    bcall(_PutC)
     ld hl, argBuf
     bcall(_PutPS)
 

@@ -309,7 +309,7 @@ mFixHandler:
     call closeInputBuf
     ld hl, mFixCallback
     ld (argHandler), hl
-    ld hl, msgFixLabel
+    ld hl, mFixName
     jr enableArgMode
 mFixCallback:
     res fmtExponent, (iy + fmtFlags)
@@ -320,7 +320,7 @@ mSciHandler:
     call closeInputBuf
     ld hl, mSciCallback
     ld (argHandler), hl
-    ld hl, msgSciLabel
+    ld hl, mSciName
     jr enableArgMode
 mSciCallback:
     set fmtExponent, (iy + fmtFlags)
@@ -331,7 +331,7 @@ mEngHandler:
     call closeInputBuf
     ld hl, mEngCallback
     ld (argHandler), hl
-    ld hl, msgEngLabel
+    ld hl, mEngName
     jr enableArgMode
 mEngCallback:
     set fmtExponent, (iy + fmtFlags)
@@ -365,17 +365,6 @@ saveFormatDigits:
 saveFormatDigitsContinue:
     ld (fmtDigits), a
     ret
-
-; TODO: I wonder if these could be replaced with the same label string as the
-; the menu that triggered it.
-msgFixLabel:
-    .db "FIX ", 0
-
-msgSciLabel:
-    .db "SCI ", 0
-
-msgEngLabel:
-    .db "ENG ", 0
 
 ;-----------------------------------------------------------------------------
 ; Children nodes of HYP menu.
