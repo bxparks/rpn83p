@@ -18,8 +18,8 @@ statusCurRow equ 0
 statusCurCol equ 0
 statusPenRow equ statusCurRow*8
 statusMenuPenCol equ 0 ; 3 * 4px, (up | down) + quadspace
-statusTrigPenCol equ 12 ; 4 * 4px, (DEG | RAD) + quadspace
-statusFloatModePenCol equ 28 ; 6 * 4px (FIX|SCI|ENG) + [n]
+statusFloatModePenCol equ 12 ; 7 * 4px (FIX|SCI|ENG) + (n) + quadspace
+statusTrigPenCol equ 40 ; 4 * 4px, (DEG | RAD) + quadspace
 
 ; Display coordinates of the debug line
 debugCurRow equ 1
