@@ -176,12 +176,13 @@ mNearHandler:
 ; Children nodes of PROB menu.
 ;-----------------------------------------------------------------------------
 
-; P(n, r) = P(y, x) = y!/(y-x)! => loop x times
+; Calculate the Permutation function:
+; P(y, x) = P(n, r) = n!/(n-r)! = n(n-1)...(n-r+1)
 mPermHandler:
     call closeInputBuf
     call validatePermComb
 
-    ; Do the calculation. Set initial Result to 1.0. P(N, 0) = 1
+    ; Do the calculation. Set initial Result to 1 so that P(N, 0) = 1.
     bcall(_OP1Set1)
     ld a, e ; A = X
     or a
@@ -202,11 +203,21 @@ mPermHandlerEnd:
 
 ;-----------------------------------------------------------------------------
 
+; Calculate the Combintation function:
+; C(y, x) = C(n, r) = n!/(n-r)!r! = n(n-1)...(n-r+1)/(r)(r-1)...(1).
+;
+; TODO: This algorithm below is a variation of the algorithm used for P(n,r)
+; above, with a division operation inside the loop that corresponds to each
+; term of the `r!` divisor. However, the division can cause intermediate result
+; to be non-integral. Eventually the final answer will be an integer, but
+; that's not guaranteed until the end of the loop. I think it should be
+; possible to rearrange the order of these divisions so that the intermediate
+; results are always integral.
 mCombHandler:
     call closeInputBuf
     call validatePermComb
 
-    ; Do the calculation. Set initial Result to 1.0. C(N, 0) = 1
+    ; Do the calculation. Set initial Result to 1 C(N, 0) = 1.
     bcall(_OP1Set1)
     ld a, e ; A = X
     or a
