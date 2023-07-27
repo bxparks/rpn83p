@@ -5,9 +5,14 @@ MenuGroup root mRoot [
   MenuStrip [
     MenuGroup NUM mNum [
       MenuStrip [
+        MenuItem <Spercent> mPercent
+        MenuItem <ScapDelta><Spercent> mDeltaPercent
+      ]
+      MenuStrip [
         MenuItem X<Scaret>3 mCube
         MenuItem <ScubeR><Sroot>X mCubeRoot
-        MenuItem <Spercent> mPercent
+        MenuItem LOG2 mLog2
+        MenuItem LOGB mLogBase
         MenuItem ATN2 mAtan2
       ]
       MenuStrip [

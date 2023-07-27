@@ -9,6 +9,41 @@ mHelpHandler:
 ; Children nodes of NUM menu.
 ;-----------------------------------------------------------------------------
 
+; mPercentHandler(Y, X) -> (Y, Y*(X/100))
+; Description: Calculate the X percent of Y.
+mPercentHandler:
+    call closeInputBuf
+    call rclX
+    ld hl, 100
+    bcall(_SetXXXXOP2)
+    bcall(_FPDiv)
+    bcall(_OP1ToOP2)
+    call rclY
+    bcall(_FPMult)
+    call replaceX
+    ret
+
+; mDeltaPercentHandler(Y, X) -> (Y, 100*(X-Y)/Y)
+; Description: Calculate the change from Y to X as a percentage of Y. The
+; resulting percentage can be given to the '%' menu key to get the delta
+; change, then the '+' command will retrieve the original X.
+mDeltaPercentHandler:
+    call closeInputBuf
+    call rclY
+    bcall(_OP1ToOP2) ; OP2 = Y
+    bcall(_PushRealO1) ; FPS = Y
+    call rclX ; OP1 = X
+    bcall(_FPSub) ; OP1 = X - Y
+    bcall(_PopRealO2) ; O2 = Y
+    bcall(_FPDiv) ; OP1 = (X-Y)/Y
+    ld hl, 100
+    bcall(_SetXXXXOP2)
+    bcall(_FPMult) ; OP1 = 100*(X-Y)/Y
+    call replaceX
+    ret
+
+;-----------------------------------------------------------------------------
+
 ; mCubeHandler(X) -> X^3
 ; Description: Calculate X^3.
 mCubeHandler:
@@ -27,20 +62,6 @@ mCubeRootHandler:
     bcall(_OP1ToOP2)
     bcall(_OP1Set3)
     bcall(_XRootY)
-    call replaceX
-    ret
-
-; mPercentHandler(Y, X) -> (Y, Y*(X/100))
-; Description: Calculate the X percent of Y.
-mPercentHandler:
-    call closeInputBuf
-    call rclX
-    ld hl, 100
-    bcall(_SetXXXXOP2)
-    bcall(_FPDiv)
-    bcall(_OP1ToOP2)
-    call rclY
-    bcall(_FPMult)
     call replaceX
     ret
 
@@ -65,6 +86,32 @@ mAtan2Handler:
     call rclY ; OP1=Y (real), OP2=X (imaginary)
     bcall(_RToP) ; complex to polar
     bcall(_OP2ToOP1) ; OP2 contains the angle with range of (-pi, pi]
+    call replaceXY
+    ret
+
+; Log2(X) = log_base_2(X) = log(X)/log(2)
+mLog2Handler:
+    call closeInputBuf
+    bcall(_OP1Set2) ; OP2 = 2
+    bcall(_LnX) ; OP1 = ln(2)
+    bcall(_PushRealO1); FPS = ln(2)
+    call rclX ; OP1 = X
+    bcall(_LnX) ; OP1 = ln(X)
+    bcall(_PopRealO2) ; OP2 = ln(2)
+    bcall(_FPDiv) ; OP1 = ln(X) / ln(2)
+    call replaceX
+    ret
+
+; LogBase(Y, X) = log_base_X(Y) = log(Y)/log(X)
+mLogBaseHandler:
+    call closeInputBuf
+    call rclX ; OP1 = X
+    bcall(_LnX) ; OP1 = ln(X)
+    bcall(_PushRealO1); FPS = ln(X)
+    call rclY ; OP1 = Y
+    bcall(_LnX) ; OP1 = ln(Y)
+    bcall(_PopRealO2) ; OP2 = ln(X)
+    bcall(_FPDiv) ; OP1 = ln(Y) / ln(X)
     call replaceXY
     ret
 
