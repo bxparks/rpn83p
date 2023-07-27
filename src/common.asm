@@ -143,10 +143,42 @@ op1SetGPerOz:
     bcall(_Mov9ToOP1)
     ret
 
-; Description: Set OP2 to GPerOz
+; Description: Set OP2 to GPerOz.
 ; Destroys: all, HL
 op2SetGPerOz:
     ld hl, constGPerOz
+    bcall(_Mov9ToOP2)
+    ret
+
+;-----------------------------------------------------------------------------
+
+; Description: Set OP1 to LPerGal.
+; Destroys: all, HL
+op1SetLPerGal:
+    ld hl, constLPerGal
+    bcall(_Mov9ToOP1)
+    ret
+
+; Description: Set OP2 to LPerGal.
+; Destroys: all, HL
+op2SetLPerGal:
+    ld hl, constLPerGal
+    bcall(_Mov9ToOP2)
+    ret
+
+;-----------------------------------------------------------------------------
+
+; Description: Set OP1 to MlPerFloz.
+; Destroys: all, HL
+op1SetMlPerFloz:
+    ld hl, constMlPerFloz
+    bcall(_Mov9ToOP1)
+    ret
+
+; Description: Set OP2 to MlPerFloz.
+; Destroys: all, HL
+op2SetMlPerFloz:
+    ld hl, constMlPerFloz
     bcall(_Mov9ToOP2)
     ret
 
@@ -175,3 +207,9 @@ constKgPerLbs: ; 0.453 592 37 kg/lbs, exact
 
 constGPerOz: ; 28.349 523 125 g/oz, exact
     .db $00, $81, $28, $34, $95, $23, $12, $50, $00
+
+constLPerGal: ; 3.785 411 784 L/gal, exact, gallon == 231 in^3
+    .db $00, $80, $37, $85, $41, $17, $84, $00, $00
+
+constMlPerFloz: ; 29.573 529 562 5 mL/floz, exact, gal = 128 floz
+    .db $00, $81, $29, $57, $35, $29, $56, $25, $00

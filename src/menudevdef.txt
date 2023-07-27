@@ -76,6 +76,13 @@ MenuGroup root mRoot [
         MenuItem <Sconvert>g mOzToG
         MenuItem <Sconvert>oz mGToOz
       ]
+      MenuStrip [
+        MenuItem <Sconvert>L mGalToL
+        MenuItem <Sconvert>gal mLToGal
+        MenuItem * *
+        MenuItem <Sconvert>mL mFlozToMl
+        MenuItem <Sconvert>foz mMlToFloz
+      ]
     ]
     MenuItem HELP mHelp
   ]

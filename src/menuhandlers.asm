@@ -493,6 +493,40 @@ mGToOzHandler:
     ret
 
 ;-----------------------------------------------------------------------------
+
+mGalToLHandler:
+    call closeInputBuf
+    call rclX
+    call op2SetLPerGal
+    bcall(_FPMult)
+    call replaceX
+    ret
+
+mLToGalHandler:
+    call closeInputBuf
+    call rclX
+    call op2SetLPerGal
+    bcall(_FPDiv)
+    call replaceX
+    ret
+
+mFlozToMlHandler:
+    call closeInputBuf
+    call rclX
+    call op2SetMlPerFloz
+    bcall(_FPMult)
+    call replaceX
+    ret
+
+mMlToFlozHandler:
+    call closeInputBuf
+    call rclX
+    call op2SetMlPerFloz
+    bcall(_FPDiv)
+    call replaceX
+    ret
+
+;-----------------------------------------------------------------------------
 ; Children nodes of CONV menu.
 ;-----------------------------------------------------------------------------
 
