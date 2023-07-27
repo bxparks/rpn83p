@@ -53,8 +53,8 @@ MenuGroup root mRoot [
         MenuItem <Sconvert>DEG mRToD
         MenuItem <Sconvert>RAD mDToR
         MenuItem * *
-        MenuItem <Sconvert>HMS mHrToHms
         MenuItem <Sconvert>HR mHmsToHr
+        MenuItem <Sconvert>HMS mHrToHms
       ]
     ]
     MenuItem HELP mHelp

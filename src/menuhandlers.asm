@@ -392,19 +392,99 @@ mDToRHandler:
     call replaceX
     ret
 
-mHrToHmsHandler:
-    ; call closeInputBuf
-    ; call rclX
-    ; bcall(_DToR) ; DEG to RAD
-    ; call replaceX
-    jp mNotYetHandler
-
+; HR(hh.mmss) = int(hh.mmss) + int(mm.ss)/60 + int(ss.nnnn)/3600
+; Destroys: OP1, OP2, OP3, OP4 (temp)
 mHmsToHrHandler:
-    ; call closeInputBuf
-    ; call rclX
-    ; bcall(_DToR) ; DEG to RAD
-    ; call replaceX
-    jp mNotYetHandler
+    call closeInputBuf
+    call rclX
+
+    ; Extract the whole 'hh' and push it into the FPS.
+    bcall(_OP1ToOP4) ; OP4 = hh.mmss (save in temp)
+    bcall(_Trunc) ; OP1 = int(hh.mmss)
+    bcall(_PushRealO1) ; FPS = hh
+
+    ; Extract the 'mm' and push it into the FPS.
+    bcall(_OP4ToOP1) ; OP1 = hh.mmss
+    bcall(_Frac) ; OP1 = .mmss
+    ld hl, 100
+    bcall(_SetXXXXOP2) ; OP2 = 100
+    bcall(_FPMult) ; OP1 = mm.ss
+    bcall(_OP1ToOP4) ; OP4 = mm.ss
+    bcall(_Trunc) ; OP1 = mm
+    bcall(_PushRealO1) ; FPS = mm
+
+    ; Extract the 'ss.nnn' part
+    bcall(_OP4ToOP1) ; OP1 = mm.ssnnn
+    bcall(_Frac) ; OP1 = .ssnnn
+    ld hl, 100
+    bcall(_SetXXXXOP2) ; OP2 = 100
+    bcall(_FPMult) ; OP1 = ss.nnn
+
+    ; Reassemble in the form of `hh.nnn`.
+    ; Extract ss.nnn/60
+    ld a, 60
+    bcall(_SetXXOP2) ; OP2 = 60
+    bcall(_FPDiv) ; OP1 = ss.nnn/60
+    ; Extract mm/60
+    bcall(_PopRealO2) ; O1 = mm
+    bcall(_FPAdd) ; OP1 = mm + ss.nnn/60
+    ld a, 60
+    bcall(_SetXXOP2) ; OP2 = 60
+    bcall(_FPDiv) ; OP1 = (mm + ss.nnn/60) / 60
+    ; Extract the hh.
+    bcall(_PopRealO2) ; O1 = hh
+    bcall(_FPAdd) ; OP1 = hh + (mm + ss.nnn/60) / 60
+
+    call replaceX
+    ret
+
+; HMS(hh.nnn) = int(hh + (mm + ss.nnn/100)/100 where
+;   - mm = int(.nnn* 60)
+;   - ss.nnn = frac(.nnn*60)*60
+; Destroys: OP1, OP2, OP3, OP4 (temp)
+mHrToHmsHandler:
+    call closeInputBuf
+    call rclX
+
+    ; Extract the whole hh.
+    bcall(_OP1ToOP4) ; OP4 = hh.nnn (save in temp)
+    bcall(_Trunc) ; OP1 = int(hh.nnn)
+    bcall(_PushRealO1) ; FPS = hh
+
+    ; Extract the 'mm' and push it into the FPS
+    bcall(_OP4ToOP1) ; OP1 = hh.nnn
+    bcall(_Frac) ; OP1 = .nnn
+    ld a, 60
+    bcall(_SetXXOP2) ; OP2 = 60
+    bcall(_FPMult) ; OP1 = mm.nnn
+    bcall(_OP1ToOP4) ; OP4 = mm.nnn
+    bcall(_Trunc) ; OP1 = mm
+    bcall(_PushRealO1) ; FPS = mm
+
+    ; Extract the 'ss.nnn' part
+    bcall(_OP4ToOP1) ; OP1 = mm.nnn
+    bcall(_Frac) ; OP1 = .nnn
+    ld a, 60
+    bcall(_SetXXOP2) ; OP2 = 60
+    bcall(_FPMult) ; OP1 = ss.nnn
+
+    ; Reassemble in the form of `hh.mmssnnn`.
+    ; Extract ss.nnn/100
+    ld hl, 100
+    bcall(_SetXXXXOP2) ; OP2 = 100
+    bcall(_FPDiv) ; OP1 = ss.nnn/100
+    ; Extract mm/100
+    bcall(_PopRealO2) ; O1 = mm
+    bcall(_FPAdd) ; OP1 = mm + ss.nnn/100
+    ld hl, 100
+    bcall(_SetXXXXOP2) ; OP2 = 100
+    bcall(_FPDiv) ; OP1 = (mm + ss.nnn/100) / 100
+    ; Extract the hh.
+    bcall(_PopRealO2) ; O1 = hh
+    bcall(_FPAdd) ; OP1 = hh + (mm + ss.nnn/100) / 100
+
+    call replaceX
+    ret
 
 ;-----------------------------------------------------------------------------
 ; Children nodes of MODE menu.

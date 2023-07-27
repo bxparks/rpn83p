@@ -354,22 +354,22 @@ mBlank039Id equ 39
     .db 0 ; numStrips
     .db 0 ; stripBeginId
     .dw mNullHandler ; handler (predefined)
-mHrToHms:
-mHrToHmsId equ 40
-    .db mHrToHmsId ; id
-    .db mConvId ; parentId
-    .db mHrToHmsNameId ; nameId
-    .db 0 ; numStrips
-    .db 0 ; stripBeginId
-    .dw mHrToHmsHandler ; handler (to be implemented)
 mHmsToHr:
-mHmsToHrId equ 41
+mHmsToHrId equ 40
     .db mHmsToHrId ; id
     .db mConvId ; parentId
     .db mHmsToHrNameId ; nameId
     .db 0 ; numStrips
     .db 0 ; stripBeginId
     .dw mHmsToHrHandler ; handler (to be implemented)
+mHrToHms:
+mHrToHmsId equ 41
+    .db mHrToHmsId ; id
+    .db mConvId ; parentId
+    .db mHrToHmsNameId ; nameId
+    .db 0 ; numStrips
+    .db 0 ; stripBeginId
+    .dw mHrToHmsHandler ; handler (to be implemented)
 ; MenuGroup DISP: children
 ; MenuGroup DISP: children: strip 0
 mFix:
@@ -610,10 +610,10 @@ mRToDNameId equ 33
     .dw mRToDName
 mDToRNameId equ 34
     .dw mDToRName
-mHrToHmsNameId equ 35
-    .dw mHrToHmsName
-mHmsToHrNameId equ 36
+mHmsToHrNameId equ 35
     .dw mHmsToHrName
+mHrToHmsNameId equ 36
+    .dw mHrToHmsName
 mFixNameId equ 37
     .dw mFixName
 mSciNameId equ 38
@@ -708,10 +708,10 @@ mRToDName:
     .db Sconvert, 'D', 'E', 'G', 0
 mDToRName:
     .db Sconvert, 'R', 'A', 'D', 0
-mHrToHmsName:
-    .db Sconvert, 'H', 'M', 'S', 0
 mHmsToHrName:
     .db Sconvert, 'H', 'R', 0
+mHrToHmsName:
+    .db Sconvert, 'H', 'M', 'S', 0
 mFixName:
     .db "FIX", 0
 mSciName:
