@@ -527,6 +527,40 @@ mMlToFlozHandler:
     ret
 
 ;-----------------------------------------------------------------------------
+
+mCalToKjHandler:
+    call closeInputBuf
+    call rclX
+    call op2SetKjPerKcal
+    bcall(_FPMult)
+    call replaceX
+    ret
+
+mKjToCalHandler:
+    call closeInputBuf
+    call rclX
+    call op2SetKjPerKcal
+    bcall(_FPDiv)
+    call replaceX
+    ret
+
+mHpToKwHandler:
+    call closeInputBuf
+    call rclX
+    call op2SetKwPerHp
+    bcall(_FPMult)
+    call replaceX
+    ret
+
+mKwToHpHandler:
+    call closeInputBuf
+    call rclX
+    call op2SetKwPerHp
+    bcall(_FPDiv)
+    call replaceX
+    ret
+
+;-----------------------------------------------------------------------------
 ; Children nodes of CONV menu.
 ;-----------------------------------------------------------------------------
 

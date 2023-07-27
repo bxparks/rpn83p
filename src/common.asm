@@ -184,6 +184,54 @@ op2SetMlPerFloz:
 
 ;-----------------------------------------------------------------------------
 
+; Description: Set OP1 to KjPerKcal.
+; Destroys: all, HL
+op1SetKjPerKcal
+    ld hl, constKjPerKcal
+    bcall(_Mov9ToOP1)
+    ret
+
+; Description: Set OP2 to KjPerKcal.
+; Destroys: all, HL
+op2SetKjPerKcal
+    ld hl, constKjPerKcal
+    bcall(_Mov9ToOP2)
+    ret
+
+;-----------------------------------------------------------------------------
+
+; Description: Set OP1 to KwPerHp
+; Destroys: all, HL
+op1SetKwPerHp
+    ld hl, constKwPerHp
+    bcall(_Mov9ToOP1)
+    ret
+
+; Description: Set OP2 to KwPerHp
+; Destroys: all, HL
+op2SetKwPerHp
+    ld hl, constKwPerHp
+    bcall(_Mov9ToOP2)
+    ret
+
+;-----------------------------------------------------------------------------
+
+; Description: Set OP1 to StandardGravity.
+; Destroys: all, HL
+op1SetStandardGravity
+    ld hl, constStandardGravity
+    bcall(_Mov9ToOP1)
+    ret
+
+; Description: Set OP2 to StandardGravity.
+; Destroys: all, HL
+op2SetStandardGravity
+    ld hl, constStandardGravity
+    bcall(_Mov9ToOP2)
+    ret
+
+;-----------------------------------------------------------------------------
+
 const100: ; 100
     .db $00, $82, $10, $00, $00, $00, $00, $00, $00
 
@@ -213,3 +261,18 @@ constLPerGal: ; 3.785 411 784 L/gal, exact, gallon == 231 in^3
 
 constMlPerFloz: ; 29.573 529 562 5 mL/floz, exact, gal = 128 floz
     .db $00, $81, $29, $57, $35, $29, $56, $25, $00
+
+constKjPerKcal: ; 4.184 J/cal or kJ/kcal, exact
+    .db $00, $80, $41, $84, $00, $00, $00, $00, $00
+
+; According to https://en.wikipedia.org/wiki/Horsepower:
+; 1 hp (mechanical)
+;   = 33 000 ft*lbf/min
+;   = 550 ft*lbf/s
+;   = 550 ft*lbf/s * 0.3048 m/ft * 9.806 65 m/s^2 * 0.453 592 37 kg/lbs
+;   ~ 0.745 699 871 582 270 22 kW
+constKwPerHp: ; 0.745 699 871 582 270 22 kW/hp, approx
+    .db $00, $7F, $74, $56, $99, $87, $15, $82, $27
+
+constStandardGravity: ; g_0 = 9.806 65 m/s^2, exact
+    .db $00, $80, $98, $06, $65, $00, $00, $00, $00

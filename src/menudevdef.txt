@@ -83,6 +83,20 @@ MenuGroup root mRoot [
         MenuItem <Sconvert>mL mFlozToMl
         MenuItem <Sconvert>foz mMlToFloz
       ]
+      MenuStrip [
+        MenuItem <Sconvert>kJ mCalToKj
+        MenuItem <Sconvert>cal mKjToCal
+        MenuItem * *
+        MenuItem <Sconvert>kW mHpToKw
+        MenuItem <Sconvert>hp mKwToHp
+      ]
+      # MenuStrip [
+      #   MenuItem <Sconvert>Lkm mL100kmToMpg
+      #   MenuItem <Sconvert>mpg mMpgToL100km
+      #   MenuItem * *
+      #   MenuItem <Sconvert>kPa mPsiToKpa
+      #   MenuItem <Sconvert>psi mKpaToPsi
+      # ]
     ]
     MenuItem HELP mHelp
   ]
