@@ -422,14 +422,12 @@ mHmsToHrHandler:
 
     ; Reassemble in the form of `hh.nnn`.
     ; Extract ss.nnn/60
-    ld a, 60
-    bcall(_SetXXOP2) ; OP2 = 60
+    bcall(_OP2Set60) ; OP2 = 60
     bcall(_FPDiv) ; OP1 = ss.nnn/60
     ; Extract mm/60
     bcall(_PopRealO2) ; O1 = mm
     bcall(_FPAdd) ; OP1 = mm + ss.nnn/60
-    ld a, 60
-    bcall(_SetXXOP2) ; OP2 = 60
+    bcall(_OP2Set60) ; OP2 = 60
     bcall(_FPDiv) ; OP1 = (mm + ss.nnn/60) / 60
     ; Extract the hh.
     bcall(_PopRealO2) ; O1 = hh
@@ -454,8 +452,7 @@ mHrToHmsHandler:
     ; Extract the 'mm' and push it into the FPS
     bcall(_OP4ToOP1) ; OP1 = hh.nnn
     bcall(_Frac) ; OP1 = .nnn
-    ld a, 60
-    bcall(_SetXXOP2) ; OP2 = 60
+    bcall(_OP2Set60) ; OP2 = 60
     bcall(_FPMult) ; OP1 = mm.nnn
     bcall(_OP1ToOP4) ; OP4 = mm.nnn
     bcall(_Trunc) ; OP1 = mm
@@ -464,8 +461,7 @@ mHrToHmsHandler:
     ; Extract the 'ss.nnn' part
     bcall(_OP4ToOP1) ; OP1 = mm.nnn
     bcall(_Frac) ; OP1 = .nnn
-    ld a, 60
-    bcall(_SetXXOP2) ; OP2 = 60
+    bcall(_OP2Set60) ; OP2 = 60
     bcall(_FPMult) ; OP1 = ss.nnn
 
     ; Reassemble in the form of `hh.mmssnnn`.
