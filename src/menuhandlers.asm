@@ -459,6 +459,40 @@ mCmToInHandler:
     ret
 
 ;-----------------------------------------------------------------------------
+
+mLbsToKgHandler:
+    call closeInputBuf
+    call rclX
+    call op2SetKgPerLbs
+    bcall(_FPMult)
+    call replaceX
+    ret
+
+mKgToLbsHandler:
+    call closeInputBuf
+    call rclX
+    call op2SetKgPerLbs
+    bcall(_FPDiv)
+    call replaceX
+    ret
+
+mOzToGHandler:
+    call closeInputBuf
+    call rclX
+    call op2SetGPerOz
+    bcall(_FPMult)
+    call replaceX
+    ret
+
+mGToOzHandler:
+    call closeInputBuf
+    call rclX
+    call op2SetGPerOz
+    bcall(_FPDiv)
+    call replaceX
+    ret
+
+;-----------------------------------------------------------------------------
 ; Children nodes of CONV menu.
 ;-----------------------------------------------------------------------------
 

@@ -144,26 +144,12 @@ MenuGroup root mRoot [
         MenuItem <rightarrow>g mGToOz
       ]
       MenuStrip [
-        MenuItem <rightarrow>m<super2> mFt2ToM2
-        MenuItem <rightarrow>ft<super2> mM2ToFt2
-        MenuItem * *
-        MenuItem cm<super2> mIn2ToCm2
-        MenuItem in<super2> mCm2ToIn2
-      ]
-      MenuStrip [
         MenuItem <rightarrow>ha mAcreToHectare
         MenuItem <rightarrow>acr mHectareToAcre
         MenuItem * *
         MenuItem * *
         MenuItem * *
       ]
-      MenuStrip [
-        MenuItem <rightarrow>m<super3> mFt3ToM3
-        MenuItem <rightarrow>ft<super3> mM3ToFt3
-        MenuItem * *
-        MenuItem <rightarrow>cm<super3> mIn3ToCm3
-        MenuItem <rightarrow>in<super3> mCm3ToIn3
-        ]
       MenuStrip [
         MenuItem <rightarrow>L mGalToL
         MenuItem <rightarrow>gal mLToGal

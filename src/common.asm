@@ -120,20 +120,58 @@ op2SetCmPerIn:
 
 ;-----------------------------------------------------------------------------
 
-const100:
-    .db $00, $82, $10, $00, $00, $00, $00, $00, $00 ; 100
+; Description: Set OP1 to KgPerLbs
+; Destroys: all, HL
+op1SetKgPerLbs:
+    ld hl, constKgPerLbs
+    bcall(_Mov9ToOP1)
+    ret
 
-constPi:
-    .db $00, $80, $31, $41, $59, $26, $53, $58, $98 ; 3.1415926535897(9323)
+; Description: Set OP2 to KgPerLbs
+; Destroys: all, HL
+op2SetKgPerLbs:
+    ld hl, constKgPerLbs
+    bcall(_Mov9ToOP2)
+    ret
 
-constEuler:
-    .db $00, $80, $27, $18, $28, $18, $28, $45, $94 ; 2.7182818284594(0452)
+;-----------------------------------------------------------------------------
 
-constKmPerMi:
-    .db $00, $80, $16, $09, $34, $40, $00, $00, $00 ; 1.609344 km/mi, exact
+; Description: Set OP1 to GPerOz.
+; Destroys: all, HL
+op1SetGPerOz:
+    ld hl, constGPerOz
+    bcall(_Mov9ToOP1)
+    ret
 
-constMPerFt:
-    .db $00, $7F, $30, $48, $00, $00, $00, $00, $00 ; 0.3048 m/ft, exact
+; Description: Set OP2 to GPerOz
+; Destroys: all, HL
+op2SetGPerOz:
+    ld hl, constGPerOz
+    bcall(_Mov9ToOP2)
+    ret
 
-constCmPerIn:
-    .db $00, $80, $25, $40, $00, $00, $00, $00, $00 ; 2.54 cm/in, exact
+;-----------------------------------------------------------------------------
+
+const100: ; 100
+    .db $00, $82, $10, $00, $00, $00, $00, $00, $00
+
+constPi: ; 3.1415926535897(9323)
+    .db $00, $80, $31, $41, $59, $26, $53, $58, $98
+
+constEuler: ; 2.7182818284594(0452)
+    .db $00, $80, $27, $18, $28, $18, $28, $45, $94
+
+constKmPerMi: ; 1.609344 km/mi, exact
+    .db $00, $80, $16, $09, $34, $40, $00, $00, $00
+
+constMPerFt: ; 0.3048 m/ft, exact
+    .db $00, $7F, $30, $48, $00, $00, $00, $00, $00
+
+constCmPerIn: ; 2.54 cm/in, exact
+    .db $00, $80, $25, $40, $00, $00, $00, $00, $00
+
+constKgPerLbs: ; 0.453 592 37 kg/lbs, exact
+    .db $00, $7F, $45, $35, $92, $37, $00, $00, $00
+
+constGPerOz: ; 28.349 523 125 g/oz, exact
+    .db $00, $81, $28, $34, $95, $23, $12, $50, $00

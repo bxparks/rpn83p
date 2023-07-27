@@ -69,6 +69,13 @@ MenuGroup root mRoot [
         MenuItem <Sconvert>cm mInToCm
         MenuItem <Sconvert>in mCmToIn
       ]
+      MenuStrip [
+        MenuItem <Sconvert>kg mLbsToKg
+        MenuItem <Sconvert>lbs mKgToLbs
+        MenuItem * *
+        MenuItem <Sconvert>g mOzToG
+        MenuItem <Sconvert>oz mGToOz
+      ]
     ]
     MenuItem HELP mHelp
   ]
