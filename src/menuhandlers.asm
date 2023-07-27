@@ -33,7 +33,7 @@ mDeltaPercentHandler:
     bcall(_PushRealO1) ; FPS = Y
     call rclX ; OP1 = X
     bcall(_FPSub) ; OP1 = X - Y
-    bcall(_PopRealO2) ; O2 = Y
+    bcall(_PopRealO2) ; OP2 = Y
     bcall(_FPDiv) ; OP1 = (X-Y)/Y
     call op2Set100
     bcall(_FPMult) ; OP1 = 100*(X-Y)/Y
@@ -54,10 +54,10 @@ mCubeHandler:
 ; and OP2 flipped.
 mCubeRootHandler:
     call closeInputBuf
-    call rclX
-    bcall(_OP1ToOP2)
-    bcall(_OP1Set3)
-    bcall(_XRootY)
+    call rclX ; OP1=X
+    bcall(_OP1ToOP2) ; OP2=X
+    bcall(_OP1Set3) ; OP1=3
+    bcall(_XRootY) ; OP2^OP1
     call replaceX
     ret
 
@@ -691,12 +691,12 @@ mHmsToHrHandler:
     bcall(_OP2Set60) ; OP2 = 60
     bcall(_FPDiv) ; OP1 = ss.nnn/60
     ; Extract mm/60
-    bcall(_PopRealO2) ; O1 = mm
+    bcall(_PopRealO2) ; OP1 = mm
     bcall(_FPAdd) ; OP1 = mm + ss.nnn/60
     bcall(_OP2Set60) ; OP2 = 60
     bcall(_FPDiv) ; OP1 = (mm + ss.nnn/60) / 60
     ; Extract the hh.
-    bcall(_PopRealO2) ; O1 = hh
+    bcall(_PopRealO2) ; OP1 = hh
     bcall(_FPAdd) ; OP1 = hh + (mm + ss.nnn/60) / 60
 
     call replaceX
@@ -735,12 +735,12 @@ mHrToHmsHandler:
     call op2Set100
     bcall(_FPDiv) ; OP1 = ss.nnn/100
     ; Extract mm/100
-    bcall(_PopRealO2) ; O1 = mm
+    bcall(_PopRealO2) ; OP1 = mm
     bcall(_FPAdd) ; OP1 = mm + ss.nnn/100
     call op2Set100
     bcall(_FPDiv) ; OP1 = (mm + ss.nnn/100) / 100
     ; Extract the hh.
-    bcall(_PopRealO2) ; O1 = hh
+    bcall(_PopRealO2) ; OP1 = hh
     bcall(_FPAdd) ; OP1 = hh + (mm + ss.nnn/100) / 100
 
     call replaceX
