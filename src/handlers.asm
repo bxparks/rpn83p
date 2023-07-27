@@ -725,25 +725,17 @@ handleKeyDiv:
 
 handleKeyPi:
     call closeInputBuf
-    ld hl, constPi
-    bcall(_Mov9ToOP1)
+    call op1SetPi
     call liftStackNonEmpty
     call stoX
     ret
 
 handleKeyEuler:
     call closeInputBuf
-    ld hl, constEuler
-    bcall(_Mov9ToOP1)
+    call op1SetEuler
     call liftStackNonEmpty
     call stoX
     ret
-
-constPi:
-    .db $00, $80, $31, $41, $59, $26, $53, $58, $98 ; 3.1415926535897(9323)
-
-constEuler:
-    .db $00, $80, $27, $18, $28, $18, $28, $45, $94 ; 2.7182818284594(0452)
 
 ;-----------------------------------------------------------------------------
 ; Alegbraic functions.

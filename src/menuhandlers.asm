@@ -14,8 +14,7 @@ mHelpHandler:
 mPercentHandler:
     call closeInputBuf
     call rclX
-    ld hl, 100
-    bcall(_SetXXXXOP2)
+    call op2Set100
     bcall(_FPDiv)
     bcall(_OP1ToOP2)
     call rclY
@@ -36,8 +35,7 @@ mDeltaPercentHandler:
     bcall(_FPSub) ; OP1 = X - Y
     bcall(_PopRealO2) ; O2 = Y
     bcall(_FPDiv) ; OP1 = (X-Y)/Y
-    ld hl, 100
-    bcall(_SetXXXXOP2)
+    call op2Set100
     bcall(_FPMult) ; OP1 = 100*(X-Y)/Y
     call replaceX
     ret
@@ -403,8 +401,7 @@ mCToFHandler:
 mMiToKmHandler:
     call closeInputBuf
     call rclX
-    ld hl, constKmPerMi
-    bcall(_Mov9ToOP2)
+    call op2SetKmPerMi
     bcall(_FPMult)
     call replaceX
     ret
@@ -412,14 +409,10 @@ mMiToKmHandler:
 mKmToMiHandler:
     call closeInputBuf
     call rclX
-    ld hl, constKmPerMi
-    bcall(_Mov9ToOP2)
+    call op2SetKmPerMi
     bcall(_FPDiv)
     call replaceX
     ret
-
-constKmPerMi:
-    .db $00, $80, $16, $09, $34, $40, $00, $00, $00 ; 1.609344 km/mi
 
 ;-----------------------------------------------------------------------------
 ; Children nodes of CONV menu.
@@ -463,8 +456,7 @@ mHmsToHrHandler:
     ; Extract the 'mm' and push it into the FPS.
     bcall(_OP4ToOP1) ; OP1 = hh.mmss
     bcall(_Frac) ; OP1 = .mmss
-    ld hl, 100
-    bcall(_SetXXXXOP2) ; OP2 = 100
+    call op2Set100
     bcall(_FPMult) ; OP1 = mm.ss
     bcall(_OP1ToOP4) ; OP4 = mm.ss
     bcall(_Trunc) ; OP1 = mm
@@ -473,8 +465,7 @@ mHmsToHrHandler:
     ; Extract the 'ss.nnn' part
     bcall(_OP4ToOP1) ; OP1 = mm.ssnnn
     bcall(_Frac) ; OP1 = .ssnnn
-    ld hl, 100
-    bcall(_SetXXXXOP2) ; OP2 = 100
+    call op2Set100
     bcall(_FPMult) ; OP1 = ss.nnn
 
     ; Reassemble in the form of `hh.nnn`.
@@ -523,14 +514,12 @@ mHrToHmsHandler:
 
     ; Reassemble in the form of `hh.mmssnnn`.
     ; Extract ss.nnn/100
-    ld hl, 100
-    bcall(_SetXXXXOP2) ; OP2 = 100
+    call op2Set100
     bcall(_FPDiv) ; OP1 = ss.nnn/100
     ; Extract mm/100
     bcall(_PopRealO2) ; O1 = mm
     bcall(_FPAdd) ; OP1 = mm + ss.nnn/100
-    ld hl, 100
-    bcall(_SetXXXXOP2) ; OP2 = 100
+    call op2Set100
     bcall(_FPDiv) ; OP1 = (mm + ss.nnn/100) / 100
     ; Extract the hh.
     bcall(_PopRealO2) ; O1 = hh
