@@ -425,6 +425,40 @@ mKmToMiHandler:
     ret
 
 ;-----------------------------------------------------------------------------
+
+mFtToMHandler:
+    call closeInputBuf
+    call rclX
+    call op2SetMPerFt
+    bcall(_FPMult)
+    call replaceX
+    ret
+
+mMToFtHandler:
+    call closeInputBuf
+    call rclX
+    call op2SetMPerFt
+    bcall(_FPDiv)
+    call replaceX
+    ret
+
+mInToCmHandler:
+    call closeInputBuf
+    call rclX
+    call op2SetCmPerIn
+    bcall(_FPMult)
+    call replaceX
+    ret
+
+mCmToInHandler:
+    call closeInputBuf
+    call rclX
+    call op2SetCmPerIn
+    bcall(_FPDiv)
+    call replaceX
+    ret
+
+;-----------------------------------------------------------------------------
 ; Children nodes of CONV menu.
 ;-----------------------------------------------------------------------------
 

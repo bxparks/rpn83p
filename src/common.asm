@@ -38,6 +38,8 @@ op2Set100:
     bcall(_Mov9ToOP2)
     ret
 
+;-----------------------------------------------------------------------------
+
 ; Description: Set OP1 to PI.
 ; Destroys: all, HL
 op1SetPi:
@@ -51,6 +53,8 @@ op2SetPi:
     ld hl, constPi
     bcall(_Mov9ToOP2)
     ret
+
+;-----------------------------------------------------------------------------
 
 ; Description: Set OP1 to Euler constant.
 ; Destroys: all, HL
@@ -66,6 +70,8 @@ op2SetEuler:
     bcall(_Mov9ToOP2)
     ret
 
+;-----------------------------------------------------------------------------
+
 ; Description: Set OP1 to KmPerMi.
 ; Destroys: all, HL
 op1SetKmPerMi:
@@ -80,6 +86,40 @@ op2SetKmPerMi:
     bcall(_Mov9ToOP2)
     ret
 
+;-----------------------------------------------------------------------------
+
+; Description: Set OP1 to MPerFt.
+; Destroys: all, HL
+op1SetMPerFt:
+    ld hl, constMPerFt
+    bcall(_Mov9ToOP1)
+    ret
+
+; Description: Set OP2 to MPerFt
+; Destroys: all, HL
+op2SetMPerFt:
+    ld hl, constMPerFt
+    bcall(_Mov9ToOP2)
+    ret
+
+;-----------------------------------------------------------------------------
+
+; Description: Set OP1 to CmPerIn.
+; Destroys: all, HL
+op1SetCmPerIn:
+    ld hl, constCmPerIn
+    bcall(_Mov9ToOP1)
+    ret
+
+; Description: Set OP2 to CmPerIn
+; Destroys: all, HL
+op2SetCmPerIn:
+    ld hl, constCmPerIn
+    bcall(_Mov9ToOP2)
+    ret
+
+;-----------------------------------------------------------------------------
+
 const100:
     .db $00, $82, $10, $00, $00, $00, $00, $00, $00 ; 100
 
@@ -90,4 +130,10 @@ constEuler:
     .db $00, $80, $27, $18, $28, $18, $28, $45, $94 ; 2.7182818284594(0452)
 
 constKmPerMi:
-    .db $00, $80, $16, $09, $34, $40, $00, $00, $00 ; 1.609344 km/mi
+    .db $00, $80, $16, $09, $34, $40, $00, $00, $00 ; 1.609344 km/mi, exact
+
+constMPerFt:
+    .db $00, $7F, $30, $48, $00, $00, $00, $00, $00 ; 0.3048 m/ft, exact
+
+constCmPerIn:
+    .db $00, $80, $25, $40, $00, $00, $00, $00, $00 ; 2.54 cm/in, exact

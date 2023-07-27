@@ -53,6 +53,13 @@ MenuGroup root mRoot [
         MenuItem <Sconvert>km mMiToKm
         MenuItem <Sconvert>mi mKmToMi
       ]
+      MenuStrip [
+        MenuItem <Sconvert>m mFtToM
+        MenuItem <Sconvert>ft mMToFt
+        MenuItem * *
+        MenuItem <Sconvert>cm mInToCm
+        MenuItem <Sconvert>in mCmToIn
+      ]
     ]
     MenuGroup CONV mConv [
       MenuStrip [
