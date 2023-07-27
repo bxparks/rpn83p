@@ -95,6 +95,26 @@ replaceXY:
     call dropStack
     jr stoX
 
+; Description: Replace stX=OP2 and stY=OP1, saving previous stX to lastX, and
+; setting dirty flag.
+; Preserves: OP1, OP2
+replaceXYWithOP2OP1:
+    ; validate OP1 and OP2 before modifying stX and stY
+    bcall(_CkValidNum)
+    bcall(_OP1ExOP2)
+    bcall(_CkValidNum)
+    bcall(_OP1ExOP2)
+
+    call stoY ; stY = OP1
+    bcall(_PushRealO1) ; FPS = OP1
+    bcall(_RclX)
+    call stoLastX ; lastX = stX
+
+    bcall(_OP2ToOP1)
+    call stoX ; stX = OP2 
+    bcall(_PopRealO1) ; OP1 unchanged
+    ret
+
 ;-----------------------------------------------------------------------------
 
 ; Function: Copy stX to OP1.

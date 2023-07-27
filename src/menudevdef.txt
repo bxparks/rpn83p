@@ -50,6 +50,10 @@ MenuGroup root mRoot [
         MenuItem <Sconvert>DEG mRToD
         MenuItem <Sconvert>RAD mDToR
         MenuItem * *
+        MenuItem P<Sconvert>R mPToR
+        MenuItem R<Sconvert>P mRToP
+      ]
+      MenuStrip [
         MenuItem <Sconvert>HR mHmsToHr
         MenuItem <Sconvert>HMS mHrToHms
       ]

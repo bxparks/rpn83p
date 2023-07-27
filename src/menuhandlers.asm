@@ -616,6 +616,40 @@ mDToRHandler:
     call replaceX
     ret
 
+; Polar to Rectangular
+; Input:
+;   - stY: r
+;   - stX: theta
+; Output:
+;   - stY: x
+;   - stX: y
+mPToRHandler:
+    call closeInputBuf
+    call rclX
+    bcall(_OP1ToOP2) ; OP2 = stX = theta
+    call rclY ; OP1 = stY = r
+    bcall(_PToR) ; OP1 = x; OP2 = y (?)
+    call replaceXYWithOP2OP1 ; stX=OP2=y; stY=OP1=x
+    ret
+
+; Rectangular to Polar
+; Input:
+;   - stY: x
+;   - stX: y
+; Output:
+;   - stY: r
+;   - stX: theta
+mRtoPHandler:
+    call closeInputBuf
+    call rclX
+    bcall(_OP1ToOP2) ; OP2 = stX = y
+    call rclY ; OP1 = stY = x
+    bcall(_RToP) ; OP1 = r; OP2 = theta (?)
+    call replaceXYWithOP2OP1 ; stX=OP2=theta; stY=OP1=r
+    ret
+
+;-----------------------------------------------------------------------------
+
 ; HR(hh.mmss) = int(hh.mmss) + int(mm.ss)/60 + int(ss.nnnn)/3600
 ; Destroys: OP1, OP2, OP3, OP4 (temp)
 mHmsToHrHandler:
