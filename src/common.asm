@@ -22,14 +22,6 @@ getString:
 
 ;-----------------------------------------------------------------------------
 
-; Description: Set OP1 to 10. The TI-OS provides OP2Set60() but not
-; OP1Set10().
-; Destroys: all, HL
-op1Set10:
-    ld hl, const10
-    bcall(_Mov9ToOP1)
-    ret
-
 ; Description: Set OP2 to 10. The TI-OS Provides OP2Set60() but not
 ; OP2Set10().
 ; Destroys: all, HL
@@ -39,14 +31,6 @@ op2Set10:
     ret
 
 ;-----------------------------------------------------------------------------
-
-; Description: Set OP1 to 100. The TI-OS provides OP2Set60() but not
-; OP1Set100().
-; Destroys: all, HL
-op1Set100:
-    ld hl, const100
-    bcall(_Mov9ToOP1)
-    ret
 
 ; Description: Set OP2 to 100. The TI-OS Provides OP2Set60() but not
 ; OP2Set100().
@@ -92,26 +76,19 @@ op2SetEuler:
 
 ; Description: Set OP1 to StandardGravity.
 ; Destroys: all, HL
-op1SetStandardGravity:
-    ld hl, constStandardGravity
-    bcall(_Mov9ToOP1)
-    ret
+; op1SetStandardGravity:
+;     ld hl, constStandardGravity
+;     bcall(_Mov9ToOP1)
+;     ret
 
 ; Description: Set OP2 to StandardGravity.
 ; Destroys: all, HL
-op2SetStandardGravity:
-    ld hl, constStandardGravity
-    bcall(_Mov9ToOP2)
-    ret
+; op2SetStandardGravity:
+;     ld hl, constStandardGravity
+;     bcall(_Mov9ToOP2)
+;     ret
 
 ;-----------------------------------------------------------------------------
-
-; Description: Set OP1 to KmPerMi.
-; Destroys: all, HL
-op1SetKmPerMi:
-    ld hl, constKmPerMi
-    bcall(_Mov9ToOP1)
-    ret
 
 ; Description: Set OP2 to KmPerMi.
 ; Destroys: all, HL
@@ -122,13 +99,6 @@ op2SetKmPerMi:
 
 ;-----------------------------------------------------------------------------
 
-; Description: Set OP1 to MPerFt.
-; Destroys: all, HL
-op1SetMPerFt:
-    ld hl, constMPerFt
-    bcall(_Mov9ToOP1)
-    ret
-
 ; Description: Set OP2 to MPerFt
 ; Destroys: all, HL
 op2SetMPerFt:
@@ -137,13 +107,6 @@ op2SetMPerFt:
     ret
 
 ;-----------------------------------------------------------------------------
-
-; Description: Set OP1 to CmPerIn.
-; Destroys: all, HL
-op1SetCmPerIn:
-    ld hl, constCmPerIn
-    bcall(_Mov9ToOP1)
-    ret
 
 ; Description: Set OP2 to CmPerIn
 ; Destroys: all, HL
@@ -154,13 +117,6 @@ op2SetCmPerIn:
 
 ;-----------------------------------------------------------------------------
 
-; Description: Set OP1 to KgPerLbs
-; Destroys: all, HL
-op1SetKgPerLbs:
-    ld hl, constKgPerLbs
-    bcall(_Mov9ToOP1)
-    ret
-
 ; Description: Set OP2 to KgPerLbs
 ; Destroys: all, HL
 op2SetKgPerLbs:
@@ -169,13 +125,6 @@ op2SetKgPerLbs:
     ret
 
 ;-----------------------------------------------------------------------------
-
-; Description: Set OP1 to GPerOz.
-; Destroys: all, HL
-op1SetGPerOz:
-    ld hl, constGPerOz
-    bcall(_Mov9ToOP1)
-    ret
 
 ; Description: Set OP2 to GPerOz.
 ; Destroys: all, HL
@@ -186,13 +135,6 @@ op2SetGPerOz:
 
 ;-----------------------------------------------------------------------------
 
-; Description: Set OP1 to LPerGal.
-; Destroys: all, HL
-op1SetLPerGal:
-    ld hl, constLPerGal
-    bcall(_Mov9ToOP1)
-    ret
-
 ; Description: Set OP2 to LPerGal.
 ; Destroys: all, HL
 op2SetLPerGal:
@@ -201,13 +143,6 @@ op2SetLPerGal:
     ret
 
 ;-----------------------------------------------------------------------------
-
-; Description: Set OP1 to MlPerFloz.
-; Destroys: all, HL
-op1SetMlPerFloz:
-    ld hl, constMlPerFloz
-    bcall(_Mov9ToOP1)
-    ret
 
 ; Description: Set OP2 to MlPerFloz.
 ; Destroys: all, HL
@@ -218,13 +153,6 @@ op2SetMlPerFloz:
 
 ;-----------------------------------------------------------------------------
 
-; Description: Set OP1 to KjPerKcal.
-; Destroys: all, HL
-op1SetKjPerKcal:
-    ld hl, constKjPerKcal
-    bcall(_Mov9ToOP1)
-    ret
-
 ; Description: Set OP2 to KjPerKcal.
 ; Destroys: all, HL
 op2SetKjPerKcal:
@@ -234,13 +162,6 @@ op2SetKjPerKcal:
 
 ;-----------------------------------------------------------------------------
 
-; Description: Set OP1 to KwPerHp
-; Destroys: all, HL
-op1SetKwPerHp:
-    ld hl, constKwPerHp
-    bcall(_Mov9ToOP1)
-    ret
-
 ; Description: Set OP2 to KwPerHp
 ; Destroys: all, HL
 op2SetKwPerHp:
@@ -249,13 +170,6 @@ op2SetKwPerHp:
     ret
 
 ;-----------------------------------------------------------------------------
-
-; Description: Set OP1 to HpaPerInhg
-; Destroys: all, HL
-op1SetHpaPerInhg:
-    ld hl, constHpaPerInhg
-    bcall(_Mov9ToOP1)
-    ret
 
 ; Description: Set OP2 to KwPerHp
 ; Destroys: all, HL
@@ -278,9 +192,9 @@ constPi: ; 3.1415926535897(9323)
 constEuler: ; 2.7182818284594(0452)
     .db $00, $80, $27, $18, $28, $18, $28, $45, $94
 
-constStandardGravity: ; g_0 = 9.806 65 m/s^2, exact
-    .db $00, $80, $98, $06, $65, $00, $00, $00, $00
-
+; constStandardGravity: ; g_0 = 9.806 65 m/s^2, exact
+;     .db $00, $80, $98, $06, $65, $00, $00, $00, $00
+;
 constKmPerMi: ; 1.609344 km/mi, exact
     .db $00, $80, $16, $09, $34, $40, $00, $00, $00
 
