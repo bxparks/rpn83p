@@ -40,8 +40,6 @@ mDeltaPercentHandler:
     call replaceX
     ret
 
-;-----------------------------------------------------------------------------
-
 ; mCubeHandler(X) -> X^3
 ; Description: Calculate X^3.
 mCubeHandler:
@@ -63,28 +61,16 @@ mCubeRootHandler:
     call replaceX
     ret
 
-; mAtan2Handler(Y, X) -> atan2(Y + Xi)
-;
-; Description: Calculate the angle of the (Y, X) number in complex plane.
-; Use bcall(_RToP) instead of bcall(_ATan2) because ATan2 does not seem produce
-; the correct results. There must be something wrong with the documentation.
-; (It turns out that the documentation does not describe the necessary values
-; of the D register which must be set before calling this. Normally D should be
-; set to 0. See https://wikiti.brandonw.net/index.php?title=83Plus:BCALLs:40D8
-; for more details. Although that page refers to ATan2Rad(), I suspect a
-; similar thing is happening for ATan2().)
-;
-; The real part (i.e. x-axis) is assumed to be entered first, then the
-; imaginary part (i.e. y-axis). They becomes stored in the RPN stack variables
-; with X and Y flipped, which is bit confusing.
-mAtan2Handler:
+;-----------------------------------------------------------------------------
+
+; Alog2(X) = 2^X
+mAlog2Handler:
     call closeInputBuf
-    call rclX ; imaginary
-    bcall(_OP1ToOP2)
-    call rclY ; OP1=Y (real), OP2=X (imaginary)
-    bcall(_RToP) ; complex to polar
-    bcall(_OP2ToOP1) ; OP2 contains the angle with range of (-pi, pi]
-    call replaceXY
+    call rclX ; OP1 = X
+    bcall(_OP1ToOP2) ; OP2 = X
+    bcall(_OP1Set2) ; OP1 = 2
+    bcall(_YToX) ; OP1 = 2^X
+    call replaceX
     ret
 
 ; Log2(X) = log_base_2(X) = log(X)/log(2)
@@ -110,6 +96,30 @@ mLogBaseHandler:
     bcall(_LnX) ; OP1 = ln(Y)
     bcall(_PopRealO2) ; OP2 = ln(X)
     bcall(_FPDiv) ; OP1 = ln(Y) / ln(X)
+    call replaceXY
+    ret
+
+; mAtan2Handler(Y, X) -> atan2(Y + Xi)
+;
+; Description: Calculate the angle of the (Y, X) number in complex plane.
+; Use bcall(_RToP) instead of bcall(_ATan2) because ATan2 does not seem produce
+; the correct results. There must be something wrong with the documentation.
+; (It turns out that the documentation does not describe the necessary values
+; of the D register which must be set before calling this. Normally D should be
+; set to 0. See https://wikiti.brandonw.net/index.php?title=83Plus:BCALLs:40D8
+; for more details. Although that page refers to ATan2Rad(), I suspect a
+; similar thing is happening for ATan2().)
+;
+; The real part (i.e. x-axis) is assumed to be entered first, then the
+; imaginary part (i.e. y-axis). They becomes stored in the RPN stack variables
+; with X and Y flipped, which is bit confusing.
+mAtan2Handler:
+    call closeInputBuf
+    call rclX ; imaginary
+    bcall(_OP1ToOP2)
+    call rclY ; OP1=Y (real), OP2=X (imaginary)
+    bcall(_RToP) ; complex to polar
+    bcall(_OP2ToOP1) ; OP2 contains the angle with range of (-pi, pi]
     call replaceXY
     ret
 
