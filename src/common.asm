@@ -90,6 +90,22 @@ op2SetEuler:
 
 ;-----------------------------------------------------------------------------
 
+; Description: Set OP1 to StandardGravity.
+; Destroys: all, HL
+op1SetStandardGravity:
+    ld hl, constStandardGravity
+    bcall(_Mov9ToOP1)
+    ret
+
+; Description: Set OP2 to StandardGravity.
+; Destroys: all, HL
+op2SetStandardGravity:
+    ld hl, constStandardGravity
+    bcall(_Mov9ToOP2)
+    ret
+
+;-----------------------------------------------------------------------------
+
 ; Description: Set OP1 to KmPerMi.
 ; Destroys: all, HL
 op1SetKmPerMi:
@@ -204,14 +220,14 @@ op2SetMlPerFloz:
 
 ; Description: Set OP1 to KjPerKcal.
 ; Destroys: all, HL
-op1SetKjPerKcal
+op1SetKjPerKcal:
     ld hl, constKjPerKcal
     bcall(_Mov9ToOP1)
     ret
 
 ; Description: Set OP2 to KjPerKcal.
 ; Destroys: all, HL
-op2SetKjPerKcal
+op2SetKjPerKcal:
     ld hl, constKjPerKcal
     bcall(_Mov9ToOP2)
     ret
@@ -220,31 +236,31 @@ op2SetKjPerKcal
 
 ; Description: Set OP1 to KwPerHp
 ; Destroys: all, HL
-op1SetKwPerHp
+op1SetKwPerHp:
     ld hl, constKwPerHp
     bcall(_Mov9ToOP1)
     ret
 
 ; Description: Set OP2 to KwPerHp
 ; Destroys: all, HL
-op2SetKwPerHp
+op2SetKwPerHp:
     ld hl, constKwPerHp
     bcall(_Mov9ToOP2)
     ret
 
 ;-----------------------------------------------------------------------------
 
-; Description: Set OP1 to StandardGravity.
+; Description: Set OP1 to HpaPerInhg
 ; Destroys: all, HL
-op1SetStandardGravity
-    ld hl, constStandardGravity
+op1SetHpaPerInhg:
+    ld hl, constHpaPerInhg
     bcall(_Mov9ToOP1)
     ret
 
-; Description: Set OP2 to StandardGravity.
+; Description: Set OP2 to KwPerHp
 ; Destroys: all, HL
-op2SetStandardGravity
-    ld hl, constStandardGravity
+op2SetHpaPerInhg:
+    ld hl, constHpaPerInhg
     bcall(_Mov9ToOP2)
     ret
 
@@ -261,6 +277,9 @@ constPi: ; 3.1415926535897(9323)
 
 constEuler: ; 2.7182818284594(0452)
     .db $00, $80, $27, $18, $28, $18, $28, $45, $94
+
+constStandardGravity: ; g_0 = 9.806 65 m/s^2, exact
+    .db $00, $80, $98, $06, $65, $00, $00, $00, $00
 
 constKmPerMi: ; 1.609344 km/mi, exact
     .db $00, $80, $16, $09, $34, $40, $00, $00, $00
@@ -295,5 +314,9 @@ constKjPerKcal: ; 4.184 J/cal or kJ/kcal, exact
 constKwPerHp: ; 0.745 699 871 582 270 22 kW/hp, approx
     .db $00, $7F, $74, $56, $99, $87, $15, $82, $27
 
-constStandardGravity: ; g_0 = 9.806 65 m/s^2, exact
-    .db $00, $80, $98, $06, $65, $00, $00, $00, $00
+; According to https://en.wikipedia.org/wiki/Millimetre_of_mercury:
+; 1 mmHg = 133.322 387 415 pascals (exact)
+; 1 inHg = 25.4 * (above) = 3386.388640341 Pa (exact)
+;        = 33.863 886 403 41 hPa (exact)
+constHpaPerInhg:
+    .db $00, $81, $33, $86, $38, $86, $40, $34, $10

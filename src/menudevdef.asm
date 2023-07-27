@@ -395,22 +395,22 @@ mBlank044Id equ 44
     .db 0 ; numStrips
     .db 0 ; stripBeginId
     .dw mNullHandler ; handler (predefined)
-mHgToHpa:
-mHgToHpaId equ 45
-    .db mHgToHpaId ; id
+mInhgToHpa:
+mInhgToHpaId equ 45
+    .db mInhgToHpaId ; id
     .db mUnitId ; parentId
-    .db mHgToHpaNameId ; nameId
+    .db mInhgToHpaNameId ; nameId
     .db 0 ; numStrips
     .db 0 ; stripBeginId
-    .dw mHgToHpaHandler ; handler (to be implemented)
-mHpaToHg:
-mHpaToHgId equ 46
-    .db mHpaToHgId ; id
+    .dw mInhgToHpaHandler ; handler (to be implemented)
+mHpaToInhg:
+mHpaToInhgId equ 46
+    .db mHpaToInhgId ; id
     .db mUnitId ; parentId
-    .db mHpaToHgNameId ; nameId
+    .db mHpaToInhgNameId ; nameId
     .db 0 ; numStrips
     .db 0 ; stripBeginId
-    .dw mHpaToHgHandler ; handler (to be implemented)
+    .dw mHpaToInhgHandler ; handler (to be implemented)
 ; MenuGroup UNIT: children: strip 1
 mMiToKm:
 mMiToKmId equ 47
@@ -864,10 +864,10 @@ mFToCNameId equ 37
     .dw mFToCName
 mCToFNameId equ 38
     .dw mCToFName
-mHgToHpaNameId equ 39
-    .dw mHgToHpaName
-mHpaToHgNameId equ 40
-    .dw mHpaToHgName
+mInhgToHpaNameId equ 39
+    .dw mInhgToHpaName
+mHpaToInhgNameId equ 40
+    .dw mHpaToInhgName
 mMiToKmNameId equ 41
     .dw mMiToKmName
 mKmToMiNameId equ 42
@@ -1010,10 +1010,10 @@ mFToCName:
     .db Sconvert, Stemp, 'C', 0
 mCToFName:
     .db Sconvert, Stemp, 'F', 0
-mHgToHpaName:
+mInhgToHpaName:
     .db Sconvert, 'h', 'P', 'a', 0
-mHpaToHgName:
-    .db Sconvert, 'H', 'g', 0
+mHpaToInhgName:
+    .db Sconvert, 'i', 'H', 'g', 0
 mMiToKmName:
     .db Sconvert, 'k', 'm', 0
 mKmToMiName:

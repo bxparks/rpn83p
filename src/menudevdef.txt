@@ -59,8 +59,8 @@ MenuGroup root mRoot [
         MenuItem <Sconvert><Stemp>C mFToC
         MenuItem <Sconvert><Stemp>F mCToF
         MenuItem * *
-        MenuItem <Sconvert>hPa mHgToHpa
-        MenuItem <Sconvert>Hg mHpaToHg
+        MenuItem <Sconvert>hPa mInhgToHpa
+        MenuItem <Sconvert>iHg mHpaToInhg
       ]
       MenuStrip [
         MenuItem <Sconvert>km mMiToKm

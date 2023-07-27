@@ -408,11 +408,21 @@ mCToFHandler:
     call replaceX
     ret
 
-mHgToHpaHandler:
-    jp mNotYetHandler
+mInhgToHpaHandler:
+    call closeInputBuf
+    call rclX
+    call op2SetHpaPerInhg
+    bcall(_FPMult)
+    call replaceX
+    ret
 
-mHpaToHgHandler:
-    jp mNotYetHandler
+mHpaToInhgHandler:
+    call closeInputBuf
+    call rclX
+    call op2SetHpaPerInhg
+    bcall(_FPDiv)
+    call replaceX
+    ret
 
 ;-----------------------------------------------------------------------------
 
