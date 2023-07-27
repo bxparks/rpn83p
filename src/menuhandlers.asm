@@ -31,8 +31,10 @@ displayPage:
     res onInterrupt, (IY+onFlags)
     ret
 
+; TODO: Move this to the end of the assembly source code if the size of the
+; binary becomes close to the 8 kB limit.
 msgHelpPage1:
-    .db "RPN83P v0.0 ", "(2023-07-27)", Senter
+    .db "RPN83P v0.0 ", "(2023", Shyphen, "07", Shyphen, "27)", Senter
     .db Senter
     .db "EE: 2ND EE or ,", Senter
     .db "R", LdownArrow, " : (", Senter
@@ -44,11 +46,11 @@ msgHelpPage1:
     .db 0
 
 msgHelpPage2:
-    .db "RPN83P v0.1 ", "(2023-07-27)", Senter
+    .db "RPN83P v0.0 ", "(2023", Shyphen, "07", Shyphen, "27)", Senter
     .db Senter
     .db "Backspace: DEL", Senter
-    .db "Menu Next: Down Arrow", Senter
     .db "Menu Prev: Up Arrow", Senter
+    .db "Menu Next: Down Arrow", Senter
     .db "Menu Back: Left Arrow or ON", Senter
     .db "Quit App: 2ND QUIT", Senter
     .db Senter
