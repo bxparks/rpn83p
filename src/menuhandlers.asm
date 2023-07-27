@@ -445,6 +445,16 @@ mHmsToHrHandler:
     call closeInputBuf
     call rclX
 
+    ; Sometimes, the internal floating point value is slightly different than
+    ; the displayed value due to rounding errors. For example, a value
+    ; displayed as `10` (e.g. `e^(ln(10))`) could actually be `9.9999999999xxx`
+    ; internally due to rounding errors. This routine parses out the digits
+    ; after the decimal point and interprets them as minutes (mm) and seconds
+    ; (ss) components. Any rounding errors will cause incorrect results. To
+    ; mitigate this, we round the X value to 10 digits to make sure that the
+    ; internal value matches the displayed value.
+    bcall(_RndGuard)
+
     ; Extract the whole 'hh' and push it into the FPS.
     bcall(_OP1ToOP4) ; OP4 = hh.mmss (save in temp)
     bcall(_Trunc) ; OP1 = int(hh.mmss)
