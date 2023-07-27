@@ -45,6 +45,15 @@ MenuGroup root mRoot [
         MenuItem SEED mRandomSeed
       ]
     ]
+    MenuGroup CONV mConv [
+      MenuStrip [
+        MenuItem <Sconvert>DEG mRToD
+        MenuItem <Sconvert>RAD mDToR
+        MenuItem * *
+        MenuItem <Sconvert>HR mHmsToHr
+        MenuItem <Sconvert>HMS mHrToHms
+      ]
+    ]
     MenuGroup UNIT mUnit [
       MenuStrip [
         MenuItem <Sconvert><Stemp>C mFToC
@@ -59,15 +68,6 @@ MenuGroup root mRoot [
         MenuItem * *
         MenuItem <Sconvert>cm mInToCm
         MenuItem <Sconvert>in mCmToIn
-      ]
-    ]
-    MenuGroup CONV mConv [
-      MenuStrip [
-        MenuItem <Sconvert>DEG mRToD
-        MenuItem <Sconvert>RAD mDToR
-        MenuItem * *
-        MenuItem <Sconvert>HR mHmsToHr
-        MenuItem <Sconvert>HMS mHrToHms
       ]
     ]
     MenuItem HELP mHelp

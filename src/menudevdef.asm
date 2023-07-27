@@ -55,21 +55,21 @@ mProbId equ 3
     .db 1 ; numStrips
     .db mCombId ; stripBeginId
     .dw mGroupHandler ; handler (predefined)
-mUnit:
-mUnitId equ 4
-    .db mUnitId ; id
-    .db mRootId ; parentId
-    .db mUnitNameId ; nameId
-    .db 2 ; numStrips
-    .db mFToCId ; stripBeginId
-    .dw mGroupHandler ; handler (predefined)
 mConv:
-mConvId equ 5
+mConvId equ 4
     .db mConvId ; id
     .db mRootId ; parentId
     .db mConvNameId ; nameId
     .db 1 ; numStrips
     .db mRToDId ; stripBeginId
+    .dw mGroupHandler ; handler (predefined)
+mUnit:
+mUnitId equ 5
+    .db mUnitId ; id
+    .db mRootId ; parentId
+    .db mUnitNameId ; nameId
+    .db 2 ; numStrips
+    .db mFToCId ; stripBeginId
     .dw mGroupHandler ; handler (predefined)
 mHelp:
 mHelpId equ 6
@@ -327,10 +327,52 @@ mRandomSeedId equ 36
     .db 0 ; numStrips
     .db 0 ; stripBeginId
     .dw mRandomSeedHandler ; handler (to be implemented)
+; MenuGroup CONV: children
+; MenuGroup CONV: children: strip 0
+mRToD:
+mRToDId equ 37
+    .db mRToDId ; id
+    .db mConvId ; parentId
+    .db mRToDNameId ; nameId
+    .db 0 ; numStrips
+    .db 0 ; stripBeginId
+    .dw mRToDHandler ; handler (to be implemented)
+mDToR:
+mDToRId equ 38
+    .db mDToRId ; id
+    .db mConvId ; parentId
+    .db mDToRNameId ; nameId
+    .db 0 ; numStrips
+    .db 0 ; stripBeginId
+    .dw mDToRHandler ; handler (to be implemented)
+mBlank039:
+mBlank039Id equ 39
+    .db mBlank039Id ; id
+    .db mConvId ; parentId
+    .db mNullNameId ; nameId
+    .db 0 ; numStrips
+    .db 0 ; stripBeginId
+    .dw mNullHandler ; handler (predefined)
+mHmsToHr:
+mHmsToHrId equ 40
+    .db mHmsToHrId ; id
+    .db mConvId ; parentId
+    .db mHmsToHrNameId ; nameId
+    .db 0 ; numStrips
+    .db 0 ; stripBeginId
+    .dw mHmsToHrHandler ; handler (to be implemented)
+mHrToHms:
+mHrToHmsId equ 41
+    .db mHrToHmsId ; id
+    .db mConvId ; parentId
+    .db mHrToHmsNameId ; nameId
+    .db 0 ; numStrips
+    .db 0 ; stripBeginId
+    .dw mHrToHmsHandler ; handler (to be implemented)
 ; MenuGroup UNIT: children
 ; MenuGroup UNIT: children: strip 0
 mFToC:
-mFToCId equ 37
+mFToCId equ 42
     .db mFToCId ; id
     .db mUnitId ; parentId
     .db mFToCNameId ; nameId
@@ -338,54 +380,13 @@ mFToCId equ 37
     .db 0 ; stripBeginId
     .dw mFToCHandler ; handler (to be implemented)
 mCToF:
-mCToFId equ 38
+mCToFId equ 43
     .db mCToFId ; id
     .db mUnitId ; parentId
     .db mCToFNameId ; nameId
     .db 0 ; numStrips
     .db 0 ; stripBeginId
     .dw mCToFHandler ; handler (to be implemented)
-mBlank039:
-mBlank039Id equ 39
-    .db mBlank039Id ; id
-    .db mUnitId ; parentId
-    .db mNullNameId ; nameId
-    .db 0 ; numStrips
-    .db 0 ; stripBeginId
-    .dw mNullHandler ; handler (predefined)
-mMiToKm:
-mMiToKmId equ 40
-    .db mMiToKmId ; id
-    .db mUnitId ; parentId
-    .db mMiToKmNameId ; nameId
-    .db 0 ; numStrips
-    .db 0 ; stripBeginId
-    .dw mMiToKmHandler ; handler (to be implemented)
-mKmToMi:
-mKmToMiId equ 41
-    .db mKmToMiId ; id
-    .db mUnitId ; parentId
-    .db mKmToMiNameId ; nameId
-    .db 0 ; numStrips
-    .db 0 ; stripBeginId
-    .dw mKmToMiHandler ; handler (to be implemented)
-; MenuGroup UNIT: children: strip 1
-mFtToM:
-mFtToMId equ 42
-    .db mFtToMId ; id
-    .db mUnitId ; parentId
-    .db mFtToMNameId ; nameId
-    .db 0 ; numStrips
-    .db 0 ; stripBeginId
-    .dw mFtToMHandler ; handler (to be implemented)
-mMToFt:
-mMToFtId equ 43
-    .db mMToFtId ; id
-    .db mUnitId ; parentId
-    .db mMToFtNameId ; nameId
-    .db 0 ; numStrips
-    .db 0 ; stripBeginId
-    .dw mMToFtHandler ; handler (to be implemented)
 mBlank044:
 mBlank044Id equ 44
     .db mBlank044Id ; id
@@ -394,8 +395,49 @@ mBlank044Id equ 44
     .db 0 ; numStrips
     .db 0 ; stripBeginId
     .dw mNullHandler ; handler (predefined)
+mMiToKm:
+mMiToKmId equ 45
+    .db mMiToKmId ; id
+    .db mUnitId ; parentId
+    .db mMiToKmNameId ; nameId
+    .db 0 ; numStrips
+    .db 0 ; stripBeginId
+    .dw mMiToKmHandler ; handler (to be implemented)
+mKmToMi:
+mKmToMiId equ 46
+    .db mKmToMiId ; id
+    .db mUnitId ; parentId
+    .db mKmToMiNameId ; nameId
+    .db 0 ; numStrips
+    .db 0 ; stripBeginId
+    .dw mKmToMiHandler ; handler (to be implemented)
+; MenuGroup UNIT: children: strip 1
+mFtToM:
+mFtToMId equ 47
+    .db mFtToMId ; id
+    .db mUnitId ; parentId
+    .db mFtToMNameId ; nameId
+    .db 0 ; numStrips
+    .db 0 ; stripBeginId
+    .dw mFtToMHandler ; handler (to be implemented)
+mMToFt:
+mMToFtId equ 48
+    .db mMToFtId ; id
+    .db mUnitId ; parentId
+    .db mMToFtNameId ; nameId
+    .db 0 ; numStrips
+    .db 0 ; stripBeginId
+    .dw mMToFtHandler ; handler (to be implemented)
+mBlank049:
+mBlank049Id equ 49
+    .db mBlank049Id ; id
+    .db mUnitId ; parentId
+    .db mNullNameId ; nameId
+    .db 0 ; numStrips
+    .db 0 ; stripBeginId
+    .dw mNullHandler ; handler (predefined)
 mInToCm:
-mInToCmId equ 45
+mInToCmId equ 50
     .db mInToCmId ; id
     .db mUnitId ; parentId
     .db mInToCmNameId ; nameId
@@ -403,55 +445,13 @@ mInToCmId equ 45
     .db 0 ; stripBeginId
     .dw mInToCmHandler ; handler (to be implemented)
 mCmToIn:
-mCmToInId equ 46
+mCmToInId equ 51
     .db mCmToInId ; id
     .db mUnitId ; parentId
     .db mCmToInNameId ; nameId
     .db 0 ; numStrips
     .db 0 ; stripBeginId
     .dw mCmToInHandler ; handler (to be implemented)
-; MenuGroup CONV: children
-; MenuGroup CONV: children: strip 0
-mRToD:
-mRToDId equ 47
-    .db mRToDId ; id
-    .db mConvId ; parentId
-    .db mRToDNameId ; nameId
-    .db 0 ; numStrips
-    .db 0 ; stripBeginId
-    .dw mRToDHandler ; handler (to be implemented)
-mDToR:
-mDToRId equ 48
-    .db mDToRId ; id
-    .db mConvId ; parentId
-    .db mDToRNameId ; nameId
-    .db 0 ; numStrips
-    .db 0 ; stripBeginId
-    .dw mDToRHandler ; handler (to be implemented)
-mBlank049:
-mBlank049Id equ 49
-    .db mBlank049Id ; id
-    .db mConvId ; parentId
-    .db mNullNameId ; nameId
-    .db 0 ; numStrips
-    .db 0 ; stripBeginId
-    .dw mNullHandler ; handler (predefined)
-mHmsToHr:
-mHmsToHrId equ 50
-    .db mHmsToHrId ; id
-    .db mConvId ; parentId
-    .db mHmsToHrNameId ; nameId
-    .db 0 ; numStrips
-    .db 0 ; stripBeginId
-    .dw mHmsToHrHandler ; handler (to be implemented)
-mHrToHms:
-mHrToHmsId equ 51
-    .db mHrToHmsId ; id
-    .db mConvId ; parentId
-    .db mHrToHmsNameId ; nameId
-    .db 0 ; numStrips
-    .db 0 ; stripBeginId
-    .dw mHrToHmsHandler ; handler (to be implemented)
 ; MenuGroup DISP: children
 ; MenuGroup DISP: children: strip 0
 mFix:
@@ -630,10 +630,10 @@ mNumNameId equ 2
     .dw mNumName
 mProbNameId equ 3
     .dw mProbName
-mUnitNameId equ 4
-    .dw mUnitName
-mConvNameId equ 5
+mConvNameId equ 4
     .dw mConvName
+mUnitNameId equ 5
+    .dw mUnitName
 mHelpNameId equ 6
     .dw mHelpName
 mDispNameId equ 7
@@ -688,30 +688,30 @@ mRandomNameId equ 31
     .dw mRandomName
 mRandomSeedNameId equ 32
     .dw mRandomSeedName
-mFToCNameId equ 33
-    .dw mFToCName
-mCToFNameId equ 34
-    .dw mCToFName
-mMiToKmNameId equ 35
-    .dw mMiToKmName
-mKmToMiNameId equ 36
-    .dw mKmToMiName
-mFtToMNameId equ 37
-    .dw mFtToMName
-mMToFtNameId equ 38
-    .dw mMToFtName
-mInToCmNameId equ 39
-    .dw mInToCmName
-mCmToInNameId equ 40
-    .dw mCmToInName
-mRToDNameId equ 41
+mRToDNameId equ 33
     .dw mRToDName
-mDToRNameId equ 42
+mDToRNameId equ 34
     .dw mDToRName
-mHmsToHrNameId equ 43
+mHmsToHrNameId equ 35
     .dw mHmsToHrName
-mHrToHmsNameId equ 44
+mHrToHmsNameId equ 36
     .dw mHrToHmsName
+mFToCNameId equ 37
+    .dw mFToCName
+mCToFNameId equ 38
+    .dw mCToFName
+mMiToKmNameId equ 39
+    .dw mMiToKmName
+mKmToMiNameId equ 40
+    .dw mKmToMiName
+mFtToMNameId equ 41
+    .dw mFtToMName
+mMToFtNameId equ 42
+    .dw mMToFtName
+mInToCmNameId equ 43
+    .dw mInToCmName
+mCmToInNameId equ 44
+    .dw mCmToInName
 mFixNameId equ 45
     .dw mFixName
 mSciNameId equ 46
@@ -744,10 +744,10 @@ mNumName:
     .db "NUM", 0
 mProbName:
     .db "PROB", 0
-mUnitName:
-    .db "UNIT", 0
 mConvName:
     .db "CONV", 0
+mUnitName:
+    .db "UNIT", 0
 mHelpName:
     .db "HELP", 0
 mDispName:
@@ -802,6 +802,14 @@ mRandomName:
     .db "RAND", 0
 mRandomSeedName:
     .db "SEED", 0
+mRToDName:
+    .db Sconvert, 'D', 'E', 'G', 0
+mDToRName:
+    .db Sconvert, 'R', 'A', 'D', 0
+mHmsToHrName:
+    .db Sconvert, 'H', 'R', 0
+mHrToHmsName:
+    .db Sconvert, 'H', 'M', 'S', 0
 mFToCName:
     .db Sconvert, Stemp, 'C', 0
 mCToFName:
@@ -818,14 +826,6 @@ mInToCmName:
     .db Sconvert, 'c', 'm', 0
 mCmToInName:
     .db Sconvert, 'i', 'n', 0
-mRToDName:
-    .db Sconvert, 'D', 'E', 'G', 0
-mDToRName:
-    .db Sconvert, 'R', 'A', 'D', 0
-mHmsToHrName:
-    .db Sconvert, 'H', 'R', 0
-mHrToHmsName:
-    .db Sconvert, 'H', 'M', 'S', 0
 mFixName:
     .db "FIX", 0
 mSciName:
