@@ -271,9 +271,13 @@ mainExit:
 #include "input.asm"
 #include "display.asm"
 #include "errorcode.asm"
-#include "debug.asm"
 #include "menu.asm"
 #include "menuhandlers.asm"
+
+#ifdef DEBUG
+#include "debug.asm"
+#endif
+
 ; Place data files at the end, because the TI-OS prevents execution of assembly
 ; code if it spills over to page $C000. The limitation does not apply to data.
 #include "handlertab.asm"
