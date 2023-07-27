@@ -42,7 +42,7 @@ msgHelpPage1:
     .db "X<>Y", ": )", Senter
     .db "LastX", ": 2ND ANS", Senter
     .db Senter
-    .db "Hit any key to continue...", Senter
+    .db SlBrack, "1/2", SrBrack, " Any key to continue...", Senter
     .db 0
 
 msgHelpPage2:
@@ -54,7 +54,7 @@ msgHelpPage2:
     .db "Menu Back: Left Arrow or ON", Senter
     .db "Quit App: 2ND QUIT", Senter
     .db Senter
-    .db "Hit any key to return.", Senter
+    .db SlBrack, "2/2", SrBrack, " Any key to return.", Senter
     .db 0
 
 ;-----------------------------------------------------------------------------
