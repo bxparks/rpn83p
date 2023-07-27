@@ -283,12 +283,4 @@ mainExit:
 #include "handlertab.asm"
 #include "menudevdef.asm"
 
-;-----------------------------------------------------------------------------
-
-msgPrompt:
-    .db "Press key", 0
-
-msgExit:
-    .db "Quit pressed", 0
-
 .end

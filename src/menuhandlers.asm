@@ -3,7 +3,57 @@
 ;-----------------------------------------------------------------------------
 
 mHelpHandler:
-    jp mNotYetHandler
+    ld hl, msgHelpPage1
+    call displayPage
+    ld hl, msgHelpPage2
+    call displayPage
+
+    ; force rerendering of the display
+    bcall(_ClrLCDFull)
+    set rpnFlagsStackDirty, (iy + rpnFlags)
+    ld a, errorCodeCount ; guaranteed to trigger rendering
+    ld (errorCodeDisplayed), a
+    call initDisplay
+    call initMenu
+    ret
+
+; Description: Display the page given by HL. Pauses for key input.
+; Input: HL: string using small font
+; Destroys: A, HL
+displayPage:
+    push hl
+    bcall(_ClrLCDFull)
+    ld hl, 0
+    ld (PenCol), hl
+    pop hl
+    call vPutS
+    bcall(_GetKey) ; pause
+    res onInterrupt, (IY+onFlags)
+    ret
+
+msgHelpPage1:
+    .db "RPN83P v0.0 ", "(2023-07-27)", Senter
+    .db Senter
+    .db "EE: 2ND EE or ,", Senter
+    .db "R", LdownArrow, " : (", Senter
+    .db "R", LupArrow, " : 2ND {", Senter
+    .db "X<>Y", ": )", Senter
+    .db "LastX", ": 2ND ANS", Senter
+    .db Senter
+    .db "Hit any key to continue...", Senter
+    .db 0
+
+msgHelpPage2:
+    .db "RPN83P v0.1 ", "(2023-07-27)", Senter
+    .db Senter
+    .db "Backspace: DEL", Senter
+    .db "Menu Next: Down Arrow", Senter
+    .db "Menu Prev: Up Arrow", Senter
+    .db "Menu Back: Left Arrow or ON", Senter
+    .db "Quit App: 2ND QUIT", Senter
+    .db Senter
+    .db "Hit any key to return.", Senter
+    .db 0
 
 ;-----------------------------------------------------------------------------
 ; Children nodes of NUM menu.
