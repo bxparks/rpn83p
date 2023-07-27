@@ -22,6 +22,24 @@ getString:
 
 ;-----------------------------------------------------------------------------
 
+; Description: Set OP1 to 10. The TI-OS provides OP2Set60() but not
+; OP1Set10().
+; Destroys: all, HL
+op1Set10:
+    ld hl, const10
+    bcall(_Mov9ToOP1)
+    ret
+
+; Description: Set OP2 to 10. The TI-OS Provides OP2Set60() but not
+; OP2Set10().
+; Destroys: all, HL
+op2Set10:
+    ld hl, const10
+    bcall(_Mov9ToOP2)
+    ret
+
+;-----------------------------------------------------------------------------
+
 ; Description: Set OP1 to 100. The TI-OS provides OP2Set60() but not
 ; OP1Set100().
 ; Destroys: all, HL
@@ -31,7 +49,7 @@ op1Set100:
     ret
 
 ; Description: Set OP2 to 100. The TI-OS Provides OP2Set60() but not
-; OP2Set60().
+; OP2Set100().
 ; Destroys: all, HL
 op2Set100:
     ld hl, const100
@@ -231,6 +249,9 @@ op2SetStandardGravity
     ret
 
 ;-----------------------------------------------------------------------------
+
+const10: ; 10
+    .db $00, $81, $10, $00, $00, $00, $00, $00, $00
 
 const100: ; 100
     .db $00, $82, $10, $00, $00, $00, $00, $00, $00

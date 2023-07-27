@@ -59,15 +59,22 @@ MenuGroup root mRoot [
         MenuItem <Sconvert><Stemp>C mFToC
         MenuItem <Sconvert><Stemp>F mCToF
         MenuItem * *
-        MenuItem <Sconvert>km mMiToKm
-        MenuItem <Sconvert>mi mKmToMi
+        MenuItem <Sconvert>hPa mHgToHpa
+        MenuItem <Sconvert>Hg mHpaToHg
       ]
       MenuStrip [
+        MenuItem <Sconvert>km mMiToKm
+        MenuItem <Sconvert>mi mKmToMi
+        MenuItem * *
         MenuItem <Sconvert>m mFtToM
         MenuItem <Sconvert>ft mMToFt
-        MenuItem * *
+      ]
+      MenuStrip [
         MenuItem <Sconvert>cm mInToCm
         MenuItem <Sconvert>in mCmToIn
+        MenuItem * *
+        MenuItem <Sconvert><Smu>m mMilToMicron
+        MenuItem <Sconvert>mil mMicronToMil
       ]
       MenuStrip [
         MenuItem <Sconvert>kg mLbsToKg

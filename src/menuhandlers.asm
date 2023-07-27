@@ -408,6 +408,14 @@ mCToFHandler:
     call replaceX
     ret
 
+mHgToHpaHandler:
+    jp mNotYetHandler
+
+mHpaToHgHandler:
+    jp mNotYetHandler
+
+;-----------------------------------------------------------------------------
+
 mMiToKmHandler:
     call closeInputBuf
     call rclX
@@ -423,8 +431,6 @@ mKmToMiHandler:
     bcall(_FPDiv)
     call replaceX
     ret
-
-;-----------------------------------------------------------------------------
 
 mFtToMHandler:
     call closeInputBuf
@@ -442,6 +448,8 @@ mMToFtHandler:
     call replaceX
     ret
 
+;-----------------------------------------------------------------------------
+
 mInToCmHandler:
     call closeInputBuf
     call rclX
@@ -454,6 +462,26 @@ mCmToInHandler:
     call closeInputBuf
     call rclX
     call op2SetCmPerIn
+    bcall(_FPDiv)
+    call replaceX
+    ret
+
+mMilToMicronHandler:
+    call closeInputBuf
+    call rclX
+    call op2SetCmPerIn
+    bcall(_FPMult)
+    call op2Set10
+    bcall(_FPMult)
+    call replaceX
+    ret
+
+mMicronToMilHandler:
+    call closeInputBuf
+    call rclX
+    call op2SetCmPerIn
+    bcall(_FPDiv)
+    call op2Set10
     bcall(_FPDiv)
     call replaceX
     ret
