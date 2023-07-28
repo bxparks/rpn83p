@@ -37,15 +37,22 @@ mGroupHandler:
 ;-----------------------------------------------------------------------------
 
 mHelpHandler:
-    ld b, 0 ; B = page number
+    ld b, 0 ; B = pageNumber
 mHelpHandlerLoop:
-    ld a, b
+    ld a, b ; A = pageNumber
     call displayPage
 mHelpHandlerGetKey:
     bcall(_GetKey) ; pause, destroys: A, DE, HL
-    res onInterrupt, (IY+onFlags)
-    cp kLeft
-    jr nz, mHelpHandlerNextPage
+    res onInterrupt, (IY+onFlags) ; reset flag set by ON button
+mHelpHandlerCheckExit:
+    or a ; A == ON
+    jr z, mHelpHandlerExit
+    cp kClear ; A == CLEAR
+    jr z, mHelpHandlerExit
+    cp kMath ; A == MATH
+    jr z, mHelpHandlerExit
+    cp kLeft ; A == LEFT
+    jr nz, mHelpHandlerNextPage ; everything else to the next page
 mHelpHandlerPrevPageMaybe:
     ; go to prev page if not already at page 0
     ld a, b
@@ -61,7 +68,7 @@ mHelpHandlerNextPage:
     cp helpPageCount
     jr nz, mHelpHandlerLoop
 mHelpHandlerExit:
-    ; force rerendering of the display
+    ; force rerendering of normal calculator display
     bcall(_ClrLCDFull)
     set rpnFlagsStackDirty, (iy + rpnFlags)
     ld a, errorCodeCount ; guaranteed to trigger rendering
@@ -70,8 +77,8 @@ mHelpHandlerExit:
     call initMenu
     ret
 
-; Description: Display the page given by HL. Pauses for key input.
-; Input: A: page number
+; Description: Display the help page given by pageNumber in A.
+; Input: A: pageNumber
 ; Destroys: none
 displayPage:
     push af
@@ -81,6 +88,7 @@ displayPage:
 
     bcall(_ClrLCDFull)
 
+    ; Calculate the pointer to the help page string
     ld hl, helpPages ; HL = (char**)
     add a, a ; A = 2 * pageNumber (i.e. max page number = 127)
     ld e, a
@@ -90,6 +98,7 @@ displayPage:
     inc hl
     ld d, (hl) ; DE = (char*)(HL)
     ex de, hl ; HL = (char*)
+
     call displayString
 
     pop hl
@@ -98,7 +107,7 @@ displayPage:
     pop af
     ret
 
-; Description: Display the page given by HL. Pauses for key input.
+; Description: Display the page given by HL.
 ; Input: HL: string using small font
 ; Destroys: none
 displayString:
@@ -110,35 +119,49 @@ displayString:
     ret
 
 ; Array of (char*) pointers to strings.
-helpPageCount equ 2
+helpPageCount equ 3
 helpPages:
     .dw msgHelpPage0
     .dw msgHelpPage1
+    .dw msgHelpPage2
 
 ; TODO: Move this to the end of the assembly source code if the size of the
 ; binary becomes close to the 8 kB limit.
+
 msgHelpPage0:
     .db "RPN83P v0.0 ", "(2023", Shyphen, "07", Shyphen, "27)", Senter
     .db Senter
-    .db "EE: 2ND EE or ,", Senter
     .db "R", LdownArrow, " : (", Senter
     .db "R", LupArrow, " : 2ND {", Senter
     .db "X<>Y", ": )", Senter
     .db "LastX", ": 2ND ANS", Senter
     .db Senter
-    .db SlBrack, "1/2", SrBrack, " Any key to continue...", Senter
+    .db Senter
+    .db SlBrack, "1/3", SrBrack, " Any key to continue...", Senter
     .db 0
 
 msgHelpPage1:
     .db "RPN83P v0.0 ", "(2023", Shyphen, "07", Shyphen, "27)", Senter
     .db Senter
-    .db "Backspace: DEL", Senter
+    .db "EE: 2ND EE or ,", Senter
+    .db "+/-: (-)", Senter
+    .db "<-: DEL", Senter
+    .db "ClrX: CLEAR", Senter
+    .db Senter
+    .db Senter
+    .db SlBrack, "2/3", SrBrack, " Any key to continue...", Senter
+    .db 0
+
+msgHelpPage2:
+    .db "RPN83P v0.0 ", "(2023", Shyphen, "07", Shyphen, "27)", Senter
+    .db Senter
     .db "Menu Home: MATH", Senter
     .db "Menu Prev: Up", Senter
     .db "Menu Next: Down", Senter
     .db "Menu Back: Left or ON", Senter
     .db "Quit App: 2ND QUIT", Senter
-    .db SlBrack, "2/2", SrBrack, " Any key to return.", Senter
+    .db Senter
+    .db SlBrack, "3/3", SrBrack, " Any key to return.", Senter
     .db 0
 
 ;-----------------------------------------------------------------------------
