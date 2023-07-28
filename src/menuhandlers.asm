@@ -37,11 +37,30 @@ mGroupHandler:
 ;-----------------------------------------------------------------------------
 
 mHelpHandler:
-    ld hl, msgHelpPage1
+    ld b, 0 ; B = page number
+mHelpHandlerLoop:
+    ld a, b
     call displayPage
-    ld hl, msgHelpPage2
-    call displayPage
-
+mHelpHandlerGetKey:
+    bcall(_GetKey) ; pause, destroys: A, DE, HL
+    res onInterrupt, (IY+onFlags)
+    cp kLeft
+    jr nz, mHelpHandlerNextPage
+mHelpHandlerPrevPageMaybe:
+    ; go to prev page if not already at page 0
+    ld a, b
+    or a
+    jr z, mHelpHandlerGetKey
+mHelpHandlerPrevPage:
+    dec b
+    jr mHelpHandlerLoop
+mHelpHandlerNextPage:
+    ; any other key goes to the next the page
+    inc b
+    ld a, b
+    cp helpPageCount
+    jr nz, mHelpHandlerLoop
+mHelpHandlerExit:
     ; force rerendering of the display
     bcall(_ClrLCDFull)
     set rpnFlagsStackDirty, (iy + rpnFlags)
@@ -52,22 +71,53 @@ mHelpHandler:
     ret
 
 ; Description: Display the page given by HL. Pauses for key input.
-; Input: HL: string using small font
-; Destroys: A, HL
+; Input: A: page number
+; Destroys: none
 displayPage:
+    push af
+    push bc
+    push de
     push hl
+
     bcall(_ClrLCDFull)
+
+    ld hl, helpPages ; HL = (char**)
+    add a, a ; A = 2 * pageNumber (i.e. max page number = 127)
+    ld e, a
+    ld d, 0 ; DE = string offset
+    add hl, de ; HL = (char**)
+    ld e, (hl)
+    inc hl
+    ld d, (hl) ; DE = (char*)(HL)
+    ex de, hl ; HL = (char*)
+    call displayString
+
+    pop hl
+    pop de
+    pop bc
+    pop af
+    ret
+
+; Description: Display the page given by HL. Pauses for key input.
+; Input: HL: string using small font
+; Destroys: none
+displayString:
+    push hl
     ld hl, 0
     ld (PenCol), hl
-    pop hl
+    pop hl ; HL= (char*)
     call vPutS
-    bcall(_GetKey) ; pause
-    res onInterrupt, (IY+onFlags)
     ret
+
+; Array of (char*) pointers to strings.
+helpPageCount equ 2
+helpPages:
+    .dw msgHelpPage0
+    .dw msgHelpPage1
 
 ; TODO: Move this to the end of the assembly source code if the size of the
 ; binary becomes close to the 8 kB limit.
-msgHelpPage1:
+msgHelpPage0:
     .db "RPN83P v0.0 ", "(2023", Shyphen, "07", Shyphen, "27)", Senter
     .db Senter
     .db "EE: 2ND EE or ,", Senter
@@ -79,7 +129,7 @@ msgHelpPage1:
     .db SlBrack, "1/2", SrBrack, " Any key to continue...", Senter
     .db 0
 
-msgHelpPage2:
+msgHelpPage1:
     .db "RPN83P v0.0 ", "(2023", Shyphen, "07", Shyphen, "27)", Senter
     .db Senter
     .db "Backspace: DEL", Senter

@@ -648,6 +648,8 @@ vEraseEOLLoop:
 ;
 ; See TI-83 Plus System Routine SDK docs for VPutS() for a reference
 ; implementation of this function.
+; Input: HL: pointer to string using small font
+; Destroys: none
 vPutS:
     push af
     push de
