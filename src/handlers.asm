@@ -513,9 +513,10 @@ handleKeyDownContinue:
 ; already at the rootMenu, and the stripIndex is not 0, then reset the
 ; stripIndex to 0 so that we return to the default, top-level view of the menu
 ; hierarchy.
-; Input: (menuGroupId)
-; Output: (menuGroupId) at parentId, (menuStripIndex) at strip of the current
-; menu group
+; Input: (menuGroupId), the current (child) menu group
+; Output:
+;   - (menuGroupId) at parentId
+;   - (menuStripIndex) at strip of the (child) menu group
 ; Destroys: all
 handleKeyMenuBack:
     ld hl, menuGroupId
@@ -639,6 +640,7 @@ handleKeyMenu5:
 ; Description: Dispatch to the handler specified by the menu node at the menu
 ; button indexed by A (0: left most, 4: right most).
 ; Input: A: menu button index (0-4)
+; Output: A: nodeId of the selected menu item
 ; Destroys: all
 handleKeyMenuA:
     ld c, a
@@ -881,20 +883,28 @@ handleKeyATan:
     ret
 
 ;-----------------------------------------------------------------------------
+; Buttons aliased to menu items.
+;-----------------------------------------------------------------------------
+
+handleKeyMath:
+    ld a, mNumId
+    jp mGroupHandler
+
+;-----------------------------------------------------------------------------
 ; Predefined Menu handlers.
 ;-----------------------------------------------------------------------------
 
 ; Description: Null handler. Does nothing.
 ; Input:
-;   HL: pointer to MenuNode that was activated
-;   A: menu button index (0 - 4)
+;   A: nodeId of the select menu item (ignored)
+;   HL: pointer to MenuNode that was activated (ignored)
 mNullHandler: ; do nothing
     ret
 
 ; Description: Null handler. Does nothing.
 ; Input:
-;   HL: pointer to MenuNode that was activated
-;   A: menu button index (0 - 4)
+;   A: nodeId of the select menu item (ignored)
+;   HL: pointer to MenuNode that was activated (ignored)
 mNotYetHandler:
     ld a, errorCodeNotYet
     jp setErrorCode
@@ -903,8 +913,8 @@ mNotYetHandler:
 ; this should cause the menuGroupId to be set to this item, and the
 ; menuStripIndex to be set to 0
 ; Input:
-;   HL: pointer to MenuNode that was activated
-;   A: menu button index (0 - 4)
+;   A: nodeId of the select menu item
+;   HL: pointer to MenuNode that was activated (ignored)
 ; Output: (menuGroupId) and (menuStripIndex) updated
 ; Destroys: A
 mGroupHandler:

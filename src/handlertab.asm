@@ -1,5 +1,5 @@
 ; List of GetKey() codes and their jump table.
-keyCodeHandlerTableSize equ 50
+keyCodeHandlerTableSize equ 51
 kOnExit equ 0 ; ON key generates 00 as the key code
 keyCodeHandlerTable:
     ; number entry
@@ -141,3 +141,7 @@ keyCodeHandlerTable:
     .dw handleKeyACos
     .db kATan ; TAN^{-1}
     .dw handleKeyATan
+
+    ; menu group buttons, e.g. MATH
+    .db kMath
+    .dw handleKeyMath
