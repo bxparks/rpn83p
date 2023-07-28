@@ -17,6 +17,13 @@ initErrorCode:
     ld (hl), errorCodeCount ; guaranteed to trigger rendering
     ret
 
+; Description: Mark the error code as dirty to force rerendering.
+; Destroys: A
+dirtyErrorCode:
+    ld a, errorCodeCount ; guaranteed to trigger rendering
+    ld (errorCodeDisplayed), a
+    ret
+
 ; Function: Set error code to errorCodeOk.
 ; Output: (errorCode) set
 ; Destroys: A, HL

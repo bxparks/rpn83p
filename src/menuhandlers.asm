@@ -75,8 +75,7 @@ mHelpHandlerExit:
     ; force rerendering of normal calculator display
     bcall(_ClrLCDFull)
     set rpnFlagsStackDirty, (iy + rpnFlags)
-    ld a, errorCodeCount ; guaranteed to trigger rendering
-    ld (errorCodeDisplayed), a
+    call dirtyErrorCode
     call initDisplay
     call initMenu
     ret
