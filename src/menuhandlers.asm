@@ -836,20 +836,6 @@ mHrToHmsHandler:
 ; Children nodes of MODE menu.
 ;-----------------------------------------------------------------------------
 
-mRadHandler:
-    res trigDeg, (iy + trigFlags)
-    set rpnFlagsTrigModeDirty, (iy + rpnFlags)
-    ret
-
-mDegHandler:
-    set trigDeg, (iy + trigFlags)
-    set rpnFlagsTrigModeDirty, (iy + rpnFlags)
-    ret
-
-;-----------------------------------------------------------------------------
-; Children nodes of DISP menu.
-;-----------------------------------------------------------------------------
-
 mFixHandler:
     call closeInputBuf
     ld hl, mFixCallback
@@ -915,6 +901,18 @@ saveFormatDigits:
     ld a, $FF ; variable number of digits, not fixed
 saveFormatDigitsContinue:
     ld (fmtDigits), a
+    ret
+
+;-----------------------------------------------------------------------------
+
+mRadHandler:
+    res trigDeg, (iy + trigFlags)
+    set rpnFlagsTrigModeDirty, (iy + rpnFlags)
+    ret
+
+mDegHandler:
+    set trigDeg, (iy + trigFlags)
+    set rpnFlagsTrigModeDirty, (iy + rpnFlags)
     ret
 
 ;-----------------------------------------------------------------------------

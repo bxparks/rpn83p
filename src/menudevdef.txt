@@ -65,22 +65,13 @@ MenuGroup root mRoot [
     MenuItem HELP mHelp
   ]
   MenuStrip [
-    MenuGroup DISP mDisp [
+    MenuGroup MODE mMode [
       MenuStrip [
         MenuItem FIX mFix
         MenuItem SCI mSci
         MenuItem ENG mEng
-        MenuItem * *
-        MenuItem * *
-      ]
-    ]
-    MenuGroup MODE mMode [
-      MenuStrip [
         MenuItem RAD mRad
         MenuItem DEG mDeg
-        MenuItem * *
-        MenuItem * *
-        MenuItem * *
       ]
     ]
     MenuGroup HYP mHyperbolic [
