@@ -1,5 +1,13 @@
 # A slimmed-down menudef.txt file for development and testing.
 
+# Define the defaults for blank menu items and menu groups.
+MenuConfig [
+  ItemName mNullName
+  ItemNameId mNullNameId
+  ItemHandler mNullHandler
+  GroupHandler mGroupHandler
+]
+
 MenuGroup root mRoot [
   MenuStrip [
     MenuGroup NUM mNum [
