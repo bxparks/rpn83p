@@ -192,7 +192,7 @@ mCubeRootHandler:
     call rclX ; OP1=X
     bcall(_OP1ToOP2) ; OP2=X
     bcall(_OP1Set3) ; OP1=3
-    bcall(_XRootY) ; OP2^OP1
+    bcall(_XRootY) ; OP2^(1/OP1)
     call replaceX
     ret
 
