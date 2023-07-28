@@ -25,6 +25,14 @@
 #   - square brackets [ ] means "list of"
 #   - '*' indicates a blank MenuItem with no ID constant
 
+# Define the defaults for blank menu items and menu groups.
+MenuConfig [
+  ItemName mNullName
+  ItemNameId mNullNameId
+  ItemHandler mNullHandler
+  GroupHandler mGroupHandler
+]
+
 MenuGroup root mRoot [
   MenuStrip [
     MenuGroup NUM mNum [

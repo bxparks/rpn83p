@@ -1,6 +1,14 @@
 # Same as menudef.txt, but reduced down so that the assembly code data can be
 # hand coded during development.
 
+# Define the defaults for blank menu items and menu groups.
+MenuConfig [
+  ItemName mNullName
+  ItemNameId mNullNameId
+  ItemHandler mNullHandler
+  GroupHandler mGroupHandler
+]
+
 MenuGroup root mRoot [
   MenuStrip [
     # Advanced math functions.
