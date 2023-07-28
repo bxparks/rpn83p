@@ -883,11 +883,11 @@ handleKeyATan:
     ret
 
 ;-----------------------------------------------------------------------------
-; Buttons aliased to menu items.
+; Buttons bound to menu items.
 ;-----------------------------------------------------------------------------
 
 handleKeyMath:
-    ld a, mNumId
+    ld a, mRootId ; MATH becomes the menu HOME button
     jp mGroupHandler
 
 ;-----------------------------------------------------------------------------

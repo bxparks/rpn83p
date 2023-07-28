@@ -3,18 +3,27 @@
 
 MenuGroup root mRoot [
   MenuStrip [
-    MenuGroup NUM mNum [
+    # Advanced math functions.
+    MenuGroup MATH mMath [
       MenuStrip [
-        MenuItem <Spercent> mPercent
-        MenuItem <ScapDelta><Spercent> mDeltaPercent
         MenuItem X<Scaret>3 mCube
         MenuItem <ScubeR><Sroot>X mCubeRoot
+        MenuItem ATN2 mAtan2
       ]
       MenuStrip [
         MenuItem 2<Scaret>X mAlog2 # 2^x
         MenuItem LOG2 mLog2 # log_base2(x)
         MenuItem LOGB mLogBase # log_base_x(y)
-        MenuItem ATN2 mAtan2
+      ]
+    ]
+    # Arithmetic functions.
+    MenuGroup NUM mNum [
+      MenuStrip [
+        MenuItem <Spercent> mPercent
+        MenuItem <ScapDelta><Spercent> mDeltaPercent
+        # MenuItem LCM mLcm
+        # MenuItem GCD mGcd
+        # MenuItem PRIM mPrime
       ]
       MenuStrip [
         MenuItem ABS mAbs
@@ -30,11 +39,6 @@ MenuGroup root mRoot [
         MenuItem CEIL mCeil
         MenuItem NEAR mNear
       ]
-      # MenuStrip [
-      #   MenuItem LCM mLcm
-      #   MenuItem GCD mGcd
-      #   MenuItem PRIM mPrime
-      # ]
     ]
     MenuGroup PROB mProb [
       MenuStrip [
@@ -56,6 +60,43 @@ MenuGroup root mRoot [
       MenuStrip [
         MenuItem <Sconvert>HR mHmsToHr
         MenuItem <Sconvert>HMS mHrToHms
+      ]
+    ]
+    MenuItem HELP mHelp
+  ]
+  MenuStrip [
+    MenuGroup DISP mDisp [
+      MenuStrip [
+        MenuItem FIX mFix
+        MenuItem SCI mSci
+        MenuItem ENG mEng
+        MenuItem * *
+        MenuItem * *
+      ]
+    ]
+    MenuGroup MODE mMode [
+      MenuStrip [
+        MenuItem RAD mRad
+        MenuItem DEG mDeg
+        MenuItem * *
+        MenuItem * *
+        MenuItem * *
+      ]
+    ]
+    MenuGroup HYP mHyperbolic [
+      MenuStrip [
+        MenuItem * *
+        MenuItem SINH mSinh
+        MenuItem COSH mCosh
+        MenuItem TANH mTanh
+        MenuItem * *
+      ]
+      MenuStrip [
+        MenuItem * *
+        MenuItem ASNH mAsinh
+        MenuItem ACSH mAcosh
+        MenuItem ATNH mAtanh
+        MenuItem * *
       ]
     ]
     MenuGroup UNIT mUnit [
@@ -108,44 +149,6 @@ MenuGroup root mRoot [
       #   MenuItem <Sconvert>kPa mPsiToKpa
       #   MenuItem <Sconvert>psi mKpaToPsi
       # ]
-    ]
-    MenuItem HELP mHelp
-  ]
-
-  MenuStrip [
-    MenuGroup DISP mDisp [
-      MenuStrip [
-        MenuItem FIX mFix
-        MenuItem SCI mSci
-        MenuItem ENG mEng
-        MenuItem * *
-        MenuItem * *
-      ]
-    ]
-    MenuGroup MODE mMode [
-      MenuStrip [
-        MenuItem RAD mRad
-        MenuItem DEG mDeg
-        MenuItem * *
-        MenuItem * *
-        MenuItem * *
-      ]
-    ]
-    MenuGroup HYP mHyperbolic [
-      MenuStrip [
-        MenuItem * *
-        MenuItem SINH mSinh
-        MenuItem COSH mCosh
-        MenuItem TANH mTanh
-        MenuItem * *
-      ]
-      MenuStrip [
-        MenuItem * *
-        MenuItem ASNH mAsinh
-        MenuItem ACSH mAcosh
-        MenuItem ATNH mAtanh
-        MenuItem * *
-      ]
     ]
     MenuItem * *
   ]
