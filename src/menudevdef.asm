@@ -221,30 +221,30 @@ mDeltaPercentId equ 23
     .db 0 ; numStrips
     .db 0 ; stripBeginId
     .dw mDeltaPercentHandler ; handler (to be implemented)
-mBlank024:
-mBlank024Id equ 24
-    .db mBlank024Id ; id
+mLcm:
+mLcmId equ 24
+    .db mLcmId ; id
     .db mNumId ; parentId
-    .db mNullNameId ; nameId
+    .db mLcmNameId ; nameId
     .db 0 ; numStrips
     .db 0 ; stripBeginId
-    .dw mNullHandler ; handler (predefined)
-mBlank025:
-mBlank025Id equ 25
-    .db mBlank025Id ; id
+    .dw mLcmHandler ; handler (to be implemented)
+mGcd:
+mGcdId equ 25
+    .db mGcdId ; id
     .db mNumId ; parentId
-    .db mNullNameId ; nameId
+    .db mGcdNameId ; nameId
     .db 0 ; numStrips
     .db 0 ; stripBeginId
-    .dw mNullHandler ; handler (predefined)
-mBlank026:
-mBlank026Id equ 26
-    .db mBlank026Id ; id
+    .dw mGcdHandler ; handler (to be implemented)
+mPrime:
+mPrimeId equ 26
+    .db mPrimeId ; id
     .db mNumId ; parentId
-    .db mNullNameId ; nameId
+    .db mPrimeNameId ; nameId
     .db 0 ; numStrips
     .db 0 ; stripBeginId
-    .dw mNullHandler ; handler (predefined)
+    .dw mPrimeHandler ; handler (to be implemented)
 ; MenuGroup NUM: children: strip 1
 mAbs:
 mAbsId equ 27
@@ -863,117 +863,123 @@ mPercentNameId equ 16
     .dw mPercentName
 mDeltaPercentNameId equ 17
     .dw mDeltaPercentName
-mAbsNameId equ 18
+mLcmNameId equ 18
+    .dw mLcmName
+mGcdNameId equ 19
+    .dw mGcdName
+mPrimeNameId equ 20
+    .dw mPrimeName
+mAbsNameId equ 21
     .dw mAbsName
-mSignNameId equ 19
+mSignNameId equ 22
     .dw mSignName
-mModNameId equ 20
+mModNameId equ 23
     .dw mModName
-mMinNameId equ 21
+mMinNameId equ 24
     .dw mMinName
-mMaxNameId equ 22
+mMaxNameId equ 25
     .dw mMaxName
-mIntPartNameId equ 23
+mIntPartNameId equ 26
     .dw mIntPartName
-mFracPartNameId equ 24
+mFracPartNameId equ 27
     .dw mFracPartName
-mFloorNameId equ 25
+mFloorNameId equ 28
     .dw mFloorName
-mCeilNameId equ 26
+mCeilNameId equ 29
     .dw mCeilName
-mNearNameId equ 27
+mNearNameId equ 30
     .dw mNearName
-mCombNameId equ 28
+mCombNameId equ 31
     .dw mCombName
-mPermNameId equ 29
+mPermNameId equ 32
     .dw mPermName
-mFactorialNameId equ 30
+mFactorialNameId equ 33
     .dw mFactorialName
-mRandomNameId equ 31
+mRandomNameId equ 34
     .dw mRandomName
-mRandomSeedNameId equ 32
+mRandomSeedNameId equ 35
     .dw mRandomSeedName
-mRToDNameId equ 33
+mRToDNameId equ 36
     .dw mRToDName
-mDToRNameId equ 34
+mDToRNameId equ 37
     .dw mDToRName
-mPToRNameId equ 35
+mPToRNameId equ 38
     .dw mPToRName
-mRToPNameId equ 36
+mRToPNameId equ 39
     .dw mRToPName
-mHmsToHrNameId equ 37
+mHmsToHrNameId equ 40
     .dw mHmsToHrName
-mHrToHmsNameId equ 38
+mHrToHmsNameId equ 41
     .dw mHrToHmsName
-mFixNameId equ 39
+mFixNameId equ 42
     .dw mFixName
-mSciNameId equ 40
+mSciNameId equ 43
     .dw mSciName
-mEngNameId equ 41
+mEngNameId equ 44
     .dw mEngName
-mRadNameId equ 42
+mRadNameId equ 45
     .dw mRadName
-mDegNameId equ 43
+mDegNameId equ 46
     .dw mDegName
-mSinhNameId equ 44
+mSinhNameId equ 47
     .dw mSinhName
-mCoshNameId equ 45
+mCoshNameId equ 48
     .dw mCoshName
-mTanhNameId equ 46
+mTanhNameId equ 49
     .dw mTanhName
-mAsinhNameId equ 47
+mAsinhNameId equ 50
     .dw mAsinhName
-mAcoshNameId equ 48
+mAcoshNameId equ 51
     .dw mAcoshName
-mAtanhNameId equ 49
+mAtanhNameId equ 52
     .dw mAtanhName
-mFToCNameId equ 50
+mFToCNameId equ 53
     .dw mFToCName
-mCToFNameId equ 51
+mCToFNameId equ 54
     .dw mCToFName
-mInhgToHpaNameId equ 52
+mInhgToHpaNameId equ 55
     .dw mInhgToHpaName
-mHpaToInhgNameId equ 53
+mHpaToInhgNameId equ 56
     .dw mHpaToInhgName
-mMiToKmNameId equ 54
+mMiToKmNameId equ 57
     .dw mMiToKmName
-mKmToMiNameId equ 55
+mKmToMiNameId equ 58
     .dw mKmToMiName
-mFtToMNameId equ 56
+mFtToMNameId equ 59
     .dw mFtToMName
-mMToFtNameId equ 57
+mMToFtNameId equ 60
     .dw mMToFtName
-mInToCmNameId equ 58
+mInToCmNameId equ 61
     .dw mInToCmName
-mCmToInNameId equ 59
+mCmToInNameId equ 62
     .dw mCmToInName
-mMilToMicronNameId equ 60
+mMilToMicronNameId equ 63
     .dw mMilToMicronName
-mMicronToMilNameId equ 61
+mMicronToMilNameId equ 64
     .dw mMicronToMilName
-mLbsToKgNameId equ 62
+mLbsToKgNameId equ 65
     .dw mLbsToKgName
-mKgToLbsNameId equ 63
+mKgToLbsNameId equ 66
     .dw mKgToLbsName
-mOzToGNameId equ 64
+mOzToGNameId equ 67
     .dw mOzToGName
-mGToOzNameId equ 65
+mGToOzNameId equ 68
     .dw mGToOzName
-mGalToLNameId equ 66
+mGalToLNameId equ 69
     .dw mGalToLName
-mLToGalNameId equ 67
+mLToGalNameId equ 70
     .dw mLToGalName
-mFlozToMlNameId equ 68
+mFlozToMlNameId equ 71
     .dw mFlozToMlName
-mMlToFlozNameId equ 69
+mMlToFlozNameId equ 72
     .dw mMlToFlozName
-mCalToKjNameId equ 70
+mCalToKjNameId equ 73
     .dw mCalToKjName
-mKjToCalNameId equ 71
+mKjToCalNameId equ 74
     .dw mKjToCalName
-mHpToKwNameId equ 72
+mHpToKwNameId equ 75
     .dw mHpToKwName
-mKwToHpNameId equ 73
+mKwToHpNameId equ 76
     .dw mKwToHpName
 
 ; Table of names as NUL terminated C strings.
@@ -1013,6 +1019,12 @@ mPercentName:
     .db Spercent, 0
 mDeltaPercentName:
     .db ScapDelta, Spercent, 0
+mLcmName:
+    .db "LCM", 0
+mGcdName:
+    .db "GCD", 0
+mPrimeName:
+    .db "PRIM", 0
 mAbsName:
     .db "ABS", 0
 mSignName:

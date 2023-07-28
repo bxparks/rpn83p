@@ -92,39 +92,8 @@ msgHelpPage2:
     .db 0
 
 ;-----------------------------------------------------------------------------
-; Children nodes of NUM menu.
+; Children nodes of MATH menu.
 ;-----------------------------------------------------------------------------
-
-; mPercentHandler(Y, X) -> (Y, Y*(X/100))
-; Description: Calculate the X percent of Y.
-mPercentHandler:
-    call closeInputBuf
-    call rclX
-    call op2Set100
-    bcall(_FPDiv)
-    bcall(_OP1ToOP2)
-    call rclY
-    bcall(_FPMult)
-    call replaceX
-    ret
-
-; mDeltaPercentHandler(Y, X) -> (Y, 100*(X-Y)/Y)
-; Description: Calculate the change from Y to X as a percentage of Y. The
-; resulting percentage can be given to the '%' menu key to get the delta
-; change, then the '+' command will retrieve the original X.
-mDeltaPercentHandler:
-    call closeInputBuf
-    call rclY
-    bcall(_OP1ToOP2) ; OP2 = Y
-    bcall(_PushRealO1) ; FPS = Y
-    call rclX ; OP1 = X
-    bcall(_FPSub) ; OP1 = X - Y
-    bcall(_PopRealO2) ; OP2 = Y
-    bcall(_FPDiv) ; OP1 = (X-Y)/Y
-    call op2Set100
-    bcall(_FPMult) ; OP1 = 100*(X-Y)/Y
-    call replaceX
-    ret
 
 ; mCubeHandler(X) -> X^3
 ; Description: Calculate X^3.
@@ -145,6 +114,30 @@ mCubeRootHandler:
     bcall(_OP1Set3) ; OP1=3
     bcall(_XRootY) ; OP2^OP1
     call replaceX
+    ret
+
+; mAtan2Handler(Y, X) -> atan2(Y + Xi)
+;
+; Description: Calculate the angle of the (Y, X) number in complex plane.
+; Use bcall(_RToP) instead of bcall(_ATan2) because ATan2 does not seem produce
+; the correct results. There must be something wrong with the documentation.
+; (It turns out that the documentation does not describe the necessary values
+; of the D register which must be set before calling this. Normally D should be
+; set to 0. See https://wikiti.brandonw.net/index.php?title=83Plus:BCALLs:40D8
+; for more details. Although that page refers to ATan2Rad(), I suspect a
+; similar thing is happening for ATan2().)
+;
+; The real part (i.e. x-axis) is assumed to be entered first, then the
+; imaginary part (i.e. y-axis). They becomes stored in the RPN stack variables
+; with X and Y flipped, which is bit confusing.
+mAtan2Handler:
+    call closeInputBuf
+    call rclX ; imaginary
+    bcall(_OP1ToOP2)
+    call rclY ; OP1=Y (real), OP2=X (imaginary)
+    bcall(_RToP) ; complex to polar
+    bcall(_OP2ToOP1) ; OP2 contains the angle with range of (-pi, pi]
+    call replaceXY
     ret
 
 ;-----------------------------------------------------------------------------
@@ -185,29 +178,45 @@ mLogBaseHandler:
     call replaceXY
     ret
 
-; mAtan2Handler(Y, X) -> atan2(Y + Xi)
-;
-; Description: Calculate the angle of the (Y, X) number in complex plane.
-; Use bcall(_RToP) instead of bcall(_ATan2) because ATan2 does not seem produce
-; the correct results. There must be something wrong with the documentation.
-; (It turns out that the documentation does not describe the necessary values
-; of the D register which must be set before calling this. Normally D should be
-; set to 0. See https://wikiti.brandonw.net/index.php?title=83Plus:BCALLs:40D8
-; for more details. Although that page refers to ATan2Rad(), I suspect a
-; similar thing is happening for ATan2().)
-;
-; The real part (i.e. x-axis) is assumed to be entered first, then the
-; imaginary part (i.e. y-axis). They becomes stored in the RPN stack variables
-; with X and Y flipped, which is bit confusing.
-mAtan2Handler:
+;-----------------------------------------------------------------------------
+; Children nodes of NUM menu.
+;-----------------------------------------------------------------------------
+
+; mPercentHandler(Y, X) -> (Y, Y*(X/100))
+; Description: Calculate the X percent of Y.
+mPercentHandler:
     call closeInputBuf
-    call rclX ; imaginary
+    call rclX
+    call op2Set100
+    bcall(_FPDiv)
     bcall(_OP1ToOP2)
-    call rclY ; OP1=Y (real), OP2=X (imaginary)
-    bcall(_RToP) ; complex to polar
-    bcall(_OP2ToOP1) ; OP2 contains the angle with range of (-pi, pi]
-    call replaceXY
+    call rclY
+    bcall(_FPMult)
+    call replaceX
     ret
+
+; mDeltaPercentHandler(Y, X) -> (Y, 100*(X-Y)/Y)
+; Description: Calculate the change from Y to X as a percentage of Y. The
+; resulting percentage can be given to the '%' menu key to get the delta
+; change, then the '+' command will retrieve the original X.
+mDeltaPercentHandler:
+    call closeInputBuf
+    call rclY
+    bcall(_OP1ToOP2) ; OP2 = Y
+    bcall(_PushRealO1) ; FPS = Y
+    call rclX ; OP1 = X
+    bcall(_FPSub) ; OP1 = X - Y
+    bcall(_PopRealO2) ; OP2 = Y
+    bcall(_FPDiv) ; OP1 = (X-Y)/Y
+    call op2Set100
+    bcall(_FPMult) ; OP1 = 100*(X-Y)/Y
+    call replaceX
+    ret
+
+mLcmHandler:
+mGcdHandler:
+mPrimeHandler:
+    jp mNotYetHandler
 
 ;-----------------------------------------------------------------------------
 
