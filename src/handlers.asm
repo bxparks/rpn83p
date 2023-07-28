@@ -883,9 +883,13 @@ handleKeyATan:
     ret
 
 ;-----------------------------------------------------------------------------
-; Buttons bound to menu items.
+; Buttons bound to menu groups.
 ;-----------------------------------------------------------------------------
 
 handleKeyMath:
     ld a, mRootId ; MATH becomes the menu HOME button
+    jp mGroupHandler
+
+handleKeyMode:
+    ld a, mModeId ; MODE triggers the MODE menu.
     jp mGroupHandler

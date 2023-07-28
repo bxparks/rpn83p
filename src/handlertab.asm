@@ -1,7 +1,13 @@
 ; List of GetKey() codes and their jump table.
-keyCodeHandlerTableSize equ 51
+; TODO: As this table gets longer, consider sorting this table so that a binary
+; search on it instead of a linear search.
+
+keyCodeHandlerTableSize equ 52
 kOnExit equ 0 ; ON key generates 00 as the key code
+
 keyCodeHandlerTable:
+;-----------------------------------------------------------------------------
+
     ; number entry
     .db k0
     .dw handleKey0
@@ -41,6 +47,8 @@ keyCodeHandlerTable:
     .db kEnter
     .dw handleKeyEnter
 
+;-----------------------------------------------------------------------------
+
     ; menu navigation
     .db kUp
     .dw handleKeyUp
@@ -78,6 +86,8 @@ keyCodeHandlerTable:
     .dw handleKeyMenu4
     .db keyMenu5
     .dw handleKeyMenu5
+
+;-----------------------------------------------------------------------------
 
     ; arithmetic
     .db kAdd
@@ -142,6 +152,12 @@ keyCodeHandlerTable:
     .db kATan ; TAN^{-1}
     .dw handleKeyATan
 
-    ; menu group buttons, e.g. MATH
+;-----------------------------------------------------------------------------
+
+    ; MATH button performs Menu HOME functionality.
     .db kMath
     .dw handleKeyMath
+
+    ; MODE button bound to MODE menu.
+    .db kMode
+    .dw handleKeyMode
