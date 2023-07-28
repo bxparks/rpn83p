@@ -22,6 +22,88 @@ getString:
 
 ;-----------------------------------------------------------------------------
 
+; Description: Copy the C string in HL to the Pascal string in DE. The C string
+; is longer than the destination Pascal string buffer, it is truncated to the
+; max length given by C.
+; Input:
+;   HL: source C string
+;   DE: destination Pascal string buffer (with leading size byte)
+;   C: max size of Pascal string buffer (assumed to be > 0)
+; Output:
+;   - buffer at DE updated
+;   - A: actual size of Pascal string
+; Destroys: A, B, HL
+; Preserves: C, DE
+copyCToPascal:
+    push de ; save pointer to the Pascal string
+    ld b, c ; B = max size
+    inc de
+copyCToPascalLoop:
+    ld a, (hl)
+    or a ; check for terminating NUL character in C string
+    jr z, copyCToPascalLoopEnd
+    ld (de), a
+    inc hl
+    inc de
+    djnz copyCToPascalLoop
+copyCToPascalLoopEnd:
+    ld a, c ; A = max size
+    sub a, b ; A = actual size of Pascal string
+    pop de ; DE = pointer to Pascal string size byte
+    ld (de), a ; save actual Pascal string size
+    ret
+
+;-----------------------------------------------------------------------------
+; Description: Print char A the multiple times.
+; Input:
+;   - A: char to print
+;   - B: number of times
+; Destroys: A, BC, DE, HL
+printARepeatB:
+    ld c, a ; C = char to print (saved)
+    ; Check for B == 0
+    ld a, b
+    or a
+    ret z
+printARepeatBLoop:
+    ld a, c
+    bcall(_VPutMap) ; destroys A, DE, HL, but not BC
+    djnz printARepeatBLoop
+    ret
+
+;-----------------------------------------------------------------------------
+; Description: Convenience wrapper around VPutSN() that works for zero-length
+; strings. Also provides an API similar to PutPS() which takes a pointer to a
+; Pascal string directly, instead of providing the length and (char*)
+; separately.
+; Input: HL: Pascal-string
+; Output; Carry=1 if characters overflowed screen
+; Destroys: A, B, HL
+vPutPS:
+    ld a, (hl)
+    or a
+    ret z
+    ld b, a ; B = num chars
+    inc hl ; HL = pointer to start of chars
+    bcall(_VPutSN)
+    ret
+
+;-----------------------------------------------------------------------------
+; Description: Convenience rapper around SStringLength() that works for
+; zero-length strings.
+; Input: HL: Pascal string, in RAM
+; Output: A = B = number of pixels
+; Destroys: all but HL
+sStringWidth:
+    ld a, (hl)
+    or a
+    ld b, a
+    ret z
+    bcall(_SStringLength) ; A, B = stringWidth; HL preserved
+    ret
+
+;-----------------------------------------------------------------------------
+
 ; Description: Set OP2 to 10. The TI-OS Provides OP2Set60() but not
 ; OP2Set10().
 ; Destroys: all, HL

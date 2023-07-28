@@ -67,6 +67,27 @@ debugString:
     pop af
     ret
 
+; Description: Print the Pascal string at HL.
+; Input: HL
+; Output:
+; Destroys: none
+debugPString:
+    push af
+    push bc
+    push de
+    push hl
+    ld hl, debugCurCol*$100+debugCurRow ; $(curCol)(curRow)
+    ld (CurRow), hl
+    pop hl
+    push hl
+    bcall(_PutPS)
+    bcall(_EraseEOL)
+    pop hl
+    pop de
+    pop bc
+    pop af
+    ret
+
 ;------------------------------------------------------------------------------
 
 ; Description: Clear the debug line.
@@ -127,11 +148,13 @@ debugUnsignedA:
     push bc
     push de
     push hl
+
     ld hl, debugCurCol*$100+debugCurRow ; $(curCol)(curRow)
     ld (CurRow), hl
     ld l, a
     ld h, 0
     bcall(_DispHL)
+
     pop hl
     pop de
     pop bc

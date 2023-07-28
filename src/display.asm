@@ -3,12 +3,12 @@
 ;
 ;   0: Status line: (up|down) (deg|rad) (fix|sci|eng) # small font
 ;   1: Debug line
-;   2: Error code line:
-;   3: T: tttt
+;   2: Error code line: # small font
+;   3: T: tttt # label small font, number large font
 ;   4: Z: zzzz
 ;   5: Y: yyyy
 ;   6: X: xxxx
-;   7: [menu1][menu2][menu3][menu4][menu5] (small font)
+;   7: [menu1][menu2][menu3][menu4][menu5] # small font
 ;-----------------------------------------------------------------------------
 
 ; Menu pixel columns:
@@ -25,13 +25,13 @@
 ;   - menuPenColEnd - 96
 menuCurRow      equ 7 ; row 7
 menuPenRow      equ menuCurRow*8+1 ; row 7, in px, +1 for small font
-menuPenWidth    equ 18
-menuPenColStart equ 0
-menuPenCol0     equ 1
-menuPenCol1     equ 20
-menuPenCol2     equ 39
-menuPenCol3     equ 58
-menuPenCol4     equ 77
+menuPenWidth    equ 18 ; excludes 1 px space between menu items
+menuPenColStart equ 0 ; left edge of menu line
+menuPenCol0     equ 1 ; left edge of menu0
+menuPenCol1     equ 20 ; left edge of menu1
+menuPenCol2     equ 39 ; left edge of menu2
+menuPenCol3     equ 58 ; left edge of menu3
+menuPenCol4     equ 77 ; left edge of menu4
 menuPenColEnd   equ 96
 
 ;-----------------------------------------------------------------------------
@@ -428,81 +428,106 @@ displayMenu:
     ret z
 
     call getCurrentMenuStripBeginId ; A=stripBeginId
-
     ld b, a
-    call getMenuName
+
+    ; TODO: convert the next 5 into a loop to save memory
+    ld a, b
+    call getMenuName ; HL = menu name of menuId in A
     ld a, menuPenCol0
+    ld c, 0
     call printMenuAtA
     inc b
 
     ld a, b
-    call getMenuName
+    call getMenuName ; HL = menu name of menuId in A
     ld a, menuPenCol1
+    ld c, 1
     call printMenuAtA
     inc b
 
     ld a, b
-    call getMenuName
+    call getMenuName ; HL = menu name of menuId in A
     ld a, menuPenCol2
+    ld c, 2
     call printMenuAtA
     inc b
 
     ld a, b
-    call getMenuName
+    call getMenuName ; HL = menu name of menuId in A
     ld a, menuPenCol3
+    ld c, 3
     call printMenuAtA
     inc b
 
     ld a, b
-    call getMenuName
+    call getMenuName ; HL = menu name of menuId in A
     ld a, menuPenCol4
+    ld c, 4
     call printMenuAtA
 
     ret
 
 ;-----------------------------------------------------------------------------
 
-; Function: Print the menu C string in HL to the menuPenCol in A, using small
-; and inverted font. Actually prints at (A+1) to show a 1px left border.
+; Description: Print the menu C-string in HL to the menuPenCol in A, using the
+; small and inverted font, centering the menu name in the middle of the 18 px
+; width of a menu box.
 ; Inputs:
 ;   A: penCol
+;   B: menuId (ignored here)
+;   C: menuIndex [0-4] (for debugging)
 ;   HL: C string
-; Destroys: DE, HL
+; Destroys: A, DE, HL
 ; Preserves: BC
 printMenuAtA:
-    push bc
-    ld c, a ; C=A=menuPenCol (saved)
+    push bc ; save B = menuId; C = menuIndex
 
     ; Set (PenCol,PenRow), preserving HL
     ld (PenCol), a
     ld a, menuPenRow
     ld (PenRow), a
 
-    ; Print the menu string, inverted.
-    set textInverse, (iy + textFlags)
-    ld a, Sspace
-    bcall(_VPutMap)
-    bcall(_VPutS)
+    ; Predict the width of menu name.
+    ld de, menuName
+    ld c, menuNameBufMax
+    call copyCToPascal ; C, DE are preserved
+    ex de, hl ; HL = menuName
+    call sStringWidth ; A = B = string width
 
-    ; Calculate remaining space on the right
-    ld a, (PenCol)
-    sub c ; C=PenCol-startPenCol
-    ld c, a
+    ; Calculate the starting pixel to center the string
     ld a, menuPenWidth
-    sub c ; C = pixelsRemaining = menuPenWidth - pixelsWritten
-    jr z, printMenuAtAExit ; no space left
-    jr c, printMenuAtAExit ; wrote past the box; shouldn't happen but be safe
+    sub b ; A = menuWidth - stringWidth
+    jr nc, printMenuAtAFitsInside
+printMenuAtATooWide:
+    xor a ; if string too wide (shouldn't happen), set to 0
+printMenuAtAFitsInside:
+    rra ; CF=0, divide by 2 for centering; A = padWidth
 
-    ; Overwrite trailing space.
-    ld b, a
-printMenuAtAOverwriteLoop:
+    ld c, a ; C = A = leftPadWidth
+    push bc ; B = stringWidth; C = leftPadWidth
+    set textInverse, (iy + textFlags)
+printMenuAtALeftPad:
+    ld b, a ; B = leftPadWidth
     ld a, Sspace
-    bcall(_VPutMap)
-    djnz printMenuAtAOverwriteLoop
-
+    call printARepeatB
+printMenuAtAPrintName:
+    ; Print the menu name
+    ld hl, menuName
+    call vPutPS
+printMenuAtARightPad:
+    pop bc ; B = stringWidth; C = leftPadWidth
+    ld a, menuPenWidth
+    sub c ; A = menuPenWidth - leftPadWidth
+    sub b ; A = rightPadWidth = menuPenWidth - leftPadWidth - stringWidth
+    jr z, printMenuAtAExit ; no space left
+    jr c, printMenuAtAExit ; overflowed, shouldn't happen but be safe
+    ; actually print the right pad
+    ld b, a ; B = rightPadWidth
+    ld a, Sspace
+    call printARepeatB
 printMenuAtAExit:
     res textInverse, (iy + textFlags)
-    pop bc
+    pop bc ; B = menuId; C = menuIndex
     ret
 
 ; Function: Print blank (all black) at menuPenCol in A.

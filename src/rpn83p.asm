@@ -108,13 +108,20 @@ errorCodeDisplayed equ errorCode + 1 ; displayed error code
 ;
 ;   struct inputBuf {
 ;       uint8_t size;
-;       char buf[inputBufMax];
+;       char buf[14];
 ;   };
 inputBuf equ errorCodeDisplayed + 1
 inputBufSize equ inputBuf ; size byte of the pascal string
 inputBufBuf equ inputBuf + 1
 inputBufMax equ 14 ; maximum size of buffer, not including appended cursor
 inputBufSizeOf equ inputBufMax + 1
+
+; When the inputBuf is used as a command argBuf, the maximum number of
+; characters in the buffer is 2.
+argBuf equ inputBuf
+argBufSize equ inputBufSize
+argBufMax equ inputBufMax
+argBufSizeMax equ 2
 
 ; Location (offset index) of the one past the 'E' symbol if it exists. Zero
 ; indicates that 'E' does NOT exist.
@@ -132,7 +139,7 @@ inputBufEELenMax equ 2
 ;
 ;   struct parseBuf {
 ;       uint8_t size; // number of digits in mantissa, 0 for 0.0
-;       char man[parseBufMax];  // mantissa, implicit starting decimal point
+;       char man[14];  // mantissa, implicit starting decimal point
 ;   }
 ;
 ; A TI-OS floating number can have a mantissa of a maximum 14 digits.
@@ -164,16 +171,21 @@ floatBufSizeOf equ 9
 menuGroupId equ floatBuf + floatBufSizeOf
 menuStripIndex equ menuGroupId + 1
 
-; When the inputBuf is used as a command argBuf, the maximum number of
-; characters in the buffer is 2.
-argBuf equ inputBuf
-argBufSize equ inputBufSize
-argBufMax equ inputBufMax
-argBufSizeMax equ 2
+; Menu name, copied here as a Pascal string.
+;
+;   struct menuName {
+;       uint8_t size;
+;       char buf[5];
+;   }
+menuName equ menuStripIndex + 1
+menuNameSize equ menuName
+menuNameBuf equ menuName + 1
+menuNameBufMax equ 5
+menuNameSizeOf equ 6
 
 ; Pointer to a C string that prompts before the argBuf.
 ; void *argPrompt;
-argPrompt equ menuStripIndex + 1
+argPrompt equ menuName + menuNameSizeOf
 argPromptSizeOf equ 2
 
 ; Pointer to the command handler waiting for the arg.
