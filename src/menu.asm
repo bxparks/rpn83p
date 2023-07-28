@@ -15,9 +15,8 @@
 ;
 ;-----------------------------------------------------------------------------
 
-; initMenu() -> None
-;
 ; Description: Set initial values for (menuGroupId) and (menuStripIndex).
+; Input: none
 ; Output:
 ;   (menuGroupId) = mRootId
 ;   (menuStripIndex) = 0
@@ -32,12 +31,12 @@ initMenu:
     set rpnFlagsMenuDirty, (iy + rpnFlags)
     ret
 
-; getCurrentMenuStripBeginId(menuGroupId, menuStripIndex) -> A
-;
 ; Description: Return the node id of the first item in the menu strip at
 ; `menuStripIndex` of the current menu node `menuGroupId`. The next 4 node
 ; ids in sequential order define the other 4 menu buttons.
-; Input: (menuGroupId), (menuStripIndex)
+; Input:
+;   - (menuGroupId)
+;   - (menuStripIndex)
 ; Output: A: strip begin id
 ; Destroys: A, B, DE, HL
 getCurrentMenuStripBeginId:
@@ -47,8 +46,6 @@ getCurrentMenuStripBeginId:
     ld b, (hl)
     ; [[fallthrough]]
 
-; getMenuBeginNode(A, B) -> A
-;
 ; Description: Return the first menu id for menuGroupId A at strip index B.
 ; Input:
 ;   A: menu id
@@ -74,8 +71,6 @@ getMenuStripBeginId:
     add a, e
     ret
 
-; getMenuNode(A) -> HL
-;
 ; Description: Return the address of the menu node at id A.
 ; Input: A: menu node id
 ; Output: HL: address of node
@@ -97,8 +92,6 @@ getMenuNode:
     add hl, de
     ret
 
-; getMenuName(A) -> HL
-;
 ; Description: Return the pointer to the name string of the menu node at id A.
 ; Input: A: menu node id
 ; Output: HL: address of the C-string
