@@ -889,37 +889,3 @@ handleKeyATan:
 handleKeyMath:
     ld a, mRootId ; MATH becomes the menu HOME button
     jp mGroupHandler
-
-;-----------------------------------------------------------------------------
-; Predefined Menu handlers.
-;-----------------------------------------------------------------------------
-
-; Description: Null handler. Does nothing.
-; Input:
-;   A: nodeId of the select menu item (ignored)
-;   HL: pointer to MenuNode that was activated (ignored)
-mNullHandler: ; do nothing
-    ret
-
-; Description: Null handler. Does nothing.
-; Input:
-;   A: nodeId of the select menu item (ignored)
-;   HL: pointer to MenuNode that was activated (ignored)
-mNotYetHandler:
-    ld a, errorCodeNotYet
-    jp setErrorCode
-
-; Description: General handler for menu nodes of type "MenuGroup". Selecting
-; this should cause the menuGroupId to be set to this item, and the
-; menuStripIndex to be set to 0
-; Input:
-;   A: nodeId of the select menu item
-;   HL: pointer to MenuNode that was activated (ignored)
-; Output: (menuGroupId) and (menuStripIndex) updated
-; Destroys: A
-mGroupHandler:
-    ld (menuGroupId), a
-    xor a
-    ld (menuStripIndex), a
-    set rpnFlagsMenuDirty, (iy + rpnFlags)
-    ret
