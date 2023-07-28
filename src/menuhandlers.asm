@@ -83,11 +83,11 @@ msgHelpPage2:
     .db "RPN83P v0.0 ", "(2023", Shyphen, "07", Shyphen, "27)", Senter
     .db Senter
     .db "Backspace: DEL", Senter
-    .db "Menu Prev: Up Arrow", Senter
-    .db "Menu Next: Down Arrow", Senter
-    .db "Menu Back: Left Arrow or ON", Senter
+    .db "Menu Home: MATH", Senter
+    .db "Menu Prev: Up", Senter
+    .db "Menu Next: Down", Senter
+    .db "Menu Back: Left or ON", Senter
     .db "Quit App: 2ND QUIT", Senter
-    .db Senter
     .db SlBrack, "2/2", SrBrack, " Any key to return.", Senter
     .db 0
 
