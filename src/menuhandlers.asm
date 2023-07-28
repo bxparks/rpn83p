@@ -52,7 +52,10 @@ mHelpHandlerCheckExit:
     cp kMath ; A == MATH
     jr z, mHelpHandlerExit
     cp kLeft ; A == LEFT
-    jr nz, mHelpHandlerNextPage ; everything else to the next page
+    jr z, mHelpHandlerPrevPageMaybe
+    cp kUp ; A == UP
+    jr z, mHelpHandlerPrevPageMaybe
+    jr mHelpHandlerNextPage ; everything else to the next page
 mHelpHandlerPrevPageMaybe:
     ; go to prev page if not already at page 0
     ld a, b
@@ -61,6 +64,7 @@ mHelpHandlerPrevPageMaybe:
 mHelpHandlerPrevPage:
     dec b
     jr mHelpHandlerLoop
+
 mHelpHandlerNextPage:
     ; any other key goes to the next the page
     inc b
