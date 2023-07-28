@@ -42,7 +42,11 @@ mHelpHandlerLoop:
     ld a, b ; A = pageNumber
     call displayPage
 mHelpHandlerGetKey:
-    bcall(_GetKey) ; pause, destroys: A, DE, HL
+    ; The SDK docs say that GetKey() destroys only A, DE, HL. But it looks like
+    ; BC also gets destroyed if 2ND QUIT is pressed.
+    push bc
+    bcall(_GetKey) ; pause for key
+    pop bc
     res onInterrupt, (IY+onFlags) ; reset flag set by ON button
 mHelpHandlerCheckExit:
     or a ; A == ON
