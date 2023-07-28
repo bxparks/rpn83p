@@ -84,11 +84,11 @@ displayStatusMenu:
     ; calculation a little shorter and easier.
 
     ; Determine if multiple menu strips exists.
-    ld hl, menuCurrentId
-    ld a, (hl) ; currentId
+    ld hl, menuGroupId
+    ld a, (hl) ; A=menuGroupId
     inc hl
-    ld b, (hl) ; B=stripIndex
-    call getMenuNode
+    ld b, (hl) ; B=menuStripIndex
+    call getMenuNode ; HL = pointer to MenuNode
     inc hl
     inc hl
     inc hl

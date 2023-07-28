@@ -446,26 +446,26 @@ closeInputBufContinue:
 ; Output: (menuStripIndex) decremented, or wrapped around
 ; Destroys: all
 handleKeyUp:
-    ld hl, menuCurrentId
-    ld a, (hl)
+    ld hl, menuGroupId
+    ld a, (hl) ; A = menuGroupId
     inc hl
-    ld b, (hl) ; menuStripIndex
-    call getMenuNode
+    ld b, (hl) ; B = menuStripIndex
+    call getMenuNode ; HL = pointer to MenuNode
     inc hl
     inc hl
     inc hl
-    ld c, (hl) ; numStrips
+    ld c, (hl) ; C = numStrips
 
     ; Check for 1. TODO: Check for 0, but that should never happen.
     ld a, c
     cp 1
     ret z
 
-    ; --(menuStripIndex) mod numStrips
+    ; (menuStripIndex-1) mod numStrips
     ld a, (menuStripIndex)
     or a
     jr nz, handleKeyUpContinue
-    ld a, c
+    ld a, c ; A = numStrips
 handleKeyUpContinue:
     dec a
     ld (menuStripIndex), a
@@ -480,7 +480,7 @@ handleKeyUpContinue:
 ; Output: (menuStripIndex) incremented mod numStrips
 ; Destroys: all
 handleKeyDown:
-    ld hl, menuCurrentId
+    ld hl, menuGroupId
     ld a, (hl)
     inc hl
     ld b, (hl) ; menuStripIndex
@@ -495,7 +495,7 @@ handleKeyDown:
     cp 1
     ret z
 
-    ; ++(menuStripIndex) mod numStrips
+    ; (menuStripIndex+1) mod numStrips
     ld a, (menuStripIndex)
     inc a
     cp c
@@ -513,13 +513,13 @@ handleKeyDownContinue:
 ; already at the rootMenu, and the stripIndex is not 0, then reset the
 ; stripIndex to 0 so that we return to the default, top-level view of the menu
 ; hierarchy.
-; Input: (menuCurrentId)
-; Output: (menuCurrentId) at parentId, (menuStripIndex) at strip of the current
+; Input: (menuGroupId)
+; Output: (menuGroupId) at parentId, (menuStripIndex) at strip of the current
 ; menu group
 ; Destroys: all
 handleKeyMenuBack:
-    ld hl, menuCurrentId
-    ld a, (hl) ; A = menuCurrentId
+    ld hl, menuGroupId
+    ld a, (hl) ; A = menuGroupId
     ; Check if already at rootGroup
     cp mRootId
     jr nz, handleKeyMenuBackToParent
@@ -533,12 +533,12 @@ handleKeyMenuBack:
     jr handleKeyMenuBackStripSave
 
 handleKeyMenuBackToParent:
-    ; Set menuCurrentId = child.parentId
-    ld c, a ; C=menuCurrentId=childId (saved)
+    ; Set menuGroupId = child.parentId
+    ld c, a ; C=menuGroupId=childId (saved)
     call getMenuNode ; get current (child) node
     inc hl
     ld a, (hl) ; A=parentId
-    ld (menuCurrentId), a
+    ld (menuGroupId), a
 
     ; Get numStrips and stripBeginId of the parent.
     call getMenuNode ; get parentNode
@@ -638,6 +638,7 @@ handleKeyMenu5:
 ;
 ; Description: Dispatch to the handler specified by the menu node at the menu
 ; button indexed by A (0: left most, 4: right most).
+; Input: A: menu button index (0-4)
 ; Destroys: all
 handleKeyMenuA:
     ld c, a
@@ -899,15 +900,15 @@ mNotYetHandler:
     jp setErrorCode
 
 ; Description: General handler for menu nodes of type "MenuGroup". Selecting
-; this should cause the menuCurrentId to be set to this item, and the
+; this should cause the menuGroupId to be set to this item, and the
 ; menuStripIndex to be set to 0
 ; Input:
 ;   HL: pointer to MenuNode that was activated
 ;   A: menu button index (0 - 4)
-; Output: (menuCurrentId) and (menuStripIndex) updated
+; Output: (menuGroupId) and (menuStripIndex) updated
 ; Destroys: A
 mGroupHandler:
-    ld (menuCurrentId), a
+    ld (menuGroupId), a
     xor a
     ld (menuStripIndex), a
     set rpnFlagsMenuDirty, (iy + rpnFlags)

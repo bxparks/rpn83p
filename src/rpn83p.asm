@@ -158,11 +158,11 @@ floatBufSizeOf equ 9
 ; Menu variables. The C equivalent is:
 ;
 ;   struct menu {
-;     uint8_t currentId;
+;     uint8_t groupId; // id of the current menu group
 ;     uint8_t stripIndex; // menu strip, groups of 5
 ;   }
-menuCurrentId equ floatBuf + floatBufSizeOf
-menuStripIndex equ menuCurrentId + 1
+menuGroupId equ floatBuf + floatBufSizeOf
+menuStripIndex equ menuGroupId + 1
 
 ; When the inputBuf is used as a command argBuf, the maximum number of
 ; characters in the buffer is 2.

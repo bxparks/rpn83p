@@ -17,13 +17,13 @@
 
 ; initMenu() -> None
 ;
-; Description: Set initial values for (menuCurrentId) and (menuStripIndex).
+; Description: Set initial values for (menuGroupId) and (menuStripIndex).
 ; Output:
-;   (menuCurrentId) = mRootId
+;   (menuGroupId) = mRootId
 ;   (menuStripIndex) = 0
 ; Destroys: A, HL
 initMenu:
-    ld hl, menuCurrentId
+    ld hl, menuGroupId
     ld a, mRootId
     ld (hl), a
     inc hl
@@ -32,16 +32,16 @@ initMenu:
     set rpnFlagsMenuDirty, (iy + rpnFlags)
     ret
 
-; getCurrentMenuStripBeginId(menuCurrentId, menuStripIndex) -> A
+; getCurrentMenuStripBeginId(menuGroupId, menuStripIndex) -> A
 ;
 ; Description: Return the node id of the first item in the menu strip at
-; `menuStripIndex` of the current menu node `menuCurrentId`. The next 4 node
+; `menuStripIndex` of the current menu node `menuGroupId`. The next 4 node
 ; ids in sequential order define the other 4 menu buttons.
-; Input: (menuCurrentId), (menuStripIndex)
+; Input: (menuGroupId), (menuStripIndex)
 ; Output: A: strip begin id
 ; Destroys: A, B, DE, HL
 getCurrentMenuStripBeginId:
-    ld hl, menuCurrentId
+    ld hl, menuGroupId
     ld a, (hl)
     inc hl
     ld b, (hl)
@@ -49,21 +49,22 @@ getCurrentMenuStripBeginId:
 
 ; getMenuBeginNode(A, B) -> A
 ;
-; Description: Return the menu node id for menuCurrentId A, strip index B.
+; Description: Return the first menu id for menuGroupId A at strip index B.
 ; Input:
 ;   A: menu id
 ;   B: strip index
 ; Output: A: strip begin id
 ; Destroys: A, DE, HL
 getMenuStripBeginId:
-    ; HL = menuNode
-    call getMenuNode
+    call getMenuNode ; HL = menuNode
+
     ; A = menNode.stripBeginId
     inc hl
     inc hl
     inc hl
     inc hl
     ld a, (hl)
+
     ; A = A + 5*B
     ld e, a
     ld a, b
