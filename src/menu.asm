@@ -95,11 +95,15 @@ getMenuNode:
 ; Description: Return the pointer to the name string of the menu node at id A.
 ; Input: A: menu node id
 ; Output: HL: address of the C-string
-; Destroys: DE, HL
+; Destroys: A, HL
+; Preserves: DE
 getMenuName:
+    push de
     call getMenuNode
     inc hl
     inc hl
     ld a, (hl) ; nameId
     ld hl, mMenuNameTable
-    jp getString
+    call getString
+    pop de
+    ret

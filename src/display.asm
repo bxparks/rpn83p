@@ -427,44 +427,28 @@ displayMenu:
     bit rpnFlagsMenuDirty, (iy + rpnFlags)
     ret z
 
+    ; get starting menuId
     call getCurrentMenuStripBeginId ; A=stripBeginId
-    ld b, a
-
-    ; TODO: convert the next 5 into a loop to save memory
-    ld a, b
+    ; set up loop over 5 consecutive menu buttons
+    ld d, a ; D = menuId
+    ld e, 0 ; E = menuIndex [0,4]
+    ld c, menuPenCol0 ; C = penCol
+    ld b, 5 ; B = loop 5 times
+displayMenuLoop:
+    ld a, d ; A = menuId
     call getMenuName ; HL = menu name of menuId in A
-    ld a, menuPenCol0
-    ld c, 0
-    call printMenuAtA
-    inc b
 
-    ld a, b
-    call getMenuName ; HL = menu name of menuId in A
-    ld a, menuPenCol1
-    ld c, 1
-    call printMenuAtA
-    inc b
-
-    ld a, b
-    call getMenuName ; HL = menu name of menuId in A
-    ld a, menuPenCol2
-    ld c, 2
-    call printMenuAtA
-    inc b
-
-    ld a, b
-    call getMenuName ; HL = menu name of menuId in A
-    ld a, menuPenCol3
-    ld c, 3
-    call printMenuAtA
-    inc b
-
-    ld a, b
-    call getMenuName ; HL = menu name of menuId in A
-    ld a, menuPenCol4
-    ld c, 4
+    ld a, c ; A = penCol
     call printMenuAtA
 
+    inc d ; D = menuId + 1
+    inc e ; E =  menuIndex + 1
+
+    ld a, c ; A = penCol
+    add a, menuPenWidth + 1 ; A += menuWidth + 1 (1px spacing)
+    ld c, a ; C += menuPenWidth + 1
+
+    djnz displayMenuLoop
     ret
 
 ;-----------------------------------------------------------------------------
@@ -474,13 +458,16 @@ displayMenu:
 ; width of a menu box.
 ; Inputs:
 ;   A: penCol
-;   B: menuId (ignored here)
-;   C: menuIndex [0-4] (for debugging)
+;   B: loop counter (must be preserved)
+;   C: penCol (must be preserved)
+;   D: menuId (ignored but must be preserved, useful for debugging)
+;   E: menuIndex [0-4] (ignored but must be preserved, useful for debugging)
 ;   HL: C string
-; Destroys: A, DE, HL
-; Preserves: BC
+; Destroys: A, HL
+; Preserves: BC, DE
 printMenuAtA:
-    push bc ; save B = menuId; C = menuIndex
+    push bc ; B = loop counter
+    push de ; D = menuId; E = menuIndex
 
     ; Set (PenCol,PenRow), preserving HL
     ld (PenCol), a
@@ -496,7 +483,7 @@ printMenuAtA:
 
     ; Calculate the starting pixel to center the string
     ld a, menuPenWidth
-    sub b ; A = menuWidth - stringWidth
+    sub b ; A = menuPenWidth - stringWidth
     jr nc, printMenuAtAFitsInside
 printMenuAtATooWide:
     xor a ; if string too wide (shouldn't happen), set to 0
@@ -525,9 +512,11 @@ printMenuAtARightPad:
     ld b, a ; B = rightPadWidth
     ld a, Sspace
     call printARepeatB
+
 printMenuAtAExit:
     res textInverse, (iy + textFlags)
-    pop bc ; B = menuId; C = menuIndex
+    pop de ; D = menuId; E = menuIndex
+    pop bc ; B = loop counter
     ret
 
 ; Function: Print blank (all black) at menuPenCol in A.
