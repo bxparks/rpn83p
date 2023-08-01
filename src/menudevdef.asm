@@ -230,22 +230,22 @@ mDeltaPercentId equ 23
     .db 0 ; numStrips
     .db 0 ; stripBeginId
     .dw mDeltaPercentHandler ; handler (to be implemented)
-mLcm:
-mLcmId equ 24
-    .db mLcmId ; id
-    .db mNumId ; parentId
-    .db mLcmNameId ; nameId
-    .db 0 ; numStrips
-    .db 0 ; stripBeginId
-    .dw mLcmHandler ; handler (to be implemented)
 mGcd:
-mGcdId equ 25
+mGcdId equ 24
     .db mGcdId ; id
     .db mNumId ; parentId
     .db mGcdNameId ; nameId
     .db 0 ; numStrips
     .db 0 ; stripBeginId
     .dw mGcdHandler ; handler (to be implemented)
+mLcm:
+mLcmId equ 25
+    .db mLcmId ; id
+    .db mNumId ; parentId
+    .db mLcmNameId ; nameId
+    .db 0 ; numStrips
+    .db 0 ; stripBeginId
+    .dw mLcmHandler ; handler (to be implemented)
 mPrime:
 mPrimeId equ 26
     .db mPrimeId ; id
@@ -872,10 +872,10 @@ mPercentNameId equ 16
     .dw mPercentName
 mDeltaPercentNameId equ 17
     .dw mDeltaPercentName
-mLcmNameId equ 18
-    .dw mLcmName
-mGcdNameId equ 19
+mGcdNameId equ 18
     .dw mGcdName
+mLcmNameId equ 19
+    .dw mLcmName
 mPrimeNameId equ 20
     .dw mPrimeName
 mAbsNameId equ 21
@@ -1028,10 +1028,10 @@ mPercentName:
     .db Spercent, 0
 mDeltaPercentName:
     .db ScapDelta, Spercent, 0
-mLcmName:
-    .db "LCM", 0
 mGcdName:
     .db "GCD", 0
+mLcmName:
+    .db "LCM", 0
 mPrimeName:
     .db "PRIM", 0
 mAbsName:
