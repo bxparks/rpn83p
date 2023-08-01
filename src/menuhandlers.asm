@@ -604,10 +604,8 @@ validatePermComb:
 
 ; Validate OP1 is an integer in the range of [0, 255].
 validatePermCombParam:
-    bcall(_CkOP1FP0)
-    ret z ; ok if OP1==0
-    bcall(_CkPosInt)
-    jr nz, validatePermCombError ; error if OP1 <= 0
+    bcall(_CkPosInt) ; if OP1 >= 0: Z=1
+    jr nz, validatePermCombError
     ld hl, 256
     bcall(_SetXXXXOP2) ; OP2=256
     bcall(_CpOP1OP2)
