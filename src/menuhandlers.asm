@@ -329,20 +329,33 @@ mSignHandlerStoX:
     call replaceX
     ret
 
+; Description: Calculate (Y mod X), where Y and X could be floating point
+; numbers. There does not seem to be a built-in function to calculator this, so
+; it is implemented as (Y mod X) = Y - X*floor(Y/X).
+; Destroys: OP1, OP2
 mModHandler:
     call closeInputBuf
-    call rclX
+    call rclX ; OP1 = X
     bcall(_OP1ToOP2) ; OP2 = X
-    bcall(_OP1ToOP4) ; OP4 = X
-    call rclY ; OP1 = Y
-    bcall(_FPDiv) ; OP1 = OP1/OP2 = Y/X
-    bcall(_Intgr) ; OP1 = floor(OP1)
-    bcall(_OP4ToOP2) ; OP2 = X
-    bcall(_FPMult) ; OP1 = floor(Y/X) * X
-    bcall(_OP1ToOP2) ; OP2 = X
-    call rclY ; OP1 = Y
-    bcall(_FPSub) ; OP1 = Y - floor(Y/X) * X
+    call rclY ; ; OP1 = Y
+    call modOp1Op2 ; OP1 = (OP1 mod OP2)
     call replaceXY
+    ret
+
+; Description: Internal helper routine to calculate OP1 = (OP1 mod OP2) = OP1 -
+; OP2 * floor(OP1/OP2). Used by mModHandler and mGcdHandler. There does not
+; seem to be a built-in function to calculator this.
+; Destroys: OP1, OP2
+modOp1Op2:
+    bcall(_PushRealO1) ; FPS = OP1
+    bcall(_PushRealO2) ; FPS = OP2
+    bcall(_FPDiv) ; OP1 = OP1/OP2
+    bcall(_Intgr) ; OP1 = floor(OP1/OP2)
+    bcall(_PopRealO2) ; OP2 = OP2
+    bcall(_FPMult) ; OP1 = floor(OP1/OP2) * OP2
+    bcall(_OP1ToOP2) ; OP2 = floor(OP1/OP2) * OP2
+    bcall(_PopRealO1) ; OP1 = OP1
+    bcall(_FPSub) ; OP1 = OP1 - floor(OP1/OP2) * OP2
     ret
 
 mMinHandler:
