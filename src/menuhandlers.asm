@@ -293,8 +293,78 @@ mDeltaPercentHandler:
     call replaceX
     ret
 
-mLcmHandler:
+; Description: Implement the Euclidean algorithm for the Greatest Common
+; Divisor (GCD) as described in
+; https://en.wikipedia.org/wiki/Euclidean_algorithm:
+;
+; function gcd(a, b)
+;    while b != 0
+;        t := b
+;        b := a mod b
+;        a := t
+;    return a
+;
+; TODO: To reduce code size and programming time, this uses the TI-OS floating
+; point operations to calculate (a mod b). It would probably be a LOT faster to
+; use native Z-80 assembly to implement the (a mod b). However, that requires
+; writing an integer division routine that takes a 32-bit and a 16-bit
+; arguments, producing a 32-bit result. It's probably available somewhere on
+; the internet, but I'm going to punt on that for now.
 mGcdHandler:
+    call closeInputBuf
+    call rclX
+    bcall(_CkPosInt)
+    jr nz, mGcdLcmHandlerError
+    bcall(_OP1ToOP2) ; OP2=X=b
+    call rclY ; OP1=Y=a
+    bcall(_CkPosInt)
+    jr nz, mGcdLcmHandlerError
+
+    call gcdOp1Op2 ; OP1 = gcd()
+    call replaceXY ; X = OP1
+    ret
+
+mGcdLcmHandlerError:
+    bjump(_ErrDomain) ; throw exception
+
+; Description: Calculate the Great Common Divisor.
+; Input: OP1, OP2
+; Output: OP1 = GCD(OP1, OP2)
+; Destroys: OP1, OP2, OP3
+gcdOp1Op2:
+    bcall(_CkOP2FP0) ; while b != 0
+    ret z
+    bcall(_PushRealO2) ; t = b
+    call modOp1Op2 ; (a mod b)
+    bcall(_OP1ToOP2) ; b = (a mod b)
+    bcall(_PopRealO1) ; a = t
+    jr gcdOp1Op2
+
+; Description: Calculate the Lowest Common Multiple using the following:
+; LCM(Y, X) = Y * X / GCD(Y, X)
+;           = Y * (X / GCD(Y,X))
+mLcmHandler:
+    call closeInputBuf
+    call rclX
+    bcall(_CkPosInt)
+    jr nz, mGcdLcmHandlerError
+    bcall(_OP1ToOP2) ; OP2=X=b
+    call rclY ; OP1=Y=a
+    bcall(_CkPosInt)
+    jr nz, mGcdLcmHandlerError
+
+    bcall(_PushRealO1) ; FPS = OP1 = Y
+    bcall(_PushRealO2) ; FPS = OP2 = X
+    call gcdOp1Op2 ; OP1 = gcd()
+    bcall(_OP1ToOP2) ; OP2 = gcd()
+    bcall(_PopRealO1) ; OP1 = X
+    bcall(_FPDiv) ; OP1 = X / gcd
+    bcall(_PopRealO2) ; OP2 = Y
+    bcall(_FPMult) ; OP1 = Y * (X / gcd)
+
+    call replaceXY ; X = lcm(X, Y)
+    ret
+
 mPrimeHandler:
     jp mNotYetHandler
 
@@ -332,7 +402,7 @@ mSignHandlerStoX:
 ; Description: Calculate (Y mod X), where Y and X could be floating point
 ; numbers. There does not seem to be a built-in function to calculator this, so
 ; it is implemented as (Y mod X) = Y - X*floor(Y/X).
-; Destroys: OP1, OP2
+; Destroys: OP1, OP2, OP3
 mModHandler:
     call closeInputBuf
     call rclX ; OP1 = X
@@ -344,8 +414,8 @@ mModHandler:
 
 ; Description: Internal helper routine to calculate OP1 = (OP1 mod OP2) = OP1 -
 ; OP2 * floor(OP1/OP2). Used by mModHandler and mGcdHandler. There does not
-; seem to be a built-in function to calculator this.
-; Destroys: OP1, OP2
+; seem to be a built-in function to calculate this.
+; Destroys: OP1, OP2, OP3
 modOp1Op2:
     bcall(_PushRealO1) ; FPS = OP1
     bcall(_PushRealO2) ; FPS = OP2
@@ -356,6 +426,7 @@ modOp1Op2:
     bcall(_OP1ToOP2) ; OP2 = floor(OP1/OP2) * OP2
     bcall(_PopRealO1) ; OP1 = OP1
     bcall(_FPSub) ; OP1 = OP1 - floor(OP1/OP2) * OP2
+    bcall(_RndGuard) ; force integer results if OP1 and OP2 were integers
     ret
 
 mMinHandler:
