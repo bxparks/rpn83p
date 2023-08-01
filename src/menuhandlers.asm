@@ -293,6 +293,8 @@ mDeltaPercentHandler:
     call replaceX
     ret
 
+;-----------------------------------------------------------------------------
+
 ; Description: Implement the Euclidean algorithm for the Greatest Common
 ; Divisor (GCD) as described in
 ; https://en.wikipedia.org/wiki/Euclidean_algorithm:
@@ -312,19 +314,29 @@ mDeltaPercentHandler:
 ; the internet, but I'm going to punt on that for now.
 mGcdHandler:
     call closeInputBuf
-    call rclX
-    bcall(_CkPosInt)
-    jr nz, mGcdLcmHandlerError
-    bcall(_OP1ToOP2) ; OP2=X=b
-    call rclY ; OP1=Y=a
-    bcall(_CkPosInt)
-    jr nz, mGcdLcmHandlerError
-
+    call validatePosIntGcdLcm
     call gcdOp1Op2 ; OP1 = gcd()
     call replaceXY ; X = OP1
     ret
 
-mGcdLcmHandlerError:
+; Description: Validate that X and Y are positive (> 0) integers. Calls
+; ErrDomain exception upon failure.
+; Output:
+;   - OP1 = Y
+;   - OP2 = X
+validatePosIntGcdLcm:
+    call rclX
+    bcall(_CkOP1FP0)
+    jr z, validatePosIntGcdLcmError
+    bcall(_CkPosInt) ; if OP1 >= 0: Z=1
+    jr nz, validatePosIntGcdLcmError
+    bcall(_OP1ToOP2) ; OP2=X=b
+    call rclY ; OP1=Y=a
+    bcall(_CkOP1FP0) ; if OP1 >= 0: Z=1
+    jr z, validatePosIntGcdLcmError
+    bcall(_CkPosInt)
+    ret z
+validatePosIntGcdLcmError:
     bjump(_ErrDomain) ; throw exception
 
 ; Description: Calculate the Great Common Divisor.
@@ -345,13 +357,7 @@ gcdOp1Op2:
 ;           = Y * (X / GCD(Y,X))
 mLcmHandler:
     call closeInputBuf
-    call rclX
-    bcall(_CkPosInt)
-    jr nz, mGcdLcmHandlerError
-    bcall(_OP1ToOP2) ; OP2=X=b
-    call rclY ; OP1=Y=a
-    bcall(_CkPosInt)
-    jr nz, mGcdLcmHandlerError
+    call validatePosIntGcdLcm
 
     bcall(_PushRealO1) ; FPS = OP1 = Y
     bcall(_PushRealO2) ; FPS = OP2 = X
@@ -364,6 +370,8 @@ mLcmHandler:
 
     call replaceXY ; X = lcm(X, Y)
     ret
+
+;-----------------------------------------------------------------------------
 
 mPrimeHandler:
     jp mNotYetHandler
