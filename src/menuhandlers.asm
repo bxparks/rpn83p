@@ -373,8 +373,110 @@ mLcmHandler:
 
 ;-----------------------------------------------------------------------------
 
+; Description: Determine if the integer in X is a prime number and returns 1 if
+; prime, or 0 if not a prime. X must be in the range of [2, 2^32-1]. The TI-OS
+; floating point operations can probably handle larger integers, but
+; restricting the range to be < 2^32 will make it easier to rewrite the
+; algorithm using Z-80 integer operations in the future.
+;
+; This algorithm uses the fact that every prime above 3 is of the form (6n-1)
+; or (6n+1), where n=1,2,3,... It checks candidate divisors from 5 to sqrt(X),
+; in steps of 6, checking whether (6n-1) or (6n+1) divides into X. If the
+; candidate divides into X, X is *not* a prime. If the loop reaches the end of
+; the iteration, then no prime factor was found, so X is a prime.
+;
+; TODO: Rewrite this using integer operations instead of floating point
+; operations to make it a LOT faster.
 mPrimeHandler:
-    jp mNotYetHandler
+    call closeInputBuf
+    call rclX
+mPrimeHandlerCheckZero:
+    bcall(_CkOP1FP0)
+    jp z, mPrimeHandlerError
+mPrimeHandlerCheckPosInt:
+    bcall(_CkPosInt) ; if OP1 >= 0: Z=1
+    jp nz, mPrimeHandlerError
+    ; TODO: Check for < 2^32.
+mPrimeHandlerCheckOne:
+    bcall(_OP2Set1) ; OP2 = 1
+    bcall(_CpOP1OP2) ; if OP1==OP2: Z=1
+    jp z, mPrimeHandlerError
+    bcall(_OP1ToOP4) ; OP4 = X
+mPrimeHandlerCheckTwo:
+    bcall(_OP2Set2) ; OP2 = 2
+    bcall(_CpOP1OP2) ; if OP1==OP2: Z=1
+    jr z, mPrimeHandlerYes
+mPrimeHandlerCheckDivTwo:
+    call mPrimeHandlerCheckDiv
+    jr z, mPrimeHandlerNo
+mPrimeHandlerCheckThree:
+    bcall(_OP4ToOP1) ; OP1 = X
+    bcall(_OP2Set3) ; OP2 = 3
+    bcall(_CpOP1OP2) ; if OP1==OP2: Z=1
+    jr z, mPrimeHandlerYes
+mPrimeHandlerCheckDivThree:
+    call mPrimeHandlerCheckDiv
+    jr z, mPrimeHandlerNo
+mPrimeHandlerCheckFive:
+    bcall(_OP4ToOP1) ; OP1 = X
+    bcall(_OP2Set5) ; OP2 = 5
+    bcall(_CpOP1OP2) ; if OP1==OP2: Z=1
+    jr z, mPrimeHandlerYes
+mPrimeHandlerCheckSeven:
+    ld a, 7
+    bcall(_SetXXOP2) ; OP2 = 7
+    bcall(_CpOP1OP2) ; if OP1==OP2: Z=1
+    jr z, mPrimeHandlerYes
+mPrimeHandlerLoopSetup:
+    bcall(_SqRoot) ; OP1 = sqrt(X)
+    bcall(_RndGuard)
+    bcall(_Trunc) ; OP1 = trunc(sqrt(X))
+    bcall(_OP1ToOP5) ; OP5 = loop limit
+    bcall(_OP2Set5) ; OP2 = 5
+    bcall(_OP2ToOP6) ; OP6 = 5 = start divisor
+mPrimeHandlerLoop:
+    ; Check (6n-1)
+    bcall(_OP4ToOP1) ; OP1 = X
+    bcall(_OP6ToOP2) ; OP2 = candidate divisor
+    call mPrimeHandlerCheckDiv
+    jr z, mPrimeHandlerNo
+    ; Check (6n+1)
+    bcall(_OP6ToOP1) ; OP1 = candidate divisor
+    bcall(_Plus1) ; OP1++
+    bcall(_Plus1) ; OP1++
+    bcall(_OP1ToOP2)
+    bcall(_OP4ToOP1)
+    call mPrimeHandlerCheckDiv
+    jr z, mPrimeHandlerNo
+    ; OP6 += 4
+    bcall(_OP6ToOP1) ; OP1 = OP6 = candidate divisor
+    bcall(_OP2Set4) ; OP2 = 4
+    bcall(_FPAdd)
+    bcall(_OP1ToOP6) ; OP6 += 4
+    ; Check if loop limit reached
+    bcall(_OP5ToOP2) ; OP5 = loop limit
+    bcall(_CpOP1OP2) ; if OP6(candidate) < OP5(limit): C=1
+    jr c, mPrimeHandlerLoop
+    jr mPrimeHandlerYes
+mPrimeHandlerNo:
+    bcall(_OP1Set0)
+    jr mPrimeHandlerEnd
+mPrimeHandlerYes:
+    bcall(_OP1Set1)
+mPrimeHandlerEnd:
+    call replaceX
+    ret
+
+; Description: Determine if OP2 is an integer factor of OP1.
+; Output: Z=1 if OP2 is a factor, 0 if not
+mPrimeHandlerCheckDiv:
+    bcall(_FPDiv) ; OP1 = OP1/3
+    bcall(_RndGuard) ; force integer results
+    bcall(_Frac) ; convert to frac part, preserving sign
+    bcall(_CkOP1FP0) ; if OP1 == 0: Z=1
+    ret
+mPrimeHandlerError:
+    bjump(_ErrDomain) ; throw exception
 
 ;-----------------------------------------------------------------------------
 
