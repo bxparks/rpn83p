@@ -149,6 +149,14 @@ MenuGroup root mRoot [
       #   MenuItem <Sconvert>psi mKpaToPsi
       # ]
     ]
-    MenuItem * *
+    MenuGroup BASE mBase [
+      MenuStrip [
+        MenuItem HEX mHex # hexadecimal
+        MenuItem DEC mDec # decimal
+        MenuItem OCT mOct # octal
+        MenuItem BIN mBin # binary
+        MenuItem BOPS mBops # base operations
+      ]
+    ]
   ]
 ]

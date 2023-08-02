@@ -1255,3 +1255,14 @@ mAtanhHandler:
     bcall(_ATanH)
     call replaceX
     ret
+
+;-----------------------------------------------------------------------------
+; Children nodes of BASE menu.
+;-----------------------------------------------------------------------------
+
+mHexHandler:
+mDecHandler:
+mOctHandler:
+mBinHandler:
+mBopsHandler:
+    jp mNotYetHandler
