@@ -328,11 +328,11 @@ validatePosIntGcdLcm:
     call rclX
     bcall(_CkOP1FP0)
     jr z, validatePosIntGcdLcmError
-    bcall(_CkPosInt) ; if OP1 >= 0: Z=1
+    bcall(_CkPosInt) ; if OP1 >= 0: ZF=1
     jr nz, validatePosIntGcdLcmError
     bcall(_OP1ToOP2) ; OP2=X=b
     call rclY ; OP1=Y=a
-    bcall(_CkOP1FP0) ; if OP1 >= 0: Z=1
+    bcall(_CkOP1FP0) ; if OP1 >= 0: ZF=1
     jr z, validatePosIntGcdLcmError
     bcall(_CkPosInt)
     ret z
@@ -394,17 +394,20 @@ mPrimeHandlerCheckZero:
     bcall(_CkOP1FP0)
     jp z, mPrimeHandlerError
 mPrimeHandlerCheckPosInt:
-    bcall(_CkPosInt) ; if OP1 >= 0: Z=1
+    bcall(_CkPosInt) ; if OP1 >= 0: ZF=1
     jp nz, mPrimeHandlerError
-    ; TODO: Check for < 2^32.
+mPrimeHandlerCheck32Bits:
+    call op2Set2Pow32 ; if OP1 >= 2^32: CF=0
+    bcall(_CpOP1OP2)
+    jp nc, mPrimeHandlerError
 mPrimeHandlerCheckOne:
     bcall(_OP2Set1) ; OP2 = 1
-    bcall(_CpOP1OP2) ; if OP1==OP2: Z=1
+    bcall(_CpOP1OP2) ; if OP1==1: ZF=1
     jp z, mPrimeHandlerError
     bcall(_OP1ToOP4) ; OP4 = X
 mPrimeHandlerCheckTwo:
     bcall(_OP2Set2) ; OP2 = 2
-    bcall(_CpOP1OP2) ; if OP1==OP2: Z=1
+    bcall(_CpOP1OP2) ; if OP1==2: ZF=1
     jr z, mPrimeHandlerYes
 mPrimeHandlerCheckDivTwo:
     call mPrimeHandlerCheckDiv
@@ -412,7 +415,7 @@ mPrimeHandlerCheckDivTwo:
 mPrimeHandlerCheckThree:
     bcall(_OP4ToOP1) ; OP1 = X
     bcall(_OP2Set3) ; OP2 = 3
-    bcall(_CpOP1OP2) ; if OP1==OP2: Z=1
+    bcall(_CpOP1OP2) ; if OP1==3: ZF=1
     jr z, mPrimeHandlerYes
 mPrimeHandlerCheckDivThree:
     call mPrimeHandlerCheckDiv
@@ -420,12 +423,12 @@ mPrimeHandlerCheckDivThree:
 mPrimeHandlerCheckFive:
     bcall(_OP4ToOP1) ; OP1 = X
     bcall(_OP2Set5) ; OP2 = 5
-    bcall(_CpOP1OP2) ; if OP1==OP2: Z=1
+    bcall(_CpOP1OP2) ; if OP1==5: ZF=1
     jr z, mPrimeHandlerYes
 mPrimeHandlerCheckSeven:
     ld a, 7
     bcall(_SetXXOP2) ; OP2 = 7
-    bcall(_CpOP1OP2) ; if OP1==OP2: Z=1
+    bcall(_CpOP1OP2) ; if OP1==5: ZF=1
     jr z, mPrimeHandlerYes
 mPrimeHandlerLoopSetup:
     bcall(_SqRoot) ; OP1 = sqrt(X)
@@ -455,7 +458,7 @@ mPrimeHandlerLoop:
     bcall(_OP1ToOP6) ; OP6 += 4
     ; Check if loop limit reached
     bcall(_OP5ToOP2) ; OP5 = loop limit
-    bcall(_CpOP1OP2) ; if OP6(candidate) < OP5(limit): C=1
+    bcall(_CpOP1OP2) ; if OP6(candidate) < OP5(limit): CF=1
     jr c, mPrimeHandlerLoop
     jr mPrimeHandlerYes
 mPrimeHandlerNo:
@@ -468,12 +471,12 @@ mPrimeHandlerEnd:
     ret
 
 ; Description: Determine if OP2 is an integer factor of OP1.
-; Output: Z=1 if OP2 is a factor, 0 if not
+; Output: ZF=1 if OP2 is a factor, 0 if not
 mPrimeHandlerCheckDiv:
     bcall(_FPDiv) ; OP1 = OP1/3
     bcall(_RndGuard) ; force integer results
     bcall(_Frac) ; convert to frac part, preserving sign
-    bcall(_CkOP1FP0) ; if OP1 == 0: Z=1
+    bcall(_CkOP1FP0) ; if OP1 == 0: ZF=1
     ret
 mPrimeHandlerError:
     bjump(_ErrDomain) ; throw exception
@@ -706,7 +709,7 @@ validatePermComb:
 
 ; Validate OP1 is an integer in the range of [0, 255].
 validatePermCombParam:
-    bcall(_CkPosInt) ; if OP1 >= 0: Z=1
+    bcall(_CkPosInt) ; if OP1 >= 0: ZF=1
     jr nz, validatePermCombError
     ld hl, 256
     bcall(_SetXXXXOP2) ; OP2=256
