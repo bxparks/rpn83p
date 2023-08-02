@@ -1,13 +1,5 @@
-; RPN mode for the TI-83 Plus and TI-84 Plus calculators.
-;
-; Reads the following keycodes:
-;   - 0-9 (TODO expand to Alpha-A to Alpha-F for hexadecimal)
-;   - . and (-)
-;   - , or 2nd-EE for EE
-;   - DEL, backspace, removes the last character
-;   - CLEAR, removes the entire line
-;   - anything else sets the CF and returns
-; See 83pa28d/week2/day12.
+; RPN calculator for the TI-83 Plus and TI-84 Plus calculators. Inspired
+; by the HP-42S calculator.
 
 .nolist
 #include "ti83plus.inc"
@@ -218,7 +210,17 @@ main:
     call initDisplay
     ; [[fall through]]
 
-; The main event/read loop. Read each button until 2ND-QUIT is entered.
+; The main event/read loop. Read button and dispatch to the appropriate
+; handler. Some of the functionalities are:
+;
+;   - 2ND-QUIT: quit app
+;   - 0-9: add to input buffer
+;   - . and (-): add to input buffer
+;   - , or 2nd-EE: add scientific notation 'E'
+;   - DEL: removes the last character in the input buffer
+;   - CLEAR: remove RPN stack X register, or clear the input buffer
+;
+; See 83pa28d/week2/day12.
 readLoop:
     ; call debugFlags
     call displayAll
