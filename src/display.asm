@@ -38,8 +38,9 @@ menuPenColEnd   equ 96
 
 ; Function: Set the display flags to dirty initially so that they are rendered.
 initDisplay:
-    set rpnFlagsTrigModeDirty, (iy + rpnFlags)
     set rpnFlagsFloatModeDirty, (iy + rpnFlags)
+    set rpnFlagsTrigModeDirty, (iy + rpnFlags)
+    set rpnFlagsBaseModeDirty, (iy + rpnFlags)
     set inputBufFlagsInputDirty, (iy + inputBufFlags)
     ret
 
@@ -57,8 +58,9 @@ displayAll:
     ; Reset dirty flags
     res rpnFlagsStackDirty, (iy + rpnFlags)
     res rpnFlagsMenuDirty, (iy + rpnFlags)
-    res rpnFlagsTrigModeDirty, (iy + rpnFlags)
     res rpnFlagsFloatModeDirty, (iy + rpnFlags)
+    res rpnFlagsTrigModeDirty, (iy + rpnFlags)
+    res rpnFlagsBaseModeDirty, (iy + rpnFlags)
     res inputBufFlagsInputDirty, (iy + inputBufFlags)
     ret
 
@@ -72,8 +74,9 @@ displayAll:
 ; Destroys: A, B, C, HL
 displayStatus:
     call displayStatusMenu
-    call displayStatusTrig
     call displayStatusFloatMode
+    call displayStatusTrig
+    call displayStatusBase
     ret
 
 displayStatusMenu:
@@ -156,6 +159,38 @@ displayStatusTrigDeg:
 displayStatusTrigRad:
     ld hl, msgStatusTrigRad
 displayStatusTrigPutS:
+    bcall(_VPutS)
+    ret
+
+;-----------------------------------------------------------------------------
+
+; Description: Display the Base: BIN, OCT, DEC, HEX.
+displayStatusBase:
+    bit rpnFlagsBaseModeDirty, (iy + rpnFlags)
+    ret z
+displayStatusBaseUpdate:
+    ld hl, statusPenRow*$100 + statusBasePenCol; $(penRow)(penCol)
+    ld (PenCol), hl
+    ; Determine current base mode.
+    ld a, (baseMode)
+    cp 2
+    jr z, displayStatusBaseBin
+    cp 8
+    jr z, displayStatusBaseOct
+    cp 16
+    jr z, displayStatusBaseHex
+displayStatusBaseDec: ; Use Base 10 for anything else
+    ld hl, mDecName
+    jr displayStatusBasePutS
+displayStatusBaseHex:
+    ld hl, mHexName
+    jr displayStatusBasePutS
+displayStatusBaseOct:
+    ld hl, mOctName
+    jr displayStatusBasePutS
+displayStatusBaseBin:
+    ld hl, mBinName
+displayStatusBasePutS:
     bcall(_VPutS)
     ret
 
@@ -699,12 +734,7 @@ vPutSEnd:
 
 ;-----------------------------------------------------------------------------
 
-; "DEG" and "RAD" trig indicators
-msgStatusTrigDeg:
-    .db "DEG", 0
-msgStatusTrigRad:
-    .db "RAD", 0
-
+; RPN stack variable labels
 msgTLabel:
     .db "T:", 0
 msgZLabel:
@@ -713,6 +743,12 @@ msgYLabel:
     .db "Y:", 0
 msgXLabel:
     .db "X:", 0
+
+; "DEG" and "RAD" trig indicators
+msgStatusTrigDeg:
+    .db "DEG", 0
+msgStatusTrigRad:
+    .db "RAD", 0
 
 msgMenuBlank: ; 18px wide
     .db SFourSpaces, SFourSpaces, SFourSpaces, SFourSpaces, Sspace, Sspace, 0

@@ -1261,8 +1261,27 @@ mAtanhHandler:
 ;-----------------------------------------------------------------------------
 
 mHexHandler:
+    ld a, 16
+    jr setBaseMode
+
 mDecHandler:
+    ld a, 10
+    jr setBaseMode
+
 mOctHandler:
+    ld a, 8
+    jr setBaseMode
+
 mBinHandler:
+    ld a, 2
+    ; [[fallthrough]]
+
+; Description: Set the (baseMode) to the value in A. Set dirty flag.
+; Destroys: none
+setBaseMode:
+    set rpnFlagsBaseModeDirty, (iy + rpnFlags)
+    ld (baseMode), a
+    ret
+
 mBopsHandler:
     jp mNotYetHandler

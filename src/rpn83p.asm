@@ -12,6 +12,7 @@ statusPenRow equ statusCurRow*8
 statusMenuPenCol equ 0 ; 3 * 4px, (up | down) + quadspace
 statusFloatModePenCol equ 12 ; 7 * 4px (FIX|SCI|ENG) + (n) + quadspace
 statusTrigPenCol equ 40 ; 4 * 4px, (DEG | RAD) + quadspace
+statusBasePenCol equ 56 ; 4 * 4px, (BIN, OCT, HEX, DEC) + quadspace
 
 ; Display coordinates of the debug line
 debugCurRow equ 1
@@ -74,6 +75,7 @@ rpnFlagsStackDirty equ 3 ; set if the stack is dirty
 rpnFlagsMenuDirty equ 4 ; set if the menu selection is dirty
 rpnFlagsTrigModeDirty equ 5 ; set if the trig status is dirty
 rpnFlagsFloatModeDirty equ 6 ; set if the floating mode is dirty
+rpnFlagsBaseModeDirty equ 7 ; set if the base mode is dirty
 
 ; Flags for the inputBuf. Offset from IY register.
 inputBufFlags equ asm_Flag3
@@ -94,6 +96,10 @@ rpnVarsBegin equ tempSwapArea
 errorCode equ rpnVarsBegin ; current error code
 errorCodeDisplayed equ errorCode + 1 ; displayed error code
 
+; Current base mode. Allowed values are: 2, 8, 10, 16. Anything else is
+; interpreted as 10.
+baseMode equ errorCodeDisplayed + 1
+
 ; String buffer for keyboard entry. This is a Pascal-style with a single size
 ; byte at the start. It does not include the cursor displayed at the end of the
 ; string. The equilvalent C struct is:
@@ -102,7 +108,7 @@ errorCodeDisplayed equ errorCode + 1 ; displayed error code
 ;       uint8_t size;
 ;       char buf[14];
 ;   };
-inputBuf equ errorCodeDisplayed + 1
+inputBuf equ baseMode + 1
 inputBufSize equ inputBuf ; size byte of the pascal string
 inputBufBuf equ inputBuf + 1
 inputBufMax equ 14 ; maximum size of buffer, not including appended cursor
@@ -202,6 +208,7 @@ main:
     res appTextSave, (iy + appFlags) ; disable shawdow text
     bcall(_ClrLCDFull)
 
+    call initBase
     call initErrorCode
     call initInputBuf
     call initArgBuf
@@ -285,6 +292,7 @@ mainExit:
 #include "input.asm"
 #include "display.asm"
 #include "errorcode.asm"
+#include "base.asm"
 #include "menu.asm"
 #include "menuhandlers.asm"
 
