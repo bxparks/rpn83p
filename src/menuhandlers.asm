@@ -387,6 +387,8 @@ mLcmHandler:
 ;
 ; TODO: Rewrite this using integer operations instead of floating point
 ; operations to make it a LOT faster.
+;
+; Examples: 90119191 = 5879 x 15329 => not prime
 mPrimeHandler:
     call closeInputBuf
     call rclX
@@ -437,7 +439,11 @@ mPrimeHandlerLoopSetup:
     bcall(_OP1ToOP5) ; OP5 = loop limit
     bcall(_OP2Set5) ; OP2 = 5
     bcall(_OP2ToOP6) ; OP6 = 5 = start divisor
+    bcall(_RunIndicOn) ; enable run indicator
 mPrimeHandlerLoop:
+    ; Check for ON/Break
+    bit onInterrupt, (IY+onFlags)
+    jr nz, mPrimeHandlerBreak
     ; Check (6n-1)
     bcall(_OP4ToOP1) ; OP1 = X
     bcall(_OP6ToOP2) ; OP2 = candidate divisor
@@ -467,6 +473,7 @@ mPrimeHandlerNo:
 mPrimeHandlerYes:
     bcall(_OP1Set1)
 mPrimeHandlerEnd:
+    bcall(_RunIndicOff) ; disable run indicator
     call replaceX
     ret
 
@@ -480,6 +487,10 @@ mPrimeHandlerCheckDiv:
     ret
 mPrimeHandlerError:
     bjump(_ErrDomain) ; throw exception
+mPrimeHandlerBreak:
+    bcall(_RunIndicOff) ; disable run indicator
+    res onInterrupt, (IY+onFlags)
+    bjump(_ErrBreak) ; throw exception
 
 ;-----------------------------------------------------------------------------
 

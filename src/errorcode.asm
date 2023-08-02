@@ -88,7 +88,7 @@ errorStrings:
     .dw errorStrUnknown         ; 3
     .dw errorStrDomain          ; 4
     .dw errorStrUnknown         ; 5
-    .dw errorStrUnknown         ; 6
+    .dw errorStrBreak           ; 6
     .dw errorStrUnknown         ; 7
     .dw errorStrUnknown         ; 8
     .dw errorStrUnknown         ; 9
