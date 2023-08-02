@@ -77,7 +77,7 @@ printARepeatBLoop:
 ; Pascal string directly, instead of providing the length and (char*)
 ; separately.
 ; Input: HL: Pascal-string
-; Output; Carry=1 if characters overflowed screen
+; Output; CF=1 if characters overflowed screen
 ; Destroys: A, B, HL
 vPutPS:
     ld a, (hl)

@@ -6,7 +6,7 @@
 ;   - , or 2nd-EE for EE
 ;   - DEL, backspace, removes the last character
 ;   - CLEAR, removes the entire line
-;   - anything else sets the Carry bit and returns
+;   - anything else sets the CF and returns
 ; See 83pa28d/week2/day12.
 
 .nolist

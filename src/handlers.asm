@@ -40,7 +40,7 @@ handleKeyNumberArg:
 ; Input:
 ;   A: character to be appended
 ; Output:
-;   - Carry flag set when append fails.
+;   - CF set when append fails.
 ;   - rpnFlagsEditing set.
 ;   - inputBufFlagsInputDirty set.
 ; Destroys: all
@@ -158,7 +158,7 @@ handleKeyDecPnt:
     ; try insert '.'
     ld a, '.'
     call handleKeyNumber
-    ret c ; If Carry: append failed so return without setting the DecPnt flag
+    ret c ; If CF: append failed so return without setting the DecPnt flag
     set inputBufFlagsDecPnt, (iy + inputBufFlags)
     ret
 
@@ -175,7 +175,7 @@ handleKeyEE:
     ; try insert 'E'
     ld a, Lexponent
     call handleKeyNumber
-    ret c ; If Carry: append failed so return without setting the EE flag
+    ret c ; If CF: append failed so return without setting the EE flag
     ; save the EE+1 position
     ld a, (inputBuf) ; position after the 'E'
     ld (inputBufEEPos), a
@@ -342,7 +342,7 @@ handleKeyChsInputBuf:
 ;   B: max size of Pasal string
 ; Output:
 ;   (HL): updated with '-' removed or added
-;   Carry:
+;   CF:
 ;       - Set if positive (including if '-' could not be added due to size)
 ;       - Clear if negative
 ; Destroys:
@@ -368,16 +368,16 @@ flipInputBufSignInside:
 flipInputBufSignRemove:
     ; Remove existing '-' sign
     call deleteAtPos
-    scf ; set Carry to indicate positive
+    scf ; set CF to indicate positive
     ret
 flipInputBufSignAdd:
     ; Add '-' sign.
     call insertAtPos
-    ret c ; Return if Carry is set, indicating insert '-' failed
+    ret c ; Return if CF is set, indicating insert '-' failed
     ; Set newly created empty slot to '-'
     ld a, signChar
     ld (hl), a
-    or a ; clear Carry to indicate negative
+    or a ; clear CF to indicate negative
     ret
 
 ;-----------------------------------------------------------------------------
@@ -580,7 +580,7 @@ deduceStripIndex:
     add a, 4 ; nodeId = stripBeginId + 4
     ld b, d ; B (DJNZ counter) = numStrips
 deduceStripIndexLoop:
-    cp c ; If nodeId < childId: set Carry
+    cp c ; If nodeId < childId: set CF
     jr nc, deduceStripIndexFound ; nodeId >= childId
     add a, 5 ; nodeId += 5
     djnz deduceStripIndexLoop

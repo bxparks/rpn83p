@@ -5,14 +5,14 @@
 ;   A: character to be appended
 ;   HL: pascal string pointer
 ;   B: maxSize
-; Output: Carry flag set when append fails
+; Output: CF set when append fails
 ; Destroys: all
 appendString:
     ld c, a ; C = char
     ld a, (hl) ; A = bufSize
     cp b
     jr nz, appendString10
-    ; buffer full, set Carry flag
+    ; buffer full, set CF
     scf
     ret
 appendString10:
@@ -23,7 +23,7 @@ appendString10:
     ld e, a
     add hl, de
     ld (hl), c
-    or a ; clear Carry flag
+    or a ; clear CF
     ret
 
 ;-----------------------------------------------------------------------------
@@ -35,12 +35,12 @@ appendString10:
 ;   HL: pascal string pointer
 ;   B: sizeMax of pascal string
 ; Output:
-;   Carry: set if buffer string too long to insert
-;   HL: pointer to position at A (if Carry false)
+;   CF: set if buffer string too long to insert
+;   HL: pointer to position at A (if CF==0)
 ; Destroys: all
 insertAtPos:
     ld e, a ; E = insertPos (save)
-    ; If stringSize == sizeMax: set Carry flag; return
+    ; If stringSize == sizeMax: set CF; return
     ld a, (hl) ; A = stringSize
     cp b ; stringSize == sizeMax
     jr nz, insertAtPosAppendOrShiftRight
@@ -56,7 +56,7 @@ insertAtPosAppendOrShiftRight:
     ld d, 0 ; No need to set E, it's already E = insertPos
     add hl, de
     inc hl
-    or a ; clear Carry
+    or a ; clear CF
     ret
 insertAtPosShiftRight:
     ; Loop to shift characters to the right, by setting up LDDR parameters:
@@ -84,7 +84,7 @@ insertAtPosShiftRight:
     ; HL = insertion address
     ld h, d
     ld l, e
-    or a ; clear Carry
+    or a ; clear CF
     ret
 
 ; Function: Delete character at position A from a pascal-string, shifting
@@ -110,7 +110,7 @@ deleteAtPosTruncateOrShiftLeft:
     ; If stringSize-1 <= deletePos: truncate
     ; If !(stringSize-1 > deletePos): truncate
     ld a, e ; A = deletePos
-    cp d ; If deletePos < stringSize-1: set Carry
+    cp d ; If deletePos < stringSize-1: set CF
     ret nc
     ; A = deletePos
     ; E = deletePos

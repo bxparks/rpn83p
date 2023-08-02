@@ -35,7 +35,7 @@ clearInputBuf:
 ; Input:
 ;   A: character to be appended
 ; Output:
-;   - Carry flag set when append fails
+;   - CF set when append fails
 ;   - inputBufFlagsInputDirty set
 ; Destroys: all
 appendInputBuf:
@@ -181,11 +181,11 @@ checkZeroLoop:
     jr z, checkZeroContinue
     cp '.'
     jr z, checkZeroContinue
-    ret ; returns with Z=0
+    ret ; returns with ZF=0
 checkZeroContinue:
     inc hl
     djnz checkZeroLoop
-    xor a ; set Z=1
+    xor a ; set ZF=1
     ret
 
 ;------------------------------------------------------------------------------
@@ -337,7 +337,7 @@ calcDPEnd:
 ; Function: Append character to parseBuf
 ; Input:
 ;   A: character to be appended
-; Output: Carry flag set when append fails
+; Output: CF set when append fails
 ; Destroys: A, B, DE, HL
 appendParseBuf:
     ld hl, parseBuf

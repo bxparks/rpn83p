@@ -166,7 +166,7 @@ stoY:
 ;-----------------------------------------------------------------------------
 
 ; Function: Recall stZ to OP1.
-; Output; Z = 1 if Z is real.
+; Output; OP1: set to stZ
 ; Destroys: all, OP1
 ; Preserves: OP2
 rclZ:

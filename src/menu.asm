@@ -84,7 +84,7 @@ getMenuNode:
     add hl, hl
     add hl, hl
     add hl, hl ; 8*A
-    or a ; clear Carry
+    or a ; clear CF
     sbc hl, de ; 7*A
     ; HL = mMenuTable + 7*A
     ex de, hl
