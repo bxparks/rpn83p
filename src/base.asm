@@ -229,6 +229,8 @@ shiftRightLogicalU32:
 ; Routines related to Hex strings.
 ;-----------------------------------------------------------------------------
 
+hexNumberWidth equ 8
+
 ; Description: Converts 32-bit unsigned integer referenced by HL to a hex
 ; string in buffer referenced by DE.
 ; Input:
@@ -263,7 +265,7 @@ convertU32ToHexString:
     ; reverse the characters
     pop hl ; HL = destination string pointer
     push hl
-    ld b, 8
+    ld b, hexNumberWidth
     call reverseString
 
     pop de
@@ -348,7 +350,7 @@ appendAToU32HexString:
     push hl
     push de
 
-    ld e, 8
+    ld e, hexNumberWidth
     ld d, 0
     add hl, de
     ld (hl), a ; buf[8] = A
@@ -362,6 +364,8 @@ appendAToU32HexString:
 ;-----------------------------------------------------------------------------
 ; Routines related to Octal strings.
 ;-----------------------------------------------------------------------------
+
+octNumberWidth equ 11
 
 ; Description: Converts 32-bit unsigned integer referenced by HL to a octal
 ; string in buffer referenced by DE.
@@ -378,7 +382,7 @@ convertU32ToOctString:
     push hl
     push de
 
-    ld b, 11 ; 3 bits * 11 = 33 bits
+    ld b, octNumberWidth ; 3 bits * 11 = 33 bits
 convertU32ToOctStringLoop:
     ld a, (hl)
     and $07 ; last 3 bits
@@ -390,12 +394,12 @@ convertU32ToOctStringLoop:
     call shiftRightLogicalU32
     djnz convertU32ToOctStringLoop
     xor a
-    ld (de), a
+    ld (de), a ; NUL terminator
 
     ; reverse the octal digits
     pop hl ; HL = destination string pointer
     push hl
-    ld b, 11
+    ld b, octNumberWidth
     call reverseString
 
     pop de
@@ -412,7 +416,71 @@ appendAToU32OctString:
     push hl
     push de
 
-    ld e, 11
+    ld e, octNumberWidth
+    ld d, 0
+    add hl, de
+    ld (hl), a ; buf[11] = A
+    inc hl
+    ld (hl), d ; buf[12] = 0
+
+    pop de
+    pop hl
+    ret
+
+;-----------------------------------------------------------------------------
+; Routines related to Binary strings.
+;-----------------------------------------------------------------------------
+
+binNumberWidth equ 14
+
+; Description: Converts 32-bit unsigned integer referenced by HL to a binary
+; string in buffer referenced by DE.
+; Input:
+;   - HL: pointer to 32-bit unsigned integer
+;   - DE: pointer to a C-string buffer of at least 15 bytes (14 binary digits
+;   plus NUL terminator). This will usually be 2 consecutive OPx registers,
+;   each 11 bytes long, for a total of 22 bytes.
+; Output:
+;   - (DE): C-string representation of u32 as octal digits
+; Destroys: A
+convertU32ToBinString:
+    push bc
+    push hl
+    push de
+
+    ld b, binNumberWidth ; 14 bits maximum
+convertU32ToBinStringLoop:
+    ld a, (hl)
+    and $01 ; last bit
+    add a, '0' ; convert to '0' or '1'
+    ld (de), a
+    inc de
+    call shiftRightLogicalU32
+    djnz convertU32ToBinStringLoop
+    xor a
+    ld (de), a ; NUL terminator
+
+    ; reverse the octal digits
+    pop hl ; HL = destination string pointer
+    push hl
+    ld b, binNumberWidth
+    call reverseString
+
+    pop de
+    pop hl
+    pop bc
+    ret
+
+; Description: Append char in A to the octal string in HL.
+; Input:
+;   - HL: pointer to NUL terminated string
+;   - A: char to add
+; Destroys: none
+appendAToU32BinString:
+    push hl
+    push de
+
+    ld e, binNumberWidth
     ld d, 0
     add hl, de
     ld (hl), a ; buf[11] = A
