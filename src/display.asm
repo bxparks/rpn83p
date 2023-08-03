@@ -157,10 +157,10 @@ displayStatusTrigUpdate:
     bit trigDeg, (iy + trigFlags)
     jr z, displayStatusTrigRad
 displayStatusTrigDeg:
-    ld hl, msgStatusTrigDeg
+    ld hl, mDegName
     jr displayStatusTrigPutS
 displayStatusTrigRad:
-    ld hl, msgStatusTrigRad
+    ld hl, mRadName
 displayStatusTrigPutS:
     bcall(_VPutS)
     ret
@@ -609,6 +609,8 @@ printOP1:
     jr z, printOP1Base16
     ; [[fallthrough]]
 
+;-----------------------------------------------------------------------------
+
 ; Function: Print floating point number at OP1 using base 10.
 ; Input: OP1: floating point number
 ; Destroys: A, HL, OP3
@@ -631,6 +633,8 @@ printHLString:
     ret z ; if spilled to next line, don't call EraseEOL
     bcall(_EraseEOL)
     ret
+
+;-----------------------------------------------------------------------------
 
 ; Function: Print ingeger at OP1 at the current cursor in base 16. Erase to
 ; the end of line (but only if the floating point did not spill over to the
@@ -812,12 +816,6 @@ msgYLabel:
     .db "Y:", 0
 msgXLabel:
     .db "X:", 0
-
-; "DEG" and "RAD" trig indicators
-msgStatusTrigDeg:
-    .db "DEG", 0
-msgStatusTrigRad:
-    .db "RAD", 0
 
 msgMenuBlank: ; 18px wide
     .db SFourSpaces, SFourSpaces, SFourSpaces, SFourSpaces, Sspace, Sspace, 0
