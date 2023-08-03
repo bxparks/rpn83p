@@ -4,6 +4,7 @@ SPASM_DIR := ../../spasm
 SPASM_INC := $(SPASM_DIR)/inc
 SPASM := $(SPASM_DIR)/spasm
 SRCS := \
+	base.asm \
 	common.asm \
 	debug.asm \
 	display.asm \
@@ -20,6 +21,9 @@ SRCS := \
 
 rpn83p.8xp: $(SRCS) Makefile
 	$(SPASM) -I $(SPASM_INC) -N rpn83p.asm $@
+
+#rpn83p.8xp: $(SRCS) Makefile
+#	$(SPASM) -DDEBUG -I $(SPASM_INC) -N rpn83p.asm $@
 
 rpn83p.lst: $(SRCS) Makefile
 	$(SPASM) -I $(SPASM_INC) -N -T rpn83p.asm rpn83p.8xp

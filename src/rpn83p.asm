@@ -1,13 +1,5 @@
-; RPN mode for the TI-83 Plus and TI-84 Plus calculators.
-;
-; Reads the following keycodes:
-;   - 0-9 (TODO expand to Alpha-A to Alpha-F for hexadecimal)
-;   - . and (-)
-;   - , or 2nd-EE for EE
-;   - DEL, backspace, removes the last character
-;   - CLEAR, removes the entire line
-;   - anything else sets the CF and returns
-; See 83pa28d/week2/day12.
+; RPN calculator for the TI-83 Plus and TI-84 Plus calculators. Inspired
+; by the HP-42S calculator.
 
 .nolist
 #include "ti83plus.inc"
@@ -20,6 +12,7 @@ statusPenRow equ statusCurRow*8
 statusMenuPenCol equ 0 ; 3 * 4px, (up | down) + quadspace
 statusFloatModePenCol equ 12 ; 7 * 4px (FIX|SCI|ENG) + (n) + quadspace
 statusTrigPenCol equ 40 ; 4 * 4px, (DEG | RAD) + quadspace
+statusBasePenCol equ 56 ; 4 * 4px, (BIN, OCT, HEX, DEC) + quadspace
 
 ; Display coordinates of the debug line
 debugCurRow equ 1
@@ -82,6 +75,7 @@ rpnFlagsStackDirty equ 3 ; set if the stack is dirty
 rpnFlagsMenuDirty equ 4 ; set if the menu selection is dirty
 rpnFlagsTrigModeDirty equ 5 ; set if the trig status is dirty
 rpnFlagsFloatModeDirty equ 6 ; set if the floating mode is dirty
+rpnFlagsBaseModeDirty equ 7 ; set if the base mode is dirty
 
 ; Flags for the inputBuf. Offset from IY register.
 inputBufFlags equ asm_Flag3
@@ -102,6 +96,10 @@ rpnVarsBegin equ tempSwapArea
 errorCode equ rpnVarsBegin ; current error code
 errorCodeDisplayed equ errorCode + 1 ; displayed error code
 
+; Current base mode. Allowed values are: 2, 8, 10, 16. Anything else is
+; interpreted as 10.
+baseMode equ errorCodeDisplayed + 1
+
 ; String buffer for keyboard entry. This is a Pascal-style with a single size
 ; byte at the start. It does not include the cursor displayed at the end of the
 ; string. The equilvalent C struct is:
@@ -110,7 +108,7 @@ errorCodeDisplayed equ errorCode + 1 ; displayed error code
 ;       uint8_t size;
 ;       char buf[14];
 ;   };
-inputBuf equ errorCodeDisplayed + 1
+inputBuf equ baseMode + 1
 inputBufSize equ inputBuf ; size byte of the pascal string
 inputBufBuf equ inputBuf + 1
 inputBufMax equ 14 ; maximum size of buffer, not including appended cursor
@@ -210,6 +208,7 @@ main:
     res appTextSave, (iy + appFlags) ; disable shawdow text
     bcall(_ClrLCDFull)
 
+    call initBase
     call initErrorCode
     call initInputBuf
     call initArgBuf
@@ -218,7 +217,17 @@ main:
     call initDisplay
     ; [[fall through]]
 
-; The main event/read loop. Read each button until 2ND-QUIT is entered.
+; The main event/read loop. Read button and dispatch to the appropriate
+; handler. Some of the functionalities are:
+;
+;   - 2ND-QUIT: quit app
+;   - 0-9: add to input buffer
+;   - . and (-): add to input buffer
+;   - , or 2nd-EE: add scientific notation 'E'
+;   - DEL: removes the last character in the input buffer
+;   - CLEAR: remove RPN stack X register, or clear the input buffer
+;
+; See 83pa28d/week2/day12.
 readLoop:
     ; call debugFlags
     call displayAll
@@ -278,17 +287,19 @@ mainExit:
 
 #include "vars.asm"
 #include "handlers.asm"
-#include "common.asm"
 #include "pstring.asm"
 #include "input.asm"
 #include "display.asm"
 #include "errorcode.asm"
+#include "base.asm"
 #include "menu.asm"
 #include "menuhandlers.asm"
 
 #ifdef DEBUG
 #include "debug.asm"
 #endif
+
+#include "common.asm"
 
 ; Place data files at the end, because the TI-OS prevents execution of assembly
 ; code if it spills over to page $C000. The limitation does not apply to data.

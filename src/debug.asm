@@ -11,6 +11,9 @@ debugInputBuf:
     push bc
     push de
     push hl
+    ld hl, (CurRow)
+    push hl
+
     ld hl, debugCurCol*$100+debugCurRow ; $(curCol)(curRow)
     ld (CurRow), hl
     ld hl, inputBuf
@@ -18,6 +21,9 @@ debugInputBuf:
     ld a, cursorCharAlt
     bcall(_PutC)
     bcall(_EraseEOL)
+
+    pop hl
+    ld (CurRow), hl
     pop hl
     pop de
     pop bc
@@ -33,6 +39,9 @@ debugParseBuf:
     push bc
     push de
     push hl
+    ld hl, (CurRow)
+    push hl
+
     ld hl, debugCurCol*$100+debugCurRow ; $(curCol)(curRow)
     ld (CurRow), hl
     ld hl, parseBuf
@@ -40,6 +49,9 @@ debugParseBuf:
     ld a, cursorCharAlt
     bcall(_PutC)
     bcall(_EraseEOL)
+
+    pop hl
+    ld (CurRow), hl
     pop hl
     pop de
     pop bc
@@ -55,12 +67,16 @@ debugString:
     push bc
     push de
     push hl
-    ld hl, debugCurCol*$100+debugCurRow ; $(curCol)(curRow)
-    ld (CurRow), hl
-    pop hl
+    ld hl, (CurRow)
     push hl
+
+    ld de, debugCurCol*$100+debugCurRow ; $(curCol)(curRow)
+    ld (CurRow), de
     bcall(_PutS)
     bcall(_EraseEOL)
+
+    pop hl
+    ld (CurRow), hl
     pop hl
     pop de
     pop bc
@@ -76,12 +92,16 @@ debugPString:
     push bc
     push de
     push hl
-    ld hl, debugCurCol*$100+debugCurRow ; $(curCol)(curRow)
-    ld (CurRow), hl
-    pop hl
+    ld hl, (CurRow)
     push hl
+
+    ld de, debugCurCol*$100+debugCurRow ; $(curCol)(curRow)
+    ld (CurRow), de
     bcall(_PutPS)
     bcall(_EraseEOL)
+
+    pop hl
+    ld (CurRow), hl
     pop hl
     pop de
     pop bc
@@ -94,9 +114,15 @@ debugPString:
 ; Destroys: none
 debugClear:
     push hl
+    ld hl, (CurRow)
+    push hl
+
     ld hl, debugCurCol*$100+debugCurRow ; $(curCol)(curRow)
     ld (CurRow), hl
     bcall(_EraseEOL)
+
+    pop hl
+    ld (CurRow), hl
     pop hl
     ret
 
@@ -111,6 +137,9 @@ debugOP1:
     push bc
     push de
     push hl
+    ld hl, (CurRow)
+    push hl
+
     ld hl, debugCurCol*$100+debugCurRow ; $(curCol)(curRow)
     ld (CurRow), hl
     ld a, 15 ; width of output
@@ -118,6 +147,9 @@ debugOP1:
     ld hl, OP3
     bcall(_PutS)
     bcall(_EraseEOL)
+
+    pop hl
+    ld (CurRow), hl
     pop hl
     pop de
     pop bc
@@ -148,6 +180,8 @@ debugUnsignedA:
     push bc
     push de
     push hl
+    ld hl, (CurRow)
+    push hl
 
     ld hl, debugCurCol*$100+debugCurRow ; $(curCol)(curRow)
     ld (CurRow), hl
@@ -155,6 +189,8 @@ debugUnsignedA:
     ld h, 0
     bcall(_DispHL)
 
+    pop hl
+    ld (CurRow), hl
     pop hl
     pop de
     pop bc
@@ -172,6 +208,9 @@ debugSignedA:
     push bc
     push de
     push hl
+    ld hl, (CurRow)
+    push hl
+
     ld hl, debugCurCol*$100+debugCurRow ; $(curCol)(curRow)
     ld (CurRow), hl
     ld b, a ; save
@@ -191,6 +230,9 @@ debugSignedAPrint:
     ld l, a
     ld h, 0
     bcall(_DispHL)
+
+    pop hl
+    ld (CurRow), hl
     pop hl
     pop de
     pop bc
@@ -211,6 +253,8 @@ debugFlags:
     push af
     push bc
     push de
+    push hl
+    ld hl, (CurRow)
     push hl
 
     ld hl, debugCurCol*$100+debugCurRow ; $(curCol)(curRow)
@@ -247,6 +291,8 @@ debugFlags:
     bcall(_EraseEOL)
 
     pop hl
+    ld (CurRow), hl
+    pop hl
     pop de
     pop bc
     pop af
@@ -269,5 +315,63 @@ printFlagPlus:
 printFlagMinus:
     bcall(_PutC)
     ld a, '-'
+    bcall(_PutC)
+    ret
+
+;------------------------------------------------------------------------------
+
+; Description: Print the 4 bytes pointed by HL.
+; Input: HL: pointer to 4 bytes
+; Destroys: None
+debugU32AsHex:
+    push af
+    push de
+    push hl
+    ld de, (CurRow)
+    push de
+
+    ld de, debugCurCol*$100+debugCurRow ; $(curCol)(curRow)
+    ld (CurRow), de
+
+    ld a, (hl)
+    call printUnsignedAAsHex
+    inc hl
+    ld a, ' '
+    bcall(_PutC)
+
+    ld a, (hl)
+    call printUnsignedAAsHex
+    inc hl
+    ld a, ' '
+    bcall(_PutC)
+
+    ld a, (hl)
+    call printUnsignedAAsHex
+    inc hl
+    ld a, ' '
+    bcall(_PutC)
+
+    ld a, (hl)
+    call printUnsignedAAsHex
+
+    pop de
+    ld (CurRow), de
+    pop hl
+    pop de
+    pop af
+    ret
+
+printUnsignedAAsHex:
+    push af
+    srl a
+    srl a
+    srl a
+    srl a
+    call convertAToChar
+    bcall(_PutC)
+
+    pop af
+    and $0F
+    call convertAToChar
     bcall(_PutC)
     ret

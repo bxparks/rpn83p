@@ -81,71 +81,154 @@ handleKeyNumberAppend:
     ; Unconditionally append character in A.
     jp appendInputBuf
 
+;-----------------------------------------------------------------------------
+
 ; Function: Append '0' to inputBuf.
-; See handleKeyNumber()
 handleKey0:
     ld a, '0'
     jr handleKeyNumber
 
 ; Function: Append '1' to inputBuf.
-; See handleKeyNumber()
 handleKey1:
     ld a, '1'
     jr handleKeyNumber
 
 ; Function: Append '2' to inputBuf.
-; See handleKeyNumber()
 handleKey2:
+    call checkBase8Or10Or16
+    ret nz
     ld a, '2'
     jr handleKeyNumber
 
 ; Function: Append '3' to inputBuf.
-; See handleKeyNumber()
 handleKey3:
+    call checkBase8Or10Or16
+    ret nz
     ld a, '3'
     jr handleKeyNumber
 
 ; Function: Append '4' to inputBuf.
-; See handleKeyNumber()
 handleKey4:
+    call checkBase8Or10Or16
+    ret nz
     ld a, '4'
     jr handleKeyNumber
 
 ; Function: Append '5' to inputBuf.
-; See handleKeyNumber()
 handleKey5:
+    call checkBase8Or10Or16
+    ret nz
     ld a, '5'
     jr handleKeyNumber
 
 ; Function: Append '6' to inputBuf.
-; See handleKeyNumber()
 handleKey6:
+    call checkBase8Or10Or16
+    ret nz
     ld a, '6'
     jr handleKeyNumber
 
 ; Function: Append '7' to inputBuf.
-; See handleKeyNumber()
 handleKey7:
+    call checkBase8Or10Or16
+    ret nz
     ld a, '7'
     jr handleKeyNumber
 
 ; Function: Append '8' to inputBuf.
-; See handleKeyNumber()
 handleKey8:
+    call checkBase10Or16
+    ret nz
     ld a, '8'
     jr handleKeyNumber
 
 ; Function: Append '9' to inputBuf.
-; See handleKeyNumber()
 handleKey9:
+    call checkBase10Or16
+    ret nz
     ld a, '9'
-    jr handleKeyNumber
+    jp handleKeyNumber
+
+; Function: Append 'A' to inputBuf.
+handleKeyA:
+    call checkBase16
+    ret nz
+    ld a, 'A'
+    jp handleKeyNumber
+
+; Function: Append 'B' to inputBuf.
+handleKeyB:
+    call checkBase16
+    ret nz
+    ld a, 'B'
+    jp handleKeyNumber
+
+; Function: Append 'C' to inputBuf.
+handleKeyC:
+    call checkBase16
+    ret nz
+    ld a, 'C'
+    jp handleKeyNumber
+
+; Function: Append 'D' to inputBuf.
+handleKeyD:
+    call checkBase16
+    ret nz
+    ld a, 'D'
+    jp handleKeyNumber
+
+; Function: Append 'E' to inputBuf.
+handleKeyE:
+    call checkBase16
+    ret nz
+    ld a, 'E'
+    jp handleKeyNumber
+
+; Function: Append 'F' to inputBuf.
+handleKeyF:
+    call checkBase16
+    ret nz
+    ld a, 'F'
+    jp handleKeyNumber
+
+; Description: Return ZF=1 if BaseMode is 8, 10, or 16.
+checkBase8Or10Or16:
+    ld a, (baseMode)
+    cp 8
+    ret z
+    cp 10
+    ret z
+    cp 16
+    ret
+
+; Description: Return ZF=1 if BaseMode is 10, or 16.
+checkBase10Or16:
+    ld a, (baseMode)
+    cp 10
+    ret z
+    cp 16
+    ret
+
+; Description: Return ZF=1 if BaseMode is 16.
+checkBase16:
+    ld a, (baseMode)
+    cp 16
+    ret
+
+; Description: Return ZF=1 if BaseMode is 10.
+checkBase10:
+    ld a, (baseMode)
+    cp 10
+    ret
 
 ; Function: Append a '.' if not already entered.
 ; Input: none
 ; Output: (iy+inputBufFlags) DecPnt set
 ; Destroys: A, DE, HL
 handleKeyDecPnt:
+    ; DecPnt is supported only in Base 10.
+    call checkBase10
+    ret nz
     ; Do nothing if in arg editing mode.
     bit rpnFlagsArgMode, (iy + rpnFlags)
     ret nz
@@ -169,6 +252,9 @@ handleKeyDecPnt:
 ; Output: (inputBufEEPos), (inputBufFlagsEE, iy+inputBufFlags)
 ; Destroys: A, HL
 handleKeyEE:
+    ; EE is supported only in Base 10.
+    call checkBase10
+    ret nz
     ; do nothing if EE already exists
     bit inputBufFlagsEE, (iy + inputBufFlags)
     ret nz
@@ -318,6 +404,10 @@ handleKeyClearHitOnce:
 ; Output: (inputBuf), X
 ; Destroys: all, OP1
 handleKeyChs:
+    ; TODO: CHS currently support only Base 10, but might be worth extending
+    ; this to other bases.
+    call checkBase10
+    ret nz
     bit rpnFlagsEditing, (iy + rpnFlags)
     jr nz, handleKeyChsInputBuf
 handleKeyChsX:
@@ -332,7 +422,7 @@ handleKeyChsInputBuf:
     ld hl, inputBuf
     ld b, inputBufMax
     ld a, (inputBufEEPos) ; offset to EE digit, or 0 if 'E' does not exist
-    jp flipInputBufSign
+    ; [[fallthrough]]
 
 ; Description: Add or remove the '-' char at position A of the Pascal string at
 ; HL, with maximum length B.
@@ -671,52 +761,36 @@ handleKeyMenuA:
 ; Output:
 ; Destroys: all, OP1, OP2, OP4
 handleKeyAdd:
-    call closeInputBuf
-    call rclX
-    bcall(_OP1ToOP2)
-    call rclY
+    call closeInputAndRecallXY
     bcall(_FPAdd) ; Y + X
-    call replaceXY
-    ret
+    jp replaceXY
 
 ; Function: Handle the Sub key.
 ; Input: inputBuf
 ; Output:
 ; Destroys: all, OP1, OP2, OP4
 handleKeySub:
-    call closeInputBuf
-    call rclX
-    bcall(_OP1ToOP2)
-    call rclY
+    call closeInputAndRecallXY
     bcall(_FPSub) ; Y - X
-    call replaceXY
-    ret
+    jp replaceXY
 
 ; Function: Handle the Mul key.
 ; Input: inputBuf
 ; Output:
 ; Destroys: all, OP1, OP2, OP4, OP5
 handleKeyMul:
-    call closeInputBuf
-    call rclX
-    bcall(_OP1ToOP2)
-    call rclY
+    call closeInputAndRecallXY
     bcall(_FPMult) ; Y * X
-    call replaceXY
-    ret
+    jp replaceXY
 
 ; Function: Handle the Div key.
 ; Input: inputBuf
 ; Output:
 ; Destroys: all, OP1, OP2, OP4
 handleKeyDiv:
-    call closeInputBuf
-    call rclX
-    bcall(_OP1ToOP2)
-    call rclY
+    call closeInputAndRecallXY
     bcall(_FPDiv) ; Y / X
-    call replaceXY
-    ret
+    jp replaceXY
 
 ;-----------------------------------------------------------------------------
 ; Constants: pi and e. There does not seem to be an existing bcall() that loads
@@ -746,37 +820,27 @@ handleKeyEuler:
 
 ; Function: y^x
 handleKeyExpon:
-    call closeInputBuf
-    call rclX
-    bcall(_OP1ToOP2)
-    call rclY
+    call closeInputAndRecallXY
     bcall(_YToX)
-    call replaceXY
-    ret
+    jp replaceXY
 
 ; Function: 1/x
 handleKeyInv:
-    call closeInputBuf
-    call rclX
+    call closeInputAndRecallX
     bcall(_FPRecip)
-    call replaceX
-    ret
+    jp replaceX
 
 ; Function: x^2
 handleKeySquare:
-    call closeInputBuf
-    call rclX
+    call closeInputAndRecallX
     bcall(_FPSquare)
-    call replaceX
-    ret
+    jp replaceX
 
 ; Function: sqrt(x)
 handleKeySqrt:
-    call closeInputBuf
-    call rclX
+    call closeInputAndRecallX
     bcall(_SqRoot)
-    call replaceX
-    ret
+    jp replaceX
 
 ;-----------------------------------------------------------------------------
 ; Stack operations
@@ -784,103 +848,79 @@ handleKeySqrt:
 
 handleKeyRotDown:
     call closeInputBuf
-    call rotDownStack
-    ret
+    jp rotDownStack
 
 handleKeyRotUp:
     call closeInputBuf
-    call rotUpStack
-    ret
+    jp rotUpStack
 
 handleKeyExchangeXY:
     call closeInputBuf
-    call exchangeXYStack
-    ret
+    jp exchangeXYStack
 
 handleKeyAns:
     call closeInputBuf
     call rclLastX
     call liftStackNonEmpty
-    call stoX
-    ret
+    jp stoX
 
 ;-----------------------------------------------------------------------------
 ; Transcendentals
 ;-----------------------------------------------------------------------------
 
 handleKeyLog:
-    call closeInputBuf
-    call rclX
+    call closeInputAndRecallX
     bcall(_LogX)
-    call replaceX
-    ret
+    jp replaceX
 
 handleKeyALog:
-    call closeInputBuf
-    call rclX
+    call closeInputAndRecallX
     bcall(_TenX)
-    call replaceX
-    ret
+    jp replaceX
 
 handleKeyLn:
-    call closeInputBuf
-    call rclX
+    call closeInputAndRecallX
     bcall(_LnX)
-    call replaceX
-    ret
+    jp replaceX
 
 handleKeyExp:
-    call closeInputBuf
-    call rclX
+    call closeInputAndRecallX
     bcall(_EToX)
-    call replaceX
-    ret
+    jp replaceX
 
 ;-----------------------------------------------------------------------------
 ; Trignometric
 ;-----------------------------------------------------------------------------
 
 handleKeySin:
-    call closeInputBuf
-    call rclX
+    call closeInputAndRecallX
     bcall(_Sin)
-    call replaceX
-    ret
+    jp replaceX
 
 handleKeyCos:
-    call closeInputBuf
-    call rclX
+    call closeInputAndRecallX
     bcall(_Cos)
-    call replaceX
-    ret
+    jp replaceX
 
 handleKeyTan:
-    call closeInputBuf
-    call rclX
+    call closeInputAndRecallX
     bcall(_Tan)
-    call replaceX
-    ret
+    jp replaceX
 
 handleKeyASin:
-    call closeInputBuf
-    call rclX
+    call closeInputAndRecallX
     bcall(_ASin)
-    call replaceX
-    ret
+    jp replaceX
 
 handleKeyACos:
-    call closeInputBuf
-    call rclX
+    call closeInputAndRecallX
     bcall(_ACos)
-    call replaceX
-    ret
+    jp replaceX
 
 handleKeyATan:
-    call closeInputBuf
-    call rclX
+    call closeInputAndRecallX
     bcall(_ATan)
-    call replaceX
-    ret
+    jp replaceX
 
 ;-----------------------------------------------------------------------------
 ; Buttons bound to menu groups.
@@ -893,3 +933,19 @@ handleKeyMath:
 handleKeyMode:
     ld a, mModeId ; MODE triggers the MODE menu.
     jp mGroupHandler
+
+;-----------------------------------------------------------------------------
+; Common code fragments, to save space.
+;-----------------------------------------------------------------------------
+
+; Close the input buffer, and recall Y and X into OP1 and OP2 respectively.
+closeInputAndRecallXY:
+    call closeInputBuf
+    call rclX
+    bcall(_OP1ToOP2)
+    jp rclY
+
+; Close the input buffer, and recall X into OP1 respectively.
+closeInputAndRecallX:
+    call closeInputBuf
+    jp rclX

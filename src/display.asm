@@ -38,8 +38,9 @@ menuPenColEnd   equ 96
 
 ; Function: Set the display flags to dirty initially so that they are rendered.
 initDisplay:
-    set rpnFlagsTrigModeDirty, (iy + rpnFlags)
     set rpnFlagsFloatModeDirty, (iy + rpnFlags)
+    set rpnFlagsTrigModeDirty, (iy + rpnFlags)
+    set rpnFlagsBaseModeDirty, (iy + rpnFlags)
     set inputBufFlagsInputDirty, (iy + inputBufFlags)
     ret
 
@@ -57,8 +58,9 @@ displayAll:
     ; Reset dirty flags
     res rpnFlagsStackDirty, (iy + rpnFlags)
     res rpnFlagsMenuDirty, (iy + rpnFlags)
-    res rpnFlagsTrigModeDirty, (iy + rpnFlags)
     res rpnFlagsFloatModeDirty, (iy + rpnFlags)
+    res rpnFlagsTrigModeDirty, (iy + rpnFlags)
+    res rpnFlagsBaseModeDirty, (iy + rpnFlags)
     res inputBufFlagsInputDirty, (iy + inputBufFlags)
     ret
 
@@ -72,10 +74,14 @@ displayAll:
 ; Destroys: A, B, C, HL
 displayStatus:
     call displayStatusMenu
-    call displayStatusTrig
     call displayStatusFloatMode
+    call displayStatusTrig
+    call displayStatusBase
     ret
 
+; Description: Display the up and down arrows that indicate whether there are
+; additional menus above or below the current set of 5 menu buttons.
+; TODO: Maybe rename this "displayStatusArrows".
 displayStatusMenu:
     bit rpnFlagsMenuDirty, (iy + rpnFlags)
     ret z
@@ -151,11 +157,43 @@ displayStatusTrigUpdate:
     bit trigDeg, (iy + trigFlags)
     jr z, displayStatusTrigRad
 displayStatusTrigDeg:
-    ld hl, msgStatusTrigDeg
+    ld hl, mDegName
     jr displayStatusTrigPutS
 displayStatusTrigRad:
-    ld hl, msgStatusTrigRad
+    ld hl, mRadName
 displayStatusTrigPutS:
+    bcall(_VPutS)
+    ret
+
+;-----------------------------------------------------------------------------
+
+; Description: Display the Base: BIN, OCT, DEC, HEX.
+displayStatusBase:
+    bit rpnFlagsBaseModeDirty, (iy + rpnFlags)
+    ret z
+displayStatusBaseUpdate:
+    ld hl, statusPenRow*$100 + statusBasePenCol; $(penRow)(penCol)
+    ld (PenCol), hl
+    ; Determine current base mode.
+    ld a, (baseMode)
+    cp 2
+    jr z, displayStatusBaseBin
+    cp 8
+    jr z, displayStatusBaseOct
+    cp 16
+    jr z, displayStatusBaseHex
+displayStatusBaseDec: ; Use Base 10 for anything else
+    ld hl, mDecName
+    jr displayStatusBasePutS
+displayStatusBaseHex:
+    ld hl, mHexName
+    jr displayStatusBasePutS
+displayStatusBaseOct:
+    ld hl, mOctName
+    jr displayStatusBasePutS
+displayStatusBaseBin:
+    ld hl, mBinName
+displayStatusBasePutS:
     bcall(_VPutS)
     ret
 
@@ -566,15 +604,170 @@ clearMenus:
 ; Input: OP1: floating point number
 ; Destroys: A, HL, OP3
 printOP1:
+    ld a, (baseMode)
+    cp a, 16
+    jr z, printOP1Base16
+    cp a, 8
+    jr z, printOP1Base8
+    cp a, 2
+    jp z, printOP1Base2
+    ; [[fallthrough]]
+
+;-----------------------------------------------------------------------------
+
+; Function: Print floating point number at OP1 using base 10.
+; Input: OP1: floating point number
+; Destroys: A, HL, OP3
+printOP1Base10:
     ld a, 15 ; width of output
     bcall(_FormReal)
     ld hl, OP3
+    ; [[fallthrough]]
+
+; Description: Print the C-string referenced by HL, and erase to the end of
+; line, taking care that the cursor did not move to the next line
+; automatically.
+; Input: HL: pointer to C-string
+; Output:
+; Destroys: A, HL
+printHLString:
     bcall(_PutS)
     ld a, (CurCol)
     or a
     ret z ; if spilled to next line, don't call EraseEOL
     bcall(_EraseEOL)
     ret
+
+; Description: Print an indicator ("...") that the OP1 number cannot be
+; rendered in the current base mode (hex, oct, or bin).
+printOP1BaseInvalid:
+    ld hl, msgInvalidBase
+    jr printHLString
+
+;-----------------------------------------------------------------------------
+
+; Function: Print ingeger at OP1 at the current cursor in base 16. Erase to
+; the end of line (but only if the floating point did not spill over to the
+; next line).
+; Destroys: all
+printOP1Base16:
+    call op2Set2Pow32 ; OP2 = 2^32
+    bcall(_CpOP1OP2) ; if OP1 >= 2^32: CF=0
+    jr nc, printOP1BaseInvalid
+
+    bcall(_CkOP1FP0) ; if OP1 == 0: ZF=1
+    jr z, printOP1Base16Valid
+
+    bcall(_CkOP1Pos) ; if OP1 > 0: ZF=1
+    jr nz, printOP1BaseInvalid
+
+printOP1Base16Valid:
+    bcall(_PushRealO1) ; FPS = OP1 (save)
+    bcall(_Trunc) ; OP1 = trunc(OP1)
+printOP1Base16String:
+    call convertOP1ToU32OP3
+    ld hl, OP3
+    ld de, OP4
+#ifdef DEBUG
+    call debugU32AsHex
+#endif
+    call convertU32ToHexString
+
+    ; Check if OP1 was a pure integer
+    push de ; DE = hex string
+    bcall(_PopRealO1) ; OP1 = original OP1
+    bcall(_Frac) ; OP1 = frac(OP1)
+    bcall(_CkOP1FP0) ; if frac(OP1) == 0: ZF=1
+    pop hl ; HL = hex string
+    jr z, printHLString
+    ld a, '.'
+    call appendAToU32HexString
+    jr printHLString
+
+;-----------------------------------------------------------------------------
+
+; Function: Print ingeger at OP1 at the current cursor in base 8. Erase to
+; the end of line (but only if the floating point did not spill over to the
+; next line).
+; Destroys: all
+printOP1Base8:
+    call op2Set2Pow32 ; OP2 = 2^32
+    bcall(_CpOP1OP2) ; if OP1 >= 2^32: CF=0
+    jr nc, printOP1BaseInvalid
+
+    bcall(_CkOP1FP0) ; if OP1 == 0: ZF=1
+    jr z, printOP1Base8Valid
+
+    bcall(_CkOP1Pos) ; if OP1 > 0: ZF=1
+    jr nz, printOP1BaseInvalid
+
+printOP1Base8Valid:
+    bcall(_PushRealO1) ; FPS = OP1 (save)
+    bcall(_Trunc) ; OP1 = trunc(OP1)
+printOP1Base8String:
+    call convertOP1ToU32OP3
+    ld hl, OP3
+    ld de, OP4
+#ifdef DEBUG
+    call debugU32AsHex
+#endif
+    call convertU32ToOctString
+
+    ; Check if OP1 was a pure integer
+    push de ; DE = rendered string
+    bcall(_PopRealO1) ; OP1 = original OP1
+    bcall(_Frac) ; OP1 = frac(OP1)
+    bcall(_CkOP1FP0) ; if frac(OP1) == 0: ZF=1
+    pop hl ; HL = rendered string
+    jr z, printHLString
+    ld a, '.'
+    call appendAToU32OctString
+    jp printHLString
+
+;-----------------------------------------------------------------------------
+
+; Description: Print ingeger at OP1 at the current cursor in base 2. Erase to
+; the end of line (but only if the floating point did not spill over to the
+; next line). A single line can display a maximum of 15 digits, but we need
+; space for a trailing ".", so the maximum number of binary digits is 14, which
+; means that we can display numbers which are < 2^14.
+; Input: OP1: non-negative floating point number < 2^14
+; Destroys: all
+printOP1Base2:
+    call op2Set2Pow14 ; OP2 = 2^14
+    bcall(_CpOP1OP2) ; if OP1 >= 2^14: CF=0
+    jp nc, printOP1BaseInvalid
+
+    bcall(_CkOP1FP0) ; if OP1 == 0: ZF=1
+    jr z, printOP1Base2Valid
+
+    bcall(_CkOP1Pos) ; if OP1 > 0: ZF=1
+    jp nz, printOP1BaseInvalid
+
+printOP1Base2Valid:
+    bcall(_PushRealO1) ; FPS = OP1 (save)
+    bcall(_Trunc) ; OP1 = trunc(OP1)
+printOP1Base2String:
+    call convertOP1ToU32OP3
+    ld hl, OP3
+    ld de, OP4
+#ifdef DEBUG
+    call debugU32AsHex
+#endif
+    call convertU32ToBinString
+
+    ; Check if OP1 was a pure integer
+    push de ; DE = rendered string
+    bcall(_PopRealO1) ; OP1 = original OP1
+    bcall(_Frac) ; OP1 = frac(OP1)
+    bcall(_CkOP1FP0) ; if frac(OP1) == 0: ZF=1
+    pop hl ; HL = rendered string
+    jp z, printHLString
+    ld a, '.'
+    call appendAToU32BinString
+    jp printHLString
+
+;-----------------------------------------------------------------------------
 
 ; Function: Convert A to 3-digit nul terminated C string at the buffer pointed
 ; by HL. This is intended for debugging, so it is not optimized.
@@ -699,12 +892,11 @@ vPutSEnd:
 
 ;-----------------------------------------------------------------------------
 
-; "DEG" and "RAD" trig indicators
-msgStatusTrigDeg:
-    .db "DEG", 0
-msgStatusTrigRad:
-    .db "RAD", 0
+; Indicates number cannot be rendered in the current Base mode.
+msgInvalidBase:
+    .db "...", 0
 
+; RPN stack variable labels
 msgTLabel:
     .db "T:", 0
 msgZLabel:
