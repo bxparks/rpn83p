@@ -86,6 +86,10 @@ calcOP3Times10:
     pop de
     ret
 
+;-----------------------------------------------------------------------------
+; Routines related to U32 stored as 4 bytes in little endian format.
+;-----------------------------------------------------------------------------
+
 ; Description: Calculate (DE) = u32(HL) * 10.
 ; Input:
 ;   - HL: pointer to a u32 integer, little-endian format
@@ -206,6 +210,23 @@ clearU32:
     pop af
     ret
 
+; Description: Shift U32 right logical.
+; Destroys: none
+shiftRightLogicalU32:
+    inc hl
+    inc hl
+    inc hl ; HL = &buf[3]
+    srl (hl) ; CF = least significant bit
+    dec hl ; HL = &buf[2]
+    rr (hl)
+    dec hl ; HL = &buf[1]
+    rr (hl)
+    dec hl ; HL = &buf[0]
+    rr (hl)
+    ret
+
+;-----------------------------------------------------------------------------
+; Routines related to Hex strings.
 ;-----------------------------------------------------------------------------
 
 ; Description: Converts 32-bit unsigned integer referenced by HL to a hex
@@ -216,8 +237,7 @@ clearU32:
 ;   terminator). This will usually be one of the OPx registers each of them
 ;   being 11 bytes long.
 ; Output:
-;   - (DE): C-string representation of u32 as hexadecimal, in reverse order,
-;   NUL terminated
+;   - (DE): C-string representation of u32 as hexadecimal
 ; Destroys: A
 convertU32ToHexString:
     push bc
@@ -334,6 +354,70 @@ appendAToU32HexString:
     ld (hl), a ; buf[8] = A
     inc hl
     ld (hl), d ; buf[9] = 0
+
+    pop de
+    pop hl
+    ret
+
+;-----------------------------------------------------------------------------
+; Routines related to Octal strings.
+;-----------------------------------------------------------------------------
+
+; Description: Converts 32-bit unsigned integer referenced by HL to a octal
+; string in buffer referenced by DE.
+; Input:
+;   - HL: pointer to 32-bit unsigned integer
+;   - DE: pointer to a C-string buffer of at least 12 bytes (11 octal digits
+;   plus NUL terminator). This will usually be 2 consecutive OPx registers,
+;   each 11 bytes long, for a total of 22 bytes.
+; Output:
+;   - (DE): C-string representation of u32 as octal digits
+; Destroys: A
+convertU32ToOctString:
+    push bc
+    push hl
+    push de
+
+    ld b, 11 ; 3 bits * 11 = 33 bits
+convertU32ToOctStringLoop:
+    ld a, (hl)
+    and $07 ; last 3 bits
+    add a, '0' ; convert to octal
+    ld (de), a
+    inc de
+    call shiftRightLogicalU32
+    call shiftRightLogicalU32
+    call shiftRightLogicalU32
+    djnz convertU32ToOctStringLoop
+    xor a
+    ld (de), a
+
+    ; reverse the octal digits
+    pop hl ; HL = destination string pointer
+    push hl
+    ld b, 11
+    call reverseString
+
+    pop de
+    pop hl
+    pop bc
+    ret
+
+; Description: Append char in A to the octal string in HL.
+; Input:
+;   - HL: pointer to NUL terminated string
+;   - A: char to add
+; Destroys: none
+appendAToU32OctString:
+    push hl
+    push de
+
+    ld e, 11
+    ld d, 0
+    add hl, de
+    ld (hl), a ; buf[11] = A
+    inc hl
+    ld (hl), d ; buf[12] = 0
 
     pop de
     pop hl

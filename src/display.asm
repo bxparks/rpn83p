@@ -607,6 +607,8 @@ printOP1:
     ld a, (baseMode)
     cp a, 16
     jr z, printOP1Base16
+    cp a, 8
+    jr z, printOP1Base8
     ; [[fallthrough]]
 
 ;-----------------------------------------------------------------------------
@@ -681,6 +683,51 @@ printOP1Base16Invalid:
 
 msgInvalidBase:
     .db "0.", 0
+
+;-----------------------------------------------------------------------------
+
+; Function: Print ingeger at OP1 at the current cursor in base 8. Erase to
+; the end of line (but only if the floating point did not spill over to the
+; next line).
+; Destroys: all
+printOP1Base8:
+    call op2Set2Pow32 ; OP2 = 2^32
+    bcall(_CpOP1OP2) ; if OP1 >= 2^32: CF=0
+    jr nc, printOP1Base8Invalid
+
+    bcall(_CkOP1FP0) ; if OP1 == 0: ZF=1
+    jr z, printOP1Base8Valid
+
+    bcall(_CkOP1Pos) ; if OP1 > 0: ZF=1
+    jr nz, printOP1Base8Invalid
+
+printOP1Base8Valid:
+    bcall(_PushRealO1) ; FPS = OP1 (save)
+    bcall(_Trunc) ; OP1 = trunc(OP1)
+printOP1Base8String:
+    call convertOP1ToU32OP3
+    ld hl, OP3
+    ld de, OP2
+#ifdef DEBUG
+    call debugU32AsHex
+#endif
+    call convertU32ToOctString
+
+    ; Check if OP1 was a pure integer
+    push de ; DE = hex string
+    bcall(_PopRealO1) ; OP1 = original OP1
+    bcall(_Frac) ; OP1 = frac(OP1)
+    bcall(_CkOP1FP0) ; if frac(OP1) == 0: ZF=1
+    pop hl ; HL = hex string
+    jr z, printHLString
+    ld a, '.'
+    call appendAToU32OctString
+printOP1Base8PureInt:
+    jp printHLString
+
+printOP1Base8Invalid:
+    ld hl, msgInvalidBase
+    jp printHLString
 
 ;-----------------------------------------------------------------------------
 
