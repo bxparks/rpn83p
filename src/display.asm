@@ -612,7 +612,9 @@ printOP1BaseInvalid:
 ; Function: Print ingeger at OP1 at the current cursor in base 16. Erase to
 ; the end of line (but only if the floating point did not spill over to the
 ; next line).
-; Destroys: all
+; TODO: I think printOP1Base16(), printOP1Base8(), and printOP1Base2() can be
+; combined into a single subroutine, saving memory.
+; Destroys: all, OP1, OP2, OP3, OP4
 printOP1Base16:
     call op2Set2Pow32 ; OP2 = 2^32
     bcall(_CpOP1OP2) ; if OP1 >= 2^32: CF=0
@@ -649,7 +651,7 @@ printOP1Base16String:
 ; Function: Print ingeger at OP1 at the current cursor in base 8. Erase to
 ; the end of line (but only if the floating point did not spill over to the
 ; next line).
-; Destroys: all
+; Destroys: all, OP1, OP2, OP3, OP4, OP5
 printOP1Base8:
     call op2Set2Pow32 ; OP2 = 2^32
     bcall(_CpOP1OP2) ; if OP1 >= 2^32: CF=0
@@ -689,7 +691,7 @@ printOP1Base8String:
 ; space for a trailing ".", so the maximum number of binary digits is 14, which
 ; means that we can display numbers which are < 2^14.
 ; Input: OP1: non-negative floating point number < 2^14
-; Destroys: all
+; Destroys: all, OP1, OP2, OP3, OP4, OP5
 printOP1Base2:
     call op2Set2Pow14 ; OP2 = 2^14
     bcall(_CpOP1OP2) ; if OP1 >= 2^14: CF=0
@@ -723,8 +725,9 @@ printOP1Base2String:
 
 ;-----------------------------------------------------------------------------
 
-; Function: Convert A to 3-digit nul terminated C string at the buffer pointed
-; by HL. This is intended for debugging, so it is not optimized.
+; Function: Convert A to a NUL-terminated C-string of 1 to 3 digits at the
+; buffer pointed by HL. This is intended for debugging, so it is not optimized.
+; TODO: This can probably be written to be faster and smaller.
 ; Input: HL: pointer to string buffer
 ; Output: HL unchanged, with 1-3 ASCII string, terminated by NUL
 ; Destroys: A, B, C
@@ -757,7 +760,7 @@ convertAToDec0:
     pop hl
     ret
 
-; Function: Return A / C using repeated substraction.
+; Function: Return A / B using repeated substraction.
 ; Input:
 ;   - A: numerator
 ;   - B: denominator
@@ -810,7 +813,8 @@ vEraseEOLLoop:
 ; See TI-83 Plus System Routine SDK docs for VPutS() for a reference
 ; implementation of this function.
 ; Input: HL: pointer to string using small font
-; Destroys: none
+; Destroys: HL
+smallFontHeight equ 7
 vPutS:
     push af
     push de
@@ -831,7 +835,7 @@ vPutSenter:
     ld (hl), a ; PenCol = 0
     inc hl ; PenRow
     ld a, (hl) ; A = PenRow
-    add a, 7 ; height of small font characters
+    add a, smallFontHeight
     ld (hl), a ; PenRow += 7
     pop hl
     pop af

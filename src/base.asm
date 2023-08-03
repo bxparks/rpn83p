@@ -233,6 +233,9 @@ hexNumberWidth equ 8 ; 4 bits * 8 = 32 bits
 
 ; Description: Converts 32-bit unsigned integer referenced by HL to a hex
 ; string in buffer referenced by DE.
+; TODO: It might be possible to combine convertU32ToHexString(),
+; convertU32ToOctString(), and convertU32ToBinString() into a single routine.
+;
 ; Input:
 ;   - HL: pointer to 32-bit unsigned integer
 ;   - DE: pointer to a C-string buffer of at least 9 bytes (8 digits plus NUL
