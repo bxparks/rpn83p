@@ -279,11 +279,10 @@ convertU32ToHexStringLoop:
 ; Input:
 ;   - HL: reference to C-string
 ;   - B: number of characters
-; Output:
-;   - HL: reference to C-string
-;   - B: number of characters
+; Output: string in (HL) reversed
 ; Destroys: A, B, DE, HL
 reverseString:
+    ; test for 0-length string
     ld a, b
     or a
     ret z
