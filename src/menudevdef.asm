@@ -119,7 +119,7 @@ mBaseId equ 10
     .db mRootId ; parentId
     .db mBaseNameId ; nameId
     .db 1 ; numStrips
-    .db mHexId ; stripBeginId
+    .db mDecId ; stripBeginId
     .dw mGroupHandler ; handler (predefined)
 mBlank011:
 mBlank011Id equ 11
@@ -835,22 +835,22 @@ mKwToHpId equ 96
     .dw mKwToHpHandler ; handler (to be implemented)
 ; MenuGroup BASE: children
 ; MenuGroup BASE: children: strip 0
-mHex:
-mHexId equ 97
-    .db mHexId ; id
-    .db mBaseId ; parentId
-    .db mHexNameId ; nameId
-    .db 0 ; numStrips
-    .db 0 ; stripBeginId
-    .dw mHexHandler ; handler (to be implemented)
 mDec:
-mDecId equ 98
+mDecId equ 97
     .db mDecId ; id
     .db mBaseId ; parentId
     .db mDecNameId ; nameId
     .db 0 ; numStrips
     .db 0 ; stripBeginId
     .dw mDecHandler ; handler (to be implemented)
+mHex:
+mHexId equ 98
+    .db mHexId ; id
+    .db mBaseId ; parentId
+    .db mHexNameId ; nameId
+    .db 0 ; numStrips
+    .db 0 ; stripBeginId
+    .dw mHexHandler ; handler (to be implemented)
 mOct:
 mOctId equ 99
     .db mOctId ; id
@@ -1034,10 +1034,10 @@ mHpToKwNameId equ 76
     .dw mHpToKwName
 mKwToHpNameId equ 77
     .dw mKwToHpName
-mHexNameId equ 78
-    .dw mHexName
-mDecNameId equ 79
+mDecNameId equ 78
     .dw mDecName
+mHexNameId equ 79
+    .dw mHexName
 mOctNameId equ 80
     .dw mOctName
 mBinNameId equ 81
@@ -1202,10 +1202,10 @@ mHpToKwName:
     .db Sconvert, 'k', 'W', 0
 mKwToHpName:
     .db Sconvert, 'h', 'p', 0
-mHexName:
-    .db "HEX", 0
 mDecName:
     .db "DEC", 0
+mHexName:
+    .db "HEX", 0
 mOctName:
     .db "OCT", 0
 mBinName:

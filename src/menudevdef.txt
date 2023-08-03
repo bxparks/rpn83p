@@ -151,8 +151,8 @@ MenuGroup root mRoot [
     ]
     MenuGroup BASE mBase [
       MenuStrip [
-        MenuItem HEX mHex # hexadecimal
         MenuItem DEC mDec # decimal
+        MenuItem HEX mHex # hexadecimal
         MenuItem OCT mOct # octal
         MenuItem BIN mBin # binary
         MenuItem BOPS mBops # base operations
