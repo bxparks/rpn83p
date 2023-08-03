@@ -2,17 +2,18 @@
 ; Common utilties that are useful in multiple modules.
 ;-----------------------------------------------------------------------------
 
-; Function: getString(A, HL) -> HL
-; Description: Get the string pointer at index A starting with base pointer HL.
+; Description: Get the string pointer at index A given an array of pointers at
+; base pointer HL.
 ; Input:
 ;   A: index
-;   HL: base pointer
+;   HL: pointer to an array of pointers
 ; Output: HL: pointer to a string
 ; Destroys: DE, HL
+; Preserves: A
 getString:
     ld e, a
     ld d, 0
-    add hl, de ; hl += a * 2
+    add hl, de ; HL += A * 2
     add hl, de
     ld e, (hl)
     inc hl
