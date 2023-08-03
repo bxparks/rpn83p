@@ -618,6 +618,12 @@ printOP1Base10:
     ld hl, OP3
     ; [[fallthrough]]
 
+; Description: Print the C-string referenced by HL, and erase to the end of
+; line, taking care that the cursor did not move to the next line
+; automatically.
+; Input: HL: pointer to C-string
+; Output:
+; Destroys: A, HL
 printHLString:
     bcall(_PutS)
     ld a, (CurCol)
@@ -631,11 +637,19 @@ printHLString:
 ; next line).
 ; Destroys: all
 printOP1Base16:
-    bcall(_CkPosInt) ; if OP1 is int >= 0: Z=1
-    jr nz, printOP1Base16Invalid
     call op2Set2Pow32 ; OP2 = 2^32
     bcall(_CpOP1OP2) ; if OP1 >= 2^32: CF=0
     jr nc, printOP1Base16Invalid
+
+    bcall(_CkOP1FP0) ; if OP1 == 0: ZF=1
+    jr z, printOP1Base16Valid
+
+    bcall(_CkOP1Pos) ; if OP1 > 0: ZF=1
+    jr nz, printOP1Base16Invalid
+
+printOP1Base16Valid:
+    bcall(_PushRealO1) ; FPS = OP1 (save)
+    bcall(_Trunc) ; OP1 = trunc(OP1)
 printOP1Base16String:
     call convertOP1ToU32OP3
     ld hl, OP3
@@ -647,6 +661,17 @@ printOP1Base16String:
     ex de, hl ; HL = OP2
     ld b, 8
     call reverseString
+
+    ; Check if OP1 was a pure integer
+    push hl
+    bcall(_PopRealO1) ; OP1 = original OP1
+    bcall(_Frac) ; OP1 = frac(OP1)
+    bcall(_CkOP1FP0) ; if frac(OP1) == 0: ZF=1
+    pop hl
+    jr z, printHLString
+    ld a, '.'
+    call appendAToU32HexString
+printOP1Base16PureInt:
     jr printHLString
 
 printOP1Base16Invalid:

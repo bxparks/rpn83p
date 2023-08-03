@@ -315,3 +315,25 @@ reverseStringLoop:
     pop de
     pop bc
     ret
+
+;-----------------------------------------------------------------------------
+
+; Description: Append char in A to the string in HL.
+; Input:
+;   - HL: pointer to NUL terminated string
+;   - A: char to add
+; Destroys: none
+appendAToU32HexString:
+    push hl
+    push de
+
+    ld e, 8
+    ld d, 0
+    add hl, de
+    ld (hl), a ; buf[8] = A
+    inc hl
+    ld (hl), d ; buf[9] = 0
+
+    pop de
+    pop hl
+    ret
