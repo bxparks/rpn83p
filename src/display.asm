@@ -638,6 +638,12 @@ printHLString:
     bcall(_EraseEOL)
     ret
 
+; Description: Print an indicator ("...") that the OP1 number cannot be
+; rendered in the current base mode (hex, oct, or bin).
+printOP1BaseInvalid:
+    ld hl, msgInvalidBase
+    jr printHLString
+
 ;-----------------------------------------------------------------------------
 
 ; Function: Print ingeger at OP1 at the current cursor in base 16. Erase to
@@ -647,13 +653,13 @@ printHLString:
 printOP1Base16:
     call op2Set2Pow32 ; OP2 = 2^32
     bcall(_CpOP1OP2) ; if OP1 >= 2^32: CF=0
-    jr nc, printOP1Base16Invalid
+    jr nc, printOP1BaseInvalid
 
     bcall(_CkOP1FP0) ; if OP1 == 0: ZF=1
     jr z, printOP1Base16Valid
 
     bcall(_CkOP1Pos) ; if OP1 > 0: ZF=1
-    jr nz, printOP1Base16Invalid
+    jr nz, printOP1BaseInvalid
 
 printOP1Base16Valid:
     bcall(_PushRealO1) ; FPS = OP1 (save)
@@ -678,13 +684,6 @@ printOP1Base16String:
     call appendAToU32HexString
     jr printHLString
 
-printOP1Base16Invalid:
-    ld hl, msgInvalidBase
-    jr printHLString
-
-msgInvalidBase:
-    .db "0.", 0
-
 ;-----------------------------------------------------------------------------
 
 ; Function: Print ingeger at OP1 at the current cursor in base 8. Erase to
@@ -694,13 +693,13 @@ msgInvalidBase:
 printOP1Base8:
     call op2Set2Pow32 ; OP2 = 2^32
     bcall(_CpOP1OP2) ; if OP1 >= 2^32: CF=0
-    jr nc, printOP1Base8Invalid
+    jr nc, printOP1BaseInvalid
 
     bcall(_CkOP1FP0) ; if OP1 == 0: ZF=1
-    jr z, printOP1Base8Valid
+    jr z, printOP1BaseValid
 
     bcall(_CkOP1Pos) ; if OP1 > 0: ZF=1
-    jr nz, printOP1Base8Invalid
+    jr nz, printOP1BaseInvalid
 
 printOP1Base8Valid:
     bcall(_PushRealO1) ; FPS = OP1 (save)
@@ -725,10 +724,6 @@ printOP1Base8String:
     call appendAToU32OctString
     jp printHLString
 
-printOP1Base8Invalid:
-    ld hl, msgInvalidBase
-    jp printHLString
-
 ;-----------------------------------------------------------------------------
 
 ; Description: Print ingeger at OP1 at the current cursor in base 2. Erase to
@@ -741,13 +736,13 @@ printOP1Base8Invalid:
 printOP1Base2:
     call op2Set2Pow14 ; OP2 = 2^14
     bcall(_CpOP1OP2) ; if OP1 >= 2^14: CF=0
-    jr nc, printOP1Base2Invalid
+    jp nc, printOP1BaseInvalid
 
     bcall(_CkOP1FP0) ; if OP1 == 0: ZF=1
     jr z, printOP1Base2Valid
 
     bcall(_CkOP1Pos) ; if OP1 > 0: ZF=1
-    jr nz, printOP1Base2Invalid
+    jp nz, printOP1BaseInvalid
 
 printOP1Base2Valid:
     bcall(_PushRealO1) ; FPS = OP1 (save)
@@ -770,11 +765,6 @@ printOP1Base2String:
     jp z, printHLString
     ld a, '.'
     call appendAToU32BinString
-    jp printHLString
-
-; TODO: merge with printOP1Base16Invalid(), printOP1Base8Invalid()
-printOP1Base2Invalid:
-    ld hl, msgInvalidBase
     jp printHLString
 
 ;-----------------------------------------------------------------------------
@@ -901,6 +891,10 @@ vPutSEnd:
     ret
 
 ;-----------------------------------------------------------------------------
+
+; Indicates number cannot be rendered in the current Base mode.
+msgInvalidBase:
+    .db "...", 0
 
 ; RPN stack variable labels
 msgTLabel:
