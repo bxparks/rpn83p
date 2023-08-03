@@ -696,7 +696,7 @@ printOP1Base8:
     jr nc, printOP1BaseInvalid
 
     bcall(_CkOP1FP0) ; if OP1 == 0: ZF=1
-    jr z, printOP1BaseValid
+    jr z, printOP1Base8Valid
 
     bcall(_CkOP1Pos) ; if OP1 > 0: ZF=1
     jr nz, printOP1BaseInvalid

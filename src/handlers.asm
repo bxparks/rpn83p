@@ -215,11 +215,20 @@ checkBase16:
     cp 16
     ret
 
+; Description: Return ZF=1 if BaseMode is 10.
+checkBase10:
+    ld a, (baseMode)
+    cp 10
+    ret
+
 ; Function: Append a '.' if not already entered.
 ; Input: none
 ; Output: (iy+inputBufFlags) DecPnt set
 ; Destroys: A, DE, HL
 handleKeyDecPnt:
+    ; DecPnt is supported only in Base 10.
+    call checkBase10
+    ret nz
     ; Do nothing if in arg editing mode.
     bit rpnFlagsArgMode, (iy + rpnFlags)
     ret nz
@@ -243,6 +252,9 @@ handleKeyDecPnt:
 ; Output: (inputBufEEPos), (inputBufFlagsEE, iy+inputBufFlags)
 ; Destroys: A, HL
 handleKeyEE:
+    ; EE is supported only in Base 10.
+    call checkBase10
+    ret nz
     ; do nothing if EE already exists
     bit inputBufFlagsEE, (iy + inputBufFlags)
     ret nz
@@ -392,6 +404,10 @@ handleKeyClearHitOnce:
 ; Output: (inputBuf), X
 ; Destroys: all, OP1
 handleKeyChs:
+    ; TODO: CHS currently support only Base 10, but might be worth extending
+    ; this to other bases.
+    call checkBase10
+    ret nz
     bit rpnFlagsEditing, (iy + rpnFlags)
     jr nz, handleKeyChsInputBuf
 handleKeyChsX:
@@ -406,7 +422,7 @@ handleKeyChsInputBuf:
     ld hl, inputBuf
     ld b, inputBufMax
     ld a, (inputBufEEPos) ; offset to EE digit, or 0 if 'E' does not exist
-    jp flipInputBufSign
+    ; [[fallthrough]]
 
 ; Description: Add or remove the '-' char at position A of the Pascal string at
 ; HL, with maximum length B.
