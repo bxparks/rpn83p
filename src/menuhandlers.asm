@@ -178,23 +178,19 @@ msgHelpPage2:
 ; mCubeHandler(X) -> X^3
 ; Description: Calculate X^3.
 mCubeHandler:
-    call closeInputBuf
-    call rclX
+    call closeInputAndRecallX
     bcall(_Cube)
-    call replaceX
-    ret
+    jp replaceX
 
 ; mCubeRootHandler(X) -> X^(1/3)
 ; Description: Calculate the cubic root of X. The SDK documentation has the OP1
 ; and OP2 flipped.
 mCubeRootHandler:
-    call closeInputBuf
-    call rclX ; OP1=X
+    call closeInputAndRecallX
     bcall(_OP1ToOP2) ; OP2=X
     bcall(_OP1Set3) ; OP1=3
     bcall(_XRootY) ; OP2^(1/OP1)
-    call replaceX
-    ret
+    jp replaceX
 
 ; mAtan2Handler(Y, X) -> atan2(Y + Xi)
 ;
@@ -211,26 +207,20 @@ mCubeRootHandler:
 ; imaginary part (i.e. y-axis). They becomes stored in the RPN stack variables
 ; with X and Y flipped, which is bit confusing.
 mAtan2Handler:
-    call closeInputBuf
-    call rclX ; imaginary
-    bcall(_OP1ToOP2)
-    call rclY ; OP1=Y (real), OP2=X (imaginary)
+    call closeInputAndRecallXY ; OP1=Y=real; OP2=X=imaginary
     bcall(_RToP) ; complex to polar
     bcall(_OP2ToOP1) ; OP2 contains the angle with range of (-pi, pi]
-    call replaceXY
-    ret
+    jp replaceXY
 
 ;-----------------------------------------------------------------------------
 
 ; Alog2(X) = 2^X
 mAlog2Handler:
-    call closeInputBuf
-    call rclX ; OP1 = X
+    call closeInputAndRecallX
     bcall(_OP1ToOP2) ; OP2 = X
     bcall(_OP1Set2) ; OP1 = 2
     bcall(_YToX) ; OP1 = 2^X
-    call replaceX
-    ret
+    jp replaceX
 
 ; Log2(X) = log_base_2(X) = log(X)/log(2)
 mLog2Handler:
@@ -242,21 +232,18 @@ mLog2Handler:
     bcall(_LnX) ; OP1 = ln(X)
     bcall(_PopRealO2) ; OP2 = ln(2)
     bcall(_FPDiv) ; OP1 = ln(X) / ln(2)
-    call replaceX
-    ret
+    jp replaceX
 
 ; LogBase(Y, X) = log_base_X(Y) = log(Y)/log(X)
 mLogBaseHandler:
-    call closeInputBuf
-    call rclX ; OP1 = X
+    call closeInputAndRecallX
     bcall(_LnX) ; OP1 = ln(X)
     bcall(_PushRealO1); FPS = ln(X)
     call rclY ; OP1 = Y
     bcall(_LnX) ; OP1 = ln(Y)
     bcall(_PopRealO2) ; OP2 = ln(X)
     bcall(_FPDiv) ; OP1 = ln(Y) / ln(X)
-    call replaceXY
-    ret
+    jp replaceXY
 
 ;-----------------------------------------------------------------------------
 ; Children nodes of NUM menu.
@@ -265,15 +252,13 @@ mLogBaseHandler:
 ; mPercentHandler(Y, X) -> (Y, Y*(X/100))
 ; Description: Calculate the X percent of Y.
 mPercentHandler:
-    call closeInputBuf
-    call rclX
+    call closeInputAndRecallX
     call op2Set100
     bcall(_FPDiv)
     bcall(_OP1ToOP2)
     call rclY
     bcall(_FPMult)
-    call replaceX
-    ret
+    jp replaceX
 
 ; mDeltaPercentHandler(Y, X) -> (Y, 100*(X-Y)/Y)
 ; Description: Calculate the change from Y to X as a percentage of Y. The
@@ -290,8 +275,7 @@ mDeltaPercentHandler:
     bcall(_FPDiv) ; OP1 = (X-Y)/Y
     call op2Set100
     bcall(_FPMult) ; OP1 = 100*(X-Y)/Y
-    call replaceX
-    ret
+    jp replaceX
 
 ;-----------------------------------------------------------------------------
 
@@ -316,8 +300,7 @@ mGcdHandler:
     call closeInputBuf
     call validatePosIntGcdLcm
     call gcdOp1Op2 ; OP1 = gcd()
-    call replaceXY ; X = OP1
-    ret
+    jp replaceXY ; X = OP1
 
 ; Description: Validate that X and Y are positive (> 0) integers. Calls
 ; ErrDomain exception upon failure.
@@ -368,8 +351,7 @@ mLcmHandler:
     bcall(_PopRealO2) ; OP2 = Y
     bcall(_FPMult) ; OP1 = Y * (X / gcd)
 
-    call replaceXY ; X = lcm(X, Y)
-    ret
+    jp replaceXY ; X = lcm(X, Y)
 
 ;-----------------------------------------------------------------------------
 
@@ -390,8 +372,7 @@ mLcmHandler:
 ;
 ; Examples: 90119191 = 5879 x 15329 => not prime
 mPrimeHandler:
-    call closeInputBuf
-    call rclX
+    call closeInputAndRecallX
 mPrimeHandlerCheckZero:
     bcall(_CkOP1FP0)
     jp z, mPrimeHandlerError
@@ -474,8 +455,7 @@ mPrimeHandlerYes:
     bcall(_OP1Set1)
 mPrimeHandlerEnd:
     bcall(_RunIndicOff) ; disable run indicator
-    call replaceX
-    ret
+    jp replaceX
 
 ; Description: Determine if OP2 is an integer factor of OP1.
 ; Output: ZF=1 if OP2 is a factor, 0 if not
@@ -496,16 +476,13 @@ mPrimeHandlerBreak:
 
 ; mAbsHandler(X) -> Abs(X)
 mAbsHandler:
-    call closeInputBuf
-    call rclX
+    call closeInputAndRecallX
     bcall(_ClrOP1S) ; clear sign bit of OP1
-    call replaceX
-    ret
+    jp replaceX
 
 ; mSignHandler(X) -> Sign(X)
 mSignHandler:
-    call closeInputBuf
-    call rclX
+    call closeInputAndRecallX
     bcall(_CkOP1FP0) ; check OP1 is float 0
     jr z, mSignHandlerSetZero
     bcall(_CkOP1Pos) ; check OP1 > 0
@@ -520,21 +497,16 @@ mSignHandlerSetOne:
 mSignHandlerSetZero:
     bcall(_OP1Set0)
 mSignHandlerStoX:
-    call replaceX
-    ret
+    jp replaceX
 
 ; Description: Calculate (Y mod X), where Y and X could be floating point
 ; numbers. There does not seem to be a built-in function to calculator this, so
 ; it is implemented as (Y mod X) = Y - X*floor(Y/X).
 ; Destroys: OP1, OP2, OP3
 mModHandler:
-    call closeInputBuf
-    call rclX ; OP1 = X
-    bcall(_OP1ToOP2) ; OP2 = X
-    call rclY ; ; OP1 = Y
+    call closeInputAndRecallXY ; OP2 = X; OP1 = Y
     call modOp1Op2 ; OP1 = (OP1 mod OP2)
-    call replaceXY
-    ret
+    jp replaceXY
 
 ; Description: Internal helper routine to calculate OP1 = (OP1 mod OP2) = OP1 -
 ; OP2 * floor(OP1/OP2). Used by mModHandler and mGcdHandler. There does not
@@ -554,61 +526,43 @@ modOp1Op2:
     ret
 
 mMinHandler:
-    call closeInputBuf
-    call rclX
-    bcall(_OP1ToOP2)
-    call rclY
+    call closeInputAndRecallXY
     bcall(_Min)
-    call replaceXY
-    ret
+    jp replaceXY
 
 mMaxHandler:
-    call closeInputBuf
-    call rclX
-    bcall(_OP1ToOP2)
-    call rclY
-    bcall(_Max
-    call replaceXY
-    ret
+    call closeInputAndRecallXY
+    bcall(_Max)
+    jp replaceXY
 
 ;-----------------------------------------------------------------------------
 
 mIntPartHandler:
-    call closeInputBuf
-    call rclX
+    call closeInputAndRecallX
     bcall(_Trunc) ; convert to int part, truncating towards 0.0, preserving sign
-    call replaceX
-    ret
+    jp replaceX
 
 mFracPartHandler:
-    call closeInputBuf
-    call rclX
+    call closeInputAndRecallX
     bcall(_Frac) ; convert to frac part, preserving sign
-    call replaceX
-    ret
+    jp replaceX
 
 mFloorHandler:
-    call closeInputBuf
-    call rclX
+    call closeInputAndRecallX
     bcall(_Intgr) ; convert to integer towards -Infinity
-    call replaceX
-    ret
+    jp replaceX
 
 mCeilHandler:
-    call closeInputBuf
-    call rclX
+    call closeInputAndRecallX
     bcall(_InvOP1S) ; invert sign
     bcall(_Intgr) ; convert to integer towards -Infinity
     bcall(_InvOP1S) ; invert sign
-    call replaceX
-    ret
+    jp replaceX
 
 mNearHandler:
-    call closeInputBuf
-    call rclX
+    call closeInputAndRecallX
     bcall(_Int) ; round to nearest integer, irrespective of sign
-    call replaceX
-    ret
+    jp replaceX
 
 ;-----------------------------------------------------------------------------
 ; Children nodes of PROB menu.
@@ -640,8 +594,7 @@ mPermHandlerLoop:
     dec c
     djnz mPermHandlerLoop
 mPermHandlerEnd:
-    call replaceXY
-    ret
+    jp replaceXY
 
 ;-----------------------------------------------------------------------------
 
@@ -685,8 +638,7 @@ mCombHandlerLoop:
     dec c
     djnz mCombHandlerLoop
 mCombHandlerEnd:
-    call replaceXY
-    ret
+    jp replaceXY
 
 ;-----------------------------------------------------------------------------
 
@@ -734,11 +686,9 @@ validatePermCombError:
 ; mFactorialHandler(X) -> X!
 ; Description: Calculate the factorial of X.
 mFactorialHandler:
-    call closeInputBuf
-    call rclX
+    call closeInputAndRecallX
     bcall(_Factorial)
-    call replaceX
-    ret
+    jp replaceX
 
 ;-----------------------------------------------------------------------------
 
@@ -756,8 +706,7 @@ mRandomHandler:
 ; mRandomSeedHandler(X) -> None
 ; Description: Set X as the Random() seed.
 mRandomSeedHandler:
-    call closeInputBuf
-    call rclX
+    call closeInputAndRecallX
     bcall(_StoRand)
     ret
 
@@ -766,236 +715,184 @@ mRandomSeedHandler:
 ;-----------------------------------------------------------------------------
 
 mFToCHandler:
-    call closeInputBuf
-    call rclX
+    call closeInputAndRecallX
     ld a, 32
     bcall(_SetXXOP2) ; OP2 = 32
     bcall(_FPSub) ; OP1 = X - 32
     ld a, $18
     bcall(_OP2SetA) ; OP2 = 1.8
     bcall(_FPDiv) ; OP1 = (X - 32) / 1.8
-    call replaceX
-    ret
+    jp replaceX
 
 mCToFHandler:
-    call closeInputBuf
-    call rclX
+    call closeInputAndRecallX
     ld a, $18
     bcall(_OP2SetA) ; OP2 = 1.8
     bcall(_FPMult) ; OP1 = X * 1.8
     ld a, 32
     bcall(_SetXXOP2) ; OP2 = 32
     bcall(_FPAdd) ; OP1 = 1.8*X + 32
-    call replaceX
-    ret
+    jp replaceX
 
 mInhgToHpaHandler:
-    call closeInputBuf
-    call rclX
+    call closeInputAndRecallX
     call op2SetHpaPerInhg
     bcall(_FPMult)
-    call replaceX
-    ret
+    jp replaceX
 
 mHpaToInhgHandler:
-    call closeInputBuf
-    call rclX
+    call closeInputAndRecallX
     call op2SetHpaPerInhg
     bcall(_FPDiv)
-    call replaceX
-    ret
+    jp replaceX
 
 ;-----------------------------------------------------------------------------
 
 mMiToKmHandler:
-    call closeInputBuf
-    call rclX
+    call closeInputAndRecallX
     call op2SetKmPerMi
     bcall(_FPMult)
-    call replaceX
-    ret
+    jp replaceX
 
 mKmToMiHandler:
-    call closeInputBuf
-    call rclX
+    call closeInputAndRecallX
     call op2SetKmPerMi
     bcall(_FPDiv)
-    call replaceX
-    ret
+    jp replaceX
 
 mFtToMHandler:
-    call closeInputBuf
-    call rclX
+    call closeInputAndRecallX
     call op2SetMPerFt
     bcall(_FPMult)
-    call replaceX
-    ret
+    jp replaceX
 
 mMToFtHandler:
-    call closeInputBuf
-    call rclX
+    call closeInputAndRecallX
     call op2SetMPerFt
     bcall(_FPDiv)
-    call replaceX
-    ret
+    jp replaceX
 
 ;-----------------------------------------------------------------------------
 
 mInToCmHandler:
-    call closeInputBuf
-    call rclX
+    call closeInputAndRecallX
     call op2SetCmPerIn
     bcall(_FPMult)
-    call replaceX
-    ret
+    jp replaceX
 
 mCmToInHandler:
-    call closeInputBuf
-    call rclX
+    call closeInputAndRecallX
     call op2SetCmPerIn
     bcall(_FPDiv)
-    call replaceX
-    ret
+    jp replaceX
 
 mMilToMicronHandler:
-    call closeInputBuf
-    call rclX
+    call closeInputAndRecallX
     call op2SetCmPerIn
     bcall(_FPMult)
     call op2Set10
     bcall(_FPMult)
-    call replaceX
-    ret
+    jp replaceX
 
 mMicronToMilHandler:
-    call closeInputBuf
-    call rclX
+    call closeInputAndRecallX
     call op2SetCmPerIn
     bcall(_FPDiv)
     call op2Set10
     bcall(_FPDiv)
-    call replaceX
-    ret
+    jp replaceX
 
 ;-----------------------------------------------------------------------------
 
 mLbsToKgHandler:
-    call closeInputBuf
-    call rclX
+    call closeInputAndRecallX
     call op2SetKgPerLbs
     bcall(_FPMult)
-    call replaceX
-    ret
+    jp replaceX
 
 mKgToLbsHandler:
-    call closeInputBuf
-    call rclX
+    call closeInputAndRecallX
     call op2SetKgPerLbs
     bcall(_FPDiv)
-    call replaceX
-    ret
+    jp replaceX
 
 mOzToGHandler:
-    call closeInputBuf
-    call rclX
+    call closeInputAndRecallX
     call op2SetGPerOz
     bcall(_FPMult)
-    call replaceX
-    ret
+    jp replaceX
 
 mGToOzHandler:
-    call closeInputBuf
-    call rclX
+    call closeInputAndRecallX
     call op2SetGPerOz
     bcall(_FPDiv)
-    call replaceX
-    ret
+    jp replaceX
 
 ;-----------------------------------------------------------------------------
 
 mGalToLHandler:
-    call closeInputBuf
-    call rclX
+    call closeInputAndRecallX
     call op2SetLPerGal
     bcall(_FPMult)
-    call replaceX
-    ret
+    jp replaceX
 
 mLToGalHandler:
-    call closeInputBuf
-    call rclX
+    call closeInputAndRecallX
     call op2SetLPerGal
     bcall(_FPDiv)
-    call replaceX
-    ret
+    jp replaceX
 
 mFlozToMlHandler:
-    call closeInputBuf
-    call rclX
+    call closeInputAndRecallX
     call op2SetMlPerFloz
     bcall(_FPMult)
-    call replaceX
-    ret
+    jp replaceX
 
 mMlToFlozHandler:
-    call closeInputBuf
-    call rclX
+    call closeInputAndRecallX
     call op2SetMlPerFloz
     bcall(_FPDiv)
-    call replaceX
-    ret
+    jp replaceX
 
 ;-----------------------------------------------------------------------------
 
 mCalToKjHandler:
-    call closeInputBuf
-    call rclX
+    call closeInputAndRecallX
     call op2SetKjPerKcal
     bcall(_FPMult)
-    call replaceX
-    ret
+    jp replaceX
 
 mKjToCalHandler:
-    call closeInputBuf
-    call rclX
+    call closeInputAndRecallX
     call op2SetKjPerKcal
     bcall(_FPDiv)
-    call replaceX
-    ret
+    jp replaceX
 
 mHpToKwHandler:
-    call closeInputBuf
-    call rclX
+    call closeInputAndRecallX
     call op2SetKwPerHp
     bcall(_FPMult)
-    call replaceX
-    ret
+    jp replaceX
 
 mKwToHpHandler:
-    call closeInputBuf
-    call rclX
+    call closeInputAndRecallX
     call op2SetKwPerHp
     bcall(_FPDiv)
-    call replaceX
-    ret
+    jp replaceX
 
 ;-----------------------------------------------------------------------------
 ; Children nodes of CONV menu.
 ;-----------------------------------------------------------------------------
 
 mRToDHandler:
-    call closeInputBuf
-    call rclX
+    call closeInputAndRecallX
     bcall(_RToD) ; RAD to DEG
-    call replaceX
-    ret
+    jp replaceX
 
 mDToRHandler:
-    call closeInputBuf
-    call rclX
+    call closeInputAndRecallX
     bcall(_DToR) ; DEG to RAD
-    call replaceX
-    ret
+    jp replaceX
 
 ; Polar to Rectangular
 ; Input:
@@ -1005,13 +902,11 @@ mDToRHandler:
 ;   - stY: x
 ;   - stX: y
 mPToRHandler:
-    call closeInputBuf
-    call rclX
+    call closeInputAndRecallX
     bcall(_OP1ToOP2) ; OP2 = stX = theta
     call rclY ; OP1 = stY = r
     bcall(_PToR) ; OP1 = x; OP2 = y (?)
-    call replaceXYWithOP2OP1 ; stX=OP2=y; stY=OP1=x
-    ret
+    jp replaceXYWithOP2OP1 ; stX=OP2=y; stY=OP1=x
 
 ; Rectangular to Polar
 ; Input:
@@ -1021,21 +916,18 @@ mPToRHandler:
 ;   - stY: r
 ;   - stX: theta
 mRtoPHandler:
-    call closeInputBuf
-    call rclX
+    call closeInputAndRecallX
     bcall(_OP1ToOP2) ; OP2 = stX = y
     call rclY ; OP1 = stY = x
     bcall(_RToP) ; OP1 = r; OP2 = theta (?)
-    call replaceXYWithOP2OP1 ; stX=OP2=theta; stY=OP1=r
-    ret
+    jp replaceXYWithOP2OP1 ; stX=OP2=theta; stY=OP1=r
 
 ;-----------------------------------------------------------------------------
 
 ; HR(hh.mmss) = int(hh.mmss) + int(mm.ss)/60 + int(ss.nnnn)/3600
 ; Destroys: OP1, OP2, OP3, OP4 (temp)
 mHmsToHrHandler:
-    call closeInputBuf
-    call rclX
+    call closeInputAndRecallX
 
     ; Sometimes, the internal floating point value is slightly different than
     ; the displayed value due to rounding errors. For example, a value
@@ -1080,16 +972,14 @@ mHmsToHrHandler:
     bcall(_PopRealO2) ; OP1 = hh
     bcall(_FPAdd) ; OP1 = hh + (mm + ss.nnn/60) / 60
 
-    call replaceX
-    ret
+    jp replaceX
 
 ; HMS(hh.nnn) = int(hh + (mm + ss.nnn/100)/100 where
 ;   - mm = int(.nnn* 60)
 ;   - ss.nnn = frac(.nnn*60)*60
 ; Destroys: OP1, OP2, OP3, OP4 (temp)
 mHrToHmsHandler:
-    call closeInputBuf
-    call rclX
+    call closeInputAndRecallX
 
     ; Extract the whole hh.
     bcall(_OP1ToOP4) ; OP4 = hh.nnn (save in temp)
@@ -1124,8 +1014,7 @@ mHrToHmsHandler:
     bcall(_PopRealO2) ; OP1 = hh
     bcall(_FPAdd) ; OP1 = hh + (mm + ss.nnn/100) / 100
 
-    call replaceX
-    ret
+    jp replaceX
 
 ;-----------------------------------------------------------------------------
 ; Children nodes of MODE menu.
@@ -1215,46 +1104,34 @@ mDegHandler:
 ;-----------------------------------------------------------------------------
 
 mSinhHandler:
-    call closeInputBuf
-    call rclX
+    call closeInputAndRecallX
     bcall(_SinH)
-    call replaceX
-    ret
+    jp replaceX
 
 mCoshHandler:
-    call closeInputBuf
-    call rclX
+    call closeInputAndRecallX
     bcall(_CosH)
-    call replaceX
-    ret
+    jp replaceX
 
 mTanhHandler:
-    call closeInputBuf
-    call rclX
+    call closeInputAndRecallX
     bcall(_TanH)
-    call replaceX
-    ret
+    jp replaceX
 
 mAsinhHandler:
-    call closeInputBuf
-    call rclX
+    call closeInputAndRecallX
     bcall(_ASinH)
-    call replaceX
-    ret
+    jp replaceX
 
 mAcoshHandler:
-    call closeInputBuf
-    call rclX
+    call closeInputAndRecallX
     bcall(_ACosH)
-    call replaceX
-    ret
+    jp replaceX
 
 mAtanhHandler:
-    call closeInputBuf
-    call rclX
+    call closeInputAndRecallX
     bcall(_ATanH)
-    call replaceX
-    ret
+    jp replaceX
 
 ;-----------------------------------------------------------------------------
 ; Children nodes of BASE menu.

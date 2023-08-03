@@ -761,52 +761,36 @@ handleKeyMenuA:
 ; Output:
 ; Destroys: all, OP1, OP2, OP4
 handleKeyAdd:
-    call closeInputBuf
-    call rclX
-    bcall(_OP1ToOP2)
-    call rclY
+    call closeInputAndRecallXY
     bcall(_FPAdd) ; Y + X
-    call replaceXY
-    ret
+    jp replaceXY
 
 ; Function: Handle the Sub key.
 ; Input: inputBuf
 ; Output:
 ; Destroys: all, OP1, OP2, OP4
 handleKeySub:
-    call closeInputBuf
-    call rclX
-    bcall(_OP1ToOP2)
-    call rclY
+    call closeInputAndRecallXY
     bcall(_FPSub) ; Y - X
-    call replaceXY
-    ret
+    jp replaceXY
 
 ; Function: Handle the Mul key.
 ; Input: inputBuf
 ; Output:
 ; Destroys: all, OP1, OP2, OP4, OP5
 handleKeyMul:
-    call closeInputBuf
-    call rclX
-    bcall(_OP1ToOP2)
-    call rclY
+    call closeInputAndRecallXY
     bcall(_FPMult) ; Y * X
-    call replaceXY
-    ret
+    jp replaceXY
 
 ; Function: Handle the Div key.
 ; Input: inputBuf
 ; Output:
 ; Destroys: all, OP1, OP2, OP4
 handleKeyDiv:
-    call closeInputBuf
-    call rclX
-    bcall(_OP1ToOP2)
-    call rclY
+    call closeInputAndRecallXY
     bcall(_FPDiv) ; Y / X
-    call replaceXY
-    ret
+    jp replaceXY
 
 ;-----------------------------------------------------------------------------
 ; Constants: pi and e. There does not seem to be an existing bcall() that loads
@@ -836,37 +820,27 @@ handleKeyEuler:
 
 ; Function: y^x
 handleKeyExpon:
-    call closeInputBuf
-    call rclX
-    bcall(_OP1ToOP2)
-    call rclY
+    call closeInputAndRecallXY
     bcall(_YToX)
-    call replaceXY
-    ret
+    jp replaceXY
 
 ; Function: 1/x
 handleKeyInv:
-    call closeInputBuf
-    call rclX
+    call closeInputAndRecallX
     bcall(_FPRecip)
-    call replaceX
-    ret
+    jp replaceX
 
 ; Function: x^2
 handleKeySquare:
-    call closeInputBuf
-    call rclX
+    call closeInputAndRecallX
     bcall(_FPSquare)
-    call replaceX
-    ret
+    jp replaceX
 
 ; Function: sqrt(x)
 handleKeySqrt:
-    call closeInputBuf
-    call rclX
+    call closeInputAndRecallX
     bcall(_SqRoot)
-    call replaceX
-    ret
+    jp replaceX
 
 ;-----------------------------------------------------------------------------
 ; Stack operations
@@ -874,103 +848,79 @@ handleKeySqrt:
 
 handleKeyRotDown:
     call closeInputBuf
-    call rotDownStack
-    ret
+    jp rotDownStack
 
 handleKeyRotUp:
     call closeInputBuf
-    call rotUpStack
-    ret
+    jp rotUpStack
 
 handleKeyExchangeXY:
     call closeInputBuf
-    call exchangeXYStack
-    ret
+    jp exchangeXYStack
 
 handleKeyAns:
     call closeInputBuf
     call rclLastX
     call liftStackNonEmpty
-    call stoX
-    ret
+    jp stoX
 
 ;-----------------------------------------------------------------------------
 ; Transcendentals
 ;-----------------------------------------------------------------------------
 
 handleKeyLog:
-    call closeInputBuf
-    call rclX
+    call closeInputAndRecallX
     bcall(_LogX)
-    call replaceX
-    ret
+    jp replaceX
 
 handleKeyALog:
-    call closeInputBuf
-    call rclX
+    call closeInputAndRecallX
     bcall(_TenX)
-    call replaceX
-    ret
+    jp replaceX
 
 handleKeyLn:
-    call closeInputBuf
-    call rclX
+    call closeInputAndRecallX
     bcall(_LnX)
-    call replaceX
-    ret
+    jp replaceX
 
 handleKeyExp:
-    call closeInputBuf
-    call rclX
+    call closeInputAndRecallX
     bcall(_EToX)
-    call replaceX
-    ret
+    jp replaceX
 
 ;-----------------------------------------------------------------------------
 ; Trignometric
 ;-----------------------------------------------------------------------------
 
 handleKeySin:
-    call closeInputBuf
-    call rclX
+    call closeInputAndRecallX
     bcall(_Sin)
-    call replaceX
-    ret
+    jp replaceX
 
 handleKeyCos:
-    call closeInputBuf
-    call rclX
+    call closeInputAndRecallX
     bcall(_Cos)
-    call replaceX
-    ret
+    jp replaceX
 
 handleKeyTan:
-    call closeInputBuf
-    call rclX
+    call closeInputAndRecallX
     bcall(_Tan)
-    call replaceX
-    ret
+    jp replaceX
 
 handleKeyASin:
-    call closeInputBuf
-    call rclX
+    call closeInputAndRecallX
     bcall(_ASin)
-    call replaceX
-    ret
+    jp replaceX
 
 handleKeyACos:
-    call closeInputBuf
-    call rclX
+    call closeInputAndRecallX
     bcall(_ACos)
-    call replaceX
-    ret
+    jp replaceX
 
 handleKeyATan:
-    call closeInputBuf
-    call rclX
+    call closeInputAndRecallX
     bcall(_ATan)
-    call replaceX
-    ret
+    jp replaceX
 
 ;-----------------------------------------------------------------------------
 ; Buttons bound to menu groups.
@@ -983,3 +933,19 @@ handleKeyMath:
 handleKeyMode:
     ld a, mModeId ; MODE triggers the MODE menu.
     jp mGroupHandler
+
+;-----------------------------------------------------------------------------
+; Common code fragments, to save space.
+;-----------------------------------------------------------------------------
+
+; Close the input buffer, and recall Y and X into OP1 and OP2 respectively.
+closeInputAndRecallXY:
+    call closeInputBuf
+    call rclX
+    bcall(_OP1ToOP2)
+    jp rclY
+
+; Close the input buffer, and recall X into OP1 respectively.
+closeInputAndRecallX:
+    call closeInputBuf
+    jp rclX
