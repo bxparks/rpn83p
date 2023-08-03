@@ -557,43 +557,6 @@ printMenuAtAExit:
     pop bc ; B = loop counter
     ret
 
-; Function: Print blank (all black) at menuPenCol in A.
-; Input: A: penCol
-; Destroys: HL
-printMenuBlank:
-    ld h, menuPenRow
-    ld l, a
-    ld (PenCol), hl
-
-    ld hl, msgMenuBlank
-    set textInverse, (iy + textFlags)
-    bcall(_VPutS)
-    res textInverse, (iy + textFlags)
-    ret
-
-; Function: Initialize the menu items with blanks, using inverted spaces.
-; Destroys: A, HL
-clearMenus:
-    ; ld hl, menuCurRow ; $(curCol)(curRow)
-    ; bcall(_EraseEOL)
-
-    ld a, menuPenCol0
-    call printMenuBlank
-
-    ld a, menuPenCol1
-    call printMenuBlank
-
-    ld a, menuPenCol2
-    call printMenuBlank
-
-    ld a, menuPenCol3
-    call printMenuBlank
-
-    ld a, menuPenCol4
-    call printMenuBlank
-
-    ret
-
 ;-----------------------------------------------------------------------------
 ; Low-level helper routines.
 ;-----------------------------------------------------------------------------
@@ -905,6 +868,3 @@ msgYLabel:
     .db "Y:", 0
 msgXLabel:
     .db "X:", 0
-
-msgMenuBlank: ; 18px wide
-    .db SFourSpaces, SFourSpaces, SFourSpaces, SFourSpaces, Sspace, Sspace, 0
