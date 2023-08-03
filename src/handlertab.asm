@@ -2,7 +2,7 @@
 ; TODO: As this table gets longer, consider sorting this table so that a binary
 ; search on it instead of a linear search.
 
-keyCodeHandlerTableSize equ 52
+keyCodeHandlerTableSize equ 58
 kOnExit equ 0 ; ON key generates 00 as the key code
 
 keyCodeHandlerTable:
@@ -29,6 +29,18 @@ keyCodeHandlerTable:
     .dw handleKey8
     .db k9
     .dw handleKey9
+    .db kCapA
+    .dw handleKeyA
+    .db kCapB
+    .dw handleKeyB
+    .db kCapC
+    .dw handleKeyC
+    .db kCapD
+    .dw handleKeyD
+    .db kCapE
+    .dw handleKeyE
+    .db kCapF
+    .dw handleKeyF
     .db kDecPnt
     .dw handleKeyDecPnt
     ; For convenience, both EE (2ND-COMMA) and COMMA are mapped to handleKeyEE.

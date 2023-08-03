@@ -81,65 +81,139 @@ handleKeyNumberAppend:
     ; Unconditionally append character in A.
     jp appendInputBuf
 
+;-----------------------------------------------------------------------------
+
 ; Function: Append '0' to inputBuf.
-; See handleKeyNumber()
 handleKey0:
     ld a, '0'
     jr handleKeyNumber
 
 ; Function: Append '1' to inputBuf.
-; See handleKeyNumber()
 handleKey1:
     ld a, '1'
     jr handleKeyNumber
 
 ; Function: Append '2' to inputBuf.
-; See handleKeyNumber()
 handleKey2:
+    call checkBase8Or10Or16
+    ret nz
     ld a, '2'
     jr handleKeyNumber
 
 ; Function: Append '3' to inputBuf.
-; See handleKeyNumber()
 handleKey3:
+    call checkBase8Or10Or16
+    ret nz
     ld a, '3'
     jr handleKeyNumber
 
 ; Function: Append '4' to inputBuf.
-; See handleKeyNumber()
 handleKey4:
+    call checkBase8Or10Or16
+    ret nz
     ld a, '4'
     jr handleKeyNumber
 
 ; Function: Append '5' to inputBuf.
-; See handleKeyNumber()
 handleKey5:
+    call checkBase8Or10Or16
+    ret nz
     ld a, '5'
     jr handleKeyNumber
 
 ; Function: Append '6' to inputBuf.
-; See handleKeyNumber()
 handleKey6:
+    call checkBase8Or10Or16
+    ret nz
     ld a, '6'
     jr handleKeyNumber
 
 ; Function: Append '7' to inputBuf.
-; See handleKeyNumber()
 handleKey7:
+    call checkBase8Or10Or16
+    ret nz
     ld a, '7'
     jr handleKeyNumber
 
 ; Function: Append '8' to inputBuf.
-; See handleKeyNumber()
 handleKey8:
+    call checkBase10Or16
+    ret nz
     ld a, '8'
     jr handleKeyNumber
 
 ; Function: Append '9' to inputBuf.
-; See handleKeyNumber()
 handleKey9:
+    call checkBase10Or16
+    ret nz
     ld a, '9'
-    jr handleKeyNumber
+    jp handleKeyNumber
+
+; Function: Append 'A' to inputBuf.
+handleKeyA:
+    call checkBase16
+    ret nz
+    ld a, 'A'
+    jp handleKeyNumber
+
+; Function: Append 'B' to inputBuf.
+handleKeyB:
+    call checkBase16
+    ret nz
+    ld a, 'B'
+    jp handleKeyNumber
+
+; Function: Append 'C' to inputBuf.
+handleKeyC:
+    call checkBase16
+    ret nz
+    ld a, 'C'
+    jp handleKeyNumber
+
+; Function: Append 'D' to inputBuf.
+handleKeyD:
+    call checkBase16
+    ret nz
+    ld a, 'D'
+    jp handleKeyNumber
+
+; Function: Append 'E' to inputBuf.
+handleKeyE:
+    call checkBase16
+    ret nz
+    ld a, 'E'
+    jp handleKeyNumber
+
+; Function: Append 'F' to inputBuf.
+handleKeyF:
+    call checkBase16
+    ret nz
+    ld a, 'F'
+    jp handleKeyNumber
+
+; Description: Return ZF=1 if BaseMode is 8, 10, or 16.
+checkBase8Or10Or16:
+    ld a, (baseMode)
+    cp 8
+    ret z
+    cp 10
+    ret z
+    cp 16
+    ret
+
+; Description: Return ZF=1 if BaseMode is 10, or 16.
+checkBase10Or16:
+    ld a, (baseMode)
+    cp 10
+    ret z
+    cp 16
+    ret
+
+; Description: Return ZF=1 if BaseMode is 16.
+checkBase16:
+    ld a, (baseMode)
+    cp 16
+    ret
 
 ; Function: Append a '.' if not already entered.
 ; Input: none
