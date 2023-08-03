@@ -309,28 +309,6 @@ reverseStringLoop:
     ret
 
 ;-----------------------------------------------------------------------------
-
-; Description: Append char in A to the string in HL.
-; Input:
-;   - HL: pointer to NUL terminated string
-;   - A: char to add
-; Destroys: none
-appendAToU32HexString:
-    push hl
-    push de
-
-    ld e, hexNumberWidth
-    ld d, 0
-    add hl, de
-    ld (hl), a ; buf[8] = A
-    inc hl
-    ld (hl), d ; buf[9] = 0
-
-    pop de
-    pop hl
-    ret
-
-;-----------------------------------------------------------------------------
 ; Routines related to Octal strings.
 ;-----------------------------------------------------------------------------
 
@@ -376,26 +354,6 @@ convertU32ToOctStringLoop:
     pop bc
     ret
 
-; Description: Append char in A to the octal string in HL.
-; Input:
-;   - HL: pointer to NUL terminated string
-;   - A: char to add
-; Destroys: none
-appendAToU32OctString:
-    push hl
-    push de
-
-    ld e, octNumberWidth
-    ld d, 0
-    add hl, de
-    ld (hl), a ; buf[11] = A
-    inc hl
-    ld (hl), d ; buf[12] = 0
-
-    pop de
-    pop hl
-    ret
-
 ;-----------------------------------------------------------------------------
 ; Routines related to Binary strings.
 ;-----------------------------------------------------------------------------
@@ -438,24 +396,4 @@ convertU32ToBinStringLoop:
     pop de
     pop hl
     pop bc
-    ret
-
-; Description: Append char in A to the octal string in HL.
-; Input:
-;   - HL: pointer to NUL terminated string
-;   - A: char to add
-; Destroys: none
-appendAToU32BinString:
-    push hl
-    push de
-
-    ld e, binNumberWidth
-    ld d, 0
-    add hl, de
-    ld (hl), a ; buf[11] = A
-    inc hl
-    ld (hl), d ; buf[12] = 0
-
-    pop de
-    pop hl
     ret

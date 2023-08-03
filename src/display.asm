@@ -631,9 +631,6 @@ printOP1Base16String:
     call convertOP1ToU32OP3
     ld hl, OP3
     ld de, OP4
-#ifdef DEBUG
-    call debugU32AsHex
-#endif
     call convertU32ToHexString
 
     ; Check if OP1 was a pure integer
@@ -644,7 +641,7 @@ printOP1Base16String:
     pop hl ; HL = hex string
     jr z, printHLString
     ld a, '.'
-    call appendAToU32HexString
+    call appendCString
     jr printHLString
 
 ;-----------------------------------------------------------------------------
@@ -671,9 +668,6 @@ printOP1Base8String:
     call convertOP1ToU32OP3
     ld hl, OP3
     ld de, OP4
-#ifdef DEBUG
-    call debugU32AsHex
-#endif
     call convertU32ToOctString
 
     ; Check if OP1 was a pure integer
@@ -684,7 +678,7 @@ printOP1Base8String:
     pop hl ; HL = rendered string
     jr z, printHLString
     ld a, '.'
-    call appendAToU32OctString
+    call appendCString
     jp printHLString
 
 ;-----------------------------------------------------------------------------
@@ -714,9 +708,6 @@ printOP1Base2String:
     call convertOP1ToU32OP3
     ld hl, OP3
     ld de, OP4
-#ifdef DEBUG
-    call debugU32AsHex
-#endif
     call convertU32ToBinString
 
     ; Check if OP1 was a pure integer
@@ -727,7 +718,7 @@ printOP1Base2String:
     pop hl ; HL = rendered string
     jp z, printHLString
     ld a, '.'
-    call appendAToU32BinString
+    call appendCString
     jp printHLString
 
 ;-----------------------------------------------------------------------------
