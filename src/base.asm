@@ -229,7 +229,7 @@ shiftRightLogicalU32:
 ; Routines related to Hex strings.
 ;-----------------------------------------------------------------------------
 
-hexNumberWidth equ 8
+hexNumberWidth equ 8 ; 4 bits * 8 = 32 bits
 
 ; Description: Converts 32-bit unsigned integer referenced by HL to a hex
 ; string in buffer referenced by DE.
@@ -246,21 +246,21 @@ convertU32ToHexString:
     push hl
     push de
 
+    ld b, hexNumberWidth
+convertU32ToHexStringLoop:
     ; convert to hexadecimal, but the characters are in reverse order
     ld a, (hl)
-    call convertAToHexDE
-    inc hl
-    ld a, (hl)
-    call convertAToHexDE
-    inc hl
-    ld a, (hl)
-    call convertAToHexDE
-    inc hl
-    ld a, (hl)
-    call convertAToHexDE
-    ; add NUL termination
-    xor a
+    and $0F ; last 4 bits
+    call convertAToChar
     ld (de), a
+    inc de
+    call shiftRightLogicalU32
+    call shiftRightLogicalU32
+    call shiftRightLogicalU32
+    call shiftRightLogicalU32
+    djnz convertU32ToHexStringLoop
+    xor a
+    ld (de), a ; NUL termination
 
     ; reverse the characters
     pop hl ; HL = destination string pointer
@@ -271,36 +271,6 @@ convertU32ToHexString:
     pop de
     pop hl
     pop bc
-    ret
-
-; Description: Convert the u8 integer in A to 2-digit hex string in DE, in
-; little-endian mode, meaning that the least signficant digit is first. The
-; actual string written to the display will be the reverse of that string.
-; Input:
-;   - A: u8 integer
-;   - DE: pointer to the destination string buffer
-; Output:
-;   - buf[0] and buf[1] are hex digits
-;   - DE = DE + 2
-; Destroys: A, C
-convertAToHexDE:
-    ; convert lower nibble to hex
-    ld c, a
-    and $0F
-    call convertAToChar
-    ld (de), a
-    inc de
-
-    ; convert upper nibble to hex
-    ld a, c
-    srl a
-    srl a
-    srl a
-    srl a
-    call convertAToChar
-    ld (de), a
-    inc de
-
     ret
 
 ;-----------------------------------------------------------------------------
@@ -365,7 +335,7 @@ appendAToU32HexString:
 ; Routines related to Octal strings.
 ;-----------------------------------------------------------------------------
 
-octNumberWidth equ 11
+octNumberWidth equ 11 ; 3 bits * 11 = 33 bits
 
 ; Description: Converts 32-bit unsigned integer referenced by HL to a octal
 ; string in buffer referenced by DE.
@@ -382,7 +352,7 @@ convertU32ToOctString:
     push hl
     push de
 
-    ld b, octNumberWidth ; 3 bits * 11 = 33 bits
+    ld b, octNumberWidth
 convertU32ToOctStringLoop:
     ld a, (hl)
     and $07 ; last 3 bits
@@ -460,7 +430,7 @@ convertU32ToBinStringLoop:
     xor a
     ld (de), a ; NUL terminator
 
-    ; reverse the octal digits
+    ; reverse the binary digits
     pop hl ; HL = destination string pointer
     push hl
     ld b, binNumberWidth
