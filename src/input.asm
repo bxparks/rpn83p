@@ -107,11 +107,24 @@ parseArgBufOneDigit:
 ; Function: Parse the input buffer into the parseBuf.
 ; Input: inputBuf filled with keyboard characters
 ; Output: OP1: floating point number
-; Destroys: all registers?
+; Destroys: all registers
 parseNum:
     call parseNumInit
     call checkZero
     ret z
+    ld hl, inputBuf
+    ld a, (baseMode)
+    cp 16
+    jr z, parseNumBase
+    cp 8
+    jr z, parseNumBase
+    cp 2
+    jr z, parseNumBase
+    ; [[fallthrough]]
+
+; Description: Base 10 parsing is a lot more complicated because it supports
+; scientific notation 'E', decimal point, and negative sign.
+parseNumBase10:
     call calcDPPos
     call extractMantissaExponent ; extract mantissa exponent to floatBuf
     call extractMantissaSign ; extract mantissa sign to floatBuf
@@ -120,6 +133,51 @@ parseNum:
     call parseExponent ; parse EE digits from inputBuf
     call addExponent ; add EE exponent to floatBuf exponent
     call copyFloatToOP1 ; copy floatBuf to OP1
+    ret
+
+; Description: Parse the baseMode number in the Pascal-string given by HL. The
+; base mode be 2, 8 or 16. This subroutine will actually supports any baseMode
+; <= 36 probably (10 numerals and 26 letters).
+; Input:
+;   - HL: pointer to Pascal-string
+;   - A: base mode (2, 8, 16)
+; Output: OP1: floating point value
+; Destroys: all
+parseNumBase:
+    push hl
+    bcall(_SetXXOP1) ; OP1 = A = base
+    bcall(_OP1ToOP4) ; OP4 = base
+    bcall(_OP1Set0)
+    pop hl
+    ld a, (hl) ; num of digits
+    or a
+    ret z
+    ld b, a ; num digits
+parseNumBaseLoop:
+    ; multiply by 10 before the next digit
+    push bc
+    push hl
+    bcall(_OP4ToOP2) ; OP2 = base
+    bcall(_FPMult) ; OP1 *= base; destroys OP3
+    pop hl
+    inc hl
+    ld a, (hl)
+    ; convert char into digit value
+    cp 'A'
+    jr c, parseNumBase0To9
+parseNumBaseAToF:
+    sub 'A'
+    add a, 10
+    jr parseNumBaseAddDigit
+parseNumBase0To9:
+    sub '0'
+parseNumBaseAddDigit:
+    push hl
+    bcall(_SetXXOP2) ; OP2 = A = digit value
+    bcall(_FPAdd) ; OP1 += OP2
+    pop hl
+    pop bc
+    djnz parseNumBaseLoop
     ret
 
 ;------------------------------------------------------------------------------

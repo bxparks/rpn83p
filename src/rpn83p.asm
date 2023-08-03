@@ -287,7 +287,6 @@ mainExit:
 
 #include "vars.asm"
 #include "handlers.asm"
-#include "common.asm"
 #include "pstring.asm"
 #include "input.asm"
 #include "display.asm"
@@ -299,6 +298,8 @@ mainExit:
 #ifdef DEBUG
 #include "debug.asm"
 #endif
+
+#include "common.asm"
 
 ; Place data files at the end, because the TI-OS prevents execution of assembly
 ; code if it spills over to page $C000. The limitation does not apply to data.
