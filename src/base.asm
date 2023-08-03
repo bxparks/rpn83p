@@ -212,16 +212,19 @@ clearU32:
 ; string in buffer referenced by DE.
 ; Input:
 ;   - HL: pointer to 32-bit unsigned integer
-;   - DE: pointer to a C-string buffer of at least 9 bytes.
+;   - DE: pointer to a C-string buffer of at least 9 bytes (8 digits plus NUL
+;   terminator). This will usually be one of the OPx registers each of them
+;   being 11 bytes long.
 ; Output:
 ;   - (DE): C-string representation of u32 as hexadecimal, in reverse order,
 ;   NUL terminated
 ; Destroys: A
 convertU32ToHexString:
     push bc
-    push de
     push hl
+    push de
 
+    ; convert to hexadecimal, but the characters are in reverse order
     ld a, (hl)
     call convertAToHexDE
     inc hl
@@ -237,8 +240,14 @@ convertU32ToHexString:
     xor a
     ld (de), a
 
-    pop hl
+    ; reverse the characters
+    pop hl ; HL = destination string pointer
+    push hl
+    ld b, 8
+    call reverseString
+
     pop de
+    pop hl
     pop bc
     ret
 
@@ -281,12 +290,8 @@ convertAToHexDE:
 ; Output:
 ;   - HL: reference to C-string
 ;   - B: number of characters
-; Destroys: A
+; Destroys: A, B, DE, HL
 reverseString:
-    push bc
-    push de
-    push hl
-
     ld a, b
     or a
     ret z
@@ -295,7 +300,7 @@ reverseString:
     ld d, 0
     ex de, hl
     add hl, de
-    ex de, hl ; DE = DE + B
+    ex de, hl ; DE = DE + B = end of string
     dec de
 
     ld a, b
@@ -310,10 +315,6 @@ reverseStringLoop:
     inc hl
     dec de
     djnz reverseStringLoop
-
-    pop hl
-    pop de
-    pop bc
     ret
 
 ;-----------------------------------------------------------------------------

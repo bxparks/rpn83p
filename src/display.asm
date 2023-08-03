@@ -658,16 +658,13 @@ printOP1Base16String:
     call debugU32AsHex
 #endif
     call convertU32ToHexString
-    ex de, hl ; HL = OP2
-    ld b, 8
-    call reverseString
 
     ; Check if OP1 was a pure integer
-    push hl
+    push de ; DE = hex string
     bcall(_PopRealO1) ; OP1 = original OP1
     bcall(_Frac) ; OP1 = frac(OP1)
     bcall(_CkOP1FP0) ; if frac(OP1) == 0: ZF=1
-    pop hl
+    pop hl ; HL = hex string
     jr z, printHLString
     ld a, '.'
     call appendAToU32HexString
