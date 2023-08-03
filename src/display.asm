@@ -79,6 +79,9 @@ displayStatus:
     call displayStatusBase
     ret
 
+; Description: Display the up and down arrows that indicate whether there are
+; additional menus above or below the current set of 5 menu buttons.
+; TODO: Maybe rename this "displayStatusArrows".
 displayStatusMenu:
     bit rpnFlagsMenuDirty, (iy + rpnFlags)
     ret z
@@ -601,15 +604,59 @@ clearMenus:
 ; Input: OP1: floating point number
 ; Destroys: A, HL, OP3
 printOP1:
+    ld a, (baseMode)
+    cp a, 16
+    jr z, printOP1Base16
+    ; [[fallthrough]]
+
+; Function: Print floating point number at OP1 using base 10.
+; Input: OP1: floating point number
+; Destroys: A, HL, OP3
+printOP1Base10:
     ld a, 15 ; width of output
     bcall(_FormReal)
     ld hl, OP3
+    ; [[fallthrough]]
+
+printHLString:
     bcall(_PutS)
     ld a, (CurCol)
     or a
     ret z ; if spilled to next line, don't call EraseEOL
     bcall(_EraseEOL)
     ret
+
+; Function: Print ingeger at OP1 at the current cursor in base 16. Erase to
+; the end of line (but only if the floating point did not spill over to the
+; next line).
+; Destroys: all
+printOP1Base16:
+    bcall(_CkPosInt) ; if OP1 is int >= 0: Z=1
+    jr nz, printOP1Base16Invalid
+    call op2Set2Pow32 ; OP2 = 2^32
+    bcall(_CpOP1OP2) ; if OP1 >= 2^32: CF=0
+    jr nc, printOP1Base16Invalid
+printOP1Base16String:
+    call convertOP1ToU32OP3
+    ld hl, OP3
+    ld de, OP2
+#ifdef DEBUG
+    call debugU32AsHex
+#endif
+    call convertU32ToHexString
+    ex de, hl ; HL = OP2
+    ld b, 8
+    call reverseString
+    jr printHLString
+
+printOP1Base16Invalid:
+    ld hl, msgInvalidBase
+    jr printHLString
+
+msgInvalidBase:
+    .db "0.", 0
+
+;-----------------------------------------------------------------------------
 
 ; Function: Convert A to 3-digit nul terminated C string at the buffer pointed
 ; by HL. This is intended for debugging, so it is not optimized.

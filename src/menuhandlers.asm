@@ -1261,18 +1261,22 @@ mAtanhHandler:
 ;-----------------------------------------------------------------------------
 
 mHexHandler:
+    call closeInputBuf
     ld a, 16
     jr setBaseMode
 
 mDecHandler:
+    call closeInputBuf
     ld a, 10
     jr setBaseMode
 
 mOctHandler:
+    call closeInputBuf
     ld a, 8
     jr setBaseMode
 
 mBinHandler:
+    call closeInputBuf
     ld a, 2
     ; [[fallthrough]]
 
@@ -1280,6 +1284,7 @@ mBinHandler:
 ; Destroys: none
 setBaseMode:
     set rpnFlagsBaseModeDirty, (iy + rpnFlags)
+    set rpnFlagsStackDirty, (iy + rpnFlags)
     ld (baseMode), a
     ret
 
