@@ -107,14 +107,23 @@ printARepeatBLoop:
 ; separately.
 ; Input: HL: Pascal-string
 ; Output; CF=1 if characters overflowed screen
-; Destroys: A, B, HL
+; Destroys: A, HL
 vPutPS:
-    ld a, (hl)
+    push bc
+    ld a, (hl) ; A = length of Pascal string
     or a
     ret z
     ld b, a ; B = num chars
     inc hl ; HL = pointer to start of chars
-    bcall(_VPutSN)
+vPutPN:
+    ; implement inlined version of VPutSN() which works with flash string
+    ld a, (hl)
+    inc hl
+    bcall(_VPutMap)
+    jr c, vPutPNEnd
+    djnz vPutPN
+vPutPNEnd:
+    pop bc
     ret
 
 ;-----------------------------------------------------------------------------
