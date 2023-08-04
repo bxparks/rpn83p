@@ -17,7 +17,7 @@ debugInputBuf:
     ld hl, debugCurCol*$100+debugCurRow ; $(curCol)(curRow)
     ld (CurRow), hl
     ld hl, inputBuf
-    bcall(_PutPS)
+    call putPS
     ld a, cursorCharAlt
     bcall(_PutC)
     bcall(_EraseEOL)
@@ -45,7 +45,7 @@ debugParseBuf:
     ld hl, debugCurCol*$100+debugCurRow ; $(curCol)(curRow)
     ld (CurRow), hl
     ld hl, parseBuf
-    bcall(_PutPS)
+    call putPS
     ld a, cursorCharAlt
     bcall(_PutC)
     bcall(_EraseEOL)
@@ -97,7 +97,7 @@ debugPString:
 
     ld de, debugCurCol*$100+debugCurRow ; $(curCol)(curRow)
     ld (CurRow), de
-    bcall(_PutPS)
+    call putPS
     bcall(_EraseEOL)
 
     pop hl

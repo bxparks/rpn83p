@@ -238,3 +238,30 @@ putSEnd:
     ld a, b
     pop bc
     ret
+
+;-----------------------------------------------------------------------------
+
+; Description: Inlined version of bcall(_PutPS) which works for Pascal strings
+; in flash memory.
+;
+; Input: HL: pointer to Pascal string
+; Destroys: A, B, C, HL
+; Preserves: DE
+putPS:
+    ld a, (hl) ; A = length of Pascal string
+    inc hl
+    or a
+    ret z
+    ld b, a ; B = length of Pascal string (missing from SDK reference impl)
+    ld a, (winBtm)
+    ld c, a ; C = bottomRow (usually 8)
+putPSLoop:
+    ld a, (hl)
+    inc hl
+    bcall(_PutC)
+    ; Check if next character is off-screen
+    ld a, (curRow)
+    cp c ; if currow == buttomRow: ZF=1
+    ret z
+    djnz putPSLoop
+    ret

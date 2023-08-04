@@ -413,7 +413,7 @@ printArgBuf:
     ld a, ' '
     bcall(_PutC)
     ld hl, argBuf
-    bcall(_PutPS)
+    call putPS
 
     ; Append cursor if needed.
     ld a, (argBufSize)
@@ -443,7 +443,7 @@ printArgBufZeroCursor:
 ; Destroys: A, HL; BC destroyed by PutPS()
 printInputBuf:
     ld hl, inputBuf
-    bcall(_PutPS)
+    call putPS
     ld a, cursorChar
     bcall(_PutC)
     ; Skip EraseEOL() if the PutC() above wrapped to next line
