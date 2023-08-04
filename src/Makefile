@@ -6,6 +6,7 @@ SPASM := $(SPASM_DIR)/spasm
 SRCS := \
 	base.asm \
 	common.asm \
+	const.asm \
 	debug.asm \
 	display.asm \
 	errorcode.asm \

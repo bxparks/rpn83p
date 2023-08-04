@@ -300,6 +300,7 @@ mainExit:
 #endif
 
 #include "common.asm"
+#include "const.asm"
 
 ; Place data files at the end, because the TI-OS prevents execution of assembly
 ; code if it spills over to page $C000. The limitation does not apply to data.
