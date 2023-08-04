@@ -793,63 +793,6 @@ convertAToCharDec:
 
 ;-----------------------------------------------------------------------------
 
-; Function: Erase to end of line using small font. Same as bcall(_EraseEOL).
-; Prints a quad space (4 pixels side), 24 times, for 96 pixels.
-; Destroys: B
-vEraseEOL:
-    ld b, 24
-vEraseEOLLoop:
-    ld a, SFourSpaces
-    bcall(_VPutMap)
-    djnz vEraseEOLLoop
-    ret
-
-; Description: Inlined version of bcall(_VPutS) which has 2 advantages:
-; 1) It works for strings which are in flash (VPutS only works with strings in
-; RAm).
-; 2) It interprets the `Senter` character to move the pen to the beginning of
-; the next line. A line using small font is 7 px high.
-;
-; See TI-83 Plus System Routine SDK docs for VPutS() for a reference
-; implementation of this function.
-; Input: HL: pointer to string using small font
-; Destroys: HL
-smallFontHeight equ 7
-vPutS:
-    push af
-    push de
-    push ix
-vPutSLoop:
-    ld a, (hl)
-    inc hl
-    or a
-    jr z, vPutSEnd
-    cp a, Senter
-    jr nz, vPutSNormal
-vPutSenter:
-    ; move to the next line
-    push af
-    push hl
-    ld hl, PenCol
-    xor a
-    ld (hl), a ; PenCol = 0
-    inc hl ; PenRow
-    ld a, (hl) ; A = PenRow
-    add a, smallFontHeight
-    ld (hl), a ; PenRow += 7
-    pop hl
-    pop af
-vPutSNormal:
-    bcall(_VPutMap)
-    jr nc, vPutSLoop
-vPutSEnd:
-    pop ix
-    pop de
-    pop af
-    ret
-
-;-----------------------------------------------------------------------------
-
 ; Indicates number cannot be rendered in the current Base mode.
 msgInvalidBase:
     .db "...", 0
