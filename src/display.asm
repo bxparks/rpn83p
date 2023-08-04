@@ -531,6 +531,20 @@ printMenuAtAFitsInside:
     ld c, a ; C = A = leftPadWidth
     push bc ; B = stringWidth; C = leftPadWidth
     set textInverse, (iy + textFlags)
+    ; The code below sets the textEraseBelow flag to fix a font rendering
+    ; problem on the very last row of pixels on the LCD display, where the menu
+    ; names are printed.
+    ;
+    ; The menu names are printed using the small font, which are 4px (w) by 7px
+    ; (h) for capital letters, including a one px padding on the right and
+    ; bottom of each letter. Each menu name is drawn on the last 7 piexel rows
+    ; of the LCD screen, in other words, at penRow of 7*8+1 = 57. When the
+    ; characterse are printed using `textInverse`, the last line of pixels just
+    ; below each menu name should be black (inverted), and on the assembly
+    ; version of this program, it is. But in the flash app version, the line of
+    ; pixels directly under the letter is white. Setting this flag fixes that
+    ; problem.
+    set textEraseBelow, (iy + textFlags)
 printMenuAtALeftPad:
     ld b, a ; B = leftPadWidth
     ld a, Sspace
@@ -553,6 +567,7 @@ printMenuAtARightPad:
 
 printMenuAtAExit:
     res textInverse, (iy + textFlags)
+    res textEraseBelow, (iy + textFlags)
     pop de ; D = menuId; E = menuIndex
     pop bc ; B = loop counter
     ret
