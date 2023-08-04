@@ -145,7 +145,10 @@ vEraseEOLLoop:
     djnz vEraseEOLLoop
     ret
 
-; Description: Inlined version of bcall(_VPutS) which has 2 advantages:
+;-----------------------------------------------------------------------------
+
+; Description: Inlined version of bcall(_VPutS) with 2 additional features:
+;
 ; 1) It works for strings which are in flash (VPutS only works with strings in
 ; RAM).
 ; 2) It interprets the `Senter` character to move the pen to the beginning of
@@ -188,4 +191,38 @@ vPutSEnd:
     pop ix
     pop de
     pop af
+    ret
+
+;-----------------------------------------------------------------------------
+
+; Description: Inlined version of bcall(_PutS) which works for flash
+; applications. See TI-83 Plus System Routine SDK docs for PutS() for a
+; reference implementation. (I *think* that the _PutC() OS function interprets
+; the `Lenter` character as a "newline" and moves the cursor to the next line.
+; Need to verify.)
+;
+; Input: HL: pointer to C-string
+; Output:
+;   - CF=1 if the entire string was displayed, CF=0 if not
+;   - curRow and curCol updated to the position after the last character
+; Destroys: HL
+putS:
+    push bc
+    push af
+    ld a, (winBtm)
+    ld b, a ; B = bottom line of window
+putSLoop:
+    ld a, (hl)
+    inc hl
+    or a ; test for end of string
+    scf ; CF=1 if entire string displayed
+    jr z, putSEnd
+    bcall(_PutC)
+    ld a, (curRow)
+    cp b ; if A >= bottom line: CF=1
+    jr c, putSLoop ; repeat if not at bottom
+putSEnd:
+    pop bc ; restore A (but not F)
+    ld a, b
+    pop bc
     ret

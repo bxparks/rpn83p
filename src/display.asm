@@ -409,7 +409,7 @@ displayStackXArg:
 printArgBuf:
     ; Print prompt and contents of argBuf
     ld hl, (argPrompt)
-    bcall(_PutS)
+    call putS
     ld a, ' '
     bcall(_PutC)
     ld hl, argBuf
@@ -594,7 +594,7 @@ printOP1Base10:
 ; Output:
 ; Destroys: A, HL
 printHLString:
-    bcall(_PutS)
+    call putS
     ld a, (CurCol)
     or a
     ret z ; if spilled to next line, don't call EraseEOL

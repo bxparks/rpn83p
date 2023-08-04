@@ -72,7 +72,7 @@ debugString:
 
     ld de, debugCurCol*$100+debugCurRow ; $(curCol)(curRow)
     ld (CurRow), de
-    bcall(_PutS)
+    call putS
     bcall(_EraseEOL)
 
     pop hl
@@ -145,7 +145,7 @@ debugOP1:
     ld a, 15 ; width of output
     bcall(_FormReal)
     ld hl, OP3
-    bcall(_PutS)
+    call putS
     bcall(_EraseEOL)
 
     pop hl
