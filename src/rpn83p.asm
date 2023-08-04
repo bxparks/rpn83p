@@ -327,7 +327,7 @@ mainExit:
 ; Place data files at the end, because the TI-OS prevents execution of assembly
 ; code if it spills over to page $C000. The limitation does not apply to data.
 #include "handlertab.asm"
-#include "menudevdef.asm"
+#include "menudef.asm"
 
 .end
 

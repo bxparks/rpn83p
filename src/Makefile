@@ -14,7 +14,7 @@ SRCS := \
 	handlertab.asm \
 	input.asm \
 	menu.asm \
-	menudevdef.asm \
+	menudef.asm \
 	menuhandlers.asm \
 	pstring.asm \
 	rpn83p.asm \
@@ -35,7 +35,7 @@ rpn83p.8xp: $(SRCS) Makefile
 rpn83p.lst: $(SRCS) Makefile
 	$(SPASM) -I $(SPASM_INC) -N -T rpn83p.asm rpn83p.8xp
 
-menudevdef.asm: menudevdef.txt ../tools/compilemenu.py
+menudef.asm: menudef.txt ../tools/compilemenu.py
 	../tools/compilemenu.py -o $@ $<
 
 clean:
