@@ -20,9 +20,15 @@ SRCS := \
 	rpn83p.asm \
 	vars.asm
 
+# TI Flash app
+rpn83p.8xk: $(SRCS) Makefile
+	$(SPASM) -DFLASHAPP -I $(SPASM_INC) -N rpn83p.asm $@
+
+# TI Assembly program
 rpn83p.8xp: $(SRCS) Makefile
 	$(SPASM) -I $(SPASM_INC) -N rpn83p.asm $@
 
+# Debug version of assembly prpgram.
 #rpn83p.8xp: $(SRCS) Makefile
 #	$(SPASM) -DDEBUG -I $(SPASM_INC) -N rpn83p.asm $@
 

@@ -162,7 +162,7 @@ displayStatusTrigDeg:
 displayStatusTrigRad:
     ld hl, mRadName
 displayStatusTrigPutS:
-    bcall(_VPutS)
+    call vPutS
     ret
 
 ;-----------------------------------------------------------------------------
@@ -194,7 +194,7 @@ displayStatusBaseOct:
 displayStatusBaseBin:
     ld hl, mBinName
 displayStatusBasePutS:
-    bcall(_VPutS)
+    call vPutS
     ret
 
 ;-----------------------------------------------------------------------------
@@ -223,7 +223,7 @@ displayStatusFloatModeEng:
     ; [[fallthrough]]
 displayStatusFloatModeBracketDigit:
     ; Print the number of digit
-    bcall(_VPutS)
+    call vPutS
     ld a, SlParen
     bcall(_VPutMap)
     ld a, (fmtDigits)
@@ -257,7 +257,7 @@ displayErrorCode:
     ld hl, errorPenRow*$100 ; $(penRow)(penCol)
     ld (PenCol), hl
     call getErrorString
-    bcall(_VPutS)
+    call vPutS
     ld a, Sspace
     bcall(_VPutMap)
     ;
@@ -269,7 +269,7 @@ displayErrorCode:
     ld a, (errorCode)
     ld hl, OP1
     call convertAToDec
-    bcall(_VPutS)
+    call vPutS
     ;
     ld a, ')'
     bcall(_VPutMap)
@@ -308,7 +308,7 @@ displayStackYZT:
     ld hl, stTPenRow*$100 ; $(penRow)(penCol)
     ld (PenCol), hl
     ld hl, msgTLabel
-    bcall(_VPutS)
+    call vPutS
 
     ; print T value
     ld hl, stTCurCol*$100 + stTCurRow ; $(curCol)(curRow)
@@ -320,7 +320,7 @@ displayStackYZT:
     ld hl, stZPenRow*$100 ; $(penRow)(penCol)
     ld (PenCol), hl
     ld hl, msgZLabel
-    bcall(_VPutS)
+    call vPutS
 
     ; print Z value
     ld hl, stZCurCol*$100 + stZCurRow ; $(curCol)(curRow)
@@ -332,7 +332,7 @@ displayStackYZT:
     ld hl, stYPenRow*$100 ; $(penRow)(penCol)
     ld (PenCol), hl
     ld hl, msgYLabel
-    bcall(_VPutS)
+    call vPutS
 
     ; print Y value
     ld hl, stYCurCol*$100 + stYCurRow ; $(curCol)(curRow)
@@ -360,7 +360,7 @@ displayStackXNormal:
     ld hl, stXPenRow*$100 ; $(penRow)(penCol)
     ld (PenCol), hl
     ld hl, msgXLabel
-    bcall(_VPutS)
+    call vPutS
     ; print the stX variable
     ld hl, stXCurCol*$100 + stXCurRow ; $(curCol)(curRow)
     ld (CurRow), hl
@@ -372,7 +372,7 @@ displayStackXInput:
     ld hl, inputPenRow*$100 ; $(penRow)(penCol)
     ld (PenCol), hl
     ld hl, msgXLabel
-    bcall(_VPutS)
+    call vPutS
     ; print the inputBuf
     ld hl, inputCurCol*$100 + inputCurRow ; $(curCol)(curRow)
     ld (CurRow), hl
@@ -409,11 +409,11 @@ displayStackXArg:
 printArgBuf:
     ; Print prompt and contents of argBuf
     ld hl, (argPrompt)
-    bcall(_PutS)
+    call putS
     ld a, ' '
     bcall(_PutC)
     ld hl, argBuf
-    bcall(_PutPS)
+    call putPS
 
     ; Append cursor if needed.
     ld a, (argBufSize)
@@ -443,7 +443,7 @@ printArgBufZeroCursor:
 ; Destroys: A, HL; BC destroyed by PutPS()
 printInputBuf:
     ld hl, inputBuf
-    bcall(_PutPS)
+    call putPS
     ld a, cursorChar
     bcall(_PutC)
     ; Skip EraseEOL() if the PutC() above wrapped to next line
@@ -594,7 +594,7 @@ printOP1Base10:
 ; Output:
 ; Destroys: A, HL
 printHLString:
-    bcall(_PutS)
+    call putS
     ld a, (CurCol)
     or a
     ret z ; if spilled to next line, don't call EraseEOL
@@ -789,63 +789,6 @@ convertAToChar:
     ret
 convertAToCharDec:
     add a, '0'
-    ret
-
-;-----------------------------------------------------------------------------
-
-; Function: Erase to end of line using small font. Same as bcall(_EraseEOL).
-; Prints a quad space (4 pixels side), 24 times, for 96 pixels.
-; Destroys: B
-vEraseEOL:
-    ld b, 24
-vEraseEOLLoop:
-    ld a, SFourSpaces
-    bcall(_VPutMap)
-    djnz vEraseEOLLoop
-    ret
-
-; Description: Inlined version of bcall(_VPutS) which has 2 advantages:
-; 1) It works for strings which are in flash (VPutS only works with strings in
-; RAm).
-; 2) It interprets the `Senter` character to move the pen to the beginning of
-; the next line. A line using small font is 7 px high.
-;
-; See TI-83 Plus System Routine SDK docs for VPutS() for a reference
-; implementation of this function.
-; Input: HL: pointer to string using small font
-; Destroys: HL
-smallFontHeight equ 7
-vPutS:
-    push af
-    push de
-    push ix
-vPutSLoop:
-    ld a, (hl)
-    inc hl
-    or a
-    jr z, vPutSEnd
-    cp a, Senter
-    jr nz, vPutSNormal
-vPutSenter:
-    ; move to the next line
-    push af
-    push hl
-    ld hl, PenCol
-    xor a
-    ld (hl), a ; PenCol = 0
-    inc hl ; PenRow
-    ld a, (hl) ; A = PenRow
-    add a, smallFontHeight
-    ld (hl), a ; PenRow += 7
-    pop hl
-    pop af
-vPutSNormal:
-    bcall(_VPutMap)
-    jr nc, vPutSLoop
-vPutSEnd:
-    pop ix
-    pop de
-    pop af
     ret
 
 ;-----------------------------------------------------------------------------

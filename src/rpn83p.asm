@@ -1,9 +1,25 @@
 ; RPN calculator for the TI-83 Plus and TI-84 Plus calculators. Inspired
 ; by the HP-42S calculator.
+;
+; See Appendix A ("Creating Flash Applications with SPASM") of the book ("TI-83
+; ASM For the Absolute Beginner") at
+; (https://www.ticalc.org/archives/files/fileinfo/437/43784.html) regarding the
+; "app.inc" include, the defpage() macro, and the validate() macro.
+;
+; This needs to be compiled using spasm-ng into a *.8xk file.
 
 .nolist
 #include "ti83plus.inc"
+
+#ifdef FLASHAPP
+#include "app.inc"
+; Define single page flash app
+defpage(0, "RPN83P")
+#endif
+
 .list
+
+;-----------------------------------------------------------------------------
 
 ; Display coordinates of the status line
 statusCurRow equ 0
@@ -199,8 +215,10 @@ rpnVarsEnd equ argValue + argValueSizeOf
 
 ;-----------------------------------------------------------------------------
 
+#ifndef FLASHAPP
 .org userMem - 2
 .db t2ByteTok, tAsmCmp
+#endif
 
 main:
     bcall(_RunIndicOff)
@@ -281,7 +299,11 @@ mainExit:
     set appAutoScroll, (iy + appFlags)
     bcall(_ClrLCDFull)
     bcall(_HomeUp)
+#ifdef FLASHAPP
+    bjump(_JForceCmdNoChar)
+#else
     ret
+#endif
 
 ;-----------------------------------------------------------------------------
 
@@ -308,3 +330,10 @@ mainExit:
 #include "menudevdef.asm"
 
 .end
+
+;-----------------------------------------------------------------------------
+
+#ifdef FLASHAPP
+; Not sure if this needs to go before or after the `.end`.
+validate()
+#endif
