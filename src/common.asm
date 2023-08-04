@@ -158,7 +158,10 @@ vEraseEOLLoop:
 ; implementation of this function.
 ;
 ; Input: HL: pointer to string using small font
+; Ouptut:
+;    - unlike VPutS(), the CF does *not* show if all of string was rendered
 ; Destroys: HL
+; Preserves: AF, DE, IX (TODO: I think IX preservation can be removed)
 smallFontHeight equ 7
 vPutS:
     push af

@@ -162,7 +162,7 @@ displayStatusTrigDeg:
 displayStatusTrigRad:
     ld hl, mRadName
 displayStatusTrigPutS:
-    bcall(_VPutS)
+    call vPutS
     ret
 
 ;-----------------------------------------------------------------------------
@@ -194,7 +194,7 @@ displayStatusBaseOct:
 displayStatusBaseBin:
     ld hl, mBinName
 displayStatusBasePutS:
-    bcall(_VPutS)
+    call vPutS
     ret
 
 ;-----------------------------------------------------------------------------
@@ -223,7 +223,7 @@ displayStatusFloatModeEng:
     ; [[fallthrough]]
 displayStatusFloatModeBracketDigit:
     ; Print the number of digit
-    bcall(_VPutS)
+    call vPutS
     ld a, SlParen
     bcall(_VPutMap)
     ld a, (fmtDigits)
@@ -257,7 +257,7 @@ displayErrorCode:
     ld hl, errorPenRow*$100 ; $(penRow)(penCol)
     ld (PenCol), hl
     call getErrorString
-    bcall(_VPutS)
+    call vPutS
     ld a, Sspace
     bcall(_VPutMap)
     ;
@@ -269,7 +269,7 @@ displayErrorCode:
     ld a, (errorCode)
     ld hl, OP1
     call convertAToDec
-    bcall(_VPutS)
+    call vPutS
     ;
     ld a, ')'
     bcall(_VPutMap)
@@ -308,7 +308,7 @@ displayStackYZT:
     ld hl, stTPenRow*$100 ; $(penRow)(penCol)
     ld (PenCol), hl
     ld hl, msgTLabel
-    bcall(_VPutS)
+    call vPutS
 
     ; print T value
     ld hl, stTCurCol*$100 + stTCurRow ; $(curCol)(curRow)
@@ -320,7 +320,7 @@ displayStackYZT:
     ld hl, stZPenRow*$100 ; $(penRow)(penCol)
     ld (PenCol), hl
     ld hl, msgZLabel
-    bcall(_VPutS)
+    call vPutS
 
     ; print Z value
     ld hl, stZCurCol*$100 + stZCurRow ; $(curCol)(curRow)
@@ -332,7 +332,7 @@ displayStackYZT:
     ld hl, stYPenRow*$100 ; $(penRow)(penCol)
     ld (PenCol), hl
     ld hl, msgYLabel
-    bcall(_VPutS)
+    call vPutS
 
     ; print Y value
     ld hl, stYCurCol*$100 + stYCurRow ; $(curCol)(curRow)
@@ -360,7 +360,7 @@ displayStackXNormal:
     ld hl, stXPenRow*$100 ; $(penRow)(penCol)
     ld (PenCol), hl
     ld hl, msgXLabel
-    bcall(_VPutS)
+    call vPutS
     ; print the stX variable
     ld hl, stXCurCol*$100 + stXCurRow ; $(curCol)(curRow)
     ld (CurRow), hl
@@ -372,7 +372,7 @@ displayStackXInput:
     ld hl, inputPenRow*$100 ; $(penRow)(penCol)
     ld (PenCol), hl
     ld hl, msgXLabel
-    bcall(_VPutS)
+    call vPutS
     ; print the inputBuf
     ld hl, inputCurCol*$100 + inputCurRow ; $(curCol)(curRow)
     ld (CurRow), hl
