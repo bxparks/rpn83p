@@ -73,7 +73,7 @@ displayAll:
 ; Output: status line displayed
 ; Destroys: A, B, C, HL
 displayStatus:
-    call displayStatusMenu
+    call displayStatusArrow
     call displayStatusFloatMode
     call displayStatusTrig
     call displayStatusBase
@@ -81,8 +81,7 @@ displayStatus:
 
 ; Description: Display the up and down arrows that indicate whether there are
 ; additional menus above or below the current set of 5 menu buttons.
-; TODO: Maybe rename this "displayStatusArrows".
-displayStatusMenu:
+displayStatusArrow:
     bit rpnFlagsMenuDirty, (iy + rpnFlags)
     ret z
 
@@ -107,43 +106,43 @@ displayStatusMenu:
     ; are no bugs in the program.
     ld a, c ; A = numStrips
     or a
-    jr z, displayStatusMenuClear
+    jr z, displayStatusArrowClear
 
-displayStatusMenuDownArrow:
+displayStatusArrowDown:
     ; If stripIndex < (numStrips - 1): show Down arrow
     ld a, b ; A = stripIndex
     dec c ; C = numStrips - 1
     cp c
-    jr nc, displayStatusMenuDownArrowNone
+    jr nc, displayStatusArrowDownNone
     ld a, SdownArrow
     bcall(_VPutMap)
     ; Add an extra space after the downArrow because when an upArrow is
     ; displayed immediately after, the 1px of space on the right side of the
     ; downArrow character seems to ellided so the downArrow occupies only 3px.
     ld a, Sspace
-    jr displayStatusMenuDownArrowDisplay
-displayStatusMenuDownArrowNone:
+    jr displayStatusArrowDownDisplay
+displayStatusArrowDownNone:
     ld a, SFourSpaces
-displayStatusMenuDownArrowDisplay:
+displayStatusArrowDownDisplay:
     bcall(_VPutMap)
 
-displayStatusMenuUpArrow:
+displayStatusArrowUp:
     ; If stripIndex > 0: show Up arrow
     ld a, b
     or a
-    jr z, displayStatusMenuUpArrowNone
+    jr z, displayStatusArrowUpNone
     ld a, SupArrow
-    jr displayStatusMenuUpArrowDisplay
-displayStatusMenuUpArrowNone:
+    jr displayStatusArrowUpDisplay
+displayStatusArrowUpNone:
     ld a, SFourSpaces
-displayStatusMenuUpArrowDisplay:
+displayStatusArrowUpDisplay:
     bcall(_VPutMap)
     ret
 
     ; clear 8 px
-displayStatusMenuClear:
-    call displayStatusMenuUpArrowNone
-    jr displayStatusMenuUpArrowNone
+displayStatusArrowClear:
+    call displayStatusArrowUpNone
+    jr displayStatusArrowUpNone
 
 ;-----------------------------------------------------------------------------
 
@@ -539,7 +538,7 @@ printMenuAtAFitsInside:
     ; (h) for capital letters, including a one px padding on the right and
     ; bottom of each letter. Each menu name is drawn on the last 7 piexel rows
     ; of the LCD screen, in other words, at penRow of 7*8+1 = 57. When the
-    ; characterse are printed using `textInverse`, the last line of pixels just
+    ; characters are printed using `textInverse`, the last line of pixels just
     ; below each menu name should be black (inverted), and on the assembly
     ; version of this program, it is. But in the flash app version, the line of
     ; pixels directly under the letter is white. Setting this flag fixes that
