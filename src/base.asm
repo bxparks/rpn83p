@@ -58,6 +58,8 @@ convertOP1ToU32SecondDigit:
     djnz convertOP1ToU32Loop
     ret
 
+;-----------------------------------------------------------------------------
+
 ; Description: Add the value in A to the u32 in OP3.
 ; Output: OP3 += A
 ; Destroys: OP3, OP2
@@ -75,41 +77,74 @@ convertOP1ToU32AddAToOP3:
 ; Destroys: OP4
 ; Preserves: all registers
 calcOP3Times10:
-    push de
     push hl ; HL = OP1 mantissa
-    ld de, OP4
     ld hl, OP3
     call calcU32Times10 ; OP4 = 10 * OP3
-    ex de, hl ; DE = OP3; HL = OP4
-    call copyU32 ; OP3 = 10 * OP3
     pop hl
-    pop de
     ret
 
 ;-----------------------------------------------------------------------------
 ; Routines related to U32 stored as 4 bytes in little endian format.
 ;-----------------------------------------------------------------------------
 
-; Description: Calculate (DE) = u32(HL) * 10.
+; Description: Calculate (HL) = u32(HL) * 10.
 ; Input:
 ;   - HL: pointer to a u32 integer, little-endian format
-;   - DE: pointer to destination u32
-; Output: DE = HL * 10
-; Destroys: none
+; Output:
+;   - u32(HL) = u32(HL) * 10
+; Destroys: A
+; Preserves: BC, DE, HL
 calcU32Times10:
-    push af
-    call copyU32 ; (DE) = (HL)
-    ; (DE) = 5 * (DE)
-    ex de, hl ; HL = destination, DE = original
+    push bc
+    push de
+    push hl
+
+    ; BCDE = u32(HL), save original (HL). Using (BC, DE) to hold the original
+    ; u32(HL) allows this routine to be implemented without the need of a
+    ; temporary u32 memory area. That makes the calling code of this routine a
+    ; little bit cleaner.
+    ld c, (hl)
+    inc hl
+    ld b, (hl)
+    inc hl
+    ld e, (hl)
+    inc hl
+    ld d, (hl)
+    pop hl
+
+    ; (HL) = 4 * (HL)
     call calcU32Times2 ; (HL) *= 2
     call calcU32Times2 ; (HL) *= 2
-    ex de, hl
-    call  calcU32PlusU32 ; (DE) = 5*(HL)
-    ; (DE) = 10*(HL)
-    ex de, hl
-    call calcU32Times2 ; (HL) *= 2
-    ex de, hl ; (DE) = (HL)
-    pop af
+
+    ; (HL) += (original HL). This step is quite lengthy because it is using
+    ; four 8-bit operations to add two u32 integers. Maybe there's a more
+    ; clever way of doing this, for example, allocating 4 bytes on the stack,
+    ; then using the 16-bit 'add hl' and 'adc hl' instructions.
+    push hl
+    ld a, (hl)
+    add a, c
+    ld (hl), a
+    inc hl
+    ;
+    ld a, (hl)
+    adc a, b
+    ld (hl), a
+    inc hl
+    ;
+    ld a, (hl)
+    adc a, e
+    ld (hl), a
+    inc hl
+    ;
+    ld a, (hl)
+    adc a, d
+    ld (hl), a
+    pop hl
+
+    call calcU32Times2 ; (HL) = 2 (HL) = 10 * (original HL)
+
+    pop de
+    pop bc
     ret
 
 ; Description: Calculate (HL) = u32(HL) * 2.
@@ -132,7 +167,7 @@ calcU32Times2:
 ; Description: Calculate (DE) = u32(DE) + u32(HL).
 ; Input:
 ;   - HL: pointer to a u32 integer in little-endian format.
-;   - DE: pointer to destinatioin u32 integer in little-endian format.
+;   - DE: pointer to destination u32 integer in little-endian format.
 ; Output:
 ;   - (DE) += (HL)
 ; Destroys: A
@@ -194,6 +229,7 @@ copyU32:
     ret
 
 ; Description: Clear the u32 pointed by HL.
+; Input: HL: pointer to u32
 ; Destroys: none
 clearU32:
     push af
@@ -211,6 +247,7 @@ clearU32:
     ret
 
 ; Description: Shift U32 right logical.
+; Input: HL: pointer to u32
 ; Destroys: none
 shiftRightLogicalU32:
     inc hl
