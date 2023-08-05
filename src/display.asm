@@ -95,6 +95,7 @@ displayStatusArrow:
     ld b, (hl) ; B=menuStripIndex
     call getMenuNode ; HL = pointer to MenuNode
     inc hl
+    ld d, (hl) ; D = parentId
     inc hl
     inc hl
     ld c, (hl) ; C=numStrips
@@ -107,6 +108,18 @@ displayStatusArrow:
     ld a, c ; A = numStrips
     or a
     jr z, displayStatusArrowClear
+
+displayStatusArrowLeft:
+    ld a, d
+    or a ; if parentId==0: ZF=1
+    jr z, displayStatusArrowLeftNone
+    ; display left arrow
+    ld a, Sleft
+    jr displayStatusArrowLeftDisplay
+displayStatusArrowLeftNone:
+    ld a, SFourSpaces
+displayStatusArrowLeftDisplay:
+    bcall(_VPutMap)
 
 displayStatusArrowDown:
     ; If stripIndex < (numStrips - 1): show Down arrow
