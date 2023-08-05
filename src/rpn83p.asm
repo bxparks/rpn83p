@@ -21,14 +21,14 @@ defpage(0, "RPN83P")
 
 ;-----------------------------------------------------------------------------
 
-; Display coordinates of the status line
+; Display coordinates of the top status line
 statusCurRow equ 0
 statusCurCol equ 0
 statusPenRow equ statusCurRow*8
-statusMenuPenCol equ 0 ; 3 * 4px, (up | down) + quadspace
-statusFloatModePenCol equ 12 ; 7 * 4px (FIX|SCI|ENG) + (n) + quadspace
-statusTrigPenCol equ 40 ; 4 * 4px, (DEG | RAD) + quadspace
-statusBasePenCol equ 56 ; 4 * 4px, (BIN, OCT, HEX, DEC) + quadspace
+statusMenuPenCol equ 0 ; left, up, down, 2px = 3*4 + 2 = 14px
+statusFloatModePenCol equ 14 ; (FIX|SCI|ENG), (, N, ), 4px = 5*4+2*3 = 26px
+statusTrigPenCol equ 40 ; (DEG|RAD), 4px = 4*4 = 16px
+statusBasePenCol equ 56 ; (BIN|OCT|HEX|DEC), 4px = 4*4 = 16px
 
 ; Display coordinates of the debug line
 debugCurRow equ 1
