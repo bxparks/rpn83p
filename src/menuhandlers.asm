@@ -1165,5 +1165,16 @@ setBaseMode:
     ld (baseMode), a
     ret
 
-mBopsHandler:
+;-----------------------------------------------------------------------------
+
+mBinaryAndHandler:
+    jp mNotYetHandler
+
+mBinaryOrHandler:
+    jp mNotYetHandler
+
+mBinaryXorHandler:
+    jp mNotYetHandler
+
+mBinaryNotHandler:
     jp mNotYetHandler

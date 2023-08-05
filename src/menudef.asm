@@ -118,7 +118,7 @@ mBaseId equ 10
     .db mBaseId ; id
     .db mRootId ; parentId
     .db mBaseNameId ; nameId
-    .db 1 ; numStrips
+    .db 2 ; numStrips
     .db mDecId ; stripBeginId
     .dw mGroupHandler ; handler (predefined)
 mBlank011:
@@ -867,14 +867,55 @@ mBinId equ 100
     .db 0 ; numStrips
     .db 0 ; stripBeginId
     .dw mBinHandler ; handler (to be implemented)
-mBops:
-mBopsId equ 101
-    .db mBopsId ; id
+mBlank101:
+mBlank101Id equ 101
+    .db mBlank101Id ; id
     .db mBaseId ; parentId
-    .db mBopsNameId ; nameId
+    .db mNullNameId ; nameId
     .db 0 ; numStrips
     .db 0 ; stripBeginId
-    .dw mBopsHandler ; handler (to be implemented)
+    .dw mNullHandler ; handler (predefined)
+; MenuGroup BASE: children: strip 1
+mBinaryAnd:
+mBinaryAndId equ 102
+    .db mBinaryAndId ; id
+    .db mBaseId ; parentId
+    .db mBinaryAndNameId ; nameId
+    .db 0 ; numStrips
+    .db 0 ; stripBeginId
+    .dw mBinaryAndHandler ; handler (to be implemented)
+mBinaryOr:
+mBinaryOrId equ 103
+    .db mBinaryOrId ; id
+    .db mBaseId ; parentId
+    .db mBinaryOrNameId ; nameId
+    .db 0 ; numStrips
+    .db 0 ; stripBeginId
+    .dw mBinaryOrHandler ; handler (to be implemented)
+mBinaryXor:
+mBinaryXorId equ 104
+    .db mBinaryXorId ; id
+    .db mBaseId ; parentId
+    .db mBinaryXorNameId ; nameId
+    .db 0 ; numStrips
+    .db 0 ; stripBeginId
+    .dw mBinaryXorHandler ; handler (to be implemented)
+mBinaryNot:
+mBinaryNotId equ 105
+    .db mBinaryNotId ; id
+    .db mBaseId ; parentId
+    .db mBinaryNotNameId ; nameId
+    .db 0 ; numStrips
+    .db 0 ; stripBeginId
+    .dw mBinaryNotHandler ; handler (to be implemented)
+mBlank106:
+mBlank106Id equ 106
+    .db mBlank106Id ; id
+    .db mBaseId ; parentId
+    .db mNullNameId ; nameId
+    .db 0 ; numStrips
+    .db 0 ; stripBeginId
+    .dw mNullHandler ; handler (predefined)
 
 ; Table of 2-byte pointers to names in the pool of strings below.
 mMenuNameTable:
@@ -1042,8 +1083,14 @@ mOctNameId equ 80
     .dw mOctName
 mBinNameId equ 81
     .dw mBinName
-mBopsNameId equ 82
-    .dw mBopsName
+mBinaryAndNameId equ 82
+    .dw mBinaryAndName
+mBinaryOrNameId equ 83
+    .dw mBinaryOrName
+mBinaryXorNameId equ 84
+    .dw mBinaryXorName
+mBinaryNotNameId equ 85
+    .dw mBinaryNotName
 
 ; Table of names as NUL terminated C strings.
 mNullName:
@@ -1210,5 +1257,11 @@ mOctName:
     .db "OCT", 0
 mBinName:
     .db "BIN", 0
-mBopsName:
-    .db "BOPS", 0
+mBinaryAndName:
+    .db "AND", 0
+mBinaryOrName:
+    .db "OR", 0
+mBinaryXorName:
+    .db "XOR", 0
+mBinaryNotName:
+    .db "NOT", 0
