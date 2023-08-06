@@ -48,6 +48,7 @@ mHelpHandlerGetKey:
     bcall(_GetKey) ; pause for key
     pop bc
     res onInterrupt, (IY+onFlags) ; reset flag set by ON button
+
 mHelpHandlerCheckExit:
     or a ; A == ON
     jr z, mHelpHandlerExit
@@ -59,7 +60,10 @@ mHelpHandlerCheckExit:
     jr z, mHelpHandlerPrevPageMaybe
     cp kUp ; A == UP
     jr z, mHelpHandlerPrevPageMaybe
+    cp kQuit ; 2ND QUIT
+    jp z, mainExit
     jr mHelpHandlerNextPage ; everything else to the next page
+
 mHelpHandlerPrevPageMaybe:
     ; go to prev page if not already at page 0
     ld a, b
@@ -118,49 +122,59 @@ displayString:
     ret
 
 ; Array of (char*) pointers to strings.
-helpPageCount equ 3
+helpPageCount equ 4
 helpPages:
     .dw msgHelpPage0
     .dw msgHelpPage1
     .dw msgHelpPage2
-
-; TODO: Move this to the end of the assembly source code if the size of the
-; binary becomes close to the 8 kB limit.
+    .dw msgHelpPage3
 
 msgHelpPage0:
-    .db "RPN83P v0.0 ", "(2023", Shyphen, "07", Shyphen, "27)", Senter
+    .db "RPN83P v0.0 ", "(2023", Shyphen, "08", Shyphen, "05)", Senter
     .db Senter
-    .db "R", LdownArrow, " : (", Senter
-    .db "R", LupArrow, " : 2ND {", Senter
-    .db "X<>Y", ": )", Senter
-    .db "LastX", ": 2ND ANS", Senter
+    .db "An RPN calculator for ", Senter
+    .db "TI-83+ TI-84+", Senter
+    .db "inspired by HP-42s.", Senter
     .db Senter
+    .db "(c) 2023  Brian T. Park", Senter
     .db Senter
-    .db SlBrack, "1/3", SrBrack, " Any key to continue...", Senter
+    .db SlBrack, "1/4", SrBrack, " Any key to continue...", Senter
     .db 0
 
 msgHelpPage1:
-    .db "RPN83P v0.0 ", "(2023", Shyphen, "07", Shyphen, "27)", Senter
+    .db "Stack Operations", Senter
     .db Senter
-    .db "EE: 2ND EE or ,", Senter
-    .db "+/-: (-)", Senter
-    .db "<-: DEL", Senter
-    .db "ClrX: CLEAR", Senter
+    .db "R", LdownArrow, " :  (", Senter
+    .db "R", LupArrow, " :  2ND {", Senter
+    .db "X<>Y", ":  )", Senter
+    .db "LastX", ":  2ND ANS", Senter
     .db Senter
     .db Senter
-    .db SlBrack, "2/3", SrBrack, " Any key to continue...", Senter
+    .db SlBrack, "2/4", SrBrack, " Any key to continue...", Senter
     .db 0
 
 msgHelpPage2:
-    .db "RPN83P v0.0 ", "(2023", Shyphen, "07", Shyphen, "27)", Senter
+    .db "Input/Editing", Senter
     .db Senter
-    .db "Menu Home: MATH", Senter
-    .db "Menu Prev: Up", Senter
-    .db "Menu Next: Down", Senter
-    .db "Menu Back: Left or ON", Senter
-    .db "Quit App: 2ND QUIT", Senter
+    .db "EE:  2ND EE or ,", Senter
+    .db "+/-:  (-)", Senter
+    .db "<-:  DEL", Senter
+    .db "ClrX:  CLEAR", Senter
     .db Senter
-    .db SlBrack, "3/3", SrBrack, " Any key to return.", Senter
+    .db Senter
+    .db SlBrack, "3/4", SrBrack, " Any key to continue...", Senter
+    .db 0
+
+msgHelpPage3:
+    .db "Menu Navigation", Senter
+    .db Senter
+    .db "Menu Home:  MATH", Senter
+    .db "Menu Prev:  Up", Senter
+    .db "Menu Next:  Down", Senter
+    .db "Menu Back:  Left or ON", Senter
+    .db "Quit App:  2ND QUIT", Senter
+    .db Senter
+    .db SlBrack, "4/4", SrBrack, " Any key to return.", Senter
     .db 0
 
 ;-----------------------------------------------------------------------------
