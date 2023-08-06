@@ -67,27 +67,54 @@ keyCodeHandlerTable:
     .db kDown
     .dw handleKeyDown
 
-    ; The MenuBack function is bound to multiple buttons until I can decide
-    ; on the one that seems most convenient. The best button would have been
-    ; the ESC button, but the TI-83 and TI-84 calculators don't have that
-    ; button (unlike the TI-92 series.)
+    ; The best button for the MenuBack functionality would have been an ESC
+    ; button, but the TI-83 and TI-84 calculators don't have that button,
+    ; unlike the TI-92 series calculators.
     ;
-    ; 1) The primary button is kLeft, because it has proximity to the kUp and
-    ; kDown button used to scroll through different menu strips at the same
-    ; level.
+    ; The next best button seems to be the ON button, which is similar to the
+    ; ON/EXIT button on the HP-42S calculator. There are 3 potential problems
+    ; with the ON button:
     ;
-    ; 2) In the Tilem emulator, the keyboard Backspace is mapped to kLeft+kDel,
-    ; so a Backspace interfere. The DEL key should probably be used in the
-    ; emulator.
+    ; 1) On the TI-83/TI-84, the ON button is special because it generates an
+    ; interrupt that sets a flag which can be polled by the assembly language
+    ; program, even without calling the GetKey() function. The ON button is
+    ; therefore often used as a BREAK button, which is close enough to the EXIT
+    ; function of the HP-42S, so I think this mapping is reasonable.
     ;
-    ; 3) The HP42S uses the ON/EXIT button to exit out of nested menus. The
-    ; Tilem emulator exposes that button by mapping F12 to the ON button, but
-    ; F12 is an awkward key to use for menu navigation.
-    .db kOnExit ; ON button on real calculator, F12 on Tilem
-    .dw handleKeyMenuBack
-    .db kLeft ; Left arrow
+    ; 2) The ON button is physically far away from the UP and DOWN arrow keys,
+    ; unlike the HP-42S where the UP and DOWN buttons are on the lower-left
+    ; side of the calculator, close to the ON/EXIT button. I suspect that this
+    ; may cause some ergonomic issues with traversing the hierarchical menus,
+    ; potentially requring 2 hands to navigate, instead of just one. (The two
+    ; buttons directly to the left of the arrow keys would have been nice to
+    ; use as the ESC key, but those are currently mapped to DEL and STAT. DEL
+    ; is used as the Backspace functionality, and I want to reserve the STAT
+    ; button for future additions.)
+
+    ; 3) The Tilem emulator exposes the ON button as the F12 key on the PC
+    ; keyboard, which is somewhat awkward to use. The ESC key on Tilem is
+    ; mapped to the CLEAR button so we can't use that. The PageUp key seemed
+    ; like a good alternative candidate since it is easy to reach on a USB
+    ; keyboard and is mapped to ALPHA_UP on the calculator. However, there
+    ; seems to be a bug where the ALPHA_UP, ALPHA_DOWN and ALPHA_ENTER keys
+    ; don't work properly if the application is running as a flash app (instead
+    ; of an assembly language program). Those buttons seem to trigger just the
+    ; normal UP, DOWN, ENTER key codes, instead of the distinct ALPHA_UP,
+    ; ALPHA_DOWN, and ALPHA_ENTER codes. So I gave up: On the Tilem, we have to
+    ; use F12 or use the mouse to do a Menu Back.
+    ;
+    ; In early versions of this program, I tried using the LEFT arrow key as
+    ; the Menu Back. It seemed reasonable because it is close to the UP and
+    ; DOWN arrow keys. But I discovered that the LEFT arrow key is so tightly
+    ; associated with the "Cursor Back" functionality, that it never felt
+    ; natural to use it as Menu Back. I remove that mapping, which frees up the
+    ; LEFT and RIGHT keys for future use. For example, it could be used for
+    ; scrolling long numbers or strings that overflow the 14-16 character
+    ; display limit on the X register line.
+    .db kOnExit ; ON button on real calculator, F12 on Tilem USB keyboard
     .dw handleKeyMenuBack
 
+    ; The 5 function keys just below the LCD screen, mapped to menu items.
     .db keyMenu1
     .dw handleKeyMenu1
     .db keyMenu2

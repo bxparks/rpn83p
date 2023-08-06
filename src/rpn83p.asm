@@ -224,6 +224,7 @@ main:
     bcall(_RunIndicOff)
     res appAutoScroll, (iy + appFlags) ; disable auto scroll
     res appTextSave, (iy + appFlags) ; disable shawdow text
+    res lwrCaseActive, (iy + appLwrCaseFlag) ; disable ALPHA-ALPHA lowercase
     bcall(_ClrLCDFull)
 
     call initBase
@@ -267,7 +268,7 @@ readLoop:
     ; it sort of seems to work. Except that upon exiting, the TI-OS displays an
     ; Quit/Goto error message.
     bcall(_GetKey)
-    res onInterrupt, (IY+onFlags)
+    res onInterrupt, (iy + onFlags)
 
     ; Check for 2nd-Quit to Quit. ON (0) triggers the handleKeyMenuBack() to
     ; emulate the ON/EXIT key on the HP 42S which exits nested menus on that

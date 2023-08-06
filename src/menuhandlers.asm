@@ -132,9 +132,9 @@ helpPages:
 msgHelpPage0:
     .db "RPN83P v0.0 ", "(2023", Shyphen, "08", Shyphen, "05)", Senter
     .db Senter
-    .db "An RPN calculator for ", Senter
-    .db "TI-83+ TI-84+", Senter
-    .db "inspired by HP-42s.", Senter
+    .db "An RPN calculator for the", Senter
+    .db "TI-83+ TI-84+ calculators", Senter
+    .db "inspired by the HP-42S.", Senter
     .db Senter
     .db "(c) 2023  Brian T. Park", Senter
     .db Senter
@@ -171,7 +171,7 @@ msgHelpPage3:
     .db "Menu Home:  MATH", Senter
     .db "Menu Prev:  Up", Senter
     .db "Menu Next:  Down", Senter
-    .db "Menu Back:  Left or ON", Senter
+    .db "Menu Back:  ON", Senter
     .db "Quit App:  2ND QUIT", Senter
     .db Senter
     .db SlBrack, "4/4", SrBrack, " Any key to return.", Senter
