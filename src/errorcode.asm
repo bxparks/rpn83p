@@ -76,44 +76,65 @@ checkErrorCodeDisplayed:
 
 ;-----------------------------------------------------------------------------
 
-; An array of pointers to C strings. The TI-OS error handle defines the error
+; An array of pointers to C strings. The TI-OS error handler defines the error
 ; code in the lower 7 bits, for a total of 128 possible values. But the SDK
-; documentation defines only 28 or so, but their numerical values are not
-; documents. We will use this array of 64 slots to error messages to reverse
-; engineer the mapping from errorCode to their meaning.
+; documentation defines `bjump()` calls for only 28 or so. Unfortunately, the
+; numerical error code values passed through the `A` register are not
+; documented.
+;
+; The following numerical error codes below were reverse engineered by calling
+; the `bjump(_ErrXXX)` one at a time, trapping the exception, then printing out
+; the code written into the `A` register. They match the codes given in this
+; wiki page, https://learn.cemetech.net/index.php?title=Z80:Error_Codes, which
+; seems to contain additional error codes which are not documented in the SDK
+; docs. We will ignore those extra error codes in this application.
+;
+; This table defines additional custom error codes used internally by this
+; application:
+; - errorStrOk (0): OK or success status code
+; - errorStrNotYet (64): not yet implemented
+; - errorStrUnknown: This string is bound to any error code whose error string
+; has not been reverse engineered, so it is unknown to this application. If the
+; user sends a reproducible bug report, maybe we can reverse engineer the
+; condition that triggers that particular error code.
+; - errorStrUnexpected (65): unexpected error code. This error message means
+; that the error code received from the exception handler was above the highest
+; error code supported by this application. Even though there are 128 possible
+; error codes, we expect that the TI-OS will use only the bottom 32 or 64
+; codes.
 errorStrings:
     .dw errorStrOk              ; 0, hopefully TI-OS uses 0 as "success"
     .dw errorStrOverflow        ; 1
     .dw errorStrDivBy0          ; 2
-    .dw errorStrUnknown         ; 3
+    .dw errorStrSingularMat     ; 3
     .dw errorStrDomain          ; 4
-    .dw errorStrUnknown         ; 5
+    .dw errorStrIncrement       ; 5
     .dw errorStrBreak           ; 6
-    .dw errorStrUnknown         ; 7
-    .dw errorStrUnknown         ; 8
-    .dw errorStrUnknown         ; 9
-    .dw errorStrUnknown         ; 10
-    .dw errorStrUnknown         ; 11
-    .dw errorStrUnknown         ; 12
-    .dw errorStrUnknown         ; 13
-    .dw errorStrUnknown         ; 14
-    .dw errorStrUnknown         ; 15
+    .dw errorStrNon_Real        ; 7
+    .dw errorStrSyntax          ; 8, also triggered by ErrNonReal??
+    .dw errorStrDataType        ; 9, also triggered by ErrNonReal??
+    .dw errorStrArgument        ; 10
+    .dw errorStrDimMismatch     ; 11
+    .dw errorStrDimension       ; 12
+    .dw errorStrUndefined       ; 13
+    .dw errorStrMemory          ; 14
+    .dw errorStrInvalid         ; 15
     .dw errorStrUnknown         ; 16
     .dw errorStrUnknown         ; 17
     .dw errorStrUnknown         ; 18
     .dw errorStrUnknown         ; 19
     .dw errorStrUnknown         ; 20
-    .dw errorStrUnknown         ; 21
+    .dw errorStrStat            ; 21
     .dw errorStrUnknown         ; 22
     .dw errorStrUnknown         ; 23
-    .dw errorStrUnknown         ; 24
-    .dw errorStrUnknown         ; 25
-    .dw errorStrUnknown         ; 26
-    .dw errorStrUnknown         ; 27
-    .dw errorStrUnknown         ; 28
+    .dw errorStrSignChange      ; 24
+    .dw errorStrIterations      ; 25
+    .dw errorStrBadGuess        ; 26
+    .dw errorStrStatPlot        ; 27
+    .dw errorStrTolTooSmall     ; 28
     .dw errorStrUnknown         ; 29
     .dw errorStrUnknown         ; 30
-    .dw errorStrUnknown         ; 31
+    .dw errorStrLinkXmit        ; 31
     .dw errorStrUnknown         ; 32
     .dw errorStrUnknown         ; 33
     .dw errorStrUnknown         ; 34
@@ -163,7 +184,7 @@ errorStrDomain:
     .db "Err: Domain", 0
 errorStrDataType:
     .db "Err: Data Type", 0
-errorStrDimention:
+errorStrDimension:
     .db "Err: Invalid Dim", 0
 errorStrDimMismatch:
     .db "Err: Dim Mismatch", 0
@@ -179,7 +200,7 @@ errorStrLinkXmit:
     .db "Err: In Xmit", 0
 errorStrMemory:
     .db "Err: Memory", 0
-errorStrNonReal:
+errorStrNon_Real:
     .db "Err: Non Real", 0
 errorStrOverflow:
     .db "Err: Overflow", 0
@@ -194,9 +215,9 @@ errorStrStatPlot:
 errorStrSyntax:
     .db "Err: Syntax", 0
 errorStrTolTooSmall:
-    .db "Err: Tool Not Met", 0
+    .db "Err: Tol Not Met", 0
 errorStrUndefined:
-    .db "Err: Undefined", 0 ; indicates a system error "Undefined"
+    .db "Err: Undefined", 0 ; indicates the system error "Undefined"
 errorStrUnknown:
     .db "Err: UNKNOWN", 0 ; not defined in this module
 errorStrNotYet:
