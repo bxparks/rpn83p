@@ -9,33 +9,33 @@ initBase:
 
 ; Description: Convert floating point OP1 (assumed to be an integer between
 ; [0, 2^32-1] to a 32-bit binary number.
-; Input: OP1: unsigned 32-bit integer as a floating point number
-; Output: OP3: 32-bit integer, little endian
-; Destroys: A, B, DE, HL
-convertOP1ToU32OP3:
-    ; initialize sum variable OP3
-    ld hl, 0
-    ld (OP3), hl
-    ld (OP3+2), hl
-
-    ; test for OP1==0
-    bcall(_CkOP1FP0)
+; Input:
+;   - OP1: unsigned 32-bit integer as a floating point number
+;   - HL: pointer to a u32 in memory
+; Output:
+;   - HL: OP1 converted to a u32, in little-endian format
+; Destroys: A, B, C, DE
+; Preserves: HL
+convertOP1ToU32:
+    ; initialize the target u32
+    call clearU32
+    bcall(_CkOP1FP0) ; preserves HL
     ret z
 
     ; extract number of decimal digits
-    ld hl, OP1+1 ; exponent byte
-    ld a, (hl)
+    ld de, OP1+1 ; exponent byte
+    ld a, (de)
     sub $7F ; A = exponent + 1 = num digits in mantissa
     ld b, a ; B = num digits in mantissa
-    inc hl ; HL = pointer to mantissa
+    inc de ; DE = pointer to mantissa
     jr convertOP1ToU32LoopEntry
 
 convertOP1ToU32Loop:
-    call calcOP3Times10
+    call calcU32Times10
 convertOP1ToU32LoopEntry:
     ; get next 2 digits of mantissa
-    ld a, (hl)
-    inc hl
+    ld a, (de)
+    inc de
 
     ; Process first mantissa digit
     ld c, a ; C = A (saved)
@@ -43,7 +43,7 @@ convertOP1ToU32LoopEntry:
     srl a
     srl a
     srl a
-    call convertOP1ToU32AddAToOP3
+    call calcU32AddU8
 
     ; check number of mantissa digits
     djnz convertOP1ToU32SecondDigit
@@ -51,36 +51,11 @@ convertOP1ToU32LoopEntry:
 
 convertOP1ToU32SecondDigit:
     ; Process second mantissa digit
-    call calcOP3Times10
+    call calcU32Times10
     ld a, c
     and a, $0F
-    call convertOP1ToU32AddAToOP3
+    call calcU32AddU8
     djnz convertOP1ToU32Loop
-    ret
-
-;-----------------------------------------------------------------------------
-
-; Description: Add the value in A to the u32 in OP3.
-; Output: OP3 += A
-; Destroys: OP3, OP2
-convertOP1ToU32AddAToOP3:
-    push hl
-    ld hl, OP2 ; HL = OP2
-    call clearU32 ; OP2 = 0
-    ld (hl), a ; OP2 = A
-    ld de, OP3
-    call calcU32PlusU32 ; OP3=OP2 + A; HL=OP2
-    pop hl
-    ret
-
-; Description: OP3 = 10*OP3
-; Destroys: OP4
-; Preserves: all registers
-calcOP3Times10:
-    push hl ; HL = OP1 mantissa
-    ld hl, OP3
-    call calcU32Times10 ; OP4 = 10 * OP3
-    pop hl
     ret
 
 ;-----------------------------------------------------------------------------
@@ -161,6 +136,36 @@ calcU32Times2:
     rl (hl) ; rotate left through CF
     inc hl
     rl (hl) ; rotate left through CF
+    pop hl
+    ret
+
+; Description: Add A to U32 pointed by HL.
+; Input:
+;   - HL: pointer to u32
+;   - A: u8 to add
+; Output: (HL) += A
+; Destroys: none
+calcU32AddU8:
+    push hl
+
+    add a, (hl)
+    ld (hl), a
+    inc hl
+    ;
+    ld a, (hl)
+    adc a, 0
+    ld (hl), a
+    inc hl
+    ;
+    ld a, (hl)
+    adc a, 0
+    ld (hl), a
+    inc hl
+    ;
+    ld a, (hl)
+    adc a, 0
+    ld (hl), a
+
     pop hl
     ret
 

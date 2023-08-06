@@ -657,8 +657,8 @@ printOP1Base16Valid:
     bcall(_PushRealO1) ; FPS = OP1 (save)
     bcall(_Trunc) ; OP1 = trunc(OP1)
 printOP1Base16String:
-    call convertOP1ToU32OP3
     ld hl, OP3
+    call convertOP1ToU32
     ld de, OP4
     call convertU32ToHexString
 
@@ -694,8 +694,8 @@ printOP1Base8Valid:
     bcall(_PushRealO1) ; FPS = OP1 (save)
     bcall(_Trunc) ; OP1 = trunc(OP1)
 printOP1Base8String:
-    call convertOP1ToU32OP3
     ld hl, OP3
+    call convertOP1ToU32
     ld de, OP4
     call convertU32ToOctString
 
@@ -734,8 +734,8 @@ printOP1Base2Valid:
     bcall(_PushRealO1) ; FPS = OP1 (save)
     bcall(_Trunc) ; OP1 = trunc(OP1)
 printOP1Base2String:
-    call convertOP1ToU32OP3
     ld hl, OP3
+    call convertOP1ToU32
     ld de, OP4
     call convertU32ToBinString
 
