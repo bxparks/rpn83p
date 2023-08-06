@@ -126,8 +126,8 @@ msgHelpPage1:
     .db "(c) 2023  Brian T. Park", Senter
     .db Senter
     .db "An RPN calculator for the", Senter
-    .db "TI-83 Plus and TI-84 Plus", Senter
-    .db "inspired by the HP-42S.", Senter
+    .db "TI", Shyphen, "83 Plus and TI", Shyphen, "84 Plus", Senter
+    .db "inspired by the HP", Shyphen, "42S.", Senter
     .db Senter
     .db SlBrack, "1/4", SrBrack, " Any key to continue...", Senter
     .db 0
