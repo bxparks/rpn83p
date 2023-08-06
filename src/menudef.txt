@@ -206,8 +206,20 @@ MenuGroup root mRoot [
         MenuItem HEX mHex # hexadecimal
         MenuItem OCT mOct # octal
         MenuItem BIN mBin # binary
-        MenuItem BOPS mBops # base operations
       ]
+      MenuStrip [
+        MenuItem AND mBinaryAnd
+        MenuItem OR mBinaryOr
+        MenuItem XOR mBinaryXor
+        MenuItem NOT mBinaryNot # 1's complement
+      ]
+      # MenuStrip [
+      #   MenuItem RLC mBinaryRlc # rotate left circular
+      #   MenuItem RRC mBinaryRrc # rotate right circular
+      #   MenuItem SLA mBinarySla # shift left arithmetic
+      #   MenuItem SRA mBinarySra # shift right arithmetic
+      #   MenuItem SRL mBinarySrl # shift right logical
+      # ]
     ]
   ]
 ]
