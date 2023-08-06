@@ -95,17 +95,9 @@ displayPage:
 
     bcall(_ClrLCDFull)
 
-    ; Calculate the pointer to the help page string
+    ; Get the string for page A, and display it.
     ld hl, helpPages ; HL = (char**)
-    add a, a ; A = 2 * pageNumber (i.e. max page number = 127)
-    ld e, a
-    ld d, 0 ; DE = string offset
-    add hl, de ; HL = (char**)
-    ld e, (hl)
-    inc hl
-    ld d, (hl) ; DE = (char*)(HL)
-    ex de, hl ; HL = (char*)
-
+    call getString
     call displayString
 
     pop hl
