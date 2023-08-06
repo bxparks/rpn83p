@@ -156,15 +156,15 @@ vEraseEOLLoop:
 
 ;-----------------------------------------------------------------------------
 
-; Description: Inlined version of bcall(_VPutS) with 2 additional features:
+; Description: Inlined version of bcall(_VPutS) with additional features:
 ;
 ; - Works for strings in flash (VPutS only works with strings in RAM).
 ; - Interprets the `Senter` and `Lenter` characters to move the pen to the
 ; beginning of the next line.
-; - Interprets inline 2 escape characters (escapeLargeFont, escapeSmallFont) to
-; change the font used by subsequent characters.
-; - Automatically adjusts the line height to be 7px for small fonts and 8px for
-; large fonts.
+; - Supports inlined escape characters (escapeLargeFont, escapeSmallFont) to
+; change the font dynamically.
+; - Automatically adjusts the line height to be 7px for small font and 8px for
+; large font.
 ;
 ; See TI-83 Plus System Routine SDK docs for VPutS() for a reference
 ; implementation of this function.
@@ -172,16 +172,12 @@ vEraseEOLLoop:
 ; Input: HL: pointer to string using small font
 ; Ouptut:
 ;    - unlike VPutS(), the CF does *not* show if all of string was rendered
-; Destroys: HL
-; Preserves: AF, DE, IX (TODO: I think IX preservation can be removed)
+; Destroys: all
 smallFontHeight equ 7
 largeFontHeight equ 8
 escapeLargeFont equ $FE ; pseudo-char to switch to large font
 escapeSmallFont equ $FF ; pseudo-char to switch to small font
 vPutS:
-    push af
-    push de
-    push ix
     ; assume using small font
     ld c, smallFontHeight ; C = current font height
     res fracDrawLFont, (IY + fontFlags) ; start with small font
@@ -190,7 +186,7 @@ vPutSLoop:
     inc hl
 vPutSCheckSpecialChars:
     or a ; Check for NUL
-    jr z, vPutSEnd
+    ret z
     cp a, Senter ; Check for Senter (same as Lenter)
     jr z, vPutSEnter
     cp a, escapeLargeFont ; check for large font
@@ -222,11 +218,6 @@ vPutSEnter:
     pop hl
     pop af
     jr vPutSLoop
-vPutSEnd:
-    pop ix
-    pop de
-    pop af
-    ret
 
 ;-----------------------------------------------------------------------------
 

@@ -98,27 +98,18 @@ displayPage:
     push hl
 
     bcall(_ClrLCDFull)
+    ld hl, 0
+    ld (PenCol), hl
 
     ; Get the string for page A, and display it.
     ld hl, helpPages ; HL = (char**)
     call getString
-    call displayString
+    call vPutS
 
     pop hl
     pop de
     pop bc
     pop af
-    ret
-
-; Description: Display the page given by HL.
-; Input: HL: string using small font
-; Destroys: none
-displayString:
-    push hl
-    ld hl, 0
-    ld (PenCol), hl
-    pop hl ; HL= (char*)
-    call vPutS
     ret
 
 ; Array of (char*) pointers to C-strings.
