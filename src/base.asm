@@ -6,6 +6,8 @@ initBase:
     ret
 
 ;-----------------------------------------------------------------------------
+; Routines for converting floating point to U32 and back.
+;-----------------------------------------------------------------------------
 
 ; Description: Convert floating point OP1 (assumed to be an integer between
 ; [0, 2^32-1] to a 32-bit binary number.
@@ -56,6 +58,65 @@ convertOP1ToU32SecondDigit:
     and a, $0F
     call addU32U8
     djnz convertOP1ToU32Loop
+    ret
+
+;-----------------------------------------------------------------------------
+
+; Description: Convert the u32 referenced by HL to a floating point number in
+; OP1.
+; Input: HL: pointer to u32
+; Ouptut: OP1: floating point equivalent of u32(HL)
+; Destroys: A, B
+; Preserves: HL
+convertU32ToOP1:
+    push hl
+    bcall(_OP1Set0)
+    pop hl
+
+    inc hl
+    inc hl
+    inc hl ; HL points to most significant byte
+
+    ld a, (hl)
+    dec hl
+    call convertU8ToOP1
+
+    ld a, (hl)
+    dec hl
+    call convertU8ToOP1
+
+    ld a, (hl)
+    dec hl
+    call convertU8ToOP1
+
+    ld a, (hl)
+    call convertU8ToOP1
+
+    ret
+
+; Description: Convert the u8 in A to floating point number, and add it to OP1.
+; Input:
+;   - A: u8 integer
+;   - OP1: current floating point value, set to 0.0 to start fresh
+; Destroys: A, B
+; Preserves: C, HL
+convertU8ToOP1:
+    push hl
+    ld b, 8 ; loop for 8 bits in u8
+convertU8ToOP1Loop:
+    push bc
+    push af
+    bcall(_Times2) ; OP1 *= 2
+    pop af
+    sla a
+    jr nc, convertU8ToOP1Check
+    push af
+    bcall(_Plus1) ; OP1 += 1
+    pop af
+convertU8ToOP1Check:
+    pop bc
+    djnz convertU8ToOP1Loop
+    pop hl
     ret
 
 ;-----------------------------------------------------------------------------
@@ -265,6 +326,148 @@ shiftRightLogicalU32:
     rr (hl)
     dec hl ; HL = &buf[0]
     rr (hl)
+    ret
+
+; Description: Perform binary AND operation.
+; Input:
+;   - HL: pointer to U32
+;   - DE: pointer to U32
+; Output:
+;   - HL: pointer to the result
+; Destroys: A
+andU32U32:
+    push hl
+    push de
+
+    ld a, (de)
+    and (hl)
+    ld (hl), a
+    inc hl
+    inc de
+
+    ld a, (de)
+    and (hl)
+    ld (hl), a
+    inc hl
+    inc de
+
+    ld a, (de)
+    and (hl)
+    ld (hl), a
+    inc hl
+    inc de
+
+    ld a, (de)
+    and (hl)
+    ld (hl), a
+
+    pop de
+    pop hl
+    ret
+
+; Description: Perform binary OR operation.
+; Input:
+;   - HL: pointer to U32
+;   - DE: pointer to U32
+; Output:
+;   - HL: pointer to the result
+; Destroys: A
+orU32U32:
+    push hl
+    push de
+
+    ld a, (de)
+    or (hl)
+    ld (hl), a
+    inc hl
+    inc de
+
+    ld a, (de)
+    or (hl)
+    ld (hl), a
+    inc hl
+    inc de
+
+    ld a, (de)
+    or (hl)
+    ld (hl), a
+    inc hl
+    inc de
+
+    ld a, (de)
+    or (hl)
+    ld (hl), a
+
+    pop de
+    pop hl
+    ret
+
+; Description: Perform binary XOR operation.
+; Input:
+;   - HL: pointer to U32
+;   - DE: pointer to U32
+; Output:
+;   - HL: pointer to the result
+; Destroys: A
+xorU32U32:
+    push hl
+    push de
+
+    ld a, (de)
+    xor (hl)
+    ld (hl), a
+    inc hl
+    inc de
+
+    ld a, (de)
+    xor (hl)
+    ld (hl), a
+    inc hl
+    inc de
+
+    ld a, (de)
+    xor (hl)
+    ld (hl), a
+    inc hl
+    inc de
+
+    ld a, (de)
+    xor (hl)
+    ld (hl), a
+
+    pop de
+    pop hl
+    ret
+
+; Description: Perform NOT (1's complement) operation.
+; Input:
+;   - HL: pointer to U32
+; Output:
+;   - HL: pointer to the result
+; Destroys: A
+notU32:
+    push hl
+
+    ld a, (hl)
+    cpl
+    ld (hl), a
+    inc hl
+
+    ld a, (hl)
+    cpl
+    ld (hl), a
+    inc hl
+
+    ld a, (hl)
+    cpl
+    ld (hl), a
+    inc hl
+
+    ld a, (hl)
+    cpl
+    ld (hl), a
+
+    pop hl
     ret
 
 ;-----------------------------------------------------------------------------

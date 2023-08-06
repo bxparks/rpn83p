@@ -1168,13 +1168,54 @@ setBaseMode:
 ;-----------------------------------------------------------------------------
 
 mBinaryAndHandler:
-    jp mNotYetHandler
+    call closeInputAndRecallXY ; OP1=Y; OP2=X
+    ld hl, OP3
+    call convertOP1ToU32 ; OP3=u32(Y)
+
+    bcall(_OP2ToOP1)
+    ld hl, OP4
+    call convertOP1ToU32 ; OP4=u32(X)
+
+    ld de, OP3
+    call andU32U32 ; OP4 = OP4 AND OP3
+
+    call convertU32ToOP1 ; OP1 = float(OP4)
+    jp replaceXY
 
 mBinaryOrHandler:
-    jp mNotYetHandler
+    call closeInputAndRecallXY ; OP1=Y; OP2=X
+    ld hl, OP3
+    call convertOP1ToU32 ; OP3=u32(Y)
+
+    bcall(_OP2ToOP1)
+    ld hl, OP4
+    call convertOP1ToU32 ; OP4=u32(X)
+
+    ld de, OP3
+    call orU32U32 ; OP4 = OP4 OR OP3
+
+    call convertU32ToOP1 ; OP1 = float(OP4)
+    jp replaceXY
 
 mBinaryXorHandler:
-    jp mNotYetHandler
+    call closeInputAndRecallXY ; OP1=Y; OP2=X
+    ld hl, OP3
+    call convertOP1ToU32 ; OP3=u32(Y)
+
+    bcall(_OP2ToOP1)
+    ld hl, OP4
+    call convertOP1ToU32 ; OP4=u32(X)
+
+    ld de, OP3
+    call xorU32U32 ; OP4 = OP4 XOR OP3
+
+    call convertU32ToOP1 ; OP1 = float(OP4)
+    jp replaceXY
 
 mBinaryNotHandler:
-    jp mNotYetHandler
+    call closeInputAndRecallX ; OP1=X
+    ld hl, OP3
+    call convertOP1ToU32 ; OP3=u32(X)
+    call notU32 ; OP3 = NOT(OP3)
+    call convertU32ToOP1 ; OP1 = float(OP3)
+    jp replaceX
