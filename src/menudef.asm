@@ -908,14 +908,14 @@ mBinaryNotId equ 105
     .db 0 ; numStrips
     .db 0 ; stripBeginId
     .dw mBinaryNotHandler ; handler (to be implemented)
-mBlank106:
-mBlank106Id equ 106
-    .db mBlank106Id ; id
+mBinaryNeg:
+mBinaryNegId equ 106
+    .db mBinaryNegId ; id
     .db mBaseId ; parentId
-    .db mNullNameId ; nameId
+    .db mBinaryNegNameId ; nameId
     .db 0 ; numStrips
     .db 0 ; stripBeginId
-    .dw mNullHandler ; handler (predefined)
+    .dw mBinaryNegHandler ; handler (to be implemented)
 
 ; Table of 2-byte pointers to names in the pool of strings below.
 mMenuNameTable:
@@ -1091,6 +1091,8 @@ mBinaryXorNameId equ 84
     .dw mBinaryXorName
 mBinaryNotNameId equ 85
     .dw mBinaryNotName
+mBinaryNegNameId equ 86
+    .dw mBinaryNegName
 
 ; Table of names as NUL terminated C strings.
 mNullName:
@@ -1265,3 +1267,5 @@ mBinaryXorName:
     .db "XOR", 0
 mBinaryNotName:
     .db "NOT", 0
+mBinaryNegName:
+    .db "NEG", 0

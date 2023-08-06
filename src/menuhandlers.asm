@@ -1216,3 +1216,11 @@ mBinaryNotHandler:
     call notU32 ; OP3 = NOT(OP3)
     call convertU32ToOP1 ; OP1 = float(OP3)
     jp replaceX
+
+mBinaryNegHandler:
+    call closeInputAndRecallX ; OP1=X
+    ld hl, OP3
+    call convertOP1ToU32 ; OP3=u32(X)
+    call negU32 ; OP3 = NEG(OP3), 2's complement negation
+    call convertU32ToOP1 ; OP1 = float(OP3)
+    jp replaceX

@@ -470,6 +470,37 @@ notU32:
     pop hl
     ret
 
+; Description: Perform NEG (2's complement negative) operation.
+; Input:
+;   - HL: pointer to U32
+; Output:
+;   - HL: pointer to the result
+; Destroys: A
+negU32:
+    push hl
+
+    ld a, (hl)
+    neg
+    ld (hl), a
+    inc hl
+
+    ld a, 0
+    sbc a, (hl)
+    ld (hl), a
+    inc hl
+
+    ld a, 0
+    sbc a, (hl)
+    ld (hl), a
+    inc hl
+
+    ld a, 0
+    sbc a, (hl)
+    ld (hl), a
+
+    pop hl
+    ret
+
 ;-----------------------------------------------------------------------------
 ; Routines related to Hex strings.
 ;-----------------------------------------------------------------------------
