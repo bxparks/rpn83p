@@ -158,10 +158,13 @@ vEraseEOLLoop:
 
 ; Description: Inlined version of bcall(_VPutS) with 2 additional features:
 ;
-; 1) It works for strings which are in flash (VPutS only works with strings in
-; RAM).
-; 2) It interprets the `Senter` character to move the pen to the beginning of
-; the next line. A line using small font is 7 px high.
+; - Works for strings in flash (VPutS only works with strings in RAM).
+; - Interprets the `Senter` and `Lenter` characters to move the pen to the
+; beginning of the next line.
+; - Interprets inline 2 escape characters (escapeLargeFont, escapeSmallFont) to
+; change the font used by subsequent characters.
+; - Automatically adjusts the line height to be 7px for small fonts and 8px for
+; large fonts.
 ;
 ; See TI-83 Plus System Routine SDK docs for VPutS() for a reference
 ; implementation of this function.
@@ -172,18 +175,40 @@ vEraseEOLLoop:
 ; Destroys: HL
 ; Preserves: AF, DE, IX (TODO: I think IX preservation can be removed)
 smallFontHeight equ 7
+largeFontHeight equ 8
+escapeLargeFont equ $FE ; pseudo-char to switch to large font
+escapeSmallFont equ $FF ; pseudo-char to switch to small font
 vPutS:
     push af
     push de
     push ix
+    ; assume using small font
+    ld c, smallFontHeight ; C = current font height
+    res fracDrawLFont, (IY + fontFlags) ; start with small font
 vPutSLoop:
-    ld a, (hl)
+    ld a, (hl) ; A = current char
     inc hl
-    or a
+vPutSCheckSpecialChars:
+    or a ; Check for NUL
     jr z, vPutSEnd
-    cp a, Senter
-    jr nz, vPutSNormal
-vPutSenter:
+    cp a, Senter ; Check for Senter (same as Lenter)
+    jr z, vPutSEnter
+    cp a, escapeLargeFont ; check for large font
+    jr z, vPutSLargeFont
+    cp a, escapeSmallFont ; check for small font
+    jr z, vPutSSmallFont
+vPutSNormal:
+    bcall(_VPutMap) ; preserves BC, HL
+    jr vPutSLoop
+vPutSLargeFont:
+    ld c, largeFontHeight
+    set fracDrawLFont, (IY + fontFlags) ; use large font
+    jr vPutSLoop
+vPutSSmallFont:
+    ld c, smallFontHeight
+    res fracDrawLFont, (IY + fontFlags) ; use small font
+    jr vPutSLoop
+vPutSEnter:
     ; move to the next line
     push af
     push hl
@@ -192,13 +217,11 @@ vPutSenter:
     ld (hl), a ; PenCol = 0
     inc hl ; PenRow
     ld a, (hl) ; A = PenRow
-    add a, smallFontHeight
+    add a, c ; A += C (font height)
     ld (hl), a ; PenRow += 7
     pop hl
     pop af
-vPutSNormal:
-    bcall(_VPutMap)
-    jr nc, vPutSLoop
+    jr vPutSLoop
 vPutSEnd:
     pop ix
     pop de

@@ -121,29 +121,29 @@ displayString:
     call vPutS
     ret
 
-; Array of (char*) pointers to strings.
+; Array of (char*) pointers to C-strings.
 helpPageCount equ 4
 helpPages:
-    .dw msgHelpPage0
     .dw msgHelpPage1
     .dw msgHelpPage2
     .dw msgHelpPage3
+    .dw msgHelpPage4
 
-msgHelpPage0:
-    .db "RPN83P v0.0 ", "(2023", Shyphen, "08", Shyphen, "05)", Senter
+msgHelpPage1:
+    .db escapeLargeFont, "RPN83P", Lenter
+    .db escapeSmallFont, "v0.0 (2023", Shyphen, "08", Shyphen, "05)", Senter
+    .db "(c) 2023  Brian T. Park", Senter
     .db Senter
     .db "An RPN calculator for the", Senter
-    .db "TI-83+ TI-84+ calculators", Senter
+    .db "TI-83 Plus and TI-84 Plus", Senter
     .db "inspired by the HP-42S.", Senter
-    .db Senter
-    .db "(c) 2023  Brian T. Park", Senter
     .db Senter
     .db SlBrack, "1/4", SrBrack, " Any key to continue...", Senter
     .db 0
 
-msgHelpPage1:
-    .db "Stack Operations", Senter
-    .db Senter
+msgHelpPage2:
+    .db escapeLargeFont, "Stack Operation", Lenter
+    .db escapeSmallFont, Senter
     .db "R", LdownArrow, " :  (", Senter
     .db "R", LupArrow, " :  2ND {", Senter
     .db "X<>Y", ":  )", Senter
@@ -153,9 +153,9 @@ msgHelpPage1:
     .db SlBrack, "2/4", SrBrack, " Any key to continue...", Senter
     .db 0
 
-msgHelpPage2:
-    .db "Input/Editing", Senter
-    .db Senter
+msgHelpPage3:
+    .db escapeLargeFont, "Input Editing", Lenter
+    .db escapeSmallFont, Senter
     .db "EE:  2ND EE or ,", Senter
     .db "+/-:  (-)", Senter
     .db "<-:  DEL", Senter
@@ -165,12 +165,12 @@ msgHelpPage2:
     .db SlBrack, "3/4", SrBrack, " Any key to continue...", Senter
     .db 0
 
-msgHelpPage3:
-    .db "Menu Navigation", Senter
-    .db Senter
+msgHelpPage4:
+    .db escapeLargeFont, "Menu Navigation", Lenter
+    .db escapeSmallFont, Senter
     .db "Menu Home:  MATH", Senter
-    .db "Menu Prev:  Up", Senter
-    .db "Menu Next:  Down", Senter
+    .db "Menu Prev:  UP", Senter
+    .db "Menu Next:  DOWN", Senter
     .db "Menu Back:  ON", Senter
     .db "Quit App:  2ND QUIT", Senter
     .db Senter
