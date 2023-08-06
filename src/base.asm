@@ -31,7 +31,7 @@ convertOP1ToU32:
     jr convertOP1ToU32LoopEntry
 
 convertOP1ToU32Loop:
-    call calcU32Times10
+    call multU32By10
 convertOP1ToU32LoopEntry:
     ; get next 2 digits of mantissa
     ld a, (de)
@@ -43,7 +43,7 @@ convertOP1ToU32LoopEntry:
     srl a
     srl a
     srl a
-    call calcU32AddU8
+    call addU32U8
 
     ; check number of mantissa digits
     djnz convertOP1ToU32SecondDigit
@@ -51,10 +51,10 @@ convertOP1ToU32LoopEntry:
 
 convertOP1ToU32SecondDigit:
     ; Process second mantissa digit
-    call calcU32Times10
+    call multU32By10
     ld a, c
     and a, $0F
-    call calcU32AddU8
+    call addU32U8
     djnz convertOP1ToU32Loop
     ret
 
@@ -69,7 +69,7 @@ convertOP1ToU32SecondDigit:
 ;   - u32(HL) = u32(HL) * 10
 ; Destroys: A
 ; Preserves: BC, DE, HL
-calcU32Times10:
+multU32By10:
     push bc
     push de
     push hl
@@ -88,8 +88,8 @@ calcU32Times10:
     pop hl
 
     ; (HL) = 4 * (HL)
-    call calcU32Times2 ; (HL) *= 2
-    call calcU32Times2 ; (HL) *= 2
+    call multU32By2 ; (HL) *= 2
+    call multU32By2 ; (HL) *= 2
 
     ; (HL) += (original HL). This step is quite lengthy because it is using
     ; four 8-bit operations to add two u32 integers. Maybe there's a more
@@ -116,7 +116,7 @@ calcU32Times10:
     ld (hl), a
     pop hl
 
-    call calcU32Times2 ; (HL) = 2 (HL) = 10 * (original HL)
+    call multU32By2 ; (HL) = 2 (HL) = 10 * (original HL)
 
     pop de
     pop bc
@@ -126,7 +126,7 @@ calcU32Times10:
 ; Input: HL: pointer to a u32 integer in little-endian format.
 ; Output: u32 pointed by HL is doubled
 ; Destroys: none
-calcU32Times2:
+multU32By2:
     push hl
     or a ; clear CF
     sla (hl) ; CF=bit7
@@ -145,7 +145,7 @@ calcU32Times2:
 ;   - A: u8 to add
 ; Output: (HL) += A
 ; Destroys: none
-calcU32AddU8:
+addU32U8:
     push hl
 
     add a, (hl)
@@ -177,7 +177,7 @@ calcU32AddU8:
 ;   - (DE) += (HL)
 ; Destroys: A
 ; Preserves: DE, HL, (HL)
-calcU32PlusU32:
+addU32U32:
     push hl
     push de
 
