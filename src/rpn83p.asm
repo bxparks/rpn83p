@@ -196,8 +196,6 @@ main:
     res lwrCaseActive, (iy + appLwrCaseFlag) ; disable ALPHA-ALPHA lowercase
     bcall(_ClrLCDFull)
 
-    ld a, $FF
-    ld (iy + dirtyFlags), a ; set all dirty flags
     call initBase
     call initErrorCode
     call initInputBuf

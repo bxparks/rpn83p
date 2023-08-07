@@ -85,12 +85,10 @@ menuPenColEnd   equ 96
 
 ;-----------------------------------------------------------------------------
 
-; Function: Set the display flags to dirty initially so that they are rendered.
+; Function: Set all dirty flags to dirty initially so that they are rendered.
 initDisplay:
-    set dirtyFlagsFloatMode, (iy + dirtyFlags)
-    set dirtyFlagsTrigMode, (iy + dirtyFlags)
-    set dirtyFlagsBaseMode, (iy + dirtyFlags)
-    set dirtyFlagsInput, (iy + dirtyFlags)
+    ld a, $FF
+    ld (iy + dirtyFlags), a ; set all dirty flags
     ret
 
 ; Function: Update the display, including the title, RPN stack variables,
@@ -104,13 +102,9 @@ displayAll:
     call displayStack
     call displayMenu
 
-    ; Reset dirty flags
-    res dirtyFlagsStack, (iy + dirtyFlags)
-    res dirtyFlagsMenu, (iy + dirtyFlags)
-    res dirtyFlagsFloatMode, (iy + dirtyFlags)
-    res dirtyFlagsTrigMode, (iy + dirtyFlags)
-    res dirtyFlagsBaseMode, (iy + dirtyFlags)
-    res dirtyFlagsInput, (iy + dirtyFlags)
+    ; Reset all dirty flags
+    xor a
+    ld (iy + dirtyFlags), a
     ret
 
 ;-----------------------------------------------------------------------------
