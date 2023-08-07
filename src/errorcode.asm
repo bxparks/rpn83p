@@ -65,7 +65,9 @@ saveErrorCodeDisplayed:
     ret
 
 ; Function: Check if errorCode is the same as errorCodeDisplayed
-; Output: Z if same, NZ if different
+; Output:
+;   - ZF=1 if same, ZF=0 if different
+;   - A: current error code
 ; Destroys: A, HL
 checkErrorCodeDisplayed:
     ld hl, errorCode
@@ -93,15 +95,15 @@ checkErrorCodeDisplayed:
 ; application:
 ; - errorStrOk (0): OK or success status code
 ; - errorStrNotYet (64): not yet implemented
-; - errorStrUnknown: This string is bound to any error code whose error string
-; has not been reverse engineered, so it is unknown to this application. If the
-; user sends a reproducible bug report, maybe we can reverse engineer the
-; condition that triggers that particular error code.
-; - errorStrUnexpected (65): unexpected error code. This error message means
-; that the error code received from the exception handler was above the highest
-; error code supported by this application. Even though there are 128 possible
-; error codes, we expect that the TI-OS will use only the bottom 32 or 64
-; codes.
+; - errorStrUnknown: This string will be display for any error code whose error
+; string is not known. If the user sends a reproducible bug report, maybe we
+; can reverse engineer the condition that triggers that particular error code
+; and create a human-readable string for it.
+; - errorStrUnexpected (65): This error message means that the error code
+; received from the exception handler was greater than the highest error code
+; supported by this module. Even though there are 128 possible error codes, we
+; expect that the TI-OS will use only the bottom 32 or 64 codes, so the table
+; below goes up to only 65.
 errorStrings:
     .dw errorStrOk              ; 0, hopefully TI-OS uses 0 as "success"
     .dw errorStrOverflow        ; 1

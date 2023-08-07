@@ -262,12 +262,17 @@ displayStatusFloatModeDigit:
 ;   - errorCodeDisplayed updated
 ; Destroys: A, DE, HL
 displayErrorCode:
-    call checkErrorCodeDisplayed
-    ret z
+    ; Check if the error code changed
+    call checkErrorCodeDisplayed ; A = current error code
+    ret z ; return if no change
 
-    ; Print error code string and its numerical code.
+    ; Display nothing if status == OK (0)
     ld hl, errorPenRow*$100 ; $(penRow)(penCol)
     ld (PenCol), hl
+    or a
+    jr z, displayErrorCodeEnd
+
+    ; Print error string and its numerical code.
     call getErrorString
     call vPutS
     ld a, Sspace
@@ -285,8 +290,9 @@ displayErrorCode:
     ;
     ld a, ')'
     bcall(_VPutMap)
-    call vEraseEOL
 
+displayErrorCodeEnd:
+    call vEraseEOL
     call saveErrorCodeDisplayed
     ret
 
