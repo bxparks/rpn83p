@@ -1,6 +1,6 @@
 # rpn83p
 
-RPN calculator app for TI-83 Plus and TI-84 Plus inspired by HP42S.
+RPN calculator app for the TI-83 Plus and TI-84 Plus inspired by the HP-42S.
 
 **Version**: 0.0 (2023-07-14)
 
@@ -20,19 +20,29 @@ RPN calculator app for TI-83 Plus and TI-84 Plus inspired by HP42S.
 <a name="Installation"></a>
 ## Installation
 
-- Copy the `rpn83p.8xp` file to the TI-83/TI-84 calculator.
-    - Windows: TI Connect
-    - Linux: `tilp`
-- Run the program using `Asm(prgmRPN83P)`:
-    - `2ND CATALOG`
-    - `Down Arrow` 6 times to `Asm(`
-    - `ENTER`
-    - `PRGM`
-    - `Down Arrow` to select `RPN83P`
-    - `ENTER`
-    - `ENTER` again to run
+RPN83P is a flash application (it no longer small enough to create as an
+assembly language program).
+
+- Copy the `rpn83p.8xk` file to the TI-83/TI-84 calculator. Use one of following
+  link programs:
+    - Windows: [TI Connect](https://education.ti.com/en/products/computer-software/ti-connect-sw)
+    - Linux: [tilp](https://github.com/debrouxl/tilp_and_gfm)
+- Run the program using the `APPS`:
+    - Press `APPS`
+    - Scroll down to the `RPN83P` entry
+    - Press `ENTER`
 - To quit:
-    - `2ND QUIT`
+    - `2ND` `QUIT`
+- To turn off:
+    - `2ND` `OFF`
+- To exit input modes, or nested menus:
+    - `ON`
+- To clear the input:
+    - `CLEAR`
+
+The nice thing about a flash app is that it does not consume precious RAM space,
+and it is preserved when the RAM is cleared (either purposefully or
+accidentally).
 
 <a name="SupportedHardware"></a>
 ### Supported Hardware
@@ -40,9 +50,9 @@ RPN calculator app for TI-83 Plus and TI-84 Plus inspired by HP42S.
 This app was designed for TI calculators using the Z80 processor:
 
 - TI-83 Plus
-- TI-83 Plus Silver Edition
+- TI-83 Plus Silver Edition (verified)
 - TI-84 Plus
-- TI-84 Plus Silver Edition
+- TI-84 Plus Silver Edition (verified)
 
 <a name="UserGuide"></a>
 ## User Guide
@@ -62,7 +72,7 @@ been verified only on my dev machine.
       `rpn83` directory. (See the `SPASM_DIR` variable inside the `Makefile`).
 - `$ cd src`
 - `$ make`
-- Should produce a file called `rpn83p.8xp`.
+- Should produce a file named `rpn83p.8xk`.
 
 <a name="ToolsResources"></a>
 ## Tools and Resources
@@ -104,6 +114,13 @@ Here is what I use for development on Ubuntu Linux 22.04:
 - Learn TI-83 Plus Assembly in 28 Days
     - https://taricorp.gitlab.io/83pa28d/
     - https://gitlab.com/taricorp/83pa28d/
+- Hot Dog's Ti-83+ Z80 ASM for the Absolute Beginner
+    - https://www.ticalc.org/archives/files/fileinfo/437/43784.html
+    - https://www.omnimaga.org/hot-dog's-ti-83-z80-asm-for-the-absolute-beginner
+    - Most of this book is aimed at an assembly language beginner.
+    - However, Appendix A (_Creating Flash Applications with SPASM_) is the only
+      place that I know which explains how to generate a flash app using the
+      `spasm-ng` assembler.
 
 <a name="License"></a>
 ## License
