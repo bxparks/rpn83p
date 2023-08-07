@@ -11,6 +11,55 @@
 ;   7: [menu1][menu2][menu3][menu4][menu5] # small font
 ;-----------------------------------------------------------------------------
 
+; Display coordinates of the top status line
+statusCurRow equ 0
+statusCurCol equ 0
+statusPenRow equ statusCurRow*8
+statusMenuPenCol equ 0 ; left, up, down, 2px = 3*4 + 2 = 14px
+statusFloatModePenCol equ 14 ; (FIX|SCI|ENG), (, N, ), 4px = 5*4+2*3 = 26px
+statusTrigPenCol equ 40 ; (DEG|RAD), 4px = 4*4 = 16px
+statusBasePenCol equ 56 ; (BIN|OCT|HEX|DEC), 4px = 4*4 = 16px
+
+; Display coordinates of the debug line
+debugCurRow equ 1
+debugCurCol equ 0
+debugPenRow equ debugCurRow*8
+
+; Display coordinates of the error line
+errorCurRow equ 2
+errorCurCol equ 0
+errorPenRow equ errorCurRow*8
+
+; Display coordinates of the stack T register.
+stTCurRow equ 3
+stTCurCol equ 1
+stTPenRow equ stTCurRow*8
+
+; Display coordinates of the stack Z register.
+stZCurRow equ 4
+stZCurCol equ 1
+stZPenRow equ stZCurRow*8
+
+; Display coordinates of the stack Y register.
+stYCurRow equ 5
+stYCurCol equ 1
+stYPenRow equ stYCurRow*8
+
+; Display coordinates of the stack X register.
+stXCurRow equ 6
+stXCurCol equ 1
+stXPenRow equ stXCurRow*8
+
+; Display coordinates of the input buffer.
+inputCurRow equ stXCurRow
+inputCurCol equ stXCurCol
+inputPenRow equ inputCurRow*8
+
+; Display coordinates of the arg buffer.
+argCurRow equ 6
+argCurCol equ 0
+argPenRow equ argCurRow*8
+
 ; Menu pixel columns:
 ;   - 96 px wide, 5 menus
 ;   - 18 px/menu = 90 px, 6 leftover
