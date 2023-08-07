@@ -38,9 +38,9 @@ menuPenColEnd   equ 96
 
 ; Function: Set the display flags to dirty initially so that they are rendered.
 initDisplay:
-    set rpnFlagsFloatModeDirty, (iy + rpnFlags)
-    set rpnFlagsTrigModeDirty, (iy + rpnFlags)
-    set rpnFlagsBaseModeDirty, (iy + rpnFlags)
+    set dirtyFlagsFloatMode, (iy + dirtyFlags)
+    set dirtyFlagsTrigMode, (iy + dirtyFlags)
+    set dirtyFlagsBaseMode, (iy + dirtyFlags)
     set inputBufFlagsInputDirty, (iy + inputBufFlags)
     ret
 
@@ -56,11 +56,11 @@ displayAll:
     call displayMenu
 
     ; Reset dirty flags
-    res rpnFlagsStackDirty, (iy + rpnFlags)
-    res rpnFlagsMenuDirty, (iy + rpnFlags)
-    res rpnFlagsFloatModeDirty, (iy + rpnFlags)
-    res rpnFlagsTrigModeDirty, (iy + rpnFlags)
-    res rpnFlagsBaseModeDirty, (iy + rpnFlags)
+    res dirtyFlagsStack, (iy + dirtyFlags)
+    res dirtyFlagsMenu, (iy + dirtyFlags)
+    res dirtyFlagsFloatMode, (iy + dirtyFlags)
+    res dirtyFlagsTrigMode, (iy + dirtyFlags)
+    res dirtyFlagsBaseMode, (iy + dirtyFlags)
     res inputBufFlagsInputDirty, (iy + inputBufFlags)
     ret
 
@@ -82,7 +82,7 @@ displayStatus:
 ; Description: Display the up and down arrows that indicate whether there are
 ; additional menus above or below the current set of 5 menu buttons.
 displayStatusArrow:
-    bit rpnFlagsMenuDirty, (iy + rpnFlags)
+    bit dirtyFlagsMenu, (iy + dirtyFlags)
     ret z
 
     ; TODO: maybe cache the numStrips of the current node to make this
@@ -161,7 +161,7 @@ displayStatusArrowClear:
 
 ; Description: Display the Degree or Radian trig mode.
 displayStatusTrig:
-    bit rpnFlagsTrigModeDirty, (iy + rpnFlags)
+    bit dirtyFlagsTrigMode, (iy + dirtyFlags)
     ret z
 displayStatusTrigUpdate:
     ld hl, statusPenRow*$100 + statusTrigPenCol; $(penRow)(penCol)
@@ -181,7 +181,7 @@ displayStatusTrigPutS:
 
 ; Description: Display the Base: BIN, OCT, DEC, HEX.
 displayStatusBase:
-    bit rpnFlagsBaseModeDirty, (iy + rpnFlags)
+    bit dirtyFlagsBaseMode, (iy + dirtyFlags)
     ret z
 displayStatusBaseUpdate:
     ld hl, statusPenRow*$100 + statusBasePenCol; $(penRow)(penCol)
@@ -214,7 +214,7 @@ displayStatusBasePutS:
 ; Description: Display the floating point format: FIX, SCI, ENG
 ; Destroys: A, HL
 displayStatusFloatMode:
-    bit rpnFlagsFloatModeDirty, (iy + rpnFlags)
+    bit dirtyFlagsFloatMode, (iy + dirtyFlags)
     ret z
     ld hl, statusPenRow*$100 + statusFloatModePenCol; $(penRow)(penCol)
     ld (PenCol), hl
@@ -302,15 +302,15 @@ displayErrorCodeEnd:
 
 ; Function: Display the RPN stack variables
 ; Input: none
-; Output: (rpnFlagsMenuDirty) reset
+; Output: (dirtyFlagsMenu) reset
 ; Destroys: A, HL
 displayStack:
     ; display YZT if stack is dirty
-    bit rpnFlagsStackDirty, (iy + rpnFlags)
+    bit dirtyFlagsStack, (iy + dirtyFlags)
     call nz, displayStackYZT
 
     ; display X if stack or inputBuf are dirty
-    bit rpnFlagsStackDirty, (iy + rpnFlags)
+    bit dirtyFlagsStack, (iy + dirtyFlags)
     jr nz, displayStackContinue
     bit inputBufFlagsInputDirty, (iy + inputBufFlags)
     jr nz, displayStackContinue
@@ -477,10 +477,10 @@ printInputBuf:
 
 ; Function: Display the bottom menus.
 ; Input: none
-; Output: (rpnFlagsMenuDirty) reset
+; Output: (dirtyFlagsMenu) reset
 ; Destroys: A, HL
 displayMenu:
-    bit rpnFlagsMenuDirty, (iy + rpnFlags)
+    bit dirtyFlagsMenu, (iy + dirtyFlags)
     ret z
 
     ; get starting menuId

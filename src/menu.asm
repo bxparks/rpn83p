@@ -28,7 +28,7 @@ initMenu:
     inc hl
     xor a
     ld (hl), a
-    set rpnFlagsMenuDirty, (iy + rpnFlags)
+    set dirtyFlagsMenu, (iy + dirtyFlags)
     ret
 
 ; Description: Return the node id of the first item in the menu strip at

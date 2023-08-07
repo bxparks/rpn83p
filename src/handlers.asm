@@ -349,7 +349,7 @@ handleKeyDelArg:
 handleKeyClearArg:
     call clearArgBuf
     res rpnFlagsEditing, (iy + rpnFlags)
-    set rpnFlagsStackDirty, (iy + rpnFlags)
+    set dirtyFlagsStack, (iy + dirtyFlags)
     ret
 
 ; Function: Clear the input buffer. If the CLEAR key is hit when the input
@@ -386,9 +386,9 @@ handleKeyClearNormal:
 handleKeyClearHitTwice:
     ; Trigger refresh of the entire display, to remove any artifacts from buggy
     ; display code.
-    set rpnFlagsMenuDirty, (iy + rpnFlags)
-    set rpnFlagsStackDirty, (iy + rpnFlags)
-    set rpnFlagsTrigModeDirty, (iy + rpnFlags)
+    set dirtyFlagsMenu, (iy + dirtyFlags)
+    set dirtyFlagsStack, (iy + dirtyFlags)
+    set dirtyFlagsTrigMode, (iy + dirtyFlags)
 handleKeyClearHitOnce:
     call clearInputBuf
     set rpnFlagsEditing, (iy + rpnFlags)
@@ -560,7 +560,7 @@ handleKeyUpContinue:
     dec a
     ld (menuStripIndex), a
 
-    set rpnFlagsMenuDirty, (iy + rpnFlags)
+    set dirtyFlagsMenu, (iy + dirtyFlags)
     ret
 
 ;-----------------------------------------------------------------------------
@@ -594,7 +594,7 @@ handleKeyDown:
 handleKeyDownContinue:
     ld (menuStripIndex), a
 
-    set rpnFlagsMenuDirty, (iy + rpnFlags)
+    set dirtyFlagsMenu, (iy + dirtyFlags)
     ret
 
 ;-----------------------------------------------------------------------------
@@ -645,7 +645,7 @@ handleKeyMenuBackToParent:
 
 handleKeyMenuBackStripSave:
     ld (menuStripIndex), a
-    set rpnFlagsMenuDirty, (iy + rpnFlags)
+    set dirtyFlagsMenu, (iy + dirtyFlags)
     ret
 
 ; Description: Deduce the stripIndex from the childId above. The `stripIndex =

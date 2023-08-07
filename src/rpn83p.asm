@@ -82,16 +82,19 @@ keyMenu3 equ kZoom
 keyMenu4 equ kTrace
 keyMenu5 equ kGraph
 
+; Flags for display rendering, dirty flags.
+dirtyFlags equ asm_Flag1
+dirtyFlagsStack equ 0 ; set if the stack is dirty
+dirtyFlagsMenu equ 1 ; set if the menu selection is dirty
+dirtyFlagsTrigMode equ 2 ; set if the trig status is dirty
+dirtyFlagsFloatMode equ 3 ; set if the floating mode is dirty
+dirtyFlagsBaseMode equ 4 ; set if the base mode is dirty
+
 ; Flags for RPN stack modes. Offset from IY register.
 rpnFlags equ asm_Flag2
 rpnFlagsEditing equ 0 ; set if in edit mode
 rpnFlagsArgMode equ 1 ; set if in command argument mode
 rpnFlagsLiftEnabled equ 2 ; set if stack lift is enabled (ENTER disables it)
-rpnFlagsStackDirty equ 3 ; set if the stack is dirty
-rpnFlagsMenuDirty equ 4 ; set if the menu selection is dirty
-rpnFlagsTrigModeDirty equ 5 ; set if the trig status is dirty
-rpnFlagsFloatModeDirty equ 6 ; set if the floating mode is dirty
-rpnFlagsBaseModeDirty equ 7 ; set if the base mode is dirty
 
 ; Flags for the inputBuf. Offset from IY register.
 inputBufFlags equ asm_Flag3

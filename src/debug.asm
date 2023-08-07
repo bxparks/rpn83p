@@ -279,7 +279,7 @@ debugFlags:
     bcall(_PutC)
 
     ; Print Stack dirty flag
-    bit rpnFlagsStackDirty, (iy + rpnFlags)
+    bit dirtyFlagsStack, (iy + dirtyFlags)
     ld a, 'S'
     call printFlag
 

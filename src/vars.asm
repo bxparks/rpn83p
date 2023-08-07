@@ -22,7 +22,7 @@ initStack:
     call initX
     call initZ
     call initR
-    set rpnFlagsStackDirty, (iy + rpnFlags) ; force initial display
+    set dirtyFlagsStack, (iy + dirtyFlags) ; force initial display
     set rpnFlagsLiftEnabled, (iy + rpnFlags)
     ret
 
@@ -128,7 +128,7 @@ rclX:
 ; Preserves: OP1, OP2
 stoX:
     bcall(_StoX)
-    set rpnFlagsStackDirty, (iy + rpnFlags)
+    set dirtyFlagsStack, (iy + dirtyFlags)
     ret
 
 ;-----------------------------------------------------------------------------
@@ -160,7 +160,7 @@ rclY:
 ; Preserves: OP1, OP2
 stoY:
     bcall(_StoY)
-    set rpnFlagsStackDirty, (iy + rpnFlags)
+    set dirtyFlagsStack, (iy + dirtyFlags)
     ret
 
 ;-----------------------------------------------------------------------------
@@ -180,7 +180,7 @@ rclZ:
 ; Destroys: all, OP4, OP6
 ; Preserves: OP1, OP2
 stoZ:
-    set rpnFlagsStackDirty, (iy + rpnFlags)
+    set dirtyFlagsStack, (iy + dirtyFlags)
     bcall(_OP1ToOP6) ; OP6=OP1 save
 
     bcall(_PushRealO1) ; _StoOther() wants the data in FPS(!)
@@ -220,7 +220,7 @@ rclT:
 ; Preserves: OP1, OP2
 stoT:
     bcall(_StoT)
-    set rpnFlagsStackDirty, (iy + rpnFlags)
+    set dirtyFlagsStack, (iy + dirtyFlags)
     ret
 
 ;-----------------------------------------------------------------------------

@@ -29,7 +29,7 @@ mGroupHandler:
     ld (menuGroupId), a
     xor a
     ld (menuStripIndex), a
-    set rpnFlagsMenuDirty, (iy + rpnFlags)
+    set dirtyFlagsMenu, (iy + dirtyFlags)
     ret
 
 ;-----------------------------------------------------------------------------
@@ -82,7 +82,7 @@ mHelpHandlerNextPage:
 mHelpHandlerExit:
     ; force rerendering of normal calculator display
     bcall(_ClrLCDFull)
-    set rpnFlagsStackDirty, (iy + rpnFlags)
+    set dirtyFlagsStack, (iy + dirtyFlags)
     call dirtyErrorCode
     call initDisplay
     call initMenu
@@ -1069,13 +1069,13 @@ enableArgMode:
 
 ; Description: Save the (argValue) to (fmtDigits).
 ; Output:
-;   - rpnFlagsStackDirty set
-;   - rpnFlagsFloatModeDirty set
+;   - dirtyFlagsStack set
+;   - dirtyFlagsFloatMode set
 ;   - fmtDigits updated
 ; Destroys: A
 saveFormatDigits:
-    set rpnFlagsStackDirty, (iy + rpnFlags)
-    set rpnFlagsFloatModeDirty, (iy + rpnFlags)
+    set dirtyFlagsStack, (iy + dirtyFlags)
+    set dirtyFlagsFloatMode, (iy + dirtyFlags)
     ld a, (argValue)
     cp 10
     jr c, saveFormatDigitsContinue
@@ -1088,12 +1088,12 @@ saveFormatDigitsContinue:
 
 mRadHandler:
     res trigDeg, (iy + trigFlags)
-    set rpnFlagsTrigModeDirty, (iy + rpnFlags)
+    set dirtyFlagsTrigMode, (iy + dirtyFlags)
     ret
 
 mDegHandler:
     set trigDeg, (iy + trigFlags)
-    set rpnFlagsTrigModeDirty, (iy + rpnFlags)
+    set dirtyFlagsTrigMode, (iy + dirtyFlags)
     ret
 
 ;-----------------------------------------------------------------------------
@@ -1157,8 +1157,8 @@ mBinHandler:
 ; Description: Set the (baseMode) to the value in A. Set dirty flag.
 ; Destroys: none
 setBaseMode:
-    set rpnFlagsBaseModeDirty, (iy + rpnFlags)
-    set rpnFlagsStackDirty, (iy + rpnFlags)
+    set dirtyFlagsBaseMode, (iy + dirtyFlags)
+    set dirtyFlagsStack, (iy + dirtyFlags)
     ld (baseMode), a
     ret
 
