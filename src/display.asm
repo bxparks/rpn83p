@@ -1,14 +1,21 @@
 ;-----------------------------------------------------------------------------
-; Display the RPN stack variables.
+; MIT License
+; Copyright (c) 2023 Brian T. Park
+;-----------------------------------------------------------------------------
+
+;-----------------------------------------------------------------------------
+; Display the calculator modes, status, and RPN stack variables using 8 lines
+; of the 96(w)x64(h) LCD display, using a mixture of small and large fonts.
+; The format looks roughly like this:
 ;
-;   0: Status line: (up|down) (deg|rad) (fix|sci|eng) # small font
-;   1: Debug line
-;   2: Error code line: # small font
-;   3: T: tttt # label small font, number large font
-;   4: Z: zzzz
-;   5: Y: yyyy
-;   6: X: xxxx
-;   7: [menu1][menu2][menu3][menu4][menu5] # small font
+; 0: Status: (left,up,down) (Deg|Rad) (Fix|Sci|Eng) (Dec|Hex|Oct|Bin)
+; 1: Debug: Debugging output, not used in app
+; 2: Error code
+; 3: T: tttt
+; 4: Z: zzzz
+; 5: Y: yyyy
+; 6: X: xxxx
+; 7: Menu: [menu1][menu2][menu3][menu4][menu5]
 ;-----------------------------------------------------------------------------
 
 ; Display coordinates of the top status line

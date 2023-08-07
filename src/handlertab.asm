@@ -1,6 +1,14 @@
+;-----------------------------------------------------------------------------
+; MIT License
+; Copyright (c) 2023 Brian T. Park
+;-----------------------------------------------------------------------------
+
+;-----------------------------------------------------------------------------
 ; List of GetKey() codes and their jump table.
+;
 ; TODO: As this table gets longer, consider sorting this table so that a binary
-; search on it instead of a linear search.
+; search can be used instead of a linear search.
+;-----------------------------------------------------------------------------
 
 keyCodeHandlerTableSize equ 58
 kOnExit equ 0 ; ON key generates 00 as the key code

@@ -1,3 +1,9 @@
+;-----------------------------------------------------------------------------
+; MIT License
+; Copyright (c) 2023 Brian T. Park
+;-----------------------------------------------------------------------------
+
+;-----------------------------------------------------------------------------
 ; RPN calculator for the TI-83 Plus and TI-84 Plus calculators. Inspired
 ; by the HP-42S calculator.
 ;
@@ -7,6 +13,7 @@
 ; "app.inc" include, the defpage() macro, and the validate() macro.
 ;
 ; This needs to be compiled using spasm-ng into a *.8xk file.
+;-----------------------------------------------------------------------------
 
 .nolist
 #include "ti83plus.inc"
@@ -300,16 +307,11 @@ mainExit:
 #include "base.asm"
 #include "menu.asm"
 #include "menuhandlers.asm"
-
 #ifdef DEBUG
 #include "debug.asm"
 #endif
-
 #include "common.asm"
 #include "const.asm"
-
-; Place data files at the end, because the TI-OS prevents execution of assembly
-; code if it spills over to page $C000. The limitation does not apply to data.
 #include "handlertab.asm"
 #include "menudef.asm"
 

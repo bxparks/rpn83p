@@ -1,12 +1,30 @@
 ;-----------------------------------------------------------------------------
-; Routines to display menus and read the 5 top-row keys corresponding to the
-; menus. The equilvanet C struct for each MenuNode is the following:
+; MIT License
+; Copyright (c) 2023 Brian T. Park
+;-----------------------------------------------------------------------------
+
+;-----------------------------------------------------------------------------
+; Routines for navigating the singly-rooted tree of MenuNodes. A MenuNode can
+; be either a MenuItem or MenuGroup. A MenuGroup is a list of one or more
+; MenuStrip. A MenuStrip is a list of exactly 5 MenuNodes, corresponding to the
+; 5 menu buttons located just below the LCD screen of the calculator.
+;
+; The root of the menu tree is usually called the RootMenu and has an id of 1.
+; The calculator menu hierarchy is described using a DSL (domain specific
+; language) that I loosely call the "Menu Definition Language". The menu nodes
+; are defined in the `menudef.txt` file. It is compiled through a Python script
+; located at `tools/compilemenu.py`, which generates the `menudef.asm` file,
+; which contains a list of MenuNodes and the C-strings that define the names of
+; the menu items.
+;
+; Each MenuNode has the following structure, described using the C language
+; syntax:
 ;
 ; struct MenuNode {
 ;   uint8_t id; // root begins with 1
 ;   uint8_t parentId; // 0 indicates NONE
 ;   uint8_t nameId; // index into NameTable
-;   uint8_t numStrips; // 0: Item; >=1: Group
+;   uint8_t numStrips; // 0 if MenuItem; >=1 if MenuGroup
 ;   uint8_t stripBeginId; // nodeId of the first node of first strip
 ;   void *handler; // pointer to the handler function
 ; };
