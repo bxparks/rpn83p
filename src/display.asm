@@ -418,11 +418,7 @@ displayStackX:
     ; [[fallthrough]]
 
 displayStackXNormal:
-    ; print X label
-    ld hl, stXPenRow*$100 ; $(penRow)(penCol)
-    ld (PenCol), hl
-    ld hl, msgXLabel
-    call vPutS
+    call displayStackXLabel
     ; print the stX variable
     ld hl, stXCurCol*$100 + stXCurRow ; $(curCol)(curRow)
     ld (CurRow), hl
@@ -430,15 +426,29 @@ displayStackXNormal:
     jp printOP1
 
 displayStackXInput:
+    call displayStackXLabel
+    ; print the inputBuf
+    ld hl, inputCurCol*$100 + inputCurRow ; $(curCol)(curRow)
+    ld (CurRow), hl
+    jr printInputBuf
+
+displayStackXLabel:
+    ; If the "X:" label was corrupted by the command arg mode label, then
+    ; clear the cell with an Lspace.
+    bit dirtyFlagsXLabel, (iy + dirtyFlags)
+    jr nz, displayStackXLabelContinue
+    ld hl, 0*$100 + stXCurRow ; $(curCol)(curRow)
+    ld (CurRow), hl
+    ld a, Lspace
+    bcall(_PutC)
+    res dirtyFlagsXLabel, (iy + dirtyFlags)
+displayStackXLabelContinue:
     ; print X label
     ld hl, inputPenRow*$100 ; $(penRow)(penCol)
     ld (PenCol), hl
     ld hl, msgXLabel
     call vPutS
-    ; print the inputBuf
-    ld hl, inputCurCol*$100 + inputCurRow ; $(curCol)(curRow)
-    ld (CurRow), hl
-    jr printInputBuf
+    ret
 
 #ifdef DEBUG
 ; This is the debug version which always shows the current X register, and

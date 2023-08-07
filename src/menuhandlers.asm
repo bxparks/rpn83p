@@ -1065,6 +1065,7 @@ enableArgMode:
     ld (argBufSize), a
     set rpnFlagsArgMode, (iy + rpnFlags)
     set dirtyFlagsInput, (iy + dirtyFlags)
+    set dirtyFlagsXLabel, (iy + dirtyFlags)
     ret
 
 ; Description: Save the (argValue) to (fmtDigits).

@@ -44,6 +44,22 @@ dirtyFlagsTrigMode equ 3 ; set if the trig status is dirty
 dirtyFlagsFloatMode equ 4 ; set if the floating mode is dirty
 dirtyFlagsBaseMode equ 5 ; set if the base mode is dirty
 dirtyFlagsErrorCode equ 6 ; set if the error code is dirty
+; The dirtyFlagsXLabel flag is set if the 'X:' label is dirty due to the
+; command arg mode. The 6x8 cell occupied by the 'X:' label is rendered in
+; small-font, which means that it actually uses only 7 rows of pixels from the
+; top. During the command arg mode, the cell is replaced by the first letter of
+; the label (i.e. "FIX", "SCI", or "ENG"), which is rendered using large font,
+; so that first letter consumes 8 rows of pixels. When the command arg mode
+; exits, the bottom row of pixels contains artifacts of the command arg mode
+; label. The easy solution is to write a large-font space (Lspace) into that
+; first cell, then write the "X:" label in small font. But doing this for every
+; refresh of that line (e.g. when entering the digits of a number) would cause
+; flickering of the "X:" label on every redraw. This flag allows us to optimize
+; the redraw algorithm so that the Lspace character *only* when transitioning
+; from the command arg mode to normal mode. That would cause a redraw of the
+; entire X line, so the slight flicker of the "X:" label should be completely
+; imperceptible.
+dirtyFlagsXLabel equ 7
 
 ; Flags for RPN stack modes. Offset from IY register.
 rpnFlags equ asm_Flag2
