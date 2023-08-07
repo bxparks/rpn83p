@@ -15,7 +15,7 @@ mNullHandler: ; do nothing
 ;   HL: pointer to MenuNode that was activated (ignored)
 mNotYetHandler:
     ld a, errorCodeNotYet
-    jp setErrorCode
+    jp setHandlerCode
 
 ; Description: General handler for menu nodes of type "MenuGroup". Selecting
 ; this should cause the menuGroupId to be set to this item, and the
@@ -82,8 +82,8 @@ mHelpHandlerNextPage:
 mHelpHandlerExit:
     ; force rerendering of normal calculator display
     bcall(_ClrLCDFull)
-    set dirtyFlagsStack, (iy + dirtyFlags)
-    call dirtyErrorCode
+    ld a, $FF
+    ld (iy + dirtyFlags), a ; set all dirty flags
     call initDisplay
     call initMenu
     ret

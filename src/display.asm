@@ -263,12 +263,13 @@ displayStatusFloatModeDigit:
 ; Destroys: A, DE, HL
 displayErrorCode:
     ; Check if the error code changed
-    call checkErrorCodeDisplayed ; A = current error code
+    bit dirtyFlagsErrorCode, (iy + dirtyFlags)
     ret z ; return if no change
 
-    ; Display nothing if status == OK (0)
+    ; Display nothing if errorCode == OK (0)
     ld hl, errorPenRow*$100 ; $(penRow)(penCol)
     ld (PenCol), hl
+    ld a, (errorCode)
     or a
     jr z, displayErrorCodeEnd
 
@@ -293,7 +294,7 @@ displayErrorCode:
 
 displayErrorCodeEnd:
     call vEraseEOL
-    call saveErrorCodeDisplayed
+    res dirtyFlagsErrorCode, (iy + dirtyFlags)
     ret
 
 ;-----------------------------------------------------------------------------

@@ -9,41 +9,40 @@ errorCodeUnexpected equ 65 ; UNEXPECTED; any code >= errorCodeCount
 ; total number of error codes
 errorCodeCount equ 66 ; total number of error codes
 
-; Function: Initialize both errorCode and errorCodeDisplayed to 0.
+; Function: Initialize errorCode and errorCodeDisplayed to 0.
 initErrorCode:
-    ld hl, errorCode
-    ld (hl), errorCodeOk
-    inc hl
-    ld (hl), errorCodeCount ; guaranteed to trigger rendering
-    ret
-
-; Description: Mark the error code as dirty to force rerendering.
-; Destroys: A
-dirtyErrorCode:
-    ld a, errorCodeCount ; guaranteed to trigger rendering
-    ld (errorCodeDisplayed), a
-    ret
-
-; Function: Set error code to errorCodeOk.
-; Output: (errorCode) set
-; Destroys: A, HL
-clearErrorCode:
     xor a
-    ; [[fallthrough]]
+    ld (errorCode), a
+    ld (handlerCode), a
+    ret
 
-; Function: Set error code. The system error code uses the lower 7 bits, so in
-; theory there are as many as 128. However, the SDK docs define only about 32.
-; So let's hope that only the lower 6 bites (64=$40) are used.
-; Input: A: error code
-; Output: (errorCode) set
-; Destroys: HL
-setErrorCode:
+; Description: Set the handlerCode to the normalized system error code in
+; Register A. The system error code uses the lower 7 bits, so in theory there
+; are as many as 128. However, the SDK docs define only about 32, so those are
+; reduced down to a range of `[0, errorCodeCount-1]`.
+; Input: A: system error code
+; Output: A: handlerCode
+setHandlerCodeToSystemCode:
     res 7, a ; reset the GOTO flag
     cp errorCodeCount
-    jr c, setErrorCodeContinue
-    ld a, errorCodeCount - 1 ; Unexpected
-setErrorCodeContinue:
-    ld (errorCode), a
+    jr c, setHandlerCode
+    ld a, errorCodeUnexpected
+    ; [[fallthrough]]
+
+; Description: Set `handlerCode` to register A.
+; Output: A: handlerCode
+setHandlerCode:
+    ld (handlerCode), a
+    ret
+
+; Description: Set the `errorCode` to the value given in register A.
+; Input: A: error code
+setErrorCode:
+    ld hl, errorCode
+    cp (hl) ; previous errorCode
+    ret z ; same, no change
+    ld (hl), a ; errorCode = new error code
+    set dirtyFlagsErrorCode, (iy + dirtyFlags)
     ret
 
 ; Function: getErrorString(A) -> HL
@@ -54,27 +53,6 @@ setErrorCodeContinue:
 getErrorString:
     ld hl, errorStrings
     jp getString
-
-; Function: Save the current errorCode to errorCodeDisplayed.
-; Destroys: A, HL
-saveErrorCodeDisplayed:
-    ld hl, errorCode
-    ld a, (hl)
-    inc hl
-    ld (hl), a
-    ret
-
-; Function: Check if errorCode is the same as errorCodeDisplayed
-; Output:
-;   - ZF=1 if same, ZF=0 if different
-;   - A: current error code
-; Destroys: A, HL
-checkErrorCodeDisplayed:
-    ld hl, errorCode
-    ld a, (hl)
-    inc hl
-    cp (hl)
-    ret
 
 ;-----------------------------------------------------------------------------
 

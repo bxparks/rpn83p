@@ -82,7 +82,9 @@ keyMenu3 equ kZoom
 keyMenu4 equ kTrace
 keyMenu5 equ kGraph
 
-; Flags for display rendering, dirty flags.
+; Flags that indicate the need to re-draw the display. These are intended to
+; be optimization purposes. In theory, we could eliminate these dirty flags
+; without affecting the correctness of the rest of the RPN83P app.
 dirtyFlags equ asm_Flag1
 dirtyFlagsInput equ 0 ; set if the input buffer is dirty
 dirtyFlagsStack equ 1 ; set if the stack is dirty
@@ -90,6 +92,7 @@ dirtyFlagsMenu equ 2 ; set if the menu selection is dirty
 dirtyFlagsTrigMode equ 3 ; set if the trig status is dirty
 dirtyFlagsFloatMode equ 4 ; set if the floating mode is dirty
 dirtyFlagsBaseMode equ 5 ; set if the base mode is dirty
+dirtyFlagsErrorCode equ 6 ; set if the error code is dirty
 
 ; Flags for RPN stack modes. Offset from IY register.
 rpnFlags equ asm_Flag2
@@ -111,13 +114,25 @@ inputBufFlagsExpSign equ 4 ; exponent sign bit detected during parsing
 ; Begin RPN83P variables.
 rpnVarsBegin equ tempSwapArea
 
-; Error code and handling.
-errorCode equ rpnVarsBegin ; current error code
-errorCodeDisplayed equ errorCode + 1 ; displayed error code
+; The result code after the execution of each handler. Success is code 0. If a
+; TI-OS exception is thrown (through a `bjump(ErrXxx)`), the exception handler
+; places a system error code into here. Before calling a handler, set this to 0
+; because vast majority of handlers will not explicitly set handlerCode to 0
+; upon success. (This makes coding easier because a successful handler can
+; simply do a `ret` or a conditional `ret`.) A few handlers will set a custom,
+; non-zero code to indicate an error.
+handlerCode equ rpnVarsBegin
+
+; The errorCode is displayed on the LCD screen if non-zero. This is set to the
+; value of handlerCode after every execution of a handler. Inside a handler,
+; the errorCode will be the handlerCode of the previous handler. This is useful
+; for the CLEAR handler which will simply clear the displayed errorCode if
+; non-zero.
+errorCode equ handlerCode + 1
 
 ; Current base mode. Allowed values are: 2, 8, 10, 16. Anything else is
 ; interpreted as 10.
-baseMode equ errorCodeDisplayed + 1
+baseMode equ errorCode + 1
 
 ; String buffer for keyboard entry. This is a Pascal-style with a single size
 ; byte at the start. It does not include the cursor displayed at the end of the
@@ -230,6 +245,8 @@ main:
     res lwrCaseActive, (iy + appLwrCaseFlag) ; disable ALPHA-ALPHA lowercase
     bcall(_ClrLCDFull)
 
+    ld a, $FF
+    ld (iy + dirtyFlags), a ; set all dirty flags
     call initBase
     call initErrorCode
     call initInputBuf
@@ -254,15 +271,9 @@ readLoop:
     ; call debugFlags
     call displayAll
 
-    ; Clear the error code before calling lookupKey() to detect any custom
-    ; error code set directly by the handler. This makes the implementation of
-    ; handleKeyClear() slightly more tricky because when a CLEAR is hit just
-    ; after a non-zero error code is displayed, the CLEAR key should simply
-    ; clear the error, instead of clearing the inputBuf. The solution is for
-    ; the handleKeyClear() function to check for errorCodeDisplayed, which is
-    ; the error code that was most recently rendered, which is not affected by
-    ; this call.
-    call clearErrorCode
+    ; Set the handler code initially to 0.
+    xor a
+    ld (handlerCode), a
 
     ; Get the key code, and reset the ON flag right after. See TI-83 Plus SDK
     ; guide, p. 69. If this flag is not reset, then the next bcall(_DispHL)
@@ -284,19 +295,23 @@ readLoop:
     jr z, mainExit
 
     ; Install error handler
-    ld hl, mainError
+    ld hl, readLoopException
     call APP_PUSH_ERRORH
     ; Handle the normal buttons or the menu F1-F5 buttons.
     call lookupKey
     ; Uninstall error handler
     call APP_POP_ERRORH
 
-    jr readLoop
-
-; Handle system error. Register A contains the error code.
-mainError:
+    ; Transfer the handler code to errorCode.
+    ld a, (handlerCode)
+readLoopSetErrorCode:
     call setErrorCode
     jr readLoop
+
+readLoopException:
+    ; Handle system exception. Register A contains the system error code.
+    call setHandlerCodeToSystemCode
+    jr readLoopSetErrorCode
 
 ; Clean up and exit app.
 mainExit:

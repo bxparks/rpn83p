@@ -281,9 +281,16 @@ handleKeyEE:
 ; Output: (iy+inputBufFlags) updated
 ; Destroys: A, DE, HL
 handleKeyDel:
+    ; Check if in command arg mode.
     bit rpnFlagsArgMode, (iy + rpnFlags)
     jr nz, handleKeyDelArg
-
+    ; Check if non-zero error code is currently displayed. The handlerCode was
+    ; already set to 0 before this was called, so simply returning will clear
+    ; the previous errorCode.
+    ld a, (errorCode)
+    or a
+    ret nz
+handleKeyDelNormal:
     set rpnFlagsEditing, (iy + rpnFlags)
     set dirtyFlagsInput, (iy + dirtyFlags)
 
@@ -365,17 +372,15 @@ handleKeyClearArg:
 ;   - mark displayInput dirty
 ; Destroys: A, HL
 handleKeyClear:
-    ; Check if in arg editing mode.
+    ; Check if in command arg mode.
     bit rpnFlagsArgMode, (iy + rpnFlags)
     jr nz, handleKeyClearArg
-    ; Check if non-zero error code is currently displayed.
-    ld a, (errorCodeDisplayed)
+    ; Check if non-zero error code is currently displayed. The handlerCode was
+    ; already set to 0 before this was called, so simply returning will clear
+    ; the previous errorCode.
+    ld a, (errorCode)
     or a
-    jr z, handleKeyClearNormal
-handleKeyClearErrorCode: ; TODO: Reverse jr z, and move this above.
-    ; Clear the error code if non-zero
-    xor a
-    jp setErrorCode
+    ret nz
 handleKeyClearNormal:
     ; Check if editing and inputBuf is empty.
     bit rpnFlagsEditing, (iy + rpnFlags)
