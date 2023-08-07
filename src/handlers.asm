@@ -42,7 +42,7 @@ handleKeyNumberArg:
 ; Output:
 ;   - CF set when append fails.
 ;   - rpnFlagsEditing set.
-;   - inputBufFlagsInputDirty set.
+;   - dirtyFlagsInput set.
 ; Destroys: all
 handleKeyNumber:
     ; Check if in arg editing mode.
@@ -285,7 +285,7 @@ handleKeyDel:
     jr nz, handleKeyDelArg
 
     set rpnFlagsEditing, (iy + rpnFlags)
-    set inputBufFlagsInputDirty, (iy + inputBufFlags)
+    set dirtyFlagsInput, (iy + dirtyFlags)
 
     ld hl, inputBuf
     ld a, (hl) ; A = inputBufSize
@@ -335,7 +335,7 @@ handleKeyDelExit:
 ; Description: Handle the DEL key when in command arg mode by removing the last
 ; character in the argBuf.
 handleKeyDelArg:
-    set inputBufFlagsInputDirty, (iy + inputBufFlags)
+    set dirtyFlagsInput, (iy + dirtyFlags)
     ld hl, argBuf
     ld a, (hl) ; A = inputBufSize
     or a
@@ -417,7 +417,7 @@ handleKeyChsX:
     call stoX
     ret
 handleKeyChsInputBuf:
-    set inputBufFlagsInputDirty, (iy + inputBufFlags)
+    set dirtyFlagsInput, (iy + dirtyFlags)
     ; Change sign of Mantissa or Exponent.
     ld hl, inputBuf
     ld b, inputBufMax
@@ -489,7 +489,7 @@ handleKeyEnter:
 ; Output: argValue
 ; Destroys: A, B, C, HL
 handleKeyEnterArg:
-    set inputBufFlagsInputDirty, (iy + inputBufFlags)
+    set dirtyFlagsInput, (iy + dirtyFlags)
     res rpnFlagsArgMode, (iy + rpnFlags)
     call parseArgBuf
     ld (argValue), a

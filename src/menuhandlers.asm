@@ -1057,14 +1057,14 @@ mEngCallback:
 ;   - argPrompt set with C string
 ;   - argBufSize set to 0
 ;   - rpnFlagsArgMode set
-;   - inputBufFlagsInputDirty set
+;   - dirtyFlagsInput set
 ; Destroys: A, HL
 enableArgMode:
     ld (argPrompt), hl
     xor a
     ld (argBufSize), a
     set rpnFlagsArgMode, (iy + rpnFlags)
-    set inputBufFlagsInputDirty, (iy + inputBufFlags)
+    set dirtyFlagsInput, (iy + dirtyFlags)
     ret
 
 ; Description: Save the (argValue) to (fmtDigits).

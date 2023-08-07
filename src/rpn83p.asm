@@ -84,11 +84,12 @@ keyMenu5 equ kGraph
 
 ; Flags for display rendering, dirty flags.
 dirtyFlags equ asm_Flag1
-dirtyFlagsStack equ 0 ; set if the stack is dirty
-dirtyFlagsMenu equ 1 ; set if the menu selection is dirty
-dirtyFlagsTrigMode equ 2 ; set if the trig status is dirty
-dirtyFlagsFloatMode equ 3 ; set if the floating mode is dirty
-dirtyFlagsBaseMode equ 4 ; set if the base mode is dirty
+dirtyFlagsInput equ 0 ; set if the input buffer is dirty
+dirtyFlagsStack equ 1 ; set if the stack is dirty
+dirtyFlagsMenu equ 2 ; set if the menu selection is dirty
+dirtyFlagsTrigMode equ 3 ; set if the trig status is dirty
+dirtyFlagsFloatMode equ 4 ; set if the floating mode is dirty
+dirtyFlagsBaseMode equ 5 ; set if the base mode is dirty
 
 ; Flags for RPN stack modes. Offset from IY register.
 rpnFlags equ asm_Flag2
@@ -98,7 +99,6 @@ rpnFlagsLiftEnabled equ 2 ; set if stack lift is enabled (ENTER disables it)
 
 ; Flags for the inputBuf. Offset from IY register.
 inputBufFlags equ asm_Flag3
-inputBufFlagsInputDirty equ 0 ; set if the input buffer is dirty
 inputBufFlagsDecPnt equ 1 ; set if decimal point exists
 inputBufFlagsEE equ 2 ; set if EE symbol exists
 inputBufFlagsClosedEmpty equ 3 ; inputBuf empty when closeInputBuf() called

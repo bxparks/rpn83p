@@ -41,7 +41,7 @@ initDisplay:
     set dirtyFlagsFloatMode, (iy + dirtyFlags)
     set dirtyFlagsTrigMode, (iy + dirtyFlags)
     set dirtyFlagsBaseMode, (iy + dirtyFlags)
-    set inputBufFlagsInputDirty, (iy + inputBufFlags)
+    set dirtyFlagsInput, (iy + dirtyFlags)
     ret
 
 ; Function: Update the display, including the title, RPN stack variables,
@@ -61,7 +61,7 @@ displayAll:
     res dirtyFlagsFloatMode, (iy + dirtyFlags)
     res dirtyFlagsTrigMode, (iy + dirtyFlags)
     res dirtyFlagsBaseMode, (iy + dirtyFlags)
-    res inputBufFlagsInputDirty, (iy + inputBufFlags)
+    res dirtyFlagsInput, (iy + dirtyFlags)
     ret
 
 ;-----------------------------------------------------------------------------
@@ -312,7 +312,7 @@ displayStack:
     ; display X if stack or inputBuf are dirty
     bit dirtyFlagsStack, (iy + dirtyFlags)
     jr nz, displayStackContinue
-    bit inputBufFlagsInputDirty, (iy + inputBufFlags)
+    bit dirtyFlagsInput, (iy + dirtyFlags)
     jr nz, displayStackContinue
     ret
 displayStackContinue:

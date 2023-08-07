@@ -17,7 +17,7 @@ initInputBuf:
 ;   - inputBuf cleared
 ;   - inputBufEEPos set to 0
 ;   - inputBufEELen set to 0
-;   - inputBufFlagsInputDirty set
+;   - dirtyFlagsInput set
 ; Destroys: none
 clearInputBuf:
     push af
@@ -27,7 +27,7 @@ clearInputBuf:
     ld (inputBufEELen), a
     res inputBufFlagsDecPnt, (iy + inputBufFlags)
     res inputBufFlagsEE, (iy + inputBufFlags)
-    set inputBufFlagsInputDirty, (iy + inputBufFlags)
+    set dirtyFlagsInput, (iy + dirtyFlags)
     pop af
     ret
 
@@ -36,12 +36,12 @@ clearInputBuf:
 ;   A: character to be appended
 ; Output:
 ;   - CF set when append fails
-;   - inputBufFlagsInputDirty set
+;   - dirtyFlagsInput set
 ; Destroys: all
 appendInputBuf:
     ld hl, inputBuf
     ld b, inputBufMax
-    set inputBufFlagsInputDirty, (iy + inputBufFlags)
+    set dirtyFlagsInput, (iy + dirtyFlags)
     jp appendString
 
 ;------------------------------------------------------------------------------
@@ -59,7 +59,7 @@ clearArgBuf:
 ; Input: A: character to append
 ; Destroys: B, HL
 appendArgBuf:
-    set inputBufFlagsInputDirty, (iy + inputBufFlags)
+    set dirtyFlagsInput, (iy + dirtyFlags)
     ld hl, argBuf
     ld b, a
     ld a, (hl)

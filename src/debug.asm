@@ -261,7 +261,7 @@ debugFlags:
     ld (CurRow), hl
 
     ; Print Input dirty flag
-    bit inputBufFlagsInputDirty, (iy + inputBufFlags)
+    bit dirtyFlagsInput, (iy + dirtyFlags)
     ld a, 'I'
     call printFlag
 
