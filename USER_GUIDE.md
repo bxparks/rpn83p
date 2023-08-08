@@ -386,7 +386,7 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (back), and `MATH`
 - `UNIT`
     - `>C`: Fahrenheit to Celsius
     - `>F`: Celsius to Fahrenheit
-    - `>hPa`: hecto Pascal (i.e. millibar) to inch Mercury
+    - `>hPa`: hecto Pascals (i.e. millibars) to inches of Mercury
     - `>km`: miles to kilometers
     - `>mi`: kilometers to miles
     - `>m`: feet to meters
@@ -527,3 +527,8 @@ curiosity and the technical challenge:
     - A single line in the RPN83P app can display 14 digits.
     - A 32-bit integer in base 2 requires 32 digits, so the display will often
       overflow when using base 2.
+- `UNIT` conversions
+    - several places assume US customary units (e.g. US gallons) instead of
+      British or Canadian imperial units
+    - it'd be nice to support both types, if we can make the menu labels
+      self-documenting and distinctive
