@@ -15,6 +15,7 @@ RPN calculator app for the TI-83 Plus and TI-84 Plus inspired by the HP-42S.
     - [Input and Editing](#InputAndEditing)
     - [RPN Stack](#RPNStack)
     - [Menu Hierarchy and Navigation](#MenuHierarchy)
+- [Advanced Usage](#AdvancedUsage)
 - [Functions](#Functions)
     - [Direct Functions](#DirectFunctions)
     - [Menu Functions](#MenuFunctions)
@@ -272,6 +273,24 @@ as the `HOME` key. This choice is again not completely random: First, the `HOME`
 button on the TI-89 Titanium is located exactly where the `MATH` is. Two, when
 the menu is at the root, the first menu item on the left is a MenuGroup named
 `MATH`, which may help to remember this button mapping.
+
+<a name="AdvancedUsage"></a>
+## Advanced Usage
+
+For convenience, you may choose to auto-run the RPN83P application as soon as
+you turn on the calculator.
+
+- Download the
+  [Start-Up](https://education.ti.com/en/software/details/en/77ec7de5d3694f4595c262fdfc2acc4b/83startupcustomization) application from TI
+- Press `APPS`, then scroll down to `Start-up`
+- Configure:
+    - Display: `ON`
+    - Type: `APP`
+    - Name: `RPN83P` (hit `ENTER` and scroll down to select this)
+- Select `FINISH` and hit `ENTER`
+
+Turn off the calculator and turn it back on. It should directly go into the
+RPN83P application.
 
 <a name="Functions"></a>
 ## Functions
