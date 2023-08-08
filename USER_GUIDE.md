@@ -101,7 +101,7 @@ After installing `rpn83p.8xk` file, go to the calculator:
 
 You should see a screen that looks like:
 
-[TBD: Insert screen shot]
+[TODO: Insert screen shot]
 
 The following are various ways to quit or exit out of certain contexts:
 
@@ -235,44 +235,63 @@ used as part of a longer sequence of calculations.
 ### Menu Hierarchy and Navigation
 
 The menu system of the RPN83P was borrowed directly from the HP-42S calculator.
-There are 5 buttons directly under the LCD screen. Those buttons will activate
-different functions depending on the menu shown on the bottom row of the LCD
-screen.
+There are over 100 functions supported by the RPN83P menu system, so it is
+convenient to arrange them into a nested folder structure. There are 5 buttons
+directly under the LCD screen so it makes sense to present the menu items as
+sets of 5 items corresponding to those buttons.
 
-The menu items form a singly-rooted tree of menu items and groups. There are
-over 100 menu items in the RPN83P hierarchy. The menu hierarchy look like this
-conceptually:
+The menu system forms a singly-rooted tree of menu items and groups, which look
+like this conceptually:
 
-[TODO: add link to menu hierarchy diagram]
+![Menu Hierarchy](docs/RPN83P_Menu_Structure.png)
 
-There are 4 buttons which are used for menu navigation:
+There are 4 components:
 
-- `UP_ARROW`: go to previous MenuStrip of 5 menu items
-- `DOWN_ARROW`: go to next MenuStrip of 5 menu items
-- `ON`: go up the menu hierarchy (similar to the `ON/EXIT` button on the HP-42S)
-- `MATH`: go to the root (home) of the menu tree
+- `MenuGroup`: a list of 1 or more `MenuStrip`s
+- `MenuStrip`: a list of exactly 5 `MenuNode`s corresponding to the 5 menu
+  buttons below the LCD
+- `MenuNode`: one slot in the `MenuStrip`, can be *either* a `MenuGroup` or a
+  `MenuItem`
+- `MenuItem`: a leaf-node that maps directly to a function (e.g. `ASNH`) when
+  the corresponding menu button is pressed
 
-The `UP_ARROW` and `DOWN_ARROW` keys move from one MenuStrip of 5 menu items to
-the next set, within the same MenuGroup. Pressing `UP` at the first MenuStrip
-will wrap around to the last MenuStrip. Pressing `DOWN` at the last MenuStrip
-will wrap around to the first MenuStrip.
+The LCD screen always shows a `MenuStrip` of 5 `MenuItems`. There are 4 buttons
+that are used to navigate the menu hierarchy:
 
-To move from a child MenuGroup back up to the parent MenuGroup, the appropriate
-key would have been an `ESC` button. But the TI-83 and TI-84 calculators do not
-have an `ESC` key (unlike the TI-92 and TI Voyager 200 calculators), so the `ON`
-button was recruited for this functionality. The choice of the `ON` button was
-not completely random, because the HP-42S uses the `ON` key which doubles as the
-`EXIT` key to perform implement this functionality.
+- `UP_ARROW`: go to previous `MenuStrip` of 5 `MenuItems`, if the current
+  `MenuGroup` group has multiple menu strips, otherwise does nothing
+- `DOWN_ARROW`: go to next `MenuStrip` of 5 `MenuItems`, if the current
+  `MenuGroup` has multiple menu strips, otherwise does nothing
+- `ON`: go back in the menu hierarchy to the parent `MenuGroup` (similar to the
+  `ON/EXIT` button on the HP-42S)
+- `MATH`: go to the root `MenuGroup`, the top of the menu hierarchy
+
+When you press a menu button that corresponds to a `MenuGroup`, the menu system
+descends into the group, and shows the first set of 5 `MenuItems` in the first
+`MenuStrip` in that group.
+
+If there are multiple `MenuStrips` in that group, you can use the `UP_ARROW` and
+`DOWN_ARROW` keys move from one `MenuStrip` to the next menu strip within the
+same `MenuGroup`. Pressing `UP` at the first strip will wrap around to the last
+strip. Pressing `DOWN` at the last strip will wrap around to the first strip.
+
+To move from a child `MenuGroup` back up to the parent `MenuGroup`, the
+appropriate key would have been an `ESC` button. But the TI-83 and TI-84
+calculators do not have an `ESC` button (unlike the TI-92 and TI Voyager 200
+series calculators), so the `ON` button was recruited for this functionality.
+The choice of the `ON` button was not completely random, because the HP-42S uses
+the `ON` key which doubles as the `EXIT` key to perform implement this function.
 
 Pressing the `ON` button multiple times will eventually bring you back to the
-root of the menu hierarchy. Sometimes, it is convenient to be able to go back to
-the root in a single press. That button would be the `HOME` button, but the
-TI-83 and TI-84 calculators do not have a `HOME` button (unlike the TI-92 and TI
-Voyager 200 series again). Instead, the RPN83P app takes over the `MATH` button
-as the `HOME` key. This choice is again not completely random: First, the `HOME`
-button on the TI-89 Titanium is located exactly where the `MATH` is. Two, when
-the menu is at the root, the first menu item on the left is a MenuGroup named
-`MATH`, which may help to remember this button mapping.
+top of the menu hierarchy. Sometimes it is convenient to be able to go back to
+the root of the menu system in a single press. That button would be the `HOME`
+button, but the TI-83 and TI-84 calculators do not have a `HOME` button (unlike
+the TI-92 and TI Voyager 200 series again). Instead, the RPN83P app takes over
+the `MATH` button to act as the `HOME` key. This choice is not completely
+random: First, the `HOME` button on the TI-89 Titanium is located exactly where
+the `MATH` is. And second, when the menu is at the root, the first menu item on
+the left is a `MenuGroup` named `MATH`, which may help to remember this button
+mapping.
 
 <a name="AdvancedUsage"></a>
 ## Advanced Usage
