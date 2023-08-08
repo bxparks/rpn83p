@@ -18,6 +18,11 @@ RPN calculator app for the TI-83 Plus and TI-84 Plus inspired by the HP-42S.
 - [Functions](#Functions)
     - [Direct Functions](#DirectFunctions)
     - [Menu Functions](#MenuFunctions)
+- [Future Enhancements](#FutureEnhancements)
+    - [Near Future](#NearFuture)
+    - [Medium Future](#MediumFuture)
+    - [Far Future](#FarFuture)
+    - [Not Planned](#NotPlanned)
 - [Bugs and Limitations](#BugsAndLimitations)
 
 <a name="Introduction"></a>
@@ -78,13 +83,14 @@ The app is provided as a single file named `rpn83p.8xk`. It must be uploaded
 to the calculator using a "link" program from a host computer. There are a
 number of options:
 
-- **Linux**
-    - [tilp](https://github.com/debrouxl/tilp_and_gfm)
-    - On Ubuntu 22.04 machines, you can install this using `$ apt install tilp2`
-    - (I'm not actually sure whether the `tilp2` binary is actually compiled
-      from the `tilp_and_gfm` source code mentioned above)
-- **Windows** or **MacOS**
-    - [TI Connect](https://education.ti.com/en/products/computer-software/ti-connect-sw)
+**Linux**
+- [tilp](https://github.com/debrouxl/tilp_and_gfm)
+- On Ubuntu 22.04 machines, you can install this using `$ apt install tilp2`
+- (I'm not actually sure whether the `tilp2` binary is actually compiled
+    from the `tilp_and_gfm` source code mentioned above)
+
+**Windows** or **MacOS**
+- [TI Connect](https://education.ti.com/en/products/computer-software/ti-connect-sw)
 
 After installing `rpn83p.8xk` file, go to the calculator:
 
@@ -179,9 +185,9 @@ There are 4 keys which are relevant for the RPN stack:
 - `(`: rotates RPN stack down (known as `R(downarrow)` on HP calculators)
 - `2ND` `{`: rotate RPN stack up (known as `R(uparrow)` on HP calculators)
 - `)`: exchanges `X` and `Y` registers
-- `ENTER`: saves the input buffer to the `X` register, and **disables** the
-  stack lift on the next number entry
-- `2ND` `ANS`: last X
+- `ENTER`: saves the input buffer to the `X` register, and *disables* the
+  stack lift for the next number entry
+- `2ND` `ANS`: recalls the last `X`
 
 When a new number is entered (using the `0`-`9` digit keys), the press of the
 first digit causes the stack to **lift**, and the calculator enters into the
@@ -200,8 +206,8 @@ The `Enter` key performs 2 functions:
 
 This is consistent with traditional RPN system used by HP calculators up to and
 including the HP-42S. It allows one to press: `2` `ENTER` `3` `*` to multiply
-`2*3` and get `3` as the result, because the second number `3` does not lift the
-stack because the `ENTER` key disabled it.
+`2*3` and get `6` as the result, because the second number `3` does not lift the
+stack.
 
 The parenthesis `(` and `)` are not used in an RPN entry system, so they have
 been repurposed for stack manipulation.
@@ -216,9 +222,8 @@ The `)` key performs an exchange of the `X` and `Y` registers. That
 functionality is usually marked as `X<>Y` on HP calculators. 
 
 This mapping of the `(` and `)` to these stack functions is identical to the
-mapping used by the [HP-30b](https://en.wikipedia.org/wiki/HP_30b) when it is
-placed into its RPN mode. (The HP-30b supports both algebraic and RPN entry
-modes.)
+mapping used by the [HP-30b](https://en.wikipedia.org/wiki/HP_30b) when it is in
+RPN mode. (The HP-30b supports both algebraic and RPN entry modes.)
 
 The `2ND` `ANS` button is mapped to the `LastX` functionality of HP calculators.
 It is the value of the `X` register of the most recent operation. It can be used
@@ -277,15 +282,27 @@ the menu is at the root, the first menu item on the left is a MenuGroup named
 These functions are available directly from the physical buttons on the
 calculator keyboard.
 
+- arithmetic
+    - `/`, `*`, `-`, `+`
+- trigonometric
+    - `SIN`, `COS`, `TAN`
+    - `2ND` `SIN^-1`, `2ND` `COS^-1`, `2ND` `TAN^-1`
+- algebraic
+    - `X^-1`, `X^2`, `sqrt`, `^` (Y^X)
+- transcendental
+    - `LOG`, `10^X`, `LN`, `e^X`
+- constants
+    - `pi`, `e`
+
 <a name="MenuFunctions"></a>
 ### Menu Functions
 
 These functions are accessed through the hierarchical menu, using the 5 menu
-buttons just under the LCD screen. The menu navigation occurs through the `UP`,
-`DOWN`, `ON` (back), and `MATH` (home) keys.
+buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (back), and `MATH`
+(home) keys to navigate the menu hierarchy.
 
 - `MATH`
-    - `X^3`: `x^3`
+    - `X^3`: cube of `X`
     - `3 Root X`: cube root of `X`
     - `ATN2`: `atan2(Y, X)` in degrees or radians, depending on current mode
         - `Y` register is the x-component entered first
@@ -312,7 +329,7 @@ buttons just under the LCD screen. The menu navigation occurs through the `UP`,
 - `PROB`
     - `COMB`: combination `C(n,r)` = `C(Y, X)`
     - `PERM`: permutation `P(n,r)` = `P(Y, X)`
-    - `N!`: factorial `X!`
+    - `N!`: factorial of `X`
     - `RAND`: random number in the range `[0,1)`
     - `SEED`: set the random number generator seed to `X`
 - `CONV`
@@ -386,5 +403,108 @@ buttons just under the LCD screen. The menu navigation occurs through the `UP`,
     - `NOT`: binary 1's complement of `X`, as 32-bit unsigned integer
     - `NEG`: binary 2's complement of `X`, as 32-bit unsigned integer
 
+<a name="FutureEnhancements"></a>
+## Future Enhancements
+
+There are a number of features which I would like to add in the future. I have
+grouped them as follows:
+
+<a name="NearFuture"></a>
+### Near Future
+
+- bit shift and rotation operators
+    - shift left
+    - shift right
+    - rotate left
+    - rotate right
+    - arithmetic shift right (preserve sign bit)
+- user-accessible registers
+    - Most HP calculators provide user-accessible registers identified by a
+      number. For example `STO 00` stores the current `X` value to Register
+      `00`.
+    - I hope to add most of these in the near future:
+        - `RCL NN`, `STO NN`, `STO+ NN`, `STO- NN`, `STO* NN`, `STO/ NN`
+    - The HP-42S supports registers identified by a string. Not sure if this
+      feature is worth the effort.
+- user selectable integer size for `BASE` functions
+    - currently, binary, octal, hexadecimal routines are implemented internally
+      using 32-bit unsigned numbers
+    - the user ought to be able to specify the integer size for those
+      operations: 8 bits, 16 bits, 32 bits, maybe 48 bits and 64 bits
+    - the user-interface will be a challenge: for large integer sizes, the
+      number of digits will no longer fit inside the 14-15 digits available on a
+      single line.
+- system memory
+    - It might be useful to expose some system status functions, like memory.
+    - But since we can always drop into the TI-OS and use `2ND` `MEM` to get
+      that information, it is not clear that this is worth the effort.
+
+<a name="MediumFuture"></a>
+### Medium Future
+
+- complex numbers
+    - The TI-OS provides internal subroutines to handle complex numbers, so in
+      theory, this should be relatively easy.
+    - I think the difficulty will be the user interface. A complex number
+      requires 2 floating point numbers to be entered and displayed, and I have
+      not figured out how to do that within the UI of the RPN83P application.
+- `STAT` functions
+    - There are lot of features that I need to research:
+        - average, std deviation, variance
+        - linear fitting
+        - logarithmic fitting
+        - exponential fitting
+        - power law fitting
+- real time clock
+    - I believe the TI-84 Plus has an RTC.
+    - It would be interesting to expose some time, date, and timezone features.
+
+<a name="FarFuture"></a>
+### Far Future
+
+I'm not sure these features are worth the effort, but I may do them for
+curiosity and the technical challenge:
+
+- programming
+    - Although I think it is technically possible for the RPN83P app to support
+      keystroke programming, like the HP-42S, I am not sure that the calculator
+      world needs yet another calculator programming language.
+    - Is it sufficient that the user can drop into TI-BASIC programming if that
+      is required?
+- matrix and vectors
+    - I don't know how much matrix functionality is provided by TI-OS SDK.
+    - Making the user-interface reasonable could be a challenge.
+    - I'm not sure that adding matrix functions into a calculator is worth the
+      effort. For any non-trivial calculations, it is probably easier to use a
+      desktop computer and application (e.g. MATLAB, Octave, Mathematica).
+
+<a name="NotPlanned"></a>
+### Not Planned
+
+- graphing
+    - The TI-OS has extensive support for graphing equations.
+    - It does not make sense to duplicate that work in the RPN83P application.
+- computer algebra system (CAS)
+    - The TI-83 Plus and TI-84 Plus do not support CAS, so it is highly unlikely
+      that the RPN83P will support CAS either.
+- rational numbers
+    - Not something that I have ever needed, so I probably will not want to
+      spend my time implementing it.
+
 <a name="BugsAndLimitations"></a>
 ## Bugs and Limitations
+
+- `PRIM` (isPrime) is quite slow, about as slow as a TI-BASIC program.
+    - Uses the TI-OS floating numbers and subroutines, which works pretty
+      well for smallish integers.
+    - Can probably make this significantly faster by implementing the algorithm
+      using native Z80 integer operations.
+    - (Need to write a `div(u32, u16) -> u32` function).
+- `PROB` and `COMB` arguments are limited to `< 256`
+    - Should be relatively easy to extend this to `< 2^16` or `<2^32`.
+- `GCD` and `LCM` functions are slow
+    - Could be made significantly faster.
+- Too many digits when using `BASE 2`
+    - A single line in the RPN83P app can display 14 digits.
+    - A 32-bit integer in base 2 requires 32 digits, so the display will often
+      overflow when using base 2.
