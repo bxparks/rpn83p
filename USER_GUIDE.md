@@ -247,8 +247,8 @@ like this conceptually:
 
 There are 4 components:
 
-- `MenuGroup`: a list of 1 or more `MenuStrip`s
-- `MenuStrip`: a list of exactly 5 `MenuNode`s corresponding to the 5 menu
+- `MenuGroup`: a list of 1 or more `MenuStrips`
+- `MenuStrip`: a list of exactly 5 `MenuNodes` corresponding to the 5 menu
   buttons below the LCD
 - `MenuNode`: one slot in the `MenuStrip`, can be *either* a `MenuGroup` or a
   `MenuItem`
