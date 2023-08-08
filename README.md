@@ -1,8 +1,8 @@
-# rpn83p
+# RPN83P
 
 RPN calculator app for the TI-83 Plus and TI-84 Plus inspired by the HP-42S.
 
-**Version**: 0.0 (2023-07-14)
+**Version**: 0.0 (2023-08-07)
 
 **Changelog**: [CHANGELOG.md](CHANGELOG.md)
 
@@ -31,18 +31,13 @@ assembly language program).
     - Press `APPS`
     - Scroll down to the `RPN83P` entry
     - Press `ENTER`
-- To quit:
-    - `2ND` `QUIT`
-- To turn off:
-    - `2ND` `OFF`
-- To exit input modes, or nested menus:
-    - `ON`
-- To clear the input:
-    - `CLEAR`
+- To quit: `2ND` `QUIT`
+- To turn off: `2ND` `OFF`
+- To exit input modes or nested menus: `ON`
+- To clear the input: `CLEAR`
 
-The nice thing about a flash app is that it does not consume precious RAM space,
-and it is preserved when the RAM is cleared (either purposefully or
-accidentally).
+As a flash app, this does not consume precious RAM space, and it is preserved
+when the RAM is cleared (either purposefully or accidentally).
 
 <a name="SupportedHardware"></a>
 ### Supported Hardware
@@ -57,7 +52,7 @@ This app was designed for TI calculators using the Z80 processor:
 <a name="UserGuide"></a>
 ## User Guide
 
-TBD
+See the [RPN83P User Guide](USER_GUIDE.md).
 
 <a name="Compiling"></a>
 ## Compiling from Source
