@@ -444,6 +444,45 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (back), and `MATH`
     - `NOT`: binary 1's complement of `X`, as 32-bit unsigned integer
     - `NEG`: binary 2's complement of `X`, as 32-bit unsigned integer
 
+<a name="BaseConversions"></a>
+### BASE Conversions
+
+The `BASE` mode and its functions are useful for computer science and
+programming. This mode works somewhat differently compared to the HP-42S.
+
+The `DEC` (decimal)` mode is the default. All numbers on the RPN stack are
+displayed using the currently selected floating point mode (e.g. `FIX`, `ENG`,
+and `SCI`) and the number of digits after the decimal point. Here is an example
+screenshot:
+
+> ![Numbers in Decimal Mode](docs/rpn83p-screenshot-base-dec.png)
+
+The `HEX` (hexadecimal) mode displays all numbers on the RPN stack as an
+unsigned 32-bit integer using base 16. If there are fractional digits after the
+decimal point, those digits are ignored, but the number is printed with a
+decimal point `.` after the hexadecimal format of the number. Negative numbers
+are not valid and three-dots are printed instead.
+
+> ![Numbers in Hexadecimal Mode](docs/rpn83p-screenshot-base-hex.png)
+
+The `OCT` (oct) mode displays all numbers on the RPN stack as an unsigned 32-bit
+integer using base 8. If there are fractional digits after the decimal point,
+those digits are ignored, but the number is printed with a decimal point `.`
+after the octal format of the number. Negative numbers are not valid and
+three-dots are printed instead.
+
+> ![Numbers in Octal Mode](docs/rpn83p-screenshot-base-oct.png)
+
+The `BIN` (oct) mode displays all numbers on the RPN stack as an unsigned 32-bit
+integer using base 2. If there are fractional digits after the decimal point,
+those digits are ignored, but the number is printed with a decimal point `.`
+after the octal format of the number. Negative numbers are not valid and
+three-dots are printed instead. The LCD screen has space for only 14 digits, so
+the largest number that can be shown is `2^14-1` or 16383. Numbers above this
+limit are displayed with three-dots, as shown below:
+
+> ![Numbers in Binary Mode](docs/rpn83p-screenshot-base-bin.png)
+
 <a name="FutureEnhancements"></a>
 ## Future Enhancements
 
