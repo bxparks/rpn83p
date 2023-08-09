@@ -38,17 +38,17 @@ Edition). The app is inspired mostly by the
 [HP-42S](https://en.wikipedia.org/wiki/HP-42S) calculator, with some sprinkles
 of some older HP calculators like the
 [HP-12C](https://en.wikipedia.org/wiki/HP-12C) and the
-[HP-15C](https://en.wikipedia.org/wiki/HP-15C). The RPN83P is a flash
-application that consumes one page (16 kB) of flash memory. Since it is stored
-in flash, it is preserved if the RAM is cleared. It consumes very little RAM:
-only 5 variables of 18 bytes or about 90 bytes.
+[HP-15C](https://en.wikipedia.org/wiki/HP-15C).
+
+The RPN83P is a flash application that consumes one page (16 kB) of flash
+memory. Since it is stored in flash, it is preserved if the RAM is cleared. It
+consumes very little RAM: only 5 variables of 18 bytes or about 90 bytes.
 
 Here are some of the high level features:
 
 - traditional 4-level RPN stack (`X`, `Y`, `Z`, `T` registers)
 - support for `lastX` register
 - hierarchical menu system, inspired by the HP-42S
-- probability functions (`P(n,r)`, `C(n,r)`, `n!`, random number)
 - support for all math functions with dedicated buttons
     - arithmetic: `/`, `*`, `-`, `+`
     - trigonometric: `SIN`, `COS`, `TAN`, etc.
@@ -61,6 +61,7 @@ Here are some of the high level features:
     - `ABS`, `SIGN`, `MOD`, `MIN`, `MAX`
     - `IP` (integer part), `FP` (fractional part), `FLR` (floor), `CEIL`
       (ceiling), `NEAR` (nearest integer)
+    - probability: `PERM`, `COMB`, `N!`, `RAND`, `SEED`
     - hyperbolic: `SINH`, `COSH`, `TANH`, etc.
     - conversions: `>DEG`, `>RAD`, `>HR`, `>HMS`, `P>R`, `R>P`
     - unit conversions: `>C`, `>F`, `>km`, `>mi`, etc
@@ -76,23 +77,26 @@ Here are some missing features which may be added in the future:
 - user registers (`STO 00`, `RCL 00`, etc)
 - statistics functions (sum, mean, variance, standard deviation)
 - complex numbers
-- programming
+- vectors and matrices
+- keystroke programming
 
 <a name="Installation"></a>
 ## Installation
 
-The app is provided as a single file named `rpn83p.8xk`. It must be uploaded
-to the calculator using a "link" program from a host computer. There are a
-number of options:
+The RPN83P app is provided as a single file named `rpn83p.8xk`. It must be
+uploaded to the calculator using a "link" program from a host computer. There
+are a number of options:
 
-**Linux**
-- [tilp](https://github.com/debrouxl/tilp_and_gfm)
-- On Ubuntu 22.04 machines, you can install this using `$ apt install tilp2`
-- (I'm not actually sure whether the `tilp2` binary is actually compiled
-    from the `tilp_and_gfm` source code mentioned above)
+**Linux**: Use the [tilp](https://github.com/debrouxl/tilp_and_gfm) program. On
+Ubuntu Linux 22.04 systems, the precompiled package can be installed using `$
+apt install tilp2`. (I'm not actually sure if the `tilp2` binary is actually
+compiled from the `tilp_and_gfm` source code mentioned above)
 
-**Windows** or **MacOS**
-- [TI Connect](https://education.ti.com/en/products/computer-software/ti-connect-sw)
+**Windows** or **MacOS**: Use the [TI
+Connect](https://education.ti.com/en/products/computer-software/ti-connect-sw)
+software and follow the instructions in [Transferring FLASH Applications to a
+Graphing
+Calculator](https://education.ti.com/en/customer-support/knowledge-base/sofware-apps/product-usage/11506).
 
 After installing `rpn83p.8xk` file, go to the calculator:
 
@@ -197,21 +201,22 @@ cursor.
 
 A stack **lift** causes the previous `X` value to shift into the `Y` register,
 the previous `Y` value into the `Z` register, and the previous `Z` value into
-the `T` register. The previous `T` value is lost. Conceptually, additional
-digits are appended to the number in the `X` register.
+the `T` register. The previous `T` value is lost.
 
-The `Enter` key performs 2 functions:
+The `Enter` key performs the following actions:
 
-- it *duplicates* the `X` register into the `Y` register
-- it temporarily *disables* the stack lift for the next number
+- if the `X` register was in edit mode: the input buffer is closed and the
+  number is placed into the `X` register,
+- the `X` register is then duplicated into the `Y` register,
+- it *disables* the stack lift for the next number.
 
-This is consistent with traditional RPN system used by HP calculators up to and
-including the HP-42S. It allows one to press: `2` `ENTER` `3` `*` to multiply
-`2*3` and get `6` as the result, because the second number `3` does not lift the
-stack.
+This is consistent with the traditional RPN system used by HP calculators up to
+and including the HP-42S. It allows the user to press: `2` `ENTER` `3` `*` to
+multiply `2*3` and get `6` as the result, because the second number `3` does not
+lift the stack.
 
-The parenthesis `(` and `)` are not used in an RPN entry system, so they have
-been repurposed for stack manipulation.
+The parenthesis `(` and `)` buttons are not used in an RPN entry system, so they
+have been repurposed for stack manipulation.
 
 The `(` key rotates the stack down, exactly as the same as the `R(downarrow)` or
 just a single `(downarrow)` on the HP calculators. The `2ND` `{` key (above the
@@ -226,10 +231,13 @@ This mapping of the `(` and `)` to these stack functions is identical to the
 mapping used by the [HP-30b](https://en.wikipedia.org/wiki/HP_30b) when it is in
 RPN mode. (The HP-30b supports both algebraic and RPN entry modes.)
 
-The `2ND` `ANS` button is mapped to the `LastX` functionality of HP calculators.
-It is the value of the `X` register of the most recent operation. It can be used
-to bring back a number that was accidentally consumed, or sometimes it can be
-used as part of a longer sequence of calculations.
+The `2ND` `ANS` functionality of the TI-OS algebraic mode is unnecessary in the
+RPN used by RPN83P, because the `X` register is always the most recent result
+that would have been stored in `2ND` `ANS`. Therefore, the `2ND` `ANS` is
+repurposed to be the `LastX` functionality of HP calculators. The `LastX` is the
+value of the `X` register just before the most recent operation. It can be used
+to bring back a number that was accidentally consumed, or it can be used as part
+of a longer sequence of calculations.
 
 <a name="MenuHierarchy"></a>
 ### Menu Hierarchy and Navigation
