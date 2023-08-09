@@ -58,8 +58,8 @@ Here are some of the high level features:
 - additional menu functions:
     - `%`, `Delta%`, `GCD`, `LCM`, `PRIM` (is prime?)
     - `ABS`, `SIGN`, `MOD`, `MIN`, `MAX`
-    - `IP` (integer part`, `FP` (fractional part)`, `FLR` (floor), `CEIL`
-        (ceiling), `NEAR` (nearest integer)
+    - `IP` (integer part), `FP` (fractional part), `FLR` (floor), `CEIL`
+      (ceiling), `NEAR` (nearest integer)
     - hyperbolic: `SINH`, `COSH`, `TANH`, etc.
     - conversions: `>DEG`, `>RAD`, `>HR`, `>HMS`, `P>R`, `R>P`
     - unit conversions: `>C`, `>F`, `>km`, `>mi`, etc
@@ -329,7 +329,7 @@ calculator keyboard.
     - `SIN`, `COS`, `TAN`
     - `2ND` `SIN^-1`, `2ND` `COS^-1`, `2ND` `TAN^-1`
 - algebraic
-    - `X^-1`, `X^2`, `sqrt`, `^` (Y^X)
+    - `X^-1`, `X^2`, `sqrt`, `^` (i.e. `Y^X`)
 - transcendental
     - `LOG`, `10^X`, `LN`, `e^X`
 - constants
