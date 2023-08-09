@@ -464,7 +464,7 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (back), and `MATH`
 
 The `BASE` mode and its functions are useful for computer science and
 programming. This mode works somewhat differently compared to the HP-42S, so
-some detailed documentation seems prudent.
+additional documentation is provided below.
 
 **DEC** (decimal)
 
@@ -483,7 +483,13 @@ integer, and printed using 8 hexadecimal digits. If there are fractional digits
 after the decimal point, a decimal point `.` is printed at the end of the 8
 digits to indicate that the fractional part is not shown. Negative numbers are
 not valid and three dots are printed instead. Three dots are printed if the
-integer part is greater than `2^32`.
+integer part is `>= 2^32`.
+
+The hexadecimal digits `A` through `F` are entered using `ALPHA` `A`, through
+`ALPHA` `F`. You can lock the `ALPHA` mode using `2ND` `A-LOCK`, but that causes
+the decimal buttons `0` to `9` to send letters instead which prevents those
+digits to be entered, so it is not clear that the Alpha Lock mode is actually
+useful in this context.
 
 > ![Numbers in Hexadecimal Mode](docs/rpn83p-screenshot-base-hex.png)
 
@@ -495,7 +501,10 @@ and printed using 11 octal digits. If there are fractional digits after the
 decimal point, a decimal point `.` is printed at the end of the 11 digits to
 indicate that the fractional part is not shown. Negative numbers are not valid
 and three-dots are printed instead. Three dots are printed if the integer part
-is greater than `2^32`.
+is `>= 2^32`.
+
+The digits `0` through `7` are entered normally. The digits `8` and `9` are
+disabled in octal mode.
 
 > ![Numbers in Octal Mode](docs/rpn83p-screenshot-base-oct.png)
 
@@ -507,9 +516,40 @@ and printed using 14 binary digits (the maximum allowed by the width of the LCD
 screen). The there are fractional digits after the decimal point, a decimal
 point `.` is printed at the end of the 11 digits to indicate that the fractional
 part is not shown. Negative numbers are not valid and three-dots are printed
-instead. The largest binary number that can be displayed is `2^14-1` or 16383.
+instead. Three dots are also printed if the integer part is `>= 2^14` (i.e. `>=
+16384`).
+
+Only the digits `0` and `1` are active in the binary mode. The rest are
+disabled.
 
 > ![Numbers in Binary Mode](docs/rpn83p-screenshot-base-bin.png)
+
+**Differences from HP-42S**
+
+Unlike the HP-42S, the `HEX`, `OCT` and `BIN` modes are simply *display* modes
+that only affect how the numbers are rendered. These modes do not affect any
+arithmetic or mathematical operations. In particular, the arithmetic buttons
+`/`, `*`, `-`, and `+` do not change their behavior in the `HEX`, `OCT`, `BIN`
+modes, in contrast to the HP-42S which remaps those buttons to the `BASE/`,
+`BASE*`, `BASE-`, and `BASE+` functions instead.
+
+For example, suppose you had the following numbers in the RPN stack in `DEC`
+mode:
+
+> ![Base Arithmetic Part 1](docs/rpn83p-screenshot-base-arithmetic-1-dec.png)
+
+Changing to `HEX` mode shows this:
+
+> ![Base Arithmetic Part 2](docs/rpn83p-screenshot-base-arithmetic-2-hex.png)
+
+Pressing the `+` button adds the `X` and `Y` registers, with no change in
+behavior from the `DEC` mode, including the hidden fractional part:
+
+> ![Base Arithmetic Part 3](docs/rpn83p-screenshot-base-arithmetic-3-plus.png)
+
+Changing back to `DEC` mode shows that the numbers were added normally:
+
+> ![Base Arithmetic Part 4](docs/rpn83p-screenshot-base-arithmetic-4-dec.png)
 
 <a name="FutureEnhancements"></a>
 ## Future Enhancements
