@@ -449,7 +449,8 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (back), and `MATH`
 ### BASE Conversions
 
 The `BASE` mode and its functions are useful for computer science and
-programming. This mode works somewhat differently compared to the HP-42S.
+programming. This mode works somewhat differently compared to the HP-42S, so
+some detailed documentation seems prudent.
 
 **DEC** (decimal)
 
@@ -462,33 +463,37 @@ screenshot:
 
 **HEX** (hexadecimal)
 
-The `HEX` (hexadecimal) mode displays all numbers on the RPN stack as an
-unsigned 32-bit integer using base 16. If there are fractional digits after the
-decimal point, those digits are ignored, but the number is printed with a
-decimal point `.` after the hexadecimal format of the number. Negative numbers
-are not valid and three-dots are printed instead.
+The `HEX` (hexadecimal) mode displays all numbers on the RPN stack using base
+16. Only the integer part is rendered. It is converted into an unsigned 32-bit
+integer, and printed using 8 hexadecimal digits. If there are fractional digits
+after the decimal point, a decimal point `.` is printed at the end of the 8
+digits to indicate that the fractional part is not shown. Negative numbers are
+not valid and three dots are printed instead. Three dots are printed if the
+integer part is greater than `2^32`.
 
 > ![Numbers in Hexadecimal Mode](docs/rpn83p-screenshot-base-hex.png)
 
 **OCT** (octal)
 
-The `OCT` (octal) mode displays all numbers on the RPN stack as an unsigned
-32-bit integer using base 8. If there are fractional digits after the decimal
-point, those digits are ignored, but the number is printed with a decimal point
-`.` after the octal format of the number. Negative numbers are not valid and
-three-dots are printed instead, like this:
+The `OCT` (octal) mode displays all numbers on the RPN stack using base 8. Only
+the integer part is rendered. It is converted into an unsigned 32-bit integer,
+and printed using 11 octal digits. If there are fractional digits after the
+decimal point, a decimal point `.` is printed at the end of the 11 digits to
+indicate that the fractional part is not shown. Negative numbers are not valid
+and three-dots are printed instead. Three dots are printed if the integer part
+is greater than `2^32`.
 
 > ![Numbers in Octal Mode](docs/rpn83p-screenshot-base-oct.png)
 
 **BIN** (binary)
 
-The `BIN` (binary) mode displays all numbers on the RPN stack as an unsigned
-32-bit integer using base 2. If there are fractional digits after the decimal
-point, those digits are ignored, but the number is printed with a decimal point
-`.` after the octal format of the number. Negative numbers are not valid and
-three-dots are printed instead. The LCD screen has space for only 14 digits, so
-the largest number that can be shown is `2^14-1` or 16383. Numbers above this
-limit are displayed with three-dots, as shown below:
+The `BIN` (binary) mode displays all numbers on the RPN stack using base 2. Only
+the integer part is rendered. It is converted into an unsigned 32-bit integer,
+and printed using 14 binary digits (the maximum allowed by the width of the LCD
+screen). The there are fractional digits after the decimal point, a decimal
+point `.` is printed at the end of the 11 digits to indicate that the fractional
+part is not shown. Negative numbers are not valid and three-dots are printed
+instead. The largest binary number that can be displayed is `2^14-1` or 16383.
 
 > ![Numbers in Binary Mode](docs/rpn83p-screenshot-base-bin.png)
 
