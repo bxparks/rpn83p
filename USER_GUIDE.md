@@ -101,7 +101,9 @@ After installing `rpn83p.8xk` file, go to the calculator:
 
 You should see a screen that looks like:
 
+<table><tr><td>
 ![RPN83P screenshot 1](docs/rpn83p-screenshot-1.png)
+</td></tr></table>
 
 The following are various ways to quit or exit out of certain contexts:
 
@@ -243,7 +245,9 @@ sets of 5 items corresponding to those buttons.
 The menu system forms a singly-rooted tree of menu items and groups, which look
 like this conceptually:
 
+<table><tr><td>
 ![Menu Structure](docs/menu-structure.png)
+</td></tr></table>
 
 There are 4 components:
 
@@ -310,7 +314,9 @@ you turn on the calculator.
 
 The LCD screen should look like this before hitting `FINISH`:
 
+<table><tr><td>
 ![Start-up app screenshot](docs/start-up-app-screenshot.png)
+</td></tr></table>
 
 Turn off the calculator and turn it back on. It should directly go into the
 RPN83P application.
