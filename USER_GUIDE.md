@@ -19,7 +19,10 @@ RPN calculator app for the TI-83 Plus and TI-84 Plus inspired by the HP-42S.
 - [Functions](#Functions)
     - [Direct Functions](#DirectFunctions)
     - [Menu Functions](#MenuFunctions)
-    - [Base Conversions](#BaseConversions)
+    - [Base Functions](#BaseFunctions)
+        - [Base Modes](#BaseModes)
+        - [Base Mode Affect Only Rendering](#BaseRendering)
+        - [Base Integers](#BaseIntegers)
 - [Future Enhancements](#FutureEnhancements)
     - [Near Future](#NearFuture)
     - [Medium Future](#MediumFuture)
@@ -459,8 +462,11 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (back), and `MATH`
     - `NOT`: binary 1's complement of `X`, as 32-bit unsigned integer
     - `NEG`: binary 2's complement of `X`, as 32-bit unsigned integer
 
-<a name="BaseConversions"></a>
-### BASE Conversions
+<a name="BaseFunctions"></a>
+### BASE Functions
+
+<a name="BaseModes"></a>
+#### BASE Modes
 
 The `BASE` mode and its functions are useful for computer science and
 programming. This mode works somewhat differently compared to the HP-42S, so
@@ -524,7 +530,8 @@ disabled.
 
 > ![Numbers in Binary Mode](docs/rpn83p-screenshot-base-bin.png)
 
-**Differences from HP-42S**
+<a name="BaseRendering"></a>
+#### Base Modes Affect Only Rendering
 
 Unlike the HP-42S, the `HEX`, `OCT` and `BIN` modes are simply *display* modes
 that only affect how the numbers are rendered. These modes do not affect any
@@ -550,6 +557,44 @@ behavior from the `DEC` mode, including the hidden fractional part:
 Changing back to `DEC` mode shows that the numbers were added normally:
 
 > ![Base Arithmetic Part 4](docs/rpn83p-screenshot-base-arithmetic-4-dec.png)
+
+<a name="BaseIntegers"></a>
+#### Base Integers
+
+The HP-42S uses a 36-bit *signed* integer for BASE rendering and operations. To
+be honest, I have never been able to fully understand and become comfortable
+with the HP-42S implementation of the BASE operations. First, 36 bits is a
+strange number, it is not an integer size used by any common microprocessor that
+I am aware of (8 bits, 16 bits, 32 bits, and 64 bits). Second, the HP-42S does
+not display leading zeros in hexadecimal, octal, or binary modes. While this is
+consistent with the normal decimal mode, I have always found it confusing to see
+the number of digits in those base modes to constantly change depending on the
+value.
+
+The RPN83P deviates from the HP-42S by using a 32-bit *unsigned* integer
+internally, and rendering the various HEX, OCT, and BIN numbers using the same
+number of digits all the time. This means that `HEX` mode always displays 8
+digits, `OCT` mode always displays 11 digits, and `BIN` mode always displays 14
+digits (due to size limitation of the LCD screen). I find this far less
+confusing when doing bitwise operations (e.g. bit-and, bit-or, bit-xor).
+
+Since the internal integer representation is *unsigned*, the `(-)` (change sign)
+button is disabled. Instead, the menu system provides a `NEG` function which
+performs a [two's complement](https://en.wikipedia.org/wiki/Two%27s_complement)
+operation which turns a `00000001` hex number into `FFFFFFFF`. The `NEG`
+function is closely related to the `NOT` function which performs a [one's
+complement](https://en.wikipedia.org/wiki/Ones%27_complement) operation where
+the `00000001` becomes `FFFFFFFE`.
+
+If you want to see the decimal value of a hex number that has its sign-bit (the
+most significant bit) turned on (so it would be interpreted as a negative number
+if it were interpreted as a 32-bit signed integer), you can run the `NEG`
+function on it, then hit the `DEC` menu item to convert it to decimal. The
+displayed value will be the decimal value of the original hex number, without
+the negative sign.
+
+Currently, the integer size for base conversions and functions is hardcoded to
+be 32 bits. I hope to change this to be user-selectable in the future.
 
 <a name="FutureEnhancements"></a>
 ## Future Enhancements
