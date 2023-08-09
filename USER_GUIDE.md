@@ -101,7 +101,7 @@ After installing `rpn83p.8xk` file, go to the calculator:
 
 You should see a screen that looks like:
 
-> ![RPN83P screenshot 1](docs/rpn83p-screenshot-1.png)
+> ![RPN83P screenshot 1](docs/rpn83p-screenshot-initial.png)
 
 The following are various ways to quit or exit out of certain contexts:
 
@@ -120,13 +120,12 @@ HP-42S. (The RPN83P does not use the newer RPN system used by the HP-48SX.)
 <a name="ScreenAreas"></a>
 ### Screen Areas
 
-Here are the elements rendered on the LCD screen:
+Here are the various UI elements on the LCD screen used by the RPN83P app:
 
-[TODO: Insert screen shot with pointers to different areas]
+> ![RPN83P screen regions](docs/rpn83p-screenshot-regions-annotated.png)
 
-The LCD screen on the TI calculator is 96 pixels (width) by 64 pixels (height).
-That is large enough to display 8 rows of numbers and letters. They are divided
-in the following:
+The LCD screen is 96 pixels (width) by 64 pixels (height). That is large enough
+to display 8 rows of numbers and letters. They are divided in the following:
 
 - 1: status line
 - 2: (currently unused)
