@@ -101,7 +101,7 @@ After installing `rpn83p.8xk` file, go to the calculator:
 
 You should see a screen that looks like:
 
-[TODO: Insert screen shot]
+![RPN83P screenshot 1](docs/rpn83p-screenshot-1.png)
 
 The following are various ways to quit or exit out of certain contexts:
 
