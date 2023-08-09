@@ -19,6 +19,7 @@ RPN calculator app for the TI-83 Plus and TI-84 Plus inspired by the HP-42S.
 - [Functions](#Functions)
     - [Direct Functions](#DirectFunctions)
     - [Menu Functions](#MenuFunctions)
+    - [Base Conversions](#BaseConversions)
 - [Future Enhancements](#FutureEnhancements)
     - [Near Future](#NearFuture)
     - [Medium Future](#MediumFuture)
@@ -51,8 +52,8 @@ Here are some of the high level features:
 - support for all math functions with dedicated buttons
     - arithmetic: `/`, `*`, `-`, `+`
     - trigonometric: `SIN`, `COS`, `TAN`, etc.
-    - `1/X`, `X^2`, `2ND SQRT`, 
-    - `^` (i.e. `Y^X`), 
+    - `1/X`, `X^2`, `2ND SQRT`,
+    - `^` (i.e. `Y^X`),
     - `LOG`, `10^X`, `LN`, `e^X`
     - constants: `pi` and `e`
 - additional menu functions:
@@ -219,7 +220,7 @@ functionality is not used as often, so it is bound to a key stroke with the
 `2ND` key.
 
 The `)` key performs an exchange of the `X` and `Y` registers. That
-functionality is usually marked as `X<>Y` on HP calculators. 
+functionality is usually marked as `X<>Y` on HP calculators.
 
 This mapping of the `(` and `)` to these stack functions is identical to the
 mapping used by the [HP-30b](https://en.wikipedia.org/wiki/HP_30b) when it is in
@@ -350,7 +351,7 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (back), and `MATH`
         - `X` register is the y-component entered second
     - `2^X`: `2` to the power of `X`
     - `LOG2`: log base 2 of `X`
-    - `LOGB`: log base `X` of `Y` 
+    - `LOGB`: log base `X` of `Y`
 - `NUM`
     - `%`: `X` percent of `Y`, leaving `Y` unchanged
     - `Delta %`: percent change from `Y` to `X`, leaving `Y` unchanged
@@ -450,12 +451,16 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (back), and `MATH`
 The `BASE` mode and its functions are useful for computer science and
 programming. This mode works somewhat differently compared to the HP-42S.
 
-The `DEC` (decimal)` mode is the default. All numbers on the RPN stack are
+**DEC** (decimal)
+
+The `DEC` (decimal) mode is the default. All numbers on the RPN stack are
 displayed using the currently selected floating point mode (e.g. `FIX`, `ENG`,
 and `SCI`) and the number of digits after the decimal point. Here is an example
 screenshot:
 
 > ![Numbers in Decimal Mode](docs/rpn83p-screenshot-base-dec.png)
+
+**HEX** (hexadecimal)
 
 The `HEX` (hexadecimal) mode displays all numbers on the RPN stack as an
 unsigned 32-bit integer using base 16. If there are fractional digits after the
@@ -465,18 +470,22 @@ are not valid and three-dots are printed instead.
 
 > ![Numbers in Hexadecimal Mode](docs/rpn83p-screenshot-base-hex.png)
 
-The `OCT` (oct) mode displays all numbers on the RPN stack as an unsigned 32-bit
-integer using base 8. If there are fractional digits after the decimal point,
-those digits are ignored, but the number is printed with a decimal point `.`
-after the octal format of the number. Negative numbers are not valid and
-three-dots are printed instead.
+**OCT** (octal)
+
+The `OCT` (octal) mode displays all numbers on the RPN stack as an unsigned
+32-bit integer using base 8. If there are fractional digits after the decimal
+point, those digits are ignored, but the number is printed with a decimal point
+`.` after the octal format of the number. Negative numbers are not valid and
+three-dots are printed instead, like this:
 
 > ![Numbers in Octal Mode](docs/rpn83p-screenshot-base-oct.png)
 
-The `BIN` (oct) mode displays all numbers on the RPN stack as an unsigned 32-bit
-integer using base 2. If there are fractional digits after the decimal point,
-those digits are ignored, but the number is printed with a decimal point `.`
-after the octal format of the number. Negative numbers are not valid and
+**BIN** (binary)
+
+The `BIN` (binary) mode displays all numbers on the RPN stack as an unsigned
+32-bit integer using base 2. If there are fractional digits after the decimal
+point, those digits are ignored, but the number is printed with a decimal point
+`.` after the octal format of the number. Negative numbers are not valid and
 three-dots are printed instead. The LCD screen has space for only 14 digits, so
 the largest number that can be shown is `2^14-1` or 16383. Numbers above this
 limit are displayed with three-dots, as shown below:
