@@ -118,9 +118,15 @@ The following are various ways to quit or exit out of certain contexts:
 ## Basic Usage
 
 This guide assumes that you already know to use an RPN calculator. In
-particular, this guide assumes that you are familiar with the traditional RPN
-system used by Hewlett-Packard calculators such as the HP-12C, HP-15C, and the
-HP-42S. (The RPN83P does not use the newer RPN system used by the HP-48SX.)
+particular, the RPN83P implements the traditional RPN system used by
+Hewlett-Packard calculators such as the HP-12C, HP-15C, and the HP-42S. (The
+RPN83P does not use the newer RPN system used by the HP-48SX.)
+
+It is beyond the scope of this document to explain how to use an RPN calculator.
+One way to learn is to download the [Free42](https://thomasokken.com/free42/)
+emulator for the HP-42S, available for Android, iOS, Windows, MacOS, and Linux),
+and then download and read the [HP-42S Owner's
+Manual](https://literature.hpcalc.org/items/929).
 
 <a name="ScreenAreas"></a>
 ### Screen Areas
