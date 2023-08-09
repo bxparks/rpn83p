@@ -243,7 +243,7 @@ sets of 5 items corresponding to those buttons.
 The menu system forms a singly-rooted tree of menu items and groups, which look
 like this conceptually:
 
-![Menu Hierarchy](docs/RPN83P_Menu_Structure.png)
+![Menu Structure](docs/menu-structure.png)
 
 There are 4 components:
 
