@@ -310,7 +310,7 @@ you turn on the calculator.
 
 The LCD screen should look like this before hitting `FINISH`:
 
-![Start-up app screenshot](docs/start-up-app-screen-shot.png)
+![Start-up app screenshot](docs/start-up-app-screenshot.png)
 
 Turn off the calculator and turn it back on. It should directly go into the
 RPN83P application.
