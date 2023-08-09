@@ -308,6 +308,10 @@ you turn on the calculator.
     - Name: `RPN83P` (hit `ENTER` and scroll down to select this)
 - Select `FINISH` and hit `ENTER`
 
+The LCD screen should look like this before hitting `FINISH`:
+
+![Start-up app screenshot](docs/start-up-app-screen-shot.png)
+
 Turn off the calculator and turn it back on. It should directly go into the
 RPN83P application.
 
