@@ -127,7 +127,7 @@ helpPages:
 
 msgHelpPage1:
     .db escapeLargeFont, "RPN83P", Lenter
-    .db escapeSmallFont, "v0.0 (2023", Shyphen, "08", Shyphen, "07)", Senter
+    .db escapeSmallFont, "v0.0 (2023", Shyphen, "08", Shyphen, "10)", Senter
     .db "(c) 2023  Brian T. Park", Senter
     .db Senter
     .db "An RPN calculator for the", Senter
@@ -262,11 +262,11 @@ mPercentHandler:
     bcall(_FPMult)
     jp replaceX
 
-; mDeltaPercentHandler(Y, X) -> (Y, 100*(X-Y)/Y)
+; mPercentChangeHandler(Y, X) -> (Y, 100*(X-Y)/Y)
 ; Description: Calculate the change from Y to X as a percentage of Y. The
 ; resulting percentage can be given to the '%' menu key to get the delta
 ; change, then the '+' command will retrieve the original X.
-mDeltaPercentHandler:
+mPercentChangeHandler:
     call closeInputBuf
     call rclY
     bcall(_OP1ToOP2) ; OP2 = Y

@@ -65,7 +65,7 @@ MenuGroup root mRoot [
     MenuGroup NUM mNum [
       MenuStrip [
         MenuItem <Spercent> mPercent
-        MenuItem <ScapDelta><Spercent> mDeltaPercent
+        MenuItem <Spercent>CH mPercentChange
         MenuItem GCD mGcd
         MenuItem LCM mLcm
         MenuItem PRIM mPrime

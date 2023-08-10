@@ -222,14 +222,14 @@ mPercentId equ 22
     .db 0 ; numStrips
     .db 0 ; stripBeginId
     .dw mPercentHandler ; handler (to be implemented)
-mDeltaPercent:
-mDeltaPercentId equ 23
-    .db mDeltaPercentId ; id
+mPercentChange:
+mPercentChangeId equ 23
+    .db mPercentChangeId ; id
     .db mNumId ; parentId
-    .db mDeltaPercentNameId ; nameId
+    .db mPercentChangeNameId ; nameId
     .db 0 ; numStrips
     .db 0 ; stripBeginId
-    .dw mDeltaPercentHandler ; handler (to be implemented)
+    .dw mPercentChangeHandler ; handler (to be implemented)
 mGcd:
 mGcdId equ 24
     .db mGcdId ; id
@@ -955,8 +955,8 @@ mLogBaseNameId equ 16
     .dw mLogBaseName
 mPercentNameId equ 17
     .dw mPercentName
-mDeltaPercentNameId equ 18
-    .dw mDeltaPercentName
+mPercentChangeNameId equ 18
+    .dw mPercentChangeName
 mGcdNameId equ 19
     .dw mGcdName
 mLcmNameId equ 20
@@ -1131,8 +1131,8 @@ mLogBaseName:
     .db "LOGB", 0
 mPercentName:
     .db Spercent, 0
-mDeltaPercentName:
-    .db ScapDelta, Spercent, 0
+mPercentChangeName:
+    .db Spercent, 'C', 'H', 0
 mGcdName:
     .db "GCD", 0
 mLcmName:
