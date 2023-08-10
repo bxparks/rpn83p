@@ -10,6 +10,9 @@ RPN calculator app for the TI-83 Plus and TI-84 Plus inspired by the HP-42S.
 
 - [Introduction](#Introduction)
 - [Installation](#Installation)
+    - [Uploading](#Uploading)
+    - [Starting](#Starting)
+    - [Quitting](#Quitting)
 - [Basic Usage](#BasicUsage)
     - [Screen Areas](#ScreenAreas)
     - [Input and Editing](#InputAndEditing)
@@ -92,6 +95,9 @@ Here are some missing features which may be added in the future:
 <a name="Installation"></a>
 ## Installation
 
+<a name="Uploading"></a>
+### Uploading
+
 The RPN83P app is provided as a single file named `rpn83p.8xk`. It must be
 uploaded to the calculator using a "link" program from a host computer. There
 are a number of options:
@@ -107,6 +113,9 @@ software and follow the instructions in [Transferring FLASH Applications to a
 Graphing
 Calculator](https://education.ti.com/en/customer-support/knowledge-base/sofware-apps/product-usage/11506).
 
+<a name="Starting"></a>
+### Starting
+
 After installing `rpn83p.8xk` file, go to the calculator:
 
 - Press the `APPS` key
@@ -117,11 +126,13 @@ You should see a screen that looks like:
 
 > ![RPN83P screenshot 1](docs/rpn83p-screenshot-initial.png)
 
-The following are various ways to quit or exit out of certain contexts:
+<a name="Quitting"></a>
+### Quitting
+
+The RPN83P application can be quit using:
 
 - `2ND` `QUIT`: to exit to normal TI calculator
 - `2ND` `OFF`: to turn the calculator off (the RPN registers will be preserved)
-- `ON`: to incrementally back out from nested menus
 
 <a name="BasicUsage"></a>
 ## Basic Usage
