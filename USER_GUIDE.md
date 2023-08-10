@@ -360,15 +360,12 @@ These functions are accessed through the hierarchical menu, using the 5 menu
 buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (back), and `MATH`
 (home) keys to navigate the menu hierarchy.
 
-At the top of the menu hierarchy, where the RPN83P menu starts by default, is
-the ROOT MenuGroup. It contains 2 MenuStrips, like this:
-
 - ROOT (implicit)
-    - ![Root MenuStrip 1](docs/rpn83p-screenshot-menu-root-1.png)
-    - ![Root MenuStrip 2](docs/rpn83p-screenshot-menu-root-2.png)
-
-
-- `MATH`
+    - ![ROOT MenuStrip 1](docs/rpn83p-screenshot-menu-root-1.png)
+    - ![ROOT MenuStrip 2](docs/rpn83p-screenshot-menu-root-2.png)
+- ROOT > `MATH`
+    - ![MATH MenuStrip 1](docs/rpn83p-screenshot-menu-root-math-1.png)
+    - ![MATH MenuStrip 2](docs/rpn83p-screenshot-menu-root-math-2.png)
     - `X^3`: cube of `X`
     - `3 Root X`: cube root of `X`
     - `ATN2`: `atan2(Y, X)` in degrees or radians, depending on current mode
@@ -377,7 +374,10 @@ the ROOT MenuGroup. It contains 2 MenuStrips, like this:
     - `2^X`: `2` to the power of `X`
     - `LOG2`: log base 2 of `X`
     - `LOGB`: log base `X` of `Y`
-- `NUM`
+- ROOT > `NUM`
+    - ![NUM MenuStrip 1](docs/rpn83p-screenshot-menu-root-num-1.png)
+    - ![NUM MenuStrip 2](docs/rpn83p-screenshot-menu-root-num-2.png)
+    - ![NUM MenuStrip 2](docs/rpn83p-screenshot-menu-root-num-3.png)
     - `%`: `X` percent of `Y`, leaving `Y` unchanged
     - `Delta %`: percent change from `Y` to `X`, leaving `Y` unchanged
     - `GCD`: greatest common divisor of `X` and `Y`
@@ -393,13 +393,16 @@ the ROOT MenuGroup. It contains 2 MenuStrips, like this:
     - `FLR`: the floor of `X`, the largest integer <= `X`
     - `CEIL`: the ceiling of `X`, the smallest integer >= `X`
     - `NEAR`: the nearest integer to `X`
-- `PROB`
+- ROOT > `PROB`
+    - ![PROB MenuStrip 1](docs/rpn83p-screenshot-menu-root-prob-1.png)
     - `COMB`: combination `C(n,r)` = `C(Y, X)`
     - `PERM`: permutation `P(n,r)` = `P(Y, X)`
     - `N!`: factorial of `X`
     - `RAND`: random number in the range `[0,1)`
     - `SEED`: set the random number generator seed to `X`
-- `CONV`
+- ROOT > `CONV`
+    - ![CONV MenuStrip 1](docs/rpn83p-screenshot-menu-root-conv-1.png)
+    - ![CONV MenuStrip 2](docs/rpn83p-screenshot-menu-root-conv-2.png)
     - `>DEG`: convert radians to degrees
     - `>RAD`: convert degrees to radians
     - `P>R`: polar to rectangular
@@ -410,9 +413,10 @@ the ROOT MenuGroup. It contains 2 MenuStrips, like this:
         - output (`Y`, `X`) = (`r`, `theta`)
     - `>HR`: convert `hh.mmssnnnn` to `hh.mmmm`
     - `>HMS`: convert `hh.mmmm` to `hh.mmssnnnn`
-- `HELP`: display the help pages
-    - use arrow keys to go back and forth
-- `MODE`
+- ROOT > `HELP`: display the help pages
+    - use arrow keys to view each help page
+- ROOT > `MODE`
+    - ![MODE MenuStrip 1](docs/rpn83p-screenshot-menu-root-mode-1.png)
     - `FIX`: fixed mode with `N` digits after the decimal point
         - set `N` to `99` for floating number of digits
         - status line indicator is `FIX(N)`
@@ -424,14 +428,22 @@ the ROOT MenuGroup. It contains 2 MenuStrips, like this:
         - status line indicator is `ENG(N)`
     - `RAD`: use radians for trigonometric functions
     - `DEG`: use degrees for trigonometric functions
-- `HYP`
+- ROOT > `HYP`
+    - ![HYP MenuStrip 1](docs/rpn83p-screenshot-menu-root-hyp-1.png)
+    - ![HYP MenuStrip 1](docs/rpn83p-screenshot-menu-root-hyp-2.png)
     - `SINH`: hyperbolic `sin()`
     - `COSH`: hyperbolic `cos()`
     - `TANH`: hyperbolic `tan()`
     - `ASNH`: hyperbolic `asin()`
     - `ACSH`: hyperbolic `acos()`
     - `ATNH`: hyperbolic `atan()`
-- `UNIT`
+- ROOT > `UNIT`
+    - ![UNIT MenuStrip 1](docs/rpn83p-screenshot-menu-root-unit-1.png)
+    - ![UNIT MenuStrip 2](docs/rpn83p-screenshot-menu-root-unit-2.png)
+    - ![UNIT MenuStrip 3](docs/rpn83p-screenshot-menu-root-unit-3.png)
+    - ![UNIT MenuStrip 4](docs/rpn83p-screenshot-menu-root-unit-4.png)
+    - ![UNIT MenuStrip 5](docs/rpn83p-screenshot-menu-root-unit-5.png)
+    - ![UNIT MenuStrip 6](docs/rpn83p-screenshot-menu-root-unit-6.png)
     - `>C`: Fahrenheit to Celsius
     - `>F`: Celsius to Fahrenheit
     - `>hPa`: hecto Pascals (i.e. millibars) to inches of Mercury
@@ -455,7 +467,9 @@ the ROOT MenuGroup. It contains 2 MenuStrips, like this:
     - `>cal`: kilo Joules to kilo calories
     - `>kW`: horsepowers (mechanical) to kilo Watts
     - `>hp`: kilo Watts to horsepowers (mechanical)
-- `BASE`
+- ROOT > `BASE`
+    - ![BASE MenuStrip 1](docs/rpn83p-screenshot-menu-root-base-1.png)
+    - ![BASE MenuStrip 2](docs/rpn83p-screenshot-menu-root-base-2.png)
     - `DEC`: use decimal base 10, set base indicator to `DEC`
     - `HEX`: use hexadecimal base 16, set base indicator to `HEX`
         - display all register values as 32-bit unsigned integer
