@@ -715,7 +715,7 @@ The `BIN` (binary) mode displays all numbers on the RPN stack using base 2. Only
 the integer part is rendered. It is converted into an unsigned 32-bit integer,
 and printed using 14 binary digits (the maximum allowed by the width of the LCD
 screen). The there are fractional digits after the decimal point, a decimal
-point `.` is printed at the end of the 11 digits to indicate that the fractional
+point `.` is printed at the end of the 14 digits to indicate that the fractional
 part is not shown. Negative numbers are not valid and three-dots are printed
 instead. Three dots are also printed if the integer part is `>= 2^14` (i.e. `>=
 16384`).
