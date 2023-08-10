@@ -471,6 +471,35 @@ point display modes, so it cannot emulate the HP-42S exactly. In particular, the
 `ALL` display mode of the HP-42S is not directly available, but it is basically
 equivalent to `FIX 99` on the RPN83P.
 
+<a name="TrigModes"></a>
+### Trigonometric Modes
+
+Just like the TI-OS, the RPN83P starts using the radian mode when doing
+trigonometric functions. The top status line shows `RAD`. Let's calculate
+`sin(pi/6)` in radian mode, by typing, `PI` `6` `/` `SIN`:
+
+> ![RPN83P FIX 99](docs/rpn83p-trig-mode-rad-1.png)
+
+> ![RPN83P FIX 99](docs/rpn83p-trig-mode-rad-2.png)
+
+> ![RPN83P FIX 99](docs/rpn83p-trig-mode-rad-3.png)
+
+Giving us `0.5` as expected.
+
+Press the `DEG` menu button to change to degree mode. The top status line shows
+`DEG`. We can calculator `sin(30deg)` by typing: `30` `SIN`:
+
+> ![RPN83P FIX 99](docs/rpn83p-trig-mode-deg-1.png)
+
+> ![RPN83P FIX 99](docs/rpn83p-trig-mode-deg-2.png)
+
+**HP-42S Compatibility Note**: The RPN83P does not offer the
+[gradian](https://en.wikipedia.org/wiki/Gradian) mode `GRAD` because the
+underlying TI-OS does not support the gradian mode directly. It is probably
+possible to add this feature by intercepting the trig functions and performing
+some pre and post unit conversions. But I'm not sure if it's worth the effort
+since gradian trig mode is not commonly used.
+
 <a name="Functions"></a>
 ## Functions
 
