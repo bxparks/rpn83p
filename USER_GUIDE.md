@@ -360,6 +360,14 @@ These functions are accessed through the hierarchical menu, using the 5 menu
 buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (back), and `MATH`
 (home) keys to navigate the menu hierarchy.
 
+At the top of the menu hierarchy, where the RPN83P menu starts by default, is
+the ROOT MenuGroup. It contains 2 MenuStrips, like this:
+
+- ROOT (implicit)
+    - ![Root MenuStrip 1](docs/rpn83p-screenshot-menu-root-1.png)
+    - ![Root MenuStrip 2](docs/rpn83p-screenshot-menu-root-2.png)
+
+
 - `MATH`
     - `X^3`: cube of `X`
     - `3 Root X`: cube root of `X`
