@@ -14,7 +14,10 @@ RPN calculator app for the TI-83 Plus and TI-84 Plus inspired by the HP-42S.
     - [Screen Areas](#ScreenAreas)
     - [Input and Editing](#InputAndEditing)
     - [RPN Stack](#RPNStack)
-    - [Menu Hierarchy and Navigation](#MenuHierarchy)
+    - [Menu System](#MenuSystem)
+        - [Menu Hierarchy](#MenuHierarchy)
+        - [Menu Buttons](#MenuButtons)
+        - [Menu Indicator Arrows](#MenuIndicatorArrows)
 - [Advanced Usage](#AdvancedUsage)
 - [Functions](#Functions)
     - [Direct Functions](#DirectFunctions)
@@ -246,8 +249,11 @@ the `X` register just before the most recent operation. It can be used to bring
 back a number that was accidentally consumed, or it can be used as part of a
 longer sequence of calculations.
 
+<a name="MenuSystem"></a>
+### Menu System
+
 <a name="MenuHierarchy"></a>
-### Menu Hierarchy and Navigation
+#### Menu Hierarchy
 
 The menu system of the RPN83P was directly inspired by the HP-42S calculator.
 There are over 100 functions supported by the RPN83P menu system, so it is
@@ -258,7 +264,7 @@ sets of 5 items corresponding to those buttons.
 The menu system forms a singly-rooted tree of menu items and groups, which look
 like this conceptually:
 
-> ![Menu Structure](docs/menu-structure.png)
+![Menu Structure](docs/menu-structure.png)
 
 There are 4 components:
 
@@ -270,25 +276,23 @@ There are 4 components:
 - `MenuItem`: a leaf-node that maps directly to a function (e.g. `ASNH`) when
   the corresponding menu button is pressed
 
-The LCD screen always shows a `MenuStrip` of 5 `MenuItems`. There are 4 buttons
-that are used to navigate the menu hierarchy:
+<a name="MenuButtons"></a>
+#### Menu Buttons
 
-- `UP_ARROW`: go to previous `MenuStrip` of 5 `MenuItems`, if the current
-  `MenuGroup` group has multiple menu strips, otherwise does nothing
-- `DOWN_ARROW`: go to next `MenuStrip` of 5 `MenuItems`, if the current
-  `MenuGroup` has multiple menu strips, otherwise does nothing
-- `ON`: go back in the menu hierarchy to the parent `MenuGroup` (similar to the
-  `ON/EXIT` button on the HP-42S)
-- `MATH`: go to the root `MenuGroup`, the top of the menu hierarchy
+The LCD screen always shows a `MenuStrip` of 5 `MenuItems`. Here are the buttons
+which are used to navigate the menu hierarchy:
 
-When you press a menu button that corresponds to a `MenuGroup`, the menu system
-descends into the group, and shows the first set of 5 `MenuItems` in the first
-`MenuStrip` in that group.
+![Menu Button Screenshot](docs/rpn83p-screenshot-menu-nav-buttons.png)
 
-If there are multiple `MenuStrips` in that group, you can use the `UP_ARROW` and
-`DOWN_ARROW` keys move from one `MenuStrip` to the next menu strip within the
-same `MenuGroup`. Pressing `UP` at the first strip will wrap around to the last
-strip. Pressing `DOWN` at the last strip will wrap around to the first strip.
+- `F1`- `F5`: invokes the function shown by the respective menu
+- `UP_ARROW`: goes to previous `MenuStrip` of 5 `MenuItems`, within the current
+  `MenuGroup`
+- `DOWN_ARROW`: goes to next `MenuStrip` of 5 `MenuItems`, within the current
+  `MenuGroup`
+- `ON`: goes back to the parent `MenuGroup` (similar to the `ON/EXIT` button on
+  the HP-42S)
+- `MATH`: goes directly to the root `MenuGroup` no matter where you are in the
+  menu hierarchy
 
 To move from a child `MenuGroup` back up to the parent `MenuGroup`, the
 appropriate key would have been an `ESC` button. But the TI-83 and TI-84
@@ -307,6 +311,57 @@ random: First, the `HOME` button on the TI-89 Titanium is located exactly where
 the `MATH` is. And second, when the menu is at the root, the first menu item on
 the left is a `MenuGroup` named `MATH`, which may help to remember this button
 mapping.
+
+<a name="MenuIndicatorArrows"></a>
+#### Menu Indicator Arrows
+
+There are 3 menu indicator arrows at the top-left corner of the LCD screen. The
+`downarrow` indicates that additional menu strips are available:
+
+> ![Menu Arrows 1](docs/rpn83p-screenshot-menu-arrows-1.png)
+
+When the `DOWN` button is pressed, the menu changes to the next set of 5 menu
+items in the next menu strip, and the indicator arrow changes to an `uparrow` to
+indicate that we are at the last menu strip of the current group:
+
+> ![Menu Arrows 2](docs/rpn83p-screenshot-menu-arrows-2.png)
+
+Pressing `UP` goes back to the previous menu strip. (Note that since the ROOT
+menu group contains only 2 menu strips, you can actually press `DOWN` at the
+last menu strip. The menu system *wraps around* to the first menu strip.)
+
+> ![Menu Arrows 1](docs/rpn83p-screenshot-menu-arrows-1.png)
+
+The `F2/WINDOW` button is associated with the `NUM` menu item. This menu item is
+actually a `MenuGroup`. Pressing `F2` will move into this menu group and display
+the first 5 menu buttons in the first menu strip:
+
+> ![Menu Arrows NUM 1](docs/rpn83p-screenshot-menu-arrows-num-1.png)
+
+The menu indicator arrow now shows a `back` arrow. This indicates that we are at
+a sub-menu group, and the `ON` button can be pressed to go back to the parent
+menu group.
+
+Pressing the `DOWN` arrow button shows the next menu strip like this:
+
+> ![Menu Arrows NUM 1](docs/rpn83p-screenshot-menu-arrows-num-2.png)
+
+Notice that the indicator arrows now show both `downarrow` and `uparrow`, which
+indicates that there exist one or more menu strips to the top and the one ore
+more menu strips to the bottom.
+
+Pressing the `DOWN` arrow button goes to the final menu strip:
+
+> ![Menu Arrows NUM 1](docs/rpn83p-screenshot-menu-arrows-num-3.png)
+
+The menu indicators show only the `back` arrow, and the `up` arrow. Pressing the
+`UP` button goes to the previous menu strip. Pressing the `DOWN` arrow wraps
+around to the first menu strip.
+
+Finally, press the `ON` button (which implements the "back" or "exit"
+functionality" to go back up to the parent menu group:
+
+> ![Menu Arrows 1](docs/rpn83p-screenshot-menu-arrows-1.png)
 
 <a name="AdvancedUsage"></a>
 ## Advanced Usage
