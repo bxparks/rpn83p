@@ -411,8 +411,8 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (back), and `MATH`
     - `R>P`: rectangular to polar
         - input (`Y`, `X`) = (`x`, `y`)
         - output (`Y`, `X`) = (`r`, `theta`)
-    - `>HR`: convert `hh.mmssnnnn` to `hh.mmmm`
-    - `>HMS`: convert `hh.mmmm` to `hh.mmssnnnn`
+    - `>HR`: convert `HH.MMSSssss` to `HH.hhhh`
+    - `>HMS`: convert `HH.hhhh` to `HH.MMSSssss`
 - `ROOT` > `HELP`: display the help pages
     - use arrow keys to view each help page
 - `ROOT` > `MODE`
