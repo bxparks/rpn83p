@@ -21,6 +21,7 @@ RPN calculator app for the TI-83 Plus and TI-84 Plus inspired by the HP-42S.
 - [Advanced Usage](#AdvancedUsage)
     - [Auto-start](#AutoStart)
     - [Floating Point Display Modes](#FloatingPointDisplayModes)
+    - [Trigonometric Modes](#TrigModes)
 - [Functions](#Functions)
     - [Direct Functions](#DirectFunctions)
     - [Menu Functions](#MenuFunctions)
@@ -474,7 +475,7 @@ equivalent to `FIX 99` on the RPN83P.
 <a name="TrigModes"></a>
 ### Trigonometric Modes
 
-Just like the TI-OS, the RPN83P starts using the radian mode when doing
+Just like the TI-OS, the RPN83P uses the radian mode by default when calculating
 trigonometric functions. The top status line shows `RAD`. Let's calculate
 `sin(pi/6)` in radian mode, by typing, `PI` `6` `/` `SIN`:
 
@@ -492,6 +493,9 @@ Press the `DEG` menu button to change to degree mode. The top status line shows
 > ![RPN83P FIX 99](docs/rpn83p-trig-mode-deg-1.png)
 
 > ![RPN83P FIX 99](docs/rpn83p-trig-mode-deg-2.png)
+
+**Warning**: The polar to rectangular conversion functions (`R>P` and `P>R`) are
+also affected by the current Trig Mode setting.
 
 **HP-42S Compatibility Note**: The RPN83P does not offer the
 [gradian](https://en.wikipedia.org/wiki/Gradian) mode `GRAD` because the
