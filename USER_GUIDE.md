@@ -402,16 +402,17 @@ In RPN83P, the `MODE` button presents a menu bar instead:
 
 > ![RPN83P Display Modes](docs/rpn83p-display-modes.png)
 
-**HP-42S Compatibility Note**: The HP-42S uses the button `DISP` to access this
+**HP-42S Compatibility Note**: The HP-42S uses the `DISP` button to access this
 functionality. For the RPN83P, it seemed to make more sense to the follow the
 TI-OS convention which places the floating display modes under the `MODE`
 button.
 
-The `NORMAL` mode in TI-OS is called `FIX` for compatibility with the HP-42S. It
-is also short enough to fit into the menu label nicely, and has the same number
-of letters as the `SCI` and `ENG` modes.
+The `NORMAL` mode in TI-OS is named `FIX` in RPN83P following the lead of the
+HP-42S. It is also short enough to fit into the menu label nicely, and has the
+same number of letters as the `SCI` and `ENG` modes which helps with the
+top-line indicator.
 
-Suppose the RPN stack has the following numbers for example:
+Suppose the RPN stack has the following numbers:
 
 > ![RPN83P Display Modes](docs/rpn83p-display-mode-start.png)
 
@@ -440,17 +441,17 @@ get this:
 
 The top-line indicator shows `ENG(4)`.
 
-To set the number of digits after the decimal point to be floating (i.e. the
-equivalent of `FLOAT` in TI-OS), type in a number greater than 9 when prompted
-for `FIX _ _`, `SCI _ _`, or `ENG _ _`. Usually, I use `99`. For example, to use
-scientific notation mode with a variable number of fractional digits, press
-`SCI` `99`:
+To set the number of digits after the decimal point to be dynamic (i.e. the
+equivalent of `FLOAT` option in the TI-OS `MODE` menu), type in a number greater
+than 9 when prompted for `FIX _ _`, `SCI _ _`, or `ENG _ _`. Usually, I use
+`99`. For example, to use scientific notation mode with a variable number of
+fractional digits, press `SCI` `99`:
 
 > ![RPN83P SCI 99 Prompt](docs/rpn83p-display-mode-sci-99.png)
 
 Then hit `ENTER` to get this:
 
-> ![RPN83P SCI 99](docs/rpn83p-display-mode-sci-float.png)
+> ![RPN83P SCI 99](docs/rpn83p-display-mode-sci-dynamic.png)
 
 Notice that the top-line floating point indicator now shows `SCI(-)`.
 
