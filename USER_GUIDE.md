@@ -19,6 +19,8 @@ RPN calculator app for the TI-83 Plus and TI-84 Plus inspired by the HP-42S.
         - [Menu Buttons](#MenuButtons)
         - [Menu Indicator Arrows](#MenuIndicatorArrows)
 - [Advanced Usage](#AdvancedUsage)
+    - [Auto-start](#AutoStart)
+    - [Floating Point Display Modes](#FloatingPointDisplayModes)
 - [Functions](#Functions)
     - [Direct Functions](#DirectFunctions)
     - [Menu Functions](#MenuFunctions)
@@ -365,7 +367,10 @@ functionality") can be used to go back to the parent menu group:
 <a name="AdvancedUsage"></a>
 ## Advanced Usage
 
-For convenience, you may choose to auto-run the RPN83P application as soon as
+<a name="AutoStart"></a>
+### Auto-start
+
+For convenience, you may choose to auto-start the RPN83P application as soon as
 you turn on the calculator.
 
 - Download the
@@ -383,6 +388,87 @@ The LCD screen should look like this before hitting `FINISH`:
 
 Turn off the calculator and turn it back on. It should directly go into the
 RPN83P application.
+
+<a name="FloatingPointDisplayModes"></a>
+### Floating Point Display Modes
+
+The RPN83P app provides access to the same floating point display modes as the
+original TI-OS. For reference, here are the options available in the TI-OS when
+the `MODE` button is pressed:
+
+> ![TI-OS Display Modes](docs/tios-display-modes.png)
+
+In RPN83P, the `MODE` button presents a menu bar instead:
+
+> ![RPN83P Display Modes](docs/rpn83p-display-modes.png)
+
+**HP-42S Compatibility Note**: The HP-42S uses the button `DISP` to access this
+functionality. For the RPN83P, it seemed to make more sense to the follow the
+TI-OS convention which places the floating display modes under the `MODE`
+button.
+
+The `NORMAL` mode in TI-OS is called `FIX` for compatibility with the HP-42S. It
+is also short enough to fit into the menu label nicely, and has the same number
+of letters as the `SCI` and `ENG` modes.
+
+Suppose the RPN stack has the following numbers for example:
+
+> ![RPN83P Display Modes](docs/rpn83p-display-mode-start.png)
+
+Pressing the `FIX` menu item shows a `FIX _ _` prompt for the number of digits
+after the decimal point, like this:
+
+> ![RPN83P FIX Prompt](docs/rpn83p-display-mode-fix.png)
+
+Type `4` then `ENTER`. The display changes to this:
+
+> ![RPN83P FIX 4](docs/rpn83p-display-mode-fix-4.png)
+
+Notice that the floating point mode indicator at the top of the screen now shows
+`FIX(4)`.
+
+Try changing to scientific notation mode, by pressing: `SCI` `4` `ENTER`, to get this:
+
+> ![RPN83P SCI 4](docs/rpn83p-display-mode-sci-4.png)
+
+The top-line indicator shows `SCI(4)`.
+
+You can change to engineering notation mode, by pressing: `ENG` `4` `ENTER`, to
+get this:
+
+> ![RPN83P ENG 4](docs/rpn83p-display-mode-eng-4.png)
+
+The top-line indicator shows `ENG(4)`.
+
+To set the number of digits after the decimal point to be floating (i.e. the
+equivalent of `FLOAT` in TI-OS), type in a number greater than 9 when prompted
+for `FIX _ _`, `SCI _ _`, or `ENG _ _`. Usually, I use `99`. For example, to use
+scientific notation mode with a variable number of fractional digits, press
+`SCI` `99`:
+
+> ![RPN83P SCI 99 Prompt](docs/rpn83p-display-mode-sci-99.png)
+
+Then hit `ENTER` to get this:
+
+> ![RPN83P SCI 99](docs/rpn83p-display-mode-sci-float.png)
+
+Notice that the top-line floating point indicator now shows `SCI(-)`.
+
+Finally, type `FIX` `99` `ENTER` to go back to the default floating point mode.
+
+> ![RPN83P FIX 99](docs/rpn83p-display-mode-sci-99.png)
+
+**HP-42S Compatibility Note**: The HP-42S automatically performs an `ENTER`
+after 2 digits are entered at the prompt, for example `FIX` `99`. The RPN83P
+always requires the `ENTER` because I think this is a bit more consistent, and
+allows the user to edit and fix any typos. But I think I would be willing to
+emulate the HP-42S better if enough people think the HP-42S way is better. Maybe
+I could add a configuration option.
+
+**HP-42S Compatibility Note**: The RPN83P uses the underlying TI-OS floating
+point display modes, so it cannot emulate the HP-42S exactly. In particular, the
+`ALL` display mode of the HP-42S is not directly available, but it is basically
+equivalent to `FIX 99` on the RPN83P.
 
 <a name="Functions"></a>
 ## Functions
