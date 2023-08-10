@@ -298,8 +298,7 @@ The appropriate key for the "menu back to parent" function would have been an
 `ESC` button. But the TI-83 and TI-84 calculators do not have an `ESC` button
 (unlike the TI-92 and TI Voyager 200 series calculators), so the `ON` button was
 recruited for this functionality. This seemed to make sense because the HP-42S
-uses the `ON` key which doubles as the `EXIT` key to perform implement this
-function.
+uses the `ON` key which doubles as the `EXIT` key to perform this function.
 
 The `HOME` button is useful to go directly to the top of the menu hierarchy from
 anywhere in the menu hierarchy. The TI-83 and TI-84 calculators do not have a
