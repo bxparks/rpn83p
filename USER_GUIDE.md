@@ -214,10 +214,10 @@ the `T` register. The previous `T` value is lost.
 
 The `Enter` key performs the following actions:
 
-- if the `X` register was in edit mode: the input buffer is closed and the
+- if the `X` register was in edit mode, the input buffer is closed and the
   number is placed into the `X` register,
 - the `X` register is then duplicated into the `Y` register,
-- it *disables* the stack lift for the next number.
+- the stack lift is *disabled* for the next number.
 
 This is consistent with the traditional RPN system used by HP calculators up to
 and including the HP-42S. It allows the user to press: `2` `ENTER` `3` `*` to
@@ -225,33 +225,31 @@ multiply `2*3` and get `6` as the result, because the second number `3` does not
 lift the stack.
 
 The parenthesis `(` and `)` buttons are not used in an RPN entry system, so they
-have been repurposed for stack manipulation.
+have been repurposed for stack manipulation:
 
-The `(` key rotates the stack down, exactly as the same as the `R(downarrow)` or
-just a single `(downarrow)` on the HP calculators. The `2ND` `{` key (above the
-`(` key) performs the opposite stack rotation, rotating the stack up. This
-functionality is not used as often, so it is bound to a key stroke with the
-`2ND` key.
-
-The `)` key performs an exchange of the `X` and `Y` registers. That
-functionality is usually marked as `X<>Y` on HP calculators.
+- `(` key rotates the stack *down*, exactly as the same as the `R(downarrow)` or
+  just a single `(downarrow)` on the HP calculators.
+- `2ND` `{` key (above the `(` key) rotates the stack *up*. This functionality
+  is not used as often, so it is bound to a key stroke with the `2ND` key.
+- `)` key performs an exchange of the `X` and `Y` registers. That functionality
+  is usually marked as `X<>Y` on HP calculators.
 
 This mapping of the `(` and `)` to these stack functions is identical to the
 mapping used by the [HP-30b](https://en.wikipedia.org/wiki/HP_30b) when it is in
 RPN mode. (The HP-30b supports both algebraic and RPN entry modes.)
 
 The `2ND` `ANS` functionality of the TI-OS algebraic mode is unnecessary in the
-RPN used by RPN83P, because the `X` register is always the most recent result
-that would have been stored in `2ND` `ANS`. Therefore, the `2ND` `ANS` is
-repurposed to be the `LastX` functionality of HP calculators. The `LastX` is the
-value of the `X` register just before the most recent operation. It can be used
-to bring back a number that was accidentally consumed, or it can be used as part
-of a longer sequence of calculations.
+RPN system because the `X` register is always the most recent result that would
+have been stored in `2ND` `ANS`. Therefore, the `2ND` `ANS` has been repurposed
+to be the `LastX` functionality of HP calculators. The `LastX` is the value of
+the `X` register just before the most recent operation. It can be used to bring
+back a number that was accidentally consumed, or it can be used as part of a
+longer sequence of calculations.
 
 <a name="MenuHierarchy"></a>
 ### Menu Hierarchy and Navigation
 
-The menu system of the RPN83P was borrowed directly from the HP-42S calculator.
+The menu system of the RPN83P was directly inspired by the HP-42S calculator.
 There are over 100 functions supported by the RPN83P menu system, so it is
 convenient to arrange them into a nested folder structure. There are 5 buttons
 directly under the LCD screen so it makes sense to present the menu items as
@@ -338,8 +336,8 @@ RPN83P application.
 <a name="DirectFunctions"></a>
 ### Direct Functions
 
-These functions are available directly from the physical buttons on the
-calculator keyboard.
+Most of the mathematical functions that are exposed through physical buttons
+are supported by the RPN83P app.
 
 - arithmetic
     - `/`, `*`, `-`, `+`
