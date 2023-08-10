@@ -21,7 +21,7 @@ RPN calculator app for the TI-83 Plus and TI-84 Plus inspired by the HP-42S.
     - [Menu Functions](#MenuFunctions)
     - [Base Functions](#BaseFunctions)
         - [Base Modes](#BaseModes)
-        - [Base Mode Affect Only Rendering](#BaseRendering)
+        - [Base Mode and Rendering](#BaseRendering)
         - [Base Integers](#BaseIntegers)
 - [Future Enhancements](#FutureEnhancements)
     - [Near Future](#NearFuture)
@@ -531,7 +531,7 @@ disabled.
 > ![Numbers in Binary Mode](docs/rpn83p-screenshot-base-bin.png)
 
 <a name="BaseRendering"></a>
-#### Base Modes Affect Only Rendering
+#### Base Modes and Rendering
 
 Unlike the HP-42S, the `HEX`, `OCT` and `BIN` modes are simply *display* modes
 that only affect how the numbers are rendered. These modes do not affect any
@@ -540,8 +540,7 @@ arithmetic or mathematical operations. In particular, the arithmetic buttons
 modes, in contrast to the HP-42S which remaps those buttons to the `BASE/`,
 `BASE*`, `BASE-`, and `BASE+` functions instead.
 
-For example, suppose you had the following numbers in the RPN stack in `DEC`
-mode:
+For example, suppose the following numbers are in the RPN stack in `DEC` mode:
 
 > ![Base Arithmetic Part 1](docs/rpn83p-screenshot-base-arithmetic-1-dec.png)
 
