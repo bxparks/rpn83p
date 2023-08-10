@@ -27,7 +27,7 @@ RPN calculator app for the TI-83 Plus and TI-84 Plus inspired by the HP-42S.
     - [Menu Functions](#MenuFunctions)
     - [Base Functions](#BaseFunctions)
         - [Base Modes](#BaseModes)
-        - [Base Mode and Rendering](#BaseRendering)
+        - [Base Rendering](#BaseRendering)
         - [Base Integers](#BaseIntegers)
 - [Future Enhancements](#FutureEnhancements)
     - [Near Future](#NearFuture)
@@ -726,7 +726,7 @@ disabled.
 > ![Numbers in Binary Mode](docs/rpn83p-screenshot-base-bin.png)
 
 <a name="BaseRendering"></a>
-#### Base Modes and Rendering
+#### Base Rendering
 
 Unlike the HP-42S, the `HEX`, `OCT` and `BIN` modes are simply *display* modes
 that only affect how the numbers are rendered. These modes do not affect any
