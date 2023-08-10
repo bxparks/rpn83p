@@ -360,10 +360,10 @@ These functions are accessed through the hierarchical menu, using the 5 menu
 buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (back), and `MATH`
 (home) keys to navigate the menu hierarchy.
 
-- ROOT (implicit)
-    - ![ROOT MenuStrip 1](docs/rpn83p-screenshot-menu-root-1.png)
-    - ![ROOT MenuStrip 2](docs/rpn83p-screenshot-menu-root-2.png)
-- ROOT > `MATH`
+- `ROOT` (implicit)
+    - ![`ROOT` MenuStrip 1](docs/rpn83p-screenshot-menu-root-1.png)
+    - ![`ROOT` MenuStrip 2](docs/rpn83p-screenshot-menu-root-2.png)
+- `ROOT` > `MATH`
     - ![MATH MenuStrip 1](docs/rpn83p-screenshot-menu-root-math-1.png)
     - ![MATH MenuStrip 2](docs/rpn83p-screenshot-menu-root-math-2.png)
     - `X^3`: cube of `X`
@@ -374,7 +374,7 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (back), and `MATH`
     - `2^X`: `2` to the power of `X`
     - `LOG2`: log base 2 of `X`
     - `LOGB`: log base `X` of `Y`
-- ROOT > `NUM`
+- `ROOT` > `NUM`
     - ![NUM MenuStrip 1](docs/rpn83p-screenshot-menu-root-num-1.png)
     - ![NUM MenuStrip 2](docs/rpn83p-screenshot-menu-root-num-2.png)
     - ![NUM MenuStrip 2](docs/rpn83p-screenshot-menu-root-num-3.png)
@@ -393,14 +393,14 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (back), and `MATH`
     - `FLR`: the floor of `X`, the largest integer <= `X`
     - `CEIL`: the ceiling of `X`, the smallest integer >= `X`
     - `NEAR`: the nearest integer to `X`
-- ROOT > `PROB`
+- `ROOT` > `PROB`
     - ![PROB MenuStrip 1](docs/rpn83p-screenshot-menu-root-prob-1.png)
     - `COMB`: combination `C(n,r)` = `C(Y, X)`
     - `PERM`: permutation `P(n,r)` = `P(Y, X)`
     - `N!`: factorial of `X`
     - `RAND`: random number in the range `[0,1)`
     - `SEED`: set the random number generator seed to `X`
-- ROOT > `CONV`
+- `ROOT` > `CONV`
     - ![CONV MenuStrip 1](docs/rpn83p-screenshot-menu-root-conv-1.png)
     - ![CONV MenuStrip 2](docs/rpn83p-screenshot-menu-root-conv-2.png)
     - `>DEG`: convert radians to degrees
@@ -413,9 +413,9 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (back), and `MATH`
         - output (`Y`, `X`) = (`r`, `theta`)
     - `>HR`: convert `hh.mmssnnnn` to `hh.mmmm`
     - `>HMS`: convert `hh.mmmm` to `hh.mmssnnnn`
-- ROOT > `HELP`: display the help pages
+- `ROOT` > `HELP`: display the help pages
     - use arrow keys to view each help page
-- ROOT > `MODE`
+- `ROOT` > `MODE`
     - ![MODE MenuStrip 1](docs/rpn83p-screenshot-menu-root-mode-1.png)
     - `FIX`: fixed mode with `N` digits after the decimal point
         - set `N` to `99` for floating number of digits
@@ -428,7 +428,7 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (back), and `MATH`
         - status line indicator is `ENG(N)`
     - `RAD`: use radians for trigonometric functions
     - `DEG`: use degrees for trigonometric functions
-- ROOT > `HYP`
+- `ROOT` > `HYP`
     - ![HYP MenuStrip 1](docs/rpn83p-screenshot-menu-root-hyp-1.png)
     - ![HYP MenuStrip 1](docs/rpn83p-screenshot-menu-root-hyp-2.png)
     - `SINH`: hyperbolic `sin()`
@@ -437,7 +437,7 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (back), and `MATH`
     - `ASNH`: hyperbolic `asin()`
     - `ACSH`: hyperbolic `acos()`
     - `ATNH`: hyperbolic `atan()`
-- ROOT > `UNIT`
+- `ROOT` > `UNIT`
     - ![UNIT MenuStrip 1](docs/rpn83p-screenshot-menu-root-unit-1.png)
     - ![UNIT MenuStrip 2](docs/rpn83p-screenshot-menu-root-unit-2.png)
     - ![UNIT MenuStrip 3](docs/rpn83p-screenshot-menu-root-unit-3.png)
@@ -467,7 +467,7 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (back), and `MATH`
     - `>cal`: kilo Joules to kilo calories
     - `>kW`: horsepowers (mechanical) to kilo Watts
     - `>hp`: kilo Watts to horsepowers (mechanical)
-- ROOT > `BASE`
+- `ROOT` > `BASE`
     - ![BASE MenuStrip 1](docs/rpn83p-screenshot-menu-root-base-1.png)
     - ![BASE MenuStrip 2](docs/rpn83p-screenshot-menu-root-base-2.png)
     - `DEC`: use decimal base 10, set base indicator to `DEC`
@@ -478,11 +478,11 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (back), and `MATH`
     - `BIN`: use binary base 2, set base indicator to `BIN`
         - display all register values as 32-bit unsigned integer
         - max of 13 digits
-    - `AND`: binary (`X` `and` `Y`) as 32-bit unsigned integers
-    - `OR`: binary (`X` `or` `Y`) as 32-bit unsigned integers
-    - `XOR`: binary (`X` `xor` `Y`) as 32-bit unsigned integers
-    - `NOT`: binary 1's complement of `X`, as 32-bit unsigned integer
-    - `NEG`: binary 2's complement of `X`, as 32-bit unsigned integer
+    - `AND`: `X` `bit-and` `Y`
+    - `OR`: `X` `bit-or` `Y`
+    - `XOR`: `X` `bit-xor` `Y`
+    - `NOT`: one's complement of `X`
+    - `NEG`: two's complement of `X`
 
 <a name="BaseFunctions"></a>
 ### BASE Functions
