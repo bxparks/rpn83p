@@ -60,7 +60,7 @@ Here are some of the high level features:
     - `LOG`, `10^X`, `LN`, `e^X`
     - constants: `pi` and `e`
 - additional menu functions:
-    - `%`, `Delta%`, `GCD`, `LCM`, `PRIM` (is prime?)
+    - `%`, `%CH`, `GCD`, `LCM`, `PRIM` (is prime?)
     - `ABS`, `SIGN`, `MOD`, `MIN`, `MAX`
     - `IP` (integer part), `FP` (fractional part), `FLR` (floor), `CEIL`
       (ceiling), `NEAR` (nearest integer)
@@ -377,7 +377,7 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (back), and `MATH`
     - ![NUM MenuStrip 2](docs/rpn83p-screenshot-menu-root-num-2.png)
     - ![NUM MenuStrip 2](docs/rpn83p-screenshot-menu-root-num-3.png)
     - `%`: `X` percent of `Y`, leaving `Y` unchanged
-    - `Delta %`: percent change from `Y` to `X`, leaving `Y` unchanged
+    - `%CH`: percent change from `Y` to `X`, leaving `Y` unchanged
     - `GCD`: greatest common divisor of `X` and `Y`
     - `LCM`: lowest common multiple of `X` and `Y`
     - `PRIM`: determine if `X` is a prime, returning 1 if prime, 0 otherwise
