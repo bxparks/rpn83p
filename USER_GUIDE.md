@@ -282,7 +282,7 @@ There are 4 components:
 The LCD screen always shows a `MenuStrip` of 5 `MenuItems`. Here are the buttons
 which are used to navigate the menu hierarchy:
 
-![Menu Buttons](docs/rpn83p-screenshot-menu-buttons.png)
+![Menu Buttons](docs/rpn83p-screenshot-menu-buttons.jpg)
 
 - `F1`- `F5`: invokes the function shown by the respective menu
 - `UP_ARROW`: goes to previous `MenuStrip` of 5 `MenuItems`, within the current
