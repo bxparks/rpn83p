@@ -444,7 +444,8 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (back), and `MATH`
     - ![UNIT MenuStrip 6](docs/rpn83p-screenshot-menu-root-unit-6.png)
     - `>C`: Fahrenheit to Celsius
     - `>F`: Celsius to Fahrenheit
-    - `>hPa`: hecto Pascals (i.e. millibars) to inches of Mercury
+    - `>hPa`: hectopascals (i.e. millibars) to inches of mercury (Hg)
+    - `>iHg`: inches of mercury (Hg) to hectopascals (i.e. millibars)
     - `>km`: miles to kilometers
     - `>mi`: kilometers to miles
     - `>m`: feet to meters
