@@ -176,14 +176,22 @@ the fixed display mode.)
 
 The following buttons are used to enter and edit a number in the input buffer:
 
+![Input and Edit Buttons](docs/rpn83p-screenshot-inputedit-buttons.jpg)
+
+
 - `0`-`9`: digits
-- `(-)`: change sign (same as `+/-` or `CHS` on HP calculators)
 - `.`: decimal point
-- `2ND` `EE`: exponent for scientific notation (same as `E` or `EEX` on HP
-  calculators)
-- `,`: same as `2ND` `EE` for convenience
+- `(-)`: enters a negative sign, or changes the sign (same as `+/-` or `CHS` on
+  HP calculators)
 - `DEL`: Backspace (same as `<-` on many HP calculators)
 - `CLEAR`: Clear `X` register (same as `CLx` or `CLX` on HP calculators)
+- `2ND` `EE`: adds an `E` to allow entry of scientific notation exponent (same
+  as `E` or `EEX` on HP calculators)
+- `,`: same as `2ND` `EE`, allowing the `2ND` to be omitted for convenience
+
+The `(-)` button acts like the `+/-` or `CHS` button on HP calculators. It
+toggles the negative sign, adding it if it does not exist, and removing it if it
+does.
 
 When the cursor (`_`) is shown, indicating the **edit** mode, the `DEL` key acts
 like the *backspace* key on HP calculators. The `DEL` key always removes the
