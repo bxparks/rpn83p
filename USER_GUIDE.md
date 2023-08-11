@@ -178,7 +178,6 @@ The following buttons are used to enter and edit a number in the input buffer:
 
 ![Input and Edit Buttons](docs/rpn83p-fullshot-inputedit-buttons.jpg)
 
-
 - `0`-`9`: digits
 - `.`: decimal point
 - `(-)`: enters a negative sign, or changes the sign (same as `+/-` or `CHS` on
@@ -219,14 +218,19 @@ only a single line display. The HP-42S has a 2-line display, with the bottom
 line often commandeered by the menu line so that only the `X` register is
 shown.)
 
-There are 4 keys which are relevant for the RPN stack:
+These are the buttons which manipulate the RPN stack:
+
+![Input and Edit Buttons](docs/rpn83p-fullshot-rpn-buttons.jpg)
 
 - `(`: rotates RPN stack down (known as `R(downarrow)` on HP calculators)
 - `2ND` `{`: rotate RPN stack up (known as `R(uparrow)` on HP calculators)
 - `)`: exchanges `X` and `Y` registers
-- `ENTER`: saves the input buffer to the `X` register, and *disables* the
-  stack lift for the next number entry
+- `ENTER`: saves the input buffer to the `X` register
 - `2ND` `ANS`: recalls the last `X`
+
+This mapping of the `(` and `)` to these stack functions is identical to the
+mapping used by the [HP-30b](https://en.wikipedia.org/wiki/HP_30b) when it is in
+RPN mode. (The HP-30b supports both algebraic and RPN entry modes.)
 
 When a new number is entered (using the `0`-`9` digit keys), the press of the
 first digit causes the stack to **lift**, and the calculator enters into the
@@ -237,7 +241,7 @@ A stack **lift** causes the previous `X` value to shift into the `Y` register,
 the previous `Y` value into the `Z` register, and the previous `Z` value into
 the `T` register. The previous `T` value is lost.
 
-The `Enter` key performs the following actions:
+The `ENTER` key performs the following actions:
 
 - if the `X` register was in edit mode, the input buffer is closed and the
   number is placed into the `X` register,
@@ -258,10 +262,6 @@ have been repurposed for stack manipulation:
   is not used as often, so it is bound to a key stroke with the `2ND` key.
 - `)` key performs an exchange of the `X` and `Y` registers. That functionality
   is usually marked as `X<>Y` on HP calculators.
-
-This mapping of the `(` and `)` to these stack functions is identical to the
-mapping used by the [HP-30b](https://en.wikipedia.org/wiki/HP_30b) when it is in
-RPN mode. (The HP-30b supports both algebraic and RPN entry modes.)
 
 The `2ND` `ANS` functionality of the TI-OS algebraic mode is unnecessary in the
 RPN system because the `X` register is always the most recent result that would
