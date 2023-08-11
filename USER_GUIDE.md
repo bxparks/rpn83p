@@ -102,10 +102,9 @@ Here are some missing features which may be added in the future:
 
 ### Short Answer
 
-This was a fun project that helped me learn about the Z80-based TI calculators,
-and allowed me to remember how to program in Z80 assembly language. As a bonus,
-I get an app that converts a TI calculator into an RPN calculator that I can
-actually use.
+This was a fun project that helped me learn Z80 assembly language programming on
+TI calculators. It also produced an app that converts a TI calculator into an
+RPN calculator that I can actually use.
 
 ### Long Answer
 
