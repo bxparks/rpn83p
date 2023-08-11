@@ -777,12 +777,10 @@ Changing back to `DEC` mode shows that the numbers were added normally:
 The HP-42S uses a 36-bit *signed* integer for BASE rendering and operations. To
 be honest, I have never been able to fully understand and become comfortable
 with the HP-42S implementation of the BASE operations. First, 36 bits is a
-strange number, it is not an integer size used by any common microprocessor that
-I am aware of (8 bits, 16 bits, 32 bits, and 64 bits). Second, the HP-42S does
-not display leading zeros in hexadecimal, octal, or binary modes. While this is
-consistent with the normal decimal mode, I have always found it confusing to see
-the number of digits in those base modes to constantly change depending on the
-value.
+strange number, it is not an integer size used by modern microprocessors (8, 16,
+32, 64 bits). Second, the HP-42S does not display leading zeros in `HEX` `OCT`,
+or `BIN` modes. While this is consistent with the decimal mode, I find it
+confusing to see the number of rendered bits change depending on its value.
 
 The RPN83P deviates from the HP-42S by using a 32-bit *unsigned* integer
 internally, and rendering the various HEX, OCT, and BIN numbers using the same
