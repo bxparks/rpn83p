@@ -193,11 +193,12 @@ The `(-)` button acts like the `+/-` or `CHS` button on HP calculators. It
 toggles the negative sign, adding it if it does not exist, and removing it if it
 does.
 
-When the cursor (`_`) is shown, indicating the **edit** mode, the `DEL` key acts
-like the *backspace* key on HP calculators. The `DEL` key always removes the
-right-most digit, because the cursor is always at the end of the input string of
-digits. When the cursor is *not* shown, the `DEL` key also acts like the `CLEAR`
-key (see below).
+The `DEL` key acts like the *backspace* key on HP calculators (usually marked
+with a `LEFTARROW` symbol. This is different from the TI-OS where the `DEL` key
+removes the character under the cursor. In RPN83P, the cursor is *always* at the
+end of the input buffer, so `DEL` is programmed to delete the right-most digit.
+If the `X` line is *not* in edit mode (i.e. the cursor is not shown), then the
+`DEL` key acts like the `CLEAR` key (see below).
 
 The `CLEAR` key clears the entire input buffer, leaving just a cursor at the end
 of an empty string. An empty string will be interpreted as a `0` if the `ENTER`
@@ -207,6 +208,13 @@ The comma `,` button is not used in the RPN system, so it has been mapped to
 behave exactly like the `2ND` `EE` button. This allows scientific notation
 numbers to be entered quickly without having to press the `2ND` button
 repeatedly.
+
+Emulating the input system of the HP-42S was surprisingly complex and subtle,
+and some features and idiosyncrasies of the HP-42S could not be carried over due
+to incompatibilities with the underlying TI-OS. I'm not sure that documenting
+all the corner cases would be useful because it would probably be tedious to
+read. I hope that the input system is intuitive and self-consistent enough that
+you can just play around with it and learn how it works.
 
 <a name="RPNStack"></a>
 ### RPN Stack
