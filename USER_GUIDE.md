@@ -709,12 +709,20 @@ since gradian trig mode is not commonly used.
 <a name="BaseFunctions"></a>
 ### BASE Functions
 
+The `BASE` functions are available through the `ROOT` > `BASE` hierarchy:
+
+- ![ROOT MenuStrip 2](docs/rpn83p-screenshot-menu-root-2.png)
+    - ![BASE MenuStrip 1](docs/rpn83p-screenshot-menu-root-base-1.png)
+    - ![BASE MenuStrip 2](docs/rpn83p-screenshot-menu-root-base-2.png)
+
+These functions allow conversion of integers into different bases (10, 16, 8,
+2), as well as performing bitwise functions on those integers (bit-and, bit-or,
+bit-xor, etc). They are useful for computer science and programming. The `BASE`
+modes and functions work somewhat differently compared to the HP-42S, so
+additional documentation is provided here.
+
 <a name="BaseModes"></a>
 #### BASE Modes
-
-The `BASE` mode and its functions are useful for computer science and
-programming. This mode works somewhat differently compared to the HP-42S, so
-additional documentation is provided below.
 
 **DEC** (decimal)
 
@@ -835,7 +843,7 @@ displayed value will be the decimal value of the original hex number, without
 the negative sign.
 
 Currently, the integer size for base conversions and functions is hardcoded to
-be 32 bits. I hope to change this to be user-selectable in the future.
+be 32 bits. I hope to add the ability to change the integer size in the future.
 
 <a name="FutureEnhancements"></a>
 ## Future Enhancements
