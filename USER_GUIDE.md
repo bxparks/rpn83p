@@ -463,7 +463,7 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (back), and `MATH`
 - `ROOT` > `NUM`
     - ![NUM MenuStrip 1](docs/rpn83p-screenshot-menu-root-num-1.png)
     - ![NUM MenuStrip 2](docs/rpn83p-screenshot-menu-root-num-2.png)
-    - ![NUM MenuStrip 2](docs/rpn83p-screenshot-menu-root-num-3.png)
+    - ![NUM MenuStrip 3](docs/rpn83p-screenshot-menu-root-num-3.png)
     - `%`: `X` percent of `Y`, leaving `Y` unchanged
     - `%CH`: percent change from `Y` to `X`, leaving `Y` unchanged
     - `GCD`: greatest common divisor of `X` and `Y`
@@ -516,7 +516,7 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (back), and `MATH`
     - `DEG`: use degrees for trigonometric functions
 - `ROOT` > `HYP`
     - ![HYP MenuStrip 1](docs/rpn83p-screenshot-menu-root-hyp-1.png)
-    - ![HYP MenuStrip 1](docs/rpn83p-screenshot-menu-root-hyp-2.png)
+    - ![HYP MenuStrip 2](docs/rpn83p-screenshot-menu-root-hyp-2.png)
     - `SINH`: hyperbolic `sin()`
     - `COSH`: hyperbolic `cos()`
     - `TANH`: hyperbolic `tan()`
