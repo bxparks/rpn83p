@@ -22,13 +22,13 @@ RPN calculator app for the TI-83 Plus and TI-84 Plus inspired by the HP-42S.
         - [Menu Buttons](#MenuButtons)
         - [Menu Indicator Arrows](#MenuIndicatorArrows)
     - [Built In Help](#BuiltInHelp)
+- [Functions](#Functions)
+    - [Direct Functions](#DirectFunctions)
+    - [Menu Functions](#MenuFunctions)
 - [Advanced Usage](#AdvancedUsage)
     - [Auto-start](#AutoStart)
     - [Floating Point Display Modes](#FloatingPointDisplayModes)
     - [Trigonometric Modes](#TrigModes)
-- [Functions](#Functions)
-    - [Direct Functions](#DirectFunctions)
-    - [Menu Functions](#MenuFunctions)
     - [Base Functions](#BaseFunctions)
         - [Base Modes](#BaseModes)
         - [Base Rendering](#BaseRendering)
@@ -415,143 +415,11 @@ activates the Help pages:
 Hopefully they are useful for remembering the mapping of the buttons whose TI-OS
 keyboard labels do not match the functionality assigned by the RPN83P program.
 
-<a name="AdvancedUsage"></a>
-## Advanced Usage
-
-<a name="AutoStart"></a>
-### Auto-start
-
-For convenience, you may choose to auto-start the RPN83P application as soon as
-you turn on the calculator.
-
-- Download the
-  [Start-Up](https://education.ti.com/en/software/details/en/77ec7de5d3694f4595c262fdfc2acc4b/83startupcustomization) application from TI
-- Press `APPS`, then scroll down to `Start-up`
-- Configure:
-    - Display: `ON`
-    - Type: `APP`
-    - Name: `RPN83P` (hit `ENTER` and scroll down to select this)
-- Select `FINISH` and hit `ENTER`
-
-The LCD screen should look like this before hitting `FINISH`:
-
-> ![Start-up app screenshot](docs/start-up-app-screenshot.png)
-
-Turn off the calculator and turn it back on. It should directly go into the
-RPN83P application.
-
-<a name="FloatingPointDisplayModes"></a>
-### Floating Point Display Modes
-
-The RPN83P app provides access to the same floating point display modes as the
-original TI-OS. For reference, here are the options available in the TI-OS when
-the `MODE` button is pressed:
-
-> ![TI-OS Display Modes](docs/tios-display-modes.png)
-
-In RPN83P, the `MODE` button presents a menu bar instead:
-
-> ![RPN83P Display Modes](docs/rpn83p-display-modes.png)
-
-**HP-42S Compatibility Note**: The HP-42S uses the `DISP` button to access this
-functionality. For the RPN83P, it seemed to make more sense to the follow the
-TI-OS convention which places the floating display modes under the `MODE`
-button.
-
-The `NORMAL` mode in TI-OS is named `FIX` in RPN83P following the lead of the
-HP-42S. It is also short enough to fit into the menu label nicely, and has the
-same number of letters as the `SCI` and `ENG` modes which helps with the
-top-line indicator.
-
-Suppose the RPN stack has the following numbers:
-
-> ![RPN83P Display Modes](docs/rpn83p-display-mode-start.png)
-
-Pressing the `FIX` menu item shows a `FIX _ _` prompt for the number of digits
-after the decimal point, like this:
-
-> ![RPN83P FIX Prompt](docs/rpn83p-display-mode-fix.png)
-
-Type `4` then `ENTER`. The display changes to this:
-
-> ![RPN83P FIX 4](docs/rpn83p-display-mode-fix-4.png)
-
-Notice that the floating point mode indicator at the top of the screen now shows
-`FIX(4)`.
-
-Try changing to scientific notation mode, by pressing: `SCI` `4` `ENTER`, to get this:
-
-> ![RPN83P SCI 4](docs/rpn83p-display-mode-sci-4.png)
-
-The top-line indicator shows `SCI(4)`.
-
-You can change to engineering notation mode, by pressing: `ENG` `4` `ENTER`, to
-get this:
-
-> ![RPN83P ENG 4](docs/rpn83p-display-mode-eng-4.png)
-
-The top-line indicator shows `ENG(4)`.
-
-To set the number of digits after the decimal point to be dynamic (i.e. the
-equivalent of `FLOAT` option in the TI-OS `MODE` menu), type in a number greater
-than 9 when prompted for `FIX _ _`, `SCI _ _`, or `ENG _ _`. Usually, I use
-`99`. For example, to use scientific notation mode with a variable number of
-fractional digits, press `SCI` `99`:
-
-> ![RPN83P SCI 99 Prompt](docs/rpn83p-display-mode-sci-99.png)
-
-Then hit `ENTER` to get this:
-
-> ![RPN83P SCI 99](docs/rpn83p-display-mode-sci-dynamic.png)
-
-Notice that the top-line floating point indicator now shows `SCI(-)`.
-
-Finally, type `FIX` `99` `ENTER` to go back to the default floating point mode.
-
-> ![RPN83P FIX 99](docs/rpn83p-display-mode-fix-99.png)
-
-**HP-42S Compatibility Note**: The HP-42S automatically performs an `ENTER`
-after 2 digits are entered at the prompt, for example `FIX` `99`. The RPN83P
-always requires the `ENTER` because I think this is a bit more consistent, and
-allows the user to edit and fix any typos. But I think I would be willing to
-emulate the HP-42S better if enough people think the HP-42S way is better. Maybe
-I could add a configuration option.
-
-**HP-42S Compatibility Note**: The RPN83P uses the underlying TI-OS floating
-point display modes, so it cannot emulate the HP-42S exactly. In particular, the
-`ALL` display mode of the HP-42S is not directly available, but it is basically
-equivalent to `FIX 99` on the RPN83P.
-
-<a name="TrigModes"></a>
-### Trigonometric Modes
-
-Just like the TI-OS, the RPN83P uses the radian mode by default when calculating
-trigonometric functions. The top status line shows `RAD`:
-
-> ![RPN83P FIX 99](docs/rpn83p-trig-mode-rad-1.png)
-
-If we calculate `sin(pi/6)` in radian mode, by typing `PI` `6` `/` `SIN`, we get
-`0.5` as expected.
-
-Press the `DEG` menu button to change to degree mode. The top status line shows
-`DEG`:
-
-> ![RPN83P FIX 99](docs/rpn83p-trig-mode-deg-1.png)
-
-We can calculate `sin(30deg)` by typing: `30` `SIN` to get `0.5`.
-
-**Warning**: The polar to rectangular conversion functions (`R>P` and `P>R`) are
-also affected by the current Trig Mode setting.
-
-**HP-42S Compatibility Note**: The RPN83P does not offer the
-[gradian](https://en.wikipedia.org/wiki/Gradian) mode `GRAD` because the
-underlying TI-OS does not support the gradian mode directly. It is probably
-possible to add this feature by intercepting the trig functions and performing
-some pre and post unit conversions. But I'm not sure if it's worth the effort
-since gradian trig mode is not commonly used.
-
 <a name="Functions"></a>
 ## Functions
+
+This section contains a description of all functions implemented by the RPN83P
+app, accessed through buttons or through the menu system.
 
 <a name="DirectFunctions"></a>
 ### Direct Functions
@@ -702,6 +570,141 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (back), and `MATH`
     - `XOR`: `X` `bit-xor` `Y`
     - `NOT`: one's complement of `X`
     - `NEG`: two's complement of `X`
+
+<a name="AdvancedUsage"></a>
+## Advanced Usage
+
+<a name="AutoStart"></a>
+### Auto-start
+
+For convenience, you may choose to auto-start the RPN83P application as soon as
+you turn on the calculator.
+
+- Download the
+  [Start-Up](https://education.ti.com/en/software/details/en/77ec7de5d3694f4595c262fdfc2acc4b/83startupcustomization) application from TI
+- Press `APPS`, then scroll down to `Start-up`
+- Configure:
+    - Display: `ON`
+    - Type: `APP`
+    - Name: `RPN83P` (hit `ENTER` and scroll down to select this)
+- Select `FINISH` and hit `ENTER`
+
+The LCD screen should look like this before hitting `FINISH`:
+
+> ![Start-up app screenshot](docs/start-up-app-screenshot.png)
+
+Turn off the calculator and turn it back on. It should directly go into the
+RPN83P application.
+
+<a name="FloatingPointDisplayModes"></a>
+### Floating Point Display Modes
+
+The RPN83P app provides access to the same floating point display modes as the
+original TI-OS. For reference, here are the options available in the TI-OS when
+the `MODE` button is pressed:
+
+> ![TI-OS Display Modes](docs/tios-display-modes.png)
+
+In RPN83P, the `MODE` button presents a menu bar instead:
+
+> ![RPN83P Display Modes](docs/rpn83p-display-modes.png)
+
+**HP-42S Compatibility Note**: The HP-42S uses the `DISP` button to access this
+functionality. For the RPN83P, it seemed to make more sense to the follow the
+TI-OS convention which places the floating display modes under the `MODE`
+button.
+
+The `NORMAL` mode in TI-OS is named `FIX` in RPN83P following the lead of the
+HP-42S. It is also short enough to fit into the menu label nicely, and has the
+same number of letters as the `SCI` and `ENG` modes which helps with the
+top-line indicator.
+
+Suppose the RPN stack has the following numbers:
+
+> ![RPN83P Display Modes](docs/rpn83p-display-mode-start.png)
+
+Pressing the `FIX` menu item shows a `FIX _ _` prompt for the number of digits
+after the decimal point, like this:
+
+> ![RPN83P FIX Prompt](docs/rpn83p-display-mode-fix.png)
+
+Type `4` then `ENTER`. The display changes to this:
+
+> ![RPN83P FIX 4](docs/rpn83p-display-mode-fix-4.png)
+
+Notice that the floating point mode indicator at the top of the screen now shows
+`FIX(4)`.
+
+Try changing to scientific notation mode, by pressing: `SCI` `4` `ENTER`, to get this:
+
+> ![RPN83P SCI 4](docs/rpn83p-display-mode-sci-4.png)
+
+The top-line indicator shows `SCI(4)`.
+
+You can change to engineering notation mode, by pressing: `ENG` `4` `ENTER`, to
+get this:
+
+> ![RPN83P ENG 4](docs/rpn83p-display-mode-eng-4.png)
+
+The top-line indicator shows `ENG(4)`.
+
+To set the number of digits after the decimal point to be dynamic (i.e. the
+equivalent of `FLOAT` option in the TI-OS `MODE` menu), type in a number greater
+than 9 when prompted for `FIX _ _`, `SCI _ _`, or `ENG _ _`. Usually, I use
+`99`. For example, to use scientific notation mode with a variable number of
+fractional digits, press `SCI` `99`:
+
+> ![RPN83P SCI 99 Prompt](docs/rpn83p-display-mode-sci-99.png)
+
+Then hit `ENTER` to get this:
+
+> ![RPN83P SCI 99](docs/rpn83p-display-mode-sci-dynamic.png)
+
+Notice that the top-line floating point indicator now shows `SCI(-)`.
+
+Finally, type `FIX` `99` `ENTER` to go back to the default floating point mode.
+
+> ![RPN83P FIX 99](docs/rpn83p-display-mode-fix-99.png)
+
+**HP-42S Compatibility Note**: The HP-42S automatically performs an `ENTER`
+after 2 digits are entered at the prompt, for example `FIX` `99`. The RPN83P
+always requires the `ENTER` because I think this is a bit more consistent, and
+allows the user to edit and fix any typos. But I think I would be willing to
+emulate the HP-42S better if enough people think the HP-42S way is better. Maybe
+I could add a configuration option.
+
+**HP-42S Compatibility Note**: The RPN83P uses the underlying TI-OS floating
+point display modes, so it cannot emulate the HP-42S exactly. In particular, the
+`ALL` display mode of the HP-42S is not directly available, but it is basically
+equivalent to `FIX 99` on the RPN83P.
+
+<a name="TrigModes"></a>
+### Trigonometric Modes
+
+Just like the TI-OS, the RPN83P uses the radian mode by default when calculating
+trigonometric functions. The top status line shows `RAD`:
+
+> ![RPN83P FIX 99](docs/rpn83p-trig-mode-rad-1.png)
+
+If we calculate `sin(pi/6)` in radian mode, by typing `PI` `6` `/` `SIN`, we get
+`0.5` as expected.
+
+Press the `DEG` menu button to change to degree mode. The top status line shows
+`DEG`:
+
+> ![RPN83P FIX 99](docs/rpn83p-trig-mode-deg-1.png)
+
+We can calculate `sin(30deg)` by typing: `30` `SIN` to get `0.5`.
+
+**Warning**: The polar to rectangular conversion functions (`R>P` and `P>R`) are
+also affected by the current Trig Mode setting.
+
+**HP-42S Compatibility Note**: The RPN83P does not offer the
+[gradian](https://en.wikipedia.org/wiki/Gradian) mode `GRAD` because the
+underlying TI-OS does not support the gradian mode directly. It is probably
+possible to add this feature by intercepting the trig functions and performing
+some pre and post unit conversions. But I'm not sure if it's worth the effort
+since gradian trig mode is not commonly used.
 
 <a name="BaseFunctions"></a>
 ### BASE Functions
