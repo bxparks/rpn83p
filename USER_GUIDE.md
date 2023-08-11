@@ -477,7 +477,7 @@ Notice that the top-line floating point indicator now shows `SCI(-)`.
 
 Finally, type `FIX` `99` `ENTER` to go back to the default floating point mode.
 
-> ![RPN83P FIX 99](docs/rpn83p-display-mode-sci-99.png)
+> ![RPN83P FIX 99](docs/rpn83p-display-mode-fix-99.png)
 
 **HP-42S Compatibility Note**: The HP-42S automatically performs an `ENTER`
 after 2 digits are entered at the prompt, for example `FIX` `99`. The RPN83P
