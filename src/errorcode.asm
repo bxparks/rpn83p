@@ -7,12 +7,9 @@
 ; Functions and strings related to error codes.
 ;-----------------------------------------------------------------------------
 
-errorCodeOk equ 0
-; error codes added by RPN83P
-errorCodeNotYet equ 64 ; NOT YET
-errorCodeUnexpected equ 65 ; UNEXPECTED; any code >= errorCodeCount
-; total number of error codes
-errorCodeCount equ 66 ; total number of error codes
+errorCodeOk equ 0 ; Error code that indicates no error
+errorCodeNotYet equ 64 ; Custom error code to indicate "not yet implemented"
+errorCodeCount equ 65 ; total number of error codes
 
 ; Function: Initialize errorCode and errorCodeDisplayed to 0.
 initErrorCode:
@@ -29,9 +26,6 @@ initErrorCode:
 ; Output: A: handlerCode
 setHandlerCodeToSystemCode:
     res 7, a ; reset the GOTO flag
-    cp errorCodeCount
-    jr c, setHandlerCode
-    ld a, errorCodeUnexpected
     ; [[fallthrough]]
 
 ; Description: Set `handlerCode` to register A.
@@ -55,7 +49,14 @@ setErrorCode:
 ; Input: A: error code
 ; Output: HL: pointer to a C string
 ; Destroys: DE, HL
+; Preserves: A
 getErrorString:
+    cp errorCodeCount
+    jr c, getErrorStringContinue
+    ; Set to "Unknown" if code is beyond the error string table
+    ld hl, errorStrUnknown
+    ret
+getErrorStringContinue:
     ld hl, errorStrings
     jp getString
 
@@ -82,11 +83,6 @@ getErrorString:
 ; string is not known. If the user sends a reproducible bug report, maybe we
 ; can reverse engineer the condition that triggers that particular error code
 ; and create a human-readable string for it.
-; - errorStrUnexpected (65): This error message means that the error code
-; received from the exception handler was greater than the highest error code
-; supported by this module. Even though there are 128 possible error codes, we
-; expect that the TI-OS will use only the bottom 32 or 64 codes, so the table
-; below goes up to only 65.
 errorStrings:
     .dw errorStrOk              ; 0, hopefully TI-OS uses 0 as "success"
     .dw errorStrOverflow        ; 1
@@ -152,8 +148,7 @@ errorStrings:
     .dw errorStrUnknown         ; 61
     .dw errorStrUnknown         ; 62
     .dw errorStrUnknown         ; 63, hopefully the last TI-OS error code
-    .dw errorStrNotYet          ; 64, not yet implemented
-    .dw errorStrUnexpected      ; 65, unexpected error code
+    .dw errorStrNotYet          ; 64, Custom error code: not yet implemented
 
 ; The C strings for each error code. In alphabetical order, as listed in the TI
 ; 83 Plus SDK docs.
@@ -207,5 +202,3 @@ errorStrUnknown:
     .db "Err: UNKNOWN", 0 ; not defined in this module
 errorStrNotYet:
     .db "Err: NOT YET", 0 ; not implemented yet
-errorStrUnexpected:
-    .db "Err: UNEXPECTED", 0 ; code above $40
