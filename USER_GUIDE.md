@@ -219,7 +219,7 @@ After installing `rpn83p.8xk` file, go to the calculator:
 
 > ![TIOS APPS](docs/tios-apps.png)
 
-The RPN83P starts directly into the calculator mode, no fancy slash screen. You
+The RPN83P starts directly into the calculator mode, no fancy splash screen. You
 should see a screen that looks like:
 
 > ![RPN83P screenshot 1](docs/rpn83p-screenshot-initial.png)
