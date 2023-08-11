@@ -70,7 +70,7 @@ Here are some of the high level features:
     - `LOG`, `10^X`, `LN`, `e^X`
     - constants: `pi` and `e`
 - additional menu functions:
-    - `%`, `%CH`, `GCD`, `LCM`, `PRIM` (is prime?)
+    - `%`, `%CH`, `GCD`, `LCM`, `PRIM` (is prime)
     - `ABS`, `SIGN`, `MOD`, `MIN`, `MAX`
     - `IP` (integer part), `FP` (fractional part), `FLR` (floor), `CEIL`
       (ceiling), `NEAR` (nearest integer)
