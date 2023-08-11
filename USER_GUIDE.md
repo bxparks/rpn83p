@@ -330,8 +330,9 @@ anywhere in the menu hierarchy. The TI-83 and TI-84 calculators do not have a
 button was taken over to act as the `HOME` key. This choice was not completely
 random:
 
-1. The `HOME` button on the TI-89 Titanium is located exactly where the `MATH`
-is.
+1. The `HOME` button on the [TI-89 series
+calculator](https://en.wikipedia.org/wiki/TI-89_series) is located exactly where
+the `MATH` is.
 2. The RPN83P app does not need the `MATH` button as implemented by the TI-OS,
 which opens a dialog box of mathematical functions. In the RPN83P app, that
 functionality is already provided by the menu system.
