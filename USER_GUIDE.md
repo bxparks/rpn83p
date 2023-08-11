@@ -2,13 +2,16 @@
 
 RPN calculator app for the TI-83 Plus and TI-84 Plus inspired by the HP-42S.
 
-**Version**: 0.0 (2023-08-10)
+**Version**: 0.0 (2023-08-11)
 
 **Project Home**: https://github.com/bxparks/rpn83p
 
 ## Table of Contents
 
 - [Introduction](#Introduction)
+- [Why?](#Why)
+    - [Short Answer](#ShortAnswer)
+    - [Long Answer](#LongAnswer)
 - [Installation](#Installation)
     - [Uploading](#Uploading)
     - [Starting](#Starting)
@@ -93,6 +96,97 @@ Here are some missing features which may be added in the future:
 - complex numbers
 - vectors and matrices
 - keystroke programming
+
+<a name="Why"></a>
+## Why?
+
+### Short Answer
+
+This was a fun project that helped me learn about the Z80-based TI calculators,
+and allowed me to remember how to program in Z80 assembly language. As a bonus,
+I get an app that converts a TI calculator into an RPN calculator that I can
+actually use.
+
+### Long Answer
+
+When I was in grad school, I used the HP-42S extensively. After graduating, I
+sold the calculator because I needed the money. I usually don't regret selling
+old stuff in my possession, but that sale is an exception. The old HP-42S
+calculators now sell for $200-$300 on eBay, which is a sum of money that I
+cannot justify spending for something that is not totally necessary.
+
+I finished my formal school education before graphing calculators became
+popular. I had not owned a graphing calculator until a few months ago, so I am
+about 20-25 years late to the party. I did not know that the early TI graphing
+calculators were using the Z80 processor, and more importantly, I did not know
+that they were programmable in assembly language.
+
+The going price for old Z80-based TI calculators seemed entirely reasonable (as
+low as $20-30 for working models). I also learned about the 68000-based TI
+calculators (e.g. TI-89 Titanium, TI-92 Plus, TI Voyage 200). They were more
+expensive than the Z80 calculators, but still within a reasonable price range.
+At least compared to old HP calculators which seemed to be unreasonably high.
+But maybe that is an indication of their popularity and rarity. When I learned
+that these old TI calculators were programmable in assembly language, I decided
+that I needed to hack on them. That's how I went from owning zero TI calculators
+to owning 5 TI calculators in a few months.
+
+In addition to their programmability, the old TI calculators are appealing to me
+for their use of standard AA or AAA batteries, instead of the custom Li-ion
+batteries that most electronic devices seem to use these days. Li-ion batteries
+have a finite lifetime (2-5 years, depending on their use). Replacement Li-ion
+batteries from the original manufacturers tend to be outrageously priced, but
+OEM batteries from third parties tend to be substandard clones with chip
+firmware that lie about their capacity and lifetimes to the main device. When
+these newer devices become obsolete, and their batteries become no longer
+available, these calculators will become useless e-waste. Meanwhile, I can
+insert my standard sized rechargeable NiMH batteries into 20 or 40 year old
+calculators using standard batteries, and they work perfectly fine.
+
+As I learned more about the old TI calculators, I realized that I could probably
+create an app that could turn them into a passable, maybe even useful, RPN
+calculator. Why RPN? Because I simply cannot use a calculator in algebraic mode.
+The debate between the RPN mode and the algebraic mode has probably been going
+on for 40-50 years, so I probably cannot add more. Personally, I use algebraic
+notation for doing math equations on paper or writing high-level computer
+programs. But when I do numerical *computation* on a hand-held device, I cannot
+use the algebraic mode. This is especially true when I try to use the more
+advanced functions on a TI calculator. They seem so inconsistent and randomly
+organized. (For example, I don't understand why the `nPr` and `nCr` functions
+implemented as *infix* operators, placed between 2 numbers, instead of as normal
+functions `P(n,r)` and `C(n,r)` like other 2-argument functions. Since their
+precedence level with respect to the other infix operators (`+`, `*`, `^`, etc)
+is not obvious, I will always have to add parenthesis around them anyway, which
+seems to defeat the apparent advantage of them being infix operators.)
+
+The RPN83P is inspired by the HP-42S. It is the RPN calculator that I know best.
+It also has the advantage of having the
+[Free42S](https://thomasokken.com/free42/) app (Android, iOS, Windows, MacOS,
+Linux) which faithfully reproduces every feature of the HP-42S. This is
+essential because I don't own an actual HP-42S anymore. The RPN83P app cannot be
+a clone of the HP-42S for several reasons:
+
+- A quick survey of the keyboard layout of the TI-83 and TI-84 calculators shows
+  that the button layout and labels are different. As an obvious example, the TI
+  calculators have 5 menu buttons below the LCD screen, but the HP-42S has 6
+  buttons.
+- There may be people who claim that the HP-42S ["was the peak of perfection for
+  the classic HP
+  calcs"](https://www.hpmuseum.org/cgi-sys/cgiwrap/hpmuseum/archv017.cgi?read=118462),
+  but there are features of the HP-42S that can be improved on. For example, the
+  HP-42S has a 2-line LCD display which is better than the single-line display
+  of earlier HP calculators. The TI-83 and TI-84 LCD screens are big enough to
+  show the entire RPN stack as well as the hierarchical menu bar all the time.
+- The RPN83P does not implement its own floating point routines, but uses the
+  ones provided by the underlying TI-OS. There are essential differences between
+  the two systems. For example, the HP-42S supports exponents up to +/-499, but
+  the TI-OS supports exponents only to +/-99.
+
+The purpose of the RPN83P project was to help me learn Z80 programming on a TI
+calculator, and to convert a TI calculator into an RPN calculator that I can
+actually use. If other people find it useful, and if it helps reduce electronic
+waste of old TI calculators, then I will have exceeded my expectations of this
+project.
 
 <a name="Installation"></a>
 ## Installation
