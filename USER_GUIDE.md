@@ -495,23 +495,19 @@ equivalent to `FIX 99` on the RPN83P.
 ### Trigonometric Modes
 
 Just like the TI-OS, the RPN83P uses the radian mode by default when calculating
-trigonometric functions. The top status line shows `RAD`. Let's calculate
-`sin(pi/6)` in radian mode, by typing, `PI` `6` `/` `SIN`:
+trigonometric functions. The top status line shows `RAD`:
 
 > ![RPN83P FIX 99](docs/rpn83p-trig-mode-rad-1.png)
 
-> ![RPN83P FIX 99](docs/rpn83p-trig-mode-rad-2.png)
-
-> ![RPN83P FIX 99](docs/rpn83p-trig-mode-rad-3.png)
-
-Giving us `0.5` as expected.
+If we calculate `sin(pi/6)` in radian mode, by typing `PI` `6` `/` `SIN`, we get
+`0.5` as expected.
 
 Press the `DEG` menu button to change to degree mode. The top status line shows
-`DEG`. We can calculator `sin(30deg)` by typing: `30` `SIN`:
+`DEG`:
 
 > ![RPN83P FIX 99](docs/rpn83p-trig-mode-deg-1.png)
 
-> ![RPN83P FIX 99](docs/rpn83p-trig-mode-deg-2.png)
+We can calculate `sin(30deg)` by typing: `30` `SIN` to get `0.5`.
 
 **Warning**: The polar to rectangular conversion functions (`R>P` and `P>R`) are
 also affected by the current Trig Mode setting.
