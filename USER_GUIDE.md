@@ -2,7 +2,7 @@
 
 RPN calculator app for the TI-83 Plus and TI-84 Plus inspired by the HP-42S.
 
-**Version**: 0.0 (2023-08-07)
+**Version**: 0.0 (2023-08-10)
 
 **Project Home**: https://github.com/bxparks/rpn83p
 
@@ -21,6 +21,7 @@ RPN calculator app for the TI-83 Plus and TI-84 Plus inspired by the HP-42S.
         - [Menu Hierarchy](#MenuHierarchy)
         - [Menu Buttons](#MenuButtons)
         - [Menu Indicator Arrows](#MenuIndicatorArrows)
+    - [Built In Help](#BuiltInHelp)
 - [Advanced Usage](#AdvancedUsage)
     - [Auto-start](#AutoStart)
     - [Floating Point Display Modes](#FloatingPointDisplayModes)
@@ -144,8 +145,8 @@ RPN83P does not use the newer RPN system used by the HP-48SX.)
 
 It is beyond the scope of this document to explain how to use an RPN calculator.
 One way to learn is to download the [Free42](https://thomasokken.com/free42/)
-emulator for the HP-42S, available for Android, iOS, Windows, MacOS, and Linux),
-and then download and read the [HP-42S Owner's
+emulator for the HP-42S (available for Android, iOS, Windows, MacOS, and Linux)
+and then download the [HP-42S Owner's
 Manual](https://literature.hpcalc.org/items/929).
 
 <a name="ScreenAreas"></a>
@@ -156,7 +157,7 @@ Here are the various UI elements on the LCD screen used by the RPN83P app:
 > ![RPN83P screen regions](docs/rpn83p-screenshot-regions-annotated.png)
 
 The LCD screen is 96 pixels (width) by 64 pixels (height). That is large enough
-to display 8 rows of numbers and letters. They are divided in the following:
+to display 8 rows of numbers and letters. They are divided into the following:
 
 - 1: status line
 - 2: (currently unused)
@@ -195,11 +196,12 @@ does.
 When the cursor (`_`) is shown, indicating the **edit** mode, the `DEL` key acts
 like the *backspace* key on HP calculators. The `DEL` key always removes the
 right-most digit, because the cursor is always at the end of the input string of
-digits.
+digits. When the cursor is *not* shown, the `DEL` key also acts like the `CLEAR`
+key (see below).
 
 The `CLEAR` key clears the entire input buffer, leaving just a cursor at the end
-of an empty string. An empty string will be interpreted as a `0`. Note that when
-the cursor is *not* shown, the `DEL` key also acts like the `CLEAR` key.
+of an empty string. An empty string will be interpreted as a `0` if the `ENTER`
+key or a function key is pressed.
 
 The comma `,` button is not used in the RPN system, so it has been mapped to
 behave exactly like the `2ND` `EE` button. This allows scientific notation
@@ -384,6 +386,26 @@ functionality") can be used to go back to the parent menu group:
 
 > ![Menu Arrows 1](docs/rpn83p-screenshot-menu-arrows-1.png)
 
+<a name="BuiltInHelp"></a>
+## Built In Help
+
+Pressing the `HELP` menu button at the root menu:
+
+> ![ROOT MenuStrip 1](docs/rpn83p-screenshot-menu-root-1.png)
+
+activates the Help pages:
+
+> ![Help Page 1](docs/rpn83p-help-page-1.png)
+
+> ![Help Page 2](docs/rpn83p-help-page-2.png)
+
+> ![Help Page 3](docs/rpn83p-help-page-3.png)
+
+> ![Help Page 4](docs/rpn83p-help-page-4.png)
+
+Hopefully they are useful for remembering the mapping of the buttons whose TI-OS
+keyboard labels do not match the functionality assigned by the RPN83P program.
+
 <a name="AdvancedUsage"></a>
 ## Advanced Usage
 
@@ -548,8 +570,8 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (back), and `MATH`
 (home) keys to navigate the menu hierarchy.
 
 - `ROOT` (implicit)
-    - ![`ROOT` MenuStrip 1](docs/rpn83p-screenshot-menu-root-1.png)
-    - ![`ROOT` MenuStrip 2](docs/rpn83p-screenshot-menu-root-2.png)
+    - ![ROOT MenuStrip 1](docs/rpn83p-screenshot-menu-root-1.png)
+    - ![ROOT MenuStrip 2](docs/rpn83p-screenshot-menu-root-2.png)
 - `ROOT` > `MATH`
     - ![MATH MenuStrip 1](docs/rpn83p-screenshot-menu-root-math-1.png)
     - ![MATH MenuStrip 2](docs/rpn83p-screenshot-menu-root-math-2.png)
