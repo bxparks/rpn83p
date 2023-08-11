@@ -160,7 +160,7 @@ seems to defeat the apparent advantage of them being infix operators.)
 
 The RPN83P is inspired by the HP-42S. It is the RPN calculator that I know best.
 It also has the advantage of having the
-[Free42S](https://thomasokken.com/free42/) app (Android, iOS, Windows, MacOS,
+[Free42](https://thomasokken.com/free42/) app (Android, iOS, Windows, MacOS,
 Linux) which faithfully reproduces every feature of the HP-42S. This is
 essential because I don't own an actual HP-42S anymore. The RPN83P app cannot be
 a clone of the HP-42S for several reasons:
@@ -175,7 +175,7 @@ a clone of the HP-42S for several reasons:
   but there are features of the HP-42S that can be improved on. For example, the
   HP-42S has a 2-line LCD display which is better than the single-line display
   of earlier HP calculators. The TI-83 and TI-84 LCD screens are big enough to
-  show the entire RPN stack as well as the hierarchical menu bar all the time.
+  show the entire RPN stack as well as the hierarchical menu bar at all times.
 - The RPN83P does not implement its own floating point routines, but uses the
   ones provided by the underlying TI-OS. There are essential differences between
   the two systems. For example, the HP-42S supports exponents up to +/-499, but
@@ -217,7 +217,10 @@ After installing `rpn83p.8xk` file, go to the calculator:
 - Scroll down to the `RPN83P` entry
 - Press the `ENTER` key
 
-You should see a screen that looks like:
+> ![TIOS APPS](docs/tios-apps.png)
+
+The RPN83P starts directly into the calculator mode, no fancy slash screen. You
+should see a screen that looks like:
 
 > ![RPN83P screenshot 1](docs/rpn83p-screenshot-initial.png)
 
