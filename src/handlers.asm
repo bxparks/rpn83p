@@ -1039,6 +1039,37 @@ handleKeyMode:
     jp mGroupHandler
 
 ;-----------------------------------------------------------------------------
+; User registers, accessed through RCL nn and STO nn.
+;-----------------------------------------------------------------------------
+
+handleKeySto:
+    call closeInputBuf
+    ld hl, handleKeyStoCallback
+    ld (argHandler), hl
+    ld hl, msgStoName
+    jp enableArgMode
+handleKeyStoCallback:
+    ld a, (argValue)
+    ; TODO: finish implementation
+    ret
+
+handleKeyRcl:
+    call closeInputBuf
+    ld hl, handleKeyRclCallback
+    ld (argHandler), hl
+    ld hl, msgRclName
+    jp enableArgMode
+handleKeyRclCallback:
+    ld a, (argValue)
+    ; TODO: finish implementation
+    ret
+
+msgStoName:
+    .db "STO", 0
+msgRclName:
+    .db "RCL", 0
+
+;-----------------------------------------------------------------------------
 ; Common code fragments, to save space.
 ;-----------------------------------------------------------------------------
 

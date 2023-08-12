@@ -10,7 +10,7 @@
 ; search can be used instead of a linear search.
 ;-----------------------------------------------------------------------------
 
-keyCodeHandlerTableSize equ 56
+keyCodeHandlerTableSize equ 58
 kOnExit equ 0 ; ON key generates 00 as the key code
 
 keyCodeHandlerTable:
@@ -196,6 +196,12 @@ keyCodeHandlerTable:
     .dw handleKeyACos
     .db kATan ; TAN^{-1}
     .dw handleKeyATan
+
+    ; STO and RCL registers
+    .db kStore
+    .dw handleKeySto
+    .db kRecall
+    .dw handleKeyRcl
 
 ;-----------------------------------------------------------------------------
 
