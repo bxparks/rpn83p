@@ -473,3 +473,43 @@ msgRegsNotFound:
 
 regsName:
     .db ListObj, tVarLst, "REGS", 0
+
+;-----------------------------------------------------------------------------
+
+; Description: Store OP1 into REGS[NN].
+; Input:
+;   - A: register index, one-based
+;   - OP1: float value
+; Output:
+;   - REGS[NN] = OP1
+; Destroys: all
+stoNN:
+    push af
+    bcall(_PushRealO1)
+    call setRegsName
+    bcall(_FindSym)
+    push de
+    bcall(_PopRealO1)
+    pop de
+    pop af
+    ld l, a
+    ld h, 0
+    bcall(_PutToL)
+    ret
+
+; Description: Recall REGS[NN] into OP1.
+; Input:
+;   - A: register index, one-based
+;   - REGS
+; Output:
+;   - OP1: float value
+; Destroys: all
+rclNN:
+    push af
+    call setRegsName
+    bcall(_FindSym)
+    pop af
+    ld l, a
+    ld h, 0
+    bcall(_GetLToOP1)
+    ret

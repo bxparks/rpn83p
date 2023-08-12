@@ -1049,9 +1049,16 @@ handleKeySto:
     ld hl, msgStoName
     jp enableArgMode
 handleKeyStoCallback:
+    call rclX
     ld a, (argValue)
-    ; TODO: finish implementation
-    ret
+    ; check if command argument too large
+    cp regsSize
+    jr c, handleKeyStoCallbackContinue
+    ld a, errorCodeDimension
+    jp setHandlerCode
+handleKeyStoCallbackContinue:
+    inc a ; change from 0-based to 1-based
+    jp stoNN
 
 handleKeyRcl:
     call closeInputBuf
@@ -1061,8 +1068,16 @@ handleKeyRcl:
     jp enableArgMode
 handleKeyRclCallback:
     ld a, (argValue)
-    ; TODO: finish implementation
-    ret
+    ; check if command argument too large
+    cp regsSize
+    jr c, handleKeyRclCallbackContinue
+    ld a, errorCodeDimension
+    jp setHandlerCode
+handleKeyRclCallbackContinue:
+    inc a ; change from 0-based to 1-based
+    call rclNN
+    call liftStackNonEmpty
+    jp stoX
 
 msgStoName:
     .db "STO", 0
