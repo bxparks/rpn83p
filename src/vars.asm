@@ -395,3 +395,81 @@ exchangeXYStack:
     bcall(_OP2ToOP1)
     call stoY
     ret
+
+;-----------------------------------------------------------------------------
+; User registers in REGS list.
+;-----------------------------------------------------------------------------
+
+regsSize equ 25
+
+; Description: Initialize the REGS list variable which is used for user
+; registers 00 to 24.
+; Input: none
+; Output:
+;   - REGS deleted if not a real list
+;   - REGS deleted if dim(REGS) != 25
+;   - REGS created if it doesn't exist
+initRegs:
+    call setRegsName
+    bcall(_FindSym)
+    jr c, initRegsCreate ; if CF=1: not found
+initRegsCheckType:
+    and $1F
+    cp ListObj
+    jr nz, initRegsDelete
+initRegsCheckArchive:
+    ld a, b
+    or a
+    jr nz, initRegsDelete
+initRegsCheckSize:
+    ex de, hl ; hl = pointer to data structure
+    ld e, (hl) ; get the LSB of the number elements
+    inc hl ; move to MSB
+    ld d, (hl) ; DE = number elements in REGS
+    ex de, hl
+    ld de, regsSize
+    bcall(_CpHLDE) ; if dim(REGS) < 25: CF=1
+    ret z ; REGS is Real, and sizeof 25, all ok
+initRegsWrongSize:
+    ; wrong size, so delete and recreate
+    call setRegsName
+    bcall(_FindSym)
+initRegsDelete:
+    ; Delete and recreate
+    bcall(_DelVarArc)
+    ; [[fallthrough]
+initRegsCreate:
+    call setRegsName
+    ld hl, regsSize
+    bcall(_CreateRList) ; DE points to data area
+    inc de
+    inc de ; skip u16 holding the list size
+initRegsClear:
+    ; Set all elements to 0.0
+    ld b, regsSize
+    bcall(_OP1Set0)
+initRegsClearLoop:
+    ld hl, OP1
+    push bc
+    ld bc, 9
+    ldir
+    pop bc
+    djnz initRegsClearLoop
+    ret
+
+setRegsName:
+    ld hl, regsName ; HL = "REGS"
+    bcall(_Mov9ToOP1)
+    ret
+
+#ifdef DEBUG
+msgRegsCreated:
+    .db "REGS Created", 0
+msgRegsFound:
+    .db "REGS Found", 0
+msgRegsNotFound:
+    .db "REGS Not Found", 0
+#endif
+
+regsName:
+    .db ListObj, tVarLst, "REGS", 0
