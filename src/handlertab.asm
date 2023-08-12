@@ -10,7 +10,7 @@
 ; search can be used instead of a linear search.
 ;-----------------------------------------------------------------------------
 
-keyCodeHandlerTableSize equ 58
+keyCodeHandlerTableSize equ 56
 kOnExit equ 0 ; ON key generates 00 as the key code
 
 keyCodeHandlerTable:
@@ -167,8 +167,6 @@ keyCodeHandlerTable:
     ; on the (, and x<->y on the ).
     .db kLParen ; (
     .dw handleKeyRotDown
-    .db kLBrace ; {, 2ND (
-    .dw handleKeyRotUp
     .db kRParen ; )
     .dw handleKeyExchangeXY
     ; bind ANS to lastX.

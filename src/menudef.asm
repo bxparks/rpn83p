@@ -121,14 +121,14 @@ mBaseId equ 10
     .db 2 ; numStrips
     .db mDecId ; stripBeginId
     .dw mGroupHandler ; handler (predefined)
-mBlank011:
-mBlank011Id equ 11
-    .db mBlank011Id ; id
+mStack:
+mStackId equ 11
+    .db mStackId ; id
     .db mRootId ; parentId
-    .db mNullNameId ; nameId
-    .db 0 ; numStrips
-    .db 0 ; stripBeginId
-    .dw mNullHandler ; handler (predefined)
+    .db mStackNameId ; nameId
+    .db 1 ; numStrips
+    .db mBlank107Id ; stripBeginId
+    .dw mGroupHandler ; handler (predefined)
 ; MenuGroup MATH: children
 ; MenuGroup MATH: children: strip 0
 mCube:
@@ -916,6 +916,48 @@ mBinaryNegId equ 106
     .db 0 ; numStrips
     .db 0 ; stripBeginId
     .dw mBinaryNegHandler ; handler (to be implemented)
+; MenuGroup STK: children
+; MenuGroup STK: children: strip 0
+mBlank107:
+mBlank107Id equ 107
+    .db mBlank107Id ; id
+    .db mStackId ; parentId
+    .db mNullNameId ; nameId
+    .db 0 ; numStrips
+    .db 0 ; stripBeginId
+    .dw mNullHandler ; handler (predefined)
+mStackRotUp:
+mStackRotUpId equ 108
+    .db mStackRotUpId ; id
+    .db mStackId ; parentId
+    .db mStackRotUpNameId ; nameId
+    .db 0 ; numStrips
+    .db 0 ; stripBeginId
+    .dw mStackRotUpHandler ; handler (to be implemented)
+mStackRotDown:
+mStackRotDownId equ 109
+    .db mStackRotDownId ; id
+    .db mStackId ; parentId
+    .db mStackRotDownNameId ; nameId
+    .db 0 ; numStrips
+    .db 0 ; stripBeginId
+    .dw mStackRotDownHandler ; handler (to be implemented)
+mStackExchangeXY:
+mStackExchangeXYId equ 110
+    .db mStackExchangeXYId ; id
+    .db mStackId ; parentId
+    .db mStackExchangeXYNameId ; nameId
+    .db 0 ; numStrips
+    .db 0 ; stripBeginId
+    .dw mStackExchangeXYHandler ; handler (to be implemented)
+mBlank111:
+mBlank111Id equ 111
+    .db mBlank111Id ; id
+    .db mStackId ; parentId
+    .db mNullNameId ; nameId
+    .db 0 ; numStrips
+    .db 0 ; stripBeginId
+    .dw mNullHandler ; handler (predefined)
 
 ; Table of 2-byte pointers to names in the pool of strings below.
 mMenuNameTable:
@@ -941,158 +983,166 @@ mUnitNameId equ 9
     .dw mUnitName
 mBaseNameId equ 10
     .dw mBaseName
-mCubeNameId equ 11
+mStackNameId equ 11
+    .dw mStackName
+mCubeNameId equ 12
     .dw mCubeName
-mCubeRootNameId equ 12
+mCubeRootNameId equ 13
     .dw mCubeRootName
-mAtan2NameId equ 13
+mAtan2NameId equ 14
     .dw mAtan2Name
-mAlog2NameId equ 14
+mAlog2NameId equ 15
     .dw mAlog2Name
-mLog2NameId equ 15
+mLog2NameId equ 16
     .dw mLog2Name
-mLogBaseNameId equ 16
+mLogBaseNameId equ 17
     .dw mLogBaseName
-mPercentNameId equ 17
+mPercentNameId equ 18
     .dw mPercentName
-mPercentChangeNameId equ 18
+mPercentChangeNameId equ 19
     .dw mPercentChangeName
-mGcdNameId equ 19
+mGcdNameId equ 20
     .dw mGcdName
-mLcmNameId equ 20
+mLcmNameId equ 21
     .dw mLcmName
-mPrimeNameId equ 21
+mPrimeNameId equ 22
     .dw mPrimeName
-mAbsNameId equ 22
+mAbsNameId equ 23
     .dw mAbsName
-mSignNameId equ 23
+mSignNameId equ 24
     .dw mSignName
-mModNameId equ 24
+mModNameId equ 25
     .dw mModName
-mMinNameId equ 25
+mMinNameId equ 26
     .dw mMinName
-mMaxNameId equ 26
+mMaxNameId equ 27
     .dw mMaxName
-mIntPartNameId equ 27
+mIntPartNameId equ 28
     .dw mIntPartName
-mFracPartNameId equ 28
+mFracPartNameId equ 29
     .dw mFracPartName
-mFloorNameId equ 29
+mFloorNameId equ 30
     .dw mFloorName
-mCeilNameId equ 30
+mCeilNameId equ 31
     .dw mCeilName
-mNearNameId equ 31
+mNearNameId equ 32
     .dw mNearName
-mCombNameId equ 32
+mCombNameId equ 33
     .dw mCombName
-mPermNameId equ 33
+mPermNameId equ 34
     .dw mPermName
-mFactorialNameId equ 34
+mFactorialNameId equ 35
     .dw mFactorialName
-mRandomNameId equ 35
+mRandomNameId equ 36
     .dw mRandomName
-mRandomSeedNameId equ 36
+mRandomSeedNameId equ 37
     .dw mRandomSeedName
-mRToDNameId equ 37
+mRToDNameId equ 38
     .dw mRToDName
-mDToRNameId equ 38
+mDToRNameId equ 39
     .dw mDToRName
-mPToRNameId equ 39
+mPToRNameId equ 40
     .dw mPToRName
-mRToPNameId equ 40
+mRToPNameId equ 41
     .dw mRToPName
-mHmsToHrNameId equ 41
+mHmsToHrNameId equ 42
     .dw mHmsToHrName
-mHrToHmsNameId equ 42
+mHrToHmsNameId equ 43
     .dw mHrToHmsName
-mFixNameId equ 43
+mFixNameId equ 44
     .dw mFixName
-mSciNameId equ 44
+mSciNameId equ 45
     .dw mSciName
-mEngNameId equ 45
+mEngNameId equ 46
     .dw mEngName
-mRadNameId equ 46
+mRadNameId equ 47
     .dw mRadName
-mDegNameId equ 47
+mDegNameId equ 48
     .dw mDegName
-mSinhNameId equ 48
+mSinhNameId equ 49
     .dw mSinhName
-mCoshNameId equ 49
+mCoshNameId equ 50
     .dw mCoshName
-mTanhNameId equ 50
+mTanhNameId equ 51
     .dw mTanhName
-mAsinhNameId equ 51
+mAsinhNameId equ 52
     .dw mAsinhName
-mAcoshNameId equ 52
+mAcoshNameId equ 53
     .dw mAcoshName
-mAtanhNameId equ 53
+mAtanhNameId equ 54
     .dw mAtanhName
-mFToCNameId equ 54
+mFToCNameId equ 55
     .dw mFToCName
-mCToFNameId equ 55
+mCToFNameId equ 56
     .dw mCToFName
-mInhgToHpaNameId equ 56
+mInhgToHpaNameId equ 57
     .dw mInhgToHpaName
-mHpaToInhgNameId equ 57
+mHpaToInhgNameId equ 58
     .dw mHpaToInhgName
-mMiToKmNameId equ 58
+mMiToKmNameId equ 59
     .dw mMiToKmName
-mKmToMiNameId equ 59
+mKmToMiNameId equ 60
     .dw mKmToMiName
-mFtToMNameId equ 60
+mFtToMNameId equ 61
     .dw mFtToMName
-mMToFtNameId equ 61
+mMToFtNameId equ 62
     .dw mMToFtName
-mInToCmNameId equ 62
+mInToCmNameId equ 63
     .dw mInToCmName
-mCmToInNameId equ 63
+mCmToInNameId equ 64
     .dw mCmToInName
-mMilToMicronNameId equ 64
+mMilToMicronNameId equ 65
     .dw mMilToMicronName
-mMicronToMilNameId equ 65
+mMicronToMilNameId equ 66
     .dw mMicronToMilName
-mLbsToKgNameId equ 66
+mLbsToKgNameId equ 67
     .dw mLbsToKgName
-mKgToLbsNameId equ 67
+mKgToLbsNameId equ 68
     .dw mKgToLbsName
-mOzToGNameId equ 68
+mOzToGNameId equ 69
     .dw mOzToGName
-mGToOzNameId equ 69
+mGToOzNameId equ 70
     .dw mGToOzName
-mGalToLNameId equ 70
+mGalToLNameId equ 71
     .dw mGalToLName
-mLToGalNameId equ 71
+mLToGalNameId equ 72
     .dw mLToGalName
-mFlozToMlNameId equ 72
+mFlozToMlNameId equ 73
     .dw mFlozToMlName
-mMlToFlozNameId equ 73
+mMlToFlozNameId equ 74
     .dw mMlToFlozName
-mCalToKjNameId equ 74
+mCalToKjNameId equ 75
     .dw mCalToKjName
-mKjToCalNameId equ 75
+mKjToCalNameId equ 76
     .dw mKjToCalName
-mHpToKwNameId equ 76
+mHpToKwNameId equ 77
     .dw mHpToKwName
-mKwToHpNameId equ 77
+mKwToHpNameId equ 78
     .dw mKwToHpName
-mDecNameId equ 78
+mDecNameId equ 79
     .dw mDecName
-mHexNameId equ 79
+mHexNameId equ 80
     .dw mHexName
-mOctNameId equ 80
+mOctNameId equ 81
     .dw mOctName
-mBinNameId equ 81
+mBinNameId equ 82
     .dw mBinName
-mBinaryAndNameId equ 82
+mBinaryAndNameId equ 83
     .dw mBinaryAndName
-mBinaryOrNameId equ 83
+mBinaryOrNameId equ 84
     .dw mBinaryOrName
-mBinaryXorNameId equ 84
+mBinaryXorNameId equ 85
     .dw mBinaryXorName
-mBinaryNotNameId equ 85
+mBinaryNotNameId equ 86
     .dw mBinaryNotName
-mBinaryNegNameId equ 86
+mBinaryNegNameId equ 87
     .dw mBinaryNegName
+mStackRotUpNameId equ 88
+    .dw mStackRotUpName
+mStackRotDownNameId equ 89
+    .dw mStackRotDownName
+mStackExchangeXYNameId equ 90
+    .dw mStackExchangeXYName
 
 ; Table of names as NUL terminated C strings.
 mNullName:
@@ -1117,6 +1167,8 @@ mUnitName:
     .db "UNIT", 0
 mBaseName:
     .db "BASE", 0
+mStackName:
+    .db "STK", 0
 mCubeName:
     .db 'X', Scaret, '3', 0
 mCubeRootName:
@@ -1269,3 +1321,9 @@ mBinaryNotName:
     .db "NOT", 0
 mBinaryNegName:
     .db "NEG", 0
+mStackRotUpName:
+    .db 'R', SupArrow, 0
+mStackRotDownName:
+    .db 'R', SdownArrow, 0
+mStackExchangeXYName:
+    .db 'X', Sleft, Sconvert, 'Y', 0

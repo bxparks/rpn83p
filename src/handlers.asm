@@ -916,13 +916,6 @@ handleKeyRotDown:
     call closeInputBuf
     jp rotDownStack
 
-handleKeyRotUp:
-    ; Do nothing in command arg mode.
-    bit rpnFlagsArgMode, (iy + rpnFlags)
-    ret nz
-    call closeInputBuf
-    jp rotUpStack
-
 handleKeyExchangeXY:
     ; Do nothing in command arg mode.
     bit rpnFlagsArgMode, (iy + rpnFlags)

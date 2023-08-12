@@ -141,9 +141,9 @@ msgHelpPage2:
     .db escapeLargeFont, "Stack Operation", Lenter
     .db escapeSmallFont, Senter
     .db "R", LdownArrow, " :  (", Senter
-    .db "R", LupArrow, " :  2ND {", Senter
-    .db "X<>Y", ":  )", Senter
-    .db "LastX", ":  2ND ANS", Senter
+    .db "X", Sleft, Sconvert, "Y", ":  )", Senter
+    .db "LastX", ":  2ND  ANS", Senter
+    .db "R", LupArrow, " :  STK  R", LupArrow, Senter
     .db Senter
     .db Senter
     .db SlBrack, "2/4", SrBrack, " Any key to continue...", Senter
@@ -1230,3 +1230,17 @@ mBinaryNegHandler:
     call negU32 ; OP3 = NEG(OP3), 2's complement negation
     call convertU32ToOP1 ; OP1 = float(OP3)
     jp replaceX
+
+;-----------------------------------------------------------------------------
+; Children nodes of STCK (stack functions)
+;-----------------------------------------------------------------------------
+
+mStackRotUpHandler:
+    call closeInputBuf
+    jp rotUpStack
+
+mStackRotDownHandler:
+    jp handleKeyRotDown
+
+mStackExchangeXYHandler:
+    jp handleKeyExchangeXY

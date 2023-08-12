@@ -222,5 +222,14 @@ MenuGroup root mRoot [
       #   MenuItem SRL mBinarySrl # shift right logical
       # ]
     ]
+    MenuGroup STK mStack [
+      MenuStrip [
+        MenuItem * *
+        MenuItem R<SupArrow> mStackRotUp
+        MenuItem R<SdownArrow> mStackRotDown
+        MenuItem X<Sleft><Sconvert>Y mStackExchangeXY
+        MenuItem * *
+      ]
+    ]
   ]
 ]
