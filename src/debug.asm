@@ -74,16 +74,16 @@ debugString:
     push bc
     push de
     push hl
-    ld hl, (CurRow)
-    push hl
+    ld de, (CurRow)
+    push de
 
     ld de, debugCurCol*$100+debugCurRow ; $(curCol)(curRow)
     ld (CurRow), de
     call putS
     bcall(_EraseEOL)
 
-    pop hl
-    ld (CurRow), hl
+    pop de
+    ld (CurRow), de
     pop hl
     pop de
     pop bc
@@ -99,16 +99,16 @@ debugPString:
     push bc
     push de
     push hl
-    ld hl, (CurRow)
-    push hl
+    ld de, (CurRow)
+    push de
 
     ld de, debugCurCol*$100+debugCurRow ; $(curCol)(curRow)
     ld (CurRow), de
     call putPS
     bcall(_EraseEOL)
 
-    pop hl
-    ld (CurRow), hl
+    pop de
+    ld (CurRow), de
     pop hl
     pop de
     pop bc
