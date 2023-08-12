@@ -9,6 +9,7 @@ RPN calculator app for the TI-83 Plus and TI-84 Plus inspired by the HP-42S.
 ## Table of Contents
 
 - [Installation](#Installation)
+- [Quick Examples](#QuickExamples)
 - [Supported Hardware](#SupportedHardware)
 - [User Guide](#UserGuide)
 - [Compiling from Source](#Compiling)
@@ -21,7 +22,8 @@ RPN calculator app for the TI-83 Plus and TI-84 Plus inspired by the HP-42S.
 ## Installation
 
 RPN83P is a flash application (it no longer small enough to create as an
-assembly language program).
+assembly language program). Detailed instructions are given in the [RPN83P User
+Guide](USER_GUIDE.md), but here is the quick version:
 
 - Copy the `rpn83p.8xk` file to the TI-83/TI-84 calculator. Use one of following
   link programs:
@@ -31,13 +33,70 @@ assembly language program).
     - Press `APPS`
     - Scroll down to the `RPN83P` entry
     - Press `ENTER`
-- To quit: `2ND` `QUIT`
-- To turn off: `2ND` `OFF`
-- To exit input modes or nested menus: `ON`
-- To clear the input: `CLEAR`
+- Exiting:
+    - Quit app: `2ND` `QUIT`
+    - Turn off device: `2ND` `OFF`
 
-As a flash app, this does not consume precious RAM space, and it is preserved
-when the RAM is cleared (either purposefully or accidentally).
+As a flash app, the RPN83P does not consume precious RAM space, and it is
+preserved when the RAM is cleared (either purposefully or accidentally).
+
+<a name="QuickExamples"></a>
+## Quick Examples
+
+### Example 1
+
+When the RPN83P is started, it goes directly into the calculator mode, and looks
+like this:
+
+> ![RPN83P Hello 1](docs/rpn83p-example1-1.png)
+
+Let's us compute the volume of a sphere of radius `2.1`. Recall that the volume
+of a sphere is `(4/3) pi r^3`. There are many ways to compute this in an RPN
+system, but I tend to start with the more complex, inner expression and work
+outwards. Enter the following keystrokes:
+
+- `2`
+- `.`
+- `1`
+- `x^2`
+- `2ND` `ANS` (invokes the `LastX` functionality)
+- `*` (`r^3` is now in the `X` register)
+- `2ND` `pi` (above the `^` button)
+- `*` (`pi r^3`)
+- `4`
+- `*` (`4 pi r^3`)
+- `3`
+- `/` (`4 pi r^3 / 3`)
+
+The `X` register should show `38.79238609` like this:
+
+> ![RPN83P Hello 1](docs/rpn83p-example1-1.png)
+
+### Example 2
+
+Let's calculate the percentage change from `77` to `89`. Press the following:
+
+- `7`
+- `7`
+- `ENTER`
+- `8`
+- `9`
+- `WINDOW/F2` menu button to invoke the `NUM` item from
+  ![ROOT MenuStrip 1](docs/rpn83p-screenshot-menu-root-1.png)
+- `WINDOW/F2` menu button again to invoke the `%CH` item from
+  ![NUM MenuStrip 1](docs/rpn83p-screenshot-menu-root-num-1.png)
+
+The display should show `15.58441558%` like this:
+
+> ![RPN83P Hello 1](docs/rpn83p-example1-1.png)
+
+Press:
+
+- `ON` (invokes the `ESC/EXIT` functionality)
+
+to go back to the previous menu bar:
+
+> ![ROOT MenuStrip 1](docs/rpn83p-screenshot-menu-root-1.png)
 
 <a name="SupportedHardware"></a>
 ### Supported Hardware
