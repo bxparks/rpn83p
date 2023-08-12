@@ -306,10 +306,9 @@ displayStatusFloatModeDigit:
 ;-----------------------------------------------------------------------------
 
 ; Function: Display the string corresponding to the current error code.
-; Input: errorCode, errorCodeDisplayed
+; Input: errorCode
 ; Output:
 ;   - string corresponding to errorCode displayed
-;   - errorCodeDisplayed updated
 ; Destroys: A, DE, HL
 displayErrorCode:
     ; Check if the error code changed
