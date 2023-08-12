@@ -17,6 +17,55 @@
 ;   ??      Ans     StoAns, RclAns
 ;-----------------------------------------------------------------------------
 
+;-----------------------------------------------------------------------------
+; User registers. Accessed through `STO nn` and `RCL nn`. Let's store them as a
+; list variable named `REGS`, similar to HP-42S. The TI-OS routines related to
+; list variables are:
+;
+;   - GetLToOP1(): Get list element to OP1
+;       - Input:
+;           - HL = element index
+;           - DE = pointer to list, output of FindSym()
+;   - PutToL(): Store OP1 in list
+;       - Input:
+;           - HL = element index
+;           - DE = pointer to list, output of FindSym()
+;   - CreateRList(): Creat a real list variable in RAM
+;       - Input:
+;           - HL = number of elements in the list
+;           - OP1 = name of list to create
+;       - Output:
+;           - HL = pointer to symbol table entry
+;           - DE = pointer to RAM
+;   - FindSym(): Search symbol table for variable in OP1
+;       - Input:
+;           - OP1: variable name
+;       - Output:
+;           - HL = pointer to start of symbol table entry
+;           - DE = pointer to start of variable data in RAM. For List variables,
+;             points to the a u16 size of list.
+;           - B = 0 (variable located in RAM)
+;   - MemChk(): Determine if there is enough memory before creating a variable
+;   - DelVar(), DelVarArc(), DelVarNoArc(): delete variables
+;
+; Getting the size (dimension) of existing list. From the SDK docs: "After
+; creating a list with 23 elements, the first two bytes of the data structure
+; are set to the number of elements, 17h 00h, the number of elements in hex,
+; with the LSB followed by the MSB."
+;
+;    LD HL,L1Name
+;    B_CALL Mov9ToOP1; OP1 = list L1 name
+;    B_CALL FindSym ; look up list variable in OP1
+;    JR C, NotFound ; jump if it is not created
+;    EX DE,HL ; HL = pointer to data structure
+;    LD E,(HL) ; get the LSB of the number elements
+;    INC HL ; move to MSB
+;    LD D,(HL) ; DE = number elements in L1
+;L1Name:
+;    DBListObj, tVarLst, tL1, 0
+;
+;-----------------------------------------------------------------------------
+
 ; Function: Initialize the RPN stack variables. If X, Y, Z, T, R already exist,
 ; the existing values will be used. Otherwise, set to zero.
 ; TODO: Check if the variables are complex. If so, reinitialize them to be real.
