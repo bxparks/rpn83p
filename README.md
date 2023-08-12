@@ -70,7 +70,7 @@ outwards. Enter the following keystrokes:
 
 The `X` register should show `38.79238609` like this:
 
-> ![RPN83P Hello 1](docs/rpn83p-example1-1.png)
+> ![RPN83P Hello 1](docs/rpn83p-example1-2.png)
 
 ### Example 2
 
@@ -88,7 +88,7 @@ Let's calculate the percentage change from `77` to `89`. Press the following:
 
 The display should show `15.58441558%` like this:
 
-> ![RPN83P Hello 1](docs/rpn83p-example1-1.png)
+> ![RPN83P Hello 1](docs/rpn83p-example2-1.png)
 
 Press:
 
