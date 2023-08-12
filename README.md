@@ -10,6 +10,8 @@ RPN calculator app for the TI-83 Plus and TI-84 Plus inspired by the HP-42S.
 
 - [Installation](#Installation)
 - [Quick Examples](#QuickExamples)
+    - [Example 1](#Example1)
+    - [Example 2](#Example2)
 - [Supported Hardware](#SupportedHardware)
 - [User Guide](#UserGuide)
 - [Compiling from Source](#Compiling)
@@ -43,6 +45,7 @@ preserved when the RAM is cleared (either purposefully or accidentally).
 <a name="QuickExamples"></a>
 ## Quick Examples
 
+<a name="Example1"></a>
 ### Example 1
 
 When the RPN83P is started, it goes directly into the calculator mode, and looks
@@ -72,6 +75,7 @@ The `X` register should show `38.79238609` like this:
 
 > ![RPN83P Hello 1](docs/rpn83p-example1-2.png)
 
+<a name="Example2"></a>
 ### Example 2
 
 Let's calculate the percentage change from `77` to `89`. Press the following:
@@ -89,6 +93,10 @@ Let's calculate the percentage change from `77` to `89`. Press the following:
 The display should show `15.58441558%` like this:
 
 > ![RPN83P Hello 1](docs/rpn83p-example2-1.png)
+
+(The `Y` register remains at `77` because the `%CH` function does not modify it,
+unlike most functions that take 2 arguments. This allows additional calculations
+to continue using the original `77` base number.)
 
 Press:
 
