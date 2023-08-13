@@ -719,9 +719,9 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (back), and `MATH`
     - `X<>Y`: exchange `X` and `Y`, also bound to `)` button
 - `ROOT` > `CLR`
     - ![CLR MenuStrip 1](docs/rpn83p-screenshot-menu-root-clr-1.png)
-    - `CLRG`: clear storage registers `00` to `24`
+    - `CLRG`: clear storage registers `R00` to `R24`
     - `CLST`: clear all RPN stack registers
-    - `CLX`: clear `X` stack register
+    - `CLX`: clear `X` stack register (stack lift disabled)
 
 <a name="AdvancedUsage"></a>
 ## Advanced Usage
@@ -996,9 +996,9 @@ be 32 bits. I hope to add the ability to change the integer size in the future.
 <a name="StorageRegisters"></a>
 #### Storage Registers
 
-Similar to the HP-42S, the RPN83P provides **25** storage registers labeled `00`
-to `24`. They are accessed using the `STO` and `2ND` `RCL` keys. To store a
-number into register `R00`, press:
+Similar to the HP-42S, the RPN83P provides **25** storage registers labeled
+`R00` to `R24`. They are accessed using the `STO` and `2ND` `RCL` keys. To store
+a number into register `R00`, press:
 
 - `STO` `00`
 
