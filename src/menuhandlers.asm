@@ -1251,7 +1251,9 @@ mStackExchangeXYHandler:
 
 mClearRegsHandler:
     call closeInputBuf
-    jp clearRegs
+    call clearRegs
+    ld a, errorCodeRegsCleared
+    jp setHandlerCode
 
 mClearStackHandler:
     call closeInputBuf
@@ -1259,6 +1261,6 @@ mClearStackHandler:
 
 mClearXHandler:
     call closeInputBuf
-    call handleKeyClearSimple
+    res rpnFlagsLiftEnabled, (iy + rpnFlags) ; disable stack lift
     bcall(_OP1Set0)
     jp stoX
