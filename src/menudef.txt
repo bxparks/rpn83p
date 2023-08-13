@@ -235,11 +235,9 @@ MenuGroup root mRoot [
   MenuStrip [
     MenuGroup CLR mClear [
       MenuStrip [
-        MenuItem CLRG mClearRegs
-        MenuItem * *
-        MenuItem * *
-        MenuItem CLST mClearStack
         MenuItem CLX mClearX
+        MenuItem CLST mClearStack
+        MenuItem CLRG mClearRegs
       ]
     ]
   ]

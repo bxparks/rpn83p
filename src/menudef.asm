@@ -136,7 +136,7 @@ mClearId equ 12
     .db mRootId ; parentId
     .db mClearNameId ; nameId
     .db 1 ; numStrips
-    .db mClearRegsId ; stripBeginId
+    .db mClearXId ; stripBeginId
     .dw mGroupHandler ; handler (predefined)
 mBlank013:
 mBlank013Id equ 13
@@ -1001,46 +1001,46 @@ mBlank116Id equ 116
     .dw mNullHandler ; handler (predefined)
 ; MenuGroup CLR: children
 ; MenuGroup CLR: children: strip 0
-mClearRegs:
-mClearRegsId equ 117
-    .db mClearRegsId ; id
-    .db mClearId ; parentId
-    .db mClearRegsNameId ; nameId
-    .db 0 ; numStrips
-    .db 0 ; stripBeginId
-    .dw mClearRegsHandler ; handler (to be implemented)
-mBlank118:
-mBlank118Id equ 118
-    .db mBlank118Id ; id
-    .db mClearId ; parentId
-    .db mNullNameId ; nameId
-    .db 0 ; numStrips
-    .db 0 ; stripBeginId
-    .dw mNullHandler ; handler (predefined)
-mBlank119:
-mBlank119Id equ 119
-    .db mBlank119Id ; id
-    .db mClearId ; parentId
-    .db mNullNameId ; nameId
-    .db 0 ; numStrips
-    .db 0 ; stripBeginId
-    .dw mNullHandler ; handler (predefined)
-mClearStack:
-mClearStackId equ 120
-    .db mClearStackId ; id
-    .db mClearId ; parentId
-    .db mClearStackNameId ; nameId
-    .db 0 ; numStrips
-    .db 0 ; stripBeginId
-    .dw mClearStackHandler ; handler (to be implemented)
 mClearX:
-mClearXId equ 121
+mClearXId equ 117
     .db mClearXId ; id
     .db mClearId ; parentId
     .db mClearXNameId ; nameId
     .db 0 ; numStrips
     .db 0 ; stripBeginId
     .dw mClearXHandler ; handler (to be implemented)
+mClearStack:
+mClearStackId equ 118
+    .db mClearStackId ; id
+    .db mClearId ; parentId
+    .db mClearStackNameId ; nameId
+    .db 0 ; numStrips
+    .db 0 ; stripBeginId
+    .dw mClearStackHandler ; handler (to be implemented)
+mClearRegs:
+mClearRegsId equ 119
+    .db mClearRegsId ; id
+    .db mClearId ; parentId
+    .db mClearRegsNameId ; nameId
+    .db 0 ; numStrips
+    .db 0 ; stripBeginId
+    .dw mClearRegsHandler ; handler (to be implemented)
+mBlank120:
+mBlank120Id equ 120
+    .db mBlank120Id ; id
+    .db mClearId ; parentId
+    .db mNullNameId ; nameId
+    .db 0 ; numStrips
+    .db 0 ; stripBeginId
+    .dw mNullHandler ; handler (predefined)
+mBlank121:
+mBlank121Id equ 121
+    .db mBlank121Id ; id
+    .db mClearId ; parentId
+    .db mNullNameId ; nameId
+    .db 0 ; numStrips
+    .db 0 ; stripBeginId
+    .dw mNullHandler ; handler (predefined)
 
 ; Table of 2-byte pointers to names in the pool of strings below.
 mMenuNameTable:
@@ -1228,12 +1228,12 @@ mStackRotDownNameId equ 90
     .dw mStackRotDownName
 mStackExchangeXYNameId equ 91
     .dw mStackExchangeXYName
-mClearRegsNameId equ 92
-    .dw mClearRegsName
+mClearXNameId equ 92
+    .dw mClearXName
 mClearStackNameId equ 93
     .dw mClearStackName
-mClearXNameId equ 94
-    .dw mClearXName
+mClearRegsNameId equ 94
+    .dw mClearRegsName
 
 ; Table of names as NUL terminated C strings.
 mNullName:
@@ -1420,9 +1420,9 @@ mStackRotDownName:
     .db 'R', SdownArrow, 0
 mStackExchangeXYName:
     .db 'X', Sleft, Sconvert, 'Y', 0
-mClearRegsName:
-    .db "CLRG", 0
-mClearStackName:
-    .db "CLST", 0
 mClearXName:
     .db "CLX", 0
+mClearStackName:
+    .db "CLST", 0
+mClearRegsName:
+    .db "CLRG", 0
