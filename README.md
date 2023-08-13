@@ -70,31 +70,31 @@ Edition). It *should* work on the others, but I have not actually tested them.
 <a name="Example1"></a>
 ### Example 1
 
-When the RPN83P is started, it goes directly into the calculator mode, and looks
-like this:
-
-Let's us compute the volume of a sphere of radius `2.1`. Recall that the volume
-of a sphere is `(4/3) pi r^3`. There are many ways to compute this in an RPN
+Let's compute the volume of a sphere of radius `2.1`. Recall that the volume of
+a sphere is `(4/3) pi r^3`. There are many ways to compute this in an RPN
 system, but I tend to start with the more complex, inner expression and work
 outwards. Enter the following keystrokes:
 
-- `2` button
-- `.` button
-- `1` button
-- `x^2` button
-- `2ND` `ANS` button (invokes the `LastX` functionality)
-- `*` button (`r^3` is now in the `X` register)
-- `2ND` `PI` button (above the `^` button)
-- `*` button (`pi r^3`)
-- `4` button
-- `*` button (`4 pi r^3`)
-- `3` button
-- `/` button (`4 pi r^3 / 3`)
+- Press `2` button
+- Press `.` button
+- Press `1` button
+- Press `x^2` button
+- Press `2ND` `ANS` button (invokes the `LastX` functionality)
+- Press `*` button (`r^3` is now in the `X` register)
+- Press `2ND` `PI` button (above the `^` button)
+- Press `*` button (`pi r^3`)
+- Press `4` button
+- Press `*` button (`4 pi r^3`)
+- Press `3` button
+- Press `/` button (`4 pi r^3 / 3`)
 - the `X` register should show `38.79238609`
 
 Here is an animated GIF that shows this calculation:
 
 > ![RPN83P Example 1 GIF](docs/rpn83p-example1.gif)
+
+(Note that the RPN83P provides a `X^3` menu function that could have been used
+for this formula, but I used the `LastX` feature to demonstrate its use.)
 
 <a name="Example2"></a>
 ### Example 2
