@@ -519,7 +519,7 @@ documented in the TI-83 SDK:
 - `Err: Break`
 - `Err: Domain` (`*`)
 - `Err: Data Type`
-- `Err: Invalid Dim`
+- `Err: Invalid Dim` (`*`)
 - `Err: Dim Mismatch`
 - `Err: Divide By 0` (`*`)
 - `Err: Increment`
@@ -542,9 +542,6 @@ shows this:
 
 > ![Err: Division By 0](docs/rpn83p-errorcode-division-by-0.png)
 
-The number in parenthesis is the internal numerical value of the error code,
-intended for debugging.
-
 The TI SDK documentation does not explain the source of most of these error
 codes, and I can reproduce only a small number of errors in the RPN83P app,
 marked by (`*`) above.
@@ -554,8 +551,10 @@ message like this:
 
 > ![Err: UNKNOWN](docs/rpn83p-errorcode-unknown.png)
 
-If the error is reproducible, please file a bug report so that I can add it to
-the list of error messages supported by RPN83P.
+The number in parenthesis is the internal numerical value of the error code. If
+the error is reproducible, please file a bug report containing the numerical
+error code so that I can add it to the list of error messages supported by
+RPN83P.
 
 <a name="Functions"></a>
 ## Functions
