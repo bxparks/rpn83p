@@ -127,7 +127,7 @@ helpPages:
 
 msgHelpPage1:
     .db escapeLargeFont, "RPN83P", Lenter
-    .db escapeSmallFont, "v0.0 (2023", Shyphen, "08", Shyphen, "11)", Senter
+    .db escapeSmallFont, "v0.0 (2023", Shyphen, "08", Shyphen, "12)", Senter
     .db "(c) 2023  Brian T. Park", Senter
     .db Senter
     .db "An RPN calculator for the", Senter
@@ -1232,7 +1232,7 @@ mBinaryNegHandler:
     jp replaceX
 
 ;-----------------------------------------------------------------------------
-; Children nodes of STCK (stack functions)
+; Children nodes of STK menu group (stack functions).
 ;-----------------------------------------------------------------------------
 
 mStackRotUpHandler:
@@ -1244,3 +1244,23 @@ mStackRotDownHandler:
 
 mStackExchangeXYHandler:
     jp handleKeyExchangeXY
+
+;-----------------------------------------------------------------------------
+; Children nodes of CLR menu group (clear functions).
+;-----------------------------------------------------------------------------
+
+mClearRegsHandler:
+    call closeInputBuf
+    call clearRegs
+    ld a, errorCodeRegsCleared
+    jp setHandlerCode
+
+mClearStackHandler:
+    call closeInputBuf
+    jp clearStack
+
+mClearXHandler:
+    call closeInputBuf
+    res rpnFlagsLiftEnabled, (iy + rpnFlags) ; disable stack lift
+    bcall(_OP1Set0)
+    jp stoX

@@ -17,6 +17,55 @@
 ;   ??      Ans     StoAns, RclAns
 ;-----------------------------------------------------------------------------
 
+;-----------------------------------------------------------------------------
+; User registers. Accessed through `STO nn` and `RCL nn`. Let's store them as a
+; list variable named `REGS`, similar to HP-42S. The TI-OS routines related to
+; list variables are:
+;
+;   - GetLToOP1(): Get list element to OP1
+;       - Input:
+;           - HL = element index
+;           - DE = pointer to list, output of FindSym()
+;   - PutToL(): Store OP1 in list
+;       - Input:
+;           - HL = element index
+;           - DE = pointer to list, output of FindSym()
+;   - CreateRList(): Creat a real list variable in RAM
+;       - Input:
+;           - HL = number of elements in the list
+;           - OP1 = name of list to create
+;       - Output:
+;           - HL = pointer to symbol table entry
+;           - DE = pointer to RAM
+;   - FindSym(): Search symbol table for variable in OP1
+;       - Input:
+;           - OP1: variable name
+;       - Output:
+;           - HL = pointer to start of symbol table entry
+;           - DE = pointer to start of variable data in RAM. For List variables,
+;             points to the a u16 size of list.
+;           - B = 0 (variable located in RAM)
+;   - MemChk(): Determine if there is enough memory before creating a variable
+;   - DelVar(), DelVarArc(), DelVarNoArc(): delete variables
+;
+; Getting the size (dimension) of existing list. From the SDK docs: "After
+; creating a list with 23 elements, the first two bytes of the data structure
+; are set to the number of elements, 17h 00h, the number of elements in hex,
+; with the LSB followed by the MSB."
+;
+;    LD HL,L1Name
+;    B_CALL Mov9ToOP1; OP1 = list L1 name
+;    B_CALL FindSym ; look up list variable in OP1
+;    JR C, NotFound ; jump if it is not created
+;    EX DE,HL ; HL = pointer to data structure
+;    LD E,(HL) ; get the LSB of the number elements
+;    INC HL ; move to MSB
+;    LD D,(HL) ; DE = number elements in L1
+;L1Name:
+;    DBListObj, tVarLst, tL1, 0
+;
+;-----------------------------------------------------------------------------
+
 ; Function: Initialize the RPN stack variables. If X, Y, Z, T, R already exist,
 ; the existing values will be used. Otherwise, set to zero.
 ; TODO: Check if the variables are complex. If so, reinitialize them to be real.
@@ -70,6 +119,16 @@ initR:
     ret nc
     bcall(_OP1Set0)
     bcall(_StoR)
+    ret
+
+clearStack:
+    bcall(_OP1Set0)
+    call stoX
+    call stoY
+    call stoZ
+    call stoT
+    set dirtyFlagsStack, (iy + dirtyFlags) ; force redraw
+    set rpnFlagsLiftEnabled, (iy + rpnFlags)
     ret
 
 ;-----------------------------------------------------------------------------
@@ -345,4 +404,132 @@ exchangeXYStack:
     call stoX
     bcall(_OP2ToOP1)
     call stoY
+    ret
+
+;-----------------------------------------------------------------------------
+; User registers in REGS list.
+;-----------------------------------------------------------------------------
+
+regsSize equ 25
+
+; Description: Initialize the REGS list variable which is used for user
+; registers 00 to 24.
+; Input: none
+; Output:
+;   - REGS deleted if not a real list
+;   - REGS deleted if dim(REGS) != 25
+;   - REGS created if it doesn't exist
+; Destroys: all
+initRegs:
+    call setRegsName
+    bcall(_FindSym)
+    jr c, initRegsCreate ; if CF=1: not found
+initRegsCheckType:
+    and $1F
+    cp ListObj
+    jr nz, initRegsDelete
+initRegsCheckArchive:
+    ld a, b
+    or a
+    jr nz, initRegsDelete
+initRegsCheckSize:
+    ex de, hl ; hl = pointer to data structure
+    ld e, (hl) ; get the LSB of the number elements
+    inc hl ; move to MSB
+    ld d, (hl) ; DE = number elements in REGS
+    ex de, hl
+    ld de, regsSize
+    bcall(_CpHLDE) ; if dim(REGS) < 25: CF=1
+    ret z ; REGS is Real, and sizeof 25, all ok
+initRegsWrongSize:
+    ; wrong size, so delete and recreate
+    call setRegsName ; OP1="REGS"
+    bcall(_FindSym)
+initRegsDelete:
+    ; Delete and recreate
+    bcall(_DelVarArc)
+    ; [[fallthrough]
+initRegsCreate:
+    call setRegsName ; OP1="REGS"
+    ld hl, regsSize
+    bcall(_CreateRList) ; DE points to data area
+    jr clearRegsAltEntry
+
+; Description: Clear all REGS elements.
+; Input: none
+; Output: REGS elements set to 0.0
+; Destroys: all
+clearRegs:
+    call setRegsName ; OP1="REGS"
+    bcall(_FindSym)
+clearRegsAltEntry: ; alternate entry if DE is already available
+    inc de
+    inc de ; skip u16 holding the list size
+    ld hl, regsSize
+    ld b, regsSize
+    bcall(_OP1Set0)
+clearRegsLoop:
+    ld hl, OP1
+    push bc
+    ld bc, 9
+    ldir
+    pop bc
+    djnz clearRegsLoop
+    ret
+
+setRegsName:
+    ld hl, regsName ; HL = "REGS"
+    bcall(_Mov9ToOP1)
+    ret
+
+#ifdef DEBUG
+msgRegsCreated:
+    .db "REGS Created", 0
+msgRegsFound:
+    .db "REGS Found", 0
+msgRegsNotFound:
+    .db "REGS Not Found", 0
+#endif
+
+regsName:
+    .db ListObj, tVarLst, "REGS", 0
+
+;-----------------------------------------------------------------------------
+
+; Description: Store OP1 into REGS[NN].
+; Input:
+;   - A: register index, one-based
+;   - OP1: float value
+; Output:
+;   - REGS[NN] = OP1
+; Destroys: all
+stoNN:
+    push af
+    bcall(_PushRealO1)
+    call setRegsName
+    bcall(_FindSym)
+    push de
+    bcall(_PopRealO1)
+    pop de
+    pop af
+    ld l, a
+    ld h, 0
+    bcall(_PutToL)
+    ret
+
+; Description: Recall REGS[NN] into OP1.
+; Input:
+;   - A: register index, one-based
+;   - REGS
+; Output:
+;   - OP1: float value
+; Destroys: all
+rclNN:
+    push af
+    call setRegsName
+    bcall(_FindSym)
+    pop af
+    ld l, a
+    ld h, 0
+    bcall(_GetLToOP1)
     ret

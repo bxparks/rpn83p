@@ -37,6 +37,7 @@ RPN calculator app for the TI-83 Plus and TI-84 Plus inspired by the HP-42S.
         - [Base Modes](#BaseModes)
         - [Base Rendering](#BaseRendering)
         - [Base Integers](#BaseIntegers)
+    - [Storage Registers](#StorageRegisters)
 - [Future Enhancements](#FutureEnhancements)
     - [Near Future](#NearFuture)
     - [Medium Future](#MediumFuture)
@@ -88,10 +89,10 @@ Here are some of the high level features:
     - `FIX` (fixed point 0-9 digits)
     - `SCI` (scientific 0-9 digits)
     - `ENG` (engineering 0-9 digits)
+- user registers (`STO 00`, `RCL 00`, etc)
 
 Here are some missing features which may be added in the future:
 
-- user registers (`STO 00`, `RCL 00`, etc)
 - statistics functions (sum, mean, variance, standard deviation)
 - complex numbers
 - vectors and matrices
@@ -590,6 +591,7 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (back), and `MATH`
 - `ROOT` (implicit)
     - ![ROOT MenuStrip 1](docs/rpn83p-screenshot-menu-root-1.png)
     - ![ROOT MenuStrip 2](docs/rpn83p-screenshot-menu-root-2.png)
+    - ![ROOT MenuStrip 3](docs/rpn83p-screenshot-menu-root-3.png)
 - `ROOT` > `MATH`
     - ![MATH MenuStrip 1](docs/rpn83p-screenshot-menu-root-math-1.png)
     - ![MATH MenuStrip 2](docs/rpn83p-screenshot-menu-root-math-2.png)
@@ -716,6 +718,11 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (back), and `MATH`
     - `R(up)`: rotate stack up
     - `R(down)`: rotate stack down, also bound to `(` button
     - `X<>Y`: exchange `X` and `Y`, also bound to `)` button
+- `ROOT` > `CLR`
+    - ![CLR MenuStrip 1](docs/rpn83p-screenshot-menu-root-clr-1.png)
+    - `CLRG`: clear storage registers `00` to `24`
+    - `CLST`: clear all RPN stack registers
+    - `CLX`: clear `X` stack register
 
 <a name="AdvancedUsage"></a>
 ## Advanced Usage
@@ -991,6 +998,26 @@ the negative sign.
 Currently, the integer size for base conversions and functions is hardcoded to
 be 32 bits. I hope to add the ability to change the integer size in the future.
 
+<a name="StorageRegisters"></a>
+#### Storage Registers
+
+Similar to the HP-42S, the RPN83P provides **25** storage registers labeled `00`
+to 24`. They are accessed using the `STO` and `2ND` `RCL` keys. To store a
+number into register `00`, press:
+
+- `STO 00`
+
+To recall register `00`, press:
+
+- `RCL 00`
+
+To clear the all storage registers, use the menu system to press the following:
+
+- `CLR`, then
+- `CLRG`
+
+The message `REGS cleared` will be displayed on the screen.
+
 <a name="FutureEnhancements"></a>
 ## Future Enhancements
 
@@ -1006,14 +1033,6 @@ grouped them as follows:
     - rotate left
     - rotate right
     - arithmetic shift right (preserve sign bit)
-- user-accessible registers
-    - Most HP calculators provide user-accessible registers identified by a
-      number. For example `STO 00` stores the current `X` value to Register
-      `00`.
-    - I hope to add most of these in the near future:
-        - `RCL NN`, `STO NN`, `STO+ NN`, `STO- NN`, `STO* NN`, `STO/ NN`
-    - The HP-42S supports registers identified by a string. Not sure if this
-      feature is worth the effort.
 - user selectable integer size for `BASE` functions
     - currently, binary, octal, hexadecimal routines are implemented internally
       using 32-bit unsigned numbers
@@ -1030,6 +1049,17 @@ grouped them as follows:
 <a name="MediumFuture"></a>
 ### Medium Future
 
+- registers and variables
+    - The HP-42S distinguishes between user *registers* (with numeric names,
+      e.g. 00-24) and user *variables* (with symbolic names, e.g. "LIM", "X").
+    - User-registers are implemented, supporting registers `00` to `24`.
+    - User-variables are not yet implemented.
+        - The HP-42S shows user-defined variables through the menu system. It's
+          a nice feature, but would require substantial refactoring of the
+          current menu system code.
+    - Compound `STO` and `RCL` operations are not implemented:
+        - `STO+ nn`, `STO- nn`, `STO* nn`, `STO/ nn`
+        - `RCL+ nn`, `RCL- nn`, `RCL* nn`, `RCL/ nn`
 - complex numbers
     - The TI-OS provides internal subroutines to handle complex numbers, so in
       theory, this should be relatively easy.

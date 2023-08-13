@@ -7,11 +7,7 @@
 ; Functions and strings related to error codes.
 ;-----------------------------------------------------------------------------
 
-errorCodeOk equ 0 ; Error code that indicates no error
-errorCodeNotYet equ 64 ; Custom error code to indicate "not yet implemented"
-errorCodeCount equ 65 ; total number of error codes
-
-; Function: Initialize errorCode and errorCodeDisplayed to 0.
+; Function: Initialize errorCode and handlerCode to 0.
 initErrorCode:
     xor a
     ld (errorCode), a
@@ -28,7 +24,8 @@ setHandlerCodeToSystemCode:
     res 7, a ; reset the GOTO flag
     ; [[fallthrough]]
 
-; Description: Set `handlerCode` to register A.
+; Description: Set `handlerCode` to register A, which will hold one of the
+; `errorCodeXxx` values.
 ; Output: A: handlerCode
 setHandlerCode:
     ld (handlerCode), a
@@ -83,39 +80,72 @@ getErrorStringContinue:
 ; string is not known. If the user sends a reproducible bug report, maybe we
 ; can reverse engineer the condition that triggers that particular error code
 ; and create a human-readable string for it.
+errorCodeCount equ 66 ; total number of error codes
 errorStrings:
-    .dw errorStrOk              ; 0, hopefully TI-OS uses 0 as "success"
-    .dw errorStrOverflow        ; 1
-    .dw errorStrDivBy0          ; 2
-    .dw errorStrSingularMat     ; 3
-    .dw errorStrDomain          ; 4
-    .dw errorStrIncrement       ; 5
-    .dw errorStrBreak           ; 6
-    .dw errorStrNon_Real        ; 7
-    .dw errorStrSyntax          ; 8, also triggered by ErrNonReal??
-    .dw errorStrDataType        ; 9, also triggered by ErrNonReal??
-    .dw errorStrArgument        ; 10
-    .dw errorStrDimMismatch     ; 11
-    .dw errorStrDimension       ; 12
-    .dw errorStrUndefined       ; 13
-    .dw errorStrMemory          ; 14
-    .dw errorStrInvalid         ; 15
-    .dw errorStrUnknown         ; 16
-    .dw errorStrUnknown         ; 17
-    .dw errorStrUnknown         ; 18
-    .dw errorStrUnknown         ; 19
-    .dw errorStrUnknown         ; 20
-    .dw errorStrStat            ; 21
-    .dw errorStrUnknown         ; 22
-    .dw errorStrUnknown         ; 23
-    .dw errorStrSignChange      ; 24
-    .dw errorStrIterations      ; 25
-    .dw errorStrBadGuess        ; 26
-    .dw errorStrStatPlot        ; 27
-    .dw errorStrTolTooSmall     ; 28
-    .dw errorStrUnknown         ; 29
-    .dw errorStrUnknown         ; 30
-    .dw errorStrLinkXmit        ; 31
+errorCodeOk equ                 0 ; hopefully TI-OS uses 0 as "success"
+    .dw errorStrOk
+errorCodeOverflow equ           1
+    .dw errorStrOverflow
+errorCodeDivBy0 equ             2
+    .dw errorStrDivBy0
+errorCodeSingularMat equ        3
+    .dw errorStrSingularMat
+errorCodeDomain equ             4
+    .dw errorStrDomain
+errorCodeIncrement equ          5
+    .dw errorStrIncrement
+errorCodeBreak equ              6
+    .dw errorStrBreak
+errorCodeNon_Real equ           7
+    .dw errorStrNon_Real
+errorCodeSyntax equ             8 ; also triggered by ErrNonReal??
+    .dw errorStrSyntax
+errorCodeDataType equ           9 ; also triggered by ErrNonReal??
+    .dw errorStrDataType
+errorCodeArgument equ           10
+    .dw errorStrArgument
+errorCodeDimMismatch equ        11
+    .dw errorStrDimMismatch
+errorCodeDimension equ          12
+    .dw errorStrDimension
+errorCodeUndefined equ          13
+    .dw errorStrUndefined
+errorCodeMemory equ             14
+    .dw errorStrMemory
+errorCodeInvalid equ            15
+    .dw errorStrInvalid
+errorCode16 equ                 16
+    .dw errorStrUnknown
+errorCode17 equ                 17
+    .dw errorStrUnknown
+errorCode18 equ                 18
+    .dw errorStrUnknown
+errorCode19 equ                 19
+    .dw errorStrUnknown
+errorCode20 equ                 20
+    .dw errorStrUnknown
+errorCodeStat equ               21
+    .dw errorStrStat
+errorCode22 equ                 22
+    .dw errorStrUnknown
+errorCode23 equ                 23
+    .dw errorStrUnknown
+errorCodeSignChange equ         24
+    .dw errorStrSignChange
+errorCodeIterations equ         25
+    .dw errorStrIterations
+errorCodeBadGuess equ           26
+    .dw errorStrBadGuess
+errorCodeStatPlot equ           27
+    .dw errorStrStatPlot
+errorCodeTolTooSmall equ        28
+    .dw errorStrTolTooSmall
+errorCode29 equ                 29
+    .dw errorStrUnknown
+errorCode30 equ                 30
+    .dw errorStrUnknown
+errorCodeLinkXmit equ           31
+    .dw errorStrLinkXmit
     .dw errorStrUnknown         ; 32
     .dw errorStrUnknown         ; 33
     .dw errorStrUnknown         ; 34
@@ -148,7 +178,10 @@ errorStrings:
     .dw errorStrUnknown         ; 61
     .dw errorStrUnknown         ; 62
     .dw errorStrUnknown         ; 63, hopefully the last TI-OS error code
-    .dw errorStrNotYet          ; 64, Custom error code: not yet implemented
+errorCodeNotYet equ             64 ; Handler not yet implemented
+    .dw errorStrNotYet
+errorCodeRegsCleared equ        65 ; REGS cleared
+    .dw errorStrRegsCleared
 
 ; The C strings for each error code. In alphabetical order, as listed in the TI
 ; 83 Plus SDK docs.
@@ -201,4 +234,6 @@ errorStrUndefined:
 errorStrUnknown:
     .db "Err: UNKNOWN", 0 ; not defined in this module
 errorStrNotYet:
-    .db "Err: NOT YET", 0 ; not implemented yet
+    .db "Err: NOT YET", 0 ; handler not implemented yet
+errorStrRegsCleared:
+    .db "REGS cleared", 0 ; storage registers cleared

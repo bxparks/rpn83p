@@ -392,17 +392,19 @@ handleKeyClear:
 handleKeyClearNormal:
     ; Check if editing and inputBuf is empty.
     bit rpnFlagsEditing, (iy + rpnFlags)
-    jr z, handleKeyClearHitOnce
+    jr z, handleKeyClearSimple
     ld a, (inputBuf)
     or a
-    jr nz, handleKeyClearHitOnce
-handleKeyClearHitTwice:
-    ; Trigger refresh of the entire display, to remove any artifacts from buggy
-    ; display code.
+    jr nz, handleKeyClearSimple
+handleKeyClearWhileClear:
+    ; If CLEAR is hit while the inputBuffer is already clear, then force a
+    ; complete refresh of the entire display. Useful for removing any artifacts
+    ; from buggy display code.
     set dirtyFlagsMenu, (iy + dirtyFlags)
     set dirtyFlagsStack, (iy + dirtyFlags)
     set dirtyFlagsTrigMode, (iy + dirtyFlags)
-handleKeyClearHitOnce:
+handleKeyClearSimple:
+    ; Clear the input buffer, and set various flags.
     call clearInputBuf
     set rpnFlagsEditing, (iy + rpnFlags)
     res rpnFlagsLiftEnabled, (iy + rpnFlags)
@@ -1037,6 +1039,52 @@ handleKeyMode:
     ret nz
     ld a, mModeId ; MODE triggers the MODE menu.
     jp mGroupHandler
+
+;-----------------------------------------------------------------------------
+; User registers, accessed through RCL nn and STO nn.
+;-----------------------------------------------------------------------------
+
+handleKeySto:
+    call closeInputBuf
+    ld hl, handleKeyStoCallback
+    ld (argHandler), hl
+    ld hl, msgStoName
+    jp enableArgMode
+handleKeyStoCallback:
+    call rclX
+    ld a, (argValue)
+    ; check if command argument too large
+    cp regsSize
+    jr c, handleKeyStoCallbackContinue
+    ld a, errorCodeDimension
+    jp setHandlerCode
+handleKeyStoCallbackContinue:
+    inc a ; change from 0-based to 1-based
+    jp stoNN
+
+handleKeyRcl:
+    call closeInputBuf
+    ld hl, handleKeyRclCallback
+    ld (argHandler), hl
+    ld hl, msgRclName
+    jp enableArgMode
+handleKeyRclCallback:
+    ld a, (argValue)
+    ; check if command argument too large
+    cp regsSize
+    jr c, handleKeyRclCallbackContinue
+    ld a, errorCodeDimension
+    jp setHandlerCode
+handleKeyRclCallbackContinue:
+    inc a ; change from 0-based to 1-based
+    call rclNN
+    call liftStackNonEmpty
+    jp stoX
+
+msgStoName:
+    .db "STO", 0
+msgRclName:
+    .db "RCL", 0
 
 ;-----------------------------------------------------------------------------
 ; Common code fragments, to save space.

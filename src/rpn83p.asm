@@ -224,6 +224,7 @@ main:
     call initInputBuf
     call initArgBuf
     call initStack
+    call initRegs
     call initMenu
     call initDisplay
     ; [[fall through]]
