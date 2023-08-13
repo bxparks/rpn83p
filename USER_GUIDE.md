@@ -1005,7 +1005,7 @@ number into register `R00`, press:
 
 To recall register `R00`, press:
 
-- `RCL` `00`
+- `2ND` `RCL` `00`
 
 To clear the all storage registers, use the arrow keys for the menu system to
 get to:
