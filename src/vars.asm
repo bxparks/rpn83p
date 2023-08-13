@@ -121,6 +121,16 @@ initR:
     bcall(_StoR)
     ret
 
+clearStack:
+    bcall(_OP1Set0)
+    call stoX
+    call stoY
+    call stoZ
+    call stoT
+    set dirtyFlagsStack, (iy + dirtyFlags) ; force redraw
+    set rpnFlagsLiftEnabled, (iy + rpnFlags)
+    ret
+
 ;-----------------------------------------------------------------------------
 ; Stack registers to OPx functions. Functions outside of this file should
 ; go through these functions, instead of calling _StoX, _RclX directly.
@@ -409,6 +419,7 @@ regsSize equ 25
 ;   - REGS deleted if not a real list
 ;   - REGS deleted if dim(REGS) != 25
 ;   - REGS created if it doesn't exist
+; Destroys: all
 initRegs:
     call setRegsName
     bcall(_FindSym)
@@ -432,29 +443,38 @@ initRegsCheckSize:
     ret z ; REGS is Real, and sizeof 25, all ok
 initRegsWrongSize:
     ; wrong size, so delete and recreate
-    call setRegsName
+    call setRegsName ; OP1="REGS"
     bcall(_FindSym)
 initRegsDelete:
     ; Delete and recreate
     bcall(_DelVarArc)
     ; [[fallthrough]
 initRegsCreate:
-    call setRegsName
+    call setRegsName ; OP1="REGS"
     ld hl, regsSize
     bcall(_CreateRList) ; DE points to data area
+    jr clearRegsAltEntry
+
+; Description: Clear all REGS elements.
+; Input: none
+; Output: REGS elements set to 0.0
+; Destroys: all
+clearRegs:
+    call setRegsName ; OP1="REGS"
+    bcall(_FindSym)
+clearRegsAltEntry: ; alternate entry if DE is already available
     inc de
     inc de ; skip u16 holding the list size
-initRegsClear:
-    ; Set all elements to 0.0
+    ld hl, regsSize
     ld b, regsSize
     bcall(_OP1Set0)
-initRegsClearLoop:
+clearRegsLoop:
     ld hl, OP1
     push bc
     ld bc, 9
     ldir
     pop bc
-    djnz initRegsClearLoop
+    djnz clearRegsLoop
     ret
 
 setRegsName:

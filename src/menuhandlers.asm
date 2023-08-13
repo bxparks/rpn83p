@@ -1232,7 +1232,7 @@ mBinaryNegHandler:
     jp replaceX
 
 ;-----------------------------------------------------------------------------
-; Children nodes of STCK (stack functions)
+; Children nodes of STK menu group (stack functions).
 ;-----------------------------------------------------------------------------
 
 mStackRotUpHandler:
@@ -1244,3 +1244,21 @@ mStackRotDownHandler:
 
 mStackExchangeXYHandler:
     jp handleKeyExchangeXY
+
+;-----------------------------------------------------------------------------
+; Children nodes of CLR menu group (clear functions).
+;-----------------------------------------------------------------------------
+
+mClearRegsHandler:
+    call closeInputBuf
+    jp clearRegs
+
+mClearStackHandler:
+    call closeInputBuf
+    jp clearStack
+
+mClearXHandler:
+    call closeInputBuf
+    call handleKeyClearSimple
+    bcall(_OP1Set0)
+    jp stoX
