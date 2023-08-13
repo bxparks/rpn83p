@@ -11,10 +11,10 @@ RPN calculator app for the TI-83 Plus and TI-84 Plus inspired by the HP-42S.
 ## Table of Contents
 
 - [Installation](#Installation)
+- [Supported Hardware](#SupportedHardware)
 - [Quick Examples](#QuickExamples)
     - [Example 1](#Example1)
     - [Example 2](#Example2)
-- [Supported Hardware](#SupportedHardware)
 - [User Guide](#UserGuide)
 - [Compiling from Source](#Compiling)
 - [Tools and Resources](#ToolsResources)
@@ -44,7 +44,20 @@ Guide](USER_GUIDE.md), but here is the quick version:
     - Turn off device: `2ND` `OFF`
 
 As a flash app, the RPN83P does not consume precious RAM space, and it is
-preserved when the RAM is cleared (either purposefully or accidentally).
+preserved when the RAM is cleared.
+
+<a name="SupportedHardware"></a>
+### Supported Hardware
+
+This app was designed for TI calculators using the Z80 processor:
+
+- TI-83 Plus
+- TI-83 Plus Silver Edition (verified)
+- TI-84 Plus
+- TI-84 Plus Silver Edition (verified)
+
+I have tested it on the two Z80 TI calculators that I have (both Silver
+Edition). It *should* work on the others, but I have not actually tested them.
 
 <a name="QuickExamples"></a>
 ## Quick Examples
@@ -110,16 +123,6 @@ to go back to the previous menu bar:
 
 > ![ROOT MenuStrip 1](docs/rpn83p-screenshot-menu-root-1.png)
 
-<a name="SupportedHardware"></a>
-### Supported Hardware
-
-This app was designed for TI calculators using the Z80 processor:
-
-- TI-83 Plus
-- TI-83 Plus Silver Edition (verified)
-- TI-84 Plus
-- TI-84 Plus Silver Edition (verified)
-
 <a name="UserGuide"></a>
 ## User Guide
 
@@ -133,7 +136,7 @@ been verified only on my dev machine.
 
 - Clone this repo:
     - `$ git clone git@github.com:bxparks/rpn83p.git`
-    - `develop` branch contains the active development
+    - `develop` branch (default) contains the active development
     - `master` branch contains the stable release
 - Install [spasm-ng](https://github.com/alberthdev/spasm-ng).
     - I use the static binary zip file, because the `.deb` file would not
