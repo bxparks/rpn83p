@@ -265,7 +265,7 @@ to display 8 rows of numbers and letters. They are divided into the following:
 - 8: menu line
 
 The X register line is also used as the input line when entering new numbers. It
-is also used to prompt for command line argument, for example `FIX __` to set
+is also used to prompt for command line argument, for example `FIX _ _` to set
 the fixed display mode.)
 
 <a name="InputAndEditing"></a>
@@ -785,16 +785,19 @@ Type `4` then `ENTER`. The display changes to this:
 
 > ![RPN83P FIX 4](docs/rpn83p-display-mode-fix-4.png)
 
+(You can also press `FIX` `04` which will automatically invoke the `ENTER` to
+apply the change.)
+
 Notice that the floating point mode indicator at the top of the screen now shows
 `FIX(4)`.
 
-Try changing to scientific notation mode, by pressing: `SCI` `4` `ENTER`, to get this:
+Try changing to scientific notation mode, by pressing: `SCI` `04` to get this:
 
 > ![RPN83P SCI 4](docs/rpn83p-display-mode-sci-4.png)
 
 The top-line indicator shows `SCI(4)`.
 
-You can change to engineering notation mode, by pressing: `ENG` `4` `ENTER`, to
+You can change to engineering notation mode, by pressing: `ENG` `04`, to
 get this:
 
 > ![RPN83P ENG 4](docs/rpn83p-display-mode-eng-4.png)
@@ -803,28 +806,21 @@ The top-line indicator shows `ENG(4)`.
 
 To set the number of digits after the decimal point to be dynamic (i.e. the
 equivalent of `FLOAT` option in the TI-OS `MODE` menu), type in a number greater
-than 9 when prompted for `FIX _ _`, `SCI _ _`, or `ENG _ _`. Usually, I use
-`99`. For example, to use scientific notation mode with a variable number of
-fractional digits, press `SCI` `99`:
+than 9 when prompted for `FIX _ _`, `SCI _ _`, or `ENG _ _`. I usually use
+`99`, but `11` would also work. For example, to use scientific notation mode
+with a variable number of fractional digits, press `SCI` `99` at this prompt:
 
-> ![RPN83P SCI 99 Prompt](docs/rpn83p-display-mode-sci-99.png)
+> ![RPN83P SCI 99](docs/rpn83p-display-mode-sci-99.png)
 
-Then hit `ENTER` to get this:
+to get this:
 
 > ![RPN83P SCI 99](docs/rpn83p-display-mode-sci-dynamic.png)
 
 Notice that the top-line floating point indicator now shows `SCI(-)`.
 
-Finally, type `FIX` `99` `ENTER` to go back to the default floating point mode.
+Finally, type `FIX` `99` to go back to the default floating point mode.
 
 > ![RPN83P FIX 99](docs/rpn83p-display-mode-fix-99.png)
-
-**HP-42S Compatibility Note**: The HP-42S automatically performs an `ENTER`
-after 2 digits are entered at the prompt, for example `FIX` `99`. The RPN83P
-always requires the `ENTER` because I think this is a bit more consistent, and
-allows the user to edit and fix any typos. But I think I would be willing to
-emulate the HP-42S better if enough people think the HP-42S way is better. Maybe
-I could add a configuration option.
 
 **HP-42S Compatibility Note**: The RPN83P uses the underlying TI-OS floating
 point display modes, so it cannot emulate the HP-42S exactly. In particular, the
