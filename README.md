@@ -78,18 +78,18 @@ of a sphere is `(4/3) pi r^3`. There are many ways to compute this in an RPN
 system, but I tend to start with the more complex, inner expression and work
 outwards. Enter the following keystrokes:
 
-- `2`
-- `.`
-- `1`
-- `x^2`
-- `2ND` `ANS` (invokes the `LastX` functionality)
-- `*` (`r^3` is now in the `X` register)
-- `2ND` `pi` (above the `^` button)
-- `*` (`pi r^3`)
-- `4`
-- `*` (`4 pi r^3`)
-- `3`
-- `/` (`4 pi r^3 / 3`)
+- `2` button
+- `.` button
+- `1` button
+- `x^2` button
+- `2ND` `ANS` button (invokes the `LastX` functionality)
+- `*` button (`r^3` is now in the `X` register)
+- `2ND` `PI` button (above the `^` button)
+- `*` button (`pi r^3`)
+- `4` button
+- `*` button (`4 pi r^3`)
+- `3` button
+- `/` button (`4 pi r^3 / 3`)
 - the `X` register should show `38.79238609`
 
 Here is an animated GIF that shows this calculation:
@@ -99,28 +99,28 @@ Here is an animated GIF that shows this calculation:
 <a name="Example2"></a>
 ### Example 2
 
-Let's calculate the binary-and between hexadecimal `B6` and `65`, then see the
-result as an octal number, a binary (base-2) number, then finally as a decimal
-number:
+Let's calculate the binary-and operator between the hexadecimal numbers `B6` and
+`65`, then see the result as an octal number, a binary (base-2) number, then
+finally as a decimal number:
 
-- Navigate the menu with the DOWN to get to
+- Navigate the menu with the DOWN arrow to get to
   ![ROOT MenuStrip 2](docs/rpn83p-screenshot-menu-root-2.png)
-- Press the `BASE` menu to get to
+- Press `BASE` menu to get to
   ![BASE MenuStrip 1](docs/rpn83p-screenshot-menu-root-base-1.png)
-- Press the `HEX` menu.
-- `ALPHA` `B`
-- `6`
-- `ENTER`
-- `6`
-- `5`
-- Press the DOWN arrow to get to
+- Press `HEX` menu.
+- Press `ALPHA` `B` buttons
+- Press `6` button
+- Press `ENTER` button
+- Press `6` button
+- Press `5` button
+- Press DOWN arrow to get to
   ![BASE MenuStrip 2](docs/rpn83p-screenshot-menu-root-base-2.png)
-- `AND`, the `X` register should show `00000024`
-- Press the UP arrow to go back to
+- Press `AND` menu, the `X` register should show `00000024`
+- Press UP arrow to go back to
   ![BASE MenuStrip 1](docs/rpn83p-screenshot-menu-root-base-1.png)
-- `OCT`, the `X` register should show `00000000044`
-- `BIN`, the `X` register should show `00000000100100`
-- `DEC`, the `X` register should show `36`
+- Press `OCT` menu, the `X` register should show `00000000044`
+- Press `BIN` menu, the `X` register should show `00000000100100`
+- Press `DEC` menu, the `X` register should show `36`
 
 Here is the animated GIF that shows this calculation:
 
@@ -128,8 +128,8 @@ Here is the animated GIF that shows this calculation:
 
 Press:
 
-- `ON` (`ESC/EXIT`) multiple times to back to the home menu, or
-- `MATH` (`HOME`) to go back directly.
+- `ON` button (`ESC/EXIT`) multiple times to back to the home menu, or
+- `MATH` button (`HOME`) to go back directly.
 
 > ![ROOT MenuStrip 1](docs/rpn83p-screenshot-menu-root-1.png)
 
