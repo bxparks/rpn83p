@@ -324,7 +324,17 @@ displayErrorCode:
 
     ; Print error string and its numerical code.
     call getErrorString
+    push hl ; save HL = C-string
     call vPutS
+    pop hl
+
+    ; Append the numerical code only if the error message was errorStrUnknown.
+    ; This helps debugging if an unknown error code is detected.
+    ld de, errorStrUnknown
+    bcall(_CpHLDE)
+    jr nz, displayErrorCodeEnd
+
+displayErrorCodeNumerical:
     ld a, Sspace
     bcall(_VPutMap)
     ;
