@@ -1,6 +1,12 @@
 # Changelog
 
 - Unreleased
+- 0.3 (2023-08-13)
+    - Move `CLRG` from F1 position to F3. Move `CLX` to F1. If the F1
+      is accidentally hit twice when selecting the `CLR` menu group, then
+      invoking `CLX` is a lot less destructive than invoking `CLRG`.
+    - Move `IP,FP,...` menu strips before the `ABS,SIGN,...` menu strip. The
+      `IP,FP` functions seem more frequently used than the `ABS,SIGN` functions.
 - 0.2.1 (2023-08-13)
     - Update README.md. Test minor version number with new release.
     - No code change.

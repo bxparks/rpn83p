@@ -2,7 +2,7 @@
 
 RPN calculator app for the TI-83 Plus and TI-84 Plus inspired by the HP-42S.
 
-**Version**: 0.2.1 (2023-08-13)
+**Version**: 0.3 (2023-08-13)
 
 **Project Home**: https://github.com/bxparks/rpn83p
 
@@ -626,16 +626,16 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (back), and `MATH`
     - `GCD`: greatest common divisor of `X` and `Y`
     - `LCM`: lowest common multiple of `X` and `Y`
     - `PRIM`: determine if `X` is a prime, returning 1 if prime, 0 otherwise
-    - `ABS`: absolute value of `X`
-    - `SIGN`: return -1, 0, 1 depending on whether `X` is less than, equal, or
-      greater than 0, respectively
-    - `MIN`: minimum of `X` and `Y`
-    - `MAX`: maximum of `X` and `Y`
     - `IP`: integer part of `X`, truncating towards 0, preserving sign
     - `FP`: fractional part of `X`, preserving sign
     - `FLR`: the floor of `X`, the largest integer <= `X`
     - `CEIL`: the ceiling of `X`, the smallest integer >= `X`
     - `NEAR`: the nearest integer to `X`
+    - `ABS`: absolute value of `X`
+    - `SIGN`: return -1, 0, 1 depending on whether `X` is less than, equal, or
+      greater than 0, respectively
+    - `MIN`: minimum of `X` and `Y`
+    - `MAX`: maximum of `X` and `Y`
 - `ROOT` > `PROB`
     - ![PROB MenuStrip 1](docs/rpn83p-screenshot-menu-root-prob-1.png)
     - `COMB`: combination `C(n,r)` = `C(Y, X)`
