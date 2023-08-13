@@ -4,23 +4,28 @@
 ;-----------------------------------------------------------------------------
 
 ;-----------------------------------------------------------------------------
-; RPN stack and other variables. Existing TI system variables are used to
-; implement the RPN stack:
+; RPN stack registers and storage registers are implemented using TI-OS list
+; variables. Stack variables are stored in a list named 'STK' and storage
+; registers are stored in a list named 'REGS' (which is similar to the 'REGS'
+; variable used on the HP-42S calculator).
 ;
-;   RPN     TI      OS Routines
-;   ---     --      -----------
-;   T       T       StoT, TName + RclVarSym
-;   Z       Z       StoOther, RclVarSym
-;   Y       Y       StoY, RclY, YName
-;   X       X       StoX, RclX, XName
-;   LastX   R       StoR, RName + RclVarSym
-;   ??      Ans     StoAns, RclAns
-;-----------------------------------------------------------------------------
-
-;-----------------------------------------------------------------------------
-; User registers. Accessed through `STO nn` and `RCL nn`. Let's store them as a
-; list variable named `REGS`, similar to HP-42S. The TI-OS routines related to
-; list variables are:
+; Early versions of RPN83P mapped each stack register to a single-letter real
+; variables in the TI-OS, in other words, X, Y, Z, T, R. They were convenient
+; because the TI-OS seemed to provide a number of subroutines (e.g. StoX, RclX,
+; etc), which makde it relatively easy access those single-letter variables.
+;
+; Later, I wanted to rename those single-letter variables to STX, STY, STZ,
+; STT, and STL, to avoid any conflicts with other apps that may use those
+; variables. But I discovered that the TI-OS allows only a single-letter
+; variable name for RealObj variables. Multi-letter variables are supported
+; only for ListObj, CListObj, ProgObj, ProtProgObj, and AppVarObj. Since I had
+; already learned how to use the TI-OS routines related to list variables, it
+; made sense to move the RPN stack variables to a ListObj variable. It is named
+; 'STK' because I wanted it to be relatively short (for efficiency), but also
+; long enough to be self-descriptive and avoid name conflicts with any other
+; apps. (The other option was 'ST' which didn't seem self-descriptive enough.)
+;
+; The following are the TI-OS routines relavant to ListObj variables:
 ;
 ;   - GetLToOP1(): Get list element to OP1
 ;       - Input:
@@ -66,74 +71,195 @@
 ;
 ;-----------------------------------------------------------------------------
 
-; Function: Initialize the RPN stack variables. If X, Y, Z, T, R already exist,
-; the existing values will be used. Otherwise, set to zero.
-; TODO: Check if the variables are complex. If so, reinitialize them to be real.
-; Destroys: all?
-initStack:
-    call initT
-    call initY
-    call initX
-    call initZ
-    call initR
-    set dirtyFlagsStack, (iy + dirtyFlags) ; force initial display
-    set rpnFlagsLiftEnabled, (iy + rpnFlags)
-    ret
+stackSize equ 5 ; X, Y, Z, T, LastX
+stackXIndex equ 1
+stackYIndex equ 2
+stackZIndex equ 3
+stackTIndex equ 4
+stackLIndex equ 5 ; LastX
 
-initX:
-    bcall(_XName)
-    bcall(_FindSym)
-    ret nc
-    bcall(_OP1Set0)
-    call stoX
-    ret
+stackName:
+    .db ListObj, tVarLst, "STK", 0
 
-initY:
-    bcall(_YName)
-    bcall(_FindSym)
-    ret nc
-    bcall(_OP1Set0)
-    call stoY
-    ret
-
-initZ:
-    ld hl, zname
+setStackName:
+    ld hl, stackName
     bcall(_Mov9ToOP1)
-    bcall(_FindSym)
-    ret nc
-    bcall(_OP1Set0)
-    call stoZ
     ret
 
-initT:
-    bcall(_TName)
+; Description: Initialize the RPN stack using the TI-OS list variable named
+; 'STK'.
+; Output:
+;   - STK deleted if not a real list
+;   - STK deleted if dim(STK) != 5
+;   - STK created if it doesn't exist
+; Destroys: all
+initStack:
+    call setStackName
     bcall(_FindSym)
-    ret nc
-    bcall(_OP1Set0)
-    call stoT
-    ret
-
-initR:
-    bcall(_RName)
+    jr c, initStackCreate ; if CF=1: not found
+initStackCheckType:
+    and $1F
+    cp ListObj
+    jr nz, initStackDelete
+initStackCheckArchive:
+    ; if B!=0: var is archived
+    ld a, b
+    or a
+    jr nz, initStackDelete
+initStackCheckSize:
+    ex de, hl ; HL = pointer to data structure
+    ld e, (hl) ; get the LSB of the number elements
+    inc hl ; move to MSB
+    ld d, (hl) ; DE = number elements in STK
+    ex de, hl
+    ld de, stackSize
+    bcall(_CpHLDE) ; if dim(STK) < 5: CF=1
+    ret z ; STK is Real, and sizeof 5, all ok
+initStackWrongSize:
+    ; wrong size, so delete and recreate
+    call setStackName ; OP1="STK"
     bcall(_FindSym)
-    ret nc
-    bcall(_OP1Set0)
-    bcall(_StoR)
-    ret
+initStackDelete:
+    bcall(_DelVarArc)
+    ; [[fallthrough]]
+initStackCreate:
+    call setStackName
+    ld hl, stackSize
+    bcall(_CreateRList)
+    jr clearStackAltEntry
 
+; Description: Clear the RPN stack.
+; Input: none
+; Output: stack registers all set to 0.0
+; Destroys: all
 clearStack:
+    call setStackName
+    bcall(_FindSym)
+clearStackAltEntry: ; alternate entry if DE is already correctly set
+    inc de
+    inc de ; skip u16 holding the list size
+    ld hl, stackSize
+    ld b, stackSize
     bcall(_OP1Set0)
-    call stoX
-    call stoY
-    call stoZ
-    call stoT
+clearStackLoop:
+    ld hl, OP1
+    push bc
+    ld bc, 9
+    ldir
+    pop bc
+    djnz clearStackLoop
+clearStackEnd:
     set dirtyFlagsStack, (iy + dirtyFlags) ; force redraw
     set rpnFlagsLiftEnabled, (iy + rpnFlags)
     ret
 
 ;-----------------------------------------------------------------------------
-; Stack registers to OPx functions. Functions outside of this file should
-; go through these functions, instead of calling _StoX, _RclX directly.
+; Stack registers to and from OP1 function functions.
+;-----------------------------------------------------------------------------
+
+; Description: Store OP1 to STK[nn], setting dirty flag.
+; Input:
+;   - A: register index, one-based
+;   - OP1: float value
+; Output:
+;   - STK[nn] = OP1
+; Destroys: all
+; Preserves: OP1, OP2
+; TODO: I think we can combine stoNN() and stoStackNN().
+stoStackNN:
+    push af
+    bcall(_PushRealO1)
+    call setStackName
+    bcall(_FindSym) ; DE = pointer data area
+    push de
+    bcall(_PopRealO1) ; destroys DE
+    pop de
+    pop af
+    ld l, a
+    ld h, 0
+    bcall(_PutToL)
+    set dirtyFlagsStack, (iy + dirtyFlags)
+    ret
+
+; Function: Copy STK[nn] to OP1.
+; Input:
+;   - A: register index, one-based
+;   - 'STK' list variable
+; Output:
+;   - OP1: float value
+; Destroys: all
+; Preserves: OP2
+; TODO: I think we can combine rclNN() and rclStackNN().
+rclStackNN:
+    push af
+    call setStackName
+    bcall(_FindSym) ; DE = pointer data area
+    pop af
+    ld l, a
+    ld h, 0
+    bcall(_GetLToOP1)
+    ret
+
+;-----------------------------------------------------------------------------
+
+; Description: Set OP1 to stX.
+rclX:
+    ld a, stackXIndex
+    jr rclStackNN
+
+; Description: Set stX to OP1.
+stoX:
+    ld a, stackXIndex
+    jr stoStackNN
+
+;-----------------------------------------------------------------------------
+
+; Description: Set OP1 to stY.
+rclY:
+    ld a, stackYIndex
+    jr rclStackNN
+
+; Description: Set stY to OP1.
+stoY:
+    ld a, stackYIndex
+    jr stoStackNN
+
+;-----------------------------------------------------------------------------
+
+; Description: Set OP1 to stZ.
+rclZ:
+    ld a, stackZIndex
+    jr rclStackNN
+
+; Description: Set stZ to OP1.
+stoZ:
+    ld a, stackZIndex
+    jr stoStackNN
+
+;-----------------------------------------------------------------------------
+
+; Description: Set OP1 to stT.
+rclT:
+    ld a, stackTIndex
+    jr rclStackNN
+
+; Description: Set stT to OP1.
+stoT:
+    ld a, stackTIndex
+    jr stoStackNN
+
+;-----------------------------------------------------------------------------
+
+; Description: Set OP1 to stL.
+rclL:
+    ld a, stackLIndex
+    jr rclStackNN
+
+; Description: Set stL to OP1.
+stoL:
+    ld a, stackLIndex
+    jr stoStackNN
+
 ;-----------------------------------------------------------------------------
 
 ; Description: Replace stX with OP1, saving previous stX to lastX, and
@@ -142,8 +268,8 @@ clearStack:
 replaceX:
     bcall(_CkValidNum)
     bcall(_OP1ToOP2)
-    bcall(_RclX)
-    call stoLastX
+    call rclX
+    call stoL
     bcall(_OP2ToOP1)
     jr stoX
 
@@ -153,8 +279,8 @@ replaceX:
 replaceXY:
     bcall(_CkValidNum)
     bcall(_OP1ToOP2)
-    bcall(_RclX)
-    call stoLastX
+    call rclX
+    call stoL
     bcall(_OP2ToOP1)
     call dropStack
     jr stoX
@@ -171,120 +297,12 @@ replaceXYWithOP2OP1:
 
     call stoY ; stY = OP1
     bcall(_PushRealO1) ; FPS = OP1
-    bcall(_RclX)
-    call stoLastX ; lastX = stX
+    call rclX
+    call stoL; lastX = stX
 
     bcall(_OP2ToOP1)
     call stoX ; stX = OP2 
     bcall(_PopRealO1) ; OP1 unchanged
-    ret
-
-;-----------------------------------------------------------------------------
-
-; Function: Copy stX to OP1.
-; Preserves: OP2
-rclX:
-    bcall(_RclX)
-    ret
-
-; Function: Store OP1 to stX, setting dirty flag.
-; Destroys: all, OP4
-; Preserves: OP1, OP2
-stoX:
-    bcall(_StoX)
-    set dirtyFlagsStack, (iy + dirtyFlags)
-    ret
-
-;-----------------------------------------------------------------------------
-
-; Function: Copy stT to OP1.
-; Destroys: all, OP1
-rclLastX:
-    bcall(_RName)
-    bcall(_RclVarSym)
-    ret
-
-; Function: Store OP1 to lastX.
-; Destroys: all, OP4
-; Preserves: OP1, OP2
-stoLastX:
-    bcall(_StoR)
-    ret
-
-;-----------------------------------------------------------------------------
-
-; Function: Copy stY to OP1.
-; Preserves: OP2
-rclY:
-    bcall(_RclY)
-    ret
-
-; Function: Store OP1 to stY, setting dirty flag.
-; Destroys: all, OP4
-; Preserves: OP1, OP2
-stoY:
-    bcall(_StoY)
-    set dirtyFlagsStack, (iy + dirtyFlags)
-    ret
-
-;-----------------------------------------------------------------------------
-
-; Function: Recall stZ to OP1.
-; Output; OP1: set to stZ
-; Destroys: all, OP1
-; Preserves: OP2
-rclZ:
-    ld hl, zname
-    bcall(_Mov9ToOP1)
-    bcall(_RclVarSym)
-    ret
-
-; Function: Store OP1 to stZ variable, setting dirty flag.
-; Output; CF = 1 if failed to store
-; Destroys: all, OP4, OP6
-; Preserves: OP1, OP2
-stoZ:
-    set dirtyFlagsStack, (iy + dirtyFlags)
-    bcall(_OP1ToOP6) ; OP6=OP1 save
-
-    bcall(_PushRealO1) ; _StoOther() wants the data in FPS(!)
-    ld hl, zName
-    bcall(_Mov9ToOP1) ; OP1 = name of var, i.e. "Z"
-
-    ; AppOnErr macro does not seem to work on spasm-ng. So do it manually.
-    ld hl, stoZFail
-    call APP_PUSH_ERRORH
-    bcall(_StoOther) ; _StoOther() implicitly pops the FPS(!)
-    call APP_POP_ERRORH
-
-    bcall(_OP6ToOP1) ; restore OP1
-    or a ; CF=0
-    ret
-stoZFail:
-    bcall(_OP6ToOP1)
-    scf ; CF=1
-    ret
-
-; Name of the "Z" variable.
-zName:
-    .db 0, tZ, 0, 0 ; the trailing 5 bytes can be anything
-
-;-----------------------------------------------------------------------------
-
-; Function: Copy stT to OP1.
-; Destroys: all, OP1
-; Preserves: OP2
-rclT:
-    bcall(_TName)
-    bcall(_RclVarSym)
-    ret
-
-; Function: Store OP1 to stT, setting dirty flag.
-; Destroys: all, OP4
-; Preserves: OP1, OP2
-stoT:
-    bcall(_StoT)
-    set dirtyFlagsStack, (iy + dirtyFlags)
     ret
 
 ;-----------------------------------------------------------------------------
@@ -304,6 +322,8 @@ liftStackNonEmpty:
 ; Output: T=Z; Z=Y; Y=X; X=X; OP1 preserved
 ; Destroys: all, OP4
 ; Preserves: OP1, OP2
+; TODO: Make this more efficient by taking advantage of the fact that stack
+; registers are actually in a list variable named STK.
 liftStack:
     bcall(_PushRealO1)
     ; T = Z
@@ -326,6 +346,8 @@ liftStack:
 ; Output: X=Y; Y=Z; Z=T; T=T; OP1 preserved
 ; Destroys: all, OP4
 ; Preserves: OP1, OP2
+; TODO: Make this more efficient by taking advantage of the fact that stack
+; registers are actually in a list variable named STK.
 dropStack:
     bcall(_PushRealO1)
     ; X = Y
@@ -348,6 +370,8 @@ dropStack:
 ; Output: X=Y; Y=Z; Z=T; T=X
 ; Destroys: all, OP1, OP2, OP4
 ; Preserves: none
+; TODO: Make this more efficient by taking advantage of the fact that stack
+; registers are actually in a list variable named STK.
 rotDownStack:
     ; save X in FPS
     call rclX
@@ -373,6 +397,8 @@ rotDownStack:
 ; Output: T=Z; Z=Y; Y=X; X=T
 ; Destroys: all, OP1, OP2, OP4
 ; Preserves: none
+; TODO: Make this more efficient by taking advantage of the fact that stack
+; registers are actually in a list variable named STK.
 rotUpStack:
     ; save T in FPS
     call rclT
@@ -412,6 +438,14 @@ exchangeXYStack:
 
 regsSize equ 25
 
+setRegsName:
+    ld hl, regsName ; HL = "REGS"
+    bcall(_Mov9ToOP1)
+    ret
+
+regsName:
+    .db ListObj, tVarLst, "REGS", 0
+
 ; Description: Initialize the REGS list variable which is used for user
 ; registers 00 to 24.
 ; Input: none
@@ -429,11 +463,12 @@ initRegsCheckType:
     cp ListObj
     jr nz, initRegsDelete
 initRegsCheckArchive:
+    ; if B!=0: var is archived
     ld a, b
     or a
     jr nz, initRegsDelete
 initRegsCheckSize:
-    ex de, hl ; hl = pointer to data structure
+    ex de, hl ; HL = pointer to data structure
     ld e, (hl) ; get the LSB of the number elements
     inc hl ; move to MSB
     ld d, (hl) ; DE = number elements in REGS
@@ -446,7 +481,6 @@ initRegsWrongSize:
     call setRegsName ; OP1="REGS"
     bcall(_FindSym)
 initRegsDelete:
-    ; Delete and recreate
     bcall(_DelVarArc)
     ; [[fallthrough]
 initRegsCreate:
@@ -462,7 +496,7 @@ initRegsCreate:
 clearRegs:
     call setRegsName ; OP1="REGS"
     bcall(_FindSym)
-clearRegsAltEntry: ; alternate entry if DE is already available
+clearRegsAltEntry: ; alternate entry if DE is already correctly set
     inc de
     inc de ; skip u16 holding the list size
     ld hl, regsSize
@@ -476,23 +510,6 @@ clearRegsLoop:
     pop bc
     djnz clearRegsLoop
     ret
-
-setRegsName:
-    ld hl, regsName ; HL = "REGS"
-    bcall(_Mov9ToOP1)
-    ret
-
-#ifdef DEBUG
-msgRegsCreated:
-    .db "REGS Created", 0
-msgRegsFound:
-    .db "REGS Found", 0
-msgRegsNotFound:
-    .db "REGS Not Found", 0
-#endif
-
-regsName:
-    .db ListObj, tVarLst, "REGS", 0
 
 ;-----------------------------------------------------------------------------
 
@@ -520,7 +537,7 @@ stoNN:
 ; Description: Recall REGS[NN] into OP1.
 ; Input:
 ;   - A: register index, one-based
-;   - REGS
+;   - 'REGS' list variable
 ; Output:
 ;   - OP1: float value
 ; Destroys: all

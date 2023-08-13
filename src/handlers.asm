@@ -944,7 +944,7 @@ handleKeyAns:
     bit rpnFlagsArgMode, (iy + rpnFlags)
     ret nz
     call closeInputBuf
-    call rclLastX
+    call rclL
     call liftStackNonEmpty
     jp stoX
 
