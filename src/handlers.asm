@@ -38,7 +38,21 @@ lookupKeyMatched:
 ;   A: character to be appended
 handleKeyNumberArg:
     call appendArgBuf
-    ret
+    ld a, (argBuf) ; A = length of argBuf string
+    cp a, argBufSizeMax
+    ret nz ; if only 1 digit entered, just return
+
+    ; On the 2nd digit, invoke auto ENTER to execute the pending command. But
+    ; before we do that, we refresh display to allow the user to see the 2nd
+    ; digit briefly. On a real HP-42S, the calculator seems to update the
+    ; display on the *press* of the digit, then trigger the command on the
+    ; *release* of the button, which allows the calculator to show the 2nd
+    ; digit to the user. The TI-OS GetKey() function used by this app does not
+    ; give us that level of control over the press and release events of a
+    ; button. Hence the need for this hack.
+    set dirtyFlagsInput, (iy + dirtyFlags)
+    call displayStack
+    jp handleKeyEnterArg
 
 ; Function: Append a number character to inputBuf or argBuf, updating various
 ; flags.
