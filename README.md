@@ -129,7 +129,7 @@ See the [RPN83P User Guide](USER_GUIDE.md).
 I use Ubuntu Linux 22.04 for my development. The following instructions have
 been verified only on my dev machine.
 
-- Install [Supported Hardware](https://github.com/alberthdev/spasm-ng).
+- Install [spasm-ng](https://github.com/alberthdev/spasm-ng).
     - I use the static binary zip file, because the `.deb` file would not
       resolve dependencies.
     - Unpack the zip file so that the `spasm` directory is a *sibling* to the
