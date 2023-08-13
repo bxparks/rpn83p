@@ -62,11 +62,11 @@ memory. Since it is stored in flash, it is preserved if the RAM is cleared. It
 consumes a small amount of TI-OS RAM: 2 list variables named `REGS` and `STK`
 which are 240 bytes and 59 bytes respectively.
 
-Here are some of the high level features:
+Here the quick summary of its features:
 
 - traditional 4-level RPN stack (`X`, `Y`, `Z`, `T` registers)
 - support for `lastX` register
-- 25 storage registers (`STO 00`, `RCL 00`, etc)
+- 25 storage registers (`STO 00`, `RCL 00`, ..., `STO 24`, `RCL 24`)
 - hierarchical menu system, inspired by the HP-42S
 - support for all math functions with dedicated buttons
     - arithmetic: `/`, `*`, `-`, `+`
@@ -160,8 +160,9 @@ The RPN83P is inspired by the HP-42S. It is the RPN calculator that I know best.
 It also has the advantage of having the
 [Free42](https://thomasokken.com/free42/) app (Android, iOS, Windows, MacOS,
 Linux) which faithfully reproduces every feature of the HP-42S. This is
-essential because I don't own an actual HP-42S anymore. The RPN83P app cannot be
-a clone of the HP-42S for several reasons:
+essential because I don't own an actual HP-42S anymore to verify obscure edge
+cases which may not be documented. The RPN83P app cannot be a clone of the
+HP-42S for several reasons:
 
 - A quick survey of the keyboard of the TI-83 and TI-84 calculators shows that
   the button layout and labels are different. As an obvious example, the TI
@@ -171,14 +172,16 @@ a clone of the HP-42S for several reasons:
   ones provided by the underlying TI-OS. There are essential differences between
   the two systems. For example, the HP-42S supports exponents up to +/-499, but
   the TI-OS supports exponents only to +/-99.
-- There may be people who claim that the HP-42S ["was the peak of perfection for
-  the classic HP
-  calcs"](https://www.hpmuseum.org/cgi-sys/cgiwrap/hpmuseum/archv017.cgi?read=118462),
-  but there are features of the HP-42S that can be improved upon. For example,
-  the HP-42S has a 2-line LCD display which is better than the single-line
-  display of earlier HP calculators. But the TI-83 and TI-84 LCD screens are big
-  enough to show the entire RPN stack as well as the hierarchical menu bar at
-  all times, so it makes sense to take advantage of the larger LCD screen size.
+
+There may be people who claim that the HP-42S ["was the peak of perfection for
+the classic HP
+calcs"](https://www.hpmuseum.org/cgi-sys/cgiwrap/hpmuseum/archv017.cgi?read=118462),
+but there are features of the HP-42S that I have found to be confusing or could
+be improved. For example, the HP-42S has a 2-line LCD display which is better
+than the single-line display of earlier HP calculators. But the TI-83 and TI-84
+LCD screens are big enough to show the entire RPN stack as well as the
+hierarchical menu bar at all times, so it makes sense to take advantage of the
+larger LCD screen size.
 
 The purpose of the RPN83P project was to help me learn Z80 programming on a TI
 calculator, and to convert a TI calculator into an RPN calculator that I can
