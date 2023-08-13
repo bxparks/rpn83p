@@ -392,17 +392,19 @@ handleKeyClear:
 handleKeyClearNormal:
     ; Check if editing and inputBuf is empty.
     bit rpnFlagsEditing, (iy + rpnFlags)
-    jr z, handleKeyClearHitOnce
+    jr z, handleKeyClearSimple
     ld a, (inputBuf)
     or a
-    jr nz, handleKeyClearHitOnce
-handleKeyClearHitTwice:
-    ; Trigger refresh of the entire display, to remove any artifacts from buggy
-    ; display code.
+    jr nz, handleKeyClearSimple
+handleKeyClearWhileClear:
+    ; If CLEAR is hit while the inputBuffer is already clear, then force a
+    ; complete refresh of the entire display. Useful for removing any artifacts
+    ; from buggy display code.
     set dirtyFlagsMenu, (iy + dirtyFlags)
     set dirtyFlagsStack, (iy + dirtyFlags)
     set dirtyFlagsTrigMode, (iy + dirtyFlags)
-handleKeyClearHitOnce:
+handleKeyClearSimple:
+    ; Clear the input buffer, and set various flags.
     call clearInputBuf
     set rpnFlagsEditing, (iy + rpnFlags)
     res rpnFlagsLiftEnabled, (iy + rpnFlags)
