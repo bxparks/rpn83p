@@ -2,7 +2,7 @@
 
 RPN calculator app for the TI-83 Plus and TI-84 Plus inspired by the HP-42S.
 
-**Version**: 0.1 (2023-08-13)
+**Version**: 0.2 (2023-08-13)
 
 **Changelog**: [CHANGELOG.md](CHANGELOG.md)
 
@@ -25,12 +25,14 @@ RPN calculator app for the TI-83 Plus and TI-84 Plus inspired by the HP-42S.
 <a name="Installation"></a>
 ## Installation
 
-RPN83P is a flash application (it no longer small enough to create as an
-assembly language program). Detailed instructions are given in the [RPN83P User
+RPN83P is a flash application that is packaged as a single file named
+`rpn83p.8xk`. Detailed instructions are given in the [RPN83P User
 Guide](USER_GUIDE.md), but here is the quick version:
 
-- Copy the `rpn83p.8xk` file to the TI-83/TI-84 calculator. Use one of following
-  link programs:
+- Download the `rpn83p.8xk` file from the
+  [releases page](https://github.com/bxparks/rpn83p/releases).
+- Upload the file to the TI-83 Plus or TI-84 Plus calculator. Use one of
+  following link programs:
     - Windows: [TI Connect](https://education.ti.com/en/products/computer-software/ti-connect-sw)
     - Linux: [tilp](https://github.com/debrouxl/tilp_and_gfm)
 - Run the program using the `APPS`:

@@ -2,7 +2,7 @@
 
 RPN calculator app for the TI-83 Plus and TI-84 Plus inspired by the HP-42S.
 
-**Version**: 0.1 (2023-08-13)
+**Version**: 0.2 (2023-08-13)
 
 **Project Home**: https://github.com/bxparks/rpn83p
 
@@ -192,12 +192,23 @@ project.
 <a name="Installation"></a>
 ## Installation
 
+<a name="ObtainingProgramFile"></a>
+### Obtaining the Program File
+
+The RPN83P app is packaged as a single file named `rpn83p.8xk`. There are at
+least 2 ways to obtain this:
+
+- [RPN83P release page on GitHub](https://github.com/bxparks/rpn83p/releases)
+    - go to the latest release
+    - click and download the `rpn83p.8xk` file
+- Compile the binary locally
+    - See [Compiling from Source](#Compiling) section below
+
 <a name="Uploading"></a>
 ### Uploading
 
-The RPN83P app is provided as a single file named `rpn83p.8xk`. It must be
-uploaded to the calculator using a "link" program from a host computer. There
-are a number of options:
+The `rpn83p.8xk` file must be uploaded to the calculator using a "link" program
+from a host computer. There are a number of options:
 
 **Linux**: Use the [tilp](https://github.com/debrouxl/tilp_and_gfm) program. On
 Ubuntu Linux 22.04 systems, the precompiled package can be installed using `$
@@ -232,7 +243,8 @@ should see a screen that looks like:
 The RPN83P application can be quit using:
 
 - `2ND` `QUIT`: to exit to normal TI calculator
-- `2ND` `OFF`: to turn the calculator off (the RPN registers will be preserved)
+- `2ND` `OFF`: to turn the calculator off (the RPN registers and storage
+  registers will be preserved)
 
 <a name="BasicUsage"></a>
 ## Basic Usage
