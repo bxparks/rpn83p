@@ -1,6 +1,9 @@
 # Changelog
 
 - Unreleased
+- 0.2.1 (2023-08-13)
+    - Update README.md. Test minor version number with new release.
+    - No code change.
 - 0.2 (2023-08-13)
     - Update downloading and installation instructions.
 - 0.1 (2023-08-13)
