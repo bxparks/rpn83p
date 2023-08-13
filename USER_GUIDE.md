@@ -2,7 +2,7 @@
 
 RPN calculator app for the TI-83 Plus and TI-84 Plus inspired by the HP-42S.
 
-**Version**: 0.0 (2023-08-11)
+**Version**: 0.0 (2023-08-13)
 
 **Project Home**: https://github.com/bxparks/rpn83p
 
@@ -43,7 +43,6 @@ RPN calculator app for the TI-83 Plus and TI-84 Plus inspired by the HP-42S.
     - [Medium Future](#MediumFuture)
     - [Far Future](#FarFuture)
     - [Not Planned](#NotPlanned)
-- [Bugs and Limitations](#BugsAndLimitations)
 
 <a name="Introduction"></a>
 ## Introduction
@@ -60,12 +59,14 @@ of some older HP calculators like the
 
 The RPN83P is a flash application that consumes one page (16 kB) of flash
 memory. Since it is stored in flash, it is preserved if the RAM is cleared. It
-consumes very little RAM: only 5 variables of 18 bytes or about 90 bytes.
+consumes a small amount of TI-OS RAM: 2 list variables named `REGS` and `STK`
+which are 240 bytes and 59 bytes respectively.
 
 Here are some of the high level features:
 
 - traditional 4-level RPN stack (`X`, `Y`, `Z`, `T` registers)
 - support for `lastX` register
+- 25 storage registers (`STO 00`, `RCL 00`, etc)
 - hierarchical menu system, inspired by the HP-42S
 - support for all math functions with dedicated buttons
     - arithmetic: `/`, `*`, `-`, `+`
@@ -89,7 +90,6 @@ Here are some of the high level features:
     - `FIX` (fixed point 0-9 digits)
     - `SCI` (scientific 0-9 digits)
     - `ENG` (engineering 0-9 digits)
-- user registers (`STO 00`, `RCL 00`, etc)
 
 Here are some missing features which may be added in the future:
 
@@ -1019,8 +1019,9 @@ The message `REGS cleared` will be displayed on the screen.
 <a name="FutureEnhancements"></a>
 ## Future Enhancements
 
-There are a number of features which I would like to add in the future. I have
-grouped them as follows:
+There seems to be almost an endless number of features that could go into a
+calculator app. I have grouped them as follows, since my time and energy is
+limited:
 
 <a name="NearFuture"></a>
 ### Near Future
@@ -1031,33 +1032,35 @@ grouped them as follows:
     - rotate left
     - rotate right
     - arithmetic shift right (preserve sign bit)
-- user selectable integer size for `BASE` functions
-    - currently, binary, octal, hexadecimal routines are implemented internally
-      using 32-bit unsigned numbers
-    - the user ought to be able to specify the integer size for those
-      operations: 8 bits, 16 bits, 32 bits, maybe 48 bits and 64 bits
-    - the user-interface will be a challenge: for large integer sizes, the
-      number of digits will no longer fit inside the 14-15 digits available on a
-      single line.
-- system memory
-    - It might be useful to expose some system status functions, like memory.
-    - But since we can always drop into the TI-OS and use `2ND` `MEM` to get
-      that information, it is not clear that this is worth the effort.
+- `PRIM` (isPrime) is quite slow, about as slow as a TI-BASIC program.
+    - Uses the TI-OS floating numbers and subroutines, which works pretty
+      well for smallish integers.
+    - Can probably make this significantly faster by implementing the algorithm
+      using native Z80 integer operations.
+    - (Need to write a `div(u32, u16) -> u32` function).
+- `PROB` and `COMB` arguments are limited to `< 256`
+    - Maybe extend this to `< 2^16` or `<2^32`.
+- `GCD` and `LCM` functions are slow
+    - Could be made significantly faster.
+- save application configurations upon quitting
+    - The RPN stack (X, Y, Z, T, LastX) and storage registers (R00 - R24) are
+      saved persistently, and restored upon restart.
+    - Application configurations are not saved:
+        - DEG/RAD mode
+        - FIX/SCI/ENG settings
+        - DEC/HEX/OCT/BIN base mode settings
+        - the input buffer
 
 <a name="MediumFuture"></a>
 ### Medium Future
 
-- registers and variables
-    - The HP-42S distinguishes between user *registers* (with numeric names,
-      e.g. 00-24) and user *variables* (with symbolic names, e.g. "LIM", "X").
-    - User-registers are implemented, supporting registers `00` to `24`.
-    - User-variables are not yet implemented.
-        - The HP-42S shows user-defined variables through the menu system. It's
-          a nice feature, but would require substantial refactoring of the
-          current menu system code.
-    - Compound `STO` and `RCL` operations are not implemented:
-        - `STO+ nn`, `STO- nn`, `STO* nn`, `STO/ nn`
-        - `RCL+ nn`, `RCL- nn`, `RCL* nn`, `RCL/ nn`
+- compound `STO` and `RCL` operators
+    - `STO+ nn`, `STO- nn`, `STO* nn`, `STO/ nn`
+    - `RCL+ nn`, `RCL- nn`, `RCL* nn`, `RCL/ nn`
+- user-defined variables
+    - The HP-42S shows user-defined variables through the menu system.
+    - Nice feature, but would require substantial refactoring of the current
+      menu system code.
 - complex numbers
     - The TI-OS provides internal subroutines to handle complex numbers, so in
       theory, this should be relatively easy.
@@ -1074,6 +1077,33 @@ grouped them as follows:
 - real time clock
     - I believe the TI-84 Plus has an RTC.
     - It would be interesting to expose some time, date, and timezone features.
+- `UNIT` conversions
+    - several places assume US customary units (e.g. US gallons) instead of
+      British or Canadian imperial units
+    - it'd be nice to support both types, if we can make the menu labels
+      self-documenting and distinctive
+- user selectable integer size for `BASE` functions
+    - currently, binary, octal, hexadecimal routines are implemented internally
+      using 32-bit unsigned numbers
+    - the user ought to be able to specify the integer size for those
+      operations: 8 bits, 16 bits, 32 bits, maybe 48 bits and 64 bits
+    - the user-interface will be a challenge: for large integer sizes, the
+      number of digits will no longer fit inside the 14-15 digits available on a
+      single line.
+- Support more than 14 digits using `BASE 2`
+    - The underlying integer representation is 32 bit, it would be nice to be
+      able to display all of those digits.
+    - But this could be a difficult UI problem, because 32 digits will require 3
+      lines on the display, as each line currently can support only 14, maybe
+      15 digits.
+- system memory
+    - Might be useful to expose some system status functions, like memory.
+    - We can always drop into the TI-OS and use `2ND` `MEM` to get that
+      information, so it's not clear that this is worth the effort.
+- transfer info between RPN83P and TI-OS
+    - It may be useful to share results between the TI-OS and the RPN83P app.
+    - To start, I think we can use `ANS` variable on the TI-OS to transport
+      the `stX` register on the RPN83P.
 
 <a name="FarFuture"></a>
 ### Far Future
@@ -1089,10 +1119,10 @@ curiosity and the technical challenge:
       is required?
 - matrix and vectors
     - I don't know how much matrix functionality is provided by TI-OS SDK.
-    - Making the user-interface reasonable could be a challenge.
-    - I'm not sure that adding matrix functions into a calculator is worth the
-      effort. For any non-trivial calculations, it is probably easier to use a
-      desktop computer and application (e.g. MATLAB, Octave, Mathematica).
+    - Creating a reasonable user-interface in the RPN83P could be a challenge.
+    - It is not clear that adding matrix functions into a calculator is worth
+      the effort. For non-trivial calculations, it is probably easier to use
+      a desktop computer and application (e.g. MATLAB, Octave, Mathematica).
 
 <a name="NotPlanned"></a>
 ### Not Planned
@@ -1106,26 +1136,3 @@ curiosity and the technical challenge:
 - rational numbers
     - Not something that I have ever needed, so I probably will not want to
       spend my time implementing it.
-
-<a name="BugsAndLimitations"></a>
-## Bugs and Limitations
-
-- `PRIM` (isPrime) is quite slow, about as slow as a TI-BASIC program.
-    - Uses the TI-OS floating numbers and subroutines, which works pretty
-      well for smallish integers.
-    - Can probably make this significantly faster by implementing the algorithm
-      using native Z80 integer operations.
-    - (Need to write a `div(u32, u16) -> u32` function).
-- `PROB` and `COMB` arguments are limited to `< 256`
-    - Should be relatively easy to extend this to `< 2^16` or `<2^32`.
-- `GCD` and `LCM` functions are slow
-    - Could be made significantly faster.
-- Too many digits when using `BASE 2`
-    - A single line in the RPN83P app can display 14 digits.
-    - A 32-bit integer in base 2 requires 32 digits, so the display will often
-      overflow when using base 2.
-- `UNIT` conversions
-    - several places assume US customary units (e.g. US gallons) instead of
-      British or Canadian imperial units
-    - it'd be nice to support both types, if we can make the menu labels
-      self-documenting and distinctive
