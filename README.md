@@ -129,6 +129,10 @@ See the [RPN83P User Guide](USER_GUIDE.md).
 I use Ubuntu Linux 22.04 for my development. The following instructions have
 been verified only on my dev machine.
 
+- Clone this repo:
+    - `$ git clone git@github.com:bxparks/rpn83p.git`
+    - `develop` branch contains the active development
+    - `master` branch contains the stable release
 - Install [spasm-ng](https://github.com/alberthdev/spasm-ng).
     - I use the static binary zip file, because the `.deb` file would not
       resolve dependencies.
@@ -141,7 +145,8 @@ been verified only on my dev machine.
 <a name="ToolsResources"></a>
 ## Tools and Resources
 
-Here is what I use for development on Ubuntu Linux 22.04:
+Here is the tools and resources that I use for development on Ubuntu Linux
+22.04:
 
 - spasm-ng Z80 assembler
     - https://github.com/alberthdev/spasm-ng
@@ -173,6 +178,11 @@ Here is what I use for development on Ubuntu Linux 22.04:
     - https://www.gnu.org/software/make/
     - Should already be installed on Ubuntu Linux.
     - `$ apt install make` to install manually.
+- Python 3
+    - The `python3` interpreter should already be installed on your Linux box.
+    - Required to run the [compilemenu.py](tools/compilemenu.py) script that
+      compiles the [menudef.txt](src/menudef.txt) file into the
+      [menudef.asm](src/menudef.asm) file.
 - TI-83 SDK docs
     - https://archive.org/details/83psdk/83psysroutines/
 - Learn TI-83 Plus Assembly in 28 Days
