@@ -998,19 +998,22 @@ be 32 bits. I hope to add the ability to change the integer size in the future.
 #### Storage Registers
 
 Similar to the HP-42S, the RPN83P provides **25** storage registers labeled `00`
-to 24`. They are accessed using the `STO` and `2ND` `RCL` keys. To store a
-number into register `00`, press:
+to `24`. They are accessed using the `STO` and `2ND` `RCL` keys. To store a
+number into register `R00`, press:
 
-- `STO 00`
+- `STO` `00`
 
-To recall register `00`, press:
+To recall register `R00`, press:
 
-- `RCL 00`
+- `RCL` `00`
 
-To clear the all storage registers, use the menu system to press the following:
+To clear the all storage registers, use the arrow keys for the menu system to
+get to:
 
-- `CLR`, then
-- `CLRG`
+- ![ROOT MenuStrip 3](docs/rpn83p-screenshot-menu-root-3.png)
+- Press `CLR` to get
+  ![CLR MenuStrip 1](docs/rpn83p-screenshot-menu-root-clr-1.png)
+- Press `CLRG`
 
 The message `REGS cleared` will be displayed on the screen.
 
