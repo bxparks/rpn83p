@@ -167,7 +167,7 @@ Here is the tools and resources that I use for development on Ubuntu Linux
     - TI calculator ROM extractor
     - Download and extract the zip file.
     - Follow the instructions to copy 1 or 2 applications to the calculator, run
-      them on the calucator to generate App Vars which contain the ROM image,
+      them on the calculator to generate App Vars which contain the ROM image,
       copy them back to the Linux host machine, then run `rom8x.exe` to generate
       the ROM image using Wine (see next item).
 - Wine
