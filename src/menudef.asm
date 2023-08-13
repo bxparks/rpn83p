@@ -296,49 +296,8 @@ mPrimeId equ 31
     .db 0 ; stripBeginId
     .dw mPrimeHandler ; handler (to be implemented)
 ; MenuGroup NUM: children: strip 1
-mAbs:
-mAbsId equ 32
-    .db mAbsId ; id
-    .db mNumId ; parentId
-    .db mAbsNameId ; nameId
-    .db 0 ; numStrips
-    .db 0 ; stripBeginId
-    .dw mAbsHandler ; handler (to be implemented)
-mSign:
-mSignId equ 33
-    .db mSignId ; id
-    .db mNumId ; parentId
-    .db mSignNameId ; nameId
-    .db 0 ; numStrips
-    .db 0 ; stripBeginId
-    .dw mSignHandler ; handler (to be implemented)
-mMod:
-mModId equ 34
-    .db mModId ; id
-    .db mNumId ; parentId
-    .db mModNameId ; nameId
-    .db 0 ; numStrips
-    .db 0 ; stripBeginId
-    .dw mModHandler ; handler (to be implemented)
-mMin:
-mMinId equ 35
-    .db mMinId ; id
-    .db mNumId ; parentId
-    .db mMinNameId ; nameId
-    .db 0 ; numStrips
-    .db 0 ; stripBeginId
-    .dw mMinHandler ; handler (to be implemented)
-mMax:
-mMaxId equ 36
-    .db mMaxId ; id
-    .db mNumId ; parentId
-    .db mMaxNameId ; nameId
-    .db 0 ; numStrips
-    .db 0 ; stripBeginId
-    .dw mMaxHandler ; handler (to be implemented)
-; MenuGroup NUM: children: strip 2
 mIntPart:
-mIntPartId equ 37
+mIntPartId equ 32
     .db mIntPartId ; id
     .db mNumId ; parentId
     .db mIntPartNameId ; nameId
@@ -346,7 +305,7 @@ mIntPartId equ 37
     .db 0 ; stripBeginId
     .dw mIntPartHandler ; handler (to be implemented)
 mFracPart:
-mFracPartId equ 38
+mFracPartId equ 33
     .db mFracPartId ; id
     .db mNumId ; parentId
     .db mFracPartNameId ; nameId
@@ -354,7 +313,7 @@ mFracPartId equ 38
     .db 0 ; stripBeginId
     .dw mFracPartHandler ; handler (to be implemented)
 mFloor:
-mFloorId equ 39
+mFloorId equ 34
     .db mFloorId ; id
     .db mNumId ; parentId
     .db mFloorNameId ; nameId
@@ -362,7 +321,7 @@ mFloorId equ 39
     .db 0 ; stripBeginId
     .dw mFloorHandler ; handler (to be implemented)
 mCeil:
-mCeilId equ 40
+mCeilId equ 35
     .db mCeilId ; id
     .db mNumId ; parentId
     .db mCeilNameId ; nameId
@@ -370,13 +329,54 @@ mCeilId equ 40
     .db 0 ; stripBeginId
     .dw mCeilHandler ; handler (to be implemented)
 mNear:
-mNearId equ 41
+mNearId equ 36
     .db mNearId ; id
     .db mNumId ; parentId
     .db mNearNameId ; nameId
     .db 0 ; numStrips
     .db 0 ; stripBeginId
     .dw mNearHandler ; handler (to be implemented)
+; MenuGroup NUM: children: strip 2
+mAbs:
+mAbsId equ 37
+    .db mAbsId ; id
+    .db mNumId ; parentId
+    .db mAbsNameId ; nameId
+    .db 0 ; numStrips
+    .db 0 ; stripBeginId
+    .dw mAbsHandler ; handler (to be implemented)
+mSign:
+mSignId equ 38
+    .db mSignId ; id
+    .db mNumId ; parentId
+    .db mSignNameId ; nameId
+    .db 0 ; numStrips
+    .db 0 ; stripBeginId
+    .dw mSignHandler ; handler (to be implemented)
+mMod:
+mModId equ 39
+    .db mModId ; id
+    .db mNumId ; parentId
+    .db mModNameId ; nameId
+    .db 0 ; numStrips
+    .db 0 ; stripBeginId
+    .dw mModHandler ; handler (to be implemented)
+mMin:
+mMinId equ 40
+    .db mMinId ; id
+    .db mNumId ; parentId
+    .db mMinNameId ; nameId
+    .db 0 ; numStrips
+    .db 0 ; stripBeginId
+    .dw mMinHandler ; handler (to be implemented)
+mMax:
+mMaxId equ 41
+    .db mMaxId ; id
+    .db mNumId ; parentId
+    .db mMaxNameId ; nameId
+    .db 0 ; numStrips
+    .db 0 ; stripBeginId
+    .dw mMaxHandler ; handler (to be implemented)
 ; MenuGroup PROB: children
 ; MenuGroup PROB: children: strip 0
 mComb:
@@ -1092,26 +1092,26 @@ mLcmNameId equ 22
     .dw mLcmName
 mPrimeNameId equ 23
     .dw mPrimeName
-mAbsNameId equ 24
-    .dw mAbsName
-mSignNameId equ 25
-    .dw mSignName
-mModNameId equ 26
-    .dw mModName
-mMinNameId equ 27
-    .dw mMinName
-mMaxNameId equ 28
-    .dw mMaxName
-mIntPartNameId equ 29
+mIntPartNameId equ 24
     .dw mIntPartName
-mFracPartNameId equ 30
+mFracPartNameId equ 25
     .dw mFracPartName
-mFloorNameId equ 31
+mFloorNameId equ 26
     .dw mFloorName
-mCeilNameId equ 32
+mCeilNameId equ 27
     .dw mCeilName
-mNearNameId equ 33
+mNearNameId equ 28
     .dw mNearName
+mAbsNameId equ 29
+    .dw mAbsName
+mSignNameId equ 30
+    .dw mSignName
+mModNameId equ 31
+    .dw mModName
+mMinNameId equ 32
+    .dw mMinName
+mMaxNameId equ 33
+    .dw mMaxName
 mCombNameId equ 34
     .dw mCombName
 mPermNameId equ 35
@@ -1284,16 +1284,6 @@ mLcmName:
     .db "LCM", 0
 mPrimeName:
     .db "PRIM", 0
-mAbsName:
-    .db "ABS", 0
-mSignName:
-    .db "SIGN", 0
-mModName:
-    .db "MOD", 0
-mMinName:
-    .db "MIN", 0
-mMaxName:
-    .db "MAX", 0
 mIntPartName:
     .db "IP", 0
 mFracPartName:
@@ -1304,6 +1294,16 @@ mCeilName:
     .db "CEIL", 0
 mNearName:
     .db "NEAR", 0
+mAbsName:
+    .db "ABS", 0
+mSignName:
+    .db "SIGN", 0
+mModName:
+    .db "MOD", 0
+mMinName:
+    .db "MIN", 0
+mMaxName:
+    .db "MAX", 0
 mCombName:
     .db "COMB", 0
 mPermName:
