@@ -17,11 +17,11 @@ MenuNodes: MenuGroup, and MenuItem. A MenuGroup is composed of 1 or more of
 MenuStrip. Each MenuStrip contains exectly 5 MenuItems corresponding to the 5
 bottons on the top row of a TI-83 Plus or a TI-84 Plus series calculator.
 
-The tree traversal of the menu hierarchy to serial into the Z-80 assembly
+The tree traversal of the menu hierarchy to serialize into the Z-80 assembly
 language file is slightly strange. It is not depth-first, nor breadth-first, but
 a hybrid of the two. Traversal occurs in 2 steps:
 
-1) The direct children of the MenuGroup, as stored in the list of MenuStrip, are
+1) The direct children of a MenuGroup, as stored in the list of MenuStrip, are
 serialized,
 
 2) Then the direct children are scanned a second time, and for each MenuNode
