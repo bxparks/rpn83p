@@ -1,0 +1,50 @@
+# A slimmed-down menudef.txt file for development and testing.
+
+# Define the defaults for blank menu items and menu groups.
+MenuConfig [
+  ItemName mNullName
+  ItemNameId mNullNameId
+  ItemHandler mNullHandler
+  GroupHandler mGroupHandler
+]
+
+MenuGroup root mRoot [
+  MenuStrip [
+    MenuGroup NUM mNum [
+      MenuStrip [
+        MenuItem <Scaret>3 mCube
+        MenuItem CBRT mCubeRoot # maybe use <super3><root> ?
+        MenuItem ATN2 mAtan2
+        MenuItem <Spercent> mPercent
+        # MenuItem * * will be auto-inserted here
+      ]
+      MenuStrip [
+        MenuItem ABS mAbs
+        MenuItem SIGN mSign
+        MenuItem MOD mMod
+        MenuItem LCM mLcm
+        MenuItem GCD mGcd
+      ]
+    ]
+    MenuGroup PROB mProb [
+      MenuStrip [
+        MenuItem PERM mPerm
+        MenuItem COMB mComb
+        MenuItem N<Sexclam> mFactorial
+        MenuItem RAND mRandom
+        MenuItem SEED mRandomSeed
+      ]
+    ]
+    MenuItem * * # CONV
+    MenuItem * * # BASE
+    MenuItem HELP mHelp
+  ]
+  # Insert place holders for testing.
+  MenuStrip [
+    MenuItem DISP mDisp
+    MenuItem MODE mMode
+    MenuItem HYP mHyperbolic
+    MenuItem UNIT mUnit
+    # MenuItem * * will be auto-inserted here
+  ]
+]

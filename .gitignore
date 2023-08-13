@@ -1,0 +1,39 @@
+#-------------------------------------------------------------------------
+# TI-83 Plus, TI-84 Plus assembly program files
+#-------------------------------------------------------------------------
+
+*.8xp
+*.8xk
+*.lst
+
+#-------------------------------------------------------------------------
+# Python
+#-------------------------------------------------------------------------
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# mypy
+.mypy_cache/
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+*.app
