@@ -127,7 +127,7 @@ helpPages:
 
 msgHelpPage1:
     .db escapeLargeFont, "RPN83P", Lenter
-    .db escapeSmallFont, "v0.3.3 (2023", Shyphen, "08", Shyphen, "13)", Senter
+    .db escapeSmallFont, "v0.3.3 (2023", Shyphen, "08", Shyphen, "14)", Senter
     .db "(c) 2023  Brian T. Park", Senter
     .db Senter
     .db "An RPN calculator for the", Senter
@@ -1230,6 +1230,56 @@ mBitwiseNegHandler:
     call negU32 ; OP3 = NEG(OP3), 2's complement negation
     call convertU32ToOP1 ; OP1 = float(OP3)
     jp replaceX
+
+mBitwiseAddHandler:
+    call closeInputAndRecallXY ; OP1=Y; OP2=X
+    ld hl, OP3
+    call convertOP1ToU32 ; OP3=u32(Y)
+
+    bcall(_OP2ToOP1)
+    ld hl, OP4
+    call convertOP1ToU32 ; OP4=u32(X)
+
+    ld de, OP3
+    call addU32U32 ; OP4(X) += OP3(Y)
+
+    call convertU32ToOP1 ; OP1 = float(OP3)
+    jp replaceXY
+
+mBitwiseSubtHandler:
+    call closeInputAndRecallXY ; OP1=Y; OP2=X
+    ld hl, OP3
+    call convertOP1ToU32 ; OP3=u32(Y)
+
+    bcall(_OP2ToOP1)
+    ld hl, OP4
+    call convertOP1ToU32 ; OP4=u32(X)
+
+    ld de, OP3
+    ex de, hl
+    call subU32U32 ; OP3(Y) -= OP4(X)
+
+    call convertU32ToOP1 ; OP1 = float(OP3)
+    jp replaceXY
+
+mBitwiseMultHandler:
+    call closeInputAndRecallXY ; OP1=Y; OP2=X
+    ld hl, OP3
+    call convertOP1ToU32 ; OP3=u32(Y)
+
+    bcall(_OP2ToOP1)
+    ld hl, OP4
+    call convertOP1ToU32 ; OP4=u32(X)
+
+    ld de, OP3
+    call multU32U32 ; OP4(X) *= OP3(Y)
+
+    call convertU32ToOP1 ; OP1 = float(OP3)
+    jp replaceXY
+
+mBitwiseDivHandler:
+mBitwiseModHandler:
+    jp mNotYetHandler
 
 ;-----------------------------------------------------------------------------
 ; Children nodes of STK menu group (stack functions).

@@ -214,6 +214,13 @@ MenuGroup root mRoot [
         MenuItem NOT mBitwiseNot # 1's complement
         MenuItem NEG mBitwiseNeg # 2's complement
       ]
+      MenuStrip [
+        MenuItem B<SplusSign> mBitwiseAdd
+        MenuItem B<Sdash> mBitwiseSubt
+        MenuItem B<Scross> mBitwiseMult
+        MenuItem B<Sslash> mBitwiseDiv
+        MenuItem BMOD mBitwiseMod
+      ]
       # MenuStrip [
       #   MenuItem RLC mBitwiseRlc # rotate left circular
       #   MenuItem RRC mBitwiseRrc # rotate right circular
