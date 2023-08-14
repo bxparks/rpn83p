@@ -48,27 +48,28 @@ Here the quick summary of its features:
     - `SCI` (scientific 0-9 digits)
     - `ENG` (engineering 0-9 digits)
 
-**Version**: 0.3.2 (2023-08-13)
+**Version**: 0.3.3 (2023-08-14)
 
 **Changelog**: [CHANGELOG.md](CHANGELOG.md)
+
+**Project Home**: https://github.com/bxparks/rpn83p
 
 **User Guide**: [USER_GUIDE.md](USER_GUIDE.md)
 
 ## Table of Contents
 
-- [Installation](#Installation)
-- [Supported Hardware](#SupportedHardware)
-- [Quick Examples](#QuickExamples)
-    - [Example 1](#Example1)
-    - [Example 2](#Example2)
-- [User Guide](#UserGuide)
-- [Compiling from Source](#Compiling)
-- [Tools and Resources](#ToolsResources)
-- [License](#License)
-- [Feedback](#Feedback)
-- [Author](#Author)
+- [Installation](#installation)
+- [Supported Hardware](#supported-hardware)
+- [Quick Examples](#quick-examples)
+    - [Example 1](#example-1)
+    - [Example 2](#example-2)
+- [User Guide](#user-guide)
+- [Compiling from Source](#compiling-from-source)
+- [Tools and Resources](#tools-and-resources)
+- [License](#license)
+- [Feedback](#feedback)
+- [Author](#author)
 
-<a name="Installation"></a>
 ## Installation
 
 RPN83P is a flash application that is packaged as a single file named
@@ -97,7 +98,6 @@ Since the RPN83P is a flash app, it is preserved when the RAM is cleared. It
 consumes about 300 bytes of RAM space for its internal RPN and storage
 registers.
 
-<a name="SupportedHardware"></a>
 ### Supported Hardware
 
 This app was designed for TI calculators using the Z80 processor:
@@ -110,10 +110,8 @@ This app was designed for TI calculators using the Z80 processor:
 I have tested it on the two Z80 TI calculators that I have (both Silver
 Edition). It *should* work on the others, but I have not actually tested them.
 
-<a name="QuickExamples"></a>
 ## Quick Examples
 
-<a name="Example1"></a>
 ### Example 1
 
 Let's compute the volume of a sphere of radius `2.1`. Recall that the volume of
@@ -142,7 +140,6 @@ Here is an animated GIF that shows this calculation:
 (Note that the RPN83P provides a `X^3` menu function that could have been used
 for this formula, but I used the `LastX` feature to demonstrate its use.)
 
-<a name="Example2"></a>
 ### Example 2
 
 Let's calculate the bitwise-and operator between the hexadecimal numbers `B6`
@@ -179,12 +176,10 @@ Press:
 
 > ![ROOT MenuStrip 1](docs/rpn83p-screenshot-menu-root-1.png)
 
-<a name="UserGuide"></a>
 ## User Guide
 
 See the [RPN83P User Guide](USER_GUIDE.md).
 
-<a name="Compiling"></a>
 ## Compiling from Source
 
 I use Ubuntu Linux 22.04 for my development. The following instructions have
@@ -203,7 +198,6 @@ been verified only on my dev machine.
 - `$ make`
 - Should produce a file named `rpn83p.8xk`.
 
-<a name="ToolsResources"></a>
 ## Tools and Resources
 
 Here is the tools and resources that I use for development on Ubuntu Linux
@@ -257,12 +251,10 @@ Here is the tools and resources that I use for development on Ubuntu Linux
       place that I know which explains how to generate a flash app using the
       `spasm-ng` assembler.
 
-<a name="License"></a>
 ## License
 
 [MIT License](https://opensource.org/licenses/MIT)
 
-<a name="Feedback"></a>
 ## Feedback and Support
 
 If you have any questions, comments, or feature requests for this library,
@@ -278,7 +270,6 @@ Please refrain from emailing me directly unless the content is sensitive. The
 problem with email is that I cannot reference the email conversation when other
 people ask similar questions later.
 
-<a name="Author"></a>
 ## Author
 
 Created by Brian T. Park (brian@xparks.net).
