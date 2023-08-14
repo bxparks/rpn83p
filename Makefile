@@ -46,7 +46,7 @@ rpn83p-example1.gif: docs/rpn83p-example1.gif
 	cp -f $< $@
 
 # Copy the animated GIF as a sample screenshot.
-rpn83p-example2.gif: docs/rpn83p-example1.gif
+rpn83p-example2.gif: docs/rpn83p-example2.gif
 	cp -f $< $@
 
 clean:
