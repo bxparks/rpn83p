@@ -120,8 +120,8 @@ popular, so I didn't know anything about them until a few months. I did not know
 that the early TI graphing calculators used the Z80 processor, and more
 importantly, I did not know that they were programmable in assembly language.
 
-I realized that I could probably create an app that could turn them into a
-passable, maybe even useful, RPN calculator. The debate over RPN mode versus
+I realized that I could probably create an app that could turn them into
+passable, maybe even useful, RPN calculators. The debate over RPN mode versus
 algebraic mode has probably been going on for 40-50 years, so I probably cannot
 add more. Personally, I use algebraic notation for doing math equations on paper
 or writing high-level computer programs. But when I do numerical *computation*
@@ -174,16 +174,15 @@ least 2 ways to obtain this:
 The `rpn83p.8xk` file must be uploaded to the calculator using a "link" program
 from a host computer. There are a number of options:
 
-**Linux**: Use the [tilp](https://github.com/debrouxl/tilp_and_gfm) program. On
-Ubuntu Linux 22.04 systems, the precompiled package can be installed using `$
-apt install tilp2`. (I'm not actually sure if the `tilp2` binary is actually
-compiled from the `tilp_and_gfm` source code mentioned above)
+- **Linux**: Use the [tilp](https://github.com/debrouxl/tilp_and_gfm) program.
+  On Ubuntu Linux 22.04 systems, the precompiled package can be installed using
+  `$ apt install tilp2`. (I'm not actually sure if the `tilp2` binary is
+  actually compiled from the `tilp_and_gfm` source code mentioned above)
 
-**Windows** or **MacOS**: Use the [TI
-Connect](https://education.ti.com/en/products/computer-software/ti-connect-sw)
-software and follow the instructions in [Transferring FLASH Applications to a
-Graphing
-Calculator](https://education.ti.com/en/customer-support/knowledge-base/sofware-apps/product-usage/11506).
+- **Windows** or **MacOS**: Use the [TI
+  Connect](https://education.ti.com/en/products/computer-software/ti-connect-sw)
+  software and follow the instructions in [Transferring FLASH
+  Applications](https://education.ti.com/en/customer-support/knowledge-base/sofware-apps/product-usage/11506).
 
 ### Starting
 
@@ -683,9 +682,9 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (back), and `MATH`
     - `X<>Y`: exchange `X` and `Y`, also bound to `)` button
 - `ROOT` > `CLR`
     - ![CLR MenuStrip 1](docs/rpn83p-screenshot-menu-root-clr-1.png)
-    - `CLRG`: clear storage registers `R00` to `R24`
-    - `CLST`: clear all RPN stack registers
     - `CLX`: clear `X` stack register (stack lift disabled)
+    - `CLST`: clear all RPN stack registers
+    - `CLRG`: clear storage registers `R00` to `R24`
 
 ## Advanced Usage
 
