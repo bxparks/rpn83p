@@ -2,7 +2,7 @@
 
 RPN calculator app for the TI-83 Plus and TI-84 Plus inspired by the HP-42S.
 
-**Version**: 0.3.1 (2023-08-13)
+**Version**: 0.3.2 (2023-08-13)
 
 **Project Home**: https://github.com/bxparks/rpn83p
 
@@ -47,7 +47,7 @@ RPN calculator app for the TI-83 Plus and TI-84 Plus inspired by the HP-42S.
 <a name="Introduction"></a>
 ## Introduction
 
-The RPN83P is an [RPN](https://en.wikipedia.org/wiki/Reverse_Polish_notation)
+RPN83P is an [RPN](https://en.wikipedia.org/wiki/Reverse_Polish_notation)
 calculator app for the [TI-83 Plus](https://en.wikipedia.org/wiki/TI-83_series)
 (including the Silver Edition) and the [TI-84
 Plus](https://en.wikipedia.org/wiki/TI-84_Plus_series) (including the Silver
@@ -68,23 +68,25 @@ Here the quick summary of its features:
 - support for `lastX` register
 - 25 storage registers (`STO 00`, `RCL 00`, ..., `STO 24`, `RCL 24`)
 - hierarchical menu system, inspired by the HP-42S
-- support for all math functions with dedicated buttons
+- support for all math functions with dedicated buttons on the TI-83 Plus and
+  TI-84 Plus
     - arithmetic: `/`, `*`, `-`, `+`
     - trigonometric: `SIN`, `COS`, `TAN`, etc.
-    - `1/X`, `X^2`, `2ND SQRT`,
+    - `1/X`, `X^2`, `2ND SQRT`
     - `^` (i.e. `Y^X`),
     - `LOG`, `10^X`, `LN`, `e^X`
     - constants: `pi` and `e`
 - additional menu functions:
     - `%`, `%CH`, `GCD`, `LCM`, `PRIM` (is prime)
-    - `ABS`, `SIGN`, `MOD`, `MIN`, `MAX`
     - `IP` (integer part), `FP` (fractional part), `FLR` (floor), `CEIL`
+    - `ABS`, `SIGN`, `MOD`, `MIN`, `MAX`
       (ceiling), `NEAR` (nearest integer)
     - probability: `PERM`, `COMB`, `N!`, `RAND`, `SEED`
     - hyperbolic: `SINH`, `COSH`, `TANH`, etc.
-    - conversions: `>DEG`, `>RAD`, `>HR`, `>HMS`, `P>R`, `R>P`
+    - angle conversions: `>DEG`, `>RAD`, `>HR`, `>HMS`, `P>R`, `R>P`
     - unit conversions: `>C`, `>F`, `>km`, `>mi`, etc
     - base conversions: `DEC`, `HEX`, `OCT`, `BIN`
+    - bitwise operations: `AND`, `OR`, `XOR`, `NOT`, `NEG`
 - various display modes
     - `RAD`, `DEG`
     - `FIX` (fixed point 0-9 digits)

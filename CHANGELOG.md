@@ -1,6 +1,9 @@
 # Changelog
 
 - Unreleased
+- 0.3.2 (2023-08-13)
+    - Add executive summary of the app at the top of README.md.
+    - No code change.
 - 0.3.1 (2023-08-13)
     - Add animated GIF to illustrate Examples 1 and 2 in README.md.
     - No code change.

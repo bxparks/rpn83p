@@ -2,7 +2,53 @@
 
 RPN calculator app for the TI-83 Plus and TI-84 Plus inspired by the HP-42S.
 
-**Version**: 0.3.1 (2023-08-13)
+RPN83P is an [RPN](https://en.wikipedia.org/wiki/Reverse_Polish_notation)
+calculator app for the [TI-83 Plus](https://en.wikipedia.org/wiki/TI-83_series)
+(including the Silver Edition) and the [TI-84
+Plus](https://en.wikipedia.org/wiki/TI-84_Plus_series) (including the Silver
+Edition). The app is inspired mostly by the
+[HP-42S](https://en.wikipedia.org/wiki/HP-42S) calculator, with some sprinkles
+of some older HP calculators like the
+[HP-12C](https://en.wikipedia.org/wiki/HP-12C) and the
+[HP-15C](https://en.wikipedia.org/wiki/HP-15C).
+
+The RPN83P is a flash application that consumes one page (16 kB) of flash
+memory. Since it is stored in flash, it is preserved if the RAM is cleared. It
+consumes a small amount of TI-OS RAM: 2 list variables named `REGS` and `STK`
+which are 240 bytes and 59 bytes respectively.
+
+Here the quick summary of its features:
+
+- traditional 4-level RPN stack (`X`, `Y`, `Z`, `T` registers)
+- support for `lastX` register
+- 25 storage registers (`STO 00`, `RCL 00`, ..., `STO 24`, `RCL 24`)
+- hierarchical menu system, inspired by the HP-42S
+- support for all math functions with dedicated buttons on the TI-83 Plus and
+  TI-84 Plus
+    - arithmetic: `/`, `*`, `-`, `+`
+    - trigonometric: `SIN`, `COS`, `TAN`, etc.
+    - `1/X`, `X^2`, `2ND SQRT`
+    - `^` (i.e. `Y^X`),
+    - `LOG`, `10^X`, `LN`, `e^X`
+    - constants: `pi` and `e`
+- additional menu functions:
+    - `%`, `%CH`, `GCD`, `LCM`, `PRIM` (is prime)
+    - `IP` (integer part), `FP` (fractional part), `FLR` (floor), `CEIL`
+    - `ABS`, `SIGN`, `MOD`, `MIN`, `MAX`
+      (ceiling), `NEAR` (nearest integer)
+    - probability: `PERM`, `COMB`, `N!`, `RAND`, `SEED`
+    - hyperbolic: `SINH`, `COSH`, `TANH`, etc.
+    - angle conversions: `>DEG`, `>RAD`, `>HR`, `>HMS`, `P>R`, `R>P`
+    - unit conversions: `>C`, `>F`, `>km`, `>mi`, etc
+    - base conversions: `DEC`, `HEX`, `OCT`, `BIN`
+    - bitwise operations: `AND`, `OR`, `XOR`, `NOT`, `NEG`
+- various display modes
+    - `RAD`, `DEG`
+    - `FIX` (fixed point 0-9 digits)
+    - `SCI` (scientific 0-9 digits)
+    - `ENG` (engineering 0-9 digits)
+
+**Version**: 0.3.2 (2023-08-13)
 
 **Changelog**: [CHANGELOG.md](CHANGELOG.md)
 
@@ -99,8 +145,8 @@ for this formula, but I used the `LastX` feature to demonstrate its use.)
 <a name="Example2"></a>
 ### Example 2
 
-Let's calculate the binary-and operator between the hexadecimal numbers `B6` and
-`65`, then see the result as an octal number, a binary (base-2) number, then
+Let's calculate the bitwise-and operator between the hexadecimal numbers `B6`
+and `65`, then see the result as an octal number, a binary (base-2) number, then
 finally as a decimal number:
 
 - Navigate the menu with the DOWN arrow to get to
