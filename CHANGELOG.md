@@ -1,6 +1,9 @@
 # Changelog
 
 - Unreleased
+- 0.3.1 (2023-08-13)
+    - Add animated GIF to illustrate Examples 1 and 2 in README.md.
+    - No code change.
 - 0.3 (2023-08-13)
     - Move `CLRG` from F1 position to F3. Move `CLX` to F1. If the F1
       is accidentally hit twice when selecting the `CLR` menu group, then
