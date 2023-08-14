@@ -2,7 +2,7 @@
 
 RPN calculator app for the TI-83 Plus and TI-84 Plus inspired by the HP-42S.
 
-**Version**: 0.3 (2023-08-13)
+**Version**: 0.3.1 (2023-08-13)
 
 **Changelog**: [CHANGELOG.md](CHANGELOG.md)
 
@@ -43,8 +43,13 @@ Guide](USER_GUIDE.md), but here is the quick version:
     - Quit app: `2ND` `QUIT`
     - Turn off device: `2ND` `OFF`
 
-As a flash app, the RPN83P does not consume precious RAM space, and it is
-preserved when the RAM is cleared.
+The RPN83P app starts directly into the calculator mode, like this:
+
+> ![RPN83P Hello 1](docs/rpn83p-screenshot-initial.png)
+
+Since the RPN83P is a flash app, it is preserved when the RAM is cleared. It
+consumes about 300 bytes of RAM space for its internal RPN and storage
+registers.
 
 <a name="SupportedHardware"></a>
 ### Supported Hardware
@@ -65,61 +70,66 @@ Edition). It *should* work on the others, but I have not actually tested them.
 <a name="Example1"></a>
 ### Example 1
 
-When the RPN83P is started, it goes directly into the calculator mode, and looks
-like this:
-
-> ![RPN83P Hello 1](docs/rpn83p-example1-1.png)
-
-Let's us compute the volume of a sphere of radius `2.1`. Recall that the volume
-of a sphere is `(4/3) pi r^3`. There are many ways to compute this in an RPN
+Let's compute the volume of a sphere of radius `2.1`. Recall that the volume of
+a sphere is `(4/3) pi r^3`. There are many ways to compute this in an RPN
 system, but I tend to start with the more complex, inner expression and work
 outwards. Enter the following keystrokes:
 
-- `2`
-- `.`
-- `1`
-- `x^2`
-- `2ND` `ANS` (invokes the `LastX` functionality)
-- `*` (`r^3` is now in the `X` register)
-- `2ND` `pi` (above the `^` button)
-- `*` (`pi r^3`)
-- `4`
-- `*` (`4 pi r^3`)
-- `3`
-- `/` (`4 pi r^3 / 3`)
+- Press `2` button
+- Press `.` button
+- Press `1` button
+- Press `x^2` button
+- Press `2ND` `ANS` button (invokes the `LastX` functionality)
+- Press `*` button (`r^3` is now in the `X` register)
+- Press `2ND` `PI` button (above the `^` button)
+- Press `*` button (`pi r^3`)
+- Press `4` button
+- Press `*` button (`4 pi r^3`)
+- Press `3` button
+- Press `/` button (`4 pi r^3 / 3`)
+- the `X` register should show `38.79238609`
 
-The `X` register should show `38.79238609` like this:
+Here is an animated GIF that shows this calculation:
 
-> ![RPN83P Hello 1](docs/rpn83p-example1-2.png)
+> ![RPN83P Example 1 GIF](docs/rpn83p-example1.gif)
+
+(Note that the RPN83P provides a `X^3` menu function that could have been used
+for this formula, but I used the `LastX` feature to demonstrate its use.)
 
 <a name="Example2"></a>
 ### Example 2
 
-Let's calculate the percentage change from `77` to `89`. Press the following:
+Let's calculate the binary-and operator between the hexadecimal numbers `B6` and
+`65`, then see the result as an octal number, a binary (base-2) number, then
+finally as a decimal number:
 
-- `7`
-- `7`
-- `ENTER`
-- `8`
-- `9`
-- `WINDOW/F2` menu button to invoke the `NUM` item from
-  ![ROOT MenuStrip 1](docs/rpn83p-screenshot-menu-root-1.png)
-- `WINDOW/F2` menu button again to invoke the `%CH` item from
-  ![NUM MenuStrip 1](docs/rpn83p-screenshot-menu-root-num-1.png)
+- Navigate the menu with the DOWN arrow to get to
+  ![ROOT MenuStrip 2](docs/rpn83p-screenshot-menu-root-2.png)
+- Press `BASE` menu to get to
+  ![BASE MenuStrip 1](docs/rpn83p-screenshot-menu-root-base-1.png)
+- Press `HEX` menu.
+- Press `ALPHA` `B` buttons
+- Press `6` button
+- Press `ENTER` button
+- Press `6` button
+- Press `5` button
+- Press DOWN arrow to get to
+  ![BASE MenuStrip 2](docs/rpn83p-screenshot-menu-root-base-2.png)
+- Press `AND` menu, the `X` register should show `00000024`
+- Press UP arrow to go back to
+  ![BASE MenuStrip 1](docs/rpn83p-screenshot-menu-root-base-1.png)
+- Press `OCT` menu, the `X` register should show `00000000044`
+- Press `BIN` menu, the `X` register should show `00000000100100`
+- Press `DEC` menu, the `X` register should show `36`
 
-The display should show `15.58441558%` like this:
+Here is the animated GIF that shows this calculation:
 
-> ![RPN83P Hello 1](docs/rpn83p-example2-1.png)
-
-(The `Y` register remains at `77` because the `%CH` function does not modify it,
-unlike most functions that take 2 arguments. This allows additional calculations
-to continue using the original `77` base number.)
+> ![RPN83P Example 2 GIF](docs/rpn83p-example2.gif)
 
 Press:
 
-- `ON` (invokes the `ESC/EXIT` functionality)
-
-to go back to the previous menu bar:
+- `ON` button (`ESC/EXIT`) multiple times to back to the home menu, or
+- `MATH` button (`HOME`) to go back directly.
 
 > ![ROOT MenuStrip 1](docs/rpn83p-screenshot-menu-root-1.png)
 
