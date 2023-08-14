@@ -1,6 +1,10 @@
 # Changelog
 
 - Unreleased
+- 0.3.3 (2023-08-14)
+    - Add `Makefile` targets for converting GitHub markdown files to PDF files.
+    - Update some sections in `README.md` and `USER_GUIDE.md`.
+    - No code change.
 - 0.3.2 (2023-08-13)
     - Add executive summary of the app at the top of README.md.
     - No code change.

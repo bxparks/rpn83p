@@ -48,7 +48,7 @@ Here the quick summary of its features:
     - `SCI` (scientific 0-9 digits)
     - `ENG` (engineering 0-9 digits)
 
-**Version**: 0.3.2 (2023-08-13)
+**Version**: 0.3.3 (2023-08-14)
 
 **Changelog**: [CHANGELOG.md](CHANGELOG.md)
 
