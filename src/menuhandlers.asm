@@ -1170,7 +1170,7 @@ setBaseMode:
 
 ;-----------------------------------------------------------------------------
 
-mBinaryAndHandler:
+mBitwiseAndHandler:
     call closeInputAndRecallXY ; OP1=Y; OP2=X
     ld hl, OP3
     call convertOP1ToU32 ; OP3=u32(Y)
@@ -1185,7 +1185,7 @@ mBinaryAndHandler:
     call convertU32ToOP1 ; OP1 = float(OP4)
     jp replaceXY
 
-mBinaryOrHandler:
+mBitwiseOrHandler:
     call closeInputAndRecallXY ; OP1=Y; OP2=X
     ld hl, OP3
     call convertOP1ToU32 ; OP3=u32(Y)
@@ -1200,7 +1200,7 @@ mBinaryOrHandler:
     call convertU32ToOP1 ; OP1 = float(OP4)
     jp replaceXY
 
-mBinaryXorHandler:
+mBitwiseXorHandler:
     call closeInputAndRecallXY ; OP1=Y; OP2=X
     ld hl, OP3
     call convertOP1ToU32 ; OP3=u32(Y)
@@ -1215,7 +1215,7 @@ mBinaryXorHandler:
     call convertU32ToOP1 ; OP1 = float(OP4)
     jp replaceXY
 
-mBinaryNotHandler:
+mBitwiseNotHandler:
     call closeInputAndRecallX ; OP1=X
     ld hl, OP3
     call convertOP1ToU32 ; OP3=u32(X)
@@ -1223,7 +1223,7 @@ mBinaryNotHandler:
     call convertU32ToOP1 ; OP1 = float(OP3)
     jp replaceX
 
-mBinaryNegHandler:
+mBitwiseNegHandler:
     call closeInputAndRecallX ; OP1=X
     ld hl, OP3
     call convertOP1ToU32 ; OP3=u32(X)

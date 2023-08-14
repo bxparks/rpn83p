@@ -917,46 +917,46 @@ mBlank106Id equ 106
     .db 0 ; stripBeginId
     .dw mNullHandler ; handler (predefined)
 ; MenuGroup BASE: children: strip 1
-mBinaryAnd:
-mBinaryAndId equ 107
-    .db mBinaryAndId ; id
+mBitwiseAnd:
+mBitwiseAndId equ 107
+    .db mBitwiseAndId ; id
     .db mBaseId ; parentId
-    .db mBinaryAndNameId ; nameId
+    .db mBitwiseAndNameId ; nameId
     .db 0 ; numStrips
     .db 0 ; stripBeginId
-    .dw mBinaryAndHandler ; handler (to be implemented)
-mBinaryOr:
-mBinaryOrId equ 108
-    .db mBinaryOrId ; id
+    .dw mBitwiseAndHandler ; handler (to be implemented)
+mBitwiseOr:
+mBitwiseOrId equ 108
+    .db mBitwiseOrId ; id
     .db mBaseId ; parentId
-    .db mBinaryOrNameId ; nameId
+    .db mBitwiseOrNameId ; nameId
     .db 0 ; numStrips
     .db 0 ; stripBeginId
-    .dw mBinaryOrHandler ; handler (to be implemented)
-mBinaryXor:
-mBinaryXorId equ 109
-    .db mBinaryXorId ; id
+    .dw mBitwiseOrHandler ; handler (to be implemented)
+mBitwiseXor:
+mBitwiseXorId equ 109
+    .db mBitwiseXorId ; id
     .db mBaseId ; parentId
-    .db mBinaryXorNameId ; nameId
+    .db mBitwiseXorNameId ; nameId
     .db 0 ; numStrips
     .db 0 ; stripBeginId
-    .dw mBinaryXorHandler ; handler (to be implemented)
-mBinaryNot:
-mBinaryNotId equ 110
-    .db mBinaryNotId ; id
+    .dw mBitwiseXorHandler ; handler (to be implemented)
+mBitwiseNot:
+mBitwiseNotId equ 110
+    .db mBitwiseNotId ; id
     .db mBaseId ; parentId
-    .db mBinaryNotNameId ; nameId
+    .db mBitwiseNotNameId ; nameId
     .db 0 ; numStrips
     .db 0 ; stripBeginId
-    .dw mBinaryNotHandler ; handler (to be implemented)
-mBinaryNeg:
-mBinaryNegId equ 111
-    .db mBinaryNegId ; id
+    .dw mBitwiseNotHandler ; handler (to be implemented)
+mBitwiseNeg:
+mBitwiseNegId equ 111
+    .db mBitwiseNegId ; id
     .db mBaseId ; parentId
-    .db mBinaryNegNameId ; nameId
+    .db mBitwiseNegNameId ; nameId
     .db 0 ; numStrips
     .db 0 ; stripBeginId
-    .dw mBinaryNegHandler ; handler (to be implemented)
+    .dw mBitwiseNegHandler ; handler (to be implemented)
 ; MenuGroup STK: children
 ; MenuGroup STK: children: strip 0
 mBlank112:
@@ -1212,16 +1212,16 @@ mOctNameId equ 82
     .dw mOctName
 mBinNameId equ 83
     .dw mBinName
-mBinaryAndNameId equ 84
-    .dw mBinaryAndName
-mBinaryOrNameId equ 85
-    .dw mBinaryOrName
-mBinaryXorNameId equ 86
-    .dw mBinaryXorName
-mBinaryNotNameId equ 87
-    .dw mBinaryNotName
-mBinaryNegNameId equ 88
-    .dw mBinaryNegName
+mBitwiseAndNameId equ 84
+    .dw mBitwiseAndName
+mBitwiseOrNameId equ 85
+    .dw mBitwiseOrName
+mBitwiseXorNameId equ 86
+    .dw mBitwiseXorName
+mBitwiseNotNameId equ 87
+    .dw mBitwiseNotName
+mBitwiseNegNameId equ 88
+    .dw mBitwiseNegName
 mStackRotUpNameId equ 89
     .dw mStackRotUpName
 mStackRotDownNameId equ 90
@@ -1404,15 +1404,15 @@ mOctName:
     .db "OCT", 0
 mBinName:
     .db "BIN", 0
-mBinaryAndName:
+mBitwiseAndName:
     .db "AND", 0
-mBinaryOrName:
+mBitwiseOrName:
     .db "OR", 0
-mBinaryXorName:
+mBitwiseXorName:
     .db "XOR", 0
-mBinaryNotName:
+mBitwiseNotName:
     .db "NOT", 0
-mBinaryNegName:
+mBitwiseNegName:
     .db "NEG", 0
 mStackRotUpName:
     .db 'R', SupArrow, 0
