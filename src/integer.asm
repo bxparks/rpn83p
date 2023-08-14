@@ -4,7 +4,7 @@
 ;-----------------------------------------------------------------------------
 
 ;-----------------------------------------------------------------------------
-; Routines related to U32 stored as 4 bytes in little endian format.
+; Routines related to u32 stored as 4 bytes in little endian format.
 ;-----------------------------------------------------------------------------
 
 ; Description: Calculate (HL) = u32(HL) * 10.
@@ -71,8 +71,8 @@ multU32By10:
 ; * 2.
 ; Input: HL: pointer to a u32 integer in little-endian format.
 ; Output:
-;   - u32(HL) shifted left by one position.
-;   - CF set to most significant bit
+;   - u32 pointed by HL is doubled
+;   - CF: highest bit
 ; Destroys: none
 shiftLeftU32:
     push hl
@@ -87,7 +87,7 @@ shiftLeftU32:
     pop hl
     ret
 
-; Description: Add A to U32 pointed by HL.
+; Description: Add A to u32 pointed by HL.
 ; Input:
 ;   - HL: pointer to u32
 ;   - A: u8 to add
@@ -117,42 +117,58 @@ addU32U8:
     pop hl
     ret
 
-; Description: Calculate (DE) = u32(DE) + u32(HL).
+; Description: Calculate u32(HL) += u32(BC)
 ; Input:
 ;   - HL: pointer to a u32 integer in little-endian format.
-;   - DE: pointer to destination u32 integer in little-endian format.
+;   - BC: pointer to destination u32 integer in little-endian format.
 ; Output:
-;   - (DE) += (HL)
-; Destroys: A
-; Preserves: DE, HL, (HL)
-addU32U32:
+;   - (HL) += (BC)
+; Preserves: A, BC, DE, HL, (BC)
+addU32U32BC:
+    push af
     push hl
-    push de
+    push bc
 
-    ld a, (de)
+    ld a, (bc)
     add a, (hl)
-    ld (de), a
-    inc de
+    ld (hl), a
+    inc bc
     inc hl
 
-    ld a, (de)
+    ld a, (bc)
     adc a, (hl)
-    ld (de), a
-    inc de
+    ld (hl), a
+    inc bc
     inc hl
 
-    ld a, (de)
+    ld a, (bc)
     adc a, (hl)
-    ld (de), a
-    inc de
+    ld (hl), a
+    inc bc
     inc hl
 
-    ld a, (de)
+    ld a, (bc)
     adc a, (hl)
-    ld (de), a
+    ld (hl), a
 
-    pop de
+    pop bc
     pop hl
+    pop af
+    ret
+
+; Description: Add u32 to u32, u32(HL) += u32(DE)
+; Destroys: A
+; Preserves: BC, DE, HL, (HL)
+addU32U32DE:
+    push bc
+    push de
+    pop bc
+    pop de
+    call addU32U32BC
+    push bc
+    push de
+    pop bc
+    pop de
     ret
 
 ; Description: Copy the u32 integer from HL to DE.
@@ -199,7 +215,7 @@ clearU32:
     pop af
     ret
 
-; Description: Shift U32 right logical.
+; Description: Shift u32(HL) right logical.
 ; Input: HL: pointer to u32
 ; Destroys: none
 shiftRightLogicalU32:
@@ -215,10 +231,10 @@ shiftRightLogicalU32:
     rr (hl)
     ret
 
-; Description: Perform binary AND operation.
+; Description: Perform binary AND operation, u32(HL) &= u32(DE).
 ; Input:
-;   - HL: pointer to U32
-;   - DE: pointer to U32
+;   - HL: pointer to u32
+;   - DE: pointer to u32
 ; Output:
 ;   - HL: pointer to the result
 ; Destroys: A
@@ -252,10 +268,10 @@ andU32U32:
     pop hl
     ret
 
-; Description: Perform binary OR operation.
+; Description: Perform binary OR operation, u32(HL) |= u32(DE).
 ; Input:
-;   - HL: pointer to U32
-;   - DE: pointer to U32
+;   - HL: pointer to u32
+;   - DE: pointer to u32
 ; Output:
 ;   - HL: pointer to the result
 ; Destroys: A
@@ -289,10 +305,10 @@ orU32U32:
     pop hl
     ret
 
-; Description: Perform binary XOR operation.
+; Description: Perform binary XOR operation, u32(HL) ^= u32(DE).
 ; Input:
-;   - HL: pointer to U32
-;   - DE: pointer to U32
+;   - HL: pointer to u32
+;   - DE: pointer to u32
 ; Output:
 ;   - HL: pointer to the result
 ; Destroys: A
@@ -326,9 +342,9 @@ xorU32U32:
     pop hl
     ret
 
-; Description: Perform NOT (1's complement) operation.
+; Description: Perform NOT (1's complement) operation, u32(HL) = !u32(HL).
 ; Input:
-;   - HL: pointer to U32
+;   - HL: pointer to u32
 ; Output:
 ;   - HL: pointer to the result
 ; Destroys: A
@@ -357,9 +373,10 @@ notU32:
     pop hl
     ret
 
-; Description: Perform NEG (2's complement negative) operation.
+; Description: Perform NEG (2's complement negative) operation, u32(HL) =
+; -u32(HL).
 ; Input:
-;   - HL: pointer to U32
+;   - HL: pointer to u32
 ; Output:
 ;   - HL: pointer to the result
 ; Destroys: A
@@ -388,4 +405,53 @@ negU32:
     pop hl
     ret
 
-
+; Description: Multiply u32 by u32, u32(HL) *= u32(DE). This algorithm is
+; similar to the u16*u16 algorithm in
+; https://tutorials.eeems.ca/Z80ASM/part4.htm, except that this implements a
+; u32*u32.
+; Input:
+;   - HL: pointer to result u32
+;   - DE: pointer to operand u32
+; Output:
+;   - u32(HL) *= u32(DE)
+; Destroys: A
+multU32U32:
+    ; Create temporary 4-byte buffer on the stack, and set it to 0.
+    push bc
+    ld bc, 0
+    push bc
+    push bc
+    ;
+    ld b, h
+    ld c, l ; BC = HL
+    ld hl, 0
+    add hl, sp ; (HL) = (SP) = result
+    ld a, 32
+multU32U32Loop:
+    call shiftLeftU32 ; (HL) *= 2
+    ex de, hl
+    call shiftLeftU32 ; (DE) *= 2
+    ex de, hl
+    jr nc, multU32U32NoMult
+    call addU32U32BC ; (HL) += (BC)
+multU32U32NoMult:
+    dec a
+    jr nz, multU32U32Loop
+multU32U32End:
+    ; copy u32(SP) to u32(original HL)
+    ld h, b
+    ld l, c
+    pop bc
+    ld (hl), c
+    inc hl
+    ld (hl), b
+    inc hl
+    pop bc
+    ld (hl), c
+    inc hl
+    ld (hl), b
+    dec hl
+    dec hl
+    dec hl
+    pop bc
+    ret
