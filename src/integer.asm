@@ -33,8 +33,8 @@ multU32By10:
     pop hl
 
     ; (HL) = 4 * (HL)
-    call multU32By2 ; (HL) *= 2
-    call multU32By2 ; (HL) *= 2
+    call shiftLeftU32 ; (HL) *= 2
+    call shiftLeftU32 ; (HL) *= 2
 
     ; (HL) += (original HL). This step is quite lengthy because it is using
     ; four 8-bit operations to add two u32 integers. Maybe there's a more
@@ -61,17 +61,20 @@ multU32By10:
     ld (hl), a
     pop hl
 
-    call multU32By2 ; (HL) = 2 (HL) = 10 * (original HL)
+    call shiftLeftU32 ; (HL) = 2 * (HL) = 10 * (original HL)
 
     pop de
     pop bc
     ret
 
-; Description: Calculate (HL) = u32(HL) * 2.
+; Description: Shift u32(HL) left by one bit. Also calculates u32(HL) = u32(HL)
+; * 2.
 ; Input: HL: pointer to a u32 integer in little-endian format.
-; Output: u32 pointed by HL is doubled
+; Output:
+;   - u32(HL) shifted left by one position.
+;   - CF set to most significant bit
 ; Destroys: none
-multU32By2:
+shiftLeftU32:
     push hl
     or a ; clear CF
     sla (hl) ; CF=bit7
