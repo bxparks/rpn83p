@@ -52,6 +52,8 @@ Here the quick summary of its features:
 
 **Changelog**: [CHANGELOG.md](CHANGELOG.md)
 
+**Project Home**: https://github.com/bxparks/rpn83p
+
 **User Guide**: [USER_GUIDE.md](USER_GUIDE.md)
 
 ## Table of Contents
