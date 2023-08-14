@@ -8,43 +8,43 @@ RPN calculator app for the TI-83 Plus and TI-84 Plus inspired by the HP-42S.
 
 ## Table of Contents
 
-- [Introduction](#Introduction)
-- [Why?](#Why)
-    - [Short Answer](#ShortAnswer)
-    - [Long Answer](#LongAnswer)
-- [Installation](#Installation)
-    - [Uploading](#Uploading)
-    - [Starting](#Starting)
-    - [Quitting](#Quitting)
-- [Basic Usage](#BasicUsage)
-    - [Screen Areas](#ScreenAreas)
-    - [Input and Editing](#InputAndEditing)
-    - [RPN Stack](#RPNStack)
-    - [Menu System](#MenuSystem)
-        - [Menu Hierarchy](#MenuHierarchy)
-        - [Menu Buttons](#MenuButtons)
-        - [Menu Indicator Arrows](#MenuIndicatorArrows)
-    - [Built In Help](#BuiltInHelp)
-    - [Error Codes](#ErrorCodes)
-- [Functions](#Functions)
-    - [Direct Functions](#DirectFunctions)
-    - [Menu Functions](#MenuFunctions)
-- [Advanced Usage](#AdvancedUsage)
-    - [Auto-start](#AutoStart)
-    - [Floating Point Display Modes](#FloatingPointDisplayModes)
-    - [Trigonometric Modes](#TrigModes)
-    - [Base Functions](#BaseFunctions)
-        - [Base Modes](#BaseModes)
-        - [Base Rendering](#BaseRendering)
-        - [Base Integers](#BaseIntegers)
-    - [Storage Registers](#StorageRegisters)
-- [Future Enhancements](#FutureEnhancements)
-    - [Near Future](#NearFuture)
-    - [Medium Future](#MediumFuture)
-    - [Far Future](#FarFuture)
-    - [Not Planned](#NotPlanned)
+- [Introduction](#introduction)
+- [Why?](#why)
+    - [Short Answer](#short-answer)
+    - [Long Answer](#long-answer)
+- [Installation](#installation)
+    - [Uploading](#obtaining-the-program-file)
+    - [Uploading](#uploading)
+    - [Starting](#starting)
+    - [Quitting](#quitting)
+- [Basic Usage](#basic-usage)
+    - [Screen Areas](#screen-areas)
+    - [Input and Editing](#input-and-editing)
+    - [RPN Stack](#rpn-stack)
+    - [Menu System](#menu-system)
+        - [Menu Hierarchy](#menu-hierarchy)
+        - [Menu Buttons](#menu-buttons)
+        - [Menu Indicator Arrows](#menu-indicator-arrows)
+    - [Built In Help](#built-in-help)
+    - [Error Codes](#error-codes)
+- [Functions](#functions)
+    - [Direct Functions](#direct-functions)
+    - [Menu Functions](#menu-functions)
+- [Advanced Usage](#advanced-usage)
+    - [Auto-start](#auto-start)
+    - [Floating Point Display Modes](#floating-point-display-modes)
+    - [Trigonometric Modes](#trig-modes)
+    - [Base Functions](#base-functions)
+        - [Base Modes](#base-modes)
+        - [Base Rendering](#base-rendering)
+        - [Base Integers](#base-integers)
+    - [Storage Registers](#storage-registers)
+- [Future Enhancements](#future-enhancements)
+    - [Near Future](#near-future)
+    - [Medium Future](#medium-future)
+    - [Far Future](#far-future)
+    - [Not Planned](#not-planned)
 
-<a name="Introduction"></a>
 ## Introduction
 
 RPN83P is an [RPN](https://en.wikipedia.org/wiki/Reverse_Polish_notation)
@@ -100,7 +100,6 @@ Here are some missing features which may be added in the future:
 - vectors and matrices
 - keystroke programming
 
-<a name="Why"></a>
 ## Why?
 
 ### Short Answer
@@ -191,10 +190,8 @@ actually use. If other people find it useful, and if it helps reduce electronic
 waste of old TI calculators, then I will have exceeded my expectations of this
 project.
 
-<a name="Installation"></a>
 ## Installation
 
-<a name="ObtainingProgramFile"></a>
 ### Obtaining the Program File
 
 The RPN83P app is packaged as a single file named `rpn83p.8xk`. There are at
@@ -206,7 +203,6 @@ least 2 ways to obtain this:
 - Compile the binary locally
     - See [Compiling from Source](#Compiling) section below
 
-<a name="Uploading"></a>
 ### Uploading
 
 The `rpn83p.8xk` file must be uploaded to the calculator using a "link" program
@@ -223,7 +219,6 @@ software and follow the instructions in [Transferring FLASH Applications to a
 Graphing
 Calculator](https://education.ti.com/en/customer-support/knowledge-base/sofware-apps/product-usage/11506).
 
-<a name="Starting"></a>
 ### Starting
 
 After installing `rpn83p.8xk` file, go to the calculator:
@@ -239,7 +234,6 @@ should see a screen that looks like:
 
 > ![RPN83P screenshot 1](docs/rpn83p-screenshot-initial.png)
 
-<a name="Quitting"></a>
 ### Quitting
 
 The RPN83P application can be quit using:
@@ -248,7 +242,6 @@ The RPN83P application can be quit using:
 - `2ND` `OFF`: to turn the calculator off (the RPN registers and storage
   registers will be preserved)
 
-<a name="BasicUsage"></a>
 ## Basic Usage
 
 This guide assumes that you already know to use an RPN calculator. In
@@ -262,7 +255,6 @@ emulator for the HP-42S (available for Android, iOS, Windows, MacOS, and Linux)
 and then download the [HP-42S Owner's
 Manual](https://literature.hpcalc.org/items/929).
 
-<a name="ScreenAreas"></a>
 ### Screen Areas
 
 Here are the various UI elements on the LCD screen used by the RPN83P app:
@@ -285,7 +277,6 @@ The X register line is also used as the input line when entering new numbers. It
 is also used to prompt for command line argument, for example `FIX _ _` to set
 the fixed display mode.)
 
-<a name="InputAndEditing"></a>
 ### Input and Editing
 
 The following buttons are used to enter and edit a number in the input buffer:
@@ -329,7 +320,6 @@ all the corner cases would be useful because it would probably be tedious to
 read. I hope that the input system is intuitive and self-consistent enough that
 you can just play around with it and learn how it works.
 
-<a name="RPNStack"></a>
 ### RPN Stack
 
 The RPN83P tries to implement the traditional 4-level stack used by many HP
@@ -391,10 +381,8 @@ the `X` register just before the most recent operation. It can be used to bring
 back a number that was accidentally consumed, or it can be used as part of a
 longer sequence of calculations.
 
-<a name="MenuSystem"></a>
 ### Menu System
 
-<a name="MenuHierarchy"></a>
 #### Menu Hierarchy
 
 The menu system of the RPN83P was directly inspired by the HP-42S calculator.
@@ -418,7 +406,6 @@ There are 4 components:
 - `MenuItem`: a leaf-node that maps directly to a function (e.g. `ASNH`) when
   the corresponding menu button is pressed
 
-<a name="MenuButtons"></a>
 #### Menu Buttons
 
 The LCD screen always shows a `MenuStrip` of 5 `MenuItems`. Here are the buttons
@@ -457,7 +444,6 @@ functionality is already provided by the menu system.
 3. When the menu system is at the root, the first menu item on the left is a
 menu group named `MATH`, which may help to remember this button mapping.
 
-<a name="MenuIndicatorArrows"></a>
 #### Menu Indicator Arrows
 
 There are 3 menu indicator arrows at the top-left corner of the LCD screen. The
@@ -505,7 +491,6 @@ functionality") can be used to go back to the parent menu group:
 
 > ![Menu Arrows 1](docs/rpn83p-screenshot-menu-arrows-1.png)
 
-<a name="BuiltInHelp"></a>
 ## Built In Help
 
 Pressing the `HELP` menu button at the root menu:
@@ -525,7 +510,6 @@ activates the Help pages:
 Hopefully they are useful for remembering the mapping of the buttons whose TI-OS
 keyboard labels do not match the functionality assigned by the RPN83P program.
 
-<a name="ErrorCodes"></a>
 ## Error Codes
 
 The RPN83P supports all error messages from the underlying TI-OS which are
@@ -573,13 +557,11 @@ the error is reproducible, please file a bug report containing the numerical
 error code so that I can add it to the list of error messages supported by
 RPN83P.
 
-<a name="Functions"></a>
 ## Functions
 
 This section contains a description of all functions implemented by the RPN83P
 app, accessed through buttons or through the menu system.
 
-<a name="DirectFunctions"></a>
 ### Direct Functions
 
 Most of the mathematical functions that are exposed through physical buttons
@@ -597,7 +579,6 @@ are supported by the RPN83P app.
 - constants
     - `pi`, `e`
 
-<a name="MenuFunctions"></a>
 ### Menu Functions
 
 These functions are accessed through the hierarchical menu, using the 5 menu
@@ -740,10 +721,8 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (back), and `MATH`
     - `CLST`: clear all RPN stack registers
     - `CLX`: clear `X` stack register (stack lift disabled)
 
-<a name="AdvancedUsage"></a>
 ## Advanced Usage
 
-<a name="AutoStart"></a>
 ### Auto-start
 
 For convenience, you may choose to auto-start the RPN83P application as soon as
@@ -765,7 +744,6 @@ The LCD screen should look like this before hitting `FINISH`:
 Turn off the calculator and turn it back on. It should directly go into the
 RPN83P application.
 
-<a name="FloatingPointDisplayModes"></a>
 ### Floating Point Display Modes
 
 The RPN83P app provides access to the same floating point display modes as the
@@ -843,7 +821,6 @@ point display modes, so it cannot emulate the HP-42S exactly. In particular, the
 `ALL` display mode of the HP-42S is not directly available, but it is basically
 equivalent to `FIX 99` on the RPN83P.
 
-<a name="TrigModes"></a>
 ### Trigonometric Modes
 
 Just like the TI-OS, the RPN83P uses the radian mode by default when calculating
@@ -871,7 +848,6 @@ possible to add this feature by intercepting the trig functions and performing
 some pre and post unit conversions. But I'm not sure if it's worth the effort
 since gradian trig mode is not commonly used.
 
-<a name="BaseFunctions"></a>
 ### BASE Functions
 
 The `BASE` functions are available through the `ROOT` > `BASE` hierarchy:
@@ -886,7 +862,6 @@ bit-xor, etc). They are useful for computer science and programming. The `BASE`
 modes and functions work somewhat differently compared to the HP-42S, so
 additional documentation is provided here.
 
-<a name="BaseModes"></a>
 #### BASE Modes
 
 **DEC** (decimal)
@@ -947,7 +922,6 @@ disabled.
 
 > ![Numbers in Binary Mode](docs/rpn83p-screenshot-base-bin.png)
 
-<a name="BaseRendering"></a>
 #### Base Rendering
 
 Unlike the HP-42S, the `HEX`, `OCT` and `BIN` modes are simply *display* modes
@@ -974,7 +948,6 @@ Changing back to `DEC` mode shows that the numbers were added normally:
 
 > ![Base Arithmetic Part 4](docs/rpn83p-screenshot-base-arithmetic-4-dec.png)
 
-<a name="BaseIntegers"></a>
 #### Base Integers
 
 The HP-42S uses a 36-bit *signed* integer for BASE rendering and operations. To
@@ -1010,7 +983,6 @@ the negative sign.
 Currently, the integer size for base conversions and functions is hardcoded to
 be 32 bits. I hope to add the ability to change the integer size in the future.
 
-<a name="StorageRegisters"></a>
 #### Storage Registers
 
 Similar to the HP-42S, the RPN83P provides **25** storage registers labeled
@@ -1033,14 +1005,12 @@ get to:
 
 The message `REGS cleared` will be displayed on the screen.
 
-<a name="FutureEnhancements"></a>
 ## Future Enhancements
 
 There seems to be almost an endless number of features that could go into a
 calculator app. I have grouped them as follows, since my time and energy is
 limited:
 
-<a name="NearFuture"></a>
 ### Near Future
 
 - bit shift and rotation operators
@@ -1068,7 +1038,6 @@ limited:
         - DEC/HEX/OCT/BIN base mode settings
         - the input buffer
 
-<a name="MediumFuture"></a>
 ### Medium Future
 
 - compound `STO` and `RCL` operators
@@ -1122,7 +1091,6 @@ limited:
     - To start, I think we can use `ANS` variable on the TI-OS to transport
       the `stX` register on the RPN83P.
 
-<a name="FarFuture"></a>
 ### Far Future
 
 I'm not sure these features are worth the effort, but I may do them for
@@ -1141,7 +1109,6 @@ curiosity and the technical challenge:
       the effort. For non-trivial calculations, it is probably easier to use
       a desktop computer and application (e.g. MATLAB, Octave, Mathematica).
 
-<a name="NotPlanned"></a>
 ### Not Planned
 
 - graphing
