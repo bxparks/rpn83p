@@ -145,8 +145,8 @@ for this formula, but I used the `LastX` feature to demonstrate its use.)
 <a name="Example2"></a>
 ### Example 2
 
-Let's calculate the binary-and operator between the hexadecimal numbers `B6` and
-`65`, then see the result as an octal number, a binary (base-2) number, then
+Let's calculate the bitwise-and operator between the hexadecimal numbers `B6`
+and `65`, then see the result as an octal number, a binary (base-2) number, then
 finally as a decimal number:
 
 - Navigate the menu with the DOWN arrow to get to
