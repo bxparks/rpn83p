@@ -11,9 +11,15 @@
 # out of context from the text. The `-f gfm` embeds the images directly into
 # the flow of the text.
 
+TARGETS := README.pdf \
+USER_GUIDE.pdf \
+rpn83p.8xk \
+rpn83p-example1.gif \
+rpn83p-example2.gif
+
 # Create a zip file suitable for third party archives, like cemetech.net and
 # ticalc.org.
-rpn83p.zip: README.pdf USER_GUIDE.pdf rpn83p.8xk
+rpn83p.zip: $(TARGETS)
 	rm -f $@
 	zip -r $@ $^
 
@@ -33,5 +39,13 @@ rpn83p.8xk: src/rpn83p.8xk
 src/rpn83p.8xk: src/*.asm
 	$(MAKE) -C src rpn83p.8xk
 
+# Copy the animated GIF as a sample screenshot.
+rpn83p-example1.gif: docs/rpn83p-example1.gif
+	cp -f $< $@
+
+# Copy the animated GIF as a sample screenshot.
+rpn83p-example2.gif: docs/rpn83p-example1.gif
+	cp -f $< $@
+
 clean:
-	rm -f README.pdf USER_GUIDE.pdf rpn83p.8xk
+	rm -f $(TARGETS)
