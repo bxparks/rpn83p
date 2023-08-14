@@ -306,6 +306,7 @@ mainExit:
 #include "display.asm"
 #include "errorcode.asm"
 #include "base.asm"
+#include "integer.asm"
 #include "menu.asm"
 #include "menuhandlers.asm"
 #ifdef DEBUG
