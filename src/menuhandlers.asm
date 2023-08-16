@@ -127,7 +127,7 @@ helpPages:
 
 msgHelpPage1:
     .db escapeLargeFont, "RPN83P", Lenter
-    .db escapeSmallFont, "v0.3.3 (2023", Shyphen, "08", Shyphen, "14)", Senter
+    .db escapeSmallFont, "v0.4.0 (2023", Shyphen, "08", Shyphen, "15)", Senter
     .db "(c) 2023  Brian T. Park", Senter
     .db Senter
     .db "An RPN calculator for the", Senter
@@ -1185,6 +1185,8 @@ mBitwiseAndHandler:
     call convertU32ToOP1 ; OP1 = float(OP4)
     jp replaceXY
 
+;-----------------------------------------------------------------------------
+
 mBitwiseOrHandler:
     call closeInputAndRecallXY ; OP1=Y; OP2=X
     ld hl, OP3
@@ -1199,6 +1201,8 @@ mBitwiseOrHandler:
 
     call convertU32ToOP1 ; OP1 = float(OP4)
     jp replaceXY
+
+;-----------------------------------------------------------------------------
 
 mBitwiseXorHandler:
     call closeInputAndRecallXY ; OP1=Y; OP2=X
@@ -1215,6 +1219,8 @@ mBitwiseXorHandler:
     call convertU32ToOP1 ; OP1 = float(OP4)
     jp replaceXY
 
+;-----------------------------------------------------------------------------
+
 mBitwiseNotHandler:
     call closeInputAndRecallX ; OP1=X
     ld hl, OP3
@@ -1223,6 +1229,8 @@ mBitwiseNotHandler:
     call convertU32ToOP1 ; OP1 = float(OP3)
     jp replaceX
 
+;-----------------------------------------------------------------------------
+
 mBitwiseNegHandler:
     call closeInputAndRecallX ; OP1=X
     ld hl, OP3
@@ -1230,6 +1238,42 @@ mBitwiseNegHandler:
     call negU32 ; OP3 = NEG(OP3), 2's complement negation
     call convertU32ToOP1 ; OP1 = float(OP3)
     jp replaceX
+
+;-----------------------------------------------------------------------------
+
+mShiftLeftHandler:
+    call closeInputAndRecallX ; OP1=X
+    ld hl, OP3
+    call convertOP1ToU32 ; OP3=u32(X)
+    call shiftLeftU32 ; OP3 = (OP3 << 1)
+    call convertU32ToOP1 ; OP1 = float(OP3)
+    jp replaceX
+
+mShiftRightHandler:
+    call closeInputAndRecallX ; OP1=X
+    ld hl, OP3
+    call convertOP1ToU32 ; OP3=u32(X)
+    call shiftRightLogicalU32 ; OP3 = (OP3 >> 1)
+    call convertU32ToOP1 ; OP1 = float(OP3)
+    jp replaceX
+
+mRotateLeftHandler:
+    call closeInputAndRecallX ; OP1=X
+    ld hl, OP3
+    call convertOP1ToU32 ; OP3=u32(X)
+    call rotateLeftCircularU32; OP3 = rotLeftCircular(OP3)
+    call convertU32ToOP1 ; OP1 = float(OP3)
+    jp replaceX
+
+mRotateRightHandler:
+    call closeInputAndRecallX ; OP1=X
+    ld hl, OP3
+    call convertOP1ToU32 ; OP3=u32(X)
+    call rotateRightCircularU32; OP3 = rotRightCircular(OP3)
+    call convertU32ToOP1 ; OP1 = float(OP3)
+    jp replaceX
+
+;-----------------------------------------------------------------------------
 
 mBitwiseAddHandler:
     call closeInputAndRecallXY ; OP1=Y; OP2=X
@@ -1245,6 +1289,8 @@ mBitwiseAddHandler:
 
     call convertU32ToOP1 ; OP1 = float(OP3)
     jp replaceXY
+
+;-----------------------------------------------------------------------------
 
 mBitwiseSubtHandler:
     call closeInputAndRecallXY ; OP1=Y; OP2=X
@@ -1262,6 +1308,8 @@ mBitwiseSubtHandler:
     call convertU32ToOP1 ; OP1 = float(OP3)
     jp replaceXY
 
+;-----------------------------------------------------------------------------
+
 mBitwiseMultHandler:
     call closeInputAndRecallXY ; OP1=Y; OP2=X
     ld hl, OP3
@@ -1277,9 +1325,46 @@ mBitwiseMultHandler:
     call convertU32ToOP1 ; OP1 = float(OP3)
     jp replaceXY
 
+;-----------------------------------------------------------------------------
+
+; Description: Calculate bitwise x/y.
+; Output:
+;   - X=quotient (remainder lost)
 mBitwiseDivHandler:
-mBitwiseModHandler:
-    jp mNotYetHandler
+    call divHandlerCommon ; HL=quotient, DE=remainder
+    call convertU32ToOP1 ; OP1 = quotient
+    jp replaceXY
+
+; Description: Calculate bitwise div(x, y) -> (y/x, y % x).
+; Output:
+;   - X=remainder
+;   - Y=quotient
+mBitwiseDiv2Handler:
+    call divHandlerCommon ; HL=quotient, DE=remainder
+    ex de, hl
+    push de ; save remainder
+    call convertU32ToOP1 ; OP1=remainder
+    bcall(_OP1ToOP2) ; OP2=remainder
+    pop hl ; HL=quotient
+    call convertU32ToOP1 ; OP1 = quotient
+    jp replaceXYWithOP2OP1 ; Y=quotient, X=remainder
+
+divHandlerCommon:
+    call closeInputAndRecallXY ; OP1=Y; OP2=X
+    ld hl, OP3
+    call convertOP1ToU32 ; OP3=u32(Y)
+    bcall(_OP2ToOP1)
+    ld hl, OP4
+    call convertOP1ToU32 ; OP4=u32(X)
+    call testU32
+    jr nz,  divHandlerContinue
+divHandlerDivByZero:
+    bcall(_ErrDivBy0) ; throw 'Div By 0' exception
+divHandlerContinue:
+    ld bc, OP4 ; BC=divisor (X)
+    ld hl, OP3 ; HL=dividend (Y)
+    ld de, OP5 ; DE=remainder
+    jp divU32U32 ; HL=OP3=quotient, DE=remainder, BC=divisor
 
 ;-----------------------------------------------------------------------------
 ; Children nodes of STK menu group (stack functions).

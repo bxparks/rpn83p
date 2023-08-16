@@ -118,7 +118,7 @@ mBaseId equ 10
     .db mBaseId ; id
     .db mRootId ; parentId
     .db mBaseNameId ; nameId
-    .db 3 ; numStrips
+    .db 4 ; numStrips
     .db mDecId ; stripBeginId
     .dw mGroupHandler ; handler (predefined)
 mStack:
@@ -127,7 +127,7 @@ mStackId equ 11
     .db mRootId ; parentId
     .db mStackNameId ; nameId
     .db 1 ; numStrips
-    .db mBlank117Id ; stripBeginId
+    .db mBlank122Id ; stripBeginId
     .dw mGroupHandler ; handler (predefined)
 ; MenuGroup root: children: strip 2
 mClear:
@@ -958,8 +958,49 @@ mBitwiseNegId equ 111
     .db 0 ; stripBeginId
     .dw mBitwiseNegHandler ; handler (to be implemented)
 ; MenuGroup BASE: children: strip 2
+mShiftLeft:
+mShiftLeftId equ 112
+    .db mShiftLeftId ; id
+    .db mBaseId ; parentId
+    .db mShiftLeftNameId ; nameId
+    .db 0 ; numStrips
+    .db 0 ; stripBeginId
+    .dw mShiftLeftHandler ; handler (to be implemented)
+mShiftRight:
+mShiftRightId equ 113
+    .db mShiftRightId ; id
+    .db mBaseId ; parentId
+    .db mShiftRightNameId ; nameId
+    .db 0 ; numStrips
+    .db 0 ; stripBeginId
+    .dw mShiftRightHandler ; handler (to be implemented)
+mRotateLeft:
+mRotateLeftId equ 114
+    .db mRotateLeftId ; id
+    .db mBaseId ; parentId
+    .db mRotateLeftNameId ; nameId
+    .db 0 ; numStrips
+    .db 0 ; stripBeginId
+    .dw mRotateLeftHandler ; handler (to be implemented)
+mRotateRight:
+mRotateRightId equ 115
+    .db mRotateRightId ; id
+    .db mBaseId ; parentId
+    .db mRotateRightNameId ; nameId
+    .db 0 ; numStrips
+    .db 0 ; stripBeginId
+    .dw mRotateRightHandler ; handler (to be implemented)
+mBlank116:
+mBlank116Id equ 116
+    .db mBlank116Id ; id
+    .db mBaseId ; parentId
+    .db mNullNameId ; nameId
+    .db 0 ; numStrips
+    .db 0 ; stripBeginId
+    .dw mNullHandler ; handler (predefined)
+; MenuGroup BASE: children: strip 3
 mBitwiseAdd:
-mBitwiseAddId equ 112
+mBitwiseAddId equ 117
     .db mBitwiseAddId ; id
     .db mBaseId ; parentId
     .db mBitwiseAddNameId ; nameId
@@ -967,7 +1008,7 @@ mBitwiseAddId equ 112
     .db 0 ; stripBeginId
     .dw mBitwiseAddHandler ; handler (to be implemented)
 mBitwiseSubt:
-mBitwiseSubtId equ 113
+mBitwiseSubtId equ 118
     .db mBitwiseSubtId ; id
     .db mBaseId ; parentId
     .db mBitwiseSubtNameId ; nameId
@@ -975,7 +1016,7 @@ mBitwiseSubtId equ 113
     .db 0 ; stripBeginId
     .dw mBitwiseSubtHandler ; handler (to be implemented)
 mBitwiseMult:
-mBitwiseMultId equ 114
+mBitwiseMultId equ 119
     .db mBitwiseMultId ; id
     .db mBaseId ; parentId
     .db mBitwiseMultNameId ; nameId
@@ -983,33 +1024,33 @@ mBitwiseMultId equ 114
     .db 0 ; stripBeginId
     .dw mBitwiseMultHandler ; handler (to be implemented)
 mBitwiseDiv:
-mBitwiseDivId equ 115
+mBitwiseDivId equ 120
     .db mBitwiseDivId ; id
     .db mBaseId ; parentId
     .db mBitwiseDivNameId ; nameId
     .db 0 ; numStrips
     .db 0 ; stripBeginId
     .dw mBitwiseDivHandler ; handler (to be implemented)
-mBitwiseMod:
-mBitwiseModId equ 116
-    .db mBitwiseModId ; id
+mBitwiseDiv2:
+mBitwiseDiv2Id equ 121
+    .db mBitwiseDiv2Id ; id
     .db mBaseId ; parentId
-    .db mBitwiseModNameId ; nameId
+    .db mBitwiseDiv2NameId ; nameId
     .db 0 ; numStrips
     .db 0 ; stripBeginId
-    .dw mBitwiseModHandler ; handler (to be implemented)
+    .dw mBitwiseDiv2Handler ; handler (to be implemented)
 ; MenuGroup STK: children
 ; MenuGroup STK: children: strip 0
-mBlank117:
-mBlank117Id equ 117
-    .db mBlank117Id ; id
+mBlank122:
+mBlank122Id equ 122
+    .db mBlank122Id ; id
     .db mStackId ; parentId
     .db mNullNameId ; nameId
     .db 0 ; numStrips
     .db 0 ; stripBeginId
     .dw mNullHandler ; handler (predefined)
 mStackRotUp:
-mStackRotUpId equ 118
+mStackRotUpId equ 123
     .db mStackRotUpId ; id
     .db mStackId ; parentId
     .db mStackRotUpNameId ; nameId
@@ -1017,7 +1058,7 @@ mStackRotUpId equ 118
     .db 0 ; stripBeginId
     .dw mStackRotUpHandler ; handler (to be implemented)
 mStackRotDown:
-mStackRotDownId equ 119
+mStackRotDownId equ 124
     .db mStackRotDownId ; id
     .db mStackId ; parentId
     .db mStackRotDownNameId ; nameId
@@ -1025,16 +1066,16 @@ mStackRotDownId equ 119
     .db 0 ; stripBeginId
     .dw mStackRotDownHandler ; handler (to be implemented)
 mStackExchangeXY:
-mStackExchangeXYId equ 120
+mStackExchangeXYId equ 125
     .db mStackExchangeXYId ; id
     .db mStackId ; parentId
     .db mStackExchangeXYNameId ; nameId
     .db 0 ; numStrips
     .db 0 ; stripBeginId
     .dw mStackExchangeXYHandler ; handler (to be implemented)
-mBlank121:
-mBlank121Id equ 121
-    .db mBlank121Id ; id
+mBlank126:
+mBlank126Id equ 126
+    .db mBlank126Id ; id
     .db mStackId ; parentId
     .db mNullNameId ; nameId
     .db 0 ; numStrips
@@ -1043,7 +1084,7 @@ mBlank121Id equ 121
 ; MenuGroup CLR: children
 ; MenuGroup CLR: children: strip 0
 mClearX:
-mClearXId equ 122
+mClearXId equ 127
     .db mClearXId ; id
     .db mClearId ; parentId
     .db mClearXNameId ; nameId
@@ -1051,7 +1092,7 @@ mClearXId equ 122
     .db 0 ; stripBeginId
     .dw mClearXHandler ; handler (to be implemented)
 mClearStack:
-mClearStackId equ 123
+mClearStackId equ 128
     .db mClearStackId ; id
     .db mClearId ; parentId
     .db mClearStackNameId ; nameId
@@ -1059,24 +1100,24 @@ mClearStackId equ 123
     .db 0 ; stripBeginId
     .dw mClearStackHandler ; handler (to be implemented)
 mClearRegs:
-mClearRegsId equ 124
+mClearRegsId equ 129
     .db mClearRegsId ; id
     .db mClearId ; parentId
     .db mClearRegsNameId ; nameId
     .db 0 ; numStrips
     .db 0 ; stripBeginId
     .dw mClearRegsHandler ; handler (to be implemented)
-mBlank125:
-mBlank125Id equ 125
-    .db mBlank125Id ; id
+mBlank130:
+mBlank130Id equ 130
+    .db mBlank130Id ; id
     .db mClearId ; parentId
     .db mNullNameId ; nameId
     .db 0 ; numStrips
     .db 0 ; stripBeginId
     .dw mNullHandler ; handler (predefined)
-mBlank126:
-mBlank126Id equ 126
-    .db mBlank126Id ; id
+mBlank131:
+mBlank131Id equ 131
+    .db mBlank131Id ; id
     .db mClearId ; parentId
     .db mNullNameId ; nameId
     .db 0 ; numStrips
@@ -1263,27 +1304,35 @@ mBitwiseNotNameId equ 87
     .dw mBitwiseNotName
 mBitwiseNegNameId equ 88
     .dw mBitwiseNegName
-mBitwiseAddNameId equ 89
+mShiftLeftNameId equ 89
+    .dw mShiftLeftName
+mShiftRightNameId equ 90
+    .dw mShiftRightName
+mRotateLeftNameId equ 91
+    .dw mRotateLeftName
+mRotateRightNameId equ 92
+    .dw mRotateRightName
+mBitwiseAddNameId equ 93
     .dw mBitwiseAddName
-mBitwiseSubtNameId equ 90
+mBitwiseSubtNameId equ 94
     .dw mBitwiseSubtName
-mBitwiseMultNameId equ 91
+mBitwiseMultNameId equ 95
     .dw mBitwiseMultName
-mBitwiseDivNameId equ 92
+mBitwiseDivNameId equ 96
     .dw mBitwiseDivName
-mBitwiseModNameId equ 93
-    .dw mBitwiseModName
-mStackRotUpNameId equ 94
+mBitwiseDiv2NameId equ 97
+    .dw mBitwiseDiv2Name
+mStackRotUpNameId equ 98
     .dw mStackRotUpName
-mStackRotDownNameId equ 95
+mStackRotDownNameId equ 99
     .dw mStackRotDownName
-mStackExchangeXYNameId equ 96
+mStackExchangeXYNameId equ 100
     .dw mStackExchangeXYName
-mClearXNameId equ 97
+mClearXNameId equ 101
     .dw mClearXName
-mClearStackNameId equ 98
+mClearStackNameId equ 102
     .dw mClearStackName
-mClearRegsNameId equ 99
+mClearRegsNameId equ 103
     .dw mClearRegsName
 
 ; Table of names as NUL terminated C strings.
@@ -1465,6 +1514,14 @@ mBitwiseNotName:
     .db "NOT", 0
 mBitwiseNegName:
     .db "NEG", 0
+mShiftLeftName:
+    .db "SL", 0
+mShiftRightName:
+    .db "SR", 0
+mRotateLeftName:
+    .db "RL", 0
+mRotateRightName:
+    .db "RR", 0
 mBitwiseAddName:
     .db 'B', SplusSign, 0
 mBitwiseSubtName:
@@ -1473,8 +1530,8 @@ mBitwiseMultName:
     .db 'B', Scross, 0
 mBitwiseDivName:
     .db 'B', Sslash, 0
-mBitwiseModName:
-    .db "BMOD", 0
+mBitwiseDiv2Name:
+    .db "BDIV", 0
 mStackRotUpName:
     .db 'R', SupArrow, 0
 mStackRotDownName:

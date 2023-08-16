@@ -72,11 +72,12 @@ convertOP1ToU32SecondDigit:
 ; Description: Convert the u32 referenced by HL to a floating point number in
 ; OP1.
 ; Input: HL: pointer to u32
-; Ouptut: OP1: floating point equivalent of u32(HL)
-; Destroys: A, B
-; Preserves: HL
+; Output: OP1: floating point equivalent of u32(HL)
+; Destroys: A, B, C, DE
+; Preserves: HL, OP2
 convertU32ToOP1:
     push hl
+    bcall(_PushRealO2)
     bcall(_OP1Set0)
     pop hl
 
@@ -99,13 +100,16 @@ convertU32ToOP1:
     ld a, (hl)
     call convertU8ToOP1
 
+    push hl
+    bcall(_PopRealO2)
+    pop hl
     ret
 
 ; Description: Convert the u8 in A to floating point number, and add it to OP1.
 ; Input:
 ;   - A: u8 integer
 ;   - OP1: current floating point value, set to 0.0 to start fresh
-; Destroys: A, B
+; Destroys: A, B, DE, OP2
 ; Preserves: C, HL
 convertU8ToOP1:
     push hl

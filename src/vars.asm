@@ -287,6 +287,9 @@ replaceXY:
 
 ; Description: Replace stX=OP2 and stY=OP1, saving previous stX to lastX, and
 ; setting dirty flag.
+; Output:
+;   - Y=OP1
+;   - X=OP2
 ; Preserves: OP1, OP2
 replaceXYWithOP2OP1:
     ; validate OP1 and OP2 before modifying stX and stY
