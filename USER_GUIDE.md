@@ -989,12 +989,6 @@ limited:
 
 ### Near Future
 
-- bit shift and rotation operators
-    - shift left
-    - shift right
-    - rotate left
-    - rotate right
-    - arithmetic shift right (preserve sign bit)
 - `PRIM` (isPrime) is quite slow, about as slow as a TI-BASIC program.
     - Uses the TI-OS floating numbers and subroutines, which works pretty
       well for smallish integers.
