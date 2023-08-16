@@ -370,9 +370,10 @@ mLcmHandler:
 ; the iteration, then no prime factor was found, so X is a prime.
 ;
 ; Benchmarks:
-;   - 4001*4001: 23 seconds
-;   - 10007*10009: 56 seconds
-; In other words, about 178 / second.
+;   - 4001*4001: 15 seconds
+;   - 10007*10009: 36 seconds
+;   - 19997*19997: 72 seconds
+; In other words, about 280 candidate-interval / second.
 ;
 ; TODO: Rewrite this using integer operations instead of floating point
 ; operations to make it a LOT faster.
@@ -413,52 +414,48 @@ mPrimeHandlerCheckThree:
 mPrimeHandlerCheckDivThree:
     call mPrimeHandlerCheckDiv
     jr z, mPrimeHandlerNo
-mPrimeHandlerCheckFive:
-    bcall(_OP4ToOP1) ; OP1 = X
-    bcall(_OP2Set5) ; OP2 = 5
-    bcall(_CpOP1OP2) ; if OP1==5: ZF=1
-    jr z, mPrimeHandlerYes
-mPrimeHandlerCheckSeven:
-    ld a, 7
-    bcall(_SetXXOP2) ; OP2 = 7
-    bcall(_CpOP1OP2) ; if OP1==5: ZF=1
-    jr z, mPrimeHandlerYes
 mPrimeHandlerLoopSetup:
+    ; start with candidate=5, first of the form (6k +/- 1)
+    ; OP1=OP4=original X
+    ; OP5=limit
+    ; OP6=candidate
+    bcall(_OP4ToOP1)
     bcall(_SqRoot) ; OP1 = sqrt(X)
     bcall(_RndGuard)
     bcall(_Trunc) ; OP1 = trunc(sqrt(X))
-    bcall(_OP1ToOP5) ; OP5 = loop limit
-    bcall(_OP2Set5) ; OP2 = 5
-    bcall(_OP2ToOP6) ; OP6 = 5 = start divisor
+    bcall(_OP1ToOP5) ; OP5=limit
+    bcall(_OP2Set5)
+    bcall(_OP2ToOP6) ; OP6=candidate=5
     bcall(_RunIndicOn) ; enable run indicator
 mPrimeHandlerLoop:
+    ; Check if loop limit reached
+    bcall(_OP6ToOP2) ; OP2=candidate
+    bcall(_OP5ToOP1) ; OP1=limit
+    bcall(_CpOP1OP2) ; if limit < candidate: CF=1
+    jr c, mPrimeHandlerYes
     ; Check for ON/Break
     bit onInterrupt, (IY+onFlags)
     jr nz, mPrimeHandlerBreak
     ; Check (6n-1)
     bcall(_OP4ToOP1) ; OP1 = X
-    bcall(_OP6ToOP2) ; OP2 = candidate divisor
+    bcall(_OP6ToOP2) ; OP2 = candidate
     call mPrimeHandlerCheckDiv
     jr z, mPrimeHandlerNo
     ; Check (6n+1)
-    bcall(_OP6ToOP1) ; OP1 = candidate divisor
-    bcall(_Plus1) ; OP1++
-    bcall(_Plus1) ; OP1++
-    bcall(_OP1ToOP2)
+    bcall(_OP6ToOP1) ; OP1 = candidate
+    bcall(_OP2Set2)
+    bcall(_FPAdd) ; OP1+=2
+    bcall(_OP1ToOP6) ; candidate+=2
+    bcall(_OP1ToOP2) ; OP2=candidate
     bcall(_OP4ToOP1) ; OP1=X
     call mPrimeHandlerCheckDiv
     jr z, mPrimeHandlerNo
     ; OP6 += 4
-    bcall(_OP6ToOP1) ; OP1 = OP6 = candidate divisor
-    bcall(_OP2Set4) ; OP2 = 4
-    bcall(_FPAdd)
-    bcall(_OP1ToOP6) ; OP6 += 4
-    ; Check if loop limit reached
-    bcall(_OP5ToOP2) ; OP5=loop limit
-    bcall(_OP1ExOP2) ; OP1=limit, OP2=candidate
-    bcall(_CpOP1OP2) ; if limit < candidate: CF=1
-    jr nc, mPrimeHandlerLoop
-    jr mPrimeHandlerYes
+    bcall(_OP6ToOP1) ; OP1 = candidate
+    bcall(_OP2Set4) ; OP2=4
+    bcall(_FPAdd) ; OP1+=4
+    bcall(_OP1ToOP6) ; candidate+=4
+    jr mPrimeHandlerLoop
 mPrimeHandlerNo:
     bcall(_OP2ToOP1)
     jr mPrimeHandlerEnd
@@ -470,13 +467,16 @@ mPrimeHandlerEnd:
 
 ; Description: Determine if OP2 is an integer factor of OP1.
 ; Output: ZF=1 if OP2 is a factor, 0 if not
+; Destroys: OP1
 mPrimeHandlerCheckDiv:
     bcall(_FPDiv) ; OP1 = OP1/OP2
     bcall(_Frac) ; convert to frac part, preserving sign
     bcall(_CkOP1FP0) ; if OP1 == 0: ZF=1
     ret
+
 mPrimeHandlerError:
     bjump(_ErrDomain) ; throw exception
+
 mPrimeHandlerBreak:
     bcall(_RunIndicOff) ; disable run indicator
     res onInterrupt, (IY+onFlags)
