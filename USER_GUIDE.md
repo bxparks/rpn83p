@@ -2,7 +2,7 @@
 
 RPN calculator app for the TI-83 Plus and TI-84 Plus inspired by the HP-42S.
 
-**Version**: 0.3.3 (2023-08-14)
+**Version**: 0.4.0-dev (2023-08-16)
 
 **Project Home**: https://github.com/bxparks/rpn83p
 
@@ -34,10 +34,10 @@ RPN calculator app for the TI-83 Plus and TI-84 Plus inspired by the HP-42S.
     - [Auto-start](#auto-start)
     - [Floating Point Display Modes](#floating-point-display-modes)
     - [Trigonometric Modes](#trig-modes)
-    - [Base Functions](#base-functions)
-        - [Base Modes](#base-modes)
-        - [Base Arithmetic](#base-arithmetic)
-        - [Base Integer Size](#base-integer-size)
+    - [BASE Functions](#base-functions)
+        - [BASE Modes](#base-modes)
+        - [BASE Arithmetic](#base-arithmetic)
+        - [BASE Integer Size](#base-integer-size)
     - [Storage Registers](#storage-registers)
 - [Future Enhancements](#future-enhancements)
     - [Near Future](#near-future)
@@ -664,6 +664,8 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (back), and `MATH`
 - `ROOT` > `BASE`
     - ![BASE MenuStrip 1](docs/rpn83p-screenshot-menu-root-base-1.png)
     - ![BASE MenuStrip 2](docs/rpn83p-screenshot-menu-root-base-2.png)
+    - ![BASE MenuStrip 3](docs/rpn83p-screenshot-menu-root-base-3.png)
+    - ![BASE MenuStrip 4](docs/rpn83p-screenshot-menu-root-base-4.png)
     - `DEC`: use decimal base 10, set base indicator to `DEC`
     - `HEX`: use hexadecimal base 16, set base indicator to `HEX`
         - display all register values as 32-bit unsigned integer
@@ -677,6 +679,16 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (back), and `MATH`
     - `XOR`: `X` `bit-xor` `Y`
     - `NOT`: one's complement of `X`
     - `NEG`: two's complement of `X`
+    - `SL`: shift left one bit
+    - `SR`: shift right one bit
+    - `RL`: rotate left circular one bit
+    - `RR`: rotate right circular one bit
+    - `B+`: add `X` and `Y` using unsigned 32-bit integer math
+    - `B-`: subtract `X` from `Y` using unsigned 32-bit integer math
+    - `B*`: multiply `X` and `Y` using unsigned 32-bit integer math
+    - `B/`: divide `X` into `Y` using unsigned 32-bit integer math
+    - `BDIV`: divide `X` into `Y` with remainder, placing the quotient in `Y`
+      and the remainder in `X`
 - `ROOT` > `STK`
     - ![STK MenuStrip 1](docs/rpn83p-screenshot-menu-root-stk-1.png)
     - `R(up)`: rotate stack up
@@ -822,6 +834,8 @@ The `BASE` functions are available through the `ROOT` > `BASE` hierarchy:
 - ![ROOT MenuStrip 2](docs/rpn83p-screenshot-menu-root-2.png)
     - ![BASE MenuStrip 1](docs/rpn83p-screenshot-menu-root-base-1.png)
     - ![BASE MenuStrip 2](docs/rpn83p-screenshot-menu-root-base-2.png)
+    - ![BASE MenuStrip 3](docs/rpn83p-screenshot-menu-root-base-3.png)
+    - ![BASE MenuStrip 4](docs/rpn83p-screenshot-menu-root-base-4.png)
 
 These functions allow conversion of integers into different bases (10, 16, 8,
 2), as well as performing bitwise functions on those integers (bit-and, bit-or,
@@ -924,6 +938,10 @@ Changing back to `DEC` mode shows that the numbers were added using integer
 functions, and the fractional digits were truncated:
 
 > ![Base Arithmetic Part 4](docs/rpn83p-screenshot-base-arithmetic-4-dec.png)
+
+You can perform integer arithmetic even in `DEC` mode, by using the `B+`, `B-`,
+`B*`, and `B/` menu functions, instead of the `+`, `-`, `*` and `/` keyboard
+buttons.
 
 #### Base Integer Size
 
