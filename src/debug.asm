@@ -404,6 +404,34 @@ debugU32DEAsHex:
 
 ;------------------------------------------------------------------------------
 
+; Description: print HL as hexadecimal
+debugHLAsHex:
+    push af
+    push bc
+    push de
+    push hl
+
+    ld de, (CurRow)
+    push de
+    ld de, debugCurCol*$100+debugCurRow ; $(curCol)(curRow)
+    ld (CurRow), de
+
+    ld a, h
+    call printUnsignedAAsHex
+    ld a, l
+    call printUnsignedAAsHex
+    bcall(_EraseEOL)
+
+    pop de
+    ld (CurRow), de
+    pop hl
+    pop de
+    pop bc
+    pop af
+    ret
+
+;------------------------------------------------------------------------------
+
 debugPause:
    push af
    push bc

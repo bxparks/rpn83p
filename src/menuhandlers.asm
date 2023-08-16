@@ -395,13 +395,50 @@ mPrimeHandler:
     jp nc, mPrimeHandlerError
 
     ; Choose one of the various primeFactorXXX() routines.
-    ;call primeFactorFloat ; OP1=1 if prime, factor >1 otherwise
-    call primeFactorInt ; OP1=1 if prime, factor >1 otherwise
+    ; OP1=1 if prime, factor >1 otherwise
+#ifdef USE_PRIME_FACTOR_FLOAT
+    call primeFactorFloat
+#else
+    #ifdef USE_PRIME_FACTOR_INT
+        call primeFactorInt
+    #else
+        call primeFactorMod
+    #endif
+#endif
 
     bcall(_RunIndicOff) ; disable run indicator
     jp replaceX
 mPrimeHandlerError:
     bjump(_ErrDomain) ; throw exception
+
+;-----------------------------------------------------------------------------
+
+#ifdef DEBUG
+; Description: Test modU32U16().
+; Uses:
+;   - OP1=Y
+;   - OP2=X
+;   - OP3=u32(Y)
+;   - OP4=u32(X)
+mPrimeModHandler:
+    call closeInputAndRecallXY ; OP2 = X; OP1 = Y
+    ld hl, OP3
+    call convertOP1ToU32 ; OP3=u32(Y)
+    bcall(_OP2ToOP1)
+    ld hl, OP4
+    call convertOP1ToU32 ; OP4=u32(X)
+    ;
+    ld e, (hl)
+    inc hl
+    ld d, (hl) ; DE=u16(X)
+    ;
+    ld hl, OP3
+    call modU32U16 ; BC=remainder=Y mod X
+    ld hl, OP3
+    call setU32ToBC ; u32(OP3)=BC
+    call convertU32ToOP1 ; OP1=float(OP3)
+    jp replaceXY
+#endif
 
 ;-----------------------------------------------------------------------------
 

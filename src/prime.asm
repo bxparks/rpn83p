@@ -7,17 +7,18 @@
 ; Various implementations of the isprime() function.
 ;-----------------------------------------------------------------------------
 
-#ifdef DEBUG
+#ifdef USE_PRIME_FACTOR_FLOAT
 
 ; Description determine if OP1 is a prime using floating point routines
-; provided by the TI-OS.
+; provided by the TI-OS. This is the slowest.
+;
 ; Input: OP1: an integer in the range of [2, 2^32-1].
 ; Output: OP1: 1 if prime, smallest prime factor if not
 ; Destroys: all registers, OP2, OP4, OP5, OP6
 ;
 ; Benchmarks:
 ;   - 4001*4001: 15 seconds
-;   - 10007*10009: 36 seconds
+;   - 10007*10007: 36 seconds
 ;   - 19997*19997: 72 seconds
 ; About 280 effective-candidates / second.
 primeFactorFloat:
@@ -105,17 +106,22 @@ primeFactorBreak:
 
 ;-----------------------------------------------------------------------------
 
-; Description determine if OP1 is a prime using U32 integer routines in
-; integer.asm.
+#ifdef USE_PRIME_FACTOR_INT
+
+; Description determine if OP1 is a prime using divU32U32() routine. This is
+; almost 3X fastger than primeFactorFloat() but I think we can better.
+;
 ; Input: OP1: an integer in the range of [2, 2^32-1].
 ; Output: OP1: 1 if prime, smallest prime factor if not
 ; Destroys: all registers, OP1, OP2, OP3, OP4, OP5, OP6
 ;
 ; Benchmarks:
+;
+; Using divU32U32():
 ;   - 4001*4001: 5 seconds
-;   - 10007*10009: 14 seconds
+;   - 10007*10007: 14 seconds
 ;   - 19997*19997: 27 seconds
-; About 750-800 effective-candidates / second.
+;   - About 750-800 effective-candidates / second.
 primeFactorInt:
     ld hl, OP4
     call convertOP1ToU32 ; OP4=X
@@ -193,6 +199,7 @@ primeFactorIntYes:
 ;   - OP1=quotient
 ;   - OP2=remainder
 ;   - ZF=1 if remainder==0
+; Destroys: A, BC, DE, HL
 primeFactorIntCheckDiv:
     ld hl, OP4
     ld de, OP1
@@ -202,4 +209,115 @@ primeFactorIntCheckDiv:
     ld bc, OP2 ; BC=OP2=remainder
     call divU32U32 ; HL=OP1=quotient, BC=OP2=remainder
     call testU32BC ; ZF=1 if remainder 0
+    ret
+
+#endif
+
+;-----------------------------------------------------------------------------
+
+; Description determine if OP1 is a prime using the modU32U16() routine. This
+; is 7X faster than primeFactorFloat(), and 2.5X faster than primeFactorInt().
+; I will guess that we could probably make this 1.5X to 2X faster by optimizing
+; the inner loop, but the code would probably be less readable and
+; maintainable. I'm going to stop here.
+;
+; Input: OP1: an integer in the range of [2, 2^32-1].
+; Output: OP1: 1 if prime, smallest prime factor if not
+; Destroys: all registers, OP1, OP2, OP3, OP4, OP5, OP6
+;
+; Benchmarks:
+;   - 4001*4001: 2.4 seconds
+;   - 10007*10007: 5.5 seconds
+;   - 19997*19997: 10.5 seconds
+;   - 65521*65521: 33 seconds
+;   - About 2000 effective-candidates / second.
+primeFactorMod:
+    ld hl, OP4
+    call convertOP1ToU32 ; OP4=X
+    ; Calc root(X) to OP5, to get it out of the way. The sqrt() function could
+    ; be done using integer operations, but it's done only once in the routine,
+    ; so we don't gain much speed improvement.
+    bcall(_SqRoot) ; OP1 = sqrt(OP1), uses OP1-OP3
+    bcall(_RndGuard)
+    bcall(_Trunc) ; OP1 = trunc(sqrt(X)), uses OP1,OP2
+    ld hl, OP5
+    call convertOP1ToU32 ; OP5=limit=sqrt(X)
+    ; Check 2
+    ld a, 2
+    ld hl, OP6
+    call setU32ToA ; OP6=candidate=2
+    ld de, OP4
+    call cpU32U32 ; if X==2: ZF=1
+    jr z, primeFactorModYes
+    ; Check divisible by 2
+    call primeFactorModCheckDiv
+    jr z, primeFactorModNo
+    ; Check 3
+    ld a, 3
+    ld hl, OP6
+    call setU32ToA ; OP6=candidate=3
+    ld de, OP4
+    call cpU32U32 ; if X==3: ZF=1
+    jr z, primeFactorModYes
+    ; Check divisible by 3
+    call primeFactorModCheckDiv
+    jr z, primeFactorModNo
+primeFactorModSetup:
+    ld a, 5
+    ld hl, OP6
+    call setU32ToA
+    bcall(_RunIndicOn) ; enable run indicator
+    ; OP4=X, u16
+    ; OP5=limit, u16
+    ; OP6=candidate, u32
+primeFactorModLoop:
+    ld de, (OP6) ; DE=u16(OP6)=candidate
+    ld hl, (OP5) ; HL=u16(OP5)=limit
+    or a ; clear CF
+    sbc hl, de
+    jr c, primeFactorModYes
+    ; Check for ON/Break
+    bit onInterrupt, (IY+onFlags)
+    jr nz, primeFactorBreak
+    ; Check (6n-1)
+    call primeFactorModCheckDiv
+    jr z, primeFactorModNo
+    ; OP6+=2
+    ld de, 2
+    ld hl, (OP6)
+    add hl, de
+    ld (OP6), hl
+    ; Check (6n+1)
+    call primeFactorModCheckDiv
+    jr z, primeFactorModNo
+    ; OP6+=4
+    ld de, 4
+    ld hl, (OP6)
+    add hl, de
+    ld (OP6), hl
+    jr primeFactorModLoop
+primeFactorModNo:
+    ld hl, OP6
+    call convertU32ToOP1
+    ret
+primeFactorModYes:
+    bcall(_OP1Set1)
+    ret
+
+; Input:
+;   - OP4=X
+;   - OP6=candidate
+; Output:
+;   - BC: remainder
+;   - ZF=1 if remainder==0
+; Destroys: A, BC, DE, HL
+primeFactorModCheckDiv:
+    ld hl, OP4
+    ld de, OP1
+    call copyU32HLToDE ; OP1=X
+    ld hl, (OP6)
+    ex de, hl ; HL=OP1=X, DE=candidate
+    call modU32U16 ; BC=remainder=16-bits
+    ld a, b
+    or c ; if BC==0: ZF=1
     ret

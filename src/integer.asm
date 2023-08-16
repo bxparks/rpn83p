@@ -421,6 +421,47 @@ div32U32NextBit:
 
 ;-----------------------------------------------------------------------------
 
+; Calculate u32 % u16, throwing away the quotient. This is useful for the
+; primeFactorXxx() routines which only need to know if a u16 integer is a
+; factor of a u32 integer.
+; Input:
+;   - HL: pointer to U32 dividend
+;   - DE: U16 divisor
+; Output:
+;   - HL: pointer to U32 of 0
+;   - DE: unchanged
+;   - BC: U16 remainder
+modU32U16:
+    push de
+    ld b, d
+    ld c, e ; BC=DE=divisor
+    ld de, 0
+    ld a, 32
+modU32U16Loop:
+    call shiftLeftU32
+    rl e
+    rl d ; DE=remainder
+    ex de, hl ; HL=remainder
+    jr c, modU32U16Overflow ; remainder overflowed, so must substract
+    or a ; reset CF
+    sbc hl, bc ; HL(remainder) -= divisor
+    jr nc, modU32U16NextBit
+    add hl, bc ; revert the subtraction
+    jr modU32U16NextBit
+modU32U16Overflow:
+    or a ; reset CF
+    sbc hl, bc ; HL(remainder) -= divisor
+modU32U16NextBit:
+    ex de, hl ; DE=remainder
+    dec a
+    jr nz, modU32U16Loop
+    ld c, e
+    ld b, d
+    pop de
+    ret
+
+;-----------------------------------------------------------------------------
+
 
 ; Description: Compare u32(HL) to u32(DE), returning C if u32(HL) < u32(DE).
 ; The order of the parameters is the same as subU32U32().
@@ -577,6 +618,22 @@ clearU32BC:
 setU32ToA:
     call clearU32
     ld (hl), a
+    ret
+
+; Description: Set u32 pointed by HL to value in BC.
+setU32ToBC:
+    push af
+    push hl
+    ld (hl), c
+    inc hl
+    ld (hl), b
+    inc hl
+    xor a
+    ld (hl), a
+    inc hl
+    ld (hl), a
+    pop hl
+    pop af
     ret
 
 ;-----------------------------------------------------------------------------

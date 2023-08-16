@@ -71,7 +71,7 @@ convertOP1ToU32SecondDigit:
 
 ; Description: Convert the u32 referenced by HL to a floating point number in
 ; OP1.
-; Input: HL: pointer to u32
+; Input: HL: pointer to u32 (must not be OP2)
 ; Output: OP1: floating point equivalent of u32(HL)
 ; Destroys: A, B, C, DE
 ; Preserves: HL, OP2
