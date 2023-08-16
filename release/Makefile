@@ -26,27 +26,31 @@ rpn83p.zip: $(TARGETS)
 	zip -r $@ $^
 
 # Convert markdown to PDF.
-README.pdf: README.md Makefile
-	pandoc -V geometry:margin=1in -V fontsize=12pt -f gfm -s -o $@ $<
+README.pdf: ../README.md Makefile
+	(cd ..; \
+	pandoc -V geometry:margin=1in -V fontsize=12pt -f gfm -s -o $@ README.md; \
+	mv -f $@ release)
 
 # Convert markdown to PDF.
-USER_GUIDE.pdf: USER_GUIDE.md Makefile
-	pandoc -V geometry:margin=1in -V fontsize=12pt -f gfm -s -o $@ $<
+USER_GUIDE.pdf: ../USER_GUIDE.md Makefile
+	(cd ..; \
+	pandoc -V geometry:margin=1in -V fontsize=12pt -f gfm -s -o $@ USER_GUIDE.md; \
+	mv -f $@ release)
 
 # Copy to local directory to place it at top level in the zip file.
-rpn83p.8xk: src/rpn83p.8xk
+rpn83p.8xk: ../src/rpn83p.8xk
 	cp -f $< $@
 
 # Compile the binary if needed.
-src/rpn83p.8xk: src/*.asm
-	$(MAKE) -C src rpn83p.8xk
+../src/rpn83p.8xk: ../src/*.asm
+	$(MAKE) -C ../src rpn83p.8xk
 
 # Copy the animated GIF as a sample screenshot.
-rpn83p-example1.gif: docs/rpn83p-example1.gif
+rpn83p-example1.gif: ../docs/rpn83p-example1.gif
 	cp -f $< $@
 
 # Copy the animated GIF as a sample screenshot.
-rpn83p-example2.gif: docs/rpn83p-example2.gif
+rpn83p-example2.gif: ../docs/rpn83p-example2.gif
 	cp -f $< $@
 
 clean:

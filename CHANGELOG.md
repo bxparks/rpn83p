@@ -1,6 +1,16 @@
 # Changelog
 
 - Unreleased
+    - More `BASE` menu functions:
+        - `SL` (shift left), `SR` (shift right)`, `RL` (rotate left circular),
+        `RR` (rotate right circular).
+        - `B+`, `B-`, `B*`, `B/`
+        - `BDIV` (division with remainder)
+    - Map `+`, `-`, `*`, and `/` buttons to their bitwise counterparts when in
+      `HEX`, `OCT`, or `BIN` modes.
+        - Too confusing to have floating point operations bound to the
+          easy-to-reach buttons while in HEX, OCT or BIN modes.
+        - This is consistent with the HP-42S.
 - 0.3.3 (2023-08-14)
     - Add `Makefile` targets for converting GitHub markdown files to PDF files.
     - Update some sections in `README.md` and `USER_GUIDE.md`.

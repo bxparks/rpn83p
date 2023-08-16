@@ -36,8 +36,8 @@ RPN calculator app for the TI-83 Plus and TI-84 Plus inspired by the HP-42S.
     - [Trigonometric Modes](#trig-modes)
     - [Base Functions](#base-functions)
         - [Base Modes](#base-modes)
-        - [Base Rendering](#base-rendering)
-        - [Base Integers](#base-integers)
+        - [Base Arithmetic](#base-arithmetic)
+        - [Base Integer Size](#base-integer-size)
     - [Storage Registers](#storage-registers)
 - [Future Enhancements](#future-enhancements)
     - [Near Future](#near-future)
@@ -86,7 +86,8 @@ Here the quick summary of its features:
     - angle conversions: `>DEG`, `>RAD`, `>HR`, `>HMS`, `P>R`, `R>P`
     - unit conversions: `>C`, `>F`, `>km`, `>mi`, etc
     - base conversions: `DEC`, `HEX`, `OCT`, `BIN`
-    - bitwise operations: `AND`, `OR`, `XOR`, `NOT`, `NEG`
+    - bitwise operations: `AND`, `OR`, `XOR`, `NOT`, `NEG`, `SL`, `SR`, `RL`,
+      `RR`, `B+`, `B-`, `B*`, `B/`, `BDIV`
 - various display modes
     - `RAD`, `DEG`
     - `FIX` (fixed point 0-9 digits)
@@ -887,14 +888,23 @@ disabled.
 
 > ![Numbers in Binary Mode](docs/rpn83p-screenshot-base-bin.png)
 
-#### Base Rendering
+#### Base Arithmetic
 
-Unlike the HP-42S, the `HEX`, `OCT` and `BIN` modes are simply *display* modes
-that only affect how the numbers are rendered. These modes do not affect any
-arithmetic or mathematical operations. In particular, the arithmetic buttons
-`/`, `*`, `-`, and `+` do not change their behavior in the `HEX`, `OCT`, `BIN`
-modes, in contrast to the HP-42S which remaps those buttons to the `BASE/`,
-`BASE*`, `BASE-`, and `BASE+` functions instead.
+Similar to the HP-42S, the `HEX`, `OCT` and `BIN` modes change how some
+arithmetic functions behave. Specifically, the keyboard buttons `+`, `-`, `*`,
+`/` are re-bound to their bitwise counterparts `B+`, `B-`, `B*`, `B/` which
+perform 32-bit unsigned arithmetic operations instead of floating point
+operations. The numbers in the `X` and `Y` registers are converted into 32-bit
+unsigned integers before the integer subroutines are called.
+
+**HP-42S Compatibility Note**: The HP-42S calls these integer functions `BASE+`,
+`BASE-`, `BASE*`, and `BASE/`. The RPN83P can only display 4-characters in the
+menu bar so I needed to use shorter names. The HP-42S function called `B+/-` is
+called `NEG` on the RPN83P. Early versions of the RPN83P retained the keyboard
+arithmetic buttons bound to their floating point operations, but it became too
+confusing to see hex, octal, or binary digits on the display, but get floating
+point results when performing an arithmetic operation such as `/`. The RPN83P
+follows the lead of the HP-42S for the arithmetic operations.
 
 For example, suppose the following numbers are in the RPN stack in `DEC` mode:
 
@@ -904,16 +914,17 @@ Changing to `HEX` mode shows this:
 
 > ![Base Arithmetic Part 2](docs/rpn83p-screenshot-base-arithmetic-2-hex.png)
 
-Pressing the `+` button adds the `X` and `Y` registers, with no change in
-behavior from the `DEC` mode, including the hidden fractional part:
+Pressing the `+` button adds the `X` and `Y` registers, converting the
+values to 32-bit unsigned integers before the addition:
 
 > ![Base Arithmetic Part 3](docs/rpn83p-screenshot-base-arithmetic-3-plus.png)
 
-Changing back to `DEC` mode shows that the numbers were added normally:
+Changing back to `DEC` mode shows that the numbers were added using integer
+functions, and the fractional digits were truncated:
 
 > ![Base Arithmetic Part 4](docs/rpn83p-screenshot-base-arithmetic-4-dec.png)
 
-#### Base Integers
+#### Base Integer Size
 
 The HP-42S uses a 36-bit *signed* integer for BASE rendering and operations. To
 be honest, I have never been able to fully understand and become comfortable
@@ -921,7 +932,7 @@ with the HP-42S implementation of the BASE operations. First, 36 bits is a
 strange number, it is not an integer size used by modern microprocessors (8, 16,
 32, 64 bits). Second, the HP-42S does not display leading zeros in `HEX` `OCT`,
 or `BIN` modes. While this is consistent with the decimal mode, I find it
-confusing to see the number of rendered bits change depending on its value.
+confusing to see the number of rendered digits change depending on its value.
 
 The RPN83P deviates from the HP-42S by using a 32-bit *unsigned* integer
 internally, and rendering the various HEX, OCT, and BIN numbers using the same

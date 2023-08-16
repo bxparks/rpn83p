@@ -208,19 +208,25 @@ MenuGroup root mRoot [
         MenuItem BIN mBin # binary
       ]
       MenuStrip [
-        MenuItem AND mBinaryAnd
-        MenuItem OR mBinaryOr
-        MenuItem XOR mBinaryXor
-        MenuItem NOT mBinaryNot # 1's complement
-        MenuItem NEG mBinaryNeg # 2's complement
+        MenuItem AND mBitwiseAnd
+        MenuItem OR mBitwiseOr
+        MenuItem XOR mBitwiseXor
+        MenuItem NOT mBitwiseNot # 1's complement
+        MenuItem NEG mBitwiseNeg # 2's complement
       ]
-      # MenuStrip [
-      #   MenuItem RLC mBinaryRlc # rotate left circular
-      #   MenuItem RRC mBinaryRrc # rotate right circular
-      #   MenuItem SLA mBinarySla # shift left arithmetic
-      #   MenuItem SRA mBinarySra # shift right arithmetic
-      #   MenuItem SRL mBinarySrl # shift right logical
-      # ]
+      MenuStrip [
+        MenuItem SL mShiftLeft # shift left logical
+        MenuItem SR mShiftRight # shift right logical
+        MenuItem RL mRotateLeft # rotate left circular
+        MenuItem RR mRotateRight # rotate right circular
+      ]
+      MenuStrip [
+        MenuItem B<SplusSign> mBitwiseAdd
+        MenuItem B<Sdash> mBitwiseSubt
+        MenuItem B<Scross> mBitwiseMult
+        MenuItem B<Sslash> mBitwiseDiv
+        MenuItem BDIV mBitwiseDiv2
+      ]
     ]
     MenuGroup STK mStack [
       MenuStrip [
