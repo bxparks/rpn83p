@@ -978,7 +978,7 @@ the negative sign.
 Currently, the integer size for base conversions and functions is hardcoded to
 be 32 bits. I hope to add the ability to change the integer size in the future.
 
-#### Storage Registers
+### Storage Registers
 
 Similar to the HP-42S, the RPN83P provides **25** storage registers labeled
 `R00` to `R24`. They are accessed using the `STO` and `2ND` `RCL` keys. To store
