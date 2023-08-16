@@ -18,6 +18,7 @@ SRCS := \
 	menudef.asm \
 	menuhandlers.asm \
 	pstring.asm \
+	prime.asm \
 	rpn83p.asm \
 	vars.asm
 

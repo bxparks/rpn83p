@@ -11,8 +11,12 @@
         - Too confusing to have floating point operations bound to the
           easy-to-reach buttons while in HEX, OCT or BIN modes.
         - This is consistent with the HP-42S.
-    - Change `PRIM` (isPrime) handler to return 1 if the number is a prime, or
-      the smallest prime factor (greater than 1) otherwise.
+    - `PRIM` (isPrime)
+        - change result values:
+            - 1 if the number is a prime, or
+            - smallest prime factor (always greater than 1) if not prime.
+        - improve speed by 7X using u32 integer routines instead of floating
+          point routines
 - 0.3.3 (2023-08-14)
     - Add `Makefile` targets for converting GitHub markdown files to PDF files.
     - Update some sections in `README.md` and `USER_GUIDE.md`.
