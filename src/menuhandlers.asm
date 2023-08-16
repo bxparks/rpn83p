@@ -369,10 +369,18 @@ mLcmHandler:
 ; candidate divides into X, X is *not* a prime. If the loop reaches the end of
 ; the iteration, then no prime factor was found, so X is a prime.
 ;
+; Benchmarks:
+;   - 4001*4001: 23 seconds
+;   - 10007*10009: 56 seconds
+; In other words, about 178 / second.
+;
 ; TODO: Rewrite this using integer operations instead of floating point
 ; operations to make it a LOT faster.
 ;
-; Examples: 90119191 = 5879 x 15329 => not prime
+; Input: X: Number to check
+; Output:
+;   - X=1 if prime
+;   - X=prime factor, if not a prime
 mPrimeHandler:
     call closeInputAndRecallX
 mPrimeHandlerCheckZero:
@@ -389,11 +397,11 @@ mPrimeHandlerCheckOne:
     bcall(_OP2Set1) ; OP2 = 1
     bcall(_CpOP1OP2) ; if OP1==1: ZF=1
     jp z, mPrimeHandlerError
-    bcall(_OP1ToOP4) ; OP4 = X
+    bcall(_OP1ToOP4) ; save OP4 = X
 mPrimeHandlerCheckTwo:
     bcall(_OP2Set2) ; OP2 = 2
     bcall(_CpOP1OP2) ; if OP1==2: ZF=1
-    jr z, mPrimeHandlerYes
+    jp z, mPrimeHandlerYes
 mPrimeHandlerCheckDivTwo:
     call mPrimeHandlerCheckDiv
     jr z, mPrimeHandlerNo
@@ -437,7 +445,7 @@ mPrimeHandlerLoop:
     bcall(_Plus1) ; OP1++
     bcall(_Plus1) ; OP1++
     bcall(_OP1ToOP2)
-    bcall(_OP4ToOP1)
+    bcall(_OP4ToOP1) ; OP1=X
     call mPrimeHandlerCheckDiv
     jr z, mPrimeHandlerNo
     ; OP6 += 4
@@ -446,12 +454,13 @@ mPrimeHandlerLoop:
     bcall(_FPAdd)
     bcall(_OP1ToOP6) ; OP6 += 4
     ; Check if loop limit reached
-    bcall(_OP5ToOP2) ; OP5 = loop limit
-    bcall(_CpOP1OP2) ; if OP6(candidate) < OP5(limit): CF=1
-    jr c, mPrimeHandlerLoop
+    bcall(_OP5ToOP2) ; OP5=loop limit
+    bcall(_OP1ExOP2) ; OP1=limit, OP2=candidate
+    bcall(_CpOP1OP2) ; if limit < candidate: CF=1
+    jr nc, mPrimeHandlerLoop
     jr mPrimeHandlerYes
 mPrimeHandlerNo:
-    bcall(_OP1Set0)
+    bcall(_OP2ToOP1)
     jr mPrimeHandlerEnd
 mPrimeHandlerYes:
     bcall(_OP1Set1)
@@ -462,8 +471,7 @@ mPrimeHandlerEnd:
 ; Description: Determine if OP2 is an integer factor of OP1.
 ; Output: ZF=1 if OP2 is a factor, 0 if not
 mPrimeHandlerCheckDiv:
-    bcall(_FPDiv) ; OP1 = OP1/3
-    bcall(_RndGuard) ; force integer results
+    bcall(_FPDiv) ; OP1 = OP1/OP2
     bcall(_Frac) ; convert to frac part, preserving sign
     bcall(_CkOP1FP0) ; if OP1 == 0: ZF=1
     ret

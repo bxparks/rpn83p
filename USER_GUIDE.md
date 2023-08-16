@@ -574,7 +574,8 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (back), and `MATH`
     - `%CH`: percent change from `Y` to `X`, leaving `Y` unchanged
     - `GCD`: greatest common divisor of `X` and `Y`
     - `LCM`: lowest common multiple of `X` and `Y`
-    - `PRIM`: determine if `X` is a prime, returning 1 if prime, 0 otherwise
+    - `PRIM`: determine if `X` is a prime, returns 1 if prime, or the smallest
+      prime factor otherwise
     - `IP`: integer part of `X`, truncating towards 0, preserving sign
     - `FP`: fractional part of `X`, preserving sign
     - `FLR`: the floor of `X`, the largest integer <= `X`
