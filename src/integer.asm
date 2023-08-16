@@ -385,39 +385,34 @@ subU32U32:
 ;
 ; Input:
 ;   - HL: pointer to u32 dividend
-;   - DE: pointer to u32 empty u32
-;   - BC: pointer to u32 divisor
+;   - DE: pointer to u32 divisor
+;   - BC: pointer to empty u32, used as remainder
 ; Output:
 ;   - HL: pointer to u32 quotient
-;   - DE: pointer to u32 remainder
-;   - BC: divisor, unchanged
+;   - DE: divisor, unchanged
+;   - BC: pointer to u32 remainder
 ; Destroys: A
 divU32U32:
-    ex de, hl
-    call clearU32 ; clear remainder(HL), dividend will shift into this
-    ex de, hl
+    call clearU32BC ; clear remainder, dividend will shift into this
     ld a, 32 ; iterate for 32 bits of a u32
 div32U32Loop:
     push af ; save A loop counter
     call shiftLeftU32 ; dividend(HL) <<= 1
-    ex de, hl ; DE=dividend/quotient, HL=remainder
-    call rotateLeftU32 ; rotate CF into remainder(HL)
-
-    push de ; save dividend/quotient
-    ld e, c
-    ld d, b ; DE=divisor
+    push hl ; save HL=dividend/quotient
+    ld l, c
+    ld h, b ; HL=BC=remainder
+    call rotateLeftU32 ; rotate CF into remainder
+    ;
     call cpU32U32 ; if remainder(HL) < divisor(DE): CF=1
     jr c, div32U32QuotientZero
 div32U32QuotientOne:
     call subU32U32 ; remainder(HL) -= divisor(DE)
-    pop de ; DE=dividend/quotient
-    ex de, hl ; HL=dividend/quotient, DE=remainder
+    pop hl ; HL=dividend/quotient
     ; Set bit 0 of byte 0 of quotient
     set 0, (hl)
     jr div32U32NextBit
 div32U32QuotientZero:
-    pop de ; DE=dividend/quotient
-    ex de, hl ; HL=dividend/quotient, DE=remainder
+    pop hl ; HL=dividend/quotient
 div32U32NextBit:
     pop af
     dec a
@@ -540,6 +535,7 @@ copyU32HLToDE:
 clearU32:
     push af
     push hl
+clearU32AltEntry:
     xor a
     ld (hl), a
     inc hl
@@ -551,6 +547,16 @@ clearU32:
     pop hl
     pop af
     ret
+
+; Description: Clear the u32 pointed by BC.
+; Input: BC: pointer to u32
+; Destroys: none
+clearU32BC:
+    push af
+    push hl
+    ld h, b
+    ld l, c
+    jr clearU32AltEntry
 
 ;-----------------------------------------------------------------------------
 

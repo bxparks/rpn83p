@@ -1337,9 +1337,10 @@ mBitwiseMultHandler:
 
 ; Description: Calculate bitwise x/y.
 ; Output:
-;   - X=quotient (remainder lost)
+;   - X=quotient
+;   - remainder thrown away
 mBitwiseDivHandler:
-    call divHandlerCommon ; HL=quotient, DE=remainder
+    call divHandlerCommon ; HL=quotient, BC=remainder
     call convertU32ToOP1 ; OP1 = quotient
     jp replaceXY
 
@@ -1348,13 +1349,17 @@ mBitwiseDivHandler:
 ;   - X=remainder
 ;   - Y=quotient
 mBitwiseDiv2Handler:
-    call divHandlerCommon ; HL=quotient, DE=remainder
-    ex de, hl
-    push de ; save remainder
+    call divHandlerCommon ; HL=quotient, BC=remainder
+    ; convert remainder into OP2
+    push hl
+    ld l, c
+    ld h, b
     call convertU32ToOP1 ; OP1=remainder
     bcall(_OP1ToOP2) ; OP2=remainder
-    pop hl ; HL=quotient
+    ; convert quotient into OP1
+    pop hl
     call convertU32ToOP1 ; OP1 = quotient
+    ;
     jp replaceXYWithOP2OP1 ; Y=quotient, X=remainder
 
 divHandlerCommon:
@@ -1369,10 +1374,10 @@ divHandlerCommon:
 divHandlerDivByZero:
     bcall(_ErrDivBy0) ; throw 'Div By 0' exception
 divHandlerContinue:
-    ld bc, OP4 ; BC=divisor (X)
     ld hl, OP3 ; HL=dividend (Y)
-    ld de, OP5 ; DE=remainder
-    jp divU32U32 ; HL=OP3=quotient, DE=remainder, BC=divisor
+    ld de, OP4 ; DE=divisor (X)
+    ld bc, OP5 ; BC=remainder
+    jp divU32U32 ; HL=OP3=quotient, DE=OP4=divisor, BC=OP5=remainder
 
 ;-----------------------------------------------------------------------------
 ; Children nodes of STK menu group (stack functions).
