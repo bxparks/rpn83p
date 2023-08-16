@@ -393,7 +393,11 @@ mPrimeHandler:
     call op2Set2Pow32 ; if OP1 >= 2^32: CF=0
     bcall(_CpOP1OP2)
     jp nc, mPrimeHandlerError
-    call primeFactorFloat ; OP1=1 if prime, factor >1 otherwise
+
+    ; Choose one of the various primeFactorXXX() routines.
+    ;call primeFactorFloat ; OP1=1 if prime, factor >1 otherwise
+    call primeFactorInt ; OP1=1 if prime, factor >1 otherwise
+
     bcall(_RunIndicOff) ; disable run indicator
     jp replaceX
 mPrimeHandlerError:

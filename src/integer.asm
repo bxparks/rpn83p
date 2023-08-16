@@ -432,6 +432,8 @@ div32U32NextBit:
 ;   - ZF=1 if (HL) == (DE)
 ; Destroys: A
 ; Preserves: BC, DE, HL
+;
+; TODO: Rename this cmpU32U32. Too easily confused with copyU32U32.
 cpU32U32:
     push hl
     push de
@@ -474,32 +476,41 @@ cpU32U32End:
 
 ;-----------------------------------------------------------------------------
 
-; Description: Test for zero u32.
+; Description: Test if u32 pointed by HL is zero.
 ; Input: HL: pointer to u32
 ; Destroys: A
 testU32:
     push hl
+testU32AltEntry:
     ld a, (hl)
     or a
     jr nz, testU32End
-
+    ;
     inc hl
     ld a, (hl)
     or a
     jr nz, testU32End
-
+    ;
     inc hl
     ld a, (hl)
     or a
     jr nz, testU32End
-
+    ;
     inc hl
     ld a, (hl)
     or a
-
 testU32End:
     pop hl
     ret
+
+; Description: Test for if u32 pointed by BC is zero.
+; Input: BC: pointer to u32
+; Destroys: A
+testU32BC:
+    push hl
+    ld l, c
+    ld h, b
+    jr testU32AltEntry
 
 ;-----------------------------------------------------------------------------
 
@@ -529,6 +540,8 @@ copyU32HLToDE:
     pop de
     ret
 
+;-----------------------------------------------------------------------------
+
 ; Description: Clear the u32 pointed by HL.
 ; Input: HL: pointer to u32
 ; Destroys: none
@@ -557,6 +570,14 @@ clearU32BC:
     ld h, b
     ld l, c
     jr clearU32AltEntry
+
+;-----------------------------------------------------------------------------
+
+; Description: Set u32 pointed by HL to value in A.
+setU32ToA:
+    call clearU32
+    ld (hl), a
+    ret
 
 ;-----------------------------------------------------------------------------
 
