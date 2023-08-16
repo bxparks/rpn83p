@@ -359,23 +359,15 @@ mLcmHandler:
 
 ; Description: Determine if the integer in X is a prime number and returns 1 if
 ; prime, or the lowest prime factor (>1) if not a prime. X must be in the range
-; of [2, 2^32-1]. The TI-OS floating point operations can probably handle
-; larger integers, but restricting the range to be < 2^32 will make it easier
-; to rewrite the algorithm using Z-80 integer operations in the future.
-;
-; This algorithm uses the fact that every prime above 3 is of the form (6n-1)
-; or (6n+1), where n=1,2,3,... It checks candidate divisors from 5 to sqrt(X),
-; in steps of 6, checking whether (6n-1) or (6n+1) divides into X. If the
-; candidate divides into X, X is *not* a prime. If the loop reaches the end of
-; the iteration, then no prime factor was found, so X is a prime.
-;
-; TODO: Rewrite this using integer operations instead of floating point
-; operations to make it a LOT faster.
+; of [2, 2^32-1].
 ;
 ; Input: X: Number to check
 ; Output:
+;   - stack lifted
+;   - Y=original X
 ;   - X=1 if prime
 ;   - X=prime factor, if not a prime
+;   - "Err: Domain" if X is not an integer in the range of [2, 2^32).
 mPrimeHandler:
     call closeInputAndRecallX
     ; Check 0
@@ -394,8 +386,9 @@ mPrimeHandler:
     bcall(_CpOP1OP2)
     jp nc, mPrimeHandlerError
 
+    bcall(_PushRealO1) ; save original X
     ; Choose one of the various primeFactorXXX() routines.
-    ; OP1=1 if prime, factor >1 otherwise
+    ; OP1=1 if prime, or its smallest prime factor (>1) otherwise
 #ifdef USE_PRIME_FACTOR_FLOAT
     call primeFactorFloat
 #else
@@ -405,9 +398,17 @@ mPrimeHandler:
         call primeFactorMod
     #endif
 #endif
-
     bcall(_RunIndicOff) ; disable run indicator
-    jp replaceX
+
+    ; Instead of replacing the original X, push the prime factor into the RPN
+    ; stack. This allows the user to press '/' to get the next candidate prime
+    ; factor, which can be processed through 'PRIM` again. Running through this
+    ; multiple times until a '1' is returns allows all prime factors to be
+    ; discovered.
+    bcall(_OP1ToOP2) ; OP2=prime factor
+    bcall(_PopRealO1) ; OP1=original X
+    jp replaceXWithOP1OP2
+
 mPrimeHandlerError:
     bjump(_ErrDomain) ; throw exception
 

@@ -4,7 +4,14 @@
 ;-----------------------------------------------------------------------------
 
 ;-----------------------------------------------------------------------------
-; Various implementations of the isprime() function.
+; Various implementations of the primeFactor() function which calculates
+; the smallest prime factor, or 1 if the number is a prime.
+;
+; All of these take advantage of the fact that every prime above 3 is of the
+; form (6n-1) or (6n+1), where n=1,2,3,... It checks candidate divisors from 5
+; to sqrt(X), in steps of 6, checking whether (6n-1) or (6n+1) divides into X.
+; If the candidate divides into X, X is *not* a prime. If the loop reaches the
+; end of the iteration, then no prime factor was found, so X is a prime.
 ;-----------------------------------------------------------------------------
 
 #ifdef USE_PRIME_FACTOR_FLOAT
@@ -20,7 +27,7 @@
 ;   - 4001*4001: 15 seconds
 ;   - 10007*10007: 36 seconds
 ;   - 19997*19997: 72 seconds
-; About 280 effective-candidates / second.
+;   - About 280 effective-candidates / second.
 primeFactorFloat:
     ; Check 2
     bcall(_OP2Set2) ; OP2 = 2
