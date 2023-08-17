@@ -205,7 +205,7 @@ been verified only on my dev machine.
 
 ## Tools and Resources
 
-Here is the tools and resources that I use for development on Ubuntu Linux
+Here are the tools and resources that I used for development on Ubuntu Linux
 22.04:
 
 - spasm-ng Z80 assembler
