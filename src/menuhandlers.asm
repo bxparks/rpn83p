@@ -875,7 +875,7 @@ mPToRHandler:
     bcall(_OP1ToOP2) ; OP2 = stX = theta
     call rclY ; OP1 = stY = r
     bcall(_PToR) ; OP1 = x; OP2 = y (?)
-    jp replaceXYWithOP2OP1 ; stX=OP2=y; stY=OP1=x
+    jp replaceXYWithOP1OP2 ; stX=OP2=y; stY=OP1=x
 
 ; Rectangular to Polar
 ; Input:
@@ -889,7 +889,7 @@ mRtoPHandler:
     bcall(_OP1ToOP2) ; OP2 = stX = y
     call rclY ; OP1 = stY = x
     bcall(_RToP) ; OP1 = r; OP2 = theta (?)
-    jp replaceXYWithOP2OP1 ; stX=OP2=theta; stY=OP1=r
+    jp replaceXYWithOP1OP2 ; stX=OP2=theta; stY=OP1=r
 
 ;-----------------------------------------------------------------------------
 
@@ -1319,7 +1319,7 @@ mBitwiseDiv2Handler:
     pop hl
     call convertU32ToOP1 ; OP1 = quotient
     ;
-    jp replaceXYWithOP2OP1 ; Y=quotient, X=remainder
+    jp replaceXYWithOP1OP2 ; Y=quotient, X=remainder
 
 divHandlerCommon:
     call closeInputAndRecallXY ; OP1=Y; OP2=X

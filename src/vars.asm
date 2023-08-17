@@ -285,15 +285,16 @@ replaceXY:
     call dropStack
     jr stoX
 
-; Description: Replace stX=OP2 and stY=OP1, saving previous stX to lastX, and
+; Description: Replace X and Y with push of OP1 and OP2 on the stack in that
+; order. This causes X=OP2 and Y=OP1, saving the previous X to lastX, and
 ; setting dirty flag.
+; Input: X, Y, OP1, OP2
 ; Output:
 ;   - Y=OP1
 ;   - X=OP2
 ;   - LastX=X
 ; Preserves: OP1, OP2
-; TODO: Rename this replaceXYWithOP1OP2().
-replaceXYWithOP2OP1:
+replaceXYWithOP1OP2:
     ; validate OP1 and OP2 before modifying stX and stY
     bcall(_CkValidNum)
     bcall(_OP1ExOP2)
@@ -311,11 +312,12 @@ replaceXYWithOP2OP1:
     ret
 
 ; Description: Replace X with OP1, and OP2 pushed onto the stack in that order.
-; Input: X
+; Input: X, OP1, OP2
 ; Output:
 ;   - Y=OP1
 ;   - X=OP2
 ;   - LastX=X
+; Preserves: OP1, OP2
 replaceXWithOP1OP2:
     ; validate OP1 and OP2 before modifying stX and stY
     bcall(_CkValidNum)
