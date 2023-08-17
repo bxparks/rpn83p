@@ -1329,14 +1329,13 @@ divHandlerCommon:
     ld hl, OP4
     call convertOP1ToU32 ; OP4=u32(X)
     call testU32
-    jr nz,  divHandlerContinue
-divHandlerDivByZero:
-    bcall(_ErrDivBy0) ; throw 'Div By 0' exception
-divHandlerContinue:
+    jr z,  divHandlerDivByZero
     ld hl, OP3 ; HL=dividend (Y)
     ld de, OP4 ; DE=divisor (X)
     ld bc, OP5 ; BC=remainder
     jp divU32U32 ; HL=OP3=quotient, DE=OP4=divisor, BC=OP5=remainder
+divHandlerDivByZero:
+    bjump(_ErrDivBy0) ; throw 'Div By 0' exception
 
 ;-----------------------------------------------------------------------------
 ; Children nodes of STK menu group (stack functions).
