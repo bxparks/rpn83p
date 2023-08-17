@@ -8,7 +8,7 @@ calculator app for the [TI-83 Plus](https://en.wikipedia.org/wiki/TI-83_series)
 Plus](https://en.wikipedia.org/wiki/TI-84_Plus_series) (including the Silver
 Edition). The app is inspired mostly by the
 [HP-42S](https://en.wikipedia.org/wiki/HP-42S) calculator, with some sprinkles
-of some older HP calculators like the
+of older HP calculators like the
 [HP-12C](https://en.wikipedia.org/wiki/HP-12C) and the
 [HP-15C](https://en.wikipedia.org/wiki/HP-15C).
 
@@ -17,7 +17,7 @@ memory. Since it is stored in flash, it is preserved if the RAM is cleared. It
 consumes a small amount of TI-OS RAM: 2 list variables named `REGS` and `STK`
 which are 240 bytes and 59 bytes respectively.
 
-Here the quick summary of its features:
+Here is a quick summary of its features:
 
 - traditional 4-level RPN stack (`X`, `Y`, `Z`, `T` registers)
 - support for `lastX` register
