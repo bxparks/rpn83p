@@ -19,7 +19,7 @@
         - preserve the original `X`, and push it up to `Y`
             - allows the `/` button to be chained with additional `PRIM` to
               calculate all prime factors
-            - see [Prime Factors](#USER_GUIDE.md#prime-factors]) for details
+            - see [Prime Factors](USER_GUIDE.md#prime-factors]) for details
         - improve speed by 7X using u32 integer routines instead of floating
           point routines
 - 0.3.3 (2023-08-14)
