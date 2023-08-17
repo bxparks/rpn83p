@@ -127,7 +127,7 @@ helpPages:
 
 msgHelpPage1:
     .db escapeLargeFont, "RPN83P", Lenter
-    .db escapeSmallFont, "v0.3.3 (2023", Shyphen, "08", Shyphen, "13)", Senter
+    .db escapeSmallFont, "v0.4.0 (2023", Shyphen, "08", Shyphen, "16)", Senter
     .db "(c) 2023  Brian T. Park", Senter
     .db Senter
     .db "An RPN calculator for the", Senter
@@ -358,121 +358,88 @@ mLcmHandler:
 ;-----------------------------------------------------------------------------
 
 ; Description: Determine if the integer in X is a prime number and returns 1 if
-; prime, or 0 if not a prime. X must be in the range of [2, 2^32-1]. The TI-OS
-; floating point operations can probably handle larger integers, but
-; restricting the range to be < 2^32 will make it easier to rewrite the
-; algorithm using Z-80 integer operations in the future.
+; prime, or the lowest prime factor (>1) if not a prime. X must be in the range
+; of [2, 2^32-1].
 ;
-; This algorithm uses the fact that every prime above 3 is of the form (6n-1)
-; or (6n+1), where n=1,2,3,... It checks candidate divisors from 5 to sqrt(X),
-; in steps of 6, checking whether (6n-1) or (6n+1) divides into X. If the
-; candidate divides into X, X is *not* a prime. If the loop reaches the end of
-; the iteration, then no prime factor was found, so X is a prime.
-;
-; TODO: Rewrite this using integer operations instead of floating point
-; operations to make it a LOT faster.
-;
-; Examples: 90119191 = 5879 x 15329 => not prime
+; Input: X: Number to check
+; Output:
+;   - stack lifted
+;   - Y=original X
+;   - X=1 if prime
+;   - X=prime factor, if not a prime
+;   - "Err: Domain" if X is not an integer in the range of [2, 2^32).
 mPrimeHandler:
     call closeInputAndRecallX
-mPrimeHandlerCheckZero:
+    ; Check 0
     bcall(_CkOP1FP0)
     jp z, mPrimeHandlerError
-mPrimeHandlerCheckPosInt:
-    bcall(_CkPosInt) ; if OP1 >= 0: ZF=1
-    jp nz, mPrimeHandlerError
-mPrimeHandlerCheck32Bits:
-    call op2Set2Pow32 ; if OP1 >= 2^32: CF=0
-    bcall(_CpOP1OP2)
-    jp nc, mPrimeHandlerError
-mPrimeHandlerCheckOne:
+    ; Check 1
     bcall(_OP2Set1) ; OP2 = 1
     bcall(_CpOP1OP2) ; if OP1==1: ZF=1
     jp z, mPrimeHandlerError
-    bcall(_OP1ToOP4) ; OP4 = X
-mPrimeHandlerCheckTwo:
-    bcall(_OP2Set2) ; OP2 = 2
-    bcall(_CpOP1OP2) ; if OP1==2: ZF=1
-    jr z, mPrimeHandlerYes
-mPrimeHandlerCheckDivTwo:
-    call mPrimeHandlerCheckDiv
-    jr z, mPrimeHandlerNo
-mPrimeHandlerCheckThree:
-    bcall(_OP4ToOP1) ; OP1 = X
-    bcall(_OP2Set3) ; OP2 = 3
-    bcall(_CpOP1OP2) ; if OP1==3: ZF=1
-    jr z, mPrimeHandlerYes
-mPrimeHandlerCheckDivThree:
-    call mPrimeHandlerCheckDiv
-    jr z, mPrimeHandlerNo
-mPrimeHandlerCheckFive:
-    bcall(_OP4ToOP1) ; OP1 = X
-    bcall(_OP2Set5) ; OP2 = 5
-    bcall(_CpOP1OP2) ; if OP1==5: ZF=1
-    jr z, mPrimeHandlerYes
-mPrimeHandlerCheckSeven:
-    ld a, 7
-    bcall(_SetXXOP2) ; OP2 = 7
-    bcall(_CpOP1OP2) ; if OP1==5: ZF=1
-    jr z, mPrimeHandlerYes
-mPrimeHandlerLoopSetup:
-    bcall(_SqRoot) ; OP1 = sqrt(X)
-    bcall(_RndGuard)
-    bcall(_Trunc) ; OP1 = trunc(sqrt(X))
-    bcall(_OP1ToOP5) ; OP5 = loop limit
-    bcall(_OP2Set5) ; OP2 = 5
-    bcall(_OP2ToOP6) ; OP6 = 5 = start divisor
-    bcall(_RunIndicOn) ; enable run indicator
-mPrimeHandlerLoop:
-    ; Check for ON/Break
-    bit onInterrupt, (IY+onFlags)
-    jr nz, mPrimeHandlerBreak
-    ; Check (6n-1)
-    bcall(_OP4ToOP1) ; OP1 = X
-    bcall(_OP6ToOP2) ; OP2 = candidate divisor
-    call mPrimeHandlerCheckDiv
-    jr z, mPrimeHandlerNo
-    ; Check (6n+1)
-    bcall(_OP6ToOP1) ; OP1 = candidate divisor
-    bcall(_Plus1) ; OP1++
-    bcall(_Plus1) ; OP1++
-    bcall(_OP1ToOP2)
-    bcall(_OP4ToOP1)
-    call mPrimeHandlerCheckDiv
-    jr z, mPrimeHandlerNo
-    ; OP6 += 4
-    bcall(_OP6ToOP1) ; OP1 = OP6 = candidate divisor
-    bcall(_OP2Set4) ; OP2 = 4
-    bcall(_FPAdd)
-    bcall(_OP1ToOP6) ; OP6 += 4
-    ; Check if loop limit reached
-    bcall(_OP5ToOP2) ; OP5 = loop limit
-    bcall(_CpOP1OP2) ; if OP6(candidate) < OP5(limit): CF=1
-    jr c, mPrimeHandlerLoop
-    jr mPrimeHandlerYes
-mPrimeHandlerNo:
-    bcall(_OP1Set0)
-    jr mPrimeHandlerEnd
-mPrimeHandlerYes:
-    bcall(_OP1Set1)
-mPrimeHandlerEnd:
-    bcall(_RunIndicOff) ; disable run indicator
-    jp replaceX
+    bcall(_OP1ToOP4) ; save OP4 = X
+    ; Check integer >= 0
+    bcall(_CkPosInt) ; if OP1 >= 0: ZF=1
+    jp nz, mPrimeHandlerError
+    ; Check unsigned 32-bit integer, i.e. < 2^32.
+    call op2Set2Pow32 ; if OP1 >= 2^32: CF=0
+    bcall(_CpOP1OP2)
+    jp nc, mPrimeHandlerError
 
-; Description: Determine if OP2 is an integer factor of OP1.
-; Output: ZF=1 if OP2 is a factor, 0 if not
-mPrimeHandlerCheckDiv:
-    bcall(_FPDiv) ; OP1 = OP1/3
-    bcall(_RndGuard) ; force integer results
-    bcall(_Frac) ; convert to frac part, preserving sign
-    bcall(_CkOP1FP0) ; if OP1 == 0: ZF=1
-    ret
+    bcall(_PushRealO1) ; save original X
+    ; Choose one of the various primeFactorXXX() routines.
+    ; OP1=1 if prime, or its smallest prime factor (>1) otherwise
+#ifdef USE_PRIME_FACTOR_FLOAT
+    call primeFactorFloat
+#else
+    #ifdef USE_PRIME_FACTOR_INT
+        call primeFactorInt
+    #else
+        call primeFactorMod
+    #endif
+#endif
+    bcall(_RunIndicOff) ; disable run indicator
+
+    ; Instead of replacing the original X, push the prime factor into the RPN
+    ; stack. This allows the user to press '/' to get the next candidate prime
+    ; factor, which can be processed through 'PRIM` again. Running through this
+    ; multiple times until a '1' is returns allows all prime factors to be
+    ; discovered.
+    bcall(_OP1ToOP2) ; OP2=prime factor
+    bcall(_PopRealO1) ; OP1=original X
+    jp replaceXWithOP1OP2
+
 mPrimeHandlerError:
     bjump(_ErrDomain) ; throw exception
-mPrimeHandlerBreak:
-    bcall(_RunIndicOff) ; disable run indicator
-    res onInterrupt, (IY+onFlags)
-    bjump(_ErrBreak) ; throw exception
+
+;-----------------------------------------------------------------------------
+
+#ifdef DEBUG
+; Description: Test modU32U16().
+; Uses:
+;   - OP1=Y
+;   - OP2=X
+;   - OP3=u32(Y)
+;   - OP4=u32(X)
+mPrimeModHandler:
+    call closeInputAndRecallXY ; OP2 = X; OP1 = Y
+    ld hl, OP3
+    call convertOP1ToU32 ; OP3=u32(Y)
+    bcall(_OP2ToOP1)
+    ld hl, OP4
+    call convertOP1ToU32 ; OP4=u32(X)
+    ;
+    ld e, (hl)
+    inc hl
+    ld d, (hl) ; DE=u16(X)
+    ;
+    ld hl, OP3
+    call modU32U16 ; BC=remainder=Y mod X
+    ld hl, OP3
+    call setU32ToBC ; u32(OP3)=BC
+    call convertU32ToOP1 ; OP1=float(OP3)
+    jp replaceXY
+#endif
 
 ;-----------------------------------------------------------------------------
 
@@ -1170,7 +1137,7 @@ setBaseMode:
 
 ;-----------------------------------------------------------------------------
 
-mBinaryAndHandler:
+mBitwiseAndHandler:
     call closeInputAndRecallXY ; OP1=Y; OP2=X
     ld hl, OP3
     call convertOP1ToU32 ; OP3=u32(Y)
@@ -1185,7 +1152,9 @@ mBinaryAndHandler:
     call convertU32ToOP1 ; OP1 = float(OP4)
     jp replaceXY
 
-mBinaryOrHandler:
+;-----------------------------------------------------------------------------
+
+mBitwiseOrHandler:
     call closeInputAndRecallXY ; OP1=Y; OP2=X
     ld hl, OP3
     call convertOP1ToU32 ; OP3=u32(Y)
@@ -1200,7 +1169,9 @@ mBinaryOrHandler:
     call convertU32ToOP1 ; OP1 = float(OP4)
     jp replaceXY
 
-mBinaryXorHandler:
+;-----------------------------------------------------------------------------
+
+mBitwiseXorHandler:
     call closeInputAndRecallXY ; OP1=Y; OP2=X
     ld hl, OP3
     call convertOP1ToU32 ; OP3=u32(Y)
@@ -1215,7 +1186,9 @@ mBinaryXorHandler:
     call convertU32ToOP1 ; OP1 = float(OP4)
     jp replaceXY
 
-mBinaryNotHandler:
+;-----------------------------------------------------------------------------
+
+mBitwiseNotHandler:
     call closeInputAndRecallX ; OP1=X
     ld hl, OP3
     call convertOP1ToU32 ; OP3=u32(X)
@@ -1223,13 +1196,147 @@ mBinaryNotHandler:
     call convertU32ToOP1 ; OP1 = float(OP3)
     jp replaceX
 
-mBinaryNegHandler:
+;-----------------------------------------------------------------------------
+
+mBitwiseNegHandler:
     call closeInputAndRecallX ; OP1=X
     ld hl, OP3
     call convertOP1ToU32 ; OP3=u32(X)
     call negU32 ; OP3 = NEG(OP3), 2's complement negation
     call convertU32ToOP1 ; OP1 = float(OP3)
     jp replaceX
+
+;-----------------------------------------------------------------------------
+
+mShiftLeftHandler:
+    call closeInputAndRecallX ; OP1=X
+    ld hl, OP3
+    call convertOP1ToU32 ; OP3=u32(X)
+    call shiftLeftU32 ; OP3 = (OP3 << 1)
+    call convertU32ToOP1 ; OP1 = float(OP3)
+    jp replaceX
+
+mShiftRightHandler:
+    call closeInputAndRecallX ; OP1=X
+    ld hl, OP3
+    call convertOP1ToU32 ; OP3=u32(X)
+    call shiftRightLogicalU32 ; OP3 = (OP3 >> 1)
+    call convertU32ToOP1 ; OP1 = float(OP3)
+    jp replaceX
+
+mRotateLeftHandler:
+    call closeInputAndRecallX ; OP1=X
+    ld hl, OP3
+    call convertOP1ToU32 ; OP3=u32(X)
+    call rotateLeftCircularU32; OP3 = rotLeftCircular(OP3)
+    call convertU32ToOP1 ; OP1 = float(OP3)
+    jp replaceX
+
+mRotateRightHandler:
+    call closeInputAndRecallX ; OP1=X
+    ld hl, OP3
+    call convertOP1ToU32 ; OP3=u32(X)
+    call rotateRightCircularU32; OP3 = rotRightCircular(OP3)
+    call convertU32ToOP1 ; OP1 = float(OP3)
+    jp replaceX
+
+;-----------------------------------------------------------------------------
+
+mBitwiseAddHandler:
+    call closeInputAndRecallXY ; OP1=Y; OP2=X
+    ld hl, OP3
+    call convertOP1ToU32 ; OP3=u32(Y)
+
+    bcall(_OP2ToOP1)
+    ld hl, OP4
+    call convertOP1ToU32 ; OP4=u32(X)
+
+    ld de, OP3
+    call addU32U32 ; OP4(X) += OP3(Y)
+
+    call convertU32ToOP1 ; OP1 = float(OP3)
+    jp replaceXY
+
+;-----------------------------------------------------------------------------
+
+mBitwiseSubtHandler:
+    call closeInputAndRecallXY ; OP1=Y; OP2=X
+    ld hl, OP3
+    call convertOP1ToU32 ; OP3=u32(Y)
+
+    bcall(_OP2ToOP1)
+    ld hl, OP4
+    call convertOP1ToU32 ; OP4=u32(X)
+
+    ld de, OP3
+    ex de, hl
+    call subU32U32 ; OP3(Y) -= OP4(X)
+
+    call convertU32ToOP1 ; OP1 = float(OP3)
+    jp replaceXY
+
+;-----------------------------------------------------------------------------
+
+mBitwiseMultHandler:
+    call closeInputAndRecallXY ; OP1=Y; OP2=X
+    ld hl, OP3
+    call convertOP1ToU32 ; OP3=u32(Y)
+
+    bcall(_OP2ToOP1)
+    ld hl, OP4
+    call convertOP1ToU32 ; OP4=u32(X)
+
+    ld de, OP3
+    call multU32U32 ; OP4(X) *= OP3(Y)
+
+    call convertU32ToOP1 ; OP1 = float(OP3)
+    jp replaceXY
+
+;-----------------------------------------------------------------------------
+
+; Description: Calculate bitwise x/y.
+; Output:
+;   - X=quotient
+;   - remainder thrown away
+mBitwiseDivHandler:
+    call divHandlerCommon ; HL=quotient, BC=remainder
+    call convertU32ToOP1 ; OP1 = quotient
+    jp replaceXY
+
+; Description: Calculate bitwise div(x, y) -> (y/x, y % x).
+; Output:
+;   - X=remainder
+;   - Y=quotient
+mBitwiseDiv2Handler:
+    call divHandlerCommon ; HL=quotient, BC=remainder
+    ; convert remainder into OP2
+    push hl
+    ld l, c
+    ld h, b
+    call convertU32ToOP1 ; OP1=remainder
+    bcall(_OP1ToOP2) ; OP2=remainder
+    ; convert quotient into OP1
+    pop hl
+    call convertU32ToOP1 ; OP1 = quotient
+    ;
+    jp replaceXYWithOP2OP1 ; Y=quotient, X=remainder
+
+divHandlerCommon:
+    call closeInputAndRecallXY ; OP1=Y; OP2=X
+    ld hl, OP3
+    call convertOP1ToU32 ; OP3=u32(Y)
+    bcall(_OP2ToOP1)
+    ld hl, OP4
+    call convertOP1ToU32 ; OP4=u32(X)
+    call testU32
+    jr nz,  divHandlerContinue
+divHandlerDivByZero:
+    bcall(_ErrDivBy0) ; throw 'Div By 0' exception
+divHandlerContinue:
+    ld hl, OP3 ; HL=dividend (Y)
+    ld de, OP4 ; DE=divisor (X)
+    ld bc, OP5 ; BC=remainder
+    jp divU32U32 ; HL=OP3=quotient, DE=OP4=divisor, BC=OP5=remainder
 
 ;-----------------------------------------------------------------------------
 ; Children nodes of STK menu group (stack functions).

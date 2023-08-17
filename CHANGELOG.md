@@ -1,6 +1,26 @@
 # Changelog
 
 - Unreleased
+    - More `BASE` menu functions:
+        - `SL` (shift left), `SR` (shift right)`, `RL` (rotate left circular),
+        `RR` (rotate right circular).
+        - `B+`, `B-`, `B*`, `B/`
+        - `BDIV` (division with remainder)
+    - Map `+`, `-`, `*`, and `/` buttons to their bitwise counterparts when in
+      `HEX`, `OCT`, or `BIN` modes.
+        - Too confusing to have floating point operations bound to the
+          easy-to-reach buttons while in HEX, OCT or BIN modes.
+        - This is consistent with the HP-42S.
+    - `PRIM` (isPrime)
+        - change result values:
+            - 1 if the number is a prime, or
+            - smallest prime factor (always greater than 1) if not prime.
+        - preserve the original `X`, and push it up to `Y`
+            - allows the `/` button to be chained with additional `PRIM` to
+              calculate all prime factors
+            - see [Prime Factors](#USER_GUIDE.md#prime-factors]) for details
+        - improve speed by 7X using u32 integer routines instead of floating
+          point routines
 - 0.3.3 (2023-08-14)
     - Add `Makefile` targets for converting GitHub markdown files to PDF files.
     - Update some sections in `README.md` and `USER_GUIDE.md`.

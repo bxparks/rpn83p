@@ -13,10 +13,12 @@ SRCS := \
 	handlers.asm \
 	handlertab.asm \
 	input.asm \
+	integer.asm \
 	menu.asm \
 	menudef.asm \
 	menuhandlers.asm \
 	pstring.asm \
+	prime.asm \
 	rpn83p.asm \
 	vars.asm
 

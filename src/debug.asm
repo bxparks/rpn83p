@@ -334,12 +334,14 @@ debugU32AsHex:
     push af
     push de
     push hl
+
+    ; Set cursor position, saving the previous on the stack.
     ld de, (CurRow)
     push de
-
     ld de, debugCurCol*$100+debugCurRow ; $(curCol)(curRow)
     ld (CurRow), de
 
+debugU32AsHexAltEntry:
     ld a, (hl)
     call printUnsignedAAsHex
     inc hl
@@ -382,3 +384,68 @@ printUnsignedAAsHex:
     call convertAToChar
     bcall(_PutC)
     ret
+
+; Description: Print the 4 bytes pointed by DE into the error code line.
+; Input: De: pointer to 4 bytes
+; Destroys: None
+debugU32DEAsHex:
+    push af
+    push de
+    push hl
+    ex de, hl
+
+    ; Set cursor position, saving the previous on the stack.
+    ld de, (CurRow)
+    push de
+    ld de, errorCurCol*$100+errorCurRow ; $(curCol)(curRow)
+    ld (CurRow), de
+
+    jp debugU32AsHexAltEntry
+
+;------------------------------------------------------------------------------
+
+; Description: print HL as hexadecimal
+debugHLAsHex:
+    push af
+    push bc
+    push de
+    push hl
+
+    ld de, (CurRow)
+    push de
+    ld de, debugCurCol*$100+debugCurRow ; $(curCol)(curRow)
+    ld (CurRow), de
+
+    ld a, h
+    call printUnsignedAAsHex
+    ld a, l
+    call printUnsignedAAsHex
+    bcall(_EraseEOL)
+
+    pop de
+    ld (CurRow), de
+    pop hl
+    pop de
+    pop bc
+    pop af
+    ret
+
+;------------------------------------------------------------------------------
+
+debugPause:
+   push af
+   push bc
+   push de
+   push hl
+   bcall(_GetKey)
+   bit onInterrupt, (iy + onFlags)
+   jr nz, debugPauseBreak
+   res onInterrupt, (iy + onFlags) ; reset flag set by ON button
+   pop hl
+   pop de
+   pop bc
+   pop af
+   ret
+debugPauseBreak:
+    res onInterrupt, (iy + onFlags)
+    bjump(_ErrBreak) ; throw exception

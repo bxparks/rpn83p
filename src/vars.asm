@@ -287,7 +287,12 @@ replaceXY:
 
 ; Description: Replace stX=OP2 and stY=OP1, saving previous stX to lastX, and
 ; setting dirty flag.
+; Output:
+;   - Y=OP1
+;   - X=OP2
+;   - LastX=X
 ; Preserves: OP1, OP2
+; TODO: Rename this replaceXYWithOP1OP2().
 replaceXYWithOP2OP1:
     ; validate OP1 and OP2 before modifying stX and stY
     bcall(_CkValidNum)
@@ -304,6 +309,28 @@ replaceXYWithOP2OP1:
     call stoX ; stX = OP2 
     bcall(_PopRealO1) ; OP1 unchanged
     ret
+
+; Description: Replace X with OP1, and OP2 pushed onto the stack in that order.
+; Input: X
+; Output:
+;   - Y=OP1
+;   - X=OP2
+;   - LastX=X
+replaceXWithOP1OP2:
+    ; validate OP1 and OP2 before modifying stX and stY
+    bcall(_CkValidNum)
+    bcall(_OP1ExOP2)
+    bcall(_CkValidNum)
+    bcall(_OP1ExOP2)
+
+    bcall(_PushRealO1)
+    call rclX
+    call stoL
+    bcall(_PopRealO1)
+    call stoX
+    call liftStack
+    bcall(_OP2ToOP1)
+    jp stoX
 
 ;-----------------------------------------------------------------------------
 

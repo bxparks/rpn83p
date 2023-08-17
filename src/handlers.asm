@@ -436,11 +436,8 @@ handleKeyChs:
     ; Do nothing in command arg mode.
     bit rpnFlagsArgMode, (iy + rpnFlags)
     ret nz
-
-    ; TODO: CHS currently support only Base 10, but might be worth extending
-    ; this to other bases.
     call checkBase10
-    ret nz
+    ret nz ; use NEG function for bases other than 10
     bit rpnFlagsEditing, (iy + rpnFlags)
     jr nz, handleKeyChsInputBuf
 handleKeyChsX:
@@ -813,6 +810,8 @@ handleKeyAdd:
     ; Do nothing in command arg mode.
     bit rpnFlagsArgMode, (iy + rpnFlags)
     ret nz
+    call checkBase10
+    jp nz, mBitwiseAddHandler
     call closeInputAndRecallXY
     bcall(_FPAdd) ; Y + X
     jp replaceXY
@@ -825,6 +824,8 @@ handleKeySub:
     ; Do nothing in command arg mode.
     bit rpnFlagsArgMode, (iy + rpnFlags)
     ret nz
+    call checkBase10
+    jp nz, mBitwiseSubtHandler
     call closeInputAndRecallXY
     bcall(_FPSub) ; Y - X
     jp replaceXY
@@ -837,6 +838,8 @@ handleKeyMul:
     ; Do nothing in command arg mode.
     bit rpnFlagsArgMode, (iy + rpnFlags)
     ret nz
+    call checkBase10
+    jp nz, mBitwiseMultHandler
     call closeInputAndRecallXY
     bcall(_FPMult) ; Y * X
     jp replaceXY
@@ -849,6 +852,8 @@ handleKeyDiv:
     ; Do nothing in command arg mode.
     bit rpnFlagsArgMode, (iy + rpnFlags)
     ret nz
+    call checkBase10
+    jp nz, mBitwiseDivHandler
     call closeInputAndRecallXY
     bcall(_FPDiv) ; Y / X
     jp replaceXY

@@ -41,14 +41,15 @@ Here the quick summary of its features:
     - angle conversions: `>DEG`, `>RAD`, `>HR`, `>HMS`, `P>R`, `R>P`
     - unit conversions: `>C`, `>F`, `>km`, `>mi`, etc
     - base conversions: `DEC`, `HEX`, `OCT`, `BIN`
-    - bitwise operations: `AND`, `OR`, `XOR`, `NOT`, `NEG`
+    - bitwise operations: `AND`, `OR`, `XOR`, `NOT`, `NEG`, `SL`, `SR`, `RL`,
+      `RR`, `B+`, `B-`, `B*`, `B/`, `BDIV`
 - various display modes
     - `RAD`, `DEG`
     - `FIX` (fixed point 0-9 digits)
     - `SCI` (scientific 0-9 digits)
     - `ENG` (engineering 0-9 digits)
 
-**Version**: 0.3.3 (2023-08-14)
+**Version**: 0.4.0-dev (2023-08-16)
 
 **Changelog**: [CHANGELOG.md](CHANGELOG.md)
 
