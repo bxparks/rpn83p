@@ -3,7 +3,7 @@
 - Unreleased
 - 0.4.0 (2023-08-16)
     - More `BASE` menu functions:
-        - `SL` (shift left), `SR` (shift right)`, `RL` (rotate left circular),
+        - `SL` (shift left), `SR` (shift right), `RL` (rotate left circular),
         `RR` (rotate right circular).
         - `B+`, `B-`, `B*`, `B/`
         - `BDIV` (division with remainder)
