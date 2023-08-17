@@ -49,7 +49,7 @@ Here the quick summary of its features:
     - `SCI` (scientific 0-9 digits)
     - `ENG` (engineering 0-9 digits)
 
-**Version**: 0.4.0-dev (2023-08-16)
+**Version**: 0.4.0 (2023-08-16)
 
 **Changelog**: [CHANGELOG.md](CHANGELOG.md)
 
@@ -104,12 +104,16 @@ registers.
 This app was designed for TI calculators using the Z80 processor:
 
 - TI-83 Plus
-- TI-83 Plus Silver Edition (verified)
+- TI-83 Plus Silver Edition
 - TI-84 Plus
-- TI-84 Plus Silver Edition (verified)
+- TI-84 Plus Silver Edition
 
-I have tested it on the two Z80 TI calculators that I have (both Silver
-Edition). It *should* work on the others, but I have not actually tested them.
+I have tested it on the two calculators that I own:
+
+- TI-83 Plus Silver Edition, OS v1.19
+- TI-84 Plus Silver Edition, OS v2.55MP
+
+It *should* work on the others, but I have not actually tested them.
 
 ## Quick Examples
 

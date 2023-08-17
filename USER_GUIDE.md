@@ -2,7 +2,7 @@
 
 RPN calculator app for the TI-83 Plus and TI-84 Plus inspired by the HP-42S.
 
-**Version**: 0.4.0-dev (2023-08-16)
+**Version**: 0.4.0 (2023-08-16)
 
 **Project Home**: https://github.com/bxparks/rpn83p
 
@@ -1040,9 +1040,9 @@ Any number outside of this range produces an `Err: Domain` message. (The number
 If the input number is a very large prime, the calculation may take a long time.
 However, testing has verified that the `PRIM` algorithm will always finish in
 less than about 30 seconds on a TI-83 Plus or TI-84 Plus calculator, no matter
-how large the input number. During the calculation, the "run" indicator on the
-upper-right corner will be active. You press `ON` key to break from loop, and
-the function will exit the function with an `Err: Break` message.
+how large the input number. During the calculation, the "run indicator" on the
+upper-right corner will be active. You can press `ON` key to break from the
+`PRIM` loop with an `Err: Break` message.
 
 ## Future Enhancements
 
