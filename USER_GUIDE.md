@@ -39,6 +39,7 @@ RPN calculator app for the TI-83 Plus and TI-84 Plus inspired by the HP-42S.
         - [BASE Arithmetic](#base-arithmetic)
         - [BASE Integer Size](#base-integer-size)
     - [Storage Registers](#storage-registers)
+    - [Prime Factors](#prime-factors)
 - [Future Enhancements](#future-enhancements)
     - [Near Future](#near-future)
     - [Medium Future](#medium-future)
@@ -574,8 +575,10 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (back), and `MATH`
     - `%CH`: percent change from `Y` to `X`, leaving `Y` unchanged
     - `GCD`: greatest common divisor of `X` and `Y`
     - `LCM`: lowest common multiple of `X` and `Y`
-    - `PRIM`: determine if `X` is a prime, returns 1 if prime, or the smallest
-      prime factor otherwise
+    - `PRIM`: determine if `X` is a prime
+        - returns 1 if prime
+        - returns the smallest prime factor otherwise
+        - See [Prime Factors](#prime-factors) section below.
     - `IP`: integer part of `X`, truncating towards 0, preserving sign
     - `FP`: fractional part of `X`, preserving sign
     - `FLR`: the floor of `X`, the largest integer <= `X`
@@ -1000,6 +1003,47 @@ get to:
 
 The message `REGS cleared` will be displayed on the screen.
 
+### Prime Factors
+
+The `PRIM` function calculates the lowest prime factor of the number in `X`. The
+result will be `1` if the number is a prime. Unlike almost all other functions
+implemented by RPN83P, the `PRIM` function does not replace the original `X`.
+Instead it pushes the prime factor onto the stack, causing the original `X` to
+move to the `Y` register. This behavior was implemented to allow easier
+calculation of all prime factors of a number as follows.
+
+After the first prime factor is calculated, the `/` can be pressed to calculate
+the remaining factor in the `X` register. We can now press `PRIM` again to
+calculate the next prime factor. Since the `PRIM` preserves the original number
+in the `Y` register, this process can be repeated multiple times to calculate
+all prime factors of the original number.
+
+For example, let's find the prime factors of `119886 = 2 * 3 * 13 * 29 * 53`:
+
+- Press `119886` `ENTER`
+- Press `PRIM` to get `2`
+- Press `/` to divide down to `59943`
+- Press `PRIM` to get `3`
+- Press `/` to divide down to `19981`
+- Press `PRIM` to get `13`
+- Press `/` to divide down to `1537`
+- Press `PRIM` to get `29`
+- Press `/` to divide down to `53`
+- Press `PRIM` to get `1`, which makes `53` the last prime factor.
+
+For computational efficiency, `PRIM` supports only integers between `2` and
+`2^32-1` (4 294 967 295). This allows `PRIM` to use integer arithmetic, making
+it about 7X faster than the equivalent algorithm using floating point routines.
+Any number outside of this range produces an `Err: Domain` message. (The number
+`1` is not considered a prime number.)
+
+If the input number is a very large prime, the calculation may take a long time.
+However, testing has verified that the `PRIM` algorithm will always finish in
+less than about 30 seconds on a TI-83 Plus or TI-84 Plus calculator, no matter
+how large the input number. During the calculation, the "run" indicator on the
+upper-right corner will be active. You press `ON` key to break from loop, and
+the function will exit the function with an `Err: Break` message.
+
 ## Future Enhancements
 
 There seems to be almost an endless number of features that could go into a
@@ -1008,12 +1052,6 @@ limited:
 
 ### Near Future
 
-- `PRIM` (isPrime) is quite slow, about as slow as a TI-BASIC program.
-    - Uses the TI-OS floating numbers and subroutines, which works pretty
-      well for smallish integers.
-    - Can probably make this significantly faster by implementing the algorithm
-      using native Z80 integer operations.
-    - (Need to write a `div(u32, u16) -> u32` function).
 - `PROB` and `COMB` arguments are limited to `< 256`
     - Maybe extend this to `< 2^16` or `<2^32`.
 - `GCD` and `LCM` functions are slow
