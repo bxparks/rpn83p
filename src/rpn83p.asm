@@ -260,10 +260,6 @@ readLoop:
     ; Check for 2nd-Quit to Quit. ON (0) triggers the handleKeyMenuBack() to
     ; emulate the ON/EXIT key on the HP 42S which exits nested menus on that
     ; calculator.
-    ; TODO: The LeftArrow is also bound to hanldeKeyMenuBack(), and that seems
-    ; convenient because LeftArrow is in close proximity to UpArrow and
-    ; DownArrow. Maybe on the TI-83/TI-84 calculators, the ON button should
-    ; just do nothing.
     cp kQuit
     jr z, mainExit
 
