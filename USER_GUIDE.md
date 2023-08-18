@@ -1020,7 +1020,7 @@ all prime factors of the original number.
 
 For example, let's find the prime factors of `119886 = 2 * 3 * 13 * 29 * 53`:
 
-- Press `119886` `ENTER`
+- Press `119886`
 - Press `PRIM` to get `2`
 - Press `/` to divide down to `59943`
 - Press `PRIM` to get `3`
