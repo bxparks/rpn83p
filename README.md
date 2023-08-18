@@ -49,6 +49,13 @@ Here is a quick summary of its features:
     - `SCI` (scientific 0-9 digits)
     - `ENG` (engineering 0-9 digits)
 
+Here are some missing features which may be added in the future:
+
+- statistics functions (sum, mean, variance, standard deviation)
+- complex numbers
+- vectors and matrices
+- keystroke programming
+
 **Version**: 0.4.0 (2023-08-16)
 
 **Changelog**: [CHANGELOG.md](CHANGELOG.md)
