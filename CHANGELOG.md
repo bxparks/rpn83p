@@ -1,6 +1,8 @@
 # Changelog
 
 - Unreleased
+    - `USER_GUIDE.md`: Update "Menu Indicator Arrows" section with latest
+      screenshots which changed the menu arrows.
 - 0.4.0 (2023-08-16)
     - More `BASE` menu functions:
         - `SL` (shift left), `SR` (shift right), `RL` (rotate left circular),
