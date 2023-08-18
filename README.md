@@ -32,6 +32,7 @@ Here is a quick summary of its features:
     - `LOG`, `10^X`, `LN`, `e^X`
     - constants: `pi` and `e`
 - additional menu functions:
+    - `X^3`, `CBRT`, `ATN2`, `2^X`, `LOG2`, `LOGB`
     - `%`, `%CH`, `GCD`, `LCM`, `PRIM` (is prime)
     - `IP` (integer part), `FP` (fractional part), `FLR` (floor), `CEIL`
       (ceiling), `NEAR` (nearest integer)

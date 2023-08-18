@@ -78,6 +78,7 @@ Here the quick summary of its features:
     - `LOG`, `10^X`, `LN`, `e^X`
     - constants: `pi` and `e`
 - additional menu functions:
+    - `X^3`, `CBRT`, `ATN2`, `2^X`, `LOG2`, `LOGB`
     - `%`, `%CH`, `GCD`, `LCM`, `PRIM` (is prime)
     - `IP` (integer part), `FP` (fractional part), `FLR` (floor), `CEIL`
     - `ABS`, `SIGN`, `MOD`, `MIN`, `MAX`
@@ -118,7 +119,7 @@ now sell for $200-$300 on eBay, which is a sum of money that I cannot justify
 spending.
 
 I finished my formal school education before graphing calculators became
-popular, so I didn't know anything about them until a few months ago . I did not
+popular, so I didn't know anything about them until a few months ago. I did not
 know that the early TI graphing calculators used the Z80 processor, and more
 importantly, I did not know that they were programmable in assembly language.
 
@@ -584,6 +585,7 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (back), and `MATH`
     - `ABS`: absolute value of `X`
     - `SIGN`: return -1, 0, 1 depending on whether `X` is less than, equal, or
       greater than 0, respectively
+    - `MOD`: `Y` mod `X` (remainder of `Y` after dividing by `X`)
     - `MIN`: minimum of `X` and `Y`
     - `MAX`: maximum of `X` and `Y`
 - `ROOT` > `PROB`
