@@ -34,8 +34,8 @@ Here is a quick summary of its features:
 - additional menu functions:
     - `%`, `%CH`, `GCD`, `LCM`, `PRIM` (is prime)
     - `IP` (integer part), `FP` (fractional part), `FLR` (floor), `CEIL`
-    - `ABS`, `SIGN`, `MOD`, `MIN`, `MAX`
       (ceiling), `NEAR` (nearest integer)
+    - `ABS`, `SIGN`, `MOD`, `MIN`, `MAX`
     - probability: `PERM`, `COMB`, `N!`, `RAND`, `SEED`
     - hyperbolic: `SINH`, `COSH`, `TANH`, etc.
     - angle conversions: `>DEG`, `>RAD`, `>HR`, `>HMS`, `P>R`, `R>P`
