@@ -118,8 +118,8 @@ now sell for $200-$300 on eBay, which is a sum of money that I cannot justify
 spending.
 
 I finished my formal school education before graphing calculators became
-popular, so I didn't know anything about them until a few months. I did not know
-that the early TI graphing calculators used the Z80 processor, and more
+popular, so I didn't know anything about them until a few months ago . I did not
+know that the early TI graphing calculators used the Z80 processor, and more
 importantly, I did not know that they were programmable in assembly language.
 
 I realized that I could probably create an app that could turn them into
