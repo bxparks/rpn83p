@@ -863,8 +863,8 @@ The `HEX` (hexadecimal) mode displays all numbers on the RPN stack using base
 integer, and printed using 8 hexadecimal digits. If there are fractional digits
 after the decimal point, a decimal point `.` is printed at the end of the 8
 digits to indicate that the fractional part is not shown. Negative numbers are
-not valid and three dots are printed instead. Three dots are printed if the
-integer part is `>= 2^32`.
+not valid and a single `-` character is printed instead. Three dots are printed
+if the integer part is `>= 2^32`.
 
 The hexadecimal digits `A` through `F` are entered using `ALPHA` `A`, through
 `ALPHA` `F`. You can lock the `ALPHA` mode using `2ND` `A-LOCK`, but that causes
@@ -881,11 +881,11 @@ the integer part is rendered. It is converted into an unsigned 32-bit integer,
 and printed using 11 octal digits. If there are fractional digits after the
 decimal point, a decimal point `.` is printed at the end of the 11 digits to
 indicate that the fractional part is not shown. Negative numbers are not valid
-and three-dots are printed instead. Three dots are printed if the integer part
-is `>= 2^32`.
+and a single `-` character is printed instead. Three dots are printed if the
+integer part is `>= 2^32`.
 
-The digits `0` through `7` are entered normally. The digits `8` and `9` are
-disabled in octal mode.
+The button digits `0` through `7` are entered normally. The button digits `8`
+and `9` are disabled in octal mode.
 
 > ![Numbers in Octal Mode](docs/rpn83p-screenshot-base-oct.png)
 
@@ -894,13 +894,13 @@ disabled in octal mode.
 The `BIN` (binary) mode displays all numbers on the RPN stack using base 2. Only
 the integer part is rendered. It is converted into an unsigned 32-bit integer,
 and printed using 14 binary digits (the maximum allowed by the width of the LCD
-screen). The there are fractional digits after the decimal point, a decimal
-point `.` is printed at the end of the 14 digits to indicate that the fractional
-part is not shown. Negative numbers are not valid and three-dots are printed
-instead. Three dots are also printed if the integer part is `>= 2^14` (i.e. `>=
-16384`).
+screen). If there are fractional digits after the decimal point, a decimal point
+`.` is printed at the end of the 14 digits to indicate that the fractional part
+is not shown. Negative numbers are not valid and a single `-` character is
+printed instead. Three dots are also printed if the integer part is `>= 2^14`
+(i.e. `>= 16384`).
 
-Only the digits `0` and `1` are active in the binary mode. The rest are
+Only the button digits `0` and `1` are active in the binary mode. The rest are
 disabled.
 
 > ![Numbers in Binary Mode](docs/rpn83p-screenshot-base-bin.png)
