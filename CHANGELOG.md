@@ -1,11 +1,17 @@
 # Changelog
 
 - Unreleased
-    - `USER_GUIDE.md`: Update "Menu Indicator Arrows" section with latest
-      screenshots which changed the menu arrows.
-    - display just a bare `-` for negatives numbers in `BASE` modes (instead of
-      `...` which is now reserved for valid numbers which overflows the number
-      of digits supported by the display)
+    - `USER_GUIDE.md`
+        - Update "Menu Indicator Arrows" section with latest screenshots which
+          changed the menu arrows.
+    - `BASE`
+        - display just a bare `-` for negatives numbers in `BASE` modes (instead
+          of `...` which is now reserved for valid numbers which overflows the
+          number of digits supported by the display)
+        - validate that the `X` and `Y` values are in the range of `[0, 2^32)`
+          when performing bitwise operations (e.g. `B+`, `AND`, `XOR`, etc).
+          Floating point numbers are truncated to `u32` integers before the
+          bitwise operations are performed.
 - 0.4.0 (2023-08-16)
     - More `BASE` menu functions:
         - `SL` (shift left), `SR` (shift right), `RL` (rotate left circular),

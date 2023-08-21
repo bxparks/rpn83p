@@ -16,8 +16,38 @@ initBase:
 ; Routines for converting floating point to U32 and back.
 ;-----------------------------------------------------------------------------
 
-; Description: Convert floating point OP1 (assumed to be an integer between
-; [0, 2^32-1] to a 32-bit binary number.
+convertOP1ToU32Error:
+    bjump(_ErrDomain) ; throw exception
+
+; Description: Same as convertOP1ToU32NoCheck() but throws an Err:Domain
+; exception if OP1 is not in the range of [0, 2^32). Floating point values are
+; allowed, but the fractional digits are ignored when converting to U32.
+; Input:
+;   - OP1: unsigned 32-bit integer as a floating point number
+;   - HL: pointer to a u32 in memory
+; Output:
+;   - HL: OP1 converted to a u32, in little-endian format
+; Destroys: A, B, C, DE
+; Preserves: HL, OP1, OP2
+convertOP1ToU32:
+    push hl
+    bcall(_PushRealO2)
+    call op2Set2Pow32
+    bcall(_CpOP1OP2) ; if OP1 >= 2^32: CF=0
+    jr nc, convertOP1ToU32Error
+    bcall(_CkOP1FP0) ; if OP1 == 0: ZF=1
+    jr z, convertOP1ToU32Valid
+    bcall(_CkOP1Pos) ; if OP1 > 0: ZF=1
+    jr nz, convertOP1ToU32Error
+convertOP1ToU32Valid:
+    bcall(_PopRealO2)
+    pop hl
+    ; [[fallthrough]]
+
+; Description: Convert floating point OP1. This routine assume that OP1 is a
+; floating point number between [0, 2^32). Fractional digits are ignored when
+; converting to U32 integer. Use convertOP1ToU32() to perform a validation
+; check that throws an exception.
 ; Input:
 ;   - OP1: unsigned 32-bit integer as a floating point number
 ;   - HL: pointer to a u32 in memory
@@ -25,7 +55,7 @@ initBase:
 ;   - HL: OP1 converted to a u32, in little-endian format
 ; Destroys: A, B, C, DE
 ; Preserves: HL
-convertOP1ToU32:
+convertOP1ToU32NoCheck:
     ; initialize the target u32
     call clearU32
     bcall(_CkOP1FP0) ; preserves HL
