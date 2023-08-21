@@ -707,7 +707,13 @@ printHLString:
 ; Description: Print an indicator ("...") that the OP1 number cannot be
 ; rendered in the current base mode (hex, oct, or bin).
 printOP1BaseInvalid:
-    ld hl, msgInvalidBase
+    ld hl, msgBaseInvalid
+    jr printHLString
+
+; Description: Print just a negative sign for OP1 number that is negative.
+; Negative numbers cannot be displayed in base HEX, OCT or BIN modes.
+printOP1BaseNegative:
+    ld hl, msgBaseNegative
     jr printHLString
 
 ;-----------------------------------------------------------------------------
@@ -727,7 +733,7 @@ printOP1Base16:
     jr z, printOP1Base16Valid
 
     bcall(_CkOP1Pos) ; if OP1 > 0: ZF=1
-    jr nz, printOP1BaseInvalid
+    jr nz, printOP1BaseNegative
 
 printOP1Base16Valid:
     bcall(_PushRealO1) ; FPS = OP1 (save)
@@ -764,7 +770,7 @@ printOP1Base8:
     jr z, printOP1Base8Valid
 
     bcall(_CkOP1Pos) ; if OP1 > 0: ZF=1
-    jr nz, printOP1BaseInvalid
+    jr nz, printOP1BaseNegative
 
 printOP1Base8Valid:
     bcall(_PushRealO1) ; FPS = OP1 (save)
@@ -804,7 +810,7 @@ printOP1Base2:
     jr z, printOP1Base2Valid
 
     bcall(_CkOP1Pos) ; if OP1 > 0: ZF=1
-    jp nz, printOP1BaseInvalid
+    jp nz, printOP1BaseNegative
 
 printOP1Base2Valid:
     bcall(_PushRealO1) ; FPS = OP1 (save)
@@ -896,9 +902,13 @@ convertAToCharDec:
 
 ;-----------------------------------------------------------------------------
 
-; Indicates number cannot be rendered in the current Base mode.
-msgInvalidBase:
+; Indicates number has overflowed the current Base mode.
+msgBaseInvalid:
     .db "...", 0
+
+; Indicates number is negative so cannot be current Base mode.
+msgBaseNegative:
+    .db "-", 0
 
 ; RPN stack variable labels
 msgTLabel:

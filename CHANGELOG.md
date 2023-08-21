@@ -3,6 +3,9 @@
 - Unreleased
     - `USER_GUIDE.md`: Update "Menu Indicator Arrows" section with latest
       screenshots which changed the menu arrows.
+    - display just a bare `-` for negatives numbers in `BASE` modes (instead of
+      `...` which is now reserved for valid numbers which overflows the number
+      of digits supported by the display)
 - 0.4.0 (2023-08-16)
     - More `BASE` menu functions:
         - `SL` (shift left), `SR` (shift right), `RL` (rotate left circular),
