@@ -1056,13 +1056,10 @@ limited:
 - `GCD` and `LCM` functions are slow
     - Could be made significantly faster.
 - save application configurations upon quitting
-    - The RPN stack (X, Y, Z, T, LastX) and storage registers (R00 - R24) are
-      saved persistently, and restored upon restart.
-    - Application configurations are not saved:
-        - DEG/RAD mode
-        - FIX/SCI/ENG settings
-        - DEC/HEX/OCT/BIN base mode settings
-        - the input buffer
+    - DEC/HEX/OCT/BIN base mode settings
+    - current state of input buffer
+    - (The RPN stack (X, Y, Z, T, LastX) and storage registers (R00 - R24) are
+      saved persistently.)
 
 ### Medium Future
 
