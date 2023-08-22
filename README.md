@@ -21,13 +21,14 @@ Here is a quick summary of its features:
 
 - traditional 4-level RPN stack (`X`, `Y`, `Z`, `T` registers)
 - support for `lastX` register
+- 8-line display showing all stack registers
 - 25 storage registers (`STO 00`, `RCL 00`, ..., `STO 24`, `RCL 24`)
 - hierarchical menu system, inspired by the HP-42S
 - support for all math functions with dedicated buttons on the TI-83 Plus and
   TI-84 Plus
     - arithmetic: `/`, `*`, `-`, `+`
     - trigonometric: `SIN`, `COS`, `TAN`, etc.
-    - `1/X`, `X^2`, `2ND SQRT`
+    - `1/X`, `X^2`, `SQRT`
     - `^` (i.e. `Y^X`),
     - `LOG`, `10^X`, `LN`, `e^X`
     - constants: `pi` and `e`
