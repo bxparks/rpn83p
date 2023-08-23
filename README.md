@@ -58,7 +58,7 @@ Here are some missing features which may be added in the future:
 - vectors and matrices
 - keystroke programming
 
-**Version**: 0.4.0 (2023-08-16)
+**Version**: 0.5.0-dev (2023-08-23)
 
 **Changelog**: [CHANGELOG.md](CHANGELOG.md)
 
