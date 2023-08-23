@@ -140,10 +140,10 @@ msgHelpPage1:
 msgHelpPage2:
     .db escapeLargeFont, "Stack Operation", Lenter
     .db escapeSmallFont, Senter
-    .db "R", LdownArrow, " :  (", Senter
+    .db "R", SdownArrow, " :  (", Senter
     .db "X", Sleft, Sconvert, "Y", ":  )", Senter
     .db "LastX", ":  2ND  ANS", Senter
-    .db "R", LupArrow, " :  STK  R", LupArrow, Senter
+    .db "R", SupArrow, " :  STK  R", SupArrow, Senter
     .db Senter
     .db Senter
     .db SlBrack, "2/4", SrBrack, " Any key to continue...", Senter
