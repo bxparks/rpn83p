@@ -1,9 +1,11 @@
 # Changelog
 
 - Unreleased
-    - `USER_GUIDE.md`
+    - `USER_GUIDE.md`, `README.md`
         - Update "Menu Indicator Arrows" section with latest screenshots which
           changed the menu arrows.
+        - rename 'Menu Strip' to 'Menu Row' for consistency with HP-42S
+          terminology.
     - `BASE`
         - display just a bare `-` for negatives numbers in `BASE` modes (instead
           of `...` which is now reserved for valid numbers which overflows the
@@ -47,7 +49,7 @@
     - Move `CLRG` from F1 position to F3. Move `CLX` to F1. If the F1
       is accidentally hit twice when selecting the `CLR` menu group, then
       invoking `CLX` is a lot less destructive than invoking `CLRG`.
-    - Move `IP,FP,...` menu strips before the `ABS,SIGN,...` menu strip. The
+    - Move `IP,FP,...` menu rows before the `ABS,SIGN,...` menu row. The
       `IP,FP` functions seem more frequently used than the `ABS,SIGN` functions.
 - 0.2.1 (2023-08-13)
     - Update README.md. Test minor version number with new release.

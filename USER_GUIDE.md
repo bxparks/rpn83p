@@ -367,25 +367,25 @@ like this conceptually:
 
 There are 4 components:
 
-- `MenuGroup`: a folder of 1 or more `MenuStrips`
-- `MenuStrip`: a list of exactly 5 `MenuNodes` corresponding to the 5 menu
+- `MenuGroup`: a folder of 1 or more `MenuRows`
+- `MenuRow`: a list of exactly 5 `MenuNodes` corresponding to the 5 menu
   buttons below the LCD
-- `MenuNode`: one slot in the `MenuStrip`, can be *either* a `MenuGroup` or a
+- `MenuNode`: one slot in the `MenuRow`, can be *either* a `MenuGroup` or a
   `MenuItem`
 - `MenuItem`: a leaf-node that maps directly to a function (e.g. `ASNH`) when
   the corresponding menu button is pressed
 
 #### Menu Buttons
 
-The LCD screen always shows a `MenuStrip` of 5 `MenuItems`. Here are the buttons
+The LCD screen always shows a `MenuRow` of 5 `MenuItems`. Here are the buttons
 which are used to navigate the menu hierarchy:
 
 ![Menu Buttons](docs/rpn83p-fullshot-menu-buttons.jpg)
 
 - `F1`- `F5`: invokes the function shown by the respective menu
-- `UP_ARROW`: goes to previous `MenuStrip` of 5 `MenuItems`, within the current
+- `UP_ARROW`: goes to previous `MenuRow` of 5 `MenuItems`, within the current
   `MenuGroup`
-- `DOWN_ARROW`: goes to next `MenuStrip` of 5 `MenuItems`, within the current
+- `DOWN_ARROW`: goes to next `MenuRow` of 5 `MenuItems`, within the current
   `MenuGroup`
 - `ON`: goes back to the parent `MenuGroup` (similar to the `ON/EXIT` button on
   the HP-42S)
@@ -416,12 +416,12 @@ menu group named `MATH`, which may help to remember this button mapping.
 #### Menu Indicator Arrows
 
 There are 3 menu arrows at the top-left corner of the LCD screen. The
-`downarrow` indicates that additional menu strips are available:
+`downarrow` indicates that additional menu rows are available:
 
 > ![Menu Arrows 1](docs/rpn83p-screenshot-menu-arrows-1.png)
 
 When the `DOWN` button is pressed, the menu changes to the next set of 5 menu
-items in the next menu strip, and the menu arrows show both an `uparrow` and a
+items in the next menu row, and the menu arrows show both an `uparrow` and a
 `downarrow` to indicate that there are more menu items above and below the
 current menu bar:
 
@@ -432,22 +432,22 @@ only the `uparrow` to indicate that this is the last of the series:
 
 > ![Menu Arrows 3](docs/rpn83p-screenshot-menu-arrows-3.png)
 
-You can press `UP` twice goes back to the first menu strip, or you can press
-`DOWN` from the last menu strip to wrap around to the beginning:
+You can press `UP` twice goes back to the first menu row, or you can press
+`DOWN` from the last menu row to wrap around to the beginning:
 
 > ![Menu Arrows 1](docs/rpn83p-screenshot-menu-arrows-1.png)
 
 Pressing the `F2/WINDOW` button from here invokes the `NUM` menu item. This menu
 item is actually a `MenuGroup`, so the menu system descends into this folder,
-and displays the 5 menu items in the first menu strip:
+and displays the 5 menu items in the first menu row:
 
 > ![Menu Arrows NUM 1](docs/rpn83p-screenshot-menu-arrows-num-1.png)
 
-Pressing the `DOWN` arrow button shows the next menu strip:
+Pressing the `DOWN` arrow button shows the next menu row:
 
 > ![Menu Arrows NUM 2](docs/rpn83p-screenshot-menu-arrows-num-2.png)
 
-Pressing the `DOWN` arrow button goes to the final menu strip:
+Pressing the `DOWN` arrow button goes to the final menu row:
 
 > ![Menu Arrows NUM 3](docs/rpn83p-screenshot-menu-arrows-num-3.png)
 
@@ -461,7 +461,7 @@ functionality) can be used to go back to the parent menu group:
 
 Pressing the `HELP` menu button at the root menu:
 
-> ![ROOT MenuStrip 1](docs/rpn83p-screenshot-menu-root-1.png)
+> ![ROOT MenuRow 1](docs/rpn83p-screenshot-menu-root-1.png)
 
 activates the Help pages:
 
@@ -552,12 +552,12 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (back), and `MATH`
 (home) keys to navigate the menu hierarchy.
 
 - `ROOT` (implicit)
-    - ![ROOT MenuStrip 1](docs/rpn83p-screenshot-menu-root-1.png)
-    - ![ROOT MenuStrip 2](docs/rpn83p-screenshot-menu-root-2.png)
-    - ![ROOT MenuStrip 3](docs/rpn83p-screenshot-menu-root-3.png)
+    - ![ROOT MenuRow 1](docs/rpn83p-screenshot-menu-root-1.png)
+    - ![ROOT MenuRow 2](docs/rpn83p-screenshot-menu-root-2.png)
+    - ![ROOT MenuRow 3](docs/rpn83p-screenshot-menu-root-3.png)
 - `ROOT` > `MATH`
-    - ![MATH MenuStrip 1](docs/rpn83p-screenshot-menu-root-math-1.png)
-    - ![MATH MenuStrip 2](docs/rpn83p-screenshot-menu-root-math-2.png)
+    - ![MATH MenuRow 1](docs/rpn83p-screenshot-menu-root-math-1.png)
+    - ![MATH MenuRow 2](docs/rpn83p-screenshot-menu-root-math-2.png)
     - `X^3`: cube of `X`
     - `3 Root X`: cube root of `X`
     - `ATN2`: `atan2(Y, X)` in degrees or radians, depending on current mode
@@ -567,9 +567,9 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (back), and `MATH`
     - `LOG2`: log base 2 of `X`
     - `LOGB`: log base `X` of `Y`
 - `ROOT` > `NUM`
-    - ![NUM MenuStrip 1](docs/rpn83p-screenshot-menu-root-num-1.png)
-    - ![NUM MenuStrip 2](docs/rpn83p-screenshot-menu-root-num-2.png)
-    - ![NUM MenuStrip 3](docs/rpn83p-screenshot-menu-root-num-3.png)
+    - ![NUM MenuRow 1](docs/rpn83p-screenshot-menu-root-num-1.png)
+    - ![NUM MenuRow 2](docs/rpn83p-screenshot-menu-root-num-2.png)
+    - ![NUM MenuRow 3](docs/rpn83p-screenshot-menu-root-num-3.png)
     - `%`: `X` percent of `Y`, leaving `Y` unchanged
     - `%CH`: percent change from `Y` to `X`, leaving `Y` unchanged
     - `GCD`: greatest common divisor of `X` and `Y`
@@ -590,15 +590,15 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (back), and `MATH`
     - `MIN`: minimum of `X` and `Y`
     - `MAX`: maximum of `X` and `Y`
 - `ROOT` > `PROB`
-    - ![PROB MenuStrip 1](docs/rpn83p-screenshot-menu-root-prob-1.png)
+    - ![PROB MenuRow 1](docs/rpn83p-screenshot-menu-root-prob-1.png)
     - `COMB`: combination `C(n,r)` = `C(Y, X)`
     - `PERM`: permutation `P(n,r)` = `P(Y, X)`
     - `N!`: factorial of `X`
     - `RAND`: random number in the range `[0,1)`
     - `SEED`: set the random number generator seed to `X`
 - `ROOT` > `CONV`
-    - ![CONV MenuStrip 1](docs/rpn83p-screenshot-menu-root-conv-1.png)
-    - ![CONV MenuStrip 2](docs/rpn83p-screenshot-menu-root-conv-2.png)
+    - ![CONV MenuRow 1](docs/rpn83p-screenshot-menu-root-conv-1.png)
+    - ![CONV MenuRow 2](docs/rpn83p-screenshot-menu-root-conv-2.png)
     - `>DEG`: convert radians to degrees
     - `>RAD`: convert degrees to radians
     - `P>R`: polar to rectangular
@@ -612,7 +612,7 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (back), and `MATH`
 - `ROOT` > `HELP`: display the help pages
     - use arrow keys to view each help page
 - `ROOT` > `MODE`
-    - ![MODE MenuStrip 1](docs/rpn83p-screenshot-menu-root-mode-1.png)
+    - ![MODE MenuRow 1](docs/rpn83p-screenshot-menu-root-mode-1.png)
     - `FIX`: fixed mode with `N` digits after the decimal point
         - set `N` to `99` for floating number of digits
         - status line indicator is `FIX(N)`
@@ -625,8 +625,8 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (back), and `MATH`
     - `RAD`: use radians for trigonometric functions
     - `DEG`: use degrees for trigonometric functions
 - `ROOT` > `HYP`
-    - ![HYP MenuStrip 1](docs/rpn83p-screenshot-menu-root-hyp-1.png)
-    - ![HYP MenuStrip 2](docs/rpn83p-screenshot-menu-root-hyp-2.png)
+    - ![HYP MenuRow 1](docs/rpn83p-screenshot-menu-root-hyp-1.png)
+    - ![HYP MenuRow 2](docs/rpn83p-screenshot-menu-root-hyp-2.png)
     - `SINH`: hyperbolic `sin()`
     - `COSH`: hyperbolic `cos()`
     - `TANH`: hyperbolic `tan()`
@@ -634,12 +634,12 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (back), and `MATH`
     - `ACSH`: hyperbolic `acos()`
     - `ATNH`: hyperbolic `atan()`
 - `ROOT` > `UNIT`
-    - ![UNIT MenuStrip 1](docs/rpn83p-screenshot-menu-root-unit-1.png)
-    - ![UNIT MenuStrip 2](docs/rpn83p-screenshot-menu-root-unit-2.png)
-    - ![UNIT MenuStrip 3](docs/rpn83p-screenshot-menu-root-unit-3.png)
-    - ![UNIT MenuStrip 4](docs/rpn83p-screenshot-menu-root-unit-4.png)
-    - ![UNIT MenuStrip 5](docs/rpn83p-screenshot-menu-root-unit-5.png)
-    - ![UNIT MenuStrip 6](docs/rpn83p-screenshot-menu-root-unit-6.png)
+    - ![UNIT MenuRow 1](docs/rpn83p-screenshot-menu-root-unit-1.png)
+    - ![UNIT MenuRow 2](docs/rpn83p-screenshot-menu-root-unit-2.png)
+    - ![UNIT MenuRow 3](docs/rpn83p-screenshot-menu-root-unit-3.png)
+    - ![UNIT MenuRow 4](docs/rpn83p-screenshot-menu-root-unit-4.png)
+    - ![UNIT MenuRow 5](docs/rpn83p-screenshot-menu-root-unit-5.png)
+    - ![UNIT MenuRow 6](docs/rpn83p-screenshot-menu-root-unit-6.png)
     - `>C`: Fahrenheit to Celsius
     - `>F`: Celsius to Fahrenheit
     - `>hPa`: hectopascals (i.e. millibars) to inches of mercury (Hg)
@@ -665,10 +665,10 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (back), and `MATH`
     - `>kW`: horsepowers (mechanical) to kilo Watts
     - `>hp`: kilo Watts to horsepowers (mechanical)
 - `ROOT` > `BASE`
-    - ![BASE MenuStrip 1](docs/rpn83p-screenshot-menu-root-base-1.png)
-    - ![BASE MenuStrip 2](docs/rpn83p-screenshot-menu-root-base-2.png)
-    - ![BASE MenuStrip 3](docs/rpn83p-screenshot-menu-root-base-3.png)
-    - ![BASE MenuStrip 4](docs/rpn83p-screenshot-menu-root-base-4.png)
+    - ![BASE MenuRow 1](docs/rpn83p-screenshot-menu-root-base-1.png)
+    - ![BASE MenuRow 2](docs/rpn83p-screenshot-menu-root-base-2.png)
+    - ![BASE MenuRow 3](docs/rpn83p-screenshot-menu-root-base-3.png)
+    - ![BASE MenuRow 4](docs/rpn83p-screenshot-menu-root-base-4.png)
     - `DEC`: use decimal base 10, set base indicator to `DEC`
     - `HEX`: use hexadecimal base 16, set base indicator to `HEX`
         - display all register values as 32-bit unsigned integer
@@ -693,12 +693,12 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (back), and `MATH`
     - `BDIV`: divide `X` into `Y` with remainder, placing the quotient in `Y`
       and the remainder in `X`
 - `ROOT` > `STK`
-    - ![STK MenuStrip 1](docs/rpn83p-screenshot-menu-root-stk-1.png)
+    - ![STK MenuRow 1](docs/rpn83p-screenshot-menu-root-stk-1.png)
     - `R(up)`: rotate stack up
     - `R(down)`: rotate stack down, also bound to `(` button
     - `X<>Y`: exchange `X` and `Y`, also bound to `)` button
 - `ROOT` > `CLR`
-    - ![CLR MenuStrip 1](docs/rpn83p-screenshot-menu-root-clr-1.png)
+    - ![CLR MenuRow 1](docs/rpn83p-screenshot-menu-root-clr-1.png)
     - `CLX`: clear `X` stack register (stack lift disabled)
     - `CLST`: clear all RPN stack registers
     - `CLRG`: clear storage registers `R00` to `R24`
@@ -834,11 +834,11 @@ since gradian trig mode is not commonly used.
 
 The `BASE` functions are available through the `ROOT` > `BASE` hierarchy:
 
-- ![ROOT MenuStrip 2](docs/rpn83p-screenshot-menu-root-2.png)
-    - ![BASE MenuStrip 1](docs/rpn83p-screenshot-menu-root-base-1.png)
-    - ![BASE MenuStrip 2](docs/rpn83p-screenshot-menu-root-base-2.png)
-    - ![BASE MenuStrip 3](docs/rpn83p-screenshot-menu-root-base-3.png)
-    - ![BASE MenuStrip 4](docs/rpn83p-screenshot-menu-root-base-4.png)
+- ![ROOT MenuRow 2](docs/rpn83p-screenshot-menu-root-2.png)
+    - ![BASE MenuRow 1](docs/rpn83p-screenshot-menu-root-base-1.png)
+    - ![BASE MenuRow 2](docs/rpn83p-screenshot-menu-root-base-2.png)
+    - ![BASE MenuRow 3](docs/rpn83p-screenshot-menu-root-base-3.png)
+    - ![BASE MenuRow 4](docs/rpn83p-screenshot-menu-root-base-4.png)
 
 These functions allow conversion of integers into different bases (10, 16, 8,
 2), as well as performing bitwise functions on those integers (bit-and, bit-or,
@@ -996,9 +996,9 @@ To recall register `R00`, press:
 To clear the all storage registers, use the arrow keys for the menu system to
 get to:
 
-- ![ROOT MenuStrip 3](docs/rpn83p-screenshot-menu-root-3.png)
+- ![ROOT MenuRow 3](docs/rpn83p-screenshot-menu-root-3.png)
 - Press `CLR` to get
-  ![CLR MenuStrip 1](docs/rpn83p-screenshot-menu-root-clr-1.png)
+  ![CLR MenuRow 1](docs/rpn83p-screenshot-menu-root-clr-1.png)
 - Press `CLRG`
 
 The message `REGS cleared` will be displayed on the screen.
