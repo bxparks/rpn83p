@@ -77,7 +77,7 @@ Here are some missing features which may be added in the future:
 - [Compiling from Source](#compiling-from-source)
 - [Tools and Resources](#tools-and-resources)
 - [License](#license)
-- [Feedback](#feedback)
+- [Feedback and Support](#feedback-and-support)
 - [Author](#author)
 
 ## Installation
