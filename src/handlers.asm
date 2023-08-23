@@ -561,9 +561,9 @@ closeInputBufContinue:
 ; Menu key handlers.
 ;-----------------------------------------------------------------------------
 
-; Function: Go to the previous menu strip, with stripIndex decreasing upwards.
+; Function: Go to the previous menu row, with rowIndex decreasing upwards.
 ; Input: none
-; Output: (menuStripIndex) decremented, or wrapped around
+; Output: (menuRowIndex) decremented, or wrapped around
 ; Destroys: all
 handleKeyUp:
     ; Do nothing in command arg mode.
@@ -573,35 +573,35 @@ handleKeyUp:
     ld hl, menuGroupId
     ld a, (hl) ; A = menuGroupId
     inc hl
-    ld b, (hl) ; B = menuStripIndex
+    ld b, (hl) ; B = menuRowIndex
     call getMenuNode ; HL = pointer to MenuNode
     inc hl
     inc hl
     inc hl
-    ld c, (hl) ; C = numStrips
+    ld c, (hl) ; C = numRows
 
     ; Check for 1. TODO: Check for 0, but that should never happen.
     ld a, c
     cp 1
     ret z
 
-    ; (menuStripIndex-1) mod numStrips
-    ld a, (menuStripIndex)
+    ; (menuRowIndex-1) mod numRows
+    ld a, (menuRowIndex)
     or a
     jr nz, handleKeyUpContinue
-    ld a, c ; A = numStrips
+    ld a, c ; A = numRows
 handleKeyUpContinue:
     dec a
-    ld (menuStripIndex), a
+    ld (menuRowIndex), a
 
     set dirtyFlagsMenu, (iy + dirtyFlags)
     ret
 
 ;-----------------------------------------------------------------------------
 
-; Function: Go to the next menu strip, with stripIndex increasing downwards.
+; Function: Go to the next menu row, with rowIndex increasing downwards.
 ; Input: none
-; Output: (menuStripIndex) incremented mod numStrips
+; Output: (menuRowIndex) incremented mod numRows
 ; Destroys: all
 handleKeyDown:
     ; Do nothing in command arg mode.
@@ -611,26 +611,26 @@ handleKeyDown:
     ld hl, menuGroupId
     ld a, (hl)
     inc hl
-    ld b, (hl) ; menuStripIndex
+    ld b, (hl) ; menuRowIndex
     call getMenuNode
     inc hl
     inc hl
     inc hl
-    ld c, (hl) ; numStrips
+    ld c, (hl) ; numRows
 
     ; Check for 1. TODO: Check for 0, but that should never happen.
     ld a, c
     cp 1
     ret z
 
-    ; (menuStripIndex+1) mod numStrips
-    ld a, (menuStripIndex)
+    ; (menuRowIndex+1) mod numRows
+    ld a, (menuRowIndex)
     inc a
     cp c
     jr c, handleKeyDownContinue
     xor a
 handleKeyDownContinue:
-    ld (menuStripIndex), a
+    ld (menuRowIndex), a
 
     set dirtyFlagsMenu, (iy + dirtyFlags)
     ret
@@ -638,13 +638,13 @@ handleKeyDownContinue:
 ;-----------------------------------------------------------------------------
 
 ; Description: Go back up the menu hierarchy to the parent menu group. If
-; already at the rootMenu, and the stripIndex is not 0, then reset the
-; stripIndex to 0 so that we return to the default, top-level view of the menu
+; already at the rootMenu, and the rowIndex is not 0, then reset the
+; rowIndex to 0 so that we return to the default, top-level view of the menu
 ; hierarchy.
 ; Input: (menuGroupId), the current (child) menu group
 ; Output:
 ;   - (menuGroupId) at parentId
-;   - (menuStripIndex) at strip of the (child) menu group
+;   - (menuRowIndex) of the input (child) menu group
 ; Destroys: all
 handleKeyMenuBack:
     ; Clear the command arg mode if already in command arg mode.
@@ -657,13 +657,13 @@ handleKeyMenuBack:
     cp mRootId
     jr nz, handleKeyMenuBackToParent
 
-    ; If already at rootId, go to menuStrip0 if not already there.
+    ; If already at rootId, go to menuRow0 if not already there.
     inc hl
-    ld a, (hl) ; menuStripIndex
+    ld a, (hl) ; menuRowIndex
     or a
     ret z
-    xor a ; set stripIndex to 0, set dirty bit
-    jr handleKeyMenuBackStripSave
+    xor a ; set rowIndex to 0, set dirty bit
+    jr handleKeyMenuBackRowSave
 
 handleKeyMenuBackToParent:
     ; Set menuGroupId = child.parentId
@@ -673,27 +673,27 @@ handleKeyMenuBackToParent:
     ld a, (hl) ; A=parentId
     ld (menuGroupId), a
 
-    ; Get numStrips and stripBeginId of the parent.
+    ; Get numRows and rowBeginId of the parent.
     call getMenuNode ; get parentNode
     inc hl
     inc hl
     inc hl
-    ld d, (hl) ; D=parent.numStrips
+    ld d, (hl) ; D=parent.numRows
     inc hl
-    ld a, (hl) ; A=parent.stripBeginId
+    ld a, (hl) ; A=parent.rowBeginId
 
-    ; Deduce the parent's stripIndex which matches the childId.
-    call deduceStripIndex
+    ; Deduce the parent's rowIndex which matches the childId.
+    call deduceRowIndex
 
-handleKeyMenuBackStripSave:
-    ld (menuStripIndex), a
+handleKeyMenuBackRowSave:
+    ld (menuRowIndex), a
     set dirtyFlagsMenu, (iy + dirtyFlags)
     ret
 
-; Description: Deduce the stripIndex from the childId above. The `stripIndex =
-; int((childId - stripBeginId)/5)` but the Z80 does not have a divison
+; Description: Deduce the rowIndex from the childId above. The `rowIndex =
+; int((childId - rowBeginId)/5)` but the Z80 does not have a divison
 ; instruction so we use a loop that increments an `index` in increments of 5 to
-; determine the corresponding stripIndex.
+; determine the corresponding rowIndex.
 ;
 ; The complication is that we want to evaluate `(childId < nodeId)` but the
 ; Z80 instruction can only increment the A register, so we have to store
@@ -703,26 +703,26 @@ handleKeyMenuBackStripSave:
 ; hope my future self will understand this explanation.
 ;
 ; Input:
-;   A: stripBeginId
-;   D: numStrips
+;   A: rowBeginId
+;   D: numRows
 ;   C: childId
-; Output: A: stripIndex
+; Output: A: rowIndex
 ; Destroys: B; preserves C, D
-deduceStripIndex:
-    add a, 4 ; nodeId = stripBeginId + 4
-    ld b, d ; B (DJNZ counter) = numStrips
-deduceStripIndexLoop:
+deduceRowIndex:
+    add a, 4 ; nodeId = rowBeginId + 4
+    ld b, d ; B (DJNZ counter) = numRows
+deduceRowIndexLoop:
     cp c ; If nodeId < childId: set CF
-    jr nc, deduceStripIndexFound ; nodeId >= childId
+    jr nc, deduceRowIndexFound ; nodeId >= childId
     add a, 5 ; nodeId += 5
-    djnz deduceStripIndexLoop
+    djnz deduceRowIndexLoop
     ; We should never fall off the end of the loop, but if we do, set the
-    ; stripIndex to 0.
+    ; rowIndex to 0.
     xor a
     ret
-deduceStripIndexFound:
-    ld a, d ; numStrips
-    sub b ; stripIndex = numStrips - B
+deduceRowIndexFound:
+    ld a, d ; numRows
+    sub b ; rowIndex = numRows - B
     ret
 
 ;-----------------------------------------------------------------------------
@@ -780,7 +780,7 @@ handleKeyMenuA:
     ret nz
 
     ld c, a
-    call getCurrentMenuStripBeginId
+    call getCurrentMenuRowBeginId
     add a, c ; menu node ids are sequential starting with beginId
     ; get menu node corresponding to pressed menu key
     call getMenuNode

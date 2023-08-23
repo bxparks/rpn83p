@@ -161,9 +161,9 @@ and `65`, then see the result as an octal number, a binary (base-2) number, then
 finally as a decimal number:
 
 - Navigate the menu with the DOWN arrow to get to
-  ![ROOT MenuStrip 2](docs/rpn83p-screenshot-menu-root-2.png)
+  ![ROOT MenuRow 2](docs/rpn83p-screenshot-menu-root-2.png)
 - Press `BASE` menu to get to
-  ![BASE MenuStrip 1](docs/rpn83p-screenshot-menu-root-base-1.png)
+  ![BASE MenuRow 1](docs/rpn83p-screenshot-menu-root-base-1.png)
 - Press `HEX` menu.
 - Press `ALPHA` `B` buttons
 - Press `6` button
@@ -171,10 +171,10 @@ finally as a decimal number:
 - Press `6` button
 - Press `5` button
 - Press DOWN arrow to get to
-  ![BASE MenuStrip 2](docs/rpn83p-screenshot-menu-root-base-2.png)
+  ![BASE MenuRow 2](docs/rpn83p-screenshot-menu-root-base-2.png)
 - Press `AND` menu, the `X` register should show `00000024`
 - Press UP arrow to go back to
-  ![BASE MenuStrip 1](docs/rpn83p-screenshot-menu-root-base-1.png)
+  ![BASE MenuRow 1](docs/rpn83p-screenshot-menu-root-base-1.png)
 - Press `OCT` menu, the `X` register should show `00000000044`
 - Press `BIN` menu, the `X` register should show `00000000100100`
 - Press `DEC` menu, the `X` register should show `36`
@@ -188,7 +188,7 @@ Press:
 - `ON` button (`ESC/EXIT`) multiple times to back to the home menu, or
 - `MATH` button (`HOME`) to go back directly.
 
-> ![ROOT MenuStrip 1](docs/rpn83p-screenshot-menu-root-1.png)
+> ![ROOT MenuRow 1](docs/rpn83p-screenshot-menu-root-1.png)
 
 ## User Guide
 

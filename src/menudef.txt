@@ -12,8 +12,8 @@
 #   menuconfig = 'MenuConfig' '[' config* ']'
 #   config = 'ItemName' value | 'ItemNameId' value | 'ItemHandler' value
 #     | 'GroupHandler' value
-#   menugroup =  'MenuGroup' name label '[' menustrip* ']'
-#   menustrip = 'MenuStrip' '[' menunode*5 ']'
+#   menugroup =  'MenuGroup' name label '[' menurow* ']'
+#   menurow = 'MenuRow' '[' menunode*5 ']'
 #   menunode = menuitem | menugroup
 #   menuitem = 'MenuItem' name label
 #   value = printableASCII+
@@ -35,7 +35,7 @@
 #       prefix for other identifiers (e.g. if the label="mNum", there will be
 #       other identifiers such as "mNumId", "mNumNameId").
 #   - fonttag: a symbol from the TI-OS Small Font table, e.g. '<Sdegree>'
-#   - MenuStrip: always has 5 menu nodes
+#   - MenuRow: always has 5 menu nodes
 
 
 # Define the defaults for blank menu items and menu groups.
@@ -48,15 +48,15 @@ MenuConfig [
 
 # Defines the hierarchy of menus.
 MenuGroup root mRoot [
-  MenuStrip [
+  MenuRow [
     # Advanced math functions.
     MenuGroup MATH mMath [
-      MenuStrip [
+      MenuRow [
         MenuItem X<Scaret>3 mCube
         MenuItem <ScubeR><Sroot>X mCubeRoot
         MenuItem ATN2 mAtan2
       ]
-      MenuStrip [
+      MenuRow [
         MenuItem 2<Scaret>X mAlog2 # 2^x
         MenuItem LOG2 mLog2 # log_base2(x)
         MenuItem LOGB mLogBase # log_base_x(y)
@@ -64,24 +64,24 @@ MenuGroup root mRoot [
     ]
     # Arithmetic functions.
     MenuGroup NUM mNum [
-      MenuStrip [
+      MenuRow [
         MenuItem <Spercent> mPercent
         MenuItem <Spercent>CH mPercentChange
         MenuItem GCD mGcd
         MenuItem LCM mLcm
         MenuItem PRIM mPrime
       ]
-      #MenuStrip [
+      #MenuRow [
       #  MenuItem PMOD mPrimeMod # for debugging modU32U16
       #]
-      MenuStrip [
+      MenuRow [
         MenuItem IP mIntPart
         MenuItem FP mFracPart
         MenuItem FLR mFloor
         MenuItem CEIL mCeil
         MenuItem NEAR mNear
       ]
-      MenuStrip [
+      MenuRow [
         MenuItem ABS mAbs
         MenuItem SIGN mSign
         MenuItem MOD mMod
@@ -90,7 +90,7 @@ MenuGroup root mRoot [
       ]
     ]
     MenuGroup PROB mProb [
-      MenuStrip [
+      MenuRow [
         MenuItem COMB mComb
         MenuItem PERM mPerm
         MenuItem N<Sexclam> mFactorial
@@ -99,18 +99,18 @@ MenuGroup root mRoot [
       ]
     ]
     MenuGroup CONV mConv [
-      MenuStrip [
+      MenuRow [
         MenuItem <Sconvert>DEG mRToD
         MenuItem <Sconvert>RAD mDToR
         MenuItem * *
         MenuItem P<Sconvert>R mPToR
         MenuItem R<Sconvert>P mRToP
       ]
-      MenuStrip [
+      MenuRow [
         MenuItem <Sconvert>HR mHmsToHr
         MenuItem <Sconvert>HMS mHrToHms
       ]
-      # MenuStrip [
+      # MenuRow [
       #   MenuItem <Sconvert>UNIX mDateToUnixSeconds
       #   menuItem <Sconvert>DATE mUnixSecondsToDate
       #   menuItem LEAP mIsLeapYear
@@ -120,9 +120,9 @@ MenuGroup root mRoot [
     ]
     MenuItem HELP mHelp
   ]
-  MenuStrip [
+  MenuRow [
     MenuGroup MODE mMode [
-      MenuStrip [
+      MenuRow [
         MenuItem FIX mFix
         MenuItem SCI mSci
         MenuItem ENG mEng
@@ -131,14 +131,14 @@ MenuGroup root mRoot [
       ]
     ]
     MenuGroup HYP mHyperbolic [
-      MenuStrip [
+      MenuRow [
         MenuItem * *
         MenuItem SINH mSinh
         MenuItem COSH mCosh
         MenuItem TANH mTanh
         MenuItem * *
       ]
-      MenuStrip [
+      MenuRow [
         MenuItem * *
         MenuItem ASNH mAsinh
         MenuItem ACSH mAcosh
@@ -147,56 +147,56 @@ MenuGroup root mRoot [
       ]
     ]
     MenuGroup UNIT mUnit [
-      MenuStrip [
+      MenuRow [
         MenuItem <Sconvert><Stemp>C mFToC
         MenuItem <Sconvert><Stemp>F mCToF
         MenuItem * *
         MenuItem <Sconvert>hPa mInhgToHpa
         MenuItem <Sconvert>iHg mHpaToInhg
       ]
-      MenuStrip [
+      MenuRow [
         MenuItem <Sconvert>km mMiToKm
         MenuItem <Sconvert>mi mKmToMi
         MenuItem * *
         MenuItem <Sconvert>m mFtToM
         MenuItem <Sconvert>ft mMToFt
       ]
-      MenuStrip [
+      MenuRow [
         MenuItem <Sconvert>cm mInToCm
         MenuItem <Sconvert>in mCmToIn
         MenuItem * *
         MenuItem <Sconvert><Smu>m mMilToMicron
         MenuItem <Sconvert>mil mMicronToMil
       ]
-      MenuStrip [
+      MenuRow [
         MenuItem <Sconvert>kg mLbsToKg
         MenuItem <Sconvert>lbs mKgToLbs
         MenuItem * *
         MenuItem <Sconvert>g mOzToG
         MenuItem <Sconvert>oz mGToOz
       ]
-      MenuStrip [
+      MenuRow [
         MenuItem <Sconvert>L mGalToL
         MenuItem <Sconvert>gal mLToGal
         MenuItem * *
         MenuItem <Sconvert>mL mFlozToMl
         MenuItem <Sconvert>foz mMlToFloz
       ]
-      MenuStrip [
+      MenuRow [
         MenuItem <Sconvert>kJ mCalToKj
         MenuItem <Sconvert>cal mKjToCal
         MenuItem * *
         MenuItem <Sconvert>kW mHpToKw
         MenuItem <Sconvert>hp mKwToHp
       ]
-      # MenuStrip [
+      # MenuRow [
       #   MenuItem <Sconvert>Lkm mL100kmToMpg
       #   MenuItem <Sconvert>mpg mMpgToL100km
       #   MenuItem * *
       #   MenuItem <Sconvert>kPa mPsiToKpa
       #   MenuItem <Sconvert>psi mKpaToPsi
       # ]
-      # MenuStrip [
+      # MenuRow [
       #   MenuItem <Sconvert>ha mAcreToHectare
       #   MenuItem <Sconvert>acr mHectareToAcre
       #   MenuItem * *
@@ -205,26 +205,26 @@ MenuGroup root mRoot [
       # ]
     ]
     MenuGroup BASE mBase [
-      MenuStrip [
+      MenuRow [
         MenuItem DEC mDec # decimal
         MenuItem HEX mHex # hexadecimal
         MenuItem OCT mOct # octal
         MenuItem BIN mBin # binary
       ]
-      MenuStrip [
+      MenuRow [
         MenuItem AND mBitwiseAnd
         MenuItem OR mBitwiseOr
         MenuItem XOR mBitwiseXor
         MenuItem NOT mBitwiseNot # 1's complement
         MenuItem NEG mBitwiseNeg # 2's complement
       ]
-      MenuStrip [
+      MenuRow [
         MenuItem SL mShiftLeft # shift left logical
         MenuItem SR mShiftRight # shift right logical
         MenuItem RL mRotateLeft # rotate left circular
         MenuItem RR mRotateRight # rotate right circular
       ]
-      MenuStrip [
+      MenuRow [
         MenuItem B<SplusSign> mBitwiseAdd
         MenuItem B<Sdash> mBitwiseSubt
         MenuItem B<Scross> mBitwiseMult
@@ -233,7 +233,7 @@ MenuGroup root mRoot [
       ]
     ]
     MenuGroup STK mStack [
-      MenuStrip [
+      MenuRow [
         MenuItem * *
         MenuItem R<SupArrow> mStackRotUp
         MenuItem R<SdownArrow> mStackRotDown
@@ -242,9 +242,9 @@ MenuGroup root mRoot [
       ]
     ]
   ]
-  MenuStrip [
+  MenuRow [
     MenuGroup CLR mClear [
-      MenuStrip [
+      MenuRow [
         MenuItem CLX mClearX
         MenuItem CLST mClearStack
         MenuItem CLRG mClearRegs
