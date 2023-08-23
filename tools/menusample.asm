@@ -35,224 +35,224 @@ mNullId equ 0
     .db mNullId ; id
     .db mNullId ; parentId
     .db mNullNameId ; nameId
-    .db 0 ; numStrips
-    .db 0 ; stripBeginId
+    .db 0 ; numRows
+    .db 0 ; rowBeginId
     .dw mNullHandler
 mRoot:
 mRootId equ 1
     .db mRootId ; id
     .db mNullId ; parentId
     .db mRootNameId ; nameId
-    .db 2 ; numStrips
-    .db mNumId ; stripBeginId
+    .db 2 ; numRows
+    .db mNumId ; rowBeginId
     .dw mGroupHandler ; handler (predefined)
 ; MenuGroup root: children
-; MenuGroup root: children: strip 0
+; MenuGroup root: children: row 0
 mNum:
 mNumId equ 2
     .db mNumId ; id
     .db mRootId ; parentId
     .db mNumNameId ; nameId
-    .db 2 ; numStrips
-    .db mCubeId ; stripBeginId
+    .db 2 ; numRows
+    .db mCubeId ; rowBeginId
     .dw mGroupHandler ; handler (predefined)
 mProb:
 mProbId equ 3
     .db mProbId ; id
     .db mRootId ; parentId
     .db mProbNameId ; nameId
-    .db 1 ; numStrips
-    .db mPermId ; stripBeginId
+    .db 1 ; numRows
+    .db mPermId ; rowBeginId
     .dw mGroupHandler ; handler (predefined)
 mBlank004:
 mBlank004Id equ 4
     .db mBlank004Id ; id
     .db mRootId ; parentId
     .db mNullNameId ; nameId
-    .db 0 ; numStrips
-    .db 0 ; stripBeginId
+    .db 0 ; numRows
+    .db 0 ; rowBeginId
     .dw mNullHandler ; handler (predefined)
 mBlank005:
 mBlank005Id equ 5
     .db mBlank005Id ; id
     .db mRootId ; parentId
     .db mNullNameId ; nameId
-    .db 0 ; numStrips
-    .db 0 ; stripBeginId
+    .db 0 ; numRows
+    .db 0 ; rowBeginId
     .dw mNullHandler ; handler (predefined)
 mHelp:
 mHelpId equ 6
     .db mHelpId ; id
     .db mRootId ; parentId
     .db mHelpNameId ; nameId
-    .db 0 ; numStrips
-    .db 0 ; stripBeginId
+    .db 0 ; numRows
+    .db 0 ; rowBeginId
     .dw mHelpHandler ; handler (to be implemented)
-; MenuGroup root: children: strip 1
+; MenuGroup root: children: row 1
 mDisp:
 mDispId equ 7
     .db mDispId ; id
     .db mRootId ; parentId
     .db mDispNameId ; nameId
-    .db 0 ; numStrips
-    .db 0 ; stripBeginId
+    .db 0 ; numRows
+    .db 0 ; rowBeginId
     .dw mDispHandler ; handler (to be implemented)
 mMode:
 mModeId equ 8
     .db mModeId ; id
     .db mRootId ; parentId
     .db mModeNameId ; nameId
-    .db 0 ; numStrips
-    .db 0 ; stripBeginId
+    .db 0 ; numRows
+    .db 0 ; rowBeginId
     .dw mModeHandler ; handler (to be implemented)
 mHyperbolic:
 mHyperbolicId equ 9
     .db mHyperbolicId ; id
     .db mRootId ; parentId
     .db mHyperbolicNameId ; nameId
-    .db 0 ; numStrips
-    .db 0 ; stripBeginId
+    .db 0 ; numRows
+    .db 0 ; rowBeginId
     .dw mHyperbolicHandler ; handler (to be implemented)
 mUnit:
 mUnitId equ 10
     .db mUnitId ; id
     .db mRootId ; parentId
     .db mUnitNameId ; nameId
-    .db 0 ; numStrips
-    .db 0 ; stripBeginId
+    .db 0 ; numRows
+    .db 0 ; rowBeginId
     .dw mUnitHandler ; handler (to be implemented)
 mBlank011:
 mBlank011Id equ 11
     .db mBlank011Id ; id
     .db mRootId ; parentId
     .db mNullNameId ; nameId
-    .db 0 ; numStrips
-    .db 0 ; stripBeginId
+    .db 0 ; numRows
+    .db 0 ; rowBeginId
     .dw mNullHandler ; handler (predefined)
 ; MenuGroup NUM: children
-; MenuGroup NUM: children: strip 0
+; MenuGroup NUM: children: row 0
 mCube:
 mCubeId equ 12
     .db mCubeId ; id
     .db mNumId ; parentId
     .db mCubeNameId ; nameId
-    .db 0 ; numStrips
-    .db 0 ; stripBeginId
+    .db 0 ; numRows
+    .db 0 ; rowBeginId
     .dw mCubeHandler ; handler (to be implemented)
 mCubeRoot:
 mCubeRootId equ 13
     .db mCubeRootId ; id
     .db mNumId ; parentId
     .db mCubeRootNameId ; nameId
-    .db 0 ; numStrips
-    .db 0 ; stripBeginId
+    .db 0 ; numRows
+    .db 0 ; rowBeginId
     .dw mCubeRootHandler ; handler (to be implemented)
 mAtan2:
 mAtan2Id equ 14
     .db mAtan2Id ; id
     .db mNumId ; parentId
     .db mAtan2NameId ; nameId
-    .db 0 ; numStrips
-    .db 0 ; stripBeginId
+    .db 0 ; numRows
+    .db 0 ; rowBeginId
     .dw mAtan2Handler ; handler (to be implemented)
 mPercent:
 mPercentId equ 15
     .db mPercentId ; id
     .db mNumId ; parentId
     .db mPercentNameId ; nameId
-    .db 0 ; numStrips
-    .db 0 ; stripBeginId
+    .db 0 ; numRows
+    .db 0 ; rowBeginId
     .dw mPercentHandler ; handler (to be implemented)
 mBlank016:
 mBlank016Id equ 16
     .db mBlank016Id ; id
     .db mNumId ; parentId
     .db mNullNameId ; nameId
-    .db 0 ; numStrips
-    .db 0 ; stripBeginId
+    .db 0 ; numRows
+    .db 0 ; rowBeginId
     .dw mNullHandler ; handler (predefined)
-; MenuGroup NUM: children: strip 1
+; MenuGroup NUM: children: row 1
 mAbs:
 mAbsId equ 17
     .db mAbsId ; id
     .db mNumId ; parentId
     .db mAbsNameId ; nameId
-    .db 0 ; numStrips
-    .db 0 ; stripBeginId
+    .db 0 ; numRows
+    .db 0 ; rowBeginId
     .dw mAbsHandler ; handler (to be implemented)
 mSign:
 mSignId equ 18
     .db mSignId ; id
     .db mNumId ; parentId
     .db mSignNameId ; nameId
-    .db 0 ; numStrips
-    .db 0 ; stripBeginId
+    .db 0 ; numRows
+    .db 0 ; rowBeginId
     .dw mSignHandler ; handler (to be implemented)
 mMod:
 mModId equ 19
     .db mModId ; id
     .db mNumId ; parentId
     .db mModNameId ; nameId
-    .db 0 ; numStrips
-    .db 0 ; stripBeginId
+    .db 0 ; numRows
+    .db 0 ; rowBeginId
     .dw mModHandler ; handler (to be implemented)
 mLcm:
 mLcmId equ 20
     .db mLcmId ; id
     .db mNumId ; parentId
     .db mLcmNameId ; nameId
-    .db 0 ; numStrips
-    .db 0 ; stripBeginId
+    .db 0 ; numRows
+    .db 0 ; rowBeginId
     .dw mLcmHandler ; handler (to be implemented)
 mGcd:
 mGcdId equ 21
     .db mGcdId ; id
     .db mNumId ; parentId
     .db mGcdNameId ; nameId
-    .db 0 ; numStrips
-    .db 0 ; stripBeginId
+    .db 0 ; numRows
+    .db 0 ; rowBeginId
     .dw mGcdHandler ; handler (to be implemented)
 ; MenuGroup PROB: children
-; MenuGroup PROB: children: strip 0
+; MenuGroup PROB: children: row 0
 mPerm:
 mPermId equ 22
     .db mPermId ; id
     .db mProbId ; parentId
     .db mPermNameId ; nameId
-    .db 0 ; numStrips
-    .db 0 ; stripBeginId
+    .db 0 ; numRows
+    .db 0 ; rowBeginId
     .dw mPermHandler ; handler (to be implemented)
 mComb:
 mCombId equ 23
     .db mCombId ; id
     .db mProbId ; parentId
     .db mCombNameId ; nameId
-    .db 0 ; numStrips
-    .db 0 ; stripBeginId
+    .db 0 ; numRows
+    .db 0 ; rowBeginId
     .dw mCombHandler ; handler (to be implemented)
 mFactorial:
 mFactorialId equ 24
     .db mFactorialId ; id
     .db mProbId ; parentId
     .db mFactorialNameId ; nameId
-    .db 0 ; numStrips
-    .db 0 ; stripBeginId
+    .db 0 ; numRows
+    .db 0 ; rowBeginId
     .dw mFactorialHandler ; handler (to be implemented)
 mRandom:
 mRandomId equ 25
     .db mRandomId ; id
     .db mProbId ; parentId
     .db mRandomNameId ; nameId
-    .db 0 ; numStrips
-    .db 0 ; stripBeginId
+    .db 0 ; numRows
+    .db 0 ; rowBeginId
     .dw mRandomHandler ; handler (to be implemented)
 mRandomSeed:
 mRandomSeedId equ 26
     .db mRandomSeedId ; id
     .db mProbId ; parentId
     .db mRandomSeedNameId ; nameId
-    .db 0 ; numStrips
-    .db 0 ; stripBeginId
+    .db 0 ; numRows
+    .db 0 ; rowBeginId
     .dw mRandomSeedHandler ; handler (to be implemented)
 
 ; Table of 2-byte pointers to names in the pool of strings below.

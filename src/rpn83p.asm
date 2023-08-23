@@ -172,10 +172,10 @@ floatBufSizeOf equ 9
 ;
 ;   struct menu {
 ;     uint8_t groupId; // id of the current menu group
-;     uint8_t stripIndex; // menu strip, groups of 5
+;     uint8_t rowIndex; // menu row, groups of 5
 ;   }
 menuGroupId equ floatBuf + floatBufSizeOf
-menuStripIndex equ menuGroupId + 1
+menuRowIndex equ menuGroupId + 1
 
 ; Menu name, copied here as a Pascal string.
 ;
@@ -183,7 +183,7 @@ menuStripIndex equ menuGroupId + 1
 ;       uint8_t size;
 ;       char buf[5];
 ;   }
-menuName equ menuStripIndex + 1
+menuName equ menuRowIndex + 1
 menuNameSize equ menuName
 menuNameBuf equ menuName + 1
 menuNameBufMax equ 5

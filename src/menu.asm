@@ -6,7 +6,7 @@
 ;-----------------------------------------------------------------------------
 ; Routines for navigating the singly-rooted tree of MenuNodes. A MenuNode can
 ; be either a MenuItem or MenuGroup. A MenuGroup is a list of one or more
-; MenuStrip. A MenuStrip is a list of exactly 5 MenuNodes, corresponding to the
+; MenuRow. A MenuRow is a list of exactly 5 MenuNodes, corresponding to the
 ; 5 menu buttons located just below the LCD screen of the calculator.
 ;
 ; The root of the menu tree is usually called the RootMenu and has an id of 1.
@@ -24,8 +24,8 @@
 ;   uint8_t id; // root begins with 1
 ;   uint8_t parentId; // 0 indicates NONE
 ;   uint8_t nameId; // index into NameTable
-;   uint8_t numStrips; // 0 if MenuItem; >=1 if MenuGroup
-;   uint8_t stripBeginId; // nodeId of the first node of first strip
+;   uint8_t numRows; // 0 if MenuItem; >=1 if MenuGroup
+;   uint8_t rowBeginId; // nodeId of the first node of first menu row
 ;   void *handler; // pointer to the handler function
 ; };
 ;
@@ -33,11 +33,11 @@
 ;
 ;-----------------------------------------------------------------------------
 
-; Description: Set initial values for (menuGroupId) and (menuStripIndex).
+; Description: Set initial values for (menuGroupId) and (menuRowIndex).
 ; Input: none
 ; Output:
 ;   (menuGroupId) = mRootId
-;   (menuStripIndex) = 0
+;   (menuRowIndex) = 0
 ; Destroys: A, HL
 initMenu:
     ld hl, menuGroupId
@@ -49,31 +49,31 @@ initMenu:
     set dirtyFlagsMenu, (iy + dirtyFlags)
     ret
 
-; Description: Return the node id of the first item in the menu strip at
-; `menuStripIndex` of the current menu node `menuGroupId`. The next 4 node
+; Description: Return the node id of the first item in the menu row at
+; `menuRowIndex` of the current menu node `menuGroupId`. The next 4 node
 ; ids in sequential order define the other 4 menu buttons.
 ; Input:
 ;   - (menuGroupId)
-;   - (menuStripIndex)
-; Output: A: strip begin id
+;   - (menuRowIndex)
+; Output: A: row begin id
 ; Destroys: A, B, DE, HL
-getCurrentMenuStripBeginId:
+getCurrentMenuRowBeginId:
     ld hl, menuGroupId
     ld a, (hl)
     inc hl
     ld b, (hl)
     ; [[fallthrough]]
 
-; Description: Return the first menu id for menuGroupId A at strip index B.
+; Description: Return the first menu id for menuGroupId A at row index B.
 ; Input:
 ;   A: menu id
-;   B: strip index
-; Output: A: strip begin id
+;   B: row index
+; Output: A: row begin id
 ; Destroys: A, DE, HL
-getMenuStripBeginId:
+getMenuRowBeginId:
     call getMenuNode ; HL = menuNode
 
-    ; A = menNode.stripBeginId
+    ; A = menNode.rowBeginId
     inc hl
     inc hl
     inc hl

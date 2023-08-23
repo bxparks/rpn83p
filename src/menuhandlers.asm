@@ -24,16 +24,16 @@ mNotYetHandler:
 
 ; Description: General handler for menu nodes of type "MenuGroup". Selecting
 ; this should cause the menuGroupId to be set to this item, and the
-; menuStripIndex to be set to 0
+; menuRowIndex to be set to 0
 ; Input:
 ;   A: nodeId of the select menu item
 ;   HL: pointer to MenuNode that was activated (ignored)
-; Output: (menuGroupId) and (menuStripIndex) updated
+; Output: (menuGroupId) and (menuRowIndex) updated
 ; Destroys: A
 mGroupHandler:
     ld (menuGroupId), a
     xor a
-    ld (menuStripIndex), a
+    ld (menuRowIndex), a
     set dirtyFlagsMenu, (iy + dirtyFlags)
     ret
 
