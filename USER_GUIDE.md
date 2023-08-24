@@ -2,7 +2,7 @@
 
 RPN calculator app for the TI-83 Plus and TI-84 Plus inspired by the HP-42S.
 
-**Version**: 0.5.0-dev (2023-08-23)
+**Version**: 0.5.0-dev (2023-08-24)
 
 **Project Home**: https://github.com/bxparks/rpn83p
 
@@ -784,13 +784,9 @@ To set the number of digits after the decimal point to be dynamic (i.e. the
 equivalent of `FLOAT` option in the TI-OS `MODE` menu), type in a number greater
 than 9 when prompted for `FIX _ _`, `SCI _ _`, or `ENG _ _`. I usually use
 `99`, but `11` would also work. For example, to use scientific notation mode
-with a variable number of fractional digits, press `SCI` `99` at this prompt:
+with a variable number of fractional digits, press `SCI` `99` to get this:
 
 > ![RPN83P SCI 99](docs/rpn83p-display-mode-sci-99.png)
-
-to get this:
-
-> ![RPN83P SCI 99](docs/rpn83p-display-mode-sci-dynamic.png)
 
 Notice that the top-line floating point indicator now shows `SCI(-)`.
 
