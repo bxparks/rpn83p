@@ -58,7 +58,7 @@ Here are some missing features which may be added in the future:
 - vectors and matrices
 - keystroke programming
 
-**Version**: 0.5.0-dev (2023-08-23)
+**Version**: 0.5.0-dev (2023-08-24)
 
 **Changelog**: [CHANGELOG.md](CHANGELOG.md)
 
@@ -163,8 +163,9 @@ finally as a decimal number:
 - Navigate the menu with the DOWN arrow to get to
   ![ROOT MenuRow 2](docs/rpn83p-screenshot-menu-root-2.png)
 - Press `BASE` menu to get to
-  ![BASE MenuRow 1](docs/rpn83p-screenshot-menu-root-base-1.png)
-- Press `HEX` menu.
+  ![BASE Menu DEC](docs/rpn83p-menu-base-dec.png)
+- Press `HEX` menu to get to
+  ![BASE Menu HEX](docs/rpn83p-menu-base-hex.png)
 - Press `ALPHA` `B` buttons
 - Press `6` button
 - Press `ENTER` button
@@ -174,10 +175,13 @@ finally as a decimal number:
   ![BASE MenuRow 2](docs/rpn83p-screenshot-menu-root-base-2.png)
 - Press `AND` menu, the `X` register should show `00000024`
 - Press UP arrow to go back to
-  ![BASE MenuRow 1](docs/rpn83p-screenshot-menu-root-base-1.png)
-- Press `OCT` menu, the `X` register should show `00000000044`
-- Press `BIN` menu, the `X` register should show `00000000100100`
-- Press `DEC` menu, the `X` register should show `36`
+  ![BASE Menu HEX](docs/rpn83p-menu-base-hex.png)
+- Press `OCT` menu, the `X` register should show `00000000044` with the menu
+  showing ![BASE Menu OCT](docs/rpn83p-menu-base-oct.png)
+- Press `BIN` menu, the `X` register should show `00000000100100` with the menu
+  showing ![BASE Menu BIN](docs/rpn83p-menu-base-bin.png)
+- Press `DEC` menu, the `X` register should show `36` with the menu showing
+  ![BASE Menu DEC](docs/rpn83p-menu-base-dec.png)
 
 Here is the animated GIF that shows this calculation:
 
