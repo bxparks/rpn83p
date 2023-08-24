@@ -10,15 +10,25 @@
 # Grammar (I really should learn something like EBNF or ABNF properly):
 #   program = menuconfig menugroup
 #   menuconfig = 'MenuConfig' '[' config* ']'
-#   config = 'ItemName' value | 'ItemNameId' value | 'ItemHandler' value
+#   config = 'ItemName' value
+#     | 'ItemNameId' value
+#     | 'ItemHandler' value
 #     | 'GroupHandler' value
-#   menugroup =  'MenuGroup' name label '[' menurow* ']'
+#   menugroup =  'MenuGroup' groupname grouplabel '[' menurow* ']'
 #   menurow = 'MenuRow' '[' menunode*5 ']'
-#   menunode = menuitem | menugroup
-#   menuitem = 'MenuItem' name label
+#   menunode = menuitem | menuitemalt | menugroup
+#   menuitem = 'MenuItem' itemname itemlabel
+#   menuitemalt = 'MenuItemAlt' itemname itemaltname itemlabel
+#   handler = printableASCII+
+#   nameHandler = printableASCII+
+#   backHandler = printableASCII+
 #   value = printableASCII+
-#   name = alpha+ | '*'
-#   label = alpha+ | '*'
+#   groupname = alpha+
+#   itemname = alpha+ | '*'
+#   itemaltname = alpha+
+#   altName = alpha+
+#   grouplabel = alpha+
+#   itemlabel = alpha+ | '*'
 #   alpha =  printableASCII | fonttag
 #   fonttag = '<' printableASCII+ '>'
 #
@@ -30,13 +40,13 @@
 #   - comments begin with '#' and continue to the until of the line
 #
 # Semantics:
-#   - name: the display name for the menu
+#   - groupname,itemname: the display name for the menu group or item
+#   - itemaltname: alternative name for the menu item
 #   - label: identifier for the node data in the assembly code, also used as
 #       prefix for other identifiers (e.g. if the label="mNum", there will be
 #       other identifiers such as "mNumId", "mNumNameId").
 #   - fonttag: a symbol from the TI-OS Small Font table, e.g. '<Sdegree>'
 #   - MenuRow: always has 5 menu nodes
-
 
 # Define the defaults for blank menu items and menu groups.
 MenuConfig [
@@ -44,6 +54,7 @@ MenuConfig [
   ItemNameId mNullNameId
   ItemHandler mNullHandler
   GroupHandler mGroupHandler
+  # NameHandler mNameHandler
 ]
 
 # Defines the hierarchy of menus.
@@ -123,11 +134,11 @@ MenuGroup root mRoot [
   MenuRow [
     MenuGroup MODE mMode [
       MenuRow [
-        MenuItem FIX mFix
-        MenuItem SCI mSci
-        MenuItem ENG mEng
-        MenuItem RAD mRad
-        MenuItem DEG mDeg
+        MenuItemAlt FIX FIX<Sblock> mFix
+        MenuItemAlt SCI SCI<Sblock> mSci
+        MenuItemAlt ENG ENG<Sblock> mEng
+        MenuItemAlt RAD RAD<Sblock> mRad
+        MenuItemAlt DEG DEG<Sblock> mDeg
       ]
     ]
     MenuGroup HYP mHyperbolic [
@@ -206,10 +217,10 @@ MenuGroup root mRoot [
     ]
     MenuGroup BASE mBase [
       MenuRow [
-        MenuItem DEC mDec # decimal
-        MenuItem HEX mHex # hexadecimal
-        MenuItem OCT mOct # octal
-        MenuItem BIN mBin # binary
+        MenuItemAlt DEC DEC<Sblock> mDec # decimal
+        MenuItemAlt HEX HEX<Sblock> mHex # hexadecimal
+        MenuItemAlt OCT OCT<Sblock> mOct # octal
+        MenuItemAlt BIN BIN<Sblock> mBin # binary
       ]
       MenuRow [
         MenuItem AND mBitwiseAnd

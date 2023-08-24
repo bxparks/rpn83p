@@ -41,8 +41,15 @@ MenuGroup root mRoot [
   ]
   # Insert place holders for testing.
   MenuRow [
-    MenuItem DISP mDisp
-    MenuItem MODE mMode
+    MenuGroup MODE mMode [
+      MenuRow [
+        MenuItemAlt FIX FIX<Sblock> mFix
+        MenuItem SCI mSci
+        MenuItem ENG mEng
+        MenuItem RAD mRad
+        MenuItem DEG mDeg
+      ]
+    ]
     MenuItem HYP mHyperbolic
     MenuItem UNIT mUnit
     # MenuItem * * will be auto-inserted here

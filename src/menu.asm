@@ -25,11 +25,15 @@
 ;   uint8_t parentId; // 0 indicates NONE
 ;   uint8_t nameId; // index into NameTable
 ;   uint8_t numRows; // 0 if MenuItem; >=1 if MenuGroup
-;   uint8_t rowBeginId; // nodeId of the first node of first menu row
+;   union {
+;       uint8_t rowBeginId; // nodeId of the first node of first menu row
+;       uint8_t altNameId; // alternate name string (if nameSelector!=NULL)
+;   }
 ;   void *handler; // pointer to the handler function
+;   void *nameSelector; // function that selects between 2 menu names
 ; };
 ;
-; sizeof(MenuNode) == 7
+; sizeof(MenuNode) == 9
 ;
 ;-----------------------------------------------------------------------------
 
@@ -94,7 +98,7 @@ getMenuRowBeginId:
 ; Output: HL: address of node
 ; Destroys: DE, HL
 getMenuNode:
-    ; HL = A * sizeof(MenuNode) = 7*A
+    ; HL = A * sizeof(MenuNode) = 9*A
     ld l, a
     ld h, 0
     ld e, l
@@ -102,26 +106,58 @@ getMenuNode:
     add hl, hl
     add hl, hl
     add hl, hl ; 8*A
-    or a ; clear CF
-    sbc hl, de ; 7*A
-    ; HL = mMenuTable + 7*A
+    add hl, de ; 9*A
+    ; HL = mMenuTable + 9*A
     ex de, hl
     ld hl, mMenuTable
     add hl, de
     ret
 
 ; Description: Return the pointer to the name string of the menu node at id A.
+; If MenuNode.nameSelector is 0, then the display name is simply the nameId.
+; But if the MenuNode.nameSelector is not 0, then it is a pointer to a function
+; that returns the display name. The nameSelector is given 2 stringIds, `A` or
+; `C`, and must return `A` or `C` in the `A` register depending the relevant
+; internal state (e.g. DEG or RAD).
 ; Input: A: menu node id
 ; Output: HL: address of the C-string
 ; Destroys: A, HL
-; Preserves: DE
+; Preserves: BC, DE
 getMenuName:
+    push bc
     push de
-    call getMenuNode
+    push hl
+    call getMenuNode ; HL=(MenuNode)
     inc hl
     inc hl
-    ld a, (hl) ; nameId
+    ld b, (hl) ; B=nameId
+    inc hl
+    inc hl 
+    ld c, (hl) ; C=altNameId
+    inc hl
+    inc hl
+    inc hl
+    ld e, (hl)
+    inc hl
+    ld d, (hl) ; DE=nameSelector
+    ld a, e
+    or d
+    ld a, b ; A=nameId
+    pop hl
+    jr z, getMenuNameDefault ; if nameSelector==NULL: goto default
+getMenuNameCustom:
+    ; The following ugly hack is required because the Z80 does not have a `call
+    ; (hl)` instruction, analogous to `jp (hl)`. The nameSelector(A, C, HL) -> A
+    ; selects one of the 2 strings (A or C), and returns the selection in A.
+    push hl ; MenuNode
+    ld hl, getMenuNameDefault ; the return address
+    ex (sp), hl ; (SP)=return address, HL=MenuNode
+    push de ; nameSelector
+    ret ; jp (de)
+getMenuNameDefault:
+    ; A contains the menu string ID
     ld hl, mMenuNameTable
-    call getString
+    call getString ; HL=name string
     pop de
+    pop bc
     ret

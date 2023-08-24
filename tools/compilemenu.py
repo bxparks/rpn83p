@@ -116,6 +116,7 @@ def main() -> None:
 
 MENU_TYPE_ITEM = 0
 MENU_TYPE_GROUP = 1
+MENU_TYPE_ITEM_ALT = 2  # MenuItem with alternate display name
 
 MenuRow = List["MenuNode"]
 
@@ -127,7 +128,10 @@ class MenuNode(TypedDict, total=False):
     parent_id: int
     name: str
     name_contains_special: bool  # name contains special characters
+    altname: str
+    altname_contains_special: bool  # altname contains special characters
     exploded_name: str  # name as a list of single characters
+    exploded_altname: str  # altname as a list of single characters
     label: str
     rows: List[MenuRow]  # List of MenuNodes in groups of 5
 
@@ -317,6 +321,8 @@ class MenuParser:
                 node = self.process_menuitem()
             elif token == 'MenuGroup':
                 node = self.process_menugroup()
+            elif token == 'MenuItemAlt':
+                node = self.process_menuitemalt()
             elif token == ']':
                 break
             else:
@@ -331,6 +337,14 @@ class MenuParser:
         item = MenuNode()
         item["mtype"] = MENU_TYPE_ITEM
         item["name"] = self.lexer.get_token()
+        item["label"] = self.lexer.get_token()
+        return item
+
+    def process_menuitemalt(self) -> MenuNode:
+        item = MenuNode()
+        item["mtype"] = MENU_TYPE_ITEM_ALT
+        item["name"] = self.lexer.get_token()
+        item["altname"] = self.lexer.get_token()
         item["label"] = self.lexer.get_token()
         return item
 
@@ -486,6 +500,7 @@ class StringExploder:
         self.explode_group(self.root)
 
     def explode_node(self, node: MenuNode) -> None:
+        # name
         name = node["name"]
         node["name_contains_special"] = (
             name.find('<') >= 0 or name.find('>') >= 0
@@ -498,6 +513,19 @@ class StringExploder:
             raise ValueError(
                 f"Invalid syntax in menu '{name}': {str(e)}"
             )
+
+        # altname
+        altname = node.get("altname")
+        if altname:
+            node["altname_contains_special"] = (
+                altname.find('<') >= 0 or name.find('>') >= 0
+            )
+            try:
+                node["exploded_altname"] = self.explode_str(altname)
+            except ValueError as e:
+                raise ValueError(
+                    f"Invalid syntax in menu '{altname}': {str(e)}"
+                )
 
     def explode_group(self, node: MenuNode) -> None:
         # Process the direct children of the current group.
@@ -541,11 +569,15 @@ class StringExploder:
 
 
 class SymbolGenerator:
+    """Collect the statement labels, string labels, and integer identifiers and
+    map them to the respective MenuNode objects. These lookup tables will used
+    to write out the assmebly language code to the menudef.asm file.
+    """
     def __init__(self, root: MenuNode):
         self.root = root
         self.id_map: Dict[int, MenuNode] = {}  # {node_id -> MenuNode}
         self.name_map: Dict[str, MenuNode] = {}  # {node_name -> MenuNode}
-        self.label_map: Dict[str, MenuNode] = {}  # {label_label -> MenuNode}
+        self.label_map: Dict[str, MenuNode] = {}  # {node_label -> MenuNode}
         self.id_counter = 1  # Root starts at id=1
 
     def generate(self) -> None:
@@ -602,6 +634,12 @@ class SymbolGenerator:
 
 
 class CodeGenerator:
+    """Generate the Z80 assembly statements. There are 2 sections:
+    1) the tree of menu nodes,
+    2) the C-strings used by the nodes, composed of:
+        2a) an array of 2-byte pointers into the c-string pool,
+        2b) the pool of c-strings concatenated together.
+    """
     def __init__(
         self, inputfile: str,
         symbols: SymbolGenerator,
@@ -668,6 +706,7 @@ mNullId equ 0
     .db 0 ; numRows
     .db 0 ; rowBeginId
     .dw mNullHandler
+    .dw 0
 """, file=self.output, end='')
 
         self.generate_menu_node(self.root)
@@ -690,6 +729,7 @@ mNullId equ 0
         if mtype == MENU_TYPE_ITEM:
             num_rows = 0
             row_begin_id = "0"
+            name_selector = "0"
             if name == '*':
                 node_id = f"{label}Id"
                 name_id = self.config['item_name_id']
@@ -700,6 +740,14 @@ mNullId equ 0
                 name_id = f"{label}NameId"
                 handler = f"{label}Handler"
                 handler_comment = "to be implemented"
+        elif mtype == MENU_TYPE_ITEM_ALT:
+            num_rows = 0
+            node_id = f"{label}Id"
+            name_id = f"{label}NameId"
+            row_begin_id = f"{label}AltNameId"
+            handler = f"{label}Handler"
+            handler_comment = "to be implemented"
+            name_selector = f"{label}NameSelector"
         else:
             node_id = f"{label}Id"
             name_id = f"{label}NameId"
@@ -710,6 +758,7 @@ mNullId equ 0
             row_begin_id = row_begin_node["label"] + "Id"
             handler = self.config['group_handler']
             handler_comment = "predefined"
+            name_selector = "0"
 
         print(f"""\
 {label}:
@@ -718,8 +767,9 @@ mNullId equ 0
     .db {parent_node_label}Id ; parentId
     .db {name_id} ; nameId
     .db {num_rows} ; numRows
-    .db {row_begin_id} ; rowBeginId
+    .db {row_begin_id} ; rowBeginId or altNameId
     .dw {handler} ; handler ({handler_comment})
+    .dw {name_selector} ; nameSelector
 """, file=self.output, end='')
 
     def generate_menu_group(self, node: MenuNode) -> None:
@@ -748,7 +798,7 @@ mNullId equ 0
     def generate_names(self, node: MenuNode) -> None:
         # Collect the name strings into a list, so that we can generate
         # continguous name ids.
-        names = self.flatten_names(node)
+        names = self.flatten_nodes(node)
 
         # Generate the array of pointers to the C-strings.
         print("""\
@@ -759,12 +809,21 @@ mNullNameId equ 0
 """, file=self.output, end='')
         name_index = 1
         for node in names:
+            # name
             label = node["label"]
             print(f"""\
 {label}NameId equ {name_index}
     .dw {label}Name
 """, file=self.output, end='')
             name_index += 1
+
+            # altname
+            if node.get("altname"):
+                print(f"""\
+{label}AltNameId equ {name_index}
+    .dw {label}AltName
+""", file=self.output, end='')
+                name_index += 1
 
         print(file=self.output)
 
@@ -774,9 +833,9 @@ mNullNameId equ 0
 mNullName:
     .db 0
 """, file=self.output, end='')
-        name_index = 1
         for node in names:
             label = node["label"]
+            # name
             name_contains_special = node["name_contains_special"]
             if name_contains_special:
                 display_name = node["exploded_name"]
@@ -787,9 +846,23 @@ mNullName:
 {label}Name:
     .db {display_name}, 0
 """, file=self.output, end='')
-            name_index += 1
+            # altname
+            if node.get("altname"):
+                altname_contains_special = node["altname_contains_special"]
+                if altname_contains_special:
+                    display_altname = node["exploded_altname"]
+                else:
+                    altname = node["altname"]
+                    display_altname = f'"{altname}"'
+                print(f"""\
+{label}AltName:
+    .db {display_altname}, 0
+""", file=self.output, end='')
 
-    def flatten_names(self, node: MenuNode) -> List[MenuNode]:
+    def flatten_nodes(self, node: MenuNode) -> List[MenuNode]:
+        """Recursively descend the menu tree starting at 'node' and flatten
+        the nodes into a list.
+        """
         flat_names: List[MenuNode] = []
         flat_names.append(node)
         self.add_menu_group(flat_names, node)
