@@ -133,11 +133,11 @@ MenuGroup root mRoot [
   MenuRow [
     MenuGroup MODE mMode [
       MenuRow [
-        MenuItem FIX mFix
-        MenuItem SCI mSci
-        MenuItem ENG mEng
-        MenuItem RAD mRad
-        MenuItem DEG mDeg
+        MenuItemAlt FIX FIX<Sblock> mFix
+        MenuItemAlt SCI SCI<Sblock> mSci
+        MenuItemAlt ENG ENG<Sblock> mEng
+        MenuItemAlt RAD RAD<Sblock> mRad
+        MenuItemAlt DEG DEG<Sblock> mDeg
       ]
     ]
     MenuGroup HYP mHyperbolic [

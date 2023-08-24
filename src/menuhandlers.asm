@@ -1058,6 +1058,7 @@ enableArgMode:
 saveFormatDigits:
     set dirtyFlagsStack, (iy + dirtyFlags)
     set dirtyFlagsFloatMode, (iy + dirtyFlags)
+    set dirtyFlagsMenu, (iy + dirtyFlags)
     ld a, (argValue)
     cp 10
     jr c, saveFormatDigitsContinue
@@ -1068,14 +1069,89 @@ saveFormatDigitsContinue:
 
 ;-----------------------------------------------------------------------------
 
+; Description: Select the display name of 'FIX' menu.
+; Input:
+;   - A: nameId
+;   - C: altNameId
+;   - HL: pointer to MenuNode
+; Output:
+;   - A: either A or C
+mFixNameSelector:
+    bit fmtExponent, (iy + fmtFlags)
+    ret nz
+    ld a, c
+    ret
+
+; Description: Select the display name of 'SCI' menu.
+; Input:
+;   - A: nameId
+;   - C: altNameId
+;   - HL: pointer to MenuNode
+; Output:
+;   - A: either A or C
+mSciNameSelector:
+    bit fmtExponent, (iy + fmtFlags)
+    ret z
+mSciNameSelectorMaybeOn:
+    bit fmtEng, (iy + fmtFlags)
+    ret nz
+    ld a, c
+    ret
+
+; Description: Select the display name of 'ENG' menu.
+; Input:
+;   - A: nameId
+;   - C: altNameId
+;   - HL: pointer to MenuNode
+; Output:
+;   - A: either A or C
+mEngNameSelector:
+    bit fmtExponent, (iy + fmtFlags)
+    ret z
+mEngNameSelectorMaybeOn:
+    bit fmtEng, (iy + fmtFlags)
+    ret z
+    ld a, c
+    ret
+
+;-----------------------------------------------------------------------------
+
 mRadHandler:
     res trigDeg, (iy + trigFlags)
     set dirtyFlagsTrigMode, (iy + dirtyFlags)
+    set dirtyFlagsMenu, (iy + dirtyFlags)
     ret
 
 mDegHandler:
     set trigDeg, (iy + trigFlags)
     set dirtyFlagsTrigMode, (iy + dirtyFlags)
+    set dirtyFlagsMenu, (iy + dirtyFlags)
+    ret
+
+; Description: Select the display name of 'RAD' menu.
+; Input:
+;   - A: nameId
+;   - C: altNameId
+;   - HL: pointer to MenuNode
+; Output:
+;   - A: either A or C
+mRadNameSelector:
+    bit trigDeg, (iy + trigFlags)
+    ret nz
+    ld a, c
+    ret
+
+; Description: Select the display name of 'DEG' menu.
+; Input:
+;   - A: nameId
+;   - C: altNameId
+;   - HL: pointer to MenuNode
+; Output:
+;   - A: either A or C
+mDegNameSelector:
+    bit trigDeg, (iy + trigFlags)
+    ret z
+    ld a, c
     ret
 
 ;-----------------------------------------------------------------------------

@@ -27,7 +27,7 @@
 ;   uint8_t numRows; // 0 if MenuItem; >=1 if MenuGroup
 ;   union {
 ;       uint8_t rowBeginId; // nodeId of the first node of first menu row
-;       uint8_t altNameId; // alternate name string
+;       uint8_t altNameId; // alternate name string (if nameSelector!=NULL)
 ;   }
 ;   void *handler; // pointer to the handler function
 ;   void *nameSelector; // function that selects between 2 menu names
@@ -114,9 +114,11 @@ getMenuNode:
     ret
 
 ; Description: Return the pointer to the name string of the menu node at id A.
-; If MenuNode.get_name is 0, then the display name is simply the nameId. But
-; if the MenuNode.get_name is not 0, then it is a pointer to a function that
-; returns the display name.
+; If MenuNode.nameSelector is 0, then the display name is simply the nameId.
+; But if the MenuNode.nameSelector is not 0, then it is a pointer to a function
+; that returns the display name. The nameSelector is given 2 stringIds, `A` or
+; `C`, and must return `A` or `C` in the `A` register depending the relevant
+; internal state (e.g. DEG or RAD).
 ; Input: A: menu node id
 ; Output: HL: address of the C-string
 ; Destroys: A, HL
@@ -142,11 +144,11 @@ getMenuName:
     or d
     ld a, b ; A=nameId
     pop hl
-    jr z, getMenuNameDefault ; if nameSelector==0: goto default
+    jr z, getMenuNameDefault ; if nameSelector==NULL: goto default
 getMenuNameCustom:
     ; The following ugly hack is required because the Z80 does not have a `call
-    ; (hl)` instruction, analogous to `jp (hl)`. The nameSelector(BC, HL) -> A
-    ; selects one of the 2 strings (B or C), and returns the selection in A.
+    ; (hl)` instruction, analogous to `jp (hl)`. The nameSelector(A, C, HL) -> A
+    ; selects one of the 2 strings (A or C), and returns the selection in A.
     push hl ; MenuNode
     ld hl, getMenuNameDefault ; the return address
     ex (sp), hl ; (SP)=return address, HL=MenuNode
