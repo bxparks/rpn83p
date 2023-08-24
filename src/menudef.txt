@@ -10,15 +10,24 @@
 # Grammar (I really should learn something like EBNF or ABNF properly):
 #   program = menuconfig menugroup
 #   menuconfig = 'MenuConfig' '[' config* ']'
-#   config = 'ItemName' value | 'ItemNameId' value | 'ItemHandler' value
+#   config = 'ItemName' value
+#     | 'ItemNameId' value
+#     | 'ItemHandler' value
 #     | 'GroupHandler' value
-#   menugroup =  'MenuGroup' name label '[' menurow* ']'
+#   menugroup =  'MenuGroup' groupname grouplabel [handler backHandler]
+#       '[' menurow* ']'
 #   menurow = 'MenuRow' '[' menunode*5 ']'
 #   menunode = menuitem | menugroup
-#   menuitem = 'MenuItem' name label
+#   menuitem = 'MenuItem' itemname itemlabel [altName nameHandler]
+#   handler = printableASCII+
+#   nameHandler = printableASCII+
+#   backHandler = printableASCII+
 #   value = printableASCII+
-#   name = alpha+ | '*'
-#   label = alpha+ | '*'
+#   groupname = alpha+
+#   itemname = alpha+ | '*'
+#   altName = alpha+
+#   grouplabel = alpha+
+#   itemlabel = alpha+ | '*'
 #   alpha =  printableASCII | fonttag
 #   fonttag = '<' printableASCII+ '>'
 #
@@ -44,6 +53,7 @@ MenuConfig [
   ItemNameId mNullNameId
   ItemHandler mNullHandler
   GroupHandler mGroupHandler
+  # NameHandler mNameHandler
 ]
 
 # Defines the hierarchy of menus.

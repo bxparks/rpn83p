@@ -678,6 +678,7 @@ mNullId equ 0
     .db 0 ; numRows
     .db 0 ; rowBeginId
     .dw mNullHandler
+    .dw 0
 """, file=self.output, end='')
 
         self.generate_menu_node(self.root)
@@ -730,6 +731,7 @@ mNullId equ 0
     .db {num_rows} ; numRows
     .db {row_begin_id} ; rowBeginId
     .dw {handler} ; handler ({handler_comment})
+    .dw 0 ; nameSelector
 """, file=self.output, end='')
 
     def generate_menu_group(self, node: MenuNode) -> None:

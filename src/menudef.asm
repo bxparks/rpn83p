@@ -38,6 +38,7 @@ mNullId equ 0
     .db 0 ; numRows
     .db 0 ; rowBeginId
     .dw mNullHandler
+    .dw 0
 mRoot:
 mRootId equ 1
     .db mRootId ; id
@@ -46,6 +47,7 @@ mRootId equ 1
     .db 3 ; numRows
     .db mMathId ; rowBeginId
     .dw mGroupHandler ; handler (predefined)
+    .dw 0 ; nameSelector
 ; MenuGroup root: children
 ; MenuGroup root: children: row 0
 mMath:
@@ -56,6 +58,7 @@ mMathId equ 2
     .db 2 ; numRows
     .db mCubeId ; rowBeginId
     .dw mGroupHandler ; handler (predefined)
+    .dw 0 ; nameSelector
 mNum:
 mNumId equ 3
     .db mNumId ; id
@@ -64,6 +67,7 @@ mNumId equ 3
     .db 3 ; numRows
     .db mPercentId ; rowBeginId
     .dw mGroupHandler ; handler (predefined)
+    .dw 0 ; nameSelector
 mProb:
 mProbId equ 4
     .db mProbId ; id
@@ -72,6 +76,7 @@ mProbId equ 4
     .db 1 ; numRows
     .db mCombId ; rowBeginId
     .dw mGroupHandler ; handler (predefined)
+    .dw 0 ; nameSelector
 mConv:
 mConvId equ 5
     .db mConvId ; id
@@ -80,6 +85,7 @@ mConvId equ 5
     .db 2 ; numRows
     .db mRToDId ; rowBeginId
     .dw mGroupHandler ; handler (predefined)
+    .dw 0 ; nameSelector
 mHelp:
 mHelpId equ 6
     .db mHelpId ; id
@@ -88,6 +94,7 @@ mHelpId equ 6
     .db 0 ; numRows
     .db 0 ; rowBeginId
     .dw mHelpHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
 ; MenuGroup root: children: row 1
 mMode:
 mModeId equ 7
@@ -97,6 +104,7 @@ mModeId equ 7
     .db 1 ; numRows
     .db mFixId ; rowBeginId
     .dw mGroupHandler ; handler (predefined)
+    .dw 0 ; nameSelector
 mHyperbolic:
 mHyperbolicId equ 8
     .db mHyperbolicId ; id
@@ -105,6 +113,7 @@ mHyperbolicId equ 8
     .db 2 ; numRows
     .db mBlank062Id ; rowBeginId
     .dw mGroupHandler ; handler (predefined)
+    .dw 0 ; nameSelector
 mUnit:
 mUnitId equ 9
     .db mUnitId ; id
@@ -113,6 +122,7 @@ mUnitId equ 9
     .db 6 ; numRows
     .db mFToCId ; rowBeginId
     .dw mGroupHandler ; handler (predefined)
+    .dw 0 ; nameSelector
 mBase:
 mBaseId equ 10
     .db mBaseId ; id
@@ -121,6 +131,7 @@ mBaseId equ 10
     .db 4 ; numRows
     .db mDecId ; rowBeginId
     .dw mGroupHandler ; handler (predefined)
+    .dw 0 ; nameSelector
 mStack:
 mStackId equ 11
     .db mStackId ; id
@@ -129,6 +140,7 @@ mStackId equ 11
     .db 1 ; numRows
     .db mBlank122Id ; rowBeginId
     .dw mGroupHandler ; handler (predefined)
+    .dw 0 ; nameSelector
 ; MenuGroup root: children: row 2
 mClear:
 mClearId equ 12
@@ -138,6 +150,7 @@ mClearId equ 12
     .db 1 ; numRows
     .db mClearXId ; rowBeginId
     .dw mGroupHandler ; handler (predefined)
+    .dw 0 ; nameSelector
 mBlank013:
 mBlank013Id equ 13
     .db mBlank013Id ; id
@@ -146,6 +159,7 @@ mBlank013Id equ 13
     .db 0 ; numRows
     .db 0 ; rowBeginId
     .dw mNullHandler ; handler (predefined)
+    .dw 0 ; nameSelector
 mBlank014:
 mBlank014Id equ 14
     .db mBlank014Id ; id
@@ -154,6 +168,7 @@ mBlank014Id equ 14
     .db 0 ; numRows
     .db 0 ; rowBeginId
     .dw mNullHandler ; handler (predefined)
+    .dw 0 ; nameSelector
 mBlank015:
 mBlank015Id equ 15
     .db mBlank015Id ; id
@@ -162,6 +177,7 @@ mBlank015Id equ 15
     .db 0 ; numRows
     .db 0 ; rowBeginId
     .dw mNullHandler ; handler (predefined)
+    .dw 0 ; nameSelector
 mBlank016:
 mBlank016Id equ 16
     .db mBlank016Id ; id
@@ -170,6 +186,7 @@ mBlank016Id equ 16
     .db 0 ; numRows
     .db 0 ; rowBeginId
     .dw mNullHandler ; handler (predefined)
+    .dw 0 ; nameSelector
 ; MenuGroup MATH: children
 ; MenuGroup MATH: children: row 0
 mCube:
@@ -180,6 +197,7 @@ mCubeId equ 17
     .db 0 ; numRows
     .db 0 ; rowBeginId
     .dw mCubeHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
 mCubeRoot:
 mCubeRootId equ 18
     .db mCubeRootId ; id
@@ -188,6 +206,7 @@ mCubeRootId equ 18
     .db 0 ; numRows
     .db 0 ; rowBeginId
     .dw mCubeRootHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
 mAtan2:
 mAtan2Id equ 19
     .db mAtan2Id ; id
@@ -196,6 +215,7 @@ mAtan2Id equ 19
     .db 0 ; numRows
     .db 0 ; rowBeginId
     .dw mAtan2Handler ; handler (to be implemented)
+    .dw 0 ; nameSelector
 mBlank020:
 mBlank020Id equ 20
     .db mBlank020Id ; id
@@ -204,6 +224,7 @@ mBlank020Id equ 20
     .db 0 ; numRows
     .db 0 ; rowBeginId
     .dw mNullHandler ; handler (predefined)
+    .dw 0 ; nameSelector
 mBlank021:
 mBlank021Id equ 21
     .db mBlank021Id ; id
@@ -212,6 +233,7 @@ mBlank021Id equ 21
     .db 0 ; numRows
     .db 0 ; rowBeginId
     .dw mNullHandler ; handler (predefined)
+    .dw 0 ; nameSelector
 ; MenuGroup MATH: children: row 1
 mAlog2:
 mAlog2Id equ 22
@@ -221,6 +243,7 @@ mAlog2Id equ 22
     .db 0 ; numRows
     .db 0 ; rowBeginId
     .dw mAlog2Handler ; handler (to be implemented)
+    .dw 0 ; nameSelector
 mLog2:
 mLog2Id equ 23
     .db mLog2Id ; id
@@ -229,6 +252,7 @@ mLog2Id equ 23
     .db 0 ; numRows
     .db 0 ; rowBeginId
     .dw mLog2Handler ; handler (to be implemented)
+    .dw 0 ; nameSelector
 mLogBase:
 mLogBaseId equ 24
     .db mLogBaseId ; id
@@ -237,6 +261,7 @@ mLogBaseId equ 24
     .db 0 ; numRows
     .db 0 ; rowBeginId
     .dw mLogBaseHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
 mBlank025:
 mBlank025Id equ 25
     .db mBlank025Id ; id
@@ -245,6 +270,7 @@ mBlank025Id equ 25
     .db 0 ; numRows
     .db 0 ; rowBeginId
     .dw mNullHandler ; handler (predefined)
+    .dw 0 ; nameSelector
 mBlank026:
 mBlank026Id equ 26
     .db mBlank026Id ; id
@@ -253,6 +279,7 @@ mBlank026Id equ 26
     .db 0 ; numRows
     .db 0 ; rowBeginId
     .dw mNullHandler ; handler (predefined)
+    .dw 0 ; nameSelector
 ; MenuGroup NUM: children
 ; MenuGroup NUM: children: row 0
 mPercent:
@@ -263,6 +290,7 @@ mPercentId equ 27
     .db 0 ; numRows
     .db 0 ; rowBeginId
     .dw mPercentHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
 mPercentChange:
 mPercentChangeId equ 28
     .db mPercentChangeId ; id
@@ -271,6 +299,7 @@ mPercentChangeId equ 28
     .db 0 ; numRows
     .db 0 ; rowBeginId
     .dw mPercentChangeHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
 mGcd:
 mGcdId equ 29
     .db mGcdId ; id
@@ -279,6 +308,7 @@ mGcdId equ 29
     .db 0 ; numRows
     .db 0 ; rowBeginId
     .dw mGcdHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
 mLcm:
 mLcmId equ 30
     .db mLcmId ; id
@@ -287,6 +317,7 @@ mLcmId equ 30
     .db 0 ; numRows
     .db 0 ; rowBeginId
     .dw mLcmHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
 mPrime:
 mPrimeId equ 31
     .db mPrimeId ; id
@@ -295,6 +326,7 @@ mPrimeId equ 31
     .db 0 ; numRows
     .db 0 ; rowBeginId
     .dw mPrimeHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
 ; MenuGroup NUM: children: row 1
 mIntPart:
 mIntPartId equ 32
@@ -304,6 +336,7 @@ mIntPartId equ 32
     .db 0 ; numRows
     .db 0 ; rowBeginId
     .dw mIntPartHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
 mFracPart:
 mFracPartId equ 33
     .db mFracPartId ; id
@@ -312,6 +345,7 @@ mFracPartId equ 33
     .db 0 ; numRows
     .db 0 ; rowBeginId
     .dw mFracPartHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
 mFloor:
 mFloorId equ 34
     .db mFloorId ; id
@@ -320,6 +354,7 @@ mFloorId equ 34
     .db 0 ; numRows
     .db 0 ; rowBeginId
     .dw mFloorHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
 mCeil:
 mCeilId equ 35
     .db mCeilId ; id
@@ -328,6 +363,7 @@ mCeilId equ 35
     .db 0 ; numRows
     .db 0 ; rowBeginId
     .dw mCeilHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
 mNear:
 mNearId equ 36
     .db mNearId ; id
@@ -336,6 +372,7 @@ mNearId equ 36
     .db 0 ; numRows
     .db 0 ; rowBeginId
     .dw mNearHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
 ; MenuGroup NUM: children: row 2
 mAbs:
 mAbsId equ 37
@@ -345,6 +382,7 @@ mAbsId equ 37
     .db 0 ; numRows
     .db 0 ; rowBeginId
     .dw mAbsHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
 mSign:
 mSignId equ 38
     .db mSignId ; id
@@ -353,6 +391,7 @@ mSignId equ 38
     .db 0 ; numRows
     .db 0 ; rowBeginId
     .dw mSignHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
 mMod:
 mModId equ 39
     .db mModId ; id
@@ -361,6 +400,7 @@ mModId equ 39
     .db 0 ; numRows
     .db 0 ; rowBeginId
     .dw mModHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
 mMin:
 mMinId equ 40
     .db mMinId ; id
@@ -369,6 +409,7 @@ mMinId equ 40
     .db 0 ; numRows
     .db 0 ; rowBeginId
     .dw mMinHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
 mMax:
 mMaxId equ 41
     .db mMaxId ; id
@@ -377,6 +418,7 @@ mMaxId equ 41
     .db 0 ; numRows
     .db 0 ; rowBeginId
     .dw mMaxHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
 ; MenuGroup PROB: children
 ; MenuGroup PROB: children: row 0
 mComb:
@@ -387,6 +429,7 @@ mCombId equ 42
     .db 0 ; numRows
     .db 0 ; rowBeginId
     .dw mCombHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
 mPerm:
 mPermId equ 43
     .db mPermId ; id
@@ -395,6 +438,7 @@ mPermId equ 43
     .db 0 ; numRows
     .db 0 ; rowBeginId
     .dw mPermHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
 mFactorial:
 mFactorialId equ 44
     .db mFactorialId ; id
@@ -403,6 +447,7 @@ mFactorialId equ 44
     .db 0 ; numRows
     .db 0 ; rowBeginId
     .dw mFactorialHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
 mRandom:
 mRandomId equ 45
     .db mRandomId ; id
@@ -411,6 +456,7 @@ mRandomId equ 45
     .db 0 ; numRows
     .db 0 ; rowBeginId
     .dw mRandomHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
 mRandomSeed:
 mRandomSeedId equ 46
     .db mRandomSeedId ; id
@@ -419,6 +465,7 @@ mRandomSeedId equ 46
     .db 0 ; numRows
     .db 0 ; rowBeginId
     .dw mRandomSeedHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
 ; MenuGroup CONV: children
 ; MenuGroup CONV: children: row 0
 mRToD:
@@ -429,6 +476,7 @@ mRToDId equ 47
     .db 0 ; numRows
     .db 0 ; rowBeginId
     .dw mRToDHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
 mDToR:
 mDToRId equ 48
     .db mDToRId ; id
@@ -437,6 +485,7 @@ mDToRId equ 48
     .db 0 ; numRows
     .db 0 ; rowBeginId
     .dw mDToRHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
 mBlank049:
 mBlank049Id equ 49
     .db mBlank049Id ; id
@@ -445,6 +494,7 @@ mBlank049Id equ 49
     .db 0 ; numRows
     .db 0 ; rowBeginId
     .dw mNullHandler ; handler (predefined)
+    .dw 0 ; nameSelector
 mPToR:
 mPToRId equ 50
     .db mPToRId ; id
@@ -453,6 +503,7 @@ mPToRId equ 50
     .db 0 ; numRows
     .db 0 ; rowBeginId
     .dw mPToRHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
 mRToP:
 mRToPId equ 51
     .db mRToPId ; id
@@ -461,6 +512,7 @@ mRToPId equ 51
     .db 0 ; numRows
     .db 0 ; rowBeginId
     .dw mRToPHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
 ; MenuGroup CONV: children: row 1
 mHmsToHr:
 mHmsToHrId equ 52
@@ -470,6 +522,7 @@ mHmsToHrId equ 52
     .db 0 ; numRows
     .db 0 ; rowBeginId
     .dw mHmsToHrHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
 mHrToHms:
 mHrToHmsId equ 53
     .db mHrToHmsId ; id
@@ -478,6 +531,7 @@ mHrToHmsId equ 53
     .db 0 ; numRows
     .db 0 ; rowBeginId
     .dw mHrToHmsHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
 mBlank054:
 mBlank054Id equ 54
     .db mBlank054Id ; id
@@ -486,6 +540,7 @@ mBlank054Id equ 54
     .db 0 ; numRows
     .db 0 ; rowBeginId
     .dw mNullHandler ; handler (predefined)
+    .dw 0 ; nameSelector
 mBlank055:
 mBlank055Id equ 55
     .db mBlank055Id ; id
@@ -494,6 +549,7 @@ mBlank055Id equ 55
     .db 0 ; numRows
     .db 0 ; rowBeginId
     .dw mNullHandler ; handler (predefined)
+    .dw 0 ; nameSelector
 mBlank056:
 mBlank056Id equ 56
     .db mBlank056Id ; id
@@ -502,6 +558,7 @@ mBlank056Id equ 56
     .db 0 ; numRows
     .db 0 ; rowBeginId
     .dw mNullHandler ; handler (predefined)
+    .dw 0 ; nameSelector
 ; MenuGroup MODE: children
 ; MenuGroup MODE: children: row 0
 mFix:
@@ -512,6 +569,7 @@ mFixId equ 57
     .db 0 ; numRows
     .db 0 ; rowBeginId
     .dw mFixHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
 mSci:
 mSciId equ 58
     .db mSciId ; id
@@ -520,6 +578,7 @@ mSciId equ 58
     .db 0 ; numRows
     .db 0 ; rowBeginId
     .dw mSciHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
 mEng:
 mEngId equ 59
     .db mEngId ; id
@@ -528,6 +587,7 @@ mEngId equ 59
     .db 0 ; numRows
     .db 0 ; rowBeginId
     .dw mEngHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
 mRad:
 mRadId equ 60
     .db mRadId ; id
@@ -536,6 +596,7 @@ mRadId equ 60
     .db 0 ; numRows
     .db 0 ; rowBeginId
     .dw mRadHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
 mDeg:
 mDegId equ 61
     .db mDegId ; id
@@ -544,6 +605,7 @@ mDegId equ 61
     .db 0 ; numRows
     .db 0 ; rowBeginId
     .dw mDegHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
 ; MenuGroup HYP: children
 ; MenuGroup HYP: children: row 0
 mBlank062:
@@ -554,6 +616,7 @@ mBlank062Id equ 62
     .db 0 ; numRows
     .db 0 ; rowBeginId
     .dw mNullHandler ; handler (predefined)
+    .dw 0 ; nameSelector
 mSinh:
 mSinhId equ 63
     .db mSinhId ; id
@@ -562,6 +625,7 @@ mSinhId equ 63
     .db 0 ; numRows
     .db 0 ; rowBeginId
     .dw mSinhHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
 mCosh:
 mCoshId equ 64
     .db mCoshId ; id
@@ -570,6 +634,7 @@ mCoshId equ 64
     .db 0 ; numRows
     .db 0 ; rowBeginId
     .dw mCoshHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
 mTanh:
 mTanhId equ 65
     .db mTanhId ; id
@@ -578,6 +643,7 @@ mTanhId equ 65
     .db 0 ; numRows
     .db 0 ; rowBeginId
     .dw mTanhHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
 mBlank066:
 mBlank066Id equ 66
     .db mBlank066Id ; id
@@ -586,6 +652,7 @@ mBlank066Id equ 66
     .db 0 ; numRows
     .db 0 ; rowBeginId
     .dw mNullHandler ; handler (predefined)
+    .dw 0 ; nameSelector
 ; MenuGroup HYP: children: row 1
 mBlank067:
 mBlank067Id equ 67
@@ -595,6 +662,7 @@ mBlank067Id equ 67
     .db 0 ; numRows
     .db 0 ; rowBeginId
     .dw mNullHandler ; handler (predefined)
+    .dw 0 ; nameSelector
 mAsinh:
 mAsinhId equ 68
     .db mAsinhId ; id
@@ -603,6 +671,7 @@ mAsinhId equ 68
     .db 0 ; numRows
     .db 0 ; rowBeginId
     .dw mAsinhHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
 mAcosh:
 mAcoshId equ 69
     .db mAcoshId ; id
@@ -611,6 +680,7 @@ mAcoshId equ 69
     .db 0 ; numRows
     .db 0 ; rowBeginId
     .dw mAcoshHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
 mAtanh:
 mAtanhId equ 70
     .db mAtanhId ; id
@@ -619,6 +689,7 @@ mAtanhId equ 70
     .db 0 ; numRows
     .db 0 ; rowBeginId
     .dw mAtanhHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
 mBlank071:
 mBlank071Id equ 71
     .db mBlank071Id ; id
@@ -627,6 +698,7 @@ mBlank071Id equ 71
     .db 0 ; numRows
     .db 0 ; rowBeginId
     .dw mNullHandler ; handler (predefined)
+    .dw 0 ; nameSelector
 ; MenuGroup UNIT: children
 ; MenuGroup UNIT: children: row 0
 mFToC:
@@ -637,6 +709,7 @@ mFToCId equ 72
     .db 0 ; numRows
     .db 0 ; rowBeginId
     .dw mFToCHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
 mCToF:
 mCToFId equ 73
     .db mCToFId ; id
@@ -645,6 +718,7 @@ mCToFId equ 73
     .db 0 ; numRows
     .db 0 ; rowBeginId
     .dw mCToFHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
 mBlank074:
 mBlank074Id equ 74
     .db mBlank074Id ; id
@@ -653,6 +727,7 @@ mBlank074Id equ 74
     .db 0 ; numRows
     .db 0 ; rowBeginId
     .dw mNullHandler ; handler (predefined)
+    .dw 0 ; nameSelector
 mInhgToHpa:
 mInhgToHpaId equ 75
     .db mInhgToHpaId ; id
@@ -661,6 +736,7 @@ mInhgToHpaId equ 75
     .db 0 ; numRows
     .db 0 ; rowBeginId
     .dw mInhgToHpaHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
 mHpaToInhg:
 mHpaToInhgId equ 76
     .db mHpaToInhgId ; id
@@ -669,6 +745,7 @@ mHpaToInhgId equ 76
     .db 0 ; numRows
     .db 0 ; rowBeginId
     .dw mHpaToInhgHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
 ; MenuGroup UNIT: children: row 1
 mMiToKm:
 mMiToKmId equ 77
@@ -678,6 +755,7 @@ mMiToKmId equ 77
     .db 0 ; numRows
     .db 0 ; rowBeginId
     .dw mMiToKmHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
 mKmToMi:
 mKmToMiId equ 78
     .db mKmToMiId ; id
@@ -686,6 +764,7 @@ mKmToMiId equ 78
     .db 0 ; numRows
     .db 0 ; rowBeginId
     .dw mKmToMiHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
 mBlank079:
 mBlank079Id equ 79
     .db mBlank079Id ; id
@@ -694,6 +773,7 @@ mBlank079Id equ 79
     .db 0 ; numRows
     .db 0 ; rowBeginId
     .dw mNullHandler ; handler (predefined)
+    .dw 0 ; nameSelector
 mFtToM:
 mFtToMId equ 80
     .db mFtToMId ; id
@@ -702,6 +782,7 @@ mFtToMId equ 80
     .db 0 ; numRows
     .db 0 ; rowBeginId
     .dw mFtToMHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
 mMToFt:
 mMToFtId equ 81
     .db mMToFtId ; id
@@ -710,6 +791,7 @@ mMToFtId equ 81
     .db 0 ; numRows
     .db 0 ; rowBeginId
     .dw mMToFtHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
 ; MenuGroup UNIT: children: row 2
 mInToCm:
 mInToCmId equ 82
@@ -719,6 +801,7 @@ mInToCmId equ 82
     .db 0 ; numRows
     .db 0 ; rowBeginId
     .dw mInToCmHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
 mCmToIn:
 mCmToInId equ 83
     .db mCmToInId ; id
@@ -727,6 +810,7 @@ mCmToInId equ 83
     .db 0 ; numRows
     .db 0 ; rowBeginId
     .dw mCmToInHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
 mBlank084:
 mBlank084Id equ 84
     .db mBlank084Id ; id
@@ -735,6 +819,7 @@ mBlank084Id equ 84
     .db 0 ; numRows
     .db 0 ; rowBeginId
     .dw mNullHandler ; handler (predefined)
+    .dw 0 ; nameSelector
 mMilToMicron:
 mMilToMicronId equ 85
     .db mMilToMicronId ; id
@@ -743,6 +828,7 @@ mMilToMicronId equ 85
     .db 0 ; numRows
     .db 0 ; rowBeginId
     .dw mMilToMicronHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
 mMicronToMil:
 mMicronToMilId equ 86
     .db mMicronToMilId ; id
@@ -751,6 +837,7 @@ mMicronToMilId equ 86
     .db 0 ; numRows
     .db 0 ; rowBeginId
     .dw mMicronToMilHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
 ; MenuGroup UNIT: children: row 3
 mLbsToKg:
 mLbsToKgId equ 87
@@ -760,6 +847,7 @@ mLbsToKgId equ 87
     .db 0 ; numRows
     .db 0 ; rowBeginId
     .dw mLbsToKgHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
 mKgToLbs:
 mKgToLbsId equ 88
     .db mKgToLbsId ; id
@@ -768,6 +856,7 @@ mKgToLbsId equ 88
     .db 0 ; numRows
     .db 0 ; rowBeginId
     .dw mKgToLbsHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
 mBlank089:
 mBlank089Id equ 89
     .db mBlank089Id ; id
@@ -776,6 +865,7 @@ mBlank089Id equ 89
     .db 0 ; numRows
     .db 0 ; rowBeginId
     .dw mNullHandler ; handler (predefined)
+    .dw 0 ; nameSelector
 mOzToG:
 mOzToGId equ 90
     .db mOzToGId ; id
@@ -784,6 +874,7 @@ mOzToGId equ 90
     .db 0 ; numRows
     .db 0 ; rowBeginId
     .dw mOzToGHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
 mGToOz:
 mGToOzId equ 91
     .db mGToOzId ; id
@@ -792,6 +883,7 @@ mGToOzId equ 91
     .db 0 ; numRows
     .db 0 ; rowBeginId
     .dw mGToOzHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
 ; MenuGroup UNIT: children: row 4
 mGalToL:
 mGalToLId equ 92
@@ -801,6 +893,7 @@ mGalToLId equ 92
     .db 0 ; numRows
     .db 0 ; rowBeginId
     .dw mGalToLHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
 mLToGal:
 mLToGalId equ 93
     .db mLToGalId ; id
@@ -809,6 +902,7 @@ mLToGalId equ 93
     .db 0 ; numRows
     .db 0 ; rowBeginId
     .dw mLToGalHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
 mBlank094:
 mBlank094Id equ 94
     .db mBlank094Id ; id
@@ -817,6 +911,7 @@ mBlank094Id equ 94
     .db 0 ; numRows
     .db 0 ; rowBeginId
     .dw mNullHandler ; handler (predefined)
+    .dw 0 ; nameSelector
 mFlozToMl:
 mFlozToMlId equ 95
     .db mFlozToMlId ; id
@@ -825,6 +920,7 @@ mFlozToMlId equ 95
     .db 0 ; numRows
     .db 0 ; rowBeginId
     .dw mFlozToMlHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
 mMlToFloz:
 mMlToFlozId equ 96
     .db mMlToFlozId ; id
@@ -833,6 +929,7 @@ mMlToFlozId equ 96
     .db 0 ; numRows
     .db 0 ; rowBeginId
     .dw mMlToFlozHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
 ; MenuGroup UNIT: children: row 5
 mCalToKj:
 mCalToKjId equ 97
@@ -842,6 +939,7 @@ mCalToKjId equ 97
     .db 0 ; numRows
     .db 0 ; rowBeginId
     .dw mCalToKjHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
 mKjToCal:
 mKjToCalId equ 98
     .db mKjToCalId ; id
@@ -850,6 +948,7 @@ mKjToCalId equ 98
     .db 0 ; numRows
     .db 0 ; rowBeginId
     .dw mKjToCalHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
 mBlank099:
 mBlank099Id equ 99
     .db mBlank099Id ; id
@@ -858,6 +957,7 @@ mBlank099Id equ 99
     .db 0 ; numRows
     .db 0 ; rowBeginId
     .dw mNullHandler ; handler (predefined)
+    .dw 0 ; nameSelector
 mHpToKw:
 mHpToKwId equ 100
     .db mHpToKwId ; id
@@ -866,6 +966,7 @@ mHpToKwId equ 100
     .db 0 ; numRows
     .db 0 ; rowBeginId
     .dw mHpToKwHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
 mKwToHp:
 mKwToHpId equ 101
     .db mKwToHpId ; id
@@ -874,6 +975,7 @@ mKwToHpId equ 101
     .db 0 ; numRows
     .db 0 ; rowBeginId
     .dw mKwToHpHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
 ; MenuGroup BASE: children
 ; MenuGroup BASE: children: row 0
 mDec:
@@ -884,6 +986,7 @@ mDecId equ 102
     .db 0 ; numRows
     .db 0 ; rowBeginId
     .dw mDecHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
 mHex:
 mHexId equ 103
     .db mHexId ; id
@@ -892,6 +995,7 @@ mHexId equ 103
     .db 0 ; numRows
     .db 0 ; rowBeginId
     .dw mHexHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
 mOct:
 mOctId equ 104
     .db mOctId ; id
@@ -900,6 +1004,7 @@ mOctId equ 104
     .db 0 ; numRows
     .db 0 ; rowBeginId
     .dw mOctHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
 mBin:
 mBinId equ 105
     .db mBinId ; id
@@ -908,6 +1013,7 @@ mBinId equ 105
     .db 0 ; numRows
     .db 0 ; rowBeginId
     .dw mBinHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
 mBlank106:
 mBlank106Id equ 106
     .db mBlank106Id ; id
@@ -916,6 +1022,7 @@ mBlank106Id equ 106
     .db 0 ; numRows
     .db 0 ; rowBeginId
     .dw mNullHandler ; handler (predefined)
+    .dw 0 ; nameSelector
 ; MenuGroup BASE: children: row 1
 mBitwiseAnd:
 mBitwiseAndId equ 107
@@ -925,6 +1032,7 @@ mBitwiseAndId equ 107
     .db 0 ; numRows
     .db 0 ; rowBeginId
     .dw mBitwiseAndHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
 mBitwiseOr:
 mBitwiseOrId equ 108
     .db mBitwiseOrId ; id
@@ -933,6 +1041,7 @@ mBitwiseOrId equ 108
     .db 0 ; numRows
     .db 0 ; rowBeginId
     .dw mBitwiseOrHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
 mBitwiseXor:
 mBitwiseXorId equ 109
     .db mBitwiseXorId ; id
@@ -941,6 +1050,7 @@ mBitwiseXorId equ 109
     .db 0 ; numRows
     .db 0 ; rowBeginId
     .dw mBitwiseXorHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
 mBitwiseNot:
 mBitwiseNotId equ 110
     .db mBitwiseNotId ; id
@@ -949,6 +1059,7 @@ mBitwiseNotId equ 110
     .db 0 ; numRows
     .db 0 ; rowBeginId
     .dw mBitwiseNotHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
 mBitwiseNeg:
 mBitwiseNegId equ 111
     .db mBitwiseNegId ; id
@@ -957,6 +1068,7 @@ mBitwiseNegId equ 111
     .db 0 ; numRows
     .db 0 ; rowBeginId
     .dw mBitwiseNegHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
 ; MenuGroup BASE: children: row 2
 mShiftLeft:
 mShiftLeftId equ 112
@@ -966,6 +1078,7 @@ mShiftLeftId equ 112
     .db 0 ; numRows
     .db 0 ; rowBeginId
     .dw mShiftLeftHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
 mShiftRight:
 mShiftRightId equ 113
     .db mShiftRightId ; id
@@ -974,6 +1087,7 @@ mShiftRightId equ 113
     .db 0 ; numRows
     .db 0 ; rowBeginId
     .dw mShiftRightHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
 mRotateLeft:
 mRotateLeftId equ 114
     .db mRotateLeftId ; id
@@ -982,6 +1096,7 @@ mRotateLeftId equ 114
     .db 0 ; numRows
     .db 0 ; rowBeginId
     .dw mRotateLeftHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
 mRotateRight:
 mRotateRightId equ 115
     .db mRotateRightId ; id
@@ -990,6 +1105,7 @@ mRotateRightId equ 115
     .db 0 ; numRows
     .db 0 ; rowBeginId
     .dw mRotateRightHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
 mBlank116:
 mBlank116Id equ 116
     .db mBlank116Id ; id
@@ -998,6 +1114,7 @@ mBlank116Id equ 116
     .db 0 ; numRows
     .db 0 ; rowBeginId
     .dw mNullHandler ; handler (predefined)
+    .dw 0 ; nameSelector
 ; MenuGroup BASE: children: row 3
 mBitwiseAdd:
 mBitwiseAddId equ 117
@@ -1007,6 +1124,7 @@ mBitwiseAddId equ 117
     .db 0 ; numRows
     .db 0 ; rowBeginId
     .dw mBitwiseAddHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
 mBitwiseSubt:
 mBitwiseSubtId equ 118
     .db mBitwiseSubtId ; id
@@ -1015,6 +1133,7 @@ mBitwiseSubtId equ 118
     .db 0 ; numRows
     .db 0 ; rowBeginId
     .dw mBitwiseSubtHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
 mBitwiseMult:
 mBitwiseMultId equ 119
     .db mBitwiseMultId ; id
@@ -1023,6 +1142,7 @@ mBitwiseMultId equ 119
     .db 0 ; numRows
     .db 0 ; rowBeginId
     .dw mBitwiseMultHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
 mBitwiseDiv:
 mBitwiseDivId equ 120
     .db mBitwiseDivId ; id
@@ -1031,6 +1151,7 @@ mBitwiseDivId equ 120
     .db 0 ; numRows
     .db 0 ; rowBeginId
     .dw mBitwiseDivHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
 mBitwiseDiv2:
 mBitwiseDiv2Id equ 121
     .db mBitwiseDiv2Id ; id
@@ -1039,6 +1160,7 @@ mBitwiseDiv2Id equ 121
     .db 0 ; numRows
     .db 0 ; rowBeginId
     .dw mBitwiseDiv2Handler ; handler (to be implemented)
+    .dw 0 ; nameSelector
 ; MenuGroup STK: children
 ; MenuGroup STK: children: row 0
 mBlank122:
@@ -1049,6 +1171,7 @@ mBlank122Id equ 122
     .db 0 ; numRows
     .db 0 ; rowBeginId
     .dw mNullHandler ; handler (predefined)
+    .dw 0 ; nameSelector
 mStackRotUp:
 mStackRotUpId equ 123
     .db mStackRotUpId ; id
@@ -1057,6 +1180,7 @@ mStackRotUpId equ 123
     .db 0 ; numRows
     .db 0 ; rowBeginId
     .dw mStackRotUpHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
 mStackRotDown:
 mStackRotDownId equ 124
     .db mStackRotDownId ; id
@@ -1065,6 +1189,7 @@ mStackRotDownId equ 124
     .db 0 ; numRows
     .db 0 ; rowBeginId
     .dw mStackRotDownHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
 mStackExchangeXY:
 mStackExchangeXYId equ 125
     .db mStackExchangeXYId ; id
@@ -1073,6 +1198,7 @@ mStackExchangeXYId equ 125
     .db 0 ; numRows
     .db 0 ; rowBeginId
     .dw mStackExchangeXYHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
 mBlank126:
 mBlank126Id equ 126
     .db mBlank126Id ; id
@@ -1081,6 +1207,7 @@ mBlank126Id equ 126
     .db 0 ; numRows
     .db 0 ; rowBeginId
     .dw mNullHandler ; handler (predefined)
+    .dw 0 ; nameSelector
 ; MenuGroup CLR: children
 ; MenuGroup CLR: children: row 0
 mClearX:
@@ -1091,6 +1218,7 @@ mClearXId equ 127
     .db 0 ; numRows
     .db 0 ; rowBeginId
     .dw mClearXHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
 mClearStack:
 mClearStackId equ 128
     .db mClearStackId ; id
@@ -1099,6 +1227,7 @@ mClearStackId equ 128
     .db 0 ; numRows
     .db 0 ; rowBeginId
     .dw mClearStackHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
 mClearRegs:
 mClearRegsId equ 129
     .db mClearRegsId ; id
@@ -1107,6 +1236,7 @@ mClearRegsId equ 129
     .db 0 ; numRows
     .db 0 ; rowBeginId
     .dw mClearRegsHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
 mBlank130:
 mBlank130Id equ 130
     .db mBlank130Id ; id
@@ -1115,6 +1245,7 @@ mBlank130Id equ 130
     .db 0 ; numRows
     .db 0 ; rowBeginId
     .dw mNullHandler ; handler (predefined)
+    .dw 0 ; nameSelector
 mBlank131:
 mBlank131Id equ 131
     .db mBlank131Id ; id
@@ -1123,6 +1254,7 @@ mBlank131Id equ 131
     .db 0 ; numRows
     .db 0 ; rowBeginId
     .dw mNullHandler ; handler (predefined)
+    .dw 0 ; nameSelector
 
 ; Table of 2-byte pointers to names in the pool of strings below.
 mMenuNameTable:
