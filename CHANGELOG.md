@@ -14,6 +14,12 @@
           when performing bitwise operations (e.g. `B+`, `AND`, `XOR`, etc).
           Floating point numbers are truncated to `u32` integers before the
           bitwise operations are performed.
+    - Add menu selector dots
+        - Replicate HP-42S menu selector dots, where a menu item can be both an
+          action (e.g. select `DEG`) and a current mode indicator.
+        - display modes: `FIX`, `SCI`, `ENG`
+        - trig modes: `RAD`, `DEG`
+        - base modes: `DEC`, `HEX`, `OCT`, `BIN`
 - 0.4.0 (2023-08-16)
     - More `BASE` menu functions:
         - `SL` (shift left), `SR` (shift right), `RL` (rotate left circular),
