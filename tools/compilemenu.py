@@ -541,11 +541,15 @@ class StringExploder:
 
 
 class SymbolGenerator:
+    """Collect the statement labels, string labels, and integer identifiers and
+    map them to the respective MenuNode objects. These lookup tables will used
+    to write out the assmebly language code to the menudef.asm file.
+    """
     def __init__(self, root: MenuNode):
         self.root = root
         self.id_map: Dict[int, MenuNode] = {}  # {node_id -> MenuNode}
         self.name_map: Dict[str, MenuNode] = {}  # {node_name -> MenuNode}
-        self.label_map: Dict[str, MenuNode] = {}  # {label_label -> MenuNode}
+        self.label_map: Dict[str, MenuNode] = {}  # {node_label -> MenuNode}
         self.id_counter = 1  # Root starts at id=1
 
     def generate(self) -> None:
@@ -602,6 +606,12 @@ class SymbolGenerator:
 
 
 class CodeGenerator:
+    """Generate the Z80 assembly statements. There are 2 sections:
+    1) the tree of menu nodes,
+    2) the C-strings used by the nodes, composed of:
+        2a) an array of 2-byte pointers into the c-string pool,
+        2b) the pool of c-strings concatenated together.
+    """
     def __init__(
         self, inputfile: str,
         symbols: SymbolGenerator,
@@ -748,7 +758,7 @@ mNullId equ 0
     def generate_names(self, node: MenuNode) -> None:
         # Collect the name strings into a list, so that we can generate
         # continguous name ids.
-        names = self.flatten_names(node)
+        names = self.flatten_nodes(node)
 
         # Generate the array of pointers to the C-strings.
         print("""\
@@ -789,7 +799,10 @@ mNullName:
 """, file=self.output, end='')
             name_index += 1
 
-    def flatten_names(self, node: MenuNode) -> List[MenuNode]:
+    def flatten_nodes(self, node: MenuNode) -> List[MenuNode]:
+        """Recursively descend the menu tree starting at 'node' and flatten
+        the nodes into a list.
+        """
         flat_names: List[MenuNode] = []
         flat_names.append(node)
         self.add_menu_group(flat_names, node)
