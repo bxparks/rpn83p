@@ -216,10 +216,10 @@ MenuGroup root mRoot [
     ]
     MenuGroup BASE mBase [
       MenuRow [
-        MenuItem DEC mDec # decimal
-        MenuItem HEX mHex # hexadecimal
-        MenuItem OCT mOct # octal
-        MenuItem BIN mBin # binary
+        MenuItemAlt DEC DEC<Sblock> mDec # decimal
+        MenuItemAlt HEX HEX<Sblock> mHex # hexadecimal
+        MenuItemAlt OCT OCT<Sblock> mOct # octal
+        MenuItemAlt BIN BIN<Sblock> mBin # binary
       ]
       MenuRow [
         MenuItem AND mBitwiseAnd

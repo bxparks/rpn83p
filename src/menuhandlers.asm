@@ -1217,7 +1217,44 @@ mBinHandler:
 setBaseMode:
     set dirtyFlagsBaseMode, (iy + dirtyFlags)
     set dirtyFlagsStack, (iy + dirtyFlags)
+    set dirtyFlagsMenu, (iy + dirtyFlags)
     ld (baseMode), a
+    ret
+
+;-----------------------------------------------------------------------------
+
+mDecNameSelector:
+    ld b, 10
+    jr mBaseNameSelector
+
+mHexNameSelector:
+    ld b, 16
+    jr mBaseNameSelector
+
+mOctNameSelector:
+    ld b, 8
+    jr mBaseNameSelector
+
+mBinNameSelector:
+    ld b, 2
+    ; [[fallthrough]]
+
+; Description: Select the display name of 'DEC', 'HEX', 'OCT', and 'BIN' menus.
+; Input:
+;   - A: nameId
+;   - B: base (2, 8, 10, 16)
+;   - C: altNameId
+;   - HL: pointer to MenuNode
+; Output:
+;   - A: either A or C
+; Destroys: D
+mBaseNameSelector:
+    ld d, a ; D=nameId, C=altNameId
+    ld a, (baseMode)
+    cp b
+    ld a, d
+    ret nz
+    ld a, c
     ret
 
 ;-----------------------------------------------------------------------------

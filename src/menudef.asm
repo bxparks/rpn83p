@@ -984,36 +984,36 @@ mDecId equ 102
     .db mBaseId ; parentId
     .db mDecNameId ; nameId
     .db 0 ; numRows
-    .db 0 ; rowBeginId or altNameId
+    .db mDecAltNameId ; rowBeginId or altNameId
     .dw mDecHandler ; handler (to be implemented)
-    .dw 0 ; nameSelector
+    .dw mDecNameSelector ; nameSelector
 mHex:
 mHexId equ 103
     .db mHexId ; id
     .db mBaseId ; parentId
     .db mHexNameId ; nameId
     .db 0 ; numRows
-    .db 0 ; rowBeginId or altNameId
+    .db mHexAltNameId ; rowBeginId or altNameId
     .dw mHexHandler ; handler (to be implemented)
-    .dw 0 ; nameSelector
+    .dw mHexNameSelector ; nameSelector
 mOct:
 mOctId equ 104
     .db mOctId ; id
     .db mBaseId ; parentId
     .db mOctNameId ; nameId
     .db 0 ; numRows
-    .db 0 ; rowBeginId or altNameId
+    .db mOctAltNameId ; rowBeginId or altNameId
     .dw mOctHandler ; handler (to be implemented)
-    .dw 0 ; nameSelector
+    .dw mOctNameSelector ; nameSelector
 mBin:
 mBinId equ 105
     .db mBinId ; id
     .db mBaseId ; parentId
     .db mBinNameId ; nameId
     .db 0 ; numRows
-    .db 0 ; rowBeginId or altNameId
+    .db mBinAltNameId ; rowBeginId or altNameId
     .dw mBinHandler ; handler (to be implemented)
-    .dw 0 ; nameSelector
+    .dw mBinNameSelector ; nameSelector
 mBlank106:
 mBlank106Id equ 106
     .db mBlank106Id ; id
@@ -1430,51 +1430,59 @@ mKwToHpNameId equ 84
     .dw mKwToHpName
 mDecNameId equ 85
     .dw mDecName
-mHexNameId equ 86
+mDecAltNameId equ 86
+    .dw mDecAltName
+mHexNameId equ 87
     .dw mHexName
-mOctNameId equ 87
+mHexAltNameId equ 88
+    .dw mHexAltName
+mOctNameId equ 89
     .dw mOctName
-mBinNameId equ 88
+mOctAltNameId equ 90
+    .dw mOctAltName
+mBinNameId equ 91
     .dw mBinName
-mBitwiseAndNameId equ 89
+mBinAltNameId equ 92
+    .dw mBinAltName
+mBitwiseAndNameId equ 93
     .dw mBitwiseAndName
-mBitwiseOrNameId equ 90
+mBitwiseOrNameId equ 94
     .dw mBitwiseOrName
-mBitwiseXorNameId equ 91
+mBitwiseXorNameId equ 95
     .dw mBitwiseXorName
-mBitwiseNotNameId equ 92
+mBitwiseNotNameId equ 96
     .dw mBitwiseNotName
-mBitwiseNegNameId equ 93
+mBitwiseNegNameId equ 97
     .dw mBitwiseNegName
-mShiftLeftNameId equ 94
+mShiftLeftNameId equ 98
     .dw mShiftLeftName
-mShiftRightNameId equ 95
+mShiftRightNameId equ 99
     .dw mShiftRightName
-mRotateLeftNameId equ 96
+mRotateLeftNameId equ 100
     .dw mRotateLeftName
-mRotateRightNameId equ 97
+mRotateRightNameId equ 101
     .dw mRotateRightName
-mBitwiseAddNameId equ 98
+mBitwiseAddNameId equ 102
     .dw mBitwiseAddName
-mBitwiseSubtNameId equ 99
+mBitwiseSubtNameId equ 103
     .dw mBitwiseSubtName
-mBitwiseMultNameId equ 100
+mBitwiseMultNameId equ 104
     .dw mBitwiseMultName
-mBitwiseDivNameId equ 101
+mBitwiseDivNameId equ 105
     .dw mBitwiseDivName
-mBitwiseDiv2NameId equ 102
+mBitwiseDiv2NameId equ 106
     .dw mBitwiseDiv2Name
-mStackRotUpNameId equ 103
+mStackRotUpNameId equ 107
     .dw mStackRotUpName
-mStackRotDownNameId equ 104
+mStackRotDownNameId equ 108
     .dw mStackRotDownName
-mStackExchangeXYNameId equ 105
+mStackExchangeXYNameId equ 109
     .dw mStackExchangeXYName
-mClearXNameId equ 106
+mClearXNameId equ 110
     .dw mClearXName
-mClearStackNameId equ 107
+mClearStackNameId equ 111
     .dw mClearStackName
-mClearRegsNameId equ 108
+mClearRegsNameId equ 112
     .dw mClearRegsName
 
 ; Table of names as NUL terminated C strings.
@@ -1650,12 +1658,20 @@ mKwToHpName:
     .db Sconvert, 'h', 'p', 0
 mDecName:
     .db "DEC", 0
+mDecAltName:
+    .db 'D', 'E', 'C', Sblock, 0
 mHexName:
     .db "HEX", 0
+mHexAltName:
+    .db 'H', 'E', 'X', Sblock, 0
 mOctName:
     .db "OCT", 0
+mOctAltName:
+    .db 'O', 'C', 'T', Sblock, 0
 mBinName:
     .db "BIN", 0
+mBinAltName:
+    .db 'B', 'I', 'N', Sblock, 0
 mBitwiseAndName:
     .db "AND", 0
 mBitwiseOrName:
