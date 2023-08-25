@@ -434,6 +434,8 @@ class Validator:
                 row.append(blank)
 
             row_index += 1
+            if row_index >= 256:
+                raise ValueError("Overflow: row_index incremented to 256")
 
     def validate_label(self, node: MenuNode) -> None:
         """Validate that the 'label' does not begin with reserved labels
@@ -624,6 +626,8 @@ class SymbolGenerator:
         node["parent_id"] = parent_id
         self.id_map[id] = node
         self.id_counter += 1
+        if self.id_counter >= 256:
+            raise ValueError("Overflow: id_counter incremented to 256")
 
         # Set label='mBlankXXX' for blank menus
         if name == "*":
@@ -816,6 +820,8 @@ mNullNameId equ 0
     .dw {label}Name
 """, file=self.output, end='')
             name_index += 1
+            if name_index >= 256:
+                raise ValueError("Overflow: name_index incremented to 256")
 
             # altname
             if node.get("altname"):
@@ -824,6 +830,8 @@ mNullNameId equ 0
     .dw {label}AltName
 """, file=self.output, end='')
                 name_index += 1
+                if name_index >= 256:
+                    raise ValueError("Overflow: name_index incremented to 256")
 
         print(file=self.output)
 
