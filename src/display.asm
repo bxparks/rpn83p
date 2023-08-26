@@ -605,8 +605,9 @@ printMenuAtA:
     ld c, menuNameBufMax
     call copyCToPascal ; C, DE are preserved
     ex de, hl ; HL = menuName
-    call sStringWidth ; A = B = string width
+    call smallStringWidth ; A = B = string width
 
+printMenuAtANoAdjust:
     ; Calculate the starting pixel to center the string
     ld a, menuPenWidth
     sub b ; A = menuPenWidth - stringWidth
@@ -614,6 +615,15 @@ printMenuAtA:
 printMenuAtATooWide:
     xor a ; if string too wide (shouldn't happen), set to 0
 printMenuAtAFitsInside:
+    ; Add 1px to the total padding so that when divided between left and right
+    ; padding, the left padding gets 1px more if the total padding is an odd
+    ; number. This allows a few names which are 17px wide to actually fit
+    ; nicely within the 18px box (with 1px padding on each side), because each
+    ; small font character actually has an embedded 1px padding on the right,
+    ; so effectively it is only 16px wide. This tweak allows short names (whose
+    ; widths are an odd number of px) to be centered perfectly with equal
+    ; padding on both sides.
+    inc a
     rra ; CF=0, divide by 2 for centering; A = padWidth
 
     ld c, a ; C = A = leftPadWidth

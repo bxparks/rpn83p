@@ -20,6 +20,11 @@
         - display modes: `FIX`, `SCI`, `ENG`
         - trig modes: `RAD`, `DEG`
         - base modes: `DEC`, `HEX`, `OCT`, `BIN`
+    - Improve menu name centering algorithm.
+        - No change for strings which are even-number of pixels wide.
+        - Strings which are odd-number of pixels wide are now centered
+          perfectly, instead of being off-centered by one-px to the left.
+        - Allows strings which are 17px wide to be rendered properly.
 - 0.4.0 (2023-08-16)
     - More `BASE` menu functions:
         - `SL` (shift left), `SR` (shift right), `RL` (rotate left circular),

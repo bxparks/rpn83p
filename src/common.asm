@@ -138,7 +138,7 @@ vPutPNEnd:
 ; Input: HL: Pascal string, in RAM
 ; Output: A = B = number of pixels
 ; Destroys: all but HL
-sStringWidth:
+smallStringWidth:
     ld a, (hl)
     or a
     ld b, a
