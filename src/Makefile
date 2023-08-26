@@ -20,6 +20,7 @@ SRCS := \
 	pstring.asm \
 	prime.asm \
 	rpn83p.asm \
+	stathandlers.asm \
 	vars.asm
 
 # TI Flash app
