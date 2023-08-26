@@ -606,14 +606,24 @@ class SymbolGenerator:
 
     def generate_node(self, node: MenuNode, parent_id: int) -> None:
         """Process the given node, no recursion."""
-        # Add menu name to the name_map[] table
+        # Add menu name to the name_map table. And label to label_map table.
+        # Check for duplicates.
         name = node["name"]
         if name != "*":
             entry = self.name_map.get(name)
+            # Check for duplicates.
             if entry is not None:
-                raise ValueError(f"Duplicate MenuItem.name '{name}'")
+                # Cannot have duplicate MenuGroup, ever.
+                if entry["mtype"] == MENU_TYPE_GROUP or \
+                    node["mtype"] == MENU_TYPE_GROUP:
+                    raise ValueError(f"Duplicate MenuItem.name '{name}'")
+                # Allow dupes for MenuItem or MenuItemAlt.
+                if entry["mtype"] != node["mtype"]:
+                    raise ValueError(f"Duplicate MenuItem.name '{name}'")
             self.name_map[name] = node
 
+            # Labels must always be unique, because they are used prefixes for
+            # various internal assembly language labels.
             label = node["label"]
             entry = self.label_map.get(label)
             if entry is not None:
