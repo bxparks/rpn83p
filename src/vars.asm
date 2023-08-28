@@ -570,7 +570,7 @@ stoNN:
     push af
     bcall(_PushRealO1)
     call setRegsName
-    bcall(_FindSym)
+    bcall(_FindSym) ; DE=pointer to var data area
     push de
     bcall(_PopRealO1)
     pop de
@@ -587,6 +587,7 @@ stoNN:
 ; Output:
 ;   - OP1: float value
 ; Destroys: all
+; Preserves: OP2
 rclNN:
     inc a ; change from 0-based to 1-based
     push af
@@ -596,4 +597,77 @@ rclNN:
     ld l, a
     ld h, 0
     bcall(_GetLToOP1)
+    ret
+
+; Description: Recall REGS[NN] to OP2.
+; Input:
+;   - A: register index, 0-based
+;   - 'REGS' list variable
+; Output:
+;   - OP2: float value
+; Preserves: OP2
+rclNNToOP2:
+    bcall(_PushRealO1)
+    call rclNN
+    bcall(_OP1ToOP2)
+    bcall(_PopRealO1)
+    ret
+
+; Description: Add OP1 to storage register NN.
+; Input:
+;   OP1: float value
+;   A: register index NN, one-based
+; Output:
+;   REGS[NN] += OP1
+; Destroys: all, OP1, OP2
+stoPlusNN:
+    push af ; A=NN
+    bcall(_OP1ToOP2)
+    call rclNN
+    bcall(_FPAdd) ; OP1 += OP2
+    pop af ; A=NN
+    jp stoNN
+
+; Description: Subtract OP1 from storage register NN.
+; Input:
+;   OP1: float value
+;   A: register index NN, one-based
+; Output:
+;   REGS[NN] += OP1
+; Destroys: all, OP1, OP2
+stoMinusNN:
+    push af ; A=NN
+    bcall(_OP1ToOP2)
+    call rclNN
+    bcall(_FPSub) ; OP1 -= OP2
+    pop af ; A=NN
+    jp stoNN
+
+;-----------------------------------------------------------------------------
+
+; Description: Clear the storage registers used by the STAT functions (R11 -
+; R23, inclusive.
+; Input: none
+; Output:
+;   - B: 0
+;   - C: 24
+;   - OP1: 0
+; Destroys: all, OP1
+; TODO: This could be implemented more efficiently by using the fact that the
+; storage registers are located in contiguous memory. On the other hand, this
+; function is not expected to be called often, so the efficiency probably
+; doesn't matter.
+clearStatRegs:
+    bcall(_OP1Set0)
+    ld c, 11 ; C=storage register number
+    ld b, 13 ; number of registers to clear
+    jr clearStatRegsEntry
+clearStatRegsLoop:
+    inc c
+clearStatRegsEntry:
+    ld a, c
+    push bc
+    call stoNN
+    pop bc
+    djnz clearStatRegsLoop
     ret

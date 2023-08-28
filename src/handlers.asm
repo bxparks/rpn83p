@@ -1054,6 +1054,13 @@ handleKeyMode:
     ld a, mModeId ; MODE triggers the MODE menu.
     jp mGroupHandler
 
+handleKeyStat:
+    ; Do nothing in command arg mode.
+    bit rpnFlagsArgMode, (iy + rpnFlags)
+    ret nz
+    ld a, mStatId ; MODE triggers the MODE menu.
+    jp mGroupHandler
+
 ;-----------------------------------------------------------------------------
 ; User registers, accessed through RCL nn and STO nn.
 ;-----------------------------------------------------------------------------
