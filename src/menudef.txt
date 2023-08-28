@@ -186,14 +186,16 @@ MenuGroup root mRoot [
       ]
       MenuRow [
         MenuItem SUM mStatSum
-        MenuItem N mStatN
         MenuItem MEAN mStatMean
         MenuItem WMNX mStatWeightedMeanX
         MenuItem WMNY mStatWeightedMeanY
+        MenuItem N mStatN
       ]
       MenuRow [
         MenuItem SDEV mStatSampleSdev
         MenuItem PDEV mStatPopSdev
+        MenuItem SCOV mStatSampleCov
+        MenuItem PCOV mStatPopCov
       ]
       # MenuRow [
       #   MenuItem <Sconvert>X mStatCalcX

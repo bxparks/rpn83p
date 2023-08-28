@@ -100,6 +100,27 @@ mStatNHandler:
     call rclNN
     jp replaceX
 
+;-----------------------------------------------------------------------------
+
+; Description: Calculate the correction factor (N)/(N-1) to convert population
+; to sample.
+; Output: OP1=N/(N-1)
+; Destroys: A, OP2
+mStatPopToSample:
+    ld a, statRegN
+    call rclNN ; OP1=N
+    bcall(_PushRealO1)
+    bcall(_Minus1)
+    bcall(_OP1ToOP2)
+    bcall(_PopRealO1) ; OP1=N, OP2=N-1
+    bcall(_FPDiv) ; OP1=N/(N-1)
+    ret
+
+; Description: Calculate the population standard deviation.
+; Output:
+;   OP1: SDEV<Y>
+;   OP2: SDEV<X>
+; Destroys: A, OP2, OP3
 mStatPopSdevHandler:
     call closeInputBuf
     call mStatPopSdevCommon ; OP1=PDEV<Y>, OP2=PDEV<X>
@@ -109,17 +130,9 @@ mStatPopSdevHandler:
 ; Output:
 ;   OP1: SDEV<Y>
 ;   OP2: SDEV<X>
-; TODO: The calculation for X and Y are essentially identical. We should be
-; able to extract that into a common routine to save memory.
 mStatSampleSdevHandler:
     call closeInputBuf
-    ld a, statRegN
-    call rclNN ; OP1=N
-    bcall(_PushRealO1)
-    bcall(_Minus1)
-    bcall(_OP1ToOP2)
-    bcall(_PopRealO1) ; OP1=N, OP2=N-1
-    bcall(_FPDiv) ; OP1=N/(N-1)
+    call mStatPopToSample ; OP1=N/(N-1)
     bcall(_SqRoot) ; OP1=sqrt(N/(N-1))
     bcall(_OP1ToOP4) ; OP4=sqrt(N/(N-1))
 
@@ -138,6 +151,7 @@ mStatSampleSdevHandler:
 ; Output:
 ;   OP1: PDEV<Y>
 ;   OP2: PDEV<X>
+; Destroys: A, OP2, OP3
 ; TODO: The algorithms for PDEV<X> and PDEV<Y> are identical. We should be able
 ; to extract that into a common routine to save memory.
 mStatPopSdevCommon:
@@ -177,6 +191,61 @@ mStatPopSdevCommon:
     bcall(_SqRoot) ; OP1=PDEV<Y>
     ;
     bcall(_PopRealO2) ; OP2=PDEV<X>
+    ret
+
+; Description: Calculate the population covariance. PCOV<X,Y> = <XY> - <X><Y>.
+; See https://en.wikipedia.org/wiki/Sample_mean_and_covariance
+; Output:
+;   - OP1: PCOV<X,Y>
+; Destroys: A, OP2, OP3, OP4
+mStatPopCovHandler:
+    call closeInputBuf
+    call mStatPopCovCommon
+    jp replaceX
+
+; Description: Calculate the sample covariance. SCOV<X,Y> = (N/(N-1)) PCOV(X,Y).
+; See https://en.wikipedia.org/wiki/Sample_mean_and_covariance
+; Output:
+;   - OP1: SCOV<X,Y>
+; Destroys: A, OP2, OP3, OP4
+mStatSampleCovHandler:
+    call closeInputBuf
+    call mStatPopToSample ; OP1=N/(N-1)
+    bcall(_PushRealO1) ; FPS=N/(N-1)
+    call mStatPopCovCommon ; OP1=PCOV(X,Y)
+    bcall(_PopRealO2)
+    bcall(_FPMult); OP1=SCOV(X,Y)
+    jp replaceX
+
+; Description: Calculate the population covariance of X and Y.
+; Output:
+;   - OP1: PCOV<X,Y>
+; Destroys: A, OP2, OP3, OP4
+mStatPopCovCommon:
+    ld a, statRegXY
+    call rclNN
+    ld a, statRegN
+    call rclNNToOP2
+    bcall(_OP2ToOP4) ; OP4=N
+    bcall(_FPDiv) ; OP1=<XY>, uses OP3
+    bcall(_PushRealO1) ; FPS=<XY>
+    ;
+    ld a, statRegX
+    call rclNN
+    bcall(_OP4ToOP2)
+    bcall(_FPDiv) ; OP1=<X>
+    bcall(_PushRealO1) ; FPS=<X>
+    ;
+    ld a, statRegY
+    call rclNN
+    bcall(_OP4ToOP2)
+    bcall(_FPDiv) ; OP1=<Y>
+    ;
+    bcall(_PopRealO2) ; OP2=<X>
+    bcall(_FPMult) ; OP1=<X><Y>
+    ;
+    bcall(_PopRealO2) ; OP2=<XY>
+    bcall(_InvSub) ; OP1=-<X><Y> + <XY>
     ret
 
 ;-----------------------------------------------------------------------------
