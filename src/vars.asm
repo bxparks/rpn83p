@@ -92,8 +92,10 @@ setStackName:
 ;   - STK deleted if not a real list
 ;   - STK deleted if dim(STK) != 5
 ;   - STK created if it doesn't exist
+;   - stack lift enabled
 ; Destroys: all
 initStack:
+    set rpnFlagsLiftEnabled, (iy + rpnFlags)
     call setStackName
     bcall(_FindSym)
     jr c, initStackCreate ; if CF=1: not found
