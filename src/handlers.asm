@@ -1078,7 +1078,6 @@ handleKeyStoCallback:
     ld a, errorCodeDimension
     jp setHandlerCode
 handleKeyStoCallbackContinue:
-    inc a ; change from 0-based to 1-based
     jp stoNN
 
 handleKeyRcl:
@@ -1095,7 +1094,6 @@ handleKeyRclCallback:
     ld a, errorCodeDimension
     jp setHandlerCode
 handleKeyRclCallbackContinue:
-    inc a ; change from 0-based to 1-based
     call rclNN
     call liftStackNonEmpty
     jp stoX

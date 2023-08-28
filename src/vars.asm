@@ -72,11 +72,11 @@
 ;-----------------------------------------------------------------------------
 
 stackSize equ 5 ; X, Y, Z, T, LastX
-stackXIndex equ 1
-stackYIndex equ 2
-stackZIndex equ 3
-stackTIndex equ 4
-stackLIndex equ 5 ; LastX
+stackXIndex equ 0
+stackYIndex equ 1
+stackZIndex equ 2
+stackTIndex equ 3
+stackLIndex equ 4 ; LastX
 
 stackName:
     .db ListObj, tVarLst, "STK", 0
@@ -159,7 +159,7 @@ clearStackEnd:
 
 ; Description: Store OP1 to STK[nn], setting dirty flag.
 ; Input:
-;   - A: register index, one-based
+;   - A: register index, 0-based
 ;   - OP1: float value
 ; Output:
 ;   - STK[nn] = OP1
@@ -167,6 +167,7 @@ clearStackEnd:
 ; Preserves: OP1, OP2
 ; TODO: I think we can combine stoNN() and stoStackNN().
 stoStackNN:
+    inc a ; change from 0-based to 1-based
     push af
     bcall(_PushRealO1)
     call setStackName
@@ -183,7 +184,7 @@ stoStackNN:
 
 ; Function: Copy STK[nn] to OP1.
 ; Input:
-;   - A: register index, one-based
+;   - A: register index, 0-based
 ;   - 'STK' list variable
 ; Output:
 ;   - OP1: float value
@@ -191,6 +192,7 @@ stoStackNN:
 ; Preserves: OP2
 ; TODO: I think we can combine rclNN() and rclStackNN().
 rclStackNN:
+    inc a ; change from 0-based to 1-based
     push af
     call setStackName
     bcall(_FindSym) ; DE = pointer data area
@@ -544,12 +546,13 @@ clearRegsLoop:
 
 ; Description: Store OP1 into REGS[NN].
 ; Input:
-;   - A: register index, one-based
+;   - A: register index, 0-based
 ;   - OP1: float value
 ; Output:
 ;   - REGS[NN] = OP1
 ; Destroys: all
 stoNN:
+    inc a ; change from 0-based to 1-based
     push af
     bcall(_PushRealO1)
     call setRegsName
@@ -565,12 +568,13 @@ stoNN:
 
 ; Description: Recall REGS[NN] into OP1.
 ; Input:
-;   - A: register index, one-based
+;   - A: register index, 0-based
 ;   - 'REGS' list variable
 ; Output:
 ;   - OP1: float value
 ; Destroys: all
 rclNN:
+    inc a ; change from 0-based to 1-based
     push af
     call setRegsName
     bcall(_FindSym)
