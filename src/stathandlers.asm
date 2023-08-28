@@ -103,10 +103,12 @@ mStatNHandler:
 ;-----------------------------------------------------------------------------
 
 ; Description: Calculate the correction factor (N)/(N-1) to convert population
-; to sample.
-; Output: OP1=N/(N-1)
+; to sample statistics.
+; Output: OP2=N/(N-1)
 ; Destroys: A, OP2
-mStatPopToSample:
+; Preserves: OP1
+statFactorPopToSampleOP2:
+    bcall(_PushRealO1)
     ld a, statRegN
     call rclNN ; OP1=N
     bcall(_PushRealO1)
@@ -114,47 +116,56 @@ mStatPopToSample:
     bcall(_OP1ToOP2)
     bcall(_PopRealO1) ; OP1=N, OP2=N-1
     bcall(_FPDiv) ; OP1=N/(N-1)
+    bcall(_OP1ToOP2)
+    bcall(_PopRealO1)
     ret
 
 ; Description: Calculate the population standard deviation.
 ; Output:
-;   OP1: SDEV<Y>
-;   OP2: SDEV<X>
-; Destroys: A, OP2, OP3
+;   OP1: PDEV<Y>
+;   OP2: PDEV<X>
+; Destroys: A, OP2, OP3, OP4
 mStatPopSdevHandler:
     call closeInputBuf
-    call mStatPopSdevCommon ; OP1=PDEV<Y>, OP2=PDEV<X>
+    call statVariance ; OP1=VAR(Y), OP2=VAR(X)
+mStatPopSdevAltEntry:
+    bcall(_PushRealO2) ; FPS=VAR(X)
+    bcall(_SqRoot) ; OP1=PDEV(Y)
+    call exchangeFPSOP1 ; OP1=VAR(X); FPS=PDEV(Y)
+    bcall(_SqRoot) ; OP1=PDEV(X)
+    bcall(_PopRealO2) ; OP2=PDEV(Y)
+    bcall(_OP1ExOP2) ; OP1=PDEV(Y), OP2=PDEV(X)
     jp replaceXYWithOP1OP2
 
 ; Description: Calculate the sample standard deviation.
 ; Output:
 ;   OP1: SDEV<Y>
 ;   OP2: SDEV<X>
+; Destroys: A, OP2, OP3, OP4
 mStatSampleSdevHandler:
     call closeInputBuf
-    call mStatPopToSample ; OP1=N/(N-1)
-    bcall(_SqRoot) ; OP1=sqrt(N/(N-1))
-    bcall(_OP1ToOP4) ; OP4=sqrt(N/(N-1))
+    call statVariance ; OP1=VAR(Y), OP2=VAR(X)
+    ; Multiply each VAR(x) with N/(N-1)
+    bcall(_PushRealO2) ; FPS=VAR(X)
+    call statFactorPopToSampleOP2 ; OP2=N/(N-1)
+    bcall(_OP2ToOP4)
+    bcall(_FPMult) ; OP1=SVAR(Y)
+    call exchangeFPSOP1 ; OP1=VAR(X); FPS=SVAR(Y)
+    bcall(_OP4ToOP2) ; OP2=N/(N-1)
+    bcall(_FPMult) ; OP1=SVAR(X)
+    bcall(_PopRealO2) ; OP2=SVAR(Y)
+    bcall(_OP1ExOP2) ; OP1=SVAR(Y), OP2=SVAR(X)
+    jr mStatPopSdevAltEntry
 
-    call mStatPopSdevCommon ; OP1=PDEV<Y>, OP2=PDEV<X>
-    bcall(_OP2ToOP5) ; OP5=PDEV<X> saved
-    bcall(_OP4ToOP2) ; OP2=sqrt(N/(N-1))
-    bcall(_FPMult) ; OP1=SDEV<Y>
-    bcall(_OP1ExOP5) ; OP1=PDEV<X>
-    bcall(_OP4ToOP2) ; OP2=sqrt(N/(N-1))
-    bcall(_FPMult) ; OP1=SDEV<X>
-    bcall(_OP5ToOP2) ; OP2=SDEV<Y>
-    bcall(_OP1ExOP2) ; OP1=SDEV<Y>, OP2=SDEV<X>
-    jp replaceXYWithOP1OP2
-
-; Description: Calculate the population standard deviation.
+; Description: Calculate the population variance.
+; Var(X) = Sum(X_i^2 - <X>^2) / N = <X^2> - <X>^2
 ; Output:
-;   OP1: PDEV<Y>
-;   OP2: PDEV<X>
-; Destroys: A, OP2, OP3
-; TODO: The algorithms for PDEV<X> and PDEV<Y> are identical. We should be able
+;   OP1: VAR<Y>
+;   OP2: VAR<X>
+; Destroys: A, OP3
+; TODO: The algorithms for VAR<X> and VAR<Y> are identical. We should be able
 ; to extract that into a common routine to save memory.
-mStatPopSdevCommon:
+statVariance:
     ld a, statRegX
     call rclNN
     ld a, statRegN
@@ -170,8 +181,7 @@ mStatPopSdevCommon:
     bcall(_FPDiv) ; OP1=<X^2>
     bcall(_PopRealO2) ; OP2=<X>^2
     bcall(_FPSub)
-    bcall(_SqRoot) ; OP1=PDEV<X>
-    bcall(_PushRealO1)
+    bcall(_PushRealO1) ; OP1=VAR<X>
     ;
     ld a, statRegY
     call rclNN
@@ -187,10 +197,9 @@ mStatPopSdevCommon:
     call rclNNToOP2
     bcall(_FPDiv) ; OP1=<Y^2>
     bcall(_PopRealO2) ; OP2=<Y>^2
-    bcall(_FPSub)
-    bcall(_SqRoot) ; OP1=PDEV<Y>
+    bcall(_FPSub) ; OP1=VAR(Y)
     ;
-    bcall(_PopRealO2) ; OP2=PDEV<X>
+    bcall(_PopRealO2) ; OP2=VAR<X>
     ret
 
 ; Description: Calculate the population covariance. PCOV<X,Y> = <XY> - <X><Y>.
@@ -200,7 +209,7 @@ mStatPopSdevCommon:
 ; Destroys: A, OP2, OP3, OP4
 mStatPopCovHandler:
     call closeInputBuf
-    call mStatPopCovCommon
+    call statCovariance
     jp replaceX
 
 ; Description: Calculate the sample covariance. SCOV<X,Y> = (N/(N-1)) PCOV(X,Y).
@@ -210,35 +219,37 @@ mStatPopCovHandler:
 ; Destroys: A, OP2, OP3, OP4
 mStatSampleCovHandler:
     call closeInputBuf
-    call mStatPopToSample ; OP1=N/(N-1)
-    bcall(_PushRealO1) ; FPS=N/(N-1)
-    call mStatPopCovCommon ; OP1=PCOV(X,Y)
-    bcall(_PopRealO2)
+    call statCovariance ; OP1=PCOV(X,Y)
+    call statFactorPopToSampleOP2 ; OP2=N/(N-1)
     bcall(_FPMult); OP1=SCOV(X,Y)
     jp replaceX
 
 ; Description: Calculate the population covariance of X and Y.
+; PCOV(X, Y) = <XY> - <X><Y>).
+; See https://en.wikipedia.org/wiki/Covariance_and_correlation
 ; Output:
 ;   - OP1: PCOV<X,Y>
 ; Destroys: A, OP2, OP3, OP4
-mStatPopCovCommon:
-    ld a, statRegXY
-    call rclNN
+statCovariance:
+    ; Extract N
     ld a, statRegN
     call rclNNToOP2
     bcall(_OP2ToOP4) ; OP4=N
+    ; Calculate <XY>
+    ld a, statRegXY
+    call rclNN
     bcall(_FPDiv) ; OP1=<XY>, uses OP3
     bcall(_PushRealO1) ; FPS=<XY>
-    ;
+    ; Calculate <X>
     ld a, statRegX
     call rclNN
-    bcall(_OP4ToOP2)
+    bcall(_OP4ToOP2) ; OP2=N
     bcall(_FPDiv) ; OP1=<X>
     bcall(_PushRealO1) ; FPS=<X>
-    ;
+    ; Calculate <Y>
     ld a, statRegY
     call rclNN
-    bcall(_OP4ToOP2)
+    bcall(_OP4ToOP2) ; OP2=N
     bcall(_FPDiv) ; OP1=<Y>
     ;
     bcall(_PopRealO2) ; OP2=<X>
