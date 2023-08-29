@@ -680,8 +680,8 @@ stoMinusNN:
 
 ;-----------------------------------------------------------------------------
 
-; Description: Clear the storage registers used by the STAT functions (R11 -
-; R23, inclusive.
+; Description: Clear the storage registers used by the STAT functions. In
+; Linear mode [R11, R16], in All mode [R11, R23], inclusive.
 ; Input: none
 ; Output:
 ;   - B: 0
@@ -694,8 +694,14 @@ stoMinusNN:
 ; doesn't matter.
 clearStatRegs:
     bcall(_OP1Set0)
-    ld c, 11 ; C=storage register number
-    ld b, 13 ; number of registers to clear
+    ld c, 11 ; begin clearing register 11
+    ; Check AllMode or LinearMode.
+    bit rpnFlagsAllStatEnabled, (iy + rpnFlags)
+    jr nz, clearStatRegsAll
+    ld b, 6 ; clear first 6 registers in Linear mode
+    jr clearStatRegsEntry
+clearStatRegsAll:
+    ld b, 13 ; clear all 13 registesr in All mode
     jr clearStatRegsEntry
 clearStatRegsLoop:
     inc c
