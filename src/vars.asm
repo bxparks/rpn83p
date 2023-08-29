@@ -268,25 +268,25 @@ stoL:
 
 ; Description: Replace stX with OP1, saving previous stX to lastX, and
 ; setting dirty flag.
-; Preserves: OP1
+; Preserves: OP1, OP2
 replaceX:
     bcall(_CkValidNum)
-    bcall(_OP1ToOP2)
+    bcall(_PushRealO1)
     call rclX
     call stoL
-    bcall(_OP2ToOP1)
+    bcall(_PopRealO1)
     jr stoX
 
 ; Description: Replace (stX, stY) pair with OP1, saving previous stX to lastX,
 ; and setting dirty flag.
-; Preserves: OP1
+; Preserves: OP1, OP2
 replaceXY:
     bcall(_CkValidNum)
-    bcall(_OP1ToOP2)
+    bcall(_PushRealO1)
     call rclX
     call stoL
-    bcall(_OP2ToOP1)
     call dropStack
+    bcall(_PopRealO1)
     jr stoX
 
 ; Description: Replace X and Y with push of OP1 and OP2 on the stack in that
@@ -338,24 +338,46 @@ replaceXWithOP1OP2:
     bcall(_OP2ToOP1)
     jp stoX
 
-; Description: Push OP1 to the X register, saving the previous X into LastX.
+; Description: Push OP1 to the X register.
 ; Input: X, OP1
 ; Output:
 ;   - Stack lifted
-;   - LastX=X
 ;   - X=OP1
-; Destroys: all, OP4
-; Preserves: OP1, OP2
+; Destroys: all
+; Preserves: OP1, OP2, LastX
 pushX:
+    bcall(_CkValidNum)
     call liftStackNonEmpty
     jp stoX
+
+; Description: Push OP1 then OP2 onto the stack.
+; Input: X, Y, OP1, OP2
+; Output:
+;   - Stack lifted
+;   - Y=OP1
+;   - X=OP2
+; Destroys: all
+; Preserves: OP1, OP2, LastX
+pushXY:
+    bcall(_CkValidNum)
+    bcall(_OP1ExOP2)
+    bcall(_CkValidNum)
+    bcall(_OP1ExOP2)
+
+    call liftStackNonEmpty
+    call stoX
+    call liftStack
+    bcall(_OP1ExOP2)
+    call stoX
+    bcall(_OP1ExOP2)
+    ret
 
 ;-----------------------------------------------------------------------------
 
 ; Function: Lift the RPN stack, if inputBuf was not empty when closed.
 ; Input: none
 ; Output: T=Z; Z=Y; Y=X; X=X; OP1 preserved
-; Destroys: all, OP4
+; Destroys: all
 ; Preserves: OP1, OP2
 liftStackNonEmpty:
     bit inputBufFlagsClosedEmpty, (iy + inputBufFlags)
@@ -365,7 +387,7 @@ liftStackNonEmpty:
 ; Function: Lift the RPN stack, copying X to Y.
 ; Input: none
 ; Output: T=Z; Z=Y; Y=X; X=X; OP1 preserved
-; Destroys: all, OP4
+; Destroys: all
 ; Preserves: OP1, OP2
 ; TODO: Make this more efficient by taking advantage of the fact that stack
 ; registers are actually in a list variable named STK.
@@ -389,7 +411,7 @@ liftStack:
 ; Function: Drop the RPN stack, copying T to Z.
 ; Input: none
 ; Output: X=Y; Y=Z; Z=T; T=T; OP1 preserved
-; Destroys: all, OP4
+; Destroys: all
 ; Preserves: OP1, OP2
 ; TODO: Make this more efficient by taking advantage of the fact that stack
 ; registers are actually in a list variable named STK.
@@ -413,7 +435,7 @@ dropStack:
 ; Function: Rotate the RPN stack *down*.
 ; Input: none
 ; Output: X=Y; Y=Z; Z=T; T=X
-; Destroys: all, OP1, OP2, OP4
+; Destroys: all, OP1, OP2
 ; Preserves: none
 ; TODO: Make this more efficient by taking advantage of the fact that stack
 ; registers are actually in a list variable named STK.
@@ -440,7 +462,7 @@ rotDownStack:
 ; Function: Rotate the RPN stack *up*.
 ; Input: none
 ; Output: T=Z; Z=Y; Y=X; X=T
-; Destroys: all, OP1, OP2, OP4
+; Destroys: all, OP1, OP2
 ; Preserves: none
 ; TODO: Make this more efficient by taking advantage of the fact that stack
 ; registers are actually in a list variable named STK.
@@ -467,7 +489,7 @@ rotUpStack:
 ; Function: Exchange X<->Y.
 ; Input: none
 ; Output: X=Y; Y=X
-; Destroys: all, OP1, OP2, OP4
+; Destroys: all, OP1, OP2
 exchangeXYStack:
     call rclX
     bcall(_OP1ToOP2)

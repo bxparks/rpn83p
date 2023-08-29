@@ -55,13 +55,13 @@ mStatSumHandler:
     call rclNN ; OP1=Ysum
     ld a, statRegX
     call rclNNToOP2 ; OP2=Xsum
-    jp replaceXYWithOP1OP2
+    jp pushXY
 
 ; Description: Calculate the average of X and Y into X and Y registers.
 mStatMeanHandler:
     call closeInputBuf
     call statMean
-    jp replaceXYWithOP1OP2
+    jp pushXY
 
 ; Description: Calculate the average of X and Y into OP1 and OP2 registers.
 ; Output:
@@ -90,7 +90,7 @@ statMean:
 mStatWeightedMeanHandler:
     call closeInputBuf
     call statWeightedMean ; OP1=WeightedY, OP2=WeightedX
-    jp replaceXYWithOP1OP2
+    jp pushXY
 
 ; Description: Calculate the weighted mean of Y and X into OP1 and OP2,
 ; respectively.
@@ -117,7 +117,7 @@ mStatNHandler:
     call closeInputBuf
     ld a, statRegN
     call rclNN
-    jp replaceX
+    jp pushX
 
 ;-----------------------------------------------------------------------------
 
@@ -147,7 +147,7 @@ statFactorPopToSampleOP2:
 mStatPopSdevHandler:
     call closeInputBuf
     call statStdDev
-    jp replaceXYWithOP1OP2
+    jp pushXY
 
 ; Description: Calculate the sample standard deviation.
 ; Output:
@@ -168,7 +168,7 @@ mStatSampleSdevHandler:
     bcall(_PopRealO2) ; OP2=SVAR(Y)
     bcall(_OP1ExOP2) ; OP1=SVAR(Y), OP2=SVAR(X)
     call statStdDevAltEntry
-    jp replaceXYWithOP1OP2
+    jp pushXY
 
 ; Description: Calculate the population standard deviation.
 ; Output:
@@ -238,7 +238,7 @@ statVariance:
 mStatPopCovHandler:
     call closeInputBuf
     call statCovariance
-    jp replaceX
+    jp pushX
 
 ; Description: Calculate the sample covariance. SCOV<X,Y> = (N/(N-1)) PCOV(X,Y).
 ; See https://en.wikipedia.org/wiki/Sample_mean_and_covariance
@@ -250,7 +250,7 @@ mStatSampleCovHandler:
     call statCovariance ; OP1=PCOV(X,Y)
     call statFactorPopToSampleOP2 ; OP2=N/(N-1)
     bcall(_FPMult); OP1=SCOV(X,Y)
-    jp replaceX
+    jp pushX
 
 ; Description: Calculate the population covariance of X and Y.
 ; PCOV(X, Y) = <XY> - <X><Y>).
