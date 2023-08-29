@@ -338,6 +338,18 @@ replaceXWithOP1OP2:
     bcall(_OP2ToOP1)
     jp stoX
 
+; Description: Push OP1 to the X register, saving the previous X into LastX.
+; Input: X, OP1
+; Output:
+;   - Stack lifted
+;   - LastX=X
+;   - X=OP1
+; Destroys: all, OP4
+; Preserves: OP1, OP2
+pushX:
+    call liftStackNonEmpty
+    jp stoX
+
 ;-----------------------------------------------------------------------------
 
 ; Function: Lift the RPN stack, if inputBuf was not empty when closed.

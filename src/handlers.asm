@@ -872,9 +872,7 @@ handleKeyPi:
     ret nz
     call closeInputBuf
     call op1SetPi
-    call liftStackNonEmpty
-    call stoX
-    ret
+    jp pushX
 
 handleKeyEuler:
     ; Do nothing in command arg mode.
@@ -882,9 +880,7 @@ handleKeyEuler:
     ret nz
     call closeInputBuf
     call op1SetEuler
-    call liftStackNonEmpty
-    call stoX
-    ret
+    jp pushX
 
 ;-----------------------------------------------------------------------------
 ; Alegbraic functions.
@@ -950,8 +946,7 @@ handleKeyAns:
     ret nz
     call closeInputBuf
     call rclL
-    call liftStackNonEmpty
-    jp stoX
+    jp pushX
 
 ;-----------------------------------------------------------------------------
 ; Transcendentals
@@ -1095,8 +1090,7 @@ handleKeyRclCallback:
     jp setHandlerCode
 handleKeyRclCallbackContinue:
     call rclNN
-    call liftStackNonEmpty
-    jp stoX
+    jp pushX
 
 msgStoName:
     .db "STO", 0

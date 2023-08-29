@@ -675,9 +675,7 @@ mFactorialHandler:
 mRandomHandler:
     call closeInputBuf
     bcall(_Random)
-    call liftStackNonEmpty
-    call stoX
-    ret
+    jp pushX
 
 ;-----------------------------------------------------------------------------
 
