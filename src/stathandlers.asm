@@ -83,27 +83,34 @@ statMean:
     bcall(_PopRealO2) ; OP2=<X>
     ret
 
-; Description: Calculate the average of X, weighted by Y into the X register.
-; Weighted Sum(X,Y) = Sum(XY) / Sum(Y).
-mStatWeightedMeanXHandler:
+; Description: Calculate the weighted mean of X and Y.
+; Output:
+;   Y: Mean of Y weighted by X = Sum(X,Y) / Sum(X)
+;   X: Mean of X weighted by Y = Sum(X,Y) / Sum(Y)
+mStatWeightedMeanHandler:
     call closeInputBuf
+    call statWeightedMean ; OP1=WeightedY, OP2=WeightedX
+    jp replaceXYWithOP1OP2
+
+; Description: Calculate the weighted mean of Y and X into OP1 and OP2,
+; respectively.
+; Output:
+;   OP1: Mean of Y weighted by X = Sum(X,Y) / Sum(X)
+;   OP2: Mean of X weighted by Y = Sum(X,Y) / Sum(Y)
+statWeightedMean:
     ld a, statRegXY
     call rclNN
+    bcall(_PushRealO1) ; FPS=SumXY
     ld a, statRegY
     call rclNNToOP2
-    bcall(_FPDiv)
-    jp replaceX
-
-; Description: Average of Y, weighted by X into the X register.
-; Weighted Sum(X,Y) = Sum(XY) / Sum(X).
-mStatWeightedMeanYHandler:
-    call closeInputBuf
-    ld a, statRegXY
-    call rclNN
+    bcall(_FPDiv) ; OP1=SumXY/SumY
+    ;
+    call exchangeFPSOP1 ; OP1=SumXY, FPS=SumXY/SumY
     ld a, statRegX
-    call rclNNToOP2
-    bcall(_FPDiv)
-    jp replaceX
+    call rclNNToOP2 ; OP2=SumX
+    bcall(_FPDiv) ; OP1=SumXY/SumX=WeightedY
+    bcall(_PopRealO2); OP2=SumXY/SumY=WeightedX
+    ret
 
 ; Description: Return the number of items entered. Mostly for convenience.
 mStatNHandler:

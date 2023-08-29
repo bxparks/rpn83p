@@ -189,8 +189,7 @@ MenuGroup root mRoot [
       MenuRow [
         MenuItem SUM mStatSum
         MenuItem MEAN mStatMean
-        MenuItem WMNX mStatWeightedMeanX
-        MenuItem WMNY mStatWeightedMeanY
+        MenuItem WMN mStatWeightedMean
         MenuItem N mStatN
       ]
       MenuRow [
