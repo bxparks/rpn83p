@@ -10,6 +10,13 @@ statRegY equ 13
 statRegY2 equ 14
 statRegXY equ 15
 statRegN equ 16
+statRegLnX equ 17
+statRegLnX2 equ 18
+statRegLnY equ 19
+statRegLnY2 equ 20
+statRegLnXLnY equ 21
+statRegXLnY equ 22
+statRegYLnX equ 23
 
 ;-----------------------------------------------------------------------------
 ; STAT Menu handlers.
@@ -418,6 +425,8 @@ mStatPwrFitNameSelector:
 
 ;-----------------------------------------------------------------------------
 
+; Description: Add the X and Y data point to the stat registers.
+; Destroys: OP1, OP2, OP4
 statSigmaPlus:
     call rclX
     bcall(_PushRealO1) ; FPST=X
@@ -447,8 +456,83 @@ statSigmaPlus:
     call rclNN
     bcall(_Plus1)
     ld a, statRegN
-    jp stoNN
+    call stoNN
 
+    ; Check if we need to update the extended STAT registers.
+    bit rpnFlagsAllStatEnabled, (iy + rpnFlags)
+    ret z
+
+statSigmaPlusLogX:
+    ; Update lnX registers.
+    call rclX
+    bcall(_CkOP1Pos) ; if OP1 > 0: ZF=1
+    jr z, statSigmaPlusLogXNormal
+    bcall(_OP1Set0) ; set lnX=0.0
+    jr statSigmaPlusLogXZero
+statSigmaPlusLogXNormal:
+    bcall(_PushRealO1) ; FPST=X
+    bcall(_LnX) ; OP1=lnX
+statSigmaPlusLogXZero:
+    bcall(_PushRealO1)
+    bcall(_PushRealO1) ; FPST=FPS1=lnX
+    ld a, statRegLnX
+    call stoPlusNN
+    ;
+    bcall(_PopRealO1) ; OP1=lnX
+    bcall(_FPSquare) ; OP1=(lnX)^2
+    ld a, statRegLnX2
+    call stoPlusNN
+
+statSigmaPlusLogY:
+    ; Update lnY registers
+    call rclY
+    bcall(_CkOP1Pos) ; if OP1 > 0: ZF=1
+    jr z, statSigmaPlusLogYNormal
+    bcall(_OP1Set0) ; set lnY=0.0
+    jr statSigmaPlusLogYZero
+statSigmaPlusLogYNormal:
+    bcall(_PushRealO1) ; FPST=Y
+    bcall(_LnX) ; OP1=lnY
+statSigmaPlusLogYZero:
+    bcall(_PushRealO1)
+    bcall(_PushRealO1) ; FPST=FPS1=lnY
+    ld a, statRegLnY
+    call stoPlusNN
+    ;
+    bcall(_PopRealO1) ; OP1=lnY
+    bcall(_FPSquare) ; OP1=(lnY)^2
+    ld a, statRegLnY2
+    call stoPlusNN
+
+    ; Update XlnY, YlnY, lnXlnY
+    ; The FPS contains the following stack elements:
+    ;   FPS0=lnY
+    ;   FPS1=Y
+    ;   FPS2=lnX
+    ;   FPS3=X
+    bcall(_PopRealO4) ; OP4=lnY
+    bcall(_PopRealO1) ; OP1=Y
+    bcall(_PopRealO2) ; OP2=lnX
+    bcall(_FPMult) ; OP1=YlnX
+    ld a, statRegYLnX
+    call stoPlusNN
+    ;
+    bcall(_PopRealO1) ; OP1=X
+    bcall(_OP2ExOP4) ; OP2=lnY, OP4=lnX
+    bcall(_FPMult) ; OP1=XlnY
+    ld a, statRegXLnY
+    call stoPlusNN
+    ;
+    bcall(_OP4ToOP1) ; OP1=lnX, OP2=lnY
+    bcall(_FPMult) ; OP1=lnXlnY
+    ld a, statRegLnXLnY
+    call stoPlusNN
+    ret
+
+;-----------------------------------------------------------------------------
+
+; Description: Subtract the X and Y data point from the stat registers.
+; Destroys: OP1, OP2, OP4
 statSigmaMinus:
     call rclX
     bcall(_PushRealO1) ; FPST=X
@@ -478,4 +562,74 @@ statSigmaMinus:
     call rclNN
     bcall(_Minus1)
     ld a, statRegN
-    jp stoNN
+    call stoNN
+
+    ; Check if we need to update the extended STAT registers.
+    bit rpnFlagsAllStatEnabled, (iy + rpnFlags)
+    ret z
+
+statSigmaMinusLogX:
+    ; Update lnX registers.
+    call rclX
+    bcall(_CkOP1Pos) ; if OP1 > 0: ZF=1
+    jr z, statSigmaMinusLogXNormal
+    bcall(_OP1Set0) ; set lnX=0.0
+    jr statSigmaMinusLogXZero
+statSigmaMinusLogXNormal:
+    bcall(_PushRealO1) ; FPST=X
+    bcall(_LnX) ; OP1=lnX
+statSigmaMinusLogXZero:
+    bcall(_PushRealO1)
+    bcall(_PushRealO1) ; FPST=FPS1=lnX
+    ld a, statRegLnX
+    call stoMinusNN
+    ;
+    bcall(_PopRealO1) ; OP1=lnX
+    bcall(_FPSquare) ; OP1=(lnX)^2
+    ld a, statRegLnX2
+    call stoMinusNN
+
+    ; Update lnY registers
+    call rclY
+    bcall(_CkOP1Pos) ; if OP1 > 0: ZF=1
+    jr z, statSigmaMinusLogYNormal
+    bcall(_OP1Set0) ; set lnY=0.0
+    jr statSigmaMinusLogYZero
+statSigmaMinusLogYNormal:
+    bcall(_PushRealO1) ; FPST=Y
+    bcall(_LnX) ; OP1=lnY
+statSigmaMinusLogYZero:
+    bcall(_PushRealO1)
+    bcall(_PushRealO1) ; FPST=FPS1=lnY
+    ld a, statRegLnY
+    call stoMinusNN
+    ;
+    bcall(_PopRealO1) ; OP1=lnY
+    bcall(_FPSquare) ; OP1=(lnY)^2
+    ld a, statRegLnY2
+    call stoMinusNN
+
+    ; Update XlnY, YlnY, lnXlnY
+    ; The FPS contains the following stack elements:
+    ;   FPS0=lnY
+    ;   FPS1=Y
+    ;   FPS2=lnX
+    ;   FPS3=X
+    bcall(_PopRealO4) ; OP4=lnY
+    bcall(_PopRealO1) ; OP1=Y
+    bcall(_PopRealO2) ; OP2=lnX
+    bcall(_FPMult) ; OP1=YlnX
+    ld a, statRegYLnX
+    call stoMinusNN
+    ;
+    bcall(_PopRealO1) ; OP1=X
+    bcall(_OP2ExOP4) ; OP2=lnY, OP4=lnX
+    bcall(_FPMult) ; OP1=XlnY
+    ld a, statRegXLnY
+    call stoMinusNN
+    ;
+    bcall(_OP4ToOP1) ; OP1=lnX, OP2=lnY
+    bcall(_FPMult) ; OP1=lnXlnY
+    ld a, statRegLnXLnY
+    call stoMinusNN
+    ret
