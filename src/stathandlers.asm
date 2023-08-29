@@ -31,12 +31,38 @@ mStatMinusHandler:
     res rpnFlagsLiftEnabled, (iy + rpnFlags)
     jp replaceX
 
-mStatAllRegsHandler:
-mStatLinearRegsHandler:
-    jp mNotYetHandler
+; Description: Initialize the STAT functions.
+initStat:
+    ; [[fallthrough]]
 
-mStatAllRegsNameSelector:
-mStatLinearRegsNameSelector:
+; Description: Set STAT mode to ALL.
+mStatAllModeHandler:
+    set rpnFlagsAllStatEnabled, (iy + rpnFlags)
+    set dirtyFlagsMenu, (iy + dirtyFlags)
+    ret
+
+; Description: Set STAT mode to LINEAR.
+mStatLinearModeHandler:
+    res rpnFlagsAllStatEnabled, (iy + rpnFlags)
+    set dirtyFlagsMenu, (iy + dirtyFlags)
+    ret
+
+; Description: Select the display name of 'ALL<Sigma>'.
+; Input:
+;   - A: nameId
+;   - B: base (2, 8, 10, 16)
+;   - C: altNameId
+mStatAllModeNameSelector:
+    bit rpnFlagsAllStatEnabled, (iy + rpnFlags)
+    ret z
+    ld a, c
+    ret
+
+; Description: Select the display name of 'LIN<Sigma>'.
+mStatLinearModeNameSelector:
+    bit rpnFlagsAllStatEnabled, (iy + rpnFlags)
+    ret nz
+    ld a, c
     ret
 
 mStatClearHandler:

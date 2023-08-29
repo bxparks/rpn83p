@@ -180,10 +180,8 @@ MenuGroup root mRoot [
       MenuRow [
         MenuItem <ScapSigma><SplusSign> mStatPlus
         MenuItem <ScapSigma><Sdash> mStatMinus
-        # MenuItemAlt ALL<ScapSigma> ALL<Sblock> mStatAllRegs
-        # MenuItemAlt LIN<ScapSigma> LIN<Sblock> mStatLinearRegs
-        MenuItem * *
-        MenuItem * *
+        MenuItemAlt ALL<ScapSigma> ALL<Sblock> mStatAllMode
+        MenuItemAlt LIN<ScapSigma> LIN<Sblock> mStatLinearMode
         MenuItem CL<ScapSigma> mStatClear
       ]
       MenuRow [

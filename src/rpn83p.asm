@@ -73,6 +73,7 @@ rpnFlags equ asm_Flag2
 rpnFlagsEditing equ 0 ; set if in edit mode
 rpnFlagsArgMode equ 1 ; set if in command argument mode
 rpnFlagsLiftEnabled equ 2 ; set if stack lift is enabled (ENTER disables it)
+rpnFlagsAllStatEnabled equ 3 ; set if Sigma+ updates logarithm registers
 
 ; Flags for the inputBuf. Offset from IY register.
 inputBufFlags equ asm_Flag3
@@ -219,7 +220,6 @@ main:
     res lwrCaseActive, (iy + appLwrCaseFlag) ; disable ALPHA-ALPHA lowercase
     bcall(_ClrLCDFull)
 
-    call initBase
     call initErrorCode
     call initInputBuf
     call initArgBuf
@@ -227,6 +227,8 @@ main:
     call initRegs
     call initMenu
     call initDisplay
+    call initBase
+    call initStat
     ; [[fall through]]
 
 ; The main event/read loop. Read button and dispatch to the appropriate
