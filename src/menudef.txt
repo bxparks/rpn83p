@@ -180,8 +180,10 @@ MenuGroup root mRoot [
       MenuRow [
         MenuItem <ScapSigma><SplusSign> mStatPlus
         MenuItem <ScapSigma><Sdash> mStatMinus
-        MenuItemAlt ALL<ScapSigma> ALL<Sblock> mStatAllRegs
-        MenuItemAlt LIN<ScapSigma> LIN<Sblock> mStatLinearRegs
+        # MenuItemAlt ALL<ScapSigma> ALL<Sblock> mStatAllRegs
+        # MenuItemAlt LIN<ScapSigma> LIN<Sblock> mStatLinearRegs
+        MenuItem * *
+        MenuItem * *
         MenuItem CL<ScapSigma> mStatClear
       ]
       MenuRow [
@@ -197,13 +199,13 @@ MenuGroup root mRoot [
         MenuItem SCOV mStatSampleCov
         MenuItem PCOV mStatPopCov
       ]
-      # MenuRow [
-      #   MenuItem <Sconvert>X mStatCalcX
-      #   MenuItem <Sconvert>Y mStatCalcY
-      #   MenuItem SLOP mStatSlope
-      #   MenuItem YINT mStatIntercept
-      #   MenuItem CORR mStatCorrelation
-      # ]
+      MenuRow [
+        MenuItem X<Sconvert>Y mStatForcastY
+        MenuItem Y<Sconvert>X mStatForcastX
+        MenuItem SLOP mStatSlope
+        MenuItem YINT mStatIntercept
+        MenuItem CORR mStatCorrelation
+      ]
       # MenuRow [
       #   MenuItemAlt LINF LIN<Sblock> mStatLinFit
       #   MenuItemAlt LOGF LOG<Sblock> mStatLogFit

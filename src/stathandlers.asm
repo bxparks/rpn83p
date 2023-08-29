@@ -48,6 +48,7 @@ mClearStatHandler:
 
 ;-----------------------------------------------------------------------------
 
+; Description: Calculate the Sum of X and Y into X and Y registers.
 mStatSumHandler:
     call closeInputBuf
     ld a, statRegY
@@ -56,8 +57,17 @@ mStatSumHandler:
     call rclNNToOP2 ; OP2=Xsum
     jp replaceXYWithOP1OP2
 
+; Description: Calculate the average of X and Y into X and Y registers.
 mStatMeanHandler:
     call closeInputBuf
+    call statMean
+    jp replaceXYWithOP1OP2
+
+; Description: Calculate the average of X and Y into OP1 and OP2 registers.
+; Output:
+;   OP1=<Y>
+;   OP2=<X>
+statMean:
     ld a, statRegX
     call rclNN
     ld a, statRegN
@@ -69,11 +79,12 @@ mStatMeanHandler:
     call rclNN
     ld a, statRegN
     call rclNNToOP2
-    bcall(_FPDiv) ; OP1=Ymean
-    bcall(_PopRealO2) ; OP2=Xmean
-    jp replaceXYWithOP1OP2
+    bcall(_FPDiv) ; OP1=<Y>
+    bcall(_PopRealO2) ; OP2=<X>
+    ret
 
-; Description: Average of X, weighted by Y. Sum(XY) / Sum(Y).
+; Description: Calculate the average of X, weighted by Y into the X register.
+; Weighted Sum(X,Y) = Sum(XY) / Sum(Y).
 mStatWeightedMeanXHandler:
     call closeInputBuf
     ld a, statRegXY
@@ -83,7 +94,8 @@ mStatWeightedMeanXHandler:
     bcall(_FPDiv)
     jp replaceX
 
-; Description: Average of Y, weighted by X. Sum(XY) / Sum(X).
+; Description: Average of Y, weighted by X into the X register.
+; Weighted Sum(X,Y) = Sum(XY) / Sum(X).
 mStatWeightedMeanYHandler:
     call closeInputBuf
     ld a, statRegXY
@@ -127,14 +139,7 @@ statFactorPopToSampleOP2:
 ; Destroys: A, OP2, OP3, OP4
 mStatPopSdevHandler:
     call closeInputBuf
-    call statVariance ; OP1=VAR(Y), OP2=VAR(X)
-mStatPopSdevAltEntry:
-    bcall(_PushRealO2) ; FPS=VAR(X)
-    bcall(_SqRoot) ; OP1=PDEV(Y)
-    call exchangeFPSOP1 ; OP1=VAR(X); FPS=PDEV(Y)
-    bcall(_SqRoot) ; OP1=PDEV(X)
-    bcall(_PopRealO2) ; OP2=PDEV(Y)
-    bcall(_OP1ExOP2) ; OP1=PDEV(Y), OP2=PDEV(X)
+    call statStdDev
     jp replaceXYWithOP1OP2
 
 ; Description: Calculate the sample standard deviation.
@@ -155,7 +160,23 @@ mStatSampleSdevHandler:
     bcall(_FPMult) ; OP1=SVAR(X)
     bcall(_PopRealO2) ; OP2=SVAR(Y)
     bcall(_OP1ExOP2) ; OP1=SVAR(Y), OP2=SVAR(X)
-    jr mStatPopSdevAltEntry
+    call statStdDevAltEntry
+    jp replaceXYWithOP1OP2
+
+; Description: Calculate the population standard deviation.
+; Output:
+;   OP1=PDEV<Y>
+;   OP2=PDEV<X>
+statStdDev:
+    call statVariance ; OP1=VAR(Y), OP2=VAR(X)
+statStdDevAltEntry:
+    bcall(_PushRealO2) ; FPS=VAR(X)
+    bcall(_SqRoot) ; OP1=PDEV(Y)
+    call exchangeFPSOP1 ; OP1=VAR(X); FPS=PDEV(Y)
+    bcall(_SqRoot) ; OP1=PDEV(X)
+    bcall(_PopRealO2) ; OP2=PDEV(Y)
+    bcall(_OP1ExOP2) ; OP1=PDEV(Y), OP2=PDEV(X)
+    ret
 
 ; Description: Calculate the population variance.
 ; Var(X) = Sum(X_i^2 - <X>^2) / N = <X^2> - <X>^2
@@ -261,12 +282,71 @@ statCovariance:
 
 ;-----------------------------------------------------------------------------
 
-mStatCalcXHandler:
-mStatCalcYHandler:
-mStatSlopeHandler:
-mStatInterceptHandler:
-mStatCorrelationHandler:
+mStatForcastXHandler:
+mStatForcastYHandler:
     jp mNotYetHandler
+
+; Description: Calculate the least square fit slope into X register.
+mStatSlopeHandler:
+    call closeInputBuf
+    call statLinearFit ; OP1=intercept,OP2=slope
+    bcall(_OP1ExOP2)
+    jp replaceX
+
+; Description: Calculate the least square fit intercept into X register.
+mStatInterceptHandler:
+    call closeInputBuf
+    call statLinearFit ; OP1=intercept,OP2=slope
+    jp replaceX
+
+; Description: Calculate the least square linear fit.
+; Output:
+;   OP1=SLOP(X,Y) = CORR(X,Y) (StdDev(Y)/StdDev(X)).
+;   OP2=YINT(X,,Y) = <Y> - SLOP(X,Y) * <X>
+;
+; Either Population or Sample can be used, because the N/(N-1) terms cancel
+; out. See https://en.wikipedia.org/wiki/Simple_linear_regression
+statLinearFit:
+    ; Calculate slope.
+    call statStdDev ; OP1=PDEV(Y), OP2=PDEV(X)
+    bcall(_FPDiv) ; OP1=PDEV(Y)/PDEV(X)
+    bcall(_PushRealO1)
+    call statCorrelation ; OP1=CORR(X,Y)
+    bcall(_PopRealO2)
+    bcall(_FPMult) ; OP1=SLOP=CORR(X,Y) * StdDev(Y) / StdDev(X)
+    bcall(_PushRealO1) ; FPS=slope
+
+    ; Calculate intercept.
+    bcall(_PushRealO1) ; FPS=slope again
+    call statMean; OP1=<Y>, OP2=<X>
+    call exchangeFPSOP1 ; OP1=SLOP, FPS=<Y>
+    bcall(_FPMult) ; OP1=SLOP * <X>
+    bcall(_PopRealO2) ; OP2 = <Y>
+    bcall(_InvSub) ; OP1 = -SLOP * <X> + <Y> = intercept
+
+    bcall(_PopRealO2) ; OP2=slope
+    ret
+
+; Description: Calculate the correlation coefficient into X register.
+mStatCorrelationHandler:
+    call closeInputBuf
+    call statCorrelation
+    jp replaceX
+
+; Description: Calculate the correslation coeficient into OP1.
+; R(X,,Y) = COV(X,Y)/StdDev(X)/StdDev(Y).
+;
+; Either Population or Sample versions can be used, because the N/(N-1) terms
+; cancel out. See https://en.wikipedia.org/wiki/Correlation
+statCorrelation:
+    call statCovariance ; OP1=COV(X, Y)
+    bcall(_PushRealO1)
+    call statStdDev ; OP1=STDDEV(Y), OP2=STDDEV(X)
+    call exchangeFPSOP1 ; OP1=COV(X,Y), FPS=STDDEV(Y)
+    bcall(_FPDiv) ; OP1=COV(X,Y)/STDDEV(X)
+    bcall(_PopRealO2) ; OP2=STDDEV(Y)
+    bcall(_FPDiv) ; OP1=COV(X,Y)/STDDEV(X)/STDDEV(Y)
+    ret
 
 ;-----------------------------------------------------------------------------
 
