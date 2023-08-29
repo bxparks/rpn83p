@@ -282,22 +282,42 @@ statCovariance:
 
 ;-----------------------------------------------------------------------------
 
-mStatForcastXHandler:
+; Description: Forecast Y from X.
 mStatForcastYHandler:
-    jp mNotYetHandler
+    call closeInputBuf
+    call rclX ; OP1=X
+    bcall(_PushRealO1) ; FPS=X
+    call statLinearFit ; OP1=intercept,OP2=slope
+    call exchangeFPSOP1 ; OP1=X, FPS=intercept
+    bcall(_FPMult) ; OP1=slope*X
+    bcall(_PopRealO2) ; OP2=intercept
+    bcall(_FPAdd) ; OP1=slope*X + intercept
+    jp replaceX
+
+; Description: Forecast X from Y.
+mStatForcastXHandler:
+    call closeInputBuf
+    call rclX ; OP1=X=y
+    bcall(_PushRealO1) ; FPS=y
+    call statLinearFit ; OP1=intercept,OP2=slope
+    call exchangeFPSOP2 ; OP2=y, FPS=slope
+    bcall(_InvSub) ; OP1=y-intercept
+    bcall(_PopRealO2) ; OP2=slope
+    bcall(_FPDiv) ; OP1=(y-intercept) / slope = x
+    jp replaceX
 
 ; Description: Calculate the least square fit slope into X register.
 mStatSlopeHandler:
     call closeInputBuf
     call statLinearFit ; OP1=intercept,OP2=slope
     bcall(_OP1ExOP2)
-    jp replaceX
+    jp pushX
 
 ; Description: Calculate the least square fit intercept into X register.
 mStatInterceptHandler:
     call closeInputBuf
     call statLinearFit ; OP1=intercept,OP2=slope
-    jp replaceX
+    jp pushX
 
 ; Description: Calculate the least square linear fit.
 ; Output:
@@ -331,7 +351,7 @@ statLinearFit:
 mStatCorrelationHandler:
     call closeInputBuf
     call statCorrelation
-    jp replaceX
+    jp pushX
 
 ; Description: Calculate the correslation coeficient into OP1.
 ; R(X,,Y) = COV(X,Y)/StdDev(X)/StdDev(Y).
