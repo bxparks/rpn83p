@@ -587,6 +587,7 @@ clearRegsLoop:
 ; Output:
 ;   - REGS[NN] = OP1
 ; Destroys: all
+; Preserves: OP1
 stoNN:
     inc a ; change from 0-based to 1-based
     push af
@@ -638,32 +639,44 @@ rclNNToOP2:
 ; Description: Add OP1 to storage register NN.
 ; Input:
 ;   OP1: float value
-;   A: register index NN, one-based
+;   A: register index NN, 0-based
 ; Output:
 ;   REGS[NN] += OP1
-; Destroys: all, OP1, OP2
+; Destroys: all
+; Preserves: OP1, OP2
 stoPlusNN:
     push af ; A=NN
+    bcall(_PushRealO1)
+    bcall(_PushRealO2)
     bcall(_OP1ToOP2)
     call rclNN
     bcall(_FPAdd) ; OP1 += OP2
     pop af ; A=NN
-    jp stoNN
+    call stoNN
+    bcall(_PopRealO2)
+    bcall(_PopRealO1)
+    ret
 
 ; Description: Subtract OP1 from storage register NN.
 ; Input:
 ;   OP1: float value
-;   A: register index NN, one-based
+;   A: register index NN, 0-based
 ; Output:
 ;   REGS[NN] += OP1
-; Destroys: all, OP1, OP2
+; Destroys: all
+; Preserves: OP1, OP2
 stoMinusNN:
     push af ; A=NN
+    bcall(_PushRealO1)
+    bcall(_PushRealO2)
     bcall(_OP1ToOP2)
     call rclNN
     bcall(_FPSub) ; OP1 -= OP2
     pop af ; A=NN
-    jp stoNN
+    call stoNN
+    bcall(_PopRealO2)
+    bcall(_PopRealO1)
+    ret
 
 ;-----------------------------------------------------------------------------
 

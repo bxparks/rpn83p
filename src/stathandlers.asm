@@ -420,26 +420,25 @@ mStatPwrFitNameSelector:
 
 statSigmaPlus:
     call rclX
+    bcall(_PushRealO1) ; FPST=X
     ld a, statRegX
     call stoPlusNN
 
-    call rclY
-    ld a, statRegY
-    call stoPlusNN
-
-    call rclX
-    bcall(_FPSquare)
+    bcall(_FPSquare) ; OP1=X^2
     ld a, statRegX2
     call stoPlusNN
 
     call rclY
-    bcall(_FPSquare)
+    bcall(_PushRealO1) ; FPST=Y
+    ld a, statRegY
+    call stoPlusNN
+
+    bcall(_FPSquare) ; OP1=Y^2
     ld a, statRegY2
     call stoPlusNN
 
-    call rclX
-    bcall(_OP1ToOP2)
-    call rclY
+    bcall(_PopRealO2) ; OP2=Y
+    bcall(_PopRealO1) ; OP1=X
     bcall(_FPMult)
     ld a, statRegXY
     call stoPlusNN
@@ -452,26 +451,25 @@ statSigmaPlus:
 
 statSigmaMinus:
     call rclX
+    bcall(_PushRealO1) ; FPST=X
     ld a, statRegX
     call stoMinusNN
 
-    call rclY
-    ld a, statRegY
-    call stoMinusNN
-
-    call rclX
-    bcall(_FPSquare)
+    bcall(_FPSquare) ; OP1=X^2
     ld a, statRegX2
     call stoMinusNN
 
     call rclY
-    bcall(_FPSquare)
+    bcall(_PushRealO1) ; FPST=Y
+    ld a, statRegY
+    call stoMinusNN
+
+    bcall(_FPSquare) ; OP1=Y^2
     ld a, statRegY2
     call stoMinusNN
 
-    call rclX
-    bcall(_OP1ToOP2)
-    call rclY
+    bcall(_PopRealO2) ; OP2=Y
+    bcall(_PopRealO1) ; OP1=X
     bcall(_FPMult)
     ld a, statRegXY
     call stoMinusNN
