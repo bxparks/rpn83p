@@ -940,17 +940,8 @@ mStatSampleSdevId equ 97
     .db 0 ; rowBeginId or altNameId
     .dw mStatSampleSdevHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
-mStatPopSdev:
-mStatPopSdevId equ 98
-    .db mStatPopSdevId ; id
-    .db mStatId ; parentId
-    .db mStatPopSdevNameId ; nameId
-    .db 0 ; numRows
-    .db 0 ; rowBeginId or altNameId
-    .dw mStatPopSdevHandler ; handler (to be implemented)
-    .dw 0 ; nameSelector
 mStatSampleCov:
-mStatSampleCovId equ 99
+mStatSampleCovId equ 98
     .db mStatSampleCovId ; id
     .db mStatId ; parentId
     .db mStatSampleCovNameId ; nameId
@@ -958,23 +949,32 @@ mStatSampleCovId equ 99
     .db 0 ; rowBeginId or altNameId
     .dw mStatSampleCovHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
+mBlank099:
+mBlank099Id equ 99
+    .db mBlank099Id ; id
+    .db mStatId ; parentId
+    .db mNullNameId ; nameId
+    .db 0 ; numRows
+    .db 0 ; rowBeginId or altNameId
+    .dw mNullHandler ; handler (predefined)
+    .dw 0 ; nameSelector
+mStatPopSdev:
+mStatPopSdevId equ 100
+    .db mStatPopSdevId ; id
+    .db mStatId ; parentId
+    .db mStatPopSdevNameId ; nameId
+    .db 0 ; numRows
+    .db 0 ; rowBeginId or altNameId
+    .dw mStatPopSdevHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
 mStatPopCov:
-mStatPopCovId equ 100
+mStatPopCovId equ 101
     .db mStatPopCovId ; id
     .db mStatId ; parentId
     .db mStatPopCovNameId ; nameId
     .db 0 ; numRows
     .db 0 ; rowBeginId or altNameId
     .dw mStatPopCovHandler ; handler (to be implemented)
-    .dw 0 ; nameSelector
-mBlank101:
-mBlank101Id equ 101
-    .db mBlank101Id ; id
-    .db mStatId ; parentId
-    .db mNullNameId ; nameId
-    .db 0 ; numRows
-    .db 0 ; rowBeginId or altNameId
-    .dw mNullHandler ; handler (predefined)
     .dw 0 ; nameSelector
 ; MenuGroup STAT: children: row 3
 mStatForcastY:
@@ -1607,10 +1607,10 @@ mStatNNameId equ 80
     .dw mStatNName
 mStatSampleSdevNameId equ 81
     .dw mStatSampleSdevName
-mStatPopSdevNameId equ 82
-    .dw mStatPopSdevName
-mStatSampleCovNameId equ 83
+mStatSampleCovNameId equ 82
     .dw mStatSampleCovName
+mStatPopSdevNameId equ 83
+    .dw mStatPopSdevName
 mStatPopCovNameId equ 84
     .dw mStatPopCovName
 mStatForcastYNameId equ 85
@@ -1871,10 +1871,10 @@ mStatNName:
     .db "N", 0
 mStatSampleSdevName:
     .db "SDEV", 0
-mStatPopSdevName:
-    .db "PDEV", 0
 mStatSampleCovName:
     .db "SCOV", 0
+mStatPopSdevName:
+    .db "PDEV", 0
 mStatPopCovName:
     .db "PCOV", 0
 mStatForcastYName:

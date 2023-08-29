@@ -194,8 +194,9 @@ MenuGroup root mRoot [
       ]
       MenuRow [
         MenuItem SDEV mStatSampleSdev
-        MenuItem PDEV mStatPopSdev
         MenuItem SCOV mStatSampleCov
+        MenuItem * *
+        MenuItem PDEV mStatPopSdev
         MenuItem PCOV mStatPopCov
       ]
       MenuRow [
