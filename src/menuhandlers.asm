@@ -136,7 +136,7 @@ helpPages:
 
 msgHelpPage1:
     .db escapeLargeFont, "RPN83P", Lenter
-    .db escapeSmallFont, "v0.5.0-dev (2023", Shyphen, "08", Shyphen, "24)", Senter
+    .db escapeSmallFont, "v0.5.0-dev (2023", Shyphen, "08", Shyphen, "29)", Senter
     .db "(c) 2023  Brian T. Park", Senter
     .db Senter
     .db "An RPN calculator for the", Senter
@@ -173,10 +173,10 @@ msgHelpPage3:
 msgHelpPage4:
     .db escapeLargeFont, "Menu Navigation", Lenter
     .db escapeSmallFont, Senter
-    .db "Menu Home:  MATH", Senter
-    .db "Menu Prev:  UP", Senter
-    .db "Menu Next:  DOWN", Senter
-    .db "Menu Back:  ON", Senter
+    .db "Home:  MATH", Senter
+    .db "Prev Row:  UP", Senter
+    .db "Next Row:  DOWN", Senter
+    .db "Back:  ON", Senter
     .db "Quit App:  2ND QUIT", Senter
     .db Senter
     .db SlBrack, "4/4", SrBrack, " Any key to return.", Senter
