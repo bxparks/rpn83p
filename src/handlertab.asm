@@ -10,7 +10,7 @@
 ; search can be used instead of a linear search.
 ;-----------------------------------------------------------------------------
 
-keyCodeHandlerTableSize equ 58
+keyCodeHandlerTableSize equ 59
 kOnExit equ 0 ; ON key generates 00 as the key code
 
 keyCodeHandlerTable:
@@ -212,3 +212,7 @@ keyCodeHandlerTable:
     ; MODE button bound to MODE menu.
     .db kMode
     .dw handleKeyMode
+
+    ; STAT button bound to STAT menu.
+    .db kStat
+    .dw handleKeyStat

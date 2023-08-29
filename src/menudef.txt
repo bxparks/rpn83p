@@ -132,13 +132,32 @@ MenuGroup root mRoot [
     MenuItem HELP mHelp
   ]
   MenuRow [
-    MenuGroup MODE mMode [
+    MenuGroup BASE mBase [
       MenuRow [
-        MenuItemAlt FIX FIX<Sblock> mFix
-        MenuItemAlt SCI SCI<Sblock> mSci
-        MenuItemAlt ENG ENG<Sblock> mEng
-        MenuItemAlt RAD RAD<Sblock> mRad
-        MenuItemAlt DEG DEG<Sblock> mDeg
+        MenuItemAlt DEC DEC<Sblock> mDec # decimal
+        MenuItemAlt HEX HEX<Sblock> mHex # hexadecimal
+        MenuItemAlt OCT OCT<Sblock> mOct # octal
+        MenuItemAlt BIN BIN<Sblock> mBin # binary
+      ]
+      MenuRow [
+        MenuItem AND mBitwiseAnd
+        MenuItem OR mBitwiseOr
+        MenuItem XOR mBitwiseXor
+        MenuItem NOT mBitwiseNot # 1's complement
+        MenuItem NEG mBitwiseNeg # 2's complement
+      ]
+      MenuRow [
+        MenuItem SL mShiftLeft # shift left logical
+        MenuItem SR mShiftRight # shift right logical
+        MenuItem RL mRotateLeft # rotate left circular
+        MenuItem RR mRotateRight # rotate right circular
+      ]
+      MenuRow [
+        MenuItem B<SplusSign> mBitwiseAdd
+        MenuItem B<Sdash> mBitwiseSubt
+        MenuItem B<Scross> mBitwiseMult
+        MenuItem B<Sslash> mBitwiseDiv
+        MenuItem BDIV mBitwiseDiv2
       ]
     ]
     MenuGroup HYP mHyperbolic [
@@ -156,6 +175,44 @@ MenuGroup root mRoot [
         MenuItem ATNH mAtanh
         MenuItem * *
       ]
+    ]
+    MenuGroup STAT mStat [
+      MenuRow [
+        MenuItem <ScapSigma><SplusSign> mStatPlus
+        MenuItem <ScapSigma><Sdash> mStatMinus
+        # MenuItemAlt ALL<ScapSigma> ALL<Sblock> mStatAllRegs
+        # MenuItemAlt LIN<ScapSigma> LIN<Sblock> mStatLinearRegs
+        MenuItem * *
+        MenuItem * *
+        MenuItem CL<ScapSigma> mStatClear
+      ]
+      MenuRow [
+        MenuItem SUM mStatSum
+        MenuItem MEAN mStatMean
+        MenuItem WMN mStatWeightedMean
+        MenuItem N mStatN
+      ]
+      MenuRow [
+        MenuItem SDEV mStatSampleSdev
+        MenuItem SCOV mStatSampleCov
+        MenuItem * *
+        MenuItem PDEV mStatPopSdev
+        MenuItem PCOV mStatPopCov
+      ]
+      MenuRow [
+        MenuItem X<Sconvert>Y mStatForcastY
+        MenuItem Y<Sconvert>X mStatForcastX
+        MenuItem SLOP mStatSlope
+        MenuItem YINT mStatIntercept
+        MenuItem CORR mStatCorrelation
+      ]
+      # MenuRow [
+      #   MenuItemAlt LINF LIN<Sblock> mStatLinFit
+      #   MenuItemAlt LOGF LOG<Sblock> mStatLogFit
+      #   MenuItemAlt EXPF EXP<Sblock> mStatExpFit
+      #   MenuItemAlt PWRF PWR<Sblock> mStatPwrFit
+      #   MenuItem BEST mStatBestFit
+      # ]
     ]
     MenuGroup UNIT mUnit [
       MenuRow [
@@ -215,32 +272,23 @@ MenuGroup root mRoot [
       #   MenuItem * *
       # ]
     ]
-    MenuGroup BASE mBase [
+  ]
+  MenuRow [
+    MenuGroup CLR mClear [
       MenuRow [
-        MenuItemAlt DEC DEC<Sblock> mDec # decimal
-        MenuItemAlt HEX HEX<Sblock> mHex # hexadecimal
-        MenuItemAlt OCT OCT<Sblock> mOct # octal
-        MenuItemAlt BIN BIN<Sblock> mBin # binary
+        MenuItem CLX mClearX
+        MenuItem CLST mClearStack
+        MenuItem CLRG mClearRegs
+        MenuItem CL<ScapSigma> mClearStat
       ]
+    ]
+    MenuGroup MODE mMode [
       MenuRow [
-        MenuItem AND mBitwiseAnd
-        MenuItem OR mBitwiseOr
-        MenuItem XOR mBitwiseXor
-        MenuItem NOT mBitwiseNot # 1's complement
-        MenuItem NEG mBitwiseNeg # 2's complement
-      ]
-      MenuRow [
-        MenuItem SL mShiftLeft # shift left logical
-        MenuItem SR mShiftRight # shift right logical
-        MenuItem RL mRotateLeft # rotate left circular
-        MenuItem RR mRotateRight # rotate right circular
-      ]
-      MenuRow [
-        MenuItem B<SplusSign> mBitwiseAdd
-        MenuItem B<Sdash> mBitwiseSubt
-        MenuItem B<Scross> mBitwiseMult
-        MenuItem B<Sslash> mBitwiseDiv
-        MenuItem BDIV mBitwiseDiv2
+        MenuItemAlt FIX FIX<Sblock> mFix
+        MenuItemAlt SCI SCI<Sblock> mSci
+        MenuItemAlt ENG ENG<Sblock> mEng
+        MenuItemAlt RAD RAD<Sblock> mRad
+        MenuItemAlt DEG DEG<Sblock> mDeg
       ]
     ]
     MenuGroup STK mStack [
@@ -250,15 +298,6 @@ MenuGroup root mRoot [
         MenuItem R<SdownArrow> mStackRotDown
         MenuItem X<Sleft><Sconvert>Y mStackExchangeXY
         MenuItem * *
-      ]
-    ]
-  ]
-  MenuRow [
-    MenuGroup CLR mClear [
-      MenuRow [
-        MenuItem CLX mClearX
-        MenuItem CLST mClearStack
-        MenuItem CLRG mClearRegs
       ]
     ]
   ]
