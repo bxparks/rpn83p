@@ -136,8 +136,8 @@ getMenuNode:
 getMenuName:
     push bc
     push de
-    push hl ; TODO: remove, no need to save, because HL gets clobbered anyway
     call getMenuNode ; HL=(MenuNode)
+    push hl ; save the MenuNode pointer
     inc hl
     inc hl
     ld b, (hl) ; B=nameId
@@ -153,7 +153,7 @@ getMenuName:
     ld a, e
     or d
     ld a, b ; A=nameId
-    pop hl
+    pop hl ; HL=MenuNode pointer
     jr z, getMenuNameDefault ; if nameSelector==NULL: goto default
 getMenuNameCustom:
     ; The following ugly hack is required because the Z80 does not have a `call
