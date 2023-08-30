@@ -116,9 +116,19 @@ getMenuNode:
 ; Description: Return the pointer to the name string of the menu node at id A.
 ; If MenuNode.nameSelector is 0, then the display name is simply the nameId.
 ; But if the MenuNode.nameSelector is not 0, then it is a pointer to a function
-; that returns the display name. The nameSelector is given 2 stringIds, `A` or
-; `C`, and must return `A` or `C` in the `A` register depending the relevant
-; internal state (e.g. DEG or RAD).
+; that returns the display name.
+;
+; The input to the nameSelector function is:
+;   - A: normal name
+;   - C: alternate name
+;   - HL: pointer to MenuNode (in case it is needed)
+; The output of the nameSelector is:
+;   - A: the selected name
+; The name is selected according to the relevant internal state (e.g. DEG or
+; RAD). The nameSelector is allowed to modify BC, DE, since they are restored
+; before returning from this function. It is also allowed to modify HL since it
+; gets clobbered with string pointer before returning from this function.
+;
 ; Input: A: menu node id
 ; Output: HL: address of the C-string
 ; Destroys: A, HL
@@ -126,7 +136,7 @@ getMenuNode:
 getMenuName:
     push bc
     push de
-    push hl
+    push hl ; TODO: remove, no need to save, because HL gets clobbered anyway
     call getMenuNode ; HL=(MenuNode)
     inc hl
     inc hl
@@ -147,8 +157,9 @@ getMenuName:
     jr z, getMenuNameDefault ; if nameSelector==NULL: goto default
 getMenuNameCustom:
     ; The following ugly hack is required because the Z80 does not have a `call
-    ; (hl)` instruction, analogous to `jp (hl)`. The nameSelector(A, C, HL) -> A
-    ; selects one of the 2 strings (A or C), and returns the selection in A.
+    ; (hl)` instruction, analogous to `jp (hl)`. The `nameSelector(A, C, HL) ->
+    ; A` function selects one of the 2 strings (A or C), and returns the
+    ; selection in A.
     push hl ; MenuNode
     ld hl, getMenuNameDefault ; the return address
     ex (sp), hl ; (SP)=return address, HL=MenuNode

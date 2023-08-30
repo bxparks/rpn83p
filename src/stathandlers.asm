@@ -86,6 +86,14 @@ statPowerReg:
     .db statRegN
 
 ;-----------------------------------------------------------------------------
+
+; Description: Initialize the STAT modes.
+initStat:
+    call mStatLinearModeHandler
+    call mStatLinearFitHandler
+    ret
+
+;-----------------------------------------------------------------------------
 ; STAT Menu handlers.
 ;-----------------------------------------------------------------------------
 
@@ -104,10 +112,6 @@ mStatMinusHandler:
     call rclNN ; OP1=R[sigmaN]
     res rpnFlagsLiftEnabled, (iy + rpnFlags)
     jp replaceX
-
-; Description: Initialize the STAT functions.
-initStat:
-    ; [[fallthrough]]
 
 ; Description: Set STAT mode to ALL.
 mStatAllModeHandler:
@@ -292,17 +296,67 @@ mStatCorrelationHandler:
 
 ;-----------------------------------------------------------------------------
 
-mStatLinFitHandler:
+mStatLinearFitHandler:
+    ld a, curveFitModelLinear
+    ld (curveFitModel), a
+    set dirtyFlagsMenu, (iy + dirtyFlags)
+    ret
+
 mStatLogFitHandler:
+    ld a, curveFitModelLog
+    ld (curveFitModel), a
+    set dirtyFlagsMenu, (iy + dirtyFlags)
+    ret
+
 mStatExpFitHandler:
-mStatPwrFitHandler:
+    ld a, curveFitModelExp
+    ld (curveFitModel), a
+    set dirtyFlagsMenu, (iy + dirtyFlags)
+    ret
+
+mStatPowerFitHandler:
+    ld a, curveFitModelPower
+    ld (curveFitModel), a
+    set dirtyFlagsMenu, (iy + dirtyFlags)
+    ret
+
 mStatBestFitHandler:
     jp mNotYetHandler
 
-mStatLinFitNameSelector:
+mStatLinearFitNameSelector:
+    ld b, a
+    ld a, (curveFitModel)
+    cp curveFitModelLinear
+    ld a, b
+    ret nz
+    ld a, c
+    ret
+
 mStatLogFitNameSelector:
+    ld b, a
+    ld a, (curveFitModel)
+    cp curveFitModelLog
+    ld a, b
+    ret nz
+    ld a, c
+    ret
+
 mStatExpFitNameSelector:
-mStatPwrFitNameSelector:
+    ld b, a
+    ld a, (curveFitModel)
+    cp curveFitModelExp
+    ld a, b
+    ret nz
+    ld a, c
+    ret
+
+mStatPowerFitNameSelector:
+    ld b, a
+    ld a, (curveFitModel)
+    cp curveFitModelPower
+    ld a, b
+    ret nz
+    ld a, c
     ret
 
 ;-----------------------------------------------------------------------------

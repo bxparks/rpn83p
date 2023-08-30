@@ -204,13 +204,13 @@ MenuGroup root mRoot [
         MenuItem YINT mStatIntercept
         MenuItem CORR mStatCorrelation
       ]
-      # MenuRow [
-      #   MenuItemAlt LINF LIN<Sblock> mStatLinFit
-      #   MenuItemAlt LOGF LOG<Sblock> mStatLogFit
-      #   MenuItemAlt EXPF EXP<Sblock> mStatExpFit
-      #   MenuItemAlt PWRF PWR<Sblock> mStatPwrFit
-      #   MenuItem BEST mStatBestFit
-      # ]
+      MenuRow [
+        MenuItemAlt LINF LIN<Sblock> mStatLinearFit
+        MenuItemAlt LOGF LOG<Sblock> mStatLogFit
+        MenuItemAlt EXPF EXP<Sblock> mStatExpFit
+        MenuItemAlt PWRF PWR<Sblock> mStatPowerFit
+        MenuItem BEST mStatBestFit
+      ]
     ]
     MenuGroup UNIT mUnit [
       MenuRow [

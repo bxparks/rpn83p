@@ -119,7 +119,7 @@ mStatId equ 9
     .db mStatId ; id
     .db mRootId ; parentId
     .db mStatNameId ; nameId
-    .db 4 ; numRows
+    .db 5 ; numRows
     .db mStatPlusId ; rowBeginId or altNameId
     .dw mGroupHandler ; handler (predefined)
     .dw 0 ; nameSelector
@@ -166,7 +166,7 @@ mStackId equ 14
     .db mRootId ; parentId
     .db mStackNameId ; nameId
     .db 1 ; numRows
-    .db mBlank147Id ; rowBeginId or altNameId
+    .db mBlank152Id ; rowBeginId or altNameId
     .dw mGroupHandler ; handler (predefined)
     .dw 0 ; nameSelector
 mBlank015:
@@ -1022,10 +1022,56 @@ mStatCorrelationId equ 106
     .db 0 ; rowBeginId or altNameId
     .dw mStatCorrelationHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
+; MenuGroup STAT: children: row 4
+mStatLinearFit:
+mStatLinearFitId equ 107
+    .db mStatLinearFitId ; id
+    .db mStatId ; parentId
+    .db mStatLinearFitNameId ; nameId
+    .db 0 ; numRows
+    .db mStatLinearFitAltNameId ; rowBeginId or altNameId
+    .dw mStatLinearFitHandler ; handler (to be implemented)
+    .dw mStatLinearFitNameSelector ; nameSelector
+mStatLogFit:
+mStatLogFitId equ 108
+    .db mStatLogFitId ; id
+    .db mStatId ; parentId
+    .db mStatLogFitNameId ; nameId
+    .db 0 ; numRows
+    .db mStatLogFitAltNameId ; rowBeginId or altNameId
+    .dw mStatLogFitHandler ; handler (to be implemented)
+    .dw mStatLogFitNameSelector ; nameSelector
+mStatExpFit:
+mStatExpFitId equ 109
+    .db mStatExpFitId ; id
+    .db mStatId ; parentId
+    .db mStatExpFitNameId ; nameId
+    .db 0 ; numRows
+    .db mStatExpFitAltNameId ; rowBeginId or altNameId
+    .dw mStatExpFitHandler ; handler (to be implemented)
+    .dw mStatExpFitNameSelector ; nameSelector
+mStatPowerFit:
+mStatPowerFitId equ 110
+    .db mStatPowerFitId ; id
+    .db mStatId ; parentId
+    .db mStatPowerFitNameId ; nameId
+    .db 0 ; numRows
+    .db mStatPowerFitAltNameId ; rowBeginId or altNameId
+    .dw mStatPowerFitHandler ; handler (to be implemented)
+    .dw mStatPowerFitNameSelector ; nameSelector
+mStatBestFit:
+mStatBestFitId equ 111
+    .db mStatBestFitId ; id
+    .db mStatId ; parentId
+    .db mStatBestFitNameId ; nameId
+    .db 0 ; numRows
+    .db 0 ; rowBeginId or altNameId
+    .dw mStatBestFitHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
 ; MenuGroup UNIT: children
 ; MenuGroup UNIT: children: row 0
 mFToC:
-mFToCId equ 107
+mFToCId equ 112
     .db mFToCId ; id
     .db mUnitId ; parentId
     .db mFToCNameId ; nameId
@@ -1034,59 +1080,13 @@ mFToCId equ 107
     .dw mFToCHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
 mCToF:
-mCToFId equ 108
+mCToFId equ 113
     .db mCToFId ; id
     .db mUnitId ; parentId
     .db mCToFNameId ; nameId
     .db 0 ; numRows
     .db 0 ; rowBeginId or altNameId
     .dw mCToFHandler ; handler (to be implemented)
-    .dw 0 ; nameSelector
-mBlank109:
-mBlank109Id equ 109
-    .db mBlank109Id ; id
-    .db mUnitId ; parentId
-    .db mNullNameId ; nameId
-    .db 0 ; numRows
-    .db 0 ; rowBeginId or altNameId
-    .dw mNullHandler ; handler (predefined)
-    .dw 0 ; nameSelector
-mInhgToHpa:
-mInhgToHpaId equ 110
-    .db mInhgToHpaId ; id
-    .db mUnitId ; parentId
-    .db mInhgToHpaNameId ; nameId
-    .db 0 ; numRows
-    .db 0 ; rowBeginId or altNameId
-    .dw mInhgToHpaHandler ; handler (to be implemented)
-    .dw 0 ; nameSelector
-mHpaToInhg:
-mHpaToInhgId equ 111
-    .db mHpaToInhgId ; id
-    .db mUnitId ; parentId
-    .db mHpaToInhgNameId ; nameId
-    .db 0 ; numRows
-    .db 0 ; rowBeginId or altNameId
-    .dw mHpaToInhgHandler ; handler (to be implemented)
-    .dw 0 ; nameSelector
-; MenuGroup UNIT: children: row 1
-mMiToKm:
-mMiToKmId equ 112
-    .db mMiToKmId ; id
-    .db mUnitId ; parentId
-    .db mMiToKmNameId ; nameId
-    .db 0 ; numRows
-    .db 0 ; rowBeginId or altNameId
-    .dw mMiToKmHandler ; handler (to be implemented)
-    .dw 0 ; nameSelector
-mKmToMi:
-mKmToMiId equ 113
-    .db mKmToMiId ; id
-    .db mUnitId ; parentId
-    .db mKmToMiNameId ; nameId
-    .db 0 ; numRows
-    .db 0 ; rowBeginId or altNameId
-    .dw mKmToMiHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
 mBlank114:
 mBlank114Id equ 114
@@ -1097,42 +1097,42 @@ mBlank114Id equ 114
     .db 0 ; rowBeginId or altNameId
     .dw mNullHandler ; handler (predefined)
     .dw 0 ; nameSelector
-mFtToM:
-mFtToMId equ 115
-    .db mFtToMId ; id
+mInhgToHpa:
+mInhgToHpaId equ 115
+    .db mInhgToHpaId ; id
     .db mUnitId ; parentId
-    .db mFtToMNameId ; nameId
+    .db mInhgToHpaNameId ; nameId
     .db 0 ; numRows
     .db 0 ; rowBeginId or altNameId
-    .dw mFtToMHandler ; handler (to be implemented)
+    .dw mInhgToHpaHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
-mMToFt:
-mMToFtId equ 116
-    .db mMToFtId ; id
+mHpaToInhg:
+mHpaToInhgId equ 116
+    .db mHpaToInhgId ; id
     .db mUnitId ; parentId
-    .db mMToFtNameId ; nameId
+    .db mHpaToInhgNameId ; nameId
     .db 0 ; numRows
     .db 0 ; rowBeginId or altNameId
-    .dw mMToFtHandler ; handler (to be implemented)
+    .dw mHpaToInhgHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
-; MenuGroup UNIT: children: row 2
-mInToCm:
-mInToCmId equ 117
-    .db mInToCmId ; id
+; MenuGroup UNIT: children: row 1
+mMiToKm:
+mMiToKmId equ 117
+    .db mMiToKmId ; id
     .db mUnitId ; parentId
-    .db mInToCmNameId ; nameId
+    .db mMiToKmNameId ; nameId
     .db 0 ; numRows
     .db 0 ; rowBeginId or altNameId
-    .dw mInToCmHandler ; handler (to be implemented)
+    .dw mMiToKmHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
-mCmToIn:
-mCmToInId equ 118
-    .db mCmToInId ; id
+mKmToMi:
+mKmToMiId equ 118
+    .db mKmToMiId ; id
     .db mUnitId ; parentId
-    .db mCmToInNameId ; nameId
+    .db mKmToMiNameId ; nameId
     .db 0 ; numRows
     .db 0 ; rowBeginId or altNameId
-    .dw mCmToInHandler ; handler (to be implemented)
+    .dw mKmToMiHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
 mBlank119:
 mBlank119Id equ 119
@@ -1143,42 +1143,42 @@ mBlank119Id equ 119
     .db 0 ; rowBeginId or altNameId
     .dw mNullHandler ; handler (predefined)
     .dw 0 ; nameSelector
-mMilToMicron:
-mMilToMicronId equ 120
-    .db mMilToMicronId ; id
+mFtToM:
+mFtToMId equ 120
+    .db mFtToMId ; id
     .db mUnitId ; parentId
-    .db mMilToMicronNameId ; nameId
+    .db mFtToMNameId ; nameId
     .db 0 ; numRows
     .db 0 ; rowBeginId or altNameId
-    .dw mMilToMicronHandler ; handler (to be implemented)
+    .dw mFtToMHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
-mMicronToMil:
-mMicronToMilId equ 121
-    .db mMicronToMilId ; id
+mMToFt:
+mMToFtId equ 121
+    .db mMToFtId ; id
     .db mUnitId ; parentId
-    .db mMicronToMilNameId ; nameId
+    .db mMToFtNameId ; nameId
     .db 0 ; numRows
     .db 0 ; rowBeginId or altNameId
-    .dw mMicronToMilHandler ; handler (to be implemented)
+    .dw mMToFtHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
-; MenuGroup UNIT: children: row 3
-mLbsToKg:
-mLbsToKgId equ 122
-    .db mLbsToKgId ; id
+; MenuGroup UNIT: children: row 2
+mInToCm:
+mInToCmId equ 122
+    .db mInToCmId ; id
     .db mUnitId ; parentId
-    .db mLbsToKgNameId ; nameId
+    .db mInToCmNameId ; nameId
     .db 0 ; numRows
     .db 0 ; rowBeginId or altNameId
-    .dw mLbsToKgHandler ; handler (to be implemented)
+    .dw mInToCmHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
-mKgToLbs:
-mKgToLbsId equ 123
-    .db mKgToLbsId ; id
+mCmToIn:
+mCmToInId equ 123
+    .db mCmToInId ; id
     .db mUnitId ; parentId
-    .db mKgToLbsNameId ; nameId
+    .db mCmToInNameId ; nameId
     .db 0 ; numRows
     .db 0 ; rowBeginId or altNameId
-    .dw mKgToLbsHandler ; handler (to be implemented)
+    .dw mCmToInHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
 mBlank124:
 mBlank124Id equ 124
@@ -1189,42 +1189,42 @@ mBlank124Id equ 124
     .db 0 ; rowBeginId or altNameId
     .dw mNullHandler ; handler (predefined)
     .dw 0 ; nameSelector
-mOzToG:
-mOzToGId equ 125
-    .db mOzToGId ; id
+mMilToMicron:
+mMilToMicronId equ 125
+    .db mMilToMicronId ; id
     .db mUnitId ; parentId
-    .db mOzToGNameId ; nameId
+    .db mMilToMicronNameId ; nameId
     .db 0 ; numRows
     .db 0 ; rowBeginId or altNameId
-    .dw mOzToGHandler ; handler (to be implemented)
+    .dw mMilToMicronHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
-mGToOz:
-mGToOzId equ 126
-    .db mGToOzId ; id
+mMicronToMil:
+mMicronToMilId equ 126
+    .db mMicronToMilId ; id
     .db mUnitId ; parentId
-    .db mGToOzNameId ; nameId
+    .db mMicronToMilNameId ; nameId
     .db 0 ; numRows
     .db 0 ; rowBeginId or altNameId
-    .dw mGToOzHandler ; handler (to be implemented)
+    .dw mMicronToMilHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
-; MenuGroup UNIT: children: row 4
-mGalToL:
-mGalToLId equ 127
-    .db mGalToLId ; id
+; MenuGroup UNIT: children: row 3
+mLbsToKg:
+mLbsToKgId equ 127
+    .db mLbsToKgId ; id
     .db mUnitId ; parentId
-    .db mGalToLNameId ; nameId
+    .db mLbsToKgNameId ; nameId
     .db 0 ; numRows
     .db 0 ; rowBeginId or altNameId
-    .dw mGalToLHandler ; handler (to be implemented)
+    .dw mLbsToKgHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
-mLToGal:
-mLToGalId equ 128
-    .db mLToGalId ; id
+mKgToLbs:
+mKgToLbsId equ 128
+    .db mKgToLbsId ; id
     .db mUnitId ; parentId
-    .db mLToGalNameId ; nameId
+    .db mKgToLbsNameId ; nameId
     .db 0 ; numRows
     .db 0 ; rowBeginId or altNameId
-    .dw mLToGalHandler ; handler (to be implemented)
+    .dw mKgToLbsHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
 mBlank129:
 mBlank129Id equ 129
@@ -1235,42 +1235,42 @@ mBlank129Id equ 129
     .db 0 ; rowBeginId or altNameId
     .dw mNullHandler ; handler (predefined)
     .dw 0 ; nameSelector
-mFlozToMl:
-mFlozToMlId equ 130
-    .db mFlozToMlId ; id
+mOzToG:
+mOzToGId equ 130
+    .db mOzToGId ; id
     .db mUnitId ; parentId
-    .db mFlozToMlNameId ; nameId
+    .db mOzToGNameId ; nameId
     .db 0 ; numRows
     .db 0 ; rowBeginId or altNameId
-    .dw mFlozToMlHandler ; handler (to be implemented)
+    .dw mOzToGHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
-mMlToFloz:
-mMlToFlozId equ 131
-    .db mMlToFlozId ; id
+mGToOz:
+mGToOzId equ 131
+    .db mGToOzId ; id
     .db mUnitId ; parentId
-    .db mMlToFlozNameId ; nameId
+    .db mGToOzNameId ; nameId
     .db 0 ; numRows
     .db 0 ; rowBeginId or altNameId
-    .dw mMlToFlozHandler ; handler (to be implemented)
+    .dw mGToOzHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
-; MenuGroup UNIT: children: row 5
-mCalToKj:
-mCalToKjId equ 132
-    .db mCalToKjId ; id
+; MenuGroup UNIT: children: row 4
+mGalToL:
+mGalToLId equ 132
+    .db mGalToLId ; id
     .db mUnitId ; parentId
-    .db mCalToKjNameId ; nameId
+    .db mGalToLNameId ; nameId
     .db 0 ; numRows
     .db 0 ; rowBeginId or altNameId
-    .dw mCalToKjHandler ; handler (to be implemented)
+    .dw mGalToLHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
-mKjToCal:
-mKjToCalId equ 133
-    .db mKjToCalId ; id
+mLToGal:
+mLToGalId equ 133
+    .db mLToGalId ; id
     .db mUnitId ; parentId
-    .db mKjToCalNameId ; nameId
+    .db mLToGalNameId ; nameId
     .db 0 ; numRows
     .db 0 ; rowBeginId or altNameId
-    .dw mKjToCalHandler ; handler (to be implemented)
+    .dw mLToGalHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
 mBlank134:
 mBlank134Id equ 134
@@ -1281,8 +1281,54 @@ mBlank134Id equ 134
     .db 0 ; rowBeginId or altNameId
     .dw mNullHandler ; handler (predefined)
     .dw 0 ; nameSelector
+mFlozToMl:
+mFlozToMlId equ 135
+    .db mFlozToMlId ; id
+    .db mUnitId ; parentId
+    .db mFlozToMlNameId ; nameId
+    .db 0 ; numRows
+    .db 0 ; rowBeginId or altNameId
+    .dw mFlozToMlHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
+mMlToFloz:
+mMlToFlozId equ 136
+    .db mMlToFlozId ; id
+    .db mUnitId ; parentId
+    .db mMlToFlozNameId ; nameId
+    .db 0 ; numRows
+    .db 0 ; rowBeginId or altNameId
+    .dw mMlToFlozHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
+; MenuGroup UNIT: children: row 5
+mCalToKj:
+mCalToKjId equ 137
+    .db mCalToKjId ; id
+    .db mUnitId ; parentId
+    .db mCalToKjNameId ; nameId
+    .db 0 ; numRows
+    .db 0 ; rowBeginId or altNameId
+    .dw mCalToKjHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
+mKjToCal:
+mKjToCalId equ 138
+    .db mKjToCalId ; id
+    .db mUnitId ; parentId
+    .db mKjToCalNameId ; nameId
+    .db 0 ; numRows
+    .db 0 ; rowBeginId or altNameId
+    .dw mKjToCalHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
+mBlank139:
+mBlank139Id equ 139
+    .db mBlank139Id ; id
+    .db mUnitId ; parentId
+    .db mNullNameId ; nameId
+    .db 0 ; numRows
+    .db 0 ; rowBeginId or altNameId
+    .dw mNullHandler ; handler (predefined)
+    .dw 0 ; nameSelector
 mHpToKw:
-mHpToKwId equ 135
+mHpToKwId equ 140
     .db mHpToKwId ; id
     .db mUnitId ; parentId
     .db mHpToKwNameId ; nameId
@@ -1291,7 +1337,7 @@ mHpToKwId equ 135
     .dw mHpToKwHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
 mKwToHp:
-mKwToHpId equ 136
+mKwToHpId equ 141
     .db mKwToHpId ; id
     .db mUnitId ; parentId
     .db mKwToHpNameId ; nameId
@@ -1302,7 +1348,7 @@ mKwToHpId equ 136
 ; MenuGroup CLR: children
 ; MenuGroup CLR: children: row 0
 mClearX:
-mClearXId equ 137
+mClearXId equ 142
     .db mClearXId ; id
     .db mClearId ; parentId
     .db mClearXNameId ; nameId
@@ -1311,7 +1357,7 @@ mClearXId equ 137
     .dw mClearXHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
 mClearStack:
-mClearStackId equ 138
+mClearStackId equ 143
     .db mClearStackId ; id
     .db mClearId ; parentId
     .db mClearStackNameId ; nameId
@@ -1320,7 +1366,7 @@ mClearStackId equ 138
     .dw mClearStackHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
 mClearRegs:
-mClearRegsId equ 139
+mClearRegsId equ 144
     .db mClearRegsId ; id
     .db mClearId ; parentId
     .db mClearRegsNameId ; nameId
@@ -1329,7 +1375,7 @@ mClearRegsId equ 139
     .dw mClearRegsHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
 mClearStat:
-mClearStatId equ 140
+mClearStatId equ 145
     .db mClearStatId ; id
     .db mClearId ; parentId
     .db mClearStatNameId ; nameId
@@ -1337,9 +1383,9 @@ mClearStatId equ 140
     .db 0 ; rowBeginId or altNameId
     .dw mClearStatHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
-mBlank141:
-mBlank141Id equ 141
-    .db mBlank141Id ; id
+mBlank146:
+mBlank146Id equ 146
+    .db mBlank146Id ; id
     .db mClearId ; parentId
     .db mNullNameId ; nameId
     .db 0 ; numRows
@@ -1349,7 +1395,7 @@ mBlank141Id equ 141
 ; MenuGroup MODE: children
 ; MenuGroup MODE: children: row 0
 mFix:
-mFixId equ 142
+mFixId equ 147
     .db mFixId ; id
     .db mModeId ; parentId
     .db mFixNameId ; nameId
@@ -1358,7 +1404,7 @@ mFixId equ 142
     .dw mFixHandler ; handler (to be implemented)
     .dw mFixNameSelector ; nameSelector
 mSci:
-mSciId equ 143
+mSciId equ 148
     .db mSciId ; id
     .db mModeId ; parentId
     .db mSciNameId ; nameId
@@ -1367,7 +1413,7 @@ mSciId equ 143
     .dw mSciHandler ; handler (to be implemented)
     .dw mSciNameSelector ; nameSelector
 mEng:
-mEngId equ 144
+mEngId equ 149
     .db mEngId ; id
     .db mModeId ; parentId
     .db mEngNameId ; nameId
@@ -1376,7 +1422,7 @@ mEngId equ 144
     .dw mEngHandler ; handler (to be implemented)
     .dw mEngNameSelector ; nameSelector
 mRad:
-mRadId equ 145
+mRadId equ 150
     .db mRadId ; id
     .db mModeId ; parentId
     .db mRadNameId ; nameId
@@ -1385,7 +1431,7 @@ mRadId equ 145
     .dw mRadHandler ; handler (to be implemented)
     .dw mRadNameSelector ; nameSelector
 mDeg:
-mDegId equ 146
+mDegId equ 151
     .db mDegId ; id
     .db mModeId ; parentId
     .db mDegNameId ; nameId
@@ -1395,9 +1441,9 @@ mDegId equ 146
     .dw mDegNameSelector ; nameSelector
 ; MenuGroup STK: children
 ; MenuGroup STK: children: row 0
-mBlank147:
-mBlank147Id equ 147
-    .db mBlank147Id ; id
+mBlank152:
+mBlank152Id equ 152
+    .db mBlank152Id ; id
     .db mStackId ; parentId
     .db mNullNameId ; nameId
     .db 0 ; numRows
@@ -1405,7 +1451,7 @@ mBlank147Id equ 147
     .dw mNullHandler ; handler (predefined)
     .dw 0 ; nameSelector
 mStackRotUp:
-mStackRotUpId equ 148
+mStackRotUpId equ 153
     .db mStackRotUpId ; id
     .db mStackId ; parentId
     .db mStackRotUpNameId ; nameId
@@ -1414,7 +1460,7 @@ mStackRotUpId equ 148
     .dw mStackRotUpHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
 mStackRotDown:
-mStackRotDownId equ 149
+mStackRotDownId equ 154
     .db mStackRotDownId ; id
     .db mStackId ; parentId
     .db mStackRotDownNameId ; nameId
@@ -1423,7 +1469,7 @@ mStackRotDownId equ 149
     .dw mStackRotDownHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
 mStackExchangeXY:
-mStackExchangeXYId equ 150
+mStackExchangeXYId equ 155
     .db mStackExchangeXYId ; id
     .db mStackId ; parentId
     .db mStackExchangeXYNameId ; nameId
@@ -1431,9 +1477,9 @@ mStackExchangeXYId equ 150
     .db 0 ; rowBeginId or altNameId
     .dw mStackExchangeXYHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
-mBlank151:
-mBlank151Id equ 151
-    .db mBlank151Id ; id
+mBlank156:
+mBlank156Id equ 156
+    .db mBlank156Id ; id
     .db mStackId ; parentId
     .db mNullNameId ; nameId
     .db 0 ; numRows
@@ -1631,87 +1677,105 @@ mStatInterceptNameId equ 92
     .dw mStatInterceptName
 mStatCorrelationNameId equ 93
     .dw mStatCorrelationName
-mFToCNameId equ 94
+mStatLinearFitNameId equ 94
+    .dw mStatLinearFitName
+mStatLinearFitAltNameId equ 95
+    .dw mStatLinearFitAltName
+mStatLogFitNameId equ 96
+    .dw mStatLogFitName
+mStatLogFitAltNameId equ 97
+    .dw mStatLogFitAltName
+mStatExpFitNameId equ 98
+    .dw mStatExpFitName
+mStatExpFitAltNameId equ 99
+    .dw mStatExpFitAltName
+mStatPowerFitNameId equ 100
+    .dw mStatPowerFitName
+mStatPowerFitAltNameId equ 101
+    .dw mStatPowerFitAltName
+mStatBestFitNameId equ 102
+    .dw mStatBestFitName
+mFToCNameId equ 103
     .dw mFToCName
-mCToFNameId equ 95
+mCToFNameId equ 104
     .dw mCToFName
-mInhgToHpaNameId equ 96
+mInhgToHpaNameId equ 105
     .dw mInhgToHpaName
-mHpaToInhgNameId equ 97
+mHpaToInhgNameId equ 106
     .dw mHpaToInhgName
-mMiToKmNameId equ 98
+mMiToKmNameId equ 107
     .dw mMiToKmName
-mKmToMiNameId equ 99
+mKmToMiNameId equ 108
     .dw mKmToMiName
-mFtToMNameId equ 100
+mFtToMNameId equ 109
     .dw mFtToMName
-mMToFtNameId equ 101
+mMToFtNameId equ 110
     .dw mMToFtName
-mInToCmNameId equ 102
+mInToCmNameId equ 111
     .dw mInToCmName
-mCmToInNameId equ 103
+mCmToInNameId equ 112
     .dw mCmToInName
-mMilToMicronNameId equ 104
+mMilToMicronNameId equ 113
     .dw mMilToMicronName
-mMicronToMilNameId equ 105
+mMicronToMilNameId equ 114
     .dw mMicronToMilName
-mLbsToKgNameId equ 106
+mLbsToKgNameId equ 115
     .dw mLbsToKgName
-mKgToLbsNameId equ 107
+mKgToLbsNameId equ 116
     .dw mKgToLbsName
-mOzToGNameId equ 108
+mOzToGNameId equ 117
     .dw mOzToGName
-mGToOzNameId equ 109
+mGToOzNameId equ 118
     .dw mGToOzName
-mGalToLNameId equ 110
+mGalToLNameId equ 119
     .dw mGalToLName
-mLToGalNameId equ 111
+mLToGalNameId equ 120
     .dw mLToGalName
-mFlozToMlNameId equ 112
+mFlozToMlNameId equ 121
     .dw mFlozToMlName
-mMlToFlozNameId equ 113
+mMlToFlozNameId equ 122
     .dw mMlToFlozName
-mCalToKjNameId equ 114
+mCalToKjNameId equ 123
     .dw mCalToKjName
-mKjToCalNameId equ 115
+mKjToCalNameId equ 124
     .dw mKjToCalName
-mHpToKwNameId equ 116
+mHpToKwNameId equ 125
     .dw mHpToKwName
-mKwToHpNameId equ 117
+mKwToHpNameId equ 126
     .dw mKwToHpName
-mClearXNameId equ 118
+mClearXNameId equ 127
     .dw mClearXName
-mClearStackNameId equ 119
+mClearStackNameId equ 128
     .dw mClearStackName
-mClearRegsNameId equ 120
+mClearRegsNameId equ 129
     .dw mClearRegsName
-mClearStatNameId equ 121
+mClearStatNameId equ 130
     .dw mClearStatName
-mFixNameId equ 122
+mFixNameId equ 131
     .dw mFixName
-mFixAltNameId equ 123
+mFixAltNameId equ 132
     .dw mFixAltName
-mSciNameId equ 124
+mSciNameId equ 133
     .dw mSciName
-mSciAltNameId equ 125
+mSciAltNameId equ 134
     .dw mSciAltName
-mEngNameId equ 126
+mEngNameId equ 135
     .dw mEngName
-mEngAltNameId equ 127
+mEngAltNameId equ 136
     .dw mEngAltName
-mRadNameId equ 128
+mRadNameId equ 137
     .dw mRadName
-mRadAltNameId equ 129
+mRadAltNameId equ 138
     .dw mRadAltName
-mDegNameId equ 130
+mDegNameId equ 139
     .dw mDegName
-mDegAltNameId equ 131
+mDegAltNameId equ 140
     .dw mDegAltName
-mStackRotUpNameId equ 132
+mStackRotUpNameId equ 141
     .dw mStackRotUpName
-mStackRotDownNameId equ 133
+mStackRotDownNameId equ 142
     .dw mStackRotDownName
-mStackExchangeXYNameId equ 134
+mStackExchangeXYNameId equ 143
     .dw mStackExchangeXYName
 
 ; Table of names as NUL terminated C strings.
@@ -1903,6 +1967,24 @@ mStatInterceptName:
     .db "YINT", 0
 mStatCorrelationName:
     .db "CORR", 0
+mStatLinearFitName:
+    .db "LINF", 0
+mStatLinearFitAltName:
+    .db 'L', 'I', 'N', Sblock, 0
+mStatLogFitName:
+    .db "LOGF", 0
+mStatLogFitAltName:
+    .db 'L', 'O', 'G', Sblock, 0
+mStatExpFitName:
+    .db "EXPF", 0
+mStatExpFitAltName:
+    .db 'E', 'X', 'P', Sblock, 0
+mStatPowerFitName:
+    .db "PWRF", 0
+mStatPowerFitAltName:
+    .db 'P', 'W', 'R', Sblock, 0
+mStatBestFitName:
+    .db "BEST", 0
 mFToCName:
     .db Sconvert, Stemp, 'C', 0
 mCToFName:
