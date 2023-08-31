@@ -274,14 +274,13 @@ mCfitPowerNameSelector:
 ; Output:
 ;   (curveFitModel)=best curve fit model
 ;   X=abs(corr(best))
-; Destroys: OP1, OP2, OP3, (maybe OP4?), OP5
+; Destroys: OP1, OP2, OP3, (maybe OP4?), OP5, OP6
 mCfitBestHandler:
     call closeInputBuf
 mCfitBestCheckLinear:
     ld a, curveFitModelLinear
     call selectCfitModel
     call statCorrelation
-    bcall(_ClrOP1S) ; clear sign bit of OP1
     bcall(_OP1ToOP5) ; OP5=corr(best)
     ld b, curveFitModelLinear
     push bc ; save linear
@@ -289,12 +288,14 @@ mCfitBestCheckLog:
     ld a, curveFitModelLog
     call selectCfitModel
     call statCorrelation
-    bcall(_ClrOP1S) ; clear sign bit of OP1
     bcall(_OP1ToOP2) ; OP2=corr(log)
+    bcall(_OP1ToOP6) ; OP6=corr(log)
     bcall(_OP5ToOP1) ; OP1=corr(best)
-    bcall(_CpOP1OP2) ; if corr(log) > corr(linear): CF=1
+    bcall(_ClrOP1S) ; clear sign bit of OP1
+    bcall(_ClrOP2S) ; clear sign bit of OP2
+    bcall(_CpOP1OP2) ; if abs(corr(log)) > abs(corr(linear)): CF=1
     jr nc, mCfitBestCheckExp
-    bcall(_OP2ToOP5) ; OP5=corr(log)
+    bcall(_OP6ToOP5) ; OP5=corr(log)
     pop bc
     ld b, curveFitModelLog
     push bc
@@ -302,12 +303,14 @@ mCfitBestCheckExp:
     ld a, curveFitModelExp
     call selectCfitModel
     call statCorrelation
-    bcall(_ClrOP1S) ; clear sign bit of OP1
     bcall(_OP1ToOP2) ; OP2=corr(exp)
+    bcall(_OP1ToOP6) ; OP6=corr(exp)
     bcall(_OP5ToOP1) ; OP1=corr(best)
-    bcall(_CpOP1OP2) ; if corr(exp) > corr(best): CF=1
+    bcall(_ClrOP1S) ; clear sign bit of OP1
+    bcall(_ClrOP2S) ; clear sign bit of OP2
+    bcall(_CpOP1OP2) ; if abs(corr(exp)) > abs(corr(best)): CF=1
     jr nc, mCfitBestCheckPower
-    bcall(_OP2ToOP5) ; OP5=corr(exp)
+    bcall(_OP6ToOP5) ; OP5=corr(exp)
     pop bc
     ld b, curveFitModelExp
     push bc
@@ -315,12 +318,14 @@ mCfitBestCheckPower:
     ld a, curveFitModelPower
     call selectCfitModel
     call statCorrelation
-    bcall(_ClrOP1S) ; clear sign bit of OP1
     bcall(_OP1ToOP2) ; OP2=corr(power)
+    bcall(_OP1ToOP6) ; OP6=corr(power)
     bcall(_OP5ToOP1) ; OP1=corr(best)
-    bcall(_CpOP1OP2) ; if corr(power) > corr(best): CF=1
+    bcall(_ClrOP1S) ; clear sign bit of OP1
+    bcall(_ClrOP2S) ; clear sign bit of OP2
+    bcall(_CpOP1OP2) ; if abs(corr(power)) > abs(corr(best)): CF=1
     jr nc, mCfitBestSelect
-    bcall(_OP2ToOP5) ; OP5=corr(power)
+    bcall(_OP6ToOP5) ; OP5=corr(power)
     pop bc
     ld b, curveFitModelPower
     push bc
