@@ -425,7 +425,7 @@ displayStackYZT:
 ; Description: Render the X lines. There are 3 options:
 ; 1) if rpnFlagsArgMode, print the inputbuf as a command argument,
 ; 2) else if rpnFlagsEditing, print the inputBuf as a stack number,
-; 3) else print the stX variable.
+; 3) else print the X register.
 displayStackX:
     bit rpnFlagsArgMode, (iy + rpnFlags)
     jr nz, displayStackXArg
@@ -435,7 +435,7 @@ displayStackX:
 
 displayStackXNormal:
     call displayStackXLabel
-    ; print the stX variable
+    ; print the X register
     ld hl, stXCurCol*$100 + stXCurRow ; $(curCol)(curRow)
     ld (CurRow), hl
     call rclX

@@ -872,31 +872,31 @@ mDToRHandler:
 
 ; Polar to Rectangular
 ; Input:
-;   - stY: r
-;   - stX: theta
+;   - Y: r
+;   - X: theta
 ; Output:
-;   - stY: x
-;   - stX: y
+;   - Y: x
+;   - X: y
 mPToRHandler:
     call closeInputAndRecallX
-    bcall(_OP1ToOP2) ; OP2 = stX = theta
-    call rclY ; OP1 = stY = r
+    bcall(_OP1ToOP2) ; OP2 = X = theta
+    call rclY ; OP1 = Y = r
     bcall(_PToR) ; OP1 = x; OP2 = y (?)
-    jp replaceXYWithOP1OP2 ; stX=OP2=y; stY=OP1=x
+    jp replaceXYWithOP1OP2 ; X=OP2=y; Y=OP1=x
 
 ; Rectangular to Polar
 ; Input:
-;   - stY: x
-;   - stX: y
+;   - Y: x
+;   - X: y
 ; Output:
-;   - stY: r
-;   - stX: theta
+;   - Y: r
+;   - X: theta
 mRtoPHandler:
     call closeInputAndRecallX
-    bcall(_OP1ToOP2) ; OP2 = stX = y
-    call rclY ; OP1 = stY = x
+    bcall(_OP1ToOP2) ; OP2 = X = y
+    call rclY ; OP1 = Y = x
     bcall(_RToP) ; OP1 = r; OP2 = theta (?)
-    jp replaceXYWithOP1OP2 ; stX=OP2=theta; stY=OP1=r
+    jp replaceXYWithOP1OP2 ; X=OP2=theta; Y=OP1=r
 
 ;-----------------------------------------------------------------------------
 
