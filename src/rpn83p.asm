@@ -232,6 +232,7 @@ main:
     call initDisplay
     call initBase
     call initStat
+    call initCfit
     ; [[fall through]]
 
 ; The main event/read loop. Read button and dispatch to the appropriate
@@ -311,6 +312,7 @@ mainExit:
 #include "menu.asm"
 #include "menuhandlers.asm"
 #include "stathandlers.asm"
+#include "cfithandlers.asm"
 #include "prime.asm"
 #ifdef DEBUG
 #include "debug.asm"

@@ -973,101 +973,101 @@ mCfitId equ 101
     .db mStatId ; parentId
     .db mCfitNameId ; nameId
     .db 2 ; numRows
-    .db mStatForcastXId ; rowBeginId or altNameId
+    .db mCfitForcastXId ; rowBeginId or altNameId
     .dw mGroupHandler ; handler (predefined)
     .dw 0 ; nameSelector
 ; MenuGroup CFIT: children
 ; MenuGroup CFIT: children: row 0
-mStatForcastX:
-mStatForcastXId equ 102
-    .db mStatForcastXId ; id
+mCfitForcastX:
+mCfitForcastXId equ 102
+    .db mCfitForcastXId ; id
     .db mCfitId ; parentId
-    .db mStatForcastXNameId ; nameId
+    .db mCfitForcastXNameId ; nameId
     .db 0 ; numRows
     .db 0 ; rowBeginId or altNameId
-    .dw mStatForcastXHandler ; handler (to be implemented)
+    .dw mCfitForcastXHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
-mStatForcastY:
-mStatForcastYId equ 103
-    .db mStatForcastYId ; id
+mCfitForcastY:
+mCfitForcastYId equ 103
+    .db mCfitForcastYId ; id
     .db mCfitId ; parentId
-    .db mStatForcastYNameId ; nameId
+    .db mCfitForcastYNameId ; nameId
     .db 0 ; numRows
     .db 0 ; rowBeginId or altNameId
-    .dw mStatForcastYHandler ; handler (to be implemented)
+    .dw mCfitForcastYHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
-mStatSlope:
-mStatSlopeId equ 104
-    .db mStatSlopeId ; id
+mCfitSlope:
+mCfitSlopeId equ 104
+    .db mCfitSlopeId ; id
     .db mCfitId ; parentId
-    .db mStatSlopeNameId ; nameId
+    .db mCfitSlopeNameId ; nameId
     .db 0 ; numRows
     .db 0 ; rowBeginId or altNameId
-    .dw mStatSlopeHandler ; handler (to be implemented)
+    .dw mCfitSlopeHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
-mStatIntercept:
-mStatInterceptId equ 105
-    .db mStatInterceptId ; id
+mCfitIntercept:
+mCfitInterceptId equ 105
+    .db mCfitInterceptId ; id
     .db mCfitId ; parentId
-    .db mStatInterceptNameId ; nameId
+    .db mCfitInterceptNameId ; nameId
     .db 0 ; numRows
     .db 0 ; rowBeginId or altNameId
-    .dw mStatInterceptHandler ; handler (to be implemented)
+    .dw mCfitInterceptHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
-mStatCorrelation:
-mStatCorrelationId equ 106
-    .db mStatCorrelationId ; id
+mCfitCorrelation:
+mCfitCorrelationId equ 106
+    .db mCfitCorrelationId ; id
     .db mCfitId ; parentId
-    .db mStatCorrelationNameId ; nameId
+    .db mCfitCorrelationNameId ; nameId
     .db 0 ; numRows
     .db 0 ; rowBeginId or altNameId
-    .dw mStatCorrelationHandler ; handler (to be implemented)
+    .dw mCfitCorrelationHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
 ; MenuGroup CFIT: children: row 1
-mStatLinearFit:
-mStatLinearFitId equ 107
-    .db mStatLinearFitId ; id
+mCfitLinear:
+mCfitLinearId equ 107
+    .db mCfitLinearId ; id
     .db mCfitId ; parentId
-    .db mStatLinearFitNameId ; nameId
+    .db mCfitLinearNameId ; nameId
     .db 0 ; numRows
-    .db mStatLinearFitAltNameId ; rowBeginId or altNameId
-    .dw mStatLinearFitHandler ; handler (to be implemented)
-    .dw mStatLinearFitNameSelector ; nameSelector
-mStatLogFit:
-mStatLogFitId equ 108
-    .db mStatLogFitId ; id
+    .db mCfitLinearAltNameId ; rowBeginId or altNameId
+    .dw mCfitLinearHandler ; handler (to be implemented)
+    .dw mCfitLinearNameSelector ; nameSelector
+mCfitLog:
+mCfitLogId equ 108
+    .db mCfitLogId ; id
     .db mCfitId ; parentId
-    .db mStatLogFitNameId ; nameId
+    .db mCfitLogNameId ; nameId
     .db 0 ; numRows
-    .db mStatLogFitAltNameId ; rowBeginId or altNameId
-    .dw mStatLogFitHandler ; handler (to be implemented)
-    .dw mStatLogFitNameSelector ; nameSelector
-mStatExpFit:
-mStatExpFitId equ 109
-    .db mStatExpFitId ; id
+    .db mCfitLogAltNameId ; rowBeginId or altNameId
+    .dw mCfitLogHandler ; handler (to be implemented)
+    .dw mCfitLogNameSelector ; nameSelector
+mCfitExp:
+mCfitExpId equ 109
+    .db mCfitExpId ; id
     .db mCfitId ; parentId
-    .db mStatExpFitNameId ; nameId
+    .db mCfitExpNameId ; nameId
     .db 0 ; numRows
-    .db mStatExpFitAltNameId ; rowBeginId or altNameId
-    .dw mStatExpFitHandler ; handler (to be implemented)
-    .dw mStatExpFitNameSelector ; nameSelector
-mStatPowerFit:
-mStatPowerFitId equ 110
-    .db mStatPowerFitId ; id
+    .db mCfitExpAltNameId ; rowBeginId or altNameId
+    .dw mCfitExpHandler ; handler (to be implemented)
+    .dw mCfitExpNameSelector ; nameSelector
+mCfitPower:
+mCfitPowerId equ 110
+    .db mCfitPowerId ; id
     .db mCfitId ; parentId
-    .db mStatPowerFitNameId ; nameId
+    .db mCfitPowerNameId ; nameId
     .db 0 ; numRows
-    .db mStatPowerFitAltNameId ; rowBeginId or altNameId
-    .dw mStatPowerFitHandler ; handler (to be implemented)
-    .dw mStatPowerFitNameSelector ; nameSelector
-mStatBestFit:
-mStatBestFitId equ 111
-    .db mStatBestFitId ; id
+    .db mCfitPowerAltNameId ; rowBeginId or altNameId
+    .dw mCfitPowerHandler ; handler (to be implemented)
+    .dw mCfitPowerNameSelector ; nameSelector
+mCfitBest:
+mCfitBestId equ 111
+    .db mCfitBestId ; id
     .db mCfitId ; parentId
-    .db mStatBestFitNameId ; nameId
+    .db mCfitBestNameId ; nameId
     .db 0 ; numRows
     .db 0 ; rowBeginId or altNameId
-    .dw mStatBestFitHandler ; handler (to be implemented)
+    .dw mCfitBestHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
 ; MenuGroup UNIT: children
 ; MenuGroup UNIT: children: row 0
@@ -1670,34 +1670,34 @@ mStatPopCovNameId equ 88
     .dw mStatPopCovName
 mCfitNameId equ 89
     .dw mCfitName
-mStatForcastXNameId equ 90
-    .dw mStatForcastXName
-mStatForcastYNameId equ 91
-    .dw mStatForcastYName
-mStatSlopeNameId equ 92
-    .dw mStatSlopeName
-mStatInterceptNameId equ 93
-    .dw mStatInterceptName
-mStatCorrelationNameId equ 94
-    .dw mStatCorrelationName
-mStatLinearFitNameId equ 95
-    .dw mStatLinearFitName
-mStatLinearFitAltNameId equ 96
-    .dw mStatLinearFitAltName
-mStatLogFitNameId equ 97
-    .dw mStatLogFitName
-mStatLogFitAltNameId equ 98
-    .dw mStatLogFitAltName
-mStatExpFitNameId equ 99
-    .dw mStatExpFitName
-mStatExpFitAltNameId equ 100
-    .dw mStatExpFitAltName
-mStatPowerFitNameId equ 101
-    .dw mStatPowerFitName
-mStatPowerFitAltNameId equ 102
-    .dw mStatPowerFitAltName
-mStatBestFitNameId equ 103
-    .dw mStatBestFitName
+mCfitForcastXNameId equ 90
+    .dw mCfitForcastXName
+mCfitForcastYNameId equ 91
+    .dw mCfitForcastYName
+mCfitSlopeNameId equ 92
+    .dw mCfitSlopeName
+mCfitInterceptNameId equ 93
+    .dw mCfitInterceptName
+mCfitCorrelationNameId equ 94
+    .dw mCfitCorrelationName
+mCfitLinearNameId equ 95
+    .dw mCfitLinearName
+mCfitLinearAltNameId equ 96
+    .dw mCfitLinearAltName
+mCfitLogNameId equ 97
+    .dw mCfitLogName
+mCfitLogAltNameId equ 98
+    .dw mCfitLogAltName
+mCfitExpNameId equ 99
+    .dw mCfitExpName
+mCfitExpAltNameId equ 100
+    .dw mCfitExpAltName
+mCfitPowerNameId equ 101
+    .dw mCfitPowerName
+mCfitPowerAltNameId equ 102
+    .dw mCfitPowerAltName
+mCfitBestNameId equ 103
+    .dw mCfitBestName
 mFToCNameId equ 104
     .dw mFToCName
 mCToFNameId equ 105
@@ -1962,33 +1962,33 @@ mStatPopCovName:
     .db "PCOV", 0
 mCfitName:
     .db "CFIT", 0
-mStatForcastXName:
+mCfitForcastXName:
     .db 'Y', Sconvert, 'X', 0
-mStatForcastYName:
+mCfitForcastYName:
     .db 'X', Sconvert, 'Y', 0
-mStatSlopeName:
+mCfitSlopeName:
     .db "SLOP", 0
-mStatInterceptName:
+mCfitInterceptName:
     .db "YINT", 0
-mStatCorrelationName:
+mCfitCorrelationName:
     .db "CORR", 0
-mStatLinearFitName:
+mCfitLinearName:
     .db "LINF", 0
-mStatLinearFitAltName:
+mCfitLinearAltName:
     .db 'L', 'I', 'N', Sblock, 0
-mStatLogFitName:
+mCfitLogName:
     .db "LOGF", 0
-mStatLogFitAltName:
+mCfitLogAltName:
     .db 'L', 'O', 'G', Sblock, 0
-mStatExpFitName:
+mCfitExpName:
     .db "EXPF", 0
-mStatExpFitAltName:
+mCfitExpAltName:
     .db 'E', 'X', 'P', Sblock, 0
-mStatPowerFitName:
+mCfitPowerName:
     .db "PWRF", 0
-mStatPowerFitAltName:
+mCfitPowerAltName:
     .db 'P', 'W', 'R', Sblock, 0
-mStatBestFitName:
+mCfitBestName:
     .db "BEST", 0
 mFToCName:
     .db Sconvert, Stemp, 'C', 0

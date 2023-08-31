@@ -197,18 +197,18 @@ MenuGroup root mRoot [
         MenuItem PCOV mStatPopCov
         MenuGroup CFIT mCfit [
           MenuRow [
-            MenuItem Y<Sconvert>X mStatForcastX
-            MenuItem X<Sconvert>Y mStatForcastY
-            MenuItem SLOP mStatSlope
-            MenuItem YINT mStatIntercept
-            MenuItem CORR mStatCorrelation
+            MenuItem Y<Sconvert>X mCfitForcastX
+            MenuItem X<Sconvert>Y mCfitForcastY
+            MenuItem SLOP mCfitSlope
+            MenuItem YINT mCfitIntercept
+            MenuItem CORR mCfitCorrelation
           ]
           MenuRow [
-            MenuItemAlt LINF LIN<Sblock> mStatLinearFit
-            MenuItemAlt LOGF LOG<Sblock> mStatLogFit
-            MenuItemAlt EXPF EXP<Sblock> mStatExpFit
-            MenuItemAlt PWRF PWR<Sblock> mStatPowerFit
-            MenuItem BEST mStatBestFit
+            MenuItemAlt LINF LIN<Sblock> mCfitLinear
+            MenuItemAlt LOGF LOG<Sblock> mCfitLog
+            MenuItemAlt EXPF EXP<Sblock> mCfitExp
+            MenuItemAlt PWRF PWR<Sblock> mCfitPower
+            MenuItem BEST mCfitBest
           ]
         ]
       ]
