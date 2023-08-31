@@ -269,8 +269,69 @@ mCfitPowerNameSelector:
 
 ;-----------------------------------------------------------------------------
 
+; Description: Select the best curve fit model with the highest absolute value
+; of the correlation coefficient.
+; Output:
+;   (curveFitModel)=best curve fit model
+;   X=abs(corr(best))
+; Destroys: OP1, OP2, OP3, (maybe OP4?), OP5
 mCfitBestHandler:
-    jp mNotYetHandler
+    call closeInputBuf
+mCfitBestCheckLinear:
+    ld a, curveFitModelLinear
+    call selectCfitModel
+    call statCorrelation
+    bcall(_ClrOP1S) ; clear sign bit of OP1
+    bcall(_OP1ToOP5) ; OP5=corr(best)
+    ld b, curveFitModelLinear
+    push bc ; save linear
+mCfitBestCheckLog:
+    ld a, curveFitModelLog
+    call selectCfitModel
+    call statCorrelation
+    bcall(_ClrOP1S) ; clear sign bit of OP1
+    bcall(_OP1ToOP2) ; OP2=corr(log)
+    bcall(_OP5ToOP1) ; OP1=corr(best)
+    bcall(_CpOP1OP2) ; if corr(log) > corr(linear): CF=1
+    jr nc, mCfitBestCheckExp
+    bcall(_OP2ToOP5) ; OP5=corr(log)
+    pop bc
+    ld b, curveFitModelLog
+    push bc
+mCfitBestCheckExp:
+    ld a, curveFitModelExp
+    call selectCfitModel
+    call statCorrelation
+    bcall(_ClrOP1S) ; clear sign bit of OP1
+    bcall(_OP1ToOP2) ; OP2=corr(exp)
+    bcall(_OP5ToOP1) ; OP1=corr(best)
+    bcall(_CpOP1OP2) ; if corr(exp) > corr(best): CF=1
+    jr nc, mCfitBestCheckPower
+    bcall(_OP2ToOP5) ; OP5=corr(exp)
+    pop bc
+    ld b, curveFitModelExp
+    push bc
+mCfitBestCheckPower:
+    ld a, curveFitModelPower
+    call selectCfitModel
+    call statCorrelation
+    bcall(_ClrOP1S) ; clear sign bit of OP1
+    bcall(_OP1ToOP2) ; OP2=corr(power)
+    bcall(_OP5ToOP1) ; OP1=corr(best)
+    bcall(_CpOP1OP2) ; if corr(power) > corr(best): CF=1
+    jr nc, mCfitBestSelect
+    bcall(_OP2ToOP5) ; OP5=corr(power)
+    pop bc
+    ld b, curveFitModelPower
+    push bc
+mCfitBestSelect:
+    ; B=best model
+    ; OP5=best correlation
+    pop af ; A=best model
+    ld (curveFitModel), a
+    set dirtyFlagsMenu, (iy + dirtyFlags)
+    bcall(_OP5ToOP1) ; OP1=abs(corr(best))
+    jp pushX ; push the |corr| to the stack to notify the user
 
 ;-----------------------------------------------------------------------------
 
