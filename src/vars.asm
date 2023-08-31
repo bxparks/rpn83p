@@ -156,7 +156,7 @@ clearStackEnd:
     ret
 
 ;-----------------------------------------------------------------------------
-; Stack registers to and from OP1 function functions.
+; Stack registers to and from OP1.
 ;-----------------------------------------------------------------------------
 
 ; Description: Store OP1 to STK[nn], setting dirty flag.
@@ -206,24 +206,24 @@ rclStackNN:
 
 ;-----------------------------------------------------------------------------
 
-; Description: Set OP1 to stX.
+; Description: Set OP1 to X.
 rclX:
     ld a, stackXIndex
     jr rclStackNN
 
-; Description: Set stX to OP1.
+; Description: Set X to OP1.
 stoX:
     ld a, stackXIndex
     jr stoStackNN
 
 ;-----------------------------------------------------------------------------
 
-; Description: Set OP1 to stY.
+; Description: Set OP1 to Y.
 rclY:
     ld a, stackYIndex
     jr rclStackNN
 
-; Description: Set stY to OP1.
+; Description: Set Y to OP1.
 stoY:
     ld a, stackYIndex
     jr stoStackNN
@@ -265,8 +265,11 @@ stoL:
     jr stoStackNN
 
 ;-----------------------------------------------------------------------------
+; Most routines should use these functions to set the results from OP1 and/or
+; OP2 to the RPN stack.
+;-----------------------------------------------------------------------------
 
-; Description: Replace stX with OP1, saving previous stX to lastX, and
+; Description: Replace X with OP1, saving previous X to LastX, and
 ; setting dirty flag.
 ; Preserves: OP1, OP2
 replaceX:
@@ -275,9 +278,11 @@ replaceX:
     call rclX
     call stoL
     bcall(_PopRealO1)
-    jr stoX
+    call stoX
+    set rpnFlagsLiftEnabled, (iy + rpnFlags)
+    ret
 
-; Description: Replace (stX, stY) pair with OP1, saving previous stX to lastX,
+; Description: Replace (X, Y) pair with OP1, saving previous X to LastX,
 ; and setting dirty flag.
 ; Preserves: OP1, OP2
 replaceXY:
@@ -287,10 +292,12 @@ replaceXY:
     call stoL
     call dropStack
     bcall(_PopRealO1)
-    jr stoX
+    call stoX
+    set rpnFlagsLiftEnabled, (iy + rpnFlags)
+    ret
 
 ; Description: Replace X and Y with push of OP1 and OP2 on the stack in that
-; order. This causes X=OP2 and Y=OP1, saving the previous X to lastX, and
+; order. This causes X=OP2 and Y=OP1, saving the previous X to LastX, and
 ; setting dirty flag.
 ; Input: X, Y, OP1, OP2
 ; Output:
@@ -299,20 +306,21 @@ replaceXY:
 ;   - LastX=X
 ; Preserves: OP1, OP2
 replaceXYWithOP1OP2:
-    ; validate OP1 and OP2 before modifying stX and stY
+    ; validate OP1 and OP2 before modifying X and Y
     bcall(_CkValidNum)
     bcall(_OP1ExOP2)
     bcall(_CkValidNum)
     bcall(_OP1ExOP2)
 
-    call stoY ; stY = OP1
+    call stoY ; Y = OP1
     bcall(_PushRealO1) ; FPS = OP1
     call rclX
-    call stoL; lastX = stX
+    call stoL; LastX = X
 
     bcall(_OP2ToOP1)
-    call stoX ; stX = OP2 
+    call stoX ; X = OP2
     bcall(_PopRealO1) ; OP1 unchanged
+    set rpnFlagsLiftEnabled, (iy + rpnFlags)
     ret
 
 ; Description: Replace X with OP1, and OP2 pushed onto the stack in that order.
@@ -323,7 +331,7 @@ replaceXYWithOP1OP2:
 ;   - LastX=X
 ; Preserves: OP1, OP2
 replaceXWithOP1OP2:
-    ; validate OP1 and OP2 before modifying stX and stY
+    ; validate OP1 and OP2 before modifying X and Y
     bcall(_CkValidNum)
     bcall(_OP1ExOP2)
     bcall(_CkValidNum)
@@ -336,24 +344,30 @@ replaceXWithOP1OP2:
     call stoX
     call liftStack
     bcall(_OP2ToOP1)
-    jp stoX
+    call stoX
+    set rpnFlagsLiftEnabled, (iy + rpnFlags)
+    ret
 
-; Description: Push OP1 to the X register.
+; Description: Push OP1 to the X register. LastX is not updated because the
+; previous X is not consumed, and is availabe as the Y register.
 ; Input: X, OP1
 ; Output:
-;   - Stack lifted
+;   - Stack lifted (if the inputBuf was not an empty string)
 ;   - X=OP1
 ; Destroys: all
 ; Preserves: OP1, OP2, LastX
 pushX:
     bcall(_CkValidNum)
     call liftStackIfNonEmpty
-    jp stoX
+    call stoX
+    set rpnFlagsLiftEnabled, (iy + rpnFlags)
+    ret
 
-; Description: Push OP1 then OP2 onto the stack.
+; Description: Push OP1 then OP2 onto the stack. LastX is not updated because
+; the previous X is not consumed, and is available as the Z register.
 ; Input: X, Y, OP1, OP2
 ; Output:
-;   - Stack lifted
+;   - Stack lifted (if the inputBuf was not an empty string)
 ;   - Y=OP1
 ;   - X=OP2
 ; Destroys: all
@@ -363,13 +377,13 @@ pushXY:
     bcall(_OP1ExOP2)
     bcall(_CkValidNum)
     bcall(_OP1ExOP2)
-
     call liftStackIfNonEmpty
     call stoX
     call liftStack
     bcall(_OP1ExOP2)
     call stoX
     bcall(_OP1ExOP2)
+    set rpnFlagsLiftEnabled, (iy + rpnFlags)
     ret
 
 ;-----------------------------------------------------------------------------
@@ -384,7 +398,18 @@ liftStackIfNonEmpty:
     ret nz ; return doing nothing if closed empty
     ; [[fallthrough]]
 
-; Function: Lift the RPN stack, copying X to Y.
+; Function: Lift the RPN stack, if rpnFlagsLiftEnabled is set.
+; Input: rpnFlagsLiftEnabled
+; Output: T=Z; Z=Y; Y=X; X=X; OP1 preserved
+; Destroys: all
+; Preserves: OP1, OP2
+liftStackIfEnabled:
+    bit rpnFlagsLiftEnabled, (iy + rpnFlags)
+    ret z
+    set rpnFlagsLiftEnabled, (iy + rpnFlags)
+    ; [[fallthrough]]
+
+; Function: Lift the RPN stack unconditionally, copying X to Y.
 ; Input: none
 ; Output: T=Z; Z=Y; Y=X; X=X; OP1 preserved
 ; Destroys: all

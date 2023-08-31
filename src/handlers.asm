@@ -58,10 +58,13 @@ handleKeyNumberArg:
 ; flags.
 ; Input:
 ;   A: character to be appended
+;   rpnFlagsArgMode: whether we are in Command Arg mode
+;   rpnFlagsEditing: whether we are already in Edit mode
 ; Output:
-;   - CF set when append fails.
-;   - rpnFlagsEditing set.
-;   - dirtyFlagsInput set.
+;   - CF set when append fails
+;   - rpnFlagsEditing set
+;   - rpnFlagsLiftEnabled set
+;   - dirtyFlagsInput set
 ; Destroys: all
 handleKeyNumber:
     ; Check if in arg editing mode.
@@ -72,14 +75,15 @@ handleKeyNumber:
     jr nz, handleKeyNumberCheckAppend
 handleKeyNumberFirstDigit:
     ; Lift the stack, unless disabled.
-    push af
-    bit rpnFlagsLiftEnabled, (iy + rpnFlags)
-    call nz, liftStack
+    push af ; preserve A=char to append
+    call liftStackIfEnabled
     pop af
-    ; Go into editing mode
+    ; Go into editing mode. Re-enable stack lift so that if the next keystroke
+    ; is a PI, Euler, or some other function that takes no arguments and
+    ; produces a number, the stack is lifted again.
     call clearInputBuf
     set rpnFlagsEditing, (iy + rpnFlags)
-    res rpnFlagsLiftEnabled, (iy + rpnFlags)
+    set rpnFlagsLiftEnabled, (iy + rpnFlags)
 handleKeyNumberCheckAppend:
     ; Limit number of exponent digits to 2.
     bit inputBufFlagsEE, (iy + inputBufFlags)
@@ -414,14 +418,12 @@ handleKeyClearWhileClear:
     ; If CLEAR is hit while the inputBuffer is already clear, then force a
     ; complete refresh of the entire display. Useful for removing any artifacts
     ; from buggy display code.
-    set dirtyFlagsMenu, (iy + dirtyFlags)
-    set dirtyFlagsStack, (iy + dirtyFlags)
-    set dirtyFlagsTrigMode, (iy + dirtyFlags)
+    call initDisplay
 handleKeyClearSimple:
     ; Clear the input buffer, and set various flags.
     call clearInputBuf
     set rpnFlagsEditing, (iy + rpnFlags)
-    res rpnFlagsLiftEnabled, (iy + rpnFlags)
+    set rpnFlagsLiftEnabled, (iy + rpnFlags)
     ret
 
 ;-----------------------------------------------------------------------------
@@ -510,7 +512,7 @@ handleKeyEnter:
     bit rpnFlagsArgMode, (iy + rpnFlags)
     jr nz, handleKeyEnterArg
     call closeInputBuf
-    call liftStack
+    call liftStack ; always lift the stack
     res rpnFlagsLiftEnabled, (iy + rpnFlags)
     ret
 
@@ -525,37 +527,6 @@ handleKeyEnterArg:
     ld (argValue), a
     ld hl, (argHandler)
     jp (hl)
-
-; closeInputBuf() -> None
-; Description: If currently in edit mode, close the input buffer by parsing the
-; input, enable stack lift, then copying the float value into X. If not in edit
-; mode, no need to parse the inputBuf, but we still have to enable stack lift
-; because the previous keyCode could have been ENTER which disabled it.
-; Input: none
-; Output:
-; Destroys: all, OP1, OP2, OP4
-closeInputBuf:
-    set rpnFlagsLiftEnabled, (iy + rpnFlags)
-    bit rpnFlagsEditing, (iy + rpnFlags)
-    jr nz, closeInputBufEditing
-closeInputBufNonEditing:
-    res inputBufFlagsClosedEmpty, (iy + inputBufFlags)
-    ret
-closeInputBufEditing:
-    ld a, (inputBuf)
-    or a
-    jr z, closeInputBufEmpty
-closeInputBufNonEmpty:
-    res inputBufFlagsClosedEmpty, (iy + inputBufFlags)
-    jr closeInputBufContinue
-closeInputBufEmpty:
-    set inputBufFlagsClosedEmpty, (iy + inputBufFlags)
-closeInputBufContinue:
-    call parseNum
-    call stoX
-    call clearInputBuf
-    res rpnFlagsEditing, (iy + rpnFlags)
-    ret
 
 ;-----------------------------------------------------------------------------
 ; Menu key handlers.

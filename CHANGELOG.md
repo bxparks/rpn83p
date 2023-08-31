@@ -16,7 +16,7 @@
           bitwise operations are performed.
     - Add menu selector dots
         - Replicate HP-42S menu selector dots, where a menu item can be both an
-          action (e.g. select `DEG`) and a current mode indicator.
+          action (e.g. select `DEG`) and a selection indicator.
         - display modes: `FIX`, `SCI`, `ENG`
         - trig modes: `RAD`, `DEG`
         - base modes: `DEC`, `HEX`, `OCT`, `BIN`
@@ -42,6 +42,17 @@
         - `EXPF` (exponential curve fit model)
         - `PWRF` (power curve fit model)
         - `BEST` (choose best curve fit model)
+    - Fix RPN stack lift logic for pending input
+        - Simplify stack lift logic to handle empty and non-empty pending input
+          consistently.
+        - If the input buffer is empty (showing just a `_` cursor), then any
+          subsequent keystroke that generates a single value (e.g. `PI` or
+          `STAT:N`) replaces the empty `X` register.
+        - If the input buffer is pending but not empty (i.e. has digits with a
+          trailing `_` cursor), then subsequent keystrokes causes a stack lift,
+          preserving the pending input into the `Y` register.
+        - If the subsequent keystroke is a function that consumes an `X`
+          register, then the empty input buffer is assumed to be a `0` value.
 - 0.4.0 (2023-08-16)
     - More `BASE` menu functions:
         - `SL` (shift left), `SR` (shift right), `RL` (rotate left circular),
