@@ -322,52 +322,65 @@ mStatSampleCovHandler:
     jp pushX
 
 ;-----------------------------------------------------------------------------
+; Curve fitting handlers and routines.
+;-----------------------------------------------------------------------------
 
 ; Description: Forecast Y from X.
 mStatForcastYHandler:
     call closeInputBuf
+    ld a, (curveFitModel)
+    call statSelectCurveFitModel
     call rclX ; OP1=X
+    call convertXToXPrime
     bcall(_PushRealO1) ; FPS=X
-    ld ix, statModelLinear
     call statLeastSquareFit ; OP1=intercept,OP2=slope
     call exchangeFPSOP1 ; OP1=X, FPS=intercept
     bcall(_FPMult) ; OP1=slope*X
     bcall(_PopRealO2) ; OP2=intercept
     bcall(_FPAdd) ; OP1=slope*X + intercept
+    call convertYPrimeToY
     jp replaceX
 
 ; Description: Forecast X from Y.
 mStatForcastXHandler:
     call closeInputBuf
+    ld a, (curveFitModel)
+    call statSelectCurveFitModel
     call rclX ; OP1=X=y
+    call convertYToYPrime
     bcall(_PushRealO1) ; FPS=y
-    ld ix, statModelLinear
     call statLeastSquareFit ; OP1=intercept,OP2=slope
     call exchangeFPSOP2 ; OP2=y, FPS=slope
     bcall(_InvSub) ; OP1=y-intercept
     bcall(_PopRealO2) ; OP2=slope
     bcall(_FPDiv) ; OP1=(y-intercept) / slope = x
+    call convertXPrimeToX
     jp replaceX
 
 ; Description: Calculate the least square fit slope into X register.
 mStatSlopeHandler:
     call closeInputBuf
-    ld ix, statModelLinear
+    ld a, (curveFitModel)
+    call statSelectCurveFitModel
     call statLeastSquareFit ; OP1=intercept,OP2=slope
     bcall(_OP1ExOP2)
+    call convertMPrimeToM
     jp pushX
 
 ; Description: Calculate the least square fit intercept into X register.
 mStatInterceptHandler:
     call closeInputBuf
-    ld ix, statModelLinear
+    ld a, (curveFitModel)
+    call statSelectCurveFitModel
     call statLeastSquareFit ; OP1=intercept,OP2=slope
+    call convertBPrimeToB
     jp pushX
 
 ; Description: Calculate the correlation coefficient into X register.
 mStatCorrelationHandler:
     call closeInputBuf
-    ld ix, statModelLinear
+    ld a, (curveFitModel)
+    call statSelectCurveFitModel
     call statCorrelation
     jp pushX
 
@@ -876,15 +889,115 @@ statLeastSquareFit:
 ; Description: Select the curve fit model.
 ; Input: A: curveFitModel index [0-3]
 ; Output: IX: pointer to curve fit indirection indexes
-; Destroys: DE, HL
+; Destroys: A, DE, HL
 statSelectCurveFitModel:
-    ld l, a
-    ld h, 0
-    add hl, hl ; HL=2*A
-    ld ix, statModelList
-    ex de, hl
-    add ix, de ; IX=statModelList + 2*A
+    add a, a ; A*=2
+    ld e, a
+    ld d, 0
+    ld hl, statModelList
+    add hl, de
+    ld e, (hl)
+    inc hl
+    ld d, (hl)
+    push de ; DE=(statModelList + 2*A)
+    pop ix
     ret
+
+; Description: Convert X to XPrime, according to model defined by IX.
+; Input:
+;   IX: curve fit model
+;   OP1: X
+; Output:
+;   OP1: XPrime
+; Destroys: HL
+convertXToXPrime:
+    ld l, (ix + statIndXToXPrime)
+    ld h, (ix + statIndXToXPrime + 1)
+    jp (hl)
+
+; Description: Convert XPrime to X, according to model defined by IX.
+; Input:
+;   IX: curve fit model
+;   OP1: XPrime
+; Output:
+;   OP1: X
+; Destroys: HL
+convertXPrimeToX:
+    ld l, (ix + statIndXPrimeToX)
+    ld h, (ix + statIndXPrimeToX + 1)
+    jp (hl)
+
+; Description: Convert Y to YPrime, according to model defined by IX.
+; Input:
+;   IX: curve fit model
+;   OP1: Y
+; Output:
+;   OP1: YPrime
+; Destroys: HL
+convertYToYPrime:
+    ld l, (ix + statIndYToYPrime)
+    ld h, (ix + statIndYToYPrime + 1)
+    jp (hl)
+
+; Description: Convert YPrime to Y, according to model defined by IX.
+; Input:
+;   IX: curve fit model
+;   OP1: YPrime
+; Output:
+;   OP1: Y
+; Destroys: HL
+convertYPrimeToY:
+    ld l, (ix + statIndYPrimeToY)
+    ld h, (ix + statIndYPrimeToY + 1)
+    jp (hl)
+
+; Description: Convert M to MPrime, according to model defined by IX.
+; Input:
+;   IX: curve fit model
+;   OP1: M
+; Output:
+;   OP1: MPrime
+; Destroys: HL
+convertMToMPrime:
+    ld l, (ix + statIndMToMPrime)
+    ld h, (ix + statIndMToMPrime + 1)
+    jp (hl)
+
+; Description: Convert MPrime to M, according to model defined by IX.
+; Input:
+;   IX: curve fit model
+;   OP1: MPrime
+; Output:
+;   OP1: M
+; Destroys: HL
+convertMPrimeToM:
+    ld l, (ix + statIndMPrimeToM)
+    ld h, (ix + statIndMPrimeToM + 1)
+    jp (hl)
+
+; Description: Convert B to BPrime, according to model defined by IX.
+; Input:
+;   IX: curve fit model
+;   OP1: B
+; Output:
+;   OP1: BPrime
+; Destroys: HL
+convertBToBPrime:
+    ld l, (ix + statIndBToBPrime)
+    ld h, (ix + statIndBToBPrime + 1)
+    jp (hl)
+
+; Description: Convert BPrime to B, according to model defined by IX.
+; Input:
+;   IX: curve fit model
+;   OP1: BPrime
+; Output:
+;   OP1: B
+; Destroys: HL
+convertBPrimeToB:
+    ld l, (ix + statIndBPrimeToB)
+    ld h, (ix + statIndBPrimeToB + 1)
+    jp (hl)
 
 ;-----------------------------------------------------------------------------
 
@@ -903,7 +1016,11 @@ statLinearBPrimeToB:
 
 ; Parameter converters for logarithmic fit.
 statLogXToXPrime:
+    bcall(_LnX)
+    ret
 statLogXPrimeToX:
+    bcall(_EToX)
+    ret
 statLogYToYPrime:
 statLogYPrimeToY:
 statLogMToMPrime:
@@ -917,23 +1034,40 @@ statLogBPrimeToB:
 ; Parameter converters for exponential fit.
 statExpXToXPrime:
 statExpXPrimeToX:
+    ret
 statExpYToYPrime:
+    bcall(_LnX)
+    ret
 statExpYPrimeToY:
+    bcall(_EToX)
+    ret
 statExpMToMPrime:
 statExpMPrimeToM:
 statExpBToBPrime:
+    ret
 statExpBPrimeToB:
+    bcall(_EToX)
     ret
 
 ;-----------------------------------------------------------------------------
 
 ; Parameter converters for power fit.
 statPowerXToXPrime:
+    bcall(_LnX)
+    ret
 statPowerXPrimeToX:
+    bcall(_EToX)
+    ret
 statPowerYToYPrime:
+    bcall(_LnX)
+    ret
 statPowerYPrimeToY:
+    bcall(_EToX)
+    ret
 statPowerMToMPrime:
 statPowerMPrimeToM:
 statPowerBToBPrime:
+    ret
 statPowerBPrimeToB:
+    bcall(_EToX)
     ret
