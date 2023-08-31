@@ -193,23 +193,24 @@ MenuGroup root mRoot [
       MenuRow [
         MenuItem SDEV mStatSampleSdev
         MenuItem SCOV mStatSampleCov
-        MenuItem * *
         MenuItem PDEV mStatPopSdev
         MenuItem PCOV mStatPopCov
-      ]
-      MenuRow [
-        MenuItem X<Sconvert>Y mStatForcastY
-        MenuItem Y<Sconvert>X mStatForcastX
-        MenuItem SLOP mStatSlope
-        MenuItem YINT mStatIntercept
-        MenuItem CORR mStatCorrelation
-      ]
-      MenuRow [
-        MenuItemAlt LINF LIN<Sblock> mStatLinearFit
-        MenuItemAlt LOGF LOG<Sblock> mStatLogFit
-        MenuItemAlt EXPF EXP<Sblock> mStatExpFit
-        MenuItemAlt PWRF PWR<Sblock> mStatPowerFit
-        MenuItem BEST mStatBestFit
+        MenuGroup CFIT mCfit [
+          MenuRow [
+            MenuItem Y<Sconvert>X mStatForcastX
+            MenuItem X<Sconvert>Y mStatForcastY
+            MenuItem SLOP mStatSlope
+            MenuItem YINT mStatIntercept
+            MenuItem CORR mStatCorrelation
+          ]
+          MenuRow [
+            MenuItemAlt LINF LIN<Sblock> mStatLinearFit
+            MenuItemAlt LOGF LOG<Sblock> mStatLogFit
+            MenuItemAlt EXPF EXP<Sblock> mStatExpFit
+            MenuItemAlt PWRF PWR<Sblock> mStatPowerFit
+            MenuItem BEST mStatBestFit
+          ]
+        ]
       ]
     ]
     MenuGroup UNIT mUnit [

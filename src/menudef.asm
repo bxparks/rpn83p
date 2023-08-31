@@ -119,7 +119,7 @@ mStatId equ 9
     .db mStatId ; id
     .db mRootId ; parentId
     .db mStatNameId ; nameId
-    .db 5 ; numRows
+    .db 3 ; numRows
     .db mStatPlusId ; rowBeginId or altNameId
     .dw mGroupHandler ; handler (predefined)
     .dw 0 ; nameSelector
@@ -949,17 +949,8 @@ mStatSampleCovId equ 98
     .db 0 ; rowBeginId or altNameId
     .dw mStatSampleCovHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
-mBlank099:
-mBlank099Id equ 99
-    .db mBlank099Id ; id
-    .db mStatId ; parentId
-    .db mNullNameId ; nameId
-    .db 0 ; numRows
-    .db 0 ; rowBeginId or altNameId
-    .dw mNullHandler ; handler (predefined)
-    .dw 0 ; nameSelector
 mStatPopSdev:
-mStatPopSdevId equ 100
+mStatPopSdevId equ 99
     .db mStatPopSdevId ; id
     .db mStatId ; parentId
     .db mStatPopSdevNameId ; nameId
@@ -968,7 +959,7 @@ mStatPopSdevId equ 100
     .dw mStatPopSdevHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
 mStatPopCov:
-mStatPopCovId equ 101
+mStatPopCovId equ 100
     .db mStatPopCovId ; id
     .db mStatId ; parentId
     .db mStatPopCovNameId ; nameId
@@ -976,29 +967,39 @@ mStatPopCovId equ 101
     .db 0 ; rowBeginId or altNameId
     .dw mStatPopCovHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
-; MenuGroup STAT: children: row 3
-mStatForcastY:
-mStatForcastYId equ 102
-    .db mStatForcastYId ; id
+mCfit:
+mCfitId equ 101
+    .db mCfitId ; id
     .db mStatId ; parentId
-    .db mStatForcastYNameId ; nameId
-    .db 0 ; numRows
-    .db 0 ; rowBeginId or altNameId
-    .dw mStatForcastYHandler ; handler (to be implemented)
+    .db mCfitNameId ; nameId
+    .db 2 ; numRows
+    .db mStatForcastXId ; rowBeginId or altNameId
+    .dw mGroupHandler ; handler (predefined)
     .dw 0 ; nameSelector
+; MenuGroup CFIT: children
+; MenuGroup CFIT: children: row 0
 mStatForcastX:
-mStatForcastXId equ 103
+mStatForcastXId equ 102
     .db mStatForcastXId ; id
-    .db mStatId ; parentId
+    .db mCfitId ; parentId
     .db mStatForcastXNameId ; nameId
     .db 0 ; numRows
     .db 0 ; rowBeginId or altNameId
     .dw mStatForcastXHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
+mStatForcastY:
+mStatForcastYId equ 103
+    .db mStatForcastYId ; id
+    .db mCfitId ; parentId
+    .db mStatForcastYNameId ; nameId
+    .db 0 ; numRows
+    .db 0 ; rowBeginId or altNameId
+    .dw mStatForcastYHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
 mStatSlope:
 mStatSlopeId equ 104
     .db mStatSlopeId ; id
-    .db mStatId ; parentId
+    .db mCfitId ; parentId
     .db mStatSlopeNameId ; nameId
     .db 0 ; numRows
     .db 0 ; rowBeginId or altNameId
@@ -1007,7 +1008,7 @@ mStatSlopeId equ 104
 mStatIntercept:
 mStatInterceptId equ 105
     .db mStatInterceptId ; id
-    .db mStatId ; parentId
+    .db mCfitId ; parentId
     .db mStatInterceptNameId ; nameId
     .db 0 ; numRows
     .db 0 ; rowBeginId or altNameId
@@ -1016,17 +1017,17 @@ mStatInterceptId equ 105
 mStatCorrelation:
 mStatCorrelationId equ 106
     .db mStatCorrelationId ; id
-    .db mStatId ; parentId
+    .db mCfitId ; parentId
     .db mStatCorrelationNameId ; nameId
     .db 0 ; numRows
     .db 0 ; rowBeginId or altNameId
     .dw mStatCorrelationHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
-; MenuGroup STAT: children: row 4
+; MenuGroup CFIT: children: row 1
 mStatLinearFit:
 mStatLinearFitId equ 107
     .db mStatLinearFitId ; id
-    .db mStatId ; parentId
+    .db mCfitId ; parentId
     .db mStatLinearFitNameId ; nameId
     .db 0 ; numRows
     .db mStatLinearFitAltNameId ; rowBeginId or altNameId
@@ -1035,7 +1036,7 @@ mStatLinearFitId equ 107
 mStatLogFit:
 mStatLogFitId equ 108
     .db mStatLogFitId ; id
-    .db mStatId ; parentId
+    .db mCfitId ; parentId
     .db mStatLogFitNameId ; nameId
     .db 0 ; numRows
     .db mStatLogFitAltNameId ; rowBeginId or altNameId
@@ -1044,7 +1045,7 @@ mStatLogFitId equ 108
 mStatExpFit:
 mStatExpFitId equ 109
     .db mStatExpFitId ; id
-    .db mStatId ; parentId
+    .db mCfitId ; parentId
     .db mStatExpFitNameId ; nameId
     .db 0 ; numRows
     .db mStatExpFitAltNameId ; rowBeginId or altNameId
@@ -1053,7 +1054,7 @@ mStatExpFitId equ 109
 mStatPowerFit:
 mStatPowerFitId equ 110
     .db mStatPowerFitId ; id
-    .db mStatId ; parentId
+    .db mCfitId ; parentId
     .db mStatPowerFitNameId ; nameId
     .db 0 ; numRows
     .db mStatPowerFitAltNameId ; rowBeginId or altNameId
@@ -1062,7 +1063,7 @@ mStatPowerFitId equ 110
 mStatBestFit:
 mStatBestFitId equ 111
     .db mStatBestFitId ; id
-    .db mStatId ; parentId
+    .db mCfitId ; parentId
     .db mStatBestFitNameId ; nameId
     .db 0 ; numRows
     .db 0 ; rowBeginId or altNameId
@@ -1667,115 +1668,117 @@ mStatPopSdevNameId equ 87
     .dw mStatPopSdevName
 mStatPopCovNameId equ 88
     .dw mStatPopCovName
-mStatForcastYNameId equ 89
-    .dw mStatForcastYName
+mCfitNameId equ 89
+    .dw mCfitName
 mStatForcastXNameId equ 90
     .dw mStatForcastXName
-mStatSlopeNameId equ 91
+mStatForcastYNameId equ 91
+    .dw mStatForcastYName
+mStatSlopeNameId equ 92
     .dw mStatSlopeName
-mStatInterceptNameId equ 92
+mStatInterceptNameId equ 93
     .dw mStatInterceptName
-mStatCorrelationNameId equ 93
+mStatCorrelationNameId equ 94
     .dw mStatCorrelationName
-mStatLinearFitNameId equ 94
+mStatLinearFitNameId equ 95
     .dw mStatLinearFitName
-mStatLinearFitAltNameId equ 95
+mStatLinearFitAltNameId equ 96
     .dw mStatLinearFitAltName
-mStatLogFitNameId equ 96
+mStatLogFitNameId equ 97
     .dw mStatLogFitName
-mStatLogFitAltNameId equ 97
+mStatLogFitAltNameId equ 98
     .dw mStatLogFitAltName
-mStatExpFitNameId equ 98
+mStatExpFitNameId equ 99
     .dw mStatExpFitName
-mStatExpFitAltNameId equ 99
+mStatExpFitAltNameId equ 100
     .dw mStatExpFitAltName
-mStatPowerFitNameId equ 100
+mStatPowerFitNameId equ 101
     .dw mStatPowerFitName
-mStatPowerFitAltNameId equ 101
+mStatPowerFitAltNameId equ 102
     .dw mStatPowerFitAltName
-mStatBestFitNameId equ 102
+mStatBestFitNameId equ 103
     .dw mStatBestFitName
-mFToCNameId equ 103
+mFToCNameId equ 104
     .dw mFToCName
-mCToFNameId equ 104
+mCToFNameId equ 105
     .dw mCToFName
-mInhgToHpaNameId equ 105
+mInhgToHpaNameId equ 106
     .dw mInhgToHpaName
-mHpaToInhgNameId equ 106
+mHpaToInhgNameId equ 107
     .dw mHpaToInhgName
-mMiToKmNameId equ 107
+mMiToKmNameId equ 108
     .dw mMiToKmName
-mKmToMiNameId equ 108
+mKmToMiNameId equ 109
     .dw mKmToMiName
-mFtToMNameId equ 109
+mFtToMNameId equ 110
     .dw mFtToMName
-mMToFtNameId equ 110
+mMToFtNameId equ 111
     .dw mMToFtName
-mInToCmNameId equ 111
+mInToCmNameId equ 112
     .dw mInToCmName
-mCmToInNameId equ 112
+mCmToInNameId equ 113
     .dw mCmToInName
-mMilToMicronNameId equ 113
+mMilToMicronNameId equ 114
     .dw mMilToMicronName
-mMicronToMilNameId equ 114
+mMicronToMilNameId equ 115
     .dw mMicronToMilName
-mLbsToKgNameId equ 115
+mLbsToKgNameId equ 116
     .dw mLbsToKgName
-mKgToLbsNameId equ 116
+mKgToLbsNameId equ 117
     .dw mKgToLbsName
-mOzToGNameId equ 117
+mOzToGNameId equ 118
     .dw mOzToGName
-mGToOzNameId equ 118
+mGToOzNameId equ 119
     .dw mGToOzName
-mGalToLNameId equ 119
+mGalToLNameId equ 120
     .dw mGalToLName
-mLToGalNameId equ 120
+mLToGalNameId equ 121
     .dw mLToGalName
-mFlozToMlNameId equ 121
+mFlozToMlNameId equ 122
     .dw mFlozToMlName
-mMlToFlozNameId equ 122
+mMlToFlozNameId equ 123
     .dw mMlToFlozName
-mCalToKjNameId equ 123
+mCalToKjNameId equ 124
     .dw mCalToKjName
-mKjToCalNameId equ 124
+mKjToCalNameId equ 125
     .dw mKjToCalName
-mHpToKwNameId equ 125
+mHpToKwNameId equ 126
     .dw mHpToKwName
-mKwToHpNameId equ 126
+mKwToHpNameId equ 127
     .dw mKwToHpName
-mClearXNameId equ 127
+mClearXNameId equ 128
     .dw mClearXName
-mClearStackNameId equ 128
+mClearStackNameId equ 129
     .dw mClearStackName
-mClearRegsNameId equ 129
+mClearRegsNameId equ 130
     .dw mClearRegsName
-mClearStatNameId equ 130
+mClearStatNameId equ 131
     .dw mClearStatName
-mFixNameId equ 131
+mFixNameId equ 132
     .dw mFixName
-mFixAltNameId equ 132
+mFixAltNameId equ 133
     .dw mFixAltName
-mSciNameId equ 133
+mSciNameId equ 134
     .dw mSciName
-mSciAltNameId equ 134
+mSciAltNameId equ 135
     .dw mSciAltName
-mEngNameId equ 135
+mEngNameId equ 136
     .dw mEngName
-mEngAltNameId equ 136
+mEngAltNameId equ 137
     .dw mEngAltName
-mRadNameId equ 137
+mRadNameId equ 138
     .dw mRadName
-mRadAltNameId equ 138
+mRadAltNameId equ 139
     .dw mRadAltName
-mDegNameId equ 139
+mDegNameId equ 140
     .dw mDegName
-mDegAltNameId equ 140
+mDegAltNameId equ 141
     .dw mDegAltName
-mStackRotUpNameId equ 141
+mStackRotUpNameId equ 142
     .dw mStackRotUpName
-mStackRotDownNameId equ 142
+mStackRotDownNameId equ 143
     .dw mStackRotDownName
-mStackExchangeXYNameId equ 143
+mStackExchangeXYNameId equ 144
     .dw mStackExchangeXYName
 
 ; Table of names as NUL terminated C strings.
@@ -1957,10 +1960,12 @@ mStatPopSdevName:
     .db "PDEV", 0
 mStatPopCovName:
     .db "PCOV", 0
-mStatForcastYName:
-    .db 'X', Sconvert, 'Y', 0
+mCfitName:
+    .db "CFIT", 0
 mStatForcastXName:
     .db 'Y', Sconvert, 'X', 0
+mStatForcastYName:
+    .db 'X', Sconvert, 'Y', 0
 mStatSlopeName:
     .db "SLOP", 0
 mStatInterceptName:
