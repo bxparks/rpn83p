@@ -154,8 +154,8 @@ statModelList:
 
 ; Description: Initialize the STAT modes.
 initStat:
-    call mStatLinearModeHandler
-    call mStatLinearFitHandler
+    call mStatAllModeHandler ; default AllSigma mode
+    call mStatLinearFitHandler ; default Linear curve fit
     ret
 
 ;-----------------------------------------------------------------------------
