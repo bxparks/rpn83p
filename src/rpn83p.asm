@@ -73,6 +73,7 @@ rpnFlags equ asm_Flag2
 rpnFlagsEditing equ 0 ; set if in edit mode
 rpnFlagsArgMode equ 1 ; set if in command argument mode
 rpnFlagsLiftEnabled equ 2 ; set if stack lift is enabled (ENTER disables it)
+rpnFlagsAllStatEnabled equ 3 ; set if Sigma+ updates logarithm registers
 
 ; Flags for the inputBuf. Offset from IY register.
 inputBufFlags equ asm_Flag3
@@ -202,8 +203,11 @@ argHandlerSizeOf equ 2
 argValue equ argHandler + argHandlerSizeOf
 argValueSizeOf equ 1
 
+; Least square curve fit model.
+curveFitModel equ argValue + argValueSizeOf
+
 ; End RPN83P variables. Total size of vars = rpnVarsEnd - rpnVarsBegin.
-rpnVarsEnd equ argValue + argValueSizeOf
+rpnVarsEnd equ curveFitModel + 1
 
 ;-----------------------------------------------------------------------------
 
@@ -219,7 +223,6 @@ main:
     res lwrCaseActive, (iy + appLwrCaseFlag) ; disable ALPHA-ALPHA lowercase
     bcall(_ClrLCDFull)
 
-    call initBase
     call initErrorCode
     call initInputBuf
     call initArgBuf
@@ -227,6 +230,9 @@ main:
     call initRegs
     call initMenu
     call initDisplay
+    call initBase
+    call initStat
+    call initCfit
     ; [[fall through]]
 
 ; The main event/read loop. Read button and dispatch to the appropriate
@@ -306,6 +312,7 @@ mainExit:
 #include "menu.asm"
 #include "menuhandlers.asm"
 #include "stathandlers.asm"
+#include "cfithandlers.asm"
 #include "prime.asm"
 #ifdef DEBUG
 #include "debug.asm"
