@@ -205,10 +205,6 @@ argValueSizeOf equ 1
 
 ; Least square curve fit model.
 curveFitModel equ argValue + argValueSizeOf
-curveFitModelLinear equ 0
-curveFitModelLog equ 1
-curveFitModelExp equ 2
-curveFitModelPower equ 3
 
 ; End RPN83P variables. Total size of vars = rpnVarsEnd - rpnVarsBegin.
 rpnVarsEnd equ curveFitModel + 1

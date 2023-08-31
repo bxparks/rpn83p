@@ -26,64 +26,141 @@ statRegLnXLnY equ 21
 statRegXLnY equ 22
 statRegYLnX equ 23
 
-; Indirect register indexes for various curve fitting algorithms.
+; Curve fit model indexes for various curve fitting algorithms. The equivalent
+; C-struct is:
+;
+;   struct CurveFitModel {
+;       uint8_t statIndX;
+;       uint8_t statIndX2;
+;       uint8_t statIndY;
+;       uint8_t statIndY2;
+;       uint8_t statIndXY;
+;       uint8_t statIndN;
+;       void *statIndXToXPrime;
+;       void *statIndXPrimeToX;
+;       void *statIndYToYPrime;
+;       void *statIndYPrimeToY;
+;       void *statIndMToMPrime;
+;       void *statIndMPrimeToM;
+;       void *statIndBToBPrime;
+;       void *statIndBPrimeToB;
+;   };
+;
 statIndX equ 0
 statIndX2 equ 1
 statIndY equ 2
 statIndY2 equ 3
 statIndXY equ 4
 statIndN equ 5
+statIndXToXPrime equ 6
+statIndXPrimeToX equ 8
+statIndYToYPrime equ 10
+statIndYPrimeToY equ 12
+statIndMToMPrime equ 14
+statIndMPrimeToM equ 16
+statIndBToBPrime equ 18
+statIndBPrimeToB equ 20
 
-; Storage registers for Linear curve fitting.
+; Model parameters for Linear curve fitting.
 ;   y = b + m x
-statLinearRegs:
+statModelLinear:
     .db statRegX
     .db statRegX2
     .db statRegY
     .db statRegY2
     .db statRegXY
     .db statRegN
+    .dw statLinearXToXPrime
+    .dw statLinearXPrimeToX
+    .dw statLinearYToYPrime
+    .dw statLinearYPrimeToY
+    .dw statLinearMToMPrime
+    .dw statLinearMPrimeToM
+    .dw statLinearBToBPrime
+    .dw statLinearBPrimeToB
 
-; Storage registers for Exponential curve fitting.
-;   y = b e^(m x)
-;   ln y = ln b + m x
-;   y' = b' + m x, where
-;       y' = ln y
-;       b' = ln b
-statExpRegs:
-    .db statRegX
-    .db statRegX2
-    .db statRegLnY
-    .db statRegLnY2
-    .db statRegXLnY
-    .db statRegN
-
-; Storage registers for Logarithmic curve fitting.
+; Model parameters for Logarithmic curve fitting.
 ;   y = b + m ln x
 ;   y = b + m x', where
 ;       x' = ln x
-statLogRegs:
+statModelLog:
     .db statRegLnX
     .db statRegLnX2
     .db statRegY
     .db statRegY2
     .db statRegYLnX
     .db statRegN
+    .dw statLogXToXPrime
+    .dw statLogXPrimeToX
+    .dw statLogYToYPrime
+    .dw statLogYPrimeToY
+    .dw statLogMToMPrime
+    .dw statLogMPrimeToM
+    .dw statLogBToBPrime
+    .dw statLogBPrimeToB
 
-; Storage registers for Power curve fitting.
+; Model parameters for Exponential curve fitting.
+;   y = b e^(m x)
+;   ln y = ln b + m x
+;   y' = b' + m x, where
+;       y' = ln y
+;       b' = ln b
+statModelExp:
+    .db statRegX
+    .db statRegX2
+    .db statRegLnY
+    .db statRegLnY2
+    .db statRegXLnY
+    .db statRegN
+    .dw statExpXToXPrime
+    .dw statExpXPrimeToX
+    .dw statExpYToYPrime
+    .dw statExpYPrimeToY
+    .dw statExpMToMPrime
+    .dw statExpMPrimeToM
+    .dw statExpBToBPrime
+    .dw statExpBPrimeToB
+
+; Model parameters for Power curve fitting.
 ;   y = b x^m
 ;   ln y = ln b + m ln x
 ;   y' = b' + m x', where
 ;       y' = ln y
 ;       b' = ln b
 ;       x' = ln x
-statPowerReg:
+statModelPower:
     .db statRegLnX
     .db statRegLnX2
     .db statRegLnY
     .db statRegLnY2
     .db statRegLnXLnY
     .db statRegN
+    .dw statPowerXToXPrime
+    .dw statPowerXPrimeToX
+    .dw statPowerYToYPrime
+    .dw statPowerYPrimeToY
+    .dw statPowerMToMPrime
+    .dw statPowerMPrimeToM
+    .dw statPowerBToBPrime
+    .dw statPowerBPrimeToB
+
+; Array of pointers to CurveFitModel structs. The equivalent C data object is:
+;
+; struct CurveFitModel *statModelList[4] = {
+;   &statModelLinear,
+;   &statModelLog,
+;   &statModelExp,
+;   &statModelPower,
+; };
+curveFitModelLinear equ 0
+curveFitModelLog equ 1
+curveFitModelExp equ 2
+curveFitModelPower equ 3
+statModelList:
+    .dw statModelLinear
+    .dw statModelLog
+    .dw statModelExp
+    .dw statModelPower
 
 ;-----------------------------------------------------------------------------
 
@@ -164,7 +241,7 @@ mStatSumHandler:
 ; Description: Calculate the average of X and Y into X and Y registers.
 mStatMeanHandler:
     call closeInputBuf
-    ld ix, statLinearRegs
+    ld ix, statModelLinear
     call statMean
     jp pushXY
 
@@ -174,7 +251,7 @@ mStatMeanHandler:
 ;   X: Mean of X weighted by Y = Sum(X,Y) / Sum(Y)
 mStatWeightedMeanHandler:
     call closeInputBuf
-    ld ix, statLinearRegs
+    ld ix, statModelLinear
     call statWeightedMean ; OP1=WeightedY, OP2=WeightedX
     jp pushXY
 
@@ -194,7 +271,7 @@ mStatNHandler:
 ; Destroys: A, OP2, OP3, OP4
 mStatPopSdevHandler:
     call closeInputBuf
-    ld ix, statLinearRegs
+    ld ix, statModelLinear
     call statStdDev
     jp pushXY
 
@@ -205,7 +282,7 @@ mStatPopSdevHandler:
 ; Destroys: A, OP2, OP3, OP4
 mStatSampleSdevHandler:
     call closeInputBuf
-    ld ix, statLinearRegs
+    ld ix, statModelLinear
     call statVariance ; OP1=VAR(Y), OP2=VAR(X)
     ; Multiply each VAR(x) with N/(N-1)
     bcall(_PushRealO2) ; FPS=VAR(X)
@@ -227,7 +304,7 @@ mStatSampleSdevHandler:
 ; Destroys: A, OP2, OP3, OP4
 mStatPopCovHandler:
     call closeInputBuf
-    ld ix, statLinearRegs
+    ld ix, statModelLinear
     call statCovariance
     jp pushX
 
@@ -238,7 +315,7 @@ mStatPopCovHandler:
 ; Destroys: A, OP2, OP3, OP4
 mStatSampleCovHandler:
     call closeInputBuf
-    ld ix, statLinearRegs
+    ld ix, statModelLinear
     call statCovariance ; OP1=PCOV(X,Y)
     call statFactorPopToSampleOP2 ; OP2=N/(N-1)
     bcall(_FPMult); OP1=SCOV(X,Y)
@@ -251,7 +328,7 @@ mStatForcastYHandler:
     call closeInputBuf
     call rclX ; OP1=X
     bcall(_PushRealO1) ; FPS=X
-    ld ix, statLinearRegs
+    ld ix, statModelLinear
     call statLeastSquareFit ; OP1=intercept,OP2=slope
     call exchangeFPSOP1 ; OP1=X, FPS=intercept
     bcall(_FPMult) ; OP1=slope*X
@@ -264,7 +341,7 @@ mStatForcastXHandler:
     call closeInputBuf
     call rclX ; OP1=X=y
     bcall(_PushRealO1) ; FPS=y
-    ld ix, statLinearRegs
+    ld ix, statModelLinear
     call statLeastSquareFit ; OP1=intercept,OP2=slope
     call exchangeFPSOP2 ; OP2=y, FPS=slope
     bcall(_InvSub) ; OP1=y-intercept
@@ -275,7 +352,7 @@ mStatForcastXHandler:
 ; Description: Calculate the least square fit slope into X register.
 mStatSlopeHandler:
     call closeInputBuf
-    ld ix, statLinearRegs
+    ld ix, statModelLinear
     call statLeastSquareFit ; OP1=intercept,OP2=slope
     bcall(_OP1ExOP2)
     jp pushX
@@ -283,14 +360,14 @@ mStatSlopeHandler:
 ; Description: Calculate the least square fit intercept into X register.
 mStatInterceptHandler:
     call closeInputBuf
-    ld ix, statLinearRegs
+    ld ix, statModelLinear
     call statLeastSquareFit ; OP1=intercept,OP2=slope
     jp pushX
 
 ; Description: Calculate the correlation coefficient into X register.
 mStatCorrelationHandler:
     call closeInputBuf
-    ld ix, statLinearRegs
+    ld ix, statModelLinear
     call statCorrelation
     jp pushX
 
@@ -302,27 +379,6 @@ mStatLinearFitHandler:
     set dirtyFlagsMenu, (iy + dirtyFlags)
     ret
 
-mStatLogFitHandler:
-    ld a, curveFitModelLog
-    ld (curveFitModel), a
-    set dirtyFlagsMenu, (iy + dirtyFlags)
-    ret
-
-mStatExpFitHandler:
-    ld a, curveFitModelExp
-    ld (curveFitModel), a
-    set dirtyFlagsMenu, (iy + dirtyFlags)
-    ret
-
-mStatPowerFitHandler:
-    ld a, curveFitModelPower
-    ld (curveFitModel), a
-    set dirtyFlagsMenu, (iy + dirtyFlags)
-    ret
-
-mStatBestFitHandler:
-    jp mNotYetHandler
-
 mStatLinearFitNameSelector:
     ld b, a
     ld a, (curveFitModel)
@@ -330,6 +386,14 @@ mStatLinearFitNameSelector:
     ld a, b
     ret nz
     ld a, c
+    ret
+
+;-----------------------------------------------------------------------------
+
+mStatLogFitHandler:
+    ld a, curveFitModelLog
+    ld (curveFitModel), a
+    set dirtyFlagsMenu, (iy + dirtyFlags)
     ret
 
 mStatLogFitNameSelector:
@@ -341,6 +405,14 @@ mStatLogFitNameSelector:
     ld a, c
     ret
 
+;-----------------------------------------------------------------------------
+
+mStatExpFitHandler:
+    ld a, curveFitModelExp
+    ld (curveFitModel), a
+    set dirtyFlagsMenu, (iy + dirtyFlags)
+    ret
+
 mStatExpFitNameSelector:
     ld b, a
     ld a, (curveFitModel)
@@ -348,6 +420,14 @@ mStatExpFitNameSelector:
     ld a, b
     ret nz
     ld a, c
+    ret
+
+;-----------------------------------------------------------------------------
+
+mStatPowerFitHandler:
+    ld a, curveFitModelPower
+    ld (curveFitModel), a
+    set dirtyFlagsMenu, (iy + dirtyFlags)
     ret
 
 mStatPowerFitNameSelector:
@@ -358,6 +438,11 @@ mStatPowerFitNameSelector:
     ret nz
     ld a, c
     ret
+
+;-----------------------------------------------------------------------------
+
+mStatBestFitHandler:
+    jp mNotYetHandler
 
 ;-----------------------------------------------------------------------------
 ; Low-level stats routines.
@@ -576,7 +661,7 @@ statSigmaMinusLogYZero:
 
 ; Description: Calculate the average of X and Y into OP1 and OP2 registers.
 ; Input:
-;   IX=pointer to list of stat registers (e.g. statLinearRegs, statExpRegs)
+;   IX=pointer to list of stat registers (e.g. statModelLinear, statModelExp)
 ; Output:
 ;   OP1=<Y>
 ;   OP2=<X>
@@ -597,7 +682,7 @@ statMean:
 ; Description: Calculate the weighted mean of Y and X into OP1 and OP2,
 ; respectively.
 ; Input:
-;   IX=pointer to list of stat registers (e.g. statLinearRegs, statExpRegs)
+;   IX=pointer to list of stat registers (e.g. statModelLinear, statModelExp)
 ; Output:
 ;   OP1: Mean of Y weighted by X = Sum(X,Y) / Sum(X)
 ;   OP2: Mean of X weighted by Y = Sum(X,Y) / Sum(Y)
@@ -636,7 +721,7 @@ statFactorPopToSampleOP2:
 
 ; Description: Calculate the population standard deviation.
 ; Input:
-;   IX=pointer to list of stat registers (e.g. statLinearRegs, statExpRegs)
+;   IX=pointer to list of stat registers (e.g. statModelLinear, statModelExp)
 ; Output:
 ;   OP1=PDEV<Y>
 ;   OP2=PDEV<X>
@@ -654,7 +739,7 @@ statStdDevAltEntry:
 ; Description: Calculate the population variance.
 ; Var(X) = Sum(X_i^2 - <X>^2) / N = <X^2> - <X>^2
 ; Input:
-;   IX=pointer to list of stat registers (e.g. statLinearRegs, statExpRegs)
+;   IX=pointer to list of stat registers (e.g. statModelLinear, statModelExp)
 ; Output:
 ;   OP1: VAR<Y>
 ;   OP2: VAR<X>
@@ -701,7 +786,7 @@ statVariance:
 ; Description: Calculate the population covariance of X and Y.
 ; PCOV(X, Y) = <XY> - <X><Y>
 ; Input:
-;   IX=pointer to list of stat registers (e.g. statLinearRegs, statExpRegs)
+;   IX=pointer to list of stat registers (e.g. statModelLinear, statModelExp)
 ; See https://en.wikipedia.org/wiki/Covariance_and_correlation
 ; Output:
 ;   OP1: PCOV<X,Y>
@@ -738,7 +823,7 @@ statCovariance:
 ; Description: Calculate the correslation coeficient into OP1.
 ; R(X,,Y) = COV(X,Y)/StdDev(X)/StdDev(Y).
 ; Input:
-;   IX=pointer to list of stat registers (e.g. statLinearRegs, statExpRegs)
+;   IX=pointer to list of stat registers (e.g. statModelLinear, statModelExp)
 ; Output:
 ;   OP1=correlation coefficient in the range of [-1, 1].
 ;
@@ -758,7 +843,7 @@ statCorrelation:
 
 ; Description: Calculate the least square fit.
 ; Input:
-;   IX=pointer to list of stat registers (e.g. statLinearRegs, statExpRegs)
+;   IX=pointer to list of stat registers (e.g. statModelLinear, statModelExp)
 ; Output:
 ;   OP1=SLOP(X,Y) = CORR(X,Y) (StdDev(Y)/StdDev(X)).
 ;   OP2=YINT(X,,Y) = <Y> - SLOP(X,Y) * <X>
@@ -784,4 +869,71 @@ statLeastSquareFit:
     bcall(_InvSub) ; OP1 = -SLOP * <X> + <Y> = intercept
 
     bcall(_PopRealO2) ; OP2=slope
+    ret
+
+;-----------------------------------------------------------------------------
+
+; Description: Select the curve fit model.
+; Input: A: curveFitModel index [0-3]
+; Output: IX: pointer to curve fit indirection indexes
+; Destroys: DE, HL
+statSelectCurveFitModel:
+    ld l, a
+    ld h, 0
+    add hl, hl ; HL=2*A
+    ld ix, statModelList
+    ex de, hl
+    add ix, de ; IX=statModelList + 2*A
+    ret
+
+;-----------------------------------------------------------------------------
+
+; Parameter converters for linear fit.
+statLinearXToXPrime:
+statLinearXPrimeToX:
+statLinearYToYPrime:
+statLinearYPrimeToY:
+statLinearMToMPrime:
+statLinearMPrimeToM:
+statLinearBToBPrime:
+statLinearBPrimeToB:
+    ret
+
+;-----------------------------------------------------------------------------
+
+; Parameter converters for logarithmic fit.
+statLogXToXPrime:
+statLogXPrimeToX:
+statLogYToYPrime:
+statLogYPrimeToY:
+statLogMToMPrime:
+statLogMPrimeToM:
+statLogBToBPrime:
+statLogBPrimeToB:
+    ret
+
+;-----------------------------------------------------------------------------
+
+; Parameter converters for exponential fit.
+statExpXToXPrime:
+statExpXPrimeToX:
+statExpYToYPrime:
+statExpYPrimeToY:
+statExpMToMPrime:
+statExpMPrimeToM:
+statExpBToBPrime:
+statExpBPrimeToB:
+    ret
+
+;-----------------------------------------------------------------------------
+
+; Parameter converters for power fit.
+statPowerXToXPrime:
+statPowerXPrimeToX:
+statPowerYToYPrime:
+statPowerYPrimeToY:
+statPowerMToMPrime:
+statPowerMPrimeToM:
+statPowerBToBPrime:
+statPowerBPrimeToB:
     ret
