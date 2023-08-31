@@ -53,6 +53,11 @@
           preserving the pending input into the `Y` register.
         - If the subsequent keystroke is a function that consumes an `X`
           register, then the empty input buffer is assumed to be a `0` value.
+    - Allow data transfer between RPN83P and TI-OS through the `ANS` variable.
+        - When the RPN83P app starts, the TI-OS `ANS` variable (if Real) is
+          available as the `LastX` register.
+        - When the RPN83P app exits, the most recent `X` register becomes
+          avaiable in TI-OS as the `ANS` variable.
 - 0.4.0 (2023-08-16)
     - More `BASE` menu functions:
         - `SL` (shift left), `SR` (shift right), `RL` (rotate left circular),
