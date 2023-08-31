@@ -347,7 +347,7 @@ replaceXWithOP1OP2:
 ; Preserves: OP1, OP2, LastX
 pushX:
     bcall(_CkValidNum)
-    call liftStackNonEmpty
+    call liftStackIfNonEmpty
     jp stoX
 
 ; Description: Push OP1 then OP2 onto the stack.
@@ -364,7 +364,7 @@ pushXY:
     bcall(_CkValidNum)
     bcall(_OP1ExOP2)
 
-    call liftStackNonEmpty
+    call liftStackIfNonEmpty
     call stoX
     call liftStack
     bcall(_OP1ExOP2)
@@ -379,7 +379,7 @@ pushXY:
 ; Output: T=Z; Z=Y; Y=X; X=X; OP1 preserved
 ; Destroys: all
 ; Preserves: OP1, OP2
-liftStackNonEmpty:
+liftStackIfNonEmpty:
     bit inputBufFlagsClosedEmpty, (iy + inputBufFlags)
     ret nz ; return doing nothing if closed empty
     ; [[fallthrough]]

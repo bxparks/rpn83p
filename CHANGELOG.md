@@ -32,7 +32,8 @@
         - `SDEV` (sample standard deviation), `SCOV` (sample covariance)
         - `PDEV` (population standard deviation), `PCOV` (population covariance)
     - Add `CFIT` curve fit menu items
-        - `Y>X` (forcast X from Y), `X>Y` (forcast Y from X)
+        - `Y>X` (forcast X from Y)
+        - `X>Y` (forcast Y from X)
         - `SLOP` (least square fit slope)
         - `YINT` (least square fit y-intercept)
         - `CORR` (correlation coefficient)
