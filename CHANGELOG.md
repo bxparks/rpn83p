@@ -58,6 +58,7 @@
           available as the `LastX` register.
         - When the RPN83P app exits, the most recent `X` register becomes
           avaiable in TI-OS as the `ANS` variable.
+    - Add `X Root Y` menu item under `MATH`
 - 0.4.0 (2023-08-16)
     - More `BASE` menu functions:
         - `SL` (shift left), `SR` (shift right), `RL` (rotate left circular),

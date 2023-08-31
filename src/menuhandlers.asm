@@ -200,19 +200,30 @@ mCubeRootHandler:
     call closeInputAndRecallX
     bcall(_OP1ToOP2) ; OP2=X
     bcall(_OP1Set3) ; OP1=3
-    bcall(_XRootY) ; OP2^(1/OP1)
+    bcall(_XRootY) ; OP2^(1/OP1), SDK documentation is incorrect
     jp replaceX
+
+; mXRootYHandler(X,Y) -> Y^(1/X)
+; Description: Calculate the X root of Y. The SDK documentation has the OP1
+; and OP2 flipped.
+mXRootYHandler:
+    call closeInputAndRecallXY ; OP1=Y; OP2=X
+    bcall(_OP1ExOP2) ; OP1=X, OP2=Y
+    bcall(_XRootY) ; OP2^(1/OP1), SDK documentation is incorrect
+    jp replaceXY
 
 ; mAtan2Handler(Y, X) -> atan2(Y + Xi)
 ;
 ; Description: Calculate the angle of the (Y, X) number in complex plane.
 ; Use bcall(_RToP) instead of bcall(_ATan2) because ATan2 does not seem produce
 ; the correct results. There must be something wrong with the documentation.
+;
 ; (It turns out that the documentation does not describe the necessary values
-; of the D register which must be set before calling this. Normally D should be
-; set to 0. See https://wikiti.brandonw.net/index.php?title=83Plus:BCALLs:40D8
-; for more details. Although that page refers to ATan2Rad(), I suspect a
-; similar thing is happening for ATan2().)
+; of the D register which must be set before calling this. Apparently the D
+; register should be set to 0. See
+; https://wikiti.brandonw.net/index.php?title=83Plus:BCALLs:40D8 for more
+; details. Although that page refers to ATan2Rad(), I suspect a similar thing
+; is happening for ATan2().)
 ;
 ; The real part (i.e. x-axis) is assumed to be entered first, then the
 ; imaginary part (i.e. y-axis). They becomes stored in the RPN stack variables

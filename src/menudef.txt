@@ -65,6 +65,7 @@ MenuGroup root mRoot [
       MenuRow [
         MenuItem X<Scaret>3 mCube
         MenuItem <ScubeR><Sroot>X mCubeRoot
+        MenuItem X<Sroot>Y mXRootY
         MenuItem ATN2 mAtan2
       ]
       MenuRow [
