@@ -40,9 +40,7 @@ statRegYLnX equ 23
 ;       void *statIndXPrimeToX;
 ;       void *statIndYToYPrime;
 ;       void *statIndYPrimeToY;
-;       void *statIndMToMPrime;
 ;       void *statIndMPrimeToM;
-;       void *statIndBToBPrime;
 ;       void *statIndBPrimeToB;
 ;   };
 ;
@@ -56,10 +54,8 @@ statIndXToXPrime equ 6
 statIndXPrimeToX equ 8
 statIndYToYPrime equ 10
 statIndYPrimeToY equ 12
-statIndMToMPrime equ 14
-statIndMPrimeToM equ 16
-statIndBToBPrime equ 18
-statIndBPrimeToB equ 20
+statIndMPrimeToM equ 14
+statIndBPrimeToB equ 16
 
 ; Model parameters for Linear curve fitting.
 ;   y = b + m x
@@ -74,9 +70,7 @@ statModelLinear:
     .dw statLinearXPrimeToX
     .dw statLinearYToYPrime
     .dw statLinearYPrimeToY
-    .dw statLinearMToMPrime
     .dw statLinearMPrimeToM
-    .dw statLinearBToBPrime
     .dw statLinearBPrimeToB
 
 ; Model parameters for Logarithmic curve fitting.
@@ -94,9 +88,7 @@ statModelLog:
     .dw statLogXPrimeToX
     .dw statLogYToYPrime
     .dw statLogYPrimeToY
-    .dw statLogMToMPrime
     .dw statLogMPrimeToM
-    .dw statLogBToBPrime
     .dw statLogBPrimeToB
 
 ; Model parameters for Exponential curve fitting.
@@ -116,9 +108,7 @@ statModelExp:
     .dw statExpXPrimeToX
     .dw statExpYToYPrime
     .dw statExpYPrimeToY
-    .dw statExpMToMPrime
     .dw statExpMPrimeToM
-    .dw statExpBToBPrime
     .dw statExpBPrimeToB
 
 ; Model parameters for Power curve fitting.
@@ -139,9 +129,7 @@ statModelPower:
     .dw statPowerXPrimeToX
     .dw statPowerYToYPrime
     .dw statPowerYPrimeToY
-    .dw statPowerMToMPrime
     .dw statPowerMPrimeToM
-    .dw statPowerBToBPrime
     .dw statPowerBPrimeToB
 
 ; Array of pointers to CurveFitModel structs. The equivalent C data object is:
@@ -951,18 +939,6 @@ convertYPrimeToY:
     ld h, (ix + statIndYPrimeToY + 1)
     jp (hl)
 
-; Description: Convert M to MPrime, according to model defined by IX.
-; Input:
-;   IX: curve fit model
-;   OP1: M
-; Output:
-;   OP1: MPrime
-; Destroys: HL
-convertMToMPrime:
-    ld l, (ix + statIndMToMPrime)
-    ld h, (ix + statIndMToMPrime + 1)
-    jp (hl)
-
 ; Description: Convert MPrime to M, according to model defined by IX.
 ; Input:
 ;   IX: curve fit model
@@ -973,18 +949,6 @@ convertMToMPrime:
 convertMPrimeToM:
     ld l, (ix + statIndMPrimeToM)
     ld h, (ix + statIndMPrimeToM + 1)
-    jp (hl)
-
-; Description: Convert B to BPrime, according to model defined by IX.
-; Input:
-;   IX: curve fit model
-;   OP1: B
-; Output:
-;   OP1: BPrime
-; Destroys: HL
-convertBToBPrime:
-    ld l, (ix + statIndBToBPrime)
-    ld h, (ix + statIndBToBPrime + 1)
     jp (hl)
 
 ; Description: Convert BPrime to B, according to model defined by IX.
@@ -1006,9 +970,7 @@ statLinearXToXPrime:
 statLinearXPrimeToX:
 statLinearYToYPrime:
 statLinearYPrimeToY:
-statLinearMToMPrime:
 statLinearMPrimeToM:
-statLinearBToBPrime:
 statLinearBPrimeToB:
     ret
 
@@ -1023,9 +985,7 @@ statLogXPrimeToX:
     ret
 statLogYToYPrime:
 statLogYPrimeToY:
-statLogMToMPrime:
 statLogMPrimeToM:
-statLogBToBPrime:
 statLogBPrimeToB:
     ret
 
@@ -1041,9 +1001,7 @@ statExpYToYPrime:
 statExpYPrimeToY:
     bcall(_EToX)
     ret
-statExpMToMPrime:
 statExpMPrimeToM:
-statExpBToBPrime:
     ret
 statExpBPrimeToB:
     bcall(_EToX)
@@ -1064,9 +1022,7 @@ statPowerYToYPrime:
 statPowerYPrimeToY:
     bcall(_EToX)
     ret
-statPowerMToMPrime:
 statPowerMPrimeToM:
-statPowerBToBPrime:
     ret
 statPowerBPrimeToB:
     bcall(_EToX)
