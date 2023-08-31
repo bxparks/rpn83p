@@ -25,6 +25,22 @@
         - Strings which are odd-number of pixels wide are now centered
           perfectly, instead of being off-centered by one-px to the left.
         - Allows strings which are 17px wide to be rendered properly.
+    - Add `STAT` menu items
+        - 1 or 2 variable statistics
+        - `Sigma+` (add data point), `Sigma-` (remove data point)
+        - `SUM`, `MEAN`, `WMN` (weighted mean)
+        - `SDEV` (sample standard deviation), `SCOV` (sample covariance)
+        - `PDEV` (population standard deviation), `PCOV` (population covariance)
+    - Add `CFIT` curve fit menu items
+        - `Y>X` (forcast X from Y), `X>Y` (forcast Y from X)
+        - `SLOP` (least square fit slope)
+        - `YINT` (least square fit y-intercept)
+        - `CORR` (correlation coefficient)
+        - `LINF` (linear curve fit model)
+        - `LOGF` (logarithmic curve fit model)
+        - `EXPF` (exponential curve fit model)
+        - `PWRF` (power curve fit model)
+        - `BEST` (choose best curve fit model)
 - 0.4.0 (2023-08-16)
     - More `BASE` menu functions:
         - `SL` (shift left), `SR` (shift right), `RL` (rotate left circular),
