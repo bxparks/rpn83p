@@ -25,6 +25,7 @@ RPN calculator app for the TI-83 Plus and TI-84 Plus inspired by the HP-42S.
         - [Menu Hierarchy](#menu-hierarchy)
         - [Menu Buttons](#menu-buttons)
         - [Menu Indicator Arrows](#menu-indicator-arrows)
+        - [Menu Shortcuts](#menu-shortcuts)
     - [Built In Help](#built-in-help)
     - [Error Codes](#error-codes)
 - [Functions](#functions)
@@ -464,6 +465,19 @@ This means that the `ON` button (which implements the "BACK", "EXIT", or "ESC"
 functionality) can be used to go back to the parent menu group:
 
 > ![Menu Arrows 1](docs/rpn83p-screenshot-menu-arrows-1.png)
+
+#### Menu Shortcuts
+
+Some menu groups can be accessed quickly through dedicated keys on the TI
+calculator which happen to have the same label as the menu item:
+
+- `MODE`: bound to `ROOT > MODE`
+- `STAT`: bound to `ROOT > STAT`
+- `MATH`: repurposed to be `HOME` (aka `ROOT`)
+
+The `MATH` button is slightly different. It is not bound to `ROOT > MATH`.
+Rather it has been repurposed to be the `HOME` button which goes to the top of
+the menu hierarchy `ROOT`.
 
 ## Built In Help
 
