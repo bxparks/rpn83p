@@ -1267,8 +1267,8 @@ an `X=752.098` (a minimum rainfall of 752) which is not reasonable.
 ### TI-OS Interoperability
 
 Although the RPN83P was not designed to interoperate with the underlying TI-OS
-calculator functions, a few features were added to allow *some* amount of data
-sharing between the 2 modes.
+calculator functions, a few features were added to allow *some* data sharing
+between the 2 modes.
 
 - The `X` register of RPN83P is always synchronized with the `ANS` variable in
   the TI-OS. After the RPN83P app exits, the most recent `X` register value
@@ -1282,6 +1282,7 @@ sharing between the 2 modes.
   point numbers:
     - `STK` holds the RPN stack registers (`X`, `Y`, `Z`, `T`, `LastX`)
     - `REGS` holds the 25 storage registers `R00` to `R24`
+
   A TI-BASIC program can access these List variables since they hold just normal
   9-byte floating point numbers.
 
