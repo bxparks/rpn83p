@@ -656,6 +656,50 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (back), and `MATH`
     - `ASNH`: hyperbolic `asin()`
     - `ACSH`: hyperbolic `acos()`
     - `ATNH`: hyperbolic `atan()`
+- `ROOT` > `STAT`
+    - See Chapter 15 of the _HP-42S User's Manual_
+    - ![STAT MenuRow 1](docs/rpn83p-screenshot-menu-root-stat-1.png)
+    - ![STAT MenuRow 2](docs/rpn83p-screenshot-menu-root-stat-2.png)
+    - ![STAT MenuRow 3](docs/rpn83p-screenshot-menu-root-stat-3.png)
+    - `Sigma+`: add `Y` and `X` data point to STAT registers
+    - `Sigma-`: remove `Y` and `X` data point from STAT registers
+    - `ALLSigma`: collect statistical sums for all curve fit models
+    - `LINSigma`: collect statistical sums for the linear curve fit model
+    - `CLSigma`: clear STAT registers `[R11,R16]` (if LINSigma selected) or
+      `[R11,R23]` (if AllSigma selected)
+    - `SUM`: return Sum of `Y` and Sum of `X` in the `Y` and `X` registers
+    - `MEAN`: return average `<Y>` and `<X>` in the `Y` and `X` registers
+    - `WMN`: return the weighted mean of `Y` and weighted mean of `X` in the `Y`
+      and `X` registers
+        - `weighted mean Y = Sum(XY)/Sum(X)`
+        - `weighted mean X = Sum(XY)/Sum(Y)`
+    - `N`: return the number of data items entered
+    - `SDEV`: sample standard deviation of `Y` and `X`
+        - `sdev(X) = (N/(N-1)) pdev(X)`
+        - `sdev(Y) = (N/(N-1)) pdev(Y)`
+    - `SCOV`: sample covariance
+        - `scov(X,Y) = (N/(N-1)) pcov(X,Y)`
+    - `PDEV`: population standard deviation of `Y` and `X`
+        - `pdev(X) = <X^2> - <X>^2`
+        - `pdev(Y) = <Y^2> - <Y>^2`
+    - `PCOV`: population covariance
+        - `pcov(X,Y) = <XY> - <X><Y>`
+    - `ROOT` > `STAT` > `CFIT`
+        - See Chapter 15 of the _HP-42S User's Manual_
+        - ![CFIT MenuRow 1](docs/rpn83p-screenshot-menu-root-stat-cfit-1.png)
+        - ![CFIT MenuRow 2](docs/rpn83p-screenshot-menu-root-stat-cfit-2.png)
+        - `Y>X`: forcast X from Y
+        - `X>Y`: forcast Y from X
+        - `SLOP`: slope of curve fit model, i.e. `m` parameter
+        - `YINT`: y-intercept of curve fit model, i.e. `b` parameter
+        - `CORR`: correlation coefficient of the least square curve fit
+        - `LINF`: linear fit model, `y = mx + b`
+        - `LOGF`: logarithmic fit model, `y = m ln(x) + b`
+        - `EXPF`: exponential fit model, `y = b e^(mx)`
+        - `PWRF`: power fit model, `y = b x^m`
+        - `BEST`: automatically select the best model, i.e. the one with the
+          largest absolute value of the correlation coefficient. The `CORR`
+          value is returned in the `X` register for reference.
 - `ROOT` > `UNIT`
     - ![UNIT MenuRow 1](docs/rpn83p-screenshot-menu-root-unit-1.png)
     - ![UNIT MenuRow 2](docs/rpn83p-screenshot-menu-root-unit-2.png)
