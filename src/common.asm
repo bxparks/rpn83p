@@ -7,6 +7,22 @@
 ; Common utilties that are useful in multiple modules.
 ;-----------------------------------------------------------------------------
 
+; Description: This trampoline hack is needed because the Z80 does not have a
+; `call (HL)` analogous to the `jp (HL)` instruction. With this, you can do a
+; `call jumpHL` or `call cc, jumpHL`. See
+; https://www.msx.org/forum/msx-talk/development/indirect-calls-with-the-z80
+; for other hacks, although I figured out this one independently.
+jumpHL:
+    jp (HL)
+
+; Description: Implement the equilvalent of `jp (de)`, similar to `jp (HL)`.
+; Call this using `call jumpDE` or `call cc, jumpDE`.
+jumpDE:
+    push de
+    ret
+
+;-----------------------------------------------------------------------------
+
 ; Description: Get the string pointer at index A given an array of pointers at
 ; base pointer HL.
 ; Input:

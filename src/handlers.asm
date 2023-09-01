@@ -28,8 +28,7 @@ lookupKeyMatched:
     ld e, (hl)
     inc hl
     ld d, (hl)
-    ex de, hl
-    jp (hl) ; the handler excutes a 'ret' statement
+    jp jumpDE
 
 ;-----------------------------------------------------------------------------
 

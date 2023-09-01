@@ -150,22 +150,11 @@ getMenuName:
     ld e, (hl)
     inc hl
     ld d, (hl) ; DE=nameSelector
-    ld a, e
-    or d
-    ld a, b ; A=nameId
     pop hl ; HL=MenuNode pointer
-    jr z, getMenuNameDefault ; if nameSelector==NULL: goto default
-getMenuNameCustom:
-    ; The following ugly hack is required because the Z80 does not have a `call
-    ; (hl)` instruction, analogous to `jp (hl)`. The `nameSelector(A, C, HL) ->
-    ; A` function selects one of the 2 strings (A or C), and returns the
-    ; selection in A.
-    push hl ; MenuNode
-    ld hl, getMenuNameDefault ; the return address
-    ex (sp), hl ; (SP)=return address, HL=MenuNode
-    push de ; nameSelector
-    ret ; jp (de)
-getMenuNameDefault:
+    ld a, e
+    or d ; if DE==0: ZF=1
+    ld a, b ; A=nameId
+    call nz, jumpDE ; if nameSelector!=NULL: call (DE)
     ; A contains the menu string ID
     ld hl, mMenuNameTable
     call getString ; HL=name string
