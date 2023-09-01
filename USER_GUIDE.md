@@ -79,7 +79,7 @@ Here the quick summary of its features:
     - `LOG`, `10^X`, `LN`, `e^X`
     - constants: `pi` and `e`
 - additional menu functions:
-    - `X^3`, `CBRT`, `ATN2`, `2^X`, `LOG2`, `LOGB`
+    - `X^3`, `CBRT`, `XRootY`, `ATN2`, `2^X`, `LOG2`, `LOGB`
     - `%`, `%CH`, `GCD`, `LCM`, `PRIM` (is prime)
     - `IP` (integer part), `FP` (fractional part), `FLR` (floor), `CEIL`
     - `ABS`, `SIGN`, `MOD`, `MIN`, `MAX`
@@ -91,6 +91,13 @@ Here the quick summary of its features:
     - base conversions: `DEC`, `HEX`, `OCT`, `BIN`
     - bitwise operations: `AND`, `OR`, `XOR`, `NOT`, `NEG`, `SL`, `SR`, `RL`,
       `RR`, `B+`, `B-`, `B*`, `B/`, `BDIV`
+    - statistics: `Sigma+`, `Sigma-`, `SUM`, `MEAN`, `WMN` (weighted mean),
+      `SDEV` (sample standard deviation), `SCOV` (sample covariance),
+      `PDEV` (population standard deviation), `PCOV` (population covariance)
+    - curve fitting: `Y>X`, `X>Y`, `SLOP` (slope), `YINT` (y intercept), `CORR`
+      (correlation coefficent)
+    - curve fit models: `LINF` (linear)`, `LOGF` (logarithmic), `EXPF`
+      (exponential), `PWRF` (power)
 - various display modes
     - `RAD`, `DEG`
     - `FIX` (fixed point 0-9 digits)
@@ -560,6 +567,7 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (back), and `MATH`
     - ![MATH MenuRow 2](docs/rpn83p-screenshot-menu-root-math-2.png)
     - `X^3`: cube of `X`
     - `3 Root X`: cube root of `X`
+    - `X Root Y`: `X` root of `Y`
     - `ATN2`: `atan2(Y, X)` in degrees or radians, depending on current mode
         - `Y` register is the x-component entered first
         - `X` register is the y-component entered second
@@ -611,19 +619,34 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (back), and `MATH`
     - `>HMS`: convert `HH.hhhh` to `HH.MMSSssss`
 - `ROOT` > `HELP`: display the help pages
     - use arrow keys to view each help page
-- `ROOT` > `MODE`
-    - ![MODE MenuRow 1](docs/rpn83p-screenshot-menu-root-mode-1.png)
-    - `FIX`: fixed mode with `N` digits after the decimal point
-        - set `N` to `99` for floating number of digits
-        - status line indicator is `FIX(N)`
-    - `SCI`: scientific notation with `N` digits after the decimal point
-        - set `N` to `99` for floating number of digits
-        - status line indicator is `SCI(N)`
-    - `ENG`: engineering notation with `N` digits after the decimal point
-        - set `N` to `99` for floating number of digits
-        - status line indicator is `ENG(N)`
-    - `RAD`: use radians for trigonometric functions
-    - `DEG`: use degrees for trigonometric functions
+- `ROOT` > `BASE`
+    - ![BASE MenuRow 1](docs/rpn83p-screenshot-menu-root-base-1.png)
+    - ![BASE MenuRow 2](docs/rpn83p-screenshot-menu-root-base-2.png)
+    - ![BASE MenuRow 3](docs/rpn83p-screenshot-menu-root-base-3.png)
+    - ![BASE MenuRow 4](docs/rpn83p-screenshot-menu-root-base-4.png)
+    - `DEC`: use decimal base 10, set base indicator to `DEC`
+    - `HEX`: use hexadecimal base 16, set base indicator to `HEX`
+        - display all register values as 32-bit unsigned integer
+    - `OCT`: use octal base 8, set base indicator to `OCT`
+        - display all register values as 32-bit unsigned integer
+    - `BIN`: use binary base 2, set base indicator to `BIN`
+        - display all register values as 32-bit unsigned integer
+        - max of 13 digits
+    - `AND`: `X` `bit-and` `Y`
+    - `OR`: `X` `bit-or` `Y`
+    - `XOR`: `X` `bit-xor` `Y`
+    - `NOT`: one's complement of `X`
+    - `NEG`: two's complement of `X`
+    - `SL`: shift left one bit
+    - `SR`: shift right one bit
+    - `RL`: rotate left circular one bit
+    - `RR`: rotate right circular one bit
+    - `B+`: add `X` and `Y` using unsigned 32-bit integer math
+    - `B-`: subtract `X` from `Y` using unsigned 32-bit integer math
+    - `B*`: multiply `X` and `Y` using unsigned 32-bit integer math
+    - `B/`: divide `X` into `Y` using unsigned 32-bit integer math
+    - `BDIV`: divide `X` into `Y` with remainder, placing the quotient in `Y`
+      and the remainder in `X`
 - `ROOT` > `HYP`
     - ![HYP MenuRow 1](docs/rpn83p-screenshot-menu-root-hyp-1.png)
     - ![HYP MenuRow 2](docs/rpn83p-screenshot-menu-root-hyp-2.png)
@@ -664,44 +687,30 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (back), and `MATH`
     - `>cal`: kilo Joules to kilo calories
     - `>kW`: horsepowers (mechanical) to kilo Watts
     - `>hp`: kilo Watts to horsepowers (mechanical)
-- `ROOT` > `BASE`
-    - ![BASE MenuRow 1](docs/rpn83p-screenshot-menu-root-base-1.png)
-    - ![BASE MenuRow 2](docs/rpn83p-screenshot-menu-root-base-2.png)
-    - ![BASE MenuRow 3](docs/rpn83p-screenshot-menu-root-base-3.png)
-    - ![BASE MenuRow 4](docs/rpn83p-screenshot-menu-root-base-4.png)
-    - `DEC`: use decimal base 10, set base indicator to `DEC`
-    - `HEX`: use hexadecimal base 16, set base indicator to `HEX`
-        - display all register values as 32-bit unsigned integer
-    - `OCT`: use octal base 8, set base indicator to `OCT`
-        - display all register values as 32-bit unsigned integer
-    - `BIN`: use binary base 2, set base indicator to `BIN`
-        - display all register values as 32-bit unsigned integer
-        - max of 13 digits
-    - `AND`: `X` `bit-and` `Y`
-    - `OR`: `X` `bit-or` `Y`
-    - `XOR`: `X` `bit-xor` `Y`
-    - `NOT`: one's complement of `X`
-    - `NEG`: two's complement of `X`
-    - `SL`: shift left one bit
-    - `SR`: shift right one bit
-    - `RL`: rotate left circular one bit
-    - `RR`: rotate right circular one bit
-    - `B+`: add `X` and `Y` using unsigned 32-bit integer math
-    - `B-`: subtract `X` from `Y` using unsigned 32-bit integer math
-    - `B*`: multiply `X` and `Y` using unsigned 32-bit integer math
-    - `B/`: divide `X` into `Y` using unsigned 32-bit integer math
-    - `BDIV`: divide `X` into `Y` with remainder, placing the quotient in `Y`
-      and the remainder in `X`
+- `ROOT` > `CLR`
+    - ![CLR MenuRow 1](docs/rpn83p-screenshot-menu-root-clr-1.png)
+    - `CLX`: clear `X` stack register (stack lift disabled)
+    - `CLST`: clear all RPN stack registers
+    - `CLRG`: clear all storage registers `R00` to `R24`
+    - `CLSigma`: clear STAT storage registers [`R11`, `R16`] or [`R11`, `R23`]
+- `ROOT` > `MODE`
+    - ![MODE MenuRow 1](docs/rpn83p-screenshot-menu-root-mode-1.png)
+    - `FIX`: fixed mode with `N` digits after the decimal point
+        - set `N` to `99` for floating number of digits
+        - status line indicator is `FIX(N)`
+    - `SCI`: scientific notation with `N` digits after the decimal point
+        - set `N` to `99` for floating number of digits
+        - status line indicator is `SCI(N)`
+    - `ENG`: engineering notation with `N` digits after the decimal point
+        - set `N` to `99` for floating number of digits
+        - status line indicator is `ENG(N)`
+    - `RAD`: use radians for trigonometric functions
+    - `DEG`: use degrees for trigonometric functions
 - `ROOT` > `STK`
     - ![STK MenuRow 1](docs/rpn83p-screenshot-menu-root-stk-1.png)
     - `R(up)`: rotate stack up
     - `R(down)`: rotate stack down, also bound to `(` button
     - `X<>Y`: exchange `X` and `Y`, also bound to `)` button
-- `ROOT` > `CLR`
-    - ![CLR MenuRow 1](docs/rpn83p-screenshot-menu-root-clr-1.png)
-    - `CLX`: clear `X` stack register (stack lift disabled)
-    - `CLST`: clear all RPN stack registers
-    - `CLRG`: clear storage registers `R00` to `R24`
 
 ## Advanced Usage
 
@@ -1073,16 +1082,8 @@ limited:
     - I think the difficulty will be the user interface. A complex number
       requires 2 floating point numbers to be entered and displayed, and I have
       not figured out how to do that within the UI of the RPN83P application.
-- `STAT` functions
-    - There are lot of features that I need to research:
-        - average, std deviation, variance
-        - linear fitting
-        - logarithmic fitting
-        - exponential fitting
-        - power law fitting
-- real time clock
-    - I believe the TI-84 Plus has an RTC.
-    - It would be interesting to expose some time, date, and timezone features.
+- datetime conversions
+    - date/time components to and from epoch seconds
 - `UNIT` conversions
     - several places assume US customary units (e.g. US gallons) instead of
       British or Canadian imperial units

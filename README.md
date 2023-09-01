@@ -33,7 +33,7 @@ Here is a quick summary of its features:
     - `LOG`, `10^X`, `LN`, `e^X`
     - constants: `pi` and `e`
 - additional menu functions:
-    - `X^3`, `CBRT`, `ATN2`, `2^X`, `LOG2`, `LOGB`
+    - `X^3`, `CBRT`, `XRootY`, `ATN2`, `2^X`, `LOG2`, `LOGB`
     - `%`, `%CH`, `GCD`, `LCM`, `PRIM` (is prime)
     - `IP` (integer part), `FP` (fractional part), `FLR` (floor), `CEIL`
       (ceiling), `NEAR` (nearest integer)
@@ -45,6 +45,13 @@ Here is a quick summary of its features:
     - base conversions: `DEC`, `HEX`, `OCT`, `BIN`
     - bitwise operations: `AND`, `OR`, `XOR`, `NOT`, `NEG`, `SL`, `SR`, `RL`,
       `RR`, `B+`, `B-`, `B*`, `B/`, `BDIV`
+    - statistics: `Sigma+`, `Sigma-`, `SUM`, `MEAN`, `WMN` (weighted mean),
+      `SDEV` (sample standard deviation), `SCOV` (sample covariance),
+      `PDEV` (population standard deviation), `PCOV` (population covariance)
+    - curve fitting: `Y>X`, `X>Y`, `SLOP` (slope), `YINT` (y intercept), `CORR`
+      (correlation coefficent)
+    - curve fit models: `LINF` (linear)`, `LOGF` (logarithmic), `EXPF`
+      (exponential), `PWRF` (power)
 - various display modes
     - `RAD`, `DEG`
     - `FIX` (fixed point 0-9 digits)
@@ -53,9 +60,8 @@ Here is a quick summary of its features:
 
 Here are some missing features which may be added in the future:
 
-- statistics functions (sum, mean, variance, standard deviation)
-- complex numbers
 - vectors and matrices
+- complex numbers
 - keystroke programming
 
 **Version**: 0.5.0-dev (2023-08-24)
