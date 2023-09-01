@@ -21,6 +21,7 @@
 
 TARGETS := README.pdf \
 USER_GUIDE.pdf \
+CHANGELOG.md \
 rpn83p.8xk \
 rpn83p-example1.gif \
 rpn83p-example2.gif
@@ -42,6 +43,11 @@ USER_GUIDE.pdf: ../USER_GUIDE.md Makefile
 	(cd ..; \
 	pandoc -V geometry:margin=1in -V fontsize=12pt -f gfm -s -o $@ USER_GUIDE.md; \
 	mv -f $@ release)
+
+# Copy the CHANGELOG.md as is, without conversion to PDF. It's just a text
+# file without any embedded images.
+CHANGELOG.md: ../CHANGELOG.md Makefile
+	cp -f $< $@
 
 # Copy to local directory to place it at top level in the zip file.
 rpn83p.8xk: ../src/rpn83p.8xk
