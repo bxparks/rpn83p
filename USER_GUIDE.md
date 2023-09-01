@@ -1227,21 +1227,27 @@ Let's see if a different curve fit model does better.
   changed to select `PWRF`, like this:
   ![CFIT BEST](docs/rpn83p-cfit-best.png)
 
-The app has determined that the best curve fit model for the data is the power
-curve `y = b x^m`, with a correlation coefficient `r = .2963586116`. It is still
-a weak correlation, but better than the linear model.
+**HP-42S Compatibility Note**: Unlike the HP-42S, `BEST` menu on the RPN83P
+returns the `CORR` value of the best curve fit model. It seemed like a useful
+bit of information to see, and it provides visual feedback that the `BEST`
+function has finished, since the RPN83P seems significantly slower than the
+HP-42S, at least on the emulators.
+
+The RPN83P app has determined that the best curve fit model for the data is the
+power curve `y = b x^m`, with a correlation coefficient `r = .2963586116`. It is
+still a weak correlation, but better than the linear model.
 
 You can perform forecasting with the `Y>X` and `X>Y` menus:
 
-- Press `1.5` (min rainfall) then `X>Y`. It predicts a maximum rainfall of
+- Enter `1.5` (min rainfall) then press `X>Y`. It predicts a maximum rainfall of
   `14.75`.
-- Press `12` (max  rainfall) then `Y>X`. It predicts a minimum rainfall of
+- Enter `12` (max  rainfall) then press `Y>X`. It predicts a minimum rainfall of
   `0.02188`.
 
 These predictions should be regarded with suspicion because the correlation
-coefficient of `.29635` is quite low, and the power law fit may not be a
-good model for this data. For example, typing `20` `Y>X` (max rainfall of 20.0)
-gives an `X=752.098` (a minimum rainfall of 752) which is not reasonable.
+coefficient of `r=.29635` is quite low, and the power fit may not be a good
+model for this data. For example, typing `20` `Y>X` (max rainfall of 20.0) gives
+an `X=752.098` (a minimum rainfall of 752) which is not reasonable.
 
 ## Future Enhancements
 
