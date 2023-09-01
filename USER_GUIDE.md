@@ -109,9 +109,8 @@ Here the quick summary of its features:
 
 Here are some missing features which may be added in the future:
 
-- statistics functions (sum, mean, variance, standard deviation)
-- complex numbers
 - vectors and matrices
+- complex numbers
 - keystroke programming
 
 ## Why?
