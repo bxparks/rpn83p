@@ -99,7 +99,7 @@ Here the quick summary of its features:
       `PDEV` (population standard deviation), `PCOV` (population covariance)
     - curve fitting: `Y>X`, `X>Y`, `SLOP` (slope), `YINT` (y intercept), `CORR`
       (correlation coefficent)
-    - curve fit models: `LINF` (linear)`, `LOGF` (logarithmic), `EXPF`
+    - curve fit models: `LINF` (linear), `LOGF` (logarithmic), `EXPF`
       (exponential), `PWRF` (power)
 - various display modes
     - `RAD`, `DEG`
