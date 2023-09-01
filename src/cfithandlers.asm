@@ -291,9 +291,7 @@ mCfitBestCheckLog:
     bcall(_OP1ToOP2) ; OP2=corr(log)
     bcall(_OP1ToOP6) ; OP6=corr(log)
     bcall(_OP5ToOP1) ; OP1=corr(best)
-    bcall(_ClrOP1S) ; clear sign bit of OP1
-    bcall(_ClrOP2S) ; clear sign bit of OP2
-    bcall(_CpOP1OP2) ; if abs(corr(log)) > abs(corr(linear)): CF=1
+    bcall(_AbsO1O2Cp) ; if abs(corr(log)) > abs(corr(linear)): CF=1
     jr nc, mCfitBestCheckExp
     bcall(_OP6ToOP5) ; OP5=corr(log)
     pop bc
@@ -306,9 +304,7 @@ mCfitBestCheckExp:
     bcall(_OP1ToOP2) ; OP2=corr(exp)
     bcall(_OP1ToOP6) ; OP6=corr(exp)
     bcall(_OP5ToOP1) ; OP1=corr(best)
-    bcall(_ClrOP1S) ; clear sign bit of OP1
-    bcall(_ClrOP2S) ; clear sign bit of OP2
-    bcall(_CpOP1OP2) ; if abs(corr(exp)) > abs(corr(best)): CF=1
+    bcall(_AbsO1O2Cp) ; if abs(corr(exp)) > abs(corr(best)): CF=1
     jr nc, mCfitBestCheckPower
     bcall(_OP6ToOP5) ; OP5=corr(exp)
     pop bc
@@ -321,9 +317,7 @@ mCfitBestCheckPower:
     bcall(_OP1ToOP2) ; OP2=corr(power)
     bcall(_OP1ToOP6) ; OP6=corr(power)
     bcall(_OP5ToOP1) ; OP1=corr(best)
-    bcall(_ClrOP1S) ; clear sign bit of OP1
-    bcall(_ClrOP2S) ; clear sign bit of OP2
-    bcall(_CpOP1OP2) ; if abs(corr(power)) > abs(corr(best)): CF=1
+    bcall(_AbsO1O2Cp) ; if abs(corr(power)) > abs(corr(best)): CF=1
     jr nc, mCfitBestSelect
     bcall(_OP6ToOP5) ; OP5=corr(power)
     pop bc
