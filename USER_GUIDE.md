@@ -1303,6 +1303,8 @@ limited:
     - current state of input buffer
     - (The RPN stack (X, Y, Z, T, LastX) and storage registers (R00 - R24) are
       saved persistently.)
+- datetime conversions
+    - date/time components to and from epoch seconds
 
 ### Medium Future
 
@@ -1313,14 +1315,17 @@ limited:
     - The HP-42S shows user-defined variables through the menu system.
     - Nice feature, but would require substantial refactoring of the current
       menu system code.
+- custom menu items
+    - The HP-42S supports up to 18 (3 rows of 6 menus) to be customized through
+      the `ASSIGN` and `CUSTOM` menus.
+    - This seems like a useful feature, but would require substantial
+      refactoring of the currnet menu system code, like user-defined variables.
 - complex numbers
     - The TI-OS provides internal subroutines to handle complex numbers, so in
       theory, this should be relatively easy.
     - I think the difficulty will be the user interface. A complex number
       requires 2 floating point numbers to be entered and displayed, and I have
       not figured out how to do that within the UI of the RPN83P application.
-- datetime conversions
-    - date/time components to and from epoch seconds
 - `UNIT` conversions
     - several places assume US customary units (e.g. US gallons) instead of
       British or Canadian imperial units
@@ -1331,6 +1336,9 @@ limited:
       using 32-bit unsigned numbers
     - the user ought to be able to specify the integer size for those
       operations: 8 bits, 16 bits, 32 bits, maybe 48 bits and 64 bits
+    - 48-bits seems to be a reasonable goal because the TI-OS floating point
+      number supports 14 decimal digits, which corresonds to 46.5 bits, which
+      fits nicely into 48 bits.
     - the user-interface will be a challenge: for large integer sizes, the
       number of digits will no longer fit inside the 14-15 digits available on a
       single line.
@@ -1344,10 +1352,6 @@ limited:
     - Might be useful to expose some system status functions, like memory.
     - We can always drop into the TI-OS and use `2ND` `MEM` to get that
       information, so it's not clear that this is worth the effort.
-- transfer info between RPN83P and TI-OS
-    - It may be useful to share results between the TI-OS and the RPN83P app.
-    - To start, I think we can use `ANS` variable on the TI-OS to transport
-      the `stX` register on the RPN83P.
 
 ### Far Future
 
