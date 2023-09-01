@@ -9,16 +9,16 @@ MenuConfig [
 ]
 
 MenuGroup root mRoot [
-  MenuStrip [
+  MenuRow [
     MenuGroup NUM mNum [
-      MenuStrip [
+      MenuRow [
         MenuItem <Scaret>3 mCube
         MenuItem CBRT mCubeRoot # maybe use <super3><root> ?
         MenuItem ATN2 mAtan2
         MenuItem <Spercent> mPercent
         # MenuItem * * will be auto-inserted here
       ]
-      MenuStrip [
+      MenuRow [
         MenuItem ABS mAbs
         MenuItem SIGN mSign
         MenuItem MOD mMod
@@ -27,7 +27,7 @@ MenuGroup root mRoot [
       ]
     ]
     MenuGroup PROB mProb [
-      MenuStrip [
+      MenuRow [
         MenuItem PERM mPerm
         MenuItem COMB mComb
         MenuItem N<Sexclam> mFactorial
@@ -40,9 +40,16 @@ MenuGroup root mRoot [
     MenuItem HELP mHelp
   ]
   # Insert place holders for testing.
-  MenuStrip [
-    MenuItem DISP mDisp
-    MenuItem MODE mMode
+  MenuRow [
+    MenuGroup MODE mMode [
+      MenuRow [
+        MenuItemAlt FIX FIX<Sblock> mFix
+        MenuItem SCI mSci
+        MenuItem ENG mEng
+        MenuItem RAD mRad
+        MenuItem DEG mDeg
+      ]
+    ]
     MenuItem HYP mHyperbolic
     MenuItem UNIT mUnit
     # MenuItem * * will be auto-inserted here

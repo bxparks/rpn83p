@@ -2,7 +2,7 @@
 
 RPN calculator app for the TI-83 Plus and TI-84 Plus inspired by the HP-42S.
 
-**Version**: 0.4.0 (2023-08-16)
+**Version**: 0.5.0 (2023-08-31)
 
 **Project Home**: https://github.com/bxparks/rpn83p
 
@@ -13,7 +13,7 @@ RPN calculator app for the TI-83 Plus and TI-84 Plus inspired by the HP-42S.
     - [Short Answer](#short-answer)
     - [Long Answer](#long-answer)
 - [Installation](#installation)
-    - [Uploading](#obtaining-the-program-file)
+    - [Obtaining the Program File](#obtaining-the-program-file)
     - [Uploading](#uploading)
     - [Starting](#starting)
     - [Quitting](#quitting)
@@ -25,6 +25,7 @@ RPN calculator app for the TI-83 Plus and TI-84 Plus inspired by the HP-42S.
         - [Menu Hierarchy](#menu-hierarchy)
         - [Menu Buttons](#menu-buttons)
         - [Menu Indicator Arrows](#menu-indicator-arrows)
+        - [Menu Shortcuts](#menu-shortcuts)
     - [Built In Help](#built-in-help)
     - [Error Codes](#error-codes)
 - [Functions](#functions)
@@ -40,6 +41,8 @@ RPN calculator app for the TI-83 Plus and TI-84 Plus inspired by the HP-42S.
         - [BASE Integer Size](#base-integer-size)
     - [Storage Registers](#storage-registers)
     - [Prime Factors](#prime-factors)
+    - [STAT Functions](#stat-functions)
+    - [TI-OS Interoperability](#ti-os-interoperability)
 - [Future Enhancements](#future-enhancements)
     - [Near Future](#near-future)
     - [Medium Future](#medium-future)
@@ -67,17 +70,19 @@ Here the quick summary of its features:
 
 - traditional 4-level RPN stack (`X`, `Y`, `Z`, `T` registers)
 - support for `lastX` register
+- 8-line display showing all stack registers
 - 25 storage registers (`STO 00`, `RCL 00`, ..., `STO 24`, `RCL 24`)
 - hierarchical menu system, inspired by the HP-42S
 - support for all math functions with dedicated buttons on the TI-83 Plus and
   TI-84 Plus
     - arithmetic: `/`, `*`, `-`, `+`
     - trigonometric: `SIN`, `COS`, `TAN`, etc.
-    - `1/X`, `X^2`, `2ND SQRT`
+    - `1/X`, `X^2`, `SQRT`
     - `^` (i.e. `Y^X`),
     - `LOG`, `10^X`, `LN`, `e^X`
     - constants: `pi` and `e`
 - additional menu functions:
+    - `X^3`, `CBRT`, `XRootY`, `ATN2`, `2^X`, `LOG2`, `LOGB`
     - `%`, `%CH`, `GCD`, `LCM`, `PRIM` (is prime)
     - `IP` (integer part), `FP` (fractional part), `FLR` (floor), `CEIL`
     - `ABS`, `SIGN`, `MOD`, `MIN`, `MAX`
@@ -89,6 +94,13 @@ Here the quick summary of its features:
     - base conversions: `DEC`, `HEX`, `OCT`, `BIN`
     - bitwise operations: `AND`, `OR`, `XOR`, `NOT`, `NEG`, `SL`, `SR`, `RL`,
       `RR`, `B+`, `B-`, `B*`, `B/`, `BDIV`
+    - statistics: `Sigma+`, `Sigma-`, `SUM`, `MEAN`, `WMN` (weighted mean),
+      `SDEV` (sample standard deviation), `SCOV` (sample covariance),
+      `PDEV` (population standard deviation), `PCOV` (population covariance)
+    - curve fitting: `Y>X`, `X>Y`, `SLOP` (slope), `YINT` (y intercept), `CORR`
+      (correlation coefficent)
+    - curve fit models: `LINF` (linear)`, `LOGF` (logarithmic), `EXPF`
+      (exponential), `PWRF` (power)
 - various display modes
     - `RAD`, `DEG`
     - `FIX` (fixed point 0-9 digits)
@@ -118,8 +130,8 @@ now sell for $200-$300 on eBay, which is a sum of money that I cannot justify
 spending.
 
 I finished my formal school education before graphing calculators became
-popular, so I didn't know anything about them until a few months. I did not know
-that the early TI graphing calculators used the Z80 processor, and more
+popular, so I didn't know anything about them until a few months ago. I did not
+know that the early TI graphing calculators used the Z80 processor, and more
 importantly, I did not know that they were programmable in assembly language.
 
 I realized that I could probably create an app that could turn them into
@@ -365,25 +377,25 @@ like this conceptually:
 
 There are 4 components:
 
-- `MenuGroup`: a folder of 1 or more `MenuStrips`
-- `MenuStrip`: a list of exactly 5 `MenuNodes` corresponding to the 5 menu
+- `MenuGroup`: a folder of 1 or more `MenuRows`
+- `MenuRow`: a list of exactly 5 `MenuNodes` corresponding to the 5 menu
   buttons below the LCD
-- `MenuNode`: one slot in the `MenuStrip`, can be *either* a `MenuGroup` or a
+- `MenuNode`: one slot in the `MenuRow`, can be *either* a `MenuGroup` or a
   `MenuItem`
 - `MenuItem`: a leaf-node that maps directly to a function (e.g. `ASNH`) when
   the corresponding menu button is pressed
 
 #### Menu Buttons
 
-The LCD screen always shows a `MenuStrip` of 5 `MenuItems`. Here are the buttons
+The LCD screen always shows a `MenuRow` of 5 `MenuItems`. Here are the buttons
 which are used to navigate the menu hierarchy:
 
 ![Menu Buttons](docs/rpn83p-fullshot-menu-buttons.jpg)
 
 - `F1`- `F5`: invokes the function shown by the respective menu
-- `UP_ARROW`: goes to previous `MenuStrip` of 5 `MenuItems`, within the current
+- `UP_ARROW`: goes to previous `MenuRow` of 5 `MenuItems`, within the current
   `MenuGroup`
-- `DOWN_ARROW`: goes to next `MenuStrip` of 5 `MenuItems`, within the current
+- `DOWN_ARROW`: goes to next `MenuRow` of 5 `MenuItems`, within the current
   `MenuGroup`
 - `ON`: goes back to the parent `MenuGroup` (similar to the `ON/EXIT` button on
   the HP-42S)
@@ -413,56 +425,66 @@ menu group named `MATH`, which may help to remember this button mapping.
 
 #### Menu Indicator Arrows
 
-There are 3 menu indicator arrows at the top-left corner of the LCD screen. The
-`downarrow` indicates that additional menu strips are available:
+There are 3 menu arrows at the top-left corner of the LCD screen. The
+`downarrow` indicates that additional menu rows are available:
 
 > ![Menu Arrows 1](docs/rpn83p-screenshot-menu-arrows-1.png)
 
 When the `DOWN` button is pressed, the menu changes to the next set of 5 menu
-items in the next menu strip, and the indicator arrow changes to an `uparrow` to
-indicate that we are at the last menu strip of the current group:
+items in the next menu row, and the menu arrows show both an `uparrow` and a
+`downarrow` to indicate that there are more menu items above and below the
+current menu bar:
 
 > ![Menu Arrows 2](docs/rpn83p-screenshot-menu-arrows-2.png)
 
-Pressing `UP` goes back to the previous menu strip. (Note that since the ROOT
-menu group contains only 2 menu strips, you can actually press `DOWN` at the
-last menu strip. The menu system *wraps around* to the first menu strip.)
+Pressing `DOWN` goes to the last set of 5 menu items, and the menu arrows show
+only the `uparrow` to indicate that this is the last of the series:
+
+> ![Menu Arrows 3](docs/rpn83p-screenshot-menu-arrows-3.png)
+
+You can press `UP` twice goes back to the first menu row, or you can press
+`DOWN` from the last menu row to wrap around to the beginning:
 
 > ![Menu Arrows 1](docs/rpn83p-screenshot-menu-arrows-1.png)
 
-Pressing the `F2/WINDOW` button invokes the `NUM` menu item. This menu item is
-actually a `MenuGroup`, so the menu system descends into this folder, and
-displays the 5 menu items in the first menu strip:
+Pressing the `F2/WINDOW` button from here invokes the `NUM` menu item. This menu
+item is actually a `MenuGroup`, so the menu system descends into this folder,
+and displays the 5 menu items in the first menu row:
 
 > ![Menu Arrows NUM 1](docs/rpn83p-screenshot-menu-arrows-num-1.png)
 
-Pressing the `DOWN` arrow button shows the next menu strip like this:
+Pressing the `DOWN` arrow button shows the next menu row:
 
 > ![Menu Arrows NUM 2](docs/rpn83p-screenshot-menu-arrows-num-2.png)
 
-Notice that the indicator arrows now show both `downarrow` and `uparrow`, which
-indicates that there exist one or more menu strips to the top and the one ore
-more menu strips to the bottom.
-
-Pressing the `DOWN` arrow button goes to the final menu strip:
+Pressing the `DOWN` arrow button goes to the final menu row:
 
 > ![Menu Arrows NUM 3](docs/rpn83p-screenshot-menu-arrows-num-3.png)
 
-The menu indicators show only the `back` arrow, and the `up` arrow. Pressing the
-`UP` button goes to the previous menu strip. Pressing the `DOWN` arrow wraps
-around to the first menu strip.
-
-When the menu system is in a child menu group, the menu indicator shows a `back`
-arrow. This means that the `ON` button (which implements the "back" or "exit"
-functionality") can be used to go back to the parent menu group:
+Notice that inside the `NUM` menu group, the menu arrows show a `back` arrow.
+This means that the `ON` button (which implements the "BACK", "EXIT", or "ESC"
+functionality) can be used to go back to the parent menu group:
 
 > ![Menu Arrows 1](docs/rpn83p-screenshot-menu-arrows-1.png)
+
+#### Menu Shortcuts
+
+Some menu groups can be accessed quickly through dedicated keys on the TI
+calculator which happen to have the same label as the menu item:
+
+- `MODE`: bound to `ROOT > MODE`
+- `STAT`: bound to `ROOT > STAT`
+- `MATH`: repurposed to be `HOME` (aka `ROOT`)
+
+The `MATH` button is slightly different. It is not bound to `ROOT > MATH`.
+Rather it has been repurposed to be the `HOME` button which goes to the top of
+the menu hierarchy `ROOT`.
 
 ## Built In Help
 
 Pressing the `HELP` menu button at the root menu:
 
-> ![ROOT MenuStrip 1](docs/rpn83p-screenshot-menu-root-1.png)
+> ![ROOT MenuRow 1](docs/rpn83p-screenshot-menu-root-1.png)
 
 activates the Help pages:
 
@@ -553,14 +575,15 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (back), and `MATH`
 (home) keys to navigate the menu hierarchy.
 
 - `ROOT` (implicit)
-    - ![ROOT MenuStrip 1](docs/rpn83p-screenshot-menu-root-1.png)
-    - ![ROOT MenuStrip 2](docs/rpn83p-screenshot-menu-root-2.png)
-    - ![ROOT MenuStrip 3](docs/rpn83p-screenshot-menu-root-3.png)
+    - ![ROOT MenuRow 1](docs/rpn83p-screenshot-menu-root-1.png)
+    - ![ROOT MenuRow 2](docs/rpn83p-screenshot-menu-root-2.png)
+    - ![ROOT MenuRow 3](docs/rpn83p-screenshot-menu-root-3.png)
 - `ROOT` > `MATH`
-    - ![MATH MenuStrip 1](docs/rpn83p-screenshot-menu-root-math-1.png)
-    - ![MATH MenuStrip 2](docs/rpn83p-screenshot-menu-root-math-2.png)
+    - ![MATH MenuRow 1](docs/rpn83p-screenshot-menu-root-math-1.png)
+    - ![MATH MenuRow 2](docs/rpn83p-screenshot-menu-root-math-2.png)
     - `X^3`: cube of `X`
     - `3 Root X`: cube root of `X`
+    - `X Root Y`: `X` root of `Y`
     - `ATN2`: `atan2(Y, X)` in degrees or radians, depending on current mode
         - `Y` register is the x-component entered first
         - `X` register is the y-component entered second
@@ -568,9 +591,9 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (back), and `MATH`
     - `LOG2`: log base 2 of `X`
     - `LOGB`: log base `X` of `Y`
 - `ROOT` > `NUM`
-    - ![NUM MenuStrip 1](docs/rpn83p-screenshot-menu-root-num-1.png)
-    - ![NUM MenuStrip 2](docs/rpn83p-screenshot-menu-root-num-2.png)
-    - ![NUM MenuStrip 3](docs/rpn83p-screenshot-menu-root-num-3.png)
+    - ![NUM MenuRow 1](docs/rpn83p-screenshot-menu-root-num-1.png)
+    - ![NUM MenuRow 2](docs/rpn83p-screenshot-menu-root-num-2.png)
+    - ![NUM MenuRow 3](docs/rpn83p-screenshot-menu-root-num-3.png)
     - `%`: `X` percent of `Y`, leaving `Y` unchanged
     - `%CH`: percent change from `Y` to `X`, leaving `Y` unchanged
     - `GCD`: greatest common divisor of `X` and `Y`
@@ -587,18 +610,19 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (back), and `MATH`
     - `ABS`: absolute value of `X`
     - `SIGN`: return -1, 0, 1 depending on whether `X` is less than, equal, or
       greater than 0, respectively
+    - `MOD`: `Y` mod `X` (remainder of `Y` after dividing by `X`)
     - `MIN`: minimum of `X` and `Y`
     - `MAX`: maximum of `X` and `Y`
 - `ROOT` > `PROB`
-    - ![PROB MenuStrip 1](docs/rpn83p-screenshot-menu-root-prob-1.png)
+    - ![PROB MenuRow 1](docs/rpn83p-screenshot-menu-root-prob-1.png)
     - `COMB`: combination `C(n,r)` = `C(Y, X)`
     - `PERM`: permutation `P(n,r)` = `P(Y, X)`
     - `N!`: factorial of `X`
     - `RAND`: random number in the range `[0,1)`
     - `SEED`: set the random number generator seed to `X`
 - `ROOT` > `CONV`
-    - ![CONV MenuStrip 1](docs/rpn83p-screenshot-menu-root-conv-1.png)
-    - ![CONV MenuStrip 2](docs/rpn83p-screenshot-menu-root-conv-2.png)
+    - ![CONV MenuRow 1](docs/rpn83p-screenshot-menu-root-conv-1.png)
+    - ![CONV MenuRow 2](docs/rpn83p-screenshot-menu-root-conv-2.png)
     - `>DEG`: convert radians to degrees
     - `>RAD`: convert degrees to radians
     - `P>R`: polar to rectangular
@@ -611,35 +635,94 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (back), and `MATH`
     - `>HMS`: convert `HH.hhhh` to `HH.MMSSssss`
 - `ROOT` > `HELP`: display the help pages
     - use arrow keys to view each help page
-- `ROOT` > `MODE`
-    - ![MODE MenuStrip 1](docs/rpn83p-screenshot-menu-root-mode-1.png)
-    - `FIX`: fixed mode with `N` digits after the decimal point
-        - set `N` to `99` for floating number of digits
-        - status line indicator is `FIX(N)`
-    - `SCI`: scientific notation with `N` digits after the decimal point
-        - set `N` to `99` for floating number of digits
-        - status line indicator is `SCI(N)`
-    - `ENG`: engineering notation with `N` digits after the decimal point
-        - set `N` to `99` for floating number of digits
-        - status line indicator is `ENG(N)`
-    - `RAD`: use radians for trigonometric functions
-    - `DEG`: use degrees for trigonometric functions
+- `ROOT` > `BASE`
+    - ![BASE MenuRow 1](docs/rpn83p-screenshot-menu-root-base-1.png)
+    - ![BASE MenuRow 2](docs/rpn83p-screenshot-menu-root-base-2.png)
+    - ![BASE MenuRow 3](docs/rpn83p-screenshot-menu-root-base-3.png)
+    - ![BASE MenuRow 4](docs/rpn83p-screenshot-menu-root-base-4.png)
+    - `DEC`: use decimal base 10, set base indicator to `DEC`
+    - `HEX`: use hexadecimal base 16, set base indicator to `HEX`
+        - display all register values as 32-bit unsigned integer
+    - `OCT`: use octal base 8, set base indicator to `OCT`
+        - display all register values as 32-bit unsigned integer
+    - `BIN`: use binary base 2, set base indicator to `BIN`
+        - display all register values as 32-bit unsigned integer
+        - max of 13 digits
+    - `AND`: `X` `bit-and` `Y`
+    - `OR`: `X` `bit-or` `Y`
+    - `XOR`: `X` `bit-xor` `Y`
+    - `NOT`: one's complement of `X`
+    - `NEG`: two's complement of `X`
+    - `SL`: shift left one bit
+    - `SR`: shift right one bit
+    - `RL`: rotate left circular one bit
+    - `RR`: rotate right circular one bit
+    - `B+`: add `X` and `Y` using unsigned 32-bit integer math
+    - `B-`: subtract `X` from `Y` using unsigned 32-bit integer math
+    - `B*`: multiply `X` and `Y` using unsigned 32-bit integer math
+    - `B/`: divide `X` into `Y` using unsigned 32-bit integer math
+    - `BDIV`: divide `X` into `Y` with remainder, placing the quotient in `Y`
+      and the remainder in `X`
 - `ROOT` > `HYP`
-    - ![HYP MenuStrip 1](docs/rpn83p-screenshot-menu-root-hyp-1.png)
-    - ![HYP MenuStrip 2](docs/rpn83p-screenshot-menu-root-hyp-2.png)
+    - ![HYP MenuRow 1](docs/rpn83p-screenshot-menu-root-hyp-1.png)
+    - ![HYP MenuRow 2](docs/rpn83p-screenshot-menu-root-hyp-2.png)
     - `SINH`: hyperbolic `sin()`
     - `COSH`: hyperbolic `cos()`
     - `TANH`: hyperbolic `tan()`
     - `ASNH`: hyperbolic `asin()`
     - `ACSH`: hyperbolic `acos()`
     - `ATNH`: hyperbolic `atan()`
+- `ROOT` > `STAT`
+    - See Chapter 15 of the _HP-42S User's Manual_
+    - ![STAT MenuRow 1](docs/rpn83p-screenshot-menu-root-stat-1.png)
+    - ![STAT MenuRow 2](docs/rpn83p-screenshot-menu-root-stat-2.png)
+    - ![STAT MenuRow 3](docs/rpn83p-screenshot-menu-root-stat-3.png)
+    - `Sigma+`: add `Y` and `X` data point to STAT registers
+    - `Sigma-`: remove `Y` and `X` data point from STAT registers
+    - `ALLSigma`: collect statistical sums for all curve fit models
+    - `LINSigma`: collect statistical sums for the linear curve fit model
+    - `CLSigma`: clear STAT registers `[R11,R16]` (if LINSigma selected) or
+      `[R11,R23]` (if AllSigma selected)
+    - `SUM`: return Sum of `Y` and Sum of `X` in the `Y` and `X` registers
+    - `MEAN`: return average `<Y>` and `<X>` in the `Y` and `X` registers
+    - `WMN`: return the weighted mean of `Y` and weighted mean of `X` in the `Y`
+      and `X` registers
+        - `weighted mean Y = Sum(XY)/Sum(X)`
+        - `weighted mean X = Sum(XY)/Sum(Y)`
+    - `N`: return the number of data items entered
+    - `SDEV`: sample standard deviation of `Y` and `X`
+        - `sdev(X) = (N/(N-1)) pdev(X)`
+        - `sdev(Y) = (N/(N-1)) pdev(Y)`
+    - `SCOV`: sample covariance
+        - `scov(X,Y) = (N/(N-1)) pcov(X,Y)`
+    - `PDEV`: population standard deviation of `Y` and `X`
+        - `pdev(X) = <X^2> - <X>^2`
+        - `pdev(Y) = <Y^2> - <Y>^2`
+    - `PCOV`: population covariance
+        - `pcov(X,Y) = <XY> - <X><Y>`
+    - `ROOT` > `STAT` > `CFIT`
+        - See Chapter 15 of the _HP-42S User's Manual_
+        - ![CFIT MenuRow 1](docs/rpn83p-screenshot-menu-root-stat-cfit-1.png)
+        - ![CFIT MenuRow 2](docs/rpn83p-screenshot-menu-root-stat-cfit-2.png)
+        - `Y>X`: forecast X from Y
+        - `X>Y`: forecast Y from X
+        - `SLOP`: slope of curve fit model, i.e. `m` parameter
+        - `YINT`: y-intercept of curve fit model, i.e. `b` parameter
+        - `CORR`: correlation coefficient of the least square curve fit
+        - `LINF`: linear fit model, `y = mx + b`
+        - `LOGF`: logarithmic fit model, `y = m ln(x) + b`
+        - `EXPF`: exponential fit model, `y = b e^(mx)`
+        - `PWRF`: power fit model, `y = b x^m`
+        - `BEST`: automatically select the best model, i.e. the one with the
+          largest absolute value of the correlation coefficient. The `CORR`
+          value is returned in the `X` register for reference.
 - `ROOT` > `UNIT`
-    - ![UNIT MenuStrip 1](docs/rpn83p-screenshot-menu-root-unit-1.png)
-    - ![UNIT MenuStrip 2](docs/rpn83p-screenshot-menu-root-unit-2.png)
-    - ![UNIT MenuStrip 3](docs/rpn83p-screenshot-menu-root-unit-3.png)
-    - ![UNIT MenuStrip 4](docs/rpn83p-screenshot-menu-root-unit-4.png)
-    - ![UNIT MenuStrip 5](docs/rpn83p-screenshot-menu-root-unit-5.png)
-    - ![UNIT MenuStrip 6](docs/rpn83p-screenshot-menu-root-unit-6.png)
+    - ![UNIT MenuRow 1](docs/rpn83p-screenshot-menu-root-unit-1.png)
+    - ![UNIT MenuRow 2](docs/rpn83p-screenshot-menu-root-unit-2.png)
+    - ![UNIT MenuRow 3](docs/rpn83p-screenshot-menu-root-unit-3.png)
+    - ![UNIT MenuRow 4](docs/rpn83p-screenshot-menu-root-unit-4.png)
+    - ![UNIT MenuRow 5](docs/rpn83p-screenshot-menu-root-unit-5.png)
+    - ![UNIT MenuRow 6](docs/rpn83p-screenshot-menu-root-unit-6.png)
     - `>C`: Fahrenheit to Celsius
     - `>F`: Celsius to Fahrenheit
     - `>hPa`: hectopascals (i.e. millibars) to inches of mercury (Hg)
@@ -664,44 +747,30 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (back), and `MATH`
     - `>cal`: kilo Joules to kilo calories
     - `>kW`: horsepowers (mechanical) to kilo Watts
     - `>hp`: kilo Watts to horsepowers (mechanical)
-- `ROOT` > `BASE`
-    - ![BASE MenuStrip 1](docs/rpn83p-screenshot-menu-root-base-1.png)
-    - ![BASE MenuStrip 2](docs/rpn83p-screenshot-menu-root-base-2.png)
-    - ![BASE MenuStrip 3](docs/rpn83p-screenshot-menu-root-base-3.png)
-    - ![BASE MenuStrip 4](docs/rpn83p-screenshot-menu-root-base-4.png)
-    - `DEC`: use decimal base 10, set base indicator to `DEC`
-    - `HEX`: use hexadecimal base 16, set base indicator to `HEX`
-        - display all register values as 32-bit unsigned integer
-    - `OCT`: use octal base 8, set base indicator to `OCT`
-        - display all register values as 32-bit unsigned integer
-    - `BIN`: use binary base 2, set base indicator to `BIN`
-        - display all register values as 32-bit unsigned integer
-        - max of 13 digits
-    - `AND`: `X` `bit-and` `Y`
-    - `OR`: `X` `bit-or` `Y`
-    - `XOR`: `X` `bit-xor` `Y`
-    - `NOT`: one's complement of `X`
-    - `NEG`: two's complement of `X`
-    - `SL`: shift left one bit
-    - `SR`: shift right one bit
-    - `RL`: rotate left circular one bit
-    - `RR`: rotate right circular one bit
-    - `B+`: add `X` and `Y` using unsigned 32-bit integer math
-    - `B-`: subtract `X` from `Y` using unsigned 32-bit integer math
-    - `B*`: multiply `X` and `Y` using unsigned 32-bit integer math
-    - `B/`: divide `X` into `Y` using unsigned 32-bit integer math
-    - `BDIV`: divide `X` into `Y` with remainder, placing the quotient in `Y`
-      and the remainder in `X`
+- `ROOT` > `CLR`
+    - ![CLR MenuRow 1](docs/rpn83p-screenshot-menu-root-clr-1.png)
+    - `CLX`: clear `X` stack register (stack lift disabled)
+    - `CLST`: clear all RPN stack registers
+    - `CLRG`: clear all storage registers `R00` to `R24`
+    - `CLSigma`: clear STAT storage registers [`R11`, `R16`] or [`R11`, `R23`]
+- `ROOT` > `MODE`
+    - ![MODE MenuRow 1](docs/rpn83p-screenshot-menu-root-mode-1.png)
+    - `FIX`: fixed mode with `N` digits after the decimal point
+        - set `N` to `99` for floating number of digits
+        - status line indicator is `FIX(N)`
+    - `SCI`: scientific notation with `N` digits after the decimal point
+        - set `N` to `99` for floating number of digits
+        - status line indicator is `SCI(N)`
+    - `ENG`: engineering notation with `N` digits after the decimal point
+        - set `N` to `99` for floating number of digits
+        - status line indicator is `ENG(N)`
+    - `RAD`: use radians for trigonometric functions
+    - `DEG`: use degrees for trigonometric functions
 - `ROOT` > `STK`
-    - ![STK MenuStrip 1](docs/rpn83p-screenshot-menu-root-stk-1.png)
+    - ![STK MenuRow 1](docs/rpn83p-screenshot-menu-root-stk-1.png)
     - `R(up)`: rotate stack up
     - `R(down)`: rotate stack down, also bound to `(` button
     - `X<>Y`: exchange `X` and `Y`, also bound to `)` button
-- `ROOT` > `CLR`
-    - ![CLR MenuStrip 1](docs/rpn83p-screenshot-menu-root-clr-1.png)
-    - `CLX`: clear `X` stack register (stack lift disabled)
-    - `CLST`: clear all RPN stack registers
-    - `CLRG`: clear storage registers `R00` to `R24`
 
 ## Advanced Usage
 
@@ -784,13 +853,9 @@ To set the number of digits after the decimal point to be dynamic (i.e. the
 equivalent of `FLOAT` option in the TI-OS `MODE` menu), type in a number greater
 than 9 when prompted for `FIX _ _`, `SCI _ _`, or `ENG _ _`. I usually use
 `99`, but `11` would also work. For example, to use scientific notation mode
-with a variable number of fractional digits, press `SCI` `99` at this prompt:
+with a variable number of fractional digits, press `SCI` `99` to get this:
 
 > ![RPN83P SCI 99](docs/rpn83p-display-mode-sci-99.png)
-
-to get this:
-
-> ![RPN83P SCI 99](docs/rpn83p-display-mode-sci-dynamic.png)
 
 Notice that the top-line floating point indicator now shows `SCI(-)`.
 
@@ -834,11 +899,11 @@ since gradian trig mode is not commonly used.
 
 The `BASE` functions are available through the `ROOT` > `BASE` hierarchy:
 
-- ![ROOT MenuStrip 2](docs/rpn83p-screenshot-menu-root-2.png)
-    - ![BASE MenuStrip 1](docs/rpn83p-screenshot-menu-root-base-1.png)
-    - ![BASE MenuStrip 2](docs/rpn83p-screenshot-menu-root-base-2.png)
-    - ![BASE MenuStrip 3](docs/rpn83p-screenshot-menu-root-base-3.png)
-    - ![BASE MenuStrip 4](docs/rpn83p-screenshot-menu-root-base-4.png)
+- ![ROOT MenuRow 2](docs/rpn83p-screenshot-menu-root-2.png)
+    - ![BASE MenuRow 1](docs/rpn83p-screenshot-menu-root-base-1.png)
+    - ![BASE MenuRow 2](docs/rpn83p-screenshot-menu-root-base-2.png)
+    - ![BASE MenuRow 3](docs/rpn83p-screenshot-menu-root-base-3.png)
+    - ![BASE MenuRow 4](docs/rpn83p-screenshot-menu-root-base-4.png)
 
 These functions allow conversion of integers into different bases (10, 16, 8,
 2), as well as performing bitwise functions on those integers (bit-and, bit-or,
@@ -864,8 +929,8 @@ The `HEX` (hexadecimal) mode displays all numbers on the RPN stack using base
 integer, and printed using 8 hexadecimal digits. If there are fractional digits
 after the decimal point, a decimal point `.` is printed at the end of the 8
 digits to indicate that the fractional part is not shown. Negative numbers are
-not valid and three dots are printed instead. Three dots are printed if the
-integer part is `>= 2^32`.
+not valid and a single `-` character is printed instead. Three dots are printed
+if the integer part is `>= 2^32`.
 
 The hexadecimal digits `A` through `F` are entered using `ALPHA` `A`, through
 `ALPHA` `F`. You can lock the `ALPHA` mode using `2ND` `A-LOCK`, but that causes
@@ -882,11 +947,11 @@ the integer part is rendered. It is converted into an unsigned 32-bit integer,
 and printed using 11 octal digits. If there are fractional digits after the
 decimal point, a decimal point `.` is printed at the end of the 11 digits to
 indicate that the fractional part is not shown. Negative numbers are not valid
-and three-dots are printed instead. Three dots are printed if the integer part
-is `>= 2^32`.
+and a single `-` character is printed instead. Three dots are printed if the
+integer part is `>= 2^32`.
 
-The digits `0` through `7` are entered normally. The digits `8` and `9` are
-disabled in octal mode.
+The button digits `0` through `7` are entered normally. The button digits `8`
+and `9` are disabled in octal mode.
 
 > ![Numbers in Octal Mode](docs/rpn83p-screenshot-base-oct.png)
 
@@ -895,13 +960,13 @@ disabled in octal mode.
 The `BIN` (binary) mode displays all numbers on the RPN stack using base 2. Only
 the integer part is rendered. It is converted into an unsigned 32-bit integer,
 and printed using 14 binary digits (the maximum allowed by the width of the LCD
-screen). The there are fractional digits after the decimal point, a decimal
-point `.` is printed at the end of the 14 digits to indicate that the fractional
-part is not shown. Negative numbers are not valid and three-dots are printed
-instead. Three dots are also printed if the integer part is `>= 2^14` (i.e. `>=
-16384`).
+screen). If there are fractional digits after the decimal point, a decimal point
+`.` is printed at the end of the 14 digits to indicate that the fractional part
+is not shown. Negative numbers are not valid and a single `-` character is
+printed instead. Three dots are also printed if the integer part is `>= 2^14`
+(i.e. `>= 16384`).
 
-Only the digits `0` and `1` are active in the binary mode. The rest are
+Only the button digits `0` and `1` are active in the binary mode. The rest are
 disabled.
 
 > ![Numbers in Binary Mode](docs/rpn83p-screenshot-base-bin.png)
@@ -996,9 +1061,9 @@ To recall register `R00`, press:
 To clear the all storage registers, use the arrow keys for the menu system to
 get to:
 
-- ![ROOT MenuStrip 3](docs/rpn83p-screenshot-menu-root-3.png)
+- ![ROOT MenuRow 3](docs/rpn83p-screenshot-menu-root-3.png)
 - Press `CLR` to get
-  ![CLR MenuStrip 1](docs/rpn83p-screenshot-menu-root-clr-1.png)
+  ![CLR MenuRow 1](docs/rpn83p-screenshot-menu-root-clr-1.png)
 - Press `CLRG`
 
 The message `REGS cleared` will be displayed on the screen.
@@ -1020,7 +1085,7 @@ all prime factors of the original number.
 
 For example, let's find the prime factors of `119886 = 2 * 3 * 13 * 29 * 53`:
 
-- Press `119886` `ENTER`
+- Press `119886`
 - Press `PRIM` to get `2`
 - Press `/` to divide down to `59943`
 - Press `PRIM` to get `3`
@@ -1044,6 +1109,183 @@ how large the input number. During the calculation, the "run indicator" on the
 upper-right corner will be active. You can press `ON` key to break from the
 `PRIM` loop with an `Err: Break` message.
 
+### STAT Functions
+
+The RPN83P implements *all* statistical and curve fitting functionality of the
+HP-42S, as described in Ch. 15 of the _HP-42S User's Manual_. Additional
+reference material can be found at:
+
+- https://en.wikipedia.org/wiki/Algorithms_for_calculating_variance
+- https://en.wikipedia.org/wiki/Simple_linear_regression
+- https://en.wikipedia.org/wiki/Covariance_and_correlation
+
+Most of the menu names are the same as the HP-42S. Here are some of the
+differences:
+
+- The organization of the menu items is different because the TI calculator has
+  only 5 menu buttons instead of 6 on the HP-42S. I also did not like the
+  complexity of the HP-42S menus for the `STAT` functions; it is nested
+  unnecessarily deeply. I have simplified the menu hierarchy for the RPN83P to
+  just 2-levels instead of 3.
+- The HP-42S `WMN` (weighted mean) returns only the weighted mean of `X`. If you
+  wanted the weighted mean of `Y` instead, you are forced to re-enter the data
+  points by swapping the `X` and `Y` values, or manually calculate it from the
+  raw summation registers. The RPN83P calculates both weighted means so that you
+  can choose the appropriate value.
+- The RPN83P contains an `N` menu item that simply returns the number of data
+  points entered for convenience. This value can be retrieved using `2ND RCL
+  16`, but it is unreasonable to expect users to remember this storage register
+  number.
+- The HP-42S calculates only the sample standard deviation `SDEV`. The RPN83P
+  supports both the sample standard deviation `SDEV` or the population standard
+  deviation `PDEV`. The ratio of `SDEV/PDEV` is `sqrt(N/(N-1))` but it is
+  convenient to have both types available in the menu.
+- The RPN83P supports the calculation of the
+  [covariance](https://en.wikipedia.org/wiki/Covariance_and_correlation) in 2
+  forms, the sample covariance `SCOV` and population covariance `PCOV`. They are
+  needed internally for least square curve fitting, so it seemed appropriate to
+  expose them to the user through the menu buttons. The ratio of
+  `SCOV(X,Y)/PCOV(X,Y)` is `N/(N-1)`.
+
+The curve fit models under the `CFIT` menu group are identical to the HP-42S.
+The linear curve fit `LINF` is available with either `LINSigma` or `ALLSigma`
+selected. The other models (`LOGF`, `EXPF`, `PWRF`) are available only when the
+`ALLSigma` option is selected, because they require additional summation
+registers to be active and updated.
+
+On the HP-42S, the clear menu item `CLSigma` is available only under the `CLEAR`
+menu hierarchy. On the RPN83P, the `CLSigma` menu appears in 2 places for
+convenience, under the `CLR` hierarchy *and* under the `STAT` hierarchy. The
+number of storage registers that are cleared depends on whether `LINSigma` or
+`ALLSigma` are selected, just like the HP-42S.
+
+There are a few STAT features which are _not_ implemented on the RPN83P:
+
+- The storage registers allocated to the `STAT` functions are hardcoded to be
+  `R11-R23`. On the HP-42S, the register allocation can be changed.
+- RPN83P does not (yet) support vectors and matrices, so it is not possible to
+  enter the data into a matrix first, then perform the `STAT` functions over the
+  matrix.
+
+**Example**
+
+Let's enter the data points given in the HP-42S manual, the "maximum and minimum
+monthly winter rainfall values in Corvallis, Oregon".
+
+```
+Month   Y(max)  X(min)
+-----   ----    ----
+Oct      9.70   0.10
+Nov     18.28   0.22
+Dec     14.47   2.33
+Jan     15.51   1.99
+Feb     15.23   0.12
+Mar     11.70   0.43
+```
+
+We would enter these data points like this:
+
+- Press `STAT` to see
+  ![STAT MenuRow 1](docs/rpn83p-screenshot-menu-root-stat-1.png)
+- Press `ALLSigma` (select all curve fit models)
+- Press `CLSigma` to clear the summation registers. You should see a status
+  message `STAT cleared`.
+- Enter the data points in pairs, with the `Y` value first, then `X`:
+    - `9.70` `ENTER` `0.10` `Sigma+`. You should see a `1`.
+    - `18.28` `ENTER` `0.22` `Sigma+`. You should see a `2`.
+    - `14.47` `ENTER` `2.33` `Sigma+`. You should see a `3`.
+    - `15.51` `ENTER` `1.99` `Sigma+`. You should see a `4`.
+    - `15.23` `ENTER` `0.12` `Sigma+`. You should see a `5`.
+    - `11.70` `ENTER` `0.43` `Sigma+`. You should see a `6`.
+
+(Note that the "stack lift" is disabled by the `Sigma+` and `Sigma-` buttons,
+similar to the `ENTER` key. So the `N` values will be replaced by the next
+`Ymax` value.)
+
+Let's calculate the basic statistics measures:
+
+- Press `DOWN` arrow key to see
+  ![STAT MenuRow 2](docs/rpn83p-screenshot-menu-root-stat-2.png)
+- Press `SUM` to get `Y:84.89` and `X:5.19`
+- Press `MEAN` to get `Y:14.14833333` and `X:.865`
+- Press `WMN` to get `Y:14.72643545` and `X:.9003439746`
+- Press `N` to get `X:6`
+- Press `DOWN` arrow key to see
+  ![STAT MenuRow 3](docs/rpn83p-screenshot-menu-root-stat-3.png)
+- Press `SDEV` to get `Y:3.032500069` and `X:1.015613115`
+- Press `SCOV` to get `X:.60007`
+- Press `PDEV` to get `Y:2.768281155` and `X:.9271236883`
+- Press `PCOV` to get `X:.5000583333`
+
+Let's perform some curve fits. It is not obvious that the maximum rainfall
+for a given month is correlated with the minimum rainfall for the same month. We
+can use the CFIT routines to figure this out:
+
+- Press `CFIT` to see
+  ![CFIT MenuRow 1](docs/rpn83p-screenshot-menu-root-stat-cfit-1.png)
+- Press the `DOWN` arrow to see
+  ![CFIT MenuRow 2](docs/rpn83p-screenshot-menu-root-stat-cfit-2.png)
+- Verify that the `LINF` (linear fit) is selected
+- Press the `UP` arrow to get back to the main `CFIT` row.
+- Press `SLOP` to get `X:.5817619514`. This is the slope variable `m`.
+- Press `YINT` to get `X:13.64510925`. This is the y-intercept variable `b`.
+- Press `CORR` to get `X:.1948376107`. This is the correlation coefficient `r`.
+  A value of `0.19` means that the correlation between min and max rainfall is
+  fairly weak. A high correlation would be close to 1.0.
+
+Let's see if a different curve fit model does better.
+
+- Press `DOWN` arrow to get to
+  ![CFIT MenuRow 2](docs/rpn83p-screenshot-menu-root-stat-cfit-2.png)
+- Press `BEST` button to request the app to automatically determine the
+  best curve model. You should see `X:.2963586116` and the menu should have
+  changed to select `PWRF`, like this:
+  ![CFIT BEST](docs/rpn83p-cfit-best.png)
+
+**HP-42S Compatibility Note**: Unlike the HP-42S, `BEST` menu on the RPN83P
+returns the `CORR` value of the best curve fit model. It seemed like a useful
+bit of information to see, and it provides visual feedback that the `BEST`
+function has finished, since the RPN83P seems significantly slower than the
+HP-42S, at least on the emulators.
+
+The RPN83P app has determined that the best curve fit model for the data is the
+power curve `y = b x^m`, with a correlation coefficient `r = .2963586116`. It is
+still a weak correlation, but better than the linear model.
+
+You can perform forecasting with the `Y>X` and `X>Y` menus:
+
+- Enter `1.5` (min rainfall) then press `X>Y`. It predicts a maximum rainfall of
+  `14.75`.
+- Enter `12` (max  rainfall) then press `Y>X`. It predicts a minimum rainfall of
+  `0.02188`.
+
+These predictions should be regarded with suspicion because the correlation
+coefficient of `r=.29635` is quite low, and the power fit may not be a good
+model for this data. For example, typing `20` `Y>X` (max rainfall of 20.0) gives
+an `X=752.098` (a minimum rainfall of 752) which is not reasonable.
+
+### TI-OS Interoperability
+
+Although the RPN83P was not designed to interoperate with the underlying TI-OS
+calculator functions, a few features were added to allow *some* data sharing
+between the 2 modes.
+
+- The `X` register of RPN83P is always synchronized with the `ANS` variable in
+  the TI-OS. After the RPN83P app exits, the most recent `X` register value
+  is available in the TI-OS calculator using `2ND` `ANS`.
+- When the RPN83P app is started, it examines the content of the `ANS` variable.
+  If it is a Real value (i.e. not complex, not a matrix, not a string, etc),
+  then it is copied into the `LastX` register of the RPN83P. The `LastX`
+  register is available in RPN83P as `2ND` `ANS` (because `2ND` `ANS` is bound
+  to be the `LastX` function of the RPN stack.)
+- The RPN83P app uses 2 TI-OS List variables to store its internal floating
+  point numbers:
+    - `STK` holds the RPN stack registers (`X`, `Y`, `Z`, `T`, `LastX`)
+    - `REGS` holds the 25 storage registers `R00` to `R24`
+
+  A TI-BASIC program can access these List variables since they hold just normal
+  9-byte floating point numbers.
+
 ## Future Enhancements
 
 There seems to be almost an endless number of features that could go into a
@@ -1057,13 +1299,10 @@ limited:
 - `GCD` and `LCM` functions are slow
     - Could be made significantly faster.
 - save application configurations upon quitting
-    - The RPN stack (X, Y, Z, T, LastX) and storage registers (R00 - R24) are
-      saved persistently, and restored upon restart.
-    - Application configurations are not saved:
-        - DEG/RAD mode
-        - FIX/SCI/ENG settings
-        - DEC/HEX/OCT/BIN base mode settings
-        - the input buffer
+    - DEC/HEX/OCT/BIN base mode settings
+    - current state of input buffer
+    - (The RPN stack (X, Y, Z, T, LastX) and storage registers (R00 - R24) are
+      saved persistently.)
 
 ### Medium Future
 
@@ -1080,16 +1319,8 @@ limited:
     - I think the difficulty will be the user interface. A complex number
       requires 2 floating point numbers to be entered and displayed, and I have
       not figured out how to do that within the UI of the RPN83P application.
-- `STAT` functions
-    - There are lot of features that I need to research:
-        - average, std deviation, variance
-        - linear fitting
-        - logarithmic fitting
-        - exponential fitting
-        - power law fitting
-- real time clock
-    - I believe the TI-84 Plus has an RTC.
-    - It would be interesting to expose some time, date, and timezone features.
+- datetime conversions
+    - date/time components to and from epoch seconds
 - `UNIT` conversions
     - several places assume US customary units (e.g. US gallons) instead of
       British or Canadian imperial units

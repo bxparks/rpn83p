@@ -80,7 +80,7 @@ getErrorStringContinue:
 ; string is not known. If the user sends a reproducible bug report, maybe we
 ; can reverse engineer the condition that triggers that particular error code
 ; and create a human-readable string for it.
-errorCodeCount equ 66 ; total number of error codes
+errorCodeCount equ 67 ; total number of error codes
 errorStrings:
 errorCodeOk equ                 0 ; hopefully TI-OS uses 0 as "success"
     .dw errorStrOk
@@ -182,6 +182,8 @@ errorCodeNotYet equ             64 ; Handler not yet implemented
     .dw errorStrNotYet
 errorCodeRegsCleared equ        65 ; REGS cleared
     .dw errorStrRegsCleared
+errorCodeStatCleared equ        66 ; STAT registers cleared
+    .dw errorStrStatCleared
 
 ; The C strings for each error code. In alphabetical order, as listed in the TI
 ; 83 Plus SDK docs.
@@ -237,3 +239,5 @@ errorStrNotYet:
     .db "Err: NOT YET", 0 ; handler not implemented yet
 errorStrRegsCleared:
     .db "REGS cleared", 0 ; storage registers cleared
+errorStrStatCleared:
+    .db "STAT cleared", 0 ; STAT registers cleared

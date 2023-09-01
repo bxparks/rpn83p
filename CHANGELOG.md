@@ -1,9 +1,68 @@
 # Changelog
 
 - Unreleased
+- 0.5.0 (2023-08-31)
+    - `USER_GUIDE.md`, `README.md`
+        - Update "Menu Indicator Arrows" section with latest screenshots which
+          changed the menu arrows.
+        - rename 'Menu Strip' to 'Menu Row' for consistency with HP-42S
+          terminology.
+    - `BASE`
+        - display just a bare `-` for negatives numbers in `BASE` modes (instead
+          of `...` which is now reserved for valid numbers which overflows the
+          number of digits supported by the display)
+        - validate that the `X` and `Y` values are in the range of `[0, 2^32)`
+          when performing bitwise operations (e.g. `B+`, `AND`, `XOR`, etc).
+          Floating point numbers are truncated to `u32` integers before the
+          bitwise operations are performed.
+    - Add menu selector dots
+        - Replicate HP-42S menu selector dots, where a menu item can be both an
+          action (e.g. select `DEG`) and a selection indicator.
+        - display modes: `FIX`, `SCI`, `ENG`
+        - trig modes: `RAD`, `DEG`
+        - base modes: `DEC`, `HEX`, `OCT`, `BIN`
+    - Improve menu name centering algorithm.
+        - No change for strings which are even-number of pixels wide.
+        - Strings which are odd-number of pixels wide are now centered
+          perfectly, instead of being off-centered by one-px to the left.
+        - Allows strings which are 17px wide to be rendered properly.
+    - Add `STAT` menu items
+        - 1 or 2 variable statistics
+        - `Sigma+` (add data point), `Sigma-` (remove data point)
+        - `SUM`, `MEAN`, `WMN` (weighted mean)
+        - `SDEV` (sample standard deviation), `SCOV` (sample covariance)
+        - `PDEV` (population standard deviation), `PCOV` (population covariance)
+    - Add `CFIT` curve fit menu items
+        - `Y>X` (forcast X from Y)
+        - `X>Y` (forcast Y from X)
+        - `SLOP` (least square fit slope)
+        - `YINT` (least square fit y-intercept)
+        - `CORR` (correlation coefficient)
+        - `LINF` (linear curve fit model)
+        - `LOGF` (logarithmic curve fit model)
+        - `EXPF` (exponential curve fit model)
+        - `PWRF` (power curve fit model)
+        - `BEST` (choose best curve fit model)
+    - Fix RPN stack lift logic for pending input
+        - Simplify stack lift logic to handle empty and non-empty pending input
+          consistently.
+        - If the input buffer is empty (showing just a `_` cursor), then any
+          subsequent keystroke that generates a single value (e.g. `PI` or
+          `STAT:N`) replaces the empty `X` register.
+        - If the input buffer is pending but not empty (i.e. has digits with a
+          trailing `_` cursor), then subsequent keystrokes causes a stack lift,
+          preserving the pending input into the `Y` register.
+        - If the subsequent keystroke is a function that consumes an `X`
+          register, then the empty input buffer is assumed to be a `0` value.
+    - Allow data transfer between RPN83P and TI-OS through the `ANS` variable.
+        - When the RPN83P app starts, the TI-OS `ANS` variable (if Real) is
+          available as the `LastX` register.
+        - When the RPN83P app exits, the most recent `X` register becomes
+          avaiable in TI-OS as the `ANS` variable.
+    - Add `X Root Y` menu item under `MATH`
 - 0.4.0 (2023-08-16)
     - More `BASE` menu functions:
-        - `SL` (shift left), `SR` (shift right)`, `RL` (rotate left circular),
+        - `SL` (shift left), `SR` (shift right), `RL` (rotate left circular),
         `RR` (rotate right circular).
         - `B+`, `B-`, `B*`, `B/`
         - `BDIV` (division with remainder)
@@ -19,7 +78,7 @@
         - preserve the original `X`, and push it up to `Y`
             - allows the `/` button to be chained with additional `PRIM` to
               calculate all prime factors
-            - see [Prime Factors](#USER_GUIDE.md#prime-factors]) for details
+            - see [Prime Factors](USER_GUIDE.md#prime-factors) for details
         - improve speed by 7X using u32 integer routines instead of floating
           point routines
 - 0.3.3 (2023-08-14)
@@ -36,7 +95,7 @@
     - Move `CLRG` from F1 position to F3. Move `CLX` to F1. If the F1
       is accidentally hit twice when selecting the `CLR` menu group, then
       invoking `CLX` is a lot less destructive than invoking `CLRG`.
-    - Move `IP,FP,...` menu strips before the `ABS,SIGN,...` menu strip. The
+    - Move `IP,FP,...` menu rows before the `ABS,SIGN,...` menu row. The
       `IP,FP` functions seem more frequently used than the `ABS,SIGN` functions.
 - 0.2.1 (2023-08-13)
     - Update README.md. Test minor version number with new release.

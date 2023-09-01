@@ -14,14 +14,14 @@ Data Structure and Algorithm Note:
 
 The menus are represented as a hierchical tree of nodes. There are 2 types of
 MenuNodes: MenuGroup, and MenuItem. A MenuGroup is composed of 1 or more of
-MenuStrip. Each MenuStrip contains exectly 5 MenuItems corresponding to the 5
+MenuRow. Each MenuRow contains exectly 5 MenuItems corresponding to the 5
 bottons on the top row of a TI-83 Plus or a TI-84 Plus series calculator.
 
 The tree traversal of the menu hierarchy to serialize into the Z-80 assembly
 language file is slightly strange. It is not depth-first, nor breadth-first, but
 a hybrid of the two. Traversal occurs in 2 steps:
 
-1) The direct children of a MenuGroup, as stored in the list of MenuStrip, are
+1) The direct children of a MenuGroup, as stored in the list of MenuRow, are
 serialized,
 
 2) Then the direct children are scanned a second time, and for each MenuNode
@@ -30,8 +30,8 @@ which happens to be a MenuGroup, the traversal routine is recursively called.
 This hybrid traversal algorithm ensures that in the serialized form, all the
 children nodes of a given MenuGroup are clustered together into a *contiguous*
 series of MenuNodes. This means that a MenuGroup can capture its children nodes
-(in groups organized by MenuStrips) with just 2 additional fields (`numStrips`
-and `stripBeginId`), without using a secondary data structure. Signficant amount
+(in groups organized by MenuRows) with just 2 additional fields (`numRows`
+and `rowBeginId`), without using a secondary data structure. Signficant amount
 of memory can be saved using this representation.
 """
 
@@ -116,8 +116,9 @@ def main() -> None:
 
 MENU_TYPE_ITEM = 0
 MENU_TYPE_GROUP = 1
+MENU_TYPE_ITEM_ALT = 2  # MenuItem with alternate display name
 
-MenuStrip = List["MenuNode"]
+MenuRow = List["MenuNode"]
 
 
 class MenuNode(TypedDict, total=False):
@@ -127,9 +128,12 @@ class MenuNode(TypedDict, total=False):
     parent_id: int
     name: str
     name_contains_special: bool  # name contains special characters
+    altname: str
+    altname_contains_special: bool  # altname contains special characters
     exploded_name: str  # name as a list of single characters
+    exploded_altname: str  # altname as a list of single characters
     label: str
-    strips: List[MenuStrip]  # List of MenuNodes in groups of 5
+    rows: List[MenuRow]  # List of MenuNodes in groups of 5
 
 
 class MenuConfig(TypedDict, total=False):
@@ -177,8 +181,8 @@ class Lexer:
         """Return the next line. Return None if EOF reached.
 
         * Comment lines beginning with a '#' character are skipped.
-        * Trailing comment lines beginning with '#' are stripped.
-        * Trailing whitespaces are stripped.
+        * Trailing comment lines beginning with '#' are rowped.
+        * Trailing whitespaces are rowped.
         * Blank lines are skipped.
         * Leading whitespaces are kept.
         """
@@ -195,10 +199,10 @@ class Lexer:
             if i >= 0:
                 line = line[:i]
 
-            # strip any trailing whitespaces
+            # row any trailing whitespaces
             line = line.rstrip()
 
-            # skip any blank lines after stripping
+            # skip any blank lines after rowping
             if not line:
                 continue
 
@@ -269,7 +273,7 @@ class MenuParser:
         return config
 
     def process_menugroup(self) -> MenuNode:
-        """A MenuGroup is a list of MenuStrips."""
+        """A MenuGroup is a list of MenuRows."""
         node = MenuNode()
         node["mtype"] = MENU_TYPE_GROUP
         node["name"] = self.lexer.get_token()
@@ -283,27 +287,27 @@ class MenuParser:
                 f"Unexpected token '{token}' "
                 f"at line {self.lexer.line_number}, should be '['"
             )
-        # Process list of MenuStrip
-        strips: List[MenuStrip] = []
+        # Process list of MenuRow
+        rows: List[MenuRow] = []
         while True:
             token = self.lexer.get_token()
-            if token == 'MenuStrip':
-                strip = self.process_menustrip()
+            if token == 'MenuRow':
+                row = self.process_menurow()
             elif token == ']':
                 break
             else:
                 raise ValueError(
                     f"Unexpected token '{token}' "
-                    f"at line {self.lexer.line_number}, should be 'MenuStrip'"
+                    f"at line {self.lexer.line_number}, should be 'MenuRow'"
                     " or ']'"
                 )
-            strips.append(strip)
-        node["strips"] = strips
+            rows.append(row)
+        node["rows"] = rows
         return node
 
-    def process_menustrip(self) -> MenuStrip:
-        """A MenuStrip is a list of MenuItem or MenuGroup."""
-        strip: MenuStrip = []
+    def process_menurow(self) -> MenuRow:
+        """A MenuRow is a list of MenuItem or MenuGroup."""
+        row: MenuRow = []
         token = self.lexer.get_token()
         if token != '[':
             raise ValueError(
@@ -317,6 +321,8 @@ class MenuParser:
                 node = self.process_menuitem()
             elif token == 'MenuGroup':
                 node = self.process_menugroup()
+            elif token == 'MenuItemAlt':
+                node = self.process_menuitemalt()
             elif token == ']':
                 break
             else:
@@ -324,13 +330,21 @@ class MenuParser:
                     f"Unexpected token '{token}' "
                     f"at line {self.lexer.line_number}"
                 )
-            strip.append(node)
-        return strip
+            row.append(node)
+        return row
 
     def process_menuitem(self) -> MenuNode:
         item = MenuNode()
         item["mtype"] = MENU_TYPE_ITEM
         item["name"] = self.lexer.get_token()
+        item["label"] = self.lexer.get_token()
+        return item
+
+    def process_menuitemalt(self) -> MenuNode:
+        item = MenuNode()
+        item["mtype"] = MENU_TYPE_ITEM_ALT
+        item["name"] = self.lexer.get_token()
+        item["altname"] = self.lexer.get_token()
         item["label"] = self.lexer.get_token()
         return item
 
@@ -351,64 +365,64 @@ class Validator:
         """Validate the current node, no recursion."""
         self.validate_label(node)
         if node["mtype"] == MENU_TYPE_GROUP:
-            self.verify_at_least_one_strip(node)
-            self.normalize_partial_strips(node)
+            self.verify_at_least_one_row(node)
+            self.normalize_partial_rows(node)
         else:
-            self.verify_no_strip(node)
+            self.verify_no_row(node)
 
     def validate_group(self, node: MenuNode) -> None:
-        """Validate the strips of the current MenuGroup. Then recursively
+        """Validate the rows of the current MenuGroup. Then recursively
         descend any sub groups.
         """
         # Process the direct children of the current group.
-        strips = node["strips"]
-        for strip in strips:
-            for slot in strip:
+        rows = node["rows"]
+        for row in rows:
+            for slot in row:
                 self.validate_node(slot)
 
         # Recursively descend the subgroups if any.
-        for strip in strips:
-            for slot in strip:
+        for row in rows:
+            for slot in row:
                 mtype = slot["mtype"]
                 if mtype == MENU_TYPE_GROUP:
                     self.validate_group(slot)
 
-    def verify_no_strip(self, node: MenuNode) -> None:
-        """Verify that a MenuItem has no MenuStrip. The parser should detect a
+    def verify_no_row(self, node: MenuNode) -> None:
+        """Verify that a MenuItem has no MenuRow. The parser should detect a
         syntax error if a MenuItem is followed by a '[' token, so in theory this
         should never be triggered. But this provides another layer of defense.
         """
         name = node["name"]
-        if "strips" in node:
+        if "rows" in node:
             raise ValueError(
-                f"MenuItem '{name}' cannot have a MenuStrip"
+                f"MenuItem '{name}' cannot have a MenuRow"
             )
 
-    def verify_at_least_one_strip(self, node: MenuNode) -> None:
-        """Verify that each ModeGroup has at least one MenuStrip."""
+    def verify_at_least_one_row(self, node: MenuNode) -> None:
+        """Verify that each ModeGroup has at least one MenuRow."""
         name = node["name"]
-        strips = node["strips"]
-        if len(strips) == 0:
+        rows = node["rows"]
+        if len(rows) == 0:
             raise ValueError(
-                f"MenuGroup '{name}' must have at least one MenuStrip"
+                f"MenuGroup '{name}' must have at least one MenuRow"
             )
 
-    def normalize_partial_strips(self, node: MenuNode) -> None:
-        """Add implicit MenuNodes to any partial MenuStrip (i.e. strips which do
+    def normalize_partial_rows(self, node: MenuNode) -> None:
+        """Add implicit MenuNodes to any partial MenuRow (i.e. rows which do
         not contain exact 5 MenuNodes)."""
         name = node["name"]
-        strips = node["strips"]
-        strip_index = 0
-        for strip in strips:
-            num_nodes = len(strip)
+        rows = node["rows"]
+        row_index = 0
+        for row in rows:
+            num_nodes = len(row)
             if num_nodes > 5:
                 raise ValueError(
-                    f"MenGroup {name}, strip {strip_index} has too "
+                    f"MenGroup {name}, row {row_index} has too "
                     f"many ({num_nodes}) nodes, must be <= 5"
                 )
             if num_nodes == 0:
                 raise ValueError(
-                    f"MenGroup {name}, strip {strip_index} has 0 nodes"
+                    f"MenGroup {name}, row {row_index} has 0 nodes"
                 )
             # Add implicit blank menu items
             for i in range(5 - num_nodes):
@@ -417,9 +431,11 @@ class Validator:
                     "name": "*",
                     "label": "*",
                 }
-                strip.append(blank)
+                row.append(blank)
 
-            strip_index += 1
+            row_index += 1
+            if row_index >= 256:
+                raise ValueError("Overflow: row_index incremented to 256")
 
     def validate_label(self, node: MenuNode) -> None:
         """Validate that the 'label' does not begin with reserved labels
@@ -486,6 +502,7 @@ class StringExploder:
         self.explode_group(self.root)
 
     def explode_node(self, node: MenuNode) -> None:
+        # name
         name = node["name"]
         node["name_contains_special"] = (
             name.find('<') >= 0 or name.find('>') >= 0
@@ -499,16 +516,29 @@ class StringExploder:
                 f"Invalid syntax in menu '{name}': {str(e)}"
             )
 
+        # altname
+        altname = node.get("altname")
+        if altname:
+            node["altname_contains_special"] = (
+                altname.find('<') >= 0 or name.find('>') >= 0
+            )
+            try:
+                node["exploded_altname"] = self.explode_str(altname)
+            except ValueError as e:
+                raise ValueError(
+                    f"Invalid syntax in menu '{altname}': {str(e)}"
+                )
+
     def explode_group(self, node: MenuNode) -> None:
         # Process the direct children of the current group.
-        strips = node["strips"]
-        for strip in strips:
-            for slot in strip:
+        rows = node["rows"]
+        for row in rows:
+            for slot in row:
                 self.explode_node(slot)
 
         # Recursively descend the subgroups if any.
-        for strip in strips:
-            for slot in strip:
+        for row in rows:
+            for slot in row:
                 mtype = slot["mtype"]
                 if mtype == MENU_TYPE_GROUP:
                     self.explode_group(slot)
@@ -541,11 +571,15 @@ class StringExploder:
 
 
 class SymbolGenerator:
+    """Collect the statement labels, string labels, and integer identifiers and
+    map them to the respective MenuNode objects. These lookup tables will used
+    to write out the assmebly language code to the menudef.asm file.
+    """
     def __init__(self, root: MenuNode):
         self.root = root
         self.id_map: Dict[int, MenuNode] = {}  # {node_id -> MenuNode}
         self.name_map: Dict[str, MenuNode] = {}  # {node_name -> MenuNode}
-        self.label_map: Dict[str, MenuNode] = {}  # {label_label -> MenuNode}
+        self.label_map: Dict[str, MenuNode] = {}  # {node_label -> MenuNode}
         self.id_counter = 1  # Root starts at id=1
 
     def generate(self) -> None:
@@ -553,33 +587,43 @@ class SymbolGenerator:
         self.generate_group(self.root)
 
     def generate_group(self, node: MenuNode) -> None:
-        """Process the strips of the current MenuGroup. Then recursively descend
+        """Process the rows of the current MenuGroup. Then recursively descend
         any sub groups.
         """
         # Process the direct children of the current group.
         id = node["id"]
-        strips = node["strips"]
-        for strip in strips:
-            for slot in strip:
+        rows = node["rows"]
+        for row in rows:
+            for slot in row:
                 self.generate_node(slot, id)
 
         # Recursively descend subgroups if any.
-        for strip in strips:
-            for slot in strip:
+        for row in rows:
+            for slot in row:
                 mtype = slot["mtype"]
                 if mtype == MENU_TYPE_GROUP:
                     self.generate_group(slot)
 
     def generate_node(self, node: MenuNode, parent_id: int) -> None:
         """Process the given node, no recursion."""
-        # Add menu name to the name_map[] table
+        # Add menu name to the name_map table. And label to label_map table.
+        # Check for duplicates.
         name = node["name"]
         if name != "*":
             entry = self.name_map.get(name)
+            # Check for duplicates.
             if entry is not None:
-                raise ValueError(f"Duplicate MenuItem.name '{name}'")
+                # Cannot have duplicate MenuGroup, ever.
+                if entry["mtype"] == MENU_TYPE_GROUP or \
+                    node["mtype"] == MENU_TYPE_GROUP:
+                    raise ValueError(f"Duplicate MenuItem.name '{name}'")
+                # Allow dupes for MenuItem or MenuItemAlt.
+                if entry["mtype"] != node["mtype"]:
+                    raise ValueError(f"Duplicate MenuItem.name '{name}'")
             self.name_map[name] = node
 
+            # Labels must always be unique, because they are used prefixes for
+            # various internal assembly language labels.
             label = node["label"]
             entry = self.label_map.get(label)
             if entry is not None:
@@ -592,6 +636,8 @@ class SymbolGenerator:
         node["parent_id"] = parent_id
         self.id_map[id] = node
         self.id_counter += 1
+        if self.id_counter >= 256:
+            raise ValueError("Overflow: id_counter incremented to 256")
 
         # Set label='mBlankXXX' for blank menus
         if name == "*":
@@ -602,6 +648,12 @@ class SymbolGenerator:
 
 
 class CodeGenerator:
+    """Generate the Z80 assembly statements. There are 2 sections:
+    1) the tree of menu nodes,
+    2) the C-strings used by the nodes, composed of:
+        2a) an array of 2-byte pointers into the c-string pool,
+        2b) the pool of c-strings concatenated together.
+    """
     def __init__(
         self, inputfile: str,
         symbols: SymbolGenerator,
@@ -665,9 +717,10 @@ mNullId equ 0
     .db mNullId ; id
     .db mNullId ; parentId
     .db mNullNameId ; nameId
-    .db 0 ; numStrips
-    .db 0 ; stripBeginId
+    .db 0 ; numRows
+    .db 0 ; rowBeginId
     .dw mNullHandler
+    .dw 0
 """, file=self.output, end='')
 
         self.generate_menu_node(self.root)
@@ -688,8 +741,9 @@ mNullId equ 0
             parent_node_label = parent_node["label"]
 
         if mtype == MENU_TYPE_ITEM:
-            num_strips = 0
-            strip_begin_id = "0"
+            num_rows = 0
+            row_begin_id = "0"
+            name_selector = "0"
             if name == '*':
                 node_id = f"{label}Id"
                 name_id = self.config['item_name_id']
@@ -700,16 +754,25 @@ mNullId equ 0
                 name_id = f"{label}NameId"
                 handler = f"{label}Handler"
                 handler_comment = "to be implemented"
+        elif mtype == MENU_TYPE_ITEM_ALT:
+            num_rows = 0
+            node_id = f"{label}Id"
+            name_id = f"{label}NameId"
+            row_begin_id = f"{label}AltNameId"
+            handler = f"{label}Handler"
+            handler_comment = "to be implemented"
+            name_selector = f"{label}NameSelector"
         else:
             node_id = f"{label}Id"
             name_id = f"{label}NameId"
-            strips = node["strips"]
-            num_strips = len(strips)
-            begin_id = strips[0][0]["id"]
-            strip_begin_node = self.id_map[begin_id]
-            strip_begin_id = strip_begin_node["label"] + "Id"
+            rows = node["rows"]
+            num_rows = len(rows)
+            begin_id = rows[0][0]["id"]
+            row_begin_node = self.id_map[begin_id]
+            row_begin_id = row_begin_node["label"] + "Id"
             handler = self.config['group_handler']
             handler_comment = "predefined"
+            name_selector = "0"
 
         print(f"""\
 {label}:
@@ -717,9 +780,10 @@ mNullId equ 0
     .db {node_id} ; id
     .db {parent_node_label}Id ; parentId
     .db {name_id} ; nameId
-    .db {num_strips} ; numStrips
-    .db {strip_begin_id} ; stripBeginId
+    .db {num_rows} ; numRows
+    .db {row_begin_id} ; rowBeginId or altNameId
     .dw {handler} ; handler ({handler_comment})
+    .dw {name_selector} ; nameSelector
 """, file=self.output, end='')
 
     def generate_menu_group(self, node: MenuNode) -> None:
@@ -727,20 +791,20 @@ mNullId equ 0
         print(f"; MenuGroup {group_name}: children", file=self.output)
 
         # Process the direct children of the current group.
-        strips = node["strips"]
-        strip_index = 0
-        for strip in strips:
+        rows = node["rows"]
+        row_index = 0
+        for row in rows:
             print(
-                f"; MenuGroup {group_name}: children: strip {strip_index}",
+                f"; MenuGroup {group_name}: children: row {row_index}",
                 file=self.output
             )
-            for slot in strip:
+            for slot in row:
                 self.generate_menu_node(slot)
-            strip_index += 1
+            row_index += 1
 
         # Recursively descend subgroups if any.
-        for strip in strips:
-            for slot in strip:
+        for row in rows:
+            for slot in row:
                 mtype = slot["mtype"]
                 if mtype == MENU_TYPE_GROUP:
                     self.generate_menu_group(slot)
@@ -748,7 +812,7 @@ mNullId equ 0
     def generate_names(self, node: MenuNode) -> None:
         # Collect the name strings into a list, so that we can generate
         # continguous name ids.
-        names = self.flatten_names(node)
+        names = self.flatten_nodes(node)
 
         # Generate the array of pointers to the C-strings.
         print("""\
@@ -759,12 +823,25 @@ mNullNameId equ 0
 """, file=self.output, end='')
         name_index = 1
         for node in names:
+            # name
             label = node["label"]
             print(f"""\
 {label}NameId equ {name_index}
     .dw {label}Name
 """, file=self.output, end='')
             name_index += 1
+            if name_index >= 256:
+                raise ValueError("Overflow: name_index incremented to 256")
+
+            # altname
+            if node.get("altname"):
+                print(f"""\
+{label}AltNameId equ {name_index}
+    .dw {label}AltName
+""", file=self.output, end='')
+                name_index += 1
+                if name_index >= 256:
+                    raise ValueError("Overflow: name_index incremented to 256")
 
         print(file=self.output)
 
@@ -774,9 +851,9 @@ mNullNameId equ 0
 mNullName:
     .db 0
 """, file=self.output, end='')
-        name_index = 1
         for node in names:
             label = node["label"]
+            # name
             name_contains_special = node["name_contains_special"]
             if name_contains_special:
                 display_name = node["exploded_name"]
@@ -787,9 +864,23 @@ mNullName:
 {label}Name:
     .db {display_name}, 0
 """, file=self.output, end='')
-            name_index += 1
+            # altname
+            if node.get("altname"):
+                altname_contains_special = node["altname_contains_special"]
+                if altname_contains_special:
+                    display_altname = node["exploded_altname"]
+                else:
+                    altname = node["altname"]
+                    display_altname = f'"{altname}"'
+                print(f"""\
+{label}AltName:
+    .db {display_altname}, 0
+""", file=self.output, end='')
 
-    def flatten_names(self, node: MenuNode) -> List[MenuNode]:
+    def flatten_nodes(self, node: MenuNode) -> List[MenuNode]:
+        """Recursively descend the menu tree starting at 'node' and flatten
+        the nodes into a list.
+        """
         flat_names: List[MenuNode] = []
         flat_names.append(node)
         self.add_menu_group(flat_names, node)
@@ -799,16 +890,16 @@ mNullName:
         self, flat_names: List[MenuNode], node: MenuNode,
     ) -> None:
         # Process the direct children of the current group.
-        strips = node["strips"]
-        for strip in strips:
-            for slot in strip:
+        rows = node["rows"]
+        for row in rows:
+            for slot in row:
                 if slot["name"] == '*':
                     continue
                 flat_names.append(slot)
 
         # Recursively descend subgroups if any.
-        for strip in strips:
-            for slot in strip:
+        for row in rows:
+            for slot in row:
                 mtype = slot["mtype"]
                 if mtype == MENU_TYPE_GROUP:
                     self.add_menu_group(flat_names, slot)

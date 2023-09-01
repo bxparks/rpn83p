@@ -5,6 +5,7 @@ SPASM_INC := $(SPASM_DIR)/inc
 SPASM := $(SPASM_DIR)/spasm
 SRCS := \
 	base.asm \
+	cfithandlers.asm \
 	common.asm \
 	const.asm \
 	debug.asm \
@@ -20,6 +21,7 @@ SRCS := \
 	pstring.asm \
 	prime.asm \
 	rpn83p.asm \
+	stathandlers.asm \
 	vars.asm
 
 # TI Flash app

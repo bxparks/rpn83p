@@ -72,11 +72,11 @@
 ;-----------------------------------------------------------------------------
 
 stackSize equ 5 ; X, Y, Z, T, LastX
-stackXIndex equ 1
-stackYIndex equ 2
-stackZIndex equ 3
-stackTIndex equ 4
-stackLIndex equ 5 ; LastX
+stackXIndex equ 0
+stackYIndex equ 1
+stackZIndex equ 2
+stackTIndex equ 3
+stackLIndex equ 4 ; LastX
 
 stackName:
     .db ListObj, tVarLst, "STK", 0
@@ -92,8 +92,10 @@ setStackName:
 ;   - STK deleted if not a real list
 ;   - STK deleted if dim(STK) != 5
 ;   - STK created if it doesn't exist
+;   - stack lift enabled
 ; Destroys: all
 initStack:
+    set rpnFlagsLiftEnabled, (iy + rpnFlags)
     call setStackName
     bcall(_FindSym)
     jr c, initStackCreate ; if CF=1: not found
@@ -113,8 +115,8 @@ initStackCheckSize:
     ld d, (hl) ; DE = number elements in STK
     ex de, hl
     ld de, stackSize
-    bcall(_CpHLDE) ; if dim(STK) < 5: CF=1
-    ret z ; STK is Real, and sizeof 5, all ok
+    bcall(_CpHLDE) ; if dim(STK) == 5: ZF=1
+    jr z, initLastX ; STK is Real, and sizeof 5, all ok
 initStackWrongSize:
     ; wrong size, so delete and recreate
     call setStackName ; OP1="STK"
@@ -126,7 +128,18 @@ initStackCreate:
     call setStackName
     ld hl, stackSize
     bcall(_CreateRList)
-    jr clearStackAltEntry
+    call clearStackAltEntry
+    ; [[fallthrough]]
+
+; Description: Initialize LastX with the contents of 'ANS' variable from TI-OS.
+; If the ANS is not Real, do nothing.
+; Input: ANS
+; Output: LastX=ANS
+initLastX:
+    bcall(_RclAns)
+    bcall(_CkOP1Real) ; if OP1 real: ZF=1
+    ret nz
+    jp stoL
 
 ; Description: Clear the RPN stack.
 ; Input: none
@@ -154,12 +167,12 @@ clearStackEnd:
     ret
 
 ;-----------------------------------------------------------------------------
-; Stack registers to and from OP1 function functions.
+; Stack registers to and from OP1.
 ;-----------------------------------------------------------------------------
 
 ; Description: Store OP1 to STK[nn], setting dirty flag.
 ; Input:
-;   - A: register index, one-based
+;   - A: register index, 0-based
 ;   - OP1: float value
 ; Output:
 ;   - STK[nn] = OP1
@@ -167,6 +180,7 @@ clearStackEnd:
 ; Preserves: OP1, OP2
 ; TODO: I think we can combine stoNN() and stoStackNN().
 stoStackNN:
+    inc a ; change from 0-based to 1-based
     push af
     bcall(_PushRealO1)
     call setStackName
@@ -183,7 +197,7 @@ stoStackNN:
 
 ; Function: Copy STK[nn] to OP1.
 ; Input:
-;   - A: register index, one-based
+;   - A: register index, 0-based
 ;   - 'STK' list variable
 ; Output:
 ;   - OP1: float value
@@ -191,6 +205,7 @@ stoStackNN:
 ; Preserves: OP2
 ; TODO: I think we can combine rclNN() and rclStackNN().
 rclStackNN:
+    inc a ; change from 0-based to 1-based
     push af
     call setStackName
     bcall(_FindSym) ; DE = pointer data area
@@ -202,24 +217,27 @@ rclStackNN:
 
 ;-----------------------------------------------------------------------------
 
-; Description: Set OP1 to stX.
+; Description: Set OP1 to X.
 rclX:
     ld a, stackXIndex
     jr rclStackNN
 
-; Description: Set stX to OP1.
+; Description: Set X to OP1. Also update `ANS` with the same value. Upon
+; exiting the RPN83P app, the TI-OS can access the most current X value using
+; `ANS`.
 stoX:
+    bcall(_StoAns) ; mirror X register to TI-OS 'ANS' variable.
     ld a, stackXIndex
     jr stoStackNN
 
 ;-----------------------------------------------------------------------------
 
-; Description: Set OP1 to stY.
+; Description: Set OP1 to Y.
 rclY:
     ld a, stackYIndex
     jr rclStackNN
 
-; Description: Set stY to OP1.
+; Description: Set Y to OP1.
 stoY:
     ld a, stackYIndex
     jr stoStackNN
@@ -261,63 +279,73 @@ stoL:
     jr stoStackNN
 
 ;-----------------------------------------------------------------------------
+; Most routines should use these functions to set the results from OP1 and/or
+; OP2 to the RPN stack.
+;-----------------------------------------------------------------------------
 
-; Description: Replace stX with OP1, saving previous stX to lastX, and
+; Description: Replace X with OP1, saving previous X to LastX, and
 ; setting dirty flag.
-; Preserves: OP1
+; Preserves: OP1, OP2
 replaceX:
     bcall(_CkValidNum)
-    bcall(_OP1ToOP2)
+    bcall(_PushRealO1)
     call rclX
     call stoL
-    bcall(_OP2ToOP1)
-    jr stoX
+    bcall(_PopRealO1)
+    call stoX
+    set rpnFlagsLiftEnabled, (iy + rpnFlags)
+    ret
 
-; Description: Replace (stX, stY) pair with OP1, saving previous stX to lastX,
+; Description: Replace (X, Y) pair with OP1, saving previous X to LastX,
 ; and setting dirty flag.
-; Preserves: OP1
+; Preserves: OP1, OP2
 replaceXY:
     bcall(_CkValidNum)
-    bcall(_OP1ToOP2)
+    bcall(_PushRealO1)
     call rclX
     call stoL
-    bcall(_OP2ToOP1)
     call dropStack
-    jr stoX
+    bcall(_PopRealO1)
+    call stoX
+    set rpnFlagsLiftEnabled, (iy + rpnFlags)
+    ret
 
-; Description: Replace stX=OP2 and stY=OP1, saving previous stX to lastX, and
+; Description: Replace X and Y with push of OP1 and OP2 on the stack in that
+; order. This causes X=OP2 and Y=OP1, saving the previous X to LastX, and
 ; setting dirty flag.
+; Input: X, Y, OP1, OP2
 ; Output:
 ;   - Y=OP1
 ;   - X=OP2
 ;   - LastX=X
 ; Preserves: OP1, OP2
-; TODO: Rename this replaceXYWithOP1OP2().
-replaceXYWithOP2OP1:
-    ; validate OP1 and OP2 before modifying stX and stY
+replaceXYWithOP1OP2:
+    ; validate OP1 and OP2 before modifying X and Y
     bcall(_CkValidNum)
     bcall(_OP1ExOP2)
     bcall(_CkValidNum)
     bcall(_OP1ExOP2)
 
-    call stoY ; stY = OP1
+    call stoY ; Y = OP1
     bcall(_PushRealO1) ; FPS = OP1
     call rclX
-    call stoL; lastX = stX
+    call stoL; LastX = X
 
     bcall(_OP2ToOP1)
-    call stoX ; stX = OP2 
+    call stoX ; X = OP2
     bcall(_PopRealO1) ; OP1 unchanged
+    set rpnFlagsLiftEnabled, (iy + rpnFlags)
     ret
 
 ; Description: Replace X with OP1, and OP2 pushed onto the stack in that order.
-; Input: X
+; Input: X, OP1, OP2
 ; Output:
 ;   - Y=OP1
 ;   - X=OP2
 ;   - LastX=X
+; Preserves: OP1, OP2
 replaceXWithOP1OP2:
-    ; validate OP1 and OP2 before modifying stX and stY
+    ; validate OP1 and OP2 before modifying X and Y
     bcall(_CkValidNum)
     bcall(_OP1ExOP2)
     bcall(_CkValidNum)
@@ -330,24 +358,75 @@ replaceXWithOP1OP2:
     call stoX
     call liftStack
     bcall(_OP2ToOP1)
-    jp stoX
+    call stoX
+    set rpnFlagsLiftEnabled, (iy + rpnFlags)
+    ret
+
+; Description: Push OP1 to the X register. LastX is not updated because the
+; previous X is not consumed, and is availabe as the Y register.
+; Input: X, OP1
+; Output:
+;   - Stack lifted (if the inputBuf was not an empty string)
+;   - X=OP1
+; Destroys: all
+; Preserves: OP1, OP2, LastX
+pushX:
+    bcall(_CkValidNum)
+    call liftStackIfNonEmpty
+    call stoX
+    set rpnFlagsLiftEnabled, (iy + rpnFlags)
+    ret
+
+; Description: Push OP1 then OP2 onto the stack. LastX is not updated because
+; the previous X is not consumed, and is available as the Z register.
+; Input: X, Y, OP1, OP2
+; Output:
+;   - Stack lifted (if the inputBuf was not an empty string)
+;   - Y=OP1
+;   - X=OP2
+; Destroys: all
+; Preserves: OP1, OP2, LastX
+pushXY:
+    bcall(_CkValidNum)
+    bcall(_OP1ExOP2)
+    bcall(_CkValidNum)
+    bcall(_OP1ExOP2)
+    call liftStackIfNonEmpty
+    call stoX
+    call liftStack
+    bcall(_OP1ExOP2)
+    call stoX
+    bcall(_OP1ExOP2)
+    set rpnFlagsLiftEnabled, (iy + rpnFlags)
+    ret
 
 ;-----------------------------------------------------------------------------
 
 ; Function: Lift the RPN stack, if inputBuf was not empty when closed.
 ; Input: none
 ; Output: T=Z; Z=Y; Y=X; X=X; OP1 preserved
-; Destroys: all, OP4
+; Destroys: all
 ; Preserves: OP1, OP2
-liftStackNonEmpty:
+liftStackIfNonEmpty:
     bit inputBufFlagsClosedEmpty, (iy + inputBufFlags)
     ret nz ; return doing nothing if closed empty
     ; [[fallthrough]]
 
-; Function: Lift the RPN stack, copying X to Y.
+; Function: Lift the RPN stack, if rpnFlagsLiftEnabled is set.
+; Input: rpnFlagsLiftEnabled
+; Output: T=Z; Z=Y; Y=X; X=X; OP1 preserved
+; Destroys: all
+; Preserves: OP1, OP2
+liftStackIfEnabled:
+    bit rpnFlagsLiftEnabled, (iy + rpnFlags)
+    ret z
+    set rpnFlagsLiftEnabled, (iy + rpnFlags)
+    ; [[fallthrough]]
+
+; Function: Lift the RPN stack unconditionally, copying X to Y.
 ; Input: none
 ; Output: T=Z; Z=Y; Y=X; X=X; OP1 preserved
-; Destroys: all, OP4
+; Destroys: all
 ; Preserves: OP1, OP2
 ; TODO: Make this more efficient by taking advantage of the fact that stack
 ; registers are actually in a list variable named STK.
@@ -371,7 +450,7 @@ liftStack:
 ; Function: Drop the RPN stack, copying T to Z.
 ; Input: none
 ; Output: X=Y; Y=Z; Z=T; T=T; OP1 preserved
-; Destroys: all, OP4
+; Destroys: all
 ; Preserves: OP1, OP2
 ; TODO: Make this more efficient by taking advantage of the fact that stack
 ; registers are actually in a list variable named STK.
@@ -395,7 +474,7 @@ dropStack:
 ; Function: Rotate the RPN stack *down*.
 ; Input: none
 ; Output: X=Y; Y=Z; Z=T; T=X
-; Destroys: all, OP1, OP2, OP4
+; Destroys: all, OP1, OP2
 ; Preserves: none
 ; TODO: Make this more efficient by taking advantage of the fact that stack
 ; registers are actually in a list variable named STK.
@@ -422,7 +501,7 @@ rotDownStack:
 ; Function: Rotate the RPN stack *up*.
 ; Input: none
 ; Output: T=Z; Z=Y; Y=X; X=T
-; Destroys: all, OP1, OP2, OP4
+; Destroys: all, OP1, OP2
 ; Preserves: none
 ; TODO: Make this more efficient by taking advantage of the fact that stack
 ; registers are actually in a list variable named STK.
@@ -449,7 +528,7 @@ rotUpStack:
 ; Function: Exchange X<->Y.
 ; Input: none
 ; Output: X=Y; Y=X
-; Destroys: all, OP1, OP2, OP4
+; Destroys: all, OP1, OP2
 exchangeXYStack:
     call rclX
     bcall(_OP1ToOP2)
@@ -542,16 +621,18 @@ clearRegsLoop:
 
 ; Description: Store OP1 into REGS[NN].
 ; Input:
-;   - A: register index, one-based
+;   - A: register index, 0-based
 ;   - OP1: float value
 ; Output:
 ;   - REGS[NN] = OP1
 ; Destroys: all
+; Preserves: OP1
 stoNN:
+    inc a ; change from 0-based to 1-based
     push af
     bcall(_PushRealO1)
     call setRegsName
-    bcall(_FindSym)
+    bcall(_FindSym) ; DE=pointer to var data area
     push de
     bcall(_PopRealO1)
     pop de
@@ -563,12 +644,14 @@ stoNN:
 
 ; Description: Recall REGS[NN] into OP1.
 ; Input:
-;   - A: register index, one-based
+;   - A: register index, 0-based
 ;   - 'REGS' list variable
 ; Output:
 ;   - OP1: float value
 ; Destroys: all
+; Preserves: OP2
 rclNN:
+    inc a ; change from 0-based to 1-based
     push af
     call setRegsName
     bcall(_FindSym)
@@ -576,4 +659,95 @@ rclNN:
     ld l, a
     ld h, 0
     bcall(_GetLToOP1)
+    ret
+
+; Description: Recall REGS[NN] to OP2.
+; Input:
+;   - A: register index, 0-based
+;   - 'REGS' list variable
+; Output:
+;   - OP2: float value
+; Preserves: OP2
+rclNNToOP2:
+    bcall(_PushRealO1)
+    call rclNN
+    bcall(_OP1ToOP2)
+    bcall(_PopRealO1)
+    ret
+
+; Description: Add OP1 to storage register NN.
+; Input:
+;   OP1: float value
+;   A: register index NN, 0-based
+; Output:
+;   REGS[NN] += OP1
+; Destroys: all
+; Preserves: OP1, OP2
+stoPlusNN:
+    push af ; A=NN
+    bcall(_PushRealO1)
+    bcall(_PushRealO2)
+    bcall(_OP1ToOP2)
+    call rclNN
+    bcall(_FPAdd) ; OP1 += OP2
+    pop af ; A=NN
+    call stoNN
+    bcall(_PopRealO2)
+    bcall(_PopRealO1)
+    ret
+
+; Description: Subtract OP1 from storage register NN.
+; Input:
+;   OP1: float value
+;   A: register index NN, 0-based
+; Output:
+;   REGS[NN] += OP1
+; Destroys: all
+; Preserves: OP1, OP2
+stoMinusNN:
+    push af ; A=NN
+    bcall(_PushRealO1)
+    bcall(_PushRealO2)
+    bcall(_OP1ToOP2)
+    call rclNN
+    bcall(_FPSub) ; OP1 -= OP2
+    pop af ; A=NN
+    call stoNN
+    bcall(_PopRealO2)
+    bcall(_PopRealO1)
+    ret
+
+;-----------------------------------------------------------------------------
+
+; Description: Clear the storage registers used by the STAT functions. In
+; Linear mode [R11, R16], in All mode [R11, R23], inclusive.
+; Input: none
+; Output:
+;   - B: 0
+;   - C: 24
+;   - OP1: 0
+; Destroys: all, OP1
+; TODO: This could be implemented more efficiently by using the fact that the
+; storage registers are located in contiguous memory. On the other hand, this
+; function is not expected to be called often, so the efficiency probably
+; doesn't matter.
+clearStatRegs:
+    bcall(_OP1Set0)
+    ld c, 11 ; begin clearing register 11
+    ; Check AllMode or LinearMode.
+    bit rpnFlagsAllStatEnabled, (iy + rpnFlags)
+    jr nz, clearStatRegsAll
+    ld b, 6 ; clear first 6 registers in Linear mode
+    jr clearStatRegsEntry
+clearStatRegsAll:
+    ld b, 13 ; clear all 13 registesr in All mode
+    jr clearStatRegsEntry
+clearStatRegsLoop:
+    inc c
+clearStatRegsEntry:
+    ld a, c
+    push bc
+    call stoNN
+    pop bc
+    djnz clearStatRegsLoop
     ret

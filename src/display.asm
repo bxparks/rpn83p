@@ -135,27 +135,27 @@ displayStatusArrow:
     bit dirtyFlagsMenu, (iy + dirtyFlags)
     ret z
 
-    ; TODO: maybe cache the numStrips of the current node to make this
+    ; TODO: maybe cache the numRows of the current node to make this
     ; calculation a little shorter and easier.
 
-    ; Determine if multiple menu strips exists.
+    ; Determine if multiple menu rows exist.
     ld hl, menuGroupId
     ld a, (hl) ; A=menuGroupId
     inc hl
-    ld b, (hl) ; B=menuStripIndex
+    ld b, (hl) ; B=menuRowIndex
     call getMenuNode ; HL = pointer to MenuNode
     inc hl
     ld d, (hl) ; D = parentId
     inc hl
     inc hl
-    ld c, (hl) ; C=numStrips
+    ld c, (hl) ; C=numRows
 
     ld hl, statusPenRow*$100 + statusMenuPenCol; $(penRow)(penCol)
     ld (PenCol), hl
 
-    ; If numStrips==0: don't do anything. This should never happen if there
+    ; If numRows==0: don't do anything. This should never happen if there
     ; are no bugs in the program.
-    ld a, c ; A = numStrips
+    ld a, c ; A = numRows
     or a
     jr z, displayStatusArrowClear
 
@@ -172,9 +172,9 @@ displayStatusArrowLeftDisplay:
     bcall(_VPutMap)
 
 displayStatusArrowDown:
-    ; If stripIndex < (numStrips - 1): show Down arrow
-    ld a, b ; A = stripIndex
-    dec c ; C = numStrips - 1
+    ; If rowIndex < (numRows - 1): show Down arrow
+    ld a, b ; A = rowIndex
+    dec c ; C = numRows - 1
     cp c
     jr nc, displayStatusArrowDownNone
     ld a, SdownArrow
@@ -190,7 +190,7 @@ displayStatusArrowDownDisplay:
     bcall(_VPutMap)
 
 displayStatusArrowUp:
-    ; If stripIndex > 0: show Up arrow
+    ; If rowIndex > 0: show Up arrow
     ld a, b
     or a
     jr z, displayStatusArrowUpNone
@@ -425,7 +425,7 @@ displayStackYZT:
 ; Description: Render the X lines. There are 3 options:
 ; 1) if rpnFlagsArgMode, print the inputbuf as a command argument,
 ; 2) else if rpnFlagsEditing, print the inputBuf as a stack number,
-; 3) else print the stX variable.
+; 3) else print the X register.
 displayStackX:
     bit rpnFlagsArgMode, (iy + rpnFlags)
     jr nz, displayStackXArg
@@ -435,7 +435,7 @@ displayStackX:
 
 displayStackXNormal:
     call displayStackXLabel
-    ; print the stX variable
+    ; print the X register
     ld hl, stXCurCol*$100 + stXCurRow ; $(curCol)(curRow)
     ld (CurRow), hl
     call rclX
@@ -554,7 +554,7 @@ displayMenu:
     ret z
 
     ; get starting menuId
-    call getCurrentMenuStripBeginId ; A=stripBeginId
+    call getCurrentMenuRowBeginId ; A=rowBeginId
     ; set up loop over 5 consecutive menu buttons
     ld d, a ; D = menuId
     ld e, 0 ; E = menuIndex [0,4]
@@ -605,8 +605,9 @@ printMenuAtA:
     ld c, menuNameBufMax
     call copyCToPascal ; C, DE are preserved
     ex de, hl ; HL = menuName
-    call sStringWidth ; A = B = string width
+    call smallStringWidth ; A = B = string width
 
+printMenuAtANoAdjust:
     ; Calculate the starting pixel to center the string
     ld a, menuPenWidth
     sub b ; A = menuPenWidth - stringWidth
@@ -614,6 +615,15 @@ printMenuAtA:
 printMenuAtATooWide:
     xor a ; if string too wide (shouldn't happen), set to 0
 printMenuAtAFitsInside:
+    ; Add 1px to the total padding so that when divided between left and right
+    ; padding, the left padding gets 1px more if the total padding is an odd
+    ; number. This allows a few names which are 17px wide to actually fit
+    ; nicely within the 18px box (with 1px padding on each side), because each
+    ; small font character actually has an embedded 1px padding on the right,
+    ; so effectively it is only 16px wide. This tweak allows short names (whose
+    ; widths are an odd number of px) to be centered perfectly with equal
+    ; padding on both sides.
+    inc a
     rra ; CF=0, divide by 2 for centering; A = padWidth
 
     ld c, a ; C = A = leftPadWidth
@@ -707,7 +717,13 @@ printHLString:
 ; Description: Print an indicator ("...") that the OP1 number cannot be
 ; rendered in the current base mode (hex, oct, or bin).
 printOP1BaseInvalid:
-    ld hl, msgInvalidBase
+    ld hl, msgBaseInvalid
+    jr printHLString
+
+; Description: Print just a negative sign for OP1 number that is negative.
+; Negative numbers cannot be displayed in base HEX, OCT or BIN modes.
+printOP1BaseNegative:
+    ld hl, msgBaseNegative
     jr printHLString
 
 ;-----------------------------------------------------------------------------
@@ -727,7 +743,7 @@ printOP1Base16:
     jr z, printOP1Base16Valid
 
     bcall(_CkOP1Pos) ; if OP1 > 0: ZF=1
-    jr nz, printOP1BaseInvalid
+    jr nz, printOP1BaseNegative
 
 printOP1Base16Valid:
     bcall(_PushRealO1) ; FPS = OP1 (save)
@@ -764,7 +780,7 @@ printOP1Base8:
     jr z, printOP1Base8Valid
 
     bcall(_CkOP1Pos) ; if OP1 > 0: ZF=1
-    jr nz, printOP1BaseInvalid
+    jr nz, printOP1BaseNegative
 
 printOP1Base8Valid:
     bcall(_PushRealO1) ; FPS = OP1 (save)
@@ -804,7 +820,7 @@ printOP1Base2:
     jr z, printOP1Base2Valid
 
     bcall(_CkOP1Pos) ; if OP1 > 0: ZF=1
-    jp nz, printOP1BaseInvalid
+    jp nz, printOP1BaseNegative
 
 printOP1Base2Valid:
     bcall(_PushRealO1) ; FPS = OP1 (save)
@@ -896,9 +912,13 @@ convertAToCharDec:
 
 ;-----------------------------------------------------------------------------
 
-; Indicates number cannot be rendered in the current Base mode.
-msgInvalidBase:
+; Indicates number has overflowed the current Base mode.
+msgBaseInvalid:
     .db "...", 0
+
+; Indicates number is negative so cannot be current Base mode.
+msgBaseNegative:
+    .db "-", 0
 
 ; RPN stack variable labels
 msgTLabel:

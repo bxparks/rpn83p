@@ -73,6 +73,7 @@ rpnFlags equ asm_Flag2
 rpnFlagsEditing equ 0 ; set if in edit mode
 rpnFlagsArgMode equ 1 ; set if in command argument mode
 rpnFlagsLiftEnabled equ 2 ; set if stack lift is enabled (ENTER disables it)
+rpnFlagsAllStatEnabled equ 3 ; set if Sigma+ updates logarithm registers
 
 ; Flags for the inputBuf. Offset from IY register.
 inputBufFlags equ asm_Flag3
@@ -172,10 +173,10 @@ floatBufSizeOf equ 9
 ;
 ;   struct menu {
 ;     uint8_t groupId; // id of the current menu group
-;     uint8_t stripIndex; // menu strip, groups of 5
+;     uint8_t rowIndex; // menu row, groups of 5
 ;   }
 menuGroupId equ floatBuf + floatBufSizeOf
-menuStripIndex equ menuGroupId + 1
+menuRowIndex equ menuGroupId + 1
 
 ; Menu name, copied here as a Pascal string.
 ;
@@ -183,7 +184,7 @@ menuStripIndex equ menuGroupId + 1
 ;       uint8_t size;
 ;       char buf[5];
 ;   }
-menuName equ menuStripIndex + 1
+menuName equ menuRowIndex + 1
 menuNameSize equ menuName
 menuNameBuf equ menuName + 1
 menuNameBufMax equ 5
@@ -202,8 +203,11 @@ argHandlerSizeOf equ 2
 argValue equ argHandler + argHandlerSizeOf
 argValueSizeOf equ 1
 
+; Least square curve fit model.
+curveFitModel equ argValue + argValueSizeOf
+
 ; End RPN83P variables. Total size of vars = rpnVarsEnd - rpnVarsBegin.
-rpnVarsEnd equ argValue + argValueSizeOf
+rpnVarsEnd equ curveFitModel + 1
 
 ;-----------------------------------------------------------------------------
 
@@ -219,7 +223,6 @@ main:
     res lwrCaseActive, (iy + appLwrCaseFlag) ; disable ALPHA-ALPHA lowercase
     bcall(_ClrLCDFull)
 
-    call initBase
     call initErrorCode
     call initInputBuf
     call initArgBuf
@@ -227,6 +230,9 @@ main:
     call initRegs
     call initMenu
     call initDisplay
+    call initBase
+    call initStat
+    call initCfit
     ; [[fall through]]
 
 ; The main event/read loop. Read button and dispatch to the appropriate
@@ -260,10 +266,6 @@ readLoop:
     ; Check for 2nd-Quit to Quit. ON (0) triggers the handleKeyMenuBack() to
     ; emulate the ON/EXIT key on the HP 42S which exits nested menus on that
     ; calculator.
-    ; TODO: The LeftArrow is also bound to hanldeKeyMenuBack(), and that seems
-    ; convenient because LeftArrow is in close proximity to UpArrow and
-    ; DownArrow. Maybe on the TI-83/TI-84 calculators, the ON button should
-    ; just do nothing.
     cp kQuit
     jr z, mainExit
 
@@ -309,6 +311,8 @@ mainExit:
 #include "integer.asm"
 #include "menu.asm"
 #include "menuhandlers.asm"
+#include "stathandlers.asm"
+#include "cfithandlers.asm"
 #include "prime.asm"
 #ifdef DEBUG
 #include "debug.asm"

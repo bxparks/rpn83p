@@ -49,6 +49,36 @@ appendInputBuf:
     set dirtyFlagsInput, (iy + dirtyFlags)
     jp appendString
 
+; Description: If currently in edit mode, close the input buffer by parsing the
+; input, enable stack lift, then copying the float value into X. If not in edit
+; mode, no need to parse the inputBuf.
+; Input: none
+; Output:
+;   inputBufFlagsClosedEmpty: set if inputBuf was an empty string when closed
+;   rpnFlagsEditing: set to 0
+; Destroys: all, OP1, OP2, OP4
+closeInputBuf:
+    bit rpnFlagsEditing, (iy + rpnFlags)
+    jr nz, closeInputBufEditing
+closeInputBufNonEditing:
+    res inputBufFlagsClosedEmpty, (iy + inputBufFlags)
+    ret
+closeInputBufEditing:
+    ld a, (inputBuf)
+    or a
+    jr z, closeInputBufEmpty
+closeInputBufNonEmpty:
+    res inputBufFlagsClosedEmpty, (iy + inputBufFlags)
+    jr closeInputBufContinue
+closeInputBufEmpty:
+    set inputBufFlagsClosedEmpty, (iy + inputBufFlags)
+closeInputBufContinue:
+    call parseNum
+    call stoX
+    call clearInputBuf
+    res rpnFlagsEditing, (iy + rpnFlags)
+    ret
+
 ;------------------------------------------------------------------------------
 
 initArgBuf:

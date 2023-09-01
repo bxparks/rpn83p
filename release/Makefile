@@ -1,7 +1,9 @@
-# Convert GitHub-flavored Markdown to PDF, including embedded images.
+# Create a rpn83p.zip file suitable for uploading to webarchives. It contains
+# the following:
 #
-# Requires pandoc and pdflatex. Here are the stackoverflow articles that helped
-# me solve this problem:
+# 1) README.pdf and USER_GUIDE.pdf, converted from the original GitHub-flavored
+# Markdown files README.md and USER_GUIDE.md. Requires pandoc and pdflatex.
+# Here are the stackoverflow articles that helped me solve this problem:
 #
 #	- https://stackoverflow.com/questions/9998337 (pandoc)
 #	- https://stackoverflow.com/questions/29240290 (pdflatex not found)
@@ -12,9 +14,14 @@
 # The `-f mardown` option separates out the images into separate Figures which
 # are out of context from the text. The `-f gfm` embeds the images directly
 # into the flow of the text.
+#
+# 2) Copy 2 animated gif files from ../docs.
+#
+# 3) Copy the actual rpn83p.8xk file from ../src.
 
 TARGETS := README.pdf \
 USER_GUIDE.pdf \
+CHANGELOG.md \
 rpn83p.8xk \
 rpn83p-example1.gif \
 rpn83p-example2.gif
@@ -36,6 +43,11 @@ USER_GUIDE.pdf: ../USER_GUIDE.md Makefile
 	(cd ..; \
 	pandoc -V geometry:margin=1in -V fontsize=12pt -f gfm -s -o $@ USER_GUIDE.md; \
 	mv -f $@ release)
+
+# Copy the CHANGELOG.md as is, without conversion to PDF. It's just a text
+# file without any embedded images.
+CHANGELOG.md: ../CHANGELOG.md Makefile
+	cp -f $< $@
 
 # Copy to local directory to place it at top level in the zip file.
 rpn83p.8xk: ../src/rpn83p.8xk

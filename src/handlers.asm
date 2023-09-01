@@ -58,10 +58,13 @@ handleKeyNumberArg:
 ; flags.
 ; Input:
 ;   A: character to be appended
+;   rpnFlagsArgMode: whether we are in Command Arg mode
+;   rpnFlagsEditing: whether we are already in Edit mode
 ; Output:
-;   - CF set when append fails.
-;   - rpnFlagsEditing set.
-;   - dirtyFlagsInput set.
+;   - CF set when append fails
+;   - rpnFlagsEditing set
+;   - rpnFlagsLiftEnabled set
+;   - dirtyFlagsInput set
 ; Destroys: all
 handleKeyNumber:
     ; Check if in arg editing mode.
@@ -72,14 +75,15 @@ handleKeyNumber:
     jr nz, handleKeyNumberCheckAppend
 handleKeyNumberFirstDigit:
     ; Lift the stack, unless disabled.
-    push af
-    bit rpnFlagsLiftEnabled, (iy + rpnFlags)
-    call nz, liftStack
+    push af ; preserve A=char to append
+    call liftStackIfEnabled
     pop af
-    ; Go into editing mode
+    ; Go into editing mode. Re-enable stack lift so that if the next keystroke
+    ; is a PI, Euler, or some other function that takes no arguments and
+    ; produces a number, the stack is lifted again.
     call clearInputBuf
     set rpnFlagsEditing, (iy + rpnFlags)
-    res rpnFlagsLiftEnabled, (iy + rpnFlags)
+    set rpnFlagsLiftEnabled, (iy + rpnFlags)
 handleKeyNumberCheckAppend:
     ; Limit number of exponent digits to 2.
     bit inputBufFlagsEE, (iy + inputBufFlags)
@@ -414,14 +418,12 @@ handleKeyClearWhileClear:
     ; If CLEAR is hit while the inputBuffer is already clear, then force a
     ; complete refresh of the entire display. Useful for removing any artifacts
     ; from buggy display code.
-    set dirtyFlagsMenu, (iy + dirtyFlags)
-    set dirtyFlagsStack, (iy + dirtyFlags)
-    set dirtyFlagsTrigMode, (iy + dirtyFlags)
+    call initDisplay
 handleKeyClearSimple:
     ; Clear the input buffer, and set various flags.
     call clearInputBuf
     set rpnFlagsEditing, (iy + rpnFlags)
-    res rpnFlagsLiftEnabled, (iy + rpnFlags)
+    set rpnFlagsLiftEnabled, (iy + rpnFlags)
     ret
 
 ;-----------------------------------------------------------------------------
@@ -510,7 +512,7 @@ handleKeyEnter:
     bit rpnFlagsArgMode, (iy + rpnFlags)
     jr nz, handleKeyEnterArg
     call closeInputBuf
-    call liftStack
+    call liftStack ; always lift the stack
     res rpnFlagsLiftEnabled, (iy + rpnFlags)
     ret
 
@@ -526,44 +528,13 @@ handleKeyEnterArg:
     ld hl, (argHandler)
     jp (hl)
 
-; closeInputBuf() -> None
-; Description: If currently in edit mode, close the input buffer by parsing the
-; input, enable stack lift, then copying the float value into X. If not in edit
-; mode, no need to parse the inputBuf, but we still have to enable stack lift
-; because the previous keyCode could have been ENTER which disabled it.
-; Input: none
-; Output:
-; Destroys: all, OP1, OP2, OP4
-closeInputBuf:
-    set rpnFlagsLiftEnabled, (iy + rpnFlags)
-    bit rpnFlagsEditing, (iy + rpnFlags)
-    jr nz, closeInputBufEditing
-closeInputBufNonEditing:
-    res inputBufFlagsClosedEmpty, (iy + inputBufFlags)
-    ret
-closeInputBufEditing:
-    ld a, (inputBuf)
-    or a
-    jr z, closeInputBufEmpty
-closeInputBufNonEmpty:
-    res inputBufFlagsClosedEmpty, (iy + inputBufFlags)
-    jr closeInputBufContinue
-closeInputBufEmpty:
-    set inputBufFlagsClosedEmpty, (iy + inputBufFlags)
-closeInputBufContinue:
-    call parseNum
-    call stoX
-    call clearInputBuf
-    res rpnFlagsEditing, (iy + rpnFlags)
-    ret
-
 ;-----------------------------------------------------------------------------
 ; Menu key handlers.
 ;-----------------------------------------------------------------------------
 
-; Function: Go to the previous menu strip, with stripIndex decreasing upwards.
+; Function: Go to the previous menu row, with rowIndex decreasing upwards.
 ; Input: none
-; Output: (menuStripIndex) decremented, or wrapped around
+; Output: (menuRowIndex) decremented, or wrapped around
 ; Destroys: all
 handleKeyUp:
     ; Do nothing in command arg mode.
@@ -573,35 +544,35 @@ handleKeyUp:
     ld hl, menuGroupId
     ld a, (hl) ; A = menuGroupId
     inc hl
-    ld b, (hl) ; B = menuStripIndex
+    ld b, (hl) ; B = menuRowIndex
     call getMenuNode ; HL = pointer to MenuNode
     inc hl
     inc hl
     inc hl
-    ld c, (hl) ; C = numStrips
+    ld c, (hl) ; C = numRows
 
     ; Check for 1. TODO: Check for 0, but that should never happen.
     ld a, c
     cp 1
     ret z
 
-    ; (menuStripIndex-1) mod numStrips
-    ld a, (menuStripIndex)
+    ; (menuRowIndex-1) mod numRows
+    ld a, (menuRowIndex)
     or a
     jr nz, handleKeyUpContinue
-    ld a, c ; A = numStrips
+    ld a, c ; A = numRows
 handleKeyUpContinue:
     dec a
-    ld (menuStripIndex), a
+    ld (menuRowIndex), a
 
     set dirtyFlagsMenu, (iy + dirtyFlags)
     ret
 
 ;-----------------------------------------------------------------------------
 
-; Function: Go to the next menu strip, with stripIndex increasing downwards.
+; Function: Go to the next menu row, with rowIndex increasing downwards.
 ; Input: none
-; Output: (menuStripIndex) incremented mod numStrips
+; Output: (menuRowIndex) incremented mod numRows
 ; Destroys: all
 handleKeyDown:
     ; Do nothing in command arg mode.
@@ -611,26 +582,26 @@ handleKeyDown:
     ld hl, menuGroupId
     ld a, (hl)
     inc hl
-    ld b, (hl) ; menuStripIndex
+    ld b, (hl) ; menuRowIndex
     call getMenuNode
     inc hl
     inc hl
     inc hl
-    ld c, (hl) ; numStrips
+    ld c, (hl) ; numRows
 
     ; Check for 1. TODO: Check for 0, but that should never happen.
     ld a, c
     cp 1
     ret z
 
-    ; (menuStripIndex+1) mod numStrips
-    ld a, (menuStripIndex)
+    ; (menuRowIndex+1) mod numRows
+    ld a, (menuRowIndex)
     inc a
     cp c
     jr c, handleKeyDownContinue
     xor a
 handleKeyDownContinue:
-    ld (menuStripIndex), a
+    ld (menuRowIndex), a
 
     set dirtyFlagsMenu, (iy + dirtyFlags)
     ret
@@ -638,13 +609,13 @@ handleKeyDownContinue:
 ;-----------------------------------------------------------------------------
 
 ; Description: Go back up the menu hierarchy to the parent menu group. If
-; already at the rootMenu, and the stripIndex is not 0, then reset the
-; stripIndex to 0 so that we return to the default, top-level view of the menu
+; already at the rootMenu, and the rowIndex is not 0, then reset the
+; rowIndex to 0 so that we return to the default, top-level view of the menu
 ; hierarchy.
 ; Input: (menuGroupId), the current (child) menu group
 ; Output:
 ;   - (menuGroupId) at parentId
-;   - (menuStripIndex) at strip of the (child) menu group
+;   - (menuRowIndex) of the input (child) menu group
 ; Destroys: all
 handleKeyMenuBack:
     ; Clear the command arg mode if already in command arg mode.
@@ -657,13 +628,13 @@ handleKeyMenuBack:
     cp mRootId
     jr nz, handleKeyMenuBackToParent
 
-    ; If already at rootId, go to menuStrip0 if not already there.
+    ; If already at rootId, go to menuRow0 if not already there.
     inc hl
-    ld a, (hl) ; menuStripIndex
+    ld a, (hl) ; menuRowIndex
     or a
     ret z
-    xor a ; set stripIndex to 0, set dirty bit
-    jr handleKeyMenuBackStripSave
+    xor a ; set rowIndex to 0, set dirty bit
+    jr handleKeyMenuBackRowSave
 
 handleKeyMenuBackToParent:
     ; Set menuGroupId = child.parentId
@@ -673,27 +644,27 @@ handleKeyMenuBackToParent:
     ld a, (hl) ; A=parentId
     ld (menuGroupId), a
 
-    ; Get numStrips and stripBeginId of the parent.
+    ; Get numRows and rowBeginId of the parent.
     call getMenuNode ; get parentNode
     inc hl
     inc hl
     inc hl
-    ld d, (hl) ; D=parent.numStrips
+    ld d, (hl) ; D=parent.numRows
     inc hl
-    ld a, (hl) ; A=parent.stripBeginId
+    ld a, (hl) ; A=parent.rowBeginId
 
-    ; Deduce the parent's stripIndex which matches the childId.
-    call deduceStripIndex
+    ; Deduce the parent's rowIndex which matches the childId.
+    call deduceRowIndex
 
-handleKeyMenuBackStripSave:
-    ld (menuStripIndex), a
+handleKeyMenuBackRowSave:
+    ld (menuRowIndex), a
     set dirtyFlagsMenu, (iy + dirtyFlags)
     ret
 
-; Description: Deduce the stripIndex from the childId above. The `stripIndex =
-; int((childId - stripBeginId)/5)` but the Z80 does not have a divison
+; Description: Deduce the rowIndex from the childId above. The `rowIndex =
+; int((childId - rowBeginId)/5)` but the Z80 does not have a divison
 ; instruction so we use a loop that increments an `index` in increments of 5 to
-; determine the corresponding stripIndex.
+; determine the corresponding rowIndex.
 ;
 ; The complication is that we want to evaluate `(childId < nodeId)` but the
 ; Z80 instruction can only increment the A register, so we have to store
@@ -703,26 +674,26 @@ handleKeyMenuBackStripSave:
 ; hope my future self will understand this explanation.
 ;
 ; Input:
-;   A: stripBeginId
-;   D: numStrips
+;   A: rowBeginId
+;   D: numRows
 ;   C: childId
-; Output: A: stripIndex
+; Output: A: rowIndex
 ; Destroys: B; preserves C, D
-deduceStripIndex:
-    add a, 4 ; nodeId = stripBeginId + 4
-    ld b, d ; B (DJNZ counter) = numStrips
-deduceStripIndexLoop:
+deduceRowIndex:
+    add a, 4 ; nodeId = rowBeginId + 4
+    ld b, d ; B (DJNZ counter) = numRows
+deduceRowIndexLoop:
     cp c ; If nodeId < childId: set CF
-    jr nc, deduceStripIndexFound ; nodeId >= childId
+    jr nc, deduceRowIndexFound ; nodeId >= childId
     add a, 5 ; nodeId += 5
-    djnz deduceStripIndexLoop
+    djnz deduceRowIndexLoop
     ; We should never fall off the end of the loop, but if we do, set the
-    ; stripIndex to 0.
+    ; rowIndex to 0.
     xor a
     ret
-deduceStripIndexFound:
-    ld a, d ; numStrips
-    sub b ; stripIndex = numStrips - B
+deduceRowIndexFound:
+    ld a, d ; numRows
+    sub b ; rowIndex = numRows - B
     ret
 
 ;-----------------------------------------------------------------------------
@@ -780,7 +751,7 @@ handleKeyMenuA:
     ret nz
 
     ld c, a
-    call getCurrentMenuStripBeginId
+    call getCurrentMenuRowBeginId
     add a, c ; menu node ids are sequential starting with beginId
     ; get menu node corresponding to pressed menu key
     call getMenuNode
@@ -872,9 +843,7 @@ handleKeyPi:
     ret nz
     call closeInputBuf
     call op1SetPi
-    call liftStackNonEmpty
-    call stoX
-    ret
+    jp pushX
 
 handleKeyEuler:
     ; Do nothing in command arg mode.
@@ -882,9 +851,7 @@ handleKeyEuler:
     ret nz
     call closeInputBuf
     call op1SetEuler
-    call liftStackNonEmpty
-    call stoX
-    ret
+    jp pushX
 
 ;-----------------------------------------------------------------------------
 ; Alegbraic functions.
@@ -950,8 +917,7 @@ handleKeyAns:
     ret nz
     call closeInputBuf
     call rclL
-    call liftStackNonEmpty
-    jp stoX
+    jp pushX
 
 ;-----------------------------------------------------------------------------
 ; Transcendentals
@@ -1059,6 +1025,13 @@ handleKeyMode:
     ld a, mModeId ; MODE triggers the MODE menu.
     jp mGroupHandler
 
+handleKeyStat:
+    ; Do nothing in command arg mode.
+    bit rpnFlagsArgMode, (iy + rpnFlags)
+    ret nz
+    ld a, mStatId ; MODE triggers the MODE menu.
+    jp mGroupHandler
+
 ;-----------------------------------------------------------------------------
 ; User registers, accessed through RCL nn and STO nn.
 ;-----------------------------------------------------------------------------
@@ -1078,7 +1051,6 @@ handleKeyStoCallback:
     ld a, errorCodeDimension
     jp setHandlerCode
 handleKeyStoCallbackContinue:
-    inc a ; change from 0-based to 1-based
     jp stoNN
 
 handleKeyRcl:
@@ -1095,10 +1067,8 @@ handleKeyRclCallback:
     ld a, errorCodeDimension
     jp setHandlerCode
 handleKeyRclCallbackContinue:
-    inc a ; change from 0-based to 1-based
     call rclNN
-    call liftStackNonEmpty
-    jp stoX
+    jp pushX
 
 msgStoName:
     .db "STO", 0

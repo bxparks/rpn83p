@@ -8,7 +8,7 @@ calculator app for the [TI-83 Plus](https://en.wikipedia.org/wiki/TI-83_series)
 Plus](https://en.wikipedia.org/wiki/TI-84_Plus_series) (including the Silver
 Edition). The app is inspired mostly by the
 [HP-42S](https://en.wikipedia.org/wiki/HP-42S) calculator, with some sprinkles
-of some older HP calculators like the
+of older HP calculators like the
 [HP-12C](https://en.wikipedia.org/wiki/HP-12C) and the
 [HP-15C](https://en.wikipedia.org/wiki/HP-15C).
 
@@ -17,25 +17,27 @@ memory. Since it is stored in flash, it is preserved if the RAM is cleared. It
 consumes a small amount of TI-OS RAM: 2 list variables named `REGS` and `STK`
 which are 240 bytes and 59 bytes respectively.
 
-Here the quick summary of its features:
+Here is a quick summary of its features:
 
 - traditional 4-level RPN stack (`X`, `Y`, `Z`, `T` registers)
 - support for `lastX` register
+- 8-line display showing all stack registers
 - 25 storage registers (`STO 00`, `RCL 00`, ..., `STO 24`, `RCL 24`)
 - hierarchical menu system, inspired by the HP-42S
 - support for all math functions with dedicated buttons on the TI-83 Plus and
   TI-84 Plus
     - arithmetic: `/`, `*`, `-`, `+`
     - trigonometric: `SIN`, `COS`, `TAN`, etc.
-    - `1/X`, `X^2`, `2ND SQRT`
+    - `1/X`, `X^2`, `SQRT`
     - `^` (i.e. `Y^X`),
     - `LOG`, `10^X`, `LN`, `e^X`
     - constants: `pi` and `e`
 - additional menu functions:
+    - `X^3`, `CBRT`, `XRootY`, `ATN2`, `2^X`, `LOG2`, `LOGB`
     - `%`, `%CH`, `GCD`, `LCM`, `PRIM` (is prime)
     - `IP` (integer part), `FP` (fractional part), `FLR` (floor), `CEIL`
-    - `ABS`, `SIGN`, `MOD`, `MIN`, `MAX`
       (ceiling), `NEAR` (nearest integer)
+    - `ABS`, `SIGN`, `MOD`, `MIN`, `MAX`
     - probability: `PERM`, `COMB`, `N!`, `RAND`, `SEED`
     - hyperbolic: `SINH`, `COSH`, `TANH`, etc.
     - angle conversions: `>DEG`, `>RAD`, `>HR`, `>HMS`, `P>R`, `R>P`
@@ -43,13 +45,26 @@ Here the quick summary of its features:
     - base conversions: `DEC`, `HEX`, `OCT`, `BIN`
     - bitwise operations: `AND`, `OR`, `XOR`, `NOT`, `NEG`, `SL`, `SR`, `RL`,
       `RR`, `B+`, `B-`, `B*`, `B/`, `BDIV`
+    - statistics: `Sigma+`, `Sigma-`, `SUM`, `MEAN`, `WMN` (weighted mean),
+      `SDEV` (sample standard deviation), `SCOV` (sample covariance),
+      `PDEV` (population standard deviation), `PCOV` (population covariance)
+    - curve fitting: `Y>X`, `X>Y`, `SLOP` (slope), `YINT` (y intercept), `CORR`
+      (correlation coefficent)
+    - curve fit models: `LINF` (linear)`, `LOGF` (logarithmic), `EXPF`
+      (exponential), `PWRF` (power)
 - various display modes
     - `RAD`, `DEG`
     - `FIX` (fixed point 0-9 digits)
     - `SCI` (scientific 0-9 digits)
     - `ENG` (engineering 0-9 digits)
 
-**Version**: 0.4.0 (2023-08-16)
+Here are some missing features which may be added in the future:
+
+- vectors and matrices
+- complex numbers
+- keystroke programming
+
+**Version**: 0.5.0 (2023-08-31)
 
 **Changelog**: [CHANGELOG.md](CHANGELOG.md)
 
@@ -68,7 +83,7 @@ Here the quick summary of its features:
 - [Compiling from Source](#compiling-from-source)
 - [Tools and Resources](#tools-and-resources)
 - [License](#license)
-- [Feedback](#feedback)
+- [Feedback and Support](#feedback-and-support)
 - [Author](#author)
 
 ## Installation
@@ -152,23 +167,27 @@ and `65`, then see the result as an octal number, a binary (base-2) number, then
 finally as a decimal number:
 
 - Navigate the menu with the DOWN arrow to get to
-  ![ROOT MenuStrip 2](docs/rpn83p-screenshot-menu-root-2.png)
+  ![ROOT MenuRow 2](docs/rpn83p-screenshot-menu-root-2.png)
 - Press `BASE` menu to get to
-  ![BASE MenuStrip 1](docs/rpn83p-screenshot-menu-root-base-1.png)
-- Press `HEX` menu.
+  ![BASE Menu DEC](docs/rpn83p-menu-base-dec.png)
+- Press `HEX` menu to get to
+  ![BASE Menu HEX](docs/rpn83p-menu-base-hex.png)
 - Press `ALPHA` `B` buttons
 - Press `6` button
 - Press `ENTER` button
 - Press `6` button
 - Press `5` button
 - Press DOWN arrow to get to
-  ![BASE MenuStrip 2](docs/rpn83p-screenshot-menu-root-base-2.png)
+  ![BASE MenuRow 2](docs/rpn83p-screenshot-menu-root-base-2.png)
 - Press `AND` menu, the `X` register should show `00000024`
 - Press UP arrow to go back to
-  ![BASE MenuStrip 1](docs/rpn83p-screenshot-menu-root-base-1.png)
-- Press `OCT` menu, the `X` register should show `00000000044`
-- Press `BIN` menu, the `X` register should show `00000000100100`
-- Press `DEC` menu, the `X` register should show `36`
+  ![BASE Menu HEX](docs/rpn83p-menu-base-hex.png)
+- Press `OCT` menu, the `X` register should show `00000000044` with the menu
+  showing ![BASE Menu OCT](docs/rpn83p-menu-base-oct.png)
+- Press `BIN` menu, the `X` register should show `00000000100100` with the menu
+  showing ![BASE Menu BIN](docs/rpn83p-menu-base-bin.png)
+- Press `DEC` menu, the `X` register should show `36` with the menu showing
+  ![BASE Menu DEC](docs/rpn83p-menu-base-dec.png)
 
 Here is the animated GIF that shows this calculation:
 
@@ -179,7 +198,7 @@ Press:
 - `ON` button (`ESC/EXIT`) multiple times to back to the home menu, or
 - `MATH` button (`HOME`) to go back directly.
 
-> ![ROOT MenuStrip 1](docs/rpn83p-screenshot-menu-root-1.png)
+> ![ROOT MenuRow 1](docs/rpn83p-screenshot-menu-root-1.png)
 
 ## User Guide
 
@@ -205,7 +224,7 @@ been verified only on my dev machine.
 
 ## Tools and Resources
 
-Here is the tools and resources that I use for development on Ubuntu Linux
+Here are the tools and resources that I used for development on Ubuntu Linux
 22.04:
 
 - spasm-ng Z80 assembler

@@ -6,7 +6,7 @@
 ;-----------------------------------------------------------------------------
 ; Routines for navigating the singly-rooted tree of MenuNodes. A MenuNode can
 ; be either a MenuItem or MenuGroup. A MenuGroup is a list of one or more
-; MenuStrip. A MenuStrip is a list of exactly 5 MenuNodes, corresponding to the
+; MenuRow. A MenuRow is a list of exactly 5 MenuNodes, corresponding to the
 ; 5 menu buttons located just below the LCD screen of the calculator.
 ;
 ; The root of the menu tree is usually called the RootMenu and has an id of 1.
@@ -24,20 +24,24 @@
 ;   uint8_t id; // root begins with 1
 ;   uint8_t parentId; // 0 indicates NONE
 ;   uint8_t nameId; // index into NameTable
-;   uint8_t numStrips; // 0 if MenuItem; >=1 if MenuGroup
-;   uint8_t stripBeginId; // nodeId of the first node of first strip
+;   uint8_t numRows; // 0 if MenuItem; >=1 if MenuGroup
+;   union {
+;       uint8_t rowBeginId; // nodeId of the first node of first menu row
+;       uint8_t altNameId; // alternate name string (if nameSelector!=NULL)
+;   }
 ;   void *handler; // pointer to the handler function
+;   void *nameSelector; // function that selects between 2 menu names
 ; };
 ;
-; sizeof(MenuNode) == 7
+; sizeof(MenuNode) == 9
 ;
 ;-----------------------------------------------------------------------------
 
-; Description: Set initial values for (menuGroupId) and (menuStripIndex).
+; Description: Set initial values for (menuGroupId) and (menuRowIndex).
 ; Input: none
 ; Output:
 ;   (menuGroupId) = mRootId
-;   (menuStripIndex) = 0
+;   (menuRowIndex) = 0
 ; Destroys: A, HL
 initMenu:
     ld hl, menuGroupId
@@ -49,31 +53,31 @@ initMenu:
     set dirtyFlagsMenu, (iy + dirtyFlags)
     ret
 
-; Description: Return the node id of the first item in the menu strip at
-; `menuStripIndex` of the current menu node `menuGroupId`. The next 4 node
+; Description: Return the node id of the first item in the menu row at
+; `menuRowIndex` of the current menu node `menuGroupId`. The next 4 node
 ; ids in sequential order define the other 4 menu buttons.
 ; Input:
 ;   - (menuGroupId)
-;   - (menuStripIndex)
-; Output: A: strip begin id
+;   - (menuRowIndex)
+; Output: A: row begin id
 ; Destroys: A, B, DE, HL
-getCurrentMenuStripBeginId:
+getCurrentMenuRowBeginId:
     ld hl, menuGroupId
     ld a, (hl)
     inc hl
     ld b, (hl)
     ; [[fallthrough]]
 
-; Description: Return the first menu id for menuGroupId A at strip index B.
+; Description: Return the first menu id for menuGroupId A at row index B.
 ; Input:
 ;   A: menu id
-;   B: strip index
-; Output: A: strip begin id
+;   B: row index
+; Output: A: row begin id
 ; Destroys: A, DE, HL
-getMenuStripBeginId:
+getMenuRowBeginId:
     call getMenuNode ; HL = menuNode
 
-    ; A = menNode.stripBeginId
+    ; A = menNode.rowBeginId
     inc hl
     inc hl
     inc hl
@@ -94,7 +98,7 @@ getMenuStripBeginId:
 ; Output: HL: address of node
 ; Destroys: DE, HL
 getMenuNode:
-    ; HL = A * sizeof(MenuNode) = 7*A
+    ; HL = A * sizeof(MenuNode) = 9*A
     ld l, a
     ld h, 0
     ld e, l
@@ -102,26 +106,69 @@ getMenuNode:
     add hl, hl
     add hl, hl
     add hl, hl ; 8*A
-    or a ; clear CF
-    sbc hl, de ; 7*A
-    ; HL = mMenuTable + 7*A
+    add hl, de ; 9*A
+    ; HL = mMenuTable + 9*A
     ex de, hl
     ld hl, mMenuTable
     add hl, de
     ret
 
 ; Description: Return the pointer to the name string of the menu node at id A.
+; If MenuNode.nameSelector is 0, then the display name is simply the nameId.
+; But if the MenuNode.nameSelector is not 0, then it is a pointer to a function
+; that returns the display name.
+;
+; The input to the nameSelector function is:
+;   - A: normal name
+;   - C: alternate name
+;   - HL: pointer to MenuNode (in case it is needed)
+; The output of the nameSelector is:
+;   - A: the selected name
+; The name is selected according to the relevant internal state (e.g. DEG or
+; RAD). The nameSelector is allowed to modify BC, DE, since they are restored
+; before returning from this function. It is also allowed to modify HL since it
+; gets clobbered with string pointer before returning from this function.
+;
 ; Input: A: menu node id
 ; Output: HL: address of the C-string
 ; Destroys: A, HL
-; Preserves: DE
+; Preserves: BC, DE
 getMenuName:
+    push bc
     push de
-    call getMenuNode
+    call getMenuNode ; HL=(MenuNode)
+    push hl ; save the MenuNode pointer
     inc hl
     inc hl
-    ld a, (hl) ; nameId
+    ld b, (hl) ; B=nameId
+    inc hl
+    inc hl 
+    ld c, (hl) ; C=altNameId
+    inc hl
+    inc hl
+    inc hl
+    ld e, (hl)
+    inc hl
+    ld d, (hl) ; DE=nameSelector
+    ld a, e
+    or d
+    ld a, b ; A=nameId
+    pop hl ; HL=MenuNode pointer
+    jr z, getMenuNameDefault ; if nameSelector==NULL: goto default
+getMenuNameCustom:
+    ; The following ugly hack is required because the Z80 does not have a `call
+    ; (hl)` instruction, analogous to `jp (hl)`. The `nameSelector(A, C, HL) ->
+    ; A` function selects one of the 2 strings (A or C), and returns the
+    ; selection in A.
+    push hl ; MenuNode
+    ld hl, getMenuNameDefault ; the return address
+    ex (sp), hl ; (SP)=return address, HL=MenuNode
+    push de ; nameSelector
+    ret ; jp (de)
+getMenuNameDefault:
+    ; A contains the menu string ID
     ld hl, mMenuNameTable
-    call getString
+    call getString ; HL=name string
     pop de
+    pop bc
     ret
