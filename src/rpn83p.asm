@@ -156,26 +156,13 @@ parseBufMan equ parseBufSize + 1
 parseBufMax equ 14
 parseBufSizeOf equ parseBufMax + 1
 
-; Floating point number buffer, 9 bytes for TI-OS:
-;
-;   struct floatBuf {
-;       uint8_t type;
-;       uint8_t exp;
-;       uint8_t man[7];
-;   }
-floatBuf equ parseBuf + parseBufSizeOf
-floatBufType equ floatBuf ; type
-floatBufExp equ floatBufType + 1 ; exponent, shifted by $80
-floatBufMan equ floatBufExp + 1 ; mantissa, 2 digits per byte
-floatBufSizeOf equ 9
-
 ; Menu variables. The C equivalent is:
 ;
 ;   struct menu {
 ;     uint8_t groupId; // id of the current menu group
 ;     uint8_t rowIndex; // menu row, groups of 5
 ;   }
-menuGroupId equ floatBuf + floatBufSizeOf
+menuGroupId equ parseBuf + parseBufSizeOf
 menuRowIndex equ menuGroupId + 1
 
 ; Menu name, copied here as a Pascal string.
@@ -208,6 +195,22 @@ curveFitModel equ argValue + argValueSizeOf
 
 ; End RPN83P variables. Total size of vars = rpnVarsEnd - rpnVarsBegin.
 rpnVarsEnd equ curveFitModel + 1
+
+; Floating point number buffer, used only within parseNumBase10(). It is used
+; only locally so it can probaly be anywhere. Let's just use OP3 instead of
+; dedicating space within the rpnVars area, because it does not need to be
+; backed up. I think any OPx register except OP1 will work.
+;
+;   struct floatBuf {
+;       uint8_t type;
+;       uint8_t exp;
+;       uint8_t man[7];
+;   }
+floatBuf equ OP3
+floatBufType equ floatBuf ; type
+floatBufExp equ floatBufType + 1 ; exponent, shifted by $80
+floatBufMan equ floatBufExp + 1 ; mantissa, 2 digits per byte
+floatBufSizeOf equ 9
 
 ;-----------------------------------------------------------------------------
 
