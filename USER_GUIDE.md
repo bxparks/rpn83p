@@ -1285,6 +1285,14 @@ between the 2 modes.
   A TI-BASIC program can access these List variables since they hold just normal
   9-byte floating point numbers.
 
+For a handful of configuration parameters, the RPN83P uses the same flags and
+global variables as the TI-OS. Changing these settings in RPN83P will cause the
+same change in the TI-OS (and vice versa) because the configuration parameters
+are shared:
+
+- trigonometric mode: `RAD` or `DEG`
+- floating point number settings: `FIX` (i.e. `NORMAL` in TI-OS), `SCI`, `ENG`
+
 ## Future Enhancements
 
 There seems to be almost an endless number of features that could go into a
