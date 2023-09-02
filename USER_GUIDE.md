@@ -1304,12 +1304,12 @@ limited:
       saved persistently.)
 - datetime conversions
     - date/time components to and from epoch seconds
-
-### Medium Future
-
 - compound `STO` and `RCL` operators
     - `STO+ nn`, `STO- nn`, `STO* nn`, `STO/ nn`
     - `RCL+ nn`, `RCL- nn`, `RCL* nn`, `RCL/ nn`
+
+### Medium Future
+
 - user-defined variables
     - The HP-42S shows user-defined variables through the menu system.
     - Nice feature, but would require substantial refactoring of the current
@@ -1351,6 +1351,12 @@ limited:
     - Might be useful to expose some system status functions, like memory.
     - We can always drop into the TI-OS and use `2ND` `MEM` to get that
       information, so it's not clear that this is worth the effort.
+- TVM (time value of money)
+    - the TI-84 Plus is bundled with a TVM app, but I find it unintuitive and
+      difficult to remember how to use
+    - the most intuitive UI in my opinion is the one used by the HP-12C
+    - if I recall, this requires implementing a root finder, since at least one
+      of the TVM variables does not have a closed-form solution
 
 ### Far Future
 
@@ -1369,6 +1375,12 @@ curiosity and the technical challenge:
     - It is not clear that adding matrix functions into a calculator is worth
       the effort. For non-trivial calculations, it is probably easier to use
       a desktop computer and application (e.g. MATLAB, Octave, Mathematica).
+- root finder (i.e. SOLVE)
+    - one of the hallmarks of advanced HP calculators, but I think this feature
+      would only be useful with keystroke programming
+- integration
+    - another feature of advanced HP calculators which also depends on keystroke
+      programming
 
 ### Not Planned
 
