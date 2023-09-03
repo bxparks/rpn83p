@@ -773,6 +773,14 @@ storeAppStateDelete:
     ; alway delete the app var if found
     bcall(_DelVarArc)
 storeAppStateCreate:
+    ; Fill in some header fields.
+    ld hl, rpn83pAppId
+    ld (appStateAppId), hl
+    ld hl, rpn83pSchemaVersion
+    ld (appStateSchemaVersion), hl
+    ld hl, 0 ; TODO: Fill this field with the actual CRC16-CCITT.
+    ld (appStateCrc16), hl
+    ; Transfer the appState data block.
     call setAppVarName
     ld hl, appStateSize
     bcall(_CreateAppVar) ; DE=pointer to appvar data
@@ -783,11 +791,11 @@ storeAppStateCreate:
     ldir ; transfer bytes
     ret
 
-; Description: Restore the RPN83P state from an AppVar named 'RPN8'.
+; Description: Restore the RPN83P application state from an AppVar named 'RPN8'.
 ; Output:
-;   CF=0: if restored correctly from AppVar
-;   CF=1: if AppVar does not exist, or was invalid for any reason. The
-;       application should initialize its state from scratch
+;   CF=0: if restored correctly from the AppVar
+;   CF=1: if the AppVar does not exist, or was invalid for any reason. The
+;       application should initialize its state from scratch.
 restoreAppState:
     call setAppVarName
     bcall(_ChkFindSym) ; DE=pointer to data
@@ -797,9 +805,11 @@ restoreAppState:
     inc hl
     ld d, (hl) ; DE=size of appVar
     inc hl
+    ; Validate the AppVar size
     push hl ; save data + 2
     ld hl, appStateSize
-    bcall(_CpHLDE) ; if HL==DE: ZF=1
+    or a ; CF=0
+    sbc hl, de ; if HL==DE: ZF=0
     pop hl ; HL=data + 2
     jr nz, restoreAppStateFailed
 restoreAppStateRead:
@@ -807,7 +817,20 @@ restoreAppStateRead:
     ld de, appStateBegin
     ld bc, appStateSize
     ldir
-    ; CF=0 from the bcall(_CpHLDE).
+restoreAppStateValidate:
+    ; Validate the appStateAppId
+    ld hl, (appStateAppId)
+    ld de, rpn83pAppId
+    or a ; CF=0
+    sbc hl, de
+    jr nz, restoreAppStateFailed
+    ; Validate the appStateSchemaVersion
+    ld hl, (appStateSchemaVersion)
+    ld de, rpn83pSchemaVersion
+    or a ; CF=0
+    sbc hl, de
+    jr nz, restoreAppStateFailed
+    or a ; CF=0
     ret
 restoreAppStateFailed:
     scf

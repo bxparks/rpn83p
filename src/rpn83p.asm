@@ -86,8 +86,28 @@ inputBufFlagsExpSign equ 4 ; exponent sign bit detected during parsing
 ; Application variables and buffers.
 ;-----------------------------------------------------------------------------
 
+; A random 16-bit integer that identifies the RPN83P app.
+rpn83pAppId equ $1E69
+
+; Increment the schema version when any variables are added or removed from the
+; appState data block. The schema version will be validated upon restoring the
+; application state from the AppVar.
+rpn83pSchemaVersion equ 0
+
 ; Begin application variables.
 appStateBegin equ tempSwapArea
+
+; CRC16CCITT of the appState data block, not including the CRC itself. 2 bytes.
+appStateCrc16 equ appStateBegin
+
+; A somewhat unique id to distinguish this app from other apps. 2 bytes.
+appStateAppId equ appStateCrc16 + 2
+
+; Schema version. 2 bytes. If we overflow the 16-bits, it's probably ok because
+; schema version 0 was probably created so far in the past the likelihood of a
+; conflict is minimal. However, if the overflow does cause a problem, there is
+; an escape hatch: we can create a new appStateAppId upon overflow.
+appStateSchemaVersion equ appStateAppId + 2
 
 ; The result code after the execution of each handler. Success is code 0. If a
 ; TI-OS exception is thrown (through a `bjump(ErrXxx)`), the exception handler
@@ -96,7 +116,7 @@ appStateBegin equ tempSwapArea
 ; upon success. (This makes coding easier because a successful handler can
 ; simply do a `ret` or a conditional `ret`.) A few handlers will set a custom,
 ; non-zero code to indicate an error.
-handlerCode equ appStateBegin
+handlerCode equ appStateSchemaVersion + 2
 
 ; The errorCode is displayed on the LCD screen if non-zero. This is set to the
 ; value of handlerCode after every execution of a handler. Inside a handler,
