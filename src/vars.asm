@@ -774,12 +774,12 @@ storeAppStateDelete:
     bcall(_DelVarArc)
 storeAppStateCreate:
     call setAppVarName
-    ld hl, rpnVarsSize
+    ld hl, appStateSize
     bcall(_CreateAppVar) ; DE=pointer to appvar data
     inc de
     inc de ; skip past the 2-byte size field
-    ld hl, rpnVarsBegin
-    ld bc, rpnVarsSize
+    ld hl, appStateBegin
+    ld bc, appStateSize
     ldir ; transfer bytes
     ret
 
@@ -798,14 +798,14 @@ restoreAppState:
     ld d, (hl) ; DE=size of appVar
     inc hl
     push hl ; save data + 2
-    ld hl, rpnVarsSize
+    ld hl, appStateSize
     bcall(_CpHLDE) ; if HL==DE: ZF=1
     pop hl ; HL=data + 2
     jr nz, restoreAppStateFailed
 restoreAppStateRead:
-    ; Read the AppVar data into rpnVarsBegin
-    ld de, rpnVarsBegin
-    ld bc, rpnVarsSize
+    ; Read the AppVar data into appStateBegin
+    ld de, appStateBegin
+    ld bc, appStateSize
     ldir
     ; CF=0 from the bcall(_CpHLDE).
     ret

@@ -86,8 +86,8 @@ inputBufFlagsExpSign equ 4 ; exponent sign bit detected during parsing
 ; Application variables and buffers.
 ;-----------------------------------------------------------------------------
 
-; Begin RPN83P variables.
-rpnVarsBegin equ tempSwapArea
+; Begin application variables.
+appStateBegin equ tempSwapArea
 
 ; The result code after the execution of each handler. Success is code 0. If a
 ; TI-OS exception is thrown (through a `bjump(ErrXxx)`), the exception handler
@@ -96,7 +96,7 @@ rpnVarsBegin equ tempSwapArea
 ; upon success. (This makes coding easier because a successful handler can
 ; simply do a `ret` or a conditional `ret`.) A few handlers will set a custom,
 ; non-zero code to indicate an error.
-handlerCode equ rpnVarsBegin
+handlerCode equ appStateBegin
 
 ; The errorCode is displayed on the LCD screen if non-zero. This is set to the
 ; value of handlerCode after every execution of a handler. Inside a handler,
@@ -193,15 +193,15 @@ argValueSizeOf equ 1
 ; Least square curve fit model.
 curveFitModel equ argValue + argValueSizeOf
 
-; End RPN83P variables.
-rpnVarsEnd equ curveFitModel + 1
+; End application variables.
+appStateEnd equ curveFitModel + 1
 
 ; Total size of vars
-rpnVarsSize equ (rpnVarsEnd - rpnVarsBegin)
+appStateSize equ (appStateEnd - appStateBegin)
 
 ; Floating point number buffer, used only within parseNumBase10(). It is used
 ; only locally so it can probaly be anywhere. Let's just use OP3 instead of
-; dedicating space within the rpnVars area, because it does not need to be
+; dedicating space within the appState area, because it does not need to be
 ; backed up. I think any OPx register except OP1 will work.
 ;
 ;   struct floatBuf {
