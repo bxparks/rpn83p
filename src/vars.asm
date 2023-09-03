@@ -753,18 +753,18 @@ clearStatRegsEntry:
     ret
 
 ;-----------------------------------------------------------------------------
-; Manage app state using an AppVar named 'RPN8'.
+; Manage app state using an AppVar named 'RPN83SAV'.
 ;-----------------------------------------------------------------------------
 
 appVarName:
-    .db AppVarObj, "RPN8", 0
+    .db AppVarObj, "RPN83SAV" ; max 8 characters, NUL terminated if < 8
 
 setAppVarName:
     ld hl, appVarName
     bcall(_Mov9ToOP1)
     ret
 
-; Description: Store the RPN83P state to an AppVar named 'RPN8'.
+; Description: Store the RPN83P state to an AppVar named 'RPN83SAV'.
 storeAppState:
     call setAppVarName
     bcall(_ChkFindSym)
@@ -801,7 +801,8 @@ storeAppStateCreate:
     ldir ; transfer bytes
     ret
 
-; Description: Restore the RPN83P application state from an AppVar named 'RPN8'.
+; Description: Restore the RPN83P application state from an AppVar named
+; 'RPN83SAV'.
 ; Output:
 ;   CF=0: if restored correctly from the AppVar
 ;   CF=1: if the AppVar does not exist, or was invalid for any reason. The

@@ -94,23 +94,36 @@ rpn83pAppId equ $1E69
 ; application state from the AppVar.
 rpn83pSchemaVersion equ 1
 
-; Begin application variables.
+; Begin application variables at tempSwapArea. According to the TI-83 Plus SDK
+; docs: "tempSwapArea (82A5h) This is the start of 323 bytes used only during
+; Flash ROM loading. If this area is used, avoid archiving variables."
 appStateBegin equ tempSwapArea
 
 ; CRC16CCITT of the appState data block, not including the CRC itself. 2 bytes.
+; This is used only in storeAppState() and restoreAppState(), so in theory, we
+; could remove it from here and save it only in the RPN83SAV AppVar. The
+; advantage of duplicating the CRC here is that the content of the AppVar
+; becomes *exactly* the same as this appState data block, so the serialization
+; and deserialization code becomes almost trivial. Two bytes is not a large
+; amount of memory, so let's keep things simple and duplicate the CRC field
+; here.
 appStateCrc16 equ appStateBegin
 
 ; A somewhat unique id to distinguish this app from other apps. 2 bytes.
+; Similar to the 'appStateCrc16' field, this does not need to be in the
+; appState data block. But this simplifies the serialization code.
 appStateAppId equ appStateCrc16 + 2
 
 ; Schema version. 2 bytes. If we overflow the 16-bits, it's probably ok because
 ; schema version 0 was probably created so far in the past the likelihood of a
 ; conflict is minimal. However, if the overflow does cause a problem, there is
-; an escape hatch: we can create a new appStateAppId upon overflow.
+; an escape hatch: we can create a new appStateAppId upon overflow. Similar to
+; AppStateAppId and appStateCrc16, this field does not need to be here, but
+; having it here simplifies the serialization code.
 appStateSchemaVersion equ appStateAppId + 2
 
-; Copy of the 3 asm_FlagN flags. These will be populated by storeAppState(),
-; and copied into asm_FlagN by restoreAppState().
+; Copy of the 3 asm_FlagN flags. These will be serialized into RPN83SAV by
+; storeAppState(), and deserialized into asm_FlagN by restoreAppState().
 appStateDirtyFlags equ appStateSchemaVersion + 2
 appStateRpnFlags equ appStateDirtyFlags + 1
 appStateInputBufFlags equ appStateRpnFlags + 1
