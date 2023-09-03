@@ -773,12 +773,19 @@ storeAppStateDelete:
     ; alway delete the app var if found
     bcall(_DelVarArc)
 storeAppStateCreate:
-    ; Fill in some header fields.
+    ; Fill in the appId and schemaVersion fields.
     ld hl, rpn83pAppId
     ld (appStateAppId), hl
     ld hl, rpn83pSchemaVersion
     ld (appStateSchemaVersion), hl
-    ; Fill in the CRC16
+    ; Copy the app flags into the appState fields.
+    ld a, (iy + dirtyFlags)
+    ld (appStateDirtyFlags), a
+    ld a, (iy + rpnFlags)
+    ld (appStateRpnFlags), a
+    ld a, (iy + inputBufFlags)
+    ld (appStateInputBufFlags), a
+    ; Calculate the CRC16 on the data block.
     ld hl, appStateBegin + 2 ; don't include the CRC16 field itself
     ld bc, appStateSize - 2 ; don't include the CRC16 field itself
     call crc16ccitt
@@ -841,6 +848,13 @@ restoreAppStateValidate:
     or a ; CF=0
     sbc hl, de
     jr nz, restoreAppStateFailed
+    ; Restore the app flags
+    ld a, (appStateDirtyFlags)
+    ld (iy + dirtyFlags), a
+    ld a, (appStateRpnFlags)
+    ld (iy + rpnFlags), a
+    ld a, (appStateInputBufFlags)
+    ld (iy + inputBufFlags), a
     ; Validation passed
     or a ; CF=0
     ret

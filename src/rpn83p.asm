@@ -92,7 +92,7 @@ rpn83pAppId equ $1E69
 ; Increment the schema version when any variables are added or removed from the
 ; appState data block. The schema version will be validated upon restoring the
 ; application state from the AppVar.
-rpn83pSchemaVersion equ 0
+rpn83pSchemaVersion equ 1
 
 ; Begin application variables.
 appStateBegin equ tempSwapArea
@@ -109,6 +109,12 @@ appStateAppId equ appStateCrc16 + 2
 ; an escape hatch: we can create a new appStateAppId upon overflow.
 appStateSchemaVersion equ appStateAppId + 2
 
+; Copy of the 3 asm_FlagN flags. These will be populated by storeAppState(),
+; and copied into asm_FlagN by restoreAppState().
+appStateDirtyFlags equ appStateSchemaVersion + 2
+appStateRpnFlags equ appStateDirtyFlags + 1
+appStateInputBufFlags equ appStateRpnFlags + 1
+
 ; The result code after the execution of each handler. Success is code 0. If a
 ; TI-OS exception is thrown (through a `bjump(ErrXxx)`), the exception handler
 ; places a system error code into here. Before calling a handler, set this to 0
@@ -116,7 +122,7 @@ appStateSchemaVersion equ appStateAppId + 2
 ; upon success. (This makes coding easier because a successful handler can
 ; simply do a `ret` or a conditional `ret`.) A few handlers will set a custom,
 ; non-zero code to indicate an error.
-handlerCode equ appStateSchemaVersion + 2
+handlerCode equ appStateInputBufFlags + 1
 
 ; The errorCode is displayed on the LCD screen if non-zero. This is set to the
 ; value of handlerCode after every execution of a handler. Inside a handler,
