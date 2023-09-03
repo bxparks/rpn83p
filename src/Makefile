@@ -8,6 +8,7 @@ SRCS := \
 	cfithandlers.asm \
 	common.asm \
 	const.asm \
+	crc.asm \
 	debug.asm \
 	display.asm \
 	errorcode.asm \

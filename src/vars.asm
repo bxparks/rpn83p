@@ -778,7 +778,10 @@ storeAppStateCreate:
     ld (appStateAppId), hl
     ld hl, rpn83pSchemaVersion
     ld (appStateSchemaVersion), hl
-    ld hl, 0 ; TODO: Fill this field with the actual CRC16-CCITT.
+    ; Fill in the CRC16
+    ld hl, appStateBegin + 2 ; don't include the CRC16 field itself
+    ld bc, appStateSize - 2 ; don't include the CRC16 field itself
+    call crc16ccitt
     ld (appStateCrc16), hl
     ; Transfer the appState data block.
     call setAppVarName
@@ -830,6 +833,15 @@ restoreAppStateValidate:
     or a ; CF=0
     sbc hl, de
     jr nz, restoreAppStateFailed
+    ; Validate the CRC16
+    ld hl, appStateBegin + 2 ; don't include the CRC16 field itself
+    ld bc, appStateSize - 2 ; don't include the CRC16 field itself
+    call crc16ccitt
+    ld de, (appStateCrc16)
+    or a ; CF=0
+    sbc hl, de
+    jr nz, restoreAppStateFailed
+    ; Validation passed
     or a ; CF=0
     ret
 restoreAppStateFailed:

@@ -348,6 +348,7 @@ mainExit:
 #include "debug.asm"
 #endif
 #include "common.asm"
+#include "crc.asm"
 #include "const.asm"
 #include "handlertab.asm"
 #include "menudef.asm"
