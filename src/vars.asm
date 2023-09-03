@@ -751,3 +751,64 @@ clearStatRegsEntry:
     pop bc
     djnz clearStatRegsLoop
     ret
+
+;-----------------------------------------------------------------------------
+; Manage app state using an AppVar named 'RPN8'.
+;-----------------------------------------------------------------------------
+
+appVarName:
+    .db AppVarObj, "RPN8", 0
+
+setAppVarName:
+    ld hl, appVarName
+    bcall(_Mov9ToOP1)
+    ret
+
+; Description: Store the RPN83P state to an AppVar named 'RPN8'.
+storeAppState:
+    call setAppVarName
+    bcall(_ChkFindSym)
+    jr c, storeAppStateCreate ; if CF=1: not found
+storeAppStateDelete:
+    ; alway delete the app var if found
+    bcall(_DelVarArc)
+storeAppStateCreate:
+    call setAppVarName
+    ld hl, rpnVarsSize
+    bcall(_CreateAppVar) ; DE=pointer to appvar data
+    inc de
+    inc de ; skip past the 2-byte size field
+    ld hl, rpnVarsBegin
+    ld bc, rpnVarsSize
+    ldir ; transfer bytes
+    ret
+
+; Description: Restore the RPN83P state from an AppVar named 'RPN8'.
+; Output:
+;   CF=0: if restored correctly from AppVar
+;   CF=1: if AppVar does not exist, or was invalid for any reason. The
+;       application should initialize its state from scratch
+restoreAppState:
+    call setAppVarName
+    bcall(_ChkFindSym) ; DE=pointer to data
+    ret c ; CF=1 if not found
+    ex de, hl; HL=pointer to data
+    ld e, (hl)
+    inc hl
+    ld d, (hl) ; DE=size of appVar
+    inc hl
+    push hl ; save data + 2
+    ld hl, rpnVarsSize
+    bcall(_CpHLDE) ; if HL==DE: ZF=1
+    pop hl ; HL=data + 2
+    jr nz, restoreAppStateFailed
+restoreAppStateRead:
+    ; Read the AppVar data into rpnVarsBegin
+    ld de, rpnVarsBegin
+    ld bc, rpnVarsSize
+    ldir
+    ; CF=0 from the bcall(_CpHLDE).
+    ret
+restoreAppStateFailed:
+    scf
+    ret

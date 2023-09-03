@@ -193,8 +193,11 @@ argValueSizeOf equ 1
 ; Least square curve fit model.
 curveFitModel equ argValue + argValueSizeOf
 
-; End RPN83P variables. Total size of vars = rpnVarsEnd - rpnVarsBegin.
+; End RPN83P variables.
 rpnVarsEnd equ curveFitModel + 1
+
+; Total size of vars
+rpnVarsSize equ (rpnVarsEnd - rpnVarsBegin)
 
 ; Floating point number buffer, used only within parseNumBase10(). It is used
 ; only locally so it can probaly be anywhere. Let's just use OP3 instead of
@@ -226,16 +229,19 @@ main:
     res lwrCaseActive, (iy + appLwrCaseFlag) ; disable ALPHA-ALPHA lowercase
     bcall(_ClrLCDFull)
 
+    call restoreAppState
+    jr nc, initAlways
     call initErrorCode
     call initInputBuf
     call initArgBuf
     call initStack
     call initRegs
     call initMenu
-    call initDisplay
     call initBase
     call initStat
     call initCfit
+initAlways:
+    call initDisplay
     ; [[fall through]]
 
 ; The main event/read loop. Read button and dispatch to the appropriate
@@ -293,6 +299,7 @@ readLoopException:
 
 ; Clean up and exit app.
 mainExit:
+    call storeAppState
     set appAutoScroll, (iy + appFlags)
     bcall(_ClrLCDFull)
     bcall(_HomeUp)
