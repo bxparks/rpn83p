@@ -17,13 +17,9 @@
 
 .nolist
 #include "ti83plus.inc"
-
-#ifdef FLASHAPP
 #include "app.inc"
 ; Define single page flash app
 defpage(0, "RPN83P")
-#endif
-
 .list
 
 ;-----------------------------------------------------------------------------
@@ -256,10 +252,9 @@ floatBufSizeOf equ 9
 
 ;-----------------------------------------------------------------------------
 
-#ifndef FLASHAPP
-.org userMem - 2
-.db t2ByteTok, tAsmCmp
-#endif
+; Commented out, not needed for flash app.
+; .org userMem - 2
+; .db t2ByteTok, tAsmCmp
 
 main:
     bcall(_RunIndicOff)
@@ -342,7 +337,6 @@ readLoopException:
     call setHandlerCodeToSystemCode
     jr readLoopSetErrorCode
 
-#ifdef FLASHAPP
 ; Clean up and exit app.
 ;   - Called explicitly upon 2ND QUIT.
 ;   - Called by TI-OS application monitor upon 2ND OFF.
@@ -382,18 +376,6 @@ appVectors:
 dummyVector:
     ret
 
-#else
-
-mainExit:
-    ; Clean up for normal assembly language program.
-    call storeAppState
-    set appAutoScroll, (iy + appFlags)
-    ld (iy + textFlags), 0 ; reset text flags
-    bcall(_ClrLCDFull)
-    bcall(_HomeUp)
-    ret
-#endif
-
 ;-----------------------------------------------------------------------------
 
 #include "vars.asm"
@@ -422,7 +404,5 @@ mainExit:
 
 ;-----------------------------------------------------------------------------
 
-#ifdef FLASHAPP
 ; Not sure if this needs to go before or after the `.end`.
 validate()
-#endif
