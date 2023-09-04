@@ -280,7 +280,13 @@ main:
     call initStat
     call initCfit
 initAlways:
+    ; Always initialize the display.
     call initDisplay
+
+    ; Initialize the App monitor so that we can intercept the Put Away (2ND
+    ; OFF) signal.
+    ld hl, appVectors
+    bcall(_AppInit)
     ; [[fall through]]
 
 ; The main event/read loop. Read button and dispatch to the appropriate
@@ -336,15 +342,55 @@ readLoopException:
     call setHandlerCodeToSystemCode
     jr readLoopSetErrorCode
 
+#ifdef FLASHAPP
 ; Clean up and exit app.
+;   - Called explicitly upon 2ND QUIT.
+;   - Called by TI-OS application monitor upon 2ND OFF.
 mainExit:
     call storeAppState
     set appAutoScroll, (iy + appFlags)
+    ld (iy + textFlags), 0 ; reset text flags
     bcall(_ClrLCDFull)
     bcall(_HomeUp)
-#ifdef FLASHAPP
-    bjump(_JForceCmdNoChar)
+
+    bcall(_ReloadAppEntryVecs) ; App Loader in control of monitor
+    bit monAbandon, (iy + monFlags) ; if turning off: ZF=1
+    jr nz, appTurningOff
+    ; If not turning off, then force control back to the home screen.
+    ; Note: this will terminate the link activity that caused the application
+    ; to be terminated.
+    ld a, iAll ; all interrupts on
+    out (intrptEnPort), a
+    bcall(_LCD_DRIVERON) ; turn on the LCD
+    set onRunning, (iy + onFlags) ; on interrupt running
+    ei ; enable interrupts
+    bjump(_JForceCmdNoChar) ; force to home screen
+appTurningOff:
+    bjump(_PutAway) ; force App locader to do its put away
+
+; Set up the AppVectors so that we can intercept the Put Away Notification upon
+; '2ND QUIT' or '2ND OFF'. See TI-83 Plus SDK documentation.
+appVectors:
+    .dw dummyVector
+    .dw dummyVector
+    .dw mainExit
+    .dw dummyVector
+    .dw dummyVector
+    .dw dummyVector
+    .db appTextSaveF
+
+dummyVector:
+    ret
+
 #else
+
+mainExit:
+    ; Clean up for normal assembly language program.
+    call storeAppState
+    set appAutoScroll, (iy + appFlags)
+    ld (iy + textFlags), 0 ; reset text flags
+    bcall(_ClrLCDFull)
+    bcall(_HomeUp)
     ret
 #endif
 
