@@ -2,7 +2,7 @@
 
 RPN calculator app for the TI-83 Plus and TI-84 Plus inspired by the HP-42S.
 
-**Version**: 0.5.0 (2023-08-31)
+**Version**: 0.6.0-dev (2023-09-04)
 
 **Project Home**: https://github.com/bxparks/rpn83p
 
@@ -63,8 +63,8 @@ of some older HP calculators like the
 
 The RPN83P is a flash application that consumes one page (16 kB) of flash
 memory. Since it is stored in flash, it is preserved if the RAM is cleared. It
-consumes a small amount of TI-OS RAM: 2 list variables named `REGS` and `STK`
-which are 240 bytes and 59 bytes respectively.
+consumes a small amount of TI-OS RAM: 2 list variables named `REGS` (240 bytes)
+and `STK` (59 byte), and an appVar named `RPN83SAV` (75 bytes).
 
 Here the quick summary of its features:
 
@@ -219,6 +219,10 @@ The RPN83P application can be quit using:
 - `2ND` `QUIT`: to exit to normal TI calculator
 - `2ND` `OFF`: to turn the calculator off (the RPN registers and storage
   registers will be preserved)
+
+Upon exit, the state of the RPN83P app will be saved in an AppVar named
+`RPN83SAV`. When the app is restarted, the calculator will resume from exactly
+where it left off, including the exact cursor position of any pending input.
 
 ## Basic Usage
 
