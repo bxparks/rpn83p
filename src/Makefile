@@ -8,6 +8,7 @@ SRCS := \
 	cfithandlers.asm \
 	common.asm \
 	const.asm \
+	crc.asm \
 	debug.asm \
 	display.asm \
 	errorcode.asm \
@@ -26,10 +27,6 @@ SRCS := \
 
 # TI Flash app
 rpn83p.8xk: $(SRCS) Makefile
-	$(SPASM) -DFLASHAPP -I $(SPASM_INC) -N rpn83p.asm $@
-
-# TI Assembly program
-rpn83p.8xp: $(SRCS) Makefile
 	$(SPASM) -I $(SPASM_INC) -N rpn83p.asm $@
 
 # Debug version of assembly prpgram.
