@@ -3,6 +3,9 @@
 - Unreleased
     - preserve the application state into an appvar named `RPN83SAV` upon exit
         - reconstruct the application state upon restart
+    - save `X` register to TI-OS `ANS` only on `2ND QUIT` or `2ND OFF`, instead
+      of saving to `ANS` every time `X` is changed
+        - no user-visible change, but more efficient internally
 - 0.5.0 (2023-08-31)
     - `USER_GUIDE.md`, `README.md`
         - Update "Menu Indicator Arrows" section with latest screenshots which

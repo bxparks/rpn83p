@@ -1284,14 +1284,14 @@ The RPN83P app interacts with the underlying TI-OS in the following ways.
 - An appVar named `RPN83SAV` is used to preserve the internal state of the app
   upon exiting. When the app is restarted, the appVar is read back in, so that
   it can continue exactly where it had left off.
-- The `X` register of RPN83P is always synchronized with the `ANS` variable in
-  the TI-OS. After the RPN83P app exits, the most recent `X` register value
+- The `X` register of RPN83P is copied to the `ANS` variable in the TI-OS when
+  the RPN83P app exits. This means that the most recent `X` register from RPN83P
   is available in the TI-OS calculator using `2ND` `ANS`.
 - When the RPN83P app is started, it examines the content of the `ANS` variable.
   If it is a Real value (i.e. not complex, not a matrix, not a string, etc),
-  then it is copied into the `LastX` register of the RPN83P. The `LastX`
-  register is available in RPN83P as `2ND` `ANS` (because `2ND` `ANS` is bound
-  to be the `LastX` function of the RPN stack.)
+  then it is copied into the `LastX` register of the RPN83P. Since the `LastX`
+  functionality is invoked in RPN83P as `2ND` `ANS`, this means that the TI-OS
+  `ANS` value becomes available in RPN83P as `2ND` `ANS`.
 
 For a handful of configuration parameters, the RPN83P uses the same flags and
 global variables as the TI-OS. Changing these settings in RPN83P will cause the

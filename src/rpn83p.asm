@@ -275,8 +275,10 @@ main:
     call initStat
     call initCfit
 initAlways:
-    ; Always initialize the display.
-    call initDisplay
+    ; Conditional initializations, regardless of success/failure of
+    ; restoreAppState()
+    call initLastX ; Always copy TI-OS 'ANS' to 'X'
+    call initDisplay ; Always initialize the display.
 
     ; Initialize the App monitor so that we can intercept the Put Away (2ND
     ; OFF) signal.
@@ -341,6 +343,8 @@ readLoopException:
 ;   - Called explicitly upon 2ND QUIT.
 ;   - Called by TI-OS application monitor upon 2ND OFF.
 mainExit:
+    call rclX
+    bcall(_StoAns) ; transfer RPN83P 'X' to TI-OS 'ANS'
     call storeAppState
     set appAutoScroll, (iy + appFlags)
     ld (iy + textFlags), 0 ; reset text flags

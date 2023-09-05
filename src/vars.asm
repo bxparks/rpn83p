@@ -116,7 +116,7 @@ initStackCheckSize:
     ex de, hl
     ld de, stackSize
     bcall(_CpHLDE) ; if dim(STK) == 5: ZF=1
-    jr z, initLastX ; STK is Real, and sizeof 5, all ok
+    ret z ; STK is Real, size==5, all ok
 initStackWrongSize:
     ; wrong size, so delete and recreate
     call setStackName ; OP1="STK"
@@ -128,8 +128,7 @@ initStackCreate:
     call setStackName
     ld hl, stackSize
     bcall(_CreateRList)
-    call clearStackAltEntry
-    ; [[fallthrough]]
+    jr clearStackAltEntry
 
 ; Description: Initialize LastX with the contents of 'ANS' variable from TI-OS.
 ; If the ANS is not Real, do nothing.
@@ -226,7 +225,6 @@ rclX:
 ; exiting the RPN83P app, the TI-OS can access the most current X value using
 ; `ANS`.
 stoX:
-    bcall(_StoAns) ; mirror X register to TI-OS 'ANS' variable.
     ld a, stackXIndex
     jr stoStackNN
 
