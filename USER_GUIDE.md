@@ -42,7 +42,7 @@ RPN calculator app for the TI-83 Plus and TI-84 Plus inspired by the HP-42S.
     - [Storage Registers](#storage-registers)
     - [Prime Factors](#prime-factors)
     - [STAT Functions](#stat-functions)
-    - [TI-OS Interoperability](#ti-os-interoperability)
+- [TI-OS Interaction](#ti-os-interaction)
 - [Future Enhancements](#future-enhancements)
     - [Near Future](#near-future)
     - [Medium Future](#medium-future)
@@ -223,6 +223,9 @@ The RPN83P application can be quit using:
 Upon exit, the state of the RPN83P app will be saved in an AppVar named
 `RPN83SAV`. When the app is restarted, the calculator will resume from exactly
 where it left off, including the exact cursor position of any pending input.
+When restarted, if the `RPN83SAV` variable does not pass validation (e.g. does
+not exist; was archived; is wrong size; contains an incompatible schema version;
+does not pass a CRC checksum) then the application starts from a clean slate.
 
 ## Basic Usage
 
@@ -1267,12 +1270,20 @@ coefficient of `r=.29635` is quite low, and the power fit may not be a good
 model for this data. For example, typing `20` `Y>X` (max rainfall of 20.0) gives
 an `X=752.098` (a minimum rainfall of 752) which is not reasonable.
 
-### TI-OS Interoperability
+### TI-OS Interaction
 
-Although the RPN83P was not designed to interoperate with the underlying TI-OS
-calculator functions, a few features were added to allow *some* data sharing
-between the 2 modes.
+The RPN83P app interacts with the underlying TI-OS in the following ways.
 
+- Two TI-OS List variables are used to store its internal floating point
+  numbers:
+    - `STK` holds the RPN stack registers (`X`, `Y`, `Z`, `T`, `LastX`)
+    - `REGS` holds the 25 storage registers `R00` to `R24`
+
+  A TI-BASIC program can access these List variables since they hold just normal
+  9-byte floating point numbers.
+- An appVar named `RPN83SAV` is used to preserve the internal state of the app
+  upon exiting. When the app is restarted, the appVar is read back in, so that
+  it can continue exactly where it had left off.
 - The `X` register of RPN83P is always synchronized with the `ANS` variable in
   the TI-OS. After the RPN83P app exits, the most recent `X` register value
   is available in the TI-OS calculator using `2ND` `ANS`.
@@ -1281,13 +1292,6 @@ between the 2 modes.
   then it is copied into the `LastX` register of the RPN83P. The `LastX`
   register is available in RPN83P as `2ND` `ANS` (because `2ND` `ANS` is bound
   to be the `LastX` function of the RPN stack.)
-- The RPN83P app uses 2 TI-OS List variables to store its internal floating
-  point numbers:
-    - `STK` holds the RPN stack registers (`X`, `Y`, `Z`, `T`, `LastX`)
-    - `REGS` holds the 25 storage registers `R00` to `R24`
-
-  A TI-BASIC program can access these List variables since they hold just normal
-  9-byte floating point numbers.
 
 For a handful of configuration parameters, the RPN83P uses the same flags and
 global variables as the TI-OS. Changing these settings in RPN83P will cause the
@@ -1309,11 +1313,6 @@ limited:
     - Maybe extend this to `< 2^16` or `<2^32`.
 - `GCD` and `LCM` functions are slow
     - Could be made significantly faster.
-- save application configurations upon quitting
-    - DEC/HEX/OCT/BIN base mode settings
-    - current state of input buffer
-    - (The RPN stack (X, Y, Z, T, LastX) and storage registers (R00 - R24) are
-      saved persistently.)
 - datetime conversions
     - date/time components to and from epoch seconds
 - compound `STO` and `RCL` operators

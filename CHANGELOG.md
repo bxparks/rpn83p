@@ -1,6 +1,8 @@
 # Changelog
 
 - Unreleased
+    - preserve the application state into an appvar named `RPN83SAV` upon exit
+        - reconstruct the application state upon restart
 - 0.5.0 (2023-08-31)
     - `USER_GUIDE.md`, `README.md`
         - Update "Menu Indicator Arrows" section with latest screenshots which
