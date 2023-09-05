@@ -89,7 +89,7 @@ Here the quick summary of its features:
       (ceiling), `NEAR` (nearest integer)
     - probability: `PERM`, `COMB`, `N!`, `RAND`, `SEED`
     - hyperbolic: `SINH`, `COSH`, `TANH`, etc.
-    - angle conversions: `>DEG`, `>RAD`, `>HR`, `>HMS`, `P>R`, `R>P`
+    - angle conversions: `>DEG`, `>RAD`, `>HR`, `>HMS`, `>REC`, `>POL`
     - unit conversions: `>C`, `>F`, `>km`, `>mi`, etc
     - base conversions: `DEC`, `HEX`, `OCT`, `BIN`
     - bitwise operations: `AND`, `OR`, `XOR`, `NOT`, `NEG`, `SL`, `SR`, `RL`,
@@ -631,10 +631,10 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (back), and `MATH`
     - ![CONV MenuRow 2](docs/rpn83p-screenshot-menu-root-conv-2.png)
     - `>DEG`: convert radians to degrees
     - `>RAD`: convert degrees to radians
-    - `P>R`: polar to rectangular
+    - `>REC`: polar to rectangular
         - input (`Y`, `X`) = `r`, `theta`
         - output (`Y`, `X`) = `x`, `y`
-    - `R>P`: rectangular to polar
+    - `>POL`: rectangular to polar
         - input (`Y`, `X`) = (`x`, `y`)
         - output (`Y`, `X`) = (`r`, `theta`)
     - `>HR`: convert `HH.MMSSssss` to `HH.hhhh`
@@ -891,8 +891,8 @@ Press the `DEG` menu button to change to degree mode. The top status line shows
 
 We can calculate `sin(30deg)` by typing: `30` `SIN` to get `0.5`.
 
-**Warning**: The polar to rectangular conversion functions (`R>P` and `P>R`) are
-also affected by the current Trig Mode setting.
+**Warning**: The polar to rectangular conversion functions (`>REC` and `>POL`)
+are also affected by the current Trig Mode setting.
 
 **HP-42S Compatibility Note**: The RPN83P does not offer the
 [gradian](https://en.wikipedia.org/wiki/Gradian) mode `GRAD` because the

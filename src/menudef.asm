@@ -1871,9 +1871,9 @@ mRToDName:
 mDToRName:
     .db Sconvert, 'R', 'A', 'D', 0
 mPToRName:
-    .db 'P', Sconvert, 'R', 0
+    .db Sconvert, 'R', 'E', 'C', 0
 mRToPName:
-    .db 'R', Sconvert, 'P', 0
+    .db Sconvert, 'P', 'O', 'L', 0
 mHmsToHrName:
     .db Sconvert, 'H', 'R', 0
 mHrToHmsName:

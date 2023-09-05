@@ -115,8 +115,8 @@ MenuGroup root mRoot [
         MenuItem <Sconvert>DEG mRToD
         MenuItem <Sconvert>RAD mDToR
         MenuItem * *
-        MenuItem P<Sconvert>R mPToR
-        MenuItem R<Sconvert>P mRToP
+        MenuItem <Sconvert>REC mPToR
+        MenuItem <Sconvert>POL mRToP
       ]
       MenuRow [
         MenuItem <Sconvert>HR mHmsToHr

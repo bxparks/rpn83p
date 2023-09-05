@@ -6,6 +6,11 @@
     - save `X` register to TI-OS `ANS` only on `2ND QUIT` or `2ND OFF`, instead
       of saving to `ANS` every time `X` is changed
         - no user-visible change, but more efficient internally
+    - rename `P>R` to `>REC`, and `R>P` to `>POL`
+        - for consistency with other conversion functions, and for consistency
+          with HP-42S
+        - I prefer the `P>R` and `R>P` but the difference is not worth breaking
+          consistency
 - 0.5.0 (2023-08-31)
     - `USER_GUIDE.md`, `README.md`
         - Update "Menu Indicator Arrows" section with latest screenshots which
