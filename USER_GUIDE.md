@@ -697,8 +697,8 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (back), and `MATH`
         - `weighted mean X = Sum(XY)/Sum(Y)`
     - `N`: return the number of data items entered
     - `SDEV`: sample standard deviation of `Y` and `X`
-        - `sdev(X) = (N/(N-1)) pdev(X)`
-        - `sdev(Y) = (N/(N-1)) pdev(Y)`
+        - `sdev(X) = sqrt(N/(N-1)) pdev(X)`
+        - `sdev(Y) = sqrt(N/(N-1)) pdev(Y)`
     - `SCOV`: sample covariance
         - `scov(X,Y) = (N/(N-1)) pcov(X,Y)`
     - `PDEV`: population standard deviation of `Y` and `X`
