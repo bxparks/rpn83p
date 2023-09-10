@@ -615,11 +615,12 @@ class SymbolGenerator:
             if entry is not None:
                 # Cannot have duplicate MenuGroup, ever.
                 if entry["mtype"] == MENU_TYPE_GROUP or \
-                    node["mtype"] == MENU_TYPE_GROUP:
-                    raise ValueError(f"Duplicate MenuItem.name '{name}'")
+                        node["mtype"] == MENU_TYPE_GROUP:
+                    raise ValueError(f"Duplicate MenuGroup.name '{name}'")
                 # Allow dupes for MenuItem or MenuItemAlt.
                 if entry["mtype"] != node["mtype"]:
-                    raise ValueError(f"Duplicate MenuItem.name '{name}'")
+                    raise ValueError(
+                        f"Duplicate MenuItem or MenuItemAlt '{name}'")
             self.name_map[name] = node
 
             # Labels must always be unique, because they are used prefixes for
