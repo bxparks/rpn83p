@@ -56,7 +56,6 @@ MenuConfig [
   ItemNameId mNullNameId
   ItemHandler mNullHandler
   GroupHandler mGroupHandler
-  # NameHandler mNameHandler
 ]
 
 # Defines the hierarchy of menus.
