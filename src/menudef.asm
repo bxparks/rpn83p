@@ -103,7 +103,7 @@ mBaseId equ 7
     .db mBaseNameId ; nameId
     .db 4 ; numRows
     .db mDecId ; rowBeginId or altNameId
-    .dw mGroupHandler ; handler (predefined)
+    .dw mBaseHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
 mHyperbolic:
 mHyperbolicId equ 8

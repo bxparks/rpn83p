@@ -14,7 +14,7 @@
 #     | 'ItemNameId' value
 #     | 'ItemHandler' value
 #     | 'GroupHandler' value
-#   menugroup =  'MenuGroup' groupname grouplabel '[' menurow* ']'
+#   menugroup =  'MenuGroup' groupname grouplabel [handler] '[' menurow* ']'
 #   menurow = 'MenuRow' '[' menunode*5 ']'
 #   menunode = menuitem | menuitemalt | menugroup
 #   menuitem = 'MenuItem' itemname itemlabel
@@ -47,6 +47,8 @@
 #       other identifiers such as "mNumId", "mNumNameId").
 #   - fonttag: a symbol from the TI-OS Small Font table, e.g. '<Sdegree>'
 #   - MenuRow: always has 5 menu nodes
+#   - MenuGroup: supports an optional 3rd argument `handler` that overrides
+#     the default handler defined by the `GroupHandler` config command
 
 # Define the defaults for blank menu items and menu groups.
 MenuConfig [
@@ -133,7 +135,9 @@ MenuGroup root mRoot [
     MenuItem HELP mHelp
   ]
   MenuRow [
-    MenuGroup BASE mBase [
+    # Override the default mGroupHandler for BASE to revert to DEC mode upon
+    # exit.
+    MenuGroup BASE mBase mBaseHandler [
       MenuRow [
         MenuItemAlt DEC DEC<Sblock> mDec # decimal
         MenuItemAlt HEX HEX<Sblock> mHex # hexadecimal

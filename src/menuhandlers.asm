@@ -28,15 +28,18 @@ mNotYetHandler:
 ; Input:
 ;   A: nodeId of the select menu item
 ;   HL: pointer to MenuNode that was activated (ignored)
+;   CF: 0 upon entry into group; 1 upon exit from group
 ; Output: (menuGroupId) and (menuRowIndex) updated
 ; Destroys: A
 mGroupHandler:
+    ret c ; do nothing when exiting the group
     ld (menuGroupId), a
     xor a
     ld (menuRowIndex), a
     set dirtyFlagsMenu, (iy + dirtyFlags)
     ret
 
+; TODO: Delete this. Obsoleted by XxxNameSelector.
 ; Description: Return the display name of the given menu node.
 ; Input:
 ;   A: nodeId of the select menu item
@@ -136,7 +139,7 @@ helpPages:
 
 msgHelpPage1:
     .db escapeLargeFont, "RPN83P", Lenter
-    .db escapeSmallFont, "v0.6.0-dev (2023", Shyphen, "09", Shyphen, "04)", Senter
+    .db escapeSmallFont, "v0.6.0-dev (2023", Shyphen, "09", Shyphen, "12)", Senter
     .db "(c) 2023  Brian T. Park", Senter
     .db Senter
     .db "An RPN calculator for the", Senter
@@ -1200,6 +1203,18 @@ mAtanhHandler:
 ;-----------------------------------------------------------------------------
 ; Children nodes of BASE menu.
 ;-----------------------------------------------------------------------------
+
+mBaseHandler:
+    jp c, mBaseHandlerOnExit
+    call mGroupHandler
+    ld a, (baseModeSaved) ; restore previously saved base mode
+    jr setBaseMode
+mBaseHandlerOnExit:
+    ; save previous base mode, and reset to 10 on exit
+    ld a, (baseMode)
+    ld (baseModeSaved), a
+    ld a, 10
+    jr setBaseMode
 
 mHexHandler:
     call closeInputBuf

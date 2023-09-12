@@ -37,6 +37,19 @@
 ;
 ;-----------------------------------------------------------------------------
 
+; Offsets into the MenuNode struct
+menuNodeId equ 0
+menuNodeParentId equ 1
+menuNodeNameId equ 2
+menuNodeNumRows equ 3
+menuNodeRowBeginId equ 4
+menuNodeAltNameId equ 4
+menuNodeHandler equ 5
+menuNodeNameSelector equ 7
+
+; sizeof(MenuNode) == 9
+menuNodeSizeOf equ 9
+
 ; Description: Set initial values for (menuGroupId) and (menuRowIndex).
 ; Input: none
 ; Output:
@@ -97,6 +110,7 @@ getMenuRowBeginId:
 ; Input: A: menu node id
 ; Output: HL: address of node
 ; Destroys: DE, HL
+; Preserves: A, BC
 getMenuNode:
     ; HL = A * sizeof(MenuNode) = 9*A
     ld l, a
@@ -111,6 +125,17 @@ getMenuNode:
     ex de, hl
     ld hl, mMenuTable
     add hl, de
+    ret
+
+; Description: Return the pointer to the menu node at id A in register IX.
+; Input: A: menu node id
+; Output: IX: address of node
+; Destroys: DE, HL
+; Preserves: A, BC
+getMenuNodeIX:
+    call getMenuNode
+    push hl
+    pop ix
     ret
 
 ; Description: Return the pointer to the name string of the menu node at id A.
