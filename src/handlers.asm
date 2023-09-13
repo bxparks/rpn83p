@@ -616,7 +616,7 @@ handleKeyDownContinue:
 ;   - (menuGroupId) at parentId
 ;   - (menuRowIndex) of the input (child) menu group
 ; Destroys: all
-handleKeyMenuBack: ; TODO: rename this to handleKeyExit
+handleKeyExit:
     ; Clear the command arg mode if already in command arg mode.
     bit rpnFlagsArgMode, (iy + rpnFlags)
     jp nz, handleKeyClearArg

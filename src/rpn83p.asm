@@ -317,7 +317,7 @@ readLoop:
     bcall(_GetKey)
     res onInterrupt, (iy + onFlags)
 
-    ; Check for 2nd-Quit to Quit. ON (0) triggers the handleKeyMenuBack() to
+    ; Check for 2nd-Quit to Quit. ON (0) triggers the handleKeyExit() to
     ; emulate the ON/EXIT key on the HP 42S which exits nested menus on that
     ; calculator.
     cp kQuit
