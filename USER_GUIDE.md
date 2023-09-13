@@ -2,7 +2,7 @@
 
 RPN calculator app for the TI-83 Plus and TI-84 Plus inspired by the HP-42S.
 
-**Version**: 0.6.0-dev (2023-09-04)
+**Version**: 0.6.0-dev (2023-09-13)
 
 **Project Home**: https://github.com/bxparks/rpn83p
 
@@ -36,9 +36,10 @@ RPN calculator app for the TI-83 Plus and TI-84 Plus inspired by the HP-42S.
     - [Floating Point Display Modes](#floating-point-display-modes)
     - [Trigonometric Modes](#trig-modes)
     - [BASE Functions](#base-functions)
-        - [BASE Modes](#base-modes)
-        - [BASE Arithmetic](#base-arithmetic)
-        - [BASE Integer Size](#base-integer-size)
+        - [Base Modes](#base-modes)
+        - [Base Arithmetic](#base-arithmetic)
+        - [Base Integer Size](#base-integer-size)
+        - [Base Mode Retention](#base-mode-retention)
     - [Storage Registers](#storage-registers)
     - [Prime Factors](#prime-factors)
     - [STAT Functions](#stat-functions)
@@ -64,7 +65,7 @@ of some older HP calculators like the
 The RPN83P is a flash application that consumes one page (16 kB) of flash
 memory. Since it is stored in flash, it is preserved if the RAM is cleared. It
 consumes a small amount of TI-OS RAM: 2 list variables named `REGS` (240 bytes)
-and `STK` (59 byte), and an appVar named `RPN83SAV` (75 bytes).
+and `STK` (59 byte), and an appVar named `RPN83SAV` (76 bytes).
 
 Here the quick summary of its features:
 
@@ -1051,6 +1052,14 @@ the negative sign.
 
 Currently, the integer size for base conversions and functions is hardcoded to
 be 32 bits. I hope to add the ability to change the integer size in the future.
+
+#### Base Mode Retention
+
+Since the `HEX`, `OCT` and `BIN` modes are useful only within the `BASE`
+hierarchy of menus, the base mode is reset to `DEC` if menu hierarchy leaves the
+`BASE` menu. This is similar to the HP-42S. However, unlike the HP-42S, the
+RPN83P remembers the most recent base mode and restores its setting if the
+`BASE` menu hierarchy is selected again.
 
 ### Storage Registers
 

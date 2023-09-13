@@ -88,7 +88,7 @@ rpn83pAppId equ $1E69
 ; Increment the schema version when any variables are added or removed from the
 ; appState data block. The schema version will be validated upon restoring the
 ; application state from the AppVar.
-rpn83pSchemaVersion equ 1
+rpn83pSchemaVersion equ 2
 
 ; Begin application variables at tempSwapArea. According to the TI-83 Plus SDK
 ; docs: "tempSwapArea (82A5h) This is the start of 323 bytes used only during
@@ -144,6 +144,9 @@ errorCode equ handlerCode + 1
 ; interpreted as 10.
 baseMode equ errorCode + 1
 
+; Base mode copied from baseMode when leaving the BASE menu group.
+baseModeSaved equ baseMode + 1
+
 ; String buffer for keyboard entry. This is a Pascal-style with a single size
 ; byte at the start. It does not include the cursor displayed at the end of the
 ; string. The equilvalent C struct is:
@@ -152,7 +155,7 @@ baseMode equ errorCode + 1
 ;       uint8_t size;
 ;       char buf[14];
 ;   };
-inputBuf equ baseMode + 1
+inputBuf equ baseModeSaved + 1
 inputBufSize equ inputBuf ; size byte of the pascal string
 inputBufBuf equ inputBuf + 1
 inputBufMax equ 14 ; maximum size of buffer, not including appended cursor
@@ -314,7 +317,7 @@ readLoop:
     bcall(_GetKey)
     res onInterrupt, (iy + onFlags)
 
-    ; Check for 2nd-Quit to Quit. ON (0) triggers the handleKeyMenuBack() to
+    ; Check for 2nd-Quit to Quit. ON (0) triggers the handleKeyExit() to
     ; emulate the ON/EXIT key on the HP 42S which exits nested menus on that
     ; calculator.
     cp kQuit

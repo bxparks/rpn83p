@@ -11,6 +11,13 @@
           with HP-42S
         - I prefer the `P>R` and `R>P` but the difference is not worth breaking
           consistency
+    - support custom MenuGroup handlers
+        - absorb `changeMenuGroup()` functionality into the `dispatchMenuNode()`
+        - add onExit events into `changeMenuGroup()`
+        - add custom `mBaseHandler` for `BASE` menu, which resets the current
+          `baseMode` to 10 upon leaving the `BASE` menu hierarchy
+        - add `baseModeSaved` appState parameter to restore the last `baseMode`
+          upon reentery into `BASE` menu hierarchy
 - 0.5.0 (2023-08-31)
     - `USER_GUIDE.md`, `README.md`
         - Update "Menu Indicator Arrows" section with latest screenshots which

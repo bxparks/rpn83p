@@ -616,84 +616,11 @@ handleKeyDownContinue:
 ;   - (menuGroupId) at parentId
 ;   - (menuRowIndex) of the input (child) menu group
 ; Destroys: all
-handleKeyMenuBack:
+handleKeyExit:
     ; Clear the command arg mode if already in command arg mode.
     bit rpnFlagsArgMode, (iy + rpnFlags)
     jp nz, handleKeyClearArg
-
-    ld hl, menuGroupId
-    ld a, (hl) ; A = menuGroupId
-    ; Check if already at rootGroup
-    cp mRootId
-    jr nz, handleKeyMenuBackToParent
-
-    ; If already at rootId, go to menuRow0 if not already there.
-    inc hl
-    ld a, (hl) ; menuRowIndex
-    or a
-    ret z
-    xor a ; set rowIndex to 0, set dirty bit
-    jr handleKeyMenuBackRowSave
-
-handleKeyMenuBackToParent:
-    ; Set menuGroupId = child.parentId
-    ld c, a ; C=menuGroupId=childId (saved)
-    call getMenuNode ; get current (child) node
-    inc hl
-    ld a, (hl) ; A=parentId
-    ld (menuGroupId), a
-
-    ; Get numRows and rowBeginId of the parent.
-    call getMenuNode ; get parentNode
-    inc hl
-    inc hl
-    inc hl
-    ld d, (hl) ; D=parent.numRows
-    inc hl
-    ld a, (hl) ; A=parent.rowBeginId
-
-    ; Deduce the parent's rowIndex which matches the childId.
-    call deduceRowIndex
-
-handleKeyMenuBackRowSave:
-    ld (menuRowIndex), a
-    set dirtyFlagsMenu, (iy + dirtyFlags)
-    ret
-
-; Description: Deduce the rowIndex from the childId above. The `rowIndex =
-; int((childId - rowBeginId)/5)` but the Z80 does not have a divison
-; instruction so we use a loop that increments an `index` in increments of 5 to
-; determine the corresponding rowIndex.
-;
-; The complication is that we want to evaluate `(childId < nodeId)` but the
-; Z80 instruction can only increment the A register, so we have to store
-; the `nodeId` in A and the `childId` in C. Which forces us to reverse the
-; comparison. But checking for NC (no carry) is equivalent to a '>='
-; instead of a '<', so we are forced to start at `5-1` instead of `5`. I
-; hope my future self will understand this explanation.
-;
-; Input:
-;   A: rowBeginId
-;   D: numRows
-;   C: childId
-; Output: A: rowIndex
-; Destroys: B; preserves C, D
-deduceRowIndex:
-    add a, 4 ; nodeId = rowBeginId + 4
-    ld b, d ; B (DJNZ counter) = numRows
-deduceRowIndexLoop:
-    cp c ; If nodeId < childId: set CF
-    jr nc, deduceRowIndexFound ; nodeId >= childId
-    add a, 5 ; nodeId += 5
-    djnz deduceRowIndexLoop
-    ; We should never fall off the end of the loop, but if we do, set the
-    ; rowIndex to 0.
-    xor a
-    ret
-deduceRowIndexFound:
-    ld a, d ; numRows
-    sub b ; rowIndex = numRows - B
-    ret
+    jp exitMenuGroup
 
 ;-----------------------------------------------------------------------------
 
@@ -748,25 +675,10 @@ handleKeyMenuA:
     ; Do nothing in command arg mode.
     bit rpnFlagsArgMode, (iy + rpnFlags)
     ret nz
-
-    ld c, a
-    call getCurrentMenuRowBeginId
+    ld c, a ; save A (menu button index 0-4)
+    call getCurrentMenuRowBeginId ; A=row begin id
     add a, c ; menu node ids are sequential starting with beginId
-    ; get menu node corresponding to pressed menu key
-    call getMenuNode
-    push hl ; save pointer to MenuNode
-    ; load and jump to the mXxxHandler
-    inc hl
-    inc hl
-    inc hl
-    inc hl
-    inc hl
-    ld e, (hl)
-    inc hl
-    ld d, (hl) ; DE=mXxxHandler of the current node
-    ex de, hl ; HL=mXxxHandler
-    ex (sp), hl
-    ret ; jump to mXxxHandler(HL=MenuNode)
+    jp dispatchMenuNode
 
 ;-----------------------------------------------------------------------------
 ; Arithmetic functions.
@@ -1015,21 +927,21 @@ handleKeyMath:
     bit rpnFlagsArgMode, (iy + rpnFlags)
     ret nz
     ld a, mRootId ; MATH becomes the menu HOME button
-    jp mGroupHandler
+    jp dispatchMenuNode
 
 handleKeyMode:
     ; Do nothing in command arg mode.
     bit rpnFlagsArgMode, (iy + rpnFlags)
     ret nz
     ld a, mModeId ; MODE triggers the MODE menu.
-    jp mGroupHandler
+    jp dispatchMenuNode
 
 handleKeyStat:
     ; Do nothing in command arg mode.
     bit rpnFlagsArgMode, (iy + rpnFlags)
     ret nz
     ld a, mStatId ; MODE triggers the MODE menu.
-    jp mGroupHandler
+    jp dispatchMenuNode
 
 ;-----------------------------------------------------------------------------
 ; User registers, accessed through RCL nn and STO nn.
