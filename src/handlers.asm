@@ -748,50 +748,10 @@ handleKeyMenuA:
     ; Do nothing in command arg mode.
     bit rpnFlagsArgMode, (iy + rpnFlags)
     ret nz
-
     ld c, a ; save A (menu button index 0-4)
     call getCurrentMenuRowBeginId ; A=row begin id
     add a, c ; menu node ids are sequential starting with beginId
-    ; [[fallthrough]]
-
-; Description: Dispatch to the handler for the menu node in register A.
-; Input: A=target nodeId
-; Output: none
-; Destroys: all?
-dispatchMenuNode:
-    ; get menu node corresponding to pressed menu key
-    call getMenuNode
-    push af
-    push hl ; save pointer to MenuNode
-    ; load mXxxHandler
-    inc hl
-    inc hl
-    inc hl
-    ld a, (hl) ; A=numRows
-    inc hl
-    inc hl
-    ld e, (hl)
-    inc hl
-    ld d, (hl) ; DE=mXxxHandler of the target node
-    push de
-    ; If the target node is a MenuGroup, then we are essentially doing a
-    ; 'chdir' operation, so we need to call the exit handler of the current
-    ; node.
-    or a ; if targetNode.numRows == 0: ZF=1
-    jr z, dispatchMenuNodeEnterTargetGroup
-dispatchMenuNodeExitCurrentGroup:
-    ld a, (menuGroupId)
-    call getMenuNodeIX
-    ld l, (ix + menuNodeHandler)
-    ld h, (ix + menuNodeHandler + 1)
-    scf ; set CF=1 to invoke handler for exit
-    call jumpHL
-dispatchMenuNodeEnterTargetGroup:
-    pop de ; DE=menu handler of target group
-    pop hl ; HL=pointer to target menu group
-    pop af ; A=menuId of target menu group
-    or a ; set CF=0 to invoke handler for entry
-    jp jumpDE
+    jp dispatchMenuNode
 
 ;-----------------------------------------------------------------------------
 ; Arithmetic functions.

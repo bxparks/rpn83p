@@ -186,3 +186,59 @@ getMenuName:
     pop de
     pop bc
     ret
+
+;-----------------------------------------------------------------------------
+
+; Description: Dispatch to the handler for the menu node in register A. There
+; are 2 cases:
+; 1) If the target node is a MenuItem, then the 'onEnter' event is sent to the
+; item by invoking its handler.
+; 2) If the target node is a MenuGroup, a 'chdir' operation is implemented in 2
+; steps:
+; a) The handler of the previous MenuGroup is sent an 'onExit' event, signaled
+; by calling its handlers with the carry flag CF=1.
+; b) The handler of the traget MenuGroup is sent an 'onEnter' event, signaled
+; by calling its handlers with the carry flag CF=0. The default MenuGroup
+; handler will normally be mGroupHandler, but this can be overridden. The
+; overridden group handler is expected to call mGroupHandler or something
+; equivalent to update (menuGroupId) and (menuRowIndex).
+;
+; Input: A=target nodeId
+; Output:
+;   - (menuGroupId) is updated if the target is a MenuGroup
+;   - (menuRowIndex) is set to 0 if the target is a MenuGroup
+; Destroys: all?
+dispatchMenuNode:
+    ; get menu node corresponding to pressed menu key
+    call getMenuNode
+    push af
+    push hl ; save pointer to MenuNode
+    ; load mXxxHandler
+    inc hl
+    inc hl
+    inc hl
+    ld a, (hl) ; A=numRows
+    inc hl
+    inc hl
+    ld e, (hl)
+    inc hl
+    ld d, (hl) ; DE=mXxxHandler of the target node
+    push de
+    ; If the target node is a MenuGroup, then we are essentially doing a
+    ; 'chdir' operation, so we need to call the exit handler of the current
+    ; node.
+    or a ; if targetNode.numRows == 0: ZF=1
+    jr z, dispatchMenuItemOrGroup
+dispatchMenuNodeExit:
+    ld a, (menuGroupId)
+    call getMenuNodeIX
+    ld l, (ix + menuNodeHandler)
+    ld h, (ix + menuNodeHandler + 1)
+    scf ; set CF=1 to invoke handler for exit
+    call jumpHL
+dispatchMenuItemOrGroup:
+    pop de ; DE=menu handler of target group
+    pop hl ; HL=pointer to target menu group
+    pop af ; A=menuId of target menu group
+    or a ; set CF=0 to invoke handler for entry
+    jp jumpDE
