@@ -7,14 +7,15 @@
 ; Predefined Menu handlers.
 ;-----------------------------------------------------------------------------
 
-; Description: Null handler. Does nothing.
+; Description: Null item handler. Does nothing.
 ; Input:
 ;   A: nodeId of the select menu item (ignored)
 ;   HL: pointer to MenuNode that was activated (ignored)
 mNullHandler: ; do nothing
     ret
 
-; Description: Null handler. Does nothing.
+; Description: Handler for menu item which has not been implemented. Prints an
+; "Err: Not Yet" error message.
 ; Input:
 ;   A: nodeId of the select menu item (ignored)
 ;   HL: pointer to MenuNode that was activated (ignored)
@@ -22,21 +23,12 @@ mNotYetHandler:
     ld a, errorCodeNotYet
     jp setHandlerCode
 
-; Description: General handler for menu nodes of type "MenuGroup". Selecting
-; this should cause the menuGroupId to be set to this item, and the
-; menuRowIndex to be set to 0
+; Description: Default handler for menu nodes of type "MenuGroup".
 ; Input:
 ;   A: nodeId of the select menu item
 ;   HL: pointer to MenuNode that was activated (ignored)
 ;   CF: 0 upon entry into group; 1 upon exit from group
-; Output: (menuGroupId) and (menuRowIndex) updated
-; Destroys: A
 mGroupHandler:
-    ret c ; do nothing when exiting the group
-    ld (menuGroupId), a
-    xor a
-    ld (menuRowIndex), a
-    set dirtyFlagsMenu, (iy + dirtyFlags)
     ret
 
 ;-----------------------------------------------------------------------------
@@ -1195,8 +1187,7 @@ mAtanhHandler:
 ;-----------------------------------------------------------------------------
 
 mBaseHandler:
-    jp c, mBaseHandlerOnExit
-    call mGroupHandler
+    jr c, mBaseHandlerOnExit
     ld a, (baseModeSaved) ; restore previously saved base mode
     jr setBaseMode
 mBaseHandlerOnExit:
