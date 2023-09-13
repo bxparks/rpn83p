@@ -9,8 +9,10 @@ Plus](https://en.wikipedia.org/wiki/TI-84_Plus_series) (including the Silver
 Edition). The app is inspired mostly by the
 [HP-42S](https://en.wikipedia.org/wiki/HP-42S) calculator, with some sprinkles
 of older HP calculators like the
-[HP-12C](https://en.wikipedia.org/wiki/HP-12C) and the
-[HP-15C](https://en.wikipedia.org/wiki/HP-15C).
+[HP-12C](https://en.wikipedia.org/wiki/HP-12C),
+[HP-15C](https://en.wikipedia.org/wiki/HP-15C), and the
+[HP-16C](https://en.wikipedia.org/wiki/HP-16C).
+
 
 The RPN83P is a flash application that consumes one page (16 kB) of flash
 memory. Since it is stored in flash, it is preserved if the RAM is cleared. It
@@ -64,7 +66,7 @@ Here are some missing features which may be added in the future:
 - complex numbers
 - keystroke programming
 
-**Version**: 0.6.0-dev (2023-09-04)
+**Version**: 0.6.0-dev (2023-09-13)
 
 **Changelog**: [CHANGELOG.md](CHANGELOG.md)
 
