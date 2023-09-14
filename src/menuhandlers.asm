@@ -1268,52 +1268,37 @@ mBitwiseAndHandler:
     call closeInputAndRecallXY ; OP1=Y; OP2=X
     ld hl, OP3
     call convertOP1ToU32 ; OP3=u32(Y)
-
     bcall(_OP2ToOP1)
     ld hl, OP4
     call convertOP1ToU32 ; OP4=u32(X)
-
     ld de, OP3
     call andU32U32 ; OP4 = OP4 AND OP3
-
     call convertU32ToOP1 ; OP1 = float(OP4)
     jp replaceXY
-
-;-----------------------------------------------------------------------------
 
 mBitwiseOrHandler:
     call closeInputAndRecallXY ; OP1=Y; OP2=X
     ld hl, OP3
     call convertOP1ToU32 ; OP3=u32(Y)
-
     bcall(_OP2ToOP1)
     ld hl, OP4
     call convertOP1ToU32 ; OP4=u32(X)
-
     ld de, OP3
     call orU32U32 ; OP4 = OP4 OR OP3
-
     call convertU32ToOP1 ; OP1 = float(OP4)
     jp replaceXY
-
-;-----------------------------------------------------------------------------
 
 mBitwiseXorHandler:
     call closeInputAndRecallXY ; OP1=Y; OP2=X
     ld hl, OP3
     call convertOP1ToU32 ; OP3=u32(Y)
-
     bcall(_OP2ToOP1)
     ld hl, OP4
     call convertOP1ToU32 ; OP4=u32(X)
-
     ld de, OP3
     call xorU32U32 ; OP4 = OP4 XOR OP3
-
     call convertU32ToOP1 ; OP1 = float(OP4)
     jp replaceXY
-
-;-----------------------------------------------------------------------------
 
 mBitwiseNotHandler:
     call closeInputAndRecallX ; OP1=X
@@ -1322,8 +1307,6 @@ mBitwiseNotHandler:
     call notU32 ; OP3 = NOT(OP3)
     call convertU32ToOP1 ; OP1 = float(OP3)
     jp replaceX
-
-;-----------------------------------------------------------------------------
 
 mBitwiseNegHandler:
     call closeInputAndRecallX ; OP1=X
@@ -1335,37 +1318,102 @@ mBitwiseNegHandler:
 
 ;-----------------------------------------------------------------------------
 
-mShiftLeftHandler:
+; Description: Transfer the carry flag (CF) to bit 0 of (baseModeCarryFlag).
+; Input: CF
+; Output: (baseModeCarryFlag)
+; Destroys: A
+storeCarryFlag:
+    rla ; shift CF into bit-0
+    and $1
+    ld (baseModeCarryFlag), a
+    ret
+
+; Description: Transfer bit 0 of (baseModeCarryFlag) into the carry flag CF.
+; Input: (baseModeCarryFlag)
+; Output: CF
+; Destroys: A
+recallCarryFlag:
+    ld a, (baseModeCarryFlag)
+    rra ; shift bit 0 into CF
+    ret
+
+mShiftLeftLogicalHandler:
     call closeInputAndRecallX ; OP1=X
     ld hl, OP3
     call convertOP1ToU32 ; OP3=u32(X)
-    call shiftLeftU32 ; OP3 = (OP3 << 1)
+    call shiftLeftLogicalU32 ; OP3 = (OP3 << 1)
+    call storeCarryFlag
     call convertU32ToOP1 ; OP1 = float(OP3)
     jp replaceX
 
-mShiftRightHandler:
+mShiftRightLogicalHandler:
     call closeInputAndRecallX ; OP1=X
     ld hl, OP3
     call convertOP1ToU32 ; OP3=u32(X)
     call shiftRightLogicalU32 ; OP3 = (OP3 >> 1)
+    call storeCarryFlag
     call convertU32ToOP1 ; OP1 = float(OP3)
     jp replaceX
 
-mRotateLeftHandler:
+mShiftRightArithmeticHandler:
+    call closeInputAndRecallX ; OP1=X
+    ld hl, OP3
+    call convertOP1ToU32 ; OP3=u32(X)
+    call shiftRightArithmeticU32 ; OP3 = signed(OP3 >> 1)
+    call storeCarryFlag
+    call convertU32ToOP1 ; OP1 = float(OP3)
+    jp replaceX
+
+;-----------------------------------------------------------------------------
+
+mRotateLeftCircularHandler:
     call closeInputAndRecallX ; OP1=X
     ld hl, OP3
     call convertOP1ToU32 ; OP3=u32(X)
     call rotateLeftCircularU32; OP3 = rotLeftCircular(OP3)
+    call storeCarryFlag
     call convertU32ToOP1 ; OP1 = float(OP3)
     jp replaceX
 
-mRotateRightHandler:
+mRotateRightCircularHandler:
     call closeInputAndRecallX ; OP1=X
     ld hl, OP3
     call convertOP1ToU32 ; OP3=u32(X)
     call rotateRightCircularU32; OP3 = rotRightCircular(OP3)
+    call storeCarryFlag
     call convertU32ToOP1 ; OP1 = float(OP3)
     jp replaceX
+
+mRotateLeftCarryHandler:
+    call closeInputAndRecallX ; OP1=X
+    ld hl, OP3
+    call convertOP1ToU32 ; OP3=u32(X)
+    call recallCarryFlag
+    call rotateLeftCarryU32; OP3 = rotLeftCarry(OP3)
+    call storeCarryFlag
+    call convertU32ToOP1 ; OP1 = float(OP3)
+    jp replaceX
+
+mRotateRightCarryHandler:
+    call closeInputAndRecallX ; OP1=X
+    ld hl, OP3
+    call convertOP1ToU32 ; OP3=u32(X)
+    call recallCarryFlag
+    call rotateRightCarryU32; OP3 = rotRightCarry(OP3)
+    call storeCarryFlag
+    call convertU32ToOP1 ; OP1 = float(OP3)
+    jp replaceX
+
+;-----------------------------------------------------------------------------
+
+mClearCarryFlagHandler:
+mSetCarryFlagHandler:
+mGetCarryFlagHandler:
+    ret
+
+mSetWordSizeHandler:
+mGetWordSizeHandler:
+    ret
 
 ;-----------------------------------------------------------------------------
 
@@ -1373,53 +1421,38 @@ mBitwiseAddHandler:
     call closeInputAndRecallXY ; OP1=Y; OP2=X
     ld hl, OP3
     call convertOP1ToU32 ; OP3=u32(Y)
-
     bcall(_OP2ToOP1)
     ld hl, OP4
     call convertOP1ToU32 ; OP4=u32(X)
-
     ld de, OP3
     call addU32U32 ; OP4(X) += OP3(Y)
-
     call convertU32ToOP1 ; OP1 = float(OP3)
     jp replaceXY
-
-;-----------------------------------------------------------------------------
 
 mBitwiseSubtHandler:
     call closeInputAndRecallXY ; OP1=Y; OP2=X
     ld hl, OP3
     call convertOP1ToU32 ; OP3=u32(Y)
-
     bcall(_OP2ToOP1)
     ld hl, OP4
     call convertOP1ToU32 ; OP4=u32(X)
-
     ld de, OP3
     ex de, hl
     call subU32U32 ; OP3(Y) -= OP4(X)
-
     call convertU32ToOP1 ; OP1 = float(OP3)
     jp replaceXY
-
-;-----------------------------------------------------------------------------
 
 mBitwiseMultHandler:
     call closeInputAndRecallXY ; OP1=Y; OP2=X
     ld hl, OP3
     call convertOP1ToU32 ; OP3=u32(Y)
-
     bcall(_OP2ToOP1)
     ld hl, OP4
     call convertOP1ToU32 ; OP4=u32(X)
-
     ld de, OP3
     call multU32U32 ; OP4(X) *= OP3(Y)
-
     call convertU32ToOP1 ; OP1 = float(OP3)
     jp replaceXY
-
-;-----------------------------------------------------------------------------
 
 ; Description: Calculate bitwise x/y.
 ; Output:

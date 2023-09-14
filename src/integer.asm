@@ -33,8 +33,8 @@ multU32By10:
     pop hl
 
     ; (HL) = 4 * (HL)
-    call shiftLeftU32 ; (HL) *= 2
-    call shiftLeftU32 ; (HL) *= 2
+    call shiftLeftLogicalU32 ; (HL) *= 2
+    call shiftLeftLogicalU32 ; (HL) *= 2
 
     ; (HL) += (original HL). This step is quite lengthy because it is using
     ; four 8-bit operations to add two u32 integers. Maybe there's a more
@@ -61,7 +61,7 @@ multU32By10:
     ld (hl), a
     pop hl
 
-    call shiftLeftU32 ; (HL) = 2 * (HL) = 10 * (original HL)
+    call shiftLeftLogicalU32 ; (HL) = 2 * (HL) = 10 * (original HL)
 
     pop de
     pop bc
@@ -90,9 +90,9 @@ multU32U32:
     add hl, sp ; (HL) = (SP) = result
     ld a, 32
 multU32U32Loop:
-    call shiftLeftU32 ; (HL) *= 2
+    call shiftLeftLogicalU32 ; (HL) *= 2
     ex de, hl
-    call shiftLeftU32 ; (DE) *= 2
+    call shiftLeftLogicalU32 ; (DE) *= 2
     ex de, hl
     jr nc, multU32U32NoMult
     call addU32U32BC ; (HL) += (BC)
@@ -127,9 +127,8 @@ multU32U32End:
 ;   - u32 pointed by HL is doubled
 ;   - CF: bit 7 of the most significant byte
 ; Destroys: none
-shiftLeftU32:
+shiftLeftLogicalU32:
     push hl
-    or a ; clear CF
     sla (hl) ; CF=bit7
     inc hl
     rl (hl) ; rotate left through CF
@@ -146,9 +145,6 @@ shiftLeftU32:
 ;   - HL: pointer result
 ;   - CF: bit 0 of the least signficant byte
 ; Destroys: none
-;
-; TODO: rename this to just shiftRightU32(), since RPN83P will not support
-; shiftRightArithmetic() because it always uses unsigned integers.
 shiftRightLogicalU32:
     inc hl
     inc hl
@@ -162,6 +158,27 @@ shiftRightLogicalU32:
     rr (hl)
     ret
 
+; Description: shift u32(HL) right arithmetic, duplicating the sign bit.
+; Input: HL: pointer to u32
+; Output:
+;   - HL: pointer result
+;   - CF: bit 0 of the least signficant byte
+; Destroys: none
+shiftRightArithmeticU32:
+    inc hl
+    inc hl
+    inc hl ; HL = byte 3
+    sra (hl) ; CF = least significant bit
+    dec hl ; HL = byte 2
+    rr (hl)
+    dec hl ; HL = byte 1
+    rr (hl)
+    dec hl ; HL = byte 0
+    rr (hl)
+    ret
+
+;-----------------------------------------------------------------------------
+
 ; Description: Rotate left circular u32(HL).
 ; Input:
 ;   - HL: pointer to u32
@@ -171,7 +188,7 @@ shiftRightLogicalU32:
 ; Destroys: none
 rotateLeftCircularU32:
     push hl
-    sla (hl)
+    sla (hl) ; start with the least significant byte
     inc hl
     rl (hl)
     inc hl
@@ -215,9 +232,9 @@ rotateRightCircularU32:
 ;   - HL: pointer to result
 ;   - CF: most significant bit
 ; Destroys: none
-rotateLeftU32:
+rotateLeftCarryU32:
     push hl
-    rl (hl)
+    rl (hl) ; start with the least signficant byte
     inc hl
     rl (hl)
     inc hl
@@ -235,7 +252,7 @@ rotateLeftU32:
 ;   - HL: pointer to result
 ;   - CF: least significant bit
 ; Destroys: none
-rotateRightU32:
+rotateRightCarryU32:
     inc hl
     inc hl
     inc hl ; start with the most significant byte
@@ -397,11 +414,11 @@ divU32U32:
     ld a, 32 ; iterate for 32 bits of a u32
 div32U32Loop:
     push af ; save A loop counter
-    call shiftLeftU32 ; dividend(HL) <<= 1
+    call shiftLeftLogicalU32 ; dividend(HL) <<= 1
     push hl ; save HL=dividend/quotient
     ld l, c
     ld h, b ; HL=BC=remainder
-    call rotateLeftU32 ; rotate CF into remainder
+    call rotateLeftCarryU32 ; rotate CF into remainder
     ;
     call cpU32U32 ; if remainder(HL) < divisor(DE): CF=1
     jr c, div32U32QuotientZero
@@ -438,7 +455,7 @@ modU32U16:
     ld de, 0
     ld a, 32
 modU32U16Loop:
-    call shiftLeftU32
+    call shiftLeftLogicalU32
     rl e
     rl d ; DE=remainder
     ex de, hl ; HL=remainder
