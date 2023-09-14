@@ -25,7 +25,7 @@ statusPenRow equ statusCurRow*8
 statusMenuPenCol equ 0 ; left, up, down, 2px = 3*4 + 2 = 14px
 statusFloatModePenCol equ 14 ; (FIX|SCI|ENG), (, N, ), 4px = 5*4+2*3 = 26px
 statusTrigPenCol equ 40 ; (DEG|RAD), 4px = 4*4 = 16px
-statusBasePenCol equ 56 ; (BIN|OCT|HEX|DEC), 4px = 4*4 = 16px
+statusBasePenCol equ 56 ; (C|-), 4px
 
 ; Display coordinates of the debug line
 debugCurRow equ 1
@@ -229,34 +229,24 @@ displayStatusTrigPutS:
 
 ;-----------------------------------------------------------------------------
 
-; Description: Display the Base: BIN, OCT, DEC, HEX.
+; Description: Display the Carry Flag used in BASE mode.
 displayStatusBase:
     bit dirtyFlagsBaseMode, (iy + dirtyFlags)
     ret z
 displayStatusBaseUpdate:
     ld hl, statusPenRow*$100 + statusBasePenCol; $(penRow)(penCol)
     ld (PenCol), hl
-    ; Determine current base mode.
-    ld a, (baseMode)
-    cp 2
-    jr z, displayStatusBaseBin
-    cp 8
-    jr z, displayStatusBaseOct
-    cp 16
-    jr z, displayStatusBaseHex
-displayStatusBaseDec: ; Use Base 10 for anything else
-    ld hl, mDecName
+    ; Determine state of Carry Flag.
+    ld a, (baseModeCarryFlag)
+    or a
+    jr z, displayStatusBaseCarryFlagOff
+displayStatusBaseCarryFlagOn:
+    ld a, 'C'
     jr displayStatusBasePutS
-displayStatusBaseHex:
-    ld hl, mHexName
-    jr displayStatusBasePutS
-displayStatusBaseOct:
-    ld hl, mOctName
-    jr displayStatusBasePutS
-displayStatusBaseBin:
-    ld hl, mBinName
+displayStatusBaseCarryFlagOff:
+    ld a, '-'
 displayStatusBasePutS:
-    call vPutS
+    bcall(_VPutMap)
     ret
 
 ;-----------------------------------------------------------------------------

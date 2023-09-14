@@ -1395,6 +1395,7 @@ storeCarryFlag:
     rla ; shift CF into bit-0
     and $1
     ld (baseModeCarryFlag), a
+    set dirtyFlagsBaseMode, (iy + dirtyFlags)
     ret
 
 ; Description: Transfer bit 0 of (baseModeCarryFlag) into the carry flag CF.
@@ -1407,15 +1408,13 @@ recallCarryFlag:
     ret
 
 mClearCarryFlagHandler:
-    or a
+    or a ; CF=0
     call storeCarryFlag
-    set dirtyFlagsBaseMode, (iy + dirtyFlags)
     ret
 
 mSetCarryFlagHandler:
-    scf
+    scf ; CF=1
     call storeCarryFlag
-    set dirtyFlagsBaseMode, (iy + dirtyFlags)
     ret
 
 mGetCarryFlagHandler:
