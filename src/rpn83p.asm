@@ -45,7 +45,7 @@ dirtyFlagsStack equ 1 ; set if the stack is dirty
 dirtyFlagsMenu equ 2 ; set if the menu selection is dirty
 dirtyFlagsTrigMode equ 3 ; set if the trig status is dirty
 dirtyFlagsFloatMode equ 4 ; set if the floating mode is dirty
-dirtyFlagsBaseMode equ 5 ; set if the base mode is dirty
+dirtyFlagsBaseMode equ 5 ; set if any base mode flags or vars is dirty
 dirtyFlagsErrorCode equ 6 ; set if the error code is dirty
 ; The dirtyFlagsXLabel flag is set if the 'X:' label is dirty due to the
 ; command arg mode. The 6x8 cell occupied by the 'X:' label is rendered in
@@ -142,15 +142,14 @@ handlerCode equ appStateInputBufFlags + 1
 errorCode equ handlerCode + 1
 
 ; Current base mode number. Allowed values are: 2, 8, 10, 16. Anything else is
-; interpreted as 10. TODO: Rename this to 'baseNumber'.
-baseMode equ errorCode + 1
+; interpreted as 10.
+baseNumber equ errorCode + 1
 
-; Base mode carry flag. Bit 0. TODO: Renae this to 'baseCarryFlag'.
-baseModeCarryFlag equ baseMode + 1
+; Base mode carry flag. Bit 0.
+baseCarryFlag equ baseNumber + 1
 
-; Base mode word size: 8, 16, 24, 32 (maybe 40 in the future). TODO: Rename
-; this to 'baseWordSize'.
-baseModeWordSize equ baseModeCarryFlag + 1
+; Base mode word size: 8, 16, 24, 32 (maybe 40 in the future).
+baseWordSize equ baseCarryFlag + 1
 
 ; String buffer for keyboard entry. This is a Pascal-style with a single size
 ; byte at the start. It does not include the cursor displayed at the end of the
@@ -160,7 +159,7 @@ baseModeWordSize equ baseModeCarryFlag + 1
 ;       uint8_t size;
 ;       char buf[14];
 ;   };
-inputBuf equ baseModeWordSize + 1
+inputBuf equ baseWordSize + 1
 inputBufSize equ inputBuf ; size byte of the pascal string
 inputBufBuf equ inputBuf + 1
 inputBufMax equ 14 ; maximum size of buffer, not including appended cursor

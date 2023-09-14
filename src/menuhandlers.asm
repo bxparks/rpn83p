@@ -1200,30 +1200,30 @@ mBaseHandlerEnd:
 mHexHandler:
     call closeInputBuf
     ld a, 16
-    jr setBaseMode
+    jr setBaseNumber
 
 mDecHandler:
     call closeInputBuf
     ld a, 10
-    jr setBaseMode
+    jr setBaseNumber
 
 mOctHandler:
     call closeInputBuf
     ld a, 8
-    jr setBaseMode
+    jr setBaseNumber
 
 mBinHandler:
     call closeInputBuf
     ld a, 2
     ; [[fallthrough]]
 
-; Description: Set the (baseMode) to the value in A. Set dirty flag.
+; Description: Set the (baseNumber) to the value in A. Set dirty flag.
 ; Destroys: none
-setBaseMode:
+setBaseNumber:
     set dirtyFlagsBaseMode, (iy + dirtyFlags)
     set dirtyFlagsStack, (iy + dirtyFlags)
     set dirtyFlagsMenu, (iy + dirtyFlags)
-    ld (baseMode), a
+    ld (baseNumber), a
     ret
 
 ;-----------------------------------------------------------------------------
@@ -1255,7 +1255,7 @@ mBinNameSelector:
 ; Destroys: D
 mBaseNameSelector:
     ld d, a ; D=nameId, C=altNameId
-    ld a, (baseMode)
+    ld a, (baseNumber)
     cp b
     ld a, d
     ret nz
@@ -1387,23 +1387,23 @@ mRotateRightCarryHandler:
 
 ;-----------------------------------------------------------------------------
 
-; Description: Transfer the carry flag (CF) to bit 0 of (baseModeCarryFlag).
+; Description: Transfer the carry flag (CF) to bit 0 of (baseCarryFlag).
 ; Input: CF
-; Output: (baseModeCarryFlag)
+; Output: (baseCarryFlag)
 ; Destroys: A
 storeCarryFlag:
     rla ; shift CF into bit-0
     and $1
-    ld (baseModeCarryFlag), a
+    ld (baseCarryFlag), a
     set dirtyFlagsBaseMode, (iy + dirtyFlags)
     ret
 
-; Description: Transfer bit 0 of (baseModeCarryFlag) into the carry flag CF.
-; Input: (baseModeCarryFlag)
+; Description: Transfer bit 0 of (baseCarryFlag) into the carry flag CF.
+; Input: (baseCarryFlag)
 ; Output: CF
 ; Destroys: A
 recallCarryFlag:
-    ld a, (baseModeCarryFlag)
+    ld a, (baseCarryFlag)
     rra ; shift bit 0 into CF
     ret
 
@@ -1436,7 +1436,7 @@ mSetWordSizeHandler:
 mGetWordSizeHandler:
     call closeInputBuf
     bcall(_OP1Set0)
-    ld a, (baseModeWordSize)
+    ld a, (baseWordSize)
     call convertU8ToOP1
     jp pushX
 

@@ -213,9 +213,9 @@ handleKeyF:
     ld a, 'F'
     jp handleKeyNumber
 
-; Description: Return ZF=1 if BaseMode is float, 8, 10, or 16.
+; Description: Return ZF=1 if baseNumber is float, 8, 10, or 16.
 checkBase8Or10Or16:
-    ld a, (baseMode)
+    ld a, (baseNumber)
     cp 8
     ret z
     cp 10
@@ -225,9 +225,9 @@ checkBase8Or10Or16:
     cp 16
     ret
 
-; Description: Return ZF=1 if BaseMode is float, 10, or 16.
+; Description: Return ZF=1 if baseNumber is float, 10, or 16.
 checkBase10Or16:
-    ld a, (baseMode)
+    ld a, (baseNumber)
     cp 10
     ret z
     bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
@@ -235,11 +235,11 @@ checkBase10Or16:
     cp 16
     ret
 
-; Description: Return ZF=1 if BaseMode is (not float and base 16).
+; Description: Return ZF=1 if baseNumber is (not float and base 16).
 checkBase16:
     bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
     ret z
-    ld a, (baseMode)
+    ld a, (baseNumber)
     cp 16
     ret
 

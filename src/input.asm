@@ -149,7 +149,7 @@ parseNum:
     ret z
     ld hl, inputBuf
     bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
-    jr nz, parseBaseMode
+    jr nz, parseBaseInteger
 parseFloat:
     ; Parse floating point.
     call calcDPPos
@@ -162,8 +162,8 @@ parseFloat:
     call copyFloatToOP1 ; copy floatBuf to OP1
     ret
 
-parseBaseMode:
-    ld a, (baseMode)
+parseBaseInteger:
+    ld a, (baseNumber)
     cp 16
     jr z, parseNumBase
     cp 8
@@ -174,12 +174,12 @@ parseBaseMode:
     jr z, parseNumBase
     ; all others interpreted as base 10
     ld a, 10
-    ld (baseMode), a
+    ld (baseNumber), a
     ; [[fallthrough]]
 
-; Description: Parse the baseMode number in the Pascal-string given by HL. The
-; base mode be 2, 8 or 16. This subroutine will actually supports any baseMode
-; <= 36 probably (10 numerals and 26 letters).
+; Description: Parse the baseNumber in the Pascal-string given by HL. The base
+; mode be 2, 8 or 16. This subroutine will actually supports any baseNumber <=
+; 36 probably (10 numerals and 26 letters).
 ; Input:
 ;   - HL: pointer to Pascal-string
 ;   - A: base mode (2, 8, 10, 16)

@@ -237,7 +237,7 @@ displayStatusBaseUpdate:
     ld hl, statusPenRow*$100 + statusBasePenCol; $(penRow)(penCol)
     ld (PenCol), hl
     ; Determine state of Carry Flag.
-    ld a, (baseModeCarryFlag)
+    ld a, (baseCarryFlag)
     or a
     jr z, displayStatusBaseCarryFlagOff
 displayStatusBaseCarryFlagOn:
@@ -672,7 +672,7 @@ printMenuAtAExit:
 printOP1:
     bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
     jr z, printOP1Base10
-    ld a, (baseMode)
+    ld a, (baseNumber)
     cp a, 16
     jr z, printOP1Base16
     cp a, 8

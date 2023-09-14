@@ -10,11 +10,11 @@
 initBase:
     res rpnFlagsBaseModeEnabled, (iy + rpnFlags)
     ld a, 10
-    ld (baseMode), a
+    ld (baseNumber), a
     xor a
-    ld (baseModeCarryFlag), a
+    ld (baseCarryFlag), a
     ld a, 32
-    ld (baseModeWordSize), a
+    ld (baseWordSize), a
     ret
 
 ;-----------------------------------------------------------------------------
