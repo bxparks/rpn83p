@@ -1318,25 +1318,6 @@ mBitwiseNegHandler:
 
 ;-----------------------------------------------------------------------------
 
-; Description: Transfer the carry flag (CF) to bit 0 of (baseModeCarryFlag).
-; Input: CF
-; Output: (baseModeCarryFlag)
-; Destroys: A
-storeCarryFlag:
-    rla ; shift CF into bit-0
-    and $1
-    ld (baseModeCarryFlag), a
-    ret
-
-; Description: Transfer bit 0 of (baseModeCarryFlag) into the carry flag CF.
-; Input: (baseModeCarryFlag)
-; Output: CF
-; Destroys: A
-recallCarryFlag:
-    ld a, (baseModeCarryFlag)
-    rra ; shift bit 0 into CF
-    ret
-
 mShiftLeftLogicalHandler:
     call closeInputAndRecallX ; OP1=X
     ld hl, OP3
@@ -1406,14 +1387,59 @@ mRotateRightCarryHandler:
 
 ;-----------------------------------------------------------------------------
 
-mClearCarryFlagHandler:
-mSetCarryFlagHandler:
-mGetCarryFlagHandler:
+; Description: Transfer the carry flag (CF) to bit 0 of (baseModeCarryFlag).
+; Input: CF
+; Output: (baseModeCarryFlag)
+; Destroys: A
+storeCarryFlag:
+    rla ; shift CF into bit-0
+    and $1
+    ld (baseModeCarryFlag), a
     ret
 
-mSetWordSizeHandler:
-mGetWordSizeHandler:
+; Description: Transfer bit 0 of (baseModeCarryFlag) into the carry flag CF.
+; Input: (baseModeCarryFlag)
+; Output: CF
+; Destroys: A
+recallCarryFlag:
+    ld a, (baseModeCarryFlag)
+    rra ; shift bit 0 into CF
     ret
+
+mClearCarryFlagHandler:
+    or a
+    call storeCarryFlag
+    set dirtyFlagsBaseMode, (iy + dirtyFlags)
+    ret
+
+mSetCarryFlagHandler:
+    scf
+    call storeCarryFlag
+    set dirtyFlagsBaseMode, (iy + dirtyFlags)
+    ret
+
+mGetCarryFlagHandler:
+    call closeInputBuf
+    set dirtyFlagsBaseMode, (iy + dirtyFlags)
+    call recallCarryFlag
+    jr c, mGetCarryFlagHandlerPush1
+    bcall(_OP1Set0)
+    jp pushX
+mGetCarryFlagHandlerPush1:
+    bcall(_OP1Set1)
+    jp pushX
+
+;-----------------------------------------------------------------------------
+
+mSetWordSizeHandler:
+    ret
+
+mGetWordSizeHandler:
+    call closeInputBuf
+    bcall(_OP1Set0)
+    ld a, (baseModeWordSize)
+    call convertU8ToOP1
+    jp pushX
 
 ;-----------------------------------------------------------------------------
 
