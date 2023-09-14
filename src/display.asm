@@ -670,6 +670,8 @@ printMenuAtAExit:
 ; Input: OP1: floating point number
 ; Destroys: A, HL, OP3
 printOP1:
+    bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
+    jr z, printOP1Base10
     ld a, (baseMode)
     cp a, 16
     jr z, printOP1Base16
@@ -684,6 +686,8 @@ printOP1:
 ; Function: Print floating point number at OP1 using base 10.
 ; Input: OP1: floating point number
 ; Destroys: A, HL, OP3
+; TODO: Rename this 'printOP1Float' and create new 'printOP1Base10' which
+; prints OP1 as a U32 integer in base 10, just like HEX, OCT, and BIN.
 printOP1Base10:
     ld a, 15 ; width of output
     bcall(_FormReal)

@@ -148,18 +148,10 @@ parseNum:
     call checkZero
     ret z
     ld hl, inputBuf
-    ld a, (baseMode)
-    cp 16
-    jr z, parseNumBase
-    cp 8
-    jr z, parseNumBase
-    cp 2
-    jr z, parseNumBase
-    ; [[fallthrough]]
-
-; Description: Base 10 parsing is a lot more complicated because it supports
-; scientific notation 'E', decimal point, and negative sign.
-parseNumBase10:
+    bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
+    jr nz, parseBaseMode
+parseFloat:
+    ; Parse floating point.
     call calcDPPos
     call extractMantissaExponent ; extract mantissa exponent to floatBuf
     call extractMantissaSign ; extract mantissa sign to floatBuf
@@ -170,12 +162,27 @@ parseNumBase10:
     call copyFloatToOP1 ; copy floatBuf to OP1
     ret
 
+parseBaseMode:
+    ld a, (baseMode)
+    cp 16
+    jr z, parseNumBase
+    cp 8
+    jr z, parseNumBase
+    cp 2
+    jr z, parseNumBase
+    cp 10
+    jr z, parseNumBase
+    ; all others interpreted as base 10
+    ld a, 10
+    ld (baseMode), a
+    ; [[fallthrough]]
+
 ; Description: Parse the baseMode number in the Pascal-string given by HL. The
 ; base mode be 2, 8 or 16. This subroutine will actually supports any baseMode
 ; <= 36 probably (10 numerals and 26 letters).
 ; Input:
 ;   - HL: pointer to Pascal-string
-;   - A: base mode (2, 8, 16)
+;   - A: base mode (2, 8, 10, 16)
 ; Output: OP1: floating point value
 ; Destroys: all
 parseNumBase:

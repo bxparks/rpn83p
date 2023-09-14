@@ -213,34 +213,34 @@ handleKeyF:
     ld a, 'F'
     jp handleKeyNumber
 
-; Description: Return ZF=1 if BaseMode is 8, 10, or 16.
+; Description: Return ZF=1 if BaseMode is float, 8, 10, or 16.
 checkBase8Or10Or16:
     ld a, (baseMode)
     cp 8
     ret z
     cp 10
     ret z
-    cp 16
-    ret
-
-; Description: Return ZF=1 if BaseMode is 10, or 16.
-checkBase10Or16:
-    ld a, (baseMode)
-    cp 10
+    bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
     ret z
     cp 16
     ret
 
-; Description: Return ZF=1 if BaseMode is 16.
-checkBase16:
+; Description: Return ZF=1 if BaseMode is float, 10, or 16.
+checkBase10Or16:
     ld a, (baseMode)
+    cp 10
+    ret z
+    bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
+    ret z
     cp 16
     ret
 
-; Description: Return ZF=1 if BaseMode is 10.
-checkBase10:
+; Description: Return ZF=1 if BaseMode is (not float and base 16).
+checkBase16:
+    bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
+    ret z
     ld a, (baseMode)
-    cp 10
+    cp 16
     ret
 
 ; Function: Append a '.' if not already entered.
@@ -248,11 +248,11 @@ checkBase10:
 ; Output: (iy+inputBufFlags) DecPnt set
 ; Destroys: A, DE, HL
 handleKeyDecPnt:
-    ; DecPnt is supported only in Base 10.
-    call checkBase10
-    ret nz
-    ; Do nothing if in arg editing mode.
+    ; Do nothing if command arg mode.
     bit rpnFlagsArgMode, (iy + rpnFlags)
+    ret nz
+    ; Do nothing in BASE mode.
+    bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
     ret nz
     ; Do nothing if a decimal point already exists.
     bit inputBufFlagsDecPnt, (iy + inputBufFlags)
@@ -277,8 +277,8 @@ handleKeyEE:
     ; Do nothing in command arg mode.
     bit rpnFlagsArgMode, (iy + rpnFlags)
     ret nz
-    ; EE is supported only in Base 10.
-    call checkBase10
+    ; Do nothing in BASE mode.
+    bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
     ret nz
     ; do nothing if EE already exists
     bit inputBufFlagsEE, (iy + inputBufFlags)
@@ -437,8 +437,10 @@ handleKeyChs:
     ; Do nothing in command arg mode.
     bit rpnFlagsArgMode, (iy + rpnFlags)
     ret nz
-    call checkBase10
-    ret nz ; use NEG function for bases other than 10
+    ; Do nothing in BASE mode. Use NEG function instead.
+    bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
+    ret nz
+    ; Toggle sign character in inputBuf in edit mode.
     bit rpnFlagsEditing, (iy + rpnFlags)
     jr nz, handleKeyChsInputBuf
 handleKeyChsX:
@@ -692,7 +694,7 @@ handleKeyAdd:
     ; Do nothing in command arg mode.
     bit rpnFlagsArgMode, (iy + rpnFlags)
     ret nz
-    call checkBase10
+    bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
     jp nz, mBitwiseAddHandler
     call closeInputAndRecallXY
     bcall(_FPAdd) ; Y + X
@@ -706,7 +708,7 @@ handleKeySub:
     ; Do nothing in command arg mode.
     bit rpnFlagsArgMode, (iy + rpnFlags)
     ret nz
-    call checkBase10
+    bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
     jp nz, mBitwiseSubtHandler
     call closeInputAndRecallXY
     bcall(_FPSub) ; Y - X
@@ -720,7 +722,7 @@ handleKeyMul:
     ; Do nothing in command arg mode.
     bit rpnFlagsArgMode, (iy + rpnFlags)
     ret nz
-    call checkBase10
+    bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
     jp nz, mBitwiseMultHandler
     call closeInputAndRecallXY
     bcall(_FPMult) ; Y * X
@@ -734,7 +736,7 @@ handleKeyDiv:
     ; Do nothing in command arg mode.
     bit rpnFlagsArgMode, (iy + rpnFlags)
     ret nz
-    call checkBase10
+    bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
     jp nz, mBitwiseDivHandler
     call closeInputAndRecallXY
     bcall(_FPDiv) ; Y / X

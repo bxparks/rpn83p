@@ -1188,14 +1188,14 @@ mAtanhHandler:
 
 mBaseHandler:
     jr c, mBaseHandlerOnExit
-    ld a, (baseModeSaved) ; restore previously saved base mode
-    jr setBaseMode
+    set rpnFlagsBaseModeEnabled, (iy + rpnFlags)
+    jr mBaseHandlerEnd
 mBaseHandlerOnExit:
-    ; save previous base mode, and reset to 10 on exit
-    ld a, (baseMode)
-    ld (baseModeSaved), a
-    ld a, 10
-    jr setBaseMode
+    res rpnFlagsBaseModeEnabled, (iy + rpnFlags)
+mBaseHandlerEnd:
+    set dirtyFlagsBaseMode, (iy + dirtyFlags)
+    set dirtyFlagsStack, (iy + dirtyFlags)
+    ret
 
 mHexHandler:
     call closeInputBuf

@@ -8,9 +8,9 @@
 ;-----------------------------------------------------------------------------
 
 initBase:
+    res rpnFlagsBaseModeEnabled, (iy + rpnFlags)
     ld a, 10
     ld (baseMode), a
-    ld (baseModeSaved), a
     xor a
     ld (baseModeCarryFlag), a
     ld a, 32

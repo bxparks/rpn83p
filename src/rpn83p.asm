@@ -70,6 +70,7 @@ rpnFlagsEditing equ 0 ; set if in edit mode
 rpnFlagsArgMode equ 1 ; set if in command argument mode
 rpnFlagsLiftEnabled equ 2 ; set if stack lift is enabled (ENTER disables it)
 rpnFlagsAllStatEnabled equ 3 ; set if Sigma+ updates logarithm registers
+rpnFlagsBaseModeEnabled equ 4 ; set if inside BASE menu hierarchy
 
 ; Flags for the inputBuf. Offset from IY register.
 inputBufFlags equ asm_Flag3
@@ -140,17 +141,15 @@ handlerCode equ appStateInputBufFlags + 1
 ; non-zero.
 errorCode equ handlerCode + 1
 
-; Current base mode. Allowed values are: 2, 8, 10, 16. Anything else is
-; interpreted as 10.
+; Current base mode number. Allowed values are: 2, 8, 10, 16. Anything else is
+; interpreted as 10. TODO: Rename this to 'baseNumber'.
 baseMode equ errorCode + 1
 
-; Base mode copied from baseMode when leaving the BASE menu group.
-baseModeSaved equ baseMode + 1
+; Base mode carry flag. Bit 0. TODO: Renae this to 'baseCarryFlag'.
+baseModeCarryFlag equ baseMode + 1
 
-; Base mode carry flag. Bit 0.
-baseModeCarryFlag equ baseModeSaved + 1
-
-; Base mode word size: 8, 16, 24, 32 (maybe 40 in the future)
+; Base mode word size: 8, 16, 24, 32 (maybe 40 in the future). TODO: Rename
+; this to 'baseWordSize'.
 baseModeWordSize equ baseModeCarryFlag + 1
 
 ; String buffer for keyboard entry. This is a Pascal-style with a single size
