@@ -1451,6 +1451,7 @@ mBitwiseAddHandler:
     call convertOP1ToU32 ; OP4=u32(X)
     ld de, OP3
     call addU32U32 ; OP4(X) += OP3(Y)
+    call storeCarryFlag
     call convertU32ToOP1 ; OP1 = float(OP3)
     jp replaceXY
 
@@ -1464,6 +1465,7 @@ mBitwiseSubtHandler:
     ld de, OP3
     ex de, hl
     call subU32U32 ; OP3(Y) -= OP4(X)
+    call storeCarryFlag
     call convertU32ToOP1 ; OP1 = float(OP3)
     jp replaceXY
 
@@ -1476,6 +1478,7 @@ mBitwiseMultHandler:
     call convertOP1ToU32 ; OP4=u32(X)
     ld de, OP3
     call multU32U32 ; OP4(X) *= OP3(Y)
+    call storeCarryFlag
     call convertU32ToOP1 ; OP1 = float(OP3)
     jp replaceXY
 
@@ -1518,7 +1521,8 @@ divHandlerCommon:
     ld hl, OP3 ; HL=dividend (Y)
     ld de, OP4 ; DE=divisor (X)
     ld bc, OP5 ; BC=remainder
-    jp divU32U32 ; HL=OP3=quotient, DE=OP4=divisor, BC=OP5=remainder
+    call divU32U32 ; HL=OP3=quotient, DE=OP4=divisor, BC=OP5=remainder
+    jp storeCarryFlag ; CF=0 always
 divHandlerDivByZero:
     bjump(_ErrDivBy0) ; throw 'Div By 0' exception
 

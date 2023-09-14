@@ -76,33 +76,38 @@ multU32By10:
 ;   - DE: pointer to operand u32
 ; Output:
 ;   - u32(HL) *= u32(DE)
-; Destroys: A
+; Destroys: A, IX
+; Preserves: BC, DE, HL, (DE)
 multU32U32:
+    push hl
+    pop ix ; save IX=HL=destination pointer
     ; Create temporary 4-byte buffer on the stack, and set it to 0.
     push bc
     ld bc, 0
     push bc
     push bc
     ;
-    ld b, h
-    ld c, l ; BC = HL
     ld hl, 0
     add hl, sp ; (HL) = (SP) = result
-    ld a, 32
+    ld b, 32
+    ld c, 0 ; carry flag
 multU32U32Loop:
     call shiftLeftLogicalU32 ; (HL) *= 2
+    jr nc, multU32U32LoopContinue
+    set 0, c ; set carry bit in C register
+multU32U32LoopContinue:
     ex de, hl
-    call shiftLeftLogicalU32 ; (DE) *= 2
+    call rotateLeftCircularU32; (DE) *= 2, preserving (DE) after 32 iterations
     ex de, hl
     jr nc, multU32U32NoMult
-    call addU32U32BC ; (HL) += (BC)
+    call addU32U32IX ; (HL) += (IX)
 multU32U32NoMult:
-    dec a
-    jr nz, multU32U32Loop
+    djnz multU32U32Loop
 multU32U32End:
     ; copy u32(SP) to u32(original HL)
-    ld h, b
-    ld l, c
+    push ix
+    pop hl ; HL=IX=destination pointer
+    ; extract the u32 at the top of the stack
     pop bc
     ld (hl), c
     inc hl
@@ -112,9 +117,14 @@ multU32U32End:
     ld (hl), c
     inc hl
     ld (hl), b
+    ; restore HL
     dec hl
     dec hl
     dec hl
+    ; transfer carry flag in C to CF
+    ld a, c
+    rra ; CF=bit0 of C
+    ; restore BC
     pop bc
     ret
 
@@ -303,11 +313,12 @@ addU32U8:
 ;   - DE: pointer to operand u32 integer in little-endian format.
 ; Output:
 ;   - (HL) += (DE)
-; Preserves: A, BC, DE, HL, (DE)
+;   - CF=carry flag
+; Destroys: A
+; Preserves: BC, DE, HL, (DE)
 addU32U32:
-    push af
-    push hl
     push de
+    push hl
     ex de, hl
 
     ld a, (de)
@@ -332,24 +343,27 @@ addU32U32:
     adc a, (hl)
     ld (de), a
 
-    pop de
     pop hl
-    pop af
+    pop de
     ret
 
-; Description: Add u32 to u32, u32(HL) += u32(BC)
-; Preserves: A, BC, DE, HL, (BC)
-addU32U32BC:
-    ; ex bc, de
-    push bc
+; Description: Add u32 to u32, u32(HL) += u32(IX)
+; Output:
+;   - (HL) += (IX)
+;   - CF=carry flag
+; Destroys: A
+; Preserves: BC, DE, HL, (BC), IX
+addU32U32IX:
+    ; ex ix, de
+    push ix
     push de
-    pop bc
+    pop ix
     pop de
     call addU32U32
-    ; ex bc, de
-    push bc
+    ; ex ix, de
+    push ix
     push de
-    pop bc
+    pop ix
     pop de
     ret
 
@@ -359,9 +373,10 @@ addU32U32BC:
 ;   - DE: pointer to operand u32 integer in little-endian format.
 ; Output:
 ;   - (HL) -= (DE)
-; Preserves: A, BC, DE, HL
+;   - CF: carry flag
+; Destroys: A
+; Preserves: BC, DE, HL
 subU32U32:
-    push af
     push de
     push hl
     ex de, hl
@@ -390,7 +405,6 @@ subU32U32:
 
     pop hl
     pop de
-    pop af
     ret
 
 ;-----------------------------------------------------------------------------
@@ -408,6 +422,7 @@ subU32U32:
 ;   - HL: pointer to u32 quotient
 ;   - DE: divisor, unchanged
 ;   - BC: pointer to u32 remainder
+;   - CF: 0 (division always clears the carry flag)
 ; Destroys: A
 divU32U32:
     call clearU32BC ; clear remainder, dividend will shift into this
