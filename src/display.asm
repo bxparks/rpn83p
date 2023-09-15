@@ -671,24 +671,22 @@ printMenuAtAExit:
 ; Destroys: A, HL, OP3
 printOP1:
     bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
-    jr z, printOP1Base10
+    jr z, printOP1AsFloat
     ld a, (baseNumber)
-    cp a, 16
-    jr z, printOP1Base16
-    cp a, 8
-    jr z, printOP1Base8
-    cp a, 2
+    cp 16
+    jp z, printOP1Base16
+    cp 8
+    jp z, printOP1Base8
+    cp 2
     jp z, printOP1Base2
-    ; [[fallthrough]]
+    jp printOP1Base10
 
 ;-----------------------------------------------------------------------------
 
 ; Function: Print floating point number at OP1 using base 10.
 ; Input: OP1: floating point number
 ; Destroys: A, HL, OP3
-; TODO: Rename this 'printOP1Float' and create new 'printOP1Base10' which
-; prints OP1 as a U32 integer in base 10, just like HEX, OCT, and BIN.
-printOP1Base10:
+printOP1AsFloat:
     ld a, 15 ; width of output
     bcall(_FormReal)
     ld hl, OP3
@@ -722,9 +720,44 @@ printOP1BaseNegative:
 
 ;-----------------------------------------------------------------------------
 
+; Function: Print ingeger at OP1 at the current cursor in base 10. Erase to
+; the end of line (but only if the digits did not spill over to the next line).
+; Destroys: all, OP1, OP2, OP3, OP4
+printOP1Base10:
+    call op2Set2Pow32 ; OP2 = 2^32
+    bcall(_CpOP1OP2) ; if OP1 >= 2^32: CF=0
+    jr nc, printOP1BaseInvalid
+
+    bcall(_CkOP1FP0) ; if OP1 == 0: ZF=1
+    jr z, printOP1Base10Valid
+
+    bcall(_CkOP1Pos) ; if OP1 > 0: ZF=1
+    jr nz, printOP1BaseNegative
+
+printOP1Base10Valid:
+    bcall(_PushRealO1) ; FPS = OP1 (save)
+    bcall(_Trunc) ; OP1 = trunc(OP1)
+printOP1Base10String:
+    ld hl, OP3
+    call convertOP1ToU32
+    ld de, OP4
+    call convertU32ToDecString
+
+    ; Check if OP1 was a pure integer
+    push de ; DE = dec string
+    bcall(_PopRealO1) ; OP1 = original OP1
+    bcall(_Frac) ; OP1 = frac(OP1)
+    bcall(_CkOP1FP0) ; if frac(OP1) == 0: ZF=1
+    pop hl ; HL = dec string
+    jr z, printHLString
+    ld a, '.'
+    call appendCString
+    jr printHLString
+
+;-----------------------------------------------------------------------------
+
 ; Function: Print ingeger at OP1 at the current cursor in base 16. Erase to
-; the end of line (but only if the floating point did not spill over to the
-; next line).
+; the end of line (but only if the digits did not spill over to the next line).
 ; TODO: I think printOP1Base16(), printOP1Base8(), and printOP1Base2() can be
 ; combined into a single subroutine, saving memory.
 ; Destroys: all, OP1, OP2, OP3, OP4
@@ -754,27 +787,26 @@ printOP1Base16String:
     bcall(_Frac) ; OP1 = frac(OP1)
     bcall(_CkOP1FP0) ; if frac(OP1) == 0: ZF=1
     pop hl ; HL = hex string
-    jr z, printHLString
+    jp z, printHLString
     ld a, '.'
     call appendCString
-    jr printHLString
+    jp printHLString
 
 ;-----------------------------------------------------------------------------
 
 ; Function: Print ingeger at OP1 at the current cursor in base 8. Erase to
-; the end of line (but only if the floating point did not spill over to the
-; next line).
+; the end of line (but only if the digits did not spill over to the next line).
 ; Destroys: all, OP1, OP2, OP3, OP4, OP5
 printOP1Base8:
     call op2Set2Pow32 ; OP2 = 2^32
     bcall(_CpOP1OP2) ; if OP1 >= 2^32: CF=0
-    jr nc, printOP1BaseInvalid
+    jp nc, printOP1BaseInvalid
 
     bcall(_CkOP1FP0) ; if OP1 == 0: ZF=1
     jr z, printOP1Base8Valid
 
     bcall(_CkOP1Pos) ; if OP1 > 0: ZF=1
-    jr nz, printOP1BaseNegative
+    jp nz, printOP1BaseNegative
 
 printOP1Base8Valid:
     bcall(_PushRealO1) ; FPS = OP1 (save)
@@ -791,7 +823,7 @@ printOP1Base8String:
     bcall(_Frac) ; OP1 = frac(OP1)
     bcall(_CkOP1FP0) ; if frac(OP1) == 0: ZF=1
     pop hl ; HL = rendered string
-    jr z, printHLString
+    jp z, printHLString
     ld a, '.'
     call appendCString
     jp printHLString

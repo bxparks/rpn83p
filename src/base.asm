@@ -217,41 +217,6 @@ convertU32ToHexStringLoop:
     ret
 
 ;-----------------------------------------------------------------------------
-
-; Description: Reverses the chars of the string referenced by HL.
-; Input:
-;   - HL: reference to C-string
-;   - B: number of characters
-; Output: string in (HL) reversed
-; Destroys: A, B, DE, HL
-reverseString:
-    ; test for 0-length string
-    ld a, b
-    or a
-    ret z
-
-    ld e, b
-    ld d, 0
-    ex de, hl
-    add hl, de
-    ex de, hl ; DE = DE + B = end of string
-    dec de
-
-    ld a, b
-    srl a
-    ld b, a ; B = num / 2
-reverseStringLoop:
-    ld a, (de)
-    ld c, (hl)
-    ld (hl), a
-    ld a, c
-    ld (de), a
-    inc hl
-    dec de
-    djnz reverseStringLoop
-    ret
-
-;-----------------------------------------------------------------------------
 ; Routines related to Octal strings.
 ;-----------------------------------------------------------------------------
 
@@ -339,4 +304,126 @@ convertU32ToBinStringLoop:
     pop de
     pop hl
     pop bc
+    ret
+
+;-----------------------------------------------------------------------------
+; Routines related to Dec strings (as integers).
+;-----------------------------------------------------------------------------
+
+decNumberWidth equ 10 ; 2^32 needs 10 digits
+
+; Description: Converts 32-bit unsigned integer referenced by HL to a hex
+; string in buffer referenced by DE.
+; Input:
+;   - HL: pointer to 32-bit unsigned integer
+;   - DE: pointer to a C-string buffer of at least 11 bytes (10 digits plus NUL
+;   terminator). This will usually be one of the OPx registers each of them
+;   being 11 bytes long.
+; Output:
+;   - (DE): C-string representation of u32 as hexadecimal
+; Destroys: A
+convertU32ToDecString:
+    push bc
+    push hl
+    push de ; push destination buffer last
+    ld b, decNumberWidth
+convertU32ToDecStringLoop:
+    ; convert to decimal integer, but the characters are in reverse order
+    push de
+    ld d, 10
+    call divU32U8 ; u32(HL)=quotient, D=10, E=remainder
+    ld a, e
+    call convertAToChar
+    pop de
+    ld (de), a
+    inc de
+    djnz convertU32ToDecStringLoop
+    xor a
+    ld (de), a ; NUL termination
+
+    ; truncate trailing '0' digits, and reverse the string
+    pop hl ; HL = destination string pointer
+    push hl
+    ld b, decNumberWidth
+    call truncateTrailingZeros ; B=length of new string
+    call reverseString ; reverse the characters
+
+    pop de
+    pop hl
+    pop bc
+    ret
+
+;-----------------------------------------------------------------------------
+
+; Description: Truncate the trailing zero-digits. This assumes that the number
+; is in reverse digit format, so the trailing zeros are the leading zeros. If
+; the string is all '0' digits, then the final string is a string with a single
+; "0".
+; Input:
+;   - HL=pointer to NUL terminated string
+;   - B=length of string, can be 0
+; Output:
+;   - u32(HL)=string with truncated zeros
+;   - B=new length of string
+; Destroys: A, B
+; Preserves: C, DE, HL
+truncateTrailingZeros:
+    ld a, b
+    or a
+    ret z
+    push hl
+    push de
+    ld e, b
+    ld d, 0
+    add hl, de ; HL points to NUL at end of string
+truncateTrailingZerosLoop:
+    dec hl
+    ld a, (hl)
+    cp '0'
+    jr nz, truncateTrailingZerosEnd
+    djnz truncateTrailingZerosLoop
+    ; If we get to here, all digits were '0', and there is only on digit
+    ; remaining. So set the new length to be 1.
+    inc b
+truncateTrailingZerosEnd:
+    inc hl
+    ld (hl), 0 ; insert new NUL terminator just after the last non-zero-digit
+    pop de
+    pop hl
+    ret
+
+;-----------------------------------------------------------------------------
+
+; Description: Reverses the chars of the string referenced by HL.
+; Input:
+;   - HL: reference to C-string
+;   - B: number of characters
+; Output: string in (HL) reversed
+; Destroys: A, B, DE, HL
+reverseString:
+    ; test for 0-length string
+    ld a, b
+    or a
+    ret z
+
+    ld e, b
+    ld d, 0
+    ex de, hl
+    add hl, de
+    ex de, hl ; DE = DE + B = end of string
+    dec de
+
+    ld a, b
+    srl a
+    ld b, a ; B = num / 2
+    ret z ; NOTE: Failing to check for this zero took 2 days to debug!
+reverseStringLoop:
+    ld a, (de)
+    ld c, (hl)
+    ld (hl), a
+    ld a, c
+    ld (de), a
+    inc hl
+    dec de
+    djnz reverseStringLoop
     ret

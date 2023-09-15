@@ -1188,6 +1188,7 @@ mAtanhHandler:
 
 mBaseHandler:
     jr c, mBaseHandlerOnExit
+    call closeInputBuf
     set rpnFlagsBaseModeEnabled, (iy + rpnFlags)
     jr mBaseHandlerEnd
 mBaseHandlerOnExit:

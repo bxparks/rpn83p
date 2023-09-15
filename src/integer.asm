@@ -409,7 +409,7 @@ subU32U32:
 
 ;-----------------------------------------------------------------------------
 
-; Description: Divide u32(HL) by u32(BC), remainder in u32(DE). This is an
+; Description: Divide u32(HL) by u32(DE), remainder in u32(BC). This is an
 ; expanded u32 version of the "Fast 8-bit division" given in
 ; https://tutorials.eeems.ca/Z80ASM/part4.htm and
 ; https://wikiti.brandonw.net/index.php?title=Z80_Routines:Math:Division#32.2F16_division
@@ -427,7 +427,7 @@ subU32U32:
 divU32U32:
     call clearU32BC ; clear remainder, dividend will shift into this
     ld a, 32 ; iterate for 32 bits of a u32
-div32U32Loop:
+divU32U32Loop:
     push af ; save A loop counter
     call shiftLeftLogicalU32 ; dividend(HL) <<= 1
     push hl ; save HL=dividend/quotient
@@ -436,19 +436,58 @@ div32U32Loop:
     call rotateLeftCarryU32 ; rotate CF into remainder
     ;
     call cpU32U32 ; if remainder(HL) < divisor(DE): CF=1
-    jr c, div32U32QuotientZero
-div32U32QuotientOne:
+    jr c, divU32U32QuotientZero
+divU32U32QuotientOne:
     call subU32U32 ; remainder(HL) -= divisor(DE)
     pop hl ; HL=dividend/quotient
     ; Set bit 0 of byte 0 of quotient
     set 0, (hl)
-    jr div32U32NextBit
-div32U32QuotientZero:
+    jr divU32U32NextBit
+divU32U32QuotientZero:
     pop hl ; HL=dividend/quotient
-div32U32NextBit:
+divU32U32NextBit:
     pop af
     dec a
-    jr nz, div32U32Loop
+    jr nz, divU32U32Loop
+    ret
+
+;-----------------------------------------------------------------------------
+
+; Description: Divide u32(HL) by u8(D), quotient in HL, remainder in u8(E).
+; This is an expanded u32 version of the "Fast 8-bit division" given in
+; https://tutorials.eeems.ca/Z80ASM/part4.htm and
+; https://wikiti.brandonw.net/index.php?title=Z80_Routines:Math:Division#32.2F16_division
+;
+; Input:
+;   - HL: pointer to u32 dividend
+;   - D: u8 divisor
+; Output:
+;   - HL: pointer to u32 quotient
+;   - D: divisor, unchanged
+;   - E: u8 remainder
+;   - CF: 0 (division always clears the carry flag)
+; Destroys: A
+; Preserves: BC
+divU32U8:
+    push bc ; save BC
+    ld e, 0 ; clear remainder
+    ld b, 32 ; iterate for 32 bits of a u32
+divU32U8Loop:
+    call shiftLeftLogicalU32 ; dividend(HL) <<= 1
+    ld a, e ; A = remainder
+    rla ; rotate CF from U32 into dividend/remainder
+    ld e, a
+    jr c, divU32U8QuotientOne ; remainder overflowed, so must substract
+    cp d ; if remainder(A) < divisor(D): CF=1
+    jr c, divU32U8QuotientZero
+divU32U8QuotientOne:
+    sub d
+    ld e, a
+    set 0, (hl)
+divU32U8QuotientZero:
+    djnz divU32U8Loop
+    pop bc
+    or a ; CF=0
     ret
 
 ;-----------------------------------------------------------------------------
