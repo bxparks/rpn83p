@@ -76,11 +76,12 @@ multU32By10:
 ;   - DE: pointer to operand u32
 ; Output:
 ;   - u32(HL) *= u32(DE)
+;   - CF: carry flag set if result overflowed U32
 ; Destroys: A, IX
 ; Preserves: BC, DE, HL, (DE)
 multU32U32:
     push hl
-    pop ix ; save IX=HL=destination pointer
+    pop ix ; IX=original HL
     ; Create temporary 4-byte buffer on the stack, and set it to 0.
     push bc
     ld bc, 0
@@ -101,9 +102,14 @@ multU32U32LoopContinue:
     ex de, hl
     jr nc, multU32U32NoMult
     call addU32U32IX ; (HL) += (IX)
+    jr nc, multU32U32NoMult
+    set 0, c ; set carry bit in C register
 multU32U32NoMult:
     djnz multU32U32Loop
 multU32U32End:
+    ; transfer carry flag in C to CF
+    ld a, c
+    rra ; CF=bit0 of C
     ; copy u32(SP) to u32(original HL)
     push ix
     pop hl ; HL=IX=destination pointer
@@ -121,9 +127,6 @@ multU32U32End:
     dec hl
     dec hl
     dec hl
-    ; transfer carry flag in C to CF
-    ld a, c
-    rra ; CF=bit0 of C
     ; restore BC
     pop bc
     ret
