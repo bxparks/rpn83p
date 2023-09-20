@@ -37,7 +37,9 @@ RPN calculator app for the TI-83 Plus and TI-84 Plus inspired by the HP-42S.
     - [Trigonometric Modes](#trig-modes)
     - [BASE Functions](#base-functions)
         - [Base Modes](#base-modes)
+        - [Shift and Rotate](#shift-and-rotate)
         - [Base Arithmetic](#base-arithmetic)
+        - [Carry Flag](#carry-flag)
         - [Base Integer Size](#base-integer-size)
         - [Base Mode Retention](#base-mode-retention)
     - [Storage Registers](#storage-registers)
@@ -914,20 +916,32 @@ The `BASE` functions are available through the `ROOT` > `BASE` hierarchy:
 
 These functions allow conversion of integers into different bases (10, 16, 8,
 2), as well as performing bitwise functions on those integers (bit-and, bit-or,
-bit-xor, etc). They are useful for computer science and programming. The `BASE`
-modes and functions work somewhat differently compared to the HP-42S, so
-additional documentation is provided here.
+bit-xor, etc). They are useful for computer science and programming. Many of the
+`BASE` mode functions were inspired by the HP-16C, which has more extensive
+functions compared to the HP-42S.
 
-#### BASE Modes
+All menu functions under the `BASE` menu operate on *integer* values instead of
+floating point values. Currently, the RPN83P app supports only unsigned 32-bit
+integers. (Support for 8-bit, 16-bit, and 24-bit integers may be implemented in
+the near future.) Any floating point values on the RPN stack (e.g. `X` or `Y`
+registers) are converted into an unsigned 32-bit integer before being passed
+into a logical, bitwise, or arithmetic function. This includes the `DEC` (base
+10) mode.
+
+#### Base Modes
 
 **DEC** (decimal)
 
 The `DEC` (decimal) mode is the default. All numbers on the RPN stack are
-displayed using the currently selected floating point mode (e.g. `FIX`, `ENG`,
-and `SCI`) and the number of digits after the decimal point. Here is an example
-screenshot:
+displayed as an integer, after being converted to an unsigned 32-bit integer.
 
 > ![Numbers in Decimal Mode](docs/rpn83p-screenshot-base-dec.png)
+
+If the value on the RPN stack is negative, a single `-` sign is shown. If the
+value is greater than or equal to `2^32`, then 3 dots `...` are shown. If the
+floating point value is within the range of `[0, 2^32]` but has non-zero
+fractional value, a decimal point is shown after converting the integer part
+into a 32-bit unsigned integer.
 
 **HEX** (hexadecimal)
 
@@ -978,23 +992,62 @@ disabled.
 
 > ![Numbers in Binary Mode](docs/rpn83p-screenshot-base-bin.png)
 
+#### Shift and Rotate
+
+The RPN83P supports most of the common shift and rotate operations implemented
+by modern microprocessors, including the Z80 processor used in the TI-83 Plus
+and TI-84 Plus calculators. Unfortunately, there seems to be no standard
+mnemonics for these shift and rotate operations, and different processors and
+calculators use conflicting names. The RPN83P follows the conventions of the
+HP-16C for consistency, even though the conventions are sometimes contrary to
+the conventions of the Z80 processor:
+
+- `SL` - shift left logical
+    - named `SLA` on the Z80 (see Note below regarding `SLL` instruction)
+    - named `SL` on the HP-16C
+- `SR` - shift right logical
+    - named `SRL` on the Z80
+    - named `SR` on the HP-16C
+- `ASR` - arithmetic shift right
+    - named `SRA` on the Z80
+    - named `ASR` on the HP-16C
+- `RL` - rotate left circular
+    - named `RLC` on the Z80
+    - named `RL` on the HP-16C
+- `RR` - rotate right circular
+    - named `RRC` on the Z80
+    - named `RR` on the HP-16C
+- `RLC` - rotate left through carry flag
+    - named `RL` on the Z80
+    - named `RLC` on the HP-16C
+- `RRC` - rotate right through carry flag
+    - named `RR` on the Z80
+    - named `RRC` on the HP-16C
+
+**Note**: The Z80 apparently has an undocumented instruction named [shift left
+logical](https://worldofspectrum.org/z88forever/dn327/z80undoc.htm) which is
+shortened to `SLL` or `SL1`. It places a 1 into bit 0 of the register, instead
+of a 0. It is unfortunate that term "logical" is used in the exact opposite
+to the meaning that I would have expected.
+
 #### Base Arithmetic
 
-Similar to the HP-42S, the `HEX`, `OCT` and `BIN` modes change how some
-arithmetic functions behave. Specifically, the keyboard buttons `+`, `-`, `*`,
-`/` are re-bound to their bitwise counterparts `B+`, `B-`, `B*`, `B/` which
+Similar to the HP-42S, activating the `BASE` hierarchy of menus changes the
+behavior of keyboard arithmetic functions. Specifically, the buttons `+`, `-`,
+`*`, `/` are re-bound to their integer counterparts `B+`, `B-`, `B*`, `B/` which
 perform 32-bit unsigned arithmetic operations instead of floating point
 operations. The numbers in the `X` and `Y` registers are converted into 32-bit
 unsigned integers before the integer subroutines are called.
 
 **HP-42S Compatibility Note**: The HP-42S calls these integer functions `BASE+`,
 `BASE-`, `BASE*`, and `BASE/`. The RPN83P can only display 4-characters in the
-menu bar so I needed to use shorter names. The HP-42S function called `B+/-` is
+menu bar so I had to use shorter names. The HP-42S function called `B+/-` is
 called `NEG` on the RPN83P. Early versions of the RPN83P retained the keyboard
 arithmetic buttons bound to their floating point operations, but it became too
 confusing to see hex, octal, or binary digits on the display, but get floating
 point results when performing an arithmetic operation such as `/`. The RPN83P
-follows the lead of the HP-42S for the arithmetic operations.
+follows the lead of the HP-42S to change the arithmetic operations to integer
+operations.
 
 For example, suppose the following numbers are in the RPN stack in `DEC` mode:
 
@@ -1014,9 +1067,42 @@ functions, and the fractional digits were truncated:
 
 > ![Base Arithmetic Part 4](docs/rpn83p-screenshot-base-arithmetic-4-dec.png)
 
-You can perform integer arithmetic even in `DEC` mode, by using the `B+`, `B-`,
-`B*`, and `B/` menu functions, instead of the `+`, `-`, `*` and `/` keyboard
-buttons.
+#### Carry Flag
+
+The RPN83P supports the *Carry Flag* implemented by most (all?) microprocessors.
+The Carry Flag is supported by the HP-16C but not by the HP-42S. When the Carry
+Flag is set, a small `C` letter appears on the display like this:
+
+> ![Carry Flag On](docs/rpn83p-carry-flag-on.png)
+
+When the flag is off, a dash `-` is shown like this:
+
+> ![Carry Flag On](docs/rpn83p-carry-flag-off.png)
+
+Many operations affect the Carry Flag (CF). First, all shift and rotate
+operations affect the CF:
+
+- `SL`: bit 31 shifted into CF
+- `SR`: bit 0 shifted into CF
+- `ASR`: bit 0 shifted into CF
+- `RL`: bit 31 shifted into CF
+- `RR`: bit 0 shifted into CF
+- `RLC`: CF into bit 0; bit 31 into CF
+- `RRC`: CF into bit 31; bit 0 into CF
+
+All integer arithmetic functions affect the CF:
+
+- `B+`: CF set on overflow
+- `B-`: CF set on borrow
+- `B*`: CF set on overflow
+- `B/`: CF always set to 0
+- `BDIV`: CF always set to 0
+
+On most microprocessors, the bitwise operations clear the Carry Flag to zero.
+However the RPN83P follows the lead of the HP-16C calculator where these
+operations do *not* affect the Carry Flag at all:
+
+- `AND`, `OR`, `XOR`, `NEG`, `NOT`
 
 #### Base Integer Size
 
@@ -1053,13 +1139,13 @@ the negative sign.
 Currently, the integer size for base conversions and functions is hardcoded to
 be 32 bits. I hope to add the ability to change the integer size in the future.
 
-#### Base Mode Retention
+#### Base Number Retention
 
-Since the `HEX`, `OCT` and `BIN` modes are useful only within the `BASE`
-hierarchy of menus, the base mode is reset to `DEC` if menu hierarchy leaves the
-`BASE` menu. This is similar to the HP-42S. However, unlike the HP-42S, the
-RPN83P remembers the most recent base mode and restores its setting if the
-`BASE` menu hierarchy is selected again.
+Since the `DEC`, `HEX`, `OCT` and `BIN` modes are useful only within the `BASE`
+hierarchy of menus. When the menu leaves the `BASE` hierarchy, the numbers on
+the RPN stack revert back to using floating points. This is similar to the
+HP-42S. However, unlike the HP-42S, the RPN83P remembers the most recent base
+number and restores its setting if the `BASE` menu hierarchy is selected again.
 
 ### Storage Registers
 

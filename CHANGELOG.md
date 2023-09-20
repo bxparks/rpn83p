@@ -18,6 +18,22 @@
           `baseMode` to 10 upon leaving the `BASE` menu hierarchy
         - add `baseModeSaved` appState parameter to restore the last `baseMode`
           upon reentery into `BASE` menu hierarchy
+    - `BASE` mode
+        - all `BASE` operations use `u32` integers, even `DEC` mode
+        - add Carry Flag which is updated for arithmetic, shifting, rotating
+          operations
+            - add `SCF` (set carry flag) menu item
+            - add `CCF` (clear carry flag) menu item
+            - add `CF?` (get carry flag) menu item
+            - `C` or `-` display indicator
+        - remove base number indicator (`DEC`, `HEX`, `OCT`, `BIN`) in the
+          status line (top line)
+            - no longer needed since those menu items show a "dot" when selected
+            - and the base number is only relevant when in the `BASE` menu
+              hierarchy
+        - add `ASL` (arithmetic shift left) menu item
+        - add `RLC` (rotate left through carry flag) menu item
+        - add `RRC` (rotate right through carry flag) menu item
 - 0.5.0 (2023-08-31)
     - `USER_GUIDE.md`, `README.md`
         - Update "Menu Indicator Arrows" section with latest screenshots which
