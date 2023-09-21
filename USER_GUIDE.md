@@ -653,6 +653,9 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (back), and `MATH`
     - ![BASE MenuRow 2](docs/rpn83p-screenshot-menu-root-base-2.png)
     - ![BASE MenuRow 3](docs/rpn83p-screenshot-menu-root-base-3.png)
     - ![BASE MenuRow 4](docs/rpn83p-screenshot-menu-root-base-4.png)
+    - ![BASE MenuRow 5](docs/rpn83p-screenshot-menu-root-base-5.png)
+    - ![BASE MenuRow 6](docs/rpn83p-screenshot-menu-root-base-6.png)
+    - ![BASE MenuRow 7](docs/rpn83p-screenshot-menu-root-base-7.png)
     - `DEC`: use decimal base 10, set base indicator to `DEC`
     - `HEX`: use hexadecimal base 16, set base indicator to `HEX`
         - display all register values as 32-bit unsigned integer
@@ -666,10 +669,24 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (back), and `MATH`
     - `XOR`: `X` `bit-xor` `Y`
     - `NOT`: one's complement of `X`
     - `NEG`: two's complement of `X`
-    - `SL`: shift left one bit
-    - `SR`: shift right one bit
+    - `SL`: shift left logical one bit
+    - `SR`: shift right logical one bit
+    - `ASR`: arithmetic shift right one bit
+    - `SLn`: shift left logical `Y` by `X` bits
+    - `SRn`: shift right logical `Y` by `X` bits
     - `RL`: rotate left circular one bit
     - `RR`: rotate right circular one bit
+    - `RLC`: rotate left through carry flag one bit
+    - `RRC`: rotate right through carry flag one bit
+    - `RLn`: rotate left circular `Y` by `X` bits
+    - `RRn`: rotate right circular `Y` by `X` bits
+    - `RLCn`: rotate left through carry flag `Y` by `X` bits
+    - `RRCn`: rotate right through carry flag `Y` by `X` bits
+    - `CCF`: clear carry flag
+    - `SCF`: set carry flag
+    - `CF?`: return carry flag state as 0 or 1
+    - `WSIZ`: set integer word size (not implemented)
+    - `WSZ?`: return current integer word size (normally 32)
     - `B+`: add `X` and `Y` using unsigned 32-bit integer math
     - `B-`: subtract `X` from `Y` using unsigned 32-bit integer math
     - `B*`: multiply `X` and `Y` using unsigned 32-bit integer math
