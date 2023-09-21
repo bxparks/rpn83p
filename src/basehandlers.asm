@@ -88,21 +88,18 @@ mBaseNameSelector:
 
 mBitwiseAndHandler:
     call recallU32XY
-    ld de, OP4
     call andU32U32 ; HL = OP3 = OP3 AND OP4
     call convertU32ToOP1 ; OP1 = float(OP3)
     jp replaceXY
 
 mBitwiseOrHandler:
     call recallU32XY
-    ld de, OP4
     call orU32U32 ; HL = OP3 = OP3 OR OP4
     call convertU32ToOP1 ; OP1 = float(OP3)
     jp replaceXY
 
 mBitwiseXorHandler:
     call recallU32XY
-    ld de, OP4
     call xorU32U32 ; HL = OP3 = OP3 XOR OP4
     call convertU32ToOP1 ; OP1 = float(OP3)
     jp replaceXY
@@ -256,6 +253,7 @@ recallU32X:
 ;   - OP3=u32(Y)
 ;   - OP4=u32(X)
 ;   - HL=OP3
+;   - DE=OP4
 ; Destroys: A, BC, DE, HL
 recallU32XY:
     call closeInputAndRecallXY ; OP1=Y; OP2=X
@@ -264,6 +262,7 @@ recallU32XY:
     ld hl, OP4
     call convertOP2ToU32 ; OP4=u32(X)
     ld hl, OP3
+    ld de, OP4
     ret
 
 ; Description: Recall X and Y for SLn, SRn, RLn, RRn, RLCn, RRCn. Verify that X
@@ -352,41 +351,22 @@ mGetWordSizeHandler:
 ;-----------------------------------------------------------------------------
 
 mBitwiseAddHandler:
-    call closeInputAndRecallXY ; OP1=Y; OP2=X
-    ld hl, OP3
-    call convertOP1ToU32 ; OP3=u32(Y)
-    bcall(_OP2ToOP1)
-    ld hl, OP4
-    call convertOP1ToU32 ; OP4=u32(X)
-    ld de, OP3
-    call addU32U32 ; OP4(X) += OP3(Y)
+    call recallU32XY ; OP3=u32(Y); OP4=u32(X); HL=OP3; DE=OP4
+    call addU32U32 ; OP3(Y) += OP4(X)
     call storeCarryFlag
     call convertU32ToOP1 ; OP1 = float(OP3)
     jp replaceXY
 
 mBitwiseSubtHandler:
-    call closeInputAndRecallXY ; OP1=Y; OP2=X
-    ld hl, OP3
-    call convertOP1ToU32 ; OP3=u32(Y)
-    bcall(_OP2ToOP1)
-    ld hl, OP4
-    call convertOP1ToU32 ; OP4=u32(X)
-    ld de, OP3
-    ex de, hl
+    call recallU32XY ; OP3=u32(Y); OP4=u32(X); HL=OP3; DE=OP4
     call subU32U32 ; OP3(Y) -= OP4(X)
     call storeCarryFlag
     call convertU32ToOP1 ; OP1 = float(OP3)
     jp replaceXY
 
 mBitwiseMultHandler:
-    call closeInputAndRecallXY ; OP1=Y; OP2=X
-    ld hl, OP3
-    call convertOP1ToU32 ; OP3=u32(Y)
-    bcall(_OP2ToOP1)
-    ld hl, OP4
-    call convertOP1ToU32 ; OP4=u32(X)
-    ld de, OP3
-    call multU32U32 ; OP4(X) *= OP3(Y)
+    call recallU32XY ; OP3=u32(Y); OP4=u32(X); HL=OP3; DE=OP4
+    call multU32U32 ; OP3(Y) *= OP4(X)
     call storeCarryFlag
     call convertU32ToOP1 ; OP1 = float(OP3)
     jp replaceXY
@@ -415,20 +395,14 @@ mBitwiseDiv2Handler:
     ; convert quotient into OP1
     pop hl
     call convertU32ToOP1 ; OP1 = quotient
-    ;
     jp replaceXYWithOP1OP2 ; Y=quotient, X=remainder
 
 baseDivHandlerCommon:
-    call closeInputAndRecallXY ; OP1=Y; OP2=X
-    ld hl, OP3
-    call convertOP1ToU32 ; OP3=u32(Y)
-    bcall(_OP2ToOP1)
-    ld hl, OP4
-    call convertOP1ToU32 ; OP4=u32(X)
-    call testU32
+    call recallU32XY ; OP3=u32(Y); OP4=u32(X); HL=OP3; DE=OP4
+    ex de, hl ; HL=OP4
+    call testU32 ; check if X==0
+    ex de, hl
     jr z,  baseDivHandlerDivByZero
-    ld hl, OP3 ; HL=dividend (Y)
-    ld de, OP4 ; DE=divisor (X)
     ld bc, OP5 ; BC=remainder
     call divU32U32 ; HL=OP3=quotient, DE=OP4=divisor, BC=OP5=remainder
     jp storeCarryFlag ; CF=0 always
