@@ -95,8 +95,10 @@ Here the quick summary of its features:
     - angle conversions: `>DEG`, `>RAD`, `>HR`, `>HMS`, `>REC`, `>POL`
     - unit conversions: `>C`, `>F`, `>km`, `>mi`, etc
     - base conversions: `DEC`, `HEX`, `OCT`, `BIN`
-    - bitwise operations: `AND`, `OR`, `XOR`, `NOT`, `NEG`, `SL`, `SR`, `RL`,
-      `RR`, `B+`, `B-`, `B*`, `B/`, `BDIV`
+    - bitwise operations: `AND`, `OR`, `XOR`, `NOT`, `NEG`, `B+`, `B-`, `B*`,
+      `B/`, `BDIV`
+    - shift and rotate operations: `SL`, `SR`, `ASR`, `RL`, `RR`, `RLC`, `RRC`,
+      `SLn`, `SRn`, `RLn`, `RRn`, `RLCn`, `RRCn`
     - statistics: `Sigma+`, `Sigma-`, `SUM`, `MEAN`, `WMN` (weighted mean),
       `SDEV` (sample standard deviation), `SCOV` (sample covariance),
       `PDEV` (population standard deviation), `PCOV` (population covariance)
@@ -1011,6 +1013,10 @@ the conventions of the Z80 processor:
 - `ASR` - arithmetic shift right
     - named `SRA` on the Z80
     - named `ASR` on the HP-16C
+- `SLn` - shift left logical of `Y` for `X` times
+    - no equivalent on Z80 or HP-16C
+- `SRn` - shift right logical of `Y` for `X` times
+    - no equivalent on Z80 or HP-16C
 - `RL` - rotate left circular
     - named `RLC` on the Z80
     - named `RL` on the HP-16C
@@ -1023,6 +1029,23 @@ the conventions of the Z80 processor:
 - `RRC` - rotate right through carry flag
     - named `RR` on the Z80
     - named `RRC` on the HP-16C
+- `RLn` - rotate left circular of `Y` for `X` times
+    - no equivalent on Z80
+    - named `RLn` on the HP-16C
+- `RRn` - rotate right circular of `Y` for `X` times
+    - no equivalent on Z80
+    - named `RRn` on the HP-16C
+- `RLCn` - rotate left through carry flag of `Y` for `X` times
+    - no equivalent on Z80
+    - named `RLCn` on the HP-16C
+- `RRCn` - rotate right through carry flag of `Y` for `X` times
+    - no equivalent on Z80
+    - named `RRCn` on the HP-16C
+
+For all `XXn` operations, if the `n` value (i.e. `X` register) is 0, the
+operation does not change the value of `Y`, but the RPN stack collapses by one
+position so the `X` value disappears. If the `n` value is `>=` to the `BASE`
+word size (`WSZ?`), normally 32, an error message will be displayed.
 
 **Note**: The Z80 apparently has an undocumented instruction named [shift left
 logical](https://worldofspectrum.org/z88forever/dn327/z80undoc.htm) which is

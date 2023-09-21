@@ -45,8 +45,10 @@ Here is a quick summary of its features:
     - angle conversions: `>DEG`, `>RAD`, `>HR`, `>HMS`, `>REC`, `>POL`
     - unit conversions: `>C`, `>F`, `>km`, `>mi`, etc
     - base conversions: `DEC`, `HEX`, `OCT`, `BIN`
-    - bitwise operations: `AND`, `OR`, `XOR`, `NOT`, `NEG`, `SL`, `SR`, `ASR`,
-      `RL`, `RR`, `RLC`, `RRC`, `B+`, `B-`, `B*`, `B/`, `BDIV`
+    - bitwise operations: `AND`, `OR`, `XOR`, `NOT`, `NEG`, `B+`, `B-`, `B*`,
+      `B/`, `BDIV`
+    - shift and rotate operations: `SL`, `SR`, `ASR`, `RL`, `RR`, `RLC`, `RRC`,
+      `SLn`, `SRn`, `RLn`, `RRn`, `RLCn`, `RRCn`
     - statistics: `Sigma+`, `Sigma-`, `SUM`, `MEAN`, `WMN` (weighted mean),
       `SDEV` (sample standard deviation), `SCOV` (sample covariance),
       `PDEV` (population standard deviation), `PCOV` (population covariance)
