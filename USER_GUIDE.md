@@ -249,7 +249,7 @@ Manual](https://literature.hpcalc.org/items/929).
 
 Here are the various UI elements on the LCD screen used by the RPN83P app:
 
-> ![RPN83P screen regions](docs/rpn83p-screenshot-regions-annotated.png)
+> ![RPN83P screen areas](docs/rpn83p-screen-areas-annotated.png)
 
 The LCD screen is 96 pixels (width) by 64 pixels (height). That is large enough
 to display 8 rows of numbers and letters. They are divided into the following:
