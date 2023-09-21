@@ -339,7 +339,7 @@ mGetCarryFlagHandlerPush1:
 ;-----------------------------------------------------------------------------
 
 mSetWordSizeHandler:
-    ret
+    jp mNotYetHandler
 
 mGetWordSizeHandler:
     call closeInputBuf
