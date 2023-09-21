@@ -169,6 +169,13 @@ MenuGroup root mRoot [
         MenuItem RRCn mRotateRightCarryN # rotate right carry by N
       ]
       MenuRow [
+        MenuItem REVB mReverseBit
+        MenuItem CNTB mCountBit
+        MenuItem SB mSetBit
+        MenuItem CB mClearBit
+        MenuItem B<Squestion> mGetBit
+      ]
+      MenuRow [
         MenuItem CCF mClearCarryFlag
         MenuItem SCF mSetCarryFlag
         MenuItem CF<Squestion> mGetCarryFlag

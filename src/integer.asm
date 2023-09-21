@@ -893,3 +893,99 @@ negU32:
 
     pop hl
     ret
+
+;-----------------------------------------------------------------------------
+
+; Description: Reverse the bits of u32(HL).
+; Input: HL=pointer to u32
+; Output: HL=reverse(HL)
+; Destroys: A, BC
+; Preserves: HL, DE
+reverseU32:
+    push hl
+    ; reverse the bytes
+    ld c, (hl)
+    inc hl
+    ld b, (hl)
+    inc hl
+    ld a, (hl)
+    ld (hl), b
+    dec hl
+    ld (hl), a
+    inc hl
+    inc hl
+    ld a, (hl)
+    ld (hl), c
+    dec hl
+    dec hl
+    dec hl
+    ld (hl), a
+    ; reverse the bits of each byte
+    ld a, (hl)
+    call reverseBits
+    ld (hl), a
+    inc hl
+    ld a, (hl)
+    call reverseBits
+    ld (hl), a
+    inc hl
+    ld a, (hl)
+    call reverseBits
+    ld (hl), a
+    inc hl
+    ld a, (hl)
+    call reverseBits
+    ld (hl), a
+    pop hl
+    ret
+
+; Description: Reverse the bits of register A.
+; Input: A
+; Output: A=reverse(A)
+; Destroys: BC
+reverseBits:
+    ld b, 8
+reverseBitsLoop:
+    rrca
+    rl c
+    djnz reverseBitsLoop
+    ld a, c
+    ret
+
+;-----------------------------------------------------------------------------
+
+; Description: Count the number of bits in u32(HL).
+; Input: HL=pointer to u32
+; Output: A=number of bits in u32
+; Destroys: A, BC
+; Preserves, DE, HL
+countU32Bits:
+    push hl
+    ld c, 0
+    ld a, (hl)
+    call appendCountBits
+    inc hl
+    ld a, (hl)
+    call appendCountBits
+    inc hl
+    ld a, (hl)
+    call appendCountBits
+    inc hl
+    ld a, (hl)
+    call appendCountBits
+    pop hl
+    ld a, c
+    ret
+
+; Description: Count the number of bits in A.
+; Output: C+=numBits(A)
+; Destroys: A, BC
+appendCountBits:
+    ld b, 8
+countBitsLoop:
+    rrca
+    jr nc, countBitsNext
+    inc c
+countBitsNext:
+    djnz countBitsLoop
+    ret

@@ -408,3 +408,23 @@ baseDivHandlerCommon:
     jp storeCarryFlag ; CF=0 always
 baseDivHandlerDivByZero:
     bjump(_ErrDivBy0) ; throw 'Div By 0' exception
+
+;-----------------------------------------------------------------------------
+
+mReverseBitHandler:
+    call recallU32X ; HL=OP3=u32(X)
+    call reverseU32
+    call convertU32ToOP1 ; OP1 = float(OP3)
+    jp replaceX
+
+mCountBitHandler:
+    call recallU32X ; HL=OP3=u32(X)
+    call countU32Bits
+    call setU32ToA
+    call convertU32ToOP1 ; OP1 = float(OP3)
+    jp replaceX
+
+mSetBitHandler:
+mClearBitHandler:
+mGetBitHandler:
+    ret
