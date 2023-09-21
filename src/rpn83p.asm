@@ -396,6 +396,7 @@ dummyVector:
 #include "display.asm"
 #include "errorcode.asm"
 #include "base.asm"
+#include "basehandlers.asm"
 #include "integer.asm"
 #include "menu.asm"
 #include "menuhandlers.asm"
