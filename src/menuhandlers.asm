@@ -1266,53 +1266,34 @@ mBaseNameSelector:
 ;-----------------------------------------------------------------------------
 
 mBitwiseAndHandler:
-    call closeInputAndRecallXY ; OP1=Y; OP2=X
-    ld hl, OP3
-    call convertOP1ToU32 ; OP3=u32(Y)
-    bcall(_OP2ToOP1)
-    ld hl, OP4
-    call convertOP1ToU32 ; OP4=u32(X)
-    ld de, OP3
-    call andU32U32 ; OP4 = OP4 AND OP3
-    call convertU32ToOP1 ; OP1 = float(OP4)
+    call recallU32XY
+    ld de, OP4
+    call andU32U32 ; HL = OP3 = OP3 AND OP4
+    call convertU32ToOP1 ; OP1 = float(OP3)
     jp replaceXY
 
 mBitwiseOrHandler:
-    call closeInputAndRecallXY ; OP1=Y; OP2=X
-    ld hl, OP3
-    call convertOP1ToU32 ; OP3=u32(Y)
-    bcall(_OP2ToOP1)
-    ld hl, OP4
-    call convertOP1ToU32 ; OP4=u32(X)
-    ld de, OP3
-    call orU32U32 ; OP4 = OP4 OR OP3
-    call convertU32ToOP1 ; OP1 = float(OP4)
+    call recallU32XY
+    ld de, OP4
+    call orU32U32 ; HL = OP3 = OP3 OR OP4
+    call convertU32ToOP1 ; OP1 = float(OP3)
     jp replaceXY
 
 mBitwiseXorHandler:
-    call closeInputAndRecallXY ; OP1=Y; OP2=X
-    ld hl, OP3
-    call convertOP1ToU32 ; OP3=u32(Y)
-    bcall(_OP2ToOP1)
-    ld hl, OP4
-    call convertOP1ToU32 ; OP4=u32(X)
-    ld de, OP3
-    call xorU32U32 ; OP4 = OP4 XOR OP3
-    call convertU32ToOP1 ; OP1 = float(OP4)
+    call recallU32XY
+    ld de, OP4
+    call xorU32U32 ; HL = OP3 = OP3 XOR OP4
+    call convertU32ToOP1 ; OP1 = float(OP3)
     jp replaceXY
 
 mBitwiseNotHandler:
-    call closeInputAndRecallX ; OP1=X
-    ld hl, OP3
-    call convertOP1ToU32 ; OP3=u32(X)
+    call recallU32X ; OP3=u32(X); HL=OP3
     call notU32 ; OP3 = NOT(OP3)
     call convertU32ToOP1 ; OP1 = float(OP3)
     jp replaceX
 
 mBitwiseNegHandler:
-    call closeInputAndRecallX ; OP1=X
-    ld hl, OP3
-    call convertOP1ToU32 ; OP3=u32(X)
+    call recallU32X ; OP3=u32(X); HL=OP3
     call negU32 ; OP3 = NEG(OP3), 2's complement negation
     call convertU32ToOP1 ; OP1 = float(OP3)
     jp replaceX
@@ -1320,28 +1301,21 @@ mBitwiseNegHandler:
 ;-----------------------------------------------------------------------------
 
 mShiftLeftLogicalHandler:
-    ; TODO: create recallU32X() common function
-    call closeInputAndRecallX ; OP1=X
-    ld hl, OP3
-    call convertOP1ToU32 ; OP3=u32(X)
+    call recallU32X ; OP3=u32(X); HL=OP3
     call shiftLeftLogicalU32 ; OP3 = (OP3 << 1)
     call storeCarryFlag
     call convertU32ToOP1 ; OP1 = float(OP3)
     jp replaceX
 
 mShiftRightLogicalHandler:
-    call closeInputAndRecallX ; OP1=X
-    ld hl, OP3
-    call convertOP1ToU32 ; OP3=u32(X)
+    call recallU32X ; OP3=u32(X); HL=OP3
     call shiftRightLogicalU32 ; OP3 = (OP3 >> 1)
     call storeCarryFlag
     call convertU32ToOP1 ; OP1 = float(OP3)
     jp replaceX
 
 mShiftRightArithmeticHandler:
-    call closeInputAndRecallX ; OP1=X
-    ld hl, OP3
-    call convertOP1ToU32 ; OP3=u32(X)
+    call recallU32X ; OP3=u32(X); HL=OP3
     call shiftRightArithmeticU32 ; OP3 = signed(OP3 >> 1)
     call storeCarryFlag
     call convertU32ToOP1 ; OP1 = float(OP3)
@@ -1370,27 +1344,21 @@ mShiftRightLogicalNLoop:
 ;-----------------------------------------------------------------------------
 
 mRotateLeftCircularHandler:
-    call closeInputAndRecallX ; OP1=X
-    ld hl, OP3
-    call convertOP1ToU32 ; OP3=u32(X)
+    call recallU32X ; OP3=u32(X); HL=OP3
     call rotateLeftCircularU32; OP3 = rotLeftCircular(OP3)
     call storeCarryFlag
     call convertU32ToOP1 ; OP1 = float(OP3)
     jp replaceX
 
 mRotateRightCircularHandler:
-    call closeInputAndRecallX ; OP1=X
-    ld hl, OP3
-    call convertOP1ToU32 ; OP3=u32(X)
+    call recallU32X ; OP3=u32(X); HL=OP3
     call rotateRightCircularU32; OP3 = rotRightCircular(OP3)
     call storeCarryFlag
     call convertU32ToOP1 ; OP1 = float(OP3)
     jp replaceX
 
 mRotateLeftCarryHandler:
-    call closeInputAndRecallX ; OP1=X
-    ld hl, OP3
-    call convertOP1ToU32 ; OP3=u32(X)
+    call recallU32X ; OP3=u32(X); HL=OP3
     call recallCarryFlag
     call rotateLeftCarryU32; OP3 = rotLeftCarry(OP3)
     call storeCarryFlag
@@ -1398,9 +1366,7 @@ mRotateLeftCarryHandler:
     jp replaceX
 
 mRotateRightCarryHandler:
-    call closeInputAndRecallX ; OP1=X
-    ld hl, OP3
-    call convertOP1ToU32 ; OP3=u32(X)
+    call recallU32X ; OP3=u32(X); HL=OP3
     call recallCarryFlag
     call rotateRightCarryU32; OP3 = rotRightCarry(OP3)
     call storeCarryFlag
@@ -1450,6 +1416,34 @@ mRotateRightCarryNLoop:
     jp replaceXY
 
 ;-----------------------------------------------------------------------------
+
+; Description: Recall X and convert into a u32 integer.
+; Input: X
+; Output:
+;   - OP3=u32(X)
+;   - HL=OP3
+; Destroys: A, BC, DE, HL
+recallU32X:
+    call closeInputAndRecallX ; OP1=X
+    ld hl, OP3
+    call convertOP1ToU32 ; OP3=u32(X)
+    ret
+
+; Description: Recall X and Y and convert them into u32 integers.
+; Input: X, Y
+; Output:
+;   - OP3=u32(Y)
+;   - OP4=u32(X)
+;   - HL=OP3
+; Destroys: A, BC, DE, HL
+recallU32XY:
+    call closeInputAndRecallXY ; OP1=Y; OP2=X
+    ld hl, OP3
+    call convertOP1ToU32 ; OP3=u32(Y)
+    ld hl, OP4
+    call convertOP2ToU32 ; OP4=u32(X)
+    ld hl, OP3
+    ret
 
 ; Description: Recall X and Y for SLn, SRn, RLn, RRn, RLCn, RRCn. Verify that X
 ; (i.e. n) is an integer between [0, WSIZE).
