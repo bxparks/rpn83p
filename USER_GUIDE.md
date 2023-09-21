@@ -1094,23 +1094,29 @@ point results when performing an arithmetic operation such as `/`. The RPN83P
 follows the lead of the HP-42S to change the arithmetic operations to integer
 operations.
 
-For example, suppose the following numbers are in the RPN stack in `DEC` mode:
+For example, suppose the following numbers are in the RPN stack *before*
+entering the `BASE` menu:
 
-> ![Base Arithmetic Part 1](docs/rpn83p-screenshot-base-arithmetic-1-dec.png)
+> ![Base Arithmetic Part 1](docs/rpn83p-screenshot-base-arithmetic-1-float.png)
+
+Entering the `BASE` menu shows this (assuming that the default base number was
+`DEC`):
+
+> ![Base Arithmetic Part 2](docs/rpn83p-screenshot-base-arithmetic-2-dec.png)
 
 Changing to `HEX` mode shows this:
 
-> ![Base Arithmetic Part 2](docs/rpn83p-screenshot-base-arithmetic-2-hex.png)
+> ![Base Arithmetic Part 3](docs/rpn83p-screenshot-base-arithmetic-3-hex.png)
 
 Pressing the `+` button adds the `X` and `Y` registers, converting the
 values to 32-bit unsigned integers before the addition:
 
-> ![Base Arithmetic Part 3](docs/rpn83p-screenshot-base-arithmetic-3-plus.png)
+> ![Base Arithmetic Part 4](docs/rpn83p-screenshot-base-arithmetic-4-plus.png)
 
 Changing back to `DEC` mode shows that the numbers were added using integer
 functions, and the fractional digits were truncated:
 
-> ![Base Arithmetic Part 4](docs/rpn83p-screenshot-base-arithmetic-4-dec.png)
+> ![Base Arithmetic Part 5](docs/rpn83p-screenshot-base-arithmetic-5-dec.png)
 
 #### Carry Flag
 
