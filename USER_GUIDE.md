@@ -934,6 +934,9 @@ The `BASE` functions are available through the `ROOT` > `BASE` hierarchy:
     - ![BASE MenuRow 2](docs/rpn83p-screenshot-menu-root-base-2.png)
     - ![BASE MenuRow 3](docs/rpn83p-screenshot-menu-root-base-3.png)
     - ![BASE MenuRow 4](docs/rpn83p-screenshot-menu-root-base-4.png)
+    - ![BASE MenuRow 5](docs/rpn83p-screenshot-menu-root-base-5.png)
+    - ![BASE MenuRow 6](docs/rpn83p-screenshot-menu-root-base-6.png)
+    - ![BASE MenuRow 7](docs/rpn83p-screenshot-menu-root-base-7.png)
 
 These functions allow conversion of integers into different bases (10, 16, 8,
 2), as well as performing bitwise functions on those integers (bit-and, bit-or,
@@ -1127,10 +1130,16 @@ operations affect the CF:
 - `SL`: bit 31 shifted into CF
 - `SR`: bit 0 shifted into CF
 - `ASR`: bit 0 shifted into CF
+- `SLn`: bit 31 shifted into CF after shifting `n` positions
+- `SRn`: bit 0 shifted into CF after shifting `n` positions
 - `RL`: bit 31 shifted into CF
 - `RR`: bit 0 shifted into CF
 - `RLC`: CF into bit 0; bit 31 into CF
 - `RRC`: CF into bit 31; bit 0 into CF
+- `RLn`: bit 31 shifted into CF after rotating `n` positions
+- `RRn`: bit 0 shifted into CF after rotating `n` positions
+- `RLCn`: CF into bit 0; bit 31 into CF after rotating `n` positions
+- `RRCn`: CF into bit 31; bit 0 into CF after rotating `n` positions
 
 All integer arithmetic functions affect the CF:
 
