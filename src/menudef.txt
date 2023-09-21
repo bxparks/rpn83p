@@ -153,12 +153,20 @@ MenuGroup root mRoot [
         MenuItem SL mShiftLeftLogical # shift left logical
         MenuItem SR mShiftRightLogical # shift right logical
         MenuItem ASR mShiftRightArithmetic # shift right arithmetic
+        MenuItem SLn mShiftLeftLogicalN # shift left logical by N
+        MenuItem SRn mShiftRightLogicalN # shift right logical by N
       ]
       MenuRow [
         MenuItem RL mRotateLeftCircular # rotate left circular
         MenuItem RR mRotateRightCircular # rotate right circular
         MenuItem RLC mRotateLeftCarry # rotate left carry
         MenuItem RRC mRotateRightCarry # rotate right carry
+      ]
+      MenuRow [
+        MenuItem RLn mRotateLeftCircularN # rotate left circular by N
+        MenuItem RRn mRotateRightCircularN # rotate right circular by N
+        MenuItem RLCn mRotateLeftCarryN # rotate left carry by N
+        MenuItem RRCn mRotateRightCarryN # rotate right carry by N
       ]
       MenuRow [
         MenuItem CCF mClearCarryFlag

@@ -121,7 +121,7 @@ helpPages:
 
 msgHelpPage1:
     .db escapeLargeFont, "RPN83P", Lenter
-    .db escapeSmallFont, "v0.6.0-dev (2023", Shyphen, "09", Shyphen, "12)", Senter
+    .db escapeSmallFont, "v0.6.0-dev (2023", Shyphen, "09", Shyphen, "20)", Senter
     .db "(c) 2023  Brian T. Park", Senter
     .db Senter
     .db "An RPN calculator for the", Senter
@@ -1320,6 +1320,7 @@ mBitwiseNegHandler:
 ;-----------------------------------------------------------------------------
 
 mShiftLeftLogicalHandler:
+    ; TODO: create recallU32X() common function
     call closeInputAndRecallX ; OP1=X
     ld hl, OP3
     call convertOP1ToU32 ; OP3=u32(X)
@@ -1345,6 +1346,26 @@ mShiftRightArithmeticHandler:
     call storeCarryFlag
     call convertU32ToOP1 ; OP1 = float(OP3)
     jp replaceX
+
+mShiftLeftLogicalNHandler:
+    call recallU32XYForN ; OP1=Y; OP2=X
+    jp z, replaceXY
+mShiftLeftLogicalNLoop:
+    call shiftLeftLogicalU32 ; OP3 = (OP3 << 1)
+    djnz mShiftLeftLogicalNLoop
+    call storeCarryFlag
+    call convertU32ToOP1 ; OP1 = float(OP3)
+    jp replaceXY
+
+mShiftRightLogicalNHandler:
+    call recallU32XYForN ; OP1=Y; OP2=X
+    jp z, replaceXY
+mShiftRightLogicalNLoop:
+    call shiftRightLogicalU32 ; OP3 = (OP3 >> 1)
+    djnz mShiftRightLogicalNLoop
+    call storeCarryFlag
+    call convertU32ToOP1 ; OP1 = float(OP3)
+    jp replaceXY
 
 ;-----------------------------------------------------------------------------
 
@@ -1385,6 +1406,78 @@ mRotateRightCarryHandler:
     call storeCarryFlag
     call convertU32ToOP1 ; OP1 = float(OP3)
     jp replaceX
+
+mRotateLeftCircularNHandler:
+    call recallU32XYForN ; OP1=Y; OP2=X; HL=OP3
+    jp z, replaceXY
+mRotateLeftCircularNLoop:
+    call rotateLeftCircularU32; OP3 = rotLeftCircular(OP3)
+    djnz mRotateLeftCircularNLoop
+    call storeCarryFlag
+    call convertU32ToOP1 ; OP1 = float(OP3)
+    jp replaceXY
+
+mRotateRightCircularNHandler:
+    call recallU32XYForN ; OP1=Y; OP2=X; HL=OP3
+    jp z, replaceXY
+mRotateRightCircularNLoop:
+    call rotateRightCircularU32; OP3 = rotRightCircular(OP3)
+    djnz mRotateRightCircularNLoop
+    call storeCarryFlag
+    call convertU32ToOP1 ; OP1 = float(OP3)
+    jp replaceXY
+
+mRotateLeftCarryNHandler:
+    call recallU32XYForN ; OP1=Y; OP2=X; HL=OP3
+    jp z, replaceXY
+    call recallCarryFlag
+mRotateLeftCarryNLoop:
+    call rotateLeftCarryU32; OP3 = rotLeftCarry(OP3)
+    djnz mRotateLeftCarryNLoop
+    call storeCarryFlag
+    call convertU32ToOP1 ; OP1 = float(OP3)
+    jp replaceXY
+
+mRotateRightCarryNHandler:
+    call recallU32XYForN ; OP1=Y; OP2=X; HL=OP3
+    jp z, replaceXY
+    call recallCarryFlag
+mRotateRightCarryNLoop:
+    call rotateRightCarryU32; HL=OP3=rotRightCarry(OP3)
+    djnz mRotateRightCarryNLoop
+    call storeCarryFlag
+    call convertU32ToOP1 ; OP1 = float(OP3)
+    jp replaceXY
+
+;-----------------------------------------------------------------------------
+
+; Description: Recall X and Y for SLn, SRn, RLn, RRn, RLCn, RRCn. Verify that X
+; (i.e. n) is an integer between [0, WSIZE).
+; Input: X, Y
+; Output:
+;   - OP3=u32(Y)
+;   - OP4=u32(X)
+;   - A=B=U8(X), verified to be an int in [0, WSIZE).
+;   - HL=OP3
+;   - ZF=1 if B==0
+; Destroys: A, BC, DE, HL
+recallU32XYForN:
+    call closeInputAndRecallXY ; OP1=Y; OP2=X
+    ld hl, OP3
+    call convertOP1ToU32 ; OP3=u32(Y)
+    ld hl, OP4
+    call convertOP2ToU32 ; OP4=u32(X)
+    ld a, (baseWordSize)
+    ld b, a
+    ld a, (hl) ; A=u8(X)
+    cp b
+    jr nc, recallU32XYForNError
+    ld hl, OP3
+    ld b, a ; B=u8(X)
+    or a ; set ZF=1 if u8(X)==0
+    ret
+recallU32XYForNError:
+    bjump(_ErrDomain) ; throw exception if X >= baseWordSize
 
 ;-----------------------------------------------------------------------------
 

@@ -80,7 +80,6 @@ convertOP1ToU32LoopEntry:
     ; get next 2 digits of mantissa
     ld a, (de)
     inc de
-
     ; Process first mantissa digit
     ld c, a ; C = A (saved)
     srl a
@@ -88,11 +87,9 @@ convertOP1ToU32LoopEntry:
     srl a
     srl a
     call addU32U8
-
     ; check number of mantissa digits
     djnz convertOP1ToU32SecondDigit
     ret
-
 convertOP1ToU32SecondDigit:
     ; Process second mantissa digit
     call multU32By10
@@ -100,6 +97,22 @@ convertOP1ToU32SecondDigit:
     and a, $0F
     call addU32U8
     djnz convertOP1ToU32Loop
+    ret
+
+; Description: Same as convertOP1ToU32() except using OP2.
+; Input:
+;   - OP2: unsigned 32-bit integer as a floating point number
+;   - HL: pointer to a u32 in memory
+; Destroys: A, B, C, DE
+; Preserves: HL, OP1, OP2
+convertOP2ToU32:
+    push hl
+    bcall(_OP1ExOP2)
+    pop hl
+    push hl
+    call convertOP1ToU32
+    bcall(_OP1ExOP2)
+    pop hl
     ret
 
 ;-----------------------------------------------------------------------------
