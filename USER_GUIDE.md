@@ -2,7 +2,7 @@
 
 RPN calculator app for the TI-83 Plus and TI-84 Plus inspired by the HP-42S.
 
-**Version**: 0.6.0-dev (2023-09-13)
+**Version**: 0.6.0-dev (2023-09-22)
 
 **Project Home**: https://github.com/bxparks/rpn83p
 
@@ -34,7 +34,7 @@ RPN calculator app for the TI-83 Plus and TI-84 Plus inspired by the HP-42S.
 - [Advanced Usage](#advanced-usage)
     - [Auto-start](#auto-start)
     - [Floating Point Display Modes](#floating-point-display-modes)
-    - [Trigonometric Modes](#trig-modes)
+    - [Trigonometric Modes](#trigonometric-modes)
     - [BASE Functions](#base-functions)
         - [Base Modes](#base-modes)
         - [Shift and Rotate](#shift-and-rotate)
@@ -666,7 +666,7 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (back), and `MATH`
         - display all register values as 32-bit unsigned integer
     - `BIN`: use binary base 2
         - display all register values as 32-bit unsigned integer
-        - max of 13 digits
+        - max of 14 digits
     - `AND`: `X` `bit-and` `Y`
     - `OR`: `X` `bit-or` `Y`
     - `XOR`: `X` `bit-xor` `Y`
@@ -1515,6 +1515,12 @@ limited:
       the `ASSIGN` and `CUSTOM` menus.
     - This seems like a useful feature, but would require substantial
       refactoring of the currnet menu system code, like user-defined variables.
+- custom button bindings
+    - a significant number of buttons on the TI-83/TI-84 keyboard are not
+      used by RPN83P
+    - it would be useful to allow the user to customize some of those buttons
+      for quick access
+    - for example, the `2ND` `L1` to `L6`
 - complex numbers
     - The TI-OS provides internal subroutines to handle complex numbers, so in
       theory, this should be relatively easy.
@@ -1530,10 +1536,10 @@ limited:
     - currently, binary, octal, hexadecimal routines are implemented internally
       using 32-bit unsigned numbers
     - the user ought to be able to specify the integer size for those
-      operations: 8 bits, 16 bits, 32 bits, maybe 48 bits and 64 bits
-    - 48-bits seems to be a reasonable goal because the TI-OS floating point
-      number supports 14 decimal digits, which corresonds to 46.5 bits, which
-      fits nicely into 48 bits.
+      operations: 8 bits, 16 bits, 32 bits, maybe 40 bits
+    - the app cannot support integer sizes higher than 46 bits because all
+      integers must eventually be stored as TI-OS floating point numbers which
+      support only 14 decimal digits, which corresonds to 46.5 bits
     - the user-interface will be a challenge: for large integer sizes, the
       number of digits will no longer fit inside the 14-15 digits available on a
       single line.
