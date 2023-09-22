@@ -658,12 +658,12 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (back), and `MATH`
     - ![BASE MenuRow 6](docs/rpn83p-screenshot-menu-root-base-6.png)
     - ![BASE MenuRow 7](docs/rpn83p-screenshot-menu-root-base-7.png)
     - ![BASE MenuRow 8](docs/rpn83p-screenshot-menu-root-base-8.png)
-    - `DEC`: use decimal base 10, set base indicator to `DEC`
-    - `HEX`: use hexadecimal base 16, set base indicator to `HEX`
+    - `DEC`: use decimal base 10
+    - `HEX`: use hexadecimal base 16
         - display all register values as 32-bit unsigned integer
-    - `OCT`: use octal base 8, set base indicator to `OCT`
+    - `OCT`: use octal base 8
         - display all register values as 32-bit unsigned integer
-    - `BIN`: use binary base 2, set base indicator to `BIN`
+    - `BIN`: use binary base 2
         - display all register values as 32-bit unsigned integer
         - max of 13 digits
     - `AND`: `X` `bit-and` `Y`
