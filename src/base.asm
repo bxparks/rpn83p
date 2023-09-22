@@ -135,23 +135,36 @@ convertU32ToOP1:
 
     ld a, (hl)
     dec hl
-    call convertU8ToOP1
+    call addU8ToOP1
 
     ld a, (hl)
     dec hl
-    call convertU8ToOP1
+    call addU8ToOP1
 
     ld a, (hl)
     dec hl
-    call convertU8ToOP1
+    call addU8ToOP1
 
     ld a, (hl)
-    call convertU8ToOP1
+    call addU8ToOP1
 
     push hl
     bcall(_PopRealO2)
     pop hl
     ret
+
+; Description: Convert the u8 in A to floating pointer number in OP1.
+; Input:
+;   - A: u8 integer
+; Output:
+;   - OP1: floating point value of A
+; Destroys: A, B, DE, OP2
+; Preserves: C, HL
+convertU8ToOP1:
+    push af
+    bcall(_OP1Set0)
+    pop af
+    ; [[fallthrough]]
 
 ; Description: Convert the u8 in A to floating point number, and add it to OP1.
 ; Input:
@@ -159,22 +172,22 @@ convertU32ToOP1:
 ;   - OP1: current floating point value, set to 0.0 to start fresh
 ; Destroys: A, B, DE, OP2
 ; Preserves: C, HL
-convertU8ToOP1:
+addU8ToOP1:
     push hl
     ld b, 8 ; loop for 8 bits in u8
-convertU8ToOP1Loop:
+addU8ToOP1Loop:
     push bc
     push af
     bcall(_Times2) ; OP1 *= 2
     pop af
     sla a
-    jr nc, convertU8ToOP1Check
+    jr nc, addU8ToOP1Check
     push af
     bcall(_Plus1) ; OP1 += 1
     pop af
-convertU8ToOP1Check:
+addU8ToOP1Check:
     pop bc
-    djnz convertU8ToOP1Loop
+    djnz addU8ToOP1Loop
     pop hl
     ret
 

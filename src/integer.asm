@@ -537,8 +537,9 @@ modU32U16NextBit:
 ;-----------------------------------------------------------------------------
 
 
-; Description: Compare u32(HL) to u32(DE), returning C if u32(HL) < u32(DE).
-; The order of the parameters is the same as subU32U32().
+; Description: Compare u32(HL) to u32(DE), returning CF=1 if u32(HL) < u32(DE),
+; and ZF=1 if u32(HL) == u32(DE). The order of the parameters is the same as
+; subU32U32().
 ; Input:
 ;   - HL: pointer to u32
 ;   - DE: pointer to u32
@@ -586,6 +587,41 @@ cpU32U32:
 
 cpU32U32End:
     pop de
+    pop hl
+    ret
+
+; Description: Compare u32(HL) with the u8 in A.
+; Input:
+;   - HL: pointer to u32
+;   - A: u8 integer
+; Output:
+;   - CF=1 if (HL) < A
+;   - ZF=1 if (HL) == A
+; Destroys: A
+; Preserves: BC, DE, HL
+cmpU32U8:
+    push hl
+    push bc
+    ld c, a ; save u8(A)
+    ld b, (hl) ; save the lowest byte of u32(HL)
+    ; Check if any of the upper 3 bytes of u32(HL) are non-zero.
+    inc hl
+    ld a, (hl)
+    or a
+    jr nz, cmpU32U8GreaterEqual
+    inc hl
+    ld a, (hl)
+    or a
+    jr nz, cmpU32U8GreaterEqual
+    inc hl
+    ld a, (hl)
+    or a
+    jr nz, cmpU32U8GreaterEqual
+    ; Compare the lowest byte
+    ld a, b
+    cp c
+cmpU32U8GreaterEqual:
+    pop bc
     pop hl
     ret
 
@@ -988,4 +1024,95 @@ countBitsLoop:
     inc c
 countBitsNext:
     djnz countBitsLoop
+    ret
+
+;-----------------------------------------------------------------------------
+
+; Description: Set bit 'C' of u32(HL).
+; Input:
+;   - HL=pointer to u32
+;   - C=bit number (0-31)
+; Output:
+;   - HL=pointer to u32
+; Destroys: A, B, DE
+; Preserves: HL, C
+setU32Bit:
+    push hl
+    call bitMaskU32
+    or (hl) ; set bit C
+    ld (hl), a
+    pop hl
+    ret
+
+; Description: Clear bit 'C' of u32(HL).
+; Input:
+;   - HL=pointer to u32
+;   - C=bit number (0-31)
+; Output:
+;   - HL=pointer to u32
+; Destroys: A, B, DE
+; Preserves: HL, C
+clearU32Bit:
+    push hl
+    call bitMaskU32
+    cpl
+    and (hl) ; clear bit C
+    ld (hl), a
+    pop hl
+    ret
+
+; Description: Return the status of bit C of u32(HL).
+; Input:
+;   - HL=pointer to u32
+;   - C=bit number (0-31)
+; Output:
+;   - HL=pointer to u32
+;   - A=1 or 0
+; Destroys: A, B, DE
+; Preserves: HL, C
+getU32Bit:
+    push hl
+    call bitMaskU32
+    and (hl)
+    jr z, getU32BitEnd
+    ld a, 1
+getU32BitEnd:
+    pop hl
+    ret
+
+; Description: Calculate the offset and mask of bit C of u32(HL).
+; Input:
+;   - HL=pointer to u32
+;   - C=bit number (0-31)
+; Output:
+;   - HL=pointer to byte offset
+;   - A=bit mask
+; Destroys: A, B, DE, HL
+; Preserves: C
+bitMaskU32:
+    ld a, c
+    and $07
+    ld b, a ; lowest 3 bits of C
+    ld a, c
+    rrca
+    rrca
+    rrca
+    and $03
+    ld e, a
+    ld d, 0 ; DE=highest 2 bits of C, acting as byte offset
+    add hl, de
+    ; [[fallthrough]]
+
+; Description: Create a bit mask with bit B set.
+; Input: B=bit number (0-7)
+; Output: A=bit mask with bit B set
+; Destroys: A, B
+bitMaskB:
+    ld a, b
+    or a
+    ld a, 1
+    ret z
+setBitBofALoop:
+    rlca
+    djnz setBitBofALoop
     ret

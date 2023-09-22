@@ -791,8 +791,35 @@ mBlank081Id equ 81
     .dw mNullHandler ; handler (predefined)
     .dw 0 ; nameSelector
 ; MenuGroup BASE: children: row 5
+mClearBit:
+mClearBitId equ 82
+    .db mClearBitId ; id
+    .db mBaseId ; parentId
+    .db mClearBitNameId ; nameId
+    .db 0 ; numRows
+    .db 0 ; rowBeginId or altNameId
+    .dw mClearBitHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
+mSetBit:
+mSetBitId equ 83
+    .db mSetBitId ; id
+    .db mBaseId ; parentId
+    .db mSetBitNameId ; nameId
+    .db 0 ; numRows
+    .db 0 ; rowBeginId or altNameId
+    .dw mSetBitHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
+mGetBit:
+mGetBitId equ 84
+    .db mGetBitId ; id
+    .db mBaseId ; parentId
+    .db mGetBitNameId ; nameId
+    .db 0 ; numRows
+    .db 0 ; rowBeginId or altNameId
+    .dw mGetBitHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
 mReverseBit:
-mReverseBitId equ 82
+mReverseBitId equ 85
     .db mReverseBitId ; id
     .db mBaseId ; parentId
     .db mReverseBitNameId ; nameId
@@ -801,40 +828,13 @@ mReverseBitId equ 82
     .dw mReverseBitHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
 mCountBit:
-mCountBitId equ 83
+mCountBitId equ 86
     .db mCountBitId ; id
     .db mBaseId ; parentId
     .db mCountBitNameId ; nameId
     .db 0 ; numRows
     .db 0 ; rowBeginId or altNameId
     .dw mCountBitHandler ; handler (to be implemented)
-    .dw 0 ; nameSelector
-mSetBit:
-mSetBitId equ 84
-    .db mSetBitId ; id
-    .db mBaseId ; parentId
-    .db mSetBitNameId ; nameId
-    .db 0 ; numRows
-    .db 0 ; rowBeginId or altNameId
-    .dw mSetBitHandler ; handler (to be implemented)
-    .dw 0 ; nameSelector
-mClearBit:
-mClearBitId equ 85
-    .db mClearBitId ; id
-    .db mBaseId ; parentId
-    .db mClearBitNameId ; nameId
-    .db 0 ; numRows
-    .db 0 ; rowBeginId or altNameId
-    .dw mClearBitHandler ; handler (to be implemented)
-    .dw 0 ; nameSelector
-mGetBit:
-mGetBitId equ 86
-    .db mGetBitId ; id
-    .db mBaseId ; parentId
-    .db mGetBitNameId ; nameId
-    .db 0 ; numRows
-    .db 0 ; rowBeginId or altNameId
-    .dw mGetBitHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
 ; MenuGroup BASE: children: row 6
 mClearCarryFlag:
@@ -1820,16 +1820,16 @@ mRotateLeftCarryNNameId equ 71
     .dw mRotateLeftCarryNName
 mRotateRightCarryNNameId equ 72
     .dw mRotateRightCarryNName
-mReverseBitNameId equ 73
-    .dw mReverseBitName
-mCountBitNameId equ 74
-    .dw mCountBitName
-mSetBitNameId equ 75
-    .dw mSetBitName
-mClearBitNameId equ 76
+mClearBitNameId equ 73
     .dw mClearBitName
-mGetBitNameId equ 77
+mSetBitNameId equ 74
+    .dw mSetBitName
+mGetBitNameId equ 75
     .dw mGetBitName
+mReverseBitNameId equ 76
+    .dw mReverseBitName
+mCountBitNameId equ 77
+    .dw mCountBitName
 mClearCarryFlagNameId equ 78
     .dw mClearCarryFlagName
 mSetCarryFlagNameId equ 79
@@ -2152,16 +2152,16 @@ mRotateLeftCarryNName:
     .db "RLCn", 0
 mRotateRightCarryNName:
     .db "RRCn", 0
+mClearBitName:
+    .db "CB", 0
+mSetBitName:
+    .db "SB", 0
+mGetBitName:
+    .db 'B', Squestion, 0
 mReverseBitName:
     .db "REVB", 0
 mCountBitName:
     .db "CNTB", 0
-mSetBitName:
-    .db "SB", 0
-mClearBitName:
-    .db "CB", 0
-mGetBitName:
-    .db 'B', Squestion, 0
 mClearCarryFlagName:
     .db "CCF", 0
 mSetCarryFlagName:
