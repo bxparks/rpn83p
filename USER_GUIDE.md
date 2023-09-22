@@ -267,7 +267,7 @@ to display 8 rows of numbers and letters. They are divided into the following:
 
 The X register line is also used as the input line when entering new numbers. It
 is also used to prompt for command line argument, for example `FIX _ _` to set
-the fixed display mode.)
+the fixed display mode.
 
 ### Input and Editing
 
@@ -974,7 +974,7 @@ displayed as an integer, after being converted to an unsigned 32-bit integer.
 
 If the value on the RPN stack is negative, a single `-` sign is shown. If the
 value is greater than or equal to `2^32`, then 3 dots `...` are shown. If the
-floating point value is within the range of `[0, 2^32]` but has non-zero
+floating point value is within the range of `[0, 2^32)` but has non-zero
 fractional value, a decimal point is shown after converting the integer part
 into a 32-bit unsigned integer.
 
