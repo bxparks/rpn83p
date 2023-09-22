@@ -185,8 +185,8 @@ view the final result as a decimal number:
 - Press `ENTER` button
 - Press `6` button
 - Press `5` button
-- Press DOWN arrow to get to
-  ![BASE MenuRow 2](docs/rpn83p-screenshot-menu-root-base-2.png)
+- Press DOWN arrow to get to the menu row with the `AND` menu item
+  ![BASE MenuRow AND](docs/rpn83p-screenshot-menu-root-base-2.png)
 - Press `AND` menu, the `X` register should show `00000024`
 - Press UP arrow to go back to
   ![BASE Menu HEX](docs/rpn83p-menu-base-hex.png)
@@ -195,7 +195,7 @@ view the final result as a decimal number:
 - Press `BIN` menu, the `X` register should show `00000000100100` with the menu
   showing ![BASE Menu BIN](docs/rpn83p-menu-base-bin.png)
 - Press DOWN DOWN (twice) to the menu row with the shift right `SR` item
-  ![BASE Menu Shift Right](docs/rpn83p-menu-root-base-3.png)
+  ![BASE MenuRow SR](docs/rpn83p-screenshot-menu-root-base-3.png)
 - Press `SR` `SR` `SR` (three times) to show `00000000000100` and the Carry Flag
   `C` set
 - Press UP UP (twice) to reach the base conversion menu row
