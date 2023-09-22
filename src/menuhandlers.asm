@@ -112,13 +112,14 @@ displayPage:
     ret
 
 ; Array of (char*) pointers to C-strings.
-helpPageCount equ 5
+helpPageCount equ 6
 helpPages:
     .dw msgHelpPage1
     .dw msgHelpPage2
     .dw msgHelpPage3
     .dw msgHelpPage4
     .dw msgHelpPage5
+    .dw msgHelpPage6
 
 msgHelpPage1:
     .db escapeLargeFont, "RPN83P", Lenter
@@ -129,7 +130,7 @@ msgHelpPage1:
     .db "TI", Shyphen, "83 Plus and TI", Shyphen, "84 Plus", Senter
     .db "inspired by the HP", Shyphen, "42S.", Senter
     .db Senter
-    .db SlBrack, "1/5", SrBrack, " Any key to continue...", Senter
+    .db SlBrack, "1/6", SrBrack, " Any key to continue...", Senter
     .db 0
 
 msgHelpPage2:
@@ -141,7 +142,7 @@ msgHelpPage2:
     .db "R", SupArrow, " :  STK  R", SupArrow, Senter
     .db Senter
     .db Senter
-    .db SlBrack, "2/5", SrBrack, " Any key to continue...", Senter
+    .db SlBrack, "2/6", SrBrack, " Any key to continue...", Senter
     .db 0
 
 msgHelpPage3:
@@ -153,7 +154,7 @@ msgHelpPage3:
     .db "ClrX:  CLEAR", Senter
     .db Senter
     .db Senter
-    .db SlBrack, "3/5", SrBrack, " Any key to continue...", Senter
+    .db SlBrack, "3/6", SrBrack, " Any key to continue...", Senter
     .db 0
 
 msgHelpPage4:
@@ -165,7 +166,7 @@ msgHelpPage4:
     .db "Back:  ON", Senter
     .db "Quit App:  2ND QUIT", Senter
     .db Senter
-    .db SlBrack, "4/5", SrBrack, " Any key to continue...", Senter
+    .db SlBrack, "4/6", SrBrack, " Any key to continue...", Senter
     .db 0
 
 msgHelpPage5:
@@ -177,7 +178,19 @@ msgHelpPage5:
     .db "PWRF: y = B x^M", Senter
     .db Senter
     .db Senter
-    .db SlBrack, "5/5", SrBrack, " Any key to return.", Senter
+    .db SlBrack, "5/6", SrBrack, " Any key to continue...", Senter
+    .db 0
+
+msgHelpPage6:
+    .db escapeLargeFont, "BASE Ops", Lenter
+    .db escapeSmallFont, Senter
+    .db "SL SR: shift logical", Senter
+    .db "ASR: arithmetic shift right", Senter
+    .db "RL RR: rotate circular",  Senter
+    .db "RLC RRC: rotate thru carry",  Senter
+    .db "REVB: reverse bits", Senter
+    .db "CNTB: count bits", Senter
+    .db SlBrack, "6/6", SrBrack, " Any key to return.", Senter
     .db 0
 
 ;-----------------------------------------------------------------------------
