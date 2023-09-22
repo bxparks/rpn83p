@@ -511,6 +511,8 @@ activates the Help pages:
 
 > ![Help Page 5](docs/rpn83p-help-page-5.png)
 
+> ![Help Page 6](docs/rpn83p-help-page-6.png)
+
 Hopefully they are useful for remembering the mapping of the buttons whose TI-OS
 keyboard labels do not match the functionality assigned by the RPN83P program.
 
