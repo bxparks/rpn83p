@@ -96,9 +96,10 @@ Here the quick summary of its features:
     - unit conversions: `>C`, `>F`, `>km`, `>mi`, etc
     - base conversions: `DEC`, `HEX`, `OCT`, `BIN`
     - bitwise operations: `AND`, `OR`, `XOR`, `NOT`, `NEG`, `B+`, `B-`, `B*`,
-      `B/`, `BDIV`
+      `B/`, `BDIV`, REVB (reverse bits), CNTB (count bits)
     - shift and rotate operations: `SL`, `SR`, `ASR`, `RL`, `RR`, `RLC`, `RRC`,
       `SLn`, `SRn`, `RLn`, `RRn`, `RLCn`, `RRCn`
+    - carry flags and bit masks: `CCF`, `SCF`, `CF?`, `CB`, `SB`, `B?`
     - statistics: `Sigma+`, `Sigma-`, `SUM`, `MEAN`, `WMN` (weighted mean),
       `SDEV` (sample standard deviation), `SCOV` (sample covariance),
       `PDEV` (population standard deviation), `PCOV` (population covariance)
@@ -376,7 +377,7 @@ longer sequence of calculations.
 #### Menu Hierarchy
 
 The menu system of the RPN83P was directly inspired by the HP-42S calculator.
-There are over 100 functions supported by the RPN83P menu system, so it is
+There are over 150 functions supported by the RPN83P menu system, so it is
 convenient to arrange them into a nested folder structure. There are 5 buttons
 directly under the LCD screen so it makes sense to present the menu items as
 sets of 5 items corresponding to those buttons.
@@ -656,6 +657,7 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (back), and `MATH`
     - ![BASE MenuRow 5](docs/rpn83p-screenshot-menu-root-base-5.png)
     - ![BASE MenuRow 6](docs/rpn83p-screenshot-menu-root-base-6.png)
     - ![BASE MenuRow 7](docs/rpn83p-screenshot-menu-root-base-7.png)
+    - ![BASE MenuRow 8](docs/rpn83p-screenshot-menu-root-base-8.png)
     - `DEC`: use decimal base 10, set base indicator to `DEC`
     - `HEX`: use hexadecimal base 16, set base indicator to `HEX`
         - display all register values as 32-bit unsigned integer
@@ -682,6 +684,11 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (back), and `MATH`
     - `RRn`: rotate right circular `Y` by `X` bits
     - `RLCn`: rotate left through carry flag `Y` by `X` bits
     - `RRCn`: rotate right through carry flag `Y` by `X` bits
+    - `CB`: clear bit `X` of `Y`
+    - `SB`: set bit `X` of `Y`
+    - `B?`: get bit `X` of `Y` as 0 or 1
+    - `REVB`: reverse bits of `X`
+    - `CNTB`: count number of 1 bits of `X` (same as `#B` on HP-16C)
     - `CCF`: clear carry flag
     - `SCF`: set carry flag
     - `CF?`: return carry flag state as 0 or 1

@@ -22,20 +22,20 @@
         - all `BASE` operations use `u32` integers, even `DEC` mode
         - add Carry Flag which is updated for arithmetic, shifting, rotating
           operations
-            - add `SCF` (set carry flag) menu item
-            - add `CCF` (clear carry flag) menu item
-            - add `CF?` (get carry flag) menu item
-            - `C` or `-` display indicator
+            - add `SCF` (set carry flag),`CCF` (clear carry flag), `CF?` (get
+              carry flag)
+            - add `C` or `-` display indicator
         - remove base number indicator (`DEC`, `HEX`, `OCT`, `BIN`) in the
           status line (top line)
             - no longer needed since those menu items show a "dot" when selected
             - and the base number is only relevant within the `BASE` menu
               hierarchy
-        - add `ASL` (arithmetic shift left) menu item
-        - add `RLC` (rotate left through carry flag) menu item
-        - add `RRC` (rotate right through carry flag) menu item
-        - add `SLn`, `SRn`, `RLn`, `RRn`, `RLCn`, `RRCn` (shift or rotate
-          operation on `Y` for `X` times)
+        - add `ASL` (arithmetic shift left), `RLC` (rotate left through carry
+          flag), `RRC` (rotate right through carry flag)
+        - add `SLn`, `SRn`, `RLn`, `RRn`, `RLCn`, `RRCn` (shift or rotate `Y`
+          for `X` times)
+        - add `CB` (clear bit), `SB` (set bit), `B?` (get bit)
+        - add `REVB` (reverse bits), `CNTB` (count bits)
 - 0.5.0 (2023-08-31)
     - `USER_GUIDE.md`, `README.md`
         - Update "Menu Indicator Arrows" section with latest screenshots which
