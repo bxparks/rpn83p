@@ -9,12 +9,12 @@
 
 mBaseHandler:
     jr c, mBaseHandlerOnExit
-    call closeInputBuf
     set rpnFlagsBaseModeEnabled, (iy + rpnFlags)
     jr mBaseHandlerEnd
 mBaseHandlerOnExit:
     res rpnFlagsBaseModeEnabled, (iy + rpnFlags)
 mBaseHandlerEnd:
+    call closeInputBuf
     set dirtyFlagsBaseMode, (iy + dirtyFlags)
     set dirtyFlagsStack, (iy + dirtyFlags)
     ret
