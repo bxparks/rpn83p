@@ -40,6 +40,7 @@ RPN calculator app for the TI-83 Plus and TI-84 Plus inspired by the HP-42S.
         - [Shift and Rotate](#shift-and-rotate)
         - [Base Arithmetic](#base-arithmetic)
         - [Carry Flag](#carry-flag)
+        - [Bit Operations](#bit-operations)
         - [Base Integer Size](#base-integer-size)
         - [Base Mode Retention](#base-mode-retention)
     - [Storage Registers](#storage-registers)
@@ -944,6 +945,7 @@ The `BASE` functions are available through the `ROOT` > `BASE` hierarchy:
     - ![BASE MenuRow 5](docs/rpn83p-screenshot-menu-root-base-5.png)
     - ![BASE MenuRow 6](docs/rpn83p-screenshot-menu-root-base-6.png)
     - ![BASE MenuRow 7](docs/rpn83p-screenshot-menu-root-base-7.png)
+    - ![BASE MenuRow 8](docs/rpn83p-screenshot-menu-root-base-8.png)
 
 These functions allow conversion of integers into different bases (10, 16, 8,
 2), as well as performing bitwise functions on those integers (bit-and, bit-or,
@@ -1137,8 +1139,15 @@ When the flag is off, a dash `-` is shown like this:
 
 > ![Carry Flag On](docs/rpn83p-carry-flag-off.png)
 
-Many operations affect the Carry Flag (CF). First, all shift and rotate
-operations affect the CF:
+The Carry Flag can be explicitly cleared, set, and retrieved using the following
+menu items:
+
+- `CCF`: clear carry flag
+- `SCF`: set carry flag
+- `CF?`: get carry flag
+
+Many operations affect the Carry Flag (CF). All shift and rotate operations
+affect the CF:
 
 - `SL`: bit 31 shifted into CF
 - `SR`: bit 0 shifted into CF
@@ -1166,7 +1175,24 @@ On most microprocessors, the bitwise operations clear the Carry Flag to zero.
 However the RPN83P follows the lead of the HP-16C calculator where these
 operations do *not* affect the Carry Flag at all:
 
-- `AND`, `OR`, `XOR`, `NEG`, `NOT`
+- `AND`, `OR`, `XOR`, `NEG`, `NOT`, `REVB`, `CNTB`
+
+#### Bit Operations
+
+Specific bits can be cleared or set using the `CB` and `SB` menu items.
+
+- `CB`: clear the `X` bit of `Y`
+- `SB`: set the `X` bit of `Y`
+- `B?`: get the `X` bit of `Y` as 1 or 0
+
+The range of `X` must be between 0 and 31, or an error code will be generated.
+
+This menu row contains a couple of additional bit manipulation functions:
+
+- `REVB`: reverse the bit patterns of `X`
+- `CNTB`: count the number of 1 bits in `X`
+
+None of these bit operations affect the Carry Flag.
 
 #### Base Integer Size
 
