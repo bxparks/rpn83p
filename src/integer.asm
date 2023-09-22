@@ -438,7 +438,7 @@ divU32U32Loop:
     ld h, b ; HL=BC=remainder
     call rotateLeftCarryU32 ; rotate CF into remainder
     ;
-    call cpU32U32 ; if remainder(HL) < divisor(DE): CF=1
+    call cmpU32U32 ; if remainder(HL) < divisor(DE): CF=1
     jr c, divU32U32QuotientZero
 divU32U32QuotientOne:
     call subU32U32 ; remainder(HL) -= divisor(DE)
@@ -548,9 +548,7 @@ modU32U16NextBit:
 ;   - ZF=1 if (HL) == (DE)
 ; Destroys: A
 ; Preserves: BC, DE, HL
-;
-; TODO: Rename this cmpU32U32. Too easily confused with copyU32U32.
-cpU32U32:
+cmpU32U32:
     push hl
     push de
 
@@ -566,26 +564,26 @@ cpU32U32:
     ; start with the most significant byte
     ld a, (de)
     cp (hl)
-    jr nz, cpU32U32End
+    jr nz, cmpU32U32End
 
     dec hl
     dec de
     ld a, (de)
     cp (hl)
-    jr nz, cpU32U32End
+    jr nz, cmpU32U32End
 
     dec hl
     dec de
     ld a, (de)
     cp (hl)
-    jr nz, cpU32U32End
+    jr nz, cmpU32U32End
 
     dec hl
     dec de
     ld a, (de)
     cp (hl)
 
-cpU32U32End:
+cmpU32U32End:
     pop de
     pop hl
     ret
