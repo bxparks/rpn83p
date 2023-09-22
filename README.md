@@ -170,8 +170,9 @@ for this formula, but I used the `LastX` feature to demonstrate its use.)
 ### Example 2
 
 Let's calculate the bitwise-and operator between the hexadecimal numbers `B6`
-and `65`, then see the result as an octal number, a binary (base-2) number, then
-finally as a decimal number:
+and `65`, then see the result as an octal number (base-8), a binary number
+(base-2), then right shift the result 3 bits which sets the Carry Flag, then
+view the final result as a decimal number:
 
 - Navigate the menu with the DOWN arrow to get to
   ![ROOT MenuRow 2](docs/rpn83p-screenshot-menu-root-2.png)
@@ -193,7 +194,13 @@ finally as a decimal number:
   showing ![BASE Menu OCT](docs/rpn83p-menu-base-oct.png)
 - Press `BIN` menu, the `X` register should show `00000000100100` with the menu
   showing ![BASE Menu BIN](docs/rpn83p-menu-base-bin.png)
-- Press `DEC` menu, the `X` register should show `36` with the menu showing
+- Press DOWN DOWN (twice) to the menu row with the shift right `SR` item
+  ![BASE Menu Shift Right](docs/rpn83p-menu-root-base-3.png)
+- Press `SR` `SR` `SR` (three times) to show `00000000000100` and the Carry Flag
+  `C` set
+- Press UP UP (twice) to reach the base conversion menu row
+  ![BASE Menu BIN](docs/rpn83p-menu-base-bin.png)
+- Press `DEC` menu, the `X` register should show `4` with the menu showing
   ![BASE Menu DEC](docs/rpn83p-menu-base-dec.png)
 
 Here is the animated GIF that shows this calculation:
