@@ -176,18 +176,18 @@ MenuGroup root mRoot [
         MenuItem CNTB mCountBit
       ]
       MenuRow [
-        MenuItem CCF mClearCarryFlag
-        MenuItem SCF mSetCarryFlag
-        MenuItem CF<Squestion> mGetCarryFlag
-        MenuItem WSIZ mSetWordSize # 1, 2, 3, 4
-        MenuItem WSZ<Squestion> mGetWordSize
-      ]
-      MenuRow [
         MenuItem B<SplusSign> mBitwiseAdd
         MenuItem B<Sdash> mBitwiseSubt
         MenuItem B<Scross> mBitwiseMult
         MenuItem B<Sslash> mBitwiseDiv
         MenuItem BDIV mBitwiseDiv2
+      ]
+      MenuRow [
+        MenuItem CCF mClearCarryFlag
+        MenuItem SCF mSetCarryFlag
+        MenuItem CF<Squestion> mGetCarryFlag
+        MenuItem WSIZ mSetWordSize # 8, 16, 24, 32
+        MenuItem WSZ<Squestion> mGetWordSize
       ]
     ]
     MenuGroup HYP mHyperbolic [

@@ -690,17 +690,17 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (back), and `MATH`
     - `B?`: get bit `X` of `Y` as 0 or 1
     - `REVB`: reverse bits of `X`
     - `CNTB`: count number of 1 bits of `X` (same as `#B` on HP-16C)
-    - `CCF`: clear carry flag
-    - `SCF`: set carry flag
-    - `CF?`: return carry flag state as 0 or 1
-    - `WSIZ`: set integer word size (not implemented)
-    - `WSZ?`: return current integer word size (normally 32)
     - `B+`: add `X` and `Y` using unsigned 32-bit integer math
     - `B-`: subtract `X` from `Y` using unsigned 32-bit integer math
     - `B*`: multiply `X` and `Y` using unsigned 32-bit integer math
     - `B/`: divide `X` into `Y` using unsigned 32-bit integer math
     - `BDIV`: divide `X` into `Y` with remainder, placing the quotient in `Y`
       and the remainder in `X`
+    - `CCF`: clear carry flag
+    - `SCF`: set carry flag
+    - `CF?`: return carry flag state as 0 or 1
+    - `WSIZ`: set integer word size (not implemented)
+    - `WSZ?`: return current integer word size (normally 32)
 - `ROOT` > `HYP`
     - ![HYP MenuRow 1](docs/rpn83p-screenshot-menu-root-hyp-1.png)
     - ![HYP MenuRow 2](docs/rpn83p-screenshot-menu-root-hyp-2.png)
@@ -951,7 +951,7 @@ These functions allow conversion of integers into different bases (10, 16, 8,
 2), as well as performing bitwise functions on those integers (bit-and, bit-or,
 bit-xor, etc). They are useful for computer science and programming. Many of the
 `BASE` mode functions were inspired by the HP-16C, which has more extensive
-functions compared to the HP-42S.
+functions in this area compared to the HP-42S.
 
 All menu functions under the `BASE` menu operate on *integer* values instead of
 floating point values. Currently, the RPN83P app supports only unsigned 32-bit

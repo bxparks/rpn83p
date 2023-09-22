@@ -837,54 +837,8 @@ mCountBitId equ 86
     .dw mCountBitHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
 ; MenuGroup BASE: children: row 6
-mClearCarryFlag:
-mClearCarryFlagId equ 87
-    .db mClearCarryFlagId ; id
-    .db mBaseId ; parentId
-    .db mClearCarryFlagNameId ; nameId
-    .db 0 ; numRows
-    .db 0 ; rowBeginId or altNameId
-    .dw mClearCarryFlagHandler ; handler (to be implemented)
-    .dw 0 ; nameSelector
-mSetCarryFlag:
-mSetCarryFlagId equ 88
-    .db mSetCarryFlagId ; id
-    .db mBaseId ; parentId
-    .db mSetCarryFlagNameId ; nameId
-    .db 0 ; numRows
-    .db 0 ; rowBeginId or altNameId
-    .dw mSetCarryFlagHandler ; handler (to be implemented)
-    .dw 0 ; nameSelector
-mGetCarryFlag:
-mGetCarryFlagId equ 89
-    .db mGetCarryFlagId ; id
-    .db mBaseId ; parentId
-    .db mGetCarryFlagNameId ; nameId
-    .db 0 ; numRows
-    .db 0 ; rowBeginId or altNameId
-    .dw mGetCarryFlagHandler ; handler (to be implemented)
-    .dw 0 ; nameSelector
-mSetWordSize:
-mSetWordSizeId equ 90
-    .db mSetWordSizeId ; id
-    .db mBaseId ; parentId
-    .db mSetWordSizeNameId ; nameId
-    .db 0 ; numRows
-    .db 0 ; rowBeginId or altNameId
-    .dw mSetWordSizeHandler ; handler (to be implemented)
-    .dw 0 ; nameSelector
-mGetWordSize:
-mGetWordSizeId equ 91
-    .db mGetWordSizeId ; id
-    .db mBaseId ; parentId
-    .db mGetWordSizeNameId ; nameId
-    .db 0 ; numRows
-    .db 0 ; rowBeginId or altNameId
-    .dw mGetWordSizeHandler ; handler (to be implemented)
-    .dw 0 ; nameSelector
-; MenuGroup BASE: children: row 7
 mBitwiseAdd:
-mBitwiseAddId equ 92
+mBitwiseAddId equ 87
     .db mBitwiseAddId ; id
     .db mBaseId ; parentId
     .db mBitwiseAddNameId ; nameId
@@ -893,7 +847,7 @@ mBitwiseAddId equ 92
     .dw mBitwiseAddHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
 mBitwiseSubt:
-mBitwiseSubtId equ 93
+mBitwiseSubtId equ 88
     .db mBitwiseSubtId ; id
     .db mBaseId ; parentId
     .db mBitwiseSubtNameId ; nameId
@@ -902,7 +856,7 @@ mBitwiseSubtId equ 93
     .dw mBitwiseSubtHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
 mBitwiseMult:
-mBitwiseMultId equ 94
+mBitwiseMultId equ 89
     .db mBitwiseMultId ; id
     .db mBaseId ; parentId
     .db mBitwiseMultNameId ; nameId
@@ -911,7 +865,7 @@ mBitwiseMultId equ 94
     .dw mBitwiseMultHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
 mBitwiseDiv:
-mBitwiseDivId equ 95
+mBitwiseDivId equ 90
     .db mBitwiseDivId ; id
     .db mBaseId ; parentId
     .db mBitwiseDivNameId ; nameId
@@ -920,13 +874,59 @@ mBitwiseDivId equ 95
     .dw mBitwiseDivHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
 mBitwiseDiv2:
-mBitwiseDiv2Id equ 96
+mBitwiseDiv2Id equ 91
     .db mBitwiseDiv2Id ; id
     .db mBaseId ; parentId
     .db mBitwiseDiv2NameId ; nameId
     .db 0 ; numRows
     .db 0 ; rowBeginId or altNameId
     .dw mBitwiseDiv2Handler ; handler (to be implemented)
+    .dw 0 ; nameSelector
+; MenuGroup BASE: children: row 7
+mClearCarryFlag:
+mClearCarryFlagId equ 92
+    .db mClearCarryFlagId ; id
+    .db mBaseId ; parentId
+    .db mClearCarryFlagNameId ; nameId
+    .db 0 ; numRows
+    .db 0 ; rowBeginId or altNameId
+    .dw mClearCarryFlagHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
+mSetCarryFlag:
+mSetCarryFlagId equ 93
+    .db mSetCarryFlagId ; id
+    .db mBaseId ; parentId
+    .db mSetCarryFlagNameId ; nameId
+    .db 0 ; numRows
+    .db 0 ; rowBeginId or altNameId
+    .dw mSetCarryFlagHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
+mGetCarryFlag:
+mGetCarryFlagId equ 94
+    .db mGetCarryFlagId ; id
+    .db mBaseId ; parentId
+    .db mGetCarryFlagNameId ; nameId
+    .db 0 ; numRows
+    .db 0 ; rowBeginId or altNameId
+    .dw mGetCarryFlagHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
+mSetWordSize:
+mSetWordSizeId equ 95
+    .db mSetWordSizeId ; id
+    .db mBaseId ; parentId
+    .db mSetWordSizeNameId ; nameId
+    .db 0 ; numRows
+    .db 0 ; rowBeginId or altNameId
+    .dw mSetWordSizeHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
+mGetWordSize:
+mGetWordSizeId equ 96
+    .db mGetWordSizeId ; id
+    .db mBaseId ; parentId
+    .db mGetWordSizeNameId ; nameId
+    .db 0 ; numRows
+    .db 0 ; rowBeginId or altNameId
+    .dw mGetWordSizeHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
 ; MenuGroup HYP: children
 ; MenuGroup HYP: children: row 0
@@ -1830,26 +1830,26 @@ mReverseBitNameId equ 76
     .dw mReverseBitName
 mCountBitNameId equ 77
     .dw mCountBitName
-mClearCarryFlagNameId equ 78
-    .dw mClearCarryFlagName
-mSetCarryFlagNameId equ 79
-    .dw mSetCarryFlagName
-mGetCarryFlagNameId equ 80
-    .dw mGetCarryFlagName
-mSetWordSizeNameId equ 81
-    .dw mSetWordSizeName
-mGetWordSizeNameId equ 82
-    .dw mGetWordSizeName
-mBitwiseAddNameId equ 83
+mBitwiseAddNameId equ 78
     .dw mBitwiseAddName
-mBitwiseSubtNameId equ 84
+mBitwiseSubtNameId equ 79
     .dw mBitwiseSubtName
-mBitwiseMultNameId equ 85
+mBitwiseMultNameId equ 80
     .dw mBitwiseMultName
-mBitwiseDivNameId equ 86
+mBitwiseDivNameId equ 81
     .dw mBitwiseDivName
-mBitwiseDiv2NameId equ 87
+mBitwiseDiv2NameId equ 82
     .dw mBitwiseDiv2Name
+mClearCarryFlagNameId equ 83
+    .dw mClearCarryFlagName
+mSetCarryFlagNameId equ 84
+    .dw mSetCarryFlagName
+mGetCarryFlagNameId equ 85
+    .dw mGetCarryFlagName
+mSetWordSizeNameId equ 86
+    .dw mSetWordSizeName
+mGetWordSizeNameId equ 87
+    .dw mGetWordSizeName
 mSinhNameId equ 88
     .dw mSinhName
 mCoshNameId equ 89
@@ -2162,16 +2162,6 @@ mReverseBitName:
     .db "REVB", 0
 mCountBitName:
     .db "CNTB", 0
-mClearCarryFlagName:
-    .db "CCF", 0
-mSetCarryFlagName:
-    .db "SCF", 0
-mGetCarryFlagName:
-    .db 'C', 'F', Squestion, 0
-mSetWordSizeName:
-    .db "WSIZ", 0
-mGetWordSizeName:
-    .db 'W', 'S', 'Z', Squestion, 0
 mBitwiseAddName:
     .db 'B', SplusSign, 0
 mBitwiseSubtName:
@@ -2182,6 +2172,16 @@ mBitwiseDivName:
     .db 'B', Sslash, 0
 mBitwiseDiv2Name:
     .db "BDIV", 0
+mClearCarryFlagName:
+    .db "CCF", 0
+mSetCarryFlagName:
+    .db "SCF", 0
+mGetCarryFlagName:
+    .db 'C', 'F', Squestion, 0
+mSetWordSizeName:
+    .db "WSIZ", 0
+mGetWordSizeName:
+    .db 'W', 'S', 'Z', Squestion, 0
 mSinhName:
     .db "SINH", 0
 mCoshName:
