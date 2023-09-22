@@ -8,13 +8,15 @@
 ;-----------------------------------------------------------------------------
 
 mBaseHandler:
+    push af ; preserve the C flag
+    call closeInputBuf ; must call before modifying rpnFlagsBaseModeEnabled
+    pop af
     jr c, mBaseHandlerOnExit
     set rpnFlagsBaseModeEnabled, (iy + rpnFlags)
     jr mBaseHandlerEnd
 mBaseHandlerOnExit:
     res rpnFlagsBaseModeEnabled, (iy + rpnFlags)
 mBaseHandlerEnd:
-    call closeInputBuf
     set dirtyFlagsBaseMode, (iy + dirtyFlags)
     set dirtyFlagsStack, (iy + dirtyFlags)
     ret
