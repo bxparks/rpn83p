@@ -5,6 +5,7 @@ SPASM_INC := $(SPASM_DIR)/inc
 SPASM := $(SPASM_DIR)/spasm
 SRCS := \
 	base.asm \
+	basehandlers.asm \
 	cfithandlers.asm \
 	common.asm \
 	const.asm \

@@ -37,7 +37,10 @@ RPN calculator app for the TI-83 Plus and TI-84 Plus inspired by the HP-42S.
     - [Trigonometric Modes](#trig-modes)
     - [BASE Functions](#base-functions)
         - [Base Modes](#base-modes)
+        - [Shift and Rotate](#shift-and-rotate)
         - [Base Arithmetic](#base-arithmetic)
+        - [Carry Flag](#carry-flag)
+        - [Bit Operations](#bit-operations)
         - [Base Integer Size](#base-integer-size)
         - [Base Mode Retention](#base-mode-retention)
     - [Storage Registers](#storage-registers)
@@ -86,15 +89,18 @@ Here the quick summary of its features:
     - `X^3`, `CBRT`, `XRootY`, `ATN2`, `2^X`, `LOG2`, `LOGB`
     - `%`, `%CH`, `GCD`, `LCM`, `PRIM` (is prime)
     - `IP` (integer part), `FP` (fractional part), `FLR` (floor), `CEIL`
-    - `ABS`, `SIGN`, `MOD`, `MIN`, `MAX`
       (ceiling), `NEAR` (nearest integer)
+    - `ABS`, `SIGN`, `MOD`, `MIN`, `MAX`
     - probability: `PERM`, `COMB`, `N!`, `RAND`, `SEED`
     - hyperbolic: `SINH`, `COSH`, `TANH`, etc.
     - angle conversions: `>DEG`, `>RAD`, `>HR`, `>HMS`, `>REC`, `>POL`
     - unit conversions: `>C`, `>F`, `>km`, `>mi`, etc
     - base conversions: `DEC`, `HEX`, `OCT`, `BIN`
-    - bitwise operations: `AND`, `OR`, `XOR`, `NOT`, `NEG`, `SL`, `SR`, `RL`,
-      `RR`, `B+`, `B-`, `B*`, `B/`, `BDIV`
+    - bitwise operations: `AND`, `OR`, `XOR`, `NOT`, `NEG`, `B+`, `B-`, `B*`,
+      `B/`, `BDIV`, REVB (reverse bits), CNTB (count bits)
+    - shift and rotate operations: `SL`, `SR`, `ASR`, `RL`, `RR`, `RLC`, `RRC`,
+      `SLn`, `SRn`, `RLn`, `RRn`, `RLCn`, `RRCn`
+    - carry flags and bit masks: `CCF`, `SCF`, `CF?`, `CB`, `SB`, `B?`
     - statistics: `Sigma+`, `Sigma-`, `SUM`, `MEAN`, `WMN` (weighted mean),
       `SDEV` (sample standard deviation), `SCOV` (sample covariance),
       `PDEV` (population standard deviation), `PCOV` (population covariance)
@@ -245,7 +251,7 @@ Manual](https://literature.hpcalc.org/items/929).
 
 Here are the various UI elements on the LCD screen used by the RPN83P app:
 
-> ![RPN83P screen regions](docs/rpn83p-screenshot-regions-annotated.png)
+> ![RPN83P screen areas](docs/rpn83p-screen-areas-annotated.png)
 
 The LCD screen is 96 pixels (width) by 64 pixels (height). That is large enough
 to display 8 rows of numbers and letters. They are divided into the following:
@@ -372,7 +378,7 @@ longer sequence of calculations.
 #### Menu Hierarchy
 
 The menu system of the RPN83P was directly inspired by the HP-42S calculator.
-There are over 100 functions supported by the RPN83P menu system, so it is
+There are over 150 functions supported by the RPN83P menu system, so it is
 convenient to arrange them into a nested folder structure. There are 5 buttons
 directly under the LCD screen so it makes sense to present the menu items as
 sets of 5 items corresponding to those buttons.
@@ -502,6 +508,8 @@ activates the Help pages:
 > ![Help Page 3](docs/rpn83p-help-page-3.png)
 
 > ![Help Page 4](docs/rpn83p-help-page-4.png)
+
+> ![Help Page 5](docs/rpn83p-help-page-5.png)
 
 Hopefully they are useful for remembering the mapping of the buttons whose TI-OS
 keyboard labels do not match the functionality assigned by the RPN83P program.
@@ -647,12 +655,16 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (back), and `MATH`
     - ![BASE MenuRow 2](docs/rpn83p-screenshot-menu-root-base-2.png)
     - ![BASE MenuRow 3](docs/rpn83p-screenshot-menu-root-base-3.png)
     - ![BASE MenuRow 4](docs/rpn83p-screenshot-menu-root-base-4.png)
-    - `DEC`: use decimal base 10, set base indicator to `DEC`
-    - `HEX`: use hexadecimal base 16, set base indicator to `HEX`
+    - ![BASE MenuRow 5](docs/rpn83p-screenshot-menu-root-base-5.png)
+    - ![BASE MenuRow 6](docs/rpn83p-screenshot-menu-root-base-6.png)
+    - ![BASE MenuRow 7](docs/rpn83p-screenshot-menu-root-base-7.png)
+    - ![BASE MenuRow 8](docs/rpn83p-screenshot-menu-root-base-8.png)
+    - `DEC`: use decimal base 10
+    - `HEX`: use hexadecimal base 16
         - display all register values as 32-bit unsigned integer
-    - `OCT`: use octal base 8, set base indicator to `OCT`
+    - `OCT`: use octal base 8
         - display all register values as 32-bit unsigned integer
-    - `BIN`: use binary base 2, set base indicator to `BIN`
+    - `BIN`: use binary base 2
         - display all register values as 32-bit unsigned integer
         - max of 13 digits
     - `AND`: `X` `bit-and` `Y`
@@ -660,16 +672,35 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (back), and `MATH`
     - `XOR`: `X` `bit-xor` `Y`
     - `NOT`: one's complement of `X`
     - `NEG`: two's complement of `X`
-    - `SL`: shift left one bit
-    - `SR`: shift right one bit
+    - `SL`: shift left logical one bit
+    - `SR`: shift right logical one bit
+    - `ASR`: arithmetic shift right one bit
+    - `SLn`: shift left logical `Y` by `X` bits
+    - `SRn`: shift right logical `Y` by `X` bits
     - `RL`: rotate left circular one bit
     - `RR`: rotate right circular one bit
+    - `RLC`: rotate left through carry flag one bit
+    - `RRC`: rotate right through carry flag one bit
+    - `RLn`: rotate left circular `Y` by `X` bits
+    - `RRn`: rotate right circular `Y` by `X` bits
+    - `RLCn`: rotate left through carry flag `Y` by `X` bits
+    - `RRCn`: rotate right through carry flag `Y` by `X` bits
+    - `CB`: clear bit `X` of `Y`
+    - `SB`: set bit `X` of `Y`
+    - `B?`: get bit `X` of `Y` as 0 or 1
+    - `REVB`: reverse bits of `X`
+    - `CNTB`: count number of 1 bits of `X` (same as `#B` on HP-16C)
     - `B+`: add `X` and `Y` using unsigned 32-bit integer math
     - `B-`: subtract `X` from `Y` using unsigned 32-bit integer math
     - `B*`: multiply `X` and `Y` using unsigned 32-bit integer math
     - `B/`: divide `X` into `Y` using unsigned 32-bit integer math
     - `BDIV`: divide `X` into `Y` with remainder, placing the quotient in `Y`
       and the remainder in `X`
+    - `CCF`: clear carry flag
+    - `SCF`: set carry flag
+    - `CF?`: return carry flag state as 0 or 1
+    - `WSIZ`: set integer word size (not implemented)
+    - `WSZ?`: return current integer word size (normally 32)
 - `ROOT` > `HYP`
     - ![HYP MenuRow 1](docs/rpn83p-screenshot-menu-root-hyp-1.png)
     - ![HYP MenuRow 2](docs/rpn83p-screenshot-menu-root-hyp-2.png)
@@ -911,23 +942,39 @@ The `BASE` functions are available through the `ROOT` > `BASE` hierarchy:
     - ![BASE MenuRow 2](docs/rpn83p-screenshot-menu-root-base-2.png)
     - ![BASE MenuRow 3](docs/rpn83p-screenshot-menu-root-base-3.png)
     - ![BASE MenuRow 4](docs/rpn83p-screenshot-menu-root-base-4.png)
+    - ![BASE MenuRow 5](docs/rpn83p-screenshot-menu-root-base-5.png)
+    - ![BASE MenuRow 6](docs/rpn83p-screenshot-menu-root-base-6.png)
+    - ![BASE MenuRow 7](docs/rpn83p-screenshot-menu-root-base-7.png)
+    - ![BASE MenuRow 8](docs/rpn83p-screenshot-menu-root-base-8.png)
 
 These functions allow conversion of integers into different bases (10, 16, 8,
 2), as well as performing bitwise functions on those integers (bit-and, bit-or,
-bit-xor, etc). They are useful for computer science and programming. The `BASE`
-modes and functions work somewhat differently compared to the HP-42S, so
-additional documentation is provided here.
+bit-xor, etc). They are useful for computer science and programming. Many of the
+`BASE` mode functions were inspired by the HP-16C, which has more extensive
+functions in this area compared to the HP-42S.
 
-#### BASE Modes
+All menu functions under the `BASE` menu operate on *integer* values instead of
+floating point values. Currently, the RPN83P app supports only unsigned 32-bit
+integers. (Support for 8-bit, 16-bit, and 24-bit integers may be implemented in
+the near future.) Any floating point values on the RPN stack (e.g. `X` or `Y`
+registers) are converted into an unsigned 32-bit integer before being passed
+into a logical, bitwise, or arithmetic function. This includes the `DEC` (base
+10) mode.
+
+#### Base Modes
 
 **DEC** (decimal)
 
 The `DEC` (decimal) mode is the default. All numbers on the RPN stack are
-displayed using the currently selected floating point mode (e.g. `FIX`, `ENG`,
-and `SCI`) and the number of digits after the decimal point. Here is an example
-screenshot:
+displayed as an integer, after being converted to an unsigned 32-bit integer.
 
 > ![Numbers in Decimal Mode](docs/rpn83p-screenshot-base-dec.png)
+
+If the value on the RPN stack is negative, a single `-` sign is shown. If the
+value is greater than or equal to `2^32`, then 3 dots `...` are shown. If the
+floating point value is within the range of `[0, 2^32]` but has non-zero
+fractional value, a decimal point is shown after converting the integer part
+into a 32-bit unsigned integer.
 
 **HEX** (hexadecimal)
 
@@ -978,45 +1025,174 @@ disabled.
 
 > ![Numbers in Binary Mode](docs/rpn83p-screenshot-base-bin.png)
 
+#### Shift and Rotate
+
+The RPN83P supports most of the common shift and rotate operations implemented
+by modern microprocessors, including the Z80 processor used in the TI-83 Plus
+and TI-84 Plus calculators. Unfortunately, there seems to be no standard
+mnemonics for these shift and rotate operations, and different processors and
+calculators use conflicting names. The RPN83P follows the conventions of the
+HP-16C for consistency, even though the conventions are sometimes contrary to
+the conventions of the Z80 processor:
+
+- `SL` - shift left logical
+    - named `SLA` on the Z80 (see Note below regarding `SLL` instruction)
+    - named `SL` on the HP-16C
+- `SR` - shift right logical
+    - named `SRL` on the Z80
+    - named `SR` on the HP-16C
+- `ASR` - arithmetic shift right
+    - named `SRA` on the Z80
+    - named `ASR` on the HP-16C
+- `SLn` - shift left logical of `Y` for `X` times
+    - no equivalent on Z80 or HP-16C
+- `SRn` - shift right logical of `Y` for `X` times
+    - no equivalent on Z80 or HP-16C
+- `RL` - rotate left circular
+    - named `RLC` on the Z80
+    - named `RL` on the HP-16C
+- `RR` - rotate right circular
+    - named `RRC` on the Z80
+    - named `RR` on the HP-16C
+- `RLC` - rotate left through carry flag
+    - named `RL` on the Z80
+    - named `RLC` on the HP-16C
+- `RRC` - rotate right through carry flag
+    - named `RR` on the Z80
+    - named `RRC` on the HP-16C
+- `RLn` - rotate left circular of `Y` for `X` times
+    - no equivalent on Z80
+    - named `RLn` on the HP-16C
+- `RRn` - rotate right circular of `Y` for `X` times
+    - no equivalent on Z80
+    - named `RRn` on the HP-16C
+- `RLCn` - rotate left through carry flag of `Y` for `X` times
+    - no equivalent on Z80
+    - named `RLCn` on the HP-16C
+- `RRCn` - rotate right through carry flag of `Y` for `X` times
+    - no equivalent on Z80
+    - named `RRCn` on the HP-16C
+
+For all `XXn` operations, if the `n` value (i.e. `X` register) is 0, the
+operation does not change the value of `Y`, but the RPN stack collapses by one
+position so the `X` value disappears. If the `n` value is `>=` to the `BASE`
+word size (`WSZ?`), normally 32, an error message will be displayed.
+
+**Note**: The Z80 apparently has an undocumented instruction named [shift left
+logical](https://worldofspectrum.org/z88forever/dn327/z80undoc.htm) which is
+shortened to `SLL` or `SL1`. It places a 1 into bit 0 of the register, instead
+of a 0. It is unfortunate that term "logical" is used in the exact opposite
+to the meaning that I would have expected.
+
 #### Base Arithmetic
 
-Similar to the HP-42S, the `HEX`, `OCT` and `BIN` modes change how some
-arithmetic functions behave. Specifically, the keyboard buttons `+`, `-`, `*`,
-`/` are re-bound to their bitwise counterparts `B+`, `B-`, `B*`, `B/` which
+Similar to the HP-42S, activating the `BASE` hierarchy of menus changes the
+behavior of keyboard arithmetic functions. Specifically, the buttons `+`, `-`,
+`*`, `/` are re-bound to their integer counterparts `B+`, `B-`, `B*`, `B/` which
 perform 32-bit unsigned arithmetic operations instead of floating point
 operations. The numbers in the `X` and `Y` registers are converted into 32-bit
 unsigned integers before the integer subroutines are called.
 
 **HP-42S Compatibility Note**: The HP-42S calls these integer functions `BASE+`,
 `BASE-`, `BASE*`, and `BASE/`. The RPN83P can only display 4-characters in the
-menu bar so I needed to use shorter names. The HP-42S function called `B+/-` is
+menu bar so I had to use shorter names. The HP-42S function called `B+/-` is
 called `NEG` on the RPN83P. Early versions of the RPN83P retained the keyboard
 arithmetic buttons bound to their floating point operations, but it became too
 confusing to see hex, octal, or binary digits on the display, but get floating
 point results when performing an arithmetic operation such as `/`. The RPN83P
-follows the lead of the HP-42S for the arithmetic operations.
+follows the lead of the HP-42S to change the arithmetic operations to integer
+operations.
 
-For example, suppose the following numbers are in the RPN stack in `DEC` mode:
+For example, suppose the following numbers are in the RPN stack *before*
+entering the `BASE` menu:
 
-> ![Base Arithmetic Part 1](docs/rpn83p-screenshot-base-arithmetic-1-dec.png)
+> ![Base Arithmetic Part 1](docs/rpn83p-screenshot-base-arithmetic-1-float.png)
+
+Entering the `BASE` menu shows this (assuming that the default base number was
+`DEC`):
+
+> ![Base Arithmetic Part 2](docs/rpn83p-screenshot-base-arithmetic-2-dec.png)
 
 Changing to `HEX` mode shows this:
 
-> ![Base Arithmetic Part 2](docs/rpn83p-screenshot-base-arithmetic-2-hex.png)
+> ![Base Arithmetic Part 3](docs/rpn83p-screenshot-base-arithmetic-3-hex.png)
 
 Pressing the `+` button adds the `X` and `Y` registers, converting the
 values to 32-bit unsigned integers before the addition:
 
-> ![Base Arithmetic Part 3](docs/rpn83p-screenshot-base-arithmetic-3-plus.png)
+> ![Base Arithmetic Part 4](docs/rpn83p-screenshot-base-arithmetic-4-plus.png)
 
 Changing back to `DEC` mode shows that the numbers were added using integer
 functions, and the fractional digits were truncated:
 
-> ![Base Arithmetic Part 4](docs/rpn83p-screenshot-base-arithmetic-4-dec.png)
+> ![Base Arithmetic Part 5](docs/rpn83p-screenshot-base-arithmetic-5-dec.png)
 
-You can perform integer arithmetic even in `DEC` mode, by using the `B+`, `B-`,
-`B*`, and `B/` menu functions, instead of the `+`, `-`, `*` and `/` keyboard
-buttons.
+#### Carry Flag
+
+The RPN83P supports the *Carry Flag* implemented by most (all?) microprocessors.
+The Carry Flag is supported by the HP-16C but not by the HP-42S. When the Carry
+Flag is set, a small `C` letter appears on the display like this:
+
+> ![Carry Flag On](docs/rpn83p-carry-flag-on.png)
+
+When the flag is off, a dash `-` is shown like this:
+
+> ![Carry Flag On](docs/rpn83p-carry-flag-off.png)
+
+The Carry Flag can be explicitly cleared, set, and retrieved using the following
+menu items:
+
+- `CCF`: clear carry flag
+- `SCF`: set carry flag
+- `CF?`: get carry flag
+
+Many operations affect the Carry Flag (CF). All shift and rotate operations
+affect the CF:
+
+- `SL`: bit 31 shifted into CF
+- `SR`: bit 0 shifted into CF
+- `ASR`: bit 0 shifted into CF
+- `SLn`: bit 31 shifted into CF after shifting `n` positions
+- `SRn`: bit 0 shifted into CF after shifting `n` positions
+- `RL`: bit 31 shifted into CF
+- `RR`: bit 0 shifted into CF
+- `RLC`: CF into bit 0; bit 31 into CF
+- `RRC`: CF into bit 31; bit 0 into CF
+- `RLn`: bit 31 shifted into CF after rotating `n` positions
+- `RRn`: bit 0 shifted into CF after rotating `n` positions
+- `RLCn`: CF into bit 0; bit 31 into CF after rotating `n` positions
+- `RRCn`: CF into bit 31; bit 0 into CF after rotating `n` positions
+
+All integer arithmetic functions affect the CF:
+
+- `B+`: CF set on overflow
+- `B-`: CF set on borrow
+- `B*`: CF set on overflow
+- `B/`: CF always set to 0
+- `BDIV`: CF always set to 0
+
+On most microprocessors, the bitwise operations clear the Carry Flag to zero.
+However the RPN83P follows the lead of the HP-16C calculator where these
+operations do *not* affect the Carry Flag at all:
+
+- `AND`, `OR`, `XOR`, `NEG`, `NOT`, `REVB`, `CNTB`
+
+#### Bit Operations
+
+Specific bits can be cleared or set using the `CB` and `SB` menu items.
+
+- `CB`: clear the `X` bit of `Y`
+- `SB`: set the `X` bit of `Y`
+- `B?`: get the `X` bit of `Y` as 1 or 0
+
+The range of `X` must be between 0 and 31, or an error code will be generated.
+
+This menu row contains a couple of additional bit manipulation functions:
+
+- `REVB`: reverse the bit patterns of `X`
+- `CNTB`: count the number of 1 bits in `X`
+
+None of these bit operations affect the Carry Flag.
 
 #### Base Integer Size
 
@@ -1053,13 +1229,13 @@ the negative sign.
 Currently, the integer size for base conversions and functions is hardcoded to
 be 32 bits. I hope to add the ability to change the integer size in the future.
 
-#### Base Mode Retention
+#### Base Number Retention
 
-Since the `HEX`, `OCT` and `BIN` modes are useful only within the `BASE`
-hierarchy of menus, the base mode is reset to `DEC` if menu hierarchy leaves the
-`BASE` menu. This is similar to the HP-42S. However, unlike the HP-42S, the
-RPN83P remembers the most recent base mode and restores its setting if the
-`BASE` menu hierarchy is selected again.
+Since the `DEC`, `HEX`, `OCT` and `BIN` modes are useful only within the `BASE`
+hierarchy of menus. When the menu leaves the `BASE` hierarchy, the numbers on
+the RPN stack revert back to using floating points. This is similar to the
+HP-42S. However, unlike the HP-42S, the RPN83P remembers the most recent base
+number and restores its setting if the `BASE` menu hierarchy is selected again.
 
 ### Storage Registers
 

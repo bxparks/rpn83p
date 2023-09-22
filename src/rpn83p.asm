@@ -45,7 +45,7 @@ dirtyFlagsStack equ 1 ; set if the stack is dirty
 dirtyFlagsMenu equ 2 ; set if the menu selection is dirty
 dirtyFlagsTrigMode equ 3 ; set if the trig status is dirty
 dirtyFlagsFloatMode equ 4 ; set if the floating mode is dirty
-dirtyFlagsBaseMode equ 5 ; set if the base mode is dirty
+dirtyFlagsBaseMode equ 5 ; set if any base mode flags or vars is dirty
 dirtyFlagsErrorCode equ 6 ; set if the error code is dirty
 ; The dirtyFlagsXLabel flag is set if the 'X:' label is dirty due to the
 ; command arg mode. The 6x8 cell occupied by the 'X:' label is rendered in
@@ -70,6 +70,7 @@ rpnFlagsEditing equ 0 ; set if in edit mode
 rpnFlagsArgMode equ 1 ; set if in command argument mode
 rpnFlagsLiftEnabled equ 2 ; set if stack lift is enabled (ENTER disables it)
 rpnFlagsAllStatEnabled equ 3 ; set if Sigma+ updates logarithm registers
+rpnFlagsBaseModeEnabled equ 4 ; set if inside BASE menu hierarchy
 
 ; Flags for the inputBuf. Offset from IY register.
 inputBufFlags equ asm_Flag3
@@ -88,7 +89,7 @@ rpn83pAppId equ $1E69
 ; Increment the schema version when any variables are added or removed from the
 ; appState data block. The schema version will be validated upon restoring the
 ; application state from the AppVar.
-rpn83pSchemaVersion equ 2
+rpn83pSchemaVersion equ 3
 
 ; Begin application variables at tempSwapArea. According to the TI-83 Plus SDK
 ; docs: "tempSwapArea (82A5h) This is the start of 323 bytes used only during
@@ -140,12 +141,15 @@ handlerCode equ appStateInputBufFlags + 1
 ; non-zero.
 errorCode equ handlerCode + 1
 
-; Current base mode. Allowed values are: 2, 8, 10, 16. Anything else is
+; Current base mode number. Allowed values are: 2, 8, 10, 16. Anything else is
 ; interpreted as 10.
-baseMode equ errorCode + 1
+baseNumber equ errorCode + 1
 
-; Base mode copied from baseMode when leaving the BASE menu group.
-baseModeSaved equ baseMode + 1
+; Base mode carry flag. Bit 0.
+baseCarryFlag equ baseNumber + 1
+
+; Base mode word size: 8, 16, 24, 32 (maybe 40 in the future).
+baseWordSize equ baseCarryFlag + 1
 
 ; String buffer for keyboard entry. This is a Pascal-style with a single size
 ; byte at the start. It does not include the cursor displayed at the end of the
@@ -155,7 +159,7 @@ baseModeSaved equ baseMode + 1
 ;       uint8_t size;
 ;       char buf[14];
 ;   };
-inputBuf equ baseModeSaved + 1
+inputBuf equ baseWordSize + 1
 inputBufSize equ inputBuf ; size byte of the pascal string
 inputBufBuf equ inputBuf + 1
 inputBufMax equ 14 ; maximum size of buffer, not including appended cursor
@@ -392,6 +396,7 @@ dummyVector:
 #include "display.asm"
 #include "errorcode.asm"
 #include "base.asm"
+#include "basehandlers.asm"
 #include "integer.asm"
 #include "menu.asm"
 #include "menuhandlers.asm"

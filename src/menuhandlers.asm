@@ -112,23 +112,24 @@ displayPage:
     ret
 
 ; Array of (char*) pointers to C-strings.
-helpPageCount equ 4
+helpPageCount equ 5
 helpPages:
     .dw msgHelpPage1
     .dw msgHelpPage2
     .dw msgHelpPage3
     .dw msgHelpPage4
+    .dw msgHelpPage5
 
 msgHelpPage1:
     .db escapeLargeFont, "RPN83P", Lenter
-    .db escapeSmallFont, "v0.6.0-dev (2023", Shyphen, "09", Shyphen, "12)", Senter
+    .db escapeSmallFont, "v0.6.0-dev (2023", Shyphen, "09", Shyphen, "22)", Senter
     .db "(c) 2023  Brian T. Park", Senter
     .db Senter
     .db "An RPN calculator for the", Senter
     .db "TI", Shyphen, "83 Plus and TI", Shyphen, "84 Plus", Senter
     .db "inspired by the HP", Shyphen, "42S.", Senter
     .db Senter
-    .db SlBrack, "1/4", SrBrack, " Any key to continue...", Senter
+    .db SlBrack, "1/5", SrBrack, " Any key to continue...", Senter
     .db 0
 
 msgHelpPage2:
@@ -140,7 +141,7 @@ msgHelpPage2:
     .db "R", SupArrow, " :  STK  R", SupArrow, Senter
     .db Senter
     .db Senter
-    .db SlBrack, "2/4", SrBrack, " Any key to continue...", Senter
+    .db SlBrack, "2/5", SrBrack, " Any key to continue...", Senter
     .db 0
 
 msgHelpPage3:
@@ -152,7 +153,7 @@ msgHelpPage3:
     .db "ClrX:  CLEAR", Senter
     .db Senter
     .db Senter
-    .db SlBrack, "3/4", SrBrack, " Any key to continue...", Senter
+    .db SlBrack, "3/5", SrBrack, " Any key to continue...", Senter
     .db 0
 
 msgHelpPage4:
@@ -164,7 +165,19 @@ msgHelpPage4:
     .db "Back:  ON", Senter
     .db "Quit App:  2ND QUIT", Senter
     .db Senter
-    .db SlBrack, "4/4", SrBrack, " Any key to return.", Senter
+    .db SlBrack, "4/5", SrBrack, " Any key to continue...", Senter
+    .db 0
+
+msgHelpPage5:
+    .db escapeLargeFont, "CFIT Models", Lenter
+    .db escapeSmallFont, Senter
+    .db "LINF: y = B + M x", Senter
+    .db "LOGF: y = B + M lnx", Senter
+    .db "EXPF: y = B e^(M x)", Senter
+    .db "PWRF: y = B x^M", Senter
+    .db Senter
+    .db Senter
+    .db SlBrack, "5/5", SrBrack, " Any key to return.", Senter
     .db 0
 
 ;-----------------------------------------------------------------------------
@@ -1181,288 +1194,6 @@ mAtanhHandler:
     call closeInputAndRecallX
     bcall(_ATanH)
     jp replaceX
-
-;-----------------------------------------------------------------------------
-; Children nodes of BASE menu.
-;-----------------------------------------------------------------------------
-
-mBaseHandler:
-    jr c, mBaseHandlerOnExit
-    ld a, (baseModeSaved) ; restore previously saved base mode
-    jr setBaseMode
-mBaseHandlerOnExit:
-    ; save previous base mode, and reset to 10 on exit
-    ld a, (baseMode)
-    ld (baseModeSaved), a
-    ld a, 10
-    jr setBaseMode
-
-mHexHandler:
-    call closeInputBuf
-    ld a, 16
-    jr setBaseMode
-
-mDecHandler:
-    call closeInputBuf
-    ld a, 10
-    jr setBaseMode
-
-mOctHandler:
-    call closeInputBuf
-    ld a, 8
-    jr setBaseMode
-
-mBinHandler:
-    call closeInputBuf
-    ld a, 2
-    ; [[fallthrough]]
-
-; Description: Set the (baseMode) to the value in A. Set dirty flag.
-; Destroys: none
-setBaseMode:
-    set dirtyFlagsBaseMode, (iy + dirtyFlags)
-    set dirtyFlagsStack, (iy + dirtyFlags)
-    set dirtyFlagsMenu, (iy + dirtyFlags)
-    ld (baseMode), a
-    ret
-
-;-----------------------------------------------------------------------------
-
-mDecNameSelector:
-    ld b, 10
-    jr mBaseNameSelector
-
-mHexNameSelector:
-    ld b, 16
-    jr mBaseNameSelector
-
-mOctNameSelector:
-    ld b, 8
-    jr mBaseNameSelector
-
-mBinNameSelector:
-    ld b, 2
-    ; [[fallthrough]]
-
-; Description: Select the display name of 'DEC', 'HEX', 'OCT', and 'BIN' menus.
-; Input:
-;   - A: nameId
-;   - B: base (2, 8, 10, 16)
-;   - C: altNameId
-;   - HL: pointer to MenuNode
-; Output:
-;   - A: either A or C
-; Destroys: D
-mBaseNameSelector:
-    ld d, a ; D=nameId, C=altNameId
-    ld a, (baseMode)
-    cp b
-    ld a, d
-    ret nz
-    ld a, c
-    ret
-
-;-----------------------------------------------------------------------------
-
-mBitwiseAndHandler:
-    call closeInputAndRecallXY ; OP1=Y; OP2=X
-    ld hl, OP3
-    call convertOP1ToU32 ; OP3=u32(Y)
-
-    bcall(_OP2ToOP1)
-    ld hl, OP4
-    call convertOP1ToU32 ; OP4=u32(X)
-
-    ld de, OP3
-    call andU32U32 ; OP4 = OP4 AND OP3
-
-    call convertU32ToOP1 ; OP1 = float(OP4)
-    jp replaceXY
-
-;-----------------------------------------------------------------------------
-
-mBitwiseOrHandler:
-    call closeInputAndRecallXY ; OP1=Y; OP2=X
-    ld hl, OP3
-    call convertOP1ToU32 ; OP3=u32(Y)
-
-    bcall(_OP2ToOP1)
-    ld hl, OP4
-    call convertOP1ToU32 ; OP4=u32(X)
-
-    ld de, OP3
-    call orU32U32 ; OP4 = OP4 OR OP3
-
-    call convertU32ToOP1 ; OP1 = float(OP4)
-    jp replaceXY
-
-;-----------------------------------------------------------------------------
-
-mBitwiseXorHandler:
-    call closeInputAndRecallXY ; OP1=Y; OP2=X
-    ld hl, OP3
-    call convertOP1ToU32 ; OP3=u32(Y)
-
-    bcall(_OP2ToOP1)
-    ld hl, OP4
-    call convertOP1ToU32 ; OP4=u32(X)
-
-    ld de, OP3
-    call xorU32U32 ; OP4 = OP4 XOR OP3
-
-    call convertU32ToOP1 ; OP1 = float(OP4)
-    jp replaceXY
-
-;-----------------------------------------------------------------------------
-
-mBitwiseNotHandler:
-    call closeInputAndRecallX ; OP1=X
-    ld hl, OP3
-    call convertOP1ToU32 ; OP3=u32(X)
-    call notU32 ; OP3 = NOT(OP3)
-    call convertU32ToOP1 ; OP1 = float(OP3)
-    jp replaceX
-
-;-----------------------------------------------------------------------------
-
-mBitwiseNegHandler:
-    call closeInputAndRecallX ; OP1=X
-    ld hl, OP3
-    call convertOP1ToU32 ; OP3=u32(X)
-    call negU32 ; OP3 = NEG(OP3), 2's complement negation
-    call convertU32ToOP1 ; OP1 = float(OP3)
-    jp replaceX
-
-;-----------------------------------------------------------------------------
-
-mShiftLeftHandler:
-    call closeInputAndRecallX ; OP1=X
-    ld hl, OP3
-    call convertOP1ToU32 ; OP3=u32(X)
-    call shiftLeftU32 ; OP3 = (OP3 << 1)
-    call convertU32ToOP1 ; OP1 = float(OP3)
-    jp replaceX
-
-mShiftRightHandler:
-    call closeInputAndRecallX ; OP1=X
-    ld hl, OP3
-    call convertOP1ToU32 ; OP3=u32(X)
-    call shiftRightLogicalU32 ; OP3 = (OP3 >> 1)
-    call convertU32ToOP1 ; OP1 = float(OP3)
-    jp replaceX
-
-mRotateLeftHandler:
-    call closeInputAndRecallX ; OP1=X
-    ld hl, OP3
-    call convertOP1ToU32 ; OP3=u32(X)
-    call rotateLeftCircularU32; OP3 = rotLeftCircular(OP3)
-    call convertU32ToOP1 ; OP1 = float(OP3)
-    jp replaceX
-
-mRotateRightHandler:
-    call closeInputAndRecallX ; OP1=X
-    ld hl, OP3
-    call convertOP1ToU32 ; OP3=u32(X)
-    call rotateRightCircularU32; OP3 = rotRightCircular(OP3)
-    call convertU32ToOP1 ; OP1 = float(OP3)
-    jp replaceX
-
-;-----------------------------------------------------------------------------
-
-mBitwiseAddHandler:
-    call closeInputAndRecallXY ; OP1=Y; OP2=X
-    ld hl, OP3
-    call convertOP1ToU32 ; OP3=u32(Y)
-
-    bcall(_OP2ToOP1)
-    ld hl, OP4
-    call convertOP1ToU32 ; OP4=u32(X)
-
-    ld de, OP3
-    call addU32U32 ; OP4(X) += OP3(Y)
-
-    call convertU32ToOP1 ; OP1 = float(OP3)
-    jp replaceXY
-
-;-----------------------------------------------------------------------------
-
-mBitwiseSubtHandler:
-    call closeInputAndRecallXY ; OP1=Y; OP2=X
-    ld hl, OP3
-    call convertOP1ToU32 ; OP3=u32(Y)
-
-    bcall(_OP2ToOP1)
-    ld hl, OP4
-    call convertOP1ToU32 ; OP4=u32(X)
-
-    ld de, OP3
-    ex de, hl
-    call subU32U32 ; OP3(Y) -= OP4(X)
-
-    call convertU32ToOP1 ; OP1 = float(OP3)
-    jp replaceXY
-
-;-----------------------------------------------------------------------------
-
-mBitwiseMultHandler:
-    call closeInputAndRecallXY ; OP1=Y; OP2=X
-    ld hl, OP3
-    call convertOP1ToU32 ; OP3=u32(Y)
-
-    bcall(_OP2ToOP1)
-    ld hl, OP4
-    call convertOP1ToU32 ; OP4=u32(X)
-
-    ld de, OP3
-    call multU32U32 ; OP4(X) *= OP3(Y)
-
-    call convertU32ToOP1 ; OP1 = float(OP3)
-    jp replaceXY
-
-;-----------------------------------------------------------------------------
-
-; Description: Calculate bitwise x/y.
-; Output:
-;   - X=quotient
-;   - remainder thrown away
-mBitwiseDivHandler:
-    call divHandlerCommon ; HL=quotient, BC=remainder
-    call convertU32ToOP1 ; OP1 = quotient
-    jp replaceXY
-
-; Description: Calculate bitwise div(x, y) -> (y/x, y % x).
-; Output:
-;   - X=remainder
-;   - Y=quotient
-mBitwiseDiv2Handler:
-    call divHandlerCommon ; HL=quotient, BC=remainder
-    ; convert remainder into OP2
-    push hl
-    ld l, c
-    ld h, b
-    call convertU32ToOP1 ; OP1=remainder
-    bcall(_OP1ToOP2) ; OP2=remainder
-    ; convert quotient into OP1
-    pop hl
-    call convertU32ToOP1 ; OP1 = quotient
-    ;
-    jp replaceXYWithOP1OP2 ; Y=quotient, X=remainder
-
-divHandlerCommon:
-    call closeInputAndRecallXY ; OP1=Y; OP2=X
-    ld hl, OP3
-    call convertOP1ToU32 ; OP3=u32(Y)
-    bcall(_OP2ToOP1)
-    ld hl, OP4
-    call convertOP1ToU32 ; OP4=u32(X)
-    call testU32
-    jr z,  divHandlerDivByZero
-    ld hl, OP3 ; HL=dividend (Y)
-    ld de, OP4 ; DE=divisor (X)
-    ld bc, OP5 ; BC=remainder
-    jp divU32U32 ; HL=OP3=quotient, DE=OP4=divisor, BC=OP5=remainder
-divHandlerDivByZero:
-    bjump(_ErrDivBy0) ; throw 'Div By 0' exception
 
 ;-----------------------------------------------------------------------------
 ; Children nodes of STK menu group (stack functions).

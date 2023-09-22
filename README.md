@@ -9,7 +9,7 @@ Plus](https://en.wikipedia.org/wiki/TI-84_Plus_series) (including the Silver
 Edition). The app is inspired mostly by the
 [HP-42S](https://en.wikipedia.org/wiki/HP-42S) calculator, with some sprinkles
 of older HP calculators like the
-[HP-12C](https://en.wikipedia.org/wiki/HP-12C),
+[HP-12C](https://en.wikipedia.org/wiki/HP-12C), the
 [HP-15C](https://en.wikipedia.org/wiki/HP-15C), and the
 [HP-16C](https://en.wikipedia.org/wiki/HP-16C).
 
@@ -45,8 +45,11 @@ Here is a quick summary of its features:
     - angle conversions: `>DEG`, `>RAD`, `>HR`, `>HMS`, `>REC`, `>POL`
     - unit conversions: `>C`, `>F`, `>km`, `>mi`, etc
     - base conversions: `DEC`, `HEX`, `OCT`, `BIN`
-    - bitwise operations: `AND`, `OR`, `XOR`, `NOT`, `NEG`, `SL`, `SR`, `RL`,
-      `RR`, `B+`, `B-`, `B*`, `B/`, `BDIV`
+    - bitwise operations: `AND`, `OR`, `XOR`, `NOT`, `NEG`, `B+`, `B-`, `B*`,
+      `B/`, `BDIV`, REVB (reverse bits), CNTB (count bits)
+    - shift and rotate operations: `SL`, `SR`, `ASR`, `RL`, `RR`, `RLC`, `RRC`,
+      `SLn`, `SRn`, `RLn`, `RRn`, `RLCn`, `RRCn`
+    - carry flags and bit masks: `CCF`, `SCF`, `CF?`, `CB`, `SB`, `B?`
     - statistics: `Sigma+`, `Sigma-`, `SUM`, `MEAN`, `WMN` (weighted mean),
       `SDEV` (sample standard deviation), `SCOV` (sample covariance),
       `PDEV` (population standard deviation), `PCOV` (population covariance)
