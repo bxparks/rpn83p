@@ -433,19 +433,19 @@ debugHLAsHex:
 ;------------------------------------------------------------------------------
 
 debugPause:
-   push af
-   push bc
-   push de
-   push hl
-   bcall(_GetKey)
-   bit onInterrupt, (iy + onFlags)
-   jr nz, debugPauseBreak
-   res onInterrupt, (iy + onFlags) ; reset flag set by ON button
-   pop hl
-   pop de
-   pop bc
-   pop af
-   ret
+    push af
+    push bc
+    push de
+    push hl
+    bcall(_GetKey)
+    bit onInterrupt, (iy + onFlags)
+    jr nz, debugPauseBreak
+    res onInterrupt, (iy + onFlags) ; reset flag set by ON button
+    pop hl
+    pop de
+    pop bc
+    pop af
+    ret
 debugPauseBreak:
     res onInterrupt, (iy + onFlags)
     bjump(_ErrBreak) ; throw exception

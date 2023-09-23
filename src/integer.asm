@@ -33,8 +33,8 @@ multU32By10:
     pop hl
 
     ; (HL) = 4 * (HL)
-    call shiftLeftU32 ; (HL) *= 2
-    call shiftLeftU32 ; (HL) *= 2
+    call shiftLeftLogicalU32 ; (HL) *= 2
+    call shiftLeftLogicalU32 ; (HL) *= 2
 
     ; (HL) += (original HL). This step is quite lengthy because it is using
     ; four 8-bit operations to add two u32 integers. Maybe there's a more
@@ -61,7 +61,7 @@ multU32By10:
     ld (hl), a
     pop hl
 
-    call shiftLeftU32 ; (HL) = 2 * (HL) = 10 * (original HL)
+    call shiftLeftLogicalU32 ; (HL) = 2 * (HL) = 10 * (original HL)
 
     pop de
     pop bc
@@ -76,33 +76,44 @@ multU32By10:
 ;   - DE: pointer to operand u32
 ; Output:
 ;   - u32(HL) *= u32(DE)
-; Destroys: A
+;   - CF: carry flag set if result overflowed U32
+; Destroys: A, IX
+; Preserves: BC, DE, HL, (DE)
 multU32U32:
+    push hl
+    pop ix ; IX=original HL
     ; Create temporary 4-byte buffer on the stack, and set it to 0.
     push bc
     ld bc, 0
     push bc
     push bc
     ;
-    ld b, h
-    ld c, l ; BC = HL
     ld hl, 0
     add hl, sp ; (HL) = (SP) = result
-    ld a, 32
+    ld b, 32
+    ld c, 0 ; carry flag
 multU32U32Loop:
-    call shiftLeftU32 ; (HL) *= 2
+    call shiftLeftLogicalU32 ; (HL) *= 2
+    jr nc, multU32U32LoopContinue
+    set 0, c ; set carry bit in C register
+multU32U32LoopContinue:
     ex de, hl
-    call shiftLeftU32 ; (DE) *= 2
+    call rotateLeftCircularU32; (DE) *= 2, preserving (DE) after 32 iterations
     ex de, hl
     jr nc, multU32U32NoMult
-    call addU32U32BC ; (HL) += (BC)
+    call addU32U32IX ; (HL) += (IX)
+    jr nc, multU32U32NoMult
+    set 0, c ; set carry bit in C register
 multU32U32NoMult:
-    dec a
-    jr nz, multU32U32Loop
+    djnz multU32U32Loop
 multU32U32End:
+    ; transfer carry flag in C to CF
+    ld a, c
+    rra ; CF=bit0 of C
     ; copy u32(SP) to u32(original HL)
-    ld h, b
-    ld l, c
+    push ix
+    pop hl ; HL=IX=destination pointer
+    ; extract the u32 at the top of the stack
     pop bc
     ld (hl), c
     inc hl
@@ -112,9 +123,11 @@ multU32U32End:
     ld (hl), c
     inc hl
     ld (hl), b
+    ; restore HL
     dec hl
     dec hl
     dec hl
+    ; restore BC
     pop bc
     ret
 
@@ -127,9 +140,8 @@ multU32U32End:
 ;   - u32 pointed by HL is doubled
 ;   - CF: bit 7 of the most significant byte
 ; Destroys: none
-shiftLeftU32:
+shiftLeftLogicalU32:
     push hl
-    or a ; clear CF
     sla (hl) ; CF=bit7
     inc hl
     rl (hl) ; rotate left through CF
@@ -146,9 +158,6 @@ shiftLeftU32:
 ;   - HL: pointer result
 ;   - CF: bit 0 of the least signficant byte
 ; Destroys: none
-;
-; TODO: rename this to just shiftRightU32(), since RPN83P will not support
-; shiftRightArithmetic() because it always uses unsigned integers.
 shiftRightLogicalU32:
     inc hl
     inc hl
@@ -162,6 +171,27 @@ shiftRightLogicalU32:
     rr (hl)
     ret
 
+; Description: shift u32(HL) right arithmetic, duplicating the sign bit.
+; Input: HL: pointer to u32
+; Output:
+;   - HL: pointer result
+;   - CF: bit 0 of the least signficant byte
+; Destroys: none
+shiftRightArithmeticU32:
+    inc hl
+    inc hl
+    inc hl ; HL = byte 3
+    sra (hl) ; CF = least significant bit
+    dec hl ; HL = byte 2
+    rr (hl)
+    dec hl ; HL = byte 1
+    rr (hl)
+    dec hl ; HL = byte 0
+    rr (hl)
+    ret
+
+;-----------------------------------------------------------------------------
+
 ; Description: Rotate left circular u32(HL).
 ; Input:
 ;   - HL: pointer to u32
@@ -171,7 +201,7 @@ shiftRightLogicalU32:
 ; Destroys: none
 rotateLeftCircularU32:
     push hl
-    sla (hl)
+    sla (hl) ; start with the least significant byte
     inc hl
     rl (hl)
     inc hl
@@ -215,9 +245,9 @@ rotateRightCircularU32:
 ;   - HL: pointer to result
 ;   - CF: most significant bit
 ; Destroys: none
-rotateLeftU32:
+rotateLeftCarryU32:
     push hl
-    rl (hl)
+    rl (hl) ; start with the least signficant byte
     inc hl
     rl (hl)
     inc hl
@@ -235,7 +265,7 @@ rotateLeftU32:
 ;   - HL: pointer to result
 ;   - CF: least significant bit
 ; Destroys: none
-rotateRightU32:
+rotateRightCarryU32:
     inc hl
     inc hl
     inc hl ; start with the most significant byte
@@ -286,11 +316,12 @@ addU32U8:
 ;   - DE: pointer to operand u32 integer in little-endian format.
 ; Output:
 ;   - (HL) += (DE)
-; Preserves: A, BC, DE, HL, (DE)
+;   - CF=carry flag
+; Destroys: A
+; Preserves: BC, DE, HL, (DE)
 addU32U32:
-    push af
-    push hl
     push de
+    push hl
     ex de, hl
 
     ld a, (de)
@@ -315,24 +346,27 @@ addU32U32:
     adc a, (hl)
     ld (de), a
 
-    pop de
     pop hl
-    pop af
+    pop de
     ret
 
-; Description: Add u32 to u32, u32(HL) += u32(BC)
-; Preserves: A, BC, DE, HL, (BC)
-addU32U32BC:
-    ; ex bc, de
-    push bc
+; Description: Add u32 to u32, u32(HL) += u32(IX)
+; Output:
+;   - (HL) += (IX)
+;   - CF=carry flag
+; Destroys: A
+; Preserves: BC, DE, HL, (BC), IX
+addU32U32IX:
+    ; ex ix, de
+    push ix
     push de
-    pop bc
+    pop ix
     pop de
     call addU32U32
-    ; ex bc, de
-    push bc
+    ; ex ix, de
+    push ix
     push de
-    pop bc
+    pop ix
     pop de
     ret
 
@@ -342,9 +376,10 @@ addU32U32BC:
 ;   - DE: pointer to operand u32 integer in little-endian format.
 ; Output:
 ;   - (HL) -= (DE)
-; Preserves: A, BC, DE, HL
+;   - CF: carry flag
+; Destroys: A
+; Preserves: BC, DE, HL
 subU32U32:
-    push af
     push de
     push hl
     ex de, hl
@@ -373,12 +408,11 @@ subU32U32:
 
     pop hl
     pop de
-    pop af
     ret
 
 ;-----------------------------------------------------------------------------
 
-; Description: Divide u32(HL) by u32(BC), remainder in u32(DE). This is an
+; Description: Divide u32(HL) by u32(DE), remainder in u32(BC). This is an
 ; expanded u32 version of the "Fast 8-bit division" given in
 ; https://tutorials.eeems.ca/Z80ASM/part4.htm and
 ; https://wikiti.brandonw.net/index.php?title=Z80_Routines:Math:Division#32.2F16_division
@@ -391,32 +425,72 @@ subU32U32:
 ;   - HL: pointer to u32 quotient
 ;   - DE: divisor, unchanged
 ;   - BC: pointer to u32 remainder
+;   - CF: 0 (division always clears the carry flag)
 ; Destroys: A
 divU32U32:
     call clearU32BC ; clear remainder, dividend will shift into this
     ld a, 32 ; iterate for 32 bits of a u32
-div32U32Loop:
+divU32U32Loop:
     push af ; save A loop counter
-    call shiftLeftU32 ; dividend(HL) <<= 1
+    call shiftLeftLogicalU32 ; dividend(HL) <<= 1
     push hl ; save HL=dividend/quotient
     ld l, c
     ld h, b ; HL=BC=remainder
-    call rotateLeftU32 ; rotate CF into remainder
+    call rotateLeftCarryU32 ; rotate CF into remainder
     ;
-    call cpU32U32 ; if remainder(HL) < divisor(DE): CF=1
-    jr c, div32U32QuotientZero
-div32U32QuotientOne:
+    call cmpU32U32 ; if remainder(HL) < divisor(DE): CF=1
+    jr c, divU32U32QuotientZero
+divU32U32QuotientOne:
     call subU32U32 ; remainder(HL) -= divisor(DE)
     pop hl ; HL=dividend/quotient
     ; Set bit 0 of byte 0 of quotient
     set 0, (hl)
-    jr div32U32NextBit
-div32U32QuotientZero:
+    jr divU32U32NextBit
+divU32U32QuotientZero:
     pop hl ; HL=dividend/quotient
-div32U32NextBit:
+divU32U32NextBit:
     pop af
     dec a
-    jr nz, div32U32Loop
+    jr nz, divU32U32Loop
+    ret
+
+;-----------------------------------------------------------------------------
+
+; Description: Divide u32(HL) by u8(D), quotient in HL, remainder in u8(E).
+; This is an expanded u32 version of the "Fast 8-bit division" given in
+; https://tutorials.eeems.ca/Z80ASM/part4.htm and
+; https://wikiti.brandonw.net/index.php?title=Z80_Routines:Math:Division#32.2F16_division
+;
+; Input:
+;   - HL: pointer to u32 dividend
+;   - D: u8 divisor
+; Output:
+;   - HL: pointer to u32 quotient
+;   - D: divisor, unchanged
+;   - E: u8 remainder
+;   - CF: 0 (division always clears the carry flag)
+; Destroys: A
+; Preserves: BC
+divU32U8:
+    push bc ; save BC
+    ld e, 0 ; clear remainder
+    ld b, 32 ; iterate for 32 bits of a u32
+divU32U8Loop:
+    call shiftLeftLogicalU32 ; dividend(HL) <<= 1
+    ld a, e ; A = remainder
+    rla ; rotate CF from U32 into dividend/remainder
+    ld e, a
+    jr c, divU32U8QuotientOne ; remainder overflowed, so must substract
+    cp d ; if remainder(A) < divisor(D): CF=1
+    jr c, divU32U8QuotientZero
+divU32U8QuotientOne:
+    sub d
+    ld e, a
+    set 0, (hl)
+divU32U8QuotientZero:
+    djnz divU32U8Loop
+    pop bc
+    or a ; CF=0
     ret
 
 ;-----------------------------------------------------------------------------
@@ -438,7 +512,7 @@ modU32U16:
     ld de, 0
     ld a, 32
 modU32U16Loop:
-    call shiftLeftU32
+    call shiftLeftLogicalU32
     rl e
     rl d ; DE=remainder
     ex de, hl ; HL=remainder
@@ -463,8 +537,9 @@ modU32U16NextBit:
 ;-----------------------------------------------------------------------------
 
 
-; Description: Compare u32(HL) to u32(DE), returning C if u32(HL) < u32(DE).
-; The order of the parameters is the same as subU32U32().
+; Description: Compare u32(HL) to u32(DE), returning CF=1 if u32(HL) < u32(DE),
+; and ZF=1 if u32(HL) == u32(DE). The order of the parameters is the same as
+; subU32U32().
 ; Input:
 ;   - HL: pointer to u32
 ;   - DE: pointer to u32
@@ -473,9 +548,7 @@ modU32U16NextBit:
 ;   - ZF=1 if (HL) == (DE)
 ; Destroys: A
 ; Preserves: BC, DE, HL
-;
-; TODO: Rename this cmpU32U32. Too easily confused with copyU32U32.
-cpU32U32:
+cmpU32U32:
     push hl
     push de
 
@@ -491,27 +564,62 @@ cpU32U32:
     ; start with the most significant byte
     ld a, (de)
     cp (hl)
-    jr nz, cpU32U32End
+    jr nz, cmpU32U32End
 
     dec hl
     dec de
     ld a, (de)
     cp (hl)
-    jr nz, cpU32U32End
+    jr nz, cmpU32U32End
 
     dec hl
     dec de
     ld a, (de)
     cp (hl)
-    jr nz, cpU32U32End
+    jr nz, cmpU32U32End
 
     dec hl
     dec de
     ld a, (de)
     cp (hl)
 
-cpU32U32End:
+cmpU32U32End:
     pop de
+    pop hl
+    ret
+
+; Description: Compare u32(HL) with the u8 in A.
+; Input:
+;   - HL: pointer to u32
+;   - A: u8 integer
+; Output:
+;   - CF=1 if (HL) < A
+;   - ZF=1 if (HL) == A
+; Destroys: A
+; Preserves: BC, DE, HL
+cmpU32U8:
+    push hl
+    push bc
+    ld c, a ; save u8(A)
+    ld b, (hl) ; save the lowest byte of u32(HL)
+    ; Check if any of the upper 3 bytes of u32(HL) are non-zero.
+    inc hl
+    ld a, (hl)
+    or a
+    jr nz, cmpU32U8GreaterEqual
+    inc hl
+    ld a, (hl)
+    or a
+    jr nz, cmpU32U8GreaterEqual
+    inc hl
+    ld a, (hl)
+    or a
+    jr nz, cmpU32U8GreaterEqual
+    ; Compare the lowest byte
+    ld a, b
+    cp c
+cmpU32U8GreaterEqual:
+    pop bc
     pop hl
     ret
 
@@ -818,4 +926,191 @@ negU32:
     ld (hl), a
 
     pop hl
+    ret
+
+;-----------------------------------------------------------------------------
+
+; Description: Reverse the bits of u32(HL).
+; Input: HL=pointer to u32
+; Output: HL=reverse(HL)
+; Destroys: A, BC
+; Preserves: HL, DE
+reverseU32:
+    push hl
+    ; reverse the bytes
+    ld c, (hl)
+    inc hl
+    ld b, (hl)
+    inc hl
+    ld a, (hl)
+    ld (hl), b
+    dec hl
+    ld (hl), a
+    inc hl
+    inc hl
+    ld a, (hl)
+    ld (hl), c
+    dec hl
+    dec hl
+    dec hl
+    ld (hl), a
+    ; reverse the bits of each byte
+    ld a, (hl)
+    call reverseBits
+    ld (hl), a
+    inc hl
+    ld a, (hl)
+    call reverseBits
+    ld (hl), a
+    inc hl
+    ld a, (hl)
+    call reverseBits
+    ld (hl), a
+    inc hl
+    ld a, (hl)
+    call reverseBits
+    ld (hl), a
+    pop hl
+    ret
+
+; Description: Reverse the bits of register A.
+; Input: A
+; Output: A=reverse(A)
+; Destroys: BC
+reverseBits:
+    ld b, 8
+reverseBitsLoop:
+    rrca
+    rl c
+    djnz reverseBitsLoop
+    ld a, c
+    ret
+
+;-----------------------------------------------------------------------------
+
+; Description: Count the number of bits in u32(HL).
+; Input: HL=pointer to u32
+; Output: A=number of bits in u32
+; Destroys: A, BC
+; Preserves, DE, HL
+countU32Bits:
+    push hl
+    ld c, 0
+    ld a, (hl)
+    call appendCountBits
+    inc hl
+    ld a, (hl)
+    call appendCountBits
+    inc hl
+    ld a, (hl)
+    call appendCountBits
+    inc hl
+    ld a, (hl)
+    call appendCountBits
+    pop hl
+    ld a, c
+    ret
+
+; Description: Count the number of bits in A.
+; Output: C+=numBits(A)
+; Destroys: A, BC
+appendCountBits:
+    ld b, 8
+countBitsLoop:
+    rrca
+    jr nc, countBitsNext
+    inc c
+countBitsNext:
+    djnz countBitsLoop
+    ret
+
+;-----------------------------------------------------------------------------
+
+; Description: Set bit 'C' of u32(HL).
+; Input:
+;   - HL=pointer to u32
+;   - C=bit number (0-31)
+; Output:
+;   - HL=pointer to u32
+; Destroys: A, B, DE
+; Preserves: HL, C
+setU32Bit:
+    push hl
+    call bitMaskU32
+    or (hl) ; set bit C
+    ld (hl), a
+    pop hl
+    ret
+
+; Description: Clear bit 'C' of u32(HL).
+; Input:
+;   - HL=pointer to u32
+;   - C=bit number (0-31)
+; Output:
+;   - HL=pointer to u32
+; Destroys: A, B, DE
+; Preserves: HL, C
+clearU32Bit:
+    push hl
+    call bitMaskU32
+    cpl
+    and (hl) ; clear bit C
+    ld (hl), a
+    pop hl
+    ret
+
+; Description: Return the status of bit C of u32(HL).
+; Input:
+;   - HL=pointer to u32
+;   - C=bit number (0-31)
+; Output:
+;   - HL=pointer to u32
+;   - A=1 or 0
+; Destroys: A, B, DE
+; Preserves: HL, C
+getU32Bit:
+    push hl
+    call bitMaskU32
+    and (hl)
+    jr z, getU32BitEnd
+    ld a, 1
+getU32BitEnd:
+    pop hl
+    ret
+
+; Description: Calculate the offset and mask of bit C of u32(HL).
+; Input:
+;   - HL=pointer to u32
+;   - C=bit number (0-31)
+; Output:
+;   - HL=pointer to byte offset
+;   - A=bit mask
+; Destroys: A, B, DE, HL
+; Preserves: C
+bitMaskU32:
+    ld a, c
+    and $07
+    ld b, a ; lowest 3 bits of C
+    ld a, c
+    rrca
+    rrca
+    rrca
+    and $03
+    ld e, a
+    ld d, 0 ; DE=highest 2 bits of C, acting as byte offset
+    add hl, de
+    ; [[fallthrough]]
+
+; Description: Create a bit mask with bit B set.
+; Input: B=bit number (0-7)
+; Output: A=bit mask with bit B set
+; Destroys: A, B
+bitMaskB:
+    ld a, b
+    or a
+    ld a, 1
+    ret z
+setBitBofALoop:
+    rlca
+    djnz setBitBofALoop
     ret

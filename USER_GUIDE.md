@@ -2,7 +2,7 @@
 
 RPN calculator app for the TI-83 Plus and TI-84 Plus inspired by the HP-42S.
 
-**Version**: 0.5.0 (2023-08-31)
+**Version**: 0.6.0 (2023-09-22)
 
 **Project Home**: https://github.com/bxparks/rpn83p
 
@@ -34,15 +34,19 @@ RPN calculator app for the TI-83 Plus and TI-84 Plus inspired by the HP-42S.
 - [Advanced Usage](#advanced-usage)
     - [Auto-start](#auto-start)
     - [Floating Point Display Modes](#floating-point-display-modes)
-    - [Trigonometric Modes](#trig-modes)
+    - [Trigonometric Modes](#trigonometric-modes)
     - [BASE Functions](#base-functions)
-        - [BASE Modes](#base-modes)
-        - [BASE Arithmetic](#base-arithmetic)
-        - [BASE Integer Size](#base-integer-size)
+        - [Base Modes](#base-modes)
+        - [Shift and Rotate](#shift-and-rotate)
+        - [Base Arithmetic](#base-arithmetic)
+        - [Carry Flag](#carry-flag)
+        - [Bit Operations](#bit-operations)
+        - [Base Integer Size](#base-integer-size)
+        - [Base Mode Retention](#base-mode-retention)
     - [Storage Registers](#storage-registers)
     - [Prime Factors](#prime-factors)
     - [STAT Functions](#stat-functions)
-    - [TI-OS Interoperability](#ti-os-interoperability)
+- [TI-OS Interaction](#ti-os-interaction)
 - [Future Enhancements](#future-enhancements)
     - [Near Future](#near-future)
     - [Medium Future](#medium-future)
@@ -63,8 +67,8 @@ of some older HP calculators like the
 
 The RPN83P is a flash application that consumes one page (16 kB) of flash
 memory. Since it is stored in flash, it is preserved if the RAM is cleared. It
-consumes a small amount of TI-OS RAM: 2 list variables named `REGS` and `STK`
-which are 240 bytes and 59 bytes respectively.
+consumes a small amount of TI-OS RAM: 2 list variables named `REGS` (240 bytes)
+and `STK` (59 byte), and an appVar named `RPN83SAV` (77 bytes).
 
 Here the quick summary of its features:
 
@@ -85,21 +89,26 @@ Here the quick summary of its features:
     - `X^3`, `CBRT`, `XRootY`, `ATN2`, `2^X`, `LOG2`, `LOGB`
     - `%`, `%CH`, `GCD`, `LCM`, `PRIM` (is prime)
     - `IP` (integer part), `FP` (fractional part), `FLR` (floor), `CEIL`
-    - `ABS`, `SIGN`, `MOD`, `MIN`, `MAX`
       (ceiling), `NEAR` (nearest integer)
+    - `ABS`, `SIGN`, `MOD`, `MIN`, `MAX`
     - probability: `PERM`, `COMB`, `N!`, `RAND`, `SEED`
-    - hyperbolic: `SINH`, `COSH`, `TANH`, etc.
-    - angle conversions: `>DEG`, `>RAD`, `>HR`, `>HMS`, `P>R`, `R>P`
+    - hyperbolic: `SINH`, `COSH`, `TANH`, `ASNH`, `ACSH`, `ATNH`
+    - angle conversions: `>DEG`, `>RAD`, `>HR`, `>HMS`, `>REC`, `>POL`
     - unit conversions: `>C`, `>F`, `>km`, `>mi`, etc
     - base conversions: `DEC`, `HEX`, `OCT`, `BIN`
-    - bitwise operations: `AND`, `OR`, `XOR`, `NOT`, `NEG`, `SL`, `SR`, `RL`,
-      `RR`, `B+`, `B-`, `B*`, `B/`, `BDIV`
+    - bitwise operations: `AND`, `OR`, `XOR`, `NOT`, `NEG`, `REVB` (reverse
+      bits), `CNTB` (count bits)
+    - integer arithmetics: `B+`, `B-`, `B*`, `B/`, `BDIV` (divide with
+      remainder)
+    - shift and rotate: `SL`, `SR`, `ASR`, `RL`, `RR`, `RLC`, `RRC`,
+      `SLn`, `SRn`, `RLn`, `RRn`, `RLCn`, `RRCn`
+    - carry flag and bit masks: `CCF`, `SCF`, `CF?`, `CB`, `SB`, `B?`
     - statistics: `Sigma+`, `Sigma-`, `SUM`, `MEAN`, `WMN` (weighted mean),
       `SDEV` (sample standard deviation), `SCOV` (sample covariance),
       `PDEV` (population standard deviation), `PCOV` (population covariance)
     - curve fitting: `Y>X`, `X>Y`, `SLOP` (slope), `YINT` (y intercept), `CORR`
       (correlation coefficent)
-    - curve fit models: `LINF` (linear)`, `LOGF` (logarithmic), `EXPF`
+    - curve fit models: `LINF` (linear), `LOGF` (logarithmic), `EXPF`
       (exponential), `PWRF` (power)
 - various display modes
     - `RAD`, `DEG`
@@ -109,9 +118,8 @@ Here the quick summary of its features:
 
 Here are some missing features which may be added in the future:
 
-- statistics functions (sum, mean, variance, standard deviation)
-- complex numbers
 - vectors and matrices
+- complex numbers
 - keystroke programming
 
 ## Why?
@@ -221,6 +229,13 @@ The RPN83P application can be quit using:
 - `2ND` `OFF`: to turn the calculator off (the RPN registers and storage
   registers will be preserved)
 
+Upon exit, the state of the RPN83P app will be saved in an AppVar named
+`RPN83SAV`. When the app is restarted, the calculator will resume from exactly
+where it left off, including the exact cursor position of any pending input.
+When restarted, if the `RPN83SAV` variable does not pass validation (e.g. does
+not exist; was archived; is wrong size; contains an incompatible schema version;
+does not pass a CRC checksum) then the application starts from a clean slate.
+
 ## Basic Usage
 
 This guide assumes that you already know to use an RPN calculator. In
@@ -238,7 +253,7 @@ Manual](https://literature.hpcalc.org/items/929).
 
 Here are the various UI elements on the LCD screen used by the RPN83P app:
 
-> ![RPN83P screen regions](docs/rpn83p-screenshot-regions-annotated.png)
+> ![RPN83P screen areas](docs/rpn83p-screen-areas-annotated.png)
 
 The LCD screen is 96 pixels (width) by 64 pixels (height). That is large enough
 to display 8 rows of numbers and letters. They are divided into the following:
@@ -254,7 +269,7 @@ to display 8 rows of numbers and letters. They are divided into the following:
 
 The X register line is also used as the input line when entering new numbers. It
 is also used to prompt for command line argument, for example `FIX _ _` to set
-the fixed display mode.)
+the fixed display mode.
 
 ### Input and Editing
 
@@ -365,7 +380,7 @@ longer sequence of calculations.
 #### Menu Hierarchy
 
 The menu system of the RPN83P was directly inspired by the HP-42S calculator.
-There are over 100 functions supported by the RPN83P menu system, so it is
+There are over 150 functions supported by the RPN83P menu system, so it is
 convenient to arrange them into a nested folder structure. There are 5 buttons
 directly under the LCD screen so it makes sense to present the menu items as
 sets of 5 items corresponding to those buttons.
@@ -428,44 +443,44 @@ menu group named `MATH`, which may help to remember this button mapping.
 There are 3 menu arrows at the top-left corner of the LCD screen. The
 `downarrow` indicates that additional menu rows are available:
 
-> ![Menu Arrows 1](docs/rpn83p-screenshot-menu-arrows-1.png)
+> ![Menu Arrows 1](docs/rpn83p-menu-arrows-1.png)
 
 When the `DOWN` button is pressed, the menu changes to the next set of 5 menu
 items in the next menu row, and the menu arrows show both an `uparrow` and a
 `downarrow` to indicate that there are more menu items above and below the
 current menu bar:
 
-> ![Menu Arrows 2](docs/rpn83p-screenshot-menu-arrows-2.png)
+> ![Menu Arrows 2](docs/rpn83p-menu-arrows-2.png)
 
 Pressing `DOWN` goes to the last set of 5 menu items, and the menu arrows show
 only the `uparrow` to indicate that this is the last of the series:
 
-> ![Menu Arrows 3](docs/rpn83p-screenshot-menu-arrows-3.png)
+> ![Menu Arrows 3](docs/rpn83p-menu-arrows-3.png)
 
 You can press `UP` twice goes back to the first menu row, or you can press
 `DOWN` from the last menu row to wrap around to the beginning:
 
-> ![Menu Arrows 1](docs/rpn83p-screenshot-menu-arrows-1.png)
+> ![Menu Arrows 1](docs/rpn83p-menu-arrows-1.png)
 
 Pressing the `F2/WINDOW` button from here invokes the `NUM` menu item. This menu
 item is actually a `MenuGroup`, so the menu system descends into this folder,
 and displays the 5 menu items in the first menu row:
 
-> ![Menu Arrows NUM 1](docs/rpn83p-screenshot-menu-arrows-num-1.png)
+> ![Menu Arrows NUM 1](docs/rpn83p-menu-arrows-num-1.png)
 
 Pressing the `DOWN` arrow button shows the next menu row:
 
-> ![Menu Arrows NUM 2](docs/rpn83p-screenshot-menu-arrows-num-2.png)
+> ![Menu Arrows NUM 2](docs/rpn83p-menu-arrows-num-2.png)
 
 Pressing the `DOWN` arrow button goes to the final menu row:
 
-> ![Menu Arrows NUM 3](docs/rpn83p-screenshot-menu-arrows-num-3.png)
+> ![Menu Arrows NUM 3](docs/rpn83p-menu-arrows-num-3.png)
 
 Notice that inside the `NUM` menu group, the menu arrows show a `back` arrow.
 This means that the `ON` button (which implements the "BACK", "EXIT", or "ESC"
 functionality) can be used to go back to the parent menu group:
 
-> ![Menu Arrows 1](docs/rpn83p-screenshot-menu-arrows-1.png)
+> ![Menu Arrows 1](docs/rpn83p-menu-arrows-1.png)
 
 #### Menu Shortcuts
 
@@ -495,6 +510,10 @@ activates the Help pages:
 > ![Help Page 3](docs/rpn83p-help-page-3.png)
 
 > ![Help Page 4](docs/rpn83p-help-page-4.png)
+
+> ![Help Page 5](docs/rpn83p-help-page-5.png)
+
+> ![Help Page 6](docs/rpn83p-help-page-6.png)
 
 Hopefully they are useful for remembering the mapping of the buttons whose TI-OS
 keyboard labels do not match the functionality assigned by the RPN83P program.
@@ -625,10 +644,10 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (back), and `MATH`
     - ![CONV MenuRow 2](docs/rpn83p-screenshot-menu-root-conv-2.png)
     - `>DEG`: convert radians to degrees
     - `>RAD`: convert degrees to radians
-    - `P>R`: polar to rectangular
+    - `>REC`: polar to rectangular
         - input (`Y`, `X`) = `r`, `theta`
         - output (`Y`, `X`) = `x`, `y`
-    - `R>P`: rectangular to polar
+    - `>POL`: rectangular to polar
         - input (`Y`, `X`) = (`x`, `y`)
         - output (`Y`, `X`) = (`r`, `theta`)
     - `>HR`: convert `HH.MMSSssss` to `HH.hhhh`
@@ -640,29 +659,52 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (back), and `MATH`
     - ![BASE MenuRow 2](docs/rpn83p-screenshot-menu-root-base-2.png)
     - ![BASE MenuRow 3](docs/rpn83p-screenshot-menu-root-base-3.png)
     - ![BASE MenuRow 4](docs/rpn83p-screenshot-menu-root-base-4.png)
-    - `DEC`: use decimal base 10, set base indicator to `DEC`
-    - `HEX`: use hexadecimal base 16, set base indicator to `HEX`
+    - ![BASE MenuRow 5](docs/rpn83p-screenshot-menu-root-base-5.png)
+    - ![BASE MenuRow 6](docs/rpn83p-screenshot-menu-root-base-6.png)
+    - ![BASE MenuRow 7](docs/rpn83p-screenshot-menu-root-base-7.png)
+    - ![BASE MenuRow 8](docs/rpn83p-screenshot-menu-root-base-8.png)
+    - `DEC`: use decimal base 10
+    - `HEX`: use hexadecimal base 16
         - display all register values as 32-bit unsigned integer
-    - `OCT`: use octal base 8, set base indicator to `OCT`
+    - `OCT`: use octal base 8
         - display all register values as 32-bit unsigned integer
-    - `BIN`: use binary base 2, set base indicator to `BIN`
+    - `BIN`: use binary base 2
         - display all register values as 32-bit unsigned integer
-        - max of 13 digits
+        - max of 14 digits
     - `AND`: `X` `bit-and` `Y`
     - `OR`: `X` `bit-or` `Y`
     - `XOR`: `X` `bit-xor` `Y`
     - `NOT`: one's complement of `X`
     - `NEG`: two's complement of `X`
-    - `SL`: shift left one bit
-    - `SR`: shift right one bit
+    - `SL`: shift left logical one bit
+    - `SR`: shift right logical one bit
+    - `ASR`: arithmetic shift right one bit
+    - `SLn`: shift left logical `Y` by `X` bits
+    - `SRn`: shift right logical `Y` by `X` bits
     - `RL`: rotate left circular one bit
     - `RR`: rotate right circular one bit
+    - `RLC`: rotate left through carry flag one bit
+    - `RRC`: rotate right through carry flag one bit
+    - `RLn`: rotate left circular `Y` by `X` bits
+    - `RRn`: rotate right circular `Y` by `X` bits
+    - `RLCn`: rotate left through carry flag `Y` by `X` bits
+    - `RRCn`: rotate right through carry flag `Y` by `X` bits
+    - `CB`: clear bit `X` of `Y`
+    - `SB`: set bit `X` of `Y`
+    - `B?`: get bit `X` of `Y` as 0 or 1
+    - `REVB`: reverse bits of `X`
+    - `CNTB`: count number of 1 bits of `X` (same as `#B` on HP-16C)
     - `B+`: add `X` and `Y` using unsigned 32-bit integer math
     - `B-`: subtract `X` from `Y` using unsigned 32-bit integer math
     - `B*`: multiply `X` and `Y` using unsigned 32-bit integer math
     - `B/`: divide `X` into `Y` using unsigned 32-bit integer math
     - `BDIV`: divide `X` into `Y` with remainder, placing the quotient in `Y`
       and the remainder in `X`
+    - `CCF`: clear carry flag
+    - `SCF`: set carry flag
+    - `CF?`: return carry flag state as 0 or 1
+    - `WSIZ`: set integer word size (not implemented)
+    - `WSZ?`: return current integer word size (normally 32)
 - `ROOT` > `HYP`
     - ![HYP MenuRow 1](docs/rpn83p-screenshot-menu-root-hyp-1.png)
     - ![HYP MenuRow 2](docs/rpn83p-screenshot-menu-root-hyp-2.png)
@@ -691,8 +733,8 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (back), and `MATH`
         - `weighted mean X = Sum(XY)/Sum(Y)`
     - `N`: return the number of data items entered
     - `SDEV`: sample standard deviation of `Y` and `X`
-        - `sdev(X) = (N/(N-1)) pdev(X)`
-        - `sdev(Y) = (N/(N-1)) pdev(Y)`
+        - `sdev(X) = sqrt(N/(N-1)) pdev(X)`
+        - `sdev(Y) = sqrt(N/(N-1)) pdev(Y)`
     - `SCOV`: sample covariance
         - `scov(X,Y) = (N/(N-1)) pcov(X,Y)`
     - `PDEV`: population standard deviation of `Y` and `X`
@@ -885,8 +927,8 @@ Press the `DEG` menu button to change to degree mode. The top status line shows
 
 We can calculate `sin(30deg)` by typing: `30` `SIN` to get `0.5`.
 
-**Warning**: The polar to rectangular conversion functions (`R>P` and `P>R`) are
-also affected by the current Trig Mode setting.
+**Warning**: The polar to rectangular conversion functions (`>REC` and `>POL`)
+are also affected by the current Trig Mode setting.
 
 **HP-42S Compatibility Note**: The RPN83P does not offer the
 [gradian](https://en.wikipedia.org/wiki/Gradian) mode `GRAD` because the
@@ -904,23 +946,39 @@ The `BASE` functions are available through the `ROOT` > `BASE` hierarchy:
     - ![BASE MenuRow 2](docs/rpn83p-screenshot-menu-root-base-2.png)
     - ![BASE MenuRow 3](docs/rpn83p-screenshot-menu-root-base-3.png)
     - ![BASE MenuRow 4](docs/rpn83p-screenshot-menu-root-base-4.png)
+    - ![BASE MenuRow 5](docs/rpn83p-screenshot-menu-root-base-5.png)
+    - ![BASE MenuRow 6](docs/rpn83p-screenshot-menu-root-base-6.png)
+    - ![BASE MenuRow 7](docs/rpn83p-screenshot-menu-root-base-7.png)
+    - ![BASE MenuRow 8](docs/rpn83p-screenshot-menu-root-base-8.png)
 
 These functions allow conversion of integers into different bases (10, 16, 8,
 2), as well as performing bitwise functions on those integers (bit-and, bit-or,
-bit-xor, etc). They are useful for computer science and programming. The `BASE`
-modes and functions work somewhat differently compared to the HP-42S, so
-additional documentation is provided here.
+bit-xor, etc). They are useful for computer science and programming. Many of the
+`BASE` mode functions were inspired by the HP-16C, which has more extensive
+functions in this area compared to the HP-42S.
 
-#### BASE Modes
+All menu functions under the `BASE` menu operate on *integer* values instead of
+floating point values. Currently, the RPN83P app supports only unsigned 32-bit
+integers. (Support for 8-bit, 16-bit, and 24-bit integers may be implemented in
+the near future.) Any floating point values on the RPN stack (e.g. `X` or `Y`
+registers) are converted into an unsigned 32-bit integer before being passed
+into a logical, bitwise, or arithmetic function. This includes the `DEC` (base
+10) mode.
+
+#### Base Modes
 
 **DEC** (decimal)
 
 The `DEC` (decimal) mode is the default. All numbers on the RPN stack are
-displayed using the currently selected floating point mode (e.g. `FIX`, `ENG`,
-and `SCI`) and the number of digits after the decimal point. Here is an example
-screenshot:
+displayed as an integer, after being converted to an unsigned 32-bit integer.
 
 > ![Numbers in Decimal Mode](docs/rpn83p-screenshot-base-dec.png)
+
+If the value on the RPN stack is negative, a single `-` sign is shown. If the
+value is greater than or equal to `2^32`, then 3 dots `...` are shown. If the
+floating point value is within the range of `[0, 2^32)` but has non-zero
+fractional value, a decimal point is shown after converting the integer part
+into a 32-bit unsigned integer.
 
 **HEX** (hexadecimal)
 
@@ -971,45 +1029,174 @@ disabled.
 
 > ![Numbers in Binary Mode](docs/rpn83p-screenshot-base-bin.png)
 
+#### Shift and Rotate
+
+The RPN83P supports most of the common shift and rotate operations implemented
+by modern microprocessors, including the Z80 processor used in the TI-83 Plus
+and TI-84 Plus calculators. Unfortunately, there seems to be no standard
+mnemonics for these shift and rotate operations, and different processors and
+calculators use conflicting names. The RPN83P follows the conventions of the
+HP-16C for consistency, even though the conventions are sometimes contrary to
+the conventions of the Z80 processor:
+
+- `SL` - shift left logical
+    - named `SLA` on the Z80 (see Note below regarding `SLL` instruction)
+    - named `SL` on the HP-16C
+- `SR` - shift right logical
+    - named `SRL` on the Z80
+    - named `SR` on the HP-16C
+- `ASR` - arithmetic shift right
+    - named `SRA` on the Z80
+    - named `ASR` on the HP-16C
+- `SLn` - shift left logical of `Y` for `X` times
+    - no equivalent on Z80 or HP-16C
+- `SRn` - shift right logical of `Y` for `X` times
+    - no equivalent on Z80 or HP-16C
+- `RL` - rotate left circular
+    - named `RLC` on the Z80
+    - named `RL` on the HP-16C
+- `RR` - rotate right circular
+    - named `RRC` on the Z80
+    - named `RR` on the HP-16C
+- `RLC` - rotate left through carry flag
+    - named `RL` on the Z80
+    - named `RLC` on the HP-16C
+- `RRC` - rotate right through carry flag
+    - named `RR` on the Z80
+    - named `RRC` on the HP-16C
+- `RLn` - rotate left circular of `Y` for `X` times
+    - no equivalent on Z80
+    - named `RLn` on the HP-16C
+- `RRn` - rotate right circular of `Y` for `X` times
+    - no equivalent on Z80
+    - named `RRn` on the HP-16C
+- `RLCn` - rotate left through carry flag of `Y` for `X` times
+    - no equivalent on Z80
+    - named `RLCn` on the HP-16C
+- `RRCn` - rotate right through carry flag of `Y` for `X` times
+    - no equivalent on Z80
+    - named `RRCn` on the HP-16C
+
+For all `XXn` operations, if the `n` value (i.e. `X` register) is 0, the
+operation does not change the value of `Y`, but the RPN stack collapses by one
+position so the `X` value disappears. If the `n` value is `>=` to the `BASE`
+word size (`WSZ?`), normally 32, an error message will be displayed.
+
+**Note**: The Z80 apparently has an undocumented instruction named [shift left
+logical](https://worldofspectrum.org/z88forever/dn327/z80undoc.htm) which is
+shortened to `SLL` or `SL1`. It places a 1 into bit 0 of the register, instead
+of a 0. It is unfortunate that term "logical" is used in the exact opposite
+to the meaning that I would have expected.
+
 #### Base Arithmetic
 
-Similar to the HP-42S, the `HEX`, `OCT` and `BIN` modes change how some
-arithmetic functions behave. Specifically, the keyboard buttons `+`, `-`, `*`,
-`/` are re-bound to their bitwise counterparts `B+`, `B-`, `B*`, `B/` which
+Similar to the HP-42S, activating the `BASE` hierarchy of menus changes the
+behavior of keyboard arithmetic functions. Specifically, the buttons `+`, `-`,
+`*`, `/` are re-bound to their integer counterparts `B+`, `B-`, `B*`, `B/` which
 perform 32-bit unsigned arithmetic operations instead of floating point
 operations. The numbers in the `X` and `Y` registers are converted into 32-bit
 unsigned integers before the integer subroutines are called.
 
 **HP-42S Compatibility Note**: The HP-42S calls these integer functions `BASE+`,
 `BASE-`, `BASE*`, and `BASE/`. The RPN83P can only display 4-characters in the
-menu bar so I needed to use shorter names. The HP-42S function called `B+/-` is
+menu bar so I had to use shorter names. The HP-42S function called `B+/-` is
 called `NEG` on the RPN83P. Early versions of the RPN83P retained the keyboard
 arithmetic buttons bound to their floating point operations, but it became too
 confusing to see hex, octal, or binary digits on the display, but get floating
 point results when performing an arithmetic operation such as `/`. The RPN83P
-follows the lead of the HP-42S for the arithmetic operations.
+follows the lead of the HP-42S to change the arithmetic operations to integer
+operations.
 
-For example, suppose the following numbers are in the RPN stack in `DEC` mode:
+For example, suppose the following numbers are in the RPN stack *before*
+entering the `BASE` menu:
 
-> ![Base Arithmetic Part 1](docs/rpn83p-screenshot-base-arithmetic-1-dec.png)
+> ![Base Arithmetic Part 1](docs/rpn83p-screenshot-base-arithmetic-1-float.png)
+
+Entering the `BASE` menu shows this (assuming that the default base number was
+`DEC`):
+
+> ![Base Arithmetic Part 2](docs/rpn83p-screenshot-base-arithmetic-2-dec.png)
 
 Changing to `HEX` mode shows this:
 
-> ![Base Arithmetic Part 2](docs/rpn83p-screenshot-base-arithmetic-2-hex.png)
+> ![Base Arithmetic Part 3](docs/rpn83p-screenshot-base-arithmetic-3-hex.png)
 
 Pressing the `+` button adds the `X` and `Y` registers, converting the
 values to 32-bit unsigned integers before the addition:
 
-> ![Base Arithmetic Part 3](docs/rpn83p-screenshot-base-arithmetic-3-plus.png)
+> ![Base Arithmetic Part 4](docs/rpn83p-screenshot-base-arithmetic-4-plus.png)
 
 Changing back to `DEC` mode shows that the numbers were added using integer
 functions, and the fractional digits were truncated:
 
-> ![Base Arithmetic Part 4](docs/rpn83p-screenshot-base-arithmetic-4-dec.png)
+> ![Base Arithmetic Part 5](docs/rpn83p-screenshot-base-arithmetic-5-dec.png)
 
-You can perform integer arithmetic even in `DEC` mode, by using the `B+`, `B-`,
-`B*`, and `B/` menu functions, instead of the `+`, `-`, `*` and `/` keyboard
-buttons.
+#### Carry Flag
+
+The RPN83P supports the *Carry Flag* implemented by most (all?) microprocessors.
+The Carry Flag is supported by the HP-16C but not by the HP-42S. When the Carry
+Flag is set, a small `C` letter appears on the display like this:
+
+> ![Carry Flag On](docs/rpn83p-carry-flag-on.png)
+
+When the flag is off, a dash `-` is shown like this:
+
+> ![Carry Flag On](docs/rpn83p-carry-flag-off.png)
+
+The Carry Flag can be explicitly cleared, set, and retrieved using the following
+menu items:
+
+- `CCF`: clear carry flag
+- `SCF`: set carry flag
+- `CF?`: get carry flag
+
+Many operations affect the Carry Flag (CF). All shift and rotate operations
+affect the CF:
+
+- `SL`: bit 31 shifted into CF
+- `SR`: bit 0 shifted into CF
+- `ASR`: bit 0 shifted into CF
+- `SLn`: bit 31 shifted into CF after shifting `n` positions
+- `SRn`: bit 0 shifted into CF after shifting `n` positions
+- `RL`: bit 31 shifted into CF
+- `RR`: bit 0 shifted into CF
+- `RLC`: CF into bit 0; bit 31 into CF
+- `RRC`: CF into bit 31; bit 0 into CF
+- `RLn`: bit 31 shifted into CF after rotating `n` positions
+- `RRn`: bit 0 shifted into CF after rotating `n` positions
+- `RLCn`: CF into bit 0; bit 31 into CF after rotating `n` positions
+- `RRCn`: CF into bit 31; bit 0 into CF after rotating `n` positions
+
+All integer arithmetic functions affect the CF:
+
+- `B+`: CF set on overflow
+- `B-`: CF set on borrow
+- `B*`: CF set on overflow
+- `B/`: CF always set to 0
+- `BDIV`: CF always set to 0
+
+On most microprocessors, the bitwise operations clear the Carry Flag to zero.
+However the RPN83P follows the lead of the HP-16C calculator where these
+operations do *not* affect the Carry Flag at all:
+
+- `AND`, `OR`, `XOR`, `NEG`, `NOT`, `REVB`, `CNTB`
+
+#### Bit Operations
+
+Specific bits can be cleared or set using the `CB` and `SB` menu items.
+
+- `CB`: clear the `X` bit of `Y`
+- `SB`: set the `X` bit of `Y`
+- `B?`: get the `X` bit of `Y` as 1 or 0
+
+The range of `X` must be between 0 and 31, or an error code will be generated.
+
+This menu row contains a couple of additional bit manipulation functions:
+
+- `REVB`: reverse the bit patterns of `X`
+- `CNTB`: count the number of 1 bits in `X`
+
+None of these bit operations affect the Carry Flag.
 
 #### Base Integer Size
 
@@ -1045,6 +1232,14 @@ the negative sign.
 
 Currently, the integer size for base conversions and functions is hardcoded to
 be 32 bits. I hope to add the ability to change the integer size in the future.
+
+#### Base Number Retention
+
+Since the `DEC`, `HEX`, `OCT` and `BIN` modes are useful only within the `BASE`
+hierarchy of menus. When the menu leaves the `BASE` hierarchy, the numbers on
+the RPN stack revert back to using floating points. This is similar to the
+HP-42S. However, unlike the HP-42S, the RPN83P remembers the most recent base
+number and restores its setting if the `BASE` menu hierarchy is selected again.
 
 ### Storage Registers
 
@@ -1264,27 +1459,36 @@ coefficient of `r=.29635` is quite low, and the power fit may not be a good
 model for this data. For example, typing `20` `Y>X` (max rainfall of 20.0) gives
 an `X=752.098` (a minimum rainfall of 752) which is not reasonable.
 
-### TI-OS Interoperability
+## TI-OS Interaction
 
-Although the RPN83P was not designed to interoperate with the underlying TI-OS
-calculator functions, a few features were added to allow *some* data sharing
-between the 2 modes.
+The RPN83P app interacts with the underlying TI-OS in the following ways.
 
-- The `X` register of RPN83P is always synchronized with the `ANS` variable in
-  the TI-OS. After the RPN83P app exits, the most recent `X` register value
-  is available in the TI-OS calculator using `2ND` `ANS`.
-- When the RPN83P app is started, it examines the content of the `ANS` variable.
-  If it is a Real value (i.e. not complex, not a matrix, not a string, etc),
-  then it is copied into the `LastX` register of the RPN83P. The `LastX`
-  register is available in RPN83P as `2ND` `ANS` (because `2ND` `ANS` is bound
-  to be the `LastX` function of the RPN stack.)
-- The RPN83P app uses 2 TI-OS List variables to store its internal floating
-  point numbers:
+- Two TI-OS List variables are used to store its internal floating point
+  numbers:
     - `STK` holds the RPN stack registers (`X`, `Y`, `Z`, `T`, `LastX`)
     - `REGS` holds the 25 storage registers `R00` to `R24`
 
   A TI-BASIC program can access these List variables since they hold just normal
   9-byte floating point numbers.
+- An appVar named `RPN83SAV` is used to preserve the internal state of the app
+  upon exiting. When the app is restarted, the appVar is read back in, so that
+  it can continue exactly where it had left off.
+- The `X` register of RPN83P is copied to the `ANS` variable in the TI-OS when
+  the RPN83P app exits. This means that the most recent `X` register from RPN83P
+  is available in the TI-OS calculator using `2ND` `ANS`.
+- When the RPN83P app is started, it examines the content of the `ANS` variable.
+  If it is a Real value (i.e. not complex, not a matrix, not a string, etc),
+  then it is copied into the `LastX` register of the RPN83P. Since the `LastX`
+  functionality is invoked in RPN83P as `2ND` `ANS`, this means that the TI-OS
+  `ANS` value becomes available in RPN83P as `2ND` `ANS`.
+
+For a handful of configuration parameters, the RPN83P uses the same flags and
+global variables as the TI-OS. Changing these settings in RPN83P will cause the
+same change in the TI-OS (and vice versa) because the configuration parameters
+are shared:
+
+- trigonometric mode: `RAD` or `DEG`
+- floating point number settings: `FIX` (i.e. `NORMAL` in TI-OS), `SCI`, `ENG`
 
 ## Future Enhancements
 
@@ -1298,29 +1502,35 @@ limited:
     - Maybe extend this to `< 2^16` or `<2^32`.
 - `GCD` and `LCM` functions are slow
     - Could be made significantly faster.
-- save application configurations upon quitting
-    - DEC/HEX/OCT/BIN base mode settings
-    - current state of input buffer
-    - (The RPN stack (X, Y, Z, T, LastX) and storage registers (R00 - R24) are
-      saved persistently.)
-
-### Medium Future
-
+- datetime conversions
+    - date/time components to and from epoch seconds
 - compound `STO` and `RCL` operators
     - `STO+ nn`, `STO- nn`, `STO* nn`, `STO/ nn`
     - `RCL+ nn`, `RCL- nn`, `RCL* nn`, `RCL/ nn`
+
+### Medium Future
+
 - user-defined variables
     - The HP-42S shows user-defined variables through the menu system.
     - Nice feature, but would require substantial refactoring of the current
       menu system code.
+- custom menu items
+    - The HP-42S supports up to 18 (3 rows of 6 menus) to be customized through
+      the `ASSIGN` and `CUSTOM` menus.
+    - This seems like a useful feature, but would require substantial
+      refactoring of the currnet menu system code, like user-defined variables.
+- custom button bindings
+    - a significant number of buttons on the TI-83/TI-84 keyboard are not
+      used by RPN83P
+    - it would be useful to allow the user to customize some of those buttons
+      for quick access
+    - for example, the `2ND` `L1` to `L6`
 - complex numbers
     - The TI-OS provides internal subroutines to handle complex numbers, so in
       theory, this should be relatively easy.
     - I think the difficulty will be the user interface. A complex number
       requires 2 floating point numbers to be entered and displayed, and I have
       not figured out how to do that within the UI of the RPN83P application.
-- datetime conversions
-    - date/time components to and from epoch seconds
 - `UNIT` conversions
     - several places assume US customary units (e.g. US gallons) instead of
       British or Canadian imperial units
@@ -1330,7 +1540,10 @@ limited:
     - currently, binary, octal, hexadecimal routines are implemented internally
       using 32-bit unsigned numbers
     - the user ought to be able to specify the integer size for those
-      operations: 8 bits, 16 bits, 32 bits, maybe 48 bits and 64 bits
+      operations: 8 bits, 16 bits, 32 bits, maybe 40 bits
+    - the app cannot support integer sizes higher than 46 bits because all
+      integers must eventually be stored as TI-OS floating point numbers which
+      support only 14 decimal digits, which corresonds to 46.5 bits
     - the user-interface will be a challenge: for large integer sizes, the
       number of digits will no longer fit inside the 14-15 digits available on a
       single line.
@@ -1344,10 +1557,12 @@ limited:
     - Might be useful to expose some system status functions, like memory.
     - We can always drop into the TI-OS and use `2ND` `MEM` to get that
       information, so it's not clear that this is worth the effort.
-- transfer info between RPN83P and TI-OS
-    - It may be useful to share results between the TI-OS and the RPN83P app.
-    - To start, I think we can use `ANS` variable on the TI-OS to transport
-      the `stX` register on the RPN83P.
+- TVM (time value of money)
+    - the TI-84 Plus is bundled with a TVM app, but I find it unintuitive and
+      difficult to remember how to use
+    - the most intuitive UI in my opinion is the one used by the HP-12C
+    - if I recall, this requires implementing a root finder, since at least one
+      of the TVM variables does not have a closed-form solution
 
 ### Far Future
 
@@ -1366,6 +1581,12 @@ curiosity and the technical challenge:
     - It is not clear that adding matrix functions into a calculator is worth
       the effort. For non-trivial calculations, it is probably easier to use
       a desktop computer and application (e.g. MATLAB, Octave, Mathematica).
+- root finder (i.e. SOLVE)
+    - one of the hallmarks of advanced HP calculators, but I think this feature
+      would only be useful with keystroke programming
+- integration
+    - another feature of advanced HP calculators which also depends on keystroke
+      programming
 
 ### Not Planned
 

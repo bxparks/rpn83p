@@ -134,6 +134,7 @@ class MenuNode(TypedDict, total=False):
     exploded_altname: str  # altname as a list of single characters
     label: str
     rows: List[MenuRow]  # List of MenuNodes in groups of 5
+    group_handler: str  # optional group handler
 
 
 class MenuConfig(TypedDict, total=False):
@@ -283,10 +284,14 @@ class MenuParser:
 
         token = self.lexer.get_token()
         if token != '[':
-            raise ValueError(
-                f"Unexpected token '{token}' "
-                f"at line {self.lexer.line_number}, should be '['"
-            )
+            # Accept optional group handler for MenuGroup.
+            node["group_handler"] = token
+            token = self.lexer.get_token()
+            if token != '[':
+                raise ValueError(
+                    f"Unexpected token '{token}' "
+                    f"at line {self.lexer.line_number}, should be '['"
+                )
         # Process list of MenuRow
         rows: List[MenuRow] = []
         while True:
@@ -615,11 +620,12 @@ class SymbolGenerator:
             if entry is not None:
                 # Cannot have duplicate MenuGroup, ever.
                 if entry["mtype"] == MENU_TYPE_GROUP or \
-                    node["mtype"] == MENU_TYPE_GROUP:
-                    raise ValueError(f"Duplicate MenuItem.name '{name}'")
+                        node["mtype"] == MENU_TYPE_GROUP:
+                    raise ValueError(f"Duplicate MenuGroup.name '{name}'")
                 # Allow dupes for MenuItem or MenuItemAlt.
                 if entry["mtype"] != node["mtype"]:
-                    raise ValueError(f"Duplicate MenuItem.name '{name}'")
+                    raise ValueError(
+                        f"Duplicate MenuItem or MenuItemAlt '{name}'")
             self.name_map[name] = node
 
             # Labels must always be unique, because they are used prefixes for
@@ -770,8 +776,13 @@ mNullId equ 0
             begin_id = rows[0][0]["id"]
             row_begin_node = self.id_map[begin_id]
             row_begin_id = row_begin_node["label"] + "Id"
-            handler = self.config['group_handler']
-            handler_comment = "predefined"
+            overridden_handler = node.get('group_handler')
+            if overridden_handler is None:
+                handler = self.config['group_handler']
+                handler_comment = "predefined"
+            else:
+                handler = overridden_handler
+                handler_comment = "to be implemented"
             name_selector = "0"
 
         print(f"""\

@@ -9,13 +9,15 @@ Plus](https://en.wikipedia.org/wiki/TI-84_Plus_series) (including the Silver
 Edition). The app is inspired mostly by the
 [HP-42S](https://en.wikipedia.org/wiki/HP-42S) calculator, with some sprinkles
 of older HP calculators like the
-[HP-12C](https://en.wikipedia.org/wiki/HP-12C) and the
-[HP-15C](https://en.wikipedia.org/wiki/HP-15C).
+[HP-12C](https://en.wikipedia.org/wiki/HP-12C), the
+[HP-15C](https://en.wikipedia.org/wiki/HP-15C), and the
+[HP-16C](https://en.wikipedia.org/wiki/HP-16C).
+
 
 The RPN83P is a flash application that consumes one page (16 kB) of flash
 memory. Since it is stored in flash, it is preserved if the RAM is cleared. It
-consumes a small amount of TI-OS RAM: 2 list variables named `REGS` and `STK`
-which are 240 bytes and 59 bytes respectively.
+consumes about 375 bytes of TI-OS RAM: 2 list variables named `REGS` and `STK`,
+and an appVar named `RPN83SAV`.
 
 Here is a quick summary of its features:
 
@@ -39,18 +41,23 @@ Here is a quick summary of its features:
       (ceiling), `NEAR` (nearest integer)
     - `ABS`, `SIGN`, `MOD`, `MIN`, `MAX`
     - probability: `PERM`, `COMB`, `N!`, `RAND`, `SEED`
-    - hyperbolic: `SINH`, `COSH`, `TANH`, etc.
-    - angle conversions: `>DEG`, `>RAD`, `>HR`, `>HMS`, `P>R`, `R>P`
+    - hyperbolic: `SINH`, `COSH`, `TANH`, `ASNH`, `ACSH`, `ATNH`
+    - angle conversions: `>DEG`, `>RAD`, `>HR`, `>HMS`, `>REC`, `>POL`
     - unit conversions: `>C`, `>F`, `>km`, `>mi`, etc
     - base conversions: `DEC`, `HEX`, `OCT`, `BIN`
-    - bitwise operations: `AND`, `OR`, `XOR`, `NOT`, `NEG`, `SL`, `SR`, `RL`,
-      `RR`, `B+`, `B-`, `B*`, `B/`, `BDIV`
+    - bitwise operations: `AND`, `OR`, `XOR`, `NOT`, `NEG`, `REVB` (reverse
+      bits), `CNTB` (count bits)
+    - integer arithmetics: `B+`, `B-`, `B*`, `B/`, `BDIV` (divide with
+      remainder)
+    - shift and rotate: `SL`, `SR`, `ASR`, `RL`, `RR`, `RLC`, `RRC`,
+      `SLn`, `SRn`, `RLn`, `RRn`, `RLCn`, `RRCn`
+    - carry flag and bit masks: `CCF`, `SCF`, `CF?`, `CB`, `SB`, `B?`
     - statistics: `Sigma+`, `Sigma-`, `SUM`, `MEAN`, `WMN` (weighted mean),
       `SDEV` (sample standard deviation), `SCOV` (sample covariance),
       `PDEV` (population standard deviation), `PCOV` (population covariance)
     - curve fitting: `Y>X`, `X>Y`, `SLOP` (slope), `YINT` (y intercept), `CORR`
       (correlation coefficent)
-    - curve fit models: `LINF` (linear)`, `LOGF` (logarithmic), `EXPF`
+    - curve fit models: `LINF` (linear), `LOGF` (logarithmic), `EXPF`
       (exponential), `PWRF` (power)
 - various display modes
     - `RAD`, `DEG`
@@ -64,7 +71,7 @@ Here are some missing features which may be added in the future:
 - complex numbers
 - keystroke programming
 
-**Version**: 0.5.0 (2023-08-31)
+**Version**: 0.6.0 (2023-09-22)
 
 **Changelog**: [CHANGELOG.md](CHANGELOG.md)
 
@@ -163,8 +170,9 @@ for this formula, but I used the `LastX` feature to demonstrate its use.)
 ### Example 2
 
 Let's calculate the bitwise-and operator between the hexadecimal numbers `B6`
-and `65`, then see the result as an octal number, a binary (base-2) number, then
-finally as a decimal number:
+and `65`, then see the result as an octal number (base-8), a binary number
+(base-2), then right shift the result 3 bits which sets the Carry Flag, then
+view the final result as a decimal number:
 
 - Navigate the menu with the DOWN arrow to get to
   ![ROOT MenuRow 2](docs/rpn83p-screenshot-menu-root-2.png)
@@ -177,8 +185,8 @@ finally as a decimal number:
 - Press `ENTER` button
 - Press `6` button
 - Press `5` button
-- Press DOWN arrow to get to
-  ![BASE MenuRow 2](docs/rpn83p-screenshot-menu-root-base-2.png)
+- Press DOWN arrow to get to the menu row with the `AND` menu item
+  ![BASE MenuRow AND](docs/rpn83p-screenshot-menu-root-base-2.png)
 - Press `AND` menu, the `X` register should show `00000024`
 - Press UP arrow to go back to
   ![BASE Menu HEX](docs/rpn83p-menu-base-hex.png)
@@ -186,7 +194,13 @@ finally as a decimal number:
   showing ![BASE Menu OCT](docs/rpn83p-menu-base-oct.png)
 - Press `BIN` menu, the `X` register should show `00000000100100` with the menu
   showing ![BASE Menu BIN](docs/rpn83p-menu-base-bin.png)
-- Press `DEC` menu, the `X` register should show `36` with the menu showing
+- Press DOWN DOWN (twice) to the menu row with the shift right `SR` item
+  ![BASE MenuRow SR](docs/rpn83p-screenshot-menu-root-base-3.png)
+- Press `SR` `SR` `SR` (three times) to show `00000000000100` and the Carry Flag
+  `C` set
+- Press UP UP (twice) to reach the base conversion menu row
+  ![BASE Menu BIN](docs/rpn83p-menu-base-bin.png)
+- Press `DEC` menu, the `X` register should show `4` with the menu showing
   ![BASE Menu DEC](docs/rpn83p-menu-base-dec.png)
 
 Here is the animated GIF that shows this calculation:

@@ -145,7 +145,7 @@ primeFactorInt:
     ld hl, OP6
     call setU32ToA ; OP6=candidate=2
     ld de, OP4
-    call cpU32U32 ; if X==2: ZF=1
+    call cmpU32U32 ; if X==2: ZF=1
     jr z, primeFactorIntYes
     ; Check divisible by 2
     call primeFactorIntCheckDiv
@@ -155,7 +155,7 @@ primeFactorInt:
     ld hl, OP6
     call setU32ToA ; OP6=candidate=3
     ld de, OP4
-    call cpU32U32 ; if X==3: ZF=1
+    call cmpU32U32 ; if X==3: ZF=1
     jr z, primeFactorIntYes
     ; Check divisible by 3
     call primeFactorIntCheckDiv
@@ -171,7 +171,7 @@ primeFactorIntSetup:
 primeFactorIntLoop:
     ld de, OP6 ; DE=OP6=candidate
     ld hl, OP5 ; HL=OP5=limit
-    call cpU32U32 ; if limit < candidate: CF=1
+    call cmpU32U32 ; if limit < candidate: CF=1
     jr c, primeFactorIntYes
     ; Check for ON/Break
     bit onInterrupt, (IY+onFlags)
@@ -254,7 +254,7 @@ primeFactorMod:
     ld hl, OP6
     call setU32ToA ; OP6=candidate=2
     ld de, OP4
-    call cpU32U32 ; if X==2: ZF=1
+    call cmpU32U32 ; if X==2: ZF=1
     jr z, primeFactorModYes
     ; Check divisible by 2
     call primeFactorModCheckDiv
@@ -264,7 +264,7 @@ primeFactorMod:
     ld hl, OP6
     call setU32ToA ; OP6=candidate=3
     ld de, OP4
-    call cpU32U32 ; if X==3: ZF=1
+    call cmpU32U32 ; if X==3: ZF=1
     jr z, primeFactorModYes
     ; Check divisible by 3
     call primeFactorModCheckDiv

@@ -28,8 +28,7 @@ lookupKeyMatched:
     ld e, (hl)
     inc hl
     ld d, (hl)
-    ex de, hl
-    jp (hl) ; the handler excutes a 'ret' statement
+    jp jumpDE
 
 ;-----------------------------------------------------------------------------
 
@@ -214,34 +213,34 @@ handleKeyF:
     ld a, 'F'
     jp handleKeyNumber
 
-; Description: Return ZF=1 if BaseMode is 8, 10, or 16.
+; Description: Return ZF=1 if baseNumber is float, 8, 10, or 16.
 checkBase8Or10Or16:
-    ld a, (baseMode)
+    ld a, (baseNumber)
     cp 8
     ret z
     cp 10
     ret z
-    cp 16
-    ret
-
-; Description: Return ZF=1 if BaseMode is 10, or 16.
-checkBase10Or16:
-    ld a, (baseMode)
-    cp 10
+    bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
     ret z
     cp 16
     ret
 
-; Description: Return ZF=1 if BaseMode is 16.
-checkBase16:
-    ld a, (baseMode)
+; Description: Return ZF=1 if baseNumber is float, 10, or 16.
+checkBase10Or16:
+    ld a, (baseNumber)
+    cp 10
+    ret z
+    bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
+    ret z
     cp 16
     ret
 
-; Description: Return ZF=1 if BaseMode is 10.
-checkBase10:
-    ld a, (baseMode)
-    cp 10
+; Description: Return ZF=1 if baseNumber is (not float and base 16).
+checkBase16:
+    bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
+    ret z
+    ld a, (baseNumber)
+    cp 16
     ret
 
 ; Function: Append a '.' if not already entered.
@@ -249,11 +248,11 @@ checkBase10:
 ; Output: (iy+inputBufFlags) DecPnt set
 ; Destroys: A, DE, HL
 handleKeyDecPnt:
-    ; DecPnt is supported only in Base 10.
-    call checkBase10
-    ret nz
-    ; Do nothing if in arg editing mode.
+    ; Do nothing if command arg mode.
     bit rpnFlagsArgMode, (iy + rpnFlags)
+    ret nz
+    ; Do nothing in BASE mode.
+    bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
     ret nz
     ; Do nothing if a decimal point already exists.
     bit inputBufFlagsDecPnt, (iy + inputBufFlags)
@@ -278,8 +277,8 @@ handleKeyEE:
     ; Do nothing in command arg mode.
     bit rpnFlagsArgMode, (iy + rpnFlags)
     ret nz
-    ; EE is supported only in Base 10.
-    call checkBase10
+    ; Do nothing in BASE mode.
+    bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
     ret nz
     ; do nothing if EE already exists
     bit inputBufFlagsEE, (iy + inputBufFlags)
@@ -438,8 +437,10 @@ handleKeyChs:
     ; Do nothing in command arg mode.
     bit rpnFlagsArgMode, (iy + rpnFlags)
     ret nz
-    call checkBase10
-    ret nz ; use NEG function for bases other than 10
+    ; Do nothing in BASE mode. Use NEG function instead.
+    bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
+    ret nz
+    ; Toggle sign character in inputBuf in edit mode.
     bit rpnFlagsEditing, (iy + rpnFlags)
     jr nz, handleKeyChsInputBuf
 handleKeyChsX:
@@ -617,84 +618,11 @@ handleKeyDownContinue:
 ;   - (menuGroupId) at parentId
 ;   - (menuRowIndex) of the input (child) menu group
 ; Destroys: all
-handleKeyMenuBack:
+handleKeyExit:
     ; Clear the command arg mode if already in command arg mode.
     bit rpnFlagsArgMode, (iy + rpnFlags)
     jp nz, handleKeyClearArg
-
-    ld hl, menuGroupId
-    ld a, (hl) ; A = menuGroupId
-    ; Check if already at rootGroup
-    cp mRootId
-    jr nz, handleKeyMenuBackToParent
-
-    ; If already at rootId, go to menuRow0 if not already there.
-    inc hl
-    ld a, (hl) ; menuRowIndex
-    or a
-    ret z
-    xor a ; set rowIndex to 0, set dirty bit
-    jr handleKeyMenuBackRowSave
-
-handleKeyMenuBackToParent:
-    ; Set menuGroupId = child.parentId
-    ld c, a ; C=menuGroupId=childId (saved)
-    call getMenuNode ; get current (child) node
-    inc hl
-    ld a, (hl) ; A=parentId
-    ld (menuGroupId), a
-
-    ; Get numRows and rowBeginId of the parent.
-    call getMenuNode ; get parentNode
-    inc hl
-    inc hl
-    inc hl
-    ld d, (hl) ; D=parent.numRows
-    inc hl
-    ld a, (hl) ; A=parent.rowBeginId
-
-    ; Deduce the parent's rowIndex which matches the childId.
-    call deduceRowIndex
-
-handleKeyMenuBackRowSave:
-    ld (menuRowIndex), a
-    set dirtyFlagsMenu, (iy + dirtyFlags)
-    ret
-
-; Description: Deduce the rowIndex from the childId above. The `rowIndex =
-; int((childId - rowBeginId)/5)` but the Z80 does not have a divison
-; instruction so we use a loop that increments an `index` in increments of 5 to
-; determine the corresponding rowIndex.
-;
-; The complication is that we want to evaluate `(childId < nodeId)` but the
-; Z80 instruction can only increment the A register, so we have to store
-; the `nodeId` in A and the `childId` in C. Which forces us to reverse the
-; comparison. But checking for NC (no carry) is equivalent to a '>='
-; instead of a '<', so we are forced to start at `5-1` instead of `5`. I
-; hope my future self will understand this explanation.
-;
-; Input:
-;   A: rowBeginId
-;   D: numRows
-;   C: childId
-; Output: A: rowIndex
-; Destroys: B; preserves C, D
-deduceRowIndex:
-    add a, 4 ; nodeId = rowBeginId + 4
-    ld b, d ; B (DJNZ counter) = numRows
-deduceRowIndexLoop:
-    cp c ; If nodeId < childId: set CF
-    jr nc, deduceRowIndexFound ; nodeId >= childId
-    add a, 5 ; nodeId += 5
-    djnz deduceRowIndexLoop
-    ; We should never fall off the end of the loop, but if we do, set the
-    ; rowIndex to 0.
-    xor a
-    ret
-deduceRowIndexFound:
-    ld a, d ; numRows
-    sub b ; rowIndex = numRows - B
-    ret
+    jp exitMenuGroup
 
 ;-----------------------------------------------------------------------------
 
@@ -749,25 +677,10 @@ handleKeyMenuA:
     ; Do nothing in command arg mode.
     bit rpnFlagsArgMode, (iy + rpnFlags)
     ret nz
-
-    ld c, a
-    call getCurrentMenuRowBeginId
+    ld c, a ; save A (menu button index 0-4)
+    call getCurrentMenuRowBeginId ; A=row begin id
     add a, c ; menu node ids are sequential starting with beginId
-    ; get menu node corresponding to pressed menu key
-    call getMenuNode
-    push hl ; save pointer to MenuNode
-    ; load and jump to the mXxxHandler
-    inc hl
-    inc hl
-    inc hl
-    inc hl
-    inc hl
-    ld e, (hl)
-    inc hl
-    ld d, (hl) ; DE=mXxxHandler of the current node
-    ex de, hl ; HL=mXxxHandler
-    ex (sp), hl
-    ret ; jump to mXxxHandler(HL=MenuNode)
+    jp dispatchMenuNode
 
 ;-----------------------------------------------------------------------------
 ; Arithmetic functions.
@@ -781,7 +694,7 @@ handleKeyAdd:
     ; Do nothing in command arg mode.
     bit rpnFlagsArgMode, (iy + rpnFlags)
     ret nz
-    call checkBase10
+    bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
     jp nz, mBitwiseAddHandler
     call closeInputAndRecallXY
     bcall(_FPAdd) ; Y + X
@@ -795,7 +708,7 @@ handleKeySub:
     ; Do nothing in command arg mode.
     bit rpnFlagsArgMode, (iy + rpnFlags)
     ret nz
-    call checkBase10
+    bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
     jp nz, mBitwiseSubtHandler
     call closeInputAndRecallXY
     bcall(_FPSub) ; Y - X
@@ -809,7 +722,7 @@ handleKeyMul:
     ; Do nothing in command arg mode.
     bit rpnFlagsArgMode, (iy + rpnFlags)
     ret nz
-    call checkBase10
+    bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
     jp nz, mBitwiseMultHandler
     call closeInputAndRecallXY
     bcall(_FPMult) ; Y * X
@@ -823,7 +736,7 @@ handleKeyDiv:
     ; Do nothing in command arg mode.
     bit rpnFlagsArgMode, (iy + rpnFlags)
     ret nz
-    call checkBase10
+    bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
     jp nz, mBitwiseDivHandler
     call closeInputAndRecallXY
     bcall(_FPDiv) ; Y / X
@@ -1016,21 +929,21 @@ handleKeyMath:
     bit rpnFlagsArgMode, (iy + rpnFlags)
     ret nz
     ld a, mRootId ; MATH becomes the menu HOME button
-    jp mGroupHandler
+    jp dispatchMenuNode
 
 handleKeyMode:
     ; Do nothing in command arg mode.
     bit rpnFlagsArgMode, (iy + rpnFlags)
     ret nz
     ld a, mModeId ; MODE triggers the MODE menu.
-    jp mGroupHandler
+    jp dispatchMenuNode
 
 handleKeyStat:
     ; Do nothing in command arg mode.
     bit rpnFlagsArgMode, (iy + rpnFlags)
     ret nz
     ld a, mStatId ; MODE triggers the MODE menu.
-    jp mGroupHandler
+    jp dispatchMenuNode
 
 ;-----------------------------------------------------------------------------
 ; User registers, accessed through RCL nn and STO nn.

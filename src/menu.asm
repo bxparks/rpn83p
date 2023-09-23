@@ -37,6 +37,19 @@
 ;
 ;-----------------------------------------------------------------------------
 
+; Offsets into the MenuNode struct
+menuNodeId equ 0
+menuNodeParentId equ 1
+menuNodeNameId equ 2
+menuNodeNumRows equ 3
+menuNodeRowBeginId equ 4
+menuNodeAltNameId equ 4
+menuNodeHandler equ 5
+menuNodeNameSelector equ 7
+
+; sizeof(MenuNode) == 9
+menuNodeSizeOf equ 9
+
 ; Description: Set initial values for (menuGroupId) and (menuRowIndex).
 ; Input: none
 ; Output:
@@ -97,6 +110,7 @@ getMenuRowBeginId:
 ; Input: A: menu node id
 ; Output: HL: address of node
 ; Destroys: DE, HL
+; Preserves: A, BC
 getMenuNode:
     ; HL = A * sizeof(MenuNode) = 9*A
     ld l, a
@@ -111,6 +125,17 @@ getMenuNode:
     ex de, hl
     ld hl, mMenuTable
     add hl, de
+    ret
+
+; Description: Return the pointer to the menu node at id A in register IX.
+; Input: A: menu node id
+; Output: HL, IX: address of node
+; Destroys: DE, HL
+; Preserves: A, BC
+getMenuNodeIX:
+    call getMenuNode
+    push hl
+    pop ix
     ret
 
 ; Description: Return the pointer to the name string of the menu node at id A.
@@ -150,25 +175,169 @@ getMenuName:
     ld e, (hl)
     inc hl
     ld d, (hl) ; DE=nameSelector
-    ld a, e
-    or d
-    ld a, b ; A=nameId
     pop hl ; HL=MenuNode pointer
-    jr z, getMenuNameDefault ; if nameSelector==NULL: goto default
-getMenuNameCustom:
-    ; The following ugly hack is required because the Z80 does not have a `call
-    ; (hl)` instruction, analogous to `jp (hl)`. The `nameSelector(A, C, HL) ->
-    ; A` function selects one of the 2 strings (A or C), and returns the
-    ; selection in A.
-    push hl ; MenuNode
-    ld hl, getMenuNameDefault ; the return address
-    ex (sp), hl ; (SP)=return address, HL=MenuNode
-    push de ; nameSelector
-    ret ; jp (de)
-getMenuNameDefault:
+    ld a, e
+    or d ; if DE==0: ZF=1
+    ld a, b ; A=nameId
+    call nz, jumpDE ; if nameSelector!=NULL: call (DE)
     ; A contains the menu string ID
     ld hl, mMenuNameTable
     call getString ; HL=name string
     pop de
     pop bc
+    ret
+
+;-----------------------------------------------------------------------------
+
+; Description: Dispatch to the handler for the menu node in register A. There
+; are 2 cases:
+; 1) If the target node is a MenuItem, then the 'onEnter' event is sent to the
+; item by invoking its handler.
+; 2) If the target node is a MenuGroup, a 'chdir' operation is implemented in 3
+; steps:
+;   a) The handler of the previous MenuGroup is sent an 'onExit' event,
+;   signaled by calling its handlers with the carry flag CF=1.
+;   b) The (menuGroupId) and (menuRowIndex) are updated with the target menu
+;   group.
+;   c) The handler of the traget MenuGroup is sent an 'onEnter' event, signaled
+;   by calling its handlers with the carry flag CF=0.
+;
+; Input: A=target nodeId
+; Output:
+;   - (menuGroupId) is updated if the target is a MenuGroup
+;   - (menuRowIndex) is set to 0 if the target is a MenuGroup
+; Destroys: B, DE, HL, IX
+dispatchMenuNode:
+    ; get menu node corresponding to pressed menu key
+    call getMenuNode
+    ld b, a ; save B=target nodeId
+    push hl ; save pointer to MenuNode
+    ; load mXxxHandler
+    inc hl
+    inc hl
+    inc hl
+    ld a, (hl) ; A=numRows
+    inc hl
+    inc hl
+    ld e, (hl)
+    inc hl
+    ld d, (hl) ; DE=mXxxHandler of the target node
+    pop hl ; HL=pointer to target MenuNode
+    or a ; if targetNode.numRows == 0: ZF=1
+    ld a, b ; A=target nodeId
+    jp z, jumpDE
+
+    ; Change into the target menu group.
+    ; B=target groupId
+    ld c, 0 ; C=rowIndex=0
+    jr changeMenuGroup
+
+;-----------------------------------------------------------------------------
+
+; Description: Go up to the parent of the menu group specified by register A.
+; Input: A=current groupId
+; Output:
+;   - (menuGroupId) updated
+;   - (menuRowIndex) updated
+; Destroys: A, BC, DE, HL
+exitMenuGroup:
+    ; Check if already at rootGroup
+    ld hl, menuGroupId
+    ld a, (hl) ; A = menuGroupId
+    cp mRootId
+    jr nz, exitMenuGroupToParent
+    ; If already at rootId, go to menuRow0 if not already there.
+    inc hl
+    ld a, (hl) ; A = menuRowIndex
+    or a
+    ret z ; already at rowIndex 0
+    xor a ; set rowIndex to 0, set dirty bit
+    ld (hl), a
+    set dirtyFlagsMenu, (iy + dirtyFlags)
+    ret
+exitMenuGroupToParent:
+    ; Get target groupId and rowIndex of the parent group.
+    ld c, a ; save C=menuGroupId=childId
+    call getMenuNode ; HL=pointer to current MenuNode
+    inc hl
+    ld a, (hl) ; A=parentId
+    call getMenuNode ; HL=pointer to parent node
+    inc hl
+    inc hl
+    inc hl
+    ld d, (hl) ; D=parent.numRows
+    inc hl
+    ld e, a ; save E=parentId
+    ld a, (hl) ; A=parent.rowBeginId
+    ; Deduce the parent's rowIndex which matches the childId.
+    call deduceRowIndex ; A=rowIndex
+    ld c, a ; C=rowIndex
+    ld b, e ; B=parentId
+    ; [[fallthrough]]
+
+; Description: Change the current menu group to the target menuGroup and
+; rowIndex.
+; Input:
+;   - B=target nodeId
+;   - C=target rowIndex
+; Output:
+;   - (menuGroupId)=target nodeId
+;   - (menuRowIndex)=target rowIndex
+;   - dirtyFlagsMenu set
+; Destroys: A, DE, HL, IX
+changeMenuGroup:
+    ; Call the onExit handler of the current node.
+    ld a, (menuGroupId)
+    call getMenuNodeIX
+    ld e, (ix + menuNodeHandler)
+    ld d, (ix + menuNodeHandler + 1)
+    scf ; set CF=1 to invoke onExit handler
+    push bc
+    call jumpDE
+    pop bc
+    ; Call the onEnter handler of the target node.
+    ld a, c ; A=target rowIndex
+    ld (menuRowIndex), a
+    ld a, b ; A=target nodeId
+    ld (menuGroupId), a
+    call getMenuNodeIX
+    ld e, (ix + menuNodeHandler)
+    ld d, (ix + menuNodeHandler + 1)
+    or a ; set CF=0 to invoke onEnter handler
+    set dirtyFlagsMenu, (iy + dirtyFlags)
+    jp jumpDE
+
+; Description: Deduce the rowIndex location of the childId from the given
+; rowBeginId. The `rowIndex = int((childId - rowBeginId)/5)` but the Z80 does
+; not have a divison instruction so we use a loop that increments an `index` in
+; increments of 5 to determine the corresponding rowIndex.
+;
+; The complication is that we want to evaluate `(childId < nodeId)` but the
+; Z80 instruction can only add to the A register, so we have to store
+; the `nodeId` in A and the `childId` in C. Which forces us to reverse the
+; comparison. But checking for NC (no carry) is equivalent to a '>='
+; instead of a '<', so we are forced to start at `5-1` instead of `5`. I
+; hope my future self will understand this explanation.
+;
+; Input:
+;   A: rowBeginId
+;   D: numRows
+;   C: childId
+; Output: A: rowIndex
+; Destroys: B; preserves C, DE, HL
+deduceRowIndex:
+    add a, 4 ; nodeId = rowBeginId + 4
+    ld b, d ; B (DJNZ counter) = numRows
+deduceRowIndexLoop:
+    cp c ; If nodeId < childId: set CF
+    jr nc, deduceRowIndexFound ; nodeId >= childId
+    add a, 5 ; nodeId += 5
+    djnz deduceRowIndexLoop
+    ; We should never fall off the end of the loop, but if we do, set the
+    ; rowIndex to 0.
+    xor a
+    ret
+deduceRowIndexFound:
+    ld a, d ; numRows
+    sub b ; rowIndex = numRows - B
     ret

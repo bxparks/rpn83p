@@ -10,7 +10,7 @@ MenuConfig [
 
 MenuGroup root mRoot [
   MenuRow [
-    MenuGroup NUM mNum [
+    MenuGroup MATH mMath [
       MenuRow [
         MenuItem <Scaret>3 mCube
         MenuItem CBRT mCubeRoot # maybe use <super3><root> ?
@@ -18,6 +18,8 @@ MenuGroup root mRoot [
         MenuItem <Spercent> mPercent
         # MenuItem * * will be auto-inserted here
       ]
+    ]
+    MenuGroup NUM mNum [
       MenuRow [
         MenuItem ABS mAbs
         MenuItem SIGN mSign
@@ -36,13 +38,21 @@ MenuGroup root mRoot [
       ]
     ]
     MenuItem * * # CONV
-    MenuItem * * # BASE
     MenuItem HELP mHelp
   ]
-  # Insert place holders for testing.
   MenuRow [
+    # Example of MenuGroup with overridden group handler.
+    MenuGroup BASE mBase mBaseHandler [
+      MenuRow [
+        MenuItem DEC mDec
+        MenuItem HEX mHex
+        MenuItem OCT mOct
+        MenuItem BIN mBin
+      ]
+    ]
     MenuGroup MODE mMode [
       MenuRow [
+        # Example of MenuItemAlt with an alternate menu name.
         MenuItemAlt FIX FIX<Sblock> mFix
         MenuItem SCI mSci
         MenuItem ENG mEng

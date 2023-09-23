@@ -75,13 +75,14 @@ keyCodeHandlerTable:
     .db kDown
     .dw handleKeyDown
 
-    ; The best button for the MenuBack functionality would have been an ESC
-    ; button, but the TI-83 and TI-84 calculators don't have that button,
-    ; unlike the TI-92 series calculators.
+    ; Handle the "menu back" or "menu exit" functionality. The best button
+    ; functionality for this would have been an ESC button, but the TI-83 and
+    ; TI-84 calculators don't have that button, unlike the TI-92 series
+    ; calculators.
     ;
-    ; The next best button seems to be the ON button, which is similar to the
-    ; ON/EXIT button on the HP-42S calculator. There are 3 potential problems
-    ; with the ON button:
+    ; The next best button seems to be the ON button, because it is similar to
+    ; the ON/EXIT button on the HP-42S calculator. There are 3 potential
+    ; problems with the ON button:
     ;
     ; 1) On the TI-83/TI-84, the ON button is special because it generates an
     ; interrupt that sets a flag which can be polled by the assembly language
@@ -120,7 +121,7 @@ keyCodeHandlerTable:
     ; scrolling long numbers or strings that overflow the 14-16 character
     ; display limit on the X register line.
     .db kOnExit ; ON button on real calculator, F12 on Tilem USB keyboard
-    .dw handleKeyMenuBack
+    .dw handleKeyExit
 
     ; The 5 function keys just below the LCD screen, mapped to menu items.
     .db keyMenu1

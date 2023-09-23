@@ -17,13 +17,9 @@
 
 .nolist
 #include "ti83plus.inc"
-
-#ifdef FLASHAPP
 #include "app.inc"
 ; Define single page flash app
 defpage(0, "RPN83P")
-#endif
-
 .list
 
 ;-----------------------------------------------------------------------------
@@ -49,7 +45,7 @@ dirtyFlagsStack equ 1 ; set if the stack is dirty
 dirtyFlagsMenu equ 2 ; set if the menu selection is dirty
 dirtyFlagsTrigMode equ 3 ; set if the trig status is dirty
 dirtyFlagsFloatMode equ 4 ; set if the floating mode is dirty
-dirtyFlagsBaseMode equ 5 ; set if the base mode is dirty
+dirtyFlagsBaseMode equ 5 ; set if any base mode flags or vars is dirty
 dirtyFlagsErrorCode equ 6 ; set if the error code is dirty
 ; The dirtyFlagsXLabel flag is set if the 'X:' label is dirty due to the
 ; command arg mode. The 6x8 cell occupied by the 'X:' label is rendered in
@@ -74,6 +70,7 @@ rpnFlagsEditing equ 0 ; set if in edit mode
 rpnFlagsArgMode equ 1 ; set if in command argument mode
 rpnFlagsLiftEnabled equ 2 ; set if stack lift is enabled (ENTER disables it)
 rpnFlagsAllStatEnabled equ 3 ; set if Sigma+ updates logarithm registers
+rpnFlagsBaseModeEnabled equ 4 ; set if inside BASE menu hierarchy
 
 ; Flags for the inputBuf. Offset from IY register.
 inputBufFlags equ asm_Flag3
@@ -86,8 +83,47 @@ inputBufFlagsExpSign equ 4 ; exponent sign bit detected during parsing
 ; Application variables and buffers.
 ;-----------------------------------------------------------------------------
 
-; Begin RPN83P variables.
-rpnVarsBegin equ tempSwapArea
+; A random 16-bit integer that identifies the RPN83P app.
+rpn83pAppId equ $1E69
+
+; Increment the schema version when any variables are added or removed from the
+; appState data block. The schema version will be validated upon restoring the
+; application state from the AppVar.
+rpn83pSchemaVersion equ 3
+
+; Begin application variables at tempSwapArea. According to the TI-83 Plus SDK
+; docs: "tempSwapArea (82A5h) This is the start of 323 bytes used only during
+; Flash ROM loading. If this area is used, avoid archiving variables."
+appStateBegin equ tempSwapArea
+
+; CRC16CCITT of the appState data block, not including the CRC itself. 2 bytes.
+; This is used only in storeAppState() and restoreAppState(), so in theory, we
+; could remove it from here and save it only in the RPN83SAV AppVar. The
+; advantage of duplicating the CRC here is that the content of the AppVar
+; becomes *exactly* the same as this appState data block, so the serialization
+; and deserialization code becomes almost trivial. Two bytes is not a large
+; amount of memory, so let's keep things simple and duplicate the CRC field
+; here.
+appStateCrc16 equ appStateBegin
+
+; A somewhat unique id to distinguish this app from other apps. 2 bytes.
+; Similar to the 'appStateCrc16' field, this does not need to be in the
+; appState data block. But this simplifies the serialization code.
+appStateAppId equ appStateCrc16 + 2
+
+; Schema version. 2 bytes. If we overflow the 16-bits, it's probably ok because
+; schema version 0 was probably created so far in the past the likelihood of a
+; conflict is minimal. However, if the overflow does cause a problem, there is
+; an escape hatch: we can create a new appStateAppId upon overflow. Similar to
+; AppStateAppId and appStateCrc16, this field does not need to be here, but
+; having it here simplifies the serialization code.
+appStateSchemaVersion equ appStateAppId + 2
+
+; Copy of the 3 asm_FlagN flags. These will be serialized into RPN83SAV by
+; storeAppState(), and deserialized into asm_FlagN by restoreAppState().
+appStateDirtyFlags equ appStateSchemaVersion + 2
+appStateRpnFlags equ appStateDirtyFlags + 1
+appStateInputBufFlags equ appStateRpnFlags + 1
 
 ; The result code after the execution of each handler. Success is code 0. If a
 ; TI-OS exception is thrown (through a `bjump(ErrXxx)`), the exception handler
@@ -96,7 +132,7 @@ rpnVarsBegin equ tempSwapArea
 ; upon success. (This makes coding easier because a successful handler can
 ; simply do a `ret` or a conditional `ret`.) A few handlers will set a custom,
 ; non-zero code to indicate an error.
-handlerCode equ rpnVarsBegin
+handlerCode equ appStateInputBufFlags + 1
 
 ; The errorCode is displayed on the LCD screen if non-zero. This is set to the
 ; value of handlerCode after every execution of a handler. Inside a handler,
@@ -105,9 +141,15 @@ handlerCode equ rpnVarsBegin
 ; non-zero.
 errorCode equ handlerCode + 1
 
-; Current base mode. Allowed values are: 2, 8, 10, 16. Anything else is
+; Current base mode number. Allowed values are: 2, 8, 10, 16. Anything else is
 ; interpreted as 10.
-baseMode equ errorCode + 1
+baseNumber equ errorCode + 1
+
+; Base mode carry flag. Bit 0.
+baseCarryFlag equ baseNumber + 1
+
+; Base mode word size: 8, 16, 24, 32 (maybe 40 in the future).
+baseWordSize equ baseCarryFlag + 1
 
 ; String buffer for keyboard entry. This is a Pascal-style with a single size
 ; byte at the start. It does not include the cursor displayed at the end of the
@@ -117,7 +159,7 @@ baseMode equ errorCode + 1
 ;       uint8_t size;
 ;       char buf[14];
 ;   };
-inputBuf equ baseMode + 1
+inputBuf equ baseWordSize + 1
 inputBufSize equ inputBuf ; size byte of the pascal string
 inputBufBuf equ inputBuf + 1
 inputBufMax equ 14 ; maximum size of buffer, not including appended cursor
@@ -156,26 +198,13 @@ parseBufMan equ parseBufSize + 1
 parseBufMax equ 14
 parseBufSizeOf equ parseBufMax + 1
 
-; Floating point number buffer, 9 bytes for TI-OS:
-;
-;   struct floatBuf {
-;       uint8_t type;
-;       uint8_t exp;
-;       uint8_t man[7];
-;   }
-floatBuf equ parseBuf + parseBufSizeOf
-floatBufType equ floatBuf ; type
-floatBufExp equ floatBufType + 1 ; exponent, shifted by $80
-floatBufMan equ floatBufExp + 1 ; mantissa, 2 digits per byte
-floatBufSizeOf equ 9
-
 ; Menu variables. The C equivalent is:
 ;
 ;   struct menu {
 ;     uint8_t groupId; // id of the current menu group
 ;     uint8_t rowIndex; // menu row, groups of 5
 ;   }
-menuGroupId equ floatBuf + floatBufSizeOf
+menuGroupId equ parseBuf + parseBufSizeOf
 menuRowIndex equ menuGroupId + 1
 
 ; Menu name, copied here as a Pascal string.
@@ -206,15 +235,33 @@ argValueSizeOf equ 1
 ; Least square curve fit model.
 curveFitModel equ argValue + argValueSizeOf
 
-; End RPN83P variables. Total size of vars = rpnVarsEnd - rpnVarsBegin.
-rpnVarsEnd equ curveFitModel + 1
+; End application variables.
+appStateEnd equ curveFitModel + 1
+
+; Total size of vars
+appStateSize equ (appStateEnd - appStateBegin)
+
+; Floating point number buffer, used only within parseNumBase10(). It is used
+; only locally so it can probaly be anywhere. Let's just use OP3 instead of
+; dedicating space within the appState area, because it does not need to be
+; backed up. I think any OPx register except OP1 will work.
+;
+;   struct floatBuf {
+;       uint8_t type;
+;       uint8_t exp;
+;       uint8_t man[7];
+;   }
+floatBuf equ OP3
+floatBufType equ floatBuf ; type
+floatBufExp equ floatBufType + 1 ; exponent, shifted by $80
+floatBufMan equ floatBufExp + 1 ; mantissa, 2 digits per byte
+floatBufSizeOf equ 9
 
 ;-----------------------------------------------------------------------------
 
-#ifndef FLASHAPP
-.org userMem - 2
-.db t2ByteTok, tAsmCmp
-#endif
+; Commented out, not needed for flash app.
+; .org userMem - 2
+; .db t2ByteTok, tAsmCmp
 
 main:
     bcall(_RunIndicOff)
@@ -223,16 +270,27 @@ main:
     res lwrCaseActive, (iy + appLwrCaseFlag) ; disable ALPHA-ALPHA lowercase
     bcall(_ClrLCDFull)
 
+    call restoreAppState
+    jr nc, initAlways
     call initErrorCode
     call initInputBuf
     call initArgBuf
     call initStack
     call initRegs
     call initMenu
-    call initDisplay
     call initBase
     call initStat
     call initCfit
+initAlways:
+    ; Conditional initializations, regardless of success/failure of
+    ; restoreAppState()
+    call initLastX ; Always copy TI-OS 'ANS' to 'X'
+    call initDisplay ; Always initialize the display.
+
+    ; Initialize the App monitor so that we can intercept the Put Away (2ND
+    ; OFF) signal.
+    ld hl, appVectors
+    bcall(_AppInit)
     ; [[fall through]]
 
 ; The main event/read loop. Read button and dispatch to the appropriate
@@ -263,7 +321,7 @@ readLoop:
     bcall(_GetKey)
     res onInterrupt, (iy + onFlags)
 
-    ; Check for 2nd-Quit to Quit. ON (0) triggers the handleKeyMenuBack() to
+    ; Check for 2nd-Quit to Quit. ON (0) triggers the handleKeyExit() to
     ; emulate the ON/EXIT key on the HP 42S which exits nested menus on that
     ; calculator.
     cp kQuit
@@ -289,15 +347,45 @@ readLoopException:
     jr readLoopSetErrorCode
 
 ; Clean up and exit app.
+;   - Called explicitly upon 2ND QUIT.
+;   - Called by TI-OS application monitor upon 2ND OFF.
 mainExit:
+    call rclX
+    bcall(_StoAns) ; transfer RPN83P 'X' to TI-OS 'ANS'
+    call storeAppState
     set appAutoScroll, (iy + appFlags)
+    ld (iy + textFlags), 0 ; reset text flags
     bcall(_ClrLCDFull)
     bcall(_HomeUp)
-#ifdef FLASHAPP
-    bjump(_JForceCmdNoChar)
-#else
+
+    bcall(_ReloadAppEntryVecs) ; App Loader in control of monitor
+    bit monAbandon, (iy + monFlags) ; if turning off: ZF=1
+    jr nz, appTurningOff
+    ; If not turning off, then force control back to the home screen.
+    ; Note: this will terminate the link activity that caused the application
+    ; to be terminated.
+    ld a, iAll ; all interrupts on
+    out (intrptEnPort), a
+    bcall(_LCD_DRIVERON) ; turn on the LCD
+    set onRunning, (iy + onFlags) ; on interrupt running
+    ei ; enable interrupts
+    bjump(_JForceCmdNoChar) ; force to home screen
+appTurningOff:
+    bjump(_PutAway) ; force App locader to do its put away
+
+; Set up the AppVectors so that we can intercept the Put Away Notification upon
+; '2ND QUIT' or '2ND OFF'. See TI-83 Plus SDK documentation.
+appVectors:
+    .dw dummyVector
+    .dw dummyVector
+    .dw mainExit
+    .dw dummyVector
+    .dw dummyVector
+    .dw dummyVector
+    .db appTextSaveF
+
+dummyVector:
     ret
-#endif
 
 ;-----------------------------------------------------------------------------
 
@@ -308,6 +396,7 @@ mainExit:
 #include "display.asm"
 #include "errorcode.asm"
 #include "base.asm"
+#include "basehandlers.asm"
 #include "integer.asm"
 #include "menu.asm"
 #include "menuhandlers.asm"
@@ -318,6 +407,7 @@ mainExit:
 #include "debug.asm"
 #endif
 #include "common.asm"
+#include "crc.asm"
 #include "const.asm"
 #include "handlertab.asm"
 #include "menudef.asm"
@@ -326,7 +416,5 @@ mainExit:
 
 ;-----------------------------------------------------------------------------
 
-#ifdef FLASHAPP
 ; Not sure if this needs to go before or after the `.end`.
 validate()
-#endif
