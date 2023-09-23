@@ -68,7 +68,7 @@ of some older HP calculators like the
 The RPN83P is a flash application that consumes one page (16 kB) of flash
 memory. Since it is stored in flash, it is preserved if the RAM is cleared. It
 consumes a small amount of TI-OS RAM: 2 list variables named `REGS` (240 bytes)
-and `STK` (59 byte), and an appVar named `RPN83SAV` (76 bytes).
+and `STK` (59 byte), and an appVar named `RPN83SAV` (77 bytes).
 
 Here the quick summary of its features:
 
