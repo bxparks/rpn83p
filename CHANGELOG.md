@@ -1,11 +1,13 @@
 # Changelog
 
 - Unreleased
-    - preserve the application state into an appvar named `RPN83SAV` upon exit
-        - reconstruct the application state upon restart
-    - save `X` register to TI-OS `ANS` only on `2ND QUIT` or `2ND OFF`, instead
-      of saving to `ANS` every time `X` is changed
-        - no user-visible change, but more efficient internally
+- 0.6.0 (2023-09-22)
+    - save application state
+        - preserve app state into an appvar named `RPN83SAV` upon exit
+        - reconstruct the app state upon restart
+    - save `X` register to TI-OS `ANS` only on `2ND QUIT` or `2ND OFF`
+        - previously saved to `ANS` every time `X` was changed
+        - no user-visible change, but is more efficient internally
     - rename `P>R` to `>REC`, and `R>P` to `>POL`
         - for consistency with other conversion functions, and for consistency
           with HP-42S
@@ -14,28 +16,28 @@
     - support custom MenuGroup handlers
         - absorb `changeMenuGroup()` functionality into the `dispatchMenuNode()`
         - add onExit events into `changeMenuGroup()`
-        - add custom `mBaseHandler` for `BASE` menu, which resets the current
-          `baseMode` to 10 upon leaving the `BASE` menu hierarchy
-        - add `baseModeSaved` appState parameter to restore the last `baseMode`
-          upon reentery into `BASE` menu hierarchy
+        - add custom `mBaseHandler` for `BASE` menu to activate or deactivate
+          the `baseNumber` upon entering or leaving the `BASE` menu hierarchy
     - `BASE` mode
-        - all `BASE` operations use `u32` integers, even `DEC` mode
+        - make all `BASE` operations use `u32` integers, even `DEC` mode
         - add Carry Flag which is updated for arithmetic, shifting, rotating
           operations
             - add `SCF` (set carry flag),`CCF` (clear carry flag), `CF?` (get
               carry flag)
             - add `C` or `-` display indicator
-        - remove base number indicator (`DEC`, `HEX`, `OCT`, `BIN`) in the
+        - remove base number indicator (`DEC`, `HEX`, `OCT`, `BIN`) from the
           status line (top line)
             - no longer needed since those menu items show a "dot" when selected
-            - and the base number is only relevant within the `BASE` menu
-              hierarchy
+            - the base number is only relevant within the `BASE` menu hierarchy
         - add `ASL` (arithmetic shift left), `RLC` (rotate left through carry
           flag), `RRC` (rotate right through carry flag)
         - add `SLn`, `SRn`, `RLn`, `RRn`, `RLCn`, `RRCn` (shift or rotate `Y`
           for `X` times)
         - add `CB` (clear bit), `SB` (set bit), `B?` (get bit)
         - add `REVB` (reverse bits), `CNTB` (count bits)
+    - add additional HELP pages
+        - CFIT Models
+        - BASE Ops
 - 0.5.0 (2023-08-31)
     - `USER_GUIDE.md`, `README.md`
         - Update "Menu Indicator Arrows" section with latest screenshots which
