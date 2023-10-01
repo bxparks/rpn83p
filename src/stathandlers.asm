@@ -229,20 +229,21 @@ statSigmaPlus:
 statSigmaPlusLogX:
     ; Update lnX registers.
     call rclX
-    bcall(_CkOP1Pos) ; if OP1 > 0: ZF=1
-    jr z, statSigmaPlusLogXNormal
-    bcall(_OP1Set0) ; set lnX=0.0
-    jr statSigmaPlusLogXZero
-statSigmaPlusLogXNormal:
     bcall(_PushRealO1) ; FPST=X
-    bcall(_LnX) ; OP1=lnX
+    bcall(_CkOP1Pos) ; if OP1 >= 0: ZF=1
+    jr nz, statSigmaPlusLogXZero
+    bcall(_CkOP1FP0) ; if OP1 == 0: ZF=1
+    jr nz, statSigmaPlusLogXNormal
 statSigmaPlusLogXZero:
-    bcall(_PushRealO1)
-    bcall(_PushRealO1) ; FPST=FPS1=lnX
+    bcall(_OP1Set0) ; set lnX=0.0
+    jr statSigmaPlusLogXContinue
+statSigmaPlusLogXNormal:
+    bcall(_LnX) ; OP1=lnX
+statSigmaPlusLogXContinue:
+    bcall(_PushRealO1) ; FPST=lnX
     ld a, statRegLnX
     call stoPlusNN
     ;
-    bcall(_PopRealO1) ; OP1=lnX
     bcall(_FPSquare) ; OP1=(lnX)^2
     ld a, statRegLnX2
     call stoPlusNN
@@ -250,20 +251,21 @@ statSigmaPlusLogXZero:
 statSigmaPlusLogY:
     ; Update lnY registers
     call rclY
-    bcall(_CkOP1Pos) ; if OP1 > 0: ZF=1
-    jr z, statSigmaPlusLogYNormal
-    bcall(_OP1Set0) ; set lnY=0.0
-    jr statSigmaPlusLogYZero
-statSigmaPlusLogYNormal:
     bcall(_PushRealO1) ; FPST=Y
-    bcall(_LnX) ; OP1=lnY
+    bcall(_CkOP1Pos) ; if OP1 >= 0: ZF=1
+    jr nz, statSigmaPlusLogYZero
+    bcall(_CkOP1FP0) ; if OP1 == 0: ZF=1
+    jr nz, statSigmaPlusLogYNormal
 statSigmaPlusLogYZero:
-    bcall(_PushRealO1)
-    bcall(_PushRealO1) ; FPST=FPS1=lnY
+    bcall(_OP1Set0) ; set lnY=0.0
+    jr statSigmaPlusLogYContinue
+statSigmaPlusLogYNormal:
+    bcall(_LnX) ; OP1=lnY
+statSigmaPlusLogYContinue:
+    bcall(_PushRealO1) ; FPST=lnY
     ld a, statRegLnY
     call stoPlusNN
     ;
-    bcall(_PopRealO1) ; OP1=lnY
     bcall(_FPSquare) ; OP1=(lnY)^2
     ld a, statRegLnY2
     call stoPlusNN
@@ -335,40 +337,43 @@ statSigmaMinus:
 statSigmaMinusLogX:
     ; Update lnX registers.
     call rclX
-    bcall(_CkOP1Pos) ; if OP1 > 0: ZF=1
-    jr z, statSigmaMinusLogXNormal
-    bcall(_OP1Set0) ; set lnX=0.0
-    jr statSigmaMinusLogXZero
-statSigmaMinusLogXNormal:
     bcall(_PushRealO1) ; FPST=X
-    bcall(_LnX) ; OP1=lnX
+    bcall(_CkOP1Pos) ; if OP1 >= 0: ZF=1
+    jr nz, statSigmaMinusLogXZero
+    bcall(_CkOP1FP0) ; if OP1 == 0: ZF=1
+    jr nz, statSigmaMinusLogXNormal
 statSigmaMinusLogXZero:
-    bcall(_PushRealO1)
-    bcall(_PushRealO1) ; FPST=FPS1=lnX
+    bcall(_OP1Set0) ; set lnX=0.0
+    jr statSigmaMinusLogXContinue
+statSigmaMinusLogXNormal:
+    bcall(_LnX) ; OP1=lnX
+statSigmaMinusLogXContinue:
+    bcall(_PushRealO1) ; FPST=lnX
     ld a, statRegLnX
     call stoMinusNN
     ;
-    bcall(_PopRealO1) ; OP1=lnX
     bcall(_FPSquare) ; OP1=(lnX)^2
     ld a, statRegLnX2
     call stoMinusNN
 
+statSigmaMinusLogY:
     ; Update lnY registers
     call rclY
-    bcall(_CkOP1Pos) ; if OP1 > 0: ZF=1
-    jr z, statSigmaMinusLogYNormal
-    bcall(_OP1Set0) ; set lnY=0.0
-    jr statSigmaMinusLogYZero
-statSigmaMinusLogYNormal:
     bcall(_PushRealO1) ; FPST=Y
-    bcall(_LnX) ; OP1=lnY
+    bcall(_CkOP1Pos) ; if OP1 >= 0: ZF=1
+    jr nz, statSigmaMinusLogYZero
+    bcall(_CkOP1FP0) ; if OP1 == 0: ZF=1
+    jr nz, statSigmaMinusLogYNormal
 statSigmaMinusLogYZero:
-    bcall(_PushRealO1)
-    bcall(_PushRealO1) ; FPST=FPS1=lnY
+    bcall(_OP1Set0) ; set lnY=0.0
+    jr statSigmaMinusLogYContinue
+statSigmaMinusLogYNormal:
+    bcall(_LnX) ; OP1=lnY
+statSigmaMinusLogYContinue:
+    bcall(_PushRealO1) ; FPST=lnY
     ld a, statRegLnY
     call stoMinusNN
     ;
-    bcall(_PopRealO1) ; OP1=lnY
     bcall(_FPSquare) ; OP1=(lnY)^2
     ld a, statRegLnY2
     call stoMinusNN

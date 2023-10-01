@@ -123,7 +123,7 @@ helpPages:
 
 msgHelpPage1:
     .db escapeLargeFont, "RPN83P", Lenter
-    .db escapeSmallFont, "v0.6.0 (2023", Shyphen, "09", Shyphen, "22)", Senter
+    .db escapeSmallFont, "v0.6.1-dev (2023", Shyphen, "10", Shyphen, "01)", Senter
     .db "(c) 2023  Brian T. Park", Senter
     .db Senter
     .db "An RPN calculator for the", Senter
