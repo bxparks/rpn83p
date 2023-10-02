@@ -357,7 +357,8 @@ selectCfitModel:
 ; Input:
 ;   IX=pointer to list of stat registers (e.g. cfitModelLinear, cfitModelExp)
 ; Output:
-;   OP1=SLOP(X,Y) = CORR(X,Y) (StdDev(Y)/StdDev(X)).
+;   OP1=SLOP(X,Y) = CORR(X,Y) (StdDev(Y)/StdDev(X))
+;                 = COV(X,Y) / StdDev(X)^2 (this works when StdDev(Y)==0)
 ;   OP2=YINT(X,,Y) = <Y> - SLOP(X,Y) * <X>
 ;
 ; Either Population or Sample can be used, because the N/(N-1) terms cancel
@@ -365,11 +366,12 @@ selectCfitModel:
 fitLeastSquare:
     ; Calculate slope.
     call statStdDev ; OP1=PDEV(Y), OP2=PDEV(X)
-    bcall(_FPDiv) ; OP1=PDEV(Y)/PDEV(X)
+    bcall(_OP2ToOP1)
+    bcall(_FPMult) ; OP1=StdDev(X)^2
     bcall(_PushRealO1)
-    call statCorrelation ; OP1=CORR(X,Y)
-    bcall(_PopRealO2)
-    bcall(_FPMult) ; OP1=SLOP=CORR(X,Y) * StdDev(Y) / StdDev(X)
+    call statCovariance ; OP1=COV(X,Y)
+    bcall(_PopRealO2) ; OP2=StdDev(X)^2
+    bcall(_FPDiv) ; OP1=SLOP=COV(X,Y) / StdDev(X)^2
     bcall(_PushRealO1) ; FPS=slope
 
     ; Calculate intercept.
