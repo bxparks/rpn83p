@@ -43,16 +43,18 @@ mStatPlusHandler:
     call statSigmaPlus
     ld a, statRegN
     call rclNN ; OP1=R[sigmaN]
+    call replaceX
     res rpnFlagsLiftEnabled, (iy + rpnFlags)
-    jp replaceX
+    ret
 
 mStatMinusHandler:
     call closeInputBuf
     call statSigmaMinus
     ld a, statRegN
     call rclNN ; OP1=R[sigmaN]
+    call replaceX
     res rpnFlagsLiftEnabled, (iy + rpnFlags)
-    jp replaceX
+    ret
 
 ; Description: Set STAT mode to ALL.
 mStatAllModeHandler:
