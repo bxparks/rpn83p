@@ -1,6 +1,12 @@
 # Changelog
 
 - Unreleased
+    - `STAT`
+        - fix broken `Sigma+` and `Sigma-` when `Y==0`
+        - use alternate equation for `SLOP` (slope) which works when the `Y`
+          data points are the same
+        - fix "stack lift disable" feature of `Sigma+` and `Sigma-` which
+          probably got broken during an earlier refactoring
 - 0.6.0 (2023-09-22)
     - save application state
         - preserve app state into an appvar named `RPN83SAV` upon exit
