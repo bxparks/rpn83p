@@ -329,11 +329,7 @@ exchangeFPSOP1:
 exchangeFPSHL:
     ld c, l
     ld b, h ; BC=HL
-    ld hl, FPS
-    ld e, (hl)
-    inc hl
-    ld d, (hl) ; DE=FPS=free memory after the stack
-    ex de, hl
+    ld hl, (FPS)
     ld de, 9
     or a ; clear CF
     sbc hl, de ; HL=(FPS) - 9
@@ -357,3 +353,16 @@ exchangeFloatLoop:
     inc hl
     djnz exchangeFloatLoop
     ret
+
+; Description: Exchange the top 2 floating point numbers on the FPS.
+exchangeFPSFPS:
+    ld hl, (FPS)
+    ld de, 9
+    or a ; clear CF
+    sbc hl, de ; HL=(FPS) - 9
+    ld c, l
+    ld b, h
+    sbc hl, de ; HL=(FPS) - 18
+    ld e, c
+    ld d, b
+    jr exchangeFloat
