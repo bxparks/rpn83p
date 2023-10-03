@@ -7,6 +7,9 @@
           data points are the same
         - fix "stack lift disable" feature of `Sigma+` and `Sigma-` which
           probably got broken during an earlier refactoring
+        - check for division by zero when calculating weighted mean `WMN`, and
+          show `9.9999999999999E99` to indicate error, allowing weightedX (or
+          weightedY) to be evaluated even if the other is undefined
 - 0.6.0 (2023-09-22)
     - save application state
         - preserve app state into an appvar named `RPN83SAV` upon exit

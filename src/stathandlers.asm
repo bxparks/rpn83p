@@ -430,23 +430,51 @@ statMean:
 ; Description: Calculate the weighted mean of Y and X into OP1 and OP2,
 ; respectively.
 ; Input:
-;   IX=pointer to list of stat registers (e.g. cfitModelLinear, cfitModelExp)
+;   IX=pointer to list of stat registers, most likely 'cfitModelLinear'
 ; Output:
 ;   OP1: Mean of Y weighted by X = Sum(X,Y) / Sum(X)
 ;   OP2: Mean of X weighted by Y = Sum(X,Y) / Sum(Y)
+; Error conditions:
+;   - If Sum(X) is 0, then Weighted<Y> is not defined so OP1 is set to
+;   9.9999999999999E99 to indicate an error condition
+;   - If Sum(Y) is 0, then Weighted<X> is not defined so OP2 is set to
+;   9.9999999999999E99 to indicate an error condition
+;   - If both Sum(X) and Sum(Y) are 0, then an 'Err: Stat' exception is thrown
 statWeightedMean:
-    ld a, (ix + modelIndXY)
+    ld a, (ix + modelIndX)
     call rclNN
-    bcall(_PushRealO1) ; FPS=SumXY
     ld a, (ix + modelIndY)
     call rclNNToOP2
-    bcall(_FPDiv) ; OP1=SumXY/SumY
-    ;
-    call exchangeFPSOP1 ; OP1=SumXY, FPS=SumXY/SumY
-    ld a, (ix + modelIndX)
-    call rclNNToOP2 ; OP2=SumX
-    bcall(_FPDiv) ; OP1=SumXY/SumX=WeightedY
-    bcall(_PopRealO2); OP2=SumXY/SumY=WeightedX
+    bcall(_CkOP1FP0)
+    jr nz, statWeightedMeanWeightedX
+    bcall(_CkOP2FP0)
+    jr nz, statWeightedMeanWeightedX
+statWeightedMeanBothZero:
+    bjump(_ErrStat) ; throw exception
+statWeightedMeanWeightedX:
+    ; OP1=SumX, OP2=SumY
+    bcall(_PushRealO1) ; FPS=[SumX]
+    ld a, (ix + modelIndXY)
+    call rclNN ; OP1=SumXY, OP2=SumY
+    bcall(_PushRealO1) ; FPS=[SumX, SumXY]
+    bcall(_CkOP2FP0)
+    jr z, statWeightedMeanSetWeightedXError
+    bcall(_FPDiv) ; OP1=WeightedX=SumXY/SumY
+    jr statWeightedMeanWeightedY
+statWeightedMeanSetWeightedXError:
+    call op1SetMaxFloat
+statWeightedMeanWeightedY:
+    call exchangeFPSOP1 ; OP1=SumXY, FPS=[SumX, WeightedX]
+    call exchangeFPSFPS ; OP1=SumXY. FPS=[WeightedX, SumX]
+    bcall(_PopRealO2); OP1=SumXY, OP2=SumX, FPS=[WeightedX]
+    bcall(_CkOP2FP0)
+    jr z, statWeightedMeanSetWeightedYError
+    bcall(_FPDiv) ; OP1=WeightedY=SumXY/SumX
+    jr statWeightedMeanFinish
+statWeightedMeanSetWeightedYError:
+    call op1SetMaxFloat ; OP1=WeightedY
+statWeightedMeanFinish:
+    bcall(_PopRealO2); OP2=WeightedX
     ret
 
 ; Description: Calculate the correction factor (N)/(N-1) to convert population
