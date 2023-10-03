@@ -86,6 +86,15 @@ op2SetEuler:
 
 ;-----------------------------------------------------------------------------
 
+; Description: Set OP1 to the maximum floating point number.
+; Destroys: all, HL
+op1SetMaxFloat:
+    ld hl, constMaxFloat
+    bcall(_Mov9ToOP1)
+    ret
+
+;-----------------------------------------------------------------------------
+
 ; Description: Set OP1 to StandardGravity.
 ; Destroys: all, HL
 ; op1SetStandardGravity:
@@ -212,6 +221,13 @@ constPi: ; 3.1415926535897(9323)
 
 constEuler: ; 2.7182818284594(0452)
     .db $00, $80, $27, $18, $28, $18, $28, $45, $94
+
+; Useful to indicate an error condition in some parameters, while allowing
+; other parameters to be calculated. If an exception is thrown instead (e.g.
+; Err: Domain), then the entire calculation will be aborted, and none of the
+; parameters can be calculated, which is not as useful in some cases.
+constMaxFloat: ; 9.9999999999999E99
+    .db $00, $E3, $99, $99, $99, $99, $99, $99, $99
 
 ; constStandardGravity: ; g_0 = 9.806 65 m/s^2, exact
 ;     .db $00, $80, $98, $06, $65, $00, $00, $00, $00
