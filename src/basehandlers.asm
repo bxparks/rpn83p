@@ -242,6 +242,7 @@ mRotateRightCarryNLoop:
 ; Output:
 ;   - OP3=u32(X)
 ;   - HL=OP3
+;   - throws Err:Domain if X is not an integer in [0, 2^32)
 ; Destroys: A, BC, DE, HL
 recallU32X:
     call closeInputAndRecallX ; OP1=X
@@ -337,7 +338,23 @@ mGetCarryFlagHandlerPush1:
 ;-----------------------------------------------------------------------------
 
 mSetWordSizeHandler:
-    jp mNotYetHandler
+    call recallU32X ; HL=OP3=u32(X)
+    ld a, 8
+    call cmpU32U8
+    jr z, setWordSize
+    ld a, 16
+    call cmpU32U8
+    jr z, setWordSize
+    ld a, 24
+    call cmpU32U8
+    jr z, setWordSize
+    ld a, 32
+    call cmpU32U8
+    jr z, setWordSize
+    bcall(_ErrDomain)
+setWordSize:
+    ld (baseWordSize), a
+    ret
 
 mGetWordSizeHandler:
     call closeInputBuf
