@@ -17,6 +17,31 @@ initBase:
     ld (baseWordSize), a
     ret
 
+; Description: Return the offset corresponding to each of the potential values
+; of (baseWordSize). For the values of (8, 16, 24, 32) this returns (0, 1, 2,
+; 3). Throws Err:Domain if not 8, 16, 24, 32.
+; Input: (baseWordSize)
+; Output: A=(baseWordSize)/8-1
+; Destroys: A
+getBaseOffset:
+    push bc
+    ld a, (baseWordSize)
+    ld b, a
+    and $07 ; 0b0000_0111
+    jr nz, getBaseOffsetErr
+    ld a, b
+    rrca
+    rrca
+    rrca
+    dec a
+    ld b, a
+    and $FC ; 0b1111_1100
+    ld a, b
+    pop bc
+    ret z
+getBaseOffsetErr:
+    bcall(_ErrDomain)
+
 ;-----------------------------------------------------------------------------
 ; Routines for converting floating point to U32 and back.
 ;-----------------------------------------------------------------------------

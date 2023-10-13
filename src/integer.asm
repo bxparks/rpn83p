@@ -132,13 +132,28 @@ multU32U32End:
     ret
 
 ;-----------------------------------------------------------------------------
+; Shift and rotate operations. TODO: Move these routines up to Line 10 or so.
+;-----------------------------------------------------------------------------
+
+; Description: Call the appropriate shiftLeftLogicalLeftUXX() depending on
+; (baseWordSize).
+shiftLeftLogical:
+    call getBaseOffset
+    or a
+    jr z, shiftLeftLogicalU8
+    dec a
+    jr z, shiftLeftLogicalU16
+    dec a
+    jr z, shiftLeftLogicalU24
+    ; [[fallthrough]]
 
 ; Description: Shift u32(HL) left by one bit. Same calculation as u32(HL) =
 ; u32(HL) * 2.
-; Input: HL: pointer to a u32 integer in little-endian format.
+; Input:
+;   - HL: pointer to a u32 integer in little-endian format.
 ; Output:
 ;   - u32 pointed by HL is doubled
-;   - CF: bit 7 of the most significant byte
+;   - CF: bit 7 of the most significant byte of input
 ; Destroys: none
 shiftLeftLogicalU32:
     push hl
@@ -152,11 +167,46 @@ shiftLeftLogicalU32:
     pop hl
     ret
 
+shiftLeftLogicalU24:
+    sla (hl) ; CF=bit7
+    inc hl
+    rl (hl) ; rotate left through CF
+    inc hl
+    rl (hl) ; rotate left through CF
+    dec hl
+    dec hl
+    ret
+
+shiftLeftLogicalU16:
+    sla (hl) ; CF=bit7
+    inc hl
+    rl (hl) ; rotate left through CF
+    dec hl
+    ret
+
+shiftLeftLogicalU8:
+    sla (hl) ; CF=bit7
+    ret
+
+;-----------------------------------------------------------------------------
+
+; Description: Call the appropriate shiftRightLogicalUXX() depending on
+; (baseWordSize).
+shiftRightLogical:
+    call getBaseOffset
+    or a
+    jr z, shiftRightLogicalU8
+    dec a
+    jr z, shiftRightLogicalU16
+    dec a
+    jr z, shiftRightLogicalU24
+    ; [[fallthrough]]
+
 ; Description: Shift u32(HL) right logical.
 ; Input: HL: pointer to u32
 ; Output:
 ;   - HL: pointer result
-;   - CF: bit 0 of the least signficant byte
+;   - CF: bit 0 of the least signficant byte of input
 ; Destroys: none
 shiftRightLogicalU32:
     inc hl
@@ -171,11 +221,46 @@ shiftRightLogicalU32:
     rr (hl)
     ret
 
+shiftRightLogicalU24:
+    inc hl
+    inc hl ; HL = byte 2
+    srl (hl) ; CF = least significant bit
+    dec hl ; HL = byte 1
+    rr (hl)
+    dec hl ; HL = byte 0
+    rr (hl)
+    ret
+
+shiftRightLogicalU16:
+    inc hl ; HL = byte 1
+    srl (hl) ; CF = least significant bit
+    dec hl ; HL = byte 0
+    rr (hl)
+    ret
+
+shiftRightLogicalU8:
+    srl (hl) ; CF = least significant bit
+    ret
+
+;-----------------------------------------------------------------------------
+
+; Description: Call the appropriate shiftRightArithmeticUXX() depending on
+; (baseWordSize).
+shiftRightArithmetic:
+    call getBaseOffset
+    or a
+    jr z, shiftRightArithmeticU8
+    dec a
+    jr z, shiftRightArithmeticU16
+    dec a
+    jr z, shiftRightArithmeticU24
+    ; [[fallthrough]]
+
 ; Description: shift u32(HL) right arithmetic, duplicating the sign bit.
 ; Input: HL: pointer to u32
 ; Output:
 ;   - HL: pointer result
-;   - CF: bit 0 of the least signficant byte
+;   - CF: bit 0 of the least signficant byte of input
 ; Destroys: none
 shiftRightArithmeticU32:
     inc hl
@@ -190,14 +275,52 @@ shiftRightArithmeticU32:
     rr (hl)
     ret
 
+shiftRightArithmeticU24:
+    inc hl
+    inc hl ; HL = byte 2
+    sra (hl) ; CF = least significant bit
+    dec hl ; HL = byte 1
+    rr (hl)
+    dec hl ; HL = byte 0
+    rr (hl)
+    ret
+
+shiftRightArithmeticU16:
+    inc hl ; HL = byte 1
+    sra (hl) ; CF = least significant bit
+    dec hl ; HL = byte 0
+    rr (hl)
+    ret
+
+shiftRightArithmeticU8:
+    sra (hl) ; CF = least significant bit
+    ret
+
 ;-----------------------------------------------------------------------------
+
+; Description: Call the appropriate rotateLeftCircularUXX() depending on
+; (baseWordSize).
+; Input:
+;   - HL: pointer to u32
+; Output:
+;   - HL: pointer to result
+;   - CF: bit 7 of most significant byte of input
+rotateLeftCircular:
+    call getBaseOffset
+    or a
+    jr z, rotateLeftCircularU8
+    dec a
+    jr z, rotateLeftCircularU16
+    dec a
+    jr z, rotateLeftCircularU24
+    ; [[fallthrough]]
 
 ; Description: Rotate left circular u32(HL).
 ; Input:
 ;   - HL: pointer to u32
 ; Output:
 ;   - HL: pointer to result
-;   - CF: bit 7 of most significant byte
+;   - CF: bit 7 of most significant byte of input
 ; Destroys: none
 rotateLeftCircularU32:
     push hl
@@ -213,19 +336,58 @@ rotateLeftCircularU32:
     inc (hl) ; transfer the bit 7 of byte 3 into bit 0 of byte 0
     ret
 
+rotateLeftCircularU24:
+    sla (hl) ; start with the least significant byte
+    inc hl
+    rl (hl)
+    inc hl
+    rl (hl)
+    dec hl
+    dec hl
+    ret nc
+    inc (hl) ; transfer the bit 7 of byte 3 into bit 0 of byte 0
+    ret
+
+rotateLeftCircularU16:
+    sla (hl) ; start with the least significant byte
+    inc hl
+    rl (hl)
+    dec hl
+    ret nc
+    inc (hl) ; transfer the bit 7 of byte 3 into bit 0 of byte 0
+    ret
+
+rotateLeftCircularU8:
+    rlc (hl)
+    ret
+
+;-----------------------------------------------------------------------------
+
+; Description: Call the appropriate rotateRightCircularUXX() depending on
+; (baseWordSize).
+rotateRightCircular:
+    call getBaseOffset
+    or a
+    jr z, rotateRightCircularU8
+    dec a
+    jr z, rotateRightCircularU16
+    dec a
+    jr z, rotateRightCircularU24
+    ; [[fallthrough]]
+
 ; Description: Rotate right circular u32(HL).
 ; Input:
 ;   - HL: pointer to u32
 ; Output:
 ;   - HL: pointer to result
-;   - CF: bit 0 of least significant byte
+;   - CF: bit 0 of least significant byte of input
 ; Destroys: none
 rotateRightCircularU32:
     push bc
     ld b, (hl) ; save byte 0
     inc hl
     inc hl
-    inc hl ; start with the most significant byte
+    inc hl ; start with byte 3
     rr b ; extract bit 0 of byte 0
     rr (hl)
     dec hl
@@ -237,13 +399,60 @@ rotateRightCircularU32:
     pop bc
     ret
 
+rotateRightCircularU24:
+    push bc
+    ld b, (hl) ; save byte 0
+    inc hl
+    inc hl ; start with byte 2
+    rr b ; extract bit 0 of byte 0
+    rr (hl)
+    dec hl
+    rr (hl)
+    dec hl
+    rr (hl) ; CF = bit 0 of byte 0
+    pop bc
+    ret
+
+rotateRightCircularU16:
+    push bc
+    ld b, (hl) ; save byte 0
+    inc hl ; start with byte 1
+    rr b ; extract bit 0 of byte 0
+    rr (hl)
+    dec hl
+    rr (hl) ; CF = bit 0 of byte 0
+    pop bc
+    ret
+
+rotateRightCircularU8:
+    rrc (hl)
+    ret
+
+;-----------------------------------------------------------------------------
+
+; Description: Call the appropriate rotateLeftCarryUXX() depending on
+; (baseWordSize).
+; Destroys: A, C
+rotateLeftCarry:
+    rl c ; save CF
+    call getBaseOffset
+    or a
+    jr z, rotateLeftCarryU8Alt
+    dec a
+    jr z, rotateLeftCarryU16Alt
+    dec a
+    jr z, rotateLeftCarryU24Alt
+    ; [[fallthrough]]
+
+rotateLeftCarryU32Alt:
+    rr c
 ; Description: Rotate left u32(HL) through carry flag.
 ; Input:
 ;   - HL: pointer to u32
-;   - CF: existing carry flag
+;   - CF: the existing carry flag in bit 0
 ; Output:
 ;   - HL: pointer to result
-;   - CF: most significant bit
+;   - CF: most significant bit of the input
 ; Destroys: none
 rotateLeftCarryU32:
     push hl
@@ -257,18 +466,63 @@ rotateLeftCarryU32:
     pop hl
     ret
 
+rotateLeftCarryU24Alt:
+    rr c
+rotateLeftCarryU24:
+    rl (hl) ; start with the least signficant byte
+    inc hl
+    rl (hl)
+    inc hl
+    rl (hl)
+    dec hl
+    dec hl
+    ret
+
+rotateLeftCarryU16Alt:
+    rr c
+rotateLeftCarryU16:
+    rl (hl) ; start with the least signficant byte
+    inc hl
+    rl (hl)
+    dec hl
+    ret
+
+rotateLeftCarryU8Alt:
+    rr c
+rotateLeftCarryU8:
+    rl (hl) ; start with the least signficant byte
+    ret
+
+;-----------------------------------------------------------------------------
+
+; Description: Call the appropriate rotateRightCarryUXX() depending on
+; (baseWordSize).
+; Destroys: A, C
+rotateRightCarry:
+    rl c ; save CF
+    call getBaseOffset
+    or a
+    jr z, rotateRightCarryU8Alt
+    dec a
+    jr z, rotateRightCarryU16Alt
+    dec a
+    jr z, rotateRightCarryU24Alt
+    ; [[fallthrough]]
+
+rotateRightCarryU32Alt:
+    rr c
 ; Description: Rotate right u32(HL) through carry flag.
 ; Input:
 ;   - HL: pointer to u32
 ;   - CF: existing carry flag
 ; Output:
 ;   - HL: pointer to result
-;   - CF: least significant bit
+;   - CF: the least significant bit of input
 ; Destroys: none
 rotateRightCarryU32:
     inc hl
     inc hl
-    inc hl ; start with the most significant byte
+    inc hl ; start with byte 3
     rr (hl)
     dec hl
     rr (hl)
@@ -278,6 +532,35 @@ rotateRightCarryU32:
     rr (hl)
     ret
 
+rotateRightCarryU24Alt:
+    rr c
+rotateRightCarryU24:
+    inc hl
+    inc hl ; start with byte 2
+    rr (hl)
+    dec hl
+    rr (hl)
+    dec hl
+    rr (hl)
+    ret
+
+rotateRightCarryU16Alt:
+    rr c
+rotateRightCarryU16:
+    inc hl ; start with byte 1
+    rr (hl)
+    dec hl
+    rr (hl)
+    ret
+
+rotateRightCarryU8Alt:
+    rr c
+rotateRightCarryU8:
+    rr (hl)
+    ret
+
+;-----------------------------------------------------------------------------
+; Various arithmetic operations.
 ;-----------------------------------------------------------------------------
 
 ; Description: Add A to u32 pointed by HL.
@@ -1113,4 +1396,38 @@ bitMaskB:
 setBitBofALoop:
     rlca
     djnz setBitBofALoop
+    ret
+
+;-----------------------------------------------------------------------------
+
+; Description: Truncate the u32(HL) to the number of bits given by
+; (baseWordSize).
+; Input:
+;   - HL=pointer to u32
+;   - (baseWordSize)=8, 16, 24, 32
+; Output:
+;   - HL=pointer to u8, u16, u24, or u32
+; Destroys: A
+; Preserves: HL
+truncToWordSize:
+    push hl
+    inc hl
+    inc hl
+    inc hl
+    ld a, (baseWordSize) ; 8, 16, 24, 32
+    and ~$07
+    rrca
+    rrca
+    rrca ; A=A/8; 1, 2, 3, 4
+    sub 4
+    neg
+    jr truncToWordSizeEntry
+truncToWordSizeLoop:
+    dec hl
+    ld (hl), 0
+    dec a
+truncToWordSizeEntry:
+    jr nz, truncToWordSizeLoop
+truncWordSizeExit:
+    pop hl
     ret
