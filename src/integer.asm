@@ -1419,17 +1419,13 @@ truncToWordSize:
     inc hl
     inc hl
     inc hl
-    ld a, (baseWordSize) ; 8, 16, 24, 32
-    and ~$07
-    rrca
-    rrca
-    rrca ; A=A/8; 1, 2, 3, 4
-    sub 4
-    neg
+    call getBaseOffset
+    sub 3
+    neg ; [u8,u16,u24,u32] -> [3,2,1,0]
     jr truncToWordSizeEntry
 truncToWordSizeLoop:
-    dec hl
     ld (hl), 0
+    dec hl
     dec a
 truncToWordSizeEntry:
     jr nz, truncToWordSizeLoop
