@@ -1,138 +1,12 @@
 ;-----------------------------------------------------------------------------
 ; MIT License
 ; Copyright (c) 2023 Brian T. Park
-;-----------------------------------------------------------------------------
-
-;-----------------------------------------------------------------------------
+;
 ; Routines related to u32 stored as 4 bytes in little endian format.
 ;-----------------------------------------------------------------------------
 
-; Description: Calculate (HL) = u32(HL) * 10.
-; Input:
-;   - HL: pointer to a u32 integer, little-endian format
-; Output:
-;   - u32(HL) = u32(HL) * 10
-; Destroys: A
-; Preserves: BC, DE, HL
-multU32By10:
-    push bc
-    push de
-    push hl
-
-    ; BCDE = u32(HL), save original (HL). Using (BC, DE) to hold the original
-    ; u32(HL) allows this routine to be implemented without the need of a
-    ; temporary u32 memory area. That makes the calling code of this routine a
-    ; little bit cleaner.
-    ld c, (hl)
-    inc hl
-    ld b, (hl)
-    inc hl
-    ld e, (hl)
-    inc hl
-    ld d, (hl)
-    pop hl
-
-    ; (HL) = 4 * (HL)
-    call shiftLeftLogicalU32 ; (HL) *= 2
-    call shiftLeftLogicalU32 ; (HL) *= 2
-
-    ; (HL) += (original HL). This step is quite lengthy because it is using
-    ; four 8-bit operations to add two u32 integers. Maybe there's a more
-    ; clever way of doing this, for example, allocating 4 bytes on the stack,
-    ; then using the 16-bit 'add hl' and 'adc hl' instructions.
-    push hl
-    ld a, (hl)
-    add a, c
-    ld (hl), a
-    inc hl
-    ;
-    ld a, (hl)
-    adc a, b
-    ld (hl), a
-    inc hl
-    ;
-    ld a, (hl)
-    adc a, e
-    ld (hl), a
-    inc hl
-    ;
-    ld a, (hl)
-    adc a, d
-    ld (hl), a
-    pop hl
-
-    call shiftLeftLogicalU32 ; (HL) = 2 * (HL) = 10 * (original HL)
-
-    pop de
-    pop bc
-    ret
-
-; Description: Multiply u32 by u32, u32(HL) *= u32(DE). This algorithm is
-; similar to the u16*u16 algorithm in
-; https://tutorials.eeems.ca/Z80ASM/part4.htm, except that this implements a
-; u32*u32.
-; Input:
-;   - HL: pointer to result u32
-;   - DE: pointer to operand u32
-; Output:
-;   - u32(HL) *= u32(DE)
-;   - CF: carry flag set if result overflowed U32
-; Destroys: A, IX
-; Preserves: BC, DE, HL, (DE)
-multU32U32:
-    push hl
-    pop ix ; IX=original HL
-    ; Create temporary 4-byte buffer on the stack, and set it to 0.
-    push bc
-    ld bc, 0
-    push bc
-    push bc
-    ;
-    ld hl, 0
-    add hl, sp ; (HL) = (SP) = result
-    ld b, 32
-    ld c, 0 ; carry flag
-multU32U32Loop:
-    call shiftLeftLogicalU32 ; (HL) *= 2
-    jr nc, multU32U32LoopContinue
-    set 0, c ; set carry bit in C register
-multU32U32LoopContinue:
-    ex de, hl
-    call rotateLeftCircularU32; (DE) *= 2, preserving (DE) after 32 iterations
-    ex de, hl
-    jr nc, multU32U32NoMult
-    call addU32U32IX ; (HL) += (IX)
-    jr nc, multU32U32NoMult
-    set 0, c ; set carry bit in C register
-multU32U32NoMult:
-    djnz multU32U32Loop
-multU32U32End:
-    ; transfer carry flag in C to CF
-    ld a, c
-    rra ; CF=bit0 of C
-    ; copy u32(SP) to u32(original HL)
-    push ix
-    pop hl ; HL=IX=destination pointer
-    ; extract the u32 at the top of the stack
-    pop bc
-    ld (hl), c
-    inc hl
-    ld (hl), b
-    inc hl
-    pop bc
-    ld (hl), c
-    inc hl
-    ld (hl), b
-    ; restore HL
-    dec hl
-    dec hl
-    dec hl
-    ; restore BC
-    pop bc
-    ret
-
 ;-----------------------------------------------------------------------------
-; Shift and rotate operations. TODO: Move these routines up to Line 10 or so.
+; Shift and rotate operations.
 ;-----------------------------------------------------------------------------
 
 ; Description: Call the appropriate shiftLeftLogicalLeftUXX() depending on
@@ -560,7 +434,133 @@ rotateRightCarryU8:
     ret
 
 ;-----------------------------------------------------------------------------
-; Various arithmetic operations.
+; Arithmetic operations.
+;-----------------------------------------------------------------------------
+
+; Description: Calculate (HL) = u32(HL) * 10.
+; Input:
+;   - HL: pointer to a u32 integer, little-endian format
+; Output:
+;   - u32(HL) = u32(HL) * 10
+; Destroys: A
+; Preserves: BC, DE, HL
+multU32By10:
+    push bc
+    push de
+    push hl
+
+    ; BCDE = u32(HL), save original (HL). Using (BC, DE) to hold the original
+    ; u32(HL) allows this routine to be implemented without the need of a
+    ; temporary u32 memory area. That makes the calling code of this routine a
+    ; little bit cleaner.
+    ld c, (hl)
+    inc hl
+    ld b, (hl)
+    inc hl
+    ld e, (hl)
+    inc hl
+    ld d, (hl)
+    pop hl
+
+    ; (HL) = 4 * (HL)
+    call shiftLeftLogicalU32 ; (HL) *= 2
+    call shiftLeftLogicalU32 ; (HL) *= 2
+
+    ; (HL) += (original HL). This step is quite lengthy because it is using
+    ; four 8-bit operations to add two u32 integers. Maybe there's a more
+    ; clever way of doing this, for example, allocating 4 bytes on the stack,
+    ; then using the 16-bit 'add hl' and 'adc hl' instructions.
+    push hl
+    ld a, (hl)
+    add a, c
+    ld (hl), a
+    inc hl
+    ;
+    ld a, (hl)
+    adc a, b
+    ld (hl), a
+    inc hl
+    ;
+    ld a, (hl)
+    adc a, e
+    ld (hl), a
+    inc hl
+    ;
+    ld a, (hl)
+    adc a, d
+    ld (hl), a
+    pop hl
+
+    call shiftLeftLogicalU32 ; (HL) = 2 * (HL) = 10 * (original HL)
+
+    pop de
+    pop bc
+    ret
+
+; Description: Multiply u32 by u32, u32(HL) *= u32(DE). This algorithm is
+; similar to the u16*u16 algorithm in
+; https://tutorials.eeems.ca/Z80ASM/part4.htm, except that this implements a
+; u32*u32.
+; Input:
+;   - HL: pointer to result u32
+;   - DE: pointer to operand u32
+; Output:
+;   - u32(HL) *= u32(DE)
+;   - CF: carry flag set if result overflowed U32
+; Destroys: A, IX
+; Preserves: BC, DE, HL, (DE)
+multU32U32:
+    push hl
+    pop ix ; IX=original HL
+    ; Create temporary 4-byte buffer on the stack, and set it to 0.
+    push bc
+    ld bc, 0
+    push bc
+    push bc
+    ;
+    ld hl, 0
+    add hl, sp ; (HL) = (SP) = result
+    ld b, 32
+    ld c, 0 ; carry flag
+multU32U32Loop:
+    call shiftLeftLogicalU32 ; (HL) *= 2
+    jr nc, multU32U32LoopContinue
+    set 0, c ; set carry bit in C register
+multU32U32LoopContinue:
+    ex de, hl
+    call rotateLeftCircularU32; (DE) *= 2, preserving (DE) after 32 iterations
+    ex de, hl
+    jr nc, multU32U32NoMult
+    call addU32U32IX ; (HL) += (IX)
+    jr nc, multU32U32NoMult
+    set 0, c ; set carry bit in C register
+multU32U32NoMult:
+    djnz multU32U32Loop
+multU32U32End:
+    ; transfer carry flag in C to CF
+    ld a, c
+    rra ; CF=bit0 of C
+    ; copy u32(SP) to u32(original HL)
+    push ix
+    pop hl ; HL=IX=destination pointer
+    ; extract the u32 at the top of the stack
+    pop bc
+    ld (hl), c
+    inc hl
+    ld (hl), b
+    inc hl
+    pop bc
+    ld (hl), c
+    inc hl
+    ld (hl), b
+    ; restore HL
+    dec hl
+    dec hl
+    dec hl
+    ; restore BC
+    pop bc
+    ret
+
 ;-----------------------------------------------------------------------------
 
 ; Description: Add A to u32 pointed by HL.
@@ -818,7 +818,8 @@ modU32U16NextBit:
     ret
 
 ;-----------------------------------------------------------------------------
-
+; Comparison, copy, and clear operations.
+;-----------------------------------------------------------------------------
 
 ; Description: Compare u32(HL) to u32(DE), returning CF=1 if u32(HL) < u32(DE),
 ; and ZF=1 if u32(HL) == u32(DE). The order of the parameters is the same as
@@ -1027,6 +1028,8 @@ setU32ToBC:
     pop af
     ret
 
+;-----------------------------------------------------------------------------
+; Logical and bitwise operations.
 ;-----------------------------------------------------------------------------
 
 ; Description: Perform binary AND operation, u32(HL) &= u32(DE).
@@ -1398,6 +1401,8 @@ setBitBofALoop:
     djnz setBitBofALoop
     ret
 
+;-----------------------------------------------------------------------------
+; Word size operations.
 ;-----------------------------------------------------------------------------
 
 ; Description: Truncate the u32(HL) to the number of bits given by
