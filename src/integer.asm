@@ -510,16 +510,15 @@ multU32By10:
 ; Destroys: A, IX
 ; Preserves: BC, DE, HL, (DE)
 multU32U32:
+    push bc ; save BC
     push hl
     pop ix ; IX=original HL
     ; Create temporary 4-byte buffer on the stack, and set it to 0.
-    push bc
-    ld bc, 0
-    push bc
-    push bc
-    ;
     ld hl, 0
+    push hl
+    push hl
     add hl, sp ; (HL) = (SP) = result
+    ; Set up loop of 32.
     ld b, 32
     ld c, 0 ; carry flag
 multU32U32Loop:
