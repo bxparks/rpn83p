@@ -406,22 +406,28 @@ mGetWordSizeHandler:
 
 mBitwiseAddHandler:
     call recallU32XY ; HL=OP3=u32(Y); DE=OP4=u32(X)
-    call addU32U32 ; OP3(Y) += OP4(X)
+    call truncToWordSize
+    call addUxxUxx ; OP3(Y) += OP4(X)
     call storeCarryFlag
+    call truncToWordSize
     call convertU32ToOP1 ; OP1 = float(OP3)
     jp replaceXY
 
 mBitwiseSubtHandler:
     call recallU32XY ; HL=OP3=u32(Y); DE=OP4=u32(X)
-    call subU32U32 ; OP3(Y) -= OP4(X)
+    call truncToWordSize
+    call subUxxUxx ; OP3(Y) -= OP4(X)
     call storeCarryFlag
+    call truncToWordSize
     call convertU32ToOP1 ; OP1 = float(OP3)
     jp replaceXY
 
 mBitwiseMultHandler:
     call recallU32XY ; HL=OP3=u32(Y); DE=OP4=u32(X)
-    call multU32U32 ; OP3(Y) *= OP4(X)
+    call truncToWordSize
+    call multUxxUxx ; OP3(Y) *= OP4(X)
     call storeCarryFlag
+    call truncToWordSize
     call convertU32ToOP1 ; OP1 = float(OP3)
     jp replaceXY
 
@@ -453,13 +459,16 @@ mBitwiseDiv2Handler:
 
 baseDivHandlerCommon:
     call recallU32XY ; HL=OP3=u32(Y); DE=OP4=u32(X)
+    call truncToWordSize
     ex de, hl ; HL=OP4
     call testU32 ; check if X==0
     ex de, hl
     jr z,  baseDivHandlerDivByZero
     ld bc, OP5 ; BC=remainder
-    call divU32U32 ; HL=OP3=quotient, DE=OP4=divisor, BC=OP5=remainder
-    jp storeCarryFlag ; CF=0 always
+    call divUxxUxx ; HL=OP3=quotient, DE=OP4=divisor, BC=OP5=remainder
+    call storeCarryFlag ; CF=0 always
+    call truncToWordSize
+    ret
 baseDivHandlerDivByZero:
     bjump(_ErrDivBy0) ; throw 'Div By 0' exception
 

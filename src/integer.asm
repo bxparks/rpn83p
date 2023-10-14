@@ -497,6 +497,16 @@ multU32By10:
     pop bc
     ret
 
+multUxxUxx:
+    call getBaseOffset
+    or a
+    jr z, multU8U8
+    dec a
+    jr z, multU16U16
+    dec a
+    jr z, multU24U24
+    ; [[fallthrough]]
+
 ; Description: Multiply u32 by u32, u32(HL) *= u32(DE). This algorithm is
 ; similar to the u16*u16 algorithm in
 ; https://tutorials.eeems.ca/Z80ASM/part4.htm, except that this implements a
@@ -507,6 +517,7 @@ multU32By10:
 ; Output:
 ;   - u32(HL) *= u32(DE)
 ;   - CF: carry flag set if result overflowed U32
+;   - A: most significant byte of u32 result (used by multU24U24)
 ; Destroys: A, IX
 ; Preserves: BC, DE, HL, (DE)
 multU32U32:
@@ -552,12 +563,83 @@ multU32U32End:
     ld (hl), c
     inc hl
     ld (hl), b
+    ld a, b
     ; restore HL
     dec hl
     dec hl
     dec hl
     ; restore BC
     pop bc
+    ret
+
+; Description: Multiply u24 by u24, u24(HL) *= u24(DE). This algorithm is
+; similar to the u16*u16 algorithm in
+; https://tutorials.eeems.ca/Z80ASM/part4.htm, except that this implements a
+; u24*u24.
+; Input:
+;   - HL: pointer to result u24
+;   - DE: pointer to operand u24
+; Output:
+;   - u24(HL) *= u24(DE)
+;   - CF: carry flag set if result overflowed u24
+; Destroys: A, IX
+; Preserves: BC, DE, HL, (DE)
+multU24U24:
+    call multU32U32
+    ret c ; if CF==1: overflowed u32, so return
+    or a
+    ret z ; if byte 3==0: no overflow of u24, so return with CF=0
+    scf ; CF=1 to indicate overflow
+    ret
+
+; Description: Multiply u16 by u16, u16(HL) *= u16(DE). This algorithm is
+; similar to the u16*u16 algorithm in
+; https://tutorials.eeems.ca/Z80ASM/part4.htm, except that this implements a
+; u16*u16.
+; Input:
+;   - HL: pointer to result u16
+;   - DE: pointer to operand u16
+; Output:
+;   - u16(HL) *= u16(DE)
+;   - CF: carry flag set if result overflowed u16
+; Destroys: A, IX
+; Preserves: BC, DE, HL, (DE)
+multU16U16:
+    call multU32U32
+    ret c ; if CF==1: overflowed u32, so return
+    inc hl
+    inc hl
+    or (hl) ; A=byte2 OR byte3
+    dec hl
+    dec hl
+    ret z ; if upper 2 bytes==0: no overflow of u16, so return with CF=0
+    scf ; CF=1 to indicate overflow
+    ret
+
+; Description: Multiply u8 by u8, u8(HL) *= u8(DE). This algorithm is
+; similar to the u8*u8 algorithm in
+; https://tutorials.eeems.ca/Z80ASM/part4.htm, except that this implements a
+; u8*u8.
+; Input:
+;   - HL: pointer to result u8
+;   - DE: pointer to operand u8
+; Output:
+;   - u8(HL) *= u8(DE)
+;   - CF: carry flag set if result overflowed u8
+; Destroys: A, IX
+; Preserves: BC, DE, HL, (DE)
+; TODO: Implement a more efficient u8*u8 algorithm, instead of calling u32*u32.
+multU8U8:
+    call multU32U32
+    ret c ; if CF==1: overflowed u32, so return
+    inc hl
+    or (hl)
+    inc hl
+    or (hl) ; A=byte1 OR byte2 OR byte3
+    dec hl
+    dec hl
+    ret z ; if upper 3 bytes==0: no overflow of u8, so return with CF=0
+    scf ; CF=1 to indicate overflow
     ret
 
 ;-----------------------------------------------------------------------------
@@ -592,6 +674,16 @@ addU32U8:
     pop hl
     ret
 
+addUxxUxx:
+    call getBaseOffset
+    or a
+    jr z, addU8U8
+    dec a
+    jr z, addU16U16
+    dec a
+    jr z, addU24U24
+    ; [[fallthrough]]
+
 ; Description: Calculate u32(HL) += u32(DE)
 ; Input:
 ;   - HL: pointer to destination u32 integer in little-endian format.
@@ -599,6 +691,7 @@ addU32U8:
 ; Output:
 ;   - (HL) += (DE)
 ;   - CF=carry flag
+;   - A=byte 3 of result
 ; Destroys: A
 ; Preserves: BC, DE, HL, (DE)
 addU32U32:
@@ -632,6 +725,66 @@ addU32U32:
     pop de
     ret
 
+; Description: Calculate u24(HL) += u24(DE)
+; Input:
+;   - HL: pointer to destination u24 integer in little-endian format.
+;   - DE: pointer to operand u24 integer in little-endian format.
+; Output:
+;   - (HL) += (DE)
+;   - CF=carry flag
+; Destroys: A
+; Preserves: BC, DE, HL, (DE)
+addU24U24:
+    call addU32U32
+    ret c
+    or a
+    ret z
+    scf
+    ret
+
+; Description: Calculate u16(HL) += u16(DE)
+; Input:
+;   - HL: pointer to destination u16 integer in little-endian format.
+;   - DE: pointer to operand u16 integer in little-endian format.
+; Output:
+;   - (HL) += (DE)
+;   - CF=carry flag
+; Destroys: A
+; Preserves: BC, DE, HL, (DE)
+addU16U16:
+    call addU32U32
+    ret c
+    inc hl
+    inc hl
+    or (hl)
+    dec hl
+    dec hl
+    ret z
+    scf
+    ret
+
+; Description: Calculate u8(HL) += u8(DE)
+; Input:
+;   - HL: pointer to destination u8 integer in little-endian format.
+;   - DE: pointer to operand u8 integer in little-endian format.
+; Output:
+;   - (HL) += (DE)
+;   - CF=carry flag
+; Destroys: A
+; Preserves: BC, DE, HL, (DE)
+addU8U8:
+    call addU32U32
+    ret c
+    inc hl
+    or (hl)
+    inc hl
+    or (hl)
+    dec hl
+    dec hl
+    ret z
+    scf
+    ret
+
 ; Description: Add u32 to u32, u32(HL) += u32(IX)
 ; Output:
 ;   - (HL) += (IX)
@@ -652,6 +805,18 @@ addU32U32IX:
     pop de
     ret
 
+;-----------------------------------------------------------------------------
+
+subUxxUxx:
+    call getBaseOffset
+    or a
+    jr z, subU8U8
+    dec a
+    jr z, subU16U16
+    dec a
+    jr z, subU24U24
+    ; [[fallthrough]]
+
 ; Description: Subtract U32 from U32, u32(HL) -= u32(DE).
 ; Input:
 ;   - HL: pointer to destination u32 integer in little-endian format.
@@ -659,6 +824,7 @@ addU32U32IX:
 ; Output:
 ;   - (HL) -= (DE)
 ;   - CF: carry flag
+;   - A: byte 3 of the result u32
 ; Destroys: A
 ; Preserves: BC, DE, HL
 subU32U32:
@@ -692,6 +858,66 @@ subU32U32:
     pop de
     ret
 
+; Description: Calculate u24(HL) -= u24(DE)
+; Input:
+;   - HL: pointer to destination u24 integer in little-endian format.
+;   - DE: pointer to operand u24 integer in little-endian format.
+; Output:
+;   - (HL) -= (DE)
+;   - CF=carry flag
+; Destroys: A
+; Preserves: BC, DE, HL, (DE)
+subU24U24:
+    call subU32U32
+    ret c
+    or a
+    ret z
+    scf
+    ret
+
+; Description: Calculate u16(HL) -= u16(DE)
+; Input:
+;   - HL: pointer to destination u16 integer in little-endian format.
+;   - DE: pointer to operand u16 integer in little-endian format.
+; Output:
+;   - (HL) -= (DE)
+;   - CF=carry flag
+; Destroys: A
+; Preserves: BC, DE, HL, (DE)
+subU16U16:
+    call subU32U32
+    ret c
+    inc hl
+    inc hl
+    or (hl)
+    dec hl
+    dec hl
+    ret z
+    scf
+    ret
+
+; Description: Calculate u8(HL) -= u8(DE)
+; Input:
+;   - HL: pointer to destination u8 integer in little-endian format.
+;   - DE: pointer to operand u8 integer in little-endian format.
+; Output:
+;   - (HL) -= (DE)
+;   - CF=carry flag
+; Destroys: A
+; Preserves: BC, DE, HL, (DE)
+subU8U8:
+    call subU32U32
+    ret c
+    inc hl
+    or (hl)
+    inc hl
+    or (hl)
+    dec hl
+    dec hl
+    ret z
+    scf
+    ret
+
 ;-----------------------------------------------------------------------------
 
 ; Description: Divide u32(HL) by u32(DE), remainder in u32(BC). This is an
@@ -709,6 +935,7 @@ subU32U32:
 ;   - BC: pointer to u32 remainder
 ;   - CF: 0 (division always clears the carry flag)
 ; Destroys: A
+divUxxUxx:
 divU32U32:
     call clearU32BC ; clear remainder, dividend will shift into this
     ld a, 32 ; iterate for 32 bits of a u32
