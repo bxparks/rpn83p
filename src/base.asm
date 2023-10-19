@@ -83,43 +83,40 @@ convertOP1ToU32Valid:
 ;   - HL: pointer to a u32 in memory
 ; Output:
 ;   - HL: OP1 converted to a u32, in little-endian format
-; Destroys: A, B, C, DE
-; Preserves: HL
+; Destroys: A, B, DE
+; Preserves: HL, C
 convertOP1ToU32NoCheck:
     ; initialize the target u32
     call clearU32
     bcall(_CkOP1FP0) ; preserves HL
     ret z
-
     ; extract number of decimal digits
     ld de, OP1+1 ; exponent byte
     ld a, (de)
     sub $7F ; A = exponent + 1 = num digits in mantissa
     ld b, a ; B = num digits in mantissa
-    inc de ; DE = pointer to mantissa
     jr convertOP1ToU32LoopEntry
-
 convertOP1ToU32Loop:
     call multU32By10
 convertOP1ToU32LoopEntry:
     ; get next 2 digits of mantissa
+    inc de ; DE = pointer to mantissa
     ld a, (de)
-    inc de
     ; Process first mantissa digit
-    ld c, a ; C = A (saved)
-    srl a
-    srl a
-    srl a
-    srl a
+    rrca
+    rrca
+    rrca
+    rrca
+    and $0F
     call addU32U8
     ; check number of mantissa digits
-    djnz convertOP1ToU32SecondDigit
-    ret
+    dec b
+    ret z
 convertOP1ToU32SecondDigit:
     ; Process second mantissa digit
     call multU32By10
-    ld a, c
-    and a, $0F
+    ld a, (de)
+    and $0F
     call addU32U8
     djnz convertOP1ToU32Loop
     ret
