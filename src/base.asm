@@ -43,11 +43,11 @@ getBaseOffsetErr:
     bcall(_ErrDomain)
 
 ;-----------------------------------------------------------------------------
-; Routines for converting floating point to U32 and back.
+; Routines for converting floating point to U32 or W32.
 ;-----------------------------------------------------------------------------
 
 convertOP1ToU32Error:
-    bjump(_ErrDomain) ; throw exception
+    bcall(_ErrDomain) ; throw exception
 
 ; Description: Same as convertOP1ToU32NoCheck() but throws an Err:Domain
 ; exception if OP1 is not in the range of [0, 2^32). Floating point values are
@@ -60,24 +60,86 @@ convertOP1ToU32Error:
 ; Destroys: A, B, C, DE
 ; Preserves: HL, OP1, OP2
 convertOP1ToU32:
-    push hl
-    bcall(_PushRealO2)
-    call op2Set2Pow32
-    bcall(_CpOP1OP2) ; if OP1 >= 2^32: CF=0
-    jr nc, convertOP1ToU32Error
-    bcall(_CkOP1FP0) ; if OP1 == 0: ZF=1
-    jr z, convertOP1ToU32Valid
-    bcall(_CkOP1Pos) ; if OP1 > 0: ZF=1
+    call convertOP1ToW32
+    ld a, (hl)
+    or a
     jr nz, convertOP1ToU32Error
-convertOP1ToU32Valid:
-    bcall(_PopRealO2)
-    pop hl
     ; [[fallthrough]]
 
-; Description: Convert floating point OP1. This routine assume that OP1 is a
-; floating point number between [0, 2^32). Fractional digits are ignored when
-; converting to U32 integer. Use convertOP1ToU32() to perform a validation
-; check that throws an exception.
+; Description: Convert a W32 into a U32 at the same HL address.
+; Input: HL: W32
+; Output: HL: U32
+; Destroys: BC, DE
+convertW32ToU32:
+    ld d, h
+    ld e, l
+    push hl
+    inc hl
+    ld bc, 4
+    ldir
+    pop hl
+    ret
+
+; The equivalent C-struct for W32 is:
+;
+;   struct W32 {
+;       uint8_t status_code;
+;       uint32_t value;
+;   }
+;
+; The bit flags in the W32 statusCode are:
+w32StatusCodeNegative equ 0
+w32StatusCodeTooBig equ 1
+w32StatusCodeHasFrac equ 2
+
+; Description: Convert OP1 to W32 (statusCode, U32) struct.
+; Input:
+;   - OP1: floating point number
+;   - HL: pointer to w32 struct in memory
+; Output:
+;   - HL: pointer to w32 struct
+; Destroys: A, B, C, DE
+; Preserves: HL, OP1, OP2
+convertOP1ToW32:
+    ld (hl), 0
+    push hl
+    bcall(_PushRealO2)
+convertOP1ToW32CheckNegative:
+    bcall(_CkOP1Pos) ; if OP1<0: ZF=0
+    jr z, convertOP1ToU32CheckTooBig
+    bcall(_PopRealO2)
+    pop hl
+    set w32StatusCodeNegative, (hl)
+    ret
+convertOP1ToU32CheckTooBig:
+    call op2Set2Pow32
+    bcall(_CpOP1OP2) ; if OP1 >= 2^32: CF=0
+    jr c, convertOP1ToU32CheckInt
+    bcall(_PopRealO2)
+    pop hl
+    set w32StatusCodeTooBig, (hl)
+    ret
+convertOP1ToU32CheckInt:
+    bcall(_CkPosInt) ; if OP1>=0 and OP1 is int: ZF=1
+    jr z, convertOP1ToW32Valid
+    bcall(_PopRealO2)
+    pop hl
+    set w32StatusCodeHasFrac, (hl)
+    jr convertOP1ToW32U32
+convertOP1ToW32Valid:
+    bcall(_PopRealO2)
+    pop hl
+convertOP1ToW32U32:
+    ; Move past the W32 statusCode and convert to u32.
+    inc hl
+    call convertOP1ToU32NoCheck
+    dec hl
+    ret
+
+; Description: Convert floating point OP1 to a u32. This routine assume that
+; OP1 is a floating point number between [0, 2^32). Fractional digits are
+; ignored when converting to U32 integer. Use convertOP1ToU32() to perform a
+; validation check that throws an exception.
 ; Input:
 ;   - OP1: unsigned 32-bit integer as a floating point number
 ;   - HL: pointer to a u32 in memory
@@ -137,6 +199,8 @@ convertOP2ToU32:
     pop hl
     ret
 
+;-----------------------------------------------------------------------------
+; Convert U3 or U32 to a TI floating point number.
 ;-----------------------------------------------------------------------------
 
 ; Description: Convert the u32 referenced by HL to a floating point number in
