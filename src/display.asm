@@ -724,31 +724,23 @@ printOP1BaseNegative:
 ; the end of line (but only if the digits did not spill over to the next line).
 ; Destroys: all, OP1, OP2, OP3, OP4
 printOP1Base10:
-    call op2Set2Pow32 ; OP2 = 2^32
-    bcall(_CpOP1OP2) ; if OP1 >= 2^32: CF=0
-    jr nc, printOP1BaseInvalid
-
-    bcall(_CkOP1FP0) ; if OP1 == 0: ZF=1
-    jr z, printOP1Base10Valid
-
-    bcall(_CkOP1Pos) ; if OP1 > 0: ZF=1
-    jr nz, printOP1BaseNegative
-
-printOP1Base10Valid:
-    bcall(_PushRealO1) ; FPS = OP1 (save)
-    bcall(_Trunc) ; OP1 = trunc(OP1)
-printOP1Base10String:
     ld hl, OP3
-    call convertOP1ToU32
+    call convertOP1ToW32
+    ld a, (hl)
+    bit w32StatusCodeTooBig, a
+    jr nz, printOP1BaseInvalid
+    bit w32StatusCodeNegative, a
+    jr nz, printOP1BaseNegative
+    ; Convert u32 into a base-10 string.
+    inc hl ; W32+1
     ld de, OP4
     call convertU32ToDecString
-
-    ; Check if OP1 was a pure integer
-    push de ; DE = dec string
-    bcall(_PopRealO1) ; OP1 = original OP1
-    bcall(_Frac) ; OP1 = frac(OP1)
-    bcall(_CkOP1FP0) ; if frac(OP1) == 0: ZF=1
-    pop hl ; HL = dec string
+printOP1BaseXX:
+    ; Add '.' if OP1 has fractional component.
+    dec hl
+    bit w32StatusCodeHasFrac, (hl)
+    inc hl
+    ex de, hl
     jr z, printHLString
     ld a, '.'
     call appendCString
@@ -762,35 +754,18 @@ printOP1Base10String:
 ; combined into a single subroutine, saving memory.
 ; Destroys: all, OP1, OP2, OP3, OP4
 printOP1Base16:
-    call op2Set2Pow32 ; OP2 = 2^32
-    bcall(_CpOP1OP2) ; if OP1 >= 2^32: CF=0
-    jr nc, printOP1BaseInvalid
-
-    bcall(_CkOP1FP0) ; if OP1 == 0: ZF=1
-    jr z, printOP1Base16Valid
-
-    bcall(_CkOP1Pos) ; if OP1 > 0: ZF=1
-    jr nz, printOP1BaseNegative
-
-printOP1Base16Valid:
-    bcall(_PushRealO1) ; FPS = OP1 (save)
-    bcall(_Trunc) ; OP1 = trunc(OP1)
-printOP1Base16String:
     ld hl, OP3
-    call convertOP1ToU32
+    call convertOP1ToW32
+    ld a, (hl)
+    bit w32StatusCodeTooBig, a
+    jr nz, printOP1BaseInvalid
+    bit w32StatusCodeNegative, a
+    jr nz, printOP1BaseNegative
+    ; Convert u32 into a base-16 string.
+    inc hl ; W32+1
     ld de, OP4
     call convertU32ToHexString
-
-    ; Check if OP1 was a pure integer
-    push de ; DE = hex string
-    bcall(_PopRealO1) ; OP1 = original OP1
-    bcall(_Frac) ; OP1 = frac(OP1)
-    bcall(_CkOP1FP0) ; if frac(OP1) == 0: ZF=1
-    pop hl ; HL = hex string
-    jp z, printHLString
-    ld a, '.'
-    call appendCString
-    jp printHLString
+    jr printOP1BaseXX
 
 ;-----------------------------------------------------------------------------
 
@@ -798,35 +773,18 @@ printOP1Base16String:
 ; the end of line (but only if the digits did not spill over to the next line).
 ; Destroys: all, OP1, OP2, OP3, OP4, OP5
 printOP1Base8:
-    call op2Set2Pow32 ; OP2 = 2^32
-    bcall(_CpOP1OP2) ; if OP1 >= 2^32: CF=0
-    jp nc, printOP1BaseInvalid
-
-    bcall(_CkOP1FP0) ; if OP1 == 0: ZF=1
-    jr z, printOP1Base8Valid
-
-    bcall(_CkOP1Pos) ; if OP1 > 0: ZF=1
-    jp nz, printOP1BaseNegative
-
-printOP1Base8Valid:
-    bcall(_PushRealO1) ; FPS = OP1 (save)
-    bcall(_Trunc) ; OP1 = trunc(OP1)
-printOP1Base8String:
     ld hl, OP3
-    call convertOP1ToU32
+    call convertOP1ToW32
+    ld a, (hl)
+    bit w32StatusCodeTooBig, a
+    jr nz, printOP1BaseInvalid
+    bit w32StatusCodeNegative, a
+    jr nz, printOP1BaseNegative
+    ; Convert u32 into a base-8 string.
+    inc hl ; W32+1
     ld de, OP4
     call convertU32ToOctString
-
-    ; Check if OP1 was a pure integer
-    push de ; DE = rendered string
-    bcall(_PopRealO1) ; OP1 = original OP1
-    bcall(_Frac) ; OP1 = frac(OP1)
-    bcall(_CkOP1FP0) ; if frac(OP1) == 0: ZF=1
-    pop hl ; HL = rendered string
-    jp z, printHLString
-    ld a, '.'
-    call appendCString
-    jp printHLString
+    jr printOP1BaseXX
 
 ;-----------------------------------------------------------------------------
 
@@ -838,35 +796,18 @@ printOP1Base8String:
 ; Input: OP1: non-negative floating point number < 2^14
 ; Destroys: all, OP1, OP2, OP3, OP4, OP5
 printOP1Base2:
-    call op2Set2Pow14 ; OP2 = 2^14
-    bcall(_CpOP1OP2) ; if OP1 >= 2^14: CF=0
-    jp nc, printOP1BaseInvalid
-
-    bcall(_CkOP1FP0) ; if OP1 == 0: ZF=1
-    jr z, printOP1Base2Valid
-
-    bcall(_CkOP1Pos) ; if OP1 > 0: ZF=1
-    jp nz, printOP1BaseNegative
-
-printOP1Base2Valid:
-    bcall(_PushRealO1) ; FPS = OP1 (save)
-    bcall(_Trunc) ; OP1 = trunc(OP1)
-printOP1Base2String:
     ld hl, OP3
-    call convertOP1ToU32
+    call convertOP1ToW32
+    ld a, (hl)
+    bit w32StatusCodeTooBig, a
+    jr nz, printOP1BaseInvalid
+    bit w32StatusCodeNegative, a
+    jr nz, printOP1BaseNegative
+    ; Convert u32 into a base-2 string.
+    inc hl ; W32+1
     ld de, OP4
     call convertU32ToBinString
-
-    ; Check if OP1 was a pure integer
-    push de ; DE = rendered string
-    bcall(_PopRealO1) ; OP1 = original OP1
-    bcall(_Frac) ; OP1 = frac(OP1)
-    bcall(_CkOP1FP0) ; if frac(OP1) == 0: ZF=1
-    pop hl ; HL = rendered string
-    jp z, printHLString
-    ld a, '.'
-    call appendCString
-    jp printHLString
+    jr printOP1BaseXX
 
 ;-----------------------------------------------------------------------------
 
