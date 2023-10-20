@@ -446,17 +446,18 @@ mBitwiseDivHandler:
 ;   - Y=quotient
 mBitwiseDiv2Handler:
     call baseDivHandlerCommon ; HL=quotient, BC=remainder
-    ; convert remainder into OP2
-    push hl
-    ld l, c
-    ld h, b
-    call convertU32ToOP1 ; OP1=remainder
-    bcall(_OP1ToOP2) ; OP2=remainder
-    ; convert quotient into OP1
+    push bc
+    ; convert HL=quotient into OP2
+    call convertU32ToOP1
+    bcall(_OP1ToOP2) ; OP2=quotient
+    ; convert BC=remainder into OP1
     pop hl
-    call convertU32ToOP1 ; OP1 = quotient
-    jp replaceXYWithOP1OP2 ; Y=quotient, X=remainder
+    call convertU32ToOP1 ; OP1=remainder
+    jp replaceXYWithOP1OP2 ; Y=remainder, X=quotient
 
+; Output:
+;   - HL=quotient
+;   - BC=remainder
 baseDivHandlerCommon:
     call recallXYAsU32 ; HL=OP3=u32(Y); DE=OP4=u32(X)
     call truncToWordSize
@@ -470,7 +471,7 @@ baseDivHandlerCommon:
     call truncToWordSize
     ret
 baseDivHandlerDivByZero:
-    bjump(_ErrDivBy0) ; throw 'Div By 0' exception
+    bcall(_ErrDivBy0) ; throw 'Div By 0' exception
 
 ;-----------------------------------------------------------------------------
 
