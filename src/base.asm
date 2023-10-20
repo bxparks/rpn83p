@@ -17,18 +17,20 @@ initBase:
     ld (baseWordSize), a
     ret
 
-; Description: Return the offset corresponding to each of the potential values
+; Description: Return the index corresponding to each of the potential values
 ; of (baseWordSize). For the values of (8, 16, 24, 32) this returns (0, 1, 2,
-; 3). Throws Err:Domain if not 8, 16, 24, 32.
+; 3).
 ; Input: (baseWordSize)
 ; Output: A=(baseWordSize)/8-1
+; Throws: Err:Domain if not 8, 16, 24, 32.
 ; Destroys: A
-getBaseOffset:
+; Preserves: BC, DE, HL
+getWordSizeIndex:
     push bc
     ld a, (baseWordSize)
     ld b, a
     and $07 ; 0b0000_0111
-    jr nz, getBaseOffsetErr
+    jr nz, getWordSizeIndexErr
     ld a, b
     rrca
     rrca
@@ -39,7 +41,7 @@ getBaseOffset:
     ld a, b
     pop bc
     ret z
-getBaseOffsetErr:
+getWordSizeIndexErr:
     bcall(_ErrDomain)
 
 ;-----------------------------------------------------------------------------
@@ -101,25 +103,25 @@ w32StatusCodeHasFrac equ 2
 ; Destroys: A, B, C, DE
 ; Preserves: HL, OP1, OP2
 convertOP1ToW32:
-    ld (hl), 0
+    call clearW32 ; ensure u32=0 even when error conditions are detected
     push hl
     bcall(_PushRealO2)
 convertOP1ToW32CheckNegative:
     bcall(_CkOP1Pos) ; if OP1<0: ZF=0
-    jr z, convertOP1ToU32CheckTooBig
+    jr z, convertOP1ToW32CheckTooBig
     bcall(_PopRealO2)
     pop hl
     set w32StatusCodeNegative, (hl)
     ret
-convertOP1ToU32CheckTooBig:
+convertOP1ToW32CheckTooBig:
     call op2Set2Pow32
     bcall(_CpOP1OP2) ; if OP1 >= 2^32: CF=0
-    jr c, convertOP1ToU32CheckInt
+    jr c, convertOP1ToW32CheckInt
     bcall(_PopRealO2)
     pop hl
     set w32StatusCodeTooBig, (hl)
     ret
-convertOP1ToU32CheckInt:
+convertOP1ToW32CheckInt:
     bcall(_CkPosInt) ; if OP1>=0 and OP1 is int: ZF=1
     jr z, convertOP1ToW32Valid
     bcall(_PopRealO2)
@@ -200,7 +202,7 @@ convertOP2ToU32:
     ret
 
 ;-----------------------------------------------------------------------------
-; Convert U3 or U32 to a TI floating point number.
+; Convert U8 or U32 to a TI floating point number.
 ;-----------------------------------------------------------------------------
 
 ; Description: Convert the u32 referenced by HL to a floating point number in
@@ -275,6 +277,43 @@ addU8ToOP1Check:
     pop bc
     djnz addU8ToOP1Loop
     pop hl
+    ret
+
+;-----------------------------------------------------------------------------
+; W32 and WSIZE routines.
+;-----------------------------------------------------------------------------
+
+; Description: Check if the given u32 fits in the given WSIZE.
+; Input:
+;   - HL: w32
+;   - (baseWordSize): current word size
+; Output:
+;   - HL: w32.statusCode set to w32StatusCodeTooBig if u32(HL) does not fit
+; Preserves: HL
+checkW32FitsWsize:
+    call getWordSizeIndex ; A=0,1,2,3
+    ld b, 3
+    sub b
+    neg ; A=3-A
+    ret z ; if A==0 (i.e. wordSize==32): ret
+    ld b, a
+    xor a
+    push hl
+    inc hl
+    inc hl
+    inc hl
+    inc hl
+checkW32FitsLoop:
+    or (hl)
+    dec hl
+    jr nz, checkW32FitsWsizeTooBig
+    djnz checkW32FitsLoop
+checkW32FitsWsizeOk:
+    pop hl
+    ret
+checkW32FitsWsizeTooBig:
+    pop hl
+    set w32StatusCodeTooBig, (hl)
     ret
 
 ;-----------------------------------------------------------------------------
@@ -378,15 +417,15 @@ convertU32ToOctStringLoop:
 ; Routines related to Binary strings.
 ;-----------------------------------------------------------------------------
 
-binNumberWidth equ 14
+binNumberWidth equ 32
 
 ; Description: Converts 32-bit unsigned integer referenced by HL to a binary
 ; string in buffer referenced by DE.
 ; Input:
 ;   - HL: pointer to 32-bit unsigned integer
-;   - DE: pointer to a C-string buffer of at least 15 bytes (14 binary digits
-;   plus NUL terminator). This will usually be 2 consecutive OPx registers,
-;   each 11 bytes long, for a total of 22 bytes.
+;   - DE: pointer to a C-string buffer of at least 33 bytes (32 binary digits
+;   plus NUL terminator). This will usually be 3 consecutive OPx registers,
+;   each 11 bytes long, for a total of 33 bytes.
 ; Output:
 ;   - (DE): C-string representation of u32 as octal digits
 ; Destroys: A

@@ -12,7 +12,7 @@
 ; Description: Call the appropriate shiftLeftLogicalLeftUXX() depending on
 ; (baseWordSize).
 shiftLeftLogical:
-    call getBaseOffset
+    call getWordSizeIndex
     or a
     jr z, shiftLeftLogicalU8
     dec a
@@ -67,7 +67,7 @@ shiftLeftLogicalU8:
 ; Description: Call the appropriate shiftRightLogicalUXX() depending on
 ; (baseWordSize).
 shiftRightLogical:
-    call getBaseOffset
+    call getWordSizeIndex
     or a
     jr z, shiftRightLogicalU8
     dec a
@@ -121,7 +121,7 @@ shiftRightLogicalU8:
 ; Description: Call the appropriate shiftRightArithmeticUXX() depending on
 ; (baseWordSize).
 shiftRightArithmetic:
-    call getBaseOffset
+    call getWordSizeIndex
     or a
     jr z, shiftRightArithmeticU8
     dec a
@@ -180,7 +180,7 @@ shiftRightArithmeticU8:
 ;   - HL: pointer to result
 ;   - CF: bit 7 of most significant byte of input
 rotateLeftCircular:
-    call getBaseOffset
+    call getWordSizeIndex
     or a
     jr z, rotateLeftCircularU8
     dec a
@@ -240,7 +240,7 @@ rotateLeftCircularU8:
 ; Description: Call the appropriate rotateRightCircularUXX() depending on
 ; (baseWordSize).
 rotateRightCircular:
-    call getBaseOffset
+    call getWordSizeIndex
     or a
     jr z, rotateRightCircularU8
     dec a
@@ -309,7 +309,7 @@ rotateRightCircularU8:
 ; Destroys: A, C
 rotateLeftCarry:
     rl c ; save CF
-    call getBaseOffset
+    call getWordSizeIndex
     or a
     jr z, rotateLeftCarryU8Alt
     dec a
@@ -374,7 +374,7 @@ rotateLeftCarryU8:
 ; Destroys: A, C
 rotateRightCarry:
     rl c ; save CF
-    call getBaseOffset
+    call getWordSizeIndex
     or a
     jr z, rotateRightCarryU8Alt
     dec a
@@ -498,7 +498,7 @@ multU32By10:
     ret
 
 multUxxUxx:
-    call getBaseOffset
+    call getWordSizeIndex
     or a
     jr z, multU8U8
     dec a
@@ -675,7 +675,7 @@ addU32U8:
     ret
 
 addUxxUxx:
-    call getBaseOffset
+    call getWordSizeIndex
     or a
     jr z, addU8U8
     dec a
@@ -808,7 +808,7 @@ addU32U32IX:
 ;-----------------------------------------------------------------------------
 
 subUxxUxx:
-    call getBaseOffset
+    call getWordSizeIndex
     or a
     jr z, subU8U8
     dec a
@@ -1226,6 +1226,15 @@ clearU32BC:
     ld h, b
     ld l, c
     jr clearU32AltEntry
+
+; Description: Clear the w32 value pointed by HL.
+; Input: HL: pointer to w32
+; Destroys: none
+clearW32:
+    push hl
+    push bc
+    ld bc, $0500 ; B=5; C=0
+    jr clearU32Loop
 
 ;-----------------------------------------------------------------------------
 
@@ -1654,7 +1663,7 @@ truncToWordSize:
     inc hl
     inc hl
     inc hl
-    call getBaseOffset
+    call getWordSizeIndex
     sub 3
     neg ; [u8,u16,u24,u32] -> [3,2,1,0]
     jr truncToWordSizeEntry

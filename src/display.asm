@@ -720,12 +720,14 @@ printOP1BaseNegative:
 
 ;-----------------------------------------------------------------------------
 
-; Function: Print ingeger at OP1 at the current cursor in base 10. Erase to
+; Function: Print integer at OP1 at the current cursor in base 10. Erase to
 ; the end of line (but only if the digits did not spill over to the next line).
+; Input: OP1
 ; Destroys: all, OP1, OP2, OP3, OP4
 printOP1Base10:
     ld hl, OP3
     call convertOP1ToW32
+    call checkW32FitsWsize
     ld a, (hl)
     bit w32StatusCodeTooBig, a
     jr nz, printOP1BaseInvalid
@@ -738,13 +740,23 @@ printOP1Base10:
 printOP1BaseXX:
     ; Add '.' if OP1 has fractional component.
     dec hl
-    bit w32StatusCodeHasFrac, (hl)
-    inc hl
-    ex de, hl
-    jr z, printHLString
-    ld a, '.'
-    call appendCString
+    call appendHasFrac
     jr printHLString
+
+; Description: Append a '.' at the end of the string if W32.hasFrac is set.
+; Input:
+;   - HL: pointer to W32 struct
+;   - DE: pointer to ascii string
+; Output:
+;   - HL: pointer to ascii string with '.' appended if w32.hasFrac is enabled
+;   - DE: pointer to W32 struct
+; Destroys: A
+appendHasFrac:
+    bit w32StatusCodeHasFrac, (hl)
+    ex de, hl
+    ret z
+    ld a, '.'
+    jp appendCString
 
 ;-----------------------------------------------------------------------------
 
@@ -752,10 +764,12 @@ printOP1BaseXX:
 ; the end of line (but only if the digits did not spill over to the next line).
 ; TODO: I think printOP1Base16(), printOP1Base8(), and printOP1Base2() can be
 ; combined into a single subroutine, saving memory.
+; Input: OP1
 ; Destroys: all, OP1, OP2, OP3, OP4
 printOP1Base16:
     ld hl, OP3
     call convertOP1ToW32
+    call checkW32FitsWsize
     ld a, (hl)
     bit w32StatusCodeTooBig, a
     jr nz, printOP1BaseInvalid
@@ -764,17 +778,38 @@ printOP1Base16:
     ; Convert u32 into a base-16 string.
     inc hl ; W32+1
     ld de, OP4
-    call convertU32ToHexString
-    jr printOP1BaseXX
+    call convertU32ToHexString ; DE=rendered string
+    ; Append frac indicator
+    dec hl
+    call appendHasFrac ; HL=rendered string
+    call truncateHexDigits
+    jr printHLString
+
+; Description: Truncate upper digits depending on baseWordSize.
+; Input: HL: pointer to rendered string
+; Output: HL: pointer to truncated string
+; Destroys: A, DE
+truncateHexDigits:
+    ld a, (baseWordSize)
+    srl a
+    srl a ; A=2,4,6,8
+    sub 8
+    neg ; A=6,4,2,0
+    ld e, a
+    ld d, 0
+    add hl, de
+    ret
 
 ;-----------------------------------------------------------------------------
 
 ; Function: Print ingeger at OP1 at the current cursor in base 8. Erase to
 ; the end of line (but only if the digits did not spill over to the next line).
+; Input: OP1
 ; Destroys: all, OP1, OP2, OP3, OP4, OP5
 printOP1Base8:
     ld hl, OP3
     call convertOP1ToW32
+    call checkW32FitsWsize
     ld a, (hl)
     bit w32StatusCodeTooBig, a
     jr nz, printOP1BaseInvalid
@@ -784,7 +819,41 @@ printOP1Base8:
     inc hl ; W32+1
     ld de, OP4
     call convertU32ToOctString
-    jr printOP1BaseXX
+    ; Append frac indicator
+    dec hl
+    call appendHasFrac ; HL=rendered string
+    call truncateOctDigits
+    jp printHLString
+
+; Truncate upper digits depending on baseWordSize. For base-8, the u32 integer
+; was converted to 11 digits (33 bits). The number of digits to retain for each
+; baseWordSize is: {8: 3, 16: 6, 24: 8, 32: 11}, so the number of digits to
+; truncate is: {8: 8, 16: 5, 24: 3, 32: 0}.
+; Input: HL: pointer to rendered string
+; Output: HL: pointer to truncated string
+; Destroys: A, DE
+truncateOctDigits:
+    ld a, (baseWordSize)
+    cp 8
+    jr nz, truncateOctDigits16
+    ld e, a
+    jr truncateOctString
+truncateOctDigits16:
+    cp 16
+    jr nz, truncateOctDigits24
+    ld e, 5
+    jr truncateOctString
+truncateOctDigits24:
+    cp 24
+    jr nz, truncateOctDigits32
+    ld e, 3
+    jr truncateOctString
+truncateOctDigits32:
+    ld e, 0
+truncateOctString:
+    ld d, 0
+    add hl, de
+    ret
 
 ;-----------------------------------------------------------------------------
 
@@ -798,16 +867,39 @@ printOP1Base8:
 printOP1Base2:
     ld hl, OP3
     call convertOP1ToW32
+    call checkW32FitsWsize
     ld a, (hl)
     bit w32StatusCodeTooBig, a
-    jr nz, printOP1BaseInvalid
+    jp nz, printOP1BaseInvalid
     bit w32StatusCodeNegative, a
-    jr nz, printOP1BaseNegative
+    jp nz, printOP1BaseNegative
     ; Convert u32 into a base-2 string.
     inc hl ; W32+1
     ld de, OP4
     call convertU32ToBinString
-    jr printOP1BaseXX
+    ; Append frac indicator
+    dec hl
+    call appendHasFrac ; HL=rendered string
+    call truncateBinDigits
+    jp printHLString
+
+; Description: Truncate upper digits depending on baseWordSize. The number of
+; digits to truncate is (32 - baseWordSize).
+; Input: HL: pointer to rendered string
+; Output: HL: pointer to truncated string
+; Destroys: A, DE
+truncateBinDigits:
+    ld a, (baseWordSize)
+    cp 15 ; cap the number of display digits to <= 14
+    jr c, truncateBinDigitsContinue
+    ld a, 14
+truncateBinDigitsContinue:
+    sub 32
+    neg ; A=24,16,8,0
+    ld e, a
+    ld d, 0
+    add hl, de
+    ret
 
 ;-----------------------------------------------------------------------------
 

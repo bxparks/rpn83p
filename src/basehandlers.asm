@@ -97,7 +97,7 @@ mBaseNameSelector:
 ;   - throws exception if (baseWordSize) is not validf
 ; Destroys: A
 ;baseDispatcher:
-;    call getBaseOffset
+;    call getWordSizeIndex
 ;    ld e, a
 ;    ld d, 0
 ;    add hl, de
