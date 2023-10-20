@@ -1205,27 +1205,24 @@ copyU32HLToDE:
 ; Input: HL: pointer to u32
 ; Destroys: none
 clearU32:
-    push af
     push hl
+    push bc
 clearU32AltEntry:
-    xor a
-    ld (hl), a
+    ld bc, $0400 ; B=4; C=0
+clearU32Loop:
+    ld (hl), c
     inc hl
-    ld (hl), a
-    inc hl
-    ld (hl), a
-    inc hl
-    ld (hl), a
+    djnz clearU32Loop
+    pop bc
     pop hl
-    pop af
     ret
 
 ; Description: Clear the u32 pointed by BC.
 ; Input: BC: pointer to u32
 ; Destroys: none
 clearU32BC:
-    push af
     push hl
+    push bc
     ld h, b
     ld l, c
     jr clearU32AltEntry
@@ -1233,12 +1230,24 @@ clearU32BC:
 ;-----------------------------------------------------------------------------
 
 ; Description: Set u32 pointed by HL to value in A.
+; Input:
+;   - A: u8
+;   - HL: pointer to u32
+; Output:
+;   - (HL)=A
+; Preserves: all
 setU32ToA:
     call clearU32
     ld (hl), a
     ret
 
-; Description: Set u32 pointed by HL to value in BC.
+; Description: Set u32 pointed by HL to u16 value in BC.
+; Input:
+;   - BC: u16
+;   - HL: pointer to u32
+; Output:
+;   - (HL)=BC
+; Preserves: all
 setU32ToBC:
     push af
     push hl
