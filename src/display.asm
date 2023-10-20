@@ -720,39 +720,43 @@ printOP1BaseNegative:
 
 ;-----------------------------------------------------------------------------
 
-; Function: Print ingeger at OP1 at the current cursor in base 10. Erase to
+; Function: Print integer at OP1 at the current cursor in base 10. Erase to
 ; the end of line (but only if the digits did not spill over to the next line).
+; Input: OP1
 ; Destroys: all, OP1, OP2, OP3, OP4
 printOP1Base10:
-    call op2Set2Pow32 ; OP2 = 2^32
-    bcall(_CpOP1OP2) ; if OP1 >= 2^32: CF=0
-    jr nc, printOP1BaseInvalid
-
-    bcall(_CkOP1FP0) ; if OP1 == 0: ZF=1
-    jr z, printOP1Base10Valid
-
-    bcall(_CkOP1Pos) ; if OP1 > 0: ZF=1
-    jr nz, printOP1BaseNegative
-
-printOP1Base10Valid:
-    bcall(_PushRealO1) ; FPS = OP1 (save)
-    bcall(_Trunc) ; OP1 = trunc(OP1)
-printOP1Base10String:
     ld hl, OP3
-    call convertOP1ToU32
+    call convertOP1ToW32
+    call checkW32FitsWsize
+    ld a, (hl)
+    bit w32StatusCodeTooBig, a
+    jr nz, printOP1BaseInvalid
+    bit w32StatusCodeNegative, a
+    jr nz, printOP1BaseNegative
+    ; Convert u32 into a base-10 string.
+    inc hl ; W32+1
     ld de, OP4
     call convertU32ToDecString
-
-    ; Check if OP1 was a pure integer
-    push de ; DE = dec string
-    bcall(_PopRealO1) ; OP1 = original OP1
-    bcall(_Frac) ; OP1 = frac(OP1)
-    bcall(_CkOP1FP0) ; if frac(OP1) == 0: ZF=1
-    pop hl ; HL = dec string
-    jr z, printHLString
-    ld a, '.'
-    call appendCString
+printOP1BaseXX:
+    ; Add '.' if OP1 has fractional component.
+    dec hl
+    call appendHasFrac
     jr printHLString
+
+; Description: Append a '.' at the end of the string if W32.hasFrac is set.
+; Input:
+;   - HL: pointer to W32 struct
+;   - DE: pointer to ascii string
+; Output:
+;   - HL: pointer to ascii string with '.' appended if w32.hasFrac is enabled
+;   - DE: pointer to W32 struct
+; Destroys: A
+appendHasFrac:
+    bit w32StatusCodeHasFrac, (hl)
+    ex de, hl
+    ret z
+    ld a, '.'
+    jp appendCString
 
 ;-----------------------------------------------------------------------------
 
@@ -760,73 +764,96 @@ printOP1Base10String:
 ; the end of line (but only if the digits did not spill over to the next line).
 ; TODO: I think printOP1Base16(), printOP1Base8(), and printOP1Base2() can be
 ; combined into a single subroutine, saving memory.
+; Input: OP1
 ; Destroys: all, OP1, OP2, OP3, OP4
 printOP1Base16:
-    call op2Set2Pow32 ; OP2 = 2^32
-    bcall(_CpOP1OP2) ; if OP1 >= 2^32: CF=0
-    jr nc, printOP1BaseInvalid
-
-    bcall(_CkOP1FP0) ; if OP1 == 0: ZF=1
-    jr z, printOP1Base16Valid
-
-    bcall(_CkOP1Pos) ; if OP1 > 0: ZF=1
-    jr nz, printOP1BaseNegative
-
-printOP1Base16Valid:
-    bcall(_PushRealO1) ; FPS = OP1 (save)
-    bcall(_Trunc) ; OP1 = trunc(OP1)
-printOP1Base16String:
     ld hl, OP3
-    call convertOP1ToU32
+    call convertOP1ToW32
+    call checkW32FitsWsize
+    ld a, (hl)
+    bit w32StatusCodeTooBig, a
+    jr nz, printOP1BaseInvalid
+    bit w32StatusCodeNegative, a
+    jr nz, printOP1BaseNegative
+    ; Convert u32 into a base-16 string.
+    inc hl ; W32+1
     ld de, OP4
-    call convertU32ToHexString
+    call convertU32ToHexString ; DE=rendered string
+    ; Append frac indicator
+    dec hl
+    call appendHasFrac ; HL=rendered string
+    call truncateHexDigits
+    jr printHLString
 
-    ; Check if OP1 was a pure integer
-    push de ; DE = hex string
-    bcall(_PopRealO1) ; OP1 = original OP1
-    bcall(_Frac) ; OP1 = frac(OP1)
-    bcall(_CkOP1FP0) ; if frac(OP1) == 0: ZF=1
-    pop hl ; HL = hex string
-    jp z, printHLString
-    ld a, '.'
-    call appendCString
-    jp printHLString
+; Description: Truncate upper digits depending on baseWordSize.
+; Input: HL: pointer to rendered string
+; Output: HL: pointer to truncated string
+; Destroys: A, DE
+truncateHexDigits:
+    ld a, (baseWordSize)
+    srl a
+    srl a ; A=2,4,6,8
+    sub 8
+    neg ; A=6,4,2,0
+    ld e, a
+    ld d, 0
+    add hl, de
+    ret
 
 ;-----------------------------------------------------------------------------
 
 ; Function: Print ingeger at OP1 at the current cursor in base 8. Erase to
 ; the end of line (but only if the digits did not spill over to the next line).
+; Input: OP1
 ; Destroys: all, OP1, OP2, OP3, OP4, OP5
 printOP1Base8:
-    call op2Set2Pow32 ; OP2 = 2^32
-    bcall(_CpOP1OP2) ; if OP1 >= 2^32: CF=0
-    jp nc, printOP1BaseInvalid
-
-    bcall(_CkOP1FP0) ; if OP1 == 0: ZF=1
-    jr z, printOP1Base8Valid
-
-    bcall(_CkOP1Pos) ; if OP1 > 0: ZF=1
-    jp nz, printOP1BaseNegative
-
-printOP1Base8Valid:
-    bcall(_PushRealO1) ; FPS = OP1 (save)
-    bcall(_Trunc) ; OP1 = trunc(OP1)
-printOP1Base8String:
     ld hl, OP3
-    call convertOP1ToU32
+    call convertOP1ToW32
+    call checkW32FitsWsize
+    ld a, (hl)
+    bit w32StatusCodeTooBig, a
+    jr nz, printOP1BaseInvalid
+    bit w32StatusCodeNegative, a
+    jr nz, printOP1BaseNegative
+    ; Convert u32 into a base-8 string.
+    inc hl ; W32+1
     ld de, OP4
     call convertU32ToOctString
-
-    ; Check if OP1 was a pure integer
-    push de ; DE = rendered string
-    bcall(_PopRealO1) ; OP1 = original OP1
-    bcall(_Frac) ; OP1 = frac(OP1)
-    bcall(_CkOP1FP0) ; if frac(OP1) == 0: ZF=1
-    pop hl ; HL = rendered string
-    jp z, printHLString
-    ld a, '.'
-    call appendCString
+    ; Append frac indicator
+    dec hl
+    call appendHasFrac ; HL=rendered string
+    call truncateOctDigits
     jp printHLString
+
+; Truncate upper digits depending on baseWordSize. For base-8, the u32 integer
+; was converted to 11 digits (33 bits). The number of digits to retain for each
+; baseWordSize is: {8: 3, 16: 6, 24: 8, 32: 11}, so the number of digits to
+; truncate is: {8: 8, 16: 5, 24: 3, 32: 0}.
+; Input: HL: pointer to rendered string
+; Output: HL: pointer to truncated string
+; Destroys: A, DE
+truncateOctDigits:
+    ld a, (baseWordSize)
+    cp 8
+    jr nz, truncateOctDigits16
+    ld e, a
+    jr truncateOctString
+truncateOctDigits16:
+    cp 16
+    jr nz, truncateOctDigits24
+    ld e, 5
+    jr truncateOctString
+truncateOctDigits24:
+    cp 24
+    jr nz, truncateOctDigits32
+    ld e, 3
+    jr truncateOctString
+truncateOctDigits32:
+    ld e, 0
+truncateOctString:
+    ld d, 0
+    add hl, de
+    ret
 
 ;-----------------------------------------------------------------------------
 
@@ -838,35 +865,55 @@ printOP1Base8String:
 ; Input: OP1: non-negative floating point number < 2^14
 ; Destroys: all, OP1, OP2, OP3, OP4, OP5
 printOP1Base2:
-    call op2Set2Pow14 ; OP2 = 2^14
-    bcall(_CpOP1OP2) ; if OP1 >= 2^14: CF=0
-    jp nc, printOP1BaseInvalid
-
-    bcall(_CkOP1FP0) ; if OP1 == 0: ZF=1
-    jr z, printOP1Base2Valid
-
-    bcall(_CkOP1Pos) ; if OP1 > 0: ZF=1
-    jp nz, printOP1BaseNegative
-
-printOP1Base2Valid:
-    bcall(_PushRealO1) ; FPS = OP1 (save)
-    bcall(_Trunc) ; OP1 = trunc(OP1)
-printOP1Base2String:
     ld hl, OP3
-    call convertOP1ToU32
+    call convertOP1ToW32
+    call checkW32FitsWsize
+    ld a, (hl)
+    bit w32StatusCodeTooBig, a
+    jp nz, printOP1BaseInvalid
+    bit w32StatusCodeNegative, a
+    jp nz, printOP1BaseNegative
+    ; Convert u32 into a base-2 string.
+    inc hl ; W32+1
     ld de, OP4
     call convertU32ToBinString
-
-    ; Check if OP1 was a pure integer
-    push de ; DE = rendered string
-    bcall(_PopRealO1) ; OP1 = original OP1
-    bcall(_Frac) ; OP1 = frac(OP1)
-    bcall(_CkOP1FP0) ; if frac(OP1) == 0: ZF=1
-    pop hl ; HL = rendered string
-    jp z, printHLString
-    ld a, '.'
-    call appendCString
+    ; Append frac indicator
+    dec hl
+    call appendHasFrac ; HL=rendered string
+    call truncateBinDigits
     jp printHLString
+
+; Description: Truncate upper digits depending on baseWordSize. The number of
+; digits to truncate is (32 - baseWordSize).
+; Input: HL: pointer to rendered string
+; Output:
+;   HL: pointer to truncated string
+; Destroys: A, BC
+truncateBinDigits:
+    ld a, (baseWordSize)
+    cp 15 ; cap the number of display digits to <= 14
+    jr c, truncateBinDigitsContinue
+    ld a, 14
+truncateBinDigitsContinue:
+    sub 32
+    neg ; A=24,16,8,0
+    ; Check leading digits to determine if truncation causes overflow
+    ld b, a
+    ld c, 0
+truncateBinDigitsCheckOverflow:
+    ld a, (hl)
+    sub '0'
+    or c ; check for a '1' digit
+    ld c, a
+    inc hl
+    djnz truncateBinDigitsCheckOverflow
+    ; HL now points to the left most digit of the truncated string.
+    ret z ; C=0, indicating no overflow
+    ; Replace left most digit with ellipsis symbol to indicate overflow.
+    ld a, Lellipsis
+    ld (hl), a
+truncateBinDigitsNoOverflow:
+    ret
 
 ;-----------------------------------------------------------------------------
 
