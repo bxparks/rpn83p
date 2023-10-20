@@ -476,12 +476,14 @@ baseDivHandlerDivByZero:
 
 mReverseBitHandler:
     call recallXAsU32 ; HL=OP3=u32(X)
-    call reverseU32
+    call truncToWordSize
+    call reverseBits
     call convertU32ToOP1 ; OP1 = float(OP3)
     jp replaceX
 
 mCountBitHandler:
     call recallXAsU32 ; HL=OP3=u32(X)
+    call truncToWordSize
     call countU32Bits
     call setU32ToA
     call convertU32ToOP1 ; OP1 = float(OP3)

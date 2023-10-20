@@ -1460,6 +1460,18 @@ negU32:
 
 ;-----------------------------------------------------------------------------
 
+; Description: Call the appropriate reverseUXX() depending on the
+; (baseWordSize).
+reverseBits:
+    call getWordSizeIndex
+    or a
+    jr z, reverseU8
+    dec a
+    jr z, reverseU16
+    dec a
+    jr z, reverseU24
+    ; [[fallthrough]]
+
 ; Description: Reverse the bits of u32(HL).
 ; Input: HL=pointer to u32
 ; Output: HL=reverse(HL)
@@ -1483,31 +1495,98 @@ reverseU32:
     dec hl
     dec hl
     dec hl
-    ld (hl), a
+    ; ld (hl), a
     ; reverse the bits of each byte
-    ld a, (hl)
-    call reverseBits
+    ; ld a, (hl)
+    call reverseABits
     ld (hl), a
     inc hl
+    ;
     ld a, (hl)
-    call reverseBits
+    call reverseABits
     ld (hl), a
     inc hl
+    ;
     ld a, (hl)
-    call reverseBits
+    call reverseABits
     ld (hl), a
     inc hl
+    ;
     ld a, (hl)
-    call reverseBits
+    call reverseABits
     ld (hl), a
     pop hl
+    ret
+
+; Description: Reverse the bits of u24(HL).
+; Input: HL=pointer to u24
+; Output: HL=reverse(HL)
+; Destroys: A, BC
+; Preserves: HL, DE
+reverseU24:
+    push hl
+    ; reverse the bytes
+    ld c, (hl)
+    inc hl
+    inc hl
+    ld a, (hl)
+    ld (hl), c
+    dec hl
+    dec hl
+    ; ld (hl), a
+    ; reverse the bits of each byte
+    ; ld a, (hl)
+    call reverseABits
+    ld (hl), a
+    inc hl
+    ld a, (hl)
+    call reverseABits
+    ld (hl), a
+    inc hl
+    ld a, (hl)
+    call reverseABits
+    ld (hl), a
+    pop hl
+    ret
+
+; Description: Reverse the bits of u16(HL).
+; Input: HL=pointer to u16
+; Output: HL=reverse(HL)
+; Destroys: A, BC
+; Preserves: HL, DE
+reverseU16:
+    ; reverse the bytes
+    ld c, (hl)
+    inc hl
+    ld a, (hl)
+    ld (hl), c
+    dec hl
+    ; reverse the bits of each byte
+    call reverseABits
+    ld (hl), a
+    inc hl
+    ld a, (hl)
+    call reverseABits
+    ld (hl), a
+    dec hl
+    ret
+
+; Description: Reverse the bits of u8(HL).
+; Input: HL=pointer to u8
+; Output: HL=reverse(HL)
+; Destroys: A, BC
+; Preserves: HL, DE
+reverseU8:
+    ld a, (hl)
+    call reverseABits
+    ld (hl), a
     ret
 
 ; Description: Reverse the bits of register A.
 ; Input: A
 ; Output: A=reverse(A)
 ; Destroys: BC
-reverseBits:
+reverseABits:
     ld b, 8
 reverseBitsLoop:
     rrca
