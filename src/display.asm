@@ -886,8 +886,9 @@ printOP1Base2:
 ; Description: Truncate upper digits depending on baseWordSize. The number of
 ; digits to truncate is (32 - baseWordSize).
 ; Input: HL: pointer to rendered string
-; Output: HL: pointer to truncated string
-; Destroys: A, DE
+; Output:
+;   HL: pointer to truncated string
+; Destroys: A, BC
 truncateBinDigits:
     ld a, (baseWordSize)
     cp 15 ; cap the number of display digits to <= 14
@@ -896,9 +897,22 @@ truncateBinDigits:
 truncateBinDigitsContinue:
     sub 32
     neg ; A=24,16,8,0
-    ld e, a
-    ld d, 0
-    add hl, de
+    ; Check leading digits to determine if truncation causes overflow
+    ld b, a
+    ld c, 0
+truncateBinDigitsCheckOverflow:
+    ld a, (hl)
+    sub '0'
+    or c ; check for a '1' digit
+    ld c, a
+    inc hl
+    djnz truncateBinDigitsCheckOverflow
+    ; HL now points to the left most digit of the truncated string.
+    ret z ; C=0, indicating no overflow
+    ; Replace left most digit with ellipsis symbol to indicate overflow.
+    ld a, Lellipsis
+    ld (hl), a
+truncateBinDigitsNoOverflow:
     ret
 
 ;-----------------------------------------------------------------------------
