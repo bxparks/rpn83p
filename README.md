@@ -115,7 +115,7 @@ Guide](USER_GUIDE.md), but here is the quick version:
 
 The RPN83P app starts directly into the calculator mode, like this:
 
-> ![RPN83P Hello 1](docs/rpn83p-screenshot-initial.png)
+![RPN83P Hello 1](docs/rpn83p-screenshot-initial.png)
 
 Since the RPN83P is a flash app, it is preserved when the RAM is cleared. It
 consumes about 300 bytes of RAM space for its internal RPN and storage
@@ -162,7 +162,7 @@ outwards. Enter the following keystrokes:
 
 Here is an animated GIF that shows this calculation:
 
-> ![RPN83P Example 1 GIF](docs/rpn83p-example1.gif)
+![RPN83P Example 1 GIF](docs/rpn83p-example1.gif)
 
 (Note that the RPN83P provides a `X^3` menu function that could have been used
 for this formula, but I used the `LastX` feature to demonstrate its use.)
@@ -205,14 +205,14 @@ view the final result as a decimal number:
 
 Here is the animated GIF that shows this calculation:
 
-> ![RPN83P Example 2 GIF](docs/rpn83p-example2.gif)
+![RPN83P Example 2 GIF](docs/rpn83p-example2.gif)
 
 Press:
 
 - `ON` button (`ESC/EXIT`) multiple times to back to the home menu, or
 - `MATH` button (`HOME`) to go back directly.
 
-> ![ROOT MenuRow 1](docs/rpn83p-screenshot-menu-root-1.png)
+![ROOT MenuRow 1](docs/rpn83p-screenshot-menu-root-1.png)
 
 ## User Guide
 
