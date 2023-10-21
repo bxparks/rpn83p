@@ -10,6 +10,17 @@
         - check for division by zero when calculating weighted mean `WMN`, and
           show `9.9999999999999E99` to indicate error, allowing weightedX (or
           weightedY) to be evaluated even if the other is undefined
+    - `BASE`
+        - implement `WSIZ` (set word size) restricted to 8, 16, 24, and 32
+        - display appropriate number of digits for various `WSIZ` values, for
+          various base modes (`HEX`, `OCT`, `BIN`)
+        - display ellipsis character on left most digit in `BIN` mode if
+          the binary number cannot be fully displayed using 14 digits on the
+          screen
+        - **Breaking Change**: change order of `BDIV` results in `X` and `Y`
+          registers
+            - now `X=quotient=Y/X` and `Y=remainder=Y%X`
+            - allows easier recovery of original `X` using `LastX` `*`
 - 0.6.0 (2023-09-22)
     - save application state
         - preserve app state into an appvar named `RPN83SAV` upon exit

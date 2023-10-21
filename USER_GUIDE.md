@@ -2,7 +2,7 @@
 
 RPN calculator app for the TI-83 Plus and TI-84 Plus inspired by the HP-42S.
 
-**Version**: 0.6.0 (2023-09-22)
+**Version**: 0.7.0-dev (2023-10-20)
 
 **Project Home**: https://github.com/bxparks/rpn83p
 
@@ -698,13 +698,13 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (back), and `MATH`
     - `B-`: subtract `X` from `Y` using unsigned 32-bit integer math
     - `B*`: multiply `X` and `Y` using unsigned 32-bit integer math
     - `B/`: divide `X` into `Y` using unsigned 32-bit integer math
-    - `BDIV`: divide `X` into `Y` with remainder, placing the quotient in `Y`
-      and the remainder in `X`
+    - `BDIV`: divide `X` into `Y` with remainder, placing the quotient in `X`
+      and the remainder in `Y`
     - `CCF`: clear carry flag
     - `SCF`: set carry flag
     - `CF?`: return carry flag state as 0 or 1
-    - `WSIZ`: set integer word size (not implemented)
-    - `WSZ?`: return current integer word size (normally 32)
+    - `WSIZ`: set integer word size (supported values: 8, 16, 24, 32)
+    - `WSZ?`: return current integer word size (default: 32)
 - `ROOT` > `HYP`
     - ![HYP MenuRow 1](docs/rpn83p-screenshot-menu-root-hyp-1.png)
     - ![HYP MenuRow 2](docs/rpn83p-screenshot-menu-root-hyp-2.png)
@@ -1029,6 +1029,14 @@ disabled.
 
 > ![Numbers in Binary Mode](docs/rpn83p-screenshot-base-bin.png)
 
+If a number is too large to be fully displayed in `BIN` mode using the 14 digits
+available on the screen, a small ellipsis character will be shown on the left to
+indicate that there are more digits which are truncated from the screen. For
+example, the number 33059 (hex 8123, oct 100443) has a binary representation of
+`1000 0001 0010 0011`, which will be shown like this:
+
+> ![BASE Binary Number Ellipsis](docs/rpn83p-base-bin-ellipsis.png)
+
 #### Shift and Rotate
 
 The RPN83P supports most of the common shift and rotate operations implemented
@@ -1097,6 +1105,12 @@ perform 32-bit unsigned arithmetic operations instead of floating point
 operations. The numbers in the `X` and `Y` registers are converted into 32-bit
 unsigned integers before the integer subroutines are called.
 
+The `BDIV` menu function performs the same integer division operation as `B/`
+but returns both the quotient (in `X`) and the remainder (in `Y`). With the
+quotient in `X`, it becomes easy to recover the original `X` value by using the
+`lastX` function (`2ND` `ANS`), then pressing the `*` button, then the `+`
+button to add back the remainder.
+
 **HP-42S Compatibility Note**: The HP-42S calls these integer functions `BASE+`,
 `BASE-`, `BASE*`, and `BASE/`. The RPN83P can only display 4-characters in the
 menu bar so I had to use shorter names. The HP-42S function called `B+/-` is
@@ -1104,8 +1118,8 @@ called `NEG` on the RPN83P. Early versions of the RPN83P retained the keyboard
 arithmetic buttons bound to their floating point operations, but it became too
 confusing to see hex, octal, or binary digits on the display, but get floating
 point results when performing an arithmetic operation such as `/`. The RPN83P
-follows the lead of the HP-42S to change the arithmetic operations to integer
-operations.
+follows the lead of the HP-42S so that the arithmetic keyboard buttons trigger
+the integer operations instead of floating point operations.
 
 For example, suppose the following numbers are in the RPN stack *before*
 entering the `BASE` menu:
@@ -1205,15 +1219,16 @@ be honest, I have never been able to fully understand and become comfortable
 with the HP-42S implementation of the BASE operations. First, 36 bits is a
 strange number, it is not an integer size used by modern microprocessors (8, 16,
 32, 64 bits). Second, the HP-42S does not display leading zeros in `HEX` `OCT`,
-or `BIN` modes. While this is consistent with the decimal mode, I find it
-confusing to see the number of rendered digits change depending on its value.
+or `BIN` modes. While this is consistent with the decimal mode, it is confusing
+to see the number of rendered digits change depending on its value.
 
 The RPN83P deviates from the HP-42S by using a 32-bit *unsigned* integer
 internally, and rendering the various HEX, OCT, and BIN numbers using the same
-number of digits all the time. This means that `HEX` mode always displays 8
-digits, `OCT` mode always displays 11 digits, and `BIN` mode always displays 14
-digits (due to size limitation of the LCD screen). I find this far less
-confusing when doing bitwise operations (e.g. bit-and, bit-or, bit-xor).
+number of digits all the time. (The word size can be changed using the `WSIZ`
+menu item, see below). This means that `HEX` mode always displays 8 digits,
+`OCT` mode always displays 11 digits, and `BIN` mode always displays 14 digits
+(due to size limitation of the LCD screen). I find this less confusing when
+doing bitwise operations (e.g. bit-and, bit-or, bit-xor).
 
 Since the internal integer representation is *unsigned*, the `(-)` (change sign)
 button is disabled. Instead, the menu system provides a `NEG` function which
@@ -1223,15 +1238,49 @@ function is closely related to the `NOT` function which performs a [one's
 complement](https://en.wikipedia.org/wiki/Ones%27_complement) operation where
 the `00000001` becomes `FFFFFFFE`.
 
-If you want to see the decimal value of a hex number that has its sign-bit (the
+If we want to see the decimal value of a hex number that has its sign-bit (the
 most significant bit) turned on (so it would be interpreted as a negative number
-if it were interpreted as a 32-bit signed integer), you can run the `NEG`
-function on it, then hit the `DEC` menu item to convert it to decimal. The
-displayed value will be the decimal value of the original hex number, without
-the negative sign.
+if it were interpreted as a signed integer), we can run the `NEG` function on
+it, then hit the `DEC` menu item to convert it to decimal. The displayed value
+will be the decimal value of the original hex number, without the negative sign.
 
-Currently, the integer size for base conversions and functions is hardcoded to
-be 32 bits. I hope to add the ability to change the integer size in the future.
+The word size, defaulting to 32 bits, can be changed using the `WSIZ` menu
+function. To simplify the implementation code, only the following word sizes are
+supported: 8, 16, 24, and 32, corresponding to 1, 2, 3, and 4 bytes
+respectively. The RPN83P app represents all numbers internally using the TI-OS
+floating point number format which supports 14 decimal digits, corresponding to
+46.5 bits. Therefore, the largest word size that could be supported in the
+current architecture is 40. Supporting a 64-bit word size would require a
+complete rewrite of the application
+
+Every `BASE` operation respects the current `WSIZ` value, truncating the `X` or
+`Y` integers to the word size, before performing the `BASE` operation, then
+truncating the result to the word size. For example, if the word size is 16,
+then the `RR` (rotate right circular) operation rotates bit 0 to bit 15, instead
+of bit 31 if the word size were 32.
+
+The `WSIZ` command uses the value of the `X` register, but the value shown on
+the display depends on the base mode. It is sometimes easier to temporarily
+change to `DEC` mode, set the `WSIZ`, then change the base mode back. For
+example, if we are in `BIN` mode, then we could use the following keystroke
+sequence to change the `WSIZ` to 16:
+
+```
+10000 # 16 in base-2 BIN mode
+WSIZ
+```
+
+But it may be easier to use the following instead:
+
+```
+BASE
+DEC
+16
+WSIZ # use the UP arrow to go to this menu row quickly
+BIN # use the DOWN arrow to go back to this menu row
+```
+
+The current `WSIZ` value can be retrieved using the `WSZ?` menu function.
 
 #### Base Number Retention
 
@@ -1518,10 +1567,10 @@ limited:
     - The HP-42S supports up to 18 (3 rows of 6 menus) to be customized through
       the `ASSIGN` and `CUSTOM` menus.
     - This seems like a useful feature, but would require substantial
-      refactoring of the currnet menu system code, like user-defined variables.
+      refactoring of the current menu system code, like user-defined variables.
 - custom button bindings
-    - a significant number of buttons on the TI-83/TI-84 keyboard are not
-      used by RPN83P
+    - a significant number of buttons on the TI-83/TI-84 keyboard are not used
+      by RPN83P
     - it would be useful to allow the user to customize some of those buttons
       for quick access
     - for example, the `2ND` `L1` to `L6`
@@ -1536,23 +1585,9 @@ limited:
       British or Canadian imperial units
     - it'd be nice to support both types, if we can make the menu labels
       self-documenting and distinctive
-- user selectable integer size for `BASE` functions
-    - currently, binary, octal, hexadecimal routines are implemented internally
-      using 32-bit unsigned numbers
-    - the user ought to be able to specify the integer size for those
-      operations: 8 bits, 16 bits, 32 bits, maybe 40 bits
-    - the app cannot support integer sizes higher than 46 bits because all
-      integers must eventually be stored as TI-OS floating point numbers which
-      support only 14 decimal digits, which corresonds to 46.5 bits
-    - the user-interface will be a challenge: for large integer sizes, the
-      number of digits will no longer fit inside the 14-15 digits available on a
-      single line.
-- Support more than 14 digits using `BASE 2`
-    - The underlying integer representation is 32 bit, it would be nice to be
-      able to display all of those digits.
-    - But this could be a difficult UI problem, because 32 digits will require 3
-      lines on the display, as each line currently can support only 14, maybe
-      15 digits.
+- Support more than 14 digits in `BIN` (base 2) mode
+    - This is a difficult UI problem, because 32 digits will require 3 lines on
+      the display, as each line currently can support only 14, maybe 15, digits.
 - system memory
     - Might be useful to expose some system status functions, like memory.
     - We can always drop into the TI-OS and use `2ND` `MEM` to get that

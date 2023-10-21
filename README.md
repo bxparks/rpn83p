@@ -71,7 +71,7 @@ Here are some missing features which may be added in the future:
 - complex numbers
 - keystroke programming
 
-**Version**: 0.6.0 (2023-09-22)
+**Version**: 0.7.0-dev (2023-10-20)
 
 **Changelog**: [CHANGELOG.md](CHANGELOG.md)
 
