@@ -289,7 +289,7 @@ mRotateRightCarryNLoop:
 recallXAsU32:
     call closeInputAndRecallX ; OP1=X
     ld hl, OP3
-    call convertOP1ToU32 ; OP3=u32(X)
+    call convertOP1ToU32AllowFrac ; OP3=u32(X)
     ret
 
 ; Description: Recall X and Y and convert them into u32 integers.
@@ -301,9 +301,9 @@ recallXAsU32:
 recallXYAsU32:
     call closeInputAndRecallXY ; OP1=Y; OP2=X
     ld hl, OP3
-    call convertOP1ToU32 ; OP3=u32(Y)
+    call convertOP1ToU32AllowFrac ; OP3=u32(Y)
     ld hl, OP4
-    call convertOP2ToU32 ; OP4=u32(X)
+    call convertOP2ToU32AllowFrac ; OP4=u32(X)
     ld hl, OP3
     ld de, OP4
     ret
@@ -320,9 +320,9 @@ recallXYAsU32:
 recallXYAsU32N:
     call closeInputAndRecallXY ; OP1=Y; OP2=X
     ld hl, OP3
-    call convertOP1ToU32 ; OP3=u32(Y)
+    call convertOP1ToU32AllowFrac ; OP3=u32(Y)
     ld hl, OP4
-    call convertOP2ToU32 ; OP4=u32(X)
+    call convertOP2ToU32AllowFrac ; OP4=u32(X)
     ld a, (baseWordSize)
     call cmpU32U8
     jr nc, recallXYAsU32NError
@@ -332,7 +332,7 @@ recallXYAsU32N:
     or a ; set ZF=1 if u8(X)==0
     ret
 recallXYAsU32NError:
-    bjump(_ErrDomain) ; throw exception if X >= baseWordSize
+    bcall(_ErrDomain) ; throw exception if X >= baseWordSize
 
 ;-----------------------------------------------------------------------------
 

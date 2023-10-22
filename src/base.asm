@@ -46,14 +46,72 @@ getWordSizeIndexErr:
 
 ;-----------------------------------------------------------------------------
 ; Routines for converting floating point to U32 or W32.
+;
+; The W32 type is a wrapper around a U32 containing a status_code byte at the
+; beginning. The equivalent C-struct for W32 is:
+;
+;   struct W32 {
+;       uint8_t status_code;
+;       uint32_t value;
+;   }
 ;-----------------------------------------------------------------------------
+
+; Bit flags of the W32 status_code. w32StatusCodeNegative and
+; w32StatusCodeTooBig are usually fatal errors which throw an exception.
+; w32StatusCodeHasFrac is sometimes a non-fatal error, because the operation
+; will truncate to integer before continuing with the calculation. We can mask
+; off the non-fatal error using an 'and w32StatusCodeFatalMask' instruction.
+w32StatusCodeNegative equ 0
+w32StatusCodeTooBig equ 1
+w32StatusCodeHasFrac equ 7
+w32StatusCodeFatalMask equ $03
 
 convertOP1ToU32Error:
     bcall(_ErrDomain) ; throw exception
 
-; Description: Same as convertOP1ToU32NoCheck() but throws an Err:Domain
-; exception if OP1 is not in the range of [0, 2^32). Floating point values are
-; allowed, but the fractional digits are ignored when converting to U32.
+; Description: Similar to convertOP1ToU32(), but don't throw if there is a
+; fractional part.
+; Input:
+;   - OP1: unsigned 32-bit integer as a floating point number
+;   - HL: pointer to a u32 in memory
+; Output:
+;   - HL: OP1 converted to a u32, in little-endian format
+; Destroys: A, B, C, DE
+; Preserves: HL, OP1, OP2
+convertOP1ToU32AllowFrac:
+    call convertOP1ToW32
+    ld a, (hl)
+    and w32StatusCodeFatalMask
+    jr nz, convertOP1ToU32Error
+    jr convertW32ToU32
+
+; Description: Similar to convertOP2ToU32(), but don't throw if there is a
+; fractional part.
+; Input:
+;   - OP2: unsigned 32-bit integer as a floating point number
+;   - HL: pointer to a u32 in memory
+; Output:
+;   - HL: OP2 converted to a u32, in little-endian format
+; Destroys: A, B, C, DE
+; Preserves: HL, OP1, OP2
+convertOP2ToU32AllowFrac:
+    push hl
+    bcall(_OP1ExOP2)
+    pop hl
+    push hl
+    call convertOP1ToU32AllowFrac
+    bcall(_OP1ExOP2)
+    pop hl
+    ret
+
+; Description: Convert OP1 to a U32, throwing an Err:Domain exception if OP1 is:
+;
+; - not in the range of [0, 2^32)
+; - is negative
+; - contains fractional part
+;
+; See convertOP1ToU32NoCheck() to convert to U32 without throwing.
+;
 ; Input:
 ;   - OP1: unsigned 32-bit integer as a floating point number
 ;   - HL: pointer to a u32 in memory
@@ -81,18 +139,6 @@ convertW32ToU32:
     ldir
     pop hl
     ret
-
-; The equivalent C-struct for W32 is:
-;
-;   struct W32 {
-;       uint8_t status_code;
-;       uint32_t value;
-;   }
-;
-; The bit flags in the W32 statusCode are:
-w32StatusCodeNegative equ 0
-w32StatusCodeTooBig equ 1
-w32StatusCodeHasFrac equ 2
 
 ; Description: Convert OP1 to W32 (statusCode, U32) struct.
 ; Input:
