@@ -126,7 +126,7 @@ appStateRpnFlags equ appStateDirtyFlags + 1
 appStateInputBufFlags equ appStateRpnFlags + 1
 
 ; The result code after the execution of each handler. Success is code 0. If a
-; TI-OS exception is thrown (through a `bjump(ErrXxx)`), the exception handler
+; TI-OS exception is thrown (through a `bcall(ErrXxx)`), the exception handler
 ; places a system error code into here. Before calling a handler, set this to 0
 ; because vast majority of handlers will not explicitly set handlerCode to 0
 ; upon success. (This makes coding easier because a successful handler can

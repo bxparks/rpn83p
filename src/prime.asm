@@ -109,7 +109,7 @@ primeFactorFloatCheckDiv:
 primeFactorBreak:
     bcall(_RunIndicOff) ; disable run indicator
     res onInterrupt, (IY+onFlags)
-    bjump(_ErrBreak) ; throw exception
+    bcall(_ErrBreak) ; throw exception
 
 ;-----------------------------------------------------------------------------
 

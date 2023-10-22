@@ -450,7 +450,7 @@ statWeightedMean:
     bcall(_CkOP2FP0)
     jr nz, statWeightedMeanWeightedX
 statWeightedMeanBothZero:
-    bjump(_ErrStat) ; throw exception
+    bcall(_ErrStat) ; throw exception
 statWeightedMeanWeightedX:
     ; OP1=SumX, OP2=SumY
     bcall(_PushRealO1) ; FPS=[SumX]

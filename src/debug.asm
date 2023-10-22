@@ -448,4 +448,4 @@ debugPause:
     ret
 debugPauseBreak:
     res onInterrupt, (iy + onFlags)
-    bjump(_ErrBreak) ; throw exception
+    bcall(_ErrBreak) ; throw exception

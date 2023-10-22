@@ -60,13 +60,13 @@ getErrorStringContinue:
 ;-----------------------------------------------------------------------------
 
 ; An array of pointers to C strings. The TI-OS error handler defines the error
-; code in the lower 7 bits, for a total of 128 possible values. But the SDK
-; documentation defines `bjump()` calls for only 28 or so. Unfortunately, the
-; numerical error code values passed through the `A` register are not
-; documented.
+; code in the lower 7 bits, for a total of 128 possible values. The SDK
+; documentation defines `bjump/bcall()` calls for about 28 of these values, but
+; the corresponding the numerical error codes passed through the `A` register
+; are not documented.
 ;
 ; The following numerical error codes below were reverse engineered by calling
-; the `bjump(_ErrXXX)` one at a time, trapping the exception, then printing out
+; the `bcall(_ErrXXX)` one at a time, trapping the exception, then printing out
 ; the code written into the `A` register. They match the codes given in this
 ; wiki page, https://learn.cemetech.net/index.php?title=Z80:Error_Codes, which
 ; seems to contain additional error codes which are not documented in the SDK

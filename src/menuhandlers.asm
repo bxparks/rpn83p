@@ -353,7 +353,7 @@ validatePosIntGcdLcm:
     bcall(_CkPosInt)
     ret z
 validatePosIntGcdLcmError:
-    bjump(_ErrDomain) ; throw exception
+    bcall(_ErrDomain) ; throw exception
 
 ; Description: Calculate the Great Common Divisor.
 ; Input: OP1, OP2
@@ -441,7 +441,7 @@ mPrimeHandler:
     jp replaceXWithOP1OP2
 
 mPrimeHandlerError:
-    bjump(_ErrDomain) ; throw exception
+    bcall(_ErrDomain) ; throw exception
 
 ;-----------------------------------------------------------------------------
 
@@ -679,7 +679,7 @@ validatePermCombParam:
     bcall(_CpOP1OP2)
     ret c ; ok if OP1 < 255
 validatePermCombError:
-    bjump(_ErrDomain) ; throw exception
+    bcall(_ErrDomain) ; throw exception
 
 ;-----------------------------------------------------------------------------
 
