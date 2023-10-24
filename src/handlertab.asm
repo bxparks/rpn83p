@@ -1,9 +1,7 @@
 ;-----------------------------------------------------------------------------
 ; MIT License
 ; Copyright (c) 2023 Brian T. Park
-;-----------------------------------------------------------------------------
-
-;-----------------------------------------------------------------------------
+;
 ; List of GetKey() codes and their jump table.
 ;
 ; TODO: As this table gets longer, consider sorting this table so that a binary

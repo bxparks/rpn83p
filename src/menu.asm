@@ -1,9 +1,7 @@
 ;-----------------------------------------------------------------------------
 ; MIT License
 ; Copyright (c) 2023 Brian T. Park
-;-----------------------------------------------------------------------------
-
-;-----------------------------------------------------------------------------
+;
 ; Routines for navigating the singly-rooted tree of MenuNodes. A MenuNode can
 ; be either a MenuItem or MenuGroup. A MenuGroup is a list of one or more
 ; MenuRow. A MenuRow is a list of exactly 5 MenuNodes, corresponding to the

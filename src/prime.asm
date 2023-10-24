@@ -1,9 +1,7 @@
 ;-----------------------------------------------------------------------------
 ; MIT License
 ; Copyright (c) 2023 Brian T. Park
-;-----------------------------------------------------------------------------
-
-;-----------------------------------------------------------------------------
+;
 ; Various implementations of the primeFactor() function which calculates
 ; the smallest prime factor, or 1 if the number is a prime.
 ;

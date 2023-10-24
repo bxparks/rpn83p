@@ -1,10 +1,10 @@
 ;-----------------------------------------------------------------------------
 ; MIT License
 ; Copyright (c) 2023 Brian T. Park
-;-----------------------------------------------------------------------------
-
-;-----------------------------------------------------------------------------
-; Curve fitting handlers and routines.
+;
+; CFIT menu handlers, as well as lower level curve fitting routines.
+;
+; TODO: Consider spliting the lower level routines into a cfit.asm file.
 ;
 ; References:
 ;   - HP-42S Owner's Manual, Ch. 15

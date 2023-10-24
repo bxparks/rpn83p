@@ -1,10 +1,10 @@
 ;-----------------------------------------------------------------------------
 ; MIT License
 ; Copyright (c) 2023 Brian T. Park
-;-----------------------------------------------------------------------------
-
-;-----------------------------------------------------------------------------
-; Common utilties that are useful in multiple modules.
+;
+; Common utilties that are useful in multiple modules. Most of these depend on
+; the TI-OS. It might be worth separating the routines which are independent of
+; TI-OS from those with a dependency to TI-OS.
 ;-----------------------------------------------------------------------------
 
 ; Description: This trampoline hack is needed because the Z80 does not have a
@@ -21,6 +21,8 @@ jumpDE:
     push de
     ret
 
+;-----------------------------------------------------------------------------
+; String common routines.
 ;-----------------------------------------------------------------------------
 
 ; Description: Get the string pointer at index A given an array of pointers at

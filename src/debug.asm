@@ -1,9 +1,7 @@
 ;-----------------------------------------------------------------------------
 ; MIT License
 ; Copyright (c) 2023 Brian T. Park
-;-----------------------------------------------------------------------------
-
-;------------------------------------------------------------------------------
+;
 ; Routines for debugging, displaying contents of buffers or registers. These
 ; are not compiled into the app unless the -DDEBUG flag is given to the
 ; spasm-ng assembler.

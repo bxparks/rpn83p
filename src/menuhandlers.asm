@@ -1,6 +1,8 @@
 ;-----------------------------------------------------------------------------
 ; MIT License
 ; Copyright (c) 2023 Brian T. Park
+;
+; Handlers for menu items.
 ;-----------------------------------------------------------------------------
 
 ;-----------------------------------------------------------------------------
@@ -11,7 +13,7 @@
 ; Input:
 ;   A: nodeId of the select menu item (ignored)
 ;   HL: pointer to MenuNode that was activated (ignored)
-mNullHandler: ; do nothing
+mNullHandler:
     ret
 
 ; Description: Handler for menu item which has not been implemented. Prints an

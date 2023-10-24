@@ -1,10 +1,11 @@
 ;-----------------------------------------------------------------------------
 ; MIT License
 ; Copyright (c) 2023 Brian T. Park
-;-----------------------------------------------------------------------------
-
-;-----------------------------------------------------------------------------
-; Basic STAT handlers and routines.
+;
+; Basic STAT handlers and lower level routines.
+;
+; TODO: Consider extracting the lower level routines into a separate stat.asm
+; file.
 ;
 ; References:
 ;   - HP-42S Owner's Manual, Ch. 15

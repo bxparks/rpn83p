@@ -1,9 +1,7 @@
 ;-----------------------------------------------------------------------------
 ; MIT License
 ; Copyright (c) 2023 Brian T. Park
-;-----------------------------------------------------------------------------
-
-;-----------------------------------------------------------------------------
+;
 ; Display the calculator modes, status, and RPN stack variables using 8 lines
 ; of the 96(w)x64(h) LCD display, using a mixture of small and large fonts.
 ; The format looks roughly like this:

@@ -1,9 +1,7 @@
 ;-----------------------------------------------------------------------------
 ; MIT License
 ; Copyright (c) 2023 Brian T. Park
-;-----------------------------------------------------------------------------
-
-;-----------------------------------------------------------------------------
+;
 ; Low-level routines for manipulating Pascal strings, with a one-byte size byte
 ; followed by an array of characters.  Pascal strings seemed more convenient
 ; when the string is mutable, for example, an edit buffer. C strings are used

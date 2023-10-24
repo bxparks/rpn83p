@@ -1,9 +1,7 @@
 ;-----------------------------------------------------------------------------
 ; MIT License
 ; Copyright (c) 2023 Brian T. Park
-;-----------------------------------------------------------------------------
-
-;-----------------------------------------------------------------------------
+;
 ; RPN stack registers and storage registers are implemented using TI-OS list
 ; variables. Stack variables are stored in a list named 'STK' and storage
 ; registers are stored in a list named 'REGS' (which is similar to the 'REGS'
