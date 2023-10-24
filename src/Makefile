@@ -20,8 +20,9 @@ SRCS := \
 	menu.asm \
 	menudef.asm \
 	menuhandlers.asm \
-	pstring.asm \
 	prime.asm \
+	print.asm \
+	pstring.asm \
 	rpn83p.asm \
 	stathandlers.asm \
 	vars.asm

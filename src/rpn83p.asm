@@ -405,6 +405,7 @@ dummyVector:
 #include "debug.asm"
 #endif
 #include "common.asm"
+#include "print.asm"
 #include "crc.asm"
 #include "const.asm"
 #include "handlertab.asm"
