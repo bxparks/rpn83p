@@ -217,6 +217,15 @@ menuNameBuf equ menuName + 1
 menuNameBufMax equ 5
 menuNameSizeOf equ 6
 
+; Command argument data structure to handle something like "STO _ _". The C
+; equivalent is:
+;
+;   struct arg {
+;       char *argPrompt;
+;       void *argHandler;
+;       uint8_t argValue;
+;   }
+
 ; Pointer to a C string that prompts before the argBuf.
 ; void *argPrompt;
 argPrompt equ menuName + menuNameSizeOf
