@@ -5,14 +5,24 @@
 ; Key code dispatcher and handlers.
 ;-----------------------------------------------------------------------------
 
-; Function: Handle the keyCode given by A. Append digits. Handle
-; DEL, and CLEAR keys.
+; Description: Handle the keyCode given by A. If keyCode is not in the handler
+; table, do nothing.
 ; Input: A: keyCode from GetKey()
 ; Output: none
-; Destroys: A, B, DE, HL
+; Destroys: A, B, DE, HL (and any other registers destroyed by the handler)
 lookupKey:
     ld hl, keyCodeHandlerTable
     ld b, keyCodeHandlerTableSize
+    ; [[fallthrough]]
+
+; Description: Handle the keyCode given by A. If keyCode is not in the handler
+; table, do nothing.
+; Input:
+;   - A: keyCode from GetKey()
+;   - HL: pointer to handler table
+;   - B: number of entries in the handler table
+; Output: none
+; Destroys: B, DE, HL (and any other registers destroyed by the handler)
 lookupKeyLoop:
     cp a, (hl)
     inc hl
@@ -30,27 +40,6 @@ lookupKeyMatched:
 
 ;-----------------------------------------------------------------------------
 
-; Description: Handle digit input in arg editing mode.
-; Input:
-;   A: character to be appended
-handleKeyNumberArg:
-    call appendArgBuf
-    ld a, (argBuf) ; A = length of argBuf string
-    cp a, argBufSizeMax
-    ret nz ; if only 1 digit entered, just return
-
-    ; On the 2nd digit, invoke auto ENTER to execute the pending command. But
-    ; before we do that, we refresh display to allow the user to see the 2nd
-    ; digit briefly. On a real HP-42S, the calculator seems to update the
-    ; display on the *press* of the digit, then trigger the command on the
-    ; *release* of the button, which allows the calculator to show the 2nd
-    ; digit to the user. The TI-OS GetKey() function used by this app does not
-    ; give us that level of control over the press and release events of a
-    ; button. Hence the need for this hack.
-    set dirtyFlagsInput, (iy + dirtyFlags)
-    call displayStack
-    jp handleKeyEnterArg
-
 ; Function: Append a number character to inputBuf or argBuf, updating various
 ; flags.
 ; Input:
@@ -64,9 +53,6 @@ handleKeyNumberArg:
 ;   - dirtyFlagsInput set
 ; Destroys: all
 handleKeyNumber:
-    ; Check if in arg editing mode.
-    bit rpnFlagsArgMode, (iy + rpnFlags)
-    jr nz, handleKeyNumberArg
     ; If not in input editing mode: lift stack and go into edit mode
     bit rpnFlagsEditing, (iy + rpnFlags)
     jr nz, handleKeyNumberCheckAppend
@@ -508,24 +494,10 @@ flipInputBufSignAdd:
 ; Output:
 ; Destroys: all, OP1, OP2, OP4
 handleKeyEnter:
-    bit rpnFlagsArgMode, (iy + rpnFlags)
-    jr nz, handleKeyEnterArg
     call closeInputBuf
     call liftStack ; always lift the stack
     res rpnFlagsLiftEnabled, (iy + rpnFlags)
     ret
-
-; Description: Handle the ENTER key for arg input.
-; Input: argBuf
-; Output: argValue
-; Destroys: A, B, C, HL
-handleKeyEnterArg:
-    set dirtyFlagsInput, (iy + dirtyFlags)
-    res rpnFlagsArgMode, (iy + rpnFlags)
-    call parseArgBuf
-    ld (argValue), a
-    ld hl, (argHandler)
-    jp (hl)
 
 ;-----------------------------------------------------------------------------
 ; Menu key handlers.
@@ -949,37 +921,32 @@ handleKeyStat:
 
 handleKeySto:
     call closeInputBuf
-    ld hl, handleKeyStoCallback
-    ld (argHandler), hl
     ld hl, msgStoName
-    jp enableArgMode
-handleKeyStoCallback:
+    call startArgParser
+    call processCommandArg
+    ret nc ; do nothing if canceled
     call rclX
     ld a, (argValue)
-    ; check if command argument too large
-    cp regsSize
-    jr c, handleKeyStoCallbackContinue
+    cp regsSize ; check if command argument too large
+    jp c, stoNN
+handleKeyStoError:
     ld a, errorCodeDimension
     jp setHandlerCode
-handleKeyStoCallbackContinue:
-    jp stoNN
 
 handleKeyRcl:
     call closeInputBuf
-    ld hl, handleKeyRclCallback
-    ld (argHandler), hl
     ld hl, msgRclName
-    jp enableArgMode
-handleKeyRclCallback:
+    call startArgParser
+    call processCommandArg
+    ret nc ; do nothing if canceled
     ld a, (argValue)
-    ; check if command argument too large
-    cp regsSize
-    jr c, handleKeyRclCallbackContinue
-    ld a, errorCodeDimension
-    jp setHandlerCode
-handleKeyRclCallbackContinue:
+    cp regsSize ; check if command argument too large
+    jr nc, handleKeyRclError
     call rclNN
     jp pushX
+handleKeyRclError:
+    ld a, errorCodeDimension
+    jp setHandlerCode
 
 msgStoName:
     .db "STO", 0

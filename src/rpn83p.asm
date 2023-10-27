@@ -44,8 +44,7 @@ dirtyFlagsMenu equ 2 ; set if the menu selection is dirty
 dirtyFlagsTrigMode equ 3 ; set if the trig status is dirty
 dirtyFlagsFloatMode equ 4 ; set if the floating mode is dirty
 dirtyFlagsBaseMode equ 5 ; set if any base mode flags or vars is dirty
-dirtyFlagsErrorCode equ 6 ; set if the error code is dirty
-; The dirtyFlagsXLabel flag is set if the 'X:' label is dirty due to the
+dirtyFlagsErrorCode equ 6 ; set if the error code is dirty ; The dirtyFlagsXLabel flag is set if the 'X:' label is dirty due to the
 ; command arg mode. The 6x8 cell occupied by the 'X:' label is rendered in
 ; small-font, which means that it actually uses only 7 rows of pixels from the
 ; top. During the command arg mode, the cell is replaced by the first letter of
@@ -76,6 +75,8 @@ inputBufFlagsDecPnt equ 1 ; set if decimal point exists
 inputBufFlagsEE equ 2 ; set if EE symbol exists
 inputBufFlagsClosedEmpty equ 3 ; inputBuf empty when closeInputBuf() called
 inputBufFlagsExpSign equ 4 ; exponent sign bit detected during parsing
+inputBufFlagsArgExit equ 5 ; set to exit CommandArg mode
+inputBufFlagsArgAllowModifier equ 6 ; allow */-+ modifier in CommandArg mode
 
 ;-----------------------------------------------------------------------------
 ; Application variables and buffers.
@@ -87,7 +88,7 @@ rpn83pAppId equ $1E69
 ; Increment the schema version when any variables are added or removed from the
 ; appState data block. The schema version will be validated upon restoring the
 ; application state from the AppVar.
-rpn83pSchemaVersion equ 3
+rpn83pSchemaVersion equ 4
 
 ; Begin application variables at tempSwapArea. According to the TI-83 Plus SDK
 ; docs: "tempSwapArea (82A5h) This is the start of 323 bytes used only during
@@ -217,30 +218,35 @@ menuNameBuf equ menuName + 1
 menuNameBufMax equ 5
 menuNameSizeOf equ 6
 
-; Command argument data structure to handle something like "STO _ _". The C
-; equivalent is:
+; Data structure revelant to the command argument parser which handles
+; something like "STO _ _". The C equivalent is:
 ;
-;   struct arg {
-;       char *argPrompt;
-;       void *argHandler;
+;   struct argParser {
+;       char *argPrompt; // e.g. "STO"
+;       // modifier/status:
+;       // - 0: no modifier
+;       // - 1: indirect
+;       // - 2: '+'
+;       // - 3: '-'
+;       // - 4: '*'
+;       // - 5: '/'
+;       // - 6+: canceled
+;       char argModifier;
 ;       uint8_t argValue;
 ;   }
-
-; Pointer to a C string that prompts before the argBuf.
-; void *argPrompt;
 argPrompt equ menuName + menuNameSizeOf
-argPromptSizeOf equ 2
-
-; Pointer to the command handler waiting for the arg.
-argHandler equ argPrompt + argPromptSizeOf
-argHandlerSizeOf equ 2
-
-; Parsed value of argBuf.
-argValue equ argHandler + argHandlerSizeOf
-argValueSizeOf equ 1
+argModifier equ argPrompt + 2
+argValue equ argModifier + 1
+argModifierNone equ 0
+argModifierIndirect equ 1
+argModifierAdd equ 2
+argModifierSub equ 3
+argModifierMul equ 4
+argModifierDiv equ 5
+argModifierCanceled equ 6
 
 ; Least square curve fit model.
-curveFitModel equ argValue + argValueSizeOf
+curveFitModel equ argValue + 1
 
 ; End application variables.
 appStateEnd equ curveFitModel + 1
@@ -279,9 +285,9 @@ main:
 
     call restoreAppState
     jr nc, initAlways
+    ; Initialize everything if restoreAppState() fails.
     call initErrorCode
     call initInputBuf
-    call initArgBuf
     call initStack
     call initRegs
     call initMenu
@@ -289,8 +295,8 @@ main:
     call initStat
     call initCfit
 initAlways:
-    ; Conditional initializations, regardless of success/failure of
-    ; restoreAppState()
+    ; Initialize the following onlky if restoreAppState() suceeds.
+    call initArgBuf ; Start with Command Arg parser off.
     call initLastX ; Always copy TI-OS 'ANS' to 'X'
     call initDisplay ; Always initialize the display.
 
@@ -398,6 +404,8 @@ dummyVector:
 
 #include "vars.asm"
 #include "handlers.asm"
+#include "argparser.asm"
+#include "arghandlers.asm"
 #include "pstring.asm"
 #include "input.asm"
 #include "display.asm"
@@ -410,15 +418,16 @@ dummyVector:
 #include "stathandlers.asm"
 #include "cfithandlers.asm"
 #include "prime.asm"
-#ifdef DEBUG
-#include "debug.asm"
-#endif
 #include "common.asm"
 #include "print.asm"
 #include "crc.asm"
 #include "const.asm"
 #include "handlertab.asm"
+#include "arghandlertab.asm"
 #include "menudef.asm"
+#ifdef DEBUG
+#include "debug.asm"
+#endif
 
 .end
 

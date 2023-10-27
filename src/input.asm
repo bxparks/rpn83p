@@ -79,13 +79,11 @@ closeInputBufContinue:
 
 ;------------------------------------------------------------------------------
 
-initArgBuf:
-    res rpnFlagsArgMode, (iy + rpnFlags)
-    ; [[fallthrough]]
-
 clearArgBuf:
     xor a
     ld (argBuf), a
+    ; [[fallthrough]]
+initArgBuf:
     res rpnFlagsArgMode, (iy + rpnFlags)
     ret
 

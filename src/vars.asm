@@ -215,6 +215,7 @@ rclStackNN:
 ;-----------------------------------------------------------------------------
 
 ; Description: Set OP1 to X.
+; Destroys: all
 rclX:
     ld a, stackXIndex
     jr rclStackNN
@@ -222,6 +223,7 @@ rclX:
 ; Description: Set X to OP1. Also update `ANS` with the same value. Upon
 ; exiting the RPN83P app, the TI-OS can access the most current X value using
 ; `ANS`.
+; Destroys: all
 stoX:
     ld a, stackXIndex
     jr stoStackNN
@@ -229,11 +231,13 @@ stoX:
 ;-----------------------------------------------------------------------------
 
 ; Description: Set OP1 to Y.
+; Destroys: all
 rclY:
     ld a, stackYIndex
     jr rclStackNN
 
 ; Description: Set Y to OP1.
+; Destroys: all
 stoY:
     ld a, stackYIndex
     jr stoStackNN
@@ -241,11 +245,13 @@ stoY:
 ;-----------------------------------------------------------------------------
 
 ; Description: Set OP1 to stZ.
+; Destroys: all
 rclZ:
     ld a, stackZIndex
     jr rclStackNN
 
 ; Description: Set stZ to OP1.
+; Destroys: all
 stoZ:
     ld a, stackZIndex
     jr stoStackNN
@@ -253,11 +259,13 @@ stoZ:
 ;-----------------------------------------------------------------------------
 
 ; Description: Set OP1 to stT.
+; Destroys: all
 rclT:
     ld a, stackTIndex
     jr rclStackNN
 
 ; Description: Set stT to OP1.
+; Destroys: all
 stoT:
     ld a, stackTIndex
     jr stoStackNN
@@ -265,11 +273,13 @@ stoT:
 ;-----------------------------------------------------------------------------
 
 ; Description: Set OP1 to stL.
+; Destroys: all
 rclL:
     ld a, stackLIndex
     jr rclStackNN
 
 ; Description: Set stL to OP1.
+; Destroys: all
 stoL:
     ld a, stackLIndex
     jr stoStackNN

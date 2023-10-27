@@ -4,6 +4,9 @@ SPASM_DIR := ../../spasm
 SPASM_INC := $(SPASM_DIR)/inc
 SPASM := $(SPASM_DIR)/spasm
 SRCS := \
+	arghandlers.asm \
+	arghandlertab.asm \
+	argparser.asm \
 	base.asm \
 	basehandlers.asm \
 	cfithandlers.asm \
@@ -31,7 +34,7 @@ SRCS := \
 rpn83p.8xk: $(SRCS) Makefile
 	$(SPASM) -I $(SPASM_INC) -N rpn83p.asm $@
 
-# Debug version of assembly prpgram.
+# Debug version of assembly program.
 #rpn83p.8xp: $(SRCS) Makefile
 #	$(SPASM) -DDEBUG -I $(SPASM_INC) -N rpn83p.asm $@
 

@@ -125,7 +125,7 @@ helpPages:
 
 msgHelpPage1:
     .db escapeLargeFont, "RPN83P", Lenter
-    .db escapeSmallFont, "v0.7.0-dev (2023", Shyphen, "10", Shyphen, "20)", Senter
+    .db escapeSmallFont, "v0.7.0-dev (2023", Shyphen, "10", Shyphen, "27)", Senter
     .db "(c) 2023  Brian T. Park", Senter
     .db Senter
     .db "An RPN calculator for the", Senter
@@ -1022,33 +1022,30 @@ mHrToHmsHandler:
 
 mFixHandler:
     call closeInputBuf
-    ld hl, mFixCallback
-    ld (argHandler), hl
     ld hl, mFixName
-    jr enableArgMode
-mFixCallback:
+    call startArgParser
+    call processCommandArg
+    ret nc ; do nothing if canceled
     res fmtExponent, (iy + fmtFlags)
     res fmtEng, (iy + fmtFlags)
     jr saveFormatDigits
 
 mSciHandler:
     call closeInputBuf
-    ld hl, mSciCallback
-    ld (argHandler), hl
     ld hl, mSciName
-    jr enableArgMode
-mSciCallback:
+    call startArgParser
+    call processCommandArg
+    ret nc ; do nothing if canceled
     set fmtExponent, (iy + fmtFlags)
     res fmtEng, (iy + fmtFlags)
     jr saveFormatDigits
 
 mEngHandler:
     call closeInputBuf
-    ld hl, mEngCallback
-    ld (argHandler), hl
     ld hl, mEngName
-    jr enableArgMode
-mEngCallback:
+    call startArgParser
+    call processCommandArg
+    ret nc ; do nothing if canceled
     set fmtExponent, (iy + fmtFlags)
     set fmtEng, (iy + fmtFlags)
     jr saveFormatDigits
