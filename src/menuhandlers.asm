@@ -1050,24 +1050,6 @@ mEngHandler:
     set fmtEng, (iy + fmtFlags)
     jr saveFormatDigits
 
-; Description: Enter command argument input mode by prompting the user
-; for a numerical parameter.
-; Input: HL: argPrompt
-; Output:
-;   - argPrompt set with C string
-;   - argBufSize set to 0
-;   - rpnFlagsArgMode set
-;   - dirtyFlagsInput set
-; Destroys: A, HL
-enableArgMode:
-    ld (argPrompt), hl
-    xor a
-    ld (argBufSize), a
-    set rpnFlagsArgMode, (iy + rpnFlags)
-    set dirtyFlagsInput, (iy + dirtyFlags)
-    set dirtyFlagsXLabel, (iy + dirtyFlags)
-    ret
-
 ; Description: Save the (argValue) to (fmtDigits).
 ; Output:
 ;   - dirtyFlagsStack set

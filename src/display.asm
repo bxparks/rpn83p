@@ -410,10 +410,10 @@ displayStackYZT:
 
 ;-----------------------------------------------------------------------------
 
-; Description: Render the X lines. There are 3 options:
-; 1) if rpnFlagsArgMode, print the inputbuf as a command argument,
-; 2) else if rpnFlagsEditing, print the inputBuf as a stack number,
-; 3) else print the X register.
+; Description: Render the X register line. There are 3 modes:
+; 1) If rpnFlagsArgMode, print the argBuf for the ArgParser, else
+; 2) If rpnFlagsEditing, print the current inputBuf, else
+; 3) Print the X register.
 displayStackX:
     bit rpnFlagsArgMode, (iy + rpnFlags)
     jr nz, displayStackXArg

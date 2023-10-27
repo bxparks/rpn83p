@@ -9,7 +9,7 @@
 ; Description: Configure the command arg parser and display before each
 ; invocation. Use initArgBuf() to initialize at the start of application.
 ; Input:
-;   - HL: label
+;   - HL: pointer to command argument label
 ; Destroys: A
 startArgParser:
     ld (argPrompt), hl
@@ -27,10 +27,10 @@ startArgParser:
 ; commands such as 'FIX', 'SCI', 'ENG', 'STO', and 'RCL'. Only a subset of
 ; buttons are allowed:
 ; - digits: 0 to 9
-; - CLEAR
-; - DEL (Backspace)
-; - ON (EXIT)
-; - ENTER
+; - CLEAR: exit from Command Arg mode and do nothing
+; - ON (EXIT): same as CLEAR currently
+; - DEL (Backspace): remove previous digit in the command argument
+; - ENTER: parse the argument and return
 ; - *, /, -, +: Converts STO and RCL to STO+, RCL+, etc.
 ; - 2ND QUIT
 ; - 2ND OFF
@@ -62,6 +62,7 @@ processCommandArg:
     ; Terminate argParser.
     res rpnFlagsArgMode, (iy + rpnFlags)
     set dirtyFlagsInput, (iy + dirtyFlags)
+    ; Set CF=0 if ArgParser canceled
     ld a, (argModifier)
     cp argModifierCanceled
     ret
