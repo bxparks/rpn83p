@@ -21,6 +21,17 @@
           registers
             - now `X=quotient=Y/X` and `Y=remainder=Y%X`
             - allows easier recovery of original `X` using `LastX` `*`
+    - add storage register arithmetic operations
+        - `STO+`, `STO-`, `STO*`, `STO/`
+        - `RCL+`, `RCL-`, `RCL*`, `RCL/`
+    - **Potential Breaking Change**: `STO`, `RCL`, `FIX`, `SCI`, `ENG` argument
+      prompt is no longer saved and restored on QUIT or OFF
+        - a new Command Arg parser was required to support storage register
+          arithmetics
+        - it uses a secondary `GetKey()` parsing loop which implements its own
+          `2ND QUIT` and `2ND OFF` handlers
+        - the state of the secondary `GetKey()` parsing loop is not saved and
+          restored
 - 0.6.0 (2023-09-22)
     - save application state
         - preserve app state into an appvar named `RPN83SAV` upon exit
