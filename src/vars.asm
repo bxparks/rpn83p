@@ -681,6 +681,8 @@ rclNNToOP2:
     bcall(_PopRealO1)
     ret
 
+;-----------------------------------------------------------------------------
+
 ; Description: Add OP1 to storage register NN.
 ; Input:
 ;   OP1: float value
@@ -689,7 +691,7 @@ rclNNToOP2:
 ;   REGS[NN] += OP1
 ; Destroys: all
 ; Preserves: OP1, OP2
-stoPlusNN:
+stoAddNN:
     push af ; A=NN
     bcall(_PushRealO1)
     bcall(_PushRealO2)
@@ -710,7 +712,7 @@ stoPlusNN:
 ;   REGS[NN] += OP1
 ; Destroys: all
 ; Preserves: OP1, OP2
-stoMinusNN:
+stoSubNN:
     push af ; A=NN
     bcall(_PushRealO1)
     bcall(_PushRealO2)
