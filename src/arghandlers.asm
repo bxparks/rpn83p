@@ -63,6 +63,11 @@ handleArgNumber:
     ; [[fallthrough]]
 
 handleArgKeyEnter:
+    ; If no argument digits entered, then do nothing.
+    ld a, (argBufSize)
+    or a
+    ret z
+    ; Parse the argument digits into (argValue).
     call parseArgBuf
     ld (argValue), a
     set inputBufFlagsArgExit, (iy + inputBufFlags)
