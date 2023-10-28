@@ -92,6 +92,9 @@ handleArgKeyExit:
     set inputBufFlagsArgExit, (iy + inputBufFlags)
     ret
 
+handleArgKeyQuit:
+    jp mainExit
+
 handleArgKeyAdd:
     bit inputBufFlagsArgAllowModifier, (iy + inputBufFlags)
     ret z

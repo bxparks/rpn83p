@@ -8,7 +8,7 @@
 ; search can be used instead of a linear search.
 ;-----------------------------------------------------------------------------
 
-keyCodeHandlerTableSize equ 59
+keyCodeHandlerTableSize equ 60
 kOnExit equ 0 ; ON key generates 00 as the key code
 
 keyCodeHandlerTable:
@@ -97,7 +97,7 @@ keyCodeHandlerTable:
     ; use as the ESC key, but those are currently mapped to DEL and STAT. DEL
     ; is used as the Backspace functionality, and I want to reserve the STAT
     ; button for future additions.)
-
+    ;
     ; 3) The Tilem emulator exposes the ON button as the F12 key on the PC
     ; keyboard, which is somewhat awkward to use. The ESC key on Tilem is
     ; mapped to the CLEAR button so we can't use that. The PageUp key seemed
@@ -215,3 +215,9 @@ keyCodeHandlerTable:
     ; STAT button bound to STAT menu.
     .db kStat
     .dw handleKeyStat
+
+;-----------------------------------------------------------------------------
+
+    ; 2ND QUIT
+    .db kQuit
+    .dw handleKeyQuit

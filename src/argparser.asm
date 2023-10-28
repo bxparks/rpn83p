@@ -44,12 +44,6 @@ processCommandArg:
     bcall(_GetKey)
     res onInterrupt, (iy + onFlags)
 
-    ; Check for 2ND QUIT.
-    ; TODO: I think this can be handled by arghandlers.asm and
-    ; arghandlertab.asm.
-    cp kQuit
-    jp z, mainExit
-
     ; Handle the button press.
     ld hl, argKeyCodeHandlerTable
     ld b, argKeyCodeTableSize

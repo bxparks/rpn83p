@@ -774,22 +774,6 @@ handleKeyATan:
     jp replaceX
 
 ;-----------------------------------------------------------------------------
-; Buttons providing direct access to menu groups.
-;-----------------------------------------------------------------------------
-
-handleKeyMath:
-    ld a, mRootId ; MATH becomes the menu HOME button
-    jp dispatchMenuNode
-
-handleKeyMode:
-    ld a, mModeId ; MODE triggers the MODE menu.
-    jp dispatchMenuNode
-
-handleKeyStat:
-    ld a, mStatId ; MODE triggers the MODE menu.
-    jp dispatchMenuNode
-
-;-----------------------------------------------------------------------------
 ; User registers, accessed through RCL nn and STO nn.
 ;-----------------------------------------------------------------------------
 
@@ -854,6 +838,30 @@ msgStoName:
     .db "STO", 0
 msgRclName:
     .db "RCL", 0
+
+;-----------------------------------------------------------------------------
+; Buttons providing direct access to menu groups.
+;-----------------------------------------------------------------------------
+
+handleKeyMath:
+    ld a, mRootId ; MATH becomes the menu HOME button
+    jp dispatchMenuNode
+
+handleKeyMode:
+    ld a, mModeId ; MODE triggers the MODE menu.
+    jp dispatchMenuNode
+
+handleKeyStat:
+    ld a, mStatId ; MODE triggers the MODE menu.
+    jp dispatchMenuNode
+
+;-----------------------------------------------------------------------------
+; QUIT. The mainExit routine will cleanup any application specific memory,
+; including the call stack.
+;-----------------------------------------------------------------------------
+
+handleKeyQuit:
+    jp mainExit
 
 ;-----------------------------------------------------------------------------
 ; Common code fragments, to save space.

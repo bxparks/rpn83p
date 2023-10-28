@@ -6,7 +6,7 @@
 ; argument dialog box (e.g. "FIX _ _").
 ;------------------------------------------------------------------------------
 
-argKeyCodeTableSize equ 18
+argKeyCodeTableSize equ 19
 
 argKeyCodeHandlerTable:
     ; number entry
@@ -42,6 +42,8 @@ argKeyCodeHandlerTable:
     ; on/exit
     .db kOnExit ; ON button on real calculator, F12 on Tilem USB keyboard
     .dw handleArgKeyExit
+    .db kQuit ; 2ND QUIT
+    .dw handleArgKeyQuit
 
     ; arithmetic
     .db kAdd
