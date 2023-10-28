@@ -800,10 +800,17 @@ handleKeySto:
     set inputBufFlagsArgAllowModifier, (iy + inputBufFlags)
     call processCommandArg
     ret nc ; do nothing if canceled
+    cp argModifierIndirect
+    ret nc ; TODO: implement this
     call rclX
+    ; Implement STO{op}NN
     ld a, (argValue)
     cp regsSize ; check if command argument too large
-    jp c, stoNN
+    jp nc, handleKeyStoError
+    ld c, a
+    ld a, (argModifier)
+    ld b, a
+    jp stoOpNN
 handleKeyStoError:
     ld a, errorCodeDimension
     jp setHandlerCode
@@ -815,11 +822,30 @@ handleKeyRcl:
     set inputBufFlagsArgAllowModifier, (iy + inputBufFlags)
     call processCommandArg
     ret nc ; do nothing if canceled
+    cp argModifierIndirect
+    ret nc ; TODO: implement this
+    ; Implement RCL{op}NN, using slightly different algorithm for rclNN versus
+    ; rclOpNN.
     ld a, (argValue)
     cp regsSize ; check if command argument too large
     jr nc, handleKeyRclError
+    ld c, a
+    ld a, (argModifier)
+    or a
+    jr nz, handleKeyRclOpNN
+handleKeyRclNN:
+    ; rclNN *pushes* RegNN on to the RPN stack.
+    ld a, c
     call rclNN
     jp pushX
+handleKeyRclOpNN:
+    ; rcl{op}NN *replaces* the X register with (OP1 {op} RegNN).
+    ld b, a
+    push bc
+    call rclX ; OP1=X
+    pop bc
+    call rclOpNN
+    jp replaceX ; updates LastX
 handleKeyRclError:
     ld a, errorCodeDimension
     jp setHandlerCode

@@ -10,6 +10,17 @@
 ; Indirect jumps and calls.
 ;-----------------------------------------------------------------------------
 
+; Description: Invoke a function according to the index in A. You can invoke
+; this using 'jp' or 'call'.
+; Input:
+;   - A: index
+;   - HL: pointer to a list of pointers to subroutines
+; Output: depends on the routine called
+; Destroys: DE, HL, and others depending on the routine called
+jumpAofHL:
+    call getString
+    ; [[fallthrough]]
+
 ; Description: This trampoline hack is needed because the Z80 does not have a
 ; `call (HL)` analogous to the `jp (HL)` instruction. With this, you can do a
 ; `call jumpHL` or `call cc, jumpHL`. See
@@ -30,7 +41,7 @@ jumpDE:
 ;-----------------------------------------------------------------------------
 
 ; Description: Get the string pointer at index A given an array of pointers at
-; base pointer HL.
+; base pointer HL. Out-of-bounds is NOT checked.
 ; Input:
 ;   A: index
 ;   HL: pointer to an array of pointers

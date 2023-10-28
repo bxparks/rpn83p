@@ -520,18 +520,17 @@ printArgBufZeroCursor:
     bcall(_EraseEOL)
     ret
 
+; Human-readable labels for each of the argModifierXxx enum.
 argModifierStrings:
     .dw msgArgModifierNone
-    .dw msgArgModifierIndirect
     .dw msgArgModifierAdd
     .dw msgArgModifierSub
     .dw msgArgModifierMul
     .dw msgArgModifierDiv
+    .dw msgArgModifierIndirect
 
 msgArgModifierNone:
     .db " ", 0
-msgArgModifierIndirect:
-    .db " IND ", 0
 msgArgModifierAdd:
     .db "+ ", 0
 msgArgModifierSub:
@@ -540,6 +539,8 @@ msgArgModifierMul:
     .db "* ", 0
 msgArgModifierDiv:
     .db "/ ", 0
+msgArgModifierIndirect:
+    .db " IND ", 0
 
 ;-----------------------------------------------------------------------------
 

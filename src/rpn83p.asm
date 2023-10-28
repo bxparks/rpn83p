@@ -235,15 +235,17 @@ menuNameSizeOf equ 6
 ;       char argModifier;
 ;       uint8_t argValue;
 ;   }
+; The argModifierXxx (0-4) MUST match the corresponding operation in the
+; 'floatOps' array in vars.asm.
 argPrompt equ menuName + menuNameSizeOf
 argModifier equ argPrompt + 2
 argValue equ argModifier + 1
 argModifierNone equ 0
-argModifierIndirect equ 1
-argModifierAdd equ 2
-argModifierSub equ 3
-argModifierMul equ 4
-argModifierDiv equ 5
+argModifierAdd equ 1
+argModifierSub equ 2
+argModifierMul equ 3
+argModifierDiv equ 4
+argModifierIndirect equ 5
 argModifierCanceled equ 6
 
 ; Least square curve fit model.
