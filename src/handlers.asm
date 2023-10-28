@@ -5,14 +5,24 @@
 ; Key code dispatcher and handlers.
 ;-----------------------------------------------------------------------------
 
-; Function: Handle the keyCode given by A. Append digits. Handle
-; DEL, and CLEAR keys.
+; Description: Handle the keyCode given by A. If keyCode is not in the handler
+; table, do nothing.
 ; Input: A: keyCode from GetKey()
 ; Output: none
-; Destroys: A, B, DE, HL
+; Destroys: A, B, DE, HL (and any other registers destroyed by the handler)
 lookupKey:
     ld hl, keyCodeHandlerTable
     ld b, keyCodeHandlerTableSize
+    ; [[fallthrough]]
+
+; Description: Handle the keyCode given by A. If keyCode is not in the handler
+; table, do nothing.
+; Input:
+;   - A: keyCode from GetKey()
+;   - HL: pointer to handler table
+;   - B: number of entries in the handler table
+; Output: none
+; Destroys: B, DE, HL (and any other registers destroyed by the handler)
 lookupKeyLoop:
     cp a, (hl)
     inc hl
@@ -30,32 +40,10 @@ lookupKeyMatched:
 
 ;-----------------------------------------------------------------------------
 
-; Description: Handle digit input in arg editing mode.
-; Input:
-;   A: character to be appended
-handleKeyNumberArg:
-    call appendArgBuf
-    ld a, (argBuf) ; A = length of argBuf string
-    cp a, argBufSizeMax
-    ret nz ; if only 1 digit entered, just return
-
-    ; On the 2nd digit, invoke auto ENTER to execute the pending command. But
-    ; before we do that, we refresh display to allow the user to see the 2nd
-    ; digit briefly. On a real HP-42S, the calculator seems to update the
-    ; display on the *press* of the digit, then trigger the command on the
-    ; *release* of the button, which allows the calculator to show the 2nd
-    ; digit to the user. The TI-OS GetKey() function used by this app does not
-    ; give us that level of control over the press and release events of a
-    ; button. Hence the need for this hack.
-    set dirtyFlagsInput, (iy + dirtyFlags)
-    call displayStack
-    jp handleKeyEnterArg
-
 ; Function: Append a number character to inputBuf or argBuf, updating various
 ; flags.
 ; Input:
 ;   A: character to be appended
-;   rpnFlagsArgMode: whether we are in Command Arg mode
 ;   rpnFlagsEditing: whether we are already in Edit mode
 ; Output:
 ;   - CF set when append fails
@@ -64,9 +52,6 @@ handleKeyNumberArg:
 ;   - dirtyFlagsInput set
 ; Destroys: all
 handleKeyNumber:
-    ; Check if in arg editing mode.
-    bit rpnFlagsArgMode, (iy + rpnFlags)
-    jr nz, handleKeyNumberArg
     ; If not in input editing mode: lift stack and go into edit mode
     bit rpnFlagsEditing, (iy + rpnFlags)
     jr nz, handleKeyNumberCheckAppend
@@ -246,9 +231,6 @@ checkBase16:
 ; Output: (iy+inputBufFlags) DecPnt set
 ; Destroys: A, DE, HL
 handleKeyDecPnt:
-    ; Do nothing if command arg mode.
-    bit rpnFlagsArgMode, (iy + rpnFlags)
-    ret nz
     ; Do nothing in BASE mode.
     bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
     ret nz
@@ -272,9 +254,6 @@ handleKeyDecPnt:
 ; Output: (inputBufEEPos), (inputBufFlagsEE, iy+inputBufFlags)
 ; Destroys: A, HL
 handleKeyEE:
-    ; Do nothing in command arg mode.
-    bit rpnFlagsArgMode, (iy + rpnFlags)
-    ret nz
     ; Do nothing in BASE mode.
     bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
     ret nz
@@ -304,9 +283,6 @@ handleKeyEE:
 ; Output: (iy+inputBufFlags) updated
 ; Destroys: A, DE, HL
 handleKeyDel:
-    ; Check if in command arg mode.
-    bit rpnFlagsArgMode, (iy + rpnFlags)
-    jr nz, handleKeyDelArg
     ; Check if non-zero error code is currently displayed. The handlerCode was
     ; already set to 0 before this was called, so simply returning will clear
     ; the previous errorCode.
@@ -362,25 +338,7 @@ handleKeyDelEEDigits:
 handleKeyDelExit:
     ret
 
-; Description: Handle the DEL key when in command arg mode by removing the last
-; character in the argBuf.
-handleKeyDelArg:
-    set dirtyFlagsInput, (iy + dirtyFlags)
-    ld hl, argBuf
-    ld a, (hl) ; A = inputBufSize
-    or a
-    ret z ; do nothing if buffer empty
-    dec (hl)
-    ret
-
 ;-----------------------------------------------------------------------------
-
-; Description: Handle CLEAR key in arg editing mode.
-handleKeyClearArg:
-    call clearArgBuf
-    res rpnFlagsEditing, (iy + rpnFlags)
-    set dirtyFlagsStack, (iy + dirtyFlags)
-    ret
 
 ; Function: Clear the input buffer. If the CLEAR key is hit when the input
 ; buffer is already empty (e.g. hit twice), then trigger a refresh of the
@@ -395,9 +353,6 @@ handleKeyClearArg:
 ;   - mark displayInput dirty
 ; Destroys: A, HL
 handleKeyClear:
-    ; Check if in command arg mode.
-    bit rpnFlagsArgMode, (iy + rpnFlags)
-    jr nz, handleKeyClearArg
     ; Check if non-zero error code is currently displayed. The handlerCode was
     ; already set to 0 before this was called, so simply returning will clear
     ; the previous errorCode.
@@ -432,9 +387,6 @@ handleKeyClearSimple:
 ; Output: (inputBuf), X
 ; Destroys: all, OP1
 handleKeyChs:
-    ; Do nothing in command arg mode.
-    bit rpnFlagsArgMode, (iy + rpnFlags)
-    ret nz
     ; Do nothing in BASE mode. Use NEG function instead.
     bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
     ret nz
@@ -508,24 +460,10 @@ flipInputBufSignAdd:
 ; Output:
 ; Destroys: all, OP1, OP2, OP4
 handleKeyEnter:
-    bit rpnFlagsArgMode, (iy + rpnFlags)
-    jr nz, handleKeyEnterArg
     call closeInputBuf
     call liftStack ; always lift the stack
     res rpnFlagsLiftEnabled, (iy + rpnFlags)
     ret
-
-; Description: Handle the ENTER key for arg input.
-; Input: argBuf
-; Output: argValue
-; Destroys: A, B, C, HL
-handleKeyEnterArg:
-    set dirtyFlagsInput, (iy + dirtyFlags)
-    res rpnFlagsArgMode, (iy + rpnFlags)
-    call parseArgBuf
-    ld (argValue), a
-    ld hl, (argHandler)
-    jp (hl)
 
 ;-----------------------------------------------------------------------------
 ; Menu key handlers.
@@ -536,10 +474,6 @@ handleKeyEnterArg:
 ; Output: (menuRowIndex) decremented, or wrapped around
 ; Destroys: all
 handleKeyUp:
-    ; Do nothing in command arg mode.
-    bit rpnFlagsArgMode, (iy + rpnFlags)
-    ret nz
-
     ld hl, menuGroupId
     ld a, (hl) ; A = menuGroupId
     inc hl
@@ -574,10 +508,6 @@ handleKeyUpContinue:
 ; Output: (menuRowIndex) incremented mod numRows
 ; Destroys: all
 handleKeyDown:
-    ; Do nothing in command arg mode.
-    bit rpnFlagsArgMode, (iy + rpnFlags)
-    ret nz
-
     ld hl, menuGroupId
     ld a, (hl)
     inc hl
@@ -617,9 +547,6 @@ handleKeyDownContinue:
 ;   - (menuRowIndex) of the input (child) menu group
 ; Destroys: all
 handleKeyExit:
-    ; Clear the command arg mode if already in command arg mode.
-    bit rpnFlagsArgMode, (iy + rpnFlags)
-    jp nz, handleKeyClearArg
     jp exitMenuGroup
 
 ;-----------------------------------------------------------------------------
@@ -672,9 +599,6 @@ handleKeyMenu5:
 ; Output: A: nodeId of the selected menu item
 ; Destroys: all
 handleKeyMenuA:
-    ; Do nothing in command arg mode.
-    bit rpnFlagsArgMode, (iy + rpnFlags)
-    ret nz
     ld c, a ; save A (menu button index 0-4)
     call getCurrentMenuRowBeginId ; A=row begin id
     add a, c ; menu node ids are sequential starting with beginId
@@ -689,9 +613,6 @@ handleKeyMenuA:
 ; Output:
 ; Destroys: all, OP1, OP2, OP4
 handleKeyAdd:
-    ; Do nothing in command arg mode.
-    bit rpnFlagsArgMode, (iy + rpnFlags)
-    ret nz
     bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
     jp nz, mBitwiseAddHandler
     call closeInputAndRecallXY
@@ -703,9 +624,6 @@ handleKeyAdd:
 ; Output:
 ; Destroys: all, OP1, OP2, OP4
 handleKeySub:
-    ; Do nothing in command arg mode.
-    bit rpnFlagsArgMode, (iy + rpnFlags)
-    ret nz
     bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
     jp nz, mBitwiseSubtHandler
     call closeInputAndRecallXY
@@ -717,9 +635,6 @@ handleKeySub:
 ; Output:
 ; Destroys: all, OP1, OP2, OP4, OP5
 handleKeyMul:
-    ; Do nothing in command arg mode.
-    bit rpnFlagsArgMode, (iy + rpnFlags)
-    ret nz
     bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
     jp nz, mBitwiseMultHandler
     call closeInputAndRecallXY
@@ -731,9 +646,6 @@ handleKeyMul:
 ; Output:
 ; Destroys: all, OP1, OP2, OP4
 handleKeyDiv:
-    ; Do nothing in command arg mode.
-    bit rpnFlagsArgMode, (iy + rpnFlags)
-    ret nz
     bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
     jp nz, mBitwiseDivHandler
     call closeInputAndRecallXY
@@ -749,17 +661,11 @@ handleKeyDiv:
 ;-----------------------------------------------------------------------------
 
 handleKeyPi:
-    ; Do nothing in command arg mode.
-    bit rpnFlagsArgMode, (iy + rpnFlags)
-    ret nz
     call closeInputBuf
     call op1SetPi
     jp pushX
 
 handleKeyEuler:
-    ; Do nothing in command arg mode.
-    bit rpnFlagsArgMode, (iy + rpnFlags)
-    ret nz
     call closeInputBuf
     call op1SetEuler
     jp pushX
@@ -770,36 +676,24 @@ handleKeyEuler:
 
 ; Function: y^x
 handleKeyExpon:
-    ; Do nothing in command arg mode.
-    bit rpnFlagsArgMode, (iy + rpnFlags)
-    ret nz
     call closeInputAndRecallXY
     bcall(_YToX)
     jp replaceXY
 
 ; Function: 1/x
 handleKeyInv:
-    ; Do nothing in command arg mode.
-    bit rpnFlagsArgMode, (iy + rpnFlags)
-    ret nz
     call closeInputAndRecallX
     bcall(_FPRecip)
     jp replaceX
 
 ; Function: x^2
 handleKeySquare:
-    ; Do nothing in command arg mode.
-    bit rpnFlagsArgMode, (iy + rpnFlags)
-    ret nz
     call closeInputAndRecallX
     bcall(_FPSquare)
     jp replaceX
 
 ; Function: sqrt(x)
 handleKeySqrt:
-    ; Do nothing in command arg mode.
-    bit rpnFlagsArgMode, (iy + rpnFlags)
-    ret nz
     call closeInputAndRecallX
     bcall(_SqRoot)
     jp replaceX
@@ -809,23 +703,14 @@ handleKeySqrt:
 ;-----------------------------------------------------------------------------
 
 handleKeyRotDown:
-    ; Do nothing in command arg mode.
-    bit rpnFlagsArgMode, (iy + rpnFlags)
-    ret nz
     call closeInputBuf
     jp rotDownStack
 
 handleKeyExchangeXY:
-    ; Do nothing in command arg mode.
-    bit rpnFlagsArgMode, (iy + rpnFlags)
-    ret nz
     call closeInputBuf
     jp exchangeXYStack
 
 handleKeyAns:
-    ; Do nothing in command arg mode.
-    bit rpnFlagsArgMode, (iy + rpnFlags)
-    ret nz
     call closeInputBuf
     call rclL
     jp pushX
@@ -835,33 +720,21 @@ handleKeyAns:
 ;-----------------------------------------------------------------------------
 
 handleKeyLog:
-    ; Do nothing in command arg mode.
-    bit rpnFlagsArgMode, (iy + rpnFlags)
-    ret nz
     call closeInputAndRecallX
     bcall(_LogX)
     jp replaceX
 
 handleKeyALog:
-    ; Do nothing in command arg mode.
-    bit rpnFlagsArgMode, (iy + rpnFlags)
-    ret nz
     call closeInputAndRecallX
     bcall(_TenX)
     jp replaceX
 
 handleKeyLn:
-    ; Do nothing in command arg mode.
-    bit rpnFlagsArgMode, (iy + rpnFlags)
-    ret nz
     call closeInputAndRecallX
     bcall(_LnX)
     jp replaceX
 
 handleKeyExp:
-    ; Do nothing in command arg mode.
-    bit rpnFlagsArgMode, (iy + rpnFlags)
-    ret nz
     call closeInputAndRecallX
     bcall(_EToX)
     jp replaceX
@@ -871,49 +744,31 @@ handleKeyExp:
 ;-----------------------------------------------------------------------------
 
 handleKeySin:
-    ; Do nothing in command arg mode.
-    bit rpnFlagsArgMode, (iy + rpnFlags)
-    ret nz
     call closeInputAndRecallX
     bcall(_Sin)
     jp replaceX
 
 handleKeyCos:
-    ; Do nothing in command arg mode.
-    bit rpnFlagsArgMode, (iy + rpnFlags)
-    ret nz
     call closeInputAndRecallX
     bcall(_Cos)
     jp replaceX
 
 handleKeyTan:
-    ; Do nothing in command arg mode.
-    bit rpnFlagsArgMode, (iy + rpnFlags)
-    ret nz
     call closeInputAndRecallX
     bcall(_Tan)
     jp replaceX
 
 handleKeyASin:
-    ; Do nothing in command arg mode.
-    bit rpnFlagsArgMode, (iy + rpnFlags)
-    ret nz
     call closeInputAndRecallX
     bcall(_ASin)
     jp replaceX
 
 handleKeyACos:
-    ; Do nothing in command arg mode.
-    bit rpnFlagsArgMode, (iy + rpnFlags)
-    ret nz
     call closeInputAndRecallX
     bcall(_ACos)
     jp replaceX
 
 handleKeyATan:
-    ; Do nothing in command arg mode.
-    bit rpnFlagsArgMode, (iy + rpnFlags)
-    ret nz
     call closeInputAndRecallX
     bcall(_ATan)
     jp replaceX
@@ -923,23 +778,14 @@ handleKeyATan:
 ;-----------------------------------------------------------------------------
 
 handleKeyMath:
-    ; Do nothing in command arg mode.
-    bit rpnFlagsArgMode, (iy + rpnFlags)
-    ret nz
     ld a, mRootId ; MATH becomes the menu HOME button
     jp dispatchMenuNode
 
 handleKeyMode:
-    ; Do nothing in command arg mode.
-    bit rpnFlagsArgMode, (iy + rpnFlags)
-    ret nz
     ld a, mModeId ; MODE triggers the MODE menu.
     jp dispatchMenuNode
 
 handleKeyStat:
-    ; Do nothing in command arg mode.
-    bit rpnFlagsArgMode, (iy + rpnFlags)
-    ret nz
     ld a, mStatId ; MODE triggers the MODE menu.
     jp dispatchMenuNode
 
@@ -949,37 +795,60 @@ handleKeyStat:
 
 handleKeySto:
     call closeInputBuf
-    ld hl, handleKeyStoCallback
-    ld (argHandler), hl
     ld hl, msgStoName
-    jp enableArgMode
-handleKeyStoCallback:
+    call startArgParser
+    set inputBufFlagsArgAllowModifier, (iy + inputBufFlags)
+    call processCommandArg
+    ret nc ; do nothing if canceled
+    cp argModifierIndirect
+    ret nc ; TODO: implement this
     call rclX
+    ; Implement STO{op}NN
     ld a, (argValue)
-    ; check if command argument too large
-    cp regsSize
-    jr c, handleKeyStoCallbackContinue
+    cp regsSize ; check if command argument too large
+    jp nc, handleKeyStoError
+    ld c, a
+    ld a, (argModifier)
+    ld b, a
+    jp stoOpNN
+handleKeyStoError:
     ld a, errorCodeDimension
     jp setHandlerCode
-handleKeyStoCallbackContinue:
-    jp stoNN
 
 handleKeyRcl:
     call closeInputBuf
-    ld hl, handleKeyRclCallback
-    ld (argHandler), hl
     ld hl, msgRclName
-    jp enableArgMode
-handleKeyRclCallback:
+    call startArgParser
+    set inputBufFlagsArgAllowModifier, (iy + inputBufFlags)
+    call processCommandArg
+    ret nc ; do nothing if canceled
+    cp argModifierIndirect
+    ret nc ; TODO: implement this
+    ; Implement RCL{op}NN, using slightly different algorithm for rclNN versus
+    ; rclOpNN.
     ld a, (argValue)
-    ; check if command argument too large
-    cp regsSize
-    jr c, handleKeyRclCallbackContinue
-    ld a, errorCodeDimension
-    jp setHandlerCode
-handleKeyRclCallbackContinue:
+    cp regsSize ; check if command argument too large
+    jr nc, handleKeyRclError
+    ld c, a
+    ld a, (argModifier)
+    or a
+    jr nz, handleKeyRclOpNN
+handleKeyRclNN:
+    ; rclNN *pushes* RegNN on to the RPN stack.
+    ld a, c
     call rclNN
     jp pushX
+handleKeyRclOpNN:
+    ; rcl{op}NN *replaces* the X register with (OP1 {op} RegNN).
+    ld b, a
+    push bc
+    call rclX ; OP1=X
+    pop bc
+    call rclOpNN
+    jp replaceX ; updates LastX
+handleKeyRclError:
+    ld a, errorCodeDimension
+    jp setHandlerCode
 
 msgStoName:
     .db "STO", 0

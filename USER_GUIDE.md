@@ -1312,6 +1312,26 @@ get to:
 
 The message `REGS cleared` will be displayed on the screen.
 
+Similar to the HP-42S and the HP-15C, storage register arithmetic operations are
+supported using the `STO` and `RCL` buttons followed by an arithmetic button.
+
+For example:
+
+- `STO` `+` `00`: add `X` to Reg 00
+- `STO` `-` `00`: subtract `X` from Reg 00
+- `STO` `*` `00`: multiply `X` to Reg 00
+- `STO` `/` `00`: divide `X` into Reg 00
+
+Similarly:
+
+- `RCL` `+` `00`: add Reg 00 to `X`
+- `RCL` `-` `00`: subtract Reg 00 from `X`
+- `RCL` `*` `00`: multiply Reg 00 to `X`
+- `RCL` `/` `00`: divide Reg 00 into `X`
+
+Indirect storage registers are not supported (as of v0.7.0). In other words, the
+`STO` `IND` `nn` and `RCL` `IND` `nn` functionality from the HP-42S.
+
 ### Prime Factors
 
 The `PRIM` function calculates the lowest prime factor of the number in `X`. The
@@ -1547,15 +1567,18 @@ limited:
 
 ### Near Future
 
+- TVM (time value of money)
+    - the TI-84 Plus is bundled with a TVM app, but I find it unintuitive and
+      difficult to remember how to use
+    - the most intuitive UI in my opinion is the one used by the HP-12C
+    - if I recall, this requires implementing a root finder, since at least one
+      of the TVM variables does not have a closed-form solution
 - `PROB` and `COMB` arguments are limited to `< 256`
     - Maybe extend this to `< 2^16` or `<2^32`.
 - `GCD` and `LCM` functions are slow
     - Could be made significantly faster.
 - datetime conversions
     - date/time components to and from epoch seconds
-- compound `STO` and `RCL` operators
-    - `STO+ nn`, `STO- nn`, `STO* nn`, `STO/ nn`
-    - `RCL+ nn`, `RCL- nn`, `RCL* nn`, `RCL/ nn`
 
 ### Medium Future
 
@@ -1580,7 +1603,7 @@ limited:
     - I think the difficulty will be the user interface. A complex number
       requires 2 floating point numbers to be entered and displayed, and I have
       not figured out how to do that within the UI of the RPN83P application.
-- `UNIT` conversions
+- `UNIT` conversions for imperial (not just US) units
     - several places assume US customary units (e.g. US gallons) instead of
       British or Canadian imperial units
     - it'd be nice to support both types, if we can make the menu labels
@@ -1592,24 +1615,30 @@ limited:
     - Might be useful to expose some system status functions, like memory.
     - We can always drop into the TI-OS and use `2ND` `MEM` to get that
       information, so it's not clear that this is worth the effort.
-- TVM (time value of money)
-    - the TI-84 Plus is bundled with a TVM app, but I find it unintuitive and
-      difficult to remember how to use
-    - the most intuitive UI in my opinion is the one used by the HP-12C
-    - if I recall, this requires implementing a root finder, since at least one
-      of the TVM variables does not have a closed-form solution
 
 ### Far Future
 
 I'm not sure these features are worth the effort, but I may do them for
 curiosity and the technical challenge:
 
-- programming
+- keystroke programming
     - Although I think it is technically possible for the RPN83P app to support
       keystroke programming, like the HP-42S, I am not sure that the calculator
       world needs yet another calculator programming language.
     - Is it sufficient that the user can drop into TI-BASIC programming if that
       is required?
+- indirect `STO` and `RCL` operators
+    - `STO IND nn`, `STO+ IND nn`, `STO- IND nn`, `STO* IND nn`, `STO/ IND nn`
+    - `RCL IND nn`, `RCL+ IND nn`, `RCL- IND nn`, `RCL* IND nn`, `RCL/ IND nn`
+    - These are mainly used in keystroke programs, so I would probably want to
+      implement programming before spending time to implement these indirect
+      operators.
+- `STO` and `RCL` for RPN stack registers
+    - `STO ST X`, `STO ST Y`, `STO ST Z`, `STO ST T`
+    - `RCL ST X`, `RCL ST Y`, `RCL ST Z`, `RCL ST T`
+    - Similar to indirect `STO` and `RCL` operators, I think these are mainly
+      useful for keystroke programming, so let's implement keystroke programming
+      before this.
 - matrix and vectors
     - I don't know how much matrix functionality is provided by TI-OS SDK.
     - Creating a reasonable user-interface in the RPN83P could be a challenge.

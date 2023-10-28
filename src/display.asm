@@ -410,10 +410,10 @@ displayStackYZT:
 
 ;-----------------------------------------------------------------------------
 
-; Description: Render the X lines. There are 3 options:
-; 1) if rpnFlagsArgMode, print the inputbuf as a command argument,
-; 2) else if rpnFlagsEditing, print the inputBuf as a stack number,
-; 3) else print the X register.
+; Description: Render the X register line. There are 3 modes:
+; 1) If rpnFlagsArgMode, print the argBuf for the ArgParser, else
+; 2) If rpnFlagsEditing, print the current inputBuf, else
+; 3) Print the X register.
 displayStackX:
     bit rpnFlagsArgMode, (iy + rpnFlags)
     jr nz, displayStackXArg
@@ -467,17 +467,20 @@ displayStackXDebug:
 #endif
 
 ; Display the argBuf in the X register line.
+; Input: (argBuf)
+; Output: (CurCol) updated
 displayStackXArg:
     ld hl, argCurCol*$100 + argCurRow ; $(curCol)(curRow)
     ld (CurRow), hl
-    jr printArgBuf
+    ; [[fallthrough]]
 
 ;-----------------------------------------------------------------------------
 
 ; Function: Print the arg buffer.
 ; Input:
 ;   - argBuf (same as inputBuf)
-;   - argBufPrompt
+;   - argPrompt
+;   - argModifier
 ;   - (CurCol) cursor position
 ; Output:
 ;   - (CurCol) is updated
@@ -486,12 +489,21 @@ printArgBuf:
     ; Print prompt and contents of argBuf
     ld hl, (argPrompt)
     call putS
-    ld a, ' '
-    bcall(_PutC)
+
+    ; Print the argModifier if needed.
+    ld a, (argModifier)
+    cp argModifierCanceled
+    jr nc, printArgBufNumber
+    ld hl, argModifierStrings
+    call getString
+    call putS
+
+printArgBufNumber:
+    ; Print the command argument.
     ld hl, argBuf
     call putPS
 
-    ; Append cursor if needed.
+    ; Append trailing cursor to fill 2 digits
     ld a, (argBufSize)
     or a
     jr z, printArgBufTwoCursors
@@ -507,6 +519,28 @@ printArgBufOneCursor:
 printArgBufZeroCursor:
     bcall(_EraseEOL)
     ret
+
+; Human-readable labels for each of the argModifierXxx enum.
+argModifierStrings:
+    .dw msgArgModifierNone
+    .dw msgArgModifierAdd
+    .dw msgArgModifierSub
+    .dw msgArgModifierMul
+    .dw msgArgModifierDiv
+    .dw msgArgModifierIndirect
+
+msgArgModifierNone:
+    .db " ", 0
+msgArgModifierAdd:
+    .db "+ ", 0
+msgArgModifierSub:
+    .db "- ", 0
+msgArgModifierMul:
+    .db "* ", 0
+msgArgModifierDiv:
+    .db "/ ", 0
+msgArgModifierIndirect:
+    .db " IND ", 0
 
 ;-----------------------------------------------------------------------------
 

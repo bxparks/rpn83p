@@ -215,6 +215,7 @@ rclStackNN:
 ;-----------------------------------------------------------------------------
 
 ; Description: Set OP1 to X.
+; Destroys: all
 rclX:
     ld a, stackXIndex
     jr rclStackNN
@@ -222,6 +223,7 @@ rclX:
 ; Description: Set X to OP1. Also update `ANS` with the same value. Upon
 ; exiting the RPN83P app, the TI-OS can access the most current X value using
 ; `ANS`.
+; Destroys: all
 stoX:
     ld a, stackXIndex
     jr stoStackNN
@@ -229,11 +231,13 @@ stoX:
 ;-----------------------------------------------------------------------------
 
 ; Description: Set OP1 to Y.
+; Destroys: all
 rclY:
     ld a, stackYIndex
     jr rclStackNN
 
 ; Description: Set Y to OP1.
+; Destroys: all
 stoY:
     ld a, stackYIndex
     jr stoStackNN
@@ -241,11 +245,13 @@ stoY:
 ;-----------------------------------------------------------------------------
 
 ; Description: Set OP1 to stZ.
+; Destroys: all
 rclZ:
     ld a, stackZIndex
     jr rclStackNN
 
 ; Description: Set stZ to OP1.
+; Destroys: all
 stoZ:
     ld a, stackZIndex
     jr stoStackNN
@@ -253,11 +259,13 @@ stoZ:
 ;-----------------------------------------------------------------------------
 
 ; Description: Set OP1 to stT.
+; Destroys: all
 rclT:
     ld a, stackTIndex
     jr rclStackNN
 
 ; Description: Set stT to OP1.
+; Destroys: all
 stoT:
     ld a, stackTIndex
     jr stoStackNN
@@ -265,11 +273,13 @@ stoT:
 ;-----------------------------------------------------------------------------
 
 ; Description: Set OP1 to stL.
+; Destroys: all
 rclL:
     ld a, stackLIndex
     jr rclStackNN
 
 ; Description: Set stL to OP1.
+; Destroys: all
 stoL:
     ld a, stackLIndex
     jr stoStackNN
@@ -663,7 +673,6 @@ rclNN:
 ;   - 'REGS' list variable
 ; Output:
 ;   - OP2: float value
-; Preserves: OP2
 rclNNToOP2:
     bcall(_PushRealO1)
     call rclNN
@@ -671,7 +680,9 @@ rclNNToOP2:
     bcall(_PopRealO1)
     ret
 
-; Description: Add OP1 to storage register NN.
+;-----------------------------------------------------------------------------
+
+; Description: Add OP1 to storage register NN. Used by STAT functions.
 ; Input:
 ;   OP1: float value
 ;   A: register index NN, 0-based
@@ -679,12 +690,12 @@ rclNNToOP2:
 ;   REGS[NN] += OP1
 ; Destroys: all
 ; Preserves: OP1, OP2
-stoPlusNN:
+stoAddNN:
     push af ; A=NN
     bcall(_PushRealO1)
     bcall(_PushRealO2)
     bcall(_OP1ToOP2)
-    call rclNN
+    call rclNN ; I guess A is preserved by the previous bcalls
     bcall(_FPAdd) ; OP1 += OP2
     pop af ; A=NN
     call stoNN
@@ -692,7 +703,7 @@ stoPlusNN:
     bcall(_PopRealO1)
     ret
 
-; Description: Subtract OP1 from storage register NN.
+; Description: Subtract OP1 from storage register NN. Used by STAT functions.
 ; Input:
 ;   OP1: float value
 ;   A: register index NN, 0-based
@@ -700,17 +711,104 @@ stoPlusNN:
 ;   REGS[NN] += OP1
 ; Destroys: all
 ; Preserves: OP1, OP2
-stoMinusNN:
+stoSubNN:
     push af ; A=NN
     bcall(_PushRealO1)
     bcall(_PushRealO2)
     bcall(_OP1ToOP2)
-    call rclNN
+    call rclNN ; I guess A is preserved by the previous bcalls
     bcall(_FPSub) ; OP1 -= OP2
     pop af ; A=NN
     call stoNN
     bcall(_PopRealO2)
     bcall(_PopRealO1)
+    ret
+
+;-----------------------------------------------------------------------------
+
+; Description: Implement STO{op} NN, with {op} defined by B and NN given by C.
+; Input:
+;   - OP1
+;   - B: operation index [0,4] into floatOps, MUST be same as argModifierXxx
+;   - C: register index NN, 0-based
+; Output:
+;   - REGS[C] {op}= OP1, where {op} is defined by B
+; Destroys: all
+; Preserves: OP1, OP2
+stoOpNN:
+    push bc
+    bcall(_PushRealO1)
+    bcall(_PushRealO2)
+    bcall(_OP1ToOP2)
+    ; Recall REGS[C]
+    pop bc
+    push bc
+    ld a, c ; A=C=register index
+    call rclNN
+    ; Invoke op B
+    pop bc
+    push bc
+    ld a, b ; A=op-index
+    ld hl, floatOps
+    call jumpAOfHL
+    ; Save REGS[C]
+    pop bc
+    ld a, c ; A=C=register index
+    call stoNN
+    ; restore OP1, OP2
+    bcall(_PopRealO2)
+    bcall(_PopRealO1)
+    ret
+
+; Description: Implement RCL{op} NN, with {op} defined by B and NN given by C.
+; Input:
+;   - OP1
+;   - B: operation index [0,4] into floatOps, MUST be same as argModifierXxx
+;   - C: register index NN, 0-based
+; Output:
+;   - OP1 {op}= REGS[C], where {op} is defined by B
+; Destroys: all
+; Preserves: OP2
+rclOpNN:
+    push bc
+    bcall(_PushRealO2) ; save OP2
+    ; Recall REGS[C]
+    pop bc
+    push bc
+    ld a, c ; A=C=register index
+    call rclNNToOP2
+    ; Invoke op B
+    pop bc
+    ld a, b ; A=op-index
+    ld hl, floatOps
+    call jumpAOfHL
+    bcall(_PopRealO2) ; restore OP2
+    ret
+
+; List of floating point operations, indexed from 0 to 4. Implements `OP1 {op}=
+; OP2`. These MUST be identical to the argModifierXxx constants.
+floatOpsCount equ 5
+floatOps:
+    .dw floatOpAssign ; 0, argModifierNone
+    .dw floatOpAdd ; 1, argModifierAdd
+    .dw floatOpSub ; 2, argModifierSub
+    .dw floatOpMul ; 3, argModifierMul
+    .dw floatOpDiv ; 4, argModifierDiv
+
+floatOpAssign:
+    bcall(_OP2ToOP1)
+    ret
+floatOpAdd:
+    bcall(_FPAdd)
+    ret
+floatOpSub:
+    bcall(_FPSub)
+    ret
+floatOpMul:
+    bcall(_FPMult)
+    ret
+floatOpDiv:
+    bcall(_FPDiv)
     ret
 
 ;-----------------------------------------------------------------------------

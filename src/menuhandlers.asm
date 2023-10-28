@@ -114,7 +114,7 @@ displayPage:
     ret
 
 ; Array of (char*) pointers to C-strings.
-helpPageCount equ 6
+helpPageCount equ 7
 helpPages:
     .dw msgHelpPage1
     .dw msgHelpPage2
@@ -122,21 +122,22 @@ helpPages:
     .dw msgHelpPage4
     .dw msgHelpPage5
     .dw msgHelpPage6
+    .dw msgHelpPage7
 
 msgHelpPage1:
     .db escapeLargeFont, "RPN83P", Lenter
-    .db escapeSmallFont, "v0.7.0-dev (2023", Shyphen, "10", Shyphen, "20)", Senter
+    .db escapeSmallFont, "v0.7.0-dev (2023", Shyphen, "10", Shyphen, "27)", Senter
     .db "(c) 2023  Brian T. Park", Senter
     .db Senter
     .db "An RPN calculator for the", Senter
     .db "TI", Shyphen, "83 Plus and TI", Shyphen, "84 Plus", Senter
     .db "inspired by the HP", Shyphen, "42S.", Senter
     .db Senter
-    .db SlBrack, "1/6", SrBrack, " Any key to continue...", Senter
+    .db SlBrack, "1/7", SrBrack, " Any key to continue...", Senter
     .db 0
 
 msgHelpPage2:
-    .db escapeLargeFont, "Stack Operation", Lenter
+    .db escapeLargeFont, "Stack Ops", Lenter
     .db escapeSmallFont, Senter
     .db "R", SdownArrow, " :  (", Senter
     .db "X", Sleft, Sconvert, "Y", ":  )", Senter
@@ -144,10 +145,22 @@ msgHelpPage2:
     .db "R", SupArrow, " :  STK  R", SupArrow, Senter
     .db Senter
     .db Senter
-    .db SlBrack, "2/6", SrBrack, " Any key to continue...", Senter
+    .db SlBrack, "2/7", SrBrack, " Any key to continue...", Senter
     .db 0
 
 msgHelpPage3:
+    .db escapeLargeFont, "Register Ops", Lenter
+    .db escapeSmallFont, Senter
+    .db "STO nn", Senter
+    .db "STO+ STO- STO* STO/ nn", Senter
+    .db "RCL nn", Senter
+    .db "RCL+ RCL- RCL* RCL/ nn", Senter
+    .db "nn: 0 to 24", Senter
+    .db Senter
+    .db SlBrack, "3/7", SrBrack, " Any key to continue...", Senter
+    .db 0
+
+msgHelpPage4:
     .db escapeLargeFont, "Input Editing", Lenter
     .db escapeSmallFont, Senter
     .db "EE:  2ND EE or ,", Senter
@@ -156,10 +169,10 @@ msgHelpPage3:
     .db "ClrX:  CLEAR", Senter
     .db Senter
     .db Senter
-    .db SlBrack, "3/6", SrBrack, " Any key to continue...", Senter
+    .db SlBrack, "4/7", SrBrack, " Any key to continue...", Senter
     .db 0
 
-msgHelpPage4:
+msgHelpPage5:
     .db escapeLargeFont, "Menu Navigation", Lenter
     .db escapeSmallFont, Senter
     .db "Home:  MATH", Senter
@@ -168,10 +181,10 @@ msgHelpPage4:
     .db "Back:  ON", Senter
     .db "Quit App:  2ND QUIT", Senter
     .db Senter
-    .db SlBrack, "4/6", SrBrack, " Any key to continue...", Senter
+    .db SlBrack, "5/7", SrBrack, " Any key to continue...", Senter
     .db 0
 
-msgHelpPage5:
+msgHelpPage6:
     .db escapeLargeFont, "CFIT Models", Lenter
     .db escapeSmallFont, Senter
     .db "LINF: y = B + M x", Senter
@@ -180,10 +193,10 @@ msgHelpPage5:
     .db "PWRF: y = B x^M", Senter
     .db Senter
     .db Senter
-    .db SlBrack, "5/6", SrBrack, " Any key to continue...", Senter
+    .db SlBrack, "6/7", SrBrack, " Any key to continue...", Senter
     .db 0
 
-msgHelpPage6:
+msgHelpPage7:
     .db escapeLargeFont, "BASE Ops", Lenter
     .db escapeSmallFont, Senter
     .db "SL SR: shift logical", Senter
@@ -192,7 +205,7 @@ msgHelpPage6:
     .db "RLC RRC: rotate thru carry",  Senter
     .db "REVB: reverse bits", Senter
     .db "CNTB: count bits", Senter
-    .db SlBrack, "6/6", SrBrack, " Any key to return.", Senter
+    .db SlBrack, "7/7", SrBrack, " Any key to return.", Senter
     .db 0
 
 ;-----------------------------------------------------------------------------
@@ -1022,54 +1035,33 @@ mHrToHmsHandler:
 
 mFixHandler:
     call closeInputBuf
-    ld hl, mFixCallback
-    ld (argHandler), hl
     ld hl, mFixName
-    jr enableArgMode
-mFixCallback:
+    call startArgParser
+    call processCommandArg
+    ret nc ; do nothing if canceled
     res fmtExponent, (iy + fmtFlags)
     res fmtEng, (iy + fmtFlags)
     jr saveFormatDigits
 
 mSciHandler:
     call closeInputBuf
-    ld hl, mSciCallback
-    ld (argHandler), hl
     ld hl, mSciName
-    jr enableArgMode
-mSciCallback:
+    call startArgParser
+    call processCommandArg
+    ret nc ; do nothing if canceled
     set fmtExponent, (iy + fmtFlags)
     res fmtEng, (iy + fmtFlags)
     jr saveFormatDigits
 
 mEngHandler:
     call closeInputBuf
-    ld hl, mEngCallback
-    ld (argHandler), hl
     ld hl, mEngName
-    jr enableArgMode
-mEngCallback:
+    call startArgParser
+    call processCommandArg
+    ret nc ; do nothing if canceled
     set fmtExponent, (iy + fmtFlags)
     set fmtEng, (iy + fmtFlags)
     jr saveFormatDigits
-
-; Description: Enter command argument input mode by prompting the user
-; for a numerical parameter.
-; Input: HL: argPrompt
-; Output:
-;   - argPrompt set with C string
-;   - argBufSize set to 0
-;   - rpnFlagsArgMode set
-;   - dirtyFlagsInput set
-; Destroys: A, HL
-enableArgMode:
-    ld (argPrompt), hl
-    xor a
-    ld (argBufSize), a
-    set rpnFlagsArgMode, (iy + rpnFlags)
-    set dirtyFlagsInput, (iy + dirtyFlags)
-    set dirtyFlagsXLabel, (iy + dirtyFlags)
-    ret
 
 ; Description: Save the (argValue) to (fmtDigits).
 ; Output:

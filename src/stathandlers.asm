@@ -198,26 +198,26 @@ statSigmaPlus:
     call rclX
     bcall(_PushRealO1) ; FPST=X
     ld a, statRegX
-    call stoPlusNN
+    call stoAddNN
 
     bcall(_FPSquare) ; OP1=X^2
     ld a, statRegX2
-    call stoPlusNN
+    call stoAddNN
 
     call rclY
     bcall(_PushRealO1) ; FPST=Y
     ld a, statRegY
-    call stoPlusNN
+    call stoAddNN
 
     bcall(_FPSquare) ; OP1=Y^2
     ld a, statRegY2
-    call stoPlusNN
+    call stoAddNN
 
     bcall(_PopRealO2) ; OP2=Y
     bcall(_PopRealO1) ; OP1=X
     bcall(_FPMult)
     ld a, statRegXY
-    call stoPlusNN
+    call stoAddNN
 
     ld a, statRegN
     call rclNN
@@ -245,11 +245,11 @@ statSigmaPlusLogXNormal:
 statSigmaPlusLogXContinue:
     bcall(_PushRealO1) ; FPST=lnX
     ld a, statRegLnX
-    call stoPlusNN
+    call stoAddNN
     ;
     bcall(_FPSquare) ; OP1=(lnX)^2
     ld a, statRegLnX2
-    call stoPlusNN
+    call stoAddNN
 
 statSigmaPlusLogY:
     ; Update lnY registers
@@ -267,11 +267,11 @@ statSigmaPlusLogYNormal:
 statSigmaPlusLogYContinue:
     bcall(_PushRealO1) ; FPST=lnY
     ld a, statRegLnY
-    call stoPlusNN
+    call stoAddNN
     ;
     bcall(_FPSquare) ; OP1=(lnY)^2
     ld a, statRegLnY2
-    call stoPlusNN
+    call stoAddNN
 
     ; Update XlnY, YlnY, lnXlnY
     ; The FPS contains the following stack elements:
@@ -284,18 +284,18 @@ statSigmaPlusLogYContinue:
     bcall(_PopRealO2) ; OP2=lnX
     bcall(_FPMult) ; OP1=YlnX
     ld a, statRegYLnX
-    call stoPlusNN
+    call stoAddNN
     ;
     bcall(_PopRealO1) ; OP1=X
     bcall(_OP2ExOP4) ; OP2=lnY, OP4=lnX
     bcall(_FPMult) ; OP1=XlnY
     ld a, statRegXLnY
-    call stoPlusNN
+    call stoAddNN
     ;
     bcall(_OP4ToOP1) ; OP1=lnX, OP2=lnY
     bcall(_FPMult) ; OP1=lnXlnY
     ld a, statRegLnXLnY
-    call stoPlusNN
+    call stoAddNN
     ret
 
 ;-----------------------------------------------------------------------------
@@ -306,26 +306,26 @@ statSigmaMinus:
     call rclX
     bcall(_PushRealO1) ; FPST=X
     ld a, statRegX
-    call stoMinusNN
+    call stoSubNN
 
     bcall(_FPSquare) ; OP1=X^2
     ld a, statRegX2
-    call stoMinusNN
+    call stoSubNN
 
     call rclY
     bcall(_PushRealO1) ; FPST=Y
     ld a, statRegY
-    call stoMinusNN
+    call stoSubNN
 
     bcall(_FPSquare) ; OP1=Y^2
     ld a, statRegY2
-    call stoMinusNN
+    call stoSubNN
 
     bcall(_PopRealO2) ; OP2=Y
     bcall(_PopRealO1) ; OP1=X
     bcall(_FPMult)
     ld a, statRegXY
-    call stoMinusNN
+    call stoSubNN
 
     ld a, statRegN
     call rclNN
@@ -353,11 +353,11 @@ statSigmaMinusLogXNormal:
 statSigmaMinusLogXContinue:
     bcall(_PushRealO1) ; FPST=lnX
     ld a, statRegLnX
-    call stoMinusNN
+    call stoSubNN
     ;
     bcall(_FPSquare) ; OP1=(lnX)^2
     ld a, statRegLnX2
-    call stoMinusNN
+    call stoSubNN
 
 statSigmaMinusLogY:
     ; Update lnY registers
@@ -375,11 +375,11 @@ statSigmaMinusLogYNormal:
 statSigmaMinusLogYContinue:
     bcall(_PushRealO1) ; FPST=lnY
     ld a, statRegLnY
-    call stoMinusNN
+    call stoSubNN
     ;
     bcall(_FPSquare) ; OP1=(lnY)^2
     ld a, statRegLnY2
-    call stoMinusNN
+    call stoSubNN
 
     ; Update XlnY, YlnY, lnXlnY
     ; The FPS contains the following stack elements:
@@ -392,18 +392,18 @@ statSigmaMinusLogYContinue:
     bcall(_PopRealO2) ; OP2=lnX
     bcall(_FPMult) ; OP1=YlnX
     ld a, statRegYLnX
-    call stoMinusNN
+    call stoSubNN
     ;
     bcall(_PopRealO1) ; OP1=X
     bcall(_OP2ExOP4) ; OP2=lnY, OP4=lnX
     bcall(_FPMult) ; OP1=XlnY
     ld a, statRegXLnY
-    call stoMinusNN
+    call stoSubNN
     ;
     bcall(_OP4ToOP1) ; OP1=lnX, OP2=lnY
     bcall(_FPMult) ; OP1=lnXlnY
     ld a, statRegLnXLnY
-    call stoMinusNN
+    call stoSubNN
     ret
 
 ;-----------------------------------------------------------------------------
