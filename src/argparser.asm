@@ -47,7 +47,7 @@ processCommandArg:
     ; Handle the button press.
     ld hl, argKeyCodeHandlerTable
     ld b, argKeyCodeTableSize
-    call lookupKeyLoop
+    call dispatchHandler
 
     ; Check for terminate flag.
     bit inputBufFlagsArgExit, (iy + inputBufFlags)

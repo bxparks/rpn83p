@@ -2,42 +2,7 @@
 ; MIT License
 ; Copyright (c) 2023 Brian T. Park
 ;
-; Key code dispatcher and handlers.
-;-----------------------------------------------------------------------------
-
-; Description: Handle the keyCode given by A. If keyCode is not in the handler
-; table, do nothing.
-; Input: A: keyCode from GetKey()
-; Output: none
-; Destroys: A, B, DE, HL (and any other registers destroyed by the handler)
-lookupKey:
-    ld hl, keyCodeHandlerTable
-    ld b, keyCodeHandlerTableSize
-    ; [[fallthrough]]
-
-; Description: Handle the keyCode given by A. If keyCode is not in the handler
-; table, do nothing.
-; Input:
-;   - A: keyCode from GetKey()
-;   - HL: pointer to handler table
-;   - B: number of entries in the handler table
-; Output: none
-; Destroys: B, DE, HL (and any other registers destroyed by the handler)
-lookupKeyLoop:
-    cp a, (hl)
-    inc hl
-    jr z, lookupKeyMatched
-    inc hl
-    inc hl
-    djnz lookupKeyLoop
-    ret
-lookupKeyMatched:
-    ; jump to the corresponding jump table entry
-    ld e, (hl)
-    inc hl
-    ld d, (hl)
-    jp jumpDE
-
+; Main input key code handlers.
 ;-----------------------------------------------------------------------------
 
 ; Function: Append a number character to inputBuf or argBuf, updating various

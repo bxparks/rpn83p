@@ -20,6 +20,7 @@ SRCS := \
 	handlertab.asm \
 	input.asm \
 	integer.asm \
+	mainparser.asm \
 	menu.asm \
 	menudef.asm \
 	menuhandlers.asm \

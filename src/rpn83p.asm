@@ -298,7 +298,7 @@ main:
     call initStat
     call initCfit
 initAlways:
-    ; Initialize the following onlky if restoreAppState() suceeds.
+    ; If restoreAppState() suceeds, only the following are initialized.
     call initArgBuf ; Start with Command Arg parser off.
     call initLastX ; Always copy TI-OS 'ANS' to 'X'
     call initDisplay ; Always initialize the display.
@@ -307,54 +307,9 @@ initAlways:
     ; OFF) signal.
     ld hl, appVectors
     bcall(_AppInit)
-    ; [[fall through]]
 
-; The main event/read loop. Read button and dispatch to the appropriate
-; handler. Some of the functionalities are:
-;
-;   - 2ND-QUIT: quit app
-;   - 0-9: add to input buffer
-;   - . and (-): add to input buffer
-;   - , or 2nd-EE: add scientific notation 'E'
-;   - DEL: removes the last character in the input buffer
-;   - CLEAR: remove RPN stack X register, or clear the input buffer
-;
-; See 83pa28d/week2/day12.
-readLoop:
-    ; call debugFlags
-    call displayAll
-
-    ; Set the handler code initially to 0.
-    xor a
-    ld (handlerCode), a
-
-    ; Get the key code, and reset the ON flag right after. See TI-83 Plus SDK
-    ; guide, p. 69. If this flag is not reset, then the next bcall(_DispHL)
-    ; causes subsequent bcall(_GetKey) to always return 0. Interestingly, if
-    ; the flag is not reset, but the next call is another bcall(_GetKey), then
-    ; it sort of seems to work. Except that upon exiting, the TI-OS displays an
-    ; Quit/Goto error message.
-    bcall(_GetKey)
-    res onInterrupt, (iy + onFlags)
-
-    ; Install error handler
-    ld hl, readLoopException
-    call APP_PUSH_ERRORH
-    ; Handle the normal buttons or the menu F1-F5 buttons.
-    call lookupKey
-    ; Uninstall error handler
-    call APP_POP_ERRORH
-
-    ; Transfer the handler code to errorCode.
-    ld a, (handlerCode)
-readLoopSetErrorCode:
-    call setErrorCode
-    jr readLoop
-
-readLoopException:
-    ; Handle system exception. Register A contains the system error code.
-    call setHandlerCodeToSystemCode
-    jr readLoopSetErrorCode
+    ; Jump into the main keyboard input parsing loop.
+    jp processCommand
 
 ; Clean up and exit app.
 ;   - Called explicitly upon 2ND QUIT.
@@ -399,10 +354,11 @@ dummyVector:
 
 ;-----------------------------------------------------------------------------
 
-#include "vars.asm"
+#include "mainparser.asm"
 #include "handlers.asm"
 #include "argparser.asm"
 #include "arghandlers.asm"
+#include "vars.asm"
 #include "pstring.asm"
 #include "input.asm"
 #include "display.asm"
