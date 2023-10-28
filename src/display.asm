@@ -467,17 +467,20 @@ displayStackXDebug:
 #endif
 
 ; Display the argBuf in the X register line.
+; Input: (argBuf)
+; Output: (CurCol) updated
 displayStackXArg:
     ld hl, argCurCol*$100 + argCurRow ; $(curCol)(curRow)
     ld (CurRow), hl
-    jr printArgBuf
+    ; [[fallthrough]]
 
 ;-----------------------------------------------------------------------------
 
 ; Function: Print the arg buffer.
 ; Input:
 ;   - argBuf (same as inputBuf)
-;   - argBufPrompt
+;   - argPrompt
+;   - argModifier
 ;   - (CurCol) cursor position
 ; Output:
 ;   - (CurCol) is updated
@@ -486,12 +489,21 @@ printArgBuf:
     ; Print prompt and contents of argBuf
     ld hl, (argPrompt)
     call putS
-    ld a, ' '
-    bcall(_PutC)
+
+    ; Print the argModifier if needed.
+    ld a, (argModifier)
+    cp argModifierCanceled
+    jr nc, printArgBufNumber
+    ld hl, argModifierStrings
+    call getString
+    call putS
+
+printArgBufNumber:
+    ; Print the command argument.
     ld hl, argBuf
     call putPS
 
-    ; Append cursor if needed.
+    ; Append trailing cursor to fill 2 digits
     ld a, (argBufSize)
     or a
     jr z, printArgBufTwoCursors
@@ -507,6 +519,27 @@ printArgBufOneCursor:
 printArgBufZeroCursor:
     bcall(_EraseEOL)
     ret
+
+argModifierStrings:
+    .dw msgArgModifierNone
+    .dw msgArgModifierIndirect
+    .dw msgArgModifierAdd
+    .dw msgArgModifierSub
+    .dw msgArgModifierMul
+    .dw msgArgModifierDiv
+
+msgArgModifierNone:
+    .db " ", 0
+msgArgModifierIndirect:
+    .db " IND ", 0
+msgArgModifierAdd:
+    .db "+ ", 0
+msgArgModifierSub:
+    .db "- ", 0
+msgArgModifierMul:
+    .db "* ", 0
+msgArgModifierDiv:
+    .db "/ ", 0
 
 ;-----------------------------------------------------------------------------
 

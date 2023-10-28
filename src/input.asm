@@ -87,8 +87,12 @@ initArgBuf:
     res rpnFlagsArgMode, (iy + rpnFlags)
     ret
 
-; Input: A: character to append
-; Destroys: B, HL
+; Description: Append character in A to the argBuf.
+; Input:
+;   - A: character to append
+; Output:
+;   - dirtyFlagsInput set
+; Destroys: all
 appendArgBuf:
     set dirtyFlagsInput, (iy + dirtyFlags)
     ld hl, argBuf
@@ -430,11 +434,12 @@ calcDPEnd:
 
 ;------------------------------------------------------------------------------
 
-; Function: Append character to parseBuf
+; Function: Append character in A to parseBuf
 ; Input:
-;   A: character to be appended
-; Output: CF set when append fails
-; Destroys: A, B, DE, HL
+;   - A: character to be appended
+; Output:
+;   - CF set when append fails
+; Destroys: all
 appendParseBuf:
     ld hl, parseBuf
     ld b, parseBufMax

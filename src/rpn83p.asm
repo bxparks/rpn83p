@@ -38,13 +38,14 @@ keyMenu5 equ kGraph
 ; be optimization purposes. In theory, we could eliminate these dirty flags
 ; without affecting the correctness of the rest of the RPN83P app.
 dirtyFlags equ asm_Flag1
-dirtyFlagsInput equ 0 ; set if the input buffer is dirty
-dirtyFlagsStack equ 1 ; set if the stack is dirty
+dirtyFlagsInput equ 0 ; set if the inputBuf or argBuf is dirty
+dirtyFlagsStack equ 1 ; set if the RPN stack is dirty
 dirtyFlagsMenu equ 2 ; set if the menu selection is dirty
 dirtyFlagsTrigMode equ 3 ; set if the trig status is dirty
 dirtyFlagsFloatMode equ 4 ; set if the floating mode is dirty
 dirtyFlagsBaseMode equ 5 ; set if any base mode flags or vars is dirty
-dirtyFlagsErrorCode equ 6 ; set if the error code is dirty ; The dirtyFlagsXLabel flag is set if the 'X:' label is dirty due to the
+dirtyFlagsErrorCode equ 6 ; set if the error code is dirty
+; The dirtyFlagsXLabel flag is set if the 'X:' label is dirty due to the
 ; command arg mode. The 6x8 cell occupied by the 'X:' label is rendered in
 ; small-font, which means that it actually uses only 7 rows of pixels from the
 ; top. During the command arg mode, the cell is replaced by the first letter of

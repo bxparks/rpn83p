@@ -797,6 +797,7 @@ handleKeySto:
     call closeInputBuf
     ld hl, msgStoName
     call startArgParser
+    set inputBufFlagsArgAllowModifier, (iy + inputBufFlags)
     call processCommandArg
     ret nc ; do nothing if canceled
     call rclX
@@ -811,6 +812,7 @@ handleKeyRcl:
     call closeInputBuf
     ld hl, msgRclName
     call startArgParser
+    set inputBufFlagsArgAllowModifier, (iy + inputBufFlags)
     call processCommandArg
     ret nc ; do nothing if canceled
     ld a, (argValue)

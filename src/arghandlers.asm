@@ -46,7 +46,7 @@ handleArgKey9:
     jr handleArgNumber
 
 handleArgNumber:
-    call appendArgBuf
+    call appendArgBuf ; sets dirtyFlagsInput
     ld a, (argBuf) ; A = length of argBuf string
     cp a, argBufSizeMax
     ret nz ; if only 1 digit entered, just return
@@ -88,21 +88,33 @@ handleArgKeyExit:
     ret
 
 handleArgKeyAdd:
+    bit inputBufFlagsArgAllowModifier, (iy + inputBufFlags)
+    ret z
     ld a, argModifierAdd
     ld (argModifier), a
+    set dirtyFlagsInput, (iy + dirtyFlags)
     ret
 
 handleArgKeySub:
+    bit inputBufFlagsArgAllowModifier, (iy + inputBufFlags)
+    ret z
     ld a, argModifierSub
     ld (argModifier), a
+    set dirtyFlagsInput, (iy + dirtyFlags)
     ret
 
 handleArgKeyMul:
+    bit inputBufFlagsArgAllowModifier, (iy + inputBufFlags)
+    ret z
     ld a, argModifierMul
     ld (argModifier), a
+    set dirtyFlagsInput, (iy + dirtyFlags)
     ret
 
 handleArgKeyDiv:
+    bit inputBufFlagsArgAllowModifier, (iy + inputBufFlags)
+    ret z
     ld a, argModifierDiv
     ld (argModifier), a
+    set dirtyFlagsInput, (iy + dirtyFlags)
     ret
