@@ -370,6 +370,7 @@ dummyVector:
 #include "stathandlers.asm"
 #include "cfithandlers.asm"
 #include "prime.asm"
+#include "help.asm"
 #include "common.asm"
 #include "integer.asm"
 #include "float.asm"

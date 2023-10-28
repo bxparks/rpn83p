@@ -18,6 +18,7 @@ SRCS := \
 	errorcode.asm \
 	handlers.asm \
 	handlertab.asm \
+	help.asm \
 	input.asm \
 	integer.asm \
 	mainparser.asm \
