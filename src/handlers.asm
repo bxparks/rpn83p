@@ -34,8 +34,8 @@ handleKeyNumberFirstDigit:
 handleKeyNumberCheckAppend:
     ; Limit number of exponent digits to 2.
     bit inputBufFlagsEE, (iy + inputBufFlags)
-    jr z, handleKeyNumberAppend
-    ; Check inputBufEELen, preserve the character in A.
+    jp z, appendInputBuf ; append character in A.
+    ; Check inputBufEELen, while preserving A.
     ld b, a
     ld a, (inputBufEELen)
     cp inputBufEELenMax
@@ -47,9 +47,6 @@ handleKeyNumberCheckAppend:
     ld hl, inputBufEELen
     inc (hl)
     ret
-handleKeyNumberAppend:
-    ; Unconditionally append character in A.
-    jp appendInputBuf
 
 ;-----------------------------------------------------------------------------
 
