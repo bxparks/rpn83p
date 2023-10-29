@@ -64,6 +64,44 @@ initMenu:
     set dirtyFlagsMenu, (iy + dirtyFlags)
     ret
 
+; Description: Sanitize the current menuGroup upon application start. This is
+; needed when the version of the app that saved its menu state (in RPN83SAV)
+; has a different menu hierarchy than the current version of the app. It is
+; then possible for the (menuGroupId) to point to a completely different or
+; non-existent menuGroup, which causes the menu bar to be rendered incorrectly.
+; In the worse case, it may cause the system to hang. This function checks if
+; the (menuGroupId) is actually a valid MenuGroup. If not, we reset the menu to
+; the ROOT.
+;
+; The problem would not exist if we incremented the appStateSchemaVersion when
+; the menu hierarchy is changed using menudef.txt. But this is easy to forget,
+; because changing the menu hierarchy does not change the *layout* of the app
+; variables. It only changes the *semantic* meaning of the value stored in the
+; (menuGroupId) variable.
+;
+; Destroys: A, HL, IX
+sanitizeMenu:
+    ld a, (menuGroupId)
+    ; Check valid menuId.
+    cp mMenuTableSize
+    jr nc, sanitizeMenuReset
+    ; Check for MenuGroup.
+    call getMenuNodeIX ; HL=menuNode
+    ld a, (ix + menuNodeNumRows)
+    or a
+    jr z, sanitizeMenuReset ; jump if node was a MenuItem
+    ; Check menuRowIndex
+    ld a, (menuRowIndex)
+    cp (ix + menuNodeNumRows)
+    ret c
+    ; [[fallthrough]] if menuRowIndex >= menuNodeNumRows
+sanitizeMenuReset:
+    ld a, mRootId
+    ld (menuGroupId), a
+    xor a
+    ld (menuRowIndex), a
+    ret
+
 ; Description: Return the node id of the first item in the menu row at
 ; `menuRowIndex` of the current menu node `menuGroupId`. The next 4 node
 ; ids in sequential order define the other 4 menu buttons.

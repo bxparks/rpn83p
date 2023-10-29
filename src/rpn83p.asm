@@ -302,6 +302,7 @@ initAlways:
     call initArgBuf ; Start with Command Arg parser off.
     call initLastX ; Always copy TI-OS 'ANS' to 'X'
     call initDisplay ; Always initialize the display.
+    call sanitizeMenu ; Sanitize the current (menuGroupId)
 
     ; Initialize the App monitor so that we can intercept the Put Away (2ND
     ; OFF) signal.
