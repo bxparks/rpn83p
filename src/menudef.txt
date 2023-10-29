@@ -301,6 +301,22 @@ MenuGroup root mRoot [
       #   MenuItem * *
       # ]
     ]
+    MenuGroup TVM mTvm [
+      MenuRow [
+        MenuItem N mTvmN
+        MenuItem I<Spercent>YR mTvmIYR
+        MenuItem PV mTvmPV
+        MenuItem PMT mTvmPMT
+        MenuItem FV mTvmFV
+      ]
+      MenuRow [
+        MenuItem P<Sslash>YR mTvmPYR
+        MenuItemAlt BEG BEG<Sblock> mTvmBegin
+        MenuItemAlt END END<Sblock> mTvmEnd
+        MenuItem RSTV mTvmReset
+        MenuItem CLTV mTvmClear
+      ]
+    ]
   ]
   MenuRow [
     MenuGroup CLR mClear [
