@@ -7,42 +7,95 @@
 
 mTvmNHandler:
     call closeInputBuf
-    ld hl, fin_N
-    bcall(_Mov9ToOP1)
+    bit rpnFlagsTvmCalculate, (iy + rpnFlags)
+    jr nz, mTvmNCalculate
+    ; save the inputBuf value
+    ld de, fin_N
+    bcall(_MovFrOP1)
+    set rpnFlagsTvmCalculate, (iy + rpnFlags)
+    ret
+mTvmNCalculate:
+    ; TODO: Calculate N
+    bcall(_OP1Set0)
+    ;ld hl, fin_N
+    ;bcall(_Mov9ToOP1)
     jp pushX
+    ret
 
 mTvmIYRHandler:
     call closeInputBuf
-    ld hl, fin_I
-    bcall(_Mov9ToOP1)
+    bit rpnFlagsTvmCalculate, (iy + rpnFlags)
+    jr nz, mTvmIYRCalculate
+    ; save the inputBuf value
+    ld de, fin_I
+    bcall(_MovFrOP1)
+    set rpnFlagsTvmCalculate, (iy + rpnFlags)
+    ret
+mTvmIYRCalculate:
+    ; TODO: Calculate IYR
+    bcall(_OP1Set1)
+    ;ld hl, fin_I
+    ;bcall(_Mov9ToOP1)
     jp pushX
 
 mTvmPVHandler:
     call closeInputBuf
-    ld hl, fin_PV
-    bcall(_Mov9ToOP1)
+    bit rpnFlagsTvmCalculate, (iy + rpnFlags)
+    jr nz, mTvmPVCalculate
+    ; save the inputBuf value
+    ld de, fin_PV
+    bcall(_MovFrOP1)
+    set rpnFlagsTvmCalculate, (iy + rpnFlags)
+    ret
+mTvmPVCalculate:
+    ; TODO: Calculate IYR
+    bcall(_OP1Set2)
+    ;ld hl, fin_PV
+    ;bcall(_Mov9ToOP1)
     jp pushX
 
 mTvmPMTHandler:
     call closeInputBuf
-    ld hl, fin_PMT
-    bcall(_Mov9ToOP1)
+    bit rpnFlagsTvmCalculate, (iy + rpnFlags)
+    jr nz, mTvmPMTCalculate
+    ; save the inputBuf value
+    ld de, fin_PMT
+    bcall(_MovFrOP1)
+    set rpnFlagsTvmCalculate, (iy + rpnFlags)
+    ret
+mTvmPMTCalculate:
+    ; TODO: Calculate PMT
+    bcall(_OP1Set3)
+    ;ld hl, fin_PMT
+    ;bcall(_Mov9ToOP1)
     jp pushX
 
 mTvmFVHandler:
     call closeInputBuf
-    ld hl, fin_FV
-    bcall(_Mov9ToOP1)
+    bit rpnFlagsTvmCalculate, (iy + rpnFlags)
+    jr nz, mTvmFVCalculate
+    ; save the inputBuf value
+    ld de, fin_FV
+    bcall(_MovFrOP1)
+    set rpnFlagsTvmCalculate, (iy + rpnFlags)
+    ret
+mTvmFVCalculate:
+    ; TODO: Calculate FV
+    bcall(_OP1Set4)
+    ;ld hl, fin_FV
+    ;bcall(_Mov9ToOP1)
     jp pushX
 
 mTvmPYRHandler:
     call closeInputBuf
+    res rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld hl, fin_PY ; payments / year
     bcall(_Mov9ToOP1)
     jp pushX
 
 mTvmBeginHandler:
     call closeInputBuf
+    res rpnFlagsTvmCalculate, (iy + rpnFlags)
     set rpnFlagsTvmPmtBegin, (iy + rpnFlags)
     set dirtyFlagsMenu, (iy + dirtyFlags)
     ret
@@ -56,6 +109,7 @@ mTvmBeginNameSelector:
 
 mTvmEndHandler:
     call closeInputBuf
+    res rpnFlagsTvmCalculate, (iy + rpnFlags)
     res rpnFlagsTvmPmtBegin, (iy + rpnFlags)
     set dirtyFlagsMenu, (iy + dirtyFlags)
     ret

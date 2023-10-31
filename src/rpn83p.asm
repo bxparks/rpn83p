@@ -70,6 +70,7 @@ rpnFlagsLiftEnabled equ 2 ; set if stack lift is enabled (ENTER disables it)
 rpnFlagsAllStatEnabled equ 3 ; set if Sigma+ updates logarithm registers
 rpnFlagsBaseModeEnabled equ 4 ; set if inside BASE menu hierarchy
 rpnFlagsTvmPmtBegin equ 5 ; set if TVM payment at begin, 0 if at end
+rpnFlagsTvmCalculate equ 6 ; set if the next TVM function should calculate
 
 ; Flags for the inputBuf. Offset from IY register.
 inputBufFlags equ asm_Flag3

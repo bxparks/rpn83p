@@ -17,6 +17,8 @@
 ;   - dirtyFlagsInput set
 ; Destroys: all
 handleKeyNumber:
+    ; Any digit entry should cause TVM menus to go into input mode.
+    res rpnFlagsTvmCalculate, (iy + rpnFlags)
     ; If not in input editing mode: lift stack and go into edit mode
     bit rpnFlagsEditing, (iy + rpnFlags)
     jr nz, handleKeyNumberCheckAppend
@@ -423,6 +425,7 @@ flipInputBufSignAdd:
 ; Destroys: all, OP1, OP2, OP4
 handleKeyEnter:
     call closeInputBuf
+    res rpnFlagsTvmCalculate, (iy + rpnFlags)
     call liftStack ; always lift the stack
     res rpnFlagsLiftEnabled, (iy + rpnFlags)
     ret
@@ -624,11 +627,13 @@ handleKeyDiv:
 
 handleKeyPi:
     call closeInputBuf
+    res rpnFlagsTvmCalculate, (iy + rpnFlags)
     call op1SetPi
     jp pushX
 
 handleKeyEuler:
     call closeInputBuf
+    res rpnFlagsTvmCalculate, (iy + rpnFlags)
     call op1SetEuler
     jp pushX
 
@@ -666,14 +671,17 @@ handleKeySqrt:
 
 handleKeyRotDown:
     call closeInputBuf
+    res rpnFlagsTvmCalculate, (iy + rpnFlags)
     jp rotDownStack
 
 handleKeyExchangeXY:
     call closeInputBuf
+    res rpnFlagsTvmCalculate, (iy + rpnFlags)
     jp exchangeXYStack
 
 handleKeyAns:
     call closeInputBuf
+    res rpnFlagsTvmCalculate, (iy + rpnFlags)
     call rclL
     jp pushX
 
@@ -741,6 +749,7 @@ handleKeyATan:
 
 handleKeySto:
     call closeInputBuf
+    res rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld hl, msgStoName
     call startArgParser
     set inputBufFlagsArgAllowModifier, (iy + inputBufFlags)
@@ -763,6 +772,7 @@ handleKeyStoError:
 
 handleKeyRcl:
     call closeInputBuf
+    res rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld hl, msgRclName
     call startArgParser
     set inputBufFlagsArgAllowModifier, (iy + inputBufFlags)
@@ -832,6 +842,7 @@ handleKeyQuit:
 ; Close the input buffer, and recall Y and X into OP1 and OP2 respectively.
 closeInputAndRecallXY:
     call closeInputBuf
+    res rpnFlagsTvmCalculate, (iy + rpnFlags)
     call rclX
     bcall(_OP1ToOP2)
     jp rclY
@@ -839,4 +850,5 @@ closeInputAndRecallXY:
 ; Close the input buffer, and recall X into OP1 respectively.
 closeInputAndRecallX:
     call closeInputBuf
+    res rpnFlagsTvmCalculate, (iy + rpnFlags)
     jp rclX

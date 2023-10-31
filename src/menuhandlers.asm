@@ -105,6 +105,7 @@ mAlog2Handler:
 ; Log2(X) = log_base_2(X) = log(X)/log(2)
 mLog2Handler:
     call closeInputBuf
+    res rpnFlagsTvmCalculate, (iy + rpnFlags)
     bcall(_OP1Set2) ; OP2 = 2
     bcall(_LnX) ; OP1 = ln(2)
     bcall(_PushRealO1); FPS = ln(2)
@@ -146,6 +147,7 @@ mPercentHandler:
 ; change, then the '+' command will retrieve the original X.
 mPercentChangeHandler:
     call closeInputBuf
+    res rpnFlagsTvmCalculate, (iy + rpnFlags)
     call rclY
     bcall(_OP1ToOP2) ; OP2 = Y
     bcall(_PushRealO1) ; FPS = Y
@@ -178,6 +180,7 @@ mPercentChangeHandler:
 ; the internet, but I'm going to punt on that for now.
 mGcdHandler:
     call closeInputBuf
+    res rpnFlagsTvmCalculate, (iy + rpnFlags)
     call validatePosIntGcdLcm
     call gcdOp1Op2 ; OP1 = gcd()
     jp replaceXY ; X = OP1
@@ -220,6 +223,7 @@ gcdOp1Op2:
 ;           = Y * (X / GCD(Y,X))
 mLcmHandler:
     call closeInputBuf
+    res rpnFlagsTvmCalculate, (iy + rpnFlags)
     call validatePosIntGcdLcm
 
     bcall(_PushRealO1) ; FPS = OP1 = Y
@@ -422,6 +426,7 @@ mNearHandler:
 ; the range to [0,65535].
 mPermHandler:
     call closeInputBuf
+    res rpnFlagsTvmCalculate, (iy + rpnFlags)
     call validatePermComb
 
     ; Do the calculation. Set initial Result to 1 so that P(N, 0) = 1.
@@ -460,6 +465,7 @@ mPermHandlerEnd:
 ; results are always integral.
 mCombHandler:
     call closeInputBuf
+    res rpnFlagsTvmCalculate, (iy + rpnFlags)
     call validatePermComb
 
     ; Do the calculation. Set initial Result to 1 C(N, 0) = 1.
@@ -543,6 +549,7 @@ mFactorialHandler:
 ; Description: Generate a random number [0,1) into the X register.
 mRandomHandler:
     call closeInputBuf
+    res rpnFlagsTvmCalculate, (iy + rpnFlags)
     bcall(_Random)
     jp pushX
 
@@ -867,6 +874,7 @@ mHrToHmsHandler:
 
 mFixHandler:
     call closeInputBuf
+    res rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld hl, mFixName
     call startArgParser
     call processCommandArg
@@ -877,6 +885,7 @@ mFixHandler:
 
 mSciHandler:
     call closeInputBuf
+    res rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld hl, mSciName
     call startArgParser
     call processCommandArg
@@ -887,6 +896,7 @@ mSciHandler:
 
 mEngHandler:
     call closeInputBuf
+    res rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld hl, mEngName
     call startArgParser
     call processCommandArg
@@ -1040,6 +1050,7 @@ mAtanhHandler:
 
 mStackRotUpHandler:
     call closeInputBuf
+    res rpnFlagsTvmCalculate, (iy + rpnFlags)
     jp rotUpStack
 
 mStackRotDownHandler:
@@ -1054,16 +1065,19 @@ mStackExchangeXYHandler:
 
 mClearRegsHandler:
     call closeInputBuf
+    res rpnFlagsTvmCalculate, (iy + rpnFlags)
     call clearRegs
     ld a, errorCodeRegsCleared
     jp setHandlerCode
 
 mClearStackHandler:
     call closeInputBuf
+    res rpnFlagsTvmCalculate, (iy + rpnFlags)
     jp clearStack
 
 mClearXHandler:
     call closeInputBuf
+    res rpnFlagsTvmCalculate, (iy + rpnFlags)
     res rpnFlagsLiftEnabled, (iy + rpnFlags) ; disable stack lift
     bcall(_OP1Set0)
     jp stoX
