@@ -13,14 +13,16 @@ mTvmNHandler:
     ld de, fin_N
     bcall(_MovFrOP1)
     set rpnFlagsTvmCalculate, (iy + rpnFlags)
-    ret
+    ld a, errorCodeTvmNSet
+    jp setHandlerCode
 mTvmNCalculate:
     ; TODO: Calculate N
     bcall(_OP1Set0)
     ;ld hl, fin_N
     ;bcall(_Mov9ToOP1)
-    jp pushX
-    ret
+    call pushX
+    ld a, errorCodeTvmNCalc
+    jp setHandlerCode
 
 mTvmIYRHandler:
     call closeInputBuf
@@ -30,13 +32,16 @@ mTvmIYRHandler:
     ld de, fin_I
     bcall(_MovFrOP1)
     set rpnFlagsTvmCalculate, (iy + rpnFlags)
-    ret
+    ld a, errorCodeTvmIYRSet
+    jp setHandlerCode
 mTvmIYRCalculate:
     ; TODO: Calculate IYR
     bcall(_OP1Set1)
     ;ld hl, fin_I
     ;bcall(_Mov9ToOP1)
-    jp pushX
+    call pushX
+    ld a, errorCodeTvmIYRCalc
+    jp setHandlerCode
 
 mTvmPVHandler:
     call closeInputBuf
@@ -46,13 +51,16 @@ mTvmPVHandler:
     ld de, fin_PV
     bcall(_MovFrOP1)
     set rpnFlagsTvmCalculate, (iy + rpnFlags)
-    ret
+    ld a, errorCodeTvmPVSet
+    jp setHandlerCode
 mTvmPVCalculate:
     ; TODO: Calculate IYR
     bcall(_OP1Set2)
     ;ld hl, fin_PV
     ;bcall(_Mov9ToOP1)
-    jp pushX
+    call pushX
+    ld a, errorCodeTvmPVCalc
+    jp setHandlerCode
 
 mTvmPMTHandler:
     call closeInputBuf
@@ -62,13 +70,16 @@ mTvmPMTHandler:
     ld de, fin_PMT
     bcall(_MovFrOP1)
     set rpnFlagsTvmCalculate, (iy + rpnFlags)
-    ret
+    ld a, errorCodeTvmPMTSet
+    jp setHandlerCode
 mTvmPMTCalculate:
     ; TODO: Calculate PMT
     bcall(_OP1Set3)
     ;ld hl, fin_PMT
     ;bcall(_Mov9ToOP1)
-    jp pushX
+    call pushX
+    ld a, errorCodeTvmPMTCalc
+    jp setHandlerCode
 
 mTvmFVHandler:
     call closeInputBuf
@@ -78,13 +89,16 @@ mTvmFVHandler:
     ld de, fin_FV
     bcall(_MovFrOP1)
     set rpnFlagsTvmCalculate, (iy + rpnFlags)
-    ret
+    ld a, errorCodeTvmFVSet
+    jp setHandlerCode
 mTvmFVCalculate:
     ; TODO: Calculate FV
     bcall(_OP1Set4)
     ;ld hl, fin_FV
     ;bcall(_Mov9ToOP1)
-    jp pushX
+    call pushX
+    ld a, errorCodeTvmFVCalc
+    jp setHandlerCode
 
 mTvmPYRHandler:
     call closeInputBuf

@@ -71,14 +71,11 @@ getErrorStringContinue:
 ; docs. We will ignore those extra error codes in this application.
 ;
 ; This table defines additional custom error codes used internally by this
-; application:
-; - errorStrOk (0): OK or success status code
-; - errorStrNotYet (64): not yet implemented
-; - errorStrUnknown: This string will be display for any error code whose error
-; string is not known. If the user sends a reproducible bug report, maybe we
-; can reverse engineer the condition that triggers that particular error code
-; and create a human-readable string for it.
-errorCodeCount equ 67 ; total number of error codes
+; application. The `errorStrUnknown` message is displayed for any error code
+; whose error string is not known. If the user sends a reproducible bug report,
+; maybe we can reverse engineer the condition that triggers that particular
+; error code and create a human-readable string for it.
+errorCodeCount equ 77 ; total number of error codes
 errorStrings:
 errorCodeOk equ                 0 ; hopefully TI-OS uses 0 as "success"
     .dw errorStrOk
@@ -182,6 +179,26 @@ errorCodeRegsCleared equ        65 ; REGS cleared
     .dw errorStrRegsCleared
 errorCodeStatCleared equ        66 ; STAT registers cleared
     .dw errorStrStatCleared
+errorCodeTvmNSet equ            67
+    .dw errorStrTvmNSet
+errorCodeTvmNCalc equ           68
+    .dw errorStrTvmNCalc
+errorCodeTvmIYRSet equ          69
+    .dw errorStrTvmIYRSet
+errorCodeTvmIYRCalc equ         70
+    .dw errorStrTvmIYRCalc
+errorCodeTvmPVSet equ           71
+    .dw errorStrTvmPVSet
+errorCodeTvmPVCalc equ          72
+    .dw errorStrTvmPVCalc
+errorCodeTvmPMTSet equ          73
+    .dw errorStrTvmPMTSet
+errorCodeTvmPMTCalc equ         74
+    .dw errorStrTvmPMTCalc
+errorCodeTvmFVSet equ           75
+    .dw errorStrTvmFVSet
+errorCodeTvmFVCalc equ          76
+    .dw errorStrTvmFVCalc
 
 ; The C strings for each error code. In alphabetical order, as listed in the TI
 ; 83 Plus SDK docs.
@@ -239,3 +256,23 @@ errorStrRegsCleared:
     .db "REGS cleared", 0 ; storage registers cleared
 errorStrStatCleared:
     .db "STAT cleared", 0 ; STAT registers cleared
+errorStrTvmNSet:
+    .db "Set TVM N", 0
+errorStrTvmNCalc:
+    .db "Calc TVM N ", 0
+errorStrTvmIYRSet:
+    .db "Set TVM I%YR", 0
+errorStrTvmIYRCalc:
+    .db "Calc TVM I%YR ", 0
+errorStrTvmPVSet:
+    .db "Set TVM PV", 0
+errorStrTvmPVCalc:
+    .db "Calc TVM PV", 0
+errorStrTvmPMTSet:
+    .db "Set TVM PMT", 0
+errorStrTvmPMTCalc:
+    .db "Calc TVM PMT", 0
+errorStrTvmFVSet:
+    .db "Set TVM FV", 0
+errorStrTvmFVCalc:
+    .db "Calc TVM FV", 0
