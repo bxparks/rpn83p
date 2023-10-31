@@ -5,21 +5,93 @@
 ; TVM menu handlers.
 ;-----------------------------------------------------------------------------
 
+; Description: Recall fin_N to OP1.
+rclTvmN:
+    ld hl, fin_N
+    bcall(_Mov9ToOP1)
+    ret
+
+; Description: Store OP1 to fin_N.
+stoTvmN:
+    ld de, fin_N
+    bcall(_MovFrOP1)
+    ret
+
+; Description: Recall fin_I to OP1.
+rclTvmIYR:
+    ld hl, fin_I
+    bcall(_Mov9ToOP1)
+    ret
+
+; Description: Store OP1 to fin_I.
+stoTvmIYR:
+    ld de, fin_I
+    bcall(_MovFrOP1)
+    ret
+
+; Description: Recall fin_PV to OP1.
+rclTvmPV:
+    ld hl, fin_PV
+    bcall(_Mov9ToOP1)
+    ret
+
+; Description: Store OP1 to fin_PV.
+stoTvmPV:
+    ld de, fin_PV
+    bcall(_MovFrOP1)
+    ret
+
+; Description: Recall fin_PMT to OP1.
+rclTvmPMT:
+    ld hl, fin_PMT
+    bcall(_Mov9ToOP1)
+    ret
+
+; Description: Store OP1 to fin_PMT.
+stoTvmPMT:
+    ld de, fin_PMT
+    bcall(_MovFrOP1)
+    ret
+
+; Description: Recall fin_N to OP1.
+rclTvmFV:
+    ld hl, fin_FV
+    bcall(_Mov9ToOP1)
+    ret
+
+; Description: Store OP1 to fin_FV.
+stoTvmFV:
+    ld de, fin_FV
+    bcall(_MovFrOP1)
+    ret
+
+; Description: Recall fin_PY to OP1.
+rclTvmPYR:
+    ld hl, fin_PY
+    bcall(_Mov9ToOP1)
+    ret
+
+; Description: Store OP1 to fin_PY.
+stoTvmPYR:
+    ld de, fin_PY
+    bcall(_MovFrOP1)
+    ret
+
+;-----------------------------------------------------------------------------
+
 mTvmNHandler:
     call closeInputBuf
     bit rpnFlagsTvmCalculate, (iy + rpnFlags)
     jr nz, mTvmNCalculate
     ; save the inputBuf value
-    ld de, fin_N
-    bcall(_MovFrOP1)
+    call stoTvmN
     set rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld a, errorCodeTvmNSet
     jp setHandlerCode
 mTvmNCalculate:
     ; TODO: Calculate N
     bcall(_OP1Set0)
-    ;ld hl, fin_N
-    ;bcall(_Mov9ToOP1)
+    call stoTvmN
     call pushX
     ld a, errorCodeTvmNCalc
     jp setHandlerCode
@@ -29,16 +101,14 @@ mTvmIYRHandler:
     bit rpnFlagsTvmCalculate, (iy + rpnFlags)
     jr nz, mTvmIYRCalculate
     ; save the inputBuf value
-    ld de, fin_I
-    bcall(_MovFrOP1)
+    call stoTvmIYR
     set rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld a, errorCodeTvmIYRSet
     jp setHandlerCode
 mTvmIYRCalculate:
     ; TODO: Calculate IYR
     bcall(_OP1Set1)
-    ;ld hl, fin_I
-    ;bcall(_Mov9ToOP1)
+    call stoTvmIYR
     call pushX
     ld a, errorCodeTvmIYRCalc
     jp setHandlerCode
@@ -48,16 +118,14 @@ mTvmPVHandler:
     bit rpnFlagsTvmCalculate, (iy + rpnFlags)
     jr nz, mTvmPVCalculate
     ; save the inputBuf value
-    ld de, fin_PV
-    bcall(_MovFrOP1)
+    call stoTvmPV
     set rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld a, errorCodeTvmPVSet
     jp setHandlerCode
 mTvmPVCalculate:
     ; TODO: Calculate IYR
     bcall(_OP1Set2)
-    ;ld hl, fin_PV
-    ;bcall(_Mov9ToOP1)
+    call stoTvmPV
     call pushX
     ld a, errorCodeTvmPVCalc
     jp setHandlerCode
@@ -67,16 +135,14 @@ mTvmPMTHandler:
     bit rpnFlagsTvmCalculate, (iy + rpnFlags)
     jr nz, mTvmPMTCalculate
     ; save the inputBuf value
-    ld de, fin_PMT
-    bcall(_MovFrOP1)
+    call stoTvmPMT
     set rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld a, errorCodeTvmPMTSet
     jp setHandlerCode
 mTvmPMTCalculate:
     ; TODO: Calculate PMT
     bcall(_OP1Set3)
-    ;ld hl, fin_PMT
-    ;bcall(_Mov9ToOP1)
+    call stoTvmPMT
     call pushX
     ld a, errorCodeTvmPMTCalc
     jp setHandlerCode
@@ -86,35 +152,32 @@ mTvmFVHandler:
     bit rpnFlagsTvmCalculate, (iy + rpnFlags)
     jr nz, mTvmFVCalculate
     ; save the inputBuf value
-    ld de, fin_FV
-    bcall(_MovFrOP1)
+    call stoTvmFV
     set rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld a, errorCodeTvmFVSet
     jp setHandlerCode
 mTvmFVCalculate:
     ; TODO: Calculate FV
     bcall(_OP1Set4)
-    ;ld hl, fin_FV
-    ;bcall(_Mov9ToOP1)
+    call stoTvmFV
     call pushX
     ld a, errorCodeTvmFVCalc
     jp setHandlerCode
+
+;-----------------------------------------------------------------------------
 
 ; Description: Set P/YR to X.
 mTvmSetPYRHandler:
     call closeInputBuf
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     call rclX
-    ld de, fin_PY ; payments / year
-    bcall(_MovFrOP1)
-    ret
+    jp stoTvmPYR
 
 ; Description: Get P/YR to X.
 mTvmGetPYRHandler:
     call closeInputBuf
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
-    ld hl, fin_PY ; payments / year
-    bcall(_Mov9ToOP1)
+    call rclTvmPYR
     jp pushX
 
 mTvmBeginHandler:
