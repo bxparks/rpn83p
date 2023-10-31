@@ -310,10 +310,13 @@ MenuGroup root mRoot [
         MenuItem FV mTvmFV
       ]
       MenuRow [
-        MenuItem P<Sslash>YR mTvmPYR
+        MenuItem P<Sslash>YR mTvmSetPYR
+        MenuItem PYR<Squestion> mTvmGetPYR
         MenuItemAlt BEG BEG<Sblock> mTvmBegin
         MenuItemAlt END END<Sblock> mTvmEnd
         MenuItem RSTV mTvmReset
+      ]
+      MenuRow [
         MenuItem CLTV mTvmClear
       ]
     ]

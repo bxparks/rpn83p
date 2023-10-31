@@ -247,6 +247,8 @@ handleKeyEE:
 ; Output: (iy+inputBufFlags) updated
 ; Destroys: A, DE, HL
 handleKeyDel:
+    ; Clear TVM Calculate mode.
+    res rpnFlagsTvmCalculate, (iy + rpnFlags)
     ; Check if non-zero error code is currently displayed. The handlerCode was
     ; already set to 0 before this was called, so simply returning will clear
     ; the previous errorCode.
@@ -317,6 +319,8 @@ handleKeyDelExit:
 ;   - mark displayInput dirty
 ; Destroys: A, HL
 handleKeyClear:
+    ; Clear TVM Calculate mode.
+    res rpnFlagsTvmCalculate, (iy + rpnFlags)
     ; Check if non-zero error code is currently displayed. The handlerCode was
     ; already set to 0 before this was called, so simply returning will clear
     ; the previous errorCode.
@@ -354,6 +358,8 @@ handleKeyChs:
     ; Do nothing in BASE mode. Use NEG function instead.
     bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
     ret nz
+    ; Clear TVM mode.
+    res rpnFlagsTvmCalculate, (iy + rpnFlags)
     ; Toggle sign character in inputBuf in edit mode.
     bit rpnFlagsEditing, (iy + rpnFlags)
     jr nz, handleKeyChsInputBuf

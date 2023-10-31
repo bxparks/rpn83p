@@ -75,7 +75,8 @@ getErrorStringContinue:
 ; whose error string is not known. If the user sends a reproducible bug report,
 ; maybe we can reverse engineer the condition that triggers that particular
 ; error code and create a human-readable string for it.
-errorCodeCount equ 77 ; total number of error codes
+
+errorCodeCount equ 79           ; total number of error codes
 errorStrings:
 errorCodeOk equ                 0 ; hopefully TI-OS uses 0 as "success"
     .dw errorStrOk
@@ -199,6 +200,10 @@ errorCodeTvmFVSet equ           75
     .dw errorStrTvmFVSet
 errorCodeTvmFVCalc equ          76
     .dw errorStrTvmFVCalc
+errorCodeTvmReset equ           77
+    .dw errorStrTvmReset
+errorCodeTvmCleared equ         78
+    .dw errorStrTvmCleared
 
 ; The C strings for each error code. In alphabetical order, as listed in the TI
 ; 83 Plus SDK docs.
@@ -253,26 +258,30 @@ errorStrUnknown:
 errorStrNotYet:
     .db "Err: NOT YET", 0 ; handler not implemented yet
 errorStrRegsCleared:
-    .db "REGS cleared", 0 ; storage registers cleared
+    .db "REGS Cleared", 0 ; storage registers cleared
 errorStrStatCleared:
-    .db "STAT cleared", 0 ; STAT registers cleared
+    .db "STAT Cleared", 0 ; STAT registers cleared
 errorStrTvmNSet:
-    .db "Set TVM N", 0
+    .db "TVM N Set", 0
 errorStrTvmNCalc:
-    .db "Calc TVM N ", 0
+    .db "TVM N Calc", 0
 errorStrTvmIYRSet:
-    .db "Set TVM I%YR", 0
+    .db "TVM I%YR Set", 0
 errorStrTvmIYRCalc:
-    .db "Calc TVM I%YR ", 0
+    .db "TVM I%YR Calc", 0
 errorStrTvmPVSet:
-    .db "Set TVM PV", 0
+    .db "TVM PV Set", 0
 errorStrTvmPVCalc:
-    .db "Calc TVM PV", 0
+    .db "TVM PV Calc", 0
 errorStrTvmPMTSet:
-    .db "Set TVM PMT", 0
+    .db "TVM PMT Set", 0
 errorStrTvmPMTCalc:
-    .db "Calc TVM PMT", 0
+    .db "TVM PMT Calc", 0
 errorStrTvmFVSet:
-    .db "Set TVM FV", 0
+    .db "TVM FV Set", 0
 errorStrTvmFVCalc:
-    .db "Calc TVM FV", 0
+    .db "TVM FV Calc", 0
+errorStrTvmReset:
+    .db "TVM Reset", 0
+errorStrTvmCleared:
+    .db "TVM Cleared", 0

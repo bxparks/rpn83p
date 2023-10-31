@@ -100,7 +100,17 @@ mTvmFVCalculate:
     ld a, errorCodeTvmFVCalc
     jp setHandlerCode
 
-mTvmPYRHandler:
+; Description: Set P/YR to X.
+mTvmSetPYRHandler:
+    call closeInputBuf
+    res rpnFlagsTvmCalculate, (iy + rpnFlags)
+    call rclX
+    ld de, fin_PY ; payments / year
+    bcall(_MovFrOP1)
+    ret
+
+; Description: Get P/YR to X.
+mTvmGetPYRHandler:
     call closeInputBuf
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld hl, fin_PY ; payments / year
@@ -145,7 +155,8 @@ mTvmResetHandler:
     bcall(_MovFrOP1)
     ld de, fin_CY
     bcall(_MovFrOP1)
-    ret
+    ld a, errorCodeTvmReset
+    jp setHandlerCode
 
 mTvmClearHandler:
     bcall(_OP1Set0)
@@ -159,4 +170,5 @@ mTvmClearHandler:
     bcall(_MovFrOP1)
     ld de, fin_FV
     bcall(_MovFrOP1)
-    ret
+    ld a, errorCodeTvmCleared
+    jp setHandlerCode
