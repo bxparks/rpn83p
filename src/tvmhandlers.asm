@@ -139,11 +139,11 @@ mTvmNCalculate:
     bcall(_OP1ToOP2) ; OP2=1/i+p
     call rclTvmPMT ; OP1=PMT
     bcall(_FPMult) ; OP1=PMT*(1/i + p)
-    bcall(_PushRealO1) ; FPS=PMT*(1/i + p)
+    bcall(_PushRealO1) ; FPS1=i; FPS=PMT*(1/i + p)
     bcall(_OP1ToOP2) ; OP2=PMT*(1/i + p)
     call rclTvmFV ; OP1=FV
     bcall(_InvSub) ; OP1=PMT*(1/i+p)-FV
-    call exchangeFPSOP1 ; OP1=PMT*(1/i+p); FPS=PMT*(1/i+p)-FV
+    call exchangeFPSOP1 ; FPS1=i; FPS=PMT*(1/i+p)-FV; OP1=PMT*(1/i+p)
     bcall(_OP1ToOP2) ; OP2=PMT*(1/i+p)
     call rclTvmPV ; OP1=PV
     bcall(_FPAdd) ; OP1=PMT*(1/i+p)+PV
@@ -153,9 +153,9 @@ mTvmNCalculate:
     call exchangeFPSOP1 ; OP1=i; FPS=R
     bcall(_Plus1) ; OP1=i+1
     bcall(_LnX) ; OP1=ln(i+1)
-    bcall(_OP1ToOP2) ; OP2=ln(i+1)
-    bcall(_PopRealO1) ; OP1=R
+    call exchangeFPSOP1 ; FPS=ln(i+1); OP1=R
     bcall(_LnX) ; OP1=ln(R)
+    bcall(_PopRealO2) ; OP2=ln(i+1)
     bcall(_FPDiv) ; OP1=ln(R)/ln(i+1)
     call stoTvmN
     call pushX
