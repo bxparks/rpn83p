@@ -55,6 +55,8 @@ exchangeFloatLoop:
     ret
 
 ; Description: Exchange the top 2 floating point numbers on the FPS.
+; Destroys: all
+; Preserves: OP1, OP2
 exchangeFPSFPS:
     ld hl, (FPS)
     ld de, 9
