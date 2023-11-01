@@ -23,6 +23,7 @@ main:
     call initBase
     call initStat
     call initCfit
+    call initTvm
 initAlways:
     ; If restoreAppState() suceeds, only the following are initialized.
     call initArgBuf ; Start with Command Arg parser off.
@@ -78,5 +79,3 @@ appVectors:
 
 dummyVector:
     ret
-
-

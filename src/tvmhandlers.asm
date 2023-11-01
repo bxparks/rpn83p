@@ -5,6 +5,12 @@
 ; TVM menu handlers.
 ;-----------------------------------------------------------------------------
 
+initTvm:
+    res rpnFlagsTvmCalculate, (iy + rpnFlags)
+    call tvmReset
+    call tvmClear
+    ret
+
 ; Description: Recall fin_N to OP1.
 rclTvmN:
     ld hl, fin_N
@@ -337,19 +343,33 @@ mTvmEndNameSelector:
     ret
 
 mTvmResetHandler:
-    ; Set payment period to END
-    call mTvmEndHandler
-    ; Set payments per year to 12
+    call closeInputBuf
+    res rpnFlagsTvmCalculate, (iy + rpnFlags)
+    call tvmReset
+    set dirtyFlagsMenu, (iy + dirtyFlags)
+    ld a, errorCodeTvmReset
+    jp setHandlerCode
+
+mTvmClearHandler:
+    call closeInputBuf
+    res rpnFlagsTvmCalculate, (iy + rpnFlags)
+    call tvmClear
+    ld a, errorCodeTvmCleared
+    jp setHandlerCode
+
+;-----------------------------------------------------------------------------
+
+tvmReset:
+    res rpnFlagsTvmPmtBegin, (iy + rpnFlags)
     ld a, 12
     bcall(_SetXXOP1)
     ld de, fin_PY
     bcall(_MovFrOP1)
     ld de, fin_CY
     bcall(_MovFrOP1)
-    ld a, errorCodeTvmReset
-    jp setHandlerCode
+    ret
 
-mTvmClearHandler:
+tvmClear:
     bcall(_OP1Set0)
     ld de, fin_N
     bcall(_MovFrOP1)
@@ -361,5 +381,4 @@ mTvmClearHandler:
     bcall(_MovFrOP1)
     ld de, fin_FV
     bcall(_MovFrOP1)
-    ld a, errorCodeTvmCleared
-    jp setHandlerCode
+    ret
