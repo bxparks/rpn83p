@@ -38,7 +38,8 @@ mGroupHandler:
 ;-----------------------------------------------------------------------------
 
 mHelpHandler:
-    jp processHelp
+    bcall(_processHelp) ; use bcall() to invoke HELP handler on Page 1
+    ret
 
 ;-----------------------------------------------------------------------------
 ; Children nodes of MATH menu.

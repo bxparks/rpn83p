@@ -16,10 +16,10 @@
 .nolist
 #include "ti83plus.inc"
 #include "app.inc"
-; Define single page flash app
-defpage(0, "RPN83P")
 .list
 
+;-----------------------------------------------------------------------------
+; TI-OS related constants.
 ;-----------------------------------------------------------------------------
 
 ; Define the Cursor character
@@ -33,6 +33,10 @@ keyMenu2 equ kWindow
 keyMenu3 equ kZoom
 keyMenu4 equ kTrace
 keyMenu5 equ kGraph
+
+; Define font sizes
+smallFontHeight equ 7
+largeFontHeight equ 8
 
 ; Flags that indicate the need to re-draw the display. These are intended to
 ; be optimization purposes. In theory, we could eliminate these dirty flags
@@ -82,7 +86,7 @@ inputBufFlagsArgExit equ 5 ; set to exit CommandArg mode
 inputBufFlagsArgAllowModifier equ 6 ; allow */-+ modifier in CommandArg mode
 
 ;-----------------------------------------------------------------------------
-; Application variables and buffers.
+; RPN83P application variables and buffers.
 ;-----------------------------------------------------------------------------
 
 ; A random 16-bit integer that identifies the RPN83P app.
@@ -276,87 +280,25 @@ floatBufMan equ floatBufExp + 1 ; mantissa, 2 digits per byte
 floatBufSizeOf equ 9
 
 ;-----------------------------------------------------------------------------
-
-; Commented out, not needed for flash app.
-; .org userMem - 2
-; .db t2ByteTok, tAsmCmp
-
-main:
-    bcall(_RunIndicOff)
-    res appAutoScroll, (iy + appFlags) ; disable auto scroll
-    res appTextSave, (iy + appFlags) ; disable shawdow text
-    res lwrCaseActive, (iy + appLwrCaseFlag) ; disable ALPHA-ALPHA lowercase
-    bcall(_ClrLCDFull)
-
-    call restoreAppState
-    jr nc, initAlways
-    ; Initialize everything if restoreAppState() fails.
-    call initErrorCode
-    call initInputBuf
-    call initStack
-    call initRegs
-    call initMenu
-    call initBase
-    call initStat
-    call initCfit
-initAlways:
-    ; If restoreAppState() suceeds, only the following are initialized.
-    call initArgBuf ; Start with Command Arg parser off.
-    call initLastX ; Always copy TI-OS 'ANS' to 'X'
-    call initDisplay ; Always initialize the display.
-    call sanitizeMenu ; Sanitize the current (menuGroupId)
-
-    ; Initialize the App monitor so that we can intercept the Put Away (2ND
-    ; OFF) signal.
-    ld hl, appVectors
-    bcall(_AppInit)
-
-    ; Jump into the main keyboard input parsing loop.
-    jp processCommand
-
-; Clean up and exit app.
-;   - Called explicitly upon 2ND QUIT.
-;   - Called by TI-OS application monitor upon 2ND OFF.
-mainExit:
-    call rclX
-    bcall(_StoAns) ; transfer RPN83P 'X' to TI-OS 'ANS'
-    call storeAppState
-    set appAutoScroll, (iy + appFlags)
-    ld (iy + textFlags), 0 ; reset text flags
-    bcall(_ClrLCDFull)
-    bcall(_HomeUp)
-
-    bcall(_ReloadAppEntryVecs) ; App Loader in control of monitor
-    bit monAbandon, (iy + monFlags) ; if turning off: ZF=1
-    jr nz, appTurningOff
-    ; If not turning off, then force control back to the home screen.
-    ; Note: this will terminate the link activity that caused the application
-    ; to be terminated.
-    ld a, iAll ; all interrupts on
-    out (intrptEnPort), a
-    bcall(_LCD_DRIVERON) ; turn on the LCD
-    set onRunning, (iy + onFlags) ; on interrupt running
-    ei ; enable interrupts
-    bjump(_JForceCmdNoChar) ; force to home screen
-appTurningOff:
-    bjump(_PutAway) ; force App locader to do its put away
-
-; Set up the AppVectors so that we can intercept the Put Away Notification upon
-; '2ND QUIT' or '2ND OFF'. See TI-83 Plus SDK documentation.
-appVectors:
-    .dw dummyVector
-    .dw dummyVector
-    .dw mainExit
-    .dw dummyVector
-    .dw dummyVector
-    .dw dummyVector
-    .db appTextSaveF
-
-dummyVector:
-    ret
-
+; Flash Page 0
+;
+; See "Appendix A: Creating Flash Applications with SPASM" of "Hot Dog's TI-83
+; z80 ASM For The Absolute Beginner" to information on creating flash
+; applications using multiple pages.
 ;-----------------------------------------------------------------------------
 
+defpage(0, "RPN83P")
+
+; Start of program.
+    jp main ; must be a 'jp' to get correct alignment of the branch table
+    .db 0 ; pad one byte so that Branch Table starts at address multiple of 3
+
+; Branch table here.
+_processHelp equ (44+0)*3
+    .dw processHelp
+    .db 1
+
+#include "main.asm"
 #include "mainparser.asm"
 #include "handlers.asm"
 #include "argparser.asm"
@@ -374,7 +316,6 @@ dummyVector:
 #include "cfithandlers.asm"
 #include "tvmhandlers.asm"
 #include "prime.asm"
-#include "help.asm"
 #include "common.asm"
 #include "integer.asm"
 #include "float.asm"
@@ -387,6 +328,14 @@ dummyVector:
 #ifdef DEBUG
 #include "debug.asm"
 #endif
+
+;-----------------------------------------------------------------------------
+; Flash Page 1
+;-----------------------------------------------------------------------------
+
+defpage(1)
+
+#include "help.asm"
 
 .end
 

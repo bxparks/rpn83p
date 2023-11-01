@@ -76,7 +76,7 @@ getErrorStringContinue:
 ; maybe we can reverse engineer the condition that triggers that particular
 ; error code and create a human-readable string for it.
 
-errorCodeCount equ 79           ; total number of error codes
+errorCodeCount equ 81           ; total number of error codes
 errorStrings:
 errorCodeOk equ                 0 ; hopefully TI-OS uses 0 as "success"
     .dw errorStrOk
@@ -174,35 +174,40 @@ errorCodeLinkXmit equ           31
     .dw errorStrUnknown         ; 61
     .dw errorStrUnknown         ; 62
     .dw errorStrUnknown         ; 63, hopefully the last TI-OS error code
-errorCodeNotYet equ             64 ; Handler not yet implemented
+; Start of extended error codes used by RPN83P.
+errorCodeQuitApp equ            64 ; Handler wants to Quit the App
+    .dw errorStrQuitApp
+errorCodeClearScreen equ        65 ; Handler wants to clear screen
+    .dw errorStrClearScreen
+errorCodeNotYet equ             66 ; Handler not yet implemented
     .dw errorStrNotYet
-errorCodeRegsCleared equ        65 ; REGS cleared
+errorCodeRegsCleared equ        67 ; REGS cleared
     .dw errorStrRegsCleared
-errorCodeStatCleared equ        66 ; STAT registers cleared
+errorCodeStatCleared equ        68 ; STAT registers cleared
     .dw errorStrStatCleared
-errorCodeTvmNSet equ            67
+errorCodeTvmNSet equ            69
     .dw errorStrTvmNSet
-errorCodeTvmNCalc equ           68
+errorCodeTvmNCalc equ           70
     .dw errorStrTvmNCalc
-errorCodeTvmIYRSet equ          69
+errorCodeTvmIYRSet equ          71
     .dw errorStrTvmIYRSet
-errorCodeTvmIYRCalc equ         70
+errorCodeTvmIYRCalc equ         72
     .dw errorStrTvmIYRCalc
-errorCodeTvmPVSet equ           71
+errorCodeTvmPVSet equ           73
     .dw errorStrTvmPVSet
-errorCodeTvmPVCalc equ          72
+errorCodeTvmPVCalc equ          74
     .dw errorStrTvmPVCalc
-errorCodeTvmPMTSet equ          73
+errorCodeTvmPMTSet equ          75
     .dw errorStrTvmPMTSet
-errorCodeTvmPMTCalc equ         74
+errorCodeTvmPMTCalc equ         76
     .dw errorStrTvmPMTCalc
-errorCodeTvmFVSet equ           75
+errorCodeTvmFVSet equ           77
     .dw errorStrTvmFVSet
-errorCodeTvmFVCalc equ          76
+errorCodeTvmFVCalc equ          78
     .dw errorStrTvmFVCalc
-errorCodeTvmReset equ           77
+errorCodeTvmReset equ           79
     .dw errorStrTvmReset
-errorCodeTvmCleared equ         78
+errorCodeTvmCleared equ         80
     .dw errorStrTvmCleared
 
 ; The C strings for each error code. In alphabetical order, as listed in the TI
@@ -253,8 +258,13 @@ errorStrTolTooSmall:
     .db "Err: Tol Not Met", 0
 errorStrUndefined:
     .db "Err: Undefined", 0 ; indicates the system error "Undefined"
+; Start of RPN83P custom error messages
+errorStrQuitApp:
+    .db "QUIT", 0 ; handler wants to QUIT the app
+errorStrClearScreen:
+    .db "Clear Screen", 0 ; handler wants to clear the screen
 errorStrUnknown:
-    .db "Err: UNKNOWN", 0 ; not defined in this module
+    .db "Err: UNKNOWN", 0 ; error string of error code not known
 errorStrNotYet:
     .db "Err: NOT YET", 0 ; handler not implemented yet
 errorStrRegsCleared:
