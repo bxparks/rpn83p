@@ -130,7 +130,7 @@ mTvmNHandler:
     ; save the inputBuf value
     call stoTvmN
     set rpnFlagsTvmCalculate, (iy + rpnFlags)
-    ld a, errorCodeTvmNSet
+    ld a, errorCodeTvmSet
     jp setHandlerCode
 mTvmNCalculate:
     call getTvmIntPerPeriod ; OP1=i
@@ -159,7 +159,7 @@ mTvmNCalculate:
     bcall(_FPDiv) ; OP1=ln(R)/ln(i+1)
     call stoTvmN
     call pushX
-    ld a, errorCodeTvmNCalc
+    ld a, errorCodeTvmCalculated
     jp setHandlerCode
 
 mTvmIYRHandler:
@@ -169,14 +169,14 @@ mTvmIYRHandler:
     ; save the inputBuf value
     call stoTvmIYR
     set rpnFlagsTvmCalculate, (iy + rpnFlags)
-    ld a, errorCodeTvmIYRSet
+    ld a, errorCodeTvmSet
     jp setHandlerCode
 mTvmIYRCalculate:
     ; TODO: Calculate IYR
     ;bcall(_OP1Set1)
     ;call stoTvmIYR
     ;call pushX
-    ;ld a, errorCodeTvmIYRCalc
+    ;ld a, errorCodeTvmCalculated
     ;jp setHandlerCode
     jp mNotYetHandler
 
@@ -187,7 +187,7 @@ mTvmPVHandler:
     ; save the inputBuf value
     call stoTvmPV
     set rpnFlagsTvmCalculate, (iy + rpnFlags)
-    ld a, errorCodeTvmPVSet
+    ld a, errorCodeTvmSet
     jp setHandlerCode
 mTvmPVCalculate:
     call getTvmIntPerPeriod ; OP1=i
@@ -218,7 +218,7 @@ mTvmPVCalculate:
     bcall(_FPDiv) ; OP1=[-FV-PMT*[(i+1)^N-1] * (1/i+p)]/(i+1)^N
     call stoTvmPV
     call pushX
-    ld a, errorCodeTvmPVCalc
+    ld a, errorCodeTvmCalculated
     jp setHandlerCode
 
 mTvmPMTHandler:
@@ -228,7 +228,7 @@ mTvmPMTHandler:
     ; save the inputBuf value
     call stoTvmPMT
     set rpnFlagsTvmCalculate, (iy + rpnFlags)
-    ld a, errorCodeTvmPMTSet
+    ld a, errorCodeTvmSet
     jp setHandlerCode
 mTvmPMTCalculate:
     call getTvmIntPerPeriod ; OP1=i
@@ -256,7 +256,7 @@ mTvmPMTCalculate:
     bcall(_FPDiv) ; OP1=-[FV+PV*(i+1)^N]/[(i+1)^N-1]/(1/i+p)
     call stoTvmPMT
     call pushX
-    ld a, errorCodeTvmPMTCalc
+    ld a, errorCodeTvmCalculated
     jp setHandlerCode
 
 mTvmFVHandler:
@@ -266,7 +266,7 @@ mTvmFVHandler:
     ; save the inputBuf value
     call stoTvmFV
     set rpnFlagsTvmCalculate, (iy + rpnFlags)
-    ld a, errorCodeTvmFVSet
+    ld a, errorCodeTvmSet
     jp setHandlerCode
 mTvmFVCalculate:
     call getTvmIntPerPeriod ; OP1=i
@@ -295,7 +295,7 @@ mTvmFVCalculate:
     bcall(_InvOP1S) ; OP1=-OP1
     call stoTvmFV
     call pushX
-    ld a, errorCodeTvmFVCalc
+    ld a, errorCodeTvmCalculated
     jp setHandlerCode
 
 ;-----------------------------------------------------------------------------
@@ -305,7 +305,9 @@ mTvmSetPYRHandler:
     call closeInputBuf
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     call rclX
-    jp stoTvmPYR
+    call stoTvmPYR
+    ld a, errorCodeTvmSet
+    jp setHandlerCode
 
 ; Description: Get P/YR to X.
 mTvmGetPYRHandler:

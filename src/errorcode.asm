@@ -76,7 +76,7 @@ getErrorStringContinue:
 ; maybe we can reverse engineer the condition that triggers that particular
 ; error code and create a human-readable string for it.
 
-errorCodeCount equ 81           ; total number of error codes
+errorCodeCount equ 73           ; total number of error codes
 errorStrings:
 errorCodeOk equ                 0 ; hopefully TI-OS uses 0 as "success"
     .dw errorStrOk
@@ -185,29 +185,13 @@ errorCodeRegsCleared equ        67 ; REGS cleared
     .dw errorStrRegsCleared
 errorCodeStatCleared equ        68 ; STAT registers cleared
     .dw errorStrStatCleared
-errorCodeTvmNSet equ            69
-    .dw errorStrTvmNSet
-errorCodeTvmNCalc equ           70
-    .dw errorStrTvmNCalc
-errorCodeTvmIYRSet equ          71
-    .dw errorStrTvmIYRSet
-errorCodeTvmIYRCalc equ         72
-    .dw errorStrTvmIYRCalc
-errorCodeTvmPVSet equ           73
-    .dw errorStrTvmPVSet
-errorCodeTvmPVCalc equ          74
-    .dw errorStrTvmPVCalc
-errorCodeTvmPMTSet equ          75
-    .dw errorStrTvmPMTSet
-errorCodeTvmPMTCalc equ         76
-    .dw errorStrTvmPMTCalc
-errorCodeTvmFVSet equ           77
-    .dw errorStrTvmFVSet
-errorCodeTvmFVCalc equ          78
-    .dw errorStrTvmFVCalc
-errorCodeTvmReset equ           79
+errorCodeTvmSet equ             69
+    .dw errorStrTvmSet
+errorCodeTvmCalculated equ      70
+    .dw errorStrTvmCalculated
+errorCodeTvmReset equ           71
     .dw errorStrTvmReset
-errorCodeTvmCleared equ         80
+errorCodeTvmCleared equ         72
     .dw errorStrTvmCleared
 
 ; The C strings for each error code. In alphabetical order, as listed in the TI
@@ -271,26 +255,10 @@ errorStrRegsCleared:
     .db "REGS Cleared", 0 ; storage registers cleared
 errorStrStatCleared:
     .db "STAT Cleared", 0 ; STAT registers cleared
-errorStrTvmNSet:
-    .db "TVM N Set", 0
-errorStrTvmNCalc:
-    .db "TVM N Calc", 0
-errorStrTvmIYRSet:
-    .db "TVM I%YR Set", 0
-errorStrTvmIYRCalc:
-    .db "TVM I%YR Calc", 0
-errorStrTvmPVSet:
-    .db "TVM PV Set", 0
-errorStrTvmPVCalc:
-    .db "TVM PV Calc", 0
-errorStrTvmPMTSet:
-    .db "TVM PMT Set", 0
-errorStrTvmPMTCalc:
-    .db "TVM PMT Calc", 0
-errorStrTvmFVSet:
-    .db "TVM FV Set", 0
-errorStrTvmFVCalc:
-    .db "TVM FV Calc", 0
+errorStrTvmSet:
+    .db "TVM Set", 0
+errorStrTvmCalculated:
+    .db "TVM Calculated", 0
 errorStrTvmReset:
     .db "TVM Reset", 0
 errorStrTvmCleared:
