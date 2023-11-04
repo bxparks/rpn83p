@@ -108,17 +108,52 @@ getTvmBegin:
     bcall(_OP1Set1)
     ret
 
-; Description: Return OP1=(1/i+p).
+; Description: Return OP1=(1+ip) which distinguishes between payment at BEGIN
+; (p=1) versus payment at END (p=0).
 ; Input: OP1=i
-; Output: OP1=1/i + p
-; Destroys: OP2
-calcTvmOneOverIPlusP:
-    bcall(_OP1ToOP2) ; OP2=i
+; Output: OP1=1+ip
+; Destroys: OP1, OP2
+beginEndFactor:
+    bit rpnFlagsTvmPmtBegin, (iy + rpnFlags)
+    jr nz, beginFactor
+endFactor:
     bcall(_OP1Set1) ; OP1=1.0
-    bcall(_FPDiv) ; OP1=1/i
-    bcall(_OP1ToOP2) ; OP2=1/i
-    call getTvmEndBegin ; OP1=p
-    bcall(_FPAdd) ; OP1=1/i + p
+    ret
+beginFactor:
+    bcall(_Plus1) ; OP1=1+i
+    ret
+
+; Description: Calculate the compounding factor defined by: [(1+i)^N-1]/i.
+; Input:
+;   - rclTvmIYR
+;   - rclTvmPYR
+;   - rclTvmN
+; Output:
+;   - OP1=CF1(i)=(1+i)^N
+;   - OP2=CF3(i)=(1+ip)[(i+i)^N-1]/i
+; Destroys: OP1-OP6
+compoundingFactors:
+    call getTvmIntPerPeriod ; OP1=i
+    bcall(_PushRealO1) ; FPS=i
+    bcall(_PushRealO1) ; FPS1=i; FPS=i
+    call rclTvmN ; OP1=N
+    call exchangeFPSOP1 ; FPS1=i; FPS=N; OP1=i
+    bcall(_PushRealO1) ; FPS2=i; FPS1=N; FPS=i
+    call beginEndFactor ; OP1=(1+ip)
+    call exchangeFPSOP1 ; FPS2=i; FPS1=N; FPS=1+ip; OP1=i
+    bcall(_Plus1) ; OP1=1+i (destroys OP2)
+    call exchangeFPSFPS ; FPS2=i; FPS1=1+ip; FPS=N
+    bcall(_PopRealO2) ; FPS1=i; FPS=1+ip; OP2=N
+    bcall(_YToX) ; OP1=(1+i)^N
+    bcall(_OP1ToOP4) ; OP4=(1+i)^N (save)
+    bcall(_Minus1) ; OP1=(1+i)^N-1
+    call exchangeFPSFPS ; FPS1=1+ip; FPS=i
+    bcall(_PopRealO2) ; OP2=i
+    bcall(_FPDiv) ; OP1=[(1+i)^N-1]/i (destroys OP3)
+    bcall(_PopRealO2) ; OP2=1+ip
+    bcall(_FPMult) ; OP1=(1+ip)[(1+i)^N-1]/i
+    bcall(_OP1ToOP2) ; OP2=(1+ip)[(1+i)^N-1]/i
+    bcall(_OP4ToOP1) ; OP1=(1+i)^N
     ret
 
 ;-----------------------------------------------------------------------------
@@ -133,23 +168,31 @@ mTvmNHandler:
     ld a, errorCodeTvmSet
     jp setHandlerCode
 mTvmNCalculate:
+    ; N = ln R / ln(1+i), where
+    ; R = [PMT*(1+ip)-i*FV]/[PMT*(1+ip)+i*PV]jjj
     call getTvmIntPerPeriod ; OP1=i
     bcall(_PushRealO1) ; FPS=i
-    call calcTvmOneOverIPlusP ; OP1=1/i+p
-    bcall(_OP1ToOP2) ; OP2=1/i+p
+    call beginEndFactor ; OP1=1+ip
+    bcall(_OP1ToOP2) ; OP2=1+ip
     call rclTvmPMT ; OP1=PMT
-    bcall(_FPMult) ; OP1=PMT*(1/i + p)
-    bcall(_PushRealO1) ; FPS1=i; FPS=PMT*(1/i + p)
-    bcall(_OP1ToOP2) ; OP2=PMT*(1/i + p)
+    bcall(_FPMult) ; OP1=PMT*(1+ip)
+    bcall(_OP1ToOP4) ; OP4=PMT*(1+ip) (save)
+    bcall(_PopRealO2) ; OP2=i
+    bcall(_PushRealO2) ; FPS=i
+    bcall(_PushRealO2) ; FPS1=i, FPS=i
     call rclTvmFV ; OP1=FV
-    bcall(_InvSub) ; OP1=PMT*(1/i+p)-FV
-    call exchangeFPSOP1 ; FPS1=i; FPS=PMT*(1/i+p)-FV; OP1=PMT*(1/i+p)
-    bcall(_OP1ToOP2) ; OP2=PMT*(1/i+p)
+    bcall(_FPMult) ; OP1=FV*i
+    bcall(_OP4ToOP2) ; OP2=PMT*(1+ip)
+    bcall(_InvSub) ; OP1=PMT*(1+ip)-FV*i
+    call exchangeFPSOP1 ; FPS1=i; FPS=PMT*(1+ip)-FV; OP1=i
+    bcall(_OP1ToOP2) ; OP2=i
     call rclTvmPV ; OP1=PV
-    bcall(_FPAdd) ; OP1=PMT*(1/i+p)+PV
-    bcall(_PopRealO2) ; OP2=PMT*(1/i+p)-FV
+    bcall(_FPMult) ; OP1=PV*i
+    bcall(_OP4ToOP2) ; OP2=PMT*(1+ip)
+    bcall(_FPAdd) ; OP1=PMT*(1+ip)+PV*i
+    bcall(_PopRealO2) ; FPS=i; OP2=PMT*(1+ip)-FV*i
     bcall(_OP1ExOP2)
-    bcall(_FPDiv) ; OP1=R=[PMT*(1/i+p)-FV] / [PMT*(1/i+p)+PV]
+    bcall(_FPDiv) ; OP1=R=[PMT*(1+ip)-FV*i] / [PMT*(1+ip)+PV*i]
     call exchangeFPSOP1 ; OP1=i; FPS=R
     bcall(_Plus1) ; OP1=i+1
     bcall(_LnX) ; OP1=ln(i+1)
@@ -190,32 +233,18 @@ mTvmPVHandler:
     ld a, errorCodeTvmSet
     jp setHandlerCode
 mTvmPVCalculate:
-    call getTvmIntPerPeriod ; OP1=i
-    bcall(_PushRealO1) ; FPS=i
-    bcall(_Plus1) ; OP1=i+1
-    bcall(_OP1ToOP2) ; OP2=i+1
-    call rclTvmN ; OP1=N
-    bcall(_OP1ExOP2) ; OP1=i+1; OP2=N
-    bcall(_YToX) ; OP1=(i+1)^N
-    bcall(_OP1ToOP2) ; OP2=(i+1)^N
-    call exchangeFPSOP1 ; FPS=(i+1)^N; OP1=i
-    bcall(_PushRealO1) ; FPS1=(i+1)^N; FPS=i
-    bcall(_OP2ToOP1) ; OP1=(i+1)^N
-    bcall(_Minus1) ; OP1=(i+1)^N-1
-    bcall(_OP1ToOP2) ; OP1=(i+1)^N-1
+    ; PV = [-FV - PMT * [(1+i)N - 1] * (1 + i p) / i] / (1+i)N
+    ;    = [-FV - PMT * CF3(i)] / CF1(i)
+    call compoundingFactors ; OP1=CF1; OP2=CF3
+    bcall(_PushRealO1) ; FPS=CF1
     call rclTvmPMT ; OP1=PMT
-    bcall(_FPMult) ; OP1=PMT*[(i+1)^N-1]
-    call exchangeFPSOP1 ; FPS1=(i+1)^N; FPS=PMT*[(i+1)^N-1]; OP1=i
-    call calcTvmOneOverIPlusP ; OP1=1/i+p
-    bcall(_OP1ToOP2) ; OP2=1/i+p
-    bcall(_PopRealO1) ; FPS=(i+1)^N; OP1=PMT*[(i+1)^N-1]
-    bcall(_FPMult) ; OP1=PMT*[(i+1)^N-1] * (1/i+p)
-    bcall(_OP1ToOP2) ; OP2=PMT*[(i+1)^N-1] * (1/i+p)
+    bcall(_FPMult) ; OP1=PMT*CF3
+    bcall(_OP1ToOP2) ; OP2=PMT*CF3
     call rclTvmFV ; OP1=FV
-    bcall(_FPAdd) ; OP1=FV+PMT*[(i+1)^N-1] * (1/i+p)
+    bcall(_FPAdd) ; OP1=FV+PMT*CF3
     bcall(_InvOP1S) ; OP1=-OP1
-    bcall(_PopRealO2); OP2=(i+1)^N
-    bcall(_FPDiv) ; OP1=[-FV-PMT*[(i+1)^N-1] * (1/i+p)]/(i+1)^N
+    bcall(_PopRealO2); OP2=CF1
+    bcall(_FPDiv) ; OP1=(-FV-PMT*CF3)/CF1
     call stoTvmPV
     call pushX
     ld a, errorCodeTvmCalculated
@@ -231,29 +260,19 @@ mTvmPMTHandler:
     ld a, errorCodeTvmSet
     jp setHandlerCode
 mTvmPMTCalculate:
-    call getTvmIntPerPeriod ; OP1=i
-    bcall(_PushRealO1) ; FPS=i
-    call calcTvmOneOverIPlusP ; OP1=(1/i+p)
-    call exchangeFPSOP1 ; FPS=(1/i+p); OP1=i
-    bcall(_Plus1) ; OP1=i+1
-    bcall(_OP1ToOP2) ; OP2=i+1
-    call rclTvmN ; OP1=N
-    bcall(_OP1ExOP2) ; OP1=i+1; OP2=N
-    bcall(_YToX) ; OP1=(i+1)^N
-    bcall(_PushRealO1) ; FPS1=1/i+p; FPS=(i+1)^N
-    bcall(_Minus1) ; OP1=(i+1)^N-1
-    call exchangeFPSOP1 ; FPS1=1/i+p; FPS=(i+1)^N-1; OP1=(i+1)^N
-    bcall(_OP1ToOP2)
+    ; PMT = [-PV * (1+i)N - FV] / [((1+i)N - 1) * (1 + i p) / i]
+    ;     = (-PV * CF1(i) - FV) / CF3(i)
+    call compoundingFactors ; OP1=CF1; OP2=CF3
+    bcall(_PushRealO2) ; FPS=CF3
+    bcall(_OP1ToOP2) ; OP2=CF1
     call rclTvmPV ; OP1=PV
-    bcall(_FPMult) ; OP1=PV*(i+1)^N
-    bcall(_OP1ToOP2) ; OP2=PV*(i+1)^N
+    bcall(_FPMult) ; OP1=PV*CF1
+    bcall(_OP1ToOP2) ; OP2=PV*CF1
     call rclTvmFV ; OP1=FV
-    bcall(_FPAdd) ; OP1=FV+PV*(i+1)^N
+    bcall(_FPAdd) ; OP1=FV+PV*CF1
     bcall(_InvOP1S) ; OP1=-OP1
-    bcall(_PopRealO2) ; OP2=(i+1)^N-1
-    bcall(_FPDiv) ; OP1=-[FV+PV*(i+1)^N]/[(i+1)^N-1]
-    bcall(_PopRealO2) ; OP2=1/i+p
-    bcall(_FPDiv) ; OP1=-[FV+PV*(i+1)^N]/[(i+1)^N-1]/(1/i+p)
+    bcall(_PopRealO2) ; OP2=CF3
+    bcall(_FPDiv) ; OP1=(-PV*CF1-FV)/CF3
     call stoTvmPMT
     call pushX
     ld a, errorCodeTvmCalculated
@@ -269,29 +288,18 @@ mTvmFVHandler:
     ld a, errorCodeTvmSet
     jp setHandlerCode
 mTvmFVCalculate:
-    call getTvmIntPerPeriod ; OP1=i
-    bcall(_PushRealO1) ; FPS=i
-    call calcTvmOneOverIPlusP ; OP1=(1/i+p)
-    call exchangeFPSOP1 ; FPS=(1/i+p); OP1=i
-    bcall(_Plus1) ; OP1=i+1
-    bcall(_OP1ToOP2) ; OP2=i+1
-    call rclTvmN ; OP1=N
-    bcall(_OP1ExOP2) ; OP1=i+1; OP2=N
-    bcall(_YToX) ; OP1=(i+1)^N
-    bcall(_PushRealO1) ; FPS1=1/i+p; FPS=(i+1)^N
-    call exchangeFPSFPS ; FPS1=(i+1)^N; FPS=1/i+p
-    bcall(_Minus1) ; OP1=(i+1)^N-1
-    bcall(_OP1ToOP2)
+    ; FV = -PMT * [(1+i)N - 1] * (1 + i p) / i - PV * (1+i)N
+    ;    = -PMT*CF3-PV*CF1
+    call compoundingFactors ; OP1=CF1; OP2=CF3
+    bcall(_PushRealO1) ; FPS=CF1
     call rclTvmPMT ; OP1=PMT
-    bcall(_FPMult) ; OP1=PMT*[(i+1)^N-1]
-    bcall(_PopRealO2) ; OP2=1/i+p
-    bcall(_FPMult) ; OP1=PMT*[(i+1)^N-1]*(1/i+p)
-    call exchangeFPSOP1 ; FPS=PMT*[(i+1)^N-1]*(1/i+p); OP1=(i+1)^N
-    bcall(_OP1ToOP2)
+    bcall(_FPMult) ; OP1=PMT*CF3
+    call exchangeFPSOP1 ; FPS=PMT*CF3; OP1=CF1
+    bcall(_OP1ToOP2) ; OP2=CF1
     call rclTvmPV ; OP1=PV
-    bcall(_FPMult) ; OP1=PV*(i+1)^N
-    bcall(_PopRealO2) ; OP2=PMT*[(i+1)^N-1]*(1/i+p)
-    bcall(_FPAdd) ; OP1=PMT*[(i+1)^N-1]*(1/i+p)+ PV*(i+1)^N
+    bcall(_FPMult) ; OP1=PV*CF1
+    bcall(_PopRealO2) ; OP2=PMT*CF3
+    bcall(_FPAdd) ; OP1=PMT*CF3+PV*CF1
     bcall(_InvOP1S) ; OP1=-OP1
     call stoTvmFV
     call pushX
