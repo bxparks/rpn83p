@@ -165,7 +165,11 @@ compoundingFactors:
     ; Use log1p() and expm1() functions to avoid cancellation errors.
     ;   - OP1=CF1(i)=(1+i)^N=exp(N*log1p(i))
     ;   - OP2=CF3(i)=(1+ip)[(i+i)^N-1]/i=(1+ip)(expm1(N*log1p(i))/i)
+    ;
     call getTvmIntPerPeriod ; OP1=i
+    bcall(_CkOP1FP0) ; check if i==0.0
+    ; CF3(i) has a removable singularity at i=0, so we use a different formula.
+    jr z, compoundingFactorsZero
     bcall(_PushRealO1) ; FPS=i
     call lnOnePlus ; OP1=log(1+i)
     bcall(_OP1ToOP2)
@@ -180,15 +184,18 @@ compoundingFactors:
     bcall(_OP1ToOP4) ; OP4=(1+ip) (save)
     bcall(_PopRealO2) ; FPS1=N*log(1+i); FPS=exp(N*log(1+i))-1; OP2=i
     bcall(_PopRealO1) ; FPS=N*log(1+i); OP1=exp(N*log(1+i))-1
-    ; TODO: CF2(i) (hence CF3(i)) has a removable singularity at i=0. To avoid
-    ; a division by 0 in the following, we should check for it, then replace it
-    ; with its value at i=0, which I believe is N (double check that).
     bcall(_FPDiv) ; OP1=[exp(N*log(1+i))-1]/i
     bcall(_OP4ToOP2) ; OP2=(1+ip)
     bcall(_FPMult) ; OP1=(1+ip)[exp(N*log(1+i))-1]/i
     call exchangeFPSOP1 ; FPS=CF3; OP1=N*log(1+i)
     bcall(_EToX) ; OP1=exp(N*log(1+i))
     bcall(_PopRealO2) ; OP2=CF3
+    ret
+compoundingFactorsZero:
+    ; If i==0, then CF1=1 and CF3=N
+    call rclTvmN
+    bcall(_OP1ToOP2) ; OP2=CF3=N
+    bcall(_OP1Set1) ; OP1=CF1=1
     ret
 #endif
 
@@ -204,11 +211,12 @@ mTvmNHandler:
     ld a, errorCodeTvmSet
     jp setHandlerCode
 mTvmNCalculate:
-    ; N = ln R / ln(1+i), where
-    ; R = [PMT*(1+ip)-i*FV]/[PMT*(1+ip)+i*PV]jjj
-    ; TODO: Use a modified formula for R when i=0, or very close to zero to
-    ; avoid division by zero error.
+    ; i>0: N = ln(R) / ln(1+i), where
+    ;   R = [PMT*(1+ip)-i*FV]/[PMT*(1+ip)+i*PV]
+    ; i==0: N = (-FV-PV)/PMT
     call getTvmIntPerPeriod ; OP1=i
+    bcall(_CkOP1FP0) ; check for i==0
+    jr z, mTvmNCalculateZero
     bcall(_PushRealO1) ; FPS=i
     call beginEndFactor ; OP1=1+ip
     bcall(_OP1ToOP2) ; OP2=1+ip
@@ -231,17 +239,29 @@ mTvmNCalculate:
     bcall(_PopRealO2) ; FPS=i; OP2=PMT*(1+ip)-FV*i
     bcall(_OP1ExOP2)
     bcall(_FPDiv) ; OP1=R=[PMT*(1+ip)-FV*i] / [PMT*(1+ip)+PV*i]
-    call exchangeFPSOP1 ; OP1=i; FPS=R
-    bcall(_Plus1) ; OP1=i+1
-    bcall(_LnX) ; OP1=ln(i+1)
-    call exchangeFPSOP1 ; FPS=ln(i+1); OP1=R
     bcall(_LnX) ; OP1=ln(R)
-    bcall(_PopRealO2) ; OP2=ln(i+1)
+    call exchangeFPSOP1 ; OP1=i; FPS=ln(R)
+    call lnOnePlus ; OP1=ln(i+1)
+    bcall(_OP1ToOP2) ; OP2=ln(i+1)
+    bcall(_PopRealO1) ; OP1=ln(R)
     bcall(_FPDiv) ; OP1=ln(R)/ln(i+1)
+mTvmNCalculateSto:
     call stoTvmN
     call pushX
     ld a, errorCodeTvmCalculated
     jp setHandlerCode
+mTvmNCalculateZero:
+    ; N = (-FV-PV)/PMT
+    call rclTvmFV
+    bcall(_OP1ToOP2)
+    call rclTvmPV
+    bcall(_FPAdd)
+    bcall(_InvOP1S)
+    bcall(_OP1ToOP2)
+    call rclTvmPMT
+    bcall(_OP1ExOP2)
+    bcall(_FPDiv)
+    jr mTvmNCalculateSto
 
 mTvmIYRHandler:
     call closeInputBuf
