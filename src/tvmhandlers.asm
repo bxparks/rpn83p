@@ -77,9 +77,13 @@ rclTvmPYR:
     bcall(_Mov9ToOP1)
     ret
 
-; Description: Store OP1 to fin_PY.
+; Description: Store OP1 to fin_PY. Store the same value in fin_CY so that if
+; we go back to the TI-OS and use the built-in "Financial" app, the same
+; compounding frequency will appear there under "C/Y".
 stoTvmPYR:
     ld de, fin_PY
+    bcall(_MovFrOP1)
+    ld de, fin_CY
     bcall(_MovFrOP1)
     ret
 
@@ -165,7 +169,6 @@ compoundingFactors:
     ; Use log1p() and expm1() functions to avoid cancellation errors.
     ;   - OP1=CF1(i)=(1+i)^N=exp(N*log1p(i))
     ;   - OP2=CF3(i)=(1+ip)[(i+i)^N-1]/i=(1+ip)(expm1(N*log1p(i))/i)
-    ;
     call getTvmIntPerPeriod ; OP1=i
     bcall(_CkOP1FP0) ; check if i==0.0
     ; CF3(i) has a removable singularity at i=0, so we use a different formula.
@@ -211,9 +214,14 @@ mTvmNHandler:
     ld a, errorCodeTvmSet
     jp setHandlerCode
 mTvmNCalculate:
-    ; i>0: N = ln(R) / ln(1+i), where
-    ;   R = [PMT*(1+ip)-i*FV]/[PMT*(1+ip)+i*PV]
-    ; i==0: N = (-FV-PV)/PMT
+    ; if i>0: N = ln(R) / ln(1+i)
+    ; where: R = [PMT*(1+ip)-i*FV]/[PMT*(1+ip)+i*PV]
+    ;
+    ; TODO: Maybe use R = [1 - i*FV/(PMT*(1+ip))]/[1 + i*PV/(PMT*(1+ip))], then
+    ; use log1p() for the denominator and numerator separately. This will be
+    ; more robust if i becomes very small. On the other hand, if PMT==0, then
+    ; this version will fail. So maybe we need to have 2 different formulas,
+    ; depending on the relative size of PMT(1+ip) compared to i*FV and i*PV.
     call getTvmIntPerPeriod ; OP1=i
     bcall(_CkOP1FP0) ; check for i==0
     jr z, mTvmNCalculateZero
@@ -251,7 +259,7 @@ mTvmNCalculateSto:
     ld a, errorCodeTvmCalculated
     jp setHandlerCode
 mTvmNCalculateZero:
-    ; N = (-FV-PV)/PMT
+    ; if i==0: N = (-FV-PV)/PMT
     call rclTvmFV
     bcall(_OP1ToOP2)
     call rclTvmPV
