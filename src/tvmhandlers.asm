@@ -86,6 +86,9 @@ stoTvmPYR:
 ;-----------------------------------------------------------------------------
 
 ; Description: Return the interest rate per period: OP1 = i = IYR / PYR / 100.
+; Input:
+;   - rclTvmIYR
+;   - rclTvmPYR
 ; Destroys: OP2
 getTvmIntPerPeriod:
     call rclTvmPYR
@@ -129,10 +132,13 @@ beginFactor:
 ;   - rclTvmPYR
 ;   - rclTvmN
 ; Output:
-;   - OP1=CF1(i)=(1+i)^N
-;   - OP2=CF3(i)=(1+ip)[(i+i)^N-1]/i
+;   - OP1=CF1(i)=(1+i)^N=exp(N*log1p(i))
+;   - OP2=CF3(i)=(1+ip)[(i+i)^N-1]/i=(1+ip)(expm1(N*log1p(i))/i)
 ; Destroys: OP1-OP6
 compoundingFactors:
+#ifdef TVM_NAIVE
+    ; Use the TVM formulas directly, which can suffer from cancellation errors
+    ; for small i.
     call getTvmIntPerPeriod ; OP1=i
     bcall(_PushRealO1) ; FPS=i
     bcall(_PushRealO1) ; FPS1=i; FPS=i
@@ -155,6 +161,36 @@ compoundingFactors:
     bcall(_OP1ToOP2) ; OP2=(1+ip)[(1+i)^N-1]/i
     bcall(_OP4ToOP1) ; OP1=(1+i)^N
     ret
+#else
+    ; Use log1p() and expm1() functions to avoid cancellation errors.
+    ;   - OP1=CF1(i)=(1+i)^N=exp(N*log1p(i))
+    ;   - OP2=CF3(i)=(1+ip)[(i+i)^N-1]/i=(1+ip)(expm1(N*log1p(i))/i)
+    call getTvmIntPerPeriod ; OP1=i
+    bcall(_PushRealO1) ; FPS=i
+    call lnOnePlus ; OP1=log(1+i)
+    bcall(_OP1ToOP2)
+    call rclTvmN ; OP1=N
+    bcall(_FPMult) ; OP1=N*log(1+i)
+    bcall(_PushRealO1) ; FPS1=i; FPS=N*log(1+i)
+    call exchangeFPSFPS ; FPS1=N*log(1+i); FPS=i
+    call expMinusOne ; OP1=exp(N*log(1+i))-1
+    call exchangeFPSOP1 ; FPS1=N*log(1+i); FPS=exp(N*log(1+i))-1; OP1=i
+    bcall(_PushRealO1) ; FPS2=N*log(1+i); FPS1=exp(N*log(1+i))-1; FPS=i; OP1=i
+    call beginEndFactor ; OP1=(1+ip)
+    bcall(_OP1ToOP4) ; OP4=(1+ip) (save)
+    bcall(_PopRealO2) ; FPS1=N*log(1+i); FPS=exp(N*log(1+i))-1; OP2=i
+    bcall(_PopRealO1) ; FPS=N*log(1+i); OP1=exp(N*log(1+i))-1
+    ; TODO: CF2(i) (hence CF3(i)) has a removable singularity at i=0. To avoid
+    ; a division by 0 in the following, we should check for it, then replace it
+    ; with its value at i=0, which I believe is N (double check that).
+    bcall(_FPDiv) ; OP1=[exp(N*log(1+i))-1]/i
+    bcall(_OP4ToOP2) ; OP2=(1+ip)
+    bcall(_FPMult) ; OP1=(1+ip)[exp(N*log(1+i))-1]/i
+    call exchangeFPSOP1 ; FPS=CF3; OP1=N*log(1+i)
+    bcall(_EToX) ; OP1=exp(N*log(1+i))
+    bcall(_PopRealO2) ; OP2=CF3
+    ret
+#endif
 
 ;-----------------------------------------------------------------------------
 
@@ -170,6 +206,8 @@ mTvmNHandler:
 mTvmNCalculate:
     ; N = ln R / ln(1+i), where
     ; R = [PMT*(1+ip)-i*FV]/[PMT*(1+ip)+i*PV]jjj
+    ; TODO: Use a modified formula for R when i=0, or very close to zero to
+    ; avoid division by zero error.
     call getTvmIntPerPeriod ; OP1=i
     bcall(_PushRealO1) ; FPS=i
     call beginEndFactor ; OP1=1+ip
@@ -215,7 +253,7 @@ mTvmIYRHandler:
     ld a, errorCodeTvmSet
     jp setHandlerCode
 mTvmIYRCalculate:
-    ; TODO: Calculate IYR
+    ; TODO: Calculate IYR using a root solver.
     ;bcall(_OP1Set1)
     ;call stoTvmIYR
     ;call pushX
@@ -289,7 +327,7 @@ mTvmFVHandler:
     jp setHandlerCode
 mTvmFVCalculate:
     ; FV = -PMT * [(1+i)N - 1] * (1 + i p) / i - PV * (1+i)N
-    ;    = -PMT*CF3-PV*CF1
+    ;    = -PMT*CF3(i)-PV*CF1(i)
     call compoundingFactors ; OP1=CF1; OP2=CF3
     bcall(_PushRealO1) ; FPS=CF1
     call rclTvmPMT ; OP1=PMT
