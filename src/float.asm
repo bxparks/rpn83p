@@ -68,3 +68,40 @@ exchangeFPSFPS:
     ld e, c
     ld d, b
     jr exchangeFloat
+
+;-----------------------------------------------------------------------------
+
+; Description: Calculate ln(1+x) such that it is immune from cancellation errors
+; when x is close to 0. Uses the identity: ln(1+x) = 2 arcsinh(x / sqrt(1+x) /
+; 2).
+; Input: OP1
+; Output: OP1: ln(1+OP1)
+; Destroys: OP1-OP5
+lnOnePlus:
+    bcall(_PushRealO1) ; FPS=x
+    bcall(_Plus1) ; OP1=1+x
+    bcall(_SqRoot) ; OP1=sqrt(1+x)
+    bcall(_Times2) ; OP1=2sqrt(1+x)
+    bcall(_OP1ToOP2) ; OP2=2sqrt(1+x)
+    bcall(_PopRealO1) ; OP1=x
+    bcall(_FPDiv) ; OP1=x / 2sqrt(1+x)
+    bcall(_ASinH) ; OP1=asinh(x / 2sqrt(1+x))
+    bcall(_Times2) ; OP1=2 asinh(x / 2sqrt(1+x))
+    ret
+
+; Description: Calculate exp(x)-1 such that it is immune from cancellation
+; errors when x is close to 0. Uses the identity: exp(x) - 1 = 2 sinh(x/2)
+; exp(x/2).
+; Input: OP1
+; Output: OP1=exp(OP1) - 1
+; Destroys: OP1-OP5
+expMinusOne:
+    bcall(_TimesPt5) ; OP1=x/2
+    bcall(_PushRealO1) ; FPS=x/2
+    bcall(_SinH) ; OP1=sinh(x/2)
+    call exchangeFPSOP1 ; FPS=sinh(x/2); OP1=x/2
+    bcall(_EToX) ; OP1=exp(x/2)
+    bcall(_PopRealO2) ; OP2=sinh(x/2)
+    bcall(_FPMult) ; OP1=sinh(x/2) exp(x/2)
+    bcall(_Times2) ; OP1=2 sinh(x/2) exp(x/2)
+    ret

@@ -95,6 +95,18 @@ mAtan2Handler:
 
 ;-----------------------------------------------------------------------------
 
+; Calculate e^x-1 without round off errors around x=0.
+mExpMinusOneHandler:
+    call closeInputAndRecallX
+    call expMinusOne
+    jp replaceX
+
+; Calculate ln(1+x) without round off errors around x=0.
+mLnOnePlusHandler:
+    call closeInputAndRecallX
+    call lnOnePlus
+    jp replaceX
+
 ; Alog2(X) = 2^X
 mAlog2Handler:
     call closeInputAndRecallX

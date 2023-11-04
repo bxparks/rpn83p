@@ -72,6 +72,8 @@ MenuGroup root mRoot [
       MenuRow [
         MenuItem 2<Scaret>X mAlog2 # 2^x
         MenuItem LOG2 mLog2 # log_base2(x)
+        MenuItem E<Scaret>X<Sdash> mExpMinusOne # exp(x)-1
+        MenuItem LN1<SplusSign> mLnOnePlus # ln(1+x)
         MenuItem LOGB mLogBase # log_base_x(y)
       ]
     ]

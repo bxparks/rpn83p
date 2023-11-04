@@ -254,32 +254,32 @@ mLog2Id equ 23
     .db 0 ; rowBeginId or altNameId
     .dw mLog2Handler ; handler (to be implemented)
     .dw 0 ; nameSelector
+mExpMinusOne:
+mExpMinusOneId equ 24
+    .db mExpMinusOneId ; id
+    .db mMathId ; parentId
+    .db mExpMinusOneNameId ; nameId
+    .db 0 ; numRows
+    .db 0 ; rowBeginId or altNameId
+    .dw mExpMinusOneHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
+mLnOnePlus:
+mLnOnePlusId equ 25
+    .db mLnOnePlusId ; id
+    .db mMathId ; parentId
+    .db mLnOnePlusNameId ; nameId
+    .db 0 ; numRows
+    .db 0 ; rowBeginId or altNameId
+    .dw mLnOnePlusHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
 mLogBase:
-mLogBaseId equ 24
+mLogBaseId equ 26
     .db mLogBaseId ; id
     .db mMathId ; parentId
     .db mLogBaseNameId ; nameId
     .db 0 ; numRows
     .db 0 ; rowBeginId or altNameId
     .dw mLogBaseHandler ; handler (to be implemented)
-    .dw 0 ; nameSelector
-mBlank025:
-mBlank025Id equ 25
-    .db mBlank025Id ; id
-    .db mMathId ; parentId
-    .db mNullNameId ; nameId
-    .db 0 ; numRows
-    .db 0 ; rowBeginId or altNameId
-    .dw mNullHandler ; handler (predefined)
-    .dw 0 ; nameSelector
-mBlank026:
-mBlank026Id equ 26
-    .db mBlank026Id ; id
-    .db mMathId ; parentId
-    .db mNullNameId ; nameId
-    .db 0 ; numRows
-    .db 0 ; rowBeginId or altNameId
-    .dw mNullHandler ; handler (predefined)
     .dw 0 ; nameSelector
 ; MenuGroup NUM: children
 ; MenuGroup NUM: children: row 0
@@ -1813,7 +1813,7 @@ mBlank191Id equ 191
     .dw 0 ; nameSelector
 
 ; Table of 2-byte pointers to names in the pool of strings below.
-mMenuNameTableSize equ 179
+mMenuNameTableSize equ 181
 mMenuNameTable:
 mNullNameId equ 0
     .dw mNullName
@@ -1857,321 +1857,325 @@ mAlog2NameId equ 19
     .dw mAlog2Name
 mLog2NameId equ 20
     .dw mLog2Name
-mLogBaseNameId equ 21
+mExpMinusOneNameId equ 21
+    .dw mExpMinusOneName
+mLnOnePlusNameId equ 22
+    .dw mLnOnePlusName
+mLogBaseNameId equ 23
     .dw mLogBaseName
-mPercentNameId equ 22
+mPercentNameId equ 24
     .dw mPercentName
-mPercentChangeNameId equ 23
+mPercentChangeNameId equ 25
     .dw mPercentChangeName
-mGcdNameId equ 24
+mGcdNameId equ 26
     .dw mGcdName
-mLcmNameId equ 25
+mLcmNameId equ 27
     .dw mLcmName
-mPrimeNameId equ 26
+mPrimeNameId equ 28
     .dw mPrimeName
-mIntPartNameId equ 27
+mIntPartNameId equ 29
     .dw mIntPartName
-mFracPartNameId equ 28
+mFracPartNameId equ 30
     .dw mFracPartName
-mFloorNameId equ 29
+mFloorNameId equ 31
     .dw mFloorName
-mCeilNameId equ 30
+mCeilNameId equ 32
     .dw mCeilName
-mNearNameId equ 31
+mNearNameId equ 33
     .dw mNearName
-mAbsNameId equ 32
+mAbsNameId equ 34
     .dw mAbsName
-mSignNameId equ 33
+mSignNameId equ 35
     .dw mSignName
-mModNameId equ 34
+mModNameId equ 36
     .dw mModName
-mMinNameId equ 35
+mMinNameId equ 37
     .dw mMinName
-mMaxNameId equ 36
+mMaxNameId equ 38
     .dw mMaxName
-mCombNameId equ 37
+mCombNameId equ 39
     .dw mCombName
-mPermNameId equ 38
+mPermNameId equ 40
     .dw mPermName
-mFactorialNameId equ 39
+mFactorialNameId equ 41
     .dw mFactorialName
-mRandomNameId equ 40
+mRandomNameId equ 42
     .dw mRandomName
-mRandomSeedNameId equ 41
+mRandomSeedNameId equ 43
     .dw mRandomSeedName
-mRToDNameId equ 42
+mRToDNameId equ 44
     .dw mRToDName
-mDToRNameId equ 43
+mDToRNameId equ 45
     .dw mDToRName
-mPToRNameId equ 44
+mPToRNameId equ 46
     .dw mPToRName
-mRToPNameId equ 45
+mRToPNameId equ 47
     .dw mRToPName
-mHmsToHrNameId equ 46
+mHmsToHrNameId equ 48
     .dw mHmsToHrName
-mHrToHmsNameId equ 47
+mHrToHmsNameId equ 49
     .dw mHrToHmsName
-mDecNameId equ 48
+mDecNameId equ 50
     .dw mDecName
-mDecAltNameId equ 49
+mDecAltNameId equ 51
     .dw mDecAltName
-mHexNameId equ 50
+mHexNameId equ 52
     .dw mHexName
-mHexAltNameId equ 51
+mHexAltNameId equ 53
     .dw mHexAltName
-mOctNameId equ 52
+mOctNameId equ 54
     .dw mOctName
-mOctAltNameId equ 53
+mOctAltNameId equ 55
     .dw mOctAltName
-mBinNameId equ 54
+mBinNameId equ 56
     .dw mBinName
-mBinAltNameId equ 55
+mBinAltNameId equ 57
     .dw mBinAltName
-mBitwiseAndNameId equ 56
+mBitwiseAndNameId equ 58
     .dw mBitwiseAndName
-mBitwiseOrNameId equ 57
+mBitwiseOrNameId equ 59
     .dw mBitwiseOrName
-mBitwiseXorNameId equ 58
+mBitwiseXorNameId equ 60
     .dw mBitwiseXorName
-mBitwiseNotNameId equ 59
+mBitwiseNotNameId equ 61
     .dw mBitwiseNotName
-mBitwiseNegNameId equ 60
+mBitwiseNegNameId equ 62
     .dw mBitwiseNegName
-mShiftLeftLogicalNameId equ 61
+mShiftLeftLogicalNameId equ 63
     .dw mShiftLeftLogicalName
-mShiftRightLogicalNameId equ 62
+mShiftRightLogicalNameId equ 64
     .dw mShiftRightLogicalName
-mShiftRightArithmeticNameId equ 63
+mShiftRightArithmeticNameId equ 65
     .dw mShiftRightArithmeticName
-mShiftLeftLogicalNNameId equ 64
+mShiftLeftLogicalNNameId equ 66
     .dw mShiftLeftLogicalNName
-mShiftRightLogicalNNameId equ 65
+mShiftRightLogicalNNameId equ 67
     .dw mShiftRightLogicalNName
-mRotateLeftCircularNameId equ 66
+mRotateLeftCircularNameId equ 68
     .dw mRotateLeftCircularName
-mRotateRightCircularNameId equ 67
+mRotateRightCircularNameId equ 69
     .dw mRotateRightCircularName
-mRotateLeftCarryNameId equ 68
+mRotateLeftCarryNameId equ 70
     .dw mRotateLeftCarryName
-mRotateRightCarryNameId equ 69
+mRotateRightCarryNameId equ 71
     .dw mRotateRightCarryName
-mRotateLeftCircularNNameId equ 70
+mRotateLeftCircularNNameId equ 72
     .dw mRotateLeftCircularNName
-mRotateRightCircularNNameId equ 71
+mRotateRightCircularNNameId equ 73
     .dw mRotateRightCircularNName
-mRotateLeftCarryNNameId equ 72
+mRotateLeftCarryNNameId equ 74
     .dw mRotateLeftCarryNName
-mRotateRightCarryNNameId equ 73
+mRotateRightCarryNNameId equ 75
     .dw mRotateRightCarryNName
-mClearBitNameId equ 74
+mClearBitNameId equ 76
     .dw mClearBitName
-mSetBitNameId equ 75
+mSetBitNameId equ 77
     .dw mSetBitName
-mGetBitNameId equ 76
+mGetBitNameId equ 78
     .dw mGetBitName
-mReverseBitNameId equ 77
+mReverseBitNameId equ 79
     .dw mReverseBitName
-mCountBitNameId equ 78
+mCountBitNameId equ 80
     .dw mCountBitName
-mBitwiseAddNameId equ 79
+mBitwiseAddNameId equ 81
     .dw mBitwiseAddName
-mBitwiseSubtNameId equ 80
+mBitwiseSubtNameId equ 82
     .dw mBitwiseSubtName
-mBitwiseMultNameId equ 81
+mBitwiseMultNameId equ 83
     .dw mBitwiseMultName
-mBitwiseDivNameId equ 82
+mBitwiseDivNameId equ 84
     .dw mBitwiseDivName
-mBitwiseDiv2NameId equ 83
+mBitwiseDiv2NameId equ 85
     .dw mBitwiseDiv2Name
-mClearCarryFlagNameId equ 84
+mClearCarryFlagNameId equ 86
     .dw mClearCarryFlagName
-mSetCarryFlagNameId equ 85
+mSetCarryFlagNameId equ 87
     .dw mSetCarryFlagName
-mGetCarryFlagNameId equ 86
+mGetCarryFlagNameId equ 88
     .dw mGetCarryFlagName
-mSetWordSizeNameId equ 87
+mSetWordSizeNameId equ 89
     .dw mSetWordSizeName
-mGetWordSizeNameId equ 88
+mGetWordSizeNameId equ 90
     .dw mGetWordSizeName
-mSinhNameId equ 89
+mSinhNameId equ 91
     .dw mSinhName
-mCoshNameId equ 90
+mCoshNameId equ 92
     .dw mCoshName
-mTanhNameId equ 91
+mTanhNameId equ 93
     .dw mTanhName
-mAsinhNameId equ 92
+mAsinhNameId equ 94
     .dw mAsinhName
-mAcoshNameId equ 93
+mAcoshNameId equ 95
     .dw mAcoshName
-mAtanhNameId equ 94
+mAtanhNameId equ 96
     .dw mAtanhName
-mStatPlusNameId equ 95
+mStatPlusNameId equ 97
     .dw mStatPlusName
-mStatMinusNameId equ 96
+mStatMinusNameId equ 98
     .dw mStatMinusName
-mStatAllModeNameId equ 97
+mStatAllModeNameId equ 99
     .dw mStatAllModeName
-mStatAllModeAltNameId equ 98
+mStatAllModeAltNameId equ 100
     .dw mStatAllModeAltName
-mStatLinearModeNameId equ 99
+mStatLinearModeNameId equ 101
     .dw mStatLinearModeName
-mStatLinearModeAltNameId equ 100
+mStatLinearModeAltNameId equ 102
     .dw mStatLinearModeAltName
-mStatClearNameId equ 101
+mStatClearNameId equ 103
     .dw mStatClearName
-mStatSumNameId equ 102
+mStatSumNameId equ 104
     .dw mStatSumName
-mStatMeanNameId equ 103
+mStatMeanNameId equ 105
     .dw mStatMeanName
-mStatWeightedMeanNameId equ 104
+mStatWeightedMeanNameId equ 106
     .dw mStatWeightedMeanName
-mStatNNameId equ 105
+mStatNNameId equ 107
     .dw mStatNName
-mStatSampleSdevNameId equ 106
+mStatSampleSdevNameId equ 108
     .dw mStatSampleSdevName
-mStatSampleCovNameId equ 107
+mStatSampleCovNameId equ 109
     .dw mStatSampleCovName
-mStatPopSdevNameId equ 108
+mStatPopSdevNameId equ 110
     .dw mStatPopSdevName
-mStatPopCovNameId equ 109
+mStatPopCovNameId equ 111
     .dw mStatPopCovName
-mCfitNameId equ 110
+mCfitNameId equ 112
     .dw mCfitName
-mCfitForcastXNameId equ 111
+mCfitForcastXNameId equ 113
     .dw mCfitForcastXName
-mCfitForcastYNameId equ 112
+mCfitForcastYNameId equ 114
     .dw mCfitForcastYName
-mCfitSlopeNameId equ 113
+mCfitSlopeNameId equ 115
     .dw mCfitSlopeName
-mCfitInterceptNameId equ 114
+mCfitInterceptNameId equ 116
     .dw mCfitInterceptName
-mCfitCorrelationNameId equ 115
+mCfitCorrelationNameId equ 117
     .dw mCfitCorrelationName
-mCfitLinearNameId equ 116
+mCfitLinearNameId equ 118
     .dw mCfitLinearName
-mCfitLinearAltNameId equ 117
+mCfitLinearAltNameId equ 119
     .dw mCfitLinearAltName
-mCfitLogNameId equ 118
+mCfitLogNameId equ 120
     .dw mCfitLogName
-mCfitLogAltNameId equ 119
+mCfitLogAltNameId equ 121
     .dw mCfitLogAltName
-mCfitExpNameId equ 120
+mCfitExpNameId equ 122
     .dw mCfitExpName
-mCfitExpAltNameId equ 121
+mCfitExpAltNameId equ 123
     .dw mCfitExpAltName
-mCfitPowerNameId equ 122
+mCfitPowerNameId equ 124
     .dw mCfitPowerName
-mCfitPowerAltNameId equ 123
+mCfitPowerAltNameId equ 125
     .dw mCfitPowerAltName
-mCfitBestNameId equ 124
+mCfitBestNameId equ 126
     .dw mCfitBestName
-mFToCNameId equ 125
+mFToCNameId equ 127
     .dw mFToCName
-mCToFNameId equ 126
+mCToFNameId equ 128
     .dw mCToFName
-mInhgToHpaNameId equ 127
+mInhgToHpaNameId equ 129
     .dw mInhgToHpaName
-mHpaToInhgNameId equ 128
+mHpaToInhgNameId equ 130
     .dw mHpaToInhgName
-mMiToKmNameId equ 129
+mMiToKmNameId equ 131
     .dw mMiToKmName
-mKmToMiNameId equ 130
+mKmToMiNameId equ 132
     .dw mKmToMiName
-mFtToMNameId equ 131
+mFtToMNameId equ 133
     .dw mFtToMName
-mMToFtNameId equ 132
+mMToFtNameId equ 134
     .dw mMToFtName
-mInToCmNameId equ 133
+mInToCmNameId equ 135
     .dw mInToCmName
-mCmToInNameId equ 134
+mCmToInNameId equ 136
     .dw mCmToInName
-mMilToMicronNameId equ 135
+mMilToMicronNameId equ 137
     .dw mMilToMicronName
-mMicronToMilNameId equ 136
+mMicronToMilNameId equ 138
     .dw mMicronToMilName
-mLbsToKgNameId equ 137
+mLbsToKgNameId equ 139
     .dw mLbsToKgName
-mKgToLbsNameId equ 138
+mKgToLbsNameId equ 140
     .dw mKgToLbsName
-mOzToGNameId equ 139
+mOzToGNameId equ 141
     .dw mOzToGName
-mGToOzNameId equ 140
+mGToOzNameId equ 142
     .dw mGToOzName
-mGalToLNameId equ 141
+mGalToLNameId equ 143
     .dw mGalToLName
-mLToGalNameId equ 142
+mLToGalNameId equ 144
     .dw mLToGalName
-mFlozToMlNameId equ 143
+mFlozToMlNameId equ 145
     .dw mFlozToMlName
-mMlToFlozNameId equ 144
+mMlToFlozNameId equ 146
     .dw mMlToFlozName
-mCalToKjNameId equ 145
+mCalToKjNameId equ 147
     .dw mCalToKjName
-mKjToCalNameId equ 146
+mKjToCalNameId equ 148
     .dw mKjToCalName
-mHpToKwNameId equ 147
+mHpToKwNameId equ 149
     .dw mHpToKwName
-mKwToHpNameId equ 148
+mKwToHpNameId equ 150
     .dw mKwToHpName
-mTvmNNameId equ 149
+mTvmNNameId equ 151
     .dw mTvmNName
-mTvmIYRNameId equ 150
+mTvmIYRNameId equ 152
     .dw mTvmIYRName
-mTvmPVNameId equ 151
+mTvmPVNameId equ 153
     .dw mTvmPVName
-mTvmPMTNameId equ 152
+mTvmPMTNameId equ 154
     .dw mTvmPMTName
-mTvmFVNameId equ 153
+mTvmFVNameId equ 155
     .dw mTvmFVName
-mTvmSetPYRNameId equ 154
+mTvmSetPYRNameId equ 156
     .dw mTvmSetPYRName
-mTvmGetPYRNameId equ 155
+mTvmGetPYRNameId equ 157
     .dw mTvmGetPYRName
-mTvmBeginNameId equ 156
+mTvmBeginNameId equ 158
     .dw mTvmBeginName
-mTvmBeginAltNameId equ 157
+mTvmBeginAltNameId equ 159
     .dw mTvmBeginAltName
-mTvmEndNameId equ 158
+mTvmEndNameId equ 160
     .dw mTvmEndName
-mTvmEndAltNameId equ 159
+mTvmEndAltNameId equ 161
     .dw mTvmEndAltName
-mTvmResetNameId equ 160
+mTvmResetNameId equ 162
     .dw mTvmResetName
-mTvmClearNameId equ 161
+mTvmClearNameId equ 163
     .dw mTvmClearName
-mClearXNameId equ 162
+mClearXNameId equ 164
     .dw mClearXName
-mClearStackNameId equ 163
+mClearStackNameId equ 165
     .dw mClearStackName
-mClearRegsNameId equ 164
+mClearRegsNameId equ 166
     .dw mClearRegsName
-mClearStatNameId equ 165
+mClearStatNameId equ 167
     .dw mClearStatName
-mFixNameId equ 166
+mFixNameId equ 168
     .dw mFixName
-mFixAltNameId equ 167
+mFixAltNameId equ 169
     .dw mFixAltName
-mSciNameId equ 168
+mSciNameId equ 170
     .dw mSciName
-mSciAltNameId equ 169
+mSciAltNameId equ 171
     .dw mSciAltName
-mEngNameId equ 170
+mEngNameId equ 172
     .dw mEngName
-mEngAltNameId equ 171
+mEngAltNameId equ 173
     .dw mEngAltName
-mRadNameId equ 172
+mRadNameId equ 174
     .dw mRadName
-mRadAltNameId equ 173
+mRadAltNameId equ 175
     .dw mRadAltName
-mDegNameId equ 174
+mDegNameId equ 176
     .dw mDegName
-mDegAltNameId equ 175
+mDegAltNameId equ 177
     .dw mDegAltName
-mStackRotUpNameId equ 176
+mStackRotUpNameId equ 178
     .dw mStackRotUpName
-mStackRotDownNameId equ 177
+mStackRotDownNameId equ 179
     .dw mStackRotDownName
-mStackExchangeXYNameId equ 178
+mStackExchangeXYNameId equ 180
     .dw mStackExchangeXYName
 
 ; Table of names as NUL terminated C strings.
@@ -2217,6 +2221,10 @@ mAlog2Name:
     .db '2', Scaret, 'X', 0
 mLog2Name:
     .db "LOG2", 0
+mExpMinusOneName:
+    .db 'E', Scaret, 'X', Sdash, 0
+mLnOnePlusName:
+    .db 'L', 'N', '1', SplusSign, 0
 mLogBaseName:
     .db "LOGB", 0
 mPercentName:
