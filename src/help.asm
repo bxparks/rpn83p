@@ -174,7 +174,7 @@ displayHelpPage:
     ret
 
 ; Array of (char*) pointers to C-strings.
-helpPageCount equ 7
+helpPageCount equ 8
 helpPages:
     .dw msgHelpPage1
     .dw msgHelpPage2
@@ -183,6 +183,7 @@ helpPages:
     .dw msgHelpPage5
     .dw msgHelpPage6
     .dw msgHelpPage7
+    .dw msgHelpPage8
 
 msgHelpPage1:
     .db escapeLargeFont, "RPN83P", Lenter
@@ -193,7 +194,7 @@ msgHelpPage1:
     .db "TI", Shyphen, "83 Plus and TI", Shyphen, "84 Plus", Senter
     .db "inspired by the HP", Shyphen, "42S.", Senter
     .db Senter
-    .db SlBrack, "1/7", SrBrack, " Any key to continue...", Senter
+    .db SlBrack, "1/8", SrBrack, " Any key to continue...", Senter
     .db 0
 
 msgHelpPage2:
@@ -205,7 +206,7 @@ msgHelpPage2:
     .db "R", SupArrow, " :  STK  R", SupArrow, Senter
     .db Senter
     .db Senter
-    .db SlBrack, "2/7", SrBrack, " Any key to continue...", Senter
+    .db SlBrack, "2/8", SrBrack, " Any key to continue...", Senter
     .db 0
 
 msgHelpPage3:
@@ -217,7 +218,7 @@ msgHelpPage3:
     .db "RCL+ RCL- RCL* RCL/ nn", Senter
     .db "nn: 0 to 24", Senter
     .db Senter
-    .db SlBrack, "3/7", SrBrack, " Any key to continue...", Senter
+    .db SlBrack, "3/8", SrBrack, " Any key to continue...", Senter
     .db 0
 
 msgHelpPage4:
@@ -229,7 +230,7 @@ msgHelpPage4:
     .db "ClrX:  CLEAR", Senter
     .db Senter
     .db Senter
-    .db SlBrack, "4/7", SrBrack, " Any key to continue...", Senter
+    .db SlBrack, "4/8", SrBrack, " Any key to continue...", Senter
     .db 0
 
 msgHelpPage5:
@@ -241,7 +242,7 @@ msgHelpPage5:
     .db "Back:  ON", Senter
     .db "Quit App:  2ND QUIT", Senter
     .db Senter
-    .db SlBrack, "5/7", SrBrack, " Any key to continue...", Senter
+    .db SlBrack, "5/8", SrBrack, " Any key to continue...", Senter
     .db 0
 
 msgHelpPage6:
@@ -253,7 +254,7 @@ msgHelpPage6:
     .db "PWRF: y = B x^M", Senter
     .db Senter
     .db Senter
-    .db SlBrack, "6/7", SrBrack, " Any key to continue...", Senter
+    .db SlBrack, "6/8", SrBrack, " Any key to continue...", Senter
     .db 0
 
 msgHelpPage7:
@@ -265,6 +266,17 @@ msgHelpPage7:
     .db "RLC RRC: rotate thru carry",  Senter
     .db "REVB: reverse bits", Senter
     .db "CNTB: count bits", Senter
-    .db SlBrack, "7/7", SrBrack, " Any key to return.", Senter
+    .db SlBrack, "7/8", SrBrack, " Any key to return.", Senter
     .db 0
 
+msgHelpPage8:
+    .db escapeLargeFont, "TVM", Lenter
+    .db escapeSmallFont, Senter
+    .db "outflow: - sign", Senter
+    .db "inflow: + sign", Senter
+    .db "RSTV: Reset P/YR BEG END",  Senter
+    .db "CLTV: Clear N ... FV",  Senter
+    .db "P/YR: Payments per year", Senter
+    .db Senter
+    .db SlBrack, "8/8", SrBrack, " Any key to return.", Senter
+    .db 0
