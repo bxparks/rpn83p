@@ -76,7 +76,7 @@ getErrorStringContinue:
 ; maybe we can reverse engineer the condition that triggers that particular
 ; error code and create a human-readable string for it.
 
-errorCodeCount equ 73           ; total number of error codes
+errorCodeCount equ 74           ; total number of error codes
 errorStrings:
 errorCodeOk equ                 0 ; hopefully TI-OS uses 0 as "success"
     .dw errorStrOk
