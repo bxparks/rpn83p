@@ -138,7 +138,7 @@ beginFactor:
 ; Output:
 ;   - OP1=CF1(i)=(1+i)^N=exp(N*log1p(i))
 ;   - OP2=CF3(i)=(1+ip)[(i+i)^N-1]/i=(1+ip)(expm1(N*log1p(i))/i)
-; Destroys: OP1-OP6
+; Destroys: OP1-OP5
 compoundingFactors:
 #ifdef TVM_NAIVE
     ; Use the TVM formulas directly, which can suffer from cancellation errors
@@ -174,24 +174,24 @@ compoundingFactors:
     ; CF3(i) has a removable singularity at i=0, so we use a different formula.
     jr z, compoundingFactorsZero
     bcall(_PushRealO1) ; FPS=i
-    call lnOnePlus ; OP1=log(1+i)
+    call lnOnePlus ; OP1=ln(1+i)
     bcall(_OP1ToOP2)
     call rclTvmN ; OP1=N
-    bcall(_FPMult) ; OP1=N*log(1+i)
-    bcall(_PushRealO1) ; FPS1=i; FPS=N*log(1+i)
-    call exchangeFPSFPS ; FPS1=N*log(1+i); FPS=i
-    call expMinusOne ; OP1=exp(N*log(1+i))-1
-    call exchangeFPSOP1 ; FPS1=N*log(1+i); FPS=exp(N*log(1+i))-1; OP1=i
-    bcall(_PushRealO1) ; FPS2=N*log(1+i); FPS1=exp(N*log(1+i))-1; FPS=i; OP1=i
+    bcall(_FPMult) ; OP1=N*ln(1+i)
+    bcall(_PushRealO1) ; FPS1=i; FPS=N*ln(1+i)
+    call exchangeFPSFPS ; FPS1=N*ln(1+i); FPS=i
+    call expMinusOne ; OP1=exp(N*ln(1+i))-1
+    call exchangeFPSOP1 ; FPS1=N*ln(1+i); FPS=exp(N*ln(1+i))-1; OP1=i
+    bcall(_PushRealO1) ; FPS2=N*ln(1+i); FPS1=exp(N*ln(1+i))-1; FPS=i; OP1=i
     call beginEndFactor ; OP1=(1+ip)
     bcall(_OP1ToOP4) ; OP4=(1+ip) (save)
-    bcall(_PopRealO2) ; FPS1=N*log(1+i); FPS=exp(N*log(1+i))-1; OP2=i
-    bcall(_PopRealO1) ; FPS=N*log(1+i); OP1=exp(N*log(1+i))-1
-    bcall(_FPDiv) ; OP1=[exp(N*log(1+i))-1]/i
+    bcall(_PopRealO2) ; FPS1=N*ln(1+i); FPS=exp(N*ln(1+i))-1; OP2=i
+    bcall(_PopRealO1) ; FPS=N*ln(1+i); OP1=exp(N*ln(1+i))-1
+    bcall(_FPDiv) ; OP1=[exp(N*ln(1+i))-1]/i
     bcall(_OP4ToOP2) ; OP2=(1+ip)
-    bcall(_FPMult) ; OP1=(1+ip)[exp(N*log(1+i))-1]/i
-    call exchangeFPSOP1 ; FPS=CF3; OP1=N*log(1+i)
-    bcall(_EToX) ; OP1=exp(N*log(1+i))
+    bcall(_FPMult) ; OP1=(1+ip)[exp(N*ln(1+i))-1]/i
+    call exchangeFPSOP1 ; FPS=CF3; OP1=N*ln(1+i)
+    bcall(_EToX) ; OP1=exp(N*ln(1+i))
     bcall(_PopRealO2) ; OP2=CF3
     ret
 compoundingFactorsZero:
@@ -201,6 +201,73 @@ compoundingFactorsZero:
     bcall(_OP1Set1) ; OP1=CF1=1
     ret
 #endif
+
+; Description: Return the function C(N,i) = N*i/((1+i)^N-1)) =
+; N*i/((expm1(N*log1p(i)) which is the reciprocal of the compounding factor,
+; with a special case of C(N,0)=1 to remove a singularity at i=0.
+; Destroys: OP1-OP5
+inverseCompoundingFactor:
+    call getTvmIntPerPeriod ; OP1=i
+    bcall(_CkOP1FP0) ; check if i==0.0
+    ; CF3(i) has a removable singularity at i=0, so we use a different formula.
+    jr z, inverseCompoundingFactorZero
+    bcall(_OP1ToOP2) ; OP2=i
+    call rclTvmN ; OP1=N
+    bcall(_PushRealO1) ; FPS=N
+    bcall(_PushRealO2) ; FPS1=N; FPS=i
+    bcall(_FPMult) ; OP1=N*i
+    call exchangeFPSOP1 ; FPS1=N; FPS=N*i; OP1=i
+    call lnOnePlus ; OP1=ln(1+i)
+    call exchangeFPSFPS ; FPS1=N*i; FPS=N
+    bcall(_PopRealO2) ; FPS=Ni; OP2=N
+    bcall(_FPMult) ; OP1=N*ln(1+i)
+    call expMinusOne ; OP1=exp(N*ln(1+i))-1
+    bcall(_OP1ToOP2) ; OP2=exp(N*ln(1+i))-1
+    bcall(_PopRealO1) ; OP2=Ni
+    bcall(_FPDiv) ; OP1=Ni/[exp(N*ln(1+i)-1]
+    ret
+inverseCompoundingFactorZero:
+    bcall(_OP1Set1) ; OP1=C=1
+    ret
+
+; Description: Determine if the interest (i) exists for the given PV, FV, PMT,
+; and N. Otherwise, the iterative root finder will fail to converge to a root
+; with i>0
+;   - If PV>0, then the root exists if PV+FV+N*PMT<=0
+;   - If PV<0, then the root exists if PV+FV+N*PMT>=0
+; Input: tvmPV, tvmFV, tvmN, tvmPMT
+; Output:
+;   - ZF set if exists
+;   - ZF cleared if does not exist
+; Destroys: OP1, OP2
+interestExists:
+    call rclTvmPV
+    bcall(_OP1ToOP2) ; OP2=PV
+    call rclTvmFV
+    bcall(_FPAdd) ; OP1=PV+FV
+    bcall(_PushRealO1) ; FPS=PV+FV
+    call rclTvmN
+    bcall(_OP1ToOP2)
+    call rclTvmPMT
+    bcall(_FPMult) ; OP1=N*PMT
+    bcall(_PopRealO2) ; OP2=PV+FV
+    bcall(_FPAdd) ; OP1=PV+FV+N*PMT
+    bcall(_CkOP1FP0) ; if OP1==0: exists
+    ret z
+    bcall(_OP1ToOP2) ; OP2=PV+FV+N*PMT
+    call rclTvmPV ; OP1=PV
+    bcall(_CkOP1Pos) ; if OP1>=0, Z=1
+    jr nz, interestExistsPVNegative
+    ; If PV>0, invert the sign of (PV+FV+N*PMT) so make the existence
+    ; inequality positive.
+    bcall(_OP2ToOP1) ; OP1=PV+FV+N*PMT
+    bcall(_InvOP1S) ; OP1=-(PV+FV+N*PMT)
+    jr interestExistsCheck
+interestExistsPVNegative:
+    bcall(_OP2ToOP1) ; OP1=PV+FV+N*PMT
+interestExistsCheck:
+    bcall(_CkOP1Pos) ; if OP1>=0, Z=1
+    ret
 
 ;-----------------------------------------------------------------------------
 
@@ -281,13 +348,15 @@ mTvmIYRHandler:
     ld a, errorCodeTvmSet
     jp setHandlerCode
 mTvmIYRCalculate:
-    ; TODO: Calculate IYR using a root solver.
-    ;bcall(_OP1Set1)
-    ;call stoTvmIYR
-    ;call pushX
-    ;ld a, errorCodeTvmCalculated
-    ;jp setHandlerCode
-    jp mNotYetHandler
+    ; Interest rate does not have a closed-form solution, so requires solving
+    ; the root of an equation. First, determine if a root exists for i>0.
+    call interestExists
+    jr z, mTvmIYRCalculateExists
+    ld a, errorCodeTvmNoSolution
+    jp setHandlerCode
+mTvmIYRCalculateExists:
+    ld a, errorCodeNotYet
+    jp setHandlerCode
 
 mTvmPVHandler:
     call closeInputBuf

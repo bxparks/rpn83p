@@ -189,9 +189,11 @@ errorCodeTvmSet equ             69
     .dw errorStrTvmSet
 errorCodeTvmCalculated equ      70
     .dw errorStrTvmCalculated
-errorCodeTvmReset equ           71
+errorCodeTvmNoSolution equ      71
+    .dw errorStrTvmNoSolution
+errorCodeTvmReset equ           72
     .dw errorStrTvmReset
-errorCodeTvmCleared equ         72
+errorCodeTvmCleared equ         73
     .dw errorStrTvmCleared
 
 ; The C strings for each error code. In alphabetical order, as listed in the TI
@@ -259,6 +261,8 @@ errorStrTvmSet:
     .db "TVM Set", 0
 errorStrTvmCalculated:
     .db "TVM Calculated", 0
+errorStrTvmNoSolution:
+    .db "TVM No Solution", 0
 errorStrTvmReset:
     .db "TVM Reset", 0
 errorStrTvmCleared:
