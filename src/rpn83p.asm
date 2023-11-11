@@ -45,6 +45,7 @@ dirtyFlags equ asm_Flag1
 dirtyFlagsInput equ 0 ; set if the inputBuf or argBuf is dirty
 dirtyFlagsStack equ 1 ; set if the RPN stack is dirty
 dirtyFlagsMenu equ 2 ; set if the menu selection is dirty
+; TODO: Combine Trig, Float, and Base into a single 'dirtyFlagsStatus' bit.
 dirtyFlagsTrigMode equ 3 ; set if the trig status is dirty
 dirtyFlagsFloatMode equ 4 ; set if the floating mode is dirty
 dirtyFlagsBaseMode equ 5 ; set if any base mode flags or vars is dirty
@@ -75,7 +76,6 @@ rpnFlagsAllStatEnabled equ 3 ; set if Sigma+ updates logarithm registers
 rpnFlagsBaseModeEnabled equ 4 ; set if inside BASE menu hierarchy
 rpnFlagsTvmPmtBegin equ 5 ; set if TVM payment at begin, 0 if at end
 rpnFlagsTvmCalculate equ 6 ; set if the next TVM function should calculate
-rpnFlagsTvmDisplay equ 7 ; set to display TVM root solver (for debugging)
 
 ; Flags for the inputBuf. Offset from IY register.
 inputBufFlags equ asm_Flag3
@@ -96,7 +96,7 @@ rpn83pAppId equ $1E69
 ; Increment the schema version when any variables are added or removed from the
 ; appState data block. The schema version will be validated upon restoring the
 ; application state from the AppVar.
-rpn83pSchemaVersion equ 5
+rpn83pSchemaVersion equ 6
 
 ; Begin application variables at tempSwapArea. According to the TI-83 Plus SDK
 ; docs: "tempSwapArea (82A5h) This is the start of 323 bytes used only during
@@ -267,8 +267,19 @@ tvmI1 equ tvmI0 + 9
 tvmNPMT0 equ tvmI1 + 9
 tvmNPMT1 equ tvmNPMT0 + 9
 
+; Draw/Debug mode constants
+drawModeNormal equ 0
+drawModeTvmSolverI equ 1 ; show i0, i1
+drawModeTvmSolverF equ 2 ; show npmt0, npmt1
+
+; Draw/Debug mode, activated by secret 2ND DRAW button.
+; - 0: normal
+; - 1: TVM Solver i0, i1 values
+; - 2: TVM Solver f0, f1 values
+drawMode equ tvmNPMT1 + 9
+
 ; End application variables.
-appStateEnd equ tvmNPMT1 + 9
+appStateEnd equ drawMode + 1
 
 ; Total size of vars
 appStateSize equ (appStateEnd - appStateBegin)

@@ -24,6 +24,7 @@ statusMenuPenCol equ 0 ; left, up, down, 2px = 3*4 + 2 = 14px
 statusFloatModePenCol equ 14 ; (FIX|SCI|ENG), (, N, ), 4px = 5*4+2*3 = 26px
 statusTrigPenCol equ 40 ; (DEG|RAD), 4px = 4*4 = 16px
 statusBasePenCol equ 56 ; (C|-), 4px
+statusDebugPenCol equ 60 ; (D|-), 4px
 
 ; Display coordinates of the debug line
 debugCurRow equ 1
@@ -92,6 +93,8 @@ menuPenColEnd   equ 96
 
 ; Function: Set all dirty flags to dirty initially so that they are rendered.
 initDisplay:
+    xor a
+    ld (drawMode), a
     ld a, $FF
     ld (iy + dirtyFlags), a ; set all dirty flags
     ret
@@ -1050,3 +1053,7 @@ msgDegLabel:
     .db "DEG", 0
 msgRadLabel:
     .db "RAD", 0
+
+; DRAW mode indicator.
+msgDrawLabel:
+    .db "DRAW", 0
