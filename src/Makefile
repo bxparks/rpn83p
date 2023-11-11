@@ -25,6 +25,7 @@ SRCS := \
 	menu.asm \
 	menudef.asm \
 	menuhandlers.asm \
+	menulookup.asm \
 	prime.asm \
 	print.asm \
 	pstring.asm \

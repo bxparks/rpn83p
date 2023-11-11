@@ -217,10 +217,10 @@ displayStatusTrigUpdate:
     bit trigDeg, (iy + trigFlags)
     jr z, displayStatusTrigRad
 displayStatusTrigDeg:
-    ld hl, mDegName
+    ld hl, msgDegLabel
     jr displayStatusTrigPutS
 displayStatusTrigRad:
-    ld hl, mRadName
+    ld hl, msgRadLabel
 displayStatusTrigPutS:
     call vPutS
     ret
@@ -260,16 +260,16 @@ displayStatusFloatMode:
     bit fmtExponent, (iy + fmtFlags)
     jr nz, displayStatusFloatModeSciOrEng
 displayStatusFloatModeFix:
-    ld hl, mFixName
+    ld hl, msgFixLabel
     jr displayStatusFloatModeBracketDigit
 displayStatusFloatModeSciOrEng:
     bit fmtEng, (iy + fmtFlags)
     jr nz, displayStatusFloatModeEng
 displayStatusFloatModeSci:
-    ld hl, mSciName
+    ld hl, msgSciLabel
     jr displayStatusFloatModeBracketDigit
 displayStatusFloatModeEng:
-    ld hl, mEngName
+    ld hl, msgEngLabel
     ; [[fallthrough]]
 displayStatusFloatModeBracketDigit:
     ; Print the number of digit
@@ -434,7 +434,7 @@ displayStackXInput:
     ; print the inputBuf
     ld hl, inputCurCol*$100 + inputCurRow ; $(curCol)(curRow)
     ld (CurRow), hl
-    jr printInputBuf
+    jp printInputBuf
 
 displayStackXLabel:
     ; If the "X:" label was corrupted by the command arg mode label, then
@@ -1021,7 +1021,7 @@ convertAToCharDec:
 msgBaseInvalid:
     .db "...", 0
 
-; Indicates number is negative so cannot be current Base mode.
+; Indicates number is negative so cannot be rendered in Base mode.
 msgBaseNegative:
     .db "-", 0
 
@@ -1034,3 +1034,19 @@ msgYLabel:
     .db "Y:", 0
 msgXLabel:
     .db "X:", 0
+
+; Floating point mode indicators. Previously reused the strings in menudef.asm,
+; but it got moved into Flash Page 1, so we have to copy them here.
+msgFixLabel:
+    .db "FIX", 0
+msgSciLabel:
+    .db "SCI", 0
+msgEngLabel:
+    .db "ENG", 0
+
+; DEG or RAD indicators. Previously reused the strings in menudef.asm, but it
+; got moved into Flash Pae 1, so we have to copy them here.
+msgDegLabel:
+    .db "DEG", 0
+msgRadLabel:
+    .db "RAD", 0

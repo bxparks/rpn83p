@@ -25,11 +25,15 @@ mNotYetHandler:
     ld a, errorCodeNotYet
     jp setHandlerCode
 
-; Description: Default handler for menu nodes of type "MenuGroup".
+; Description: Default handler for menu nodes of type "MenuGroup". This handler
+; currently does nothing. The 'chdir' functionality is now handled by
+; dispatchMenuNode() because it needs to send an 'onExit' to the current node,
+; and an 'onEnter' event to the selected node.
 ; Input:
 ;   A: nodeId of the select menu item
 ;   HL: pointer to MenuNode that was activated (ignored)
-;   CF: 0 upon entry into group; 1 upon exit from group
+;   CF: 0 indicates on 'onEnter' event into group; 1 indicates onExit event
+;   from group
 mGroupHandler:
     ret
 
@@ -38,7 +42,7 @@ mGroupHandler:
 ;-----------------------------------------------------------------------------
 
 mHelpHandler:
-    bcall(_processHelp) ; use bcall() to invoke HELP handler on Page 1
+    bcall(_processHelp) ; use bcall() to invoke HELP handler on Flash Page 1
     ret
 
 ;-----------------------------------------------------------------------------
@@ -888,7 +892,7 @@ mHrToHmsHandler:
 mFixHandler:
     call closeInputBuf
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
-    ld hl, mFixName
+    ld hl, msgFixLabel
     call startArgParser
     call processCommandArg
     ret nc ; do nothing if canceled
@@ -899,7 +903,7 @@ mFixHandler:
 mSciHandler:
     call closeInputBuf
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
-    ld hl, mSciName
+    ld hl, msgSciLabel
     call startArgParser
     call processCommandArg
     ret nc ; do nothing if canceled
@@ -910,7 +914,7 @@ mSciHandler:
 mEngHandler:
     call closeInputBuf
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
-    ld hl, mEngName
+    ld hl, msgEngLabel
     call startArgParser
     call processCommandArg
     ret nc ; do nothing if canceled

@@ -3,11 +3,14 @@
 ; Copyright (c) 2023 Brian T. Park
 ;
 ; Help strings and handlers. These are placed in flash Page 1 because we
-; overflowed Page 0.
+; overflowed Page 0. 
+;
+; Capitalized labels are intended to be exported to the branch table on flash
+; page 0. Lowercased labels are intended to be local to the current flash page.
 ;-----------------------------------------------------------------------------
 
 ; Description: A read loop dedicated to the help screens.
-processHelp:
+ProcessHelp:
     ld b, 0 ; B = pageNumber
 processHelpLoop:
     ld a, b ; A = pageNumber
@@ -73,7 +76,7 @@ processHelpQuitApp:
 ; Output: HL: pointer to a string
 ; Destroys: DE, HL
 ; Preserves: A
-getHelpString:
+getStringOnPage1:
     ld e, a
     ld d, 0
     add hl, de ; HL += A * 2
@@ -164,7 +167,7 @@ displayHelpPage:
 
     ; Get the string for page A, and display it.
     ld hl, helpPages ; HL = (char**)
-    call getHelpString
+    call getStringOnPage1
     call eVPutS
 
     pop hl

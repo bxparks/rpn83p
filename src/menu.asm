@@ -86,7 +86,7 @@ sanitizeMenu:
     cp mMenuTableSize
     jr nc, sanitizeMenuReset
     ; Check for MenuGroup.
-    call getMenuNodeIX ; HL=menuNode
+    call getMenuNodeIX ; IX=menuNode
     ld a, (ix + menuNodeNumRows)
     or a
     jr z, sanitizeMenuReset ; jump if node was a MenuItem
@@ -112,9 +112,9 @@ sanitizeMenuReset:
 ; Destroys: A, B, DE, HL
 getCurrentMenuRowBeginId:
     ld hl, menuGroupId
-    ld a, (hl)
+    ld a, (hl) ; menuGroupId
     inc hl
-    ld b, (hl)
+    ld b, (hl) ; menuRowIndex
     ; [[fallthrough]]
 
 ; Description: Return the first menu id for menuGroupId A at row index B.
@@ -125,14 +125,12 @@ getCurrentMenuRowBeginId:
 ; Destroys: A, DE, HL
 getMenuRowBeginId:
     call getMenuNode ; HL = menuNode
-
     ; A = menNode.rowBeginId
     inc hl
     inc hl
     inc hl
     inc hl
     ld a, (hl)
-
     ; A = A + 5*B
     ld e, a
     ld a, b
@@ -148,19 +146,11 @@ getMenuRowBeginId:
 ; Destroys: DE, HL
 ; Preserves: A, BC
 getMenuNode:
-    ; HL = A * sizeof(MenuNode) = 9*A
-    ld l, a
-    ld h, 0
-    ld e, l
-    ld d, h
-    add hl, hl
-    add hl, hl
-    add hl, hl ; 8*A
-    add hl, de ; 9*A
-    ; HL = mMenuTable + 9*A
-    ex de, hl
-    ld hl, mMenuTable
-    add hl, de
+    push af
+    push bc
+    bcall(_findMenuNode) ; use bcall() to invoke routine on Flash Page 1
+    pop bc
+    pop af
     ret
 
 ; Description: Return the pointer to the menu node at id A in register IX.
@@ -217,8 +207,7 @@ getMenuName:
     ld a, b ; A=nameId
     call nz, jumpDE ; if nameSelector!=NULL: call (DE)
     ; A contains the menu string ID
-    ld hl, mMenuNameTable
-    call getString ; HL=name string
+    bcall(_findMenuString)
     pop de
     pop bc
     ret
@@ -242,7 +231,7 @@ getMenuName:
 ; Output:
 ;   - (menuGroupId) is updated if the target is a MenuGroup
 ;   - (menuRowIndex) is set to 0 if the target is a MenuGroup
-; Destroys: B, DE, HL, IX
+; Destroys: A, B, C, DE, HL, IX
 dispatchMenuNode:
     ; get menu node corresponding to pressed menu key
     call getMenuNode
@@ -314,7 +303,7 @@ exitMenuGroupToParent:
 ; Description: Change the current menu group to the target menuGroup and
 ; rowIndex.
 ; Input:
-;   - B=target nodeId
+;   - B=target nodeGroupId
 ;   - C=target rowIndex
 ; Output:
 ;   - (menuGroupId)=target nodeId

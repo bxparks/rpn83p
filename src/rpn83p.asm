@@ -263,6 +263,25 @@ appStateEnd equ curveFitModel + 1
 ; Total size of vars
 appStateSize equ (appStateEnd - appStateBegin)
 
+;-----------------------------------------------------------------------------
+; Temporary buffers which do NOT need to be saved to an app var.
+;-----------------------------------------------------------------------------
+
+appBufferStart equ appStateEnd
+
+; FindMenuNode() copies the matching menuNode from menudef.asm (in flash page 1)
+; to here so that routines in flash page 0 can access the information.
+menuNodeBuf equ appBufferStart ; 9 bytes, defined by menuNodeSizeOf
+
+; FindMenuString() copies the name of the menu from flash page 1 to here so that
+; routines in flash page 0 can access it. This is named 'menuStringBuf' to
+; avoid conflicting with the existing 'menuNameBuf' which is a Pascal-string
+; version of 'menuStringBuf'.
+menuStringBuf equ menuNodeBuf + 9 ; 6 bytes
+menuStringBufSizeOf equ 6
+
+appBufferEnd equ menuStringBuf + menuStringBufSizeOf
+
 ; Floating point number buffer, used only within parseNumBase10(). It is used
 ; only locally so it can probaly be anywhere. Let's just use OP3 instead of
 ; dedicating space within the appState area, because it does not need to be
@@ -295,7 +314,13 @@ defpage(0, "RPN83P")
 
 ; Branch table here.
 _processHelp equ (44+0)*3
-    .dw processHelp
+    .dw ProcessHelp
+    .db 1
+_findMenuNode equ (44+1)*3
+    .dw FindMenuNode
+    .db 1
+_findMenuString equ (44+2)*3
+    .dw FindMenuString
     .db 1
 
 #include "main.asm"
@@ -324,7 +349,6 @@ _processHelp equ (44+0)*3
 #include "const.asm"
 #include "handlertab.asm"
 #include "arghandlertab.asm"
-#include "menudef.asm"
 #ifdef DEBUG
 #include "debug.asm"
 #endif
@@ -336,6 +360,8 @@ _processHelp equ (44+0)*3
 defpage(1)
 
 #include "help.asm"
+#include "menulookup.asm"
+#include "menudef.asm"
 
 .end
 
