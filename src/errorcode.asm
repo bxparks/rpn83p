@@ -76,7 +76,6 @@ getErrorStringContinue:
 ; maybe we can reverse engineer the condition that triggers that particular
 ; error code and create a human-readable string for it.
 
-errorCodeCount equ 74           ; total number of error codes
 errorStrings:
 errorCodeOk equ                 0 ; hopefully TI-OS uses 0 as "success"
     .dw errorStrOk
@@ -191,10 +190,13 @@ errorCodeTvmCalculated equ      70
     .dw errorStrTvmCalculated
 errorCodeTvmNoSolution equ      71
     .dw errorStrTvmNoSolution
-errorCodeTvmReset equ           72
+errorCodeTvmNotFound equ        72
+    .dw errorStrTvmNotFound
+errorCodeTvmReset equ           73
     .dw errorStrTvmReset
-errorCodeTvmCleared equ         73
+errorCodeTvmCleared equ         74
     .dw errorStrTvmCleared
+errorCodeCount equ              75 ; total number of error codes
 
 ; The C strings for each error code. In alphabetical order, as listed in the TI
 ; 83 Plus SDK docs.
@@ -263,6 +265,8 @@ errorStrTvmCalculated:
     .db "TVM Calculated", 0
 errorStrTvmNoSolution:
     .db "TVM No Solution", 0
+errorStrTvmNotFound:
+    .db "TVM Not Found", 0
 errorStrTvmReset:
     .db "TVM Reset", 0
 errorStrTvmCleared:

@@ -105,3 +105,19 @@ expMinusOne:
     bcall(_FPMult) ; OP1=sinh(x/2) exp(x/2)
     bcall(_Times2) ; OP1=2 sinh(x/2) exp(x/2)
     ret
+
+;-----------------------------------------------------------------------------
+
+; Description: Check if the sign bit of OP1 and OP2 are equal (ZF=1) or
+; different (ZF=0).
+; Input: OP1, OP2
+; Output: ZF=0 if different, ZF=1 if same
+; Destroys: all registers
+; Preserves: OP1, OP2
+compareSignOP1OP2:
+    ld a, (OP1) ; A=sign bit of OP1
+    ld b, a
+    ld a, (OP2) ; A=sign bit of OP2
+    xor b ; bit7=1 if different, 0 if same
+    and $80 ; ZF=1 if same, 0 if different
+    ret

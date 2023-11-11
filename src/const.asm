@@ -15,11 +15,28 @@ op2Set10:
 
 ;-----------------------------------------------------------------------------
 
+; Description: Set OP1 to 100. The TI-OS Provides OP2Set60() but not
+; OP2Set100().
+; Destroys: all, HL
+op1Set100:
+    ld hl, const100
+    bcall(_Mov9ToOP1)
+    ret
+
 ; Description: Set OP2 to 100. The TI-OS Provides OP2Set60() but not
 ; OP2Set100().
 ; Destroys: all, HL
 op2Set100:
     ld hl, const100
+    bcall(_Mov9ToOP2)
+    ret
+
+;-----------------------------------------------------------------------------
+
+; Description: Set OP2 to 1e-6.
+; Destroys: all, HL
+op2Set1EM6:
+    ld hl, const1EM6
     bcall(_Mov9ToOP2)
     ret
 
@@ -213,6 +230,9 @@ const2Pow16: ; 2^16 = 65 536
 
 const2Pow32: ; 2^32 = 4 294 967 296
     .db $00, $89, $42, $94, $96, $72, $96, $00, $00
+
+const1EM6: ; 10^-6
+    .db $00, $7A, $10, $00, $00, $00, $00, $00, $00
 
 constPi: ; 3.1415926535897(9323)
     .db $00, $80, $31, $41, $59, $26, $53, $58, $98

@@ -121,21 +121,97 @@ moveTvmToCalc:
 ;    ldir
 ;    ret
 
+; Description: Recall tvmI0 to OP1.
+rclTvmI0:
+    ld hl, tvmI0
+    bcall(_Mov9ToOP1)
+    ret
+
+; Description: Store OP1 to tvmI0 variable.
+stoTvmI0:
+    ld de, tvmI0
+    bcall(_MovFrOP1)
+    ret
+
+; Description: Recall tvmI1 to OP1.
+rclTvmI1:
+    ld hl, tvmI1
+    bcall(_Mov9ToOP1)
+    ret
+
+; Description: Store OP1 to tvmI1 variable.
+stoTvmI1:
+    ld de, tvmI1
+    bcall(_MovFrOP1)
+    ret
+
+; Description: Recall tvmNPMT0 to OP1.
+rclTvmNPMT0:
+    ld hl, tvmNPMT0
+    bcall(_Mov9ToOP1)
+    ret
+
+; Description: Store OP1 to tvmNPMT0 variable.
+stoTvmNPMT0:
+    ld de, tvmNPMT0
+    bcall(_MovFrOP1)
+    ret
+
+; Description: Recall tvmNPMT1 to OP1.
+rclTvmNPMT1:
+    ld hl, tvmNPMT1
+    bcall(_Mov9ToOP1)
+    ret
+
+; Description: Store OP1 to tvmNPMT1 variable.
+stoTvmNPMT1:
+    ld de, tvmNPMT1
+    bcall(_MovFrOP1)
+    ret
+
 ;-----------------------------------------------------------------------------
 
-; Description: Return the interest rate per period: OP1 = i = IYR / PYR / 100.
+; Description: Return the fractional interest rate per period.
 ; Input:
 ;   - rclTvmIYR
 ;   - rclTvmPYR
-; Destroys: OP2
+; Output:
+;   - OP1 = i = IYR / PYR / 100.
 getTvmIntPerPeriod:
-    call rclTvmPYR
-    bcall(_OP1ToOP2)
     call rclTvmIYR
-    bcall(_FPDiv)
+    ; [[fallthrough]]
+
+; Description: Compute the interest rate per period for given annual interest
+; rate in OP1.
+; Input: OP1=IYR=annual interest percent
+; Output: OP1=IYR/PYR/100
+; Preserves: OP2
+calcTvmIntPerPeriod:
+    bcall(_PushRealO2) ; FPS=[OP2]
+    bcall(_OP1ToOP2)
+    call rclTvmPYR
+    bcall(_OP1ExOP2)
+    bcall(_FPDiv) ; OP1=I/PYR
     call op2Set100
-    bcall(_FPDiv)
+    bcall(_FPDiv) ; OP1=I/PYR/100
+    bcall(_PopRealO2) ; FPS=[]
     ret
+
+; Description: Compute the I%/YR from the fractional interest per period.
+; Input: OP1=i=fractional interest per period
+; Output: OP1=IYR=percent per year=i*PYR*100
+; Preserves: OP2
+calcTvmIYR:
+    bcall(_PushRealO2) ; FPS=[OP2]
+    bcall(_OP1ToOP2)
+    call rclTvmPYR
+    bcall(_FPMult)
+    call op2Set100
+    bcall(_FPMult)
+    bcall(_PopRealO2) ; FPS=[]
+    ret
+
+;-----------------------------------------------------------------------------
 
 ; Description: Return OP1 = p = {0.0 if END, 1.0 if BEGIN}.
 ; Destroys: OP1
@@ -153,7 +229,8 @@ getTvmBegin:
 ; (p=1) versus payment at END (p=0).
 ; Input: OP1=i
 ; Output: OP1=1+ip
-; Destroys: OP1, OP2
+; Destroys: OP1
+; Preserves: OP2
 beginEndFactor:
     bit rpnFlagsTvmPmtBegin, (iy + rpnFlags)
     jr nz, beginFactor
@@ -161,7 +238,9 @@ endFactor:
     bcall(_OP1Set1) ; OP1=1.0
     ret
 beginFactor:
+    bcall(_PushRealO2)
     bcall(_Plus1) ; OP1=1+i
+    bcall(_PopRealO2)
     ret
 
 ; Description: Calculate the compounding factor defined by: [(1+i)^N-1]/i.
@@ -178,23 +257,23 @@ compoundingFactors:
     ; Use the TVM formulas directly, which can suffer from cancellation errors
     ; for small i.
     call getTvmIntPerPeriod ; OP1=i
-    bcall(_PushRealO1) ; FPS=i
-    bcall(_PushRealO1) ; FPS1=i; FPS=i
+    bcall(_PushRealO1) ; FPS=[i]
+    bcall(_PushRealO1) ; FPS=[i,i]
     call rclTvmN ; OP1=N
-    call exchangeFPSOP1 ; FPS1=i; FPS=N; OP1=i
-    bcall(_PushRealO1) ; FPS2=i; FPS1=N; FPS=i
+    call exchangeFPSOP1 ; FPS=[i,N]; OP1=i
+    bcall(_PushRealO1) ; FPS=[i,N,i]
     call beginEndFactor ; OP1=(1+ip)
-    call exchangeFPSOP1 ; FPS2=i; FPS1=N; FPS=1+ip; OP1=i
+    call exchangeFPSOP1 ; FPS=[i,N,1+ip]; OP1=i
     bcall(_Plus1) ; OP1=1+i (destroys OP2)
-    call exchangeFPSFPS ; FPS2=i; FPS1=1+ip; FPS=N
-    bcall(_PopRealO2) ; FPS1=i; FPS=1+ip; OP2=N
+    call exchangeFPSFPS ; FPS=[i,1+ip,N]
+    bcall(_PopRealO2) ; FPS=[i,1+ip] OP2=N
     bcall(_YToX) ; OP1=(1+i)^N
     bcall(_OP1ToOP4) ; OP4=(1+i)^N (save)
     bcall(_Minus1) ; OP1=(1+i)^N-1
-    call exchangeFPSFPS ; FPS1=1+ip; FPS=i
+    call exchangeFPSFPS ; FPS=[1+ip,i]
     bcall(_PopRealO2) ; OP2=i
     bcall(_FPDiv) ; OP1=[(1+i)^N-1]/i (destroys OP3)
-    bcall(_PopRealO2) ; OP2=1+ip
+    bcall(_PopRealO2) ; FPS=[]; OP2=1+ip
     bcall(_FPMult) ; OP1=(1+ip)[(1+i)^N-1]/i
     bcall(_OP1ToOP2) ; OP2=(1+ip)[(1+i)^N-1]/i
     bcall(_OP4ToOP1) ; OP1=(1+i)^N
@@ -207,26 +286,26 @@ compoundingFactors:
     bcall(_CkOP1FP0) ; check if i==0.0
     ; CF3(i) has a removable singularity at i=0, so we use a different formula.
     jr z, compoundingFactorsZero
-    bcall(_PushRealO1) ; FPS=i
+    bcall(_PushRealO1) ; FPS=[i]
     call lnOnePlus ; OP1=ln(1+i)
     bcall(_OP1ToOP2)
     call rclTvmN ; OP1=N
     bcall(_FPMult) ; OP1=N*ln(1+i)
-    bcall(_PushRealO1) ; FPS1=i; FPS=N*ln(1+i)
-    call exchangeFPSFPS ; FPS1=N*ln(1+i); FPS=i
+    bcall(_PushRealO1) ; FPS=[i,N*ln(1+i)]
+    call exchangeFPSFPS ; FPS=[N*ln(1+i),i]
     call expMinusOne ; OP1=exp(N*ln(1+i))-1
-    call exchangeFPSOP1 ; FPS1=N*ln(1+i); FPS=exp(N*ln(1+i))-1; OP1=i
-    bcall(_PushRealO1) ; FPS2=N*ln(1+i); FPS1=exp(N*ln(1+i))-1; FPS=i; OP1=i
+    call exchangeFPSOP1 ; FPS=[N*ln(1+i),exp(N*ln(1+i))-1]; OP1=i
+    bcall(_PushRealO1) ; FPS=[N*ln(1+i),exp(N*ln(1+i))-1,i]; OP1=i
     call beginEndFactor ; OP1=(1+ip)
     bcall(_OP1ToOP4) ; OP4=(1+ip) (save)
-    bcall(_PopRealO2) ; FPS1=N*ln(1+i); FPS=exp(N*ln(1+i))-1; OP2=i
-    bcall(_PopRealO1) ; FPS=N*ln(1+i); OP1=exp(N*ln(1+i))-1
+    bcall(_PopRealO2) ; FPS=[N*ln(1+i),exp(N*ln(1+i))-1]; OP2=i
+    bcall(_PopRealO1) ; FPS=[N*ln(1+i)]; OP1=exp(N*ln(1+i))-1
     bcall(_FPDiv) ; OP1=[exp(N*ln(1+i))-1]/i
     bcall(_OP4ToOP2) ; OP2=(1+ip)
     bcall(_FPMult) ; OP1=(1+ip)[exp(N*ln(1+i))-1]/i
-    call exchangeFPSOP1 ; FPS=CF3; OP1=N*ln(1+i)
+    call exchangeFPSOP1 ; FPS=[CF3]; OP1=N*ln(1+i)
     bcall(_EToX) ; OP1=exp(N*ln(1+i))
-    bcall(_PopRealO2) ; OP2=CF3
+    bcall(_PopRealO2) ; FPS=[]; OP2=CF3
     ret
 compoundingFactorsZero:
     ; If i==0, then CF1=1 and CF3=N
@@ -238,38 +317,9 @@ compoundingFactorsZero:
 
 ;-----------------------------------------------------------------------------
 
-; Description: Return the function C(N,i) = N*i/((1+i)^N-1)) =
-; N*i/((expm1(N*log1p(i)) which is the reciprocal of the compounding factor,
-; with a special case of C(N,0)=1 to remove a singularity at i=0.
-; Input: cal_N, cal_I, fin_PV, fin_PMT, fin_FV, fin_PY
-; Destroys: OP1-OP5
-inverseCompoundingFactor:
-    call getTvmIntPerPeriod ; OP1=i
-    bcall(_CkOP1FP0) ; check if i==0.0
-    ; CF3(i) has a removable singularity at i=0, so we use a different formula.
-    jr z, inverseCompoundingFactorZero
-    bcall(_OP1ToOP2) ; OP2=i
-    call rclTvmN ; OP1=N
-    bcall(_PushRealO1) ; FPS=N
-    bcall(_PushRealO2) ; FPS1=N; FPS=i
-    bcall(_FPMult) ; OP1=N*i
-    call exchangeFPSOP1 ; FPS1=N; FPS=N*i; OP1=i
-    call lnOnePlus ; OP1=ln(1+i)
-    call exchangeFPSFPS ; FPS1=N*i; FPS=N
-    bcall(_PopRealO2) ; FPS=Ni; OP2=N
-    bcall(_FPMult) ; OP1=N*ln(1+i)
-    call expMinusOne ; OP1=exp(N*ln(1+i))-1
-    bcall(_OP1ToOP2) ; OP2=exp(N*ln(1+i))-1
-    bcall(_PopRealO1) ; OP2=Ni
-    bcall(_FPDiv) ; OP1=Ni/[exp(N*ln(1+i)-1]
-    ret
-inverseCompoundingFactorZero:
-    bcall(_OP1Set1) ; OP1=C=1
-    ret
-
-; Description: Determine if the interest (i) exists for the given PV, FV, PMT,
-; and N. Otherwise, the iterative root finder will fail to converge to a root
-; with i>0
+; Description: Determine if a solution for the interest (i) exists for the
+; given PV, FV, PMT, and N. Otherwise, the iterative root finder will fail to
+; converge to a root with i>0:
 ;   - If PV>0, then the root exists if PV+FV+N*PMT<=0
 ;   - If PV<0, then the root exists if PV+FV+N*PMT>=0
 ; Input: tvmPV, tvmFV, tvmN, tvmPMT
@@ -282,12 +332,12 @@ interestExists:
     bcall(_OP1ToOP2) ; OP2=PV
     call rclTvmFV
     bcall(_FPAdd) ; OP1=PV+FV
-    bcall(_PushRealO1) ; FPS=PV+FV
+    bcall(_PushRealO1) ; FPS=[PV+FV]
     call rclTvmN
     bcall(_OP1ToOP2)
     call rclTvmPMT
     bcall(_FPMult) ; OP1=N*PMT
-    bcall(_PopRealO2) ; OP2=PV+FV
+    bcall(_PopRealO2) ; FPS=[]; OP2=PV+FV
     bcall(_FPAdd) ; OP1=PV+FV+N*PMT
     bcall(_CkOP1FP0) ; if OP1==0: exists
     ret z
@@ -304,6 +354,250 @@ interestExistsPVNegative:
     bcall(_OP2ToOP1) ; OP1=PV+FV+N*PMT
 interestExistsCheck:
     bcall(_CkOP1Pos) ; if OP1>=0, Z=1
+    ret
+
+; Description: Return the function C(N,i) = N*i/((1+i)^N-1)) =
+; N*i/((expm1(N*log1p(i)) which is the reciprocal of the compounding factor,
+; with a special case of C(N,0)=1 to remove a singularity at i=0.
+; Input:
+;   - fin_PV, fin_PMT, fin_FV, fin_PY
+;   - OP1: N
+;   - OP2: i (fractional interest per period)
+; Output: OP1: C(N,i)
+; Destroys: OP1-OP5
+inverseCompoundingFactor:
+    bcall(_CkOP2FP0) ; check if i==0.0
+    ; C(N,i) has a removable singularity at i=0
+    jr z, inverseCompoundingFactorZero
+    bcall(_PushRealO1) ; FPS=[N]
+    bcall(_PushRealO2) ; FPS=[N,i]
+    bcall(_FPMult) ; OP1=N*i
+    call exchangeFPSOP1 ; FPS=[N,N*i]; OP1=i
+    call lnOnePlus ; OP1=ln(1+i)
+    call exchangeFPSFPS ; FPS=[N*i,N]
+    bcall(_PopRealO2) ; FPS=[Ni]; OP2=N
+    bcall(_FPMult) ; OP1=N*ln(1+i)
+    call expMinusOne ; OP1=exp(N*ln(1+i))-1
+    bcall(_OP1ToOP2) ; OP2=exp(N*ln(1+i))-1
+    bcall(_PopRealO1) ; FPS=[]; OP2=Ni
+    bcall(_FPDiv) ; OP1=Ni/[exp(N*ln(1+i)-1]
+    ret
+inverseCompoundingFactorZero:
+    bcall(_OP1Set1) ; OP1=C=1
+    ret
+
+; Description: This is the function whose root we have to solve to find the
+; interest rate corresponding to the N, PV, PMT, and FV. The function is:
+;   NPMT(i,N) = PV*C(-N,i) + (1+ip)PMT*N + FV*C(N,i) = 0
+; where
+;   C(N,i) = inverseCompoundingFactor(N,i) defined above.
+;
+; It is roughly the total nominal amount of money that was paid out
+; (positive sign), if the discount-equivalent of PV and FV had been
+; spread out across N payments at the given interest rate i.
+;
+; Input:
+;   - moveTvmToCalc() must be called to populate the cal_xx variables
+;   - OP1: i (interest per period)
+; Output: OP1=NPMT(i)
+; Destroys: OP1-OP5
+nominalPMT:
+    bcall(_PushRealO1) ; FPS=[i]
+    ; Calculate FV*C(N,i)
+    bcall(_OP1ToOP2) ; OP2=i
+    call rclTvmN ; OP1=N
+    call inverseCompoundingFactor ; OP1=C(N,i)
+    bcall(_OP1ToOP2) ; OP2=C(N,i)
+    call rclTvmFV ; OP1=FV
+    bcall(_FPMult) ; OP1=FV*C(N,i)
+    call exchangeFPSOP1 ; FPS=[FV*C()]; OP1=i
+    ; Calcuate PV*C(-N,i)
+    bcall(_PushRealO1) ; FPS=[FV*C(),i]; OP1=i
+    bcall(_OP1ToOP2) ; OP2=i
+    call rclTvmN ; OP1=N
+    bcall(_InvOP1S) ; OP1=-N
+    call inverseCompoundingFactor ; OP1=C(-N,i)
+    bcall(_OP1ToOP2) ; OP2=C(-N,i)
+    call rclTvmPV ; OP1=PV
+    bcall(_FPMult) ; OP1=PV*C(-N,i)
+    call exchangeFPSOP1 ; FPS=[FV*C(N,i),PV*C(-N,i)]; OP1=i
+    ; Calculate (1+ip)PMT*N
+    call beginEndFactor ; OP1=(1+ip)
+    bcall(_OP1ToOP2) ; OP2=(1+ip)
+    call rclTvmPMT ; OP1=PMT
+    bcall(_FPMult) ; OP1=(1+ip)*PMT
+    bcall(_OP1ToOP2) ; OP2=(1+ip)
+    call rclTvmN ; OP1=N
+    bcall(_FPMult) ; OP1=(1+ip)*PMT*N
+    ; Sum up the 3 terms
+    bcall(_PopRealO2) ; FPS=[FV*C(N,i)]; OP2=PV*C(-N,i)
+    bcall(_FPAdd) ; OP1=PV*C(-N,i)+(1+ip)*PMT*N
+    bcall(_PopRealO2) ; FPS=[]; OP2=FV*C(N,i)
+    bcall(_FPAdd) ; OP1=PV*C(-N,i)+(1+ip)*PMT*N+FV*C(N,i)
+    ret
+
+; Description: Calculate the interest rate of the next interation using the
+; Secant method.
+;   x(n) = x(n-1) - f(n-1)[x(n-1)-x(n-2)]/[f(n-1)-f(n-2))
+;        = [x(n-2)f(n-1) - x(n-1)f(n-2)] / [f(n-1)-f(n-2))
+; Input: tvmI0, tvmI1, tvmNPMT0, tvmNPMT1
+; Output: OP1: i2 the next estimate
+calculateNextSecantInterest:
+    call rclTvmI0
+    bcall(_OP1ToOP2)
+    call rclTvmNPMT1
+    bcall(_PushRealO1) ; FPS=[npmt1]
+    bcall(_FPMult) ; OP1=i0*npmt1
+    bcall(_PushRealO1) ; FPS=[npmt1,i0*npmt1]
+    call rclTvmI1
+    bcall(_OP1ToOP2)
+    call rclTvmNPMT0
+    bcall(_PushRealO1) ; FPS=[npmt1,i0*npmt1,npmt0]
+    bcall(_FPMult) ; OP1=i1*npmt0
+    call exchangeFPSFPS ; FPS=[npmt1,npmt0,i0*npmt1]
+    bcall(_PopRealO2) ; FPS=[npmt1,npmt0]; OP2=i0*npmt1
+    bcall(_InvSub) ; OP1=i0*npmt1-i1*npmt0
+    call exchangeFPSOP1 ; FPS=[npmt1,i0*npmt1-i1*npmt0]; OP1=npmt0
+    bcall(_OP1ToOP2) ; OP2=npmt0
+    call exchangeFPSFPS ; FPS=[i0*npmt1-i1*npmt0,npmt1]; OP2=npmt0
+    bcall(_PopRealO1) ; FPS=[i0*npmt1-i1*npmt0]; OP1=npmt1; OP2=npmt0
+    bcall(_FPSub)  ; OP1=npmt1-npmt0
+    bcall(_OP1ToOP2) ; OP2=npmt1-npmt0
+    bcall(_PopRealO1) ; FPS=[]; OP1=i0*npmt1-i1*npmt0
+    bcall(_FPDiv) ; OP1=i0*npmt1-i1*npmt0)/(npmt1-npmt0)
+    ret
+
+; Description: Update i0 and i1 using the new i2 guess.
+; Input:
+;   - i0, i1, npmt0, npmt1
+;   - OP1: i2, the next interest rate
+; Output: i0, i1, npmt0, npmpt1 updated
+updateInterestGuesses:
+    bcall(_PushRealO1) ; FPS=[i2]
+    call nominalPMT ; OP1=npmt2
+    bcall(_PushRealO1) ; FPS=[i2,npmt2]
+    ; Check npmt2 against npmt0
+    bcall(_OP1ToOP2) ; OP2=npmt2
+    call rclTvmNPMT0 ; OP1=npmt0
+    call compareSignOP1OP2 ; ZF=1 if same
+    jr z, updateInterestUpdate0
+    ; Sign was different from npmt0, so replace i1 and npmt1
+    bcall(_PopRealO1) ; FPS=[i2]; OP1=npmt2
+    call stoTvmNPMT1
+    bcall(_PopRealO1) ; FPS=[]; OP1=i2
+    call stoTvmI1
+    ret
+updateInterestUpdate0:
+    bcall(_PopRealO1) ; FPS=[i2]; OP1=npmt2
+    call stoTvmNPMT0
+    bcall(_PopRealO1) ; FPS=[]; OP1=i2
+    call stoTvmI0
+    ret
+
+; Description: Check if the root finding iteration should stop.
+; Input: i0, i1
+; Output:
+;   - (tvmSolverResult) set to status
+;   - CF=1 if should terminate
+; Destroys: A
+checkInterestTermination:
+    ; Check for ON/Break
+    bit onInterrupt, (IY+onFlags)
+    jp nz, checkInterestBreak
+    ; Check if i0 and i1 are within tolerance
+    call rclTvmI0
+    bcall(_OP1ToOP2)
+    call rclTvmI1
+    bcall(_FPSub) ; OP1=(i1-i0)
+    call op2Set1EM6 ; OP2=1e-6
+    bcall(_AbsO1O2Cp) ; if |OP1| < |OP2|: CF=1
+    jr c, checkInterestFound
+    ; Check iteration counter
+    ld hl, tvmSolverCount
+    dec (hl)
+    jr z, checkInterestIterMax
+    or a ; CF=0 to continue
+    ret
+checkInterestFound:
+    ld a, tvmSolverResultFound
+    jr checkInterestTerminate
+checkInterestBreak:
+    ld a, tvmSolverResultBreak
+    jr checkInterestTerminate
+checkInterestIterMax:
+    ld a, tvmSolverResultIterMax
+checkInterestTerminate:
+    ld (tvmSolverResult), a
+    scf ; CF=1 to terminate
+    ret
+
+; Description: Calculate the interest rate by solving the root of the equation
+; using the Newton-Secant method. Uses 2 initial interest rate guesses:
+;   - i0=0
+;   - i1=100 (100%/year)
+; Input:
+;   - moveTvmToCalc() must be called to populate the cal_xx variables
+; Output:
+;   - (tvmIYR): updated if a solution exists, otherwise left unmodified
+;   - (tvmSolverResult) set
+; Destroys:
+;   - OP1-OP5
+calculateInterest:
+    ; Set up iteration limit
+    ld a, tvmSolverMax
+    ld (tvmSolverCount), a
+    ; Set up i0 using 0.0%
+    bcall(_OP1Set0) ; OP1=0.0
+    call stoTvmI0 ; i0=0.0
+    call nominalPMT ; OP1=NPMT(i0)
+    call stoTvmNPMT0 ; tvmNPMT0=NPMT(i0)
+    bcall(_CkOP1FP0) ; if OP1==0: ZF=set
+    jr z, calculateInterestI0Zero
+    ; Set up i1 using 100.0%
+    call op1Set100 ; OP1=100.0%
+    call calcTvmIntPerPeriod
+    call stoTvmI1 ; i1=100%/PYR/100
+    call nominalPMT ; OP1=NPMT(i1)
+    call stoTvmNPMT1 ; tvmNPMT1=NPMT(N,i1)
+    bcall(_CkOP1FP0) ; if OP1==0: ZF=set
+    jr z, calculateInterestI1Zero
+    ; Check for different sign bit
+    call rclTvmI0
+    bcall(_OP1ToOP2)
+    call rclTvmI1
+    call compareSignOP1OP2
+    jr z, calculateInterestNotFound
+calculateInterestLoop:
+    call checkInterestTermination
+    jr c, calculateInterestTerminate
+    ; Use Secant method to estimate the next interest rate
+    call calculateNextSecantInterest ; OP1=i2
+    ;call checkInterestBounds ; CF=1 if out of bounds
+    ; Secant failed. Use bisection.
+    ;call c, call calculateNextBisectInterest
+    call updateInterestGuesses ; update tvmI0,tmvI1
+    jr calculateInterestLoop
+calculateInterestTerminate:
+    ld a, (tvmSolverResult)
+    or a
+    ret nz ; return without modifying if status!=tvmSolverResultFound
+    call rclTvmI1
+    call calcTvmIYR
+    call stoTvmIYR
+    ret
+calculateInterestNotFound:
+    ld a, tvmSolverResultNotFound
+    ld (tvmSolverResult), a
+    ret
+calculateInterestI0Zero:
+    bcall(_OP1Set0) ; OP1=0.0
+    jr calculateInterestUpdateIYR
+calculateInterestI1Zero:
+    call op1Set100 ; OP1=100.0%
+calculateInterestUpdateIYR:
+    call stoTvmIYR
+    xor a
+    ld (tvmSolverResult), a
     ret
 
 ;-----------------------------------------------------------------------------
@@ -330,33 +624,33 @@ mTvmNCalculate:
     call getTvmIntPerPeriod ; OP1=i
     bcall(_CkOP1FP0) ; check for i==0
     jr z, mTvmNCalculateZero
-    bcall(_PushRealO1) ; FPS=i
+    bcall(_PushRealO1) ; FPS=[i]
     call beginEndFactor ; OP1=1+ip
     bcall(_OP1ToOP2) ; OP2=1+ip
     call rclTvmPMT ; OP1=PMT
     bcall(_FPMult) ; OP1=PMT*(1+ip)
     bcall(_OP1ToOP4) ; OP4=PMT*(1+ip) (save)
-    bcall(_PopRealO2) ; OP2=i
-    bcall(_PushRealO2) ; FPS=i
-    bcall(_PushRealO2) ; FPS1=i, FPS=i
+    bcall(_PopRealO2) ; FPS=[]; OP2=i
+    bcall(_PushRealO2) ; FPS=[i]
+    bcall(_PushRealO2) ; FPS=[i,i]
     call rclTvmFV ; OP1=FV
     bcall(_FPMult) ; OP1=FV*i
     bcall(_OP4ToOP2) ; OP2=PMT*(1+ip)
     bcall(_InvSub) ; OP1=PMT*(1+ip)-FV*i
-    call exchangeFPSOP1 ; FPS1=i; FPS=PMT*(1+ip)-FV; OP1=i
+    call exchangeFPSOP1 ; FPS=[i,PMT*(1+ip)-FV]; OP1=i
     bcall(_OP1ToOP2) ; OP2=i
     call rclTvmPV ; OP1=PV
     bcall(_FPMult) ; OP1=PV*i
     bcall(_OP4ToOP2) ; OP2=PMT*(1+ip)
     bcall(_FPAdd) ; OP1=PMT*(1+ip)+PV*i
-    bcall(_PopRealO2) ; FPS=i; OP2=PMT*(1+ip)-FV*i
+    bcall(_PopRealO2) ; FPS=[i]; OP2=PMT*(1+ip)-FV*i
     bcall(_OP1ExOP2)
     bcall(_FPDiv) ; OP1=R=[PMT*(1+ip)-FV*i] / [PMT*(1+ip)+PV*i]
     bcall(_LnX) ; OP1=ln(R)
-    call exchangeFPSOP1 ; OP1=i; FPS=ln(R)
+    call exchangeFPSOP1 ; FPS=[ln(R)]; OP1=i
     call lnOnePlus ; OP1=ln(i+1)
     bcall(_OP1ToOP2) ; OP2=ln(i+1)
-    bcall(_PopRealO1) ; OP1=ln(R)
+    bcall(_PopRealO1) ; FPS=[]; OP1=ln(R)
     bcall(_FPDiv) ; OP1=ln(R)/ln(i+1)
 mTvmNCalculateSto:
     call stoTvmN
@@ -396,6 +690,23 @@ mTvmIYRCalculate:
 mTvmIYRCalculateExists:
     ld a, errorCodeNotYet
     jp setHandlerCode
+    call calculateInterest
+    ld a, (tvmSolverResult)
+    or a
+    ret z ; solution found
+    dec a
+    jr nz, mTvmIYRCalculateCheckIterMax
+    ; tvmSolverResultNotFound
+    ld a, errorCodeTvmNotFound
+    jp setHandlerCode
+mTvmIYRCalculateCheckIterMax:
+    dec a
+    jr nz, mTvmIYRCalculateBreak
+    ld a, errorCodeTvmNotFound
+    jp setHandlerCode
+mTvmIYRCalculateBreak:
+    ld a, errorCodeBreak
+    jp setHandlerCode
 
 mTvmPVHandler:
     call closeInputBuf
@@ -411,14 +722,14 @@ mTvmPVCalculate:
     ;    = [-FV - PMT * CF3(i)] / CF1(i)
     call moveTvmToCalc
     call compoundingFactors ; OP1=CF1; OP2=CF3
-    bcall(_PushRealO1) ; FPS=CF1
+    bcall(_PushRealO1) ; FPS=[CF1]
     call rclTvmPMT ; OP1=PMT
     bcall(_FPMult) ; OP1=PMT*CF3
     bcall(_OP1ToOP2) ; OP2=PMT*CF3
     call rclTvmFV ; OP1=FV
     bcall(_FPAdd) ; OP1=FV+PMT*CF3
     bcall(_InvOP1S) ; OP1=-OP1
-    bcall(_PopRealO2); OP2=CF1
+    bcall(_PopRealO2); FPS=[]; OP2=CF1
     bcall(_FPDiv) ; OP1=(-FV-PMT*CF3)/CF1
     call stoTvmPV
     call pushX
@@ -435,11 +746,11 @@ mTvmPMTHandler:
     ld a, errorCodeTvmSet
     jp setHandlerCode
 mTvmPMTCalculate:
-    ; PMT = [-PV * (1+i)N - FV] / [((1+i)N - 1) * (1 + i p) / i]
+    ; PMT = [-PV * (1+i)^N - FV] / [((1+i)^N - 1) * (1+ip)/i]
     ;     = (-PV * CF1(i) - FV) / CF3(i)
     call moveTvmToCalc
     call compoundingFactors ; OP1=CF1; OP2=CF3
-    bcall(_PushRealO2) ; FPS=CF3
+    bcall(_PushRealO2) ; FPS=[CF3]
     bcall(_OP1ToOP2) ; OP2=CF1
     call rclTvmPV ; OP1=PV
     bcall(_FPMult) ; OP1=PV*CF1
@@ -447,7 +758,7 @@ mTvmPMTCalculate:
     call rclTvmFV ; OP1=FV
     bcall(_FPAdd) ; OP1=FV+PV*CF1
     bcall(_InvOP1S) ; OP1=-OP1
-    bcall(_PopRealO2) ; OP2=CF3
+    bcall(_PopRealO2) ; FPS=[]; OP2=CF3
     bcall(_FPDiv) ; OP1=(-PV*CF1-FV)/CF3
     call stoTvmPMT
     call pushX

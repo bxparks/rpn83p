@@ -75,6 +75,7 @@ rpnFlagsAllStatEnabled equ 3 ; set if Sigma+ updates logarithm registers
 rpnFlagsBaseModeEnabled equ 4 ; set if inside BASE menu hierarchy
 rpnFlagsTvmPmtBegin equ 5 ; set if TVM payment at begin, 0 if at end
 rpnFlagsTvmCalculate equ 6 ; set if the next TVM function should calculate
+rpnFlagsTvmDisplay equ 7 ; set to display TVM root solver (for debugging)
 
 ; Flags for the inputBuf. Offset from IY register.
 inputBufFlags equ asm_Flag3
@@ -95,7 +96,7 @@ rpn83pAppId equ $1E69
 ; Increment the schema version when any variables are added or removed from the
 ; appState data block. The schema version will be validated upon restoring the
 ; application state from the AppVar.
-rpn83pSchemaVersion equ 4
+rpn83pSchemaVersion equ 5
 
 ; Begin application variables at tempSwapArea. According to the TI-83 Plus SDK
 ; docs: "tempSwapArea (82A5h) This is the start of 323 bytes used only during
@@ -230,15 +231,7 @@ menuNameSizeOf equ 6
 ;
 ;   struct argParser {
 ;       char *argPrompt; // e.g. "STO"
-;       // modifier/status:
-;       // - 0: no modifier
-;       // - 1: indirect
-;       // - 2: '+'
-;       // - 3: '-'
-;       // - 4: '*'
-;       // - 5: '/'
-;       // - 6+: canceled
-;       char argModifier;
+;       char argModifier; // see argModifierXxx
 ;       uint8_t argValue;
 ;   }
 ; The argModifierXxx (0-4) MUST match the corresponding operation in the
@@ -247,18 +240,35 @@ argPrompt equ menuName + menuNameSizeOf
 argModifier equ argPrompt + 2
 argValue equ argModifier + 1
 argModifierNone equ 0
-argModifierAdd equ 1
-argModifierSub equ 2
-argModifierMul equ 3
-argModifierDiv equ 4
-argModifierIndirect equ 5
-argModifierCanceled equ 6
+argModifierAdd equ 1 ; '+' pressed
+argModifierSub equ 2 ; '-' pressed
+argModifierMul equ 3 ; '*' pressed
+argModifierDiv equ 4 ; '/' pressed
+argModifierIndirect equ 5 ; '.' pressed (not yet supported)
+argModifierCanceled equ 6 ; CLEAR or EXIT pressed
 
 ; Least square curve fit model.
 curveFitModel equ argValue + 1
 
+; Constants used by the TVM solver.
+tvmSolverMax equ 15
+tvmSolverResultFound equ 0
+tvmSolverResultNotFound equ 1
+tvmSolverResultIterMax equ 2
+tvmSolverResultBreak equ 3
+
+; TVM float variables for root-solving the NPMT(i)=0 equation. Need 2 prior
+; guesses of the interest rate, i0 and i1, plus the next interest rate i2. Also
+; need to evaluate the NPMT() function at each of those points.
+tvmSolverCount equ curveFitModel + 1
+tvmSolverResult equ tvmSolverCount + 1
+tvmI0 equ tvmSolverResult + 1
+tvmI1 equ tvmI0 + 9
+tvmNPMT0 equ tvmI1 + 9
+tvmNPMT1 equ tvmNPMT0 + 9
+
 ; End application variables.
-appStateEnd equ curveFitModel + 1
+appStateEnd equ tvmNPMT1 + 9
 
 ; Total size of vars
 appStateSize equ (appStateEnd - appStateBegin)
