@@ -192,11 +192,13 @@ errorCodeTvmNoSolution equ      71
     .dw errorStrTvmNoSolution
 errorCodeTvmNotFound equ        72
     .dw errorStrTvmNotFound
-errorCodeTvmReset equ           73
+errorCodeTvmIterations equ      73
+    .dw errorStrTvmIterations
+errorCodeTvmReset equ           74
     .dw errorStrTvmReset
-errorCodeTvmCleared equ         74
+errorCodeTvmCleared equ         75
     .dw errorStrTvmCleared
-errorCodeCount equ              75 ; total number of error codes
+errorCodeCount equ              76 ; total number of error codes
 
 ; The C strings for each error code. In alphabetical order, as listed in the TI
 ; 83 Plus SDK docs.
@@ -260,13 +262,15 @@ errorStrRegsCleared:
 errorStrStatCleared:
     .db "STAT Cleared", 0 ; STAT registers cleared
 errorStrTvmSet:
-    .db "TVM Set", 0
+    .db "TVM Set", 0 ; TVM parameter was set
 errorStrTvmCalculated:
-    .db "TVM Calculated", 0
+    .db "TVM Calculated", 0 ; TVM parameter was calculated
 errorStrTvmNoSolution:
-    .db "TVM No Solution", 0
+    .db "TVM No Solution", 0 ; TVM Solver determines no solution exists
 errorStrTvmNotFound:
-    .db "TVM Not Found", 0
+    .db "TVM Not Found", 0 ; TVM Solver did not find root
+errorStrTvmIterations:
+    .db "TVM Iterations", 0 ; TVM Solver hit max iterations
 errorStrTvmReset:
     .db "TVM Reset", 0
 errorStrTvmCleared:

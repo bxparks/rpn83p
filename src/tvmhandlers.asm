@@ -9,6 +9,11 @@ initTvm:
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     call tvmReset
     call tvmClear
+    ; [[fallthrough]]
+
+initTvmSolver:
+    xor a
+    ld (tvmSolverStatus), a
     ret
 
 ;-----------------------------------------------------------------------------
@@ -167,6 +172,12 @@ rclTvmNPMT1:
 stoTvmNPMT1:
     ld de, tvmNPMT1
     bcall(_MovFrOP1)
+    ret
+
+; Description: Recall the TVM solver iteration counter as a float in OP1.
+rclTvmSolverCount:
+    ld a, (tvmSolverCount)
+    bcall(_SetXXOP1) ; OP1=float(A)
     ret
 
 ;-----------------------------------------------------------------------------
@@ -467,7 +478,10 @@ calculateNextSecantInterest:
     bcall(_FPDiv) ; OP1=i0*npmt1-i1*npmt0)/(npmt1-npmt0)
     ret
 
-; Description: Update i0 and i1 using the new i2 guess.
+; Description: Update i0 and i1 using the new i2 guess by moving i1 to i0, then
+; i2 into i1. (An alternate algorithm is to clobber the i0 or i1 that preserves
+; the sign change across the root. Unfortunately, that algorithm results in a
+; much slower convergence rate beside it often converges only from one side.)
 ; Input:
 ;   - i0, i1, npmt0, npmt1
 ;   - OP1: i2, the next interest rate
@@ -476,22 +490,39 @@ updateInterestGuesses:
     bcall(_PushRealO1) ; FPS=[i2]
     call nominalPMT ; OP1=npmt2
     bcall(_PushRealO1) ; FPS=[i2,npmt2]
-    ; Check npmt2 against npmt0
-    bcall(_OP1ToOP2) ; OP2=npmt2
-    call rclTvmNPMT0 ; OP1=npmt0
-    call compareSignOP1OP2 ; ZF=1 if same
-    jr z, updateInterestUpdate0
-    ; Sign was different from npmt0, so replace i1 and npmt1
+    ;
+    call rclTvmI1 ; OP1=i1
+    call stoTvmI0 ; i1=i0
+    call rclTvmNPMT1 ; OP1=npmt1
+    call stoTvmNPMT0 ; npmt0=npmt1
+    ;
     bcall(_PopRealO1) ; FPS=[i2]; OP1=npmt2
-    call stoTvmNPMT1
+    call stoTvmNPMT1 ; npmt1=npmt2
     bcall(_PopRealO1) ; FPS=[]; OP1=i2
-    call stoTvmI1
+    call stoTvmI1 ; i1=i2
     ret
-updateInterestUpdate0:
-    bcall(_PopRealO1) ; FPS=[i2]; OP1=npmt2
-    call stoTvmNPMT0
-    bcall(_PopRealO1) ; FPS=[]; OP1=i2
-    call stoTvmI0
+
+; Description: Determine if TVM Solver debugging is enabled, which is activated
+; when drawMode for TVM Solver is enabled and the TVM Solver is in effect. In
+; other words, (drawMode==drawModeTvmSolverI || drawMode==drawModeTvmSolverF)
+; && tvmSolverStatus!=0.
+; Output:
+;   - CF: 1 if TVM solver debug enabled; 0 if disabled
+; Destroys: A
+tvmSolverCheckDebugEnabled:
+    ld a, (tvmSolverStatus)
+    or a
+    ret z ; CF==0 if TVM Solver not running
+    ; check for drawMode 1 or 2
+    ld a, (drawMode)
+    dec a
+    jr z, tvmSolverDebugEnabled
+    dec a
+    jr z, tvmSolverDebugEnabled
+    or a ; CF=0
+    ret
+tvmSolverDebugEnabled:
+    scf ; CF=1
     ret
 
 ; Description: Check if the root finding iteration should stop.
@@ -501,48 +532,62 @@ updateInterestUpdate0:
 ;   - CF=1 if should terminate
 ; Destroys: A
 checkInterestTermination:
+    ; Display debugging progress if enabled
+    call tvmSolverCheckDebugEnabled ; CF=1 if enabled
+    jr nc, checkInterestNoDebug
+    call displayAll
+    bcall(_GetKey) ; pause
+    bit dirtyFlagsStack, (iy + dirtyFlags)
+checkInterestNoDebug:
     ; Check for ON/Break
     bit onInterrupt, (IY+onFlags)
     jp nz, checkInterestBreak
-    ; Check if i0 and i1 are within tolerance
+    ; Check if i0 and i1 are within tolerance.
+    ; TODO: Check relative error instead of absolute error. Maybe it should be
+    ; something like |i0-i1|/|i0+i1| < tol.
     call rclTvmI0
     bcall(_OP1ToOP2)
     call rclTvmI1
     bcall(_FPSub) ; OP1=(i1-i0)
-    call op2Set1EM6 ; OP2=1e-6
+    call op2Set1EM8 ; OP2=1e-8
     bcall(_AbsO1O2Cp) ; if |OP1| < |OP2|: CF=1
     jr c, checkInterestFound
     ; Check iteration counter
     ld hl, tvmSolverCount
     dec (hl)
-    jr z, checkInterestIterMax
+    jr z, checkInterestIterMaxed
     or a ; CF=0 to continue
     ret
 checkInterestFound:
     ld a, tvmSolverResultFound
     jr checkInterestTerminate
 checkInterestBreak:
+    bcall(_RunIndicOff) ; disable run indicator
+    res onInterrupt, (iy + onFlags)
     ld a, tvmSolverResultBreak
     jr checkInterestTerminate
-checkInterestIterMax:
-    ld a, tvmSolverResultIterMax
+checkInterestIterMaxed:
+    ld a, tvmSolverResultIterMaxed
 checkInterestTerminate:
     ld (tvmSolverResult), a
     scf ; CF=1 to terminate
     ret
 
-; Description: Calculate the interest rate by solving the root of the equation
-; using the Newton-Secant method. Uses 2 initial interest rate guesses:
+; Description: Calculate the interest rate by solving the root of the NPMT
+; equation using the Newton-Secant method. Uses 2 initial interest rate
+; guesses:
 ;   - i0=0
 ;   - i1=100 (100%/year)
 ; Input:
 ;   - moveTvmToCalc() must be called to populate the cal_xx variables
 ; Output:
-;   - (tvmIYR): updated if a solution exists, otherwise left unmodified
+;   - OP1: the calculated I%YR if tvmSolverResult==Found
 ;   - (tvmSolverResult) set
 ; Destroys:
 ;   - OP1-OP5
 calculateInterest:
+    ld a, 1
+    ld (tvmSolverStatus), a
     ; Set up iteration limit
     ld a, tvmSolverMax
     ld (tvmSolverCount), a
@@ -561,10 +606,10 @@ calculateInterest:
     call stoTvmNPMT1 ; tvmNPMT1=NPMT(N,i1)
     bcall(_CkOP1FP0) ; if OP1==0: ZF=set
     jr z, calculateInterestI1Zero
-    ; Check for different sign bit
-    call rclTvmI0
+    ; Check for different sign bit of NPMT(i)
+    call rclTvmNPMT0
     bcall(_OP1ToOP2)
-    call rclTvmI1
+    call rclTvmNPMT1
     call compareSignOP1OP2
     jr z, calculateInterestNotFound
 calculateInterestLoop:
@@ -580,24 +625,30 @@ calculateInterestLoop:
 calculateInterestTerminate:
     ld a, (tvmSolverResult)
     or a
-    ret nz ; return without modifying if status!=tvmSolverResultFound
+    jr nz, calculateInterestEnd ; if status!=tvmSolverResultFound: return
+    ; Found!
     call rclTvmI1
     call calcTvmIYR
-    call stoTvmIYR
-    ret
+    jr calculateInterestFound
 calculateInterestNotFound:
     ld a, tvmSolverResultNotFound
     ld (tvmSolverResult), a
-    ret
+    jr calculateInterestEnd
 calculateInterestI0Zero:
     bcall(_OP1Set0) ; OP1=0.0
-    jr calculateInterestUpdateIYR
+    jr calculateInterestFound
 calculateInterestI1Zero:
     call op1Set100 ; OP1=100.0%
-calculateInterestUpdateIYR:
-    call stoTvmIYR
+calculateInterestFound:
     xor a
     ld (tvmSolverResult), a
+calculateInterestEnd:
+    call tvmSolverCheckDebugEnabled ; CF=1 if enabled
+    jr nc, calculateInterestEndNoDirty
+    set dirtyFlagsStack, (iy + dirtyFlags)
+calculateInterestEndNoDirty:
+    xor a
+    ld (tvmSolverStatus), a
     ret
 
 ;-----------------------------------------------------------------------------
@@ -688,23 +739,29 @@ mTvmIYRCalculate:
     ld a, errorCodeTvmNoSolution
     jp setHandlerCode
 mTvmIYRCalculateExists:
-    ld a, errorCodeNotYet
-    jp setHandlerCode
     call calculateInterest
     ld a, (tvmSolverResult)
     or a
-    ret z ; solution found
+    jr nz, mTvmIYRCalculateNotFound
+    ; Found!
+    call stoTvmIYR
+    call pushX
+    ld a, errorCodeTvmCalculated
+    jp setHandlerCode
+mTvmIYRCalculateNotFound:
     dec a
     jr nz, mTvmIYRCalculateCheckIterMax
-    ; tvmSolverResultNotFound
+    ; root not found because sign +/- was not detected in initial guess
     ld a, errorCodeTvmNotFound
     jp setHandlerCode
 mTvmIYRCalculateCheckIterMax:
     dec a
     jr nz, mTvmIYRCalculateBreak
-    ld a, errorCodeTvmNotFound
+    ; root not found after max iterations
+    ld a, errorCodeTvmIterations
     jp setHandlerCode
 mTvmIYRCalculateBreak:
+    ; user hit ON/EXIT
     ld a, errorCodeBreak
     jp setHandlerCode
 

@@ -254,13 +254,14 @@ curveFitModel equ argValue + 1
 tvmSolverMax equ 15
 tvmSolverResultFound equ 0
 tvmSolverResultNotFound equ 1
-tvmSolverResultIterMax equ 2
+tvmSolverResultIterMaxed equ 2
 tvmSolverResultBreak equ 3
 
 ; TVM float variables for root-solving the NPMT(i)=0 equation. Need 2 prior
 ; guesses of the interest rate, i0 and i1, plus the next interest rate i2. Also
 ; need to evaluate the NPMT() function at each of those points.
-tvmSolverCount equ curveFitModel + 1
+tvmSolverStatus equ curveFitModel + 1 ; 0 - inactive, 1 - active
+tvmSolverCount equ tvmSolverStatus + 1
 tvmSolverResult equ tvmSolverCount + 1
 tvmI0 equ tvmSolverResult + 1
 tvmI1 equ tvmI0 + 9
