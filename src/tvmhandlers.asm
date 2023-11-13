@@ -30,77 +30,66 @@ initTvmSolver:
 ; Description: Recall cal_N to OP1.
 rclTvmN:
     ld hl, cal_N
-    bcall(_Mov9ToOP1)
-    ret
+    jp move9ToOp1
 
 ; Description: Store OP1 to fin_N.
 stoTvmN:
     ld de, fin_N
-    bcall(_MovFrOP1)
-    ret
+    jp move9FromOp1
 
 ; Description: Recall cal_I to OP1.
 rclTvmIYR:
     ld hl, cal_I
-    bcall(_Mov9ToOP1)
-    ret
+    jp move9ToOp1
 
 ; Description: Store OP1 to fin_I.
 stoTvmIYR:
     ld de, fin_I
-    bcall(_MovFrOP1)
-    ret
+    jp move9FromOp1
 
 ; Description: Recall cal_PV to OP1.
 rclTvmPV:
     ld hl, cal_PV
-    bcall(_Mov9ToOP1)
-    ret
+    jp move9ToOp1
 
 ; Description: Store OP1 to fin_PV.
 stoTvmPV:
     ld de, fin_PV
-    bcall(_MovFrOP1)
-    ret
+    jp move9FromOp1
 
 ; Description: Recall cal_PMT to OP1.
 rclTvmPMT:
     ld hl, cal_PMT
-    bcall(_Mov9ToOP1)
-    ret
+    jp move9ToOp1
 
 ; Description: Store OP1 to fin_PMT.
 stoTvmPMT:
     ld de, fin_PMT
-    bcall(_MovFrOP1)
-    ret
+    jp move9FromOp1
 
 ; Description: Recall cal_N to OP1.
 rclTvmFV:
     ld hl, cal_FV
-    bcall(_Mov9ToOP1)
-    ret
+    jp move9ToOp1
 
 ; Description: Store OP1 to fin_FV.
 stoTvmFV:
     ld de, fin_FV
-    bcall(_MovFrOP1)
-    ret
+    jp move9FromOp1
 
 ; Description: Recall fin_PY to OP1.
 rclTvmPYR:
     ld hl, fin_PY
-    bcall(_Mov9ToOP1)
-    ret
+    jp move9ToOp1
 
 ; Description: Store OP1 to fin_PY. Store the same value in fin_CY so that if
 ; we go back to the TI-OS and use the built-in "Financial" app, the same
 ; compounding frequency will appear there under "C/Y".
 stoTvmPYR:
     ld de, fin_PY
-    bcall(_MovFrOP1)
+    call move9FromOp1
     ld de, fin_CY
-    bcall(_MovFrOP1)
+    call move9FromOp1
     ret
 
 ;-----------------------------------------------------------------------------
@@ -129,50 +118,42 @@ moveTvmToCalc:
 ; Description: Recall tvmI0 to OP1.
 rclTvmI0:
     ld hl, tvmI0
-    bcall(_Mov9ToOP1)
-    ret
+    jp move9ToOp1
 
 ; Description: Store OP1 to tvmI0 variable.
 stoTvmI0:
     ld de, tvmI0
-    bcall(_MovFrOP1)
-    ret
+    jp move9FromOp1
 
 ; Description: Recall tvmI1 to OP1.
 rclTvmI1:
     ld hl, tvmI1
-    bcall(_Mov9ToOP1)
-    ret
+    jp move9ToOp1
 
 ; Description: Store OP1 to tvmI1 variable.
 stoTvmI1:
     ld de, tvmI1
-    bcall(_MovFrOP1)
-    ret
+    jp move9FromOp1
 
 ; Description: Recall tvmNPMT0 to OP1.
 rclTvmNPMT0:
     ld hl, tvmNPMT0
-    bcall(_Mov9ToOP1)
-    ret
+    jp move9ToOp1
 
 ; Description: Store OP1 to tvmNPMT0 variable.
 stoTvmNPMT0:
     ld de, tvmNPMT0
-    bcall(_MovFrOP1)
-    ret
+    jp move9FromOp1
 
 ; Description: Recall tvmNPMT1 to OP1.
 rclTvmNPMT1:
     ld hl, tvmNPMT1
-    bcall(_Mov9ToOP1)
-    ret
+    jp move9ToOp1
 
 ; Description: Store OP1 to tvmNPMT1 variable.
 stoTvmNPMT1:
     ld de, tvmNPMT1
-    bcall(_MovFrOP1)
-    ret
+    jp move9FromOp1
 
 ; Description: Recall the TVM solver iteration counter as a float in OP1.
 rclTvmSolverCount:
@@ -933,21 +914,19 @@ tvmReset:
     ld a, 12
     bcall(_SetXXOP1)
     ld de, fin_PY
-    bcall(_MovFrOP1)
+    call move9FromOp1
     ld de, fin_CY
-    bcall(_MovFrOP1)
-    ret
+    jp move9FromOp1
 
 tvmClear:
     bcall(_OP1Set0)
     ld de, fin_N
-    bcall(_MovFrOP1)
+    call move9FromOp1
     ld de, fin_I
-    bcall(_MovFrOP1)
+    call move9FromOp1
     ld de, fin_PV
-    bcall(_MovFrOP1)
+    call move9FromOp1
     ld de, fin_PMT
-    bcall(_MovFrOP1)
+    call move9FromOp1
     ld de, fin_FV
-    bcall(_MovFrOP1)
-    ret
+    jp move9FromOp1

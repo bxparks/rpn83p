@@ -71,6 +71,34 @@ exchangeFPSFPS:
 
 ;-----------------------------------------------------------------------------
 
+; Description: Move 9 bytes (size of TI-OS floating point number) from HL to
+; OP1. Implements bcall(_Mov9ToOP1) without the overhead of a bcall().
+; Input: HL=pointer to float
+; Output: (OP1)=contains float
+; Destroys: BC, DE, HL
+; Preserves: A
+move9ToOp1:
+    ld de, OP1
+    ld bc, 9
+    ldir
+    ret
+
+; Description: Move 9 bytes (size of TI-OS floating point number) from OP1 to
+; DE. Implements bcall(_MovFrOP1) without the overhead of a bcall().
+; Input:
+;   - DE=destination pointer to float
+;   - OP1=float
+; Output: (DE)=contains OP1
+; Destroys: BC, DE, HL
+; Preserves: A
+move9FromOp1:
+    ld hl, OP1
+    ld bc, 9
+    ldir
+    ret
+
+;-----------------------------------------------------------------------------
+
 ; Description: Calculate ln(1+x) such that it is immune from cancellation errors
 ; when x is close to 0.
 ; Input: OP1
