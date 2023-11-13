@@ -76,7 +76,6 @@ getErrorStringContinue:
 ; maybe we can reverse engineer the condition that triggers that particular
 ; error code and create a human-readable string for it.
 
-errorCodeCount equ 73           ; total number of error codes
 errorStrings:
 errorCodeOk equ                 0 ; hopefully TI-OS uses 0 as "success"
     .dw errorStrOk
@@ -189,10 +188,17 @@ errorCodeTvmSet equ             69
     .dw errorStrTvmSet
 errorCodeTvmCalculated equ      70
     .dw errorStrTvmCalculated
-errorCodeTvmReset equ           71
+errorCodeTvmNoSolution equ      71
+    .dw errorStrTvmNoSolution
+errorCodeTvmNotFound equ        72
+    .dw errorStrTvmNotFound
+errorCodeTvmIterations equ      73
+    .dw errorStrTvmIterations
+errorCodeTvmReset equ           74
     .dw errorStrTvmReset
-errorCodeTvmCleared equ         72
+errorCodeTvmCleared equ         75
     .dw errorStrTvmCleared
+errorCodeCount equ              76 ; total number of error codes
 
 ; The C strings for each error code. In alphabetical order, as listed in the TI
 ; 83 Plus SDK docs.
@@ -256,9 +262,15 @@ errorStrRegsCleared:
 errorStrStatCleared:
     .db "STAT Cleared", 0 ; STAT registers cleared
 errorStrTvmSet:
-    .db "TVM Set", 0
+    .db "TVM Set", 0 ; TVM parameter was set
 errorStrTvmCalculated:
-    .db "TVM Calculated", 0
+    .db "TVM Calculated", 0 ; TVM parameter was calculated
+errorStrTvmNoSolution:
+    .db "TVM No Solution", 0 ; TVM Solver determines no solution exists
+errorStrTvmNotFound:
+    .db "TVM Not Found", 0 ; TVM Solver did not find root
+errorStrTvmIterations:
+    .db "TVM Iterations", 0 ; TVM Solver hit max iterations
 errorStrTvmReset:
     .db "TVM Reset", 0
 errorStrTvmCleared:

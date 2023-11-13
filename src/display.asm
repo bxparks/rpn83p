@@ -24,6 +24,7 @@ statusMenuPenCol equ 0 ; left, up, down, 2px = 3*4 + 2 = 14px
 statusFloatModePenCol equ 14 ; (FIX|SCI|ENG), (, N, ), 4px = 5*4+2*3 = 26px
 statusTrigPenCol equ 40 ; (DEG|RAD), 4px = 4*4 = 16px
 statusBasePenCol equ 56 ; (C|-), 4px
+statusDebugPenCol equ 60 ; (D|-), 4px
 
 ; Display coordinates of the debug line
 debugCurRow equ 1
@@ -54,6 +55,26 @@ stYPenRow equ stYCurRow*8
 stXCurRow equ 6
 stXCurCol equ 1
 stXPenRow equ stXCurRow*8
+
+; Display coordinates of the TVM N counter
+tvmNCurRow equ 3
+tvmNCurCol equ 1
+tvmNPenRow equ tvmNCurRow*8
+
+; Display coordinates of the TVM i0 counter
+tvmI0CurRow equ 4
+tvmI0CurCol equ 1
+tvmI0PenRow equ tvmI0CurRow*8
+
+; Display coordinates of the TVM i1 counter
+tvmI1CurRow equ 5
+tvmI1CurCol equ 1
+tvmI1PenRow equ tvmI1CurRow*8
+
+; Display coordinates of the TVM extra line
+tvmExtraCurRow equ 6
+tvmExtraCurCol equ 0
+tvmExtraPenRow equ tvmExtraCurRow*8
 
 ; Display coordinates of the input buffer.
 inputCurRow equ stXCurRow
@@ -90,13 +111,15 @@ menuPenColEnd   equ 96
 
 ;-----------------------------------------------------------------------------
 
-; Function: Set all dirty flags to dirty initially so that they are rendered.
+; Description: Set all dirty flags to dirty initially so that they are rendered.
 initDisplay:
+    xor a
+    ld (drawMode), a
     ld a, $FF
     ld (iy + dirtyFlags), a ; set all dirty flags
     ret
 
-; Function: Update the display, including the title, RPN stack variables,
+; Description: Update the display, including the title, RPN stack variables,
 ; and the menu.
 ; Input: none
 ; Output:
@@ -104,7 +127,7 @@ initDisplay:
 displayAll:
     call displayStatus
     call displayErrorCode
-    call displayStack
+    call displayMain
     call displayMenu
 
     ; Reset all dirty flags
@@ -116,7 +139,7 @@ displayAll:
 ; Routines for displaying the status bar at the top.
 ;-----------------------------------------------------------------------------
 
-; Function: Display the status bar, showing menu up/down arrows.
+; Description: Display the status bar, showing menu up/down arrows.
 ; Input: none
 ; Output: status line displayed
 ; Destroys: A, B, C, HL
@@ -293,7 +316,7 @@ displayStatusFloatModeDigit:
 ; Routines for displaying the error code and string.
 ;-----------------------------------------------------------------------------
 
-; Function: Display the string corresponding to the current error code.
+; Description: Display the string corresponding to the current error code.
 ; Input: errorCode
 ; Output:
 ;   - string corresponding to errorCode displayed
@@ -345,10 +368,31 @@ displayErrorCodeEnd:
     ret
 
 ;-----------------------------------------------------------------------------
+; Display the main panel, depending on DRAW mode.
+;-----------------------------------------------------------------------------
+
+; Description: Display the main area, depending on the drawMode. It will
+; usually the RPN stack, but can be something else for debugging.
+; Destroys: A
+displayMain:
+    ld a, (drawMode)
+    or a ; drawMode==0
+    jr z, displayStack
+    dec a ; drawMode==1 (drawModeTvmSolverI)
+    jr z, displayTvmMaybe
+    dec a ; drawMode==2 (drawModeTvmSolverF)
+    jr nz, displayStack
+displayTvmMaybe:
+    ld a, (tvmSolverStatus)
+    or a
+    jp nz, displayTvm
+    ; [[fallthrough]]
+
+;-----------------------------------------------------------------------------
 ; Routines for displaying the RPN stack variables.
 ;-----------------------------------------------------------------------------
 
-; Function: Display the RPN stack variables
+; Description: Display the RPN stack variables
 ; Input: none
 ; Output: (dirtyFlagsMenu) reset
 ; Destroys: A, HL
@@ -476,7 +520,7 @@ displayStackXArg:
 
 ;-----------------------------------------------------------------------------
 
-; Function: Print the arg buffer.
+; Description: Print the arg buffer.
 ; Input:
 ;   - argBuf (same as inputBuf)
 ;   - argPrompt
@@ -544,7 +588,7 @@ msgArgModifierIndirect:
 
 ;-----------------------------------------------------------------------------
 
-; Function: Print the input buffer.
+; Description: Print the input buffer.
 ; Input:
 ;   - inputBuf
 ;   - (CurCol) cursor position
@@ -564,10 +608,73 @@ printInputBuf:
     ret
 
 ;-----------------------------------------------------------------------------
+; Routines to display the progress of the TVM solver (for debugging).
+;-----------------------------------------------------------------------------
+
+; Description: Display the intermediate state of the TVM Solver. This routine
+; will be invoked only if drawMode==1 or 2.
+displayTvm:
+    ; print TVM n label
+    ld hl, tvmNPenRow*$100 ; $(penRow)(penCol)
+    ld (PenCol), hl
+    ld hl, msgTvmNLabel
+    call vPutS
+
+    ; print TVM n value
+    ld hl, tvmNCurCol*$100 + tvmNCurRow ; $(curCol)(curRow)
+    ld (CurRow), hl
+    call rclTvmSolverCount
+    call printOP1
+
+    ; print TVM i0 or npmt0 label
+    ld hl, tvmI0PenRow*$100 ; $(penRow)(penCol)
+    ld (PenCol), hl
+    ld hl, msgTvmI0Label
+    call vPutS
+
+    ; print TVM i0 or npmt0 value
+    ld hl, tvmI0CurCol*$100 + tvmI0CurRow ; $(curCol)(curRow)
+    ld (CurRow), hl
+    ld a, (drawMode)
+    cp a, drawModeTvmSolverI ; if drawMode==1: ZF=1
+    jr z, displayTvmI0
+    call rclTvmNPMT0
+    jr displayTvm0
+displayTvmI0:
+    call rclTvmI0
+displayTvm0:
+    call printOP1
+
+    ; print TVM i1 or npmt1 label
+    ld hl, tvmI1PenRow*$100 ; $(penRow)(penCol)
+    ld (PenCol), hl
+    ld hl, msgTvmI1Label
+    call vPutS
+
+    ; print TVM i1 or npmt1 value
+    ld hl, tvmI1CurCol*$100 + tvmI1CurRow ; $(curCol)(curRow)
+    ld (CurRow), hl
+    ld a, (drawMode)
+    cp a, drawModeTvmSolverI ; if drawMode==1: ZF=1
+    jr z, displayTvmI1
+    call rclTvmNPMT1
+    jr displayTvm1
+displayTvmI1:
+    call rclTvmI1
+displayTvm1:
+    call printOP1
+
+    ; print the TVM empty line
+    ld hl, tvmExtraCurCol*$100 + tvmExtraCurRow ; $(curCol)(curRow)
+    ld (CurRow), hl
+    bcall(_EraseEOL)
+    ret
+
+;-----------------------------------------------------------------------------
 ; Routines for displaying the menu bar.
 ;-----------------------------------------------------------------------------
 
-; Function: Display the bottom menus.
+; Description: Display the bottom menus.
 ; Input: none
 ; Output: (dirtyFlagsMenu) reset
 ; Destroys: A, HL
@@ -696,8 +803,8 @@ printMenuAtAExit:
 ; Low-level helper routines.
 ;-----------------------------------------------------------------------------
 
-; Function: Print floating point number at OP1 at the current cursor. Erase to
-; the end of line (but only if the floating point did not spill over to the
+; Description: Print floating point number at OP1 at the current cursor. Erase
+; to the end of line (but only if the floating point did not spill over to the
 ; next line).
 ; Input: OP1: floating point number
 ; Destroys: A, HL, OP3
@@ -715,7 +822,7 @@ printOP1:
 
 ;-----------------------------------------------------------------------------
 
-; Function: Print floating point number at OP1 using base 10.
+; Description: Print floating point number at OP1 using base 10.
 ; Input: OP1: floating point number
 ; Destroys: A, HL, OP3
 printOP1AsFloat:
@@ -752,7 +859,7 @@ printOP1BaseNegative:
 
 ;-----------------------------------------------------------------------------
 
-; Function: Print integer at OP1 at the current cursor in base 10. Erase to
+; Description: Print integer at OP1 at the current cursor in base 10. Erase to
 ; the end of line (but only if the digits did not spill over to the next line).
 ; Input: OP1
 ; Destroys: all, OP1, OP2, OP3, OP4
@@ -792,7 +899,7 @@ appendHasFrac:
 
 ;-----------------------------------------------------------------------------
 
-; Function: Print ingeger at OP1 at the current cursor in base 16. Erase to
+; Description: Print ingeger at OP1 at the current cursor in base 16. Erase to
 ; the end of line (but only if the digits did not spill over to the next line).
 ; TODO: I think printOP1Base16(), printOP1Base8(), and printOP1Base2() can be
 ; combined into a single subroutine, saving memory.
@@ -834,7 +941,7 @@ truncateHexDigits:
 
 ;-----------------------------------------------------------------------------
 
-; Function: Print ingeger at OP1 at the current cursor in base 8. Erase to
+; Description: Print ingeger at OP1 at the current cursor in base 8. Erase to
 ; the end of line (but only if the digits did not spill over to the next line).
 ; Input: OP1
 ; Destroys: all, OP1, OP2, OP3, OP4, OP5
@@ -949,7 +1056,7 @@ truncateBinDigitsNoOverflow:
 
 ;-----------------------------------------------------------------------------
 
-; Function: Convert A to a NUL-terminated C-string of 1 to 3 digits at the
+; Description: Convert A to a NUL-terminated C-string of 1 to 3 digits at the
 ; buffer pointed by HL. This is intended for debugging, so it is not optimized.
 ; TODO: This can probably be written to be faster and smaller.
 ; Input: HL: pointer to string buffer
@@ -984,7 +1091,7 @@ convertAToDec0:
     pop hl
     ret
 
-; Function: Return A / B using repeated substraction.
+; Description: Return A / B using repeated substraction.
 ; Input:
 ;   - A: numerator
 ;   - B: denominator
@@ -1003,7 +1110,7 @@ divideAByBLoopEnd:
     ld a, c
     ret
 
-; Function: Convert A into an Ascii Char ('0'-'9','A'-'F').
+; Description: Convert A into an Ascii Char ('0'-'9','A'-'F').
 ; Destroys: A
 convertAToChar:
     cp 10
@@ -1050,3 +1157,15 @@ msgDegLabel:
     .db "DEG", 0
 msgRadLabel:
     .db "RAD", 0
+
+; DRAW mode indicator.
+msgDrawLabel:
+    .db "DRAW", 0
+
+; TVM debug labels
+msgTvmNLabel:
+    .db "n:", 0
+msgTvmI0Label:
+    .db "0:", 0
+msgTvmI1Label:
+    .db "1:", 0

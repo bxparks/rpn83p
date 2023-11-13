@@ -16,11 +16,13 @@ SRCS := \
 	debug.asm \
 	display.asm \
 	errorcode.asm \
+	float.asm \
 	handlers.asm \
 	handlertab.asm \
 	help.asm \
 	input.asm \
 	integer.asm \
+	main.asm \
 	mainparser.asm \
 	menu.asm \
 	menudef.asm \

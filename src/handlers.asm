@@ -841,6 +841,18 @@ handleKeyStat:
 handleKeyQuit:
     jp mainExit
 
+handleKeyDraw:
+    call closeInputBuf
+    res rpnFlagsTvmCalculate, (iy + rpnFlags)
+    ld hl, msgDrawLabel
+    call startArgParser
+    call processCommandArg
+    ret nc ; do nothing if canceled
+    ; save (argValue)
+    ld a, (argValue)
+    ld (drawMode), a
+    ret
+
 ;-----------------------------------------------------------------------------
 ; Common code fragments, to save space.
 ;-----------------------------------------------------------------------------
