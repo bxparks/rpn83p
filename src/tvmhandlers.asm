@@ -309,44 +309,39 @@ compoundingFactorsZero:
 
 ;-----------------------------------------------------------------------------
 
-; Description: Determine if a solution for the interest (i) exists for the
-; given PV, FV, PMT, and N. Otherwise, the iterative root finder will fail to
-; converge to a root with i>0:
-;   - If PV>0, then the root exists if PV+FV+N*PMT<=0
-;   - If PV<0, then the root exists if PV+FV+N*PMT>=0
+; Description: Determine if the TVM equation has NO solutions. This algorithm
+; detects a *sufficient* condition for an equation to have no solutions. In
+; other words, there may be TVM equations with zero solutions which are not
+; detected by this function.
+;
+; From https://github.com/thomasokken/plus42desktop/issues/2, use Descartes
+; Rules of Signs (https://en.wikipedia.org/wiki/Descartes%27_rule_of_signs).
+; If PV, PMT, and PMT+FV all have the same sign, then there are no solutions.
+;
 ; Input: tvmPV, tvmFV, tvmN, tvmPMT
 ; Output:
-;   - ZF set if exists
-;   - ZF cleared if does not exist
+;   - ZF=0 if solution *may* exist
+;   - ZF=1 if no solution exists
 ; Destroys: OP1, OP2
-interestExists:
-    call rclTvmPV
-    call op1ToOP2 ; OP2=PV
-    call rclTvmFV
-    bcall(_FPAdd) ; OP1=PV+FV
-    bcall(_PushRealO1) ; FPS=[PV+FV]
-    call rclTvmN
-    call op1ToOP2
+tvmSolverCheckNoSolution:
     call rclTvmPMT
-    bcall(_FPMult) ; OP1=N*PMT
-    bcall(_PopRealO2) ; FPS=[]; OP2=PV+FV
-    bcall(_FPAdd) ; OP1=PV+FV+N*PMT
-    bcall(_CkOP1FP0) ; if OP1==0: exists
-    ret z
-    call op1ToOP2 ; OP2=PV+FV+N*PMT
-    call rclTvmPV ; OP1=PV
-    bcall(_CkOP1Pos) ; if OP1>=0, Z=1
-    jr nz, interestExistsPVNegative
-    ; If PV>0, invert the sign of (PV+FV+N*PMT) so make the existence
-    ; inequality positive.
-    bcall(_OP2ToOP1) ; OP1=PV+FV+N*PMT
-    bcall(_InvOP1S) ; OP1=-(PV+FV+N*PMT)
-    jr interestExistsCheck
-interestExistsPVNegative:
-    bcall(_OP2ToOP1) ; OP1=PV+FV+N*PMT
-interestExistsCheck:
-    bcall(_CkOP1Pos) ; if OP1>=0, Z=1
-    ret
+    call op1ToOp2
+    call rclTvmFV
+    bcall(_FPAdd) ; OP1=PMT+FV
+    ld a, (OP1) ; A=sign(PMT+FV)
+    call rclTvmPV ; OP1=PV; preserves A
+    ld b, a ; B=sign(PMT+FV)
+    ld a, (OP1)
+    xor b ; A=sign(PMT+FV) XOR sign(PV), bit7=1 if different
+    and $80 ; ZF=1 if same, 0 if different
+    ret nz ; ret ZF=0 if different, solution may exist
+    ld a, b ; save B=sign(PMT+FV)
+    call rclTvmFV ; preserves A
+    ld b, a
+    ld a, (OP1) ; OP1=sign(FV)
+    xor b ; A=sign(PMT+FV) XOR sign(FV), bit7=1 if different
+    and $80 ; ZF=1 if same, 0 if different
+    ret ; ZF=0 if different, solution may exist; ZF=1 no solution
 
 ; Description: Return the function C(N,i) = N*i/((1+i)^N-1)) =
 ; N*i/((expm1(N*log1p(i)) which is the reciprocal of the compounding factor,
@@ -722,13 +717,15 @@ mTvmIYRHandler:
     jp setHandlerCode
 mTvmIYRCalculate:
     ; Interest rate does not have a closed-form solution, so requires solving
-    ; the root of an equation. First, determine if a root exists for i>0.
+    ; the root of an equation. First, determine if equation has no roots
+    ; definitively.
     call moveTvmToCalc
-    call interestExists
-    jr z, mTvmIYRCalculateExists
+    call tvmSolverCheckNoSolution ; ZF=0 if no solution
+    jr nz, mTvmIYRCalculateMayExists
+    ; Cannot have a solution
     ld a, errorCodeTvmNoSolution
     jp setHandlerCode
-mTvmIYRCalculateExists:
+mTvmIYRCalculateMayExists:
     bcall(_RunIndicOn)
     call calculateInterest
     ld a, (tvmSolverResult)
