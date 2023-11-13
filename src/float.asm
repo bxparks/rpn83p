@@ -83,6 +83,14 @@ move9ToOp1:
     ldir
     ret
 
+; Description: Move OP1 to OP2. This is used so frequently that it's worth
+; inlining it to avoid the overhead of calling bcall(_OP1ToOP2).
+; Destroys: BC, DE, HL
+; Preserves: A
+op1ToOp2:
+    ld de, OP2
+    ; [[fallthrough]]
+
 ; Description: Move 9 bytes (size of TI-OS floating point number) from OP1 to
 ; DE. Implements bcall(_MovFrOP1) without the overhead of a bcall().
 ; Input:
@@ -96,6 +104,15 @@ move9FromOp1:
     ld bc, 9
     ldir
     ret
+
+; Description: Exchange OP1 with OP2. Inlined version of bcall(_OP1ExOP2) to
+; avoid the overhead of bcall().
+; Output: OP1, OP2 exchanged
+; Destroys: A, BC, DE, HL
+op1ExOp2:
+    ld hl, OP1
+    ld de, OP2
+    jr exchangeFloat
 
 ;-----------------------------------------------------------------------------
 

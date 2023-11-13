@@ -180,9 +180,9 @@ getTvmIntPerPeriod:
 ; Preserves: OP2
 calcTvmIntPerPeriod:
     bcall(_PushRealO2) ; FPS=[OP2]
-    bcall(_OP1ToOP2)
+    call op1ToOP2
     call rclTvmPYR
-    bcall(_OP1ExOP2)
+    call op1ExOp2
     bcall(_FPDiv) ; OP1=I/PYR
     call op2Set100
     bcall(_FPDiv) ; OP1=I/PYR/100
@@ -195,7 +195,7 @@ calcTvmIntPerPeriod:
 ; Preserves: OP2
 calcTvmIYR:
     bcall(_PushRealO2) ; FPS=[OP2]
-    bcall(_OP1ToOP2)
+    call op1ToOP2
     call rclTvmPYR
     bcall(_FPMult)
     call op2Set100
@@ -267,7 +267,7 @@ compoundingFactors:
     bcall(_FPDiv) ; OP1=[(1+i)^N-1]/i (destroys OP3)
     bcall(_PopRealO2) ; FPS=[]; OP2=1+ip
     bcall(_FPMult) ; OP1=(1+ip)[(1+i)^N-1]/i
-    bcall(_OP1ToOP2) ; OP2=(1+ip)[(1+i)^N-1]/i
+    call op1ToOP2 ; OP2=(1+ip)[(1+i)^N-1]/i
     bcall(_OP4ToOP1) ; OP1=(1+i)^N
     ret
 #else
@@ -280,7 +280,7 @@ compoundingFactors:
     jr z, compoundingFactorsZero
     bcall(_PushRealO1) ; FPS=[i]
     call lnOnePlus ; OP1=ln(1+i)
-    bcall(_OP1ToOP2)
+    call op1ToOP2
     call rclTvmN ; OP1=N
     bcall(_FPMult) ; OP1=N*ln(1+i)
     bcall(_PushRealO1) ; FPS=[i,N*ln(1+i)]
@@ -302,7 +302,7 @@ compoundingFactors:
 compoundingFactorsZero:
     ; If i==0, then CF1=1 and CF3=N
     call rclTvmN
-    bcall(_OP1ToOP2) ; OP2=CF3=N
+    call op1ToOP2 ; OP2=CF3=N
     bcall(_OP1Set1) ; OP1=CF1=1
     ret
 #endif
@@ -321,19 +321,19 @@ compoundingFactorsZero:
 ; Destroys: OP1, OP2
 interestExists:
     call rclTvmPV
-    bcall(_OP1ToOP2) ; OP2=PV
+    call op1ToOP2 ; OP2=PV
     call rclTvmFV
     bcall(_FPAdd) ; OP1=PV+FV
     bcall(_PushRealO1) ; FPS=[PV+FV]
     call rclTvmN
-    bcall(_OP1ToOP2)
+    call op1ToOP2
     call rclTvmPMT
     bcall(_FPMult) ; OP1=N*PMT
     bcall(_PopRealO2) ; FPS=[]; OP2=PV+FV
     bcall(_FPAdd) ; OP1=PV+FV+N*PMT
     bcall(_CkOP1FP0) ; if OP1==0: exists
     ret z
-    bcall(_OP1ToOP2) ; OP2=PV+FV+N*PMT
+    call op1ToOP2 ; OP2=PV+FV+N*PMT
     call rclTvmPV ; OP1=PV
     bcall(_CkOP1Pos) ; if OP1>=0, Z=1
     jr nz, interestExistsPVNegative
@@ -370,7 +370,7 @@ inverseCompoundingFactor:
     bcall(_PopRealO2) ; FPS=[Ni]; OP2=N
     bcall(_FPMult) ; OP1=N*ln(1+i)
     call expMinusOne ; OP1=exp(N*ln(1+i))-1
-    bcall(_OP1ToOP2) ; OP2=exp(N*ln(1+i))-1
+    call op1ToOP2 ; OP2=exp(N*ln(1+i))-1
     bcall(_PopRealO1) ; FPS=[]; OP2=Ni
     bcall(_FPDiv) ; OP1=Ni/[exp(N*ln(1+i)-1]
     ret
@@ -396,29 +396,29 @@ inverseCompoundingFactorZero:
 nominalPMT:
     bcall(_PushRealO1) ; FPS=[i]
     ; Calculate FV*C(N,i)
-    bcall(_OP1ToOP2) ; OP2=i
+    call op1ToOP2 ; OP2=i
     call rclTvmN ; OP1=N
     call inverseCompoundingFactor ; OP1=C(N,i)
-    bcall(_OP1ToOP2) ; OP2=C(N,i)
+    call op1ToOP2 ; OP2=C(N,i)
     call rclTvmFV ; OP1=FV
     bcall(_FPMult) ; OP1=FV*C(N,i)
     call exchangeFPSOP1 ; FPS=[FV*C()]; OP1=i
     ; Calcuate PV*C(-N,i)
     bcall(_PushRealO1) ; FPS=[FV*C(),i]; OP1=i
-    bcall(_OP1ToOP2) ; OP2=i
+    call op1ToOP2 ; OP2=i
     call rclTvmN ; OP1=N
     bcall(_InvOP1S) ; OP1=-N
     call inverseCompoundingFactor ; OP1=C(-N,i)
-    bcall(_OP1ToOP2) ; OP2=C(-N,i)
+    call op1ToOP2 ; OP2=C(-N,i)
     call rclTvmPV ; OP1=PV
     bcall(_FPMult) ; OP1=PV*C(-N,i)
     call exchangeFPSOP1 ; FPS=[FV*C(N,i),PV*C(-N,i)]; OP1=i
     ; Calculate (1+ip)PMT*N
     call beginEndFactor ; OP1=(1+ip)
-    bcall(_OP1ToOP2) ; OP2=(1+ip)
+    call op1ToOP2 ; OP2=(1+ip)
     call rclTvmPMT ; OP1=PMT
     bcall(_FPMult) ; OP1=(1+ip)*PMT
-    bcall(_OP1ToOP2) ; OP2=(1+ip)
+    call op1ToOP2 ; OP2=(1+ip)
     call rclTvmN ; OP1=N
     bcall(_FPMult) ; OP1=(1+ip)*PMT*N
     ; Sum up the 3 terms
@@ -436,13 +436,13 @@ nominalPMT:
 ; Output: OP1: i2 the next estimate
 calculateNextSecantInterest:
     call rclTvmI0
-    bcall(_OP1ToOP2)
+    call op1ToOP2
     call rclTvmNPMT1
     bcall(_PushRealO1) ; FPS=[npmt1]
     bcall(_FPMult) ; OP1=i0*npmt1
     bcall(_PushRealO1) ; FPS=[npmt1,i0*npmt1]
     call rclTvmI1
-    bcall(_OP1ToOP2)
+    call op1ToOP2
     call rclTvmNPMT0
     bcall(_PushRealO1) ; FPS=[npmt1,i0*npmt1,npmt0]
     bcall(_FPMult) ; OP1=i1*npmt0
@@ -450,11 +450,11 @@ calculateNextSecantInterest:
     bcall(_PopRealO2) ; FPS=[npmt1,npmt0]; OP2=i0*npmt1
     bcall(_InvSub) ; OP1=i0*npmt1-i1*npmt0
     call exchangeFPSOP1 ; FPS=[npmt1,i0*npmt1-i1*npmt0]; OP1=npmt0
-    bcall(_OP1ToOP2) ; OP2=npmt0
+    call op1ToOP2 ; OP2=npmt0
     call exchangeFPSFPS ; FPS=[i0*npmt1-i1*npmt0,npmt1]; OP2=npmt0
     bcall(_PopRealO1) ; FPS=[i0*npmt1-i1*npmt0]; OP1=npmt1; OP2=npmt0
     bcall(_FPSub)  ; OP1=npmt1-npmt0
-    bcall(_OP1ToOP2) ; OP2=npmt1-npmt0
+    call op1ToOP2 ; OP2=npmt1-npmt0
     bcall(_PopRealO1) ; FPS=[]; OP1=i0*npmt1-i1*npmt0
     bcall(_FPDiv) ; OP1=i0*npmt1-i1*npmt0)/(npmt1-npmt0)
     ret
@@ -526,7 +526,7 @@ checkInterestNoDebug:
     ; Check if i0 and i1 are within tolerance. If i1!=0.0, then use relative
     ; error |i0-i1|/|i1| < tol. Otherwise use absolute error |i0-i1| < tol.
     call rclTvmI0
-    bcall(_OP1ToOP2)
+    call op1ToOP2
     call rclTvmI1
     bcall(_PushRealO1) ; FPS=[i1]
     bcall(_FPSub) ; OP1=(i1-i0)
@@ -598,7 +598,7 @@ calculateInterest:
     jr z, calculateInterestI1Zero
     ; Check for different sign bit of NPMT(i)
     call rclTvmNPMT0
-    bcall(_OP1ToOP2)
+    call op1ToOP2
     call rclTvmNPMT1
     call compareSignOP1OP2
     jr z, calculateInterestNotFound
@@ -667,7 +667,7 @@ mTvmNCalculate:
     jr z, mTvmNCalculateZero
     bcall(_PushRealO1) ; FPS=[i]
     call beginEndFactor ; OP1=1+ip
-    bcall(_OP1ToOP2) ; OP2=1+ip
+    call op1ToOP2 ; OP2=1+ip
     call rclTvmPMT ; OP1=PMT
     bcall(_FPMult) ; OP1=PMT*(1+ip)
     bcall(_OP1ToOP4) ; OP4=PMT*(1+ip) (save)
@@ -679,18 +679,18 @@ mTvmNCalculate:
     bcall(_OP4ToOP2) ; OP2=PMT*(1+ip)
     bcall(_InvSub) ; OP1=PMT*(1+ip)-FV*i
     call exchangeFPSOP1 ; FPS=[i,PMT*(1+ip)-FV]; OP1=i
-    bcall(_OP1ToOP2) ; OP2=i
+    call op1ToOP2 ; OP2=i
     call rclTvmPV ; OP1=PV
     bcall(_FPMult) ; OP1=PV*i
     bcall(_OP4ToOP2) ; OP2=PMT*(1+ip)
     bcall(_FPAdd) ; OP1=PMT*(1+ip)+PV*i
     bcall(_PopRealO2) ; FPS=[i]; OP2=PMT*(1+ip)-FV*i
-    bcall(_OP1ExOP2)
+    call op1ExOp2
     bcall(_FPDiv) ; OP1=R=[PMT*(1+ip)-FV*i] / [PMT*(1+ip)+PV*i]
     bcall(_LnX) ; OP1=ln(R)
     call exchangeFPSOP1 ; FPS=[ln(R)]; OP1=i
     call lnOnePlus ; OP1=ln(i+1)
-    bcall(_OP1ToOP2) ; OP2=ln(i+1)
+    call op1ToOP2 ; OP2=ln(i+1)
     bcall(_PopRealO1) ; FPS=[]; OP1=ln(R)
     bcall(_FPDiv) ; OP1=ln(R)/ln(i+1)
 mTvmNCalculateSto:
@@ -701,13 +701,13 @@ mTvmNCalculateSto:
 mTvmNCalculateZero:
     ; if i==0: N = (-FV-PV)/PMT
     call rclTvmFV
-    bcall(_OP1ToOP2)
+    call op1ToOP2
     call rclTvmPV
     bcall(_FPAdd)
     bcall(_InvOP1S)
-    bcall(_OP1ToOP2)
+    call op1ToOP2
     call rclTvmPMT
-    bcall(_OP1ExOP2)
+    call op1ExOp2
     bcall(_FPDiv)
     jr mTvmNCalculateSto
 
@@ -777,7 +777,7 @@ mTvmPVCalculate:
     bcall(_PushRealO1) ; FPS=[CF1]
     call rclTvmPMT ; OP1=PMT
     bcall(_FPMult) ; OP1=PMT*CF3
-    bcall(_OP1ToOP2) ; OP2=PMT*CF3
+    call op1ToOP2 ; OP2=PMT*CF3
     call rclTvmFV ; OP1=FV
     bcall(_FPAdd) ; OP1=FV+PMT*CF3
     bcall(_InvOP1S) ; OP1=-OP1
@@ -803,10 +803,10 @@ mTvmPMTCalculate:
     call moveTvmToCalc
     call compoundingFactors ; OP1=CF1; OP2=CF3
     bcall(_PushRealO2) ; FPS=[CF3]
-    bcall(_OP1ToOP2) ; OP2=CF1
+    call op1ToOP2 ; OP2=CF1
     call rclTvmPV ; OP1=PV
     bcall(_FPMult) ; OP1=PV*CF1
-    bcall(_OP1ToOP2) ; OP2=PV*CF1
+    call op1ToOP2 ; OP2=PV*CF1
     call rclTvmFV ; OP1=FV
     bcall(_FPAdd) ; OP1=FV+PV*CF1
     bcall(_InvOP1S) ; OP1=-OP1
@@ -835,7 +835,7 @@ mTvmFVCalculate:
     call rclTvmPMT ; OP1=PMT
     bcall(_FPMult) ; OP1=PMT*CF3
     call exchangeFPSOP1 ; FPS=PMT*CF3; OP1=CF1
-    bcall(_OP1ToOP2) ; OP2=CF1
+    call op1ToOP2 ; OP2=CF1
     call rclTvmPV ; OP1=PV
     bcall(_FPMult) ; OP1=PV*CF1
     bcall(_PopRealO2) ; OP2=PMT*CF3
