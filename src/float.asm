@@ -72,12 +72,13 @@ exchangeFPSFPS:
 ;-----------------------------------------------------------------------------
 
 ; Description: Calculate ln(1+x) such that it is immune from cancellation errors
-; when x is close to 0. Uses the identity: ln(1+x) = 2 arcsinh(x / sqrt(1+x) /
-; 2).
+; when x is close to 0.
 ; Input: OP1
 ; Output: OP1: ln(1+OP1)
 ; Destroys: OP1-OP5
 lnOnePlus:
+#ifdef LOG1P_USING_ASINH
+    ; This uses the identity: ln(1+x) = 2 arcsinh(x / 2sqrt(1+x)).
     bcall(_PushRealO1) ; FPS=x
     bcall(_Plus1) ; OP1=1+x
     bcall(_SqRoot) ; OP1=sqrt(1+x)
@@ -88,6 +89,28 @@ lnOnePlus:
     bcall(_ASinH) ; OP1=asinh(x / 2sqrt(1+x))
     bcall(_Times2) ; OP1=2 asinh(x / 2sqrt(1+x))
     ret
+#else
+    ; See https://math.stackexchange.com/questions/175891
+    ; I think this algorithm is a lot faster than above.
+    bcall(_PushRealO1) ; FPS=[x]
+    bcall(_Plus1) ; OP1=y=1+x
+    bcall(_PushRealO1) ; FPS=[x,1+x]
+    bcall(_Minus1) ; OP1=z=1+x-1
+    bcall(_CkOP1FP0) ; if OP1==0: ZF=1
+    jr nz, lnOnePlusNotZero
+    bcall(_PopRealO1) ; FPS=[x]; OP1=1+x
+    bcall(_PopRealO1) ; FPS=[]; OP1=x
+    ret
+lnOnePlusNotZero:
+    bcall(_OP1ToOP2) ; OP2=z=1+x-1
+    call exchangeFPSOP1 ; FPS=[x,1+x-1]; OP1=1+x
+    bcall(_LnX) ; OP1=ln(1+x)
+    bcall(_PopRealO2) ; FPS=[x]; OP2=1+x-1
+    bcall(_FPDiv) ; OP1=ln(1+x)/(1+x-1)
+    bcall(_PopRealO2) ; FPS=[]; OP1=x
+    bcall(_FPMult) ; OP1=x*ln(1+x)/(1+x-1)
+    ret
+#endif
 
 ; Description: Calculate exp(x)-1 such that it is immune from cancellation
 ; errors when x is close to 0. Uses the identity: exp(x) - 1 = 2 sinh(x/2)
