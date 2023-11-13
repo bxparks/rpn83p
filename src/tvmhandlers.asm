@@ -554,7 +554,10 @@ checkInterestNoDebug:
     jr c, checkInterestFound
     ; Check iteration counter
     ld hl, tvmSolverCount
-    dec (hl)
+    ld a, (hl)
+    inc a
+    ld (hl), a
+    cp a, tvmSolverIterMax
     jr z, checkInterestIterMaxed
     or a ; CF=0 to continue
     ret
@@ -587,8 +590,10 @@ checkInterestTerminate:
 calculateInterest:
     ld a, 1
     ld (tvmSolverStatus), a
-    ; Set up iteration limit
-    ld a, tvmSolverMax
+    ; Set iteration counter to 0 initially. Counting down is more efficient,
+    ; but counting up allows better debugging. The number of iterations is so
+    ; low that the small bit of inefficiency here doesn't matter.
+    xor a
     ld (tvmSolverCount), a
     ; Set up i0 using 0.0%
     bcall(_OP1Set0) ; OP1=0.0

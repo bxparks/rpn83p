@@ -251,7 +251,7 @@ argModifierCanceled equ 6 ; CLEAR or EXIT pressed
 curveFitModel equ argValue + 1
 
 ; Constants used by the TVM solver.
-tvmSolverMax equ 15
+tvmSolverIterMax equ 15
 tvmSolverResultFound equ 0
 tvmSolverResultNotFound equ 1
 tvmSolverResultIterMaxed equ 2
