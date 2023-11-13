@@ -562,7 +562,6 @@ checkInterestFound:
     ld a, tvmSolverResultFound
     jr checkInterestTerminate
 checkInterestBreak:
-    bcall(_RunIndicOff) ; disable run indicator
     res onInterrupt, (iy + onFlags)
     ld a, tvmSolverResultBreak
     jr checkInterestTerminate
@@ -739,6 +738,7 @@ mTvmIYRCalculate:
     ld a, errorCodeTvmNoSolution
     jp setHandlerCode
 mTvmIYRCalculateExists:
+    bcall(_RunIndicOn)
     call calculateInterest
     ld a, (tvmSolverResult)
     or a
@@ -747,22 +747,26 @@ mTvmIYRCalculateExists:
     call stoTvmIYR
     call pushX
     ld a, errorCodeTvmCalculated
-    jp setHandlerCode
+    jr mTvmIYRCalculateEnd
 mTvmIYRCalculateNotFound:
     dec a
     jr nz, mTvmIYRCalculateCheckIterMax
     ; root not found because sign +/- was not detected in initial guess
     ld a, errorCodeTvmNotFound
-    jp setHandlerCode
+    jr mTvmIYRCalculateEnd
 mTvmIYRCalculateCheckIterMax:
     dec a
     jr nz, mTvmIYRCalculateBreak
     ; root not found after max iterations
     ld a, errorCodeTvmIterations
-    jp setHandlerCode
+    jr mTvmIYRCalculateEnd
 mTvmIYRCalculateBreak:
     ; user hit ON/EXIT
     ld a, errorCodeBreak
+mTvmIYRCalculateEnd:
+    push af
+    bcall(_RunIndicOff)
+    pop af
     jp setHandlerCode
 
 mTvmPVHandler:
