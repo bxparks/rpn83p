@@ -542,13 +542,18 @@ checkInterestNoDebug:
     ; Check for ON/Break
     bit onInterrupt, (IY+onFlags)
     jp nz, checkInterestBreak
-    ; Check if i0 and i1 are within tolerance.
-    ; TODO: Check relative error instead of absolute error. Maybe it should be
-    ; something like |i0-i1|/|i0+i1| < tol.
+    ; Check if i0 and i1 are within tolerance. If i1!=0.0, then use relative
+    ; error |i0-i1|/|i1| < tol. Otherwise use absolute error |i0-i1| < tol.
     call rclTvmI0
     bcall(_OP1ToOP2)
     call rclTvmI1
+    bcall(_PushRealO1) ; FPS=[i1]
     bcall(_FPSub) ; OP1=(i1-i0)
+    bcall(_PopRealO2) ; FPS=[]; OP2=i1
+    bcall(_CkOP2FP0) ; if OP2==0: ZF=1
+    jr z, checkInterestNoRelativeError
+    bcall(_FPDiv) ; OP1=(i1-i0)/i1
+checkInterestNoRelativeError:
     call op2Set1EM8 ; OP2=1e-8
     bcall(_AbsO1O2Cp) ; if |OP1| < |OP2|: CF=1
     jr c, checkInterestFound
