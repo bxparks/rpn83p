@@ -726,6 +726,22 @@ mTvmIYRCalculate:
     ld a, errorCodeTvmNoSolution
     jp setHandlerCode
 mTvmIYRCalculateMayExists:
+    ; TVM Solver is a bit slow, 2-3 seconds. During that time, the errorCode
+    ; from the previous command will be displayed, which is a bit confusing.
+    ; Let's remove the previous error code before running the long subroutine.
+    ; NOTE: It might be reasonable to do this before all commands, but we have
+    ; to be a little careful because the CLEAR command behaves slightly
+    ; differently if there an errorcode is currently being displayed. The CLEAR
+    ; command simply clears the current errorCode if it exists, without doing
+    ; anything else, so the logic is a bit tricky.
+    ld a, (errorCode)
+    or a
+    jr z, mTvmIYRCalculateSolve
+    ; Remove the displayed error code if it exists
+    xor a
+    call setErrorCode
+    call displayAll
+mTvmIYRCalculateSolve:
     bcall(_RunIndicOn)
     call calculateInterest
     ld a, (tvmSolverResult)
