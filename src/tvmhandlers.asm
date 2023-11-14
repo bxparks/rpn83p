@@ -316,32 +316,130 @@ compoundingFactorsZero:
 ;
 ; From https://github.com/thomasokken/plus42desktop/issues/2, use Descartes
 ; Rules of Signs (https://en.wikipedia.org/wiki/Descartes%27_rule_of_signs).
-; If PV, PMT, and PMT+FV all have the same sign, then there are no solutions.
 ;
-; Input: tvmPV, tvmFV, tvmN, tvmPMT
+; The non-zero coefficients of the NFV() polynomial are:
+;
+;   - PV+PMT*p
+;   - PMT
+;   - PMT*(1-p)+FV.
+;
+; where p=BEGIN is 0 for payment at END, and 1 for payment at BEG.
+;
+; If they all have the same sign, then there are no solutions. If there is only
+; a single sign change, then one positive solution. If there are 2 sign
+; changes, then there are 0 or 2 positive solutions.
+;
+; This routine figures out whether all the coefficients have the same sign. It
+; is somewhat tricky because we have to ignore coefficients which are exactly
+; zero, and we need to consider both negative and positive signs. There are
+; probably multiple ways to solve this, but the solution that I created was to
+; use 2 counters/accumulators:
+;
+; 1) numNonZero: the number of non-zero coefficients from the above 3, and
+; 2) sumSign: the sum of the sign bit of each non-zero coefficient (where the
+; sign bit of a floating point number is 1 if negative, 0 if positive).
+;
+; If numNonZero==0, then we have a degenerate situation where all the terms of
+; the NPV() polynomial are 0, so any I%YR will actually fit the solution.
+; Return NO SOLUTION.
+;
+; If sumSign==numNonZero OR sumSign==0, then we know that all non-zero
+; coefficients have the same sign. Return NO SOLUTION.
+;
+; For all other situations, we have either 0, 1, or 2 solutions, so return that
+; a solution *may* exist.
+;
+; Input: tvmPV, tvmFV, tvmPMT
 ; Output:
-;   - ZF=0 if solution *may* exist
-;   - ZF=1 if no solution exists
-; Destroys: OP1, OP2
-tvmSolverCheckNoSolution:
-    call rclTvmPMT
+;   - CF=0 if no solution exists
+;   - CF=1 if solution *may* exist
+; Destroys: A, BC, DE, HL, OP1, OP2
+tvmCheckNoSolution:
+    ld bc, 0 ; B=numNonZero, C=sumSign
+    ; Consider each polynomial coefficient and update the sums.
+    call tvmCheckPVPMT
+    call tvmCheckUpdateSums
+    call tvmCheckPMT
+    call tvmCheckUpdateSums
+    call tvmCheckPMTFV
+    call tvmCheckUpdateSums
+    ; Check degenerate condition of numNonZero==0
+    ld a, b ; A=numNonZero
+    or a
+    ret z ; all coefficients are zero
+    ; Check if sumSign==0.
+    ld a, c ; A=sumSign
+    or a
+    ret z ; all non-zero coef are positive
+    ; Check if sumSign==numNonZero
+    ld a, b ; A=numNonZero
+    cp c ; this will never set CF=1 because numNonZero>=sumSign
+    ret z; all non-zero coef are negative
+    scf ; sumSign!=numNonZero, so set CF
+    ret
+
+; Description: Update the numNonZero (B) and sumSign (C).
+; Input: BC, OP1
+; Output: BC
+; Destroys: A
+tvmCheckUpdateSums:
+    bcall(_CkOP1FP0) ; preserves BC
+    jr z, tvmCheckUpdateSumSign
+    inc b ; numNonZero++
+tvmCheckUpdateSumSign:
+    call signOfOp1 ; A=signbit(OP1)
+    add a, c
+    ld c, a ; sumSign+=signbit(OP1)
+    ret
+
+; Description: Return (PV+PMT*p), where p=0 (end) or 1 (begin).
+; Preserves: BC
+tvmCheckPVPMT:
+    push bc
+    call rclTvmPV
+    bit rpnFlagsTvmPmtBegin, (iy + rpnFlags)
+    jr z, tvmCheckPVPMTRet ; return if p=begin=0
     call op1ToOp2
+    call rclTvmPMT
+    bcall(_FPAdd)
+tvmCheckPVPMTRet:
+    pop bc
+    ret
+
+; Description: Return (PMT*(1-p)+FV), where p=0 or 1.
+; Preserves: BC
+tvmCheckPMTFV:
+    push bc
     call rclTvmFV
-    bcall(_FPAdd) ; OP1=PMT+FV
-    ld a, (OP1) ; A=sign(PMT+FV)
-    call rclTvmPV ; OP1=PV; preserves A
-    ld b, a ; B=sign(PMT+FV)
-    ld a, (OP1)
-    xor b ; A=sign(PMT+FV) XOR sign(PV), bit7=1 if different
-    and $80 ; ZF=1 if same, 0 if different
-    ret nz ; ret ZF=0 if different, solution may exist
-    ld a, b ; save B=sign(PMT+FV)
-    call rclTvmFV ; preserves A
-    ld b, a
-    ld a, (OP1) ; OP1=sign(FV)
-    xor b ; A=sign(PMT+FV) XOR sign(FV), bit7=1 if different
-    and $80 ; ZF=1 if same, 0 if different
-    ret ; ZF=0 if different, solution may exist; ZF=1 no solution
+    bit rpnFlagsTvmPmtBegin, (iy + rpnFlags)
+    jr nz, tvmCheckPMTFVRet ; return if p=begin=1
+    call op1ToOp2
+    call rclTvmPMT
+    bcall(_FPAdd)
+tvmCheckPMTFVRet:
+    pop bc
+    ret
+
+; Description: Return PMT.
+; Preserves: BC
+tvmCheckPMT:
+    push bc
+    call rclTvmPMT
+    pop bc
+    ret
+
+; Description: Return the sign bit of OP1 in A as a 1 (negative) or 0 (positive
+; or zero).
+; Input: OP1
+; Output: A=0 or 1
+; Preserves: BC
+signOfOp1:
+    ld a, (OP1); bit7=sign bit
+    rlca
+    and $01
+    ret
+
+;-----------------------------------------------------------------------------
 
 ; Description: Return the function C(N,i) = N*i/((1+i)^N-1)) =
 ; N*i/((expm1(N*log1p(i)) which is the reciprocal of the compounding factor,
@@ -720,8 +818,8 @@ mTvmIYRCalculate:
     ; the root of an equation. First, determine if equation has no roots
     ; definitively.
     call moveTvmToCalc
-    call tvmSolverCheckNoSolution ; ZF=0 if no solution
-    jr nz, mTvmIYRCalculateMayExists
+    call tvmCheckNoSolution ; ZF=0 if no solution
+    jr c, mTvmIYRCalculateMayExists
     ; Cannot have a solution
     ld a, errorCodeTvmNoSolution
     jp setHandlerCode
