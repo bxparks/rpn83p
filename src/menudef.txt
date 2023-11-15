@@ -312,7 +312,7 @@ MenuGroup root mRoot [
         MenuItem FV mTvmFV
       ]
       MenuRow [
-        MenuItem P<Sslash>YR mTvmSetPYR
+        MenuItem P<Sslash>YR mTvmPYR
         MenuItemAlt BEG BEG<Sblock> mTvmBegin
         MenuItemAlt END END<Sblock> mTvmEnd
         MenuItem * *

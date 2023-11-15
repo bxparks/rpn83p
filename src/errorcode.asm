@@ -186,17 +186,19 @@ errorCodeStatCleared equ        68 ; STAT registers cleared
     .dw errorStrStatCleared
 errorCodeTvmSet equ             69
     .dw errorStrTvmSet
-errorCodeTvmCalculated equ      70
+errorCodeTvmRecalled equ        70
+    .dw errorStrTvmRecalled
+errorCodeTvmCalculated equ      71
     .dw errorStrTvmCalculated
-errorCodeTvmNoSolution equ      71
+errorCodeTvmNoSolution equ      72
     .dw errorStrTvmNoSolution
-errorCodeTvmNotFound equ        72
+errorCodeTvmNotFound equ        73
     .dw errorStrTvmNotFound
-errorCodeTvmIterations equ      73
+errorCodeTvmIterations equ      74
     .dw errorStrTvmIterations
-errorCodeTvmCleared equ         74
+errorCodeTvmCleared equ         75
     .dw errorStrTvmCleared
-errorCodeCount equ              75 ; total number of error codes
+errorCodeCount equ              76 ; total number of error codes
 
 ; The C strings for each error code. In alphabetical order, as listed in the TI
 ; 83 Plus SDK docs.
@@ -261,6 +263,8 @@ errorStrStatCleared:
     .db "STAT Cleared", 0 ; STAT registers cleared
 errorStrTvmSet:
     .db "TVM Set", 0 ; TVM parameter was set
+errorStrTvmRecalled:
+    .db "TVM Recalled", 0 ; TVM parameter was recalled, without recalculation
 errorStrTvmCalculated:
     .db "TVM Calculated", 0 ; TVM parameter was calculated
 errorStrTvmNoSolution:

@@ -1579,14 +1579,14 @@ mTvmFVId equ 166
     .dw mTvmFVHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
 ; MenuGroup TVM: children: row 1
-mTvmSetPYR:
-mTvmSetPYRId equ 167
-    .db mTvmSetPYRId ; id
+mTvmPYR:
+mTvmPYRId equ 167
+    .db mTvmPYRId ; id
     .db mTvmId ; parentId
-    .db mTvmSetPYRNameId ; nameId
+    .db mTvmPYRNameId ; nameId
     .db 0 ; numRows
     .db 0 ; rowBeginId or altNameId
-    .dw mTvmSetPYRHandler ; handler (to be implemented)
+    .dw mTvmPYRHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
 mTvmBegin:
 mTvmBeginId equ 168
@@ -2081,8 +2081,8 @@ mTvmPMTNameId equ 154
     .dw mTvmPMTName
 mTvmFVNameId equ 155
     .dw mTvmFVName
-mTvmSetPYRNameId equ 156
-    .dw mTvmSetPYRName
+mTvmPYRNameId equ 156
+    .dw mTvmPYRName
 mTvmBeginNameId equ 157
     .dw mTvmBeginName
 mTvmBeginAltNameId equ 158
@@ -2443,7 +2443,7 @@ mTvmPMTName:
     .db "PMT", 0
 mTvmFVName:
     .db "FV", 0
-mTvmSetPYRName:
+mTvmPYRName:
     .db 'P', Sslash, 'Y', 'R', 0
 mTvmBeginName:
     .db "BEG", 0

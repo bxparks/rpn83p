@@ -716,13 +716,22 @@ tvmSolveEndNoDirty:
 
 mTvmNHandler:
     call closeInputBuf
-    call tvmSolverDisableOverride
+    ; Check if '2ND N' pressed.
+    bit rpnFlagsSecondKey, (iy + rpnFlags)
+    jr nz, mTvmNGet
+    ; Check if N needs to be calculated.
     bit rpnFlagsTvmCalculate, (iy + rpnFlags)
     jr nz, mTvmNCalculate
     ; save the inputBuf value
+    call rclX
     call stoTvmN
     set rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld a, errorCodeTvmSet
+    jp setHandlerCode
+mTvmNGet:
+    call rclTvmN
+    call pushX
+    ld a, errorCodeTvmRecalled
     jp setHandlerCode
 mTvmNCalculate:
     ; if i>0: N = ln(R) / ln(1+i)
@@ -786,17 +795,22 @@ mTvmNCalculateZero:
 
 mTvmIYRHandler:
     call closeInputBuf
-    ; Check if 2ND I%YR pressed.
+    ; Check if '2ND I%YR' pressed.
     bit rpnFlagsSecondKey, (iy + rpnFlags)
-    jr nz, mTvmIYRSecondHandler
-    ; Handle vanilla I%YR.
+    jr nz, mTvmIYRGet
+    ; Check if I%YR needs to be calculated.
     bit rpnFlagsTvmCalculate, (iy + rpnFlags)
     jr nz, mTvmIYRCalculate
     ; save the inputBuf value
+    call rclX
     call stoTvmIYR
     set rpnFlagsTvmCalculate, (iy + rpnFlags)
-    call tvmSolverDisableOverride
     ld a, errorCodeTvmSet
+    jp setHandlerCode
+mTvmIYRGet:
+    call rclTvmIYR
+    call pushX
+    ld a, errorCodeTvmRecalled
     jp setHandlerCode
 mTvmIYRCalculate:
     ; Interest rate does not have a closed-form solution, so requires solving
@@ -857,7 +871,6 @@ mTvmIYRCalculateBreak:
 mTvmIYRCalculateEnd:
     push af
     bcall(_RunIndicOff)
-    call tvmSolverDisableOverride
     pop af
     jp setHandlerCode
 
@@ -881,13 +894,22 @@ mTvmIYRSecondHandler:
 
 mTvmPVHandler:
     call closeInputBuf
-    call tvmSolverDisableOverride
+    ; Check if '2ND PV' pressed.
+    bit rpnFlagsSecondKey, (iy + rpnFlags)
+    jr nz, mTvmPVGet
+    ; Check if PV needs to be calculated.
     bit rpnFlagsTvmCalculate, (iy + rpnFlags)
     jr nz, mTvmPVCalculate
     ; save the inputBuf value
+    call rclX
     call stoTvmPV
     set rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld a, errorCodeTvmSet
+    jp setHandlerCode
+mTvmPVGet:
+    call rclTvmPV
+    call pushX
+    ld a, errorCodeTvmRecalled
     jp setHandlerCode
 mTvmPVCalculate:
     ; PV = [-FV - PMT * [(1+i)N - 1] * (1 + i p) / i] / (1+i)N
@@ -911,13 +933,22 @@ mTvmPVCalculate:
 
 mTvmPMTHandler:
     call closeInputBuf
-    call tvmSolverDisableOverride
+    ; Check if '2ND PMT' pressed.
+    bit rpnFlagsSecondKey, (iy + rpnFlags)
+    jr nz, mTvmPMTGet
+    ; Check if PMT needs to be calculated.
     bit rpnFlagsTvmCalculate, (iy + rpnFlags)
     jr nz, mTvmPMTCalculate
     ; save the inputBuf value
+    call rclX
     call stoTvmPMT
     set rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld a, errorCodeTvmSet
+    jp setHandlerCode
+mTvmPMTGet:
+    call rclTvmPMT
+    call pushX
+    ld a, errorCodeTvmRecalled
     jp setHandlerCode
 mTvmPMTCalculate:
     ; PMT = [-PV * (1+i)^N - FV] / [((1+i)^N - 1) * (1+ip)/i]
@@ -942,10 +973,14 @@ mTvmPMTCalculate:
 
 mTvmFVHandler:
     call closeInputBuf
-    call tvmSolverDisableOverride
+    ; Check if '2ND FV' pressed.
+    bit rpnFlagsSecondKey, (iy + rpnFlags)
+    jr nz, mTvmFVGet
+    ; Check if FV needs to be calculated.
     bit rpnFlagsTvmCalculate, (iy + rpnFlags)
     jr nz, mTvmFVCalculate
     ; save the inputBuf value
+    call rclX
     call stoTvmFV
     set rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld a, errorCodeTvmSet
@@ -968,24 +1003,34 @@ mTvmFVCalculate:
     call pushX
     ld a, errorCodeTvmCalculated
     jp setHandlerCode
+mTvmFVGet:
+    call rclTvmFV
+    call pushX
+    ld a, errorCodeTvmRecalled
+    jp setHandlerCode
 
 ;-----------------------------------------------------------------------------
 
-; Description: Set P/YR to X.
-mTvmSetPYRHandler:
+; Description: Set or get P/YR to X.
+mTvmPYRHandler:
     call closeInputBuf
-    res rpnFlagsTvmCalculate, (iy + rpnFlags)
+    ; Check if '2ND PYR' pressed.
+    bit rpnFlagsSecondKey, (iy + rpnFlags)
+    jr nz, mTvmPYRGet
+    ; save the inputBuf value in OP1
     call rclX
     call stoTvmPYR
+    res rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld a, errorCodeTvmSet
     jp setHandlerCode
-
-; Description: Get P/YR to X.
-mTvmGetPYRHandler:
-    call closeInputBuf
+mTvmPYRGet:
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     call rclTvmPYR
-    jp pushX
+    call pushX
+    ld a, errorCodeTvmRecalled
+    jp setHandlerCode
+
+;-----------------------------------------------------------------------------
 
 mTvmBeginHandler:
     call closeInputBuf
@@ -1010,6 +1055,8 @@ mTvmBeginNameSelectorC:
     ld a, c
     ret
 
+;-----------------------------------------------------------------------------
+
 mTvmEndHandler:
     call closeInputBuf
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
@@ -1032,6 +1079,8 @@ mTvmEndNameSelector:
 mTvmEndNameSelectorC:
     ld a, c
     ret
+
+;-----------------------------------------------------------------------------
 
 mTvmClearHandler:
     call closeInputBuf
@@ -1081,6 +1130,8 @@ tvmClear:
     ;
     set dirtyFlagsMenu, (iy + dirtyFlags)
     ret
+
+;-----------------------------------------------------------------------------
 
 ; Description: Turn off the TVM Solver override. This is invoked by every
 ; TVM menu, except '2ND I%YR'.
