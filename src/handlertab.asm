@@ -8,7 +8,7 @@
 ; search can be used instead of a linear search.
 ;-----------------------------------------------------------------------------
 
-keyCodeHandlerTableSize equ 61
+keyCodeHandlerTableSize equ 66
 kOnExit equ 0 ; ON key generates 00 as the key code
 
 keyCodeHandlerTable:
@@ -132,6 +132,17 @@ keyCodeHandlerTable:
     .dw handleKeyMenu4
     .db keyMenu5
     .dw handleKeyMenu5
+    ; The 2ND versions of the 5 menu keys.
+    .db keyMenuSecond1
+    .dw handleKeyMenuSecond1
+    .db keyMenuSecond2
+    .dw handleKeyMenuSecond2
+    .db keyMenuSecond3
+    .dw handleKeyMenuSecond3
+    .db keyMenuSecond4
+    .dw handleKeyMenuSecond4
+    .db keyMenuSecond5
+    .dw handleKeyMenuSecond5
 
 ;-----------------------------------------------------------------------------
 

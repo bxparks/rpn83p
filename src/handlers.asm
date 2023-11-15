@@ -522,7 +522,6 @@ handleKeyExit:
 
 ;-----------------------------------------------------------------------------
 
-; handleKeyMenu1() -> None
 ; Description: Handle menu key 1 (left most).
 ; Input: none
 ; Destroys: all
@@ -530,7 +529,6 @@ handleKeyMenu1:
     ld a, 0
     jr handleKeyMenuA
 
-; handleKeyMenu2() -> None
 ; Description: Handle menu key 2 (2nd from left).
 ; Input: none
 ; Destroys: all
@@ -538,7 +536,6 @@ handleKeyMenu2:
     ld a, 1
     jr handleKeyMenuA
 
-; handleKeyMenu3() -> None
 ; Description: Handle menu key 3 (middle).
 ; Input: none
 ; Destroys: all
@@ -546,7 +543,6 @@ handleKeyMenu3:
     ld a, 2
     jr handleKeyMenuA
 
-; handleKeyMenu4() -> None
 ; Description: Handle menu key 4 (2nd from right).
 ; Input: none
 ; Destroys: all
@@ -554,16 +550,48 @@ handleKeyMenu4:
     ld a, 3
     jr handleKeyMenuA
 
-; handleKeyMenu5() -> None
 ; Description: Handle menu key 5 (right most).
 ; Input: none
 ; Destroys: all
 handleKeyMenu5:
     ld a, 4
-    ; [[fallthrough]]
+    jr handleKeyMenuA
 
-; handleKeyMenuA(A) -> None
-;
+; Description: Handle menu key 1 (left most).
+; Input: none
+; Destroys: all
+handleKeyMenuSecond1:
+    ld a, 0
+    jr handleKeyMenuSecondA
+
+; Description: Handle menu key 2 (2nd from left).
+; Input: none
+; Destroys: all
+handleKeyMenuSecond2:
+    ld a, 1
+    jr handleKeyMenuSecondA
+
+; Description: Handle menu key 3 (middle).
+; Input: none
+; Destroys: all
+handleKeyMenuSecond3:
+    ld a, 2
+    jr handleKeyMenuSecondA
+
+; Description: Handle menu key 4 (2nd from right).
+; Input: none
+; Destroys: all
+handleKeyMenuSecond4:
+    ld a, 3
+    jr handleKeyMenuSecondA
+
+; Description: Handle menu key 5 (right most).
+; Input: none
+; Destroys: all
+handleKeyMenuSecond5:
+    ld a, 4
+    jr handleKeyMenuSecondA
+
 ; Description: Dispatch to the handler specified by the menu node at the menu
 ; button indexed by A (0: left most, 4: right most).
 ; Input: A: menu button index (0-4)
@@ -571,9 +599,20 @@ handleKeyMenu5:
 ; Destroys: all
 handleKeyMenuA:
     ld c, a ; save A (menu button index 0-4)
+    xor a
+handleKeyMenuAltEntry:
+    ld (menuSecond), a
+    ld a, c
     call getCurrentMenuRowBeginId ; A=row begin id
     add a, c ; menu node ids are sequential starting with beginId
     jp dispatchMenuNode
+
+; Description: Same as handleKeyMenuA except that the menu key was invoked
+; using the 2ND key, which sets (menuSecond) to true.
+handleKeyMenuSecondA:
+    ld c, a
+    ld a, 1
+    jr handleKeyMenuAltEntry
 
 ;-----------------------------------------------------------------------------
 ; Arithmetic functions.

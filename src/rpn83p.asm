@@ -33,6 +33,12 @@ keyMenu2 equ kWindow
 keyMenu3 equ kZoom
 keyMenu4 equ kTrace
 keyMenu5 equ kGraph
+; Menu keys after 2ND key.
+keyMenuSecond1 equ kSPlot
+keyMenuSecond2 equ kTblSet
+keyMenuSecond3 equ kFormat
+keyMenuSecond4 equ kCalc
+keyMenuSecond5 equ kTable
 
 ; Define font sizes
 smallFontHeight equ 7
@@ -302,7 +308,13 @@ menuNodeBuf equ appBufferStart ; 9 bytes, defined by menuNodeSizeOf
 menuStringBuf equ menuNodeBuf + 9 ; 6 bytes
 menuStringBufSizeOf equ 6
 
-appBufferEnd equ menuStringBuf + menuStringBufSizeOf
+; If a menu button was invoked normally without the 2ND key, this is set to 0.
+; If the menu key was invoked using the 2ND key (e.g. 2ND F1), then this is set
+; to 1. Most handlers can ignore this, but some handlers may choose to check
+; this flag to implement additional functionality.
+menuSecond equ menuStringBuf + menuStringBufSizeOf
+
+appBufferEnd equ menuSecond + 1
 
 ; Floating point number buffer, used only within parseNumBase10(). It is used
 ; only locally so it can probaly be anywhere. Let's just use OP3 instead of
