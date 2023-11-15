@@ -582,7 +582,7 @@ tvmSolverDebugEnabled:
 ; Description: Check if the root finding iteration should stop.
 ; Input: i0, i1
 ; Output:
-;   - (tvmSolverResult) set to status
+;   - A=tvmSolverResult status
 ;   - CF=1 if should terminate
 ; Destroys: A
 tvmSolveCheckTermination:
@@ -630,7 +630,6 @@ tvmSolveCheckBreak:
 tvmSolveCheckIterMaxed:
     ld a, tvmSolverResultIterMaxed
 tvmSolveCheckTerminate:
-    ld (tvmSolverResult), a
     scf ; CF=1 to terminate
     ret
 
@@ -642,7 +641,7 @@ tvmSolveCheckTerminate:
 ;
 ; Input:
 ;   - i0, i1: initial guesses, usually 0% and 100%, but can be overridden by
-;   entering 2 values for the I%YR menu button twice
+;   entering 2 values using '2ND I%YR' menu button twice
 ; Output:
 ;   - OP1: the calculated I%YR if tvmSolverResult==Found
 ;   - (tvmSolverResult) set
@@ -676,7 +675,7 @@ tvmSolve:
     call compareSignOP1OP2
     jr z, tvmSolveNotFound
 tvmSolveLoop:
-    call tvmSolveCheckTermination
+    call tvmSolveCheckTermination ; A=tvmSolverResult; CF=1 if terminate
     jr c, tvmSolveTerminate
     ; Use Secant method to estimate the next interest rate
     call calculateNextSecantInterest ; OP1=i2
@@ -686,8 +685,7 @@ tvmSolveLoop:
     call updateInterestGuesses ; update tvmI0,tmvI1
     jr tvmSolveLoop
 tvmSolveTerminate:
-    ld a, (tvmSolverResult)
-    or a
+    or a ; A=tvmSolverResult
     jr nz, tvmSolveEnd ; if status!=tvmSolverResultFound: return
     ; Found!
     call rclTvmI1
@@ -695,7 +693,6 @@ tvmSolveTerminate:
     jr tvmSolveFound
 tvmSolveNotFound:
     ld a, tvmSolverResultNotFound
-    ld (tvmSolverResult), a
     jr tvmSolveEnd
 tvmSolveI0Zero:
     bcall(_OP1Set0) ; OP1=0.0
@@ -704,8 +701,10 @@ tvmSolveI1Zero:
     call op1Set100 ; OP1=100.0%
 tvmSolveFound:
     xor a
-    ld (tvmSolverResult), a
+; All branches above must exit through this fragment. Reg A must contain the
+; tvmSolverResult code.
 tvmSolveEnd:
+    ld (tvmSolverResult), a
     call tvmSolverCheckDebugEnabled ; CF=1 if enabled
     jr nc, tvmSolveEndNoDirty
     set dirtyFlagsStack, (iy + dirtyFlags)
