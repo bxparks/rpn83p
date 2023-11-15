@@ -589,9 +589,9 @@ tvmSolveCheckTermination:
     ; Display debugging progress if enabled
     call tvmSolverCheckDebugEnabled ; CF=1 if enabled
     jr nc, tvmSolveCheckNoDebug
+    set dirtyFlagsStack, (iy + dirtyFlags)
     call displayAll
     bcall(_GetKey) ; pause
-    bit dirtyFlagsStack, (iy + dirtyFlags)
 tvmSolveCheckNoDebug:
     ; Check for ON/Break
     bit onInterrupt, (IY+onFlags)
