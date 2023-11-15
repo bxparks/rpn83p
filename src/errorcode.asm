@@ -198,7 +198,9 @@ errorCodeTvmIterations equ      74
     .dw errorStrTvmIterations
 errorCodeTvmCleared equ         75
     .dw errorStrTvmCleared
-errorCodeCount equ              76 ; total number of error codes
+errorCodeTvmSolverCleared equ   76
+    .dw errorStrTvmSolverCleared
+errorCodeCount equ              77 ; total number of error codes
 
 ; The C strings for each error code. In alphabetical order, as listed in the TI
 ; 83 Plus SDK docs.
@@ -274,4 +276,6 @@ errorStrTvmNotFound:
 errorStrTvmIterations:
     .db "TVM Iterations", 0 ; TVM Solver hit max iterations
 errorStrTvmCleared:
-    .db "TVM Cleared", 0
+    .db "TVM Cleared", 0 ; TVM all parameter cleared, including TVM Solver
+errorStrTvmSolverCleared:
+    .db "TVM Solver Cleared", 0 ; TVM Solver parameters cleared

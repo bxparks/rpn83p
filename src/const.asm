@@ -5,6 +5,17 @@
 ; Constants, usually floating point.
 ;-----------------------------------------------------------------------------
 
+; TODO: Replace bcall(_Mov9ToOP1) with 'call move9ToOp1'.
+
+; Description: Set OP1 to 0.0. Faster version of bcall(_OP1Set0).
+; Destroys: all, HL
+op1Set0:
+    ld hl, const0
+    bcall(_Mov9ToOP1)
+    ret
+
+;-----------------------------------------------------------------------------
+
 ; Description: Set OP2 to 10. The TI-OS Provides OP2Set60() but not
 ; OP2Set10().
 ; Destroys: all, HL
@@ -215,6 +226,9 @@ op2SetHpaPerInhg:
     ret
 
 ;-----------------------------------------------------------------------------
+
+const0: ; 0.0
+    .db $00, $80, $00, $00, $00, $00, $00, $00, $00
 
 const10: ; 10
     .db $00, $81, $10, $00, $00, $00, $00, $00, $00

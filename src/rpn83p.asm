@@ -109,7 +109,7 @@ rpn83pAppId equ $1E69
 ; Increment the schema version when any variables are added or removed from the
 ; appState data block. The schema version will be validated upon restoring the
 ; application state from the AppVar.
-rpn83pSchemaVersion equ 8
+rpn83pSchemaVersion equ 9
 
 ; Define true and false. Something else in spasm-ng defines the 'true' and
 ; 'false' symbols but I cannot find the definitions for them in the
@@ -274,40 +274,43 @@ argModifierCanceled equ 6 ; CLEAR or EXIT pressed
 curveFitModel equ argValue + 1
 
 ; Constants used by the TVM Solver.
-tvmSolverIterMax equ 15
+tvmSolverDefaultIterMax equ 15
 ; tvmSolverResult enums indicate success or failure of the TVM Solver.
 tvmSolverResultFound equ 0
 tvmSolverResultNotFound equ 1
 tvmSolverResultIterMaxed equ 2
 tvmSolverResultBreak equ 3
+; Bit position in tvmSolverOverrideFlags that determine if a specific parameter
+; has been overridden.
+tvmSolverOverrideFlagIYR0 equ 0
+tvmSolverOverrideFlagIYR1 equ 1
+tvmSolverOverrideFlagIterMax equ 2
 
 ; TVM float variables for root-solving the NPMT(i)=0 equation.
 tvmIsBegin equ curveFitModel + 1 ; boolean; true if payment is at BEGIN
 tvmSolverIsRunning equ tvmIsBegin + 1 ; boolean; true if active
-tvmSolverCount equ tvmSolverIsRunning + 1
+tvmSolverCount equ tvmSolverIsRunning + 1 ; iteration count
 tvmSolverResult equ tvmSolverCount + 1 ; enum; tvmSolverResultXxx
-; The tvmSolverIsOverridden boolean flag is true if the i0 and i1 have been
-; manually overridden (currently by the '2ND I%YR' menu button, but that may
-; change). This will be set to false by any invocation of I%YR or CLTV command.
-tvmSolverIsOverridden equ tvmSolverResult + 1
-; TVM Solver needs prior guesses of the interest rate, i0 and i1, plus the
-; next interest rate i2. Also need to evaluate the NPMT() function at each of
-; those points.
-tvmI0 equ tvmSolverIsOverridden + 1
-tvmI1 equ tvmI0 + 9
-tvmNPMT0 equ tvmI1 + 9
-tvmNPMT1 equ tvmNPMT0 + 9
+; The tvmSolverOverrideFlags is a collection of bit flags. Each flag determines
+; whether a particular parameter that controls the TVM Solver execution has its
+; default value overridden by a manual value from the user.
+tvmSolverOverrideFlags equ tvmSolverResult + 1
+; TVM Solver configuration parameters. These are normally defined automatically
+; but can be overridden using the 'IYR0', 'IYR1', and 'TMAX' menu buttons.
+tvmIYR0 equ tvmSolverOverrideFlags + 1 ; float
+tvmIYR1 equ tvmIYR0 + 9 ; float
+tvmIterMax equ tvmIYR1 + 9 ; u8 integer
 
 ; Draw/Debug mode constants
 drawModeNormal equ 0
 drawModeTvmSolverI equ 1 ; show i0, i1
 drawModeTvmSolverF equ 2 ; show npmt0, npmt1
 
-; Draw/Debug mode, activated by secret 2ND DRAW button.
+; Draw/Debug mode, u8 integer. Activated by secret '2ND DRAW' button.
 ; - 0: normal
 ; - 1: TVM Solver i0, i1 values
 ; - 2: TVM Solver f0, f1 values
-drawMode equ tvmNPMT1 + 9
+drawMode equ tvmIterMax + 1
 
 ; End application variables.
 appStateEnd equ drawMode + 1
@@ -332,7 +335,16 @@ menuNodeBuf equ appBufferStart ; 9 bytes, defined by menuNodeSizeOf
 menuStringBuf equ menuNodeBuf + 9 ; 6 bytes
 menuStringBufSizeOf equ 6
 
-appBufferEnd equ menuStringBuf + menuStringBufSizeOf
+; TVM Solver needs a bunch of workspace variables: interest rate, i0 and i1,
+; plus the next interest rate i2, and the value of the NPMT() function at each
+; of those points. These are needed only transiently so do not need to be
+; persisted.
+tvmI0 equ menuStringBuf + menuStringBufSizeOf
+tvmI1 equ tvmI0 + 9
+tvmNPMT0 equ tvmI1 + 9
+tvmNPMT1 equ tvmNPMT0 + 9
+
+appBufferEnd equ tvmNPMT1 + 9
 
 ; Floating point number buffer, used only within parseNumBase10(). It is used
 ; only locally so it can probaly be anywhere. Let's just use OP3 instead of

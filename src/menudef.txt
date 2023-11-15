@@ -318,10 +318,18 @@ MenuGroup root mRoot [
         MenuItem * *
         MenuItem CLTV mTvmClear
       ]
-      #MenuRow [
-      #  MenuItem IYR0 mTvmIYR0
-      #  MenuItem IYR1 mTvmIYR1
-      #]
+      MenuRow [
+        # TVM Solver's initial first and second guesses. The label shown to
+        # users is one-based, because a '0' looks like a capital 'O', and most
+        # non-software people are more familar with 1-based counting. But
+        # internally, we use a zero-based system and these variables are known
+        # consistently as i0 (IYR0) and i1 (IYR1) respectively.
+        MenuItemAlt IYR1 IY1<Sblock> mTvmIYR0 # TVM Solver's first guess
+        MenuItemAlt IYR2 IY2<Sblock> mTvmIYR1 # TVM Solver's second guess
+        MenuItemAlt TMAX TMX<Sblock> mTvmIterMax # TVM Solver max iter count
+        MenuItem * *
+        MenuItem CLTS mTvmSolverClear
+      ]
     ]
   ]
   MenuRow [

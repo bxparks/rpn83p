@@ -9,7 +9,6 @@
 ; restoreAppState() fails.
 initTvm:
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
-    call tvmResetGuesses
     call tvmClear
     ; [[fallthrough]]
 
@@ -17,7 +16,6 @@ initTvm:
 initTvmSolver:
     xor a
     ld (tvmSolverIsRunning), a
-    ld (tvmSolverIsOverridden), a
     ret
 
 ;-----------------------------------------------------------------------------
@@ -91,6 +89,47 @@ stoTvmPYR:
 
 ;-----------------------------------------------------------------------------
 
+; Description: Recall tvmIYR0 to OP1.
+rclTvmIYR0:
+    ld hl, tvmIYR0
+    jp move9ToOp1
+
+; Description: Store OP1 to tvmIYR0 variable.
+stoTvmIYR0:
+    ld de, tvmIYR0
+    jp move9FromOp1
+
+; Description: Recall tvmIYR1 to OP1.
+rclTvmIYR1:
+    ld hl, tvmIYR1
+    jp move9ToOp1
+
+; Description: Store OP1 to tvmIYR1 variable.
+stoTvmIYR1:
+    ld de, tvmIYR1
+    jp move9FromOp1
+
+; Description: Recall tvmIterMax to OP1.
+rclTvmIterMax:
+    ld a, (tvmIterMax)
+    call convertU8ToOP1
+    ret
+
+; Description: Store OP1 to tvmIterMax variable.
+stoTvmIterMax:
+    ld hl, OP3
+    call convertOP1ToU8 ; hl=OP3=U8; throws Err:Domain if larger than u8
+    ld a, (hl)
+stoTvmIterMaxA: ; alt version that stores A
+    or a
+    jr z, stoTvmIterMaxErr ; IterMax cannot be 0
+    ld (tvmIterMax), a
+    ret
+stoTvmIterMaxErr:
+    bcall(_ErrDomain)
+
+;-----------------------------------------------------------------------------
+
 ; Description: Recall tvmI0 to OP1.
 rclTvmI0:
     ld hl, tvmI0
@@ -134,7 +173,7 @@ stoTvmNPMT1:
 ; Description: Recall the TVM solver iteration counter as a float in OP1.
 rclTvmSolverCount:
     ld a, (tvmSolverCount)
-    bcall(_SetXXOP1) ; OP1=float(A)
+    call convertU8ToOP1 ; OP1=float(A)
     ret
 
 ;-----------------------------------------------------------------------------
@@ -539,7 +578,7 @@ calculateNextSecantInterest:
 ;   - i0, i1, npmt0, npmt1
 ;   - OP1: i2, the next interest rate
 ; Output: i0, i1, npmt0, npmpt1 updated
-updateInterestGuesses:
+tvmSolveUpdateGuesses:
     bcall(_PushRealO1) ; FPS=[i2]
     call nominalPMT ; OP1=npmt2
     bcall(_PushRealO1) ; FPS=[i2,npmt2]
@@ -562,19 +601,19 @@ updateInterestGuesses:
 ; Output:
 ;   - CF: 1 if TVM solver debug enabled; 0 if disabled
 ; Destroys: A
-tvmSolverCheckDebugEnabled:
+tvmSolveCheckDebugEnabled:
     ld a, (tvmSolverIsRunning)
     or a
     ret z ; CF==0 if TVM Solver not running
     ; check for drawMode 1 or 2
     ld a, (drawMode)
     dec a
-    jr z, tvmSolverDebugEnabled
+    jr z, tvmSolveDebugEnabled
     dec a
-    jr z, tvmSolverDebugEnabled
+    jr z, tvmSolveDebugEnabled
     or a ; CF=0
     ret
-tvmSolverDebugEnabled:
+tvmSolveDebugEnabled:
     scf ; CF=1
     ret
 
@@ -583,10 +622,10 @@ tvmSolverDebugEnabled:
 ; Output:
 ;   - A=tvmSolverResult status
 ;   - CF=1 if should terminate
-; Destroys: A
+; Destroys: A, B
 tvmSolveCheckTermination:
     ; Display debugging progress if enabled
-    call tvmSolverCheckDebugEnabled ; CF=1 if enabled
+    call tvmSolveCheckDebugEnabled ; CF=1 if enabled
     jr nc, tvmSolveCheckNoDebug
     set dirtyFlagsStack, (iy + dirtyFlags)
     call displayAll
@@ -610,12 +649,14 @@ tvmSolveCheckNoRelativeError:
     call op2Set1EM8 ; OP2=1e-8
     bcall(_AbsO1O2Cp) ; if |OP1| < |OP2|: CF=1
     jr c, tvmSolveCheckFound
-    ; Check iteration counter
+    ; Check iteration counter against tvmIterMax
     ld hl, tvmSolverCount
     ld a, (hl)
     inc a
     ld (hl), a
-    cp a, tvmSolverIterMax
+    ld b, a
+    ld a, (tvmIterMax)
+    cp b
     jr z, tvmSolveCheckIterMaxed
     or a ; CF=0 to continue
     ret
@@ -630,6 +671,17 @@ tvmSolveCheckIterMaxed:
     ld a, tvmSolverResultIterMaxed
 tvmSolveCheckTerminate:
     scf ; CF=1 to terminate
+    ret
+
+; Description: Initialize i0 and i1 from IYR0 and IYR1 respectively.
+tvmSolveInitGuesses:
+    call rclTvmIYR0
+    call calcTvmIntPerPeriod
+    call stoTvmI0
+    ;
+    call rclTvmIYR1
+    call calcTvmIntPerPeriod
+    call stoTvmI1
     ret
 
 ; Description: Calculate the interest rate by solving the root of the NPMT
@@ -655,6 +707,8 @@ tvmSolve:
     ; low that this small bit of inefficiency doesn't matter.
     xor a
     ld (tvmSolverCount), a
+    ; Initialize i0 and i1 from IYR0 and IYR1
+    call tvmSolveInitGuesses
     ; Set up the i0 guess
     call rclTvmI0 ; i0=0.0
     call nominalPMT ; OP1=NPMT(i0)
@@ -681,14 +735,13 @@ tvmSolveLoop:
     ;call tvmSolveCheckBounds ; CF=1 if out of bounds
     ; Secant failed. Use bisection.
     ;call c, call calculateNextBisectInterest
-    call updateInterestGuesses ; update tvmI0,tmvI1
+    call tvmSolveUpdateGuesses ; update tvmI0,tmvI1
     jr tvmSolveLoop
 tvmSolveTerminate:
     or a ; A=tvmSolverResult
     jr nz, tvmSolveEnd ; if status!=tvmSolverResultFound: return
     ; Found!
     call rclTvmI1
-    call calcTvmIYR
     jr tvmSolveFound
 tvmSolveNotFound:
     ld a, tvmSolverResultNotFound
@@ -699,12 +752,13 @@ tvmSolveI0Zero:
 tvmSolveI1Zero:
     call op1Set100 ; OP1=100.0%
 tvmSolveFound:
+    call calcTvmIYR ; convert i (per period) to IYR
     xor a
 ; All branches above must exit through this fragment. Reg A must contain the
 ; tvmSolverResult code.
 tvmSolveEnd:
     ld (tvmSolverResult), a
-    call tvmSolverCheckDebugEnabled ; CF=1 if enabled
+    call tvmSolveCheckDebugEnabled ; CF=1 if enabled
     jr nc, tvmSolveEndNoDirty
     set dirtyFlagsStack, (iy + dirtyFlags)
 tvmSolveEndNoDirty:
@@ -832,16 +886,11 @@ mTvmIYRCalculateMayExists:
     ; anything else, so the logic is a bit tricky.
     ld a, (errorCode)
     or a
-    jr z, mTvmIYRCalculateCheckOverride
+    jr z, mTvmIYRCalculateSolve
     ; Remove the displayed error code if it exists
     xor a
     call setErrorCode
     call displayAll
-mTvmIYRCalculateCheckOverride:
-    ; If tvmSolverIsOverridden is false, clobber i0 and i1 with defaults.
-    ld a, (tvmSolverIsOverridden)
-    or a
-    call z, tvmResetGuesses
 mTvmIYRCalculateSolve:
     bcall(_RunIndicOn)
     call tvmSolve
@@ -872,22 +921,6 @@ mTvmIYRCalculateEnd:
     push af
     bcall(_RunIndicOff)
     pop af
-    jp setHandlerCode
-
-; Description: Handle the '2ND I%YR' menu. Push the newest IYR into the I1 and
-; I0 stack, so that they can be used as the initial guess for the TVM Solver.
-; Input: OP1=rclX
-; Destroys: OP1, OP2
-mTvmIYRSecondHandler:
-    set rpnFlagsTvmCalculate, (iy + rpnFlags)
-    call tvmSolverEnableOverride
-    call calcTvmIntPerPeriod
-    call op1ToOp2
-    call rclTvmI1
-    call stoTvmI0
-    call op2ToOp1
-    call stoTvmI1
-    ld a, errorCodeTvmSet
     jp setHandlerCode
 
 ;-----------------------------------------------------------------------------
@@ -1041,9 +1074,7 @@ mTvmBeginHandler:
     ret
 
 ; Description: Return B if tvmIsBegin is false, C otherwise.
-; Input:
-;   - A, B: normal nameId
-;   - C: alt nameId
+; Input: A, B: normal nameId; C: alt nameId
 ; Output: A
 mTvmBeginNameSelector:
     ld a, (tvmIsBegin)
@@ -1082,27 +1113,117 @@ mTvmEndNameSelectorC:
 
 ;-----------------------------------------------------------------------------
 
+mTvmIYR0Handler:
+    call closeInputBuf
+    ; Check if '2ND IYR1' pressed.
+    bit rpnFlagsSecondKey, (iy + rpnFlags)
+    jr nz, mTvmIYR0Get
+    ; save the inputBuf value in OP1
+    call rclX
+    call stoTvmIYR0
+    call tvmSolverSetOverrideFlagIYR0
+    res rpnFlagsTvmCalculate, (iy + rpnFlags)
+    ld a, errorCodeTvmSet
+    jp setHandlerCode
+mTvmIYR0Get:
+    call rclTvmIYR0
+    call pushX
+    ld a, errorCodeTvmRecalled
+    jp setHandlerCode
+
+; Description: Return B if tvmIsBegin is false, C otherwise.
+; Input: A, B: normal nameId; C: alt nameId
+; Output: A
+mTvmIYR0NameSelector:
+    call tvmSolverBitOverrideFlagIYR0
+    jr nz, mTvmIYR0NameSelectorC
+    ld a, b
+    ret
+mTvmIYR0NameSelectorC:
+    ld a, c
+    ret
+
+;-----------------------------------------------------------------------------
+
+mTvmIYR1Handler:
+    call closeInputBuf
+    ; Check if '2ND IYR2' pressed.
+    bit rpnFlagsSecondKey, (iy + rpnFlags)
+    jr nz, mTvmIYR1Get
+    ; save the inputBuf value in OP1
+    call rclX
+    call stoTvmIYR1
+    call tvmSolverSetOverrideFlagIYR1
+    res rpnFlagsTvmCalculate, (iy + rpnFlags)
+    ld a, errorCodeTvmSet
+    jp setHandlerCode
+mTvmIYR1Get:
+    call rclTvmIYR1
+    call pushX
+    ld a, errorCodeTvmRecalled
+    jp setHandlerCode
+
+; Description: Return B if tvmIsBegin is false, C otherwise.
+; Input: A, B: normal nameId; C: alt nameId
+; Output: A
+mTvmIYR1NameSelector:
+    call tvmSolverBitOverrideFlagIYR1
+    jr nz, mTvmIYR1NameSelectorC
+    ld a, b
+    ret
+mTvmIYR1NameSelectorC:
+    ld a, c
+    ret
+
+;-----------------------------------------------------------------------------
+
+mTvmIterMaxHandler:
+    call closeInputBuf
+    ; Check if '2ND TMAX' pressed.
+    bit rpnFlagsSecondKey, (iy + rpnFlags)
+    jr nz, mTvmIterMaxGet
+    ; save the inputBuf value in OP1
+    call rclX
+    call stoTvmIterMax
+    call tvmSolverSetOverrideFlagIterMax
+    res rpnFlagsTvmCalculate, (iy + rpnFlags)
+    ld a, errorCodeTvmSet
+    jp setHandlerCode
+mTvmIterMaxGet:
+    call rclTvmIterMax
+    call pushX
+    ld a, errorCodeTvmRecalled
+    jp setHandlerCode
+
+; Description: Return B if tvmIsBegin is false, C otherwise.
+; Input: A, B: normal nameId; C: alt nameId
+; Output: A
+mTvmIterMaxNameSelector:
+    call tvmSolverBitOverrideFlagIterMax
+    jr nz, mTvmIterMaxNameSelectorC
+    ld a, b
+    ret
+mTvmIterMaxNameSelectorC:
+    ld a, c
+    ret
+
+;-----------------------------------------------------------------------------
+
 mTvmClearHandler:
     call closeInputBuf
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     call tvmClear
-    call tvmResetGuesses
-    call tvmSolverDisableOverride
     ld a, errorCodeTvmCleared
     jp setHandlerCode
 
-;-----------------------------------------------------------------------------
+mTvmSolverClearHandler:
+    call closeInputBuf
+    res rpnFlagsTvmCalculate, (iy + rpnFlags)
+    call tvmSolverClear
+    ld a, errorCodeTvmSolverCleared
+    jp setHandlerCode
 
-; Description: Reset the i0 and i1 of the TVM Solver. This is called for the
-; stoN, stoPV, stoPMT, and stoFV buttons, so that updating any of those causes
-; the TVM Solver initial guesses to be reset to 0 and 100%.
-tvmResetGuesses:
-    bcall(_OP1Set0) ; OP1=0.0
-    call stoTvmI0 ; i0=0.0
-    call op1Set100 ; OP1=100.0%
-    call calcTvmIntPerPeriod
-    call stoTvmI1 ; i1=100%/PYR/100
-    ret
+;-----------------------------------------------------------------------------
 
 ; Description: Clear the 5 NPV or NFV variables. Bound to CLTV menu button.
 tvmClear:
@@ -1115,7 +1236,7 @@ tvmClear:
     call move9FromOp1
     ld de, fin_CY
     call move9FromOp1
-    ; Reset the 5 TVM() variables to 0.
+    ; Clear the 5 TVM equation variables to 0.
     bcall(_OP1Set0)
     ld de, fin_N
     call move9FromOp1
@@ -1127,24 +1248,90 @@ tvmClear:
     call move9FromOp1
     ld de, fin_FV
     call move9FromOp1
-    ;
+    ; [[fallthrough]]
+
+; Description: Clear the TVM Solver override flags.
+tvmSolverClear:
+    ; Set factory defaults
+    call op1Set0 ; 0%/year
+    call stoTvmIYR0
+    call op1Set100 ; 100%/year
+    call stoTvmIYR1
+    ld a, tvmSolverDefaultIterMax
+    call stoTvmIterMaxA
+    ; Clear flags
+    xor a
+    ld (tvmSolverOverrideFlags), a
     set dirtyFlagsMenu, (iy + dirtyFlags)
     ret
 
 ;-----------------------------------------------------------------------------
 
-; Description: Turn off the TVM Solver override. This is invoked by every
-; TVM menu, except '2ND I%YR'.
-; Destroys: A
-tvmSolverDisableOverride:
-    xor a
-    ld (tvmSolverIsOverridden), a
+; Description: Set tvmSolverOverrideFlagIYR0.
+; Destroys: HL
+tvmSolverSetOverrideFlagIYR0:
+    ld hl, tvmSolverOverrideFlags
+    set tvmSolverOverrideFlagIYR0, (hl)
+    set dirtyFlagsMenu, (iy + dirtyFlags)
     ret
 
-; Description: Turn on the TVM Solver override. This is invoked by 2ND I%YR
-; button.
-; Destroys: A
-tvmSolverEnableOverride:
-    ld a, rpntrue
-    ld (tvmSolverIsOverridden), a
+; Description: Reset tvmSolverOverrideFlagIYR0.
+; Destroys: HL
+tvmSolverResOverrideFlagIYR0:
+    ld hl, tvmSolverOverrideFlags
+    res tvmSolverOverrideFlagIYR0, (hl)
+    set dirtyFlagsMenu, (iy + dirtyFlags)
+    ret
+
+; Description: Test bit tvmSolverOverrideFlagIYR0.
+; Destroys: HL
+tvmSolverBitOverrideFlagIYR0:
+    ld hl, tvmSolverOverrideFlags
+    bit tvmSolverOverrideFlagIYR0, (hl)
+    ret
+
+; Description: Set tvmSolverOverrideFlagIYR1.
+; Destroys: HL
+tvmSolverSetOverrideFlagIYR1:
+    ld hl, tvmSolverOverrideFlags
+    set tvmSolverOverrideFlagIYR1, (hl)
+    set dirtyFlagsMenu, (iy + dirtyFlags)
+    ret
+
+; Description: Reset tvmSolverOverrideFlagIYR1.
+; Destroys: HL
+tvmSolverResOverrideFlagIYR1:
+    ld hl, tvmSolverOverrideFlags
+    res tvmSolverOverrideFlagIYR1, (hl)
+    set dirtyFlagsMenu, (iy + dirtyFlags)
+    ret
+
+; Description: Test bit tvmSolverOverrideFlagIYR1.
+; Destroys: HL
+tvmSolverBitOverrideFlagIYR1:
+    ld hl, tvmSolverOverrideFlags
+    bit tvmSolverOverrideFlagIYR1, (hl)
+    ret
+
+; Description: Set tvmSolverOverrideFlagIterMax.
+; Destroys: HL
+tvmSolverSetOverrideFlagIterMax:
+    ld hl, tvmSolverOverrideFlags
+    set tvmSolverOverrideFlagIterMax, (hl)
+    set dirtyFlagsMenu, (iy + dirtyFlags)
+    ret
+
+; Description: Reset tvmSolverOverrideFlagIterMax.
+; Destroys: HL
+tvmSolverResOverrideFlagIterMax:
+    ld hl, tvmSolverOverrideFlags
+    res tvmSolverOverrideFlagIterMax, (hl)
+    set dirtyFlagsMenu, (iy + dirtyFlags)
+    ret
+
+; Description: Test bit tvmSolverOverrideFlagIterMax.
+; Destroys: HL
+tvmSolverBitOverrideFlagIterMax:
+    ld hl, tvmSolverOverrideFlags
+    bit tvmSolverOverrideFlagIterMax, (hl)
     ret
