@@ -84,8 +84,7 @@ rpnFlagsArgMode equ 1 ; set if in command argument mode
 rpnFlagsLiftEnabled equ 2 ; set if stack lift is enabled (ENTER disables it)
 rpnFlagsAllStatEnabled equ 3 ; set if Sigma+ updates logarithm registers
 rpnFlagsBaseModeEnabled equ 4 ; set if inside BASE menu hierarchy
-rpnFlagsTvmPmtBegin equ 5 ; set if TVM payment at begin, 0 if at end
-rpnFlagsTvmCalculate equ 6 ; set if the next TVM function should calculate
+rpnFlagsTvmCalculate equ 5 ; set if the next TVM function should calculate
 
 ; Flags for the inputBuf. Offset from IY register.
 inputBufFlags equ asm_Flag3
@@ -279,7 +278,8 @@ tvmSolverResultIterMaxed equ 2
 tvmSolverResultBreak equ 3
 
 ; TVM float variables for root-solving the NPMT(i)=0 equation.
-tvmSolverIsRunning equ curveFitModel + 1 ; boolean; true if active
+tvmIsBegin equ curveFitModel + 1 ; boolean; true if payment is at BEGIN
+tvmSolverIsRunning equ tvmIsBegin + 1 ; boolean; true if active
 tvmSolverCount equ tvmSolverIsRunning + 1
 tvmSolverResult equ tvmSolverCount + 1 ; enum; tvmSolverResultXxx
 ; The tvmSolverIsOverridden boolean flag is true if the i0 and i1 have been

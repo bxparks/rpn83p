@@ -170,7 +170,7 @@ getMenuNodeIX:
 ; that returns the display name.
 ;
 ; The input to the nameSelector function is:
-;   - A: normal name
+;   - A,B: normal name
 ;   - C: alternate name
 ;   - HL: pointer to MenuNode (in case it is needed)
 ; The output of the nameSelector is:

@@ -183,9 +183,10 @@ calcTvmIYR:
 ;-----------------------------------------------------------------------------
 
 ; Description: Return OP1 = p = {0.0 if END, 1.0 if BEGIN}.
-; Destroys: OP1
+; Destroys: A, HL, OP1
 getTvmEndBegin:
-    bit rpnFlagsTvmPmtBegin, (iy + rpnFlags)
+    ld a, (tvmIsBegin)
+    or a
     jr nz, getTvmBegin
 getTvmEnd:
     bcall(_OP1Set0)
@@ -198,10 +199,11 @@ getTvmBegin:
 ; (p=1) versus payment at END (p=0).
 ; Input: OP1=i
 ; Output: OP1=1+ip
-; Destroys: OP1
+; Destroys: all, OP1
 ; Preserves: OP2
 beginEndFactor:
-    bit rpnFlagsTvmPmtBegin, (iy + rpnFlags)
+    ld a, (tvmIsBegin)
+    or a
     jr nz, beginFactor
 endFactor:
     bcall(_OP1Set1) ; OP1=1.0
@@ -374,7 +376,8 @@ tvmCheckUpdateSumSign:
 tvmCheckPVPMT:
     push bc
     call rclTvmPV
-    bit rpnFlagsTvmPmtBegin, (iy + rpnFlags)
+    ld a, (tvmIsBegin)
+    or a
     jr z, tvmCheckPVPMTRet ; return if p=begin=0
     call op1ToOp2
     call rclTvmPMT
@@ -388,7 +391,8 @@ tvmCheckPVPMTRet:
 tvmCheckPMTFV:
     push bc
     call rclTvmFV
-    bit rpnFlagsTvmPmtBegin, (iy + rpnFlags)
+    ld a, (tvmIsBegin)
+    or a
     jr nz, tvmCheckPMTFVRet ; return if p=begin=1
     call op1ToOp2
     call rclTvmPMT
@@ -989,28 +993,46 @@ mTvmGetPYRHandler:
 mTvmBeginHandler:
     call closeInputBuf
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
-    set rpnFlagsTvmPmtBegin, (iy + rpnFlags)
+    ld a, rpntrue
+    ld (tvmIsBegin), a
     set dirtyFlagsMenu, (iy + dirtyFlags)
     ret
 
-; Return A if rpnFlagsTvmPmtBegin is zero, C otherwise.
+; Description: Return B if tvmIsBegin is false, C otherwise.
+; Input:
+;   - A, B: normal nameId
+;   - C: alt nameId
+; Output: A
 mTvmBeginNameSelector:
-    bit rpnFlagsTvmPmtBegin, (iy + rpnFlags)
-    ret z
+    ld a, (tvmIsBegin)
+    or a
+    jr nz, mTvmBeginNameSelectorC
+    ld a, b
+    ret
+mTvmBeginNameSelectorC:
     ld a, c
     ret
 
 mTvmEndHandler:
     call closeInputBuf
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
-    res rpnFlagsTvmPmtBegin, (iy + rpnFlags)
+    xor a
+    ld (tvmIsBegin), a
     set dirtyFlagsMenu, (iy + dirtyFlags)
     ret
 
-; Return C if rpnFlagsTvmPmtBegin is zero, A otherwise.
+; Description: Return C if tvmIsBegin is false, B otherwise.
+; Input:
+;   - A, B: normal nameId
+;   - C: alt nameId
+; Output: A
 mTvmEndNameSelector:
-    bit rpnFlagsTvmPmtBegin, (iy + rpnFlags)
-    ret nz
+    ld a, (tvmIsBegin)
+    or a
+    jr z, mTvmEndNameSelectorC
+    ld a, b
+    ret
+mTvmEndNameSelectorC:
     ld a, c
     ret
 
@@ -1035,7 +1057,8 @@ mTvmClearHandler:
 
 ; Description: Reset the payments per year PYR. Bound to RSTV menu button.
 tvmResetPYR:
-    res rpnFlagsTvmPmtBegin, (iy + rpnFlags)
+    xor a
+    ld (tvmIsBegin), a
     ld a, 12
     bcall(_SetXXOP1)
     ld de, fin_PY
