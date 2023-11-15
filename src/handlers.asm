@@ -557,35 +557,35 @@ handleKeyMenu5:
     ld a, 4
     jr handleKeyMenuA
 
-; Description: Handle menu key 1 (left most).
+; Description: Handle menu key 2ND 1 (left most).
 ; Input: none
 ; Destroys: all
 handleKeyMenuSecond1:
     ld a, 0
     jr handleKeyMenuSecondA
 
-; Description: Handle menu key 2 (2nd from left).
+; Description: Handle menu key 2ND 2 (2nd from left).
 ; Input: none
 ; Destroys: all
 handleKeyMenuSecond2:
     ld a, 1
     jr handleKeyMenuSecondA
 
-; Description: Handle menu key 3 (middle).
+; Description: Handle menu key 2ND 3 (middle).
 ; Input: none
 ; Destroys: all
 handleKeyMenuSecond3:
     ld a, 2
     jr handleKeyMenuSecondA
 
-; Description: Handle menu key 4 (2nd from right).
+; Description: Handle menu key 2ND 4 (2nd from right).
 ; Input: none
 ; Destroys: all
 handleKeyMenuSecond4:
     ld a, 3
     jr handleKeyMenuSecondA
 
-; Description: Handle menu key 5 (right most).
+; Description: Handle menu key 2ND 5 (right most).
 ; Input: none
 ; Destroys: all
 handleKeyMenuSecond5:
@@ -598,20 +598,20 @@ handleKeyMenuSecond5:
 ; Output: A: nodeId of the selected menu item
 ; Destroys: all
 handleKeyMenuA:
-    ld c, a ; save A (menu button index 0-4)
-    xor a
+    res rpnFlagsSecondKey, (iy + rpnFlags)
 handleKeyMenuAltEntry:
-    ld (menuSecond), a
-    ld a, c
+    ld c, a ; save A (menu button index 0-4)
     call getCurrentMenuRowBeginId ; A=row begin id
     add a, c ; menu node ids are sequential starting with beginId
     jp dispatchMenuNode
 
-; Description: Same as handleKeyMenuA except that the menu key was invoked
-; using the 2ND key, which sets (menuSecond) to true.
+; Description: Same as handleKeyMenuA() except that the menu key was invoked
+; using the 2ND key, which sets the rpnFlagsSecondKey flag.
+; Input: A: menu button index (0-4)
+; Output: A: nodeId of the selected menu item
+; Destroys: all
 handleKeyMenuSecondA:
-    ld c, a
-    ld a, 1
+    set rpnFlagsSecondKey, (iy + rpnFlags)
     jr handleKeyMenuAltEntry
 
 ;-----------------------------------------------------------------------------

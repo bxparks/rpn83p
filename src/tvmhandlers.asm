@@ -788,8 +788,7 @@ mTvmNCalculateZero:
 mTvmIYRHandler:
     call closeInputBuf
     ; Check if 2ND I%YR pressed.
-    ld a, (menuSecond)
-    or a
+    bit rpnFlagsSecondKey, (iy + rpnFlags)
     jr nz, mTvmIYRSecondHandler
     ; Handle vanilla I%YR.
     bit rpnFlagsTvmCalculate, (iy + rpnFlags)

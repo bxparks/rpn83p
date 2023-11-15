@@ -84,7 +84,11 @@ rpnFlagsArgMode equ 1 ; set if in command argument mode
 rpnFlagsLiftEnabled equ 2 ; set if stack lift is enabled (ENTER disables it)
 rpnFlagsAllStatEnabled equ 3 ; set if Sigma+ updates logarithm registers
 rpnFlagsBaseModeEnabled equ 4 ; set if inside BASE menu hierarchy
-rpnFlagsTvmCalculate equ 5 ; set if the next TVM function should calculate
+; rpnFlagsSecondKey: Set if the 2ND was pressed before a menu button. Most
+; handlers can ignore this, but some handlers may choose to check this flag to
+; implement additional functionality.
+rpnFlagsSecondKey equ 5
+rpnFlagsTvmCalculate equ 6 ; set if the next TVM function should calculate
 
 ; Flags for the inputBuf. Offset from IY register.
 inputBufFlags equ asm_Flag3
@@ -329,13 +333,7 @@ menuNodeBuf equ appBufferStart ; 9 bytes, defined by menuNodeSizeOf
 menuStringBuf equ menuNodeBuf + 9 ; 6 bytes
 menuStringBufSizeOf equ 6
 
-; If a menu button was invoked normally without the 2ND key, this is set to 0.
-; If the menu key was invoked using the 2ND key (e.g. 2ND F1), then this is set
-; to 1. Most handlers can ignore this, but some handlers may choose to check
-; this flag to implement additional functionality.
-menuSecond equ menuStringBuf + menuStringBufSizeOf
-
-appBufferEnd equ menuSecond + 1
+appBufferEnd equ menuStringBuf + menuStringBufSizeOf
 
 ; Floating point number buffer, used only within parseNumBase10(). It is used
 ; only locally so it can probaly be anywhere. Let's just use OP3 instead of
