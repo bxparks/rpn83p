@@ -383,7 +383,7 @@ displayMain:
     dec a ; drawMode==2 (drawModeTvmSolverF)
     jr nz, displayStack
 displayTvmMaybe:
-    ld a, (tvmSolverStatus)
+    ld a, (tvmSolverIsRunning)
     or a
     jp nz, displayTvm
     ; [[fallthrough]]

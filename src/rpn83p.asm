@@ -44,6 +44,10 @@ keyMenuSecond5 equ kTable
 smallFontHeight equ 7
 largeFontHeight equ 8
 
+;-----------------------------------------------------------------------------
+; RPN83P flags, using asm_Flag1, asm_Flag2, and asm_Flag3
+;-----------------------------------------------------------------------------
+
 ; Flags that indicate the need to re-draw the display. These are intended to
 ; be optimization purposes. In theory, we could eliminate these dirty flags
 ; without affecting the correctness of the rest of the RPN83P app.
@@ -102,7 +106,17 @@ rpn83pAppId equ $1E69
 ; Increment the schema version when any variables are added or removed from the
 ; appState data block. The schema version will be validated upon restoring the
 ; application state from the AppVar.
-rpn83pSchemaVersion equ 7
+rpn83pSchemaVersion equ 8
+
+; Define true and false. Something else in spasm-ng defines the 'true' and
+; 'false' symbols but I cannot find the definitions for them in the
+; "ti83plus.inc" file. So maybe they are defined by the assembler itself?
+; Regardless, I don't know what their values are, so I will explicitly define
+; my own boolean values.
+rpnfalse equ 0
+rpntrue equ 1
+
+;-----------------------------------------------------------------------------
 
 ; Begin application variables at tempSwapArea. According to the TI-83 Plus SDK
 ; docs: "tempSwapArea (82A5h) This is the start of 323 bytes used only during
@@ -256,33 +270,27 @@ argModifierCanceled equ 6 ; CLEAR or EXIT pressed
 ; Least square curve fit model.
 curveFitModel equ argValue + 1
 
-; Constants used by the TVM solver.
+; Constants used by the TVM Solver.
 tvmSolverIterMax equ 15
 ; tvmSolverResult enums indicate success or failure of the TVM Solver.
 tvmSolverResultFound equ 0
 tvmSolverResultNotFound equ 1
 tvmSolverResultIterMaxed equ 2
 tvmSolverResultBreak equ 3
-; tvmSolverStatus indicates whether or not the TVM Solver is running. Used for
-; for debugging with DRAW mode 1 or 2.
-tvmSolverStatusOff equ 0
-tvmSolverStatusRunning equ 1
-; Whether the i0 and i1 guesses have been overridden.
-tvmSolverOverrideOff equ 0
-tvmSolverOverrideOn equ 1
 
 ; TVM float variables for root-solving the NPMT(i)=0 equation.
-tvmSolverStatus equ curveFitModel + 1 ; 0 - inactive, 1 - active
-tvmSolverCount equ tvmSolverStatus + 1
-tvmSolverResult equ tvmSolverCount + 1
-; tvmSolverOverride is true if the i0 and i1 have been manually overridden by
-; '2ND I%YR' entries. This will be set to false by any invocation of I%YR or by
-; RSTV command.
-tvmSolverOverride equ tvmSolverResult + 1
+tvmSolverIsRunning equ curveFitModel + 1 ; boolean; true if active
+tvmSolverCount equ tvmSolverIsRunning + 1
+tvmSolverResult equ tvmSolverCount + 1 ; enum; tvmSolverResultXxx
+; The tvmSolverIsOverridden boolean flag is true if the i0 and i1 have been
+; manually overridden (currently by the '2ND I%YR' menu button, but that may
+; change). This will be set to false by any invocation of I%YR or by RSTV
+; command.
+tvmSolverIsOverridden equ tvmSolverResult + 1
 ; TVM Solver needs prior guesses of the interest rate, i0 and i1, plus the
 ; next interest rate i2. Also need to evaluate the NPMT() function at each of
 ; those points.
-tvmI0 equ tvmSolverOverride + 1
+tvmI0 equ tvmSolverIsOverridden + 1
 tvmI1 equ tvmI0 + 9
 tvmNPMT0 equ tvmI1 + 9
 tvmNPMT1 equ tvmNPMT0 + 9

@@ -16,10 +16,9 @@ initTvm:
 
 ; Description: Reset the TVM Solver status. This is always done at App start.
 initTvmSolver:
-    ld a, tvmSolverStatusOff
-    ld (tvmSolverStatus), a
-    ld a, tvmSolverOverrideOff
-    ld (tvmSolverOverrideOff), a
+    xor a
+    ld (tvmSolverIsRunning), a
+    ld (tvmSolverIsOverridden), a
     ret
 
 ;-----------------------------------------------------------------------------
@@ -556,12 +555,12 @@ updateInterestGuesses:
 ; Description: Determine if TVM Solver debugging is enabled, which is activated
 ; when drawMode for TVM Solver is enabled and the TVM Solver is in effect. In
 ; other words, (drawMode==drawModeTvmSolverI || drawMode==drawModeTvmSolverF)
-; && tvmSolverStatus!=0.
+; && tvmSolverIsRunning.
 ; Output:
 ;   - CF: 1 if TVM solver debug enabled; 0 if disabled
 ; Destroys: A
 tvmSolverCheckDebugEnabled:
-    ld a, (tvmSolverStatus)
+    ld a, (tvmSolverIsRunning)
     or a
     ret z ; CF==0 if TVM Solver not running
     ; check for drawMode 1 or 2
@@ -646,11 +645,12 @@ tvmSolveCheckTerminate:
 ; Destroys:
 ;   - OP1-OP5
 tvmSolve:
-    ld a, tvmSolverStatusRunning
-    ld (tvmSolverStatus), a
+    ; Set the isRunning flag to true.
+    ld a, rpntrue
+    ld (tvmSolverIsRunning), a
     ; Set iteration counter to 0 initially. Counting down is more efficient,
     ; but counting up allows better debugging. The number of iterations is so
-    ; low that the small bit of inefficiency here doesn't matter.
+    ; low that this small bit of inefficiency doesn't matter.
     xor a
     ld (tvmSolverCount), a
     ; Set up the i0 guess
@@ -706,8 +706,8 @@ tvmSolveEnd:
     jr nc, tvmSolveEndNoDirty
     set dirtyFlagsStack, (iy + dirtyFlags)
 tvmSolveEndNoDirty:
-    ld a, tvmSolverStatusOff
-    ld (tvmSolverStatus), a
+    xor a
+    ld (tvmSolverIsRunning), a
     ret
 
 ;-----------------------------------------------------------------------------
@@ -823,8 +823,8 @@ mTvmIYRCalculateMayExists:
     call setErrorCode
     call displayAll
 mTvmIYRCalculateCheckOverride:
-    ; If tvmSolverOverride is false, clobber i0 and i1 with defaults.
-    ld a, (tvmSolverOverride)
+    ; If tvmSolverIsOverridden is false, clobber i0 and i1 with defaults.
+    ld a, (tvmSolverIsOverridden)
     or a
     call z, tvmResetGuesses
 mTvmIYRCalculateSolve:
@@ -1073,13 +1073,13 @@ tvmClear:
 ; Destroys: A
 tvmSolverDisableOverride:
     xor a
-    ld (tvmSolverOverride), a
+    ld (tvmSolverIsOverridden), a
     ret
 
 ; Description: Turn on the TVM Solver override. This is invoked by 2ND I%YR
 ; button.
 ; Destroys: A
 tvmSolverEnableOverride:
-    ld a, tvmSolverOverrideOn
-    ld (tvmSolverOverride), a
+    ld a, rpntrue
+    ld (tvmSolverIsOverridden), a
     ret
