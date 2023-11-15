@@ -17,19 +17,12 @@ initTvmSolver:
     ret
 
 ;-----------------------------------------------------------------------------
-; Store and recall the TVM variables. The recall functions use the cal_xx
-; variables so moveTvmToCalc() must be called at the start of a sequence of
-; calculation. The store functions stores OP1 to the fin_xx variables.
-;
-; The cal_xx variables are used for computation so that if an exception is
-; thrown the middle of a long calculation that modifies the cal_xx variables,
-; the original fin_xx variables are unaffected. Essentially, the cal_xx
-; variables are used for passing the TVM parameters to the various functions.
+; Store and recall the TVM variables.
 ;-----------------------------------------------------------------------------
 
-; Description: Recall cal_N to OP1.
+; Description: Recall fin_N to OP1.
 rclTvmN:
-    ld hl, cal_N
+    ld hl, fin_N
     jp move9ToOp1
 
 ; Description: Store OP1 to fin_N.
@@ -37,9 +30,9 @@ stoTvmN:
     ld de, fin_N
     jp move9FromOp1
 
-; Description: Recall cal_I to OP1.
+; Description: Recall fin_I to OP1.
 rclTvmIYR:
-    ld hl, cal_I
+    ld hl, fin_I
     jp move9ToOp1
 
 ; Description: Store OP1 to fin_I.
@@ -47,9 +40,9 @@ stoTvmIYR:
     ld de, fin_I
     jp move9FromOp1
 
-; Description: Recall cal_PV to OP1.
+; Description: Recall fin_PV to OP1.
 rclTvmPV:
-    ld hl, cal_PV
+    ld hl, fin_PV
     jp move9ToOp1
 
 ; Description: Store OP1 to fin_PV.
@@ -57,9 +50,9 @@ stoTvmPV:
     ld de, fin_PV
     jp move9FromOp1
 
-; Description: Recall cal_PMT to OP1.
+; Description: Recall fin_PMT to OP1.
 rclTvmPMT:
-    ld hl, cal_PMT
+    ld hl, fin_PMT
     jp move9ToOp1
 
 ; Description: Store OP1 to fin_PMT.
@@ -67,9 +60,9 @@ stoTvmPMT:
     ld de, fin_PMT
     jp move9FromOp1
 
-; Description: Recall cal_N to OP1.
+; Description: Recall fin_N to OP1.
 rclTvmFV:
-    ld hl, cal_FV
+    ld hl, fin_FV
     jp move9ToOp1
 
 ; Description: Store OP1 to fin_FV.
@@ -93,27 +86,6 @@ stoTvmPYR:
     ret
 
 ;-----------------------------------------------------------------------------
-
-; Description: Copy the 5 fin_xxx variables to the cal_xxx working variables,
-; so that intermediate calculations can modify the cal_xxx variables without
-; affecting the fin_xxx variables until the very end. These variables are
-; defined sequentially, so we can use the LDIR instruction.
-; Destroys: BC, DE, HL
-moveTvmToCalc:
-    ld de, cal_N
-    ld hl, fin_N
-    ld bc, 5*9 ; 5 variables x 9 bytes
-    ldir
-    ret
-
-; Description: Copy the 6 working cal_xxx variables to the fin_xxx.
-; Destroys: BC, DE, HL
-;moveCalcToTvm:
-;    ld de, fin_N
-;    ld hl, cal_N
-;    ld bc, 5*9 ; 6 variables x 9 bytes
-;    ldir
-;    ret
 
 ; Description: Recall tvmI0 to OP1.
 rclTvmI0:
@@ -482,7 +454,6 @@ inverseCompoundingFactorZero:
 ; spread out across N payments at the given interest rate i.
 ;
 ; Input:
-;   - moveTvmToCalc() must be called to populate the cal_xx variables
 ;   - OP1: i (interest per period)
 ; Output: OP1=NPMT(i)
 ; Destroys: OP1-OP5
@@ -660,7 +631,8 @@ checkInterestTerminate:
 ;   - i0=0
 ;   - i1=100 (100%/year)
 ; Input:
-;   - moveTvmToCalc() must be called to populate the cal_xx variables
+;   - i0, i1: initial guesses, usually 0% and 100%, but can be overridden by
+;   entering 2 values for the I%YR menu button twice
 ; Output:
 ;   - OP1: the calculated I%YR if tvmSolverResult==Found
 ;   - (tvmSolverResult) set
@@ -754,7 +726,6 @@ mTvmNCalculate:
     ; more robust if i becomes very small. On the other hand, if PMT==0, then
     ; this version will fail. So maybe we need to have 2 different formulas,
     ; depending on the relative size of PMT(1+ip) compared to i*FV and i*PV.
-    call moveTvmToCalc
     call getTvmIntPerPeriod ; OP1=i
     bcall(_CkOP1FP0) ; check for i==0
     jr z, mTvmNCalculateZero
@@ -817,7 +788,6 @@ mTvmIYRCalculate:
     ; Interest rate does not have a closed-form solution, so requires solving
     ; the root of an equation. First, determine if equation has no roots
     ; definitively.
-    call moveTvmToCalc
     call tvmCheckNoSolution ; ZF=0 if no solution
     jr c, mTvmIYRCalculateMayExists
     ; Cannot have a solution
@@ -883,7 +853,6 @@ mTvmPVHandler:
 mTvmPVCalculate:
     ; PV = [-FV - PMT * [(1+i)N - 1] * (1 + i p) / i] / (1+i)N
     ;    = [-FV - PMT * CF3(i)] / CF1(i)
-    call moveTvmToCalc
     call compoundingFactors ; OP1=CF1; OP2=CF3
     bcall(_PushRealO1) ; FPS=[CF1]
     call rclTvmPMT ; OP1=PMT
@@ -911,7 +880,6 @@ mTvmPMTHandler:
 mTvmPMTCalculate:
     ; PMT = [-PV * (1+i)^N - FV] / [((1+i)^N - 1) * (1+ip)/i]
     ;     = (-PV * CF1(i) - FV) / CF3(i)
-    call moveTvmToCalc
     call compoundingFactors ; OP1=CF1; OP2=CF3
     bcall(_PushRealO2) ; FPS=[CF3]
     call op1ToOP2 ; OP2=CF1
@@ -940,7 +908,6 @@ mTvmFVHandler:
 mTvmFVCalculate:
     ; FV = -PMT * [(1+i)N - 1] * (1 + i p) / i - PV * (1+i)N
     ;    = -PMT*CF3(i)-PV*CF1(i)
-    call moveTvmToCalc
     call compoundingFactors ; OP1=CF1; OP2=CF3
     bcall(_PushRealO1) ; FPS=CF1
     call rclTvmPMT ; OP1=PMT
