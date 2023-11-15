@@ -313,14 +313,15 @@ MenuGroup root mRoot [
       ]
       MenuRow [
         MenuItem P<Sslash>YR mTvmSetPYR
-        MenuItem PYR<Squestion> mTvmGetPYR
         MenuItemAlt BEG BEG<Sblock> mTvmBegin
         MenuItemAlt END END<Sblock> mTvmEnd
-        MenuItem RSTV mTvmReset
-      ]
-      MenuRow [
+        MenuItem * *
         MenuItem CLTV mTvmClear
       ]
+      #MenuRow [
+      #  MenuItem IYR0 mTvmIYR0
+      #  MenuItem IYR1 mTvmIYR1
+      #]
     ]
   ]
   MenuRow [
@@ -330,6 +331,7 @@ MenuGroup root mRoot [
         MenuItem CLST mClearStack
         MenuItem CLRG mClearRegs
         MenuItem CL<ScapSigma> mClearStat
+        MenuItem CLTV mClearTvm
       ]
     ]
     MenuGroup MODE mMode [

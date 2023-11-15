@@ -288,8 +288,7 @@ tvmSolverCount equ tvmSolverIsRunning + 1
 tvmSolverResult equ tvmSolverCount + 1 ; enum; tvmSolverResultXxx
 ; The tvmSolverIsOverridden boolean flag is true if the i0 and i1 have been
 ; manually overridden (currently by the '2ND I%YR' menu button, but that may
-; change). This will be set to false by any invocation of I%YR or by RSTV
-; command.
+; change). This will be set to false by any invocation of I%YR or CLTV command.
 tvmSolverIsOverridden equ tvmSolverResult + 1
 ; TVM Solver needs prior guesses of the interest rate, i0 and i1, plus the
 ; next interest rate i2. Also need to evaluate the NPMT() function at each of

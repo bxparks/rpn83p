@@ -275,11 +275,11 @@ msgHelpPage7:
 msgHelpPage8:
     .db escapeLargeFont, "TVM", Lenter
     .db escapeSmallFont, Senter
-    .db "outflow: - sign", Senter
-    .db "inflow: + sign", Senter
-    .db "RSTV: Reset P/YR BEG END",  Senter
-    .db "CLTV: Clear N ... FV",  Senter
+    .db "outflow: -", Senter
+    .db "inflow: +", Senter
     .db "P/YR: Payments per year", Senter
+    .db "CLTV: Clear params",  Senter
+    .db Senter
     .db Senter
     .db SlBrack, "8/8", SrBrack, " Any key to return.", Senter
     .db 0

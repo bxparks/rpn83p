@@ -90,7 +90,6 @@ mStatLinearModeNameSelector:
     ret
 
 mStatClearHandler:
-mClearStatHandler:
     call closeInputBuf
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     call clearStatRegs

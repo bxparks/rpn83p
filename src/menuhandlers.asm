@@ -1098,3 +1098,9 @@ mClearXHandler:
     res rpnFlagsLiftEnabled, (iy + rpnFlags) ; disable stack lift
     bcall(_OP1Set0)
     jp stoX
+
+mClearStatHandler:
+    jp mStatClearHandler
+
+mClearTvmHandler:
+    jp mTvmClearHandler

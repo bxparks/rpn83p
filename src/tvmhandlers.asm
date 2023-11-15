@@ -9,7 +9,6 @@
 ; restoreAppState() fails.
 initTvm:
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
-    call tvmResetPYR
     call tvmResetGuesses
     call tvmClear
     ; [[fallthrough]]
@@ -1034,35 +1033,16 @@ mTvmEndNameSelectorC:
     ld a, c
     ret
 
-mTvmResetHandler:
-    call closeInputBuf
-    res rpnFlagsTvmCalculate, (iy + rpnFlags)
-    call tvmResetPYR
-    call tvmResetGuesses
-    call tvmSolverDisableOverride
-    set dirtyFlagsMenu, (iy + dirtyFlags)
-    ld a, errorCodeTvmReset
-    jp setHandlerCode
-
 mTvmClearHandler:
     call closeInputBuf
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     call tvmClear
+    call tvmResetGuesses
+    call tvmSolverDisableOverride
     ld a, errorCodeTvmCleared
     jp setHandlerCode
 
 ;-----------------------------------------------------------------------------
-
-; Description: Reset the payments per year PYR. Bound to RSTV menu button.
-tvmResetPYR:
-    xor a
-    ld (tvmIsBegin), a
-    ld a, 12
-    bcall(_SetXXOP1)
-    ld de, fin_PY
-    call move9FromOp1
-    ld de, fin_CY
-    jp move9FromOp1
 
 ; Description: Reset the i0 and i1 of the TVM Solver. This is called for the
 ; stoN, stoPV, stoPMT, and stoFV buttons, so that updating any of those causes
@@ -1077,6 +1057,16 @@ tvmResetGuesses:
 
 ; Description: Clear the 5 NPV or NFV variables. Bound to CLTV menu button.
 tvmClear:
+    ; Reset the PYR, BEGIN parameters to their defaults.
+    xor a
+    ld (tvmIsBegin), a
+    ld a, 12
+    bcall(_SetXXOP1)
+    ld de, fin_PY
+    call move9FromOp1
+    ld de, fin_CY
+    call move9FromOp1
+    ; Reset the 5 TVM() variables to 0.
     bcall(_OP1Set0)
     ld de, fin_N
     call move9FromOp1
@@ -1087,7 +1077,10 @@ tvmClear:
     ld de, fin_PMT
     call move9FromOp1
     ld de, fin_FV
-    jp move9FromOp1
+    call move9FromOp1
+    ;
+    set dirtyFlagsMenu, (iy + dirtyFlags)
+    ret
 
 ; Description: Turn off the TVM Solver override. This is invoked by every
 ; TVM menu, except '2ND I%YR'.
