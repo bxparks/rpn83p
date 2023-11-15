@@ -105,6 +105,16 @@ move9FromOp1:
     ldir
     ret
 
+; Description: Move 9 bytes from OP2 to OP1.
+; Destroys: BC, DE, HL
+; Preserves: A
+op2ToOp1:
+    ld de, OP1
+    ld hl, OP2
+    ld bc, 9
+    ldir
+    ret
+
 ; Description: Exchange OP1 with OP2. Inlined version of bcall(_OP1ExOP2) to
 ; avoid the overhead of bcall().
 ; Output: OP1, OP2 exchanged

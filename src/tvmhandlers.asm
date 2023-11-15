@@ -5,15 +5,21 @@
 ; TVM menu handlers.
 ;-----------------------------------------------------------------------------
 
+; Description: Reset all of the TVM variables. This is performed only when
+; restoreAppState() fails.
 initTvm:
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
-    call tvmReset
+    call tvmResetPYR
+    call tvmResetGuesses
     call tvmClear
     ; [[fallthrough]]
 
+; Description: Reset the TVM Solver status. This is always done at App start.
 initTvmSolver:
-    xor a
+    ld a, tvmSolverStatusOff
     ld (tvmSolverStatus), a
+    ld a, tvmSolverOverrideOff
+    ld (tvmSolverOverrideOff), a
     ret
 
 ;-----------------------------------------------------------------------------
@@ -576,17 +582,17 @@ tvmSolverDebugEnabled:
 ;   - (tvmSolverResult) set to status
 ;   - CF=1 if should terminate
 ; Destroys: A
-checkInterestTermination:
+tvmSolveCheckTermination:
     ; Display debugging progress if enabled
     call tvmSolverCheckDebugEnabled ; CF=1 if enabled
-    jr nc, checkInterestNoDebug
+    jr nc, tvmSolveCheckNoDebug
     call displayAll
     bcall(_GetKey) ; pause
     bit dirtyFlagsStack, (iy + dirtyFlags)
-checkInterestNoDebug:
+tvmSolveCheckNoDebug:
     ; Check for ON/Break
     bit onInterrupt, (IY+onFlags)
-    jp nz, checkInterestBreak
+    jp nz, tvmSolveCheckBreak
     ; Check if i0 and i1 are within tolerance. If i1!=0.0, then use relative
     ; error |i0-i1|/|i1| < tol. Otherwise use absolute error |i0-i1| < tol.
     call rclTvmI0
@@ -596,40 +602,41 @@ checkInterestNoDebug:
     bcall(_FPSub) ; OP1=(i1-i0)
     bcall(_PopRealO2) ; FPS=[]; OP2=i1
     bcall(_CkOP2FP0) ; if OP2==0: ZF=1
-    jr z, checkInterestNoRelativeError
+    jr z, tvmSolveCheckNoRelativeError
     bcall(_FPDiv) ; OP1=(i1-i0)/i1
-checkInterestNoRelativeError:
+tvmSolveCheckNoRelativeError:
     call op2Set1EM8 ; OP2=1e-8
     bcall(_AbsO1O2Cp) ; if |OP1| < |OP2|: CF=1
-    jr c, checkInterestFound
+    jr c, tvmSolveCheckFound
     ; Check iteration counter
     ld hl, tvmSolverCount
     ld a, (hl)
     inc a
     ld (hl), a
     cp a, tvmSolverIterMax
-    jr z, checkInterestIterMaxed
+    jr z, tvmSolveCheckIterMaxed
     or a ; CF=0 to continue
     ret
-checkInterestFound:
+tvmSolveCheckFound:
     ld a, tvmSolverResultFound
-    jr checkInterestTerminate
-checkInterestBreak:
+    jr tvmSolveCheckTerminate
+tvmSolveCheckBreak:
     res onInterrupt, (iy + onFlags)
     ld a, tvmSolverResultBreak
-    jr checkInterestTerminate
-checkInterestIterMaxed:
+    jr tvmSolveCheckTerminate
+tvmSolveCheckIterMaxed:
     ld a, tvmSolverResultIterMaxed
-checkInterestTerminate:
+tvmSolveCheckTerminate:
     ld (tvmSolverResult), a
     scf ; CF=1 to terminate
     ret
 
 ; Description: Calculate the interest rate by solving the root of the NPMT
-; equation using the Newton-Secant method. Uses 2 initial interest rate
-; guesses:
-;   - i0=0
-;   - i1=100 (100%/year)
+; equation using the Newton-Secant method. Uses 2 initial interest rate guesses
+; in i0 and i1. Usually, they will be i0=0 i1=100 (100%/year). But if multiple
+; values are entered repeatedly using the I%YR menu key, the last 2 values will
+; be used as the initial guess.
+;
 ; Input:
 ;   - i0, i1: initial guesses, usually 0% and 100%, but can be overridden by
 ;   entering 2 values for the I%YR menu button twice
@@ -638,71 +645,68 @@ checkInterestTerminate:
 ;   - (tvmSolverResult) set
 ; Destroys:
 ;   - OP1-OP5
-calculateInterest:
-    ld a, 1
+tvmSolve:
+    ld a, tvmSolverStatusRunning
     ld (tvmSolverStatus), a
     ; Set iteration counter to 0 initially. Counting down is more efficient,
     ; but counting up allows better debugging. The number of iterations is so
     ; low that the small bit of inefficiency here doesn't matter.
     xor a
     ld (tvmSolverCount), a
-    ; Set up i0 using 0.0%
-    bcall(_OP1Set0) ; OP1=0.0
-    call stoTvmI0 ; i0=0.0
+    ; Set up the i0 guess
+    call rclTvmI0 ; i0=0.0
     call nominalPMT ; OP1=NPMT(i0)
     call stoTvmNPMT0 ; tvmNPMT0=NPMT(i0)
     bcall(_CkOP1FP0) ; if OP1==0: ZF=set
-    jr z, calculateInterestI0Zero
-    ; Set up i1 using 100.0%
-    call op1Set100 ; OP1=100.0%
-    call calcTvmIntPerPeriod
-    call stoTvmI1 ; i1=100%/PYR/100
+    jr z, tvmSolveI0Zero
+    ; Set up the i1 guess
+    call rclTvmI1 ; i1=100%/PYR/100
     call nominalPMT ; OP1=NPMT(i1)
     call stoTvmNPMT1 ; tvmNPMT1=NPMT(N,i1)
     bcall(_CkOP1FP0) ; if OP1==0: ZF=set
-    jr z, calculateInterestI1Zero
+    jr z, tvmSolveI1Zero
     ; Check for different sign bit of NPMT(i)
     call rclTvmNPMT0
     call op1ToOP2
     call rclTvmNPMT1
     call compareSignOP1OP2
-    jr z, calculateInterestNotFound
-calculateInterestLoop:
-    call checkInterestTermination
-    jr c, calculateInterestTerminate
+    jr z, tvmSolveNotFound
+tvmSolveLoop:
+    call tvmSolveCheckTermination
+    jr c, tvmSolveTerminate
     ; Use Secant method to estimate the next interest rate
     call calculateNextSecantInterest ; OP1=i2
-    ;call checkInterestBounds ; CF=1 if out of bounds
+    ;call tvmSolveCheckBounds ; CF=1 if out of bounds
     ; Secant failed. Use bisection.
     ;call c, call calculateNextBisectInterest
     call updateInterestGuesses ; update tvmI0,tmvI1
-    jr calculateInterestLoop
-calculateInterestTerminate:
+    jr tvmSolveLoop
+tvmSolveTerminate:
     ld a, (tvmSolverResult)
     or a
-    jr nz, calculateInterestEnd ; if status!=tvmSolverResultFound: return
+    jr nz, tvmSolveEnd ; if status!=tvmSolverResultFound: return
     ; Found!
     call rclTvmI1
     call calcTvmIYR
-    jr calculateInterestFound
-calculateInterestNotFound:
+    jr tvmSolveFound
+tvmSolveNotFound:
     ld a, tvmSolverResultNotFound
     ld (tvmSolverResult), a
-    jr calculateInterestEnd
-calculateInterestI0Zero:
+    jr tvmSolveEnd
+tvmSolveI0Zero:
     bcall(_OP1Set0) ; OP1=0.0
-    jr calculateInterestFound
-calculateInterestI1Zero:
+    jr tvmSolveFound
+tvmSolveI1Zero:
     call op1Set100 ; OP1=100.0%
-calculateInterestFound:
+tvmSolveFound:
     xor a
     ld (tvmSolverResult), a
-calculateInterestEnd:
+tvmSolveEnd:
     call tvmSolverCheckDebugEnabled ; CF=1 if enabled
-    jr nc, calculateInterestEndNoDirty
+    jr nc, tvmSolveEndNoDirty
     set dirtyFlagsStack, (iy + dirtyFlags)
-calculateInterestEndNoDirty:
-    xor a
+tvmSolveEndNoDirty:
+    ld a, tvmSolverStatusOff
     ld (tvmSolverStatus), a
     ret
 
@@ -710,6 +714,7 @@ calculateInterestEndNoDirty:
 
 mTvmNHandler:
     call closeInputBuf
+    call tvmSolverDisableOverride
     bit rpnFlagsTvmCalculate, (iy + rpnFlags)
     jr nz, mTvmNCalculate
     ; save the inputBuf value
@@ -775,13 +780,21 @@ mTvmNCalculateZero:
     bcall(_FPDiv)
     jr mTvmNCalculateSto
 
+;-----------------------------------------------------------------------------
+
 mTvmIYRHandler:
     call closeInputBuf
+    ; Check if 2ND I%YR pressed.
+    ld a, (menuSecond)
+    or a
+    jr nz, mTvmIYRSecondHandler
+    ; Handle vanilla I%YR.
     bit rpnFlagsTvmCalculate, (iy + rpnFlags)
     jr nz, mTvmIYRCalculate
     ; save the inputBuf value
     call stoTvmIYR
     set rpnFlagsTvmCalculate, (iy + rpnFlags)
+    call tvmSolverDisableOverride
     ld a, errorCodeTvmSet
     jp setHandlerCode
 mTvmIYRCalculate:
@@ -792,7 +805,7 @@ mTvmIYRCalculate:
     jr c, mTvmIYRCalculateMayExists
     ; Cannot have a solution
     ld a, errorCodeTvmNoSolution
-    jp setHandlerCode
+    jr mTvmIYRCalculateEnd
 mTvmIYRCalculateMayExists:
     ; TVM Solver is a bit slow, 2-3 seconds. During that time, the errorCode
     ; from the previous command will be displayed, which is a bit confusing.
@@ -804,14 +817,19 @@ mTvmIYRCalculateMayExists:
     ; anything else, so the logic is a bit tricky.
     ld a, (errorCode)
     or a
-    jr z, mTvmIYRCalculateSolve
+    jr z, mTvmIYRCalculateCheckOverride
     ; Remove the displayed error code if it exists
     xor a
     call setErrorCode
     call displayAll
+mTvmIYRCalculateCheckOverride:
+    ; If tvmSolverOverride is false, clobber i0 and i1 with defaults.
+    ld a, (tvmSolverOverride)
+    or a
+    call z, tvmResetGuesses
 mTvmIYRCalculateSolve:
     bcall(_RunIndicOn)
-    call calculateInterest
+    call tvmSolve
     ld a, (tvmSolverResult)
     or a
     jr nz, mTvmIYRCalculateNotFound
@@ -838,11 +856,31 @@ mTvmIYRCalculateBreak:
 mTvmIYRCalculateEnd:
     push af
     bcall(_RunIndicOff)
+    call tvmSolverDisableOverride
     pop af
     jp setHandlerCode
 
+; Description: Handle the '2ND I%YR' menu. Push the newest IYR into the I1 and
+; I0 stack, so that they can be used as the initial guess for the TVM Solver.
+; Input: OP1=rclX
+; Destroys: OP1, OP2
+mTvmIYRSecondHandler:
+    set rpnFlagsTvmCalculate, (iy + rpnFlags)
+    call tvmSolverEnableOverride
+    call calcTvmIntPerPeriod
+    call op1ToOp2
+    call rclTvmI1
+    call stoTvmI0
+    call op2ToOp1
+    call stoTvmI1
+    ld a, errorCodeTvmSet
+    jp setHandlerCode
+
+;-----------------------------------------------------------------------------
+
 mTvmPVHandler:
     call closeInputBuf
+    call tvmSolverDisableOverride
     bit rpnFlagsTvmCalculate, (iy + rpnFlags)
     jr nz, mTvmPVCalculate
     ; save the inputBuf value
@@ -868,8 +906,11 @@ mTvmPVCalculate:
     ld a, errorCodeTvmCalculated
     jp setHandlerCode
 
+;-----------------------------------------------------------------------------
+
 mTvmPMTHandler:
     call closeInputBuf
+    call tvmSolverDisableOverride
     bit rpnFlagsTvmCalculate, (iy + rpnFlags)
     jr nz, mTvmPMTCalculate
     ; save the inputBuf value
@@ -896,8 +937,11 @@ mTvmPMTCalculate:
     ld a, errorCodeTvmCalculated
     jp setHandlerCode
 
+;-----------------------------------------------------------------------------
+
 mTvmFVHandler:
     call closeInputBuf
+    call tvmSolverDisableOverride
     bit rpnFlagsTvmCalculate, (iy + rpnFlags)
     jr nz, mTvmFVCalculate
     ; save the inputBuf value
@@ -973,7 +1017,9 @@ mTvmEndNameSelector:
 mTvmResetHandler:
     call closeInputBuf
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
-    call tvmReset
+    call tvmResetPYR
+    call tvmResetGuesses
+    call tvmSolverDisableOverride
     set dirtyFlagsMenu, (iy + dirtyFlags)
     ld a, errorCodeTvmReset
     jp setHandlerCode
@@ -987,7 +1033,8 @@ mTvmClearHandler:
 
 ;-----------------------------------------------------------------------------
 
-tvmReset:
+; Description: Reset the payments per year PYR. Bound to RSTV menu button.
+tvmResetPYR:
     res rpnFlagsTvmPmtBegin, (iy + rpnFlags)
     ld a, 12
     bcall(_SetXXOP1)
@@ -996,6 +1043,18 @@ tvmReset:
     ld de, fin_CY
     jp move9FromOp1
 
+; Description: Reset the i0 and i1 of the TVM Solver. This is called for the
+; stoN, stoPV, stoPMT, and stoFV buttons, so that updating any of those causes
+; the TVM Solver initial guesses to be reset to 0 and 100%.
+tvmResetGuesses:
+    bcall(_OP1Set0) ; OP1=0.0
+    call stoTvmI0 ; i0=0.0
+    call op1Set100 ; OP1=100.0%
+    call calcTvmIntPerPeriod
+    call stoTvmI1 ; i1=100%/PYR/100
+    ret
+
+; Description: Clear the 5 NPV or NFV variables. Bound to CLTV menu button.
 tvmClear:
     bcall(_OP1Set0)
     ld de, fin_N
@@ -1008,3 +1067,19 @@ tvmClear:
     call move9FromOp1
     ld de, fin_FV
     jp move9FromOp1
+
+; Description: Turn off the TVM Solver override. This is invoked by every
+; TVM menu, except '2ND I%YR'.
+; Destroys: A
+tvmSolverDisableOverride:
+    xor a
+    ld (tvmSolverOverride), a
+    ret
+
+; Description: Turn on the TVM Solver override. This is invoked by 2ND I%YR
+; button.
+; Destroys: A
+tvmSolverEnableOverride:
+    ld a, tvmSolverOverrideOn
+    ld (tvmSolverOverride), a
+    ret
