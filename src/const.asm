@@ -5,14 +5,11 @@
 ; Constants, usually floating point.
 ;-----------------------------------------------------------------------------
 
-; TODO: Replace bcall(_Mov9ToOP1) with 'call move9ToOp1'.
-
 ; Description: Set OP1 to 0.0. Faster version of bcall(_OP1Set0).
 ; Destroys: all, HL
 op1Set0:
     ld hl, const0
-    bcall(_Mov9ToOP1)
-    ret
+    jp move9ToOp1
 
 ;-----------------------------------------------------------------------------
 
@@ -21,8 +18,7 @@ op1Set0:
 ; Destroys: all, HL
 op2Set10:
     ld hl, const10
-    bcall(_Mov9ToOP2)
-    ret
+    jp move9ToOp2
 
 ;-----------------------------------------------------------------------------
 
@@ -31,16 +27,14 @@ op2Set10:
 ; Destroys: all, HL
 op1Set100:
     ld hl, const100
-    bcall(_Mov9ToOP1)
-    ret
+    jp move9ToOp1
 
 ; Description: Set OP2 to 100. The TI-OS Provides OP2Set60() but not
 ; OP2Set100().
 ; Destroys: all, HL
 op2Set100:
     ld hl, const100
-    bcall(_Mov9ToOP2)
-    ret
+    jp move9ToOp2
 
 ;-----------------------------------------------------------------------------
 
@@ -48,8 +42,7 @@ op2Set100:
 ; Destroys: all, HL
 op2Set1EM8:
     ld hl, const1EM8
-    bcall(_Mov9ToOP2)
-    ret
+    jp move9ToOp2
 
 ;-----------------------------------------------------------------------------
 
@@ -57,8 +50,7 @@ op2Set1EM8:
 ; Destroys: all, HL
 op2Set2Pow32:
     ld hl, const2Pow32
-    bcall(_Mov9ToOP2)
-    ret
+    jp move9ToOp2
 
 ;-----------------------------------------------------------------------------
 
@@ -66,8 +58,7 @@ op2Set2Pow32:
 ; Destroys: all, HL
 op2Set2Pow14:
     ld hl, const2Pow14
-    bcall(_Mov9ToOP2)
-    ret
+    jp move9ToOp2
 
 ;-----------------------------------------------------------------------------
 
@@ -75,8 +66,7 @@ op2Set2Pow14:
 ; Destroys: all, HL
 op2Set2Pow16:
     ld hl, const2Pow16
-    bcall(_Mov9ToOP2)
-    ret
+    jp move9ToOp2
 
 ;-----------------------------------------------------------------------------
 
@@ -84,15 +74,13 @@ op2Set2Pow16:
 ; Destroys: all, HL
 op1SetPi:
     ld hl, constPi
-    bcall(_Mov9ToOP1)
-    ret
+    jp move9ToOp1
 
 ; Description: Set OP2 to PI.
 ; Destroys: all, HL
 op2SetPi:
     ld hl, constPi
-    bcall(_Mov9ToOP2)
-    ret
+    jp move9ToOp2
 
 ;-----------------------------------------------------------------------------
 
@@ -100,15 +88,13 @@ op2SetPi:
 ; Destroys: all, HL
 op1SetEuler:
     ld hl, constEuler
-    bcall(_Mov9ToOP1)
-    ret
+    jp move9ToOp1
 
 ; Description: Set OP2 to Euler constant.
 ; Destroys: all, HL
 op2SetEuler:
     ld hl, constEuler
-    bcall(_Mov9ToOP2)
-    ret
+    jp move9ToOp2
 
 ;-----------------------------------------------------------------------------
 
@@ -116,8 +102,7 @@ op2SetEuler:
 ; Destroys: all, HL
 op1SetMaxFloat:
     ld hl, constMaxFloat
-    bcall(_Mov9ToOP1)
-    ret
+    jp move9ToOp1
 
 ;-----------------------------------------------------------------------------
 
@@ -125,15 +110,13 @@ op1SetMaxFloat:
 ; Destroys: all, HL
 ; op1SetStandardGravity:
 ;     ld hl, constStandardGravity
-;     bcall(_Mov9ToOP1)
-;     ret
+;     jp move9ToOp1
 
 ; Description: Set OP2 to StandardGravity.
 ; Destroys: all, HL
 ; op2SetStandardGravity:
 ;     ld hl, constStandardGravity
-;     bcall(_Mov9ToOP2)
-;     ret
+;     jp move9ToOp2
 
 ;-----------------------------------------------------------------------------
 
@@ -141,8 +124,7 @@ op1SetMaxFloat:
 ; Destroys: all, HL
 op2SetKmPerMi:
     ld hl, constKmPerMi
-    bcall(_Mov9ToOP2)
-    ret
+    jp move9ToOp2
 
 ;-----------------------------------------------------------------------------
 
@@ -150,8 +132,7 @@ op2SetKmPerMi:
 ; Destroys: all, HL
 op2SetMPerFt:
     ld hl, constMPerFt
-    bcall(_Mov9ToOP2)
-    ret
+    jp move9ToOp2
 
 ;-----------------------------------------------------------------------------
 
@@ -159,8 +140,7 @@ op2SetMPerFt:
 ; Destroys: all, HL
 op2SetCmPerIn:
     ld hl, constCmPerIn
-    bcall(_Mov9ToOP2)
-    ret
+    jp move9ToOp2
 
 ;-----------------------------------------------------------------------------
 
@@ -168,8 +148,7 @@ op2SetCmPerIn:
 ; Destroys: all, HL
 op2SetKgPerLbs:
     ld hl, constKgPerLbs
-    bcall(_Mov9ToOP2)
-    ret
+    jp move9ToOp2
 
 ;-----------------------------------------------------------------------------
 
@@ -177,8 +156,7 @@ op2SetKgPerLbs:
 ; Destroys: all, HL
 op2SetGPerOz:
     ld hl, constGPerOz
-    bcall(_Mov9ToOP2)
-    ret
+    jp move9ToOp2
 
 ;-----------------------------------------------------------------------------
 
@@ -186,8 +164,7 @@ op2SetGPerOz:
 ; Destroys: all, HL
 op2SetLPerGal:
     ld hl, constLPerGal
-    bcall(_Mov9ToOP2)
-    ret
+    jp move9ToOp2
 
 ;-----------------------------------------------------------------------------
 
@@ -195,8 +172,7 @@ op2SetLPerGal:
 ; Destroys: all, HL
 op2SetMlPerFloz:
     ld hl, constMlPerFloz
-    bcall(_Mov9ToOP2)
-    ret
+    jp move9ToOp2
 
 ;-----------------------------------------------------------------------------
 
@@ -204,8 +180,7 @@ op2SetMlPerFloz:
 ; Destroys: all, HL
 op2SetKjPerKcal:
     ld hl, constKjPerKcal
-    bcall(_Mov9ToOP2)
-    ret
+    jp move9ToOp2
 
 ;-----------------------------------------------------------------------------
 
@@ -213,8 +188,7 @@ op2SetKjPerKcal:
 ; Destroys: all, HL
 op2SetKwPerHp:
     ld hl, constKwPerHp
-    bcall(_Mov9ToOP2)
-    ret
+    jp move9ToOp2
 
 ;-----------------------------------------------------------------------------
 
@@ -222,8 +196,7 @@ op2SetKwPerHp:
 ; Destroys: all, HL
 op2SetHpaPerInhg:
     ld hl, constHpaPerInhg
-    bcall(_Mov9ToOP2)
-    ret
+    jp move9ToOp2
 
 ;-----------------------------------------------------------------------------
 

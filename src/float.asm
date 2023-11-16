@@ -83,6 +83,18 @@ move9ToOp1:
     ldir
     ret
 
+; Description: Move 9 bytes (size of TI-OS floating point number) from HL to
+; OP2. Implements bcall(_Mov9ToOP2) without the overhead of a bcall().
+; Input: HL=pointer to float
+; Output: (OP2)=contains float
+; Destroys: BC, DE, HL
+; Preserves: A
+move9ToOp2:
+    ld de, OP2
+    ld bc, 9
+    ldir
+    ret
+
 ; Description: Move OP1 to OP2. This is used so frequently that it's worth
 ; inlining it to avoid the overhead of calling bcall(_OP1ToOP2).
 ; Destroys: BC, DE, HL
