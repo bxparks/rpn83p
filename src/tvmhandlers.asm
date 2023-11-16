@@ -3,6 +3,22 @@
 ; Copyright (c) 2023 Brian T. Park
 ;
 ; TVM menu handlers.
+;
+; The handling of rpnFlagsTvmCalculate is a bit tricky so let's write it down
+; for posterity:
+;
+; - If any TVM variable or parameter is set, then set the rpnFlagsTvmCalculate
+; flag, causing the next TVM button to Calculate. This includes the BEG and END
+; which set or clear the tvmIsBegin flag.
+;
+; - If a `2ND` menu button is invoked, causing a recall of the specified TVM
+; variable, then clear the rpnFlagsTvmCalculate flag, causing the next TVM
+; button to Store. This makes sense because a value was just recalled into the
+; X register.
+;
+; - If a TVM menu button performed a Calculate, then keep the
+; rpnFlagsTvmCalculate flag set, so that another TVM menu button performs
+; another Calculate.
 ;-----------------------------------------------------------------------------
 
 ; Description: Reset all of the TVM variables. This is performed only when
@@ -785,6 +801,7 @@ mTvmNHandler:
 mTvmNGet:
     call rclTvmN
     call pushX
+    res rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld a, errorCodeTvmRecalled
     jp setHandlerCode
 mTvmNCalculate:
@@ -861,9 +878,9 @@ mTvmIYRHandler:
     call op1ToOp2 ; OP2=IYR/N=i
     call op1SetM1 ; OP1=-1
     bcall(_CpOP1OP2) ; if -1<i: CF=1 (valid)
-    jr c, mTvmIYRValid
+    jr c, mTvmIYRSet
     bcall(_ErrDomain)
-mTvmIYRValid:
+mTvmIYRSet:
     call rclX
     call stoTvmIYR
     set rpnFlagsTvmCalculate, (iy + rpnFlags)
@@ -872,6 +889,7 @@ mTvmIYRValid:
 mTvmIYRGet:
     call rclTvmIYR
     call pushX
+    res rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld a, errorCodeTvmRecalled
     jp setHandlerCode
 mTvmIYRCalculate:
@@ -950,6 +968,7 @@ mTvmPVHandler:
 mTvmPVGet:
     call rclTvmPV
     call pushX
+    res rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld a, errorCodeTvmRecalled
     jp setHandlerCode
 mTvmPVCalculate:
@@ -989,6 +1008,7 @@ mTvmPMTHandler:
 mTvmPMTGet:
     call rclTvmPMT
     call pushX
+    res rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld a, errorCodeTvmRecalled
     jp setHandlerCode
 mTvmPMTCalculate:
@@ -1026,6 +1046,12 @@ mTvmFVHandler:
     set rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld a, errorCodeTvmSet
     jp setHandlerCode
+mTvmFVGet:
+    call rclTvmFV
+    call pushX
+    res rpnFlagsTvmCalculate, (iy + rpnFlags)
+    ld a, errorCodeTvmRecalled
+    jp setHandlerCode
 mTvmFVCalculate:
     ; FV = -PMT * [(1+i)N - 1] * (1 + i p) / i - PV * (1+i)N
     ;    = -PMT*CF3(i)-PV*CF1(i)
@@ -1044,11 +1070,6 @@ mTvmFVCalculate:
     call pushX
     ld a, errorCodeTvmCalculated
     jp setHandlerCode
-mTvmFVGet:
-    call rclTvmFV
-    call pushX
-    ld a, errorCodeTvmRecalled
-    jp setHandlerCode
 
 ;-----------------------------------------------------------------------------
 
@@ -1059,19 +1080,20 @@ mTvmPYRHandler:
     bit rpnFlagsSecondKey, (iy + rpnFlags)
     jr nz, mTvmPYRGet
     ; save the inputBuf value in OP1
+    res rpnFlagsTvmCalculate, (iy + rpnFlags)
     call rclX
     bcall(_PosNo0Int) ; if posnonzeroint(x): ZF=1
-    jr z, mTvmPYRHandlerContinue
+    jr z, mTvmPYRHandlerSet
     bcall(_ErrDomain)
-mTvmPYRHandlerContinue:
+mTvmPYRHandlerSet:
     call stoTvmPYR
-    res rpnFlagsTvmCalculate, (iy + rpnFlags)
+    set rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld a, errorCodeTvmSet
     jp setHandlerCode
 mTvmPYRGet:
-    res rpnFlagsTvmCalculate, (iy + rpnFlags)
     call rclTvmPYR
     call pushX
+    res rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld a, errorCodeTvmRecalled
     jp setHandlerCode
 
@@ -1079,7 +1101,7 @@ mTvmPYRGet:
 
 mTvmBeginHandler:
     call closeInputBuf
-    res rpnFlagsTvmCalculate, (iy + rpnFlags)
+    set rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld a, rpntrue
     ld (tvmIsBegin), a
     set dirtyFlagsMenu, (iy + dirtyFlags)
@@ -1102,7 +1124,7 @@ mTvmBeginNameSelectorC:
 
 mTvmEndHandler:
     call closeInputBuf
-    res rpnFlagsTvmCalculate, (iy + rpnFlags)
+    set rpnFlagsTvmCalculate, (iy + rpnFlags)
     xor a
     ld (tvmIsBegin), a
     set dirtyFlagsMenu, (iy + dirtyFlags)
@@ -1134,12 +1156,13 @@ mTvmIYR0Handler:
     call rclX
     call stoTvmIYR0
     call tvmSolverSetOverrideFlagIYR0
-    res rpnFlagsTvmCalculate, (iy + rpnFlags)
+    set rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld a, errorCodeTvmSet
     jp setHandlerCode
 mTvmIYR0Get:
     call rclTvmIYR0
     call pushX
+    res rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld a, errorCodeTvmRecalled
     jp setHandlerCode
 
@@ -1166,12 +1189,13 @@ mTvmIYR1Handler:
     call rclX
     call stoTvmIYR1
     call tvmSolverSetOverrideFlagIYR1
-    res rpnFlagsTvmCalculate, (iy + rpnFlags)
+    set rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld a, errorCodeTvmSet
     jp setHandlerCode
 mTvmIYR1Get:
     call rclTvmIYR1
     call pushX
+    res rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld a, errorCodeTvmRecalled
     jp setHandlerCode
 
@@ -1198,12 +1222,13 @@ mTvmIterMaxHandler:
     call rclX
     call stoTvmIterMax
     call tvmSolverSetOverrideFlagIterMax
-    res rpnFlagsTvmCalculate, (iy + rpnFlags)
+    set rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld a, errorCodeTvmSet
     jp setHandlerCode
 mTvmIterMaxGet:
     call rclTvmIterMax
     call pushX
+    res rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld a, errorCodeTvmRecalled
     jp setHandlerCode
 
