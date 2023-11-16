@@ -8,6 +8,7 @@
 mBaseHandler:
     push af ; preserve the C flag
     call closeInputBuf ; must call before modifying rpnFlagsBaseModeEnabled
+    res rpnFlagsTvmCalculate, (iy + rpnFlags)
     pop af
     jr c, mBaseHandlerOnExit
     set rpnFlagsBaseModeEnabled, (iy + rpnFlags)
@@ -21,21 +22,25 @@ mBaseHandlerEnd:
 
 mHexHandler:
     call closeInputBuf
+    res rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld a, 16
     jr setBaseNumber
 
 mDecHandler:
     call closeInputBuf
+    res rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld a, 10
     jr setBaseNumber
 
 mOctHandler:
     call closeInputBuf
+    res rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld a, 8
     jr setBaseNumber
 
 mBinHandler:
     call closeInputBuf
+    res rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld a, 2
     ; [[fallthrough]]
 
@@ -364,6 +369,7 @@ mSetCarryFlagHandler:
 
 mGetCarryFlagHandler:
     call closeInputBuf
+    res rpnFlagsTvmCalculate, (iy + rpnFlags)
     set dirtyFlagsBaseMode, (iy + dirtyFlags)
     call recallCarryFlag
     jr c, mGetCarryFlagHandlerPush1
@@ -396,6 +402,7 @@ setWordSize:
 
 mGetWordSizeHandler:
     call closeInputBuf
+    res rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld a, (baseWordSize)
     call convertU8ToOP1
     jp pushX

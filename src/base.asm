@@ -43,7 +43,7 @@ getWordSizeIndexErr:
     bcall(_ErrDomain)
 
 ;-----------------------------------------------------------------------------
-; Routines for converting floating point to U32 or W32.
+; Routines for converting floating point OP1 to U32 or W32.
 ;
 ; The W32 type is a wrapper around a U32 containing a status_code byte at the
 ; beginning. The equivalent C-struct for W32 is:
@@ -71,7 +71,7 @@ convertOP1ToU32Error:
 ; fractional part.
 ; Input:
 ;   - OP1: unsigned 32-bit integer as a floating point number
-;   - HL: pointer to a u32 in memory
+;   - HL: pointer to a u32 in memory, cannot be OP2
 ; Output:
 ;   - HL: OP1 converted to a u32, in little-endian format
 ; Destroys: A, B, C, DE
@@ -87,7 +87,7 @@ convertOP1ToU32AllowFrac:
 ; fractional part.
 ; Input:
 ;   - OP2: unsigned 32-bit integer as a floating point number
-;   - HL: pointer to a u32 in memory
+;   - HL: pointer to a u32 in memory, cannot be OP2
 ; Output:
 ;   - HL: OP2 converted to a u32, in little-endian format
 ; Destroys: A, B, C, DE
@@ -112,7 +112,7 @@ convertOP2ToU32AllowFrac:
 ;
 ; Input:
 ;   - OP1: unsigned 32-bit integer as a floating point number
-;   - HL: pointer to a u32 in memory
+;   - HL: pointer to a u32 in memory, cannot be OP2
 ; Output:
 ;   - HL: OP1 converted to a u32, in little-endian format
 ; Destroys: A, B, C, DE
@@ -141,7 +141,7 @@ convertW32ToU32:
 ; Description: Convert OP1 to W32 (statusCode, U32) struct.
 ; Input:
 ;   - OP1: floating point number
-;   - HL: pointer to w32 struct in memory
+;   - HL: pointer to w32 struct in memory, cannot be OP2
 ; Output:
 ;   - HL: pointer to w32 struct
 ; Destroys: A, B, C, DE
@@ -188,7 +188,7 @@ convertOP1ToW32U32:
 ; validation check that throws an exception.
 ; Input:
 ;   - OP1: unsigned 32-bit integer as a floating point number
-;   - HL: pointer to a u32 in memory
+;   - HL: pointer to a u32 in memory, cannot be OP2
 ; Output:
 ;   - HL: OP1 converted to a u32, in little-endian format
 ; Destroys: A, B, DE
@@ -232,7 +232,7 @@ convertOP1ToU32SecondDigit:
 ; Description: Same as convertOP1ToU32() except using OP2.
 ; Input:
 ;   - OP2: unsigned 32-bit integer as a floating point number
-;   - HL: pointer to a u32 in memory
+;   - HL: pointer to a u32 in memory, cannot be OP1 or OP2
 ; Destroys: A, B, C, DE
 ; Preserves: HL, OP1, OP2
 convertOP2ToU32:
@@ -244,6 +244,31 @@ convertOP2ToU32:
     bcall(_OP1ExOP2)
     pop hl
     ret
+
+; Description: Convert OP1 to a u8, throwing an exception if the number has
+; fractions, or is larger than a u8.
+; Input:
+;   - OP1: unsigned 32-bit integer as a floating point number
+;   - HL: pointer to a u32 in memory, cannot be OP1 or OP2
+; Output:
+;   - (HL): u8 value
+; Destroys: A, B, C, DE
+; Preserves: HL, OP1, OP2
+convertOP1ToU8:
+    call convertOP1ToU32
+    ; Check that the U32 is a U8
+    inc hl
+    ld a, (hl)
+    inc hl
+    or (hl)
+    inc hl
+    or (hl)
+    dec hl
+    dec hl
+    dec hl
+    ret z
+convertOP1ToU8Error:
+    bcall(_ErrDomain)
 
 ;-----------------------------------------------------------------------------
 ; Convert U8 or U32 to a TI floating point number.

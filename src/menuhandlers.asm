@@ -25,11 +25,15 @@ mNotYetHandler:
     ld a, errorCodeNotYet
     jp setHandlerCode
 
-; Description: Default handler for menu nodes of type "MenuGroup".
+; Description: Default handler for menu nodes of type "MenuGroup". This handler
+; currently does nothing. The 'chdir' functionality is now handled by
+; dispatchMenuNode() because it needs to send an 'onExit' to the current node,
+; and an 'onEnter' event to the selected node.
 ; Input:
 ;   A: nodeId of the select menu item
 ;   HL: pointer to MenuNode that was activated (ignored)
-;   CF: 0 upon entry into group; 1 upon exit from group
+;   CF: 0 indicates on 'onEnter' event into group; 1 indicates onExit event
+;   from group
 mGroupHandler:
     ret
 
@@ -38,7 +42,8 @@ mGroupHandler:
 ;-----------------------------------------------------------------------------
 
 mHelpHandler:
-    jp processHelp
+    bcall(_processHelp) ; use bcall() to invoke HELP handler on Flash Page 1
+    ret
 
 ;-----------------------------------------------------------------------------
 ; Children nodes of MATH menu.
@@ -94,6 +99,18 @@ mAtan2Handler:
 
 ;-----------------------------------------------------------------------------
 
+; Calculate e^x-1 without round off errors around x=0.
+mExpMinusOneHandler:
+    call closeInputAndRecallX
+    call expMinusOne
+    jp replaceX
+
+; Calculate ln(1+x) without round off errors around x=0.
+mLnOnePlusHandler:
+    call closeInputAndRecallX
+    call lnOnePlus
+    jp replaceX
+
 ; Alog2(X) = 2^X
 mAlog2Handler:
     call closeInputAndRecallX
@@ -105,6 +122,7 @@ mAlog2Handler:
 ; Log2(X) = log_base_2(X) = log(X)/log(2)
 mLog2Handler:
     call closeInputBuf
+    res rpnFlagsTvmCalculate, (iy + rpnFlags)
     bcall(_OP1Set2) ; OP2 = 2
     bcall(_LnX) ; OP1 = ln(2)
     bcall(_PushRealO1); FPS = ln(2)
@@ -146,6 +164,7 @@ mPercentHandler:
 ; change, then the '+' command will retrieve the original X.
 mPercentChangeHandler:
     call closeInputBuf
+    res rpnFlagsTvmCalculate, (iy + rpnFlags)
     call rclY
     bcall(_OP1ToOP2) ; OP2 = Y
     bcall(_PushRealO1) ; FPS = Y
@@ -178,6 +197,7 @@ mPercentChangeHandler:
 ; the internet, but I'm going to punt on that for now.
 mGcdHandler:
     call closeInputBuf
+    res rpnFlagsTvmCalculate, (iy + rpnFlags)
     call validatePosIntGcdLcm
     call gcdOp1Op2 ; OP1 = gcd()
     jp replaceXY ; X = OP1
@@ -220,6 +240,7 @@ gcdOp1Op2:
 ;           = Y * (X / GCD(Y,X))
 mLcmHandler:
     call closeInputBuf
+    res rpnFlagsTvmCalculate, (iy + rpnFlags)
     call validatePosIntGcdLcm
 
     bcall(_PushRealO1) ; FPS = OP1 = Y
@@ -422,6 +443,7 @@ mNearHandler:
 ; the range to [0,65535].
 mPermHandler:
     call closeInputBuf
+    res rpnFlagsTvmCalculate, (iy + rpnFlags)
     call validatePermComb
 
     ; Do the calculation. Set initial Result to 1 so that P(N, 0) = 1.
@@ -460,6 +482,7 @@ mPermHandlerEnd:
 ; results are always integral.
 mCombHandler:
     call closeInputBuf
+    res rpnFlagsTvmCalculate, (iy + rpnFlags)
     call validatePermComb
 
     ; Do the calculation. Set initial Result to 1 C(N, 0) = 1.
@@ -543,6 +566,7 @@ mFactorialHandler:
 ; Description: Generate a random number [0,1) into the X register.
 mRandomHandler:
     call closeInputBuf
+    res rpnFlagsTvmCalculate, (iy + rpnFlags)
     bcall(_Random)
     jp pushX
 
@@ -867,7 +891,8 @@ mHrToHmsHandler:
 
 mFixHandler:
     call closeInputBuf
-    ld hl, mFixName
+    res rpnFlagsTvmCalculate, (iy + rpnFlags)
+    ld hl, msgFixLabel
     call startArgParser
     call processCommandArg
     ret nc ; do nothing if canceled
@@ -877,7 +902,8 @@ mFixHandler:
 
 mSciHandler:
     call closeInputBuf
-    ld hl, mSciName
+    res rpnFlagsTvmCalculate, (iy + rpnFlags)
+    ld hl, msgSciLabel
     call startArgParser
     call processCommandArg
     ret nc ; do nothing if canceled
@@ -887,7 +913,8 @@ mSciHandler:
 
 mEngHandler:
     call closeInputBuf
-    ld hl, mEngName
+    res rpnFlagsTvmCalculate, (iy + rpnFlags)
+    ld hl, msgEngLabel
     call startArgParser
     call processCommandArg
     ret nc ; do nothing if canceled
@@ -1040,6 +1067,7 @@ mAtanhHandler:
 
 mStackRotUpHandler:
     call closeInputBuf
+    res rpnFlagsTvmCalculate, (iy + rpnFlags)
     jp rotUpStack
 
 mStackRotDownHandler:
@@ -1054,16 +1082,25 @@ mStackExchangeXYHandler:
 
 mClearRegsHandler:
     call closeInputBuf
+    res rpnFlagsTvmCalculate, (iy + rpnFlags)
     call clearRegs
     ld a, errorCodeRegsCleared
     jp setHandlerCode
 
 mClearStackHandler:
     call closeInputBuf
+    res rpnFlagsTvmCalculate, (iy + rpnFlags)
     jp clearStack
 
 mClearXHandler:
     call closeInputBuf
+    res rpnFlagsTvmCalculate, (iy + rpnFlags)
     res rpnFlagsLiftEnabled, (iy + rpnFlags) ; disable stack lift
     bcall(_OP1Set0)
     jp stoX
+
+mClearStatHandler:
+    jp mStatClearHandler
+
+mClearTvmHandler:
+    jp mTvmClearHandler

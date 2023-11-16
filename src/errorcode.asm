@@ -71,14 +71,11 @@ getErrorStringContinue:
 ; docs. We will ignore those extra error codes in this application.
 ;
 ; This table defines additional custom error codes used internally by this
-; application:
-; - errorStrOk (0): OK or success status code
-; - errorStrNotYet (64): not yet implemented
-; - errorStrUnknown: This string will be display for any error code whose error
-; string is not known. If the user sends a reproducible bug report, maybe we
-; can reverse engineer the condition that triggers that particular error code
-; and create a human-readable string for it.
-errorCodeCount equ 67 ; total number of error codes
+; application. The `errorStrUnknown` message is displayed for any error code
+; whose error string is not known. If the user sends a reproducible bug report,
+; maybe we can reverse engineer the condition that triggers that particular
+; error code and create a human-readable string for it.
+
 errorStrings:
 errorCodeOk equ                 0 ; hopefully TI-OS uses 0 as "success"
     .dw errorStrOk
@@ -176,12 +173,34 @@ errorCodeLinkXmit equ           31
     .dw errorStrUnknown         ; 61
     .dw errorStrUnknown         ; 62
     .dw errorStrUnknown         ; 63, hopefully the last TI-OS error code
-errorCodeNotYet equ             64 ; Handler not yet implemented
+; Start of extended error codes used by RPN83P.
+errorCodeQuitApp equ            64 ; Handler wants to Quit the App
+    .dw errorStrQuitApp
+errorCodeClearScreen equ        65 ; Handler wants to clear screen
+    .dw errorStrClearScreen
+errorCodeNotYet equ             66 ; Handler not yet implemented
     .dw errorStrNotYet
-errorCodeRegsCleared equ        65 ; REGS cleared
+errorCodeRegsCleared equ        67 ; REGS cleared
     .dw errorStrRegsCleared
-errorCodeStatCleared equ        66 ; STAT registers cleared
+errorCodeStatCleared equ        68 ; STAT registers cleared
     .dw errorStrStatCleared
+errorCodeTvmSet equ             69
+    .dw errorStrTvmSet
+errorCodeTvmRecalled equ        70
+    .dw errorStrTvmRecalled
+errorCodeTvmCalculated equ      71
+    .dw errorStrTvmCalculated
+errorCodeTvmNoSolution equ      72
+    .dw errorStrTvmNoSolution
+errorCodeTvmNotFound equ        73
+    .dw errorStrTvmNotFound
+errorCodeTvmIterations equ      74
+    .dw errorStrTvmIterations
+errorCodeTvmCleared equ         75
+    .dw errorStrTvmCleared
+errorCodeTvmSolverReset equ     76
+    .dw errorStrTvmSolverReset
+errorCodeCount equ              77 ; total number of error codes
 
 ; The C strings for each error code. In alphabetical order, as listed in the TI
 ; 83 Plus SDK docs.
@@ -231,11 +250,32 @@ errorStrTolTooSmall:
     .db "Err: Tol Not Met", 0
 errorStrUndefined:
     .db "Err: Undefined", 0 ; indicates the system error "Undefined"
+; Start of RPN83P custom error messages
+errorStrQuitApp:
+    .db "QUIT", 0 ; handler wants to QUIT the app
+errorStrClearScreen:
+    .db "Clear Screen", 0 ; handler wants to clear the screen
 errorStrUnknown:
-    .db "Err: UNKNOWN", 0 ; not defined in this module
+    .db "Err: UNKNOWN", 0 ; error string of error code not known
 errorStrNotYet:
     .db "Err: NOT YET", 0 ; handler not implemented yet
 errorStrRegsCleared:
-    .db "REGS cleared", 0 ; storage registers cleared
+    .db "REGS Cleared", 0 ; storage registers cleared
 errorStrStatCleared:
-    .db "STAT cleared", 0 ; STAT registers cleared
+    .db "STAT Cleared", 0 ; STAT registers cleared
+errorStrTvmSet:
+    .db "TVM Set", 0 ; TVM parameter was set
+errorStrTvmRecalled:
+    .db "TVM Recalled", 0 ; TVM parameter was recalled, without recalculation
+errorStrTvmCalculated:
+    .db "TVM Calculated", 0 ; TVM parameter was calculated
+errorStrTvmNoSolution:
+    .db "TVM No Solution", 0 ; TVM Solver determines no solution exists
+errorStrTvmNotFound:
+    .db "TVM Not Found", 0 ; TVM Solver did not find root
+errorStrTvmIterations:
+    .db "TVM Iterations", 0 ; TVM Solver hit max iterations
+errorStrTvmCleared:
+    .db "TVM Cleared", 0 ; TVM all parameter cleared, including TVM Solver
+errorStrTvmSolverReset:
+    .db "TVM Solver Reset", 0 ; TVM Solver parameters reset to factory defaults

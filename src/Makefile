@@ -16,20 +16,24 @@ SRCS := \
 	debug.asm \
 	display.asm \
 	errorcode.asm \
+	float.asm \
 	handlers.asm \
 	handlertab.asm \
 	help.asm \
 	input.asm \
 	integer.asm \
+	main.asm \
 	mainparser.asm \
 	menu.asm \
 	menudef.asm \
 	menuhandlers.asm \
+	menulookup.asm \
 	prime.asm \
 	print.asm \
 	pstring.asm \
 	rpn83p.asm \
 	stathandlers.asm \
+	tvmhandlers.asm \
 	vars.asm
 
 # TI Flash app

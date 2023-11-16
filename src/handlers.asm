@@ -17,6 +17,8 @@
 ;   - dirtyFlagsInput set
 ; Destroys: all
 handleKeyNumber:
+    ; Any digit entry should cause TVM menus to go into input mode.
+    res rpnFlagsTvmCalculate, (iy + rpnFlags)
     ; If not in input editing mode: lift stack and go into edit mode
     bit rpnFlagsEditing, (iy + rpnFlags)
     jr nz, handleKeyNumberCheckAppend
@@ -245,6 +247,8 @@ handleKeyEE:
 ; Output: (iy+inputBufFlags) updated
 ; Destroys: A, DE, HL
 handleKeyDel:
+    ; Clear TVM Calculate mode.
+    res rpnFlagsTvmCalculate, (iy + rpnFlags)
     ; Check if non-zero error code is currently displayed. The handlerCode was
     ; already set to 0 before this was called, so simply returning will clear
     ; the previous errorCode.
@@ -315,6 +319,8 @@ handleKeyDelExit:
 ;   - mark displayInput dirty
 ; Destroys: A, HL
 handleKeyClear:
+    ; Clear TVM Calculate mode.
+    res rpnFlagsTvmCalculate, (iy + rpnFlags)
     ; Check if non-zero error code is currently displayed. The handlerCode was
     ; already set to 0 before this was called, so simply returning will clear
     ; the previous errorCode.
@@ -352,6 +358,8 @@ handleKeyChs:
     ; Do nothing in BASE mode. Use NEG function instead.
     bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
     ret nz
+    ; Clear TVM mode.
+    res rpnFlagsTvmCalculate, (iy + rpnFlags)
     ; Toggle sign character in inputBuf in edit mode.
     bit rpnFlagsEditing, (iy + rpnFlags)
     jr nz, handleKeyChsInputBuf
@@ -423,6 +431,7 @@ flipInputBufSignAdd:
 ; Destroys: all, OP1, OP2, OP4
 handleKeyEnter:
     call closeInputBuf
+    res rpnFlagsTvmCalculate, (iy + rpnFlags)
     call liftStack ; always lift the stack
     res rpnFlagsLiftEnabled, (iy + rpnFlags)
     ret
@@ -513,7 +522,6 @@ handleKeyExit:
 
 ;-----------------------------------------------------------------------------
 
-; handleKeyMenu1() -> None
 ; Description: Handle menu key 1 (left most).
 ; Input: none
 ; Destroys: all
@@ -521,7 +529,6 @@ handleKeyMenu1:
     ld a, 0
     jr handleKeyMenuA
 
-; handleKeyMenu2() -> None
 ; Description: Handle menu key 2 (2nd from left).
 ; Input: none
 ; Destroys: all
@@ -529,7 +536,6 @@ handleKeyMenu2:
     ld a, 1
     jr handleKeyMenuA
 
-; handleKeyMenu3() -> None
 ; Description: Handle menu key 3 (middle).
 ; Input: none
 ; Destroys: all
@@ -537,7 +543,6 @@ handleKeyMenu3:
     ld a, 2
     jr handleKeyMenuA
 
-; handleKeyMenu4() -> None
 ; Description: Handle menu key 4 (2nd from right).
 ; Input: none
 ; Destroys: all
@@ -545,26 +550,69 @@ handleKeyMenu4:
     ld a, 3
     jr handleKeyMenuA
 
-; handleKeyMenu5() -> None
 ; Description: Handle menu key 5 (right most).
 ; Input: none
 ; Destroys: all
 handleKeyMenu5:
     ld a, 4
-    ; [[fallthrough]]
+    jr handleKeyMenuA
 
-; handleKeyMenuA(A) -> None
-;
+; Description: Handle menu key 2ND 1 (left most).
+; Input: none
+; Destroys: all
+handleKeyMenuSecond1:
+    ld a, 0
+    jr handleKeyMenuSecondA
+
+; Description: Handle menu key 2ND 2 (2nd from left).
+; Input: none
+; Destroys: all
+handleKeyMenuSecond2:
+    ld a, 1
+    jr handleKeyMenuSecondA
+
+; Description: Handle menu key 2ND 3 (middle).
+; Input: none
+; Destroys: all
+handleKeyMenuSecond3:
+    ld a, 2
+    jr handleKeyMenuSecondA
+
+; Description: Handle menu key 2ND 4 (2nd from right).
+; Input: none
+; Destroys: all
+handleKeyMenuSecond4:
+    ld a, 3
+    jr handleKeyMenuSecondA
+
+; Description: Handle menu key 2ND 5 (right most).
+; Input: none
+; Destroys: all
+handleKeyMenuSecond5:
+    ld a, 4
+    jr handleKeyMenuSecondA
+
 ; Description: Dispatch to the handler specified by the menu node at the menu
 ; button indexed by A (0: left most, 4: right most).
 ; Input: A: menu button index (0-4)
 ; Output: A: nodeId of the selected menu item
 ; Destroys: all
 handleKeyMenuA:
+    res rpnFlagsSecondKey, (iy + rpnFlags)
+handleKeyMenuAltEntry:
     ld c, a ; save A (menu button index 0-4)
     call getCurrentMenuRowBeginId ; A=row begin id
     add a, c ; menu node ids are sequential starting with beginId
     jp dispatchMenuNode
+
+; Description: Same as handleKeyMenuA() except that the menu key was invoked
+; using the 2ND key, which sets the rpnFlagsSecondKey flag.
+; Input: A: menu button index (0-4)
+; Output: A: nodeId of the selected menu item
+; Destroys: all
+handleKeyMenuSecondA:
+    set rpnFlagsSecondKey, (iy + rpnFlags)
+    jr handleKeyMenuAltEntry
 
 ;-----------------------------------------------------------------------------
 ; Arithmetic functions.
@@ -624,11 +672,13 @@ handleKeyDiv:
 
 handleKeyPi:
     call closeInputBuf
+    res rpnFlagsTvmCalculate, (iy + rpnFlags)
     call op1SetPi
     jp pushX
 
 handleKeyEuler:
     call closeInputBuf
+    res rpnFlagsTvmCalculate, (iy + rpnFlags)
     call op1SetEuler
     jp pushX
 
@@ -666,14 +716,17 @@ handleKeySqrt:
 
 handleKeyRotDown:
     call closeInputBuf
+    res rpnFlagsTvmCalculate, (iy + rpnFlags)
     jp rotDownStack
 
 handleKeyExchangeXY:
     call closeInputBuf
+    res rpnFlagsTvmCalculate, (iy + rpnFlags)
     jp exchangeXYStack
 
 handleKeyAns:
     call closeInputBuf
+    res rpnFlagsTvmCalculate, (iy + rpnFlags)
     call rclL
     jp pushX
 
@@ -741,6 +794,7 @@ handleKeyATan:
 
 handleKeySto:
     call closeInputBuf
+    res rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld hl, msgStoName
     call startArgParser
     set inputBufFlagsArgAllowModifier, (iy + inputBufFlags)
@@ -763,6 +817,7 @@ handleKeyStoError:
 
 handleKeyRcl:
     call closeInputBuf
+    res rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld hl, msgRclName
     call startArgParser
     set inputBufFlagsArgAllowModifier, (iy + inputBufFlags)
@@ -825,6 +880,18 @@ handleKeyStat:
 handleKeyQuit:
     jp mainExit
 
+handleKeyDraw:
+    call closeInputBuf
+    res rpnFlagsTvmCalculate, (iy + rpnFlags)
+    ld hl, msgDrawLabel
+    call startArgParser
+    call processCommandArg
+    ret nc ; do nothing if canceled
+    ; save (argValue)
+    ld a, (argValue)
+    ld (drawMode), a
+    ret
+
 ;-----------------------------------------------------------------------------
 ; Common code fragments, to save space.
 ;-----------------------------------------------------------------------------
@@ -832,6 +899,7 @@ handleKeyQuit:
 ; Close the input buffer, and recall Y and X into OP1 and OP2 respectively.
 closeInputAndRecallXY:
     call closeInputBuf
+    res rpnFlagsTvmCalculate, (iy + rpnFlags)
     call rclX
     bcall(_OP1ToOP2)
     jp rclY
@@ -839,4 +907,5 @@ closeInputAndRecallXY:
 ; Close the input buffer, and recall X into OP1 respectively.
 closeInputAndRecallX:
     call closeInputBuf
+    res rpnFlagsTvmCalculate, (iy + rpnFlags)
     jp rclX

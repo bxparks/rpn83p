@@ -72,6 +72,8 @@ MenuGroup root mRoot [
       MenuRow [
         MenuItem 2<Scaret>X mAlog2 # 2^x
         MenuItem LOG2 mLog2 # log_base2(x)
+        MenuItem E<Scaret>X<Sdash> mExpMinusOne # exp(x)-1
+        MenuItem LN1<SplusSign> mLnOnePlus # ln(1+x)
         MenuItem LOGB mLogBase # log_base_x(y)
       ]
     ]
@@ -301,6 +303,34 @@ MenuGroup root mRoot [
       #   MenuItem * *
       # ]
     ]
+    MenuGroup TVM mTvm [
+      MenuRow [
+        MenuItem N mTvmN
+        MenuItem I<Spercent>YR mTvmIYR
+        MenuItem PV mTvmPV
+        MenuItem PMT mTvmPMT
+        MenuItem FV mTvmFV
+      ]
+      MenuRow [
+        MenuItem P<Sslash>YR mTvmPYR
+        MenuItemAlt BEG BEG<Sblock> mTvmBegin
+        MenuItemAlt END END<Sblock> mTvmEnd
+        MenuItem * *
+        MenuItem CLTV mTvmClear
+      ]
+      MenuRow [
+        # TVM Solver's initial first and second guesses. The label shown to
+        # users is one-based, because a '0' looks like a capital 'O', and most
+        # non-software people are more familar with 1-based counting. But
+        # internally, we use a zero-based system and these variables are known
+        # consistently as i0 (IYR0) and i1 (IYR1) respectively.
+        MenuItemAlt IYR1 IY1<Sblock> mTvmIYR0 # TVM Solver's first guess
+        MenuItemAlt IYR2 IY2<Sblock> mTvmIYR1 # TVM Solver's second guess
+        MenuItemAlt TMAX TMX<Sblock> mTvmIterMax # TVM Solver max iter count
+        MenuItem * *
+        MenuItem RSTV mTvmSolverReset
+      ]
+    ]
   ]
   MenuRow [
     MenuGroup CLR mClear [
@@ -309,6 +339,7 @@ MenuGroup root mRoot [
         MenuItem CLST mClearStack
         MenuItem CLRG mClearRegs
         MenuItem CL<ScapSigma> mClearStat
+        MenuItem CLTV mClearTvm
       ]
     ]
     MenuGroup MODE mMode [

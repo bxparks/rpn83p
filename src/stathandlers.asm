@@ -41,6 +41,7 @@ initStat:
 
 mStatPlusHandler:
     call closeInputBuf
+    res rpnFlagsTvmCalculate, (iy + rpnFlags)
     call statSigmaPlus
     ld a, statRegN
     call rclNN ; OP1=R[sigmaN]
@@ -50,6 +51,7 @@ mStatPlusHandler:
 
 mStatMinusHandler:
     call closeInputBuf
+    res rpnFlagsTvmCalculate, (iy + rpnFlags)
     call statSigmaMinus
     ld a, statRegN
     call rclNN ; OP1=R[sigmaN]
@@ -88,8 +90,8 @@ mStatLinearModeNameSelector:
     ret
 
 mStatClearHandler:
-mClearStatHandler:
     call closeInputBuf
+    res rpnFlagsTvmCalculate, (iy + rpnFlags)
     call clearStatRegs
     ld a, errorCodeStatCleared
     jp setHandlerCode
@@ -99,6 +101,7 @@ mClearStatHandler:
 ; Description: Calculate the Sum of X and Y into X and Y registers.
 mStatSumHandler:
     call closeInputBuf
+    res rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld a, statRegY
     call rclNN ; OP1=Ysum
     ld a, statRegX
@@ -108,6 +111,7 @@ mStatSumHandler:
 ; Description: Calculate the average of X and Y into X and Y registers.
 mStatMeanHandler:
     call closeInputBuf
+    res rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld ix, cfitModelLinear ; use linear model for simple statistics
     call statMean
     jp pushXY
@@ -118,6 +122,7 @@ mStatMeanHandler:
 ;   X: Mean of X weighted by Y = Sum(X,Y) / Sum(Y)
 mStatWeightedMeanHandler:
     call closeInputBuf
+    res rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld ix, cfitModelLinear ; use linear model for simple statistics
     call statWeightedMean ; OP1=WeightedY, OP2=WeightedX
     jp pushXY
@@ -125,6 +130,7 @@ mStatWeightedMeanHandler:
 ; Description: Return the number of items entered. Mostly for convenience.
 mStatNHandler:
     call closeInputBuf
+    res rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld a, statRegN
     call rclNN
     jp pushX
@@ -138,6 +144,7 @@ mStatNHandler:
 ; Destroys: A, OP2, OP3, OP4
 mStatPopSdevHandler:
     call closeInputBuf
+    res rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld ix, cfitModelLinear ; use linear model for simple statistics
     call statStdDev
     jp pushXY
@@ -149,6 +156,7 @@ mStatPopSdevHandler:
 ; Destroys: A, OP2, OP3, OP4
 mStatSampleSdevHandler:
     call closeInputBuf
+    res rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld ix, cfitModelLinear ; use linear model for simple statistics
     call statVariance ; OP1=VAR(Y), OP2=VAR(X)
     ; Multiply each VAR(x) with N/(N-1)
@@ -171,6 +179,7 @@ mStatSampleSdevHandler:
 ; Destroys: A, OP2, OP3, OP4
 mStatPopCovHandler:
     call closeInputBuf
+    res rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld ix, cfitModelLinear ; use linear model for simple statistics
     call statCovariance
     jp pushX
@@ -182,6 +191,7 @@ mStatPopCovHandler:
 ; Destroys: A, OP2, OP3, OP4
 mStatSampleCovHandler:
     call closeInputBuf
+    res rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld ix, cfitModelLinear ; use linear model for simple statistics
     call statCovariance ; OP1=PCOV(X,Y)
     call statFactorPopToSampleOP2 ; OP2=N/(N-1)

@@ -25,7 +25,7 @@ processCommand:
     res onInterrupt, (iy + onFlags)
 
     ; Install error handler
-    ld hl, processInputException
+    ld hl, cleanupHandlerException
     call APP_PUSH_ERRORH
     ; Handle the normal buttons or the menu F1-F5 buttons.
     ld hl, keyCodeHandlerTable
@@ -36,14 +36,35 @@ processCommand:
 
     ; Transfer the handler code to errorCode.
     ld a, (handlerCode)
-processInputSetErrorCode:
+    ; Check for errorCodeQuitApp
+    cp errorCodeQuitApp
+    jr z, cleanupHandlerQuitApp
+    ; Check for errorCodeClearScreen
+    cp errorCodeClearScreen
+    jp z, cleanupHandlerClearScreen
+cleanupHandlerSetErrorCode:
     call setErrorCode
     jr processCommand
 
-processInputException:
+cleanupHandlerException:
     ; Handle system exception. Register A contains the system error code.
     call setHandlerCodeToSystemCode
-    jr processInputSetErrorCode
+    jr cleanupHandlerSetErrorCode
+
+cleanupHandlerClearScreen:
+    ; force rerendering of normal calculator display
+    bcall(_ClrLCDFull)
+    ld a, $FF
+    ld (iy + dirtyFlags), a ; set all dirty flags
+    call initDisplay
+    call initMenu
+    ld a, errorCodeOk
+    jr cleanupHandlerSetErrorCode
+
+cleanupHandlerQuitApp:
+    ld a, errorCodeOk
+    call setErrorCode
+    jp mainExit
 
 ;-----------------------------------------------------------------------------
 

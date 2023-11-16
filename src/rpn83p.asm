@@ -16,10 +16,10 @@
 .nolist
 #include "ti83plus.inc"
 #include "app.inc"
-; Define single page flash app
-defpage(0, "RPN83P")
 .list
 
+;-----------------------------------------------------------------------------
+; TI-OS related constants.
 ;-----------------------------------------------------------------------------
 
 ; Define the Cursor character
@@ -33,6 +33,20 @@ keyMenu2 equ kWindow
 keyMenu3 equ kZoom
 keyMenu4 equ kTrace
 keyMenu5 equ kGraph
+; Menu keys after 2ND key.
+keyMenuSecond1 equ kSPlot
+keyMenuSecond2 equ kTblSet
+keyMenuSecond3 equ kFormat
+keyMenuSecond4 equ kCalc
+keyMenuSecond5 equ kTable
+
+; Define font sizes
+smallFontHeight equ 7
+largeFontHeight equ 8
+
+;-----------------------------------------------------------------------------
+; RPN83P flags, using asm_Flag1, asm_Flag2, and asm_Flag3
+;-----------------------------------------------------------------------------
 
 ; Flags that indicate the need to re-draw the display. These are intended to
 ; be optimization purposes. In theory, we could eliminate these dirty flags
@@ -41,6 +55,7 @@ dirtyFlags equ asm_Flag1
 dirtyFlagsInput equ 0 ; set if the inputBuf or argBuf is dirty
 dirtyFlagsStack equ 1 ; set if the RPN stack is dirty
 dirtyFlagsMenu equ 2 ; set if the menu selection is dirty
+; TODO: Combine Trig, Float, and Base into a single 'dirtyFlagsStatus' bit.
 dirtyFlagsTrigMode equ 3 ; set if the trig status is dirty
 dirtyFlagsFloatMode equ 4 ; set if the floating mode is dirty
 dirtyFlagsBaseMode equ 5 ; set if any base mode flags or vars is dirty
@@ -69,6 +84,11 @@ rpnFlagsArgMode equ 1 ; set if in command argument mode
 rpnFlagsLiftEnabled equ 2 ; set if stack lift is enabled (ENTER disables it)
 rpnFlagsAllStatEnabled equ 3 ; set if Sigma+ updates logarithm registers
 rpnFlagsBaseModeEnabled equ 4 ; set if inside BASE menu hierarchy
+; rpnFlagsSecondKey: Set if the 2ND was pressed before a menu button. Most
+; handlers can ignore this, but some handlers may choose to check this flag to
+; implement additional functionality.
+rpnFlagsSecondKey equ 5
+rpnFlagsTvmCalculate equ 6 ; set if the next TVM function should calculate
 
 ; Flags for the inputBuf. Offset from IY register.
 inputBufFlags equ asm_Flag3
@@ -80,7 +100,7 @@ inputBufFlagsArgExit equ 5 ; set to exit CommandArg mode
 inputBufFlagsArgAllowModifier equ 6 ; allow */-+ modifier in CommandArg mode
 
 ;-----------------------------------------------------------------------------
-; Application variables and buffers.
+; RPN83P application variables and buffers.
 ;-----------------------------------------------------------------------------
 
 ; A random 16-bit integer that identifies the RPN83P app.
@@ -89,7 +109,17 @@ rpn83pAppId equ $1E69
 ; Increment the schema version when any variables are added or removed from the
 ; appState data block. The schema version will be validated upon restoring the
 ; application state from the AppVar.
-rpn83pSchemaVersion equ 4
+rpn83pSchemaVersion equ 9
+
+; Define true and false. Something else in spasm-ng defines the 'true' and
+; 'false' symbols but I cannot find the definitions for them in the
+; "ti83plus.inc" file. So maybe they are defined by the assembler itself?
+; Regardless, I don't know what their values are, so I will explicitly define
+; my own boolean values.
+rpnfalse equ 0
+rpntrue equ 1
+
+;-----------------------------------------------------------------------------
 
 ; Begin application variables at tempSwapArea. According to the TI-83 Plus SDK
 ; docs: "tempSwapArea (82A5h) This is the start of 323 bytes used only during
@@ -224,15 +254,7 @@ menuNameSizeOf equ 6
 ;
 ;   struct argParser {
 ;       char *argPrompt; // e.g. "STO"
-;       // modifier/status:
-;       // - 0: no modifier
-;       // - 1: indirect
-;       // - 2: '+'
-;       // - 3: '-'
-;       // - 4: '*'
-;       // - 5: '/'
-;       // - 6+: canceled
-;       char argModifier;
+;       char argModifier; // see argModifierXxx
 ;       uint8_t argValue;
 ;   }
 ; The argModifierXxx (0-4) MUST match the corresponding operation in the
@@ -241,21 +263,88 @@ argPrompt equ menuName + menuNameSizeOf
 argModifier equ argPrompt + 2
 argValue equ argModifier + 1
 argModifierNone equ 0
-argModifierAdd equ 1
-argModifierSub equ 2
-argModifierMul equ 3
-argModifierDiv equ 4
-argModifierIndirect equ 5
-argModifierCanceled equ 6
+argModifierAdd equ 1 ; '+' pressed
+argModifierSub equ 2 ; '-' pressed
+argModifierMul equ 3 ; '*' pressed
+argModifierDiv equ 4 ; '/' pressed
+argModifierIndirect equ 5 ; '.' pressed (not yet supported)
+argModifierCanceled equ 6 ; CLEAR or EXIT pressed
 
 ; Least square curve fit model.
 curveFitModel equ argValue + 1
 
+; Constants used by the TVM Solver.
+tvmSolverDefaultIterMax equ 15
+; tvmSolverResult enums indicate success or failure of the TVM Solver.
+tvmSolverResultFound equ 0
+tvmSolverResultNotFound equ 1
+tvmSolverResultIterMaxed equ 2
+tvmSolverResultBreak equ 3
+; Bit position in tvmSolverOverrideFlags that determine if a specific parameter
+; has been overridden.
+tvmSolverOverrideFlagIYR0 equ 0
+tvmSolverOverrideFlagIYR1 equ 1
+tvmSolverOverrideFlagIterMax equ 2
+
+; TVM variables for root-solving the NPMT(i)=0 equation.
+tvmIsBegin equ curveFitModel + 1 ; boolean; true if payment is at BEGIN
+; The tvmSolverOverrideFlags is a collection of bit flags. Each flag determines
+; whether a particular parameter that controls the TVM Solver execution has its
+; default value overridden by a manual value from the user.
+tvmSolverOverrideFlags equ tvmIsBegin + 1 ; u8 flag
+; TVM Solver configuration parameters. These are normally defined automatically
+; but can be overridden using the 'IYR0', 'IYR1', and 'TMAX' menu buttons.
+tvmIYR0 equ tvmSolverOverrideFlags + 1 ; float
+tvmIYR1 equ tvmIYR0 + 9 ; float
+tvmIterMax equ tvmIYR1 + 9 ; u8 integer
+
+; Draw/Debug mode constants
+drawModeNormal equ 0
+drawModeTvmSolverI equ 1 ; show i0, i1
+drawModeTvmSolverF equ 2 ; show npmt0, npmt1
+
+; Draw/Debug mode, u8 integer. Activated by secret '2ND DRAW' button.
+; - 0: normal
+; - 1: TVM Solver i0, i1 values
+; - 2: TVM Solver f0, f1 values
+drawMode equ tvmIterMax + 1
+
 ; End application variables.
-appStateEnd equ curveFitModel + 1
+appStateEnd equ drawMode + 1
 
 ; Total size of vars
 appStateSize equ (appStateEnd - appStateBegin)
+
+;-----------------------------------------------------------------------------
+; Temporary buffers which do NOT need to be saved to an app var.
+;-----------------------------------------------------------------------------
+
+appBufferStart equ appStateEnd
+
+; FindMenuNode() copies the matching menuNode from menudef.asm (in flash page 1)
+; to here so that routines in flash page 0 can access the information.
+menuNodeBuf equ appBufferStart ; 9 bytes, defined by menuNodeSizeOf
+
+; FindMenuString() copies the name of the menu from flash page 1 to here so that
+; routines in flash page 0 can access it. This is named 'menuStringBuf' to
+; avoid conflicting with the existing 'menuNameBuf' which is a Pascal-string
+; version of 'menuStringBuf'.
+menuStringBuf equ menuNodeBuf + 9 ; 6 bytes
+menuStringBufSizeOf equ 6
+
+; TVM Solver needs a bunch of workspace variables: interest rate, i0 and i1,
+; plus the next interest rate i2, and the value of the NPMT() function at each
+; of those points. Transient, so no need to persist them.
+tvmI0 equ menuStringBuf + menuStringBufSizeOf ; float
+tvmI1 equ tvmI0 + 9 ; float
+tvmNPMT0 equ tvmI1 + 9 ; float
+tvmNPMT1 equ tvmNPMT0 + 9 ; float
+; TVM Solver status and result code. Transient, no need to persist them.
+tvmSolverIsRunning equ tvmNPMT1 + 9 ; boolean; true if active
+tvmSolverCount equ tvmSolverIsRunning + 1 ; u8; iteration count
+tvmSolverResult equ tvmSolverCount + 1 ; u8 enum; tvmSolverResultXxx
+
+appBufferEnd equ tvmSolverResult + 1
 
 ; Floating point number buffer, used only within parseNumBase10(). It is used
 ; only locally so it can probaly be anywhere. Let's just use OP3 instead of
@@ -274,87 +363,31 @@ floatBufMan equ floatBufExp + 1 ; mantissa, 2 digits per byte
 floatBufSizeOf equ 9
 
 ;-----------------------------------------------------------------------------
-
-; Commented out, not needed for flash app.
-; .org userMem - 2
-; .db t2ByteTok, tAsmCmp
-
-main:
-    bcall(_RunIndicOff)
-    res appAutoScroll, (iy + appFlags) ; disable auto scroll
-    res appTextSave, (iy + appFlags) ; disable shawdow text
-    res lwrCaseActive, (iy + appLwrCaseFlag) ; disable ALPHA-ALPHA lowercase
-    bcall(_ClrLCDFull)
-
-    call restoreAppState
-    jr nc, initAlways
-    ; Initialize everything if restoreAppState() fails.
-    call initErrorCode
-    call initInputBuf
-    call initStack
-    call initRegs
-    call initMenu
-    call initBase
-    call initStat
-    call initCfit
-initAlways:
-    ; If restoreAppState() suceeds, only the following are initialized.
-    call initArgBuf ; Start with Command Arg parser off.
-    call initLastX ; Always copy TI-OS 'ANS' to 'X'
-    call initDisplay ; Always initialize the display.
-    call sanitizeMenu ; Sanitize the current (menuGroupId)
-
-    ; Initialize the App monitor so that we can intercept the Put Away (2ND
-    ; OFF) signal.
-    ld hl, appVectors
-    bcall(_AppInit)
-
-    ; Jump into the main keyboard input parsing loop.
-    jp processCommand
-
-; Clean up and exit app.
-;   - Called explicitly upon 2ND QUIT.
-;   - Called by TI-OS application monitor upon 2ND OFF.
-mainExit:
-    call rclX
-    bcall(_StoAns) ; transfer RPN83P 'X' to TI-OS 'ANS'
-    call storeAppState
-    set appAutoScroll, (iy + appFlags)
-    ld (iy + textFlags), 0 ; reset text flags
-    bcall(_ClrLCDFull)
-    bcall(_HomeUp)
-
-    bcall(_ReloadAppEntryVecs) ; App Loader in control of monitor
-    bit monAbandon, (iy + monFlags) ; if turning off: ZF=1
-    jr nz, appTurningOff
-    ; If not turning off, then force control back to the home screen.
-    ; Note: this will terminate the link activity that caused the application
-    ; to be terminated.
-    ld a, iAll ; all interrupts on
-    out (intrptEnPort), a
-    bcall(_LCD_DRIVERON) ; turn on the LCD
-    set onRunning, (iy + onFlags) ; on interrupt running
-    ei ; enable interrupts
-    bjump(_JForceCmdNoChar) ; force to home screen
-appTurningOff:
-    bjump(_PutAway) ; force App locader to do its put away
-
-; Set up the AppVectors so that we can intercept the Put Away Notification upon
-; '2ND QUIT' or '2ND OFF'. See TI-83 Plus SDK documentation.
-appVectors:
-    .dw dummyVector
-    .dw dummyVector
-    .dw mainExit
-    .dw dummyVector
-    .dw dummyVector
-    .dw dummyVector
-    .db appTextSaveF
-
-dummyVector:
-    ret
-
+; Flash Page 0
+;
+; See "Appendix A: Creating Flash Applications with SPASM" of "Hot Dog's TI-83
+; z80 ASM For The Absolute Beginner" to information on creating flash
+; applications using multiple pages.
 ;-----------------------------------------------------------------------------
 
+defpage(0, "RPN83P")
+
+; Start of program.
+    jp main ; must be a 'jp' to get correct alignment of the branch table
+    .db 0 ; pad one byte so that Branch Table starts at address multiple of 3
+
+; Branch table here.
+_processHelp equ (44+0)*3
+    .dw ProcessHelp
+    .db 1
+_findMenuNode equ (44+1)*3
+    .dw FindMenuNode
+    .db 1
+_findMenuString equ (44+2)*3
+    .dw FindMenuString
+    .db 1
+
+#include "main.asm"
 #include "mainparser.asm"
 #include "handlers.asm"
 #include "argparser.asm"
@@ -370,8 +403,8 @@ dummyVector:
 #include "menuhandlers.asm"
 #include "stathandlers.asm"
 #include "cfithandlers.asm"
+#include "tvmhandlers.asm"
 #include "prime.asm"
-#include "help.asm"
 #include "common.asm"
 #include "integer.asm"
 #include "float.asm"
@@ -380,10 +413,19 @@ dummyVector:
 #include "const.asm"
 #include "handlertab.asm"
 #include "arghandlertab.asm"
-#include "menudef.asm"
 #ifdef DEBUG
 #include "debug.asm"
 #endif
+
+;-----------------------------------------------------------------------------
+; Flash Page 1
+;-----------------------------------------------------------------------------
+
+defpage(1)
+
+#include "help.asm"
+#include "menulookup.asm"
+#include "menudef.asm"
 
 .end
 

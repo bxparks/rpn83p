@@ -16,7 +16,7 @@ of older HP calculators like the
 
 The RPN83P is a flash application that consumes one page (16 kB) of flash
 memory. Since it is stored in flash, it is preserved if the RAM is cleared. It
-consumes about 375 bytes of TI-OS RAM: 2 list variables named `REGS` and `STK`,
+consumes about 400 bytes of TI-OS RAM: 2 list variables named `REGS` and `STK`,
 and an appVar named `RPN83SAV`.
 
 Here is a quick summary of its features:
@@ -25,7 +25,7 @@ Here is a quick summary of its features:
 - support for `lastX` register
 - 8-line display showing all stack registers
 - 25 storage registers (`STO 00`, `RCL 00`, ..., `STO 24`, `RCL 24`)
-- hierarchical menu system, inspired by the HP-42S
+- hierarchical menu system similar to HP-42S
 - support for all math functions with dedicated buttons on the TI-83 Plus and
   TI-84 Plus
     - arithmetic: `/`, `*`, `-`, `+`
@@ -44,6 +44,16 @@ Here is a quick summary of its features:
     - hyperbolic: `SINH`, `COSH`, `TANH`, `ASNH`, `ACSH`, `ATNH`
     - angle conversions: `>DEG`, `>RAD`, `>HR`, `>HMS`, `>REC`, `>POL`
     - unit conversions: `>C`, `>F`, `>km`, `>mi`, etc
+- functions inspired by HP-42S
+    - `E^X-` (exp(x)-1), `LN1+` (log(1+x))
+    - statistics: `Sigma+`, `Sigma-`, `SUM`, `MEAN`, `WMN` (weighted mean),
+      `SDEV` (sample standard deviation), `SCOV` (sample covariance),
+      `PDEV` (population standard deviation), `PCOV` (population covariance)
+    - curve fitting: `Y>X`, `X>Y`, `SLOP` (slope), `YINT` (y intercept), `CORR`
+      (correlation coefficent)
+    - curve fit models: `LINF` (linear), `LOGF` (logarithmic), `EXPF`
+      (exponential), `PWRF` (power)
+- functions inspired by HP-16C and HP-42S
     - base conversions: `DEC`, `HEX`, `OCT`, `BIN`
     - bitwise operations: `AND`, `OR`, `XOR`, `NOT`, `NEG`, `REVB` (reverse
       bits), `CNTB` (count bits)
@@ -52,13 +62,9 @@ Here is a quick summary of its features:
     - shift and rotate: `SL`, `SR`, `ASR`, `RL`, `RR`, `RLC`, `RRC`,
       `SLn`, `SRn`, `RLn`, `RRn`, `RLCn`, `RRCn`
     - carry flag and bit masks: `CCF`, `SCF`, `CF?`, `CB`, `SB`, `B?`
-    - statistics: `Sigma+`, `Sigma-`, `SUM`, `MEAN`, `WMN` (weighted mean),
-      `SDEV` (sample standard deviation), `SCOV` (sample covariance),
-      `PDEV` (population standard deviation), `PCOV` (population covariance)
-    - curve fitting: `Y>X`, `X>Y`, `SLOP` (slope), `YINT` (y intercept), `CORR`
-      (correlation coefficent)
-    - curve fit models: `LINF` (linear), `LOGF` (logarithmic), `EXPF`
-      (exponential), `PWRF` (power)
+- functions inspired by HP-12C and HP-30b
+    - time value of money (TVM): `N`, `I%YR`, `PV`, `PMT`, `FV`, `P/YR`, `BEG`,
+      `END`, `CLTV` (clear TVM)
 - various display modes
     - `RAD`, `DEG`
     - `FIX` (fixed point 0-9 digits)
@@ -71,7 +77,7 @@ Here are some missing features which may be added in the future:
 - complex numbers
 - keystroke programming
 
-**Version**: 0.7.0-dev (2023-10-20)
+**Version**: 0.7.0-dev (2023-11-16)
 
 **Changelog**: [CHANGELOG.md](CHANGELOG.md)
 
