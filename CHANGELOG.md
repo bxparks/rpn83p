@@ -21,9 +21,22 @@
           registers
             - now `X=quotient=Y/X` and `Y=remainder=Y%X`
             - allows easier recovery of original `X` using `LastX` `*`
+    - `MATH`: add `LN1+`, `E^X-`
+        - implement `log(1+x)` and `e^x-1` respectively
+        - more accurate than their naive implementations when `x` is close to 0
+        - use mathematical identities involving hyperbolic `sinh()` and
+          `asinh()` functions to avoid roundoff errors
+    - `TVM`
+        - add TVM (time value of money) submenu hierarchy
+        - implement relatively simple Newton-Secant root solver to calculate
+          the `I%YR` from the other 4 TVM variables
+        - significant performance and robustness improvements can probably be
+          made in the future
     - add storage register arithmetic operations
         - `STO+`, `STO-`, `STO*`, `STO/`
         - `RCL+`, `RCL-`, `RCL*`, `RCL/`
+    - convert to multi-page flash application
+        - now consumes 2 flash pages (2 x 16 kiB)
     - **Potential Breaking Change**: `STO`, `RCL`, `FIX`, `SCI`, `ENG` argument
       prompt is no longer saved and restored on QUIT or OFF
         - a new Command Arg parser was required to support storage register

@@ -2,7 +2,7 @@
 
 RPN calculator app for the TI-83 Plus and TI-84 Plus inspired by the HP-42S.
 
-**Version**: 0.7.0-dev (2023-10-20)
+**Version**: 0.7.0-dev (2023-11-16)
 
 **Project Home**: https://github.com/bxparks/rpn83p
 
@@ -46,6 +46,14 @@ RPN calculator app for the TI-83 Plus and TI-84 Plus inspired by the HP-42S.
     - [Storage Registers](#storage-registers)
     - [Prime Factors](#prime-factors)
     - [STAT Functions](#stat-functions)
+    - [TVM Functions](#tvm-functions)
+        - [TVM Menu Buttons](#tvm-menu-buttons)
+        - [TVM Payments Per Year](#tvm-payments-per-year)
+        - [TVM BEG and END](#tvm-beg-and-end)
+        - [TVM Solver Control](#tvm-solver-control)
+        - [TVM Clear](#tvm-clear)
+        - [TVM Variable Recall](#tvm-variable-recall)
+        - [TVM Examples](#tvm-examples)
 - [TI-OS Interaction](#ti-os-interaction)
 - [Future Enhancements](#future-enhancements)
     - [Near Future](#near-future)
@@ -62,13 +70,14 @@ Plus](https://en.wikipedia.org/wiki/TI-84_Plus_series) (including the Silver
 Edition). The app is inspired mostly by the
 [HP-42S](https://en.wikipedia.org/wiki/HP-42S) calculator, with some sprinkles
 of some older HP calculators like the
-[HP-12C](https://en.wikipedia.org/wiki/HP-12C) and the
-[HP-15C](https://en.wikipedia.org/wiki/HP-15C).
+[HP-12C](https://en.wikipedia.org/wiki/HP-12C), the
+[HP-15C](https://en.wikipedia.org/wiki/HP-15C), and the
+[HP-16C](https://en.wikipedia.org/wiki/HP-16C).
 
 The RPN83P is a flash application that consumes one page (16 kB) of flash
 memory. Since it is stored in flash, it is preserved if the RAM is cleared. It
 consumes a small amount of TI-OS RAM: 2 list variables named `REGS` (240 bytes)
-and `STK` (59 byte), and an appVar named `RPN83SAV` (77 bytes).
+and `STK` (59 byte), and an appVar named `RPN83SAV` (98 bytes).
 
 Here the quick summary of its features:
 
@@ -76,7 +85,7 @@ Here the quick summary of its features:
 - support for `lastX` register
 - 8-line display showing all stack registers
 - 25 storage registers (`STO 00`, `RCL 00`, ..., `STO 24`, `RCL 24`)
-- hierarchical menu system, inspired by the HP-42S
+- hierarchical menu system similar to HP-42S
 - support for all math functions with dedicated buttons on the TI-83 Plus and
   TI-84 Plus
     - arithmetic: `/`, `*`, `-`, `+`
@@ -95,6 +104,16 @@ Here the quick summary of its features:
     - hyperbolic: `SINH`, `COSH`, `TANH`, `ASNH`, `ACSH`, `ATNH`
     - angle conversions: `>DEG`, `>RAD`, `>HR`, `>HMS`, `>REC`, `>POL`
     - unit conversions: `>C`, `>F`, `>km`, `>mi`, etc
+- functions inspired by HP-42S
+    - `E^X-` (exp(x)-1), `LN1+` (log(1+x))
+    - statistics: `Sigma+`, `Sigma-`, `SUM`, `MEAN`, `WMN` (weighted mean),
+      `SDEV` (sample standard deviation), `SCOV` (sample covariance),
+      `PDEV` (population standard deviation), `PCOV` (population covariance)
+    - curve fitting: `Y>X`, `X>Y`, `SLOP` (slope), `YINT` (y intercept), `CORR`
+      (correlation coefficent)
+    - curve fit models: `LINF` (linear), `LOGF` (logarithmic), `EXPF`
+      (exponential), `PWRF` (power)
+- functions inspired by HP-16C and HP-42S
     - base conversions: `DEC`, `HEX`, `OCT`, `BIN`
     - bitwise operations: `AND`, `OR`, `XOR`, `NOT`, `NEG`, `REVB` (reverse
       bits), `CNTB` (count bits)
@@ -103,13 +122,9 @@ Here the quick summary of its features:
     - shift and rotate: `SL`, `SR`, `ASR`, `RL`, `RR`, `RLC`, `RRC`,
       `SLn`, `SRn`, `RLn`, `RRn`, `RLCn`, `RRCn`
     - carry flag and bit masks: `CCF`, `SCF`, `CF?`, `CB`, `SB`, `B?`
-    - statistics: `Sigma+`, `Sigma-`, `SUM`, `MEAN`, `WMN` (weighted mean),
-      `SDEV` (sample standard deviation), `SCOV` (sample covariance),
-      `PDEV` (population standard deviation), `PCOV` (population covariance)
-    - curve fitting: `Y>X`, `X>Y`, `SLOP` (slope), `YINT` (y intercept), `CORR`
-      (correlation coefficent)
-    - curve fit models: `LINF` (linear), `LOGF` (logarithmic), `EXPF`
-      (exponential), `PWRF` (power)
+- functions inspired by HP-12C and HP-30b
+    - time value of money (TVM): `N`, `I%YR`, `PV`, `PMT`, `FV`, `P/YR`, `BEG`,
+      `END`, `CLTV` (clear TVM)
 - various display modes
     - `RAD`, `DEG`
     - `FIX` (fixed point 0-9 digits)
@@ -205,6 +220,13 @@ from a host computer. There are a number of options:
   Connect](https://education.ti.com/en/products/computer-software/ti-connect-sw)
   software and follow the instructions in [Transferring FLASH
   Applications](https://education.ti.com/en/customer-support/knowledge-base/sofware-apps/product-usage/11506).
+
+**Warning**: If you are upgrading from a previous version of RPN83P, you may
+need to manually remove the `RPN83P` app from the calculator, before uploading
+the new `rpn83p.8xk` file. I don't know why, but sometimes the calculator gets
+stuck at the `Defragmenting...` step and never finish uploading the file. To
+manually remove, go to `2ND MEM`, `2` (Mem Mgmt/Del), `ALPHA A` (Apps), scroll
+down to the `RPN83P`, hit `DEL`, press `2` (Yes).
 
 ### Starting
 
@@ -1528,6 +1550,291 @@ coefficient of `r=.29635` is quite low, and the power fit may not be a good
 model for this data. For example, typing `20` `Y>X` (max rainfall of 20.0) gives
 an `X=752.098` (a minimum rainfall of 752) which is not reasonable.
 
+### TVM Functions
+
+#### TVM Menu Buttons
+
+Version 0.7.0 implements a rudimentary Time Value of Money functionality that is
+inspired by financial calculators such as the HP-12C and the HP-30b. There are 5
+menu items under the `ROOT > TVM` menu hierarchy, corresponding to the 5
+variables in the TVM equation (both the Net Future Value and Net Present Value
+equations produce identical results):
+
+- `N`: number of compounding periods
+- `I%YR`: interest percent per year
+- `PV`: present value
+- `PMT`: payment per period
+- `FV`: future value
+
+When 4 variables are known, the 5th variable can be calculated from the other 4.
+Just like the HP-12C and HP-30b, each menu button performs a dual function: it
+can either assign a value to the corresponding TVM variable, or it can calculate
+the TVM variable from the other 4 variables:
+
+- If a value has been entered into the `X` register, then the next press of a
+  TVM menu button **stores** the `X` value to the corresponding variable.
+- If the most recent action was another TVM menu button, then the next press of
+  a TVM menu button **calculates** that variable from the other 4, and returns
+  the result in the `X` register.
+
+Since each button has a dual-function, it can sometimes be confusing to remember
+which action a given TVM menu button has performed. This is definitely true on
+the HP-12C and the HP-30b which provide no feedback regarding the two different
+actions.
+
+The RPN83P solves this problem by displaying different status messages after a
+TVM menu button has completed. The message will read:
+
+- `TVM Set` if the menu button **stored** the `X` value into the TVM variable,
+- `TVM Calculated` if the menu button **calculated** the given TVM variable
+  from the other 4 variables.
+
+#### TVM Payments Per Year
+
+On the HP-12C, the interest rate button is labeled with an `i` and represents
+the compounding interest percentage for each *compounding period*. On the HP-30b
+and most modern financial calculators, the `i` button has been replaced with
+`I%YR` (or `I/YR`) which accepts the interest rate as a nominal *annual*
+percentage rate. The RPN83P app follows the modern convention and the interest
+rate menu button is named `I%YR`.
+
+The relationship between the `i` button (as implemented on the HP-12C) and the
+`I%YR` button as implemented on the RPN83P is:
+
+> `i = IYR / PYR`
+
+where `PYR` is the number of payments per year. In math equations and inside
+computer programs, the quantity `i` is usually represented as a fractional rate
+instead of a percentage, so there is an addition division by 100.
+
+The RPN83P app allows the `PYR` quantity to be modified using the `P/YR` menu
+button. `PYR` is an input-only parameter, not an output parameter, so the `P/YR`
+is not a dual-action button. It performs only a *store* function. By default,
+the `P/YR` value is set to 12, which makes it easy to calculate monthly mortgage
+payments whose rates are given as yearly percentages.
+
+#### TVM BEG and END
+
+The `BEG` and `END` menu buttons act in the same way as the equivalent buttons
+on the HP-12C and HP-30b. The `BEG` button specifies that the payments are made
+at the beginning of the payment term. The `END` button specifies that the
+payments are made at the end of the payment term. A little dot on the menu
+button indicates the currently selected option. Both of these are input-only
+buttons. The default value is `END`.
+
+#### TVM Solver Control
+
+It is well-known that the `N`, `PV`, `PMT`, and `FV` variables can be solved
+using analytical equations. However, there is no closed-form solution for the
+`I%YR` quantity, so it must be solved using iterative methods. Further
+complicating the situation, it can be mathematically deduced that the
+root-solving equation for `I%YR` can fall into 3 categories:
+
+- 0 solution, or
+- 1 unique solution, or
+- 0 or 2 solutions.
+
+Sometimes, the TVM module can determine immediately that the equation has 0
+solution. It will return a `TVM No Solution` error message.
+
+Sometimes, the numerical algorithm will fail to find a solution, even though the
+math says that a solution must exist. The TVM module will return a `TVM Not
+Found` error message.
+
+Sometimes, the equation has 2 solutions, but the TVM module will find only one
+of the 2 solutions. Currently (v0.7.0), the TVM module does not notify the user
+that another solution may exist. A normal `TVM Calculated` will be returned.
+Sometimes there are 2 solutions, but the algorithm finds neither solution. A
+`TVM Not Found` message will be returned.
+
+To prevent excessive execution time, the number of iterations performed by the
+TVM Solver has a maximum limit. The default is 15 iterations. If exceeded, the
+message `TVM Iterations` is displayed.
+
+Due to the complexity of the numerical algorithm and the number of iterations
+required, calculating the `I%YR` will take noticeably longer than the other
+variables. Somewhere between 1-3 seconds on the TI-84 Plus model has been
+observed.
+
+The RPN83P currently (v0.7.0) uses the [Newton-Secant
+method](https://en.wikipedia.org/wiki/Secant_method) to solve for `I%YR`. For
+the purpose of debugging and to allow extra control for advanced users, three
+parameters that affect the progress and termination of the algorithm are
+exposed:
+
+- `IYR1`: first guess percent per year (default: 0%; allowed: `IYR1 >
+  -PYR*100`)
+- `IYR2`: second guess percent per year (default: 100%; allowed: `IYR2 >
+  -PYR*100`)
+- `TMAX`: iteration maximum (default: 15; allowed: 0-255)
+
+For most TVM problems representing real-life situations, the default values
+should be sufficient to find a solution. You can override the defaults of these
+values by entering a value and pressing the appropriate menu button. A small dot
+will be appended to the menu name to indicate that the default value has been
+overridden.
+
+We might choose to override `IYR1` and `IYR2` when 2 solutions are known to
+exist, but the TVM Solver is unable to find either of them due to the default
+initial values. If we know the approximate value of one of the solutions, we can
+override the initial guesses to be closer to the solution of interest. This will
+help the TVM Solver converge to that solution.
+
+(TODO: Maybe add a menu item to control the convergence error tolerance?
+Currently, it is set to 1e-8. Some HP calculators use the number of digits in
+the `FIX`, `SCI` or `ENG` display modes to determine the value of the error
+tolerance. TI calculators are usually kept in `display all digits` mode, so I'm
+not sure if we can use the display mode to extract the number of digits in the
+tolerance.)
+
+These control parameter can be restored to their default factory values by
+pressing the `RSTV` menu. The `overridden` dot indicator on the menu buttons
+should disappear.
+
+#### TVM Clear
+
+There are 2 reset or clear menu buttons under the TVM menu hierarchy:
+
+- `RSTV`: Reset the TVM Solver control parameters to factory defaults
+- `CLTV`: Clear all TVM variables and parameters, including `RSTV` parameters
+
+The `RSTV` clears *only* the 3 parameters related to the TVM Solver which
+calculates the interest rate. The factory default values are:
+
+- `IYR1`: 0%
+- `IYR2`: 100%
+- `TMAX`: 15
+
+The `CLTV` clears *everything* in the TVM submenu, including the `RSTV`
+parameters. The following additional variables are cleared or reset to their
+factory values:
+
+- `N`, `I%YR`, `PV`, `PMT`, `FV`: 0
+- `P/YR`: 12
+- `BEG`, `END`: `END`
+
+#### TVM Variable Recall
+
+Remember that most of TVM menu buttons are dual-action:
+
+- `number + button`: sets the TVM variable to `X` value, and
+- `button`: calculates the TVM variable from the other 4 variables.
+
+Other TVM menu buttons (i.e. `P/YR`, `IYR1`, `IYR2`, `TMAX`) are single-action
+buttons and support only the storing of their values. There is no ability to
+calculate those parameters from other parameters. This convention used by most
+(all?) HP financial calculators.
+
+The RPN83P app provides a mechanism to retrieve a TVM variable *without*
+performing a calculation. This was useful for debugging during development, but
+the functionality was innocuous enough that I retained it for general use. The
+recall functionality is available through the `2ND` key:
+
+- `2ND N`: recall the `N` variable
+- `2ND I%YR`: recall the `I%YR` variable
+- `2ND PV`: recall the `PV` variable
+- `2ND PMT`: recall the `PMT` variable
+- `2ND FV`: recall the `FV` variable
+- `2ND P/YR`: recall the `P/YR` variable
+- `2ND IYR1`: recall the `IYR1` variable
+- `2ND IYR2`: recall the `IYR2` variable
+- `2ND TMAX`: recall the `TMAX` variable
+
+As a rule of thumb, the RPN83P does not use the `2ND` button for its menu
+buttons. Usually if a menu button sets an internal variable, the equivalent read
+functionality is implemented by another menu button with a name similar to the
+original menu with the addition of a question mark (e.g. `WSIZ` and `WSZ?`).
+This helps with discovery because each function is directly shown through the
+menu system, with no hidden features. But there are so many TVM variables and
+parameters, that adding the `?` variant of all those menu buttons would have
+made the menu rows too cluttered and hard to navigate. Currently (v0.7.0), the
+TVM submenu is the only place where the `2ND` button is used for hidden menu
+functionality.
+
+#### TVM Examples
+
+**Example 1**: Calculate the monthly payment on a 30-year, $500,000 mortgage at
+7.5%
+
+- Press `CLTV`
+- Press 360 `N` (30 years * 12 payments/year)
+- Press 7.5 `I%YR`
+- Press 500000 `PV`
+- Press 0 `FV`
+- Press `PMT`
+- Answer: -$3496.072543 (should see `TVM Calculated`)
+
+The sign convention of the TVM equation is such that +'ve represents inflow of
+cash, and -'ve represents outflow of cash.
+
+**Example 2**: Assuming Example 1, calculate the amount that can be borrowed
+if the payment is $3000/month instead of $3496/month
+
+- (Building on Example 1)
+- Press -3000 `PMT` (should see `TVM Set`)
+- Press `PV` (should see `TVM Caculated`)
+- Answer: $429052.882
+
+**Example 3**: Assuming Examples 1 and 2, calculate the interest rate required
+to get a $500,000 mortgage with a $3000/month payment
+
+- (Building on Examples 1 and 2)
+- Press 500000 `PV` (should see `TVM Set` message). This resets the current `PV`
+  which became modified by the calculation in Example 2.
+- Press `I%YR` (should see `TVM Calculated`)
+- Answer: 6.00699%
+
+**Example 4**: If Susan got paid $0.01 per second, compounded every second, at a
+10% per annum rate, what is her bank balance after 365 days?
+
+- Press `CLTV`
+- Press 3600 24 `*` 365 `*` (31536000)
+- Press `N`
+- Press DOWN to next menu row
+    - Press `P/YR` (set payments per year to the same 31536000)
+    - Press UP to return to the TVM menu row
+- Press 10 `I%YR`
+- Press 0 PV (bank balance starts at 0)
+- Press -0.01 `PMT` (negative to indicate outward cash flow to bank)
+- Press `FV` (should see `TVM Calculated`)
+- Answer: $331667.0067
+
+Note that the answer is accurate to all displayed digits because we avoided
+roundoff errors by using the new `E^X-` and `LN1+` functions.
+
+Source:
+- [A Penny for your
+  Thoughts](https://people.eecs.berkeley.edu/~wkahan/MathSand.pdf)
+- [Looking for TVM formulas](https://www.hpmuseum.org/forum/thread-1012.html)
+
+**Example 5**: Multiple Solutions
+
+The following contrived example has 2 solutions for `I%YR` 14.44% and 53.17%.
+We can persuade the TVM module to give us 2 solutions using the `IYR1` and
+`IYR2` menu buttons:
+
+- Press `CLTV`
+- Press 10 `N`
+- Press 50 `PV`
+- Press -30 `PMT`
+- Press 400 `FV`
+- Press 1 `P/YR`
+- Press `I%YR` (see `TVM Not Found`)
+- Modify the TVM Solver initial guesses to get first solution
+    - Press 10 `IYR1`
+    - Press 20 `IYR2`
+- Press `I%YR` (see `TVM Calculated`)
+- Answer: 14.43587133%
+- Modify the TVM Solver initial guesses to get second solution
+    - Press 40 `IYR1`
+    - Press 60 `IYR2`
+- Press `I%YR` (see `TVM Calculated`)
+- Answer: 53.17221327%
+
+Source:
+- [Solving the TVM equation for the interest
+  rate](https://www.hpmuseum.org/cgi-sys/cgiwrap/hpmuseum/archv021.cgi?read=234439)
+
 ## TI-OS Interaction
 
 The RPN83P app interacts with the underlying TI-OS in the following ways.
@@ -1559,6 +1866,17 @@ are shared:
 - trigonometric mode: `RAD` or `DEG`
 - floating point number settings: `FIX` (i.e. `NORMAL` in TI-OS), `SCI`, `ENG`
 
+The TVM module in the RPN83P uses some of the same TI-OS floating point
+variables used by the `Finance` app (automatically provided by the TI-OS on the
+TI-84 Plus). Specifically, any values stored in the `N`, `I%YR`, `PV`, `PMT`,
+`FV`, and `P/YR` variables will reappear in the Finance app with slightly
+different names (`N`, `I%`, `PV`, `PMT`, `FV`, and `P/Y` respectively). The two
+variables that I could not synchronize between the 2 apps are:
+
+- `BEG`/`END` flag because I could not figure out where the Finance app stores
+  this, and
+- `C/Y` (compoundings per year) is always set equal to `P/YR` in the RPN83P app
+
 ## Future Enhancements
 
 There seems to be almost an endless number of features that could go into a
@@ -1568,17 +1886,16 @@ limited:
 ### Near Future
 
 - TVM (time value of money)
-    - the TI-84 Plus is bundled with a TVM app, but I find it unintuitive and
-      difficult to remember how to use
-    - the most intuitive UI in my opinion is the one used by the HP-12C
-    - if I recall, this requires implementing a root finder, since at least one
-      of the TVM variables does not have a closed-form solution
-- `PROB` and `COMB` arguments are limited to `< 256`
-    - Maybe extend this to `< 2^16` or `<2^32`.
-- `GCD` and `LCM` functions are slow
-    - Could be made significantly faster.
+    - substantially done, but the TVM Solver for `I%YR` can be improved
+- Support more than 14 digits in `BIN` (base 2) mode
+    - This is a difficult UI problem, because 32 digits will require 3 lines on
+      the display, as each line currently can support only 14, maybe 15, digits.
 - datetime conversions
     - date/time components to and from epoch seconds
+- `PROB` and `COMB` arguments are limited to `< 256`
+    - Maybe extend this to `< 2^16` or `< 2^32`.
+- `GCD` and `LCM` functions are slow
+    - Could be made significantly faster.
 
 ### Medium Future
 
@@ -1608,13 +1925,6 @@ limited:
       British or Canadian imperial units
     - it'd be nice to support both types, if we can make the menu labels
       self-documenting and distinctive
-- Support more than 14 digits in `BIN` (base 2) mode
-    - This is a difficult UI problem, because 32 digits will require 3 lines on
-      the display, as each line currently can support only 14, maybe 15, digits.
-- system memory
-    - Might be useful to expose some system status functions, like memory.
-    - We can always drop into the TI-OS and use `2ND` `MEM` to get that
-      information, so it's not clear that this is worth the effort.
 
 ### Far Future
 
