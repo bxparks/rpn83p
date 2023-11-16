@@ -286,15 +286,12 @@ tvmSolverOverrideFlagIYR0 equ 0
 tvmSolverOverrideFlagIYR1 equ 1
 tvmSolverOverrideFlagIterMax equ 2
 
-; TVM float variables for root-solving the NPMT(i)=0 equation.
+; TVM variables for root-solving the NPMT(i)=0 equation.
 tvmIsBegin equ curveFitModel + 1 ; boolean; true if payment is at BEGIN
-tvmSolverIsRunning equ tvmIsBegin + 1 ; boolean; true if active
-tvmSolverCount equ tvmSolverIsRunning + 1 ; iteration count
-tvmSolverResult equ tvmSolverCount + 1 ; enum; tvmSolverResultXxx
 ; The tvmSolverOverrideFlags is a collection of bit flags. Each flag determines
 ; whether a particular parameter that controls the TVM Solver execution has its
 ; default value overridden by a manual value from the user.
-tvmSolverOverrideFlags equ tvmSolverResult + 1
+tvmSolverOverrideFlags equ tvmIsBegin + 1 ; u8 flag
 ; TVM Solver configuration parameters. These are normally defined automatically
 ; but can be overridden using the 'IYR0', 'IYR1', and 'TMAX' menu buttons.
 tvmIYR0 equ tvmSolverOverrideFlags + 1 ; float
@@ -337,14 +334,17 @@ menuStringBufSizeOf equ 6
 
 ; TVM Solver needs a bunch of workspace variables: interest rate, i0 and i1,
 ; plus the next interest rate i2, and the value of the NPMT() function at each
-; of those points. These are needed only transiently so do not need to be
-; persisted.
-tvmI0 equ menuStringBuf + menuStringBufSizeOf
-tvmI1 equ tvmI0 + 9
-tvmNPMT0 equ tvmI1 + 9
-tvmNPMT1 equ tvmNPMT0 + 9
+; of those points. Transient, so no need to persist them.
+tvmI0 equ menuStringBuf + menuStringBufSizeOf ; float
+tvmI1 equ tvmI0 + 9 ; float
+tvmNPMT0 equ tvmI1 + 9 ; float
+tvmNPMT1 equ tvmNPMT0 + 9 ; float
+; TVM Solver status and result code. Transient, no need to persist them.
+tvmSolverIsRunning equ tvmNPMT1 + 9 ; boolean; true if active
+tvmSolverCount equ tvmSolverIsRunning + 1 ; u8; iteration count
+tvmSolverResult equ tvmSolverCount + 1 ; u8 enum; tvmSolverResultXxx
 
-appBufferEnd equ tvmNPMT1 + 9
+appBufferEnd equ tvmSolverResult + 1
 
 ; Floating point number buffer, used only within parseNumBase10(). It is used
 ; only locally so it can probaly be anywhere. Let's just use OP3 instead of
