@@ -249,7 +249,7 @@ msgHelpPage4:
     .db "EE:  2ND EE or ,", Senter
     .db "+/-:  (-)", Senter
     .db "<-:  DEL", Senter
-    .db "ClrX:  CLEAR", Senter
+    .db "CLX:  CLEAR", Senter
     .db Senter
     .db Senter
     .db SlBrack, "4/9", SrBrack, " Any key to continue...", Senter
