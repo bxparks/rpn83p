@@ -11,7 +11,7 @@
 
 ; Description: A read loop dedicated to the help screens.
 ProcessHelp:
-    ld b, 0 ; B = pageNumber
+    ld b, 0 ; B = current pageNumber
 processHelpLoop:
     ld a, b ; A = pageNumber
     call displayHelpPage
@@ -28,27 +28,43 @@ processHelpGetKey:
     jr z, processHelpExit
     cp kClear ; A == CLEAR
     jr z, processHelpExit
+    cp kDel ; A == CLEAR
+    jr z, processHelpExit
     cp kMath ; A == MATH
     jr z, processHelpExit
     cp kLeft ; A == LEFT
-    jr z, processHelpPrevPageMaybe
+    jr z, processHelpPrevPageWithWrap
     cp kUp ; A == UP
-    jr z, processHelpPrevPageMaybe
+    jr z, processHelpPrevPageWithWrap
+    cp kRight ; A == RIGHT
+    jr z, processHelpNextPageWithWrap
+    cp kDown ; A == DOWN
+    jr z, processHelpNextPageWithWrap
     cp kQuit ; 2ND QUIT
     jr z, processHelpQuitApp
     jr processHelpNextPage ; everything else to the next page
 
-processHelpPrevPageMaybe:
-    ; go to prev page if not already at page 0
+processHelpPrevPageWithWrap:
+    ; go to prev page with wrap around
     ld a, b
-    or a
-    jr z, processHelpGetKey
-mHelpHandlerPrevPage:
-    dec b
+    sub 1
+    ld b, a
+    jr nc, processHelpLoop
+    ; wrap around to the last page
+    ld b, helpPageCount-1
+    jr processHelpLoop
+
+processHelpNextPageWithWrap:
+    ; go to the next page with wrap around
+    inc b
+    ld a, b
+    cp helpPageCount
+    jr nz, processHelpLoop
+    ld b, 0 ; wrap to the beginning
     jr processHelpLoop
 
 processHelpNextPage:
-    ; any other key goes to the next the page
+    ; Any other key goes to the next the page, with no wrapping.
     inc b
     ld a, b
     cp helpPageCount
@@ -56,12 +72,12 @@ processHelpNextPage:
 
 processHelpExit:
     ld a, errorCodeClearScreen
-    ld (handlerCode), a ; cannot call setHandlerCode() on Page 0
+    ld (handlerCode), a ; cannot call setHandlerCode() on Flash Page 0
     ret
 
 processHelpQuitApp:
     ld a, errorCodeQuitApp
-    ld (handlerCode), a ; cannot call setHandlerCode() on Page 0
+    ld (handlerCode), a ; cannot call setHandlerCode() on Flash Page 0
     ret
 
 ;-----------------------------------------------------------------------------
@@ -176,8 +192,10 @@ displayHelpPage:
     pop af
     ret
 
+;-----------------------------------------------------------------------------
+
 ; Array of (char*) pointers to C-strings.
-helpPageCount equ 8
+helpPageCount equ 9
 helpPages:
     .dw msgHelpPage1
     .dw msgHelpPage2
@@ -187,6 +205,7 @@ helpPages:
     .dw msgHelpPage6
     .dw msgHelpPage7
     .dw msgHelpPage8
+    .dw msgHelpPage9
 
 msgHelpPage1:
     .db escapeLargeFont, "RPN83P", Lenter
@@ -197,7 +216,7 @@ msgHelpPage1:
     .db "TI", Shyphen, "83 Plus and TI", Shyphen, "84 Plus", Senter
     .db "inspired by the HP", Shyphen, "42S.", Senter
     .db Senter
-    .db SlBrack, "1/8", SrBrack, " Any key to continue...", Senter
+    .db SlBrack, "1/9", SrBrack, " Any key to continue...", Senter
     .db 0
 
 msgHelpPage2:
@@ -209,7 +228,7 @@ msgHelpPage2:
     .db "R", SupArrow, " :  STK  R", SupArrow, Senter
     .db Senter
     .db Senter
-    .db SlBrack, "2/8", SrBrack, " Any key to continue...", Senter
+    .db SlBrack, "2/9", SrBrack, " Any key to continue...", Senter
     .db 0
 
 msgHelpPage3:
@@ -221,7 +240,7 @@ msgHelpPage3:
     .db "RCL+ RCL- RCL* RCL/ nn", Senter
     .db "nn: 0 to 24", Senter
     .db Senter
-    .db SlBrack, "3/8", SrBrack, " Any key to continue...", Senter
+    .db SlBrack, "3/9", SrBrack, " Any key to continue...", Senter
     .db 0
 
 msgHelpPage4:
@@ -233,7 +252,7 @@ msgHelpPage4:
     .db "ClrX:  CLEAR", Senter
     .db Senter
     .db Senter
-    .db SlBrack, "4/8", SrBrack, " Any key to continue...", Senter
+    .db SlBrack, "4/9", SrBrack, " Any key to continue...", Senter
     .db 0
 
 msgHelpPage5:
@@ -245,7 +264,7 @@ msgHelpPage5:
     .db "Back:  ON", Senter
     .db "Quit App:  2ND QUIT", Senter
     .db Senter
-    .db SlBrack, "5/8", SrBrack, " Any key to continue...", Senter
+    .db SlBrack, "5/9", SrBrack, " Any key to continue...", Senter
     .db 0
 
 msgHelpPage6:
@@ -257,7 +276,7 @@ msgHelpPage6:
     .db "PWRF: y = B x^M", Senter
     .db Senter
     .db Senter
-    .db SlBrack, "6/8", SrBrack, " Any key to continue...", Senter
+    .db SlBrack, "6/9", SrBrack, " Any key to continue...", Senter
     .db 0
 
 msgHelpPage7:
@@ -269,7 +288,7 @@ msgHelpPage7:
     .db "RLC RRC: rotate thru carry",  Senter
     .db "REVB: reverse bits", Senter
     .db "CNTB: count bits", Senter
-    .db SlBrack, "7/8", SrBrack, " Any key to return.", Senter
+    .db SlBrack, "7/9", SrBrack, " Any key to continue...", Senter
     .db 0
 
 msgHelpPage8:
@@ -278,8 +297,20 @@ msgHelpPage8:
     .db "outflow: -", Senter
     .db "inflow: +", Senter
     .db "P/YR: Payments per year", Senter
-    .db "CLTV: Clear params",  Senter
+    .db "BEG: Payments at begin", Senter
+    .db "END: Payments at end", Senter
+    .db "CLTV: Clear TVM (all)",  Senter
+    .db SlBrack, "8/9", SrBrack, " Any key to continue...", Senter
+    .db 0
+
+msgHelpPage9:
+    .db escapeLargeFont, "TVM Solver", Lenter
+    .db escapeSmallFont, Senter
+    .db "IYR1: IYR guess 1",  Senter
+    .db "IYR2: IYR guess 2",  Senter
+    .db "TMAX: Iteration max",  Senter
+    .db "CLTS: Clear TVM Solver",  Senter
     .db Senter
     .db Senter
-    .db SlBrack, "8/8", SrBrack, " Any key to return.", Senter
+    .db SlBrack, "9/9", SrBrack, " Any key to return.", Senter
     .db 0
