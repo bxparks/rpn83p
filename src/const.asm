@@ -5,6 +5,14 @@
 ; Constants, usually floating point.
 ;-----------------------------------------------------------------------------
 
+; Description: Set OP1 to -1.0, avoiding the overhead of bcall.
+; Destroys: all, HL
+op1SetM1:
+    ld hl, constM1
+    jp move9ToOp1
+
+;-----------------------------------------------------------------------------
+
 ; Description: Set OP1 to 0.0. Faster version of bcall(_OP1Set0).
 ; Destroys: all, HL
 op1Set0:
@@ -199,6 +207,9 @@ op2SetHpaPerInhg:
     jp move9ToOp2
 
 ;-----------------------------------------------------------------------------
+
+constM1: ; -1
+    .db $80, $80, $10, $00, $00, $00, $00, $00, $00
 
 const0: ; 0.0
     .db $00, $80, $00, $00, $00, $00, $00, $00, $00

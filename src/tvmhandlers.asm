@@ -857,6 +857,14 @@ mTvmIYRHandler:
     jr nz, mTvmIYRCalculate
     ; save the inputBuf value
     call rclX
+    call calcTvmIntPerPeriod
+    call op1ToOp2 ; OP2=IYR/N=i
+    call op1SetM1 ; OP1=-1
+    bcall(_CpOP1OP2) ; if -1<i: CF=1 (valid)
+    jr c, mTvmIYRValid
+    bcall(_ErrDomain)
+mTvmIYRValid:
+    call rclX
     call stoTvmIYR
     set rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld a, errorCodeTvmSet
