@@ -138,27 +138,17 @@ op1ExOp2:
 
 ;-----------------------------------------------------------------------------
 
-; Description: Calculate ln(1+x) such that it is immune from cancellation errors
-; when x is close to 0.
+; Description: Calculate ln(1+x) such that it is less susceptible from
+; cancellation errors when x is close to 0.
 ; Input: OP1
 ; Output: OP1: ln(1+OP1)
 ; Destroys: OP1-OP5
 lnOnePlus:
-#ifdef LOG1P_USING_ASINH
-    ; This uses the identity: ln(1+x) = 2 arcsinh(x / 2sqrt(1+x)).
-    bcall(_PushRealO1) ; FPS=x
-    bcall(_Plus1) ; OP1=1+x
-    bcall(_SqRoot) ; OP1=sqrt(1+x)
-    bcall(_Times2) ; OP1=2sqrt(1+x)
-    bcall(_OP1ToOP2) ; OP2=2sqrt(1+x)
-    bcall(_PopRealO1) ; OP1=x
-    bcall(_FPDiv) ; OP1=x / 2sqrt(1+x)
-    bcall(_ASinH) ; OP1=asinh(x / 2sqrt(1+x))
-    bcall(_Times2) ; OP1=2 asinh(x / 2sqrt(1+x))
-    ret
-#else
+#ifdef LOG1P_USING_LOG
+    ; This uses ln(1+x) = x * log(1+x) / ((1+x)-1). I think this algorithm is
+    ; faster than above, but apparently it doesn't work on certain computers
+    ; (though I don't know why).
     ; See https://math.stackexchange.com/questions/175891
-    ; I think this algorithm is a lot faster than above.
     bcall(_PushRealO1) ; FPS=[x]
     bcall(_Plus1) ; OP1=y=1+x
     bcall(_PushRealO1) ; FPS=[x,1+x]
@@ -176,6 +166,30 @@ lnOnePlusNotZero:
     bcall(_FPDiv) ; OP1=ln(1+x)/(1+x-1)
     bcall(_PopRealO2) ; FPS=[]; OP1=x
     bcall(_FPMult) ; OP1=x*ln(1+x)/(1+x-1)
+    ret
+#else
+    ; This uses ln(1+x) = asinh(x^2+2x)/(2x+2)). I think it is better than
+    ; above for calculators with the asinh() function. For better numerical
+    ; stability, use asinh((x/2)(1+1/(1+x))). Must check for (1+x)>0, because
+    ; asinh() will actually return a value, but ln(1+x) will throw an
+    ; exception.
+    ; See https://www.hpmuseum.org/forum/thread-1012-post-8714.html#pid8714
+    bcall(_PushRealO1) ; FPS=x
+    bcall(_Plus1) ; OP1=1+x
+    bcall(_CkOP1FP0) ; if OP1==0: ZF=1
+    jr z, lnOnePlusError
+    bcall(_CkOP1Pos) ; if OP1>=0: ZF=1 (SDK doc "OP1>0" is incorrect)
+    jr z, lnOnePlusContinue
+lnOnePlusError:
+    bcall(_ErrDomain)
+lnOnePlusContinue:
+    bcall(_FPRecip) ; OP1=1/(1+x)
+    bcall(_Plus1) ; OP1=1+1/(1+x)
+    call op1ToOp2 ; OP2=1+1/(1+x)
+    bcall(_PopRealO1) ; OP1=x
+    bcall(_FPMult) ; OP1=x*(1+1/(1+x))
+    bcall(_TimesPt5) ; OP1=(x/2)(1+1/(1+x))
+    bcall(_ASinH) ; OP1=asinh((x/2)(1+1/(1+x)))
     ret
 #endif
 
