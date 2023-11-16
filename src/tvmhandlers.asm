@@ -1060,6 +1060,10 @@ mTvmPYRHandler:
     jr nz, mTvmPYRGet
     ; save the inputBuf value in OP1
     call rclX
+    bcall(_PosNo0Int) ; if posnonzeroint(x): ZF=1
+    jr z, mTvmPYRHandlerContinue
+    bcall(_ErrDomain)
+mTvmPYRHandlerContinue:
     call stoTvmPYR
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld a, errorCodeTvmSet
