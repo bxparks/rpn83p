@@ -1253,16 +1253,16 @@ mTvmClearHandler:
     ld a, errorCodeTvmCleared
     jp setHandlerCode
 
-mTvmSolverClearHandler:
+mTvmSolverResetHandler:
     call closeInputBuf
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
-    call tvmSolverClear
-    ld a, errorCodeTvmSolverCleared
+    call tvmSolverReset
+    ld a, errorCodeTvmSolverReset
     jp setHandlerCode
 
 ;-----------------------------------------------------------------------------
 
-; Description: Clear the 5 NPV or NFV variables. Bound to CLTV menu button.
+; Description: Clear the 5 NPV or NFV variables.
 tvmClear:
     ; Reset the PYR, BEGIN parameters to their defaults.
     xor a
@@ -1287,8 +1287,9 @@ tvmClear:
     call move9FromOp1
     ; [[fallthrough]]
 
-; Description: Clear the TVM Solver override flags.
-tvmSolverClear:
+; Description: Reset the TVM Solver parameter to factory default and clear the
+; override flags to remove the menu dots.
+tvmSolverReset:
     ; Set factory defaults
     call op1Set0 ; 0%/year
     call stoTvmIYR0

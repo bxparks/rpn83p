@@ -1661,14 +1661,14 @@ mBlank175Id equ 175
     .db 0 ; rowBeginId or altNameId
     .dw mNullHandler ; handler (predefined)
     .dw 0 ; nameSelector
-mTvmSolverClear:
-mTvmSolverClearId equ 176
-    .db mTvmSolverClearId ; id
+mTvmSolverReset:
+mTvmSolverResetId equ 176
+    .db mTvmSolverResetId ; id
     .db mTvmId ; parentId
-    .db mTvmSolverClearNameId ; nameId
+    .db mTvmSolverResetNameId ; nameId
     .db 0 ; numRows
     .db 0 ; rowBeginId or altNameId
-    .dw mTvmSolverClearHandler ; handler (to be implemented)
+    .dw mTvmSolverResetHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
 ; MenuGroup CLR: children
 ; MenuGroup CLR: children: row 0
@@ -2151,8 +2151,8 @@ mTvmIterMaxNameId equ 166
     .dw mTvmIterMaxName
 mTvmIterMaxAltNameId equ 167
     .dw mTvmIterMaxAltName
-mTvmSolverClearNameId equ 168
-    .dw mTvmSolverClearName
+mTvmSolverResetNameId equ 168
+    .dw mTvmSolverResetName
 mClearXNameId equ 169
     .dw mClearXName
 mClearStackNameId equ 170
@@ -2527,8 +2527,8 @@ mTvmIterMaxName:
     .db "TMAX", 0
 mTvmIterMaxAltName:
     .db 'T', 'M', 'X', Sblock, 0
-mTvmSolverClearName:
-    .db "CLTS", 0
+mTvmSolverResetName:
+    .db "RSTV", 0
 mClearXName:
     .db "CLX", 0
 mClearStackName:

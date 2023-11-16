@@ -328,7 +328,7 @@ MenuGroup root mRoot [
         MenuItemAlt IYR2 IY2<Sblock> mTvmIYR1 # TVM Solver's second guess
         MenuItemAlt TMAX TMX<Sblock> mTvmIterMax # TVM Solver max iter count
         MenuItem * *
-        MenuItem CLTS mTvmSolverClear
+        MenuItem RSTV mTvmSolverReset
       ]
     ]
   ]

@@ -198,8 +198,8 @@ errorCodeTvmIterations equ      74
     .dw errorStrTvmIterations
 errorCodeTvmCleared equ         75
     .dw errorStrTvmCleared
-errorCodeTvmSolverCleared equ   76
-    .dw errorStrTvmSolverCleared
+errorCodeTvmSolverReset equ     76
+    .dw errorStrTvmSolverReset
 errorCodeCount equ              77 ; total number of error codes
 
 ; The C strings for each error code. In alphabetical order, as listed in the TI
@@ -277,5 +277,5 @@ errorStrTvmIterations:
     .db "TVM Iterations", 0 ; TVM Solver hit max iterations
 errorStrTvmCleared:
     .db "TVM Cleared", 0 ; TVM all parameter cleared, including TVM Solver
-errorStrTvmSolverCleared:
-    .db "TVM Solver Cleared", 0 ; TVM Solver parameters cleared
+errorStrTvmSolverReset:
+    .db "TVM Solver Reset", 0 ; TVM Solver parameters reset to factory defaults
