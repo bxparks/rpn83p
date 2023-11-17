@@ -631,6 +631,8 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (back), and `MATH`
     - `2^X`: `2` to the power of `X`
     - `LOG2`: log base 2 of `X`
     - `LOGB`: log base `X` of `Y`
+    - `E^X-`: `e^x-1` accurate for small `x`
+    - `LN1+`: `log(1+x)` accurate for small `x`
 - `ROOT` > `NUM`
     - ![NUM MenuRow 1](docs/rpn83p-screenshot-menu-root-num-1.png)
     - ![NUM MenuRow 2](docs/rpn83p-screenshot-menu-root-num-2.png)
@@ -811,12 +813,30 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (back), and `MATH`
     - `>cal`: kilo Joules to kilo calories
     - `>kW`: horsepowers (mechanical) to kilo Watts
     - `>hp`: kilo Watts to horsepowers (mechanical)
+- `ROOT` > `TVM (time value of money)
+    - ![UNIT MenuRow 1](docs/rpn83p-screenshot-menu-root-tvm-1.png)
+    - ![UNIT MenuRow 2](docs/rpn83p-screenshot-menu-root-tvm-2.png)
+    - ![UNIT MenuRow 3](docs/rpn83p-screenshot-menu-root-tvm-3.png)
+    - `N`: set or calculate Number of payment periods
+    - `I%YR`: set or calculate Interest Percent per Year
+    - `PV`: set or calculate Present Value
+    - `PMT`: set or calculate Payment per period
+    - `FV`: set or calculate Future Value
+    - `P/YR`: set number of payments per year
+    - `BEG`: payment occurs at the Beginning of each period
+    - `END`: payment occurs at the End of each period
+    - `CLTV`: clear TVM variables and parameters
+    - `IYR1`: set `I%YR` guess 1 for TVM Solver
+    - `IYR2`: set `I%YR` guess 2 for TVM Solver
+    - `TMAX`: set iteration max for TVM Solver
+    - `RSTV`: reset TVM Solver parameters to factory defaults
 - `ROOT` > `CLR`
     - ![CLR MenuRow 1](docs/rpn83p-screenshot-menu-root-clr-1.png)
     - `CLX`: clear `X` stack register (stack lift disabled)
     - `CLST`: clear all RPN stack registers
     - `CLRG`: clear all storage registers `R00` to `R24`
     - `CLSigma`: clear STAT storage registers [`R11`, `R16`] or [`R11`, `R23`]
+    - `CLTV`: clear TVM variables and parameters
 - `ROOT` > `MODE`
     - ![MODE MenuRow 1](docs/rpn83p-screenshot-menu-root-mode-1.png)
     - `FIX`: fixed mode with `N` digits after the decimal point
