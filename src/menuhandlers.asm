@@ -313,7 +313,7 @@ mPrimeHandlerError:
 
 ;-----------------------------------------------------------------------------
 
-#ifdef DEBUG
+#ifdef ENABLE_PRIME_MOD
 ; Description: Test modU32U16().
 ; Uses:
 ;   - OP1=Y

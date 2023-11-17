@@ -401,6 +401,61 @@ _FindMenuString equ _FindMenuStringLabel-branchTableBase
     .dw FindMenuString
     .db 1
 
+#ifdef DEBUG
+_DebugInputBufLabel:
+_DebugInputBuf equ _DebugInputBufLabel-branchTableBase
+    .dw DebugInputBuf
+    .db 1
+_DebugParseBufLabel:
+_DebugParseBuf equ _DebugParseBufLabel-branchTableBase
+    .dw DebugParseBuf
+    .db 1
+_DebugPStringLabel:
+_DebugPString equ _DebugPStringLabel-branchTableBase
+    .dw DebugPString
+    .db 1
+_DebugClearLabel:
+_DebugClear equ _DebugClearLabel-branchTableBase
+    .dw DebugClear
+    .db 1
+_DebugOP1Label:
+_DebugOP1 equ _DebugOP1Label-branchTableBase
+    .dw DebugOP1
+    .db 1
+_DebugEEPosLabel:
+_DebugEEPos equ _DebugEEPosLabel-branchTableBase
+    .dw DebugEEPos
+    .db 1
+_DebugUnsignedALabel:
+_DebugUnsignedA equ _DebugUnsignedALabel-branchTableBase
+    .dw DebugUnsignedA
+    .db 1
+_DebugSignedALabel:
+_DebugSignedA equ _DebugSignedALabel-branchTableBase
+    .dw DebugSignedA
+    .db 1
+_DebugFlagsLabel:
+_DebugFlags equ _DebugFlagsLabel-branchTableBase
+    .dw DebugFlags
+    .db 1
+_DebugU32AsHexLabel:
+_DebugU32AsHex equ _DebugU32AsHexLabel-branchTableBase
+    .dw DebugU32AsHex
+    .db 1
+_DebugHLAsHexLabel:
+_DebugHLAsHex equ _DebugHLAsHexLabel-branchTableBase
+    .dw DebugHLAsHex
+    .db 1
+_DebugPauseLabel:
+_DebugPause equ _DebugPauseLabel-branchTableBase
+    .dw DebugPause
+    .db 1
+_DebugU32DEAsHexLabel:
+_DebugU32DEAsHex equ _DebugU32DEAsHexLabel-branchTableBase
+    .dw DebugU32DEAsHex
+    .db 1
+#endif
+
 #include "main.asm"
 #include "mainparser.asm"
 #include "handlers.asm"
@@ -427,9 +482,6 @@ _FindMenuString equ _FindMenuStringLabel-branchTableBase
 #include "const.asm"
 #include "handlertab.asm"
 #include "arghandlertab.asm"
-#ifdef DEBUG
-#include "debug.asm"
-#endif
 
 ;-----------------------------------------------------------------------------
 ; Flash Page 1
@@ -440,6 +492,9 @@ defpage(1)
 #include "help.asm"
 #include "menulookup.asm"
 #include "menudef.asm"
+#ifdef DEBUG
+#include "debug.asm"
+#endif
 
 .end
 

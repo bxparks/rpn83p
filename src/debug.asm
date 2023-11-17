@@ -5,13 +5,18 @@
 ; Routines for debugging, displaying contents of buffers or registers. These
 ; are not compiled into the app unless the -DDEBUG flag is given to the
 ; spasm-ng assembler.
+;
+; Labels with Capital letters are intended to be exported to other flash pages
+; and should be placed in the branch table on Flash Page 0. Labels with
+; lowercase letters are intended to be private so do not need a branch table
+; entry.
 ;------------------------------------------------------------------------------
 
 ; Function: Print out the inputBuf on the debug line.
 ; Input: parseBuf
 ; Output:
 ; Destroys: none
-debugInputBuf:
+DebugInputBuf:
     push af
     push bc
     push de
@@ -22,7 +27,7 @@ debugInputBuf:
     ld hl, debugCurCol*$100+debugCurRow ; $(curCol)(curRow)
     ld (CurRow), hl
     ld hl, inputBuf
-    call putPS
+    call debugPutPS
     ld a, cursorCharAlt
     bcall(_PutC)
     bcall(_EraseEOL)
@@ -35,11 +40,13 @@ debugInputBuf:
     pop af
     ret
 
+;------------------------------------------------------------------------------
+
 ; Function: Print out the parseBuf on the debug line.
 ; Input: parseBuf
 ; Output:
 ; Destroys: none
-debugParseBuf:
+DebugParseBuf:
     push af
     push bc
     push de
@@ -50,7 +57,7 @@ debugParseBuf:
     ld hl, debugCurCol*$100+debugCurRow ; $(curCol)(curRow)
     ld (CurRow), hl
     ld hl, parseBuf
-    call putPS
+    call debugPutPS
     ld a, cursorCharAlt
     bcall(_PutC)
     bcall(_EraseEOL)
@@ -63,11 +70,13 @@ debugParseBuf:
     pop af
     ret
 
+;------------------------------------------------------------------------------
+
 ; Description: Print the C string at HL.
 ; Input: HL
 ; Output:
 ; Destroys: none
-debugString:
+DebugString:
     push af
     push bc
     push de
@@ -77,7 +86,7 @@ debugString:
 
     ld de, debugCurCol*$100+debugCurRow ; $(curCol)(curRow)
     ld (CurRow), de
-    call putS
+    call debugPutS
     bcall(_EraseEOL)
 
     pop de
@@ -92,7 +101,7 @@ debugString:
 ; Input: HL
 ; Output:
 ; Destroys: none
-debugPString:
+DebugPString:
     push af
     push bc
     push de
@@ -102,7 +111,7 @@ debugPString:
 
     ld de, debugCurCol*$100+debugCurRow ; $(curCol)(curRow)
     ld (CurRow), de
-    call putPS
+    call debugPutPS
     bcall(_EraseEOL)
 
     pop de
@@ -117,7 +126,7 @@ debugPString:
 
 ; Description: Clear the debug line.
 ; Destroys: none
-debugClear:
+DebugClear:
     push hl
     ld hl, (CurRow)
     push hl
@@ -137,7 +146,7 @@ debugClear:
 ; Input: OP1
 ; Output:
 ; Destroys: OP3
-debugOP1:
+DebugOP1:
     push af
     push bc
     push de
@@ -150,7 +159,7 @@ debugOP1:
     ld a, 15 ; width of output
     bcall(_FormReal)
     ld hl, OP3
-    call putS
+    call debugPutS
     bcall(_EraseEOL)
 
     pop hl
@@ -167,7 +176,7 @@ debugOP1:
 ; Input: none
 ; Output: A printed on debug line
 ; Destroys: none
-debugEEPos:
+DebugEEPos:
     push af
     ld a, (inputBufEEPos)
     call debugUnsignedA
@@ -180,7 +189,7 @@ debugEEPos:
 ; Input: A
 ; Output: A printed on debug line
 ; Destroys: none
-debugUnsignedA:
+DebugUnsignedA:
     push af
     push bc
     push de
@@ -208,7 +217,7 @@ debugUnsignedA:
 ; Input: A
 ; Output: A printed on debug line
 ; Destroys: none
-debugSignedA:
+DebugSignedA:
     push af
     push bc
     push de
@@ -254,7 +263,7 @@ debugSignedAPrint:
 ; Input: (iy+rpnFlags), (iy+inputBufFlags)
 ; Output: Flags printed on debug line.
 ; Destroys: none
-debugFlags:
+DebugFlags:
     push af
     push bc
     push de
@@ -268,17 +277,17 @@ debugFlags:
     ; Print Input dirty flag
     bit dirtyFlagsInput, (iy + dirtyFlags)
     ld a, 'I'
-    call printFlag
+    call debugPrintFlag
 
     ; Print Editing flag
     bit rpnFlagsEditing, (iy + rpnFlags)
     ld a, 'E'
-    call printFlag
+    call debugPrintFlag
 
     ; Print ClosedEmpty flag
     bit inputBufFlagsClosedEmpty, (iy + inputBufFlags)
     ld a, 'Z'
-    call printFlag
+    call debugPrintFlag
 
     ld a, ' '
     bcall(_PutC)
@@ -286,12 +295,12 @@ debugFlags:
     ; Print Stack dirty flag
     bit dirtyFlagsStack, (iy + dirtyFlags)
     ld a, 'S'
-    call printFlag
+    call debugPrintFlag
 
     ; Print Lift flag
     bit rpnFlagsLiftEnabled, (iy + rpnFlags)
     ld a, 'L'
-    call printFlag
+    call debugPrintFlag
 
     bcall(_EraseEOL)
 
@@ -310,14 +319,14 @@ debugFlags:
 ; Output:
 ;   Flag character with '+' or '-', e.g. "I+", "E+"
 ; Destroys: A
-printFlag:
-    jr z, printFlagMinus
-printFlagPlus:
+debugPrintFlag:
+    jr z, debugPrintFlagMinus
+debugPrintFlagPlus:
     bcall(_PutC)
     ld a, '+'
     bcall(_PutC)
     ret
-printFlagMinus:
+debugPrintFlagMinus:
     bcall(_PutC)
     ld a, '-'
     bcall(_PutC)
@@ -328,7 +337,7 @@ printFlagMinus:
 ; Description: Print the 4 bytes pointed by HL.
 ; Input: HL: pointer to 4 bytes
 ; Destroys: None
-debugU32AsHex:
+DebugU32AsHex:
     push af
     push de
     push hl
@@ -341,25 +350,25 @@ debugU32AsHex:
 
 debugU32AsHexAltEntry:
     ld a, (hl)
-    call printUnsignedAAsHex
+    call debugUnsignedAAsHex
     inc hl
     ld a, ' '
     bcall(_PutC)
 
     ld a, (hl)
-    call printUnsignedAAsHex
+    call debugUnsignedAAsHex
     inc hl
     ld a, ' '
     bcall(_PutC)
 
     ld a, (hl)
-    call printUnsignedAAsHex
+    call debugUnsignedAAsHex
     inc hl
     ld a, ' '
     bcall(_PutC)
 
     ld a, (hl)
-    call printUnsignedAAsHex
+    call debugUnsignedAAsHex
 
     pop de
     ld (CurRow), de
@@ -368,25 +377,27 @@ debugU32AsHexAltEntry:
     pop af
     ret
 
-printUnsignedAAsHex:
+debugUnsignedAAsHex:
     push af
     srl a
     srl a
     srl a
     srl a
-    call convertAToChar
+    call debugAToChar
     bcall(_PutC)
 
     pop af
     and $0F
-    call convertAToChar
+    call debugAToChar
     bcall(_PutC)
     ret
+
+;------------------------------------------------------------------------------
 
 ; Description: Print the 4 bytes pointed by DE into the error code line.
 ; Input: De: pointer to 4 bytes
 ; Destroys: None
-debugU32DEAsHex:
+DebugU32DEAsHex:
     push af
     push de
     push hl
@@ -403,7 +414,7 @@ debugU32DEAsHex:
 ;------------------------------------------------------------------------------
 
 ; Description: print HL as hexadecimal
-debugHLAsHex:
+DebugHLAsHex:
     push af
     push bc
     push de
@@ -415,9 +426,9 @@ debugHLAsHex:
     ld (CurRow), de
 
     ld a, h
-    call printUnsignedAAsHex
+    call debugUnsignedAAsHex
     ld a, l
-    call printUnsignedAAsHex
+    call debugUnsignedAAsHex
     bcall(_EraseEOL)
 
     pop de
@@ -430,7 +441,11 @@ debugHLAsHex:
 
 ;------------------------------------------------------------------------------
 
-debugPause:
+; Description: Pause and wait for a keyboard input.
+; Input: none
+; Output: none
+; Destroys: none
+DebugPause:
     push af
     push bc
     push de
@@ -447,3 +462,73 @@ debugPause:
 debugPauseBreak:
     res onInterrupt, (iy + onFlags)
     bcall(_ErrBreak) ; throw exception
+
+;------------------------------------------------------------------------------
+; Low level routines, duplicated from Flash Page 0 for Flash Page 1.
+;------------------------------------------------------------------------------
+
+; Description: Convert A into an Ascii Char ('0'-'9','A'-'F'). For Flash Page 1.
+; Destroys: A
+debugAToChar:
+    cp 10
+    jr c, debugAToCharDec
+    sub 10
+    add a, 'A'
+    ret
+debugAToCharDec:
+    add a, '0'
+    ret
+
+; Description: Inlined version of bcall(_PutPS) which works for Pascal strings
+; in flash memory. For Flash Page 1. Identical to putPS().
+;
+; Input: HL: pointer to Pascal string
+; Destroys: A, B, C, HL
+; Preserves: DE
+debugPutPS:
+    ld a, (hl) ; A = length of Pascal string
+    inc hl
+    or a
+    ret z
+    ld b, a ; B = length of Pascal string (missing from SDK reference impl)
+    ld a, (winBtm)
+    ld c, a ; C = bottomRow (usually 8)
+debugPutPSLoop:
+    ld a, (hl)
+    inc hl
+    bcall(_PutC)
+    ; Check if next character is off-screen
+    ld a, (curRow)
+    cp c ; if currow == buttomRow: ZF=1
+    ret z
+    djnz debugPutPSLoop
+    ret
+
+; Description: Inlined version of bcall(_PutS) which works for flash
+; applications in Flash Page 1. Identical to putS().
+;
+; Input: HL: pointer to C-string
+; Output:
+;   - CF=1 if the entire string was displayed, CF=0 if not
+;   - curRow and curCol updated to the position after the last character
+; Destroys: HL
+debugPutS:
+    push bc
+    push af
+    ld a, (winBtm)
+    ld b, a ; B = bottom line of window
+debugPutSLoop:
+    ld a, (hl)
+    inc hl
+    or a ; test for end of string
+    scf ; CF=1 if entire string displayed
+    jr z, debugPutSEnd
+    bcall(_PutC)
+    ld a, (curRow)
+    cp b ; if A >= bottom line: CF=1
+    jr c, debugPutSLoop ; repeat if not at bottom
+debugPutSEnd:
+    pop bc ; restore A (but not F)
+    ld a, b
+    pop bc
+    ret

@@ -36,13 +36,13 @@ SRCS := \
 	tvmhandlers.asm \
 	vars.asm
 
-# TI Flash app
+# TI Flash app. Use -DDEBUG to activate functions in debug.asm.
 rpn83p.8xk: $(SRCS) Makefile
 	$(SPASM) -I $(SPASM_INC) -N rpn83p.asm $@
 
-# Debug version of assembly program.
+# TI assembly program. No longer works because the program is > 8 kiB.
 #rpn83p.8xp: $(SRCS) Makefile
-#	$(SPASM) -DDEBUG -I $(SPASM_INC) -N rpn83p.asm $@
+#	$(SPASM) -I $(SPASM_INC) -N rpn83p.asm $@
 
 rpn83p.lst: $(SRCS) Makefile
 	$(SPASM) -I $(SPASM_INC) -N -T rpn83p.asm rpn83p.8xp
