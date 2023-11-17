@@ -519,26 +519,27 @@ the menu hierarchy `ROOT`.
 
 ## Built In Help
 
-Pressing the `HELP` menu button at the root menu:
+Pressing the `HELP` menu button at the root menu activates the Help pages:
 
 ![ROOT MenuRow 1](docs/rpn83p-screenshot-menu-root-1.png)
 
-activates the Help pages. The contents are updated frequently so that
-screenshots below may not reflect the current version, but they look like this:
+The contents of these pages are updated frequently so the screenshots below may
+not be identical to the current version:
 
 ![Help Page 1](docs/rpn83p-help-page-1.png)
 ![Help Page 2](docs/rpn83p-help-page-2.png)
 ![Help Page 9](docs/rpn83p-help-page-9.png)
 
-Hopefully they are useful for remembering the mapping of the buttons whose TI-OS
-keyboard labels do not match the functionality assigned by the RPN83P program.
+The Help pages are intended to capture some of the more obscure tidbits about
+the RPN83P app which may be hard to remember. Hopefully it reduces the number of
+times that this User Guide needs to be consulted.
 
-The message at the bottom of each screen is not completely honest. A number of
-navigational keys are recognized by the Help subsystem:
+The message at the bottom of each page is not completely honest. A number of
+navigational keys are recognized by the Help system:
 
 - `UP`, `LEFT`: previous page with wraparound
 - `DOWN`, `RIGHT`: next page with wraparound
-- `DEL`, `MATH`, `CLEAR`, `ON`: exit help
+- `DEL`, `MATH`, `CLEAR`, `ON`: exit Help
 - any other button: next page *without* wraparound, exiting on the last page
 
 ## Error Codes
@@ -677,8 +678,8 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (back), and `MATH`
         - output (`Y`, `X`) = (`r`, `theta`)
     - `>HR`: convert `HH.MMSSssss` to `HH.hhhh`
     - `>HMS`: convert `HH.hhhh` to `HH.MMSSssss`
-- `ROOT` > `HELP`: display the help pages
-    - use arrow keys to view each help page
+- `ROOT` > `HELP`: display the Help pages
+    - use arrow keys to view each Help page
 - `ROOT` > `BASE`
     - ![BASE MenuRow 1](docs/rpn83p-screenshot-menu-root-base-1.png)
     - ![BASE MenuRow 2](docs/rpn83p-screenshot-menu-root-base-2.png)
