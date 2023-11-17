@@ -523,22 +523,23 @@ Pressing the `HELP` menu button at the root menu:
 
 ![ROOT MenuRow 1](docs/rpn83p-screenshot-menu-root-1.png)
 
-activates the Help pages:
+activates the Help pages. The contents are updated frequently so that
+screenshots below may not reflect the current version, but they look like this:
 
 ![Help Page 1](docs/rpn83p-help-page-1.png)
-
 ![Help Page 2](docs/rpn83p-help-page-2.png)
-
-![Help Page 3](docs/rpn83p-help-page-3.png)
-
-![Help Page 4](docs/rpn83p-help-page-4.png)
-
-![Help Page 5](docs/rpn83p-help-page-5.png)
-
-![Help Page 6](docs/rpn83p-help-page-6.png)
+![Help Page 9](docs/rpn83p-help-page-9.png)
 
 Hopefully they are useful for remembering the mapping of the buttons whose TI-OS
 keyboard labels do not match the functionality assigned by the RPN83P program.
+
+The message at the bottom of each screen is not completely honest. A number of
+navigational keys are recognized by the Help subsystem:
+
+- `UP`, `LEFT`: previous page with wraparound
+- `DOWN`, `RIGHT`: next page with wraparound
+- `DEL`, `MATH`, `CLEAR`, `ON`: exit help
+- any other button: next page *without* wraparound, exiting on the last page
 
 ## Error Codes
 
