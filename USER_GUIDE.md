@@ -1822,7 +1822,7 @@ to get a $500,000 mortgage with a $3000/month payment
 10% per annum rate, what is her bank balance after 365 days?
 
 - Press `CLTV`
-- Press 3600 24 `*` 365 `*` (31536000)
+- Press 3600 24 `*` 365 `*` (should see 31536000)
 - Press `N`
 - Press DOWN to next menu row
     - Press `P/YR` (set payments per year to the same 31536000)
@@ -1834,12 +1834,13 @@ to get a $500,000 mortgage with a $3000/month payment
 - Answer: $331667.0067
 
 Note that the answer is accurate to all displayed digits because we avoided
-roundoff errors by using the new `E^X-` and `LN1+` functions.
+roundoff errors by using the new `E^X-` and `LN1+` functions internally.
 
 Source:
 - [A Penny for your
-  Thoughts](https://people.eecs.berkeley.edu/~wkahan/MathSand.pdf)
+  Thoughts](https://people.eecs.berkeley.edu/~wkahan/MathSand.pdf) (1983)
 - [Looking for TVM formulas](https://www.hpmuseum.org/forum/thread-1012.html)
+  (2014)
 
 **Example 5**: Multiple Solutions
 
