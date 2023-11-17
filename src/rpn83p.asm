@@ -376,14 +376,28 @@ defpage(0, "RPN83P")
     jp main ; must be a 'jp' to get correct alignment of the branch table
     .db 0 ; pad one byte so that Branch Table starts at address multiple of 3
 
-; Branch table here.
-_processHelp equ (44+0)*3
+; Branch table here. The spasm-ng documentation in Appendix A mentioned above
+; recommends that each bcall() entry is defined by the expression `(44+n)*3`
+; where `n` starts at 0 and increments by one for each entry. The problem with
+; that method is that it becomes a chore to maintain the correct `n` index when
+; entries are added or removed.
+;
+; Instead, let's define the bcall() labels as offsets from start of flash page,
+; $4000. When entries are added or removed, all the labels are automatically
+; updated. Warning: spasm-ng cannot handle forward references in `equ`
+; statements, so we have to define the bcall() label *after* the XxxLabel
+; label.
+branchTableBase equ $4000
+_ProcessHelpLabel:
+_ProcessHelp equ _ProcessHelpLabel-branchTableBase
     .dw ProcessHelp
     .db 1
-_findMenuNode equ (44+1)*3
+_FindMenuNodeLabel:
+_FindMenuNode equ _FindMenuNodeLabel-branchTableBase
     .dw FindMenuNode
     .db 1
-_findMenuString equ (44+2)*3
+_FindMenuStringLabel:
+_FindMenuString equ _FindMenuStringLabel-branchTableBase
     .dw FindMenuString
     .db 1
 

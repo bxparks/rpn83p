@@ -42,7 +42,7 @@ mGroupHandler:
 ;-----------------------------------------------------------------------------
 
 mHelpHandler:
-    bcall(_processHelp) ; use bcall() to invoke HELP handler on Flash Page 1
+    bcall(_ProcessHelp) ; use bcall() to invoke HELP handler on Flash Page 1
     ret
 
 ;-----------------------------------------------------------------------------

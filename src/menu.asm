@@ -148,7 +148,7 @@ getMenuRowBeginId:
 getMenuNode:
     push af
     push bc
-    bcall(_findMenuNode) ; use bcall() to invoke routine on Flash Page 1
+    bcall(_FindMenuNode) ; use bcall() to invoke routine on Flash Page 1
     pop bc
     pop af
     ret
@@ -207,7 +207,7 @@ getMenuName:
     ld a, b ; A=nameId
     call nz, jumpDE ; if nameSelector!=NULL: call (DE)
     ; A contains the menu string ID
-    bcall(_findMenuString)
+    bcall(_FindMenuString)
     pop de
     pop bc
     ret
