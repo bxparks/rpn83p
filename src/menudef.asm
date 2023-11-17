@@ -254,8 +254,17 @@ mLog2Id equ 23
     .db 0 ; rowBeginId or altNameId
     .dw mLog2Handler ; handler (to be implemented)
     .dw 0 ; nameSelector
+mLogBase:
+mLogBaseId equ 24
+    .db mLogBaseId ; id
+    .db mMathId ; parentId
+    .db mLogBaseNameId ; nameId
+    .db 0 ; numRows
+    .db 0 ; rowBeginId or altNameId
+    .dw mLogBaseHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
 mExpMinusOne:
-mExpMinusOneId equ 24
+mExpMinusOneId equ 25
     .db mExpMinusOneId ; id
     .db mMathId ; parentId
     .db mExpMinusOneNameId ; nameId
@@ -264,22 +273,13 @@ mExpMinusOneId equ 24
     .dw mExpMinusOneHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
 mLnOnePlus:
-mLnOnePlusId equ 25
+mLnOnePlusId equ 26
     .db mLnOnePlusId ; id
     .db mMathId ; parentId
     .db mLnOnePlusNameId ; nameId
     .db 0 ; numRows
     .db 0 ; rowBeginId or altNameId
     .dw mLnOnePlusHandler ; handler (to be implemented)
-    .dw 0 ; nameSelector
-mLogBase:
-mLogBaseId equ 26
-    .db mLogBaseId ; id
-    .db mMathId ; parentId
-    .db mLogBaseNameId ; nameId
-    .db 0 ; numRows
-    .db 0 ; rowBeginId or altNameId
-    .dw mLogBaseHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
 ; MenuGroup NUM: children
 ; MenuGroup NUM: children: row 0
@@ -1857,12 +1857,12 @@ mAlog2NameId equ 19
     .dw mAlog2Name
 mLog2NameId equ 20
     .dw mLog2Name
-mExpMinusOneNameId equ 21
-    .dw mExpMinusOneName
-mLnOnePlusNameId equ 22
-    .dw mLnOnePlusName
-mLogBaseNameId equ 23
+mLogBaseNameId equ 21
     .dw mLogBaseName
+mExpMinusOneNameId equ 22
+    .dw mExpMinusOneName
+mLnOnePlusNameId equ 23
+    .dw mLnOnePlusName
 mPercentNameId equ 24
     .dw mPercentName
 mPercentChangeNameId equ 25
@@ -2233,12 +2233,12 @@ mAlog2Name:
     .db '2', Scaret, 'X', 0
 mLog2Name:
     .db "LOG2", 0
+mLogBaseName:
+    .db "LOGB", 0
 mExpMinusOneName:
     .db 'E', Scaret, 'X', Sdash, 0
 mLnOnePlusName:
     .db 'L', 'N', '1', SplusSign, 0
-mLogBaseName:
-    .db "LOGB", 0
 mPercentName:
     .db Spercent, 0
 mPercentChangeName:
