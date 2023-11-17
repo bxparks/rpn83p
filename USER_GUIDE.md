@@ -813,10 +813,10 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (back), and `MATH`
     - `>cal`: kilo Joules to kilo calories
     - `>kW`: horsepowers (mechanical) to kilo Watts
     - `>hp`: kilo Watts to horsepowers (mechanical)
-- `ROOT` > `TVM (time value of money)
-    - ![UNIT MenuRow 1](docs/rpn83p-screenshot-menu-root-tvm-1.png)
-    - ![UNIT MenuRow 2](docs/rpn83p-screenshot-menu-root-tvm-2.png)
-    - ![UNIT MenuRow 3](docs/rpn83p-screenshot-menu-root-tvm-3.png)
+- `ROOT` > `TVM` (time value of money)
+    - ![TVM MenuRow 1](docs/rpn83p-screenshot-menu-root-tvm-1.png)
+    - ![TVM MenuRow 2](docs/rpn83p-screenshot-menu-root-tvm-2.png)
+    - ![TVM MenuRow 3](docs/rpn83p-screenshot-menu-root-tvm-3.png)
     - `N`: set or calculate Number of payment periods
     - `I%YR`: set or calculate Interest Percent per Year
     - `PV`: set or calculate Present Value
@@ -1572,15 +1572,30 @@ an `X=752.098` (a minimum rainfall of 752) which is not reasonable.
 
 ### TVM Functions
 
+Version 0.7.0 implements a usable Time Value of Money functionality that is
+inspired by RPN financial calculators such as the HP-12C and the HP-30b. They
+are available through the `ROOT` > `TVM` menu:
+
+- ![ROOT MenuRow 2](docs/rpn83p-screenshot-menu-root-2.png)
+    - ![TVM MenuRow 1](docs/rpn83p-screenshot-menu-root-tvm-1.png)
+    - ![TVM MenuRow 2](docs/rpn83p-screenshot-menu-root-tvm-2.png)
+    - ![TVM MenuRow 3](docs/rpn83p-screenshot-menu-root-tvm-3.png)
+
+This User Guide assumes that you are already know the theory of the Time Value
+of Money, and that you are familiar with TVM functions of RPN financial
+calculators. Some introductory information can be found in the manuals of these
+calculators:
+
+- [HP-12C User's Guide](https://literature.hpcalc.org/items/47): Section 3:
+  Basic Financial Functions
+- [HP-30b User's Guide](https://literature.hpcalc.org/items/130): Chapter 3:
+  Time Value of Money
+
 #### TVM Menu Buttons
 
-Version 0.7.0 implements a rudimentary Time Value of Money functionality that is
-inspired by financial calculators such as the HP-12C and the HP-30b. There are 5
-menu items under the `ROOT > TVM` menu hierarchy, corresponding to the 5
-variables in the TVM equation (both the Net Future Value and Net Present Value
-equations produce identical results):
+There are 5 menu items that correspond to the 5 variables in the TVM equation:
 
-- `N`: number of compounding periods
+- `N`: number of payment periods
 - `I%YR`: interest percent per year
 - `PV`: present value
 - `PMT`: payment per period
@@ -1588,8 +1603,9 @@ equations produce identical results):
 
 When 4 variables are known, the 5th variable can be calculated from the other 4.
 Just like the HP-12C and HP-30b, each menu button performs a dual function: it
-can either assign a value to the corresponding TVM variable, or it can calculate
-the TVM variable from the other 4 variables:
+can either store a value to the corresponding TVM variable, or it can calculate
+the TVM variable from the other 4 variables. The rules that determine the course
+of action are:
 
 - If a value has been entered into the `X` register, then the next press of a
   TVM menu button **stores** the `X` value to the corresponding variable.
@@ -1600,10 +1616,8 @@ the TVM variable from the other 4 variables:
 Since each button has a dual-function, it can sometimes be confusing to remember
 which action a given TVM menu button has performed. This is definitely true on
 the HP-12C and the HP-30b which provide no feedback regarding the two different
-actions.
-
-The RPN83P solves this problem by displaying different status messages after a
-TVM menu button has completed. The message will read:
+actions. The RPN83P solves this problem by displaying different status messages
+after a TVM menu button has completed. The message will read:
 
 - `TVM Set` if the menu button **stored** the `X` value into the TVM variable,
 - `TVM Calculated` if the menu button **calculated** the given TVM variable
@@ -1612,11 +1626,11 @@ TVM menu button has completed. The message will read:
 #### TVM Payments Per Year
 
 On the HP-12C, the interest rate button is labeled with an `i` and represents
-the compounding interest percentage for each *compounding period*. On the HP-30b
-and most modern financial calculators, the `i` button has been replaced with
-`I%YR` (or `I/YR`) which accepts the interest rate as a nominal *annual*
-percentage rate. The RPN83P app follows the modern convention and the interest
-rate menu button is named `I%YR`.
+the interest percentage for each *payment period*. On the HP-30b and most modern
+financial calculators, the `i` button has been replaced with `I%YR` (or `I/YR`)
+which accepts the interest rate as a nominal *annual* percentage rate. The
+RPN83P app follows the modern convention and the interest rate menu button is
+named `I%YR`.
 
 The relationship between the `i` button (as implemented on the HP-12C) and the
 `I%YR` button as implemented on the RPN83P is:
