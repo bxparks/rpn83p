@@ -27,7 +27,8 @@ processCommand:
     ; Install error handler
     ld hl, cleanupHandlerException
     call APP_PUSH_ERRORH
-    ; Handle the normal buttons or the menu F1-F5 buttons.
+    ; Dispatch to the handler for the given button, either the normal buttons
+    ; or the menu F1-F5 buttons.
     ld hl, keyCodeHandlerTable
     ld b, keyCodeHandlerTableSize
     call dispatchHandler
@@ -41,13 +42,22 @@ processCommand:
     jr z, cleanupHandlerQuitApp
     ; Check for errorCodeClearScreen
     cp errorCodeClearScreen
-    jp z, cleanupHandlerClearScreen
+    jr z, cleanupHandlerClearScreen
+    ; [[fallthrough]]
 cleanupHandlerSetErrorCode:
+    ; transfer the handlerCode in A to displayable errorCode.
     call setErrorCode
     jr processCommand
 
+; Handle system exception. A contains the system error code.
 cleanupHandlerException:
-    ; Handle system exception. Register A contains the system error code.
+    ; The exception may have been thrown inside a routine that enabled the run
+    ; indicator (e.g. TVM Solver when calculating I%YR). Disable the indicator
+    ; just in case.
+    push af
+    bcall(_RunIndicOff) ; destroys A (contrary to SDK docs)
+    pop af
+    ; Convert system code to handler code
     call setHandlerCodeToSystemCode
     jr cleanupHandlerSetErrorCode
 
