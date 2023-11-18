@@ -77,7 +77,7 @@ Here are some missing features which may be added in the future:
 - complex numbers
 - keystroke programming
 
-**Version**: 0.7.0-dev (2023-11-16)
+**Version**: 0.7.0-dev (2023-11-17)
 
 **Changelog**: [CHANGELOG.md](CHANGELOG.md)
 
@@ -92,6 +92,7 @@ Here are some missing features which may be added in the future:
 - [Quick Examples](#quick-examples)
     - [Example 1](#example-1)
     - [Example 2](#example-2)
+    - [Example 3](#example-3)
 - [User Guide](#user-guide)
 - [Compiling from Source](#compiling-from-source)
 - [Tools and Resources](#tools-and-resources)
@@ -145,7 +146,7 @@ It *should* work on the others, but I have not actually tested them.
 
 ## Quick Examples
 
-### Example 1
+### Example 1: Volume of Sphere
 
 Let's compute the volume of a sphere of radius `2.1`. Recall that the volume of
 a sphere is `(4/3) pi r^3`. There are many ways to compute this in an RPN
@@ -173,13 +174,17 @@ Here is an animated GIF that shows this calculation:
 (Note that the RPN83P provides a `X^3` menu function that could have been used
 for this formula, but I used the `LastX` feature to demonstrate its use.)
 
-### Example 2
+### Example 2: Base Conversions and Logical Operations
+
+The RPN83P supports most of the base conversion and logical operators found on
+the HP-42S and the HP-16C calculators.
 
 Let's calculate the bitwise-and operator between the hexadecimal numbers `B6`
 and `65`, then see the result as an octal number (base-8), a binary number
 (base-2), then right shift the result 3 bits which sets the Carry Flag, then
 view the final result as a decimal number:
 
+- Press `MATH` to reset the menu to the home row.
 - Navigate the menu with the DOWN arrow to get to
   ![ROOT MenuRow 2](docs/rpn83p-screenshot-menu-root-2.png)
 - Press `BASE` menu to get to
@@ -212,6 +217,49 @@ view the final result as a decimal number:
 Here is the animated GIF that shows this calculation:
 
 ![RPN83P Example 2 GIF](docs/rpn83p-example2.gif)
+
+### Example 3: Time Value of Money
+
+The RPN83P supports the Time Value of Money functionality of the HP-12C
+calculator.
+
+In this example:
+- We calculate the monthly payment of a $500,000 mortgage over 30 years at 8%,
+  then,
+- We recalculate the payment at 7%, then,
+- We fix the monthly payment at $3000/month and calculate the interest rate
+  that is needed for that monthly payment.
+
+Here are the steps:
+
+- Press `MATH` to reset the menu to the home row.
+- Navigate the menu with the DOWN arrow to get to
+  ![ROOT MenuRow 2](docs/rpn83p-screenshot-menu-root-2.png)
+- Press the `TVM` menu to get to
+  ![TVM MenuRow 1](docs/rpn83p-screenshot-menu-root-tvm-1.png)
+- Press the DOWN arrow to get to
+  ![TVM MenuRow 2](docs/rpn83p-screenshot-menu-root-tvm-2.png)
+- Press the `CLTV` button to clear the TVM variables.
+- Press the UP arrow to get back to
+  ![TVM MenuRow 1](docs/rpn83p-screenshot-menu-root-tvm-1.png)
+- Press `360` `N` (30 years * 12 months = 360 payments)
+- Press `8` `I%YR` (interest percent per year)
+- Press `500000` `PV` (present value)
+- Press `0` `FV` (future value)
+- Press `PMT` (payments)
+    - You should see `-3668.822869` ($3668.82)
+- Press `7` `I%YR`
+- Press `PMT`
+    - You should see `-3326.512476` ($3326.51)
+- Press `-3000` `PMT`
+- Press `I%YR`
+    - After a couple of seconds, you should see 6.006990008 (6%).
+
+Here is the animated GIF that shows this calculation:
+
+![RPN83P Example 3 GIF](docs/rpn83p-example3.gif)
+
+### Exiting the Menu
 
 Press:
 
