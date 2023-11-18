@@ -805,45 +805,45 @@ mTvmNGet:
     ld a, errorCodeTvmRecalled
     jp setHandlerCode
 mTvmNCalculate:
-    ; if i>0: N = ln(R) / ln(1+i)
-    ; where: R = [PMT*(1+ip)-i*FV]/[PMT*(1+ip)+i*PV]
-    ;
-    ; TODO: Maybe use R = [1 - i*FV/(PMT*(1+ip))]/[1 + i*PV/(PMT*(1+ip))], then
-    ; use log1p() for the denominator and numerator separately. This will be
-    ; more robust if i becomes very small. On the other hand, if PMT==0, then
-    ; this version will fail. So maybe we need to have 2 different formulas,
-    ; depending on the relative size of PMT(1+ip) compared to i*FV and i*PV.
+    ; if i!=0:
+    ;   N = ln(1+N0)/ln(1+i), where
+    ;   N0 = -i(FV+PV)/[PMT*(1+ip)+i*PV]
+    ;   if N0<=-1: no solution
+    ; else:
+    ;   N -> N0/i = -(FV+PV)/PMT
+    ;   if N<=0: no solution
     call getTvmIntPerPeriod ; OP1=i
     bcall(_CkOP1FP0) ; check for i==0
     jr z, mTvmNCalculateZero
     bcall(_PushRealO1) ; FPS=[i]
     call beginEndFactor ; OP1=1+ip
-    call op1ToOP2 ; OP2=1+ip
+    call op1ToOp2 ; OP2=1+ip
     call rclTvmPMT ; OP1=PMT
     bcall(_FPMult) ; OP1=PMT*(1+ip)
     bcall(_OP1ToOP4) ; OP4=PMT*(1+ip) (save)
     bcall(_PopRealO2) ; FPS=[]; OP2=i
     bcall(_PushRealO2) ; FPS=[i]
     bcall(_PushRealO2) ; FPS=[i,i]
-    call rclTvmFV ; OP1=FV
-    bcall(_FPMult) ; OP1=FV*i
-    bcall(_OP4ToOP2) ; OP2=PMT*(1+ip)
-    bcall(_InvSub) ; OP1=PMT*(1+ip)-FV*i
-    call exchangeFPSOP1 ; FPS=[i,PMT*(1+ip)-FV]; OP1=i
-    call op1ToOP2 ; OP2=i
     call rclTvmPV ; OP1=PV
     bcall(_FPMult) ; OP1=PV*i
     bcall(_OP4ToOP2) ; OP2=PMT*(1+ip)
-    bcall(_FPAdd) ; OP1=PMT*(1+ip)+PV*i
-    bcall(_PopRealO2) ; FPS=[i]; OP2=PMT*(1+ip)-FV*i
-    call op1ExOp2
-    bcall(_FPDiv) ; OP1=R=[PMT*(1+ip)-FV*i] / [PMT*(1+ip)+PV*i]
-    bcall(_LnX) ; OP1=ln(R)
-    call exchangeFPSOP1 ; FPS=[ln(R)]; OP1=i
-    call lnOnePlus ; OP1=ln(i+1)
-    call op1ToOP2 ; OP2=ln(i+1)
-    bcall(_PopRealO1) ; FPS=[]; OP1=ln(R)
-    bcall(_FPDiv) ; OP1=ln(R)/ln(i+1)
+    bcall(_FPAdd) ; OP1=PMT*(1+ip)+i*PV
+    bcall(_PushRealO1) ; FPS[i,i,PMT*(1+ip)+i*PV]
+    call rclTvmPV ; OP1=PV
+    call op1ToOp2 ; OP2=PV
+    call rclTvmFV ; OP1=FV
+    bcall(_FPAdd) ; OP1=PV+FV
+    bcall(_PopRealO2) ; FPS=[i,i]; OP2=PMT*(1+ip)+i*PV
+    bcall(_FPDiv) ; OP1=(FV+PV)/(PMT*(1+ip)+i*PV)
+    bcall(_PopRealO2) ; FPS=[i]; OP2=i
+    bcall(_FPMult) ; OP1=N0=i*(FV+PV)/(PMT*(1+ip)+i*PV)
+    bcall(_InvOP1S) ; OP1=N0=-i*(FV+PV)/(PMT*(1+ip)+i*PV)
+    call lnOnePlus ; OP1=ln(1+N0); throws exception if 1+N0<=0
+    call exchangeFPSOP1 ; FPS=[ln(1+N0)]; OP1=i
+    call lnOnePlus ; OP1=ln(1+i); throws exception if 1+i<=0
+    call op1ToOP2 ; OP2=ln(1+i)
+    bcall(_PopRealO1) ; FPS=[]; OP1=ln(1+N0)
+    bcall(_FPDiv) ; OP1=ln(1+N0)/ln(1+i)
 mTvmNCalculateSto:
     call stoTvmN
     call pushX
