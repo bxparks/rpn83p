@@ -225,7 +225,8 @@ parseBufMan equ parseBufSize + 1
 parseBufMax equ 14
 parseBufSizeOf equ parseBufMax + 1
 
-; Menu variables. The C equivalent is:
+; Menu variables. Two variables determine the current state of the menu, the
+; groupId and the rowIndex in the group. The C equivalent is:
 ;
 ;   struct menu {
 ;     uint8_t groupId; // id of the current menu group
@@ -234,13 +235,24 @@ parseBufSizeOf equ parseBufMax + 1
 menuGroupId equ parseBuf + parseBufSizeOf
 menuRowIndex equ menuGroupId + 1
 
+; These variables remember the previous menuGroup/row pair when a shortcut was
+; pressed to another menuGroup. On the ON/EXIT button is pressed, we can then
+; go back to the previous menu, instead of going up to the parent of the menu
+; invoked by the shortcut button. Not all shortcuts will choose to use this
+; feature. Currently (v0.7.0), only the MODE button seems to be a good candidate.
+; If jumpBackMenuGroupId is 0, then the memory feature is not active. If it is
+; not 0, then the ON/EXIT button should go back to the menu defined by this
+; pair.
+jumpBackMenuGroupId equ menuRowIndex + 1
+jumpBackMenuRowIndex equ jumpBackMenuGroupId + 1
+
 ; Menu name, copied here as a Pascal string.
 ;
 ;   struct menuName {
 ;       uint8_t size;
 ;       char buf[5];
 ;   }
-menuName equ menuRowIndex + 1
+menuName equ jumpBackMenuRowIndex + 1
 menuNameSize equ menuName
 menuNameBuf equ menuName + 1
 menuNameBufMax equ 5

@@ -48,11 +48,13 @@ menuNodeNameSelector equ 7
 ; sizeof(MenuNode) == 9
 menuNodeSizeOf equ 9
 
-; Description: Set initial values for (menuGroupId) and (menuRowIndex).
+; Description: Set initial values for various menu node variables.
 ; Input: none
 ; Output:
-;   (menuGroupId) = mRootId
-;   (menuRowIndex) = 0
+;   - (menuGroupId) = mRootId
+;   - (menuRowIndex) = 0
+;   - (jumpBackMenuGroupId) = 0
+;   - (jumpBackMenuRowIndex) = 0
 ; Destroys: A, HL
 initMenu:
     ld hl, menuGroupId
@@ -61,6 +63,7 @@ initMenu:
     inc hl
     xor a
     ld (hl), a
+    call clearJumpBack
     set dirtyFlagsMenu, (iy + dirtyFlags)
     ret
 
@@ -193,7 +196,7 @@ getMenuName:
     inc hl
     ld b, (hl) ; B=nameId
     inc hl
-    inc hl 
+    inc hl
     ld c, (hl) ; C=altNameId
     inc hl
     inc hl
@@ -214,8 +217,10 @@ getMenuName:
 
 ;-----------------------------------------------------------------------------
 
-; Description: Dispatch to the handler for the menu node in register A. There
-; are 2 cases:
+; Description: Dispatch to the handler for the menu node in register A.
+;
+; There are 2 cases:
+;
 ; 1) If the target node is a MenuItem, then the 'onEnter' event is sent to the
 ; item by invoking its handler.
 ; 2) If the target node is a MenuGroup, a 'chdir' operation is implemented in 3
@@ -231,41 +236,106 @@ getMenuName:
 ; Output:
 ;   - (menuGroupId) is updated if the target is a MenuGroup
 ;   - (menuRowIndex) is set to 0 if the target is a MenuGroup
+;   - (jumpBackMenuGroupId) cleared
+;   - (jumpBackMenuRowIndex) cleared
 ; Destroys: A, B, C, DE, HL, IX
 dispatchMenuNode:
-    ; get menu node corresponding to pressed menu key
-    call getMenuNode
-    ld b, a ; save B=target nodeId
+    call getMenuNode ; HL=pointer to MenuNode
+    call getMenuNodeHandler ; DE=handler
+    ld b, a ; B=targetNodeId
+
+    ; Invoke a MenuItem.
+    ld a, c ; A=numRows
+    or a ; if numRows == 0: ZF=1 (i.e. a MenuItem)
+    jp z, jumpDE ; Invoke menuHandler(HL=pointer to MenuNode).
+
+    ; Change into the target menu group. First clear the jumpBack registers.
+    ; Then invoke changeMenuGroup(B=targetGroupId, C=targetRowIndex,
+    ; HL=pointerToMenuNode).
+    call clearJumpBack
+    ld c, 0 ; C=rowIndex=0
+    jr changeMenuGroup ; MenuGroup
+
+; Description: Same as dispatchMenuNode, except save the current
+; menuGroupId/menuRowIndex in the jumpBack registers if the target is different
+; than the current.
+; Input:
+;   - A=target nodeId
+; Output
+;   - (menuGroupId) is updated if the target is a MenuGroup
+;   - (menuRowIndex) is set to 0 if the target is a MenuGroup
+;   - (jumpBackMenuGroupId) set to current menuGroupId
+;   - (jumpBackMenuRowIndex) set to current menuRowIndex
+; Destroys: B
+dispatchMenuNodeWithJumpBack:
+    call getMenuNode ; HL=pointer to MenuNode
+    call getMenuNodeHandler ; DE=handler
+    ld b, a ; B=targetGroupId
+
+    ; Invoke a MenuItem.
+    ld a, c ; A=numRows
+    or a ; if numRows == 0: ZF=1 (i.e. a MenuItem)
+    jp z, jumpDE ; Invoke menuHandler(HL=pointer to MenuNode).
+
+    ; Change into the target menu group. First, update the jumpBack registers
+    ; if target is different than current. Then invoke
+    ; changeMenuGroup(B=targetGroupId, C=targetRowIndex, HL=pointerToMenuNode).
+    ld a, (menuGroupId)
+    cp b
+    call nz, saveJumpBack
+    ld c, 0 ; C=rowIndex=0
+    jr changeMenuGroup ; MenuGroup
+
+; Description: Retrieve the mXxxHandler of the given MenuNode.
+; Input:
+;   - HL: pointer MenuNode
+; Output:
+;   - C: numRows
+;   - DE: handler
+; Preserves: A, B, HL
+getMenuNodeHandler:
     push hl ; save pointer to MenuNode
-    ; load mXxxHandler
     inc hl
     inc hl
     inc hl
-    ld a, (hl) ; A=numRows
+    ld c, (hl) ; C=numRows
     inc hl
     inc hl
     ld e, (hl)
     inc hl
     ld d, (hl) ; DE=mXxxHandler of the target node
     pop hl ; HL=pointer to target MenuNode
-    or a ; if targetNode.numRows == 0: ZF=1
-    ld a, b ; A=target nodeId
-    jp z, jumpDE
-
-    ; Change into the target menu group.
-    ; B=target groupId
-    ld c, 0 ; C=rowIndex=0
-    jr changeMenuGroup
+    ret
 
 ;-----------------------------------------------------------------------------
 
-; Description: Go up to the parent of the menu group specified by register A.
-; Input: A=current groupId
+; Description: Go back from the menu group specified by (menuGroupId).
+; Normally, the jumpBackMenuGroupId is 0, and this handler should go up to the
+; parent MenuGroup of the current MenuGroup. However, if jumpBackMenuGroupId is
+; non-zero, then the current MenuGroup was reached through a keyboard shortcut,
+; and the exit handler should go back to the jumpBack MenuGroup.
+; Input:
+;   - (menuGroupId)
+;   - (jumpBackMenuGroupId)
+;   - (jumpBackMenuRowIndex)
 ; Output:
 ;   - (menuGroupId) updated
 ;   - (menuRowIndex) updated
 ; Destroys: A, BC, DE, HL
 exitMenuGroup:
+    ; Check if the jumpBack target is defined.
+    ld a, (jumpBackMenuGroupId)
+    or a
+    jr z, exitMenuGroupHierarchy
+exitMenuGroupThroughJumpBack:
+    ; Go to jumpBack MenuGroup.
+    ld b, a ; B=jumpBackMenuGroupId
+    ld a, (jumpBackMenuRowIndex)
+    ld c, a ; C=jumpBackMenuRowIndex
+    ; But clear the jumpBask before going back.
+    call clearJumpBack
+    jr changeMenuGroup
+exitMenuGroupHierarchy:
     ; Check if already at rootGroup
     ld hl, menuGroupId
     ld a, (hl) ; A = menuGroupId
@@ -303,7 +373,7 @@ exitMenuGroupToParent:
 ; Description: Change the current menu group to the target menuGroup and
 ; rowIndex.
 ; Input:
-;   - B=target nodeGroupId
+;   - B=target menuGroupId
 ;   - C=target rowIndex
 ; Output:
 ;   - (menuGroupId)=target nodeId
@@ -311,16 +381,18 @@ exitMenuGroupToParent:
 ;   - dirtyFlagsMenu set
 ; Destroys: A, DE, HL, IX
 changeMenuGroup:
-    ; Call the onExit handler of the current node.
+    ; First, invoke the onExit handler of the previous MenuGroup by setting
+    ; CF=1.
     ld a, (menuGroupId)
     call getMenuNodeIX
     ld e, (ix + menuNodeHandler)
     ld d, (ix + menuNodeHandler + 1)
-    scf ; set CF=1 to invoke onExit handler
+    scf
     push bc
     call jumpDE
     pop bc
-    ; Call the onEnter handler of the target node.
+    ; Second, invoke the onEnter handler of the target MenuGroup by setting
+    ; CF=0.
     ld a, c ; A=target rowIndex
     ld (menuRowIndex), a
     ld a, b ; A=target nodeId
@@ -328,7 +400,7 @@ changeMenuGroup:
     call getMenuNodeIX
     ld e, (ix + menuNodeHandler)
     ld d, (ix + menuNodeHandler + 1)
-    or a ; set CF=0 to invoke onEnter handler
+    or a ; set CF=0
     set dirtyFlagsMenu, (iy + dirtyFlags)
     jp jumpDE
 
@@ -365,4 +437,28 @@ deduceRowIndexLoop:
 deduceRowIndexFound:
     ld a, d ; numRows
     sub b ; rowIndex = numRows - B
+    ret
+
+;-----------------------------------------------------------------------------
+
+; Description: Clear the jumpBack variables.
+; Input: (jumpBackMenuGroupId), (jumpBackMenuRowIndex)
+; Output: (jumpBackMenuGroupId), (jumpBackMenuRowIndex) both set to 0
+; Destroys: A
+clearJumpBack:
+    xor a
+    ld (jumpBackMenuGroupId), a
+    ld (jumpBackMenuRowIndex), a
+    ret
+
+; Description: Save the current (menuGroupId) and (menuRowIndex) to the
+; jumpBack variables.
+; Input: (menuGroupId), (menuRowIndex)
+; Output: (jumpBackMenuGroupId), (jumpBackMenuRowIndex) set
+; Destroys: A
+saveJumpBack:
+    ld a, (menuGroupId)
+    ld (jumpBackMenuGroupId), a
+    ld a, (menuRowIndex)
+    ld (jumpBackMenuRowIndex), a
     ret

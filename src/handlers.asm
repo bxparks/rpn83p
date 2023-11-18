@@ -888,16 +888,22 @@ msgRclName:
 ; Buttons providing direct access to menu groups.
 ;-----------------------------------------------------------------------------
 
+; Description: Handle the MATH key as the "HOME" key, going up to the top of
+; the menu hierarchy.
 handleKeyMath:
-    ld a, mRootId ; MATH becomes the menu HOME button
+    ld a, mRootId
     jp dispatchMenuNode
 
+; Description: Handle the MODE key as a shortcut to `ROOT > MODE`, except this
+; saves the current MenuGroup as the jumpBack menu, and the ON/EXIT
 handleKeyMode:
-    ld a, mModeId ; MODE triggers the MODE menu.
-    jp dispatchMenuNode
+    ld a, mModeId
+    jp dispatchMenuNodeWithJumpBack
 
+; Description: Handle the STAT key as a shortcut to `ROOT > STAT`, but unlike
+; `MODE`, this does *not* save the current MenuGroup in the jumpBack variables.
 handleKeyStat:
-    ld a, mStatId ; MODE triggers the MODE menu.
+    ld a, mStatId
     jp dispatchMenuNode
 
 ;-----------------------------------------------------------------------------

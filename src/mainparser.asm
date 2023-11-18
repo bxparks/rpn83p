@@ -83,7 +83,7 @@ cleanupHandlerQuitApp:
 ;   - HL: pointer to handler table
 ;   - B: number of entries in the handler table
 ; Output: none
-; Destroys: B, DE, HL (and any other registers destroyed by the handler)
+; Destroys: A, B, DE, HL (and any other registers destroyed by the handler)
 dispatchHandler:
     cp a, (hl)
     inc hl
