@@ -302,11 +302,9 @@ tvmIterMax equ tvmIYR1 + 9 ; u8 integer
 drawModeNormal equ 0
 drawModeTvmSolverI equ 1 ; show i0, i1
 drawModeTvmSolverF equ 2 ; show npmt0, npmt1
+drawModeInputBuf equ 3 ; show inputBuf in debug line
 
 ; Draw/Debug mode, u8 integer. Activated by secret '2ND DRAW' button.
-; - 0: normal
-; - 1: TVM Solver i0, i1 values
-; - 2: TVM Solver f0, f1 values
 drawMode equ tvmIterMax + 1
 
 ; End application variables.

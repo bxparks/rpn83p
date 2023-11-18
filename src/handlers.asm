@@ -890,7 +890,9 @@ handleKeyDraw:
     ; save (argValue)
     ld a, (argValue)
     ld (drawMode), a
-    ret
+    ; notify the dispatcher to clear and redraw the screen
+    ld a, errorCodeClearScreen
+    jp setHandlerCode
 
 ;-----------------------------------------------------------------------------
 ; Common code fragments, to save space.

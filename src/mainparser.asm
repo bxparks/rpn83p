@@ -66,8 +66,6 @@ cleanupHandlerClearScreen:
     bcall(_ClrLCDFull)
     ld a, $FF
     ld (iy + dirtyFlags), a ; set all dirty flags
-    call initDisplay
-    call initMenu
     ld a, errorCodeOk
     jr cleanupHandlerSetErrorCode
 

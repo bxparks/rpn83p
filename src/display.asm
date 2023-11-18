@@ -376,12 +376,13 @@ displayErrorCodeEnd:
 ; Destroys: A
 displayMain:
     ld a, (drawMode)
-    or a ; drawMode==0
+    cp drawModeNormal
     jr z, displayStack
-    dec a ; drawMode==1 (drawModeTvmSolverI)
+    cp drawModeTvmSolverI
     jr z, displayTvmMaybe
-    dec a ; drawMode==2 (drawModeTvmSolverF)
-    jr nz, displayStack
+    cp drawModeTvmSolverF
+    ; Everything else (including drawModeInputBuf), display the stack.
+    jr displayStack
 displayTvmMaybe:
     ld a, (tvmSolverIsRunning)
     or a
@@ -454,15 +455,32 @@ displayStackYZT:
 
 ;-----------------------------------------------------------------------------
 
-; Description: Render the X register line. There are 3 modes:
+; Description: Render the X register line. There are multiple modes:
 ; 1) If rpnFlagsArgMode, print the argBuf for the ArgParser, else
 ; 2) If rpnFlagsEditing, print the current inputBuf, else
 ; 3) Print the X register.
+;
+; Well... unless drawMode==drawModeInputBuf, in which case the inputBuf is
+; displayed separately on the debug line, and the X register is always printed
+; on the X line.
 displayStackX:
     bit rpnFlagsArgMode, (iy + rpnFlags)
     jr nz, displayStackXArg
+    ; If drawMode==drawModeInputBuf, print the inputBuf and X register on 2
+    ; separate lines, instead of overlaying the inputBuf on the X register
+    ; line. This helps with debugging the inputBuf. The inputBuf is printed on
+    ; the debug line, and the X register is printed on the X register line.
+    ld a, (drawMode)
+    cp drawModeInputBuf
+    jr z, displayStackXBoth
+    ; If drawMode!=drawModeInputBuf: draw X or inputBuf, depending on the
+    ; rpnFlagsEditing.
     bit rpnFlagsEditing, (iy + rpnFlags)
     jr nz, displayStackXInput
+    jr displayStackXNormal
+displayStackXBoth:
+    ; If drawMode==drawModeInputBuf: draw both X and inputBuf on separate lines.
+    call displayStackXInputAtDebug
     ; [[fallthrough]]
 
 displayStackXNormal:
@@ -477,6 +495,12 @@ displayStackXInput:
     call displayStackXLabel
     ; print the inputBuf
     ld hl, inputCurCol*$100 + inputCurRow ; $(curCol)(curRow)
+    ld (CurRow), hl
+    jp printInputBuf
+
+; Display the inputBuf in the debug line. Used for DRAW mode 3.
+displayStackXInputAtDebug:
+    ld hl, debugCurCol*$100+debugCurRow ; $(curCol)(curRow)
     ld (CurRow), hl
     jp printInputBuf
 
@@ -497,18 +521,6 @@ displayStackXLabelContinue:
     ld hl, msgXLabel
     call vPutS
     ret
-
-#ifdef DEBUG
-; This is the debug version which always shows the current X register, and
-; prints the inputBuf on the debug line.
-displayStackXDebug:
-    ld hl, $0100 + stXCurRow ; $(curCol)(curRow)
-    ld (CurRow), hl
-    call rclX
-    call printOP1
-    ; print the inputBuf on the error line
-    jp debugInputBuf
-#endif
 
 ; Display the argBuf in the X register line.
 ; Input: (argBuf)
