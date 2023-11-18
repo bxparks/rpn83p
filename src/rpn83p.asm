@@ -55,11 +55,8 @@ dirtyFlags equ asm_Flag1
 dirtyFlagsInput equ 0 ; set if the inputBuf or argBuf is dirty
 dirtyFlagsStack equ 1 ; set if the RPN stack is dirty
 dirtyFlagsMenu equ 2 ; set if the menu selection is dirty
-; TODO: Combine Trig, Float, and Base into a single 'dirtyFlagsStatus' bit.
-dirtyFlagsTrigMode equ 3 ; set if the trig status is dirty
-dirtyFlagsFloatMode equ 4 ; set if the floating mode is dirty
-dirtyFlagsBaseMode equ 5 ; set if any base mode flags or vars is dirty
-dirtyFlagsErrorCode equ 6 ; set if the error code is dirty
+dirtyFlagsStatus equ 3 ; set if anything on the status line is dirty
+dirtyFlagsErrorCode equ 4 ; set if the error code is dirty
 ; The dirtyFlagsXLabel flag is set if the 'X:' label is dirty due to the
 ; command arg mode. The 6x8 cell occupied by the 'X:' label is rendered in
 ; small-font, which means that it actually uses only 7 rows of pixels from the
@@ -75,7 +72,7 @@ dirtyFlagsErrorCode equ 6 ; set if the error code is dirty
 ; from the command arg mode to normal mode. That would cause a redraw of the
 ; entire X line, so the slight flicker of the "X:" label should be completely
 ; imperceptible.
-dirtyFlagsXLabel equ 7
+dirtyFlagsXLabel equ 5
 
 ; Flags for RPN stack modes. Offset from IY register.
 rpnFlags equ asm_Flag2
@@ -92,12 +89,12 @@ rpnFlagsTvmCalculate equ 6 ; set if the next TVM function should calculate
 
 ; Flags for the inputBuf. Offset from IY register.
 inputBufFlags equ asm_Flag3
-inputBufFlagsDecPnt equ 1 ; set if decimal point exists
-inputBufFlagsEE equ 2 ; set if EE symbol exists
-inputBufFlagsClosedEmpty equ 3 ; inputBuf empty when closeInputBuf() called
-inputBufFlagsExpSign equ 4 ; exponent sign bit detected during parsing
-inputBufFlagsArgExit equ 5 ; set to exit CommandArg mode
-inputBufFlagsArgAllowModifier equ 6 ; allow */-+ modifier in CommandArg mode
+inputBufFlagsDecPnt equ 0 ; set if decimal point exists
+inputBufFlagsEE equ 1 ; set if EE symbol exists
+inputBufFlagsClosedEmpty equ 2 ; inputBuf empty when closeInputBuf() called
+inputBufFlagsExpSign equ 3 ; exponent sign bit detected during parsing
+inputBufFlagsArgExit equ 4 ; set to exit CommandArg mode
+inputBufFlagsArgAllowModifier equ 5 ; allow */-+ modifier in CommandArg mode
 
 ;-----------------------------------------------------------------------------
 ; RPN83P application variables and buffers.

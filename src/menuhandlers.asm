@@ -930,7 +930,7 @@ mEngHandler:
 ; Destroys: A
 saveFormatDigits:
     set dirtyFlagsStack, (iy + dirtyFlags)
-    set dirtyFlagsFloatMode, (iy + dirtyFlags)
+    set dirtyFlagsStatus, (iy + dirtyFlags)
     set dirtyFlagsMenu, (iy + dirtyFlags)
     ld a, (argValue)
     cp 10
@@ -991,13 +991,13 @@ mEngNameSelectorMaybeOn:
 
 mRadHandler:
     res trigDeg, (iy + trigFlags)
-    set dirtyFlagsTrigMode, (iy + dirtyFlags)
+    set dirtyFlagsStatus, (iy + dirtyFlags)
     set dirtyFlagsMenu, (iy + dirtyFlags)
     ret
 
 mDegHandler:
     set trigDeg, (iy + trigFlags)
-    set dirtyFlagsTrigMode, (iy + dirtyFlags)
+    set dirtyFlagsStatus, (iy + dirtyFlags)
     set dirtyFlagsMenu, (iy + dirtyFlags)
     ret
 

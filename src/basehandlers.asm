@@ -16,7 +16,7 @@ mBaseHandler:
 mBaseHandlerOnExit:
     res rpnFlagsBaseModeEnabled, (iy + rpnFlags)
 mBaseHandlerEnd:
-    set dirtyFlagsBaseMode, (iy + dirtyFlags)
+    set dirtyFlagsStatus, (iy + dirtyFlags)
     set dirtyFlagsStack, (iy + dirtyFlags)
     ret
 
@@ -47,7 +47,7 @@ mBinHandler:
 ; Description: Set the (baseNumber) to the value in A. Set dirty flag.
 ; Destroys: none
 setBaseNumber:
-    set dirtyFlagsBaseMode, (iy + dirtyFlags)
+    set dirtyFlagsStatus, (iy + dirtyFlags)
     set dirtyFlagsStack, (iy + dirtyFlags)
     set dirtyFlagsMenu, (iy + dirtyFlags)
     ld (baseNumber), a
@@ -347,7 +347,7 @@ storeCarryFlag:
     rla ; shift CF into bit-0
     and $1
     ld (baseCarryFlag), a
-    set dirtyFlagsBaseMode, (iy + dirtyFlags)
+    set dirtyFlagsStatus, (iy + dirtyFlags)
     ret
 
 ; Description: Transfer bit 0 of (baseCarryFlag) into CF.
@@ -370,7 +370,7 @@ mSetCarryFlagHandler:
 mGetCarryFlagHandler:
     call closeInputBuf
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
-    set dirtyFlagsBaseMode, (iy + dirtyFlags)
+    set dirtyFlagsStatus, (iy + dirtyFlags)
     call recallCarryFlag
     jr c, mGetCarryFlagHandlerPush1
     bcall(_OP1Set0)

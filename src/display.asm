@@ -139,8 +139,10 @@ displayAll:
 ; Routines for displaying the status bar at the top.
 ;-----------------------------------------------------------------------------
 
-; Description: Display the status bar, showing menu up/down arrows.
-; Input: none
+; Description: Display the status bar, showing menu up/down arrows. Most of
+; these indicators check the dirtyFlagsStatus flag, but the menu arrows depend
+; on dirtyFlagsMenu.
+; Input: dirtyFlagsMenu, dirtyFlagsStatus
 ; Output: status line displayed
 ; Destroys: A, B, C, HL
 displayStatus:
@@ -232,9 +234,8 @@ displayStatusArrowClear:
 
 ; Description: Display the Degree or Radian trig mode.
 displayStatusTrig:
-    bit dirtyFlagsTrigMode, (iy + dirtyFlags)
+    bit dirtyFlagsStatus, (iy + dirtyFlags)
     ret z
-displayStatusTrigUpdate:
     ld hl, statusPenRow*$100 + statusTrigPenCol; $(penRow)(penCol)
     ld (PenCol), hl
     bit trigDeg, (iy + trigFlags)
@@ -252,9 +253,8 @@ displayStatusTrigPutS:
 
 ; Description: Display the Carry Flag used in BASE mode.
 displayStatusBase:
-    bit dirtyFlagsBaseMode, (iy + dirtyFlags)
+    bit dirtyFlagsStatus, (iy + dirtyFlags)
     ret z
-displayStatusBaseUpdate:
     ld hl, statusPenRow*$100 + statusBasePenCol; $(penRow)(penCol)
     ld (PenCol), hl
     ; Determine state of Carry Flag.
@@ -275,7 +275,7 @@ displayStatusBasePutS:
 ; Description: Display the floating point format: FIX, SCI, ENG
 ; Destroys: A, HL
 displayStatusFloatMode:
-    bit dirtyFlagsFloatMode, (iy + dirtyFlags)
+    bit dirtyFlagsStatus, (iy + dirtyFlags)
     ret z
     ld hl, statusPenRow*$100 + statusFloatModePenCol; $(penRow)(penCol)
     ld (PenCol), hl
