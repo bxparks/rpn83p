@@ -796,7 +796,7 @@ mTvmNHandler:
     call rclX
     call stoTvmN
     set rpnFlagsTvmCalculate, (iy + rpnFlags)
-    ld a, errorCodeTvmSet
+    ld a, errorCodeTvmStored
     jp setHandlerCode
 mTvmNGet:
     call rclTvmN
@@ -884,7 +884,7 @@ mTvmIYRSet:
     call rclX
     call stoTvmIYR
     set rpnFlagsTvmCalculate, (iy + rpnFlags)
-    ld a, errorCodeTvmSet
+    ld a, errorCodeTvmStored
     jp setHandlerCode
 mTvmIYRGet:
     call rclTvmIYR
@@ -963,7 +963,7 @@ mTvmPVHandler:
     call rclX
     call stoTvmPV
     set rpnFlagsTvmCalculate, (iy + rpnFlags)
-    ld a, errorCodeTvmSet
+    ld a, errorCodeTvmStored
     jp setHandlerCode
 mTvmPVGet:
     call rclTvmPV
@@ -1003,7 +1003,7 @@ mTvmPMTHandler:
     call rclX
     call stoTvmPMT
     set rpnFlagsTvmCalculate, (iy + rpnFlags)
-    ld a, errorCodeTvmSet
+    ld a, errorCodeTvmStored
     jp setHandlerCode
 mTvmPMTGet:
     call rclTvmPMT
@@ -1044,7 +1044,7 @@ mTvmFVHandler:
     call rclX
     call stoTvmFV
     set rpnFlagsTvmCalculate, (iy + rpnFlags)
-    ld a, errorCodeTvmSet
+    ld a, errorCodeTvmStored
     jp setHandlerCode
 mTvmFVGet:
     call rclTvmFV
@@ -1088,7 +1088,7 @@ mTvmPYRHandler:
 mTvmPYRHandlerSet:
     call stoTvmPYR
     set rpnFlagsTvmCalculate, (iy + rpnFlags)
-    ld a, errorCodeTvmSet
+    ld a, errorCodeTvmStored
     jp setHandlerCode
 mTvmPYRGet:
     call rclTvmPYR
@@ -1157,7 +1157,7 @@ mTvmIYR0Handler:
     call stoTvmIYR0
     call tvmSolverSetOverrideFlagIYR0
     set rpnFlagsTvmCalculate, (iy + rpnFlags)
-    ld a, errorCodeTvmSet
+    ld a, errorCodeTvmStored
     jp setHandlerCode
 mTvmIYR0Get:
     call rclTvmIYR0
@@ -1190,7 +1190,7 @@ mTvmIYR1Handler:
     call stoTvmIYR1
     call tvmSolverSetOverrideFlagIYR1
     set rpnFlagsTvmCalculate, (iy + rpnFlags)
-    ld a, errorCodeTvmSet
+    ld a, errorCodeTvmStored
     jp setHandlerCode
 mTvmIYR1Get:
     call rclTvmIYR1
@@ -1223,7 +1223,7 @@ mTvmIterMaxHandler:
     call stoTvmIterMax
     call tvmSolverSetOverrideFlagIterMax
     set rpnFlagsTvmCalculate, (iy + rpnFlags)
-    ld a, errorCodeTvmSet
+    ld a, errorCodeTvmStored
     jp setHandlerCode
 mTvmIterMaxGet:
     call rclTvmIterMax

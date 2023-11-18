@@ -184,8 +184,8 @@ errorCodeRegsCleared equ        67 ; REGS cleared
     .dw errorStrRegsCleared
 errorCodeStatCleared equ        68 ; STAT registers cleared
     .dw errorStrStatCleared
-errorCodeTvmSet equ             69
-    .dw errorStrTvmSet
+errorCodeTvmStored equ          69
+    .dw errorStrTvmStored
 errorCodeTvmRecalled equ        70
     .dw errorStrTvmRecalled
 errorCodeTvmCalculated equ      71
@@ -263,8 +263,8 @@ errorStrRegsCleared:
     .db "REGS Cleared", 0 ; storage registers cleared
 errorStrStatCleared:
     .db "STAT Cleared", 0 ; STAT registers cleared
-errorStrTvmSet:
-    .db "TVM Set", 0 ; TVM parameter was set
+errorStrTvmStored:
+    .db "TVM Stored", 0 ; TVM parameter was stored
 errorStrTvmRecalled:
     .db "TVM Recalled", 0 ; TVM parameter was recalled, without recalculation
 errorStrTvmCalculated:
