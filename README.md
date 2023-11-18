@@ -146,7 +146,7 @@ It *should* work on the others, but I have not actually tested them.
 
 ## Quick Examples
 
-### Example 1: Volume of Sphere
+### Example 1
 
 Let's compute the volume of a sphere of radius `2.1`. Recall that the volume of
 a sphere is `(4/3) pi r^3`. There are many ways to compute this in an RPN
@@ -174,7 +174,7 @@ Here is an animated GIF that shows this calculation:
 (Note that the RPN83P provides a `X^3` menu function that could have been used
 for this formula, but I used the `LastX` feature to demonstrate its use.)
 
-### Example 2: Base Conversions and Logical Operations
+### Example 2
 
 The RPN83P supports most of the base conversion and logical operators found on
 the HP-42S and the HP-16C calculators.
@@ -218,7 +218,7 @@ Here is the animated GIF that shows this calculation:
 
 ![RPN83P Example 2 GIF](docs/rpn83p-example2.gif)
 
-### Example 3: Time Value of Money
+### Example 3
 
 The RPN83P supports the Time Value of Money functionality of the HP-12C
 calculator.
