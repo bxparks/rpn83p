@@ -37,6 +37,17 @@
         - `RCL+`, `RCL-`, `RCL*`, `RCL/`
     - convert to multi-page flash application
         - now consumes 2 flash pages (2 x 16 kiB)
+    - `CLEAR` multiple times to clear RPN stack
+        - If `CLEAR` is pressed on an empty edit line (just a `_` cursor), then
+          the message "CLEAR Again to Clear Stack" will be displayed.
+        - If `CLEAR` is pressed again right after this message, the RPN stack is
+          cleared, invoking the `ROOT > CLR > CLST` menu function.
+        - Provides a quick shortcut to the `CLST` function which can be
+          difficult to reach when the current menu item is deeply nested in
+          another part of the menu hierarchy.
+        - The TI-OS does not support `2ND CLEAR`, it returns the same keycode as
+          `CLEAR`. So invoke the `CLST` feature on multiple presses of the
+          `CLEAR` button seemed like the most reasonable workaround.
     - **Potential Breaking Change**: `STO`, `RCL`, `FIX`, `SCI`, `ENG` argument
       prompt is no longer saved and restored on QUIT or OFF
         - a new Command Arg parser was required to support storage register

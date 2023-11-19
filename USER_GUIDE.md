@@ -2,7 +2,7 @@
 
 RPN calculator app for the TI-83 Plus and TI-84 Plus inspired by the HP-42S.
 
-**Version**: 0.7.0-dev (2023-11-17)
+**Version**: 0.7.0-dev (2023-11-18)
 
 **Project Home**: https://github.com/bxparks/rpn83p
 
@@ -304,7 +304,8 @@ The following buttons are used to enter and edit a number in the input buffer:
 - `(-)`: enters a negative sign, or changes the sign (same as `+/-` or `CHS` on
   HP calculators)
 - `DEL`: Backspace (same as `<-` on many HP calculators)
-- `CLEAR`: Clear `X` register (same as `CLx` or `CLX` on HP calculators)
+- `CLEAR`: Clear `X` register (same as `CLx` or `CLX` on HP calculators), *or*
+  clear the input buffer, *or* clear the entire RPN stack.
 - `2ND` `EE`: adds an `E` to allow entry of scientific notation exponent (same
   as `E` or `EEX` on HP calculators)
 - `,`: same as `2ND` `EE`, allowing the `2ND` to be omitted for convenience
@@ -320,9 +321,35 @@ end of the input buffer, so `DEL` is programmed to delete the right-most digit.
 If the `X` line is *not* in edit mode (i.e. the cursor is not shown), then the
 `DEL` key acts like the `CLEAR` key (see below).
 
-The `CLEAR` key clears the entire input buffer, leaving just a cursor at the end
-of an empty string. An empty string will be interpreted as a `0` if the `ENTER`
-key or a function key is pressed.
+The `CLEAR` key performs slightly different actions depending on the context:
+- If the `X` register is normally displayed, `CLEAR` goes into edit mode with an
+  empty input buffer.
+- If the `X` register is already in edit mode, `CLEAR` clears input buffer.
+- If the `X` register is in edit mode and the input buffer is already empty,
+  then `CLEAR` shows a message to the user: `CLEAR Again to Clear Stack`.
+- If the `CLEAR` button is pressed immediately again, the RPN stack is cleared.
+  This is the same functionality as the `ROOT > CLR > CLST` menu button.
+
+In an RPN system, it is generally not necessary to clear the RPN stack before
+any calculations. However, many users want to see a clean slate on the display
+to reflect their mental state when starting a new calculation. The `CLST` menu
+function provides this feature, but is nested under the `ROOT > CLR > CLST` menu
+hierarchy. If you are deeply nested under another part of the menu hierarchy, it
+can be cumbersome to navigate back up to the `ROOT`, invoke the `CLST` button,
+then make your way back to the original menu location.
+
+On RPN calculators with multiple lines such as the HP-42S, the `CLEAR` menu bar
+can be reached using a direct keyboard shortcut, and the `CLST` function is only
+2 or 3 keystrokes away. The RPN83P app uses the key buttons already provided by
+the TI-83+ and TI-84+ calculators, and unfortunately, there is no obvious button
+shortcut that can be used for the `CLR` menu bar. The obvious choice would have
+been the `2ND CLEAR`, but the TI-OS does not support that. It returns the same
+keycode as just `CLEAR`. The only reasonable alternative was to overload the
+existing `CLEAR` button, so that it performs the additional function of `CLST`
+when the button is pressed multiple times.
+
+An empty string will be interpreted as a `0` if the `ENTER` key or a function
+key is pressed.
 
 The comma `,` button is not used in the RPN system, so it has been mapped to
 behave exactly like the `2ND` `EE` button. This allows scientific notation
@@ -331,10 +358,23 @@ repeatedly.
 
 Emulating the input system of the HP-42S was surprisingly complex and subtle,
 and some features and idiosyncrasies of the HP-42S could not be carried over due
-to incompatibilities with the underlying TI-OS. I'm not sure that documenting
-all the corner cases would be useful because it would probably be tedious to
-read. I hope that the input system is intuitive and self-consistent enough that
-you can just play around with it and learn how it works.
+to incompatibilities with the underlying TI-OS. But some features were
+deliberately implemented differently. For example, on the HP-42S, when the input
+buffer becomes empty after pressing the `<-` backspace button multiple times, or
+pressing the `CLEAR > CLX` menu button, the cursor disappears and the `X`
+register is shown as `0.0000`. But internally, the HP-42S is in a slightly
+different state than normal: the Stack Lift is disabled, and entering another
+number will replace the `0.0000` in the `X` register instead of lifting it up to
+the `Y` register. In RPN83P, when the `DEL` key or the `CLEAR` key is pressed,
+the `X` register always enters into Edit mode with an empty input buffer, and
+the cursor will *always* be shown with an empty string. The presence of the
+cursor indicates that the Edit Mode is in effect and that the Stack Lift is
+disabled.
+
+I'm not sure that documenting all the corner cases would be useful in this
+document because it would probably be tedious to read. I hope that the input
+system is intuitive and self-consistent enough that you can just play around
+with it and learn how it works.
 
 ### RPN Stack
 

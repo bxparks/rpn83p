@@ -363,14 +363,15 @@ handleKeyClearWhileClear:
     jp setHandlerCode
 handleKeyClearToEmptyInput:
     ; We are here if we were not in edit mode, so CLEAR should "clear the X
-    ; register" by going into edit mode with an emtpy inputBuf. We also enable
-    ; stack lift.
+    ; register" by going into edit mode with an emtpy inputBuf.
     call clearInputBuf
     set rpnFlagsEditing, (iy + rpnFlags)
-    ; TODO: Double-check if we should enable stack lift, or disable it instead.
-    ; It seems like we should disable it, but the old code enables it, and it
-    ; seems to work.
-    set rpnFlagsLiftEnabled, (iy + rpnFlags)
+    ; We also disable stack lift. Testing seems to show that this is not seem
+    ; strictly necessary because handleNumber() handles the edit mode properly
+    ; even if the stack lift is enabled. But I think it is safer to disable it
+    ; in case handleKeyNumber() is refactored in the future to use a different
+    ; algorithm.
+    res rpnFlagsLiftEnabled, (iy + rpnFlags)
     ret
 
 ;-----------------------------------------------------------------------------
