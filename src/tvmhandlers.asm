@@ -263,9 +263,9 @@ endFactor:
     bcall(_OP1Set1) ; OP1=1.0
     ret
 beginFactor:
-    bcall(_PushRealO2)
+    bcall(_PushRealO2) ; FPS=[OP2 saved]
     bcall(_Plus1) ; OP1=1+i
-    bcall(_PopRealO2)
+    bcall(_PopRealO2) ; FPS=[]; OP2=OP2 saved
     ret
 
 ; Description: Calculate the compounding factor defined by: [(1+i)^N-1]/i.
@@ -296,7 +296,7 @@ compoundingFactors:
     bcall(_OP1ToOP4) ; OP4=(1+i)^N (save)
     bcall(_Minus1) ; OP1=(1+i)^N-1
     call exchangeFPSFPS ; FPS=[1+ip,i]
-    bcall(_PopRealO2) ; OP2=i
+    bcall(_PopRealO2) ; FPS=[1+ip]; OP2=i
     bcall(_FPDiv) ; OP1=[(1+i)^N-1]/i (destroys OP3)
     bcall(_PopRealO2) ; FPS=[]; OP2=1+ip
     bcall(_FPMult) ; OP1=(1+ip)[(1+i)^N-1]/i
@@ -982,7 +982,7 @@ mTvmPVCalculate:
     call rclTvmFV ; OP1=FV
     bcall(_FPAdd) ; OP1=FV+PMT*CF3
     bcall(_InvOP1S) ; OP1=-OP1
-    bcall(_PopRealO2); FPS=[]; OP2=CF1
+    bcall(_PopRealO2) ; FPS=[]; OP2=CF1
     bcall(_FPDiv) ; OP1=(-FV-PMT*CF3)/CF1
     call stoTvmPV
     call pushX
@@ -1056,14 +1056,14 @@ mTvmFVCalculate:
     ; FV = -PMT * [(1+i)N - 1] * (1 + i p) / i - PV * (1+i)N
     ;    = -PMT*CF3(i)-PV*CF1(i)
     call compoundingFactors ; OP1=CF1; OP2=CF3
-    bcall(_PushRealO1) ; FPS=CF1
+    bcall(_PushRealO1) ; FPS=[CF1]
     call rclTvmPMT ; OP1=PMT
     bcall(_FPMult) ; OP1=PMT*CF3
-    call exchangeFPSOP1 ; FPS=PMT*CF3; OP1=CF1
+    call exchangeFPSOP1 ; FPS=[PMT*CF3]; OP1=CF1
     call op1ToOP2 ; OP2=CF1
     call rclTvmPV ; OP1=PV
     bcall(_FPMult) ; OP1=PV*CF1
-    bcall(_PopRealO2) ; OP2=PMT*CF3
+    bcall(_PopRealO2) ; FPS=[]; OP2=PMT*CF3
     bcall(_FPAdd) ; OP1=PMT*CF3+PV*CF1
     bcall(_InvOP1S) ; OP1=-OP1
     call stoTvmFV

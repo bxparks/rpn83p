@@ -174,7 +174,7 @@ lnOnePlusNotZero:
     ; asinh() will actually return a value, but ln(1+x) will throw an
     ; exception.
     ; See https://www.hpmuseum.org/forum/thread-1012-post-8714.html#pid8714
-    bcall(_PushRealO1) ; FPS=x
+    bcall(_PushRealO1) ; FPS=[x]
     bcall(_Plus1) ; OP1=1+x
     bcall(_CkOP1FP0) ; if OP1==0: ZF=1
     jr z, lnOnePlusError
@@ -186,7 +186,7 @@ lnOnePlusContinue:
     bcall(_FPRecip) ; OP1=1/(1+x)
     bcall(_Plus1) ; OP1=1+1/(1+x)
     call op1ToOp2 ; OP2=1+1/(1+x)
-    bcall(_PopRealO1) ; OP1=x
+    bcall(_PopRealO1) ; FPS=[]; OP1=x
     bcall(_FPMult) ; OP1=x*(1+1/(1+x))
     bcall(_TimesPt5) ; OP1=(x/2)(1+1/(1+x))
     bcall(_ASinH) ; OP1=asinh((x/2)(1+1/(1+x)))
@@ -201,11 +201,11 @@ lnOnePlusContinue:
 ; Destroys: OP1-OP5
 expMinusOne:
     bcall(_TimesPt5) ; OP1=x/2
-    bcall(_PushRealO1) ; FPS=x/2
+    bcall(_PushRealO1) ; FPS=[x/2]
     bcall(_SinH) ; OP1=sinh(x/2)
-    call exchangeFPSOP1 ; FPS=sinh(x/2); OP1=x/2
+    call exchangeFPSOP1 ; FPS=[sinh(x/2)]; OP1=x/2
     bcall(_EToX) ; OP1=exp(x/2)
-    bcall(_PopRealO2) ; OP2=sinh(x/2)
+    bcall(_PopRealO2) ; FPS=[]; OP2=sinh(x/2)
     bcall(_FPMult) ; OP1=sinh(x/2) exp(x/2)
     bcall(_Times2) ; OP1=2 sinh(x/2) exp(x/2)
     ret

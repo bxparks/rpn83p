@@ -149,11 +149,11 @@ convertW32ToU32:
 convertOP1ToW32:
     call clearW32 ; ensure u32=0 even when error conditions are detected
     push hl
-    bcall(_PushRealO2)
+    bcall(_PushRealO2) ; FPS=[OP2 saved]
 convertOP1ToW32CheckNegative:
     bcall(_CkOP1Pos) ; if OP1<0: ZF=0
     jr z, convertOP1ToW32CheckTooBig
-    bcall(_PopRealO2)
+    bcall(_PopRealO2) ; FPS=[]; OP2=OP2 saved
     pop hl
     set w32StatusCodeNegative, (hl)
     ret
@@ -161,19 +161,19 @@ convertOP1ToW32CheckTooBig:
     call op2Set2Pow32
     bcall(_CpOP1OP2) ; if OP1 >= 2^32: CF=0
     jr c, convertOP1ToW32CheckInt
-    bcall(_PopRealO2)
+    bcall(_PopRealO2) ; FPS=[]; OP2=OP2 saved
     pop hl
     set w32StatusCodeTooBig, (hl)
     ret
 convertOP1ToW32CheckInt:
     bcall(_CkPosInt) ; if OP1>=0 and OP1 is int: ZF=1
     jr z, convertOP1ToW32Valid
-    bcall(_PopRealO2)
+    bcall(_PopRealO2) ; FPS=[]; OP2=OP2 saved
     pop hl
     set w32StatusCodeHasFrac, (hl)
     jr convertOP1ToW32U32
 convertOP1ToW32Valid:
-    bcall(_PopRealO2)
+    bcall(_PopRealO2) ; FPS=[]; OP2=OP2 saved
     pop hl
 convertOP1ToW32U32:
     ; Move past the W32 statusCode and convert to u32.
@@ -282,7 +282,7 @@ convertOP1ToU8Error:
 ; Preserves: HL, OP2
 convertU32ToOP1:
     push hl
-    bcall(_PushRealO2)
+    bcall(_PushRealO2) ; FPS=[OP2 saved]
     bcall(_OP1Set0)
     pop hl
 
@@ -306,7 +306,7 @@ convertU32ToOP1:
     call addU8ToOP1
 
     push hl
-    bcall(_PopRealO2)
+    bcall(_PopRealO2) ; FPS=[]; OP2=OP2 saved
     pop hl
     ret
 

@@ -148,11 +148,11 @@ mCfitForcastYHandler:
     call selectCfitModel
     call rclX ; OP1=X
     call convertXToXPrime
-    bcall(_PushRealO1) ; FPS=X
-    call fitLeastSquare ; OP1=intercept,OP2=slope
-    call exchangeFPSOP1 ; OP1=X, FPS=intercept
+    bcall(_PushRealO1) ; FPS=[X]
+    call fitLeastSquare ; OP1=intercept, OP2=slope
+    call exchangeFPSOP1 ; FPS=[intercept]; OP1=X
     bcall(_FPMult) ; OP1=slope*X
-    bcall(_PopRealO2) ; OP2=intercept
+    bcall(_PopRealO2) ; FPS=[]; OP2=intercept
     bcall(_FPAdd) ; OP1=slope*X + intercept
     call convertYPrimeToY
     jp replaceX
@@ -165,11 +165,11 @@ mCfitForcastXHandler:
     call selectCfitModel
     call rclX ; OP1=X=y
     call convertYToYPrime
-    bcall(_PushRealO1) ; FPS=y
+    bcall(_PushRealO1) ; FPS=[y]
     call fitLeastSquare ; OP1=intercept,OP2=slope
-    call exchangeFPSOP2 ; OP2=y, FPS=slope
+    call exchangeFPSOP2 ; FPS=[slope]; OP2=y
     bcall(_InvSub) ; OP1=y-intercept
-    bcall(_PopRealO2) ; OP2=slope
+    bcall(_PopRealO2) ; FPS=[]; OP2=slope
     bcall(_FPDiv) ; OP1=(y-intercept) / slope = x
     call convertXPrimeToX
     jp replaceX
@@ -374,21 +374,21 @@ fitLeastSquare:
     call statStdDev ; OP1=PDEV(Y), OP2=PDEV(X)
     bcall(_OP2ToOP1)
     bcall(_FPMult) ; OP1=StdDev(X)^2
-    bcall(_PushRealO1)
+    bcall(_PushRealO1) ; FPS=[StdDev(X)^2]
     call statCovariance ; OP1=COV(X,Y)
-    bcall(_PopRealO2) ; OP2=StdDev(X)^2
+    bcall(_PopRealO2) ; FPS=[]; OP2=StdDev(X)^2
     bcall(_FPDiv) ; OP1=SLOP=COV(X,Y) / StdDev(X)^2
-    bcall(_PushRealO1) ; FPS=slope
+    bcall(_PushRealO1) ; FPS=[slope]
 
     ; Calculate intercept.
-    bcall(_PushRealO1) ; FPS=slope again
+    bcall(_PushRealO1) ; FPS=[slope,slope]
     call statMean; OP1=<Y>, OP2=<X>
-    call exchangeFPSOP1 ; OP1=SLOP, FPS=<Y>
+    call exchangeFPSOP1 ; FPS=[slope,<Y>]; OP1=SLOP
     bcall(_FPMult) ; OP1=SLOP * <X>
-    bcall(_PopRealO2) ; OP2 = <Y>
+    bcall(_PopRealO2) ; FPS=[slope]; OP2=<Y>
     bcall(_InvSub) ; OP1 = -SLOP * <X> + <Y> = intercept
 
-    bcall(_PopRealO2) ; OP2=slope
+    bcall(_PopRealO2) ; FPS=[]; OP2=slope
     ret
 
 ;-----------------------------------------------------------------------------

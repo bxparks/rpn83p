@@ -125,10 +125,10 @@ mLog2Handler:
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     bcall(_OP1Set2) ; OP2 = 2
     bcall(_LnX) ; OP1 = ln(2)
-    bcall(_PushRealO1); FPS = ln(2)
+    bcall(_PushRealO1); FPS=[ln(2)]
     call rclX ; OP1 = X
     bcall(_LnX) ; OP1 = ln(X)
-    bcall(_PopRealO2) ; OP2 = ln(2)
+    bcall(_PopRealO2) ; FPS=[]; OP2 = ln(2)
     bcall(_FPDiv) ; OP1 = ln(X) / ln(2)
     jp replaceX
 
@@ -136,10 +136,10 @@ mLog2Handler:
 mLogBaseHandler:
     call closeInputAndRecallX
     bcall(_LnX) ; OP1 = ln(X)
-    bcall(_PushRealO1); FPS = ln(X)
+    bcall(_PushRealO1); FPS=[ln(X)]
     call rclY ; OP1 = Y
     bcall(_LnX) ; OP1 = ln(Y)
-    bcall(_PopRealO2) ; OP2 = ln(X)
+    bcall(_PopRealO2) ; FPS=[]; OP2 = ln(X)
     bcall(_FPDiv) ; OP1 = ln(Y) / ln(X)
     jp replaceXY
 
@@ -167,10 +167,10 @@ mPercentChangeHandler:
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     call rclY
     bcall(_OP1ToOP2) ; OP2 = Y
-    bcall(_PushRealO1) ; FPS = Y
+    bcall(_PushRealO1) ; FPS=[Y]
     call rclX ; OP1 = X
     bcall(_FPSub) ; OP1 = X - Y
-    bcall(_PopRealO2) ; OP2 = Y
+    bcall(_PopRealO2) ; FPS=[]; OP2 = Y
     bcall(_FPDiv) ; OP1 = (X-Y)/Y
     call op2Set100
     bcall(_FPMult) ; OP1 = 100*(X-Y)/Y
@@ -229,10 +229,10 @@ validatePosIntGcdLcmError:
 gcdOp1Op2:
     bcall(_CkOP2FP0) ; while b != 0
     ret z
-    bcall(_PushRealO2) ; t = b
+    bcall(_PushRealO2) ; FPS=[b]; (t = b)
     call modOp1Op2 ; (a mod b)
     bcall(_OP1ToOP2) ; b = (a mod b)
-    bcall(_PopRealO1) ; a = t
+    bcall(_PopRealO1) ; FPS=[]; (a = t)
     jr gcdOp1Op2
 
 ; Description: Calculate the Lowest Common Multiple using the following:
@@ -243,13 +243,13 @@ mLcmHandler:
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     call validatePosIntGcdLcm
 
-    bcall(_PushRealO1) ; FPS = OP1 = Y
-    bcall(_PushRealO2) ; FPS = OP2 = X
+    bcall(_PushRealO1) ; FPS=[Y]
+    bcall(_PushRealO2) ; FPS=[Y,X]
     call gcdOp1Op2 ; OP1 = gcd()
     bcall(_OP1ToOP2) ; OP2 = gcd()
-    bcall(_PopRealO1) ; OP1 = X
+    bcall(_PopRealO1) ; FPS=[Y]; OP1 = X
     bcall(_FPDiv) ; OP1 = X / gcd
-    bcall(_PopRealO2) ; OP2 = Y
+    bcall(_PopRealO2) ; FPS=[]; OP2 = Y
     bcall(_FPMult) ; OP1 = Y * (X / gcd)
 
     jp replaceXY ; X = lcm(X, Y)
@@ -285,7 +285,7 @@ mPrimeHandler:
     bcall(_CpOP1OP2)
     jp nc, mPrimeHandlerError
 
-    bcall(_PushRealO1) ; save original X
+    bcall(_PushRealO1) ; FPS=[X]; save original X
     ; Choose one of the various primeFactorXXX() routines.
     ; OP1=1 if prime, or its smallest prime factor (>1) otherwise
 #ifdef USE_PRIME_FACTOR_FLOAT
@@ -305,7 +305,7 @@ mPrimeHandler:
     ; multiple times until a '1' is returns allows all prime factors to be
     ; discovered.
     bcall(_OP1ToOP2) ; OP2=prime factor
-    bcall(_PopRealO1) ; OP1=original X
+    bcall(_PopRealO1) ; FPS=[]; OP1=original X
     jp replaceXWithOP1OP2
 
 mPrimeHandlerError:
@@ -381,14 +381,14 @@ mModHandler:
 ; seem to be a built-in function to calculate this.
 ; Destroys: OP1, OP2, OP3
 modOp1Op2:
-    bcall(_PushRealO1) ; FPS = OP1
-    bcall(_PushRealO2) ; FPS = OP2
+    bcall(_PushRealO1) ; FPS=[OP1]
+    bcall(_PushRealO2) ; FPS=[OP1,OP2]
     bcall(_FPDiv) ; OP1 = OP1/OP2
     bcall(_Intgr) ; OP1 = floor(OP1/OP2)
-    bcall(_PopRealO2) ; OP2 = OP2
+    bcall(_PopRealO2) ; FPS=[OP1]; OP2 = OP2
     bcall(_FPMult) ; OP1 = floor(OP1/OP2) * OP2
     bcall(_OP1ToOP2) ; OP2 = floor(OP1/OP2) * OP2
-    bcall(_PopRealO1) ; OP1 = OP1
+    bcall(_PopRealO1) ; FPS=[]; OP1 = OP1
     bcall(_FPSub) ; OP1 = OP1 - floor(OP1/OP2) * OP2
     bcall(_RndGuard) ; force integer results if OP1 and OP2 were integers
     ret
@@ -811,7 +811,7 @@ mHmsToHrHandler:
     ; Extract the whole 'hh' and push it into the FPS.
     bcall(_OP1ToOP4) ; OP4 = hh.mmss (save in temp)
     bcall(_Trunc) ; OP1 = int(hh.mmss)
-    bcall(_PushRealO1) ; FPS = hh
+    bcall(_PushRealO1) ; FPS=[hh]
 
     ; Extract the 'mm' and push it into the FPS.
     bcall(_OP4ToOP1) ; OP1 = hh.mmss
@@ -820,7 +820,7 @@ mHmsToHrHandler:
     bcall(_FPMult) ; OP1 = mm.ss
     bcall(_OP1ToOP4) ; OP4 = mm.ss
     bcall(_Trunc) ; OP1 = mm
-    bcall(_PushRealO1) ; FPS = mm
+    bcall(_PushRealO1) ; FPS=[hh, mm]
 
     ; Extract the 'ss.nnn' part
     bcall(_OP4ToOP1) ; OP1 = mm.ssnnn
@@ -833,12 +833,12 @@ mHmsToHrHandler:
     bcall(_OP2Set60) ; OP2 = 60
     bcall(_FPDiv) ; OP1 = ss.nnn/60
     ; Extract mm/60
-    bcall(_PopRealO2) ; OP1 = mm
+    bcall(_PopRealO2) ; FPS=[hh]; OP1 = mm
     bcall(_FPAdd) ; OP1 = mm + ss.nnn/60
     bcall(_OP2Set60) ; OP2 = 60
     bcall(_FPDiv) ; OP1 = (mm + ss.nnn/60) / 60
     ; Extract the hh.
-    bcall(_PopRealO2) ; OP1 = hh
+    bcall(_PopRealO2) ; FPS=[]; OP1 = hh
     bcall(_FPAdd) ; OP1 = hh + (mm + ss.nnn/60) / 60
 
     jp replaceX
@@ -853,7 +853,7 @@ mHrToHmsHandler:
     ; Extract the whole hh.
     bcall(_OP1ToOP4) ; OP4 = hh.nnn (save in temp)
     bcall(_Trunc) ; OP1 = int(hh.nnn)
-    bcall(_PushRealO1) ; FPS = hh
+    bcall(_PushRealO1) ; FPS=[hh]
 
     ; Extract the 'mm' and push it into the FPS
     bcall(_OP4ToOP1) ; OP1 = hh.nnn
@@ -862,7 +862,7 @@ mHrToHmsHandler:
     bcall(_FPMult) ; OP1 = mm.nnn
     bcall(_OP1ToOP4) ; OP4 = mm.nnn
     bcall(_Trunc) ; OP1 = mm
-    bcall(_PushRealO1) ; FPS = mm
+    bcall(_PushRealO1) ; FPS=[hh,mm]
 
     ; Extract the 'ss.nnn' part
     bcall(_OP4ToOP1) ; OP1 = mm.nnn
@@ -875,12 +875,12 @@ mHrToHmsHandler:
     call op2Set100
     bcall(_FPDiv) ; OP1 = ss.nnn/100
     ; Extract mm/100
-    bcall(_PopRealO2) ; OP1 = mm
+    bcall(_PopRealO2) ; FPS=[hh]; OP1 = mm
     bcall(_FPAdd) ; OP1 = mm + ss.nnn/100
     call op2Set100
     bcall(_FPDiv) ; OP1 = (mm + ss.nnn/100) / 100
     ; Extract the hh.
-    bcall(_PopRealO2) ; OP1 = hh
+    bcall(_PopRealO2) ; FPS=[]; OP1 = hh
     bcall(_FPAdd) ; OP1 = hh + (mm + ss.nnn/100) / 100
 
     jp replaceX
