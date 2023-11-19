@@ -184,28 +184,30 @@ errorCodeRegsCleared equ        67 ; REGS cleared
     .dw errorStrRegsCleared
 errorCodeStatCleared equ        68 ; STAT registers cleared
     .dw errorStrStatCleared
-errorCodeTvmStored equ          69
+errorCodeTvmStored equ          69 ; TVM value was stored
     .dw errorStrTvmStored
-errorCodeTvmRecalled equ        70
+errorCodeTvmRecalled equ        70 ; TVM value was recalled
     .dw errorStrTvmRecalled
-errorCodeTvmCalculated equ      71
+errorCodeTvmCalculated equ      71 ; TVM value was calculated
     .dw errorStrTvmCalculated
-errorCodeTvmNoSolution equ      72
+errorCodeTvmNoSolution equ      72 ; TVM value has no solution
     .dw errorStrTvmNoSolution
-errorCodeTvmNotFound equ        73
+errorCodeTvmNotFound equ        73 ; TVM value could not be found
     .dw errorStrTvmNotFound
-errorCodeTvmIterations equ      74
+errorCodeTvmIterations equ      74 ; TVM Solver exceeded max iterations
     .dw errorStrTvmIterations
-errorCodeTvmCleared equ         75
+errorCodeTvmCleared equ         75 ; TVM vars cleared
     .dw errorStrTvmCleared
-errorCodeTvmSolverReset equ     76
+errorCodeTvmSolverReset equ     76 ; TVM Solver params reset
     .dw errorStrTvmSolverReset
-errorCodeCount equ              77 ; total number of error codes
+errorCodeClearAgain equ         77 ; next CLEAR button invokes CLST
+    .dw errorStrClearAgain
+errorCodeCount equ              78 ; total number of error codes
 
 ; The C strings for each error code. In alphabetical order, as listed in the TI
 ; 83 Plus SDK docs.
 errorStrOk:
-    .db "OK", 0 ; this won't be displayed, but define the string just in case
+    .db "OK", 0 ; won't be displayed, but string is defined just in case
 errorStrArgument:
     .db "Err: Argument", 0
 errorStrBadGuess:
@@ -250,32 +252,47 @@ errorStrTolTooSmall:
     .db "Err: Tol Not Met", 0
 errorStrUndefined:
     .db "Err: Undefined", 0 ; indicates the system error "Undefined"
-; Start of RPN83P custom error messages
+; Start of RPN83P custom messages, which map to a specific custom handler code.
+; This part of the application feels clunky, but I have not figure out an
+; elegant architecture to handle the different types of handler
+; post-processing. I think I am attempting to decouple the layer that handles
+; the (mostly) pure algorithms, from the UI layer which renders things to the
+; screen.
+;
+; The types of handler return codes are:
+; - Action: handler wants additional post-processing
+; - Error: a TI-OS exception was thrown, the message should be displayed
+; - Info: handler executed normally, but should display the given message
+;
+; For 'Action' codes, the handler code performs the requested action, and the
+; error message is not even shown to the user.
 errorStrQuitApp:
-    .db "QUIT", 0 ; handler wants to QUIT the app
+    .db "QUIT", 0 ; Action: handler wants to QUIT the app
 errorStrClearScreen:
-    .db "Clear Screen", 0 ; handler wants to clear the screen
+    .db "Clear Screen", 0 ; Action: handler wants to clear the screen
 errorStrUnknown:
-    .db "Err: UNKNOWN", 0 ; error string of error code not known
+    .db "Err: UNKNOWN", 0 ; Error: error string of error code is not known
 errorStrNotYet:
-    .db "Err: NOT YET", 0 ; handler not implemented yet
+    .db "Err: NOT YET", 0 ; Info: handler not implemented yet
 errorStrRegsCleared:
-    .db "REGS Cleared", 0 ; storage registers cleared
+    .db "REGS Cleared", 0 ; Info: storage registers cleared
 errorStrStatCleared:
-    .db "STAT Cleared", 0 ; STAT registers cleared
+    .db "STAT Cleared", 0 ; Info: STAT registers cleared
 errorStrTvmStored:
-    .db "TVM Stored", 0 ; TVM parameter was stored
+    .db "TVM Stored", 0 ; Info: TVM parameter was stored
 errorStrTvmRecalled:
-    .db "TVM Recalled", 0 ; TVM parameter was recalled, without recalculation
+    .db "TVM Recalled", 0 ; Info: TVM parameter was recalled, w/o recalculation
 errorStrTvmCalculated:
-    .db "TVM Calculated", 0 ; TVM parameter was calculated
+    .db "TVM Calculated", 0 ; Info: TVM parameter was calculated
 errorStrTvmNoSolution:
-    .db "TVM No Solution", 0 ; TVM Solver determines no solution exists
+    .db "TVM No Solution", 0 ; Info: TVM Solver determines no solution exists
 errorStrTvmNotFound:
-    .db "TVM Not Found", 0 ; TVM Solver did not find root
+    .db "TVM Not Found", 0 ; Info: TVM Solver did not find root
 errorStrTvmIterations:
-    .db "TVM Iterations", 0 ; TVM Solver hit max iterations
+    .db "TVM Iterations", 0 ; Info: TVM Solver hit max iterations
 errorStrTvmCleared:
-    .db "TVM Cleared", 0 ; TVM all parameter cleared, including TVM Solver
+    .db "TVM Cleared", 0 ; Info: TVM all parameter cleared, including TVM Solver
 errorStrTvmSolverReset:
-    .db "TVM Solver Reset", 0 ; TVM Solver parameters reset to factory defaults
+    .db "TVM Solver Reset", 0 ; Info: TVM Solver parameters reset to defaults
+errorStrClearAgain:
+    .db "CLEAR Again to Clear Stack", 0 ; Info: Next CLEAR will invoke CLST

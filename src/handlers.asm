@@ -306,43 +306,70 @@ handleKeyDelExit:
 
 ;-----------------------------------------------------------------------------
 
-; Function: Clear the input buffer. If the CLEAR key is hit when the input
-; buffer is already empty (e.g. hit twice), then trigger a refresh of the
-; entire display. This is useful for removing and recovering from rendering
-; bugs.
-; Input: none
+; Function: Clear the X register and go into edit mode. If already in edit
+; mode, clear the inputBuf. If the CLEAR is pressed when the input buffer is
+; already empty, then go into ClearAgain mode. If CLEAR is pressed in
+; ClearAgain mode, the RPN stack is cleared (like the CLST command).
+; Input:
+;   - errorCode
+;   - inputBuf
+;   - rpnFlagsEditing
 ; Output:
-;   - A=0
 ;   - inputBuf cleared
 ;   - editing mode set
 ;   - stack lift disabled
-;   - mark displayInput dirty
+;   - handlerCode set to `errorCodeOk` or `errorCodeClearAgain`
 ; Destroys: A, HL
 handleKeyClear:
     ; Clear TVM Calculate mode.
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
-    ; Check if non-zero error code is currently displayed. The handlerCode was
-    ; already set to 0 before this was called, so simply returning will clear
-    ; the previous errorCode.
+    ; Check if an error code is currently displayed.
     ld a, (errorCode)
     or a
+    jr z, handleKeyClearNormal
+    ; We are here if a non-zero errorCode from the previous handler is
+    ; displayed. Previously, we simply returned if that was true, causing the
+    ; CLEAR button to clear the previous error code. But we now support hitting
+    ; CLEAR twice to invoke CLST, so we should return for all error codes
+    ; except errorCodeClearAgain.
+    cp errorCodeClearAgain
     ret nz
-handleKeyClearNormal:
-    ; Check if editing and inputBuf is empty.
-    bit rpnFlagsEditing, (iy + rpnFlags)
-    jr z, handleKeyClearSimple
+    ; We are here if the last errorCode was errorCodeClearAgain. CLEAR was
+    ; pressed again, but before going ahead and clearing the RPN stack, let's
+    ; check that the inputBuf is still empty. I am not actually sure if it is
+    ; possible to have an errorCodeClearAgain and also have a non-empty
+    ; inputBuf, but if that's the case, simply return without doing anything.
     ld a, (inputBuf)
     or a
-    jr nz, handleKeyClearSimple
+    ret nz ; not sure if inputBuf can ever be non-empty, but just ret if so
+    res rpnFlagsEditing, (iy + rpnFlags)
+    jp clearStack
+handleKeyClearNormal:
+    ; We are here if CLEAR was pressed when there are no other error conditions
+    ; previously. If we are already in edit mode, then we clear the inputBuf.
+    ; If not in edit mode, then we "clear the X register" by going into edit
+    ; mode with an empty inputBuf.
+    bit rpnFlagsEditing, (iy + rpnFlags)
+    jr z, handleKeyClearToEmptyInput
+    ; We are here if clearing the inputBuf.
+    ld a, (inputBuf)
+    or a
+    ; If the inputBuf has stuff, then clear the inputBuf.
+    jr nz, handleKeyClearToEmptyInput
 handleKeyClearWhileClear:
-    ; If CLEAR is hit while the inputBuffer is already clear, then force a
-    ; complete refresh of the entire display. Useful for removing any artifacts
-    ; from buggy display code.
-    call initDisplay
-handleKeyClearSimple:
-    ; Clear the input buffer, and set various flags.
+    ; We are here if CLEAR was pressed while the inputBuffer was already empty.
+    ; Go into ClearAgain mode, where the next CLEAR invokes CLST.
+    ld a, errorCodeClearAgain
+    jp setHandlerCode
+handleKeyClearToEmptyInput:
+    ; We are here if we were not in edit mode, so CLEAR should "clear the X
+    ; register" by going into edit mode with an emtpy inputBuf. We also enable
+    ; stack lift.
     call clearInputBuf
     set rpnFlagsEditing, (iy + rpnFlags)
+    ; TODO: Double-check if we should enable stack lift, or disable it instead.
+    ; It seems like we should disable it, but the old code enables it, and it
+    ; seems to work.
     set rpnFlagsLiftEnabled, (iy + rpnFlags)
     ret
 
