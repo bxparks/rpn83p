@@ -61,6 +61,7 @@ Here is a quick summary of its features:
     - shift and rotate: `SL`, `SR`, `ASR`, `RL`, `RR`, `RLC`, `RRC`,
       `SLn`, `SRn`, `RLn`, `RRn`, `RLCn`, `RRCn`
     - carry flag and bit masks: `CCF`, `SCF`, `CF?`, `CB`, `SB`, `B?`
+    - word sizes: 8, 16, 24, 32 bits
 - features inspired by HP-12C and HP-30b
     - time value of money (TVM): `N`, `I%YR`, `PV`, `PMT`, `FV`, `P/YR`, `BEG`,
       `END`, `CLTV` (clear TVM)
