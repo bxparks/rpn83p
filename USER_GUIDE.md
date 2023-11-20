@@ -2,7 +2,7 @@
 
 RPN calculator app for the TI-83 Plus and TI-84 Plus inspired by the HP-42S.
 
-**Version**: 0.7.0-dev (2023-11-19)
+**Version**: 0.7.0-dev (2023-11-20)
 
 **Project Home**: https://github.com/bxparks/rpn83p
 
@@ -78,7 +78,7 @@ of some older HP calculators like the
 The RPN83P is a flash application that consumes 2 pages (32 kiB) of flash
 memory. Since it is stored in flash, it is preserved if the RAM is cleared. It
 consumes a small amount of TI-OS RAM: 2 list variables named `REGS` (240 bytes)
-and `STK` (59 byte), and an appVar named `RPN83SAV` (98 bytes).
+and `STK` (59 byte), and an appVar named `RPN83SAV` (100 bytes).
 
 Here the quick summary of its features:
 
@@ -1686,7 +1686,8 @@ the HP-12C and the HP-30b which provide no feedback regarding the two different
 actions. The RPN83P solves this problem by displaying different status messages
 after a TVM menu button has completed. The message will read:
 
-- `TVM Set` if the menu button **stored** the `X` value into the TVM variable,
+- `TVM Stored` if the menu button **stored** the `X` value into the TVM
+  variable,
 - `TVM Calculated` if the menu button **calculated** the given TVM variable
   from the other 4 variables.
 
@@ -1727,30 +1728,31 @@ buttons. The default value is `END`.
 
 It is well-known that the `N`, `PV`, `PMT`, and `FV` variables can be solved
 using analytical equations. However, there is no closed-form solution for the
-`I%YR` quantity, so it must be solved using iterative methods. Further
-complicating the situation, it can be mathematically deduced that the
-root-solving equation for `I%YR` can fall into 3 categories:
+`I%YR` quantity, so it must be solved using iterative methods. The TVM Solver is
+the submodule that implements the iterative method to solve for `I%YR`.
+
+It can be mathematically deduced that the root-solving equation for `I%YR` can
+fall into 3 categories:
 
 - 0 solution, or
 - 1 unique solution, or
 - 0 or 2 solutions.
 
-Sometimes, the TVM module can determine immediately that the equation has 0
-solution. It will return a `TVM No Solution` error message.
+The TVM Solver tries to handle the various cases as follows:
 
-Sometimes, the numerical algorithm will fail to find a solution, even though the
-math says that a solution must exist. The TVM module will return a `TVM Not
-Found` error message.
-
-Sometimes, the equation has 2 solutions, but the TVM module will find only one
-of the 2 solutions. Currently (v0.7.0), the TVM module does not notify the user
-that another solution may exist. A normal `TVM Calculated` will be returned.
-Sometimes there are 2 solutions, but the algorithm finds neither solution. A
-`TVM Not Found` message will be returned.
-
-To prevent excessive execution time, the number of iterations performed by the
-TVM Solver has a maximum limit. The default is 15 iterations. If exceeded, the
-message `TVM Iterations` is displayed.
+- If the TVM Solver can determine immediately that the equation has 0 solution,
+  it will return a `TVM No Solution` error message.
+- The TVM Solver can fail to find a solution, even though the math says that a
+  solution must exist. The TVM Solver will return a `TVM Not Found` error
+  message.
+- If the equation has 2 solutions, but the TVM Solver finds only one of the 2
+  solutions, the solver currently (v0.7.0) does not notify the user that another
+  solution may exist. A normal `TVM Calculated` will be returned.
+- If there are 2 solutions, but the solver finds neither solution, a `TVM Not
+  Found` message will be returned.
+- To prevent excessive execution time, the number of iterations performed by the
+  TVM Solver has a maximum limit. The default is 15 iterations. If exceeded, the
+  message `TVM Iterations` is displayed.
 
 Due to the complexity of the numerical algorithm and the number of iterations
 required, calculating the `I%YR` will take noticeably longer than the other
@@ -1760,7 +1762,7 @@ observed.
 The RPN83P currently (v0.7.0) uses the [Newton-Secant
 method](https://en.wikipedia.org/wiki/Secant_method) to solve for `I%YR`. For
 the purpose of debugging and to allow extra control for advanced users, three
-parameters that affect the progress and termination of the algorithm are
+parameters that affect the progression and termination of the algorithm are
 exposed:
 
 - `IYR1`: first guess percent per year (default: 0%; allowed: `IYR1 >
@@ -1872,7 +1874,7 @@ cash, and -'ve represents outflow of cash.
 if the payment is $3000/month instead of $3496/month
 
 - (Building on Example 1)
-- Press -3000 `PMT` (should see `TVM Set`)
+- Press -3000 `PMT` (should see `TVM Stored`)
 - Press `PV` (should see `TVM Caculated`)
 - Answer: $429052.882
 
@@ -1880,8 +1882,8 @@ if the payment is $3000/month instead of $3496/month
 to get a $500,000 mortgage with a $3000/month payment
 
 - (Building on Examples 1 and 2)
-- Press 500000 `PV` (should see `TVM Set` message). This resets the current `PV`
-  which became modified by the calculation in Example 2.
+- Press 500000 `PV` (should see `TVM Stored` message). This resets the current
+  `PV` which became modified by the calculation in Example 2.
 - Press `I%YR` (should see `TVM Calculated`)
 - Answer: 6.00699%
 

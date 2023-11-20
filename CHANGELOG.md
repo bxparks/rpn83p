@@ -54,6 +54,12 @@
         - When `ROOT > MODE` is reached through the `MODE` button on the
           keyboard, the ON/EXIT/ESC button jumps back to the previous menu
           location, instead of going back up the menu tree.
+    - fix incorrect handling of `DEL` after a `FIX`, `SCI`, or `ENG` mode
+        - when the `DEL` (backspace) button is pressed after a 2-digit argument
+          of a `FIX` (or `SCI` etc), one of the digits of the 2-digit argument
+          remained in the input buffer
+        - the fix now correctly clears the input buffer when transitioning into
+          edit mode from a normal mode
     - **Potential Breaking Change**: `STO`, `RCL`, `FIX`, `SCI`, `ENG` argument
       prompt is no longer saved and restored on QUIT or OFF
         - a new Command Arg parser was required to support storage register
