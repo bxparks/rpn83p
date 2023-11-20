@@ -69,10 +69,9 @@ calculator app for the [TI-83 Plus](https://en.wikipedia.org/wiki/TI-83_series)
 (including the Silver Edition) and the [TI-84
 Plus](https://en.wikipedia.org/wiki/TI-84_Plus_series) (including the Silver
 Edition). The app is inspired mostly by the
-[HP-42S](https://en.wikipedia.org/wiki/HP-42S) calculator, with some sprinkles
-of some older HP calculators like the
-[HP-12C](https://en.wikipedia.org/wiki/HP-12C), the
-[HP-15C](https://en.wikipedia.org/wiki/HP-15C), and the
+[HP-42S](https://en.wikipedia.org/wiki/HP-42S) calculator, with some significant
+features from the
+[HP-12C](https://en.wikipedia.org/wiki/HP-12C) and the
 [HP-16C](https://en.wikipedia.org/wiki/HP-16C).
 
 The RPN83P is a flash application that consumes 2 pages (32 kiB) of flash
@@ -105,7 +104,7 @@ Here the quick summary of its features:
     - hyperbolic: `SINH`, `COSH`, `TANH`, `ASNH`, `ACSH`, `ATNH`
     - angle conversions: `>DEG`, `>RAD`, `>HR`, `>HMS`, `>REC`, `>POL`
     - unit conversions: `>C`, `>F`, `>km`, `>mi`, etc
-- functions inspired by HP-42S
+- features inspired by HP-42S
     - `E^X-` (e^x-1), `LN1+` (log(1+x))
     - statistics: `Sigma+`, `Sigma-`, `SUM`, `MEAN`, `WMN` (weighted mean),
       `SDEV` (sample standard deviation), `SCOV` (sample covariance),
@@ -114,7 +113,7 @@ Here the quick summary of its features:
       (correlation coefficent)
     - curve fit models: `LINF` (linear), `LOGF` (logarithmic), `EXPF`
       (exponential), `PWRF` (power)
-- functions inspired by HP-16C and HP-42S
+- features inspired by HP-16C and HP-42S
     - base conversions: `DEC`, `HEX`, `OCT`, `BIN`
     - bitwise operations: `AND`, `OR`, `XOR`, `NOT`, `NEG`, `REVB` (reverse
       bits), `CNTB` (count bits)
@@ -123,7 +122,7 @@ Here the quick summary of its features:
     - shift and rotate: `SL`, `SR`, `ASR`, `RL`, `RR`, `RLC`, `RRC`,
       `SLn`, `SRn`, `RLn`, `RRn`, `RLCn`, `RRCn`
     - carry flag and bit masks: `CCF`, `SCF`, `CF?`, `CB`, `SB`, `B?`
-- functions inspired by HP-12C and HP-30b
+- features inspired by HP-12C and HP-30b
     - time value of money (TVM): `N`, `I%YR`, `PV`, `PMT`, `FV`, `P/YR`, `BEG`,
       `END`, `CLTV` (clear TVM)
 - various display modes
