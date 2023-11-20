@@ -240,7 +240,9 @@ handleKeyEE:
 
 ;-----------------------------------------------------------------------------
 
-; Function: Delete the last character of inputBuf.
+; Description: Implement the DEL functionality, which does slightly different
+; things depending on the context:
+;   - If not in edit mode, clear the inputBuf and go into edit mode.
 ;   - If the deleted char was a '.', reset the decimal point flag.
 ;   - If the deleted char was a '-', reset the negative flag.
 ; Input: none
@@ -255,15 +257,21 @@ handleKeyDel:
     ld a, (errorCode)
     or a
     ret nz
-handleKeyDelNormal:
-    set rpnFlagsEditing, (iy + rpnFlags)
-    set dirtyFlagsInput, (iy + dirtyFlags)
-
+    ; If not in edit mode, go into edit mode, clear the inputBuf, and just
+    ; return because there is nothing to do with an empty inputBuf.
     ld hl, inputBuf
+    bit rpnFlagsEditing, (iy + rpnFlags)
+    jr nz, handleKeyDelInEditMode
+    set rpnFlagsEditing, (iy + rpnFlags)
+    ld (hl), 0 ; clear the inputBuf
+    set dirtyFlagsInput, (iy + dirtyFlags)
+    ret
+handleKeyDelInEditMode:
+    ; DEL pressed in edit mode.
+    set dirtyFlagsInput, (iy + dirtyFlags)
     ld a, (hl) ; A = inputBufSize
     or a
     ret z ; do nothing if buffer empty
-
     ; shorten string by one
     ld e, a ; E = inputBufSize
     dec a
@@ -293,12 +301,12 @@ handleKeyDelEEDigits:
     jr z, handleKeyDelExit
     cp signChar
     jr z, handleKeyDelExit ; no special handling of '-' in exponent
-    ;
+    ; check if EELen is 0
     ld hl, inputBufEELen
     ld a, (hl)
     or a
     jr z, handleKeyDelExit ; don't decrement len below 0
-    ;
+    ; decrement EELen
     dec a
     ld (hl), a
 handleKeyDelExit:
