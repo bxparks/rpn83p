@@ -1,6 +1,7 @@
 # Changelog
 
 - Unreleased
+- 0.7.0 (2023-11-20)
     - `STAT`
         - fix broken `Sigma+` and `Sigma-` when `Y==0`
         - use alternate equation for `SLOP` (slope) which works when the `Y`
@@ -12,6 +13,7 @@
           weightedY) to be evaluated even if the other is undefined
     - `BASE`
         - implement `WSIZ` (set word size) restricted to 8, 16, 24, and 32
+          (inspired by HP-16C and Free42)
         - display appropriate number of digits for various `WSIZ` values, for
           various base modes (`HEX`, `OCT`, `BIN`)
         - display ellipsis character on left most digit in `BIN` mode if
@@ -27,7 +29,8 @@
         - use mathematical identities involving hyperbolic `sinh()` and
           `asinh()` functions to avoid roundoff errors
     - `TVM`
-        - add TVM (time value of money) submenu hierarchy
+        - add TVM (time value of money) submenu hierarchy (inspired by HP-12C
+          and HP-30b)
         - implement relatively simple Newton-Secant root solver to calculate
           the `I%YR` from the other 4 TVM variables
         - significant performance and robustness improvements can probably be
@@ -46,14 +49,17 @@
           difficult to reach when the current menu item is deeply nested in
           another part of the menu hierarchy.
         - The TI-OS does not support `2ND CLEAR`, it returns the same keycode as
-          `CLEAR`. So invoke the `CLST` feature on multiple presses of the
-          `CLEAR` button seemed like the most reasonable workaround.
+          `CLEAR`. So invoking `CLST` on multiple `CLEAR` presses seemed like
+          the most reasonable workaround.
     - implement jumpBack for `MODE` button shortcut
         - When `ROOT > MODE` is reached through the hierchical menu, the
-          ON/EXIT/ESC button goes back up the hierarchy to the parent, the ROOT.
-        - When `ROOT > MODE` is reached through the `MODE` button on the
-          keyboard, the ON/EXIT/ESC button jumps back to the previous menu
+          `ON/EXIT/ESC` button goes back up the menu hierarchy to the parent,
+          the `ROOT`.
+        - When `ROOT > MODE` is invoked through the `MODE` button on the
+          keyboard, the `ON/EXIT/ESC` button jumps back to the previous menu
           location, instead of going back up the menu tree.
+        - This allows quick changes to the `FIX`, `SCI`, and `ENG` display
+          modes, without losing one's place in the menu hierarchy.
     - fix incorrect handling of `DEL` after a `FIX`, `SCI`, or `ENG` mode
         - when the `DEL` (backspace) button is pressed after a 2-digit argument
           of a `FIX` (or `SCI` etc), one of the digits of the 2-digit argument
