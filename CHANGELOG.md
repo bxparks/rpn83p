@@ -48,6 +48,12 @@
         - The TI-OS does not support `2ND CLEAR`, it returns the same keycode as
           `CLEAR`. So invoke the `CLST` feature on multiple presses of the
           `CLEAR` button seemed like the most reasonable workaround.
+    - implement jumpBack for `MODE` button shortcut
+        - When `ROOT > MODE` is reached through the hierchical menu, the
+          ON/EXIT/ESC button goes back up the hierarchy to the parent, the ROOT.
+        - When `ROOT > MODE` is reached through the `MODE` button on the
+          keyboard, the ON/EXIT/ESC button jumps back to the previous menu
+          location, instead of going back up the menu tree.
     - **Potential Breaking Change**: `STO`, `RCL`, `FIX`, `SCI`, `ENG` argument
       prompt is no longer saved and restored on QUIT or OFF
         - a new Command Arg parser was required to support storage register

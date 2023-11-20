@@ -2,7 +2,7 @@
 
 RPN calculator app for the TI-83 Plus and TI-84 Plus inspired by the HP-42S.
 
-**Version**: 0.7.0-dev (2023-11-18)
+**Version**: 0.7.0-dev (2023-11-19)
 
 **Project Home**: https://github.com/bxparks/rpn83p
 
@@ -26,6 +26,7 @@ RPN calculator app for the TI-83 Plus and TI-84 Plus inspired by the HP-42S.
         - [Menu Buttons](#menu-buttons)
         - [Menu Indicator Arrows](#menu-indicator-arrows)
         - [Menu Shortcuts](#menu-shortcuts)
+        - [Menu Shortcut Jump Back](#menu-shortcut-jump-back)
     - [Built In Help](#built-in-help)
     - [Error Codes](#error-codes)
 - [Functions](#functions)
@@ -483,7 +484,8 @@ The appropriate key for the "menu back to parent" function would have been an
 `ESC` button. But the TI-83 and TI-84 calculators do not have an `ESC` button
 (unlike the TI-92 and TI Voyager 200 series calculators), so the `ON` button was
 recruited for this functionality. This seemed to make sense because the HP-42S
-uses the `ON` key which doubles as the `EXIT` key to perform this function.
+uses the `ON` key which doubles as the `EXIT` or `ESC` key to perform this
+function.
 
 The `HOME` button is useful to go directly to the top of the menu hierarchy from
 anywhere in the menu hierarchy. The TI-83 and TI-84 calculators do not have a
@@ -556,6 +558,29 @@ calculator which happen to have the same label as the menu item:
 The `MATH` button is slightly different. It is not bound to `ROOT > MATH`.
 Rather it has been repurposed to be the `HOME` button which goes to the top of
 the menu hierarchy `ROOT`.
+
+#### Menu Shortcut Jump Back
+
+Normally when the `ON/EXIT/ESC` button is pressed, the menu bar goes up to the
+parent of the current MenuGroup. That makes sense because the user normally must
+travel through the parent to reach the child MenuGroup. But the keyboard
+shortcuts break this rule.
+
+When the `MODE` button is pressed, the menu bar goes directly to the `ROOT >
+MODE` MenuGroup from anywhere in the menu hierarchy. Since the `MODE` functions
+involve quick changes to the floating point display or the trigonometric angle
+units, it seems likely that the user would want to go back to the original menu
+bar after making the `MODE` changes. Therefore, the `ON/EXIT/ESC` button has
+been programmed to jump back to the *previous* menu bar if the `ROOT > MODE`
+menu was invoked through the `MODE` button.
+
+The `STAT` shortcut, however, does *not* implement the jump back feature.
+Instead, the `ON/EXIT/ESC` acts normally and the menu goes up to the parent of
+the `STAT` MenuGroup to the `ROOT` of the menu system. This behavior was chosen
+because it seemed more likely that the user would spend a significant amount of
+time inside the `STAT` menu functions. The more time spent inside the `STAT`
+menu, the less likely it seemed the user would remember where the original menu
+bar was, and unlikely to want to go back there using the `ON/EXIT/ESC` key.
 
 ## Built In Help
 
@@ -654,8 +679,8 @@ are supported by the RPN83P app.
 ### Menu Functions
 
 These functions are accessed through the hierarchical menu, using the 5 menu
-buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (back), and `MATH`
-(home) keys to navigate the menu hierarchy.
+buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
+`MATH` (HOME) keys to navigate the menu hierarchy.
 
 - `ROOT` (implicit)
     - ![ROOT MenuRow 1](docs/rpn83p-screenshot-menu-root-1.png)
