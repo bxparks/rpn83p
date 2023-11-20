@@ -1,10 +1,10 @@
 ;-----------------------------------------------------------------------------
 ; MIT License
 ; Copyright (c) 2023 Brian T. Park
-;-----------------------------------------------------------------------------
-
-;-----------------------------------------------------------------------------
-; Curve fitting handlers and routines.
+;
+; CFIT menu handlers, as well as lower level curve fitting routines.
+;
+; TODO: Consider spliting the lower level routines into a cfit.asm file.
 ;
 ; References:
 ;   - HP-42S Owner's Manual, Ch. 15
@@ -143,15 +143,16 @@ initCfit:
 ; Description: Forecast Y from X.
 mCfitForcastYHandler:
     call closeInputBuf
+    res rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld a, (curveFitModel)
     call selectCfitModel
     call rclX ; OP1=X
     call convertXToXPrime
-    bcall(_PushRealO1) ; FPS=X
-    call fitLeastSquare ; OP1=intercept,OP2=slope
-    call exchangeFPSOP1 ; OP1=X, FPS=intercept
+    bcall(_PushRealO1) ; FPS=[X]
+    call fitLeastSquare ; OP1=intercept, OP2=slope
+    call exchangeFPSOP1 ; FPS=[intercept]; OP1=X
     bcall(_FPMult) ; OP1=slope*X
-    bcall(_PopRealO2) ; OP2=intercept
+    bcall(_PopRealO2) ; FPS=[]; OP2=intercept
     bcall(_FPAdd) ; OP1=slope*X + intercept
     call convertYPrimeToY
     jp replaceX
@@ -159,15 +160,16 @@ mCfitForcastYHandler:
 ; Description: Forecast X from Y.
 mCfitForcastXHandler:
     call closeInputBuf
+    res rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld a, (curveFitModel)
     call selectCfitModel
     call rclX ; OP1=X=y
     call convertYToYPrime
-    bcall(_PushRealO1) ; FPS=y
+    bcall(_PushRealO1) ; FPS=[y]
     call fitLeastSquare ; OP1=intercept,OP2=slope
-    call exchangeFPSOP2 ; OP2=y, FPS=slope
+    call exchangeFPSOP2 ; FPS=[slope]; OP2=y
     bcall(_InvSub) ; OP1=y-intercept
-    bcall(_PopRealO2) ; OP2=slope
+    bcall(_PopRealO2) ; FPS=[]; OP2=slope
     bcall(_FPDiv) ; OP1=(y-intercept) / slope = x
     call convertXPrimeToX
     jp replaceX
@@ -175,6 +177,7 @@ mCfitForcastXHandler:
 ; Description: Calculate the least square fit slope into X register.
 mCfitSlopeHandler:
     call closeInputBuf
+    res rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld a, (curveFitModel)
     call selectCfitModel
     call fitLeastSquare ; OP1=intercept,OP2=slope
@@ -185,6 +188,7 @@ mCfitSlopeHandler:
 ; Description: Calculate the least square fit intercept into X register.
 mCfitInterceptHandler:
     call closeInputBuf
+    res rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld a, (curveFitModel)
     call selectCfitModel
     call fitLeastSquare ; OP1=intercept,OP2=slope
@@ -194,6 +198,7 @@ mCfitInterceptHandler:
 ; Description: Calculate the correlation coefficient into X register.
 mCfitCorrelationHandler:
     call closeInputBuf
+    res rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld a, (curveFitModel)
     call selectCfitModel
     call statCorrelation
@@ -277,6 +282,7 @@ mCfitPowerNameSelector:
 ; Destroys: OP1, OP2, OP3, (maybe OP4?), OP5, OP6
 mCfitBestHandler:
     call closeInputBuf
+    res rpnFlagsTvmCalculate, (iy + rpnFlags)
 mCfitBestCheckLinear:
     ld a, curveFitModelLinear
     call selectCfitModel
@@ -357,7 +363,8 @@ selectCfitModel:
 ; Input:
 ;   IX=pointer to list of stat registers (e.g. cfitModelLinear, cfitModelExp)
 ; Output:
-;   OP1=SLOP(X,Y) = CORR(X,Y) (StdDev(Y)/StdDev(X)).
+;   OP1=SLOP(X,Y) = CORR(X,Y) (StdDev(Y)/StdDev(X))
+;                 = COV(X,Y) / StdDev(X)^2 (this works when StdDev(Y)==0)
 ;   OP2=YINT(X,,Y) = <Y> - SLOP(X,Y) * <X>
 ;
 ; Either Population or Sample can be used, because the N/(N-1) terms cancel
@@ -365,22 +372,23 @@ selectCfitModel:
 fitLeastSquare:
     ; Calculate slope.
     call statStdDev ; OP1=PDEV(Y), OP2=PDEV(X)
-    bcall(_FPDiv) ; OP1=PDEV(Y)/PDEV(X)
-    bcall(_PushRealO1)
-    call statCorrelation ; OP1=CORR(X,Y)
-    bcall(_PopRealO2)
-    bcall(_FPMult) ; OP1=SLOP=CORR(X,Y) * StdDev(Y) / StdDev(X)
-    bcall(_PushRealO1) ; FPS=slope
+    bcall(_OP2ToOP1)
+    bcall(_FPMult) ; OP1=StdDev(X)^2
+    bcall(_PushRealO1) ; FPS=[StdDev(X)^2]
+    call statCovariance ; OP1=COV(X,Y)
+    bcall(_PopRealO2) ; FPS=[]; OP2=StdDev(X)^2
+    bcall(_FPDiv) ; OP1=SLOP=COV(X,Y) / StdDev(X)^2
+    bcall(_PushRealO1) ; FPS=[slope]
 
     ; Calculate intercept.
-    bcall(_PushRealO1) ; FPS=slope again
+    bcall(_PushRealO1) ; FPS=[slope,slope]
     call statMean; OP1=<Y>, OP2=<X>
-    call exchangeFPSOP1 ; OP1=SLOP, FPS=<Y>
+    call exchangeFPSOP1 ; FPS=[slope,<Y>]; OP1=SLOP
     bcall(_FPMult) ; OP1=SLOP * <X>
-    bcall(_PopRealO2) ; OP2 = <Y>
+    bcall(_PopRealO2) ; FPS=[slope]; OP2=<Y>
     bcall(_InvSub) ; OP1 = -SLOP * <X> + <Y> = intercept
 
-    bcall(_PopRealO2) ; OP2=slope
+    bcall(_PopRealO2) ; FPS=[]; OP2=slope
     ret
 
 ;-----------------------------------------------------------------------------

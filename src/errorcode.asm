@@ -1,9 +1,7 @@
 ;-----------------------------------------------------------------------------
 ; MIT License
 ; Copyright (c) 2023 Brian T. Park
-;-----------------------------------------------------------------------------
-
-;-----------------------------------------------------------------------------
+;
 ; Functions and strings related to error codes.
 ;-----------------------------------------------------------------------------
 
@@ -60,27 +58,24 @@ getErrorStringContinue:
 ;-----------------------------------------------------------------------------
 
 ; An array of pointers to C strings. The TI-OS error handler defines the error
-; code in the lower 7 bits, for a total of 128 possible values. But the SDK
-; documentation defines `bjump()` calls for only 28 or so. Unfortunately, the
-; numerical error code values passed through the `A` register are not
-; documented.
+; code in the lower 7 bits, for a total of 128 possible values. The SDK
+; documentation defines `bjump/bcall()` calls for about 28 of these values, but
+; the corresponding the numerical error codes passed through the `A` register
+; are not documented.
 ;
 ; The following numerical error codes below were reverse engineered by calling
-; the `bjump(_ErrXXX)` one at a time, trapping the exception, then printing out
+; the `bcall(_ErrXXX)` one at a time, trapping the exception, then printing out
 ; the code written into the `A` register. They match the codes given in this
 ; wiki page, https://learn.cemetech.net/index.php?title=Z80:Error_Codes, which
 ; seems to contain additional error codes which are not documented in the SDK
 ; docs. We will ignore those extra error codes in this application.
 ;
 ; This table defines additional custom error codes used internally by this
-; application:
-; - errorStrOk (0): OK or success status code
-; - errorStrNotYet (64): not yet implemented
-; - errorStrUnknown: This string will be display for any error code whose error
-; string is not known. If the user sends a reproducible bug report, maybe we
-; can reverse engineer the condition that triggers that particular error code
-; and create a human-readable string for it.
-errorCodeCount equ 67 ; total number of error codes
+; application. The `errorStrUnknown` message is displayed for any error code
+; whose error string is not known. If the user sends a reproducible bug report,
+; maybe we can reverse engineer the condition that triggers that particular
+; error code and create a human-readable string for it.
+
 errorStrings:
 errorCodeOk equ                 0 ; hopefully TI-OS uses 0 as "success"
     .dw errorStrOk
@@ -178,17 +173,41 @@ errorCodeLinkXmit equ           31
     .dw errorStrUnknown         ; 61
     .dw errorStrUnknown         ; 62
     .dw errorStrUnknown         ; 63, hopefully the last TI-OS error code
-errorCodeNotYet equ             64 ; Handler not yet implemented
+; Start of extended error codes used by RPN83P.
+errorCodeQuitApp equ            64 ; Handler wants to Quit the App
+    .dw errorStrQuitApp
+errorCodeClearScreen equ        65 ; Handler wants to clear screen
+    .dw errorStrClearScreen
+errorCodeNotYet equ             66 ; Handler not yet implemented
     .dw errorStrNotYet
-errorCodeRegsCleared equ        65 ; REGS cleared
+errorCodeRegsCleared equ        67 ; REGS cleared
     .dw errorStrRegsCleared
-errorCodeStatCleared equ        66 ; STAT registers cleared
+errorCodeStatCleared equ        68 ; STAT registers cleared
     .dw errorStrStatCleared
+errorCodeTvmStored equ          69 ; TVM value was stored
+    .dw errorStrTvmStored
+errorCodeTvmRecalled equ        70 ; TVM value was recalled
+    .dw errorStrTvmRecalled
+errorCodeTvmCalculated equ      71 ; TVM value was calculated
+    .dw errorStrTvmCalculated
+errorCodeTvmNoSolution equ      72 ; TVM value has no solution
+    .dw errorStrTvmNoSolution
+errorCodeTvmNotFound equ        73 ; TVM value could not be found
+    .dw errorStrTvmNotFound
+errorCodeTvmIterations equ      74 ; TVM Solver exceeded max iterations
+    .dw errorStrTvmIterations
+errorCodeTvmCleared equ         75 ; TVM vars cleared
+    .dw errorStrTvmCleared
+errorCodeTvmSolverReset equ     76 ; TVM Solver params reset
+    .dw errorStrTvmSolverReset
+errorCodeClearAgain equ         77 ; next CLEAR button invokes CLST
+    .dw errorStrClearAgain
+errorCodeCount equ              78 ; total number of error codes
 
 ; The C strings for each error code. In alphabetical order, as listed in the TI
 ; 83 Plus SDK docs.
 errorStrOk:
-    .db "OK", 0 ; this won't be displayed, but define the string just in case
+    .db "OK", 0 ; won't be displayed, but string is defined just in case
 errorStrArgument:
     .db "Err: Argument", 0
 errorStrBadGuess:
@@ -233,11 +252,47 @@ errorStrTolTooSmall:
     .db "Err: Tol Not Met", 0
 errorStrUndefined:
     .db "Err: Undefined", 0 ; indicates the system error "Undefined"
+; Start of RPN83P custom messages, which map to a specific custom handler code.
+; This part of the application feels clunky, but I have not figure out an
+; elegant architecture to handle the different types of handler
+; post-processing. I think I am attempting to decouple the layer that handles
+; the (mostly) pure algorithms, from the UI layer which renders things to the
+; screen.
+;
+; The types of handler return codes are:
+; - Action: handler wants additional post-processing
+; - Error: a TI-OS exception was thrown, the message should be displayed
+; - Info: handler executed normally, but should display the given message
+;
+; For 'Action' codes, the handler code performs the requested action, and the
+; error message is not even shown to the user.
+errorStrQuitApp:
+    .db "QUIT", 0 ; Action: handler wants to QUIT the app
+errorStrClearScreen:
+    .db "Clear Screen", 0 ; Action: handler wants to clear the screen
 errorStrUnknown:
-    .db "Err: UNKNOWN", 0 ; not defined in this module
+    .db "Err: UNKNOWN", 0 ; Error: error string of error code is not known
 errorStrNotYet:
-    .db "Err: NOT YET", 0 ; handler not implemented yet
+    .db "Err: NOT YET", 0 ; Info: handler not implemented yet
 errorStrRegsCleared:
-    .db "REGS cleared", 0 ; storage registers cleared
+    .db "REGS Cleared", 0 ; Info: storage registers cleared
 errorStrStatCleared:
-    .db "STAT cleared", 0 ; STAT registers cleared
+    .db "STAT Cleared", 0 ; Info: STAT registers cleared
+errorStrTvmStored:
+    .db "TVM Stored", 0 ; Info: TVM parameter was stored
+errorStrTvmRecalled:
+    .db "TVM Recalled", 0 ; Info: TVM parameter was recalled, w/o recalculation
+errorStrTvmCalculated:
+    .db "TVM Calculated", 0 ; Info: TVM parameter was calculated
+errorStrTvmNoSolution:
+    .db "TVM No Solution", 0 ; Info: TVM Solver determines no solution exists
+errorStrTvmNotFound:
+    .db "TVM Not Found", 0 ; Info: TVM Solver did not find root
+errorStrTvmIterations:
+    .db "TVM Iterations", 0 ; Info: TVM Solver hit max iterations
+errorStrTvmCleared:
+    .db "TVM Cleared", 0 ; Info: TVM all parameter cleared, including TVM Solver
+errorStrTvmSolverReset:
+    .db "TVM Solver Reset", 0 ; Info: TVM Solver parameters reset to defaults
+errorStrClearAgain:
+    .db "CLEAR Again to Clear Stack", 0 ; Info: Next CLEAR will invoke CLST

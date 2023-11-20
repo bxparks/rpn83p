@@ -1,9 +1,7 @@
 ;-----------------------------------------------------------------------------
 ; MIT License
 ; Copyright (c) 2023 Brian T. Park
-;-----------------------------------------------------------------------------
-
-;-----------------------------------------------------------------------------
+;
 ; Various implementations of the primeFactor() function which calculates
 ; the smallest prime factor, or 1 if the number is a prime.
 ;
@@ -109,7 +107,7 @@ primeFactorFloatCheckDiv:
 primeFactorBreak:
     bcall(_RunIndicOff) ; disable run indicator
     res onInterrupt, (IY+onFlags)
-    bjump(_ErrBreak) ; throw exception
+    bcall(_ErrBreak) ; throw exception
 
 ;-----------------------------------------------------------------------------
 

@@ -1,9 +1,7 @@
 ;-----------------------------------------------------------------------------
 ; MIT License
 ; Copyright (c) 2023 Brian T. Park
-;-----------------------------------------------------------------------------
-
-;-----------------------------------------------------------------------------
+;
 ; Routines to handle calculations in different bases (2, 8, 10, 16).
 ;-----------------------------------------------------------------------------
 
@@ -17,84 +15,216 @@ initBase:
     ld (baseWordSize), a
     ret
 
+; Description: Return the index corresponding to each of the potential values
+; of (baseWordSize). For the values of (8, 16, 24, 32) this returns (0, 1, 2,
+; 3).
+; Input: (baseWordSize)
+; Output: A=(baseWordSize)/8-1
+; Throws: Err:Domain if not 8, 16, 24, 32.
+; Destroys: A
+; Preserves: BC, DE, HL
+getWordSizeIndex:
+    push bc
+    ld a, (baseWordSize)
+    ld b, a
+    and $07 ; 0b0000_0111
+    jr nz, getWordSizeIndexErr
+    ld a, b
+    rrca
+    rrca
+    rrca
+    dec a
+    ld b, a
+    and $FC ; 0b1111_1100
+    ld a, b
+    pop bc
+    ret z
+getWordSizeIndexErr:
+    bcall(_ErrDomain)
+
 ;-----------------------------------------------------------------------------
-; Routines for converting floating point to U32 and back.
+; Routines for converting floating point OP1 to U32 or W32.
+;
+; The W32 type is a wrapper around a U32 containing a status_code byte at the
+; beginning. The equivalent C-struct for W32 is:
+;
+;   struct W32 {
+;       uint8_t status_code;
+;       uint32_t value;
+;   }
 ;-----------------------------------------------------------------------------
+
+; Bit flags of the W32 status_code. w32StatusCodeNegative and
+; w32StatusCodeTooBig are usually fatal errors which throw an exception.
+; w32StatusCodeHasFrac is sometimes a non-fatal error, because the operation
+; will truncate to integer before continuing with the calculation. We can mask
+; off the non-fatal error using an 'and w32StatusCodeFatalMask' instruction.
+w32StatusCodeNegative equ 0
+w32StatusCodeTooBig equ 1
+w32StatusCodeHasFrac equ 7
+w32StatusCodeFatalMask equ $03
 
 convertOP1ToU32Error:
-    bjump(_ErrDomain) ; throw exception
+    bcall(_ErrDomain) ; throw exception
 
-; Description: Same as convertOP1ToU32NoCheck() but throws an Err:Domain
-; exception if OP1 is not in the range of [0, 2^32). Floating point values are
-; allowed, but the fractional digits are ignored when converting to U32.
+; Description: Similar to convertOP1ToU32(), but don't throw if there is a
+; fractional part.
 ; Input:
 ;   - OP1: unsigned 32-bit integer as a floating point number
-;   - HL: pointer to a u32 in memory
+;   - HL: pointer to a u32 in memory, cannot be OP2
+; Output:
+;   - HL: OP1 converted to a u32, in little-endian format
+; Destroys: A, B, C, DE
+; Preserves: HL, OP1, OP2
+convertOP1ToU32AllowFrac:
+    call convertOP1ToW32
+    ld a, (hl)
+    and w32StatusCodeFatalMask
+    jr nz, convertOP1ToU32Error
+    jr convertW32ToU32
+
+; Description: Similar to convertOP2ToU32(), but don't throw if there is a
+; fractional part.
+; Input:
+;   - OP2: unsigned 32-bit integer as a floating point number
+;   - HL: pointer to a u32 in memory, cannot be OP2
+; Output:
+;   - HL: OP2 converted to a u32, in little-endian format
+; Destroys: A, B, C, DE
+; Preserves: HL, OP1, OP2
+convertOP2ToU32AllowFrac:
+    push hl
+    bcall(_OP1ExOP2)
+    pop hl
+    push hl
+    call convertOP1ToU32AllowFrac
+    bcall(_OP1ExOP2)
+    pop hl
+    ret
+
+; Description: Convert OP1 to a U32, throwing an Err:Domain exception if OP1 is:
+;
+; - not in the range of [0, 2^32)
+; - is negative
+; - contains fractional part
+;
+; See convertOP1ToU32NoCheck() to convert to U32 without throwing.
+;
+; Input:
+;   - OP1: unsigned 32-bit integer as a floating point number
+;   - HL: pointer to a u32 in memory, cannot be OP2
 ; Output:
 ;   - HL: OP1 converted to a u32, in little-endian format
 ; Destroys: A, B, C, DE
 ; Preserves: HL, OP1, OP2
 convertOP1ToU32:
-    push hl
-    bcall(_PushRealO2)
-    call op2Set2Pow32
-    bcall(_CpOP1OP2) ; if OP1 >= 2^32: CF=0
-    jr nc, convertOP1ToU32Error
-    bcall(_CkOP1FP0) ; if OP1 == 0: ZF=1
-    jr z, convertOP1ToU32Valid
-    bcall(_CkOP1Pos) ; if OP1 > 0: ZF=1
+    call convertOP1ToW32
+    ld a, (hl)
+    or a
     jr nz, convertOP1ToU32Error
-convertOP1ToU32Valid:
-    bcall(_PopRealO2)
-    pop hl
     ; [[fallthrough]]
 
-; Description: Convert floating point OP1. This routine assume that OP1 is a
-; floating point number between [0, 2^32). Fractional digits are ignored when
-; converting to U32 integer. Use convertOP1ToU32() to perform a validation
-; check that throws an exception.
+; Description: Convert a W32 into a U32 at the same HL address.
+; Input: HL: W32
+; Output: HL: U32
+; Destroys: BC, DE
+convertW32ToU32:
+    ld d, h
+    ld e, l
+    push hl
+    inc hl
+    ld bc, 4
+    ldir
+    pop hl
+    ret
+
+; Description: Convert OP1 to W32 (statusCode, U32) struct.
+; Input:
+;   - OP1: floating point number
+;   - HL: pointer to w32 struct in memory, cannot be OP2
+; Output:
+;   - HL: pointer to w32 struct
+; Destroys: A, B, C, DE
+; Preserves: HL, OP1, OP2
+convertOP1ToW32:
+    call clearW32 ; ensure u32=0 even when error conditions are detected
+    push hl
+    bcall(_PushRealO2) ; FPS=[OP2 saved]
+convertOP1ToW32CheckNegative:
+    bcall(_CkOP1Pos) ; if OP1<0: ZF=0
+    jr z, convertOP1ToW32CheckTooBig
+    bcall(_PopRealO2) ; FPS=[]; OP2=OP2 saved
+    pop hl
+    set w32StatusCodeNegative, (hl)
+    ret
+convertOP1ToW32CheckTooBig:
+    call op2Set2Pow32
+    bcall(_CpOP1OP2) ; if OP1 >= 2^32: CF=0
+    jr c, convertOP1ToW32CheckInt
+    bcall(_PopRealO2) ; FPS=[]; OP2=OP2 saved
+    pop hl
+    set w32StatusCodeTooBig, (hl)
+    ret
+convertOP1ToW32CheckInt:
+    bcall(_CkPosInt) ; if OP1>=0 and OP1 is int: ZF=1
+    jr z, convertOP1ToW32Valid
+    bcall(_PopRealO2) ; FPS=[]; OP2=OP2 saved
+    pop hl
+    set w32StatusCodeHasFrac, (hl)
+    jr convertOP1ToW32U32
+convertOP1ToW32Valid:
+    bcall(_PopRealO2) ; FPS=[]; OP2=OP2 saved
+    pop hl
+convertOP1ToW32U32:
+    ; Move past the W32 statusCode and convert to u32.
+    inc hl
+    call convertOP1ToU32NoCheck
+    dec hl
+    ret
+
+; Description: Convert floating point OP1 to a u32. This routine assume that
+; OP1 is a floating point number between [0, 2^32). Fractional digits are
+; ignored when converting to U32 integer. Use convertOP1ToU32() to perform a
+; validation check that throws an exception.
 ; Input:
 ;   - OP1: unsigned 32-bit integer as a floating point number
-;   - HL: pointer to a u32 in memory
+;   - HL: pointer to a u32 in memory, cannot be OP2
 ; Output:
 ;   - HL: OP1 converted to a u32, in little-endian format
-; Destroys: A, B, C, DE
-; Preserves: HL
+; Destroys: A, B, DE
+; Preserves: HL, C
 convertOP1ToU32NoCheck:
     ; initialize the target u32
     call clearU32
     bcall(_CkOP1FP0) ; preserves HL
     ret z
-
     ; extract number of decimal digits
     ld de, OP1+1 ; exponent byte
     ld a, (de)
     sub $7F ; A = exponent + 1 = num digits in mantissa
     ld b, a ; B = num digits in mantissa
-    inc de ; DE = pointer to mantissa
     jr convertOP1ToU32LoopEntry
-
 convertOP1ToU32Loop:
     call multU32By10
 convertOP1ToU32LoopEntry:
     ; get next 2 digits of mantissa
+    inc de ; DE = pointer to mantissa
     ld a, (de)
-    inc de
     ; Process first mantissa digit
-    ld c, a ; C = A (saved)
-    srl a
-    srl a
-    srl a
-    srl a
+    rrca
+    rrca
+    rrca
+    rrca
+    and $0F
     call addU32U8
     ; check number of mantissa digits
-    djnz convertOP1ToU32SecondDigit
-    ret
+    dec b
+    ret z
 convertOP1ToU32SecondDigit:
     ; Process second mantissa digit
     call multU32By10
-    ld a, c
-    and a, $0F
+    ld a, (de)
+    and $0F
     call addU32U8
     djnz convertOP1ToU32Loop
     ret
@@ -102,7 +232,7 @@ convertOP1ToU32SecondDigit:
 ; Description: Same as convertOP1ToU32() except using OP2.
 ; Input:
 ;   - OP2: unsigned 32-bit integer as a floating point number
-;   - HL: pointer to a u32 in memory
+;   - HL: pointer to a u32 in memory, cannot be OP1 or OP2
 ; Destroys: A, B, C, DE
 ; Preserves: HL, OP1, OP2
 convertOP2ToU32:
@@ -115,6 +245,33 @@ convertOP2ToU32:
     pop hl
     ret
 
+; Description: Convert OP1 to a u8, throwing an exception if the number has
+; fractions, or is larger than a u8.
+; Input:
+;   - OP1: unsigned 32-bit integer as a floating point number
+;   - HL: pointer to a u32 in memory, cannot be OP1 or OP2
+; Output:
+;   - (HL): u8 value
+; Destroys: A, B, C, DE
+; Preserves: HL, OP1, OP2
+convertOP1ToU8:
+    call convertOP1ToU32
+    ; Check that the U32 is a U8
+    inc hl
+    ld a, (hl)
+    inc hl
+    or (hl)
+    inc hl
+    or (hl)
+    dec hl
+    dec hl
+    dec hl
+    ret z
+convertOP1ToU8Error:
+    bcall(_ErrDomain)
+
+;-----------------------------------------------------------------------------
+; Convert U8 or U32 to a TI floating point number.
 ;-----------------------------------------------------------------------------
 
 ; Description: Convert the u32 referenced by HL to a floating point number in
@@ -125,7 +282,7 @@ convertOP2ToU32:
 ; Preserves: HL, OP2
 convertU32ToOP1:
     push hl
-    bcall(_PushRealO2)
+    bcall(_PushRealO2) ; FPS=[OP2 saved]
     bcall(_OP1Set0)
     pop hl
 
@@ -149,7 +306,7 @@ convertU32ToOP1:
     call addU8ToOP1
 
     push hl
-    bcall(_PopRealO2)
+    bcall(_PopRealO2) ; FPS=[]; OP2=OP2 saved
     pop hl
     ret
 
@@ -189,6 +346,43 @@ addU8ToOP1Check:
     pop bc
     djnz addU8ToOP1Loop
     pop hl
+    ret
+
+;-----------------------------------------------------------------------------
+; W32 and WSIZE routines.
+;-----------------------------------------------------------------------------
+
+; Description: Check if the given u32 fits in the given WSIZE.
+; Input:
+;   - HL: w32
+;   - (baseWordSize): current word size
+; Output:
+;   - HL: w32.statusCode set to w32StatusCodeTooBig if u32(HL) does not fit
+; Preserves: HL
+checkW32FitsWsize:
+    call getWordSizeIndex ; A=0,1,2,3
+    ld b, 3
+    sub b
+    neg ; A=3-A
+    ret z ; if A==0 (i.e. wordSize==32): ret
+    ld b, a
+    xor a
+    push hl
+    inc hl
+    inc hl
+    inc hl
+    inc hl
+checkW32FitsLoop:
+    or (hl)
+    dec hl
+    jr nz, checkW32FitsWsizeTooBig
+    djnz checkW32FitsLoop
+checkW32FitsWsizeOk:
+    pop hl
+    ret
+checkW32FitsWsizeTooBig:
+    pop hl
+    set w32StatusCodeTooBig, (hl)
     ret
 
 ;-----------------------------------------------------------------------------
@@ -292,15 +486,15 @@ convertU32ToOctStringLoop:
 ; Routines related to Binary strings.
 ;-----------------------------------------------------------------------------
 
-binNumberWidth equ 14
+binNumberWidth equ 32
 
 ; Description: Converts 32-bit unsigned integer referenced by HL to a binary
 ; string in buffer referenced by DE.
 ; Input:
 ;   - HL: pointer to 32-bit unsigned integer
-;   - DE: pointer to a C-string buffer of at least 15 bytes (14 binary digits
-;   plus NUL terminator). This will usually be 2 consecutive OPx registers,
-;   each 11 bytes long, for a total of 22 bytes.
+;   - DE: pointer to a C-string buffer of at least 33 bytes (32 binary digits
+;   plus NUL terminator). This will usually be 3 consecutive OPx registers,
+;   each 11 bytes long, for a total of 33 bytes.
 ; Output:
 ;   - (DE): C-string representation of u32 as octal digits
 ; Destroys: A

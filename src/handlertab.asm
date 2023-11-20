@@ -1,16 +1,14 @@
 ;-----------------------------------------------------------------------------
 ; MIT License
 ; Copyright (c) 2023 Brian T. Park
-;-----------------------------------------------------------------------------
-
-;-----------------------------------------------------------------------------
+;
 ; List of GetKey() codes and their jump table.
 ;
 ; TODO: As this table gets longer, consider sorting this table so that a binary
 ; search can be used instead of a linear search.
 ;-----------------------------------------------------------------------------
 
-keyCodeHandlerTableSize equ 59
+keyCodeHandlerTableSize equ 66
 kOnExit equ 0 ; ON key generates 00 as the key code
 
 keyCodeHandlerTable:
@@ -99,7 +97,7 @@ keyCodeHandlerTable:
     ; use as the ESC key, but those are currently mapped to DEL and STAT. DEL
     ; is used as the Backspace functionality, and I want to reserve the STAT
     ; button for future additions.)
-
+    ;
     ; 3) The Tilem emulator exposes the ON button as the F12 key on the PC
     ; keyboard, which is somewhat awkward to use. The ESC key on Tilem is
     ; mapped to the CLEAR button so we can't use that. The PageUp key seemed
@@ -134,6 +132,17 @@ keyCodeHandlerTable:
     .dw handleKeyMenu4
     .db keyMenu5
     .dw handleKeyMenu5
+    ; The 2ND versions of the 5 menu keys.
+    .db keyMenuSecond1
+    .dw handleKeyMenuSecond1
+    .db keyMenuSecond2
+    .dw handleKeyMenuSecond2
+    .db keyMenuSecond3
+    .dw handleKeyMenuSecond3
+    .db keyMenuSecond4
+    .dw handleKeyMenuSecond4
+    .db keyMenuSecond5
+    .dw handleKeyMenuSecond5
 
 ;-----------------------------------------------------------------------------
 
@@ -217,3 +226,13 @@ keyCodeHandlerTable:
     ; STAT button bound to STAT menu.
     .db kStat
     .dw handleKeyStat
+
+;-----------------------------------------------------------------------------
+
+    ; 2ND QUIT
+    .db kQuit
+    .dw handleKeyQuit
+
+    ; DRAW (i.e. Debug) mode
+    .db kDraw
+    .dw handleKeyDraw

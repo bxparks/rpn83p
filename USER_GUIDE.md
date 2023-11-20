@@ -2,7 +2,7 @@
 
 RPN calculator app for the TI-83 Plus and TI-84 Plus inspired by the HP-42S.
 
-**Version**: 0.6.0 (2023-09-22)
+**Version**: 0.7.0 (2023-11-20)
 
 **Project Home**: https://github.com/bxparks/rpn83p
 
@@ -26,6 +26,7 @@ RPN calculator app for the TI-83 Plus and TI-84 Plus inspired by the HP-42S.
         - [Menu Buttons](#menu-buttons)
         - [Menu Indicator Arrows](#menu-indicator-arrows)
         - [Menu Shortcuts](#menu-shortcuts)
+        - [Menu Shortcut Jump Back](#menu-shortcut-jump-back)
     - [Built In Help](#built-in-help)
     - [Error Codes](#error-codes)
 - [Functions](#functions)
@@ -35,6 +36,8 @@ RPN calculator app for the TI-83 Plus and TI-84 Plus inspired by the HP-42S.
     - [Auto-start](#auto-start)
     - [Floating Point Display Modes](#floating-point-display-modes)
     - [Trigonometric Modes](#trigonometric-modes)
+    - [Storage Registers](#storage-registers)
+    - [Prime Factors](#prime-factors)
     - [BASE Functions](#base-functions)
         - [Base Modes](#base-modes)
         - [Shift and Rotate](#shift-and-rotate)
@@ -43,9 +46,15 @@ RPN calculator app for the TI-83 Plus and TI-84 Plus inspired by the HP-42S.
         - [Bit Operations](#bit-operations)
         - [Base Integer Size](#base-integer-size)
         - [Base Mode Retention](#base-mode-retention)
-    - [Storage Registers](#storage-registers)
-    - [Prime Factors](#prime-factors)
     - [STAT Functions](#stat-functions)
+    - [TVM Functions](#tvm-functions)
+        - [TVM Menu Buttons](#tvm-menu-buttons)
+        - [TVM Payments Per Year](#tvm-payments-per-year)
+        - [TVM BEG and END](#tvm-beg-and-end)
+        - [TVM Solver Control](#tvm-solver-control)
+        - [TVM Clear](#tvm-clear)
+        - [TVM Variable Recall](#tvm-variable-recall)
+        - [TVM Examples](#tvm-examples)
 - [TI-OS Interaction](#ti-os-interaction)
 - [Future Enhancements](#future-enhancements)
     - [Near Future](#near-future)
@@ -60,15 +69,15 @@ calculator app for the [TI-83 Plus](https://en.wikipedia.org/wiki/TI-83_series)
 (including the Silver Edition) and the [TI-84
 Plus](https://en.wikipedia.org/wiki/TI-84_Plus_series) (including the Silver
 Edition). The app is inspired mostly by the
-[HP-42S](https://en.wikipedia.org/wiki/HP-42S) calculator, with some sprinkles
-of some older HP calculators like the
+[HP-42S](https://en.wikipedia.org/wiki/HP-42S) calculator, with some significant
+features from the
 [HP-12C](https://en.wikipedia.org/wiki/HP-12C) and the
-[HP-15C](https://en.wikipedia.org/wiki/HP-15C).
+[HP-16C](https://en.wikipedia.org/wiki/HP-16C).
 
-The RPN83P is a flash application that consumes one page (16 kB) of flash
+The RPN83P is a flash application that consumes 2 pages (32 kiB) of flash
 memory. Since it is stored in flash, it is preserved if the RAM is cleared. It
 consumes a small amount of TI-OS RAM: 2 list variables named `REGS` (240 bytes)
-and `STK` (59 byte), and an appVar named `RPN83SAV` (77 bytes).
+and `STK` (59 byte), and an appVar named `RPN83SAV` (100 bytes).
 
 Here the quick summary of its features:
 
@@ -76,7 +85,7 @@ Here the quick summary of its features:
 - support for `lastX` register
 - 8-line display showing all stack registers
 - 25 storage registers (`STO 00`, `RCL 00`, ..., `STO 24`, `RCL 24`)
-- hierarchical menu system, inspired by the HP-42S
+- hierarchical menu system similar to HP-42S
 - support for all math functions with dedicated buttons on the TI-83 Plus and
   TI-84 Plus
     - arithmetic: `/`, `*`, `-`, `+`
@@ -86,7 +95,7 @@ Here the quick summary of its features:
     - `LOG`, `10^X`, `LN`, `e^X`
     - constants: `pi` and `e`
 - additional menu functions:
-    - `X^3`, `CBRT`, `XRootY`, `ATN2`, `2^X`, `LOG2`, `LOGB`
+    - `X^3`, `3RootX`, `XRootY`, `ATN2`, `2^X`, `LOG2`, `LOGB`
     - `%`, `%CH`, `GCD`, `LCM`, `PRIM` (is prime)
     - `IP` (integer part), `FP` (fractional part), `FLR` (floor), `CEIL`
       (ceiling), `NEAR` (nearest integer)
@@ -95,6 +104,16 @@ Here the quick summary of its features:
     - hyperbolic: `SINH`, `COSH`, `TANH`, `ASNH`, `ACSH`, `ATNH`
     - angle conversions: `>DEG`, `>RAD`, `>HR`, `>HMS`, `>REC`, `>POL`
     - unit conversions: `>C`, `>F`, `>km`, `>mi`, etc
+- features inspired by HP-42S
+    - `E^X-` (e^x-1), `LN1+` (log(1+x))
+    - statistics: `Sigma+`, `Sigma-`, `SUM`, `MEAN`, `WMN` (weighted mean),
+      `SDEV` (sample standard deviation), `SCOV` (sample covariance),
+      `PDEV` (population standard deviation), `PCOV` (population covariance)
+    - curve fitting: `Y>X`, `X>Y`, `SLOP` (slope), `YINT` (y intercept), `CORR`
+      (correlation coefficent)
+    - curve fit models: `LINF` (linear), `LOGF` (logarithmic), `EXPF`
+      (exponential), `PWRF` (power)
+- features inspired by HP-16C and HP-42S
     - base conversions: `DEC`, `HEX`, `OCT`, `BIN`
     - bitwise operations: `AND`, `OR`, `XOR`, `NOT`, `NEG`, `REVB` (reverse
       bits), `CNTB` (count bits)
@@ -103,13 +122,9 @@ Here the quick summary of its features:
     - shift and rotate: `SL`, `SR`, `ASR`, `RL`, `RR`, `RLC`, `RRC`,
       `SLn`, `SRn`, `RLn`, `RRn`, `RLCn`, `RRCn`
     - carry flag and bit masks: `CCF`, `SCF`, `CF?`, `CB`, `SB`, `B?`
-    - statistics: `Sigma+`, `Sigma-`, `SUM`, `MEAN`, `WMN` (weighted mean),
-      `SDEV` (sample standard deviation), `SCOV` (sample covariance),
-      `PDEV` (population standard deviation), `PCOV` (population covariance)
-    - curve fitting: `Y>X`, `X>Y`, `SLOP` (slope), `YINT` (y intercept), `CORR`
-      (correlation coefficent)
-    - curve fit models: `LINF` (linear), `LOGF` (logarithmic), `EXPF`
-      (exponential), `PWRF` (power)
+- features inspired by HP-12C and HP-30b
+    - time value of money (TVM): `N`, `I%YR`, `PV`, `PMT`, `FV`, `P/YR`, `BEG`,
+      `END`, `CLTV` (clear TVM)
 - various display modes
     - `RAD`, `DEG`
     - `FIX` (fixed point 0-9 digits)
@@ -206,6 +221,13 @@ from a host computer. There are a number of options:
   software and follow the instructions in [Transferring FLASH
   Applications](https://education.ti.com/en/customer-support/knowledge-base/sofware-apps/product-usage/11506).
 
+**Warning**: If you are upgrading from a previous version of RPN83P, you may
+need to manually remove the `RPN83P` app from the calculator, before uploading
+the new `rpn83p.8xk` file. I don't know why, but sometimes the calculator gets
+stuck at the `Defragmenting...` step and never finish uploading the file. To
+manually remove, go to `2ND MEM`, `2` (Mem Mgmt/Del), `ALPHA A` (Apps), scroll
+down to the `RPN83P`, hit `DEL`, press `2` (Yes).
+
 ### Starting
 
 After installing `rpn83p.8xk` file, go to the calculator:
@@ -214,12 +236,12 @@ After installing `rpn83p.8xk` file, go to the calculator:
 - Scroll down to the `RPN83P` entry
 - Press the `ENTER` key
 
-> ![TIOS APPS](docs/tios-apps.png)
+![TIOS APPS](docs/tios-apps.png)
 
 The RPN83P starts directly into the calculator mode, no fancy splash screen. You
 should see a screen that looks like:
 
-> ![RPN83P screenshot 1](docs/rpn83p-screenshot-initial.png)
+![RPN83P screenshot 1](docs/rpn83p-screenshot-initial.png)
 
 ### Quitting
 
@@ -253,7 +275,7 @@ Manual](https://literature.hpcalc.org/items/929).
 
 Here are the various UI elements on the LCD screen used by the RPN83P app:
 
-> ![RPN83P screen areas](docs/rpn83p-screen-areas-annotated.png)
+![RPN83P screen areas](docs/rpn83p-screen-areas-annotated.png)
 
 The LCD screen is 96 pixels (width) by 64 pixels (height). That is large enough
 to display 8 rows of numbers and letters. They are divided into the following:
@@ -282,7 +304,8 @@ The following buttons are used to enter and edit a number in the input buffer:
 - `(-)`: enters a negative sign, or changes the sign (same as `+/-` or `CHS` on
   HP calculators)
 - `DEL`: Backspace (same as `<-` on many HP calculators)
-- `CLEAR`: Clear `X` register (same as `CLx` or `CLX` on HP calculators)
+- `CLEAR`: Clear `X` register (same as `CLx` or `CLX` on HP calculators), *or*
+  clear the input buffer, *or* clear the entire RPN stack.
 - `2ND` `EE`: adds an `E` to allow entry of scientific notation exponent (same
   as `E` or `EEX` on HP calculators)
 - `,`: same as `2ND` `EE`, allowing the `2ND` to be omitted for convenience
@@ -298,9 +321,35 @@ end of the input buffer, so `DEL` is programmed to delete the right-most digit.
 If the `X` line is *not* in edit mode (i.e. the cursor is not shown), then the
 `DEL` key acts like the `CLEAR` key (see below).
 
-The `CLEAR` key clears the entire input buffer, leaving just a cursor at the end
-of an empty string. An empty string will be interpreted as a `0` if the `ENTER`
-key or a function key is pressed.
+The `CLEAR` key performs slightly different actions depending on the context:
+- If the `X` register is normally displayed, `CLEAR` goes into edit mode with an
+  empty input buffer.
+- If the `X` register is already in edit mode, `CLEAR` clears input buffer.
+- If the `X` register is in edit mode and the input buffer is already empty,
+  then `CLEAR` shows a message to the user: `CLEAR Again to Clear Stack`.
+- If the `CLEAR` button is pressed immediately again, the RPN stack is cleared.
+  This is the same functionality as the `ROOT > CLR > CLST` menu button.
+
+In an RPN system, it is generally not necessary to clear the RPN stack before
+any calculations. However, many users want to see a clean slate on the display
+to reflect their mental state when starting a new calculation. The `CLST` menu
+function provides this feature, but is nested under the `ROOT > CLR > CLST` menu
+hierarchy. If you are deeply nested under another part of the menu hierarchy, it
+can be cumbersome to navigate back up to the `ROOT`, invoke the `CLST` button,
+then make your way back to the original menu location.
+
+On RPN calculators with multiple lines such as the HP-42S, the `CLEAR` menu bar
+can be reached using a direct keyboard shortcut, and the `CLST` function is only
+2 or 3 keystrokes away. The RPN83P app uses the key buttons already provided by
+the TI-83+ and TI-84+ calculators, and unfortunately, there is no obvious button
+shortcut that can be used for the `CLR` menu bar. The obvious choice would have
+been the `2ND CLEAR`, but the TI-OS does not support that. It returns the same
+keycode as just `CLEAR`. The only reasonable alternative was to overload the
+existing `CLEAR` button, so that it performs the additional function of `CLST`
+when the button is pressed multiple times.
+
+An empty string will be interpreted as a `0` if the `ENTER` key or a function
+key is pressed.
 
 The comma `,` button is not used in the RPN system, so it has been mapped to
 behave exactly like the `2ND` `EE` button. This allows scientific notation
@@ -309,10 +358,23 @@ repeatedly.
 
 Emulating the input system of the HP-42S was surprisingly complex and subtle,
 and some features and idiosyncrasies of the HP-42S could not be carried over due
-to incompatibilities with the underlying TI-OS. I'm not sure that documenting
-all the corner cases would be useful because it would probably be tedious to
-read. I hope that the input system is intuitive and self-consistent enough that
-you can just play around with it and learn how it works.
+to incompatibilities with the underlying TI-OS. But some features were
+deliberately implemented differently. For example, on the HP-42S, when the input
+buffer becomes empty after pressing the `<-` backspace button multiple times, or
+pressing the `CLEAR > CLX` menu button, the cursor disappears and the `X`
+register is shown as `0.0000`. But internally, the HP-42S is in a slightly
+different state than normal: the Stack Lift is disabled, and entering another
+number will replace the `0.0000` in the `X` register instead of lifting it up to
+the `Y` register. In RPN83P, when the `DEL` key or the `CLEAR` key is pressed,
+the `X` register always enters into Edit mode with an empty input buffer, and
+the cursor will *always* be shown with an empty string. The presence of the
+cursor indicates that the Edit Mode is in effect and that the Stack Lift is
+disabled.
+
+I'm not sure that documenting all the corner cases would be useful in this
+document because it would probably be tedious to read. I hope that the input
+system is intuitive and self-consistent enough that you can just play around
+with it and learn how it works.
 
 ### RPN Stack
 
@@ -421,7 +483,8 @@ The appropriate key for the "menu back to parent" function would have been an
 `ESC` button. But the TI-83 and TI-84 calculators do not have an `ESC` button
 (unlike the TI-92 and TI Voyager 200 series calculators), so the `ON` button was
 recruited for this functionality. This seemed to make sense because the HP-42S
-uses the `ON` key which doubles as the `EXIT` key to perform this function.
+uses the `ON` key which doubles as the `EXIT` or `ESC` key to perform this
+function.
 
 The `HOME` button is useful to go directly to the top of the menu hierarchy from
 anywhere in the menu hierarchy. The TI-83 and TI-84 calculators do not have a
@@ -443,44 +506,44 @@ menu group named `MATH`, which may help to remember this button mapping.
 There are 3 menu arrows at the top-left corner of the LCD screen. The
 `downarrow` indicates that additional menu rows are available:
 
-> ![Menu Arrows 1](docs/rpn83p-menu-arrows-1.png)
+![Menu Arrows 1](docs/rpn83p-menu-arrows-1.png)
 
 When the `DOWN` button is pressed, the menu changes to the next set of 5 menu
 items in the next menu row, and the menu arrows show both an `uparrow` and a
 `downarrow` to indicate that there are more menu items above and below the
 current menu bar:
 
-> ![Menu Arrows 2](docs/rpn83p-menu-arrows-2.png)
+![Menu Arrows 2](docs/rpn83p-menu-arrows-2.png)
 
 Pressing `DOWN` goes to the last set of 5 menu items, and the menu arrows show
 only the `uparrow` to indicate that this is the last of the series:
 
-> ![Menu Arrows 3](docs/rpn83p-menu-arrows-3.png)
+![Menu Arrows 3](docs/rpn83p-menu-arrows-3.png)
 
 You can press `UP` twice goes back to the first menu row, or you can press
 `DOWN` from the last menu row to wrap around to the beginning:
 
-> ![Menu Arrows 1](docs/rpn83p-menu-arrows-1.png)
+![Menu Arrows 1](docs/rpn83p-menu-arrows-1.png)
 
 Pressing the `F2/WINDOW` button from here invokes the `NUM` menu item. This menu
 item is actually a `MenuGroup`, so the menu system descends into this folder,
 and displays the 5 menu items in the first menu row:
 
-> ![Menu Arrows NUM 1](docs/rpn83p-menu-arrows-num-1.png)
+![Menu Arrows NUM 1](docs/rpn83p-menu-arrows-num-1.png)
 
 Pressing the `DOWN` arrow button shows the next menu row:
 
-> ![Menu Arrows NUM 2](docs/rpn83p-menu-arrows-num-2.png)
+![Menu Arrows NUM 2](docs/rpn83p-menu-arrows-num-2.png)
 
 Pressing the `DOWN` arrow button goes to the final menu row:
 
-> ![Menu Arrows NUM 3](docs/rpn83p-menu-arrows-num-3.png)
+![Menu Arrows NUM 3](docs/rpn83p-menu-arrows-num-3.png)
 
 Notice that inside the `NUM` menu group, the menu arrows show a `back` arrow.
 This means that the `ON` button (which implements the "BACK", "EXIT", or "ESC"
 functionality) can be used to go back to the parent menu group:
 
-> ![Menu Arrows 1](docs/rpn83p-menu-arrows-1.png)
+![Menu Arrows 1](docs/rpn83p-menu-arrows-1.png)
 
 #### Menu Shortcuts
 
@@ -495,28 +558,53 @@ The `MATH` button is slightly different. It is not bound to `ROOT > MATH`.
 Rather it has been repurposed to be the `HOME` button which goes to the top of
 the menu hierarchy `ROOT`.
 
+#### Menu Shortcut Jump Back
+
+Normally when the `ON/EXIT/ESC` button is pressed, the menu bar goes up to the
+parent of the current MenuGroup. That makes sense because the user normally must
+travel through the parent to reach the child MenuGroup. But the keyboard
+shortcuts break this rule.
+
+When the `MODE` button is pressed, the menu bar goes directly to the `ROOT >
+MODE` MenuGroup from anywhere in the menu hierarchy. Since the `MODE` functions
+involve quick changes to the floating point display or the trigonometric angle
+units, it seems likely that the user would want to go back to the original menu
+bar after making the `MODE` changes. Therefore, the `ON/EXIT/ESC` button has
+been programmed to jump back to the *previous* menu bar if the `ROOT > MODE`
+menu was invoked through the `MODE` button.
+
+The `STAT` shortcut, however, does *not* implement the jump back feature.
+Instead, the `ON/EXIT/ESC` acts normally and the menu goes up to the parent of
+the `STAT` MenuGroup to the `ROOT` of the menu system. This behavior was chosen
+because it seemed more likely that the user would spend a significant amount of
+time inside the `STAT` menu functions. The more time spent inside the `STAT`
+menu, the less likely it seemed the user would remember where the original menu
+bar was, and unlikely to want to go back there using the `ON/EXIT/ESC` key.
+
 ## Built In Help
 
-Pressing the `HELP` menu button at the root menu:
+Pressing the `HELP` menu button at the root menu activates the Help pages:
 
-> ![ROOT MenuRow 1](docs/rpn83p-screenshot-menu-root-1.png)
+![ROOT MenuRow 1](docs/rpn83p-screenshot-menu-root-1.png)
 
-activates the Help pages:
+The contents of these pages are updated frequently so the screenshots below may
+not be identical to the current version:
 
-> ![Help Page 1](docs/rpn83p-help-page-1.png)
+![Help Page 1](docs/rpn83p-help-page-1.png)
+![Help Page 2](docs/rpn83p-help-page-2.png)
+![Help Page 9](docs/rpn83p-help-page-9.png)
 
-> ![Help Page 2](docs/rpn83p-help-page-2.png)
+The Help pages are intended to capture some of the more obscure tidbits about
+the RPN83P app which may be hard to remember. Hopefully it reduces the number of
+times that this User Guide needs to be consulted.
 
-> ![Help Page 3](docs/rpn83p-help-page-3.png)
+The message at the bottom of each page is not completely honest. A number of
+navigational keys are recognized by the Help system:
 
-> ![Help Page 4](docs/rpn83p-help-page-4.png)
-
-> ![Help Page 5](docs/rpn83p-help-page-5.png)
-
-> ![Help Page 6](docs/rpn83p-help-page-6.png)
-
-Hopefully they are useful for remembering the mapping of the buttons whose TI-OS
-keyboard labels do not match the functionality assigned by the RPN83P program.
+- `UP`, `LEFT`: previous page with wraparound
+- `DOWN`, `RIGHT`: next page with wraparound
+- `DEL`, `MATH`, `CLEAR`, `ON`: exit Help
+- any other button: next page *without* wraparound, exiting on the last page
 
 ## Error Codes
 
@@ -549,7 +637,7 @@ documented in the TI-83 SDK:
 These are shown in the Error Code line on the screen. For example, division by 0
 shows this:
 
-> ![Err: Division By 0](docs/rpn83p-errorcode-division-by-0.png)
+![Err: Division By 0](docs/rpn83p-errorcode-division-by-0.png)
 
 The TI SDK documentation does not explain the source of most of these error
 codes, and I can reproduce only a small number of errors in the RPN83P app,
@@ -558,7 +646,7 @@ marked by (`*`) above.
 If an unknown error code is detected the RPN83P will print `Err: UNKNOWN (##)`
 message like this:
 
-> ![Err: UNKNOWN](docs/rpn83p-errorcode-unknown.png)
+![Err: UNKNOWN](docs/rpn83p-errorcode-unknown.png)
 
 The number in parenthesis is the internal numerical value of the error code. If
 the error is reproducible, please file a bug report containing the numerical
@@ -590,8 +678,8 @@ are supported by the RPN83P app.
 ### Menu Functions
 
 These functions are accessed through the hierarchical menu, using the 5 menu
-buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (back), and `MATH`
-(home) keys to navigate the menu hierarchy.
+buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
+`MATH` (HOME) keys to navigate the menu hierarchy.
 
 - `ROOT` (implicit)
     - ![ROOT MenuRow 1](docs/rpn83p-screenshot-menu-root-1.png)
@@ -609,6 +697,8 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (back), and `MATH`
     - `2^X`: `2` to the power of `X`
     - `LOG2`: log base 2 of `X`
     - `LOGB`: log base `X` of `Y`
+    - `E^X-`: `e^x-1` accurate for small `x`
+    - `LN1+`: `log(1+x)` accurate for small `x`
 - `ROOT` > `NUM`
     - ![NUM MenuRow 1](docs/rpn83p-screenshot-menu-root-num-1.png)
     - ![NUM MenuRow 2](docs/rpn83p-screenshot-menu-root-num-2.png)
@@ -652,8 +742,8 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (back), and `MATH`
         - output (`Y`, `X`) = (`r`, `theta`)
     - `>HR`: convert `HH.MMSSssss` to `HH.hhhh`
     - `>HMS`: convert `HH.hhhh` to `HH.MMSSssss`
-- `ROOT` > `HELP`: display the help pages
-    - use arrow keys to view each help page
+- `ROOT` > `HELP`: display the Help pages
+    - use arrow keys to view each Help page
 - `ROOT` > `BASE`
     - ![BASE MenuRow 1](docs/rpn83p-screenshot-menu-root-base-1.png)
     - ![BASE MenuRow 2](docs/rpn83p-screenshot-menu-root-base-2.png)
@@ -698,13 +788,13 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (back), and `MATH`
     - `B-`: subtract `X` from `Y` using unsigned 32-bit integer math
     - `B*`: multiply `X` and `Y` using unsigned 32-bit integer math
     - `B/`: divide `X` into `Y` using unsigned 32-bit integer math
-    - `BDIV`: divide `X` into `Y` with remainder, placing the quotient in `Y`
-      and the remainder in `X`
+    - `BDIV`: divide `X` into `Y` with remainder, placing the quotient in `X`
+      and the remainder in `Y`
     - `CCF`: clear carry flag
     - `SCF`: set carry flag
     - `CF?`: return carry flag state as 0 or 1
-    - `WSIZ`: set integer word size (not implemented)
-    - `WSZ?`: return current integer word size (normally 32)
+    - `WSIZ`: set integer word size (supported values: 8, 16, 24, 32)
+    - `WSZ?`: return current integer word size (default: 32)
 - `ROOT` > `HYP`
     - ![HYP MenuRow 1](docs/rpn83p-screenshot-menu-root-hyp-1.png)
     - ![HYP MenuRow 2](docs/rpn83p-screenshot-menu-root-hyp-2.png)
@@ -789,12 +879,30 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (back), and `MATH`
     - `>cal`: kilo Joules to kilo calories
     - `>kW`: horsepowers (mechanical) to kilo Watts
     - `>hp`: kilo Watts to horsepowers (mechanical)
+- `ROOT` > `TVM` (time value of money)
+    - ![TVM MenuRow 1](docs/rpn83p-screenshot-menu-root-tvm-1.png)
+    - ![TVM MenuRow 2](docs/rpn83p-screenshot-menu-root-tvm-2.png)
+    - ![TVM MenuRow 3](docs/rpn83p-screenshot-menu-root-tvm-3.png)
+    - `N`: set or calculate Number of payment periods
+    - `I%YR`: set or calculate Interest Percent per Year
+    - `PV`: set or calculate Present Value
+    - `PMT`: set or calculate Payment per period
+    - `FV`: set or calculate Future Value
+    - `P/YR`: set number of payments per year
+    - `BEG`: payment occurs at the Beginning of each period
+    - `END`: payment occurs at the End of each period
+    - `CLTV`: clear TVM variables and parameters
+    - `IYR1`: set `I%YR` guess 1 for TVM Solver
+    - `IYR2`: set `I%YR` guess 2 for TVM Solver
+    - `TMAX`: set iteration max for TVM Solver
+    - `RSTV`: reset TVM Solver parameters to factory defaults
 - `ROOT` > `CLR`
     - ![CLR MenuRow 1](docs/rpn83p-screenshot-menu-root-clr-1.png)
     - `CLX`: clear `X` stack register (stack lift disabled)
     - `CLST`: clear all RPN stack registers
     - `CLRG`: clear all storage registers `R00` to `R24`
     - `CLSigma`: clear STAT storage registers [`R11`, `R16`] or [`R11`, `R23`]
+    - `CLTV`: clear TVM variables and parameters
 - `ROOT` > `MODE`
     - ![MODE MenuRow 1](docs/rpn83p-screenshot-menu-root-mode-1.png)
     - `FIX`: fixed mode with `N` digits after the decimal point
@@ -832,7 +940,7 @@ you turn on the calculator.
 
 The LCD screen should look like this before hitting `FINISH`:
 
-> ![Start-up app screenshot](docs/start-up-app-screenshot.png)
+![Start-up app screenshot](docs/start-up-app-screenshot.png)
 
 Turn off the calculator and turn it back on. It should directly go into the
 RPN83P application.
@@ -843,11 +951,11 @@ The RPN83P app provides access to the same floating point display modes as the
 original TI-OS. For reference, here are the options available in the TI-OS when
 the `MODE` button is pressed:
 
-> ![TI-OS Display Modes](docs/tios-display-modes.png)
+![TI-OS Display Modes](docs/tios-display-modes.png)
 
 In RPN83P, the `MODE` button presents a menu bar instead:
 
-> ![RPN83P Display Modes](docs/rpn83p-display-modes.png)
+![RPN83P Display Modes](docs/rpn83p-display-modes.png)
 
 **HP-42S Compatibility Note**: The HP-42S uses the `DISP` button to access this
 functionality. For the RPN83P, it seemed to make more sense to the follow the
@@ -861,16 +969,16 @@ top-line indicator.
 
 Suppose the RPN stack has the following numbers:
 
-> ![RPN83P Display Modes](docs/rpn83p-display-mode-start.png)
+![RPN83P Display Modes](docs/rpn83p-display-mode-start.png)
 
 Pressing the `FIX` menu item shows a `FIX _ _` prompt for the number of digits
 after the decimal point, like this:
 
-> ![RPN83P FIX Prompt](docs/rpn83p-display-mode-fix.png)
+![RPN83P FIX Prompt](docs/rpn83p-display-mode-fix.png)
 
 Type `4` then `ENTER`. The display changes to this:
 
-> ![RPN83P FIX 4](docs/rpn83p-display-mode-fix-4.png)
+![RPN83P FIX 4](docs/rpn83p-display-mode-fix-4.png)
 
 (You can also press `FIX` `04` which will automatically invoke the `ENTER` to
 apply the change.)
@@ -880,14 +988,14 @@ Notice that the floating point mode indicator at the top of the screen now shows
 
 Try changing to scientific notation mode, by pressing: `SCI` `04` to get this:
 
-> ![RPN83P SCI 4](docs/rpn83p-display-mode-sci-4.png)
+![RPN83P SCI 4](docs/rpn83p-display-mode-sci-4.png)
 
 The top-line indicator shows `SCI(4)`.
 
 You can change to engineering notation mode, by pressing: `ENG` `04`, to
 get this:
 
-> ![RPN83P ENG 4](docs/rpn83p-display-mode-eng-4.png)
+![RPN83P ENG 4](docs/rpn83p-display-mode-eng-4.png)
 
 The top-line indicator shows `ENG(4)`.
 
@@ -897,13 +1005,13 @@ than 9 when prompted for `FIX _ _`, `SCI _ _`, or `ENG _ _`. I usually use
 `99`, but `11` would also work. For example, to use scientific notation mode
 with a variable number of fractional digits, press `SCI` `99` to get this:
 
-> ![RPN83P SCI 99](docs/rpn83p-display-mode-sci-99.png)
+![RPN83P SCI 99](docs/rpn83p-display-mode-sci-99.png)
 
 Notice that the top-line floating point indicator now shows `SCI(-)`.
 
 Finally, type `FIX` `99` to go back to the default floating point mode.
 
-> ![RPN83P FIX 99](docs/rpn83p-display-mode-fix-99.png)
+![RPN83P FIX 99](docs/rpn83p-display-mode-fix-99.png)
 
 **HP-42S Compatibility Note**: The RPN83P uses the underlying TI-OS floating
 point display modes, so it cannot emulate the HP-42S exactly. In particular, the
@@ -915,7 +1023,7 @@ equivalent to `FIX 99` on the RPN83P.
 Just like the TI-OS, the RPN83P uses the radian mode by default when calculating
 trigonometric functions. The top status line shows `RAD`:
 
-> ![RPN83P FIX 99](docs/rpn83p-trig-mode-rad-1.png)
+![RPN83P FIX 99](docs/rpn83p-trig-mode-rad-1.png)
 
 If we calculate `sin(pi/6)` in radian mode, by typing `PI` `6` `/` `SIN`, we get
 `0.5` as expected.
@@ -923,7 +1031,7 @@ If we calculate `sin(pi/6)` in radian mode, by typing `PI` `6` `/` `SIN`, we get
 Press the `DEG` menu button to change to degree mode. The top status line shows
 `DEG`:
 
-> ![RPN83P FIX 99](docs/rpn83p-trig-mode-deg-1.png)
+![RPN83P FIX 99](docs/rpn83p-trig-mode-deg-1.png)
 
 We can calculate `sin(30deg)` by typing: `30` `SIN` to get `0.5`.
 
@@ -936,6 +1044,89 @@ underlying TI-OS does not support the gradian mode directly. It is probably
 possible to add this feature by intercepting the trig functions and performing
 some pre and post unit conversions. But I'm not sure if it's worth the effort
 since gradian trig mode is not commonly used.
+
+### Storage Registers
+
+Similar to the HP-42S, the RPN83P provides **25** storage registers labeled
+`R00` to `R24`. They are accessed using the `STO` and `2ND` `RCL` keys. To store
+a number into register `R00`, press:
+
+- `STO` `00`
+
+To recall register `R00`, press:
+
+- `2ND` `RCL` `00`
+
+To clear the all storage registers, use the arrow keys for the menu system to
+get to:
+
+- ![ROOT MenuRow 3](docs/rpn83p-screenshot-menu-root-3.png)
+- Press `CLR` to get
+  ![CLR MenuRow 1](docs/rpn83p-screenshot-menu-root-clr-1.png)
+- Press `CLRG`
+
+The message `REGS cleared` will be displayed on the screen.
+
+Similar to the HP-42S and the HP-15C, storage register arithmetic operations are
+supported using the `STO` and `RCL` buttons followed by an arithmetic button.
+
+For example:
+
+- `STO` `+` `00`: add `X` to Reg 00
+- `STO` `-` `00`: subtract `X` from Reg 00
+- `STO` `*` `00`: multiply `X` to Reg 00
+- `STO` `/` `00`: divide `X` into Reg 00
+
+Similarly:
+
+- `RCL` `+` `00`: add Reg 00 to `X`
+- `RCL` `-` `00`: subtract Reg 00 from `X`
+- `RCL` `*` `00`: multiply Reg 00 to `X`
+- `RCL` `/` `00`: divide Reg 00 into `X`
+
+Indirect storage registers are not supported (as of v0.7.0). In other words, the
+`STO` `IND` `nn` and `RCL` `IND` `nn` functionality from the HP-42S.
+
+### Prime Factors
+
+The `PRIM` function calculates the lowest prime factor of the number in `X`. The
+result will be `1` if the number is a prime. Unlike almost all other functions
+implemented by RPN83P, the `PRIM` function does not replace the original `X`.
+Instead it pushes the prime factor onto the stack, causing the original `X` to
+move to the `Y` register. This behavior was implemented to allow easier
+calculation of all prime factors of a number as follows.
+
+After the first prime factor is calculated, the `/` can be pressed to calculate
+the remaining factor in the `X` register. We can now press `PRIM` again to
+calculate the next prime factor. Since the `PRIM` preserves the original number
+in the `Y` register, this process can be repeated multiple times to calculate
+all prime factors of the original number.
+
+For example, let's find the prime factors of `119886 = 2 * 3 * 13 * 29 * 53`:
+
+- Press `119886`
+- Press `PRIM` to get `2`
+- Press `/` to divide down to `59943`
+- Press `PRIM` to get `3`
+- Press `/` to divide down to `19981`
+- Press `PRIM` to get `13`
+- Press `/` to divide down to `1537`
+- Press `PRIM` to get `29`
+- Press `/` to divide down to `53`
+- Press `PRIM` to get `1`, which makes `53` the last prime factor.
+
+For computational efficiency, `PRIM` supports only integers between `2` and
+`2^32-1` (4 294 967 295). This allows `PRIM` to use integer arithmetic, making
+it about 7X faster than the equivalent algorithm using floating point routines.
+Any number outside of this range produces an `Err: Domain` message. (The number
+`1` is not considered a prime number.)
+
+If the input number is a very large prime, the calculation may take a long time.
+However, testing has verified that the `PRIM` algorithm will always finish in
+less than about 30 seconds on a TI-83 Plus or TI-84 Plus calculator, no matter
+how large the input number. During the calculation, the "run indicator" on the
+upper-right corner will be active. You can press `ON` key to break from the
+`PRIM` loop with an `Err: Break` message.
 
 ### BASE Functions
 
@@ -972,7 +1163,7 @@ into a logical, bitwise, or arithmetic function. This includes the `DEC` (base
 The `DEC` (decimal) mode is the default. All numbers on the RPN stack are
 displayed as an integer, after being converted to an unsigned 32-bit integer.
 
-> ![Numbers in Decimal Mode](docs/rpn83p-screenshot-base-dec.png)
+![Numbers in Decimal Mode](docs/rpn83p-screenshot-base-dec.png)
 
 If the value on the RPN stack is negative, a single `-` sign is shown. If the
 value is greater than or equal to `2^32`, then 3 dots `...` are shown. If the
@@ -996,7 +1187,7 @@ the decimal buttons `0` to `9` to send letters instead which prevents those
 digits to be entered, so it is not clear that the Alpha Lock mode is actually
 useful in this context.
 
-> ![Numbers in Hexadecimal Mode](docs/rpn83p-screenshot-base-hex.png)
+![Numbers in Hexadecimal Mode](docs/rpn83p-screenshot-base-hex.png)
 
 **OCT** (octal)
 
@@ -1011,7 +1202,7 @@ integer part is `>= 2^32`.
 The button digits `0` through `7` are entered normally. The button digits `8`
 and `9` are disabled in octal mode.
 
-> ![Numbers in Octal Mode](docs/rpn83p-screenshot-base-oct.png)
+![Numbers in Octal Mode](docs/rpn83p-screenshot-base-oct.png)
 
 **BIN** (binary)
 
@@ -1027,7 +1218,15 @@ printed instead. Three dots are also printed if the integer part is `>= 2^14`
 Only the button digits `0` and `1` are active in the binary mode. The rest are
 disabled.
 
-> ![Numbers in Binary Mode](docs/rpn83p-screenshot-base-bin.png)
+![Numbers in Binary Mode](docs/rpn83p-screenshot-base-bin.png)
+
+If a number is too large to be fully displayed in `BIN` mode using the 14 digits
+available on the screen, a small ellipsis character will be shown on the left to
+indicate that there are more digits which are truncated from the screen. For
+example, the number 33059 (hex 8123, oct 100443) has a binary representation of
+`1000 0001 0010 0011`, which will be shown like this:
+
+![BASE Binary Number Ellipsis](docs/rpn83p-base-bin-ellipsis.png)
 
 #### Shift and Rotate
 
@@ -1097,6 +1296,12 @@ perform 32-bit unsigned arithmetic operations instead of floating point
 operations. The numbers in the `X` and `Y` registers are converted into 32-bit
 unsigned integers before the integer subroutines are called.
 
+The `BDIV` menu function performs the same integer division operation as `B/`
+but returns both the quotient (in `X`) and the remainder (in `Y`). With the
+quotient in `X`, it becomes easy to recover the original `X` value by using the
+`lastX` function (`2ND` `ANS`), then pressing the `*` button, then the `+`
+button to add back the remainder.
+
 **HP-42S Compatibility Note**: The HP-42S calls these integer functions `BASE+`,
 `BASE-`, `BASE*`, and `BASE/`. The RPN83P can only display 4-characters in the
 menu bar so I had to use shorter names. The HP-42S function called `B+/-` is
@@ -1104,32 +1309,32 @@ called `NEG` on the RPN83P. Early versions of the RPN83P retained the keyboard
 arithmetic buttons bound to their floating point operations, but it became too
 confusing to see hex, octal, or binary digits on the display, but get floating
 point results when performing an arithmetic operation such as `/`. The RPN83P
-follows the lead of the HP-42S to change the arithmetic operations to integer
-operations.
+follows the lead of the HP-42S so that the arithmetic keyboard buttons trigger
+the integer operations instead of floating point operations.
 
 For example, suppose the following numbers are in the RPN stack *before*
 entering the `BASE` menu:
 
-> ![Base Arithmetic Part 1](docs/rpn83p-screenshot-base-arithmetic-1-float.png)
+![Base Arithmetic Part 1](docs/rpn83p-screenshot-base-arithmetic-1-float.png)
 
 Entering the `BASE` menu shows this (assuming that the default base number was
 `DEC`):
 
-> ![Base Arithmetic Part 2](docs/rpn83p-screenshot-base-arithmetic-2-dec.png)
+![Base Arithmetic Part 2](docs/rpn83p-screenshot-base-arithmetic-2-dec.png)
 
 Changing to `HEX` mode shows this:
 
-> ![Base Arithmetic Part 3](docs/rpn83p-screenshot-base-arithmetic-3-hex.png)
+![Base Arithmetic Part 3](docs/rpn83p-screenshot-base-arithmetic-3-hex.png)
 
 Pressing the `+` button adds the `X` and `Y` registers, converting the
 values to 32-bit unsigned integers before the addition:
 
-> ![Base Arithmetic Part 4](docs/rpn83p-screenshot-base-arithmetic-4-plus.png)
+![Base Arithmetic Part 4](docs/rpn83p-screenshot-base-arithmetic-4-plus.png)
 
 Changing back to `DEC` mode shows that the numbers were added using integer
 functions, and the fractional digits were truncated:
 
-> ![Base Arithmetic Part 5](docs/rpn83p-screenshot-base-arithmetic-5-dec.png)
+![Base Arithmetic Part 5](docs/rpn83p-screenshot-base-arithmetic-5-dec.png)
 
 #### Carry Flag
 
@@ -1137,11 +1342,11 @@ The RPN83P supports the *Carry Flag* implemented by most (all?) microprocessors.
 The Carry Flag is supported by the HP-16C but not by the HP-42S. When the Carry
 Flag is set, a small `C` letter appears on the display like this:
 
-> ![Carry Flag On](docs/rpn83p-carry-flag-on.png)
+![Carry Flag On](docs/rpn83p-carry-flag-on.png)
 
 When the flag is off, a dash `-` is shown like this:
 
-> ![Carry Flag On](docs/rpn83p-carry-flag-off.png)
+![Carry Flag On](docs/rpn83p-carry-flag-off.png)
 
 The Carry Flag can be explicitly cleared, set, and retrieved using the following
 menu items:
@@ -1205,15 +1410,16 @@ be honest, I have never been able to fully understand and become comfortable
 with the HP-42S implementation of the BASE operations. First, 36 bits is a
 strange number, it is not an integer size used by modern microprocessors (8, 16,
 32, 64 bits). Second, the HP-42S does not display leading zeros in `HEX` `OCT`,
-or `BIN` modes. While this is consistent with the decimal mode, I find it
-confusing to see the number of rendered digits change depending on its value.
+or `BIN` modes. While this is consistent with the decimal mode, it is confusing
+to see the number of rendered digits change depending on its value.
 
 The RPN83P deviates from the HP-42S by using a 32-bit *unsigned* integer
 internally, and rendering the various HEX, OCT, and BIN numbers using the same
-number of digits all the time. This means that `HEX` mode always displays 8
-digits, `OCT` mode always displays 11 digits, and `BIN` mode always displays 14
-digits (due to size limitation of the LCD screen). I find this far less
-confusing when doing bitwise operations (e.g. bit-and, bit-or, bit-xor).
+number of digits all the time. (The word size can be changed using the `WSIZ`
+menu item, see below). This means that `HEX` mode always displays 8 digits,
+`OCT` mode always displays 11 digits, and `BIN` mode always displays 14 digits
+(due to size limitation of the LCD screen). I find this less confusing when
+doing bitwise operations (e.g. bit-and, bit-or, bit-xor).
 
 Since the internal integer representation is *unsigned*, the `(-)` (change sign)
 button is disabled. Instead, the menu system provides a `NEG` function which
@@ -1223,15 +1429,49 @@ function is closely related to the `NOT` function which performs a [one's
 complement](https://en.wikipedia.org/wiki/Ones%27_complement) operation where
 the `00000001` becomes `FFFFFFFE`.
 
-If you want to see the decimal value of a hex number that has its sign-bit (the
+If we want to see the decimal value of a hex number that has its sign-bit (the
 most significant bit) turned on (so it would be interpreted as a negative number
-if it were interpreted as a 32-bit signed integer), you can run the `NEG`
-function on it, then hit the `DEC` menu item to convert it to decimal. The
-displayed value will be the decimal value of the original hex number, without
-the negative sign.
+if it were interpreted as a signed integer), we can run the `NEG` function on
+it, then hit the `DEC` menu item to convert it to decimal. The displayed value
+will be the decimal value of the original hex number, without the negative sign.
 
-Currently, the integer size for base conversions and functions is hardcoded to
-be 32 bits. I hope to add the ability to change the integer size in the future.
+The word size, defaulting to 32 bits, can be changed using the `WSIZ` menu
+function. To simplify the implementation code, only the following word sizes are
+supported: 8, 16, 24, and 32, corresponding to 1, 2, 3, and 4 bytes
+respectively. The RPN83P app represents all numbers internally using the TI-OS
+floating point number format which supports 14 decimal digits, corresponding to
+46.5 bits. Therefore, the largest word size that could be supported in the
+current architecture is 40. Supporting a 64-bit word size would require a
+complete rewrite of the application
+
+Every `BASE` operation respects the current `WSIZ` value, truncating the `X` or
+`Y` integers to the word size, before performing the `BASE` operation, then
+truncating the result to the word size. For example, if the word size is 16,
+then the `RR` (rotate right circular) operation rotates bit 0 to bit 15, instead
+of bit 31 if the word size were 32.
+
+The `WSIZ` command uses the value of the `X` register, but the value shown on
+the display depends on the base mode. It is sometimes easier to temporarily
+change to `DEC` mode, set the `WSIZ`, then change the base mode back. For
+example, if we are in `BIN` mode, then we could use the following keystroke
+sequence to change the `WSIZ` to 16:
+
+```
+10000 # 16 in base-2 BIN mode
+WSIZ
+```
+
+But it may be easier to use the following instead:
+
+```
+BASE
+DEC
+16
+WSIZ # use the UP arrow to go to this menu row quickly
+BIN # use the DOWN arrow to go back to this menu row
+```
+
+The current `WSIZ` value can be retrieved using the `WSZ?` menu function.
 
 #### Base Number Retention
 
@@ -1240,69 +1480,6 @@ hierarchy of menus. When the menu leaves the `BASE` hierarchy, the numbers on
 the RPN stack revert back to using floating points. This is similar to the
 HP-42S. However, unlike the HP-42S, the RPN83P remembers the most recent base
 number and restores its setting if the `BASE` menu hierarchy is selected again.
-
-### Storage Registers
-
-Similar to the HP-42S, the RPN83P provides **25** storage registers labeled
-`R00` to `R24`. They are accessed using the `STO` and `2ND` `RCL` keys. To store
-a number into register `R00`, press:
-
-- `STO` `00`
-
-To recall register `R00`, press:
-
-- `2ND` `RCL` `00`
-
-To clear the all storage registers, use the arrow keys for the menu system to
-get to:
-
-- ![ROOT MenuRow 3](docs/rpn83p-screenshot-menu-root-3.png)
-- Press `CLR` to get
-  ![CLR MenuRow 1](docs/rpn83p-screenshot-menu-root-clr-1.png)
-- Press `CLRG`
-
-The message `REGS cleared` will be displayed on the screen.
-
-### Prime Factors
-
-The `PRIM` function calculates the lowest prime factor of the number in `X`. The
-result will be `1` if the number is a prime. Unlike almost all other functions
-implemented by RPN83P, the `PRIM` function does not replace the original `X`.
-Instead it pushes the prime factor onto the stack, causing the original `X` to
-move to the `Y` register. This behavior was implemented to allow easier
-calculation of all prime factors of a number as follows.
-
-After the first prime factor is calculated, the `/` can be pressed to calculate
-the remaining factor in the `X` register. We can now press `PRIM` again to
-calculate the next prime factor. Since the `PRIM` preserves the original number
-in the `Y` register, this process can be repeated multiple times to calculate
-all prime factors of the original number.
-
-For example, let's find the prime factors of `119886 = 2 * 3 * 13 * 29 * 53`:
-
-- Press `119886`
-- Press `PRIM` to get `2`
-- Press `/` to divide down to `59943`
-- Press `PRIM` to get `3`
-- Press `/` to divide down to `19981`
-- Press `PRIM` to get `13`
-- Press `/` to divide down to `1537`
-- Press `PRIM` to get `29`
-- Press `/` to divide down to `53`
-- Press `PRIM` to get `1`, which makes `53` the last prime factor.
-
-For computational efficiency, `PRIM` supports only integers between `2` and
-`2^32-1` (4 294 967 295). This allows `PRIM` to use integer arithmetic, making
-it about 7X faster than the equivalent algorithm using floating point routines.
-Any number outside of this range produces an `Err: Domain` message. (The number
-`1` is not considered a prime number.)
-
-If the input number is a very large prime, the calculation may take a long time.
-However, testing has verified that the `PRIM` algorithm will always finish in
-less than about 30 seconds on a TI-83 Plus or TI-84 Plus calculator, no matter
-how large the input number. During the calculation, the "run indicator" on the
-upper-right corner will be active. You can press `ON` key to break from the
-`PRIM` loop with an `Err: Break` message.
 
 ### STAT Functions
 
@@ -1459,6 +1636,310 @@ coefficient of `r=.29635` is quite low, and the power fit may not be a good
 model for this data. For example, typing `20` `Y>X` (max rainfall of 20.0) gives
 an `X=752.098` (a minimum rainfall of 752) which is not reasonable.
 
+### TVM Functions
+
+Version 0.7.0 implements a usable Time Value of Money functionality that is
+inspired by RPN financial calculators such as the HP-12C and the HP-30b. They
+are available through the `ROOT` > `TVM` menu:
+
+- ![ROOT MenuRow 2](docs/rpn83p-screenshot-menu-root-2.png)
+    - ![TVM MenuRow 1](docs/rpn83p-screenshot-menu-root-tvm-1.png)
+    - ![TVM MenuRow 2](docs/rpn83p-screenshot-menu-root-tvm-2.png)
+    - ![TVM MenuRow 3](docs/rpn83p-screenshot-menu-root-tvm-3.png)
+
+This User Guide assumes that you are already know the theory of the Time Value
+of Money, and that you are familiar with TVM functions of RPN financial
+calculators. Some introductory information can be found in the manuals of these
+calculators:
+
+- [HP-12C User's Guide](https://literature.hpcalc.org/items/47): Section 3:
+  Basic Financial Functions
+- [HP-30b User's Guide](https://literature.hpcalc.org/items/130): Chapter 3:
+  Time Value of Money
+
+#### TVM Menu Buttons
+
+There are 5 menu items that correspond to the 5 variables in the TVM equation:
+
+- `N`: number of payment periods
+- `I%YR`: interest percent per year
+- `PV`: present value
+- `PMT`: payment per period
+- `FV`: future value
+
+When 4 variables are known, the 5th variable can be calculated from the other 4.
+Just like the HP-12C and HP-30b, each menu button performs a dual function: it
+can either store a value to the corresponding TVM variable, or it can calculate
+the TVM variable from the other 4 variables. The rules that determine the course
+of action are:
+
+- If a value has been entered into the `X` register, then the next press of a
+  TVM menu button **stores** the `X` value to the corresponding variable.
+- If the most recent action was another TVM menu button, then the next press of
+  a TVM menu button **calculates** that variable from the other 4, and returns
+  the result in the `X` register.
+
+Since each button has a dual-function, it can sometimes be confusing to remember
+which action a given TVM menu button has performed. This is definitely true on
+the HP-12C and the HP-30b which provide no feedback regarding the two different
+actions. The RPN83P solves this problem by displaying different status messages
+after a TVM menu button has completed. The message will read:
+
+- `TVM Stored` if the menu button **stored** the `X` value into the TVM
+  variable,
+- `TVM Calculated` if the menu button **calculated** the given TVM variable
+  from the other 4 variables.
+
+#### TVM Payments Per Year
+
+On the HP-12C, the interest rate button is labeled with an `i` and represents
+the interest percentage for each *payment period*. On the HP-30b and most modern
+financial calculators, the `i` button has been replaced with `I%YR` (or `I/YR`)
+which accepts the interest rate as a nominal *annual* percentage rate. The
+RPN83P app follows the modern convention and the interest rate menu button is
+named `I%YR`.
+
+The relationship between the `i` button (as implemented on the HP-12C) and the
+`I%YR` button as implemented on the RPN83P is:
+
+> `i = IYR / PYR`
+
+where `PYR` is the number of payments per year. In math equations and inside
+computer programs, the quantity `i` is usually represented as a fractional rate
+instead of a percentage, so there is an addition division by 100.
+
+The RPN83P app allows the `PYR` quantity to be modified using the `P/YR` menu
+button. `PYR` is an input-only parameter, not an output parameter, so the `P/YR`
+is not a dual-action button. It performs only a *store* function. By default,
+the `P/YR` value is set to 12, which makes it easy to calculate monthly mortgage
+payments whose rates are given as yearly percentages.
+
+#### TVM BEG and END
+
+The `BEG` and `END` menu buttons act in the same way as the equivalent buttons
+on the HP-12C and HP-30b. The `BEG` button specifies that the payments are made
+at the beginning of the payment term. The `END` button specifies that the
+payments are made at the end of the payment term. A little dot on the menu
+button indicates the currently selected option. Both of these are input-only
+buttons. The default value is `END`.
+
+#### TVM Solver Control
+
+It is well-known that the `N`, `PV`, `PMT`, and `FV` variables can be solved
+using analytical equations. However, there is no closed-form solution for the
+`I%YR` quantity, so it must be solved using iterative methods. The TVM Solver is
+the submodule that implements the iterative method to solve for `I%YR`.
+
+It can be mathematically deduced that the root-solving equation for `I%YR` can
+fall into 3 categories:
+
+- 0 solution, or
+- 1 unique solution, or
+- 0 or 2 solutions.
+
+The TVM Solver tries to handle the various cases as follows:
+
+- If the TVM Solver can determine immediately that the equation has 0 solution,
+  it will return a `TVM No Solution` error message.
+- The TVM Solver can fail to find a solution, even though the math says that a
+  solution must exist. The TVM Solver will return a `TVM Not Found` error
+  message.
+- If the equation has 2 solutions, but the TVM Solver finds only one of the 2
+  solutions, the solver currently (v0.7.0) does not notify the user that another
+  solution may exist. A normal `TVM Calculated` will be returned.
+- If there are 2 solutions, but the solver finds neither solution, a `TVM Not
+  Found` message will be returned.
+- To prevent excessive execution time, the number of iterations performed by the
+  TVM Solver has a maximum limit. The default is 15 iterations. If exceeded, the
+  message `TVM Iterations` is displayed.
+
+Due to the complexity of the numerical algorithm and the number of iterations
+required, calculating the `I%YR` will take noticeably longer than the other
+variables. Somewhere between 1-3 seconds on the TI-84 Plus model has been
+observed.
+
+The RPN83P currently (v0.7.0) uses the [Newton-Secant
+method](https://en.wikipedia.org/wiki/Secant_method) to solve for `I%YR`. For
+the purpose of debugging and to allow extra control for advanced users, three
+parameters that affect the progression and termination of the algorithm are
+exposed:
+
+- `IYR1`: first guess percent per year (default: 0%; allowed: `IYR1 >
+  -PYR*100`)
+- `IYR2`: second guess percent per year (default: 100%; allowed: `IYR2 >
+  -PYR*100`)
+- `TMAX`: iteration maximum (default: 15; allowed: 0-255)
+
+For most TVM problems representing real-life situations, the default values
+should be sufficient to find a solution. You can override the defaults of these
+values by entering a value and pressing the appropriate menu button. A small dot
+will be appended to the menu name to indicate that the default value has been
+overridden:
+
+![TVM Solver Overridden](docs/rpn83p-tvm-control-overridden.png)
+
+We might choose to override `IYR1` and `IYR2` when 2 solutions are known to
+exist, but the TVM Solver is unable to find either of them due to the default
+initial values. If we know the approximate value of one of the solutions, we can
+override the initial guesses to be closer to the solution of interest. This will
+help the TVM Solver converge to that solution.
+
+(TODO: Maybe add a menu item to control the convergence error tolerance?
+Currently, it is set to 1e-8. Some HP calculators use the number of digits in
+the `FIX`, `SCI` or `ENG` display modes to determine the value of the error
+tolerance. TI calculators are usually kept in "floating" (aka "display all
+digits") mode `FIX(-)`, so I'm not sure it would be useful to use the display
+mode to extract size of the tolerance.)
+
+These control parameter can be restored to their default factory values by
+pressing the `RSTV` menu. The "overridden" dot on the menu buttons should
+disappear.
+
+#### TVM Clear
+
+There are 2 reset or clear menu buttons under the TVM menu hierarchy:
+
+- `RSTV`: Reset the TVM Solver control parameters to factory defaults
+- `CLTV`: Clear all TVM variables and parameters, including `RSTV` parameters
+
+The `RSTV` clears *only* the 3 parameters related to the TVM Solver which
+calculates the interest rate. The factory default values are:
+
+- `IYR1`: 0%
+- `IYR2`: 100%
+- `TMAX`: 15
+
+The `CLTV` clears *everything* in the TVM submenu, including the `RSTV`
+parameters. The following additional variables are cleared or reset to their
+factory values:
+
+- `N`, `I%YR`, `PV`, `PMT`, `FV`: 0
+- `P/YR`: 12
+- `BEG`, `END`: `END`
+
+#### TVM Variable Recall
+
+Remember that most of TVM menu buttons are dual-action:
+
+- `number + button`: sets the TVM variable to `X` value, and
+- `button`: calculates the TVM variable from the other 4 variables.
+
+Other TVM menu buttons (i.e. `P/YR`, `IYR1`, `IYR2`, `TMAX`) are single-action
+buttons and support only the storing of their values. There is no ability to
+calculate those parameters from other parameters. This convention used by most
+(all?) HP financial calculators.
+
+The RPN83P app provides a mechanism to retrieve a TVM variable *without*
+performing a calculation. This was useful for debugging during development, but
+the functionality was innocuous enough that I retained it for general use. The
+recall functionality is available through the `2ND` key:
+
+- `2ND N`: recall the `N` variable
+- `2ND I%YR`: recall the `I%YR` variable
+- `2ND PV`: recall the `PV` variable
+- `2ND PMT`: recall the `PMT` variable
+- `2ND FV`: recall the `FV` variable
+- `2ND P/YR`: recall the `P/YR` variable
+- `2ND IYR1`: recall the `IYR1` variable
+- `2ND IYR2`: recall the `IYR2` variable
+- `2ND TMAX`: recall the `TMAX` variable
+
+As a rule of thumb, the RPN83P does not use the `2ND` button for its menu
+buttons. Usually if a menu button sets an internal variable, the equivalent read
+functionality is implemented by another menu button with a name similar to the
+original menu with the addition of a question mark (e.g. `WSIZ` and `WSZ?`).
+This helps with discovery because each function is directly shown through the
+menu system, with no hidden features. But there are so many TVM variables and
+parameters, that adding the `?` variant of all those menu buttons would have
+made the menu rows too cluttered and hard to navigate. Currently (v0.7.0), the
+TVM submenu is the only place where the `2ND` button is used for hidden menu
+functionality.
+
+#### TVM Examples
+
+**Example 1**: Calculate the monthly payment on a 30-year, $500,000 mortgage at
+7.5%
+
+- Press `CLTV`
+- Press 360 `N` (30 years * 12 payments/year)
+- Press 7.5 `I%YR`
+- Press 500000 `PV`
+- Press 0 `FV`
+- Press `PMT`
+- Answer: -$3496.072543 (should see `TVM Calculated`)
+
+The sign convention of the TVM equation is such that +'ve represents inflow of
+cash, and -'ve represents outflow of cash.
+
+**Example 2**: Assuming Example 1, calculate the amount that can be borrowed
+if the payment is $3000/month instead of $3496/month
+
+- (Building on Example 1)
+- Press -3000 `PMT` (should see `TVM Stored`)
+- Press `PV` (should see `TVM Caculated`)
+- Answer: $429052.882
+
+**Example 3**: Assuming Examples 1 and 2, calculate the interest rate required
+to get a $500,000 mortgage with a $3000/month payment
+
+- (Building on Examples 1 and 2)
+- Press 500000 `PV` (should see `TVM Stored` message). This resets the current
+  `PV` which became modified by the calculation in Example 2.
+- Press `I%YR` (should see `TVM Calculated`)
+- Answer: 6.00699%
+
+**Example 4**: If Susan got paid $0.01 per second, compounded every second, at a
+10% per annum rate, what is her bank balance after 365 days?
+
+- Press `CLTV`
+- Press 3600 24 `*` 365 `*` (should see 31536000)
+- Press `N`
+- Press DOWN to next menu row
+    - Press `P/YR` (set payments per year to the same 31536000)
+    - Press UP to return to the TVM menu row
+- Press 10 `I%YR`
+- Press 0 PV (bank balance starts at 0)
+- Press -0.01 `PMT` (negative to indicate outward cash flow to bank)
+- Press `FV` (should see `TVM Calculated`)
+- Answer: $331667.0067
+
+Note that the answer is accurate to all displayed digits because we avoided
+roundoff errors by using the new `E^X-` and `LN1+` functions internally.
+
+Source:
+- [A Penny for your
+  Thoughts](https://people.eecs.berkeley.edu/~wkahan/MathSand.pdf) (1983)
+- [Looking for TVM formulas](https://www.hpmuseum.org/forum/thread-1012.html)
+  (2014)
+
+**Example 5**: Multiple Solutions
+
+The following contrived example has 2 solutions for `I%YR` 14.44% and 53.17%.
+We can persuade the TVM module to give us 2 solutions using the `IYR1` and
+`IYR2` menu buttons:
+
+- Press `CLTV`
+- Press 10 `N`
+- Press 50 `PV`
+- Press -30 `PMT`
+- Press 400 `FV`
+- Press 1 `P/YR`
+- Press `I%YR` (see `TVM Not Found`)
+- Modify the TVM Solver initial guesses to get first solution
+    - Press 10 `IYR1`
+    - Press 20 `IYR2`
+- Press `I%YR` (see `TVM Calculated`)
+- Answer: 14.43587133%
+- Modify the TVM Solver initial guesses to get second solution
+    - Press 40 `IYR1`
+    - Press 60 `IYR2`
+- Press `I%YR` (see `TVM Calculated`)
+- Answer: 53.17221327%
+
+Source:
+- [Solving the TVM equation for the interest
+  rate](https://www.hpmuseum.org/cgi-sys/cgiwrap/hpmuseum/archv021.cgi?read=234439)
+
 ## TI-OS Interaction
 
 The RPN83P app interacts with the underlying TI-OS in the following ways.
@@ -1490,6 +1971,17 @@ are shared:
 - trigonometric mode: `RAD` or `DEG`
 - floating point number settings: `FIX` (i.e. `NORMAL` in TI-OS), `SCI`, `ENG`
 
+The TVM module in the RPN83P uses some of the same TI-OS floating point
+variables used by the `Finance` app (automatically provided by the TI-OS on the
+TI-84 Plus). Specifically, any values stored in the `N`, `I%YR`, `PV`, `PMT`,
+`FV`, and `P/YR` variables will reappear in the Finance app with slightly
+different names (`N`, `I%`, `PV`, `PMT`, `FV`, and `P/Y` respectively). The two
+variables that I could not synchronize between the 2 apps are:
+
+- `BEG`/`END` flag because I could not figure out where the Finance app stores
+  this, and
+- `C/Y` (compoundings per year) is always set equal to `P/YR` in the RPN83P app
+
 ## Future Enhancements
 
 There seems to be almost an endless number of features that could go into a
@@ -1498,15 +1990,17 @@ limited:
 
 ### Near Future
 
-- `PROB` and `COMB` arguments are limited to `< 256`
-    - Maybe extend this to `< 2^16` or `<2^32`.
-- `GCD` and `LCM` functions are slow
-    - Could be made significantly faster.
+- TVM (time value of money)
+    - substantially done, but the TVM Solver for `I%YR` can be improved
+- Support more than 14 digits in `BIN` (base 2) mode
+    - This is a difficult UI problem, because 32 digits will require 3 lines on
+      the display, as each line currently can support only 14, maybe 15, digits.
 - datetime conversions
     - date/time components to and from epoch seconds
-- compound `STO` and `RCL` operators
-    - `STO+ nn`, `STO- nn`, `STO* nn`, `STO/ nn`
-    - `RCL+ nn`, `RCL- nn`, `RCL* nn`, `RCL/ nn`
+- `PROB` and `COMB` arguments are limited to `< 256`
+    - Maybe extend this to `< 2^16` or `< 2^32`.
+- `GCD` and `LCM` functions are slow
+    - Could be made significantly faster.
 
 ### Medium Future
 
@@ -1518,10 +2012,10 @@ limited:
     - The HP-42S supports up to 18 (3 rows of 6 menus) to be customized through
       the `ASSIGN` and `CUSTOM` menus.
     - This seems like a useful feature, but would require substantial
-      refactoring of the currnet menu system code, like user-defined variables.
+      refactoring of the current menu system code, like user-defined variables.
 - custom button bindings
-    - a significant number of buttons on the TI-83/TI-84 keyboard are not
-      used by RPN83P
+    - a significant number of buttons on the TI-83/TI-84 keyboard are not used
+      by RPN83P
     - it would be useful to allow the user to customize some of those buttons
       for quick access
     - for example, the `2ND` `L1` to `L6`
@@ -1531,50 +2025,35 @@ limited:
     - I think the difficulty will be the user interface. A complex number
       requires 2 floating point numbers to be entered and displayed, and I have
       not figured out how to do that within the UI of the RPN83P application.
-- `UNIT` conversions
+- `UNIT` conversions for imperial (not just US) units
     - several places assume US customary units (e.g. US gallons) instead of
       British or Canadian imperial units
     - it'd be nice to support both types, if we can make the menu labels
       self-documenting and distinctive
-- user selectable integer size for `BASE` functions
-    - currently, binary, octal, hexadecimal routines are implemented internally
-      using 32-bit unsigned numbers
-    - the user ought to be able to specify the integer size for those
-      operations: 8 bits, 16 bits, 32 bits, maybe 40 bits
-    - the app cannot support integer sizes higher than 46 bits because all
-      integers must eventually be stored as TI-OS floating point numbers which
-      support only 14 decimal digits, which corresonds to 46.5 bits
-    - the user-interface will be a challenge: for large integer sizes, the
-      number of digits will no longer fit inside the 14-15 digits available on a
-      single line.
-- Support more than 14 digits using `BASE 2`
-    - The underlying integer representation is 32 bit, it would be nice to be
-      able to display all of those digits.
-    - But this could be a difficult UI problem, because 32 digits will require 3
-      lines on the display, as each line currently can support only 14, maybe
-      15 digits.
-- system memory
-    - Might be useful to expose some system status functions, like memory.
-    - We can always drop into the TI-OS and use `2ND` `MEM` to get that
-      information, so it's not clear that this is worth the effort.
-- TVM (time value of money)
-    - the TI-84 Plus is bundled with a TVM app, but I find it unintuitive and
-      difficult to remember how to use
-    - the most intuitive UI in my opinion is the one used by the HP-12C
-    - if I recall, this requires implementing a root finder, since at least one
-      of the TVM variables does not have a closed-form solution
 
 ### Far Future
 
 I'm not sure these features are worth the effort, but I may do them for
 curiosity and the technical challenge:
 
-- programming
+- keystroke programming
     - Although I think it is technically possible for the RPN83P app to support
       keystroke programming, like the HP-42S, I am not sure that the calculator
       world needs yet another calculator programming language.
     - Is it sufficient that the user can drop into TI-BASIC programming if that
       is required?
+- indirect `STO` and `RCL` operators
+    - `STO IND nn`, `STO+ IND nn`, `STO- IND nn`, `STO* IND nn`, `STO/ IND nn`
+    - `RCL IND nn`, `RCL+ IND nn`, `RCL- IND nn`, `RCL* IND nn`, `RCL/ IND nn`
+    - These are mainly used in keystroke programs, so I would probably want to
+      implement programming before spending time to implement these indirect
+      operators.
+- `STO` and `RCL` for RPN stack registers
+    - `STO ST X`, `STO ST Y`, `STO ST Z`, `STO ST T`
+    - `RCL ST X`, `RCL ST Y`, `RCL ST Z`, `RCL ST T`
+    - Similar to indirect `STO` and `RCL` operators, I think these are mainly
+      useful for keystroke programming, so let's implement keystroke programming
+      before this.
 - matrix and vectors
     - I don't know how much matrix functionality is provided by TI-OS SDK.
     - Creating a reasonable user-interface in the RPN83P could be a challenge.

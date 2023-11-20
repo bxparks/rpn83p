@@ -1,9 +1,7 @@
 ;-----------------------------------------------------------------------------
 ; MIT License
 ; Copyright (c) 2023 Brian T. Park
-;-----------------------------------------------------------------------------
-
-;------------------------------------------------------------------------------
+;
 ; Functions related to parsing the inputBuf into a floating point number.
 ;------------------------------------------------------------------------------
 
@@ -52,22 +50,27 @@ appendInputBuf:
 ; Description: If currently in edit mode, close the input buffer by parsing the
 ; input, enable stack lift, then copying the float value into X. If not in edit
 ; mode, no need to parse the inputBuf.
-; Input: none
+; Input:
+;   - rpnFlagsEditing: indicates if inputBuf is valid
+;   - inputBuf: input buffer
 ; Output:
-;   inputBufFlagsClosedEmpty: set if inputBuf was an empty string when closed
-;   rpnFlagsEditing: set to 0
+;   - inputBufFlagsClosedEmpty: set if inputBuf was an empty string when closed
+;   - rpnFlagsEditing: set to 0
+;   - rpnFlagsEditing: cleared
+;   - OP1: value of inputBuf if edited
+;   - X register: set to OP1 if inputBuf was edited
 ; Destroys: all, OP1, OP2, OP4
 closeInputBuf:
     bit rpnFlagsEditing, (iy + rpnFlags)
     jr nz, closeInputBufEditing
-closeInputBufNonEditing:
+    ; Not editing
     res inputBufFlagsClosedEmpty, (iy + inputBufFlags)
     ret
 closeInputBufEditing:
     ld a, (inputBuf)
     or a
     jr z, closeInputBufEmpty
-closeInputBufNonEmpty:
+    ; inputBuf not empty
     res inputBufFlagsClosedEmpty, (iy + inputBufFlags)
     jr closeInputBufContinue
 closeInputBufEmpty:
@@ -81,18 +84,20 @@ closeInputBufContinue:
 
 ;------------------------------------------------------------------------------
 
-initArgBuf:
-    res rpnFlagsArgMode, (iy + rpnFlags)
-    ; [[fallthrough]]
-
 clearArgBuf:
     xor a
     ld (argBuf), a
+    ; [[fallthrough]]
+initArgBuf:
     res rpnFlagsArgMode, (iy + rpnFlags)
     ret
 
-; Input: A: character to append
-; Destroys: B, HL
+; Description: Append character in A to the argBuf.
+; Input:
+;   - A: character to append
+; Output:
+;   - dirtyFlagsInput set
+; Destroys: all
 appendArgBuf:
     set dirtyFlagsInput, (iy + dirtyFlags)
     ld hl, argBuf
@@ -434,11 +439,12 @@ calcDPEnd:
 
 ;------------------------------------------------------------------------------
 
-; Function: Append character to parseBuf
+; Function: Append character in A to parseBuf
 ; Input:
-;   A: character to be appended
-; Output: CF set when append fails
-; Destroys: A, B, DE, HL
+;   - A: character to be appended
+; Output:
+;   - CF set when append fails
+; Destroys: all
 appendParseBuf:
     ld hl, parseBuf
     ld b, parseBufMax

@@ -1,9 +1,7 @@
 ;-----------------------------------------------------------------------------
 ; MIT License
 ; Copyright (c) 2023 Brian T. Park
-;-----------------------------------------------------------------------------
-
-;-----------------------------------------------------------------------------
+;
 ; Display the calculator modes, status, and RPN stack variables using 8 lines
 ; of the 96(w)x64(h) LCD display, using a mixture of small and large fonts.
 ; The format looks roughly like this:
@@ -26,6 +24,7 @@ statusMenuPenCol equ 0 ; left, up, down, 2px = 3*4 + 2 = 14px
 statusFloatModePenCol equ 14 ; (FIX|SCI|ENG), (, N, ), 4px = 5*4+2*3 = 26px
 statusTrigPenCol equ 40 ; (DEG|RAD), 4px = 4*4 = 16px
 statusBasePenCol equ 56 ; (C|-), 4px
+statusDebugPenCol equ 60 ; (D|-), 4px
 
 ; Display coordinates of the debug line
 debugCurRow equ 1
@@ -56,6 +55,26 @@ stYPenRow equ stYCurRow*8
 stXCurRow equ 6
 stXCurCol equ 1
 stXPenRow equ stXCurRow*8
+
+; Display coordinates of the TVM N counter
+tvmNCurRow equ 3
+tvmNCurCol equ 1
+tvmNPenRow equ tvmNCurRow*8
+
+; Display coordinates of the TVM i0 counter
+tvmI0CurRow equ 4
+tvmI0CurCol equ 1
+tvmI0PenRow equ tvmI0CurRow*8
+
+; Display coordinates of the TVM i1 counter
+tvmI1CurRow equ 5
+tvmI1CurCol equ 1
+tvmI1PenRow equ tvmI1CurRow*8
+
+; Display coordinates of the TVM extra line
+tvmExtraCurRow equ 6
+tvmExtraCurCol equ 0
+tvmExtraPenRow equ tvmExtraCurRow*8
 
 ; Display coordinates of the input buffer.
 inputCurRow equ stXCurRow
@@ -92,13 +111,15 @@ menuPenColEnd   equ 96
 
 ;-----------------------------------------------------------------------------
 
-; Function: Set all dirty flags to dirty initially so that they are rendered.
+; Description: Set all dirty flags to dirty initially so that they are rendered.
 initDisplay:
+    xor a
+    ld (drawMode), a
     ld a, $FF
     ld (iy + dirtyFlags), a ; set all dirty flags
     ret
 
-; Function: Update the display, including the title, RPN stack variables,
+; Description: Update the display, including the title, RPN stack variables,
 ; and the menu.
 ; Input: none
 ; Output:
@@ -106,7 +127,7 @@ initDisplay:
 displayAll:
     call displayStatus
     call displayErrorCode
-    call displayStack
+    call displayMain
     call displayMenu
 
     ; Reset all dirty flags
@@ -118,8 +139,10 @@ displayAll:
 ; Routines for displaying the status bar at the top.
 ;-----------------------------------------------------------------------------
 
-; Function: Display the status bar, showing menu up/down arrows.
-; Input: none
+; Description: Display the status bar, showing menu up/down arrows. Most of
+; these indicators check the dirtyFlagsStatus flag, but the menu arrows depend
+; on dirtyFlagsMenu.
+; Input: dirtyFlagsMenu, dirtyFlagsStatus
 ; Output: status line displayed
 ; Destroys: A, B, C, HL
 displayStatus:
@@ -211,18 +234,17 @@ displayStatusArrowClear:
 
 ; Description: Display the Degree or Radian trig mode.
 displayStatusTrig:
-    bit dirtyFlagsTrigMode, (iy + dirtyFlags)
+    bit dirtyFlagsStatus, (iy + dirtyFlags)
     ret z
-displayStatusTrigUpdate:
     ld hl, statusPenRow*$100 + statusTrigPenCol; $(penRow)(penCol)
     ld (PenCol), hl
     bit trigDeg, (iy + trigFlags)
     jr z, displayStatusTrigRad
 displayStatusTrigDeg:
-    ld hl, mDegName
+    ld hl, msgDegLabel
     jr displayStatusTrigPutS
 displayStatusTrigRad:
-    ld hl, mRadName
+    ld hl, msgRadLabel
 displayStatusTrigPutS:
     call vPutS
     ret
@@ -231,9 +253,8 @@ displayStatusTrigPutS:
 
 ; Description: Display the Carry Flag used in BASE mode.
 displayStatusBase:
-    bit dirtyFlagsBaseMode, (iy + dirtyFlags)
+    bit dirtyFlagsStatus, (iy + dirtyFlags)
     ret z
-displayStatusBaseUpdate:
     ld hl, statusPenRow*$100 + statusBasePenCol; $(penRow)(penCol)
     ld (PenCol), hl
     ; Determine state of Carry Flag.
@@ -254,7 +275,7 @@ displayStatusBasePutS:
 ; Description: Display the floating point format: FIX, SCI, ENG
 ; Destroys: A, HL
 displayStatusFloatMode:
-    bit dirtyFlagsFloatMode, (iy + dirtyFlags)
+    bit dirtyFlagsStatus, (iy + dirtyFlags)
     ret z
     ld hl, statusPenRow*$100 + statusFloatModePenCol; $(penRow)(penCol)
     ld (PenCol), hl
@@ -262,16 +283,16 @@ displayStatusFloatMode:
     bit fmtExponent, (iy + fmtFlags)
     jr nz, displayStatusFloatModeSciOrEng
 displayStatusFloatModeFix:
-    ld hl, mFixName
+    ld hl, msgFixLabel
     jr displayStatusFloatModeBracketDigit
 displayStatusFloatModeSciOrEng:
     bit fmtEng, (iy + fmtFlags)
     jr nz, displayStatusFloatModeEng
 displayStatusFloatModeSci:
-    ld hl, mSciName
+    ld hl, msgSciLabel
     jr displayStatusFloatModeBracketDigit
 displayStatusFloatModeEng:
-    ld hl, mEngName
+    ld hl, msgEngLabel
     ; [[fallthrough]]
 displayStatusFloatModeBracketDigit:
     ; Print the number of digit
@@ -295,7 +316,7 @@ displayStatusFloatModeDigit:
 ; Routines for displaying the error code and string.
 ;-----------------------------------------------------------------------------
 
-; Function: Display the string corresponding to the current error code.
+; Description: Display the string corresponding to the current error code.
 ; Input: errorCode
 ; Output:
 ;   - string corresponding to errorCode displayed
@@ -347,10 +368,32 @@ displayErrorCodeEnd:
     ret
 
 ;-----------------------------------------------------------------------------
+; Display the main panel, depending on DRAW mode.
+;-----------------------------------------------------------------------------
+
+; Description: Display the main area, depending on the drawMode. It will
+; usually the RPN stack, but can be something else for debugging.
+; Destroys: A
+displayMain:
+    ld a, (drawMode)
+    cp drawModeNormal
+    jr z, displayStack
+    cp drawModeTvmSolverI
+    jr z, displayTvmMaybe
+    cp drawModeTvmSolverF
+    ; Everything else (including drawModeInputBuf), display the stack.
+    jr displayStack
+displayTvmMaybe:
+    ld a, (tvmSolverIsRunning)
+    or a
+    jp nz, displayTvm
+    ; [[fallthrough]]
+
+;-----------------------------------------------------------------------------
 ; Routines for displaying the RPN stack variables.
 ;-----------------------------------------------------------------------------
 
-; Function: Display the RPN stack variables
+; Description: Display the RPN stack variables
 ; Input: none
 ; Output: (dirtyFlagsMenu) reset
 ; Destroys: A, HL
@@ -412,15 +455,32 @@ displayStackYZT:
 
 ;-----------------------------------------------------------------------------
 
-; Description: Render the X lines. There are 3 options:
-; 1) if rpnFlagsArgMode, print the inputbuf as a command argument,
-; 2) else if rpnFlagsEditing, print the inputBuf as a stack number,
-; 3) else print the X register.
+; Description: Render the X register line. There are multiple modes:
+; 1) If rpnFlagsArgMode, print the argBuf for the ArgParser, else
+; 2) If rpnFlagsEditing, print the current inputBuf, else
+; 3) Print the X register.
+;
+; Well... unless drawMode==drawModeInputBuf, in which case the inputBuf is
+; displayed separately on the debug line, and the X register is always printed
+; on the X line.
 displayStackX:
     bit rpnFlagsArgMode, (iy + rpnFlags)
     jr nz, displayStackXArg
+    ; If drawMode==drawModeInputBuf, print the inputBuf and X register on 2
+    ; separate lines, instead of overlaying the inputBuf on the X register
+    ; line. This helps with debugging the inputBuf. The inputBuf is printed on
+    ; the debug line, and the X register is printed on the X register line.
+    ld a, (drawMode)
+    cp drawModeInputBuf
+    jr z, displayStackXBoth
+    ; If drawMode!=drawModeInputBuf: draw X or inputBuf, depending on the
+    ; rpnFlagsEditing.
     bit rpnFlagsEditing, (iy + rpnFlags)
     jr nz, displayStackXInput
+    jr displayStackXNormal
+displayStackXBoth:
+    ; If drawMode==drawModeInputBuf: draw both X and inputBuf on separate lines.
+    call displayStackXInputAtDebug
     ; [[fallthrough]]
 
 displayStackXNormal:
@@ -436,7 +496,13 @@ displayStackXInput:
     ; print the inputBuf
     ld hl, inputCurCol*$100 + inputCurRow ; $(curCol)(curRow)
     ld (CurRow), hl
-    jr printInputBuf
+    jp printInputBuf
+
+; Display the inputBuf in the debug line. Used for DRAW mode 3.
+displayStackXInputAtDebug:
+    ld hl, debugCurCol*$100+debugCurRow ; $(curCol)(curRow)
+    ld (CurRow), hl
+    jp printInputBuf
 
 displayStackXLabel:
     ; If the "X:" label was corrupted by the command arg mode label, then
@@ -456,30 +522,21 @@ displayStackXLabelContinue:
     call vPutS
     ret
 
-#ifdef DEBUG
-; This is the debug version which always shows the current X register, and
-; prints the inputBuf on the debug line.
-displayStackXDebug:
-    ld hl, $0100 + stXCurRow ; $(curCol)(curRow)
-    ld (CurRow), hl
-    call rclX
-    call printOP1
-    ; print the inputBuf on the error line
-    jp debugInputBuf
-#endif
-
 ; Display the argBuf in the X register line.
+; Input: (argBuf)
+; Output: (CurCol) updated
 displayStackXArg:
     ld hl, argCurCol*$100 + argCurRow ; $(curCol)(curRow)
     ld (CurRow), hl
-    jr printArgBuf
+    ; [[fallthrough]]
 
 ;-----------------------------------------------------------------------------
 
-; Function: Print the arg buffer.
+; Description: Print the arg buffer.
 ; Input:
 ;   - argBuf (same as inputBuf)
-;   - argBufPrompt
+;   - argPrompt
+;   - argModifier
 ;   - (CurCol) cursor position
 ; Output:
 ;   - (CurCol) is updated
@@ -488,12 +545,21 @@ printArgBuf:
     ; Print prompt and contents of argBuf
     ld hl, (argPrompt)
     call putS
-    ld a, ' '
-    bcall(_PutC)
+
+    ; Print the argModifier if needed.
+    ld a, (argModifier)
+    cp argModifierCanceled
+    jr nc, printArgBufNumber
+    ld hl, argModifierStrings
+    call getString
+    call putS
+
+printArgBufNumber:
+    ; Print the command argument.
     ld hl, argBuf
     call putPS
 
-    ; Append cursor if needed.
+    ; Append trailing cursor to fill 2 digits
     ld a, (argBufSize)
     or a
     jr z, printArgBufTwoCursors
@@ -510,9 +576,31 @@ printArgBufZeroCursor:
     bcall(_EraseEOL)
     ret
 
+; Human-readable labels for each of the argModifierXxx enum.
+argModifierStrings:
+    .dw msgArgModifierNone
+    .dw msgArgModifierAdd
+    .dw msgArgModifierSub
+    .dw msgArgModifierMul
+    .dw msgArgModifierDiv
+    .dw msgArgModifierIndirect
+
+msgArgModifierNone:
+    .db " ", 0
+msgArgModifierAdd:
+    .db "+ ", 0
+msgArgModifierSub:
+    .db "- ", 0
+msgArgModifierMul:
+    .db "* ", 0
+msgArgModifierDiv:
+    .db "/ ", 0
+msgArgModifierIndirect:
+    .db " IND ", 0
+
 ;-----------------------------------------------------------------------------
 
-; Function: Print the input buffer.
+; Description: Print the input buffer.
 ; Input:
 ;   - inputBuf
 ;   - (CurCol) cursor position
@@ -532,10 +620,73 @@ printInputBuf:
     ret
 
 ;-----------------------------------------------------------------------------
+; Routines to display the progress of the TVM solver (for debugging).
+;-----------------------------------------------------------------------------
+
+; Description: Display the intermediate state of the TVM Solver. This routine
+; will be invoked only if drawMode==1 or 2.
+displayTvm:
+    ; print TVM n label
+    ld hl, tvmNPenRow*$100 ; $(penRow)(penCol)
+    ld (PenCol), hl
+    ld hl, msgTvmNLabel
+    call vPutS
+
+    ; print TVM n value
+    ld hl, tvmNCurCol*$100 + tvmNCurRow ; $(curCol)(curRow)
+    ld (CurRow), hl
+    call rclTvmSolverCount
+    call printOP1
+
+    ; print TVM i0 or npmt0 label
+    ld hl, tvmI0PenRow*$100 ; $(penRow)(penCol)
+    ld (PenCol), hl
+    ld hl, msgTvmI0Label
+    call vPutS
+
+    ; print TVM i0 or npmt0 value
+    ld hl, tvmI0CurCol*$100 + tvmI0CurRow ; $(curCol)(curRow)
+    ld (CurRow), hl
+    ld a, (drawMode)
+    cp a, drawModeTvmSolverI ; if drawMode==1: ZF=1
+    jr z, displayTvmI0
+    call rclTvmNPMT0
+    jr displayTvm0
+displayTvmI0:
+    call rclTvmI0
+displayTvm0:
+    call printOP1
+
+    ; print TVM i1 or npmt1 label
+    ld hl, tvmI1PenRow*$100 ; $(penRow)(penCol)
+    ld (PenCol), hl
+    ld hl, msgTvmI1Label
+    call vPutS
+
+    ; print TVM i1 or npmt1 value
+    ld hl, tvmI1CurCol*$100 + tvmI1CurRow ; $(curCol)(curRow)
+    ld (CurRow), hl
+    ld a, (drawMode)
+    cp a, drawModeTvmSolverI ; if drawMode==1: ZF=1
+    jr z, displayTvmI1
+    call rclTvmNPMT1
+    jr displayTvm1
+displayTvmI1:
+    call rclTvmI1
+displayTvm1:
+    call printOP1
+
+    ; print the TVM empty line
+    ld hl, tvmExtraCurCol*$100 + tvmExtraCurRow ; $(curCol)(curRow)
+    ld (CurRow), hl
+    bcall(_EraseEOL)
+    ret
+
+;-----------------------------------------------------------------------------
 ; Routines for displaying the menu bar.
 ;-----------------------------------------------------------------------------
 
-; Function: Display the bottom menus.
+; Description: Display the bottom menus.
 ; Input: none
 ; Output: (dirtyFlagsMenu) reset
 ; Destroys: A, HL
@@ -664,8 +815,8 @@ printMenuAtAExit:
 ; Low-level helper routines.
 ;-----------------------------------------------------------------------------
 
-; Function: Print floating point number at OP1 at the current cursor. Erase to
-; the end of line (but only if the floating point did not spill over to the
+; Description: Print floating point number at OP1 at the current cursor. Erase
+; to the end of line (but only if the floating point did not spill over to the
 ; next line).
 ; Input: OP1: floating point number
 ; Destroys: A, HL, OP3
@@ -683,7 +834,7 @@ printOP1:
 
 ;-----------------------------------------------------------------------------
 
-; Function: Print floating point number at OP1 using base 10.
+; Description: Print floating point number at OP1 using base 10.
 ; Input: OP1: floating point number
 ; Destroys: A, HL, OP3
 printOP1AsFloat:
@@ -720,113 +871,140 @@ printOP1BaseNegative:
 
 ;-----------------------------------------------------------------------------
 
-; Function: Print ingeger at OP1 at the current cursor in base 10. Erase to
+; Description: Print integer at OP1 at the current cursor in base 10. Erase to
 ; the end of line (but only if the digits did not spill over to the next line).
+; Input: OP1
 ; Destroys: all, OP1, OP2, OP3, OP4
 printOP1Base10:
-    call op2Set2Pow32 ; OP2 = 2^32
-    bcall(_CpOP1OP2) ; if OP1 >= 2^32: CF=0
-    jr nc, printOP1BaseInvalid
-
-    bcall(_CkOP1FP0) ; if OP1 == 0: ZF=1
-    jr z, printOP1Base10Valid
-
-    bcall(_CkOP1Pos) ; if OP1 > 0: ZF=1
-    jr nz, printOP1BaseNegative
-
-printOP1Base10Valid:
-    bcall(_PushRealO1) ; FPS = OP1 (save)
-    bcall(_Trunc) ; OP1 = trunc(OP1)
-printOP1Base10String:
     ld hl, OP3
-    call convertOP1ToU32
+    call convertOP1ToW32
+    call checkW32FitsWsize
+    ld a, (hl)
+    bit w32StatusCodeTooBig, a
+    jr nz, printOP1BaseInvalid
+    bit w32StatusCodeNegative, a
+    jr nz, printOP1BaseNegative
+    ; Convert u32 into a base-10 string.
+    inc hl ; W32+1
     ld de, OP4
     call convertU32ToDecString
-
-    ; Check if OP1 was a pure integer
-    push de ; DE = dec string
-    bcall(_PopRealO1) ; OP1 = original OP1
-    bcall(_Frac) ; OP1 = frac(OP1)
-    bcall(_CkOP1FP0) ; if frac(OP1) == 0: ZF=1
-    pop hl ; HL = dec string
-    jr z, printHLString
-    ld a, '.'
-    call appendCString
+printOP1BaseXX:
+    ; Add '.' if OP1 has fractional component.
+    dec hl
+    call appendHasFrac
     jr printHLString
+
+; Description: Append a '.' at the end of the string if W32.hasFrac is set.
+; Input:
+;   - HL: pointer to W32 struct
+;   - DE: pointer to ascii string
+; Output:
+;   - HL: pointer to ascii string with '.' appended if w32.hasFrac is enabled
+;   - DE: pointer to W32 struct
+; Destroys: A
+appendHasFrac:
+    bit w32StatusCodeHasFrac, (hl)
+    ex de, hl
+    ret z
+    ld a, '.'
+    jp appendCString
 
 ;-----------------------------------------------------------------------------
 
-; Function: Print ingeger at OP1 at the current cursor in base 16. Erase to
+; Description: Print ingeger at OP1 at the current cursor in base 16. Erase to
 ; the end of line (but only if the digits did not spill over to the next line).
 ; TODO: I think printOP1Base16(), printOP1Base8(), and printOP1Base2() can be
 ; combined into a single subroutine, saving memory.
+; Input: OP1
 ; Destroys: all, OP1, OP2, OP3, OP4
 printOP1Base16:
-    call op2Set2Pow32 ; OP2 = 2^32
-    bcall(_CpOP1OP2) ; if OP1 >= 2^32: CF=0
-    jr nc, printOP1BaseInvalid
-
-    bcall(_CkOP1FP0) ; if OP1 == 0: ZF=1
-    jr z, printOP1Base16Valid
-
-    bcall(_CkOP1Pos) ; if OP1 > 0: ZF=1
-    jr nz, printOP1BaseNegative
-
-printOP1Base16Valid:
-    bcall(_PushRealO1) ; FPS = OP1 (save)
-    bcall(_Trunc) ; OP1 = trunc(OP1)
-printOP1Base16String:
     ld hl, OP3
-    call convertOP1ToU32
+    call convertOP1ToW32
+    call checkW32FitsWsize
+    ld a, (hl)
+    bit w32StatusCodeTooBig, a
+    jr nz, printOP1BaseInvalid
+    bit w32StatusCodeNegative, a
+    jr nz, printOP1BaseNegative
+    ; Convert u32 into a base-16 string.
+    inc hl ; W32+1
     ld de, OP4
-    call convertU32ToHexString
+    call convertU32ToHexString ; DE=rendered string
+    ; Append frac indicator
+    dec hl
+    call appendHasFrac ; HL=rendered string
+    call truncateHexDigits
+    jr printHLString
 
-    ; Check if OP1 was a pure integer
-    push de ; DE = hex string
-    bcall(_PopRealO1) ; OP1 = original OP1
-    bcall(_Frac) ; OP1 = frac(OP1)
-    bcall(_CkOP1FP0) ; if frac(OP1) == 0: ZF=1
-    pop hl ; HL = hex string
-    jp z, printHLString
-    ld a, '.'
-    call appendCString
-    jp printHLString
+; Description: Truncate upper digits depending on baseWordSize.
+; Input: HL: pointer to rendered string
+; Output: HL: pointer to truncated string
+; Destroys: A, DE
+truncateHexDigits:
+    ld a, (baseWordSize)
+    srl a
+    srl a ; A=2,4,6,8
+    sub 8
+    neg ; A=6,4,2,0
+    ld e, a
+    ld d, 0
+    add hl, de
+    ret
 
 ;-----------------------------------------------------------------------------
 
-; Function: Print ingeger at OP1 at the current cursor in base 8. Erase to
+; Description: Print ingeger at OP1 at the current cursor in base 8. Erase to
 ; the end of line (but only if the digits did not spill over to the next line).
+; Input: OP1
 ; Destroys: all, OP1, OP2, OP3, OP4, OP5
 printOP1Base8:
-    call op2Set2Pow32 ; OP2 = 2^32
-    bcall(_CpOP1OP2) ; if OP1 >= 2^32: CF=0
-    jp nc, printOP1BaseInvalid
-
-    bcall(_CkOP1FP0) ; if OP1 == 0: ZF=1
-    jr z, printOP1Base8Valid
-
-    bcall(_CkOP1Pos) ; if OP1 > 0: ZF=1
-    jp nz, printOP1BaseNegative
-
-printOP1Base8Valid:
-    bcall(_PushRealO1) ; FPS = OP1 (save)
-    bcall(_Trunc) ; OP1 = trunc(OP1)
-printOP1Base8String:
     ld hl, OP3
-    call convertOP1ToU32
+    call convertOP1ToW32
+    call checkW32FitsWsize
+    ld a, (hl)
+    bit w32StatusCodeTooBig, a
+    jr nz, printOP1BaseInvalid
+    bit w32StatusCodeNegative, a
+    jr nz, printOP1BaseNegative
+    ; Convert u32 into a base-8 string.
+    inc hl ; W32+1
     ld de, OP4
     call convertU32ToOctString
-
-    ; Check if OP1 was a pure integer
-    push de ; DE = rendered string
-    bcall(_PopRealO1) ; OP1 = original OP1
-    bcall(_Frac) ; OP1 = frac(OP1)
-    bcall(_CkOP1FP0) ; if frac(OP1) == 0: ZF=1
-    pop hl ; HL = rendered string
-    jp z, printHLString
-    ld a, '.'
-    call appendCString
+    ; Append frac indicator
+    dec hl
+    call appendHasFrac ; HL=rendered string
+    call truncateOctDigits
     jp printHLString
+
+; Truncate upper digits depending on baseWordSize. For base-8, the u32 integer
+; was converted to 11 digits (33 bits). The number of digits to retain for each
+; baseWordSize is: {8: 3, 16: 6, 24: 8, 32: 11}, so the number of digits to
+; truncate is: {8: 8, 16: 5, 24: 3, 32: 0}.
+; Input: HL: pointer to rendered string
+; Output: HL: pointer to truncated string
+; Destroys: A, DE
+truncateOctDigits:
+    ld a, (baseWordSize)
+    cp 8
+    jr nz, truncateOctDigits16
+    ld e, a
+    jr truncateOctString
+truncateOctDigits16:
+    cp 16
+    jr nz, truncateOctDigits24
+    ld e, 5
+    jr truncateOctString
+truncateOctDigits24:
+    cp 24
+    jr nz, truncateOctDigits32
+    ld e, 3
+    jr truncateOctString
+truncateOctDigits32:
+    ld e, 0
+truncateOctString:
+    ld d, 0
+    add hl, de
+    ret
 
 ;-----------------------------------------------------------------------------
 
@@ -838,39 +1016,59 @@ printOP1Base8String:
 ; Input: OP1: non-negative floating point number < 2^14
 ; Destroys: all, OP1, OP2, OP3, OP4, OP5
 printOP1Base2:
-    call op2Set2Pow14 ; OP2 = 2^14
-    bcall(_CpOP1OP2) ; if OP1 >= 2^14: CF=0
-    jp nc, printOP1BaseInvalid
-
-    bcall(_CkOP1FP0) ; if OP1 == 0: ZF=1
-    jr z, printOP1Base2Valid
-
-    bcall(_CkOP1Pos) ; if OP1 > 0: ZF=1
-    jp nz, printOP1BaseNegative
-
-printOP1Base2Valid:
-    bcall(_PushRealO1) ; FPS = OP1 (save)
-    bcall(_Trunc) ; OP1 = trunc(OP1)
-printOP1Base2String:
     ld hl, OP3
-    call convertOP1ToU32
+    call convertOP1ToW32
+    call checkW32FitsWsize
+    ld a, (hl)
+    bit w32StatusCodeTooBig, a
+    jp nz, printOP1BaseInvalid
+    bit w32StatusCodeNegative, a
+    jp nz, printOP1BaseNegative
+    ; Convert u32 into a base-2 string.
+    inc hl ; W32+1
     ld de, OP4
     call convertU32ToBinString
-
-    ; Check if OP1 was a pure integer
-    push de ; DE = rendered string
-    bcall(_PopRealO1) ; OP1 = original OP1
-    bcall(_Frac) ; OP1 = frac(OP1)
-    bcall(_CkOP1FP0) ; if frac(OP1) == 0: ZF=1
-    pop hl ; HL = rendered string
-    jp z, printHLString
-    ld a, '.'
-    call appendCString
+    ; Append frac indicator
+    dec hl
+    call appendHasFrac ; HL=rendered string
+    call truncateBinDigits
     jp printHLString
+
+; Description: Truncate upper digits depending on baseWordSize. The number of
+; digits to truncate is (32 - baseWordSize).
+; Input: HL: pointer to rendered string
+; Output:
+;   HL: pointer to truncated string
+; Destroys: A, BC
+truncateBinDigits:
+    ld a, (baseWordSize)
+    cp 15 ; cap the number of display digits to <= 14
+    jr c, truncateBinDigitsContinue
+    ld a, 14
+truncateBinDigitsContinue:
+    sub 32
+    neg ; A=24,16,8,0
+    ; Check leading digits to determine if truncation causes overflow
+    ld b, a
+    ld c, 0
+truncateBinDigitsCheckOverflow:
+    ld a, (hl)
+    sub '0'
+    or c ; check for a '1' digit
+    ld c, a
+    inc hl
+    djnz truncateBinDigitsCheckOverflow
+    ; HL now points to the left most digit of the truncated string.
+    ret z ; C=0, indicating no overflow
+    ; Replace left most digit with ellipsis symbol to indicate overflow.
+    ld a, Lellipsis
+    ld (hl), a
+truncateBinDigitsNoOverflow:
+    ret
 
 ;-----------------------------------------------------------------------------
 
-; Function: Convert A to a NUL-terminated C-string of 1 to 3 digits at the
+; Description: Convert A to a NUL-terminated C-string of 1 to 3 digits at the
 ; buffer pointed by HL. This is intended for debugging, so it is not optimized.
 ; TODO: This can probably be written to be faster and smaller.
 ; Input: HL: pointer to string buffer
@@ -905,7 +1103,7 @@ convertAToDec0:
     pop hl
     ret
 
-; Function: Return A / B using repeated substraction.
+; Description: Return A / B using repeated substraction.
 ; Input:
 ;   - A: numerator
 ;   - B: denominator
@@ -924,7 +1122,7 @@ divideAByBLoopEnd:
     ld a, c
     ret
 
-; Function: Convert A into an Ascii Char ('0'-'9','A'-'F').
+; Description: Convert A into an Ascii Char ('0'-'9','A'-'F').
 ; Destroys: A
 convertAToChar:
     cp 10
@@ -942,7 +1140,7 @@ convertAToCharDec:
 msgBaseInvalid:
     .db "...", 0
 
-; Indicates number is negative so cannot be current Base mode.
+; Indicates number is negative so cannot be rendered in Base mode.
 msgBaseNegative:
     .db "-", 0
 
@@ -955,3 +1153,31 @@ msgYLabel:
     .db "Y:", 0
 msgXLabel:
     .db "X:", 0
+
+; Floating point mode indicators. Previously reused the strings in menudef.asm,
+; but it got moved into Flash Page 1, so we have to copy them here.
+msgFixLabel:
+    .db "FIX", 0
+msgSciLabel:
+    .db "SCI", 0
+msgEngLabel:
+    .db "ENG", 0
+
+; DEG or RAD indicators. Previously reused the strings in menudef.asm, but it
+; got moved into Flash Pae 1, so we have to copy them here.
+msgDegLabel:
+    .db "DEG", 0
+msgRadLabel:
+    .db "RAD", 0
+
+; DRAW mode indicator.
+msgDrawLabel:
+    .db "DRAW", 0
+
+; TVM debug labels
+msgTvmNLabel:
+    .db "n:", 0
+msgTvmI0Label:
+    .db "0:", 0
+msgTvmI1Label:
+    .db "1:", 0

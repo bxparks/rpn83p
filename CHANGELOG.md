@@ -1,6 +1,79 @@
 # Changelog
 
 - Unreleased
+- 0.7.0 (2023-11-20)
+    - `STAT`
+        - fix broken `Sigma+` and `Sigma-` when `Y==0`
+        - use alternate equation for `SLOP` (slope) which works when the `Y`
+          data points are the same
+        - fix "stack lift disable" feature of `Sigma+` and `Sigma-` which
+          probably got broken during an earlier refactoring
+        - check for division by zero when calculating weighted mean `WMN`, and
+          show `9.9999999999999E99` to indicate error, allowing weightedX (or
+          weightedY) to be evaluated even if the other is undefined
+    - `BASE`
+        - implement `WSIZ` (set word size) restricted to 8, 16, 24, and 32
+          (inspired by HP-16C and Free42)
+        - display appropriate number of digits for various `WSIZ` values, for
+          various base modes (`HEX`, `OCT`, `BIN`)
+        - display ellipsis character on left most digit in `BIN` mode if
+          the binary number cannot be fully displayed using 14 digits on the
+          screen
+        - **Breaking Change**: change order of `BDIV` results in `X` and `Y`
+          registers
+            - now `X=quotient=Y/X` and `Y=remainder=Y%X`
+            - allows easier recovery of original `X` using `LastX` `*`
+    - `MATH`: add `LN1+`, `E^X-`
+        - implement `log(1+x)` and `e^x-1` respectively
+        - more accurate than their naive implementations when `x` is close to 0
+        - use mathematical identities involving hyperbolic `sinh()` and
+          `asinh()` functions to avoid roundoff errors
+    - `TVM`
+        - add TVM (time value of money) submenu hierarchy (inspired by HP-12C
+          and HP-30b)
+        - implement relatively simple Newton-Secant root solver to calculate
+          the `I%YR` from the other 4 TVM variables
+        - significant performance and robustness improvements can probably be
+          made in the future
+    - add storage register arithmetic operations
+        - `STO+`, `STO-`, `STO*`, `STO/`
+        - `RCL+`, `RCL-`, `RCL*`, `RCL/`
+    - convert to multi-page flash application
+        - now consumes 2 flash pages (2 x 16 kiB)
+    - `CLEAR` multiple times to clear RPN stack
+        - If `CLEAR` is pressed on an empty edit line (just a `_` cursor), then
+          the message "CLEAR Again to Clear Stack" will be displayed.
+        - If `CLEAR` is pressed again right after this message, the RPN stack is
+          cleared, invoking the `ROOT > CLR > CLST` menu function.
+        - Provides a quick shortcut to the `CLST` function which can be
+          difficult to reach when the current menu item is deeply nested in
+          another part of the menu hierarchy.
+        - The TI-OS does not support `2ND CLEAR`, it returns the same keycode as
+          `CLEAR`. So invoking `CLST` on multiple `CLEAR` presses seemed like
+          the most reasonable workaround.
+    - implement jumpBack for `MODE` button shortcut
+        - When `ROOT > MODE` is reached through the hierchical menu, the
+          `ON/EXIT/ESC` button goes back up the menu hierarchy to the parent,
+          the `ROOT`.
+        - When `ROOT > MODE` is invoked through the `MODE` button on the
+          keyboard, the `ON/EXIT/ESC` button jumps back to the previous menu
+          location, instead of going back up the menu tree.
+        - This allows quick changes to the `FIX`, `SCI`, and `ENG` display
+          modes, without losing one's place in the menu hierarchy.
+    - fix incorrect handling of `DEL` after a `FIX`, `SCI`, or `ENG` mode
+        - when the `DEL` (backspace) button is pressed after a 2-digit argument
+          of a `FIX` (or `SCI` etc), one of the digits of the 2-digit argument
+          remained in the input buffer
+        - the fix now correctly clears the input buffer when transitioning into
+          edit mode from a normal mode
+    - **Potential Breaking Change**: `STO`, `RCL`, `FIX`, `SCI`, `ENG` argument
+      prompt is no longer saved and restored on QUIT or OFF
+        - a new Command Arg parser was required to support storage register
+          arithmetics
+        - it uses a secondary `GetKey()` parsing loop which implements its own
+          `2ND QUIT` and `2ND OFF` handlers
+        - the state of the secondary `GetKey()` parsing loop is not saved and
+          restored
 - 0.6.0 (2023-09-22)
     - save application state
         - preserve app state into an appvar named `RPN83SAV` upon exit

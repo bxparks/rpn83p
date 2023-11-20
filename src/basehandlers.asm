@@ -1,15 +1,14 @@
 ;-----------------------------------------------------------------------------
 ; MIT License
 ; Copyright (c) 2023 Brian T. Park
-;-----------------------------------------------------------------------------
-
-;-----------------------------------------------------------------------------
+;
 ; BASE menu handlers.
 ;-----------------------------------------------------------------------------
 
 mBaseHandler:
     push af ; preserve the C flag
     call closeInputBuf ; must call before modifying rpnFlagsBaseModeEnabled
+    res rpnFlagsTvmCalculate, (iy + rpnFlags)
     pop af
     jr c, mBaseHandlerOnExit
     set rpnFlagsBaseModeEnabled, (iy + rpnFlags)
@@ -17,34 +16,38 @@ mBaseHandler:
 mBaseHandlerOnExit:
     res rpnFlagsBaseModeEnabled, (iy + rpnFlags)
 mBaseHandlerEnd:
-    set dirtyFlagsBaseMode, (iy + dirtyFlags)
+    set dirtyFlagsStatus, (iy + dirtyFlags)
     set dirtyFlagsStack, (iy + dirtyFlags)
     ret
 
 mHexHandler:
     call closeInputBuf
+    res rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld a, 16
     jr setBaseNumber
 
 mDecHandler:
     call closeInputBuf
+    res rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld a, 10
     jr setBaseNumber
 
 mOctHandler:
     call closeInputBuf
+    res rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld a, 8
     jr setBaseNumber
 
 mBinHandler:
     call closeInputBuf
+    res rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld a, 2
     ; [[fallthrough]]
 
 ; Description: Set the (baseNumber) to the value in A. Set dirty flag.
 ; Destroys: none
 setBaseNumber:
-    set dirtyFlagsBaseMode, (iy + dirtyFlags)
+    set dirtyFlagsStatus, (iy + dirtyFlags)
     set dirtyFlagsStack, (iy + dirtyFlags)
     set dirtyFlagsMenu, (iy + dirtyFlags)
     ld (baseNumber), a
@@ -88,74 +91,116 @@ mBaseNameSelector:
 
 ;-----------------------------------------------------------------------------
 
+; Description: Dispatch to the appropriate handler for the current baseWordSize.
+; Input:
+;   - HL: pointer to handlers (usually 4 entries)
+;   - (baseWordSize): current word size, 8, 16, 24, 32
+; Output:
+;   - jumps to the appropriate handler (can be invoked using a 'call')
+;   - throws exception if (baseWordSize) is not validf
+; Destroys: A
+;baseDispatcher:
+;    call getWordSizeIndex
+;    ld e, a
+;    ld d, 0
+;    add hl, de
+;    ld a, (hl)
+;    inc hl
+;    ld h, (hl)
+;    ld l, a ; HL=(HL+baseOffset)
+;    jp (hl)
+
+;-----------------------------------------------------------------------------
+
 mBitwiseAndHandler:
-    call recallU32XY ; HL=OP3=u32(Y); DE=OP4=u32(X)
+    call recallXYAsU32 ; HL=OP3=u32(Y); DE=OP4=u32(X)
+    call truncToWordSize
+    ex de, hl
+    call truncToWordSize
+    ex de, hl
     call andU32U32 ; HL = OP3 = OP3 AND OP4
+    call truncToWordSize
     call convertU32ToOP1 ; OP1 = float(OP3)
     jp replaceXY
 
+;-----------------------------------------------------------------------------
+
 mBitwiseOrHandler:
-    call recallU32XY ; HL=OP3=u32(Y); DE=OP4=u32(X)
+    call recallXYAsU32 ; HL=OP3=u32(Y); DE=OP4=u32(X)
+    call truncToWordSize
+    ex de, hl
+    call truncToWordSize
+    ex de, hl
     call orU32U32 ; HL = OP3 = OP3 OR OP4
+    call truncToWordSize
     call convertU32ToOP1 ; OP1 = float(OP3)
     jp replaceXY
 
 mBitwiseXorHandler:
-    call recallU32XY ; HL=OP3=u32(Y); DE=OP4=u32(X)
+    call recallXYAsU32 ; HL=OP3=u32(Y); DE=OP4=u32(X)
+    call truncToWordSize
+    ex de, hl
+    call truncToWordSize
+    ex de, hl
     call xorU32U32 ; HL = OP3 = OP3 XOR OP4
+    call truncToWordSize
     call convertU32ToOP1 ; OP1 = float(OP3)
     jp replaceXY
 
 mBitwiseNotHandler:
-    call recallU32X ; HL=OP3=u32(X)
+    call recallXAsU32 ; HL=OP3=u32(X)
+    call truncToWordSize
     call notU32 ; OP3 = NOT(OP3)
+    call truncToWordSize
     call convertU32ToOP1 ; OP1 = float(OP3)
     jp replaceX
 
 mBitwiseNegHandler:
-    call recallU32X ; HL=OP3=u32(X)
+    call recallXAsU32 ; HL=OP3=u32(X)
+    call truncToWordSize
     call negU32 ; OP3 = NEG(OP3), 2's complement negation
+    call truncToWordSize
     call convertU32ToOP1 ; OP1 = float(OP3)
     jp replaceX
 
 ;-----------------------------------------------------------------------------
 
 mShiftLeftLogicalHandler:
-    call recallU32X ; HL=OP3=u32(X)
-    call shiftLeftLogicalU32 ; OP3 = (OP3 << 1)
+    call recallXAsU32 ; HL=OP3=u32(X)
+    call shiftLeftLogical ; OP3 = (OP3 << 1)
     call storeCarryFlag
     call convertU32ToOP1 ; OP1 = float(OP3)
     jp replaceX
 
 mShiftRightLogicalHandler:
-    call recallU32X ; HL=OP3=u32(X)
-    call shiftRightLogicalU32 ; OP3 = (OP3 >> 1)
+    call recallXAsU32 ; HL=OP3=u32(X)
+    call shiftRightLogical ; OP3 = (OP3 >> 1)
     call storeCarryFlag
     call convertU32ToOP1 ; OP1 = float(OP3)
     jp replaceX
 
 mShiftRightArithmeticHandler:
-    call recallU32X ; HL=OP3=u32(X)
-    call shiftRightArithmeticU32 ; OP3 = signed(OP3 >> 1)
+    call recallXAsU32 ; HL=OP3=u32(X)
+    call shiftRightArithmetic ; OP3 = signed(OP3 >> 1)
     call storeCarryFlag
     call convertU32ToOP1 ; OP1 = float(OP3)
     jp replaceX
 
 mShiftLeftLogicalNHandler:
-    call recallU32XYForN ; HL=OP3=u32(Y); DE=OP4=u32(X)
+    call recallXYAsU32N ; HL=OP3=u32(Y); DE=OP4=u32(X)
     jp z, replaceXY
 mShiftLeftLogicalNLoop:
-    call shiftLeftLogicalU32 ; OP3 = (OP3 << 1)
+    call shiftLeftLogical ; OP3 = (OP3 << 1)
     djnz mShiftLeftLogicalNLoop
     call storeCarryFlag
     call convertU32ToOP1 ; OP1 = float(OP3)
     jp replaceXY
 
 mShiftRightLogicalNHandler:
-    call recallU32XYForN ; HL=OP3=u32(Y); DE=OP4=u32(X)
+    call recallXYAsU32N ; HL=OP3=u32(Y); DE=OP4=u32(X)
     jp z, replaceXY
 mShiftRightLogicalNLoop:
-    call shiftRightLogicalU32 ; OP3 = (OP3 >> 1)
+    call shiftRightLogical ; OP3 = (OP3 >> 1)
     djnz mShiftRightLogicalNLoop
     call storeCarryFlag
     call convertU32ToOP1 ; OP1 = float(OP3)
@@ -164,72 +209,72 @@ mShiftRightLogicalNLoop:
 ;-----------------------------------------------------------------------------
 
 mRotateLeftCircularHandler:
-    call recallU32X ; HL=OP3=u32(X)
-    call rotateLeftCircularU32; OP3 = rotLeftCircular(OP3)
+    call recallXAsU32 ; HL=OP3=u32(X)
+    call rotateLeftCircular; OP3 = rotLeftCircular(OP3)
     call storeCarryFlag
     call convertU32ToOP1 ; OP1 = float(OP3)
     jp replaceX
 
 mRotateRightCircularHandler:
-    call recallU32X ; HL=OP3=u32(X)
-    call rotateRightCircularU32; OP3 = rotRightCircular(OP3)
+    call recallXAsU32 ; HL=OP3=u32(X)
+    call rotateRightCircular; OP3 = rotRightCircular(OP3)
     call storeCarryFlag
     call convertU32ToOP1 ; OP1 = float(OP3)
     jp replaceX
 
 mRotateLeftCarryHandler:
-    call recallU32X ; HL=OP3=u32(X)
+    call recallXAsU32 ; HL=OP3=u32(X)
     call recallCarryFlag
-    call rotateLeftCarryU32; OP3 = rotLeftCarry(OP3)
+    call rotateLeftCarry; OP3 = rotLeftCarry(OP3)
     call storeCarryFlag
     call convertU32ToOP1 ; OP1 = float(OP3)
     jp replaceX
 
 mRotateRightCarryHandler:
-    call recallU32X ; HL=OP3=u32(X)
+    call recallXAsU32 ; HL=OP3=u32(X)
     call recallCarryFlag
-    call rotateRightCarryU32; OP3 = rotRightCarry(OP3)
+    call rotateRightCarry; OP3 = rotRightCarry(OP3)
     call storeCarryFlag
     call convertU32ToOP1 ; OP1 = float(OP3)
     jp replaceX
 
 mRotateLeftCircularNHandler:
-    call recallU32XYForN ; HL=OP3=u32(Y); DE=OP4=u32(X)
+    call recallXYAsU32N ; HL=OP3=u32(Y); DE=OP4=u32(X)
     jp z, replaceXY
 mRotateLeftCircularNLoop:
-    call rotateLeftCircularU32; OP3 = rotLeftCircular(OP3)
+    call rotateLeftCircular; OP3 = rotLeftCircular(OP3)
     djnz mRotateLeftCircularNLoop
     call storeCarryFlag
     call convertU32ToOP1 ; OP1 = float(OP3)
     jp replaceXY
 
 mRotateRightCircularNHandler:
-    call recallU32XYForN ; HL=OP3=u32(Y); DE=OP4=u32(X)
+    call recallXYAsU32N ; HL=OP3=u32(Y); DE=OP4=u32(X)
     jp z, replaceXY
 mRotateRightCircularNLoop:
-    call rotateRightCircularU32; OP3 = rotRightCircular(OP3)
+    call rotateRightCircular; OP3 = rotRightCircular(OP3)
     djnz mRotateRightCircularNLoop
     call storeCarryFlag
     call convertU32ToOP1 ; OP1 = float(OP3)
     jp replaceXY
 
 mRotateLeftCarryNHandler:
-    call recallU32XYForN ; HL=OP3=u32(Y); DE=OP4=u32(X)
+    call recallXYAsU32N ; HL=OP3=u32(Y); DE=OP4=u32(X)
     jp z, replaceXY
     call recallCarryFlag
 mRotateLeftCarryNLoop:
-    call rotateLeftCarryU32; OP3 = rotLeftCarry(OP3)
+    call rotateLeftCarry; OP3 = rotLeftCarry(OP3)
     djnz mRotateLeftCarryNLoop
     call storeCarryFlag
     call convertU32ToOP1 ; OP1 = float(OP3)
     jp replaceXY
 
 mRotateRightCarryNHandler:
-    call recallU32XYForN ; HL=OP3=u32(Y); DE=OP4=u32(X)
+    call recallXYAsU32N ; HL=OP3=u32(Y); DE=OP4=u32(X)
     jp z, replaceXY
     call recallCarryFlag
 mRotateRightCarryNLoop:
-    call rotateRightCarryU32; HL=OP3=rotRightCarry(OP3)
+    call rotateRightCarry; HL=OP3=rotRightCarry(OP3)
     djnz mRotateRightCarryNLoop
     call storeCarryFlag
     call convertU32ToOP1 ; OP1 = float(OP3)
@@ -242,11 +287,12 @@ mRotateRightCarryNLoop:
 ; Output:
 ;   - OP3=u32(X)
 ;   - HL=OP3
+;   - throws Err:Domain if X is not an integer in [0, 2^32)
 ; Destroys: A, BC, DE, HL
-recallU32X:
+recallXAsU32:
     call closeInputAndRecallX ; OP1=X
     ld hl, OP3
-    call convertOP1ToU32 ; OP3=u32(X)
+    call convertOP1ToU32AllowFrac ; OP3=u32(X)
     ret
 
 ; Description: Recall X and Y and convert them into u32 integers.
@@ -255,12 +301,12 @@ recallU32X:
 ;   - HL=OP3=u32(Y)
 ;   - DE=OP4=u32(X)
 ; Destroys: A, BC, DE, HL
-recallU32XY:
+recallXYAsU32:
     call closeInputAndRecallXY ; OP1=Y; OP2=X
     ld hl, OP3
-    call convertOP1ToU32 ; OP3=u32(Y)
+    call convertOP1ToU32AllowFrac ; OP3=u32(Y)
     ld hl, OP4
-    call convertOP2ToU32 ; OP4=u32(X)
+    call convertOP2ToU32AllowFrac ; OP4=u32(X)
     ld hl, OP3
     ld de, OP4
     ret
@@ -274,26 +320,26 @@ recallU32XY:
 ;   - A=B=U8(X), verified to be an int in [0, WSIZE).
 ;   - ZF=1 if B==0
 ; Destroys: A, BC, DE, HL
-recallU32XYForN:
+recallXYAsU32N:
     call closeInputAndRecallXY ; OP1=Y; OP2=X
     ld hl, OP3
-    call convertOP1ToU32 ; OP3=u32(Y)
+    call convertOP1ToU32AllowFrac ; OP3=u32(Y)
     ld hl, OP4
-    call convertOP2ToU32 ; OP4=u32(X)
+    call convertOP2ToU32AllowFrac ; OP4=u32(X)
     ld a, (baseWordSize)
     call cmpU32U8
-    jr nc, recallU32XYForNError
+    jr nc, recallXYAsU32NError
     ld hl, OP3
     ld de, OP4
     ld b, a ; B=u8(X)
     or a ; set ZF=1 if u8(X)==0
     ret
-recallU32XYForNError:
-    bjump(_ErrDomain) ; throw exception if X >= baseWordSize
+recallXYAsU32NError:
+    bcall(_ErrDomain) ; throw exception if X >= baseWordSize
 
 ;-----------------------------------------------------------------------------
 
-; Description: Transfer the carry flag (CF) to bit 0 of (baseCarryFlag).
+; Description: Transfer CF to bit 0 of (baseCarryFlag).
 ; Input: CF
 ; Output: (baseCarryFlag)
 ; Destroys: A
@@ -301,10 +347,10 @@ storeCarryFlag:
     rla ; shift CF into bit-0
     and $1
     ld (baseCarryFlag), a
-    set dirtyFlagsBaseMode, (iy + dirtyFlags)
+    set dirtyFlagsStatus, (iy + dirtyFlags)
     ret
 
-; Description: Transfer bit 0 of (baseCarryFlag) into the carry flag CF.
+; Description: Transfer bit 0 of (baseCarryFlag) into CF.
 ; Input: (baseCarryFlag)
 ; Output: CF
 ; Destroys: A
@@ -315,17 +361,16 @@ recallCarryFlag:
 
 mClearCarryFlagHandler:
     or a ; CF=0
-    call storeCarryFlag
-    ret
+    jr storeCarryFlag
 
 mSetCarryFlagHandler:
     scf ; CF=1
-    call storeCarryFlag
-    ret
+    jr storeCarryFlag
 
 mGetCarryFlagHandler:
     call closeInputBuf
-    set dirtyFlagsBaseMode, (iy + dirtyFlags)
+    res rpnFlagsTvmCalculate, (iy + rpnFlags)
+    set dirtyFlagsStatus, (iy + dirtyFlags)
     call recallCarryFlag
     jr c, mGetCarryFlagHandlerPush1
     bcall(_OP1Set0)
@@ -337,10 +382,27 @@ mGetCarryFlagHandlerPush1:
 ;-----------------------------------------------------------------------------
 
 mSetWordSizeHandler:
-    jp mNotYetHandler
+    call recallXAsU32 ; HL=OP3=u32(X)
+    ld a, 8
+    call cmpU32U8
+    jr z, setWordSize
+    ld a, 16
+    call cmpU32U8
+    jr z, setWordSize
+    ld a, 24
+    call cmpU32U8
+    jr z, setWordSize
+    ld a, 32
+    call cmpU32U8
+    jr z, setWordSize
+    bcall(_ErrDomain)
+setWordSize:
+    ld (baseWordSize), a
+    ret
 
 mGetWordSizeHandler:
     call closeInputBuf
+    res rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld a, (baseWordSize)
     call convertU8ToOP1
     jp pushX
@@ -348,23 +410,29 @@ mGetWordSizeHandler:
 ;-----------------------------------------------------------------------------
 
 mBitwiseAddHandler:
-    call recallU32XY ; HL=OP3=u32(Y); DE=OP4=u32(X)
-    call addU32U32 ; OP3(Y) += OP4(X)
+    call recallXYAsU32 ; HL=OP3=u32(Y); DE=OP4=u32(X)
+    call truncToWordSize
+    call addUxxUxx ; OP3(Y) += OP4(X)
     call storeCarryFlag
+    call truncToWordSize
     call convertU32ToOP1 ; OP1 = float(OP3)
     jp replaceXY
 
 mBitwiseSubtHandler:
-    call recallU32XY ; HL=OP3=u32(Y); DE=OP4=u32(X)
-    call subU32U32 ; OP3(Y) -= OP4(X)
+    call recallXYAsU32 ; HL=OP3=u32(Y); DE=OP4=u32(X)
+    call truncToWordSize
+    call subUxxUxx ; OP3(Y) -= OP4(X)
     call storeCarryFlag
+    call truncToWordSize
     call convertU32ToOP1 ; OP1 = float(OP3)
     jp replaceXY
 
 mBitwiseMultHandler:
-    call recallU32XY ; HL=OP3=u32(Y); DE=OP4=u32(X)
-    call multU32U32 ; OP3(Y) *= OP4(X)
+    call recallXYAsU32 ; HL=OP3=u32(Y); DE=OP4=u32(X)
+    call truncToWordSize
+    call multUxxUxx ; OP3(Y) *= OP4(X)
     call storeCarryFlag
+    call truncToWordSize
     call convertU32ToOP1 ; OP1 = float(OP3)
     jp replaceXY
 
@@ -383,46 +451,52 @@ mBitwiseDivHandler:
 ;   - Y=quotient
 mBitwiseDiv2Handler:
     call baseDivHandlerCommon ; HL=quotient, BC=remainder
-    ; convert remainder into OP2
-    push hl
-    ld l, c
-    ld h, b
-    call convertU32ToOP1 ; OP1=remainder
-    bcall(_OP1ToOP2) ; OP2=remainder
-    ; convert quotient into OP1
+    push bc
+    ; convert HL=quotient into OP2
+    call convertU32ToOP1
+    bcall(_OP1ToOP2) ; OP2=quotient
+    ; convert BC=remainder into OP1
     pop hl
-    call convertU32ToOP1 ; OP1 = quotient
-    jp replaceXYWithOP1OP2 ; Y=quotient, X=remainder
+    call convertU32ToOP1 ; OP1=remainder
+    jp replaceXYWithOP1OP2 ; Y=remainder, X=quotient
 
+; Output:
+;   - HL=quotient
+;   - BC=remainder
 baseDivHandlerCommon:
-    call recallU32XY ; HL=OP3=u32(Y); DE=OP4=u32(X)
+    call recallXYAsU32 ; HL=OP3=u32(Y); DE=OP4=u32(X)
+    call truncToWordSize
     ex de, hl ; HL=OP4
     call testU32 ; check if X==0
     ex de, hl
     jr z,  baseDivHandlerDivByZero
     ld bc, OP5 ; BC=remainder
-    call divU32U32 ; HL=OP3=quotient, DE=OP4=divisor, BC=OP5=remainder
-    jp storeCarryFlag ; CF=0 always
+    call divUxxUxx ; HL=OP3=quotient, DE=OP4=divisor, BC=OP5=remainder
+    call storeCarryFlag ; CF=0 always
+    call truncToWordSize
+    ret
 baseDivHandlerDivByZero:
-    bjump(_ErrDivBy0) ; throw 'Div By 0' exception
+    bcall(_ErrDivBy0) ; throw 'Div By 0' exception
 
 ;-----------------------------------------------------------------------------
 
 mReverseBitHandler:
-    call recallU32X ; HL=OP3=u32(X)
-    call reverseU32
+    call recallXAsU32 ; HL=OP3=u32(X)
+    call truncToWordSize
+    call reverseBits
     call convertU32ToOP1 ; OP1 = float(OP3)
     jp replaceX
 
 mCountBitHandler:
-    call recallU32X ; HL=OP3=u32(X)
+    call recallXAsU32 ; HL=OP3=u32(X)
+    call truncToWordSize
     call countU32Bits
     call setU32ToA
     call convertU32ToOP1 ; OP1 = float(OP3)
     jp replaceX
 
 mSetBitHandler:
-    call recallU32XYForN ; HL=OP3=u32(Y); DE=OP4=u32(X)
+    call recallXYAsU32N ; HL=OP3=u32(Y); DE=OP4=u32(X)
     ld a, (de)
     ld c, a
     call setU32Bit
@@ -430,7 +504,7 @@ mSetBitHandler:
     jp replaceXY
 
 mClearBitHandler:
-    call recallU32XYForN ; HL=OP3=u32(Y); DE=OP4=u32(X)
+    call recallXYAsU32N ; HL=OP3=u32(Y); DE=OP4=u32(X)
     ld a, (de)
     ld c, a
     call clearU32Bit
@@ -438,7 +512,7 @@ mClearBitHandler:
     jp replaceXY
 
 mGetBitHandler:
-    call recallU32XYForN ; HL=OP3=u32(Y); DE=OP4=u32(X)
+    call recallXYAsU32N ; HL=OP3=u32(Y); DE=OP4=u32(X)
     ld a, (de)
     ld c, a
     call getU32Bit

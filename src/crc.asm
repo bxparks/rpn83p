@@ -1,20 +1,18 @@
 ;-----------------------------------------------------------------------------
 ; MIT License
 ; Copyright (c) 2023 Brian T. Park
-;-----------------------------------------------------------------------------
-
-;-----------------------------------------------------------------------------
+;
 ; CRC16 algorithm.
 ;-----------------------------------------------------------------------------
 
-; Description: Calculate the CRC16-CCITT of the byte array pointed by DE, of
+; Description: Calculate the CRC16-CCITT of the byte array pointed by HL, of
 ; length BC.
 ;
 ; Input:
 ;   BC: length of byte array, can be 0
 ;   HL: pointer to data
 ; Output:
-;   DE: new CRC value
+;   DE: CRC16 value
 ; Destroys: A, BC, DE, HL
 ;
 ; The CRC16-CCITT algorithm was generated from the pycrc script at

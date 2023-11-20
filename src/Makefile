@@ -4,6 +4,9 @@ SPASM_DIR := ../../spasm
 SPASM_INC := $(SPASM_DIR)/inc
 SPASM := $(SPASM_DIR)/spasm
 SRCS := \
+	arghandlers.asm \
+	arghandlertab.asm \
+	argparser.asm \
 	base.asm \
 	basehandlers.asm \
 	cfithandlers.asm \
@@ -13,26 +16,33 @@ SRCS := \
 	debug.asm \
 	display.asm \
 	errorcode.asm \
+	float.asm \
 	handlers.asm \
 	handlertab.asm \
+	help.asm \
 	input.asm \
 	integer.asm \
+	main.asm \
+	mainparser.asm \
 	menu.asm \
 	menudef.asm \
 	menuhandlers.asm \
-	pstring.asm \
+	menulookup.asm \
 	prime.asm \
+	print.asm \
+	pstring.asm \
 	rpn83p.asm \
 	stathandlers.asm \
+	tvmhandlers.asm \
 	vars.asm
 
-# TI Flash app
+# TI Flash app. Use -DDEBUG to activate functions in debug.asm.
 rpn83p.8xk: $(SRCS) Makefile
 	$(SPASM) -I $(SPASM_INC) -N rpn83p.asm $@
 
-# Debug version of assembly prpgram.
+# TI assembly program. No longer works because the program is > 8 kiB.
 #rpn83p.8xp: $(SRCS) Makefile
-#	$(SPASM) -DDEBUG -I $(SPASM_INC) -N rpn83p.asm $@
+#	$(SPASM) -I $(SPASM_INC) -N rpn83p.asm $@
 
 rpn83p.lst: $(SRCS) Makefile
 	$(SPASM) -I $(SPASM_INC) -N -T rpn83p.asm rpn83p.8xp

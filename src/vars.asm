@@ -1,9 +1,7 @@
 ;-----------------------------------------------------------------------------
 ; MIT License
 ; Copyright (c) 2023 Brian T. Park
-;-----------------------------------------------------------------------------
-
-;-----------------------------------------------------------------------------
+;
 ; RPN stack registers and storage registers are implemented using TI-OS list
 ; variables. Stack variables are stored in a list named 'STK' and storage
 ; registers are stored in a list named 'REGS' (which is similar to the 'REGS'
@@ -181,11 +179,11 @@ clearStackEnd:
 stoStackNN:
     inc a ; change from 0-based to 1-based
     push af
-    bcall(_PushRealO1)
+    bcall(_PushRealO1) ; FPS=[OP1]
     call setStackName
     bcall(_FindSym) ; DE = pointer data area
     push de
-    bcall(_PopRealO1) ; destroys DE
+    bcall(_PopRealO1) ; FPS=[]; OP1=OP1; destroys DE
     pop de
     pop af
     ld l, a
@@ -217,6 +215,7 @@ rclStackNN:
 ;-----------------------------------------------------------------------------
 
 ; Description: Set OP1 to X.
+; Destroys: all
 rclX:
     ld a, stackXIndex
     jr rclStackNN
@@ -224,6 +223,7 @@ rclX:
 ; Description: Set X to OP1. Also update `ANS` with the same value. Upon
 ; exiting the RPN83P app, the TI-OS can access the most current X value using
 ; `ANS`.
+; Destroys: all
 stoX:
     ld a, stackXIndex
     jr stoStackNN
@@ -231,11 +231,13 @@ stoX:
 ;-----------------------------------------------------------------------------
 
 ; Description: Set OP1 to Y.
+; Destroys: all
 rclY:
     ld a, stackYIndex
     jr rclStackNN
 
 ; Description: Set Y to OP1.
+; Destroys: all
 stoY:
     ld a, stackYIndex
     jr stoStackNN
@@ -243,11 +245,13 @@ stoY:
 ;-----------------------------------------------------------------------------
 
 ; Description: Set OP1 to stZ.
+; Destroys: all
 rclZ:
     ld a, stackZIndex
     jr rclStackNN
 
 ; Description: Set stZ to OP1.
+; Destroys: all
 stoZ:
     ld a, stackZIndex
     jr stoStackNN
@@ -255,11 +259,13 @@ stoZ:
 ;-----------------------------------------------------------------------------
 
 ; Description: Set OP1 to stT.
+; Destroys: all
 rclT:
     ld a, stackTIndex
     jr rclStackNN
 
 ; Description: Set stT to OP1.
+; Destroys: all
 stoT:
     ld a, stackTIndex
     jr stoStackNN
@@ -267,11 +273,13 @@ stoT:
 ;-----------------------------------------------------------------------------
 
 ; Description: Set OP1 to stL.
+; Destroys: all
 rclL:
     ld a, stackLIndex
     jr rclStackNN
 
 ; Description: Set stL to OP1.
+; Destroys: all
 stoL:
     ld a, stackLIndex
     jr stoStackNN
@@ -286,10 +294,10 @@ stoL:
 ; Preserves: OP1, OP2
 replaceX:
     bcall(_CkValidNum)
-    bcall(_PushRealO1)
+    bcall(_PushRealO1) ; FPS=[OP1]
     call rclX
     call stoL
-    bcall(_PopRealO1)
+    bcall(_PopRealO1) ; FPS=[]; OP1=OP1
     call stoX
     set rpnFlagsLiftEnabled, (iy + rpnFlags)
     ret
@@ -299,11 +307,11 @@ replaceX:
 ; Preserves: OP1, OP2
 replaceXY:
     bcall(_CkValidNum)
-    bcall(_PushRealO1)
+    bcall(_PushRealO1) ; FPS=[OP1]
     call rclX
     call stoL
     call dropStack
-    bcall(_PopRealO1)
+    bcall(_PopRealO1) ; FPS=[]; OP1=OP1
     call stoX
     set rpnFlagsLiftEnabled, (iy + rpnFlags)
     ret
@@ -325,13 +333,13 @@ replaceXYWithOP1OP2:
     bcall(_OP1ExOP2)
 
     call stoY ; Y = OP1
-    bcall(_PushRealO1) ; FPS = OP1
+    bcall(_PushRealO1) ; FPS=[OP1]
     call rclX
     call stoL; LastX = X
 
     bcall(_OP2ToOP1)
     call stoX ; X = OP2
-    bcall(_PopRealO1) ; OP1 unchanged
+    bcall(_PopRealO1) ; FPS=[]; OP1=OP1
     set rpnFlagsLiftEnabled, (iy + rpnFlags)
     ret
 
@@ -349,10 +357,10 @@ replaceXWithOP1OP2:
     bcall(_CkValidNum)
     bcall(_OP1ExOP2)
 
-    bcall(_PushRealO1)
+    bcall(_PushRealO1) ; FPS=[OP1]
     call rclX
     call stoL
-    bcall(_PopRealO1)
+    bcall(_PopRealO1) ; FPS=[]; OP1=OP1
     call stoX
     call liftStack
     bcall(_OP2ToOP1)
@@ -429,7 +437,7 @@ liftStackIfEnabled:
 ; TODO: Make this more efficient by taking advantage of the fact that stack
 ; registers are actually in a list variable named STK.
 liftStack:
-    bcall(_PushRealO1)
+    bcall(_PushRealO1) ; FPS=[OP1]
     ; T = Z
     call rclZ
     call stoT
@@ -440,7 +448,7 @@ liftStack:
     call rclX
     call stoY
     ; X = X
-    bcall(_PopRealO1)
+    bcall(_PopRealO1) ; FPS=[]; OP1=OP1
     ret
 
 ;-----------------------------------------------------------------------------
@@ -453,7 +461,7 @@ liftStack:
 ; TODO: Make this more efficient by taking advantage of the fact that stack
 ; registers are actually in a list variable named STK.
 dropStack:
-    bcall(_PushRealO1)
+    bcall(_PushRealO1) ; FPS=[OP1]
     ; X = Y
     call rclY
     call stoX
@@ -464,7 +472,7 @@ dropStack:
     call rclT
     call stoZ
     ; T = T
-    bcall(_PopRealO1)
+    bcall(_PopRealO1) ; FPS=[]; OP1=OP1
     ret
 
 ;-----------------------------------------------------------------------------
@@ -479,7 +487,7 @@ dropStack:
 rotDownStack:
     ; save X in FPS
     call rclX
-    bcall(_PushRealO1)
+    bcall(_PushRealO1) ; FPS=[OP1]
     ; X = Y
     call rclY
     call stoX
@@ -490,7 +498,7 @@ rotDownStack:
     call rclT
     call stoZ
     ; T = X
-    bcall(_PopRealO1)
+    bcall(_PopRealO1) ; FPS=[]; OP1=OP1
     call stoT
     ret
 
@@ -506,7 +514,7 @@ rotDownStack:
 rotUpStack:
     ; save T in FPS
     call rclT
-    bcall(_PushRealO1)
+    bcall(_PushRealO1) ; FPS=[OP1]
     ; T = Z
     call rclZ
     call stoT
@@ -517,7 +525,7 @@ rotUpStack:
     call rclX
     call stoY
     ; X = T
-    bcall(_PopRealO1)
+    bcall(_PopRealO1) ; FPS=[]; OP1=OP1
     call stoX
     ret
 
@@ -628,11 +636,11 @@ clearRegsLoop:
 stoNN:
     inc a ; change from 0-based to 1-based
     push af
-    bcall(_PushRealO1)
+    bcall(_PushRealO1) ; FPS=[OP1]
     call setRegsName
     bcall(_FindSym) ; DE=pointer to var data area
     push de
-    bcall(_PopRealO1)
+    bcall(_PopRealO1) ; FPS=[]; OP1=OP1
     pop de
     pop af
     ld l, a
@@ -665,15 +673,16 @@ rclNN:
 ;   - 'REGS' list variable
 ; Output:
 ;   - OP2: float value
-; Preserves: OP2
 rclNNToOP2:
-    bcall(_PushRealO1)
+    bcall(_PushRealO1) ; FPS=[OP1]
     call rclNN
     bcall(_OP1ToOP2)
-    bcall(_PopRealO1)
+    bcall(_PopRealO1) ; FPS=[]; OP1=OP1
     ret
 
-; Description: Add OP1 to storage register NN.
+;-----------------------------------------------------------------------------
+
+; Description: Add OP1 to storage register NN. Used by STAT functions.
 ; Input:
 ;   OP1: float value
 ;   A: register index NN, 0-based
@@ -681,38 +690,125 @@ rclNNToOP2:
 ;   REGS[NN] += OP1
 ; Destroys: all
 ; Preserves: OP1, OP2
-stoPlusNN:
+stoAddNN:
     push af ; A=NN
-    bcall(_PushRealO1)
-    bcall(_PushRealO2)
+    bcall(_PushRealO1) ; FPS=[OP1]
+    bcall(_PushRealO2) ; FPS=[OP1,OP2]
     bcall(_OP1ToOP2)
-    call rclNN
+    call rclNN ; I guess A is preserved by the previous bcalls
     bcall(_FPAdd) ; OP1 += OP2
     pop af ; A=NN
     call stoNN
-    bcall(_PopRealO2)
-    bcall(_PopRealO1)
+    bcall(_PopRealO2) ; FPS=[OP1]
+    bcall(_PopRealO1) ; FPS=[]; OP1=OP1
     ret
 
-; Description: Subtract OP1 from storage register NN.
+; Description: Subtract OP1 from storage register NN. Used by STAT functions.
 ; Input:
 ;   OP1: float value
 ;   A: register index NN, 0-based
 ; Output:
-;   REGS[NN] += OP1
+;   REGS[NN] -= OP1
 ; Destroys: all
 ; Preserves: OP1, OP2
-stoMinusNN:
+stoSubNN:
     push af ; A=NN
-    bcall(_PushRealO1)
-    bcall(_PushRealO2)
+    bcall(_PushRealO1) ; FPS=[OP1]
+    bcall(_PushRealO2) ; FPS=[OP1,OP2]
     bcall(_OP1ToOP2)
-    call rclNN
+    call rclNN ; I guess A is preserved by the previous bcalls
     bcall(_FPSub) ; OP1 -= OP2
     pop af ; A=NN
     call stoNN
-    bcall(_PopRealO2)
-    bcall(_PopRealO1)
+    bcall(_PopRealO2) ; FPS=[OP1]
+    bcall(_PopRealO1) ; FPS=[]; OP1=OP1
+    ret
+
+;-----------------------------------------------------------------------------
+
+; Description: Implement STO{op} NN, with {op} defined by B and NN given by C.
+; Input:
+;   - OP1
+;   - B: operation index [0,4] into floatOps, MUST be same as argModifierXxx
+;   - C: register index NN, 0-based
+; Output:
+;   - REGS[C] {op}= OP1, where {op} is defined by B
+; Destroys: all
+; Preserves: OP1, OP2
+stoOpNN:
+    push bc
+    bcall(_PushRealO1) ; FPS=[OP1]
+    bcall(_PushRealO2) ; FPS=[OP1,OP2]
+    bcall(_OP1ToOP2)
+    ; Recall REGS[C]
+    pop bc
+    push bc
+    ld a, c ; A=C=register index
+    call rclNN
+    ; Invoke op B
+    pop bc
+    push bc
+    ld a, b ; A=op-index
+    ld hl, floatOps
+    call jumpAOfHL
+    ; Save REGS[C]
+    pop bc
+    ld a, c ; A=C=register index
+    call stoNN
+    ; restore OP1, OP2
+    bcall(_PopRealO2) ; FPS=[OP1]
+    bcall(_PopRealO1) ; FPS=[]; OP1=OP1
+    ret
+
+; Description: Implement RCL{op} NN, with {op} defined by B and NN given by C.
+; Input:
+;   - OP1
+;   - B: operation index [0,4] into floatOps, MUST be same as argModifierXxx
+;   - C: register index NN, 0-based
+; Output:
+;   - OP1 {op}= REGS[C], where {op} is defined by B
+; Destroys: all
+; Preserves: OP2
+rclOpNN:
+    push bc
+    bcall(_PushRealO2) ; FPS=[OP2]
+    ; Recall REGS[C]
+    pop bc
+    push bc
+    ld a, c ; A=C=register index
+    call rclNNToOP2
+    ; Invoke op B
+    pop bc
+    ld a, b ; A=op-index
+    ld hl, floatOps
+    call jumpAOfHL
+    bcall(_PopRealO2) ; FPS=[]; OP2=OP2
+    ret
+
+; List of floating point operations, indexed from 0 to 4. Implements `OP1 {op}=
+; OP2`. These MUST be identical to the argModifierXxx constants.
+floatOpsCount equ 5
+floatOps:
+    .dw floatOpAssign ; 0, argModifierNone
+    .dw floatOpAdd ; 1, argModifierAdd
+    .dw floatOpSub ; 2, argModifierSub
+    .dw floatOpMul ; 3, argModifierMul
+    .dw floatOpDiv ; 4, argModifierDiv
+
+floatOpAssign:
+    bcall(_OP2ToOP1)
+    ret
+floatOpAdd:
+    bcall(_FPAdd)
+    ret
+floatOpSub:
+    bcall(_FPSub)
+    ret
+floatOpMul:
+    bcall(_FPMult)
+    ret
+floatOpDiv:
+    bcall(_FPDiv)
     ret
 
 ;-----------------------------------------------------------------------------
