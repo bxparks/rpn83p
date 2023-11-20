@@ -36,6 +36,8 @@ RPN calculator app for the TI-83 Plus and TI-84 Plus inspired by the HP-42S.
     - [Auto-start](#auto-start)
     - [Floating Point Display Modes](#floating-point-display-modes)
     - [Trigonometric Modes](#trigonometric-modes)
+    - [Storage Registers](#storage-registers)
+    - [Prime Factors](#prime-factors)
     - [BASE Functions](#base-functions)
         - [Base Modes](#base-modes)
         - [Shift and Rotate](#shift-and-rotate)
@@ -44,8 +46,6 @@ RPN calculator app for the TI-83 Plus and TI-84 Plus inspired by the HP-42S.
         - [Bit Operations](#bit-operations)
         - [Base Integer Size](#base-integer-size)
         - [Base Mode Retention](#base-mode-retention)
-    - [Storage Registers](#storage-registers)
-    - [Prime Factors](#prime-factors)
     - [STAT Functions](#stat-functions)
     - [TVM Functions](#tvm-functions)
         - [TVM Menu Buttons](#tvm-menu-buttons)
@@ -1046,6 +1046,89 @@ possible to add this feature by intercepting the trig functions and performing
 some pre and post unit conversions. But I'm not sure if it's worth the effort
 since gradian trig mode is not commonly used.
 
+### Storage Registers
+
+Similar to the HP-42S, the RPN83P provides **25** storage registers labeled
+`R00` to `R24`. They are accessed using the `STO` and `2ND` `RCL` keys. To store
+a number into register `R00`, press:
+
+- `STO` `00`
+
+To recall register `R00`, press:
+
+- `2ND` `RCL` `00`
+
+To clear the all storage registers, use the arrow keys for the menu system to
+get to:
+
+- ![ROOT MenuRow 3](docs/rpn83p-screenshot-menu-root-3.png)
+- Press `CLR` to get
+  ![CLR MenuRow 1](docs/rpn83p-screenshot-menu-root-clr-1.png)
+- Press `CLRG`
+
+The message `REGS cleared` will be displayed on the screen.
+
+Similar to the HP-42S and the HP-15C, storage register arithmetic operations are
+supported using the `STO` and `RCL` buttons followed by an arithmetic button.
+
+For example:
+
+- `STO` `+` `00`: add `X` to Reg 00
+- `STO` `-` `00`: subtract `X` from Reg 00
+- `STO` `*` `00`: multiply `X` to Reg 00
+- `STO` `/` `00`: divide `X` into Reg 00
+
+Similarly:
+
+- `RCL` `+` `00`: add Reg 00 to `X`
+- `RCL` `-` `00`: subtract Reg 00 from `X`
+- `RCL` `*` `00`: multiply Reg 00 to `X`
+- `RCL` `/` `00`: divide Reg 00 into `X`
+
+Indirect storage registers are not supported (as of v0.7.0). In other words, the
+`STO` `IND` `nn` and `RCL` `IND` `nn` functionality from the HP-42S.
+
+### Prime Factors
+
+The `PRIM` function calculates the lowest prime factor of the number in `X`. The
+result will be `1` if the number is a prime. Unlike almost all other functions
+implemented by RPN83P, the `PRIM` function does not replace the original `X`.
+Instead it pushes the prime factor onto the stack, causing the original `X` to
+move to the `Y` register. This behavior was implemented to allow easier
+calculation of all prime factors of a number as follows.
+
+After the first prime factor is calculated, the `/` can be pressed to calculate
+the remaining factor in the `X` register. We can now press `PRIM` again to
+calculate the next prime factor. Since the `PRIM` preserves the original number
+in the `Y` register, this process can be repeated multiple times to calculate
+all prime factors of the original number.
+
+For example, let's find the prime factors of `119886 = 2 * 3 * 13 * 29 * 53`:
+
+- Press `119886`
+- Press `PRIM` to get `2`
+- Press `/` to divide down to `59943`
+- Press `PRIM` to get `3`
+- Press `/` to divide down to `19981`
+- Press `PRIM` to get `13`
+- Press `/` to divide down to `1537`
+- Press `PRIM` to get `29`
+- Press `/` to divide down to `53`
+- Press `PRIM` to get `1`, which makes `53` the last prime factor.
+
+For computational efficiency, `PRIM` supports only integers between `2` and
+`2^32-1` (4 294 967 295). This allows `PRIM` to use integer arithmetic, making
+it about 7X faster than the equivalent algorithm using floating point routines.
+Any number outside of this range produces an `Err: Domain` message. (The number
+`1` is not considered a prime number.)
+
+If the input number is a very large prime, the calculation may take a long time.
+However, testing has verified that the `PRIM` algorithm will always finish in
+less than about 30 seconds on a TI-83 Plus or TI-84 Plus calculator, no matter
+how large the input number. During the calculation, the "run indicator" on the
+upper-right corner will be active. You can press `ON` key to break from the
+`PRIM` loop with an `Err: Break` message.
+
 ### BASE Functions
 
 The `BASE` functions are available through the `ROOT` > `BASE` hierarchy:
@@ -1398,89 +1481,6 @@ hierarchy of menus. When the menu leaves the `BASE` hierarchy, the numbers on
 the RPN stack revert back to using floating points. This is similar to the
 HP-42S. However, unlike the HP-42S, the RPN83P remembers the most recent base
 number and restores its setting if the `BASE` menu hierarchy is selected again.
-
-### Storage Registers
-
-Similar to the HP-42S, the RPN83P provides **25** storage registers labeled
-`R00` to `R24`. They are accessed using the `STO` and `2ND` `RCL` keys. To store
-a number into register `R00`, press:
-
-- `STO` `00`
-
-To recall register `R00`, press:
-
-- `2ND` `RCL` `00`
-
-To clear the all storage registers, use the arrow keys for the menu system to
-get to:
-
-- ![ROOT MenuRow 3](docs/rpn83p-screenshot-menu-root-3.png)
-- Press `CLR` to get
-  ![CLR MenuRow 1](docs/rpn83p-screenshot-menu-root-clr-1.png)
-- Press `CLRG`
-
-The message `REGS cleared` will be displayed on the screen.
-
-Similar to the HP-42S and the HP-15C, storage register arithmetic operations are
-supported using the `STO` and `RCL` buttons followed by an arithmetic button.
-
-For example:
-
-- `STO` `+` `00`: add `X` to Reg 00
-- `STO` `-` `00`: subtract `X` from Reg 00
-- `STO` `*` `00`: multiply `X` to Reg 00
-- `STO` `/` `00`: divide `X` into Reg 00
-
-Similarly:
-
-- `RCL` `+` `00`: add Reg 00 to `X`
-- `RCL` `-` `00`: subtract Reg 00 from `X`
-- `RCL` `*` `00`: multiply Reg 00 to `X`
-- `RCL` `/` `00`: divide Reg 00 into `X`
-
-Indirect storage registers are not supported (as of v0.7.0). In other words, the
-`STO` `IND` `nn` and `RCL` `IND` `nn` functionality from the HP-42S.
-
-### Prime Factors
-
-The `PRIM` function calculates the lowest prime factor of the number in `X`. The
-result will be `1` if the number is a prime. Unlike almost all other functions
-implemented by RPN83P, the `PRIM` function does not replace the original `X`.
-Instead it pushes the prime factor onto the stack, causing the original `X` to
-move to the `Y` register. This behavior was implemented to allow easier
-calculation of all prime factors of a number as follows.
-
-After the first prime factor is calculated, the `/` can be pressed to calculate
-the remaining factor in the `X` register. We can now press `PRIM` again to
-calculate the next prime factor. Since the `PRIM` preserves the original number
-in the `Y` register, this process can be repeated multiple times to calculate
-all prime factors of the original number.
-
-For example, let's find the prime factors of `119886 = 2 * 3 * 13 * 29 * 53`:
-
-- Press `119886`
-- Press `PRIM` to get `2`
-- Press `/` to divide down to `59943`
-- Press `PRIM` to get `3`
-- Press `/` to divide down to `19981`
-- Press `PRIM` to get `13`
-- Press `/` to divide down to `1537`
-- Press `PRIM` to get `29`
-- Press `/` to divide down to `53`
-- Press `PRIM` to get `1`, which makes `53` the last prime factor.
-
-For computational efficiency, `PRIM` supports only integers between `2` and
-`2^32-1` (4 294 967 295). This allows `PRIM` to use integer arithmetic, making
-it about 7X faster than the equivalent algorithm using floating point routines.
-Any number outside of this range produces an `Err: Domain` message. (The number
-`1` is not considered a prime number.)
-
-If the input number is a very large prime, the calculation may take a long time.
-However, testing has verified that the `PRIM` algorithm will always finish in
-less than about 30 seconds on a TI-83 Plus or TI-84 Plus calculator, no matter
-how large the input number. During the calculation, the "run indicator" on the
-upper-right corner will be active. You can press `ON` key to break from the
-`PRIM` loop with an `Err: Break` message.
 
 ### STAT Functions
 
