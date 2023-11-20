@@ -1775,7 +1775,9 @@ For most TVM problems representing real-life situations, the default values
 should be sufficient to find a solution. You can override the defaults of these
 values by entering a value and pressing the appropriate menu button. A small dot
 will be appended to the menu name to indicate that the default value has been
-overridden.
+overridden:
+
+![TVM Solver Overridden](docs/rpn83p-tvm-control-overridden.png)
 
 We might choose to override `IYR1` and `IYR2` when 2 solutions are known to
 exist, but the TVM Solver is unable to find either of them due to the default
