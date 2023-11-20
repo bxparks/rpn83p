@@ -1786,13 +1786,13 @@ help the TVM Solver converge to that solution.
 (TODO: Maybe add a menu item to control the convergence error tolerance?
 Currently, it is set to 1e-8. Some HP calculators use the number of digits in
 the `FIX`, `SCI` or `ENG` display modes to determine the value of the error
-tolerance. TI calculators are usually kept in `display all digits` mode, so I'm
-not sure if we can use the display mode to extract the number of digits in the
-tolerance.)
+tolerance. TI calculators are usually kept in "floating" (aka "display all
+digits") mode `FIX(-)`, so I'm not sure it would be useful to use the display
+mode to extract size of the tolerance.)
 
 These control parameter can be restored to their default factory values by
-pressing the `RSTV` menu. The `overridden` dot indicator on the menu buttons
-should disappear.
+pressing the `RSTV` menu. The "overridden" dot on the menu buttons should
+disappear.
 
 #### TVM Clear
 
