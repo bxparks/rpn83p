@@ -23,3 +23,42 @@ Currently 4 modes defined:
   always shown, instead of being overwritten by the `inputBuf` in Edit mode.
   This helps debugging the complex interaction between the input buffer and the
   X register.
+
+## PRIM Prime Factor
+
+The [USER_GUIDE.md#prime-factors](USER_GUIDE.md#prime-factors) section explains
+how to use the `PRIM` menu function to successively calculate all the prime
+factors of an integer `N` from `[0, 2^32)`. The largest prime less than 2^16 is
+`65521`. Therefore the longest time that `PRIM` can spend is the factorization
+of `65521*65521=4 293 001 441`. On a TI-84 Plus, that calculation takes 33
+seconds.
+
+Here are some notes about how the `PRIM` algorithm works:
+
+- The basics of the algorithm is to test all the candidate prime factors from 2
+  to `sqrt(N)`.
+- We could simply start at 3 and increment by 2 to test every odd number to
+  `sqrt(N)`. But we can do slightly better. All prime numbers `>=5` are of the
+  form `6k-1` and `6k+1`. So each iteration can increment by 6, but perform 2
+  checks. This effectively means that we step by 3 through the candidate prime
+  factors, instead of just by 2 (for all odd numbers),  which makes the loop 50%
+  faster.
+- We use integer operations instead of TI-OS floating point ops. If I recall,
+  this makes it about 2-3X faster (floating point ops in TI-OS are surprisingly
+  fast).
+- Z80 does not support integer division operations in hardware, so we have to
+  write our own in software. The integer size of `N` is limited to 32 bits, so
+  we need to write a `div(u32, u32)` routine.
+- But the loop only needs to go up to `sqrt(N)`, so we actually only need a
+  `div(u32, u16)` routine, which if I recall is about 2X faster. This is because
+  the bit-wise loop is reduced by 2X, but also because the dividend can be
+  stored in a 16-bit Z80 register, instead of stored in 4 bytes of RAM.
+- Finally, we actually don't need a full `div()` operation for the `PRIM`
+  function. We don't need the quotient, we need only the remainder. So we
+  implement a custom `mod(u32, u16)` function which is about 25% faster than the
+  full `div(u32, u16)` function.
+
+I think there are additional micro-optimizations left on the table that could
+make the `PRIM` function maybe 1.5X to 2X faster, without resorting to a
+completely different algorithm. But I suspect that the resulting code would be
+difficult to understand and maintain. So I decided to stop here.

@@ -97,7 +97,7 @@ Here the quick summary of its features:
     - constants: `pi` and `e`
 - additional menu functions:
     - `X^3`, `3RootX`, `XRootY`, `ATN2`, `2^X`, `LOG2`, `LOGB`
-    - `%`, `%CH`, `GCD`, `LCM`, `PRIM` (is prime)
+    - `%`, `%CH`, `GCD`, `LCM`, `PRIM` (prime factor)
     - `IP` (integer part), `FP` (fractional part), `FLR` (floor), `CEIL`
       (ceiling), `NEAR` (nearest integer)
     - `ABS`, `SIGN`, `MOD`, `MIN`, `MAX`
@@ -727,7 +727,7 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
     - `%CH`: percent change from `Y` to `X`, leaving `Y` unchanged
     - `GCD`: greatest common divisor of `X` and `Y`
     - `LCM`: lowest common multiple of `X` and `Y`
-    - `PRIM`: determine if `X` is a prime
+    - `PRIM`: prime factor of `X`
         - returns 1 if prime
         - returns the smallest prime factor otherwise
         - See [Prime Factors](#prime-factors) section below.

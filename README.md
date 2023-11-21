@@ -35,7 +35,7 @@ Here is a quick summary of its features:
     - constants: `pi` and `e`
 - additional menu functions:
     - `X^3`, `3RootX`, `XRootY`, `ATN2`, `2^X`, `LOG2`, `LOGB`
-    - `%`, `%CH`, `GCD`, `LCM`, `PRIM` (is prime)
+    - `%`, `%CH`, `GCD`, `LCM`, `PRIM` (prime factor)
     - `IP` (integer part), `FP` (fractional part), `FLR` (floor), `CEIL`
       (ceiling), `NEAR` (nearest integer)
     - `ABS`, `SIGN`, `MOD`, `MIN`, `MAX`
