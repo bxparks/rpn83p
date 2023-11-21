@@ -125,17 +125,19 @@ The RPN83P app starts directly into the calculator mode, like this:
 ![RPN83P Hello 1](docs/rpn83p-screenshot-initial.png)
 
 Since the RPN83P is a flash app, it is preserved when the RAM is cleared. It
-consumes about 300 bytes of RAM space for its internal RPN and storage
+consumes about 400 bytes of RAM space for its internal RPN and storage
 registers.
 
 ### Supported Hardware
 
 This app was designed for TI calculators using the Z80 processor:
 
-- TI-83 Plus
-- TI-83 Plus Silver Edition
-- TI-84 Plus
-- TI-84 Plus Silver Edition
+- TI-83 Plus (6 MHz Z80, 24 kB accessible RAM, 160 kB accessible flash)
+- TI-83 Plus Silver Edition (15 MHz Z80, 24 kB accessible RAM, 1.5 MB accessible
+  flash)
+- TI-84 Plus (15 MHz Z80, 24 kB accessible RAM, 480 kB accessible flash)
+- TI-84 Plus Silver Edition (15 MHz Z80, 24 kB accessible RAM, 1.5 MB accessible
+  flash)
 
 I have tested it on the two calculators that I own:
 

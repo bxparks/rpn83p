@@ -17,6 +17,7 @@ RPN calculator app for the TI-83 Plus and TI-84 Plus inspired by the HP-42S.
     - [Uploading](#uploading)
     - [Starting](#starting)
     - [Quitting](#quitting)
+    - [Supported Hardware](#supported-hardware)
 - [Basic Usage](#basic-usage)
     - [Screen Areas](#screen-areas)
     - [Input and Editing](#input-and-editing)
@@ -258,6 +259,24 @@ where it left off, including the exact cursor position of any pending input.
 When restarted, if the `RPN83SAV` variable does not pass validation (e.g. does
 not exist; was archived; is wrong size; contains an incompatible schema version;
 does not pass a CRC checksum) then the application starts from a clean slate.
+
+### Supported Hardware
+
+This app was designed for TI calculators using the Z80 processor:
+
+- TI-83 Plus (6 MHz Z80, 24 kB accessible RAM, 160 kB accessible flash)
+- TI-83 Plus Silver Edition (15 MHz Z80, 24 kB accessible RAM, 1.5 MB accessible
+  flash)
+- TI-84 Plus (15 MHz Z80, 24 kB accessible RAM, 480 kB accessible flash)
+- TI-84 Plus Silver Edition (15 MHz Z80, 24 kB accessible RAM, 1.5 MB accessible
+  flash)
+
+I have tested it on the two calculators that I own:
+
+- TI-83 Plus Silver Edition, OS v1.19
+- TI-84 Plus Silver Edition, OS v2.55MP
+
+It *should* work on the others, but I have not actually tested them.
 
 ## Basic Usage
 
