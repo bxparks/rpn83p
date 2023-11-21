@@ -1149,38 +1149,41 @@ bit-xor, etc). They are useful for computer science and programming. Many of the
 `BASE` mode functions were inspired by the HP-16C, which has more extensive
 functions in this area compared to the HP-42S.
 
-All menu functions under the `BASE` menu operate on *integer* values instead of
-floating point values. Currently, the RPN83P app supports only unsigned 32-bit
-integers. (Support for 8-bit, 16-bit, and 24-bit integers may be implemented in
-the near future.) Any floating point values on the RPN stack (e.g. `X` or `Y`
-registers) are converted into an unsigned 32-bit integer before being passed
-into a logical, bitwise, or arithmetic function. This includes the `DEC` (base
-10) mode.
+All menu functions under the `BASE` menu operate on *unsigned integer* values
+instead of floating point values. The following word sizes have been
+implemented: 8, 16, 24, and 32 bits. Any floating point values on the RPN stack
+(e.g. `X` or `Y` registers) are converted into an unsigned integer before being
+passed into a logical, bitwise, or arithmetic function. This includes the `DEC`
+(base 10) mode.
+
+The maximum value that can be represented when in `BASE` mode is `2^WSIZ-1`,
+which is (255, 16383, 16777215, 4294967295) for (8, 16, 24, 32) bit integers
+respectively.
 
 #### Base Modes
 
 **DEC** (decimal)
 
 The `DEC` (decimal) mode is the default. All numbers on the RPN stack are
-displayed as an integer, after being converted to an unsigned 32-bit integer.
+displayed as an integer, after being converted to an unsigned integer.
 
 ![Numbers in Decimal Mode](docs/rpn83p-screenshot-base-dec.png)
 
 If the value on the RPN stack is negative, a single `-` sign is shown. If the
-value is greater than or equal to `2^32`, then 3 dots `...` are shown. If the
-floating point value is within the range of `[0, 2^32)` but has non-zero
+value is greater than or equal to `2^WSIZ`, then 3 dots `...` are shown. If the
+floating point value is within the range of `[0, 2^WSIZ)` but has non-zero
 fractional value, a decimal point is shown after converting the integer part
-into a 32-bit unsigned integer.
+into a unsigned integer.
 
 **HEX** (hexadecimal)
 
 The `HEX` (hexadecimal) mode displays all numbers on the RPN stack using base
-16. Only the integer part is rendered. It is converted into an unsigned 32-bit
-integer, and printed using 8 hexadecimal digits. If there are fractional digits
-after the decimal point, a decimal point `.` is printed at the end of the 8
-digits to indicate that the fractional part is not shown. Negative numbers are
-not valid and a single `-` character is printed instead. Three dots are printed
-if the integer part is `>= 2^32`.
+16. Only the integer part is rendered. It is converted into an unsigned integer,
+and printed using a fixed number of hexadecimal digits depending on the word
+size. If there are fractional digits after the decimal point, a decimal point
+`.` is printed at the end of the 8 digits to indicate that the fractional part
+is not shown. Negative numbers are not valid and a single `-` character is
+printed instead. Three dots are printed if the integer part is `>= 2^WSIZ`.
 
 The hexadecimal digits `A` through `F` are entered using `ALPHA` `A`, through
 `ALPHA` `F`. You can lock the `ALPHA` mode using `2ND` `A-LOCK`, but that causes
@@ -1193,12 +1196,12 @@ useful in this context.
 **OCT** (octal)
 
 The `OCT` (octal) mode displays all numbers on the RPN stack using base 8. Only
-the integer part is rendered. It is converted into an unsigned 32-bit integer,
-and printed using 11 octal digits. If there are fractional digits after the
-decimal point, a decimal point `.` is printed at the end of the 11 digits to
-indicate that the fractional part is not shown. Negative numbers are not valid
-and a single `-` character is printed instead. Three dots are printed if the
-integer part is `>= 2^32`.
+the integer part is rendered. It is converted into an unsigned integer, and
+printed using a fixed number of octal digits depending on the word size. If
+there are fractional digits after the decimal point, a decimal point `.` is
+printed at the end of the 11 digits to indicate that the fractional part is not
+shown. Negative numbers are not valid and a single `-` character is printed
+instead. Three dots are printed if the integer part is `>= 2^WSIZ`.
 
 The button digits `0` through `7` are entered normally. The button digits `8`
 and `9` are disabled in octal mode.
@@ -1208,13 +1211,13 @@ and `9` are disabled in octal mode.
 **BIN** (binary)
 
 The `BIN` (binary) mode displays all numbers on the RPN stack using base 2. Only
-the integer part is rendered. It is converted into an unsigned 32-bit integer,
-and printed using 14 binary digits (the maximum allowed by the width of the LCD
-screen). If there are fractional digits after the decimal point, a decimal point
-`.` is printed at the end of the 14 digits to indicate that the fractional part
-is not shown. Negative numbers are not valid and a single `-` character is
-printed instead. Three dots are also printed if the integer part is `>= 2^14`
-(i.e. `>= 16384`).
+the integer part is rendered. It is converted into an unsigned integer, and
+printed using a maximum of 14 binary digits, due to the maximum allowed by the
+width of the LCD screen. If there are fractional digits after the decimal point,
+a decimal point `.` is printed at the end of the 14 digits to indicate that the
+fractional part is not shown. Negative numbers are not valid and a single `-`
+character is printed instead. Three dots are also printed if the integer part is
+`>= 2^14` (i.e. `>= 16384`).
 
 Only the button digits `0` and `1` are active in the binary mode. The rest are
 disabled.
@@ -1412,15 +1415,16 @@ with the HP-42S implementation of the BASE operations. First, 36 bits is a
 strange number, it is not an integer size used by modern microprocessors (8, 16,
 32, 64 bits). Second, the HP-42S does not display leading zeros in `HEX` `OCT`,
 or `BIN` modes. While this is consistent with the decimal mode, it is confusing
-to see the number of rendered digits change depending on its value.
+to see the number of displayed bits change depending on its value.
 
-The RPN83P deviates from the HP-42S by using a 32-bit *unsigned* integer
-internally, and rendering the various HEX, OCT, and BIN numbers using the same
-number of digits all the time. (The word size can be changed using the `WSIZ`
-menu item, see below). This means that `HEX` mode always displays 8 digits,
-`OCT` mode always displays 11 digits, and `BIN` mode always displays 14 digits
-(due to size limitation of the LCD screen). I find this less confusing when
-doing bitwise operations (e.g. bit-and, bit-or, bit-xor).
+The RPN83P deviates from the HP-42S by using *unsigned* integers internally, and
+rendering the various HEX, OCT, and BIN numbers using the same number of digits
+regardless of the value. The word size of the integer can be changed using the
+`WSIZ` menu item (see below). The following word sizes are supported: 8, 16, 24,
+and 32 bits. This means that `HEX` mode with a word size of 32 always displays 8
+digits, `OCT` mode always displays 11 digits, and `BIN` mode always displays 14
+digits (due to size limitation of the LCD screen). I find this less confusing
+when doing bitwise operations (e.g. bit-and, bit-or, bit-xor).
 
 Since the internal integer representation is *unsigned*, the `(-)` (change sign)
 button is disabled. Instead, the menu system provides a `NEG` function which
@@ -1440,16 +1444,16 @@ The word size, defaulting to 32 bits, can be changed using the `WSIZ` menu
 function. To simplify the implementation code, only the following word sizes are
 supported: 8, 16, 24, and 32, corresponding to 1, 2, 3, and 4 bytes
 respectively. The RPN83P app represents all numbers internally using the TI-OS
-floating point number format which supports 14 decimal digits, corresponding to
-46.5 bits. Therefore, the largest word size that could be supported in the
-current architecture is 40. Supporting a 64-bit word size would require a
-complete rewrite of the application
+floating point number format which supports 14 decimal digits. This corresponds
+to 46.5 bits. Therefore, the largest word size that could be supported in the
+current architecture is 40. Supporting a 64-bit word size would require a major
+rearchitecture of the application
 
 Every `BASE` operation respects the current `WSIZ` value, truncating the `X` or
 `Y` integers to the word size, before performing the `BASE` operation, then
 truncating the result to the word size. For example, if the word size is 16,
 then the `RR` (rotate right circular) operation rotates bit 0 to bit 15, instead
-of bit 31 if the word size were 32.
+of bit 31 if the word size was 32.
 
 The `WSIZ` command uses the value of the `X` register, but the value shown on
 the display depends on the base mode. It is sometimes easier to temporarily
@@ -1476,7 +1480,7 @@ The current `WSIZ` value can be retrieved using the `WSZ?` menu function.
 
 #### Base Number Retention
 
-Since the `DEC`, `HEX`, `OCT` and `BIN` modes are useful only within the `BASE`
+The `DEC`, `HEX`, `OCT` and `BIN` modes are useful only within the `BASE`
 hierarchy of menus. When the menu leaves the `BASE` hierarchy, the numbers on
 the RPN stack revert back to using floating points. This is similar to the
 HP-42S. However, unlike the HP-42S, the RPN83P remembers the most recent base
