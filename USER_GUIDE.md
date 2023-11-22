@@ -2055,6 +2055,11 @@ limited:
     - I think the difficulty will be the user interface. A complex number
       requires 2 floating point numbers to be entered and displayed, and I have
       not figured out how to do that within the UI of the RPN83P application.
+- polynomial solvers
+    - Quadratic, cubic, and quartic equations have analytical solutions so
+      should be relatively straightforward... Except that they need complex
+      number support. And we need to workaround numerical cancellation or
+      roundoff errors.
 - `UNIT` conversions for imperial (not just US) units
     - several places assume US customary units (e.g. US gallons) instead of
       British or Canadian imperial units
