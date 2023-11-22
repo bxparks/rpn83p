@@ -146,6 +146,12 @@ I have tested it on the two calculators that I own:
 
 It *should* work on the others, but I have not actually tested them.
 
+The following calculators are *not* supported because their internal hardware is
+too different:
+
+- TI-84 Plus C Silver Edition
+- TI-84 Plus CE
+
 ## Quick Examples
 
 ### Example 1
