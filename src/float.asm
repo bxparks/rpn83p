@@ -176,8 +176,8 @@ lnOnePlusNotZero:
     ; better than the above x*ln(x)/(1+x-1) hack coded above, if the calculator
     ; already has the asinh() function. For better numerical stability, use
     ; asinh((x/2)(1+1/(1+x))). Must check for (1+x)>0, because the above
-    ; identity is true only for (1+x)>0, and asinh() will actually return a
-    ; value, but ln(1+x) will throw an exception.
+    ; identity is true only for (1+x)>0. For (1+x)<0, asinh() will actually
+    ; return a value, but ln(1+x) will throw an exception.
     ;
     ; See https://www.hpmuseum.org/forum/thread-1012-post-8714.html#pid8714
     ; for more info.
