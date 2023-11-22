@@ -41,15 +41,15 @@
 ;    while (data_len--) {
 ;        c = *d++;
 ;        for (i = 0x80; i > 0; i >>= 1) {
-;            bit = (crc & 0x80) ^ ((c & i) ? 0x80 : 0);
+;            bit = (crc & 0x8000) ^ ((c & i) ? 0x8000 : 0);
 ;            crc <<= 1;
 ;            if (bit) {
-;                crc ^= 0x07;
+;                crc ^= 0x1021;
 ;            }
 ;        }
-;        crc &= 0xff;
+;        crc &= 0xffff;
 ;    }
-;    return crc & 0xff;
+;    return crc & 0xffff;
 ; }
 crc16ccitt:
     ex de, hl ; DE=pointer to data
