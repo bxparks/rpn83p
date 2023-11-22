@@ -20,18 +20,20 @@ and an appVar named `RPN83SAV`.
 
 Here is a quick summary of its features:
 
-- traditional 4-level RPN stack (`X`, `Y`, `Z`, `T` registers)
-- support for `lastX` register
+- traditional 4-level RPN stack (`X`, `Y`, `Z`, `T`), with `LastX` register
 - 8-line display showing all stack registers
-- 25 storage registers (`STO 00`, `RCL 00`, ..., `STO 24`, `RCL 24`)
 - hierarchical menu system similar to HP-42S
+- storage registers
+    - store and recall:`STO nn`, `2ND RCL nn`
+    - storage arithmetics: `STO+ nn`, `STO- nn`, `STO* nn`, `STO/ nn`, `RCL+
+      nn`, `RCL- nn`, `RCL* nn`, `RCL/ nn`
+    - 25 storage registers: `nn = 00..24`
 - support for all math functions with dedicated buttons on the TI-83 Plus and
   TI-84 Plus
     - arithmetic: `/`, `*`, `-`, `+`
     - trigonometric: `SIN`, `COS`, `TAN`, etc.
-    - `1/X`, `X^2`, `SQRT`
-    - `^` (i.e. `Y^X`),
-    - `LOG`, `10^X`, `LN`, `e^X`
+    - algebraic: `1/X`, `X^2`, `SQRT`, `^` (i.e. `Y^X`)
+    - transcendental: `LOG`, `10^X`, `LN`, `e^X`
     - constants: `pi` and `e`
 - additional menu functions:
     - `X^3`, `3RootX`, `XRootY`, `ATN2`, `2^X`, `LOG2`, `LOGB`
