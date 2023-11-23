@@ -3,6 +3,59 @@
 Notes for the developers of the RPN83P app, likely myself in 6 months when I
 cannot remember how the code works.
 
+## Table of Contents
+
+- [Debug Statements](#debug-statements)
+- [DRAW Mode](#draw-mode)
+- [PRIM Prime Factor](#prim-prime-factor)
+
+## Debug Statements
+
+Debugging a TI calculator app written in Z80 assembly language is a royal pain
+in the neck. Maybe there exist Z80 debuggers that are useful, but I don't know
+how to use any of them. The `debug.asm` file contains a number of routines that
+I have incrementally added to help me debug this app.
+
+They are normally excluded from the binary. They are included only when the
+`DEBUG` macro is defined with the `-DDEBUG` flag like this:
+
+```
+$(SPASM) -DDEBUG -I $(SPASM_INC) -N rpn83p.asm $@
+```
+
+Currently, all debug routines are placed in Flash Page 1, but they could easily
+be moved to another Flash Page if needed. The routines are placed in the branch
+table in `rpn83p.asm`, and all of them start with the prefix `_Debug`:
+
+- `_DebugInputBuf`
+- `_DebugParseBuf`
+- `_DebugPString`
+- `_DebugClear`
+- `_DebugOP1`
+- `_DebugEEPos`
+- `_DebugUnsignedA`
+- `_DebugSignedA`
+- `_DebugFlags`
+- `_DebugU32AsHex`
+- `_DebugHLAsHex`
+- `_DebugPause`
+- `_DebugU32DEAsHex`
+
+They are called with the usual `bcall()` convention like
+`bcall(_DebugUnsignedA)`. Most of these debugging functions write to the empty
+line on the LCD, just below the top Status line. That line is purposely left
+unused in the RPN83P app, for the explicit goal of allowing these debug routines
+to print to that line without interfering with the normal operation of the app.
+
+These debug statements intended to have no side effects so that they can be
+inserted into most places in the application code, without affecting the logic
+of the code being debugged. They should save all modified registers (including
+the accumulator A and the flags with the `AF` register), save the display cursor
+variables `CurRow` and `CurCol`, and restore these variables at the end of the
+routine. It is probably a bug if any of these routines cause side effects,
+because that means that adding a debug statement would cause the normal flow of
+the application code to change.
+
 ## DRAW Mode
 
 The secret `DRAW` (maybe call it "Debug") modes are activated by the `2ND DRAW`
