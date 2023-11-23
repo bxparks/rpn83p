@@ -19,7 +19,7 @@ how to use any of them. The `debug.asm` file contains a number of routines that
 I have incrementally added to help me debug this app.
 
 They are normally excluded from the binary. They are included only when the
-`DEBUG` macro is defined with the `-DDEBUG` flag like this:
+`DEBUG` macro is defined with the `-DDEBUG` flag like this in the `Makefile`:
 
 ```
 $(SPASM) -DDEBUG -I $(SPASM_INC) -N rpn83p.asm $@
@@ -49,7 +49,7 @@ line on the LCD, just below the top Status line. That line is purposely left
 unused in the RPN83P app, for the explicit goal of allowing these debug routines
 to print to that line without interfering with the normal operation of the app.
 
-These debug statements intended to have no side effects so that they can be
+These debug statements are intended to have no side effects so that they can be
 inserted into most places in the application code, without affecting the logic
 of the code being debugged. They should save all modified registers (including
 the accumulator A and the flags with the `AF` register), save the display cursor
@@ -60,11 +60,10 @@ the application code to change.
 
 ## DRAW Mode
 
-The secret `DRAW` (maybe call it "Debug") modes are activated by the `2ND DRAW`
-command. It prompts the user for a number, like the `FIX` or `STO` command.
-Currently 4 modes defined:
+The secret `DRAW` modes are activated by the `2ND DRAW` command. It prompts the
+user for a number, like the `FIX` or `STO` command. Currently 4 modes defined:
 
-- 0 (drawNodeNormal): Normal rendering, this is the default.
+- 0 (drawModeNormal): Normal rendering, this is the default.
 - 1 (drawModeTvmSolverI): Single step through the `I%YR` TVM Solver
   calculations, and show the iteration counter (`tvmSolverCount`), and the
   internal interest rate variables (`tvmI0`, `tvmI1`) in place of the RPN stack
@@ -78,6 +77,8 @@ Currently 4 modes defined:
   always shown, instead of being overwritten by the `inputBuf` in Edit mode.
   This helps debugging the complex interaction between the input buffer and the
   X register.
+
+Any other value is treated to be the same as 0 (drawModeNormal).
 
 ## PRIM Prime Factor
 
@@ -128,24 +129,26 @@ factoring algorithm:
 1. The `PRIM` function currently returns only the smallest prime factor. It must
    be manually called repeatedly to get additional prime factors. But each time
    it is called, the search the next prime factor restart at 2 and loop to
-   sqrt(N). This is inefficient, because the search should have started at the
-   *last* prime factor, since all candidates smaller than that number had
-   already been tested. If another function was added that returned *all* prime
-   factors of a number `N` (maybe call it`PRFS`), it could be implemented
-   efficiently by restarting the loop at the previous prime factor. However,
-   this new function would need support for vectors in the RPN83P app so that it
-   can return multiple numbers as the result. Vectors unfortunately are not
-   currently (v0.7.0) supported.
+   sqrt(N).
+
+   This is inefficient, because the search should have started at the *last*
+   prime factor, since all candidates smaller than that number had already been
+   tested. If another function was added that returned *all* prime factors of a
+   number `N` (maybe call it`PRFS`), it could be implemented efficiently by
+   restarting the loop at the previous prime factor. However, this new function
+   would need support for vectors in the RPN83P app so that it can return
+   multiple numbers as the result. Vectors unfortunately are not currently
+   (v0.7.0) supported.
 1. The [Prime Number
    Theorem](https://en.wikipedia.org/wiki/Prime_number_theorem) tells us that
    the number of prime numbers less than `n` is roughly `n/ln(n)`. Since we
    restrict our input to the `PRIM` function to 32-bit unsigned integers, the
    largest prime factor that we need to consider is `sqrt(2^32)` or `2^16`. That
    means that the number of candidate prime factors that we need to consider is
-   roughly `65536/ln(65535)` or about `5909`. (Apparently, the `n/ln(n)`
-   expression *underestimates* the actual number of primes). According to the
-   [Prime Counting Function](https://www.dcode.fr/prime-number-pi-count), the
-   actual number is `6542`.
+   roughly `65536/ln(65535)` or about `5909`. According to the [Prime Counting
+   Function](https://www.dcode.fr/prime-number-pi-count), the actual number is
+   `6542`. (Apparently, the `n/ln(n)` expression *underestimates* the actual
+   number of primes).
 
    We could pre-calculate those 6542 prime numbers into a table, consuming 13084
    bytes (using 16-bit integers), which is less than one flash page (16 kiB) of
