@@ -8,6 +8,8 @@ cannot remember how the code works.
 - [Debug Statements](#debug-statements)
 - [DRAW Mode](#draw-mode)
 - [PRIM Prime Factor](#prim-prime-factor)
+    - [Prime Factor Algorithm](#prime-factor-algorithm)
+    - [Prime Factor Improvements](#prime-factor-improvements)
 
 ## Debug Statements
 
@@ -79,6 +81,8 @@ Currently 4 modes defined:
 
 ## PRIM Prime Factor
 
+### Prime Factor Algorithm
+
 The [USER_GUIDE.md#prime-factors](USER_GUIDE.md#prime-factors) section explains
 how to use the `PRIM` menu function to successively calculate all the prime
 factors of an integer `N` from `[0, 2^32)`. The largest prime less than 2^16 is
@@ -115,3 +119,40 @@ I think there are additional micro-optimizations left on the table that could
 make the `PRIM` function maybe 1.5X to 2X faster, without resorting to a
 completely different algorithm. But I suspect that the resulting code would be
 difficult to understand and maintain. So I decided to stop here.
+
+### Prime Factor Improvements
+
+For completeness, here are some improvements that could be made in the prime
+factoring algorithm:
+
+1. The `PRIM` function currently returns only the smallest prime factor. It must
+   be manually called repeatedly to get additional prime factors. But each time
+   it is called, the search the next prime factor restart at 2 and loop to
+   sqrt(N). This is inefficient, because the search should have started at the
+   *last* prime factor, since all candidates smaller than that number had
+   already been tested. If another function was added that returned *all* prime
+   factors of a number `N` (maybe call it`PRFS`), it could be implemented
+   efficiently by restarting the loop at the previous prime factor. However,
+   this new function would need support for vectors in the RPN83P app so that it
+   can return multiple numbers as the result. Vectors unfortunately are not
+   currently (v0.7.0) supported.
+1. The [Prime Number
+   Theorem](https://en.wikipedia.org/wiki/Prime_number_theorem) tells us that
+   the number of prime numbers less than `n` is `n/ln(n)`. Since we restrict our
+   input to the `PRIM` function to 32-bit unsigned integers, the largest prime
+   factor that we need to consider is `sqrt(2^32)` or `2^16`. That means that
+   the number of candidate prime factors that we need to consider is
+   `65536/ln(65535)` or `5909`.
+
+   We could pre-calculate those 5909 prime numbers into a table, consuming about
+   11818 bytes (using 16-bit integers), which is less than one flash page (16
+   kiB) of a TI calculator. The `PRIM` function would need to iterate only 5909
+   times through this table. In comparison, the current algorithm effectively
+   increments through the candidates by 3, up to `2^16`, so about 21845
+   iterations. The lookup table method would be 3.7X faster, but would increase
+   the app flash memory size by 11818 bytes (most likely another flash page, so
+   16 kiB).
+
+   I'm not sure if the increase in flash size is worth it, but the `PRIM`
+   function could be made blindingly fast, finishing the toughest prime
+   factorization problem in less than 9 seconds on a TI-84+.
