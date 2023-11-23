@@ -138,21 +138,24 @@ factoring algorithm:
    currently (v0.7.0) supported.
 1. The [Prime Number
    Theorem](https://en.wikipedia.org/wiki/Prime_number_theorem) tells us that
-   the number of prime numbers less than `n` is `n/ln(n)`. Since we restrict our
-   input to the `PRIM` function to 32-bit unsigned integers, the largest prime
-   factor that we need to consider is `sqrt(2^32)` or `2^16`. That means that
-   the number of candidate prime factors that we need to consider is
-   `65536/ln(65535)` or `5909`.
+   the number of prime numbers less than `n` is roughly `n/ln(n)`. Since we
+   restrict our input to the `PRIM` function to 32-bit unsigned integers, the
+   largest prime factor that we need to consider is `sqrt(2^32)` or `2^16`. That
+   means that the number of candidate prime factors that we need to consider is
+   roughly `65536/ln(65535)` or about `5909`. (Apparently, the `n/ln(n)`
+   expression *underestimates* the actual number of primes). According to the
+   [Prime Counting Function](https://www.dcode.fr/prime-number-pi-count), the
+   actual number is `6542`.
 
-   We could pre-calculate those 5909 prime numbers into a table, consuming about
-   11818 bytes (using 16-bit integers), which is less than one flash page (16
-   kiB) of a TI calculator. The `PRIM` function would need to iterate only 5909
-   times through this table. In comparison, the current algorithm effectively
+   We could pre-calculate those 6542 prime numbers into a table, consuming 13084
+   bytes (using 16-bit integers), which is less than one flash page (16 kiB) of
+   a TI calculator. The `PRIM` function would need to iterate only 6542 times
+   through this table. In comparison, the current algorithm effectively
    increments through the candidates by 3, up to `2^16`, so about 21845
-   iterations. The lookup table method would be 3.7X faster, but would increase
-   the app flash memory size by 11818 bytes (most likely another flash page, so
-   16 kiB).
+   iterations. The lookup table method would be 3.3X faster, but would increase
+   the app flash memory size by at least 13084 bytes (most likely another flash
+   page, so 16 kiB).
 
    I'm not sure if the increase in flash size is worth it, but the `PRIM`
-   function could be made blindingly fast, finishing the toughest prime
-   factorization problem in less than 9 seconds on a TI-84+.
+   function could be made blindingly fast, finishing the toughest prime factor
+   problem (of less than `2^32`) in about 10 seconds on a TI-84+ calculator.
