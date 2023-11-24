@@ -422,10 +422,11 @@ pulling everything to the present or pushing everything to the future.
 **Implementation Note**: The `inverseCompoundingFactor()` routine calculates the
 reciprocal of `CFN(i,N)`. In other words, it calculates `ICFN(i,N) = 1/CFN(i,N)
 = Ni/((1+i)^N-1)` for a slight gain in efficiency by avoiding a division or two.
-This makes `ICFN(i,N)` very similar to the `C(n)` function given by Albert Chan
-in [TVM formula error in programming
+This makes `ICFN(i,N)` similar to the `C(n)` function given by Albert Chan in
+[TVM formula error in programming
 manual?](https://www.hpmuseum.org/forum/thread-20739-post-179371.html#pid179371)
-(2023), within a factor of `(1+ip)`.
+(2023), within a factor of `(1+i)^N`, or equivalently, a substitution of `-N`
+for `N`.
 
 ### Secant Method
 
