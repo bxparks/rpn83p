@@ -10,6 +10,7 @@ cannot remember how the code works.
 - [PRIM Prime Factor](#prim-prime-factor)
     - [Prime Factor Algorithm](#prime-factor-algorithm)
     - [Prime Factor Improvements](#prime-factor-improvements)
+- [TVM Algorithms](#tvm-algorithms)
 
 ## Debug Statements
 
@@ -162,3 +163,7 @@ factoring algorithm:
    I'm not sure if the increase in flash size is worth it, but the `PRIM`
    function could be made blindingly fast, finishing the toughest prime factor
    problem (of less than `2^32`) in about 10 seconds on a TI-84+ calculator.
+
+## TVM Algorithms
+
+See [TVM Algorithms](TVM.md).
