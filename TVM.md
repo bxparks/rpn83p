@@ -3,7 +3,7 @@
 ## Table of Contents
 
 - [TVM Basics](#tvm-algorithms)
-- [Interest Rate Conversions](interest-rate-conversions)
+- [Interest Rate Conversions](#interest-rate-conversions)
 - [TVM Formulas](#tvm-formulas)
 - [Small Interest Limits](#small-interest-limits)
     - [CF1 and CF2](#cf1-and-cf2)
@@ -287,7 +287,7 @@ degree   coefficient
 
 As before, `p = 0 (end) or 1 (begin)`. Since all the `PMT` terms are identical,
 there are only 3 possibilities for the number of sign changes: 0, 1, or 2.
-According to the rule of signs, these are number of possible solutions:
+According to the rule of signs, these are the number of possible solutions:
 
 ```
 0: no solution
@@ -340,7 +340,7 @@ value of `i=1`, the term `(1+i)^N` is approximately `2e108`, which is larger
 than the highest number supported by the TI calculator `9.9999e99`. Note that
 the same problem exists if we used the `NPV(i)` equation, but in that case, we
 would have an *underflow* problem where the polynomial terms become less than
-the 1e-99 limit of the TI calculator.
+the `1e-99` limit of the TI-OS.
 
 The solution provided by Albert Chan is brilliant. It uses the fact that when we
 are solving for the zeros of an equation, we can divide the equation by an
@@ -351,12 +351,11 @@ equation are *unchanged*. Let's define a new term `CFN(i,N)`:
 CFN(i,N) = CF2(i)/N = [(1+i)^N-1]/Ni
 ```
 
-Note that this is slightly different than the `C(i,N)` function defined by
+(Note that this is slightly different than the `C(i,N)` function defined by
 Albert Chan in [TVM formula error in programming
-manual?](https://www.hpmuseum.org/forum/thread-20739.html) (2023). The
-`CFN(i,N)` function is normalized by `N` so that it evaluates to `1` at `i=0`
-for all `N`. This version seemed easier to debug in the code, rather than have
-it change depending on `N`.
+manual?](https://www.hpmuseum.org/forum/thread-20739.html) (2023)) The
+`CFN(i,N)` function normalized by `N` compared to `CF2(i)` so that it evaluates
+to `1` at `i=0` for all `N`.
 
 Let's divide the `NFV(i)` equation by the `CFN(i,N)` quantity to get a function
 called `NPMT(i)`:
@@ -388,7 +387,6 @@ and `PV(i)` for small and large `i`:
 - For large `i`:
     - `CFN(i,N) ~ i^(N-1)/N`
     - `CFN(i,-N) ~ 1/Ni`
-```
 
 This means that each term in the `NPMT(i)` equation either diminishes by a
 factor of `i^(N-1)` as `i` becomes large, or grows no faster than a linear
