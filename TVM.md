@@ -409,16 +409,15 @@ interpreation:
   at the specified interest rate `i`
 - `FV/CFN(i,N)`: the nominal value of `N` payments that are equivalent to `FV`
   at the specified interest rate `i`
-- (1+ip)N*PMT: the nominal value of `N` payments of `PMT`, after normalizing all
-  payments to the end of each period
+- `(1+ip)N*PMT`: the nominal value of `N` payments of `PMT`, after normalizing
+  all payments to the end of each period
 
-We can perhaps get an intuitive understanding why `NPMT(i)` is a function that
-does not overflow or underflow as readily as `NFV(i)` or `NPV(i)`. It tracks the
-cash flow in terms of *nominal* currency, not the inflation-adjusted currency at
-one end or the other of the cash flow. The `NPMT(i)` function essentially
-averages all 3 terms over the entire duration of the `N` payment periods,
-instead of pulling everything to the present or pushing everything to the
-future.
+We can perhaps get an intuitive understanding why `NPMT(i)` is less susceptible
+to overflow or underflow compared to `NFV(i)` or `NPV(i)`. It tracks the cash
+flow in terms of *nominal* currency, not the inflation-adjusted currency at the
+beginning or end of the cash flow. The `NPMT(i)` function essentially averages
+all 3 terms over the entire duration of the `N` payment periods, instead of
+pulling everything to the present or pushing everything to the future.
 
 **Implementation Note**: The `inverseCompoundingFactor()` routine calculates the
 reciprocal of `CFN(i,N)`. In other words, it calculates `ICFN(i,N) = 1/CFN(i,N)
