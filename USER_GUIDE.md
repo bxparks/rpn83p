@@ -2,7 +2,7 @@
 
 RPN calculator app for the TI-83 Plus and TI-84 Plus inspired by the HP-42S.
 
-**Version**: 0.7.0 (2023-11-20)
+**Version**: 0.8.0-dev (2023-11-24)
 
 **Project Home**: https://github.com/bxparks/rpn83p
 
@@ -80,13 +80,13 @@ memory. Since it is stored in flash, it is preserved if the RAM is cleared. It
 consumes a small amount of TI-OS RAM: 2 list variables named `REGS` (240 bytes)
 and `STK` (59 byte), and an appVar named `RPN83SAV` (100 bytes).
 
-Here the quick summary of its features:
+Summary of features:
 
 - traditional 4-level RPN stack (`X`, `Y`, `Z`, `T`), with `LastX` register
 - 8-line display showing all stack registers
 - hierarchical menu system similar to HP-42S
 - storage registers
-    - store and recall:`STO nn`, `2ND RCL nn`
+    - store and recall:`STO nn`, `RCL nn`
     - storage arithmetics: `STO+ nn`, `STO- nn`, `STO* nn`, `STO/ nn`, `RCL+
       nn`, `RCL- nn`, `RCL* nn`, `RCL/ nn`
     - 25 storage registers: `nn = 00..24`
@@ -135,7 +135,7 @@ Here the quick summary of its features:
     - `SCI` (scientific 0-9 digits)
     - `ENG` (engineering 0-9 digits)
 
-Here are some missing features which may be added in the future:
+Missing features (partial list):
 
 - vectors and matrices
 - complex numbers
@@ -719,9 +719,10 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
     - `X^3`: cube of `X`
     - `3 Root X`: cube root of `X`
     - `X Root Y`: `X` root of `Y`
-    - `ATN2`: `atan2(Y, X)` in degrees or radians, depending on current mode
-        - `Y` register is the x-component entered first
-        - `X` register is the y-component entered second
+    - `ATN2`: `atan2(X, Y)` in degrees or radians, depending on current mode
+        - `Y`: y-component, entered first
+        - `X`: x-component, entered second
+        - (order of `Y` and `X` is the same as the `>POL` conversion function)
     - `2^X`: `2` to the power of `X`
     - `LOG2`: log base 2 of `X`
     - `LOGB`: log base `X` of `Y`
@@ -763,11 +764,13 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
     - `>DEG`: convert radians to degrees
     - `>RAD`: convert degrees to radians
     - `>REC`: polar to rectangular
-        - input (`Y`, `X`) = `r`, `theta`
-        - output (`Y`, `X`) = `x`, `y`
+        - input: `Y`=y, `X`=x
+        - output: `Y`=theta, `X`=r
+        - (consistent with HP-42S)
     - `>POL`: rectangular to polar
-        - input (`Y`, `X`) = (`x`, `y`)
-        - output (`Y`, `X`) = (`r`, `theta`)
+        - input: `Y`=theta, `X`=r
+        - output: `Y`=y, `X`=x
+        - (consistent with HP-42S)
     - `>HR`: convert `HH.MMSSssss` to `HH.hhhh`
     - `>HMS`: convert `HH.hhhh` to `HH.MMSSssss`
 - `ROOT` > `HELP`: display the Help pages

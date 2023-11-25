@@ -18,13 +18,13 @@ memory. Since it is stored in flash, it is preserved if the RAM is cleared. It
 consumes about 400 bytes of TI-OS RAM: 2 list variables named `REGS` and `STK`,
 and an appVar named `RPN83SAV`.
 
-Here is a quick summary of its features:
+Summary of features:
 
 - traditional 4-level RPN stack (`X`, `Y`, `Z`, `T`), with `LastX` register
 - 8-line display showing all stack registers
 - hierarchical menu system similar to HP-42S
 - storage registers
-    - store and recall:`STO nn`, `2ND RCL nn`
+    - store and recall:`STO nn`, `RCL nn`
     - storage arithmetics: `STO+ nn`, `STO- nn`, `STO* nn`, `STO/ nn`, `RCL+
       nn`, `RCL- nn`, `RCL* nn`, `RCL/ nn`
     - 25 storage registers: `nn = 00..24`
@@ -73,13 +73,13 @@ Here is a quick summary of its features:
     - `SCI` (scientific 0-9 digits)
     - `ENG` (engineering 0-9 digits)
 
-Here are some missing features which may be added in the future:
+Missing features (partial list):
 
 - vectors and matrices
 - complex numbers
 - keystroke programming
 
-**Version**: 0.7.0 (2023-11-20)
+**Version**: 0.8.0-dev (2023-11-24)
 
 **Changelog**: [CHANGELOG.md](CHANGELOG.md)
 
