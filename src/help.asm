@@ -195,7 +195,7 @@ displayHelpPage:
 ;-----------------------------------------------------------------------------
 
 ; Array of (char*) pointers to C-strings.
-helpPageCount equ 9
+helpPageCount equ 10
 helpPages:
     .dw msgHelpPage1
     .dw msgHelpPage2
@@ -206,17 +206,18 @@ helpPages:
     .dw msgHelpPage7
     .dw msgHelpPage8
     .dw msgHelpPage9
+    .dw msgHelpPage10
 
 msgHelpPage1:
     .db escapeLargeFont, "RPN83P", Lenter
-    .db escapeSmallFont, "v0.7.0 (2023", Shyphen, "11", Shyphen, "20)", Senter
+    .db escapeSmallFont, "v0.8.0-dev (2023", Shyphen, "11", Shyphen, "24)", Senter
     .db "(c) 2023  Brian T. Park", Senter
     .db Senter
     .db "An RPN calculator for the", Senter
     .db "TI", Shyphen, "83 Plus and TI", Shyphen, "84 Plus", Senter
     .db "inspired by the HP", Shyphen, "42S.", Senter
     .db Senter
-    .db SlBrack, "1/9", SrBrack, " Any key to continue...", Senter
+    .db SlBrack, "1/10", SrBrack, " Any key to continue...", Senter
     .db 0
 
 msgHelpPage2:
@@ -228,7 +229,7 @@ msgHelpPage2:
     .db Senter
     .db "Quit:  2ND QUIT", Senter
     .db "Off:  2ND OFF", Senter
-    .db SlBrack, "2/9", SrBrack, " Any key to continue...", Senter
+    .db SlBrack, "2/10", SrBrack, " Any key to continue...", Senter
     .db 0
 
 msgHelpPage3:
@@ -240,7 +241,7 @@ msgHelpPage3:
     .db "CLST:  CLEAR CLEAR CLEAR", Senter
     .db Senter
     .db Senter
-    .db SlBrack, "3/9", SrBrack, " Any key to continue...", Senter
+    .db SlBrack, "3/10", SrBrack, " Any key to continue...", Senter
     .db 0
 
 msgHelpPage4:
@@ -252,7 +253,7 @@ msgHelpPage4:
     .db Senter
     .db Senter
     .db Senter
-    .db SlBrack, "4/9", SrBrack, " Any key to continue...", Senter
+    .db SlBrack, "4/10", SrBrack, " Any key to continue...", Senter
     .db 0
 
 msgHelpPage5:
@@ -264,10 +265,21 @@ msgHelpPage5:
     .db "nn: 0 to 24", Senter
     .db Senter
     .db Senter
-    .db SlBrack, "5/9", SrBrack, " Any key to continue...", Senter
+    .db SlBrack, "5/10", SrBrack, " Any key to continue...", Senter
     .db 0
 
 msgHelpPage6:
+    .db escapeLargeFont, "CONV Arguments", Lenter
+    .db escapeSmallFont, Sconvert, "POL ", Sconvert, "REC:", Senter
+    .db SFourSpaces, "Y: y or ", Stheta, Senter
+    .db SFourSpaces, "X: x or r", Senter
+    .db Sconvert, "HMS: hh.mmss", Senter
+    .db Senter
+    .db Senter
+    .db SlBrack, "6/10", SrBrack, " Any key to continue...", Senter
+    .db 0
+
+msgHelpPage7:
     .db escapeLargeFont, "CFIT Models", Lenter
     .db escapeSmallFont, "LINF: y = B + M x", Senter
     .db "LOGF: y = B + M lnx", Senter
@@ -276,10 +288,10 @@ msgHelpPage6:
     .db "BEST: select best model", Senter
     .db Senter
     .db Senter
-    .db SlBrack, "6/9", SrBrack, " Any key to continue...", Senter
+    .db SlBrack, "7/10", SrBrack, " Any key to continue...", Senter
     .db 0
 
-msgHelpPage7:
+msgHelpPage8:
     .db escapeLargeFont, "BASE Ops", Lenter
     .db escapeSmallFont, "SL,SR: shift logical", Senter
     .db "ASR: arithmetic shift right", Senter
@@ -288,10 +300,10 @@ msgHelpPage7:
     .db "REVB: reverse bits", Senter
     .db "CNTB: count bits", Senter
     .db Senter
-    .db SlBrack, "7/9", SrBrack, " Any key to continue...", Senter
+    .db SlBrack, "8/10", SrBrack, " Any key to continue...", Senter
     .db 0
 
-msgHelpPage8:
+msgHelpPage9:
     .db escapeLargeFont, "TVM", Lenter
     .db escapeSmallFont, "outflow: -", Senter
     .db "inflow: +", Senter
@@ -300,10 +312,10 @@ msgHelpPage8:
     .db "END: Payments at end", Senter
     .db "CLTV: Clear TVM",  Senter
     .db Senter
-    .db SlBrack, "8/9", SrBrack, " Any key to continue...", Senter
+    .db SlBrack, "9/10", SrBrack, " Any key to continue...", Senter
     .db 0
 
-msgHelpPage9:
+msgHelpPage10:
     .db escapeLargeFont, "TVM Solver", Lenter
     .db escapeSmallFont, "IYR1: I%YR guess 1",  Senter
     .db "IYR2: I%YR guess 2",  Senter
@@ -312,5 +324,5 @@ msgHelpPage9:
     .db Senter
     .db Senter
     .db Senter
-    .db SlBrack, "9/9", SrBrack, " Any key to return.", Senter
+    .db SlBrack, "10/10", SrBrack, " Any key to return.", Senter
     .db 0

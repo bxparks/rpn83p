@@ -1,6 +1,13 @@
 # Changelog
 
 - Unreleased
+    - **Breaking**: Change order of polar-rectangular conversion menu function
+      (`>POL` and `>REC`) so that they are consistent with the HP-42S. I don't
+      know why I had them reversed.
+        - `Y` register holds the `y` or `theta` value
+        - `X` register holds the `x` or `r` value
+    - Add `Help` page for `CONV` functions summarizing the order and format of
+      parameters.
 - 0.7.0 (2023-11-20)
     - `STAT`
         - fix broken `Sigma+` and `Sigma-` when `Y==0`

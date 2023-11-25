@@ -761,33 +761,39 @@ mDToRHandler:
     bcall(_DToR) ; DEG to RAD
     jp replaceX
 
-; Polar to Rectangular
+; Polar to Rectangular. The order of arguments is intended to be consistent
+; with the HP-42S.
 ; Input:
-;   - Y: r
-;   - X: theta
+;   - Y: theta
+;   - X: r
 ; Output:
-;   - Y: x
-;   - X: y
+;   - Y: y
+;   - X: x
 mPToRHandler:
     call closeInputAndRecallX
-    bcall(_OP1ToOP2) ; OP2 = X = theta
-    call rclY ; OP1 = Y = r
-    bcall(_PToR) ; OP1 = x; OP2 = y (?)
-    jp replaceXYWithOP1OP2 ; X=OP2=y; Y=OP1=x
+    bcall(_OP1ToOP2) ; OP2=X=r
+    call rclY ; OP1 =Y=theta
+    call op1ExOp2  ; OP1=r; OP2=theta
+    bcall(_PToR) ; OP1=x; OP2=y
+    call op1ExOp2  ; OP1=y; OP2=x
+    jp replaceXYWithOP1OP2 ; Y=OP2=y; X=OP1=x
 
-; Rectangular to Polar
+; Rectangular to Polar. The order of arguments is intended to be consistent
+; with the HP-42S.
 ; Input:
-;   - Y: x
-;   - X: y
+;   - Y: y
+;   - X: x
 ; Output:
-;   - Y: r
-;   - X: theta
+;   - Y: theta
+;   - X: r
 mRtoPHandler:
     call closeInputAndRecallX
-    bcall(_OP1ToOP2) ; OP2 = X = y
-    call rclY ; OP1 = Y = x
-    bcall(_RToP) ; OP1 = r; OP2 = theta (?)
-    jp replaceXYWithOP1OP2 ; X=OP2=theta; Y=OP1=r
+    bcall(_OP1ToOP2) ; OP2=X=x
+    call rclY ; OP1=Y=y
+    call op1ExOp2  ; OP1=x; OP2=y
+    bcall(_RToP) ; OP1=r; OP2=theta
+    call op1ExOp2  ; OP1=theta; OP2=r
+    jp replaceXYWithOP1OP2 ; Y=OP1=theta; X=OP2=r
 
 ;-----------------------------------------------------------------------------
 
