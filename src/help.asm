@@ -274,6 +274,7 @@ msgHelpPage6:
     .db SFourSpaces, "Y: y or ", Stheta, Senter
     .db SFourSpaces, "X: x or r", Senter
     .db Sconvert, "HMS: hh.mmss", Senter
+    .db "ATN2: same as ", Sconvert, "POL", Senter
     .db Senter
     .db Senter
     .db SlBrack, "6/10", SrBrack, " Any key to continue...", Senter

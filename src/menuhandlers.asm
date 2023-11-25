@@ -73,9 +73,7 @@ mXRootYHandler:
     bcall(_XRootY) ; OP2^(1/OP1), SDK documentation is incorrect
     jp replaceXY
 
-; mAtan2Handler(Y, X) -> atan2(Y + Xi)
-;
-; Description: Calculate the angle of the (Y, X) number in complex plane.
+; Description: Calculate the angle of the (X, Y) number in complex plane.
 ; Use bcall(_RToP) instead of bcall(_ATan2) because ATan2 does not seem produce
 ; the correct results. There must be something wrong with the documentation.
 ;
@@ -86,11 +84,12 @@ mXRootYHandler:
 ; details. Although that page refers to ATan2Rad(), I suspect a similar thing
 ; is happening for ATan2().)
 ;
-; The real part (i.e. x-axis) is assumed to be entered first, then the
-; imaginary part (i.e. y-axis). They becomes stored in the RPN stack variables
-; with X and Y flipped, which is bit confusing.
+; The imaginary part (i.e. y-axis) must be entered first, then the real part
+; (i.e. x-axis). This order is consistent with the the `>POL` conversion
+; function.
 mAtan2Handler:
-    call closeInputAndRecallXY ; OP1=Y=real; OP2=X=imaginary
+    call closeInputAndRecallXY ; OP1=Y=imaginary; OP2=X=real
+    call op1ExOp2 ; OP1=X=real; OP2=Y=imaginary
     bcall(_RToP) ; complex to polar
     bcall(_OP2ToOP1) ; OP2 contains the angle with range of (-pi, pi]
     jp replaceXY

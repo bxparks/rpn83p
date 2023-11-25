@@ -1,13 +1,18 @@
 # Changelog
 
 - Unreleased
-    - **Breaking**: Change order of polar-rectangular conversion menu function
+    - **Breaking**: Flip the order of polar-rectangular conversion menu function
       (`>POL` and `>REC`) so that they are consistent with the HP-42S. I don't
       know why I had them reversed.
-        - `Y` register holds the `y` or `theta` value
-        - `X` register holds the `x` or `r` value
-    - Add `Help` page for `CONV` functions summarizing the order and format of
-      parameters.
+        - `Y` register holds the `y` or `theta` value, entered first, and
+        - `X` register holds the `x` or `r` value, entered second.
+    - **Breaking**: Flip the order of `(X, Y)` coordinates of the `ATN2` menu
+      function, so that they are consistent with the `>POL` function.
+        - `Y` register holds the `y` value, which is entered first, then
+        - `X` register holds the `x` value, which is entered second.
+    - HELP pages
+        - Add page for `CONV` functions to gives hints regarding the order of
+          (x, y, r, theta) variables for the polar conversion functions.
 - 0.7.0 (2023-11-20)
     - `STAT`
         - fix broken `Sigma+` and `Sigma-` when `Y==0`
