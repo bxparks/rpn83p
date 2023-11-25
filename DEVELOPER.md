@@ -129,17 +129,17 @@ factoring algorithm:
 
 1. The `PRIM` function currently returns only the smallest prime factor. It must
    be manually called repeatedly to get additional prime factors. But each time
-   it is called, the search the next prime factor restart at 2 and loop to
+   it is called, the search for the next prime factor restarts at 2 and loops to
    sqrt(N).
 
-   This is inefficient, because the search should have started at the *last*
-   prime factor, since all candidates smaller than that number had already been
-   tested. If another function was added that returned *all* prime factors of a
-   number `N` (maybe call it`PRFS`), it could be implemented efficiently by
-   restarting the loop at the previous prime factor. However, this new function
-   would need support for vectors in the RPN83P app so that it can return
-   multiple numbers as the result. Vectors unfortunately are not currently
-   (v0.7.0) supported.
+   This is inefficient because the search should have started at the *last*
+   prime factor, since all candidates smaller than that number have already been
+   tested. We could implement another function (maybe call it`PRFS`) that
+   returned *all* prime factors of a number `N` . It could be more efficient
+   by restarting the loop at the previous prime factor. However, this new
+   function would need support for vectors in the RPN83P app so that it can
+   return multiple numbers as the result. Vectors unfortunately are not
+   currently (v0.7.0) supported.
 1. The [Prime Number
    Theorem](https://en.wikipedia.org/wiki/Prime_number_theorem) tells us that
    the number of prime numbers less than `n` is roughly `n/ln(n)`. Since we

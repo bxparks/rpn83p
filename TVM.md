@@ -257,7 +257,7 @@ The TVM Solver needs to solve the following equation:
 NFV(i) = PV * (1+i)^N + (1+ip) PMT * [(1+i)^N - 1] / i + FV = 0
 ```
 for values of `(1+i) > 0`. Most likely, `i` will have an even stricter condition
-of`i > 0`.
+of `i > 0`.
 
 Recall that the original version of this equation is:
 
@@ -306,7 +306,7 @@ If the TVM Solver finds that the number of sign changes is 0, then it knows
 immediately that there are no solutions to the polynomial equation, and it can
 let the user know immediately.
 
-The RPN83P code uses the following algorithm to determine there are no sign
+The RPN83P code uses the following algorithm to determine if there are no sign
 changes:
 
 - initialize 2 counters:
@@ -317,8 +317,12 @@ changes:
         - the `sign(coef)` corresponds directly to the sign bit of a TI-OS
           floating point number
 - loop through the coefficients, and update the 2 counters
-- if `sumSign == numNonZero` OR `numNonZero == 0`, then there were *no* sign
+    - only 3 different coefficients need to be considered because the `PMT`
+      coefficients are all identical
+- if `sumSign == numNonZero` OR `sumSign == 0`, then there were *no* sign
   changes
+- if `numNonZero == 0`, then the TVM variables were ill-defined and an error
+  should be shown to the user
 
 The TVM Solver does not check for 1 sign-change or 2 sign-changes, because I am
 not sure that there is an easy way to distinguish between "no solution" and "two
@@ -391,6 +395,7 @@ and `PV(i)` for small and large `i`:
 
 - For small `i -> 0`:
     - `CFN(i,N) -> 1`
+    - `CFN(i,-N) -> 1`
 - For large `i`:
     - `CFN(i,N) ~ i^(N-1)/N`
     - `CFN(i,-N) ~ 1/Ni`
@@ -401,16 +406,16 @@ function of `i` as `i` becomes large. When the TVM Solver samples the `NPMT(i)`
 equation, there is far less chance of numerical overflow.
 
 (**Note**: The previous analysis assumes that we are interested in values of `i`
-when `i>0`. It is theoretically possible for `i` to be a negative number between
--1 and 0, in which case the `1/CNF(i,N)` factor can grow quickly as a power of
-`N`. Such cases correspond to deflation (negative inflation rate), so it is
-usually safe to look for only solutions where `i>0`.)
+when `i>=0`. It is theoretically possible for `i` to be a negative number
+between -1 and 0, in which case the `1/CNF(i,N)` factor can grow quickly as a
+power of `N` as `i -> -1`. Such cases correspond to deflation (negative
+inflation rate), so it is usually safe to look for only solutions where `i>=0`.)
 
 The physical interpretation of `NPMT(i)` quantity is interesting, since it is
 analogous to the `NPV` or `NFV` quantity. It is the "Net Payment" that has to be
-made to satisfy the equation, using a nominal dollar that is *not* adjusted for
-inflation or deflation. Each term in the `NPMT(i)` equation has the following
-interpreation:
+made to satisfy the equation, using a nominal currency value that is *not*
+adjusted for inflation or deflation. Each term in the `NPMT(i)` equation has the
+following interpretation:
 
 - `PV/CFN(i,-N)`: the nominal value of `N` payments that are equivalent to `PV`
   at the specified interest rate `i`
