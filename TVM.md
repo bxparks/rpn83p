@@ -1,5 +1,12 @@
 # TVM Algorithms
 
+Equations, algorithms, and other tricks used to calculate the Time Value of
+Money (TVM) variables in the RPN83P calculator app.
+
+**Version**: 0.8.0-dev (2023-11-24)
+
+**Project Home**: https://github.com/bxparks/rpn83p
+
 ## Table of Contents
 
 - [TVM Basics](#tvm-algorithms)
