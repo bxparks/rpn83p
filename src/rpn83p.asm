@@ -425,6 +425,10 @@ _DebugParseBufLabel:
 _DebugParseBuf equ _DebugParseBufLabel-branchTableBase
     .dw DebugParseBuf
     .db 1
+_DebugStringLabel:
+_DebugString equ _DebugStringLabel-branchTableBase
+    .dw DebugString
+    .db 1
 _DebugPStringLabel:
 _DebugPString equ _DebugPStringLabel-branchTableBase
     .dw DebugPString

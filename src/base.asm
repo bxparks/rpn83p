@@ -404,6 +404,7 @@ hexNumberWidth equ 8 ; 4 bits * 8 = 32 bits
 ; Output:
 ;   - (DE): C-string representation of u32 as hexadecimal
 ; Destroys: A
+; Preserves: BC, DE, HL
 convertU32ToHexString:
     push bc
     push hl
@@ -452,6 +453,7 @@ octNumberWidth equ 11 ; 3 bits * 11 = 33 bits
 ; Output:
 ;   - (DE): C-string representation of u32 as octal digits
 ; Destroys: A
+; Preserves: BC, DE, HL
 convertU32ToOctString:
     push bc
     push hl
@@ -496,8 +498,9 @@ binNumberWidth equ 32
 ;   plus NUL terminator). This will usually be 3 consecutive OPx registers,
 ;   each 11 bytes long, for a total of 33 bytes.
 ; Output:
-;   - (DE): C-string representation of u32 as octal digits
+;   - (DE): C-string representation of u32 as binary digits
 ; Destroys: A
+; Preserves: BC, DE, HL
 convertU32ToBinString:
     push bc
     push hl
