@@ -831,7 +831,7 @@ handleKeyATan:
 handleKeySto:
     call closeInputBuf
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
-    ld hl, msgStoName
+    ld hl, msgStoPrompt
     call startArgParser
     set inputBufFlagsArgAllowModifier, (iy + inputBufFlags)
     call processCommandArg
@@ -854,7 +854,7 @@ handleKeyStoError:
 handleKeyRcl:
     call closeInputBuf
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
-    ld hl, msgRclName
+    ld hl, msgRclPrompt
     call startArgParser
     set inputBufFlagsArgAllowModifier, (iy + inputBufFlags)
     call processCommandArg
@@ -887,9 +887,9 @@ handleKeyRclError:
     ld a, errorCodeDimension
     jp setHandlerCode
 
-msgStoName:
+msgStoPrompt:
     .db "STO", 0
-msgRclName:
+msgRclPrompt:
     .db "RCL", 0
 
 ;-----------------------------------------------------------------------------
@@ -922,10 +922,14 @@ handleKeyStat:
 handleKeyQuit:
     jp mainExit
 
+;-----------------------------------------------------------------------------
+; Secret "DRAW" mode.
+;-----------------------------------------------------------------------------
+
 handleKeyDraw:
     call closeInputBuf
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
-    ld hl, msgDrawLabel
+    ld hl, msgDrawPrompt
     call startArgParser
     call processCommandArg
     ret nc ; do nothing if canceled
@@ -940,6 +944,10 @@ handleKeyShow:
     call closeInputBuf
     call processCommandShow
     ret
+
+; DRAW mode prompt.
+msgDrawPrompt:
+    .db "DRAW", 0
 
 ;-----------------------------------------------------------------------------
 ; Common code fragments, to save space.

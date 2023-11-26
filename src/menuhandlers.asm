@@ -895,7 +895,7 @@ mHrToHmsHandler:
 mFixHandler:
     call closeInputBuf
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
-    ld hl, msgFixLabel
+    ld hl, msgFixPrompt
     call startArgParser
     call processCommandArg
     ret nc ; do nothing if canceled
@@ -906,7 +906,7 @@ mFixHandler:
 mSciHandler:
     call closeInputBuf
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
-    ld hl, msgSciLabel
+    ld hl, msgSciPrompt
     call startArgParser
     call processCommandArg
     ret nc ; do nothing if canceled
@@ -917,13 +917,20 @@ mSciHandler:
 mEngHandler:
     call closeInputBuf
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
-    ld hl, msgEngLabel
+    ld hl, msgEngPrompt
     call startArgParser
     call processCommandArg
     ret nc ; do nothing if canceled
     set fmtExponent, (iy + fmtFlags)
     set fmtEng, (iy + fmtFlags)
     jr saveFormatDigits
+
+msgFixPrompt:
+    .db "FIX", 0
+msgSciPrompt:
+    .db "SCI", 0
+msgEngPrompt:
+    .db "ENG", 0
 
 ; Description: Save the (argValue) to (fmtDigits).
 ; Output:

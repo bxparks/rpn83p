@@ -1289,10 +1289,6 @@ msgDegLabel:
 msgRadLabel:
     .db "RAD", 0
 
-; DRAW mode indicator.
-msgDrawLabel:
-    .db "DRAW", 0
-
 ; TVM debug labels
 msgTvmNLabel:
     .db "n:", 0
