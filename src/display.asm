@@ -36,6 +36,11 @@ errorCurRow equ 2
 errorCurCol equ 0
 errorPenRow equ errorCurRow*8
 
+; Display coordinates of the SHOW line, overlaps with T
+showCurRow equ 3
+showCurCol equ 0
+showPenRow equ showCurRow*8
+
 ; Display coordinates of the stack T register.
 stTCurRow equ 3
 stTCurCol equ 1
@@ -114,7 +119,7 @@ menuPenColEnd   equ 96
 ; Description: Set all dirty flags to dirty initially so that they are rendered.
 initDisplay:
     xor a
-    ld (drawMode), a
+    ld (drawMode), a ; always set drawMode to drawModeNormal
     ld a, $FF
     ld (iy + dirtyFlags), a ; set all dirty flags
     ret
@@ -381,7 +386,12 @@ displayMain:
     cp drawModeTvmSolverI
     jr z, displayTvmMaybe
     cp drawModeTvmSolverF
-    ; Everything else (including drawModeInputBuf), display the stack.
+    jr z, displayTvmMaybe
+    cp drawModeInputBuf
+    jr z, displayStack
+    cp drawModeShow
+    jp z, displayShow
+    ; Everything else display the stack.
     jr displayStack
 displayTvmMaybe:
     ld a, (tvmSolverIsRunning)
@@ -403,6 +413,7 @@ displayStack:
     call nz, displayStackYZT
 
     ; display X if stack or inputBuf are dirty
+    ; TODO: Clean this up with two 'jp z, displayStackX'.
     bit dirtyFlagsStack, (iy + dirtyFlags)
     jr nz, displayStackContinue
     bit dirtyFlagsInput, (iy + dirtyFlags)
@@ -809,6 +820,44 @@ printMenuAtAExit:
     res textEraseBelow, (iy + textFlags)
     pop de ; D = menuId; E = menuIndex
     pop bc ; B = loop counter
+    ret
+
+;-----------------------------------------------------------------------------
+; SHOW mode
+;-----------------------------------------------------------------------------
+
+msgShowLabel:
+    .db "SHOW", 0
+
+; Description: Display the X register in SHOW mode, showing all 14 significant
+; digits.
+; Destroys; A, HL, OP1, OP3-OP6
+displayShow:
+    ld hl, errorPenRow*$100 ; $(penRow)(penCol)
+    ld (PenCol), hl
+    ld hl, msgShowLabel
+    call vputS
+    call vEraseEOL
+    ; TODO: Replace with actual displayShow() function.
+    ld hl, showCurCol*$100 + showCurRow ; $(curCol)(curRow)
+    ld (CurRow), hl
+    call rclX
+    call printOP1
+    ret
+
+; Clear the display area used by the SHOW feature (errorCode, T, Z, Y, X).
+; Input: none
+; Destroys: A, B, HL
+clearShowArea:
+    ld hl, errorCurCol*$100 + errorCurRow ; $(curCol)(curRow)
+    ld (CurRow), hl
+    ld b, 5
+clearShowAreaLoop:
+    bcall(_EraseEOL) ; saves all registers
+    ld hl, (CurRow)
+    inc l
+    ld (CurRow), hl
+    djnz clearShowAreaLoop
     ret
 
 ;-----------------------------------------------------------------------------

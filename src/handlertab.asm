@@ -8,7 +8,7 @@
 ; search can be used instead of a linear search.
 ;-----------------------------------------------------------------------------
 
-keyCodeHandlerTableSize equ 66
+keyCodeHandlerTableSize equ 67
 kOnExit equ 0 ; ON key generates 00 as the key code
 
 keyCodeHandlerTable:
@@ -236,3 +236,7 @@ keyCodeHandlerTable:
     ; DRAW (i.e. Debug) mode
     .db kDraw
     .dw handleKeyDraw
+
+    ; 2ND ENTRY = SHOW
+    .db kLastEnt
+    .dw handleKeyShow
