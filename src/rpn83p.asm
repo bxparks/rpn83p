@@ -481,6 +481,7 @@ _DebugU32DEAsHex equ _DebugU32DEAsHexLabel-branchTableBase
 #include "pstring.asm"
 #include "input.asm"
 #include "display.asm"
+#include "show.asm"
 #include "errorcode.asm"
 #include "base.asm"
 #include "basehandlers.asm"

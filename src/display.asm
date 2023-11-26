@@ -838,11 +838,13 @@ displayShow:
     ld hl, msgShowLabel
     call vputS
     call vEraseEOL
-    ; TODO: Replace with actual displayShow() function.
+    ; Call special FormShowable() function to show all digits of OP1.
     ld hl, showCurCol*$100 + showCurRow ; $(curCol)(curRow)
     ld (CurRow), hl
     call rclX
-    call printOP1
+    call formShowable
+    ld hl, OP3
+    call putS
     ret
 
 ; Clear the display area used by the SHOW feature (errorCode, T, Z, Y, X).
