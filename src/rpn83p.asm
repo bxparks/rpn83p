@@ -79,7 +79,7 @@ rpnFlags equ asm_Flag2
 rpnFlagsEditing equ 0 ; set if in edit mode
 rpnFlagsArgMode equ 1 ; set if in command argument mode
 rpnFlagsLiftEnabled equ 2 ; set if stack lift is enabled (ENTER disables it)
-rpnFlagsAllStatEnabled equ 3 ; set if Sigma+ updates logarithm registers
+; rpnFlagsAllStatEnabled equ 3 ; set if Sigma+ updates logarithm registers
 rpnFlagsBaseModeEnabled equ 4 ; set if inside BASE menu hierarchy
 ; rpnFlagsSecondKey: Set if the 2ND was pressed before a menu button. Most
 ; handlers can ignore this, but some handlers may choose to check this flag to
@@ -103,9 +103,14 @@ inputBufFlagsArgAllowModifier equ 5 ; allow */-+ modifier in CommandArg mode
 ; A random 16-bit integer that identifies the RPN83P app.
 rpn83pAppId equ $1E69
 
-; Increment the schema version when any variables are added or removed from the
-; appState data block. The schema version will be validated upon restoring the
-; application state from the AppVar.
+; Increment the schema version if the previously saved app variable 'RPN83SAV'
+; should be marked as stale during validation. This will cause the app to
+; initialize to the factory defaults. When an variable is added or deleted, the
+; version does not absolutely need to be incremented, because the value of
+; appStateSize will be checked, and since it will be different, the previous
+; state considered stale automatically. However, if the *semantics* of any
+; variable is changed (e.g. if the meaning of a flag is changed), then we
+; *must* increment the version number to mark the previous state as stale.
 rpn83pSchemaVersion equ 9
 
 ; Define true and false. Something else in spasm-ng defines the 'true' and
@@ -279,8 +284,10 @@ argModifierDiv equ 4 ; '/' pressed
 argModifierIndirect equ 5 ; '.' pressed (not yet supported)
 argModifierCanceled equ 6 ; CLEAR or EXIT pressed
 
-; Least square curve fit model.
-curveFitModel equ argValue + 1
+; STAT variables
+statAllEnabled equ argValue + 1 ; boolean, 1 if "ALLSigma" enabled
+; Least square CFIT model.
+curveFitModel equ statAllEnabled + 1 ; u8
 
 ; Constants used by the TVM Solver.
 tvmSolverDefaultIterMax equ 15
