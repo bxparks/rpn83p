@@ -3,7 +3,7 @@
 Equations, algorithms, and other tricks used to calculate the Time Value of
 Money (TVM) variables in the RPN83P calculator app.
 
-**Version**: 0.8.0-dev (2023-11-24)
+**Version**: 0.8.0-dev (2023-11-27)
 
 **Project Home**: https://github.com/bxparks/rpn83p
 
@@ -23,6 +23,7 @@ Money (TVM) variables in the RPN83P calculator app.
     - [Tolerance](#tolerance)
     - [Maximum Iterations](#maximum-iterations)
     - [Convergence](#convergence)
+- [References](#references)
 
 Notes about the equations and algorithms used by the TVM functions.
 
@@ -123,7 +124,7 @@ have common financial names, but I call them "compounding factors":
   `FV+PV` value at a monthly payment of `PMT`, if the compounding interest `i`
   is ignored. (Thanks to Albert Chan at [TVM formula error in programming
   manual?](https://www.hpmuseum.org/forum/thread-20739-post-179379.html#pid179379)
-  for this formulation.)
+  (2023) for this formulation.)
 
 The term `(1+ip)` appears frequently in these equations. It is either `1` (end)
 or `(1+i)` (begin). It accounts for the one extra compounding factor that occurs
@@ -542,3 +543,28 @@ using the Secant method. It is possible that Albert Chan has proven this in one
 of his posts, for example [TVM solve for interest rate,
 revisited](https://www.hpmuseum.org/forum/thread-18359.html) (2022), but I have
 not yet digested these posts.
+
+## References
+
+Here is an incomplete list of references that I consulted:
+
+- [Mathematics Written in
+  Sand](https://people.eecs.berkeley.edu/~wkahan/MathSand.pdf) (1983)
+- [Accurate TVM for
+  HP42S](https://www.hpmuseum.org/cgi-sys/cgiwrap/hpmuseum/archv014.cgi?read=68086) (2005)
+- [[WP34s et al.] Solving the TVM equation for the interest
+  rate](https://www.hpmuseum.org/cgi-sys/cgiwrap/hpmuseum/archv021.cgi?read=234439)
+  (2012)
+- [Looking for TVM formulas](https://www.hpmuseum.org/forum/thread-1012.html)
+  (2014)
+- [Solving the TVM equation for the interest
+  rate](https://www.hpmuseum.org/forum/thread-10510.html) (2018)
+- [(71B) calculate interest
+  rate](https://www.hpmuseum.org/forum/thread-14195.html) (2019)
+- [TVM solve for interest rate,
+  revisited](https://www.hpmuseum.org/forum/thread-18359.html) (2022)
+- [TVM rate guess](https://github.com/thomasokken/plus42desktop/issues/2) (2022)
+- [TVM formula error in programming
+  manual?](https://www.hpmuseum.org/forum/thread-20739.html) (2023)
+- [Descartes' rule of
+  signs](https://en.wikipedia.org/wiki/Descartes%27_rule_of_signs)
