@@ -2,7 +2,7 @@
 
 RPN calculator app for the TI-83 Plus and TI-84 Plus inspired by the HP-42S.
 
-**Version**: 0.8.0-dev (2023-11-24)
+**Version**: 0.8.0-dev (2023-11-26)
 
 **Project Home**: https://github.com/bxparks/rpn83p
 
@@ -85,6 +85,7 @@ Summary of features:
 - traditional 4-level RPN stack (`X`, `Y`, `Z`, `T`), with `LastX` register
 - 8-line display showing all stack registers
 - hierarchical menu system similar to HP-42S
+- quick reference `HELP` menu
 - storage registers
     - store and recall:`STO nn`, `RCL nn`
     - storage arithmetics: `STO+ nn`, `STO- nn`, `STO* nn`, `STO/ nn`, `RCL+
@@ -134,6 +135,7 @@ Summary of features:
     - `FIX` (fixed point 0-9 digits)
     - `SCI` (scientific 0-9 digits)
     - `ENG` (engineering 0-9 digits)
+    - `SHOW` (`2ND ENTRY`) to display all 14 internal floating point digits
 
 Missing features (partial list):
 
