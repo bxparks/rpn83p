@@ -568,3 +568,5 @@ Here is an incomplete list of references that I consulted:
   manual?](https://www.hpmuseum.org/forum/thread-20739.html) (2023)
 - [Descartes' rule of
   signs](https://en.wikipedia.org/wiki/Descartes%27_rule_of_signs)
+- Handbook of Mathematical Functions, Abramowitz and Stegun, Dover 9th Printing,
+  1970
