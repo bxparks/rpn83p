@@ -10,6 +10,15 @@
       function, so that they are consistent with the `>POL` function.
         - `Y` register holds the `y` value, which is entered first, then
         - `X` register holds the `x` value, which is entered second.
+    - `SHOW`
+        - implement "Show" function using `2ND` `ENTRY` on TI keyboard
+        - displays all 14 internal digits of the TI-OS floating point number
+        - if integer < 10^14: display as integer
+        - otherwise: display in scientific notation
+        - `BASE` mode
+            - `BIN` mode: displays `WSIZ` digits in groups of 4, using up to 4
+              lines
+            - all other modes: display underlying floating point number
     - HELP pages
         - Add page for `CONV` functions to gives hints regarding the order of
           (x, y, r, theta) variables for the polar conversion functions.
