@@ -411,16 +411,11 @@ displayStack:
     ; display YZT if stack is dirty
     bit dirtyFlagsStack, (iy + dirtyFlags)
     call nz, displayStackYZT
-
     ; display X if stack or inputBuf are dirty
-    ; TODO: Clean this up with two 'jp z, displayStackX'.
     bit dirtyFlagsStack, (iy + dirtyFlags)
-    jr nz, displayStackContinue
+    jp nz, displayStackX
     bit dirtyFlagsInput, (iy + dirtyFlags)
-    jr nz, displayStackContinue
-    ret
-displayStackContinue:
-    call displayStackX
+    jp nz, displayStackX
     ret
 
 ;-----------------------------------------------------------------------------
