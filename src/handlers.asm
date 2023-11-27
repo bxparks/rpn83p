@@ -936,6 +936,11 @@ handleKeyDraw:
     ld a, errorCodeClearScreen
     jp setHandlerCode
 
+handleKeyShow:
+    call closeInputBuf
+    call processCommandShow
+    ret
+
 ;-----------------------------------------------------------------------------
 ; Common code fragments, to save space.
 ;-----------------------------------------------------------------------------

@@ -829,7 +829,8 @@ clearStatRegs:
     bcall(_OP1Set0)
     ld c, 11 ; begin clearing register 11
     ; Check AllMode or LinearMode.
-    bit rpnFlagsAllStatEnabled, (iy + rpnFlags)
+    ld a, (statAllEnabled)
+    or a
     jr nz, clearStatRegsAll
     ld b, 6 ; clear first 6 registers in Linear mode
     jr clearStatRegsEntry
