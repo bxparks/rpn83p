@@ -7,7 +7,7 @@
 ;------------------------------------------------------------------------------
 
 ; Description: Read loop for the SHOW mode.
-processCommandShow:
+processShowCommands:
     call clearShowArea
     ld a, (drawMode)
     push af ; stack=[drawMode]

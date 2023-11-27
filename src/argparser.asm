@@ -37,7 +37,7 @@ startArgParser:
 ; Output:
 ;   - (argModifier): modifier enum if selected
 ;   - CF=0: if canceled
-processCommandArg:
+processArgCommands:
     call displayAll
 
     ; Get key code, and reset the ON flag.
@@ -51,7 +51,7 @@ processCommandArg:
 
     ; Check for terminate flag.
     bit inputBufFlagsArgExit, (iy + inputBufFlags)
-    jr z, processCommandArg
+    jr z, processArgCommands
 
     ; Terminate argParser.
     res rpnFlagsArgMode, (iy + rpnFlags)

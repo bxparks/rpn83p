@@ -7,7 +7,7 @@
 
 ; The main interactive keyboard read loop. Read button and dispatch to the
 ; appropriate handler. See 83pa28d/week2/day12 for the basics.
-processCommand:
+processMainCommands:
     ; call debugFlags
     call displayAll
 
@@ -47,7 +47,7 @@ processCommand:
 cleanupHandlerSetErrorCode:
     ; transfer the handlerCode in A to displayable errorCode.
     call setErrorCode
-    jr processCommand
+    jr processMainCommands
 
 ; Handle system exception. A contains the system error code.
 cleanupHandlerException:

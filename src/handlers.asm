@@ -834,7 +834,7 @@ handleKeySto:
     ld hl, msgStoPrompt
     call startArgParser
     set inputBufFlagsArgAllowModifier, (iy + inputBufFlags)
-    call processCommandArg
+    call processArgCommands
     ret nc ; do nothing if canceled
     cp argModifierIndirect
     ret nc ; TODO: implement this
@@ -857,7 +857,7 @@ handleKeyRcl:
     ld hl, msgRclPrompt
     call startArgParser
     set inputBufFlagsArgAllowModifier, (iy + inputBufFlags)
-    call processCommandArg
+    call processArgCommands
     ret nc ; do nothing if canceled
     cp argModifierIndirect
     ret nc ; TODO: implement this
@@ -931,7 +931,7 @@ handleKeyDraw:
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld hl, msgDrawPrompt
     call startArgParser
-    call processCommandArg
+    call processArgCommands
     ret nc ; do nothing if canceled
     ; save (argValue)
     ld a, (argValue)
@@ -942,7 +942,7 @@ handleKeyDraw:
 
 handleKeyShow:
     call closeInputBuf
-    call processCommandShow
+    call processShowCommands
     ret
 
 ; DRAW mode prompt.

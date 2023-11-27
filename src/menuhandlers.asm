@@ -897,7 +897,7 @@ mFixHandler:
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld hl, msgFixPrompt
     call startArgParser
-    call processCommandArg
+    call processArgCommands
     ret nc ; do nothing if canceled
     res fmtExponent, (iy + fmtFlags)
     res fmtEng, (iy + fmtFlags)
@@ -908,7 +908,7 @@ mSciHandler:
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld hl, msgSciPrompt
     call startArgParser
-    call processCommandArg
+    call processArgCommands
     ret nc ; do nothing if canceled
     set fmtExponent, (iy + fmtFlags)
     res fmtEng, (iy + fmtFlags)
@@ -919,7 +919,7 @@ mEngHandler:
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld hl, msgEngPrompt
     call startArgParser
-    call processCommandArg
+    call processArgCommands
     ret nc ; do nothing if canceled
     set fmtExponent, (iy + fmtFlags)
     set fmtEng, (iy + fmtFlags)

@@ -38,7 +38,7 @@ initAlways:
     bcall(_AppInit)
 
     ; Jump into the main keyboard input parsing loop.
-    jp processCommand
+    jp processMainCommands
 
 ; Clean up and exit app.
 ;   - Called explicitly upon 2ND QUIT.
