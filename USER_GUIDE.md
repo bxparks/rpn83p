@@ -531,6 +531,18 @@ functionality is already provided by the menu system.
 3. When the menu system is at the root, the first menu item on the left is a
 menu group named `MATH`, which may help to remember this button mapping.
 
+**HP-42S Compatibility Note**: As far I can tell, the menu system of the HP-42S
+is *multiply rooted* and pressing a given menu button (e.g. `BASE`) activates
+the menu hierarchy of that particular button. I think this works because the
+menu bar on the HP-42S is not displayed by default, so there is no single ROOT
+node of its menu system. Some of the HP-42S menu bars can stack on top of each
+other, so that the `EXIT` button goes back to the previous menu bar. But some
+menu bars do not. I have never figured out the rhyme and reason for this
+behavior. The RPN83P app, on the other hand, always displays its menu bar, so it
+was simpler for the user (and the programmer of this app) to create a *singly
+rooted* menu hierarchy with the menu bar always starting from the implicit
+`ROOT` menu node.
+
 #### Menu Indicator Arrows
 
 There are 3 menu arrows at the top-left corner of the LCD screen. The
