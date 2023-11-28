@@ -210,7 +210,7 @@ helpPages:
 
 msgHelpPage1:
     .db escapeLargeFont, "RPN83P", Lenter
-    .db escapeSmallFont, "v0.8.0-dev (2023", Shyphen, "11", Shyphen, "26)", Senter
+    .db escapeSmallFont, "v0.8.0-dev (2023", Shyphen, "11", Shyphen, "28)", Senter
     .db "(c) 2023  Brian T. Park", Senter
     .db Senter
     .db "An RPN calculator for the", Senter
@@ -239,7 +239,7 @@ msgHelpPage3:
     .db "<-:  DEL", Senter
     .db "CLX:  CLEAR", Senter
     .db "CLST:  CLEAR CLEAR CLEAR", Senter
-    .db Senter
+    .db "SHOW:  2ND ENTRY", Senter
     .db Senter
     .db SlBrack, "3/10", SrBrack, " Any key to continue...", Senter
     .db 0
