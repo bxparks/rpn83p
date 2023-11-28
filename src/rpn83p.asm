@@ -244,10 +244,10 @@ menuRowIndex equ menuGroupId + 1
 ; pressed to another menuGroup. On the ON/EXIT button is pressed, we can then
 ; go back to the previous menu, instead of going up to the parent of the menu
 ; invoked by the shortcut button. Not all shortcuts will choose to use this
-; feature. Currently (v0.7.0), only the MODE button seems to be a good candidate.
-; If jumpBackMenuGroupId is 0, then the memory feature is not active. If it is
-; not 0, then the ON/EXIT button should go back to the menu defined by this
-; pair.
+; feature. Currently (v0.7.0), only the MODE button seems to be a good
+; candidate. If jumpBackMenuGroupId is 0, then the memory feature is not
+; active. If it is not 0, then the ON/EXIT button should go back to the menu
+; defined by this pair.
 jumpBackMenuGroupId equ menuRowIndex + 1
 jumpBackMenuRowIndex equ jumpBackMenuGroupId + 1
 

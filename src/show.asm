@@ -11,8 +11,8 @@
 ; Page 1, but it needs too many routines from base.asm.
 ;------------------------------------------------------------------------------
 
-; Function: Convert the number in OP1 with all available digits, suitable for a
-; SHOW function.
+; Description: Convert the number in OP1 with all available digits, suitable
+; for a SHOW function.
 ; Input: OP1: floating point number
 ; Output: OP3: string rendering of OP1 as a C-string
 ; Destroys: all, OP1-OP6

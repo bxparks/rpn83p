@@ -192,7 +192,7 @@ stoStackNN:
     set dirtyFlagsStack, (iy + dirtyFlags)
     ret
 
-; Function: Copy STK[nn] to OP1.
+; Description: Copy STK[nn] to OP1.
 ; Input:
 ;   - A: register index, 0-based
 ;   - 'STK' list variable
@@ -408,7 +408,7 @@ pushXY:
 
 ;-----------------------------------------------------------------------------
 
-; Function: Lift the RPN stack, if inputBuf was not empty when closed.
+; Description: Lift the RPN stack, if inputBuf was not empty when closed.
 ; Input: none
 ; Output: T=Z; Z=Y; Y=X; X=X; OP1 preserved
 ; Destroys: all
@@ -418,7 +418,7 @@ liftStackIfNonEmpty:
     ret nz ; return doing nothing if closed empty
     ; [[fallthrough]]
 
-; Function: Lift the RPN stack, if rpnFlagsLiftEnabled is set.
+; Description: Lift the RPN stack, if rpnFlagsLiftEnabled is set.
 ; Input: rpnFlagsLiftEnabled
 ; Output: T=Z; Z=Y; Y=X; X=X; OP1 preserved
 ; Destroys: all
@@ -429,7 +429,7 @@ liftStackIfEnabled:
     set rpnFlagsLiftEnabled, (iy + rpnFlags)
     ; [[fallthrough]]
 
-; Function: Lift the RPN stack unconditionally, copying X to Y.
+; Description: Lift the RPN stack unconditionally, copying X to Y.
 ; Input: none
 ; Output: T=Z; Z=Y; Y=X; X=X; OP1 preserved
 ; Destroys: all
@@ -453,7 +453,7 @@ liftStack:
 
 ;-----------------------------------------------------------------------------
 
-; Function: Drop the RPN stack, copying T to Z.
+; Description: Drop the RPN stack, copying T to Z.
 ; Input: none
 ; Output: X=Y; Y=Z; Z=T; T=T; OP1 preserved
 ; Destroys: all
@@ -477,7 +477,7 @@ dropStack:
 
 ;-----------------------------------------------------------------------------
 
-; Function: Rotate the RPN stack *down*.
+; Description: Rotate the RPN stack *down*.
 ; Input: none
 ; Output: X=Y; Y=Z; Z=T; T=X
 ; Destroys: all, OP1, OP2
@@ -504,7 +504,7 @@ rotDownStack:
 
 ;-----------------------------------------------------------------------------
 
-; Function: Rotate the RPN stack *up*.
+; Description: Rotate the RPN stack *up*.
 ; Input: none
 ; Output: T=Z; Z=Y; Y=X; X=T
 ; Destroys: all, OP1, OP2
@@ -531,7 +531,7 @@ rotUpStack:
 
 ;-----------------------------------------------------------------------------
 
-; Function: Exchange X<->Y.
+; Description: Exchange X<->Y.
 ; Input: none
 ; Output: X=Y; Y=X
 ; Destroys: all, OP1, OP2

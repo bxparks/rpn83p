@@ -14,7 +14,7 @@ initInputBuf:
     res rpnFlagsEditing, (iy + rpnFlags)
     ; [[fallthrough]]
 
-; Function: Clear the inputBuf.
+; Description: Clear the inputBuf.
 ; Input: inputBuf
 ; Output:
 ;   - inputBuf cleared
@@ -34,7 +34,7 @@ clearInputBuf:
     pop af
     ret
 
-; Function: Append character to inputBuf.
+; Description: Append character to inputBuf.
 ; Input:
 ;   A: character to be appended
 ; Output:
@@ -144,7 +144,7 @@ parseArgBufOneDigit:
 
 ;------------------------------------------------------------------------------
 
-; Function: Parse the input buffer into the parseBuf.
+; Description: Parse the input buffer into the parseBuf.
 ; Input: inputBuf filled with keyboard characters
 ; Output: OP1: floating point number
 ; Destroys: all registers
@@ -229,7 +229,7 @@ parseNumBaseAddDigit:
 
 ;------------------------------------------------------------------------------
 
-; Function: Initialize the parseBuf.
+; Description: Initialize the parseBuf.
 ; Input: none
 ; Output: (parseBuf) cleared
 ; Destroys: all
@@ -238,7 +238,7 @@ parseNumInit:
     call clearFloatBuf
     ret
 
-; Function: Clear parseBuf by setting all digits to the character '0', and
+; Description: Clear parseBuf by setting all digits to the character '0', and
 ; setting size to 0. The trailing '0' characters make it easy to construct the
 ; floating point number.
 clearParseBuf:
@@ -254,7 +254,7 @@ clearParseBufLoop:
     djnz clearParseBufLoop
     ret
 
-; Function: Set floatBuf to 0.0.
+; Description: Set floatBuf to 0.0.
 clearFloatBuf:
     bcall(_OP1Set0)
     ld de, floatBuf
@@ -263,7 +263,7 @@ clearFloatBuf:
 
 ;------------------------------------------------------------------------------
 
-; Function: Check if the inputBuf is effectively '0'. In other words, if
+; Description: Check if the inputBuf is effectively '0'. In other words, if
 ; the inputBuf is composed of characters only in the set ['-', '.', '0'], then
 ; it is effectively zero. Otherwise, not zero.
 ; Input: inputBuf
@@ -295,7 +295,7 @@ checkZeroContinue:
 
 ;------------------------------------------------------------------------------
 
-; Function: Parse the mantissa digits from inputBuf into parseBuf, ignoring
+; Description: Parse the mantissa digits from inputBuf into parseBuf, ignoring
 ; negative sign, leading zeros, the decimal point, and the EE symbol. For
 ; example:
 ;   - "0.1" produces "1"
@@ -340,7 +340,8 @@ parseMantissaContinue:
 
 ;------------------------------------------------------------------------------
 
-; Function: Find the position of the decimal point of the given number string.
+; Description: Find the position of the decimal point of the given number
+; string.
 ; Input: assumes non-empty inputBuf
 ; Output: A = decimal point position, signed integer
 ; Destroys: all
@@ -439,7 +440,7 @@ calcDPEnd:
 
 ;------------------------------------------------------------------------------
 
-; Function: Append character in A to parseBuf
+; Description: Append character in A to parseBuf
 ; Input:
 ;   - A: character to be appended
 ; Output:
@@ -452,7 +453,7 @@ appendParseBuf:
 
 ;------------------------------------------------------------------------------
 
-; Function: Set the exponent from the mantissa. The mantissaExp =
+; Description: Set the exponent from the mantissa. The mantissaExp =
 ; decimalPointPos - 1. But the floating exponent is shifted by $80.
 ;   mantissaExponent = decimalPointPos - 1
 ;   floatingExponent = mantissaExponent + $80
@@ -466,7 +467,7 @@ extractMantissaExponent:
     ld (floatBufExp), a
     ret
 
-; Function: Extract mantissa sign from the first character in the inputBuf.
+; Description: Extract mantissa sign from the first character in the inputBuf.
 ; Input: inputBuf
 ; Output: floatBuf sign set
 ; Destroys: HL
@@ -483,7 +484,8 @@ extractMantissaSign:
     set 7, (hl)
     ret
 
-; Function: Extract the normalized mantissa digits from parseBuf to floatBuf, 2
+; Description: Extract the normalized mantissa digits from parseBuf to
+; floatBuf, 2
 ; digits per byte.
 ; Input: parseBuf
 ; Output:
@@ -515,7 +517,7 @@ extractMantissaLoop:
     djnz extractMantissaLoop
     ret
 
-; Function: Copy floatBuf into OP1
+; Description: Copy floatBuf into OP1
 copyFloatToOP1:
     ld hl, floatBuf
     bcall(_Mov9ToOP1)

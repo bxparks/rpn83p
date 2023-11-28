@@ -8,7 +8,7 @@
 ; in the rest of the app where the text is mostly constant.
 ;-----------------------------------------------------------------------------
 
-; Function: Append character to pascal-string buffer.
+; Description: Append character to pascal-string buffer.
 ; Input:
 ;   A: character to be appended
 ;   HL: pascal string pointer
@@ -36,8 +36,8 @@ appendString10:
 
 ;-----------------------------------------------------------------------------
 
-; Function: Prepare to insert a character at position 'A' from a pascal-string,
-; shifting characters to the right.
+; Description: Prepare to insert a character at position 'A' from a
+; pascal-string, shifting characters to the right.
 ; Input:
 ;   A: insertPos, range of [0, stringSize]
 ;   HL: pascal string pointer
@@ -95,7 +95,7 @@ insertAtPosShiftRight:
     or a ; clear CF
     ret
 
-; Function: Delete character at position A from a pascal-string, shifting
+; Description: Delete character at position A from a pascal-string, shifting
 ; characters to the left.
 ; Input:
 ;   A: deletePos, range of [0, stringSize-1]
@@ -150,7 +150,7 @@ deleteAtPosShiftLeft:
 
 ;-----------------------------------------------------------------------------
 
-; Function: Find the given character in the given pascal string.
+; Description: Find the given character in the given pascal string.
 ; Input:
 ;   A: character to find
 ;   HL: pointer to pascal string
