@@ -276,12 +276,13 @@ This app was designed for TI calculators using the Z80 processor:
 - TI-84 Plus Silver Edition (15 MHz Z80, 24 kB accessible RAM, 1.5 MB accessible
   flash)
 
-I have tested it on the two calculators that I own:
+I have tested it on the following calculators that I own:
 
+- TI-83 Plus, OS v1.19
 - TI-83 Plus Silver Edition, OS v1.19
 - TI-84 Plus Silver Edition, OS v2.55MP
 
-It *should* work on the others, but I have not actually tested them.
+It *should* work on the TI-84 Plus, but I have not actually tested it.
 
 The following calculators are *not* supported  because their internal hardware
 is too different:
