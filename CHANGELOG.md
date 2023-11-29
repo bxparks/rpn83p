@@ -19,6 +19,13 @@
             - `BIN` mode: displays `WSIZ` digits in groups of 4, using up to 4
               lines
             - all other modes: display underlying floating point number
+    - `BASE` input limit
+        - limit the number of digits that can be entered in `BASE` mode to a
+          maximum that is appropriate for the selected `WSIZ` and the baseNumber
+          selected by `HEX`, `DEC`, `OCT` and `BIN`
+        - for example, selecting `HEX` and `WSIZ` 16 will allow only 4 hex
+          digits to be entered
+        - see [USER_GUIDE.md#base-input-digit-limit] for details
     - HELP pages
         - Add page for `CONV` functions to gives hints regarding the order of
           (x, y, r, theta) variables for the polar conversion functions.

@@ -46,6 +46,7 @@ RPN calculator app for the TI-83 Plus and TI-84 Plus inspired by the HP-42S.
         - [Carry Flag](#carry-flag)
         - [Bit Operations](#bit-operations)
         - [Base Integer Size](#base-integer-size)
+        - [Base Input Digit Limit](#base-input-digit-limit)
         - [Base Mode Retention](#base-mode-retention)
     - [STAT Functions](#stat-functions)
     - [TVM Functions](#tvm-functions)
@@ -1521,6 +1522,74 @@ BIN # use the DOWN arrow to go back to this menu row
 ```
 
 The current `WSIZ` value can be retrieved using the `WSZ?` menu function.
+
+#### Base Input Digit Limit
+
+The maximum number of digits allowed to be entered into the input buffer is
+limited by a function which depends on:
+- the `WSIZ`
+- the current base number (`HEX` 16, `DEC` 10, `OCT` 8, `BIN` 2)
+- the width of the single line on the display
+
+Adding a limit during input hopefully reduces the likelihood that the user will
+enter a number that is greater than the maximum number of bits allowed in by the
+current `WSIZ` and base number.
+
+Here are the limits:
+
+```
++------+------+-------------+-----------+
+| Base | WSIZ |     Max Num | MaxDigits |
+|------+------+-------------+-----------|
+|  DEC |    8 |         255 |         3 |
+|  DEC |   16 |       65535 |         5 |
+|  DEC |   24 |    16777215 |         8 |
+|  DEC |   32 |  4294967295 |        10 |
+|------+------+-------------+-----------|
+|  HEX |    8 |          FF |         2 |
+|  HEX |   16 |        FFFF |         4 |
+|  HEX |   24 |      FFFFFF |         6 |
+|  HEX |   32 |    FFFFFFFF |         8 |
+|------+------+-------------+-----------|
+|  OCT |    8 |         377 |         3 |
+|  OCT |   16 |      177777 |         5 |
+|  OCT |   24 |    77777777 |         8 |
+|  OCT |   32 | 37777777777 |        10 |
+|------+------+-------------+-----------|
+|  BIN |    8 |         255 |         8 |
+|  BIN |   16 |        4095 |    (*) 12 |
+|  BIN |   24 |        4095 |    (*) 12 |
+|  BIN |   32 |        4095 |    (*) 12 |
++------+------+------------ +-----------+
+
+(*) Limit determined by width of a single line on the display.
+```
+
+Limiting the number of digits during input does not completely prevent the user
+from entering a number which is immediately out-of-bounds of the `WSIZ` limit.
+That's because in certain bases like `OCT`, the maximum number of allowed bits
+falls inside a single digit. In other bases, like `DEC`, the number of binary
+bits does not correspond exactly to the representation in decimal.
+
+In `BIN` mode, the longest binary number that can be entered is limited by the
+width of the single line on the display, which in BIN mode is 12. You can apply
+arithmetic, logical, and bitwise operations to binary numbers to create larger
+results, but the largest binary number that can be entered manually is currently
+limited to 12 digits.
+
+It is assumed that most people will work with relatively small numbers in BIN
+mode. If they need to work with larger binary numbers, perhaps the HEX mode can
+be used instead. There are two hacky workarounds:
+
+1. Enter the numbers in HEX instead of BIN.
+2. Split the BIN numbers in groups less than 12, then use the shift operators
+`SL`  to shift the binary digits, and add them together to form the larger
+binary number.
+
+A future enhancement would be allow up to `WSIZ` digits to be entered in `BIN`
+mode by scrolling the digits off the single line to the left. But currently
+(v0.8.0), this ability is not supported because the amount of work seems too
+great for the amount of benefits.
 
 #### Base Number Retention
 
