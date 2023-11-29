@@ -116,12 +116,18 @@ menuPenColEnd   equ 96
 
 ;-----------------------------------------------------------------------------
 
-; Description: Set all dirty flags to dirty initially so that they are rendered.
+; Description: Configure flags and variables related to rendering to a sane
+; state. This is always called, regardless of whether restoreAppState()
+; succeeded in restoring the saved state.
 initDisplay:
+    ; always set drawMode to drawModeNormal
     xor a
-    ld (drawMode), a ; always set drawMode to drawModeNormal
+    ld (drawMode), a
+    ; always disable SHOW mode
+    res rpnFlagsShowModeEnabled, (iy + rpnFlags)
+    ; set all dirty flags so that everything on the display is re-rendered
     ld a, $FF
-    ld (iy + dirtyFlags), a ; set all dirty flags
+    ld (iy + dirtyFlags), a
     ret
 
 ; Description: Update the display, including the title, RPN stack variables,
@@ -134,7 +140,6 @@ displayAll:
     call displayErrorCode
     call displayMain
     call displayMenu
-
     ; Reset all dirty flags
     xor a
     ld (iy + dirtyFlags), a
