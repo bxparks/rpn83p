@@ -883,7 +883,7 @@ storeAppStateCreate:
     ; Calculate the CRC16 on the data block.
     ld hl, appStateBegin + 2 ; don't include the CRC16 field itself
     ld bc, appStateSize - 2 ; don't include the CRC16 field itself
-    call crc16ccitt
+    bcall(_Crc16ccitt)
     ld (appStateCrc16), hl
     ; Transfer the appState data block.
     call setAppVarName
@@ -939,7 +939,7 @@ restoreAppStateValidate:
     ; Validate the CRC16
     ld hl, appStateBegin + 2 ; don't include the CRC16 field itself
     ld bc, appStateSize - 2 ; don't include the CRC16 field itself
-    call crc16ccitt
+    bcall(_Crc16ccitt)
     ld de, (appStateCrc16)
     or a ; CF=0
     sbc hl, de

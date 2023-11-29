@@ -414,6 +414,10 @@ _FindMenuStringLabel:
 _FindMenuString equ _FindMenuStringLabel-branchTableBase
     .dw FindMenuString
     .db 1
+_Crc16ccittLabel:
+_Crc16ccitt equ _Crc16ccittLabel-branchTableBase
+    .dw Crc16ccitt
+    .db 1
 
 #ifdef DEBUG
 _DebugInputBufLabel:
@@ -498,7 +502,6 @@ _DebugU32DEAsHex equ _DebugU32DEAsHexLabel-branchTableBase
 #include "integer.asm"
 #include "float.asm"
 #include "print.asm"
-#include "crc.asm"
 #include "const.asm"
 #include "handlertab.asm"
 #include "arghandlertab.asm"
@@ -512,6 +515,7 @@ defpage(1)
 #include "help.asm"
 #include "menulookup.asm"
 #include "menudef.asm"
+#include "crc.asm"
 #ifdef DEBUG
 #include "debug.asm"
 #endif
