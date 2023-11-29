@@ -10,6 +10,11 @@
       function, so that they are consistent with the `>POL` function.
         - `Y` register holds the `y` value, which is entered first, then
         - `X` register holds the `x` value, which is entered second.
+    - Increase execution speed by 2.5X on supported calculators
+        - configure CPU speed to 15 MHz on the 83+SE, 84+, and 84+SE, while
+          remaining at 6 MHz on the 83+
+        - apparently the default CPU speed of assembly language programs and
+          flash apps is 6 MHz, for backwards compatibility
     - `SHOW`
         - implement "Show" function using `2ND` `ENTRY` on TI keyboard
         - displays all 14 internal digits of the TI-OS floating point number

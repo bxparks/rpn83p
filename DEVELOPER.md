@@ -3,6 +3,10 @@
 Notes for the developers of the RPN83P app, likely myself in 6 months when I
 cannot remember how the code works.
 
+**Version**: 0.8.0-dev (2023-11-29)
+
+**Project Home**: https://github.com/bxparks/rpn83p
+
 ## Table of Contents
 
 - [Debug Statements](#debug-statements)
@@ -32,6 +36,7 @@ table in `rpn83p.asm`, and all of them start with the prefix `_Debug`:
 
 - `_DebugInputBuf`
 - `_DebugParseBuf`
+- `_DebugString`
 - `_DebugPString`
 - `_DebugClear`
 - `_DebugOP1`
@@ -90,7 +95,7 @@ how to use the `PRIM` menu function to successively calculate all the prime
 factors of an integer `N` from `[0, 2^32)`. The largest prime less than 2^16 is
 `65521`. Therefore the longest time that `PRIM` can spend is the factorization
 of `65521*65521=4 293 001 441`. On a TI-84 Plus, that calculation takes 33
-seconds.
+seconds (at 6 MHz) and 13 seconds (at 15 MHz).
 
 Here are some notes about how the `PRIM` algorithm works:
 

@@ -2,7 +2,7 @@
 
 RPN calculator app for the TI-83 Plus and TI-84 Plus inspired by the HP-42S.
 
-**Version**: 0.8.0-dev (2023-11-26)
+**Version**: 0.8.0-dev (2023-11-29)
 
 **Project Home**: https://github.com/bxparks/rpn83p
 
@@ -270,11 +270,14 @@ does not pass a CRC checksum) then the application starts from a clean slate.
 This app was designed for TI calculators using the Z80 processor:
 
 - TI-83 Plus (6 MHz Z80, 24 kB accessible RAM, 160 kB accessible flash)
-- TI-83 Plus Silver Edition (15 MHz Z80, 24 kB accessible RAM, 1.5 MB accessible
-  flash)
-- TI-84 Plus (15 MHz Z80, 24 kB accessible RAM, 480 kB accessible flash)
-- TI-84 Plus Silver Edition (15 MHz Z80, 24 kB accessible RAM, 1.5 MB accessible
-  flash)
+- TI-83 Plus Silver Edition (6/15 MHz Z80, 24 kB accessible RAM, 1.5 MB
+  accessible flash)
+- TI-84 Plus (6/15 MHz Z80, 24 kB accessible RAM, 480 kB accessible flash)
+- TI-84 Plus Silver Edition (6/15 MHz Z80, 24 kB accessible RAM, 1.5 MB
+  accessible flash)
+
+The app configures itself to run at 15 MHz on supported hardware, while
+remaining at 6 MHz on the TI-83+.
 
 I have tested it on the following calculators that I own:
 
@@ -1170,10 +1173,11 @@ Any number outside of this range produces an `Err: Domain` message. (The number
 
 If the input number is a very large prime, the calculation may take a long time.
 However, testing has verified that the `PRIM` algorithm will always finish in
-less than about 30 seconds on a TI-83 Plus or TI-84 Plus calculator, no matter
-how large the input number. During the calculation, the "run indicator" on the
-upper-right corner will be active. You can press `ON` key to break from the
-`PRIM` loop with an `Err: Break` message.
+less than about 33 seconds on a TI-83+ (running at 6 MHz) or 13 seconds on a
+TI-83+SE, TI-84+, or TI-84+SE (running at 15 MHz), no matter how large the input
+number. During the calculation, the "run indicator" on the upper-right corner
+will be active. You can press `ON` key to break from the `PRIM` loop with an
+`Err: Break` message.
 
 ### BASE Functions
 

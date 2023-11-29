@@ -81,7 +81,7 @@ Missing features (partial list):
 - complex numbers
 - keystroke programming
 
-**Version**: 0.8.0-dev (2023-11-26)
+**Version**: 0.8.0-dev (2023-11-29)
 
 **Changelog**: [CHANGELOG.md](CHANGELOG.md)
 
@@ -137,11 +137,14 @@ registers.
 This app was designed for TI calculators using the Z80 processor:
 
 - TI-83 Plus (6 MHz Z80, 24 kB accessible RAM, 160 kB accessible flash)
-- TI-83 Plus Silver Edition (15 MHz Z80, 24 kB accessible RAM, 1.5 MB accessible
-  flash)
-- TI-84 Plus (15 MHz Z80, 24 kB accessible RAM, 480 kB accessible flash)
-- TI-84 Plus Silver Edition (15 MHz Z80, 24 kB accessible RAM, 1.5 MB accessible
-  flash)
+- TI-83 Plus Silver Edition (6/15 MHz Z80, 24 kB accessible RAM, 1.5 MB
+  accessible flash)
+- TI-84 Plus (6/15 MHz Z80, 24 kB accessible RAM, 480 kB accessible flash)
+- TI-84 Plus Silver Edition (6/15 MHz Z80, 24 kB accessible RAM, 1.5 MB
+  accessible flash)
+
+The app configures itself to run at 15 MHz on supported hardware, while
+remaining at 6 MHz on the TI-83+.
 
 I have tested it on the following calculators that I own:
 
