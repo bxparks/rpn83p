@@ -19,11 +19,11 @@ appendString:
     ld c, a ; C = char
     ld a, (hl) ; A = bufSize
     cp b
-    jr nz, appendString10
+    jr nz, appendStringNotFull
     ; buffer full, set CF
     scf
     ret
-appendString10:
+appendStringNotFull:
     ; Go to end of string
     inc a
     ld (hl), a

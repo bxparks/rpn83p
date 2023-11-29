@@ -42,8 +42,11 @@ clearInputBuf:
 ;   - dirtyFlagsInput set
 ; Destroys: all
 appendInputBuf:
+    ld c, a ; C=char
+    call getWordSizeDigits
+    ld b, a ; B=maxDigits
+    ld a, c ; A=char
     ld hl, inputBuf
-    ld b, inputBufMax
     set dirtyFlagsInput, (iy + dirtyFlags)
     jp appendString
 
