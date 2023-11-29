@@ -6,6 +6,7 @@
 ;------------------------------------------------------------------------------
 
 main:
+    call setFastSpeed
     bcall(_RunIndicOff)
     res appAutoScroll, (iy + appFlags) ; disable auto scroll
     res appTextSave, (iy + appFlags) ; disable shawdow text
@@ -40,9 +41,12 @@ initAlways:
     ; Jump into the main keyboard input parsing loop.
     jp processMainCommands
 
+;------------------------------------------------------------------------------
+
 ; Clean up and exit app.
 ;   - Called explicitly upon 2ND QUIT.
 ;   - Called by TI-OS application monitor upon 2ND OFF.
+; See the TI-83 Plus SDK reference for PutAway().
 mainExit:
     call rclX
     bcall(_StoAns) ; transfer RPN83P 'X' to TI-OS 'ANS'
@@ -79,4 +83,22 @@ appVectors:
     .db appTextSaveF
 
 dummyVector:
+    ret
+
+;------------------------------------------------------------------------------
+
+; Set CPU speed to 15 MHz on supported hardware (83+SE, 84+, 84+SE) on OS 1.13
+; or higher. See TI-83 Plus SDK reference for SetExSpeed().
+setFastSpeed:
+    bcall(_GetBaseVer) ; OS version in A, B
+    cp 2 ; check major version
+    jr nc, above112 ; if 2.x then > 1.12
+    cp 1 ; if 0.x, then < 1.12
+    ret nz ; major version == 1
+    ld a, b
+    cp 13 ; check minor version
+    ret c ; < 1.13
+above112:
+    ld a, $ff
+    bcall(_SetExSpeed)
     ret
