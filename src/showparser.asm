@@ -9,10 +9,7 @@
 ; Description: Read loop for the SHOW mode.
 processShowCommands:
     call clearShowArea
-    ld a, (drawMode)
-    push af ; stack=[drawMode]
-    ld a, drawModeShow
-    ld (drawMode), a
+    set rpnFlagsShowModeEnabled, (iy + rpnFlags)
     set dirtyFlagsStack, (iy + dirtyFlags)
     ; Show the new display.
     call displayAll
@@ -22,10 +19,9 @@ processShowCommands:
     ; Quit the app on QUIT.
     cp a, KQuit
     jp z, mainExit
-    ; Anything exits the SHOW mode.
+    ; Anything else exits the SHOW mode.
     call clearShowArea
-    pop af ; stack=[]; A=drawMode
-    ld (drawMode), a
+    res rpnFlagsShowModeEnabled, (iy + rpnFlags)
     set dirtyFlagsStack, (iy + dirtyFlags)
     set dirtyFlagsErrorCode, (iy + dirtyFlags) ; errorCode displays "SHOW"
     ret

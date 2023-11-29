@@ -79,7 +79,7 @@ rpnFlags equ asm_Flag2
 rpnFlagsEditing equ 0 ; set if in edit mode
 rpnFlagsArgMode equ 1 ; set if in command argument mode
 rpnFlagsLiftEnabled equ 2 ; set if stack lift is enabled (ENTER disables it)
-; rpnFlagsFree equ 3 ; free
+rpnFlagsShowModeEnabled equ 3 ; set if SHOW mode enabled
 rpnFlagsBaseModeEnabled equ 4 ; set if inside BASE menu hierarchy
 ; rpnFlagsSecondKey: Set if the 2ND was pressed before a menu button. Most
 ; handlers can ignore this, but some handlers may choose to check this flag to
@@ -319,7 +319,6 @@ drawModeNormal equ 0
 drawModeTvmSolverI equ 1 ; show i0, i1
 drawModeTvmSolverF equ 2 ; show npmt0, npmt1
 drawModeInputBuf equ 3 ; show inputBuf in debug line
-drawModeShow equ 4 ; show X register with all significant digits
 
 ; Draw/Debug mode, u8 integer. Activated by secret '2ND DRAW' button.
 drawMode equ tvmIterMax + 1

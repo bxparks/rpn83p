@@ -380,6 +380,8 @@ displayErrorCodeEnd:
 ; usually the RPN stack, but can be something else for debugging.
 ; Destroys: A
 displayMain:
+    bit rpnFlagsShowModeEnabled, (iy + rpnFlags)
+    jp nz, displayShow
     ld a, (drawMode)
     cp drawModeNormal
     jr z, displayStack
@@ -389,8 +391,6 @@ displayMain:
     jr z, displayTvmMaybe
     cp drawModeInputBuf
     jr z, displayStack
-    cp drawModeShow
-    jp z, displayShow
     ; Everything else display the stack.
     jr displayStack
 displayTvmMaybe:
