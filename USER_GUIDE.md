@@ -36,6 +36,7 @@ RPN calculator app for the TI-83 Plus and TI-84 Plus inspired by the HP-42S.
 - [Advanced Usage](#advanced-usage)
     - [Auto-start](#auto-start)
     - [Floating Point Display Modes](#floating-point-display-modes)
+    - [Show Mode](#show-mode)
     - [Trigonometric Modes](#trigonometric-modes)
     - [Storage Registers](#storage-registers)
     - [Prime Factors](#prime-factors)
@@ -1067,6 +1068,47 @@ Finally, type `FIX` `99` to go back to the default floating point mode.
 point display modes, so it cannot emulate the HP-42S exactly. In particular, the
 `ALL` display mode of the HP-42S is not directly available, but it is basically
 equivalent to `FIX 99` on the RPN83P.
+
+### SHOW Mode
+
+Many HP RPN calculators have a display mode that shows all significant digits
+that are stored internally. On the HP-42S and HP-16C, the button that activates
+this is labeled `SHOW`. On the HP-12C and HP-15C, the button is labeled
+`Prefix`.
+
+The RPN83P app implements the `SHOW` functionality using the `2ND` `ENTRY` key
+sequence (just above the `ENTER` button). This key was selected because `ENTRY`
+is unused in our RPN system, and because it is located close to the `ENTER` key.
+The Show mode reverts back to the normal display mode when *any* key is pressed
+(exception `OFF` and `QUIT`). Unlike the HP-42S which automatically reverts back
+to the normal mode after a 2-3 second delay, the TI calculator must wait for
+keyboard event from the user.
+
+Normally, the Show mode displays all 14 digits of the internal floating point
+format of the `X` register in scientific notation. For example, `sqrt(2)` is
+displayed with 10 significant digits as `1.414213562` in normal mode, but in
+Show mode it looks like this:
+
+![RPN83P SHOW Floating](docs/rpn83p-show-mode-floating.png)
+
+If the `X` value is an exact integer internally, then the value is printed in
+integer form instead of scientific notation. For example `2^46` is an exact
+integer that will normally appear as `7.036874418E13`, but in Show mode looks
+like this:
+
+![RPN83P SHOW Integer](docs/rpn83p-show-mode-integer.png)
+
+The Show mode has a slight variation in `BASE` mode. For `DEC`, `HEX`, and `OCT`
+modes, the `SHOW` function behaves as before, showing the internal floating
+point number in scientific or integer notation. However, in `BIN` mode, the
+`SHOW` function displays the `X` value in *binary* notation, allowing all digits
+of the binary number to be shown. This behavior is consistent with the `SHOW`
+function on the HP-42S. For example, the hex number `01D62BB7` in normal `BIN`
+mode looks like `...011 1011 0111` because only 12 digits can be displayed on a
+single line. But in Show mode, all 32 digits (assuming `WSIZ` was 32) will be
+displayed like this:
+
+![RPN83P SHOW Binary 32](docs/rpn83p-show-mode-bin32.png)
 
 ### Trigonometric Modes
 

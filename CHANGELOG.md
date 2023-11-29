@@ -15,15 +15,16 @@
           remaining at 6 MHz on the 83+
         - apparently the default CPU speed of assembly language programs and
           flash apps is 6 MHz, for backwards compatibility
-    - `SHOW`
+    - `SHOW` display mode
         - implement "Show" function using `2ND` `ENTRY` on TI keyboard
         - displays all 14 internal digits of the TI-OS floating point number
-        - if integer < 10^14: display as integer
-        - otherwise: display in scientific notation
-        - `BASE` mode
-            - `BIN` mode: displays `WSIZ` digits in groups of 4, using up to 4
-              lines
-            - all other modes: display underlying floating point number
+            - if integer < 10^14: display as integer
+            - otherwise: display in scientific notation
+        - `BASE` mode variation
+            - in `BIN` mode: displays `WSIZ` digits in groups of 4, using up to
+              4 display lines
+            - in all other `BASE` modes: display underlying floating point
+              number
     - `BASE` input limit
         - limit the number of digits that can be entered in `BASE` mode to a
           maximum that is appropriate for the selected `WSIZ` and the baseNumber
