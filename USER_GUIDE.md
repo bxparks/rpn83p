@@ -36,7 +36,7 @@ RPN calculator app for the TI-83 Plus and TI-84 Plus inspired by the HP-42S.
 - [Advanced Usage](#advanced-usage)
     - [Auto-start](#auto-start)
     - [Floating Point Display Modes](#floating-point-display-modes)
-    - [Show Mode](#show-mode)
+    - [SHOW Mode](#show-mode)
     - [Trigonometric Modes](#trigonometric-modes)
     - [Storage Registers](#storage-registers)
     - [Prime Factors](#prime-factors)
