@@ -13,10 +13,11 @@ features from the
 [HP-16C](https://en.wikipedia.org/wiki/HP-16C).
 
 
-The RPN83P is a flash application that consumes 2 pages (32 kiB) of flash
-memory. Since it is stored in flash, it is preserved if the RAM is cleared. It
-consumes about 400 bytes of TI-OS RAM: 2 list variables named `REGS` and `STK`,
-and an appVar named `RPN83SAV`.
+The RPN83P is a flash application written in Z80 assembly language that consumes
+2 pages (32 kiB) of flash memory. Since it is stored in flash, it is preserved
+if the RAM is cleared. It consumes about 400 bytes of TI-OS RAM: 2 list
+variables named `REGS` (240 bytes) and `STK` (59 byte), and an appVar named
+`RPN83SAV` (101 bytes).
 
 Summary of features:
 
@@ -81,7 +82,7 @@ Missing features (partial list):
 - complex numbers
 - keystroke programming
 
-**Version**: 0.8.0-dev (2023-11-29)
+**Version**: 0.8.0-dev (2023-11-30)
 
 **Changelog**: [CHANGELOG.md](CHANGELOG.md)
 
@@ -127,10 +128,6 @@ Guide](USER_GUIDE.md), but here is the quick version:
 The RPN83P app starts directly into the calculator mode, like this:
 
 ![RPN83P Hello 1](docs/rpn83p-screenshot-initial.png)
-
-Since the RPN83P is a flash app, it is preserved when the RAM is cleared. It
-consumes about 400 bytes of RAM space for its internal RPN and storage
-registers.
 
 ### Supported Hardware
 

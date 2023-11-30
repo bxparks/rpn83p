@@ -77,10 +77,11 @@ features from the
 [HP-12C](https://en.wikipedia.org/wiki/HP-12C) and the
 [HP-16C](https://en.wikipedia.org/wiki/HP-16C).
 
-The RPN83P is a flash application that consumes 2 pages (32 kiB) of flash
-memory. Since it is stored in flash, it is preserved if the RAM is cleared. It
-consumes a small amount of TI-OS RAM: 2 list variables named `REGS` (240 bytes)
-and `STK` (59 byte), and an appVar named `RPN83SAV` (100 bytes).
+The RPN83P is a flash application written in Z80 assembly language that consumes
+2 pages (32 kiB) of flash memory. Since it is stored in flash, it is preserved
+if the RAM is cleared. It consumes about 400 bytes of TI-OS RAM: 2 list
+variables named `REGS` (240 bytes) and `STK` (59 byte), and an appVar named
+`RPN83SAV` (101 bytes).
 
 Summary of features:
 
