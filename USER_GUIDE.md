@@ -116,7 +116,7 @@ Summary of features:
       `SDEV` (sample standard deviation), `SCOV` (sample covariance),
       `PDEV` (population standard deviation), `PCOV` (population covariance)
     - curve fitting: `Y>X`, `X>Y`, `SLOP` (slope), `YINT` (y intercept), `CORR`
-      (correlation coefficent)
+      (correlation coefficient)
     - curve fit models: `LINF` (linear), `LOGF` (logarithmic), `EXPF`
       (exponential), `PWRF` (power)
 - features inspired by HP-16C and HP-42S
@@ -299,7 +299,8 @@ is too different:
 This guide assumes that you already know to use an RPN calculator. In
 particular, the RPN83P implements the traditional RPN system used by
 Hewlett-Packard calculators such as the HP-12C, HP-15C, and the HP-42S. (The
-RPN83P does not use the newer RPN system used by the HP-48SX.)
+RPN83P does not use the newer RPN system used by the HP-48 series and other
+similar HP calculators.)
 
 It is beyond the scope of this document to explain how to use an RPN calculator.
 One way to learn is to download the [Free42](https://thomasokken.com/free42/)
@@ -1081,13 +1082,13 @@ sequence (just above the `ENTER` button). This key was selected because `ENTRY`
 is unused in our RPN system, and because it is located close to the `ENTER` key.
 The Show mode reverts back to the normal display mode when *any* key is pressed
 (exception `OFF` and `QUIT`). Unlike the HP-42S which automatically reverts back
-to the normal mode after a 2-3 second delay, the TI calculator must wait for
+to the normal mode after a 2-3 second delay, the TI calculator must wait for a
 keyboard event from the user.
 
 Normally, the Show mode displays all 14 digits of the internal floating point
 format of the `X` register in scientific notation. For example, `sqrt(2)` is
-displayed with 10 significant digits as `1.414213562` in normal mode, but in
-Show mode it looks like this:
+normally displayed with 10 significant digits as `1.414213562`, but in Show mode
+it looks like this:
 
 ![RPN83P SHOW Floating](docs/rpn83p-show-mode-floating.png)
 
@@ -2155,21 +2156,34 @@ limited:
 
 ### Near Future
 
-- TVM (time value of money)
-    - substantially done, but the TVM Solver for `I%YR` can be improved
-- Support more than 14 digits in `BIN` (base 2) mode
-    - This is a difficult UI problem, because 32 digits will require 3 lines on
-      the display, as each line currently can support only 14, maybe 15, digits.
 - datetime conversions
     - date/time components to and from epoch seconds
 - `PROB` and `COMB` arguments are limited to `< 256`
     - Maybe extend this to `< 2^16` or `< 2^32`.
 - `GCD` and `LCM` functions are slow
     - Could be made significantly faster.
+- Allow resize of storage registers using `SIZE` command
+    - The current default is fixed at 25.
+    - It should be relatively straightforward to allow this to be
+      user-definable, up to a `SIZE` of 100.
 
 ### Medium Future
 
-- user-defined variables
+- complex numbers
+    - The TI-OS provides internal subroutines to handle complex numbers, so in
+      theory, this should be relatively easy.
+    - The user interface may be difficult since a complex number requires 2
+      floating point numbers to be entered and displayed, and I have not figured
+      out how to do that within the UI of the RPN83P application.
+    - Additionally, all internal variables must be upgraded to accept a complex
+      number: RPN stack, storage registers nn
+- custom button bindings
+    - a significant number of buttons on the TI-83/TI-84 keyboard are not used
+      by RPN83P
+    - it would be useful to allow the user to customize some of those buttons
+      for quick access
+    - for example, the `2ND L1` to `2ND L6`
+- user-defined alphanumeric variables
     - The HP-42S shows user-defined variables through the menu system.
     - Nice feature, but would require substantial refactoring of the current
       menu system code.
@@ -2178,18 +2192,6 @@ limited:
       the `ASSIGN` and `CUSTOM` menus.
     - This seems like a useful feature, but would require substantial
       refactoring of the current menu system code, like user-defined variables.
-- custom button bindings
-    - a significant number of buttons on the TI-83/TI-84 keyboard are not used
-      by RPN83P
-    - it would be useful to allow the user to customize some of those buttons
-      for quick access
-    - for example, the `2ND` `L1` to `L6`
-- complex numbers
-    - The TI-OS provides internal subroutines to handle complex numbers, so in
-      theory, this should be relatively easy.
-    - I think the difficulty will be the user interface. A complex number
-      requires 2 floating point numbers to be entered and displayed, and I have
-      not figured out how to do that within the UI of the RPN83P application.
 - polynomial solvers
     - Quadratic, cubic, and quartic equations have analytical solutions so
       should be relatively straightforward... Except that they need complex
@@ -2200,6 +2202,19 @@ limited:
       British or Canadian imperial units
     - it'd be nice to support both types, if we can make the menu labels
       self-documenting and distinctive
+- `BASE` > `BIN`
+    - Allow more than 12 binary digits to be entered if `WSIZ` is greater than 8
+    - The most reasonable solution seems to be to scroll off the left digits to
+      the left as more digits are entered. This solution requires a significant
+      redesign of the current input buffer code, because currently, the internal
+      characters in the input buffer is exactly what is displayed on the screen.
+      We would need to decouple that.
+- `TVM` (time value of money)
+    - Improve TVM Solver for `I%YR`.
+    - The initial guesses could be better.
+    - The terminating tolerance could be selectable or more intelligent.
+    - Maybe change the root solving algorithm from Secant method to Newton's
+      method for faster convergence.
 
 ### Far Future
 

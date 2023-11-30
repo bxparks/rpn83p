@@ -52,7 +52,7 @@ Summary of features:
       `SDEV` (sample standard deviation), `SCOV` (sample covariance),
       `PDEV` (population standard deviation), `PCOV` (population covariance)
     - curve fitting: `Y>X`, `X>Y`, `SLOP` (slope), `YINT` (y intercept), `CORR`
-      (correlation coefficent)
+      (correlation coefficient)
     - curve fit models: `LINF` (linear), `LOGF` (logarithmic), `EXPF`
       (exponential), `PWRF` (power)
 - features inspired by HP-16C and HP-42S
