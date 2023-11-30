@@ -195,7 +195,7 @@ displayHelpPage:
 ;-----------------------------------------------------------------------------
 
 ; Array of (char*) pointers to C-strings.
-helpPageCount equ 11
+helpPageCount equ 12
 helpPages:
     .dw msgHelpPage1
     .dw msgHelpPage2
@@ -208,6 +208,7 @@ helpPages:
     .dw msgHelpPage9
     .dw msgHelpPage10
     .dw msgHelpPage11
+    .dw msgHelpPage12
 
 msgHelpPage1:
     .db escapeLargeFont, "RPN83P", Lenter
@@ -218,7 +219,7 @@ msgHelpPage1:
     .db "TI", Shyphen, "83 Plus and TI", Shyphen, "84 Plus", Senter
     .db "inspired by the HP", Shyphen, "42S.", Senter
     .db Senter
-    .db SlBrack, "1/11", SrBrack, " Any key to continue...", Senter
+    .db SlBrack, "1/12", SrBrack, " Any key to continue...", Senter
     .db 0
 
 msgHelpPage2:
@@ -230,7 +231,7 @@ msgHelpPage2:
     .db Senter
     .db "Quit:  2ND QUIT", Senter
     .db "Off:  2ND OFF", Senter
-    .db SlBrack, "2/11", SrBrack, " Any key to continue...", Senter
+    .db SlBrack, "2/12", SrBrack, " Any key to continue...", Senter
     .db 0
 
 msgHelpPage3:
@@ -242,7 +243,7 @@ msgHelpPage3:
     .db "CLST:  CLEAR CLEAR CLEAR", Senter
     .db Senter
     .db Senter
-    .db SlBrack, "3/11", SrBrack, " Any key to continue...", Senter
+    .db SlBrack, "3/12", SrBrack, " Any key to continue...", Senter
     .db 0
 
 msgHelpPage4:
@@ -254,7 +255,7 @@ msgHelpPage4:
     .db Senter
     .db Senter
     .db Senter
-    .db SlBrack, "4/11", SrBrack, " Any key to continue...", Senter
+    .db SlBrack, "4/12", SrBrack, " Any key to continue...", Senter
     .db 0
 
 msgHelpPage5:
@@ -262,11 +263,11 @@ msgHelpPage5:
     .db escapeSmallFont, "FIX nn: Fixed", Senter
     .db "SCI nn: Scientific", Senter
     .db "ENG nn: Engineering", Senter
-    .db "nn: 0..9: Num digits", Senter
-    .db "nn: 11..99: Reset to floating", Senter
+    .db SFourSpaces, "nn: 0..9: Num digits", Senter
+    .db SFourSpaces, "nn: 11..99: Reset to floating", Senter
     .db "SHOW: 2ND ENTRY", Senter
     .db Senter
-    .db SlBrack, "5/11", SrBrack, " Any key to continue...", Senter
+    .db SlBrack, "5/12", SrBrack, " Any key to continue...", Senter
     .db 0
 
 msgHelpPage6:
@@ -278,7 +279,7 @@ msgHelpPage6:
     .db "nn: 0..24", Senter
     .db Senter
     .db Senter
-    .db SlBrack, "6/11", SrBrack, " Any key to continue...", Senter
+    .db SlBrack, "6/12", SrBrack, " Any key to continue...", Senter
     .db 0
 
 msgHelpPage7:
@@ -290,46 +291,58 @@ msgHelpPage7:
     .db "ATN2: same as ", Sconvert, "POL", Senter
     .db Senter
     .db Senter
-    .db SlBrack, "7/11", SrBrack, " Any key to continue...", Senter
+    .db SlBrack, "7/12", SrBrack, " Any key to continue...", Senter
     .db 0
 
 msgHelpPage8:
+    .db escapeLargeFont, "STAT Functions", Lenter
+    .db escapeSmallFont, "WMN: Weighted Mean", Senter
+    .db SFourSpaces, "Y: ", ScapSigma, "XY/", ScapSigma, "X", Senter
+    .db SFourSpaces, "X: ", ScapSigma, "XY/", ScapSigma, "Y", Senter
+    .db "SDEV: Sample Std Deviation", Senter
+    .db "SCOV: Sample Covariance", Senter
+    .db "PDEV: Pop Std Deviation", Senter
+    .db "PCOV: Pop Covariance", Senter
+    .db SlBrack, "8/12", SrBrack, " Any key to continue...", Senter
+    .db 0
+
+msgHelpPage9:
     .db escapeLargeFont, "CFIT Models", Lenter
     .db escapeSmallFont, "LINF: y = B + M x", Senter
     .db "LOGF: y = B + M lnx", Senter
     .db "EXPF: y = B e^(M x)", Senter
     .db "PWRF: y = B x^M", Senter
-    .db "BEST: select best model", Senter
+    .db "BEST: Select best model", Senter
     .db Senter
     .db Senter
-    .db SlBrack, "8/11", SrBrack, " Any key to continue...", Senter
-    .db 0
-
-msgHelpPage9:
-    .db escapeLargeFont, "BASE Ops", Lenter
-    .db escapeSmallFont, "SL,SR: shift logical", Senter
-    .db "ASR: arithmetic shift right", Senter
-    .db "RL,RR: rotate circular",  Senter
-    .db "RLC,RRC: rotate thru carry",  Senter
-    .db "REVB: reverse bits", Senter
-    .db "CNTB: count bits", Senter
-    .db Senter
-    .db SlBrack, "9/11", SrBrack, " Any key to continue...", Senter
+    .db SlBrack, "9/12", SrBrack, " Any key to continue...", Senter
     .db 0
 
 msgHelpPage10:
+    .db escapeLargeFont, "BASE Ops", Lenter
+    .db escapeSmallFont, "SL,SR: Shift Logical", Senter
+    .db "ASR: Arithmetic Shift Right", Senter
+    .db "RL,RR: Rotate Circular",  Senter
+    .db "RLC,RRC: Rotate thru Carry",  Senter
+    .db "REVB: Reverse Bits", Senter
+    .db "CNTB: Count Bits", Senter
+    .db Senter
+    .db SlBrack, "10/12", SrBrack, " Any key to continue...", Senter
+    .db 0
+
+msgHelpPage11:
     .db escapeLargeFont, "TVM", Lenter
-    .db escapeSmallFont, "outflow: -", Senter
-    .db "inflow: +", Senter
+    .db escapeSmallFont, "Outflow: -", Senter
+    .db "Inflow: +", Senter
     .db "P/YR: Payments per year", Senter
     .db "BEG: Payments at begin", Senter
     .db "END: Payments at end", Senter
     .db "CLTV: Clear TVM",  Senter
     .db Senter
-    .db SlBrack, "10/11", SrBrack, " Any key to continue...", Senter
+    .db SlBrack, "11/12", SrBrack, " Any key to continue...", Senter
     .db 0
 
-msgHelpPage11:
+msgHelpPage12:
     .db escapeLargeFont, "TVM Solver", Lenter
     .db escapeSmallFont, "IYR1: I%YR guess 1",  Senter
     .db "IYR2: I%YR guess 2",  Senter
@@ -338,5 +351,5 @@ msgHelpPage11:
     .db Senter
     .db Senter
     .db Senter
-    .db SlBrack, "11/11", SrBrack, " Any key to return.", Senter
+    .db SlBrack, "12/12", SrBrack, " Any key to return.", Senter
     .db 0
