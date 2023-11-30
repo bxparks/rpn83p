@@ -2,7 +2,7 @@
 
 RPN calculator app for the TI-83 Plus and TI-84 Plus inspired by the HP-42S.
 
-**Version**: 0.8.0-dev (2023-11-29)
+**Version**: 0.8.0-dev (2023-11-30)
 
 **Project Home**: https://github.com/bxparks/rpn83p
 
@@ -808,12 +808,11 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
     - ![BASE MenuRow 8](docs/rpn83p-screenshot-menu-root-base-8.png)
     - `DEC`: use decimal base 10
     - `HEX`: use hexadecimal base 16
-        - display all register values as 32-bit unsigned integer
+        - display register values as 32-bit unsigned integer
     - `OCT`: use octal base 8
-        - display all register values as 32-bit unsigned integer
+        - display register values as 32-bit unsigned integer
     - `BIN`: use binary base 2
-        - display all register values as 32-bit unsigned integer
-        - max of 14 digits
+        - display register values as 32-bit unsigned integer
     - `AND`: `X` `bit-and` `Y`
     - `OR`: `X` `bit-or` `Y`
     - `XOR`: `X` `bit-xor` `Y`
@@ -1256,75 +1255,106 @@ respectively.
 
 #### Base Modes
 
+When the `BASE` menu is selected, one of the base number menu items will be
+activated: `DEC`, `HEX`, `OCT`, `BIN`. Normally the default is `DEC`, but the
+`BASE` menu remembers the last base number that was used.
+
+The numbers on the RPN stack are not modified internally when the `BASE` menu is
+selected, but they are displayed on the screen differently to emphasize that
+they are intended to be treated as unsigned integers.
+
+Let's start with the RPN stack containing the following numbers: -1, 17.1, 9E9,
+and 1234567, like this:
+
+![Numbers in Normal Mode](docs/rpn83p-screenshot-base-normal.png)
+
 **DEC** (decimal)
 
-The `DEC` (decimal) mode is the default. All numbers on the RPN stack are
-displayed as an integer, after being converted to an unsigned integer.
+The `DEC` (decimal) mode is the default when the `BASE` menu is selected. All
+numbers on the RPN stack are displayed as an integer, *as if* they were
+converted to an unsigned integer, but the RPN stack values are not modified. For
+the values given above, the display now looks like this:
 
-![Numbers in Decimal Mode](docs/rpn83p-screenshot-base-dec.png)
+![Numbers in DEC Mode](docs/rpn83p-screenshot-base-dec.png)
 
-If the value on the RPN stack is negative, a single `-` sign is shown. If the
-value is greater than or equal to `2^WSIZ`, then 3 dots `...` are shown. If the
-floating point value is within the range of `[0, 2^WSIZ)` but has non-zero
-fractional value, a decimal point is shown after converting the integer part
-into a unsigned integer.
+If the value on the RPN stack is negative, a single `-` sign is shown.
+If the value is greater than or equal to `2^WSIZ`, then 3 dots `...` are shown
+to indicate that the number is too large.
+If the floating point value is within the range of `[0, 2^WSIZ)` but has
+non-zero fractional value, a decimal point is shown after the integer part of
+the unsigned integer.
 
 **HEX** (hexadecimal)
 
 The `HEX` (hexadecimal) mode displays all numbers on the RPN stack using base
-16. Only the integer part is rendered. It is converted into an unsigned integer,
-and printed using a fixed number of hexadecimal digits depending on the word
-size. If there are fractional digits after the decimal point, a decimal point
-`.` is printed at the end of the 8 digits to indicate that the fractional part
-is not shown. Negative numbers are not valid and a single `-` character is
-printed instead. Three dots are printed if the integer part is `>= 2^WSIZ`.
+16. Only the integer part is rendered as if the RPN stack values were
+converted to an unsigned integer.
 
-The hexadecimal digits `A` through `F` are entered using `ALPHA` `A`, through
-`ALPHA` `F`. You can lock the `ALPHA` mode using `2ND` `A-LOCK`, but that causes
-the decimal buttons `0` to `9` to send letters instead which prevents those
-digits to be entered, so it is not clear that the Alpha Lock mode is actually
-useful in this context.
+![Numbers in HEX Mode](docs/rpn83p-screenshot-base-hex.png)
 
-![Numbers in Hexadecimal Mode](docs/rpn83p-screenshot-base-hex.png)
+If the value on the RPN stack is negative, a single `-` sign is shown.
+If the value is greater than or equal to `2^WSIZ`, then 3 dots `...` are shown
+to indicate that the number is too large.
+If the floating point value is within the range of `[0, 2^WSIZ)` but has
+non-zero fractional value, a decimal point is shown after the integer part of
+the unsigned integer.
+
+On the keyboard, the hexadecimal digits `A` through `F` are entered using
+`ALPHA` `A`, through `ALPHA` `F`. You can lock the `ALPHA` mode using `2ND`
+`A-LOCK`, but that causes the decimal buttons `0` to `9` to send letters instead
+which prevents those digits to be entered, so it is not clear that the Alpha
+Lock mode is actually useful in this context.
 
 **OCT** (octal)
 
 The `OCT` (octal) mode displays all numbers on the RPN stack using base 8. Only
-the integer part is rendered. It is converted into an unsigned integer, and
-printed using a fixed number of octal digits depending on the word size. If
-there are fractional digits after the decimal point, a decimal point `.` is
-printed at the end of the 11 digits to indicate that the fractional part is not
-shown. Negative numbers are not valid and a single `-` character is printed
-instead. Three dots are printed if the integer part is `>= 2^WSIZ`.
+the integer part is rendered as if the RPN stack values were converted to an
+unsigned integer.
 
-The button digits `0` through `7` are entered normally. The button digits `8`
-and `9` are disabled in octal mode.
+![Numbers in OCT Mode](docs/rpn83p-screenshot-base-oct.png)
 
-![Numbers in Octal Mode](docs/rpn83p-screenshot-base-oct.png)
+If the value on the RPN stack is negative, a single `-` sign is shown.
+If the value is greater than or equal to `2^WSIZ`, then 3 dots `...` are shown
+to indicate that the number is too large.
+If the floating point value is within the range of `[0, 2^WSIZ)` but has
+non-zero fractional value, a decimal point is shown after the integer part of
+the unsigned integer.
+
+On the keyboard, the button digits `0` through `7` are entered normally. The
+button digits `8` and `9` are disabled in octal mode.
 
 **BIN** (binary)
 
 The `BIN` (binary) mode displays all numbers on the RPN stack using base 2. Only
-the integer part is rendered. It is converted into an unsigned integer, and
-printed using a maximum of 14 binary digits, due to the maximum allowed by the
-width of the LCD screen. If there are fractional digits after the decimal point,
-a decimal point `.` is printed at the end of the 14 digits to indicate that the
-fractional part is not shown. Negative numbers are not valid and a single `-`
-character is printed instead. Three dots are also printed if the integer part is
-`>= 2^14` (i.e. `>= 16384`).
+the integer part is rendered as if the RPN stack values were converted to an
+unsigned integer.
 
-Only the button digits `0` and `1` are active in the binary mode. The rest are
-disabled.
+![Numbers in BIN Mode](docs/rpn83p-screenshot-base-bin.png)
 
-![Numbers in Binary Mode](docs/rpn83p-screenshot-base-bin.png)
+If the value on the RPN stack is negative, a single `-` sign is shown.
+If the value is greater than or equal to `2^WSIZ`, then 3 dots `...` are shown
+to indicate that the number is too large.
+If the floating point value is within the range of `[0, 2^WSIZ)` but has
+non-zero fractional value, a decimal point is shown after the integer part of
+the unsigned integer.
 
-If a number is too large to be fully displayed in `BIN` mode using the 14 digits
-available on the screen, a small ellipsis character will be shown on the left to
-indicate that there are more digits which are truncated from the screen. For
-example, the number 33059 (hex 8123, oct 100443) has a binary representation of
-`1000 0001 0010 0011`, which will be shown like this:
+Binary numbers are displayed in groups of 4 digits to help readability. That
+means that maximum number of digits that can be displayed is 12 digits. If
+`WSIZ` is 16, 24 or 32, then a number may have non-zero digits which are cutoff
+after the 12 digits. When that happens, a small ellipsis character will be shown
+on the left most digit to indicate truncation, as shown above.
 
-![BASE Binary Number Ellipsis](docs/rpn83p-base-bin-ellipsis.png)
+The `SHOW` function (bound to `2ND ENTRY` on the TI calculators) can be used to
+reveal all digits of the binary number, in groups of 4, using as many 4 lines of
+text like this:
+
+![Numbers in BIN Mode with SHOW](docs/rpn83p-screenshot-base-bin-show.png)
+
+We can now see that the number `1234567` in Base 2 is `0000 0000 0001 0010 1101
+0110 1000 0111`.
+
+On the keyboard, only the button digits `0` and `1` are active in the binary
+mode. The rest are disabled.
 
 #### Shift and Rotate
 
