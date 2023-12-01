@@ -1546,7 +1546,7 @@ rendering the various HEX, OCT, and BIN numbers using the same number of digits
 regardless of the value. The word size of the integer can be changed using the
 `WSIZ` menu item (see below). The following word sizes are supported: 8, 16, 24,
 and 32 bits. This means that `HEX` mode with a word size of 32 always displays 8
-digits, `OCT` mode always displays 11 digits, and `BIN` mode always displays 14
+digits, `OCT` mode always displays 11 digits, and `BIN` mode always displays 12
 digits (due to size limitation of the LCD screen). I find this less confusing
 when doing bitwise operations (e.g. bit-and, bit-or, bit-xor).
 
@@ -1602,7 +1602,20 @@ BIN # use the DOWN arrow to go back to this menu row
 
 The current `WSIZ` value can be retrieved using the `WSZ?` menu function.
 
-#### Base Input Digit Limit
+**HP-42S Compatibility Note**: The original HP-42S does *not* support the `WSIZ`
+command. Its word size is fixed at 36 bits. The Free42 app however does support
+it as the `WSIZE` command. I suspect that Free42 borrowed the `WSIZE` command
+from the HP-16C. Keen observers will note an unfortunate UI inconsistency: the
+`WSIZE` command really ought to take the word size as an argument to the command
+(similar to `FIX` and `STO`), instead of taking the word size from the `X`
+register on the RPN stack. But that is how it is implemented on the HP-16C. For
+consistency with Free42 and the HP-16C, the RPN83P app also implements the
+`WSIZ` command in the same way, taking the word size from the RPN stack. This is
+the fundamental source of the usability problem noted above, where the `BASE`
+mode can be set to something other than `DEC`, causing the word size to be
+displayed in a format which may be difficult for the user to read or enter.
+
+### Base Input Digit Limit
 
 The maximum number of digits allowed to be entered into the input buffer is
 limited by a function which depends on:
@@ -1648,7 +1661,9 @@ Limiting the number of digits during input does not completely prevent the user
 from entering a number which is immediately out-of-bounds of the `WSIZ` limit.
 That's because in certain bases like `OCT`, the maximum number of allowed bits
 falls inside a single digit. In other bases, like `DEC`, the number of binary
-bits does not correspond exactly to the representation in decimal.
+bits does not correspond exactly to the representation in decimal. (A future
+enhancement may be to parse the input buffer upon `ENTER` and refuse to accept
+the number if it is greater than the maximum allowed by the `WSIZ`.)
 
 In `BIN` mode, the longest binary number that can be entered is limited by the
 width of the single line on the display, which in BIN mode is 12. You can apply
@@ -1657,8 +1672,8 @@ results, but the largest binary number that can be entered manually is currently
 limited to 12 digits.
 
 It is assumed that most people will work with relatively small numbers in BIN
-mode. If they need to work with larger binary numbers, perhaps the HEX mode can
-be used instead. There are two hacky workarounds:
+mode. If they need to work with larger binary numbers, there may be
+two hacky workarounds:
 
 1. Enter the numbers in HEX instead of BIN.
 2. Split the BIN numbers in groups less than 12, then use the shift operators
@@ -2226,7 +2241,7 @@ limited:
 - polynomial solvers
     - Quadratic, cubic, and quartic equations have analytical solutions so
       should be relatively straightforward... Except that they need complex
-      number support. And we need to workaround numerical cancellation or
+      number support. And we need to work around numerical cancellation or
       roundoff errors.
 - `UNIT` conversions for imperial (not just US) units
     - several places assume US customary units (e.g. US gallons) instead of
