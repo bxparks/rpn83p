@@ -10,21 +10,18 @@
       function, so that they are consistent with the `>POL` function.
         - `Y` register holds the `y` value, which is entered first, then
         - `X` register holds the `x` value, which is entered second.
-    - Increase execution speed by 2.5X on supported calculators
-        - configure CPU speed to 15 MHz on the 83+SE, 84+, and 84+SE, while
-          remaining at 6 MHz on the 83+
-        - apparently the default CPU speed of assembly language programs and
-          flash apps is 6 MHz, for backwards compatibility
+    - Increase execution speed by 2.5X on 83+SE, 84+, 84+SE
+        - set CPU speed to 15 MHz when supported by hardware
+        - remain at 6 MHz on the 83+
     - `SHOW` display mode
         - implement "Show" function using `2ND` `ENTRY` on TI keyboard
         - displays all 14 internal digits of the TI-OS floating point number
             - if integer < 10^14: display as integer
             - otherwise: display in scientific notation
         - `BASE` mode variation
-            - in `BIN` mode: displays `WSIZ` digits in groups of 4, using up to
-              4 display lines
-            - in all other `BASE` modes: display underlying floating point
-              number
+            - `BIN` mode: display `WSIZ` digits in groups of 4, using up to 4
+              display lines
+            - all other `BASE` modes: display underlying floating point number
         - see [SHOW Mode](USER_GUIDE.md#show-mode) for details
     - `BASE` input limit
         - limit the number of digits that can be entered in `BASE` mode to a
@@ -35,8 +32,11 @@
         - see [Base Input Digit Limit](USER_GUIDE.md#base-input-digit-limit) for
           details
     - HELP pages
-        - Add page for `CONV` functions to gives hints regarding the order of
-          (x, y, r, theta) variables for the polar conversion functions.
+        - Add page for `CONV` functions to show order of (x, y, r, theta)
+          variables on RPN stack
+        - Add page for `STAT` functions
+        - Add page for `NUM` functions
+        - Add page for various display MODEs
 - 0.7.0 (2023-11-20)
     - `STAT`
         - fix broken `Sigma+` and `Sigma-` when `Y==0`
