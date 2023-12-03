@@ -10,6 +10,9 @@
       function, so that they are consistent with the `>POL` function.
         - `Y` register holds the `y` value, which is entered first, then
         - `X` register holds the `x` value, which is entered second.
+    - **Bug Fix**: Tweak the stack-lift enable/disable logic so that certain
+      operations (RollDown, RollUp, X<>Y) enable stack lift even if the previous
+      command was a `CLEAR` or `CLX`.
     - Increase execution speed by 2.5X on 83+SE, 84+, 84+SE
         - set CPU speed to 15 MHz when supported by hardware
         - remain at 6 MHz on the 83+

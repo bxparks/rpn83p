@@ -13,7 +13,6 @@
 ; Output:
 ;   - CF set when append fails
 ;   - rpnFlagsEditing set
-;   - rpnFlagsLiftEnabled set
 ;   - dirtyFlagsInput set
 ; Destroys: all
 handleKeyNumber:
@@ -27,12 +26,9 @@ handleKeyNumberFirstDigit:
     push af ; preserve A=char to append
     call liftStackIfEnabled
     pop af
-    ; Go into editing mode. Re-enable stack lift so that if the next keystroke
-    ; is a PI, Euler, or some other function that takes no arguments and
-    ; produces a number, the stack is lifted again.
+    ; Go into editing mode.
     call clearInputBuf
     set rpnFlagsEditing, (iy + rpnFlags)
-    set rpnFlagsLiftEnabled, (iy + rpnFlags)
 handleKeyNumberCheckAppend:
     ; Limit number of exponent digits to 2.
     bit inputBufFlagsEE, (iy + inputBufFlags)
@@ -489,9 +485,8 @@ handleKeyUp:
     inc hl
     inc hl
     inc hl
+    ; if numRows==1: return TODO: Check for 0, but that should never happen.
     ld c, (hl) ; C = numRows
-
-    ; Check for 1. TODO: Check for 0, but that should never happen.
     ld a, c
     cp 1
     ret z
@@ -523,9 +518,8 @@ handleKeyDown:
     inc hl
     inc hl
     inc hl
+    ; if numRows==1: returt TODO: Check for 0, but that should never happen.
     ld c, (hl) ; numRows
-
-    ; Check for 1. TODO: Check for 0, but that should never happen.
     ld a, c
     cp 1
     ret z

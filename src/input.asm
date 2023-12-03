@@ -50,20 +50,49 @@ appendInputBuf:
     set dirtyFlagsInput, (iy + dirtyFlags)
     jp appendString
 
-; Description: If currently in edit mode, close the input buffer by parsing the
-; input, enable stack lift, then copying the float value into X. If not in edit
-; mode, no need to parse the inputBuf.
+; Description: Close the input buffer by parsing the input, then copying the
+; float value into X. If not in edit mode, no need to parse the inputBuf, the X
+; register is not changed. Almost all functions/commands in RPN83P will call
+; this function at the very beginning of their handler.
+;
+; This function determines 2 flags which affect the stack lift:
+;
+; - rpnFlagsLiftEnabled: *Always* set after this call. It is up to the calling
+; handler to override this default and disable it if necessary (e.g. ENTER, or
+; Sigma+).
+; - inputBufFlagsClosedEmpty: Set if the inputBuf was an empty string before
+; being closed. This flag is cleared if the inputBuf was *not* in edit mode to
+; begin with.
+;
+; The rpnFlagsLiftEnabled is used by the next manual entry of a number (digits
+; 0-9 usualy, sometimes A-F in hexadecimal mode). Usually, the next manual
+; number entry lifts the stack, but this flag can be used to disable that.
+; (e.g. ENTER will disable the lift of the next number).
+;
+; The inputBufFlagsClosedEmpty flag is used by functions which do not consume
+; any value from the RPN stack, but simply push a value or two onto the X or Y
+; registers (e.g. PI, E, or various TVM functions, various STAT functions). If
+; the user had pressed CLEAR, to clear the input buffer, then it doesn't make
+; sense for these functions to lift the empty string (i.e. 0) up when pushing
+; the new values. These functions call pushX() or pushXY() which checks if the
+; inputBuf was closed when empty. If empty, pushX() or pushXY() will *not* lift
+; the stack, but simply replace the "0" in the X register with the new value.
+; This flag is cleared if the inputBuf was not in edit mode, with the
+; assumption that new X or Y values should lift the stack.
+;
 ; Input:
 ;   - rpnFlagsEditing: indicates if inputBuf is valid
 ;   - inputBuf: input buffer
 ; Output:
+;   - rpnFlagsLiftEnabled: always set
 ;   - inputBufFlagsClosedEmpty: set if inputBuf was an empty string when closed
-;   - rpnFlagsEditing: set to 0
-;   - rpnFlagsEditing: cleared
+;   - rpnFlagsEditing: always cleared
 ;   - OP1: value of inputBuf if edited
 ;   - X register: set to OP1 if inputBuf was edited
+;   - inputBuf cleared to empty string
 ; Destroys: all, OP1, OP2, OP4
 closeInputBuf:
+    set rpnFlagsLiftEnabled, (iy + rpnFlags)
     bit rpnFlagsEditing, (iy + rpnFlags)
     jr nz, closeInputBufEditing
     ; Not editing

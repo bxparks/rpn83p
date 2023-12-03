@@ -160,7 +160,7 @@ clearStackLoop:
     djnz clearStackLoop
 clearStackEnd:
     set dirtyFlagsStack, (iy + dirtyFlags) ; force redraw
-    set rpnFlagsLiftEnabled, (iy + rpnFlags)
+    set rpnFlagsLiftEnabled, (iy + rpnFlags) ; TODO: I think this can be removed
     ret
 
 ;-----------------------------------------------------------------------------
@@ -299,7 +299,6 @@ replaceX:
     call stoL
     bcall(_PopRealO1) ; FPS=[]; OP1=OP1
     call stoX
-    set rpnFlagsLiftEnabled, (iy + rpnFlags)
     ret
 
 ; Description: Replace (X, Y) pair with OP1, saving previous X to LastX,
@@ -313,7 +312,6 @@ replaceXY:
     call dropStack
     bcall(_PopRealO1) ; FPS=[]; OP1=OP1
     call stoX
-    set rpnFlagsLiftEnabled, (iy + rpnFlags)
     ret
 
 ; Description: Replace X and Y with push of OP1 and OP2 on the stack in that
@@ -340,7 +338,6 @@ replaceXYWithOP1OP2:
     bcall(_OP2ToOP1)
     call stoX ; X = OP2
     bcall(_PopRealO1) ; FPS=[]; OP1=OP1
-    set rpnFlagsLiftEnabled, (iy + rpnFlags)
     ret
 
 ; Description: Replace X with OP1, and OP2 pushed onto the stack in that order.
@@ -365,7 +362,6 @@ replaceXWithOP1OP2:
     call liftStack
     bcall(_OP2ToOP1)
     call stoX
-    set rpnFlagsLiftEnabled, (iy + rpnFlags)
     ret
 
 ; Description: Push OP1 to the X register. LastX is not updated because the
@@ -380,7 +376,6 @@ pushX:
     bcall(_CkValidNum)
     call liftStackIfNonEmpty
     call stoX
-    set rpnFlagsLiftEnabled, (iy + rpnFlags)
     ret
 
 ; Description: Push OP1 then OP2 onto the stack. LastX is not updated because
@@ -403,7 +398,6 @@ pushXY:
     bcall(_OP1ExOP2)
     call stoX
     bcall(_OP1ExOP2)
-    set rpnFlagsLiftEnabled, (iy + rpnFlags)
     ret
 
 ;-----------------------------------------------------------------------------
@@ -426,7 +420,6 @@ liftStackIfNonEmpty:
 liftStackIfEnabled:
     bit rpnFlagsLiftEnabled, (iy + rpnFlags)
     ret z
-    set rpnFlagsLiftEnabled, (iy + rpnFlags)
     ; [[fallthrough]]
 
 ; Description: Lift the RPN stack unconditionally, copying X to Y.
