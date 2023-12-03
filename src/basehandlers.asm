@@ -381,24 +381,33 @@ mGetCarryFlagHandlerPush1:
 
 ;-----------------------------------------------------------------------------
 
+; Description: Prompt for the new base word size, like FIX or STO. Allowed
+; values are 8, 16, 24, 32. Throw Err:Argument if outside of that list.
 mSetWordSizeHandler:
-    call recallXAsU32 ; HL=OP3=u32(X)
-    ld a, 8
-    call cmpU32U8
+    call closeInputBuf
+    res rpnFlagsTvmCalculate, (iy + rpnFlags)
+    ld hl, msgWordSizePrompt
+    call startArgParser
+    call processArgCommands ; CF=0 if canceled; (argModified), (argValue)
+    ret nc ; do nothing if canceled
+    ld a, (argValue)
+    cp 8
     jr z, setWordSize
-    ld a, 16
-    call cmpU32U8
+    cp 16
     jr z, setWordSize
-    ld a, 24
-    call cmpU32U8
+    cp 24
     jr z, setWordSize
-    ld a, 32
-    call cmpU32U8
+    cp 32
     jr z, setWordSize
-    bcall(_ErrDomain)
+    ; throw Err:Argument if not (8,16,24,32)
+    bcall(_ErrArgument)
 setWordSize:
     ld (baseWordSize), a
+    set dirtyFlagsStack, (iy + dirtyFlags)
     ret
+
+msgWordSizePrompt:
+    .db "WSIZ", 0
 
 mGetWordSizeHandler:
     call closeInputBuf
