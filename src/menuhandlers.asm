@@ -1075,13 +1075,13 @@ mAtanhHandler:
 ; Children nodes of STK menu group (stack functions).
 ;-----------------------------------------------------------------------------
 
-mStackRotUpHandler:
+mStackRollUpHandler:
     call closeInputBuf
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
-    jp rotUpStack
+    jp rollUpStack
 
-mStackRotDownHandler:
-    jp handleKeyRotDown
+mStackRollDownHandler:
+    jp handleKeyRollDown
 
 mStackExchangeXYHandler:
     jp handleKeyExchangeXY

@@ -176,7 +176,7 @@ keyCodeHandlerTable:
     ; calculator which supports both ALG and RPN modes, and places the R-down
     ; on the (, and x<->y on the ).
     .db kLParen ; (
-    .dw handleKeyRotDown
+    .dw handleKeyRollDown
     .db kRParen ; )
     .dw handleKeyExchangeXY
     ; bind ANS to lastX.

@@ -429,7 +429,7 @@ These are the buttons which manipulate the RPN stack:
 
 ![Input and Edit Buttons](docs/rpn83p-fullshot-rpn-buttons.jpg)
 
-- `(`: rotates RPN stack down (known as `R(downarrow)` on HP calculators)
+- `(`: rolls RPN stack down (known as `R(downarrow)` on HP calculators)
 - `)`: exchanges `X` and `Y` registers
 - `ENTER`: saves the input buffer to the `X` register
 - `2ND` `ANS`: recalls the last `X`
@@ -462,7 +462,7 @@ lift the stack.
 The parenthesis `(` and `)` buttons are not used in an RPN entry system, so they
 have been repurposed for stack manipulation:
 
-- `(` key rotates the stack *down*, exactly as the same as the `R(downarrow)` or
+- `(` key rolls the stack *down*, exactly as the same as the `R(downarrow)` or
   just a single `(downarrow)` on the HP calculators.
 - `)` key performs an exchange of the `X` and `Y` registers. That functionality
   is usually marked as `X<>Y` on HP calculators.
@@ -970,8 +970,8 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
     - `DEG`: use degrees for trigonometric functions
 - `ROOT` > `STK`
     - ![STK MenuRow 1](docs/rpn83p-screenshot-menu-root-stk-1.png)
-    - `R(up)`: rotate stack up
-    - `R(down)`: rotate stack down, also bound to `(` button
+    - `R(up)`: roll stack up
+    - `R(down)`: roll stack down, also bound to `(` button
     - `X<>Y`: exchange `X` and `Y`, also bound to `)` button
 
 ## Advanced Usage

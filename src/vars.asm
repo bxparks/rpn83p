@@ -470,14 +470,14 @@ dropStack:
 
 ;-----------------------------------------------------------------------------
 
-; Description: Rotate the RPN stack *down*.
+; Description: Roll the RPN stack *down*.
 ; Input: none
 ; Output: X=Y; Y=Z; Z=T; T=X
 ; Destroys: all, OP1, OP2
 ; Preserves: none
 ; TODO: Make this more efficient by taking advantage of the fact that stack
 ; registers are actually in a list variable named STK.
-rotDownStack:
+rollDownStack:
     ; save X in FPS
     call rclX
     bcall(_PushRealO1) ; FPS=[OP1]
@@ -497,14 +497,14 @@ rotDownStack:
 
 ;-----------------------------------------------------------------------------
 
-; Description: Rotate the RPN stack *up*.
+; Description: Roll the RPN stack *up*.
 ; Input: none
 ; Output: T=Z; Z=Y; Y=X; X=T
 ; Destroys: all, OP1, OP2
 ; Preserves: none
 ; TODO: Make this more efficient by taking advantage of the fact that stack
 ; registers are actually in a list variable named STK.
-rotUpStack:
+rollUpStack:
     ; save T in FPS
     call rclT
     bcall(_PushRealO1) ; FPS=[OP1]

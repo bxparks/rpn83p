@@ -744,10 +744,10 @@ handleKeySqrt:
 ; Stack operations
 ;-----------------------------------------------------------------------------
 
-handleKeyRotDown:
+handleKeyRollDown:
     call closeInputBuf
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
-    jp rotDownStack
+    jp rollDownStack
 
 handleKeyExchangeXY:
     call closeInputBuf

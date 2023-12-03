@@ -1775,23 +1775,23 @@ mBlank187Id equ 187
     .db 0 ; rowBeginId or altNameId
     .dw mNullHandler ; handler (predefined)
     .dw 0 ; nameSelector
-mStackRotUp:
-mStackRotUpId equ 188
-    .db mStackRotUpId ; id
+mStackRollUp:
+mStackRollUpId equ 188
+    .db mStackRollUpId ; id
     .db mStackId ; parentId
-    .db mStackRotUpNameId ; nameId
+    .db mStackRollUpNameId ; nameId
     .db 0 ; numRows
     .db 0 ; rowBeginId or altNameId
-    .dw mStackRotUpHandler ; handler (to be implemented)
+    .dw mStackRollUpHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
-mStackRotDown:
-mStackRotDownId equ 189
-    .db mStackRotDownId ; id
+mStackRollDown:
+mStackRollDownId equ 189
+    .db mStackRollDownId ; id
     .db mStackId ; parentId
-    .db mStackRotDownNameId ; nameId
+    .db mStackRollDownNameId ; nameId
     .db 0 ; numRows
     .db 0 ; rowBeginId or altNameId
-    .dw mStackRotDownHandler ; handler (to be implemented)
+    .dw mStackRollDownHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
 mStackExchangeXY:
 mStackExchangeXYId equ 190
@@ -2183,10 +2183,10 @@ mDegNameId equ 182
     .dw mDegName
 mDegAltNameId equ 183
     .dw mDegAltName
-mStackRotUpNameId equ 184
-    .dw mStackRotUpName
-mStackRotDownNameId equ 185
-    .dw mStackRotDownName
+mStackRollUpNameId equ 184
+    .dw mStackRollUpName
+mStackRollDownNameId equ 185
+    .dw mStackRollDownName
 mStackExchangeXYNameId equ 186
     .dw mStackExchangeXYName
 
@@ -2559,9 +2559,9 @@ mDegName:
     .db "DEG", 0
 mDegAltName:
     .db 'D', 'E', 'G', Sblock, 0
-mStackRotUpName:
+mStackRollUpName:
     .db 'R', SupArrow, 0
-mStackRotDownName:
+mStackRollDownName:
     .db 'R', SdownArrow, 0
 mStackExchangeXYName:
     .db 'X', Sleft, Sconvert, 'Y', 0
