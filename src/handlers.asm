@@ -364,7 +364,8 @@ handleKeyClearWhileClear:
     ; We are here if CLEAR was pressed while the inputBuffer was already empty.
     ; Go into ClearAgain mode, where the next CLEAR invokes CLST.
     ld a, errorCodeClearAgain
-    jp setHandlerCode
+    ld (handlerCode), a
+    ret
 handleKeyClearToEmptyInput:
     ; We are here if we were not in edit mode, so CLEAR should "clear the X
     ; register" by going into edit mode with an emtpy inputBuf.
@@ -843,7 +844,8 @@ handleKeySto:
     jp stoOpNN
 handleKeyStoError:
     ld a, errorCodeDimension
-    jp setHandlerCode
+    ld (handlerCode), a
+    ret
 
 handleKeyRcl:
     call closeInputBuf
@@ -879,7 +881,8 @@ handleKeyRclOpNN:
     jp replaceX ; updates LastX
 handleKeyRclError:
     ld a, errorCodeDimension
-    jp setHandlerCode
+    ld (handlerCode), a
+    ret
 
 msgStoPrompt:
     .db "STO", 0
@@ -932,7 +935,8 @@ handleKeyDraw:
     ld (drawMode), a
     ; notify the dispatcher to clear and redraw the screen
     ld a, errorCodeClearScreen
-    jp setHandlerCode
+    ld (handlerCode), a
+    ret
 
 handleKeyShow:
     call closeInputBuf

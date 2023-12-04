@@ -102,7 +102,8 @@ mStatClearHandler:
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     call clearStatRegs
     ld a, errorCodeStatCleared
-    jp setHandlerCode
+    ld (handlerCode), a
+    ret
 
 ;-----------------------------------------------------------------------------
 

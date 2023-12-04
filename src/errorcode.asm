@@ -3,10 +3,15 @@
 ; Copyright (c) 2023 Brian T. Park
 ;
 ; Functions and strings related to error codes.
+;
+; This is now on Flash Page 1. Labels with Capital letters are intended to be
+; exported to other flash pages and should be placed in the branch table on
+; Flash Page 0. Labels with lowercase letters are intended to be private so do
+; not need a branch table entry.
 ;-----------------------------------------------------------------------------
 
 ; Description: Initialize errorCode and handlerCode to 0.
-initErrorCode:
+InitErrorCode:
     xor a
     ld (errorCode), a
     ld (handlerCode), a
@@ -18,20 +23,14 @@ initErrorCode:
 ; reduced down to a range of `[0, errorCodeCount-1]`.
 ; Input: A: system error code
 ; Output: A: handlerCode
-setHandlerCodeToSystemCode:
+SetHandlerCodeToSystemCode:
     res 7, a ; reset the GOTO flag
-    ; [[fallthrough]]
-
-; Description: Set `handlerCode` to register A, which will hold one of the
-; `errorCodeXxx` values.
-; Output: A: handlerCode
-setHandlerCode:
     ld (handlerCode), a
     ret
 
 ; Description: Set the `errorCode` to the value given in register A.
 ; Input: A: error code
-setErrorCode:
+SetErrorCode:
     ld hl, errorCode
     cp (hl) ; previous errorCode
     ret z ; same, no change
@@ -39,7 +38,42 @@ setErrorCode:
     set dirtyFlagsErrorCode, (iy + dirtyFlags)
     ret
 
-; Description: getErrorString(A) -> HL
+;-----------------------------------------------------------------------------
+
+; Description: Print the error string identified by the error code in A. If the
+; error code is "Err: UNKNOWN", append the numerical code in parenthesis.
+; Input: A: error code
+; Destroys: all
+PrintErrorString:
+    call getErrorString
+    push hl
+    call vPutSFP1
+    pop hl
+    ; Check if error string is "Err: UNKNOWN".
+    ld de, errorStrUnknown
+    bcall(_CpHLDE)
+    ret nz
+    ; Append the numerical code in parenthesis.
+    ; This helps debugging if an unknown error code is detected.
+    ld a, Sspace
+    bcall(_VPutMap)
+    ;
+    ld a, ' '
+    bcall(_VPutMap)
+    ld a, '('
+    bcall(_VPutMap)
+    ;
+    ld a, (errorCode)
+    ld hl, OP1
+    push hl
+    call convertAToDecFP1
+    pop hl
+    call vPutSFP1
+    ;
+    ld a, ')'
+    bcall(_VPutMap)
+    ret
+
 ; Description: Get the string for given error code.
 ; Input: A: error code
 ; Output: HL: pointer to a C string
@@ -53,7 +87,7 @@ getErrorString:
     ret
 getErrorStringContinue:
     ld hl, errorStrings
-    jp getString
+    jp getStringFP1
 
 ;-----------------------------------------------------------------------------
 

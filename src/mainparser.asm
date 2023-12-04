@@ -44,9 +44,10 @@ processMainCommands:
     cp errorCodeClearScreen
     jr z, cleanupHandlerClearScreen
     ; [[fallthrough]]
+
 cleanupHandlerSetErrorCode:
     ; transfer the handlerCode in A to displayable errorCode.
-    call setErrorCode
+    bcall(_SetErrorCode)
     jr processMainCommands
 
 ; Handle system exception. A contains the system error code.
@@ -58,7 +59,7 @@ cleanupHandlerException:
     bcall(_RunIndicOff) ; destroys A (contrary to SDK docs)
     pop af
     ; Convert system code to handler code
-    call setHandlerCodeToSystemCode
+    bcall(_SetHandlerCodeToSystemCode)
     jr cleanupHandlerSetErrorCode
 
 cleanupHandlerClearScreen:
@@ -71,7 +72,7 @@ cleanupHandlerClearScreen:
 
 cleanupHandlerQuitApp:
     ld a, errorCodeOk
-    call setErrorCode
+    bcall(_SetErrorCode)
     jp mainExit
 
 ;-----------------------------------------------------------------------------

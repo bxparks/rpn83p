@@ -32,6 +32,59 @@ getStringFP1:
 
 ;------------------------------------------------------------------------------
 
+; Description: Convert A to a NUL-terminated C-string of 1 to 3 digits at the
+; string buffer pointed by HL.
+; Input: HL: pointer to string buffer
+; Output: HL: pointer to NUL terminator at end of string
+; Destroys: A, B, C, HL
+convertAToDecFP1:
+    ; Divide by 100
+    ld b, 100
+    call divideAByBFP1
+    or a
+    jr z, convertAToDecFP110
+    call convertAToCharFP1
+    ld (hl), a
+    inc hl
+convertAToDecFP110:
+    ; Divide by 10
+    ld a, b
+    ld b, 10
+    call divideAByBFP1
+    or a
+    jr z, convertAToDecFP11
+    call convertAToCharFP1
+    ld (hl), a
+    inc hl
+convertAToDecFP11:
+    ; Extract the 1
+    ld a, b
+    call convertAToCharFP1
+    ld (hl), a
+    inc hl
+    ; Terminate with NUL
+    ld (hl), 0
+    ret
+
+; Description: Return A / B using repeated substraction.
+; Input:
+;   - A: numerator
+;   - B: denominator
+; Output: A = A/B (quotient); B=A%B (remainder)
+; Destroys: C
+divideAByBFP1:
+    ld c, 0
+divideAByBFP1Loop:
+    sub b
+    jr c, divideAByBFP1LoopEnd
+    inc c
+    jr divideAByBFP1Loop
+divideAByBFP1LoopEnd:
+    add a, b ; undo the last subtraction
+    ld b, a
+    ld a, c
+    ret
+
 ; Description: Convert A into an Ascii Char ('0'-'9','A'-'F'). Same as
 ; convertAToChar() but located in Flash Page 1.
 ; Destroys: A
@@ -180,3 +233,26 @@ putSFP1Enter:
     ld (CurRow), hl
     pop hl
     jr putSFP1Check
+
+;------------------------------------------------------------------------------
+
+; Description: Version of bcall(_VPutS) and vPutS() that works for Flash Page 1.
+; See also eVPutS() for an extended version of this that supported embedded
+; font control characters.
+;
+; Input: HL: pointer to string using small font
+; Ouptut:
+;    - unlike VPutS(), the CF does *not* show if all of string was rendered
+; Destroys: all
+vPutSFP1:
+    ; assume using small font
+    ld c, smallFontHeight ; C = current font height
+    res fracDrawLFont, (IY + fontFlags) ; start with small font
+vPutSFP1Loop:
+    ld a, (hl) ; A = current char
+    inc hl
+vPutSFP1CheckSpecialChars:
+    or a ; Check for NUL
+    ret z
+    bcall(_VPutMap) ; preserves BC, HL
+    jr vPutSFP1Loop

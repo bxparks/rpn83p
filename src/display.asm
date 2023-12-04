@@ -335,45 +335,14 @@ displayErrorCode:
     ; Check if the error code changed
     bit dirtyFlagsErrorCode, (iy + dirtyFlags)
     ret z ; return if no change
-
     ; Display nothing if errorCode == OK (0)
     ld hl, errorPenRow*$100 ; $(penRow)(penCol)
     ld (PenCol), hl
     ld a, (errorCode)
     or a
     jr z, displayErrorCodeEnd
-
     ; Print error string and its numerical code.
-    call getErrorString
-    push hl ; save HL = C-string
-    call vPutS
-    pop hl
-
-    ; Append the numerical code only if the error message was errorStrUnknown.
-    ; This helps debugging if an unknown error code is detected.
-    ld de, errorStrUnknown
-    bcall(_CpHLDE)
-    jr nz, displayErrorCodeEnd
-
-displayErrorCodeNumerical:
-    ld a, Sspace
-    bcall(_VPutMap)
-    ;
-    ld a, ' '
-    bcall(_VPutMap)
-    ld a, '('
-    bcall(_VPutMap)
-    ;
-    ld a, (errorCode)
-    ld hl, OP1
-    push hl
-    call convertAToDec
-    pop hl
-    call vPutS
-    ;
-    ld a, ')'
-    bcall(_VPutMap)
-
+    bcall(_PrintErrorString)
 displayErrorCodeEnd:
     call vEraseEOL
     res dirtyFlagsErrorCode, (iy + dirtyFlags)

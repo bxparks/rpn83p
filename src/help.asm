@@ -72,12 +72,12 @@ processHelpNextPage:
 
 processHelpExit:
     ld a, errorCodeClearScreen
-    ld (handlerCode), a ; cannot call setHandlerCode() on Flash Page 0
+    ld (handlerCode), a
     ret
 
 processHelpQuitApp:
     ld a, errorCodeQuitApp
-    ld (handlerCode), a ; cannot call setHandlerCode() on Flash Page 0
+    ld (handlerCode), a
     ret
 
 ;-----------------------------------------------------------------------------

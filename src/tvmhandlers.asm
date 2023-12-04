@@ -806,13 +806,15 @@ mTvmNHandler:
     call stoTvmN
     set rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld a, errorCodeTvmStored
-    jp setHandlerCode
+    ld (handlerCode), a
+    ret
 mTvmNGet:
     call rclTvmN
     call pushX
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld a, errorCodeTvmRecalled
-    jp setHandlerCode
+    ld (handlerCode), a
+    ret
 mTvmNCalculate:
     ; if i!=0:
     ;   N = ln(1+N0)/ln(1+i), where
@@ -857,7 +859,8 @@ mTvmNCalculateSto:
     call stoTvmN
     call pushX
     ld a, errorCodeTvmCalculated
-    jp setHandlerCode
+    ld (handlerCode), a
+    ret
 mTvmNCalculateZero:
     ; if i==0: N = (-FV-PV)/PMT
     call rclTvmFV
@@ -894,13 +897,15 @@ mTvmIYRSet:
     call stoTvmIYR
     set rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld a, errorCodeTvmStored
-    jp setHandlerCode
+    ld (handlerCode), a
+    ret
 mTvmIYRGet:
     call rclTvmIYR
     call pushX
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld a, errorCodeTvmRecalled
-    jp setHandlerCode
+    ld (handlerCode), a
+    ret
 mTvmIYRCalculate:
     ; Interest rate does not have a closed-form solution, so requires solving
     ; the root of an equation. First, determine if equation has no roots
@@ -924,7 +929,7 @@ mTvmIYRCalculateMayExists:
     jr z, mTvmIYRCalculateSolve
     ; Remove the displayed error code if it exists
     xor a
-    call setErrorCode
+    bcall(_SetErrorCode)
     call displayAll
 mTvmIYRCalculateSolve:
     bcall(_RunIndicOn)
@@ -956,7 +961,8 @@ mTvmIYRCalculateEnd:
     push af
     bcall(_RunIndicOff)
     pop af
-    jp setHandlerCode
+    ld (handlerCode), a
+    ret
 
 ;-----------------------------------------------------------------------------
 
@@ -973,13 +979,15 @@ mTvmPVHandler:
     call stoTvmPV
     set rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld a, errorCodeTvmStored
-    jp setHandlerCode
+    ld (handlerCode), a
+    ret
 mTvmPVGet:
     call rclTvmPV
     call pushX
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld a, errorCodeTvmRecalled
-    jp setHandlerCode
+    ld (handlerCode), a
+    ret
 mTvmPVCalculate:
     ; PV = [-FV - PMT * [(1+i)N - 1] * (1 + i p) / i] / (1+i)N
     ;    = [-FV - PMT * CF3(i)] / CF1(i)
@@ -996,7 +1004,8 @@ mTvmPVCalculate:
     call stoTvmPV
     call pushX
     ld a, errorCodeTvmCalculated
-    jp setHandlerCode
+    ld (handlerCode), a
+    ret
 
 ;-----------------------------------------------------------------------------
 
@@ -1013,13 +1022,15 @@ mTvmPMTHandler:
     call stoTvmPMT
     set rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld a, errorCodeTvmStored
-    jp setHandlerCode
+    ld (handlerCode), a
+    ret
 mTvmPMTGet:
     call rclTvmPMT
     call pushX
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld a, errorCodeTvmRecalled
-    jp setHandlerCode
+    ld (handlerCode), a
+    ret
 mTvmPMTCalculate:
     ; PMT = [-PV * (1+i)^N - FV] / [((1+i)^N - 1) * (1+ip)/i]
     ;     = (-PV * CF1(i) - FV) / CF3(i)
@@ -1037,7 +1048,8 @@ mTvmPMTCalculate:
     call stoTvmPMT
     call pushX
     ld a, errorCodeTvmCalculated
-    jp setHandlerCode
+    ld (handlerCode), a
+    ret
 
 ;-----------------------------------------------------------------------------
 
@@ -1054,13 +1066,15 @@ mTvmFVHandler:
     call stoTvmFV
     set rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld a, errorCodeTvmStored
-    jp setHandlerCode
+    ld (handlerCode), a
+    ret
 mTvmFVGet:
     call rclTvmFV
     call pushX
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld a, errorCodeTvmRecalled
-    jp setHandlerCode
+    ld (handlerCode), a
+    ret
 mTvmFVCalculate:
     ; FV = -PMT * [(1+i)N - 1] * (1 + i p) / i - PV * (1+i)N
     ;    = -PMT*CF3(i)-PV*CF1(i)
@@ -1078,7 +1092,8 @@ mTvmFVCalculate:
     call stoTvmFV
     call pushX
     ld a, errorCodeTvmCalculated
-    jp setHandlerCode
+    ld (handlerCode), a
+    ret
 
 ;-----------------------------------------------------------------------------
 
@@ -1098,13 +1113,15 @@ mTvmPYRHandlerSet:
     call stoTvmPYR
     set rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld a, errorCodeTvmStored
-    jp setHandlerCode
+    ld (handlerCode), a
+    ret
 mTvmPYRGet:
     call rclTvmPYR
     call pushX
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld a, errorCodeTvmRecalled
-    jp setHandlerCode
+    ld (handlerCode), a
+    ret
 
 ;-----------------------------------------------------------------------------
 
@@ -1167,13 +1184,15 @@ mTvmIYR0Handler:
     call tvmSolverSetOverrideFlagIYR0
     set rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld a, errorCodeTvmStored
-    jp setHandlerCode
+    ld (handlerCode), a
+    ret
 mTvmIYR0Get:
     call rclTvmIYR0
     call pushX
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld a, errorCodeTvmRecalled
-    jp setHandlerCode
+    ld (handlerCode), a
+    ret
 
 ; Description: Return B if tvmIsBegin is false, C otherwise.
 ; Input: A, B: normal nameId; C: alt nameId
@@ -1200,13 +1219,15 @@ mTvmIYR1Handler:
     call tvmSolverSetOverrideFlagIYR1
     set rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld a, errorCodeTvmStored
-    jp setHandlerCode
+    ld (handlerCode), a
+    ret
 mTvmIYR1Get:
     call rclTvmIYR1
     call pushX
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld a, errorCodeTvmRecalled
-    jp setHandlerCode
+    ld (handlerCode), a
+    ret
 
 ; Description: Return B if tvmIsBegin is false, C otherwise.
 ; Input: A, B: normal nameId; C: alt nameId
@@ -1233,13 +1254,15 @@ mTvmIterMaxHandler:
     call tvmSolverSetOverrideFlagIterMax
     set rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld a, errorCodeTvmStored
-    jp setHandlerCode
+    ld (handlerCode), a
+    ret
 mTvmIterMaxGet:
     call rclTvmIterMax
     call pushX
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld a, errorCodeTvmRecalled
-    jp setHandlerCode
+    ld (handlerCode), a
+    ret
 
 ; Description: Return B if tvmIsBegin is false, C otherwise.
 ; Input: A, B: normal nameId; C: alt nameId
@@ -1263,14 +1286,16 @@ mTvmClearHandler:
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     call tvmClear
     ld a, errorCodeTvmCleared
-    jp setHandlerCode
+    ld (handlerCode), a
+    ret
 
 mTvmSolverResetHandler:
     call closeInputBuf
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     call tvmSolverReset
     ld a, errorCodeTvmSolverReset
-    jp setHandlerCode
+    ld (handlerCode), a
+    ret
 
 ;-----------------------------------------------------------------------------
 

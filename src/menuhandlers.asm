@@ -21,7 +21,8 @@ mNullHandler:
 ;   HL: pointer to MenuNode that was activated (ignored)
 mNotYetHandler:
     ld a, errorCodeNotYet
-    jp setHandlerCode
+    ld (handlerCode), a
+    ret
 
 ; Description: Default handler for MenuGroup nodes. This handler currently does
 ; nothing. The 'chdir' functionality is now handled by dispatchMenuNode()
@@ -1095,7 +1096,8 @@ mClearRegsHandler:
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     call clearRegs
     ld a, errorCodeRegsCleared
-    jp setHandlerCode
+    ld (handlerCode), a
+    ret
 
 mClearStackHandler:
     call closeInputBuf

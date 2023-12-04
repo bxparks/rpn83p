@@ -414,9 +414,27 @@ _FindMenuStringLabel:
 _FindMenuString equ _FindMenuStringLabel-branchTableBase
     .dw FindMenuString
     .db 1
+; crc.asm
 _Crc16ccittLabel:
 _Crc16ccitt equ _Crc16ccittLabel-branchTableBase
     .dw Crc16ccitt
+    .db 1
+; errorcode.asm
+_InitErrorCodeLabel:
+_InitErrorCode equ _InitErrorCodeLabel-branchTableBase
+    .dw InitErrorCode
+    .db 1
+_PrintErrorStringLabel:
+_PrintErrorString equ _PrintErrorStringLabel-branchTableBase
+    .dw PrintErrorString
+    .db 1
+_SetErrorCodeLabel:
+_SetErrorCode equ _SetErrorCodeLabel-branchTableBase
+    .dw SetErrorCode
+    .db 1
+_SetHandlerCodeToSystemCodeLabel:
+_SetHandlerCodeToSystemCode equ _SetHandlerCodeToSystemCodeLabel-branchTableBase
+    .dw SetHandlerCodeToSystemCode
     .db 1
 
 #ifdef DEBUG
@@ -489,7 +507,6 @@ _DebugU32DEAsHex equ _DebugU32DEAsHexLabel-branchTableBase
 #include "input.asm"
 #include "display.asm"
 #include "show.asm"
-#include "errorcode.asm"
 #include "base.asm"
 #include "basehandlers.asm"
 #include "menu.asm"
@@ -517,6 +534,7 @@ defpage(1)
 #include "menudef.asm"
 #include "crc.asm"
 #include "print1.asm"
+#include "errorcode.asm"
 #ifdef DEBUG
 #include "debug.asm"
 #endif
