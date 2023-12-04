@@ -1,6 +1,7 @@
 # Changelog
 
 - Unreleased
+- 0.8.0 (2023-12-03)
     - **Breaking**: Flip the order of polar-rectangular conversion menu function
       (`>POL` and `>REC`) so that they are consistent with the HP-42S. I don't
       know why I had them reversed.
@@ -15,11 +16,15 @@
         - Solves a major usability problem where the user was forced to enter
           the word size using the currently selected base mode (e.g. `HEX` or
           `BIN`). For example, the word size `16` was required to be entered as
-          `100000` in `BIN` mode, which was too confusing.
+          `10000` in `BIN` mode, which was too confusing.
         - See [Base Word Size](USER_GUIDE.md#base-word-size) for more details.
-    - **Bug Fix**: Tweak the stack-lift enable/disable logic so that certain
-      operations (RollDown, RollUp, X<>Y) enable stack lift even if the previous
-      command was a `CLEAR` or `CLX`.
+    - **Bug Fix**: Tweak the stack-lift logic so that certain operations
+      (RollDown, RollUp, X<>Y) enable stack lift even if the previous command
+      was a `CLEAR` or `CLX`.
+        - The `rpnFlagsLiftEnabled` was not set properly for RollDown, RollUp,
+          X<>Y and potentially other commands.
+        - So a `CLEAR RollDown RollDown RollDown RollDown` followed by a number
+          would overwrite the `X` register, instead of doing a stack lift.
     - Increase execution speed by 2.5X on 83+SE, 84+, 84+SE
         - set CPU speed to 15 MHz when supported by hardware
         - remain at 6 MHz on the 83+

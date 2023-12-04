@@ -213,7 +213,7 @@ helpPages:
 
 msgHelpPage1:
     .db escapeLargeFont, "RPN83P", Lenter
-    .db escapeSmallFont, "v0.8.0-dev (2023", Shyphen, "12", Shyphen, "03)", Senter
+    .db escapeSmallFont, "v0.8.0 (2023", Shyphen, "12", Shyphen, "03)", Senter
     .db "(c) 2023  Brian T. Park", Senter
     .db Senter
     .db "An RPN calculator for the", Senter
@@ -287,7 +287,7 @@ msgHelpPage7:
     .db escapeLargeFont, "NUM Functions", Lenter
     .db escapeSmallFont, "%: Y=Y; X=Y*X/100", Senter
     .db "%CH: Y=Y; X=100*(X-Y)/Y", Senter
-    .db "PRIM: Prime factor", Senter
+    .db "PRIM: Prime factor of < 2^32", Senter
     .db Senter
     .db Senter
     .db Senter
@@ -339,7 +339,7 @@ msgHelpPage11:
     .db "RLC,RRC: Rotate thru Carry",  Senter
     .db "REVB: Reverse Bits", Senter
     .db "CNTB: Count Bits", Senter
-    .db Senter
+    .db "WSIZ: 8, 16, 24, 32", Senter
     .db SlBrack, "11/13", SrBrack, " Any key to continue...", Senter
     .db 0
 

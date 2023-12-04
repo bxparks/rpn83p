@@ -82,7 +82,7 @@ Missing features (partial list):
 - complex numbers
 - keystroke programming
 
-**Version**: 0.8.0-dev (2023-11-30)
+**Version**: 0.8.0 (2023-12-03)
 
 **Changelog**: [CHANGELOG.md](CHANGELOG.md)
 
