@@ -10,6 +10,13 @@
       function, so that they are consistent with the `>POL` function.
         - `Y` register holds the `y` value, which is entered first, then
         - `X` register holds the `x` value, which is entered second.
+    - **Breaking**: Change `WSIZ` to prompt the user for the base word size
+      using `WSIZ _ _` prompt, instead of using the value in the `X` register.
+        - Solves a major usability problem where the user was forced to enter
+          the word size using the currently selected base mode (e.g. `HEX` or
+          `BIN`). For example, the word size `16` was required to be entered as
+          `100000` in `BIN` mode, which was too confusing.
+        - See [Base Word Size](USER_GUIDE.md#base-word-size) for more details.
     - **Bug Fix**: Tweak the stack-lift enable/disable logic so that certain
       operations (RollDown, RollUp, X<>Y) enable stack lift even if the previous
       command was a `CLEAR` or `CLX`.

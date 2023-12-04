@@ -46,7 +46,7 @@ RPN calculator app for the TI-83 Plus and TI-84 Plus inspired by the HP-42S.
         - [Base Arithmetic](#base-arithmetic)
         - [Carry Flag](#carry-flag)
         - [Bit Operations](#bit-operations)
-        - [Base Integer Size](#base-integer-size)
+        - [Base Word Size](#base-word-size)
         - [Base Input Digit Limit](#base-input-digit-limit)
         - [Base Mode Retention](#base-mode-retention)
     - [STAT Functions](#stat-functions)
@@ -1531,15 +1531,15 @@ This menu row contains a couple of additional bit manipulation functions:
 
 None of these bit operations affect the Carry Flag.
 
-#### Base Integer Size
+#### Base Word Size
 
 The HP-42S uses a 36-bit *signed* integer for BASE rendering and operations. To
 be honest, I have never been able to fully understand and become comfortable
 with the HP-42S implementation of the BASE operations. First, 36 bits is a
-strange number, it is not an integer size used by modern microprocessors (8, 16,
-32, 64 bits). Second, the HP-42S does not display leading zeros in `HEX` `OCT`,
-or `BIN` modes. While this is consistent with the decimal mode, it is confusing
-to see the number of displayed bits change depending on its value.
+strange number, it is not a multiple of 8 as used by most modern microprocessors
+(8, 16, 32, 64 bits). Second, the HP-42S does not display leading zeros in `HEX`
+`OCT`, or `BIN` modes. While this is consistent with the decimal mode, it is
+confusing to see the number of displayed digits change depending on its value.
 
 The RPN83P deviates from the HP-42S by using *unsigned* integers internally, and
 rendering the various HEX, OCT, and BIN numbers using the same number of digits
@@ -1565,13 +1565,23 @@ it, then hit the `DEC` menu item to convert it to decimal. The displayed value
 will be the decimal value of the original hex number, without the negative sign.
 
 The word size, defaulting to 32 bits, can be changed using the `WSIZ` menu
-function. To simplify the implementation code, only the following word sizes are
-supported: 8, 16, 24, and 32, corresponding to 1, 2, 3, and 4 bytes
-respectively. The RPN83P app represents all numbers internally using the TI-OS
-floating point number format which supports 14 decimal digits. This corresponds
-to 46.5 bits. Therefore, the largest word size that could be supported in the
-current architecture is 40. Supporting a 64-bit word size would require a major
-rearchitecture of the application
+function. Pressing it displays `WSIZ _ _` and waits for the argument, just like
+the `FIX` and `STO` commands. To simplify the implementation code, only the
+following word sizes are supported: 8, 16, 24, and 32, corresponding to 1, 2, 3,
+and 4 bytes respectively:
+
+![WSIZ Prompt](docs/rpn83p-base-wsiz.png)
+
+If an unsupported word size is entered, for example `9`, then the error code
+`Err:Argument` will be displayed:
+
+![WSIZ Error](docs/rpn83p-base-wsiz-err.png)
+
+Note: The RPN83P app represents all numbers internally using the TI-OS floating
+point number format which supports 14 decimal digits. This corresponds to 46.5
+bits. Therefore, the largest word size that could be supported in the current
+architecture is 40. Supporting a 64-bit word size would require a major
+rearchitecture of the application.
 
 Every `BASE` operation respects the current `WSIZ` value, truncating the `X` or
 `Y` integers to the word size, before performing the `BASE` operation, then
@@ -1579,41 +1589,29 @@ truncating the result to the word size. For example, if the word size is 16,
 then the `RR` (rotate right circular) operation rotates bit 0 to bit 15, instead
 of bit 31 if the word size was 32.
 
-The `WSIZ` command uses the value of the `X` register, but the value shown on
-the display depends on the base mode. It is sometimes easier to temporarily
-change to `DEC` mode, set the `WSIZ`, then change the base mode back. For
-example, if we are in `BIN` mode, then we could use the following keystroke
-sequence to change the `WSIZ` to 16:
-
-```
-10000 # 16 in base-2 BIN mode
-WSIZ
-```
-
-But it may be easier to use the following instead:
-
-```
-BASE
-DEC
-16
-WSIZ # use the UP arrow to go to this menu row quickly
-BIN # use the DOWN arrow to go back to this menu row
-```
-
 The current `WSIZ` value can be retrieved using the `WSZ?` menu function.
 
 **HP-42S Compatibility Note**: The original HP-42S does *not* support the `WSIZ`
 command. Its word size is fixed at 36 bits. The Free42 app however does support
-it as the `WSIZE` command. I suspect that Free42 borrowed the `WSIZE` command
-from the HP-16C. Keen observers will note an unfortunate UI inconsistency: the
-`WSIZE` command really ought to take the word size as an argument to the command
-(similar to `FIX` and `STO`), instead of taking the word size from the `X`
-register on the RPN stack. But that is how it is implemented on the HP-16C. For
-consistency with Free42 and the HP-16C, the RPN83P app also implements the
-`WSIZ` command in the same way, taking the word size from the RPN stack. This is
-the fundamental source of the usability problem noted above, where the `BASE`
-mode can be set to something other than `DEC`, causing the word size to be
-displayed in a format which may be difficult for the user to read or enter.
+it as the `WSIZE` command which I suspect was borrowed from `WSIZE` command on
+the HP-16C. Keen observers will note a UI discrepancy: On the HP-16C and HP-42S,
+the `WSIZE` command uses the value of `X` register to set the word size, but the
+RPN83P *prompts* the user to enter the size using a `WSIZ _ _` prompt similar to
+the `FIX` and `STO` commands. This decision was made to solve a major usability
+problem on the RPN83P: The `X` register value in the `BASE` menu hierarchy is
+shown using the currently selected base mode (e.g. `DEC`, `HEX`, etc). If the
+mode was something other than `DEC`, for example `HEX`, then the user needs to
+type `10 WSIZ` to set the `WSIZ` to 16 bits, because `10` is the base-16
+representation of 16. Even worse, if the base mode was `BIN`, then the user must
+type in `100000 WSIZ` to set the word size to `32` because `100000` is the
+base-2 representation of `32`. I find this far too confusing. Instead, the
+RPN83P uses the command argument prompt `WSIZ _ _` to obtain the word size from
+the user in normal base-10 format. The prompt is not affected by the current
+base mode so the user can type `8`, `16`, `24`, or `32` to select the new word
+size without confusion. The `WSZ?` command returns the current word size in the
+`X` register and will be displayed using the current base mode. I could not
+think of any way around this, but I assume that this will not cause as much
+usability problems as the `WSIZ` command.
 
 ### Base Input Digit Limit
 
