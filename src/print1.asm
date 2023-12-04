@@ -10,8 +10,8 @@
 ;-----------------------------------------------------------------------------
 
 ; Description: Get the string pointer at index A given an array of pointers at
-; base pointer HL. Out-of-bounds is NOT checked. NOTE: This is a duplicate of
-; getString(), copied here so that routines in flash Page 1 can call this.
+; base pointer HL. Out-of-bounds is NOT checked. Duplicate of getString() but
+; located in Flash Page 1.
 ;
 ; Input:
 ;   A: index
@@ -19,7 +19,7 @@
 ; Output: HL: pointer to a string
 ; Destroys: DE, HL
 ; Preserves: A
-getStringOnPage1:
+getStringFP1:
     ld e, a
     ld d, 0
     add hl, de ; HL += A * 2
@@ -28,6 +28,21 @@ getStringOnPage1:
     inc hl
     ld d, (hl)
     ex de, hl
+    ret
+
+;------------------------------------------------------------------------------
+
+; Description: Convert A into an Ascii Char ('0'-'9','A'-'F'). Same as
+; convertAToChar() but located in Flash Page 1.
+; Destroys: A
+convertAToCharFP1:
+    cp 10
+    jr c, convertAToCharFP1Dec
+    sub 10
+    add a, 'A'
+    ret
+convertAToCharFP1Dec:
+    add a, '0'
     ret
 
 ;-----------------------------------------------------------------------------
@@ -94,3 +109,74 @@ eVPutSEnter:
     pop hl
     pop af
     jr eVPutSLoop
+
+;------------------------------------------------------------------------------
+
+; Description: Inlined version of bcall(_PutPS) which works for Pascal strings
+; in flash memory. For Flash Page 1. Identical to putPS() but located in Flash
+; Page 1.
+;
+; Input: HL: pointer to Pascal string
+; Destroys: A, B, C, HL
+; Preserves: DE
+putPSFP1:
+    ld a, (hl) ; A = length of Pascal string
+    inc hl
+    or a
+    ret z
+    ld b, a ; B = length of Pascal string (missing from SDK reference impl)
+    ld a, (winBtm)
+    ld c, a ; C = bottomRow (usually 8)
+putPSFP1Loop:
+    ld a, (hl)
+    inc hl
+    bcall(_PutC)
+    ; Check if next character is off-screen
+    ld a, (curRow)
+    cp c ; if currow == buttomRow: ZF=1
+    ret z
+    djnz putPSFP1Loop
+    ret
+
+;------------------------------------------------------------------------------
+
+; Description: Inlined version of bcall(_PutS), identical to putS(), but
+; located in Flash Page 1.
+;
+; Input: HL: pointer to C-string
+; Output:
+;   - CF=1 if the entire string was displayed, CF=0 if not
+;   - curRow and curCol updated to the position after the last character
+; Destroys: HL
+putSFP1:
+    push bc
+    push af
+    ld a, (winBtm)
+    ld b, a ; B = bottom line of window
+putSFP1Loop:
+    ld a, (hl)
+    inc hl
+    or a ; test for end of string
+    scf ; CF=1 if entire string displayed
+    jr z, putSFP1End
+    cp Lenter ; check for newline
+    jr z, putSFP1Enter
+    bcall(_PutC)
+putSFP1Check:
+    ld a, (curRow)
+    cp b ; if A >= bottom line: CF=1
+    jr c, putSFP1Loop ; repeat if not at bottom
+putSFP1End:
+    pop bc ; restore A (but not F)
+    ld a, b
+    pop bc
+    ret
+putSFP1Enter:
+    ; Handle newline
+    push hl
+    ld hl, (CurRow)
+    inc l ; CurRow++
+    ld h, 0 ; CurCol=0
+    ld (CurRow), hl
+    pop hl
+    jr putSFP1Check

@@ -27,7 +27,7 @@ DebugInputBuf:
     ld hl, debugCurCol*$100+debugCurRow ; $(curCol)(curRow)
     ld (CurRow), hl
     ld hl, inputBuf
-    call debugPutPS
+    call putPSFP1
     ld a, cursorCharAlt
     bcall(_PutC)
     bcall(_EraseEOL)
@@ -57,7 +57,7 @@ DebugParseBuf:
     ld hl, debugCurCol*$100+debugCurRow ; $(curCol)(curRow)
     ld (CurRow), hl
     ld hl, parseBuf
-    call debugPutPS
+    call putPSFP1
     ld a, cursorCharAlt
     bcall(_PutC)
     bcall(_EraseEOL)
@@ -86,7 +86,7 @@ DebugString:
 
     ld de, debugCurCol*$100+debugCurRow ; $(curCol)(curRow)
     ld (CurRow), de
-    call debugPutS
+    call putSFP1
     bcall(_EraseEOL)
 
     pop de
@@ -111,7 +111,7 @@ DebugPString:
 
     ld de, debugCurCol*$100+debugCurRow ; $(curCol)(curRow)
     ld (CurRow), de
-    call debugPutPS
+    call putPSFP1
     bcall(_EraseEOL)
 
     pop de
@@ -159,7 +159,7 @@ DebugOP1:
     ld a, 15 ; width of output
     bcall(_FormReal)
     ld hl, OP3
-    call debugPutS
+    call putSFP1
     bcall(_EraseEOL)
 
     pop hl
@@ -383,12 +383,12 @@ debugUnsignedAAsHex:
     srl a
     srl a
     srl a
-    call debugAToChar
+    call convertAToCharFP1
     bcall(_PutC)
 
     pop af
     and $0F
-    call debugAToChar
+    call convertAToCharFP1
     bcall(_PutC)
     ret
 
@@ -462,73 +462,3 @@ DebugPause:
 debugPauseBreak:
     res onInterrupt, (iy + onFlags)
     bcall(_ErrBreak) ; throw exception
-
-;------------------------------------------------------------------------------
-; Low level routines, duplicated from Flash Page 0 for Flash Page 1.
-;------------------------------------------------------------------------------
-
-; Description: Convert A into an Ascii Char ('0'-'9','A'-'F'). For Flash Page 1.
-; Destroys: A
-debugAToChar:
-    cp 10
-    jr c, debugAToCharDec
-    sub 10
-    add a, 'A'
-    ret
-debugAToCharDec:
-    add a, '0'
-    ret
-
-; Description: Inlined version of bcall(_PutPS) which works for Pascal strings
-; in flash memory. For Flash Page 1. Identical to putPS().
-;
-; Input: HL: pointer to Pascal string
-; Destroys: A, B, C, HL
-; Preserves: DE
-debugPutPS:
-    ld a, (hl) ; A = length of Pascal string
-    inc hl
-    or a
-    ret z
-    ld b, a ; B = length of Pascal string (missing from SDK reference impl)
-    ld a, (winBtm)
-    ld c, a ; C = bottomRow (usually 8)
-debugPutPSLoop:
-    ld a, (hl)
-    inc hl
-    bcall(_PutC)
-    ; Check if next character is off-screen
-    ld a, (curRow)
-    cp c ; if currow == buttomRow: ZF=1
-    ret z
-    djnz debugPutPSLoop
-    ret
-
-; Description: Inlined version of bcall(_PutS) which works for flash
-; applications in Flash Page 1. Identical to putS().
-;
-; Input: HL: pointer to C-string
-; Output:
-;   - CF=1 if the entire string was displayed, CF=0 if not
-;   - curRow and curCol updated to the position after the last character
-; Destroys: HL
-debugPutS:
-    push bc
-    push af
-    ld a, (winBtm)
-    ld b, a ; B = bottom line of window
-debugPutSLoop:
-    ld a, (hl)
-    inc hl
-    or a ; test for end of string
-    scf ; CF=1 if entire string displayed
-    jr z, debugPutSEnd
-    bcall(_PutC)
-    ld a, (curRow)
-    cp b ; if A >= bottom line: CF=1
-    jr c, debugPutSLoop ; repeat if not at bottom
-debugPutSEnd:
-    pop bc ; restore A (but not F)
-    ld a, b
-    pop bc
-    ret
