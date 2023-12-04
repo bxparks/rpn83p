@@ -146,43 +146,9 @@ convertOP1ToSciStringExp:
     ld a, c
     neg
 convertOP1ToSciStringPosExp:
-    call convertAToDecDE
-    ; Terminate C-string with NUL
-    xor a
-    ld (de), a
-    ret
-
-; Description: Convert A to 1 to 3 digits at the buffer pointed by DE.
-; This is a copy of convertAToDec() function for Flash Page 1.
-; TODO: This can probably be written to be faster and smaller.
-; Input:
-;   - A: u8 integer
-;   - DE: pointer to string buffer
-; Output: DE incremented to the char after the digits
-; Destroys: A, B, C, DE
-convertAToDecDE:
-convertAToDecDE100:
-    ld b, 100
-    call divideAByB
-    or a
-    jr z, convertAToDecDE10
-    call convertAToChar
-    ld (de), a
-    inc de
-convertAToDecDE10:
-    ld a, b
-    ld b, 10
-    call divideAByB
-    or a
-    jr z, convertAToDecDE1
-    call convertAToChar
-    ld (de), a
-    inc de
-convertAToDecDE1:
-    ld a, b
-    call convertAToChar
-    ld (de), a
-    inc de
+    ex de, hl
+    call convertAToDec ; HL string is NUL terminated
+    ex de, hl
     ret
 
 ;------------------------------------------------------------------------------

@@ -366,7 +366,9 @@ displayErrorCodeNumerical:
     ;
     ld a, (errorCode)
     ld hl, OP1
+    push hl
     call convertAToDec
+    pop hl
     call vPutS
     ;
     ld a, ')'
@@ -1188,14 +1190,12 @@ formatBinDigitsEnd:
 ;-----------------------------------------------------------------------------
 
 ; Description: Convert A to a NUL-terminated C-string of 1 to 3 digits at the
-; buffer pointed by HL. This is intended for debugging, so it is not optimized.
-; TODO: This can probably be written to be faster and smaller.
+; string buffer pointed by HL.
 ; Input: HL: pointer to string buffer
-; Output: HL unchanged, with 1-3 ASCII string, terminated by NUL
-; Destroys: A, B, C
+; Output: HL: pointer to NUL terminator at end of string
+; Destroys: A, B, C, HL
 convertAToDec:
-    push hl
-convertAToDec100:
+    ; Divide by 100
     ld b, 100
     call divideAByB
     or a
@@ -1204,6 +1204,7 @@ convertAToDec100:
     ld (hl), a
     inc hl
 convertAToDec10:
+    ; Divide by 10
     ld a, b
     ld b, 10
     call divideAByB
@@ -1213,13 +1214,13 @@ convertAToDec10:
     ld (hl), a
     inc hl
 convertAToDec1:
+    ; Extract the 1
     ld a, b
     call convertAToChar
     ld (hl), a
     inc hl
-convertAToDec0:
+    ; Terminate with NUL
     ld (hl), 0
-    pop hl
     ret
 
 ; Description: Return A / B using repeated substraction.
