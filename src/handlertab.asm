@@ -8,7 +8,7 @@
 ; search can be used instead of a linear search.
 ;-----------------------------------------------------------------------------
 
-keyCodeHandlerTableSize equ 66
+keyCodeHandlerTableSize equ 67
 kOnExit equ 0 ; ON key generates 00 as the key code
 
 keyCodeHandlerTable:
@@ -176,7 +176,7 @@ keyCodeHandlerTable:
     ; calculator which supports both ALG and RPN modes, and places the R-down
     ; on the (, and x<->y on the ).
     .db kLParen ; (
-    .dw handleKeyRotDown
+    .dw handleKeyRollDown
     .db kRParen ; )
     .dw handleKeyExchangeXY
     ; bind ANS to lastX.
@@ -236,3 +236,7 @@ keyCodeHandlerTable:
     ; DRAW (i.e. Debug) mode
     .db kDraw
     .dw handleKeyDraw
+
+    ; 2ND ENTRY = SHOW
+    .db kLastEnt
+    .dw handleKeyShow

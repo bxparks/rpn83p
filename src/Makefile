@@ -32,6 +32,8 @@ SRCS := \
 	print.asm \
 	pstring.asm \
 	rpn83p.asm \
+	showparser.asm \
+	show.asm \
 	stathandlers.asm \
 	tvmhandlers.asm \
 	vars.asm

@@ -61,30 +61,38 @@ mStatMinusHandler:
 
 ; Description: Set STAT mode to ALL.
 mStatAllModeHandler:
-    set rpnFlagsAllStatEnabled, (iy + rpnFlags)
+    ld a, rpntrue
+    ld (statAllEnabled), a
     set dirtyFlagsMenu, (iy + dirtyFlags)
     ret
 
 ; Description: Set STAT mode to LINEAR.
 mStatLinearModeHandler:
-    res rpnFlagsAllStatEnabled, (iy + rpnFlags)
+    xor a
+    ld (statAllEnabled), a
     set dirtyFlagsMenu, (iy + dirtyFlags)
     ret
 
 ; Description: Select the display name of 'ALL<Sigma>'.
 ; Input:
-;   - A: nameId
-;   - B: base (2, 8, 10, 16)
+;   - A,B: nameId
 ;   - C: altNameId
 mStatAllModeNameSelector:
-    bit rpnFlagsAllStatEnabled, (iy + rpnFlags)
+    ld a, (statAllEnabled)
+    or a
+    ld a, b
     ret z
     ld a, c
     ret
 
 ; Description: Select the display name of 'LIN<Sigma>'.
+; Input:
+;   - A,B: nameId
+;   - C: altNameId
 mStatLinearModeNameSelector:
-    bit rpnFlagsAllStatEnabled, (iy + rpnFlags)
+    ld a, (statAllEnabled)
+    or a
+    ld a, b
     ret nz
     ld a, c
     ret
@@ -236,7 +244,8 @@ statSigmaPlus:
     call stoNN
 
     ; Check if we need to update the extended STAT registers.
-    bit rpnFlagsAllStatEnabled, (iy + rpnFlags)
+    ld a, (statAllEnabled)
+    or a
     ret z
 
 statSigmaPlusLogX:
@@ -339,7 +348,8 @@ statSigmaMinus:
     call stoNN
 
     ; Check if we need to update the extended STAT registers.
-    bit rpnFlagsAllStatEnabled, (iy + rpnFlags)
+    ld a, (statAllEnabled)
+    or a
     ret z
 
 statSigmaMinusLogX:

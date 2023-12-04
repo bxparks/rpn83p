@@ -2,7 +2,7 @@
 
 RPN calculator app for the TI-83 Plus and TI-84 Plus inspired by the HP-42S.
 
-**Version**: 0.7.0 (2023-11-20)
+**Version**: 0.8.0 (2023-12-03)
 
 **Project Home**: https://github.com/bxparks/rpn83p
 
@@ -17,6 +17,7 @@ RPN calculator app for the TI-83 Plus and TI-84 Plus inspired by the HP-42S.
     - [Uploading](#uploading)
     - [Starting](#starting)
     - [Quitting](#quitting)
+    - [Supported Hardware](#supported-hardware)
 - [Basic Usage](#basic-usage)
     - [Screen Areas](#screen-areas)
     - [Input and Editing](#input-and-editing)
@@ -35,6 +36,7 @@ RPN calculator app for the TI-83 Plus and TI-84 Plus inspired by the HP-42S.
 - [Advanced Usage](#advanced-usage)
     - [Auto-start](#auto-start)
     - [Floating Point Display Modes](#floating-point-display-modes)
+    - [SHOW Mode](#show-mode)
     - [Trigonometric Modes](#trigonometric-modes)
     - [Storage Registers](#storage-registers)
     - [Prime Factors](#prime-factors)
@@ -44,7 +46,8 @@ RPN calculator app for the TI-83 Plus and TI-84 Plus inspired by the HP-42S.
         - [Base Arithmetic](#base-arithmetic)
         - [Carry Flag](#carry-flag)
         - [Bit Operations](#bit-operations)
-        - [Base Integer Size](#base-integer-size)
+        - [Base Word Size](#base-word-size)
+        - [Base Input Digit Limit](#base-input-digit-limit)
         - [Base Mode Retention](#base-mode-retention)
     - [STAT Functions](#stat-functions)
     - [TVM Functions](#tvm-functions)
@@ -74,29 +77,33 @@ features from the
 [HP-12C](https://en.wikipedia.org/wiki/HP-12C) and the
 [HP-16C](https://en.wikipedia.org/wiki/HP-16C).
 
-The RPN83P is a flash application that consumes 2 pages (32 kiB) of flash
-memory. Since it is stored in flash, it is preserved if the RAM is cleared. It
-consumes a small amount of TI-OS RAM: 2 list variables named `REGS` (240 bytes)
-and `STK` (59 byte), and an appVar named `RPN83SAV` (100 bytes).
+The RPN83P is a flash application written in Z80 assembly language that consumes
+2 pages (32 kiB) of flash memory. Since it is stored in flash, it is preserved
+if the RAM is cleared. It consumes about 400 bytes of TI-OS RAM: 2 list
+variables named `REGS` (240 bytes) and `STK` (59 byte), and an appVar named
+`RPN83SAV` (101 bytes).
 
-Here the quick summary of its features:
+Summary of features:
 
-- traditional 4-level RPN stack (`X`, `Y`, `Z`, `T` registers)
-- support for `lastX` register
+- traditional 4-level RPN stack (`X`, `Y`, `Z`, `T`), with `LastX` register
 - 8-line display showing all stack registers
-- 25 storage registers (`STO 00`, `RCL 00`, ..., `STO 24`, `RCL 24`)
 - hierarchical menu system similar to HP-42S
+- quick reference `HELP` menu
+- storage registers
+    - store and recall:`STO nn`, `RCL nn`
+    - storage arithmetics: `STO+ nn`, `STO- nn`, `STO* nn`, `STO/ nn`, `RCL+
+      nn`, `RCL- nn`, `RCL* nn`, `RCL/ nn`
+    - 25 storage registers: `nn = 00..24`
 - support for all math functions with dedicated buttons on the TI-83 Plus and
   TI-84 Plus
     - arithmetic: `/`, `*`, `-`, `+`
     - trigonometric: `SIN`, `COS`, `TAN`, etc.
-    - `1/X`, `X^2`, `SQRT`
-    - `^` (i.e. `Y^X`),
-    - `LOG`, `10^X`, `LN`, `e^X`
+    - algebraic: `1/X`, `X^2`, `SQRT`, `^` (i.e. `Y^X`)
+    - transcendental: `LOG`, `10^X`, `LN`, `e^X`
     - constants: `pi` and `e`
 - additional menu functions:
     - `X^3`, `3RootX`, `XRootY`, `ATN2`, `2^X`, `LOG2`, `LOGB`
-    - `%`, `%CH`, `GCD`, `LCM`, `PRIM` (is prime)
+    - `%`, `%CH`, `GCD`, `LCM`, `PRIM` (prime factor)
     - `IP` (integer part), `FP` (fractional part), `FLR` (floor), `CEIL`
       (ceiling), `NEAR` (nearest integer)
     - `ABS`, `SIGN`, `MOD`, `MIN`, `MAX`
@@ -110,7 +117,7 @@ Here the quick summary of its features:
       `SDEV` (sample standard deviation), `SCOV` (sample covariance),
       `PDEV` (population standard deviation), `PCOV` (population covariance)
     - curve fitting: `Y>X`, `X>Y`, `SLOP` (slope), `YINT` (y intercept), `CORR`
-      (correlation coefficent)
+      (correlation coefficient)
     - curve fit models: `LINF` (linear), `LOGF` (logarithmic), `EXPF`
       (exponential), `PWRF` (power)
 - features inspired by HP-16C and HP-42S
@@ -122,6 +129,7 @@ Here the quick summary of its features:
     - shift and rotate: `SL`, `SR`, `ASR`, `RL`, `RR`, `RLC`, `RRC`,
       `SLn`, `SRn`, `RLn`, `RRn`, `RLCn`, `RRCn`
     - carry flag and bit masks: `CCF`, `SCF`, `CF?`, `CB`, `SB`, `B?`
+    - word sizes: `WSIZ`, `WSZ?`: 8, 16, 24, 32 bits
 - features inspired by HP-12C and HP-30b
     - time value of money (TVM): `N`, `I%YR`, `PV`, `PMT`, `FV`, `P/YR`, `BEG`,
       `END`, `CLTV` (clear TVM)
@@ -130,8 +138,9 @@ Here the quick summary of its features:
     - `FIX` (fixed point 0-9 digits)
     - `SCI` (scientific 0-9 digits)
     - `ENG` (engineering 0-9 digits)
+    - `SHOW` (`2ND ENTRY`) to display all 14 internal floating point digits
 
-Here are some missing features which may be added in the future:
+Missing features (partial list):
 
 - vectors and matrices
 - complex numbers
@@ -258,12 +267,41 @@ When restarted, if the `RPN83SAV` variable does not pass validation (e.g. does
 not exist; was archived; is wrong size; contains an incompatible schema version;
 does not pass a CRC checksum) then the application starts from a clean slate.
 
+### Supported Hardware
+
+This app was designed for TI calculators using the Z80 processor:
+
+- TI-83 Plus (6 MHz Z80, 24 kB accessible RAM, 160 kB accessible flash)
+- TI-83 Plus Silver Edition (6/15 MHz Z80, 24 kB accessible RAM, 1.5 MB
+  accessible flash)
+- TI-84 Plus (6/15 MHz Z80, 24 kB accessible RAM, 480 kB accessible flash)
+- TI-84 Plus Silver Edition (6/15 MHz Z80, 24 kB accessible RAM, 1.5 MB
+  accessible flash)
+
+The app configures itself to run at 15 MHz on supported hardware, while
+remaining at 6 MHz on the TI-83+.
+
+I have tested it on the following calculators that I own:
+
+- TI-83 Plus, OS v1.19
+- TI-83 Plus Silver Edition, OS v1.19
+- TI-84 Plus Silver Edition, OS v2.55MP
+
+It *should* work on the TI-84 Plus, but I have not actually tested it.
+
+The following calculators are *not* supported  because their internal hardware
+is too different:
+
+- TI-84 Plus C Silver Edition
+- TI-84 Plus CE
+
 ## Basic Usage
 
 This guide assumes that you already know to use an RPN calculator. In
 particular, the RPN83P implements the traditional RPN system used by
 Hewlett-Packard calculators such as the HP-12C, HP-15C, and the HP-42S. (The
-RPN83P does not use the newer RPN system used by the HP-48SX.)
+RPN83P does not use the newer RPN system used by the HP-48 series and other
+similar HP calculators.)
 
 It is beyond the scope of this document to explain how to use an RPN calculator.
 One way to learn is to download the [Free42](https://thomasokken.com/free42/)
@@ -391,7 +429,7 @@ These are the buttons which manipulate the RPN stack:
 
 ![Input and Edit Buttons](docs/rpn83p-fullshot-rpn-buttons.jpg)
 
-- `(`: rotates RPN stack down (known as `R(downarrow)` on HP calculators)
+- `(`: rolls RPN stack down (known as `R(downarrow)` on HP calculators)
 - `)`: exchanges `X` and `Y` registers
 - `ENTER`: saves the input buffer to the `X` register
 - `2ND` `ANS`: recalls the last `X`
@@ -424,7 +462,7 @@ lift the stack.
 The parenthesis `(` and `)` buttons are not used in an RPN entry system, so they
 have been repurposed for stack manipulation:
 
-- `(` key rotates the stack *down*, exactly as the same as the `R(downarrow)` or
+- `(` key rolls the stack *down*, exactly as the same as the `R(downarrow)` or
   just a single `(downarrow)` on the HP calculators.
 - `)` key performs an exchange of the `X` and `Y` registers. That functionality
   is usually marked as `X<>Y` on HP calculators.
@@ -500,6 +538,18 @@ which opens a dialog box of mathematical functions. In the RPN83P app, that
 functionality is already provided by the menu system.
 3. When the menu system is at the root, the first menu item on the left is a
 menu group named `MATH`, which may help to remember this button mapping.
+
+**HP-42S Compatibility Note**: As far I can tell, the menu system of the HP-42S
+is *multiply rooted* and pressing a given menu button (e.g. `BASE`) activates
+the menu hierarchy of that particular button. I think this works because the
+menu bar on the HP-42S is not displayed by default, so there is no single ROOT
+node of its menu system. Some of the HP-42S menu bars can stack on top of each
+other, so that the `EXIT` button goes back to the previous menu bar. But some
+menu bars do not. I have never figured out the rhyme and reason for this
+behavior. The RPN83P app, on the other hand, always displays its menu bar, so it
+was simpler for the user (and the programmer of this app) to create a *singly
+rooted* menu hierarchy with the menu bar always starting from the implicit
+`ROOT` menu node.
 
 #### Menu Indicator Arrows
 
@@ -691,9 +741,10 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
     - `X^3`: cube of `X`
     - `3 Root X`: cube root of `X`
     - `X Root Y`: `X` root of `Y`
-    - `ATN2`: `atan2(Y, X)` in degrees or radians, depending on current mode
-        - `Y` register is the x-component entered first
-        - `X` register is the y-component entered second
+    - `ATN2`: `atan2(X, Y)` in degrees or radians, depending on current mode
+        - `Y`: y-component, entered first
+        - `X`: x-component, entered second
+        - (order of `Y` and `X` is the same as the `>POL` conversion function)
     - `2^X`: `2` to the power of `X`
     - `LOG2`: log base 2 of `X`
     - `LOGB`: log base `X` of `Y`
@@ -707,7 +758,7 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
     - `%CH`: percent change from `Y` to `X`, leaving `Y` unchanged
     - `GCD`: greatest common divisor of `X` and `Y`
     - `LCM`: lowest common multiple of `X` and `Y`
-    - `PRIM`: determine if `X` is a prime
+    - `PRIM`: prime factor of `X`
         - returns 1 if prime
         - returns the smallest prime factor otherwise
         - See [Prime Factors](#prime-factors) section below.
@@ -735,11 +786,13 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
     - `>DEG`: convert radians to degrees
     - `>RAD`: convert degrees to radians
     - `>REC`: polar to rectangular
-        - input (`Y`, `X`) = `r`, `theta`
-        - output (`Y`, `X`) = `x`, `y`
+        - input: `Y`=y, `X`=x
+        - output: `Y`=theta, `X`=r
+        - (consistent with HP-42S)
     - `>POL`: rectangular to polar
-        - input (`Y`, `X`) = (`x`, `y`)
-        - output (`Y`, `X`) = (`r`, `theta`)
+        - input: `Y`=theta, `X`=r
+        - output: `Y`=y, `X`=x
+        - (consistent with HP-42S)
     - `>HR`: convert `HH.MMSSssss` to `HH.hhhh`
     - `>HMS`: convert `HH.hhhh` to `HH.MMSSssss`
 - `ROOT` > `HELP`: display the Help pages
@@ -755,12 +808,11 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
     - ![BASE MenuRow 8](docs/rpn83p-screenshot-menu-root-base-8.png)
     - `DEC`: use decimal base 10
     - `HEX`: use hexadecimal base 16
-        - display all register values as 32-bit unsigned integer
+        - display register values as 32-bit unsigned integer
     - `OCT`: use octal base 8
-        - display all register values as 32-bit unsigned integer
+        - display register values as 32-bit unsigned integer
     - `BIN`: use binary base 2
-        - display all register values as 32-bit unsigned integer
-        - max of 14 digits
+        - display register values as 32-bit unsigned integer
     - `AND`: `X` `bit-and` `Y`
     - `OR`: `X` `bit-or` `Y`
     - `XOR`: `X` `bit-xor` `Y`
@@ -918,8 +970,8 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
     - `DEG`: use degrees for trigonometric functions
 - `ROOT` > `STK`
     - ![STK MenuRow 1](docs/rpn83p-screenshot-menu-root-stk-1.png)
-    - `R(up)`: rotate stack up
-    - `R(down)`: rotate stack down, also bound to `(` button
+    - `R(up)`: roll stack up
+    - `R(down)`: roll stack down, also bound to `(` button
     - `X<>Y`: exchange `X` and `Y`, also bound to `)` button
 
 ## Advanced Usage
@@ -1017,6 +1069,47 @@ Finally, type `FIX` `99` to go back to the default floating point mode.
 point display modes, so it cannot emulate the HP-42S exactly. In particular, the
 `ALL` display mode of the HP-42S is not directly available, but it is basically
 equivalent to `FIX 99` on the RPN83P.
+
+### SHOW Mode
+
+Many HP RPN calculators have a display mode that shows all significant digits
+that are stored internally. On the HP-42S and HP-16C, the button that activates
+this is labeled `SHOW`. On the HP-12C and HP-15C, the button is labeled
+`Prefix`.
+
+The RPN83P app implements the `SHOW` functionality using the `2ND` `ENTRY` key
+sequence (just above the `ENTER` button). This key was selected because `ENTRY`
+is unused in our RPN system, and because it is located close to the `ENTER` key.
+The Show mode reverts back to the normal display mode when *any* key is pressed
+(exception `OFF` and `QUIT`). Unlike the HP-42S which automatically reverts back
+to the normal mode after a 2-3 second delay, the TI calculator must wait for a
+keyboard event from the user.
+
+Normally, the Show mode displays all 14 digits of the internal floating point
+format of the `X` register in scientific notation. For example, `sqrt(2)` is
+normally displayed with 10 significant digits as `1.414213562`, but in Show mode
+it looks like this:
+
+![RPN83P SHOW Floating](docs/rpn83p-show-mode-floating.png)
+
+If the `X` value is an exact integer internally, then the value is printed in
+integer form instead of scientific notation. For example `2^46` is an exact
+integer that will normally appear as `7.036874418E13`, but in Show mode looks
+like this:
+
+![RPN83P SHOW Integer](docs/rpn83p-show-mode-integer.png)
+
+The Show mode has a slight variation in `BASE` mode. For `DEC`, `HEX`, and `OCT`
+modes, the `SHOW` function behaves as before, showing the internal floating
+point number in scientific or integer notation. However, in `BIN` mode, the
+`SHOW` function displays the `X` value in *binary* notation, allowing all digits
+of the binary number to be shown. This behavior is consistent with the `SHOW`
+function on the HP-42S. For example, the hex number `01D62BB7` in normal `BIN`
+mode looks like `...011 1011 0111` because only 12 digits can be displayed on a
+single line. But in Show mode, all 32 digits (assuming `WSIZ` was 32) will be
+displayed like this:
+
+![RPN83P SHOW Binary 32](docs/rpn83p-show-mode-bin32.png)
 
 ### Trigonometric Modes
 
@@ -1123,10 +1216,11 @@ Any number outside of this range produces an `Err: Domain` message. (The number
 
 If the input number is a very large prime, the calculation may take a long time.
 However, testing has verified that the `PRIM` algorithm will always finish in
-less than about 30 seconds on a TI-83 Plus or TI-84 Plus calculator, no matter
-how large the input number. During the calculation, the "run indicator" on the
-upper-right corner will be active. You can press `ON` key to break from the
-`PRIM` loop with an `Err: Break` message.
+less than about 33 seconds on a TI-83+ (running at 6 MHz) or 13 seconds on a
+TI-83+SE, TI-84+, or TI-84+SE (running at 15 MHz), no matter how large the input
+number. During the calculation, the "run indicator" on the upper-right corner
+will be active. You can press `ON` key to break from the `PRIM` loop with an
+`Err: Break` message.
 
 ### BASE Functions
 
@@ -1148,85 +1242,119 @@ bit-xor, etc). They are useful for computer science and programming. Many of the
 `BASE` mode functions were inspired by the HP-16C, which has more extensive
 functions in this area compared to the HP-42S.
 
-All menu functions under the `BASE` menu operate on *integer* values instead of
-floating point values. Currently, the RPN83P app supports only unsigned 32-bit
-integers. (Support for 8-bit, 16-bit, and 24-bit integers may be implemented in
-the near future.) Any floating point values on the RPN stack (e.g. `X` or `Y`
-registers) are converted into an unsigned 32-bit integer before being passed
-into a logical, bitwise, or arithmetic function. This includes the `DEC` (base
-10) mode.
+All menu functions under the `BASE` menu operate on *unsigned integer* values
+instead of floating point values. The following word sizes have been
+implemented: 8, 16, 24, and 32 bits. Any floating point values on the RPN stack
+(e.g. `X` or `Y` registers) are converted into an unsigned integer before being
+passed into a logical, bitwise, or arithmetic function. This includes the `DEC`
+(base 10) mode.
+
+The maximum value that can be represented when in `BASE` mode is `2^WSIZ-1`,
+which is (255, 16383, 16777215, 4294967295) for (8, 16, 24, 32) bit integers
+respectively.
 
 #### Base Modes
 
+When the `BASE` menu is selected, one of the base number menu items will be
+activated: `DEC`, `HEX`, `OCT`, `BIN`. Normally the default is `DEC`, but the
+`BASE` menu remembers the last base number that was used.
+
+The numbers on the RPN stack are not modified internally when the `BASE` menu is
+selected, but they are displayed on the screen differently to emphasize that
+they are intended to be treated as unsigned integers.
+
+Let's start with the RPN stack containing the following numbers: -1, 17.1, 9E9,
+and 1234567, like this:
+
+![Numbers in Normal Mode](docs/rpn83p-screenshot-base-normal.png)
+
 **DEC** (decimal)
 
-The `DEC` (decimal) mode is the default. All numbers on the RPN stack are
-displayed as an integer, after being converted to an unsigned 32-bit integer.
+The `DEC` (decimal) mode is the default when the `BASE` menu is selected. All
+numbers on the RPN stack are displayed as an integer, *as if* they were
+converted to an unsigned integer, but the RPN stack values are not modified. For
+the values given above, the display now looks like this:
 
-![Numbers in Decimal Mode](docs/rpn83p-screenshot-base-dec.png)
+![Numbers in DEC Mode](docs/rpn83p-screenshot-base-dec.png)
 
-If the value on the RPN stack is negative, a single `-` sign is shown. If the
-value is greater than or equal to `2^32`, then 3 dots `...` are shown. If the
-floating point value is within the range of `[0, 2^32)` but has non-zero
-fractional value, a decimal point is shown after converting the integer part
-into a 32-bit unsigned integer.
+If the value on the RPN stack is negative, a single `-` sign is shown.
+If the value is greater than or equal to `2^WSIZ`, then 3 dots `...` are shown
+to indicate that the number is too large.
+If the floating point value is within the range of `[0, 2^WSIZ)` but has
+non-zero fractional value, a decimal point is shown after the integer part of
+the unsigned integer.
 
 **HEX** (hexadecimal)
 
 The `HEX` (hexadecimal) mode displays all numbers on the RPN stack using base
-16. Only the integer part is rendered. It is converted into an unsigned 32-bit
-integer, and printed using 8 hexadecimal digits. If there are fractional digits
-after the decimal point, a decimal point `.` is printed at the end of the 8
-digits to indicate that the fractional part is not shown. Negative numbers are
-not valid and a single `-` character is printed instead. Three dots are printed
-if the integer part is `>= 2^32`.
+16. Only the integer part is rendered as if the RPN stack values were
+converted to an unsigned integer.
 
-The hexadecimal digits `A` through `F` are entered using `ALPHA` `A`, through
-`ALPHA` `F`. You can lock the `ALPHA` mode using `2ND` `A-LOCK`, but that causes
-the decimal buttons `0` to `9` to send letters instead which prevents those
-digits to be entered, so it is not clear that the Alpha Lock mode is actually
-useful in this context.
+![Numbers in HEX Mode](docs/rpn83p-screenshot-base-hex.png)
 
-![Numbers in Hexadecimal Mode](docs/rpn83p-screenshot-base-hex.png)
+If the value on the RPN stack is negative, a single `-` sign is shown.
+If the value is greater than or equal to `2^WSIZ`, then 3 dots `...` are shown
+to indicate that the number is too large.
+If the floating point value is within the range of `[0, 2^WSIZ)` but has
+non-zero fractional value, a decimal point is shown after the integer part of
+the unsigned integer.
+
+On the keyboard, the hexadecimal digits `A` through `F` are entered using
+`ALPHA` `A`, through `ALPHA` `F`. You can lock the `ALPHA` mode using `2ND`
+`A-LOCK`, but that causes the decimal buttons `0` to `9` to send letters instead
+which prevents those digits to be entered, so it is not clear that the Alpha
+Lock mode is actually useful in this context.
 
 **OCT** (octal)
 
 The `OCT` (octal) mode displays all numbers on the RPN stack using base 8. Only
-the integer part is rendered. It is converted into an unsigned 32-bit integer,
-and printed using 11 octal digits. If there are fractional digits after the
-decimal point, a decimal point `.` is printed at the end of the 11 digits to
-indicate that the fractional part is not shown. Negative numbers are not valid
-and a single `-` character is printed instead. Three dots are printed if the
-integer part is `>= 2^32`.
+the integer part is rendered as if the RPN stack values were converted to an
+unsigned integer.
 
-The button digits `0` through `7` are entered normally. The button digits `8`
-and `9` are disabled in octal mode.
+![Numbers in OCT Mode](docs/rpn83p-screenshot-base-oct.png)
 
-![Numbers in Octal Mode](docs/rpn83p-screenshot-base-oct.png)
+If the value on the RPN stack is negative, a single `-` sign is shown.
+If the value is greater than or equal to `2^WSIZ`, then 3 dots `...` are shown
+to indicate that the number is too large.
+If the floating point value is within the range of `[0, 2^WSIZ)` but has
+non-zero fractional value, a decimal point is shown after the integer part of
+the unsigned integer.
+
+On the keyboard, the button digits `0` through `7` are entered normally. The
+button digits `8` and `9` are disabled in octal mode.
 
 **BIN** (binary)
 
 The `BIN` (binary) mode displays all numbers on the RPN stack using base 2. Only
-the integer part is rendered. It is converted into an unsigned 32-bit integer,
-and printed using 14 binary digits (the maximum allowed by the width of the LCD
-screen). If there are fractional digits after the decimal point, a decimal point
-`.` is printed at the end of the 14 digits to indicate that the fractional part
-is not shown. Negative numbers are not valid and a single `-` character is
-printed instead. Three dots are also printed if the integer part is `>= 2^14`
-(i.e. `>= 16384`).
+the integer part is rendered as if the RPN stack values were converted to an
+unsigned integer.
 
-Only the button digits `0` and `1` are active in the binary mode. The rest are
-disabled.
+![Numbers in BIN Mode](docs/rpn83p-screenshot-base-bin.png)
 
-![Numbers in Binary Mode](docs/rpn83p-screenshot-base-bin.png)
+If the value on the RPN stack is negative, a single `-` sign is shown.
+If the value is greater than or equal to `2^WSIZ`, then 3 dots `...` are shown
+to indicate that the number is too large.
+If the floating point value is within the range of `[0, 2^WSIZ)` but has
+non-zero fractional value, a decimal point is shown after the integer part of
+the unsigned integer.
 
-If a number is too large to be fully displayed in `BIN` mode using the 14 digits
-available on the screen, a small ellipsis character will be shown on the left to
-indicate that there are more digits which are truncated from the screen. For
-example, the number 33059 (hex 8123, oct 100443) has a binary representation of
-`1000 0001 0010 0011`, which will be shown like this:
+Binary numbers are displayed in groups of 4 digits to help readability. That
+means that maximum number of digits that can be displayed is 12 digits. If
+`WSIZ` is 16, 24 or 32, then a number may have non-zero digits which are cutoff
+after the 12 digits. When that happens, a small ellipsis character will be shown
+on the left most digit to indicate truncation, as shown above.
 
-![BASE Binary Number Ellipsis](docs/rpn83p-base-bin-ellipsis.png)
+The `SHOW` function (bound to `2ND ENTRY` on the TI calculators) can be used to
+reveal all digits of the binary number, in groups of 4, using as many 4 lines of
+text like this:
+
+![Numbers in BIN Mode with SHOW](docs/rpn83p-screenshot-base-bin-show.png)
+
+We can now see that the number `1234567` in Base 2 is `0000 0000 0001 0010 1101
+0110 1000 0111`.
+
+On the keyboard, only the button digits `0` and `1` are active in the binary
+mode. The rest are disabled.
 
 #### Shift and Rotate
 
@@ -1299,7 +1427,7 @@ unsigned integers before the integer subroutines are called.
 The `BDIV` menu function performs the same integer division operation as `B/`
 but returns both the quotient (in `X`) and the remainder (in `Y`). With the
 quotient in `X`, it becomes easy to recover the original `X` value by using the
-`lastX` function (`2ND` `ANS`), then pressing the `*` button, then the `+`
+`LastX` function (`2ND` `ANS`), then pressing the `*` button, then the `+`
 button to add back the remainder.
 
 **HP-42S Compatibility Note**: The HP-42S calls these integer functions `BASE+`,
@@ -1403,23 +1531,24 @@ This menu row contains a couple of additional bit manipulation functions:
 
 None of these bit operations affect the Carry Flag.
 
-#### Base Integer Size
+#### Base Word Size
 
 The HP-42S uses a 36-bit *signed* integer for BASE rendering and operations. To
 be honest, I have never been able to fully understand and become comfortable
 with the HP-42S implementation of the BASE operations. First, 36 bits is a
-strange number, it is not an integer size used by modern microprocessors (8, 16,
-32, 64 bits). Second, the HP-42S does not display leading zeros in `HEX` `OCT`,
-or `BIN` modes. While this is consistent with the decimal mode, it is confusing
-to see the number of rendered digits change depending on its value.
+strange number, it is not a multiple of 8 as used by most modern microprocessors
+(8, 16, 32, 64 bits). Second, the HP-42S does not display leading zeros in `HEX`
+`OCT`, or `BIN` modes. While this is consistent with the decimal mode, it is
+confusing to see the number of displayed digits change depending on its value.
 
-The RPN83P deviates from the HP-42S by using a 32-bit *unsigned* integer
-internally, and rendering the various HEX, OCT, and BIN numbers using the same
-number of digits all the time. (The word size can be changed using the `WSIZ`
-menu item, see below). This means that `HEX` mode always displays 8 digits,
-`OCT` mode always displays 11 digits, and `BIN` mode always displays 14 digits
-(due to size limitation of the LCD screen). I find this less confusing when
-doing bitwise operations (e.g. bit-and, bit-or, bit-xor).
+The RPN83P deviates from the HP-42S by using *unsigned* integers internally, and
+rendering the various HEX, OCT, and BIN numbers using the same number of digits
+regardless of the value. The word size of the integer can be changed using the
+`WSIZ` menu item (see below). The following word sizes are supported: 8, 16, 24,
+and 32 bits. This means that `HEX` mode with a word size of 32 always displays 8
+digits, `OCT` mode always displays 11 digits, and `BIN` mode always displays 12
+digits (due to size limitation of the LCD screen). I find this less confusing
+when doing bitwise operations (e.g. bit-and, bit-or, bit-xor).
 
 Since the internal integer representation is *unsigned*, the `(-)` (change sign)
 button is disabled. Instead, the menu system provides a `NEG` function which
@@ -1436,46 +1565,127 @@ it, then hit the `DEC` menu item to convert it to decimal. The displayed value
 will be the decimal value of the original hex number, without the negative sign.
 
 The word size, defaulting to 32 bits, can be changed using the `WSIZ` menu
-function. To simplify the implementation code, only the following word sizes are
-supported: 8, 16, 24, and 32, corresponding to 1, 2, 3, and 4 bytes
-respectively. The RPN83P app represents all numbers internally using the TI-OS
-floating point number format which supports 14 decimal digits, corresponding to
-46.5 bits. Therefore, the largest word size that could be supported in the
-current architecture is 40. Supporting a 64-bit word size would require a
-complete rewrite of the application
+function. Pressing it displays `WSIZ _ _` and waits for the argument, just like
+the `FIX` and `STO` commands. To simplify the implementation code, only the
+following word sizes are supported: 8, 16, 24, and 32, corresponding to 1, 2, 3,
+and 4 bytes respectively:
+
+![WSIZ Prompt](docs/rpn83p-base-wsiz.png)
+
+If an unsupported word size is entered, for example `9`, then the error code
+`Err:Argument` will be displayed:
+
+![WSIZ Error](docs/rpn83p-base-wsiz-err.png)
+
+Note: The RPN83P app represents all numbers internally using the TI-OS floating
+point number format which supports 14 decimal digits. This corresponds to 46.5
+bits. Therefore, the largest word size that could be supported in the current
+architecture is 40. Supporting a 64-bit word size would require a major
+rearchitecture of the application.
 
 Every `BASE` operation respects the current `WSIZ` value, truncating the `X` or
 `Y` integers to the word size, before performing the `BASE` operation, then
 truncating the result to the word size. For example, if the word size is 16,
 then the `RR` (rotate right circular) operation rotates bit 0 to bit 15, instead
-of bit 31 if the word size were 32.
-
-The `WSIZ` command uses the value of the `X` register, but the value shown on
-the display depends on the base mode. It is sometimes easier to temporarily
-change to `DEC` mode, set the `WSIZ`, then change the base mode back. For
-example, if we are in `BIN` mode, then we could use the following keystroke
-sequence to change the `WSIZ` to 16:
-
-```
-10000 # 16 in base-2 BIN mode
-WSIZ
-```
-
-But it may be easier to use the following instead:
-
-```
-BASE
-DEC
-16
-WSIZ # use the UP arrow to go to this menu row quickly
-BIN # use the DOWN arrow to go back to this menu row
-```
+of bit 31 if the word size was 32.
 
 The current `WSIZ` value can be retrieved using the `WSZ?` menu function.
 
+**HP-42S Compatibility Note**: The original HP-42S does *not* support the `WSIZ`
+command. Its word size is fixed at 36 bits. The Free42 app however does support
+it as the `WSIZE` command which I suspect was borrowed from `WSIZE` command on
+the HP-16C. Keen observers will note a UI discrepancy: On the HP-16C and HP-42S,
+the `WSIZE` command uses the value of `X` register to set the word size, but the
+RPN83P *prompts* the user to enter the size using a `WSIZ _ _` prompt similar to
+the `FIX` and `STO` commands. This decision was made to solve a major usability
+problem on the RPN83P: The `X` register value in the `BASE` menu hierarchy is
+shown using the currently selected base mode (e.g. `DEC`, `HEX`, etc). If the
+mode was something other than `DEC`, for example `HEX`, then the user needs to
+type `10 WSIZ` to set the `WSIZ` to 16 bits, because `10` is the base-16
+representation of 16. Even worse, if the base mode was `BIN`, then the user must
+type in `100000 WSIZ` to set the word size to `32` because `100000` is the
+base-2 representation of `32`. I find this far too confusing. Instead, the
+RPN83P uses the command argument prompt `WSIZ _ _` to obtain the word size from
+the user in normal base-10 format. The prompt is not affected by the current
+base mode so the user can type `8`, `16`, `24`, or `32` to select the new word
+size without confusion. The `WSZ?` command returns the current word size in the
+`X` register and will be displayed using the current base mode. I could not
+think of any way around this, but I assume that this will not cause as much
+usability problems as the `WSIZ` command.
+
+### Base Input Digit Limit
+
+The maximum number of digits allowed to be entered into the input buffer is
+limited by a function which depends on:
+- the `WSIZ`
+- the current base number (`HEX` 16, `DEC` 10, `OCT` 8, `BIN` 2)
+- the width of the single line on the display
+
+Adding a limit during input hopefully reduces the likelihood that the user will
+enter a number that is greater than the maximum number of bits allowed in by the
+current `WSIZ` and base number.
+
+Here are the limits:
+
+```
++------+------+-------------+-----------+
+| Base | WSIZ |     Max Num | MaxDigits |
+|------+------+-------------+-----------|
+|  DEC |    8 |         255 |         3 |
+|  DEC |   16 |       65535 |         5 |
+|  DEC |   24 |    16777215 |         8 |
+|  DEC |   32 |  4294967295 |        10 |
+|------+------+-------------+-----------|
+|  HEX |    8 |          FF |         2 |
+|  HEX |   16 |        FFFF |         4 |
+|  HEX |   24 |      FFFFFF |         6 |
+|  HEX |   32 |    FFFFFFFF |         8 |
+|------+------+-------------+-----------|
+|  OCT |    8 |         377 |         3 |
+|  OCT |   16 |      177777 |         5 |
+|  OCT |   24 |    77777777 |         8 |
+|  OCT |   32 | 37777777777 |        10 |
+|------+------+-------------+-----------|
+|  BIN |    8 |         255 |         8 |
+|  BIN |   16 |        4095 |    (*) 12 |
+|  BIN |   24 |        4095 |    (*) 12 |
+|  BIN |   32 |        4095 |    (*) 12 |
++------+------+------------ +-----------+
+
+(*) Limit determined by width of a single line on the display.
+```
+
+Limiting the number of digits during input does not completely prevent the user
+from entering a number which is immediately out-of-bounds of the `WSIZ` limit.
+That's because in certain bases like `OCT`, the maximum number of allowed bits
+falls inside a single digit. In other bases, like `DEC`, the number of binary
+bits does not correspond exactly to the representation in decimal. (A future
+enhancement may be to parse the input buffer upon `ENTER` and refuse to accept
+the number if it is greater than the maximum allowed by the `WSIZ`.)
+
+In `BIN` mode, the longest binary number that can be entered is limited by the
+width of the single line on the display, which in BIN mode is 12. You can apply
+arithmetic, logical, and bitwise operations to binary numbers to create larger
+results, but the largest binary number that can be entered manually is currently
+limited to 12 digits.
+
+It is assumed that most people will work with relatively small numbers in BIN
+mode. If they need to work with larger binary numbers, there may be
+two hacky workarounds:
+
+1. Enter the numbers in HEX instead of BIN.
+2. Split the BIN numbers in groups less than 12, then use the shift operators
+`SL`  to shift the binary digits, and add them together to form the larger
+binary number.
+
+A future enhancement would be allow up to `WSIZ` digits to be entered in `BIN`
+mode by scrolling the digits off the single line to the left. But currently
+(v0.8.0), this ability is not supported because the amount of work seems too
+great for the amount of benefits.
+
 #### Base Number Retention
 
-Since the `DEC`, `HEX`, `OCT` and `BIN` modes are useful only within the `BASE`
+The `DEC`, `HEX`, `OCT` and `BIN` modes are useful only within the `BASE`
 hierarchy of menus. When the menu leaves the `BASE` hierarchy, the numbers on
 the RPN stack revert back to using floating points. This is similar to the
 HP-42S. However, unlike the HP-42S, the RPN83P remembers the most recent base
@@ -1990,21 +2200,34 @@ limited:
 
 ### Near Future
 
-- TVM (time value of money)
-    - substantially done, but the TVM Solver for `I%YR` can be improved
-- Support more than 14 digits in `BIN` (base 2) mode
-    - This is a difficult UI problem, because 32 digits will require 3 lines on
-      the display, as each line currently can support only 14, maybe 15, digits.
 - datetime conversions
     - date/time components to and from epoch seconds
 - `PROB` and `COMB` arguments are limited to `< 256`
     - Maybe extend this to `< 2^16` or `< 2^32`.
 - `GCD` and `LCM` functions are slow
     - Could be made significantly faster.
+- Allow resize of storage registers using `SIZE` command
+    - The current default is fixed at 25.
+    - It should be relatively straightforward to allow this to be
+      user-definable, up to a `SIZE` of 100.
 
 ### Medium Future
 
-- user-defined variables
+- complex numbers
+    - The TI-OS provides internal subroutines to handle complex numbers, so in
+      theory, this should be relatively easy.
+    - The user interface may be difficult since a complex number requires 2
+      floating point numbers to be entered and displayed, and I have not figured
+      out how to do that within the UI of the RPN83P application.
+    - Additionally, all internal variables must be upgraded to accept a complex
+      number: RPN stack, storage registers nn
+- custom button bindings
+    - a significant number of buttons on the TI-83/TI-84 keyboard are not used
+      by RPN83P
+    - it would be useful to allow the user to customize some of those buttons
+      for quick access
+    - for example, the `2ND L1` to `2ND L6`
+- user-defined alphanumeric variables
     - The HP-42S shows user-defined variables through the menu system.
     - Nice feature, but would require substantial refactoring of the current
       menu system code.
@@ -2013,23 +2236,29 @@ limited:
       the `ASSIGN` and `CUSTOM` menus.
     - This seems like a useful feature, but would require substantial
       refactoring of the current menu system code, like user-defined variables.
-- custom button bindings
-    - a significant number of buttons on the TI-83/TI-84 keyboard are not used
-      by RPN83P
-    - it would be useful to allow the user to customize some of those buttons
-      for quick access
-    - for example, the `2ND` `L1` to `L6`
-- complex numbers
-    - The TI-OS provides internal subroutines to handle complex numbers, so in
-      theory, this should be relatively easy.
-    - I think the difficulty will be the user interface. A complex number
-      requires 2 floating point numbers to be entered and displayed, and I have
-      not figured out how to do that within the UI of the RPN83P application.
+- polynomial solvers
+    - Quadratic, cubic, and quartic equations have analytical solutions so
+      should be relatively straightforward... Except that they need complex
+      number support. And we need to work around numerical cancellation or
+      roundoff errors.
 - `UNIT` conversions for imperial (not just US) units
     - several places assume US customary units (e.g. US gallons) instead of
       British or Canadian imperial units
     - it'd be nice to support both types, if we can make the menu labels
       self-documenting and distinctive
+- `BASE` > `BIN`
+    - Allow more than 12 binary digits to be entered if `WSIZ` is greater than 8
+    - The most reasonable solution seems to be to scroll off the left digits to
+      the left as more digits are entered. This solution requires a significant
+      redesign of the current input buffer code, because currently, the internal
+      characters in the input buffer is exactly what is displayed on the screen.
+      We would need to decouple that.
+- `TVM` (time value of money)
+    - Improve TVM Solver for `I%YR`.
+    - The initial guesses could be better.
+    - The terminating tolerance could be selectable or more intelligent.
+    - Maybe change the root solving algorithm from Secant method to Newton's
+      method for faster convergence.
 
 ### Far Future
 

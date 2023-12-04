@@ -13,29 +13,33 @@ features from the
 [HP-16C](https://en.wikipedia.org/wiki/HP-16C).
 
 
-The RPN83P is a flash application that consumes 2 pages (32 kiB) of flash
-memory. Since it is stored in flash, it is preserved if the RAM is cleared. It
-consumes about 400 bytes of TI-OS RAM: 2 list variables named `REGS` and `STK`,
-and an appVar named `RPN83SAV`.
+The RPN83P is a flash application written in Z80 assembly language that consumes
+2 pages (32 kiB) of flash memory. Since it is stored in flash, it is preserved
+if the RAM is cleared. It consumes about 400 bytes of TI-OS RAM: 2 list
+variables named `REGS` (240 bytes) and `STK` (59 byte), and an appVar named
+`RPN83SAV` (101 bytes).
 
-Here is a quick summary of its features:
+Summary of features:
 
-- traditional 4-level RPN stack (`X`, `Y`, `Z`, `T` registers)
-- support for `lastX` register
+- traditional 4-level RPN stack (`X`, `Y`, `Z`, `T`), with `LastX` register
 - 8-line display showing all stack registers
-- 25 storage registers (`STO 00`, `RCL 00`, ..., `STO 24`, `RCL 24`)
 - hierarchical menu system similar to HP-42S
+- quick reference `HELP` menu
+- storage registers
+    - store and recall:`STO nn`, `RCL nn`
+    - storage arithmetics: `STO+ nn`, `STO- nn`, `STO* nn`, `STO/ nn`, `RCL+
+      nn`, `RCL- nn`, `RCL* nn`, `RCL/ nn`
+    - 25 storage registers: `nn = 00..24`
 - support for all math functions with dedicated buttons on the TI-83 Plus and
   TI-84 Plus
     - arithmetic: `/`, `*`, `-`, `+`
     - trigonometric: `SIN`, `COS`, `TAN`, etc.
-    - `1/X`, `X^2`, `SQRT`
-    - `^` (i.e. `Y^X`),
-    - `LOG`, `10^X`, `LN`, `e^X`
+    - algebraic: `1/X`, `X^2`, `SQRT`, `^` (i.e. `Y^X`)
+    - transcendental: `LOG`, `10^X`, `LN`, `e^X`
     - constants: `pi` and `e`
 - additional menu functions:
     - `X^3`, `3RootX`, `XRootY`, `ATN2`, `2^X`, `LOG2`, `LOGB`
-    - `%`, `%CH`, `GCD`, `LCM`, `PRIM` (is prime)
+    - `%`, `%CH`, `GCD`, `LCM`, `PRIM` (prime factor)
     - `IP` (integer part), `FP` (fractional part), `FLR` (floor), `CEIL`
       (ceiling), `NEAR` (nearest integer)
     - `ABS`, `SIGN`, `MOD`, `MIN`, `MAX`
@@ -49,7 +53,7 @@ Here is a quick summary of its features:
       `SDEV` (sample standard deviation), `SCOV` (sample covariance),
       `PDEV` (population standard deviation), `PCOV` (population covariance)
     - curve fitting: `Y>X`, `X>Y`, `SLOP` (slope), `YINT` (y intercept), `CORR`
-      (correlation coefficent)
+      (correlation coefficient)
     - curve fit models: `LINF` (linear), `LOGF` (logarithmic), `EXPF`
       (exponential), `PWRF` (power)
 - features inspired by HP-16C and HP-42S
@@ -61,6 +65,7 @@ Here is a quick summary of its features:
     - shift and rotate: `SL`, `SR`, `ASR`, `RL`, `RR`, `RLC`, `RRC`,
       `SLn`, `SRn`, `RLn`, `RRn`, `RLCn`, `RRCn`
     - carry flag and bit masks: `CCF`, `SCF`, `CF?`, `CB`, `SB`, `B?`
+    - word sizes: `WSIZ`, `WSZ?`: 8, 16, 24, 32 bits
 - features inspired by HP-12C and HP-30b
     - time value of money (TVM): `N`, `I%YR`, `PV`, `PMT`, `FV`, `P/YR`, `BEG`,
       `END`, `CLTV` (clear TVM)
@@ -69,14 +74,15 @@ Here is a quick summary of its features:
     - `FIX` (fixed point 0-9 digits)
     - `SCI` (scientific 0-9 digits)
     - `ENG` (engineering 0-9 digits)
+    - `SHOW` (`2ND ENTRY`) to display all 14 internal floating point digits
 
-Here are some missing features which may be added in the future:
+Missing features (partial list):
 
 - vectors and matrices
 - complex numbers
 - keystroke programming
 
-**Version**: 0.7.0 (2023-11-20)
+**Version**: 0.8.0 (2023-12-03)
 
 **Changelog**: [CHANGELOG.md](CHANGELOG.md)
 
@@ -123,25 +129,33 @@ The RPN83P app starts directly into the calculator mode, like this:
 
 ![RPN83P Hello 1](docs/rpn83p-screenshot-initial.png)
 
-Since the RPN83P is a flash app, it is preserved when the RAM is cleared. It
-consumes about 300 bytes of RAM space for its internal RPN and storage
-registers.
-
 ### Supported Hardware
 
 This app was designed for TI calculators using the Z80 processor:
 
-- TI-83 Plus
-- TI-83 Plus Silver Edition
-- TI-84 Plus
-- TI-84 Plus Silver Edition
+- TI-83 Plus (6 MHz Z80, 24 kB accessible RAM, 160 kB accessible flash)
+- TI-83 Plus Silver Edition (6/15 MHz Z80, 24 kB accessible RAM, 1.5 MB
+  accessible flash)
+- TI-84 Plus (6/15 MHz Z80, 24 kB accessible RAM, 480 kB accessible flash)
+- TI-84 Plus Silver Edition (6/15 MHz Z80, 24 kB accessible RAM, 1.5 MB
+  accessible flash)
 
-I have tested it on the two calculators that I own:
+The app configures itself to run at 15 MHz on supported hardware, while
+remaining at 6 MHz on the TI-83+.
 
+I have tested it on the following calculators that I own:
+
+- TI-83 Plus, OS v1.19
 - TI-83 Plus Silver Edition, OS v1.19
 - TI-84 Plus Silver Edition, OS v2.55MP
 
-It *should* work on the others, but I have not actually tested them.
+It *should* work on the TI-84 Plus, but I have not actually tested it.
+
+The following calculators are *not* supported because their internal hardware is
+too different:
+
+- TI-84 Plus C Silver Edition
+- TI-84 Plus CE
 
 ## Quick Examples
 

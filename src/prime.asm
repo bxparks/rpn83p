@@ -21,7 +21,7 @@
 ; Output: OP1: 1 if prime, smallest prime factor if not
 ; Destroys: all registers, OP2, OP4, OP5, OP6
 ;
-; Benchmarks:
+; Benchmarks (6 MHz):
 ;   - 4001*4001: 15 seconds
 ;   - 10007*10007: 36 seconds
 ;   - 19997*19997: 72 seconds
@@ -120,7 +120,7 @@ primeFactorBreak:
 ; Output: OP1: 1 if prime, smallest prime factor if not
 ; Destroys: all registers, OP1, OP2, OP3, OP4, OP5, OP6
 ;
-; Benchmarks:
+; Benchmarks (6 MHz):
 ;
 ; Using divU32U32():
 ;   - 4001*4001: 5 seconds
@@ -230,7 +230,7 @@ primeFactorIntCheckDiv:
 ; Output: OP1: 1 if prime, smallest prime factor if not
 ; Destroys: all registers, OP1, OP2, OP3, OP4, OP5, OP6
 ;
-; Benchmarks:
+; Benchmarks (6 MHz):
 ;   - 4001*4001: 2.4 seconds
 ;   - 10007*10007: 5.5 seconds
 ;   - 19997*19997: 10.5 seconds

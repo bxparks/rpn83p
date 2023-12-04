@@ -2,7 +2,13 @@
 ; MIT License
 ; Copyright (c) 2023 Brian T. Park
 ;
-; CRC16 algorithm.
+; CRC16 algorithm. This is now on Flash Page 1, since it is called only once
+; upon startup and once during shutdown.
+;
+; Labels with Capital letters are intended to be exported to other flash pages
+; and should be placed in the branch table on Flash Page 0. Labels with
+; lowercase letters are intended to be private so do not need a branch table
+; entry.
 ;-----------------------------------------------------------------------------
 
 ; Description: Calculate the CRC16-CCITT of the byte array pointed by HL, of
@@ -41,17 +47,17 @@
 ;    while (data_len--) {
 ;        c = *d++;
 ;        for (i = 0x80; i > 0; i >>= 1) {
-;            bit = (crc & 0x80) ^ ((c & i) ? 0x80 : 0);
+;            bit = (crc & 0x8000) ^ ((c & i) ? 0x8000 : 0);
 ;            crc <<= 1;
 ;            if (bit) {
-;                crc ^= 0x07;
+;                crc ^= 0x1021;
 ;            }
 ;        }
-;        crc &= 0xff;
+;        crc &= 0xffff;
 ;    }
-;    return crc & 0xff;
+;    return crc & 0xffff;
 ; }
-crc16ccitt:
+Crc16ccitt:
     ex de, hl ; DE=pointer to data
     ld hl, $1D0F
     jr crc16ccitt_char_next

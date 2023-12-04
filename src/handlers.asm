@@ -5,7 +5,7 @@
 ; Main input key code handlers.
 ;-----------------------------------------------------------------------------
 
-; Function: Append a number character to inputBuf or argBuf, updating various
+; Description: Append a number character to inputBuf or argBuf, updating various
 ; flags.
 ; Input:
 ;   A: character to be appended
@@ -13,7 +13,6 @@
 ; Output:
 ;   - CF set when append fails
 ;   - rpnFlagsEditing set
-;   - rpnFlagsLiftEnabled set
 ;   - dirtyFlagsInput set
 ; Destroys: all
 handleKeyNumber:
@@ -27,12 +26,9 @@ handleKeyNumberFirstDigit:
     push af ; preserve A=char to append
     call liftStackIfEnabled
     pop af
-    ; Go into editing mode. Re-enable stack lift so that if the next keystroke
-    ; is a PI, Euler, or some other function that takes no arguments and
-    ; produces a number, the stack is lifted again.
+    ; Go into editing mode.
     call clearInputBuf
     set rpnFlagsEditing, (iy + rpnFlags)
-    set rpnFlagsLiftEnabled, (iy + rpnFlags)
 handleKeyNumberCheckAppend:
     ; Limit number of exponent digits to 2.
     bit inputBufFlagsEE, (iy + inputBufFlags)
@@ -52,108 +48,108 @@ handleKeyNumberCheckAppend:
 
 ;-----------------------------------------------------------------------------
 
-; Function: Append '0' to inputBuf.
+; Description: Append '0' to inputBuf.
 handleKey0:
     ld a, '0'
     jr handleKeyNumber
 
-; Function: Append '1' to inputBuf.
+; Description: Append '1' to inputBuf.
 handleKey1:
     ld a, '1'
     jr handleKeyNumber
 
-; Function: Append '2' to inputBuf.
+; Description: Append '2' to inputBuf.
 handleKey2:
     call checkBase8Or10Or16
     ret nz
     ld a, '2'
     jr handleKeyNumber
 
-; Function: Append '3' to inputBuf.
+; Description: Append '3' to inputBuf.
 handleKey3:
     call checkBase8Or10Or16
     ret nz
     ld a, '3'
     jr handleKeyNumber
 
-; Function: Append '4' to inputBuf.
+; Description: Append '4' to inputBuf.
 handleKey4:
     call checkBase8Or10Or16
     ret nz
     ld a, '4'
     jr handleKeyNumber
 
-; Function: Append '5' to inputBuf.
+; Description: Append '5' to inputBuf.
 handleKey5:
     call checkBase8Or10Or16
     ret nz
     ld a, '5'
     jr handleKeyNumber
 
-; Function: Append '6' to inputBuf.
+; Description: Append '6' to inputBuf.
 handleKey6:
     call checkBase8Or10Or16
     ret nz
     ld a, '6'
     jr handleKeyNumber
 
-; Function: Append '7' to inputBuf.
+; Description: Append '7' to inputBuf.
 handleKey7:
     call checkBase8Or10Or16
     ret nz
     ld a, '7'
     jr handleKeyNumber
 
-; Function: Append '8' to inputBuf.
+; Description: Append '8' to inputBuf.
 handleKey8:
     call checkBase10Or16
     ret nz
     ld a, '8'
     jr handleKeyNumber
 
-; Function: Append '9' to inputBuf.
+; Description: Append '9' to inputBuf.
 handleKey9:
     call checkBase10Or16
     ret nz
     ld a, '9'
     jp handleKeyNumber
 
-; Function: Append 'A' to inputBuf.
+; Description: Append 'A' to inputBuf.
 handleKeyA:
     call checkBase16
     ret nz
     ld a, 'A'
     jp handleKeyNumber
 
-; Function: Append 'B' to inputBuf.
+; Description: Append 'B' to inputBuf.
 handleKeyB:
     call checkBase16
     ret nz
     ld a, 'B'
     jp handleKeyNumber
 
-; Function: Append 'C' to inputBuf.
+; Description: Append 'C' to inputBuf.
 handleKeyC:
     call checkBase16
     ret nz
     ld a, 'C'
     jp handleKeyNumber
 
-; Function: Append 'D' to inputBuf.
+; Description: Append 'D' to inputBuf.
 handleKeyD:
     call checkBase16
     ret nz
     ld a, 'D'
     jp handleKeyNumber
 
-; Function: Append 'E' to inputBuf.
+; Description: Append 'E' to inputBuf.
 handleKeyE:
     call checkBase16
     ret nz
     ld a, 'E'
     jp handleKeyNumber
 
-; Function: Append 'F' to inputBuf.
+; Description: Append 'F' to inputBuf.
 handleKeyF:
     call checkBase16
     ret nz
@@ -190,7 +186,7 @@ checkBase16:
     cp 16
     ret
 
-; Function: Append a '.' if not already entered.
+; Description: Append a '.' if not already entered.
 ; Input: none
 ; Output: (iy+inputBufFlags) DecPnt set
 ; Destroys: A, DE, HL
@@ -314,7 +310,7 @@ handleKeyDelExit:
 
 ;-----------------------------------------------------------------------------
 
-; Function: Clear the X register and go into edit mode. If already in edit
+; Description: Clear the X register and go into edit mode. If already in edit
 ; mode, clear the inputBuf. If the CLEAR is pressed when the input buffer is
 ; already empty, then go into ClearAgain mode. If CLEAR is pressed in
 ; ClearAgain mode, the RPN stack is cleared (like the CLST command).
@@ -384,7 +380,7 @@ handleKeyClearToEmptyInput:
 
 ;-----------------------------------------------------------------------------
 
-; Function: Handle (-) change sign. If in edit mode, change the sign in the
+; Description: Handle (-) change sign. If in edit mode, change the sign in the
 ; inputBuf. Otherwise, change the sign of the X register. If the EE symbol
 ; exists, change the sign of the exponent instead of the mantissa.
 ; Input: none
@@ -461,7 +457,7 @@ flipInputBufSignAdd:
 
 ;-----------------------------------------------------------------------------
 
-; Function: Handle the ENTER key.
+; Description: Handle the ENTER key.
 ; Input: none
 ; Output:
 ; Destroys: all, OP1, OP2, OP4
@@ -476,7 +472,7 @@ handleKeyEnter:
 ; Menu key handlers.
 ;-----------------------------------------------------------------------------
 
-; Function: Go to the previous menu row, with rowIndex decreasing upwards.
+; Description: Go to the previous menu row, with rowIndex decreasing upwards.
 ; Input: none
 ; Output: (menuRowIndex) decremented, or wrapped around
 ; Destroys: all
@@ -489,9 +485,8 @@ handleKeyUp:
     inc hl
     inc hl
     inc hl
+    ; if numRows==1: return TODO: Check for 0, but that should never happen.
     ld c, (hl) ; C = numRows
-
-    ; Check for 1. TODO: Check for 0, but that should never happen.
     ld a, c
     cp 1
     ret z
@@ -510,7 +505,7 @@ handleKeyUpContinue:
 
 ;-----------------------------------------------------------------------------
 
-; Function: Go to the next menu row, with rowIndex increasing downwards.
+; Description: Go to the next menu row, with rowIndex increasing downwards.
 ; Input: none
 ; Output: (menuRowIndex) incremented mod numRows
 ; Destroys: all
@@ -523,9 +518,8 @@ handleKeyDown:
     inc hl
     inc hl
     inc hl
+    ; if numRows==1: returt TODO: Check for 0, but that should never happen.
     ld c, (hl) ; numRows
-
-    ; Check for 1. TODO: Check for 0, but that should never happen.
     ld a, c
     cp 1
     ret z
@@ -654,7 +648,7 @@ handleKeyMenuSecondA:
 ; Arithmetic functions.
 ;-----------------------------------------------------------------------------
 
-; Function: Handle the Add key.
+; Description: Handle the Add key.
 ; Input: inputBuf
 ; Output:
 ; Destroys: all, OP1, OP2, OP4
@@ -665,7 +659,7 @@ handleKeyAdd:
     bcall(_FPAdd) ; Y + X
     jp replaceXY
 
-; Function: Handle the Sub key.
+; Description: Handle the Sub key.
 ; Input: inputBuf
 ; Output:
 ; Destroys: all, OP1, OP2, OP4
@@ -676,7 +670,7 @@ handleKeySub:
     bcall(_FPSub) ; Y - X
     jp replaceXY
 
-; Function: Handle the Mul key.
+; Description: Handle the Mul key.
 ; Input: inputBuf
 ; Output:
 ; Destroys: all, OP1, OP2, OP4, OP5
@@ -687,7 +681,7 @@ handleKeyMul:
     bcall(_FPMult) ; Y * X
     jp replaceXY
 
-; Function: Handle the Div key.
+; Description: Handle the Div key.
 ; Input: inputBuf
 ; Output:
 ; Destroys: all, OP1, OP2, OP4
@@ -722,25 +716,25 @@ handleKeyEuler:
 ; Alegbraic functions.
 ;-----------------------------------------------------------------------------
 
-; Function: y^x
+; Description: y^x
 handleKeyExpon:
     call closeInputAndRecallXY
     bcall(_YToX)
     jp replaceXY
 
-; Function: 1/x
+; Description: 1/x
 handleKeyInv:
     call closeInputAndRecallX
     bcall(_FPRecip)
     jp replaceX
 
-; Function: x^2
+; Description: x^2
 handleKeySquare:
     call closeInputAndRecallX
     bcall(_FPSquare)
     jp replaceX
 
-; Function: sqrt(x)
+; Description: sqrt(x)
 handleKeySqrt:
     call closeInputAndRecallX
     bcall(_SqRoot)
@@ -750,10 +744,10 @@ handleKeySqrt:
 ; Stack operations
 ;-----------------------------------------------------------------------------
 
-handleKeyRotDown:
+handleKeyRollDown:
     call closeInputBuf
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
-    jp rotDownStack
+    jp rollDownStack
 
 handleKeyExchangeXY:
     call closeInputBuf
@@ -831,10 +825,10 @@ handleKeyATan:
 handleKeySto:
     call closeInputBuf
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
-    ld hl, msgStoName
+    ld hl, msgStoPrompt
     call startArgParser
     set inputBufFlagsArgAllowModifier, (iy + inputBufFlags)
-    call processCommandArg
+    call processArgCommands
     ret nc ; do nothing if canceled
     cp argModifierIndirect
     ret nc ; TODO: implement this
@@ -854,10 +848,10 @@ handleKeyStoError:
 handleKeyRcl:
     call closeInputBuf
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
-    ld hl, msgRclName
+    ld hl, msgRclPrompt
     call startArgParser
     set inputBufFlagsArgAllowModifier, (iy + inputBufFlags)
-    call processCommandArg
+    call processArgCommands
     ret nc ; do nothing if canceled
     cp argModifierIndirect
     ret nc ; TODO: implement this
@@ -887,9 +881,9 @@ handleKeyRclError:
     ld a, errorCodeDimension
     jp setHandlerCode
 
-msgStoName:
+msgStoPrompt:
     .db "STO", 0
-msgRclName:
+msgRclPrompt:
     .db "RCL", 0
 
 ;-----------------------------------------------------------------------------
@@ -922,12 +916,16 @@ handleKeyStat:
 handleKeyQuit:
     jp mainExit
 
+;-----------------------------------------------------------------------------
+; Secret "DRAW" mode.
+;-----------------------------------------------------------------------------
+
 handleKeyDraw:
     call closeInputBuf
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
-    ld hl, msgDrawLabel
+    ld hl, msgDrawPrompt
     call startArgParser
-    call processCommandArg
+    call processArgCommands
     ret nc ; do nothing if canceled
     ; save (argValue)
     ld a, (argValue)
@@ -935,6 +933,15 @@ handleKeyDraw:
     ; notify the dispatcher to clear and redraw the screen
     ld a, errorCodeClearScreen
     jp setHandlerCode
+
+handleKeyShow:
+    call closeInputBuf
+    call processShowCommands
+    ret
+
+; DRAW mode prompt.
+msgDrawPrompt:
+    .db "DRAW", 0
 
 ;-----------------------------------------------------------------------------
 ; Common code fragments, to save space.

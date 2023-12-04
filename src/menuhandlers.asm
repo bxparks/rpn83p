@@ -73,9 +73,7 @@ mXRootYHandler:
     bcall(_XRootY) ; OP2^(1/OP1), SDK documentation is incorrect
     jp replaceXY
 
-; mAtan2Handler(Y, X) -> atan2(Y + Xi)
-;
-; Description: Calculate the angle of the (Y, X) number in complex plane.
+; Description: Calculate the angle of the (X, Y) number in complex plane.
 ; Use bcall(_RToP) instead of bcall(_ATan2) because ATan2 does not seem produce
 ; the correct results. There must be something wrong with the documentation.
 ;
@@ -86,11 +84,12 @@ mXRootYHandler:
 ; details. Although that page refers to ATan2Rad(), I suspect a similar thing
 ; is happening for ATan2().)
 ;
-; The real part (i.e. x-axis) is assumed to be entered first, then the
-; imaginary part (i.e. y-axis). They becomes stored in the RPN stack variables
-; with X and Y flipped, which is bit confusing.
+; The imaginary part (i.e. y-axis) must be entered first, then the real part
+; (i.e. x-axis). This order is consistent with the the `>POL` conversion
+; function.
 mAtan2Handler:
-    call closeInputAndRecallXY ; OP1=Y=real; OP2=X=imaginary
+    call closeInputAndRecallXY ; OP1=Y=imaginary; OP2=X=real
+    call op1ExOp2 ; OP1=X=real; OP2=Y=imaginary
     bcall(_RToP) ; complex to polar
     bcall(_OP2ToOP1) ; OP2 contains the angle with range of (-pi, pi]
     jp replaceXY
@@ -761,33 +760,39 @@ mDToRHandler:
     bcall(_DToR) ; DEG to RAD
     jp replaceX
 
-; Polar to Rectangular
+; Polar to Rectangular. The order of arguments is intended to be consistent
+; with the HP-42S.
 ; Input:
-;   - Y: r
-;   - X: theta
+;   - Y: theta
+;   - X: r
 ; Output:
-;   - Y: x
-;   - X: y
+;   - Y: y
+;   - X: x
 mPToRHandler:
     call closeInputAndRecallX
-    bcall(_OP1ToOP2) ; OP2 = X = theta
-    call rclY ; OP1 = Y = r
-    bcall(_PToR) ; OP1 = x; OP2 = y (?)
-    jp replaceXYWithOP1OP2 ; X=OP2=y; Y=OP1=x
+    bcall(_OP1ToOP2) ; OP2=X=r
+    call rclY ; OP1 =Y=theta
+    call op1ExOp2  ; OP1=r; OP2=theta
+    bcall(_PToR) ; OP1=x; OP2=y
+    call op1ExOp2  ; OP1=y; OP2=x
+    jp replaceXYWithOP1OP2 ; Y=OP2=y; X=OP1=x
 
-; Rectangular to Polar
+; Rectangular to Polar. The order of arguments is intended to be consistent
+; with the HP-42S.
 ; Input:
-;   - Y: x
-;   - X: y
+;   - Y: y
+;   - X: x
 ; Output:
-;   - Y: r
-;   - X: theta
+;   - Y: theta
+;   - X: r
 mRtoPHandler:
     call closeInputAndRecallX
-    bcall(_OP1ToOP2) ; OP2 = X = y
-    call rclY ; OP1 = Y = x
-    bcall(_RToP) ; OP1 = r; OP2 = theta (?)
-    jp replaceXYWithOP1OP2 ; X=OP2=theta; Y=OP1=r
+    bcall(_OP1ToOP2) ; OP2=X=x
+    call rclY ; OP1=Y=y
+    call op1ExOp2  ; OP1=x; OP2=y
+    bcall(_RToP) ; OP1=r; OP2=theta
+    call op1ExOp2  ; OP1=theta; OP2=r
+    jp replaceXYWithOP1OP2 ; Y=OP1=theta; X=OP2=r
 
 ;-----------------------------------------------------------------------------
 
@@ -890,9 +895,9 @@ mHrToHmsHandler:
 mFixHandler:
     call closeInputBuf
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
-    ld hl, msgFixLabel
+    ld hl, msgFixPrompt
     call startArgParser
-    call processCommandArg
+    call processArgCommands
     ret nc ; do nothing if canceled
     res fmtExponent, (iy + fmtFlags)
     res fmtEng, (iy + fmtFlags)
@@ -901,9 +906,9 @@ mFixHandler:
 mSciHandler:
     call closeInputBuf
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
-    ld hl, msgSciLabel
+    ld hl, msgSciPrompt
     call startArgParser
-    call processCommandArg
+    call processArgCommands
     ret nc ; do nothing if canceled
     set fmtExponent, (iy + fmtFlags)
     res fmtEng, (iy + fmtFlags)
@@ -912,13 +917,20 @@ mSciHandler:
 mEngHandler:
     call closeInputBuf
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
-    ld hl, msgEngLabel
+    ld hl, msgEngPrompt
     call startArgParser
-    call processCommandArg
+    call processArgCommands
     ret nc ; do nothing if canceled
     set fmtExponent, (iy + fmtFlags)
     set fmtEng, (iy + fmtFlags)
     jr saveFormatDigits
+
+msgFixPrompt:
+    .db "FIX", 0
+msgSciPrompt:
+    .db "SCI", 0
+msgEngPrompt:
+    .db "ENG", 0
 
 ; Description: Save the (argValue) to (fmtDigits).
 ; Output:
@@ -1063,13 +1075,13 @@ mAtanhHandler:
 ; Children nodes of STK menu group (stack functions).
 ;-----------------------------------------------------------------------------
 
-mStackRotUpHandler:
+mStackRollUpHandler:
     call closeInputBuf
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
-    jp rotUpStack
+    jp rollUpStack
 
-mStackRotDownHandler:
-    jp handleKeyRotDown
+mStackRollDownHandler:
+    jp handleKeyRollDown
 
 mStackExchangeXYHandler:
     jp handleKeyExchangeXY

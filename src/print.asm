@@ -110,15 +110,17 @@ vPutSCheckSpecialChars:
 
 ; Description: Inlined version of bcall(_PutS) which works for flash
 ; applications. See TI-83 Plus System Routine SDK docs for PutS() for a
-; reference implementation. (I *think* that the _PutC() OS function interprets
-; the `Lenter` character as a "newline" and moves the cursor to the next line.
-; Need to verify.)
+; reference implementation. The _PutC() OS function interprets the `Lenter`
+; character as a "newline" and moves the cursor to the next line. BUT, it also
+; seems to add a ':' on the next line (as a continuation marker?), which we do
+; NOT want. So we handle the Lenter ourselves.
 ;
 ; Input: HL: pointer to C-string
 ; Output:
 ;   - CF=1 if the entire string was displayed, CF=0 if not
 ;   - curRow and curCol updated to the position after the last character
 ; Destroys: HL
+; Preserves: A, BC
 putS:
     push bc
     push af
@@ -130,7 +132,10 @@ putSLoop:
     or a ; test for end of string
     scf ; CF=1 if entire string displayed
     jr z, putSEnd
+    cp Lenter ; check for newline
+    jr z, putSEnter
     bcall(_PutC)
+putSCheck:
     ld a, (curRow)
     cp b ; if A >= bottom line: CF=1
     jr c, putSLoop ; repeat if not at bottom
@@ -139,6 +144,15 @@ putSEnd:
     ld a, b
     pop bc
     ret
+putSEnter:
+    ; Handle newline
+    push hl
+    ld hl, (CurRow)
+    inc l ; CurRow++
+    ld h, 0 ; CurCol=0
+    ld (CurRow), hl
+    pop hl
+    jr putSCheck
 
 ;-----------------------------------------------------------------------------
 

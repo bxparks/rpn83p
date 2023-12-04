@@ -36,6 +36,11 @@ errorCurRow equ 2
 errorCurCol equ 0
 errorPenRow equ errorCurRow*8
 
+; Display coordinates of the SHOW line, overlaps with T
+showCurRow equ 3
+showCurCol equ 0
+showPenRow equ showCurRow*8
+
 ; Display coordinates of the stack T register.
 stTCurRow equ 3
 stTCurCol equ 1
@@ -111,12 +116,18 @@ menuPenColEnd   equ 96
 
 ;-----------------------------------------------------------------------------
 
-; Description: Set all dirty flags to dirty initially so that they are rendered.
+; Description: Configure flags and variables related to rendering to a sane
+; state. This is always called, regardless of whether restoreAppState()
+; succeeded in restoring the saved state.
 initDisplay:
+    ; always set drawMode to drawModeNormal
     xor a
     ld (drawMode), a
+    ; always disable SHOW mode
+    res rpnFlagsShowModeEnabled, (iy + rpnFlags)
+    ; set all dirty flags so that everything on the display is re-rendered
     ld a, $FF
-    ld (iy + dirtyFlags), a ; set all dirty flags
+    ld (iy + dirtyFlags), a
     ret
 
 ; Description: Update the display, including the title, RPN stack variables,
@@ -129,7 +140,6 @@ displayAll:
     call displayErrorCode
     call displayMain
     call displayMenu
-
     ; Reset all dirty flags
     xor a
     ld (iy + dirtyFlags), a
@@ -375,13 +385,18 @@ displayErrorCodeEnd:
 ; usually the RPN stack, but can be something else for debugging.
 ; Destroys: A
 displayMain:
+    bit rpnFlagsShowModeEnabled, (iy + rpnFlags)
+    jp nz, displayShow
     ld a, (drawMode)
     cp drawModeNormal
     jr z, displayStack
     cp drawModeTvmSolverI
     jr z, displayTvmMaybe
     cp drawModeTvmSolverF
-    ; Everything else (including drawModeInputBuf), display the stack.
+    jr z, displayTvmMaybe
+    cp drawModeInputBuf
+    jr z, displayStack
+    ; Everything else display the stack.
     jr displayStack
 displayTvmMaybe:
     ld a, (tvmSolverIsRunning)
@@ -401,15 +416,11 @@ displayStack:
     ; display YZT if stack is dirty
     bit dirtyFlagsStack, (iy + dirtyFlags)
     call nz, displayStackYZT
-
     ; display X if stack or inputBuf are dirty
     bit dirtyFlagsStack, (iy + dirtyFlags)
-    jr nz, displayStackContinue
+    jp nz, displayStackX
     bit dirtyFlagsInput, (iy + dirtyFlags)
-    jr nz, displayStackContinue
-    ret
-displayStackContinue:
-    call displayStackX
+    jp nz, displayStackX
     ret
 
 ;-----------------------------------------------------------------------------
@@ -812,6 +823,46 @@ printMenuAtAExit:
     ret
 
 ;-----------------------------------------------------------------------------
+; SHOW mode
+;-----------------------------------------------------------------------------
+
+msgShowLabel:
+    .db "SHOW", 0
+
+; Description: Display the X register in SHOW mode, showing all 14 significant
+; digits.
+; Destroys; A, HL, OP1, OP3-OP6
+displayShow:
+    ld hl, errorPenRow*$100 ; $(penRow)(penCol)
+    ld (PenCol), hl
+    ld hl, msgShowLabel
+    call vputS
+    call vEraseEOL
+    ; Call special FormShowable() function to show all digits of OP1.
+    ld hl, showCurCol*$100 + showCurRow ; $(curCol)(curRow)
+    ld (CurRow), hl
+    call rclX
+    call formShowable
+    ld hl, OP3
+    call putS
+    ret
+
+; Clear the display area used by the SHOW feature (errorCode, T, Z, Y, X).
+; Input: none
+; Destroys: A, B, HL
+clearShowArea:
+    ld hl, errorCurCol*$100 + errorCurRow ; $(curCol)(curRow)
+    ld (CurRow), hl
+    ld b, 5
+clearShowAreaLoop:
+    bcall(_EraseEOL) ; saves all registers
+    ld hl, (CurRow)
+    inc l
+    ld (CurRow), hl
+    djnz clearShowAreaLoop
+    ret
+
+;-----------------------------------------------------------------------------
 ; Low-level helper routines.
 ;-----------------------------------------------------------------------------
 
@@ -891,7 +942,8 @@ printOP1Base10:
 printOP1BaseXX:
     ; Add '.' if OP1 has fractional component.
     dec hl
-    call appendHasFrac
+    call appendHasFrac ; DE=rendered string
+    ex de, hl ; HL=rendered string
     jr printHLString
 
 ; Description: Append a '.' at the end of the string if W32.hasFrac is set.
@@ -899,15 +951,19 @@ printOP1BaseXX:
 ;   - HL: pointer to W32 struct
 ;   - DE: pointer to ascii string
 ; Output:
-;   - HL: pointer to ascii string with '.' appended if w32.hasFrac is enabled
-;   - DE: pointer to W32 struct
+;   - HL: pointer to W32 struct
+;   - DE: pointer to ascii string with '.' appended if w32.hasFrac is enabled
 ; Destroys: A
 appendHasFrac:
-    bit w32StatusCodeHasFrac, (hl)
-    ex de, hl
+    ld a, (hl)
+appendHasFracUsingA: ; alternative entry where A replaces (HL)
+    bit w32StatusCodeHasFrac, a
     ret z
     ld a, '.'
-    jp appendCString
+    ex de, hl
+    call appendCString
+    ex de, hl
+    ret
 
 ;-----------------------------------------------------------------------------
 
@@ -932,7 +988,8 @@ printOP1Base16:
     call convertU32ToHexString ; DE=rendered string
     ; Append frac indicator
     dec hl
-    call appendHasFrac ; HL=rendered string
+    call appendHasFrac ; DE=rendered string
+    ex de, hl ; HL=rendered string
     call truncateHexDigits
     jr printHLString
 
@@ -972,7 +1029,8 @@ printOP1Base8:
     call convertU32ToOctString
     ; Append frac indicator
     dec hl
-    call appendHasFrac ; HL=rendered string
+    call appendHasFrac ; DE=rendered string
+    ex de, hl ; HL=rendered string
     call truncateOctDigits
     jp printHLString
 
@@ -1008,11 +1066,21 @@ truncateOctString:
 
 ;-----------------------------------------------------------------------------
 
-; Description: Print ingeger at OP1 at the current cursor in base 2. Erase to
+; Description: Print integer at OP1 at the current cursor in base 2. Erase to
 ; the end of line (but only if the floating point did not spill over to the
-; next line). A single line can display a maximum of 15 digits, but we need
-; space for a trailing ".", so the maximum number of binary digits is 14, which
-; means that we can display numbers which are < 2^14.
+; next line).
+;
+; The display can handle a maximum of 15 digits (1 character for
+; the "X:" label). We need one space for a trailing "." so that's 14 digits. We
+; also want to display the binary digits in group of 4, separated by a space
+; between groups, for readability, With 3 groups of 4 digits plus 2 spaces in
+; between, that's exactly 14 characters.
+;
+; If there are non-zero digits after the left most digit (digit 13 from the
+; right, zero-based), then digit 13 should be replaced with a one-character
+; ellipsis character to indicate hidden digits. The SHOW command can be used to
+; display the additional digits.
+;
 ; Input: OP1: non-negative floating point number < 2^14
 ; Destroys: all, OP1, OP2, OP3, OP4, OP5
 printOP1Base2:
@@ -1024,46 +1092,97 @@ printOP1Base2:
     jp nz, printOP1BaseInvalid
     bit w32StatusCodeNegative, a
     jp nz, printOP1BaseNegative
-    ; Convert u32 into a base-2 string.
+    ; Move u32 to OP1 to free up OP3 for the formatted digits.
+    push af ; stack=[w32StatusCode]
     inc hl ; W32+1
+    ld de, OP1
+    ld bc, 4
+    ldir
+    ; Convert u32 into a base-2 string.
+    ld hl, OP1
     ld de, OP4
-    call convertU32ToBinString
+    call convertU32ToBinString ; DE points to a 32-character string + NUL.
+    ; Truncate leading digits to fit display (12 or 8 digits)
+    ex de, hl
+    call truncateBinDigits ; HL=truncated string
+    ; Group digits in groups of 4.
+    ld de, OP3
+    call formatBinDigits ; HL,DE preserved
     ; Append frac indicator
-    dec hl
-    call appendHasFrac ; HL=rendered string
-    call truncateBinDigits
+    pop af ; stack=[]; A=w32StatusCode
+    call appendHasFracUsingA ; DE=rendered string
+    ex de, hl ; HL=rendered string
     jp printHLString
 
-; Description: Truncate upper digits depending on baseWordSize. The number of
-; digits to truncate is (32 - baseWordSize).
-; Input: HL: pointer to rendered string
+; Description: Truncate upper digits depending on baseWordSize. The effective
+; number of digits that can be displayed is `strLen = min(baseWordSize, 12)`.
+; Then scan all digits above strLen and look for a '1'. If a '1' exists at
+; digit >= strLen, replace the left most digit of the truncated string with an
+; Lellipsis character.
+;
+; Input:
+;   - HL: pointer to rendered string
 ; Output:
-;   HL: pointer to truncated string
+;   - HL: pointer to truncated string
+;   - A: strLen
 ; Destroys: A, BC
+maxBinDisplayDigits equ 12
 truncateBinDigits:
     ld a, (baseWordSize)
-    cp 15 ; cap the number of display digits to <= 14
+    cp maxBinDisplayDigits + 1 ; if baseWordSize < maxBinDisplayDigits: CF=1
     jr c, truncateBinDigitsContinue
-    ld a, 14
+    ld a, maxBinDisplayDigits ; strLen=min(baseWordSize, maxBinDisplayDigits)
 truncateBinDigitsContinue:
+    push af ; stack=[strLen]
     sub 32
-    neg ; A=24,16,8,0
+    neg ; A=num leading digits=32-strLen, either 20 or 24
     ; Check leading digits to determine if truncation causes overflow
     ld b, a
-    ld c, 0
+    ld c, 0 ; C=foundOneDigit:boolean
 truncateBinDigitsCheckOverflow:
     ld a, (hl)
+    inc hl ; HL=left most digit of the truncated string.
     sub '0'
     or c ; check for a '1' digit
     ld c, a
-    inc hl
     djnz truncateBinDigitsCheckOverflow
-    ; HL now points to the left most digit of the truncated string.
-    ret z ; C=0, indicating no overflow
+    jr z, truncateBinDigitsNoOverflow ; if C=0: ZF=1, indicating no overflow
     ; Replace left most digit with ellipsis symbol to indicate overflow.
     ld a, Lellipsis
     ld (hl), a
 truncateBinDigitsNoOverflow:
+    pop af ; stack=[]; A=strLen
+    ret
+
+; Description: Format the binary string into groups of 4 digits.
+; Input:
+;   - HL: pointer to NUL terminated string, <= 12 digits.
+;   - A: strLen
+;   - DE: destination string of at least 15 bytes
+; Output:
+;   - DE: string reformatted in groups of 4
+; Destroys: A, BC
+; Preserves: DE, HL
+formatBinDigits:
+    push de
+    push hl
+    ld b, 0
+    ld c, a
+formatBinDigitsLoop:
+    ldi
+    jp po, formatBinDigitsEnd ; if BC==0: PV=0=po (odd)
+    ld a, c
+    and $03 ; every group of 4 digits (right justified), add a space
+    jr nz, formatBinDigitsLoop
+    ld a, ' '
+    ld (de), a
+    inc de
+    jr formatBinDigitsLoop
+formatBinDigitsEnd:
+    xor a
+    ld (de), a
+    pop hl
+    pop de
     ret
 
 ;-----------------------------------------------------------------------------
@@ -1169,10 +1288,6 @@ msgDegLabel:
     .db "DEG", 0
 msgRadLabel:
     .db "RAD", 0
-
-; DRAW mode indicator.
-msgDrawLabel:
-    .db "DRAW", 0
 
 ; TVM debug labels
 msgTvmNLabel:

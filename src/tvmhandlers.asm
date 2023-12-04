@@ -2,14 +2,16 @@
 ; MIT License
 ; Copyright (c) 2023 Brian T. Park
 ;
-; TVM menu handlers.
+; TVM menu handlers. The equations and algorithms to calculate N, i, PV, PMT,
+; and FV as a function of the other 4 variables are described in detail in the
+; TVM.md document.
 ;
 ; The handling of rpnFlagsTvmCalculate is a bit tricky so let's write it down
 ; for posterity:
 ;
-; - If any TVM variable or parameter is set, then set the rpnFlagsTvmCalculate
-; flag, causing the next TVM button to Calculate. This includes the BEG and END
-; which set or clear the tvmIsBegin flag.
+; - If any TVM variable or parameter is Stored, then set the
+; rpnFlagsTvmCalculate flag, causing the next TVM button to Calculate. This
+; includes the BEG and END which set or clear the tvmIsBegin flag.
 ;
 ; - If a `2ND` menu button is invoked, causing a recall of the specified TVM
 ; variable, then clear the rpnFlagsTvmCalculate flag, causing the next TVM
@@ -104,6 +106,8 @@ stoTvmPYR:
     ret
 
 ;-----------------------------------------------------------------------------
+; Workspace variables used by the TVM Solver.
+;-----------------------------------------------------------------------------
 
 ; Description: Recall tvmIYR0 to OP1.
 rclTvmIYR0:
@@ -192,6 +196,9 @@ rclTvmSolverCount:
     call convertU8ToOP1 ; OP1=float(A)
     ret
 
+;-----------------------------------------------------------------------------
+; Lower-level routines that calculate various terms and coefficients of the
+; various TVM equations.
 ;-----------------------------------------------------------------------------
 
 ; Description: Return the fractional interest rate per period.
@@ -327,7 +334,7 @@ compoundingFactors:
     bcall(_PopRealO1) ; FPS=[N*ln(1+i)]; OP1=exp(N*ln(1+i))-1
     bcall(_FPDiv) ; OP1=[exp(N*ln(1+i))-1]/i
     bcall(_OP4ToOP2) ; OP2=(1+ip)
-    bcall(_FPMult) ; OP1=(1+ip)[exp(N*ln(1+i))-1]/i
+    bcall(_FPMult) ; OP1=CF3=(1+ip)[exp(N*ln(1+i))-1]/i
     call exchangeFPSOP1 ; FPS=[CF3]; OP1=N*ln(1+i)
     bcall(_EToX) ; OP1=exp(N*ln(1+i))
     bcall(_PopRealO2) ; FPS=[]; OP2=CF3
@@ -398,15 +405,15 @@ tvmCheckNoSolution:
     call tvmCheckUpdateSums
     ; Check degenerate condition of numNonZero==0
     ld a, b ; A=numNonZero
-    or a
+    or a ; CF=0
     ret z ; all coefficients are zero
     ; Check if sumSign==0.
     ld a, c ; A=sumSign
-    or a
+    or a ; CF=0
     ret z ; all non-zero coef are positive
     ; Check if sumSign==numNonZero
     ld a, b ; A=numNonZero
-    cp c ; this will never set CF=1 because numNonZero>=sumSign
+    cp c ; will always set CF=0 because numNonZero>=sumSign
     ret z; all non-zero coef are negative
     scf ; sumSign!=numNonZero, so set CF
     ret
@@ -476,18 +483,18 @@ signOfOp1:
 
 ;-----------------------------------------------------------------------------
 
-; Description: Return the function C(N,i) = N*i/((1+i)^N-1)) =
+; Description: Return the function ICFN(N,i) = N*i/((1+i)^N-1)) =
 ; N*i/((expm1(N*log1p(i)) which is the reciprocal of the compounding factor,
-; with a special case of C(N,0)=1 to remove a singularity at i=0.
+; with a special case of ICFN(N,0)=1 to remove a singularity at i=0.
 ; Input:
 ;   - fin_PV, fin_PMT, fin_FV, fin_PY
 ;   - OP1: N
 ;   - OP2: i (fractional interest per period)
-; Output: OP1: C(N,i)
+; Output: OP1: ICFN(N,i)
 ; Destroys: OP1-OP5
 inverseCompoundingFactor:
     bcall(_CkOP2FP0) ; check if i==0.0
-    ; C(N,i) has a removable singularity at i=0
+    ; ICFN(N,i) has a removable singularity at i=0
     jr z, inverseCompoundingFactorZero
     bcall(_PushRealO1) ; FPS=[N]
     bcall(_PushRealO2) ; FPS=[N,i]
@@ -508,38 +515,38 @@ inverseCompoundingFactorZero:
 
 ; Description: This is the function whose root we have to solve to find the
 ; interest rate corresponding to the N, PV, PMT, and FV. The function is:
-;   NPMT(i,N) = PV*C(-N,i) + (1+ip)PMT*N + FV*C(N,i) = 0
+;   NPMT(i,N) = PV*ICFN(-N,i) + (1+ip)PMT*N + FV*ICFN(N,i) = 0
 ; where
-;   C(N,i) = inverseCompoundingFactor(N,i) defined above.
+;   ICFN(N,i) = inverseCompoundingFactor(N,i) defined above.
 ;
-; It is roughly the total nominal amount of money that was paid out
-; (positive sign), if the discount-equivalent of PV and FV had been
-; spread out across N payments at the given interest rate i.
+; It is roughly the total nominal amount of money that was paid out (positive
+; sign), if the discount-equivalent of PV and FV had been spread out across N
+; payments at the given interest rate i. I guess we could also call this the
+; "Net Payment", and I think I used that term in the TVM.md document.
 ;
-; Input:
-;   - OP1: i (interest per period)
+; Input: OP1: i (interest per period)
 ; Output: OP1=NPMT(i)
 ; Destroys: OP1-OP5
 nominalPMT:
     bcall(_PushRealO1) ; FPS=[i]
-    ; Calculate FV*C(N,i)
+    ; Calculate FV*ICFN(N,i)
     call op1ToOP2 ; OP2=i
     call rclTvmN ; OP1=N
-    call inverseCompoundingFactor ; OP1=C(N,i)
-    call op1ToOP2 ; OP2=C(N,i)
+    call inverseCompoundingFactor ; OP1=ICFN(N,i)
+    call op1ToOP2 ; OP2=ICFN(N,i)
     call rclTvmFV ; OP1=FV
-    bcall(_FPMult) ; OP1=FV*C(N,i)
-    call exchangeFPSOP1 ; FPS=[FV*C()]; OP1=i
-    ; Calcuate PV*C(-N,i)
-    bcall(_PushRealO1) ; FPS=[FV*C(),i]; OP1=i
+    bcall(_FPMult) ; OP1=FV*ICFN(N,i)
+    call exchangeFPSOP1 ; FPS=[FV*ICFN()]; OP1=i
+    ; Calcuate PV*ICFN(-N,i)
+    bcall(_PushRealO1) ; FPS=[FV*ICFN(),i]; OP1=i
     call op1ToOP2 ; OP2=i
     call rclTvmN ; OP1=N
     bcall(_InvOP1S) ; OP1=-N
-    call inverseCompoundingFactor ; OP1=C(-N,i)
-    call op1ToOP2 ; OP2=C(-N,i)
+    call inverseCompoundingFactor ; OP1=ICFN(-N,i)
+    call op1ToOP2 ; OP2=ICFN(-N,i)
     call rclTvmPV ; OP1=PV
-    bcall(_FPMult) ; OP1=PV*C(-N,i)
-    call exchangeFPSOP1 ; FPS=[FV*C(N,i),PV*C(-N,i)]; OP1=i
+    bcall(_FPMult) ; OP1=PV*ICFN(-N,i)
+    call exchangeFPSOP1 ; FPS=[FV*ICFN(N,i),PV*ICFN(-N,i)]; OP1=i
     ; Calculate (1+ip)PMT*N
     call beginEndFactor ; OP1=(1+ip)
     call op1ToOP2 ; OP2=(1+ip)
@@ -549,10 +556,10 @@ nominalPMT:
     call rclTvmN ; OP1=N
     bcall(_FPMult) ; OP1=(1+ip)*PMT*N
     ; Sum up the 3 terms
-    bcall(_PopRealO2) ; FPS=[FV*C(N,i)]; OP2=PV*C(-N,i)
-    bcall(_FPAdd) ; OP1=PV*C(-N,i)+(1+ip)*PMT*N
-    bcall(_PopRealO2) ; FPS=[]; OP2=FV*C(N,i)
-    bcall(_FPAdd) ; OP1=PV*C(-N,i)+(1+ip)*PMT*N+FV*C(N,i)
+    bcall(_PopRealO2) ; FPS=[FV*ICFN(N,i)]; OP2=PV*ICFN(-N,i)
+    bcall(_FPAdd) ; OP1=PV*ICFN(-N,i)+(1+ip)*PMT*N
+    bcall(_PopRealO2) ; FPS=[]; OP2=FV*ICFN(N,i)
+    bcall(_FPAdd) ; OP1=PV*ICFN(-N,i)+(1+ip)*PMT*N+FV*ICFN(N,i)
     ret
 
 ; Description: Calculate the interest rate of the next interation using the
@@ -782,6 +789,8 @@ tvmSolveEndNoDirty:
     ld (tvmSolverIsRunning), a
     ret
 
+;-----------------------------------------------------------------------------
+; TVM handlers are invoked by the menu buttons.
 ;-----------------------------------------------------------------------------
 
 mTvmNHandler:
@@ -1245,6 +1254,9 @@ mTvmIterMaxNameSelectorC:
     ret
 
 ;-----------------------------------------------------------------------------
+; More low-level helper routines, placed at the bottom to avoid clutter in the
+; main parts of the file.
+;-----------------------------------------------------------------------------
 
 mTvmClearHandler:
     call closeInputBuf
@@ -1287,8 +1299,8 @@ tvmClear:
     call move9FromOp1
     ; [[fallthrough]]
 
-; Description: Reset the TVM Solver parameter to factory default and clear the
-; override flags to remove the menu dots.
+; Description: Reset the TVM Solver parameters to their factory defaults and
+; clear the override flags to remove the menu dots.
 tvmSolverReset:
     ; Set factory defaults
     call op1Set0 ; 0%/year

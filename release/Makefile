@@ -1,9 +1,10 @@
-# Create a rpn83p.zip file suitable for uploading to webarchives. It contains
-# the following:
+# Create a rpn83p.zip file suitable for uploading to webarchives (e.g.
+# cemetech.net, or ticalc.org). The zip file contains the following:
 #
-# 1) README.pdf and USER_GUIDE.pdf, converted from the original GitHub-flavored
-# Markdown files README.md and USER_GUIDE.md. Requires pandoc and pdflatex.
-# Here are the stackoverflow articles that helped me solve this problem:
+# 1) README.pdf, USER_GUIDE.pdf, and TVM.pdf are converted from the original
+# GitHub-flavored Markdown files README.md, USER_GUIDE.md and TVM.md. Requires
+# pandoc and pdflatex. Here are the stackoverflow articles that helped me solve
+# this problem:
 #
 #	- https://stackoverflow.com/questions/9998337 (pandoc)
 #	- https://stackoverflow.com/questions/29240290 (pdflatex not found)
@@ -15,12 +16,13 @@
 # are out of context from the text. The `-f gfm` embeds the images directly
 # into the flow of the text.
 #
-# 2) Copy 2 animated gif files from ../docs.
+# 2) Copy the animated gif screenshot files from ../docs.
 #
 # 3) Copy the actual rpn83p.8xk file from ../src.
 
 TARGETS := README.pdf \
 USER_GUIDE.pdf \
+TVM.pdf \
 CHANGELOG.md \
 rpn83p.8xk \
 rpn83p-example1.gif \
@@ -43,6 +45,12 @@ README.pdf: ../README.md Makefile
 USER_GUIDE.pdf: ../USER_GUIDE.md Makefile
 	(cd ..; \
 	pandoc -V geometry:margin=1in -V fontsize=12pt -f gfm -s -o $@ USER_GUIDE.md; \
+	mv -f $@ release)
+
+# Convert markdown to PDF.
+TVM.pdf: ../TVM.md Makefile
+	(cd ..; \
+	pandoc -V geometry:margin=1in -V fontsize=12pt -f gfm -s -o $@ TVM.md; \
 	mv -f $@ release)
 
 # Copy the CHANGELOG.md as is, without conversion to PDF. It's just a text

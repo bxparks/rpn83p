@@ -12,7 +12,7 @@
 ; entry.
 ;------------------------------------------------------------------------------
 
-; Function: Print out the inputBuf on the debug line.
+; Description: Print out the inputBuf on the debug line.
 ; Input: parseBuf
 ; Output:
 ; Destroys: none
@@ -42,7 +42,7 @@ DebugInputBuf:
 
 ;------------------------------------------------------------------------------
 
-; Function: Print out the parseBuf on the debug line.
+; Description: Print out the parseBuf on the debug line.
 ; Input: parseBuf
 ; Output:
 ; Destroys: none
@@ -142,7 +142,7 @@ DebugClear:
 
 ;------------------------------------------------------------------------------
 
-; Function: Print out OP1 at debug line.
+; Description: Print out OP1 at debug line.
 ; Input: OP1
 ; Output:
 ; Destroys: OP3
@@ -185,7 +185,7 @@ DebugEEPos:
 
 ;------------------------------------------------------------------------------
 
-; Function: Print the unsigned A on the debug line.
+; Description: Print the unsigned A on the debug line.
 ; Input: A
 ; Output: A printed on debug line
 ; Destroys: none
@@ -213,7 +213,7 @@ DebugUnsignedA:
 
 ;------------------------------------------------------------------------------
 
-; Function: Print the signed A on the debug line.
+; Description: Print the signed A on the debug line.
 ; Input: A
 ; Output: A printed on debug line
 ; Destroys: none
@@ -255,7 +255,7 @@ debugSignedAPrint:
 
 ;------------------------------------------------------------------------------
 
-; Function: Print some of the display and RPN flags on the debug line.
+; Description: Print some of the display and RPN flags on the debug line.
 ;   - I: input dirty
 ;   - E: editing
 ;   - L: stack lift disabled
@@ -312,7 +312,7 @@ DebugFlags:
     pop af
     ret
 
-; Function: Print the character in reg A, and a +/- depending on Z flag.
+; Description: Print the character in reg A, and a +/- depending on Z flag.
 ; Input:
 ;   A: flag char (e.g. 'I', 'E')
 ;   CF: 1 or 0

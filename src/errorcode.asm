@@ -5,7 +5,7 @@
 ; Functions and strings related to error codes.
 ;-----------------------------------------------------------------------------
 
-; Function: Initialize errorCode and handlerCode to 0.
+; Description: Initialize errorCode and handlerCode to 0.
 initErrorCode:
     xor a
     ld (errorCode), a
@@ -39,7 +39,7 @@ setErrorCode:
     set dirtyFlagsErrorCode, (iy + dirtyFlags)
     ret
 
-; Function: getErrorString(A) -> HL
+; Description: getErrorString(A) -> HL
 ; Description: Get the string for given error code.
 ; Input: A: error code
 ; Output: HL: pointer to a C string

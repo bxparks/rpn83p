@@ -354,8 +354,8 @@ MenuGroup root mRoot [
     MenuGroup STK mStack [
       MenuRow [
         MenuItem * *
-        MenuItem R<SupArrow> mStackRotUp
-        MenuItem R<SdownArrow> mStackRotDown
+        MenuItem R<SupArrow> mStackRollUp
+        MenuItem R<SdownArrow> mStackRollDown
         MenuItem X<Sleft><Sconvert>Y mStackExchangeXY
         MenuItem * *
       ]

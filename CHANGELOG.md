@@ -1,6 +1,57 @@
 # Changelog
 
 - Unreleased
+- 0.8.0 (2023-12-03)
+    - **Breaking**: Flip the order of polar-rectangular conversion menu function
+      (`>POL` and `>REC`) so that they are consistent with the HP-42S. I don't
+      know why I had them reversed.
+        - `Y` register holds the `y` or `theta` value, entered first, and
+        - `X` register holds the `x` or `r` value, entered second.
+    - **Breaking**: Flip the order of `(X, Y)` coordinates of the `ATN2` menu
+      function, so that they are consistent with the `>POL` function.
+        - `Y` register holds the `y` value, which is entered first, then
+        - `X` register holds the `x` value, which is entered second.
+    - **Breaking**: Change `WSIZ` to prompt the user for the base word size
+      using `WSIZ _ _` prompt, instead of using the value in the `X` register.
+        - Solves a major usability problem where the user was forced to enter
+          the word size using the currently selected base mode (e.g. `HEX` or
+          `BIN`). For example, the word size `16` was required to be entered as
+          `10000` in `BIN` mode, which was too confusing.
+        - See [Base Word Size](USER_GUIDE.md#base-word-size) for more details.
+    - **Bug Fix**: Tweak the stack-lift logic so that certain operations
+      (RollDown, RollUp, X<>Y) enable stack lift even if the previous command
+      was a `CLEAR` or `CLX`.
+        - The `rpnFlagsLiftEnabled` was not set properly for RollDown, RollUp,
+          X<>Y and potentially other commands.
+        - So a `CLEAR RollDown RollDown RollDown RollDown` followed by a number
+          would overwrite the `X` register, instead of doing a stack lift.
+    - Increase execution speed by 2.5X on 83+SE, 84+, 84+SE
+        - set CPU speed to 15 MHz when supported by hardware
+        - remain at 6 MHz on the 83+
+    - `SHOW` display mode
+        - implement "Show" function using `2ND` `ENTRY` on TI keyboard
+        - displays all 14 internal digits of the TI-OS floating point number
+            - if integer < 10^14: display as integer
+            - otherwise: display in scientific notation
+        - `BASE` mode variation
+            - `BIN` mode: display `WSIZ` digits in groups of 4, using up to 4
+              display lines
+            - all other `BASE` modes: display underlying floating point number
+        - see [SHOW Mode](USER_GUIDE.md#show-mode) for details
+    - `BASE` input limit
+        - limit the number of digits that can be entered in `BASE` mode to a
+          maximum that is appropriate for the selected `WSIZ` and the baseNumber
+          selected by `HEX`, `DEC`, `OCT` and `BIN`
+        - for example, selecting `HEX` and `WSIZ` 16 will allow only 4 hex
+          digits to be entered
+        - see [Base Input Digit Limit](USER_GUIDE.md#base-input-digit-limit) for
+          details
+    - HELP pages
+        - Add page for `CONV` functions to show order of (x, y, r, theta)
+          variables on RPN stack
+        - Add page for `STAT` functions
+        - Add page for `NUM` functions
+        - Add page for various display MODEs
 - 0.7.0 (2023-11-20)
     - `STAT`
         - fix broken `Sigma+` and `Sigma-` when `Y==0`

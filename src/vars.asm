@@ -160,7 +160,7 @@ clearStackLoop:
     djnz clearStackLoop
 clearStackEnd:
     set dirtyFlagsStack, (iy + dirtyFlags) ; force redraw
-    set rpnFlagsLiftEnabled, (iy + rpnFlags)
+    set rpnFlagsLiftEnabled, (iy + rpnFlags) ; TODO: I think this can be removed
     ret
 
 ;-----------------------------------------------------------------------------
@@ -192,7 +192,7 @@ stoStackNN:
     set dirtyFlagsStack, (iy + dirtyFlags)
     ret
 
-; Function: Copy STK[nn] to OP1.
+; Description: Copy STK[nn] to OP1.
 ; Input:
 ;   - A: register index, 0-based
 ;   - 'STK' list variable
@@ -299,7 +299,6 @@ replaceX:
     call stoL
     bcall(_PopRealO1) ; FPS=[]; OP1=OP1
     call stoX
-    set rpnFlagsLiftEnabled, (iy + rpnFlags)
     ret
 
 ; Description: Replace (X, Y) pair with OP1, saving previous X to LastX,
@@ -313,7 +312,6 @@ replaceXY:
     call dropStack
     bcall(_PopRealO1) ; FPS=[]; OP1=OP1
     call stoX
-    set rpnFlagsLiftEnabled, (iy + rpnFlags)
     ret
 
 ; Description: Replace X and Y with push of OP1 and OP2 on the stack in that
@@ -340,7 +338,6 @@ replaceXYWithOP1OP2:
     bcall(_OP2ToOP1)
     call stoX ; X = OP2
     bcall(_PopRealO1) ; FPS=[]; OP1=OP1
-    set rpnFlagsLiftEnabled, (iy + rpnFlags)
     ret
 
 ; Description: Replace X with OP1, and OP2 pushed onto the stack in that order.
@@ -365,7 +362,6 @@ replaceXWithOP1OP2:
     call liftStack
     bcall(_OP2ToOP1)
     call stoX
-    set rpnFlagsLiftEnabled, (iy + rpnFlags)
     ret
 
 ; Description: Push OP1 to the X register. LastX is not updated because the
@@ -380,7 +376,6 @@ pushX:
     bcall(_CkValidNum)
     call liftStackIfNonEmpty
     call stoX
-    set rpnFlagsLiftEnabled, (iy + rpnFlags)
     ret
 
 ; Description: Push OP1 then OP2 onto the stack. LastX is not updated because
@@ -403,12 +398,11 @@ pushXY:
     bcall(_OP1ExOP2)
     call stoX
     bcall(_OP1ExOP2)
-    set rpnFlagsLiftEnabled, (iy + rpnFlags)
     ret
 
 ;-----------------------------------------------------------------------------
 
-; Function: Lift the RPN stack, if inputBuf was not empty when closed.
+; Description: Lift the RPN stack, if inputBuf was not empty when closed.
 ; Input: none
 ; Output: T=Z; Z=Y; Y=X; X=X; OP1 preserved
 ; Destroys: all
@@ -418,7 +412,7 @@ liftStackIfNonEmpty:
     ret nz ; return doing nothing if closed empty
     ; [[fallthrough]]
 
-; Function: Lift the RPN stack, if rpnFlagsLiftEnabled is set.
+; Description: Lift the RPN stack, if rpnFlagsLiftEnabled is set.
 ; Input: rpnFlagsLiftEnabled
 ; Output: T=Z; Z=Y; Y=X; X=X; OP1 preserved
 ; Destroys: all
@@ -426,10 +420,9 @@ liftStackIfNonEmpty:
 liftStackIfEnabled:
     bit rpnFlagsLiftEnabled, (iy + rpnFlags)
     ret z
-    set rpnFlagsLiftEnabled, (iy + rpnFlags)
     ; [[fallthrough]]
 
-; Function: Lift the RPN stack unconditionally, copying X to Y.
+; Description: Lift the RPN stack unconditionally, copying X to Y.
 ; Input: none
 ; Output: T=Z; Z=Y; Y=X; X=X; OP1 preserved
 ; Destroys: all
@@ -453,7 +446,7 @@ liftStack:
 
 ;-----------------------------------------------------------------------------
 
-; Function: Drop the RPN stack, copying T to Z.
+; Description: Drop the RPN stack, copying T to Z.
 ; Input: none
 ; Output: X=Y; Y=Z; Z=T; T=T; OP1 preserved
 ; Destroys: all
@@ -477,14 +470,14 @@ dropStack:
 
 ;-----------------------------------------------------------------------------
 
-; Function: Rotate the RPN stack *down*.
+; Description: Roll the RPN stack *down*.
 ; Input: none
 ; Output: X=Y; Y=Z; Z=T; T=X
 ; Destroys: all, OP1, OP2
 ; Preserves: none
 ; TODO: Make this more efficient by taking advantage of the fact that stack
 ; registers are actually in a list variable named STK.
-rotDownStack:
+rollDownStack:
     ; save X in FPS
     call rclX
     bcall(_PushRealO1) ; FPS=[OP1]
@@ -504,14 +497,14 @@ rotDownStack:
 
 ;-----------------------------------------------------------------------------
 
-; Function: Rotate the RPN stack *up*.
+; Description: Roll the RPN stack *up*.
 ; Input: none
 ; Output: T=Z; Z=Y; Y=X; X=T
 ; Destroys: all, OP1, OP2
 ; Preserves: none
 ; TODO: Make this more efficient by taking advantage of the fact that stack
 ; registers are actually in a list variable named STK.
-rotUpStack:
+rollUpStack:
     ; save T in FPS
     call rclT
     bcall(_PushRealO1) ; FPS=[OP1]
@@ -531,7 +524,7 @@ rotUpStack:
 
 ;-----------------------------------------------------------------------------
 
-; Function: Exchange X<->Y.
+; Description: Exchange X<->Y.
 ; Input: none
 ; Output: X=Y; Y=X
 ; Destroys: all, OP1, OP2
@@ -829,7 +822,8 @@ clearStatRegs:
     bcall(_OP1Set0)
     ld c, 11 ; begin clearing register 11
     ; Check AllMode or LinearMode.
-    bit rpnFlagsAllStatEnabled, (iy + rpnFlags)
+    ld a, (statAllEnabled)
+    or a
     jr nz, clearStatRegsAll
     ld b, 6 ; clear first 6 registers in Linear mode
     jr clearStatRegsEntry
@@ -882,7 +876,7 @@ storeAppStateCreate:
     ; Calculate the CRC16 on the data block.
     ld hl, appStateBegin + 2 ; don't include the CRC16 field itself
     ld bc, appStateSize - 2 ; don't include the CRC16 field itself
-    call crc16ccitt
+    bcall(_Crc16ccitt)
     ld (appStateCrc16), hl
     ; Transfer the appState data block.
     call setAppVarName
@@ -938,7 +932,7 @@ restoreAppStateValidate:
     ; Validate the CRC16
     ld hl, appStateBegin + 2 ; don't include the CRC16 field itself
     ld bc, appStateSize - 2 ; don't include the CRC16 field itself
-    call crc16ccitt
+    bcall(_Crc16ccitt)
     ld de, (appStateCrc16)
     or a ; CF=0
     sbc hl, de
