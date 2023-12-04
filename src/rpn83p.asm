@@ -1008,6 +1008,7 @@ _DebugU32DEAsHex equ _DebugU32DEAsHexLabel-branchTableBase
 #include "cfithandlers.asm"
 #include "tvmhandlers.asm"
 #include "complexhandlers.asm"
+#include "datehandlers.asm"
 #include "prime.asm"
 #include "common.asm"
 #include "memory.asm"
