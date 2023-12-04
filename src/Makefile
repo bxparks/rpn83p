@@ -30,6 +30,7 @@ SRCS := \
 	menulookup.asm \
 	prime.asm \
 	print.asm \
+	print1.asm \
 	pstring.asm \
 	rpn83p.asm \
 	showparser.asm \

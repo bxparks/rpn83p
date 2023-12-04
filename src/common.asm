@@ -117,4 +117,3 @@ appendCStringAtEnd:
     ld (hl), 0
     pop hl
     ret
-

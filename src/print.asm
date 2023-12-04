@@ -86,7 +86,7 @@ vEraseEOLLoop:
 ; Description: Inlined version of bcall(_VPutS) so that it works for strings in
 ; flash (VPutS only works with strings in RAM). See TI-83 Plus System Routine
 ; SDK docs for VPutS() for a reference implementation of this function. See
-; also helpPutS() for an extended version of this that supported embedded font
+; also eVPutS() for an extended version of this that supported embedded font
 ; control characters.
 ;
 ; Input: HL: pointer to string using small font

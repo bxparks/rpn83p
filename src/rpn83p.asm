@@ -512,6 +512,7 @@ _DebugU32DEAsHex equ _DebugU32DEAsHexLabel-branchTableBase
 
 defpage(1)
 
+#include "print1.asm"
 #include "help.asm"
 #include "menulookup.asm"
 #include "menudef.asm"
