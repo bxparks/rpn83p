@@ -16,8 +16,8 @@ main:
     call restoreAppState
     jr nc, initAlways
     ; Initialize everything if restoreAppState() fails.
-    call initErrorCode
-    call initInputBuf
+    bcall(_InitErrorCode)
+    bcall(_InitInputBuf)
     call initStack
     call initRegs
     call initMenu

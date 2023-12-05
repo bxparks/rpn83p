@@ -8,6 +8,7 @@ SRCS := \
 	arghandlertab.asm \
 	argparser.asm \
 	base.asm \
+	base1.asm \
 	basehandlers.asm \
 	cfithandlers.asm \
 	common.asm \
@@ -21,6 +22,7 @@ SRCS := \
 	handlertab.asm \
 	help.asm \
 	input.asm \
+	input1.asm \
 	integer.asm \
 	main.asm \
 	mainparser.asm \
@@ -32,6 +34,7 @@ SRCS := \
 	print.asm \
 	print1.asm \
 	pstring.asm \
+	pstring1.asm \
 	rpn83p.asm \
 	showparser.asm \
 	show.asm \

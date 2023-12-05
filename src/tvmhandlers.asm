@@ -794,7 +794,7 @@ tvmSolveEndNoDirty:
 ;-----------------------------------------------------------------------------
 
 mTvmNHandler:
-    call closeInputBuf
+    call closeX
     ; Check if '2ND N' pressed.
     bit rpnFlagsSecondKey, (iy + rpnFlags)
     jr nz, mTvmNGet
@@ -877,7 +877,7 @@ mTvmNCalculateZero:
 ;-----------------------------------------------------------------------------
 
 mTvmIYRHandler:
-    call closeInputBuf
+    call closeX
     ; Check if '2ND I%YR' pressed.
     bit rpnFlagsSecondKey, (iy + rpnFlags)
     jr nz, mTvmIYRGet
@@ -967,7 +967,7 @@ mTvmIYRCalculateEnd:
 ;-----------------------------------------------------------------------------
 
 mTvmPVHandler:
-    call closeInputBuf
+    call closeX
     ; Check if '2ND PV' pressed.
     bit rpnFlagsSecondKey, (iy + rpnFlags)
     jr nz, mTvmPVGet
@@ -1010,7 +1010,7 @@ mTvmPVCalculate:
 ;-----------------------------------------------------------------------------
 
 mTvmPMTHandler:
-    call closeInputBuf
+    call closeX
     ; Check if '2ND PMT' pressed.
     bit rpnFlagsSecondKey, (iy + rpnFlags)
     jr nz, mTvmPMTGet
@@ -1054,7 +1054,7 @@ mTvmPMTCalculate:
 ;-----------------------------------------------------------------------------
 
 mTvmFVHandler:
-    call closeInputBuf
+    call closeX
     ; Check if '2ND FV' pressed.
     bit rpnFlagsSecondKey, (iy + rpnFlags)
     jr nz, mTvmFVGet
@@ -1099,7 +1099,7 @@ mTvmFVCalculate:
 
 ; Description: Set or get P/YR to X.
 mTvmPYRHandler:
-    call closeInputBuf
+    call closeX
     ; Check if '2ND PYR' pressed.
     bit rpnFlagsSecondKey, (iy + rpnFlags)
     jr nz, mTvmPYRGet
@@ -1126,7 +1126,7 @@ mTvmPYRGet:
 ;-----------------------------------------------------------------------------
 
 mTvmBeginHandler:
-    call closeInputBuf
+    call closeX
     set rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld a, rpntrue
     ld (tvmIsBegin), a
@@ -1149,7 +1149,7 @@ mTvmBeginNameSelectorC:
 ;-----------------------------------------------------------------------------
 
 mTvmEndHandler:
-    call closeInputBuf
+    call closeX
     set rpnFlagsTvmCalculate, (iy + rpnFlags)
     xor a
     ld (tvmIsBegin), a
@@ -1174,7 +1174,7 @@ mTvmEndNameSelectorC:
 ;-----------------------------------------------------------------------------
 
 mTvmIYR0Handler:
-    call closeInputBuf
+    call closeX
     ; Check if '2ND IYR1' pressed.
     bit rpnFlagsSecondKey, (iy + rpnFlags)
     jr nz, mTvmIYR0Get
@@ -1209,7 +1209,7 @@ mTvmIYR0NameSelectorC:
 ;-----------------------------------------------------------------------------
 
 mTvmIYR1Handler:
-    call closeInputBuf
+    call closeX
     ; Check if '2ND IYR2' pressed.
     bit rpnFlagsSecondKey, (iy + rpnFlags)
     jr nz, mTvmIYR1Get
@@ -1244,7 +1244,7 @@ mTvmIYR1NameSelectorC:
 ;-----------------------------------------------------------------------------
 
 mTvmIterMaxHandler:
-    call closeInputBuf
+    call closeX
     ; Check if '2ND TMAX' pressed.
     bit rpnFlagsSecondKey, (iy + rpnFlags)
     jr nz, mTvmIterMaxGet
@@ -1282,7 +1282,7 @@ mTvmIterMaxNameSelectorC:
 ;-----------------------------------------------------------------------------
 
 mTvmClearHandler:
-    call closeInputBuf
+    call closeX
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     call tvmClear
     ld a, errorCodeTvmCleared
@@ -1290,7 +1290,7 @@ mTvmClearHandler:
     ret
 
 mTvmSolverResetHandler:
-    call closeInputBuf
+    call closeX
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     call tvmSolverReset
     ld a, errorCodeTvmSolverReset

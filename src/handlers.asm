@@ -27,20 +27,24 @@ handleKeyNumberFirstDigit:
     call liftStackIfEnabled
     pop af
     ; Go into editing mode.
-    call clearInputBuf
+    bcall(_ClearInputBuf)
     set rpnFlagsEditing, (iy + rpnFlags)
 handleKeyNumberCheckAppend:
     ; Limit number of exponent digits to 2.
     bit inputBufFlagsEE, (iy + inputBufFlags)
-    jp z, appendInputBuf ; append character in A.
-    ; Check inputBufEELen, while preserving A.
+    jr nz, handleKeyNumberAppendExponent
+    ; Append A to mantissa.
+    bcall(_AppendInputBuf)
+    ret
+handleKeyNumberAppendExponent:
+    ; Append A to exponent.
     ld b, a
     ld a, (inputBufEELen)
     cp inputBufEELenMax
     ld a, b
     ret nc ; prevent more than 2 exponent digits
     ; Try to append. Check for buffer full before incrementing counter.
-    call appendInputBuf
+    bcall(_AppendInputBuf)
     ret c ; return if buffer full
     ld hl, inputBufEELen
     inc (hl)
@@ -369,7 +373,7 @@ handleKeyClearWhileClear:
 handleKeyClearToEmptyInput:
     ; We are here if we were not in edit mode, so CLEAR should "clear the X
     ; register" by going into edit mode with an emtpy inputBuf.
-    call clearInputBuf
+    bcall(_ClearInputBuf)
     set rpnFlagsEditing, (iy + rpnFlags)
     ; We also disable stack lift. Testing seems to show that this is not seem
     ; strictly necessary because handleNumber() handles the edit mode properly
@@ -463,7 +467,7 @@ flipInputBufSignAdd:
 ; Output:
 ; Destroys: all, OP1, OP2, OP4
 handleKeyEnter:
-    call closeInputBuf
+    call closeX
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     call liftStack ; always lift the stack
     res rpnFlagsLiftEnabled, (iy + rpnFlags)
@@ -702,13 +706,13 @@ handleKeyDiv:
 ;-----------------------------------------------------------------------------
 
 handleKeyPi:
-    call closeInputBuf
+    call closeX
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     call op1SetPi
     jp pushX
 
 handleKeyEuler:
-    call closeInputBuf
+    call closeX
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     call op1SetEuler
     jp pushX
@@ -746,17 +750,17 @@ handleKeySqrt:
 ;-----------------------------------------------------------------------------
 
 handleKeyRollDown:
-    call closeInputBuf
+    call closeX
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     jp rollDownStack
 
 handleKeyExchangeXY:
-    call closeInputBuf
+    call closeX
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     jp exchangeXYStack
 
 handleKeyAns:
-    call closeInputBuf
+    call closeX
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     call rclL
     jp pushX
@@ -824,7 +828,7 @@ handleKeyATan:
 ;-----------------------------------------------------------------------------
 
 handleKeySto:
-    call closeInputBuf
+    call closeX
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld hl, msgStoPrompt
     call startArgParser
@@ -848,7 +852,7 @@ handleKeyStoError:
     ret
 
 handleKeyRcl:
-    call closeInputBuf
+    call closeX
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld hl, msgRclPrompt
     call startArgParser
@@ -924,7 +928,7 @@ handleKeyQuit:
 ;-----------------------------------------------------------------------------
 
 handleKeyDraw:
-    call closeInputBuf
+    call closeX
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld hl, msgDrawPrompt
     call startArgParser
@@ -939,7 +943,7 @@ handleKeyDraw:
     ret
 
 handleKeyShow:
-    call closeInputBuf
+    call closeX
     call processShowCommands
     ret
 
@@ -953,7 +957,7 @@ msgDrawPrompt:
 
 ; Close the input buffer, and recall Y and X into OP1 and OP2 respectively.
 closeInputAndRecallXY:
-    call closeInputBuf
+    call closeX
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     call rclX
     bcall(_OP1ToOP2)
@@ -961,6 +965,6 @@ closeInputAndRecallXY:
 
 ; Close the input buffer, and recall X into OP1 respectively.
 closeInputAndRecallX:
-    call closeInputBuf
+    call closeX
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     jp rclX

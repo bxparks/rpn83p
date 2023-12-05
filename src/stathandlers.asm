@@ -40,7 +40,7 @@ initStat:
 ;-----------------------------------------------------------------------------
 
 mStatPlusHandler:
-    call closeInputBuf
+    call closeX
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     call statSigmaPlus
     ld a, statRegN
@@ -50,7 +50,7 @@ mStatPlusHandler:
     ret
 
 mStatMinusHandler:
-    call closeInputBuf
+    call closeX
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     call statSigmaMinus
     ld a, statRegN
@@ -98,7 +98,7 @@ mStatLinearModeNameSelector:
     ret
 
 mStatClearHandler:
-    call closeInputBuf
+    call closeX
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     call clearStatRegs
     ld a, errorCodeStatCleared
@@ -109,7 +109,7 @@ mStatClearHandler:
 
 ; Description: Calculate the Sum of X and Y into X and Y registers.
 mStatSumHandler:
-    call closeInputBuf
+    call closeX
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld a, statRegY
     call rclNN ; OP1=Ysum
@@ -119,7 +119,7 @@ mStatSumHandler:
 
 ; Description: Calculate the average of X and Y into X and Y registers.
 mStatMeanHandler:
-    call closeInputBuf
+    call closeX
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld ix, cfitModelLinear ; use linear model for simple statistics
     call statMean
@@ -130,7 +130,7 @@ mStatMeanHandler:
 ;   Y: Mean of Y weighted by X = Sum(X,Y) / Sum(X)
 ;   X: Mean of X weighted by Y = Sum(X,Y) / Sum(Y)
 mStatWeightedMeanHandler:
-    call closeInputBuf
+    call closeX
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld ix, cfitModelLinear ; use linear model for simple statistics
     call statWeightedMean ; OP1=WeightedY, OP2=WeightedX
@@ -138,7 +138,7 @@ mStatWeightedMeanHandler:
 
 ; Description: Return the number of items entered. Mostly for convenience.
 mStatNHandler:
-    call closeInputBuf
+    call closeX
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld a, statRegN
     call rclNN
@@ -152,7 +152,7 @@ mStatNHandler:
 ;   OP2: PDEV<X>
 ; Destroys: A, OP2, OP3, OP4
 mStatPopSdevHandler:
-    call closeInputBuf
+    call closeX
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld ix, cfitModelLinear ; use linear model for simple statistics
     call statStdDev
@@ -164,7 +164,7 @@ mStatPopSdevHandler:
 ;   OP2: SDEV<X>
 ; Destroys: A, OP2, OP3, OP4
 mStatSampleSdevHandler:
-    call closeInputBuf
+    call closeX
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld ix, cfitModelLinear ; use linear model for simple statistics
     call statVariance ; OP1=VAR(Y), OP2=VAR(X)
@@ -187,7 +187,7 @@ mStatSampleSdevHandler:
 ;   - OP1: PCOV<X,Y>
 ; Destroys: A, OP2, OP3, OP4
 mStatPopCovHandler:
-    call closeInputBuf
+    call closeX
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld ix, cfitModelLinear ; use linear model for simple statistics
     call statCovariance
@@ -199,7 +199,7 @@ mStatPopCovHandler:
 ;   - OP1: SCOV<X,Y>
 ; Destroys: A, OP2, OP3, OP4
 mStatSampleCovHandler:
-    call closeInputBuf
+    call closeX
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld ix, cfitModelLinear ; use linear model for simple statistics
     call statCovariance ; OP1=PCOV(X,Y)

@@ -7,7 +7,7 @@
 
 mBaseHandler:
     push af ; preserve the C flag
-    call closeInputBuf ; must call before modifying rpnFlagsBaseModeEnabled
+    call closeX ; must call before modifying rpnFlagsBaseModeEnabled
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     pop af
     jr c, mBaseHandlerOnExit
@@ -21,25 +21,25 @@ mBaseHandlerEnd:
     ret
 
 mHexHandler:
-    call closeInputBuf
+    call closeX
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld a, 16
     jr setBaseNumber
 
 mDecHandler:
-    call closeInputBuf
+    call closeX
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld a, 10
     jr setBaseNumber
 
 mOctHandler:
-    call closeInputBuf
+    call closeX
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld a, 8
     jr setBaseNumber
 
 mBinHandler:
-    call closeInputBuf
+    call closeX
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld a, 2
     ; [[fallthrough]]
@@ -368,7 +368,7 @@ mSetCarryFlagHandler:
     jr storeCarryFlag
 
 mGetCarryFlagHandler:
-    call closeInputBuf
+    call closeX
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     set dirtyFlagsStatus, (iy + dirtyFlags)
     call recallCarryFlag
@@ -384,7 +384,7 @@ mGetCarryFlagHandlerPush1:
 ; Description: Prompt for the new base word size, like FIX or STO. Allowed
 ; values are 8, 16, 24, 32. Throw Err:Argument if outside of that list.
 mSetWordSizeHandler:
-    call closeInputBuf
+    call closeX
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld hl, msgWordSizePrompt
     call startArgParser
@@ -410,7 +410,7 @@ msgWordSizePrompt:
     .db "WSIZ", 0
 
 mGetWordSizeHandler:
-    call closeInputBuf
+    call closeX
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld a, (baseWordSize)
     call convertU8ToOP1

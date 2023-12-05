@@ -142,7 +142,7 @@ initCfit:
 
 ; Description: Forecast Y from X.
 mCfitForcastYHandler:
-    call closeInputBuf
+    call closeX
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld a, (curveFitModel)
     call selectCfitModel
@@ -159,7 +159,7 @@ mCfitForcastYHandler:
 
 ; Description: Forecast X from Y.
 mCfitForcastXHandler:
-    call closeInputBuf
+    call closeX
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld a, (curveFitModel)
     call selectCfitModel
@@ -176,7 +176,7 @@ mCfitForcastXHandler:
 
 ; Description: Calculate the least square fit slope into X register.
 mCfitSlopeHandler:
-    call closeInputBuf
+    call closeX
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld a, (curveFitModel)
     call selectCfitModel
@@ -187,7 +187,7 @@ mCfitSlopeHandler:
 
 ; Description: Calculate the least square fit intercept into X register.
 mCfitInterceptHandler:
-    call closeInputBuf
+    call closeX
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld a, (curveFitModel)
     call selectCfitModel
@@ -197,7 +197,7 @@ mCfitInterceptHandler:
 
 ; Description: Calculate the correlation coefficient into X register.
 mCfitCorrelationHandler:
-    call closeInputBuf
+    call closeX
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld a, (curveFitModel)
     call selectCfitModel
@@ -281,7 +281,7 @@ mCfitPowerNameSelector:
 ;   X=abs(corr(best))
 ; Destroys: OP1, OP2, OP3, (maybe OP4?), OP5, OP6
 mCfitBestHandler:
-    call closeInputBuf
+    call closeX
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
 mCfitBestCheckLinear:
     ld a, curveFitModelLinear

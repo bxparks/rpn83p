@@ -91,7 +91,7 @@ rpnFlagsTvmCalculate equ 6 ; set if the next TVM function should calculate
 inputBufFlags equ asm_Flag3
 inputBufFlagsDecPnt equ 0 ; set if decimal point exists
 inputBufFlagsEE equ 1 ; set if EE symbol exists
-inputBufFlagsClosedEmpty equ 2 ; inputBuf empty when closeInputBuf() called
+inputBufFlagsClosedEmpty equ 2 ; inputBuf empty when closeX() called
 inputBufFlagsExpSign equ 3 ; exponent sign bit detected during parsing
 inputBufFlagsArgExit equ 4 ; set to exit CommandArg mode
 inputBufFlagsArgAllowModifier equ 5 ; allow */-+ modifier in CommandArg mode
@@ -436,6 +436,23 @@ _SetHandlerCodeToSystemCodeLabel:
 _SetHandlerCodeToSystemCode equ _SetHandlerCodeToSystemCodeLabel-branchTableBase
     .dw SetHandlerCodeToSystemCode
     .db 1
+; input1.asm
+_InitInputBufLabel:
+_InitInputBuf equ _InitInputBufLabel-branchTableBase
+    .dw InitInputBuf
+    .db 1
+_ClearInputBufLabel:
+_ClearInputBuf equ _ClearInputBufLabel-branchTableBase
+    .dw ClearInputBuf
+    .db 1
+_CloseInputBufLabel:
+_CloseInputBuf equ _CloseInputBufLabel-branchTableBase
+    .dw CloseInputBuf
+    .db 1
+_AppendInputBufLabel:
+_AppendInputBuf equ _AppendInputBufLabel-branchTableBase
+    .dw AppendInputBuf
+    .db 1
 
 #ifdef DEBUG
 _DebugInputBufLabel:
@@ -533,8 +550,11 @@ defpage(1)
 #include "menulookup.asm"
 #include "menudef.asm"
 #include "crc.asm"
-#include "print1.asm"
 #include "errorcode.asm"
+#include "print1.asm"
+#include "input1.asm"
+#include "base1.asm"
+#include "pstring1.asm"
 #ifdef DEBUG
 #include "debug.asm"
 #endif
