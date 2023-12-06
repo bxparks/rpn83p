@@ -2159,8 +2159,10 @@ The RPN83P app interacts with the underlying TI-OS in the following ways.
     - `STK` holds the RPN stack registers (`X`, `Y`, `Z`, `T`, `LastX`)
     - `REGS` holds the 25 storage registers `R00` to `R24`
 
-  A TI-BASIC program can access these List variables since they hold just normal
-  9-byte floating point numbers.
+  **Warning**: While it is possible for a TI-BASIC program to access these List
+  variables, future versions of RPN83P will probably implement the storage in
+  different ways. The `STK` and `REGS` variables should *not* be considered to
+  form a stable API between RPN83P and TI-BASIC programs.
 - An appVar named `RPN83SAV` is used to preserve the internal state of the app
   upon exiting. When the app is restarted, the appVar is read back in, so that
   it can continue exactly where it had left off.
