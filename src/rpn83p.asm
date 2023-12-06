@@ -506,9 +506,9 @@ _TvmCalculateFVLabel:
 _TvmCalculateFV equ _TvmCalculateFVLabel-branchTableBase
     .dw TvmCalculateFV
     .db 1
-_TvmCalculateIntPerPeriodLabel:
-_TvmCalculateIntPerPeriod equ _TvmCalculateIntPerPeriodLabel-branchTableBase
-    .dw TvmCalculateIntPerPeriod
+_TvmCalcIPPFromIYRLabel:
+_TvmCalcIPPFromIYR equ _TvmCalcIPPFromIYRLabel-branchTableBase
+    .dw TvmCalcIPPFromIYR
     .db 1
 _TvmClearLabel:
 _TvmClear equ _TvmClearLabel-branchTableBase

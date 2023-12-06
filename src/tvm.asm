@@ -181,22 +181,23 @@ RclTvmSolverCount:
 ; various TVM equations.
 ;-----------------------------------------------------------------------------
 
-; Description: Return the fractional interest rate per period.
+; Description: Return the fractional interest rate per period (IPP) from the
+; current IYR and PYR.
 ; Input:
 ;   - RclTvmIYR
 ;   - RclTvmPYR
 ; Output:
 ;   - OP1 = i = IYR / PYR / 100.
-getTvmIntPerPeriod:
+getTvmIPP:
     call RclTvmIYR
     ; [[fallthrough]]
 
-; Description: Compute the interest rate per period for given annual interest
-; rate in OP1.
-; Input: OP1=IYR=annual interest percent
+; Description: Compute the interest rate per period (IPP) for the given
+; interest percent yearly rate (IYR) in OP1.
+; Input: OP1=IYR=interest percent yearly rate
 ; Output: OP1=IYR/PYR/100
 ; Preserves: OP2
-TvmCalculateIntPerPeriod:
+TvmCalcIPPFromIYR:
     bcall(_PushRealO2) ; FPS=[OP2]
     call op1ToOp2FP1
     call RclTvmPYR
@@ -211,7 +212,7 @@ TvmCalculateIntPerPeriod:
 ; Input: OP1=i=fractional interest per period
 ; Output: OP1=IYR=percent per year=i*PYR*100
 ; Preserves: OP2
-calcTvmIYR:
+calcTvmIYRFromIPP:
     bcall(_PushRealO2) ; FPS=[OP2]
     call op1ToOp2FP1
     call RclTvmPYR
@@ -255,7 +256,7 @@ compoundingFactors:
 #ifdef TVM_NAIVE
     ; Use the TVM formulas directly, which can suffer from cancellation errors
     ; for small i.
-    call getTvmIntPerPeriod ; OP1=i
+    call getTvmIPP ; OP1=i
     bcall(_PushRealO1) ; FPS=[i]
     bcall(_PushRealO1) ; FPS=[i,i]
     call RclTvmN ; OP1=N
@@ -281,7 +282,7 @@ compoundingFactors:
     ; Use log1p() and expm1() functions to avoid cancellation errors.
     ;   - OP1=CF1(i)=(1+i)^N=exp(N*log1p(i))
     ;   - OP2=CF3(i)=(1+ip)[(i+i)^N-1]/i=(1+ip)(expm1(N*log1p(i))/i)
-    call getTvmIntPerPeriod ; OP1=i
+    call getTvmIPP ; OP1=i
     bcall(_CkOP1FP0) ; check if i==0.0
     ; CF3(i) has a removable singularity at i=0, so we use a different formula.
     jr z, compoundingFactorsZero
@@ -655,11 +656,11 @@ tvmSolveCheckContinue:
 ; Description: Initialize i0 and i1 from IYR0 and IYR1 respectively.
 tvmSolveInitGuesses:
     call RclTvmIYR0
-    call TvmCalculateIntPerPeriod
+    call TvmCalcIPPFromIYR
     call StoTvmI0
     ;
     call RclTvmIYR1
-    call TvmCalculateIntPerPeriod
+    call TvmCalcIPPFromIYR
     call StoTvmI1
     ret
 
@@ -746,7 +747,7 @@ tvmSolveI0Zero:
 tvmSolveI1Zero:
     call op1Set100FP1 ; OP1=100.0%
 tvmSolveFound:
-    call calcTvmIYR ; convert i (per period) to IYR
+    call calcTvmIYRFromIPP ; convert i (per period) to IYR
     ld a, tvmSolverResultFound
     ret
 
@@ -764,7 +765,7 @@ tvmSolveFound:
 ;   N -> N0/i = -(FV+PV)/PMT
 ;   if N<=0: no solution
 TvmCalculateN:
-    call getTvmIntPerPeriod ; OP1=i
+    call getTvmIPP ; OP1=i
     bcall(_CkOP1FP0) ; check for i==0
     jr z, tvmCalculateNZero
     bcall(_PushRealO1) ; FPS=[i]
