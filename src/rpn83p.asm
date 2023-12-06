@@ -644,6 +644,15 @@ _HmsFromHrLabel:
 _HmsFromHr equ _HmsFromHrLabel-branchTableBase
     .dw HmsFromHr
     .db 1
+; prob.asm
+_ProbPermLabel:
+_ProbPerm equ _ProbPermLabel-branchTableBase
+    .dw ProbPerm
+    .db 1
+_ProbCombLabel:
+_ProbComb equ _ProbCombLabel-branchTableBase
+    .dw ProbComb
+    .db 1
 
 #ifdef DEBUG
 ; debug.asm
@@ -751,6 +760,7 @@ defpage(1)
 #include "const1.asm"
 #include "tvm.asm"
 #include "hms.asm"
+#include "prob.asm"
 #ifdef DEBUG
 #include "debug.asm"
 #endif

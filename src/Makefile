@@ -37,6 +37,7 @@ SRCS := \
 	prime.asm \
 	print.asm \
 	print1.asm \
+	prob.asm \
 	pstring1.asm \
 	rpn83p.asm \
 	showparser.asm \

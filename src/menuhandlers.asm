@@ -435,119 +435,22 @@ mNearHandler:
 ;-----------------------------------------------------------------------------
 
 ; Calculate the Permutation function:
-; P(y, x) = P(n, r) = n!/(n-r)! = n(n-1)...(n-r+1)
-;
-; TODO: (n,r) are limited to [0.255]. It should be relatively easy to extended
-; the range to [0,65535].
+; P(Y, X) = P(n, r) = n!/(n-r)! = n(n-1)...(n-r+1)
 mPermHandler:
-    call closeX
+    call closeInputAndRecallXY ; OP1=Y=n; OP2=X=r
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
-    call validatePermComb
-
-    ; Do the calculation. Set initial Result to 1 so that P(N, 0) = 1.
-    bcall(_OP1Set1)
-    ld a, e ; A = X
-    or a
-    jr z, mPermHandlerEnd
-    ; Loop x times, multiple by (y-i)
-    ld b, a ; B = X, C = Y
-mPermHandlerLoop:
-    push bc
-    ld l, c ; L = C = Y
-    ld h, 0 ; HL = Y
-    bcall(_SetXXXXOP2)
-    bcall(_FPMult)
-    pop bc
-    dec c
-    djnz mPermHandlerLoop
-mPermHandlerEnd:
+    bcall(_ProbPerm)
     jp replaceXY
 
 ;-----------------------------------------------------------------------------
 
 ; Calculate the Combintation function:
-; C(y, x) = C(n, r) = n!/(n-r)!/r! = n(n-1)...(n-r+1)/(r)(r-1)...(1).
-;
-; TODO: (n,r) are limited to [0.255]. It should be relatively easy to extended
-; the range to [0,65535].
-;
-; TODO: This algorithm below is a variation of the algorithm used for P(n,r)
-; above, with a division operation inside the loop that corresponds to each
-; term of the `r!` divisor. However, the division can cause intermediate result
-; to be non-integral. Eventually the final answer will be an integer, but
-; that's not guaranteed until the end of the loop. I think it should be
-; possible to rearrange the order of these divisions so that the intermediate
-; results are always integral.
+; C(Y, X) = C(n, r) = n!/(n-r)!/r! = n(n-1)...(n-r+1)/(r)(r-1)...(1).
 mCombHandler:
-    call closeX
+    call closeInputAndRecallXY ; OP1=Y=n; OP2=X=r
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
-    call validatePermComb
-
-    ; Do the calculation. Set initial Result to 1 C(N, 0) = 1.
-    bcall(_OP1Set1)
-    ld a, e ; A = X
-    or a
-    jr z, mCombHandlerEnd
-    ; Loop X times, multiple by (Y-i), divide by i.
-    ld b, a ; B = X, C = Y
-mCombHandlerLoop:
-    push bc
-    ld l, c ; L = C = Y
-    ld h, 0 ; HL = Y
-    bcall(_SetXXXXOP2) ; OP2 = Y
-    bcall(_FPMult)
-    pop bc
-    push bc
-    ld l, b ; L = B = X
-    ld h, 0 ; HL = X
-    bcall(_SetXXXXOP2) ; OP2 = X
-    bcall(_FPDiv)
-    pop bc
-    dec c
-    djnz mCombHandlerLoop
-mCombHandlerEnd:
+    bcall(_ProbComb)
     jp replaceXY
-
-;-----------------------------------------------------------------------------
-
-; Validate the n and r parameters of P(n,r) and C(n,r):
-;   - n, r are integers in the range of [0,255]
-;   - n >= r
-; Output:
-;   - C: Y
-;   - E: X
-; Destroys: A, BC, DE, HL
-validatePermComb:
-    ; Validate X
-    call rclX
-    call validatePermCombParam
-    ; Validate Y
-    call rclY
-    call validatePermCombParam
-
-    ; Convert X and Y into integers
-    bcall(_ConvOP1) ; OP1 = Y
-    push de ; save Y
-    bcall(_OP1ToOP2) ; OP2 = Y
-    call rclX
-    bcall(_ConvOP1) ; E = X
-    pop bc ; C = Y
-    ; Check that Y >= X
-    ld a, c ; A = Y
-    cp e ; Y - X
-    jr c, validatePermCombError
-    ret
-
-; Validate OP1 is an integer in the range of [0, 255].
-validatePermCombParam:
-    bcall(_CkPosInt) ; if OP1 >= 0: ZF=1
-    jr nz, validatePermCombError
-    ld hl, 256
-    bcall(_SetXXXXOP2) ; OP2=256
-    bcall(_CpOP1OP2)
-    ret c ; ok if OP1 < 255
-validatePermCombError:
-    bcall(_ErrDomain) ; throw exception
 
 ;-----------------------------------------------------------------------------
 
