@@ -4,6 +4,7 @@ SPASM_DIR := ../../spasm
 SPASM_INC := $(SPASM_DIR)/inc
 SPASM := $(SPASM_DIR)/spasm
 SRCS := \
+	arg1.asm \
 	arghandlers.asm \
 	arghandlertab.asm \
 	argparser.asm \

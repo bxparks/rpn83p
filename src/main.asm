@@ -27,7 +27,7 @@ main:
     call initTvm
 initAlways:
     ; If restoreAppState() suceeds, only the following are initialized.
-    call initArgBuf ; Start with Command Arg parser off.
+    bcall(_InitArgBuf) ; Start with Command Arg parser off.
     call initLastX ; Always copy TI-OS 'ANS' to 'X'
     call initDisplay ; Always initialize the display.
     call initTvmSolver ; Always init TVM solver

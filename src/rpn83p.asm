@@ -453,6 +453,23 @@ _AppendInputBufLabel:
 _AppendInputBuf equ _AppendInputBufLabel-branchTableBase
     .dw AppendInputBuf
     .db 1
+; arg1.asm
+_ClearArgBufLabel:
+_ClearArgBuf equ _ClearArgBufLabel-branchTableBase
+    .dw ClearArgBuf
+    .db 1
+_InitArgBufLabel:
+_InitArgBuf equ _InitArgBufLabel-branchTableBase
+    .dw InitArgBuf
+    .db 1
+_AppendArgBufLabel:
+_AppendArgBuf equ _AppendArgBufLabel-branchTableBase
+    .dw AppendArgBuf
+    .db 1
+_ParseArgBufLabel:
+_ParseArgBuf equ _ParseArgBufLabel-branchTableBase
+    .dw ParseArgBuf
+    .db 1
 
 #ifdef DEBUG
 _DebugInputBufLabel:
@@ -553,6 +570,7 @@ defpage(1)
 #include "errorcode.asm"
 #include "print1.asm"
 #include "input1.asm"
+#include "arg1.asm"
 #include "base1.asm"
 #include "pstring1.asm"
 #ifdef DEBUG

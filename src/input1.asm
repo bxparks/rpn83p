@@ -108,66 +108,6 @@ closeInputBufContinue:
 
 ;------------------------------------------------------------------------------
 
-clearArgBuf:
-    xor a
-    ld (argBuf), a
-    ; [[fallthrough]]
-initArgBuf:
-    res rpnFlagsArgMode, (iy + rpnFlags)
-    ret
-
-; Description: Append character in A to the argBuf.
-; Input:
-;   - A: character to append
-; Output:
-;   - dirtyFlagsInput set
-; Destroys: all
-appendArgBuf:
-    set dirtyFlagsInput, (iy + dirtyFlags)
-    ld hl, argBuf
-    ld b, a
-    ld a, (hl)
-    cp argBufSizeMax
-    ret nc ; limit total number of characters
-    ld a, b
-    ld b, argBufMax
-    jp appendStringFP1
-
-; Description: Convert (0 to 2 digit) argBuf into a binary number.
-; Input: argBuf
-; Output: A: value of argBuf
-; Destroys: A, B, C, HL
-parseArgBuf:
-    ld hl, argBuf
-    ld b, (hl) ; B = argBufSize
-    inc hl
-    ; check for 0 digit
-    ld a, b
-    or a
-    ret z
-    ; A = current sum
-    xor a
-    ; check for 1 digit
-    dec b
-    jr z, parseArgBufOneDigit
-parseArgBufTwoDigits:
-    call parseArgBufOneDigit
-    ; C = C * 10 = C * (2 * 5)
-    ld c, a
-    add a, a
-    add a, a
-    add a, c ; A = 5 * C
-    add a, a
-parseArgBufOneDigit:
-    ld c, a
-    ld a, (hl)
-    inc hl
-    sub '0'
-    add a, c
-    ret ; A = current sum
-
-;------------------------------------------------------------------------------
-
 ; Description: Parse the input buffer into the parseBuf.
 ; Input: inputBuf filled with keyboard characters
 ; Output: OP1: floating point number
