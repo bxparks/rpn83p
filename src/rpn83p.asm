@@ -635,6 +635,15 @@ _ExpMinusOneLabel:
 _ExpMinusOne equ _ExpMinusOneLabel-branchTableBase
     .dw ExpMinusOne
     .db 1
+; hms.asm
+_HmsToHrLabel:
+_HmsToHr equ _HmsToHrLabel-branchTableBase
+    .dw HmsToHr
+    .db 1
+_HmsFromHrLabel:
+_HmsFromHr equ _HmsFromHrLabel-branchTableBase
+    .dw HmsFromHr
+    .db 1
 
 #ifdef DEBUG
 ; debug.asm
@@ -741,6 +750,7 @@ defpage(1)
 #include "float1.asm"
 #include "const1.asm"
 #include "tvm.asm"
+#include "hms.asm"
 #ifdef DEBUG
 #include "debug.asm"
 #endif

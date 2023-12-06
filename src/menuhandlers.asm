@@ -797,96 +797,18 @@ mRtoPHandler:
 
 ;-----------------------------------------------------------------------------
 
-; HR(hh.mmss) = int(hh.mmss) + int(mm.ss)/60 + int(ss.nnnn)/3600
+; Description: Convert "hh.mmss" to "hh.ddddd".
 ; Destroys: OP1, OP2, OP3, OP4 (temp)
 mHmsToHrHandler:
     call closeInputAndRecallX
-
-    ; Sometimes, the internal floating point value is slightly different than
-    ; the displayed value due to rounding errors. For example, a value
-    ; displayed as `10` (e.g. `e^(ln(10))`) could actually be `9.9999999999xxx`
-    ; internally due to rounding errors. This routine parses out the digits
-    ; after the decimal point and interprets them as minutes (mm) and seconds
-    ; (ss) components. Any rounding errors will cause incorrect results. To
-    ; mitigate this, we round the X value to 10 digits to make sure that the
-    ; internal value matches the displayed value.
-    bcall(_RndGuard)
-
-    ; Extract the whole 'hh' and push it into the FPS.
-    bcall(_OP1ToOP4) ; OP4 = hh.mmss (save in temp)
-    bcall(_Trunc) ; OP1 = int(hh.mmss)
-    bcall(_PushRealO1) ; FPS=[hh]
-
-    ; Extract the 'mm' and push it into the FPS.
-    bcall(_OP4ToOP1) ; OP1 = hh.mmss
-    bcall(_Frac) ; OP1 = .mmss
-    call op2Set100
-    bcall(_FPMult) ; OP1 = mm.ss
-    bcall(_OP1ToOP4) ; OP4 = mm.ss
-    bcall(_Trunc) ; OP1 = mm
-    bcall(_PushRealO1) ; FPS=[hh, mm]
-
-    ; Extract the 'ss.nnn' part
-    bcall(_OP4ToOP1) ; OP1 = mm.ssnnn
-    bcall(_Frac) ; OP1 = .ssnnn
-    call op2Set100
-    bcall(_FPMult) ; OP1 = ss.nnn
-
-    ; Reassemble in the form of `hh.nnn`.
-    ; Extract ss.nnn/60
-    bcall(_OP2Set60) ; OP2 = 60
-    bcall(_FPDiv) ; OP1 = ss.nnn/60
-    ; Extract mm/60
-    bcall(_PopRealO2) ; FPS=[hh]; OP1 = mm
-    bcall(_FPAdd) ; OP1 = mm + ss.nnn/60
-    bcall(_OP2Set60) ; OP2 = 60
-    bcall(_FPDiv) ; OP1 = (mm + ss.nnn/60) / 60
-    ; Extract the hh.
-    bcall(_PopRealO2) ; FPS=[]; OP1 = hh
-    bcall(_FPAdd) ; OP1 = hh + (mm + ss.nnn/60) / 60
-
+    bcall(_HmsToHr)
     jp replaceX
 
-; HMS(hh.nnn) = int(hh + (mm + ss.nnn/100)/100 where
-;   - mm = int(.nnn* 60)
-;   - ss.nnn = frac(.nnn*60)*60
+; Description: Convert "hh.dddd" to "hh.mmss".
 ; Destroys: OP1, OP2, OP3, OP4 (temp)
 mHrToHmsHandler:
     call closeInputAndRecallX
-
-    ; Extract the whole hh.
-    bcall(_OP1ToOP4) ; OP4 = hh.nnn (save in temp)
-    bcall(_Trunc) ; OP1 = int(hh.nnn)
-    bcall(_PushRealO1) ; FPS=[hh]
-
-    ; Extract the 'mm' and push it into the FPS
-    bcall(_OP4ToOP1) ; OP1 = hh.nnn
-    bcall(_Frac) ; OP1 = .nnn
-    bcall(_OP2Set60) ; OP2 = 60
-    bcall(_FPMult) ; OP1 = mm.nnn
-    bcall(_OP1ToOP4) ; OP4 = mm.nnn
-    bcall(_Trunc) ; OP1 = mm
-    bcall(_PushRealO1) ; FPS=[hh,mm]
-
-    ; Extract the 'ss.nnn' part
-    bcall(_OP4ToOP1) ; OP1 = mm.nnn
-    bcall(_Frac) ; OP1 = .nnn
-    bcall(_OP2Set60) ; OP2 = 60
-    bcall(_FPMult) ; OP1 = ss.nnn
-
-    ; Reassemble in the form of `hh.mmssnnn`.
-    ; Extract ss.nnn/100
-    call op2Set100
-    bcall(_FPDiv) ; OP1 = ss.nnn/100
-    ; Extract mm/100
-    bcall(_PopRealO2) ; FPS=[hh]; OP1 = mm
-    bcall(_FPAdd) ; OP1 = mm + ss.nnn/100
-    call op2Set100
-    bcall(_FPDiv) ; OP1 = (mm + ss.nnn/100) / 100
-    ; Extract the hh.
-    bcall(_PopRealO2) ; FPS=[]; OP1 = hh
-    bcall(_FPAdd) ; OP1 = hh + (mm + ss.nnn/100) / 100
-
+    bcall(_HmsFromHr)
     jp replaceX
 
 ;-----------------------------------------------------------------------------

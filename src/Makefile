@@ -24,6 +24,7 @@ SRCS := \
 	handlers.asm \
 	handlertab.asm \
 	help.asm \
+	hms.asm \
 	input.asm \
 	input1.asm \
 	integer.asm \
