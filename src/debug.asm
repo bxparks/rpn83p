@@ -27,7 +27,7 @@ DebugInputBuf:
     ld hl, debugCurCol*$100+debugCurRow ; $(curCol)(curRow)
     ld (CurRow), hl
     ld hl, inputBuf
-    call putPSFP1
+    call putPSPageOne
     ld a, cursorCharAlt
     bcall(_PutC)
     bcall(_EraseEOL)
@@ -57,7 +57,7 @@ DebugParseBuf:
     ld hl, debugCurCol*$100+debugCurRow ; $(curCol)(curRow)
     ld (CurRow), hl
     ld hl, parseBuf
-    call putPSFP1
+    call putPSPageOne
     ld a, cursorCharAlt
     bcall(_PutC)
     bcall(_EraseEOL)
@@ -86,7 +86,7 @@ DebugString:
 
     ld de, debugCurCol*$100+debugCurRow ; $(curCol)(curRow)
     ld (CurRow), de
-    call putSFP1
+    call putSPageOne
     bcall(_EraseEOL)
 
     pop de
@@ -111,7 +111,7 @@ DebugPString:
 
     ld de, debugCurCol*$100+debugCurRow ; $(curCol)(curRow)
     ld (CurRow), de
-    call putPSFP1
+    call putPSPageOne
     bcall(_EraseEOL)
 
     pop de
@@ -159,7 +159,7 @@ DebugOP1:
     ld a, 15 ; width of output
     bcall(_FormReal)
     ld hl, OP3
-    call putSFP1
+    call putSPageOne
     bcall(_EraseEOL)
 
     pop hl
@@ -383,12 +383,12 @@ debugUnsignedAAsHex:
     srl a
     srl a
     srl a
-    call convertAToCharFP1
+    call convertAToCharPageOne
     bcall(_PutC)
 
     pop af
     and $0F
-    call convertAToCharFP1
+    call convertAToCharPageOne
     bcall(_PutC)
     ret
 

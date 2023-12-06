@@ -13,13 +13,13 @@
 
 ; Description: Exchange OP2 and FPS.
 ; Destroys: all registers
-exchangeFPSOP2FP1:
+exchangeFPSOP2PageOne:
     ld hl, OP2
-    jr exchangeFPSHLFP1
+    jr exchangeFPSHLPageOne
 
 ; Description: Exchange OP1 and FPS.
 ; Destroys: all registers
-exchangeFPSOP1FP1:
+exchangeFPSOP1PageOne:
     ld hl, OP1
     ; [[fallthrough]]
 
@@ -32,7 +32,7 @@ exchangeFPSOP1FP1:
 ; Input: HL=floating point value
 ; Destroys: all registers
 ; Preserves: all OPx registers
-exchangeFPSHLFP1:
+exchangeFPSHLPageOne:
     ld c, l
     ld b, h ; BC=HL
     ld hl, (FPS)
@@ -47,9 +47,9 @@ exchangeFPSHLFP1:
 ; Input: DE, HL: pointers to floating point values
 ; Output: 9-byte contents of DE, HL exchanged
 ; Destroys: all registers
-exchangeFloatFP1:
+exchangeFloatPageOne:
     ld b, 9
-exchangeFloatFP1Loop:
+exchangeFloatPageOneLoop:
     ld a, (de)
     ld c, (hl)
     ld (hl), a
@@ -57,13 +57,13 @@ exchangeFloatFP1Loop:
     ld (de), a
     inc de
     inc hl
-    djnz exchangeFloatFP1Loop
+    djnz exchangeFloatPageOneLoop
     ret
 
 ; Description: Exchange the top 2 floating point numbers on the FPS.
 ; Destroys: all
 ; Preserves: OP1, OP2
-exchangeFPSFPSFP1:
+exchangeFPSFPSPageOne:
     ld hl, (FPS)
     ld de, 9
     or a ; clear CF
@@ -73,7 +73,7 @@ exchangeFPSFPSFP1:
     sbc hl, de ; HL=(FPS) - 18
     ld e, c
     ld d, b
-    jr exchangeFloatFP1
+    jr exchangeFloatPageOne
 
 ;-----------------------------------------------------------------------------
 
@@ -83,7 +83,7 @@ exchangeFPSFPSFP1:
 ; Output: (OP1)=contains float
 ; Destroys: BC, DE, HL
 ; Preserves: A
-move9ToOp1FP1:
+move9ToOp1PageOne:
     ld de, OP1
     ld bc, 9
     ldir
@@ -95,7 +95,7 @@ move9ToOp1FP1:
 ; Output: (OP2)=contains float
 ; Destroys: BC, DE, HL
 ; Preserves: A
-move9ToOp2FP1:
+move9ToOp2PageOne:
     ld de, OP2
     ld bc, 9
     ldir
@@ -105,7 +105,7 @@ move9ToOp2FP1:
 ; inlining it to avoid the overhead of calling bcall(_OP1ToOP2).
 ; Destroys: BC, DE, HL
 ; Preserves: A
-op1ToOp2FP1:
+op1ToOp2PageOne:
     ld de, OP2
     ; [[fallthrough]]
 
@@ -117,7 +117,7 @@ op1ToOp2FP1:
 ; Output: (DE)=contains OP1
 ; Destroys: BC, DE, HL
 ; Preserves: A
-move9FromOp1FP1:
+move9FromOp1PageOne:
     ld hl, OP1
     ld bc, 9
     ldir
@@ -126,7 +126,7 @@ move9FromOp1FP1:
 ; Description: Move 9 bytes from OP2 to OP1.
 ; Destroys: BC, DE, HL
 ; Preserves: A
-op2ToOp1FP1:
+op2ToOp1PageOne:
     ld de, OP1
     ld hl, OP2
     ld bc, 9
@@ -137,10 +137,10 @@ op2ToOp1FP1:
 ; avoid the overhead of bcall().
 ; Output: OP1, OP2 exchanged
 ; Destroys: A, BC, DE, HL
-op1ExOp2FP1:
+op1ExOp2PageOne:
     ld hl, OP1
     ld de, OP2
-    jr exchangeFloatFP1
+    jr exchangeFloatPageOne
 
 ;-----------------------------------------------------------------------------
 
@@ -149,7 +149,7 @@ op1ExOp2FP1:
 ; Input: OP1
 ; Output: A=0 or 1
 ; Preserves: BC
-signOfOp1FP1:
+signOfOp1PageOne:
     ld a, (OP1); bit7=sign bit
     rlca
     and $01
@@ -161,7 +161,7 @@ signOfOp1FP1:
 ; Output: ZF=0 if different, ZF=1 if same
 ; Destroys: all registers
 ; Preserves: OP1, OP2
-compareSignOP1OP2FP1:
+compareSignOP1OP2PageOne:
     ld a, (OP1) ; A=sign bit of OP1
     ld b, a
     ld a, (OP2) ; A=sign bit of OP2
@@ -197,7 +197,7 @@ LnOnePlus:
     ret
 lnOnePlusNotZero:
     bcall(_OP1ToOP2) ; OP2=z=1+x-1
-    call exchangeFPSOP1FP1 ; FPS=[x,1+x-1]; OP1=1+x
+    call exchangeFPSOP1PageOne ; FPS=[x,1+x-1]; OP1=1+x
     bcall(_LnX) ; OP1=ln(1+x)
     bcall(_PopRealO2) ; FPS=[x]; OP2=1+x-1
     bcall(_FPDiv) ; OP1=ln(1+x)/(1+x-1)
@@ -225,7 +225,7 @@ lnOnePlusError:
 lnOnePlusContinue:
     bcall(_FPRecip) ; OP1=1/(1+x)
     bcall(_Plus1) ; OP1=1+1/(1+x)
-    call op1ToOp2FP1 ; OP2=1+1/(1+x)
+    call op1ToOp2PageOne ; OP2=1+1/(1+x)
     bcall(_PopRealO1) ; FPS=[]; OP1=x
     bcall(_FPMult) ; OP1=x*(1+1/(1+x))
     bcall(_TimesPt5) ; OP1=(x/2)(1+1/(1+x))
@@ -243,7 +243,7 @@ ExpMinusOne:
     bcall(_TimesPt5) ; OP1=x/2
     bcall(_PushRealO1) ; FPS=[x/2]
     bcall(_SinH) ; OP1=sinh(x/2)
-    call exchangeFPSOP1FP1 ; FPS=[sinh(x/2)]; OP1=x/2
+    call exchangeFPSOP1PageOne ; FPS=[sinh(x/2)]; OP1=x/2
     bcall(_EToX) ; OP1=exp(x/2)
     bcall(_PopRealO2) ; FPS=[]; OP2=sinh(x/2)
     bcall(_FPMult) ; OP1=sinh(x/2) exp(x/2)

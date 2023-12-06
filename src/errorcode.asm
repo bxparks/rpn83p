@@ -47,7 +47,7 @@ SetErrorCode:
 PrintErrorString:
     call getErrorString
     push hl
-    call vPutSFP1
+    call vPutSPageOne
     pop hl
     ; Check if error string is "Err: UNKNOWN".
     ld de, errorStrUnknown
@@ -66,9 +66,9 @@ PrintErrorString:
     ld a, (errorCode)
     ld hl, OP1
     push hl
-    call convertAToDecFP1
+    call convertAToDecPageOne
     pop hl
-    call vPutSFP1
+    call vPutSPageOne
     ;
     ld a, ')'
     bcall(_VPutMap)
@@ -87,7 +87,7 @@ getErrorString:
     ret
 getErrorStringContinue:
     ld hl, errorStrings
-    jp getStringFP1
+    jp getStringPageOne
 
 ;-----------------------------------------------------------------------------
 

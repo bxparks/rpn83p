@@ -19,7 +19,7 @@
 ; Output: HL: pointer to a string
 ; Destroys: DE, HL
 ; Preserves: A
-getStringFP1:
+getStringPageOne:
     ld e, a
     ld d, 0
     add hl, de ; HL += A * 2
@@ -37,29 +37,29 @@ getStringFP1:
 ; Input: HL: pointer to string buffer
 ; Output: HL: pointer to NUL terminator at end of string
 ; Destroys: A, B, C, HL
-convertAToDecFP1:
+convertAToDecPageOne:
     ; Divide by 100
     ld b, 100
-    call divideAByBFP1
+    call divideAByBPageOne
     or a
-    jr z, convertAToDecFP110
-    call convertAToCharFP1
+    jr z, convertAToDecPageOne10
+    call convertAToCharPageOne
     ld (hl), a
     inc hl
-convertAToDecFP110:
+convertAToDecPageOne10:
     ; Divide by 10
     ld a, b
     ld b, 10
-    call divideAByBFP1
+    call divideAByBPageOne
     or a
-    jr z, convertAToDecFP11
-    call convertAToCharFP1
+    jr z, convertAToDecPageOne1
+    call convertAToCharPageOne
     ld (hl), a
     inc hl
-convertAToDecFP11:
+convertAToDecPageOne1:
     ; Extract the 1
     ld a, b
-    call convertAToCharFP1
+    call convertAToCharPageOne
     ld (hl), a
     inc hl
     ; Terminate with NUL
@@ -72,14 +72,14 @@ convertAToDecFP11:
 ;   - B: denominator
 ; Output: A = A/B (quotient); B=A%B (remainder)
 ; Destroys: C
-divideAByBFP1:
+divideAByBPageOne:
     ld c, 0
-divideAByBFP1Loop:
+divideAByBPageOneLoop:
     sub b
-    jr c, divideAByBFP1LoopEnd
+    jr c, divideAByBPageOneLoopEnd
     inc c
-    jr divideAByBFP1Loop
-divideAByBFP1LoopEnd:
+    jr divideAByBPageOneLoop
+divideAByBPageOneLoopEnd:
     add a, b ; undo the last subtraction
     ld b, a
     ld a, c
@@ -88,13 +88,13 @@ divideAByBFP1LoopEnd:
 ; Description: Convert A into an Ascii Char ('0'-'9','A'-'F'). Same as
 ; convertAToChar() but located in Flash Page 1.
 ; Destroys: A
-convertAToCharFP1:
+convertAToCharPageOne:
     cp 10
-    jr c, convertAToCharFP1Dec
+    jr c, convertAToCharPageOneDec
     sub 10
     add a, 'A'
     ret
-convertAToCharFP1Dec:
+convertAToCharPageOneDec:
     add a, '0'
     ret
 
@@ -172,7 +172,7 @@ eVPutSEnter:
 ; Input: HL: pointer to Pascal string
 ; Destroys: A, B, C, HL
 ; Preserves: DE
-putPSFP1:
+putPSPageOne:
     ld a, (hl) ; A = length of Pascal string
     inc hl
     or a
@@ -180,7 +180,7 @@ putPSFP1:
     ld b, a ; B = length of Pascal string (missing from SDK reference impl)
     ld a, (winBtm)
     ld c, a ; C = bottomRow (usually 8)
-putPSFP1Loop:
+putPSPageOneLoop:
     ld a, (hl)
     inc hl
     bcall(_PutC)
@@ -188,7 +188,7 @@ putPSFP1Loop:
     ld a, (curRow)
     cp c ; if currow == buttomRow: ZF=1
     ret z
-    djnz putPSFP1Loop
+    djnz putPSPageOneLoop
     ret
 
 ;------------------------------------------------------------------------------
@@ -201,30 +201,30 @@ putPSFP1Loop:
 ;   - CF=1 if the entire string was displayed, CF=0 if not
 ;   - curRow and curCol updated to the position after the last character
 ; Destroys: HL
-putSFP1:
+putSPageOne:
     push bc
     push af
     ld a, (winBtm)
     ld b, a ; B = bottom line of window
-putSFP1Loop:
+putSPageOneLoop:
     ld a, (hl)
     inc hl
     or a ; test for end of string
     scf ; CF=1 if entire string displayed
-    jr z, putSFP1End
+    jr z, putSPageOneEnd
     cp Lenter ; check for newline
-    jr z, putSFP1Enter
+    jr z, putSPageOneEnter
     bcall(_PutC)
-putSFP1Check:
+putSPageOneCheck:
     ld a, (curRow)
     cp b ; if A >= bottom line: CF=1
-    jr c, putSFP1Loop ; repeat if not at bottom
-putSFP1End:
+    jr c, putSPageOneLoop ; repeat if not at bottom
+putSPageOneEnd:
     pop bc ; restore A (but not F)
     ld a, b
     pop bc
     ret
-putSFP1Enter:
+putSPageOneEnter:
     ; Handle newline
     push hl
     ld hl, (CurRow)
@@ -232,7 +232,7 @@ putSFP1Enter:
     ld h, 0 ; CurCol=0
     ld (CurRow), hl
     pop hl
-    jr putSFP1Check
+    jr putSPageOneCheck
 
 ;------------------------------------------------------------------------------
 
@@ -244,15 +244,15 @@ putSFP1Enter:
 ; Ouptut:
 ;    - unlike VPutS(), the CF does *not* show if all of string was rendered
 ; Destroys: all
-vPutSFP1:
+vPutSPageOne:
     ; assume using small font
     ld c, smallFontHeight ; C = current font height
     res fracDrawLFont, (IY + fontFlags) ; start with small font
-vPutSFP1Loop:
+vPutSPageOneLoop:
     ld a, (hl) ; A = current char
     inc hl
-vPutSFP1CheckSpecialChars:
+vPutSPageOneCheckSpecialChars:
     or a ; Check for NUL
     ret z
     bcall(_VPutMap) ; preserves BC, HL
-    jr vPutSFP1Loop
+    jr vPutSPageOneLoop

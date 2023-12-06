@@ -46,7 +46,7 @@ FindMenuNode:
 ; Destroys: all
 FindMenuString:
     ld hl, mMenuNameTable
-    call getStringFP1 ; HL=name string
+    call getStringPageOne ; HL=name string
 copyToMenuStringBuf:
     ; Copy the name to (menuStringBuf)
     ld de, menuStringBuf

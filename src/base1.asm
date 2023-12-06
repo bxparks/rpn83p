@@ -19,12 +19,12 @@
 ; Throws: Err:Domain if not 8, 16, 24, 32.
 ; Destroys: A
 ; Preserves: BC, DE, HL
-getWordSizeIndexFP1:
+getWordSizeIndexPageOne:
     push bc
     ld a, (baseWordSize)
     ld b, a
     and $07 ; 0b0000_0111
-    jr nz, getWordSizeIndexFP1Err
+    jr nz, getWordSizeIndexPageOneErr
     ld a, b
     rrca
     rrca
@@ -35,7 +35,7 @@ getWordSizeIndexFP1:
     ld a, b
     pop bc
     ret z
-getWordSizeIndexFP1Err:
+getWordSizeIndexPageOneErr:
     bcall(_ErrDomain)
 
 ;------------------------------------------------------------------------------
@@ -125,7 +125,7 @@ getWordSizeDigitsBaseMode:
     sla a
     sla a ; A=baseNumberIndex * 4
     ld e, a
-    call getWordSizeIndexFP1 ; A=wordSizeIndex
+    call getWordSizeIndexPageOne ; A=wordSizeIndex
     add a, e ; A=4*baseNumberIndex+wordSizeIndex
     ld e, a
     ld d, 0
@@ -154,7 +154,7 @@ wordSizeDigitsArray:
 ;   - OP1: floating point value of A
 ; Destroys: A, B, DE, OP2
 ; Preserves: C, HL
-convertU8ToOP1FP1:
+convertU8ToOP1PageOne:
     push af
     bcall(_OP1Set0)
     pop af
@@ -166,21 +166,21 @@ convertU8ToOP1FP1:
 ;   - OP1: current floating point value, set to 0.0 to start fresh
 ; Destroys: A, B, DE, OP2
 ; Preserves: C, HL
-addU8ToOP1FP1:
+addU8ToOP1PageOne:
     push hl
     ld b, 8 ; loop for 8 bits in u8
-addU8ToOP1FP1Loop:
+addU8ToOP1PageOneLoop:
     push bc
     push af
     bcall(_Times2) ; OP1 *= 2
     pop af
     sla a
-    jr nc, addU8ToOP1FP1Check
+    jr nc, addU8ToOP1PageOneCheck
     push af
     bcall(_Plus1) ; OP1 += 1
     pop af
-addU8ToOP1FP1Check:
+addU8ToOP1PageOneCheck:
     pop bc
-    djnz addU8ToOP1FP1Loop
+    djnz addU8ToOP1PageOneLoop
     pop hl
     ret

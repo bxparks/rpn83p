@@ -97,7 +97,7 @@ displayHelpPage:
 
     ; Get the string for page A, and display it.
     ld hl, helpPages ; HL = (char**)
-    call getStringFP1
+    call getStringPageOne
     call eVPutS
 
     pop hl
