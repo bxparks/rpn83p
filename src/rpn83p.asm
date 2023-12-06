@@ -291,11 +291,14 @@ curveFitModel equ statAllEnabled + 1 ; u8
 
 ; Constants used by the TVM Solver.
 tvmSolverDefaultIterMax equ 15
-; tvmSolverResult enums indicate success or failure of the TVM Solver.
-tvmSolverResultFound equ 0
-tvmSolverResultNotFound equ 1
-tvmSolverResultIterMaxed equ 2
-tvmSolverResultBreak equ 3
+; tvmSolverResult enums indicate if the solver should stop or continue the
+; iterations
+tvmSolverResultContinue equ 0 ; loop should continue
+tvmSolverResultFound equ 1
+tvmSolverResultNotFound equ 2
+tvmSolverResultIterMaxed equ 3
+tvmSolverResultBreak equ 4
+tvmSolverResultSingleStep equ 5 ; return after each iteration
 ; Bit position in tvmSolverOverrideFlags that determine if a specific parameter
 ; has been overridden.
 tvmSolverOverrideFlagIYR0 equ 0
@@ -356,9 +359,8 @@ tvmNPMT1 equ tvmNPMT0 + 9 ; float
 ; TVM Solver status and result code. Transient, no need to persist them.
 tvmSolverIsRunning equ tvmNPMT1 + 9 ; boolean; true if active
 tvmSolverCount equ tvmSolverIsRunning + 1 ; u8; iteration count
-tvmSolverResult equ tvmSolverCount + 1 ; u8 enum; tvmSolverResultXxx
 
-appBufferEnd equ tvmSolverResult + 1
+appBufferEnd equ tvmSolverCount + 1
 
 ; Floating point number buffer, used only within parseNumBase10(). It is used
 ; only locally so it can probaly be anywhere. Let's just use OP3 instead of

@@ -643,20 +643,16 @@ tvmSolveDebugEnabled:
 ; Description: Check if the root finding iteration should stop.
 ; Input: i0, i1
 ; Output:
-;   - A=tvmSolverResult status
-;   - CF=1 if should terminate
-; Destroys: A, B
+;   - A=tvmSolverResultXxx, non-zero means terminate loop.
+; Destroys: A, B, OP1, OP2
 tvmSolveCheckTermination:
-    ; Display debugging progress if enabled
-    call tvmSolveCheckDebugEnabled ; CF=1 if enabled
-    jr nc, tvmSolveCheckNoDebug
-    set dirtyFlagsStack, (iy + dirtyFlags)
-    call displayAll
-    bcall(_GetKey) ; pause
-tvmSolveCheckNoDebug:
     ; Check for ON/Break
     bit onInterrupt, (IY+onFlags)
-    jp nz, tvmSolveCheckBreak
+    jr z, tvmSolveCheckTolerance
+    res onInterrupt, (iy + onFlags)
+    ld a, tvmSolverResultBreak
+    ret
+tvmSolveCheckTolerance:
     ; Check if i0 and i1 are within tolerance. If i1!=0.0, then use relative
     ; error |i0-i1|/|i1| < tol. Otherwise use absolute error |i0-i1| < tol.
     call rclTvmI0
@@ -671,7 +667,10 @@ tvmSolveCheckNoDebug:
 tvmSolveCheckNoRelativeError:
     call op2Set1EM8 ; OP2=1e-8
     bcall(_AbsO1O2Cp) ; if |OP1| < |OP2|: CF=1
-    jr c, tvmSolveCheckFound
+    jr nc, tvmSolveCheckCount
+    ld a, tvmSolverResultFound ; Found!
+    ret
+tvmSolveCheckCount:
     ; Check iteration counter against tvmIterMax
     ld hl, tvmSolverCount
     ld a, (hl)
@@ -680,20 +679,19 @@ tvmSolveCheckNoRelativeError:
     ld b, a
     ld a, (tvmIterMax)
     cp b
-    jr z, tvmSolveCheckIterMaxed
-    or a ; CF=0 to continue
-    ret
-tvmSolveCheckFound:
-    ld a, tvmSolverResultFound
-    jr tvmSolveCheckTerminate
-tvmSolveCheckBreak:
-    res onInterrupt, (iy + onFlags)
-    ld a, tvmSolverResultBreak
-    jr tvmSolveCheckTerminate
-tvmSolveCheckIterMaxed:
+    jr nz, tvmSolveCheckSingleStep
     ld a, tvmSolverResultIterMaxed
-tvmSolveCheckTerminate:
-    scf ; CF=1 to terminate
+    ret
+tvmSolveCheckSingleStep:
+    ; Check if single-step debug mode enabled. This *must* be the last
+    ; condition to check, so that when tvmSolve() is called again, it does not
+    ; terminate immediately if single-step debugging is enabled.
+    call tvmSolveCheckDebugEnabled ; CF=1 if enabled
+    jr nc, tvmSolveCheckContinue
+    ld a, tvmSolverResultSingleStep
+    ret
+tvmSolveCheckContinue:
+    ld a, tvmSolverResultContinue
     ret
 
 ; Description: Initialize i0 and i1 from IYR0 and IYR1 respectively.
@@ -713,18 +711,26 @@ tvmSolveInitGuesses:
 ; values are entered repeatedly using the I%YR menu key, the last 2 values will
 ; be used as the initial guess.
 ;
+; The tricky part of this subroutine is that it supports a "single-step"
+; debugging mode where it returns to the after each iteration. Then the caller
+; can call this routine again, to continue the next iteration. Therefore, this
+; routine must preserve enough state information to be able to continue the
+; iteration at the correct point.
+;
 ; Input:
+;   - A: tvmSolverResultXxx. If tvmSolverResultSingleStep, the subroutine
 ;   - i0, i1: initial guesses, usually 0% and 100%, but can be overridden by
 ;   entering 2 values using '2ND I%YR' menu button twice
+;   continues from previous iteration. Otherwise it initializes the various
+;   parameters for a fresh calculation.
 ; Output:
-;   - OP1: the calculated I%YR if tvmSolverResult==Found
-;   - (tvmSolverResult) set
+;   - A: tvmSolverResultXxx
+;   - OP1: the calculated I%YR if A==tvmSolverResultFound
 ; Destroys:
-;   - OP1-OP5
+;   - all registers, OP1-OP5
 tvmSolve:
-    ; Set the isRunning flag to true.
-    ld a, rpntrue
-    ld (tvmSolverIsRunning), a
+    cp tvmSolverResultSingleStep
+    jr z, tvmSolveLoop
     ; Set iteration counter to 0 initially. Counting down is more efficient,
     ; but counting up allows better debugging. The number of iterations is so
     ; low that this small bit of inefficiency doesn't matter.
@@ -749,26 +755,26 @@ tvmSolve:
     call op1ToOP2
     call rclTvmNPMT1
     call compareSignOP1OP2
-    jr z, tvmSolveNotFound
+    jr nz, tvmSolveLoopEntry
+    ld a, tvmSolverResultNotFound
+    ret
 tvmSolveLoop:
-    call tvmSolveCheckTermination ; A=tvmSolverResult; CF=1 if terminate
-    jr c, tvmSolveTerminate
     ; Use Secant method to estimate the next interest rate
     call calculateNextSecantInterest ; OP1=i2
     ;call tvmSolveCheckBounds ; CF=1 if out of bounds
     ; Secant failed. Use bisection.
     ;call c, call calculateNextBisectInterest
     call tvmSolveUpdateGuesses ; update tvmI0,tmvI1
-    jr tvmSolveLoop
+tvmSolveLoopEntry:
+    call tvmSolveCheckTermination ; A=tvmSolverResultXxx
+    or a ; if A==0: keep looping
+    jr z, tvmSolveLoop
 tvmSolveTerminate:
-    or a ; A=tvmSolverResult
-    jr nz, tvmSolveEnd ; if status!=tvmSolverResultFound: return
-    ; Found!
+    cp tvmSolverResultFound
+    ret nz ; not found
+    ; Found, set OP1 to the result.
     call rclTvmI1
     jr tvmSolveFound
-tvmSolveNotFound:
-    ld a, tvmSolverResultNotFound
-    jr tvmSolveEnd
 tvmSolveI0Zero:
     bcall(_OP1Set0) ; OP1=0.0
     jr tvmSolveFound
@@ -776,17 +782,7 @@ tvmSolveI1Zero:
     call op1Set100 ; OP1=100.0%
 tvmSolveFound:
     call calcTvmIYR ; convert i (per period) to IYR
-    xor a
-; All branches above must exit through this fragment. Reg A must contain the
-; tvmSolverResult code.
-tvmSolveEnd:
-    ld (tvmSolverResult), a
-    call tvmSolveCheckDebugEnabled ; CF=1 if enabled
-    jr nc, tvmSolveEndNoDirty
-    set dirtyFlagsStack, (iy + dirtyFlags)
-tvmSolveEndNoDirty:
-    xor a
-    ld (tvmSolverIsRunning), a
+    ld a, tvmSolverResultFound
     ret
 
 ;-----------------------------------------------------------------------------
@@ -907,15 +903,31 @@ mTvmIYRGet:
     ld (handlerCode), a
     ret
 mTvmIYRCalculate:
+    call tvmIYRCalculate ; OP1=answer; A=handlerCode
+    ld (handlerCode), a
+    cp errorCodeTvmCalculated
+    ret nz
+    call stoTvmIYR
+    call pushX
+    ret
+
+; Description: Call the tvmSolver() as often as necessary (e.g. during
+; debugging single step) to arrive a solution, or determine that there is no
+; solution.
+; Output:
+;   - A: handlerCoder
+;   - OP1: IYR solution if A==errorCodeCalculated
+; Destroys: all
+tvmIYRCalculate:
     ; Interest rate does not have a closed-form solution, so requires solving
     ; the root of an equation. First, determine if equation has no roots
     ; definitively.
     call tvmCheckNoSolution ; ZF=0 if no solution
-    jr c, mTvmIYRCalculateMayExists
+    jr c, tvmIYRCalculateMayExists
     ; Cannot have a solution
     ld a, errorCodeTvmNoSolution
-    jr mTvmIYRCalculateEnd
-mTvmIYRCalculateMayExists:
+    ret
+tvmIYRCalculateMayExists:
     ; TVM Solver is a bit slow, 2-3 seconds. During that time, the errorCode
     ; from the previous command will be displayed, which is a bit confusing.
     ; Let's remove the previous error code before running the long subroutine.
@@ -926,42 +938,63 @@ mTvmIYRCalculateMayExists:
     ; anything else, so the logic is a bit tricky.
     ld a, (errorCode)
     or a
-    jr z, mTvmIYRCalculateSolve
+    jr z, tvmIYRCalculateSolve
     ; Remove the displayed error code if it exists
     xor a
     bcall(_SetErrorCode)
     call displayAll
-mTvmIYRCalculateSolve:
+tvmIYRCalculateSolve:
+    ld a, rpntrue
+    ld (tvmSolverIsRunning), a ; set 'isRunning' flag
     bcall(_RunIndicOn)
-    call tvmSolve
-    ld a, (tvmSolverResult)
-    or a
-    jr nz, mTvmIYRCalculateNotFound
-    ; Found!
-    call stoTvmIYR
-    call pushX
+    xor a ; A=0=tvmSolverResultContinue
+tvmIYRCalculateSolveLoop:
+    ; tvmSolve() can be called with 2 values of A:
+    ; - A=tvmSolverResultSingleStep to restart from the last loop, or
+    ; - A=anything else to start the root solver from the beginning,
+    call tvmSolve ; A=tvmSolverResultXxx, guaranteed non-zero when it returns
+    cp tvmSolverResultFound
+    jr nz, tvmIYRCalculateCheckNotFound
     ld a, errorCodeTvmCalculated
-    jr mTvmIYRCalculateEnd
-mTvmIYRCalculateNotFound:
-    dec a
-    jr nz, mTvmIYRCalculateCheckIterMax
-    ; root not found because sign +/- was not detected in initial guess
+    jr tvmIYRCalculateEnd
+tvmIYRCalculateCheckNotFound:
+    cp tvmSolverResultNotFound
+    jr nz, tvmIYRCalculateCheckIterMax
+    ; root not found
     ld a, errorCodeTvmNotFound
-    jr mTvmIYRCalculateEnd
-mTvmIYRCalculateCheckIterMax:
-    dec a
-    jr nz, mTvmIYRCalculateBreak
+    jr tvmIYRCalculateEnd
+tvmIYRCalculateCheckIterMax:
+    cp tvmSolverResultIterMaxed
+    jr nz, tvmIYRCalculateCheckBreak
     ; root not found after max iterations
     ld a, errorCodeTvmIterations
-    jr mTvmIYRCalculateEnd
-mTvmIYRCalculateBreak:
+    jr tvmIYRCalculateEnd
+tvmIYRCalculateCheckBreak:
+    cp tvmSolverResultBreak
+    jr nz, tvmIYRCalculateCheckSingleStep
     ; user hit ON/EXIT
     ld a, errorCodeBreak
-mTvmIYRCalculateEnd:
+    jr tvmIYRCalculateEnd
+tvmIYRCalculateCheckSingleStep:
+    cp tvmSolverResultSingleStep
+    jr nz, tvmIYRCalculateStatusUnknown
+    ; single-step debugging mode: render display and wait for key
+    push af ; preserve A==tvmSolverResultSingleStep
+    set dirtyFlagsStack, (iy + dirtyFlags)
+    call displayAll
+    ; Pause and wait for button press.
+    ; If QUIT or OFF then TvmSolver will be reset upon app start.
+    bcall(_GetKey)
+    pop af
+    jr tvmIYRCalculateSolveLoop
+tvmIYRCalculateStatusUnknown:
+    ld a, errorCodeTvmNotFound
+tvmIYRCalculateEnd:
     push af
+    xor a
+    ld (tvmSolverIsRunning), a ; clear 'isRunning' flag
     bcall(_RunIndicOff)
     pop af
-    ld (handlerCode), a
     ret
 
 ;-----------------------------------------------------------------------------
