@@ -53,7 +53,7 @@ AppendInputBuf:
     ld a, c ; A=char
     ld hl, inputBuf
     set dirtyFlagsInput, (iy + dirtyFlags)
-    jp appendStringFP1
+    jp AppendString
 
 ; Description: Close the input buffer by parsing the input, then copying the
 ; float value into X. If not in edit mode, no need to parse the inputBuf, the X
@@ -413,7 +413,7 @@ calcDPEnd:
 appendParseBuf:
     ld hl, parseBuf
     ld b, parseBufMax
-    jp appendStringFP1
+    jp AppendString
 
 ;------------------------------------------------------------------------------
 

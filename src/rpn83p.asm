@@ -470,6 +470,19 @@ _ParseArgBufLabel:
 _ParseArgBuf equ _ParseArgBufLabel-branchTableBase
     .dw ParseArgBuf
     .db 1
+; pstring1.asm
+_AppendStringLabel:
+_AppendString equ _AppendStringLabel-branchTableBase
+    .dw AppendString
+    .db 1
+_InsertAtPosLabel:
+_InsertAtPos equ _InsertAtPosLabel-branchTableBase
+    .dw InsertAtPos
+    .db 1
+_DeleteAtPosLabel:
+_DeleteAtPos equ _DeleteAtPosLabel-branchTableBase
+    .dw DeleteAtPos
+    .db 1
 
 #ifdef DEBUG
 _DebugInputBufLabel:
@@ -537,7 +550,6 @@ _DebugU32DEAsHex equ _DebugU32DEAsHexLabel-branchTableBase
 #include "arghandlers.asm"
 #include "showparser.asm"
 #include "vars.asm"
-#include "pstring.asm"
 #include "input.asm"
 #include "display.asm"
 #include "show.asm"

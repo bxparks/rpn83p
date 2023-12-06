@@ -447,12 +447,12 @@ flipInputBufSignInside:
     jr nz, flipInputBufSignAdd
 flipInputBufSignRemove:
     ; Remove existing '-' sign
-    call deleteAtPos
+    bcall(_DeleteAtPos)
     scf ; set CF to indicate positive
     ret
 flipInputBufSignAdd:
     ; Add '-' sign.
-    call insertAtPos
+    bcall(_InsertAtPos)
     ret c ; Return if CF is set, indicating insert '-' failed
     ; Set newly created empty slot to '-'
     ld a, signChar

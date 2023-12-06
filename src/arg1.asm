@@ -35,7 +35,7 @@ AppendArgBuf:
     ret nc ; limit total number of characters
     ld a, b
     ld b, argBufMax
-    jp appendStringFP1
+    jp AppendString
 
 ; Description: Convert (0 to 2 digit) argBuf into a binary number.
 ; Input: argBuf
