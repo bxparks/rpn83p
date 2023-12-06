@@ -617,7 +617,7 @@ displayTvm:
     ; print TVM n value
     ld hl, tvmNCurCol*$100 + tvmNCurRow ; $(curCol)(curRow)
     ld (CurRow), hl
-    call rclTvmSolverCount
+    bcall(_RclTvmSolverCount)
     call printOP1
 
     ; print TVM i0 or npmt0 label
@@ -632,10 +632,10 @@ displayTvm:
     ld a, (drawMode)
     cp a, drawModeTvmSolverI ; if drawMode==1: ZF=1
     jr z, displayTvmI0
-    call rclTvmNPMT0
+    bcall(_RclTvmNPMT0)
     jr displayTvm0
 displayTvmI0:
-    call rclTvmI0
+    bcall(_RclTvmI0)
 displayTvm0:
     call printOP1
 
@@ -651,10 +651,10 @@ displayTvm0:
     ld a, (drawMode)
     cp a, drawModeTvmSolverI ; if drawMode==1: ZF=1
     jr z, displayTvmI1
-    call rclTvmNPMT1
+    bcall(_RclTvmNPMT1)
     jr displayTvm1
 displayTvmI1:
-    call rclTvmI1
+    bcall(_RclTvmI1)
 displayTvm1:
     call printOP1
 

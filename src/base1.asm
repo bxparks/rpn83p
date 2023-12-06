@@ -144,3 +144,43 @@ wordSizeDigitsArray:
     .db 3, 6, 8, 11 ; base 8
     .db 3, 5, 8, 10 ; base 10
     .db 2, 4, 6, 8 ; base 16
+
+;------------------------------------------------------------------------------
+
+; Description: Convert the u8 in A to floating pointer number in OP1.
+; Input:
+;   - A: u8 integer
+; Output:
+;   - OP1: floating point value of A
+; Destroys: A, B, DE, OP2
+; Preserves: C, HL
+convertU8ToOP1FP1:
+    push af
+    bcall(_OP1Set0)
+    pop af
+    ; [[fallthrough]]
+
+; Description: Convert the u8 in A to floating point number, and add it to OP1.
+; Input:
+;   - A: u8 integer
+;   - OP1: current floating point value, set to 0.0 to start fresh
+; Destroys: A, B, DE, OP2
+; Preserves: C, HL
+addU8ToOP1FP1:
+    push hl
+    ld b, 8 ; loop for 8 bits in u8
+addU8ToOP1FP1Loop:
+    push bc
+    push af
+    bcall(_Times2) ; OP1 *= 2
+    pop af
+    sla a
+    jr nc, addU8ToOP1FP1Check
+    push af
+    bcall(_Plus1) ; OP1 += 1
+    pop af
+addU8ToOP1FP1Check:
+    pop bc
+    djnz addU8ToOP1FP1Loop
+    pop hl
+    ret

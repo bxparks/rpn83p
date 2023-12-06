@@ -295,10 +295,11 @@ tvmSolverDefaultIterMax equ 15
 ; iterations
 tvmSolverResultContinue equ 0 ; loop should continue
 tvmSolverResultFound equ 1
-tvmSolverResultNotFound equ 2
-tvmSolverResultIterMaxed equ 3
-tvmSolverResultBreak equ 4
-tvmSolverResultSingleStep equ 5 ; return after each iteration
+tvmSolverResultNoSolution equ 2
+tvmSolverResultNotFound equ 3
+tvmSolverResultIterMaxed equ 4
+tvmSolverResultBreak equ 5
+tvmSolverResultSingleStep equ 6 ; return after each iteration
 ; Bit position in tvmSolverOverrideFlags that determine if a specific parameter
 ; has been overridden.
 tvmSolverOverrideFlagIYR0 equ 0
@@ -484,9 +485,159 @@ _InsertAtPos equ _InsertAtPosLabel-branchTableBase
 _DeleteAtPosLabel:
 _DeleteAtPos equ _DeleteAtPosLabel-branchTableBase
     .dw DeleteAtPos
+; tvm.asm
+_TvmCalculateNLabel:
+_TvmCalculateN equ _TvmCalculateNLabel-branchTableBase
+    .dw TvmCalculateN
+    .db 1
+_TvmSolveLabel:
+_TvmSolve equ _TvmSolveLabel-branchTableBase
+    .dw TvmSolve
+    .db 1
+_TvmCalculatePVLabel:
+_TvmCalculatePV equ _TvmCalculatePVLabel-branchTableBase
+    .dw TvmCalculatePV
+    .db 1
+_TvmCalculatePMTLabel:
+_TvmCalculatePMT equ _TvmCalculatePMTLabel-branchTableBase
+    .dw TvmCalculatePMT
+    .db 1
+_TvmCalculateFVLabel:
+_TvmCalculateFV equ _TvmCalculateFVLabel-branchTableBase
+    .dw TvmCalculateFV
+    .db 1
+_TvmCalculateIntPerPeriodLabel:
+_TvmCalculateIntPerPeriod equ _TvmCalculateIntPerPeriodLabel-branchTableBase
+    .dw TvmCalculateIntPerPeriod
+    .db 1
+_TvmClearLabel:
+_TvmClear equ _TvmClearLabel-branchTableBase
+    .dw TvmClear
+    .db 1
+_TvmSolverResetLabel:
+_TvmSolverReset equ _TvmSolverResetLabel-branchTableBase
+    .dw TvmSolverReset
+    .db 1
+_RclTvmNLabel:
+_RclTvmN equ _RclTvmNLabel-branchTableBase
+    .dw RclTvmN
+    .db 1
+_StoTvmNLabel:
+_StoTvmN equ _StoTvmNLabel-branchTableBase
+    .dw StoTvmN
+    .db 1
+_RclTvmIYRLabel:
+_RclTvmIYR equ _RclTvmIYRLabel-branchTableBase
+    .dw RclTvmIYR
+    .db 1
+_StoTvmIYRLabel:
+_StoTvmIYR equ _StoTvmIYRLabel-branchTableBase
+    .dw StoTvmIYR
+    .db 1
+_RclTvmPVLabel:
+_RclTvmPV equ _RclTvmPVLabel-branchTableBase
+    .dw RclTvmPV
+    .db 1
+_StoTvmPVLabel:
+_StoTvmPV equ _StoTvmPVLabel-branchTableBase
+    .dw StoTvmPV
+    .db 1
+_RclTvmPMTLabel:
+_RclTvmPMT equ _RclTvmPMTLabel-branchTableBase
+    .dw RclTvmPMT
+    .db 1
+_StoTvmPMTLabel:
+_StoTvmPMT equ _StoTvmPMTLabel-branchTableBase
+    .dw StoTvmPMT
+    .db 1
+_RclTvmFVLabel:
+_RclTvmFV equ _RclTvmFVLabel-branchTableBase
+    .dw RclTvmFV
+    .db 1
+_StoTvmFVLabel:
+_StoTvmFV equ _StoTvmFVLabel-branchTableBase
+    .dw StoTvmFV
+    .db 1
+_RclTvmPYRLabel:
+_RclTvmPYR equ _RclTvmPYRLabel-branchTableBase
+    .dw RclTvmPYR
+    .db 1
+_StoTvmPYRLabel:
+_StoTvmPYR equ _StoTvmPYRLabel-branchTableBase
+    .dw StoTvmPYR
+    .db 1
+_RclTvmIYR0Label:
+_RclTvmIYR0 equ _RclTvmIYR0Label-branchTableBase
+    .dw RclTvmIYR0
+    .db 1
+_StoTvmIYR0Label:
+_StoTvmIYR0 equ _StoTvmIYR0Label-branchTableBase
+    .dw StoTvmIYR0
+    .db 1
+_RclTvmIYR1Label:
+_RclTvmIYR1 equ _RclTvmIYR1Label-branchTableBase
+    .dw RclTvmIYR1
+    .db 1
+_StoTvmIYR1Label:
+_StoTvmIYR1 equ _StoTvmIYR1Label-branchTableBase
+    .dw StoTvmIYR1
+    .db 1
+_RclTvmIterMaxLabel:
+_RclTvmIterMax equ _RclTvmIterMaxLabel-branchTableBase
+    .dw RclTvmIterMax
+    .db 1
+_StoTvmIterMaxLabel:
+_StoTvmIterMax equ _StoTvmIterMaxLabel-branchTableBase
+    .dw StoTvmIterMax
+    .db 1
+_RclTvmI0Label:
+_RclTvmI0 equ _RclTvmI0Label-branchTableBase
+    .dw RclTvmI0
+    .db 1
+_StoTvmI0Label:
+_StoTvmI0 equ _StoTvmI0Label-branchTableBase
+    .dw StoTvmI0
+    .db 1
+_RclTvmI1Label:
+_RclTvmI1 equ _RclTvmI1Label-branchTableBase
+    .dw RclTvmI1
+    .db 1
+_StoTvmI1Label:
+_StoTvmI1 equ _StoTvmI1Label-branchTableBase
+    .dw StoTvmI1
+    .db 1
+_RclTvmNPMT0Label:
+_RclTvmNPMT0 equ _RclTvmNPMT0Label-branchTableBase
+    .dw RclTvmNPMT0
+    .db 1
+_StoTvmNPMT0Label:
+_StoTvmNPMT0 equ _StoTvmNPMT0Label-branchTableBase
+    .dw StoTvmNPMT0
+    .db 1
+_RclTvmNPMT1Label:
+_RclTvmNPMT1 equ _RclTvmNPMT1Label-branchTableBase
+    .dw RclTvmNPMT1
+    .db 1
+_StoTvmNPMT1Label:
+_StoTvmNPMT1 equ _StoTvmNPMT1Label-branchTableBase
+    .dw StoTvmNPMT1
+    .db 1
+_RclTvmSolverCountLabel:
+_RclTvmSolverCount equ _RclTvmSolverCountLabel-branchTableBase
+    .dw RclTvmSolverCount
+    .db 1
+; float1.asm
+_LnOnePlusLabel:
+_LnOnePlus equ _LnOnePlusLabel-branchTableBase
+    .dw LnOnePlus
+    .db 1
+_ExpMinusOneLabel:
+_ExpMinusOne equ _ExpMinusOneLabel-branchTableBase
+    .dw ExpMinusOne
     .db 1
 
 #ifdef DEBUG
+; debug.asm
 _DebugInputBufLabel:
 _DebugInputBuf equ _DebugInputBufLabel-branchTableBase
     .dw DebugInputBuf
@@ -587,6 +738,9 @@ defpage(1)
 #include "arg1.asm"
 #include "base1.asm"
 #include "pstring1.asm"
+#include "float1.asm"
+#include "const1.asm"
+#include "tvm.asm"
 #ifdef DEBUG
 #include "debug.asm"
 #endif

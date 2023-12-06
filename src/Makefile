@@ -14,11 +14,13 @@ SRCS := \
 	cfithandlers.asm \
 	common.asm \
 	const.asm \
+	const1.asm \
 	crc.asm \
 	debug.asm \
 	display.asm \
 	errorcode.asm \
 	float.asm \
+	float1.asm \
 	handlers.asm \
 	handlertab.asm \
 	help.asm \
@@ -40,6 +42,7 @@ SRCS := \
 	show.asm \
 	stathandlers.asm \
 	tvmhandlers.asm \
+	tvm.asm \
 	vars.asm
 
 # TI Flash app. Use -DDEBUG to activate functions in debug.asm.
