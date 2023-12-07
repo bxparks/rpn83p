@@ -7,6 +7,12 @@
 
 ; Description: Close the inputBuf and transfer its contents to the X register
 ; if it had been opened in edit mode. Otherwise, do nothing.
+;
+; Most button and menu handlers should probably use closeInputAndRecallX() and
+; closeInputAndRecallXY() instead, to transfer the X and Y parameters into the
+; OP1 and OP2 variables. This decouples the implementations of those handlers
+; from the RPN stack, and making them easier move to different Flash Pages if
+; needed.
 ; Input:
 ;   - rpnFlagsEditing: indicates if inputBuf is valid
 ;   - inputBuf: input buffer
@@ -33,16 +39,26 @@ closeInputEditing:
 
 ;-----------------------------------------------------------------------------
 
-; Close the input buffer, and recall X into OP1 respectively.
+; Close the input buffer, and don't set OP1 to anything.
 ; Output:
+;   - rpnFlagsTvmCalculate: cleared
+closeInputAndRecallNone:
+    res rpnFlagsTvmCalculate, (iy + rpnFlags)
+    jr closeInput
+
+; Close the input buffer, and set OP1=X.
+; Output:
+;   - OP1=X
 ;   - rpnFlagsTvmCalculate: cleared
 closeInputAndRecallX:
     call closeInput
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     jp rclX
 
-; Close the input buffer, and recall Y and X into OP1 and OP2 respectively.
+; Close the input buffer, and set OP1=Y and OP2=X.
 ; Output:
+;   - OP1=Y
+;   - OP2=X
 ;   - rpnFlagsTvmCalculate: cleared
 closeInputAndRecallXY:
     call closeInput

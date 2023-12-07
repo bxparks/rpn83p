@@ -467,8 +467,7 @@ flipInputBufSignAdd:
 ; Output:
 ; Destroys: all, OP1, OP2, OP4
 handleKeyEnter:
-    call closeInput
-    res rpnFlagsTvmCalculate, (iy + rpnFlags)
+    call closeInputAndRecallNone
     call liftStack ; always lift the stack
     res rpnFlagsLiftEnabled, (iy + rpnFlags)
     ret
@@ -706,14 +705,12 @@ handleKeyDiv:
 ;-----------------------------------------------------------------------------
 
 handleKeyPi:
-    call closeInput
-    res rpnFlagsTvmCalculate, (iy + rpnFlags)
+    call closeInputAndRecallNone
     call op1SetPi
     jp pushX
 
 handleKeyEuler:
-    call closeInput
-    res rpnFlagsTvmCalculate, (iy + rpnFlags)
+    call closeInputAndRecallNone
     call op1SetEuler
     jp pushX
 
@@ -750,18 +747,15 @@ handleKeySqrt:
 ;-----------------------------------------------------------------------------
 
 handleKeyRollDown:
-    call closeInput
-    res rpnFlagsTvmCalculate, (iy + rpnFlags)
+    call closeInputAndRecallNone
     jp rollDownStack
 
 handleKeyExchangeXY:
-    call closeInput
-    res rpnFlagsTvmCalculate, (iy + rpnFlags)
+    call closeInputAndRecallNone
     jp exchangeXYStack
 
 handleKeyAns:
-    call closeInput
-    res rpnFlagsTvmCalculate, (iy + rpnFlags)
+    call closeInputAndRecallNone
     call rclL
     jp pushX
 
@@ -828,8 +822,7 @@ handleKeyATan:
 ;-----------------------------------------------------------------------------
 
 handleKeySto:
-    call closeInput
-    res rpnFlagsTvmCalculate, (iy + rpnFlags)
+    call closeInputAndRecallNone
     ld hl, msgStoPrompt
     call startArgParser
     set inputBufFlagsArgAllowModifier, (iy + inputBufFlags)
@@ -852,8 +845,7 @@ handleKeyStoError:
     ret
 
 handleKeyRcl:
-    call closeInput
-    res rpnFlagsTvmCalculate, (iy + rpnFlags)
+    call closeInputAndRecallNone
     ld hl, msgRclPrompt
     call startArgParser
     set inputBufFlagsArgAllowModifier, (iy + inputBufFlags)
@@ -928,8 +920,7 @@ handleKeyQuit:
 ;-----------------------------------------------------------------------------
 
 handleKeyDraw:
-    call closeInput
-    res rpnFlagsTvmCalculate, (iy + rpnFlags)
+    call closeInput ; preserve rpnFlagsTvmCalculate
     ld hl, msgDrawPrompt
     call startArgParser
     call processArgCommands
@@ -943,7 +934,7 @@ handleKeyDraw:
     ret
 
 handleKeyShow:
-    call closeInput
+    call closeInput ; preserve rpnFlagsTvmCalculate
     call processShowCommands
     ret
 
