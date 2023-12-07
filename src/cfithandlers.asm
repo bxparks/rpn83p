@@ -142,42 +142,37 @@ initCfit:
 
 ; Description: Forecast Y from X.
 mCfitForcastYHandler:
-    call closeInput
-    res rpnFlagsTvmCalculate, (iy + rpnFlags)
+    call closeInputAndRecallX ; OP1=x
     ld a, (curveFitModel)
     call selectCfitModel
-    call rclX ; OP1=X
-    call convertXToXPrime
-    bcall(_PushRealO1) ; FPS=[X]
+    call convertXToXPrime ; OP1=xprime
+    bcall(_PushRealO1) ; FPS=[xprime]
     call fitLeastSquare ; OP1=intercept, OP2=slope
-    call exchangeFPSOP1 ; FPS=[intercept]; OP1=X
-    bcall(_FPMult) ; OP1=slope*X
+    call exchangeFPSOP1 ; FPS=[intercept]; OP1=xprime
+    bcall(_FPMult) ; OP1=slope*xprime
     bcall(_PopRealO2) ; FPS=[]; OP2=intercept
-    bcall(_FPAdd) ; OP1=slope*X + intercept
-    call convertYPrimeToY
+    bcall(_FPAdd) ; OP1=yprime=slope*xprime + intercept
+    call convertYPrimeToY ; OP1=y
     jp replaceX
 
 ; Description: Forecast X from Y.
 mCfitForcastXHandler:
-    call closeInput
-    res rpnFlagsTvmCalculate, (iy + rpnFlags)
+    call closeInputAndRecallX ; OP1=y
     ld a, (curveFitModel)
     call selectCfitModel
-    call rclX ; OP1=X=y
-    call convertYToYPrime
-    bcall(_PushRealO1) ; FPS=[y]
+    call convertYToYPrime ; OP1=yprime
+    bcall(_PushRealO1) ; FPS=[yprime]
     call fitLeastSquare ; OP1=intercept,OP2=slope
-    call exchangeFPSOP2 ; FPS=[slope]; OP2=y
+    call exchangeFPSOP2 ; FPS=[slope]; OP2=yprime
     bcall(_InvSub) ; OP1=y-intercept
     bcall(_PopRealO2) ; FPS=[]; OP2=slope
-    bcall(_FPDiv) ; OP1=(y-intercept) / slope = x
-    call convertXPrimeToX
+    bcall(_FPDiv) ; OP1=xprime=(y-intercept) / slope
+    call convertXPrimeToX ; OP1=x
     jp replaceX
 
 ; Description: Calculate the least square fit slope into X register.
 mCfitSlopeHandler:
-    call closeInput
-    res rpnFlagsTvmCalculate, (iy + rpnFlags)
+    call closeInputAndRecallX
     ld a, (curveFitModel)
     call selectCfitModel
     call fitLeastSquare ; OP1=intercept,OP2=slope
@@ -187,8 +182,7 @@ mCfitSlopeHandler:
 
 ; Description: Calculate the least square fit intercept into X register.
 mCfitInterceptHandler:
-    call closeInput
-    res rpnFlagsTvmCalculate, (iy + rpnFlags)
+    call closeInputAndRecallX
     ld a, (curveFitModel)
     call selectCfitModel
     call fitLeastSquare ; OP1=intercept,OP2=slope
@@ -197,8 +191,7 @@ mCfitInterceptHandler:
 
 ; Description: Calculate the correlation coefficient into X register.
 mCfitCorrelationHandler:
-    call closeInput
-    res rpnFlagsTvmCalculate, (iy + rpnFlags)
+    call closeInputAndRecallX
     ld a, (curveFitModel)
     call selectCfitModel
     call statCorrelation
@@ -281,16 +274,15 @@ mCfitPowerNameSelector:
 ;   X=abs(corr(best))
 ; Destroys: OP1, OP2, OP3, (maybe OP4?), OP5, OP6
 mCfitBestHandler:
-    call closeInput
-    res rpnFlagsTvmCalculate, (iy + rpnFlags)
-mCfitBestCheckLinear:
+    call closeInputAndRecallX
+    ; check Linear fit
     ld a, curveFitModelLinear
     call selectCfitModel
     call statCorrelation
     bcall(_OP1ToOP5) ; OP5=corr(best)
     ld b, curveFitModelLinear
-    push bc ; save linear
-mCfitBestCheckLog:
+    push bc ; stack=[linearModel]
+    ; check Log fit
     ld a, curveFitModelLog
     call selectCfitModel
     call statCorrelation
@@ -302,7 +294,7 @@ mCfitBestCheckLog:
     bcall(_OP6ToOP5) ; OP5=corr(log)
     pop bc
     ld b, curveFitModelLog
-    push bc
+    push bc ; stack=[logModel]
 mCfitBestCheckExp:
     ld a, curveFitModelExp
     call selectCfitModel
@@ -315,7 +307,7 @@ mCfitBestCheckExp:
     bcall(_OP6ToOP5) ; OP5=corr(exp)
     pop bc
     ld b, curveFitModelExp
-    push bc
+    push bc ; stack=[expModel]
 mCfitBestCheckPower:
     ld a, curveFitModelPower
     call selectCfitModel
@@ -328,7 +320,7 @@ mCfitBestCheckPower:
     bcall(_OP6ToOP5) ; OP5=corr(power)
     pop bc
     ld b, curveFitModelPower
-    push bc
+    push bc ; stack=[powerModel]
 mCfitBestSelect:
     ; B=best model
     ; OP5=best correlation
