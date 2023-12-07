@@ -467,7 +467,7 @@ flipInputBufSignAdd:
 ; Output:
 ; Destroys: all, OP1, OP2, OP4
 handleKeyEnter:
-    call closeX
+    call closeInput
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     call liftStack ; always lift the stack
     res rpnFlagsLiftEnabled, (iy + rpnFlags)
@@ -706,13 +706,13 @@ handleKeyDiv:
 ;-----------------------------------------------------------------------------
 
 handleKeyPi:
-    call closeX
+    call closeInput
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     call op1SetPi
     jp pushX
 
 handleKeyEuler:
-    call closeX
+    call closeInput
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     call op1SetEuler
     jp pushX
@@ -750,17 +750,17 @@ handleKeySqrt:
 ;-----------------------------------------------------------------------------
 
 handleKeyRollDown:
-    call closeX
+    call closeInput
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     jp rollDownStack
 
 handleKeyExchangeXY:
-    call closeX
+    call closeInput
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     jp exchangeXYStack
 
 handleKeyAns:
-    call closeX
+    call closeInput
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     call rclL
     jp pushX
@@ -828,7 +828,7 @@ handleKeyATan:
 ;-----------------------------------------------------------------------------
 
 handleKeySto:
-    call closeX
+    call closeInput
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld hl, msgStoPrompt
     call startArgParser
@@ -852,7 +852,7 @@ handleKeyStoError:
     ret
 
 handleKeyRcl:
-    call closeX
+    call closeInput
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld hl, msgRclPrompt
     call startArgParser
@@ -928,7 +928,7 @@ handleKeyQuit:
 ;-----------------------------------------------------------------------------
 
 handleKeyDraw:
-    call closeX
+    call closeInput
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld hl, msgDrawPrompt
     call startArgParser
@@ -943,28 +943,10 @@ handleKeyDraw:
     ret
 
 handleKeyShow:
-    call closeX
+    call closeInput
     call processShowCommands
     ret
 
 ; DRAW mode prompt.
 msgDrawPrompt:
     .db "DRAW", 0
-
-;-----------------------------------------------------------------------------
-; Common code fragments, to save space.
-;-----------------------------------------------------------------------------
-
-; Close the input buffer, and recall Y and X into OP1 and OP2 respectively.
-closeInputAndRecallXY:
-    call closeX
-    res rpnFlagsTvmCalculate, (iy + rpnFlags)
-    call rclX
-    bcall(_OP1ToOP2)
-    jp rclY
-
-; Close the input buffer, and recall X into OP1 respectively.
-closeInputAndRecallX:
-    call closeX
-    res rpnFlagsTvmCalculate, (iy + rpnFlags)
-    jp rclX

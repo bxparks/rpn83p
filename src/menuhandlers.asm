@@ -119,7 +119,7 @@ mAlog2Handler:
 
 ; Log2(X) = log_base_2(X) = log(X)/log(2)
 mLog2Handler:
-    call closeX
+    call closeInput
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     bcall(_OP1Set2) ; OP2 = 2
     bcall(_LnX) ; OP1 = ln(2)
@@ -161,7 +161,7 @@ mPercentHandler:
 ; resulting percentage can be given to the '%' menu key to get the delta
 ; change, then the '+' command will retrieve the original X.
 mPercentChangeHandler:
-    call closeX
+    call closeInput
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     call rclY
     bcall(_OP1ToOP2) ; OP2 = Y
@@ -194,7 +194,7 @@ mPercentChangeHandler:
 ; arguments, producing a 32-bit result. It's probably available somewhere on
 ; the internet, but I'm going to punt on that for now.
 mGcdHandler:
-    call closeX
+    call closeInput
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     call validatePosIntGcdLcm
     call gcdOp1Op2 ; OP1 = gcd()
@@ -237,7 +237,7 @@ gcdOp1Op2:
 ; LCM(Y, X) = Y * X / GCD(Y, X)
 ;           = Y * (X / GCD(Y,X))
 mLcmHandler:
-    call closeX
+    call closeInput
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     call validatePosIntGcdLcm
 
@@ -466,7 +466,7 @@ mFactorialHandler:
 ; mRandomHandler() -> rand()
 ; Description: Generate a random number [0,1) into the X register.
 mRandomHandler:
-    call closeX
+    call closeInput
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     bcall(_Random)
     jp pushX
@@ -719,7 +719,7 @@ mHrToHmsHandler:
 ;-----------------------------------------------------------------------------
 
 mFixHandler:
-    call closeX
+    call closeInput
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld hl, msgFixPrompt
     call startArgParser
@@ -730,7 +730,7 @@ mFixHandler:
     jr saveFormatDigits
 
 mSciHandler:
-    call closeX
+    call closeInput
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld hl, msgSciPrompt
     call startArgParser
@@ -741,7 +741,7 @@ mSciHandler:
     jr saveFormatDigits
 
 mEngHandler:
-    call closeX
+    call closeInput
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld hl, msgEngPrompt
     call startArgParser
@@ -902,7 +902,7 @@ mAtanhHandler:
 ;-----------------------------------------------------------------------------
 
 mStackRollUpHandler:
-    call closeX
+    call closeInput
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     jp rollUpStack
 
@@ -917,7 +917,7 @@ mStackExchangeXYHandler:
 ;-----------------------------------------------------------------------------
 
 mClearRegsHandler:
-    call closeX
+    call closeInput
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     call clearRegs
     ld a, errorCodeRegsCleared
@@ -925,12 +925,12 @@ mClearRegsHandler:
     ret
 
 mClearStackHandler:
-    call closeX
+    call closeInput
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     jp clearStack
 
 mClearXHandler:
-    call closeX
+    call closeInput
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     res rpnFlagsLiftEnabled, (iy + rpnFlags) ; disable stack lift
     bcall(_OP1Set0)
