@@ -590,8 +590,10 @@ msgArgModifierIndirect:
 ;   - (CurCol) is updated
 ; Destroys: A, HL; BC destroyed by PutPS()
 printInputBuf:
-    ld hl, inputBuf
+    call formatInputBuf
+    ld hl, inputDisplay
     call putPS
+    ; Append trailing '_' cursor.
     ld a, cursorChar
     bcall(_PutC)
     ; Skip EraseEOL() if the PutC() above wrapped to next line
@@ -599,6 +601,51 @@ printInputBuf:
     or a
     ret z
     bcall(_EraseEOL)
+    ret
+
+; Description: Convert the inputBuf into inputDisplay suitable for rendering on
+; the screen. The biggest difference is that if the inputBuf is longer than the
+; display width, only the right most 13 digits are displayed. The 14th digit
+; from the left is replaced with an ellipsis character.
+; Input: inputBuf
+; Output: inputDisplay
+; Destroys: all registers
+formatInputBuf:
+    ld hl, inputBuf
+    ld de, inputDisplay
+    ld c, (hl) ; C=len(inputBuf)
+    ld a, inputDisplayMax
+    sub c ; A=14-len(inputBuf); if len(inputBuf)>14: CF=1
+    jr c, formatInputBufTruncate
+    ; copy the entire inputBuf
+    ld a, c ; check for 0-len string
+    ld (de), a
+    or a
+    ret z
+    ld b, 0
+    inc hl ; skip past len byte
+    inc de ; skip past len byte
+    ldir
+    ret
+formatInputBufTruncate:
+    ; We are here if C=len(inputBuf)>14. Advance inputBuf pointer to the last
+    ; 13 characters.
+    neg ; A=len(inputBuf)-14
+    inc a ; A=len(inputBuf)-13
+    ld c, a
+    ld b, 0
+    inc hl ; skip past len byte
+    add hl, bc ; HL+=len(inputBuf)-13
+    ; Prepend ellipsis character in inputDisplay
+    ld a, inputDisplayMax
+    ld (de), a ; len(inputDisplay) = inputDisplayMax
+    inc de
+    ld a, Lellipsis
+    ld (de), a
+    inc de
+    ; Copy last 13 characters from inputBuf to inputDisplay.
+    ld bc, inputDisplayMax-1
+    ldir
     ret
 
 ;-----------------------------------------------------------------------------

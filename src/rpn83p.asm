@@ -361,8 +361,17 @@ tvmNPMT1 equ tvmNPMT0 + 9 ; float
 tvmSolverIsRunning equ tvmNPMT1 + 9 ; boolean; true if active
 tvmSolverCount equ tvmSolverIsRunning + 1 ; u8; iteration count
 
-inputDisplay equ tvmSolverCount + 1
-inputDisplaySizeOf equ 15
+; A Pascal-string that contains the rendered version of inputBuf, truncated and
+; formatted as needed, which can be printed on the screen.
+; struct InputDisplay {
+;   uint8_t size;
+;   char buf[15];
+; };
+inputDisplay equ tvmSolverCount + 1 ; Pascal-string of 15 bytes
+inputDisplaySize equ inputDisplay ; size byte of the string
+inputDisplayBuf equ inputDisplay + 1 ; start of actual buffer
+inputDisplayMax equ 14 ; 14-characters displayed, excluding trailing cursor
+inputDisplaySizeOf equ inputDisplayMax + 1 ; total size of data structure
 
 appBufferEnd equ inputDisplay + inputDisplaySizeOf
 
