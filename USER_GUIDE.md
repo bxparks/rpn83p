@@ -2135,12 +2135,12 @@ We can persuade the TVM module to give us 2 solutions using the `IYR1` and
 - Press 400 `FV`
 - Press 1 `P/YR`
 - Press `I%YR` (see `TVM Not Found`)
-- Modify the TVM Solver initial guesses to get first solution
+- Modify the TVM Solver initial guesses to get the first solution
     - Press 10 `IYR1`
     - Press 20 `IYR2`
 - Press `I%YR` (see `TVM Calculated`)
 - Answer: 14.43587133%
-- Modify the TVM Solver initial guesses to get second solution
+- Modify the TVM Solver initial guesses to get the second solution
     - Press 40 `IYR1`
     - Press 60 `IYR2`
 - Press `I%YR` (see `TVM Calculated`)
