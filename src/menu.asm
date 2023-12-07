@@ -371,7 +371,9 @@ exitMenuGroupToParent:
     ; [[fallthrough]]
 
 ; Description: Change the current menu group to the target menuGroup and
-; rowIndex.
+; rowIndex. Sends an onExit() event to the previous menuGroupHandler by setting
+; at CF=1. Then sends an onEnter() event to the new menuGroupHandler by setting
+; CF=0.
 ; Input:
 ;   - B=target menuGroupId
 ;   - C=target rowIndex
