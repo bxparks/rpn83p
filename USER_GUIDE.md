@@ -233,7 +233,7 @@ from a host computer. There are a number of options:
 **Warning**: If you are upgrading from a previous version of RPN83P, you may
 need to manually remove the `RPN83P` app from the calculator, before uploading
 the new `rpn83p.8xk` file. I don't know why, but sometimes the calculator gets
-stuck at the `Defragmenting...` step and never finish uploading the file. To
+stuck at the `Defragmenting...` step and never finishes uploading the file. To
 manually remove, go to `2ND MEM`, `2` (Mem Mgmt/Del), `ALPHA A` (Apps), scroll
 down to the `RPN83P`, hit `DEL`, press `2` (Yes).
 
