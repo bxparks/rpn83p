@@ -488,6 +488,7 @@ _InsertAtPos equ _InsertAtPosLabel-branchTableBase
 _DeleteAtPosLabel:
 _DeleteAtPos equ _DeleteAtPosLabel-branchTableBase
     .dw DeleteAtPos
+    .db 1
 ; tvm.asm
 _TvmCalculateNLabel:
 _TvmCalculateN equ _TvmCalculateNLabel-branchTableBase
