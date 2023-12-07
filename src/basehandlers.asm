@@ -5,15 +5,21 @@
 ; BASE menu handlers.
 ;-----------------------------------------------------------------------------
 
+; Description: Group handler for BASE menu group.
+; Input:
+;   - CF=1: handle onExit() event
+;   - CF=0: handle onEnter() event
 mBaseHandler:
     push af ; preserve the C flag
-    call closeX ; must call before modifying rpnFlagsBaseModeEnabled
-    res rpnFlagsTvmCalculate, (iy + rpnFlags)
+    ; must call closeInputXxx() before modifying rpnFlagsBaseModeEnabled
+    call closeInputAndRecallNone
     pop af
     jr c, mBaseHandlerOnExit
+    ; handle onEnter()
     set rpnFlagsBaseModeEnabled, (iy + rpnFlags)
     jr mBaseHandlerEnd
 mBaseHandlerOnExit:
+    ; handle onExit()
     res rpnFlagsBaseModeEnabled, (iy + rpnFlags)
 mBaseHandlerEnd:
     set dirtyFlagsStatus, (iy + dirtyFlags)
@@ -21,30 +27,26 @@ mBaseHandlerEnd:
     ret
 
 mHexHandler:
-    call closeX
-    res rpnFlagsTvmCalculate, (iy + rpnFlags)
+    call closeInputAndRecallNone
     ld a, 16
     jr setBaseNumber
 
 mDecHandler:
-    call closeX
-    res rpnFlagsTvmCalculate, (iy + rpnFlags)
+    call closeInputAndRecallNone
     ld a, 10
     jr setBaseNumber
 
 mOctHandler:
-    call closeX
-    res rpnFlagsTvmCalculate, (iy + rpnFlags)
+    call closeInputAndRecallNone
     ld a, 8
     jr setBaseNumber
 
 mBinHandler:
-    call closeX
-    res rpnFlagsTvmCalculate, (iy + rpnFlags)
+    call closeInputAndRecallNone
     ld a, 2
     ; [[fallthrough]]
 
-; Description: Set the (baseNumber) to the value in A. Set dirty flag.
+; Description: Set the (baseNumber) to the value in A. Set various dirty flags.
 ; Destroys: none
 setBaseNumber:
     set dirtyFlagsStatus, (iy + dirtyFlags)
@@ -368,8 +370,7 @@ mSetCarryFlagHandler:
     jr storeCarryFlag
 
 mGetCarryFlagHandler:
-    call closeX
-    res rpnFlagsTvmCalculate, (iy + rpnFlags)
+    call closeInputAndRecallNone
     set dirtyFlagsStatus, (iy + dirtyFlags)
     call recallCarryFlag
     jr c, mGetCarryFlagHandlerPush1
@@ -384,8 +385,7 @@ mGetCarryFlagHandlerPush1:
 ; Description: Prompt for the new base word size, like FIX or STO. Allowed
 ; values are 8, 16, 24, 32. Throw Err:Argument if outside of that list.
 mSetWordSizeHandler:
-    call closeX
-    res rpnFlagsTvmCalculate, (iy + rpnFlags)
+    call closeInputAndRecallNone
     ld hl, msgWordSizePrompt
     call startArgParser
     call processArgCommands ; CF=0 if canceled; (argModified), (argValue)
@@ -410,8 +410,7 @@ msgWordSizePrompt:
     .db "WSIZ", 0
 
 mGetWordSizeHandler:
-    call closeX
-    res rpnFlagsTvmCalculate, (iy + rpnFlags)
+    call closeInputAndRecallNone
     ld a, (baseWordSize)
     call convertU8ToOP1
     jp pushX

@@ -40,8 +40,7 @@ initStat:
 ;-----------------------------------------------------------------------------
 
 mStatPlusHandler:
-    call closeX
-    res rpnFlagsTvmCalculate, (iy + rpnFlags)
+    call closeInputAndRecallNone
     call statSigmaPlus
     ld a, statRegN
     call rclNN ; OP1=R[sigmaN]
@@ -50,8 +49,7 @@ mStatPlusHandler:
     ret
 
 mStatMinusHandler:
-    call closeX
-    res rpnFlagsTvmCalculate, (iy + rpnFlags)
+    call closeInputAndRecallNone
     call statSigmaMinus
     ld a, statRegN
     call rclNN ; OP1=R[sigmaN]
@@ -98,8 +96,7 @@ mStatLinearModeNameSelector:
     ret
 
 mStatClearHandler:
-    call closeX
-    res rpnFlagsTvmCalculate, (iy + rpnFlags)
+    call closeInputAndRecallNone
     call clearStatRegs
     ld a, errorCodeStatCleared
     ld (handlerCode), a
@@ -109,8 +106,7 @@ mStatClearHandler:
 
 ; Description: Calculate the Sum of X and Y into X and Y registers.
 mStatSumHandler:
-    call closeX
-    res rpnFlagsTvmCalculate, (iy + rpnFlags)
+    call closeInputAndRecallNone
     ld a, statRegY
     call rclNN ; OP1=Ysum
     ld a, statRegX
@@ -119,8 +115,7 @@ mStatSumHandler:
 
 ; Description: Calculate the average of X and Y into X and Y registers.
 mStatMeanHandler:
-    call closeX
-    res rpnFlagsTvmCalculate, (iy + rpnFlags)
+    call closeInputAndRecallNone
     ld ix, cfitModelLinear ; use linear model for simple statistics
     call statMean
     jp pushXY
@@ -130,16 +125,14 @@ mStatMeanHandler:
 ;   Y: Mean of Y weighted by X = Sum(X,Y) / Sum(X)
 ;   X: Mean of X weighted by Y = Sum(X,Y) / Sum(Y)
 mStatWeightedMeanHandler:
-    call closeX
-    res rpnFlagsTvmCalculate, (iy + rpnFlags)
+    call closeInputAndRecallNone
     ld ix, cfitModelLinear ; use linear model for simple statistics
     call statWeightedMean ; OP1=WeightedY, OP2=WeightedX
     jp pushXY
 
 ; Description: Return the number of items entered. Mostly for convenience.
 mStatNHandler:
-    call closeX
-    res rpnFlagsTvmCalculate, (iy + rpnFlags)
+    call closeInputAndRecallNone
     ld a, statRegN
     call rclNN
     jp pushX
@@ -152,8 +145,7 @@ mStatNHandler:
 ;   OP2: PDEV<X>
 ; Destroys: A, OP2, OP3, OP4
 mStatPopSdevHandler:
-    call closeX
-    res rpnFlagsTvmCalculate, (iy + rpnFlags)
+    call closeInputAndRecallNone
     ld ix, cfitModelLinear ; use linear model for simple statistics
     call statStdDev
     jp pushXY
@@ -164,8 +156,7 @@ mStatPopSdevHandler:
 ;   OP2: SDEV<X>
 ; Destroys: A, OP2, OP3, OP4
 mStatSampleSdevHandler:
-    call closeX
-    res rpnFlagsTvmCalculate, (iy + rpnFlags)
+    call closeInputAndRecallNone
     ld ix, cfitModelLinear ; use linear model for simple statistics
     call statVariance ; OP1=VAR(Y), OP2=VAR(X)
     ; Multiply each VAR(x) with N/(N-1)
@@ -187,8 +178,7 @@ mStatSampleSdevHandler:
 ;   - OP1: PCOV<X,Y>
 ; Destroys: A, OP2, OP3, OP4
 mStatPopCovHandler:
-    call closeX
-    res rpnFlagsTvmCalculate, (iy + rpnFlags)
+    call closeInputAndRecallNone
     ld ix, cfitModelLinear ; use linear model for simple statistics
     call statCovariance
     jp pushX
@@ -199,8 +189,7 @@ mStatPopCovHandler:
 ;   - OP1: SCOV<X,Y>
 ; Destroys: A, OP2, OP3, OP4
 mStatSampleCovHandler:
-    call closeX
-    res rpnFlagsTvmCalculate, (iy + rpnFlags)
+    call closeInputAndRecallNone
     ld ix, cfitModelLinear ; use linear model for simple statistics
     call statCovariance ; OP1=PCOV(X,Y)
     call statFactorPopToSampleOP2 ; OP2=N/(N-1)
@@ -212,6 +201,10 @@ mStatSampleCovHandler:
 ;-----------------------------------------------------------------------------
 
 ; Description: Add the X and Y data point to the stat registers.
+; TODO: Use OP1 and OP2 as input parameters, instead of rclX and rclY. This
+; would decouple this routine from the RPN stack, which allows easier migration
+; to Flash Page 1 if necessary. But we would still have a dependency to storage
+; registers through stoNN() and rclNN().
 ; Destroys: OP1, OP2, OP4
 statSigmaPlus:
     call rclX
@@ -316,6 +309,10 @@ statSigmaPlusLogYContinue:
 ;-----------------------------------------------------------------------------
 
 ; Description: Subtract the X and Y data point from the stat registers.
+; TODO: Use OP1 and OP2 as input parameters, instead of rclX and rclY. This
+; would decouple this routine from the RPN stack, which allows easier migration
+; to Flash Page 1 if necessary. But we would still have a dependency to storage
+; registers through stoNN() and rclNN().
 ; Destroys: OP1, OP2, OP4
 statSigmaMinus:
     call rclX

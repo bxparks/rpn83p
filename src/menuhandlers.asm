@@ -119,26 +119,26 @@ mAlog2Handler:
 
 ; Log2(X) = log_base_2(X) = log(X)/log(2)
 mLog2Handler:
-    call closeX
-    res rpnFlagsTvmCalculate, (iy + rpnFlags)
-    bcall(_OP1Set2) ; OP2 = 2
-    bcall(_LnX) ; OP1 = ln(2)
-    bcall(_PushRealO1); FPS=[ln(2)]
-    call rclX ; OP1 = X
-    bcall(_LnX) ; OP1 = ln(X)
-    bcall(_PopRealO2) ; FPS=[]; OP2 = ln(2)
-    bcall(_FPDiv) ; OP1 = ln(X) / ln(2)
-    jp replaceX
-
-; LogBase(Y, X) = log_base_X(Y) = log(Y)/log(X)
-mLogBaseHandler:
     call closeInputAndRecallX
     bcall(_LnX) ; OP1 = ln(X)
-    bcall(_PushRealO1); FPS=[ln(X)]
-    call rclY ; OP1 = Y
-    bcall(_LnX) ; OP1 = ln(Y)
-    bcall(_PopRealO2) ; FPS=[]; OP2 = ln(X)
-    bcall(_FPDiv) ; OP1 = ln(Y) / ln(X)
+    bcall(_PushRealO1) ; FPS=[ln(x)]
+    bcall(_OP1Set2) ; OP1=2.0
+    bcall(_LnX) ; OP1=ln(2.0)
+    call op1ToOp2 ; OP2=ln(2.0)
+    bcall(_PopRealO1) ; FPS=[]; OP1=ln(x)
+    bcall(_FPDiv) ; OP1=ln(x)/ln(2)
+    jp replaceX
+
+; LogBase(Y, X) = log_base_X(Y)=log(Y)/log(X)
+mLogBaseHandler:
+    call closeInputAndRecallXY ; OP1=Y; OP2=X
+    bcall(_PushRealO2) ; FPS=[X]
+    bcall(_LnX) ; OP1=ln(Y)
+    call exchangeFPSOP1; FPS=[ln(Y)]; OP1=X
+    bcall(_LnX) ; OP1=ln(X)
+    call op1ToOp2 ; OP2=ln(X)
+    bcall(_PopRealO1) ; FPS=[]; OP1=ln(Y)
+    bcall(_FPDiv) ; OP1=ln(Y)/ln(X)
     jp replaceXY
 
 ;-----------------------------------------------------------------------------
@@ -161,17 +161,13 @@ mPercentHandler:
 ; resulting percentage can be given to the '%' menu key to get the delta
 ; change, then the '+' command will retrieve the original X.
 mPercentChangeHandler:
-    call closeX
-    res rpnFlagsTvmCalculate, (iy + rpnFlags)
-    call rclY
-    bcall(_OP1ToOP2) ; OP2 = Y
+    call closeInputAndRecallXY ; OP1=Y; OP2=X
     bcall(_PushRealO1) ; FPS=[Y]
-    call rclX ; OP1 = X
-    bcall(_FPSub) ; OP1 = X - Y
-    bcall(_PopRealO2) ; FPS=[]; OP2 = Y
-    bcall(_FPDiv) ; OP1 = (X-Y)/Y
+    bcall(_InvSub) ; OP1=X-Y
+    bcall(_PopRealO2) ; FPS=[]; OP2=Y
+    bcall(_FPDiv) ; OP1=(X-Y)/Y
     call op2Set100
-    bcall(_FPMult) ; OP1 = 100*(X-Y)/Y
+    bcall(_FPMult) ; OP1=100*(X-Y)/Y
     jp replaceX
 
 ;-----------------------------------------------------------------------------
@@ -194,25 +190,20 @@ mPercentChangeHandler:
 ; arguments, producing a 32-bit result. It's probably available somewhere on
 ; the internet, but I'm going to punt on that for now.
 mGcdHandler:
-    call closeX
-    res rpnFlagsTvmCalculate, (iy + rpnFlags)
+    call closeInputAndRecallXY
     call validatePosIntGcdLcm
-    call gcdOp1Op2 ; OP1 = gcd()
-    jp replaceXY ; X = OP1
+    call gcdOp1Op2 ; OP1=gcd(OP1,OP2)
+    jp replaceXY
 
 ; Description: Validate that X and Y are positive (> 0) integers. Calls
 ; ErrDomain exception upon failure.
-; Output:
-;   - OP1 = Y
-;   - OP2 = X
+; Input: OP1=Y; OP2=X
+; Output: OP1=Y; OP2=X
 validatePosIntGcdLcm:
-    call rclX
-    bcall(_CkOP1FP0)
-    jr z, validatePosIntGcdLcmError
-    bcall(_CkPosInt) ; if OP1 >= 0: ZF=1
-    jr nz, validatePosIntGcdLcmError
-    bcall(_OP1ToOP2) ; OP2=X=b
-    call rclY ; OP1=Y=a
+    call op1ExOp2
+    call validatePosIntGcdLcmCommon ; neat trick, calls the tail of itself
+    call op1ExOp2
+validatePosIntGcdLcmCommon:
     bcall(_CkOP1FP0) ; if OP1 >= 0: ZF=1
     jr z, validatePosIntGcdLcmError
     bcall(_CkPosInt)
@@ -237,10 +228,12 @@ gcdOp1Op2:
 ; LCM(Y, X) = Y * X / GCD(Y, X)
 ;           = Y * (X / GCD(Y,X))
 mLcmHandler:
-    call closeX
-    res rpnFlagsTvmCalculate, (iy + rpnFlags)
+    call closeInputAndRecallXY
     call validatePosIntGcdLcm
+    call lcdOp1Op2 ; OP1=lcd(OP1,OP2)
+    jp replaceXY ; X = lcm(X, Y)
 
+lcdOp1Op2:
     bcall(_PushRealO1) ; FPS=[Y]
     bcall(_PushRealO2) ; FPS=[Y,X]
     call gcdOp1Op2 ; OP1 = gcd()
@@ -249,8 +242,7 @@ mLcmHandler:
     bcall(_FPDiv) ; OP1 = X / gcd
     bcall(_PopRealO2) ; FPS=[]; OP2 = Y
     bcall(_FPMult) ; OP1 = Y * (X / gcd)
-
-    jp replaceXY ; X = lcm(X, Y)
+    ret
 
 ;-----------------------------------------------------------------------------
 
@@ -438,7 +430,6 @@ mNearHandler:
 ; P(Y, X) = P(n, r) = n!/(n-r)! = n(n-1)...(n-r+1)
 mPermHandler:
     call closeInputAndRecallXY ; OP1=Y=n; OP2=X=r
-    res rpnFlagsTvmCalculate, (iy + rpnFlags)
     bcall(_ProbPerm)
     jp replaceXY
 
@@ -448,7 +439,6 @@ mPermHandler:
 ; C(Y, X) = C(n, r) = n!/(n-r)!/r! = n(n-1)...(n-r+1)/(r)(r-1)...(1).
 mCombHandler:
     call closeInputAndRecallXY ; OP1=Y=n; OP2=X=r
-    res rpnFlagsTvmCalculate, (iy + rpnFlags)
     bcall(_ProbComb)
     jp replaceXY
 
@@ -466,8 +456,7 @@ mFactorialHandler:
 ; mRandomHandler() -> rand()
 ; Description: Generate a random number [0,1) into the X register.
 mRandomHandler:
-    call closeX
-    res rpnFlagsTvmCalculate, (iy + rpnFlags)
+    call closeInputAndRecallX
     bcall(_Random)
     jp pushX
 
@@ -719,8 +708,7 @@ mHrToHmsHandler:
 ;-----------------------------------------------------------------------------
 
 mFixHandler:
-    call closeX
-    res rpnFlagsTvmCalculate, (iy + rpnFlags)
+    call closeInputAndRecallNone
     ld hl, msgFixPrompt
     call startArgParser
     call processArgCommands
@@ -730,8 +718,7 @@ mFixHandler:
     jr saveFormatDigits
 
 mSciHandler:
-    call closeX
-    res rpnFlagsTvmCalculate, (iy + rpnFlags)
+    call closeInputAndRecallNone
     ld hl, msgSciPrompt
     call startArgParser
     call processArgCommands
@@ -741,8 +728,7 @@ mSciHandler:
     jr saveFormatDigits
 
 mEngHandler:
-    call closeX
-    res rpnFlagsTvmCalculate, (iy + rpnFlags)
+    call closeInputAndRecallNone
     ld hl, msgEngPrompt
     call startArgParser
     call processArgCommands
@@ -902,8 +888,7 @@ mAtanhHandler:
 ;-----------------------------------------------------------------------------
 
 mStackRollUpHandler:
-    call closeX
-    res rpnFlagsTvmCalculate, (iy + rpnFlags)
+    call closeInputAndRecallNone
     jp rollUpStack
 
 mStackRollDownHandler:
@@ -917,21 +902,18 @@ mStackExchangeXYHandler:
 ;-----------------------------------------------------------------------------
 
 mClearRegsHandler:
-    call closeX
-    res rpnFlagsTvmCalculate, (iy + rpnFlags)
+    call closeInputAndRecallNone
     call clearRegs
     ld a, errorCodeRegsCleared
     ld (handlerCode), a
     ret
 
 mClearStackHandler:
-    call closeX
-    res rpnFlagsTvmCalculate, (iy + rpnFlags)
+    call closeInputAndRecallNone
     jp clearStack
 
 mClearXHandler:
-    call closeX
-    res rpnFlagsTvmCalculate, (iy + rpnFlags)
+    call closeInputAndRecallNone
     res rpnFlagsLiftEnabled, (iy + rpnFlags) ; disable stack lift
     bcall(_OP1Set0)
     jp stoX

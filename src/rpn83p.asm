@@ -91,7 +91,7 @@ rpnFlagsTvmCalculate equ 6 ; set if the next TVM function should calculate
 inputBufFlags equ asm_Flag3
 inputBufFlagsDecPnt equ 0 ; set if decimal point exists
 inputBufFlagsEE equ 1 ; set if EE symbol exists
-inputBufFlagsClosedEmpty equ 2 ; inputBuf empty when closeX() called
+inputBufFlagsClosedEmpty equ 2 ; inputBuf empty when closeInput() called
 inputBufFlagsExpSign equ 3 ; exponent sign bit detected during parsing
 inputBufFlagsArgExit equ 4 ; set to exit CommandArg mode
 inputBufFlagsArgAllowModifier equ 5 ; allow */-+ modifier in CommandArg mode
@@ -361,7 +361,10 @@ tvmNPMT1 equ tvmNPMT0 + 9 ; float
 tvmSolverIsRunning equ tvmNPMT1 + 9 ; boolean; true if active
 tvmSolverCount equ tvmSolverIsRunning + 1 ; u8; iteration count
 
-appBufferEnd equ tvmSolverCount + 1
+inputDisplay equ tvmSolverCount + 1
+inputDisplaySizeOf equ 15
+
+appBufferEnd equ inputDisplay + inputDisplaySizeOf
 
 ; Floating point number buffer, used only within parseNumBase10(). It is used
 ; only locally so it can probaly be anywhere. Let's just use OP3 instead of

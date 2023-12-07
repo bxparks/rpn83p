@@ -58,7 +58,7 @@ AppendInputBuf:
 ; Description: Close the input buffer by parsing the input, then copying the
 ; float value into X. If not in edit mode, no need to parse the inputBuf, the X
 ; register is not changed. Almost all functions/commands in RPN83P will call
-; this function through the closeX() function.
+; this function through the closeInput() function.
 ;
 ; This function determines 2 flags which affect the stack lift:
 ;
