@@ -2228,7 +2228,16 @@ limited:
       by RPN83P
     - it would be useful to allow the user to customize some of those buttons
       for quick access
-    - for example, the `2ND L1` to `2ND L6`
+    - among the currently unassigned keys, here are some remarks about their
+      availability:
+        - unavailable, likely used by RPN83P in future: `2ND INS`, `2ND LIST`,
+          `2ND TEST`, `2ND ANGLE`, `2ND MATRIX` `2ND Imaginary-i`, `2ND
+          CATALOG`, `2ND MEM`, `VARS`, `PRGM`,
+        - reserved just in case: `XTTn`, `2ND LINK`, `2ND DISTR`, `2ND {`, `2ND
+          }`, `2ND [`, `2ND ]`
+        - definitely available:`2ND L1` to `2ND L6` (no obvious purpose in
+          RPN83P)
+        - probably available: `2ND u`, `2ND v`, `2ND w`
 - user-defined alphanumeric variables
     - The HP-42S shows user-defined variables through the menu system.
     - Nice feature, but would require substantial refactoring of the current
