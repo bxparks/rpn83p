@@ -48,5 +48,5 @@ closeInputAndRecallXY:
     call closeInput
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     call rclX
-    bcall(_OP1ToOP2)
+    call op1ToOp2
     jp rclY
