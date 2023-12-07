@@ -116,7 +116,8 @@ Guide](USER_GUIDE.md), but here is the quick version:
 - Upload the file to the TI-83 Plus or TI-84 Plus calculator. Use one of
   following link programs:
     - Windows: [TI Connect](https://education.ti.com/en/products/computer-software/ti-connect-sw)
-    - Linux: [tilp](https://github.com/debrouxl/tilp_and_gfm)
+    - Linux: [tilp](https://github.com/debrouxl/tilp_and_gfm) (`$ apt install
+      tilp2`)
 - Run the program using the `APPS`:
     - Press `APPS`
     - Scroll down to the `RPN83P` entry
