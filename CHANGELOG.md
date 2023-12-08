@@ -1,6 +1,18 @@
 # Changelog
 
 - Unreleased
+    - Support more than 14 digits during edit/input
+        - When more than 14 digits are entered, the left most digits scroll off
+          to the left, with the left most digit replaced with an ellipsis
+          character indicates existence of extra digits.
+        - Normal mode:
+            - Accepts maximum of 20 digits, which supports entering all 14
+              digits encoded by the TI-OS floating point number format.
+            - 14 digits plus 1 decimal point, 1 mantissa minus sign, the 'E'
+              symbol, 1 exponent minus sign, 2 exponent digits.
+        - `BASE BIN` mode
+            - Accepts maximum of 32 digits, to allow all 32-bits of a binary
+              number to be entered when the `WSIZ` is 32.
 - 0.8.0 (2023-12-03)
     - **Breaking**: Flip the order of polar-rectangular conversion menu function
       (`>POL` and `>REC`) so that they are consistent with the HP-42S. I don't
