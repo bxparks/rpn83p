@@ -186,3 +186,23 @@ addU8ToOP1PageOneCheck:
     djnz addU8ToOP1PageOneLoop
     pop hl
     ret
+
+;------------------------------------------------------------------------------
+
+; Description: Convert OP1 to u16. Throw ErrDomain exception if:
+;   - OP1 >= 10000 (TODO: support 2^16)
+;   - OP1 < 0
+;   - OP1 is not an integer
+; Input: OP1
+; Output: DE=int(OP1)
+; Destroys: all, OP2
+convertOP1ToU16DEPageOne:
+    bcall(_CkPosInt) ; if OP1>=0 and OP1 is int: ZF=1
+    jr nz, convertOP1ToU16Err
+    call op2Set10000PageOne
+    bcall(_CpOP1OP2) ; if OP1 >= 10000: CF=0
+    jr nc, convertOP1ToU16Err
+    bcall(_ConvOP1) ; DE=int(OP1); TODO: implement convertOP1ToU16()
+    ret
+convertOP1ToU16Err:
+    bcall(_ErrDomain)

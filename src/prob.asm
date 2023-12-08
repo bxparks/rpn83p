@@ -11,32 +11,30 @@
 ;-----------------------------------------------------------------------------
 
 ; Calculate the Permutation function: P(OP1,OP2) = P(n,r) = n!/(n-r)! =
-; n(n-1)...(n-r+1)
+; n(n-1)...(n-r+1). n and r are limited to integers less than 65536 (2^16).
 ;
-; TODO: (n,r) are limited to [0.255]. It should be relatively easy to extended
-; the range to [0,65535].
-;
-; Input: OP1=Y=n; OP2=X=r
+; Input: OP1=n; OP2=r
 ; Output: OP1=P(n,r)
 ProbPerm:
-    call validatePermComb ; C=n; E=r
+    call validatePermComb ; HL=n; DE=r
     ; Do the calculation. Set initial Result to 1 since P(N, 0) = 1.
+    push hl
     bcall(_OP1Set1)
-    ld a, e ; A=r
-    or a
-    ret z
+    pop hl
     ; Loop r times, multiple by (y-i)
-    ld b, a ; B=r, C=n
 probPermLoop:
-    push bc
-    ld l, c
-    ld h, 0 ; HL=n
-    bcall(_SetXXXXOP2)
-    bcall(_FPMult)
-    pop bc
-    dec c ; n=n-1
-    djnz probPermLoop ; r=r-1
-    ret
+    ld a, e
+    or d
+    ret z ; return if DE==0
+    push de
+    push hl
+    bcall(_SetXXXXOP2) ; OP2=n
+    bcall(_FPMult) ; OP1=n(n-1)...
+    pop hl
+    pop de
+    dec hl ; n=n-1
+    dec de ; r=n-1
+    jr probPermLoop
 
 ; Description: Calculate the Combination function C(OP1,OP2) = C(n,r) =
 ; n!/(n-r)!/r! = n(n-1)...(n-r+1)/(r)(r-1)...(1). C(n,r) is symmetric with C(n,
@@ -60,78 +58,58 @@ ProbComb:
 #if 0
     bcall(_DebugClear)
 #endif
-    call validatePermComb ; C=n; E=r
+    call validatePermComb ; HL=n; DE=r
     ; Select the smaller of r and (n-r).
-    ld a, c
-    srl a ; A=int(n/2)
-    cp e ; if r>int(n/2): CF=1
+    push hl ; stack=[n]
+    or a ; CF=0
+    sbc hl, de ; HL=n-r
+    bcall(_CpHLDE) ; if (n-r)>=r: CF=0
     jr nc, ProbCombNormalized
-    ld a, c
-    sub e
-    ld e, a ; E=rprime=(n-r)
+    ex de, hl ; DE=n-r
 #if 0
-    bcall(_DebugUnsignedA) ; validate that the logic is correct
+    bcall(_DebugHL) ; validate that the logic is correct
 #endif
 ProbCombNormalized:
     ; Do the calculation. Set initial Result to 1 since C(n,0) = 1.
     bcall(_OP1Set1)
-    ld a, e ; A=r
-    or a
-    ret z
     ; Loop r times, multiply by (n-i), divide by i.
-    ld b, a ; B=r, C=n
+    pop hl ; HL=n
 probCombLoop:
-    push bc
-    ld l, c
-    ld h, 0 ; HL=n
+    ld a, e
+    or d
+    ret z ; return if DE==0
+    push hl ; stack=[n]
+    push de ; stack=[n,r]
     bcall(_SetXXXXOP2) ; OP2=n
-    bcall(_FPMult)
-    pop bc
-    push bc
-    ld l, b
-    ld h, 0 ; HL=r
+    bcall(_FPMult) ; OP2=n(n-1)...
+    pop hl ; stack=[n]; HL=r
+    push hl ; stack=[n,r]
     bcall(_SetXXXXOP2) ; OP2=r
-    bcall(_FPDiv)
-    pop bc
-    dec c ; n=n-1
-    djnz probCombLoop ; r=r-1
-    ret
+    bcall(_FPDiv) ; OP1=n(n-1).../[r(r-1)...]
+    pop de ; DE=r
+    pop hl ; HL=n
+    dec hl ; n=n-1
+    dec de ; r=r-1
+    jr probCombLoop
 
 ;-----------------------------------------------------------------------------
 
 ; Validate the n and r parameters of P(n,r) and C(n,r):
-;   - n, r are integers in the range of [0,255]
+;   - n, r are integers in the range of [0,65535]
 ;   - n >= r
 ; Input: OP1=Y=n; OP2=X=r
-; Output: C=n=int(OP1); E=r=int(OP2)
+; Output: HL=u16(n); DE=u16(r)
 ; Destroys: A, BC, DE, HL, OP1, OP2
 validatePermComb:
     ; Validate OP1=n
     bcall(_PushRealO2) ; FPS=[r]
-    call validatePermCombParam
-    bcall(_ConvOP1) ; DE=int(n)
-    push de ; stack=[int(n)]
+    call convertOP1ToU16DEPageOne ; DE=u16(n)
+    push de ; stack=[u16(n)]
     ; Validate OP2=r
     bcall(_PopRealO1) ; FPS=[]; OP1=r
-    call validatePermCombParam
-    bcall(_ConvOP1) ; DE=int(r)
-    pop bc ; BC=int(n)
+    call convertOP1ToU16DEPageOne ; DE=u16(r)
+    pop hl ; HL=u16(n)
     ; Check that n >= r
-    ld a, c ; A=n
-    cp e ; if n<r: CF=1
+    bcall(_CpHLDE) ; if HL(n)<DE(r): CF=1
     ret nc
-    bcall(_ErrDomain) ; throw exception
-
-; Validate OP1 is an integer in the range of [0, 255].
-; Input: OP1
-; Output: throws ErrDomain if outside of range
-; Destroys: all, OP2
-validatePermCombParam:
-    bcall(_CkPosInt) ; if OP1 >= 0: ZF=1
-    jr nz, validatePermCombError
-    ld hl, 256
-    bcall(_SetXXXXOP2) ; OP2=256
-    bcall(_CpOP1OP2) ; destroys all
-    ret c ; ok if OP1 < 255
-validatePermCombError:
     bcall(_ErrDomain) ; throw exception
