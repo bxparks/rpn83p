@@ -29,17 +29,19 @@ ProbPerm:
     ld b, a ; B=r, C=n
 probPermLoop:
     push bc
-    ld l, c ; L=C=n
+    ld l, c
     ld h, 0 ; HL=n
     bcall(_SetXXXXOP2)
     bcall(_FPMult)
     pop bc
-    dec c
-    djnz probPermLoop
+    dec c ; n=n-1
+    djnz probPermLoop ; r=r-1
     ret
 
 ; Description: Calculate the Combination function C(OP1,OP2) = C(n,r) =
-; n!/(n-r)!/r! = n(n-1)...(n-r+1)/(r)(r-1)...(1).
+; n!/(n-r)!/r! = n(n-1)...(n-r+1)/(r)(r-1)...(1). C(n,r) is symmetric with C(n,
+; n-r). So we can save a little bit of time by exchanging r with n-r, depending
+; on which is smaller.
 ;
 ; TODO: (n,r) are limited to [0.255]. It should be relatively easy to extended
 ; the range to [0,65535].
@@ -55,29 +57,44 @@ probPermLoop:
 ; Input: OP1=Y=n, OP2=X=r
 ; Output: OP1=C(n,r)
 ProbComb:
+#if 0
+    bcall(_DebugClear)
+#endif
     call validatePermComb ; C=n; E=r
+    ; Select the smaller of r and (n-r).
+    ld a, c
+    srl a ; A=int(n/2)
+    cp e ; if r>int(n/2): CF=1
+    jr nc, ProbCombNormalized
+    ld a, c
+    sub e
+    ld e, a ; E=rprime=(n-r)
+#if 0
+    bcall(_DebugUnsignedA) ; validate that the logic is correct
+#endif
+ProbCombNormalized:
     ; Do the calculation. Set initial Result to 1 since C(n,0) = 1.
     bcall(_OP1Set1)
     ld a, e ; A=r
     or a
     ret z
-    ; Loop r times, multiple by (n-i), divide by i.
+    ; Loop r times, multiply by (n-i), divide by i.
     ld b, a ; B=r, C=n
 probCombLoop:
     push bc
-    ld l, c ; L=C=n
+    ld l, c
     ld h, 0 ; HL=n
     bcall(_SetXXXXOP2) ; OP2=n
     bcall(_FPMult)
     pop bc
     push bc
-    ld l, b ; L=B=r
+    ld l, b
     ld h, 0 ; HL=r
     bcall(_SetXXXXOP2) ; OP2=r
     bcall(_FPDiv)
     pop bc
-    dec c
-    djnz probCombLoop
+    dec c ; n=n-1
+    djnz probCombLoop ; r=r-1
     ret
 
 ;-----------------------------------------------------------------------------
