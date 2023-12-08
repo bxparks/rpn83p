@@ -34,7 +34,7 @@ AppendArgBuf:
     cp argBufSizeMax
     ret nc ; limit total number of characters
     ld a, b
-    ld b, argBufMax
+    ld b, argBufCapacity
     jp AppendString
 
 ; Description: Convert (0 to 2 digit) argBuf into a binary number.
@@ -43,7 +43,7 @@ AppendArgBuf:
 ; Destroys: A, B, C, HL
 ParseArgBuf:
     ld hl, argBuf
-    ld b, (hl) ; B = argBufSize
+    ld b, (hl) ; B = argBufLen
     inc hl
     ; check for 0 digit
     ld a, b

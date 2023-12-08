@@ -192,14 +192,14 @@ baseWordSize equ baseCarryFlag + 1 ; u8
 ; struct is:
 ;
 ;   struct InputBuf {
-;       uint8_t size;
-;       char buf[inputBufMaxLen];
+;       uint8_t len;
+;       char buf[inputBufCapacity];
 ;   };
 inputBuf equ baseWordSize + 1 ; struct InputBuf
-inputBufSize equ inputBuf ; size byte of the pascal string
+inputBufLen equ inputBuf ; len byte of the pascal string
 inputBufBuf equ inputBuf + 1
-inputBufMax equ 32 ; maximum len, excluding trailing cursor
-inputBufSizeOf equ inputBufMax + 1
+inputBufCapacity equ 32 ; excludes trailing cursor
+inputBufSizeOf equ inputBufCapacity + 1
 
 ; The TI-OS floating point number supports 14 significant digits, but we need 6
 ; more characters to hold the optional mantissa minus sign, the optional
@@ -211,9 +211,9 @@ inputBufNormalMaxLen equ 20
 ; When the inputBuf is used as a command argBuf, the maximum number of
 ; characters in the buffer is 2.
 argBuf equ inputBuf ; struct InputBuf
-argBufSize equ inputBufSize
-argBufMax equ inputBufMax
-argBufSizeMax equ 2
+argBufLen equ inputBufLen
+argBufCapacity equ inputBufCapacity
+argBufSizeMax equ 2 ; max number of digits accepted on input
 
 ; Location (offset index) of the one past the 'E' symbol if it exists. Zero
 ; indicates that 'E' does NOT exist.
@@ -237,14 +237,14 @@ inputBufEELenMax equ 2
 ; This is a Pascal string whose equivalent C struct is:
 ;
 ;   struct ParseBuf {
-;       uint8_t size; // number of digits in mantissa, 0 for 0.0
+;       uint8_t len; // number of digits in mantissa, 0 for 0.0
 ;       char man[14];  // mantissa, implicit starting decimal point
 ;   }
 parseBuf equ inputBufEELen + 1 ; struct ParseBuf
-parseBufSize equ parseBuf ; size byte of the pascal string
-parseBufMan equ parseBufSize + 1
-parseBufMax equ 14
-parseBufSizeOf equ parseBufMax + 1
+parseBufLen equ parseBuf ; len byte of the pascal string
+parseBufMan equ parseBufLen + 1
+parseBufCapacity equ 14
+parseBufSizeOf equ parseBufCapacity + 1
 
 ; Menu variables. Two variables determine the current state of the menu, the
 ; groupId and the rowIndex in the group. The C equivalent is:
@@ -270,7 +270,7 @@ jumpBackMenuRowIndex equ jumpBackMenuGroupId + 1 ; u8
 ; Menu name, copied here as a Pascal string.
 ;
 ;   struct MenuName {
-;       uint8_t size;
+;       uint8_t len;
 ;       char buf[5];
 ;   }
 menuName equ jumpBackMenuRowIndex + 1 ; struct menuName
@@ -383,14 +383,14 @@ tvmSolverCount equ tvmSolverIsRunning + 1 ; u8; iteration count
 ; The C structure is:
 ;
 ; struct InputDisplay {
-;   uint8_t size;
+;   uint8_t len;
 ;   char buf[14];
 ; };
 inputDisplay equ tvmSolverCount + 1 ; struct InputDisplay; Pascal-string
-inputDisplaySize equ inputDisplay ; size byte of the string
+inputDisplayLen equ inputDisplay ; len byte of the string
 inputDisplayBuf equ inputDisplay + 1 ; start of actual buffer
-inputDisplayMax equ 14 ; 14-characters displayed, excluding trailing cursor
-inputDisplaySizeOf equ inputDisplayMax + 1 ; total size of data structure
+inputDisplayCapacity equ 14 ; 14-characters displayed, excluding trailing cursor
+inputDisplaySizeOf equ inputDisplayCapacity + 1 ; total size of data structure
 
 appBufferEnd equ inputDisplay + inputDisplaySizeOf
 
@@ -399,7 +399,7 @@ appBufferEnd equ inputDisplay + inputDisplaySizeOf
 ; dedicating space within the appState area, because it does not need to be
 ; backed up. I think any OPx register except OP1 will work.
 ;
-;   struct floatBuf {
+;   struct FloatBuf {
 ;       uint8_t type;
 ;       uint8_t exp;
 ;       uint8_t man[7];

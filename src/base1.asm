@@ -78,8 +78,8 @@ getBaseNumberIndexErr:
 
 ; Description: Return the number of digits which are accepted or displayed for
 ; the given (baseWordSize) and (baseNumber).
-;   - no BASE: inputBufMax
-;   - BASE 2: numDigits = min(baseWordSize, inputBufMax)
+;   - no BASE: inputBufCapacity
+;   - BASE 2: numDigits = min(baseWordSize, inputBufCapacity)
 ;       - 8 -> 8
 ;       - 16 -> 16
 ;       - 24 -> 24

@@ -542,7 +542,7 @@ printArgBufNumber:
     call putPS
 
     ; Append trailing cursor to fill 2 digits
-    ld a, (argBufSize)
+    ld a, (argBufLen)
     or a
     jr z, printArgBufTwoCursors
     cp 1
@@ -614,7 +614,7 @@ formatInputBuf:
     ld hl, inputBuf
     ld de, inputDisplay
     ld c, (hl) ; C=len(inputBuf)
-    ld a, inputDisplayMax
+    ld a, inputDisplayCapacity
     sub c ; A=14-len(inputBuf); if len(inputBuf)>14: CF=1
     jr c, formatInputBufTruncate
     ; copy the entire inputBuf
@@ -637,14 +637,14 @@ formatInputBufTruncate:
     inc hl ; skip past len byte
     add hl, bc ; HL+=len(inputBuf)-13
     ; Prepend ellipsis character in inputDisplay
-    ld a, inputDisplayMax
-    ld (de), a ; len(inputDisplay) = inputDisplayMax
+    ld a, inputDisplayCapacity
+    ld (de), a ; len(inputDisplay) = inputDisplayCapacity
     inc de
     ld a, Lellipsis
     ld (de), a
     inc de
     ; Copy last 13 characters from inputBuf to inputDisplay.
-    ld bc, inputDisplayMax-1
+    ld bc, inputDisplayCapacity-1
     ldir
     ret
 
