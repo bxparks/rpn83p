@@ -13,6 +13,11 @@
         - `BASE BIN` mode
             - Accepts maximum of 32 digits, to allow all 32-bits of a binary
               number to be entered when the `WSIZ` is 32.
+    - `PROB`
+        - Expand range of `COMB(n,r)` and `PERM(n,r)` arguments to `n,r<=65535`
+          from `n,r<=255`.
+        - Improve performance of `COMB(n,r)` when `r>(n-r)` by taking advantage
+          of the symmetry of `COMB(n,r)==COMB(n,n-r)`.
 - 0.8.0 (2023-12-03)
     - **Breaking**: Flip the order of polar-rectangular conversion menu function
       (`>POL` and `>REC`) so that they are consistent with the HP-42S. I don't

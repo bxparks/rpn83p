@@ -29,8 +29,30 @@ op2Set1EM8PageOne:
 
 ;-----------------------------------------------------------------------------
 
+; Description: Set OP2 to 2^16.
+; Destroys: all, HL
+op2Set2Pow16PageOne:
+    ld hl, const2Pow16PageOne
+    jp move9ToOp2PageOne
+
+;-----------------------------------------------------------------------------
+
+; Description: Set OP2 to 10000.
+; Destroys: all, HL
+op2Set10000PageOne:
+    ld hl, const10000PageOne
+    jp move9ToOp2PageOne
+
+;-----------------------------------------------------------------------------
+
 const100PageOne: ; 100
     .db $00, $82, $10, $00, $00, $00, $00, $00, $00
 
 const1EM8PageOne: ; 10^-8
     .db $00, $78, $10, $00, $00, $00, $00, $00, $00
+
+const10000PageOne: ; 10000
+    .db $00, $84, $10, $00, $00, $00, $00, $00, $00
+
+const2Pow16PageOne: ; 2^16 = 65 536
+    .db $00, $84, $65, $53, $60, $00, $00, $00, $00
