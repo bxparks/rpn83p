@@ -21,36 +21,37 @@ ProbPerm:
     push hl
     bcall(_OP1Set1)
     pop hl
-    ; Loop r times, multiple by (y-i)
+    ; Loop r times, multiply by each factor of (n-i)
 probPermLoop:
     ld a, e
     or d
     ret z ; return if DE==0
-    push de
-    push hl
+    push de ; stack=[r]
+    push hl ; stack=[r,n]
     bcall(_SetXXXXOP2) ; OP2=n
     bcall(_FPMult) ; OP1=n(n-1)...
-    pop hl
-    pop de
-    dec hl ; n=n-1
-    dec de ; r=n-1
+    pop hl ; stack=[r]; HL=n
+    pop de ; stack=[]; DE=r
+    dec hl ; n--
+    dec de ; r--
     jr probPermLoop
 
 ; Description: Calculate the Combination function C(OP1,OP2) = C(n,r) =
 ; n!/(n-r)!/r! = n(n-1)...(n-r+1)/(r)(r-1)...(1).
 ;
-; C(n,r) is symmetric with C(n, n-r). So we can make the code a bit more
-; efficient for large r by exchanging r with n-r if r is > (n-r).
+; Several tricks are used in the code below:
 ;
-; TODO: This algorithm below is a variation of the algorithm used for P(n,r)
-; above, with a division operation inside the loop that corresponds to each
-; term of the `r!` divisor. However, the division can cause intermediate result
-; to be non-integral. Eventually the final answer will be an integer, but
-; that's not guaranteed until the end of the loop. I think it should be
-; possible to rearrange the order of these divisions so that the intermediate
-; results are always integral.
+; 1) C(n,r) is symmetric with C(n, n-r). So we can make the code faster for
+; large r by exchanging r with n-r if r is > (n-r).
 ;
-; Input: OP1=Y=n, OP2=X=r
+; 2) If the divisor in the formula below starts with r and counts down to 1,
+; then it is possible for intermediate results to be non-integers. The final
+; answer is guaranteed to be an integer, but rounding errors in the
+; intermediate result may produce a non-integer answer. The solution is to
+; start the divisor from 1 and increment *up* to r. See
+; https://www.hpmuseum.org/forum/thread-3962.html (2015) for more details.
+;
+; Input: OP1=n, OP2=r
 ; Output: OP1=C(n,r)
 ProbComb:
 #if 0
@@ -70,24 +71,30 @@ ProbComb:
 ProbCombNormalized:
     ; Do the calculation. Set initial Result to 1 since C(n,0) = 1.
     bcall(_OP1Set1)
-    ; Loop r times, multiply by (n-i), divide by i.
-    pop hl ; HL=n
+    ; Loop r times, multiply by each factor (n-i), divide by divisor.
+    pop hl ; stack=[]; HL=n
+    ld b, d
+    ld c, e ; BC=r
+    ld de, 1 ; DE=1=divisor
 probCombLoop:
-    ld a, e
-    or d
-    ret z ; return if DE==0
-    push hl ; stack=[n]
-    push de ; stack=[n,r]
+    ld a, c
+    or b
+    ret z ; return if BC==0
+    push bc ; stack=[r]
+    push hl ; stack=[r,n]
+    push de ; stack=[r,n,divisor]
     bcall(_SetXXXXOP2) ; OP2=n
-    bcall(_FPMult) ; OP2=n(n-1)...
-    pop hl ; stack=[n]; HL=r
-    push hl ; stack=[n,r]
-    bcall(_SetXXXXOP2) ; OP2=r
-    bcall(_FPDiv) ; OP1=n(n-1).../[r(r-1)...]
-    pop de ; DE=r
-    pop hl ; HL=n
-    dec hl ; n=n-1
-    dec de ; r=r-1
+    bcall(_FPMult) ; OP1=n(n-1)...
+    pop hl ; stack=[r,n]; HL=divisor
+    push hl ; stack=[r,n,divisor]
+    bcall(_SetXXXXOP2) ; OP2=divisor
+    bcall(_FPDiv) ; OP1=n(n-1).../[(1)(2)...(r)]
+    pop de ; stack=[r,n]; DE=divisor
+    pop hl ; stack=[r]; HL=n
+    pop bc ; stack=[]; BC=r
+    inc de ; divisor++
+    dec hl ; n--
+    dec bc ; r--
     jr probCombLoop
 
 ;-----------------------------------------------------------------------------
@@ -107,7 +114,7 @@ validatePermComb:
     bcall(_PopRealO1) ; FPS=[]; OP1=r
     call convertOP1ToU16PageOne ; HL=u16(r)
     ex de, hl ; DE=u16(r)
-    pop hl ; HL=u16(n)
+    pop hl ; stack=[]; HL=u16(n)
     ; Check that n >= r
     bcall(_CpHLDE) ; if HL(n)<DE(r): CF=1
     ret nc

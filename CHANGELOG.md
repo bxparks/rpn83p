@@ -18,6 +18,9 @@
           from `n,r<=255`.
         - Improve performance of `COMB(n,r)` when `r>(n-r)` by taking advantage
           of the symmetry of `COMB(n,r)==COMB(n,n-r)`.
+        - Eliminate floating point round-off errors in computing `COMB(n,r)` by
+          incrementing the divisor from 1 to `r`, instead of decrementing it
+          from `r` to 1.
 - 0.8.0 (2023-12-03)
     - **Breaking**: Flip the order of polar-rectangular conversion menu function
       (`>POL` and `>REC`) so that they are consistent with the HP-42S. I don't
