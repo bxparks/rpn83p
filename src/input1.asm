@@ -48,7 +48,11 @@ ClearInputBuf:
 ; Destroys: all
 AppendInputBuf:
     ld c, a ; C=char
-    call GetWordSizeDigits
+    call GetWordSizeDigits ; A=maxDigits
+    cp inputBufCapacity ; if maxDigits>=inputBufCapacity: CF=0
+    jr c, appendInputBufContinue
+    ld a, inputBufCapacity ; A=min(maxDigits,inputBufCapacity)
+appendInputBufContinue:
     ld b, a ; B=maxDigits
     ld a, c ; A=char
     ld hl, inputBuf
@@ -210,7 +214,7 @@ clearParseBuf:
     ld hl, parseBuf
     ld (hl), a
     ld a, '0'
-    ld b, parseBufMax
+    ld b, parseBufCapacity
     inc hl
 clearParseBufLoop:
     ld (hl), a
@@ -235,7 +239,7 @@ clearFloatBuf:
 ; Destroys: A, B, HL
 checkZero:
     ld hl, inputBuf
-    ld a, (hl) ; A = inputBufSize
+    ld a, (hl) ; A = inputBufLen
     ; Check for empty
     or a
     ret z
@@ -271,10 +275,10 @@ checkZeroContinue:
 parseMantissaLeadingFound equ 0 ; bit to set when lead digit found
 parseMantissa:
     ld hl, inputBuf
-    ld a, (hl) ; A = inputBufSize
+    ld a, (hl) ; A = inputBufLen
     or a
     ret z
-    ld b, a ; B = inputBufSize
+    ld b, a ; B = inputBufLen
     res parseMantissaLeadingFound, c
     inc hl
 parseMantissaLoop:
@@ -412,7 +416,7 @@ calcDPEnd:
 ; Destroys: all
 appendParseBuf:
     ld hl, parseBuf
-    ld b, parseBufMax
+    ld b, parseBufCapacity
     jp AppendString
 
 ;------------------------------------------------------------------------------
@@ -461,7 +465,7 @@ extractMantissa:
     ret z
     inc hl
     ld de, floatBufMan
-    ld b, parseBufMax/2
+    ld b, parseBufCapacity/2
 extractMantissaLoop:
     ; Loop 2 digits at a time.
     ld a, (hl)

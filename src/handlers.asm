@@ -269,11 +269,11 @@ handleKeyDel:
 handleKeyDelInEditMode:
     ; DEL pressed in edit mode.
     set dirtyFlagsInput, (iy + dirtyFlags)
-    ld a, (hl) ; A = inputBufSize
+    ld a, (hl) ; A = inputBufLen
     or a
     ret z ; do nothing if buffer empty
     ; shorten string by one
-    ld e, a ; E = inputBufSize
+    ld e, a ; E = inputBufLen
     dec a
     ld (hl), a
     ; retrieve the character deleted
@@ -410,7 +410,7 @@ handleKeyChsInputBuf:
     set dirtyFlagsInput, (iy + dirtyFlags)
     ; Change sign of Mantissa or Exponent.
     ld hl, inputBuf
-    ld b, inputBufMax
+    ld b, inputBufCapacity
     ld a, (inputBufEEPos) ; offset to EE digit, or 0 if 'E' does not exist
     ; [[fallthrough]]
 
@@ -430,8 +430,8 @@ handleKeyChsInputBuf:
 flipInputBufSign:
     ld c, (hl) ; size of string
     cp c
-    jr c, flipInputBufSignInside ; If A < inputBufSize: interior position
-    ld a, c ; set A = inputBufSize, just in case
+    jr c, flipInputBufSignInside ; If A < inputBufLen: interior position
+    ld a, c ; set A = inputBufLen, just in case
     jr flipInputBufSignAdd
 flipInputBufSignInside:
     ; Check for the '-' and flip it.

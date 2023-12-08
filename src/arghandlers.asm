@@ -64,7 +64,7 @@ handleArgNumber:
 
 handleArgKeyEnter:
     ; If no argument digits entered, then do nothing.
-    ld a, (argBufSize)
+    ld a, (argBufLen)
     or a
     ret z
     ; Parse the argument digits into (argValue).
@@ -76,7 +76,7 @@ handleArgKeyEnter:
 handleArgKeyDel:
     set dirtyFlagsInput, (iy + dirtyFlags)
     ld hl, argBuf
-    ld a, (hl) ; A = inputBufSize
+    ld a, (hl) ; A=argBufLen
     or a
     ret z ; do nothing if buffer empty
     dec (hl)
