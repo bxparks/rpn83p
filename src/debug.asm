@@ -413,24 +413,65 @@ DebugU32DEAsHex:
 
 ;------------------------------------------------------------------------------
 
+; Description: Print HL as a decimal number.
+; Destroys: none
+DebugHL:
+    push af
+    push bc
+    push de
+    push hl
+    bcall(_PushRealO1)
+    bcall(_PushRealO2)
+    bcall(_PushRealO3)
+    bcall(_PushRealO4) ; up to 16 bytes starting at OP3, which spills into OP4
+    pop hl
+    push hl
+    ld de, (CurRow)
+    push de
+    ;
+    ld de, debugCurCol*$100+debugCurRow ; $(curCol)(curRow)
+    ld (CurRow), de
+    ; Converting to float is not efficient, but ok for debugging.
+    bcall(_SetXXXXOP2) ; OP2=float(HL)
+    bcall(_OP2ToOP1) ; OP1=float(HL)
+    ld a, 15 ; width of output
+    bcall(_FormReal)
+    ld hl, OP3
+    call putSPageOne
+    bcall(_EraseEOL)
+    ;
+    pop de
+    ld (CurRow), de
+    bcall(_PopRealO4)
+    bcall(_PopRealO3)
+    bcall(_PopRealO2)
+    bcall(_PopRealO1)
+    pop hl
+    pop de
+    pop bc
+    pop af
+    ret
+
+;------------------------------------------------------------------------------
+
 ; Description: print HL as hexadecimal
 DebugHLAsHex:
     push af
     push bc
     push de
     push hl
-
     ld de, (CurRow)
     push de
+    ;
     ld de, debugCurCol*$100+debugCurRow ; $(curCol)(curRow)
     ld (CurRow), de
-
+    ;
     ld a, h
     call debugUnsignedAAsHex
     ld a, l
     call debugUnsignedAAsHex
     bcall(_EraseEOL)
-
+    ;
     pop de
     ld (CurRow), de
     pop hl

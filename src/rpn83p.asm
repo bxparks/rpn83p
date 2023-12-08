@@ -732,6 +732,10 @@ _DebugU32AsHexLabel:
 _DebugU32AsHex equ _DebugU32AsHexLabel-branchTableBase
     .dw DebugU32AsHex
     .db 1
+_DebugHLLabel:
+_DebugHL equ _DebugHLLabel-branchTableBase
+    .dw DebugHL
+    .db 1
 _DebugHLAsHexLabel:
 _DebugHLAsHex equ _DebugHLAsHexLabel-branchTableBase
     .dw DebugHLAsHex
