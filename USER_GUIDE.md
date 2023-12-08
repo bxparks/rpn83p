@@ -2204,8 +2204,6 @@ limited:
 
 - datetime conversions
     - date/time components to and from epoch seconds
-- `PROB` and `COMB` arguments are limited to `< 256`
-    - Maybe extend this to `< 2^16` or `< 2^32`.
 - `GCD` and `LCM` functions are slow
     - Could be made significantly faster.
 - Allow resize of storage registers using `SIZE` command
@@ -2257,13 +2255,6 @@ limited:
       British or Canadian imperial units
     - it'd be nice to support both types, if we can make the menu labels
       self-documenting and distinctive
-- `BASE` > `BIN`
-    - Allow more than 12 binary digits to be entered if `WSIZ` is greater than 8
-    - The most reasonable solution seems to be to scroll off the left digits to
-      the left as more digits are entered. This solution requires a significant
-      redesign of the current input buffer code, because currently, the internal
-      characters in the input buffer is exactly what is displayed on the screen.
-      We would need to decouple that.
 - `TVM` (time value of money)
     - Improve TVM Solver for `I%YR`.
     - The initial guesses could be better.
