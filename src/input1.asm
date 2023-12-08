@@ -48,7 +48,11 @@ ClearInputBuf:
 ; Destroys: all
 AppendInputBuf:
     ld c, a ; C=char
-    call GetWordSizeDigits
+    call GetWordSizeDigits ; A=maxDigits
+    cp inputBufMax ; if maxDigits>=inputBufMax: CF=0
+    jr c, appendInputBufContinue
+    ld a, inputBufMax ; A=min(maxDigits,inputBufMax)
+appendInputBufContinue:
     ld b, a ; B=maxDigits
     ld a, c ; A=char
     ld hl, inputBuf

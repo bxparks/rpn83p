@@ -81,9 +81,9 @@ getBaseNumberIndexErr:
 ;   - no BASE: inputBufMax
 ;   - BASE 2: numDigits = min(baseWordSize, inputBufMax)
 ;       - 8 -> 8
-;       - 16 -> 12
-;       - 24 -> 12
-;       - 32 -> 12
+;       - 16 -> 16
+;       - 24 -> 24
+;       - 32 -> 32
 ;   - BASE 8: numDigits = ceil(baseWordSize / 3)
 ;       - 8 -> 3 (0o377)
 ;       - 16 -> 6 (0o177 777)
@@ -95,10 +95,10 @@ getBaseNumberIndexErr:
 ;       - 24 -> 8 (16 777 215)
 ;       - 32 -> 10 (4 294 967 295)
 ;   - BASE 16: numDigits = baseWordSize / 4
-;       - 8 -> 2
-;       - 16 -> 4
-;       - 24 -> 6
-;       - 32 -> 8
+;       - 8 -> 2 (0xff)
+;       - 16 -> 4 (0xff ff)
+;       - 24 -> 6 (0xff ff ff)
+;       - 32 -> 8 (0xff ff ff ff)
 ;
 ; This version uses a lookup table to make the above transformations. Another
 ; way is to use a series of nested if-then-else statements (i.e. a series of
@@ -140,7 +140,7 @@ getWordSizeDigitsBaseMode:
 ; (baseWordSize). Each group of 4 represents the inputDigits for wordSizes (8,
 ; 16, 24, 32) respectively.
 wordSizeDigitsArray:
-    .db 8, 12, 12, 12 ; base 2; max num of binary digits on single line is 12
+    .db 8, 16, 24, 32 ; base 2
     .db 3, 6, 8, 11 ; base 8
     .db 3, 5, 8, 10 ; base 10
     .db 2, 4, 6, 8 ; base 16

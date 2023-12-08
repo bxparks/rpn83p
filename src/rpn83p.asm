@@ -136,12 +136,12 @@ appStateBegin equ tempSwapArea
 ; and deserialization code becomes almost trivial. Two bytes is not a large
 ; amount of memory, so let's keep things simple and duplicate the CRC field
 ; here.
-appStateCrc16 equ appStateBegin
+appStateCrc16 equ appStateBegin ; u16
 
 ; A somewhat unique id to distinguish this app from other apps. 2 bytes.
 ; Similar to the 'appStateCrc16' field, this does not need to be in the
 ; appState data block. But this simplifies the serialization code.
-appStateAppId equ appStateCrc16 + 2
+appStateAppId equ appStateCrc16 + 2 ; u16
 
 ; Schema version. 2 bytes. If we overflow the 16-bits, it's probably ok because
 ; schema version 0 was probably created so far in the past the likelihood of a
@@ -149,13 +149,13 @@ appStateAppId equ appStateCrc16 + 2
 ; an escape hatch: we can create a new appStateAppId upon overflow. Similar to
 ; AppStateAppId and appStateCrc16, this field does not need to be here, but
 ; having it here simplifies the serialization code.
-appStateSchemaVersion equ appStateAppId + 2
+appStateSchemaVersion equ appStateAppId + 2 ; u16
 
 ; Copy of the 3 asm_FlagN flags. These will be serialized into RPN83SAV by
 ; storeAppState(), and deserialized into asm_FlagN by restoreAppState().
-appStateDirtyFlags equ appStateSchemaVersion + 2
-appStateRpnFlags equ appStateDirtyFlags + 1
-appStateInputBufFlags equ appStateRpnFlags + 1
+appStateDirtyFlags equ appStateSchemaVersion + 2 ; u8
+appStateRpnFlags equ appStateDirtyFlags + 1 ; u8
+appStateInputBufFlags equ appStateRpnFlags + 1 ; u8
 
 ; The result code after the execution of each handler. Success is code 0. If a
 ; TI-OS exception is thrown (through a `bcall(ErrXxx)`), the exception handler
@@ -164,67 +164,79 @@ appStateInputBufFlags equ appStateRpnFlags + 1
 ; upon success. (This makes coding easier because a successful handler can
 ; simply do a `ret` or a conditional `ret`.) A few handlers will set a custom,
 ; non-zero code to indicate an error.
-handlerCode equ appStateInputBufFlags + 1
+handlerCode equ appStateInputBufFlags + 1 ; u8
 
 ; The errorCode is displayed on the LCD screen if non-zero. This is set to the
 ; value of handlerCode after every execution of a handler. Inside a handler,
 ; the errorCode will be the handlerCode of the previous handler. This is useful
 ; for the CLEAR handler which will simply clear the displayed errorCode if
 ; non-zero.
-errorCode equ handlerCode + 1
+errorCode equ handlerCode + 1 ; u8
 
 ; Current base mode number. Allowed values are: 2, 8, 10, 16. Anything else is
 ; interpreted as 10.
-baseNumber equ errorCode + 1
+baseNumber equ errorCode + 1 ; u8
 
 ; Base mode carry flag. Bit 0.
-baseCarryFlag equ baseNumber + 1
+baseCarryFlag equ baseNumber + 1 ; boolean
 
 ; Base mode word size: 8, 16, 24, 32 (maybe 40 in the future).
-baseWordSize equ baseCarryFlag + 1
+baseWordSize equ baseCarryFlag + 1 ; u8
 
-; String buffer for keyboard entry. This is a Pascal-style with a single size
-; byte at the start. It does not include the cursor displayed at the end of the
-; string. The equilvalent C struct is:
+; String buffer for keyboard entry. The TI-OS floating point number supports 14
+; significant digits, but we need 6 more characters to hold the optional
+; mantissa minus sign, the optional decimal point, the optinoal 'E' symbol for
+; the exponent, the 2-digit exponent, and the optional minus sign on the
+; exponent. That's a total of 20 characters. To support 32-bit base-2 numbers,
+; we need 32 characters. Let's set this to 32.
 ;
-;   struct inputBuf {
+; This is a Pascal-style with a single size byte at the start. It does not
+; include the cursor displayed at the end of the string. The equilvalent C
+; struct is:
+;
+;   struct InputBuf {
 ;       uint8_t size;
-;       char buf[14];
+;       char buf[inputBufMaxLen];
 ;   };
-inputBuf equ baseWordSize + 1
+inputBuf equ baseWordSize + 1 ; struct InputBuf
 inputBufSize equ inputBuf ; size byte of the pascal string
 inputBufBuf equ inputBuf + 1
-inputBufMax equ 14 ; maximum size of buffer, not including appended cursor
+inputBufMax equ 32 ; maximum len, excluding trailing cursor
 inputBufSizeOf equ inputBufMax + 1
 
 ; When the inputBuf is used as a command argBuf, the maximum number of
 ; characters in the buffer is 2.
-argBuf equ inputBuf
+argBuf equ inputBuf ; struct InputBuf
 argBufSize equ inputBufSize
 argBufMax equ inputBufMax
 argBufSizeMax equ 2
 
 ; Location (offset index) of the one past the 'E' symbol if it exists. Zero
 ; indicates that 'E' does NOT exist.
-inputBufEEPos equ inputBuf + inputBufSizeOf
+inputBufEEPos equ inputBuf + inputBufSizeOf ; u8
 ; Length of EE digits. Maximum of 2.
-inputBufEELen equ inputBufEEPos + 1
+inputBufEELen equ inputBufEEPos + 1 ; u8
 ; Max number of digits allowed for exponent.
 inputBufEELenMax equ 2
 
-; Temporary buffer for parsing keyboard input into a floating point number. This
-; is a pascal string that contains the normalized floating point number, one
-; character per digit. It's a stepping stone before converting this into the
-; packed floating point number format used by TI-OS. The equivalent C struct
-; is:
+; Temporary buffer for parsing keyboard input into a floating point number.
+; When the app is in BASE mode, the inputBuf is parsed directly, and this
+; buffer is not used. In normal floating point mode, each mantissa digit is
+; converted into this data structure, one byte per digit, before being
+; converted into the packed floating point number format used by TI-OS.
 ;
-;   struct parseBuf {
+; The decimal point will not appear explicitly here because it is implicitly
+; present just before the first digit. The inputBuf can hold more than 14
+; digits, but those extra digits will be ignored when parsed into this data
+; structure.
+;
+; This is a Pascal string whose equivalent C struct is:
+;
+;   struct ParseBuf {
 ;       uint8_t size; // number of digits in mantissa, 0 for 0.0
 ;       char man[14];  // mantissa, implicit starting decimal point
 ;   }
-;
-; A TI-OS floating number can have a mantissa of a maximum 14 digits.
-parseBuf equ inputBufEELen + 1
+parseBuf equ inputBufEELen + 1 ; struct ParseBuf
 parseBufSize equ parseBuf ; size byte of the pascal string
 parseBufMan equ parseBufSize + 1
 parseBufMax equ 14
@@ -237,8 +249,8 @@ parseBufSizeOf equ parseBufMax + 1
 ;     uint8_t groupId; // id of the current menu group
 ;     uint8_t rowIndex; // menu row, groups of 5
 ;   }
-menuGroupId equ parseBuf + parseBufSizeOf
-menuRowIndex equ menuGroupId + 1
+menuGroupId equ parseBuf + parseBufSizeOf ; u8
+menuRowIndex equ menuGroupId + 1 ; u8
 
 ; These variables remember the previous menuGroup/row pair when a shortcut was
 ; pressed to another menuGroup. On the ON/EXIT button is pressed, we can then
@@ -248,8 +260,8 @@ menuRowIndex equ menuGroupId + 1
 ; candidate. If jumpBackMenuGroupId is 0, then the memory feature is not
 ; active. If it is not 0, then the ON/EXIT button should go back to the menu
 ; defined by this pair.
-jumpBackMenuGroupId equ menuRowIndex + 1
-jumpBackMenuRowIndex equ jumpBackMenuGroupId + 1
+jumpBackMenuGroupId equ menuRowIndex + 1 ; u8
+jumpBackMenuRowIndex equ jumpBackMenuGroupId + 1 ; u8
 
 ; Menu name, copied here as a Pascal string.
 ;
@@ -257,7 +269,7 @@ jumpBackMenuRowIndex equ jumpBackMenuGroupId + 1
 ;       uint8_t size;
 ;       char buf[5];
 ;   }
-menuName equ jumpBackMenuRowIndex + 1
+menuName equ jumpBackMenuRowIndex + 1 ; struct menuName
 menuNameSize equ menuName
 menuNameBuf equ menuName + 1
 menuNameBufMax equ 5
@@ -273,9 +285,9 @@ menuNameSizeOf equ 6
 ;   }
 ; The argModifierXxx (0-4) MUST match the corresponding operation in the
 ; 'floatOps' array in vars.asm.
-argPrompt equ menuName + menuNameSizeOf
-argModifier equ argPrompt + 2
-argValue equ argModifier + 1
+argPrompt equ menuName + menuNameSizeOf ; (char*)
+argModifier equ argPrompt + 2 ; char
+argValue equ argModifier + 1 ; u8
 argModifierNone equ 0
 argModifierAdd equ 1 ; '+' pressed
 argModifierSub equ 2 ; '-' pressed
@@ -316,7 +328,7 @@ tvmSolverOverrideFlags equ tvmIsBegin + 1 ; u8 flag
 ; but can be overridden using the 'IYR0', 'IYR1', and 'TMAX' menu buttons.
 tvmIYR0 equ tvmSolverOverrideFlags + 1 ; float
 tvmIYR1 equ tvmIYR0 + 9 ; float
-tvmIterMax equ tvmIYR1 + 9 ; u8 integer
+tvmIterMax equ tvmIYR1 + 9 ; u8
 
 ; Draw mode constants
 drawModeNormal equ 0
@@ -325,7 +337,7 @@ drawModeTvmSolverF equ 2 ; show npmt0, npmt1
 drawModeInputBuf equ 3 ; show inputBuf in debug line
 
 ; Draw/Debug mode, u8 integer. Activated by secret '2ND DRAW' button.
-drawMode equ tvmIterMax + 1
+drawMode equ tvmIterMax + 1 ; u8
 
 ; End application variables.
 appStateEnd equ drawMode + 1
@@ -347,7 +359,7 @@ menuNodeBuf equ appBufferStart ; 9 bytes, defined by menuNodeSizeOf
 ; routines in flash page 0 can access it. This is named 'menuStringBuf' to
 ; avoid conflicting with the existing 'menuNameBuf' which is a Pascal-string
 ; version of 'menuStringBuf'.
-menuStringBuf equ menuNodeBuf + 9 ; 6 bytes
+menuStringBuf equ menuNodeBuf + 9 ; char[6]
 menuStringBufSizeOf equ 6
 
 ; TVM Solver needs a bunch of workspace variables: interest rate, i0 and i1,
