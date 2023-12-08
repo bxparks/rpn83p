@@ -183,12 +183,9 @@ baseCarryFlag equ baseNumber + 1 ; boolean
 ; Base mode word size: 8, 16, 24, 32 (maybe 40 in the future).
 baseWordSize equ baseCarryFlag + 1 ; u8
 
-; String buffer for keyboard entry. The TI-OS floating point number supports 14
-; significant digits, but we need 6 more characters to hold the optional
-; mantissa minus sign, the optional decimal point, the optinoal 'E' symbol for
-; the exponent, the 2-digit exponent, and the optional minus sign on the
-; exponent. That's a total of 20 characters. To support 32-bit base-2 numbers,
-; we need 32 characters. Let's set this to 32.
+; String buffer for keyboard entry. In normal floating point entry mode, we
+; need 20 characters (see inputBufNormalMaxLen below). But to support 32-bit
+; base-2 numbers, we need 32 characters. Let's set this to 32.
 ;
 ; This is a Pascal-style with a single size byte at the start. It does not
 ; include the cursor displayed at the end of the string. The equilvalent C
@@ -203,6 +200,13 @@ inputBufSize equ inputBuf ; size byte of the pascal string
 inputBufBuf equ inputBuf + 1
 inputBufMax equ 32 ; maximum len, excluding trailing cursor
 inputBufSizeOf equ inputBufMax + 1
+
+; The TI-OS floating point number supports 14 significant digits, but we need 6
+; more characters to hold the optional mantissa minus sign, the optional
+; decimal point, the optional 'E' symbol for the exponent, the 2-digit
+; exponent, and the optional minus sign on the exponent. That's a total of 20
+; characters.
+inputBufNormalMaxLen equ 20
 
 ; When the inputBuf is used as a command argBuf, the maximum number of
 ; characters in the buffer is 2.
@@ -245,7 +249,7 @@ parseBufSizeOf equ parseBufMax + 1
 ; Menu variables. Two variables determine the current state of the menu, the
 ; groupId and the rowIndex in the group. The C equivalent is:
 ;
-;   struct menu {
+;   struct Menu {
 ;     uint8_t groupId; // id of the current menu group
 ;     uint8_t rowIndex; // menu row, groups of 5
 ;   }
@@ -265,7 +269,7 @@ jumpBackMenuRowIndex equ jumpBackMenuGroupId + 1 ; u8
 
 ; Menu name, copied here as a Pascal string.
 ;
-;   struct menuName {
+;   struct MenuName {
 ;       uint8_t size;
 ;       char buf[5];
 ;   }
@@ -278,7 +282,7 @@ menuNameSizeOf equ 6
 ; Data structure revelant to the command argument parser which handles
 ; something like "STO _ _". The C equivalent is:
 ;
-;   struct argParser {
+;   struct ArgParser {
 ;       char *argPrompt; // e.g. "STO"
 ;       char argModifier; // see argModifierXxx
 ;       uint8_t argValue;
@@ -375,11 +379,14 @@ tvmSolverCount equ tvmSolverIsRunning + 1 ; u8; iteration count
 
 ; A Pascal-string that contains the rendered version of inputBuf, truncated and
 ; formatted as needed, which can be printed on the screen.
+;
+; The C structure is:
+;
 ; struct InputDisplay {
 ;   uint8_t size;
-;   char buf[15];
+;   char buf[14];
 ; };
-inputDisplay equ tvmSolverCount + 1 ; Pascal-string of 15 bytes
+inputDisplay equ tvmSolverCount + 1 ; struct InputDisplay; Pascal-string
 inputDisplaySize equ inputDisplay ; size byte of the string
 inputDisplayBuf equ inputDisplay + 1 ; start of actual buffer
 inputDisplayMax equ 14 ; 14-characters displayed, excluding trailing cursor

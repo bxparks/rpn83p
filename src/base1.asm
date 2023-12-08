@@ -113,12 +113,14 @@ getBaseNumberIndexErr:
 ; Destroys: A
 ; Preserves: BC, DE, HL
 GetWordSizeDigits:
-    ; If in floating point mode (not BASE) mode, just return the maximum.
+    ; If floating point mode (not BASE) mode, return the normal maximum.
     bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
     jr nz, getWordSizeDigitsBaseMode
-    ld a, inputBufMax
+    ld a, inputBufNormalMaxLen
     ret
 getWordSizeDigitsBaseMode:
+    ; If BASE mode, the maximum number of digits depends on baseNumber and
+    ; baseWordSize.
     push de
     push hl
     call getBaseNumberIndex ; A=baseNumberIndex
