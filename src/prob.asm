@@ -37,12 +37,10 @@ probPermLoop:
     jr probPermLoop
 
 ; Description: Calculate the Combination function C(OP1,OP2) = C(n,r) =
-; n!/(n-r)!/r! = n(n-1)...(n-r+1)/(r)(r-1)...(1). C(n,r) is symmetric with C(n,
-; n-r). So we can save a little bit of time by exchanging r with n-r, depending
-; on which is smaller.
+; n!/(n-r)!/r! = n(n-1)...(n-r+1)/(r)(r-1)...(1).
 ;
-; TODO: (n,r) are limited to [0.255]. It should be relatively easy to extended
-; the range to [0,65535].
+; C(n,r) is symmetric with C(n, n-r). So we can make the code a bit more
+; efficient for large r by exchanging r with n-r if r is > (n-r).
 ;
 ; TODO: This algorithm below is a variation of the algorithm used for P(n,r)
 ; above, with a division operation inside the loop that corresponds to each
@@ -65,10 +63,10 @@ ProbComb:
     sbc hl, de ; HL=n-r
     bcall(_CpHLDE) ; if (n-r)>=r: CF=0
     jr nc, ProbCombNormalized
-    ex de, hl ; DE=n-r
 #if 0
-    bcall(_DebugHL) ; validate that the logic is correct
+    bcall(_DebugHL) ; Print (n-r) if it's smaller than r.
 #endif
+    ex de, hl ; DE=n-r
 ProbCombNormalized:
     ; Do the calculation. Set initial Result to 1 since C(n,0) = 1.
     bcall(_OP1Set1)
@@ -103,11 +101,12 @@ probCombLoop:
 validatePermComb:
     ; Validate OP1=n
     bcall(_PushRealO2) ; FPS=[r]
-    call convertOP1ToU16DEPageOne ; DE=u16(n)
-    push de ; stack=[u16(n)]
+    call convertOP1ToU16PageOne ; HL=u16(n)
+    push hl ; stack=[u16(n)]
     ; Validate OP2=r
     bcall(_PopRealO1) ; FPS=[]; OP1=r
-    call convertOP1ToU16DEPageOne ; DE=u16(r)
+    call convertOP1ToU16PageOne ; HL=u16(r)
+    ex de, hl ; DE=u16(r)
     pop hl ; HL=u16(n)
     ; Check that n >= r
     bcall(_CpHLDE) ; if HL(n)<DE(r): CF=1
