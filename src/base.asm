@@ -599,9 +599,7 @@ reverseString:
     ex de, hl ; DE = DE + B = end of string
     dec de
 
-    ld a, b
-    srl a
-    ld b, a ; B = num / 2
+    srl b ; B = num / 2
     ret z ; NOTE: Failing to check for this zero took 2 days to debug!
 reverseStringLoop:
     ld a, (de)
