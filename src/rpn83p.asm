@@ -517,6 +517,11 @@ _DeleteAtPosLabel:
 _DeleteAtPos equ _DeleteAtPosLabel-branchTableBase
     .dw DeleteAtPos
     .db 1
+; integer1.asm
+_ConvertAToOP1PageOneLabel:
+_ConvertAToOP1PageOne equ _ConvertAToOP1PageOneLabel-branchTableBase
+    .dw ConvertAToOP1PageOne
+    .db 1
 ; tvm.asm
 _TvmCalculateNLabel:
 _TvmCalculateN equ _TvmCalculateNLabel-branchTableBase
@@ -793,6 +798,7 @@ defpage(1)
 #include "base1.asm"
 #include "pstring1.asm"
 #include "float1.asm"
+#include "integer1.asm"
 #include "const1.asm"
 #include "tvm.asm"
 #include "hms.asm"

@@ -2,7 +2,8 @@
 ; MIT License
 ; Copyright (c) 2023 Brian T. Park
 ;
-; Routines to handle calculations in different bases (2, 8, 10, 16).
+; Routines to convert between TI-OS floating point numbers in OP1 or OP2
+; to the u32 integers required by the BASE functions in baseops.asm.
 ;-----------------------------------------------------------------------------
 
 initBase:
@@ -245,31 +246,6 @@ convertOP2ToU32:
     pop hl
     ret
 
-; Description: Convert OP1 to a u8, throwing an exception if the number has
-; fractions, or is larger than a u8.
-; Input:
-;   - OP1: unsigned 32-bit integer as a floating point number
-;   - HL: pointer to a u32 in memory, cannot be OP1 or OP2
-; Output:
-;   - (HL): u8 value
-; Destroys: A, B, C, DE
-; Preserves: HL, OP1, OP2
-convertOP1ToU8:
-    call convertOP1ToU32
-    ; Check that the U32 is a U8
-    inc hl
-    ld a, (hl)
-    inc hl
-    or (hl)
-    inc hl
-    or (hl)
-    dec hl
-    dec hl
-    dec hl
-    ret z
-convertOP1ToU8Error:
-    bcall(_ErrDomain)
-
 ;-----------------------------------------------------------------------------
 ; Convert U8 or U32 to a TI floating point number.
 ;-----------------------------------------------------------------------------
@@ -292,36 +268,23 @@ convertU32ToOP1:
 
     ld a, (hl)
     dec hl
-    call addU8ToOP1
+    call addAToOP1
 
     ld a, (hl)
     dec hl
-    call addU8ToOP1
+    call addAToOP1
 
     ld a, (hl)
     dec hl
-    call addU8ToOP1
+    call addAToOP1
 
     ld a, (hl)
-    call addU8ToOP1
+    call addAToOP1
 
     push hl
     bcall(_PopRealO2) ; FPS=[]; OP2=OP2 saved
     pop hl
     ret
-
-; Description: Convert the u8 in A to floating pointer number in OP1.
-; Input:
-;   - A: u8 integer
-; Output:
-;   - OP1: floating point value of A
-; Destroys: A, B, DE, OP2
-; Preserves: C, HL
-convertU8ToOP1:
-    push af
-    bcall(_OP1Set0)
-    pop af
-    ; [[fallthrough]]
 
 ; Description: Convert the u8 in A to floating point number, and add it to OP1.
 ; Input:
@@ -329,22 +292,22 @@ convertU8ToOP1:
 ;   - OP1: current floating point value, set to 0.0 to start fresh
 ; Destroys: A, B, DE, OP2
 ; Preserves: C, HL
-addU8ToOP1:
+addAToOP1:
     push hl
     ld b, 8 ; loop for 8 bits in u8
-addU8ToOP1Loop:
+addAToOP1Loop:
     push bc
     push af
     bcall(_Times2) ; OP1 *= 2
     pop af
     sla a
-    jr nc, addU8ToOP1Check
+    jr nc, addAToOP1Check
     push af
     bcall(_Plus1) ; OP1 += 1
     pop af
-addU8ToOP1Check:
+addAToOP1Check:
     pop bc
-    djnz addU8ToOP1Loop
+    djnz addAToOP1Loop
     pop hl
     ret
 

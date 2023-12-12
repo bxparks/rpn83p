@@ -412,7 +412,7 @@ msgWordSizePrompt:
 mGetWordSizeHandler:
     call closeInputAndRecallNone
     ld a, (baseWordSize)
-    call convertU8ToOP1
+    bcall(_ConvertAToOP1PageOne)
     jp pushX
 
 ;-----------------------------------------------------------------------------
@@ -524,5 +524,5 @@ mGetBitHandler:
     ld a, (de)
     ld c, a
     call getU32Bit
-    call convertU8ToOP1
+    bcall(_ConvertAToOP1PageOne)
     jp replaceXY

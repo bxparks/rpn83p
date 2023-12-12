@@ -28,6 +28,7 @@ SRCS := \
 	hms.asm \
 	input.asm \
 	input1.asm \
+	integer1.asm \
 	main.asm \
 	mainparser.asm \
 	menu.asm \
