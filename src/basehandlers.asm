@@ -268,39 +268,37 @@ mGetWordSizeHandler:
 
 ;-----------------------------------------------------------------------------
 
-; TODO: Rename these arithmetic operations mBaseXxxHandler.
-
-mBitwiseAddHandler:
+mBaseAddHandler:
     call closeInputAndRecallXY ; OP1=Y; OP2=X
-    call bitwiseAdd ; OP1+=OP2
+    call baseAdd ; OP1+=OP2
     jp replaceXY
 
-mBitwiseSubtHandler:
+mBaseSubtHandler:
     call closeInputAndRecallXY ; OP1=Y; OP2=X
-    call bitwiseSub ; OP1-=OP2
+    call baseSub ; OP1-=OP2
     jp replaceXY
 
-mBitwiseMultHandler:
+mBaseMultHandler:
     call closeInputAndRecallXY ; OP1=Y; OP2=X
-    call bitwiseMult ; OP1*=OP2
+    call baseMult ; OP1*=OP2
     jp replaceXY
 
-; Description: Calculate bitwise x/y.
+; Description: Calculate base x/y.
 ; Output:
 ;   - X=quotient
 ;   - remainder thrown away
-mBitwiseDivHandler:
+mBaseDivHandler:
     call closeInputAndRecallXY ; OP1=Y; OP2=X
-    call bitwiseDiv ; OP1=OP1/OP2
+    call baseDiv ; OP1=OP1/OP2
     jp replaceXY
 
-; Description: Calculate bitwise div(x, y) -> (y/x, y % x).
+; Description: Calculate base div(x, y) -> (y/x, y % x).
 ; Output:
 ;   - X=remainder
 ;   - Y=quotient
-mBitwiseDiv2Handler:
+mBaseDiv2Handler:
     call closeInputAndRecallXY ; OP1=Y; OP2=X
-    call bitwiseDiv2 ; OP1=remainder; OP2=quotient
+    call baseDiv2 ; OP1=remainder; OP2=quotient
     jp replaceXYWithOP1OP2 ; Y=remainder, X=quotient
 
 ;-----------------------------------------------------------------------------

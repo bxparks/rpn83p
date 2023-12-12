@@ -658,7 +658,7 @@ handleKeyMenuSecondA:
 ; Destroys: all, OP1, OP2, OP4
 handleKeyAdd:
     bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
-    jp nz, mBitwiseAddHandler
+    jp nz, mBaseAddHandler
     call closeInputAndRecallXY
     bcall(_FPAdd) ; Y + X
     jp replaceXY
@@ -669,7 +669,7 @@ handleKeyAdd:
 ; Destroys: all, OP1, OP2, OP4
 handleKeySub:
     bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
-    jp nz, mBitwiseSubtHandler
+    jp nz, mBaseSubtHandler
     call closeInputAndRecallXY
     bcall(_FPSub) ; Y - X
     jp replaceXY
@@ -680,7 +680,7 @@ handleKeySub:
 ; Destroys: all, OP1, OP2, OP4, OP5
 handleKeyMul:
     bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
-    jp nz, mBitwiseMultHandler
+    jp nz, mBaseMultHandler
     call closeInputAndRecallXY
     bcall(_FPMult) ; Y * X
     jp replaceXY
@@ -691,7 +691,7 @@ handleKeyMul:
 ; Destroys: all, OP1, OP2, OP4
 handleKeyDiv:
     bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
-    jp nz, mBitwiseDivHandler
+    jp nz, mBaseDivHandler
     call closeInputAndRecallXY
     bcall(_FPDiv) ; Y / X
     jp replaceXY

@@ -541,9 +541,7 @@ baseRotateRightCarryNLoop:
 
 ;-----------------------------------------------------------------------------
 
-; TODO: Rename these from bitwiseXxx() to baseXxx().
-
-bitwiseAdd:
+baseAdd:
     call convertOP1OP2ToUxx ; HL=OP3=u32(OP1); DE=OP4=u32(OP2)
     call truncToWordSize
     call addUxxUxx ; OP3+=OP4
@@ -551,7 +549,7 @@ bitwiseAdd:
     call truncToWordSize
     jp convertU32ToOP1 ; OP1=float(OP3)
 
-bitwiseSub:
+baseSub:
     call convertOP1OP2ToUxx ; HL=OP3=u32(OP1); DE=OP4=u32(OP2)
     call truncToWordSize
     call subUxxUxx ; OP3-=OP4
@@ -559,7 +557,7 @@ bitwiseSub:
     call truncToWordSize
     jp convertU32ToOP1 ; OP1=float(OP3)
 
-bitwiseMult:
+baseMult:
     call convertOP1OP2ToUxx ; HL=OP3=u32(OP1); DE=OP4=u32(OP2)
     call truncToWordSize
     call multUxxUxx ; OP3*=OP4
@@ -568,13 +566,13 @@ bitwiseMult:
     jp convertU32ToOP1 ; OP1=float(OP3)
 
 ; Output: OP1=quotient
-bitwiseDiv:
-    call bitwiseDivCommon
+baseDiv:
+    call baseDivCommon
     jp convertU32ToOP1 ; OP1=quotient(OP3)
 
 ; Output: OP1=remainder; OP2=quotient
-bitwiseDiv2:
-    call bitwiseDivCommon ; HL=OP3=quotient; BC=OP5=remainder
+baseDiv2:
+    call baseDivCommon ; HL=OP3=quotient; BC=OP5=remainder
     push bc ; stack=[remainder]
     ; convert HL=quotient into OP2
     call convertU32ToOP1
@@ -591,18 +589,18 @@ bitwiseDiv2:
 ;   - DE=OP4=divisor
 ;   - BC=OP5=remainder
 ;   - (baseCarryFlag)=0
-bitwiseDivCommon:
+baseDivCommon:
     call convertOP1OP2ToUxx ; HL=OP3=u32(OP1); DE=OP4=u32(OP2)
     call truncToWordSize
     ex de, hl ; HL=OP4
     call testU32 ; check if X==0
     ex de, hl
-    jr z,  bitwiseDivByZero
+    jr z,  baseDivByZero
     ld bc, OP5 ; BC=remainder
     call divUxxUxx ; HL=OP3=quotient, DE=OP4=divisor, BC=OP5=remainder
     call storeCarryFlag ; CF=0 always
     jp truncToWordSize
-bitwiseDivByZero:
+baseDivByZero:
     bcall(_ErrDivBy0) ; throw 'Div By 0' exception
 
 ;-----------------------------------------------------------------------------
