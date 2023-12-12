@@ -115,97 +115,55 @@ mBaseNameSelector:
 ;-----------------------------------------------------------------------------
 
 mBitwiseAndHandler:
-    call recallXYAsU32 ; HL=OP3=u32(Y); DE=OP4=u32(X)
-    call truncToWordSize
-    ex de, hl
-    call truncToWordSize
-    ex de, hl
-    call andU32U32 ; HL = OP3 = OP3 AND OP4
-    call truncToWordSize
-    call convertU32ToOP1 ; OP1 = float(OP3)
+    call closeInputAndRecallXY ; OP1=Y; OP2=X
+    call bitwiseAnd ; OP1=X AND Y
     jp replaceXY
 
-;-----------------------------------------------------------------------------
-
 mBitwiseOrHandler:
-    call recallXYAsU32 ; HL=OP3=u32(Y); DE=OP4=u32(X)
-    call truncToWordSize
-    ex de, hl
-    call truncToWordSize
-    ex de, hl
-    call orU32U32 ; HL = OP3 = OP3 OR OP4
-    call truncToWordSize
-    call convertU32ToOP1 ; OP1 = float(OP3)
+    call closeInputAndRecallXY ; OP1=Y; OP2=X
+    call bitwiseOr ; OP1=X OR Y
     jp replaceXY
 
 mBitwiseXorHandler:
-    call recallXYAsU32 ; HL=OP3=u32(Y); DE=OP4=u32(X)
-    call truncToWordSize
-    ex de, hl
-    call truncToWordSize
-    ex de, hl
-    call xorU32U32 ; HL = OP3 = OP3 XOR OP4
-    call truncToWordSize
-    call convertU32ToOP1 ; OP1 = float(OP3)
+    call closeInputAndRecallXY ; OP1=Y; OP2=X
+    call bitwiseXor ; OP1=X XOR Y
     jp replaceXY
 
 mBitwiseNotHandler:
-    call recallXAsU32 ; HL=OP3=u32(X)
-    call truncToWordSize
-    call notU32 ; OP3 = NOT(OP3)
-    call truncToWordSize
-    call convertU32ToOP1 ; OP1 = float(OP3)
+    call closeInputAndRecallX ; OP1=X
+    call bitwiseNot ; OP1=NOT(X)
     jp replaceX
 
 mBitwiseNegHandler:
-    call recallXAsU32 ; HL=OP3=u32(X)
-    call truncToWordSize
-    call negU32 ; OP3 = NEG(OP3), 2's complement negation
-    call truncToWordSize
-    call convertU32ToOP1 ; OP1 = float(OP3)
+    call closeInputAndRecallX ; OP1=X
+    call bitwiseNeg ; OP1=NEG(X)
     jp replaceX
 
 ;-----------------------------------------------------------------------------
 
 mShiftLeftLogicalHandler:
-    call recallXAsU32 ; HL=OP3=u32(X)
-    call shiftLeftLogical ; OP3 = (OP3 << 1)
-    call storeCarryFlag
-    call convertU32ToOP1 ; OP1 = float(OP3)
+    call closeInputAndRecallX ; OP1=X
+    call baseShiftLeftLogical ; OP1=shiftLeftLogical(OP1)
     jp replaceX
 
 mShiftRightLogicalHandler:
-    call recallXAsU32 ; HL=OP3=u32(X)
-    call shiftRightLogical ; OP3 = (OP3 >> 1)
-    call storeCarryFlag
-    call convertU32ToOP1 ; OP1 = float(OP3)
+    call closeInputAndRecallX ; OP1=X
+    call baseShiftRightLogical ; OP1=shiftRightLogical(OP1)
     jp replaceX
 
 mShiftRightArithmeticHandler:
-    call recallXAsU32 ; HL=OP3=u32(X)
-    call shiftRightArithmetic ; OP3 = signed(OP3 >> 1)
-    call storeCarryFlag
-    call convertU32ToOP1 ; OP1 = float(OP3)
+    call closeInputAndRecallX ; OP1=X
+    call baseShiftRightArithmetic ; OP1=shiftRightArithmetic(OP1)
     jp replaceX
 
 mShiftLeftLogicalNHandler:
-    call recallXYAsU32N ; HL=OP3=u32(Y); DE=OP4=u32(X)
-    jp z, replaceXY
-mShiftLeftLogicalNLoop:
-    call shiftLeftLogical ; OP3 = (OP3 << 1)
-    djnz mShiftLeftLogicalNLoop
-    call storeCarryFlag
-    call convertU32ToOP1 ; OP1 = float(OP3)
+    call closeInputAndRecallXY ; OP1=Y; OP2=X
+    call baseShiftLeftLogicalN ; OP1=shiftLeftLogical(OP1,OP2)
     jp replaceXY
 
 mShiftRightLogicalNHandler:
-    call recallXYAsU32N ; HL=OP3=u32(Y); DE=OP4=u32(X)
-    jp z, replaceXY
-mShiftRightLogicalNLoop:
-    call shiftRightLogical ; OP3 = (OP3 >> 1)
-    djnz mShiftRightLogicalNLoop
-    call storeCarryFlag
-    call convertU32ToOP1 ; OP1 = float(OP3)
+    call closeInputAndRecallXY ; OP1=Y; OP2=X
+    call baseShiftRightLogicalN ; OP1=shiftLeftLogical(OP1,OP2)
     jp replaceXY
 
 ;-----------------------------------------------------------------------------
@@ -508,27 +466,3 @@ recallXYAsU32N:
     ret
 recallXYAsU32NError:
     bcall(_ErrDomain) ; throw exception if X >= baseWordSize
-
-;-----------------------------------------------------------------------------
-; Recall and store the Carry Flag.
-;-----------------------------------------------------------------------------
-
-; Description: Transfer CF to bit 0 of (baseCarryFlag).
-; Input: CF
-; Output: (baseCarryFlag)
-; Destroys: A
-storeCarryFlag:
-    rla ; shift CF into bit-0
-    and $1
-    ld (baseCarryFlag), a
-    set dirtyFlagsStatus, (iy + dirtyFlags)
-    ret
-
-; Description: Transfer bit 0 of (baseCarryFlag) into CF.
-; Input: (baseCarryFlag)
-; Output: CF
-; Destroys: A
-recallCarryFlag:
-    ld a, (baseCarryFlag)
-    rra ; shift bit 0 into CF
-    ret

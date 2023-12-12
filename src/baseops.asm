@@ -1111,8 +1111,7 @@ cmpU32U32End:
 ; Output:
 ;   - CF=1 if (HL) < A
 ;   - ZF=1 if (HL) == A
-; Destroys: A
-; Preserves: BC, DE, HL
+; Preserves: A, BC, DE, HL
 cmpU32WithA:
     push hl
     push bc
@@ -1135,6 +1134,7 @@ cmpU32WithA:
     ld a, b
     cp c
 cmpU32WithAGreaterEqual:
+    ld a, c ; restore A
     pop bc
     pop hl
     ret

@@ -312,6 +312,184 @@ addAToOP1Check:
     ret
 
 ;-----------------------------------------------------------------------------
+
+; Description: Convert OP1 to u32.
+; Input: OP1
+; Output:
+;   - OP3=u32(OP1)
+;   - HL=OP3
+; TODO: Check for overflow of baseWordSize
+convertOP1ToUxx:
+    ld hl, OP3
+    call convertOP1ToU32AllowFrac ; OP3=u32(OP1)
+    ret
+
+; Description: Convert OP1, OP2 to u32, u32.
+; Input: OP1, OP2
+; Output:
+;   - OP3=u32(OP1); OP4=u32(OP2)
+;   - HL=OP3; DE=OP4
+; TODO: Check for overflow of baseWordSize
+convertOP1OP2ToUxx:
+    ld hl, OP3
+    call convertOP1ToU32AllowFrac ; OP3=u32(OP1)
+    ld hl, OP4
+    call convertOP2ToU32AllowFrac ; OP4=u32(OP2)
+    ld hl, OP3
+    ld de, OP4
+    ret
+
+; Description: Convert OP1, OP2 to u32, u32.
+; Input: OP1, OP2
+; Output:
+;   - OP3=u32(OP1); OP4=u32(OP2)
+;   - HL=OP3; A=u8(OP4)
+;   - ZF=1 if A==0
+; TODO: Check for overflow of baseWordSize
+convertOP1OP2ToUxxN:
+    call convertOP1OP2ToUxx ; HL=OP3=u32(OP1); DE=OP4=u32(OP2)
+    ; Check OP4 against baseWordSize
+    ex de, hl ; HL=OP4=u32(OP2)
+    ld a, (baseWordSize)
+    call cmpU32WithA
+    jr nc, convertOP1OP2ToUxxErr
+    ld a, (hl) ; A=u8(OP4)
+    ex de, hl ; HL=OP3=u32(OP1); DE=OP4=u32(OP2)
+    or a ; set ZF=1 if u8(OP2)==0
+    ret
+convertOP1OP2ToUxxErr:
+    bcall(_ErrDomain) ; throw exception if X >= baseWordSize
+
+;-----------------------------------------------------------------------------
+; Entry point of BASE operation from basehandlers.asm. This indirection layer
+; becomes the API to the lower-level baseops.asm routines, allowing us to move
+; baseops.asm to another flash page more easily.
+;-----------------------------------------------------------------------------
+
+; Description: Calculate the bitwise-and between the integers in OP1 and OP2.
+; Input: OP1, OP2
+; Output: OP1: result as a floating number
+bitwiseAnd:
+    call convertOP1OP2ToUxx ; HL=OP3=u32(OP1); DE=OP4=u32(OP2)
+    call truncToWordSize
+    ex de, hl
+    call truncToWordSize
+    ex de, hl
+    call andU32U32 ; HL=OP3 AND OP4
+    call truncToWordSize
+    jp convertU32ToOP1 ; OP1=float(OP3)
+
+; Description: Calculate the bitwise-or between the integers in OP1 and OP2.
+; Input: OP1, OP2
+; Output: OP1: result as a floating number
+bitwiseOr:
+    call convertOP1OP2ToUxx ; HL=OP3=u32(OP1); DE=OP4=u32(OP2)
+    call truncToWordSize
+    ex de, hl
+    call truncToWordSize
+    ex de, hl
+    call orU32U32 ; HL=OP3=OP3 OR OP4
+    call truncToWordSize
+    jp convertU32ToOP1 ; OP1=float(OP3)
+
+; Description: Calculate the bitwise-xor between the integers in OP1 and OP2.
+; Input: OP1, OP2
+; Output: OP1: result as a floating number
+bitwiseXor:
+    call convertOP1OP2ToUxx ; HL=OP3=u32(OP1); DE=OP4=u32(OP2)
+    call truncToWordSize
+    ex de, hl
+    call truncToWordSize
+    ex de, hl
+    call xorU32U32 ; HL=OP3=OP3 XOR OP4
+    call truncToWordSize
+    jp convertU32ToOP1 ; OP1=float(OP3)
+
+; Description: Calculate the bitwise-not of OP1
+; Input: OP1
+; Output: OP1: result as a floating number
+bitwiseNot:
+    call convertOP1ToUxx ; HL=OP3=u32(OP1)
+    call truncToWordSize
+    call notU32 ; OP3=NOT(OP3)
+    call truncToWordSize
+    jp convertU32ToOP1 ; OP1=float(OP3)
+
+; Description: Calculate the bitwise-neg of OP1
+; Input: OP1
+; Output: OP1: result as a floating number
+bitwiseNeg:
+    call convertOP1ToUxx ; HL=OP3=u32(OP1)
+    call truncToWordSize
+    call negU32 ; OP3=NEG(OP3)
+    call truncToWordSize
+    jp convertU32ToOP1 ; OP1=float(OP3)
+
+;-----------------------------------------------------------------------------
+
+baseShiftLeftLogical:
+    call convertOP1ToUxx ; HL=OP3=u32(OP1)
+    call shiftLeftLogical ; OP3=shiftLeftLogical(OP3)
+    call storeCarryFlag
+    jp convertU32ToOP1 ; OP1=float(OP3)
+
+baseShiftRightLogical:
+    call convertOP1ToUxx ; HL=OP3=u32(OP1)
+    call shiftRightLogical ; OP3=shiftRightLogical(OP3)
+    call storeCarryFlag
+    jp convertU32ToOP1 ; OP1=float(OP3)
+
+baseShiftRightArithmetic:
+    call convertOP1ToUxx ; HL=OP3=u32(OP1)
+    call shiftRightArithmetic ; OP3=shiftRightArithmetic(OP3)
+    call storeCarryFlag
+    jp convertU32ToOP1 ; OP1=float(OP3)
+
+baseShiftLeftLogicalN:
+    call convertOP1OP2ToUxxN ; HL=OP3=u32(OP1); A=u8(OP2); ZF=1 if A==0
+    ret z
+    ld b, a
+baseShiftLeftLogicalNLoop:
+    call shiftLeftLogical; (OP3)=shiftLeftLogical(OP3)
+    djnz baseShiftLeftLogicalNLoop
+    call storeCarryFlag
+    jp convertU32ToOP1 ; OP1=float(OP3)
+
+baseShiftRightLogicalN:
+    call convertOP1OP2ToUxxN ; HL=OP3=u32(OP1); A=u8(OP2); ZF=1 if A==0
+    ret z
+    ld b, a
+baseShiftRightLogicalNLoop:
+    call shiftRightLogical; (OP3)=shiftRightLogical(OP3)
+    djnz baseShiftRightLogicalNLoop
+    call storeCarryFlag
+    jp convertU32ToOP1 ; OP1=float(OP3)
+
+;-----------------------------------------------------------------------------
+; Recall and store the Carry Flag.
+;-----------------------------------------------------------------------------
+
+; Description: Transfer CF to bit 0 of (baseCarryFlag).
+; Input: CF
+; Output: (baseCarryFlag)
+; Destroys: A
+storeCarryFlag:
+    rla ; shift CF into bit-0
+    and $1
+    ld (baseCarryFlag), a
+    set dirtyFlagsStatus, (iy + dirtyFlags)
+    ret
+
+; Description: Transfer bit 0 of (baseCarryFlag) into CF.
+; Input: (baseCarryFlag)
+; Output: CF
+; Destroys: A
+recallCarryFlag:
+    ld a, (baseCarryFlag)
+    rra ; shift bit 0 into CF
+    ret
+
+;-----------------------------------------------------------------------------
 ; W32 and WSIZE routines.
 ;-----------------------------------------------------------------------------
 
