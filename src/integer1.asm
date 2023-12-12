@@ -60,21 +60,21 @@ addAToOP1PageOneCheck:
 
 ;------------------------------------------------------------------------------
 
-; Description: Convert OP1 to u16. Throw ErrDomain exception if:
+; Description: Convert OP1 to u16(HL). Throw ErrDomain exception if:
 ;   - OP1 >= 2^16
 ;   - OP1 < 0
 ;   - OP1 is not an integer
 ; Input: OP1
 ; Output: HL=u16(OP1)
 ; Destroys: all, OP2
-convertOP1ToU16PageOne:
+convertOP1ToHLPageOne:
     bcall(_CkPosInt) ; if OP1>=0 and OP1 is int: ZF=1
-    jr nz, convertOP1ToU16Err
+    jr nz, convertOP1ToHLErr
     call op2Set2Pow16PageOne
     bcall(_CpOP1OP2) ; if OP1 >= 2^16: CF=0
-    jr nc, convertOP1ToU16Err
-    jr convertOP1ToU16NoCheck
-convertOP1ToU16Err:
+    jr nc, convertOP1ToHLErr
+    jr convertOP1ToHLNoCheck
+convertOP1ToHLErr:
     bcall(_ErrDomain)
 
 ; Description: Convert OP1 to u16(HL) without any boundary checks. Adapted from
@@ -82,7 +82,7 @@ convertOP1ToU16Err:
 ; Input: OP1
 ; Output: HL=u16(OP1)
 ; Destroys: all
-convertOP1ToU16NoCheck:
+convertOP1ToHLNoCheck:
     ; initialize the target u16 and check for 0.0
     ld hl, 0
     bcall(_CkOP1FP0) ; preserves HL
@@ -92,10 +92,10 @@ convertOP1ToU16NoCheck:
     ld a, (de)
     sub $7F ; A = exponent + 1 = num digits in mantissa
     ld b, a ; B = num digits in mantissa
-    jr convertOP1ToU16LoopEntry
-convertOP1ToU16Loop:
+    jr convertOP1ToHLLoopEntry
+convertOP1ToHLLoop:
     call multHLBy10
-convertOP1ToU16LoopEntry:
+convertOP1ToHLLoopEntry:
     ; get next 2 digits of mantissa
     inc de ; DE = pointer to mantissa
     ld a, (de)
@@ -114,7 +114,7 @@ convertOP1ToU16LoopEntry:
     ld a, (de)
     and $0F
     call addHLByA
-    djnz convertOP1ToU16Loop
+    djnz convertOP1ToHLLoop
     ret
 
 ; Description: Multiply HL by 10.
