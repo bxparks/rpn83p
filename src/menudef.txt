@@ -87,7 +87,7 @@ MenuGroup root mRoot [
         MenuItem PRIM mPrime
       ]
       #MenuRow [
-      #  MenuItem PMOD mPrimeMod # for debugging modU32U16
+      #  MenuItem PMOD mPrimeMod # for debugging modU32ByDE
       #]
       MenuRow [
         MenuItem IP mIntPart

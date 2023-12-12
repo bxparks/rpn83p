@@ -329,7 +329,7 @@ recallXYAsU32N:
     ld hl, OP4
     call convertOP2ToU32AllowFrac ; OP4=u32(X)
     ld a, (baseWordSize)
-    call cmpU32U8
+    call cmpU32WithA
     jr nc, recallXYAsU32NError
     ld hl, OP3
     ld de, OP4

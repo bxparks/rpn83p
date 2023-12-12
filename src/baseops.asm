@@ -656,7 +656,7 @@ multU8U8:
 ;   - A: u8 to add
 ; Output: (HL) += A
 ; Destroys: none
-addU32U8:
+addU32ByA:
     push hl
 
     add a, (hl)
@@ -1020,30 +1020,30 @@ divU32U8QuotientZero:
 ;   - HL: pointer to U32 of 0
 ;   - DE: unchanged
 ;   - BC: U16 remainder
-modU32U16:
+modU32ByDE:
     push de
     ld b, d
     ld c, e ; BC=DE=divisor
     ld de, 0
     ld a, 32
-modU32U16Loop:
+modU32ByDELoop:
     call shiftLeftLogicalU32
     rl e
     rl d ; DE=remainder
     ex de, hl ; HL=remainder
-    jr c, modU32U16Overflow ; remainder overflowed, so must substract
+    jr c, modU32ByDEOverflow ; remainder overflowed, so must substract
     or a ; reset CF
     sbc hl, bc ; HL(remainder) -= divisor
-    jr nc, modU32U16NextBit
+    jr nc, modU32ByDENextBit
     add hl, bc ; revert the subtraction
-    jr modU32U16NextBit
-modU32U16Overflow:
+    jr modU32ByDENextBit
+modU32ByDEOverflow:
     or a ; reset CF
     sbc hl, bc ; HL(remainder) -= divisor
-modU32U16NextBit:
+modU32ByDENextBit:
     ex de, hl ; DE=remainder
     dec a
-    jr nz, modU32U16Loop
+    jr nz, modU32ByDELoop
     ld c, e
     ld b, d
     pop de
@@ -1113,7 +1113,7 @@ cmpU32U32End:
 ;   - ZF=1 if (HL) == A
 ; Destroys: A
 ; Preserves: BC, DE, HL
-cmpU32U8:
+cmpU32WithA:
     push hl
     push bc
     ld c, a ; save u8(A)
@@ -1122,19 +1122,19 @@ cmpU32U8:
     inc hl
     ld a, (hl)
     or a
-    jr nz, cmpU32U8GreaterEqual
+    jr nz, cmpU32WithAGreaterEqual
     inc hl
     ld a, (hl)
     or a
-    jr nz, cmpU32U8GreaterEqual
+    jr nz, cmpU32WithAGreaterEqual
     inc hl
     ld a, (hl)
     or a
-    jr nz, cmpU32U8GreaterEqual
+    jr nz, cmpU32WithAGreaterEqual
     ; Compare the lowest byte
     ld a, b
     cp c
-cmpU32U8GreaterEqual:
+cmpU32WithAGreaterEqual:
     pop bc
     pop hl
     ret

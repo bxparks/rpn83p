@@ -217,7 +217,7 @@ convertOP1ToU32LoopEntry:
     rrca
     rrca
     and $0F
-    call addU32U8
+    call addU32ByA
     ; check number of mantissa digits
     dec b
     ret z
@@ -226,7 +226,7 @@ convertOP1ToU32SecondDigit:
     call multU32By10
     ld a, (de)
     and $0F
-    call addU32U8
+    call addU32ByA
     djnz convertOP1ToU32Loop
     ret
 
