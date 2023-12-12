@@ -191,45 +191,23 @@ mRotateRightCarryHandler:
 ;-----------------------------------------------------------------------------
 
 mRotateLeftCircularNHandler:
-    call recallXYAsU32N ; HL=OP3=u32(Y); DE=OP4=u32(X)
-    jp z, replaceXY
-mRotateLeftCircularNLoop:
-    call rotateLeftCircular; OP3 = rotLeftCircular(OP3)
-    djnz mRotateLeftCircularNLoop
-    call storeCarryFlag
-    call convertU32ToOP1 ; OP1 = float(OP3)
+    call closeInputAndRecallXY ; OP1=Y; OP2=X
+    call baseRotateLeftCircularN
     jp replaceXY
 
 mRotateRightCircularNHandler:
-    call recallXYAsU32N ; HL=OP3=u32(Y); DE=OP4=u32(X)
-    jp z, replaceXY
-mRotateRightCircularNLoop:
-    call rotateRightCircular; OP3 = rotRightCircular(OP3)
-    djnz mRotateRightCircularNLoop
-    call storeCarryFlag
-    call convertU32ToOP1 ; OP1 = float(OP3)
+    call closeInputAndRecallXY ; OP1=Y; OP2=X
+    call baseRotateRightCircularN
     jp replaceXY
 
 mRotateLeftCarryNHandler:
-    call recallXYAsU32N ; HL=OP3=u32(Y); DE=OP4=u32(X)
-    jp z, replaceXY
-    call recallCarryFlag
-mRotateLeftCarryNLoop:
-    call rotateLeftCarry; OP3 = rotLeftCarry(OP3)
-    djnz mRotateLeftCarryNLoop
-    call storeCarryFlag
-    call convertU32ToOP1 ; OP1 = float(OP3)
+    call closeInputAndRecallXY ; OP1=Y; OP2=X
+    call baseRotateLeftCarryN
     jp replaceXY
 
 mRotateRightCarryNHandler:
-    call recallXYAsU32N ; HL=OP3=u32(Y); DE=OP4=u32(X)
-    jp z, replaceXY
-    call recallCarryFlag
-mRotateRightCarryNLoop:
-    call rotateRightCarry; HL=OP3=rotRightCarry(OP3)
-    djnz mRotateRightCarryNLoop
-    call storeCarryFlag
-    call convertU32ToOP1 ; OP1 = float(OP3)
+    call closeInputAndRecallXY ; OP1=Y; OP2=X
+    call baseRotateRightCarryN
     jp replaceXY
 
 ;-----------------------------------------------------------------------------
