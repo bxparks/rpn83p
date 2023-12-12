@@ -78,23 +78,23 @@ getBaseNumberIndexErr:
 
 ; Description: Return the number of digits which are accepted or displayed for
 ; the given (baseWordSize) and (baseNumber).
-;   - no BASE: inputBufCapacity
-;   - BASE 2: numDigits = min(baseWordSize, inputBufCapacity)
+;   - floating mode: inputBufNormalMaxLen
+;   - BASE 2: inputMaxLen = baseWordSize
 ;       - 8 -> 8
 ;       - 16 -> 16
 ;       - 24 -> 24
 ;       - 32 -> 32
-;   - BASE 8: numDigits = ceil(baseWordSize / 3)
+;   - BASE 8: inputMaxLen = ceil(baseWordSize / 3)
 ;       - 8 -> 3 (0o377)
 ;       - 16 -> 6 (0o177 777)
 ;       - 24 -> 8 (0o77 777 777)
 ;       - 32 -> 11 (0o37 777 777 777)
-;   - BASE 10:
+;   - BASE 10: inputMaxLen = ceil(log10(2^baseWordSize))
 ;       - 8 -> 3 (255)
 ;       - 16 -> 5 (65 535)
 ;       - 24 -> 8 (16 777 215)
 ;       - 32 -> 10 (4 294 967 295)
-;   - BASE 16: numDigits = baseWordSize / 4
+;   - BASE 16: inputMaxLen = baseWordSize / 4
 ;       - 8 -> 2 (0xff)
 ;       - 16 -> 4 (0xff ff)
 ;       - 24 -> 6 (0xff ff ff)
@@ -109,16 +109,16 @@ getBaseNumberIndexErr:
 ; more space.
 ;
 ; Input: rpnFlagsBaseModeEnabled, (baseWordSize), (baseNumber).
-; Output: A: numDigits
+; Output: A: inputMaxLen
 ; Destroys: A
 ; Preserves: BC, DE, HL
-GetWordSizeDigits:
+getInputMaxLen:
     ; If floating point mode (not BASE) mode, return the normal maximum.
     bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
-    jr nz, getWordSizeDigitsBaseMode
+    jr nz, getInputMaxLenBaseMode
     ld a, inputBufNormalMaxLen
     ret
-getWordSizeDigitsBaseMode:
+getInputMaxLenBaseMode:
     ; If BASE mode, the maximum number of digits depends on baseNumber and
     ; baseWordSize.
     push de
