@@ -2,7 +2,13 @@
 ; MIT License
 ; Copyright (c) 2023 Brian T. Park
 ;
-; Routines related to u32 stored as 4 bytes in little endian format.
+; Routines that implement the various BASE bitwise and logical operations on
+; integer arguments. The arguments to the lower-level functions are u32,
+; u24, u16, or u8 integers, usually stored using up to 4 bytes in little endian
+; format.
+;
+; TODO: Remove dependency to (baseWordSize) by passing it as a parameter in one
+; of the registers. That would allow these routines to be tested in isolation.
 ;-----------------------------------------------------------------------------
 
 ;-----------------------------------------------------------------------------
