@@ -284,90 +284,13 @@ mRotateRightCarryNLoop:
 
 ;-----------------------------------------------------------------------------
 
-; Description: Recall X and convert into a u32 integer.
-; Input: X
-; Output:
-;   - OP3=u32(X)
-;   - HL=OP3
-;   - throws Err:Domain if X is not an integer in [0, 2^32)
-; Destroys: A, BC, DE, HL
-recallXAsU32:
-    call closeInputAndRecallX ; OP1=X
-    ld hl, OP3
-    call convertOP1ToU32AllowFrac ; OP3=u32(X)
-    ret
-
-; Description: Recall X and Y and convert them into u32 integers.
-; Input: X, Y
-; Output:
-;   - HL=OP3=u32(Y)
-;   - DE=OP4=u32(X)
-; Destroys: A, BC, DE, HL
-recallXYAsU32:
-    call closeInputAndRecallXY ; OP1=Y; OP2=X
-    ld hl, OP3
-    call convertOP1ToU32AllowFrac ; OP3=u32(Y)
-    ld hl, OP4
-    call convertOP2ToU32AllowFrac ; OP4=u32(X)
-    ld hl, OP3
-    ld de, OP4
-    ret
-
-; Description: Recall X and Y for SLn, SRn, RLn, RRn, RLCn, RRCn. Verify that X
-; (i.e. n) is an integer between [0, WSIZE).
-; Input: X, Y
-; Output:
-;   - HL=OP3=u32(Y)
-;   - DE=OP4=u32(X)
-;   - A=B=U8(X), verified to be an int in [0, WSIZE).
-;   - ZF=1 if B==0
-; Destroys: A, BC, DE, HL
-recallXYAsU32N:
-    call closeInputAndRecallXY ; OP1=Y; OP2=X
-    ld hl, OP3
-    call convertOP1ToU32AllowFrac ; OP3=u32(Y)
-    ld hl, OP4
-    call convertOP2ToU32AllowFrac ; OP4=u32(X)
-    ld a, (baseWordSize)
-    call cmpU32WithA
-    jr nc, recallXYAsU32NError
-    ld hl, OP3
-    ld de, OP4
-    ld b, a ; B=u8(X)
-    or a ; set ZF=1 if u8(X)==0
-    ret
-recallXYAsU32NError:
-    bcall(_ErrDomain) ; throw exception if X >= baseWordSize
-
-;-----------------------------------------------------------------------------
-
-; Description: Transfer CF to bit 0 of (baseCarryFlag).
-; Input: CF
-; Output: (baseCarryFlag)
-; Destroys: A
-storeCarryFlag:
-    rla ; shift CF into bit-0
-    and $1
-    ld (baseCarryFlag), a
-    set dirtyFlagsStatus, (iy + dirtyFlags)
-    ret
-
-; Description: Transfer bit 0 of (baseCarryFlag) into CF.
-; Input: (baseCarryFlag)
-; Output: CF
-; Destroys: A
-recallCarryFlag:
-    ld a, (baseCarryFlag)
-    rra ; shift bit 0 into CF
-    ret
-
 mClearCarryFlagHandler:
     or a ; CF=0
-    jr storeCarryFlag
+    jp storeCarryFlag
 
 mSetCarryFlagHandler:
     scf ; CF=1
-    jr storeCarryFlag
+    jp storeCarryFlag
 
 mGetCarryFlagHandler:
     call closeInputAndRecallNone
@@ -526,3 +449,86 @@ mGetBitHandler:
     call getU32Bit
     bcall(_ConvertAToOP1PageOne)
     jp replaceXY
+
+;-----------------------------------------------------------------------------
+; Recall X or Y as U32.
+;-----------------------------------------------------------------------------
+
+; Description: Recall X and convert into a u32 integer.
+; Input: X
+; Output:
+;   - OP3=u32(X)
+;   - HL=OP3
+;   - throws Err:Domain if X is not an integer in [0, 2^32)
+; Destroys: A, BC, DE, HL
+recallXAsU32:
+    call closeInputAndRecallX ; OP1=X
+    ld hl, OP3
+    call convertOP1ToU32AllowFrac ; OP3=u32(X)
+    ret
+
+; Description: Recall X and Y and convert them into u32 integers.
+; Input: X, Y
+; Output:
+;   - HL=OP3=u32(Y)
+;   - DE=OP4=u32(X)
+; Destroys: A, BC, DE, HL
+recallXYAsU32:
+    call closeInputAndRecallXY ; OP1=Y; OP2=X
+    ld hl, OP3
+    call convertOP1ToU32AllowFrac ; OP3=u32(Y)
+    ld hl, OP4
+    call convertOP2ToU32AllowFrac ; OP4=u32(X)
+    ld hl, OP3
+    ld de, OP4
+    ret
+
+; Description: Recall X and Y for SLn, SRn, RLn, RRn, RLCn, RRCn. Verify that X
+; (i.e. n) is an integer between [0, WSIZE).
+; Input: X, Y
+; Output:
+;   - HL=OP3=u32(Y)
+;   - DE=OP4=u32(X)
+;   - A=B=U8(X), verified to be an int in [0, WSIZE).
+;   - ZF=1 if B==0
+; Destroys: A, BC, DE, HL
+recallXYAsU32N:
+    call closeInputAndRecallXY ; OP1=Y; OP2=X
+    ld hl, OP3
+    call convertOP1ToU32AllowFrac ; OP3=u32(Y)
+    ld hl, OP4
+    call convertOP2ToU32AllowFrac ; OP4=u32(X)
+    ld a, (baseWordSize)
+    call cmpU32WithA
+    jr nc, recallXYAsU32NError
+    ld hl, OP3
+    ld de, OP4
+    ld b, a ; B=u8(X)
+    or a ; set ZF=1 if u8(X)==0
+    ret
+recallXYAsU32NError:
+    bcall(_ErrDomain) ; throw exception if X >= baseWordSize
+
+;-----------------------------------------------------------------------------
+; Recall and store the Carry Flag.
+;-----------------------------------------------------------------------------
+
+; Description: Transfer CF to bit 0 of (baseCarryFlag).
+; Input: CF
+; Output: (baseCarryFlag)
+; Destroys: A
+storeCarryFlag:
+    rla ; shift CF into bit-0
+    and $1
+    ld (baseCarryFlag), a
+    set dirtyFlagsStatus, (iy + dirtyFlags)
+    ret
+
+; Description: Transfer bit 0 of (baseCarryFlag) into CF.
+; Input: (baseCarryFlag)
+; Output: CF
+; Destroys: A
+recallCarryFlag:
+    ld a, (baseCarryFlag)
+    rra ; shift bit 0 into CF
+    ret
