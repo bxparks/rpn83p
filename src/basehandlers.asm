@@ -169,34 +169,26 @@ mShiftRightLogicalNHandler:
 ;-----------------------------------------------------------------------------
 
 mRotateLeftCircularHandler:
-    call recallXAsU32 ; HL=OP3=u32(X)
-    call rotateLeftCircular; OP3 = rotLeftCircular(OP3)
-    call storeCarryFlag
-    call convertU32ToOP1 ; OP1 = float(OP3)
+    call closeInputAndRecallX ; OP1=X
+    call baseRotateLeftCircular; OP3=rotateLeftCircular(OP3)
     jp replaceX
 
 mRotateRightCircularHandler:
-    call recallXAsU32 ; HL=OP3=u32(X)
-    call rotateRightCircular; OP3 = rotRightCircular(OP3)
-    call storeCarryFlag
-    call convertU32ToOP1 ; OP1 = float(OP3)
+    call closeInputAndRecallX ; OP1=X
+    call baseRotateRightCircular; OP1=rotateRightCircular(OP1)
     jp replaceX
 
 mRotateLeftCarryHandler:
-    call recallXAsU32 ; HL=OP3=u32(X)
-    call recallCarryFlag
-    call rotateLeftCarry; OP3 = rotLeftCarry(OP3)
-    call storeCarryFlag
-    call convertU32ToOP1 ; OP1 = float(OP3)
+    call closeInputAndRecallX ; OP1=X
+    call baseRotateLeftCarry ; OP1=rotateLeftCarry(OP1)
     jp replaceX
 
 mRotateRightCarryHandler:
-    call recallXAsU32 ; HL=OP3=u32(X)
-    call recallCarryFlag
-    call rotateRightCarry; OP3 = rotRightCarry(OP3)
-    call storeCarryFlag
-    call convertU32ToOP1 ; OP1 = float(OP3)
+    call closeInputAndRecallX ; OP1=X
+    call baseRotateRightCarry ; OP1=rotateRightCarry(OP1)
     jp replaceX
+
+;-----------------------------------------------------------------------------
 
 mRotateLeftCircularNHandler:
     call recallXYAsU32N ; HL=OP3=u32(Y); DE=OP4=u32(X)

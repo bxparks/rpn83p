@@ -466,6 +466,34 @@ baseShiftRightLogicalNLoop:
     jp convertU32ToOP1 ; OP1=float(OP3)
 
 ;-----------------------------------------------------------------------------
+
+baseRotateLeftCircular:
+    call convertOP1ToUxx ; HL=OP3=u32(OP1)
+    call rotateLeftCircular ; OP3=rotateLeftCircular(OP3)
+    call storeCarryFlag
+    jp convertU32ToOP1 ; OP1=float(OP3)
+
+baseRotateRightCircular:
+    call convertOP1ToUxx ; HL=OP3=u32(OP1)
+    call rotateRightCircular ; OP3=rotateRightCircular(OP3)
+    call storeCarryFlag
+    jp convertU32ToOP1 ; OP1=float(OP3)
+
+baseRotateLeftCarry:
+    call convertOP1ToUxx ; HL=OP3=u32(OP1)
+    call recallCarryFlag ; CF=(baseCarryFlag)
+    call rotateLeftCarry; OP3=rotateLeftCarry(OP3)
+    call storeCarryFlag ; (baseCarryFlag)=CF
+    jp convertU32ToOP1 ; OP1=float(OP3)
+
+baseRotateRightCarry:
+    call convertOP1ToUxx ; HL=OP3=u32(OP1)
+    call recallCarryFlag ; CF=(baseCarryFlag)
+    call rotateRightCarry; OP3=rotateRightCarry(OP3)
+    call storeCarryFlag ; (baseCarryFlag)=CF
+    jp convertU32ToOP1 ; OP1=float(OP3)
+
+;-----------------------------------------------------------------------------
 ; Recall and store the Carry Flag.
 ;-----------------------------------------------------------------------------
 
