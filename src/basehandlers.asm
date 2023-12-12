@@ -268,31 +268,21 @@ mGetWordSizeHandler:
 
 ;-----------------------------------------------------------------------------
 
+; TODO: Rename these arithmetic operations mBaseXxxHandler.
+
 mBitwiseAddHandler:
-    call recallXYAsU32 ; HL=OP3=u32(Y); DE=OP4=u32(X)
-    call truncToWordSize
-    call addUxxUxx ; OP3(Y) += OP4(X)
-    call storeCarryFlag
-    call truncToWordSize
-    call convertU32ToOP1 ; OP1 = float(OP3)
+    call closeInputAndRecallXY ; OP1=Y; OP2=X
+    call bitwiseAdd ; OP1+=OP2
     jp replaceXY
 
 mBitwiseSubtHandler:
-    call recallXYAsU32 ; HL=OP3=u32(Y); DE=OP4=u32(X)
-    call truncToWordSize
-    call subUxxUxx ; OP3(Y) -= OP4(X)
-    call storeCarryFlag
-    call truncToWordSize
-    call convertU32ToOP1 ; OP1 = float(OP3)
+    call closeInputAndRecallXY ; OP1=Y; OP2=X
+    call bitwiseSub ; OP1-=OP2
     jp replaceXY
 
 mBitwiseMultHandler:
-    call recallXYAsU32 ; HL=OP3=u32(Y); DE=OP4=u32(X)
-    call truncToWordSize
-    call multUxxUxx ; OP3(Y) *= OP4(X)
-    call storeCarryFlag
-    call truncToWordSize
-    call convertU32ToOP1 ; OP1 = float(OP3)
+    call closeInputAndRecallXY ; OP1=Y; OP2=X
+    call bitwiseMult ; OP1*=OP2
     jp replaceXY
 
 ; Description: Calculate bitwise x/y.
@@ -300,8 +290,8 @@ mBitwiseMultHandler:
 ;   - X=quotient
 ;   - remainder thrown away
 mBitwiseDivHandler:
-    call baseDivHandlerCommon ; HL=quotient, BC=remainder
-    call convertU32ToOP1 ; OP1 = quotient
+    call closeInputAndRecallXY ; OP1=Y; OP2=X
+    call bitwiseDiv ; OP1=OP1/OP2
     jp replaceXY
 
 ; Description: Calculate bitwise div(x, y) -> (y/x, y % x).
@@ -309,33 +299,9 @@ mBitwiseDivHandler:
 ;   - X=remainder
 ;   - Y=quotient
 mBitwiseDiv2Handler:
-    call baseDivHandlerCommon ; HL=quotient, BC=remainder
-    push bc
-    ; convert HL=quotient into OP2
-    call convertU32ToOP1
-    bcall(_OP1ToOP2) ; OP2=quotient
-    ; convert BC=remainder into OP1
-    pop hl
-    call convertU32ToOP1 ; OP1=remainder
+    call closeInputAndRecallXY ; OP1=Y; OP2=X
+    call bitwiseDiv2 ; OP1=remainder; OP2=quotient
     jp replaceXYWithOP1OP2 ; Y=remainder, X=quotient
-
-; Output:
-;   - HL=quotient
-;   - BC=remainder
-baseDivHandlerCommon:
-    call recallXYAsU32 ; HL=OP3=u32(Y); DE=OP4=u32(X)
-    call truncToWordSize
-    ex de, hl ; HL=OP4
-    call testU32 ; check if X==0
-    ex de, hl
-    jr z,  baseDivHandlerDivByZero
-    ld bc, OP5 ; BC=remainder
-    call divUxxUxx ; HL=OP3=quotient, DE=OP4=divisor, BC=OP5=remainder
-    call storeCarryFlag ; CF=0 always
-    call truncToWordSize
-    ret
-baseDivHandlerDivByZero:
-    bcall(_ErrDivBy0) ; throw 'Div By 0' exception
 
 ;-----------------------------------------------------------------------------
 
