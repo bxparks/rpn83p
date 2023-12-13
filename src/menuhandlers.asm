@@ -304,7 +304,7 @@ mPrimeHandlerError:
 ;-----------------------------------------------------------------------------
 
 #ifdef ENABLE_PRIME_MOD
-; Description: Test modU32U16().
+; Description: Test modU32ByDE().
 ; Uses:
 ;   - OP1=Y
 ;   - OP2=X
@@ -323,7 +323,7 @@ mPrimeModHandler:
     ld d, (hl) ; DE=u16(X)
     ;
     ld hl, OP3
-    call modU32U16 ; BC=remainder=Y mod X
+    call modU32ByDE ; BC=remainder=Y mod X
     ld hl, OP3
     call setU32ToBC ; u32(OP3)=BC
     call convertU32ToOP1 ; OP1=float(OP3)

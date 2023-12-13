@@ -229,15 +229,13 @@ convertOP1ToBaseString:
 convertOP1ToBinString:
     ; Check if OP1 fits in the current baseWordSize.
     ld hl, OP3
-    call convertOP1ToW32
-    call checkW32FitsWsize
-    ld a, (hl)
-    bit w32StatusCodeTooBig, a
+    call convertOP1ToU32StatusCode ; OP3=u32(OP1); C=u32StatusCode
+    call checkU32FitsWsize ; C=u32StatusCode
+    bit u32StatusCodeTooBig, c
     jr nz, convertOP1ToIntString
-    bit w32StatusCodeNegative, a
+    bit u32StatusCodeNegative, c
     jr nz, convertOP1ToIntString
     ; Move u32 to OP1, to free up OP3.
-    inc hl ; w32+1
     ld de, OP1
     ld bc, 4
     ldir

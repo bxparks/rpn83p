@@ -10,6 +10,7 @@ SRCS := \
 	argparser.asm \
 	base.asm \
 	base1.asm \
+	baseops.asm \
 	basehandlers.asm \
 	cfithandlers.asm \
 	common.asm \
@@ -27,7 +28,7 @@ SRCS := \
 	hms.asm \
 	input.asm \
 	input1.asm \
-	integer.asm \
+	integer1.asm \
 	main.asm \
 	mainparser.asm \
 	menu.asm \

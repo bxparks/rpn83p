@@ -838,50 +838,50 @@ mCountBitId equ 86
     .dw mCountBitHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
 ; MenuGroup BASE: children: row 6
-mBitwiseAdd:
-mBitwiseAddId equ 87
-    .db mBitwiseAddId ; id
+mBaseAdd:
+mBaseAddId equ 87
+    .db mBaseAddId ; id
     .db mBaseId ; parentId
-    .db mBitwiseAddNameId ; nameId
+    .db mBaseAddNameId ; nameId
     .db 0 ; numRows
     .db 0 ; rowBeginId or altNameId
-    .dw mBitwiseAddHandler ; handler (to be implemented)
+    .dw mBaseAddHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
-mBitwiseSubt:
-mBitwiseSubtId equ 88
-    .db mBitwiseSubtId ; id
+mBaseSubt:
+mBaseSubtId equ 88
+    .db mBaseSubtId ; id
     .db mBaseId ; parentId
-    .db mBitwiseSubtNameId ; nameId
+    .db mBaseSubtNameId ; nameId
     .db 0 ; numRows
     .db 0 ; rowBeginId or altNameId
-    .dw mBitwiseSubtHandler ; handler (to be implemented)
+    .dw mBaseSubtHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
-mBitwiseMult:
-mBitwiseMultId equ 89
-    .db mBitwiseMultId ; id
+mBaseMult:
+mBaseMultId equ 89
+    .db mBaseMultId ; id
     .db mBaseId ; parentId
-    .db mBitwiseMultNameId ; nameId
+    .db mBaseMultNameId ; nameId
     .db 0 ; numRows
     .db 0 ; rowBeginId or altNameId
-    .dw mBitwiseMultHandler ; handler (to be implemented)
+    .dw mBaseMultHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
-mBitwiseDiv:
-mBitwiseDivId equ 90
-    .db mBitwiseDivId ; id
+mBaseDiv:
+mBaseDivId equ 90
+    .db mBaseDivId ; id
     .db mBaseId ; parentId
-    .db mBitwiseDivNameId ; nameId
+    .db mBaseDivNameId ; nameId
     .db 0 ; numRows
     .db 0 ; rowBeginId or altNameId
-    .dw mBitwiseDivHandler ; handler (to be implemented)
+    .dw mBaseDivHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
-mBitwiseDiv2:
-mBitwiseDiv2Id equ 91
-    .db mBitwiseDiv2Id ; id
+mBaseDiv2:
+mBaseDiv2Id equ 91
+    .db mBaseDiv2Id ; id
     .db mBaseId ; parentId
-    .db mBitwiseDiv2NameId ; nameId
+    .db mBaseDiv2NameId ; nameId
     .db 0 ; numRows
     .db 0 ; rowBeginId or altNameId
-    .dw mBitwiseDiv2Handler ; handler (to be implemented)
+    .dw mBaseDiv2Handler ; handler (to be implemented)
     .dw 0 ; nameSelector
 ; MenuGroup BASE: children: row 7
 mClearCarryFlag:
@@ -1977,16 +1977,16 @@ mReverseBitNameId equ 79
     .dw mReverseBitName
 mCountBitNameId equ 80
     .dw mCountBitName
-mBitwiseAddNameId equ 81
-    .dw mBitwiseAddName
-mBitwiseSubtNameId equ 82
-    .dw mBitwiseSubtName
-mBitwiseMultNameId equ 83
-    .dw mBitwiseMultName
-mBitwiseDivNameId equ 84
-    .dw mBitwiseDivName
-mBitwiseDiv2NameId equ 85
-    .dw mBitwiseDiv2Name
+mBaseAddNameId equ 81
+    .dw mBaseAddName
+mBaseSubtNameId equ 82
+    .dw mBaseSubtName
+mBaseMultNameId equ 83
+    .dw mBaseMultName
+mBaseDivNameId equ 84
+    .dw mBaseDivName
+mBaseDiv2NameId equ 85
+    .dw mBaseDiv2Name
 mClearCarryFlagNameId equ 86
     .dw mClearCarryFlagName
 mSetCarryFlagNameId equ 87
@@ -2353,15 +2353,15 @@ mReverseBitName:
     .db "REVB", 0
 mCountBitName:
     .db "CNTB", 0
-mBitwiseAddName:
+mBaseAddName:
     .db 'B', SplusSign, 0
-mBitwiseSubtName:
+mBaseSubtName:
     .db 'B', Sdash, 0
-mBitwiseMultName:
+mBaseMultName:
     .db 'B', Scross, 0
-mBitwiseDivName:
+mBaseDivName:
     .db 'B', Sslash, 0
-mBitwiseDiv2Name:
+mBaseDiv2Name:
     .db "BDIV", 0
 mClearCarryFlagName:
     .db "CCF", 0

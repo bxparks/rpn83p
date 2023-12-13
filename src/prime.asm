@@ -180,14 +180,14 @@ primeFactorIntLoop:
     ; OP6+=2
     ld a, 2
     ld hl, OP6
-    call addU32U8
+    call addU32ByA
     ; Check (6n+1)
     call primeFactorIntCheckDiv
     jr z, primeFactorIntNo
     ; OP6+=4
     ld a, 4
     ld hl, OP6
-    call addU32U8
+    call addU32ByA
     jr primeFactorIntLoop
 primeFactorIntNo:
     ld hl, OP6
@@ -220,7 +220,7 @@ primeFactorIntCheckDiv:
 
 ;-----------------------------------------------------------------------------
 
-; Description determine if OP1 is a prime using the modU32U16() routine. This
+; Description determine if OP1 is a prime using the modU32ByDE() routine. This
 ; is 7X faster than primeFactorFloat(), and 2.5X faster than primeFactorInt().
 ; I will guess that we could probably make this 1.5X to 2X faster by optimizing
 ; the inner loop, but the code would probably be less readable and
@@ -322,7 +322,7 @@ primeFactorModCheckDiv:
     call copyU32HLToDE ; OP1=X
     ld hl, (OP6)
     ex de, hl ; HL=OP1=X, DE=candidate
-    call modU32U16 ; BC=remainder=16-bits
+    call modU32ByDE ; BC=remainder=16-bits
     ld a, b
     or c ; if BC==0: ZF=1
     ret

@@ -87,7 +87,7 @@ MenuGroup root mRoot [
         MenuItem PRIM mPrime
       ]
       #MenuRow [
-      #  MenuItem PMOD mPrimeMod # for debugging modU32U16
+      #  MenuItem PMOD mPrimeMod # for debugging modU32ByDE
       #]
       MenuRow [
         MenuItem IP mIntPart
@@ -178,11 +178,11 @@ MenuGroup root mRoot [
         MenuItem CNTB mCountBit
       ]
       MenuRow [
-        MenuItem B<SplusSign> mBitwiseAdd
-        MenuItem B<Sdash> mBitwiseSubt
-        MenuItem B<Scross> mBitwiseMult
-        MenuItem B<Sslash> mBitwiseDiv
-        MenuItem BDIV mBitwiseDiv2
+        MenuItem B<SplusSign> mBaseAdd
+        MenuItem B<Sdash> mBaseSubt
+        MenuItem B<Scross> mBaseMult
+        MenuItem B<Sslash> mBaseDiv
+        MenuItem BDIV mBaseDiv2
       ]
       MenuRow [
         MenuItem CCF mClearCarryFlag

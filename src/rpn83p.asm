@@ -517,6 +517,11 @@ _DeleteAtPosLabel:
 _DeleteAtPos equ _DeleteAtPosLabel-branchTableBase
     .dw DeleteAtPos
     .db 1
+; integer1.asm
+_ConvertAToOP1PageOneLabel:
+_ConvertAToOP1PageOne equ _ConvertAToOP1PageOneLabel-branchTableBase
+    .dw ConvertAToOP1PageOne
+    .db 1
 ; tvm.asm
 _TvmCalculateNLabel:
 _TvmCalculateN equ _TvmCalculateNLabel-branchTableBase
@@ -762,6 +767,7 @@ _DebugU32DEAsHex equ _DebugU32DEAsHexLabel-branchTableBase
 #include "show.asm"
 #include "base.asm"
 #include "basehandlers.asm"
+#include "baseops.asm"
 #include "menu.asm"
 #include "menuhandlers.asm"
 #include "stathandlers.asm"
@@ -769,7 +775,6 @@ _DebugU32DEAsHex equ _DebugU32DEAsHexLabel-branchTableBase
 #include "tvmhandlers.asm"
 #include "prime.asm"
 #include "common.asm"
-#include "integer.asm"
 #include "float.asm"
 #include "print.asm"
 #include "const.asm"
@@ -793,6 +798,7 @@ defpage(1)
 #include "base1.asm"
 #include "pstring1.asm"
 #include "float1.asm"
+#include "integer1.asm"
 #include "const1.asm"
 #include "tvm.asm"
 #include "hms.asm"

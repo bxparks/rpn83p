@@ -48,12 +48,12 @@ ClearInputBuf:
 ; Destroys: all
 AppendInputBuf:
     ld c, a ; C=char
-    call GetWordSizeDigits ; A=maxDigits
-    cp inputBufCapacity ; if maxDigits>=inputBufCapacity: CF=0
+    call getInputMaxLen ; A=inputMaxLen
+    cp inputBufCapacity ; if inputMaxLen>=inputBufCapacity: CF=0
     jr c, appendInputBufContinue
-    ld a, inputBufCapacity ; A=min(maxDigits,inputBufCapacity)
+    ld a, inputBufCapacity ; A=min(inputMaxLen,inputBufCapacity)
 appendInputBufContinue:
-    ld b, a ; B=maxDigits
+    ld b, a ; B=inputMaxLen
     ld a, c ; A=char
     ld hl, inputBuf
     set dirtyFlagsInput, (iy + dirtyFlags)

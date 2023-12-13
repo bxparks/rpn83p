@@ -2,7 +2,8 @@
 ; MIT License
 ; Copyright (c) 2023 Brian T. Park
 ;
-; Routines to handle calculations in different bases (2, 8, 10, 16).
+; Routines to convert between TI-OS floating point numbers in OP1 or OP2
+; to the u32 integers required by the BASE functions in baseops.asm.
 ;-----------------------------------------------------------------------------
 
 initBase:
@@ -43,29 +44,20 @@ getWordSizeIndexErr:
     bcall(_ErrDomain)
 
 ;-----------------------------------------------------------------------------
-; Routines for converting floating point OP1 to U32 or W32.
-;
-; The W32 type is a wrapper around a U32 containing a status_code byte at the
-; beginning. The equivalent C-struct for W32 is:
-;
-;   struct W32 {
-;       uint8_t status_code;
-;       uint32_t value;
-;   }
+; Routines for converting floating point OP1 to U32 and u32StatusCode.
 ;-----------------------------------------------------------------------------
 
-; Bit flags of the W32 status_code. w32StatusCodeNegative and
-; w32StatusCodeTooBig are usually fatal errors which throw an exception.
-; w32StatusCodeHasFrac is sometimes a non-fatal error, because the operation
-; will truncate to integer before continuing with the calculation. We can mask
-; off the non-fatal error using an 'and w32StatusCodeFatalMask' instruction.
-w32StatusCodeNegative equ 0
-w32StatusCodeTooBig equ 1
-w32StatusCodeHasFrac equ 7
-w32StatusCodeFatalMask equ $03
-
-convertOP1ToU32Error:
-    bcall(_ErrDomain) ; throw exception
+; Bit flags of the u32StatusCode.
+;   - u32StatusCodeNegative and u32StatusCodeTooBig are usually fatal errors
+;   which throw an exception.
+;   - u32StatusCodeHasFrac is sometimes a non-fatal error, because the
+;   operation will truncate to integer before continuing with the calculation.
+;   - u32StatusCodeFatalMask can be used to check only the fatal codes using a
+;   bitwise-and
+u32StatusCodeNegative equ 0
+u32StatusCodeTooBig equ 1
+u32StatusCodeHasFrac equ 7
+u32StatusCodeFatalMask equ $03
 
 ; Description: Similar to convertOP1ToU32(), but don't throw if there is a
 ; fractional part.
@@ -77,11 +69,14 @@ convertOP1ToU32Error:
 ; Destroys: A, B, C, DE
 ; Preserves: HL, OP1, OP2
 convertOP1ToU32AllowFrac:
-    call convertOP1ToW32
-    ld a, (hl)
-    and w32StatusCodeFatalMask
+    call convertOP1ToU32StatusCode ; OP3=u32(OP1); C=u32StatusCode
+    ld a, c
+    and u32StatusCodeFatalMask
     jr nz, convertOP1ToU32Error
-    jr convertW32ToU32
+    ret
+
+convertOP1ToU32Error:
+    bcall(_ErrDomain) ; throw exception
 
 ; Description: Similar to convertOP2ToU32(), but don't throw if there is a
 ; fractional part.
@@ -103,10 +98,9 @@ convertOP2ToU32AllowFrac:
     ret
 
 ; Description: Convert OP1 to a U32, throwing an Err:Domain exception if OP1 is:
-;
-; - not in the range of [0, 2^32)
-; - is negative
-; - contains fractional part
+; - not in the range of [0, 2^32), or
+; - is negative, or
+; - contains fractional part.
 ;
 ; See convertOP1ToU32NoCheck() to convert to U32 without throwing.
 ;
@@ -115,72 +109,62 @@ convertOP2ToU32AllowFrac:
 ;   - HL: pointer to a u32 in memory, cannot be OP2
 ; Output:
 ;   - HL: OP1 converted to a u32, in little-endian format
+;   - C: u32StatusCode
 ; Destroys: A, B, C, DE
 ; Preserves: HL, OP1, OP2
 convertOP1ToU32:
-    call convertOP1ToW32
-    ld a, (hl)
+    call convertOP1ToU32StatusCode ; OP3=u32(OP1); C=u32StatusCode
+    ld a, c
     or a
     jr nz, convertOP1ToU32Error
-    ; [[fallthrough]]
-
-; Description: Convert a W32 into a U32 at the same HL address.
-; Input: HL: W32
-; Output: HL: U32
-; Destroys: BC, DE
-convertW32ToU32:
-    ld d, h
-    ld e, l
-    push hl
-    inc hl
-    ld bc, 4
-    ldir
-    pop hl
     ret
 
-; Description: Convert OP1 to W32 (statusCode, U32) struct.
+; Description: Convert OP1 to U32 with u32StatusCode.
 ; Input:
 ;   - OP1: floating point number
-;   - HL: pointer to w32 struct in memory, cannot be OP2
+;   - HL: pointer to u32 in memory, cannot be OP2
 ; Output:
-;   - HL: pointer to w32 struct
+;   - HL: pointer to u32
+;   - C: u32StatusCode
 ; Destroys: A, B, C, DE
 ; Preserves: HL, OP1, OP2
-convertOP1ToW32:
-    call clearW32 ; ensure u32=0 even when error conditions are detected
-    push hl
+convertOP1ToU32StatusCode:
+    call clearU32 ; ensure u32=0 even when error conditions are detected
+    push hl ; stack=[u32]
+    ld c, 0 ; u32StatusCode
+    push bc ; stack=[u32, u32StatusCode]
     bcall(_PushRealO2) ; FPS=[OP2 saved]
-convertOP1ToW32CheckNegative:
+    ; check negative
     bcall(_CkOP1Pos) ; if OP1<0: ZF=0
-    jr z, convertOP1ToW32CheckTooBig
+    jr z, convertOP1ToU32StatusCodeCheckTooBig
     bcall(_PopRealO2) ; FPS=[]; OP2=OP2 saved
-    pop hl
-    set w32StatusCodeNegative, (hl)
+    pop bc ; stack=[u32]; C=u32StatusCode
+    pop hl ; stack=[]; HL=u32
+    set u32StatusCodeNegative, c
     ret
-convertOP1ToW32CheckTooBig:
+convertOP1ToU32StatusCodeCheckTooBig:
     call op2Set2Pow32
     bcall(_CpOP1OP2) ; if OP1 >= 2^32: CF=0
-    jr c, convertOP1ToW32CheckInt
+    jr c, convertOP1ToU32StatusCodeCheckInt
     bcall(_PopRealO2) ; FPS=[]; OP2=OP2 saved
-    pop hl
-    set w32StatusCodeTooBig, (hl)
+    pop bc ; stack=[u32]; C=u32StatusCode
+    pop hl ; stack=[]; HL=u32
+    set u32StatusCodeTooBig, c
     ret
-convertOP1ToW32CheckInt:
+convertOP1ToU32StatusCodeCheckInt:
     bcall(_CkPosInt) ; if OP1>=0 and OP1 is int: ZF=1
-    jr z, convertOP1ToW32Valid
+    jr z, convertOP1ToU32StatusCodeValid
     bcall(_PopRealO2) ; FPS=[]; OP2=OP2 saved
-    pop hl
-    set w32StatusCodeHasFrac, (hl)
-    jr convertOP1ToW32U32
-convertOP1ToW32Valid:
+    pop bc ; stack=[u32]; C=u32StatusCode
+    pop hl ; stack=[]; HL=u32
+    set u32StatusCodeHasFrac, c
+    jr convertOP1ToU32StatusCodeContinue
+convertOP1ToU32StatusCodeValid:
     bcall(_PopRealO2) ; FPS=[]; OP2=OP2 saved
-    pop hl
-convertOP1ToW32U32:
-    ; Move past the W32 statusCode and convert to u32.
-    inc hl
-    call convertOP1ToU32NoCheck
-    dec hl
-    ret
+    pop bc ; stack=[u32]; C=u32StatusCode
+    pop hl ; stack=[]; HL=u32
+convertOP1ToU32StatusCodeContinue:
+    ; [[fallthrough]]
 
 ; Description: Convert floating point OP1 to a u32. This routine assume that
 ; OP1 is a floating point number between [0, 2^32). Fractional digits are
@@ -216,7 +200,7 @@ convertOP1ToU32LoopEntry:
     rrca
     rrca
     and $0F
-    call addU32U8
+    call addU32ByA
     ; check number of mantissa digits
     dec b
     ret z
@@ -225,7 +209,7 @@ convertOP1ToU32SecondDigit:
     call multU32By10
     ld a, (de)
     and $0F
-    call addU32U8
+    call addU32ByA
     djnz convertOP1ToU32Loop
     ret
 
@@ -245,30 +229,38 @@ convertOP2ToU32:
     pop hl
     ret
 
-; Description: Convert OP1 to a u8, throwing an exception if the number has
-; fractions, or is larger than a u8.
+; Description: Check if the given u32 fits in the given WSIZE.
 ; Input:
-;   - OP1: unsigned 32-bit integer as a floating point number
-;   - HL: pointer to a u32 in memory, cannot be OP1 or OP2
+;   - HL: u32
+;   - C: u32StatusCode
+;   - (baseWordSize): current word size
 ; Output:
-;   - (HL): u8 value
-; Destroys: A, B, C, DE
-; Preserves: HL, OP1, OP2
-convertOP1ToU8:
-    call convertOP1ToU32
-    ; Check that the U32 is a U8
+;   - C: u32StatusCodeTooBig bit set if u32 is too big for baseWordSize
+; Destroys: A, B, C
+; Preserves: DE, HL
+checkU32FitsWsize:
+    call getWordSizeIndex ; A=0,1,2,3
+    sub 3 ; A=A-3
+    neg ; A=3-A
+    ret z ; if A==0 (i.e. wordSize==32): return
+    ld b, a ; B=number of upper bytes of u32 to check
+    xor a
+    push hl
     inc hl
-    ld a, (hl)
     inc hl
+    inc hl
+checkU32FitsLoop:
     or (hl)
-    inc hl
-    or (hl)
     dec hl
-    dec hl
-    dec hl
-    ret z
-convertOP1ToU8Error:
-    bcall(_ErrDomain)
+    jr nz, checkU32FitsWsizeTooBig
+    djnz checkU32FitsLoop
+checkU32FitsWsizeOk:
+    pop hl
+    ret
+checkU32FitsWsizeTooBig:
+    set u32StatusCodeTooBig, c
+    pop hl
+    ret
 
 ;-----------------------------------------------------------------------------
 ; Convert U8 or U32 to a TI floating point number.
@@ -292,32 +284,34 @@ convertU32ToOP1:
 
     ld a, (hl)
     dec hl
-    call addU8ToOP1
+    call addAToOP1
 
     ld a, (hl)
     dec hl
-    call addU8ToOP1
+    call addAToOP1
 
     ld a, (hl)
     dec hl
-    call addU8ToOP1
+    call addAToOP1
 
     ld a, (hl)
-    call addU8ToOP1
+    call addAToOP1
 
     push hl
     bcall(_PopRealO2) ; FPS=[]; OP2=OP2 saved
     pop hl
     ret
 
-; Description: Convert the u8 in A to floating pointer number in OP1.
+; Description: Convert the u8 in A to floating pointer number in OP1. This
+; supports the full range of A from 0 to 255, compared to the SetXXOP1()
+; function in the SDK which supports only integers between 0 and 99.
 ; Input:
 ;   - A: u8 integer
 ; Output:
 ;   - OP1: floating point value of A
 ; Destroys: A, B, DE, OP2
 ; Preserves: C, HL
-convertU8ToOP1:
+convertAToOP1:
     push af
     bcall(_OP1Set0)
     pop af
@@ -329,61 +323,428 @@ convertU8ToOP1:
 ;   - OP1: current floating point value, set to 0.0 to start fresh
 ; Destroys: A, B, DE, OP2
 ; Preserves: C, HL
-addU8ToOP1:
+addAToOP1:
     push hl
     ld b, 8 ; loop for 8 bits in u8
-addU8ToOP1Loop:
+addAToOP1Loop:
     push bc
     push af
     bcall(_Times2) ; OP1 *= 2
     pop af
     sla a
-    jr nc, addU8ToOP1Check
+    jr nc, addAToOP1Check
     push af
     bcall(_Plus1) ; OP1 += 1
     pop af
-addU8ToOP1Check:
+addAToOP1Check:
     pop bc
-    djnz addU8ToOP1Loop
+    djnz addAToOP1Loop
     pop hl
     ret
 
 ;-----------------------------------------------------------------------------
-; W32 and WSIZE routines.
+; Convert OP1 to Uxx (u32, u24, u16, or u8) depending on (baseWordSize).
 ;-----------------------------------------------------------------------------
 
-; Description: Check if the given u32 fits in the given WSIZE.
-; Input:
-;   - HL: w32
-;   - (baseWordSize): current word size
+; Description: Convert OP1 to u32.
+; Input: OP1
 ; Output:
-;   - HL: w32.statusCode set to w32StatusCodeTooBig if u32(HL) does not fit
-; Preserves: HL
-checkW32FitsWsize:
-    call getWordSizeIndex ; A=0,1,2,3
-    ld b, 3
-    sub b
-    neg ; A=3-A
-    ret z ; if A==0 (i.e. wordSize==32): ret
+;   - OP3=u32(OP1)
+;   - HL=OP3
+convertOP1ToUxx:
+    ld hl, OP3
+    call convertOP1ToU32StatusCode ; OP3=u32(OP1); C=u32StatusCode
+    call checkU32FitsWsize ; C=u32StatusCode
+    ld a, c
+    and u32StatusCodeFatalMask
+    jp nz, convertOP1ToU32Error
+    ret
+
+; Description: Convert OP1, OP2 to u32, u32.
+; Input: OP1, OP2
+; Output:
+;   - OP3=u32(OP1); OP4=u32(OP2)
+;   - HL=OP3; DE=OP4
+convertOP1OP2ToUxx:
+    ld hl, OP3
+    call convertOP1ToU32AllowFrac ; OP3=u32(OP1)
+    call checkU32FitsWsize ; C=u32StatusCode
+    ld a, c
+    and u32StatusCodeFatalMask
+    jp nz, convertOP1ToU32Error
+    ;
+    ld hl, OP4
+    call convertOP2ToU32AllowFrac ; OP4=u32(OP2)
+    call checkU32FitsWsize ; C=u32StatusCode
+    ld a, c
+    and u32StatusCodeFatalMask
+    jp nz, convertOP1ToU32Error
+    ;
+    ld hl, OP3
+    ld de, OP4
+    ret
+
+; Description: Convert OP1, OP2 to u32, u32.
+; Input: OP1, OP2
+; Output:
+;   - OP3=u32(OP1); OP4=u32(OP2)
+;   - HL=OP3; A=u8(OP4)
+;   - ZF=1 if A==0
+convertOP1OP2ToUxxN:
+    call convertOP1OP2ToUxx ; HL=OP3=u32(OP1); DE=OP4=u32(OP2)
+    ; Furthermore, check OP4 against baseWordSize
+    ex de, hl ; HL=OP4=u32(OP2)
+    ld a, (baseWordSize)
+    call cmpU32WithA
+    jr nc, convertOP1OP2ToUxxErr
+    ex de, hl ; HL=OP3=u32(OP1); DE=OP4=u32(OP2)
+    ld a, (de) ; A=u8(OP4)
+    or a ; set ZF=1 if u8(OP2)==0
+    ret
+convertOP1OP2ToUxxErr:
+    bcall(_ErrDomain) ; throw exception if X >= baseWordSize
+
+;-----------------------------------------------------------------------------
+; Entry point of BASE operation from basehandlers.asm. This indirection layer
+; becomes the API to the lower-level baseops.asm routines, allowing us to move
+; baseops.asm to another flash page more easily.
+;-----------------------------------------------------------------------------
+
+; Description: Calculate the bitwise-and between the integers in OP1 and OP2.
+; Input: OP1, OP2
+; Output: OP1: result as a floating number
+bitwiseAnd:
+    call convertOP1OP2ToUxx ; HL=OP3=u32(OP1); DE=OP4=u32(OP2)
+    call truncToWordSize
+    ex de, hl
+    call truncToWordSize
+    ex de, hl
+    call andU32U32 ; HL=OP3 AND OP4
+    call truncToWordSize
+    jp convertU32ToOP1 ; OP1=float(OP3)
+
+; Description: Calculate the bitwise-or between the integers in OP1 and OP2.
+; Input: OP1, OP2
+; Output: OP1: result as a floating number
+bitwiseOr:
+    call convertOP1OP2ToUxx ; HL=OP3=u32(OP1); DE=OP4=u32(OP2)
+    call truncToWordSize
+    ex de, hl
+    call truncToWordSize
+    ex de, hl
+    call orU32U32 ; HL=OP3=OP3 OR OP4
+    call truncToWordSize
+    jp convertU32ToOP1 ; OP1=float(OP3)
+
+; Description: Calculate the bitwise-xor between the integers in OP1 and OP2.
+; Input: OP1, OP2
+; Output: OP1: result as a floating number
+bitwiseXor:
+    call convertOP1OP2ToUxx ; HL=OP3=u32(OP1); DE=OP4=u32(OP2)
+    call truncToWordSize
+    ex de, hl
+    call truncToWordSize
+    ex de, hl
+    call xorU32U32 ; HL=OP3=OP3 XOR OP4
+    call truncToWordSize
+    jp convertU32ToOP1 ; OP1=float(OP3)
+
+; Description: Calculate the bitwise-not of OP1
+; Input: OP1
+; Output: OP1: result as a floating number
+bitwiseNot:
+    call convertOP1ToUxx ; HL=OP3=u32(OP1)
+    call truncToWordSize
+    call notU32 ; OP3=NOT(OP3)
+    call truncToWordSize
+    jp convertU32ToOP1 ; OP1=float(OP3)
+
+; Description: Calculate the bitwise-neg of OP1
+; Input: OP1
+; Output: OP1: result as a floating number
+bitwiseNeg:
+    call convertOP1ToUxx ; HL=OP3=u32(OP1)
+    call truncToWordSize
+    call negU32 ; OP3=NEG(OP3)
+    call truncToWordSize
+    jp convertU32ToOP1 ; OP1=float(OP3)
+
+;-----------------------------------------------------------------------------
+
+baseShiftLeftLogical:
+    call convertOP1ToUxx ; HL=OP3=u32(OP1)
+    call shiftLeftLogicalUxx ; OP3=shiftLeftLogical(OP3)
+    call storeCarryFlag
+    jp convertU32ToOP1 ; OP1=float(OP3)
+
+baseShiftRightLogical:
+    call convertOP1ToUxx ; HL=OP3=u32(OP1)
+    call shiftRightLogicalUxx ; OP3=shiftRightLogical(OP3)
+    call storeCarryFlag
+    jp convertU32ToOP1 ; OP1=float(OP3)
+
+baseShiftRightArithmetic:
+    call convertOP1ToUxx ; HL=OP3=u32(OP1)
+    call shiftRightArithmeticUxx ; OP3=shiftRightArithmetic(OP3)
+    call storeCarryFlag
+    jp convertU32ToOP1 ; OP1=float(OP3)
+
+baseShiftLeftLogicalN:
+    call convertOP1OP2ToUxxN ; HL=OP3=u32(OP1); A=u8(OP2); ZF=1 if A==0
+    ret z
     ld b, a
-    xor a
-    push hl
-    inc hl
-    inc hl
-    inc hl
-    inc hl
-checkW32FitsLoop:
-    or (hl)
-    dec hl
-    jr nz, checkW32FitsWsizeTooBig
-    djnz checkW32FitsLoop
-checkW32FitsWsizeOk:
-    pop hl
+baseShiftLeftLogicalNLoop:
+    call shiftLeftLogicalUxx; (OP3)=shiftLeftLogical(OP3)
+    djnz baseShiftLeftLogicalNLoop
+    call storeCarryFlag
+    jp convertU32ToOP1 ; OP1=float(OP3)
+
+baseShiftRightLogicalN:
+    call convertOP1OP2ToUxxN ; HL=OP3=u32(OP1); A=u8(OP2); ZF=1 if A==0
+    ret z
+    ld b, a
+baseShiftRightLogicalNLoop:
+    call shiftRightLogicalUxx; (OP3)=shiftRightLogical(OP3)
+    djnz baseShiftRightLogicalNLoop
+    call storeCarryFlag
+    jp convertU32ToOP1 ; OP1=float(OP3)
+
+;-----------------------------------------------------------------------------
+
+baseRotateLeftCircular:
+    call convertOP1ToUxx ; HL=OP3=u32(OP1)
+    call rotateLeftCircularUxx ; OP3=rotateLeftCircular(OP3)
+    call storeCarryFlag
+    jp convertU32ToOP1 ; OP1=float(OP3)
+
+baseRotateRightCircular:
+    call convertOP1ToUxx ; HL=OP3=u32(OP1)
+    call rotateRightCircularUxx ; OP3=rotateRightCircular(OP3)
+    call storeCarryFlag
+    jp convertU32ToOP1 ; OP1=float(OP3)
+
+baseRotateLeftCarry:
+    call convertOP1ToUxx ; HL=OP3=u32(OP1)
+    call recallCarryFlag ; CF=(baseCarryFlag)
+    call rotateLeftCarryUxx ; OP3=rotateLeftCarry(OP3)
+    call storeCarryFlag ; (baseCarryFlag)=CF
+    jp convertU32ToOP1 ; OP1=float(OP3)
+
+baseRotateRightCarry:
+    call convertOP1ToUxx ; HL=OP3=u32(OP1)
+    call recallCarryFlag ; CF=(baseCarryFlag)
+    call rotateRightCarryUxx ; OP3=rotateRightCarry(OP3)
+    call storeCarryFlag ; (baseCarryFlag)=CF
+    jp convertU32ToOP1 ; OP1=float(OP3)
+
+;-----------------------------------------------------------------------------
+
+baseRotateLeftCircularN:
+    call convertOP1OP2ToUxxN ; HL=OP3=u32(OP1); A=u8(OP2); ZF=1 if A==0
+    ret z
+    ld b, a
+    call recallCarryFlag ; CF=(baseCarryFlag)
+baseRotateLeftCircularNLoop:
+    call rotateLeftCircularUxx ; OP3=rotateLeftCircular(OP3)
+    djnz baseRotateLeftCircularNLoop
+    call storeCarryFlag
+    jp convertU32ToOP1 ; OP1=float(OP3)
+
+baseRotateRightCircularN:
+    call convertOP1OP2ToUxxN ; HL=OP3=u32(OP1); A=u8(OP2); ZF=1 if A==0
+    ret z
+    ld b, a
+    call recallCarryFlag ; CF=(baseCarryFlag)
+baseRotateRightCircularNLoop:
+    call rotateRightCircularUxx ; OP3=rotateRightCircular(OP3)
+    djnz baseRotateRightCircularNLoop
+    call storeCarryFlag
+    jp convertU32ToOP1 ; OP1=float(OP3)
+
+baseRotateLeftCarryN:
+    call convertOP1OP2ToUxxN ; HL=OP3=u32(OP1); A=u8(OP2); ZF=1 if A==0
+    ret z
+    ld b, a
+    call recallCarryFlag ; CF=(baseCarryFlag)
+baseRotateLeftCarryNLoop:
+    call rotateLeftCarryUxx ; OP3=rotateLeftCarry(OP3)
+    djnz baseRotateLeftCarryNLoop
+    call storeCarryFlag
+    jp convertU32ToOP1 ; OP1=float(OP3)
+
+baseRotateRightCarryN:
+    call convertOP1OP2ToUxxN ; HL=OP3=u32(OP1); A=u8(OP2); ZF=1 if A==0
+    ret z
+    ld b, a
+    call recallCarryFlag ; CF=(baseCarryFlag)
+baseRotateRightCarryNLoop:
+    call rotateRightCarryUxx ; OP3=rotateRightCarry(OP3)
+    djnz baseRotateRightCarryNLoop
+    call storeCarryFlag
+    jp convertU32ToOP1 ; OP1=float(OP3)
+
+;-----------------------------------------------------------------------------
+
+baseAdd:
+    call convertOP1OP2ToUxx ; HL=OP3=u32(OP1); DE=OP4=u32(OP2)
+    call truncToWordSize
+    call addUxxUxx ; OP3+=OP4
+    call storeCarryFlag
+    call truncToWordSize
+    jp convertU32ToOP1 ; OP1=float(OP3)
+
+baseSub:
+    call convertOP1OP2ToUxx ; HL=OP3=u32(OP1); DE=OP4=u32(OP2)
+    call truncToWordSize
+    call subUxxUxx ; OP3-=OP4
+    call storeCarryFlag
+    call truncToWordSize
+    jp convertU32ToOP1 ; OP1=float(OP3)
+
+baseMult:
+    call convertOP1OP2ToUxx ; HL=OP3=u32(OP1); DE=OP4=u32(OP2)
+    call truncToWordSize
+    call multUxxUxx ; OP3*=OP4
+    call storeCarryFlag
+    call truncToWordSize
+    jp convertU32ToOP1 ; OP1=float(OP3)
+
+; Output: OP1=quotient
+baseDiv:
+    call baseDivCommon
+    jp convertU32ToOP1 ; OP1=quotient(OP3)
+
+; Output: OP1=remainder; OP2=quotient
+baseDiv2:
+    call baseDivCommon ; HL=OP3=quotient; BC=OP5=remainder
+    push bc ; stack=[remainder]
+    ; convert HL=quotient into OP2
+    call convertU32ToOP1
+    bcall(_OP1ToOP2) ; OP2=quotient
+    ; convert BC=remainder into OP1
+    pop hl ; stack=[]; HL=remainder
+    jp convertU32ToOP1 ; OP1=remainder
+
+; Input:
+;   - OP1=dividend
+;   - OP2=divisor
+; Output:
+;   - HL=OP3=quotient
+;   - DE=OP4=divisor
+;   - BC=OP5=remainder
+;   - (baseCarryFlag)=0
+baseDivCommon:
+    call convertOP1OP2ToUxx ; HL=OP3=u32(OP1); DE=OP4=u32(OP2)
+    call truncToWordSize
+    ex de, hl ; HL=OP4
+    call testU32 ; check if X==0
+    ex de, hl
+    jr z,  baseDivByZeroErr
+    ld bc, OP5 ; BC=remainder
+    call divUxxUxx ; HL=OP3=quotient, DE=OP4=divisor, BC=OP5=remainder
+    call storeCarryFlag ; CF=0 always
+    jp truncToWordSize
+baseDivByZeroErr:
+    bcall(_ErrDivBy0) ; throw 'Div By 0' exception
+
+;-----------------------------------------------------------------------------
+
+baseReverseBits:
+    call convertOP1ToUxx ; HL=OP3=u32(OP1)
+    call truncToWordSize
+    call reverseUxxBits
+    jp convertU32ToOP1 ; OP1 = float(OP3)
+
+baseCountBits:
+    call convertOP1ToUxx ; HL=OP3=u32(OP1)
+    call truncToWordSize
+    call countU32Bits ; A=countBits(OP3)
+    jp convertAToOP1 ; OP1=float(A)
+
+baseSetBit:
+    call convertOP1OP2ToUxxN ; HL=OP3=u32(OP1); A=u8(OP2); ZF=1 if A==0
+    ld c, a
+    call setU32Bit ; OP3=setBit(OP3,C)
+    jp convertU32ToOP1 ; OP1=float(OP3)
+
+baseClearBit:
+    call convertOP1OP2ToUxxN ; HL=OP3=u32(OP1); A=u8(OP2); ZF=1 if A==0
+    ld c, a
+    call clearU32Bit ; OP3=clearBit(OP3,C)
+    jp convertU32ToOP1 ; OP1=float(OP3)
+
+baseGetBit:
+    call convertOP1OP2ToUxxN ; HL=OP3=u32(OP1); A=u8(OP2); ZF=1 if A==0
+    ld c, a
+    call getU32Bit ; A=1 or 0
+    jp convertAToOP1 ; OP1=float(A)
+
+;-----------------------------------------------------------------------------
+; Recall and store the Carry Flag.
+;-----------------------------------------------------------------------------
+
+; Description: Transfer CF to bit 0 of (baseCarryFlag).
+; Input: CF
+; Output: (baseCarryFlag)
+; Destroys: A
+storeCarryFlag:
+    rla ; shift CF into bit-0
+    and $1
+    ld (baseCarryFlag), a
+    set dirtyFlagsStatus, (iy + dirtyFlags)
     ret
-checkW32FitsWsizeTooBig:
-    pop hl
-    set w32StatusCodeTooBig, (hl)
+
+; Description: Transfer bit 0 of (baseCarryFlag) into CF.
+; Input: (baseCarryFlag)
+; Output: CF
+; Destroys: A
+recallCarryFlag:
+    ld a, (baseCarryFlag)
+    rra ; shift bit 0 into CF
     ret
+
+; Description: Return the baseCarryFlag as OP1.
+; Input: (baseCarryFlag)
+; Output: OP1=flaot(baseCarryFlag)
+baseGetCarryFlag:
+    call recallCarryFlag
+    jr c, baseGetCarryFlagSet1
+    bcall(_OP1Set0)
+    ret
+baseGetCarryFlagSet1:
+    bcall(_OP1Set1)
+    ret
+
+;-----------------------------------------------------------------------------
+
+; Description: Set the (baseWordSize) to A. Throws Err:Argument if A is not one
+; of (8, 16, 24, 32).
+; Input: A=new wordSize
+; Output: (baseWordSize)=A
+; Destroys: none
+baseSetWordSize:
+    cp 8
+    jr z, setWordSize
+    cp 16
+    jr z, setWordSize
+    cp 24
+    jr z, setWordSize
+    cp 32
+    jr z, setWordSize
+    ; throw Err:Argument if not (8,16,24,32)
+    bcall(_ErrArgument)
+setWordSize:
+    ld (baseWordSize), a
+    set dirtyFlagsStack, (iy + dirtyFlags)
+    ret
+
+; Description: Get the current (baseWordSize) in OP1.
+; Input: None
+; Output: OP1=float(baseWordSize)
+; Destroys; A
+baseGetWordSize:
+    ld a, (baseWordSize)
+    jp convertAToOP1 ; OP1=float(A)
 
 ;-----------------------------------------------------------------------------
 ; Routines related to Hex strings.
@@ -545,6 +906,7 @@ decNumberWidth equ 10 ; 2^32 needs 10 digits
 ; Output:
 ;   - (DE): C-string representation of u32 as hexadecimal
 ; Destroys: A
+; Preserves: BC, DE, HL
 convertU32ToDecString:
     push bc
     push hl
@@ -554,7 +916,7 @@ convertU32ToDecStringLoop:
     ; convert to decimal integer, but the characters are in reverse order
     push de
     ld d, 10
-    call divU32U8 ; u32(HL)=quotient, D=10, E=remainder
+    call divU32ByD ; u32(HL)=quotient, D=10, E=remainder
     ld a, e
     call convertAToChar
     pop de
@@ -636,9 +998,7 @@ reverseString:
     ex de, hl ; DE = DE + B = end of string
     dec de
 
-    ld a, b
-    srl a
-    ld b, a ; B = num / 2
+    srl b ; B = num / 2
     ret z ; NOTE: Failing to check for this zero took 2 days to debug!
 reverseStringLoop:
     ld a, (de)

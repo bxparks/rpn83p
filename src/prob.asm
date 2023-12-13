@@ -108,11 +108,11 @@ probCombLoop:
 validatePermComb:
     ; Validate OP1=n
     bcall(_PushRealO2) ; FPS=[r]
-    call convertOP1ToU16PageOne ; HL=u16(n)
+    call convertOP1ToHLPageOne ; HL=u16(n)
     push hl ; stack=[u16(n)]
     ; Validate OP2=r
     bcall(_PopRealO1) ; FPS=[]; OP1=r
-    call convertOP1ToU16PageOne ; HL=u16(r)
+    call convertOP1ToHLPageOne ; HL=u16(r)
     ex de, hl ; DE=u16(r)
     pop hl ; stack=[]; HL=u16(n)
     ; Check that n >= r

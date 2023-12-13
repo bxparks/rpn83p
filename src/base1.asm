@@ -78,23 +78,23 @@ getBaseNumberIndexErr:
 
 ; Description: Return the number of digits which are accepted or displayed for
 ; the given (baseWordSize) and (baseNumber).
-;   - no BASE: inputBufCapacity
-;   - BASE 2: numDigits = min(baseWordSize, inputBufCapacity)
+;   - floating mode: inputBufNormalMaxLen
+;   - BASE 2: inputMaxLen = baseWordSize
 ;       - 8 -> 8
 ;       - 16 -> 16
 ;       - 24 -> 24
 ;       - 32 -> 32
-;   - BASE 8: numDigits = ceil(baseWordSize / 3)
+;   - BASE 8: inputMaxLen = ceil(baseWordSize / 3)
 ;       - 8 -> 3 (0o377)
 ;       - 16 -> 6 (0o177 777)
 ;       - 24 -> 8 (0o77 777 777)
 ;       - 32 -> 11 (0o37 777 777 777)
-;   - BASE 10:
+;   - BASE 10: inputMaxLen = ceil(log10(2^baseWordSize))
 ;       - 8 -> 3 (255)
 ;       - 16 -> 5 (65 535)
 ;       - 24 -> 8 (16 777 215)
 ;       - 32 -> 10 (4 294 967 295)
-;   - BASE 16: numDigits = baseWordSize / 4
+;   - BASE 16: inputMaxLen = baseWordSize / 4
 ;       - 8 -> 2 (0xff)
 ;       - 16 -> 4 (0xff ff)
 ;       - 24 -> 6 (0xff ff ff)
@@ -109,16 +109,16 @@ getBaseNumberIndexErr:
 ; more space.
 ;
 ; Input: rpnFlagsBaseModeEnabled, (baseWordSize), (baseNumber).
-; Output: A: numDigits
+; Output: A: inputMaxLen
 ; Destroys: A
 ; Preserves: BC, DE, HL
-GetWordSizeDigits:
+getInputMaxLen:
     ; If floating point mode (not BASE) mode, return the normal maximum.
     bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
-    jr nz, getWordSizeDigitsBaseMode
+    jr nz, getInputMaxLenBaseMode
     ld a, inputBufNormalMaxLen
     ret
-getWordSizeDigitsBaseMode:
+getInputMaxLenBaseMode:
     ; If BASE mode, the maximum number of digits depends on baseNumber and
     ; baseWordSize.
     push de
@@ -146,132 +146,3 @@ wordSizeDigitsArray:
     .db 3, 6, 8, 11 ; base 8
     .db 3, 5, 8, 10 ; base 10
     .db 2, 4, 6, 8 ; base 16
-
-;------------------------------------------------------------------------------
-; Conversions between OP1 and U8, U16, maybe U32.
-;------------------------------------------------------------------------------
-
-; Description: Convert the u8 in A to floating pointer number in OP1.
-; Input:
-;   - A: u8 integer
-; Output:
-;   - OP1: floating point value of A
-; Destroys: A, B, DE, OP2
-; Preserves: C, HL
-convertU8ToOP1PageOne:
-    push af
-    bcall(_OP1Set0)
-    pop af
-    ; [[fallthrough]]
-
-; Description: Convert the u8 in A to floating point number, and add it to OP1.
-; Input:
-;   - A: u8 integer
-;   - OP1: current floating point value, set to 0.0 to start fresh
-; Destroys: A, B, DE, OP2
-; Preserves: C, HL
-addU8ToOP1PageOne:
-    push hl
-    ld b, 8 ; loop for 8 bits in u8
-addU8ToOP1PageOneLoop:
-    push bc
-    push af
-    bcall(_Times2) ; OP1 *= 2
-    pop af
-    sla a
-    jr nc, addU8ToOP1PageOneCheck
-    push af
-    bcall(_Plus1) ; OP1 += 1
-    pop af
-addU8ToOP1PageOneCheck:
-    pop bc
-    djnz addU8ToOP1PageOneLoop
-    pop hl
-    ret
-
-;------------------------------------------------------------------------------
-
-; Description: Convert OP1 to u16. Throw ErrDomain exception if:
-;   - OP1 >= 2^16
-;   - OP1 < 0
-;   - OP1 is not an integer
-; Input: OP1
-; Output: HL=u16(OP1)
-; Destroys: all, OP2
-convertOP1ToU16PageOne:
-    bcall(_CkPosInt) ; if OP1>=0 and OP1 is int: ZF=1
-    jr nz, convertOP1ToU16Err
-    call op2Set2Pow16PageOne
-    bcall(_CpOP1OP2) ; if OP1 >= 2^16: CF=0
-    jr nc, convertOP1ToU16Err
-    jr convertOP1ToU16NoCheck
-convertOP1ToU16Err:
-    bcall(_ErrDomain)
-
-; Description: Convert OP1 to u16(HL) without any boundary checks. Adapted from
-; convertOP1ToU32NoCheck().
-; Input: OP1
-; Output: HL=u16(OP1)
-; Destroys: all
-convertOP1ToU16NoCheck:
-    ; initialize the target u16 and check for 0.0
-    ld hl, 0
-    bcall(_CkOP1FP0) ; preserves HL
-    ret z
-    ; extract number of decimal digits
-    ld de, OP1+1 ; exponent byte
-    ld a, (de)
-    sub $7F ; A = exponent + 1 = num digits in mantissa
-    ld b, a ; B = num digits in mantissa
-    jr convertOP1ToU16LoopEntry
-convertOP1ToU16Loop:
-    call multHLBy10
-convertOP1ToU16LoopEntry:
-    ; get next 2 digits of mantissa
-    inc de ; DE = pointer to mantissa
-    ld a, (de)
-    ; Process first mantissa digit
-    rrca
-    rrca
-    rrca
-    rrca
-    and $0F
-    call addHLByA
-    ; check number of mantissa digits
-    dec b
-    ret z
-    ; Process second mantissa digit
-    call multHLBy10
-    ld a, (de)
-    and $0F
-    call addHLByA
-    djnz convertOP1ToU16Loop
-    ret
-
-; Description: Multiply HL by 10.
-; Input: HL
-; Output: HL=10*HL
-; Preserves: all
-multHLBy10:
-    push de
-    add hl, hl ; HL=2*HL
-    ld d, h
-    ld e, l
-    add hl, hl ; HL=4*HL
-    add hl, hl ; HL=8*HL
-    add hl, de ; HL=10*HL
-    pop de
-    ret
-
-; Description: Add A to HL.
-; Input: HL, A
-; Output: HL+=A
-; Destroys: A
-; Preserves: BC, DE
-addHLByA:
-    add a, l
-    ld l, a
-    ld a, 0
-    adc a, h
-    ld h, a
-    ret
