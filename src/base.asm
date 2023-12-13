@@ -473,19 +473,19 @@ bitwiseNeg:
 
 baseShiftLeftLogical:
     call convertOP1ToUxx ; HL=OP3=u32(OP1)
-    call shiftLeftLogical ; OP3=shiftLeftLogical(OP3)
+    call shiftLeftLogicalUxx ; OP3=shiftLeftLogical(OP3)
     call storeCarryFlag
     jp convertU32ToOP1 ; OP1=float(OP3)
 
 baseShiftRightLogical:
     call convertOP1ToUxx ; HL=OP3=u32(OP1)
-    call shiftRightLogical ; OP3=shiftRightLogical(OP3)
+    call shiftRightLogicalUxx ; OP3=shiftRightLogical(OP3)
     call storeCarryFlag
     jp convertU32ToOP1 ; OP1=float(OP3)
 
 baseShiftRightArithmetic:
     call convertOP1ToUxx ; HL=OP3=u32(OP1)
-    call shiftRightArithmetic ; OP3=shiftRightArithmetic(OP3)
+    call shiftRightArithmeticUxx ; OP3=shiftRightArithmetic(OP3)
     call storeCarryFlag
     jp convertU32ToOP1 ; OP1=float(OP3)
 
@@ -494,7 +494,7 @@ baseShiftLeftLogicalN:
     ret z
     ld b, a
 baseShiftLeftLogicalNLoop:
-    call shiftLeftLogical; (OP3)=shiftLeftLogical(OP3)
+    call shiftLeftLogicalUxx; (OP3)=shiftLeftLogical(OP3)
     djnz baseShiftLeftLogicalNLoop
     call storeCarryFlag
     jp convertU32ToOP1 ; OP1=float(OP3)
@@ -504,7 +504,7 @@ baseShiftRightLogicalN:
     ret z
     ld b, a
 baseShiftRightLogicalNLoop:
-    call shiftRightLogical; (OP3)=shiftRightLogical(OP3)
+    call shiftRightLogicalUxx; (OP3)=shiftRightLogical(OP3)
     djnz baseShiftRightLogicalNLoop
     call storeCarryFlag
     jp convertU32ToOP1 ; OP1=float(OP3)
@@ -513,27 +513,27 @@ baseShiftRightLogicalNLoop:
 
 baseRotateLeftCircular:
     call convertOP1ToUxx ; HL=OP3=u32(OP1)
-    call rotateLeftCircular ; OP3=rotateLeftCircular(OP3)
+    call rotateLeftCircularUxx ; OP3=rotateLeftCircular(OP3)
     call storeCarryFlag
     jp convertU32ToOP1 ; OP1=float(OP3)
 
 baseRotateRightCircular:
     call convertOP1ToUxx ; HL=OP3=u32(OP1)
-    call rotateRightCircular ; OP3=rotateRightCircular(OP3)
+    call rotateRightCircularUxx ; OP3=rotateRightCircular(OP3)
     call storeCarryFlag
     jp convertU32ToOP1 ; OP1=float(OP3)
 
 baseRotateLeftCarry:
     call convertOP1ToUxx ; HL=OP3=u32(OP1)
     call recallCarryFlag ; CF=(baseCarryFlag)
-    call rotateLeftCarry; OP3=rotateLeftCarry(OP3)
+    call rotateLeftCarryUxx ; OP3=rotateLeftCarry(OP3)
     call storeCarryFlag ; (baseCarryFlag)=CF
     jp convertU32ToOP1 ; OP1=float(OP3)
 
 baseRotateRightCarry:
     call convertOP1ToUxx ; HL=OP3=u32(OP1)
     call recallCarryFlag ; CF=(baseCarryFlag)
-    call rotateRightCarry; OP3=rotateRightCarry(OP3)
+    call rotateRightCarryUxx ; OP3=rotateRightCarry(OP3)
     call storeCarryFlag ; (baseCarryFlag)=CF
     jp convertU32ToOP1 ; OP1=float(OP3)
 
@@ -545,7 +545,7 @@ baseRotateLeftCircularN:
     ld b, a
     call recallCarryFlag ; CF=(baseCarryFlag)
 baseRotateLeftCircularNLoop:
-    call rotateLeftCircular; OP3=rotateLeftCircular(OP3)
+    call rotateLeftCircularUxx ; OP3=rotateLeftCircular(OP3)
     djnz baseRotateLeftCircularNLoop
     call storeCarryFlag
     jp convertU32ToOP1 ; OP1=float(OP3)
@@ -556,7 +556,7 @@ baseRotateRightCircularN:
     ld b, a
     call recallCarryFlag ; CF=(baseCarryFlag)
 baseRotateRightCircularNLoop:
-    call rotateRightCircular; OP3=rotateRightCircular(OP3)
+    call rotateRightCircularUxx ; OP3=rotateRightCircular(OP3)
     djnz baseRotateRightCircularNLoop
     call storeCarryFlag
     jp convertU32ToOP1 ; OP1=float(OP3)
@@ -567,7 +567,7 @@ baseRotateLeftCarryN:
     ld b, a
     call recallCarryFlag ; CF=(baseCarryFlag)
 baseRotateLeftCarryNLoop:
-    call rotateLeftCarry; OP3=rotateLeftCarry(OP3)
+    call rotateLeftCarryUxx ; OP3=rotateLeftCarry(OP3)
     djnz baseRotateLeftCarryNLoop
     call storeCarryFlag
     jp convertU32ToOP1 ; OP1=float(OP3)
@@ -578,7 +578,7 @@ baseRotateRightCarryN:
     ld b, a
     call recallCarryFlag ; CF=(baseCarryFlag)
 baseRotateRightCarryNLoop:
-    call rotateRightCarry; OP3=rotateRightCarry(OP3)
+    call rotateRightCarryUxx ; OP3=rotateRightCarry(OP3)
     djnz baseRotateRightCarryNLoop
     call storeCarryFlag
     jp convertU32ToOP1 ; OP1=float(OP3)

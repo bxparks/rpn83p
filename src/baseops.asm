@@ -23,7 +23,7 @@
 ;   - u32 pointed by HL is shifted left
 ;   - CF: bit 7 of the most significant byte of input
 ; Destroys: A
-shiftLeftLogical:
+shiftLeftLogicalUxx:
     call getWordSizeIndex
     or a
     jr z, shiftLeftLogicalU8
@@ -75,7 +75,7 @@ shiftLeftLogicalU8:
 ;   - HL: pointer result
 ;   - CF: bit 0 of the least signficant byte of input
 ; Destroys: A
-shiftRightLogical:
+shiftRightLogicalUxx:
     call getWordSizeIndex
     or a
     jr z, shiftRightLogicalU8
@@ -128,7 +128,7 @@ shiftRightLogicalU8:
 ;   - HL: pointer result
 ;   - CF: bit 0 of the least signficant byte of input
 ; Destroys: A
-shiftRightArithmetic:
+shiftRightArithmeticUxx:
     call getWordSizeIndex
     or a
     jr z, shiftRightArithmeticU8
@@ -182,7 +182,7 @@ shiftRightArithmeticU8:
 ;   - HL: pointer to result
 ;   - CF: bit 7 of most significant byte of input
 ; Destroys: A
-rotateLeftCircular:
+rotateLeftCircularUxx:
     call getWordSizeIndex
     or a
     jr z, rotateLeftCircularU8
@@ -241,7 +241,7 @@ rotateLeftCircularU8:
 ;   - HL: pointer to result
 ;   - CF: bit 0 of least significant byte of input
 ; Destroys: A
-rotateRightCircular:
+rotateRightCircularUxx:
     call getWordSizeIndex
     or a
     jr z, rotateRightCircularU8
@@ -308,7 +308,7 @@ rotateRightCircularU8:
 ;   - HL: pointer to result
 ;   - CF: most significant bit of the input
 ; Destroys: A, C
-rotateLeftCarry:
+rotateLeftCarryUxx:
     rl c ; save CF
     call getWordSizeIndex
     or a
@@ -371,7 +371,7 @@ rotateLeftCarryU8:
 ;   - HL: pointer to result
 ;   - CF: the least significant bit of input
 ; Destroys: A, C
-rotateRightCarry:
+rotateRightCarryUxx:
     rl c ; save CF
     call getWordSizeIndex
     or a

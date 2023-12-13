@@ -158,12 +158,12 @@ mShiftRightArithmeticHandler:
 
 mShiftLeftLogicalNHandler:
     call closeInputAndRecallXY ; OP1=Y; OP2=X
-    call baseShiftLeftLogicalN ; OP1=shiftLeftLogical(OP1,OP2)
+    call baseShiftLeftLogicalN ; OP1=shiftLeftLogicalN(OP1,OP2)
     jp replaceXY
 
 mShiftRightLogicalNHandler:
     call closeInputAndRecallXY ; OP1=Y; OP2=X
-    call baseShiftRightLogicalN ; OP1=shiftLeftLogical(OP1,OP2)
+    call baseShiftRightLogicalN ; OP1=shiftRightLogicalN(OP1,OP2)
     jp replaceXY
 
 ;-----------------------------------------------------------------------------
