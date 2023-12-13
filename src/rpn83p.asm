@@ -346,7 +346,7 @@ drawMode equ tvmIterMax + 1 ; u8
 ; End application variables.
 appStateEnd equ drawMode + 1
 
-; Total size of vars
+; Total size of appState vars.
 appStateSize equ (appStateEnd - appStateBegin)
 
 ;-----------------------------------------------------------------------------
@@ -394,6 +394,9 @@ inputDisplaySizeOf equ inputDisplayCapacity + 1 ; total size of data structure
 
 appBufferEnd equ inputDisplay + inputDisplaySizeOf
 
+; Total size of appBuffer.
+appBufferSize equ appBufferEnd-appBufferStart
+
 ; Floating point number buffer, used only within parseNumBase10(). It is used
 ; only locally so it can probaly be anywhere. Let's just use OP3 instead of
 ; dedicating space within the appState area, because it does not need to be
@@ -409,6 +412,25 @@ floatBufType equ floatBuf ; type
 floatBufExp equ floatBufType + 1 ; exponent, shifted by $80
 floatBufMan equ floatBufExp + 1 ; mantissa, 2 digits per byte
 floatBufSizeOf equ 9
+
+;-----------------------------------------------------------------------------
+; Validate that app memory buffers do not overflow the assigned RAM area.
+; According to the TI-83 Plus SDK docs: "tempSwapArea (82A5h) This is the start
+; of 323 bytes used only during Flash ROM loading. If this area is used, avoid
+; archiving variables."
+;-----------------------------------------------------------------------------
+
+; Print out the sizes of various sections.
+appMemSize equ appStateSize+appBufferSize
+appMemMax equ 323
+.echo "App State Size: ", appStateSize
+.echo "App Buffer Size: ", appBufferSize
+.echo "App Mem Size: ", appMemSize, " (max ", appMemMax, ")"
+
+; Make sure that appStateSize+appBufferSize <= appMemMax
+#if appMemSize > appMemMax
+  .error "App Mem Size ", appMemSize, " > ", appMemMax, " bytes"
+#endif
 
 ;-----------------------------------------------------------------------------
 ; Flash Page 0
