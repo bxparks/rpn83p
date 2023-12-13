@@ -117,7 +117,7 @@ menuPenColEnd   equ 96
 ;-----------------------------------------------------------------------------
 
 ; Description: Configure flags and variables related to rendering to a sane
-; state. This is always called, regardless of whether restoreAppState()
+; state. This is always called, regardless of whether RestoreAppState()
 ; succeeded in restoring the saved state.
 initDisplay:
     ; always set drawMode to drawModeNormal

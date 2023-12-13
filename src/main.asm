@@ -13,9 +13,9 @@ main:
     res lwrCaseActive, (iy + appLwrCaseFlag) ; disable ALPHA-ALPHA lowercase
     bcall(_ClrLCDFull)
 
-    call restoreAppState
+    bcall(_RestoreAppState)
     jr nc, initAlways
-    ; Initialize everything if restoreAppState() fails.
+    ; Initialize everything if RestoreAppState() fails.
     bcall(_InitErrorCode)
     bcall(_InitInputBuf)
     call initStack
@@ -26,7 +26,7 @@ main:
     call initCfit
     call initTvm
 initAlways:
-    ; If restoreAppState() suceeds, only the following are initialized.
+    ; If RestoreAppState() suceeds, only the following are initialized.
     bcall(_InitArgBuf) ; Start with Command Arg parser off.
     call initLastX ; Always copy TI-OS 'ANS' to 'X'
     call initDisplay ; Always initialize the display.
@@ -50,7 +50,7 @@ initAlways:
 mainExit:
     call rclX
     bcall(_StoAns) ; transfer RPN83P 'X' to TI-OS 'ANS'
-    call storeAppState
+    bcall(_StoreAppState)
     set appAutoScroll, (iy + appFlags)
     ld (iy + textFlags), 0 ; reset text flags
     bcall(_ClrLCDFull)

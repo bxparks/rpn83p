@@ -129,7 +129,7 @@ rpntrue equ 1
 appStateBegin equ tempSwapArea
 
 ; CRC16CCITT of the appState data block, not including the CRC itself. 2 bytes.
-; This is used only in storeAppState() and restoreAppState(), so in theory, we
+; This is used only in StoreAppState() and RestoreAppState(), so in theory, we
 ; could remove it from here and save it only in the RPN83SAV AppVar. The
 ; advantage of duplicating the CRC here is that the content of the AppVar
 ; becomes *exactly* the same as this appState data block, so the serialization
@@ -152,7 +152,7 @@ appStateAppId equ appStateCrc16 + 2 ; u16
 appStateSchemaVersion equ appStateAppId + 2 ; u16
 
 ; Copy of the 3 asm_FlagN flags. These will be serialized into RPN83SAV by
-; storeAppState(), and deserialized into asm_FlagN by restoreAppState().
+; StoreAppState(), and deserialized into asm_FlagN by RestoreAppState().
 appStateDirtyFlags equ appStateSchemaVersion + 2 ; u8
 appStateRpnFlags equ appStateDirtyFlags + 1 ; u8
 appStateInputBufFlags equ appStateRpnFlags + 1 ; u8
@@ -458,10 +458,21 @@ defpage(0, "RPN83P")
 ; statements, so we have to define the bcall() label *after* the XxxLabel
 ; label.
 branchTableBase equ $4000
+; appstate.asm
+_StoreAppStateLabel:
+_StoreAppState equ _StoreAppStateLabel-branchTableBase
+    .dw StoreAppState
+    .db 1
+_RestoreAppStateLabel:
+_RestoreAppState equ _RestoreAppStateLabel-branchTableBase
+    .dw RestoreAppState
+    .db 1
+; help.asm
 _ProcessHelpLabel:
 _ProcessHelp equ _ProcessHelpLabel-branchTableBase
     .dw ProcessHelp
     .db 1
+; menulookup.asm
 _FindMenuNodeLabel:
 _FindMenuNode equ _FindMenuNodeLabel-branchTableBase
     .dw FindMenuNode
@@ -809,6 +820,7 @@ _DebugU32DEAsHex equ _DebugU32DEAsHexLabel-branchTableBase
 
 defpage(1)
 
+#include "appstate.asm"
 #include "help.asm"
 #include "menulookup.asm"
 #include "menudef.asm"

@@ -24,7 +24,7 @@
 ;-----------------------------------------------------------------------------
 
 ; Description: Reset all of the TVM variables. This is performed only when
-; restoreAppState() fails.
+; RestoreAppState() fails.
 initTvm:
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     bcall(_TvmClear)
