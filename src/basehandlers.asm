@@ -212,62 +212,6 @@ mRotateRightCarryNHandler:
 
 ;-----------------------------------------------------------------------------
 
-mClearCarryFlagHandler:
-    or a ; CF=0
-    jp storeCarryFlag
-
-mSetCarryFlagHandler:
-    scf ; CF=1
-    jp storeCarryFlag
-
-mGetCarryFlagHandler:
-    call closeInputAndRecallNone
-    set dirtyFlagsStatus, (iy + dirtyFlags)
-    call recallCarryFlag
-    jr c, mGetCarryFlagHandlerPush1
-    bcall(_OP1Set0)
-    jp pushX
-mGetCarryFlagHandlerPush1:
-    bcall(_OP1Set1)
-    jp pushX
-
-;-----------------------------------------------------------------------------
-
-; Description: Prompt for the new base word size, like FIX or STO. Allowed
-; values are 8, 16, 24, 32. Throw Err:Argument if outside of that list.
-mSetWordSizeHandler:
-    call closeInputAndRecallNone
-    ld hl, msgWordSizePrompt
-    call startArgParser
-    call processArgCommands ; CF=0 if canceled; (argModified), (argValue)
-    ret nc ; do nothing if canceled
-    ld a, (argValue)
-    cp 8
-    jr z, setWordSize
-    cp 16
-    jr z, setWordSize
-    cp 24
-    jr z, setWordSize
-    cp 32
-    jr z, setWordSize
-    ; throw Err:Argument if not (8,16,24,32)
-    bcall(_ErrArgument)
-setWordSize:
-    ld (baseWordSize), a
-    set dirtyFlagsStack, (iy + dirtyFlags)
-    ret
-
-msgWordSizePrompt:
-    .db "WSIZ", 0
-
-mGetWordSizeHandler:
-    call closeInputAndRecallNone
-    ld a, (baseWordSize)
-    bcall(_ConvertAToOP1PageOne)
-    jp pushX
-
-;-----------------------------------------------------------------------------
-
 mBaseAddHandler:
     call closeInputAndRecallXY ; OP1=Y; OP2=X
     call baseAdd ; OP1+=OP2
@@ -327,3 +271,39 @@ mGetBitHandler:
     call closeInputAndRecallXY ; OP1=Y; OP2=X
     call baseGetBit ; OP1=bit(OP1,OP2)
     jp replaceXY
+
+;-----------------------------------------------------------------------------
+
+mClearCarryFlagHandler:
+    or a ; CF=0
+    jp storeCarryFlag
+
+mSetCarryFlagHandler:
+    scf ; CF=1
+    jp storeCarryFlag
+
+mGetCarryFlagHandler:
+    call closeInputAndRecallNone
+    call baseGetCarryFlag ; OP1=float(baseCarryFlag)
+    jp pushX
+
+;-----------------------------------------------------------------------------
+
+; Description: Prompt for the new base word size, like FIX or STO. Allowed
+; values are 8, 16, 24, 32. Throw Err:Argument if outside of that list.
+mSetWordSizeHandler:
+    call closeInputAndRecallNone
+    ld hl, msgWordSizePrompt
+    call startArgParser
+    call processArgCommands ; CF=0 if canceled; (argModified), (argValue)
+    ret nc ; do nothing if canceled
+    ld a, (argValue)
+    jp baseSetWordSize
+
+msgWordSizePrompt:
+    .db "WSIZ", 0
+
+mGetWordSizeHandler:
+    call closeInputAndRecallNone
+    call baseGetWordSize
+    jp pushX

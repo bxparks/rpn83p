@@ -286,6 +286,21 @@ convertU32ToOP1:
     pop hl
     ret
 
+; Description: Convert the u8 in A to floating pointer number in OP1. This
+; supports the full range of A from 0 to 255, compared to the SetXXOP1()
+; function in the SDK which supports only integers between 0 and 99.
+; Input:
+;   - A: u8 integer
+; Output:
+;   - OP1: floating point value of A
+; Destroys: A, B, DE, OP2
+; Preserves: C, HL
+convertAToOP1:
+    push af
+    bcall(_OP1Set0)
+    pop af
+    ; [[fallthrough]]
+
 ; Description: Convert the u8 in A to floating point number, and add it to OP1.
 ; Input:
 ;   - A: u8 integer
@@ -615,8 +630,7 @@ baseCountBits:
     call convertOP1ToUxx ; HL=OP3=u32(OP1)
     call truncToWordSize
     call countU32Bits ; A=countBits(OP3)
-    call setU32ToA ; HL=OP3=A
-    jp convertU32ToOP1 ; OP1=float(OP3)
+    jp convertAToOP1 ; OP1=float(A)
 
 baseSetBit:
     call convertOP1OP2ToUxxN ; HL=OP3=u32(OP1); A=u8(OP2); ZF=1 if A==0
@@ -634,11 +648,7 @@ baseGetBit:
     call convertOP1OP2ToUxxN ; HL=OP3=u32(OP1); A=u8(OP2); ZF=1 if A==0
     ld c, a
     call getU32Bit ; A=1 or 0
-    ; TODO: It would be slightly faster to call ConvertAToOP1PageOne(), but
-    ; that would introduce a dependency from base.asm to integer1.asm. Maybe
-    ; copy ConvertAToOP1PageOne() to here as convertAToOP1()?
-    call setU32ToA ; HL=OP3=A
-    jp convertU32ToOP1 ; OP1=float(OP3)
+    jp convertAToOP1 ; OP1=float(A)
 
 ;-----------------------------------------------------------------------------
 ; Recall and store the Carry Flag.
@@ -663,6 +673,49 @@ recallCarryFlag:
     ld a, (baseCarryFlag)
     rra ; shift bit 0 into CF
     ret
+
+; Description: Return the baseCarryFlag as OP1.
+; Input: (baseCarryFlag)
+; Output: OP1=flaot(baseCarryFlag)
+baseGetCarryFlag:
+    call recallCarryFlag
+    jr c, baseGetCarryFlagSet1
+    bcall(_OP1Set0)
+    ret
+baseGetCarryFlagSet1:
+    bcall(_OP1Set1)
+    ret
+
+;-----------------------------------------------------------------------------
+
+; Description: Set the (baseWordSize) to A. Throws Err:Argument if A is not one
+; of (8, 16, 24, 32).
+; Input: A=new wordSize
+; Output: (baseWordSize)=A
+; Destroys: none
+baseSetWordSize:
+    cp 8
+    jr z, setWordSize
+    cp 16
+    jr z, setWordSize
+    cp 24
+    jr z, setWordSize
+    cp 32
+    jr z, setWordSize
+    ; throw Err:Argument if not (8,16,24,32)
+    bcall(_ErrArgument)
+setWordSize:
+    ld (baseWordSize), a
+    set dirtyFlagsStack, (iy + dirtyFlags)
+    ret
+
+; Description: Get the current (baseWordSize) in OP1.
+; Input: None
+; Output: OP1=float(baseWordSize)
+; Destroys; A
+baseGetWordSize:
+    ld a, (baseWordSize)
+    jp convertAToOP1 ; OP1=float(A)
 
 ;-----------------------------------------------------------------------------
 ; W32 and WSIZE routines.
