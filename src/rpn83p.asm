@@ -68,10 +68,10 @@ dirtyFlagsErrorCode equ 4 ; set if the error code is dirty
 ; first cell, then write the "X:" label in small font. But doing this for every
 ; refresh of that line (e.g. when entering the digits of a number) would cause
 ; flickering of the "X:" label on every redraw. This flag allows us to optimize
-; the redraw algorithm so that the Lspace character *only* when transitioning
-; from the command arg mode to normal mode. That would cause a redraw of the
-; entire X line, so the slight flicker of the "X:" label should be completely
-; imperceptible.
+; the redraw algorithm so that the Lspace character is printed to overwrite the
+; label *only* when transitioning from the command arg mode to normal mode.
+; That would cause a redraw of the entire X line, so the slight flicker of the
+; "X:" label should be completely imperceptible.
 dirtyFlagsXLabel equ 5
 
 ; Flags for RPN stack modes. Offset from IY register.
@@ -108,7 +108,7 @@ rpn83pAppId equ $1E69
 ; initialize to the factory defaults. When an variable is added or deleted, the
 ; version does not absolutely need to be incremented, because the value of
 ; appStateSize will be checked, and since it will be different, the previous
-; state considered stale automatically. However, if the *semantics* of any
+; state is considered stale automatically. However, if the *semantics* of any
 ; variable is changed (e.g. if the meaning of a flag is changed), then we
 ; *must* increment the version number to mark the previous state as stale.
 rpn83pSchemaVersion equ 9
