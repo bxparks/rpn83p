@@ -304,99 +304,26 @@ mBaseDiv2Handler:
 ;-----------------------------------------------------------------------------
 
 mReverseBitHandler:
-    call recallXAsU32 ; HL=OP3=u32(X)
-    call truncToWordSize
-    call reverseBits
-    call convertU32ToOP1 ; OP1 = float(OP3)
+    call closeInputAndRecallX ; OP1=X
+    call baseReverseBits ; OP1=reverseBits(OP1)
     jp replaceX
 
 mCountBitHandler:
-    call recallXAsU32 ; HL=OP3=u32(X)
-    call truncToWordSize
-    call countU32Bits
-    call setU32ToA
-    call convertU32ToOP1 ; OP1 = float(OP3)
+    call closeInputAndRecallX ; OP1=X
+    call baseCountBits ; OP1=countBits(OP1)
     jp replaceX
 
 mSetBitHandler:
-    call recallXYAsU32N ; HL=OP3=u32(Y); DE=OP4=u32(X)
-    ld a, (de)
-    ld c, a
-    call setU32Bit
-    call convertU32ToOP1 ; OP1 = float(OP3)
+    call closeInputAndRecallXY ; OP1=Y; OP2=X
+    call baseSetBit ; OP1=setBit(OP1,OP2)
     jp replaceXY
 
 mClearBitHandler:
-    call recallXYAsU32N ; HL=OP3=u32(Y); DE=OP4=u32(X)
-    ld a, (de)
-    ld c, a
-    call clearU32Bit
-    call convertU32ToOP1 ; OP1 = float(OP3)
+    call closeInputAndRecallXY ; OP1=Y; OP2=X
+    call baseClearBit ; OP1=clearBit(OP1,OP2)
     jp replaceXY
 
 mGetBitHandler:
-    call recallXYAsU32N ; HL=OP3=u32(Y); DE=OP4=u32(X)
-    ld a, (de)
-    ld c, a
-    call getU32Bit
-    bcall(_ConvertAToOP1PageOne)
+    call closeInputAndRecallXY ; OP1=Y; OP2=X
+    call baseGetBit ; OP1=bit(OP1,OP2)
     jp replaceXY
-
-;-----------------------------------------------------------------------------
-; Recall X or Y as U32.
-;-----------------------------------------------------------------------------
-
-; Description: Recall X and convert into a u32 integer.
-; Input: X
-; Output:
-;   - OP3=u32(X)
-;   - HL=OP3
-;   - throws Err:Domain if X is not an integer in [0, 2^32)
-; Destroys: A, BC, DE, HL
-recallXAsU32:
-    call closeInputAndRecallX ; OP1=X
-    ld hl, OP3
-    call convertOP1ToU32AllowFrac ; OP3=u32(X)
-    ret
-
-; Description: Recall X and Y and convert them into u32 integers.
-; Input: X, Y
-; Output:
-;   - HL=OP3=u32(Y)
-;   - DE=OP4=u32(X)
-; Destroys: A, BC, DE, HL
-recallXYAsU32:
-    call closeInputAndRecallXY ; OP1=Y; OP2=X
-    ld hl, OP3
-    call convertOP1ToU32AllowFrac ; OP3=u32(Y)
-    ld hl, OP4
-    call convertOP2ToU32AllowFrac ; OP4=u32(X)
-    ld hl, OP3
-    ld de, OP4
-    ret
-
-; Description: Recall X and Y for SLn, SRn, RLn, RRn, RLCn, RRCn. Verify that X
-; (i.e. n) is an integer between [0, WSIZE).
-; Input: X, Y
-; Output:
-;   - HL=OP3=u32(Y)
-;   - DE=OP4=u32(X)
-;   - A=B=U8(X), verified to be an int in [0, WSIZE).
-;   - ZF=1 if B==0
-; Destroys: A, BC, DE, HL
-recallXYAsU32N:
-    call closeInputAndRecallXY ; OP1=Y; OP2=X
-    ld hl, OP3
-    call convertOP1ToU32AllowFrac ; OP3=u32(Y)
-    ld hl, OP4
-    call convertOP2ToU32AllowFrac ; OP4=u32(X)
-    ld a, (baseWordSize)
-    call cmpU32WithA
-    jr nc, recallXYAsU32NError
-    ld hl, OP3
-    ld de, OP4
-    ld b, a ; B=u8(X)
-    or a ; set ZF=1 if u8(X)==0
-    ret
-recallXYAsU32NError:
-    bcall(_ErrDomain) ; throw exception if X >= baseWordSize

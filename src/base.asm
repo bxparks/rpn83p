@@ -595,13 +595,50 @@ baseDivCommon:
     ex de, hl ; HL=OP4
     call testU32 ; check if X==0
     ex de, hl
-    jr z,  baseDivByZero
+    jr z,  baseDivByZeroErr
     ld bc, OP5 ; BC=remainder
     call divUxxUxx ; HL=OP3=quotient, DE=OP4=divisor, BC=OP5=remainder
     call storeCarryFlag ; CF=0 always
     jp truncToWordSize
-baseDivByZero:
+baseDivByZeroErr:
     bcall(_ErrDivBy0) ; throw 'Div By 0' exception
+
+;-----------------------------------------------------------------------------
+
+baseReverseBits:
+    call convertOP1ToUxx ; HL=OP3=u32(OP1)
+    call truncToWordSize
+    call reverseBits
+    jp convertU32ToOP1 ; OP1 = float(OP3)
+
+baseCountBits:
+    call convertOP1ToUxx ; HL=OP3=u32(OP1)
+    call truncToWordSize
+    call countU32Bits ; A=countBits(OP3)
+    call setU32ToA ; HL=OP3=A
+    jp convertU32ToOP1 ; OP1=float(OP3)
+
+baseSetBit:
+    call convertOP1OP2ToUxxN ; HL=OP3=u32(OP1); A=u8(OP2); ZF=1 if A==0
+    ld c, a
+    call setU32Bit ; OP3=setBit(OP3,C)
+    jp convertU32ToOP1 ; OP1=float(OP3)
+
+baseClearBit:
+    call convertOP1OP2ToUxxN ; HL=OP3=u32(OP1); A=u8(OP2); ZF=1 if A==0
+    ld c, a
+    call clearU32Bit ; OP3=clearBit(OP3,C)
+    jp convertU32ToOP1 ; OP1=float(OP3)
+
+baseGetBit:
+    call convertOP1OP2ToUxxN ; HL=OP3=u32(OP1); A=u8(OP2); ZF=1 if A==0
+    ld c, a
+    call getU32Bit ; A=1 or 0
+    ; TODO: It would be slightly faster to call ConvertAToOP1PageOne(), but
+    ; that would introduce a dependency from base.asm to integer1.asm. Maybe
+    ; copy ConvertAToOP1PageOne() to here as convertAToOP1()?
+    call setU32ToA ; HL=OP3=A
+    jp convertU32ToOP1 ; OP1=float(OP3)
 
 ;-----------------------------------------------------------------------------
 ; Recall and store the Carry Flag.
