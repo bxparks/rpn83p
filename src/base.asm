@@ -916,7 +916,7 @@ convertU32ToDecStringLoop:
     ; convert to decimal integer, but the characters are in reverse order
     push de
     ld d, 10
-    call divU32U8 ; u32(HL)=quotient, D=10, E=remainder
+    call divU32ByD ; u32(HL)=quotient, D=10, E=remainder
     ld a, e
     call convertAToChar
     pop de

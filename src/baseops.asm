@@ -922,24 +922,24 @@ divU32U32NextBit:
 ;   - CF: 0 (division always clears the carry flag)
 ; Destroys: A
 ; Preserves: BC
-divU32U8:
+divU32ByD:
     push bc ; save BC
     ld e, 0 ; clear remainder
     ld b, 32 ; iterate for 32 bits of a u32
-divU32U8Loop:
+divU32ByDLoop:
     call shiftLeftLogicalU32 ; dividend(HL) <<= 1
     ld a, e ; A = remainder
     rla ; rotate CF from U32 into dividend/remainder
     ld e, a
-    jr c, divU32U8QuotientOne ; remainder overflowed, so must substract
+    jr c, divU32ByDQuotientOne ; remainder overflowed, so must substract
     cp d ; if remainder(A) < divisor(D): CF=1
-    jr c, divU32U8QuotientZero
-divU32U8QuotientOne:
+    jr c, divU32ByDQuotientZero
+divU32ByDQuotientOne:
     sub d
     ld e, a
     set 0, (hl)
-divU32U8QuotientZero:
-    djnz divU32U8Loop
+divU32ByDQuotientZero:
+    djnz divU32ByDLoop
     pop bc
     or a ; CF=0
     ret
