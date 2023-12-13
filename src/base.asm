@@ -652,7 +652,7 @@ baseDivByZeroErr:
 baseReverseBits:
     call convertOP1ToUxx ; HL=OP3=u32(OP1)
     call truncToWordSize
-    call reverseBits
+    call reverseUxxBits
     jp convertU32ToOP1 ; OP1 = float(OP3)
 
 baseCountBits:

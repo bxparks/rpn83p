@@ -1395,22 +1395,22 @@ negU32:
 
 ; Description: Call the appropriate reverseUXX() depending on the
 ; (baseWordSize).
-reverseBits:
-    call getWordSizeIndex
-    or a
-    jr z, reverseU8
-    dec a
-    jr z, reverseU16
-    dec a
-    jr z, reverseU24
-    ; [[fallthrough]]
-
-; Description: Reverse the bits of u32(HL).
 ; Input: HL=pointer to u32
 ; Output: HL=reverse(HL)
 ; Destroys: A, BC
 ; Preserves: HL, DE
-reverseU32:
+reverseUxxBits:
+    call getWordSizeIndex
+    or a
+    jr z, reverseU8Bits
+    dec a
+    jr z, reverseU16Bits
+    dec a
+    jr z, reverseU24Bits
+    ; [[fallthrough]]
+
+; Description: Reverse the bits of u32(HL).
+reverseU32Bits:
     push hl
     ; reverse the bytes
     ld c, (hl)
@@ -1452,11 +1452,7 @@ reverseU32:
     ret
 
 ; Description: Reverse the bits of u24(HL).
-; Input: HL=pointer to u24
-; Output: HL=reverse(HL)
-; Destroys: A, BC
-; Preserves: HL, DE
-reverseU24:
+reverseU24Bits:
     push hl
     ; reverse the bytes
     ld c, (hl)
@@ -1483,11 +1479,7 @@ reverseU24:
     ret
 
 ; Description: Reverse the bits of u16(HL).
-; Input: HL=pointer to u16
-; Output: HL=reverse(HL)
-; Destroys: A, BC
-; Preserves: HL, DE
-reverseU16:
+reverseU16Bits:
     ; reverse the bytes
     ld c, (hl)
     inc hl
@@ -1505,11 +1497,7 @@ reverseU16:
     ret
 
 ; Description: Reverse the bits of u8(HL).
-; Input: HL=pointer to u8
-; Output: HL=reverse(HL)
-; Destroys: A, BC
-; Preserves: HL, DE
-reverseU8:
+reverseU8Bits:
     ld a, (hl)
     call reverseABits
     ld (hl), a
