@@ -946,36 +946,32 @@ printOP1BaseNegative:
 ; Destroys: all, OP1, OP2, OP3, OP4
 printOP1Base10:
     ld hl, OP3
-    call convertOP1ToW32
-    call checkW32FitsWsize
-    ld a, (hl)
-    bit w32StatusCodeTooBig, a
+    call convertOP1ToU32StatusCode
+    call checkU32FitsWsize ; C=u32StatusCode
+    bit u32StatusCodeTooBig, c
     jr nz, printOP1BaseInvalid
-    bit w32StatusCodeNegative, a
+    bit u32StatusCodeNegative, c
     jr nz, printOP1BaseNegative
     ; Convert u32 into a base-10 string.
-    inc hl ; W32+1
     ld de, OP4
     call convertU32ToDecString
-printOP1BaseXX:
     ; Add '.' if OP1 has fractional component.
-    dec hl
     call appendHasFrac ; DE=rendered string
     ex de, hl ; HL=rendered string
     jr printHLString
 
-; Description: Append a '.' at the end of the string if W32.hasFrac is set.
+; Description: Append a '.' at the end of the string if u32StatusCode contains
+; u32StatusCodeHasFrac.
 ; Input:
-;   - HL: pointer to W32 struct
+;   - C: u32StatusCode
 ;   - DE: pointer to ascii string
 ; Output:
-;   - HL: pointer to W32 struct
-;   - DE: pointer to ascii string with '.' appended if w32.hasFrac is enabled
+;   - DE: pointer to ascii string with '.' appended if u32StatusCodehasFrac is
+;   enabled
 ; Destroys: A
+; Preserves, BC, DE, HL
 appendHasFrac:
-    ld a, (hl)
-appendHasFracUsingA: ; alternative entry where A replaces (HL)
-    bit w32StatusCodeHasFrac, a
+    bit u32StatusCodeHasFrac, c
     ret z
     ld a, '.'
     ex de, hl
@@ -993,19 +989,16 @@ appendHasFracUsingA: ; alternative entry where A replaces (HL)
 ; Destroys: all, OP1, OP2, OP3, OP4
 printOP1Base16:
     ld hl, OP3
-    call convertOP1ToW32
-    call checkW32FitsWsize
-    ld a, (hl)
-    bit w32StatusCodeTooBig, a
+    call convertOP1ToU32StatusCode
+    call checkU32FitsWsize ; C=u32StatusCode
+    bit u32StatusCodeTooBig, c
     jr nz, printOP1BaseInvalid
-    bit w32StatusCodeNegative, a
+    bit u32StatusCodeNegative, c
     jr nz, printOP1BaseNegative
     ; Convert u32 into a base-16 string.
-    inc hl ; W32+1
     ld de, OP4
     call convertU32ToHexString ; DE=rendered string
     ; Append frac indicator
-    dec hl
     call appendHasFrac ; DE=rendered string
     ex de, hl ; HL=rendered string
     call truncateHexDigits
@@ -1034,19 +1027,16 @@ truncateHexDigits:
 ; Destroys: all, OP1, OP2, OP3, OP4, OP5
 printOP1Base8:
     ld hl, OP3
-    call convertOP1ToW32
-    call checkW32FitsWsize
-    ld a, (hl)
-    bit w32StatusCodeTooBig, a
+    call convertOP1ToU32StatusCode
+    call checkU32FitsWsize ; C=u32StatusCode
+    bit u32StatusCodeTooBig, c
     jr nz, printOP1BaseInvalid
-    bit w32StatusCodeNegative, a
+    bit u32StatusCodeNegative, c
     jr nz, printOP1BaseNegative
     ; Convert u32 into a base-8 string.
-    inc hl ; W32+1
     ld de, OP4
     call convertU32ToOctString
     ; Append frac indicator
-    dec hl
     call appendHasFrac ; DE=rendered string
     ex de, hl ; HL=rendered string
     call truncateOctDigits
@@ -1103,16 +1093,14 @@ truncateOctString:
 ; Destroys: all, OP1, OP2, OP3, OP4, OP5
 printOP1Base2:
     ld hl, OP3
-    call convertOP1ToW32
-    call checkW32FitsWsize
-    ld a, (hl)
-    bit w32StatusCodeTooBig, a
+    call convertOP1ToU32StatusCode
+    call checkU32FitsWsize ; C=u32StatusCode
+    bit u32StatusCodeTooBig, c
     jp nz, printOP1BaseInvalid
-    bit w32StatusCodeNegative, a
+    bit u32StatusCodeNegative, c
     jp nz, printOP1BaseNegative
     ; Move u32 to OP1 to free up OP3 for the formatted digits.
-    push af ; stack=[w32StatusCode]
-    inc hl ; W32+1
+    push bc ; stack=[u32StatusCode]
     ld de, OP1
     ld bc, 4
     ldir
@@ -1127,8 +1115,8 @@ printOP1Base2:
     ld de, OP3
     call formatBinDigits ; HL,DE preserved
     ; Append frac indicator
-    pop af ; stack=[]; A=w32StatusCode
-    call appendHasFracUsingA ; DE=rendered string
+    pop bc ; stack=[]; C=u32StatusCode
+    call appendHasFrac ; DE=rendered string
     ex de, hl ; HL=rendered string
     jp printHLString
 

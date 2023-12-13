@@ -44,29 +44,20 @@ getWordSizeIndexErr:
     bcall(_ErrDomain)
 
 ;-----------------------------------------------------------------------------
-; Routines for converting floating point OP1 to U32 or W32.
-;
-; The W32 type is a wrapper around a U32 containing a status_code byte at the
-; beginning. The equivalent C-struct for W32 is:
-;
-;   struct W32 {
-;       uint8_t status_code;
-;       uint32_t value;
-;   }
+; Routines for converting floating point OP1 to U32 and u32StatusCode.
 ;-----------------------------------------------------------------------------
 
-; Bit flags of the W32 status_code. w32StatusCodeNegative and
-; w32StatusCodeTooBig are usually fatal errors which throw an exception.
-; w32StatusCodeHasFrac is sometimes a non-fatal error, because the operation
-; will truncate to integer before continuing with the calculation. We can mask
-; off the non-fatal error using an 'and w32StatusCodeFatalMask' instruction.
-w32StatusCodeNegative equ 0
-w32StatusCodeTooBig equ 1
-w32StatusCodeHasFrac equ 7
-w32StatusCodeFatalMask equ $03
-
-convertOP1ToU32Error:
-    bcall(_ErrDomain) ; throw exception
+; Bit flags of the u32StatusCode.
+;   - u32StatusCodeNegative and u32StatusCodeTooBig are usually fatal errors
+;   which throw an exception.
+;   - u32StatusCodeHasFrac is sometimes a non-fatal error, because the
+;   operation will truncate to integer before continuing with the calculation.
+;   - u32StatusCodeFatalMask can be used to check only the fatal codes using a
+;   bitwise-and
+u32StatusCodeNegative equ 0
+u32StatusCodeTooBig equ 1
+u32StatusCodeHasFrac equ 7
+u32StatusCodeFatalMask equ $03
 
 ; Description: Similar to convertOP1ToU32(), but don't throw if there is a
 ; fractional part.
@@ -78,11 +69,14 @@ convertOP1ToU32Error:
 ; Destroys: A, B, C, DE
 ; Preserves: HL, OP1, OP2
 convertOP1ToU32AllowFrac:
-    call convertOP1ToW32
-    ld a, (hl)
-    and w32StatusCodeFatalMask
+    call convertOP1ToU32StatusCode ; OP3=u32(OP1); C=u32StatusCode
+    ld a, c
+    and u32StatusCodeFatalMask
     jr nz, convertOP1ToU32Error
-    jr convertW32ToU32
+    ret
+
+convertOP1ToU32Error:
+    bcall(_ErrDomain) ; throw exception
 
 ; Description: Similar to convertOP2ToU32(), but don't throw if there is a
 ; fractional part.
@@ -104,10 +98,9 @@ convertOP2ToU32AllowFrac:
     ret
 
 ; Description: Convert OP1 to a U32, throwing an Err:Domain exception if OP1 is:
-;
-; - not in the range of [0, 2^32)
-; - is negative
-; - contains fractional part
+; - not in the range of [0, 2^32), or
+; - is negative, or
+; - contains fractional part.
 ;
 ; See convertOP1ToU32NoCheck() to convert to U32 without throwing.
 ;
@@ -116,72 +109,62 @@ convertOP2ToU32AllowFrac:
 ;   - HL: pointer to a u32 in memory, cannot be OP2
 ; Output:
 ;   - HL: OP1 converted to a u32, in little-endian format
+;   - C: u32StatusCode
 ; Destroys: A, B, C, DE
 ; Preserves: HL, OP1, OP2
 convertOP1ToU32:
-    call convertOP1ToW32
-    ld a, (hl)
+    call convertOP1ToU32StatusCode ; OP3=u32(OP1); C=u32StatusCode
+    ld a, c
     or a
     jr nz, convertOP1ToU32Error
-    ; [[fallthrough]]
-
-; Description: Convert a W32 into a U32 at the same HL address.
-; Input: HL: W32
-; Output: HL: U32
-; Destroys: BC, DE
-convertW32ToU32:
-    ld d, h
-    ld e, l
-    push hl
-    inc hl
-    ld bc, 4
-    ldir
-    pop hl
     ret
 
-; Description: Convert OP1 to W32 (statusCode, U32) struct.
+; Description: Convert OP1 to U32 with u32StatusCode.
 ; Input:
 ;   - OP1: floating point number
-;   - HL: pointer to w32 struct in memory, cannot be OP2
+;   - HL: pointer to u32 in memory, cannot be OP2
 ; Output:
-;   - HL: pointer to w32 struct
+;   - HL: pointer to u32
+;   - C: u32StatusCode
 ; Destroys: A, B, C, DE
 ; Preserves: HL, OP1, OP2
-convertOP1ToW32:
-    call clearW32 ; ensure u32=0 even when error conditions are detected
-    push hl
+convertOP1ToU32StatusCode:
+    call clearU32 ; ensure u32=0 even when error conditions are detected
+    push hl ; stack=[u32]
+    ld c, 0 ; u32StatusCode
+    push bc ; stack=[u32, u32StatusCode]
     bcall(_PushRealO2) ; FPS=[OP2 saved]
-convertOP1ToW32CheckNegative:
+    ; check negative
     bcall(_CkOP1Pos) ; if OP1<0: ZF=0
-    jr z, convertOP1ToW32CheckTooBig
+    jr z, convertOP1ToU32StatusCodeCheckTooBig
     bcall(_PopRealO2) ; FPS=[]; OP2=OP2 saved
-    pop hl
-    set w32StatusCodeNegative, (hl)
+    pop bc ; stack=[u32]; C=u32StatusCode
+    pop hl ; stack=[]; HL=u32
+    set u32StatusCodeNegative, c
     ret
-convertOP1ToW32CheckTooBig:
+convertOP1ToU32StatusCodeCheckTooBig:
     call op2Set2Pow32
     bcall(_CpOP1OP2) ; if OP1 >= 2^32: CF=0
-    jr c, convertOP1ToW32CheckInt
+    jr c, convertOP1ToU32StatusCodeCheckInt
     bcall(_PopRealO2) ; FPS=[]; OP2=OP2 saved
-    pop hl
-    set w32StatusCodeTooBig, (hl)
+    pop bc ; stack=[u32]; C=u32StatusCode
+    pop hl ; stack=[]; HL=u32
+    set u32StatusCodeTooBig, c
     ret
-convertOP1ToW32CheckInt:
+convertOP1ToU32StatusCodeCheckInt:
     bcall(_CkPosInt) ; if OP1>=0 and OP1 is int: ZF=1
-    jr z, convertOP1ToW32Valid
+    jr z, convertOP1ToU32StatusCodeValid
     bcall(_PopRealO2) ; FPS=[]; OP2=OP2 saved
-    pop hl
-    set w32StatusCodeHasFrac, (hl)
-    jr convertOP1ToW32U32
-convertOP1ToW32Valid:
+    pop bc ; stack=[u32]; C=u32StatusCode
+    pop hl ; stack=[]; HL=u32
+    set u32StatusCodeHasFrac, c
+    jr convertOP1ToU32StatusCodeContinue
+convertOP1ToU32StatusCodeValid:
     bcall(_PopRealO2) ; FPS=[]; OP2=OP2 saved
-    pop hl
-convertOP1ToW32U32:
-    ; Move past the W32 statusCode and convert to u32.
-    inc hl
-    call convertOP1ToU32NoCheck
-    dec hl
-    ret
+    pop bc ; stack=[u32]; C=u32StatusCode
+    pop hl ; stack=[]; HL=u32
+convertOP1ToU32StatusCodeContinue:
+    ; [[fallthrough]]
 
 ; Description: Convert floating point OP1 to a u32. This routine assume that
 ; OP1 is a floating point number between [0, 2^32). Fractional digits are
@@ -243,6 +226,39 @@ convertOP2ToU32:
     push hl
     call convertOP1ToU32
     bcall(_OP1ExOP2)
+    pop hl
+    ret
+
+; Description: Check if the given u32 fits in the given WSIZE.
+; Input:
+;   - HL: u32
+;   - C: u32StatusCode
+;   - (baseWordSize): current word size
+; Output:
+;   - C: u32StatusCodeTooBig bit set if u32 is too big for baseWordSize
+; Destroys: A, B, C
+; Preserves: DE, HL
+checkU32FitsWsize:
+    call getWordSizeIndex ; A=0,1,2,3
+    sub 3 ; A=A-3
+    neg ; A=3-A
+    ret z ; if A==0 (i.e. wordSize==32): return
+    ld b, a ; B=number of upper bytes of u32 to check
+    xor a
+    push hl
+    inc hl
+    inc hl
+    inc hl
+checkU32FitsLoop:
+    or (hl)
+    dec hl
+    jr nz, checkU32FitsWsizeTooBig
+    djnz checkU32FitsLoop
+checkU32FitsWsizeOk:
+    pop hl
+    ret
+checkU32FitsWsizeTooBig:
+    set u32StatusCodeTooBig, c
     pop hl
     ret
 
@@ -327,16 +343,21 @@ addAToOP1Check:
     ret
 
 ;-----------------------------------------------------------------------------
+; Convert OP1 to Uxx (u32, u24, u16, or u8) depending on (baseWordSize).
+;-----------------------------------------------------------------------------
 
 ; Description: Convert OP1 to u32.
 ; Input: OP1
 ; Output:
 ;   - OP3=u32(OP1)
 ;   - HL=OP3
-; TODO: Check for overflow of baseWordSize
 convertOP1ToUxx:
     ld hl, OP3
-    call convertOP1ToU32AllowFrac ; OP3=u32(OP1)
+    call convertOP1ToU32StatusCode ; OP3=u32(OP1); C=u32StatusCode
+    call checkU32FitsWsize ; C=u32StatusCode
+    ld a, c
+    and u32StatusCodeFatalMask
+    jp nz, convertOP1ToU32Error
     ret
 
 ; Description: Convert OP1, OP2 to u32, u32.
@@ -344,12 +365,21 @@ convertOP1ToUxx:
 ; Output:
 ;   - OP3=u32(OP1); OP4=u32(OP2)
 ;   - HL=OP3; DE=OP4
-; TODO: Check for overflow of baseWordSize
 convertOP1OP2ToUxx:
     ld hl, OP3
     call convertOP1ToU32AllowFrac ; OP3=u32(OP1)
+    call checkU32FitsWsize ; C=u32StatusCode
+    ld a, c
+    and u32StatusCodeFatalMask
+    jp nz, convertOP1ToU32Error
+    ;
     ld hl, OP4
     call convertOP2ToU32AllowFrac ; OP4=u32(OP2)
+    call checkU32FitsWsize ; C=u32StatusCode
+    ld a, c
+    and u32StatusCodeFatalMask
+    jp nz, convertOP1ToU32Error
+    ;
     ld hl, OP3
     ld de, OP4
     ret
@@ -360,16 +390,15 @@ convertOP1OP2ToUxx:
 ;   - OP3=u32(OP1); OP4=u32(OP2)
 ;   - HL=OP3; A=u8(OP4)
 ;   - ZF=1 if A==0
-; TODO: Check for overflow of baseWordSize
 convertOP1OP2ToUxxN:
     call convertOP1OP2ToUxx ; HL=OP3=u32(OP1); DE=OP4=u32(OP2)
-    ; Check OP4 against baseWordSize
+    ; Furthermore, check OP4 against baseWordSize
     ex de, hl ; HL=OP4=u32(OP2)
     ld a, (baseWordSize)
     call cmpU32WithA
     jr nc, convertOP1OP2ToUxxErr
-    ld a, (hl) ; A=u8(OP4)
     ex de, hl ; HL=OP3=u32(OP1); DE=OP4=u32(OP2)
+    ld a, (de) ; A=u8(OP4)
     or a ; set ZF=1 if u8(OP2)==0
     ret
 convertOP1OP2ToUxxErr:
@@ -718,43 +747,6 @@ baseGetWordSize:
     jp convertAToOP1 ; OP1=float(A)
 
 ;-----------------------------------------------------------------------------
-; W32 and WSIZE routines.
-;-----------------------------------------------------------------------------
-
-; Description: Check if the given u32 fits in the given WSIZE.
-; Input:
-;   - HL: w32
-;   - (baseWordSize): current word size
-; Output:
-;   - HL: w32.statusCode set to w32StatusCodeTooBig if u32(HL) does not fit
-; Preserves: HL
-checkW32FitsWsize:
-    call getWordSizeIndex ; A=0,1,2,3
-    ld b, 3
-    sub b
-    neg ; A=3-A
-    ret z ; if A==0 (i.e. wordSize==32): ret
-    ld b, a
-    xor a
-    push hl
-    inc hl
-    inc hl
-    inc hl
-    inc hl
-checkW32FitsLoop:
-    or (hl)
-    dec hl
-    jr nz, checkW32FitsWsizeTooBig
-    djnz checkW32FitsLoop
-checkW32FitsWsizeOk:
-    pop hl
-    ret
-checkW32FitsWsizeTooBig:
-    pop hl
-    set w32StatusCodeTooBig, (hl)
-    ret
-
-;-----------------------------------------------------------------------------
 ; Routines related to Hex strings.
 ;-----------------------------------------------------------------------------
 
@@ -914,6 +906,7 @@ decNumberWidth equ 10 ; 2^32 needs 10 digits
 ; Output:
 ;   - (DE): C-string representation of u32 as hexadecimal
 ; Destroys: A
+; Preserves: BC, DE, HL
 convertU32ToDecString:
     push bc
     push hl

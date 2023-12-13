@@ -1233,15 +1233,6 @@ clearU32BC:
     ld l, c
     jr clearU32AltEntry
 
-; Description: Clear the w32 value pointed by HL.
-; Input: HL: pointer to w32
-; Destroys: none
-clearW32:
-    push hl
-    push bc
-    ld bc, $0500 ; B=5; C=0
-    jr clearU32Loop
-
 ;-----------------------------------------------------------------------------
 
 ; Description: Set u32 pointed by HL to value in A.
