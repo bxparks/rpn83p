@@ -175,7 +175,7 @@ clearStackEnd:
 ;   - STK[nn] = OP1
 ; Destroys: all
 ; Preserves: OP1, OP2
-; TODO: I think we can combine stoNN() and stoStackNN().
+; TODO: I think we can combine stoRegNN() and stoStackNN().
 stoStackNN:
     inc a ; change from 0-based to 1-based
     push af
@@ -200,7 +200,7 @@ stoStackNN:
 ;   - OP1: float value
 ; Destroys: all
 ; Preserves: OP2
-; TODO: I think we can combine rclNN() and rclStackNN().
+; TODO: I think we can combine rclRegNN() and rclStackNN().
 rclStackNN:
     inc a ; change from 0-based to 1-based
     push af
@@ -626,7 +626,7 @@ clearRegsLoop:
 ;   - REGS[NN] = OP1
 ; Destroys: all
 ; Preserves: OP1
-stoNN:
+stoRegNN:
     inc a ; change from 0-based to 1-based
     push af
     bcall(_PushRealO1) ; FPS=[OP1]
@@ -649,7 +649,7 @@ stoNN:
 ;   - OP1: float value
 ; Destroys: all
 ; Preserves: OP2
-rclNN:
+rclRegNN:
     inc a ; change from 0-based to 1-based
     push af
     call setRegsName
@@ -666,9 +666,9 @@ rclNN:
 ;   - 'REGS' list variable
 ; Output:
 ;   - OP2: float value
-rclNNToOP2:
+rclRegNNToOP2:
     bcall(_PushRealO1) ; FPS=[OP1]
-    call rclNN
+    call rclRegNN
     bcall(_OP1ToOP2)
     bcall(_PopRealO1) ; FPS=[]; OP1=OP1
     ret
@@ -683,15 +683,15 @@ rclNNToOP2:
 ;   REGS[NN] += OP1
 ; Destroys: all
 ; Preserves: OP1, OP2
-stoAddNN:
+stoAddRegNN:
     push af ; A=NN
     bcall(_PushRealO1) ; FPS=[OP1]
     bcall(_PushRealO2) ; FPS=[OP1,OP2]
     bcall(_OP1ToOP2)
-    call rclNN ; I guess A is preserved by the previous bcalls
+    call rclRegNN ; I guess A is preserved by the previous bcalls
     bcall(_FPAdd) ; OP1 += OP2
     pop af ; A=NN
-    call stoNN
+    call stoRegNN
     bcall(_PopRealO2) ; FPS=[OP1]
     bcall(_PopRealO1) ; FPS=[]; OP1=OP1
     ret
@@ -704,15 +704,15 @@ stoAddNN:
 ;   REGS[NN] -= OP1
 ; Destroys: all
 ; Preserves: OP1, OP2
-stoSubNN:
+stoSubRegNN:
     push af ; A=NN
     bcall(_PushRealO1) ; FPS=[OP1]
     bcall(_PushRealO2) ; FPS=[OP1,OP2]
     bcall(_OP1ToOP2)
-    call rclNN ; I guess A is preserved by the previous bcalls
+    call rclRegNN ; I guess A is preserved by the previous bcalls
     bcall(_FPSub) ; OP1 -= OP2
     pop af ; A=NN
-    call stoNN
+    call stoRegNN
     bcall(_PopRealO2) ; FPS=[OP1]
     bcall(_PopRealO1) ; FPS=[]; OP1=OP1
     ret
@@ -728,7 +728,7 @@ stoSubNN:
 ;   - REGS[C] {op}= OP1, where {op} is defined by B
 ; Destroys: all
 ; Preserves: OP1, OP2
-stoOpNN:
+stoOpRegNN:
     push bc
     bcall(_PushRealO1) ; FPS=[OP1]
     bcall(_PushRealO2) ; FPS=[OP1,OP2]
@@ -737,7 +737,7 @@ stoOpNN:
     pop bc
     push bc
     ld a, c ; A=C=register index
-    call rclNN
+    call rclRegNN
     ; Invoke op B
     pop bc
     push bc
@@ -747,7 +747,7 @@ stoOpNN:
     ; Save REGS[C]
     pop bc
     ld a, c ; A=C=register index
-    call stoNN
+    call stoRegNN
     ; restore OP1, OP2
     bcall(_PopRealO2) ; FPS=[OP1]
     bcall(_PopRealO1) ; FPS=[]; OP1=OP1
@@ -762,14 +762,14 @@ stoOpNN:
 ;   - OP1 {op}= REGS[C], where {op} is defined by B
 ; Destroys: all
 ; Preserves: OP2
-rclOpNN:
+rclOpRegNN:
     push bc
     bcall(_PushRealO2) ; FPS=[OP2]
     ; Recall REGS[C]
     pop bc
     push bc
     ld a, c ; A=C=register index
-    call rclNNToOP2
+    call rclRegNNToOP2
     ; Invoke op B
     pop bc
     ld a, b ; A=op-index
@@ -835,7 +835,7 @@ clearStatRegsLoop:
 clearStatRegsEntry:
     ld a, c
     push bc
-    call stoNN
+    call stoRegNN
     pop bc
     djnz clearStatRegsLoop
     ret

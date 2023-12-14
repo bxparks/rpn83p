@@ -838,7 +838,7 @@ handleKeySto:
     ld c, a
     ld a, (argModifier)
     ld b, a
-    jp stoOpNN
+    jp stoOpRegNN
 handleKeyStoError:
     ld a, errorCodeDimension
     ld (handlerCode), a
@@ -853,7 +853,7 @@ handleKeyRcl:
     ret nc ; do nothing if canceled
     cp argModifierIndirect
     ret nc ; TODO: implement this
-    ; Implement RCL{op}NN, using slightly different algorithm for rclNN versus
+    ; Implement RCL{op}NN, using slightly different algorithm for rclRegNN versus
     ; rclOpNN.
     ld a, (argValue)
     cp regsSize ; check if command argument too large
@@ -863,9 +863,9 @@ handleKeyRcl:
     or a
     jr nz, handleKeyRclOpNN
 handleKeyRclNN:
-    ; rclNN *pushes* RegNN on to the RPN stack.
+    ; rclRegNN *pushes* RegNN on to the RPN stack.
     ld a, c
-    call rclNN
+    call rclRegNN
     jp pushX
 handleKeyRclOpNN:
     ; rcl{op}NN *replaces* the X register with (OP1 {op} RegNN).
@@ -873,7 +873,7 @@ handleKeyRclOpNN:
     push bc
     call rclX ; OP1=X
     pop bc
-    call rclOpNN
+    call rclOpRegNN
     jp replaceX ; updates LastX
 handleKeyRclError:
     ld a, errorCodeDimension
