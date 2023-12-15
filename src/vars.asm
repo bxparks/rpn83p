@@ -878,7 +878,8 @@ stoSubRegNN:
 ;   - B: operation index [0,4] into floatOps, MUST be same as argModifierXxx
 ;   - C: register index NN, 0-based
 ; Output:
-;   - REGS[C] {op}= OP1, where {op} is defined by B
+;   - REGS[C]: REGS[C] {op} OP1, where {op} is defined by B, and can be a
+;   simple assignment operator
 ; Destroys: all
 ; Preserves: OP1, OP2
 stoOpRegNN:
@@ -912,7 +913,8 @@ stoOpRegNN:
 ;   - B: operation index [0,4] into floatOps, MUST be same as argModifierXxx
 ;   - C: register index NN, 0-based
 ; Output:
-;   - OP1 {op}= REGS[C], where {op} is defined by B
+;   - OP1: OP1 {op} REGS[C], where {op} is defined by B, and can be a simple
+;   assignment operator
 ; Destroys: all
 ; Preserves: OP2
 rclOpRegNN:

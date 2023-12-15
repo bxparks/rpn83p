@@ -659,7 +659,7 @@ handleKeyMenuSecondA:
 handleKeyAdd:
     bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
     jp nz, mBaseAddHandler
-    call closeInputAndRecallXY
+    call closeInputAndRecallXY ; OP1=Y; OP2=X
     bcall(_FPAdd) ; Y + X
     jp replaceXY
 
@@ -670,7 +670,7 @@ handleKeyAdd:
 handleKeySub:
     bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
     jp nz, mBaseSubtHandler
-    call closeInputAndRecallXY
+    call closeInputAndRecallXY ; OP1=Y; OP2=X
     bcall(_FPSub) ; Y - X
     jp replaceXY
 
@@ -681,7 +681,7 @@ handleKeySub:
 handleKeyMul:
     bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
     jp nz, mBaseMultHandler
-    call closeInputAndRecallXY
+    call closeInputAndRecallXY ; OP1=Y; OP2=X
     bcall(_FPMult) ; Y * X
     jp replaceXY
 
@@ -692,7 +692,7 @@ handleKeyMul:
 handleKeyDiv:
     bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
     jp nz, mBaseDivHandler
-    call closeInputAndRecallXY
+    call closeInputAndRecallXY ; OP1=Y; OP2=X
     bcall(_FPDiv) ; Y / X
     jp replaceXY
 
@@ -720,7 +720,7 @@ handleKeyEuler:
 
 ; Description: y^x
 handleKeyExpon:
-    call closeInputAndRecallXY
+    call closeInputAndRecallXY ; OP1=Y; OP2=X
     bcall(_YToX)
     jp replaceXY
 
@@ -853,8 +853,11 @@ handleKeyRcl:
     ret nc ; do nothing if canceled
     cp argModifierIndirect
     ret nc ; TODO: implement this
-    ; Implement RCL{op}NN, using slightly different algorithm for rclRegNN versus
-    ; rclOpNN.
+    ; Implement rclOpRegNN. There are 2 cases:
+    ; 1) If the {op} is a simple assignment, we call rclRegNN() and push the
+    ; value on to the RPN stack.
+    ; 2) If the {op} is an arithmetic operator, we call rclOpRegNN() and
+    ; *replace* the current X with the new X.
     ld a, (argValue)
     cp regsSize ; check if command argument too large
     jr nc, handleKeyRclError
@@ -863,12 +866,12 @@ handleKeyRcl:
     or a
     jr nz, handleKeyRclOpNN
 handleKeyRclNN:
-    ; rclRegNN *pushes* RegNN on to the RPN stack.
+    ; Call rclRegNN() and *push* RegNN onto the RPN stack.
     ld a, c
     call rclRegNN
     jp pushX
 handleKeyRclOpNN:
-    ; rcl{op}NN *replaces* the X register with (OP1 {op} RegNN).
+    ; Call rclOpRegNN() and *replace* the X register with (OP1 {op} RegNN).
     ld b, a
     push bc
     call rclX ; OP1=X
