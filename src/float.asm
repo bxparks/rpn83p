@@ -5,6 +5,10 @@
 ; Floating point common routines.
 ;-----------------------------------------------------------------------------
 
+;-----------------------------------------------------------------------------
+; Floating point stack (FPS).
+;-----------------------------------------------------------------------------
+
 ; Description: Exchange OP2 and FPS.
 ; Destroys: all registers
 exchangeFPSOP2:
@@ -70,6 +74,8 @@ exchangeFPSFPS:
     jr exchangeFloat
 
 ;-----------------------------------------------------------------------------
+; Floating point registers OP1-OP6.
+;-----------------------------------------------------------------------------
 
 ; Description: Move 9 bytes (size of TI-OS floating point number) from HL to
 ; OP1. Implements bcall(_Mov9ToOP1) without the overhead of a bcall().
@@ -95,37 +101,87 @@ move9ToOp2:
     ldir
     ret
 
-; Description: Move OP1 to OP2. This is used so frequently that it's worth
-; inlining it to avoid the overhead of calling bcall(_OP1ToOP2).
+; Description: Move 9 bytes (size of TI-OS floating point number) from HL to
+; OP3. Implements bcall(_Mov9ToOP4) without the overhead of a bcall().
+; Input: HL=pointer to float
+; Output: (OP3)=contains float
 ; Destroys: BC, DE, HL
 ; Preserves: A
+move9ToOp3:
+    ld de, OP3
+    ld bc, 9
+    ldir
+    ret
+
+; Description: Move 9 bytes (size of TI-OS floating point number) from HL to
+; OP4. Implements bcall(_Mov9ToOP4) without the overhead of a bcall().
+; Input: HL=pointer to float
+; Output: (OP4)=contains float
+; Destroys: BC, DE, HL
+; Preserves: A
+move9ToOp4:
+    ld de, OP4
+    ld bc, 9
+    ldir
+    ret
+
+;-----------------------------------------------------------------------------
+
 op1ToOp2:
-    ld de, OP2
-    ; [[fallthrough]]
-
-; Description: Move 9 bytes (size of TI-OS floating point number) from OP1 to
-; DE. Implements bcall(_MovFrOP1) without the overhead of a bcall().
-; Input:
-;   - DE=destination pointer to float
-;   - OP1=float
-; Output: (DE)=contains OP1
-; Destroys: BC, DE, HL
-; Preserves: A
-move9FromOp1:
     ld hl, OP1
-    ld bc, 9
-    ldir
-    ret
+    jr move9ToOp2
 
-; Description: Move 9 bytes from OP2 to OP1.
-; Destroys: BC, DE, HL
-; Preserves: A
+op1ToOp3:
+    ld hl, OP1
+    jr move9ToOp3
+
+op1ToOp4:
+    ld hl, OP1
+    jr move9ToOp4
+
+;-----------------------------------------------------------------------------
+
 op2ToOp1:
-    ld de, OP1
     ld hl, OP2
-    ld bc, 9
-    ldir
-    ret
+    jr move9ToOp1
+
+op2ToOp3:
+    ld hl, OP2
+    jr move9ToOp3
+
+op2ToOp4:
+    ld hl, OP2
+    jr move9ToOp4
+
+;-----------------------------------------------------------------------------
+
+op3ToOp1:
+    ld hl, OP3
+    jr move9ToOp1
+
+op3ToOp2:
+    ld hl, OP3
+    jr move9ToOp2
+
+op3ToOp4:
+    ld hl, OP3
+    jr move9ToOp4
+
+;-----------------------------------------------------------------------------
+
+op4ToOp1:
+    ld hl, OP4
+    jr move9ToOp1
+
+op4ToOp2:
+    ld hl, OP4
+    jr move9ToOp2
+
+op4ToOp3:
+    ld hl, OP4
+    jr move9ToOp3
+
+;-----------------------------------------------------------------------------
 
 ; Description: Exchange OP1 with OP2. Inlined version of bcall(_OP1ExOP2) to
 ; avoid the overhead of bcall().
@@ -134,4 +190,66 @@ op2ToOp1:
 op1ExOp2:
     ld hl, OP1
     ld de, OP2
-    jr exchangeFloat
+    jp exchangeFloat
+
+;-----------------------------------------------------------------------------
+
+; Input: DE: destination
+move9FromOp1:
+    ld hl, OP1
+    ld bc, 9
+    ldir
+    ret
+
+; Input: DE: destination
+move9FromOp2:
+    ld hl, OP2
+    ld bc, 9
+    ldir
+    ret
+
+;-----------------------------------------------------------------------------
+; RPN object types.
+;-----------------------------------------------------------------------------
+
+; Description: Return the rpnObjectType of OP1/OP2.
+; Input: OP1
+; Output: A=C=rpnObjectType
+; Destroys: A
+getOp1RpnObjectType:
+    ld a, (OP1)
+    and $1f
+    ld c, a
+    ret
+
+; Description: Same as CkOP1Cplx() OS routine without the bcall() overhead.
+; Input: OP1
+; Output: ZF=1 if complex
+; Destroys: A
+checkOp1Complex:
+    ld a, (OP1)
+    and $1f
+    cp rpnObjectTypeComplexRect
+    ret
+
+; Description: Convert real numbers in OP1 and OP2 into a complex number.
+; Destroys: A
+convertOp1Op2ToComplex:
+    ld a, (OP1)
+    or rpnObjectTypeComplexRect
+    ld (OP1), a
+    ld a, (OP2)
+    or rpnObjectTypeComplexRect
+    ld (OP2), a
+    ret
+
+; Description: Convert the complex number in OP1 and OP2 into 2 real numbers.
+; Destroys: A
+convertOp1Op2ToReal:
+    ld a, (OP1)
+    and ~rpnObjectTypeComplexRect
+    ld (OP1), a
+    ld a, (OP2)
+    and ~rpnObjectTypeComplexRect
+    ld (OP2), a
+    ret

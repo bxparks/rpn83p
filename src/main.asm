@@ -18,8 +18,6 @@ main:
     ; Initialize everything if RestoreAppState() fails.
     bcall(_InitErrorCode)
     bcall(_InitInputBuf)
-    call initStack
-    call initRegs
     call initMenu
     call initBase
     call initStat
@@ -28,6 +26,8 @@ main:
 initAlways:
     ; If RestoreAppState() suceeds, only the following are initialized.
     bcall(_InitArgBuf) ; Start with Command Arg parser off.
+    call initStack
+    call initRegs
     call initLastX ; Always copy TI-OS 'ANS' to 'X'
     call initDisplay ; Always initialize the display.
     call initTvmSolver ; Always init TVM solver
@@ -48,14 +48,20 @@ initAlways:
 ;   - Called by TI-OS application monitor upon 2ND OFF.
 ; See the TI-83 Plus SDK reference for PutAway().
 mainExit:
+    ; Save appState and close the stack and storage registers.
     call rclX
     bcall(_StoAns) ; transfer RPN83P 'X' to TI-OS 'ANS'
     bcall(_StoreAppState)
+    call closeStack
+    call closeRegs
+
+    ; Clean up the screen.
     set appAutoScroll, (iy + appFlags)
     ld (iy + textFlags), 0 ; reset text flags
     bcall(_ClrLCDFull)
     bcall(_HomeUp)
 
+    ; Terminate the app.
     bcall(_ReloadAppEntryVecs) ; App Loader in control of monitor
     bit monAbandon, (iy + monFlags) ; if turning off: ZF=1
     jr nz, appTurningOff

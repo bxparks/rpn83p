@@ -121,6 +121,16 @@ rpn83pSchemaVersion equ 9
 rpnfalse equ 0
 rpntrue equ 1
 
+; Stack and register type enums.
+rpnObjectTypeReal equ 0
+rpnObjectTypeComplexRect equ $C ; same as TI-OS
+rpnObjectTypeComplexPolarDeg equ $2C ; uses bit 5 and 6
+rpnObjectTypeComplexPolarRad equ $4C ; uses bit 5 and 6
+rpnObjectTypeMask equ $1F ; TI-OS type uses only bits 0-4
+rpnObjectSizeOf equ 32
+rpnRealSizeOf equ 9 ; sizeof(float)
+rpnComplexSizeOf equ 18 ; sizeof(complex)
+
 ;-----------------------------------------------------------------------------
 
 ; Begin application variables at tempSwapArea. According to the TI-83 Plus SDK
