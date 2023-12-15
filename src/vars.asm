@@ -101,19 +101,26 @@ initRpnObjectList:
     push bc ; stack=[len]
     call move9ToOp1 ; OP1=varName
     bcall(_ChkFindSym) ; DE=dataPointer; CF=1 if not found
+    ld a, b ; A=romPage (0 if RAM)
     pop bc ; stack=[]; B=len
     jr c, initRpnObjectListCreate
-    ; Exists, so validate.
-    call validateRpnObjectList ; ZF=1 if validates; preserves BC
+    ; If archived, deleted it. TODO: Maybe try to unachive it?
+    or a ; if romPage==0: ZF=1
+    jr nz, initRpnObjectListDelete
+    ; Exists in RAM, so validate.
+    call validateRpnObjectList ; if valid: ZF=1 ; preserves BC
     ret z
+initRpnObjectListDelete:
     ; Delete the existing (non-validating) appVar. We call ChkFindSym again to
     ; re-populate the various registers needed by DelVarArc, but but this code
     ; path should rarely happen, so I think it's ok to call it twice.
+    push bc ; stack=[len]
     bcall(_ChkFindSym) ; DE=dataPointer; CF=1 if not found
-    ret c
     bcall(_DelVarArc)
+    pop bc ; stack=[]; B=len
 initRpnObjectListCreate:
-    ; Not found, so create. OP1=appVarName; B=len
+    ; We are here if the appVar does not exist. So create.
+    ; OP1=appVarName; B=len
     push bc ; stack=[len]
     call rpnObjectIndexToSize ; HL=expectedSize
     bcall(_CreateAppVar) ; DE=dataPointer
@@ -144,7 +151,7 @@ initRpnObjectListLoop:
     call move9FromOP1
     ; Set the trailing bytes of the slot to binary 0.
     xor a
-    ld b, 22 ; rpnObjectSizeOf-rpnRealSizeOf-1
+    ld b, rpnObjectSizeOf-rpnRealSizeOf-1 ; 22
 initRpnObjectListLoopTrailing:
     ld (de), a
     inc de
@@ -159,7 +166,6 @@ initRpnObjectListLoopTrailing:
 ;   - B=expectedLen
 ;   - DE=dataPointer to appVar internal
 ;   - (appVar): 2 bytes (len), 2 bytes (crc16), data[]
-; TODO: Check for archive, different var type, etc.
 ; Output:
 ;   - ZF=1 if valid, 0 if not valid
 ; Destroys: DE, HL
