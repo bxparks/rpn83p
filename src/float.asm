@@ -229,17 +229,17 @@ getOp1RpnObjectType:
 checkOp1Complex:
     ld a, (OP1)
     and $1f
-    cp rpnObjectTypeComplexRect
+    cp rpnObjectTypeComplex
     ret
 
 ; Description: Convert real numbers in OP1 and OP2 into a complex number.
 ; Destroys: A
 convertOp1Op2ToComplex:
     ld a, (OP1)
-    or rpnObjectTypeComplexRect
+    or rpnObjectTypeComplex
     ld (OP1), a
     ld a, (OP2)
-    or rpnObjectTypeComplexRect
+    or rpnObjectTypeComplex
     ld (OP2), a
     ret
 
@@ -247,9 +247,9 @@ convertOp1Op2ToComplex:
 ; Destroys: A
 convertOp1Op2ToReal:
     ld a, (OP1)
-    and ~rpnObjectTypeComplexRect
+    and ~rpnObjectTypeComplex
     ld (OP1), a
     ld a, (OP2)
-    and ~rpnObjectTypeComplexRect
+    and ~rpnObjectTypeComplex
     ld (OP2), a
     ret

@@ -944,3 +944,32 @@ handleKeyShow:
 ; DRAW mode prompt.
 msgDrawPrompt:
     .db "DRAW", 0
+
+;-----------------------------------------------------------------------------
+; The Xttn button will be often bound to some temporary feature during
+; development, then turned off when a release build is made.
+;-----------------------------------------------------------------------------
+
+handleKeyVarx:
+    ; Combine X and Y into a complex number, and store it back into X.
+    call closeInputAndRecallNone
+    call rclX ; OP1/OP2=X
+    ld a, c ; A=objectType
+    cp a, rpnObjectTypeComplex
+    jr nz, handleKeyVarxRealToComplex
+    ; Convert complex into 2 reals
+    call convertOp1Op2ToReal ; OP1=Re(X), OP2=Im(X)
+    jp replaceXWithOP1OP2 ; replace X with OP1,OP2
+handleKeyVarxRealToComplex:
+    bcall(_PushRealO1) ; FPS=[Im]
+    ; Verify that Y is also real.
+    call rclY ; OP1/OP2=Y
+    ld a, c ; A=objectType
+    cp a, rpnObjectTypeComplex
+    jr nz, handleKeyVarxRealToComplexOk
+    ; Y is complex, so throw an error
+    bcall(_ErrArgument)
+handleKeyVarxRealToComplexOk:
+    bcall(_PopRealO2) ; FPS=[]; OP2=X=Im; OP1=Y=Re
+    call convertOp1Op2ToComplex ; OP1=complex(Re,Im)
+    jp replaceXY

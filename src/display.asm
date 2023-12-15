@@ -887,9 +887,52 @@ clearShowAreaLoop:
 ; Description: Print floating point number at OP1 at the current cursor. Erase
 ; to the end of line (but only if the floating point did not spill over to the
 ; next line).
-; Input: OP1: floating point number
+; Input:
+;   - OP1: floating point number
+;   - C: objectType
 ; Destroys: A, HL, OP3
 printOP1:
+    ld a, c
+    cp rpnObjectTypeComplex
+    jr nz, printOP1Real
+    ; [[fallthrough]]
+
+; Description: Print a complex number. The LCD screen is 96 pixels wide. The
+; stack label is 6 pixels, leaving 90 pixels. Each small font character is 4
+; pixels wide for digits, exponent 'E', and minus sign. A decimal point is only
+; 2 pixels wide, so we have extra space. So that's 22 small-font characters.
+; The imaginary-i is 4 pixels. Add a space on either wide, for 2 more pixels.
+; So this means that we can print the Re and Im parts using a width of 10
+; (which is the same as a single real number in large font, then add the
+; imaginary-i character, and still fit inside the 96 pixel limit.
+printOP1Complex:
+    call convertOp1Op2ToReal
+    bcall(_EraseEOL) ; erase remnants of large font before printing small font
+    res fracDrawLFont, (IY + fontFlags) ; use small font
+    ; Print Re(X)
+    ld a, 10 ; width of output
+    bcall(_FormReal)
+    ld hl, OP3
+    call vPutS
+    ;
+    ; Print the complex-i
+    ld hl, msgComplexSpacer
+    call vPutS
+    ; Print Im(X)
+    call op2ToOp1
+    ld a, 10 ; width of output
+    bcall(_FormReal)
+    ld hl, OP3
+    call vPutS
+    ;
+    call vEraseEOL
+    set fracDrawLFont, (IY + fontFlags) ; restore large font
+    ret
+
+msgComplexSpacer:
+    .db "  ", SimagI, " ", 0
+
+printOP1Real:
     bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
     jr z, printOP1AsFloat
     ld a, (baseNumber)

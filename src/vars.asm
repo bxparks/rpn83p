@@ -299,9 +299,23 @@ stoRpnObjectContinue:
     call rpnObjectIndexToPointer ; HL=objectPointer
     ld (hl), c ; (hl)=objectType
     inc hl
-    ex de, hl ; DE=dataPointer+byteOffset+1
+    ld a, c
+    ex de, hl ; DE=objectPointer+1
+    cp rpnObjectTypeComplex
+    jr z, stoRpnObjectCopyComplex
+    ; copy real
     ld hl, OP1
-    ld bc, rpnRealSizeOf ; TODO: Support complex
+    ld bc, rpnRealSizeOf
+    ldir
+    ret
+stoRpnObjectCopyComplex:
+    ; copy complex
+    ld hl, OP1
+    ld bc, rpnRealSizeOf
+    ldir
+    inc hl
+    inc hl ; OPx registers are 11 bytes, not 9 bytes
+    ld bc, rpnRealSizeOf
     ldir
     ret
 
@@ -318,14 +332,29 @@ rclRpnObject:
     call move9ToOp1 ; OP1=varName
     bcall(_ChkFindSym) ; DE=dataPointer; CF=1 if not found
     pop bc
-    ret c
-    ;
+    ret c ; TODO: throw an exception?
     call rpnObjectIndexToPointer ; HL=objectPointer
-    ld c, (hl) ; C=objectType
-    inc hl
+    ; figure out how much to copy
     ld de, OP1
-    ld bc, rpnRealSizeOf ; TODO: Support complex
+    ld a, (hl) ; A=objectType
+    inc hl
+    cp rpnObjectTypeComplex
+    jr z, rclRpnObjectCopyComplex
+    ; copy real
+    ld bc, rpnRealSizeOf
     ldir
+    ld c, a ; C=objectType
+    ret
+rclRpnObjectCopyComplex:
+    ; copy complex
+    ld bc, rpnRealSizeOf
+    ldir
+    inc de
+    inc de ; OPx registers are 11 bytes, not 9 bytes
+    ld bc, rpnRealSizeOf
+    ldir
+rclRpnObjectEnd:
+    ld c, a ; C=objectType
     ret
 
 ;-----------------------------------------------------------------------------
@@ -390,7 +419,7 @@ closeStack:
 ; Stack registers to and from OP1/OP2
 ;-----------------------------------------------------------------------------
 
-; Description: Store OP1 to STK[nn], setting dirty flag.
+; Description: Store OP1/OP2 to STK[nn], setting dirty flag.
 ; Input:
 ;   - A: stack register index, 0-based
 ;   - OP1: float value
@@ -401,34 +430,33 @@ closeStack:
 stoStackNN:
     set dirtyFlagsStack, (iy + dirtyFlags)
     ld hl, stackName
-    ld b, a
+    ld b, a ; B=index
     call getOp1RpnObjectType ; C=rpnObjectType
     jp stoRpnObject
 
-; Description: Copy STK[nn] to OP1.
+; Description: Copy STK[nn] to OP1/OP2.
 ; Input:
 ;   - A: stack register index, 0-based
 ;   - 'STK' list variable
 ; Output:
 ;   - OP1: float value
+;   - C: rpnObjectType
 ; Destroys: all
 ; Preserves: OP2
 rclStackNN:
     ld hl, stackName
-    ld b, a
+    ld b, a ; B=index
     jp rclRpnObject ; OP1/OP2=STK[A]
 
 ;-----------------------------------------------------------------------------
 
-; Description: Set X to OP1. Also update `ANS` with the same value. Upon
-; exiting the RPN83P app, the TI-OS can access the most current X value using
-; `ANS`.
+; Description: Store OP1/OP2 to X.
 ; Destroys: all
 stoX:
     ld a, stackXIndex
     jr stoStackNN
 
-; Description: Set OP1 to X.
+; Description: Recall X to OP1/OP2.
 ; Destroys: all
 rclX:
     ld a, stackXIndex
@@ -436,13 +464,13 @@ rclX:
 
 ;-----------------------------------------------------------------------------
 
-; Description: Set Y to OP1.
+; Description: Store OP1/OP2 to Y.
 ; Destroys: all
 stoY:
     ld a, stackYIndex
     jr stoStackNN
 
-; Description: Set OP1 to Y.
+; Description: Recall Y to OP1/OP2.
 ; Destroys: all
 rclY:
     ld a, stackYIndex
@@ -450,13 +478,13 @@ rclY:
 
 ;-----------------------------------------------------------------------------
 
-; Description: Set stZ to OP1.
+; Description: Store OP1/OP2 to Z.
 ; Destroys: all
 stoZ:
     ld a, stackZIndex
     jr stoStackNN
 
-; Description: Set OP1 to stZ.
+; Description: Recall Z to OP1/OP2.
 ; Destroys: all
 rclZ:
     ld a, stackZIndex
@@ -464,13 +492,13 @@ rclZ:
 
 ;-----------------------------------------------------------------------------
 
-; Description: Set stT to OP1.
+; Description: Store OP1/OP2 to T.
 ; Destroys: all
 stoT:
     ld a, stackTIndex
     jr stoStackNN
 
-; Description: Set OP1 to stT.
+; Description: Recall T to OP1/OP2.
 ; Destroys: all
 rclT:
     ld a, stackTIndex
@@ -478,13 +506,13 @@ rclT:
 
 ;-----------------------------------------------------------------------------
 
-; Description: Set stL to OP1.
+; Description: Store OP1/OP2 to L.
 ; Destroys: all
 stoL:
     ld a, stackLIndex
     jr stoStackNN
 
-; Description: Set OP1 to stL.
+; Description: Recall L to OP1/OP2.
 ; Destroys: all
 rclL:
     ld a, stackLIndex
@@ -495,34 +523,35 @@ rclL:
 ; OP2 to the RPN stack.
 ;-----------------------------------------------------------------------------
 
-; Description: Replace X with OP1, saving previous X to LastX, and
-; setting dirty flag.
+; Description: Replace X with OP1/OP2, saving previous X to LastX, and
+; setting dirty flag. Works for complex numbers.
 ; Preserves: OP1, OP2
 replaceX:
     bcall(_CkValidNum)
-    bcall(_PushRealO1) ; FPS=[OP1]
+    bcall(_PushOP1) ; FPS=[OP1/OP1]
     call rclX
     call stoL
-    bcall(_PopRealO1) ; FPS=[]; OP1=OP1
+    bcall(_PopOP1) ; FPS=[]; OP1/OP2=OP1/OP2
     call stoX
     ret
 
-; Description: Replace (X, Y) pair with OP1, saving previous X to LastX,
-; and setting dirty flag.
+; Description: Replace X and Y pair with OP1/OP2, saving previous X to LastX,
+; and setting dirty flag. Works for complex numbers.
 ; Preserves: OP1, OP2
 replaceXY:
     bcall(_CkValidNum)
-    bcall(_PushRealO1) ; FPS=[OP1]
+    bcall(_PushOP1) ; FPS=[OP1/OP1]
     call rclX
     call stoL
     call dropStack
-    bcall(_PopRealO1) ; FPS=[]; OP1=OP1
+    bcall(_PopOP1) ; FPS=[]; OP1/OP1=OP1/OP2
     call stoX
     ret
 
 ; Description: Replace X and Y with push of OP1 and OP2 on the stack in that
 ; order. This causes X=OP2 and Y=OP1, saving the previous X to LastX, and
 ; setting dirty flag.
+; WARNING: Assumes that OP1 and OP2 are real not complex.
 ; Input: X, Y, OP1, OP2
 ; Output:
 ;   - Y=OP1
@@ -547,7 +576,8 @@ replaceXYWithOP1OP2:
     ret
 
 ; Description: Replace X with OP1, and OP2 pushed onto the stack in that order.
-; Input: X, OP1, OP2
+; WARNING: Assumes that OP1 and OP2 are real not complex.
+; Input: X, OP1 (Re), OP2 (Im)
 ; Output:
 ;   - Y=OP1
 ;   - X=OP2
@@ -556,23 +586,25 @@ replaceXYWithOP1OP2:
 replaceXWithOP1OP2:
     ; validate OP1 and OP2 before modifying X and Y
     bcall(_CkValidNum)
-    bcall(_OP1ExOP2)
-    bcall(_CkValidNum)
-    bcall(_OP1ExOP2)
-
     bcall(_PushRealO1) ; FPS=[OP1]
+    call op2ToOp1
+    bcall(_CkValidNum)
+    bcall(_PushRealO1) ; FPS=[OP1,OP2]
+    call exchangeFPSFPS ; FPS=[OP2,OP1]
+
     call rclX
     call stoL
-    bcall(_PopRealO1) ; FPS=[]; OP1=OP1
+    bcall(_PopRealO1) ; FPS=[OP2]; OP1=OP1
     call stoX
     call liftStack
-    bcall(_OP2ToOP1)
+    bcall(_PopRealO1) ; FPS=[]; OP1=OP2
     call stoX
     ret
 
 ; Description: Push OP1 to the X register. LastX is not updated because the
-; previous X is not consumed, and is availabe as the Y register.
-; Input: X, OP1
+; previous X is not consumed, and is availabe as the Y register. Works for
+; complex numbers.
+; Input: X, OP1/OP2
 ; Output:
 ;   - Stack lifted (if the inputBuf was not an empty string)
 ;   - X=OP1
@@ -586,6 +618,7 @@ pushX:
 
 ; Description: Push OP1 then OP2 onto the stack. LastX is not updated because
 ; the previous X is not consumed, and is available as the Z register.
+; WARNING: Assumes OP1 and OP2 are real not complex.
 ; Input: X, Y, OP1, OP2
 ; Output:
 ;   - Stack lifted (if the inputBuf was not an empty string)
@@ -636,7 +669,7 @@ liftStackIfEnabled:
 ; TODO: Make this more efficient by taking advantage of the fact that stack
 ; registers are contiguous.
 liftStack:
-    bcall(_PushRealO1) ; FPS=[OP1]
+    bcall(_PushOP1) ; FPS=[OP1/OP2]
     ; T = Z
     call rclZ
     call stoT
@@ -647,7 +680,7 @@ liftStack:
     call rclX
     call stoY
     ; X = X
-    bcall(_PopRealO1) ; FPS=[]; OP1=OP1
+    bcall(_PopOP1) ; FPS=[]; OP1/OP2=OP1/OP2
     ret
 
 ;-----------------------------------------------------------------------------
@@ -660,7 +693,7 @@ liftStack:
 ; TODO: Make this more efficient by taking advantage of the fact that stack
 ; registers are contiguous.
 dropStack:
-    bcall(_PushRealO1) ; FPS=[OP1]
+    bcall(_PushOP1) ; FPS=[OP1/OP2]
     ; X = Y
     call rclY
     call stoX
@@ -671,7 +704,7 @@ dropStack:
     call rclT
     call stoZ
     ; T = T
-    bcall(_PopRealO1) ; FPS=[]; OP1=OP1
+    bcall(_PopOP1) ; FPS=[]; OP1/OP2=OP1/OP2
     ret
 
 ;-----------------------------------------------------------------------------
@@ -686,7 +719,7 @@ dropStack:
 rollDownStack:
     ; save X in FPS
     call rclX
-    bcall(_PushRealO1) ; FPS=[OP1]
+    bcall(_PushOP1) ; FPS=[OP1/OP2]
     ; X = Y
     call rclY
     call stoX
@@ -697,7 +730,7 @@ rollDownStack:
     call rclT
     call stoZ
     ; T = X
-    bcall(_PopRealO1) ; FPS=[]; OP1=OP1
+    bcall(_PopOP1) ; FPS=[]; OP1/OP2=OP1/OP2
     call stoT
     ret
 
@@ -713,7 +746,7 @@ rollDownStack:
 rollUpStack:
     ; save T in FPS
     call rclT
-    bcall(_PushRealO1) ; FPS=[OP1]
+    bcall(_PushOP1) ; FPS=[OP1/OP2]
     ; T = Z
     call rclZ
     call stoT
@@ -724,7 +757,7 @@ rollUpStack:
     call rclX
     call stoY
     ; X = T
-    bcall(_PopRealO1) ; FPS=[]; OP1=OP1
+    bcall(_PopOP1) ; FPS=[]; OP1/OP2=OP1/OP2
     call stoX
     ret
 
@@ -736,10 +769,10 @@ rollUpStack:
 ; Destroys: all, OP1, OP2
 exchangeXYStack:
     call rclX
-    bcall(_OP1ToOP2)
+    bcall(_PushOP1)
     call rclY
     call stoX
-    bcall(_OP2ToOP1)
+    bcall(_PopOP1)
     call stoY
     ret
 
@@ -783,7 +816,7 @@ closeRegs:
 
 ;-----------------------------------------------------------------------------
 
-; Description: Store OP1 into REGS[NN].
+; Description: Store OP1/OP2 into REGS[NN]. Works for complex.
 ; Input:
 ;   - A: register index, 0-based
 ;   - OP1: float value
@@ -793,24 +826,25 @@ closeRegs:
 ; Preserves: OP1
 stoRegNN:
     ld hl, regsName
-    ld b, a
+    ld b, a ; B=index
     call getOp1RpnObjectType ; C=rpnObjectType
     jp stoRpnObject
 
-; Description: Recall REGS[NN] into OP1.
+; Description: Recall REGS[NN] into OP1/OP2. Works for complex.
 ; Input:
 ;   - A: register index, 0-based
 ;   - 'REGS' list variable
 ; Output:
 ;   - OP1: float value
+;   - C: objectType
 ; Destroys: all
 ; Preserves: OP2
 rclRegNN:
     ld hl, regsName
-    ld b, a
+    ld b, a ; B=index
     jp rclRpnObject ; OP1/OP2=STK[A]
 
-; Description: Recall REGS[NN] to OP2.
+; Description: Recall REGS[NN] to OP2. WARNING: Assumes real not complex.
 ; Input:
 ;   - A: register index, 0-based
 ;   - 'REGS' list variable
@@ -829,6 +863,7 @@ rclRegNNToOP2:
 ;-----------------------------------------------------------------------------
 
 ; Description: Add OP1 to storage register NN. Used by STAT functions.
+; WARNING: Works only for real not complex.
 ; Input:
 ;   OP1: float value
 ;   A: register index NN, 0-based
@@ -850,6 +885,7 @@ stoAddRegNN:
     ret
 
 ; Description: Subtract OP1 from storage register NN. Used by STAT functions.
+; WARNING: Works only for real not complex.
 ; Input:
 ;   OP1: float value
 ;   A: register index NN, 0-based
@@ -873,6 +909,7 @@ stoSubRegNN:
 ;-----------------------------------------------------------------------------
 
 ; Description: Implement STO{op} NN, with {op} defined by B and NN given by C.
+; WARNING: Works only for real not complex.
 ; Input:
 ;   - OP1
 ;   - B: operation index [0,4] into floatOps, MUST be same as argModifierXxx
@@ -908,6 +945,7 @@ stoOpRegNN:
     ret
 
 ; Description: Implement RCL{op} NN, with {op} defined by B and NN given by C.
+; WARNING: Works only for real not complex.
 ; Input:
 ;   - OP1
 ;   - B: operation index [0,4] into floatOps, MUST be same as argModifierXxx
@@ -963,7 +1001,7 @@ floatOpDiv:
 
 ; Description: Clear the storage registers used by the STAT functions. In
 ; Linear mode [R11, R16], in All mode [R11, R23], inclusive. TODO: Move stat
-; registers to separte "RPN83STA" appVar so that we don't overlap with
+; registers to a separate "RPN83STA" appVar so that we don't overlap with
 ; [R11,R23].
 ; Input: none
 ; Output:

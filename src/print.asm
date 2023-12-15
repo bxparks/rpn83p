@@ -36,6 +36,7 @@ printARepeatBLoop:
 ; Output; CF=1 if characters overflowed screen
 ; Destroys: A, HL
 vPutPS:
+    res fracDrawLFont, (IY + fontFlags) ; use small font
     push bc
     ld a, (hl) ; A = length of Pascal string
     or a
@@ -94,13 +95,10 @@ vEraseEOLLoop:
 ;    - unlike VPutS(), the CF does *not* show if all of string was rendered
 ; Destroys: all
 vPutS:
-    ; assume using small font
-    ld c, smallFontHeight ; C = current font height
-    res fracDrawLFont, (IY + fontFlags) ; start with small font
+    res fracDrawLFont, (IY + fontFlags) ; use small font
 vPutSLoop:
     ld a, (hl) ; A = current char
     inc hl
-vPutSCheckSpecialChars:
     or a ; Check for NUL
     ret z
     bcall(_VPutMap) ; preserves BC, HL
