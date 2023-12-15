@@ -275,7 +275,6 @@ mPrimeHandler:
     bcall(_CpOP1OP2)
     jp nc, mPrimeHandlerError
 
-    bcall(_PushRealO1) ; FPS=[X]; save original X
     ; Choose one of the various primeFactorXXX() routines.
     ; OP1=1 if prime, or its smallest prime factor (>1) otherwise
 #ifdef USE_PRIME_FACTOR_FLOAT
@@ -294,9 +293,7 @@ mPrimeHandler:
     ; factor, which can be processed through 'PRIM` again. Running through this
     ; multiple times until a '1' is returns allows all prime factors to be
     ; discovered.
-    bcall(_OP1ToOP2) ; OP2=prime factor
-    bcall(_PopRealO1) ; FPS=[]; OP1=original X
-    jp replaceXWithOP1OP2
+    jp pushX
 
 mPrimeHandlerError:
     bcall(_ErrDomain) ; throw exception
