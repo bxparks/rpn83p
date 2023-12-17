@@ -170,6 +170,8 @@ compareSignOP1OP2PageOne:
     ret
 
 ;-----------------------------------------------------------------------------
+; Extended transcendental functions.
+;-----------------------------------------------------------------------------
 
 ; Description: Calculate ln(1+x) such that it is less susceptible from
 ; cancellation errors when x is close to 0. By default the LOG1P_USING_LOG

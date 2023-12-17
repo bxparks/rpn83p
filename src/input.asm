@@ -55,7 +55,7 @@ closeInputAndRecallX:
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     jp rclX
 
-; Close the input buffer, and set OP1=Y and OP2=X.
+; Close the input buffer, and recall real values into OP1=Y and OP2=X.
 ; Output:
 ;   - OP1=Y
 ;   - OP2=X
@@ -65,4 +65,17 @@ closeInputAndRecallXY:
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     call rclX
     call op1ToOp2
+    jp rclY
+
+; Close the input buffer, and recall the potentially complex values into
+; OP1/OP2=Y and OP3/OP4=X.
+; Output:
+;   - OP1/OP2=Y
+;   - OP3/OP4=X
+;   - rpnFlagsTvmCalculate: cleared
+closeInputAndRecallComplexXY:
+    call closeInput
+    res rpnFlagsTvmCalculate, (iy + rpnFlags)
+    call rclX
+    call cp1ToCp3
     jp rclY

@@ -2,7 +2,7 @@
 ; MIT License
 ; Copyright (c) 2023 Brian T. Park
 ;
-; Floating point common routines.
+; Memory routines for floating point (real) numbers.
 ;-----------------------------------------------------------------------------
 
 ;-----------------------------------------------------------------------------
@@ -127,56 +127,68 @@ move9ToOp4:
 
 ;-----------------------------------------------------------------------------
 
+; Preserves: A
 op1ToOp2:
     ld hl, OP1
     jr move9ToOp2
 
+; Preserves: A
 op1ToOp3:
     ld hl, OP1
     jr move9ToOp3
 
+; Preserves: A
 op1ToOp4:
     ld hl, OP1
     jr move9ToOp4
 
 ;-----------------------------------------------------------------------------
 
+; Preserves: A
 op2ToOp1:
     ld hl, OP2
     jr move9ToOp1
 
+; Preserves: A
 op2ToOp3:
     ld hl, OP2
     jr move9ToOp3
 
+; Preserves: A
 op2ToOp4:
     ld hl, OP2
     jr move9ToOp4
 
 ;-----------------------------------------------------------------------------
 
+; Preserves: A
 op3ToOp1:
     ld hl, OP3
     jr move9ToOp1
 
+; Preserves: A
 op3ToOp2:
     ld hl, OP3
     jr move9ToOp2
 
+; Preserves: A
 op3ToOp4:
     ld hl, OP3
     jr move9ToOp4
 
 ;-----------------------------------------------------------------------------
 
+; Preserves: A
 op4ToOp1:
     ld hl, OP4
     jr move9ToOp1
 
+; Preserves: A
 op4ToOp2:
     ld hl, OP4
     jr move9ToOp2
 
+; Preserves: A
 op4ToOp3:
     ld hl, OP4
     jr move9ToOp3
@@ -195,6 +207,7 @@ op1ExOp2:
 ;-----------------------------------------------------------------------------
 
 ; Input: DE: destination
+; Preserves: A
 move9FromOp1:
     ld hl, OP1
     ld bc, 9
@@ -202,54 +215,9 @@ move9FromOp1:
     ret
 
 ; Input: DE: destination
+; Preserves: A
 move9FromOp2:
     ld hl, OP2
     ld bc, 9
     ldir
-    ret
-
-;-----------------------------------------------------------------------------
-; RPN object types.
-;-----------------------------------------------------------------------------
-
-; Description: Return the rpnObjectType of OP1/OP2.
-; Input: OP1
-; Output: A=C=rpnObjectType
-; Destroys: A
-getOp1RpnObjectType:
-    ld a, (OP1)
-    and $1f
-    ld c, a
-    ret
-
-; Description: Same as CkOP1Cplx() OS routine without the bcall() overhead.
-; Input: OP1
-; Output: ZF=1 if complex
-; Destroys: A
-checkOp1Complex:
-    ld a, (OP1)
-    and $1f
-    cp rpnObjectTypeComplex
-    ret
-
-; Description: Convert real numbers in OP1 and OP2 into a complex number.
-; Destroys: A
-convertOp1Op2ToComplex:
-    ld a, (OP1)
-    or rpnObjectTypeComplex
-    ld (OP1), a
-    ld a, (OP2)
-    or rpnObjectTypeComplex
-    ld (OP2), a
-    ret
-
-; Description: Convert the complex number in OP1 and OP2 into 2 real numbers.
-; Destroys: A
-convertOp1Op2ToReal:
-    ld a, (OP1)
-    and ~rpnObjectTypeComplex
-    ld (OP1), a
-    ld a, (OP2)
-    and ~rpnObjectTypeComplex
-    ld (OP2), a
     ret

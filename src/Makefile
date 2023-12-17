@@ -9,12 +9,14 @@ SRCS := \
 	arghandlers.asm \
 	arghandlertab.asm \
 	argparser.asm \
+	arithmetic.asm \
 	base.asm \
 	base1.asm \
 	baseops.asm \
 	basehandlers.asm \
 	cfithandlers.asm \
 	common.asm \
+	complex.asm \
 	const.asm \
 	const1.asm \
 	crc.asm \

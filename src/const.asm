@@ -19,6 +19,24 @@ op1Set0:
     ld hl, const0
     jp move9ToOp1
 
+; Description: Set OP1 to 0.0. Faster version of bcall(_OP1Set0).
+; Destroys: all, HL
+op2Set0:
+    ld hl, const0
+    jp move9ToOp2
+
+; Description: Set OP1 to 0.0. Faster version of bcall(_OP1Set0).
+; Destroys: all, HL
+op3Set0:
+    ld hl, const0
+    jp move9ToOp3
+
+; Description: Set OP1 to 0.0. Faster version of bcall(_OP1Set0).
+; Destroys: all, HL
+op4Set0:
+    ld hl, const0
+    jp move9ToOp4
+
 ;-----------------------------------------------------------------------------
 
 ; Description: Set OP2 to 10. The TI-OS Provides OP2Set60() but not
