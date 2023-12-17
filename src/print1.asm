@@ -124,7 +124,7 @@ escapeSmallFont equ $FF ; pseudo-char to switch to small font
 eVPutS:
     ; assume using small font
     ld c, smallFontHeight ; C = current font height
-    res fracDrawLFont, (IY + fontFlags) ; start with small font
+    res fracDrawLFont, (iy + fontFlags) ; start with small font
 eVPutSLoop:
     ld a, (hl) ; A = current char
     inc hl
@@ -142,11 +142,11 @@ eVPutSNormal:
     jr eVPutSLoop
 eVPutSLargeFont:
     ld c, largeFontHeight
-    set fracDrawLFont, (IY + fontFlags) ; use large font
+    set fracDrawLFont, (iy + fontFlags) ; use large font
     jr eVPutSLoop
 eVPutSSmallFont:
     ld c, smallFontHeight
-    res fracDrawLFont, (IY + fontFlags) ; use small font
+    res fracDrawLFont, (iy + fontFlags) ; use small font
     jr eVPutSLoop
 eVPutSEnter:
     ; move to the next line
@@ -247,7 +247,7 @@ putSPageOneEnter:
 vPutSPageOne:
     ; assume using small font
     ld c, smallFontHeight ; C = current font height
-    res fracDrawLFont, (IY + fontFlags) ; start with small font
+    res fracDrawLFont, (iy + fontFlags) ; start with small font
 vPutSPageOneLoop:
     ld a, (hl) ; A = current char
     inc hl

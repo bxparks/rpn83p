@@ -156,6 +156,7 @@ displayAll:
 ; Output: status line displayed
 ; Destroys: A, B, C, HL
 displayStatus:
+    res fracDrawLFont, (iy + fontFlags) ; use small font
     call displayStatusArrow
     call displayStatusFloatMode
     call displayStatusTrig
@@ -336,6 +337,7 @@ displayErrorCode:
     bit dirtyFlagsErrorCode, (iy + dirtyFlags)
     ret z ; return if no change
     ; Display nothing if errorCode == OK (0)
+    res fracDrawLFont, (iy + fontFlags) ; use small font
     ld hl, errorPenRow*$100 ; $(penRow)(penCol)
     ld (PenCol), hl
     ld a, (errorCode)
@@ -401,7 +403,7 @@ displayStackYZT:
     ld hl, stTPenRow*$100 ; $(penRow)(penCol)
     ld (PenCol), hl
     ld hl, msgTLabel
-    call vPutS
+    call vPutSmallS
 
     ; print T value
     ld hl, stTCurCol*$100 + stTCurRow ; $(curCol)(curRow)
@@ -413,7 +415,7 @@ displayStackYZT:
     ld hl, stZPenRow*$100 ; $(penRow)(penCol)
     ld (PenCol), hl
     ld hl, msgZLabel
-    call vPutS
+    call vPutSmallS
 
     ; print Z value
     ld hl, stZCurCol*$100 + stZCurRow ; $(curCol)(curRow)
@@ -425,7 +427,7 @@ displayStackYZT:
     ld hl, stYPenRow*$100 ; $(penRow)(penCol)
     ld (PenCol), hl
     ld hl, msgYLabel
-    call vPutS
+    call vPutSmallS
 
     ; print Y value
     ld hl, stYCurCol*$100 + stYCurRow ; $(curCol)(curRow)
@@ -501,7 +503,7 @@ displayStackXLabelContinue:
     ld hl, inputPenRow*$100 ; $(penRow)(penCol)
     ld (PenCol), hl
     ld hl, msgXLabel
-    call vPutS
+    call vPutSmallS
     ret
 
 ; Display the argBuf in the X register line.
@@ -659,7 +661,7 @@ displayTvm:
     ld hl, tvmNPenRow*$100 ; $(penRow)(penCol)
     ld (PenCol), hl
     ld hl, msgTvmNLabel
-    call vPutS
+    call vPutSmallS
 
     ; print TVM n value
     ld hl, tvmNCurCol*$100 + tvmNCurRow ; $(curCol)(curRow)
@@ -671,7 +673,7 @@ displayTvm:
     ld hl, tvmI0PenRow*$100 ; $(penRow)(penCol)
     ld (PenCol), hl
     ld hl, msgTvmI0Label
-    call vPutS
+    call vPutSmallS
 
     ; print TVM i0 or npmt0 value
     ld hl, tvmI0CurCol*$100 + tvmI0CurRow ; $(curCol)(curRow)
@@ -690,7 +692,7 @@ displayTvm0:
     ld hl, tvmI1PenRow*$100 ; $(penRow)(penCol)
     ld (PenCol), hl
     ld hl, msgTvmI1Label
-    call vPutS
+    call vPutSmallS
 
     ; print TVM i1 or npmt1 value
     ld hl, tvmI1CurCol*$100 + tvmI1CurRow ; $(curCol)(curRow)
@@ -723,6 +725,7 @@ displayMenu:
     bit dirtyFlagsMenu, (iy + dirtyFlags)
     ret z
 
+    res fracDrawLFont, (iy + fontFlags) ; use small font
     ; get starting menuId
     call getCurrentMenuRowBeginId ; A=rowBeginId
     ; set up loop over 5 consecutive menu buttons
@@ -820,7 +823,7 @@ printMenuAtALeftPad:
 printMenuAtAPrintName:
     ; Print the menu name
     ld hl, menuName
-    call vPutPS
+    call vPutSmallPS
 printMenuAtARightPad:
     pop bc ; B = stringWidth; C = leftPadWidth
     ld a, menuPenWidth
@@ -908,25 +911,25 @@ printOP1:
 printOP1Complex:
     call convertOp1Op2ToReal
     bcall(_EraseEOL) ; erase remnants of large font before printing small font
-    res fracDrawLFont, (IY + fontFlags) ; use small font
+    res fracDrawLFont, (iy + fontFlags) ; use small font
     ; Print Re(X)
     ld a, 10 ; width of output
     bcall(_FormReal)
     ld hl, OP3
-    call vPutS
+    call vPutSmallS
     ;
     ; Print the complex-i
     ld hl, msgComplexSpacer
-    call vPutS
+    call vPutSmallS
     ; Print Im(X)
     call op2ToOp1
     ld a, 10 ; width of output
     bcall(_FormReal)
     ld hl, OP3
-    call vPutS
+    call vPutSmallS
     ;
     call vEraseEOL
-    set fracDrawLFont, (IY + fontFlags) ; restore large font
+    set fracDrawLFont, (iy + fontFlags) ; restore large font
     ret
 
 msgComplexSpacer:

@@ -28,6 +28,11 @@ printARepeatBLoop:
 
 ;-----------------------------------------------------------------------------
 
+; Description: Call vPutPS() using small font.
+vPutSmallPS:
+    res fracDrawLFont, (iy + fontFlags) ; use small font
+    ; [[fallthrough]]
+
 ; Description: Convenience wrapper around VPutSN() that works for zero-length
 ; strings. Also provides an API similar to PutPS() which takes a pointer to a
 ; Pascal string directly, instead of providing the length and (char*)
@@ -36,7 +41,6 @@ printARepeatBLoop:
 ; Output; CF=1 if characters overflowed screen
 ; Destroys: A, HL
 vPutPS:
-    res fracDrawLFont, (IY + fontFlags) ; use small font
     push bc
     ld a, (hl) ; A = length of Pascal string
     or a
@@ -84,18 +88,26 @@ vEraseEOLLoop:
 
 ;-----------------------------------------------------------------------------
 
+; Description: Print the HL string using VPutMap(), using small font.
+; Input: HL: pointer to C-string
+; Output:
+;    - unlike VPutS(), the CF does *not* show if all of string was rendered
+; Destroys: all
+vPutSmallS:
+    res fracDrawLFont, (iy + fontFlags) ; use small font
+    ; [[fallthrough]]
+
 ; Description: Inlined version of bcall(_VPutS) so that it works for strings in
 ; flash (VPutS only works with strings in RAM). See TI-83 Plus System Routine
 ; SDK docs for VPutS() for a reference implementation of this function. See
 ; also eVPutS() for an extended version of this that supported embedded font
 ; control characters.
 ;
-; Input: HL: pointer to string using small font
+; Input: HL: pointer to string
 ; Ouptut:
 ;    - unlike VPutS(), the CF does *not* show if all of string was rendered
 ; Destroys: all
 vPutS:
-    res fracDrawLFont, (IY + fontFlags) ; use small font
 vPutSLoop:
     ld a, (hl) ; A = current char
     inc hl
