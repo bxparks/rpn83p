@@ -211,3 +211,19 @@ universalDivComplex:
     ; bit of efficiency, probably.
     bcall(_CDiv) ; OP1/OP2 = FPS[OP1/OP2] / OP1/OP2; FPS=[]
     ret
+
+;-----------------------------------------------------------------------------
+
+; Input:
+;   - OP1/OP2: Y
+; Output:
+;   - OP1/OP2: -Y
+universalChs:
+    call checkOp1Complex
+    jr z, universalChsComplex
+    ; CHS a real number
+    bcall(_InvOP1S)
+    ret
+universalChsComplex:
+    bcall(_InvOP1SC)
+    ret

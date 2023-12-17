@@ -403,7 +403,7 @@ handleKeyChs:
 handleKeyChsX:
     ; CHS of X register
     call rclX
-    bcall(_InvOP1S)
+    call universalChs
     call stoX
     ret
 handleKeyChsInputBuf:
