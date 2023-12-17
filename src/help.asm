@@ -21,7 +21,7 @@ processHelpGetKey:
     push bc
     bcall(_GetKey) ; pause for key
     pop bc
-    res onInterrupt, (IY+onFlags) ; reset flag set by ON button
+    res onInterrupt, (iy + onFlags) ; reset flag set by ON button
 
     ; Handle HELP keys
     or a ; A == ON

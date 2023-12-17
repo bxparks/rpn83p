@@ -62,7 +62,7 @@ primeFactorFloatLoop:
     bcall(_CpOP1OP2) ; if limit < candidate: CF=1
     jr c, primeFactorFloatYes
     ; Check for ON/Break
-    bit onInterrupt, (IY+onFlags)
+    bit onInterrupt, (iy + onFlags)
     jr nz, primeFactorBreak
     ; Check (6n-1)
     bcall(_OP4ToOP1) ; OP1 = X
@@ -106,7 +106,7 @@ primeFactorFloatCheckDiv:
 
 primeFactorBreak:
     bcall(_RunIndicOff) ; disable run indicator
-    res onInterrupt, (IY+onFlags)
+    res onInterrupt, (iy + onFlags)
     bcall(_ErrBreak) ; throw exception
 
 ;-----------------------------------------------------------------------------
@@ -172,7 +172,7 @@ primeFactorIntLoop:
     call cmpU32U32 ; if limit < candidate: CF=1
     jr c, primeFactorIntYes
     ; Check for ON/Break
-    bit onInterrupt, (IY+onFlags)
+    bit onInterrupt, (iy + onFlags)
     jr nz, primeFactorBreak
     ; Check (6n-1)
     call primeFactorIntCheckDiv
@@ -282,7 +282,7 @@ primeFactorModLoop:
     sbc hl, de
     jr c, primeFactorModYes
     ; Check for ON/Break
-    bit onInterrupt, (IY+onFlags)
+    bit onInterrupt, (iy + onFlags)
     jr nz, primeFactorBreak
     ; Check (6n-1)
     call primeFactorModCheckDiv
