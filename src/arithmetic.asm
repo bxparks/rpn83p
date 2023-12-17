@@ -167,3 +167,47 @@ universalSubComplex:
     call convertOp1ToCp1
     bcall(_CSub) ; OP1/OP2 = FPS[OP1/OP2] - OP1/OP2; FPS=[]
     ret
+
+; Input:
+;   - OP1/OP2: Y
+;   - OP3/OP4: X
+; Output:
+;   - OP1/OP2: Y*X
+universalMult:
+    call checkOp1OrOP3Complex
+    jr z, universalMultComplex
+    ; Sub 2 real numbers.
+    call op3ToOp2
+    bcall(_FPMult) ; OP1=Y*X
+    ret
+universalMultComplex:
+    call convertOp1ToCp1
+    bcall(_PushOP1) ; FPS=[Y]
+    call cp3ToCp1 ; OP1/OP2=OP3/OP4
+    call convertOp1ToCp1
+    ; TODO: If one of the arguments is real, then we could use CMltByReal() for
+    ; a little bit of efficiency, probably.
+    bcall(_CMult) ; OP1/OP2 = FPS[OP1/OP2] * OP1/OP2; FPS=[]
+    ret
+
+; Input:
+;   - OP1/OP2: Y
+;   - OP3/OP4: X
+; Output:
+;   - OP1/OP2: Y/X
+universalDiv:
+    call checkOp1OrOP3Complex
+    jr z, universalDivComplex
+    ; Sub 2 real numbers.
+    call op3ToOp2
+    bcall(_FPDiv) ; OP1=Y/X
+    ret
+universalDivComplex:
+    call convertOp1ToCp1
+    bcall(_PushOP1) ; FPS=[Y]
+    call cp3ToCp1 ; OP1/OP2=OP3/OP4
+    call convertOp1ToCp1
+    ; TODO: If the divisor is real, then we could use CDivByReal() for a little
+    ; bit of efficiency, probably.
+    bcall(_CDiv) ; OP1/OP2 = FPS[OP1/OP2] / OP1/OP2; FPS=[]
+    ret

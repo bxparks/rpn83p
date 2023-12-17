@@ -655,7 +655,7 @@ handleKeyMenuSecondA:
 ; Description: Handle the Add key.
 ; Input: inputBuf
 ; Output:
-; Destroys: all, OP1, OP2, OP4
+; Destroys: all, OP1, OP2, OP3, OP4
 handleKeyAdd:
     bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
     jp nz, mBaseAddHandler
@@ -666,7 +666,7 @@ handleKeyAdd:
 ; Description: Handle the Sub key.
 ; Input: inputBuf
 ; Output:
-; Destroys: all, OP1, OP2, OP4
+; Destroys: all, OP1, OP2, OP3, OP4
 handleKeySub:
     bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
     jp nz, mBaseSubtHandler
@@ -677,23 +677,23 @@ handleKeySub:
 ; Description: Handle the Mul key.
 ; Input: inputBuf
 ; Output:
-; Destroys: all, OP1, OP2, OP4, OP5
+; Destroys: all, OP1, OP2, OP3, OP4, OP5
 handleKeyMul:
     bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
     jp nz, mBaseMultHandler
-    call closeInputAndRecallXY ; OP1=Y; OP2=X
-    bcall(_FPMult) ; Y * X
+    call closeInputAndRecallComplexXY ; OP1/OP2=Y; OP3/OP4=X
+    call universalMult
     jp replaceXY
 
 ; Description: Handle the Div key.
 ; Input: inputBuf
 ; Output:
-; Destroys: all, OP1, OP2, OP4
+; Destroys: all, OP1, OP2, OP3, OP4
 handleKeyDiv:
     bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
     jp nz, mBaseDivHandler
-    call closeInputAndRecallXY ; OP1=Y; OP2=X
-    bcall(_FPDiv) ; Y / X
+    call closeInputAndRecallComplexXY ; OP1/OP2=Y; OP3/OP4=X
+    call universalDiv
     jp replaceXY
 
 ;-----------------------------------------------------------------------------
