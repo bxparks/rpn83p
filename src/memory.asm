@@ -225,7 +225,7 @@ move9FromOp2:
 ;-----------------------------------------------------------------------------
 ; Complex numbers in OPx registers. Complex numbers are stored in consecutive
 ; registers (e.g. OP1/OP2), but each OPx register is 11 bytes wide not 9 bytes,
-; which can complicate some memory copying routines.
+; which explains the 22 bytes that we move below.
 ;-----------------------------------------------------------------------------
 
 ; Input: HL=pointer to 2 floats in OPx registers.
@@ -242,6 +242,15 @@ move22ToOp1:
 ; Preserves: A
 move22ToOp3:
     ld de, OP3
+    ld bc, 22
+    ldir
+    ret
+
+; Input: HL=pointer to 2 floats in OPx registers.
+; Destroys: BC, DE, HL
+; Preserves: A
+move22ToOp5:
+    ld de, OP5
     ld bc, 22
     ldir
     ret
@@ -264,6 +273,15 @@ move22FromOp3:
     ldir
     ret
 
+; Input: DE=pointer to 2 floats in OPx registers.
+; Destroys: BC, DE, HL
+; Preserves: A
+move22FromOp5:
+    ld hl, OP5
+    ld bc, 22
+    ldir
+    ret
+
 ;-----------------------------------------------------------------------------
 
 ; Description: Move complex number in OP1/OP2 to OP3/OP4.
@@ -272,10 +290,22 @@ cp1ToCp3:
     ld hl, OP1
     jr move22ToOp3
 
+; Description: Move complex number in OP1/OP2 to OP5/OP6.
+; Preserves: A
+cp1ToCp5:
+    ld hl, OP1
+    jr move22ToOp5
+
 ; Description: Move complex number in OP3/OP4 to OP1/OP2.
 ; Preserves: A
 cp3ToCp1:
     ld hl, OP3
+    jr move22ToOp1
+
+; Description: Move complex number in OP5/OP6 to OP1/OP2.
+; Preserves: A
+cp5ToCp1:
+    ld hl, OP5
     jr move22ToOp1
 
 ; Description: Exchange OP1/OP2 with OP3/OP4.

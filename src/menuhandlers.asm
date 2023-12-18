@@ -48,30 +48,22 @@ mHelpHandler:
 ; Children nodes of MATH menu.
 ;-----------------------------------------------------------------------------
 
-; mCubeHandler(X) -> X^3
 ; Description: Calculate X^3.
 mCubeHandler:
-    call closeInputAndRecallX
-    bcall(_Cube)
+    call closeInputAndRecallUniversalX
+    call universalCube
     jp replaceX
 
-; mCubeRootHandler(X) -> X^(1/3)
-; Description: Calculate the cubic root of X. The SDK documentation has the OP1
-; and OP2 flipped.
+; Description: Calculate the cubic root of X, X^(1/3).
 mCubeRootHandler:
-    call closeInputAndRecallX
-    bcall(_OP1ToOP2) ; OP2=X
-    bcall(_OP1Set3) ; OP1=3
-    bcall(_XRootY) ; OP2^(1/OP1), SDK documentation is incorrect
+    call closeInputAndRecallUniversalX
+    call universalCubeRoot
     jp replaceX
 
-; mXRootYHandler(X,Y) -> Y^(1/X)
-; Description: Calculate the X root of Y. The SDK documentation has the OP1
-; and OP2 flipped.
+; Description: Calculate the X root of Y, Y^(1/X).
 mXRootYHandler:
-    call closeInputAndRecallXY ; OP1=Y; OP2=X
-    bcall(_OP1ExOP2) ; OP1=X, OP2=Y
-    bcall(_XRootY) ; OP2^(1/OP1), SDK documentation is incorrect
+    call closeInputAndRecallUniversalXY ; OP1=Y; OP2=X
+    call universalXRootY
     jp replaceXY
 
 ; Description: Calculate the angle of the (X, Y) number in complex plane.

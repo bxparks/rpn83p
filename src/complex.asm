@@ -290,7 +290,7 @@ universalChsComplex:
 ;   - OP3/OP4: X
 ; Output:
 ;   - OP1/OP2: Y^X
-universalExpon:
+universalExpon: ; TODO: Rename this universalPow()
     call checkOp1OrOP3Complex
     jr z, universalExponComplex
     ; X and Y are real numbers.
@@ -306,10 +306,8 @@ universalExponComplex:
     ret
 
 ; Description: Reciprocal for real and complex numbers.
-; Input:
-;   - OP1/OP2: X
-; Output:
-;   - OP1/OP2: 1/X
+; Input: OP1/OP2: X
+; Output: OP1/OP2: 1/X
 universalRecip:
     call checkOp1Complex
     jr z, universalRecipComplex
@@ -321,10 +319,8 @@ universalRecipComplex:
     ret
 
 ; Description: Square for real and complex numbers.
-; Input:
-;   - OP1/OP2: X
-; Output:
-;   - OP1/OP2: X^2
+; Input: OP1/OP2: X
+; Output: OP1/OP2: X^2
 universalSquare:
     call checkOp1Complex
     jr z, universalSquareComplex
@@ -336,10 +332,8 @@ universalSquareComplex:
     ret
 
 ; Description: Square root for real and complex numbers.
-; Input:
-;   - OP1/OP2: X
-; Output:
-;   - OP1/OP2: sqrt(X)
+; Input: OP1/OP2: X
+; Output: OP1/OP2: sqrt(X)
 universalSqRoot:
     call checkOp1Complex
     jr z, universalSqRootComplex
@@ -348,6 +342,66 @@ universalSqRoot:
     ret
 universalSqRootComplex:
     bcall(_CSqRoot)
+    ret
+
+; Description: Calculate X^3 for real and complex numbers. For some reason, the
+; TI-OS provides a Cube() function for reals, but not for complex. Which is
+; strange because it provides both a Csquare() and Square() function.
+; Input: OP1/OP2: X
+; Output: OP1/OP2: X^3
+; Destroys: all, OP1-OP6
+universalCube:
+    call checkOp1Complex
+    jr z, universalCubeComplex
+    ; X is real
+    bcall(_Cube)
+    ret
+universalCubeComplex:
+    call cp1ToCp5 ; CP5=CP1
+    bcall(_Csquare) ; CP1=CP1^2
+    bcall(_PushOp1) ; FPS=[CP1^2]
+    call cp5ToCp1 ; CP1=CP5
+    bcall(_CMult) ; CP1=CP1^3; FPS=[]
+    ret
+
+; Description: Calculate CBRT(X)=X^(1/3) for real and complex numbers.
+; Input: OP1/OP2: X
+; Output: OP1/OP2: X^(1/3)
+universalCubeRoot:
+    call checkOp1Complex
+    jr z, universalCubeRootComplex
+    ; X is real
+    bcall(_OP1ToOP2) ; OP2=X
+    bcall(_OP1Set3) ; OP1=3
+    bcall(_XRootY) ; OP2^(1/OP1), SDK documentation is incorrect
+    ret
+universalCubeRootComplex:
+    call cp1ToCp3 ; CP3=CP1
+    bcall(_OP1Set3) ; OP1=3
+    call convertOp1ToCp1 ; CP1=(3i0)
+    bcall(_PushOP1) ; FPS=[3i0]
+    call cp3Tocp1 ; CP1=CP3
+    bcall(_CXrootY) ; CP1=CP1^(1/3); FPS=[]
+    ret
+
+; Description: Calculate CBRT(X)=X^(1/3) for real and complex numbers.
+; Input:
+;   - OP1/OP2: Y
+;   - OP3/OP4: X
+; Output: OP1/OP2: Y^(1/X)
+universalXRootY:
+    call checkOp1OrOP3Complex
+    jr z, universalXRootYComplex
+    ; X and Y are real
+    call op1ToOp2 ; OP2=Y
+    call op3ToOp1 ; OP1=X
+    bcall(_XRootY) ; OP2^(1/OP1), SDK documentation is incorrect
+    ret
+universalXRootYComplex:
+    call convertOp1ToCp1
+    call convertOp3ToCp3
+    bcall(_PushOp3) ; FPS=[CP3]
+    bcall(_CXrootY) ; CP1=CP1^(1/CP3); FPS=[]
     ret
 
 ;-----------------------------------------------------------------------------
