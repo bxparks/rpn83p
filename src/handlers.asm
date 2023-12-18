@@ -721,7 +721,7 @@ handleKeyEuler:
 ; Description: y^x
 handleKeyExpon:
     call closeInputAndRecallUniversalXY ; OP1/OP2=Y; OP3/OP4=X
-    call universalExpon
+    call universalPow
     jp replaceXY
 
 ; Description: 1/x

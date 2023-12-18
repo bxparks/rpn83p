@@ -284,20 +284,20 @@ universalChsComplex:
 ; Alegbraic functions.
 ;-----------------------------------------------------------------------------
 
-; Description: Exponentiation (Y^X) for real and complex numbers.
+; Description: Power function (Y^X) for real and complex numbers.
 ; Input:
 ;   - OP1/OP2: Y
 ;   - OP3/OP4: X
 ; Output:
 ;   - OP1/OP2: Y^X
-universalExpon: ; TODO: Rename this universalPow()
+universalPow:
     call checkOp1OrOP3Complex
-    jr z, universalExponComplex
+    jr z, universalPowComplex
     ; X and Y are real numbers.
     call op3ToOp2
     bcall(_YToX) ; OP1=Y/X
     ret
-universalExponComplex:
+universalPowComplex:
     call convertOp1ToCp1
     bcall(_PushOP1) ; FPS=[Y]
     call cp3ToCp1 ; OP1/OP2=OP3/OP4=X
