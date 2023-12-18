@@ -302,3 +302,67 @@ universalSqRoot:
 universalSqRootComplex:
     bcall(_CSqRoot)
     ret
+
+;-----------------------------------------------------------------------------
+; Transcendentals
+;-----------------------------------------------------------------------------
+
+; Description: Log for real and complex numbers.
+; Input:
+;   - OP1/OP2: X
+; Output:
+;   - OP1/OP2: X^2
+universalLog:
+    call checkOp1Complex
+    jr z, universalLogComplex
+    ; X is a real number
+    bcall(_LogX)
+    ret
+universalLogComplex:
+    bcall(_CLog)
+    ret
+
+; Description: ALog for real and complex numbers.
+; Input:
+;   - OP1/OP2: X
+; Output:
+;   - OP1/OP2: X^2
+universalALog:
+    call checkOp1Complex
+    jr z, universalALogComplex
+    ; X is a real number
+    bcall(_TenX)
+    ret
+universalALogComplex:
+    bcall(_CTenX)
+    ret
+
+; Description: Ln for real and complex numbers.
+; Input:
+;   - OP1/OP2: X
+; Output:
+;   - OP1/OP2: X^2
+universalLn:
+    call checkOp1Complex
+    jr z, universalLnComplex
+    ; X is a real number
+    bcall(_LnX)
+    ret
+universalLnComplex:
+    bcall(_CLn)
+    ret
+
+; Description: Exp for real and complex numbers.
+; Input:
+;   - OP1/OP2: X
+; Output:
+;   - OP1/OP2: X^2
+universalExp:
+    call checkOp1Complex
+    jr z, universalExpComplex
+    ; X is a real number
+    bcall(_EtoX)
+    ret
+universalExpComplex:
+    bcall(_CEtoX)
+    ret

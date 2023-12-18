@@ -765,22 +765,22 @@ handleKeyAns:
 
 handleKeyLog:
     call closeInputAndRecallX
-    bcall(_LogX)
+    call universalLog
     jp replaceX
 
 handleKeyALog:
     call closeInputAndRecallX
-    bcall(_TenX)
+    call universalALog
     jp replaceX
 
 handleKeyLn:
     call closeInputAndRecallX
-    bcall(_LnX)
+    call universalLn
     jp replaceX
 
 handleKeyExp:
     call closeInputAndRecallX
-    bcall(_EToX)
+    call universalExp
     jp replaceX
 
 ;-----------------------------------------------------------------------------
