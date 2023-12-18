@@ -421,9 +421,9 @@ closeStack:
 ; Description: Store OP1/OP2 to STK[nn], setting dirty flag.
 ; Input:
 ;   - A: stack register index, 0-based
-;   - OP1: float value
+;   - OP1/OP2: float value
 ; Output:
-;   - STK[nn] = OP1
+;   - STK[nn] = OP1/OP2
 ; Destroys: all
 ; Preserves: OP1, OP2
 stoStackNN:
@@ -436,12 +436,11 @@ stoStackNN:
 ; Description: Copy STK[nn] to OP1/OP2.
 ; Input:
 ;   - A: stack register index, 0-based
-;   - 'STK' list variable
+;   - 'STK' app variable
 ; Output:
-;   - OP1: float value
+;   - OP1/OP2: float value
 ;   - A: rpnObjectType
 ; Destroys: all
-; Preserves: OP2
 rclStackNN:
     ld hl, stackName
     ld b, a ; B=index
@@ -866,6 +865,99 @@ rclRegNNToOP2:
 
 ;-----------------------------------------------------------------------------
 
+; Description: Implement STO{op} NN, with {op} defined by B and NN given by C.
+; Input:
+;   - OP1/OP2: real or complex number
+;   - B: operation index [0,4] into floatOps, MUST be same as argModifierXxx
+;   - C: register index NN, 0-based
+; Output:
+;   - REGS[NN]=(REGS[NN] {op} OP1/OP2), where {op} is defined by B, and can be
+;   a simple assignment operator
+; Destroys: all, OP3, OP4
+; Preserves: OP1, OP2
+stoOpRegNN:
+    push bc ; stack=[op,NN]
+    bcall(_PushOP1) ; FPS=[OP1/OP2]
+    call cp1ToCp3 ; OP3/OP4=OP1/OP2
+    ; Recall REGS[NN]
+    pop bc ; stack=[]; B=op; C=NN
+    push bc ; stack=[op,NN]
+    ld a, c ; A=NN
+    call rclRegNN ; OP1/OP2=REGS[NN]
+    ; Invoke op B
+    pop bc ; stack=[]; B=op; C=NN
+    push bc ; stack=[op,NN]
+    ld a, b ; A=op
+    ld hl, floatOps
+    call jumpAOfHL
+    ; Save REGS[C]
+    pop bc ; stack=[]; B=op; C=NN
+    ld a, c ; A=NN
+    call stoRegNN
+    ; restore OP1, OP2
+    bcall(_PopOP1) ; FPS=[]; OP1/OP2=OP1/OP2
+    ret
+
+; Description: Implement RCL{op} NN, with {op} defined by B and NN given by C.
+; WARNING: Works only for real not complex.
+; Input:
+;   - OP1
+;   - B: operation index [0,4] into floatOps, MUST be same as argModifierXxx
+;   - C: register index NN, 0-based
+; Output:
+;   - OP1/OP2=(OP1/OP2 {op} REGS[NN]), where {op} is defined by B, and can be a
+;   simple assignment operator
+; Destroys: all, OP3, OP4
+rclOpRegNN:
+    push bc ; stack=[op,NN]
+    bcall(_PushOP1) ; FPS=[OP1/OP2]
+    ; Recall REGS[NN]
+    pop bc ; stack=[]; B=op; C=NN
+    push bc ; stack=[op,NN]
+    ld a, c ; A=NN
+    call rclRegNN ; OP1/OP2=REGS[NN]
+    call cp1ToCp3 ; OP3/OP4=OP1/OP2
+    bcall(_PopOP1) ; FPS=[]; OP1/OP2=OP1/OP2
+    ; Invoke op B
+    pop bc ; stack=[]; B=op; C=NN
+    ld a, b ; A=op
+    ld hl, floatOps
+    jp jumpAOfHL ; OP1/OP2=OP1/OP2{op}OP3/OP4
+
+;-----------------------------------------------------------------------------
+
+; List of floating point operations, indexed from 0 to 4. Implements `OP1/OP2
+; {op}= OP3/OP4`. These MUST be identical to the argModifierXxx constants.
+floatOpsCount equ 5
+floatOps:
+    .dw floatOpAssign ; 0, argModifierNone
+    .dw floatOpAdd ; 1, argModifierAdd
+    .dw floatOpSub ; 2, argModifierSub
+    .dw floatOpMul ; 3, argModifierMul
+    .dw floatOpDiv ; 4, argModifierDiv
+
+; We could place these jump routines directly into the floatOps table. However,
+; at some point the various complex functions will probably move to different
+; flash page, which will requires a bcall(), so having this layer of
+; indirection will make that refactoring easier. Also, this provides slightly
+; better self-documentation.
+floatOpAssign:
+    jp cp3ToCp1
+floatOpAdd:
+    jp universalAdd
+floatOpSub:
+    jp universalSub
+floatOpMul:
+    jp universalMult
+floatOpDiv:
+    jp universalDiv
+
+;-----------------------------------------------------------------------------
+; STAT register functions.
+; TODO: Move stat registers to a separate "RPN83STA" appVar so that we don't
+; overlap with [R11,R23].
+;-----------------------------------------------------------------------------
+
 ; Description: Add OP1 to storage register NN. Used by STAT functions.
 ; WARNING: Works only for real not complex.
 ; Input:
@@ -910,103 +1002,8 @@ stoSubRegNN:
     bcall(_PopRealO1) ; FPS=[]; OP1=OP1
     ret
 
-;-----------------------------------------------------------------------------
-
-; Description: Implement STO{op} NN, with {op} defined by B and NN given by C.
-; WARNING: Works only for real not complex.
-; Input:
-;   - OP1
-;   - B: operation index [0,4] into floatOps, MUST be same as argModifierXxx
-;   - C: register index NN, 0-based
-; Output:
-;   - REGS[C]: REGS[C] {op} OP1, where {op} is defined by B, and can be a
-;   simple assignment operator
-; Destroys: all
-; Preserves: OP1, OP2
-stoOpRegNN:
-    push bc
-    bcall(_PushRealO1) ; FPS=[OP1]
-    bcall(_PushRealO2) ; FPS=[OP1,OP2]
-    bcall(_OP1ToOP2)
-    ; Recall REGS[C]
-    pop bc
-    push bc
-    ld a, c ; A=C=register index
-    call rclRegNN
-    ; Invoke op B
-    pop bc
-    push bc
-    ld a, b ; A=op-index
-    ld hl, floatOps
-    call jumpAOfHL
-    ; Save REGS[C]
-    pop bc
-    ld a, c ; A=C=register index
-    call stoRegNN
-    ; restore OP1, OP2
-    bcall(_PopRealO2) ; FPS=[OP1]
-    bcall(_PopRealO1) ; FPS=[]; OP1=OP1
-    ret
-
-; Description: Implement RCL{op} NN, with {op} defined by B and NN given by C.
-; WARNING: Works only for real not complex.
-; Input:
-;   - OP1
-;   - B: operation index [0,4] into floatOps, MUST be same as argModifierXxx
-;   - C: register index NN, 0-based
-; Output:
-;   - OP1: OP1 {op} REGS[C], where {op} is defined by B, and can be a simple
-;   assignment operator
-; Destroys: all
-; Preserves: OP2
-rclOpRegNN:
-    push bc
-    bcall(_PushRealO2) ; FPS=[OP2]
-    ; Recall REGS[C]
-    pop bc
-    push bc
-    ld a, c ; A=C=register index
-    call rclRegNNToOP2
-    ; Invoke op B
-    pop bc
-    ld a, b ; A=op-index
-    ld hl, floatOps
-    call jumpAOfHL
-    bcall(_PopRealO2) ; FPS=[]; OP2=OP2
-    ret
-
-; List of floating point operations, indexed from 0 to 4. Implements `OP1 {op}=
-; OP2`. These MUST be identical to the argModifierXxx constants.
-floatOpsCount equ 5
-floatOps:
-    .dw floatOpAssign ; 0, argModifierNone
-    .dw floatOpAdd ; 1, argModifierAdd
-    .dw floatOpSub ; 2, argModifierSub
-    .dw floatOpMul ; 3, argModifierMul
-    .dw floatOpDiv ; 4, argModifierDiv
-
-floatOpAssign:
-    bcall(_OP2ToOP1)
-    ret
-floatOpAdd:
-    bcall(_FPAdd)
-    ret
-floatOpSub:
-    bcall(_FPSub)
-    ret
-floatOpMul:
-    bcall(_FPMult)
-    ret
-floatOpDiv:
-    bcall(_FPDiv)
-    ret
-
-;-----------------------------------------------------------------------------
-
 ; Description: Clear the storage registers used by the STAT functions. In
-; Linear mode [R11, R16], in All mode [R11, R23], inclusive. TODO: Move stat
-; registers to a separate "RPN83STA" appVar so that we don't overlap with
-; [R11,R23].
+; Linear mode [R11, R16], in All mode [R11, R23], inclusive.
 ; Input: none
 ; Output:
 ;   - B: 0

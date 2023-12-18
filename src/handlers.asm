@@ -835,9 +835,9 @@ handleKeySto:
     ld a, (argValue)
     cp regsSize ; check if command argument too large
     jp nc, handleKeyStoError
-    ld c, a
+    ld c, a ; C=NN
     ld a, (argModifier)
-    ld b, a
+    ld b, a ; B=op
     jp stoOpRegNN
 handleKeyStoError:
     ld a, errorCodeDimension
