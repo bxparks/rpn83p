@@ -125,6 +125,53 @@ convertCp3ToOp3Op4:
     ret
 
 ;-----------------------------------------------------------------------------
+; Complex misc operations.
+;-----------------------------------------------------------------------------
+
+; Description: Calculate the ComplexConjugate of(OP1/OP2).
+; Output: OP1/OP2=conj(OP1/OP2)
+complexConj:
+    call checkOp1Complex
+    ret nz ; do nothing if not complex
+    bcall(_Conj) ; X=conj(X)
+    ret
+
+; Description: Extract the real part of complex(OP1/OP2).
+; Output: OP1=Re(OP1/OP2)
+complexReal:
+    call checkOp1Complex
+    ret nz ; do nothing if not complex
+    jp convertCp1ToOp1Op2 ; OP1=Re(X); OP2=Im(X)
+
+; Description: Extract the imaginary part of complex(OP1/OP2).
+; Output: OP1=Im(OP1/OP2)
+complexImag:
+    call checkOp1Complex
+    ret nz ; do nothing if not complex
+    call convertCp1ToOp1Op2 ; OP1=Re(X); OP2=Im(X)
+    jp op2ToOp1 ; OP1=Im(X)
+
+complexAbs:
+    call checkOp1Complex
+    jr z, complexAbsCabs
+    ; real X
+    bcall(_ClrOP1S) ; clear sign bit of OP1
+    ret
+complexAbsCabs:
+    bcall(_CAbs); OP1/OP2=Cabs(OP1/OP2)
+    ret
+
+complexAngle:
+    call checkOp1Complex
+    jr z, complexAngleComplex
+    call op2Set0 ; Im(X)=0
+    call convertOp1Op2ToCp1 ; OP1/OP2=complex(OP1,OP2)
+    ; [[fallthrough]]
+complexAngleComplex:
+    bcall(_Angle) ; OP1=CAngle(OP1/OP2)
+    ret
+
+;-----------------------------------------------------------------------------
 ; Arithmetic operations.
 ;-----------------------------------------------------------------------------
 

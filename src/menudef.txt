@@ -360,5 +360,14 @@ MenuGroup root mRoot [
         MenuItem * *
       ]
     ]
+    MenuGroup CPLX mComplex [
+      MenuRow [
+        MenuItem REAL mComplexReal
+        MenuItem IMAG mComplexImag
+        MenuItem CONJ mComplexConj
+        MenuItem CABS mComplexAbs
+        MenuItem CANG mComplexAngle
+      ]
+    ]
   ]
 ]

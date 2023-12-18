@@ -16,6 +16,7 @@ SRCS := \
 	cfithandlers.asm \
 	common.asm \
 	complex.asm \
+	complexhandlers.asm \
 	const.asm \
 	const1.asm \
 	crc.asm \
