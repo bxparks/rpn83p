@@ -659,7 +659,7 @@ handleKeyMenuSecondA:
 handleKeyAdd:
     bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
     jp nz, mBaseAddHandler
-    call closeInputAndRecallComplexXY ; OP1/OP2=Y; OP3/OP4=X
+    call closeInputAndRecallUniversalXY ; OP1/OP2=Y; OP3/OP4=X
     call universalAdd
     jp replaceXY
 
@@ -670,7 +670,7 @@ handleKeyAdd:
 handleKeySub:
     bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
     jp nz, mBaseSubtHandler
-    call closeInputAndRecallComplexXY ; OP1=Y; OP2=X
+    call closeInputAndRecallUniversalXY ; OP1=Y; OP2=X
     call universalSub
     jp replaceXY
 
@@ -681,7 +681,7 @@ handleKeySub:
 handleKeyMul:
     bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
     jp nz, mBaseMultHandler
-    call closeInputAndRecallComplexXY ; OP1/OP2=Y; OP3/OP4=X
+    call closeInputAndRecallUniversalXY ; OP1/OP2=Y; OP3/OP4=X
     call universalMult
     jp replaceXY
 
@@ -692,7 +692,7 @@ handleKeyMul:
 handleKeyDiv:
     bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
     jp nz, mBaseDivHandler
-    call closeInputAndRecallComplexXY ; OP1/OP2=Y; OP3/OP4=X
+    call closeInputAndRecallUniversalXY ; OP1/OP2=Y; OP3/OP4=X
     call universalDiv
     jp replaceXY
 
@@ -720,25 +720,25 @@ handleKeyEuler:
 
 ; Description: y^x
 handleKeyExpon:
-    call closeInputAndRecallComplexXY ; OP1/OP2=Y; OP3/OP4=X
+    call closeInputAndRecallUniversalXY ; OP1/OP2=Y; OP3/OP4=X
     call universalExpon
     jp replaceXY
 
 ; Description: 1/x
 handleKeyInv:
-    call closeInputAndRecallX
+    call closeInputAndRecallUniversalX
     call universalRecip
     jp replaceX
 
 ; Description: x^2
 handleKeySquare:
-    call closeInputAndRecallX
+    call closeInputAndRecallUniversalX
     call universalSquare
     jp replaceX
 
 ; Description: sqrt(x)
 handleKeySqrt:
-    call closeInputAndRecallX
+    call closeInputAndRecallUniversalX
     call universalSqRoot
     jp replaceX
 
@@ -764,22 +764,22 @@ handleKeyAns:
 ;-----------------------------------------------------------------------------
 
 handleKeyLog:
-    call closeInputAndRecallX
+    call closeInputAndRecallUniversalX
     call universalLog
     jp replaceX
 
 handleKeyALog:
-    call closeInputAndRecallX
+    call closeInputAndRecallUniversalX
     call universalALog
     jp replaceX
 
 handleKeyLn:
-    call closeInputAndRecallX
+    call closeInputAndRecallUniversalX
     call universalLn
     jp replaceX
 
 handleKeyExp:
-    call closeInputAndRecallX
+    call closeInputAndRecallUniversalX
     call universalExp
     jp replaceX
 
@@ -953,8 +953,7 @@ msgDrawPrompt:
 handleKeyVarx:
     ; Combine X and Y into a complex number, and store it back into X.
     call closeInputAndRecallNone
-    call rclX ; OP1/OP2=X
-    ld a, c ; A=objectType
+    call rclX ; OP1/OP2=X; A=objectType
     cp a, rpnObjectTypeComplex
     jr nz, handleKeyVarxRealToComplex
     ; Convert complex into 2 reals
@@ -963,8 +962,7 @@ handleKeyVarx:
 handleKeyVarxRealToComplex:
     bcall(_PushRealO1) ; FPS=[Im]
     ; Verify that Y is also real.
-    call rclY ; OP1/OP2=Y
-    ld a, c ; A=objectType
+    call rclY ; OP1/OP2=Y; A=objectType
     cp a, rpnObjectTypeComplex
     jr nz, handleKeyVarxRealToComplexOk
     ; Y is complex, so throw an error

@@ -324,7 +324,7 @@ stoRpnObjectCopyComplex:
 ;   - B: index
 ;   - HL: name of appVar e.g. "RPN83STK", "RPN83REG"
 ; Output:
-;   - C: rpnObjectType
+;   - A: rpnObjectType
 ;   - OP1/OP2: float or complex number
 ; Destroys: all
 rclRpnObject:
@@ -343,7 +343,6 @@ rclRpnObject:
     ; copy real
     ld bc, rpnRealSizeOf
     ldir
-    ld c, a ; C=objectType
     ret
 rclRpnObjectCopyComplex:
     ; copy complex
@@ -353,8 +352,6 @@ rclRpnObjectCopyComplex:
     inc de ; OPx registers are 11 bytes, not 9 bytes
     ld bc, rpnRealSizeOf
     ldir
-rclRpnObjectEnd:
-    ld c, a ; C=objectType
     ret
 
 ;-----------------------------------------------------------------------------
@@ -442,7 +439,7 @@ stoStackNN:
 ;   - 'STK' list variable
 ; Output:
 ;   - OP1: float value
-;   - C: rpnObjectType
+;   - A: rpnObjectType
 ; Destroys: all
 ; Preserves: OP2
 rclStackNN:
@@ -459,6 +456,7 @@ stoX:
     jr stoStackNN
 
 ; Description: Recall X to OP1/OP2.
+; Output: A=objectType
 ; Destroys: all
 rclX:
     ld a, stackXIndex
@@ -473,6 +471,7 @@ stoY:
     jr stoStackNN
 
 ; Description: Recall Y to OP1/OP2.
+; Output: A=objectType
 ; Destroys: all
 rclY:
     ld a, stackYIndex
@@ -487,6 +486,7 @@ stoZ:
     jr stoStackNN
 
 ; Description: Recall Z to OP1/OP2.
+; Output: A=objectType
 ; Destroys: all
 rclZ:
     ld a, stackZIndex
@@ -501,6 +501,7 @@ stoT:
     jr stoStackNN
 
 ; Description: Recall T to OP1/OP2.
+; Output: A=objectType
 ; Destroys: all
 rclT:
     ld a, stackTIndex
@@ -515,6 +516,7 @@ stoL:
     jr stoStackNN
 
 ; Description: Recall L to OP1/OP2.
+; Output: A=objectType
 ; Destroys: all
 rclL:
     ld a, stackLIndex
@@ -838,7 +840,7 @@ stoRegNN:
 ;   - 'REGS' list variable
 ; Output:
 ;   - OP1: float value
-;   - C: objectType
+;   - A: objectType
 ; Destroys: all
 ; Preserves: OP2
 rclRegNN:

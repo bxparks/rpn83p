@@ -891,11 +891,10 @@ clearShowAreaLoop:
 ; to the end of line (but only if the floating point did not spill over to the
 ; next line).
 ; Input:
+;   - A: objectType
 ;   - OP1: floating point number
-;   - C: objectType
 ; Destroys: A, HL, OP3
 printOP1:
-    ld a, c
     cp rpnObjectTypeComplex
     jr nz, printOP1Real
     ; [[fallthrough]]
