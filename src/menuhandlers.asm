@@ -89,27 +89,25 @@ mAtan2Handler:
 
 ;-----------------------------------------------------------------------------
 
-; Calculate e^x-1 without round off errors around x=0.
+; Description: Calculate e^x-1 without round off errors around x=0.
 mExpMinusOneHandler:
     call closeInputAndRecallX
     bcall(_ExpMinusOne)
     jp replaceX
 
-; Calculate ln(1+x) without round off errors around x=0.
+; Description: Calculate ln(1+x) without round off errors around x=0.
 mLnOnePlusHandler:
     call closeInputAndRecallX
     bcall(_LnOnePlus)
     jp replaceX
 
-; Alog2(X) = 2^X
-mAlog2Handler:
-    call closeInputAndRecallX
-    bcall(_OP1ToOP2) ; OP2 = X
-    bcall(_OP1Set2) ; OP1 = 2
-    bcall(_YToX) ; OP1 = 2^X
+; Description: TwoPow(X) = 2^X
+mTwoPowHandler:
+    call closeInputAndRecallUniversalX
+    call universalTwoPow
     jp replaceX
 
-; Log2(X) = log_base_2(X) = log(X)/log(2)
+; Description: Log2(X) = log_base_2(X) = log(X)/log(2)
 mLog2Handler:
     call closeInputAndRecallX
     bcall(_LnX) ; OP1 = ln(X)
@@ -121,7 +119,7 @@ mLog2Handler:
     bcall(_FPDiv) ; OP1=ln(x)/ln(2)
     jp replaceX
 
-; LogBase(Y, X) = log_base_X(Y)=log(Y)/log(X)
+; Description: LogBase(Y, X) = log_base_X(Y)=log(Y)/log(X)
 mLogBaseHandler:
     call closeInputAndRecallXY ; OP1=Y; OP2=X
     bcall(_PushRealO2) ; FPS=[X]

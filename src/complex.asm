@@ -302,7 +302,7 @@ universalPowComplex:
     bcall(_PushOP1) ; FPS=[Y]
     call cp3ToCp1 ; OP1/OP2=OP3/OP4=X
     call convertOp1ToCp1
-    bcall(_CYtoX) ; OP1/OP2=(Y)^(X); FPS=[]
+    bcall(_CYtoX) ; OP1/OP2=(FPS)^(CP1); FPS=[]
     ret
 
 ; Description: Reciprocal for real and complex numbers.
@@ -409,10 +409,8 @@ universalXRootYComplex:
 ;-----------------------------------------------------------------------------
 
 ; Description: Log for real and complex numbers.
-; Input:
-;   - OP1/OP2: X
-; Output:
-;   - OP1/OP2: X^2
+; Input: OP1/OP2: X
+; Output: OP1/OP2: X^2
 universalLog:
     call checkOp1Complex
     jr z, universalLogComplex
@@ -424,10 +422,8 @@ universalLogComplex:
     ret
 
 ; Description: ALog for real and complex numbers.
-; Input:
-;   - OP1/OP2: X
-; Output:
-;   - OP1/OP2: X^2
+; Input: OP1/OP2: X
+; Output: OP1/OP2: X^2
 universalALog:
     call checkOp1Complex
     jr z, universalALogComplex
@@ -439,10 +435,8 @@ universalALogComplex:
     ret
 
 ; Description: Ln for real and complex numbers.
-; Input:
-;   - OP1/OP2: X
-; Output:
-;   - OP1/OP2: X^2
+; Input: OP1/OP2: X
+; Output: OP1/OP2: X^2
 universalLn:
     call checkOp1Complex
     jr z, universalLnComplex
@@ -454,10 +448,8 @@ universalLnComplex:
     ret
 
 ; Description: Exp for real and complex numbers.
-; Input:
-;   - OP1/OP2: X
-; Output:
-;   - OP1/OP2: X^2
+; Input: OP1/OP2: X
+; Output: OP1/OP2: X^2
 universalExp:
     call checkOp1Complex
     jr z, universalExpComplex
@@ -466,4 +458,22 @@ universalExp:
     ret
 universalExpComplex:
     bcall(_CEtoX)
+    ret
+
+; Description: TwoPow(X)=2^X for real and complex numbers.
+; Input: OP1/OP2: X
+; Output: OP1/OP2: 2^X
+universalTwoPow:
+    call checkOp1Complex
+    jr z, universalTwoPowComplex
+    ; X is a real number
+    call op1ToOp2 ; OP2 = X
+    bcall(_OP1Set2) ; OP1 = 2
+    bcall(_YToX) ; OP1=OP1^OP2=2^X
+    ret
+universalTwoPowComplex:
+    bcall(_OP3Set2) ; OP3=2
+    call convertOp3ToCp3 ; CP3=2i0
+    bcall(_PushOp3) ; FPS=[2i0]
+    bcall(_CYtoX) ; CP1=FPS^CP1=2^(X); FPS=[]
     ret

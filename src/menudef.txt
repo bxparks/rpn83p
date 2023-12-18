@@ -70,7 +70,7 @@ MenuGroup root mRoot [
         MenuItem ATN2 mAtan2
       ]
       MenuRow [
-        MenuItem 2<Scaret>X mAlog2 # 2^x
+        MenuItem 2<Scaret>X mTwoPow # 2^x
         MenuItem LOG2 mLog2 # log_base2(x)
         MenuItem LOGB mLogBase # log_base_x(y)
         MenuItem E<Scaret>X<Sdash> mExpMinusOne # exp(x)-1

@@ -236,14 +236,14 @@ mBlank021Id equ 21
     .dw mNullHandler ; handler (predefined)
     .dw 0 ; nameSelector
 ; MenuGroup MATH: children: row 1
-mAlog2:
-mAlog2Id equ 22
-    .db mAlog2Id ; id
+mTwoPow:
+mTwoPowId equ 22
+    .db mTwoPowId ; id
     .db mMathId ; parentId
-    .db mAlog2NameId ; nameId
+    .db mTwoPowNameId ; nameId
     .db 0 ; numRows
     .db 0 ; rowBeginId or altNameId
-    .dw mAlog2Handler ; handler (to be implemented)
+    .dw mTwoPowHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
 mLog2:
 mLog2Id equ 23
@@ -1902,8 +1902,8 @@ mXRootYNameId equ 18
     .dw mXRootYName
 mAtan2NameId equ 19
     .dw mAtan2Name
-mAlog2NameId equ 20
-    .dw mAlog2Name
+mTwoPowNameId equ 20
+    .dw mTwoPowName
 mLog2NameId equ 21
     .dw mLog2Name
 mLogBaseNameId equ 22
@@ -2290,7 +2290,7 @@ mXRootYName:
     .db 'X', Sroot, 'Y', 0
 mAtan2Name:
     .db "ATN2", 0
-mAlog2Name:
+mTwoPowName:
     .db '2', Scaret, 'X', 0
 mLog2Name:
     .db "LOG2", 0
