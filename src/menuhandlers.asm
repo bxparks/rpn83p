@@ -89,18 +89,6 @@ mAtan2Handler:
 
 ;-----------------------------------------------------------------------------
 
-; Description: Calculate e^x-1 without round off errors around x=0.
-mExpMinusOneHandler:
-    call closeInputAndRecallX
-    bcall(_ExpMinusOne)
-    jp replaceX
-
-; Description: Calculate ln(1+x) without round off errors around x=0.
-mLnOnePlusHandler:
-    call closeInputAndRecallX
-    bcall(_LnOnePlus)
-    jp replaceX
-
 ; Description: TwoPow(X) = 2^X
 mTwoPowHandler:
     call closeInputAndRecallUniversalX
@@ -130,6 +118,18 @@ mLogBaseHandler:
     bcall(_PopRealO1) ; FPS=[]; OP1=ln(Y)
     bcall(_FPDiv) ; OP1=ln(Y)/ln(X)
     jp replaceXY
+
+; Description: Calculate e^x-1 without round off errors around x=0.
+mExpMinusOneHandler:
+    call closeInputAndRecallX
+    bcall(_ExpMinusOne)
+    jp replaceX
+
+; Description: Calculate ln(1+x) without round off errors around x=0.
+mLnOnePlusHandler:
+    call closeInputAndRecallX
+    bcall(_LnOnePlus)
+    jp replaceX
 
 ;-----------------------------------------------------------------------------
 ; Children nodes of NUM menu.
