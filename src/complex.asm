@@ -68,7 +68,7 @@ convertOp1ToCp1:
 
 ; Description: Convert real numbers in OP1 and OP2 into a complex number.
 ; Destroys: A
-convertOp1Op2ToCp1:
+convertOp1Op2ToCp1: ; TODO: rename mergeOp1Op2ToCp1()
     ld a, (OP1)
     or rpnObjectTypeComplex
     ld (OP1), a
@@ -79,7 +79,7 @@ convertOp1Op2ToCp1:
 
 ; Description: Convert the complex number in OP1 and OP2 into 2 real numbers.
 ; Destroys: A
-convertCp1ToOp1Op2:
+convertCp1ToOp1Op2: ; TODO: rename splitCp1ToOp1Op2()
     ld a, (OP1)
     and ~rpnObjectTypeComplex
     ld (OP1), a
@@ -104,7 +104,7 @@ convertOp3ToCp3:
 
 ; Description: Convert real numbers in OP3 and OP4 into a complex number in OP3.
 ; Destroys: A
-convertOp3Op4ToCp3:
+convertOp3Op4ToCp3: ; TODO: rename mergeOp3Op4ToCp3()
     ld a, (OP3)
     or rpnObjectTypeComplex
     ld (OP3), a
@@ -115,7 +115,7 @@ convertOp3Op4ToCp3:
 
 ; Description: Convert the complex number in OP3 and OP4 into 2 real numbers.
 ; Destroys: A
-convertCp3ToOp3Op4:
+convertCp3ToOp3Op4: ; TODO: rename splitCp3ToOp3Op4()
     ld a, (OP3)
     and ~rpnObjectTypeComplex
     ld (OP3), a
@@ -384,7 +384,7 @@ universalCubeRootComplex:
     bcall(_CXrootY) ; CP1=CP1^(1/3); FPS=[]
     ret
 
-; Description: Calculate CBRT(X)=X^(1/3) for real and complex numbers.
+; Description: Calculate XRootY(Y)=Y^(1/X) for real and complex numbers.
 ; Input:
 ;   - OP1/OP2: Y
 ;   - OP3/OP4: X
@@ -444,7 +444,7 @@ universalLn:
     bcall(_LnX)
     ret
 universalLnComplex:
-    bcall(_CLn)
+    bcall(_CLN)
     ret
 
 ; Description: Exp for real and complex numbers.
@@ -501,4 +501,33 @@ universalLog2Complex:
     call op1ToOp3; OP1=ln(2.0)
     bcall(_PopOP1) ; CP1=ln(X)
     bcall(_CDivByReal) ; OP1=ln(X)/ln(2)
+    ret
+
+; Description: LogB(X) = log(X)/log(B).
+; Input:
+;   - OP1/OP2: X
+;   - OP3/OP4: B
+; Output: OP1/OP2: Y^(1/X)
+universalLogBase:
+    call checkOp1OrOP3Complex
+    jr z, universalLogBaseComplex
+    ; X is real
+    bcall(_PushRealO3) ; FPS=[X]
+    bcall(_LnX) ; OP1=ln(Y)
+    call exchangeFPSOP1; FPS=[ln(Y)]; OP1=X
+    bcall(_LnX) ; OP1=ln(X)
+    call op1ToOp2 ; OP2=ln(X)
+    bcall(_PopRealO1) ; FPS=[]; OP1=ln(Y)
+    bcall(_FPDiv) ; OP1=ln(Y)/ln(X)
+    ret
+universalLogBaseComplex:
+    call convertOp3ToCp3
+    bcall(_PushOP3) ; FPS=[B]
+    call convertOp1ToCp1
+    bcall(_CLN) ; CP1=ln(CP1)=ln(X)
+    call cp1ToCp3 ; CP3=ln(X)
+    bcall(_PopOP1) ; FPS=[]; CP1=B
+    bcall(_PushOP3) ; FPS=[ln(X)]
+    bcall(_CLN) ; CP1=ln(B)
+    bcall(_CDiv) ; CP1=ln(X)/ln(B); FPS=[]
     ret

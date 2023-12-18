@@ -62,7 +62,7 @@ mCubeRootHandler:
 
 ; Description: Calculate the X root of Y, Y^(1/X).
 mXRootYHandler:
-    call closeInputAndRecallUniversalXY ; OP1=Y; OP2=X
+    call closeInputAndRecallUniversalXY ; CP1=Y; CP3=X
     call universalXRootY
     jp replaceXY
 
@@ -95,22 +95,16 @@ mTwoPowHandler:
     call universalTwoPow
     jp replaceX
 
-; Description: Log2(X) = log_base_2(X) = log(X)/log(2)
+; Description: Log2(X)=log(X)/log(2)
 mLog2Handler:
     call closeInputAndRecallUniversalX
     call universalLog2
     jp replaceX
 
-; Description: LogBase(Y, X) = log_base_X(Y)=log(Y)/log(X)
+; Description: LogBase(Y,X)=log(Y)/log(X)
 mLogBaseHandler:
-    call closeInputAndRecallXY ; OP1=Y; OP2=X
-    bcall(_PushRealO2) ; FPS=[X]
-    bcall(_LnX) ; OP1=ln(Y)
-    call exchangeFPSOP1; FPS=[ln(Y)]; OP1=X
-    bcall(_LnX) ; OP1=ln(X)
-    call op1ToOp2 ; OP2=ln(X)
-    bcall(_PopRealO1) ; FPS=[]; OP1=ln(Y)
-    bcall(_FPDiv) ; OP1=ln(Y)/ln(X)
+    call closeInputAndRecallUniversalXY ; CP1=Y; CP3=X
+    call universalLogBase
     jp replaceXY
 
 ; Description: Calculate e^x-1 without round off errors around x=0.
