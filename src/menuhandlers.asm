@@ -97,14 +97,8 @@ mTwoPowHandler:
 
 ; Description: Log2(X) = log_base_2(X) = log(X)/log(2)
 mLog2Handler:
-    call closeInputAndRecallX
-    bcall(_LnX) ; OP1 = ln(X)
-    bcall(_PushRealO1) ; FPS=[ln(x)]
-    bcall(_OP1Set2) ; OP1=2.0
-    bcall(_LnX) ; OP1=ln(2.0)
-    call op1ToOp2 ; OP2=ln(2.0)
-    bcall(_PopRealO1) ; FPS=[]; OP1=ln(x)
-    bcall(_FPDiv) ; OP1=ln(x)/ln(2)
+    call closeInputAndRecallUniversalX
+    call universalLog2
     jp replaceX
 
 ; Description: LogBase(Y, X) = log_base_X(Y)=log(Y)/log(X)

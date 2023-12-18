@@ -359,7 +359,7 @@ universalCube:
 universalCubeComplex:
     call cp1ToCp5 ; CP5=CP1
     bcall(_Csquare) ; CP1=CP1^2
-    bcall(_PushOp1) ; FPS=[CP1^2]
+    bcall(_PushOP1) ; FPS=[CP1^2]
     call cp5ToCp1 ; CP1=CP5
     bcall(_CMult) ; CP1=CP1^3; FPS=[]
     ret
@@ -476,4 +476,29 @@ universalTwoPowComplex:
     call convertOp3ToCp3 ; CP3=2i0
     bcall(_PushOp3) ; FPS=[2i0]
     bcall(_CYtoX) ; CP1=FPS^CP1=2^(X); FPS=[]
+    ret
+
+; Description: Log2(X) = log_base_2(X) = log(X)/log(2)
+; Input: OP1/OP2: X
+; Output: OP1/OP2: log2(X)
+universalLog2:
+    call checkOp1Complex
+    jr z, universalLog2Complex
+    ; X is a real number
+    bcall(_LnX) ; OP1 = ln(X)
+    bcall(_PushRealO1) ; FPS=[ln(x)]
+    bcall(_OP1Set2) ; OP1=2.0
+    bcall(_LnX) ; OP1=ln(2.0) ; TODO: Precalculate ln(2)
+    call op1ToOp2 ; OP2=ln(2.0)
+    bcall(_PopRealO1) ; FPS=[]; OP1=ln(x)
+    bcall(_FPDiv) ; OP1=ln(x)/ln(2)
+    ret
+universalLog2Complex:
+    bcall(_CLN) ; CP1=ln(X)
+    bcall(_PushOP1) ; FPS=[CP1]
+    bcall(_OP1Set2) ; OP1=2.0 ; TODO: Precalculate ln(2)
+    bcall(_LnX) ; OP1=ln(2.0)
+    call op1ToOp3; OP1=ln(2.0)
+    bcall(_PopOP1) ; CP1=ln(X)
+    bcall(_CDivByReal) ; OP1=ln(X)/ln(2)
     ret
