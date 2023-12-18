@@ -770,7 +770,7 @@ handleKeyLog:
 
 handleKeyALog:
     call closeInputAndRecallUniversalX
-    call universalALog
+    call universalTenPow
     jp replaceX
 
 handleKeyLn:

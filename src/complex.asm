@@ -421,16 +421,16 @@ universalLogComplex:
     bcall(_CLog)
     ret
 
-; Description: ALog for real and complex numbers.
+; Description: TenPow(X)=10^X for real and complex numbers.
 ; Input: OP1/OP2: X
 ; Output: OP1/OP2: X^2
-universalALog:
+universalTenPow:
     call checkOp1Complex
-    jr z, universalALogComplex
+    jr z, universalTenPowComplex
     ; X is a real number
     bcall(_TenX)
     ret
-universalALogComplex:
+universalTenPowComplex:
     bcall(_CTenX)
     ret
 
