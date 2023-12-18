@@ -9,7 +9,6 @@ SRCS := \
 	arghandlers.asm \
 	arghandlertab.asm \
 	argparser.asm \
-	arithmetic.asm \
 	base.asm \
 	base1.asm \
 	baseops.asm \
@@ -23,7 +22,6 @@ SRCS := \
 	debug.asm \
 	display.asm \
 	errorcode.asm \
-	float.asm \
 	float1.asm \
 	handlers.asm \
 	handlertab.asm \
@@ -34,6 +32,8 @@ SRCS := \
 	integer1.asm \
 	main.asm \
 	mainparser.asm \
+	memory.asm \
+	memory1.asm \
 	menu.asm \
 	menudef.asm \
 	menuhandlers.asm \

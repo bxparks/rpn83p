@@ -2,22 +2,24 @@
 ; MIT License
 ; Copyright (c) 2023 Brian T. Park
 ;
-; Memory routines for floating point (real) numbers.
-;-----------------------------------------------------------------------------
-
-;-----------------------------------------------------------------------------
-; Floating point stack (FPS).
+; Memory routines related to floating point values and registers, some
+; duplicated from memory.asm into here for Flash Page 1.
+;
+; Labels with Capital letters are intended to be exported to other flash pages
+; and should be placed in the branch table on Flash Page 0. Labels with
+; lowercase letters are intended to be private so do not need a branch table
+; entry.
 ;-----------------------------------------------------------------------------
 
 ; Description: Exchange OP2 and FPS.
 ; Destroys: all registers
-exchangeFPSOP2:
+exchangeFPSOP2PageOne:
     ld hl, OP2
-    jr exchangeFPSHL
+    jr exchangeFPSHLPageOne
 
 ; Description: Exchange OP1 and FPS.
 ; Destroys: all registers
-exchangeFPSOP1:
+exchangeFPSOP1PageOne:
     ld hl, OP1
     ; [[fallthrough]]
 
@@ -30,7 +32,7 @@ exchangeFPSOP1:
 ; Input: HL=floating point value
 ; Destroys: all registers
 ; Preserves: all OPx registers
-exchangeFPSHL:
+exchangeFPSHLPageOne:
     ld c, l
     ld b, h ; BC=HL
     ld hl, (FPS)
@@ -45,9 +47,9 @@ exchangeFPSHL:
 ; Input: DE, HL: pointers to floating point values
 ; Output: 9-byte contents of DE, HL exchanged
 ; Destroys: all registers
-exchangeFloat:
+exchangeFloatPageOne:
     ld b, 9
-exchangeFloatLoop:
+exchangeFloatPageOneLoop:
     ld a, (de)
     ld c, (hl)
     ld (hl), a
@@ -55,13 +57,13 @@ exchangeFloatLoop:
     ld (de), a
     inc de
     inc hl
-    djnz exchangeFloatLoop
+    djnz exchangeFloatPageOneLoop
     ret
 
 ; Description: Exchange the top 2 floating point numbers on the FPS.
 ; Destroys: all
 ; Preserves: OP1, OP2
-exchangeFPSFPS:
+exchangeFPSFPSPageOne:
     ld hl, (FPS)
     ld de, 9
     or a ; clear CF
@@ -71,10 +73,8 @@ exchangeFPSFPS:
     sbc hl, de ; HL=(FPS) - 18
     ld e, c
     ld d, b
-    jr exchangeFloat
+    jr exchangeFloatPageOne
 
-;-----------------------------------------------------------------------------
-; Floating point registers OP1-OP6.
 ;-----------------------------------------------------------------------------
 
 ; Description: Move 9 bytes (size of TI-OS floating point number) from HL to
@@ -83,7 +83,7 @@ exchangeFPSFPS:
 ; Output: (OP1)=contains float
 ; Destroys: BC, DE, HL
 ; Preserves: A
-move9ToOp1:
+move9ToOp1PageOne:
     ld de, OP1
     ld bc, 9
     ldir
@@ -95,129 +95,50 @@ move9ToOp1:
 ; Output: (OP2)=contains float
 ; Destroys: BC, DE, HL
 ; Preserves: A
-move9ToOp2:
+move9ToOp2PageOne:
     ld de, OP2
     ld bc, 9
     ldir
     ret
 
-; Description: Move 9 bytes (size of TI-OS floating point number) from HL to
-; OP3. Implements bcall(_Mov9ToOP4) without the overhead of a bcall().
-; Input: HL=pointer to float
-; Output: (OP3)=contains float
+; Description: Move OP1 to OP2. This is used so frequently that it's worth
+; inlining it to avoid the overhead of calling bcall(_OP1ToOP2).
 ; Destroys: BC, DE, HL
 ; Preserves: A
-move9ToOp3:
-    ld de, OP3
+op1ToOp2PageOne:
+    ld de, OP2
+    ; [[fallthrough]]
+
+; Description: Move 9 bytes (size of TI-OS floating point number) from OP1 to
+; DE. Implements bcall(_MovFrOP1) without the overhead of a bcall().
+; Input:
+;   - DE=destination pointer to float
+;   - OP1=float
+; Output: (DE)=contains OP1
+; Destroys: BC, DE, HL
+; Preserves: A
+move9FromOp1PageOne:
+    ld hl, OP1
     ld bc, 9
     ldir
     ret
 
-; Description: Move 9 bytes (size of TI-OS floating point number) from HL to
-; OP4. Implements bcall(_Mov9ToOP4) without the overhead of a bcall().
-; Input: HL=pointer to float
-; Output: (OP4)=contains float
+; Description: Move 9 bytes from OP2 to OP1.
 ; Destroys: BC, DE, HL
 ; Preserves: A
-move9ToOp4:
-    ld de, OP4
+op2ToOp1PageOne:
+    ld de, OP1
+    ld hl, OP2
     ld bc, 9
     ldir
     ret
-
-;-----------------------------------------------------------------------------
-
-; Preserves: A
-op1ToOp2:
-    ld hl, OP1
-    jr move9ToOp2
-
-; Preserves: A
-op1ToOp3:
-    ld hl, OP1
-    jr move9ToOp3
-
-; Preserves: A
-op1ToOp4:
-    ld hl, OP1
-    jr move9ToOp4
-
-;-----------------------------------------------------------------------------
-
-; Preserves: A
-op2ToOp1:
-    ld hl, OP2
-    jr move9ToOp1
-
-; Preserves: A
-op2ToOp3:
-    ld hl, OP2
-    jr move9ToOp3
-
-; Preserves: A
-op2ToOp4:
-    ld hl, OP2
-    jr move9ToOp4
-
-;-----------------------------------------------------------------------------
-
-; Preserves: A
-op3ToOp1:
-    ld hl, OP3
-    jr move9ToOp1
-
-; Preserves: A
-op3ToOp2:
-    ld hl, OP3
-    jr move9ToOp2
-
-; Preserves: A
-op3ToOp4:
-    ld hl, OP3
-    jr move9ToOp4
-
-;-----------------------------------------------------------------------------
-
-; Preserves: A
-op4ToOp1:
-    ld hl, OP4
-    jr move9ToOp1
-
-; Preserves: A
-op4ToOp2:
-    ld hl, OP4
-    jr move9ToOp2
-
-; Preserves: A
-op4ToOp3:
-    ld hl, OP4
-    jr move9ToOp3
-
-;-----------------------------------------------------------------------------
 
 ; Description: Exchange OP1 with OP2. Inlined version of bcall(_OP1ExOP2) to
 ; avoid the overhead of bcall().
 ; Output: OP1, OP2 exchanged
 ; Destroys: A, BC, DE, HL
-op1ExOp2:
+op1ExOp2PageOne:
     ld hl, OP1
     ld de, OP2
-    jp exchangeFloat
+    jr exchangeFloatPageOne
 
-;-----------------------------------------------------------------------------
-
-; Input: DE: destination
-; Preserves: A
-move9FromOp1:
-    ld hl, OP1
-    ld bc, 9
-    ldir
-    ret
-
-; Input: DE: destination
-; Preserves: A
-move9FromOp2:
-    ld hl, OP2
-    ld bc, 9
-    ldir
-    ret
