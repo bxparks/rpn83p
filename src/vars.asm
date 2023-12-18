@@ -386,15 +386,17 @@ initStack:
     ld b, stackSize
     jp initRpnObjectList
 
-; Description: Initialize LastX with the contents of 'ANS' variable from TI-OS.
-; If the ANS is not Real, do nothing.
+; Description: Initialize LastX with the contents of 'ANS' variable from TI-OS
+; if ANS is real or complex. Otherwise, do nothing.
 ; Input: ANS
 ; Output: LastX=ANS
 initLastX:
     bcall(_RclAns)
     bcall(_CkOP1Real) ; if OP1 real: ZF=1
-    ret nz
-    jp stoL
+    jp z, stoL
+    bcall(_CkOP1Cplx) ; if OP complex: ZF=1
+    jp z, stoL
+    ret
 
 ; Description: Clear the RPN stack.
 ; Input: none

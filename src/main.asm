@@ -50,7 +50,7 @@ initAlways:
 mainExit:
     ; Save appState and close the stack and storage registers.
     call rclX
-    bcall(_StoAns) ; transfer RPN83P 'X' to TI-OS 'ANS'
+    bcall(_StoAns) ; transfer to TI-OS 'ANS' (supports complex numbers)
     bcall(_StoreAppState)
     call closeStack
     call closeRegs
