@@ -128,6 +128,7 @@ convertCp3ToOp3Op4:
 ; Arithmetic operations.
 ;-----------------------------------------------------------------------------
 
+; Description: Addition for real and complex numbers.
 ; Input:
 ;   - OP1/OP2: Y
 ;   - OP3/OP4: X
@@ -136,7 +137,7 @@ convertCp3ToOp3Op4:
 universalAdd:
     call checkOp1OrOP3Complex
     jr z, universalAddComplex
-    ; Add 2 real numbers.
+    ; X and Y are real numbers.
     call op3ToOp2
     bcall(_FPAdd) ; OP1=Y+X
     ret
@@ -148,6 +149,7 @@ universalAddComplex:
     bcall(_CAdd) ; OP1/OP2 += FPS[OP1/OP2]; FPS=[]
     ret
 
+; Description: Subtractions for real and complex numbers.
 ; Input:
 ;   - OP1/OP2: Y
 ;   - OP3/OP4: X
@@ -156,7 +158,7 @@ universalAddComplex:
 universalSub:
     call checkOp1OrOP3Complex
     jr z, universalSubComplex
-    ; Sub 2 real numbers.
+    ; X and Y are real numbers.
     call op3ToOp2
     bcall(_FPSub) ; OP1=Y-X
     ret
@@ -168,6 +170,7 @@ universalSubComplex:
     bcall(_CSub) ; OP1/OP2 = FPS[OP1/OP2] - OP1/OP2; FPS=[]
     ret
 
+; Description: Multiplication for real and complex numbers.
 ; Input:
 ;   - OP1/OP2: Y
 ;   - OP3/OP4: X
@@ -176,7 +179,7 @@ universalSubComplex:
 universalMult:
     call checkOp1OrOP3Complex
     jr z, universalMultComplex
-    ; Sub 2 real numbers.
+    ; X and Y are real numbers.
     call op3ToOp2
     bcall(_FPMult) ; OP1=Y*X
     ret
@@ -190,6 +193,7 @@ universalMultComplex:
     bcall(_CMult) ; OP1/OP2 = FPS[OP1/OP2] * OP1/OP2; FPS=[]
     ret
 
+; Description: Division for real and complex numbers.
 ; Input:
 ;   - OP1/OP2: Y
 ;   - OP3/OP4: X
@@ -198,7 +202,7 @@ universalMultComplex:
 universalDiv:
     call checkOp1OrOP3Complex
     jr z, universalDivComplex
-    ; Sub 2 real numbers.
+    ; X and Y are real numbers.
     call op3ToOp2
     bcall(_FPDiv) ; OP1=Y/X
     ret
@@ -214,6 +218,7 @@ universalDivComplex:
 
 ;-----------------------------------------------------------------------------
 
+; Description: Change sign for real and complex numbers.
 ; Input:
 ;   - OP1/OP2: Y
 ; Output:
@@ -221,9 +226,79 @@ universalDivComplex:
 universalChs:
     call checkOp1Complex
     jr z, universalChsComplex
-    ; CHS a real number
+    ; X is a real number
     bcall(_InvOP1S)
     ret
 universalChsComplex:
     bcall(_InvOP1SC)
+    ret
+
+;-----------------------------------------------------------------------------
+; Alegbraic functions.
+;-----------------------------------------------------------------------------
+
+; Description: Exponentiation (Y^X) for real and complex numbers.
+; Input:
+;   - OP1/OP2: Y
+;   - OP3/OP4: X
+; Output:
+;   - OP1/OP2: Y^X
+universalExpon:
+    call checkOp1OrOP3Complex
+    jr z, universalExponComplex
+    ; X and Y are real numbers.
+    call op3ToOp2
+    bcall(_YToX) ; OP1=Y/X
+    ret
+universalExponComplex:
+    call convertOp1ToCp1
+    bcall(_PushOP1) ; FPS=[Y]
+    call cp3ToCp1 ; OP1/OP2=OP3/OP4=X
+    call convertOp1ToCp1
+    bcall(_CYtoX) ; OP1/OP2=(Y)^(X); FPS=[]
+    ret
+
+; Description: Reciprocal for real and complex numbers.
+; Input:
+;   - OP1/OP2: X
+; Output:
+;   - OP1/OP2: 1/X
+universalRecip:
+    call checkOp1Complex
+    jr z, universalRecipComplex
+    ; X is a real number
+    bcall(_FPRecip)
+    ret
+universalRecipComplex:
+    bcall(_CRecip)
+    ret
+
+; Description: Square for real and complex numbers.
+; Input:
+;   - OP1/OP2: X
+; Output:
+;   - OP1/OP2: X^2
+universalSquare:
+    call checkOp1Complex
+    jr z, universalSquareComplex
+    ; X is a real number
+    bcall(_FPSquare)
+    ret
+universalSquareComplex:
+    bcall(_CSquare)
+    ret
+
+; Description: Square root for real and complex numbers.
+; Input:
+;   - OP1/OP2: X
+; Output:
+;   - OP1/OP2: sqrt(X)
+universalSqRoot:
+    call checkOp1Complex
+    jr z, universalSqRootComplex
+    ; X is a real number
+    bcall(_SqRoot)
+    ret
+universalSqRootComplex:
+    bcall(_CSqRoot)
     ret

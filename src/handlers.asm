@@ -720,26 +720,26 @@ handleKeyEuler:
 
 ; Description: y^x
 handleKeyExpon:
-    call closeInputAndRecallXY ; OP1=Y; OP2=X
-    bcall(_YToX)
+    call closeInputAndRecallComplexXY ; OP1/OP2=Y; OP3/OP4=X
+    call universalExpon
     jp replaceXY
 
 ; Description: 1/x
 handleKeyInv:
     call closeInputAndRecallX
-    bcall(_FPRecip)
+    call universalRecip
     jp replaceX
 
 ; Description: x^2
 handleKeySquare:
     call closeInputAndRecallX
-    bcall(_FPSquare)
+    call universalSquare
     jp replaceX
 
 ; Description: sqrt(x)
 handleKeySqrt:
     call closeInputAndRecallX
-    bcall(_SqRoot)
+    call universalSqRoot
     jp replaceX
 
 ;-----------------------------------------------------------------------------
