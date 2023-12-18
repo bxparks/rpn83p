@@ -659,28 +659,31 @@ navigational keys are recognized by the Help system:
 ## Error Codes
 
 The RPN83P supports all error messages from the underlying TI-OS which are
-documented in the TI-83 SDK:
+listed in the TI-83 SDK. The SDK unfortunately does not describe how these
+errors are actually triggered. By trial-and-error, I could reverse engineer only
+a few of them as described below:
 
-- `Err: Argument`
+- `Err: Argument`: incorrect number of arguments
 - `Err: Bad Guess`
 - `Err: Break`
-- `Err: Domain` (`*`)
-- `Err: Data Type`
-- `Err: Invalid Dim` (`*`)
+- `Err: Domain`: invalid argument or argument outside range
+- `Err: Data Type`: invalid argument type (e.g. complex number)
+- `Err: Invalid Dim`: list index larger than list size
 - `Err: Dim Mismatch`
-- `Err: Divide By 0` (`*`)
+- `Err: Divide By 0`: divide by 0
 - `Err: Increment`
 - `Err: Invalid`
 - `Err: Iterations`
 - `Err: In Xmit`
 - `Err: Memory`
-- `Err: Non Real`
-- `Err: Overflow` (`*`)
+- `Err: Non Real` (I could never reproduce this, the TI-OS seems to use `Err:
+  Domain` or `Err: Data Type` instead)
+- `Err: Overflow`: result exceeds `9.99999999E99`
 - `Err: No Sign Change`
 - `Err: Singularity`
 - `Err: Stat`
 - `Err: StatPlot`
-- `Err: Syntax`
+- `Err: Syntax`: incorrect math expression syntax
 - `Err: Tol Not Met`
 - `Err: Undefined`
 
@@ -689,12 +692,9 @@ shows this:
 
 ![Err: Division By 0](docs/rpn83p-errorcode-division-by-0.png)
 
-The TI SDK documentation does not explain the source of most of these error
-codes, and I can reproduce only a small number of errors in the RPN83P app,
-marked by (`*`) above.
-
-If an unknown error code is detected the RPN83P will print `Err: UNKNOWN (##)`
-message like this:
+If a TI-OS function returns an internal error code outside of the ones
+documented in the SDK, RPN83P will print an error message in the form of `Err:
+UNKNOWN (##)` like this:
 
 ![Err: UNKNOWN](docs/rpn83p-errorcode-unknown.png)
 
@@ -710,16 +710,16 @@ app, accessed through buttons or through the menu system.
 
 ### Direct Functions
 
-Most of the mathematical functions that are exposed through physical buttons
-are supported by the RPN83P app.
+All mathematical functions that are exposed through physical buttons are
+supported by the RPN83P app.
 
 - arithmetic
     - `/`, `*`, `-`, `+`
+- algebraic
+    - `X^-1`, `X^2`, `sqrt`, `^` (i.e. `Y^X`)
 - trigonometric
     - `SIN`, `COS`, `TAN`
     - `2ND` `SIN^-1`, `2ND` `COS^-1`, `2ND` `TAN^-1`
-- algebraic
-    - `X^-1`, `X^2`, `sqrt`, `^` (i.e. `Y^X`)
 - transcendental
     - `LOG`, `10^X`, `LN`, `e^X`
 - constants
