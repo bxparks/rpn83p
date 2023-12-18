@@ -957,7 +957,7 @@ handleKeyVarx:
     cp a, rpnObjectTypeComplex
     jr nz, handleKeyVarxRealToComplex
     ; Convert complex into 2 reals
-    call convertCp1ToOp1Op2 ; OP1=Re(X), OP2=Im(X)
+    call splitCp1ToOp1Op2 ; OP1=Re(X), OP2=Im(X)
     jp replaceXWithOP1OP2 ; replace X with OP1,OP2
 handleKeyVarxRealToComplex:
     bcall(_PushRealO1) ; FPS=[Im]
@@ -969,5 +969,5 @@ handleKeyVarxRealToComplex:
     bcall(_ErrArgument)
 handleKeyVarxRealToComplexOk:
     bcall(_PopRealO2) ; FPS=[]; OP2=X=Im; OP1=Y=Re
-    call convertOp1Op2ToCp1 ; OP1=complex(Re,Im)
+    call mergeOp1Op2ToCp1 ; OP1=complex(Re,Im)
     jp replaceXY

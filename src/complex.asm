@@ -68,7 +68,7 @@ convertOp1ToCp1:
 
 ; Description: Convert real numbers in OP1 and OP2 into a complex number.
 ; Destroys: A
-convertOp1Op2ToCp1: ; TODO: rename mergeOp1Op2ToCp1()
+mergeOp1Op2ToCp1:
     ld a, (OP1)
     or rpnObjectTypeComplex
     ld (OP1), a
@@ -79,7 +79,7 @@ convertOp1Op2ToCp1: ; TODO: rename mergeOp1Op2ToCp1()
 
 ; Description: Convert the complex number in OP1 and OP2 into 2 real numbers.
 ; Destroys: A
-convertCp1ToOp1Op2: ; TODO: rename splitCp1ToOp1Op2()
+splitCp1ToOp1Op2:
     ld a, (OP1)
     and ~rpnObjectTypeComplex
     ld (OP1), a
@@ -104,7 +104,7 @@ convertOp3ToCp3:
 
 ; Description: Convert real numbers in OP3 and OP4 into a complex number in OP3.
 ; Destroys: A
-convertOp3Op4ToCp3: ; TODO: rename mergeOp3Op4ToCp3()
+mergeOp3Op4ToCp3:
     ld a, (OP3)
     or rpnObjectTypeComplex
     ld (OP3), a
@@ -115,7 +115,7 @@ convertOp3Op4ToCp3: ; TODO: rename mergeOp3Op4ToCp3()
 
 ; Description: Convert the complex number in OP3 and OP4 into 2 real numbers.
 ; Destroys: A
-convertCp3ToOp3Op4: ; TODO: rename splitCp3ToOp3Op4()
+splitCp3ToOp3Op4:
     ld a, (OP3)
     and ~rpnObjectTypeComplex
     ld (OP3), a
@@ -141,14 +141,14 @@ complexConj:
 complexReal:
     call checkOp1Complex
     ret nz ; do nothing if not complex
-    jp convertCp1ToOp1Op2 ; OP1=Re(X); OP2=Im(X)
+    jp splitCp1ToOp1Op2 ; OP1=Re(X); OP2=Im(X)
 
 ; Description: Extract the imaginary part of complex(OP1/OP2).
 ; Output: OP1=Im(OP1/OP2)
 complexImag:
     call checkOp1Complex
     ret nz ; do nothing if not complex
-    call convertCp1ToOp1Op2 ; OP1=Re(X); OP2=Im(X)
+    call splitCp1ToOp1Op2 ; OP1=Re(X); OP2=Im(X)
     jp op2ToOp1 ; OP1=Im(X)
 
 complexAbs:
@@ -165,7 +165,7 @@ complexAngle:
     call checkOp1Complex
     jr z, complexAngleComplex
     call op2Set0 ; Im(X)=0
-    call convertOp1Op2ToCp1 ; OP1/OP2=complex(OP1,OP2)
+    call mergeOp1Op2ToCp1 ; OP1/OP2=complex(OP1,OP2)
     ; [[fallthrough]]
 complexAngleComplex:
     bcall(_Angle) ; OP1=CAngle(OP1/OP2)

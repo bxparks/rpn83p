@@ -908,7 +908,7 @@ printOP1:
 ; (which is the same as a single real number in large font, then add the
 ; imaginary-i character, and still fit inside the 96 pixel limit.
 printOP1Complex:
-    call convertCp1ToOp1Op2
+    call splitCp1ToOp1Op2
     bcall(_EraseEOL) ; erase remnants of large font before printing small font
     res fracDrawLFont, (iy + fontFlags) ; use small font
     ; Print Re(X)
