@@ -863,8 +863,11 @@ displayShow:
     ld hl, showCurCol*$100 + showCurRow ; $(curCol)(curRow)
     ld (CurRow), hl
     call rclX
+    ; fmtString is a buffer of 65 bytes used by FormDCplx(). There should be no
+    ; problems using it as our string buffer.
+    ld de, fmtString
     call formShowable
-    ld hl, OP3
+    ld hl, fmtString
     call putS
     ret
 

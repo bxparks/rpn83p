@@ -14,15 +14,44 @@
 ; Description: Convert the number in OP1 to a NUL terminated string that shows
 ; all significant digits, suitable for a SHOW function.
 ; Input:
-;   - OP1: floating point number
+;   - OP1/OP2: floating point number
 ;   - DE: pointer to output string buffer
 ; Output:
 ;   - (DE): string buffer updated and NUL terminated
 ;   - DE: points to the next character
 ; Destroys: all, OP1-OP6
 formShowable:
-    ld de, OP3
+    ; BASE mode should not have a complex number, but let's check to avoid
+    ; overflowing our destination buffer with 2 x 32-digit numbers.
+    bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
+    jr nz, formShowableReal
+    call checkOp1Complex
+    jr z, formShowableComplex
+formShowableReal:
     call convertOP1
+    jr formShowableEnd
+formShowableComplex:
+    call splitCp1ToOp1Op2 ; OP1=Re(X); OP2=Im(X)
+    push de
+    bcall(_PushRealO2) ; FPS=[Im(X)]
+    pop de
+    call convertOP1 ; DE updated
+    ; Add " i "
+    ld a, ' '
+    ld (de), a
+    inc de
+    ld a, LimagI
+    ld (de), a
+    inc de
+    ld a, ' '
+    ld (de), a
+    inc de
+    ; Format the imaginary
+    push de
+    bcall(_PopRealO1) ; FPS=[]; OP1=Im(X)
+    pop de
+    call convertOP1 ; DE updated
+formShowableEnd:
     xor a
     ld (de), a ; terminate with NUL
     inc de
