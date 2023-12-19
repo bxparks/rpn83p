@@ -994,7 +994,7 @@ printOP1BaseNegative:
 ; Destroys: all, OP1, OP2, OP3, OP4
 printOP1Base10:
     ld hl, OP3
-    call convertOP1ToU32StatusCode
+    call convertOP1ToU32StatusCode ; HL=U32; C=statusCode
     call checkU32FitsWsize ; C=u32StatusCode
     bit u32StatusCodeTooBig, c
     jr nz, printOP1BaseInvalid

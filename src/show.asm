@@ -11,8 +11,105 @@
 ; Page 1, but it needs too many routines from base.asm.
 ;------------------------------------------------------------------------------
 
-; Description: Convert the number in OP1 to a NUL terminated string that shows
+; Description: Format the number in OP1 to a NUL terminated string that shows
 ; all significant digits, suitable for a SHOW function.
+; Input:
+;   - OP1/OP2: real, complex, or integer number
+;   - DE: pointer to output string buffer
+; Output:
+;   - (DE): string buffer updated and NUL terminated
+;   - DE: points to the character after the NUL
+; Destroys: all, OP1-OP6
+formShowable:
+    bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
+    jr nz, formShowableBase
+    call checkOp1Complex ; if complex: ZF=1
+    jr z, formShowableComplex
+formShowableReal:
+    call formRealString
+    jr formShowableEnd
+formShowableBase:
+    call formBaseString
+    jr formShowableEnd
+formShowableComplex:
+    call formComplexString
+formShowableEnd:
+    xor a
+    ld (de), a ; terminate with NUL
+    inc de
+    ret
+
+;------------------------------------------------------------------------------
+
+; Description: Format the number in OP1 in BASE mode. Currently, only BIN mode
+; has special formatting. The others (DEC, HEX, OCT) format the integer as a
+; decimal integer, which is consistent with the HP-42S. The longest string
+; produced by this routine is 32 characters when the BASE mode is BIN and WSIZ
+; is 32.
+;
+; Input:
+;   - OP1: an integer represented as a floating point number
+;   - DE: bufPointer
+; Output:
+;   - (DE): contains the integer rendered as an integer string
+;   - DE: updated
+; Destroys: A, B, C, DE, HL, OP2-OP6
+formBaseString:
+    ; Check for complex number, and use Complex formatting.
+    call checkOp1Complex
+    jr z, formComplexString
+    ; Check for negative number, and use Real formatting.
+    push de
+    bcall(_CkOP1Pos) ; if OP1>=0: ZF=1
+    pop de
+    jr nz, formRealString
+    ; Check for DEC, HEX, OCT and use Real formatting.
+    ld a, (baseNumber)
+    cp 10
+    jr z, formRealString
+    cp 16
+    jr z, formRealString
+    cp 8
+    jr z, formRealString
+    ; [[fallthrough]]
+
+formBinString:
+    push de ; stack=[bufPointer]
+    ; Check if OP1 fits in the current baseWordSize.
+    ld hl, OP3
+    call convertOP1ToU32StatusCode ; HL=OP3=u32(OP1); C=u32StatusCode
+    call checkU32FitsWsize ; C=u32StatusCode
+    ; Check for too big.
+    bit u32StatusCodeTooBig, c
+    pop de ; stack=[]; DE=bufPointer
+    jr nz, formRealString
+    ; Check for negative. This shouldn't happen because it should have been
+    ; caught earlier, so I guess this is just defensive programming against
+    ; future refatoring.
+    bit u32StatusCodeNegative, c
+    jr nz, formRealString
+    ; We are here if OP1 is a positive integer < 2^WSIZ.
+    push de ; stack=[bufPointer]
+    ; Move u32(OP3) to OP1, to free up OP3.
+    call move9ToOp1
+    ; Convert to a 32-digit binary string at OP4.
+    ld hl, OP1
+    ld de, OP4
+    call convertU32ToBinString ; DE points to a 32-character string + NUL.
+    ; Find the beginning of the binary string, depending on baseWordSize.
+    ld a, 32
+    ld hl, baseWordSize
+    sub (hl)
+    ld e, a
+    ld d, 0 ; DE=32-baseWordSize
+    ld hl, OP4
+    add hl, de ; HL=pointer to beginning of binary string
+    pop de ; stack=[]; DE=bufPointer
+    jp reformatBaseTwoString
+
+;------------------------------------------------------------------------------
+
+; Format the complex number in OP1/OP2 into the string buffer pointed by DE.
 ; Input:
 ;   - OP1/OP2: floating point number
 ;   - DE: pointer to output string buffer
@@ -20,22 +117,12 @@
 ;   - (DE): string buffer updated and NUL terminated
 ;   - DE: points to the next character
 ; Destroys: all, OP1-OP6
-formShowable:
-    ; BASE mode should not have a complex number, but let's check to avoid
-    ; overflowing our destination buffer with 2 x 32-digit numbers.
-    bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
-    jr nz, formShowableReal
-    call checkOp1Complex
-    jr z, formShowableComplex
-formShowableReal:
-    call convertOP1
-    jr formShowableEnd
-formShowableComplex:
+formComplexString:
     call splitCp1ToOp1Op2 ; OP1=Re(X); OP2=Im(X)
     push de
     bcall(_PushRealO2) ; FPS=[Im(X)]
     pop de
-    call convertOP1 ; DE updated
+    call formRealString ; DE updated
     ; Add " i "
     ld a, ' '
     ld (de), a
@@ -50,61 +137,57 @@ formShowableComplex:
     push de
     bcall(_PopRealO1) ; FPS=[]; OP1=Im(X)
     pop de
-    call convertOP1 ; DE updated
-formShowableEnd:
-    xor a
-    ld (de), a ; terminate with NUL
-    inc de
-    ret
+    ; [[fallthrough]]
 
-; Convert the value in OP1 into the string buffer pointed by DE. The string is
-; *not* terminated with NUL, allowing additional characters to be rendered into
-; the buffer. Calls various helper routines:
-;   - convertOP1ToFloatString()
-;   - convertOP1ToIntString()
-;   - convertOP1ToBaseString()
+;------------------------------------------------------------------------------
+
+; Format the real floating value in OP1 into the string buffer pointed by DE.
+; The string is *not* terminated with NUL, allowing additional characters to be
+; rendered into the buffer. Calls various helper routines:
+;   - formFloatString()
+;   - formIntString()
 ; Input:
 ;   - OP1: floating point number
 ;   - DE: pointer to output string buffer
 ; Output:
 ;   - DE: string buffer updated, points to the next character
-convertOP1:
+formRealString:
     push de
-    bcall(_CkOp1FP0)
+    bcall(_CkOp1FP0) ; if OP1==0: ZF=1
     pop de
-    jr nz, convertOP1ToShowStringNonZero
+    jr nz, formRealStringNonZero
     ; Generate just a "0" if zero.
     ld a, '0'
     ld (de), a
     inc de
     ret
-convertOP1ToShowStringNonZero:
+formRealStringNonZero:
     push de ; stack=[bufPointer]
     bcall(_PushRealO1) ; FPS=[OP1]
     bcall(_ClrOP1S) ; clear sign bit of OP1
     call op2Set1E14 ; OP2=1E14
     bcall(_CpOP1OP2) ; if OP1 >= OP2: CF=0
-    jr nc, convertOP1ToShowStringFloat
+    jr nc, formRealStringFloat
     ; Check for integer
     bcall(_CkPosInt) ; if OP1 int >= 0: ZF=1
-    jr z, convertOP1ToShowStringInt
-convertOP1ToShowStringFloat:
+    jr z, formRealStringInt
+formRealStringFloat:
     bcall(_PopRealO1) ; FPS=[]
     pop de ; stack=[]; DE=bufPointer
-    jr convertOP1ToSciString
-convertOP1ToShowStringInt:
+    jr formSciString
+formRealStringInt:
     bcall(_PopRealO1) ; FPS=[]
-    bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
     pop de ; stack=[]; DE=bufPointer
-    jp z, convertOP1ToIntString
-    jp convertOP1ToBaseString
+    jr formIntString
 
 ;------------------------------------------------------------------------------
 
-; Description: Convert the floating point number in OP1 to a string using
-; scientific notation. Prints all 14-digits in the mantissa. The longest string
-; produced by this routine is: 14 significant digits, decimal point, mantissa
-; minus sign, 'E', exponent minus sign, 2 exponent digits = 20 characters.
+; Description: Format the floating point number in OP1 to a string using
+; scientific notation. Prints all 14 digits in the mantissa, excluding trailing
+; zeros which are not relevant. The longest string produced by this routine is:
+; 14 significant digits, decimal point, mantissa minus sign, 'E', exponent
+; minus sign, 2 exponent digits = 20 characters. (I am not actually sure what
+; this routine produces if OP1==0.0).
 ;
 ; Input:
 ;   - OP1: floating point number
@@ -113,17 +196,17 @@ convertOP1ToShowStringInt:
 ;   - (DE): floating point rendered in scientific notation, no NUL terminator
 ;   - DE: updated
 ; Destroys: A, B, C, DE, HL
-convertOP1ToSciString:
+formSciString:
     ld hl, OP1
     ld b, 14 ; 14 digit mantissa in BCD format
     ld a, (hl)
     inc hl
     rla ; CF=bit7 of floating point object type T
-    jr nc, convertOP1ToSciStringDigits
+    jr nc, formSciStringDigits
     ld a, '-'
     ld (de), a
     inc de
-convertOP1ToSciStringDigits:
+formSciStringDigits:
     ; Save the exponent
     ld a, (hl) ; A=EXP
     inc hl
@@ -147,8 +230,8 @@ convertOP1ToSciStringDigits:
     inc de
     ld a, '.'
     ; Continue with the second digits and onwards
-    jr convertOP1ToSciStringLoopAltEntry
-convertOP1ToSciStringLoop:
+    jr formSciStringLoopAltEntry
+formSciStringLoop:
     ld a, (hl)
     inc hl
     ld c, a ; C=BCD digit saved
@@ -157,34 +240,34 @@ convertOP1ToSciStringLoop:
     srl a
     srl a
     srl a
-    jr z, convertOP1ToSciStringMaintainLastDE1
+    jr z, formSciStringMaintainLastDE1
     ; non-zero digit, so update the last known non-zero DE on the stack
     ex (sp), hl
     ld h, d
     ld l, e
     ex (sp), hl ; stack=[EXP, new lastNonZeroDE]; HL preserved
-convertOP1ToSciStringMaintainLastDE1:
+formSciStringMaintainLastDE1:
     call convertAToChar
-convertOP1ToSciStringLoopAltEntry:
+formSciStringLoopAltEntry:
     ld (de), a
     inc de
     dec b
-    jr z, convertOP1ToSciStringExp
+    jr z, formSciStringExp
     ; print the second digit
     ld a, c ; A=BCD digit
     and $0F
-    jr z, convertOP1ToSciStringMaintainLastDE2
+    jr z, formSciStringMaintainLastDE2
     ; non-zero digit, so update the last known non-zero DE on the stack
     ex (sp), hl
     ld h, d
     ld l, e
     ex (sp), hl ; stack=[EXP, lastNonZeroDE]
-convertOP1ToSciStringMaintainLastDE2:
+formSciStringMaintainLastDE2:
     call convertAToChar
     ld (de), a
     inc de
-    djnz convertOP1ToSciStringLoop
-convertOP1ToSciStringExp:
+    djnz formSciStringLoop
+formSciStringExp:
     pop de ; stack=[EXP]; DE=lastNonZeroDE
     inc de ; move past the last non-zero trailing digit
     ; print the Exponent in scientific notation
@@ -193,7 +276,7 @@ convertOP1ToSciStringExp:
     inc de
     pop af ; stack=[]; A=EXP
     sub 128 ; A=exp=EXP-128
-    jr nc, convertOP1ToSciStringPosExp
+    jr nc, formSciStringPosExp
     ; Exponent is negative, so print a '-', then print (-EXP)
     ld c, a
     ld a, '-'
@@ -201,7 +284,7 @@ convertOP1ToSciStringExp:
     inc de
     ld a, c
     neg ; A=-EXP
-convertOP1ToSciStringPosExp:
+formSciStringPosExp:
     ex de, hl
     call convertAToDec ; HL string updated, no NUL termination
     ex de, hl
@@ -209,7 +292,7 @@ convertOP1ToSciStringPosExp:
 
 ;------------------------------------------------------------------------------
 
-; Description: Convert the integer in OP1 to an integer string. The longest
+; Description: Format the integer in OP1 to an integer string. The longest
 ; string produced by this routine is 14 characters.
 ;
 ; This routine assumes that:
@@ -224,21 +307,21 @@ convertOP1ToSciStringPosExp:
 ;   - (DE): floating point rendered in scientific notation, no NUL terminator
 ;   - DE: updated
 ; Destroys: A, B, C, DE, HL
-convertOP1ToIntString:
+formIntString:
     ld hl, OP1
-    ld a, (hl)
+    ld a, (hl) ; A=signByte
     inc hl
     rla ; CF=bit7 of floating point object type T
-    jr nc, convertOP1ToIntStringDigits
+    jr nc, formIntStringDigits
     ld a, '-'
     ld (de), a
     inc de
-convertOP1ToIntStringDigits:
+formIntStringDigits:
     ld a, (hl) ; A=EXP
     inc hl
     sub a, 127
     ld b, a ; B=EXP-127=number of integer digits to print
-convertOP1ToIntStringLoop:
+formIntStringLoop:
     ld a, (hl)
     inc hl
     ld c, a ; C=BCD digit saved
@@ -258,74 +341,13 @@ convertOP1ToIntStringLoop:
     call convertAToChar
     ld (de), a
     inc de
-    djnz convertOP1ToIntStringLoop
+    djnz formIntStringLoop
     ret
 
 ;------------------------------------------------------------------------------
 
-; Description: Convert the integer in OP1 to a BASE string (currently, only BIN
-; is supported). The longest string produced by this routine is 32 characters.
-;
-; This routine assumes that:
-; - OP1 is not zero (but negative is allowed)
-; - OP1 is an integer < 10^14
-; No validation of the EXP parameter is performed.
-;
-; Input:
-;   - OP1: an integer represented as a floating point number
-;   - DE: bufPointer
-; Output:
-;   - (DE): contains the integer rendered as an integer string
-;   - DE: updated
-; Destroys: A, B, C, DE, HL, OP2-OP6
-convertOP1ToBaseString:
-    ; Support only positive integers in BIN mode.
-    push de
-    bcall(_CkOP1Pos) ; if OP1>=0: ZF=1
-    pop de
-    jr nz, convertOP1ToIntString
-    ld a, (baseNumber)
-    cp 10
-    jr z, convertOP1ToIntString
-    cp 16
-    jr z, convertOP1ToIntString
-    cp 8
-    jr z, convertOP1ToIntString
-    ; [[fallthrough]]
-convertOP1ToBinString:
-    push de ; stack=[bufPointer]
-    ; Check if OP1 fits in the current baseWordSize.
-    ld hl, OP3
-    call convertOP1ToU32StatusCode ; OP3=u32(OP1); C=u32StatusCode
-    call checkU32FitsWsize ; C=u32StatusCode
-    bit u32StatusCodeTooBig, c
-    pop de ; stack=[]; DE=bufPointer
-    jr nz, convertOP1ToIntString
-    bit u32StatusCodeNegative, c
-    jr nz, convertOP1ToIntString
-    ;
-    push de ; stack=[bufPointer]
-    ; Move u32 to OP1, to free up OP3.
-    ld de, OP1
-    ld bc, 4
-    ldir
-    ; Convert to a 32-digit binary string at OP4.
-    ld hl, OP1
-    ld de, OP4
-    call convertU32ToBinString
-    ; Find the beginning of the binary string, depending on baseWordSize.
-    ld a, 32
-    ld hl, baseWordSize
-    sub (hl)
-    ld e, a
-    ld d, 0 ; DE=32-baseWordSize
-    ld hl, OP4
-    add hl, de ; HL=pointer to beginning of binary string
-    pop de ; stack=[]; DE=bufPointer
-    ; [[fallthrough]]
-
-; Description: Format the base-2 string in groups of 4, 2 groups per line. The
-; source string is probably at OP4. The destination string is probably OP3,
+; Description: Reformat the base-2 string in groups of 4, 2 groups per line.
+; The source string is probably at OP4. The destination string is probably OP3,
 ; which is 11 bytes before OP4. The original string is a maximum of 32
 ; characters long. The formatted string adds 2 characters per line, for a
 ; maximum of 8 characters, which is less than the 11 bytes that OP3 is before
@@ -342,11 +364,11 @@ convertOP1ToBinString:
 ;   - (DE): base-2 string formatted in lines of 8 digits, in 2 groups of 4
 ;   digits
 ;   - DE updated
-formatBaseTwoString:
+reformatBaseTwoString:
     call getWordSizeIndex
     inc a ; A=baseWordSize/8=number of bytes
     ld b, a
-formatBaseTwoStringLoop:
+reformatBaseTwoStringLoop:
     push bc
     ld bc, 4
     ldir
@@ -361,5 +383,5 @@ formatBaseTwoStringLoop:
     inc de
     ;
     pop bc
-    djnz formatBaseTwoStringLoop
+    djnz reformatBaseTwoStringLoop
     ret
