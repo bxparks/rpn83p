@@ -857,7 +857,7 @@ displayShow:
     ld hl, errorPenRow*$100 ; $(penRow)(penCol)
     ld (PenCol), hl
     ld hl, msgShowLabel
-    call vputS
+    call vPutSmallS
     call vEraseEOL
     ; Call special FormShowable() function to show all digits of OP1.
     ld hl, showCurCol*$100 + showCurRow ; $(curCol)(curRow)
@@ -1238,10 +1238,10 @@ formatBinDigitsEnd:
 
 ;-----------------------------------------------------------------------------
 
-; Description: Convert A to a NUL-terminated C-string of 1 to 3 digits at the
-; string buffer pointed by HL.
+; Description: Convert A to a string of 1 to 3 digits and append at the
+; string buffer pointed by HL. No NUL termination.
 ; Input: HL: pointer to string buffer
-; Output: HL: pointer to NUL terminator at end of string
+; Output: HL: pointer to one character past the end of string
 ; Destroys: A, B, C, HL
 convertAToDec:
     ; Divide by 100
@@ -1268,8 +1268,6 @@ convertAToDec1:
     call convertAToChar
     ld (hl), a
     inc hl
-    ; Terminate with NUL
-    ld (hl), 0
     ret
 
 ; Description: Return A / B using repeated substraction.

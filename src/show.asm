@@ -11,22 +11,46 @@
 ; Page 1, but it needs too many routines from base.asm.
 ;------------------------------------------------------------------------------
 
-; Description: Convert the number in OP1 with all available digits, suitable
-; for a SHOW function.
-; Input: OP1: floating point number
-; Output: OP3: string rendering of OP1 as a C-string
+; Description: Convert the number in OP1 to a NUL terminated string that shows
+; all significant digits, suitable for a SHOW function.
+; Input:
+;   - OP1: floating point number
+;   - DE: pointer to output string buffer
+; Output:
+;   - (DE): string buffer updated and NUL terminated
+;   - DE: points to the next character
 ; Destroys: all, OP1-OP6
 formShowable:
-    bcall(_CkOp1FP0)
-    jr nz, convertOP1ToShowStringNonZero
     ld de, OP3
+    call convertOP1
+    xor a
+    ld (de), a ; terminate with NUL
+    inc de
+    ret
+
+; Convert the value in OP1 into the string buffer pointed by DE. The string is
+; *not* terminated with NUL, allowing additional characters to be rendered into
+; the buffer. Calls various helper routines:
+;   - convertOP1ToFloatString()
+;   - convertOP1ToIntString()
+;   - convertOP1ToBaseString()
+; Input:
+;   - OP1: floating point number
+;   - DE: pointer to output string buffer
+; Output:
+;   - DE: string buffer updated, points to the next character
+convertOP1:
+    push de
+    bcall(_CkOp1FP0)
+    pop de
+    jr nz, convertOP1ToShowStringNonZero
+    ; Generate just a "0" if zero.
     ld a, '0'
     ld (de), a
     inc de
-    xor a
-    ld (de), a
     ret
 convertOP1ToShowStringNonZero:
+    push de ; stack=[bufPointer]
     bcall(_PushRealO1) ; FPS=[OP1]
     bcall(_ClrOP1S) ; clear sign bit of OP1
     ld hl, const1E14
@@ -40,10 +64,12 @@ convertOP1ToShowStringNonZero:
     jr z, convertOP1ToShowStringInt
 convertOP1ToShowStringFloat:
     bcall(_PopRealO1) ; FPS=[]
+    pop de ; stack=[]; DE=bufPointer
     jr convertOP1ToSciString
 convertOP1ToShowStringInt:
     bcall(_PopRealO1) ; FPS=[]
     bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
+    pop de ; stack=[]; DE=bufPointer
     jp z, convertOP1ToIntString
     jp convertOP1ToBaseString
 
@@ -53,12 +79,18 @@ const1E14: ; 10^14, EXP=$80+14=$8E
 ;------------------------------------------------------------------------------
 
 ; Description: Convert the floating point number in OP1 to a string using
-; scientific notation. Prints all 14-digits in the mantissa.
-; Input: OP1: floating point number
-; Output: OP3: string of floating point rendered in scientific notation
+; scientific notation. Prints all 14-digits in the mantissa. The longest string
+; produced by this routine is: 14 significant digits, decimal point, mantissa
+; minus sign, 'E', exponent minus sign, 2 exponent digits = 20 characters.
+;
+; Input:
+;   - OP1: floating point number
+;   - DE: bufPointer
+; Output:
+;   - (DE): floating point rendered in scientific notation, no NUL terminator
+;   - DE: updated
 ; Destroys: A, B, C, DE, HL
 convertOP1ToSciString:
-    ld de, OP3
     ld hl, OP1
     ld b, 14 ; 14 digit mantissa in BCD format
     ld a, (hl)
@@ -70,7 +102,7 @@ convertOP1ToSciString:
     inc de
 convertOP1ToSciStringDigits:
     ; Save the exponent
-    ld a, (hl)
+    ld a, (hl) ; A=EXP
     inc hl
     push af ; stack=[EXP]
     ; Always print the very first digit of mantissa.
@@ -103,11 +135,11 @@ convertOP1ToSciStringLoop:
     srl a
     srl a
     jr z, convertOP1ToSciStringMaintainLastDE1
-    ; non-zero digit, so increment the last known non-zero DE
+    ; non-zero digit, so update the last known non-zero DE on the stack
     ex (sp), hl
     ld h, d
     ld l, e
-    ex (sp), hl ; stack=[EXP, lastNonZeroDE]
+    ex (sp), hl ; stack=[EXP, new lastNonZeroDE]; HL preserved
 convertOP1ToSciStringMaintainLastDE1:
     call convertAToChar
 convertOP1ToSciStringLoopAltEntry:
@@ -119,7 +151,7 @@ convertOP1ToSciStringLoopAltEntry:
     ld a, c ; A=BCD digit
     and $0F
     jr z, convertOP1ToSciStringMaintainLastDE2
-    ; non-zero digit, so increment the last known non-zero DE
+    ; non-zero digit, so update the last known non-zero DE on the stack
     ex (sp), hl
     ld h, d
     ld l, e
@@ -139,30 +171,37 @@ convertOP1ToSciStringExp:
     pop af ; stack=[]; A=EXP
     sub 128 ; A=exp=EXP-128
     jr nc, convertOP1ToSciStringPosExp
+    ; Exponent is negative, so print a '-', then print (-EXP)
     ld c, a
     ld a, '-'
     ld (de), a
     inc de
     ld a, c
-    neg
+    neg ; A=-EXP
 convertOP1ToSciStringPosExp:
     ex de, hl
-    call convertAToDec ; HL string is NUL terminated
+    call convertAToDec ; HL string updated, no NUL termination
     ex de, hl
     ret
 
 ;------------------------------------------------------------------------------
 
-; Description: Convert the integer in OP1 to an integer string.
+; Description: Convert the integer in OP1 to an integer string. The longest
+; string produced by this routine is 14 characters.
+;
 ; This routine assumes that:
 ; - OP1 is not zero (but can be negative)
 ; - abs(OP1) is an integer < 10^14 (i.e. 14 digits or less)
 ; No validation of the EXP parameter is performed.
-; Input: OP1: an integer represented as a floating point number
-; Output: OP3: integer string
+;
+; Input:
+;   - OP1: an integer represented as a floating point number
+;   - DE: bufPointer
+; Output:
+;   - (DE): floating point rendered in scientific notation, no NUL terminator
+;   - DE: updated
 ; Destroys: A, B, C, DE, HL
 convertOP1ToIntString:
-    ld de, OP3
     ld hl, OP1
     ld a, (hl)
     inc hl
@@ -189,7 +228,7 @@ convertOP1ToIntStringLoop:
     ld (de), a
     inc de
     dec b
-    jr z, convertOP1ToIntStringEnd
+    ret z
     ; print the second digit
     ld a, c ; A=BCD digit
     and $0F
@@ -197,26 +236,30 @@ convertOP1ToIntStringLoop:
     ld (de), a
     inc de
     djnz convertOP1ToIntStringLoop
-convertOP1ToIntStringEnd:
-    ; Terminate C-string with NUL
-    xor a
-    ld (de), a
     ret
 
 ;------------------------------------------------------------------------------
 
 ; Description: Convert the integer in OP1 to a BASE string (currently, only BIN
-; is supported).
+; is supported). The longest string produced by this routine is 32 characters.
+;
 ; This routine assumes that:
 ; - OP1 is not zero (but negative is allowed)
 ; - OP1 is an integer < 10^14
 ; No validation of the EXP parameter is performed.
-; Input: OP1: an integer represented as a floating point number
-; Output: OP3: integer string
+;
+; Input:
+;   - OP1: an integer represented as a floating point number
+;   - DE: bufPointer
+; Output:
+;   - (DE): contains the integer rendered as an integer string
+;   - DE: updated
 ; Destroys: A, B, C, DE, HL, OP2-OP6
 convertOP1ToBaseString:
     ; Support only positive integers in BIN mode.
+    push de
     bcall(_CkOP1Pos) ; if OP1>=0: ZF=1
+    pop de
     jr nz, convertOP1ToIntString
     ld a, (baseNumber)
     cp 10
@@ -227,14 +270,18 @@ convertOP1ToBaseString:
     jr z, convertOP1ToIntString
     ; [[fallthrough]]
 convertOP1ToBinString:
+    push de ; stack=[bufPointer]
     ; Check if OP1 fits in the current baseWordSize.
     ld hl, OP3
     call convertOP1ToU32StatusCode ; OP3=u32(OP1); C=u32StatusCode
     call checkU32FitsWsize ; C=u32StatusCode
     bit u32StatusCodeTooBig, c
+    pop de ; stack=[]; DE=bufPointer
     jr nz, convertOP1ToIntString
     bit u32StatusCodeNegative, c
     jr nz, convertOP1ToIntString
+    ;
+    push de ; stack=[bufPointer]
     ; Move u32 to OP1, to free up OP3.
     ld de, OP1
     ld bc, 4
@@ -251,16 +298,32 @@ convertOP1ToBinString:
     ld d, 0 ; DE=32-baseWordSize
     ld hl, OP4
     add hl, de ; HL=pointer to beginning of binary string
-    ; Format the binary string in groups of 4, 2 groups per line. Destination
-    ; OP3 is 11 bytes before OP4, so the maximum length of the final string is
-    ; 4 lines * 10 bytes = 40 bytes, which is less than the 44 bytes of
-    ; OP3-OP6.
+    pop de ; stack=[]; DE=bufPointer
+    ; [[fallthrough]]
+
+; Description: Format the base-2 string in groups of 4, 2 groups per line. The
+; source string is probably at OP4. The destination string is probably OP3,
+; which is 11 bytes before OP4. The original string is a maximum of 32
+; characters long. The formatted string adds 2 characters per line, for a
+; maximum of 8 characters, which is less than the 11 bytes that OP3 is before
+; OP4. Therefore the formatting can be done in-situ because at every point in
+; the iteration, the resulting string does not affect the upcoming digits.
+;
+; The maximum length of the final string is 4 lines * 10 bytes = 40 bytes,
+; which is smaller than the 44 bytes available using OP3-OP6.
+;
+; Input:
+;   - HL: pointer to source base-2 string (probably OP4)
+;   - DE: destination string buffer (sometimes OP3)
+; Output:
+;   - (DE): base-2 string formatted in lines of 8 digits, in 2 groups of 4
+;   digits
+;   - DE updated
+formatBaseTwoString:
     call getWordSizeIndex
     inc a ; A=baseWordSize/8=number of bytes
     ld b, a
-    ld de, OP3
-convertOP1ToBaseStringSpacingLoop:
-    ; Copy 8 digits per line, in groups of 4, with space in between.
+formatBaseTwoStringLoop:
     push bc
     ld bc, 4
     ldir
@@ -275,8 +338,5 @@ convertOP1ToBaseStringSpacingLoop:
     inc de
     ;
     pop bc
-    djnz convertOP1ToBaseStringSpacingLoop
-    ; terminate with NUL character
-    xor a
-    ld (de), a
+    djnz formatBaseTwoStringLoop
     ret
