@@ -353,8 +353,20 @@ drawModeInputBuf equ 3 ; show inputBuf in debug line
 ; Draw/Debug mode, u8 integer. Activated by secret '2ND DRAW' button.
 drawMode equ tvmIterMax + 1 ; u8
 
+; Function result modes determines whether certain functions return real
+; results always, or will sometimes return a complex result.
+numResultModeReal equ 0 ; return real results only
+numResultModeComplex equ 1 ; return complex results
+numResultMode equ drawMode + 1 ; u8
+
+; Complex number display modes. The rendering of the complex polar mode is
+; also affected by the DEG and RAD settings.
+complexModeRect equ 0
+complexModePolar equ 1
+complexMode equ numResultMode + 1 ; u8
+
 ; End application variables.
-appStateEnd equ drawMode + 1
+appStateEnd equ complexMode + 1
 
 ; Total size of appState vars.
 appStateSize equ (appStateEnd - appStateBegin)

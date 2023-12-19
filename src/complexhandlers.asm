@@ -29,3 +29,41 @@ mComplexAngleHandler:
     call closeInputAndRecallUniversalX
     call complexAngle
     jp replaceX ; X=Cangle(X)
+
+;-----------------------------------------------------------------------------
+
+mNumResultModeRealHandler:
+    call closeInputAndRecallNone
+    ld a, numResultModeReal
+    ld (numResultMode), a
+    call updateNumResultMode
+    set dirtyFlagsMenu, (iy + dirtyFlags)
+    ret
+
+; Input: A=B=menuLabel; C=altLabel
+; Output: A=selectedLabel
+mNumResultModeRealNameSelector:
+    ld a, (numResultMode)
+    cp numResultModeReal
+    ld a, b
+    ret nz
+    ld a, c
+    ret
+
+mNumResultModeComplexHandler:
+    call closeInputAndRecallNone
+    ld a, numResultModeComplex
+    ld (numResultMode), a
+    call updateNumResultMode
+    set dirtyFlagsMenu, (iy + dirtyFlags)
+    ret
+
+; Input: A=B=menuLabel; C=altLabel
+; Output: A=selectedLabel
+mNumResultModeComplexNameSelector:
+    ld a, (numResultMode)
+    cp numResultModeComplex
+    ld a, b
+    ret nz
+    ld a, c
+    ret

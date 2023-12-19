@@ -125,6 +125,32 @@ splitCp3ToOp3Op4:
     ret
 
 ;-----------------------------------------------------------------------------
+; Complex number modes.
+;-----------------------------------------------------------------------------
+
+; Description: Initialize the number result modes to "real results only".
+initNumResultMode:
+    ld a, numResultModeReal
+    ld (numResultMode), a
+    ret
+
+; Description: Update the TI-OS 'fmtFlags' from the 'numResult' variable in
+; RPN83P.
+updateNumResultMode:
+    ld a, (numResultMode)
+    cp numResultModeComplex
+    jr z, updateNumResultModeComplex
+    set fmtReal, (iy + fmtFlags)
+    res fmtRect, (iy + fmtFlags)
+    res fmtPolar, (iy + fmtFlags)
+    ret
+updateNumResultModeComplex:
+    res fmtReal, (iy + fmtFlags)
+    set fmtRect, (iy + fmtFlags)
+    res fmtPolar, (iy + fmtFlags)
+    ret
+
+;-----------------------------------------------------------------------------
 ; Complex misc operations.
 ;-----------------------------------------------------------------------------
 

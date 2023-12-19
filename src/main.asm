@@ -18,6 +18,7 @@ main:
     ; Initialize everything if RestoreAppState() fails.
     bcall(_InitErrorCode)
     bcall(_InitInputBuf)
+    call initNumResultMode
     call initMenu
     call initBase
     call initStat
@@ -26,6 +27,7 @@ main:
 initAlways:
     ; If RestoreAppState() suceeds, only the following are initialized.
     bcall(_InitArgBuf) ; Start with Command Arg parser off.
+    call updateNumResultMode
     call initStack
     call initRegs
     call initLastX ; Always copy TI-OS 'ANS' to 'X'
