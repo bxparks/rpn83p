@@ -53,10 +53,7 @@ convertOP1ToShowStringNonZero:
     push de ; stack=[bufPointer]
     bcall(_PushRealO1) ; FPS=[OP1]
     bcall(_ClrOP1S) ; clear sign bit of OP1
-    ld hl, const1E14
-    ld de, OP2
-    ld bc, 9
-    ldir ; OP2=1e14
+    call op2Set1E14 ; OP2=1E14
     bcall(_CpOP1OP2) ; if OP1 >= OP2: CF=0
     jr nc, convertOP1ToShowStringFloat
     ; Check for integer
@@ -72,9 +69,6 @@ convertOP1ToShowStringInt:
     pop de ; stack=[]; DE=bufPointer
     jp z, convertOP1ToIntString
     jp convertOP1ToBaseString
-
-const1E14: ; 10^14, EXP=$80+14=$8E
-    .db $00, $8E, $10, $00, $00, $00, $00, $00, $00
 
 ;------------------------------------------------------------------------------
 
