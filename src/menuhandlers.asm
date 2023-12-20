@@ -637,9 +637,7 @@ mDToRHandler:
 ;   - Y: y
 ;   - X: x
 mPToRHandler:
-    call closeInputAndRecallX
-    bcall(_OP1ToOP2) ; OP2=X=r
-    call rclY ; OP1 =Y=theta
+    call closeInputAndRecallXY ; OP1=Y=theta; OP2=X=r
     call op1ExOp2  ; OP1=r; OP2=theta
     bcall(_PToR) ; OP1=x; OP2=y
     call op1ExOp2  ; OP1=y; OP2=x
@@ -654,9 +652,7 @@ mPToRHandler:
 ;   - Y: theta
 ;   - X: r
 mRtoPHandler:
-    call closeInputAndRecallX
-    bcall(_OP1ToOP2) ; OP2=X=x
-    call rclY ; OP1=Y=y
+    call closeInputAndRecallXY ; OP1=Y=imaginary; OP2=X=real
     call op1ExOp2  ; OP1=x; OP2=y
     bcall(_RToP) ; OP1=r; OP2=theta
     call op1ExOp2  ; OP1=theta; OP2=r
