@@ -215,6 +215,9 @@ complexImag:
     call splitCp1ToOp1Op2 ; OP1=Re(X); OP2=Im(X)
     jp op2ToOp1 ; OP1=Im(X)
 
+; Description: Return the magnitude or absolute value 'r' of the complex
+; number.
+; Input: CP1: complex number
 complexAbs:
     call checkOp1Complex
     jr z, complexAbsCabs
@@ -225,6 +228,10 @@ complexAbsCabs:
     bcall(_CAbs); OP1/OP2=Cabs(OP1/OP2)
     ret
 
+; Description: Return the angle (argument) of the complex number.
+; Input:
+;   - CP1: complex number
+;   - (trigFlags): trigDeg determines RAD or DEG mode of the result
 complexAngle:
     call checkOp1Complex
     jr z, complexAngleComplex
