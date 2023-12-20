@@ -243,6 +243,6 @@ keyCodeHandlerTable:
 
 ;-----------------------------------------------------------------------------
 
-    ; X,t,Theta,n
-    .db kVarx
-    .dw handleKeyVarx
+    ; Imaginary-i
+    .db kI
+    .dw handleKeyImagI

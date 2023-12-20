@@ -946,28 +946,27 @@ msgDrawPrompt:
     .db "DRAW", 0
 
 ;-----------------------------------------------------------------------------
-; The Xttn button will be often bound to some temporary feature during
-; development, then turned off when a release build is made.
+; Keys related to complex numbers.
 ;-----------------------------------------------------------------------------
 
-handleKeyVarx:
+handleKeyImagI:
     ; Combine X and Y into a complex number, and store it back into X.
     call closeInputAndRecallNone
     call rclX ; CP1=X; A=objectType
     cp a, rpnObjectTypeComplex
-    jr nz, handleKeyVarxRealToComplex
+    jr nz, handleKeyImagIRealToComplex
     ; Convert complex into 2 reals
     call splitCp1ToOp1Op2 ; OP1=Re(X), OP2=Im(X)
     jp replaceXWithOP1OP2 ; replace X with OP1,OP2
-handleKeyVarxRealToComplex:
+handleKeyImagIRealToComplex:
     bcall(_PushRealO1) ; FPS=[Im]
     ; Verify that Y is also real.
     call rclY ; CP1=Y; A=objectType
     cp a, rpnObjectTypeComplex
-    jr nz, handleKeyVarxRealToComplexOk
+    jr nz, handleKeyImagIRealToComplexOk
     ; Y is complex, so throw an error
     bcall(_ErrArgument)
-handleKeyVarxRealToComplexOk:
+handleKeyImagIRealToComplexOk:
     bcall(_PopRealO2) ; FPS=[]; OP2=X=Im; OP1=Y=Re
     call mergeOp1Op2ToCp1 ; OP1=complex(Re,Im)
     jp replaceXY
