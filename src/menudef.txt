@@ -121,6 +121,13 @@ MenuGroup root mRoot [
         MenuItem CABS mComplexAbs
         MenuItem CANG mComplexAngle
       ]
+      MenuRow [
+        MenuItemAlt RRES RRS<Sblock> mNumResultModeReal
+        MenuItemAlt CRES CRS<Sblock> mNumResultModeComplex
+        MenuItemAlt RECT REC<Sblock> mComplexModeRect
+        MenuItemAlt PRAD PRD<Sblock> mComplexModeRad
+        MenuItemAlt PDEG PDG<Sblock> mComplexModeDeg
+      ]
     ]
     MenuItem HELP mHelp
   ]
@@ -293,13 +300,6 @@ MenuGroup root mRoot [
         MenuItemAlt ENG ENG<Sblock> mEng
         MenuItemAlt RAD RAD<Sblock> mRad
         MenuItemAlt DEG DEG<Sblock> mDeg
-      ]
-      MenuRow [
-        MenuItemAlt RRES RRS<Sblock> mNumResultModeReal
-        MenuItemAlt CRES CRS<Sblock> mNumResultModeComplex
-        MenuItemAlt RECT REC<Sblock> mComplexModeRect
-        MenuItemAlt PRAD PRD<Sblock> mComplexModeRad
-        MenuItemAlt PDEG PDG<Sblock> mComplexModeDeg
       ]
     ]
     MenuGroup STK mStack [
