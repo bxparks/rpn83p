@@ -1553,33 +1553,33 @@ mNumResultModeComplexId equ 163
     .db mNumResultModeComplexAltNameId ; rowBeginId or altNameId
     .dw mNumResultModeComplexHandler ; handler (to be implemented)
     .dw mNumResultModeComplexNameSelector ; nameSelector
-mBlank164:
-mBlank164Id equ 164
-    .db mBlank164Id ; id
+mComplexModeRect:
+mComplexModeRectId equ 164
+    .db mComplexModeRectId ; id
     .db mModeId ; parentId
-    .db mNullNameId ; nameId
+    .db mComplexModeRectNameId ; nameId
     .db 0 ; numRows
-    .db 0 ; rowBeginId or altNameId
-    .dw mNullHandler ; handler (predefined)
-    .dw 0 ; nameSelector
-mBlank165:
-mBlank165Id equ 165
-    .db mBlank165Id ; id
+    .db mComplexModeRectAltNameId ; rowBeginId or altNameId
+    .dw mComplexModeRectHandler ; handler (to be implemented)
+    .dw mComplexModeRectNameSelector ; nameSelector
+mComplexModeRad:
+mComplexModeRadId equ 165
+    .db mComplexModeRadId ; id
     .db mModeId ; parentId
-    .db mNullNameId ; nameId
+    .db mComplexModeRadNameId ; nameId
     .db 0 ; numRows
-    .db 0 ; rowBeginId or altNameId
-    .dw mNullHandler ; handler (predefined)
-    .dw 0 ; nameSelector
-mBlank166:
-mBlank166Id equ 166
-    .db mBlank166Id ; id
+    .db mComplexModeRadAltNameId ; rowBeginId or altNameId
+    .dw mComplexModeRadHandler ; handler (to be implemented)
+    .dw mComplexModeRadNameSelector ; nameSelector
+mComplexModeDeg:
+mComplexModeDegId equ 166
+    .db mComplexModeDegId ; id
     .db mModeId ; parentId
-    .db mNullNameId ; nameId
+    .db mComplexModeDegNameId ; nameId
     .db 0 ; numRows
-    .db 0 ; rowBeginId or altNameId
-    .dw mNullHandler ; handler (predefined)
-    .dw 0 ; nameSelector
+    .db mComplexModeDegAltNameId ; rowBeginId or altNameId
+    .dw mComplexModeDegHandler ; handler (to be implemented)
+    .dw mComplexModeDegNameSelector ; nameSelector
 ; MenuGroup STK: children
 ; MenuGroup STK: children: row 0
 mBlank167:
@@ -1906,7 +1906,7 @@ mKwToHpId equ 201
     .dw 0 ; nameSelector
 
 ; Table of 2-byte pointers to names in the pool of strings below.
-mMenuNameTableSize equ 197
+mMenuNameTableSize equ 203
 mMenuNameTable:
 mNullNameId equ 0
     .dw mNullName
@@ -2248,59 +2248,71 @@ mNumResultModeComplexNameId equ 168
     .dw mNumResultModeComplexName
 mNumResultModeComplexAltNameId equ 169
     .dw mNumResultModeComplexAltName
-mStackRollUpNameId equ 170
+mComplexModeRectNameId equ 170
+    .dw mComplexModeRectName
+mComplexModeRectAltNameId equ 171
+    .dw mComplexModeRectAltName
+mComplexModeRadNameId equ 172
+    .dw mComplexModeRadName
+mComplexModeRadAltNameId equ 173
+    .dw mComplexModeRadAltName
+mComplexModeDegNameId equ 174
+    .dw mComplexModeDegName
+mComplexModeDegAltNameId equ 175
+    .dw mComplexModeDegAltName
+mStackRollUpNameId equ 176
     .dw mStackRollUpName
-mStackRollDownNameId equ 171
+mStackRollDownNameId equ 177
     .dw mStackRollDownName
-mStackExchangeXYNameId equ 172
+mStackExchangeXYNameId equ 178
     .dw mStackExchangeXYName
-mFToCNameId equ 173
+mFToCNameId equ 179
     .dw mFToCName
-mCToFNameId equ 174
+mCToFNameId equ 180
     .dw mCToFName
-mInhgToHpaNameId equ 175
+mInhgToHpaNameId equ 181
     .dw mInhgToHpaName
-mHpaToInhgNameId equ 176
+mHpaToInhgNameId equ 182
     .dw mHpaToInhgName
-mMiToKmNameId equ 177
+mMiToKmNameId equ 183
     .dw mMiToKmName
-mKmToMiNameId equ 178
+mKmToMiNameId equ 184
     .dw mKmToMiName
-mFtToMNameId equ 179
+mFtToMNameId equ 185
     .dw mFtToMName
-mMToFtNameId equ 180
+mMToFtNameId equ 186
     .dw mMToFtName
-mInToCmNameId equ 181
+mInToCmNameId equ 187
     .dw mInToCmName
-mCmToInNameId equ 182
+mCmToInNameId equ 188
     .dw mCmToInName
-mMilToMicronNameId equ 183
+mMilToMicronNameId equ 189
     .dw mMilToMicronName
-mMicronToMilNameId equ 184
+mMicronToMilNameId equ 190
     .dw mMicronToMilName
-mLbsToKgNameId equ 185
+mLbsToKgNameId equ 191
     .dw mLbsToKgName
-mKgToLbsNameId equ 186
+mKgToLbsNameId equ 192
     .dw mKgToLbsName
-mOzToGNameId equ 187
+mOzToGNameId equ 193
     .dw mOzToGName
-mGToOzNameId equ 188
+mGToOzNameId equ 194
     .dw mGToOzName
-mGalToLNameId equ 189
+mGalToLNameId equ 195
     .dw mGalToLName
-mLToGalNameId equ 190
+mLToGalNameId equ 196
     .dw mLToGalName
-mFlozToMlNameId equ 191
+mFlozToMlNameId equ 197
     .dw mFlozToMlName
-mMlToFlozNameId equ 192
+mMlToFlozNameId equ 198
     .dw mMlToFlozName
-mCalToKjNameId equ 193
+mCalToKjNameId equ 199
     .dw mCalToKjName
-mKjToCalNameId equ 194
+mKjToCalNameId equ 200
     .dw mKjToCalName
-mHpToKwNameId equ 195
+mHpToKwNameId equ 201
     .dw mHpToKwName
-mKwToHpNameId equ 196
+mKwToHpNameId equ 202
     .dw mKwToHpName
 
 ; Table of names as NUL terminated C strings.
@@ -2644,6 +2656,18 @@ mNumResultModeComplexName:
     .db "CRES", 0
 mNumResultModeComplexAltName:
     .db 'C', 'R', 'S', Sblock, 0
+mComplexModeRectName:
+    .db "RECT", 0
+mComplexModeRectAltName:
+    .db 'R', 'E', 'C', Sblock, 0
+mComplexModeRadName:
+    .db "PRAD", 0
+mComplexModeRadAltName:
+    .db 'P', 'R', 'D', Sblock, 0
+mComplexModeDegName:
+    .db "PDEG", 0
+mComplexModeDegAltName:
+    .db 'P', 'D', 'G', Sblock, 0
 mStackRollUpName:
     .db 'R', SupArrow, 0
 mStackRollDownName:

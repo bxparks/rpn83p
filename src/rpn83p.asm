@@ -359,10 +359,12 @@ numResultModeReal equ 0 ; return real results only
 numResultModeComplex equ 1 ; return complex results
 numResultMode equ drawMode + 1 ; u8
 
-; Complex number display modes. The rendering of the complex polar mode is
-; also affected by the DEG and RAD settings.
+; Complex number display modes. The 2 complex polar mode (RAD and DEG) are
+; explicitly separate from the DEG and RAD settings that affect trigonometric
+; functions.
 complexModeRect equ 0
-complexModePolar equ 1
+complexModeRad equ 1
+complexModeDeg equ 2
 complexMode equ numResultMode + 1 ; u8
 
 ; End application variables.

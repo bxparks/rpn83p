@@ -67,3 +67,56 @@ mNumResultModeComplexNameSelector:
     ret nz
     ld a, c
     ret
+
+;-----------------------------------------------------------------------------
+
+mComplexModeRectHandler:
+    call closeInputAndRecallNone
+    ld a, complexModeRect
+    ld (complexMode), a
+    set dirtyFlagsMenu, (iy + dirtyFlags)
+    ret
+
+; Input: A=B=menuLabel; C=altLabel
+; Output: A=selectedLabel
+mComplexModeRectNameSelector:
+    ld a, (complexMode)
+    cp complexModeRect
+    ld a, b
+    ret nz
+    ld a, c
+    ret
+
+mComplexModeRadHandler:
+    call closeInputAndRecallNone
+    ld a, complexModeRad
+    ld (complexMode), a
+    set dirtyFlagsMenu, (iy + dirtyFlags)
+    ret
+
+; Input: A=B=menuLabel; C=altLabel
+; Output: A=selectedLabel
+mComplexModeRadNameSelector:
+    ld a, (complexMode)
+    cp complexModeRad
+    ld a, b
+    ret nz
+    ld a, c
+    ret
+
+mComplexModeDegHandler:
+    call closeInputAndRecallNone
+    ld a, complexModeDeg
+    ld (complexMode), a
+    set dirtyFlagsMenu, (iy + dirtyFlags)
+    ret
+
+; Input: A=B=menuLabel; C=altLabel
+; Output: A=selectedLabel
+mComplexModeDegNameSelector:
+    ld a, (complexMode)
+    cp complexModeDeg
+    ld a, b
+    ret nz
+    ld a, c
+    ret

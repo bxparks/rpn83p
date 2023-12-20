@@ -134,7 +134,7 @@ splitCp3ToOp3Op4:
     ret
 
 ;-----------------------------------------------------------------------------
-; Complex number modes.
+; Complex result modes.
 ;-----------------------------------------------------------------------------
 
 ; Description: Initialize the number result modes to "real results only".
@@ -164,6 +164,28 @@ updateNumResultModeComplex:
 checkNumResultModeComplex:
     ld a, (numResultMode)
     cp numResultModeComplex
+    ret
+
+;-----------------------------------------------------------------------------
+; Complex display modes.
+;-----------------------------------------------------------------------------
+
+; Description: Sanitize the current complex display mode.
+updateComplexMode:
+    ld a, complexModeRect
+    ld (complexMode), a
+    cp a, complexModeRect
+    ret z
+    cp a, complexModeRad
+    ret z
+    cp a, complexModeDeg
+    ret z
+    ; [[fallthrough]]
+
+; Description: Initialize the complex display mode.
+initComplexMode:
+    ld a, complexModeRect
+    ld (complexMode), a
     ret
 
 ;-----------------------------------------------------------------------------

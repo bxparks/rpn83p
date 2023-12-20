@@ -19,6 +19,7 @@ main:
     bcall(_InitErrorCode)
     bcall(_InitInputBuf)
     call initNumResultMode
+    call initComplexMode
     call initMenu
     call initBase
     call initStat
@@ -28,6 +29,7 @@ initAlways:
     ; If RestoreAppState() suceeds, only the following are initialized.
     bcall(_InitArgBuf) ; Start with Command Arg parser off.
     call updateNumResultMode
+    call updateComplexMode
     call initStack
     call initRegs
     call initLastX ; Always copy TI-OS 'ANS' to 'X'

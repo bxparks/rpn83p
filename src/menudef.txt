@@ -297,6 +297,9 @@ MenuGroup root mRoot [
       MenuRow [
         MenuItemAlt RRES RRS<Sblock> mNumResultModeReal
         MenuItemAlt CRES CRS<Sblock> mNumResultModeComplex
+        MenuItemAlt RECT REC<Sblock> mComplexModeRect
+        MenuItemAlt PRAD PRD<Sblock> mComplexModeRad
+        MenuItemAlt PDEG PDG<Sblock> mComplexModeDeg
       ]
     ]
     MenuGroup STK mStack [
