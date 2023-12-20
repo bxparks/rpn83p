@@ -737,7 +737,7 @@ saveFormatDigitsContinue:
 
 ; Description: Select the display name of 'FIX' menu.
 ; Input:
-;   - A: nameId
+;   - A,B: nameId
 ;   - C: altNameId
 ;   - HL: pointer to MenuNode
 ; Output:
@@ -750,7 +750,7 @@ mFixNameSelector:
 
 ; Description: Select the display name of 'SCI' menu.
 ; Input:
-;   - A: nameId
+;   - A,B: nameId
 ;   - C: altNameId
 ;   - HL: pointer to MenuNode
 ; Output:
@@ -766,7 +766,7 @@ mSciNameSelectorMaybeOn:
 
 ; Description: Select the display name of 'ENG' menu.
 ; Input:
-;   - A: nameId
+;   - A,B: nameId
 ;   - C: altNameId
 ;   - HL: pointer to MenuNode
 ; Output:
@@ -796,7 +796,7 @@ mDegHandler:
 
 ; Description: Select the display name of 'RAD' menu.
 ; Input:
-;   - A: nameId
+;   - A,B: nameId
 ;   - C: altNameId
 ;   - HL: pointer to MenuNode
 ; Output:
@@ -809,7 +809,7 @@ mRadNameSelector:
 
 ; Description: Select the display name of 'DEG' menu.
 ; Input:
-;   - A: nameId
+;   - A,B: nameId
 ;   - C: altNameId
 ;   - HL: pointer to MenuNode
 ; Output:

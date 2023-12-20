@@ -430,7 +430,7 @@ mTvmIYR1Get:
     ret
 
 ; Description: Return B if tvmIsBegin is false, C otherwise.
-; Input: A, B: normal nameId; C: alt nameId
+; Input: A, B: nameId; C: altNameId
 ; Output: A
 mTvmIYR1NameSelector:
     call tvmSolverBitOverrideFlagIYR1
