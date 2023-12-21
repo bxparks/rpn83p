@@ -172,8 +172,7 @@ checkNumResultModeComplex:
 
 ; Description: Sanitize the current complex display mode.
 updateComplexMode:
-    ld a, complexModeRect
-    ld (complexMode), a
+    ld a, (complexMode)
     cp a, complexModeRect
     ret z
     cp a, complexModeRad
