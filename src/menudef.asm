@@ -2419,11 +2419,11 @@ mComplexAngleName:
 mNumResultModeRealName:
     .db "RRES", 0
 mNumResultModeRealAltName:
-    .db 'R', 'R', 'S', Sblock, 0
+    .db 'R', 'R', 'E', Sblock, 0
 mNumResultModeComplexName:
     .db "CRES", 0
 mNumResultModeComplexAltName:
-    .db 'C', 'R', 'S', Sblock, 0
+    .db 'C', 'R', 'E', Sblock, 0
 mComplexModeRectName:
     .db "RECT", 0
 mComplexModeRectAltName:
@@ -2431,11 +2431,11 @@ mComplexModeRectAltName:
 mComplexModeRadName:
     .db "PRAD", 0
 mComplexModeRadAltName:
-    .db 'P', 'R', 'D', Sblock, 0
+    .db 'P', 'R', 'A', Sblock, 0
 mComplexModeDegName:
     .db "PDEG", 0
 mComplexModeDegAltName:
-    .db 'P', 'D', 'G', Sblock, 0
+    .db 'P', 'D', 'E', Sblock, 0
 mDecName:
     .db "DEC", 0
 mDecAltName:

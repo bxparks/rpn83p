@@ -122,11 +122,11 @@ MenuGroup root mRoot [
         MenuItem CANG mComplexAngle
       ]
       MenuRow [
-        MenuItemAlt RRES RRS<Sblock> mNumResultModeReal
-        MenuItemAlt CRES CRS<Sblock> mNumResultModeComplex
+        MenuItemAlt RRES RRE<Sblock> mNumResultModeReal
+        MenuItemAlt CRES CRE<Sblock> mNumResultModeComplex
         MenuItemAlt RECT REC<Sblock> mComplexModeRect
-        MenuItemAlt PRAD PRD<Sblock> mComplexModeRad
-        MenuItemAlt PDEG PDG<Sblock> mComplexModeDeg
+        MenuItemAlt PRAD PRA<Sblock> mComplexModeRad
+        MenuItemAlt PDEG PDE<Sblock> mComplexModeDeg
       ]
     ]
     MenuItem HELP mHelp

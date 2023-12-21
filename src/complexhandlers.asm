@@ -75,6 +75,7 @@ mComplexModeRectHandler:
     ld a, complexModeRect
     ld (complexMode), a
     set dirtyFlagsMenu, (iy + dirtyFlags)
+    set dirtyFlagsStack, (iy + dirtyFlags)
     ret
 
 ; Input: A=B=menuLabel; C=altLabel
@@ -92,6 +93,7 @@ mComplexModeRadHandler:
     ld a, complexModeRad
     ld (complexMode), a
     set dirtyFlagsMenu, (iy + dirtyFlags)
+    set dirtyFlagsStack, (iy + dirtyFlags)
     ret
 
 ; Input: A=B=menuLabel; C=altLabel
@@ -109,6 +111,7 @@ mComplexModeDegHandler:
     ld a, complexModeDeg
     ld (complexMode), a
     set dirtyFlagsMenu, (iy + dirtyFlags)
+    set dirtyFlagsStack, (iy + dirtyFlags)
     ret
 
 ; Input: A=B=menuLabel; C=altLabel

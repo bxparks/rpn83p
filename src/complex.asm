@@ -189,6 +189,125 @@ initComplexMode:
     ret
 
 ;-----------------------------------------------------------------------------
+
+; Description: Convert the complex number into either (a,b) or (r,theta),
+; dependingon the complexMode.
+; Input: CP1=complex
+; Output: OP1,OP2=(a,b) or (r,theta)
+complexToReals:
+    ld a, (complexMode)
+    cp a, complexModeRad
+    jr z, complexToPolarRad
+    cp a, complexModeDeg
+    jr z, complexToPolarDeg
+    ; Everything else, assume Rect
+    jp splitCp1ToOp1Op2
+
+; Description: Convert complex number into polar-rad form.
+; Input: CP1: complex number
+; Output: OP1: r; OP2: theta(radian)
+complexToPolarRad:
+    call splitCp1ToOp1Op2 ; OP1=Re(X); OP2=Im(X)
+    ld a, (iy + trigFlags)
+    push af ; stack=[trigFlags]
+    res trigDeg, (iy + trigFlags)
+    ld hl, complexToPolarHandleException
+    ; set up exception trap to reset trigFlags
+    call APP_PUSH_ERRORH
+    bcall(_RToP) ; OP1=r; OP2=theta
+    call APP_POP_ERRORH
+    ; Reset the original trigFlags
+    pop af ; stack=[]; A=trigFlags
+    ld (iy + trigFlags), a
+    ret
+
+; Description: Convert complex number into polar-rad form.
+; Input: CP1: complex number
+; Output: OP1: r; OP2: theta(deg)
+complexToPolarDeg:
+    call splitCp1ToOp1Op2 ; OP1=Re(X); OP2=Im(X)
+    ld a, (iy + trigFlags)
+    push af ; stack=[trigFlags]
+    set trigDeg, (iy + trigFlags)
+    ld hl, complexToPolarHandleException
+    ; set up exception trap to reset trigFlags
+    call APP_PUSH_ERRORH
+    bcall(_RToP) ; OP1=r; OP2=theta
+    call APP_POP_ERRORH
+    ; Reset the original trigFlags
+    pop af ; stack=[]; A=trigFlags
+    ld (iy + trigFlags), a
+    ret
+
+complexToPolarHandleException:
+    bcall(_SetHandlerCodeToSystemCode)
+    bcall(_SetErrorCode)
+    call op1Set0 ; OP1=0.0
+    call op2Set0 ; OP2=0.0
+    ; Reset the original trigFlags
+    pop af ; stack=[]; A=trigFlags
+    ld (iy + trigFlags), a
+    ret
+
+;-----------------------------------------------------------------------------
+
+; Description: Convert the (a,b) or (r,theta) (depending on complexMode) to a
+; complex number.
+; dependingon the complexMode.
+; Input: OP1,OP2=(a,b) or (r,theta)
+; Output: CP1=complex
+complexFromReals:
+    ld a, (complexMode)
+    cp a, complexModeRad
+    jr z, complexFromPolarRad
+    cp a, complexModeDeg
+    jr z, complexFromPolarDeg
+    ; Everything else, assume Rect
+    jp mergeOp1Op2ToCp1
+
+complexFromPolarRad:
+    ld a, (iy + trigFlags)
+    push af ; stack=[trigFlags]
+    res trigDeg, (iy + trigFlags)
+    ld hl, complexFromPolarHandleException
+    ; set up exception trap to reset trigFlags
+    call APP_PUSH_ERRORH
+    bcall(_PToR) ; OP1=x; OP2=y
+    call APP_POP_ERRORH
+    call mergeOp1Op2ToCp1 ; CP1=(OP1,OP2)
+    ; Reset the original trigFlags
+    pop af ; stack=[]; A=trigFlags
+    ld (iy + trigFlags), a
+    ret
+
+complexFromPolarDeg:
+    ld a, (iy + trigFlags)
+    push af ; stack=[trigFlags]
+    set trigDeg, (iy + trigFlags)
+    ld hl, complexFromPolarHandleException
+    ; set up exception trap to reset trigFlags
+    call APP_PUSH_ERRORH
+    bcall(_PToR) ; OP1=r; OP2=theta
+    call APP_POP_ERRORH
+    call mergeOp1Op2ToCp1 ; CP1=(OP1,OP2)
+    ; Reset the original trigFlags
+    pop af ; stack=[]; A=trigFlags
+    ld (iy + trigFlags), a
+    ret
+
+complexFromPolarHandleException:
+    bcall(_SetHandlerCodeToSystemCode)
+    bcall(_SetErrorCode)
+    call op1Set0 ; OP1=0.0
+    call op2Set0 ; OP2=0.0
+    call mergeOp1Op2ToCp1
+    ; Reset the original trigFlags
+    pop af ; stack=[]; A=trigFlags
+    ld (iy + trigFlags), a
+    ret
+
+
+;-----------------------------------------------------------------------------
 ; Complex misc operations.
 ;-----------------------------------------------------------------------------
 

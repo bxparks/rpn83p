@@ -907,13 +907,24 @@ printOP1:
 ; pixels wide for digits, exponent 'E', and minus sign. A decimal point is only
 ; 2 pixels wide, so we have extra space. So that's 22 small-font characters.
 ; The imaginary-i is 4 pixels. Add a space on either wide, for 2 more pixels.
-; So this means that we can print the Re and Im parts using a width of 10
-; (which is the same as a single real number in large font, then add the
-; imaginary-i character, and still fit inside the 96 pixel limit.
+; So this means that we can print the Re and Im parts using a width of 10 each,
+; then add the imaginary-i character in between, and still fit inside the 96
+; pixel limit.
 printOP1Complex:
     call splitCp1ToOp1Op2
     bcall(_EraseEOL) ; erase remnants of large font before printing small font
-    res fracDrawLFont, (iy + fontFlags) ; use small font
+    ld a, (complexMode)
+    cp a, complexModeRect
+    jr z, printOP1ComplexRect
+    cp a, complexModeRad
+    jr z, printOP1ComplexRad
+    cp a, complexModeDeg
+    jr z, printOP1ComplexDeg
+    ; [[falltrhough]]
+
+; Description: Print the complex numberin CP1 in rectangular form.
+; Input: CP1: complex number
+printOP1ComplexRect:
     ; Print Re(X)
     ld a, 10 ; width of output
     bcall(_FormReal)
@@ -931,12 +942,13 @@ printOP1Complex:
     call vPutSmallS
     ;
     call vEraseEOL
-    set fracDrawLFont, (iy + fontFlags) ; restore large font
     ret
 
 msgComplexSpacer:
     .db "  ", SimagI, " ", 0
 
+; Description: Print the real number in OP1, taking into account the BASE mode.
+; Input: OP1: real number
 printOP1Real:
     bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
     jr z, printOP1AsFloat
@@ -948,6 +960,56 @@ printOP1Real:
     cp 2
     jp z, printOP1Base2
     jp printOP1Base10
+
+; Description: Print the complex numberin CP1 in polar form using radians.
+; Input: CP1: complex number
+printOP1ComplexRad:
+    call complexToPolarRad ; OP1=r; OP2=theta(rad)
+    ; Print 'r'
+    ld a, 10 ; width of output
+    bcall(_FormReal)
+    ld hl, OP3
+    call vPutSmallS
+    ; Print the theta symbol
+    ld hl, msgComplexRadSpacer
+    call vPutSmallS
+    ; Print theta(rad)
+    call op2ToOp1
+    ld a, 10 ; width of output
+    bcall(_FormReal)
+    ld hl, OP3
+    call vPutSmallS
+    call vEraseEOL
+    ret
+
+msgComplexRadSpacer:
+    .db "  ", Sangle, " ", 0
+
+; Description: Print the complex numberin CP1 in polar form using degrees.
+; Input: CP1: complex number
+printOP1ComplexDeg:
+    call complexToPolarDeg ; OP1=r; OP2=theta(deg)
+    ; Print 'r'
+    ld a, 10 ; width of output
+    bcall(_FormReal)
+    ld hl, OP3
+    call vPutSmallS
+    ; Print the angle symbol
+    ld hl, msgComplexDegSpacer
+    call vPutSmallS
+    ; Print theta(deg)
+    call op2ToOp1
+    ld a, 10 ; width of output
+    bcall(_FormReal)
+    ld hl, OP3
+    call vPutSmallS
+    ld a, Stemp ; deg symbol
+    bcall(_VPutMap)
+    call vEraseEOL
+    ret
+
+msgComplexDegSpacer:
+    .db "  ", Sangle, " ", 0
 
 ;-----------------------------------------------------------------------------
 
