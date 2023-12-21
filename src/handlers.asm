@@ -953,23 +953,23 @@ msgDrawPrompt:
 ; complexMode setting (RECT, PRAD, PDEG).
 ; Input: OP1,OP2 or CP1
 ; Output; OP1,OP2 or CP1
-handleKeyImagI:
+handleKeyLink:
     call closeInputAndRecallNone
     call rclX ; CP1=X; A=objectType
     cp a, rpnObjectTypeComplex
-    jr nz, handleKeyImagIRealToComplex
+    jr nz, handleKeyLinkRealToComplex
     ; Convert complex into 2 reals
     call complexToReals ; OP1=Re(X), OP2=Im(X)
     jp replaceXWithOP1OP2 ; replace X with OP1,OP2
-handleKeyImagIRealToComplex:
+handleKeyLinkRealToComplex:
     bcall(_PushRealO1) ; FPS=[Im]
     ; Verify that Y is also real.
     call rclY ; CP1=Y; A=objectType
     cp a, rpnObjectTypeComplex
-    jr nz, handleKeyImagIRealToComplexOk
+    jr nz, handleKeyLinkRealToComplexOk
     ; Y is complex, so throw an error
     bcall(_ErrArgument)
-handleKeyImagIRealToComplexOk:
+handleKeyLinkRealToComplexOk:
     ; Convert 2 reals to complex
     bcall(_PopRealO2) ; FPS=[]; OP2=X=Im; OP1=Y=Re
     call complexFromReals ; CP1=complex(OP1,OP2)

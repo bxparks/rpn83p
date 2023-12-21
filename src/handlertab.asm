@@ -243,6 +243,6 @@ keyCodeHandlerTable:
 
 ;-----------------------------------------------------------------------------
 
-    ; Imaginary-i
-    .db kI
-    .dw handleKeyImagI
+    ; 2ND Link. Merge reals to complex, or split complex into reals.
+    .db kLinkIO
+    .dw handleKeyLink
