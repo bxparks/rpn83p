@@ -76,10 +76,18 @@ smallStringWidth:
 ;-----------------------------------------------------------------------------
 
 ; Description: Erase to end of line using small font. Same as bcall(_EraseEOL).
-; Prints a quad space (4 pixels side), 24 times, for 96 pixels.
-; Destroys: B
+; Prints a quad space (4 pixels side) as many times as necessary to overwrite
+; the remainder of the line.
+; Destroys: A, B
 vEraseEOL:
-    ld b, 24
+    ld a, (penCol)
+    sub 96 ; if A>=96: CF=0
+    ret nc
+    neg ; A=96-penCol=numPixelsToEnd
+    add a, 3 ; A=numPixelsToEnd+3
+    srl a
+    srl a ; A=numSpacesToPrint=(numPixelsToEnd+3)/4
+    ld b, a
 vEraseEOLLoop:
     ld a, SFourSpaces
     bcall(_VPutMap)
