@@ -23,8 +23,9 @@ statusPenRow equ statusCurRow*8
 statusMenuPenCol equ 0 ; left, up, down, 2px = 3*4 + 2 = 14px
 statusFloatModePenCol equ 14 ; (FIX|SCI|ENG), (, N, ), 4px = 5*4+2*3 = 26px
 statusTrigPenCol equ 40 ; (DEG|RAD), 4px = 4*4 = 16px
-statusBasePenCol equ 56 ; (C|-), 4px
-statusDebugPenCol equ 60 ; (D|-), 4px
+statusBasePenCol equ 56 ; (C|-), 4px + 4px
+statusComplexModePenCol equ 64 ; (aib|rLt|rLo), 4x4px = 16px
+statusEndPenCol equ 80
 
 ; Display coordinates of the debug line
 debugCurRow equ 1
@@ -161,6 +162,7 @@ displayStatus:
     call displayStatusFloatMode
     call displayStatusTrig
     call displayStatusBase
+    call displayStatusComplexMode
     ret
 
 ; Description: Display the up and down arrows that indicate whether there are
@@ -279,6 +281,42 @@ displayStatusBaseCarryFlagOff:
     ld a, '-'
 displayStatusBasePutS:
     bcall(_VPutMap)
+    ret
+
+;-----------------------------------------------------------------------------
+
+; Description: Display the complexMode setting on the status line.
+displayStatusComplexMode:
+    bit dirtyFlagsStatus, (iy + dirtyFlags)
+    ret z
+    ld hl, statusPenRow*$100 + statusComplexModePenCol; $(penRow)(penCol)
+    ld (PenCol), hl
+    ; Determine state of complexMode
+    ld a, (complexMode)
+    ; Check complexModeRad
+    cp complexModeRad
+    jr nz, displayStatusComplexModeCheckDeg
+    ; complexModeRad
+    ld hl, msgComplexModeRadLabel
+    jr displayStatusComplexModePutS
+displayStatusComplexModeCheckDeg:
+    cp complexModeDeg
+    jr nz, displayStatusComplexModeCheckRect
+    ; complexModeDeg
+    ld hl, msgComplexModeDegLabel
+    jr displayStatusComplexModePutS
+displayStatusComplexModeCheckRect:
+    cp complexModeRect
+    jr z, displayStatusComplexModeRect
+displayStatusComplexModeFix:
+    ; Should never happen, but if it does, fix the darned complexMode.
+    ld a, complexModeRect
+    ld (complexMode), a
+displayStatusComplexModeRect:
+    ; complexModeRect
+    ld hl, msgComplexModeRectLabel
+displayStatusComplexModePutS:
+    call vPutS
     ret
 
 ;-----------------------------------------------------------------------------
@@ -1409,3 +1447,11 @@ msgTvmI0Label:
     .db "0:", 0
 msgTvmI1Label:
     .db "1:", 0
+
+; ComplexMode labels
+msgComplexModeRectLabel:
+    .db "a", SimagI, "b", 0
+msgComplexModeRadLabel:
+    .db "r", Sangle, Stheta, 0
+msgComplexModeDegLabel:
+    .db "r", Sangle, Stemp, 0
