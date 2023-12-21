@@ -239,7 +239,7 @@ complexToPolarDeg:
     ret
 
 complexToPolarHandleException:
-    bcall(_SetHandlerCodeToSystemCode)
+    bcall(_SetHandlerCodeFromSystemCode)
     bcall(_SetErrorCode)
     call op1Set0 ; OP1=0.0
     call op2Set0 ; OP2=0.0
@@ -295,7 +295,7 @@ complexFromPolarDeg:
     ret
 
 complexFromPolarHandleException:
-    bcall(_SetHandlerCodeToSystemCode)
+    bcall(_SetHandlerCodeFromSystemCode)
     bcall(_SetErrorCode)
     call op1Set0 ; OP1=0.0
     call op2Set0 ; OP2=0.0

@@ -23,7 +23,7 @@ InitErrorCode:
 ; reduced down to a range of `[0, errorCodeCount-1]`.
 ; Input: A=systemErrorCode
 ; Output: (handlerCode)=systemErrorCode
-SetHandlerCodeToSystemCode:
+SetHandlerCodeFromSystemCode:
     res 7, a ; reset the GOTO flag
     ld (handlerCode), a
     ret

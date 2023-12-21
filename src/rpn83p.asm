@@ -535,9 +535,9 @@ _SetErrorCodeLabel:
 _SetErrorCode equ _SetErrorCodeLabel-branchTableBase
     .dw SetErrorCode
     .db 1
-_SetHandlerCodeToSystemCodeLabel:
-_SetHandlerCodeToSystemCode equ _SetHandlerCodeToSystemCodeLabel-branchTableBase
-    .dw SetHandlerCodeToSystemCode
+_SetHandlerCodeFromSystemCodeLabel:
+_SetHandlerCodeFromSystemCode equ _SetHandlerCodeFromSystemCodeLabel-branchTableBase
+    .dw SetHandlerCodeFromSystemCode
     .db 1
 ; input1.asm
 _InitInputBufLabel:

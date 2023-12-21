@@ -56,7 +56,7 @@ processMainCommandsHandleException:
     bcall(_RunIndicOff) ; destroys A (contrary to SDK docs)
     pop af
     ; Convert system code to handler code
-    bcall(_SetHandlerCodeToSystemCode) ; A=systemCode
+    bcall(_SetHandlerCodeFromSystemCode) ; A=systemCode
     jr processMainCommandsSetErrorCode
 
 ; Handle errorCodeClearScreen from subcommand.
