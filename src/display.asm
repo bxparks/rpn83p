@@ -568,12 +568,13 @@ displayStackXArg:
 ;   - (CurCol) cursor position
 ; Output:
 ;   - (CurCol) is updated
+;   - (displayStackFontFlagsX) cleared to indicate large font
 ; Destroys: A, HL; BC destroyed by PutPS()
 printArgBuf:
+    call displayStackSetLargeFont
     ; Print prompt and contents of argBuf
     ld hl, (argPrompt)
     call putS
-
     ; Print the argModifier if needed.
     ld a, (argModifier)
     cp argModifierCanceled
@@ -581,12 +582,10 @@ printArgBuf:
     ld hl, argModifierStrings
     call getString
     call putS
-
 printArgBufNumber:
     ; Print the command argument.
     ld hl, argBuf
     call putPS
-
     ; Append trailing cursor to fill 2 digits
     ld a, (argBufLen)
     or a
