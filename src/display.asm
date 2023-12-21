@@ -524,6 +524,8 @@ displayStackXInput:
     ; print the inputBuf
     ld hl, inputCurCol*$100 + inputCurRow ; $(curCol)(curRow)
     ld (CurRow), hl
+    ld b, displayStackFontFlagsX
+    call displayStackSetLargeFont
     jp printInputBuf
 
 ; Display the inputBuf in the debug line. Used for DRAW mode 3.
@@ -550,17 +552,18 @@ displayStackXLabelContinue:
     call vPutSmallS
     ret
 
+;-----------------------------------------------------------------------------
+
 ; Display the argBuf in the X register line.
 ; Input: (argBuf)
 ; Output: (CurCol) updated
 displayStackXArg:
     ld hl, argCurCol*$100 + argCurRow ; $(curCol)(curRow)
     ld (CurRow), hl
+    ld b, displayStackFontFlagsX
     ; [[fallthrough]]
 
-;-----------------------------------------------------------------------------
-
-; Description: Print the arg buffer.
+; Description: Print the arg buffer at the (CurRow) and (CurCol).
 ; Input:
 ;   - argBuf (same as inputBuf)
 ;   - argPrompt
