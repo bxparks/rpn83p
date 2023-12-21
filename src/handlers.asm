@@ -957,20 +957,23 @@ handleKeyLink:
     call closeInputAndRecallNone
     call rclX ; CP1=X; A=objectType
     cp a, rpnObjectTypeComplex
-    jr nz, handleKeyLinkRealToComplex
+    jr nz, handleKeyLinkRealsToComplex
     ; Convert complex into 2 reals
     call complexToReals ; OP1=Re(X), OP2=Im(X)
-    jp replaceXWithOP1OP2 ; replace X with OP1,OP2
-handleKeyLinkRealToComplex:
+    jp nc, replaceXWithOP1OP2 ; replace X with OP1,OP2
+    bcall(_ErrDomain)
+handleKeyLinkRealsToComplex:
     bcall(_PushRealO1) ; FPS=[Im]
     ; Verify that Y is also real.
     call rclY ; CP1=Y; A=objectType
     cp a, rpnObjectTypeComplex
-    jr nz, handleKeyLinkRealToComplexOk
+    jr nz, handleKeyLinkRealsToComplexOk
     ; Y is complex, so throw an error
     bcall(_ErrArgument)
-handleKeyLinkRealToComplexOk:
+handleKeyLinkRealsToComplexOk:
     ; Convert 2 reals to complex
     bcall(_PopRealO2) ; FPS=[]; OP2=X=Im; OP1=Y=Re
     call complexFromReals ; CP1=complex(OP1,OP2)
-    jp replaceXY ; replace X, Y with CP1
+    jp nc, replaceXY ; replace X, Y with CP1
+    ; Handle error
+    bcall(_ErrDomain)

@@ -979,7 +979,7 @@ printOP1Complex:
     cp a, complexModeRad
     jr z, printOP1ComplexRad
     cp a, complexModeDeg
-    jr z, printOP1ComplexDeg
+    jp z, printOP1ComplexDeg
     ; [[falltrhough]]
 
 ; Description: Print the complex numberin CP1 in rectangular form.
@@ -992,7 +992,7 @@ printOP1ComplexRect:
     call vPutSmallS
     ;
     ; Print the complex-i
-    ld hl, msgComplexSpacer
+    ld hl, msgComplexRectSpacer
     call vPutSmallS
     ; Print Im(X)
     call op2ToOp1
@@ -1004,7 +1004,7 @@ printOP1ComplexRect:
     call vEraseEOL
     ret
 
-msgComplexSpacer:
+msgComplexRectSpacer:
     .db "  ", SimagI, " ", 0
 
 ; Description: Print the real number in OP1, taking into account the BASE mode.
@@ -1030,13 +1030,18 @@ printOP1Real:
 ; Input: CP1: complex number
 printOP1ComplexRad:
     call complexToPolarRad ; OP1=r; OP2=theta(rad)
+    jr nc, printOP1ComplexRadOk
+    ld hl, msgPrintComplexError
+    call vPutSmallS
+    jp vEraseEOL
+printOP1ComplexRadOk:
     ; Print 'r'
     ld a, 10 ; width of output
     bcall(_FormReal)
     ld hl, OP3
     call vPutSmallS
     ; Print the theta symbol
-    ld hl, msgComplexRadSpacer
+    ld hl, msgComplexPolarSpacer
     call vPutSmallS
     ; Print theta(rad)
     call op2ToOp1
@@ -1047,20 +1052,22 @@ printOP1ComplexRad:
     call vEraseEOL
     ret
 
-msgComplexRadSpacer:
-    .db "  ", Sangle, " ", 0
-
 ; Description: Print the complex numberin CP1 in polar form using degrees.
 ; Input: CP1: complex number
 printOP1ComplexDeg:
     call complexToPolarDeg ; OP1=r; OP2=theta(deg)
+    jr nc, printOP1ComplexDegOk
+    ld hl, msgPrintComplexError
+    call vPutSmallS
+    jp vEraseEOL
+printOP1ComplexDegOk:
     ; Print 'r'
     ld a, 10 ; width of output
     bcall(_FormReal)
     ld hl, OP3
     call vPutSmallS
     ; Print the angle symbol
-    ld hl, msgComplexDegSpacer
+    ld hl, msgComplexPolarSpacer
     call vPutSmallS
     ; Print theta(deg)
     call op2ToOp1
@@ -1068,12 +1075,16 @@ printOP1ComplexDeg:
     bcall(_FormReal)
     ld hl, OP3
     call vPutSmallS
+    ; Add a deg symbol
     ld a, Stemp ; deg symbol
     bcall(_VPutMap)
     call vEraseEOL
     ret
 
-msgComplexDegSpacer:
+msgPrintComplexError:
+    .db "<err>", 0
+
+msgComplexPolarSpacer:
     .db "  ", Sangle, " ", 0
 
 ;-----------------------------------------------------------------------------
