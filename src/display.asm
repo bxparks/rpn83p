@@ -124,6 +124,8 @@ initDisplay:
     ; always set drawMode to drawModeNormal
     xor a
     ld (drawMode), a
+    ; clear the displayFontMasks
+    ld (displayStackFontFlags), a
     ; always disable SHOW mode
     res rpnFlagsShowModeEnabled, (iy + rpnFlags)
     ; set all dirty flags so that everything on the display is re-rendered
@@ -447,6 +449,7 @@ displayStackYZT:
     ld hl, stTCurCol*$100 + stTCurRow ; $(curCol)(curRow)
     ld (CurRow), hl
     call rclT
+    ld b, displayStackFontFlagsT
     call printOP1
 
     ; print Z label
@@ -459,6 +462,7 @@ displayStackYZT:
     ld hl, stZCurCol*$100 + stZCurRow ; $(curCol)(curRow)
     ld (CurRow), hl
     call rclZ
+    ld b, displayStackFontFlagsZ
     call printOP1
 
     ; print Y label
@@ -471,6 +475,7 @@ displayStackYZT:
     ld hl, stYCurCol*$100 + stYCurRow ; $(curCol)(curRow)
     ld (CurRow), hl
     call rclY
+    ld b, displayStackFontFlagsY
     call printOP1
 
     ret
@@ -511,6 +516,7 @@ displayStackXNormal:
     ld hl, stXCurCol*$100 + stXCurRow ; $(curCol)(curRow)
     ld (CurRow), hl
     call rclX
+    ld b, displayStackFontFlagsX
     jp printOP1
 
 displayStackXInput:
@@ -705,6 +711,7 @@ displayTvm:
     ld hl, tvmNCurCol*$100 + tvmNCurRow ; $(curCol)(curRow)
     ld (CurRow), hl
     bcall(_RclTvmSolverCount)
+    ld b, displayStackFontFlagsT
     call printOP1
 
     ; print TVM i0 or npmt0 label
@@ -724,6 +731,7 @@ displayTvm:
 displayTvmI0:
     bcall(_RclTvmI0)
 displayTvm0:
+    ld b, displayStackFontFlagsZ
     call printOP1
 
     ; print TVM i1 or npmt1 label
@@ -743,6 +751,7 @@ displayTvm0:
 displayTvmI1:
     bcall(_RclTvmI1)
 displayTvm1:
+    ld b, displayStackFontFlagsY
     call printOP1
 
     ; print the TVM empty line
@@ -933,6 +942,7 @@ clearShowAreaLoop:
 ; next line).
 ; Input:
 ;   - A: objectType
+;   - B: displayFontMask
 ;   - OP1: floating point number
 ; Destroys: A, HL, OP3
 printOP1:
@@ -948,9 +958,19 @@ printOP1:
 ; So this means that we can print the Re and Im parts using a width of 10 each,
 ; then add the imaginary-i character in between, and still fit inside the 96
 ; pixel limit.
+;
+; A complex number is always printed using small font. If the previous
+; rendering was done using large font, then we must call EraseEOL() before
+; printing the small font characters, to avoid artifacts on the bottom row. The
+; displayFontMask in B will tell us the previous font.
+;
+; Input:
+;   - CP1: complex number
+;   - B: displayFontMask
 printOP1Complex:
+    call eraseEOLIfNeeded
+    call displayStackSetSmallFont
     call splitCp1ToOp1Op2
-    bcall(_EraseEOL) ; erase remnants of large font before printing small font
     ld a, (complexMode)
     cp a, complexModeRect
     jr z, printOP1ComplexRect
@@ -986,10 +1006,15 @@ msgComplexSpacer:
     .db "  ", SimagI, " ", 0
 
 ; Description: Print the real number in OP1, taking into account the BASE mode.
-; Input: OP1: real number
+; This routine always uses large font, so it never needs to clear the line with
+; EraseEOL(), so the displayFontMask does not need to be used.
+; Input:
+;   - OP1: real number
+;   - B: displayFontMask
 printOP1Real:
+    call displayStackSetLargeFont
     bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
-    jr z, printOP1AsFloat
+    jp z, printOP1AsFloat
     ld a, (baseNumber)
     cp 16
     jp z, printOP1Base16
@@ -1048,6 +1073,45 @@ printOP1ComplexDeg:
 
 msgComplexDegSpacer:
     .db "  ", Sangle, " ", 0
+
+;-----------------------------------------------------------------------------
+
+; Erase the previous rendering on the line identified by the mask in B
+; if the previous rendering was done in large font (fontMask==0).
+; Input:
+;   - (displayStackFontFlags)
+;   - B: displayFontMask
+; Destroys: A, HL
+eraseEOLIfNeeded:
+    ld hl, displayStackFontFlags
+    ld a, (hl)
+    and b ; if previous==smallFont: ZF=0
+    ret nz ; if previous==smallFont: ret
+    bcall(_EraseEOL) ; all registered saved
+    ret
+
+; Description: Mark the stack line identified by B as using small font.
+; Input: B: displayFontMask
+; Output: displayStackFontFlags |= B
+; Destroys: A, HL
+displayStackSetSmallFont:
+    ld a, b
+    ld hl, displayStackFontFlags
+    or (hl) ; A=displayFontMask OR (displayStackFontFlags)
+    ld (hl), a
+    ret
+
+; Description: Mark the stack line identified by B as using large font.
+; Input: B: displayFontMask
+; Output: displayStackFontFlags &= (~B)
+; Destroys: A, HL
+displayStackSetLargeFont:
+    ld a, b
+    cpl ; A=~displayFontMask
+    ld hl, displayStackFontFlags
+    and (hl)
+    ld (hl), a
+    ret
 
 ;-----------------------------------------------------------------------------
 

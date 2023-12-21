@@ -416,7 +416,19 @@ inputDisplayBuf equ inputDisplay + 1 ; start of actual buffer
 inputDisplayCapacity equ 14 ; 14-characters displayed, excluding trailing cursor
 inputDisplaySizeOf equ inputDisplayCapacity + 1 ; total size of data structure
 
-appBufferEnd equ inputDisplay + inputDisplaySizeOf
+; Set of bit-flags that remember whether an RPN stack display line was rendered
+; in large or small font. We can optimize the drawing algorithm by performing a
+; pre-clear of the line only when the rendering transitions from a large font
+; to a small font. This prevents unnecessary flickering of the RPN stack line.
+; Normally large fonts are used so a cleared bit means large font. A set flag
+; means small font.
+displayStackFontFlagsX equ 1
+displayStackFontFlagsY equ 2
+displayStackFontFlagsZ equ 4
+displayStackFontFlagsT equ 8
+displayStackFontFlags equ inputDisplay + inputDisplaySizeOf ; u8
+
+appBufferEnd equ rpnStackFontFlags + 1
 
 ; Total size of appBuffer.
 appBufferSize equ appBufferEnd-appBufferStart
