@@ -25,7 +25,7 @@ processMainCommands:
     res onInterrupt, (iy + onFlags)
 
     ; Install error handler
-    ld hl, cleanupHandlerException
+    ld hl, processMainCommandsHandleException
     call APP_PUSH_ERRORH
     ; Dispatch to the handler for the given button, either the normal buttons
     ; or the menu F1-F5 buttons.
@@ -39,19 +39,16 @@ processMainCommands:
     ld a, (handlerCode)
     ; Check for errorCodeQuitApp
     cp errorCodeQuitApp
-    jr z, cleanupHandlerQuitApp
+    jr z, processMainCommandsHandleQuitApp
     ; Check for errorCodeClearScreen
     cp errorCodeClearScreen
-    jr z, cleanupHandlerClearScreen
-    ; [[fallthrough]]
-
-cleanupHandlerSetErrorCode:
-    ; transfer the handlerCode in A to displayable errorCode.
-    bcall(_SetErrorCode)
+    jr z, processMainCommandsHandleClearScreen
+processMainCommandsSetErrorCode:
+    bcall(_SetErrorCode) ; (errorCode)=A
     jr processMainCommands
 
 ; Handle system exception. A contains the system error code.
-cleanupHandlerException:
+processMainCommandsHandleException:
     ; The exception may have been thrown inside a routine that enabled the run
     ; indicator (e.g. TVM Solver when calculating I%YR). Disable the indicator
     ; just in case.
@@ -59,18 +56,20 @@ cleanupHandlerException:
     bcall(_RunIndicOff) ; destroys A (contrary to SDK docs)
     pop af
     ; Convert system code to handler code
-    bcall(_SetHandlerCodeToSystemCode)
-    jr cleanupHandlerSetErrorCode
+    bcall(_SetHandlerCodeToSystemCode) ; A=systemCode
+    jr processMainCommandsSetErrorCode
 
-cleanupHandlerClearScreen:
+; Handle errorCodeClearScreen from subcommand.
+processMainCommandsHandleClearScreen:
     ; force rerendering of normal calculator display
     bcall(_ClrLCDFull)
     ld a, $FF
     ld (iy + dirtyFlags), a ; set all dirty flags
     ld a, errorCodeOk
-    jr cleanupHandlerSetErrorCode
+    jr processMainCommandsSetErrorCode
 
-cleanupHandlerQuitApp:
+; Handle errorCodeQuitApp from subcommand.
+processMainCommandsHandleQuitApp:
     ld a, errorCodeOk
     bcall(_SetErrorCode)
     jp mainExit
