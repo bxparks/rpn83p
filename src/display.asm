@@ -972,7 +972,6 @@ printOP1:
 printOP1Complex:
     call eraseEOLIfNeeded
     call displayStackSetSmallFont
-    call splitCp1ToOp1Op2
     ld a, (complexMode)
     cp a, complexModeRect
     jr z, printOP1ComplexRect
@@ -985,6 +984,7 @@ printOP1Complex:
 ; Description: Print the complex numberin CP1 in rectangular form.
 ; Input: CP1: complex number
 printOP1ComplexRect:
+    call splitCp1ToOp1Op2
     ; Print Re(X)
     ld a, 10 ; width of output
     bcall(_FormReal)
@@ -1027,9 +1027,13 @@ printOP1Real:
     jp printOP1Base10
 
 ; Description: Print the complex numberin CP1 in polar form using radians.
+; Note: An r value >= 1e100 or <= 1e-100 can be returned by complexRToPRad()
+; and will be displayed by this function. This is useful because that means we
+; can display the entire domain of the rectangular complex numbers, even when
+; the 'r' value goes beyond 1e100 or 1e-100.
 ; Input: CP1: complex number
 printOP1ComplexRad:
-    call complexToPolarRad ; OP1=r; OP2=theta(rad)
+    call complexRToPRad ; OP1=r; OP2=theta(rad)
     jr nc, printOP1ComplexRadOk
     ld hl, msgPrintComplexError
     call vPutSmallS
@@ -1053,9 +1057,13 @@ printOP1ComplexRadOk:
     ret
 
 ; Description: Print the complex numberin CP1 in polar form using degrees.
+; Note: An r value >= 1e100 or <= 1e-100 can be returned by complexRToPRad()
+; and will be displayed by this function. This is useful because that means we
+; can display the entire domain of the rectangular complex numbers, even when
+; the 'r' value goes beyond 1e100 or 1e-100.
 ; Input: CP1: complex number
 printOP1ComplexDeg:
-    call complexToPolarDeg ; OP1=r; OP2=theta(deg)
+    call complexRToPDeg ; OP1=r; OP2=theta(deg)
     jr nc, printOP1ComplexDegOk
     ld hl, msgPrintComplexError
     call vPutSmallS
@@ -1082,7 +1090,7 @@ printOP1ComplexDegOk:
     ret
 
 msgPrintComplexError:
-    .db "<err>", 0
+    .db "<overflow>", 0
 
 msgComplexPolarSpacer:
     .db "  ", Sangle, " ", 0

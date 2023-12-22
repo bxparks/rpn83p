@@ -973,7 +973,7 @@ handleKeyLinkRealsToComplex:
 handleKeyLinkRealsToComplexOk:
     ; Convert 2 reals to complex
     bcall(_PopRealO2) ; FPS=[]; OP2=X=Im; OP1=Y=Re
-    call complexFromReals ; CP1=complex(OP1,OP2)
+    call realsToComplex ; CP1=complex(OP1,OP2)
     jp nc, replaceXY ; replace X, Y with CP1
     ; Handle error
     bcall(_ErrDomain)

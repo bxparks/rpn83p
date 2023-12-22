@@ -188,6 +188,8 @@ initComplexMode:
     ret
 
 ;-----------------------------------------------------------------------------
+; Conversion bewteen complex and reals.
+;-----------------------------------------------------------------------------
 
 ; Description: Convert the complex number into either (a,b) or (r,theta),
 ; dependingon the complexMode.
@@ -198,66 +200,13 @@ initComplexMode:
 complexToReals:
     ld a, (complexMode)
     cp a, complexModeRad
-    jr z, complexToPolarRad
+    jr z, complexRToPRad
     cp a, complexModeDeg
-    jr z, complexToPolarDeg
+    jr z, complexRToPDeg
     ; Everything else, assume Rect
     call splitCp1ToOp1Op2
     or a ; CF=0
     ret
-
-; Description: Convert complex number into polar-rad form.
-; Input: CP1: complex number
-; Output: OP1: r; OP2: theta(radian)
-complexToPolarRad:
-    call splitCp1ToOp1Op2 ; OP1=Re(X); OP2=Im(X)
-    ld a, (iy + trigFlags)
-    push af ; stack=[trigFlags]
-    res trigDeg, (iy + trigFlags)
-    jr complexToPolarCommon
-
-; Description: Convert complex number into polar-rad form.
-; Input: CP1: complex number
-; Output: OP1: r; OP2: theta(deg)
-complexToPolarDeg:
-    call splitCp1ToOp1Op2 ; OP1=Re(X); OP2=Im(X)
-    ld a, (iy + trigFlags)
-    push af ; stack=[trigFlags]
-    set trigDeg, (iy + trigFlags)
-    ; [[fallthrough]]
-
-; Description: Common fragment of complexToPolarRad() and complexToPolarDeg().
-; Currently, this routine overflows at a pretty low number of a and b for the
-; complex number (a+bi) because the TI-OS RToP() function overflows when
-; r^2=a^2+b^ becomes >= 1e128. So RToP() limits a and b to about 7.07e63.
-;
-; TODO: I think it would be fairly easy to write own version of RToP() which
-; would extend the range to close to 7.07e99. That implementation would use the
-; more robust formula: r^2 = a^2(1+(b/a)^2) = b^2((a/b)^2+1), depending on
-; whether a > b or b > a. We would still have an overflow problem when r >=
-; 1e100, since it cannot be displayed using normal floating point format.
-complexToPolarCommon:
-    ld hl, complexToPolarHandleException
-    ; set up exception trap to reset trigFlags
-    call APP_PUSH_ERRORH
-    bcall(_RToP) ; OP1=r; OP2=theta; throws exception when r^2=a^2+b^2>=1e128
-    call APP_POP_ERRORH
-    ; Reset the original trigFlags
-    pop af ; stack=[]; A=trigFlags
-    ld (iy + trigFlags), a
-    or a ; CF=0
-    ret
-
-complexToPolarHandleException:
-    call op1Set0 ; OP1=0.0
-    call op2Set0 ; OP2=0.0
-    ; Reset the original trigFlags
-    pop af ; stack=[]; A=trigFlags
-    ld (iy + trigFlags), a
-    scf ; CF=1
-    ret
-
-;-----------------------------------------------------------------------------
 
 ; Description: Convert the (a,b) or (r,theta) (depending on complexMode) to a
 ; complex number.
@@ -266,34 +215,174 @@ complexToPolarHandleException:
 ; Output:
 ;   - CP1=complex
 ;   - CF=1 on error; CF=0 if ok
-complexFromReals:
+realsToComplex:
     ld a, (complexMode)
     cp a, complexModeRad
-    jr z, complexFromPolarRad
+    jp z, complexPRadToR
     cp a, complexModeDeg
-    jr z, complexFromPolarDeg
+    jp z, complexPDegToR
     ; Everything else, assume Rect
     call mergeOp1Op2ToCp1
     or a ; CF=0
     ret
 
-complexFromPolarRad:
+;-----------------------------------------------------------------------------
+; Complex rectangular and polar conversions. These are custom variations on top
+; of the built-in RToP() and PToR() TI-OS functions. The RToP() function in
+; particular overflows internally when it calculators r^2 = a^2 + b^2. So, for
+; example, it throws an exception when a=b=7.1e63 (1/sqrt(2)*10^64).
+;-----------------------------------------------------------------------------
+
+; Description: Convert complex number into polar-rad form.
+; Input: CP1: Z, complex number
+; Output:
+;   - OP1,OP2: (r, thetaRad)
+;   - CF=1 if error; 0 if no error
+complexRToPRad:
+    ; Clobber the global trigFlags, but use an exception handler to restore the
+    ; previous setting.
     ld a, (iy + trigFlags)
     push af ; stack=[trigFlags]
     res trigDeg, (iy + trigFlags)
-    jr complexFromPolarCommon
+    jr complexRToPCommon
 
-complexFromPolarDeg:
+; Description: Convert complex number into polar-degree form.
+; Input: CP1: Z, complex number
+; Output:
+;   - OP1,OP2: (r, thetaDeg)
+;   - CF=1 if error; 0 if no error
+complexRToPDeg:
+    ; Clobber the global trigFlags, but use an exception handler to restore the
+    ; previous setting.
     ld a, (iy + trigFlags)
     push af ; stack=[trigFlags]
     set trigDeg, (iy + trigFlags)
     ; [[fallthrough]]
 
-; Description: Common fragment of complexFromPolarRad() and
-; complexFromPolarDeg().
-complexFromPolarCommon:
-    ld hl, complexFromPolarHandleException
+; Description: Common fragment of complexRToPRad() and complexRToPDeg(). This
+; routine can overflow when the 'r=cabs(a,b)' overflows 1e100, in which case
+; CF=1 will be set. The internal exception will be caught and eaten.
+;
+; It looks like Cabs() does *not* throw an Err:Overflow exception when the
+; exponent becomes >=100. An 'r' of >=1E100 can be returned and will be
+; displayed on the screen in polar mode.
+;
+; Input:
+;   - CP1: complex number
+;   - (trigFlags)=angle mode
+; Output:
+;   - OP1,OP2: (r, theta)
+;   - CF=1 if error; 0 if no error
+complexRToPCommon:
     ; set up exception trap to reset trigFlags
+    ld hl, complexRToPHandleException
+    call APP_PUSH_ERRORH
+#ifdef USE_RTOP_WITH_SCALING
+    call splitCp1ToOp1Op2 ; OP1=Re(Z); OP2=Im(Z)
+    call complexNormalize ; OP1=a/scale; OP2=b/scale; OP3=scale
+    bcall(_PushRealO3) ; FPS=[scale]
+    bcall(_RToP) ; OP1=r; OP2=theta; may throw exception on overflow
+    call exchangeFPSOP2 ; FPS=[theta]; OP2=scale
+    bcall(_FPMult) ; OP1=r*scale
+    bcall(_PopRealO2) ; OP2=theta
+#else
+    ; Cabs() does not seem to suffer the internal overflow and underflow
+    ; problems of RToP(). This implementation also uses fewer bcall() which is
+    ; very expensive, so I think this is the winner.
+    bcall(_PushOP1) ; FPS=[Z]
+    bcall(_Angle) ; OP1=Angle(Z)
+    call op1ToOp5 ; OP5=Angle(Z)
+    bcall(_PopOP1) ; FPS=[]; CP1=Z
+    bcall(_CAbs) ; OP1=Cabs(Z); destroys OP1-OP4
+    call op5ToOp2 ; OP2=Angle(Z)
+#endif
+    call APP_POP_ERRORH
+    ; Reset the original trigFlags
+    pop af ; stack=[]; A=trigFlags
+    ld (iy + trigFlags), a
+    or a ; CF=0
+    ret
+
+complexRToPHandleException:
+    call op1Set0 ; OP1=0.0
+    call op2Set0 ; OP2=0.0
+    ; Reset the original trigFlags
+    pop af ; stack=[]; A=trigFlags
+    ld (iy + trigFlags), a
+    scf ; CF=1
+    ret
+
+#ifdef USE_RTOP_WITH_SCALING
+; Description: Scale OP1,OP2 by the max(|OP1|,|OP2|). NOTE: Maybe it's easier
+; to just call the CAbs() and Angle() functions separately, instead of trying
+; to work around the bug/limitation of RToP().
+; Input: OP1=a,OP2=b
+; Output: OP3=scale=max(|OP1|,|OP2|,1.0)
+complexNormalize:
+    bcall(_AbsO1O2Cp) ; if Abs(OP1)>=Abs(OP2): CF=0
+    jr nc, complexNormalizeOP1Bigger
+    ; OP2 bigger
+    call op2ToOp3 ; OP3=scale
+    jr complexNormalizeCheckScale
+complexNormalizeOP1Bigger:
+    call op1ToOP3 ; OP3=scale
+complexNormalizeCheckScale:
+    ; Check the scaling factor for zer0
+    call checkOp3FP0 ; if zero: ZF=1
+    jr nz, complexNormalizeCheckReduce
+    bcall(_OP3Set1) ; OP3=1.0
+complexNormalizeCheckReduce:
+    call clearOp3Sign ; OP3=scale=max(|a|,|b|,1.0)
+    ; Reduce OP1,OP2 by scale. Sorry for all the stack juggling.
+    bcall(_PushRealO3) ; FPS=[scale]
+    bcall(_PushRealO3) ; FPS=[scale,scale]
+    bcall(_PushRealO2) ; FPS=[scale,scale,b]
+    call op3ToOp2 ; OP2=scale
+    bcall(_FPDiv) ; OP1=a/scale
+    call exchangeFPSOP1 ; FPS=[scale,scale,a/scale]; OP1=b
+    call exchangeFPSFPS ; FPS=[scale,a/scale,scale]
+    bcall(_PopRealO2) ; FPS=[scale,a/scale]; OP2=scale
+    bcall(_FPDiv) ; OP1=b/scale
+    call op1ToOp2 ; OP2=/b/scale
+    bcall(_PopRealO1) ; FPS=[scale]; OP1=a/scale
+    bcall(_PopRealO3) ; FPS=[]; OP3=scale
+    ret
+#endif
+
+;-----------------------------------------------------------------------------
+
+; Input:
+;   - OP1,OP2=(r,thetaRad)
+; Output:
+;   - OP1,OP2=(a,b)
+;   - CF=1 if error; 0 if no error
+complexPRadToR:
+    ld a, (iy + trigFlags)
+    push af ; stack=[trigFlags]
+    res trigDeg, (iy + trigFlags)
+    jr complexPToRCommon
+
+; Input:
+;   - OP1,OP2=(r,thetaDeg)
+; Output:
+;   - OP1,OP2=(a,b)
+;   - CF=1 if error; 0 if no error
+complexPDegToR:
+    ld a, (iy + trigFlags)
+    push af ; stack=[trigFlags]
+    set trigDeg, (iy + trigFlags)
+    ; [[fallthrough]]
+
+; Description: Common fragment of complexPRadToR() and complexPDegToR().
+; Input:
+;   - OP1,OP2=(r,theta)
+;   - (trigFlags)=angle mode
+; Output:
+;   - OP1,OP2=(a,b)
+;   - CF=1 if error; 0 if no error
+complexPToRCommon:
+    ; set up exception trap to reset trigFlags
+    ld hl, complexPToRHandleException
     call APP_PUSH_ERRORH
     bcall(_PToR) ; OP1=Re(z); OP2=Im(z)
     call APP_POP_ERRORH
@@ -304,7 +393,7 @@ complexFromPolarCommon:
     or a ; CF=0
     ret
 
-complexFromPolarHandleException:
+complexPToRHandleException:
     call op1Set0 ; OP1=0.0
     call op2Set0 ; OP2=0.0
     call mergeOp1Op2ToCp1
@@ -313,7 +402,6 @@ complexFromPolarHandleException:
     ld (iy + trigFlags), a
     scf ; CF=1
     ret
-
 
 ;-----------------------------------------------------------------------------
 ; Complex misc operations.
@@ -332,19 +420,20 @@ complexConj:
 complexReal:
     call checkOp1Complex
     ret nz ; do nothing if not complex
-    jp splitCp1ToOp1Op2 ; OP1=Re(X); OP2=Im(X)
+    jp splitCp1ToOp1Op2 ; OP1=Re(Z); OP2=Im(Z)
 
 ; Description: Extract the imaginary part of complex(OP1/OP2).
 ; Output: OP1=Im(OP1/OP2)
 complexImag:
     call checkOp1Complex
     ret nz ; do nothing if not complex
-    call splitCp1ToOp1Op2 ; OP1=Re(X); OP2=Im(X)
-    jp op2ToOp1 ; OP1=Im(X)
+    call splitCp1ToOp1Op2 ; OP1=Re(Z); OP2=Im(Z)
+    jp op2ToOp1 ; OP1=Im(Z)
 
 ; Description: Return the magnitude or absolute value 'r' of the complex
 ; number.
 ; Input: CP1: complex number
+; Output: OP1: abs(Z) or abs(X)
 complexAbs:
     call checkOp1Complex
     jr z, complexAbsCabs
@@ -352,7 +441,7 @@ complexAbs:
     bcall(_ClrOP1S) ; clear sign bit of OP1
     ret
 complexAbsCabs:
-    bcall(_CAbs); OP1/OP2=Cabs(OP1/OP2)
+    bcall(_CAbs); OP1=Cabs(CP1)
     ret
 
 ; Description: Return the angle (argument) of the complex number.
@@ -362,11 +451,11 @@ complexAbsCabs:
 complexAngle:
     call checkOp1Complex
     jr z, complexAngleComplex
-    call op2Set0 ; Im(X)=0
+    call op2Set0 ; Im(Z)=0
     call mergeOp1Op2ToCp1 ; OP1/OP2=complex(OP1,OP2)
     ; [[fallthrough]]
 complexAngleComplex:
-    bcall(_Angle) ; OP1=CAngle(OP1/OP2)
+    bcall(_Angle) ; OP1=CAngle(CP1)
     ret
 
 ;-----------------------------------------------------------------------------

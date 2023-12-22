@@ -23,6 +23,7 @@ SRCS := \
 	debug.asm \
 	display.asm \
 	errorcode.asm \
+	float.asm \
 	float1.asm \
 	handlers.asm \
 	handlertab.asm \

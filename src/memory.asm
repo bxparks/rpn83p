@@ -125,6 +125,18 @@ move9ToOp4:
     ldir
     ret
 
+; Description: Move 9 bytes (size of TI-OS floating point number) from HL to
+; OP4. Implements bcall(_Mov9ToOP5) without the overhead of a bcall().
+; Input: HL=pointer to float
+; Output: (OP4)=contains float
+; Destroys: BC, DE, HL
+; Preserves: A
+move9ToOp5:
+    ld de, OP5
+    ld bc, 9
+    ldir
+    ret
+
 ;-----------------------------------------------------------------------------
 
 ; Preserves: A
@@ -141,6 +153,11 @@ op1ToOp3:
 op1ToOp4:
     ld hl, OP1
     jr move9ToOp4
+
+; Preserves: A
+op1ToOp5:
+    ld hl, OP1
+    jr move9ToOp5
 
 ;-----------------------------------------------------------------------------
 
@@ -159,6 +176,11 @@ op2ToOp4:
     ld hl, OP2
     jr move9ToOp4
 
+; Preserves: A
+op2ToOp5:
+    ld hl, OP2
+    jr move9ToOp5
+
 ;-----------------------------------------------------------------------------
 
 ; Preserves: A
@@ -176,6 +198,11 @@ op3ToOp4:
     ld hl, OP3
     jr move9ToOp4
 
+; Preserves: A
+op3ToOp5:
+    ld hl, OP3
+    jr move9ToOp5
+
 ;-----------------------------------------------------------------------------
 
 ; Preserves: A
@@ -192,6 +219,33 @@ op4ToOp2:
 op4ToOp3:
     ld hl, OP4
     jr move9ToOp3
+
+; Preserves: A
+op4ToOp5:
+    ld hl, OP4
+    jr move9ToOp5
+
+;-----------------------------------------------------------------------------
+
+; Preserves: A
+op5ToOp1:
+    ld hl, OP5
+    jp move9ToOp1
+
+; Preserves: A
+op5ToOp2:
+    ld hl, OP5
+    jp move9ToOp2
+
+; Preserves: A
+op5ToOp3:
+    ld hl, OP5
+    jp move9ToOp3
+
+; Preserves: A
+op5ToOp4:
+    ld hl, OP5
+    jp move9ToOp4
 
 ;-----------------------------------------------------------------------------
 
