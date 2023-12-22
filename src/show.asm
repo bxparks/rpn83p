@@ -62,15 +62,15 @@ formBaseString:
     push de
     bcall(_CkOP1Pos) ; if OP1>=0: ZF=1
     pop de
-    jr nz, formRealString
+    jp nz, formRealString
     ; Check for DEC, HEX, OCT and use Real formatting.
     ld a, (baseNumber)
     cp 10
-    jr z, formRealString
+    jp z, formRealString
     cp 16
-    jr z, formRealString
+    jp z, formRealString
     cp 8
-    jr z, formRealString
+    jp z, formRealString
     ; [[fallthrough]]
 
 formBinString:
@@ -82,12 +82,12 @@ formBinString:
     ; Check for too big.
     bit u32StatusCodeTooBig, c
     pop de ; stack=[]; DE=bufPointer
-    jr nz, formRealString
+    jp nz, formRealString
     ; Check for negative. This shouldn't happen because it should have been
     ; caught earlier, so I guess this is just defensive programming against
     ; future refatoring.
     bit u32StatusCodeNegative, c
-    jr nz, formRealString
+    jp nz, formRealString
     ; We are here if OP1 is a positive integer < 2^WSIZ.
     push de ; stack=[bufPointer]
     ; Move u32(OP3) to OP1, to free up OP3.
@@ -111,33 +111,92 @@ formBinString:
 
 ; Format the complex number in OP1/OP2 into the string buffer pointed by DE.
 ; Input:
-;   - OP1/OP2: floating point number
+;   - OP1/OP2=Z, complex number
 ;   - DE: pointer to output string buffer
 ; Output:
 ;   - (DE): string buffer updated and NUL terminated
 ;   - DE: points to the next character
 ; Destroys: all, OP1-OP6
 formComplexString:
-    call splitCp1ToOp1Op2 ; OP1=Re(X); OP2=Im(X)
+    ; Determine the complex display mode.
+    ld a, (complexMode)
+    cp a, complexModeRect
+    jr z, formComplexRectString
+    cp a, complexModeRad
+    jr z, formComplexRadString
+    cp a, complexModeDeg
+    jr z, formComplexDegString
+    ; [[falltrhough]]
+
+; Description: Format the complex number in rectangular form.
+; Input: DE: stringPointer
+; Output: DE: updated
+formComplexRectString:
+    call splitCp1ToOp1Op2 ; OP1=Re(Z); OP2=Im(Z)
+    ; Format real part
     push de
-    bcall(_PushRealO2) ; FPS=[Im(X)]
+    bcall(_PushRealO2) ; FPS=[Im(Z)]
     pop de
     call formRealString ; DE updated
     ; Add " i "
-    ld a, ' '
-    ld (de), a
-    inc de
-    ld a, LimagI
-    ld (de), a
-    inc de
-    ld a, ' '
-    ld (de), a
-    inc de
-    ; Format the imaginary
+    ld hl, msgShowComplexRectSpacer
+    bcall(_StrCopy)
+    ; Format imaginary part
     push de
-    bcall(_PopRealO1) ; FPS=[]; OP1=Im(X)
+    bcall(_PopRealO1) ; FPS=[]; OP1=Im(Z)
+    pop de
+    jr formRealString
+
+msgShowComplexRectSpacer:
+    .db " ", LImagI, " ", 0
+
+; Description: Format the complex number in polar radian form.
+; Input: DE: stringPointer
+; Output: DE: updated
+formComplexRadString:
+    push de
+    call complexRToPRad ; OP1=r; OP2=theta(rad)
     pop de
     ; [[fallthrough]]
+
+; Output: DE: updated
+formComplexPolarCommon:
+    jr nc, formComplexRadStringOk
+    ld hl, msgPrintComplexError ; "<overflow>"
+    bcall(_StrCopy)
+    ret
+formComplexRadStringOk:
+    ; Format the magnitude
+    push de
+    bcall(_PushRealO2) ; FPS=[theta]
+    pop de
+    call formRealString
+    ; Add angle symbol
+    ld hl, msgShowComplexPolarSpacer
+    bcall(_StrCopy)
+    ; Format angle
+    push de
+    bcall(_PopRealO1) ; FPS=[]; OP1=theta
+    pop de
+    jr formRealString
+
+; Description: Format the complex number in polar degree form.
+formComplexDegString:
+    push de
+    call complexRToPDeg ; OP1=r; OP2=theta(rad)
+    pop de
+    call formComplexPolarCommon
+    ld a, Ldegree
+    ld (de), a
+    inc de
+    ; add NUL terminator
+    xor a
+    ld (de), a
+    inc de
+    ret
+
+msgShowComplexPolarSpacer:
+    .db " ", Langle, " ", 0
 
 ;------------------------------------------------------------------------------
 
@@ -151,6 +210,7 @@ formComplexString:
 ;   - DE: pointer to output string buffer
 ; Output:
 ;   - DE: string buffer updated, points to the next character
+; Destroys: OP1, OP2
 formRealString:
     push de
     bcall(_CkOp1FP0) ; if OP1==0: ZF=1

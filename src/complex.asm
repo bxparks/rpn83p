@@ -197,6 +197,7 @@ initComplexMode:
 ; Output:
 ;   - OP1,OP2=(a,b) or (r,theta)
 ;   - CF=1 if error; 0 if no error
+; Destroys: all
 complexToReals:
     ld a, (complexMode)
     cp a, complexModeRad
@@ -215,6 +216,7 @@ complexToReals:
 ; Output:
 ;   - CP1=complex
 ;   - CF=1 on error; CF=0 if ok
+; Destroys: all
 realsToComplex:
     ld a, (complexMode)
     cp a, complexModeRad
@@ -238,6 +240,7 @@ realsToComplex:
 ; Output:
 ;   - OP1,OP2: (r, thetaRad)
 ;   - CF=1 if error; 0 if no error
+; Destroys: all
 complexRToPRad:
     ; Clobber the global trigFlags, but use an exception handler to restore the
     ; previous setting.
@@ -251,6 +254,7 @@ complexRToPRad:
 ; Output:
 ;   - OP1,OP2: (r, thetaDeg)
 ;   - CF=1 if error; 0 if no error
+; Destroys: all
 complexRToPDeg:
     ; Clobber the global trigFlags, but use an exception handler to restore the
     ; previous setting.
