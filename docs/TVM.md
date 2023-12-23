@@ -3,7 +3,7 @@
 Equations, algorithms, and other tricks used to calculate the Time Value of
 Money (TVM) variables in the RPN83P calculator app.
 
-**Version**: 0.8.0-dev (2023-11-27)
+**Version**: 0.9.0-dev (2023-12-23)
 
 **Project Home**: https://github.com/bxparks/rpn83p
 

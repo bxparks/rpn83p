@@ -42,16 +42,16 @@ README.pdf: ../README.md Makefile
 	mv -f $@ release)
 
 # Convert markdown to PDF.
-USER_GUIDE.pdf: ../USER_GUIDE.md Makefile
-	(cd ..; \
+USER_GUIDE.pdf: ../docs/USER_GUIDE.md Makefile
+	(cd ../docs; \
 	pandoc -V geometry:margin=1in -V fontsize=12pt -f gfm -s -o $@ USER_GUIDE.md; \
-	mv -f $@ release)
+	mv -f $@ ../release)
 
 # Convert markdown to PDF.
-TVM.pdf: ../TVM.md Makefile
-	(cd ..; \
+TVM.pdf: ../docs/TVM.md Makefile
+	(cd ../docs; \
 	pandoc -V geometry:margin=1in -V fontsize=12pt -f gfm -s -o $@ TVM.md; \
-	mv -f $@ release)
+	mv -f $@ ../release)
 
 # Copy the CHANGELOG.md as is, without conversion to PDF. It's just a text
 # file without any embedded images.
@@ -67,15 +67,15 @@ rpn83p.8xk: ../src/rpn83p.8xk
 	$(MAKE) -C ../src rpn83p.8xk
 
 # Copy the animated GIF as a sample screenshot.
-rpn83p-example1.gif: ../docs/rpn83p-example1.gif
+rpn83p-example1.gif: ../docs/images/rpn83p-example1.gif
 	cp -f $< $@
 
 # Copy the animated GIF as a sample screenshot.
-rpn83p-example2.gif: ../docs/rpn83p-example2.gif
+rpn83p-example2.gif: ../docs/images/rpn83p-example2.gif
 	cp -f $< $@
 
 # Copy the animated GIF as a sample screenshot.
-rpn83p-example3.gif: ../docs/rpn83p-example3.gif
+rpn83p-example3.gif: ../docs/images/rpn83p-example3.gif
 	cp -f $< $@
 
 clean:

@@ -82,13 +82,13 @@ Missing features (partial list):
 - complex numbers
 - keystroke programming
 
-**Version**: 0.8.0 (2023-12-03)
+**Version**: 0.9.0-dev (2023-12-23)
 
 **Changelog**: [CHANGELOG.md](CHANGELOG.md)
 
 **Project Home**: https://github.com/bxparks/rpn83p
 
-**User Guide**: [USER_GUIDE.md](USER_GUIDE.md)
+**User Guide**: [USER_GUIDE.md](docs/USER_GUIDE.md)
 
 ## Table of Contents
 
@@ -98,7 +98,7 @@ Missing features (partial list):
     - [Example 1](#example-1)
     - [Example 2](#example-2)
     - [Example 3](#example-3)
-- [User Guide](#user-guide)
+- [Documentation](#documentation)
 - [Compiling from Source](#compiling-from-source)
 - [Tools and Resources](#tools-and-resources)
 - [License](#license)
@@ -109,7 +109,7 @@ Missing features (partial list):
 
 RPN83P is a flash application that is packaged as a single file named
 `rpn83p.8xk`. Detailed instructions are given in the [RPN83P User
-Guide](USER_GUIDE.md), but here is the quick version:
+Guide](docs/USER_GUIDE.md), but here is the quick version:
 
 - Download the `rpn83p.8xk` file from the
   [releases page](https://github.com/bxparks/rpn83p/releases).
@@ -128,7 +128,7 @@ Guide](USER_GUIDE.md), but here is the quick version:
 
 The RPN83P app starts directly into the calculator mode, like this:
 
-![RPN83P Hello 1](docs/rpn83p-screenshot-initial.png)
+![RPN83P Hello 1](docs/images/rpn83p-screenshot-initial.png)
 
 ### Supported Hardware
 
@@ -183,7 +183,7 @@ outwards. Enter the following keystrokes:
 
 Here is an animated GIF that shows this calculation:
 
-![RPN83P Example 1 GIF](docs/rpn83p-example1.gif)
+![RPN83P Example 1 GIF](docs/images/rpn83p-example1.gif)
 
 (Note that the RPN83P provides a `X^3` menu function that could have been used
 for this formula, but I used the `LastX` feature to demonstrate its use.)
@@ -200,37 +200,37 @@ view the final result as a decimal number:
 
 - Press `MATH` to reset the menu to the home row.
 - Navigate the menu with the DOWN arrow to get to
-  ![ROOT MenuRow 2](docs/rpn83p-screenshot-menu-root-2.png)
+  ![ROOT MenuRow 2](docs/images/rpn83p-screenshot-menu-root-2.png)
 - Press `BASE` menu to get to
-  ![BASE Menu DEC](docs/rpn83p-menu-base-dec.png)
+  ![BASE Menu DEC](docs/images/rpn83p-menu-base-dec.png)
 - Press `HEX` menu to get to
-  ![BASE Menu HEX](docs/rpn83p-menu-base-hex.png)
+  ![BASE Menu HEX](docs/images/rpn83p-menu-base-hex.png)
 - Press `ALPHA` `B` buttons
 - Press `6` button
 - Press `ENTER` button
 - Press `6` button
 - Press `5` button
 - Press DOWN arrow to get to the menu row with the `AND` menu item
-  ![BASE MenuRow AND](docs/rpn83p-screenshot-menu-root-base-2.png)
+  ![BASE MenuRow AND](docs/images/rpn83p-screenshot-menu-root-base-2.png)
 - Press `AND` menu, the `X` register should show `00000024`
 - Press UP arrow to go back to
-  ![BASE Menu HEX](docs/rpn83p-menu-base-hex.png)
+  ![BASE Menu HEX](docs/images/rpn83p-menu-base-hex.png)
 - Press `OCT` menu, the `X` register should show `00000000044` with the menu
-  showing ![BASE Menu OCT](docs/rpn83p-menu-base-oct.png)
+  showing ![BASE Menu OCT](docs/images/rpn83p-menu-base-oct.png)
 - Press `BIN` menu, the `X` register should show `00000000100100` with the menu
-  showing ![BASE Menu BIN](docs/rpn83p-menu-base-bin.png)
+  showing ![BASE Menu BIN](docs/images/rpn83p-menu-base-bin.png)
 - Press DOWN DOWN (twice) to the menu row with the shift right `SR` item
-  ![BASE MenuRow SR](docs/rpn83p-screenshot-menu-root-base-3.png)
+  ![BASE MenuRow SR](docs/images/rpn83p-screenshot-menu-root-base-3.png)
 - Press `SR` `SR` `SR` (three times) to show `00000000000100` and the Carry Flag
   `C` set
 - Press UP UP (twice) to reach the base conversion menu row
-  ![BASE Menu BIN](docs/rpn83p-menu-base-bin.png)
+  ![BASE Menu BIN](docs/images/rpn83p-menu-base-bin.png)
 - Press `DEC` menu, the `X` register should show `4` with the menu showing
-  ![BASE Menu DEC](docs/rpn83p-menu-base-dec.png)
+  ![BASE Menu DEC](docs/images/rpn83p-menu-base-dec.png)
 
 Here is the animated GIF that shows this calculation:
 
-![RPN83P Example 2 GIF](docs/rpn83p-example2.gif)
+![RPN83P Example 2 GIF](docs/images/rpn83p-example2.gif)
 
 ### Example 3
 
@@ -248,14 +248,14 @@ Here are the steps:
 
 - Press `MATH` to reset the menu to the home row.
 - Navigate the menu with the DOWN arrow to get to
-  ![ROOT MenuRow 2](docs/rpn83p-screenshot-menu-root-2.png)
+  ![ROOT MenuRow 2](docs/images/rpn83p-screenshot-menu-root-2.png)
 - Press the `TVM` menu to get to
-  ![TVM MenuRow 1](docs/rpn83p-screenshot-menu-root-tvm-1.png)
+  ![TVM MenuRow 1](docs/images/rpn83p-screenshot-menu-root-tvm-1.png)
 - Press the DOWN arrow to get to
-  ![TVM MenuRow 2](docs/rpn83p-screenshot-menu-root-tvm-2.png)
+  ![TVM MenuRow 2](docs/images/rpn83p-screenshot-menu-root-tvm-2.png)
 - Press the `CLTV` button to clear the TVM variables.
 - Press the UP arrow to get back to
-  ![TVM MenuRow 1](docs/rpn83p-screenshot-menu-root-tvm-1.png)
+  ![TVM MenuRow 1](docs/images/rpn83p-screenshot-menu-root-tvm-1.png)
 - Press `360` `N` (30 years * 12 months = 360 payments)
 - Press `8` `I%YR` (interest percent per year)
 - Press `500000` `PV` (present value)
@@ -271,7 +271,7 @@ Here are the steps:
 
 Here is the animated GIF that shows this calculation:
 
-![RPN83P Example 3 GIF](docs/rpn83p-example3.gif)
+![RPN83P Example 3 GIF](docs/images/rpn83p-example3.gif)
 
 ### Exiting the Menu
 
@@ -280,11 +280,13 @@ Press:
 - `ON` button (`ESC/EXIT`) multiple times to back to the home menu, or
 - `MATH` button (`HOME`) to go back directly.
 
-![ROOT MenuRow 1](docs/rpn83p-screenshot-menu-root-1.png)
+![ROOT MenuRow 1](docs/images/rpn83p-screenshot-menu-root-1.png)
 
-## User Guide
+## Documentation
 
-See the [RPN83P User Guide](USER_GUIDE.md).
+- [RPN83P User Guide](docs/USER_GUIDE.md)
+- [TVM Algorithms](docs/TVM.md)
+- [Developer Notes](docs/DEVELOPER.md)
 
 ## Compiling from Source
 

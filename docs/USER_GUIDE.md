@@ -2,7 +2,7 @@
 
 RPN calculator app for the TI-83 Plus and TI-84 Plus inspired by the HP-42S.
 
-**Version**: 0.8.0 (2023-12-03)
+**Version**: 0.9.0-dev (2023-12-23)
 
 **Project Home**: https://github.com/bxparks/rpn83p
 
@@ -245,12 +245,12 @@ After installing `rpn83p.8xk` file, go to the calculator:
 - Scroll down to the `RPN83P` entry
 - Press the `ENTER` key
 
-![TIOS APPS](docs/tios-apps.png)
+![TIOS APPS](images/tios-apps.png)
 
 The RPN83P starts directly into the calculator mode, no fancy splash screen. You
 should see a screen that looks like:
 
-![RPN83P screenshot 1](docs/rpn83p-screenshot-initial.png)
+![RPN83P screenshot 1](images/rpn83p-screenshot-initial.png)
 
 ### Quitting
 
@@ -313,7 +313,7 @@ Manual](https://literature.hpcalc.org/items/929).
 
 Here are the various UI elements on the LCD screen used by the RPN83P app:
 
-![RPN83P screen areas](docs/rpn83p-screen-areas-annotated.png)
+![RPN83P screen areas](images/rpn83p-screen-areas-annotated.png)
 
 The LCD screen is 96 pixels (width) by 64 pixels (height). That is large enough
 to display 8 rows of numbers and letters. They are divided into the following:
@@ -335,7 +335,7 @@ the fixed display mode.
 
 The following buttons are used to enter and edit a number in the input buffer:
 
-![Input and Edit Buttons](docs/rpn83p-fullshot-inputedit-buttons.jpg)
+![Input and Edit Buttons](images/rpn83p-fullshot-inputedit-buttons.jpg)
 
 - `0`-`9`: digits
 - `.`: decimal point
@@ -427,7 +427,7 @@ shown.)
 
 These are the buttons which manipulate the RPN stack:
 
-![Input and Edit Buttons](docs/rpn83p-fullshot-rpn-buttons.jpg)
+![Input and Edit Buttons](images/rpn83p-fullshot-rpn-buttons.jpg)
 
 - `(`: rolls RPN stack down (known as `R(downarrow)` on HP calculators)
 - `)`: exchanges `X` and `Y` registers
@@ -488,7 +488,7 @@ sets of 5 items corresponding to those buttons.
 The menu system forms a singly-rooted tree of menu items and groups, which look
 like this conceptually:
 
-![Menu Structure](docs/menu-structure.png)
+![Menu Structure](images/menu-structure.png)
 
 There are 4 components:
 
@@ -505,7 +505,7 @@ There are 4 components:
 The LCD screen always shows a `MenuRow` of 5 `MenuItems`. Here are the buttons
 which are used to navigate the menu hierarchy:
 
-![Menu Buttons](docs/rpn83p-fullshot-menu-buttons.jpg)
+![Menu Buttons](images/rpn83p-fullshot-menu-buttons.jpg)
 
 - `F1`- `F5`: invokes the function shown by the respective menu
 - `UP_ARROW`: goes to previous `MenuRow` of 5 `MenuItems`, within the current
@@ -556,44 +556,44 @@ rooted* menu hierarchy with the menu bar always starting from the implicit
 There are 3 menu arrows at the top-left corner of the LCD screen. The
 `downarrow` indicates that additional menu rows are available:
 
-![Menu Arrows 1](docs/rpn83p-menu-arrows-1.png)
+![Menu Arrows 1](images/rpn83p-menu-arrows-1.png)
 
 When the `DOWN` button is pressed, the menu changes to the next set of 5 menu
 items in the next menu row, and the menu arrows show both an `uparrow` and a
 `downarrow` to indicate that there are more menu items above and below the
 current menu bar:
 
-![Menu Arrows 2](docs/rpn83p-menu-arrows-2.png)
+![Menu Arrows 2](images/rpn83p-menu-arrows-2.png)
 
 Pressing `DOWN` goes to the last set of 5 menu items, and the menu arrows show
 only the `uparrow` to indicate that this is the last of the series:
 
-![Menu Arrows 3](docs/rpn83p-menu-arrows-3.png)
+![Menu Arrows 3](images/rpn83p-menu-arrows-3.png)
 
 You can press `UP` twice goes back to the first menu row, or you can press
 `DOWN` from the last menu row to wrap around to the beginning:
 
-![Menu Arrows 1](docs/rpn83p-menu-arrows-1.png)
+![Menu Arrows 1](images/rpn83p-menu-arrows-1.png)
 
 Pressing the `F2/WINDOW` button from here invokes the `NUM` menu item. This menu
 item is actually a `MenuGroup`, so the menu system descends into this folder,
 and displays the 5 menu items in the first menu row:
 
-![Menu Arrows NUM 1](docs/rpn83p-menu-arrows-num-1.png)
+![Menu Arrows NUM 1](images/rpn83p-menu-arrows-num-1.png)
 
 Pressing the `DOWN` arrow button shows the next menu row:
 
-![Menu Arrows NUM 2](docs/rpn83p-menu-arrows-num-2.png)
+![Menu Arrows NUM 2](images/rpn83p-menu-arrows-num-2.png)
 
 Pressing the `DOWN` arrow button goes to the final menu row:
 
-![Menu Arrows NUM 3](docs/rpn83p-menu-arrows-num-3.png)
+![Menu Arrows NUM 3](images/rpn83p-menu-arrows-num-3.png)
 
 Notice that inside the `NUM` menu group, the menu arrows show a `back` arrow.
 This means that the `ON` button (which implements the "BACK", "EXIT", or "ESC"
 functionality) can be used to go back to the parent menu group:
 
-![Menu Arrows 1](docs/rpn83p-menu-arrows-1.png)
+![Menu Arrows 1](images/rpn83p-menu-arrows-1.png)
 
 #### Menu Shortcuts
 
@@ -635,14 +635,14 @@ bar was, and unlikely to want to go back there using the `ON/EXIT/ESC` key.
 
 Pressing the `HELP` menu button at the root menu activates the Help pages:
 
-![ROOT MenuRow 1](docs/rpn83p-screenshot-menu-root-1.png)
+![ROOT MenuRow 1](images/rpn83p-screenshot-menu-root-1.png)
 
 The contents of these pages are updated frequently so the screenshots below may
 not be identical to the current version:
 
-![Help Page 1](docs/rpn83p-help-page-1.png)
-![Help Page 2](docs/rpn83p-help-page-2.png)
-![Help Page 9](docs/rpn83p-help-page-9.png)
+![Help Page 1](images/rpn83p-help-page-1.png)
+![Help Page 2](images/rpn83p-help-page-2.png)
+![Help Page 9](images/rpn83p-help-page-9.png)
 
 The Help pages are intended to capture some of the more obscure tidbits about
 the RPN83P app which may be hard to remember. Hopefully it reduces the number of
@@ -690,13 +690,13 @@ a few of them as described below:
 These are shown in the Error Code line on the screen. For example, division by 0
 shows this:
 
-![Err: Division By 0](docs/rpn83p-errorcode-division-by-0.png)
+![Err: Division By 0](images/rpn83p-errorcode-division-by-0.png)
 
 If a TI-OS function returns an internal error code outside of the ones
 documented in the SDK, RPN83P will print an error message in the form of `Err:
 UNKNOWN (##)` like this:
 
-![Err: UNKNOWN](docs/rpn83p-errorcode-unknown.png)
+![Err: UNKNOWN](images/rpn83p-errorcode-unknown.png)
 
 The number in parenthesis is the internal numerical value of the error code. If
 the error is reproducible, please file a bug report containing the numerical
@@ -732,12 +732,12 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
 `MATH` (HOME) keys to navigate the menu hierarchy.
 
 - `ROOT` (implicit)
-    - ![ROOT MenuRow 1](docs/rpn83p-screenshot-menu-root-1.png)
-    - ![ROOT MenuRow 2](docs/rpn83p-screenshot-menu-root-2.png)
-    - ![ROOT MenuRow 3](docs/rpn83p-screenshot-menu-root-3.png)
+    - ![ROOT MenuRow 1](images/rpn83p-screenshot-menu-root-1.png)
+    - ![ROOT MenuRow 2](images/rpn83p-screenshot-menu-root-2.png)
+    - ![ROOT MenuRow 3](images/rpn83p-screenshot-menu-root-3.png)
 - `ROOT` > `MATH`
-    - ![MATH MenuRow 1](docs/rpn83p-screenshot-menu-root-math-1.png)
-    - ![MATH MenuRow 2](docs/rpn83p-screenshot-menu-root-math-2.png)
+    - ![MATH MenuRow 1](images/rpn83p-screenshot-menu-root-math-1.png)
+    - ![MATH MenuRow 2](images/rpn83p-screenshot-menu-root-math-2.png)
     - `X^3`: cube of `X`
     - `3 Root X`: cube root of `X`
     - `X Root Y`: `X` root of `Y`
@@ -751,9 +751,9 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
     - `E^X-`: `e^x-1` accurate for small `x`
     - `LN1+`: `log(1+x)` accurate for small `x`
 - `ROOT` > `NUM`
-    - ![NUM MenuRow 1](docs/rpn83p-screenshot-menu-root-num-1.png)
-    - ![NUM MenuRow 2](docs/rpn83p-screenshot-menu-root-num-2.png)
-    - ![NUM MenuRow 3](docs/rpn83p-screenshot-menu-root-num-3.png)
+    - ![NUM MenuRow 1](images/rpn83p-screenshot-menu-root-num-1.png)
+    - ![NUM MenuRow 2](images/rpn83p-screenshot-menu-root-num-2.png)
+    - ![NUM MenuRow 3](images/rpn83p-screenshot-menu-root-num-3.png)
     - `%`: `X` percent of `Y`, leaving `Y` unchanged
     - `%CH`: percent change from `Y` to `X`, leaving `Y` unchanged
     - `GCD`: greatest common divisor of `X` and `Y`
@@ -774,15 +774,15 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
     - `MIN`: minimum of `X` and `Y`
     - `MAX`: maximum of `X` and `Y`
 - `ROOT` > `PROB`
-    - ![PROB MenuRow 1](docs/rpn83p-screenshot-menu-root-prob-1.png)
+    - ![PROB MenuRow 1](images/rpn83p-screenshot-menu-root-prob-1.png)
     - `COMB`: combination `C(n,r)` = `C(Y, X)`
     - `PERM`: permutation `P(n,r)` = `P(Y, X)`
     - `N!`: factorial of `X`
     - `RAND`: random number in the range `[0,1)`
     - `SEED`: set the random number generator seed to `X`
 - `ROOT` > `CONV`
-    - ![CONV MenuRow 1](docs/rpn83p-screenshot-menu-root-conv-1.png)
-    - ![CONV MenuRow 2](docs/rpn83p-screenshot-menu-root-conv-2.png)
+    - ![CONV MenuRow 1](images/rpn83p-screenshot-menu-root-conv-1.png)
+    - ![CONV MenuRow 2](images/rpn83p-screenshot-menu-root-conv-2.png)
     - `>DEG`: convert radians to degrees
     - `>RAD`: convert degrees to radians
     - `>REC`: polar to rectangular
@@ -798,14 +798,14 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
 - `ROOT` > `HELP`: display the Help pages
     - use arrow keys to view each Help page
 - `ROOT` > `BASE`
-    - ![BASE MenuRow 1](docs/rpn83p-screenshot-menu-root-base-1.png)
-    - ![BASE MenuRow 2](docs/rpn83p-screenshot-menu-root-base-2.png)
-    - ![BASE MenuRow 3](docs/rpn83p-screenshot-menu-root-base-3.png)
-    - ![BASE MenuRow 4](docs/rpn83p-screenshot-menu-root-base-4.png)
-    - ![BASE MenuRow 5](docs/rpn83p-screenshot-menu-root-base-5.png)
-    - ![BASE MenuRow 6](docs/rpn83p-screenshot-menu-root-base-6.png)
-    - ![BASE MenuRow 7](docs/rpn83p-screenshot-menu-root-base-7.png)
-    - ![BASE MenuRow 8](docs/rpn83p-screenshot-menu-root-base-8.png)
+    - ![BASE MenuRow 1](images/rpn83p-screenshot-menu-root-base-1.png)
+    - ![BASE MenuRow 2](images/rpn83p-screenshot-menu-root-base-2.png)
+    - ![BASE MenuRow 3](images/rpn83p-screenshot-menu-root-base-3.png)
+    - ![BASE MenuRow 4](images/rpn83p-screenshot-menu-root-base-4.png)
+    - ![BASE MenuRow 5](images/rpn83p-screenshot-menu-root-base-5.png)
+    - ![BASE MenuRow 6](images/rpn83p-screenshot-menu-root-base-6.png)
+    - ![BASE MenuRow 7](images/rpn83p-screenshot-menu-root-base-7.png)
+    - ![BASE MenuRow 8](images/rpn83p-screenshot-menu-root-base-8.png)
     - `DEC`: use decimal base 10
     - `HEX`: use hexadecimal base 16
         - display register values as 32-bit unsigned integer
@@ -848,8 +848,8 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
     - `WSIZ`: set integer word size (supported values: 8, 16, 24, 32)
     - `WSZ?`: return current integer word size (default: 32)
 - `ROOT` > `HYP`
-    - ![HYP MenuRow 1](docs/rpn83p-screenshot-menu-root-hyp-1.png)
-    - ![HYP MenuRow 2](docs/rpn83p-screenshot-menu-root-hyp-2.png)
+    - ![HYP MenuRow 1](images/rpn83p-screenshot-menu-root-hyp-1.png)
+    - ![HYP MenuRow 2](images/rpn83p-screenshot-menu-root-hyp-2.png)
     - `SINH`: hyperbolic `sin()`
     - `COSH`: hyperbolic `cos()`
     - `TANH`: hyperbolic `tan()`
@@ -858,9 +858,9 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
     - `ATNH`: hyperbolic `atan()`
 - `ROOT` > `STAT`
     - See Chapter 15 of the _HP-42S User's Manual_
-    - ![STAT MenuRow 1](docs/rpn83p-screenshot-menu-root-stat-1.png)
-    - ![STAT MenuRow 2](docs/rpn83p-screenshot-menu-root-stat-2.png)
-    - ![STAT MenuRow 3](docs/rpn83p-screenshot-menu-root-stat-3.png)
+    - ![STAT MenuRow 1](images/rpn83p-screenshot-menu-root-stat-1.png)
+    - ![STAT MenuRow 2](images/rpn83p-screenshot-menu-root-stat-2.png)
+    - ![STAT MenuRow 3](images/rpn83p-screenshot-menu-root-stat-3.png)
     - `Sigma+`: add `Y` and `X` data point to STAT registers
     - `Sigma-`: remove `Y` and `X` data point from STAT registers
     - `ALLSigma`: collect statistical sums for all curve fit models
@@ -886,8 +886,8 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
         - `pcov(X,Y) = <XY> - <X><Y>`
     - `ROOT` > `STAT` > `CFIT`
         - See Chapter 15 of the _HP-42S User's Manual_
-        - ![CFIT MenuRow 1](docs/rpn83p-screenshot-menu-root-stat-cfit-1.png)
-        - ![CFIT MenuRow 2](docs/rpn83p-screenshot-menu-root-stat-cfit-2.png)
+        - ![CFIT MenuRow 1](images/rpn83p-screenshot-menu-root-stat-cfit-1.png)
+        - ![CFIT MenuRow 2](images/rpn83p-screenshot-menu-root-stat-cfit-2.png)
         - `Y>X`: forecast X from Y
         - `X>Y`: forecast Y from X
         - `SLOP`: slope of curve fit model, i.e. `m` parameter
@@ -901,12 +901,12 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
           largest absolute value of the correlation coefficient. The `CORR`
           value is returned in the `X` register for reference.
 - `ROOT` > `UNIT`
-    - ![UNIT MenuRow 1](docs/rpn83p-screenshot-menu-root-unit-1.png)
-    - ![UNIT MenuRow 2](docs/rpn83p-screenshot-menu-root-unit-2.png)
-    - ![UNIT MenuRow 3](docs/rpn83p-screenshot-menu-root-unit-3.png)
-    - ![UNIT MenuRow 4](docs/rpn83p-screenshot-menu-root-unit-4.png)
-    - ![UNIT MenuRow 5](docs/rpn83p-screenshot-menu-root-unit-5.png)
-    - ![UNIT MenuRow 6](docs/rpn83p-screenshot-menu-root-unit-6.png)
+    - ![UNIT MenuRow 1](images/rpn83p-screenshot-menu-root-unit-1.png)
+    - ![UNIT MenuRow 2](images/rpn83p-screenshot-menu-root-unit-2.png)
+    - ![UNIT MenuRow 3](images/rpn83p-screenshot-menu-root-unit-3.png)
+    - ![UNIT MenuRow 4](images/rpn83p-screenshot-menu-root-unit-4.png)
+    - ![UNIT MenuRow 5](images/rpn83p-screenshot-menu-root-unit-5.png)
+    - ![UNIT MenuRow 6](images/rpn83p-screenshot-menu-root-unit-6.png)
     - `>C`: Fahrenheit to Celsius
     - `>F`: Celsius to Fahrenheit
     - `>hPa`: hectopascals (i.e. millibars) to inches of mercury (Hg)
@@ -932,9 +932,9 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
     - `>kW`: horsepowers (mechanical) to kilo Watts
     - `>hp`: kilo Watts to horsepowers (mechanical)
 - `ROOT` > `TVM` (time value of money)
-    - ![TVM MenuRow 1](docs/rpn83p-screenshot-menu-root-tvm-1.png)
-    - ![TVM MenuRow 2](docs/rpn83p-screenshot-menu-root-tvm-2.png)
-    - ![TVM MenuRow 3](docs/rpn83p-screenshot-menu-root-tvm-3.png)
+    - ![TVM MenuRow 1](images/rpn83p-screenshot-menu-root-tvm-1.png)
+    - ![TVM MenuRow 2](images/rpn83p-screenshot-menu-root-tvm-2.png)
+    - ![TVM MenuRow 3](images/rpn83p-screenshot-menu-root-tvm-3.png)
     - `N`: set or calculate Number of payment periods
     - `I%YR`: set or calculate Interest Percent per Year
     - `PV`: set or calculate Present Value
@@ -949,14 +949,14 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
     - `TMAX`: set iteration max for TVM Solver
     - `RSTV`: reset TVM Solver parameters to factory defaults
 - `ROOT` > `CLR`
-    - ![CLR MenuRow 1](docs/rpn83p-screenshot-menu-root-clr-1.png)
+    - ![CLR MenuRow 1](images/rpn83p-screenshot-menu-root-clr-1.png)
     - `CLX`: clear `X` stack register (stack lift disabled)
     - `CLST`: clear all RPN stack registers
     - `CLRG`: clear all storage registers `R00` to `R24`
     - `CLSigma`: clear STAT storage registers [`R11`, `R16`] or [`R11`, `R23`]
     - `CLTV`: clear TVM variables and parameters
 - `ROOT` > `MODE`
-    - ![MODE MenuRow 1](docs/rpn83p-screenshot-menu-root-mode-1.png)
+    - ![MODE MenuRow 1](images/rpn83p-screenshot-menu-root-mode-1.png)
     - `FIX`: fixed mode with `N` digits after the decimal point
         - set `N` to `99` for floating number of digits
         - status line indicator is `FIX(N)`
@@ -969,7 +969,7 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
     - `RAD`: use radians for trigonometric functions
     - `DEG`: use degrees for trigonometric functions
 - `ROOT` > `STK`
-    - ![STK MenuRow 1](docs/rpn83p-screenshot-menu-root-stk-1.png)
+    - ![STK MenuRow 1](images/rpn83p-screenshot-menu-root-stk-1.png)
     - `R(up)`: roll stack up
     - `R(down)`: roll stack down, also bound to `(` button
     - `X<>Y`: exchange `X` and `Y`, also bound to `)` button
@@ -992,7 +992,7 @@ you turn on the calculator.
 
 The LCD screen should look like this before hitting `FINISH`:
 
-![Start-up app screenshot](docs/start-up-app-screenshot.png)
+![Start-up app screenshot](images/start-up-app-screenshot.png)
 
 Turn off the calculator and turn it back on. It should directly go into the
 RPN83P application.
@@ -1003,11 +1003,11 @@ The RPN83P app provides access to the same floating point display modes as the
 original TI-OS. For reference, here are the options available in the TI-OS when
 the `MODE` button is pressed:
 
-![TI-OS Display Modes](docs/tios-display-modes.png)
+![TI-OS Display Modes](images/tios-display-modes.png)
 
 In RPN83P, the `MODE` button presents a menu bar instead:
 
-![RPN83P Display Modes](docs/rpn83p-display-modes.png)
+![RPN83P Display Modes](images/rpn83p-display-modes.png)
 
 **HP-42S Compatibility Note**: The HP-42S uses the `DISP` button to access this
 functionality. For the RPN83P, it seemed to make more sense to the follow the
@@ -1021,16 +1021,16 @@ top-line indicator.
 
 Suppose the RPN stack has the following numbers:
 
-![RPN83P Display Modes](docs/rpn83p-display-mode-start.png)
+![RPN83P Display Modes](images/rpn83p-display-mode-start.png)
 
 Pressing the `FIX` menu item shows a `FIX _ _` prompt for the number of digits
 after the decimal point, like this:
 
-![RPN83P FIX Prompt](docs/rpn83p-display-mode-fix.png)
+![RPN83P FIX Prompt](images/rpn83p-display-mode-fix.png)
 
 Type `4` then `ENTER`. The display changes to this:
 
-![RPN83P FIX 4](docs/rpn83p-display-mode-fix-4.png)
+![RPN83P FIX 4](images/rpn83p-display-mode-fix-4.png)
 
 (You can also press `FIX` `04` which will automatically invoke the `ENTER` to
 apply the change.)
@@ -1040,14 +1040,14 @@ Notice that the floating point mode indicator at the top of the screen now shows
 
 Try changing to scientific notation mode, by pressing: `SCI` `04` to get this:
 
-![RPN83P SCI 4](docs/rpn83p-display-mode-sci-4.png)
+![RPN83P SCI 4](images/rpn83p-display-mode-sci-4.png)
 
 The top-line indicator shows `SCI(4)`.
 
 You can change to engineering notation mode, by pressing: `ENG` `04`, to
 get this:
 
-![RPN83P ENG 4](docs/rpn83p-display-mode-eng-4.png)
+![RPN83P ENG 4](images/rpn83p-display-mode-eng-4.png)
 
 The top-line indicator shows `ENG(4)`.
 
@@ -1057,13 +1057,13 @@ than 9 when prompted for `FIX _ _`, `SCI _ _`, or `ENG _ _`. I usually use
 `99`, but `11` would also work. For example, to use scientific notation mode
 with a variable number of fractional digits, press `SCI` `99` to get this:
 
-![RPN83P SCI 99](docs/rpn83p-display-mode-sci-99.png)
+![RPN83P SCI 99](images/rpn83p-display-mode-sci-99.png)
 
 Notice that the top-line floating point indicator now shows `SCI(-)`.
 
 Finally, type `FIX` `99` to go back to the default floating point mode.
 
-![RPN83P FIX 99](docs/rpn83p-display-mode-fix-99.png)
+![RPN83P FIX 99](images/rpn83p-display-mode-fix-99.png)
 
 **HP-42S Compatibility Note**: The RPN83P uses the underlying TI-OS floating
 point display modes, so it cannot emulate the HP-42S exactly. In particular, the
@@ -1090,14 +1090,14 @@ format of the `X` register in scientific notation. For example, `sqrt(2)` is
 normally displayed with 10 significant digits as `1.414213562`, but in Show mode
 it looks like this:
 
-![RPN83P SHOW Floating](docs/rpn83p-show-mode-floating.png)
+![RPN83P SHOW Floating](images/rpn83p-show-mode-floating.png)
 
 If the `X` value is an exact integer internally, then the value is printed in
 integer form instead of scientific notation. For example `2^46` is an exact
 integer that will normally appear as `7.036874418E13`, but in Show mode looks
 like this:
 
-![RPN83P SHOW Integer](docs/rpn83p-show-mode-integer.png)
+![RPN83P SHOW Integer](images/rpn83p-show-mode-integer.png)
 
 The Show mode has a slight variation in `BASE` mode. For `DEC`, `HEX`, and `OCT`
 modes, the `SHOW` function behaves as before, showing the internal floating
@@ -1109,14 +1109,14 @@ mode looks like `...011 1011 0111` because only 12 digits can be displayed on a
 single line. But in Show mode, all 32 digits (assuming `WSIZ` was 32) will be
 displayed like this:
 
-![RPN83P SHOW Binary 32](docs/rpn83p-show-mode-bin32.png)
+![RPN83P SHOW Binary 32](images/rpn83p-show-mode-bin32.png)
 
 ### Trigonometric Modes
 
 Just like the TI-OS, the RPN83P uses the radian mode by default when calculating
 trigonometric functions. The top status line shows `RAD`:
 
-![RPN83P FIX 99](docs/rpn83p-trig-mode-rad-1.png)
+![RPN83P FIX 99](images/rpn83p-trig-mode-rad-1.png)
 
 If we calculate `sin(pi/6)` in radian mode, by typing `PI` `6` `/` `SIN`, we get
 `0.5` as expected.
@@ -1124,7 +1124,7 @@ If we calculate `sin(pi/6)` in radian mode, by typing `PI` `6` `/` `SIN`, we get
 Press the `DEG` menu button to change to degree mode. The top status line shows
 `DEG`:
 
-![RPN83P FIX 99](docs/rpn83p-trig-mode-deg-1.png)
+![RPN83P FIX 99](images/rpn83p-trig-mode-deg-1.png)
 
 We can calculate `sin(30deg)` by typing: `30` `SIN` to get `0.5`.
 
@@ -1153,9 +1153,9 @@ To recall register `R00`, press:
 To clear the all storage registers, use the arrow keys for the menu system to
 get to:
 
-- ![ROOT MenuRow 3](docs/rpn83p-screenshot-menu-root-3.png)
+- ![ROOT MenuRow 3](images/rpn83p-screenshot-menu-root-3.png)
 - Press `CLR` to get
-  ![CLR MenuRow 1](docs/rpn83p-screenshot-menu-root-clr-1.png)
+  ![CLR MenuRow 1](images/rpn83p-screenshot-menu-root-clr-1.png)
 - Press `CLRG`
 
 The message `REGS cleared` will be displayed on the screen.
@@ -1226,15 +1226,15 @@ will be active. You can press `ON` key to break from the `PRIM` loop with an
 
 The `BASE` functions are available through the `ROOT` > `BASE` hierarchy:
 
-- ![ROOT MenuRow 2](docs/rpn83p-screenshot-menu-root-2.png)
-    - ![BASE MenuRow 1](docs/rpn83p-screenshot-menu-root-base-1.png)
-    - ![BASE MenuRow 2](docs/rpn83p-screenshot-menu-root-base-2.png)
-    - ![BASE MenuRow 3](docs/rpn83p-screenshot-menu-root-base-3.png)
-    - ![BASE MenuRow 4](docs/rpn83p-screenshot-menu-root-base-4.png)
-    - ![BASE MenuRow 5](docs/rpn83p-screenshot-menu-root-base-5.png)
-    - ![BASE MenuRow 6](docs/rpn83p-screenshot-menu-root-base-6.png)
-    - ![BASE MenuRow 7](docs/rpn83p-screenshot-menu-root-base-7.png)
-    - ![BASE MenuRow 8](docs/rpn83p-screenshot-menu-root-base-8.png)
+- ![ROOT MenuRow 2](images/rpn83p-screenshot-menu-root-2.png)
+    - ![BASE MenuRow 1](images/rpn83p-screenshot-menu-root-base-1.png)
+    - ![BASE MenuRow 2](images/rpn83p-screenshot-menu-root-base-2.png)
+    - ![BASE MenuRow 3](images/rpn83p-screenshot-menu-root-base-3.png)
+    - ![BASE MenuRow 4](images/rpn83p-screenshot-menu-root-base-4.png)
+    - ![BASE MenuRow 5](images/rpn83p-screenshot-menu-root-base-5.png)
+    - ![BASE MenuRow 6](images/rpn83p-screenshot-menu-root-base-6.png)
+    - ![BASE MenuRow 7](images/rpn83p-screenshot-menu-root-base-7.png)
+    - ![BASE MenuRow 8](images/rpn83p-screenshot-menu-root-base-8.png)
 
 These functions allow conversion of integers into different bases (10, 16, 8,
 2), as well as performing bitwise functions on those integers (bit-and, bit-or,
@@ -1266,7 +1266,7 @@ they are intended to be treated as unsigned integers.
 Let's start with the RPN stack containing the following numbers: -1, 17.1, 9E9,
 and 1234567, like this:
 
-![Numbers in Normal Mode](docs/rpn83p-screenshot-base-normal.png)
+![Numbers in Normal Mode](images/rpn83p-screenshot-base-normal.png)
 
 **DEC** (decimal)
 
@@ -1275,7 +1275,7 @@ numbers on the RPN stack are displayed as an integer, *as if* they were
 converted to an unsigned integer, but the RPN stack values are not modified. For
 the values given above, the display now looks like this:
 
-![Numbers in DEC Mode](docs/rpn83p-screenshot-base-dec.png)
+![Numbers in DEC Mode](images/rpn83p-screenshot-base-dec.png)
 
 If the value on the RPN stack is negative, a single `-` sign is shown.
 If the value is greater than or equal to `2^WSIZ`, then 3 dots `...` are shown
@@ -1290,7 +1290,7 @@ The `HEX` (hexadecimal) mode displays all numbers on the RPN stack using base
 16. Only the integer part is rendered as if the RPN stack values were
 converted to an unsigned integer.
 
-![Numbers in HEX Mode](docs/rpn83p-screenshot-base-hex.png)
+![Numbers in HEX Mode](images/rpn83p-screenshot-base-hex.png)
 
 If the value on the RPN stack is negative, a single `-` sign is shown.
 If the value is greater than or equal to `2^WSIZ`, then 3 dots `...` are shown
@@ -1311,7 +1311,7 @@ The `OCT` (octal) mode displays all numbers on the RPN stack using base 8. Only
 the integer part is rendered as if the RPN stack values were converted to an
 unsigned integer.
 
-![Numbers in OCT Mode](docs/rpn83p-screenshot-base-oct.png)
+![Numbers in OCT Mode](images/rpn83p-screenshot-base-oct.png)
 
 If the value on the RPN stack is negative, a single `-` sign is shown.
 If the value is greater than or equal to `2^WSIZ`, then 3 dots `...` are shown
@@ -1329,7 +1329,7 @@ The `BIN` (binary) mode displays all numbers on the RPN stack using base 2. Only
 the integer part is rendered as if the RPN stack values were converted to an
 unsigned integer.
 
-![Numbers in BIN Mode](docs/rpn83p-screenshot-base-bin.png)
+![Numbers in BIN Mode](images/rpn83p-screenshot-base-bin.png)
 
 If the value on the RPN stack is negative, a single `-` sign is shown.
 If the value is greater than or equal to `2^WSIZ`, then 3 dots `...` are shown
@@ -1348,7 +1348,7 @@ The `SHOW` function (bound to `2ND ENTRY` on the TI calculators) can be used to
 reveal all digits of the binary number, in groups of 4, using as many 4 lines of
 text like this:
 
-![Numbers in BIN Mode with SHOW](docs/rpn83p-screenshot-base-bin-show.png)
+![Numbers in BIN Mode with SHOW](images/rpn83p-screenshot-base-bin-show.png)
 
 We can now see that the number `1234567` in Base 2 is `0000 0000 0001 0010 1101
 0110 1000 0111`.
@@ -1443,26 +1443,26 @@ the integer operations instead of floating point operations.
 For example, suppose the following numbers are in the RPN stack *before*
 entering the `BASE` menu:
 
-![Base Arithmetic Part 1](docs/rpn83p-screenshot-base-arithmetic-1-float.png)
+![Base Arithmetic Part 1](images/rpn83p-screenshot-base-arithmetic-1-float.png)
 
 Entering the `BASE` menu shows this (assuming that the default base number was
 `DEC`):
 
-![Base Arithmetic Part 2](docs/rpn83p-screenshot-base-arithmetic-2-dec.png)
+![Base Arithmetic Part 2](images/rpn83p-screenshot-base-arithmetic-2-dec.png)
 
 Changing to `HEX` mode shows this:
 
-![Base Arithmetic Part 3](docs/rpn83p-screenshot-base-arithmetic-3-hex.png)
+![Base Arithmetic Part 3](images/rpn83p-screenshot-base-arithmetic-3-hex.png)
 
 Pressing the `+` button adds the `X` and `Y` registers, converting the
 values to 32-bit unsigned integers before the addition:
 
-![Base Arithmetic Part 4](docs/rpn83p-screenshot-base-arithmetic-4-plus.png)
+![Base Arithmetic Part 4](images/rpn83p-screenshot-base-arithmetic-4-plus.png)
 
 Changing back to `DEC` mode shows that the numbers were added using integer
 functions, and the fractional digits were truncated:
 
-![Base Arithmetic Part 5](docs/rpn83p-screenshot-base-arithmetic-5-dec.png)
+![Base Arithmetic Part 5](images/rpn83p-screenshot-base-arithmetic-5-dec.png)
 
 #### Carry Flag
 
@@ -1470,11 +1470,11 @@ The RPN83P supports the *Carry Flag* implemented by most (all?) microprocessors.
 The Carry Flag is supported by the HP-16C but not by the HP-42S. When the Carry
 Flag is set, a small `C` letter appears on the display like this:
 
-![Carry Flag On](docs/rpn83p-carry-flag-on.png)
+![Carry Flag On](images/rpn83p-carry-flag-on.png)
 
 When the flag is off, a dash `-` is shown like this:
 
-![Carry Flag On](docs/rpn83p-carry-flag-off.png)
+![Carry Flag On](images/rpn83p-carry-flag-off.png)
 
 The Carry Flag can be explicitly cleared, set, and retrieved using the following
 menu items:
@@ -1570,12 +1570,12 @@ the `FIX` and `STO` commands. To simplify the implementation code, only the
 following word sizes are supported: 8, 16, 24, and 32, corresponding to 1, 2, 3,
 and 4 bytes respectively:
 
-![WSIZ Prompt](docs/rpn83p-base-wsiz.png)
+![WSIZ Prompt](images/rpn83p-base-wsiz.png)
 
 If an unsupported word size is entered, for example `9`, then the error code
 `Err:Argument` will be displayed:
 
-![WSIZ Error](docs/rpn83p-base-wsiz-err.png)
+![WSIZ Error](images/rpn83p-base-wsiz-err.png)
 
 Note: The RPN83P app represents all numbers internally using the TI-OS floating
 point number format which supports 14 decimal digits. This corresponds to 46.5
@@ -1768,7 +1768,7 @@ Mar     11.70   0.43
 We would enter these data points like this:
 
 - Press `STAT` to see
-  ![STAT MenuRow 1](docs/rpn83p-screenshot-menu-root-stat-1.png)
+  ![STAT MenuRow 1](images/rpn83p-screenshot-menu-root-stat-1.png)
 - Press `ALLSigma` (select all curve fit models)
 - Press `CLSigma` to clear the summation registers. You should see a status
   message `STAT cleared`.
@@ -1787,13 +1787,13 @@ similar to the `ENTER` key. So the `N` values will be replaced by the next
 Let's calculate the basic statistics measures:
 
 - Press `DOWN` arrow key to see
-  ![STAT MenuRow 2](docs/rpn83p-screenshot-menu-root-stat-2.png)
+  ![STAT MenuRow 2](images/rpn83p-screenshot-menu-root-stat-2.png)
 - Press `SUM` to get `Y:84.89` and `X:5.19`
 - Press `MEAN` to get `Y:14.14833333` and `X:.865`
 - Press `WMN` to get `Y:14.72643545` and `X:.9003439746`
 - Press `N` to get `X:6`
 - Press `DOWN` arrow key to see
-  ![STAT MenuRow 3](docs/rpn83p-screenshot-menu-root-stat-3.png)
+  ![STAT MenuRow 3](images/rpn83p-screenshot-menu-root-stat-3.png)
 - Press `SDEV` to get `Y:3.032500069` and `X:1.015613115`
 - Press `SCOV` to get `X:.60007`
 - Press `PDEV` to get `Y:2.768281155` and `X:.9271236883`
@@ -1804,9 +1804,9 @@ for a given month is correlated with the minimum rainfall for the same month. We
 can use the CFIT routines to figure this out:
 
 - Press `CFIT` to see
-  ![CFIT MenuRow 1](docs/rpn83p-screenshot-menu-root-stat-cfit-1.png)
+  ![CFIT MenuRow 1](images/rpn83p-screenshot-menu-root-stat-cfit-1.png)
 - Press the `DOWN` arrow to see
-  ![CFIT MenuRow 2](docs/rpn83p-screenshot-menu-root-stat-cfit-2.png)
+  ![CFIT MenuRow 2](images/rpn83p-screenshot-menu-root-stat-cfit-2.png)
 - Verify that the `LINF` (linear fit) is selected
 - Press the `UP` arrow to get back to the main `CFIT` row.
 - Press `SLOP` to get `X:.5817619514`. This is the slope variable `m`.
@@ -1818,11 +1818,11 @@ can use the CFIT routines to figure this out:
 Let's see if a different curve fit model does better.
 
 - Press `DOWN` arrow to get to
-  ![CFIT MenuRow 2](docs/rpn83p-screenshot-menu-root-stat-cfit-2.png)
+  ![CFIT MenuRow 2](images/rpn83p-screenshot-menu-root-stat-cfit-2.png)
 - Press `BEST` button to request the app to automatically determine the
   best curve model. You should see `X:.2963586116` and the menu should have
   changed to select `PWRF`, like this:
-  ![CFIT BEST](docs/rpn83p-cfit-best.png)
+  ![CFIT BEST](images/rpn83p-cfit-best.png)
 
 **HP-42S Compatibility Note**: Unlike the HP-42S, `BEST` menu on the RPN83P
 returns the `CORR` value of the best curve fit model. It seemed like a useful
@@ -1852,10 +1852,10 @@ Version 0.7.0 implements a usable Time Value of Money functionality that is
 inspired by RPN financial calculators such as the HP-12C and the HP-30b. They
 are available through the `ROOT` > `TVM` menu:
 
-- ![ROOT MenuRow 2](docs/rpn83p-screenshot-menu-root-2.png)
-    - ![TVM MenuRow 1](docs/rpn83p-screenshot-menu-root-tvm-1.png)
-    - ![TVM MenuRow 2](docs/rpn83p-screenshot-menu-root-tvm-2.png)
-    - ![TVM MenuRow 3](docs/rpn83p-screenshot-menu-root-tvm-3.png)
+- ![ROOT MenuRow 2](images/rpn83p-screenshot-menu-root-2.png)
+    - ![TVM MenuRow 1](images/rpn83p-screenshot-menu-root-tvm-1.png)
+    - ![TVM MenuRow 2](images/rpn83p-screenshot-menu-root-tvm-2.png)
+    - ![TVM MenuRow 3](images/rpn83p-screenshot-menu-root-tvm-3.png)
 
 This User Guide assumes that you are already know the theory of the Time Value
 of Money, and that you are familiar with TVM functions of RPN financial
@@ -1986,7 +1986,7 @@ values by entering a value and pressing the appropriate menu button. A small dot
 will be appended to the menu name to indicate that the default value has been
 overridden:
 
-![TVM Solver Overridden](docs/rpn83p-tvm-control-overridden.png)
+![TVM Solver Overridden](images/rpn83p-tvm-control-overridden.png)
 
 We might choose to override `IYR1` and `IYR2` when 2 solutions are known to
 exist, but the TVM Solver is unable to find either of them due to the default
