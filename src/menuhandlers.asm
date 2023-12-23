@@ -66,25 +66,26 @@ mXRootYHandler:
     call universalXRootY
     jp replaceXY
 
-; Description: Calculate the angle of the (X, Y) number in complex plane.
-; Use bcall(_RToP) instead of bcall(_ATan2) because ATan2 does not seem produce
-; the correct results. There must be something wrong with the documentation.
+; Description: Calculate the angle of the (X, Y) in x-y plane. The y-axis must
+; be pushed into the RPN stack first, then the x-axis. This order is consistent
+; with the the `>POL` conversion function.
 ;
-; (It turns out that the documentation does not describe the necessary values
-; of the D register which must be set before calling this. Apparently the D
-; register should be set to 0. See
+; The first version used bcall(_ATan2), but it does not seem produce the
+; correct results.
+;
+; The second version used bcall(_RToP), but it has an overflow and underflow
+; bug when r^2=x^2+y^2 is too large, which limits |r| to ~<7.1e63 and ~>1e-64.
+;
+; The third version uses ATan2() again, but sets an undocumented parameter to
+; fix the bug. Apparently, the D register must be set to 0 to get the
+; documented behavior. See
 ; https://wikiti.brandonw.net/index.php?title=83Plus:BCALLs:40D8 for more
-; details. Although that page refers to ATan2Rad(), I suspect a similar thing
-; is happening for ATan2().)
-;
-; The imaginary part (i.e. y-axis) must be entered first, then the real part
-; (i.e. x-axis). This order is consistent with the the `>POL` conversion
-; function.
+; details. Although that page refers to ATan2Rad(), but a similar thing happens
+; for ATan2().
 mAtan2Handler:
-    call closeInputAndRecallXY ; OP1=Y=imaginary; OP2=X=real
-    call op1ExOp2 ; OP1=X=real; OP2=Y=imaginary
-    bcall(_RToP) ; complex to polar
-    bcall(_OP2ToOP1) ; OP2 contains the angle with range of (-pi, pi]
+    call closeInputAndRecallXY ; OP1=Y; OP2=X
+    ld d, 0
+    bcall(_ATan2) ; OP1=angle
     jp replaceXY
 
 ;-----------------------------------------------------------------------------
