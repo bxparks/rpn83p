@@ -19,6 +19,7 @@ SRCS := \
 	complexhandlers.asm \
 	const.asm \
 	const1.asm \
+	conv.asm \
 	crc.asm \
 	debug.asm \
 	display.asm \

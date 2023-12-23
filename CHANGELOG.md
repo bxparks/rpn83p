@@ -22,15 +22,21 @@
           incrementing the divisor from 1 to `r`, instead of decrementing it
           from `r` to 1.
     - Complex Numbers
-        - redesign RPN stack and storage registers to support both real and complex numbers
-        - extend arithmetic, algebraic, transcendental handlers to support complex numbers
+        - redesign RPN stack and storage registers to support both real and
+          complex numbers
+        - extend arithmetic, algebraic, transcendental handlers to support
+          complex numbers
         - add explicit CPLX menu group with: REAL, IMAG, CONJ, CABS, CANG
         - support RRES (real result) and CRES (complex result) menu settings
-        - support RECT (rectangular), PRAD (polar radian), PDEG (polar degree) menu settings
+        - support RECT (rectangular), PRAD (polar radian), PDEG (polar degree)
+          menu settings
         - display complex numbers in RPN stack in rect and polar modes
         - support complex numbers in SHOW in rect and polar modes
         - support Linking/Unlinking a complex number and its 2 real components
           using 2ND LINK (equivalent to COMPLEX button on the HP-42S)
+    - Rectangular to Polar conversion
+        - fix overflow and underflow caused by bug in the TI-OS `RToP()`
+          function by using a custom `rectToPolar()` function instead
 - 0.8.0 (2023-12-03)
     - **Breaking**: Flip the order of polar-rectangular conversion menu function
       (`>POL` and `>REC`) so that they are consistent with the HP-42S. I don't

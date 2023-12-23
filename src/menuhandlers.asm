@@ -645,7 +645,9 @@ mPToRHandler:
     jp replaceXYWithOP1OP2 ; Y=OP2=y; X=OP1=x
 
 ; Rectangular to Polar. The order of arguments is intended to be consistent
-; with the HP-42S.
+; with the HP-42S. Early version used the RToP() TI-OS function, but it has an
+; overflow/underflow bug when r^2 becomes too big or small. Instead, use the
+; custom rectToPolar() function which does not overflow or underflow.
 ; Input:
 ;   - Y: y
 ;   - X: x
@@ -653,9 +655,9 @@ mPToRHandler:
 ;   - Y: theta
 ;   - X: r
 mRtoPHandler:
-    call closeInputAndRecallXY ; OP1=Y=imaginary; OP2=X=real
+    call closeInputAndRecallXY ; OP1=Y; OP2=X
     call op1ExOp2  ; OP1=x; OP2=y
-    bcall(_RToP) ; OP1=r; OP2=theta
+    call rectToPolar ; OP1=r; OP2=theta
     call op1ExOp2  ; OP1=theta; OP2=r
     jp replaceXYWithOP1OP2 ; Y=OP1=theta; X=OP2=r
 
