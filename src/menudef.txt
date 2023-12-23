@@ -70,7 +70,7 @@ MenuGroup root mRoot [
         MenuItem ATN2 mAtan2
       ]
       MenuRow [
-        MenuItem 2<Scaret>X mAlog2 # 2^x
+        MenuItem 2<Scaret>X mTwoPow # 2^x
         MenuItem LOG2 mLog2 # log_base2(x)
         MenuItem LOGB mLogBase # log_base_x(y)
         MenuItem E<Scaret>X<Sdash> mExpMinusOne # exp(x)-1
@@ -113,25 +113,21 @@ MenuGroup root mRoot [
         MenuItem SEED mRandomSeed
       ]
     ]
-    MenuGroup CONV mConv [
+    MenuGroup CPLX mComplex [
       MenuRow [
-        MenuItem <Sconvert>DEG mRToD
-        MenuItem <Sconvert>RAD mDToR
-        MenuItem * *
-        MenuItem <Sconvert>REC mPToR
-        MenuItem <Sconvert>POL mRToP
+        MenuItem REAL mComplexReal
+        MenuItem IMAG mComplexImag
+        MenuItem CONJ mComplexConj
+        MenuItem CABS mComplexAbs
+        MenuItem CANG mComplexAngle
       ]
       MenuRow [
-        MenuItem <Sconvert>HR mHmsToHr
-        MenuItem <Sconvert>HMS mHrToHms
+        MenuItemAlt RRES RRE<Sblock> mNumResultModeReal
+        MenuItemAlt CRES CRE<Sblock> mNumResultModeComplex
+        MenuItemAlt RECT REC<Sblock> mComplexModeRect
+        MenuItemAlt PRAD PRA<Sblock> mComplexModeRad
+        MenuItemAlt PDEG PDE<Sblock> mComplexModeDeg
       ]
-      # MenuRow [
-      #   MenuItem <Sconvert>UNIX mDateToUnixSeconds
-      #   menuItem <Sconvert>DATE mUnixSecondsToDate
-      #   menuItem LEAP mIsLeapYear
-      #   menuItem <Sconvert>SEC mDaysToSeconds
-      #   menuItem <Sconvert>DAYS mSecondsToDays
-      # ]
     ]
     MenuItem HELP mHelp
   ]
@@ -245,63 +241,18 @@ MenuGroup root mRoot [
         ]
       ]
     ]
-    MenuGroup UNIT mUnit [
+    MenuGroup CONV mConv [
       MenuRow [
-        MenuItem <Sconvert><Stemp>C mFToC
-        MenuItem <Sconvert><Stemp>F mCToF
+        MenuItem <Sconvert>DEG mRToD
+        MenuItem <Sconvert>RAD mDToR
         MenuItem * *
-        MenuItem <Sconvert>hPa mInhgToHpa
-        MenuItem <Sconvert>iHg mHpaToInhg
+        MenuItem <Sconvert>REC mPToR
+        MenuItem <Sconvert>POL mRToP
       ]
       MenuRow [
-        MenuItem <Sconvert>km mMiToKm
-        MenuItem <Sconvert>mi mKmToMi
-        MenuItem * *
-        MenuItem <Sconvert>m mFtToM
-        MenuItem <Sconvert>ft mMToFt
+        MenuItem <Sconvert>HR mHmsToHr
+        MenuItem <Sconvert>HMS mHrToHms
       ]
-      MenuRow [
-        MenuItem <Sconvert>cm mInToCm
-        MenuItem <Sconvert>in mCmToIn
-        MenuItem * *
-        MenuItem <Sconvert><Smu>m mMilToMicron
-        MenuItem <Sconvert>mil mMicronToMil
-      ]
-      MenuRow [
-        MenuItem <Sconvert>kg mLbsToKg
-        MenuItem <Sconvert>lbs mKgToLbs
-        MenuItem * *
-        MenuItem <Sconvert>g mOzToG
-        MenuItem <Sconvert>oz mGToOz
-      ]
-      MenuRow [
-        MenuItem <Sconvert>L mGalToL
-        MenuItem <Sconvert>gal mLToGal
-        MenuItem * *
-        MenuItem <Sconvert>mL mFlozToMl
-        MenuItem <Sconvert>foz mMlToFloz
-      ]
-      MenuRow [
-        MenuItem <Sconvert>kJ mCalToKj
-        MenuItem <Sconvert>cal mKjToCal
-        MenuItem * *
-        MenuItem <Sconvert>kW mHpToKw
-        MenuItem <Sconvert>hp mKwToHp
-      ]
-      # MenuRow [
-      #   MenuItem <Sconvert>Lkm mL100kmToMpg
-      #   MenuItem <Sconvert>mpg mMpgToL100km
-      #   MenuItem * *
-      #   MenuItem <Sconvert>kPa mPsiToKpa
-      #   MenuItem <Sconvert>psi mKpaToPsi
-      # ]
-      # MenuRow [
-      #   MenuItem <Sconvert>ha mAcreToHectare
-      #   MenuItem <Sconvert>acr mHectareToAcre
-      #   MenuItem * *
-      #   MenuItem * *
-      #   MenuItem * *
-      # ]
     ]
     MenuGroup TVM mTvm [
       MenuRow [
@@ -359,6 +310,64 @@ MenuGroup root mRoot [
         MenuItem X<Sleft><Sconvert>Y mStackExchangeXY
         MenuItem * *
       ]
+    ]
+    MenuGroup UNIT mUnit [
+      MenuRow [
+        MenuItem <Sconvert><Stemp>C mFToC
+        MenuItem <Sconvert><Stemp>F mCToF
+        MenuItem * *
+        MenuItem <Sconvert>hPa mInhgToHpa
+        MenuItem <Sconvert>iHg mHpaToInhg
+      ]
+      MenuRow [
+        MenuItem <Sconvert>km mMiToKm
+        MenuItem <Sconvert>mi mKmToMi
+        MenuItem * *
+        MenuItem <Sconvert>m mFtToM
+        MenuItem <Sconvert>ft mMToFt
+      ]
+      MenuRow [
+        MenuItem <Sconvert>cm mInToCm
+        MenuItem <Sconvert>in mCmToIn
+        MenuItem * *
+        MenuItem <Sconvert><Smu>m mMilToMicron
+        MenuItem <Sconvert>mil mMicronToMil
+      ]
+      MenuRow [
+        MenuItem <Sconvert>kg mLbsToKg
+        MenuItem <Sconvert>lbs mKgToLbs
+        MenuItem * *
+        MenuItem <Sconvert>g mOzToG
+        MenuItem <Sconvert>oz mGToOz
+      ]
+      MenuRow [
+        MenuItem <Sconvert>L mGalToL
+        MenuItem <Sconvert>gal mLToGal
+        MenuItem * *
+        MenuItem <Sconvert>mL mFlozToMl
+        MenuItem <Sconvert>foz mMlToFloz
+      ]
+      MenuRow [
+        MenuItem <Sconvert>kJ mCalToKj
+        MenuItem <Sconvert>cal mKjToCal
+        MenuItem * *
+        MenuItem <Sconvert>kW mHpToKw
+        MenuItem <Sconvert>hp mKwToHp
+      ]
+      # MenuRow [
+      #   MenuItem <Sconvert>Lkm mL100kmToMpg
+      #   MenuItem <Sconvert>mpg mMpgToL100km
+      #   MenuItem * *
+      #   MenuItem <Sconvert>kPa mPsiToKpa
+      #   MenuItem <Sconvert>psi mKpaToPsi
+      # ]
+      # MenuRow [
+      #   MenuItem <Sconvert>ha mAcreToHectare
+      #   MenuItem <Sconvert>acr mHectareToAcre
+      #   MenuItem * *
+      #   MenuItem * *
+      #   MenuItem * *
+      # ]
     ]
   ]
 ]

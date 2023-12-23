@@ -21,7 +21,7 @@ processHelpGetKey:
     push bc
     bcall(_GetKey) ; pause for key
     pop bc
-    res onInterrupt, (IY+onFlags) ; reset flag set by ON button
+    res onInterrupt, (iy + onFlags) ; reset flag set by ON button
 
     ; Handle HELP keys
     or a ; A == ON
@@ -127,7 +127,7 @@ helpPages:
 
 msgHelpPage1:
     .db escapeLargeFont, "RPN83P", Lenter
-    .db escapeSmallFont, "v0.9.0-dev (2023", Shyphen, "12", Shyphen, "13)", Senter
+    .db escapeSmallFont, "v0.9.0-dev (2023", Shyphen, "12", Shyphen, "22)", Senter
     .db "(c) 2023  Brian T. Park", Senter
     .db Senter
     .db "An RPN calculator for the", Senter

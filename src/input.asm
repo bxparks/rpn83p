@@ -53,9 +53,12 @@ closeInputAndRecallNone:
 closeInputAndRecallX:
     call closeInput
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
-    jp rclX
+    call rclX
+    cp rpnObjectTypeReal
+    ret z
+    bcall(_ErrDomain)
 
-; Close the input buffer, and set OP1=Y and OP2=X.
+; Close the input buffer, and recall real values into OP1=Y and OP2=X.
 ; Output:
 ;   - OP1=Y
 ;   - OP2=X
@@ -64,5 +67,33 @@ closeInputAndRecallXY:
     call closeInput
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     call rclX
+    cp rpnObjectTypeReal
+    jr nz, closeInputAndRecallXYErr
     call op1ToOp2
+    call rclY
+    cp rpnObjectTypeReal
+    ret z
+closeInputAndRecallXYErr:
+    bcall(_ErrDomain)
+
+; Close the input buffer, and recall the real or complex X to OP1/OP2.
+; Output:
+;   - OP1=X
+;   - rpnFlagsTvmCalculate: cleared
+closeInputAndRecallUniversalX:
+    call closeInput
+    res rpnFlagsTvmCalculate, (iy + rpnFlags)
+    jp rclX
+
+; Close the input buffer, and recall the real or complex values X, Y into
+; OP1/OP2=Y and OP3/OP4=X.
+; Output:
+;   - OP1/OP2=Y
+;   - OP3/OP4=X
+;   - rpnFlagsTvmCalculate: cleared
+closeInputAndRecallUniversalXY:
+    call closeInput
+    res rpnFlagsTvmCalculate, (iy + rpnFlags)
+    call rclX
+    call cp1ToCp3
     jp rclY

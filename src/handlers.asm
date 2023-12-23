@@ -403,7 +403,7 @@ handleKeyChs:
 handleKeyChsX:
     ; CHS of X register
     call rclX
-    bcall(_InvOP1S)
+    call universalChs
     call stoX
     ret
 handleKeyChsInputBuf:
@@ -655,45 +655,45 @@ handleKeyMenuSecondA:
 ; Description: Handle the Add key.
 ; Input: inputBuf
 ; Output:
-; Destroys: all, OP1, OP2, OP4
+; Destroys: all, OP1, OP2, OP3, OP4
 handleKeyAdd:
     bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
     jp nz, mBaseAddHandler
-    call closeInputAndRecallXY
-    bcall(_FPAdd) ; Y + X
+    call closeInputAndRecallUniversalXY ; CP1=Y; CP3=X
+    call universalAdd
     jp replaceXY
 
 ; Description: Handle the Sub key.
 ; Input: inputBuf
 ; Output:
-; Destroys: all, OP1, OP2, OP4
+; Destroys: all, OP1, OP2, OP3, OP4
 handleKeySub:
     bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
     jp nz, mBaseSubtHandler
-    call closeInputAndRecallXY
-    bcall(_FPSub) ; Y - X
+    call closeInputAndRecallUniversalXY ; CP1=X; CP3=Y
+    call universalSub
     jp replaceXY
 
 ; Description: Handle the Mul key.
 ; Input: inputBuf
 ; Output:
-; Destroys: all, OP1, OP2, OP4, OP5
+; Destroys: all, OP1, OP2, OP3, OP4, OP5
 handleKeyMul:
     bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
     jp nz, mBaseMultHandler
-    call closeInputAndRecallXY
-    bcall(_FPMult) ; Y * X
+    call closeInputAndRecallUniversalXY ; CP1=Y; CP3=X
+    call universalMult
     jp replaceXY
 
 ; Description: Handle the Div key.
 ; Input: inputBuf
 ; Output:
-; Destroys: all, OP1, OP2, OP4
+; Destroys: all, OP1, OP2, OP3, OP4
 handleKeyDiv:
     bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
     jp nz, mBaseDivHandler
-    call closeInputAndRecallXY
-    bcall(_FPDiv) ; Y / X
+    call closeInputAndRecallUniversalXY ; CP1=Y; CP3=X
+    call universalDiv
     jp replaceXY
 
 ;-----------------------------------------------------------------------------
@@ -720,26 +720,26 @@ handleKeyEuler:
 
 ; Description: y^x
 handleKeyExpon:
-    call closeInputAndRecallXY
-    bcall(_YToX)
+    call closeInputAndRecallUniversalXY ; CP1=Y; CP3=X
+    call universalPow
     jp replaceXY
 
 ; Description: 1/x
 handleKeyInv:
-    call closeInputAndRecallX
-    bcall(_FPRecip)
+    call closeInputAndRecallUniversalX
+    call universalRecip
     jp replaceX
 
 ; Description: x^2
 handleKeySquare:
-    call closeInputAndRecallX
-    bcall(_FPSquare)
+    call closeInputAndRecallUniversalX
+    call universalSquare
     jp replaceX
 
 ; Description: sqrt(x)
 handleKeySqrt:
-    call closeInputAndRecallX
-    bcall(_SqRoot)
+    call closeInputAndRecallUniversalX
+    call universalSqRoot
     jp replaceX
 
 ;-----------------------------------------------------------------------------
@@ -764,23 +764,23 @@ handleKeyAns:
 ;-----------------------------------------------------------------------------
 
 handleKeyLog:
-    call closeInputAndRecallX
-    bcall(_LogX)
+    call closeInputAndRecallUniversalX
+    call universalLog
     jp replaceX
 
 handleKeyALog:
-    call closeInputAndRecallX
-    bcall(_TenX)
+    call closeInputAndRecallUniversalX
+    call universalTenPow
     jp replaceX
 
 handleKeyLn:
-    call closeInputAndRecallX
-    bcall(_LnX)
+    call closeInputAndRecallUniversalX
+    call universalLn
     jp replaceX
 
 handleKeyExp:
-    call closeInputAndRecallX
-    bcall(_EToX)
+    call closeInputAndRecallUniversalX
+    call universalExp
     jp replaceX
 
 ;-----------------------------------------------------------------------------
@@ -835,9 +835,9 @@ handleKeySto:
     ld a, (argValue)
     cp regsSize ; check if command argument too large
     jp nc, handleKeyStoError
-    ld c, a
+    ld c, a ; C=NN
     ld a, (argModifier)
-    ld b, a
+    ld b, a ; B=op
     jp stoOpRegNN
 handleKeyStoError:
     ld a, errorCodeDimension
@@ -853,8 +853,11 @@ handleKeyRcl:
     ret nc ; do nothing if canceled
     cp argModifierIndirect
     ret nc ; TODO: implement this
-    ; Implement RCL{op}NN, using slightly different algorithm for rclRegNN versus
-    ; rclOpNN.
+    ; Implement rclOpRegNN. There are 2 cases:
+    ; 1) If the {op} is a simple assignment, we call rclRegNN() and push the
+    ; value on to the RPN stack.
+    ; 2) If the {op} is an arithmetic operator, we call rclOpRegNN() and
+    ; *replace* the current X with the new X.
     ld a, (argValue)
     cp regsSize ; check if command argument too large
     jr nc, handleKeyRclError
@@ -863,12 +866,12 @@ handleKeyRcl:
     or a
     jr nz, handleKeyRclOpNN
 handleKeyRclNN:
-    ; rclRegNN *pushes* RegNN on to the RPN stack.
+    ; Call rclRegNN() and *push* RegNN onto the RPN stack.
     ld a, c
     call rclRegNN
     jp pushX
 handleKeyRclOpNN:
-    ; rcl{op}NN *replaces* the X register with (OP1 {op} RegNN).
+    ; Call rclOpRegNN() and *replace* the X register with (OP1 {op} RegNN).
     ld b, a
     push bc
     call rclX ; OP1=X
@@ -941,3 +944,36 @@ handleKeyShow:
 ; DRAW mode prompt.
 msgDrawPrompt:
     .db "DRAW", 0
+
+;-----------------------------------------------------------------------------
+; Keys related to complex numbers.
+;-----------------------------------------------------------------------------
+
+; Description: Convert between 2 reals and a complex number, depending on the
+; complexMode setting (RECT, PRAD, PDEG).
+; Input: OP1,OP2 or CP1
+; Output; OP1,OP2 or CP1
+handleKeyLink:
+    call closeInputAndRecallNone
+    call rclX ; CP1=X; A=objectType
+    cp a, rpnObjectTypeComplex
+    jr nz, handleKeyLinkRealsToComplex
+    ; Convert complex into 2 reals
+    call complexToReals ; OP1=Re(X), OP2=Im(X)
+    jp nc, replaceXWithOP1OP2 ; replace X with OP1,OP2
+    bcall(_ErrDomain)
+handleKeyLinkRealsToComplex:
+    bcall(_PushRealO1) ; FPS=[Im]
+    ; Verify that Y is also real.
+    call rclY ; CP1=Y; A=objectType
+    cp a, rpnObjectTypeComplex
+    jr nz, handleKeyLinkRealsToComplexOk
+    ; Y is complex, so throw an error
+    bcall(_ErrArgument)
+handleKeyLinkRealsToComplexOk:
+    ; Convert 2 reals to complex
+    bcall(_PopRealO2) ; FPS=[]; OP2=X=Im; OP1=Y=Re
+    call realsToComplex ; CP1=complex(OP1,OP2)
+    jp nc, replaceXY ; replace X, Y with CP1
+    ; Handle error
+    bcall(_ErrDomain)

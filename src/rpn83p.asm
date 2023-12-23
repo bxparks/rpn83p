@@ -121,6 +121,16 @@ rpn83pSchemaVersion equ 9
 rpnfalse equ 0
 rpntrue equ 1
 
+; Stack and register type enums.
+rpnObjectTypeReal equ 0
+rpnObjectTypeComplex equ $C ; same as TI-OS
+rpnObjectTypeComplexDeg equ $2C ; uses bit 5 and 6
+rpnObjectTypeComplexRad equ $4C ; uses bit 5 and 6
+rpnObjectTypeMask equ $1F ; TI-OS type uses only bits 0-4
+rpnObjectSizeOf equ 32
+rpnRealSizeOf equ 9 ; sizeof(float)
+rpnComplexSizeOf equ 18 ; sizeof(complex)
+
 ;-----------------------------------------------------------------------------
 
 ; Begin application variables at tempSwapArea. According to the TI-83 Plus SDK
@@ -343,8 +353,22 @@ drawModeInputBuf equ 3 ; show inputBuf in debug line
 ; Draw/Debug mode, u8 integer. Activated by secret '2ND DRAW' button.
 drawMode equ tvmIterMax + 1 ; u8
 
+; Function result modes determines whether certain functions return real
+; results always, or will sometimes return a complex result.
+numResultModeReal equ 0 ; return real results only
+numResultModeComplex equ 1 ; return complex results
+numResultMode equ drawMode + 1 ; u8
+
+; Complex number display modes. The 2 complex polar mode (RAD and DEG) are
+; explicitly separate from the DEG and RAD settings that affect trigonometric
+; functions.
+complexModeRect equ 0
+complexModeRad equ 1
+complexModeDeg equ 2
+complexMode equ numResultMode + 1 ; u8
+
 ; End application variables.
-appStateEnd equ drawMode + 1
+appStateEnd equ complexMode + 1
 
 ; Total size of appState vars.
 appStateSize equ (appStateEnd - appStateBegin)
@@ -392,7 +416,19 @@ inputDisplayBuf equ inputDisplay + 1 ; start of actual buffer
 inputDisplayCapacity equ 14 ; 14-characters displayed, excluding trailing cursor
 inputDisplaySizeOf equ inputDisplayCapacity + 1 ; total size of data structure
 
-appBufferEnd equ inputDisplay + inputDisplaySizeOf
+; Set of bit-flags that remember whether an RPN stack display line was rendered
+; in large or small font. We can optimize the drawing algorithm by performing a
+; pre-clear of the line only when the rendering transitions from a large font
+; to a small font. This prevents unnecessary flickering of the RPN stack line.
+; Normally large fonts are used so a cleared bit means large font. A set flag
+; means small font.
+displayStackFontFlagsX equ 1
+displayStackFontFlagsY equ 2
+displayStackFontFlagsZ equ 4
+displayStackFontFlagsT equ 8
+displayStackFontFlags equ inputDisplay + inputDisplaySizeOf ; u8
+
+appBufferEnd equ rpnStackFontFlags + 1
 
 ; Total size of appBuffer.
 appBufferSize equ appBufferEnd-appBufferStart
@@ -499,9 +535,9 @@ _SetErrorCodeLabel:
 _SetErrorCode equ _SetErrorCodeLabel-branchTableBase
     .dw SetErrorCode
     .db 1
-_SetHandlerCodeToSystemCodeLabel:
-_SetHandlerCodeToSystemCode equ _SetHandlerCodeToSystemCodeLabel-branchTableBase
-    .dw SetHandlerCodeToSystemCode
+_SetHandlerCodeFromSystemCodeLabel:
+_SetHandlerCodeFromSystemCode equ _SetHandlerCodeFromSystemCodeLabel-branchTableBase
+    .dw SetHandlerCodeFromSystemCode
     .db 1
 ; input1.asm
 _InitInputBufLabel:
@@ -806,9 +842,12 @@ _DebugU32DEAsHex equ _DebugU32DEAsHexLabel-branchTableBase
 #include "stathandlers.asm"
 #include "cfithandlers.asm"
 #include "tvmhandlers.asm"
+#include "complexhandlers.asm"
 #include "prime.asm"
 #include "common.asm"
+#include "memory.asm"
 #include "float.asm"
+#include "complex.asm"
 #include "print.asm"
 #include "const.asm"
 #include "handlertab.asm"
@@ -831,6 +870,7 @@ defpage(1)
 #include "arg1.asm"
 #include "base1.asm"
 #include "pstring1.asm"
+#include "memory1.asm"
 #include "float1.asm"
 #include "integer1.asm"
 #include "const1.asm"

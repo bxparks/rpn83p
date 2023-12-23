@@ -48,30 +48,22 @@ mHelpHandler:
 ; Children nodes of MATH menu.
 ;-----------------------------------------------------------------------------
 
-; mCubeHandler(X) -> X^3
 ; Description: Calculate X^3.
 mCubeHandler:
-    call closeInputAndRecallX
-    bcall(_Cube)
+    call closeInputAndRecallUniversalX
+    call universalCube
     jp replaceX
 
-; mCubeRootHandler(X) -> X^(1/3)
-; Description: Calculate the cubic root of X. The SDK documentation has the OP1
-; and OP2 flipped.
+; Description: Calculate the cubic root of X, X^(1/3).
 mCubeRootHandler:
-    call closeInputAndRecallX
-    bcall(_OP1ToOP2) ; OP2=X
-    bcall(_OP1Set3) ; OP1=3
-    bcall(_XRootY) ; OP2^(1/OP1), SDK documentation is incorrect
+    call closeInputAndRecallUniversalX
+    call universalCubeRoot
     jp replaceX
 
-; mXRootYHandler(X,Y) -> Y^(1/X)
-; Description: Calculate the X root of Y. The SDK documentation has the OP1
-; and OP2 flipped.
+; Description: Calculate the X root of Y, Y^(1/X).
 mXRootYHandler:
-    call closeInputAndRecallXY ; OP1=Y; OP2=X
-    bcall(_OP1ExOP2) ; OP1=X, OP2=Y
-    bcall(_XRootY) ; OP2^(1/OP1), SDK documentation is incorrect
+    call closeInputAndRecallUniversalXY ; CP1=Y; CP3=X
+    call universalXRootY
     jp replaceXY
 
 ; Description: Calculate the angle of the (X, Y) number in complex plane.
@@ -97,49 +89,35 @@ mAtan2Handler:
 
 ;-----------------------------------------------------------------------------
 
-; Calculate e^x-1 without round off errors around x=0.
+; Description: TwoPow(X) = 2^X
+mTwoPowHandler:
+    call closeInputAndRecallUniversalX
+    call universalTwoPow
+    jp replaceX
+
+; Description: Log2(X)=log(X)/log(2)
+mLog2Handler:
+    call closeInputAndRecallUniversalX
+    call universalLog2
+    jp replaceX
+
+; Description: LogBase(Y,X)=log(Y)/log(X)
+mLogBaseHandler:
+    call closeInputAndRecallUniversalXY ; CP1=Y; CP3=X
+    call universalLogBase
+    jp replaceXY
+
+; Description: Calculate e^x-1 without round off errors around x=0.
 mExpMinusOneHandler:
     call closeInputAndRecallX
     bcall(_ExpMinusOne)
     jp replaceX
 
-; Calculate ln(1+x) without round off errors around x=0.
+; Description: Calculate ln(1+x) without round off errors around x=0.
 mLnOnePlusHandler:
     call closeInputAndRecallX
     bcall(_LnOnePlus)
     jp replaceX
-
-; Alog2(X) = 2^X
-mAlog2Handler:
-    call closeInputAndRecallX
-    bcall(_OP1ToOP2) ; OP2 = X
-    bcall(_OP1Set2) ; OP1 = 2
-    bcall(_YToX) ; OP1 = 2^X
-    jp replaceX
-
-; Log2(X) = log_base_2(X) = log(X)/log(2)
-mLog2Handler:
-    call closeInputAndRecallX
-    bcall(_LnX) ; OP1 = ln(X)
-    bcall(_PushRealO1) ; FPS=[ln(x)]
-    bcall(_OP1Set2) ; OP1=2.0
-    bcall(_LnX) ; OP1=ln(2.0)
-    call op1ToOp2 ; OP2=ln(2.0)
-    bcall(_PopRealO1) ; FPS=[]; OP1=ln(x)
-    bcall(_FPDiv) ; OP1=ln(x)/ln(2)
-    jp replaceX
-
-; LogBase(Y, X) = log_base_X(Y)=log(Y)/log(X)
-mLogBaseHandler:
-    call closeInputAndRecallXY ; OP1=Y; OP2=X
-    bcall(_PushRealO2) ; FPS=[X]
-    bcall(_LnX) ; OP1=ln(Y)
-    call exchangeFPSOP1; FPS=[ln(Y)]; OP1=X
-    bcall(_LnX) ; OP1=ln(X)
-    call op1ToOp2 ; OP2=ln(X)
-    bcall(_PopRealO1) ; FPS=[]; OP1=ln(Y)
-    bcall(_FPDiv) ; OP1=ln(Y)/ln(X)
-    jp replaceXY
 
 ;-----------------------------------------------------------------------------
 ; Children nodes of NUM menu.
@@ -659,9 +637,7 @@ mDToRHandler:
 ;   - Y: y
 ;   - X: x
 mPToRHandler:
-    call closeInputAndRecallX
-    bcall(_OP1ToOP2) ; OP2=X=r
-    call rclY ; OP1 =Y=theta
+    call closeInputAndRecallXY ; OP1=Y=theta; OP2=X=r
     call op1ExOp2  ; OP1=r; OP2=theta
     bcall(_PToR) ; OP1=x; OP2=y
     call op1ExOp2  ; OP1=y; OP2=x
@@ -676,9 +652,7 @@ mPToRHandler:
 ;   - Y: theta
 ;   - X: r
 mRtoPHandler:
-    call closeInputAndRecallX
-    bcall(_OP1ToOP2) ; OP2=X=x
-    call rclY ; OP1=Y=y
+    call closeInputAndRecallXY ; OP1=Y=imaginary; OP2=X=real
     call op1ExOp2  ; OP1=x; OP2=y
     bcall(_RToP) ; OP1=r; OP2=theta
     call op1ExOp2  ; OP1=theta; OP2=r
@@ -763,7 +737,7 @@ saveFormatDigitsContinue:
 
 ; Description: Select the display name of 'FIX' menu.
 ; Input:
-;   - A: nameId
+;   - A,B: nameId
 ;   - C: altNameId
 ;   - HL: pointer to MenuNode
 ; Output:
@@ -776,7 +750,7 @@ mFixNameSelector:
 
 ; Description: Select the display name of 'SCI' menu.
 ; Input:
-;   - A: nameId
+;   - A,B: nameId
 ;   - C: altNameId
 ;   - HL: pointer to MenuNode
 ; Output:
@@ -792,7 +766,7 @@ mSciNameSelectorMaybeOn:
 
 ; Description: Select the display name of 'ENG' menu.
 ; Input:
-;   - A: nameId
+;   - A,B: nameId
 ;   - C: altNameId
 ;   - HL: pointer to MenuNode
 ; Output:
@@ -822,7 +796,7 @@ mDegHandler:
 
 ; Description: Select the display name of 'RAD' menu.
 ; Input:
-;   - A: nameId
+;   - A,B: nameId
 ;   - C: altNameId
 ;   - HL: pointer to MenuNode
 ; Output:
@@ -835,7 +809,7 @@ mRadNameSelector:
 
 ; Description: Select the display name of 'DEG' menu.
 ; Input:
-;   - A: nameId
+;   - A,B: nameId
 ;   - C: altNameId
 ;   - HL: pointer to MenuNode
 ; Output:

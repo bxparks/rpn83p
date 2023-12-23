@@ -606,7 +606,7 @@ tvmSolveDebugEnabled:
 ; Destroys: A, B, OP1, OP2
 tvmSolveCheckTermination:
     ; Check for ON/Break
-    bit onInterrupt, (IY+onFlags)
+    bit onInterrupt, (iy + onFlags)
     jr z, tvmSolveCheckTolerance
     res onInterrupt, (iy + onFlags)
     ld a, tvmSolverResultBreak

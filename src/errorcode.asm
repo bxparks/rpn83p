@@ -21,15 +21,15 @@ InitErrorCode:
 ; Register A. The system error code uses the lower 7 bits, so in theory there
 ; are as many as 128. However, the SDK docs define only about 32, so those are
 ; reduced down to a range of `[0, errorCodeCount-1]`.
-; Input: A: system error code
-; Output: A: handlerCode
-SetHandlerCodeToSystemCode:
+; Input: A=systemErrorCode
+; Output: (handlerCode)=systemErrorCode
+SetHandlerCodeFromSystemCode:
     res 7, a ; reset the GOTO flag
     ld (handlerCode), a
     ret
 
 ; Description: Set the `errorCode` to the value given in register A.
-; Input: A: error code
+; Input: A=errorCode
 SetErrorCode:
     ld hl, errorCode
     cp (hl) ; previous errorCode

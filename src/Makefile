@@ -15,6 +15,8 @@ SRCS := \
 	basehandlers.asm \
 	cfithandlers.asm \
 	common.asm \
+	complex.asm \
+	complexhandlers.asm \
 	const.asm \
 	const1.asm \
 	crc.asm \
@@ -32,6 +34,8 @@ SRCS := \
 	integer1.asm \
 	main.asm \
 	mainparser.asm \
+	memory.asm \
+	memory1.asm \
 	menu.asm \
 	menudef.asm \
 	menuhandlers.asm \
