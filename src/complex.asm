@@ -29,6 +29,15 @@ checkOp1Complex:
     cp rpnObjectTypeComplex
     ret
 
+; Description: Check if either OP1 or OP3 is complex.
+; Input: OP1, OP3
+; Output: ZF=1 if either parameter is complex
+; Destroys: A
+checkOp1OrOP3Complex:
+    call checkOp1Complex
+    ret z
+    ; [[fallthrough]]
+
 ; Description: Same as checkOp1Complex() for OP3.
 ; Input: OP1
 ; Output: ZF=1 if complex
@@ -36,19 +45,6 @@ checkOp1Complex:
 checkOp3Complex:
     ld a, (OP3)
     and $1f
-    cp rpnObjectTypeComplex
-    ret
-
-; Description: Check if either OP1 or OP3 are complex.
-; Input: OP1, OP3
-; Output: ZF=1 if either parameters is complex
-; Destroys: A
-checkOp1OrOP3Complex:
-    ld a, (OP1)
-    ld b, a
-    ld a, (OP3)
-    or b
-    and $1F
     cp rpnObjectTypeComplex
     ret
 
