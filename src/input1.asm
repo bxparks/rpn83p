@@ -135,7 +135,8 @@ parseNum:
     call parseExponent ; A=exponentValue of inputBuf)
     call addExponent ; add EE exponent to floatBuf exponent
 parseFloatNoExponent:
-    call copyFloatToOP1 ; copy floatBuf to OP1
+    ld hl, floatBuf
+    jp move9ToOp1PageOne
     ret
 
 parseBaseInteger:
@@ -493,12 +494,6 @@ extractMantissaLoop:
     inc de
     inc hl
     djnz extractMantissaLoop
-    ret
-
-; Description: Copy floatBuf into OP1
-copyFloatToOP1:
-    ld hl, floatBuf
-    bcall(_Mov9ToOP1) ; TODO: Replace with 'jp move9ToOp1'
     ret
 
 ;-----------------------------------------------------------------------------
