@@ -556,13 +556,12 @@ parseExponent:
     inc hl
     cp signChar
     jr z, parseExponentSetSign
-    ; TODO: Replace inputBufFlagsExpSign with a register, maybe D or E
-    res inputBufFlagsExpSign, (iy+inputBufFlags) ; temporary
+    ld d, rpnfalse ; D=isEENeg=false
     jr parseExponentDigits
 parseExponentSetSign:
     ld a, (hl)
     inc hl
-    set inputBufFlagsExpSign, (iy+inputBufFlags)
+    ld d, rpntrue ; D=isEENeg=true
 parseExponentDigits:
     ld b, 0 ; B=exponentValue
     ; process the first digit if any, A==NUL if end of string
@@ -586,8 +585,9 @@ parseExponentDigits:
     ld b, a
     ; [[fallthrough]]
 parseExponentEnd:
+    ld a, d ; A=isEENeg
+    or a ; if isEENeg: ZF=0
     ld a, b ; A=exponentValue
-    bit inputBufFlagsExpSign, (iy+inputBufFlags)
     ret z
     neg
     ret

@@ -92,9 +92,8 @@ inputBufFlags equ asm_Flag3
 inputBufFlagsDecPnt equ 0 ; set if decimal point exists
 inputBufFlagsEE equ 1 ; set if EE symbol exists
 inputBufFlagsClosedEmpty equ 2 ; inputBuf empty when closeInput() called
-inputBufFlagsExpSign equ 3 ; exponent sign bit detected during parsing
-inputBufFlagsArgExit equ 4 ; set to exit CommandArg mode
-inputBufFlagsArgAllowModifier equ 5 ; allow */-+ modifier in CommandArg mode
+inputBufFlagsArgExit equ 3 ; set to exit CommandArg mode
+inputBufFlagsArgAllowModifier equ 4 ; allow */-+ modifier in CommandArg mode
 
 ;-----------------------------------------------------------------------------
 ; RPN83P application variables and buffers.
