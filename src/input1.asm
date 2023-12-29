@@ -123,15 +123,18 @@ parseNum:
     ld hl, inputBuf
     bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
     jr nz, parseBaseInteger
-parseFloat:
     ; Parse floating point.
-    call calcDPPos
+    call calcDPPos ; A=i8(decimalPointPos)
     call extractMantissaExponent ; extract mantissa exponent to floatBuf
     call extractMantissaSign ; extract mantissa sign to floatBuf
     call parseMantissa ; parse mantissa digits from inputBuf into parseBuf
     call extractMantissa ; copy mantissa digits from parseBuf into floatBuf
-    call parseExponent ; parse EE digits from inputBuf
+    xor a ; A=inputBufOffset=0
+    call findExponent ; A=offsetToExponent; CF=1 if found
+    jr nc, parseFloatNoExponent
+    call parseExponent ; A=exponentValue of inputBuf)
     call addExponent ; add EE exponent to floatBuf exponent
+parseFloatNoExponent:
     call copyFloatToOP1 ; copy floatBuf to OP1
     ret
 
@@ -204,6 +207,14 @@ parseNumBaseAddDigit:
 parseNumInit:
     call clearParseBuf
     call clearFloatBuf
+    ; terminate the inputBuf with a NUL sentinel to help parsing logic
+    ld hl, inputBuf
+    ld e, (hl)
+    xor a
+    ld d, a
+    inc hl ; skip len byte
+    add hl, de ; HL=pointerToNUL
+    ld (hl), a
     ret
 
 ; Description: Clear parseBuf by setting all digits to the character '0', and
@@ -453,10 +464,9 @@ extractMantissaSign:
     ret
 
 ; Description: Extract the normalized mantissa digits from parseBuf to
-; floatBuf, 2
-; digits per byte.
+; floatBuf, 2 digits per byte.
 ; Input: parseBuf
-; Output:
+; Output: floatBuf updated
 ; Destroys: A, BC, DE, HL
 extractMantissa:
     ld hl, parseBuf
@@ -488,69 +498,117 @@ extractMantissaLoop:
 ; Description: Copy floatBuf into OP1
 copyFloatToOP1:
     ld hl, floatBuf
-    bcall(_Mov9ToOP1)
+    bcall(_Mov9ToOP1) ; TODO: Replace with 'jp move9ToOp1'
     ret
 
 ;-----------------------------------------------------------------------------
 
+; Description: Find the next 'E' character and return the number of exponent
+; digits.
+; Input:
+;   - (inputBuf): input characters and digits, Pascal-string w/ NUL terminator
+;   - A: offset into inputBuf (which allows us to parse complex numbers with 2
+;   floating point numbers in the inputBuf)
+; Output:
+;   - CF: 0 if not found, 1 if found
+;   - A: offset to the first character after the 'E' symbol
+; Destroys: BC, DE, HL
+findExponent:
+    ld hl, inputBuf
+    ld c, (hl) ; C=len
+    inc hl ; skip len byte
+    ld e, a
+    ld d, 0 ; DE=offset
+    add hl, de
+    ; Calculate length of string to loop over. Return if at end.
+    sub c ; A=offset-len
+    ret nc ; if offset>=len: no 'E', CF=0
+    neg ; A=len-offset, guaranteed > 0
+    ld b, a ; B=len-offset
+findExponentSearchLoop:
+    ld a, (hl)
+    inc hl
+    inc e ; E=offset++
+    cp Lexponent
+    jr z, findExponentFound
+    ; This algorithm assumes that the Pascal string is *also* terminated with a
+    ; NUL, like a C-string. It makes the loop algorithm simpler.
+    call isValidFloatDigit ; if isValidFloatDigit(A): CF=1
+    ret nc
+    djnz findExponentSearchLoop
+    ; indicate not found
+    or a ; CF=0
+    ret
+findExponentFound:
+    ld a, e ; A=offsetToFirstExponent
+    scf
+    ret
+
 ; Description: Parse the digits after the 'E' symbol in the inputBuf.
-; Input: inputBuf
+; Input:
+;   - inputBuf
+;   - A: offset to the first character of exponent, just after the 'E'
 ; Output: A: the exponent, in two's complement form
 ; Destroys: A, BC, DE, HL
-; TODO: Instead of relying on inputBufEEPos and inputBufEELen, scan for 'E' and
-; parse out the exponent digits. This would remove the dependency to those 2
-; variables, and decouple the parsing routines from the input/editing routines.
 parseExponent:
-    ld b, 0 ; B=exponent value
-    ; Return if no 'E' symbol
-    ld a, (inputBufEEPos)
-    ld e, a ; E=EEpos
-    or a
-    ld a, b
-    ret z
-    ; Return if no digits after 'E'
-    ld a, (inputBufEELen)
-    ld c, a ; C=EELen
-    or a
-    ld a, b
-    ret z
-    ; Check for minus sign
     ld hl, inputBuf
+    inc hl ; skip len byte
+    ld e, a ; E=eeDigitOffset
     ld d, 0
-    add hl, de
-    inc hl ; HL=pointer to first digit of EE
-    ld a, (hl)
+    add hl, de ; HL=pointer to first digit of EE
+    ; Check for minus sign
+    ld a, (hl); A==NUL if end of string
+    inc hl
     cp signChar
     jr z, parseExponentSetSign
-    res inputBufFlagsExpSign, (iy+inputBufFlags)
+    ; TODO: Replace inputBufFlagsExpSign with a register, maybe D or E
+    res inputBufFlagsExpSign, (iy+inputBufFlags) ; temporary
     jr parseExponentDigits
 parseExponentSetSign:
+    ld a, (hl)
     inc hl
     set inputBufFlagsExpSign, (iy+inputBufFlags)
 parseExponentDigits:
-    ; Convert 1 or 2 digits of the exponent to 2's complement number in A
-    ld a, c ; A=EELen
-    cp 1
-    jr z, parseExponentOneDigit
-parseExponentTwoDigits:
-    ld a, (hl) ; first of 2 digits
-    inc hl
+    ld b, 0 ; B=exponentValue
+    ; process the first digit if any, A==NUL if end of string
+    call isValidUnsignedDigit ; if valid: CF=1
+    jr nc, parseExponentEnd
     sub '0'
-    ; multiply by 10
+    add a, b
+    ld b, a
+    ; process the second digit if any
+    ld a, (hl) ; second of 2 digits, A==NUL if end of string
+    inc hl
+    call isValidUnsignedDigit; if valid: CF=1
+    jr nc, parseExponentEnd
+    ld c, a ; C=save A
+    ld a, b
+    call multABy10
+    ld b, a
+    ld a, c ; A=restored C
+    sub '0'
+    add a, b
+    ld b, a
+    ; [[fallthrough]]
+parseExponentEnd:
+    ld a, b ; A=exponentValue
+    bit inputBufFlagsExpSign, (iy+inputBufFlags)
+    ret z
+    neg
+    ret
+
+; Description: Multiply A by 10.
+; Input: A
+; Output: A
+; Destroys: none
+multABy10:
+    push bc
     add a, a
     ld c, a ; C=2*A
     add a, a
     add a, a ; A=8*A
     add a, c ; A=10*A
-    ld b, a ; save B
-parseExponentOneDigit:
-    ld a, (hl) ; second of 2 digits,or first of 1 digit
-    sub '0'
-    add a, b
-parseExponentNegIfSign:
-    bit inputBufFlagsExpSign, (iy+inputBufFlags)
-    ret z
-    neg
+    pop bc
     ret
 
 ; Description: Add the exponent in A to the floatBuf exponent.
@@ -565,4 +623,47 @@ addExponent:
     add a, b ; 2's complement
     add a, $80
     ld (hl), a
+    ret
+
+;-----------------------------------------------------------------------------
+
+; Description: Check if the character in A is a valid floating point digit ('0'
+; to '9', '-', '.', and 'E').
+; Input: A: character
+; Output: CF=1 if valid, 0 if not
+; Destroys: none
+isValidFloatDigit:
+    cp '.'
+    jr z, isValidDigitTrue
+    cp Lexponent
+    jr z, isValidDigitTrue
+    ; [[fallthrough]]
+
+; Description: Check if the character in A is a valid signed integer ('0' to
+; '9', '-').
+; Input: A: character
+; Output: CF=1 if valid, 0 if not
+; Destroys: none
+isValidSignedDigit:
+    cp signChar ; '-'
+    jr z, isValidDigitTrue
+    ; [[fallthrough]]
+
+; Description: Check if the character in A is a valid unsigned integer ('0' to
+; '9').
+; Input: A: character
+; Output: CF=1 if valid, 0 if not
+; Destroys: none
+isValidUnsignedDigit:
+    cp '0' ; if A<'0': CF=1
+    jr c, isValidDigitFalse
+    cp ':' ; if A<='9': CF=1
+    ret c
+    ; [[fallthrough]]
+
+isValidDigitFalse:
+    or a ; CF=0
+    ret
+isValidDigitTrue:
+    scf ; CF=1
     ret
