@@ -142,9 +142,9 @@ factoring algorithm:
    tested. We could implement another function (maybe call it`PRFS`) that
    returned *all* prime factors of a number `N` . It could be more efficient
    by restarting the loop at the previous prime factor. However, this new
-   function would need support for vectors in the RPN83P app so that it can
-   return multiple numbers as the result. Vectors unfortunately are not
-   currently (v0.7.0) supported.
+   function would need support for vectors or arrays so that it can return
+   multiple numbers as the result. Vectors or arrays are not currently (v0.8.0)
+   supported.
 1. The [Prime Number
    Theorem](https://en.wikipedia.org/wiki/Prime_number_theorem) tells us that
    the number of prime numbers less than `n` is roughly `n/ln(n)`. Since we
@@ -167,7 +167,8 @@ factoring algorithm:
 
    I'm not sure if the increase in flash size is worth it, but the `PRIM`
    function could be made blindingly fast, finishing the toughest prime factor
-   problem (of less than `2^32`) in about 10 seconds on a TI-84+ calculator.
+   problem (of less than `2^32`) in about 4 seconds (13.0/3.3) on a TI-84+
+   calculator.
 
 ## TVM Algorithms
 
