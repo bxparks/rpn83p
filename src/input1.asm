@@ -29,6 +29,7 @@ ClearInputBuf:
     push af
     xor a
     ld (inputBuf), a
+    res inputBufFlagsComplex, (iy + inputBufFlags)
     set dirtyFlagsInput, (iy + dirtyFlags)
     pop af
     ret

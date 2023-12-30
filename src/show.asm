@@ -148,7 +148,7 @@ formComplexRectString:
     jr formRealString
 
 msgShowComplexRectSpacer:
-    .db " ", LImagI, " ", 0
+    .db " ", LimagI, " ", 0
 
 ; Description: Format the complex number in polar radian form.
 ; Input: DE: stringPointer

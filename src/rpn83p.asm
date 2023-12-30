@@ -94,6 +94,7 @@ inputBufFlags equ asm_Flag3
 inputBufFlagsClosedEmpty equ 2 ; inputBuf empty when closeInput() called
 inputBufFlagsArgExit equ 3 ; set to exit CommandArg mode
 inputBufFlagsArgAllowModifier equ 4 ; allow */-+ modifier in CommandArg mode
+inputBufFlagsComplex equ 5 ; set if either ImaginaryI or Angle exists
 
 ; Bit flags for the result of GetInputBufState().
 inputBufStateDecimalPoint equ 0 ; set if decimal point exists

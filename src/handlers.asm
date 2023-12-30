@@ -227,6 +227,34 @@ handleKeyEE:
     ld a, Lexponent
     jp handleKeyNumber
 
+; Description: Add imaginary-i into the input buffer.
+handleKeyImagI:
+    ; Do nothing in BASE mode.
+    bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
+    ret nz
+    ; Do nothing if already in complex mode
+    bit inputBufFlagsComplex, (iy + inputBufFlags)
+    ret nz
+    ; try inserting imaginary-i
+    ld a, LimagI
+    call handleKeyNumber
+    set inputBufFlagsComplex, (iy + inputBufFlags)
+    ret
+
+; Description: Add Angle symbol into the input buffer.
+handleKeyAngle:
+    ; Do nothing in BASE mode.
+    bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
+    ret nz
+    ; Do nothing if already in complex mode
+    bit inputBufFlagsComplex, (iy + inputBufFlags)
+    ret nz
+    ; try inserting Angle character
+    ld a, LAngle
+    call handleKeyNumber
+    set inputBufFlagsComplex, (iy + inputBufFlags)
+    ret
+
 ;-----------------------------------------------------------------------------
 
 ; Description: Implement the DEL functionality, which does slightly different
