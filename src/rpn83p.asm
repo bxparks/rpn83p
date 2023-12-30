@@ -25,7 +25,7 @@
 ; Define the Cursor character
 cursorChar equ LcurI
 cursorCharAlt equ LcurO
-signChar equ Lneg ; different from '-' which is LDash
+signChar equ Lneg ; different from Ldash ('-'), or Lhyphen
 
 ; Menu keys, left to right.
 keyMenu1 equ kYequ
@@ -92,9 +92,8 @@ inputBufFlags equ asm_Flag3
 inputBufFlagsDecPnt equ 0 ; set if decimal point exists
 inputBufFlagsEE equ 1 ; set if EE symbol exists
 inputBufFlagsClosedEmpty equ 2 ; inputBuf empty when closeInput() called
-inputBufFlagsExpSign equ 3 ; exponent sign bit detected during parsing
-inputBufFlagsArgExit equ 4 ; set to exit CommandArg mode
-inputBufFlagsArgAllowModifier equ 5 ; allow */-+ modifier in CommandArg mode
+inputBufFlagsArgExit equ 3 ; set to exit CommandArg mode
+inputBufFlagsArgAllowModifier equ 4 ; allow */-+ modifier in CommandArg mode
 
 ;-----------------------------------------------------------------------------
 ; RPN83P application variables and buffers.
@@ -209,7 +208,7 @@ inputBuf equ baseWordSize + 1 ; struct InputBuf
 inputBufLen equ inputBuf ; len byte of the pascal string
 inputBufBuf equ inputBuf + 1
 inputBufCapacity equ 32 ; excludes trailing cursor
-inputBufSizeOf equ inputBufCapacity + 1
+inputBufSizeOf equ inputBufCapacity + 1 + 1 ; extra space for NUL terminator
 
 ; The TI-OS floating point number supports 14 significant digits, but we need 6
 ; more characters to hold the optional mantissa minus sign, the optional
