@@ -949,8 +949,29 @@ clearShowAreaLoop:
 ; Destroys: A, HL, OP3
 printOP1:
     cp rpnObjectTypeComplex
-    jr nz, printOP1Real
+    jr z, printOP1Complex
     ; [[fallthrough]]
+
+; Description: Print the real number in OP1, taking into account the BASE mode.
+; This routine always uses large font, so it never needs to clear the line with
+; EraseEOL(), so the displayFontMask does not need to be used.
+; Input:
+;   - OP1: real number
+;   - B: displayFontMask
+printOP1Real:
+    call displayStackSetLargeFont
+    bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
+    jp z, printOP1AsFloat
+    ld a, (baseNumber)
+    cp 16
+    jp z, printOP1Base16
+    cp 8
+    jp z, printOP1Base8
+    cp 2
+    jp z, printOP1Base2
+    jp printOP1Base10
+
+;-----------------------------------------------------------------------------
 
 ; Description: Print a complex number. The LCD screen is 96 pixels wide. The
 ; stack label is 6 pixels, leaving 90 pixels. Each small font character is 4
@@ -1007,25 +1028,6 @@ printOP1ComplexRect:
 msgComplexRectSpacer:
     .db "  ", SimagI, " ", 0
 
-; Description: Print the real number in OP1, taking into account the BASE mode.
-; This routine always uses large font, so it never needs to clear the line with
-; EraseEOL(), so the displayFontMask does not need to be used.
-; Input:
-;   - OP1: real number
-;   - B: displayFontMask
-printOP1Real:
-    call displayStackSetLargeFont
-    bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
-    jp z, printOP1AsFloat
-    ld a, (baseNumber)
-    cp 16
-    jp z, printOP1Base16
-    cp 8
-    jp z, printOP1Base8
-    cp 2
-    jp z, printOP1Base2
-    jp printOP1Base10
-
 ; Description: Print the complex numberin CP1 in polar form using radians.
 ; Note: An r value >= 1e100 or <= 1e-100 can be returned by complexRToPRad()
 ; and will be displayed by this function. This is useful because that means we
@@ -1045,7 +1047,7 @@ printOP1ComplexRadOk:
     ld hl, OP3
     call vPutSmallS
     ; Print the theta symbol
-    ld hl, msgComplexPolarSpacer
+    ld hl, msgComplexPRadSpacer
     call vPutSmallS
     ; Print theta(rad)
     call op2ToOp1
@@ -1055,6 +1057,9 @@ printOP1ComplexRadOk:
     call vPutSmallS
     call vEraseEOL
     ret
+
+msgComplexPRadSpacer:
+    .db "  ", Sangle, " ", 0
 
 ; Description: Print the complex numberin CP1 in polar form using degrees.
 ; Note: An r value >= 1e100 or <= 1e-100 can be returned by complexRToPRad()
@@ -1075,7 +1080,7 @@ printOP1ComplexDegOk:
     ld hl, OP3
     call vPutSmallS
     ; Print the angle symbol
-    ld hl, msgComplexPolarSpacer
+    ld hl, msgComplexPDegSpacer
     call vPutSmallS
     ; Print theta(deg)
     call op2ToOp1
@@ -1084,16 +1089,16 @@ printOP1ComplexDegOk:
     ld hl, OP3
     call vPutSmallS
     ; Add a deg symbol
-    ld a, Stemp ; deg symbol
-    bcall(_VPutMap)
+    ; ld a, Stemp ; deg symbol
+    ; bcall(_VPutMap)
     call vEraseEOL
     ret
 
+msgComplexPDegSpacer:
+    .db "  ", Sangle, Stemp, " ", 0
+
 msgPrintComplexError:
     .db "<overflow>", 0
-
-msgComplexPolarSpacer:
-    .db "  ", Sangle, " ", 0
 
 ;-----------------------------------------------------------------------------
 
