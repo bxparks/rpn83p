@@ -112,12 +112,13 @@ closeInputBufContinue:
 ; are checked:
 ;   - inputBufStateDecimalPoint: set if decimal point exists
 ;   - inputBufStateEE: set if exponent 'E' character exists
-;   - inputBufEEPos: pos of char after 'E', or 0 if no 'E'
+;   - inputBufEEPos: pos of char after 'E', or the first character of the
+;   number component if no 'E'
 ;   - inputBufEELen: number of EE digits if inputBufStateEE is set
 ; Input: inputBuf
 ; Output:
 ;   - C: inputBufState flags updated
-;   - D: inputBufEEPos, pos of char after 'E', or 0 if no 'E'
+;   - D: inputBufEEPos, pos of char after 'E' or at start of number
 ;   - E: inputBufEELen, number of EE digits if inputBufStateEE is set
 ; Destroys: BC, DE, HL
 ; Preserves: AF
@@ -154,12 +155,22 @@ getInputBufStateCheckDecimalPoint:
     set inputBufStateDecimalPoint, c
 getInputBufStateCheckEE:
     cp Lexponent
-    jr nz, getInputBufStateCheckLen
+    jr nz, getInputBufStateCheckTermination
     set inputBufStateEE, c
     ld d, b ; inputBufEEPos=B
-getInputBufStateCheckLen:
+getInputBufStateCheckTermination:
+    cp LimagI
+    jr z, getInputBufStateEnd
+    cp Langle
+    jr z, getInputBufStateEnd
     djnz getInputBufStateLoop
 getInputBufStateEnd:
+    ; If no 'E', set inputBufEEPos to the start of current number, which could
+    ; be the imaginary or angle part of a complex number.
+    bit inputBufStateEE, c
+    jr nz, getInputBufStateReturn
+    ld d, b
+getInputBufStateReturn:
     pop af
     ret
 
