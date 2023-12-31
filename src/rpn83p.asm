@@ -222,7 +222,7 @@ inputBufSizeOf equ inputBufCapacity + 1 + 1 ; extra space for NUL terminator
 inputBufNormalMaxLen equ 20
 
 ; Max number of digits allowed for exponent.
-inputBufEELenMax equ 2 ; TODO: Rename to inputBufEEMaxLen for consistency
+inputBufEEMaxLen equ 2
 
 ; When the inputBuf is used as a command argBuf, the maximum number of
 ; characters in the buffer is 2.

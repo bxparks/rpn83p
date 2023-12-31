@@ -40,7 +40,7 @@ handleKeyNumberAppendExponent:
     ; Append A to exponent.
     ld b, a ; save A
     ld a, e ; A=inputBufEELen
-    cp inputBufEELenMax
+    cp inputBufEEMaxLen
     ld a, b ; restore A
     ret nc ; prevent more than 2 exponent digits
     ; Try to append character
