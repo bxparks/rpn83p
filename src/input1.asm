@@ -203,8 +203,13 @@ parseFloat:
     ld hl, inputBuf
     inc hl
     call calcDPPos ; A=i8(decimalPointPos)
+    ;
     call extractMantissaExponent ; extract mantissa exponent to floatBuf
+    ;
+    ld hl, inputBuf
+    inc hl
     call extractMantissaSign ; extract mantissa sign to floatBuf
+    ;
     call parseMantissa ; parse mantissa digits from inputBuf into parseBuf
     call extractMantissa ; copy mantissa digits from parseBuf into floatBuf
     xor a ; A=inputBufOffset=0
@@ -524,17 +529,13 @@ extractMantissaExponent:
     ld (floatBufExp), a
     ret
 
-; Description: Extract mantissa sign from the first character in the inputBuf.
-; Input: inputBuf
-; Output: floatBuf sign set
+; Description: Extract mantissa sign from the first character of the given
+; string, and transfer it to the sign bit of the floatBuf.
+; Input: HL: NUL terminated C-string
+; Output: (floatBuf) sign set
 ; Destroys: HL
 extractMantissaSign:
-    ld hl, inputBuf
-    ld a, (hl)
-    or a
-    ret z ; empty string, assume positive
-    inc hl
-    ld a, (hl)
+    ld a, (hl) ; A will be NUL if an empty string
     cp signChar
     ret nz ; '-' not found at first character
     ld hl, floatBufType

@@ -452,7 +452,7 @@ appBufferSize equ appBufferEnd-appBufferStart
 ;       uint8_t man[7];
 ;   }
 floatBuf equ OP3
-floatBufType equ floatBuf ; type
+floatBufType equ floatBuf ; type byte, also contains sign bit
 floatBufExp equ floatBufType + 1 ; exponent, shifted by $80
 floatBufMan equ floatBufExp + 1 ; mantissa, 2 digits per byte
 floatBufSizeOf equ 9
