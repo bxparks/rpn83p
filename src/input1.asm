@@ -101,7 +101,7 @@ CloseInputBuf:
 closeInputBufEmpty:
     set inputBufFlagsClosedEmpty, (iy + inputBufFlags)
 closeInputBufContinue:
-    call parseNum
+    call parseInputBuf ; OP1=float
     jp ClearInputBuf
 
 ;------------------------------------------------------------------------------
@@ -182,18 +182,24 @@ getInputBufStateReturn:
 
 ;------------------------------------------------------------------------------
 
-; Description: Parse the input buffer into the parseBuf.
+; Description: Parse the input buffer into OP1.
 ; Input: inputBuf filled with keyboard characters
 ; Output: OP1: floating point number
 ; Destroys: all registers
-parseNum:
-    call parseNumInit
-    call checkZero
+parseInputBuf:
+    call parseNumInit ; OP1=0.0
+    call checkZero ; ZF=1 if inputBuf is zero
     ret z
     ld hl, inputBuf
     bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
     jr nz, parseBaseInteger
-    ; Parse floating point.
+    ; [[fallthrough]]
+
+; Description: Parse the floating point number at HL.
+; Input: HL: pointer to a Pascal string of a floating point number
+; Output: OP1: floating point number
+; Destroys: all
+parseFloat:
     call calcDPPos ; A=i8(decimalPointPos)
     call extractMantissaExponent ; extract mantissa exponent to floatBuf
     call extractMantissaSign ; extract mantissa sign to floatBuf
@@ -209,6 +215,10 @@ parseFloatNoExponent:
     jp move9ToOp1PageOne
     ret
 
+; Description: Parse the integer (base 2, 8, 10, 16) at HL.
+; Input: HL: pointer to Pascal string of an integer
+; Output: OP1: floating point representation of integer
+; Destroys: all
 parseBaseInteger:
     ld a, (baseNumber)
     cp 16
@@ -273,11 +283,13 @@ parseNumBaseAddDigit:
 
 ; Description: Initialize the parseBuf.
 ; Input: none
-; Output: (parseBuf) cleared
+; Output:
+;   - (parseBuf) cleared
+;   - OP1=0.0
 ; Destroys: all
 parseNumInit:
     call clearParseBuf
-    call clearFloatBuf
+    call clearFloatBuf ; OP1=0.0
     ; terminate the inputBuf with a NUL sentinel to help parsing logic
     ld hl, inputBuf
     ld e, (hl)
@@ -304,7 +316,7 @@ clearParseBufLoop:
     djnz clearParseBufLoop
     ret
 
-; Description: Set floatBuf to 0.0.
+; Description: Set floatBuf and OP1 to 0.0.
 clearFloatBuf:
     bcall(_OP1Set0)
     ld de, floatBuf
@@ -317,7 +329,7 @@ clearFloatBuf:
 ; the inputBuf is composed of characters only in the set ['-', '.', '0'], then
 ; it is effectively zero. Otherwise, not zero.
 ; Input: inputBuf
-; Output: Z set if zero, otherwise not set
+; Output: ZF set if zero, otherwise not set
 ; Destroys: A, B, HL
 checkZero:
     ld hl, inputBuf
@@ -392,8 +404,8 @@ parseMantissaContinue:
 
 ; Description: Find the position of the decimal point of the given number
 ; string.
-; Input: assumes non-empty inputBuf
-; Output: A = decimal point position, signed integer
+; Input: HL: pointer to floating point Pascal-string
+; Output: A: decimalPointPos, signed integer
 ; Destroys: all
 ;
 ; The returned value is the number of places the the decimal point needs to be
@@ -692,17 +704,24 @@ addExponent:
 
 ;-----------------------------------------------------------------------------
 
+; Description: Check if the character in A is a valid floating point digit
+; which may be in scientific notation ('0' to '9', '-', '.', and 'E').
+; Input: A: character
+; Output: CF=1 if valid, 0 if not
+; Destroys: none
+isValidScientificDigit:
+    cp Lexponent
+    jr z, isValidDigitTrue
+    ; [[fallthrough]]
+
 ; Description: Check if the character in A is a valid floating point digit ('0'
-; to '9', '-', '.', and 'E').
+; to '9', '-', '.').
 ; Input: A: character
 ; Output: CF=1 if valid, 0 if not
 ; Destroys: none
 isValidFloatDigit:
     cp '.'
     jr z, isValidDigitTrue
-    cp Lexponent
-    jr z, isValidDigitTrue
-    ; [[fallthrough]]
 
 ; Description: Check if the character in A is a valid signed integer ('0' to
 ; '9', '-').
