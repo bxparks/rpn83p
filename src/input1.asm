@@ -33,8 +33,6 @@ ClearInputBuf:
     ld (inputBuf), a
     ld (inputBufEEPos), a
     ld (inputBufEELen), a
-    res inputBufFlagsDecPnt, (iy + inputBufFlags)
-    res inputBufFlagsEE, (iy + inputBufFlags)
     set dirtyFlagsInput, (iy + dirtyFlags)
     pop af
     ret
@@ -109,6 +107,48 @@ closeInputBufEmpty:
 closeInputBufContinue:
     call parseNum
     jp ClearInputBuf
+
+;------------------------------------------------------------------------------
+
+; Description: Check the current state of the inputBuf by scanning backwards
+; from the end of the string. Currently, 2 states are checked:
+;   - decimal point exists, sets inputBufStateDecimalPoint
+;   - exponent 'E' character exists, sets inputBufStateEE
+; Input: inputBuf
+; Output: C: inputBufState flags updated
+; Destroys: BC, HL
+; Preserves: AF, DE
+GetInputBufState:
+    push af
+    ld hl, inputBuf
+    ld c, (hl) ; C=len
+    ld b, 0 ; BC=len
+    inc hl ; skip past len byte
+    add hl, bc ; HL=pointer to end of string
+    ; swap B and C
+    ld a, c ; A=len
+    ld c, b ; C=0
+    ld b, a ; B=len
+    ; check for len==0
+    or a ; if len==0: ZF=0
+    jr z, getInputBufStateEnd
+getInputBufStateLoop:
+    ; loop and accumulate inputBufState flags in the C register
+    dec hl
+    ld a, (hl)
+    ; check decimal point
+    cp '.'
+    jr nz, getInputBufStateCheckEE
+    set inputBufStateDecimalPoint, c
+getInputBufStateCheckEE:
+    cp Lexponent
+    jr nz, getInputBufStateCheckLen
+    set inputBufStateEE, c
+getInputBufStateCheckLen:
+    djnz getInputBufStateLoop
+getInputBufStateEnd:
+    pop af
+    ret
 
 ;------------------------------------------------------------------------------
 

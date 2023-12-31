@@ -30,8 +30,8 @@ handleKeyNumberFirstDigit:
     bcall(_ClearInputBuf)
     set rpnFlagsEditing, (iy + rpnFlags)
 handleKeyNumberCheckAppend:
-    ; Limit number of exponent digits to 2.
-    bit inputBufFlagsEE, (iy + inputBufFlags)
+    bcall(_GetInputBufState) ; C=inputBufState flags; AF preserved
+    bit inputBufStateEE, c
     jr nz, handleKeyNumberAppendExponent
     ; Append A to mantissa.
     bcall(_AppendInputBuf)
@@ -191,38 +191,40 @@ checkBase16:
     ret
 
 ; Description: Append a '.' if not already entered.
-; Input: none
-; Output: (iy+inputBufFlags) DecPnt set
-; Destroys: A, DE, HL
+; Input: inputBuf
+; Output: (inputBuf) updated
+; Destroys: A, BC, DE, HL
 handleKeyDecPnt:
     ; Do nothing in BASE mode.
     bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
     ret nz
+    ; Check prior characters in the inputBuf.
+    bcall(_GetInputBufState) ; C=inputBufState flags
     ; Do nothing if a decimal point already exists.
-    bit inputBufFlagsDecPnt, (iy + inputBufFlags)
+    bit inputBufStateDecimalPoint, c
     ret nz
     ; Also do nothing if 'E' exists. Exponents cannot have a decimal point.
-    bit inputBufFlagsEE, (iy + inputBufFlags)
+    bit inputBufStateEE, c
     ret nz
     ; try insert '.'
     ld a, '.'
     call handleKeyNumber
-    ret c ; If CF: append failed so return without setting the DecPnt flag
-    set inputBufFlagsDecPnt, (iy + inputBufFlags)
     ret
 
 ; Description: Handle the EE for scientific notation. The 'EE' is mapped to
 ; 2ND-COMMA by default on the calculator. For faster entry, we map the COMMA
 ; key (withouth 2ND) to be EE as well.
 ; Input: none
-; Output: (inputBufEEPos), (inputBufFlagsEE, iy+inputBufFlags)
+; Output: (inputBufEEPos)
 ; Destroys: A, HL
 handleKeyEE:
     ; Do nothing in BASE mode.
     bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
     ret nz
-    ; do nothing if EE already exists
-    bit inputBufFlagsEE, (iy + inputBufFlags)
+    ; Check prior characters in the inputBuf.
+    bcall(_GetInputBufState) ; C=inputBufState flags
+    ; Do nothing if EE already exists
+    bit inputBufStateEE, c
     ret nz
     ; try insert 'E'
     ld a, Lexponent
@@ -234,8 +236,6 @@ handleKeyEE:
     ; set the EE Len to 0
     xor a
     ld (inputBufEELen), a
-    ; set flag to indicate presence of EE
-    set inputBufFlagsEE, (iy + inputBufFlags)
     ret
 
 ;-----------------------------------------------------------------------------
@@ -279,37 +279,34 @@ handleKeyDelInEditMode:
     ; retrieve the character deleted
     ld d, 0
     add hl, de
-    ld a, (hl)
+    ld a, (hl) ; A=deletedChar
 handleKeyDelDecPnt:
-    ; reset decimal point flag if the deleted character was a '.'
+    ; simply return if the deleted character was a '.'
     cp a, '.'
-    jr nz, handleKeyDelEE
-    res inputBufFlagsDecPnt, (iy + inputBufFlags)
-    ret
-handleKeyDelEE:
+    ret z
     ; reset EE flag if the deleted character was an 'E'
     cp Lexponent
     jr nz, handleKeyDelEEDigits
     xor a
     ld (inputBufEEPos), a
     ld (inputBufEELen), a
-    res inputBufFlagsEE, (iy + inputBufFlags)
     ret
 handleKeyDelEEDigits:
-    ; decrement exponent len counter
-    bit inputBufFlagsEE, (iy + inputBufFlags)
-    jr z, handleKeyDelExit
+    ; check for 'E'
+    bcall(_GetInputBufState) ; C=inputBufState; AF preserved
+    bit inputBufStateEE, c
+    ret z ; return if no 'E' character
+    ; check if '-' was deleted
     cp signChar
-    jr z, handleKeyDelExit ; no special handling of '-' in exponent
+    ret z ; return if deleted '-' in exponent
     ; check if EELen is 0
     ld hl, inputBufEELen
     ld a, (hl)
     or a
-    jr z, handleKeyDelExit ; don't decrement len below 0
+    ret z ; return if len is already 0
     ; decrement EELen
     dec a
     ld (hl), a
-handleKeyDelExit:
     ret
 
 ;-----------------------------------------------------------------------------
