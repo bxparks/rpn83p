@@ -30,7 +30,7 @@ handleKeyNumberFirstDigit:
     bcall(_ClearInputBuf)
     set rpnFlagsEditing, (iy + rpnFlags)
 handleKeyNumberCheckAppend:
-    bcall(_GetInputBufState) ; C=inputBufState flags; AF preserved
+    bcall(_GetInputBufState) ; C=inputBufState; D=inputBufEEPos; E=inputBufEELen
     bit inputBufStateEE, c
     jr nz, handleKeyNumberAppendExponent
     ; Append A to mantissa.
@@ -38,16 +38,13 @@ handleKeyNumberCheckAppend:
     ret
 handleKeyNumberAppendExponent:
     ; Append A to exponent.
-    ld b, a
-    ld a, (inputBufEELen)
+    ld b, a ; save A
+    ld a, e ; A=inputBufEELen
     cp inputBufEELenMax
-    ld a, b
+    ld a, b ; restore A
     ret nc ; prevent more than 2 exponent digits
-    ; Try to append. Check for buffer full before incrementing counter.
+    ; Try to append character
     bcall(_AppendInputBuf)
-    ret c ; return if buffer full
-    ld hl, inputBufEELen
-    inc (hl)
     ret
 
 ;-----------------------------------------------------------------------------
@@ -199,7 +196,7 @@ handleKeyDecPnt:
     bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
     ret nz
     ; Check prior characters in the inputBuf.
-    bcall(_GetInputBufState) ; C=inputBufState flags
+    bcall(_GetInputBufState) ; C=inputBufState; D=inputBufEEPos; E=inputBufEELen
     ; Do nothing if a decimal point already exists.
     bit inputBufStateDecimalPoint, c
     ret nz
@@ -215,28 +212,20 @@ handleKeyDecPnt:
 ; 2ND-COMMA by default on the calculator. For faster entry, we map the COMMA
 ; key (withouth 2ND) to be EE as well.
 ; Input: none
-; Output: (inputBufEEPos)
-; Destroys: A, HL
+; Output: (inputBuf) updated
+; Destroys: A, BC, DE, HL
 handleKeyEE:
     ; Do nothing in BASE mode.
     bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
     ret nz
     ; Check prior characters in the inputBuf.
-    bcall(_GetInputBufState) ; C=inputBufState flags
+    bcall(_GetInputBufState) ; C=inputBufState; D=inputBufEEPos; E=inputBufEELen
     ; Do nothing if EE already exists
     bit inputBufStateEE, c
     ret nz
     ; try insert 'E'
     ld a, Lexponent
-    call handleKeyNumber
-    ret c ; If CF: append failed so return without setting the EE flag
-    ; save the EE+1 position
-    ld a, (inputBuf) ; position after the 'E'
-    ld (inputBufEEPos), a
-    ; set the EE Len to 0
-    xor a
-    ld (inputBufEELen), a
-    ret
+    jp handleKeyNumber
 
 ;-----------------------------------------------------------------------------
 
@@ -273,40 +262,7 @@ handleKeyDelInEditMode:
     or a
     ret z ; do nothing if buffer empty
     ; shorten string by one
-    ld e, a ; E = inputBufLen
-    dec a
-    ld (hl), a
-    ; retrieve the character deleted
-    ld d, 0
-    add hl, de
-    ld a, (hl) ; A=deletedChar
-handleKeyDelDecPnt:
-    ; simply return if the deleted character was a '.'
-    cp a, '.'
-    ret z
-    ; reset EE flag if the deleted character was an 'E'
-    cp Lexponent
-    jr nz, handleKeyDelEEDigits
-    xor a
-    ld (inputBufEEPos), a
-    ld (inputBufEELen), a
-    ret
-handleKeyDelEEDigits:
-    ; check for 'E'
-    bcall(_GetInputBufState) ; C=inputBufState; AF preserved
-    bit inputBufStateEE, c
-    ret z ; return if no 'E' character
-    ; check if '-' was deleted
-    cp signChar
-    ret z ; return if deleted '-' in exponent
-    ; check if EELen is 0
-    ld hl, inputBufEELen
-    ld a, (hl)
-    or a
-    ret z ; return if len is already 0
-    ; decrement EELen
-    dec a
-    ld (hl), a
+    dec (hl)
     ret
 
 ;-----------------------------------------------------------------------------
@@ -394,29 +350,30 @@ handleKeyChs:
     ret nz
     ; Clear TVM mode.
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
-    ; Toggle sign character in inputBuf in edit mode.
+    ; Check if edit mode.
     bit rpnFlagsEditing, (iy + rpnFlags)
     jr nz, handleKeyChsInputBuf
 handleKeyChsX:
-    ; CHS of X register
+    ; Not in edit mode, so change sign of X register
     call rclX
     call universalChs
     call stoX
     ret
 handleKeyChsInputBuf:
+    ; In edit mode, so change sign of Mantissa or Exponent.
     set dirtyFlagsInput, (iy + dirtyFlags)
-    ; Change sign of Mantissa or Exponent.
+    bcall(_GetInputBufState) ; C=inputBufState; D=inputBufEEPos; E=inputBufEELen
+    ld a, d ; A=inputBufEEPos or 0 if no 'E'
     ld hl, inputBuf
     ld b, inputBufCapacity
-    ld a, (inputBufEEPos) ; offset to EE digit, or 0 if 'E' does not exist
     ; [[fallthrough]]
 
 ; Description: Add or remove the '-' char at position A of the Pascal string at
 ; HL, with maximum length B.
 ; Input:
-;   A: inputBuf offset where the sign ought to be
+;   A: signPos, the offset where the sign ought to be
+;   B: inputBufCapacity, max size of Pasal string
 ;   HL: pointer to Pascal string
-;   B: max size of Pasal string
 ; Output:
 ;   (HL): updated with '-' removed or added
 ;   CF:
@@ -435,12 +392,12 @@ flipInputBufSignInside:
     push hl
     inc hl ; skip size byte
     ld e, a
-    ld d, 0
+    ld d, 0 ; DE=signPos
     add hl, de
-    ld a, (hl)
+    ld a, (hl) ; A=char at signPos
     cp signChar
     pop hl
-    ld a, e ; A=sign position
+    ld a, e ; A=signPos
     jr nz, flipInputBufSignAdd
 flipInputBufSignRemove:
     ; Remove existing '-' sign

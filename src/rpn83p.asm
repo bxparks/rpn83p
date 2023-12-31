@@ -221,20 +221,15 @@ inputBufSizeOf equ inputBufCapacity + 1 + 1 ; extra space for NUL terminator
 ; characters.
 inputBufNormalMaxLen equ 20
 
+; Max number of digits allowed for exponent.
+inputBufEELenMax equ 2 ; TODO: Rename to inputBufEEMaxLen for consistency
+
 ; When the inputBuf is used as a command argBuf, the maximum number of
 ; characters in the buffer is 2.
 argBuf equ inputBuf ; struct InputBuf
 argBufLen equ inputBufLen
 argBufCapacity equ inputBufCapacity
 argBufSizeMax equ 2 ; max number of digits accepted on input
-
-; Location (offset index) of the one past the 'E' symbol if it exists. Zero
-; indicates that 'E' does NOT exist.
-inputBufEEPos equ inputBuf + inputBufSizeOf ; u8
-; Length of EE digits. Maximum of 2.
-inputBufEELen equ inputBufEEPos + 1 ; u8
-; Max number of digits allowed for exponent.
-inputBufEELenMax equ 2
 
 ; Temporary buffer for parsing keyboard input into a floating point number.
 ; When the app is in BASE mode, the inputBuf is parsed directly, and this
@@ -253,7 +248,7 @@ inputBufEELenMax equ 2
 ;       uint8_t len; // number of digits in mantissa, 0 for 0.0
 ;       char man[14];  // mantissa, implicit starting decimal point
 ;   }
-parseBuf equ inputBufEELen + 1 ; struct ParseBuf
+parseBuf equ inputBuf + inputBufSizeOf ; struct ParseBuf
 parseBufLen equ parseBuf ; len byte of the pascal string
 parseBufMan equ parseBufLen + 1
 parseBufCapacity equ 14
@@ -431,7 +426,7 @@ displayStackFontFlagsZ equ 4
 displayStackFontFlagsT equ 8
 displayStackFontFlags equ inputDisplay + inputDisplaySizeOf ; u8
 
-appBufferEnd equ rpnStackFontFlags + 1
+appBufferEnd equ displayStackFontFlags + 1
 
 ; Total size of appBuffer.
 appBufferSize equ appBufferEnd-appBufferStart
@@ -792,10 +787,6 @@ _DebugClear equ _DebugClearLabel-branchTableBase
 _DebugOP1Label:
 _DebugOP1 equ _DebugOP1Label-branchTableBase
     .dw DebugOP1
-    .db 1
-_DebugEEPosLabel:
-_DebugEEPos equ _DebugEEPosLabel-branchTableBase
-    .dw DebugEEPos
     .db 1
 _DebugUnsignedALabel:
 _DebugUnsignedA equ _DebugUnsignedALabel-branchTableBase
