@@ -732,3 +732,65 @@ isValidDigitFalse:
 isValidDigitTrue:
     scf ; CF=1
     ret
+
+;-----------------------------------------------------------------------------
+
+; Description: Set the complex indicator to the character encoded by A. There
+; are 3 complex number indicators: LimagI (RECT), Langle (PRAD), Ldegree
+; (PDEG). This routine converts them to the other characters depending on the
+; value of the targetChar.
+; Input:
+;   - A: targetChar
+;       - if LimagI: always set to LimagI
+;       - if Langle: toggle or set
+;           - if Langle, set to Ldegree
+;           - if Ldegree, set to Langle
+;           - if LimagI, set to Langle
+;       - if not complex, do nothing
+;   - inputBuf
+; Output:
+;   - inputBuf updated
+;   - CF: set if complex indicator found, cleared if not found
+; Destroys: A, BC, HL
+; Preserves: DE
+SetComplexChar:
+    ld c, a ; C=targetChar
+    ld hl, inputBuf
+    ld b, (hl) ; B=len
+    inc hl ; skip len byte
+    ; Check for len==0
+    ld a, b
+    or a
+    ret z
+setComplexCharLoop:
+    ; Find the complex indicator, if any
+    ld a, (hl)
+    inc hl
+    cp LimagI
+    jr z, setComplexCharFromImagI
+    cp Langle
+    jr z, setComplexCharFromAngle
+    cp Ldegree
+    jr z, setComplexCharFromDegree
+    ; Loop until end of buffer
+    djnz setComplexCharLoop
+    or a; CF=0
+    ret
+setComplexCharFromImagI:
+    ; [[fallthrough]]
+setComplexCharFromDegree:
+    dec hl
+    ld (hl), c ; unconditional overwrite of targetChar does what we want
+    scf
+    ret
+setComplexCharFromAngle:
+    ; We have to toggle the current char if the targetChar is Langle
+    dec hl
+    ld a, c ; A=targetChar
+    cp Langle
+    jr nz, setComplexCharFromAngleToTarget
+    ld a, Ldegree
+setComplexCharFromAngleToTarget:
+    ld (hl), a
+    scf
+    ret

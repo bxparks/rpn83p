@@ -559,6 +559,10 @@ _GetInputBufStateLabel:
 _GetInputBufState equ _GetInputBufStateLabel-branchTableBase
     .dw GetInputBufState
     .db 1
+_SetComplexCharLabel:
+_SetComplexChar equ _SetComplexCharLabel-branchTableBase
+    .dw SetComplexChar
+    .db 1
 ; arg1.asm
 _ClearArgBufLabel:
 _ClearArgBuf equ _ClearArgBufLabel-branchTableBase

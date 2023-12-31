@@ -232,11 +232,12 @@ handleKeyImagI:
     ; Do nothing in BASE mode.
     bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
     ret nz
-    ; Do nothing if already in complex mode
-    bcall(_GetInputBufState) ; C=inputBufState; D=inputBufEEPos; E=inputBufEELen
-    bit inputBufStateComplex, c
-    ret nz
-    ; try inserting imaginary-i
+    ; Try setting an existing complex indicator.
+    set dirtyFlagsInput, (iy + dirtyFlags)
+    ld a, LimagI
+    bcall(_SetComplexChar) ; CF=1 if complex number
+    ret c
+    ; Try inserting imaginary-i
     ld a, LimagI
     call handleKeyNumber
     ret
@@ -246,11 +247,12 @@ handleKeyAngle:
     ; Do nothing in BASE mode.
     bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
     ret nz
-    ; Do nothing if already in complex mode
-    bcall(_GetInputBufState) ; C=inputBufState; D=inputBufEEPos; E=inputBufEELen
-    bit inputBufStateComplex, c
-    ret nz
-    ; try inserting Angle character
+    ; Try setting or toggling an existing complex number.
+    set dirtyFlagsInput, (iy + dirtyFlags)
+    ld a, Langle
+    bcall(_SetComplexChar) ; CF=1 if complex number
+    ret c
+    ; Try inserting Angle character
     ld a, Langle
     call handleKeyNumber
     ret
