@@ -172,19 +172,6 @@ DebugOP1:
 
 ;------------------------------------------------------------------------------
 
-; Description: Print the value of the inputBufEEPos variable.
-; Input: none
-; Output: A printed on debug line
-; Destroys: none
-DebugEEPos:
-    push af
-    ld a, (inputBufEEPos)
-    call debugUnsignedA
-    pop af
-    ret
-
-;------------------------------------------------------------------------------
-
 ; Description: Print the unsigned A on the debug line.
 ; Input: A
 ; Output: A printed on debug line

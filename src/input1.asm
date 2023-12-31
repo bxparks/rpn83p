@@ -23,18 +23,12 @@ InitInputBuf:
 ; Input: inputBuf
 ; Output:
 ;   - inputBuf cleared
-;   - inputBufEEPos set to 0
-;   - inputBufEELen set to 0
 ;   - dirtyFlagsInput set
 ; Destroys: none
 ClearInputBuf:
     push af
     xor a
     ld (inputBuf), a
-    ld (inputBufEEPos), a
-    ld (inputBufEELen), a
-    res inputBufFlagsDecPnt, (iy + inputBufFlags)
-    res inputBufFlagsEE, (iy + inputBufFlags)
     set dirtyFlagsInput, (iy + dirtyFlags)
     pop af
     ret
@@ -109,6 +103,64 @@ closeInputBufEmpty:
 closeInputBufContinue:
     call parseNum
     jp ClearInputBuf
+
+;------------------------------------------------------------------------------
+
+; Description: Check various characteristics of the characters in the inputBuf
+; by scanning backwards from the end of the string. The following conditions
+; are checked:
+;   - inputBufStateDecimalPoint: set if decimal point exists
+;   - inputBufStateEE: set if exponent 'E' character exists
+;   - inputBufEEPos: pos of char after 'E', or 0 if no 'E'
+;   - inputBufEELen: number of EE digits if inputBufStateEE is set
+; Input: inputBuf
+; Output:
+;   - C: inputBufState flags updated
+;   - D: inputBufEEPos, pos of char after 'E', or 0 if no 'E'
+;   - E: inputBufEELen, number of EE digits if inputBufStateEE is set
+; Destroys: BC, DE, HL
+; Preserves: AF
+GetInputBufState:
+    push af
+    ld hl, inputBuf
+    ld c, (hl) ; C=len
+    ld b, 0 ; BC=len
+    inc hl ; skip past len byte
+    add hl, bc ; HL=pointer to end of string
+    ; swap B and C
+    ld a, c ; A=len
+    ld c, b ; C=0
+    ld b, a ; B=len
+    ; check for len==0
+    or a ; if len==0: ZF=0
+    jr z, getInputBufStateEnd
+    ; D=inputBufEEPos=0; E=inputBufEELen=0
+    ld de, 0
+getInputBufStateLoop:
+    ; loop and accumulate inputBufState flags in the C register
+    dec hl
+    ld a, (hl)
+    ; check for '0'-'9'
+    call isValidUnsignedDigit ; if valid: CF=1
+    jr nc, getInputBufStateCheckDecimalPoint
+    ; if not EE: increment inputBufEELen
+    bit inputBufStateEE, c
+    jr nz, getInputBufStateCheckDecimalPoint
+    inc e ; inputBufEELen++
+getInputBufStateCheckDecimalPoint:
+    cp '.'
+    jr nz, getInputBufStateCheckEE
+    set inputBufStateDecimalPoint, c
+getInputBufStateCheckEE:
+    cp Lexponent
+    jr nz, getInputBufStateCheckLen
+    set inputBufStateEE, c
+    ld d, b ; inputBufEEPos=B
+getInputBufStateCheckLen:
+    djnz getInputBufStateLoop
+getInputBufStateEnd:
+    pop af
+    ret
 
 ;------------------------------------------------------------------------------
 
