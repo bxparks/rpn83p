@@ -200,6 +200,8 @@ parseInputBuf:
 ; Output: OP1: floating point number
 ; Destroys: all
 parseFloat:
+    ld hl, inputBuf
+    inc hl
     call calcDPPos ; A=i8(decimalPointPos)
     call extractMantissaExponent ; extract mantissa exponent to floatBuf
     call extractMantissaSign ; extract mantissa sign to floatBuf
@@ -404,7 +406,7 @@ parseMantissaContinue:
 
 ; Description: Find the position of the decimal point of the given number
 ; string.
-; Input: HL: pointer to floating point Pascal-string
+; Input: HL: pointer to floating point C-string
 ; Output: A: decimalPointPos, signed integer
 ; Destroys: all
 ;
@@ -428,13 +430,13 @@ parseMantissaContinue:
 ;
 ; Here is the algorithm written in C:
 ;
-; int8_t calcDPPos(const char *s, uint8_t stringSize) {
+; int8_t calcDPPos(const char *s) {
 ;   bool leadingFound = false;
 ;   bool dotFound = false;
-;   int_t pos = 0;
-;   for (int i = 0; i < stringSize; i++) {
+;   int8_t pos = 0;
+;   for (int8_t i=0; ; i++) {
 ;       char c = s[i];
-;       if (c == 'E') break; // hit exponent symbol
+;       if (!isValidFloatingDigit(c)) break;
 ;       if (c == '-') continue;
 ;       if (c == '.') {
 ;           dotFound = true;
@@ -445,57 +447,50 @@ parseMantissaContinue:
 ;           if (dotFound) {
 ;               pos--;
 ;           }
-;       } else {
-;           // if leading has already been found, treat
-;           // '0' just like any other character
+;       } else { // c!='0' || leadingFound
+;           if (dotFound) break;
 ;           leadingFound = true;
-;           if (!dotFound) {
-;               pos++;
-;           }
+;           pos++;
 ;       }
 ;   }
 ;   return pos;
 calcDPLeadingFound equ 0 ; set if leading (non-zero) digit found
 calcDPDotFound equ 1; set if decimal point found
 calcDPPos:
-    ld hl, inputBuf
-    ld b, (hl) ; stringSize
     xor a
     ld c, a ; pos
     ld d, a ; flags
-    inc hl
 calcDPLoop:
     ld a, (hl)
-    ; break if EE symbol
-    cp Lexponent
-    jr z, calcDPEnd
+    inc hl
+    ; check valid floating point digit (excludes 'E')
+    call isValidFloatDigit; if valid: CF=1
+    jr nc, calcDPEnd
     ; ignore and skip '-'
     cp signChar
-    jr z, calcDPContinue
+    jr z, calcDPLoop
     ; check for '.'
     cp '.'
-    jr nz, calcDPZero
+    jr nz, calcDPCheckZero
     set calcDPDotFound, d
-    jr calcDPContinue
-calcDPZero:
-    ; check for '0'
+    jr calcDPLoop
+calcDPCheckZero:
+    ; check for '0' && !leadingFound
     cp '0'
     jr nz, calcDPNormalDigit
     bit calcDPLeadingFound, d
     jr nz, calcDPNormalDigit
-calcDPUpdatePos:
+    ; decrement pos if dot found
     bit calcDPDotFound, d
-    jr z, calcDPContinue
+    jr z, calcDPLoop
     dec c
-    jr calcDPContinue
+    jr calcDPLoop
 calcDPNormalDigit:
-    set calcDPLeadingFound, d
     bit calcDPDotFound, d
-    jr nz, calcDPContinue
+    jr nz, calcDPEnd
+    set calcDPLeadingFound, d
     inc c
-calcDPContinue:
-    inc hl
-    djnz calcDPLoop
+    jr calcDPLoop
 calcDPEnd:
     ld a, c
     ret
