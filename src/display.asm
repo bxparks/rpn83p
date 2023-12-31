@@ -639,6 +639,7 @@ msgArgModifierIndirect:
 ; Destroys: A, HL; BC destroyed by PutPS()
 printInputBuf:
     call formatInputBuf
+    call truncateInputDisplay
     ld hl, inputDisplay
     call putPS
     ; Append trailing '_' cursor.
@@ -652,48 +653,73 @@ printInputBuf:
     ret
 
 ; Description: Convert the inputBuf into inputDisplay suitable for rendering on
-; the screen. The biggest difference is that if the inputBuf is longer than the
-; display width, only the right most 13 digits are displayed. The 14th digit
-; from the left is replaced with an ellipsis character.
+; the screen. If Ldegree character used for complex polar degree mode exists,
+; it is replaced by (Langle, Ltemp) pair.
 ; Input: inputBuf
-; Output: inputDisplay
+; Output:
+;   - inputDisplay updated
+;   - HL=inputDisplay
 ; Destroys: all registers
 formatInputBuf:
     ld hl, inputBuf
     ld de, inputDisplay
-    ld c, (hl) ; C=len(inputBuf)
-    ld a, inputDisplayCapacity
-    sub c ; A=14-len(inputBuf); if len(inputBuf)>14: CF=1
-    jr c, formatInputBufTruncate
-    ; copy the entire inputBuf
-    ld a, c ; check for 0-len string
-    ld (de), a
+    ld b, (hl) ; B=len(inputBuf)
+    ; check for zero string
+    ld a, b
+    ld (de), a ; len(displayBuf)=len(inputBuf) initially
     or a
     ret z
-    ld b, 0
+    ; set up loop variables
     inc hl ; skip past len byte
     inc de ; skip past len byte
-    ldir
-    ret
-formatInputBufTruncate:
-    ; We are here if C=len(inputBuf)>14. Advance inputBuf pointer to the last
-    ; 13 characters.
-    neg ; A=len(inputBuf)-14
-    inc a ; A=len(inputBuf)-13
-    ld c, a
-    ld b, 0
-    inc hl ; skip past len byte
-    add hl, bc ; HL+=len(inputBuf)-13
-    ; Prepend ellipsis character in inputDisplay
-    ld a, inputDisplayCapacity
-    ld (de), a ; len(inputDisplay) = inputDisplayCapacity
+    ld c, 0 ; C=targetLength
+formatInputBufLoop:
+    ld a, (hl)
+    inc hl
+    cp Ldegree
+    jr nz, formatInputBufCopy
+    ; Expand Ldegree into (Langle, Ltemp).
+    ld a, Langle
+    ld (de), a
     inc de
+    inc c
+    ld a, Ltemp
+formatInputBufCopy:
+    ld (de), a
+    inc de
+    inc c
+    djnz formatInputBufLoop
+    ld hl, inputDisplay
+    ld (hl), c ; len(inputDisplay)=targetLen
+    ret
+
+; Description: Truncate inputDisplay to a maximum of 14 characters. If more
+; than 14 characters, add an ellipsis character on the left most character and
+; copy the last 13 characters.
+; Input: inputDisplay
+; Output: inputDisplay truncated if necessary
+; Destroys: all registers
+truncateInputDisplay:
+    ld hl, inputDisplay
+    ld a, (hl) ; A=len
+    inc hl ; skip past len byte
+    cp inputDisplayMaxLen+1 ; if len<15: CF=1
+    ret c
+    ; We are here if len>=15. Extract the last 13 characters, with an ellipsis
+    ; on the left most character.
+    sub inputDisplayMaxLen-1 ; A=len-13
+    ld e, a
+    ld d, 0
+    add hl, de ; HL=pointer to last 13 characters
+    ld a, inputDisplayMaxLen
+    ld de, inputDisplay
+    ld (de), a ; len=14
+    inc de; skip past len byte
     ld a, Lellipsis
     ld (de), a
     inc de
-    ; Copy last 13 characters from inputBuf to inputDisplay.
-    ld bc, inputDisplayCapacity-1
-    ldir
+    ld bc, inputDisplayMaxLen-1
+    ldir ; shift the last 13 characters to the beginning of inputDisplay
     ret
 
 ;-----------------------------------------------------------------------------
