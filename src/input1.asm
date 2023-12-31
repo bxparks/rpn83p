@@ -29,7 +29,6 @@ ClearInputBuf:
     push af
     xor a
     ld (inputBuf), a
-    res inputBufFlagsComplex, (iy + inputBufFlags)
     set dirtyFlagsInput, (iy + dirtyFlags)
     pop af
     ret
@@ -112,6 +111,7 @@ closeInputBufContinue:
 ; are checked:
 ;   - inputBufStateDecimalPoint: set if decimal point exists
 ;   - inputBufStateEE: set if exponent 'E' character exists
+;   - inputBufStateComplex: set if complex number
 ;   - inputBufEEPos: pos of char after 'E', or the first character of the
 ;   number component if no 'E'
 ;   - inputBufEELen: number of EE digits if inputBufStateEE is set
@@ -131,7 +131,7 @@ GetInputBufState:
     add hl, bc ; HL=pointer to end of string
     ; swap B and C
     ld a, c ; A=len
-    ld c, b ; C=0
+    ld c, b ; C=inputBufState=0
     ld b, a ; B=len
     ; check for len==0
     or a ; if len==0: ZF=0
@@ -139,7 +139,7 @@ GetInputBufState:
     ; D=inputBufEEPos=0; E=inputBufEELen=0
     ld de, 0
 getInputBufStateLoop:
-    ; loop and accumulate inputBufState flags in the C register
+    ; Loop backwards from end of string and update inputBufState flags
     dec hl
     ld a, (hl)
     ; check for '0'-'9'
@@ -160,10 +160,16 @@ getInputBufStateCheckEE:
     ld d, b ; inputBufEEPos=B
 getInputBufStateCheckTermination:
     cp LimagI
-    jr z, getInputBufStateEnd
+    jr z, getInputBufStateComplex
     cp Langle
-    jr z, getInputBufStateEnd
+    jr z, getInputBufStateComplex
+    cp Ltheta
+    jr z, getInputBufStateComplex
+    ; Loop until we reach the start of string
     djnz getInputBufStateLoop
+    jr getInputBufStateEnd
+getInputBufStateComplex:
+    set inputBufStateComplex, c
 getInputBufStateEnd:
     ; If no 'E', set inputBufEEPos to the start of current number, which could
     ; be the imaginary or angle part of a complex number.

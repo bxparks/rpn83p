@@ -233,26 +233,26 @@ handleKeyImagI:
     bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
     ret nz
     ; Do nothing if already in complex mode
-    bit inputBufFlagsComplex, (iy + inputBufFlags)
+    bcall(_GetInputBufState) ; C=inputBufState; D=inputBufEEPos; E=inputBufEELen
+    bit inputBufStateComplex, c
     ret nz
     ; try inserting imaginary-i
     ld a, LimagI
     call handleKeyNumber
-    set inputBufFlagsComplex, (iy + inputBufFlags)
     ret
 
-; Description: Add Angle symbol into the input buffer.
+; Description: Add Angle symbol into the input buffer for angle in degrees.
 handleKeyAngle:
     ; Do nothing in BASE mode.
     bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
     ret nz
     ; Do nothing if already in complex mode
-    bit inputBufFlagsComplex, (iy + inputBufFlags)
+    bcall(_GetInputBufState) ; C=inputBufState; D=inputBufEEPos; E=inputBufEELen
+    bit inputBufStateComplex, c
     ret nz
     ; try inserting Angle character
-    ld a, LAngle
+    ld a, Langle
     call handleKeyNumber
-    set inputBufFlagsComplex, (iy + inputBufFlags)
     ret
 
 ;-----------------------------------------------------------------------------
