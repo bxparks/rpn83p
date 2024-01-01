@@ -159,11 +159,7 @@ getInputBufStateCheckEE:
     set inputBufStateEE, c
     ld d, b ; inputBufEEPos=B
 getInputBufStateCheckTermination:
-    cp LimagI
-    jr z, getInputBufStateComplex
-    cp Langle
-    jr z, getInputBufStateComplex
-    cp Ltheta
+    call isComplexDelimiterPageOne ; ZF=1 if complex delimiter
     jr z, getInputBufStateComplex
     ; Loop until we reach the start of string
     djnz getInputBufStateLoop
@@ -825,7 +821,7 @@ setComplexDelimiterToTarget:
 findComplexDelimiter:
     ld a, (hl)
     inc hl
-    call isComplexDelimiter ; if delimiter: ZF=1
+    call isComplexDelimiterPageOne ; if delimiter: ZF=1
     jr z, findComplexDelimiterFound
     call isValidScientificDigit ; if valid: CF=1
     jr c, findComplexDelimiter
@@ -834,11 +830,12 @@ findComplexDelimiterFound:
     scf ; CF=1
     ret
 
-; Description: Return ZF=1 if A is a complex number delimiter.
+; Description: Return ZF=1 if A is a complex number delimiter. Same as
+; isComplexDelimiter().
 ; Input: A: char
 ; Output: ZF=1 if delimiter
 ; Destroys: none
-isComplexDelimiter:
+isComplexDelimiterPageOne:
     cp LimagI
     ret z
     cp Langle

@@ -5,8 +5,9 @@
 ; Main input key code handlers.
 ;-----------------------------------------------------------------------------
 
-; Description: Append a number character to inputBuf or argBuf, updating various
-; flags.
+; Description: Append a number character to inputBuf or argBuf, updating
+; various flags. If the inputBuf is already complex, this routine must not be
+; called with Langle, LimagI or Ltheta.
 ; Input:
 ;   A: character to be appended
 ;   rpnFlagsEditing: whether we are already in Edit mode
@@ -27,24 +28,37 @@ handleKeyNumberFirstDigit:
     call liftStackIfEnabled
     pop af
     ; Go into editing mode.
-    bcall(_ClearInputBuf)
+    bcall(_ClearInputBuf) ; preserves A
     set rpnFlagsEditing, (iy + rpnFlags)
 handleKeyNumberCheckAppend:
+    call isComplexDelimiter ; ZF=1 if complex delimiter
+    jr z, handleKeyNumberAppend
     bcall(_GetInputBufState) ; C=inputBufState; D=inputBufEEPos; E=inputBufEELen
     bit inputBufStateEE, c
-    jr nz, handleKeyNumberAppendExponent
-    ; Append A to mantissa.
-    bcall(_AppendInputBuf)
-    ret
+    jr z, handleKeyNumberAppend
 handleKeyNumberAppendExponent:
-    ; Append A to exponent.
+    ; Append A to exponent, if len(exponent)<2.
     ld b, a ; save A
     ld a, e ; A=inputBufEELen
     cp inputBufEEMaxLen
     ld a, b ; restore A
     ret nc ; prevent more than 2 exponent digits
+handleKeyNumberAppend:
     ; Try to append character
     bcall(_AppendInputBuf)
+    ret
+
+; Description: Return ZF=1 if A is a complex number delimiter. Same as
+; isComplexDelimiterPageOne().
+; Input: A: char
+; Output: ZF=1 if delimiter
+; Destroys: none
+isComplexDelimiter:
+    cp LimagI
+    ret z
+    cp Langle
+    ret z
+    cp Ldegree
     ret
 
 ;-----------------------------------------------------------------------------
