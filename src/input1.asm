@@ -752,7 +752,7 @@ isValidDigitTrue:
 ;   - CF: set if complex indicator found, cleared if not found
 ; Destroys: A, BC, HL
 ; Preserves: DE
-SetComplexChar:
+SetComplexDelimiter:
     ld c, a ; C=targetChar
     ld hl, inputBuf
     ld b, (hl) ; B=len
@@ -761,35 +761,35 @@ SetComplexChar:
     ld a, b
     or a
     ret z
-setComplexCharLoop:
+setComplexDelimiterLoop:
     ; Find the complex indicator, if any
     ld a, (hl)
     inc hl
     cp LimagI
-    jr z, setComplexCharFromImagI
+    jr z, setComplexDelimiterFromImagI
     cp Langle
-    jr z, setComplexCharFromAngle
+    jr z, setComplexDelimiterFromAngle
     cp Ldegree
-    jr z, setComplexCharFromDegree
+    jr z, setComplexDelimiterFromDegree
     ; Loop until end of buffer
-    djnz setComplexCharLoop
+    djnz setComplexDelimiterLoop
     or a; CF=0
     ret
-setComplexCharFromImagI:
+setComplexDelimiterFromImagI:
     ; [[fallthrough]]
-setComplexCharFromDegree:
+setComplexDelimiterFromDegree:
     dec hl
     ld (hl), c ; unconditional overwrite of targetChar does what we want
     scf
     ret
-setComplexCharFromAngle:
+setComplexDelimiterFromAngle:
     ; We have to toggle the current char if the targetChar is Langle
     dec hl
     ld a, c ; A=targetChar
     cp Langle
-    jr nz, setComplexCharFromAngleToTarget
+    jr nz, setComplexDelimiterFromAngleToTarget
     ld a, Ldegree
-setComplexCharFromAngleToTarget:
+setComplexDelimiterFromAngleToTarget:
     ld (hl), a
     scf
     ret

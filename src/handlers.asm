@@ -235,7 +235,7 @@ handleKeyImagI:
     ; Try setting an existing complex indicator.
     set dirtyFlagsInput, (iy + dirtyFlags)
     ld a, LimagI
-    bcall(_SetComplexChar) ; CF=1 if complex number
+    bcall(_SetComplexDelimiter) ; CF=1 if complex number
     ret c
     ; Try inserting imaginary-i
     ld a, LimagI
@@ -250,7 +250,7 @@ handleKeyAngle:
     ; Try setting or toggling an existing complex number.
     set dirtyFlagsInput, (iy + dirtyFlags)
     ld a, Langle
-    bcall(_SetComplexChar) ; CF=1 if complex number
+    bcall(_SetComplexDelimiter) ; CF=1 if complex number
     ret c
     ; Try inserting Angle character
     ld a, Langle

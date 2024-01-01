@@ -568,9 +568,9 @@ _GetInputBufStateLabel:
 _GetInputBufState equ _GetInputBufStateLabel-branchTableBase
     .dw GetInputBufState
     .db 1
-_SetComplexCharLabel:
-_SetComplexChar equ _SetComplexCharLabel-branchTableBase
-    .dw SetComplexChar
+_SetComplexDelimiterLabel:
+_SetComplexDelimiter equ _SetComplexDelimiterLabel-branchTableBase
+    .dw SetComplexDelimiter
     .db 1
 ; arg1.asm
 _ClearArgBufLabel:
