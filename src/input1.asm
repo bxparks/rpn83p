@@ -188,8 +188,6 @@ getInputBufStateReturn:
 ; Destroys: all registers, OP1-OP5 (due to SinCosRad())
 parseInputBuf:
     call initInputBufForParsing
-    ;call checkZero ; ZF=1 if inputBuf is zero; TODO: is this necessary?
-    ;ret z
     ld hl, inputBuf
     inc hl
     bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
@@ -348,38 +346,6 @@ clearFloatBuf:
     ld de, floatBuf
     bcall(_MovFrOP1)
     pop hl
-    ret
-
-;------------------------------------------------------------------------------
-
-; Description: Check if the inputBuf is effectively '0'. In other words, if
-; the inputBuf is composed of characters only in the set ['-', '.', '0'], then
-; it is effectively zero. Otherwise, not zero.
-; Input: inputBuf
-; Output: ZF set if zero, otherwise not set
-; Destroys: A, B, HL
-checkZero:
-    ld hl, inputBuf
-    ld a, (hl) ; A = inputBufLen
-    ; Check for empty
-    or a
-    ret z
-    ; Check for any characters other than 0, '-', '.'
-    inc hl
-    ld b, a
-checkZeroLoop:
-    ld a, (hl)
-    cp '0'
-    jr z, checkZeroContinue
-    cp signChar
-    jr z, checkZeroContinue
-    cp '.'
-    jr z, checkZeroContinue
-    ret ; returns with ZF=0
-checkZeroContinue:
-    inc hl
-    djnz checkZeroLoop
-    xor a ; set ZF=1
     ret
 
 ;------------------------------------------------------------------------------
