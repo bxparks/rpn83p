@@ -101,7 +101,7 @@ CloseInputBuf:
 closeInputBufEmpty:
     set inputBufFlagsClosedEmpty, (iy + inputBufFlags)
 closeInputBufContinue:
-    call parseInputBuf ; OP1=float
+    call parseInputBuf ; OP1/OP2=float or complex
     jp ClearInputBuf
 
 ;------------------------------------------------------------------------------
@@ -184,49 +184,57 @@ getInputBufStateReturn:
 
 ; Description: Parse the input buffer into OP1.
 ; Input: inputBuf filled with keyboard characters
-; Output: OP1: floating point number
-; Destroys: all registers
+; Output: OP1/OP2: floating point number or complex number
+; Destroys: all registers, OP1-OP5 (due to SinCosRad())
 parseInputBuf:
-    call parseNumInit ; OP1=0.0
-    call checkZero ; ZF=1 if inputBuf is zero
-    ret z
+    call initInputBufForParsing
+    ;call checkZero ; ZF=1 if inputBuf is zero; TODO: is this necessary?
+    ;ret z
     ld hl, inputBuf
+    inc hl
     bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
     jr nz, parseBaseInteger
-    ; [[fallthrough]]
+    ; parse a real or complex number
+    call parseFloat ; OP1=float
+    call findComplexDelimiter ; if complex: CF=1, A=delimiter, HL=pointer
+    ret nc
+    ; parse the complex number
+    push hl
+    bcall(_PushRealO1) ; FPS=[first]
+    pop hl
+    push af ; stack=[delimiter]
+    call parseFloat ; OP1=second
+    call op1ToOp2PageOne ; OP2=second
+    bcall(_PopRealO1) ; FPS=[]; OP1=first; OP2=second
+    pop af ; stack=[]; A=delimiter
+    ; convert 2 real numbers into complex number
+    cp Langle
+    jp z, pradToComplex
+    cp Ldegree
+    jp z, pdegToComplex
+    jp rectToComplex
 
 ; Description: Parse the floating point number at HL.
-; Input: HL: pointer to a Pascal string of a floating point number
+; Input: HL: pointer to a floating point number C-string
 ; Output: OP1: floating point number
-; Destroys: all
+; Destroys: A, BC, DE
+; Preserves: HL
 parseFloat:
-    ld hl, inputBuf
-    inc hl
+    call clearParseBuf
+    call clearFloatBuf ; OP1=0.0
     call calcDPPos ; A=i8(decimalPointPos)
-    ;
     call extractMantissaExponent ; extract mantissa exponent to floatBuf
-    ;
-    ld hl, inputBuf
-    inc hl
     call extractMantissaSign ; extract mantissa sign to floatBuf
-    ;
-    ld hl, inputBuf
-    inc hl
     call parseMantissa ; parse mantissa digits from inputBuf into parseBuf
-    ;
     call extractMantissa ; copy mantissa digits from parseBuf into floatBuf
-    ;
-    ld hl, inputBuf
-    inc hl
-    call findExponent ; HL=pointerEEDigit; CF=1 if found
-    jr nc, parseFloatNoExponent
-    call parseExponent ; A=exponentValue of HL string
-    call addExponent ; add EE exponent to floatBuf exponent
-parseFloatNoExponent:
+    call extractExponent ; floatBuf updated
+    push hl
     ld hl, floatBuf
-    jp move9ToOp1PageOne
+    call move9ToOp1PageOne
+    pop hl
     ret
 
+; TODO: Fix this to accept HL pointer to C-string.
 ; Description: Parse the integer (base 2, 8, 10, 16) at HL.
 ; Input: HL: pointer to Pascal string of an integer
 ; Output: OP1: floating point representation of integer
@@ -293,16 +301,13 @@ parseNumBaseAddDigit:
 
 ;------------------------------------------------------------------------------
 
-; Description: Initialize the parseBuf.
-; Input: none
-; Output:
-;   - (parseBuf) cleared
-;   - OP1=0.0
-; Destroys: all
-parseNumInit:
-    call clearParseBuf
-    call clearFloatBuf ; OP1=0.0
-    ; terminate the inputBuf with a NUL sentinel to help parsing logic
+; Description: Initialize the inputBuf for parsing by adding a NUL terminator
+; to the Pascal string. The capacity of inputBuf is one character larger than
+; necessary to hold the extra NUL character.
+; Input: inputBuf
+; Output: inputBuf with NUL terminator
+; Destroys: A, DE, HL
+initInputBufForParsing:
     ld hl, inputBuf
     ld e, (hl)
     xor a
@@ -315,7 +320,12 @@ parseNumInit:
 ; Description: Clear parseBuf by setting all digits to the character '0', and
 ; setting size to 0. The trailing '0' characters make it easy to construct the
 ; floating point number.
+; Input: parseBuf
+; Output: parseBuf initialized to '0's, and set to 0-length
+; Destroys: A, B
+; Preserves: HL
 clearParseBuf:
+    push hl
     xor a
     ld hl, parseBuf
     ld (hl), a
@@ -326,13 +336,18 @@ clearParseBufLoop:
     ld (hl), a
     inc hl
     djnz clearParseBufLoop
+    pop hl
     ret
 
 ; Description: Set floatBuf and OP1 to 0.0.
+; Destroys: A, DE
+; Preserves: HL
 clearFloatBuf:
+    push hl
     bcall(_OP1Set0)
     ld de, floatBuf
     bcall(_MovFrOP1)
+    pop hl
     ret
 
 ;------------------------------------------------------------------------------
@@ -377,15 +392,17 @@ checkZeroContinue:
 ;   - "23E-1" produces "23"
 ; Input: HL: pointer to C-string
 ; Output: parseBuf filled with mantissa digits
-; Destroys: all registers
+; Destroys: A, BC, DE
+; Preserves: HL
 parseMantissaLeadingFound equ 0 ; bit to set when lead digit found
 parseMantissa:
     res parseMantissaLeadingFound, c
+    push hl
 parseMantissaLoop:
     ld a, (hl)
     inc hl
     call isValidFloatDigit ; if valid: CF=1
-    ret nc
+    jr nc, parseMantissaEnd
     cp signChar
     jr z, parseMantissaLoop
     cp '.'
@@ -400,6 +417,9 @@ parseMantissaNormalDigit:
     set parseMantissaLeadingFound, c
     call appendParseBuf ; preserves HL
     jr parseMantissaLoop
+parseMantissaEnd:
+    pop hl
+    ret
 
 ;------------------------------------------------------------------------------
 
@@ -407,7 +427,8 @@ parseMantissaNormalDigit:
 ; string.
 ; Input: HL: pointer to floating point C-string
 ; Output: A: decimalPointPos, signed integer
-; Destroys: all
+; Destroys: A, BC, DE
+; Preservers: HL
 ;
 ; The returned value is the number of places the the decimal point needs to be
 ; shifted to get back the original value after the mantissa is normalized with
@@ -456,6 +477,7 @@ parseMantissaNormalDigit:
 calcDPLeadingFound equ 0 ; set if leading (non-zero) digit found
 calcDPDotFound equ 1; set if decimal point found
 calcDPPos:
+    push hl
     xor a
     ld c, a ; pos
     ld d, a ; flags
@@ -492,6 +514,7 @@ calcDPNormalDigit:
     jr calcDPLoop
 calcDPEnd:
     ld a, c
+    pop hl
     ret
 
 ;------------------------------------------------------------------------------
@@ -531,25 +554,30 @@ extractMantissaExponent:
 ; string, and transfer it to the sign bit of the floatBuf.
 ; Input: HL: NUL terminated C-string
 ; Output: (floatBuf) sign set
-; Destroys: HL
+; Destroys: none
+; Preserves: HL
 extractMantissaSign:
     ld a, (hl) ; A will be NUL if an empty string
     cp signChar
     ret nz ; '-' not found at first character
+    push hl
     ld hl, floatBufType
     set 7, (hl)
+    pop hl
     ret
 
 ; Description: Extract the normalized mantissa digits from parseBuf to
 ; floatBuf, 2 digits per byte.
 ; Input: parseBuf
 ; Output: floatBuf updated
-; Destroys: A, BC, DE, HL
+; Destroys: A, BC, DE
+; Preserves: HL
 extractMantissa:
+    push hl
     ld hl, parseBuf
     ld a, (hl)
     or a
-    ret z
+    jr z, extractMantissaEnd
     inc hl
     ld de, floatBufMan
     ld b, parseBufCapacity/2
@@ -570,9 +598,26 @@ extractMantissaLoop:
     inc de
     inc hl
     djnz extractMantissaLoop
+extractMantissaEnd:
+    pop hl
     ret
 
 ;-----------------------------------------------------------------------------
+
+; Description: Extract the EE exponent digits (if any) to floatBuf.
+; Input: HL: pointer to floating number C-string
+; Output: floatBuf updated
+; Destroys: A, BC, DE
+; Preserves: HL
+extractExponent:
+    push hl
+    call findExponent ; HL=pointerEEDigit; CF=1 if found
+    jr nc, extractExponentEnd
+    call parseExponent ; A=exponentValue of HL string
+    call addExponent ; add EE exponent to floatBuf exponent
+extractExponentEnd:
+    pop hl
+    ret
 
 ; Description: Find the next 'E' character and return the number of exponent
 ; digits.
@@ -591,7 +636,7 @@ findExponent:
     jr c, findExponent
     ret ; CF=0
 findExponentFound:
-    scf
+    scf ; CF=1
     ret
 
 ; Description: Parse the digits after the 'E' symbol in the inputBuf.
@@ -781,4 +826,35 @@ setComplexCharFromAngle:
 setComplexCharFromAngleToTarget:
     ld (hl), a
     scf
+    ret
+
+; Description: Find the location of the complex number delimiter (LimagI,
+; Langle, or Ldegree).
+; Input: HL: pointer to floating point number C-string
+; Output:
+;   - CF: 1 if complex number delimiter found, 0 otherwise
+;   - A: delimiter char (LimagI, Langle, or Ldegree)
+;   - HL: pointer to character after the delimiter
+findComplexDelimiter:
+    ld a, (hl)
+    inc hl
+    call isComplexDelimiter ; if delimiter: ZF=1
+    jr z, findComplexDelimiterFound
+    call isValidScientificDigit ; if valid: CF=1
+    jr c, findComplexDelimiter
+    ret ; CF=0
+findComplexDelimiterFound:
+    scf ; CF=1
+    ret
+
+; Description: Return ZF=1 if A is a complex number delimiter.
+; Input: A: char
+; Output: ZF=1 if delimiter
+; Destroys: none
+isComplexDelimiter:
+    cp LimagI
+    ret z
+    cp Langle
+    ret z
+    cp Ldegree
     ret

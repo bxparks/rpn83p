@@ -23,7 +23,7 @@
 ;   - rpnFlagsEditing: always cleared
 ;   - inputBuf cleared to empty string
 ;   - X register: set to inputBuf if edited, otherwise unchanged
-; Destroys: all, OP1, OP2, OP4
+; Destroys: all, OP1, OP2, OP3, OP4, OP5
 closeInput:
     set rpnFlagsLiftEnabled, (iy + rpnFlags)
     bit rpnFlagsEditing, (iy + rpnFlags)
@@ -32,7 +32,7 @@ closeInput:
     res inputBufFlagsClosedEmpty, (iy + inputBufFlags)
     ret
 closeInputEditing:
-    bcall(_CloseInputBuf)
+    bcall(_CloseInputBuf) ; OP1/OP2=real or complex number
     call stoX
     res rpnFlagsEditing, (iy + rpnFlags)
     ret

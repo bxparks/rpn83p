@@ -887,6 +887,7 @@ defpage(1)
 #include "float1.asm"
 #include "integer1.asm"
 #include "const1.asm"
+#include "complex1.asm"
 #include "tvm.asm"
 #include "hms.asm"
 #include "prob.asm"
