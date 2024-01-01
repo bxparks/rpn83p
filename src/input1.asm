@@ -220,7 +220,7 @@ parseInputBuf:
 parseFloat:
     call clearParseBuf
     call clearFloatBuf ; OP1=0.0
-    call calcDPPos ; A=i8(decimalPointPos)
+    call findDecimalPoint ; A=i8(decimalPointPos)
     call extractMantissaExponent ; extract mantissa exponent to floatBuf
     call extractMantissaSign ; extract mantissa sign to floatBuf
     call parseMantissa ; parse mantissa digits from inputBuf into parseBuf
@@ -384,6 +384,10 @@ parseMantissaEnd:
 
 ;------------------------------------------------------------------------------
 
+; Bit flags used by findDecimalPoint().
+findDecimalPointLeadingFound equ 0 ; set if leading (non-zero) digit found
+findDecimalPointDotFound equ 1; set if decimal point found
+
 ; Description: Find the position of the decimal point of the given number
 ; string.
 ; Input: HL: pointer to floating point C-string
@@ -411,7 +415,7 @@ parseMantissaEnd:
 ;
 ; Here is the algorithm written in C:
 ;
-; int8_t calcDPPos(const char *s) {
+; int8_t findDecimalPoint(const char *s) {
 ;   bool leadingFound = false;
 ;   bool dotFound = false;
 ;   int8_t pos = 0;
@@ -435,45 +439,43 @@ parseMantissaEnd:
 ;       }
 ;   }
 ;   return pos;
-calcDPLeadingFound equ 0 ; set if leading (non-zero) digit found
-calcDPDotFound equ 1; set if decimal point found
-calcDPPos:
+findDecimalPoint:
     push hl
     xor a
     ld c, a ; pos
     ld d, a ; flags
-calcDPLoop:
+findDecimalPointLoop:
     ld a, (hl)
     inc hl
     ; check valid floating point digit (excludes 'E')
     call isValidFloatDigit; if valid: CF=1
-    jr nc, calcDPEnd
+    jr nc, findDecimalPointEnd
     ; ignore and skip '-'
     cp signChar
-    jr z, calcDPLoop
+    jr z, findDecimalPointLoop
     ; check for '.'
     cp '.'
-    jr nz, calcDPCheckZero
-    set calcDPDotFound, d
-    jr calcDPLoop
-calcDPCheckZero:
+    jr nz, findDecimalPointCheckZero
+    set findDecimalPointDotFound, d
+    jr findDecimalPointLoop
+findDecimalPointCheckZero:
     ; check for '0' && !leadingFound
     cp '0'
-    jr nz, calcDPNormalDigit
-    bit calcDPLeadingFound, d
-    jr nz, calcDPNormalDigit
+    jr nz, findDecimalPointNormalDigit
+    bit findDecimalPointLeadingFound, d
+    jr nz, findDecimalPointNormalDigit
     ; decrement pos if dot found
-    bit calcDPDotFound, d
-    jr z, calcDPLoop
+    bit findDecimalPointDotFound, d
+    jr z, findDecimalPointLoop
     dec c
-    jr calcDPLoop
-calcDPNormalDigit:
-    bit calcDPDotFound, d
-    jr nz, calcDPEnd
-    set calcDPLeadingFound, d
+    jr findDecimalPointLoop
+findDecimalPointNormalDigit:
+    bit findDecimalPointDotFound, d
+    jr nz, findDecimalPointEnd
+    set findDecimalPointLeadingFound, d
     inc c
-    jr calcDPLoop
-calcDPEnd:
+    jr findDecimalPointLoop
+findDecimalPointEnd:
     ld a, c
     pop hl
     ret
@@ -503,7 +505,7 @@ appendParseBuf:
 ;   floatingExponent = mantissaExponent + $80
 ;                    = decimalPointPos + $7F
 ;
-; Input: A: decimalPointPos (from calcDPPos())
+; Input: A: decimalPointPos (from findDecimalPoint())
 ; Output: floatBufExp = decimalPointPos + $7F
 ; Destroys: A
 extractMantissaExponent:
