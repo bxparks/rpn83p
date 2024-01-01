@@ -232,9 +232,8 @@ parseFloat:
     pop hl
     ret
 
-; TODO: Fix this to accept HL pointer to C-string.
 ; Description: Parse the integer (base 2, 8, 10, 16) at HL.
-; Input: HL: pointer to Pascal string of an integer
+; Input: HL: pointer to C string of an integer
 ; Output: OP1: floating point representation of integer
 ; Destroys: all
 parseBaseInteger:
@@ -252,11 +251,11 @@ parseBaseInteger:
     ld (baseNumber), a
     ; [[fallthrough]]
 
-; Description: Parse the baseNumber in the Pascal-string given by HL. The base
-; mode be 2, 8 or 16. This subroutine will actually supports any baseNumber <=
-; 36 probably (10 numerals and 26 letters).
+; Description: Parse the baseNumber in the C-string given by HL. The base mode
+; be 2, 8 or 16. This subroutine will actually supports any baseNumber <= 36
+; probably (10 numerals and 26 letters).
 ; Input:
-;   - HL: pointer to Pascal-string
+;   - HL: pointer to C string
 ;   - A: base mode (2, 8, 10, 16)
 ; Output: OP1: floating point value
 ; Destroys: all
@@ -266,19 +265,18 @@ parseNumBase:
     bcall(_OP1ToOP4) ; OP4 = base
     bcall(_OP1Set0)
     pop hl
-    ld a, (hl) ; num of digits
-    or a
-    ret z
-    ld b, a ; num digits
 parseNumBaseLoop:
-    ; multiply by 10 before the next digit
-    push bc
+    ; get next digit
+    ld a, (hl)
+    inc hl
+    or a
+    ret z ; return on NUL
     push hl
+    ; multiply by 'base' before adding the next digit
+    push af
     bcall(_OP4ToOP2) ; OP2 = base
     bcall(_FPMult) ; OP1 *= base; destroys OP3
-    pop hl
-    inc hl
-    ld a, (hl)
+    pop af
     ; convert char into digit value
     cp 'A'
     jr c, parseNumBase0To9
@@ -289,13 +287,10 @@ parseNumBaseAToF:
 parseNumBase0To9:
     sub '0'
 parseNumBaseAddDigit:
-    push hl
     bcall(_SetXXOP2) ; OP2 = A = digit value
     bcall(_FPAdd) ; OP1 += OP2
     pop hl
-    pop bc
-    djnz parseNumBaseLoop
-    ret
+    jr parseNumBaseLoop
 
 ;------------------------------------------------------------------------------
 
