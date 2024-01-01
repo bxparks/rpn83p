@@ -734,35 +734,39 @@ isValidDigitTrue:
 
 ;-----------------------------------------------------------------------------
 
-; Description: Set the complex indicator to the character encoded by A. There
-; are 3 complex number indicators: LimagI (RECT), Langle (PRAD), Ldegree
-; (PDEG). This routine converts them to the other characters depending on the
-; value of the targetChar.
+; Description: Set the complex delimiter to the character encoded by A. There
+; are 3 complex number delimiters: LimagI (RECT), Langle (PRAD), Ldegree
+; (PDEG). This routine converts them to other delimiters depending on the value
+; of the targetDelimiter.
+;
+; The algorithm is as follows:
+; - if delimiter==LimagI:
+;     - if targetDelimiter==LimagI: do nothing
+;     - if targetDelimiter==targetDelimiter
+; - if delimiter in (Langle, Ldegree):
+;     - if targetDelimiter==LimagI: delimiter=LimagI
+;     - if targetDelimiter==(Langle,Ldegree): toggle to the other
+; - if no delimiter: do nothing
+;
 ; Input:
-;   - A: targetChar
-;       - if LimagI: always set to LimagI
-;       - if Langle: toggle or set
-;           - if Langle, set to Ldegree
-;           - if Ldegree, set to Langle
-;           - if LimagI, set to Langle
-;       - if not complex, do nothing
+;   - A: targetDelimiter
 ;   - inputBuf
 ; Output:
 ;   - inputBuf updated
-;   - CF: set if complex indicator found, cleared if not found
+;   - CF: 1 if complex delimiter found, 0 if not found
 ; Destroys: A, BC, HL
 ; Preserves: DE
 SetComplexDelimiter:
-    ld c, a ; C=targetChar
+    ld c, a ; C=targetDelimiter
     ld hl, inputBuf
     ld b, (hl) ; B=len
     inc hl ; skip len byte
     ; Check for len==0
     ld a, b
-    or a
+    or a ; CF=0
     ret z
 setComplexDelimiterLoop:
-    ; Find the complex indicator, if any
+    ; Find the complex delimiter, if any
     ld a, (hl)
     inc hl
     cp LimagI
@@ -776,20 +780,23 @@ setComplexDelimiterLoop:
     or a; CF=0
     ret
 setComplexDelimiterFromImagI:
-    ; [[fallthrough]]
+    dec hl
+    ld a, c
+    jr setComplexDelimiterToTarget
 setComplexDelimiterFromDegree:
     dec hl
-    ld (hl), c ; unconditional overwrite of targetChar does what we want
-    scf
-    ret
+    ld a, c ; A=targetDelimiter
+    cp LimagI
+    jr z, setComplexDelimiterToTarget
+    ld a, Langle ; toggle
+    jr setComplexDelimiterToTarget
 setComplexDelimiterFromAngle:
-    ; We have to toggle the current char if the targetChar is Langle
     dec hl
-    ld a, c ; A=targetChar
-    cp Langle
-    jr nz, setComplexDelimiterFromAngleToTarget
-    ld a, Ldegree
-setComplexDelimiterFromAngleToTarget:
+    ld a, c ; A=targetDelimiter
+    cp LimagI
+    jr z, setComplexDelimiterToTarget
+    ld a, Ldegree ; toggle
+setComplexDelimiterToTarget:
     ld (hl), a
     scf
     ret

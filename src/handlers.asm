@@ -232,7 +232,7 @@ handleKeyImagI:
     ; Do nothing in BASE mode.
     bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
     ret nz
-    ; Try setting an existing complex indicator.
+    ; Try setting an existing complex delimiter.
     set dirtyFlagsInput, (iy + dirtyFlags)
     ld a, LimagI
     bcall(_SetComplexDelimiter) ; CF=1 if complex number
@@ -247,13 +247,13 @@ handleKeyAngle:
     ; Do nothing in BASE mode.
     bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
     ret nz
-    ; Try setting or toggling an existing complex number.
+    ; Try setting or toggling an existing complex delimiter.
     set dirtyFlagsInput, (iy + dirtyFlags)
-    ld a, Langle
-    bcall(_SetComplexDelimiter) ; CF=1 if complex number
+    ld a, Ldegree
+    bcall(_SetComplexDelimiter) ; CF=1 if complex delimiter exists
     ret c
-    ; Try inserting Angle character
-    ld a, Langle
+    ; Insert Ldegree delimiter for initial default.
+    ld a, Ldegree
     call handleKeyNumber
     ret
 
