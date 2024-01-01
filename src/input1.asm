@@ -215,10 +215,12 @@ parseFloat:
     call parseMantissa ; parse mantissa digits from inputBuf into parseBuf
     ;
     call extractMantissa ; copy mantissa digits from parseBuf into floatBuf
-    xor a ; A=inputBufOffset=0
-    call findExponent ; A=offsetToExponent; CF=1 if found
+    ;
+    ld hl, inputBuf
+    inc hl
+    call findExponent ; HL=pointerEEDigit; CF=1 if found
     jr nc, parseFloatNoExponent
-    call parseExponent ; A=exponentValue of inputBuf)
+    call parseExponent ; A=exponentValue of HL string
     call addExponent ; add EE exponent to floatBuf exponent
 parseFloatNoExponent:
     ld hl, floatBuf
@@ -575,69 +577,44 @@ extractMantissaLoop:
 ; Description: Find the next 'E' character and return the number of exponent
 ; digits.
 ; Input:
-;   - (inputBuf): input characters and digits, Pascal-string w/ NUL terminator
-;   - A: offset into inputBuf (which allows us to parse complex numbers with 2
-;   floating point numbers in the inputBuf)
+;   - HL: pointer to scientific floating point C-string
 ; Output:
 ;   - CF: 0 if not found, 1 if found
-;   - A: offset to the first character after the 'E' symbol
+;   - HL: pointer to the first character after the 'E' symbol
 ; Destroys: BC, DE, HL
 findExponent:
-    ld hl, inputBuf
-    ld c, (hl) ; C=len
-    inc hl ; skip len byte
-    ld e, a
-    ld d, 0 ; DE=offset
-    add hl, de
-    ; Calculate length of string to loop over. Return if at end.
-    sub c ; A=offset-len
-    ret nc ; if offset>=len: no 'E', CF=0
-    neg ; A=len-offset, guaranteed > 0
-    ld b, a ; B=len-offset
-findExponentSearchLoop:
     ld a, (hl)
     inc hl
-    inc e ; E=offset++
     cp Lexponent
     jr z, findExponentFound
-    ; This algorithm assumes that the Pascal string is *also* terminated with a
-    ; NUL, like a C-string. It makes the loop algorithm simpler.
     call isValidFloatDigit ; if isValidFloatDigit(A): CF=1
-    ret nc
-    djnz findExponentSearchLoop
-    ; indicate not found
-    or a ; CF=0
-    ret
+    jr c, findExponent
+    ret ; CF=0
 findExponentFound:
-    ld a, e ; A=offsetToFirstExponent
     scf
     ret
 
 ; Description: Parse the digits after the 'E' symbol in the inputBuf.
-; Input:
-;   - inputBuf
-;   - A: offset to the first character of exponent, just after the 'E'
+; Input: HL: pointer to EE digits
 ; Output: A: the exponent, in two's complement form
 ; Destroys: A, BC, DE, HL
 parseExponent:
-    ld hl, inputBuf
-    inc hl ; skip len byte
-    ld e, a ; E=eeDigitOffset
-    ld d, 0
-    add hl, de ; HL=pointer to first digit of EE
-    ; Check for minus sign
+    ld b, 0 ; B=exponentValue
+    ld d, rpnfalse ; D=isEENeg=false
+    ; Check for valid char
     ld a, (hl); A==NUL if end of string
     inc hl
+    call isValidSignedDigit ; if valid: CF=1
+    jr nc, parseExponentEnd
+    ; Check for '-'
     cp signChar
     jr z, parseExponentSetSign
-    ld d, rpnfalse ; D=isEENeg=false
     jr parseExponentDigits
 parseExponentSetSign:
+    ld d, rpntrue ; D=isEENeg=true
     ld a, (hl)
     inc hl
-    ld d, rpntrue ; D=isEENeg=true
 parseExponentDigits:
-    ld b, 0 ; B=exponentValue
     ; process the first digit if any, A==NUL if end of string
     call isValidUnsignedDigit ; if valid: CF=1
     jr nc, parseExponentEnd
