@@ -34,6 +34,8 @@
         - support complex numbers in SHOW in rect and polar modes
         - support Linking/Unlinking a complex number and its 2 real components
           using 2ND LINK (equivalent to COMPLEX button on the HP-42S)
+        - support entry of complex numbers on a single line in RECT, PRAD, and
+          PDEG modes using the `2ND i` and `2ND ANGLE` keys.
     - Rectangular to Polar conversion
         - fix overflow and underflow caused by bug in the TI-OS `RToP()`
           function by using a custom `rectToPolar()` function instead
