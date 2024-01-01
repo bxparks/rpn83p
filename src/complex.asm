@@ -249,7 +249,7 @@ complexToPolarRad:
     ; very expensive, so I think this is the winner.
     bcall(_PushOP1) ; FPS=[Z]
     call op1ExOp2 ; OP1=Im(Z)=y; OP2=Re(Z)=x
-    ld d, 0 ; undocumented parameter for ATan2(), must be set to 0
+    ld d, 0 ; set undocumented parameter for ATan2Rad()
     bcall(_ATan2Rad) ; OP1=Angle(Z), destroys OP1-OP5
     call op1ToOp3 ; OP3=Angle(Z)
     bcall(_PopOP1) ; FPS=[]; CP1=Z
@@ -378,10 +378,20 @@ complexAbsCabs:
     bcall(_CAbs); OP1=Cabs(CP1)
     ret
 
-; Description: Return the angle (argument) of the complex number.
+; Description: Return the angle (argument) of the complex number. It uses the
+; complex rendering mode (complexMode: RECT, PRAD, PDEG) to decide on the unit
+; of the output:
+;   - RECT: radians
+;   - PRAD: radians
+;   - PDEG: degrees
+;
+; The 'trigMode' flag is ignored. It was too confusing to see the complex
+; numbers rendered using the 'complexMode' (e.g. PDEG), but the angle converted
+; into a different unit determined by the 'trigMode' (e.g. RAD).
+;
 ; Input:
 ;   - CP1: complex number
-;   - (trigFlags): trigDeg determines RAD or DEG mode of the result
+;   - (complexMode): complex rendering mode
 complexAngle:
     call checkOp1Complex
     jr z, complexAngleComplex
@@ -389,7 +399,15 @@ complexAngle:
     call mergeOp1Op2ToCp1 ; OP1/OP2=complex(OP1,OP2)
     ; [[fallthrough]]
 complexAngleComplex:
-    bcall(_Angle) ; OP1=CAngle(CP1)
+    ; calculate angle in radians
+    call op1ExOp2 ; OP1=Im(Z)=y; OP2=Re(Z)=x
+    ld d, 0 ; set undocumented parameter for ATan2Rad()
+    bcall(_ATan2Rad) ; OP1=radian(Z), destroys OP1-OP5
+    ; convert to degrees if PDEG mode
+    ld a, (complexMode)
+    cp complexModeDeg
+    ret nz
+    bcall(_RToD) ; OP1=degree(Z)
     ret
 
 ;-----------------------------------------------------------------------------
