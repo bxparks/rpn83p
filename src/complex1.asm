@@ -10,7 +10,7 @@
 ; entry.
 ;------------------------------------------------------------------------------
 
-; Description: Convert OP1/OP2 (re/im) into complex number in CP1.
+; Description: Convert OP1/OP2 (re,im) into complex number in CP1.
 ; Input: OP1/OP2=(re,im)
 rectToComplex:
     ld a, (OP1)
@@ -21,7 +21,7 @@ rectToComplex:
     ld (OP2), a
     ret
 
-; Description: Convert OP1/OP2 (r/rad) in polar radians to CP1.
+; Description: Convert OP1/OP2 (r,rad) in polar radians to CP1.
 ; Input: OP1/OP2=(r,radian)
 pradToComplex:
     bcall(_PushRealO1) ; FPS=[r]
@@ -32,7 +32,7 @@ pradToComplex:
     call op1ExOp2PageOne ; OP1=r*cos(rad); OP2=r*sin(rad)
     jr rectToComplex
 
-; Description: Convert OP1/OP2 (r/deg) in polar degrees to CP1.
+; Description: Convert OP1/OP2 (r,deg) in polar degrees to CP1.
 ; Input: OP1/OP2=(r,degree)
 pdegToComplex:
     bcall(_PushRealO1) ; FPS=[r]

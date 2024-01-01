@@ -187,8 +187,8 @@ initComplexMode:
 ; Conversion bewteen complex and reals.
 ;-----------------------------------------------------------------------------
 
-; Description: Convert the complex number into either (a,b) or (r,theta),
-; dependingon the complexMode.
+; Description: Convert the complex number in CP1 to either (a,b) or (r,theta)
+; in OP1/OP2, depending on the complexMode.
 ; Input: CP1=complex
 ; Output:
 ;   - OP1,OP2=(a,b) or (r,theta)
@@ -197,17 +197,16 @@ initComplexMode:
 complexToReals:
     ld a, (complexMode)
     cp a, complexModeRad
-    jr z, complexRToPRad
+    jr z, complexToPolarRad
     cp a, complexModeDeg
-    jr z, complexRToPDeg
+    jr z, complexToPolarDeg
     ; Everything else, assume Rect
     call splitCp1ToOp1Op2
     or a ; CF=0
     ret
 
 ; Description: Convert the (a,b) or (r,theta) (depending on complexMode) to a
-; complex number.
-; dependingon the complexMode.
+; complex number in CP1.
 ; Input: OP1,OP2=(a,b) or (r,theta)
 ; Output:
 ;   - CP1=complex
@@ -216,100 +215,60 @@ complexToReals:
 realsToComplex:
     ld a, (complexMode)
     cp a, complexModeRad
-    jp z, complexPRadToR
+    jp z, polarRadToComplex
     cp a, complexModeDeg
-    jp z, complexPDegToR
+    jp z, polarDegToComplex
     ; Everything else, assume Rect
     call mergeOp1Op2ToCp1
     or a ; CF=0
     ret
 
 ;-----------------------------------------------------------------------------
-; Complex rectangular and polar conversions. These are custom variations on top
-; of the built-in RToP() and PToR() TI-OS functions. The RToP() function in
-; particular overflows internally when it calculators r^2 = a^2 + b^2. So, for
-; example, it throws an exception when a=b=7.1e63 (1/sqrt(2)*10^64).
+; Complex rectangular and polar conversions. We create custom implementations,
+; instead of using the built-in RToP() and PToR() TI-OS functions, for two
+; reasons:
+; 1) The OS functions are buggy. For example, RToP() overflows internally when
+; it calculators r^2 = a^2 + b^2. For example, it throws an exception when
+; a=b=7.1e63 (1/sqrt(2)*10^64).
+; 2) The output of the OS routines depend on the global trigMode flag, but our
+; routines must be deterministic, instead of changing its results depending on
+; the DEG or RAD modes.
 ;-----------------------------------------------------------------------------
 
 ; Description: Convert complex number into polar-rad form.
-; Input: CP1: Z, complex number
-; Output:
-;   - OP1,OP2: (r, thetaRad)
-;   - CF=1 if error; 0 if no error
-; Destroys: all
-complexRToPRad:
-    ; Clobber the global trigFlags, but use an exception handler to restore the
-    ; previous setting.
-    ld a, (iy + trigFlags)
-    push af ; stack=[trigFlags]
-    res trigDeg, (iy + trigFlags)
-    jr complexRToPCommon
-
-; Description: Convert complex number into polar-degree form.
-; Input: CP1: Z, complex number
-; Output:
-;   - OP1,OP2: (r, thetaDeg)
-;   - CF=1 if error; 0 if no error
-; Destroys: all
-complexRToPDeg:
-    ; Clobber the global trigFlags, but use an exception handler to restore the
-    ; previous setting.
-    ld a, (iy + trigFlags)
-    push af ; stack=[trigFlags]
-    set trigDeg, (iy + trigFlags)
-    ; [[fallthrough]]
-
-; Description: Common fragment of complexRToPRad() and complexRToPDeg(). This
-; routine can overflow when the 'r=cabs(a,b)' overflows 1e100, in which case
-; CF=1 will be set. The internal exception will be caught and eaten.
-;
 ; It looks like Cabs() does *not* throw an Err:Overflow exception when the
 ; exponent becomes >=100. An 'r' of >=1E100 can be returned and will be
 ; displayed on the screen in polar mode.
 ;
-; Input:
-;   - CP1: complex number
-;   - (trigFlags)=angle mode
-; Output:
-;   - OP1,OP2: (r, theta)
-;   - CF=1 if error; 0 if no error
-complexRToPCommon:
-    ; set up exception trap to reset trigFlags
-    ld hl, complexRToPHandleException
-    call APP_PUSH_ERRORH
-#ifdef USE_RTOP_WITH_SCALING
-    call splitCp1ToOp1Op2 ; OP1=Re(Z); OP2=Im(Z)
-    call complexNormalize ; OP1=a/scale; OP2=b/scale; OP3=scale
-    bcall(_PushRealO3) ; FPS=[scale]
-    bcall(_RToP) ; OP1=r; OP2=theta; may throw exception on overflow
-    call exchangeFPSOP2 ; FPS=[theta]; OP2=scale
-    bcall(_FPMult) ; OP1=r*scale
-    bcall(_PopRealO2) ; OP2=theta
-#else
+; Input: CP1: Z, complex number
+; Output: OP1,OP2: (r, thetaRad)
+; Destroys: all, OP1-OP5
+complexToPolarRad:
     ; Cabs() does not seem to suffer the internal overflow and underflow
     ; problems of RToP(). This implementation also uses fewer bcall() which is
     ; very expensive, so I think this is the winner.
     bcall(_PushOP1) ; FPS=[Z]
-    bcall(_Angle) ; OP1=Angle(Z)
-    call op1ToOp5 ; OP5=Angle(Z)
+    call op1ExOp2 ; OP1=Im(Z)=y; OP2=Re(Z)=x
+    ld d, 0 ; undocumented parameter for ATan2(), must be set to 0
+    bcall(_ATan2Rad) ; OP1=Angle(Z), destroys OP1-OP5
+    call op1ToOp3 ; OP3=Angle(Z)
     bcall(_PopOP1) ; FPS=[]; CP1=Z
+    bcall(_PushRealO3) ; FPS=[Angle(Z)]
     bcall(_CAbs) ; OP1=Cabs(Z); destroys OP1-OP4
-    call op5ToOp2 ; OP2=Angle(Z)
-#endif
-    call APP_POP_ERRORH
-    ; Reset the original trigFlags
-    pop af ; stack=[]; A=trigFlags
-    ld (iy + trigFlags), a
-    or a ; CF=0
+    bcall(_PopRealO2) ; FPS=[]; OP2=Angle(Z)
     ret
 
-complexRToPHandleException:
-    call op1Set0 ; OP1=0.0
-    call op2Set0 ; OP2=0.0
-    ; Reset the original trigFlags
-    pop af ; stack=[]; A=trigFlags
-    ld (iy + trigFlags), a
-    scf ; CF=1
+; Description: Convert complex number into polar-degree form.
+; Input: CP1: Z, complex number
+; Output: OP1,OP2: (r, thetaDeg)
+; Destroys: all
+complexToPolarDeg:
+    call complexToPolarRad ; OP1=abs(Z); OP2=radian(Z)
+    bcall(_PushRealO1) ; FPS=[abs(Z)]
+    call op2ToOp1 ; OP1=radian(Z)
+    bcall(_RToD) ; OP1=degree(Z)
+    call op1ToOp2 ; OP2=degree(Z)
+    bcall(_PopRealO1) ; FPS=[]; OP1=abs(Z)
     ret
 
 #ifdef USE_RTOP_WITH_SCALING
@@ -351,57 +310,32 @@ complexNormalizeCheckReduce:
 
 ;-----------------------------------------------------------------------------
 
-; Input:
-;   - OP1,OP2=(r,thetaRad)
-; Output:
-;   - OP1,OP2=(a,b)
-;   - CF=1 if error; 0 if no error
-complexPRadToR:
-    ld a, (iy + trigFlags)
-    push af ; stack=[trigFlags]
-    res trigDeg, (iy + trigFlags)
-    jr complexPToRCommon
+; Description: Convert polar radian form (OP1,OP2)=(r,radian) to a complex
+; number in CP1.
+; Input: OP1,OP2=(r,thetaRad)
+; Output: CP1=(a+bi)
+polarRadToComplex:
+    bcall(_PushRealO1) ; FPS=[r]
+    call op2ToOp1 ; OP1=rad
+    bcall(_SinCosRad) ; OP1=sin(rad); OP2=cos(rad)
+    call op1ExOp2 ; OP1=cos(rad); OP2=sin(rad)
+    bcall(_PopRealO3) ; FPS=[]; OP3=r
+    bcall(_CMltByReal) ; OP1=r*cos(rad); OP2=r*sin(rad)
+    jp mergeOp1Op2ToCp1 ; CP1=(OP1,OP2)
 
-; Input:
-;   - OP1,OP2=(r,thetaDeg)
-; Output:
-;   - OP1,OP2=(a,b)
-;   - CF=1 if error; 0 if no error
-complexPDegToR:
-    ld a, (iy + trigFlags)
-    push af ; stack=[trigFlags]
-    set trigDeg, (iy + trigFlags)
-    ; [[fallthrough]]
-
-; Description: Common fragment of complexPRadToR() and complexPDegToR().
-; Input:
-;   - OP1,OP2=(r,theta)
-;   - (trigFlags)=angle mode
-; Output:
-;   - OP1,OP2=(a,b)
-;   - CF=1 if error; 0 if no error
-complexPToRCommon:
-    ; set up exception trap to reset trigFlags
-    ld hl, complexPToRHandleException
-    call APP_PUSH_ERRORH
-    bcall(_PToR) ; OP1=Re(z); OP2=Im(z)
-    call APP_POP_ERRORH
-    call mergeOp1Op2ToCp1 ; CP1=(OP1,OP2)
-    ; Reset the original trigFlags
-    pop af ; stack=[]; A=trigFlags
-    ld (iy + trigFlags), a
-    or a ; CF=0
-    ret
-
-complexPToRHandleException:
-    call op1Set0 ; OP1=0.0
-    call op2Set0 ; OP2=0.0
-    call mergeOp1Op2ToCp1
-    ; Reset the original trigFlags
-    pop af ; stack=[]; A=trigFlags
-    ld (iy + trigFlags), a
-    scf ; CF=1
-    ret
+; Description: Convert polar degree form (OP1,OP2)=(r,degree) to a complex
+; number in CP1.
+; Input: OP1,OP2=(r,thetaDeg)
+; Output: CP1=(a+bi)
+polarDegToComplex:
+    bcall(_PushRealO1) ; FPS=[r]
+    call op2ToOp1 ; OP1=thetaDeg
+    bcall(_DToR) ; OP1=thetaRad
+    bcall(_SinCosRad) ; OP1=sin(rad); OP2=cos(rad)
+    call op1ExOp2 ; OP1=cos(rad); OP2=sin(rad)
+    bcall(_PopRealO3) ; FPS=[]; OP3=r
+    bcall(_CMltByReal) ; OP1=r*cos(rad); OP2=r*sin(rad)
+    jp mergeOp1Op2ToCp1 ; CP1=(OP1,OP2)
 
 ;-----------------------------------------------------------------------------
 ; Complex misc operations.

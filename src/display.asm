@@ -1061,7 +1061,7 @@ msgComplexRectSpacer:
 ; the 'r' value goes beyond 1e100 or 1e-100.
 ; Input: CP1: complex number
 printOP1ComplexRad:
-    call complexRToPRad ; OP1=r; OP2=theta(rad)
+    call complexToPolarRad ; OP1=r; OP2=theta(rad)
     jr nc, printOP1ComplexRadOk
     ld hl, msgPrintComplexError
     call vPutSmallS
@@ -1094,7 +1094,7 @@ msgComplexPRadSpacer:
 ; the 'r' value goes beyond 1e100 or 1e-100.
 ; Input: CP1: complex number
 printOP1ComplexDeg:
-    call complexRToPDeg ; OP1=r; OP2=theta(deg)
+    call complexToPolarDeg ; OP1=r; OP2=theta(deg)
     jr nc, printOP1ComplexDegOk
     ld hl, msgPrintComplexError
     call vPutSmallS

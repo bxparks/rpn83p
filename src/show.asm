@@ -155,7 +155,7 @@ msgShowComplexRectSpacer:
 ; Output: DE: updated
 formComplexRadString:
     push de
-    call complexRToPRad ; OP1=r; OP2=theta(rad); CF=1 if error
+    call complexToPolarRad ; OP1=r; OP2=radians; CF=1 if error
     pop de
     jr nc, formComplexRadStringOk
     ld hl, msgPrintComplexError ; "<overflow>"
@@ -184,7 +184,7 @@ msgShowComplexRadSpacer:
 ; Output: DE: updated
 formComplexDegString:
     push de
-    call complexRToPDeg ; OP1=r; OP2=theta(rad)
+    call complexToPolarDeg ; OP1=r; OP2=degrees; CF=1 if error
     pop de
     jr nc, formComplexDegStringOk
     ld hl, msgPrintComplexError ; "<overflow>"

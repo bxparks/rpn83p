@@ -84,7 +84,7 @@ mXRootYHandler:
 ; for ATan2().
 mAtan2Handler:
     call closeInputAndRecallXY ; OP1=Y; OP2=X
-    ld d, 0
+    ld d, 0 ; undocumented parameter for ATan2(), must be set to 0
     bcall(_ATan2) ; OP1=angle
     jp replaceXY
 
