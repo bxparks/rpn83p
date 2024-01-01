@@ -182,9 +182,9 @@ getInputBufStateReturn:
 
 ;------------------------------------------------------------------------------
 
-; Description: Parse the input buffer into OP1.
+; Description: Parse the input buffer into a real or complex number in OP1/OP2.
 ; Input: inputBuf filled with keyboard characters
-; Output: OP1/OP2: floating point number or complex number
+; Output: OP1/OP2: real or complex number
 ; Destroys: all registers, OP1-OP5 (due to SinCosRad())
 parseInputBuf:
     call initInputBufForParsing
@@ -201,11 +201,21 @@ parseInputBuf:
     bcall(_PushRealO1) ; FPS=[first]
     pop hl
     push af ; stack=[delimiter]
-    call parseFloat ; OP1=second
+    call parseFloat ; OP1=second; CF=0 if empty string
+    jr c, parseInputBufNonEmptyImaginary
+    ; If the imaginary component is an empty string, AND the complex delimiter
+    ; was a 'i', then set the imaginary component to 1, so that a singular 'i'
+    ; is interpreted as just '0i1' instead of '0i0'.
+    pop af ; A=delimiter
+    cp LimagI
+    push af ; stack=[delimiter]
+    jr nz, parseInputBufNonEmptyImaginary
+    bcall(_OP1Set1) ; OP1=1.0
+parseInputBufNonEmptyImaginary:
     call op1ToOp2PageOne ; OP2=second
     bcall(_PopRealO1) ; FPS=[]; OP1=first; OP2=second
     pop af ; stack=[]; A=delimiter
-    ; convert 2 real numbers into complex number
+    ; convert 2 real numbers in OP1/OP2 into a complex number
     cp Langle
     jp z, pradToComplex
     cp Ldegree
@@ -214,12 +224,18 @@ parseInputBuf:
 
 ; Description: Parse the floating point number at HL.
 ; Input: HL: pointer to a floating point number C-string
-; Output: OP1: floating point number
+; Output:
+;   - OP1: floating point number
+;   - CF: 0 if empty string, 1 non-empty
 ; Destroys: A, BC, DE
 ; Preserves: HL
 parseFloat:
     call clearParseBuf
     call clearFloatBuf ; OP1=0.0
+    ; Check for an emtpy string.
+    ld a, (hl)
+    call isValidScientificDigit ; CF=1 if valid
+    ret nc
     call findDecimalPoint ; A=i8(decimalPointPos)
     call extractMantissaExponent ; extract mantissa exponent to floatBuf
     call extractMantissaSign ; extract mantissa sign to floatBuf
@@ -230,6 +246,7 @@ parseFloat:
     ld hl, floatBuf
     call move9ToOp1PageOne
     pop hl
+    scf ; CF=1
     ret
 
 ; Description: Parse the integer (base 2, 8, 10, 16) at HL.
