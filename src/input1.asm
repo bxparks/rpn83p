@@ -210,7 +210,10 @@ parseFloat:
     inc hl
     call extractMantissaSign ; extract mantissa sign to floatBuf
     ;
+    ld hl, inputBuf
+    inc hl
     call parseMantissa ; parse mantissa digits from inputBuf into parseBuf
+    ;
     call extractMantissa ; copy mantissa digits from parseBuf into floatBuf
     xor a ; A=inputBufOffset=0
     call findExponent ; A=offsetToExponent; CF=1 if found
@@ -370,42 +373,31 @@ checkZeroContinue:
 ;   - "0.1" produces "1"
 ;   - "-001.2" produces "12"
 ;   - "23E-1" produces "23"
-; Input: inputBuf
+; Input: HL: pointer to C-string
 ; Output: parseBuf filled with mantissa digits
 ; Destroys: all registers
 parseMantissaLeadingFound equ 0 ; bit to set when lead digit found
 parseMantissa:
-    ld hl, inputBuf
-    ld a, (hl) ; A = inputBufLen
-    or a
-    ret z
-    ld b, a ; B = inputBufLen
     res parseMantissaLeadingFound, c
-    inc hl
 parseMantissaLoop:
     ld a, (hl)
-    cp Lexponent
-    ret z ; terminate loop at "E"
+    inc hl
+    call isValidFloatDigit ; if valid: CF=1
+    ret nc
     cp signChar
-    jr z, parseMantissaContinue
+    jr z, parseMantissaLoop
     cp '.'
-    jr z, parseMantissaContinue
+    jr z, parseMantissaLoop
     cp '0'
     jr nz, parseMantissaNormalDigit
-    ; Check if we found leading digit.
+    ; Ignore '0' before a leading digit.
     bit parseMantissaLeadingFound, c
-    jr z, parseMantissaContinue
+    jr z, parseMantissaLoop
 parseMantissaNormalDigit:
+    ; A: char to append
     set parseMantissaLeadingFound, c
-    push hl
-    push bc
-    call appendParseBuf
-    pop bc
-    pop hl
-parseMantissaContinue:
-    inc hl
-    djnz parseMantissaLoop
-    ret
+    call appendParseBuf ; preserves HL
+    jr parseMantissaLoop
 
 ;------------------------------------------------------------------------------
 
@@ -507,11 +499,15 @@ calcDPEnd:
 ;   - A: character to be appended
 ; Output:
 ;   - CF set when append fails
-; Destroys: all
+; Destroys: A, BC, DE
+; Preserves: HL
 appendParseBuf:
+    push hl
     ld hl, parseBuf
     ld b, parseBufCapacity
-    jp AppendString
+    call AppendString
+    pop hl
+    ret
 
 ;------------------------------------------------------------------------------
 
