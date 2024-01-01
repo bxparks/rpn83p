@@ -101,7 +101,7 @@ CloseInputBuf:
 closeInputBufEmpty:
     set inputBufFlagsClosedEmpty, (iy + inputBufFlags)
 closeInputBufContinue:
-    call parseNum
+    call parseInputBuf ; OP1/OP2=float or complex
     jp ClearInputBuf
 
 ;------------------------------------------------------------------------------
@@ -111,12 +111,14 @@ closeInputBufContinue:
 ; are checked:
 ;   - inputBufStateDecimalPoint: set if decimal point exists
 ;   - inputBufStateEE: set if exponent 'E' character exists
-;   - inputBufEEPos: pos of char after 'E', or 0 if no 'E'
+;   - inputBufStateComplex: set if complex number
+;   - inputBufEEPos: pos of char after 'E', or the first character of the
+;   number component if no 'E'
 ;   - inputBufEELen: number of EE digits if inputBufStateEE is set
 ; Input: inputBuf
 ; Output:
 ;   - C: inputBufState flags updated
-;   - D: inputBufEEPos, pos of char after 'E', or 0 if no 'E'
+;   - D: inputBufEEPos, pos of char after 'E' or at start of number
 ;   - E: inputBufEELen, number of EE digits if inputBufStateEE is set
 ; Destroys: BC, DE, HL
 ; Preserves: AF
@@ -129,7 +131,7 @@ GetInputBufState:
     add hl, bc ; HL=pointer to end of string
     ; swap B and C
     ld a, c ; A=len
-    ld c, b ; C=0
+    ld c, b ; C=inputBufState=0
     ld b, a ; B=len
     ; check for len==0
     or a ; if len==0: ZF=0
@@ -137,7 +139,7 @@ GetInputBufState:
     ; D=inputBufEEPos=0; E=inputBufEELen=0
     ld de, 0
 getInputBufStateLoop:
-    ; loop and accumulate inputBufState flags in the C register
+    ; Loop backwards from end of string and update inputBufState flags
     dec hl
     ld a, (hl)
     ; check for '0'-'9'
@@ -153,44 +155,104 @@ getInputBufStateCheckDecimalPoint:
     set inputBufStateDecimalPoint, c
 getInputBufStateCheckEE:
     cp Lexponent
-    jr nz, getInputBufStateCheckLen
+    jr nz, getInputBufStateCheckTermination
     set inputBufStateEE, c
     ld d, b ; inputBufEEPos=B
-getInputBufStateCheckLen:
+getInputBufStateCheckTermination:
+    cp LimagI
+    jr z, getInputBufStateComplex
+    cp Langle
+    jr z, getInputBufStateComplex
+    cp Ltheta
+    jr z, getInputBufStateComplex
+    ; Loop until we reach the start of string
     djnz getInputBufStateLoop
+    jr getInputBufStateEnd
+getInputBufStateComplex:
+    set inputBufStateComplex, c
 getInputBufStateEnd:
+    ; If no 'E', set inputBufEEPos to the start of current number, which could
+    ; be the imaginary or angle part of a complex number.
+    bit inputBufStateEE, c
+    jr nz, getInputBufStateReturn
+    ld d, b
+getInputBufStateReturn:
     pop af
     ret
 
 ;------------------------------------------------------------------------------
 
-; Description: Parse the input buffer into the parseBuf.
+; Description: Parse the input buffer into a real or complex number in OP1/OP2.
 ; Input: inputBuf filled with keyboard characters
-; Output: OP1: floating point number
-; Destroys: all registers
-parseNum:
-    call parseNumInit
-    call checkZero
-    ret z
+; Output: OP1/OP2: real or complex number
+; Destroys: all registers, OP1-OP5 (due to SinCosRad())
+parseInputBuf:
+    call initInputBufForParsing
     ld hl, inputBuf
+    inc hl
     bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
     jr nz, parseBaseInteger
-    ; Parse floating point.
-    call calcDPPos ; A=i8(decimalPointPos)
+    ; parse a real or complex number
+    call parseFloat ; OP1=float
+    call findComplexDelimiter ; if complex: CF=1, A=delimiter, HL=pointer
+    ret nc
+    ; parse the complex number
+    push hl
+    bcall(_PushRealO1) ; FPS=[first]
+    pop hl
+    push af ; stack=[delimiter]
+    call parseFloat ; OP1=second; CF=0 if empty string
+    jr c, parseInputBufNonEmptyImaginary
+    ; If the imaginary component is an empty string, AND the complex delimiter
+    ; was a 'i', then set the imaginary component to 1, so that a singular 'i'
+    ; is interpreted as just '0i1' instead of '0i0'.
+    pop af ; A=delimiter
+    cp LimagI
+    push af ; stack=[delimiter]
+    jr nz, parseInputBufNonEmptyImaginary
+    bcall(_OP1Set1) ; OP1=1.0
+parseInputBufNonEmptyImaginary:
+    call op1ToOp2PageOne ; OP2=second
+    bcall(_PopRealO1) ; FPS=[]; OP1=first; OP2=second
+    pop af ; stack=[]; A=delimiter
+    ; convert 2 real numbers in OP1/OP2 into a complex number
+    cp Langle
+    jp z, pradToComplex
+    cp Ldegree
+    jp z, pdegToComplex
+    jp rectToComplex
+
+; Description: Parse the floating point number at HL.
+; Input: HL: pointer to a floating point number C-string
+; Output:
+;   - OP1: floating point number
+;   - CF: 0 if empty string, 1 non-empty
+; Destroys: A, BC, DE
+; Preserves: HL
+parseFloat:
+    call clearParseBuf
+    call clearFloatBuf ; OP1=0.0
+    ; Check for an emtpy string.
+    ld a, (hl)
+    call isValidScientificDigit ; CF=1 if valid
+    ret nc
+    call findDecimalPoint ; A=i8(decimalPointPos)
     call extractMantissaExponent ; extract mantissa exponent to floatBuf
     call extractMantissaSign ; extract mantissa sign to floatBuf
     call parseMantissa ; parse mantissa digits from inputBuf into parseBuf
     call extractMantissa ; copy mantissa digits from parseBuf into floatBuf
-    xor a ; A=inputBufOffset=0
-    call findExponent ; A=offsetToExponent; CF=1 if found
-    jr nc, parseFloatNoExponent
-    call parseExponent ; A=exponentValue of inputBuf)
-    call addExponent ; add EE exponent to floatBuf exponent
-parseFloatNoExponent:
+    call extractExponent ; floatBuf updated
+    push hl
     ld hl, floatBuf
-    jp move9ToOp1PageOne
+    call move9ToOp1PageOne
+    pop hl
+    scf ; CF=1
     ret
 
+; Description: Parse the integer (base 2, 8, 10, 16) at HL.
+; Input: HL: pointer to C string of an integer
+; Output: OP1: floating point representation of integer
+; Destroys: all
 parseBaseInteger:
     ld a, (baseNumber)
     cp 16
@@ -206,11 +268,11 @@ parseBaseInteger:
     ld (baseNumber), a
     ; [[fallthrough]]
 
-; Description: Parse the baseNumber in the Pascal-string given by HL. The base
-; mode be 2, 8 or 16. This subroutine will actually supports any baseNumber <=
-; 36 probably (10 numerals and 26 letters).
+; Description: Parse the baseNumber in the C-string given by HL. The base mode
+; be 2, 8 or 16. This subroutine will actually supports any baseNumber <= 36
+; probably (10 numerals and 26 letters).
 ; Input:
-;   - HL: pointer to Pascal-string
+;   - HL: pointer to C string
 ;   - A: base mode (2, 8, 10, 16)
 ; Output: OP1: floating point value
 ; Destroys: all
@@ -220,19 +282,18 @@ parseNumBase:
     bcall(_OP1ToOP4) ; OP4 = base
     bcall(_OP1Set0)
     pop hl
-    ld a, (hl) ; num of digits
-    or a
-    ret z
-    ld b, a ; num digits
 parseNumBaseLoop:
-    ; multiply by 10 before the next digit
-    push bc
+    ; get next digit
+    ld a, (hl)
+    inc hl
+    or a
+    ret z ; return on NUL
     push hl
+    ; multiply by 'base' before adding the next digit
+    push af
     bcall(_OP4ToOP2) ; OP2 = base
     bcall(_FPMult) ; OP1 *= base; destroys OP3
-    pop hl
-    inc hl
-    ld a, (hl)
+    pop af
     ; convert char into digit value
     cp 'A'
     jr c, parseNumBase0To9
@@ -243,24 +304,20 @@ parseNumBaseAToF:
 parseNumBase0To9:
     sub '0'
 parseNumBaseAddDigit:
-    push hl
     bcall(_SetXXOP2) ; OP2 = A = digit value
     bcall(_FPAdd) ; OP1 += OP2
     pop hl
-    pop bc
-    djnz parseNumBaseLoop
-    ret
+    jr parseNumBaseLoop
 
 ;------------------------------------------------------------------------------
 
-; Description: Initialize the parseBuf.
-; Input: none
-; Output: (parseBuf) cleared
-; Destroys: all
-parseNumInit:
-    call clearParseBuf
-    call clearFloatBuf
-    ; terminate the inputBuf with a NUL sentinel to help parsing logic
+; Description: Initialize the inputBuf for parsing by adding a NUL terminator
+; to the Pascal string. The capacity of inputBuf is one character larger than
+; necessary to hold the extra NUL character.
+; Input: inputBuf
+; Output: inputBuf with NUL terminator
+; Destroys: A, DE, HL
+initInputBufForParsing:
     ld hl, inputBuf
     ld e, (hl)
     xor a
@@ -273,7 +330,12 @@ parseNumInit:
 ; Description: Clear parseBuf by setting all digits to the character '0', and
 ; setting size to 0. The trailing '0' characters make it easy to construct the
 ; floating point number.
+; Input: parseBuf
+; Output: parseBuf initialized to '0's, and set to 0-length
+; Destroys: A, B
+; Preserves: HL
 clearParseBuf:
+    push hl
     xor a
     ld hl, parseBuf
     ld (hl), a
@@ -284,45 +346,18 @@ clearParseBufLoop:
     ld (hl), a
     inc hl
     djnz clearParseBufLoop
+    pop hl
     ret
 
-; Description: Set floatBuf to 0.0.
+; Description: Set floatBuf and OP1 to 0.0.
+; Destroys: A, DE
+; Preserves: HL
 clearFloatBuf:
+    push hl
     bcall(_OP1Set0)
     ld de, floatBuf
     bcall(_MovFrOP1)
-    ret
-
-;------------------------------------------------------------------------------
-
-; Description: Check if the inputBuf is effectively '0'. In other words, if
-; the inputBuf is composed of characters only in the set ['-', '.', '0'], then
-; it is effectively zero. Otherwise, not zero.
-; Input: inputBuf
-; Output: Z set if zero, otherwise not set
-; Destroys: A, B, HL
-checkZero:
-    ld hl, inputBuf
-    ld a, (hl) ; A = inputBufLen
-    ; Check for empty
-    or a
-    ret z
-    ; Check for any characters other than 0, '-', '.'
-    inc hl
-    ld b, a
-checkZeroLoop:
-    ld a, (hl)
-    cp '0'
-    jr z, checkZeroContinue
-    cp signChar
-    jr z, checkZeroContinue
-    cp '.'
-    jr z, checkZeroContinue
-    ret ; returns with ZF=0
-checkZeroContinue:
-    inc hl
-    djnz checkZeroLoop
-    xor a ; set ZF=1
+    pop hl
     ret
 
 ;------------------------------------------------------------------------------
@@ -333,50 +368,49 @@ checkZeroContinue:
 ;   - "0.1" produces "1"
 ;   - "-001.2" produces "12"
 ;   - "23E-1" produces "23"
-; Input: inputBuf
+; Input: HL: pointer to C-string
 ; Output: parseBuf filled with mantissa digits
-; Destroys: all registers
+; Destroys: A, BC, DE
+; Preserves: HL
 parseMantissaLeadingFound equ 0 ; bit to set when lead digit found
 parseMantissa:
-    ld hl, inputBuf
-    ld a, (hl) ; A = inputBufLen
-    or a
-    ret z
-    ld b, a ; B = inputBufLen
     res parseMantissaLeadingFound, c
-    inc hl
+    push hl
 parseMantissaLoop:
     ld a, (hl)
-    cp Lexponent
-    ret z ; terminate loop at "E"
+    inc hl
+    call isValidFloatDigit ; if valid: CF=1
+    jr nc, parseMantissaEnd
     cp signChar
-    jr z, parseMantissaContinue
+    jr z, parseMantissaLoop
     cp '.'
-    jr z, parseMantissaContinue
+    jr z, parseMantissaLoop
     cp '0'
     jr nz, parseMantissaNormalDigit
-    ; Check if we found leading digit.
+    ; Ignore '0' before a leading digit.
     bit parseMantissaLeadingFound, c
-    jr z, parseMantissaContinue
+    jr z, parseMantissaLoop
 parseMantissaNormalDigit:
+    ; A: char to append
     set parseMantissaLeadingFound, c
-    push hl
-    push bc
-    call appendParseBuf
-    pop bc
+    call appendParseBuf ; preserves HL
+    jr parseMantissaLoop
+parseMantissaEnd:
     pop hl
-parseMantissaContinue:
-    inc hl
-    djnz parseMantissaLoop
     ret
 
 ;------------------------------------------------------------------------------
 
+; Bit flags used by findDecimalPoint().
+findDecimalPointLeadingFound equ 0 ; set if leading (non-zero) digit found
+findDecimalPointDotFound equ 1; set if decimal point found
+
 ; Description: Find the position of the decimal point of the given number
 ; string.
-; Input: assumes non-empty inputBuf
-; Output: A = decimal point position, signed integer
-; Destroys: all
+; Input: HL: pointer to floating point C-string
+; Output: A: decimalPointPos, signed integer
+; Destroys: A, BC, DE
+; Preservers: HL
 ;
 ; The returned value is the number of places the the decimal point needs to be
 ; shifted to get back the original value after the mantissa is normalized with
@@ -398,13 +432,13 @@ parseMantissaContinue:
 ;
 ; Here is the algorithm written in C:
 ;
-; int8_t calcDPPos(const char *s, uint8_t stringSize) {
+; int8_t findDecimalPoint(const char *s) {
 ;   bool leadingFound = false;
 ;   bool dotFound = false;
-;   int_t pos = 0;
-;   for (int i = 0; i < stringSize; i++) {
+;   int8_t pos = 0;
+;   for (int8_t i=0; ; i++) {
 ;       char c = s[i];
-;       if (c == 'E') break; // hit exponent symbol
+;       if (!isValidFloatingDigit(c)) break;
 ;       if (c == '-') continue;
 ;       if (c == '.') {
 ;           dotFound = true;
@@ -415,59 +449,52 @@ parseMantissaContinue:
 ;           if (dotFound) {
 ;               pos--;
 ;           }
-;       } else {
-;           // if leading has already been found, treat
-;           // '0' just like any other character
+;       } else { // c!='0' || leadingFound
+;           if (dotFound) break;
 ;           leadingFound = true;
-;           if (!dotFound) {
-;               pos++;
-;           }
+;           pos++;
 ;       }
 ;   }
 ;   return pos;
-calcDPLeadingFound equ 0 ; set if leading (non-zero) digit found
-calcDPDotFound equ 1; set if decimal point found
-calcDPPos:
-    ld hl, inputBuf
-    ld b, (hl) ; stringSize
+findDecimalPoint:
+    push hl
     xor a
     ld c, a ; pos
     ld d, a ; flags
-    inc hl
-calcDPLoop:
+findDecimalPointLoop:
     ld a, (hl)
-    ; break if EE symbol
-    cp Lexponent
-    jr z, calcDPEnd
+    inc hl
+    ; check valid floating point digit (excludes 'E')
+    call isValidFloatDigit; if valid: CF=1
+    jr nc, findDecimalPointEnd
     ; ignore and skip '-'
     cp signChar
-    jr z, calcDPContinue
+    jr z, findDecimalPointLoop
     ; check for '.'
     cp '.'
-    jr nz, calcDPZero
-    set calcDPDotFound, d
-    jr calcDPContinue
-calcDPZero:
-    ; check for '0'
+    jr nz, findDecimalPointCheckZero
+    set findDecimalPointDotFound, d
+    jr findDecimalPointLoop
+findDecimalPointCheckZero:
+    ; check for '0' && !leadingFound
     cp '0'
-    jr nz, calcDPNormalDigit
-    bit calcDPLeadingFound, d
-    jr nz, calcDPNormalDigit
-calcDPUpdatePos:
-    bit calcDPDotFound, d
-    jr z, calcDPContinue
+    jr nz, findDecimalPointNormalDigit
+    bit findDecimalPointLeadingFound, d
+    jr nz, findDecimalPointNormalDigit
+    ; decrement pos if dot found
+    bit findDecimalPointDotFound, d
+    jr z, findDecimalPointLoop
     dec c
-    jr calcDPContinue
-calcDPNormalDigit:
-    set calcDPLeadingFound, d
-    bit calcDPDotFound, d
-    jr nz, calcDPContinue
+    jr findDecimalPointLoop
+findDecimalPointNormalDigit:
+    bit findDecimalPointDotFound, d
+    jr nz, findDecimalPointEnd
+    set findDecimalPointLeadingFound, d
     inc c
-calcDPContinue:
-    inc hl
-    djnz calcDPLoop
-calcDPEnd:
+    jr findDecimalPointLoop
+findDecimalPointEnd:
     ld a, c
+    pop hl
     ret
 
 ;------------------------------------------------------------------------------
@@ -477,11 +504,15 @@ calcDPEnd:
 ;   - A: character to be appended
 ; Output:
 ;   - CF set when append fails
-; Destroys: all
+; Destroys: A, BC, DE
+; Preserves: HL
 appendParseBuf:
+    push hl
     ld hl, parseBuf
     ld b, parseBufCapacity
-    jp AppendString
+    call AppendString
+    pop hl
+    ret
 
 ;------------------------------------------------------------------------------
 
@@ -491,7 +522,7 @@ appendParseBuf:
 ;   floatingExponent = mantissaExponent + $80
 ;                    = decimalPointPos + $7F
 ;
-; Input: A: decimalPointPos (from calcDPPos())
+; Input: A: decimalPointPos (from findDecimalPoint())
 ; Output: floatBufExp = decimalPointPos + $7F
 ; Destroys: A
 extractMantissaExponent:
@@ -499,33 +530,34 @@ extractMantissaExponent:
     ld (floatBufExp), a
     ret
 
-; Description: Extract mantissa sign from the first character in the inputBuf.
-; Input: inputBuf
-; Output: floatBuf sign set
-; Destroys: HL
+; Description: Extract mantissa sign from the first character of the given
+; string, and transfer it to the sign bit of the floatBuf.
+; Input: HL: NUL terminated C-string
+; Output: (floatBuf) sign set
+; Destroys: none
+; Preserves: HL
 extractMantissaSign:
-    ld hl, inputBuf
-    ld a, (hl)
-    or a
-    ret z ; empty string, assume positive
-    inc hl
-    ld a, (hl)
+    ld a, (hl) ; A will be NUL if an empty string
     cp signChar
     ret nz ; '-' not found at first character
+    push hl
     ld hl, floatBufType
     set 7, (hl)
+    pop hl
     ret
 
 ; Description: Extract the normalized mantissa digits from parseBuf to
 ; floatBuf, 2 digits per byte.
 ; Input: parseBuf
 ; Output: floatBuf updated
-; Destroys: A, BC, DE, HL
+; Destroys: A, BC, DE
+; Preserves: HL
 extractMantissa:
+    push hl
     ld hl, parseBuf
     ld a, (hl)
     or a
-    ret z
+    jr z, extractMantissaEnd
     inc hl
     ld de, floatBufMan
     ld b, parseBufCapacity/2
@@ -546,76 +578,68 @@ extractMantissaLoop:
     inc de
     inc hl
     djnz extractMantissaLoop
+extractMantissaEnd:
+    pop hl
     ret
 
 ;-----------------------------------------------------------------------------
 
+; Description: Extract the EE exponent digits (if any) to floatBuf.
+; Input: HL: pointer to floating number C-string
+; Output: floatBuf updated
+; Destroys: A, BC, DE
+; Preserves: HL
+extractExponent:
+    push hl
+    call findExponent ; HL=pointerEEDigit; CF=1 if found
+    jr nc, extractExponentEnd
+    call parseExponent ; A=exponentValue of HL string
+    call addExponent ; add EE exponent to floatBuf exponent
+extractExponentEnd:
+    pop hl
+    ret
+
 ; Description: Find the next 'E' character and return the number of exponent
 ; digits.
 ; Input:
-;   - (inputBuf): input characters and digits, Pascal-string w/ NUL terminator
-;   - A: offset into inputBuf (which allows us to parse complex numbers with 2
-;   floating point numbers in the inputBuf)
+;   - HL: pointer to scientific floating point C-string
 ; Output:
 ;   - CF: 0 if not found, 1 if found
-;   - A: offset to the first character after the 'E' symbol
+;   - HL: pointer to the first character after the 'E' symbol
 ; Destroys: BC, DE, HL
 findExponent:
-    ld hl, inputBuf
-    ld c, (hl) ; C=len
-    inc hl ; skip len byte
-    ld e, a
-    ld d, 0 ; DE=offset
-    add hl, de
-    ; Calculate length of string to loop over. Return if at end.
-    sub c ; A=offset-len
-    ret nc ; if offset>=len: no 'E', CF=0
-    neg ; A=len-offset, guaranteed > 0
-    ld b, a ; B=len-offset
-findExponentSearchLoop:
     ld a, (hl)
     inc hl
-    inc e ; E=offset++
     cp Lexponent
     jr z, findExponentFound
-    ; This algorithm assumes that the Pascal string is *also* terminated with a
-    ; NUL, like a C-string. It makes the loop algorithm simpler.
     call isValidFloatDigit ; if isValidFloatDigit(A): CF=1
-    ret nc
-    djnz findExponentSearchLoop
-    ; indicate not found
-    or a ; CF=0
-    ret
+    jr c, findExponent
+    ret ; CF=0
 findExponentFound:
-    ld a, e ; A=offsetToFirstExponent
-    scf
+    scf ; CF=1
     ret
 
 ; Description: Parse the digits after the 'E' symbol in the inputBuf.
-; Input:
-;   - inputBuf
-;   - A: offset to the first character of exponent, just after the 'E'
+; Input: HL: pointer to EE digits
 ; Output: A: the exponent, in two's complement form
 ; Destroys: A, BC, DE, HL
 parseExponent:
-    ld hl, inputBuf
-    inc hl ; skip len byte
-    ld e, a ; E=eeDigitOffset
-    ld d, 0
-    add hl, de ; HL=pointer to first digit of EE
-    ; Check for minus sign
+    ld b, 0 ; B=exponentValue
+    ld d, rpnfalse ; D=isEENeg=false
+    ; Check for valid char
     ld a, (hl); A==NUL if end of string
     inc hl
+    call isValidSignedDigit ; if valid: CF=1
+    jr nc, parseExponentEnd
+    ; Check for '-'
     cp signChar
     jr z, parseExponentSetSign
-    ld d, rpnfalse ; D=isEENeg=false
     jr parseExponentDigits
 parseExponentSetSign:
+    ld d, rpntrue ; D=isEENeg=true
     ld a, (hl)
     inc hl
-    ld d, rpntrue ; D=isEENeg=true
 parseExponentDigits:
-    ld b, 0 ; B=exponentValue
     ; process the first digit if any, A==NUL if end of string
     call isValidUnsignedDigit ; if valid: CF=1
     jr nc, parseExponentEnd
@@ -674,17 +698,24 @@ addExponent:
 
 ;-----------------------------------------------------------------------------
 
+; Description: Check if the character in A is a valid floating point digit
+; which may be in scientific notation ('0' to '9', '-', '.', and 'E').
+; Input: A: character
+; Output: CF=1 if valid, 0 if not
+; Destroys: none
+isValidScientificDigit:
+    cp Lexponent
+    jr z, isValidDigitTrue
+    ; [[fallthrough]]
+
 ; Description: Check if the character in A is a valid floating point digit ('0'
-; to '9', '-', '.', and 'E').
+; to '9', '-', '.').
 ; Input: A: character
 ; Output: CF=1 if valid, 0 if not
 ; Destroys: none
 isValidFloatDigit:
     cp '.'
     jr z, isValidDigitTrue
-    cp Lexponent
-    jr z, isValidDigitTrue
-    ; [[fallthrough]]
 
 ; Description: Check if the character in A is a valid signed integer ('0' to
 ; '9', '-').
@@ -713,4 +744,104 @@ isValidDigitFalse:
     ret
 isValidDigitTrue:
     scf ; CF=1
+    ret
+
+;-----------------------------------------------------------------------------
+
+; Description: Set the complex delimiter to the character encoded by A. There
+; are 3 complex number delimiters: LimagI (RECT), Langle (PRAD), Ldegree
+; (PDEG). This routine converts them to other delimiters depending on the value
+; of the targetDelimiter.
+;
+; The algorithm is as follows:
+; - if delimiter==LimagI:
+;     - if targetDelimiter==LimagI: do nothing
+;     - if targetDelimiter==targetDelimiter
+; - if delimiter in (Langle, Ldegree):
+;     - if targetDelimiter==LimagI: delimiter=LimagI
+;     - if targetDelimiter==(Langle,Ldegree): toggle to the other
+; - if no delimiter: do nothing
+;
+; Input:
+;   - A: targetDelimiter
+;   - inputBuf
+; Output:
+;   - inputBuf updated
+;   - CF: 1 if complex delimiter found, 0 if not found
+; Destroys: A, BC, HL
+; Preserves: DE
+SetComplexDelimiter:
+    ld c, a ; C=targetDelimiter
+    ld hl, inputBuf
+    ld b, (hl) ; B=len
+    inc hl ; skip len byte
+    ; Check for len==0
+    ld a, b
+    or a ; CF=0
+    ret z
+setComplexDelimiterLoop:
+    ; Find the complex delimiter, if any
+    ld a, (hl)
+    inc hl
+    cp LimagI
+    jr z, setComplexDelimiterFromImagI
+    cp Langle
+    jr z, setComplexDelimiterFromAngle
+    cp Ldegree
+    jr z, setComplexDelimiterFromDegree
+    ; Loop until end of buffer
+    djnz setComplexDelimiterLoop
+    or a; CF=0
+    ret
+setComplexDelimiterFromImagI:
+    dec hl
+    ld a, c
+    jr setComplexDelimiterToTarget
+setComplexDelimiterFromDegree:
+    dec hl
+    ld a, c ; A=targetDelimiter
+    cp LimagI
+    jr z, setComplexDelimiterToTarget
+    ld a, Langle ; toggle
+    jr setComplexDelimiterToTarget
+setComplexDelimiterFromAngle:
+    dec hl
+    ld a, c ; A=targetDelimiter
+    cp LimagI
+    jr z, setComplexDelimiterToTarget
+    ld a, Ldegree ; toggle
+setComplexDelimiterToTarget:
+    ld (hl), a
+    scf
+    ret
+
+; Description: Find the location of the complex number delimiter (LimagI,
+; Langle, or Ldegree).
+; Input: HL: pointer to floating point number C-string
+; Output:
+;   - CF: 1 if complex number delimiter found, 0 otherwise
+;   - A: delimiter char (LimagI, Langle, or Ldegree)
+;   - HL: pointer to character after the delimiter
+findComplexDelimiter:
+    ld a, (hl)
+    inc hl
+    call isComplexDelimiter ; if delimiter: ZF=1
+    jr z, findComplexDelimiterFound
+    call isValidScientificDigit ; if valid: CF=1
+    jr c, findComplexDelimiter
+    ret ; CF=0
+findComplexDelimiterFound:
+    scf ; CF=1
+    ret
+
+; Description: Return ZF=1 if A is a complex number delimiter.
+; Input: A: char
+; Output: ZF=1 if delimiter
+; Destroys: none
+isComplexDelimiter:
+    cp LimagI
+    ret z
+    cp Langle
+    ret z
+    cp Ldegree
     ret

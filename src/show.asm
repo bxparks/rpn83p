@@ -109,12 +109,12 @@ formBinString:
 
 ;------------------------------------------------------------------------------
 
-; Format the complex number in OP1/OP2 into the string buffer pointed by DE.
+; Format the complex number in OP1/OP2 into the C string buffer pointed by DE.
 ; Input:
 ;   - OP1/OP2=Z, complex number
 ;   - DE: pointer to output string buffer
 ; Output:
-;   - (DE): string buffer updated and NUL terminated
+;   - (DE): C string buffer updated and NUL terminated
 ;   - DE: points to the next character
 ; Destroys: all, OP1-OP6
 formComplexString:
@@ -148,19 +148,15 @@ formComplexRectString:
     jr formRealString
 
 msgShowComplexRectSpacer:
-    .db " ", LImagI, " ", 0
+    .db " ", LimagI, " ", 0
 
 ; Description: Format the complex number in polar radian form.
-; Input: DE: stringPointer
+; Input: DE: cstringPointer
 ; Output: DE: updated
 formComplexRadString:
     push de
-    call complexRToPRad ; OP1=r; OP2=theta(rad)
+    call complexRToPRad ; OP1=r; OP2=theta(rad); CF=1 if error
     pop de
-    ; [[fallthrough]]
-
-; Output: DE: updated
-formComplexPolarCommon:
     jr nc, formComplexRadStringOk
     ld hl, msgPrintComplexError ; "<overflow>"
     bcall(_StrCopy)
@@ -172,7 +168,7 @@ formComplexRadStringOk:
     pop de
     call formRealString
     ; Add angle symbol
-    ld hl, msgShowComplexPolarSpacer
+    ld hl, msgShowComplexRadSpacer
     bcall(_StrCopy)
     ; Format angle
     push de
@@ -180,23 +176,37 @@ formComplexRadStringOk:
     pop de
     jr formRealString
 
+msgShowComplexRadSpacer:
+    .db " ", Langle, " ", 0
+
 ; Description: Format the complex number in polar degree form.
+; Input: DE: cstringPointer
+; Output: DE: updated
 formComplexDegString:
     push de
     call complexRToPDeg ; OP1=r; OP2=theta(rad)
     pop de
-    call formComplexPolarCommon
-    ld a, Ldegree
-    ld (de), a
-    inc de
-    ; add NUL terminator
-    xor a
-    ld (de), a
-    inc de
+    jr nc, formComplexDegStringOk
+    ld hl, msgPrintComplexError ; "<overflow>"
+    bcall(_StrCopy)
     ret
+formComplexDegStringOk:
+    ; Format the magnitude
+    push de
+    bcall(_PushRealO2) ; FPS=[theta]
+    pop de
+    call formRealString
+    ; Add angle symbol
+    ld hl, msgShowComplexDegSpacer
+    bcall(_StrCopy)
+    ; Format angle
+    push de
+    bcall(_PopRealO1) ; FPS=[]; OP1=theta
+    pop de
+    jr formRealString
 
-msgShowComplexPolarSpacer:
-    .db " ", Langle, " ", 0
+msgShowComplexDegSpacer:
+    .db " ", Langle, Ltemp, " ", 0
 
 ;------------------------------------------------------------------------------
 

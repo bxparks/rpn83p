@@ -98,6 +98,7 @@ inputBufFlagsArgAllowModifier equ 4 ; allow */-+ modifier in CommandArg mode
 ; Bit flags for the result of GetInputBufState().
 inputBufStateDecimalPoint equ 0 ; set if decimal point exists
 inputBufStateEE equ 1 ; set if 'E' exists
+inputBufStateComplex equ 2 ; set if input is a complex number
 
 ;-----------------------------------------------------------------------------
 ; RPN83P application variables and buffers.
@@ -400,19 +401,28 @@ tvmSolverIsRunning equ tvmNPMT1 + 9 ; boolean; true if active
 tvmSolverCount equ tvmSolverIsRunning + 1 ; u8; iteration count
 
 ; A Pascal-string that contains the rendered version of inputBuf, truncated and
-; formatted as needed, which can be printed on the screen.
+; formatted as needed, which can be printed on the screen. It is slightly
+; longer than inputBuf because sometimes a single character in inputBuf gets
+; expanded to multiple characters in inputDisplay (e.g. 'Ldegree' delimiter for
+; complex numbers gets expanded to 'Langle,Ltemp' pair).
 ;
 ; The C structure is:
 ;
 ; struct InputDisplay {
 ;   uint8_t len;
-;   char buf[14];
+;   char buf[inputDisplayCapacity];
 ; };
 inputDisplay equ tvmSolverCount + 1 ; struct InputDisplay; Pascal-string
 inputDisplayLen equ inputDisplay ; len byte of the string
 inputDisplayBuf equ inputDisplay + 1 ; start of actual buffer
-inputDisplayCapacity equ 14 ; 14-characters displayed, excluding trailing cursor
+inputDisplayCapacity equ inputBufCapacity + 1 ; Ldegree -> Langle Ltemp
 inputDisplaySizeOf equ inputDisplayCapacity + 1 ; total size of data structure
+
+; Maximum number of characters that can be displayed during input/editing mode.
+; The LCD line can display 16 characters using the large font. We need 1 char
+; for the "X:" label, and 1 char for the trailing prompt "_", which leaves us
+; with 14 characters.
+inputDisplayMaxLen equ 14
 
 ; Set of bit-flags that remember whether an RPN stack display line was rendered
 ; in large or small font. We can optimize the drawing algorithm by performing a
@@ -442,7 +452,7 @@ appBufferSize equ appBufferEnd-appBufferStart
 ;       uint8_t man[7];
 ;   }
 floatBuf equ OP3
-floatBufType equ floatBuf ; type
+floatBufType equ floatBuf ; type byte, also contains sign bit
 floatBufExp equ floatBufType + 1 ; exponent, shifted by $80
 floatBufMan equ floatBufExp + 1 ; mantissa, 2 digits per byte
 floatBufSizeOf equ 9
@@ -557,6 +567,10 @@ _AppendInputBuf equ _AppendInputBufLabel-branchTableBase
 _GetInputBufStateLabel:
 _GetInputBufState equ _GetInputBufStateLabel-branchTableBase
     .dw GetInputBufState
+    .db 1
+_SetComplexDelimiterLabel:
+_SetComplexDelimiter equ _SetComplexDelimiterLabel-branchTableBase
+    .dw SetComplexDelimiter
     .db 1
 ; arg1.asm
 _ClearArgBufLabel:
@@ -873,6 +887,7 @@ defpage(1)
 #include "float1.asm"
 #include "integer1.asm"
 #include "const1.asm"
+#include "complex1.asm"
 #include "tvm.asm"
 #include "hms.asm"
 #include "prob.asm"

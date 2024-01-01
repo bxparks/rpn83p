@@ -227,6 +227,36 @@ handleKeyEE:
     ld a, Lexponent
     jp handleKeyNumber
 
+; Description: Add imaginary-i into the input buffer.
+handleKeyImagI:
+    ; Do nothing in BASE mode.
+    bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
+    ret nz
+    ; Try setting an existing complex delimiter.
+    set dirtyFlagsInput, (iy + dirtyFlags)
+    ld a, LimagI
+    bcall(_SetComplexDelimiter) ; CF=1 if complex number
+    ret c
+    ; Try inserting imaginary-i
+    ld a, LimagI
+    call handleKeyNumber
+    ret
+
+; Description: Add Angle symbol into the input buffer for angle in degrees.
+handleKeyAngle:
+    ; Do nothing in BASE mode.
+    bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
+    ret nz
+    ; Try setting or toggling an existing complex delimiter.
+    set dirtyFlagsInput, (iy + dirtyFlags)
+    ld a, Ldegree
+    bcall(_SetComplexDelimiter) ; CF=1 if complex delimiter exists
+    ret c
+    ; Insert Ldegree delimiter for initial default.
+    ld a, Ldegree
+    call handleKeyNumber
+    ret
+
 ;-----------------------------------------------------------------------------
 
 ; Description: Implement the DEL functionality, which does slightly different
