@@ -432,7 +432,7 @@ mFactorialHandler:
 ; mRandomHandler() -> rand()
 ; Description: Generate a random number [0,1) into the X register.
 mRandomHandler:
-    call closeInputAndRecallX
+    call closeInputAndRecallNone
     bcall(_Random)
     jp pushX
 
