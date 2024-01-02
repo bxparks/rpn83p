@@ -42,6 +42,7 @@ SRCS := \
 	menudef.asm \
 	menuhandlers.asm \
 	menulookup.asm \
+	osstate.asm \
 	prime.asm \
 	print.asm \
 	print1.asm \

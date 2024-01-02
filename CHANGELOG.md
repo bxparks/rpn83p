@@ -39,6 +39,15 @@
     - Rectangular to Polar conversion
         - fix overflow and underflow caused by bug in the TI-OS `RToP()`
           function by using a custom `rectToPolar()` function instead
+    - Save and restore app MODE settings independently from the TI-OS settings
+        - decouple the TI-OS MODE settings from the RPN83P MODE settings
+        - the TI-OS MODE settings are saved upon app start, and restored upon
+          app exit
+        - the app MODE settings are saved and restore independently
+        - for example, it is now possible to set the TI-OS to FIX(2) and DEG,
+          while setting RPN83P to SCI(4) and RAD and the 2 settings are managed
+          separately, even though there is only a single set of global OS
+          settings
 - 0.8.0 (2023-12-03)
     - **Breaking**: Flip the order of polar-rectangular conversion menu function
       (`>POL` and `>REC`) so that they are consistent with the HP-42S. I don't

@@ -7,6 +7,7 @@
 
 main:
     call setFastSpeed
+    bcall(_SaveOSState)
     bcall(_RunIndicOff)
     res appAutoScroll, (iy + appFlags) ; disable auto scroll
     res appTextSave, (iy + appFlags) ; disable shawdow text
@@ -55,9 +56,9 @@ mainExit:
     ; Save appState and close the stack and storage registers.
     call rclX
     bcall(_StoAns) ; transfer to TI-OS 'ANS' (supports complex numbers)
-    bcall(_StoreAppState)
     call closeStack
     call closeRegs
+    bcall(_StoreAppState)
 
     ; Clean up the screen.
     set appAutoScroll, (iy + appFlags)
@@ -65,7 +66,8 @@ mainExit:
     bcall(_ClrLCDFull)
     bcall(_HomeUp)
 
-    ; Terminate the app.
+    ; Restore various OS states, and terminate the app.
+    bcall(_RestoreOSState)
     bcall(_ReloadAppEntryVecs) ; App Loader in control of monitor
     bit monAbandon, (iy + monFlags) ; if turning off: ZF=1
     jr nz, appTurningOff

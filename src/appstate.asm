@@ -30,13 +30,8 @@ storeAppStateCreate:
     ld (appStateAppId), hl
     ld hl, rpn83pSchemaVersion
     ld (appStateSchemaVersion), hl
-    ; Copy the app flags into the appState fields.
-    ld a, (iy + dirtyFlags)
-    ld (appStateDirtyFlags), a
-    ld a, (iy + rpnFlags)
-    ld (appStateRpnFlags), a
-    ld a, (iy + inputBufFlags)
-    ld (appStateInputBufFlags), a
+    ; Copy various OS parameters into the appState fields.
+    call setAppStateFromOS
     ; Calculate the CRC16 on the data block.
     ld hl, appStateBegin + 2 ; don't include the CRC16 field itself
     ld bc, appStateSize - 2 ; don't include the CRC16 field itself
@@ -52,6 +47,25 @@ storeAppStateCreate:
     ld bc, appStateSize
     ldir ; transfer bytes
     ret
+
+; Description: Copy various OS parameters into the appState.
+setAppStateFromOS:
+    ld a, (iy + dirtyFlags)
+    ld (appStateDirtyFlags), a
+    ld a, (iy + rpnFlags)
+    ld (appStateRpnFlags), a
+    ld a, (iy + inputBufFlags)
+    ld (appStateInputBufFlags), a
+    ;
+    ld a, (iy + trigFlags)
+    ld (appStateTrigFlags), a
+    ld a, (iy + fmtFlags)
+    ld (appStateFmtFlags), a
+    ld a, (fmtDigits)
+    ld (appStateFmtDigits), a
+    ret
+
+;-----------------------------------------------------------------------------
 
 ; Description: Restore the RPN83P application state from an AppVar named
 ; 'RPN83SAV'.
@@ -101,16 +115,28 @@ restoreAppStateValidate:
     or a ; CF=0
     sbc hl, de
     jr nz, restoreAppStateFailed
-    ; Restore the app flags
+    ; Restore OS parameters from appState.
+    call setOSFromAppState
+    ; Validation passed
+    or a ; CF=0
+    ret
+restoreAppStateFailed:
+    scf
+    ret
+
+; Set the various OS parameters from the AppState.
+setOSFromAppState:
     ld a, (appStateDirtyFlags)
     ld (iy + dirtyFlags), a
     ld a, (appStateRpnFlags)
     ld (iy + rpnFlags), a
     ld a, (appStateInputBufFlags)
     ld (iy + inputBufFlags), a
-    ; Validation passed
-    or a ; CF=0
-    ret
-restoreAppStateFailed:
-    scf
+    ;
+    ld a, (appStateTrigFlags)
+    ld (iy + trigFlags), a
+    ld a, (appStateFmtFlags)
+    ld (iy + fmtFlags), a
+    ld a, (appStateFmtDigits)
+    ld (fmtDigits), a
     ret

@@ -115,7 +115,7 @@ rpn83pAppId equ $1E69
 ; state is considered stale automatically. However, if the *semantics* of any
 ; variable is changed (e.g. if the meaning of a flag is changed), then we
 ; *must* increment the version number to mark the previous state as stale.
-rpn83pSchemaVersion equ 9
+rpn83pSchemaVersion equ 10
 
 ; Define true and false. Something else in spasm-ng defines the 'true' and
 ; 'false' symbols but I cannot find the definitions for them in the
@@ -171,6 +171,13 @@ appStateDirtyFlags equ appStateSchemaVersion + 2 ; u8
 appStateRpnFlags equ appStateDirtyFlags + 1 ; u8
 appStateInputBufFlags equ appStateRpnFlags + 1 ; u8
 
+; Copy of the trigFlags, fmtFlags, and fmtDigits as used by this app. When the
+; app starts, these values will be used to configure the corresponding OS
+; settings. When the app quits, the OS settings are copied here.
+appStateTrigFlags equ appStateInputBufFlags + 1 ; u8
+appStateFmtFlags equ appStateTrigFlags + 1 ; u8
+appStateFmtDigits equ appStateFmtFlags + 1 ; u8
+
 ; The result code after the execution of each handler. Success is code 0. If a
 ; TI-OS exception is thrown (through a `bcall(ErrXxx)`), the exception handler
 ; places a system error code into here. Before calling a handler, set this to 0
@@ -178,7 +185,7 @@ appStateInputBufFlags equ appStateRpnFlags + 1 ; u8
 ; upon success. (This makes coding easier because a successful handler can
 ; simply do a `ret` or a conditional `ret`.) A few handlers will set a custom,
 ; non-zero code to indicate an error.
-handlerCode equ appStateInputBufFlags + 1 ; u8
+handlerCode equ appStateFmtDigits + 1 ; u8
 
 ; The errorCode is displayed on the LCD screen if non-zero. This is set to the
 ; value of handlerCode after every execution of a handler. Inside a handler,
@@ -378,9 +385,15 @@ appStateSize equ (appStateEnd - appStateBegin)
 
 appBufferStart equ appStateEnd
 
+; Various OS flags and parameters are copied to these variables upon start of
+; the app, then restored when the app quits.
+savedTrigFlags equ appBufferStart ; u8
+savedFmtFlags equ savedTrigFlags + 1 ; u8
+savedFmtDigits equ savedFmtFlags + 1 ; u8
+
 ; FindMenuNode() copies the matching menuNode from menudef.asm (in flash page 1)
 ; to here so that routines in flash page 0 can access the information.
-menuNodeBuf equ appBufferStart ; 9 bytes, defined by menuNodeSizeOf
+menuNodeBuf equ savedFmtDigits + 1 ; 9 bytes, defined by menuNodeSizeOf
 
 ; FindMenuString() copies the name of the menu from flash page 1 to here so that
 ; routines in flash page 0 can access it. This is named 'menuStringBuf' to
@@ -510,6 +523,15 @@ _StoreAppState equ _StoreAppStateLabel-branchTableBase
 _RestoreAppStateLabel:
 _RestoreAppState equ _RestoreAppStateLabel-branchTableBase
     .dw RestoreAppState
+    .db 1
+; osstate.asm
+_SaveOSStateLabel:
+_SaveOSState equ _SaveOSStateLabel-branchTableBase
+    .dw SaveOSState
+    .db 1
+_RestoreOSStateLabel:
+_RestoreOSState equ _RestoreOSStateLabel-branchTableBase
+    .dw RestoreOSState
     .db 1
 ; help.asm
 _ProcessHelpLabel:
@@ -873,6 +895,7 @@ _DebugU32DEAsHex equ _DebugU32DEAsHexLabel-branchTableBase
 defpage(1)
 
 #include "appstate.asm"
+#include "osstate.asm"
 #include "help.asm"
 #include "menulookup.asm"
 #include "menudef.asm"
