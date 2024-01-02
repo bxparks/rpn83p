@@ -34,7 +34,7 @@ checkOp1Complex:
 ; Output: ZF=1 if either parameter is complex
 ; Destroys: A
 checkOp1OrOP3Complex:
-    call checkOp1Complex
+    call checkOp1Complex ; ZF=1 if complex
     ret z
     ; [[fallthrough]]
 
@@ -57,7 +57,7 @@ checkOp3Complex:
 ; Output: OP1/OP2
 ; Destroys: A
 convertOp1ToCp1:
-    call checkOp1Complex
+    call checkOp1Complex ; ZF=1 if complex
     ret z
     call op2Set0
     ; [[fallthrough]]
@@ -87,7 +87,7 @@ splitCp1ToOp1Op2:
 ; Description: Convert a complex number to real if the imaginary part is zero.
 ; Do nothing if already a real.
 convertCp1ToOp1:
-    call checkOp1Complex
+    call checkOp1Complex ; ZF-1 if complex
     ret nz
     bcall(_CkOP2FP0) ; ZF=1 if im(CP1)==0
     jr z, splitCp1ToOp1Op2
@@ -102,7 +102,7 @@ convertCp1ToOp1:
 ; Output: OP3/OP4
 ; Destroys: A
 convertOp3ToCp3:
-    call checkOp3Complex
+    call checkOp3Complex ; ZF=1 if complex
     ret z
     call op4Set0
     ; [[fallthrough]]
@@ -338,29 +338,34 @@ polarDegToComplex:
     jp mergeOp1Op2ToCp1 ; CP1=(OP1,OP2)
 
 ;-----------------------------------------------------------------------------
-; Complex misc operations.
+; Complex misc operations. To avoid confusing the user, these throw an
+; Err:DataType if the argument is not complex. In other words, these are not
+; "universal" routines which operate on both types.
 ;-----------------------------------------------------------------------------
+
+complexDataTypeErr:
+    bcall(_ErrDataType)
 
 ; Description: Calculate the ComplexConjugate of(OP1/OP2).
 ; Output: OP1/OP2=conj(OP1/OP2)
 complexConj:
-    call checkOp1Complex
-    ret nz ; do nothing if not complex
+    call checkOp1Complex ; ZF=1 if complex
+    jr nz, complexDataTypeErr
     bcall(_Conj) ; X=conj(X)
     ret
 
 ; Description: Extract the real part of complex(OP1/OP2).
 ; Output: OP1=Re(OP1/OP2)
 complexReal:
-    call checkOp1Complex
-    ret nz ; do nothing if not complex
+    call checkOp1Complex ; ZF=1 if complex
+    jr nz, complexDataTypeErr
     jp splitCp1ToOp1Op2 ; OP1=Re(Z); OP2=Im(Z)
 
 ; Description: Extract the imaginary part of complex(OP1/OP2).
 ; Output: OP1=Im(OP1/OP2)
 complexImag:
-    call checkOp1Complex
-    ret nz ; do nothing if not complex
+    call checkOp1Complex ; ZF=1 if complex
+    jr nz, complexDataTypeErr
     call splitCp1ToOp1Op2 ; OP1=Re(Z); OP2=Im(Z)
     jp op2ToOp1 ; OP1=Im(Z)
 
@@ -369,12 +374,8 @@ complexImag:
 ; Input: CP1: complex number
 ; Output: OP1: abs(Z) or abs(X)
 complexAbs:
-    call checkOp1Complex
-    jr z, complexAbsCabs
-    ; real X
-    bcall(_ClrOP1S) ; clear sign bit of OP1
-    ret
-complexAbsCabs:
+    call checkOp1Complex ; ZF=1 if complex
+    jr nz, complexDataTypeErr
     bcall(_CAbs); OP1=Cabs(CP1)
     ret
 
@@ -393,12 +394,8 @@ complexAbsCabs:
 ;   - CP1: complex number
 ;   - (complexMode): complex rendering mode
 complexAngle:
-    call checkOp1Complex
-    jr z, complexAngleComplex
-    call op2Set0 ; Im(Z)=0
-    call mergeOp1Op2ToCp1 ; OP1/OP2=complex(OP1,OP2)
-    ; [[fallthrough]]
-complexAngleComplex:
+    call checkOp1Complex ; ZF=1 if complex
+    jr nz, complexDataTypeErr
     ; calculate angle in radians
     call op1ExOp2 ; OP1=Im(Z)=y; OP2=Re(Z)=x
     ld d, 0 ; set undocumented parameter for ATan2Rad()
@@ -510,7 +507,7 @@ universalDivComplex:
 ; Output:
 ;   - OP1/OP2: -Y
 universalChs:
-    call checkOp1Complex
+    call checkOp1Complex ; ZF=1 if complex
     jr z, universalChsComplex
     ; X is a real number
     bcall(_InvOP1S)
@@ -551,7 +548,7 @@ universalPowComplex:
 ; Input: OP1/OP2: X
 ; Output: OP1/OP2: 1/X
 universalRecip:
-    call checkOp1Complex
+    call checkOp1Complex ; ZF=1 if complex
     jr z, universalRecipComplex
     ; X is a real number
     bcall(_FPRecip)
@@ -564,7 +561,7 @@ universalRecipComplex:
 ; Input: OP1/OP2: X
 ; Output: OP1/OP2: X^2
 universalSquare:
-    call checkOp1Complex
+    call checkOp1Complex ; ZF=1 if complex
     jr z, universalSquareComplex
     ; X is a real number
     bcall(_FPSquare)
@@ -577,7 +574,7 @@ universalSquareComplex:
 ; Input: OP1/OP2: X; numResultMode
 ; Output: OP1/OP2: sqrt(X)
 universalSqRoot:
-    call checkOp1Complex
+    call checkOp1Complex ; ZF=1 if complex
     jr z, universalSqRootComplex
     ; X is a real number
     call checkNumResultModeComplex ; ZF=1 if complex
@@ -609,7 +606,7 @@ universalSqRootComplex:
 ; Output: OP1/OP2: X^3
 ; Destroys: all, OP1-OP6
 universalCube:
-    call checkOp1Complex
+    call checkOp1Complex ; ZF=1 if complex
     jr z, universalCubeComplex
     ; X is real
     bcall(_Cube)
@@ -626,7 +623,7 @@ universalCubeComplex:
 ; Input: OP1/OP2: X
 ; Output: OP1/OP2: X^(1/3)
 universalCubeRoot:
-    call checkOp1Complex
+    call checkOp1Complex ; ZF=1 if complex
     jr z, universalCubeRootComplex
     ; X is real
     bcall(_OP1ToOP2) ; OP2=X
@@ -649,7 +646,7 @@ universalCubeRootComplex:
 ;   - numResultMode
 ; Output: OP1/OP2: Y^(1/X)
 universalXRootY:
-    call checkOp1OrOP3Complex
+    call checkOp1OrOP3Complex ; ZF=1 if complex
     jr z, universalXRootYComplex
     ; X and Y are real. Amazingly, XRootY() will return a complex result when
     ; necessary. We don't need to add a hack like universalSqRoot().
@@ -672,7 +669,7 @@ universalXRootYComplex:
 ; Input: OP1/OP2: X; numResultMode
 ; Output: OP1/OP2: Log(X) (base 10)
 universalLog:
-    call checkOp1Complex
+    call checkOp1Complex ; ZF=1 if complex
     jr z, universalLogComplex
     ; X is a real number
     call checkNumResultModeComplex ; ZF=1 if complex
@@ -701,7 +698,7 @@ universalLogComplex:
 ; Input: OP1/OP2: X
 ; Output: OP1/OP2: 10^X
 universalTenPow:
-    call checkOp1Complex
+    call checkOp1Complex ; ZF=1 if complex
     jr z, universalTenPowComplex
     ; X is a real number
     bcall(_TenX)
@@ -714,7 +711,7 @@ universalTenPowComplex:
 ; Input: OP1/OP2: X; numResultMode
 ; Output: OP1/OP2: Ln(X)
 universalLn:
-    call checkOp1Complex
+    call checkOp1Complex ; ZF=1 if complex
     jr z, universalLnComplex
     ; X is a real number
     call checkNumResultModeComplex ; ZF=1 if complex
@@ -743,7 +740,7 @@ universalLnComplex:
 ; Input: OP1/OP2: X
 ; Output: OP1/OP2: e^X
 universalExp:
-    call checkOp1Complex
+    call checkOp1Complex ; ZF=1 if complex
     jr z, universalExpComplex
     ; X is a real number
     bcall(_EtoX)
@@ -756,7 +753,7 @@ universalExpComplex:
 ; Input: OP1/OP2: X
 ; Output: OP1/OP2: 2^X
 universalTwoPow:
-    call checkOp1Complex
+    call checkOp1Complex ; ZF=1 if complex
     jr z, universalTwoPowComplex
     ; X is a real number
     call op1ToOp2 ; OP2 = X
