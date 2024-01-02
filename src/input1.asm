@@ -188,30 +188,38 @@ parseInputBuf:
     inc hl
     bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
     jr nz, parseBaseInteger
-    ; parse a real or complex number
-    call parseFloat ; OP1=float
+    ; parse a real or real component
+    call parseFloat ; OP1=float; CF=0 if empty string
+    rl b ; B=first.isNonEmpty
     call findComplexDelimiter ; if complex: CF=1, A=delimiter, HL=pointer
     ret nc
-    ; parse the complex number
+    ; parse the imaginary component
+    ld c, a ; C=delimiter
+    push bc ; stack=[delimiter,first.isNonEmpty]
     push hl
     bcall(_PushRealO1) ; FPS=[first]
     pop hl
-    push af ; stack=[delimiter]
     call parseFloat ; OP1=second; CF=0 if empty string
+    ; Check if first and second were empty strings.
     jr c, parseInputBufNonEmptyImaginary
-    ; If the imaginary component is an empty string, AND the complex delimiter
-    ; was a 'i', then set the imaginary component to 1, so that a singular 'i'
-    ; is interpreted as just '0i1' instead of '0i0'.
-    pop af ; A=delimiter
+    pop bc ; stack=[]; B=first.isNonEmpty; C=delimiter
+    push bc
+    rr b ; CF=first.isNonEmpty
+    jr c, parseInputBufNonEmptyImaginary
+    ; We are here if both the real and imaginary components were empty strings.
+    ; Check if the complex delimiter was a 'i'. If so, set the imaginary
+    ; component to 1, so that a solitary 'i' is interpreted as just '0i1'
+    ; instead of '0i0'.
+    ld a, c ; A=delimiter
     cp LimagI
-    push af ; stack=[delimiter]
     jr nz, parseInputBufNonEmptyImaginary
     bcall(_OP1Set1) ; OP1=1.0
 parseInputBufNonEmptyImaginary:
     call op1ToOp2PageOne ; OP2=second
     bcall(_PopRealO1) ; FPS=[]; OP1=first; OP2=second
-    pop af ; stack=[]; A=delimiter
+    pop bc ; stack=[]; C=delimiter
     ; convert 2 real numbers in OP1/OP2 into a complex number
+    ld a, c ; A=delimiter
     cp Langle
     jp z, pradToComplex
     cp Ldegree
@@ -818,6 +826,7 @@ setComplexDelimiterToTarget:
 ;   - CF: 1 if complex number delimiter found, 0 otherwise
 ;   - A: delimiter char (LimagI, Langle, or Ldegree)
 ;   - HL: pointer to character after the delimiter
+; Destroys: A, HL
 findComplexDelimiter:
     ld a, (hl)
     inc hl
