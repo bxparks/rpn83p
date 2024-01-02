@@ -2264,6 +2264,23 @@ in radian mode.
 
 [TODO: Screenshot of `0.99 i 1.73`]
 
+**HP-35s Compatibility Note 1**: The HP-35s uses a Theta symbol to represent
+complex numbers in polar notation. I decided to use the Angle symbol instead on
+the RPN83P because the Theta symbol in the small font on the TI calculators
+looked too similar to a numeral `0`. The problem is made worse because the TI-OS
+omits the leading `0` when printing floating point numbers less than `1`, so the
+Theta symbol seemed even more likely to be confused with a numeral `0`. The
+Angle symbol is used by the HP-42S and is distinctly different from numerals on
+the TI calculators using the small font.
+
+**HP-35s Compatibility Note 2**: The HP-35s uses `SHIFT Theta` button to enter
+complex numbers in polar notation. The `Theta` symbol is available on a TI
+calculator as `ALPHA Theta`, however, I decided against using that because the
+`ALPHA` shifted key is used for no other functionality in the RPN83P app. I
+found switching from `2ND` and `ALPHA` to invoke this function was too
+confusing. The `2ND ANGLE` key was unused in the RPN83P app, and it seemed to
+match the Angle symbol used to display complex numbers in polar notation.
+
 #### Complex Display Modes
 
 Just as there are 3 modes that complex numbers can be entered, there are 3 modes
