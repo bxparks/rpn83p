@@ -418,7 +418,7 @@ complexAngle:
 ; Output:
 ;   - OP1/OP2: Y+X
 universalAdd:
-    call checkOp1OrOP3Complex
+    call checkOp1OrOP3Complex ; ZF=1 if complex
     jr z, universalAddComplex
     ; X and Y are real numbers.
     call op3ToOp2
@@ -439,7 +439,7 @@ universalAddComplex:
 ; Output:
 ;   - OP1/OP2: Y-X
 universalSub:
-    call checkOp1OrOP3Complex
+    call checkOp1OrOP3Complex ; ZF=1 if complex
     jr z, universalSubComplex
     ; X and Y are real numbers.
     call op3ToOp2
@@ -460,7 +460,7 @@ universalSubComplex:
 ; Output:
 ;   - OP1/OP2: Y*X
 universalMult:
-    call checkOp1OrOP3Complex
+    call checkOp1OrOP3Complex ; ZF=1 if complex
     jr z, universalMultComplex
     ; X and Y are real numbers.
     call op3ToOp2
@@ -483,7 +483,7 @@ universalMultComplex:
 ; Output:
 ;   - OP1/OP2: Y/X
 universalDiv:
-    call checkOp1OrOP3Complex
+    call checkOp1OrOP3Complex ; ZF=1 if complex
     jr z, universalDivComplex
     ; X and Y are real numbers.
     call op3ToOp2
@@ -520,30 +520,6 @@ universalChsComplex:
 ; Alegbraic functions.
 ;-----------------------------------------------------------------------------
 
-; Description: Power function (Y^X) for real and complex numbers.
-; Input:
-;   - OP1/OP2: Y
-;   - OP3/OP4: X
-;   - numResultMode
-; Output:
-;   - OP1/OP2: Y^X
-universalPow:
-    call checkOp1OrOP3Complex
-    jr z, universalPowComplex
-    ; X and Y are real numbers. Amazingly, YToX() will return a complex number
-    ; when necessary, even if X and Y are real. We don't need to hack like
-    ; universalSqRoot().
-    call op3ToOp2
-    bcall(_YToX) ; OP1=Y/X
-    ret
-universalPowComplex:
-    call convertOp1ToCp1
-    bcall(_PushOP1) ; FPS=[Y]
-    call cp3ToCp1 ; OP1/OP2=OP3/OP4=X
-    call convertOp1ToCp1
-    bcall(_CYtoX) ; OP1/OP2=(FPS)^(CP1); FPS=[]
-    ret
-
 ; Description: Reciprocal for real and complex numbers.
 ; Input: OP1/OP2: X
 ; Output: OP1/OP2: 1/X
@@ -579,19 +555,14 @@ universalSqRoot:
     ; X is a real number
     call checkNumResultModeComplex ; ZF=1 if complex
     jr nz, universalSqRootNumResultModeReal
-    ; If numResultMode==complex, then it's possible for the real argument to
-    ; produce a complex result, so we call CSqRoot() instead. But if we call
-    ; that with a positive real number, then we want the result to be a real
-    ; number as well, not a complex number with an imaginary part of 0. So, we
-    ; check for an imaginary==0 and chop off the zero imaginary part. I think
-    ; this hack would be unnecessary if we had access to the UnOPExec()
-    ; function of the OS, but spasm-ng does not provide the list of constants
-    ; for the various functions, so we can't use UnOPExec().
-    ; this would be necessary if we
+    ; The argument is real but the result could be complex, so we calculate the
+    ; complex result and chop off the imaginary part if it's zero. I think this
+    ; hack would be unnecessary if we had access to the UnOPExec() function of
+    ; the OS, but spasm-ng does not provide the list of constants for the
+    ; various functions, so we can't use UnOPExec().
     call convertOp1ToCp1
     bcall(_CSqRoot)
-    call convertCp1ToOp1 ; chop off the imaginary part if zero
-    ret
+    jp convertCp1ToOp1 ; chop off the imaginary part if zero
 universalSqRootNumResultModeReal:
     bcall(_SqRoot)
     ret
@@ -625,7 +596,7 @@ universalCubeComplex:
 universalCubeRoot:
     call checkOp1Complex ; ZF=1 if complex
     jr z, universalCubeRootComplex
-    ; X is real
+    ; X is real, the result will always be real
     bcall(_OP1ToOP2) ; OP2=X
     bcall(_OP1Set3) ; OP1=3
     bcall(_XRootY) ; OP2^(1/OP1), SDK documentation is incorrect
@@ -639,6 +610,35 @@ universalCubeRootComplex:
     bcall(_CXrootY) ; CP1=CP1^(1/3); FPS=[]
     ret
 
+; Description: Power function (Y^X) for real and complex numbers.
+; Input:
+;   - OP1/OP2: Y
+;   - OP3/OP4: X
+;   - numResultMode
+; Output:
+;   - OP1/OP2: Y^X
+universalPow:
+    call checkOp1OrOP3Complex ; ZF=1 if complex
+    jr z, universalPowComplex
+    ; Both X and Y are real. Now check if numResultMode is Real or Complex.
+    call checkNumResultModeComplex ; ZF=1 if complex
+    jr nz, universalPowNumResultModeReal
+    ; Both are real, but the result could be complex, so we calculate the
+    ; complex result, and chop off the imaginary part if it's zero.
+    call universalPowComplex ; awesome assembly trick, calling our own tail
+    jp convertCp1ToOp1
+universalPowNumResultModeReal:
+    call op3ToOp2 ; OP2=X
+    bcall(_YToX) ; OP1=OP1^OP2=Y^X
+    ret
+universalPowComplex:
+    call convertOp1ToCp1
+    bcall(_PushOP1) ; FPS=[Y]
+    call cp3ToCp1 ; CP1=OP3/OP4=X
+    call convertOp1ToCp1
+    bcall(_CYtoX) ; CP1=(FPS)^(CP1)=Y^X; FPS=[]
+    ret
+
 ; Description: Calculate XRootY(Y)=Y^(1/X) for real and complex numbers.
 ; Input:
 ;   - OP1/OP2: Y
@@ -648,17 +648,23 @@ universalCubeRootComplex:
 universalXRootY:
     call checkOp1OrOP3Complex ; ZF=1 if complex
     jr z, universalXRootYComplex
-    ; X and Y are real. Amazingly, XRootY() will return a complex result when
-    ; necessary. We don't need to add a hack like universalSqRoot().
+    ; Both X and Y are real. Now check if numResultMode is Real or Complex.
+    call checkNumResultModeComplex ; ZF=1 if complex
+    jr nz, universalXRootYNumResultModeReal
+    ; Both are real, but the result could be complex, so we calculate the
+    ; complex result, and chop off the imaginary part if it's zero.
+    call universalXRootYComplex ; awesome assembly trick, calling our own tail
+    jp convertCp1ToOp1 ; chop off the imaginary part if zero
+universalXRootYNumResultModeReal:
     call op1ToOp2 ; OP2=Y
     call op3ToOp1 ; OP1=X
-    bcall(_XRootY) ; OP2^(1/OP1), SDK documentation is incorrect
+    bcall(_XRootY) ; OP1=OP2^(1/OP1), SDK documentation is incorrect
     ret
 universalXRootYComplex:
     call convertOp1ToCp1
     call convertOp3ToCp3
-    bcall(_PushOp3) ; FPS=[CP3]
-    bcall(_CXrootY) ; CP1=CP1^(1/CP3); FPS=[]
+    bcall(_PushOp3) ; FPS=[X]
+    bcall(_CXrootY) ; CP1=CP1^(1/FPS)=Y^(1/X); FPS=[]
     ret
 
 ;-----------------------------------------------------------------------------
@@ -674,15 +680,11 @@ universalLog:
     ; X is a real number
     call checkNumResultModeComplex ; ZF=1 if complex
     jr nz, universalLogNumResultModeReal
-    ; If numResultMode==complex, then it's possible for the real argument to
-    ; produce a complex result, so we call CLog() instead. But if we call that
-    ; with a positive real number, then we want the result to be a real number
-    ; as well, not a complex number with an imaginary part of 0. So, we check
-    ; for an imaginary==0 and chop off the zero imaginary part. I think this
+    ; The argument is real but the result could be complex, so we calculate the
+    ; complex result and chop off the imaginary part if it's zero. I think this
     ; hack would be unnecessary if we had access to the UnOPExec() function of
     ; the OS, but spasm-ng does not provide the list of constants for the
-    ; various functions, so we can't use UnOPExec(). this would be necessary if
-    ; we
+    ; various functions, so we can't use UnOPExec().
     call convertOp1ToCp1
     bcall(_CLog)
     call convertCp1ToOp1 ; chop off the imaginary part if zero
@@ -716,19 +718,14 @@ universalLn:
     ; X is a real number
     call checkNumResultModeComplex ; ZF=1 if complex
     jr nz, universalLnNumResultModeReal
-    ; If numResultMode==complex, then it's possible for the real argument to
-    ; produce a complex result, so we call CLN() instead. But if we call that
-    ; with a positive real number, then we want the result to be a real number
-    ; as well, not a complex number with an imaginary part of 0. So, we check
-    ; for an imaginary==0 and chop off the zero imaginary part. I think this
+    ; The argument is real but the result could be complex, so we calculate the
+    ; complex result and chop off the imaginary part if it's zero. I think this
     ; hack would be unnecessary if we had access to the UnOPExec() function of
     ; the OS, but spasm-ng does not provide the list of constants for the
-    ; various functions, so we can't use UnOPExec(). this would be necessary if
-    ; we
+    ; various functions, so we can't use UnOPExec().
     call convertOp1ToCp1
     bcall(_CLN)
-    call convertCp1ToOp1 ; chop off the imaginary part if zero
-    ret
+    jp convertCp1ToOp1 ; chop off the imaginary part if zero
 universalLnNumResultModeReal:
     bcall(_LnX)
     ret
