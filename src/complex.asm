@@ -230,9 +230,9 @@ realsToComplex:
 ; 1) The OS functions are buggy. For example, RToP() overflows internally when
 ; it calculators r^2 = a^2 + b^2. For example, it throws an exception when
 ; a=b=7.1e63 (1/sqrt(2)*10^64).
-; 2) The output of the OS routines depend on the global trigMode flag, but our
-; routines must be deterministic, instead of changing its results depending on
-; the DEG or RAD modes.
+; 2) The output of the OS routines depend on the 'trigFlags' global parameter,
+; but our routines must be deterministic, instead of changing its results
+; depending on the DEG or RAD modes.
 ;-----------------------------------------------------------------------------
 
 ; Description: Convert complex number into polar-rad form.
@@ -386,9 +386,10 @@ complexAbs:
 ;   - PRAD: radians
 ;   - PDEG: degrees
 ;
-; The 'trigMode' flag is ignored. It was too confusing to see the complex
-; numbers rendered using the 'complexMode' (e.g. PDEG), but the angle converted
-; into a different unit determined by the 'trigMode' (e.g. RAD).
+; The 'trigFlags' parameter of the underlying TI-OS is ignored. It was too
+; confusing to see the complex numbers rendered using the 'complexMode' (e.g.
+; PDEG), but the angle converted into a different unit determined by
+; 'trigFlags' (e.g. RAD).
 ;
 ; Input:
 ;   - CP1: complex number

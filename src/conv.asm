@@ -9,8 +9,8 @@
 ; Angle(). The TI-OS RToP() suffers from overflow and underflow bugs when
 ; 'r=cabs(a,b)' overflows 1e100. This routine uses the same algorithm used by
 ; complexRToPCommon() routine in complex.asm, minus the various exception
-; handling which isn't needed here because this does not clobber the (trigMode)
-; global settings.
+; handling which isn't needed here because this does not clobber the
+; 'trigFlags' global parameter.
 ;
 ; It looks like Cabs() does *not* throw an Err:Overflow exception when the
 ; exponent becomes >=100. But when the OP1 is saved into the Stack X register
