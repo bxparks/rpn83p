@@ -30,25 +30,39 @@ Summary of features:
     - storage arithmetics: `STO+ nn`, `STO- nn`, `STO* nn`, `STO/ nn`, `RCL+
       nn`, `RCL- nn`, `RCL* nn`, `RCL/ nn`
     - 25 storage registers: `nn = 00..24`
-- support for all math functions with dedicated buttons on the TI-83 Plus and
-  TI-84 Plus
+- all math functions with dedicated buttons on the TI-83 Plus and TI-84 Plus
     - arithmetic: `/`, `*`, `-`, `+`
-    - trigonometric: `SIN`, `COS`, `TAN`, etc.
     - algebraic: `1/X`, `X^2`, `SQRT`, `^` (i.e. `Y^X`)
     - transcendental: `LOG`, `10^X`, `LN`, `e^X`
+    - trigonometric: `SIN`, `COS`, `TAN`, etc.
     - constants: `pi` and `e`
-- additional menu functions:
-    - `X^3`, `3RootX`, `XRootY`, `ATN2`, `2^X`, `LOG2`, `LOGB`
-    - `%`, `%CH`, `GCD`, `LCM`, `PRIM` (prime factor)
-    - `IP` (integer part), `FP` (fractional part), `FLR` (floor), `CEIL`
-      (ceiling), `NEAR` (nearest integer)
-    - `ABS`, `SIGN`, `MOD`, `MIN`, `MAX`
-    - probability: `PERM`, `COMB`, `N!`, `RAND`, `SEED`
+- additional menu functions
+    - arithmetic: `%`, `%CH`, `GCD`, `LCM`, `PRIM` (prime factor), `IP` (integer
+      part), `FP` (fractional part), `FLR` (floor), `CEIL` (ceiling), `NEAR`
+      (nearest integer), `ABS`, `SIGN`, `MOD`, `MIN`, `MAX`
+    - algebraic: `X^3`, `3RootX`
+    - transcendental: `XRootY`,`2^X`, `LOG2`, `LOGB`, `E^X-` (e^x-1), `LN1+`
+      (log(1+x))
+    - trigonometric: `ATN2`
     - hyperbolic: `SINH`, `COSH`, `TANH`, `ASNH`, `ACSH`, `ATNH`
+    - probability: `PERM`, `COMB`, `N!`, `RAND`, `SEED`
     - angle conversions: `>DEG`, `>RAD`, `>HR`, `>HMS`, `>REC`, `>POL`
     - unit conversions: `>C`, `>F`, `>km`, `>mi`, etc
-- features inspired by HP-42S
-    - `E^X-` (e^x-1), `LN1+` (log(1+x))
+- complex numbers, inspired by HP-42S, HP-35s
+    - stored in RPN stack registers (`X`, `Y`, `Z`, `T`, `LastX`) and storage
+      registers `R00-R24`
+    - menu functions: `REAL`, `IMAG`, `CONJ`, `CABS`, `CANG`
+    - computation modes: `RRES` (real results), `CRES` (complex results)
+    - display modes: `RECT`, `PRAD` (polar radians), `PDEG` (polar degrees)
+    - linking/unlinking: `2ND LINK` (convert 2 reals to 1 complex, same as
+      `COMPLEX` on HP-42S)
+    - number entry: `2ND i` (a i b), `2ND ANGLE` (r L degrees), `2ND ANGLE 2ND
+      ANGLE` (r L radians)
+    - complex functions: `1/x`, `x^2`, `SQRT`, `x^3`, `CBRT`, `y^x`,
+      `XRootY`, `LOG`, `LN`, `10^x`, `e^x`, `2^x`, `LOG2`, `LOGB`
+    - unsupported: trigonometric and hyperbolic functions (not supported by
+      TI-OS)
+- statistics and curve fitting, inspired by HP-42S
     - statistics: `Sigma+`, `Sigma-`, `SUM`, `MEAN`, `WMN` (weighted mean),
       `SDEV` (sample standard deviation), `SCOV` (sample covariance),
       `PDEV` (population standard deviation), `PCOV` (population covariance)
@@ -56,7 +70,7 @@ Summary of features:
       (correlation coefficient)
     - curve fit models: `LINF` (linear), `LOGF` (logarithmic), `EXPF`
       (exponential), `PWRF` (power)
-- features inspired by HP-16C and HP-42S
+- base conversion and bitwise operations, inspired by HP-16C and HP-42S
     - base conversions: `DEC`, `HEX`, `OCT`, `BIN`
     - bitwise operations: `AND`, `OR`, `XOR`, `NOT`, `NEG`, `REVB` (reverse
       bits), `CNTB` (count bits)
@@ -66,9 +80,8 @@ Summary of features:
       `SLn`, `SRn`, `RLn`, `RRn`, `RLCn`, `RRCn`
     - carry flag and bit masks: `CCF`, `SCF`, `CF?`, `CB`, `SB`, `B?`
     - word sizes: `WSIZ`, `WSZ?`: 8, 16, 24, 32 bits
-- features inspired by HP-12C and HP-30b
-    - time value of money (TVM): `N`, `I%YR`, `PV`, `PMT`, `FV`, `P/YR`, `BEG`,
-      `END`, `CLTV` (clear TVM)
+- time value of money (TVM), inspired by HP-12C, HP-17B, HP-30b
+    - `N`, `I%YR`, `PV`, `PMT`, `FV`, `P/YR`, `BEG`, `END`, `CLTV` (clear TVM)
 - various display modes
     - `RAD`, `DEG`
     - `FIX` (fixed point 0-9 digits)
@@ -82,7 +95,7 @@ Missing features (partial list):
 - complex numbers
 - keystroke programming
 
-**Version**: 0.9.0-dev (2023-12-23)
+**Version**: 0.9.0-dev (2024-01-01)
 
 **Changelog**: [CHANGELOG.md](CHANGELOG.md)
 

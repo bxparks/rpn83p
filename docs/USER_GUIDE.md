@@ -2,7 +2,7 @@
 
 RPN calculator app for the TI-83 Plus and TI-84 Plus inspired by the HP-42S.
 
-**Version**: 0.9.0-dev (2023-12-23)
+**Version**: 0.9.0-dev (2024-01-01)
 
 **Project Home**: https://github.com/bxparks/rpn83p
 
@@ -58,6 +58,7 @@ RPN calculator app for the TI-83 Plus and TI-84 Plus inspired by the HP-42S.
         - [TVM Clear](#tvm-clear)
         - [TVM Variable Recall](#tvm-variable-recall)
         - [TVM Examples](#tvm-examples)
+    - [Complex Numbers](#complex-numbers)
 - [TI-OS Interaction](#ti-os-interaction)
 - [Future Enhancements](#future-enhancements)
     - [Near Future](#near-future)
@@ -94,25 +95,39 @@ Summary of features:
     - storage arithmetics: `STO+ nn`, `STO- nn`, `STO* nn`, `STO/ nn`, `RCL+
       nn`, `RCL- nn`, `RCL* nn`, `RCL/ nn`
     - 25 storage registers: `nn = 00..24`
-- support for all math functions with dedicated buttons on the TI-83 Plus and
-  TI-84 Plus
+- all math functions with dedicated buttons on the TI-83 Plus and TI-84 Plus
     - arithmetic: `/`, `*`, `-`, `+`
-    - trigonometric: `SIN`, `COS`, `TAN`, etc.
     - algebraic: `1/X`, `X^2`, `SQRT`, `^` (i.e. `Y^X`)
     - transcendental: `LOG`, `10^X`, `LN`, `e^X`
+    - trigonometric: `SIN`, `COS`, `TAN`, etc.
     - constants: `pi` and `e`
-- additional menu functions:
-    - `X^3`, `3RootX`, `XRootY`, `ATN2`, `2^X`, `LOG2`, `LOGB`
-    - `%`, `%CH`, `GCD`, `LCM`, `PRIM` (prime factor)
-    - `IP` (integer part), `FP` (fractional part), `FLR` (floor), `CEIL`
-      (ceiling), `NEAR` (nearest integer)
-    - `ABS`, `SIGN`, `MOD`, `MIN`, `MAX`
-    - probability: `PERM`, `COMB`, `N!`, `RAND`, `SEED`
+- additional menu functions
+    - arithmetic: `%`, `%CH`, `GCD`, `LCM`, `PRIM` (prime factor), `IP` (integer
+      part), `FP` (fractional part), `FLR` (floor), `CEIL` (ceiling), `NEAR`
+      (nearest integer), `ABS`, `SIGN`, `MOD`, `MIN`, `MAX`
+    - algebraic: `X^3`, `3RootX`
+    - transcendental: `XRootY`,`2^X`, `LOG2`, `LOGB`, `E^X-` (e^x-1), `LN1+`
+      (log(1+x))
+    - trigonometric: `ATN2`
     - hyperbolic: `SINH`, `COSH`, `TANH`, `ASNH`, `ACSH`, `ATNH`
+    - probability: `PERM`, `COMB`, `N!`, `RAND`, `SEED`
     - angle conversions: `>DEG`, `>RAD`, `>HR`, `>HMS`, `>REC`, `>POL`
     - unit conversions: `>C`, `>F`, `>km`, `>mi`, etc
-- features inspired by HP-42S
-    - `E^X-` (e^x-1), `LN1+` (log(1+x))
+- complex numbers, inspired by HP-42S, HP-35s
+    - stored in RPN stack registers (`X`, `Y`, `Z`, `T`, `LastX`) and storage
+      registers `R00-R24`
+    - menu functions: `REAL`, `IMAG`, `CONJ`, `CABS`, `CANG`
+    - computation modes: `RRES` (real results), `CRES` (complex results)
+    - display modes: `RECT`, `PRAD` (polar radians), `PDEG` (polar degrees)
+    - linking/unlinking: `2ND LINK` (convert 2 reals to 1 complex, same as
+      `COMPLEX` on HP-42S)
+    - number entry: `2ND i` (a i b), `2ND ANGLE` (r L degrees), `2ND ANGLE 2ND
+      ANGLE` (r L radians)
+    - complex functions: `1/x`, `x^2`, `SQRT`, `x^3`, `CBRT`, `y^x`,
+      `XRootY`, `LOG`, `LN`, `10^x`, `e^x`, `2^x`, `LOG2`, `LOGB`
+    - unsupported: trigonometric and hyperbolic functions (not supported by
+      TI-OS)
+- statistics and curve fitting, inspired by HP-42S
     - statistics: `Sigma+`, `Sigma-`, `SUM`, `MEAN`, `WMN` (weighted mean),
       `SDEV` (sample standard deviation), `SCOV` (sample covariance),
       `PDEV` (population standard deviation), `PCOV` (population covariance)
@@ -120,7 +135,7 @@ Summary of features:
       (correlation coefficient)
     - curve fit models: `LINF` (linear), `LOGF` (logarithmic), `EXPF`
       (exponential), `PWRF` (power)
-- features inspired by HP-16C and HP-42S
+- base conversion and bitwise operations, inspired by HP-16C and HP-42S
     - base conversions: `DEC`, `HEX`, `OCT`, `BIN`
     - bitwise operations: `AND`, `OR`, `XOR`, `NOT`, `NEG`, `REVB` (reverse
       bits), `CNTB` (count bits)
@@ -130,9 +145,8 @@ Summary of features:
       `SLn`, `SRn`, `RLn`, `RRn`, `RLCn`, `RRCn`
     - carry flag and bit masks: `CCF`, `SCF`, `CF?`, `CB`, `SB`, `B?`
     - word sizes: `WSIZ`, `WSZ?`: 8, 16, 24, 32 bits
-- features inspired by HP-12C and HP-30b
-    - time value of money (TVM): `N`, `I%YR`, `PV`, `PMT`, `FV`, `P/YR`, `BEG`,
-      `END`, `CLTV` (clear TVM)
+- time value of money (TVM), inspired by HP-12C, HP-17B, HP-30b
+    - `N`, `I%YR`, `PV`, `PMT`, `FV`, `P/YR`, `BEG`, `END`, `CLTV` (clear TVM)
 - various display modes
     - `RAD`, `DEG`
     - `FIX` (fixed point 0-9 digits)
@@ -143,7 +157,6 @@ Summary of features:
 Missing features (partial list):
 
 - vectors and matrices
-- complex numbers
 - keystroke programming
 
 ## Why?
@@ -2150,6 +2163,294 @@ Source:
 - [Solving the TVM equation for the interest
   rate](https://www.hpmuseum.org/cgi-sys/cgiwrap/hpmuseum/archv021.cgi?read=234439)
 
+### Complex Numbers
+
+Complex numbers are supported starting with v0.9.0. They can be entered in
+rectangular form `a+bi`, polar radian form `r e^(i theta)`, or polar degree
+form (`theta` in degrees). They can be displayed in all three forms. The entry
+mode and the display mode are independent. For example, the complex numbers
+could be displayed in rectangular form, but numbers can be entered in polar
+form.
+
+#### Buttons Related to Complex Numbers
+
+[TODO: Screenshot of calculator, with highlights of: 2ND LINK, 2ND ANGLE, 2ND i]
+
+#### Complex Number Entry
+
+There are essentially 2 ways to enter complex numbers on the RPN83P app, by
+composition using 2 real numbers, or entering both parts inlined on a single
+line.
+
+**Composition (2ND LINK)**
+
+The composition method borrows from the HP-42S which provides a `COMPLEX` key.
+It takes the `Y` and `X` registers and combines them into a complex number `Y +
+Xi`. The convention is that the real part is entered first, then `ENTER` is
+pressed, then the imaginary part is entered second. (This is the opposite order
+compared to the semantically related `ATN2` function or the `>POL` conversion
+function.) If the `COMPLEX` key is pressed again on a complex number, the
+reverse happens, where the complex number is broken up into 2 real numbers, with
+the `Y` register containing the real part, and the `X` register containing the
+imaginary part.
+
+The TI-83 Plus and TI-84 Plus calculators do not have a `COMPLEX` button. The
+closest key that seems reasonable is the `2ND LINK` button which is otherwise
+unused.
+
+For example, the number `1+2i` would be entered like this:
+
+```
+1
+ENTER
+2
+2ND LINK
+```
+
+The display shows as the following:
+
+[TODO: Screenshot of `1 i 2`]
+
+Pressing `2ND LINK` again will break up the complex number into its components:
+
+[TODO: Screenshot of 1 2]
+
+**Inlined (2ND i, 2ND ANGLE)**
+
+The inlined entry method borrows from the HP-35s which allows a complex number
+to be entered in its entirety on a single line. The `2ND i` (above the `.`
+button), and the `2ND LINK` (above the `x,t,theta,n` button) are used to delimit the 2 components of a complex number.
+
+To enter `1+2i` in rectangular mode, we would type:
+
+```
+1
+2ND i
+2
+ENTER
+```
+
+[TODO: Screenshot of `1 i 2`]
+
+To enter `2 e^(i 60deg)` in polar-degree mode, we would type:
+
+```
+2
+2ND LINK
+60
+ENTER
+```
+
+[TODO: Screenshot of `1 i 1.73205081`]
+
+Notice that the complex number separator is an Angle symbol and a Degree symbol,
+which indicates that we are in degree mode. First `2ND LINK` goes into degree
+mode, because it is easier to enter fractions of the full circle in degrees
+(e.g. 30deg, 45deg, 60deg, 120deg, 180deg).
+
+We can enter `2 e^(i 1.7)` in polar-radian mode by typing `2ND LINK` twice, like
+this:
+
+```
+2
+2ND LINK
+2ND LINK
+1.05
+ENTER
+```
+
+The Angle-Degree symbols change to just an Angle symbol to indicate that we are
+in radian mode.
+
+[TODO: Screenshot of `0.99 i 1.73`]
+
+#### Complex Display Modes
+
+Just as there are 3 modes that complex numbers can be entered, there are 3 modes
+that complex numbers can be displayed. The complex display modes are: `RECT`,
+`PRAD`, and `PDEG`. These are selected under the `CPLX` menu group, on the
+second menu row, like this:
+
+[TODO: Screenshot of `ROOT>CPLX>DOWN` menu row]
+
+In the `RECT` (rectangular) display mode, the complex numbers are displayed in
+the form of `a i b`:
+
+[TODO: Screnshot of RECT, including the status indicator]
+
+In the `PRAD` (polar radian) display mode, the complex numbers are displayed
+in polar form using radians:
+
+[TODO: Screnshot of PRAD, including the status indicator]
+
+In the `PDEG` (polar degree) display mode, the complex numbers are displayed in
+polar form using degrees:
+
+[TODO: Screnshot of PDEG, including the status indicator]
+
+This is a good place to note that the `2ND LINK` function is one of only 2
+functions which are affected by the display mode. The `2ND LINK` function will
+merge 2 real numbers from `Y` and `X` registers using the display mode
+*currently* in effect. In other words:
+
+- `RECT`: the resulting number is `Y+Xi`
+- `PRAD`: the resulting number is `Y e^(i X)`
+- `PDEG`: the resulting number is `Y e^(i * X*pi/180)`, where `X` has been
+  converted from degrees to radians
+
+The resulting complex number will be displayed with the same numerical value as
+the real numbers in the `X` and `Y` registers. For example, let's set the
+display mode to `PDEG`, and enter the following:
+
+```
+1
+ENTER
+60
+2ND LINK
+```
+
+The resulting complex number looks like:
+
+[TODO: Screenshot of `1 AngleDegree 60`]
+
+#### Complex SHOW
+
+The `SHOW` functionality (implemented by `2ND ENTRY`) supports complex numbers.
+All 14 internal digits of both the real and imaginary parts will be shown, using
+the current display mode (`RECT`, `PRAD`, `PDEG`).
+
+[TODO: 3x Screenshots of SHOW]
+
+#### Complex FIX, SCI, ENG
+
+The floating point display modes `FIX`, `SCI`, and `ENG` apply to complex
+numbers. Normally, each component is displayed within a block of 10 digits, so
+that the entire complex number fits on a single line. The floating point display
+modes will be applied as necessary.
+
+[TODO: 3x Screenshots of Fix, SCI, ENG]
+
+#### Complex Functions
+
+The TI-OS provides versions of many functions that support complex numbers.
+Almost all of those functions have been implemented in the RPN83P app, and
+are transparently invoked by using a complex number argument. The following
+functions support complex numbers:
+
+- arithmetic: `+`, `-`, `*`, `/`
+- algebraic: `1/X`, `X^2`, `SQRT`, `X^3`, `3RootX`, `Y^X`, `XRootY`
+- transcendental: `LOG`, `10^X`, `LN`, `e^X`, `LOG2`, `2^X`, `LOGB`
+
+Trigonometric and hyperbolic functions do *not* support complex numbers because
+the underlying TI-OS functions do not support them.
+
+**Example 1: Arithmetic**
+
+Here is an addition of 3 complex numbers as described in the HP-35s manual (p.
+9-6). The 3 complex numbers are:
+- 185 Angle 62 deg
+- 170 Angle 143 deg
+- 100 Angle 261 deg
+
+```
+185 2ND ANGLE 62 ENTER
+170 2ND ANGLE 143 ENTER
+100 2ND ANGLE 261 ENTER
+```
+
+The result can be viewed in 3 the different display formats:
+
+[TODO: 3x Truncated screenshots the results.]
+```
+178.9372 i 111.148
+178.9372 Angle 111.148
+178.9372 AngleDeg 111.148
+```
+
+**Example 2: SQRT**
+
+[TODO: Screenshot of SQRT.]
+
+In addition, the following functions specific to complex numbers are
+implemented:
+
+- `REAL`: extract the real part of a complex number `Z`
+- `IMAG`: extract the imaginary part of a complex number `Z`
+- `CONJ`: compute the complex conjugate of complex number `Z`
+- `CABS`: compute the magnitude `r=sqrt(a^2+b^2)` of complex number `Z`
+- `CANG`: compute the angle (i.e. "argument") of the complex number `Z`
+  (affected by complex mode `RECT`, `PRAD`, `PDEG`)
+
+The `CANG` function has some interesting features. This function returns the
+angle `theta` of the complex number when it is represented in polar form `r e^(i
+theta)`. In mathematics, this function is normally referred to as the
+"argument". But the word "argument" is overloaded with too many other meanings
+in the context of software and computer science. Therefore, I chose to name this
+function `CANG` for "complex angle" to be more self-description and avoid any
+ambiguity.
+
+The `CANG` function is also one of only 2 functions whose return value is
+affected by the complex display mode (`RECT`, `PRAD`, `PDEG`). When the display
+mode is `PRAD` or `PDEG`, the `CANG` function returns the angle using the same
+unit as the display mode. It was too confusing for the `CANG` function to return
+an angle value that was different than the angle shown on the display. When the
+display mode is `RECT`, the angle could be returned in either units, and an
+arbitrary chose was made to use radian units because it is often the natural
+unit for additional computation.
+
+**Example 3: CANG**
+
+Enter the number `1 i 1`:
+```
+1 2ND i 1 ENTER
+MATH > CPLX > DOWN > PRAD
+UP > CANG
+```
+
+The result is `XXX`, which is the same angle value shown in `PRAD` mode on the
+screen.
+
+#### Complex Computation Modes
+
+There are 2 computation mode settings under the `CPLX` menu group which affect
+whether some functions return complex values or real values:
+
+- `RRES` (real results) return only real results for real arguments
+- `CRES` (complex results) allows complex results for real arguments
+
+Notice that these settings do *not* affect how functions evaluate complex
+arguments. If the argument is complex, the returned results will always be
+complex.
+
+There are currently only 3 functions which are affected by these settings:
+
+- `SQRT`, for arguments < 0
+- `LOG`, for arguments < 0
+- `LN`, for arguments < 0
+- `Y^X`, for `Y<0` and non-integer values of `X`
+
+If `RRES` is selected, then these functions will return an `Err: Domain` error
+message. If `CRES` is selected, these functions will return a complex value.
+
+#### Complex Numbers Unaffected by Trigonometric Modes
+
+On the HP-42S, the rendering of the complex number is affected by the
+trigonometric modes (`DEG` and `RAD`). On RPN83P, in contrast, I decided to
+decouple the decouple the trigonometric modes from the complex display modes
+(`RECT`, `PRAD`, `PDEG`). One reason for the decoupling is that on the TI-83
+Plus and Ti-84 Plus keyboards, these modes are available only through the menu
+system, so it is somewhat difficult to navigate quickly between the
+trigonometric modes and the complex display modes. Another reason is that these
+2 modes seem to me conceptually different: the trigonometric mode affects the
+computation of certain functions, while the complex display mode affects only
+the rendering of numbers on the screen. Internally, complex numbers are always
+stored in the rectangular format `a+bi`.
+
+#### Complex Numbers in Storage Registers
+
+Both the RPN stack registers and the storage registers have been upgraded to
+accept real or complex numbers transparently.
+
 ## TI-OS Interaction
 
 The RPN83P app interacts with the underlying TI-OS in the following ways.
@@ -2213,29 +2514,22 @@ limited:
 
 ### Medium Future
 
-- complex numbers
-    - The TI-OS provides internal subroutines to handle complex numbers, so in
-      theory, this should be relatively easy.
-    - The user interface may be difficult since a complex number requires 2
-      floating point numbers to be entered and displayed, and I have not figured
-      out how to do that within the UI of the RPN83P application.
-    - Additionally, all internal variables must be upgraded to accept a complex
-      number: RPN stack, storage registers nn
 - custom button bindings
     - a significant number of buttons on the TI-83/TI-84 keyboard are not used
       by RPN83P
     - it would be useful to allow the user to customize some of those buttons
       for quick access
-    - among the currently unassigned keys, here are some remarks about their
-      availability:
-        - unavailable, likely used by RPN83P in future: `2ND INS`, `2ND LIST`,
-          `2ND TEST`, `2ND ANGLE`, `2ND MATRIX` `2ND Imaginary-i`, `2ND
-          CATALOG`, `2ND MEM`, `VARS`, `PRGM`,
-        - reserved just in case: `XTTn`, `2ND LINK`, `2ND DISTR`, `2ND {`, `2ND
-          }`, `2ND [`, `2ND ]`
+    - among the currently unassigned keys, here are some notes on which may or
+      may not be be available:
+        - reserved for probable future use: `2ND INS`, `2ND LIST`, `2ND TEST`,
+          `2ND MATRIX` `2ND CATALOG`, `2ND MEM`, `APPS`, `PRGM`, `VARS`
+        - reserved for potential future use: `2ND DISTR`, `2ND {`, `2ND }`, `2ND
+          [`, `2ND ]`
+        - potentially available: all `ALPHA` keys, except probably `A`-`F`, ` `
+          (space), `"` (double quote), `:` (colon)
+        - probably available: `2ND u`, `2ND v`, `2ND w`, `XTTn`
         - definitely available:`2ND L1` to `2ND L6` (no obvious purpose in
           RPN83P)
-        - probably available: `2ND u`, `2ND v`, `2ND w`
 - user-defined alphanumeric variables
     - The HP-42S shows user-defined variables through the menu system.
     - Nice feature, but would require substantial refactoring of the current
