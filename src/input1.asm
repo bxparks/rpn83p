@@ -397,7 +397,7 @@ parseMantissaLoop:
 parseMantissaNormalDigit:
     ; A: char to append
     set parseMantissaLeadingFound, c
-    call appendParseBuf ; preserves HL
+    call appendParseBuf ; preserves BC, HL
     jr parseMantissaLoop
 parseMantissaEnd:
     pop hl
@@ -508,13 +508,15 @@ findDecimalPointEnd:
 ;   - A: character to be appended
 ; Output:
 ;   - CF set when append fails
-; Destroys: A, BC, DE
-; Preserves: HL
+; Destroys: A, DE
+; Preserves: BC, HL
 appendParseBuf:
     push hl
+    push bc
     ld hl, parseBuf
     ld b, parseBufCapacity
     call AppendString
+    pop bc
     pop hl
     ret
 
