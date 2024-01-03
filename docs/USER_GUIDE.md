@@ -2392,11 +2392,11 @@ Here is the number `1+i` in 3 different modes using the SHOW function:
 #### Complex FIX, SCI, ENG
 
 The floating point display modes `FIX`, `SCI`, and `ENG` apply to complex
-numbers. Normally, each component is displayed within a block of 10 digits, so
-that the entire complex number fits on a single line. The floating point display
-modes will be applied as necessary.
+numbers:
 
-[TODO: 3x Screenshots of Fix, SCI, ENG]
+![RPN83P Complex FIX 4](images/rpn83p-complex-fmt-fix-4.png)
+![RPN83P Complex SCI 4](images/rpn83p-complex-fmt-sci-4.png)
+![RPN83P Complex ENG 4](images/rpn83p-complex-fmt-eng-4.png)
 
 #### Complex Functions
 
