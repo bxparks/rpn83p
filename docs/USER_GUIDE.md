@@ -2329,8 +2329,8 @@ used to display complex numbers in polar notation.
 
 Just as there are 3 modes that complex numbers can be entered, there are 3 modes
 that complex numbers can be displayed. The complex display modes are: `RECT`,
-`PRAD`, and `PDEG`. These are available in row 2 of `MODE` menu group (which is
-bound to the `MODE` button), like this:
+`PRAD`, and `PDEG`. These are available in row 2 of the `MODE` menu group (which
+is bound to the `MODE` button), like this:
 
 ![RPN83P Complex Mode Menu](images/rpn83p-complex-mode-menu.png)
 
@@ -2391,8 +2391,8 @@ Here is the number `1+i` in 3 different modes using the SHOW function:
 
 #### Complex FIX, SCI, ENG
 
-The floating point display modes `FIX`, `SCI`, and `ENG` apply to complex
-numbers:
+The floating point formatting modes `FIX`, `SCI`, and `ENG` can be applied to
+complex numbers:
 
 ![RPN83P Complex FIX 4](images/rpn83p-complex-fmt-fix-4.png)
 ![RPN83P Complex SCI 4](images/rpn83p-complex-fmt-sci-4.png)
@@ -2412,42 +2412,47 @@ functions support complex numbers:
 Trigonometric and hyperbolic functions do *not* support complex numbers because
 the underlying TI-OS functions do not support them.
 
+Additional functions specific to complex numbers are under the `CPLX` menu:
+
+![RPN83P Complex CPLX Menu](images/rpn83p-complex-cplx-menu.png)
+
+They are:
+
+- `REAL`: extract the real part of a complex number
+- `IMAG`: extract the imaginary part of a complex number
+- `CONJ`: compute the complex conjugate of complex number
+- `CABS`: compute the magnitude `r=sqrt(a^2+b^2)` of complex number
+- `CANG`: compute the angle (i.e. "argument") of the complex number
+
 **Example 1: Arithmetic**
 
-Here is an addition of 3 complex numbers as described in the HP-35s manual (p.
-9-6). The 3 complex numbers are:
+Here is an example of adding the 3 complex numbers as described in p. 9-6 of the
+[HP-35s User's Guide](https://literature.hpcalc.org/items/171). The 3 complex
+numbers are:
+
 - 185 Angle 62 deg
 - 170 Angle 143 deg
 - 100 Angle 261 deg
 
+We can add them like this:
+
 ```
 185 2ND ANGLE 62 ENTER
-170 2ND ANGLE 143 ENTER
-100 2ND ANGLE 261 ENTER
+170 2ND ANGLE 143 +
+100 2ND ANGLE 261 +
 ```
 
-The result can be viewed in 3 the different display formats:
+The result can be viewed in the 3 complex display formats:
 
-[TODO: 3x Truncated screenshots the results.]
-```
-178.9372 i 111.148
-178.9372 Angle 111.148
-178.9372 AngleDeg 111.148
-```
+![RPN83P Complex Example1 RECT](images/rpn83p-complex-example1-rect.png)
+![RPN83P Complex Example1 PRAD](images/rpn83p-complex-example1-prad.png)
+![RPN83P Complex Example1 PDEG](images/rpn83p-complex-example1-pdeg.png)
 
-**Example 2: SQRT**
+**Example 2: Y^X**
 
-[TODO: Screenshot of SQRT.]
+[TODO: Screenshot of Y^X calculation.]
 
-In addition, the following functions specific to complex numbers are
-implemented:
-
-- `REAL`: extract the real part of a complex number `Z`
-- `IMAG`: extract the imaginary part of a complex number `Z`
-- `CONJ`: compute the complex conjugate of complex number `Z`
-- `CABS`: compute the magnitude `r=sqrt(a^2+b^2)` of complex number `Z`
-- `CANG`: compute the angle (i.e. "argument") of the complex number `Z`
-  (affected by complex mode `RECT`, `PRAD`, `PDEG`)
+**Example 3: CANG**
 
 The `CANG` function has some interesting features. This function returns the
 angle `theta` of the complex number when it is represented in polar form `r e^(i
@@ -2457,25 +2462,24 @@ in the context of software and computer science. Therefore, I chose to name this
 function `CANG` for "complex angle" to be more self-description and avoid any
 ambiguity.
 
-The `CANG` function is also one of only 2 functions whose return value is
-affected by the complex display mode (`RECT`, `PRAD`, `PDEG`). When the display
-mode is `PRAD` or `PDEG`, the `CANG` function returns the angle using the same
-unit as the display mode. It was too confusing for the `CANG` function to return
-an angle value that was different than the angle shown on the display. When the
-display mode is `RECT`, the angle could be returned in either units, and an
-arbitrary chose was made to use radian units because it is often the natural
-unit for additional computation.
+The `CANG` function is also one of only 2 functions (the other is the `2ND
+LINK`) whose functionality is affected by the complex display mode (`RECT`,
+`PRAD`, `PDEG`). When the display mode is `PRAD` or `PDEG`, the `CANG` function
+returns the angle using the same unit as the display mode. It was too confusing
+for the `CANG` function to return an angle value that was different than the
+angle shown on the display. When the display mode is `RECT`, the angle could be
+returned in either units, and an arbitrary chose was made to use radian units
+because it is often the natural unit for additional computation.
 
-**Example 3: CANG**
-
-Enter the number `1 i 1`:
 ```
-1 2ND i 1 ENTER
-MATH > CPLX > DOWN > PRAD
-UP > CANG
+MODE > DOWN > PDEG
+ON/EXIT
+MATH > CPLX
+1 2ND i 1 ENTER # not necessary, but added here for visual double-checking
+CANG
 ```
 
-The result is `XXX`, which is the same angle value shown in `PRAD` mode on the
+The result is `45`, which is the same angle value shown in `PDEG` mode on the
 screen.
 
 #### Complex Computation Modes
@@ -2490,12 +2494,15 @@ Notice that these settings do *not* affect how functions evaluate complex
 arguments. If the argument is complex, the returned results will always be
 complex.
 
-There are currently only 3 functions which are affected by these settings:
+There are currently only a few functions which are affected by these settings:
 
 - `SQRT`, for arguments < 0
 - `LOG`, for arguments < 0
 - `LN`, for arguments < 0
+- `LOG2`, for arguments < 0
+- `LOGB`, for arguments < 0
 - `Y^X`, for `Y<0` and non-integer values of `X`
+- `XRootY`, for `Y<0` and non-integer values of `X`
 
 If `RRES` is selected, then these functions will return an `Err: Domain` error
 message. If `CRES` is selected, these functions will return a complex value.
