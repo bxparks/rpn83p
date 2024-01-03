@@ -125,15 +125,19 @@ rpn83pSchemaVersion equ 10
 rpnfalse equ 0
 rpntrue equ 1
 
-; Stack and register type enums.
+; RpnObect type enums.
 rpnObjectTypeReal equ 0
 rpnObjectTypeComplex equ $C ; same as TI-OS
 rpnObjectTypeComplexDeg equ $2C ; uses bit 5 and 6
 rpnObjectTypeComplexRad equ $4C ; uses bit 5 and 6
 rpnObjectTypeMask equ $1F ; TI-OS type uses only bits 0-4
-rpnObjectSizeOf equ 32
+; An PpnObject is a struct of a type byte and 2 RpnFloats so that a complex
+; number can be stored. See the struct definitions in vars.asm. If the
+; rpnObjectSizeOf is changed, the rpnObjectIndexToSize() function must be
+; updated.
 rpnRealSizeOf equ 9 ; sizeof(float)
 rpnComplexSizeOf equ 18 ; sizeof(complex)
+rpnObjectSizeOf equ rpnComplexSizeOf + 1 ; type + sizeof(complex)
 
 ;-----------------------------------------------------------------------------
 
