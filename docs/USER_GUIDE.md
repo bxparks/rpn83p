@@ -2427,12 +2427,10 @@ They are:
 **Example 1: Arithmetic**
 
 Here is an example of adding the 3 complex numbers as described in p. 9-6 of the
-[HP-35s User's Guide](https://literature.hpcalc.org/items/171). The 3 complex
-numbers are:
+[HP-35s User's Guide](https://literature.hpcalc.org/items/171), shown in the
+following diagram:
 
-- 185 Angle 62 deg
-- 170 Angle 143 deg
-- 100 Angle 261 deg
+![RPN83P Complex Example1 Diagram](images/rpn83p-complex-example1-diagram.png)
 
 We can add them like this:
 
@@ -2442,7 +2440,8 @@ We can add them like this:
 100 2ND ANGLE 261 +
 ```
 
-The result can be viewed in the 3 complex display formats:
+The result can be viewed in the 3 complex display formats by clicking on the
+`RECT`, `PRAD`, and `PDEG` menu buttons:
 
 ![RPN83P Complex Example1 RECT](images/rpn83p-complex-example1-rect.png)
 ![RPN83P Complex Example1 PRAD](images/rpn83p-complex-example1-prad.png)
