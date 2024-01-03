@@ -2409,7 +2409,11 @@ The `SHOW` functionality (implemented by `2ND ENTRY`) supports complex numbers.
 All 14 internal digits of both the real and imaginary parts will be shown, using
 the current display mode (`RECT`, `PRAD`, `PDEG`).
 
-[TODO: 3x Screenshots of SHOW]
+Here is the number `1+i` in 3 different modes using the SHOW function:
+
+![RPN83P Complex Show RECT](images/rpn83p-complex-show-rect.png)
+![RPN83P Complex Show PRAD](images/rpn83p-complex-show-prad.png)
+![RPN83P Complex Show PDEG](images/rpn83p-complex-show-pdeg.png)
 
 #### Complex FIX, SCI, ENG
 
