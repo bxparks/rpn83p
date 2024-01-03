@@ -2198,7 +2198,7 @@ There are 2 ways to enter complex numbers on the RPN83P app:
 - linking 2 real numbers in 2 stack registers into a single complex number
 - inlining both components on a single line.
 
-*Linking (2ND LINK)*
+**Linking (2ND LINK)**
 
 The linking method borrows from the HP-42S which provides a `COMPLEX` key. It
 takes the `Y` and `X` registers and combines them into a complex number `Y +
@@ -2226,70 +2226,96 @@ ENTER
 
 The display shows this before the `2ND LINK`:
 
-![RPN83P Complex Linking Before](docs/images/rpn83p-complex-linking-1.png)
+![RPN83P Complex Linking 1](images/rpn83p-complex-linking-1.png)
 
-After the `2ND LINK`, the 2 numbers are together into a single complex number
-like this:
+After the `2ND LINK`, the 2 numbers are linked together into a single complex
+number like this:
 
-![RPN83P Complex Linking After](docs/images/rpn83p-complex-linking-2.png)
+![RPN83P Complex Linking 2](images/rpn83p-complex-linking-2.png)
 
 Notice that the RPN83P follows the convention used by the HP-35s in rendering
 the complex number with an imaginary `i` delimiter between the two components.
 The negative sign on the `-2` appears *after* the `i`, because it is a delimiter
 not a multiplier of the number `-2`.
 
-Pressing `2ND LINK` on a complex number perform the reverse operation: the
-complex number into is broken up into its real components and placed into the
-`Y` (real) and `X` (imaginary) registers.
+Pressing `2ND LINK` on a complex number perform the *reverse* operation: the
+complex number into is broken up into its real components. The real part goes
+into `Y` and the imaginary part goes into `X`.
 
-*Inlining (2ND i, 2ND ANGLE)*
+**Inlining (2ND i, 2ND ANGLE)**
 
 The inlined entry method borrows from the HP-35s which allows a complex number
 to be entered in its entirety on a single line. The `2ND i` (above the `.`
 button), and the `2ND LINK` (above the `x,t,theta,n` button) are used to delimit the 2 components of a complex number.
 
-To enter `1+2i` in rectangular mode, we would type:
+To enter `1-2i` in rectangular mode, we would type:
 
 ```
 1
 2ND i
 2
+(-)
 ENTER
 ```
 
-[TODO: Screenshot of `1 i 2`]
+The display before the `ENTER` looks like this:
+
+![RPN83P Complex Inlining RECT 1](images/rpn83p-complex-inlining-rect-1.png)
+
+After the `ENTER`, the input buffer is parsed and a complex number is pushed
+into the RPN stack, like any other number:
+
+![RPN83P Complex Inlining RECT 2](images/rpn83p-complex-inlining-rect-2.png)
 
 To enter `2 e^(i 60deg)` in polar-degree mode, we would type:
 
 ```
 2
-2ND LINK
+2ND ANGLE
 60
 ENTER
 ```
 
-[TODO: Screenshot of `1 i 1.73205081`]
+The display before the `ENTER` looks like this:
+
+![RPN83P Complex Inlining PDEG 1](images/rpn83p-complex-inlining-pdeg-1.png)
 
 Notice that the complex number separator is an Angle symbol and a Degree symbol,
-which indicates that we are in degree mode. First `2ND LINK` goes into degree
-mode, because it is easier to enter fractions of the full circle in degrees
-(e.g. 30deg, 45deg, 60deg, 120deg, 180deg).
+which indicates that the input is excepting the angle to be entered in degrees.
 
-We can enter `2 e^(i 1.7)` in polar-radian mode by typing `2ND LINK` twice, like
-this:
+After the `ENTER`, the input buffer is parsed and a complex number is pushed
+into the RPN stack, like any other number:
+
+![RPN83P Complex Inlining PDEG 2](images/rpn83p-complex-inlining-pdeg-2.png)
+
+Notice that although the number was entered in polar form `2 AngleDeg 60`, the
+number is displayed in rectangular form `1 i 1.73205081`, because the [complex
+display mode](#complex-display-modes) is set to `RECT`, which displays all
+complex numbers in rectangular form.
+
+We can enter complex numbers using angles in radians by typing `2ND ANGLE`
+twice. For example, to enter `2 Angle 1.7`, use the following keystrokes:
 
 ```
 2
-2ND LINK
-2ND LINK
-1.05
+2ND ANGLE
+2ND ANGLE
+1.7
 ENTER
 ```
 
-The Angle-Degree symbols change to just an Angle symbol to indicate that we are
-in radian mode.
+The display before the `ENTER` looks like this:
 
-[TODO: Screenshot of `0.99 i 1.73`]
+![RPN83P Complex Inlining PRAD 1](images/rpn83p-complex-inlining-prad-1.png)
+
+Notice that the complex number separator is just an Angle symbol symbol, without
+the Degree symbol, which indicates that the input is excepting the angle to be
+entered in radians.
+
+After the `ENTER`, the number is added to the RPN stack like this:
+
+![RPN83P Complex Inlining PRAD 2](images/rpn83p-complex-inlining-prad-2.png)
+
 
 **HP-35s Compatibility Note 1**: The HP-35s uses a Theta symbol to represent
 complex numbers in polar notation. I decided to use the Angle symbol instead on
