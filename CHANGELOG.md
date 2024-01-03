@@ -1,6 +1,11 @@
 # Changelog
 
 - Unreleased
+    - **Breaking**: Change names and internal formats of various appVars
+        - `STK` list variable replaced with `RPN83STK`
+        - `REGS` list variable replaced with `RPN83REG`
+        - `RPN83SAV` remains unchanged
+        - the old `STK` and `REGS` variables can be manually removed
     - Support more than 14 digits during edit/input
         - When more than 14 digits are entered, the left most digits scroll off
           to the left, with the left most digit replaced with an ellipsis
