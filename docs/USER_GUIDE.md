@@ -2281,58 +2281,53 @@ The display before the `ENTER` looks like this:
 ![RPN83P Complex Inlining PDEG 1](images/rpn83p-complex-inlining-pdeg-1.png)
 
 Notice that the complex number separator is an Angle symbol and a Degree symbol,
-which indicates that the input is excepting the angle to be entered in degrees.
+which indicates that the input is expecting the angle to be entered in degrees.
 
 After the `ENTER`, the input buffer is parsed and a complex number is pushed
 into the RPN stack, like any other number:
 
 ![RPN83P Complex Inlining PDEG 2](images/rpn83p-complex-inlining-pdeg-2.png)
 
-Notice that although the number was entered in polar form `2 AngleDeg 60`, the
-number is displayed in rectangular form `1 i 1.73205081`, because the [complex
-display mode](#complex-display-modes) is set to `RECT`, which displays all
-complex numbers in rectangular form.
+Notice that although the number was entered in polar form, the number is
+displayed in rectangular form. That is because the rendering of complex number
+is controlled by the [complex display mode](#complex-display-modes), currently
+set to `RECT`, which is independent of how the complex number is entered.
 
 We can enter complex numbers using angles in radians by typing `2ND ANGLE`
-twice. For example, to enter `2 Angle 1.7`, use the following keystrokes:
+twice. For example, to enter `2 Angle 1.047`, use the following keystrokes:
 
 ```
 2
 2ND ANGLE
 2ND ANGLE
-1.7
+1.047
 ENTER
 ```
 
-The display before the `ENTER` looks like this:
+The display before the `ENTER` looks like this, where the Angle symbol appears
+without the Degree symbol:
 
 ![RPN83P Complex Inlining PRAD 1](images/rpn83p-complex-inlining-prad-1.png)
-
-Notice that the complex number separator is just an Angle symbol symbol, without
-the Degree symbol, which indicates that the input is excepting the angle to be
-entered in radians.
 
 After the `ENTER`, the number is added to the RPN stack like this:
 
 ![RPN83P Complex Inlining PRAD 2](images/rpn83p-complex-inlining-prad-2.png)
 
 
-**HP-35s Compatibility Note 1**: The HP-35s uses a Theta symbol to represent
-complex numbers in polar notation. I decided to use the Angle symbol instead on
-the RPN83P because the Theta symbol in the small font on the TI calculators
-looked too similar to a numeral `0`. The problem is made worse because the TI-OS
-omits the leading `0` when printing floating point numbers less than `1`, so the
-Theta symbol seemed even more likely to be confused with a numeral `0`. The
-Angle symbol is used by the HP-42S and is distinctly different from numerals on
-the TI calculators using the small font.
+**HP-35s Compatibility Note 1**: The HP-35s uses a Theta symbol to display
+complex numbers in polar notation. The problem with the Theta symbol is that in
+the Small font of the TI calculators, it looks too similar to the digit `0`. The
+Angle symbol is distinctly different from the digit characters on the TI
+calculators using the Small font, and it is also the symbol used by the HP-42S
+calculator.
 
 **HP-35s Compatibility Note 2**: The HP-35s uses `SHIFT Theta` button to enter
 complex numbers in polar notation. The `Theta` symbol is available on a TI
-calculator as `ALPHA Theta`, however, I decided against using that because the
-`ALPHA` shifted key is used for no other functionality in the RPN83P app. I
-found switching from `2ND` and `ALPHA` to invoke this function was too
-confusing. The `2ND ANGLE` key was unused in the RPN83P app, and it seemed to
-match the Angle symbol used to display complex numbers in polar notation.
+calculator as `ALPHA Theta`. However, the `ALPHA` shifted key is used for no
+other functionality in the RPN83P app, and I found switching from `2ND` and
+`ALPHA` to invoke this function was too confusing for the muscle memory. The
+`2ND ANGLE` key was unused in the RPN83P app, and it matches the Angle symbol
+used to display complex numbers in polar notation.
 
 #### Complex Display Modes
 
