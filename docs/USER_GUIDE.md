@@ -2224,13 +2224,9 @@ ENTER
 2ND LINK
 ```
 
-The display shows this before the `2ND LINK`:
+The display before and after the `2ND LINK` looks like this:
 
 ![RPN83P Complex Linking 1](images/rpn83p-complex-linking-1.png)
-
-After the `2ND LINK`, the 2 numbers are linked together into a single complex
-number like this:
-
 ![RPN83P Complex Linking 2](images/rpn83p-complex-linking-2.png)
 
 Notice that the RPN83P follows the convention used by the HP-35s in rendering
@@ -2259,13 +2255,9 @@ To enter `1-2i` in rectangular mode, we would type:
 ENTER
 ```
 
-The display before the `ENTER` looks like this:
+The display before and after the `ENTER` looks like this:
 
 ![RPN83P Complex Inlining RECT 1](images/rpn83p-complex-inlining-rect-1.png)
-
-After the `ENTER`, the input buffer is parsed and a complex number is pushed
-into the RPN stack, like any other number:
-
 ![RPN83P Complex Inlining RECT 2](images/rpn83p-complex-inlining-rect-2.png)
 
 To enter `2 e^(i 60deg)` in polar-degree mode, we would type:
@@ -2277,22 +2269,20 @@ To enter `2 e^(i 60deg)` in polar-degree mode, we would type:
 ENTER
 ```
 
-The display before the `ENTER` looks like this:
+The display before and after the `ENTER` looks like this:
 
 ![RPN83P Complex Inlining PDEG 1](images/rpn83p-complex-inlining-pdeg-1.png)
+![RPN83P Complex Inlining PDEG 2](images/rpn83p-complex-inlining-pdeg-2.png)
 
 Notice that the complex number separator is an Angle symbol and a Degree symbol,
 which indicates that the input is expecting the angle to be entered in degrees.
-
 After the `ENTER`, the input buffer is parsed and a complex number is pushed
 into the RPN stack, like any other number:
 
-![RPN83P Complex Inlining PDEG 2](images/rpn83p-complex-inlining-pdeg-2.png)
-
-Notice that although the number was entered in polar form, the number is
-displayed in rectangular form. That is because the rendering of complex number
-is controlled by the [complex display mode](#complex-display-modes), currently
-set to `RECT`, which is independent of how the complex number is entered.
+Note also that the number was entered in polar form, but the number is displayed
+in rectangular form. That is because the rendering of complex number is
+controlled by the [complex display mode](#complex-display-modes), currently set
+to `RECT`, which is independent of how the complex number is entered.
 
 We can enter complex numbers using angles in radians by typing `2ND ANGLE`
 twice. For example, to enter `2 Angle 1.047`, use the following keystrokes:
@@ -2309,9 +2299,6 @@ The display before the `ENTER` looks like this, where the Angle symbol appears
 without the Degree symbol:
 
 ![RPN83P Complex Inlining PRAD 1](images/rpn83p-complex-inlining-prad-1.png)
-
-After the `ENTER`, the number is added to the RPN stack like this:
-
 ![RPN83P Complex Inlining PRAD 2](images/rpn83p-complex-inlining-prad-2.png)
 
 The polar-degree mode was chosen to be the default, and the polar-radian mode
@@ -2347,19 +2334,11 @@ bound to the `MODE` button), like this:
 
 ![RPN83P Complex Mode Menu](images/rpn83p-complex-mode-menu.png)
 
-In the `RECT` (rectangular) display mode, the complex numbers are displayed in
-the rectangular form of `a i b`:
+Pressing the `RECT`, `PRAD`, and `PDEG` menu buttons will change the display
+into the following:
 
 ![RPN83P Complex Mode RECT](images/rpn83p-complex-mode-rect.png)
-
-In the `PRAD` (polar radian) display mode, the complex numbers are displayed
-in polar form using radians:
-
 ![RPN83P Complex Mode PRAD](images/rpn83p-complex-mode-prad.png)
-
-In the `PDEG` (polar degree) display mode, the complex numbers are displayed in
-polar form using degrees:
-
 ![RPN83P Complex Mode PDEG](images/rpn83p-complex-mode-pdeg.png)
 
 This is probably a good place to note that the `2ND LINK` function is one of
@@ -2386,21 +2365,16 @@ ENTER
 2ND LINK
 ```
 
-The display before the `ENTER` looks like this:
+The display before and after the `2ND LINK` looks like this:
 
 ![RPN83P Complex Linking PDEG 1](images/rpn83p-complex-linking-pdeg-1.png)
-
-The resulting complex number looks like this:
-
 ![RPN83P Complex Linking PDEG 1](images/rpn83p-complex-linking-pdeg-2.png)
 
 The *unlinking* process is also affected by the complex display mode. Let's
-change the display mode to `RECT`, to get this:
+change the display mode to `RECT`, then hit `2ND LINK` to perform the unlinking.
+The display before and after the `2ND LINK` looks like this:
 
 ![RPN83P Complex Unlinking RECT 1](images/rpn83p-complex-unlinking-rect-1.png)
-
-After the `2ND LINK` is pressed, the display shows:
-
 ![RPN83P Complex Unlinking RECT 2](images/rpn83p-complex-unlinking-rect-2.png)
 
 #### Complex SHOW
