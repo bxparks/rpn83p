@@ -99,7 +99,7 @@ Summary of features:
     - arithmetic: `/`, `*`, `-`, `+`
     - algebraic: `1/X`, `X^2`, `SQRT`, `^` (i.e. `Y^X`)
     - transcendental: `LOG`, `10^X`, `LN`, `e^X`
-    - trigonometric: `SIN`, `COS`, `TAN`, etc.
+    - trigonometric: `SIN`, `COS`, `TAN`, `ASIN`, `ACOS`, `ATAN`
     - constants: `pi` and `e`
 - additional menu functions
     - arithmetic: `%`, `%CH`, `GCD`, `LCM`, `PRIM` (prime factor), `IP` (integer
@@ -113,7 +113,7 @@ Summary of features:
     - probability: `PERM`, `COMB`, `N!`, `RAND`, `SEED`
     - angle conversions: `>DEG`, `>RAD`, `>HR`, `>HMS`, `>REC`, `>POL`
     - unit conversions: `>C`, `>F`, `>km`, `>mi`, etc
-- complex numbers, inspired by HP-42S, HP-35s
+- complex numbers, inspired by HP-42S and HP-35s
     - stored in RPN stack registers (`X`, `Y`, `Z`, `T`, `LastX`) and storage
       registers `R00-R24`
     - menu functions: `REAL`, `IMAG`, `CONJ`, `CABS`, `CANG`
@@ -145,7 +145,7 @@ Summary of features:
       `SLn`, `SRn`, `RLn`, `RRn`, `RLCn`, `RRCn`
     - carry flag and bit masks: `CCF`, `SCF`, `CF?`, `CB`, `SB`, `B?`
     - word sizes: `WSIZ`, `WSZ?`: 8, 16, 24, 32 bits
-- time value of money (TVM), inspired by HP-12C, HP-17B, HP-30b
+- time value of money (TVM), inspired by HP-12C, HP-17B, and HP-30b
     - `N`, `I%YR`, `PV`, `PMT`, `FV`, `P/YR`, `BEG`, `END`, `CLTV` (clear TVM)
 - various display modes
     - `RAD`, `DEG`
@@ -2147,47 +2147,63 @@ We can persuade the TVM module to give us 2 solutions using the `IYR1` and
 - Press -30 `PMT`
 - Press 400 `FV`
 - Press 1 `P/YR`
-- Press `I%YR` (see `TVM Not Found`)
+- Press `I%YR` (should see `TVM Not Found`)
 - Modify the TVM Solver initial guesses to get the first solution
     - Press 10 `IYR1`
     - Press 20 `IYR2`
-- Press `I%YR` (see `TVM Calculated`)
+- Press `I%YR` (should see `TVM Calculated`)
 - Answer: 14.43587133%
 - Modify the TVM Solver initial guesses to get the second solution
     - Press 40 `IYR1`
     - Press 60 `IYR2`
-- Press `I%YR` (see `TVM Calculated`)
+- Press `I%YR` (should see `TVM Calculated`)
 - Answer: 53.17221327%
 
 Source:
 - [Solving the TVM equation for the interest
-  rate](https://www.hpmuseum.org/cgi-sys/cgiwrap/hpmuseum/archv021.cgi?read=234439)
+  rate](https://www.hpmuseum.org/cgi-sys/cgiwrap/hpmuseum/archv021.cgi?read=234439) (2012)
 
 ### Complex Numbers
 
-Complex numbers are supported starting with v0.9.0. They can be entered in
-rectangular form `a+bi`, polar radian form `r e^(i theta)`, or polar degree
-form (`theta` in degrees). They can be displayed in all three forms. The entry
-mode and the display mode are independent. For example, the complex numbers
-could be displayed in rectangular form, but numbers can be entered in polar
-form.
+Complex numbers can be entered in rectangular form `a+bi`, polar radian form `r
+e^(i theta)`, or polar degree form (`theta` in degrees). They can be also be
+displayed in all three forms. The entry modes and the display modes are
+independent of each other. For example, a complex number can be entered in
+rectangular form, even if the current display mode is polar form.
 
-#### Buttons Related to Complex Numbers
+#### Complex Numbers and Screen Size
 
-[TODO: Screenshot of calculator, with highlights of: 2ND LINK, 2ND ANGLE, 2ND i]
+The screen size of a TI-83 and TI-84 calculator is 96 pixels wide, which is
+enough to hold 16 characters using the Large Font. But a complex number needs 2
+floating point numbers, with at least one delimiter character between the 2
+numbers, which gives us only 7 characters per number. In scientific notation, we
+lose up to 6 characters due to the overhead of the format (decimal point, the
+minus sign on the mantissa, the `E` symbol, the minus sign on the exponent,
+and 2 digits for the exponent), leaving us with only a single significant digit
+for each component of the complex number (i.e. we can print only `-1.E-23`).
+This is not reasonable.
+
+We could use 2 lines to display a single complex number, but that means we would
+see only 2 registers (`X` and `Y`) of the RPN stack instead of 4. That was also
+not reasonable. The most reasonable solution was to use the Small Font of the
+TI-OS. The Small Font is a proportional font, but most digits and symbols needed
+for printing numbers are 4 pixels wide, which gives us 24 characters. Taking
+account of overhead, we can print the entire complex number on a single line
+with each floating component taking up 10 characters, with room to spare for
+delimiters and labels.
 
 #### Complex Number Entry
 
-There are essentially 2 ways to enter complex numbers on the RPN83P app, by
-composition using 2 real numbers, or entering both parts inlined on a single
-line.
+There are 2 ways to enter complex numbers on the RPN83P app:
+- linking 2 real numbers in 2 stack registers into a single complex number
+- inlining both components on a single line.
 
-**Composition (2ND LINK)**
+*Linking (2ND LINK)*
 
-The composition method borrows from the HP-42S which provides a `COMPLEX` key.
-It takes the `Y` and `X` registers and combines them into a complex number `Y +
-Xi`. The convention is that the real part is entered first, then `ENTER` is
-pressed, then the imaginary part is entered second. (This is the opposite order
+The linking method borrows from the HP-42S which provides a `COMPLEX` key. It
+takes the `Y` and `X` registers and combines them into a complex number `Y +
+Xi`. By convention, the real part is entered first, `ENTER` is pressed, then the
+imaginary part is entered second. (Interestingly, this is the opposite order
 compared to the semantically related `ATN2` function or the `>POL` conversion
 function.) If the `COMPLEX` key is pressed again on a complex number, the
 reverse happens, where the complex number is broken up into 2 real numbers, with
@@ -2198,24 +2214,35 @@ The TI-83 Plus and TI-84 Plus calculators do not have a `COMPLEX` button. The
 closest key that seems reasonable is the `2ND LINK` button which is otherwise
 unused.
 
-For example, the number `1+2i` would be entered like this:
+For example, the number `1-2i` would be entered like this:
 
 ```
 1
 ENTER
 2
+(-)
 2ND LINK
 ```
 
-The display shows as the following:
+The display shows this before the `2ND LINK`:
 
-[TODO: Screenshot of `1 i 2`]
+![RPN83P Complex Linking Before](docs/images/rpn83p-complex-linking-1.png)
 
-Pressing `2ND LINK` again will break up the complex number into its components:
+After the `2ND LINK`, the 2 numbers are together into a single complex number
+like this:
 
-[TODO: Screenshot of 1 2]
+![RPN83P Complex Linking After](docs/images/rpn83p-complex-linking-2.png)
 
-**Inlined (2ND i, 2ND ANGLE)**
+Notice that the RPN83P follows the convention used by the HP-35s in rendering
+the complex number with an imaginary `i` delimiter between the two components.
+The negative sign on the `-2` appears *after* the `i`, because it is a delimiter
+not a multiplier of the number `-2`.
+
+Pressing `2ND LINK` on a complex number perform the reverse operation: the
+complex number into is broken up into its real components and placed into the
+`Y` (real) and `X` (imaginary) registers.
+
+*Inlining (2ND i, 2ND ANGLE)*
 
 The inlined entry method borrows from the HP-35s which allows a complex number
 to be entered in its entirety on a single line. The `2ND i` (above the `.`

@@ -34,7 +34,7 @@ Summary of features:
     - arithmetic: `/`, `*`, `-`, `+`
     - algebraic: `1/X`, `X^2`, `SQRT`, `^` (i.e. `Y^X`)
     - transcendental: `LOG`, `10^X`, `LN`, `e^X`
-    - trigonometric: `SIN`, `COS`, `TAN`, etc.
+    - trigonometric: `SIN`, `COS`, `TAN`, `ASIN`, `ACOS`, `ATAN`
     - constants: `pi` and `e`
 - additional menu functions
     - arithmetic: `%`, `%CH`, `GCD`, `LCM`, `PRIM` (prime factor), `IP` (integer
@@ -48,7 +48,7 @@ Summary of features:
     - probability: `PERM`, `COMB`, `N!`, `RAND`, `SEED`
     - angle conversions: `>DEG`, `>RAD`, `>HR`, `>HMS`, `>REC`, `>POL`
     - unit conversions: `>C`, `>F`, `>km`, `>mi`, etc
-- complex numbers, inspired by HP-42S, HP-35s
+- complex numbers, inspired by HP-42S and HP-35s
     - stored in RPN stack registers (`X`, `Y`, `Z`, `T`, `LastX`) and storage
       registers `R00-R24`
     - menu functions: `REAL`, `IMAG`, `CONJ`, `CABS`, `CANG`
@@ -80,7 +80,7 @@ Summary of features:
       `SLn`, `SRn`, `RLn`, `RRn`, `RLCn`, `RRCn`
     - carry flag and bit masks: `CCF`, `SCF`, `CF?`, `CB`, `SB`, `B?`
     - word sizes: `WSIZ`, `WSZ?`: 8, 16, 24, 32 bits
-- time value of money (TVM), inspired by HP-12C, HP-17B, HP-30b
+- time value of money (TVM), inspired by HP-12C, HP-17B, and HP-30b
     - `N`, `I%YR`, `PV`, `PMT`, `FV`, `P/YR`, `BEG`, `END`, `CLTV` (clear TVM)
 - various display modes
     - `RAD`, `DEG`

@@ -6,6 +6,16 @@
         - `REGS` list variable replaced with `RPN83REG`
         - `RPN83SAV` remains unchanged
         - the old `STK` and `REGS` variables can be manually removed
+    - **Breaking**: Add `CPLX` menu at the previous location of `CONV`
+        - `CPLX` menu seemed most convenient on row 1 of the `ROOT` menu where
+          the old `CONV` was located
+        - `CONV` got pushed to row 2, where the `UNIT` menu was previously
+          located
+        - `UNIT` got pushed to row 3, into an empty slot
+        - the RPN83P home menu row now has exactly the same items as the `MATH`
+          menu on the TI-OS:
+            - RPN83P: `MATH`, `NUM`, `PROB`, `CPLX`
+            - TI-OS: `MATH`, `NUM`, `CPX`, `PROB`
     - Support more than 14 digits during edit/input
         - When more than 14 digits are entered, the left most digits scroll off
           to the left, with the left most digit replaced with an ellipsis
