@@ -80,9 +80,9 @@ features from the
 
 The RPN83P is a flash application written in Z80 assembly language that consumes
 2 pages (32 kiB) of flash memory. Since it is stored in flash, it is preserved
-if the RAM is cleared. It consumes about 400 bytes of TI-OS RAM: 2 list
-variables named `REGS` (240 bytes) and `STK` (59 byte), and an appVar named
-`RPN83SAV` (101 bytes).
+if the RAM is cleared. It consumes about 735 bytes of TI-OS RAM through 3
+AppVars: `RPN83REG` (496 bytes), `RPN83STK` (116 bytes), and `RPN83SAV` (123
+bytes).
 
 Summary of features:
 
@@ -2472,18 +2472,12 @@ accept real or complex numbers transparently.
 
 The RPN83P app interacts with the underlying TI-OS in the following ways.
 
-- Two TI-OS List variables are used to store its internal floating point
-  numbers:
-    - `STK` holds the RPN stack registers (`X`, `Y`, `Z`, `T`, `LastX`)
-    - `REGS` holds the 25 storage registers `R00` to `R24`
-
-  **Warning**: While it is possible for a TI-BASIC program to access these List
-  variables, future versions of RPN83P will probably implement the storage in
-  different ways. The `STK` and `REGS` variables should *not* be considered to
-  form a stable API between RPN83P and TI-BASIC programs.
-- An appVar named `RPN83SAV` is used to preserve the internal state of the app
-  upon exiting. When the app is restarted, the appVar is read back in, so that
-  it can continue exactly where it had left off.
+- The `RPN83STK` appVar holds the RPN stack registers (`X`, `Y`, `Z`, `T`,
+  `LastX`).
+- The `RPN83REG` appVar holds the 25 storage registers (`R00` to `R24`).
+- The `RPN83SAV` appVar preserves the internal state of the app upon exiting.
+  When the app is restarted, the appVar is read back in, so that it can continue
+  exactly where it had left off.
 - The `X` register of RPN83P is copied to the `ANS` variable in the TI-OS when
   the RPN83P app exits. This means that the most recent `X` register from RPN83P
   is available in the TI-OS calculator using `2ND` `ANS`.
@@ -2493,10 +2487,11 @@ The RPN83P app interacts with the underlying TI-OS in the following ways.
   functionality is invoked in RPN83P as `2ND` `ANS`, this means that the TI-OS
   `ANS` value becomes available in RPN83P as `2ND` `ANS`.
 
-For a handful of configuration parameters, the RPN83P uses the same flags and
-global variables as the TI-OS. Changing these settings in RPN83P will cause the
-same change in the TI-OS (and vice versa) because the configuration parameters
-are shared:
+The RPN83P app uses some of the same flags and global variables for its `MODE`
+configuration as the TI-OS version of `MODE`. Starting with v0.9, these
+configurations are now decoupled and kept independent. Changing the `MODE`
+settings in one app will not cause changes to the other. Some of these `MODE`
+settings include:
 
 - trigonometric mode: `RAD` or `DEG`
 - floating point number settings: `FIX` (i.e. `NORMAL` in TI-OS), `SCI`, `ENG`
