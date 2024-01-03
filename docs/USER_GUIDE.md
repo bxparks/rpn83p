@@ -2102,7 +2102,7 @@ to get a $500,000 mortgage with a $3000/month payment
 10% per annum rate, what is her bank balance after 365 days?
 
 - Press `CLTV`
-- Press 3600 24 `*` 365 `*` (should see 31536000)
+- Press 3600 `ENTER` 24 `*` 365 `*` (should see 31536000)
 - Press `N`
 - Press DOWN to next menu row
     - Press `P/YR` (set payments per year to the same 31536000)
