@@ -2238,15 +2238,16 @@ the complex number with an imaginary `i` delimiter between the two components.
 The negative sign on the `-2` appears *after* the `i`, because it is a delimiter
 not a multiplier of the number `-2`.
 
-Pressing `2ND LINK` on a complex number perform the *reverse* operation: the
-complex number into is broken up into its real components. The real part goes
-into `Y` and the imaginary part goes into `X`.
+Pressing `2ND LINK` on a complex number performs the *reverse* operation: the
+complex number is broken up into its real components. The real part goes into
+`Y` and the imaginary part goes into `X`.
 
 **Inlining (2ND i, 2ND ANGLE)**
 
 The inlined entry method borrows from the HP-35s which allows a complex number
-to be entered in its entirety on a single line. The `2ND i` (above the `.`
-button), and the `2ND LINK` (above the `x,t,theta,n` button) are used to delimit the 2 components of a complex number.
+to be entered in its entirety on a single line. The `2ND i` button (above the
+`.` button), and the `2ND LINK` button (above the `x,t,theta,n` button) are used
+to delimit the 2 components of a complex number.
 
 To enter `1-2i` in rectangular mode, we would type:
 
@@ -2313,6 +2314,14 @@ After the `ENTER`, the number is added to the RPN stack like this:
 
 ![RPN83P Complex Inlining PRAD 2](images/rpn83p-complex-inlining-prad-2.png)
 
+The polar-degree mode was chosen to be the default, and the polar-radian mode
+available with an extra keystroke, because it seemed like the degree mode would
+be more useful when entering complex numbers as an inlined number on a single
+line. For example, a [three-phase electric
+power](https://en.wikipedia.org/wiki/Three-phase_electric_power) supply has
+three lines, each 120 degrees out of phase with each other. In contrast, the
+same angle in radians would involve rational multiples of Pi (e.g. 120 deg =
+pi/3 = 2.094395102 radians) so would probably be more difficult to enter.
 
 **HP-35s Compatibility Note 1**: The HP-35s uses a Theta symbol to display
 complex numbers in polar notation. The problem with the Theta symbol is that in
@@ -2333,30 +2342,33 @@ used to display complex numbers in polar notation.
 
 Just as there are 3 modes that complex numbers can be entered, there are 3 modes
 that complex numbers can be displayed. The complex display modes are: `RECT`,
-`PRAD`, and `PDEG`. These are selected under the `CPLX` menu group, on the
-second menu row, like this:
+`PRAD`, and `PDEG`. These are available in row 2 of `MODE` menu group (which is
+bound to the `MODE` button), like this:
 
-[TODO: Screenshot of `ROOT>CPLX>DOWN` menu row]
+![RPN83P Complex Mode Menu](images/rpn83p-complex-mode-menu.png)
 
 In the `RECT` (rectangular) display mode, the complex numbers are displayed in
-the form of `a i b`:
+the rectangular form of `a i b`:
 
-[TODO: Screnshot of RECT, including the status indicator]
+![RPN83P Complex Mode RECT](images/rpn83p-complex-mode-rect.png)
 
 In the `PRAD` (polar radian) display mode, the complex numbers are displayed
 in polar form using radians:
 
-[TODO: Screnshot of PRAD, including the status indicator]
+![RPN83P Complex Mode PRAD](images/rpn83p-complex-mode-prad.png)
 
 In the `PDEG` (polar degree) display mode, the complex numbers are displayed in
 polar form using degrees:
 
-[TODO: Screnshot of PDEG, including the status indicator]
+![RPN83P Complex Mode PDEG](images/rpn83p-complex-mode-pdeg.png)
 
-This is a good place to note that the `2ND LINK` function is one of only 2
-functions which are affected by the display mode. The `2ND LINK` function will
-merge 2 real numbers from `Y` and `X` registers using the display mode
-*currently* in effect. In other words:
+This is probably a good place to note that the `2ND LINK` function is one of
+only 2 functions (the other is the `CANG` function) which are affected by the
+display mode. The `2ND LINK` function will merge 2 real numbers from `Y` and `X`
+registers using the display mode that is *currently* in effect. (It did not make
+sense for it to do anything else.)
+
+In other words:
 
 - `RECT`: the resulting number is `Y+Xi`
 - `PRAD`: the resulting number is `Y e^(i X)`
@@ -2374,9 +2386,22 @@ ENTER
 2ND LINK
 ```
 
-The resulting complex number looks like:
+The display before the `ENTER` looks like this:
 
-[TODO: Screenshot of `1 AngleDegree 60`]
+![RPN83P Complex Linking PDEG 1](images/rpn83p-complex-linking-pdeg-1.png)
+
+The resulting complex number looks like this:
+
+![RPN83P Complex Linking PDEG 1](images/rpn83p-complex-linking-pdeg-2.png)
+
+The *unlinking* process is also affected by the complex display mode. Let's
+change the display mode to `RECT`, to get this:
+
+![RPN83P Complex Unlinking RECT 1](images/rpn83p-complex-unlinking-rect-1.png)
+
+After the `2ND LINK` is pressed, the display shows:
+
+![RPN83P Complex Unlinking RECT 2](images/rpn83p-complex-unlinking-rect-2.png)
 
 #### Complex SHOW
 
