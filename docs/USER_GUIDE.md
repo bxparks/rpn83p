@@ -2549,22 +2549,32 @@ There are currently only a few functions which are affected by these settings:
 If `RRES` is selected, then these functions will return an `Err: Domain` error
 message. If `CRES` is selected, these functions will return a complex value.
 
-#### Complex Numbers Unaffected by Trigonometric Modes
+For example, if we try to take the sqrt(-1), in `RRES` mode, an error will be
+printed like this:
 
-In the `MODE` menu, there are 2 sets of menus related to degrees and radians:
+![RPN83P Complex SQRT RRES](images/rpn83p-complex-sqrt-rres.png)
 
-![RPN83P MODE Menu 1](images/rpn83p-mode-menu-1.png)
+But if we change the computation mode to `CRES`, we get a complex result:
 
-![RPN83P MODE Menu 2](images/rpn83p-mode-menu-2.png)
+![RPN83P Complex SQRT CRES](images/rpn83p-complex-sqrt-cres.png)
 
-The first set (`RAD`, `DEG`) are the trigonometric modes that determine the
-numbers returned by the trigonometric functions (`SIN`, `COS`, etc) because they
-control the unit of those numbers. The second set (`RECT`, `PRAD`, `PDEG`)
-controls how complex numbers are displayed on the screen, but does not control
-the computation of (almost) any function. This separation is different from
-almost all other calculators on the market that provide support for complex
-numbers (including the HP-42S). Internally, complex numbers are always stored in
-the rectangular format `a+bi`.
+#### Complex Rendering Independent of Trigonometric Modes
+
+In the `MODE` menu, there are 2 sets of menus related to degrees and radians.
+They are essentially independent of each other. This separation is different
+from other calculators that I am aware of. I hope that this is not too
+confusing.
+
+The first set of modes (`RAD`, `DEG`) contains the trigonometric modes that
+affect the computation of trigonometric functions. These determine the unit of
+the angles consumed or returned by these functions. Complex functions (except
+`CANG`) are not affected by the trigonometric modes: ![RPN83P MODE Menu
+1](images/rpn83p-mode-menu-1.png)
+
+The second set of modes (`RECT`, `PRAD`, `PDEG`) controls how complex numbers
+are displayed on the screen. These modes do not affect the behavior of any
+complex functions (except `2ND LINK`): ![RPN83P MODE Menu
+2](images/rpn83p-mode-menu-2.png)
 
 #### Complex Numbers in Storage Registers
 
