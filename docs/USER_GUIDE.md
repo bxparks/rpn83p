@@ -2348,22 +2348,20 @@ into the following:
 ![RPN83P Complex Mode PRAD](images/rpn83p-complex-mode-prad.png)
 ![RPN83P Complex Mode PDEG](images/rpn83p-complex-mode-pdeg.png)
 
-This is probably a good place to note that the `2ND LINK` function is one of
-only 2 functions (the other is the `CANG` function) which are affected by the
-display mode. The `2ND LINK` function will merge 2 real numbers from `Y` and `X`
-registers using the display mode that is *currently* in effect. (It did not make
-sense for it to do anything else.)
+This is probably a good place to note that the `2ND LINK` function is the only
+complex functionality that is affected by the display mode. The `2ND LINK`
+function will merge 2 real numbers from `Y` and `X` registers using the display
+mode that is *currently* in effect. (It did not make sense for it to do anything
+else.)
 
 In other words:
 
-- `RECT`: the resulting number is `Y+Xi`
-- `PRAD`: the resulting number is `Y e^(i X)`
-- `PDEG`: the resulting number is `Y e^(i * X*pi/180)`, where `X` has been
+- if `RECT`: the resulting number is `Y+Xi`
+- if `PRAD`: the resulting number is `Y e^(i X)`
+- if `PDEG`: the resulting number is `Y e^(i * X*pi/180)`, where `X` has been
   converted from degrees to radians
 
-The resulting complex number will be displayed with the same numerical value as
-the real numbers in the `X` and `Y` registers. For example, let's set the
-display mode to `PDEG`, and enter the following:
+For example, let's set the display mode to `PDEG`, and enter the following:
 
 ```
 1
@@ -2431,6 +2429,22 @@ They are:
 - `CABS`: compute the magnitude `r=sqrt(a^2+b^2)` of complex number
 - `CANG`: compute the angle (i.e. "argument") of the complex number
 
+The `CANG` function returns the angle of the complex number in polar form. In
+mathematics, this function is normally called the "argument". But the word
+"argument" has too many other meanings in software and computer science.
+Therefore, this function is named `CANG` (complex angle) to be more
+self-descriptive.
+
+Since `CANG` returns the *angle*, it uses the trigonometric mode (`RAD`, `DEG`)
+to determine the unit of that angle. It is currently the *only* complex function
+that is affected by the trigonometric mode. One alternative was to use the
+complex *display* mode (`RECT`, `PRAD`, `PDEG`) to determine the unit of `CANG`,
+but it was too confusing for 2 reasons: 1) When the complex number is displayed
+in `RECT` format, there is no obvious reason why it should pick `RAD` over
+`DEG`, especially when, 2) The trigonometric mode is shown on the screen and can
+indicate one unit (e.g. `DEG`) but the `CANG` function could return another unit
+(e.g. radians).
+
 **Example 1: Arithmetic**
 
 Here is an example of adding the 3 complex numbers as described in p. 9-6 of the
@@ -2446,9 +2460,9 @@ We can add them like this:
 170 2ND ANGLE 143 +
 100 2ND ANGLE 261 +
 
-RECT:: -64.559244 i 166.885025
-PRAD:: 178.937161 Angle 1.93991416
-PDEG:: 178.937161 AngleDeg 111.148894
+RECT # shows -64.559244 i 166.885025
+PRAD # shows 178.937161 Angle 1.93991416
+PDEG # shows 178.937161 AngleDeg 111.148894
 ```
 
 The result can be viewed in the 3 complex display formats by clicking on the
@@ -2464,7 +2478,8 @@ different formats regardless of the display setting.
 
 **Example 2: Y^X, SQRT**
 
-Here is a more complicated example, where we want to calculate the following:
+In this contrived example, we compute a function involving all three
+representations of complex numbers:
 
 ```
 # ignore this comment line
@@ -2483,46 +2498,31 @@ ENTER
 +
 2ND SQRT
 
-RECT: .576363737 i 1.01949228
-PRAD: 1.17113606 Angle 1.05624914
-PDEG: 1.17113606 AngleDeg 60.518618
+RECT # show .576363737 i 1.01949228
+PRAD # show 1.17113606 Angle 1.05624914
+PDEG # show 1.17113606 AngleDeg 60.518618
 ```
 
 **Example 3: CANG, CABS**
 
-The `CANG` function returns the angle `theta` of the complex number when it is
-represented in polar form `r e^(i theta)`. In mathematics, this function is
-normally called the "argument". But the word "argument" has too many other
-meanings in software and computer science. Therefore, this function is named
-`CANG` (complex angle) to be more self-descriptive.
+In this example, we calculate the magnitude and angle of the complex number
+`1+i`. We want the angle in degrees, so we have to first set the trigonometric
+mode to `DEG` (using `MODE DEG`), just like trigonometric functions. Enter the
+complex number in rectangular format:
 
-The `CANG` function is also one of only 2 functions (the other is the `2ND
-LINK`) whose functionality is affected by the complex display mode (`RECT`,
-`PRAD`, `PDEG`). When the display mode is `PRAD` or `PDEG`, the `CANG` function
-returns the angle using the same unit as the display mode. To return anything
-else was too confusing. When the display mode is `RECT`, the angle could be
-returned in either unit, and an arbitrary chose was made to return the radian
-unit because it is often the natural unit for additional calculation. (The other
-option as to use the trigonometric setting (`RAD` or `DEG`) to determine the
-returned value, but I wanted to keep a clean separation between trigonometric
-modes and complex display modes.)
-
-For example, to compute the angle and magnitude of the number `1+i`, first set
-the display mode to `PDEG`:
-
-```
-MODE > PDEG
-MATH > CPLX
-```
-
-Then type:
 ```
 1 2ND i 1
-ENTER # Displays 1.414213562 AngleDeg 45
-CABS # Answer: 1.414213562
-X<>Y # Exchange X, Y
-CANG # Answer: 45
+CANG # shows 45, determined by DEG mode
+2ND ANS # LastX
+CABS # shows 1.414213562
 ```
+
+The complex display mode (`RECT`, `PRAD`, `PDEG`) does *not* affect the value
+returned by `CANG`.
+
+If you want the angle value as shown on the screen, use the `2ND LINK` function
+to unlink the 2 components of the complex number. The value in the `X` register
+will be the angle value shown on the screen.
 
 #### Complex Computation Modes
 
