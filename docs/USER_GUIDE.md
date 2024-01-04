@@ -2531,9 +2531,9 @@ message. If `CRES` is selected, these functions will return a complex value.
 
 In the `MODE` menu, there are 2 sets of menus related to degrees and radians:
 
-![RPN83P MODE Menu 1](images/rpn83p-menu-menu-1.png)
+![RPN83P MODE Menu 1](images/rpn83p-mode-menu-1.png)
 
-![RPN83P MODE Menu 2](images/rpn83p-menu-menu-2.png)
+![RPN83P MODE Menu 2](images/rpn83p-mode-menu-2.png)
 
 The first set (`RAD`, `DEG`) are the trigonometric modes that determine the
 numbers returned by the trigonometric functions (`SIN`, `COS`, etc) because they
