@@ -2196,8 +2196,8 @@ Readability suffers a bit using the small font, but it seemed reasonable.
 
 There are 2 ways to enter complex numbers on the RPN83P app:
 
-- **linking** 2 real numbers in 2 stack registers into a single complex number
-- **inlining** both components on a single line.
+- *linking* 2 real numbers in 2 stack registers into a single complex number
+- *inlining* both components on a single line.
 
 **Linking (2ND LINK)**
 
@@ -2555,7 +2555,7 @@ But if we change the computation mode to `CRES`, we get a complex result:
 
 ![RPN83P Complex SQRT CRES](images/rpn83p-complex-sqrt-cres.png)
 
-#### Complex Rendering Independent of Trigonometric Modes
+#### Complex Numbers and Trigonometric Modes
 
 In the `MODE` menu, there are 2 sets of menus related to degrees and radians.
 They are essentially independent of each other. This separation is different
@@ -2640,10 +2640,24 @@ limited:
     - date/time components to and from epoch seconds
 - `GCD` and `LCM` functions are slow
     - Could be made significantly faster.
-- Allow resize of storage registers using `SIZE` command
+- allow resize of storage registers using `SIZE` command
     - The current default is fixed at 25.
     - It should be relatively straightforward to allow this to be
       user-definable, up to a `SIZE` of 100.
+- decouple STAT registers from regular storage registers
+    - STAT registers use R11-R23 storage registers, following the convention
+      used by the HP-42S
+    - there is no technical reason why RPN83P needs to follow this
+    - a better solution is to create a separate set of registers (e.g. an
+      `RPN83STA` appVar) just for STAT so that they don't interfere with normal
+      storage registers
+- add `ROND` menu function
+    - round real and complex numbers to the number of significant digits
+      displayed on the screen
+- support complex numbers in various numerical functions
+    - `IP`, `FP`, `FLR`, `CEIL`, `NEAR`
+    - we could support complex numbers to `%` and `%CH`, but does that make
+      sense? The HP-42S does not support it.
 
 ### Medium Future
 
@@ -2724,6 +2738,17 @@ curiosity and the technical challenge:
 - integration
     - another feature of advanced HP calculators which also depends on keystroke
       programming
+- interaction with TI-BASIC
+    - it might be possible to define a data conduit (i.e. an API) between RPN83P
+      and TI-BASIC, so that they can communicate with each other
+    - for example, the TI-BASIC predefined variables `A` to `Z` and `Theta` are
+      not used by RPN83P. They could be made accessible within RPN83P using a
+      new `STO` and `RCL` syntax, e.g. `STO OS A` and `RCL OS B` (maybe through
+      the currently unused `2ND DISTR` button, i.e. `STO 2ND DISTR 2ND ALPHA A`
+    - I think these would be different from the usual HP-42S alphabetic
+      variables of `STO "A"` and `RCL "B"`, which would be accessed through `STO
+      ALPHA A` and `RCL ALPHA B`.
+    - also to consider: TI-OS List, Matrix, and String variables
 
 ### Not Planned
 
