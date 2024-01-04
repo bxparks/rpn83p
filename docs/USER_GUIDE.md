@@ -2597,7 +2597,7 @@ RCL 00
 Answer: 3 i 5
 ```
 
-![RPN83P Complex Storage Registers](images/rpn83p-complex-storage registers.png)
+![RPN83P Complex Storage Registers](images/rpn83p-complex-storage-registers.png)
 
 ## TI-OS Interaction
 
