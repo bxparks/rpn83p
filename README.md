@@ -53,15 +53,16 @@ Summary of features:
 - complex numbers, inspired by HP-42S and HP-35s
     - stored in RPN stack registers (`X`, `Y`, `Z`, `T`, `LastX`) and storage
       registers `R00-R24`
-    - menu functions: `REAL`, `IMAG`, `CONJ`, `CABS`, `CANG`
     - computation modes: `RRES` (real results), `CRES` (complex results)
     - display modes: `RECT`, `PRAD` (polar radians), `PDEG` (polar degrees)
     - linking/unlinking: `2ND LINK` (convert 2 reals to 1 complex, same as
       `COMPLEX` on HP-42S)
-    - number entry: `2ND i` (a i b), `2ND ANGLE` (r L degrees), `2ND ANGLE 2ND
-      ANGLE` (r L radians)
-    - complex functions: `1/x`, `x^2`, `SQRT`, `x^3`, `CBRT`, `y^x`,
-      `XRootY`, `LOG`, `LN`, `10^x`, `e^x`, `2^x`, `LOG2`, `LOGB`
+    - number entry: `2ND i` (rectangular), `2ND ANGLE` (polar degrees), `2ND
+      ANGLE 2ND ANGLE` (polar radians)
+    - extended regular functions: `+`, `-`, `*`, `/`, `1/x`, `x^2`, `SQRT`,
+      `Y^X`, `X^3`, `3RootY`, `XRootY`, `LOG`, `LN`, `10^x`, `e^x`, `2^x`,
+      `LOG2`, `LOGB`
+    - complex specific functions: `REAL`, `IMAG`, `CONJ`, `CABS`, `CANG`
     - unsupported: trigonometric and hyperbolic functions (not supported by
       TI-OS)
 - statistics and curve fitting, inspired by HP-42S
