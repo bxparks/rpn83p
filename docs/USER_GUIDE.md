@@ -715,9 +715,10 @@ UNKNOWN (##)` like this:
 ![Err: UNKNOWN](images/rpn83p-errorcode-unknown.png)
 
 The number in parenthesis is the internal numerical value of the error code. If
-the error is reproducible, please file a bug report containing the numerical
-error code so that I can add it to the list of error messages supported by
-RPN83P.
+the error is reproducible, please file a [bug
+report](https://github.com/bxparks/rpn83p/issues) containing the numerical error
+code and the steps needed to reproduce it so that I can add it to the list of
+error messages supported by RPN83P.
 
 ## Functions
 
