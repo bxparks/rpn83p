@@ -379,33 +379,35 @@ complexAbs:
     bcall(_CAbs); OP1=Cabs(CP1)
     ret
 
-; Description: Return the angle (argument) of the complex number. It uses the
-; complex rendering mode (complexMode: RECT, PRAD, PDEG) to decide on the unit
-; of the output:
-;   - RECT: radians
-;   - PRAD: radians
-;   - PDEG: degrees
+; Description: Return the angle (argument) of the complex number. This function
+; returns the angle in the unit specified by the trigonometric mode (RAD, DEG).
+; This makes CANG the *only* complex function to depend on the trigonometric
+; mode. This seemed to make sense because the CARG function is so similar to
+; the ATN2 function.
 ;
-; The 'trigFlags' parameter of the underlying TI-OS is ignored. It was too
-; confusing to see the complex numbers rendered using the 'complexMode' (e.g.
-; PDEG), but the angle converted into a different unit determined by
-; 'trigFlags' (e.g. RAD).
+; Another alternative was to use the complex display mode, and return radians in
+; PRAD mode, and degrees in PDEG mode. But for RECT, the only thing that made
+; sense was to return radians which seemed confusing. Also, the CANG function
+; becomes the only complex function that depends on how complex numbers are
+; rendered. This seemed likely to cause even more problems if keystroke
+; programming is added later, because the behavior of the program now depends
+; on how something is *displayed* on the screen.
+;
+; A second alternatve was to always return radians for CANG. But that meant
+; that the screen would show DEG to indicate degree mode, but CANG always
+; return radians. And that seemed more confusing than letting CANG depend on
+; the trigonometric mode.
 ;
 ; Input:
 ;   - CP1: complex number
-;   - (complexMode): complex rendering mode
+;   - (trigFlags): RAD, DEG
 complexAngle:
     call checkOp1Complex ; ZF=1 if complex
     jr nz, complexDataTypeErr
     ; calculate angle in radians
     call op1ExOp2 ; OP1=Im(Z)=y; OP2=Re(Z)=x
-    ld d, 0 ; set undocumented parameter for ATan2Rad()
-    bcall(_ATan2Rad) ; OP1=radian(Z), destroys OP1-OP5
-    ; convert to degrees if PDEG mode
-    ld a, (complexMode)
-    cp complexModeDeg
-    ret nz
-    bcall(_RToD) ; OP1=degree(Z)
+    ld d, 0 ; set undocumented parameter for ATan2()
+    bcall(_ATan2) ; OP1=radian(Z), destroys OP1-OP5
     ret
 
 ;-----------------------------------------------------------------------------
