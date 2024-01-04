@@ -2336,7 +2336,9 @@ that complex numbers can be displayed. The complex display modes are: `RECT`,
 `PRAD`, and `PDEG`. These are available in row 2 of the `MODE` menu group (which
 is bound to the `MODE` button), like this:
 
-![RPN83P Complex Mode Menu](images/rpn83p-complex-mode-menu.png)
+- ![RPN83P Complex Mode Menu](images/rpn83p-complex-mode-menu-1.png)
+    - ![RPN83P Complex Mode Menu](images/rpn83p-complex-mode-menu-2.png)
+    - ![RPN83P Complex Mode Menu](images/rpn83p-complex-mode-menu-3.png)
 
 Pressing the `RECT`, `PRAD`, and `PDEG` menu buttons will change the display
 into the following:
@@ -2443,9 +2445,9 @@ We can add them like this:
 170 2ND ANGLE 143 +
 100 2ND ANGLE 261 +
 
-PDEG:: 178.937161 AngleDeg 111.148894
-PRAD:: 178.937161 AngleDeg 1.93991416
 RECT:: -64.559244 i 166.885025
+PRAD:: 178.937161 Angle 1.93991416
+PDEG:: 178.937161 AngleDeg 111.148894
 ```
 
 The result can be viewed in the 3 complex display formats by clicking on the
@@ -2454,6 +2456,10 @@ The result can be viewed in the 3 complex display formats by clicking on the
 ![RPN83P Complex Example1 RECT](images/rpn83p-complex-example1-rect.png)
 ![RPN83P Complex Example1 PRAD](images/rpn83p-complex-example1-prad.png)
 ![RPN83P Complex Example1 PDEG](images/rpn83p-complex-example1-pdeg.png)
+
+**Remember**: Complex numbers are always stored internally in rectangular
+format. They can be displayed in 3 different formats. They can be entered in 3
+different formats regardless of the display setting.
 
 **Example 2: Y^X, SQRT**
 
@@ -2484,17 +2490,21 @@ The `CANG` function returns the angle `theta` of the complex number when it is
 represented in polar form `r e^(i theta)`. In mathematics, this function is
 normally called the "argument". But the word "argument" has too many other
 meanings in software and computer science. Therefore, this function is named
-`CANG` (complex angle) to be more self-description.
+`CANG` (complex angle) to be more self-descriptive.
 
 The `CANG` function is also one of only 2 functions (the other is the `2ND
 LINK`) whose functionality is affected by the complex display mode (`RECT`,
 `PRAD`, `PDEG`). When the display mode is `PRAD` or `PDEG`, the `CANG` function
 returns the angle using the same unit as the display mode. To return anything
 else was too confusing. When the display mode is `RECT`, the angle could be
-returned in either units, and an arbitrary chose was made to return radian units
-because it is often the natural unit for additional computation.
+returned in either unit, and an arbitrary chose was made to return the radian
+unit because it is often the natural unit for additional calculation. (The other
+option as to use the trigonometric setting (`RAD` or `DEG`) to determine the
+returned value, but I wanted to keep a clean separation between trigonometric
+modes and complex display modes.)
 
-For example, compute the angle and magnitude of the number `1+i`:
+For example, to compute the angle and magnitude of the number `1+i`, we can
+type:
 
 ```
 MODE > DOWN > PDEG
