@@ -2584,18 +2584,20 @@ complex functions (except `2ND LINK`): ![RPN83P MODE Menu
 #### Complex Numbers in Storage Registers
 
 Both the RPN stack registers and the storage registers have been upgraded to
-accept real or complex numbers transparently. For example, we can store `1+i`
-into `R00`, then add `2+2i` into it using:
+accept real or complex numbers transparently. For example, we can store `1+2i`
+into `R00`, then add `2+3i` into it, to get `3+5i`:
 
 ```
-1 2ND i 1
+1 2ND i 2
 STO 00
-2 2ND i 2
+2 2ND i 3
 STO+ 00
 RCL 00
 
-Answer: 3 i 3
+Answer: 3 i 5
 ```
+
+![RPN83P Complex Storage Registers](images/rpn83p-complex-storage registers.png)
 
 ## TI-OS Interaction
 
