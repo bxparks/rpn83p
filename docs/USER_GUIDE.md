@@ -2466,7 +2466,10 @@ different formats regardless of the display setting.
 
 Here is a more complicated example, where we want to calculate the following:
 
-[comment]: # (\[ \sqrt{(1+i)^{(3 \angle 45^{\circ})} + (1 \angle 2)} \])
+```
+# ignore this comment line
+\[ \sqrt{(1+i)^{(3 \angle 45^{\circ})} + (1 \angle 2)} \]
+```
 
 ![RPN83P Complex Example2 Equation](images/rpn83p-complex-example2-equation.png)
 
