@@ -2332,7 +2332,7 @@ Just as there are 3 modes that complex numbers can be entered, there are 3 modes
 that complex numbers can be displayed. The complex display modes are: `RECT`,
 `PRAD`, and `PDEG`. These are available in row 2 of the `MODE` menu group, under
 `ROOT > MODE`, but the fastest way to reach this menu row is to use the `MODE`
-button on keyboard, and then press the `DOWN` arrow:
+button shortcut on keyboard:
 
 - ![RPN83P Complex Mode Menu 1](images/rpn83p-complex-mode-menu-1.png)
     - ![RPN83P Complex Mode Menu 2](images/rpn83p-complex-mode-menu-2.png)
@@ -2416,7 +2416,8 @@ the underlying TI-OS functions do not support them.
 
 Additional functions specific to complex numbers are under the `CPLX` menu:
 
-![RPN83P Complex CPLX Menu](images/rpn83p-complex-cplx-menu.png)
+- ![RPN83P Complex CPLX Menu 1](images/rpn83p-complex-cplx-menu-1.png)
+    - ![RPN83P Complex CPLX Menu 2](images/rpn83p-complex-cplx-menu-2.png)
 
 They are:
 
@@ -2523,15 +2524,22 @@ will be the angle value shown on the screen.
 
 #### Complex Computation Modes
 
-There are 2 computation mode settings under the `CPLX` menu group which affect
-whether some functions return complex values or real values:
+There are 2 computation mode settings under the `MODE` menu group which affect
+whether some functions return complex values or real values when the argument to
+the functions are real:
 
 - `RRES` (real results) return only real results for real arguments
 - `CRES` (complex results) allows complex results for real arguments
 
-Notice that these settings do *not* affect how functions evaluate complex
-arguments. If the argument is complex, the returned results will always be
-complex.
+These are available on row 2 of the `MODE` menu group, under `ROOT > MODE`, but
+the fastest way to reach this menu row is to use the `MODE` button shortcut:
+
+- ![RPN83P Complex Mode Menu 1](images/rpn83p-complex-mode-menu-1.png)
+    - ![RPN83P Complex Mode Menu 2](images/rpn83p-complex-mode-menu-2.png)
+    - ![RPN83P Complex Mode Menu 4](images/rpn83p-complex-mode-menu-4.png)
+
+Note that these settings do *not* affect how functions evaluate complex
+arguments. If the argument is complex, the results will always be complex.
 
 There are currently only a few functions which are affected by these settings:
 
