@@ -2333,12 +2333,13 @@ used to display complex numbers in polar notation.
 
 Just as there are 3 modes that complex numbers can be entered, there are 3 modes
 that complex numbers can be displayed. The complex display modes are: `RECT`,
-`PRAD`, and `PDEG`. These are available in row 2 of the `MODE` menu group (which
-is bound to the `MODE` button), like this:
+`PRAD`, and `PDEG`. These are available in row 2 of the `MODE` menu group, under
+`ROOT > MODE`, but the fastest way to reach this menu row is to use the `MODE`
+button on keyboard, and then press the `DOWN` arrow:
 
-- ![RPN83P Complex Mode Menu](images/rpn83p-complex-mode-menu-1.png)
-    - ![RPN83P Complex Mode Menu](images/rpn83p-complex-mode-menu-2.png)
-    - ![RPN83P Complex Mode Menu](images/rpn83p-complex-mode-menu-3.png)
+- ![RPN83P Complex Mode Menu 1](images/rpn83p-complex-mode-menu-1.png)
+    - ![RPN83P Complex Mode Menu 2](images/rpn83p-complex-mode-menu-2.png)
+    - ![RPN83P Complex Mode Menu 3](images/rpn83p-complex-mode-menu-3.png)
 
 Pressing the `RECT`, `PRAD`, and `PDEG` menu buttons will change the display
 into the following:
@@ -2463,11 +2464,12 @@ different formats regardless of the display setting.
 
 **Example 2: Y^X, SQRT**
 
-Here is a more complicated example, where we want to calculate the following:
+Here is a more complicated example, where we want to calculate the following
+(written in MathJax for historical
 
-```
-Sqrt((1+i)^(3 Angle 45 deg) + (1 Angle 2 rad))
-```
+[//]: # Comment: \[ \sqrt{(1+i)^{(3 \angle 45^{\circ})} + (1 \angle 2)} \]
+
+![RPN83P Complex Example2 Equation](images/rpn83p-complex-example2-equation.png)
 
 The keystrokes can be:
 ```
@@ -2503,17 +2505,21 @@ option as to use the trigonometric setting (`RAD` or `DEG`) to determine the
 returned value, but I wanted to keep a clean separation between trigonometric
 modes and complex display modes.)
 
-For example, to compute the angle and magnitude of the number `1+i`, we can
-type:
+For example, to compute the angle and magnitude of the number `1+i`, first set
+the display mode to `PDEG`:
 
 ```
-MODE > DOWN > PDEG
+MODE > PDEG
 MATH > CPLX
+```
 
+Then type:
+```
 1 2ND i 1
-CANG # Answer: 45
-2ND ANS # LastX
+ENTER # Displays 1.414213562 AngleDeg 45
 CABS # Answer: 1.414213562
+X<>Y # Exchange X, Y
+CANG # Answer: 45
 ```
 
 #### Complex Computation Modes
