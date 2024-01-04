@@ -2177,30 +2177,27 @@ rectangular form, even if the current display mode is polar form.
 
 #### Complex Numbers and Screen Size
 
-The screen size of a TI-83 and TI-84 calculator is 96 pixels wide, which is
-enough to hold 16 characters using the Large Font. But a complex number needs 2
-floating point numbers, with at least one delimiter character between the 2
-numbers, which gives us only 7 characters per number. In scientific notation, we
-lose up to 6 characters due to the overhead of the format (decimal point, the
-minus sign on the mantissa, the `E` symbol, the minus sign on the exponent,
-and 2 digits for the exponent), leaving us with only a single significant digit
-for each component of the complex number (i.e. we can print only `-1.E-23`).
-This is not reasonable.
+Complex numbers are rendering using the Small Font of the TI-83 and 84
+calculators instead of the Large Font. With the Large Font, we are limited to 16
+digits on a single line (including the stack label), which is not sufficient to
+display the 2 floating point numbers of a complex number. The Small Font allows
+us to display about 24 digits on a single line, which allows us to allocate 10
+digits for each of the two components of a complex number.
 
-We could use 2 lines to display a single complex number, but that means we would
-see only 2 registers (`X` and `Y`) of the RPN stack instead of 4. That was also
-not reasonable. The most reasonable solution was to use the Small Font of the
-TI-OS. The Small Font is a proportional font, but most digits and symbols needed
-for printing numbers are 4 pixels wide, which gives us 24 characters. Taking
-account of overhead, we can print the entire complex number on a single line
-with each floating component taking up 10 characters, with room to spare for
-delimiters and labels.
+Here is what the screen looks like with just Large Font (left), and a mix of
+Small and Large Fonts (right):
+
+![RPN83P Complex Font 1](images/rpn83p-complex-font-1.png)
+![RPN83P Complex Font 2](images/rpn83p-complex-font-2.png)
+
+Readability suffers a bit using the small font, but it seemed reasonable.
 
 #### Complex Number Entry
 
 There are 2 ways to enter complex numbers on the RPN83P app:
-- linking 2 real numbers in 2 stack registers into a single complex number
-- inlining both components on a single line.
+
+- **linking** 2 real numbers in 2 stack registers into a single complex number
+- **inlining** both components on a single line.
 
 **Linking (2ND LINK)**
 
@@ -2478,7 +2475,7 @@ different formats regardless of the display setting.
 
 **Example 2: Y^X, SQRT**
 
-In this contrived example, we compute a function involving all three
+In this contrived example, we compute an expression involving all three
 representations of complex numbers:
 
 ```
