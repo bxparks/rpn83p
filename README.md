@@ -47,7 +47,9 @@ Summary of features:
     - hyperbolic: `SINH`, `COSH`, `TANH`, `ASNH`, `ACSH`, `ATNH`
     - probability: `PERM`, `COMB`, `N!`, `RAND`, `SEED`
     - angle conversions: `>DEG`, `>RAD`, `>HR`, `>HMS`, `>REC`, `>POL`
-    - unit conversions: `>C`, `>F`, `>km`, `>mi`, etc
+    - unit conversions: `>C`, `>F`, `>hPa`, `>inHg`, `>km`, `>mi`, `>m`, `>ft`,
+      `>cm`, `>in`, `>um`, `>mil`, `>kg`, `>lbs`, `>g`, `>oz`, `>L`, `>gal`,
+      `>mL`, `>floz`, `>kJ`, `>cal`, `>kW`, `>hp`
 - complex numbers, inspired by HP-42S and HP-35s
     - stored in RPN stack registers (`X`, `Y`, `Z`, `T`, `LastX`) and storage
       registers `R00-R24`
