@@ -2438,6 +2438,10 @@ We can add them like this:
 185 2ND ANGLE 62 ENTER
 170 2ND ANGLE 143 +
 100 2ND ANGLE 261 +
+
+PDEG:: 178.937161 AngleDeg 111.148894
+PRAD:: 178.937161 AngleDeg 1.93991416
+RECT:: -64.559244 i 166.885025
 ```
 
 The result can be viewed in the 3 complex display formats by clicking on the
@@ -2447,39 +2451,56 @@ The result can be viewed in the 3 complex display formats by clicking on the
 ![RPN83P Complex Example1 PRAD](images/rpn83p-complex-example1-prad.png)
 ![RPN83P Complex Example1 PDEG](images/rpn83p-complex-example1-pdeg.png)
 
-**Example 2: Y^X**
+**Example 2: Y^X, SQRT**
 
-[TODO: Screenshot of Y^X calculation.]
+Here is a more complicated example, where we want to calculate the following:
 
-**Example 3: CANG**
+```
+Sqrt((1+i)^(3 Angle 45 deg) + (1 Angle 2 rad))
+```
 
-The `CANG` function has some interesting features. This function returns the
-angle `theta` of the complex number when it is represented in polar form `r e^(i
-theta)`. In mathematics, this function is normally referred to as the
-"argument". But the word "argument" is overloaded with too many other meanings
-in the context of software and computer science. Therefore, I chose to name this
-function `CANG` for "complex angle" to be more self-description and avoid any
-ambiguity.
+The keystrokes can be:
+```
+1 2ND i 1
+ENTER
+3 2ND ANGLE 45
+^
+1 2ND ANGLE 2ND ANGLE 2
++
+2ND SQRT
+
+RECT: .576363737 i 1.01949228
+PRAD: 1.17113606 Angle 1.05624914
+PDEG: 1.17113606 AngleDeg 60.518618
+```
+
+**Example 3: CANG, CABS**
+
+The `CANG` function returns the angle `theta` of the complex number when it is
+represented in polar form `r e^(i theta)`. In mathematics, this function is
+normally called the "argument". But the word "argument" has too many other
+meanings in software and computer science. Therefore, this function is named
+`CANG` (complex angle) to be more self-description.
 
 The `CANG` function is also one of only 2 functions (the other is the `2ND
 LINK`) whose functionality is affected by the complex display mode (`RECT`,
 `PRAD`, `PDEG`). When the display mode is `PRAD` or `PDEG`, the `CANG` function
-returns the angle using the same unit as the display mode. It was too confusing
-for the `CANG` function to return an angle value that was different than the
-angle shown on the display. When the display mode is `RECT`, the angle could be
-returned in either units, and an arbitrary chose was made to use radian units
+returns the angle using the same unit as the display mode. To return anything
+else was too confusing. When the display mode is `RECT`, the angle could be
+returned in either units, and an arbitrary chose was made to return radian units
 because it is often the natural unit for additional computation.
+
+For example, compute the angle and magnitude of the number `1+i`:
 
 ```
 MODE > DOWN > PDEG
-ON/EXIT
 MATH > CPLX
-1 2ND i 1 ENTER # not necessary, but added here for visual double-checking
-CANG
-```
 
-The result is `45`, which is the same angle value shown in `PDEG` mode on the
-screen.
+1 2ND i 1
+CANG # Answer: 45
+2ND ANS # LastX
+CABS # Answer: 1.414213562
+```
 
 #### Complex Computation Modes
 
@@ -2508,22 +2529,36 @@ message. If `CRES` is selected, these functions will return a complex value.
 
 #### Complex Numbers Unaffected by Trigonometric Modes
 
-On the HP-42S, the rendering of the complex number is affected by the
-trigonometric modes (`DEG` and `RAD`). On RPN83P, in contrast, I decided to
-decouple the decouple the trigonometric modes from the complex display modes
-(`RECT`, `PRAD`, `PDEG`). One reason for the decoupling is that on the TI-83
-Plus and Ti-84 Plus keyboards, these modes are available only through the menu
-system, so it is somewhat difficult to navigate quickly between the
-trigonometric modes and the complex display modes. Another reason is that these
-2 modes seem to me conceptually different: the trigonometric mode affects the
-computation of certain functions, while the complex display mode affects only
-the rendering of numbers on the screen. Internally, complex numbers are always
-stored in the rectangular format `a+bi`.
+In the `MODE` menu, there are 2 sets of menus related to degrees and radians:
+
+![RPN83P MODE Menu 1](images/rpn83p-menu-menu-1.png)
+
+![RPN83P MODE Menu 2](images/rpn83p-menu-menu-2.png)
+
+The first set (`RAD`, `DEG`) are the trigonometric modes that determine the
+numbers returned by the trigonometric functions (`SIN`, `COS`, etc) because they
+control the unit of those numbers. The second set (`RECT`, `PRAD`, `PDEG`)
+controls how complex numbers are displayed on the screen, but does not control
+the computation of (almost) any function. This separation is different from
+almost all other calculators on the market that provide support for complex
+numbers (including the HP-42S). Internally, complex numbers are always stored in
+the rectangular format `a+bi`.
 
 #### Complex Numbers in Storage Registers
 
 Both the RPN stack registers and the storage registers have been upgraded to
-accept real or complex numbers transparently.
+accept real or complex numbers transparently. For example, we can store `1+i`
+into `R00`, then add `2+2i` into it using:
+
+```
+1 2ND i 1
+STO 00
+2 2ND i 2
+STO+ 00
+RCL 00
+
+Answer: 3 i 3
+```
 
 ## TI-OS Interaction
 
