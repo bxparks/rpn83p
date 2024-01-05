@@ -16,6 +16,8 @@ cannot remember how the code works.
     - [Prime Factor Improvements](#prime-factor-improvements)
 - [TVM Algorithms](#tvm-algorithms)
 - [Complex Numbers](#complex-numbers)
+    - [Complex Number Font](#complex-number-font)
+    - [Complex Number Rendering](#complex-number-rendering)
 
 ## Debug Statements
 
@@ -177,6 +179,8 @@ See [TVM Algorithms](TVM.md).
 
 ## Complex Numbers
 
+### Complex Number Font
+
 The screen size of a TI-83 and TI-84 calculator is 96 pixels wide, which is
 enough to hold 16 characters using the Large Font. But a complex number needs 2
 floating point numbers, with at least one delimiter character between the 2
@@ -194,3 +198,26 @@ the TI-OS. The Small Font is a proportional font, but most digits and symbols
 needed for printing numbers are 4 pixels wide, which gives us 24 characters.
 Taking account of overhead, each floating component can consume up 10
 characters when a complex number is printed on a single line.
+
+### Complex Number Rendering
+
+The Large Font is a monospaced font where each character fits inside an 6x8
+(hxw) grid. The Small Font is a proportional font where most digits and letters
+fit into a 4x7 grid, but some characters (e.g. '.' and ' ') take up less width.
+
+Since a complex number is rendered using the Small Font, the app must take
+special precautions to prevent artifacts from the previously rendered number in
+the Large Font from showing through the Small Font. The easiest way to do that
+is to erase the line before printing the complex number in Small Font.
+Unfortunately, if the erase algorithm is applied naively, it causes unnecessary
+flickering of the display when numbers are updated. A significant amount of
+complexity was added to the rendering code (`display.asm`) to keep the
+flickering to a minimum. For example, when a Large Font is rendered over a Small
+Font, or when a Small Font line is written over a previous Small Font line, no
+erasure is required. The bookkeeping algorithm was made more complex due to the
+rendering of the `argBuf` (the input buffer used for command arguments in `STO`,
+`FIX`, etc) which uses the Large Font, over the same line as the `X` register.
+
+Developers who dig into the rendering code may wonder why all that complexity
+exists. Ironically, it's all there so that the vast majority end-users will
+never notice anything.
