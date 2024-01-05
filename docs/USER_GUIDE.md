@@ -658,7 +658,7 @@ not be identical to the current version:
 
 ![Help Page 1](images/rpn83p-help-page-1.png)
 ![Help Page 2](images/rpn83p-help-page-2.png)
-![Help Page 9](images/rpn83p-help-page-9.png)
+![Help Page Last](images/rpn83p-help-page-last.png)
 
 The Help pages are intended to capture some of the more obscure tidbits about
 the RPN83P app which may be hard to remember. Hopefully it reduces the number of
