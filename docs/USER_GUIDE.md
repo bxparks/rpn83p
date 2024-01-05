@@ -178,9 +178,12 @@ Missing features (partial list):
 
 ### Short Answer
 
-This was a fun project that helped me learn Z80 assembly language programming on
-TI calculators. It also produced an app that converts a TI calculator into an
-RPN calculator that I can actually use.
+This project helped me relearn Z80 assembly language programming using TI
+calculators. It also produced a scientific RPN app that can run on calculators
+which are easily and cheaply obtainable. There are no scientific RPN calculators
+currently in production from HP. The prices for many HP calculators in the used
+market are unreasonably high, so RPN83P may fill a gap for some people in some
+cases.
 
 ### Long Answer
 
@@ -200,6 +203,11 @@ algebraic mode has probably been going on for 40-50 years, so I probably cannot
 add more. Personally, I use algebraic notation for doing math equations on paper
 or writing high-level computer programs. But when I do numerical *computation*
 on a hand-held device, I am most comfortable using the RPN mode.
+
+There are many RPN calculator apps for the smartphone, but the touchscreen of a
+phone can become tedious for calculations that require large number of
+keystrokes. For those cases, a physical device is more convenient and less error
+prone.
 
 The RPN83P app is inspired by the HP-42S. It is the RPN calculator that I know
 best. It also has the advantage of having the
@@ -227,8 +235,9 @@ show the entire RPN stack as well as the hierarchical menu bar at all times, so
 it makes sense to take advantage of the larger LCD screen size.
 
 The purpose of the RPN83P project was to help me learn Z80 programming on a TI
-calculator, and to convert an old TI calculator into an RPN calculator that I
-can actually use. I hope other people find it useful.
+calculator, and to convert an old TI calculator into a scientific RPN calculator
+that I can actually use. The host calculator hardware is readily and cheaply
+available, so I hope other people find it useful.
 
 ## Installation
 
