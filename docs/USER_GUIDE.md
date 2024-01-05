@@ -1033,8 +1033,8 @@ RPN83P application.
 The input buffer is rendering using Large Font which means that only 14
 characters can be displayed on a single line. Entering numbers longer than 14
 characters is now (v0.9) supported by scrolling the left characters off the
-screen. When a non-zero leading digit scrolls off, an an ellipsis character on
-the left indicates that some digits are hidden.
+screen. When a leading digit scrolls off, an ellipsis character appears on the
+left to indicate that some digits are hidden.
 
 For example, if the number "123456.78901234" is entered, the input buffer look
 normal after 14 characters (see left), then when the 15th character is entered,
