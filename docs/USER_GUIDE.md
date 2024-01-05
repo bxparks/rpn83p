@@ -704,8 +704,8 @@ a few of them as described below:
 - `Err: Tol Not Met`
 - `Err: Undefined`
 
-These are shown in the Error Code line on the screen. For example, division by 0
-shows this:
+These are shown in the Error Code line on the screen. For example, if we try to
+divide `1 / 0`, a division by 0 error is shown:
 
 ![Err: Division By 0](images/rpn83p-errorcode-division-by-0.png)
 
