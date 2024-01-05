@@ -2333,6 +2333,24 @@ three lines, each 120 degrees out of phase with each other. In contrast, the
 same angle in radians would involve rational multiples of Pi (e.g. 120 deg =
 pi/3 = 2.094395102 radians) so would probably be more difficult to enter.
 
+**Special Case for Solitary 2ND i**
+
+Since `2ND i` is used as a *delimiter* in the RPN83P app, not as a
+multiplicative constant, entering the pure imaginary number `i` (i.e. `0+1i`)
+should be officially done by entering `2ND i 1`. That's because an empty string
+is normally interpreted as a `0`, so a solitary `2ND i` with an empty string
+following it would be parsed as `0+0i`. However, it seemed convenient to make a
+special case for a solitary `2ND i`. The input parser recognizes a solitary `2ND
+i` and parses it as `0 i 1` instead so that it becomes the mathematical
+expression `0+1i`. Here are screenshots after a solitary `2ND i` and an `ENTER`:
+
+![RPN83P Complex Solitary i 1](images/rpn83p-complex-solitary-i-1.png)
+![RPN83P Complex Solitary i 2](images/rpn83p-complex-solitary-i-2.png)
+
+This special rule is triggered only by a solitary `2ND i`. If there is any digit
+before or after the `2ND i`, regular parsing rules are used. For example, `1 2ND
+i` is interpreted to be `1+0i` not `1+1i`.
+
 **HP-35s Compatibility Note 1**: The HP-35s uses a Theta symbol to display
 complex numbers in polar notation. The problem with the Theta symbol is that in
 the Small Font of the TI calculators, it looks too similar to the digit `0`. The
