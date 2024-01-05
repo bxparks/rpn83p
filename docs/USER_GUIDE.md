@@ -1683,14 +1683,11 @@ usability problems as the `WSIZ` command.
 #### Base Input Digit Limit
 
 The maximum number of digits allowed to be entered into the input buffer is
-limited by a function which depends on:
-- the `WSIZ`
-- the current base number (`HEX` 16, `DEC` 10, `OCT` 8, `BIN` 2)
-- the width of the single line on the display
-
-Adding a limit during input hopefully reduces the likelihood that the user will
-enter a number that is greater than the maximum number of bits allowed in by the
-current `WSIZ` and base number.
+determined by a function which depends on both the `WSIZ` and the current base
+number (`HEX` 16, `DEC` 10, `OCT` 8, `BIN` 2). Adding a limit during input
+hopefully reduces the likelihood that the user will enter a number that is
+greater than the maximum number of bits allowed in by the current `WSIZ` and
+base number.
 
 Here are the limits:
 
@@ -1730,8 +1727,8 @@ the number if it is greater than the maximum allowed by the `WSIZ`.)
 
 The longest binary number that can be displayed on a single line in edit mode is
 14 digits. If the `WSIZ` is greater than 14 (i.e. greater than 8), then a binary
-number in `BIN` can exceed this limit. Entering additional digits after 14 will
-cause the left digits to scroll off the screen to the left.
+number in `BIN` can exceed this limit and entering more digits will cause the
+left digits to scroll off the screen.
 
 #### Base Number Retention
 
