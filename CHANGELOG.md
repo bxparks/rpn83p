@@ -6,6 +6,8 @@
         - `REGS` list variable replaced with `RPN83REG`
         - `RPN83SAV` remains unchanged
         - the old `STK` and `REGS` variables can be manually removed
+        - see [TI-OS Interaction](docs/USER_GUIDE.md#ti-os-interaction) for more
+          details
     - **Breaking**: Add `CPLX` menu at the previous location of `CONV`
         - `CPLX` menu seemed most convenient on row 1 of the `ROOT` menu where
           the old `CONV` was located
@@ -28,6 +30,9 @@
         - `BASE BIN` mode
             - Accepts maximum of 32 digits, to allow all 32-bits of a binary
               number to be entered when the `WSIZ` is 32.
+        - see [Input Limits and Long
+          Numbers](docs/USER_GUIDE.md#input-limits-and-long-numbers) for more
+          details
     - `PROB`
         - Expand range of `COMB(n,r)` and `PERM(n,r)` arguments to `n,r<=65535`
           from `n,r<=255`.
@@ -51,6 +56,8 @@
           using 2ND LINK (equivalent to COMPLEX button on the HP-42S)
         - support entry of complex numbers on a single line in RECT, PRAD, and
           PDEG modes using the `2ND i` and `2ND ANGLE` keys.
+        - see [Complex Numbers](docs/USER_GUIDE.md#complex-numbers) for more
+          details.
     - Rectangular to Polar conversion
         - fix overflow and underflow caused by bug in the TI-OS `RToP()`
           function by using a custom `rectToPolar()` function instead
