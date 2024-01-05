@@ -2,7 +2,7 @@
 
 RPN calculator app for the TI-83 Plus and TI-84 Plus inspired by the HP-42S.
 
-**Version**: 0.9.0-dev (2024-01-04)
+**Version**: 0.9.0-dev (2024-01-05)
 
 **Project Home**: https://github.com/bxparks/rpn83p
 
@@ -60,6 +60,17 @@ RPN calculator app for the TI-83 Plus and TI-84 Plus inspired by the HP-42S.
         - [TVM Variable Recall](#tvm-variable-recall)
         - [TVM Examples](#tvm-examples)
     - [Complex Numbers](#complex-numbers)
+        - [Complex Numbers and Screen Size](#complex-numbers-and-screen-size)
+        - [Complex Number Entry](#complex-number-entry)
+        - [Complex Display Modes](#complex-display-modes)
+        - [Complex SHOW](#complex-show)
+        - [Complex FIX, SCI, ENG](#complex-fix-sci-eng)
+        - [Complex Functions](#complex-functions)
+        - [Complex Computation Modes](#complex-computation-modes)
+        - [Complex Numbers and Trigonometric
+          Modes](#complex-numbers-and-trigonometric-modes)
+        - [Complex Numbers in Storage
+          Registers](#complex-numbers-in-storage-registers)
 - [TI-OS Interaction](#ti-os-interaction)
 - [Future Enhancements](#future-enhancements)
     - [Near Future](#near-future)
@@ -116,21 +127,6 @@ Summary of features:
     - unit conversions: `>C`, `>F`, `>hPa`, `>inHg`, `>km`, `>mi`, `>m`, `>ft`,
       `>cm`, `>in`, `>um`, `>mil`, `>kg`, `>lbs`, `>g`, `>oz`, `>L`, `>gal`,
       `>mL`, `>floz`, `>kJ`, `>cal`, `>kW`, `>hp`
-- complex numbers, inspired by HP-42S and HP-35s
-    - stored in RPN stack registers (`X`, `Y`, `Z`, `T`, `LastX`) and storage
-      registers `R00-R24`
-    - computation modes: `RRES` (real results), `CRES` (complex results)
-    - display modes: `RECT`, `PRAD` (polar radians), `PDEG` (polar degrees)
-    - linking/unlinking: `2ND LINK` (convert 2 reals to 1 complex, same as
-      `COMPLEX` on HP-42S)
-    - number entry: `2ND i` (rectangular), `2ND ANGLE` (polar degrees), `2ND
-      ANGLE 2ND ANGLE` (polar radians)
-    - extended regular functions: `+`, `-`, `*`, `/`, `1/x`, `x^2`, `SQRT`,
-      `Y^X`, `X^3`, `3RootY`, `XRootY`, `LOG`, `LN`, `10^x`, `e^x`, `2^x`,
-      `LOG2`, `LOGB`
-    - complex specific functions: `REAL`, `IMAG`, `CONJ`, `CABS`, `CANG`
-    - unsupported: trigonometric and hyperbolic functions (not supported by
-      TI-OS)
 - statistics and curve fitting, inspired by HP-42S
     - statistics: `Sigma+`, `Sigma-`, `SUM`, `MEAN`, `WMN` (weighted mean),
       `SDEV` (sample standard deviation), `SCOV` (sample covariance),
@@ -151,6 +147,21 @@ Summary of features:
     - word sizes: `WSIZ`, `WSZ?`: 8, 16, 24, 32 bits
 - time value of money (TVM), inspired by HP-12C, HP-17B, and HP-30b
     - `N`, `I%YR`, `PV`, `PMT`, `FV`, `P/YR`, `BEG`, `END`, `CLTV` (clear TVM)
+- complex numbers, inspired by HP-42S and HP-35s
+    - stored in RPN stack registers (`X`, `Y`, `Z`, `T`, `LastX`) and storage
+      registers `R00-R24`
+    - computation modes: `RRES` (real results), `CRES` (complex results)
+    - display modes: `RECT`, `PRAD` (polar radians), `PDEG` (polar degrees)
+    - linking/unlinking: `2ND LINK` (convert 2 reals to 1 complex, same as
+      `COMPLEX` on HP-42S)
+    - number entry: `2ND i` (rectangular), `2ND ANGLE` (polar degrees), `2ND
+      ANGLE 2ND ANGLE` (polar radians)
+    - extended regular functions: `+`, `-`, `*`, `/`, `1/x`, `x^2`, `SQRT`,
+      `Y^X`, `X^3`, `3RootY`, `XRootY`, `LOG`, `LN`, `10^x`, `e^x`, `2^x`,
+      `LOG2`, `LOGB`
+    - complex specific functions: `REAL`, `IMAG`, `CONJ`, `CABS`, `CANG`
+    - unsupported: trigonometric and hyperbolic functions (not supported by
+      TI-OS)
 - various display modes
     - `RAD`, `DEG`
     - `FIX` (fixed point 0-9 digits)
