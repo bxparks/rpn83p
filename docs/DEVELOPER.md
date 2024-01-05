@@ -19,9 +19,11 @@ cannot remember how the code works.
     - [Complex Number Font](#complex-number-font)
     - [Complex Number Rendering](#complex-number-rendering)
 - [Design Guidelines](#design-guidelines)
-    - [Discoverable](#discoverable)
-    - [Easy to Use](#easy-to-use)
-    - [Practical](#practical)
+    - [No Keyboard Overlay](#no-keyboard-overlay)
+    - [Hierarchical Menu](#hierarchical-menu)
+    - [No System Flags](#no-system-flags)
+    - [Traditional RPN System](#traditional-rpn-system)
+    - [Includes Useful Features](#includes-useful-features)
     - [Customizable](#customizable)
 
 ## Debug Statements
@@ -229,59 +231,67 @@ never notice anything.
 
 ## Design Guidelines
 
-In this section, I hope to explain some of my design guidelines which determine
-how and why I have implemented certain features of the app in certain ways.
+In this section, I hope to explain the reasons why I implemented certain
+features of the app in certain ways.
 
-### Discoverable
+### No Keyboard Overlay
 
-A modern scientific calculator has hundreds (if not thousands) of built-in
-functions. I hope to make almost all functions of the RPN83P app easily
-discoverable.
+TI-83 Plus and TI-84 Plus has buttons which are mostly compatible with an RPN
+calculator. In particular, it has an `ENTER` key and a separate `(-)` key which
+can act as the `+/-` function. Most other functions can be mapped to something
+close enough, like the `MATH` key which can act as the menu `HOME` function.
 
-A consistent, well-organized, hierarchical menu system (inspired by the HP-42S)
-should help. The RPN83P app hijacks the TI-83 and 84 keyboards for its purpose.
-Functions which normally would fit better as a direct button or shifted-button
-(`2ND`) have to go into the menu system.
+For something like RPN83P which is expected to be used by only a handful of
+users, it did not seem worthwhile to spend any effort creating an overlay. Which
+is a little bit ironic because the TI-84 Plus calculator actually has a
+removable keyboard faceplate. Different faceplates are available in different
+colors. I don't have a 3D printer so I don't know if it's possible to create a
+custom faceplate. An injection molding faceplate would be far too expensive.
 
-RPN83P will not use numerical configuration flags to customize its behavior.
-Every calculator with system flags has its unique set of options. Even for
-options which overlap, they are assigned to different numerical flags. For
-people who use multiple calculators, it is impossible to remember what all those
-options do, and which feature corresponds to which flag number. On older
-calculators, itis even difficult to remember how to set or clear these flags, or
-whether the flag is a single digit, 2 digits, or 3 digits. RPN83P will expose
-all system configuration options through the menu system.
+### Hierarchical Menu
 
-### Easy to Use
+Of the menu systems that I have seen on various calculators, the hierarchical
+menu system with soft keys used by the HP-42S seems to be the easiest to use.
+All RPN83P features will be accessible through direct key buttons or the menu
+systems. I want to avoid secret key sequences which are hard to discover and
+remember for end-users.
 
-RPN83P should be as easy to use as possible. This includes reducing the number
-of keystrokes as reasonable as possible.
+### No System Flags
+
+RPN83P will not use system flags to customize its behavior. Every calculator
+with system flags has its unique set of options. Even for options which overlap,
+they are assigned to different numerical flags. For people who use multiple
+calculators, it is impossible to remember what all those options do, and which
+feature corresponds to which flag number. On older calculators, it is even
+difficult to remember how to set or clear these flags, or whether the flag is a
+single digit, 2 digits, or 3 digits. RPN83P will expose all system configuration
+options through the menu system.
+
+User flags, on the other hand, may be provided in the future, probably when
+keystroke programming is added. They are definitely useful in calculator
+programs.
+
+### Traditional RPN System
 
 It may be a personal preference, but I believe that the traditional RPN system
 from older HP calculators are easier to use than the modern RPL calculators
 (introduced with the HP-28S series, and continuing through the HP-48/49/50
-series.) Consistency with the traditional RPN calculators seems important to
-achieve ease of use. For example, even though it is actually be slightly easier
-to implement an RPN entry system that separates the input buffer from the `X`
-register (like RPL systems do), the RPN83P goes out of its to mimic the behavior
-of the traditional RPN calculators.
+series.) Consistency with the traditional RPN calculators seems important for
+ease of use. For example, even though it is actually slightly easier to
+implement an RPN entry system that separates the input buffer from the `X`
+register (like RPL systems do), the RPN83P goes out of its way to mimic the
+behavior of the traditional RPN calculators.
 
-### Practical
+### Includes Useful Features
 
-The feature set of most calculators seems to be determined by market
-segmentation. For example, there are separate calculators for the business
-market, the scientific market, the educational market, the computer science
-field (e.g. the HP-16C), and so on. I want RPN83P to provide useful features
-without any regard to market segmentation. Therefore, it has features related to
-business (TVM), features related to computer science (BASE), features related to
-engineering (complex numbers), features related to data analysis (STAT), and so
-on.
+There is no need to segment the features of RPN83P to different market segments
+(e.g. business, scientific, graphing, computer science). If a feature is useful
+or interesting, without regards to a product segment, and if it is reasonable to
+implement within the limitations of the Z80 assembly language and the underlying
+TI-OS, then it seems worth considering to include it in RPN83P.
 
 ### Customizable
 
-Users will use the calculator in different ways, and some people may use certain
-functions more frequently than other functions. It seems important to allow
-users to make custom key-bindings for certain functions to help the ease of use.
-
-RPN83P does not currently support custom key bindings, but it seems important to
-include that in the future.
+Custom key bindings are now supported right now, but it seems important to add
+that in the future. Users will use the calculator in different ways, and some
+people may use some functions more frequently than others.
