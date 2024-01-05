@@ -106,6 +106,87 @@ closeInputBufContinue:
 
 ;------------------------------------------------------------------------------
 
+; Description: Return the number of digits which are accepted or displayed for
+; the given (baseWordSize) and (baseNumber).
+;   - floating mode: inputBufFloatMaxLen
+;   - BASE 2: inputMaxLen = baseWordSize
+;       - 8 -> 8
+;       - 16 -> 16
+;       - 24 -> 24
+;       - 32 -> 32
+;   - BASE 8: inputMaxLen = ceil(baseWordSize / 3)
+;       - 8 -> 3 (0o377)
+;       - 16 -> 6 (0o177 777)
+;       - 24 -> 8 (0o77 777 777)
+;       - 32 -> 11 (0o37 777 777 777)
+;   - BASE 10: inputMaxLen = ceil(log10(2^baseWordSize))
+;       - 8 -> 3 (255)
+;       - 16 -> 5 (65 535)
+;       - 24 -> 8 (16 777 215)
+;       - 32 -> 10 (4 294 967 295)
+;   - BASE 16: inputMaxLen = baseWordSize / 4
+;       - 8 -> 2 (0xff)
+;       - 16 -> 4 (0xff ff)
+;       - 24 -> 6 (0xff ff ff)
+;       - 32 -> 8 (0xff ff ff ff)
+;
+; This version uses a lookup table to make the above transformations. Another
+; way is to use a series of nested if-then-else statements (i.e. a series of
+; 'cp' and 'jr nz' statements in assembly language). The nested if-then-else
+; actually turned out to be about 80 bytes *smaller*. However, the if-then-else
+; version is so convoluted that it is basically unreadable and unmaintainable.
+; Use the lookup table implementation instead even though it takes up slightly
+; more space.
+;
+; Input: rpnFlagsBaseModeEnabled, (baseWordSize), (baseNumber).
+; Output: A: inputMaxLen
+; Destroys: A
+; Preserves: BC, DE, HL
+getInputMaxLen:
+    bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
+    jr nz, getInputMaxLenBaseMode
+    ; In normal floating point input mode, i.e. not BASE mode.
+    ; Return either the normal float limit or the complex limit.
+    ld hl, inputBuf
+    call checkComplexDelimiterP ; CF=1 if complex
+    jr nc, getInputMaxLenNormalMaxLen
+    ; allow extra characters for complex numbers
+    ld a, inputBufComplexMaxLen
+    ret
+getInputMaxLenNormalMaxLen:
+    ld a, inputBufFloatMaxLen
+    ret
+getInputMaxLenBaseMode:
+    ; If BASE mode, the maximum number of digits depends on baseNumber and
+    ; baseWordSize.
+    push de
+    push hl
+    call getBaseNumberIndex ; A=baseNumberIndex
+    sla a
+    sla a ; A=baseNumberIndex * 4
+    ld e, a
+    call getWordSizeIndexPageOne ; A=wordSizeIndex
+    add a, e ; A=4*baseNumberIndex+wordSizeIndex
+    ld e, a
+    ld d, 0
+    ld hl, wordSizeDigitsArray
+    add hl, de
+    ld a, (hl) ; A=maxLen
+    pop hl
+    pop de
+    ret
+
+; List of the inputDigit limit of the inputBuf for each (baseNumber) and
+; (baseWordSize). Each group of 4 represents the inputDigits for wordSizes (8,
+; 16, 24, 32) respectively.
+wordSizeDigitsArray:
+    .db 8, 16, 24, 32 ; base 2
+    .db 3, 6, 8, 11 ; base 8
+    .db 3, 5, 8, 10 ; base 10
+    .db 2, 4, 6, 8 ; base 16
+
+;------------------------------------------------------------------------------
+
 ; Description: Check various characteristics of the characters in the inputBuf
 ; by scanning backwards from the end of the string. The following conditions
 ; are checked:
@@ -838,6 +919,27 @@ findComplexDelimiter:
     jr c, findComplexDelimiter
     ret ; CF=0
 findComplexDelimiterFound:
+    scf ; CF=1
+    ret
+
+; Description: Check if complex delimiter exists in the given Pascal string.
+; Input: HL: pointer to pascal string
+; Output: CF=1 if complex, 0 otherwise
+checkComplexDelimiterP:
+    ld a, (hl) ; A=len
+    inc hl
+    or a ; ZF=0 if len==0; CF=0
+    ret z
+    ld b, a
+checkComplexDelimiterPLoop:
+    ld a, (hl)
+    inc hl
+    call isComplexDelimiterPageOne
+    jr z, checkComplexDelimiterPFound
+    djnz checkComplexDelimiterPLoop
+    or a ; CF=0
+    ret
+checkComplexDelimiterPFound:
     scf ; CF=1
     ret
 

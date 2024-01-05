@@ -208,9 +208,27 @@ baseCarryFlag equ baseNumber + 1 ; boolean
 ; Base mode word size: 8, 16, 24, 32 (maybe 40 in the future).
 baseWordSize equ baseCarryFlag + 1 ; u8
 
-; String buffer for keyboard entry. In normal floating point entry mode, we
-; need 20 characters (see inputBufNormalMaxLen below). But to support 32-bit
-; base-2 numbers, we need 32 characters. Let's set this to 32.
+; The TI-OS floating point number supports 14 significant digits, but we need 6
+; more characters to hold the optional mantissa minus sign, the optional
+; decimal point, the optional 'E' symbol for the exponent, the 2-digit
+; exponent, and the optional minus sign on the exponent. That's a total of 20
+; characters. We need one more, to allow a complex delimiter to be entered.
+inputBufFloatMaxLen equ 20+1
+
+; A complex number requires 2 floating point numbers, plus a delimiter.
+inputBufComplexMaxLen equ 20+20+1
+
+; Max number of digits allowed for exponent.
+inputBufEEMaxLen equ 2
+
+; String buffer for keyboard entry. Three types of numbers can be entered, each
+; type with different maxlen limits:
+;
+; 1) floating point real numbers: 20 characters (inputBufFloatMaxLen)
+; 2) complex numbers: 20 * 2 = 40 characters (inputBufComplexMaxLen)
+; 3) base-2 numberrs: max of 32 digits (various, see getInputMaxLenBaseMode())
+;
+; The inputBuf must be the maximum of all of the above.
 ;
 ; This is a Pascal-style with a single size byte at the start. It does not
 ; include the cursor displayed at the end of the string. The equilvalent C
@@ -223,21 +241,11 @@ baseWordSize equ baseCarryFlag + 1 ; u8
 inputBuf equ baseWordSize + 1 ; struct InputBuf
 inputBufLen equ inputBuf ; len byte of the pascal string
 inputBufBuf equ inputBuf + 1
-inputBufCapacity equ 32 ; excludes trailing cursor
-inputBufSizeOf equ inputBufCapacity + 1 + 1 ; extra space for NUL terminator
+inputBufCapacity equ inputBufComplexMaxLen ; excludes trailing cursor
+inputBufSizeOf equ inputBufCapacity + 1 + 1 ; +1(len), +1(NUL)
 
-; The TI-OS floating point number supports 14 significant digits, but we need 6
-; more characters to hold the optional mantissa minus sign, the optional
-; decimal point, the optional 'E' symbol for the exponent, the 2-digit
-; exponent, and the optional minus sign on the exponent. That's a total of 20
-; characters.
-inputBufNormalMaxLen equ 20
-
-; Max number of digits allowed for exponent.
-inputBufEEMaxLen equ 2
-
-; When the inputBuf is used as a command argBuf, the maximum number of
-; characters in the buffer is 2.
+; argBuf can reuse inputBuf because argBuf is activated only after inputBuf is
+; closed.  The maximum number of characters in the buffer is 2.
 argBuf equ inputBuf ; struct InputBuf
 argBufLen equ inputBufLen
 argBufCapacity equ inputBufCapacity
@@ -253,6 +261,9 @@ argBufSizeMax equ 2 ; max number of digits accepted on input
 ; present just before the first digit. The inputBuf can hold more than 14
 ; digits, but those extra digits will be ignored when parsed into this data
 ; structure.
+;
+; TODO: I *think* this can be moved into the appBufferStart area, because I
+; don't think it needs to be saved upon app exit.
 ;
 ; This is a Pascal string whose equivalent C struct is:
 ;
