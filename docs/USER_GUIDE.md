@@ -798,6 +798,7 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
     - `RAND`: random number in the range `[0,1)`
     - `SEED`: set the random number generator seed to `X`
 - `ROOT` > `CPLX`
+    - ![CPLX MenuRow 1](images/rpn83p-screenshot-menu-root-cplx-1.png)
     - `REAL`: extract the real component of the complex number
     - `IMAG`: extract the imaginary component of the complex number
     - `CONJ`: calculate the complex conjugate
