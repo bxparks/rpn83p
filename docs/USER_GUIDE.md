@@ -287,7 +287,7 @@ After installing `rpn83p.8xk` file, go to the calculator:
 The RPN83P starts directly into the calculator mode, no fancy splash screen. You
 should see a screen that looks like:
 
-![RPN83P screenshot 1](images/rpn83p-screenshot-initial.png)
+![RPN83P screenshot 1](images/rpn83p-initial.png)
 
 ### Quitting
 
