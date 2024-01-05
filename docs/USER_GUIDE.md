@@ -756,8 +756,8 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
     - ![MATH MenuRow 1](images/rpn83p-screenshot-menu-root-math-1.png)
     - ![MATH MenuRow 2](images/rpn83p-screenshot-menu-root-math-2.png)
     - `X^3`: cube of `X`
-    - `3 Root X`: cube root of `X`
-    - `X Root Y`: `X` root of `Y`
+    - `3RootX`: cube root of `X`
+    - `XRootY`: `X` root of `Y`
     - `ATN2`: `atan2(X, Y)` in degrees or radians, depending on current mode
         - `Y`: y-component, entered first
         - `X`: x-component, entered second
@@ -797,21 +797,12 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
     - `N!`: factorial of `X`
     - `RAND`: random number in the range `[0,1)`
     - `SEED`: set the random number generator seed to `X`
-- `ROOT` > `CONV`
-    - ![CONV MenuRow 1](images/rpn83p-screenshot-menu-root-conv-1.png)
-    - ![CONV MenuRow 2](images/rpn83p-screenshot-menu-root-conv-2.png)
-    - `>DEG`: convert radians to degrees
-    - `>RAD`: convert degrees to radians
-    - `>REC`: polar to rectangular
-        - input: `Y`=y, `X`=x
-        - output: `Y`=theta, `X`=r
-        - (consistent with HP-42S)
-    - `>POL`: rectangular to polar
-        - input: `Y`=theta, `X`=r
-        - output: `Y`=y, `X`=x
-        - (consistent with HP-42S)
-    - `>HR`: convert `HH.MMSSssss` to `HH.hhhh`
-    - `>HMS`: convert `HH.hhhh` to `HH.MMSSssss`
+- `ROOT` > `CPLX`
+    - `REAL`: extract the real component of the complex number
+    - `IMAG`: extract the imaginary component of the complex number
+    - `CONJ`: calculate the complex conjugate
+    - `CABS`: calculate the magnitude of the complex number
+    - `CANG`: calculate the angle (i.e. argument) of the complex number
 - `ROOT` > `HELP`: display the Help pages
     - use arrow keys to view each Help page
 - `ROOT` > `BASE`
@@ -917,6 +908,69 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
         - `BEST`: automatically select the best model, i.e. the one with the
           largest absolute value of the correlation coefficient. The `CORR`
           value is returned in the `X` register for reference.
+- `ROOT` > `CONV`
+    - ![CONV MenuRow 1](images/rpn83p-screenshot-menu-root-conv-1.png)
+    - ![CONV MenuRow 2](images/rpn83p-screenshot-menu-root-conv-2.png)
+    - `>DEG`: convert radians to degrees
+    - `>RAD`: convert degrees to radians
+    - `>REC`: polar to rectangular
+        - input: `Y`=y, `X`=x
+        - output: `Y`=theta, `X`=r
+        - (consistent with HP-42S)
+    - `>POL`: rectangular to polar
+        - input: `Y`=theta, `X`=r
+        - output: `Y`=y, `X`=x
+        - (consistent with HP-42S)
+    - `>HR`: convert `HH.MMSSssss` to `HH.hhhh`
+    - `>HMS`: convert `HH.hhhh` to `HH.MMSSssss`
+- `ROOT` > `TVM` (time value of money)
+    - ![TVM MenuRow 1](images/rpn83p-screenshot-menu-root-tvm-1.png)
+    - ![TVM MenuRow 2](images/rpn83p-screenshot-menu-root-tvm-2.png)
+    - ![TVM MenuRow 3](images/rpn83p-screenshot-menu-root-tvm-3.png)
+    - `N`: set or calculate Number of payment periods
+    - `I%YR`: set or calculate Interest Percent per Year
+    - `PV`: set or calculate Present Value
+    - `PMT`: set or calculate Payment per period
+    - `FV`: set or calculate Future Value
+    - `P/YR`: set number of payments per year
+    - `BEG`: payment occurs at the Beginning of each period
+    - `END`: payment occurs at the End of each period
+    - `CLTV`: clear TVM variables and parameters
+    - `IYR1`: set `I%YR` guess 1 for TVM Solver
+    - `IYR2`: set `I%YR` guess 2 for TVM Solver
+    - `TMAX`: set iteration max for TVM Solver
+    - `RSTV`: reset TVM Solver parameters to factory defaults
+- `ROOT` > `CLR`
+    - ![CLR MenuRow 1](images/rpn83p-screenshot-menu-root-clr-1.png)
+    - `CLX`: clear `X` stack register (stack lift disabled)
+    - `CLST`: clear all RPN stack registers
+    - `CLRG`: clear all storage registers `R00` to `R24`
+    - `CLSigma`: clear STAT storage registers [`R11`, `R16`] or [`R11`, `R23`]
+    - `CLTV`: clear TVM variables and parameters
+- `ROOT` > `MODE`
+    - ![MODE MenuRow 1](images/rpn83p-screenshot-menu-root-mode-1.png)
+    - ![MODE MenuRow 2](images/rpn83p-screenshot-menu-root-mode-2.png)
+    - `FIX`: fixed mode with `N` digits after the decimal point
+        - set `N` to `99` for floating number of digits
+        - status line indicator is `FIX(N)`
+    - `SCI`: scientific notation with `N` digits after the decimal point
+        - set `N` to `99` for floating number of digits
+        - status line indicator is `SCI(N)`
+    - `ENG`: engineering notation with `N` digits after the decimal point
+        - set `N` to `99` for floating number of digits
+        - status line indicator is `ENG(N)`
+    - `RAD`: use radians for trigonometric functions
+    - `DEG`: use degrees for trigonometric functions
+    - `RRES`: real results only from real arguments
+    - `CRES`: complex results allowed from real arguments
+    - `RECT`: display complex number in rectangular form
+    - `PRAD`: display complex number in polar radian form
+    - `PDEG`: display complex number in polar degree form
+- `ROOT` > `STK`
+    - ![STK MenuRow 1](images/rpn83p-screenshot-menu-root-stk-1.png)
+    - `R(up)`: roll stack up
+    - `R(down)`: roll stack down, also bound to `(` button
+    - `X<>Y`: exchange `X` and `Y`, also bound to `)` button
 - `ROOT` > `UNIT`
     - ![UNIT MenuRow 1](images/rpn83p-screenshot-menu-root-unit-1.png)
     - ![UNIT MenuRow 2](images/rpn83p-screenshot-menu-root-unit-2.png)
@@ -948,48 +1002,6 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
     - `>cal`: kilo Joules to kilo calories
     - `>kW`: horsepowers (mechanical) to kilo Watts
     - `>hp`: kilo Watts to horsepowers (mechanical)
-- `ROOT` > `TVM` (time value of money)
-    - ![TVM MenuRow 1](images/rpn83p-screenshot-menu-root-tvm-1.png)
-    - ![TVM MenuRow 2](images/rpn83p-screenshot-menu-root-tvm-2.png)
-    - ![TVM MenuRow 3](images/rpn83p-screenshot-menu-root-tvm-3.png)
-    - `N`: set or calculate Number of payment periods
-    - `I%YR`: set or calculate Interest Percent per Year
-    - `PV`: set or calculate Present Value
-    - `PMT`: set or calculate Payment per period
-    - `FV`: set or calculate Future Value
-    - `P/YR`: set number of payments per year
-    - `BEG`: payment occurs at the Beginning of each period
-    - `END`: payment occurs at the End of each period
-    - `CLTV`: clear TVM variables and parameters
-    - `IYR1`: set `I%YR` guess 1 for TVM Solver
-    - `IYR2`: set `I%YR` guess 2 for TVM Solver
-    - `TMAX`: set iteration max for TVM Solver
-    - `RSTV`: reset TVM Solver parameters to factory defaults
-- `ROOT` > `CLR`
-    - ![CLR MenuRow 1](images/rpn83p-screenshot-menu-root-clr-1.png)
-    - `CLX`: clear `X` stack register (stack lift disabled)
-    - `CLST`: clear all RPN stack registers
-    - `CLRG`: clear all storage registers `R00` to `R24`
-    - `CLSigma`: clear STAT storage registers [`R11`, `R16`] or [`R11`, `R23`]
-    - `CLTV`: clear TVM variables and parameters
-- `ROOT` > `MODE`
-    - ![MODE MenuRow 1](images/rpn83p-screenshot-menu-root-mode-1.png)
-    - `FIX`: fixed mode with `N` digits after the decimal point
-        - set `N` to `99` for floating number of digits
-        - status line indicator is `FIX(N)`
-    - `SCI`: scientific notation with `N` digits after the decimal point
-        - set `N` to `99` for floating number of digits
-        - status line indicator is `SCI(N)`
-    - `ENG`: engineering notation with `N` digits after the decimal point
-        - set `N` to `99` for floating number of digits
-        - status line indicator is `ENG(N)`
-    - `RAD`: use radians for trigonometric functions
-    - `DEG`: use degrees for trigonometric functions
-- `ROOT` > `STK`
-    - ![STK MenuRow 1](images/rpn83p-screenshot-menu-root-stk-1.png)
-    - `R(up)`: roll stack up
-    - `R(down)`: roll stack down, also bound to `(` button
-    - `X<>Y`: exchange `X` and `Y`, also bound to `)` button
 
 ## Advanced Usage
 
