@@ -20,9 +20,11 @@ cannot remember how the code works.
     - [Complex Number Rendering](#complex-number-rendering)
 - [Design Guidelines](#design-guidelines)
     - [No Keyboard Overlay](#no-keyboard-overlay)
+    - [Utilize TI-OS](#utilize-ti-os)
+    - [Flash App](#flash-app)
+    - [Traditional RPN System](#traditional-rpn-system)
     - [Hierarchical Menu](#hierarchical-menu)
     - [No System Flags](#no-system-flags)
-    - [Traditional RPN System](#traditional-rpn-system)
     - [Includes Useful Features](#includes-useful-features)
     - [Customizable](#customizable)
 
@@ -248,6 +250,32 @@ removable keyboard faceplate. Different faceplates are available in different
 colors. I don't have a 3D printer so I don't know if it's possible to create a
 custom faceplate. An injection molding faceplate would be far too expensive.
 
+### Utilize TI-OS
+
+The underlying TI-OS provides an enormous amount of mathematical, numerical, and
+formatting functions. To save development time and maintenance costs, RPN83P
+will use as much of the TI-OS routines as practical.
+
+### Flash App
+
+There are 2 types of assembly programs possible on these TI calculators: 1)
+assembly programs which reside in RAM, and, 2) flash applications which reside
+in non-volatile flash memory. Flash applications are far more convenient and
+robust because they do not have an arbitrarily 8kB limit in size, and they are
+retained when the calculator crashes or loses battery power. RPN83P will be a
+flash application.
+
+### Traditional RPN System
+
+It may be a personal preference, but I believe that the traditional RPN system
+from older HP calculators are easier to use than the modern RPL calculators
+(introduced with the HP-28S series, and continuing through the HP-48/49/50
+series.) Consistency with the traditional RPN calculators seems important for
+ease of use. For example, even though it is actually slightly easier to
+implement an RPN entry system that separates the input buffer from the `X`
+register (like RPL systems do), the RPN83P goes out of its way to mimic the
+behavior of the traditional RPN calculators.
+
 ### Hierarchical Menu
 
 Of the menu systems that I have seen on various calculators, the hierarchical
@@ -270,17 +298,6 @@ options through the menu system.
 User flags, on the other hand, may be provided in the future, probably when
 keystroke programming is added. They are definitely useful in calculator
 programs.
-
-### Traditional RPN System
-
-It may be a personal preference, but I believe that the traditional RPN system
-from older HP calculators are easier to use than the modern RPL calculators
-(introduced with the HP-28S series, and continuing through the HP-48/49/50
-series.) Consistency with the traditional RPN calculators seems important for
-ease of use. For example, even though it is actually slightly easier to
-implement an RPN entry system that separates the input buffer from the `X`
-register (like RPL systems do), the RPN83P goes out of its way to mimic the
-behavior of the traditional RPN calculators.
 
 ### Includes Useful Features
 
