@@ -1195,20 +1195,20 @@ supported using the `STO` and `RCL` buttons followed by an arithmetic button.
 
 For example:
 
-- `STO` `+` `00`: add `X` to Reg 00
-- `STO` `-` `00`: subtract `X` from Reg 00
-- `STO` `*` `00`: multiply `X` to Reg 00
-- `STO` `/` `00`: divide `X` into Reg 00
+- `STO` `+` `00`: add `X` to `R00`
+- `STO` `-` `00`: subtract `X` from `R00`
+- `STO` `*` `00`: multiply `X` to `R00`
+- `STO` `/` `00`: divide `X` into `R00`
 
 Similarly:
 
-- `RCL` `+` `00`: add Reg 00 to `X`
-- `RCL` `-` `00`: subtract Reg 00 from `X`
-- `RCL` `*` `00`: multiply Reg 00 to `X`
-- `RCL` `/` `00`: divide Reg 00 into `X`
+- `RCL` `+` `00`: add `R00` to `X`
+- `RCL` `-` `00`: subtract `R00` from `X`
+- `RCL` `*` `00`: multiply `R00` to `X`
+- `RCL` `/` `00`: divide `R00` into `X`
 
-Indirect storage registers are not supported (as of v0.7.0). In other words, the
-`STO` `IND` `nn` and `RCL` `IND` `nn` functionality from the HP-42S.
+Indirect storage registers, the `STO` `IND` `nn` and `RCL` `IND` `nn`
+functionality from the HP-42S, are not supported (as of v0.9.0).
 
 ### Prime Factors
 
