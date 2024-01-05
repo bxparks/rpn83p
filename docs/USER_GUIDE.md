@@ -35,7 +35,7 @@ RPN calculator app for the TI-83 Plus and TI-84 Plus inspired by the HP-42S.
     - [Menu Functions](#menu-functions)
 - [Advanced Usage](#advanced-usage)
     - [Auto-start](#auto-start)
-    - [Input Limits and Long Numbers](#limit-limits-and-long-numbers)
+    - [Input Limits and Long Numbers](#input-limits-and-long-numbers)
     - [Floating Point Display Modes](#floating-point-display-modes)
     - [SHOW Mode](#show-mode)
     - [Trigonometric Modes](#trigonometric-modes)
