@@ -2,7 +2,7 @@
 
 RPN calculator app for the TI-83 Plus and TI-84 Plus inspired by the HP-42S.
 
-**Version**: 0.9.0-dev (2024-01-01)
+**Version**: 0.9.0-dev (2024-01-04)
 
 **Project Home**: https://github.com/bxparks/rpn83p
 
@@ -358,8 +358,8 @@ The following buttons are used to enter and edit a number in the input buffer:
 - `(-)`: enters a negative sign, or changes the sign (same as `+/-` or `CHS` on
   HP calculators)
 - `DEL`: Backspace (same as `<-` on many HP calculators)
-- `CLEAR`: Clear `X` register (same as `CLx` or `CLX` on HP calculators), *or*
-  clear the input buffer, *or* clear the entire RPN stack.
+- `CLEAR`: Clear `X` register, same as `CLX`; *or* clear the input buffer
+- `CLEAR CLEAR CLEAR`: Clear the stack, same as `CLST`
 - `2ND` `EE`: adds an `E` to allow entry of scientific notation exponent (same
   as `E` or `EEX` on HP calculators)
 - `,`: same as `2ND` `EE`, allowing the `2ND` to be omitted for convenience
@@ -1641,7 +1641,7 @@ size without confusion. The `WSZ?` command returns the current word size in the
 think of any way around this, but I assume that this will not cause as much
 usability problems as the `WSIZ` command.
 
-### Base Input Digit Limit
+#### Base Input Digit Limit
 
 The maximum number of digits allowed to be entered into the input buffer is
 limited by a function which depends on:
@@ -1656,31 +1656,29 @@ current `WSIZ` and base number.
 Here are the limits:
 
 ```
-+------+------+-------------+-----------+
-| Base | WSIZ |     Max Num | MaxDigits |
-|------+------+-------------+-----------|
-|  DEC |    8 |         255 |         3 |
-|  DEC |   16 |       65535 |         5 |
-|  DEC |   24 |    16777215 |         8 |
-|  DEC |   32 |  4294967295 |        10 |
-|------+------+-------------+-----------|
-|  HEX |    8 |          FF |         2 |
-|  HEX |   16 |        FFFF |         4 |
-|  HEX |   24 |      FFFFFF |         6 |
-|  HEX |   32 |    FFFFFFFF |         8 |
-|------+------+-------------+-----------|
-|  OCT |    8 |         377 |         3 |
-|  OCT |   16 |      177777 |         5 |
-|  OCT |   24 |    77777777 |         8 |
-|  OCT |   32 | 37777777777 |        10 |
-|------+------+-------------+-----------|
-|  BIN |    8 |         255 |         8 |
-|  BIN |   16 |        4095 |    (*) 12 |
-|  BIN |   24 |        4095 |    (*) 12 |
-|  BIN |   32 |        4095 |    (*) 12 |
-+------+------+------------ +-----------+
-
-(*) Limit determined by width of a single line on the display.
++------+------+-------------+------------+
+| Base | WSIZ |  Max Number | Max Digits |
+|------+------+-------------+------------|
+|  DEC |    8 |         255 |          3 |
+|  DEC |   16 |       65535 |          5 |
+|  DEC |   24 |    16777215 |          8 |
+|  DEC |   32 |  4294967295 |         10 |
+|------+------+-------------+------------|
+|  HEX |    8 |          FF |          2 |
+|  HEX |   16 |        FFFF |          4 |
+|  HEX |   24 |      FFFFFF |          6 |
+|  HEX |   32 |    FFFFFFFF |          8 |
+|------+------+-------------+------------|
+|  OCT |    8 |         377 |          3 |
+|  OCT |   16 |      177777 |          5 |
+|  OCT |   24 |    77777777 |          8 |
+|  OCT |   32 | 37777777777 |         10 |
+|------+------+-------------+------------|
+|  BIN |    8 |         255 |          8 |
+|  BIN |   16 |       65535 |         16 |
+|  BIN |   24 |    16777215 |         24 |
+|  BIN |   32 |  4294967295 |         32 |
++------+------+------------ +------------+
 ```
 
 Limiting the number of digits during input does not completely prevent the user
@@ -1691,25 +1689,10 @@ bits does not correspond exactly to the representation in decimal. (A future
 enhancement may be to parse the input buffer upon `ENTER` and refuse to accept
 the number if it is greater than the maximum allowed by the `WSIZ`.)
 
-In `BIN` mode, the longest binary number that can be entered is limited by the
-width of the single line on the display, which in BIN mode is 12. You can apply
-arithmetic, logical, and bitwise operations to binary numbers to create larger
-results, but the largest binary number that can be entered manually is currently
-limited to 12 digits.
-
-It is assumed that most people will work with relatively small numbers in BIN
-mode. If they need to work with larger binary numbers, there may be
-two hacky workarounds:
-
-1. Enter the numbers in HEX instead of BIN.
-2. Split the BIN numbers in groups less than 12, then use the shift operators
-`SL`  to shift the binary digits, and add them together to form the larger
-binary number.
-
-A future enhancement would be allow up to `WSIZ` digits to be entered in `BIN`
-mode by scrolling the digits off the single line to the left. But currently
-(v0.8.0), this ability is not supported because the amount of work seems too
-great for the amount of benefits.
+The longest binary number that can be displayed on a single line in edit mode is
+14 digits. If the `WSIZ` is greater than 14 (i.e. greater than 8), then a binary
+number in `BIN` can exceed this limit. Entering additional digits after 14 will
+cause the left digits to scroll off the screen to the left.
 
 #### Base Number Retention
 
