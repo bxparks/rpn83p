@@ -1497,14 +1497,13 @@ functions, and the fractional digits were truncated:
 #### Carry Flag
 
 The RPN83P supports the *Carry Flag* implemented by most (all?) microprocessors.
-The Carry Flag is supported by the HP-16C but not by the HP-42S. When the Carry
-Flag is set, a small `C` letter appears on the display like this:
+The Carry Flag is supported by the HP-16C but not by the HP-42S.
 
+When the flag is off, a dash `-` is shown (left). When the Carry Flag is set, a
+small `C` letter appears (right):
+
+![Carry Flag Off](images/rpn83p-carry-flag-off.png)
 ![Carry Flag On](images/rpn83p-carry-flag-on.png)
-
-When the flag is off, a dash `-` is shown like this:
-
-![Carry Flag On](images/rpn83p-carry-flag-off.png)
 
 The Carry Flag can be explicitly cleared, set, and retrieved using the following
 menu items:
