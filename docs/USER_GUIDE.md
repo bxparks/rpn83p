@@ -2677,10 +2677,17 @@ limited:
 - add `ROND` menu function
     - round real and complex numbers to the number of significant digits
       displayed on the screen
-- support complex numbers in various numerical functions
+- support complex numbers in various `NUM` functions
     - `IP`, `FP`, `FLR`, `CEIL`, `NEAR`
     - we could support complex numbers to `%` and `%CH`, but does that make
       sense? The HP-42S does not support it.
+- bigger RPN stack
+    - linking and unlinking a complex number to and from its 2 components
+      effectively reduces the stack size by 1
+    - an option to increase the size to 5 or maybe 8 seems worthwhile
+    - should the stack size be user-configurable, say between 4 and 8?
+    - I am not convinced that an infinite stack like RPL or the NSTK mode of
+      Free42 is worth the effort
 
 ### Medium Future
 
