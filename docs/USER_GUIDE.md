@@ -364,6 +364,14 @@ The following buttons are used to enter and edit a number in the input buffer:
   as `E` or `EEX` on HP calculators)
 - `,`: same as `2ND` `EE`, allowing the `2ND` to be omitted for convenience
 
+The following keys are related to complex numbers and are explained in more
+detail in the [Complex Numbers](#complex-numbers) section below:
+
+- `2ND LINK`: convert `X` and `Y` into a complex number in `X`, or the reverse
+- `2ND ANGLE`: enter a complex number in polar degree form
+- `2ND ANGLE` `2ND ANGLE`: enter a complex number polar radian form
+- `2ND i`: enter a complex number in rectangular form
+
 The `(-)` button acts like the `+/-` or `CHS` button on HP calculators. It
 toggles the negative sign, adding it if it does not exist, and removing it if it
 does.
@@ -390,17 +398,9 @@ to reflect their mental state when starting a new calculation. The `CLST` menu
 function provides this feature, but is nested under the `ROOT > CLR > CLST` menu
 hierarchy. If you are deeply nested under another part of the menu hierarchy, it
 can be cumbersome to navigate back up to the `ROOT`, invoke the `CLST` button,
-then make your way back to the original menu location.
-
-On RPN calculators with multiple lines such as the HP-42S, the `CLEAR` menu bar
-can be reached using a direct keyboard shortcut, and the `CLST` function is only
-2 or 3 keystrokes away. The RPN83P app uses the key buttons already provided by
-the TI-83+ and TI-84+ calculators, and unfortunately, there is no obvious button
-shortcut that can be used for the `CLR` menu bar. The obvious choice would have
-been the `2ND CLEAR`, but the TI-OS does not support that. It returns the same
-keycode as just `CLEAR`. The only reasonable alternative was to overload the
-existing `CLEAR` button, so that it performs the additional function of `CLST`
-when the button is pressed multiple times.
+then make your way back to the original menu location. To solve this problem,
+the RPN83P app will invoke `CLST` function when `CLEAR` is hit 3 times. (The
+TI-OS does not support `2ND CLEAR`, it returns the same code as `CLEAR`.)
 
 An empty string will be interpreted as a `0` if the `ENTER` key or a function
 key is pressed.
