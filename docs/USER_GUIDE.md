@@ -1344,7 +1344,7 @@ they are intended to be treated as unsigned integers.
 Let's start with the RPN stack containing the following numbers: -1, 17.1, 9E9,
 and 1234567, like this:
 
-![Numbers in Normal Mode](images/rpn83p-screenshot-base-normal.png)
+![Numbers in Normal Mode](images/rpn83p-base-normal.png)
 
 **DEC** (decimal)
 
@@ -1353,7 +1353,7 @@ numbers on the RPN stack are displayed as an integer, *as if* they were
 converted to an unsigned integer, but the RPN stack values are not modified. For
 the values given above, the display now looks like this:
 
-![Numbers in DEC Mode](images/rpn83p-screenshot-base-dec.png)
+![Numbers in DEC Mode](images/rpn83p-base-dec.png)
 
 If the value on the RPN stack is negative, a single `-` sign is shown.
 If the value is greater than or equal to `2^WSIZ`, then 3 dots `...` are shown
@@ -1368,7 +1368,7 @@ The `HEX` (hexadecimal) mode displays all numbers on the RPN stack using base
 16. Only the integer part is rendered as if the RPN stack values were
 converted to an unsigned integer.
 
-![Numbers in HEX Mode](images/rpn83p-screenshot-base-hex.png)
+![Numbers in HEX Mode](images/rpn83p-base-hex.png)
 
 If the value on the RPN stack is negative, a single `-` sign is shown.
 If the value is greater than or equal to `2^WSIZ`, then 3 dots `...` are shown
@@ -1389,7 +1389,7 @@ The `OCT` (octal) mode displays all numbers on the RPN stack using base 8. Only
 the integer part is rendered as if the RPN stack values were converted to an
 unsigned integer.
 
-![Numbers in OCT Mode](images/rpn83p-screenshot-base-oct.png)
+![Numbers in OCT Mode](images/rpn83p-base-oct.png)
 
 If the value on the RPN stack is negative, a single `-` sign is shown.
 If the value is greater than or equal to `2^WSIZ`, then 3 dots `...` are shown
@@ -1407,7 +1407,7 @@ The `BIN` (binary) mode displays all numbers on the RPN stack using base 2. Only
 the integer part is rendered as if the RPN stack values were converted to an
 unsigned integer.
 
-![Numbers in BIN Mode](images/rpn83p-screenshot-base-bin.png)
+![Numbers in BIN Mode](images/rpn83p-base-bin.png)
 
 If the value on the RPN stack is negative, a single `-` sign is shown.
 If the value is greater than or equal to `2^WSIZ`, then 3 dots `...` are shown
@@ -1426,7 +1426,7 @@ The `SHOW` function (bound to `2ND ENTRY` on the TI calculators) can be used to
 reveal all digits of the binary number, in groups of 4, using as many 4 lines of
 text like this:
 
-![Numbers in BIN Mode with SHOW](images/rpn83p-screenshot-base-bin-show.png)
+![Numbers in BIN Mode with SHOW](images/rpn83p-base-bin-show.png)
 
 We can now see that the number `1234567` in Base 2 is `0000 0000 0001 0010 1101
 0110 1000 0111`.
@@ -1521,26 +1521,26 @@ the integer operations instead of floating point operations.
 For example, suppose the following numbers are in the RPN stack *before*
 entering the `BASE` menu:
 
-![Base Arithmetic Part 1](images/rpn83p-screenshot-base-arithmetic-1-float.png)
+![Base Arithmetic Part 1](images/rpn83p-base-arithmetic-1-float.png)
 
 Entering the `BASE` menu shows this (assuming that the default base number was
 `DEC`):
 
-![Base Arithmetic Part 2](images/rpn83p-screenshot-base-arithmetic-2-dec.png)
+![Base Arithmetic Part 2](images/rpn83p-base-arithmetic-2-dec.png)
 
 Changing to `HEX` mode shows this:
 
-![Base Arithmetic Part 3](images/rpn83p-screenshot-base-arithmetic-3-hex.png)
+![Base Arithmetic Part 3](images/rpn83p-base-arithmetic-3-hex.png)
 
 Pressing the `+` button adds the `X` and `Y` registers, converting the
 values to 32-bit unsigned integers before the addition:
 
-![Base Arithmetic Part 4](images/rpn83p-screenshot-base-arithmetic-4-plus.png)
+![Base Arithmetic Part 4](images/rpn83p-base-arithmetic-4-plus.png)
 
 Changing back to `DEC` mode shows that the numbers were added using integer
 functions, and the fractional digits were truncated:
 
-![Base Arithmetic Part 5](images/rpn83p-screenshot-base-arithmetic-5-dec.png)
+![Base Arithmetic Part 5](images/rpn83p-base-arithmetic-5-dec.png)
 
 #### Carry Flag
 
