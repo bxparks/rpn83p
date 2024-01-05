@@ -2335,10 +2335,9 @@ pi/3 = 2.094395102 radians) so would probably be more difficult to enter.
 
 **HP-35s Compatibility Note 1**: The HP-35s uses a Theta symbol to display
 complex numbers in polar notation. The problem with the Theta symbol is that in
-the Small font of the TI calculators, it looks too similar to the digit `0`. The
-Angle symbol is distinctly different from the digit characters on the TI
-calculators using the Small font, and it is also the symbol used by the HP-42S
-calculator.
+the Small Font of the TI calculators, it looks too similar to the digit `0`. The
+Angle symbol seemed like a better choice as a delimiter because it is visually
+distinct from other digit characters. It is also the symbol used by the HP-42S.
 
 **HP-35s Compatibility Note 2**: The HP-35s uses `SHIFT Theta` button to enter
 complex numbers in polar notation. The `Theta` symbol is available on a TI
@@ -2436,7 +2435,8 @@ functions support complex numbers:
 Trigonometric and hyperbolic functions do *not* support complex numbers because
 the underlying TI-OS functions do not support them.
 
-Additional functions specific to complex numbers are under the `CPLX` menu:
+Additional functions specific to complex numbers are under the `ROOT > CPLX`
+menu:
 
 - ![RPN83P Complex CPLX Menu 1](images/rpn83p-complex-cplx-menu-1.png)
     - ![RPN83P Complex CPLX Menu 2](images/rpn83p-complex-cplx-menu-2.png)
@@ -2457,7 +2457,7 @@ self-descriptive.
 
 Since `CANG` returns the *angle*, it uses the trigonometric mode (`RAD`, `DEG`)
 to determine the unit of that angle. It is currently the *only* complex function
-that is affected by the trigonometric mode. One alternative was to use the
+that is affected by the trigonometric mode. An alternative was to use the
 complex *display* mode (`RECT`, `PRAD`, `PDEG`) to determine the unit of `CANG`,
 but it was too confusing for 2 reasons: 1) When the complex number is displayed
 in `RECT` format, there is no obvious reason why it should pick `RAD` over
@@ -2502,7 +2502,7 @@ In this contrived example, we compute an expression involving all three
 representations of complex numbers:
 
 ```
-# ignore this comment line
+# ignore the following comment line, comments are not supported by MarkDown
 \[ \sqrt{(1+i)^{(3 \angle 45^{\circ})} + (1 \angle 2)} \]
 ```
 
