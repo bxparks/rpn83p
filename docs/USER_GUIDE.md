@@ -35,6 +35,7 @@ RPN calculator app for the TI-83 Plus and TI-84 Plus inspired by the HP-42S.
     - [Menu Functions](#menu-functions)
 - [Advanced Usage](#advanced-usage)
     - [Auto-start](#auto-start)
+    - [Input Limits and Long Numbers](#limit-limits-and-long-numbers)
     - [Floating Point Display Modes](#floating-point-display-modes)
     - [SHOW Mode](#show-mode)
     - [Trigonometric Modes](#trigonometric-modes)
@@ -1026,6 +1027,33 @@ The LCD screen should look like this before hitting `FINISH`:
 
 Turn off the calculator and turn it back on. It should directly go into the
 RPN83P application.
+
+### Input Limits and Long Numbers
+
+The input buffer is rendering using Large Font which means that only 14
+characters can be displayed on a single line. Entering numbers longer than 14
+characters is now (v0.9) supported by scrolling the left characters off the
+screen. When a non-zero leading digit scrolls off, an an ellipsis character on
+the left indicates that some digits are hidden.
+
+For example, if the number "123456.78901234" is entered, the input buffer look
+normal after 14 characters (see left), then when the 15th character is entered,
+some digits scroll off to the left (see right):
+
+![Long Number Entry 1](images/rpn83p-long-number-entry-1.png)
+![Long Number Entry 2](images/rpn83p-long-number-entry-2.png)
+
+In normal mode, the input system is configured to accept up to 20 digits because
+a TI-OS floating point number in scientific notation requires 20 digits to enter
+in full precision (14 significant digits plus 6 digits of notation overhead).
+
+In `BASE` mode, the input system will accept up to 32 digits because a `BIN`
+binary number can be up to 32 digits long.
+
+When the input system detects a [complex number in inlined entry
+mode](#complex-number-entry), through the presence of a `2ND i` or `2ND ANGLE`
+delimiter, the maximum number of characters changes to 41 to allow 2 floating
+point numbers in full precision to be entered on a single line.
 
 ### Floating Point Display Modes
 
