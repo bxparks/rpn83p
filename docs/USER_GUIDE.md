@@ -2767,6 +2767,8 @@ limited:
     - should the stack size be user-configurable, say between 4 and 8?
     - I am not convinced that an infinite stack like RPL or the NSTK mode of
       Free42 is worth the effort
+- add a `ROOT > CLR > CLAL` (Clear All) menu function
+    - becomes useful as more features and configuration options are added
 
 ### Medium Future
 
