@@ -1457,36 +1457,49 @@ formatBinDigitsEnd:
 
 ;-----------------------------------------------------------------------------
 
-; Description: Convert A to a string of 1 to 3 digits and append at the
-; string buffer pointed by HL. No NUL termination.
+; Description: Convert A to a string of 1 to 3 digits, with the leading '0'
+; suppressed, and append at the string buffer pointed by HL. No NUL
+; termination.
 ; Input: HL: pointer to string buffer
 ; Output: HL: pointer to one character past the end of string
 ; Destroys: A, B, C, HL
+; Preserves: DE
+suppressLeadingZero equ 0 ; bit 0 of D
 convertAToDec:
+    push de
+    set suppressLeadingZero, d
     ; Divide by 100
     ld b, 100
     call divideAByB
     or a
-    jr z, convertAToDec10
+    jr z, convertAToDecTen ; skip hundred's leading zero
+    ; print non-zero hundred's digit
     call convertAToChar
     ld (hl), a
     inc hl
-convertAToDec10:
+    res suppressLeadingZero, d
+convertAToDecTen:
     ; Divide by 10
     ld a, b
     ld b, 10
     call divideAByB
     or a
-    jr z, convertAToDec1
+    jr nz, convertAToDecTenPrint
+    ; Check if ten's zero should be suppressed before printing.
+    bit suppressLeadingZero, d ; if suppressLeadingZero: ZF=0
+    jr nz, convertAToDecOne
+convertAToDecTenPrint:
     call convertAToChar
     ld (hl), a
     inc hl
-convertAToDec1:
+convertAToDecOne:
     ; Extract the 1
     ld a, b
     call convertAToChar
+    ; always print the last digit regardless of suppressLeadingZero
     ld (hl), a
     inc hl
+    pop de
     ret
 
 ; Description: Return A / B using repeated substraction.
