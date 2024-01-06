@@ -308,16 +308,16 @@ The keystrokes are:
 - (optional) Press `CLEAR CLEAR CLEAR` to clear the RPN stack.
 - Press `MODE` `downarrow` `RECT`:
   ![MODE MenuRow 2](docs/images/rpn83p-menu-root-mode-2.png)
-- Press `100 ENTER`
-- Press `2 PI * 60 * 1 EE 5 (-) * 1/X (-)`
+- Press `100` `ENTER`
+- Press `2` `PI` `*` `60` `*` `1 EE 5` `(-)` `*` `1/X` `(-)` (-265.26)
 - Press `2ND LINK` (100 - 265.26i)
-- Press `100 2ND i 250 +` (200-15.26i)
-- Press `200 2ND ANGLE 10 +` (396.96+19.47i)
-- Press `300 2ND ANGLE 2ND ANGLE 0.1 +` (695.46+49.42i)
+- Press `100` `2ND i` `250` `+` (200-15.26i)
+- Press `200` `2ND ANGLE` `10 `+` (396.96+19.47i)
+- Press `300` `2ND ANGLE` `2ND ANGLE` `0.1` `+` (695.46+49.42i)
 - Press `4` `/` (173.89+12.35i)
 - Press `PRAD` (174.30 e^(i 0.07)
 - Press `PDEG` (174.30 e^(4.04 deg))
-- Press `MATH CPLX`:
+- Press `MATH` `CPLX`:
   ![CPLX MenuRow 1](docs/images/rpn83p-menu-root-cplx-1.png)
 - Press `CABS` (174.30)
 
