@@ -27,7 +27,8 @@ CHANGELOG.md \
 rpn83p.8xk \
 rpn83p-example1.gif \
 rpn83p-example2.gif \
-rpn83p-example3.gif
+rpn83p-example3.gif \
+rpn83p-example4.gif
 
 # Create a zip file suitable for third party archives, like cemetech.net and
 # ticalc.org.
@@ -76,6 +77,10 @@ rpn83p-example2.gif: ../docs/images/rpn83p-example2.gif
 
 # Copy the animated GIF as a sample screenshot.
 rpn83p-example3.gif: ../docs/images/rpn83p-example3.gif
+	cp -f $< $@
+
+# Copy the animated GIF as a sample screenshot.
+rpn83p-example4.gif: ../docs/images/rpn83p-example4.gif
 	cp -f $< $@
 
 clean:
