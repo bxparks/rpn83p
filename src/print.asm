@@ -198,3 +198,17 @@ putPSLoop:
     ret z
     djnz putPSLoop
     ret
+
+;-----------------------------------------------------------------------------
+
+; Description: Convert A into an Ascii Char ('0'-'9','A'-'F').
+; Destroys: A
+convertAToChar:
+    cp 10
+    jr c, convertAToCharDecimal
+    sub 10
+    add a, 'A'
+    ret
+convertAToCharDecimal:
+    add a, '0'
+    ret

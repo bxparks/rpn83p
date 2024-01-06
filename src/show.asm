@@ -356,7 +356,7 @@ formSciStringExp:
     neg ; A=-EXP
 formSciStringPosExp:
     ex de, hl
-    call convertAToDec ; HL string updated, no NUL termination
+    bcall(_ConvertAToString) ; HL string updated, NUL terminated
     ex de, hl
     ret
 

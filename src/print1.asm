@@ -32,38 +32,49 @@ getStringPageOne:
 
 ;------------------------------------------------------------------------------
 
-; Description: Convert A to a NUL-terminated C-string of 1 to 3 digits at the
-; string buffer pointed by HL.
+; Description: Convert A to a string of 1 to 3 digits, with the leading '0'
+; suppressed, and append at the string buffer pointed by HL. NUL terminated.
 ; Input: HL: pointer to string buffer
 ; Output: HL: pointer to NUL terminator at end of string
 ; Destroys: A, B, C, HL
-convertAToDecPageOne:
+; Preserves: DE
+suppressLeadingZero equ 0 ; bit 0 of D
+ConvertAToString:
+    push de
+    set suppressLeadingZero, d
     ; Divide by 100
     ld b, 100
-    call divideAByBPageOne
+    call divideAByB
     or a
-    jr z, convertAToDecPageOne10
+    jr z, convertAToStringTen ; skip hundred's leading zero
+    ; print non-zero hundred's digit
     call convertAToCharPageOne
     ld (hl), a
     inc hl
-convertAToDecPageOne10:
+    res suppressLeadingZero, d
+convertAToStringTen:
     ; Divide by 10
     ld a, b
     ld b, 10
-    call divideAByBPageOne
+    call divideAByB
     or a
-    jr z, convertAToDecPageOne1
+    jr nz, convertAToStringTenPrint
+    ; Check if ten's zero should be suppressed before printing.
+    bit suppressLeadingZero, d ; if suppressLeadingZero: ZF=0
+    jr nz, convertAToStringOne
+convertAToStringTenPrint:
     call convertAToCharPageOne
     ld (hl), a
     inc hl
-convertAToDecPageOne1:
+convertAToStringOne:
     ; Extract the 1
     ld a, b
     call convertAToCharPageOne
+    ; always print the last digit regardless of suppressLeadingZero
     ld (hl), a
     inc hl
-    ; Terminate with NUL
-    ld (hl), 0
+    ; ld (hl), 0 ; NUL terminated
+    pop de
     ret
 
 ; Description: Return A / B using repeated substraction.
@@ -72,29 +83,28 @@ convertAToDecPageOne1:
 ;   - B: denominator
 ; Output: A = A/B (quotient); B=A%B (remainder)
 ; Destroys: C
-divideAByBPageOne:
+divideAByB:
     ld c, 0
-divideAByBPageOneLoop:
+divideAByBLoop:
     sub b
-    jr c, divideAByBPageOneLoopEnd
+    jr c, divideAByBLoopEnd
     inc c
-    jr divideAByBPageOneLoop
-divideAByBPageOneLoopEnd:
+    jr divideAByBLoop
+divideAByBLoopEnd:
     add a, b ; undo the last subtraction
     ld b, a
     ld a, c
     ret
 
-; Description: Convert A into an Ascii Char ('0'-'9','A'-'F'). Same as
-; convertAToChar() but located in Flash Page 1.
+; Description: Convert A into an Ascii Char ('0'-'9','A'-'F').
 ; Destroys: A
 convertAToCharPageOne:
     cp 10
-    jr c, convertAToCharPageOneDec
+    jr c, convertAToCharPageOneDecimal
     sub 10
     add a, 'A'
     ret
-convertAToCharPageOneDec:
+convertAToCharPageOneDecimal:
     add a, '0'
     ret
 
