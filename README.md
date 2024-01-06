@@ -144,7 +144,7 @@ Guide](docs/USER_GUIDE.md), but here is the quick version:
 
 The RPN83P app starts directly into the calculator mode, like this:
 
-![RPN83P Hello 1](docs/images/rpn83p-screenshot-initial.png)
+![RPN83P Hello 1](docs/images/rpn83p-initial.png)
 
 ### Supported Hardware
 
@@ -216,7 +216,7 @@ view the final result as a decimal number:
 
 - Press `MATH` to reset the menu to the home row.
 - Navigate the menu with the DOWN arrow to get to
-  ![ROOT MenuRow 2](docs/images/rpn83p-screenshot-menu-root-2.png)
+  ![ROOT MenuRow 2](docs/images/rpn83p-menu-root-2.png)
 - Press `BASE` menu to get to
   ![BASE Menu DEC](docs/images/rpn83p-menu-base-dec.png)
 - Press `HEX` menu to get to
@@ -227,7 +227,7 @@ view the final result as a decimal number:
 - Press `6` button
 - Press `5` button
 - Press DOWN arrow to get to the menu row with the `AND` menu item
-  ![BASE MenuRow AND](docs/images/rpn83p-screenshot-menu-root-base-2.png)
+  ![BASE MenuRow AND](docs/images/rpn83p-menu-root-base-2.png)
 - Press `AND` menu, the `X` register should show `00000024`
 - Press UP arrow to go back to
   ![BASE Menu HEX](docs/images/rpn83p-menu-base-hex.png)
@@ -236,7 +236,7 @@ view the final result as a decimal number:
 - Press `BIN` menu, the `X` register should show `00000000100100` with the menu
   showing ![BASE Menu BIN](docs/images/rpn83p-menu-base-bin.png)
 - Press DOWN DOWN (twice) to the menu row with the shift right `SR` item
-  ![BASE MenuRow SR](docs/images/rpn83p-screenshot-menu-root-base-3.png)
+  ![BASE MenuRow SR](docs/images/rpn83p-menu-root-base-3.png)
 - Press `SR` `SR` `SR` (three times) to show `00000000000100` and the Carry Flag
   `C` set
 - Press UP UP (twice) to reach the base conversion menu row
@@ -264,14 +264,14 @@ Here are the steps:
 
 - Press `MATH` to reset the menu to the home row.
 - Navigate the menu with the DOWN arrow to get to
-  ![ROOT MenuRow 2](docs/images/rpn83p-screenshot-menu-root-2.png)
+  ![ROOT MenuRow 2](docs/images/rpn83p-menu-root-2.png)
 - Press the `TVM` menu to get to
-  ![TVM MenuRow 1](docs/images/rpn83p-screenshot-menu-root-tvm-1.png)
+  ![TVM MenuRow 1](docs/images/rpn83p-menu-root-tvm-1.png)
 - Press the DOWN arrow to get to
-  ![TVM MenuRow 2](docs/images/rpn83p-screenshot-menu-root-tvm-2.png)
+  ![TVM MenuRow 2](docs/images/rpn83p-menu-root-tvm-2.png)
 - Press the `CLTV` button to clear the TVM variables.
 - Press the UP arrow to get back to
-  ![TVM MenuRow 1](docs/images/rpn83p-screenshot-menu-root-tvm-1.png)
+  ![TVM MenuRow 1](docs/images/rpn83p-menu-root-tvm-1.png)
 - Press `360` `N` (30 years * 12 months = 360 payments)
 - Press `8` `I%YR` (interest percent per year)
 - Press `500000` `PV` (present value)
@@ -296,7 +296,7 @@ Press:
 - `ON` button (`ESC/EXIT`) multiple times to back to the home menu, or
 - `MATH` button (`HOME`) to go back directly.
 
-![ROOT MenuRow 1](docs/images/rpn83p-screenshot-menu-root-1.png)
+![ROOT MenuRow 1](docs/images/rpn83p-menu-root-1.png)
 
 ## Documentation
 
