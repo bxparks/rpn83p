@@ -292,36 +292,34 @@ Here is the animated GIF that shows this calculation:
 
 ### Example 4
 
-Let's add 3 complex numbers, divide by 3 to get their average, compute the
-complex conjugate, then take their square, then view the result in rectangular,
-polar radian, and polar degree modes, then extract the imaginary component of
-the result.
+Let's add 4 complex numbers, divide by 4 to get their average, view the result
+in rectangular, polar radian, and polar degree modes, then extract the complex
+magnitude of the result.
 
 The complex numbers are:
 
-- `1-2i`
-- `2 e^(i 60deg)`
-- `3 e^(i 4.5)`
+- `100 - i/(2*pi*60*(1e-5))`
+- `100 + 250i`
+- `200 e^(i 10deg)`
+- `300 e^(i 0.1)`
 
 The keystrokes are:
 
 - (optional) Press `CLEAR CLEAR CLEAR` to clear the RPN stack.
-- Press `1 2ND i 2 (-) ENTER`
-- Press `2 2ND ANGLE 60 +`
-- Press `3 2ND ANGLE 2ND ANGLE 4.5 +`
-- Press `3` `/` to divide by 3
-- Press `MATH` `CPLX`:
-![CPLX MenuRow 1](docs/images/rpn83p-menu-root-cplx-1.png)
-- Press `CONJ` to calculate the conjugate
-- Press `X^2` to square the complex number
-- Press `MODE` `downarrow` to get to row 2:
-![MODE MenuRow 2](docs/images/rpn83p-menu-root-mode-2.png)
-- Press `RECT` for rectangular form:
-![Example4 RECT](docs/images/rpn83p-example4-rect.png)
-- Press `PRAD` for polar rad form:
-![Example4 PRAD](docs/images/rpn83p-example4-prad.png)
-- Press `PDEG` for polar deg form:
-![Example4 PDEG](docs/images/rpn83p-example4-pdeg.png)
+- Press `MODE` `downarrow` `RECT`:
+  ![MODE MenuRow 2](docs/images/rpn83p-menu-root-mode-2.png)
+- Press `100 ENTER`
+- Press `2 PI * 60 * 1 EE 5 (-) * 1/X (-)`
+- Press `2ND LINK` (100 - 265.26i)
+- Press `100 2ND i 250 +` (200-15.26i)
+- Press `200 2ND ANGLE 10 +` (396.96+19.47i)
+- Press `300 2ND ANGLE 2ND ANGLE 0.1 +` (695.46+49.42i)
+- Press `4` `/` (173.89+12.35i)
+- Press `PRAD` (174.30 e^(i 0.07)
+- Press `PDEG` (174.30 e^(4.04 deg))
+- Press `MATH CPLX`:
+  ![CPLX MenuRow 1](docs/images/rpn83p-menu-root-cplx-1.png)
+- Press `CABS` (174.30)
 
 ![RPN83P Example 4 GIF](docs/images/rpn83p-example4.gif)
 
