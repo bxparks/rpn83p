@@ -63,6 +63,7 @@ RPN calculator app for the TI-83 Plus and TI-84 Plus inspired by the HP-42S.
         - [Complex Numbers and Screen Size](#complex-numbers-and-screen-size)
         - [Complex Number Entry](#complex-number-entry)
         - [Complex Display Modes](#complex-display-modes)
+        - [Complex Polar Mode Overflow](#complex-polar-mode-overflow)
         - [Complex SHOW](#complex-show)
         - [Complex FIX, SCI, ENG](#complex-fix-sci-eng)
         - [Complex Functions](#complex-functions)
@@ -2436,6 +2437,29 @@ The display before and after the `2ND LINK` looks like this:
 
 ![RPN83P Complex Unlinking RECT 1](images/rpn83p-complex-unlinking-rect-1.png)
 ![RPN83P Complex Unlinking RECT 2](images/rpn83p-complex-unlinking-rect-2.png)
+
+#### Complex Polar Mode Overflow
+
+When a large complex number is converted to polar form, the magnitude value in
+the polar form, i.e. the `r` term, may overflow the usual floating point limit
+of the calculator. That's because `r=sqrt(a^2+b^2)`. For example,
+
+```
+(9e99 + 9e99i) = 1.2728e100 e^(i 0.785398163)
+```
+
+The number `1.2728e100` would normally generate an overflow error, but through a
+quirk in the underlying TI-OS, the `PRAD` and `PDEG` display modes will display
+these polar forms correctly, like this:
+
+![RPN83P Complex Overflow PRAD](images/rpn83p-complex-overflow-prad.png)
+![RPN83P Complex Overflow PDEG](images/rpn83p-complex-overflow-pdeg.png)
+
+However, if we try to unlink the 2 components using the `2ND LINK` function, an
+`Err: Overflow` code will be generated, because the magnitude `1.2728e100` is
+too large to be stored in the RPN register:
+
+![RPN83P Complex Overflow Unlink](images/rpn83p-complex-overflow-unlink.png)
 
 #### Complex SHOW
 
