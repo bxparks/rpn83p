@@ -6,18 +6,33 @@
         - `REGS` list variable replaced with `RPN83REG`
         - `RPN83SAV` remains unchanged
         - the old `STK` and `REGS` variables can be manually removed
+        - see [TI-OS Interaction](docs/USER_GUIDE.md#ti-os-interaction) for more
+          details
+    - **Breaking**: Add `CPLX` menu at the previous location of `CONV`
+        - `CPLX` menu seemed most convenient on row 1 of the `ROOT` menu where
+          the old `CONV` was located
+        - `CONV` got pushed to row 2, where the `UNIT` menu was previously
+          located
+        - `UNIT` got pushed to row 3, into an empty slot
+        - the RPN83P home menu row now has exactly the same items as the `MATH`
+          menu on the TI-OS:
+            - RPN83P: `MATH`, `NUM`, `PROB`, `CPLX`
+            - TI-OS: `MATH`, `NUM`, `CPX`, `PROB`
     - Support more than 14 digits during edit/input
         - When more than 14 digits are entered, the left most digits scroll off
           to the left, with the left most digit replaced with an ellipsis
           character indicates existence of extra digits.
         - Normal mode:
-            - Accepts maximum of 20 digits, which supports entering all 14
-              digits encoded by the TI-OS floating point number format.
-            - 14 digits plus 1 decimal point, 1 mantissa minus sign, the 'E'
-              symbol, 1 exponent minus sign, 2 exponent digits.
+            - accepts maximum of 20 digits, which supports entering all 14
+              digits encoded by the TI-OS floating point number format
+        - Complex mode:
+            - accepts maximum of 41 digits to allow 2 floating point numbers
         - `BASE BIN` mode
-            - Accepts maximum of 32 digits, to allow all 32-bits of a binary
-              number to be entered when the `WSIZ` is 32.
+            - accepts up to 32 digits, to allow a 32-bit binary number when the
+              `WSIZ` is 32.
+        - see [Input Limits and Long
+          Numbers](docs/USER_GUIDE.md#input-limits-and-long-numbers) for more
+          details
     - `PROB`
         - Expand range of `COMB(n,r)` and `PERM(n,r)` arguments to `n,r<=65535`
           from `n,r<=255`.
@@ -41,6 +56,8 @@
           using 2ND LINK (equivalent to COMPLEX button on the HP-42S)
         - support entry of complex numbers on a single line in RECT, PRAD, and
           PDEG modes using the `2ND i` and `2ND ANGLE` keys.
+        - see [Complex Numbers](docs/USER_GUIDE.md#complex-numbers) for more
+          details.
     - Rectangular to Polar conversion
         - fix overflow and underflow caused by bug in the TI-OS `RToP()`
           function by using a custom `rectToPolar()` function instead
@@ -53,6 +70,9 @@
           while setting RPN83P to SCI(4) and RAD and the 2 settings are managed
           separately, even though there is only a single set of global OS
           settings
+    - **Bug Fix**: Render 3-digit EE exponents correctly in `SHOW` mode.
+        - 3-digit exponents can only be shown for complex numbers, so the bug
+          was latent until complex numbers were added
 - 0.8.0 (2023-12-03)
     - **Breaking**: Flip the order of polar-rectangular conversion menu function
       (`>POL` and `>REC`) so that they are consistent with the HP-42S. I don't

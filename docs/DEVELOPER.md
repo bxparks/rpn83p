@@ -3,7 +3,7 @@
 Notes for the developers of the RPN83P app, likely myself in 6 months when I
 cannot remember how the code works.
 
-**Version**: 0.8.0-dev (2023-11-29)
+**Version**: 0.9.0-dev (2024-01-05)
 
 **Project Home**: https://github.com/bxparks/rpn83p
 
@@ -15,6 +15,19 @@ cannot remember how the code works.
     - [Prime Factor Algorithm](#prime-factor-algorithm)
     - [Prime Factor Improvements](#prime-factor-improvements)
 - [TVM Algorithms](#tvm-algorithms)
+- [Complex Numbers](#complex-numbers)
+    - [Complex Number Font](#complex-number-font)
+    - [Complex Number Rendering](#complex-number-rendering)
+    - [Complex Delimiters](#complex-delimiters)
+- [Design Guidelines](#design-guidelines)
+    - [No Keyboard Overlay](#no-keyboard-overlay)
+    - [Utilize TI-OS](#utilize-ti-os)
+    - [Flash App](#flash-app)
+    - [Traditional RPN System](#traditional-rpn-system)
+    - [Hierarchical Menu](#hierarchical-menu)
+    - [No System Flags](#no-system-flags)
+    - [Includes Useful Features](#includes-useful-features)
+    - [Customizable](#customizable)
 
 ## Debug Statements
 
@@ -173,3 +186,154 @@ factoring algorithm:
 ## TVM Algorithms
 
 See [TVM Algorithms](TVM.md).
+
+## Complex Numbers
+
+### Complex Number Font
+
+The screen size of a TI-83 and TI-84 calculator is 96 pixels wide, which is
+enough to hold 16 characters using the Large Font. But a complex number needs 2
+floating point numbers, with at least one delimiter character between the 2
+numbers, which gives us only 7 characters per number. In scientific notation, we
+lose up to 6 characters due to the overhead of the format (decimal point, the
+optional minus sign on the mantissa, the `E` symbol, the optional minus sign on
+the exponent, and up to 2 digits for the exponent). That means that we would be
+able to print only a single significant digit for certain numbers like
+`-1.E-23`. This is not reasonable.
+
+We could use 2 lines to display a single complex number, but that means we would
+see only 2 registers (`X` and `Y`) of the RPN stack instead of 4. That also did
+not seem reasonable. The most workable solution was to use the Small Font of
+the TI-OS. The Small Font is a proportional font, but most digits and symbols
+needed for printing numbers are 4 pixels wide, which gives us 24 characters.
+Taking account of overhead, each floating component can consume up 10
+characters when a complex number is printed on a single line.
+
+### Complex Number Rendering
+
+The Large Font is a monospaced font where each character fits inside an 6x8
+(hxw) grid. The Small Font is a proportional font where most digits and letters
+fit into a 4x7 grid, but some characters (e.g. '.' and ' ') take up less width.
+
+Since a complex number is rendered using the Small Font, the app must take
+special precautions to prevent artifacts from the previously rendered number in
+the Large Font from showing through the Small Font. The easiest way to do that
+is to erase the line before printing the complex number in Small Font.
+Unfortunately, if the erase algorithm is applied naively, it causes unnecessary
+flickering of the display when numbers are updated. A significant amount of
+complexity was added to the rendering code (`display.asm`) to keep the
+flickering to a minimum. For example, when a Large Font is rendered over a Small
+Font, or when a Small Font line is written over a previous Small Font line, no
+erasure is required. The bookkeeping algorithm was made more complex due to the
+rendering of the `argBuf` (the input buffer used for command arguments in `STO`,
+`FIX`, etc) which uses the Large Font, over the same line as the `X` register.
+
+Developers who dig into the rendering code may wonder why all that complexity
+exists. Ironically, it's all there so that the vast majority end-users will
+never notice anything.
+
+### Complex Delimiters
+
+Internally, the complex delimiter is stored in the `inputBuf` as a single byte.
+The following three characters are used:
+
+- `LimagI`: rectangular, when `2ND i` is pressed
+- `Ldegree`: polar deg, when `2ND ANGLE` is pressed
+- `Langle`: polar rad, when `2ND ANGLE 2ND ANGLE` is pressed
+
+(See `isComplexDelimiter()` routine.) Using a single byte for the delimiter
+makes the complex number parsing code simpler.
+
+When the `2ND i` or `2ND ANGLE` key is pressed, the delimiter is overwritten or
+toggled between polar-rad and polar-deg modes. The function that perform that
+conversion is `SetComplexDelimiter()`.
+
+When the string inside `inputBuf` is rendered (after each press of a digit for
+example), the complex delimiter is converted into the following character before
+shown on the screen (see `formatInputBuf()`):
+
+- `LimagI`: `LimagI`
+- `Ldegree`: `Langle` `Ltemp` (`Ltemp` looks better than `Ldegree`)
+- `Langle`: `Langle`
+
+## Design Guidelines
+
+In this section, I hope to explain the reasons why I implemented certain
+features of the app in certain ways.
+
+### No Keyboard Overlay
+
+TI-83 Plus and TI-84 Plus has buttons which are mostly compatible with an RPN
+calculator. In particular, it has an `ENTER` key and a separate `(-)` key which
+can act as the `+/-` function. Most other functions can be mapped to something
+close enough, like the `MATH` key which can act as the menu `HOME` function.
+
+For something like RPN83P which is expected to be used by only a handful of
+users, it did not seem worthwhile to spend any effort creating an overlay. Which
+is a little bit ironic because the TI-84 Plus calculator actually has a
+removable keyboard faceplate. Different faceplates are available in different
+colors. I don't have a 3D printer so I don't know if it's possible to create a
+custom faceplate. An injection molding faceplate would be far too expensive.
+
+### Utilize TI-OS
+
+The underlying TI-OS provides an enormous amount of mathematical, numerical, and
+formatting functions. To save development time and maintenance costs, RPN83P
+will use as much of the TI-OS routines as practical.
+
+### Flash App
+
+There are 2 types of assembly programs possible on these TI calculators: 1)
+assembly programs which reside in RAM, and, 2) flash applications which reside
+in non-volatile flash memory. Flash applications are far more convenient and
+robust because they do not have an arbitrarily 8kB limit in size, and they are
+retained when the calculator crashes or loses battery power. RPN83P will be a
+flash application.
+
+### Traditional RPN System
+
+It may be a personal preference, but I believe that the traditional RPN system
+from older HP calculators are easier to use than the modern RPL calculators
+(introduced with the HP-28S series, and continuing through the HP-48/49/50
+series.) Consistency with the traditional RPN calculators seems important for
+ease of use. For example, even though it is actually slightly easier to
+implement an RPN entry system that separates the input buffer from the `X`
+register (like RPL systems do), the RPN83P goes out of its way to mimic the
+behavior of the traditional RPN calculators.
+
+### Hierarchical Menu
+
+Of the menu systems that I have seen on various calculators, the hierarchical
+menu system with soft keys used by the HP-42S seems to be the easiest to use.
+All RPN83P features will be accessible through direct key buttons or the menu
+systems. I want to avoid secret key sequences which are hard to discover and
+remember for end-users.
+
+### No System Flags
+
+RPN83P will not use system flags to customize its behavior. Every calculator
+with system flags has its unique set of options. Even for options which overlap,
+they are assigned to different numerical flags. For people who use multiple
+calculators, it is impossible to remember what all those options do, and which
+feature corresponds to which flag number. On older calculators, it is even
+difficult to remember how to set or clear these flags, or whether the flag is a
+single digit, 2 digits, or 3 digits. RPN83P will expose all system configuration
+options through the menu system.
+
+User flags, on the other hand, may be provided in the future if or when
+keystroke programming is added. They are definitely useful in calculator
+programs.
+
+### Includes Useful Features
+
+The RPN83P app has no need to segment the features of RPN83P to different market
+segments (e.g. business, scientific, graphing, computer science). I added
+features to RPN83P because they are useful, interesting, and are reasonable to
+implement within the constraints of the hardware, the TI-OS, and the Z80
+assembly language programming.
+
+### Customizable
+
+Custom key bindings are not supported right now (v0.9), but it seems important
+to add that in the future. Users will use the calculator in different ways, and
+some people may use some functions more frequently than others.

@@ -2,7 +2,7 @@
 
 RPN calculator app for the TI-83 Plus and TI-84 Plus inspired by the HP-42S.
 
-**Version**: 0.9.0-dev (2023-12-23)
+**Version**: 0.9.0-dev (2024-01-05)
 
 **Project Home**: https://github.com/bxparks/rpn83p
 
@@ -35,6 +35,7 @@ RPN calculator app for the TI-83 Plus and TI-84 Plus inspired by the HP-42S.
     - [Menu Functions](#menu-functions)
 - [Advanced Usage](#advanced-usage)
     - [Auto-start](#auto-start)
+    - [Input Limits and Long Numbers](#input-limits-and-long-numbers)
     - [Floating Point Display Modes](#floating-point-display-modes)
     - [SHOW Mode](#show-mode)
     - [Trigonometric Modes](#trigonometric-modes)
@@ -58,6 +59,19 @@ RPN calculator app for the TI-83 Plus and TI-84 Plus inspired by the HP-42S.
         - [TVM Clear](#tvm-clear)
         - [TVM Variable Recall](#tvm-variable-recall)
         - [TVM Examples](#tvm-examples)
+    - [Complex Numbers](#complex-numbers)
+        - [Complex Numbers and Screen Size](#complex-numbers-and-screen-size)
+        - [Complex Number Entry](#complex-number-entry)
+        - [Complex Display Modes](#complex-display-modes)
+        - [Complex Polar Mode Overflow](#complex-polar-mode-overflow)
+        - [Complex SHOW](#complex-show)
+        - [Complex FIX, SCI, ENG](#complex-fix-sci-eng)
+        - [Complex Functions](#complex-functions)
+        - [Complex Computation Modes](#complex-computation-modes)
+        - [Complex Numbers and Trigonometric
+          Modes](#complex-numbers-and-trigonometric-modes)
+        - [Complex Numbers in Storage
+          Registers](#complex-numbers-in-storage-registers)
 - [TI-OS Interaction](#ti-os-interaction)
 - [Future Enhancements](#future-enhancements)
     - [Near Future](#near-future)
@@ -79,9 +93,9 @@ features from the
 
 The RPN83P is a flash application written in Z80 assembly language that consumes
 2 pages (32 kiB) of flash memory. Since it is stored in flash, it is preserved
-if the RAM is cleared. It consumes about 400 bytes of TI-OS RAM: 2 list
-variables named `REGS` (240 bytes) and `STK` (59 byte), and an appVar named
-`RPN83SAV` (101 bytes).
+if the RAM is cleared. It consumes about 735 bytes of TI-OS RAM through 3
+AppVars: `RPN83REG` (496 bytes), `RPN83STK` (116 bytes), and `RPN83SAV` (123
+bytes).
 
 Summary of features:
 
@@ -94,25 +108,27 @@ Summary of features:
     - storage arithmetics: `STO+ nn`, `STO- nn`, `STO* nn`, `STO/ nn`, `RCL+
       nn`, `RCL- nn`, `RCL* nn`, `RCL/ nn`
     - 25 storage registers: `nn = 00..24`
-- support for all math functions with dedicated buttons on the TI-83 Plus and
-  TI-84 Plus
+- all math functions with dedicated buttons on the TI-83 Plus and TI-84 Plus
     - arithmetic: `/`, `*`, `-`, `+`
-    - trigonometric: `SIN`, `COS`, `TAN`, etc.
     - algebraic: `1/X`, `X^2`, `SQRT`, `^` (i.e. `Y^X`)
     - transcendental: `LOG`, `10^X`, `LN`, `e^X`
+    - trigonometric: `SIN`, `COS`, `TAN`, `ASIN`, `ACOS`, `ATAN`
     - constants: `pi` and `e`
-- additional menu functions:
-    - `X^3`, `3RootX`, `XRootY`, `ATN2`, `2^X`, `LOG2`, `LOGB`
-    - `%`, `%CH`, `GCD`, `LCM`, `PRIM` (prime factor)
-    - `IP` (integer part), `FP` (fractional part), `FLR` (floor), `CEIL`
-      (ceiling), `NEAR` (nearest integer)
-    - `ABS`, `SIGN`, `MOD`, `MIN`, `MAX`
-    - probability: `PERM`, `COMB`, `N!`, `RAND`, `SEED`
+- additional menu functions
+    - arithmetic: `%`, `%CH`, `GCD`, `LCM`, `PRIM` (prime factor), `IP` (integer
+      part), `FP` (fractional part), `FLR` (floor), `CEIL` (ceiling), `NEAR`
+      (nearest integer), `ABS`, `SIGN`, `MOD`, `MIN`, `MAX`
+    - algebraic: `X^3`, `3RootX`
+    - transcendental: `XRootY`,`2^X`, `LOG2`, `LOGB`, `E^X-` (e^x-1), `LN1+`
+      (log(1+x))
+    - trigonometric: `ATN2`
     - hyperbolic: `SINH`, `COSH`, `TANH`, `ASNH`, `ACSH`, `ATNH`
+    - probability: `PERM`, `COMB`, `N!`, `RAND`, `SEED`
     - angle conversions: `>DEG`, `>RAD`, `>HR`, `>HMS`, `>REC`, `>POL`
-    - unit conversions: `>C`, `>F`, `>km`, `>mi`, etc
-- features inspired by HP-42S
-    - `E^X-` (e^x-1), `LN1+` (log(1+x))
+    - unit conversions: `>C`, `>F`, `>hPa`, `>inHg`, `>km`, `>mi`, `>m`, `>ft`,
+      `>cm`, `>in`, `>um`, `>mil`, `>kg`, `>lbs`, `>g`, `>oz`, `>L`, `>gal`,
+      `>mL`, `>floz`, `>kJ`, `>cal`, `>kW`, `>hp`
+- statistics and curve fitting, inspired by HP-42S
     - statistics: `Sigma+`, `Sigma-`, `SUM`, `MEAN`, `WMN` (weighted mean),
       `SDEV` (sample standard deviation), `SCOV` (sample covariance),
       `PDEV` (population standard deviation), `PCOV` (population covariance)
@@ -120,7 +136,7 @@ Summary of features:
       (correlation coefficient)
     - curve fit models: `LINF` (linear), `LOGF` (logarithmic), `EXPF`
       (exponential), `PWRF` (power)
-- features inspired by HP-16C and HP-42S
+- base conversion and bitwise operations, inspired by HP-16C and HP-42S
     - base conversions: `DEC`, `HEX`, `OCT`, `BIN`
     - bitwise operations: `AND`, `OR`, `XOR`, `NOT`, `NEG`, `REVB` (reverse
       bits), `CNTB` (count bits)
@@ -130,9 +146,23 @@ Summary of features:
       `SLn`, `SRn`, `RLn`, `RRn`, `RLCn`, `RRCn`
     - carry flag and bit masks: `CCF`, `SCF`, `CF?`, `CB`, `SB`, `B?`
     - word sizes: `WSIZ`, `WSZ?`: 8, 16, 24, 32 bits
-- features inspired by HP-12C and HP-30b
-    - time value of money (TVM): `N`, `I%YR`, `PV`, `PMT`, `FV`, `P/YR`, `BEG`,
-      `END`, `CLTV` (clear TVM)
+- time value of money (TVM), inspired by HP-12C, HP-17B, and HP-30b
+    - `N`, `I%YR`, `PV`, `PMT`, `FV`, `P/YR`, `BEG`, `END`, `CLTV` (clear TVM)
+- complex numbers, inspired by HP-42S and HP-35s
+    - stored in RPN stack registers (`X`, `Y`, `Z`, `T`, `LastX`) and storage
+      registers `R00-R24`
+    - computation modes: `RRES` (real results), `CRES` (complex results)
+    - display modes: `RECT`, `PRAD` (polar radians), `PDEG` (polar degrees)
+    - linking/unlinking: `2ND LINK` (convert 2 reals to 1 complex, same as
+      `COMPLEX` on HP-42S)
+    - number entry: `2ND i` (rectangular), `2ND ANGLE` (polar degrees), `2ND
+      ANGLE 2ND ANGLE` (polar radians)
+    - extended regular functions: `+`, `-`, `*`, `/`, `1/x`, `x^2`, `SQRT`,
+      `Y^X`, `X^3`, `3RootY`, `XRootY`, `LOG`, `LN`, `10^x`, `e^x`, `2^x`,
+      `LOG2`, `LOGB`
+    - complex specific functions: `REAL`, `IMAG`, `CONJ`, `CABS`, `CANG`
+    - unsupported: trigonometric and hyperbolic functions (not supported by
+      TI-OS)
 - various display modes
     - `RAD`, `DEG`
     - `FIX` (fixed point 0-9 digits)
@@ -143,16 +173,18 @@ Summary of features:
 Missing features (partial list):
 
 - vectors and matrices
-- complex numbers
 - keystroke programming
 
 ## Why?
 
 ### Short Answer
 
-This was a fun project that helped me learn Z80 assembly language programming on
-TI calculators. It also produced an app that converts a TI calculator into an
-RPN calculator that I can actually use.
+This project helped me relearn Z80 assembly language programming using TI
+calculators. It also produced a scientific RPN app that can run on calculators
+which are easily and cheaply obtainable. There are no scientific RPN calculators
+currently in production from HP. The prices for many HP calculators in the used
+market are unreasonably high, so RPN83P may fill a gap for some people in some
+cases.
 
 ### Long Answer
 
@@ -172,6 +204,11 @@ algebraic mode has probably been going on for 40-50 years, so I probably cannot
 add more. Personally, I use algebraic notation for doing math equations on paper
 or writing high-level computer programs. But when I do numerical *computation*
 on a hand-held device, I am most comfortable using the RPN mode.
+
+There are many RPN calculator apps for the smartphone, but the touchscreen of a
+phone can become tedious for calculations that require large number of
+keystrokes. For those cases, a physical device is more convenient and less error
+prone.
 
 The RPN83P app is inspired by the HP-42S. It is the RPN calculator that I know
 best. It also has the advantage of having the
@@ -199,8 +236,9 @@ show the entire RPN stack as well as the hierarchical menu bar at all times, so
 it makes sense to take advantage of the larger LCD screen size.
 
 The purpose of the RPN83P project was to help me learn Z80 programming on a TI
-calculator, and to convert an old TI calculator into an RPN calculator that I
-can actually use. I hope other people find it useful.
+calculator, and to convert an old TI calculator into a scientific RPN calculator
+that I can actually use. The host calculator hardware is readily and cheaply
+available, so I hope other people find it useful.
 
 ## Installation
 
@@ -250,7 +288,7 @@ After installing `rpn83p.8xk` file, go to the calculator:
 The RPN83P starts directly into the calculator mode, no fancy splash screen. You
 should see a screen that looks like:
 
-![RPN83P screenshot 1](images/rpn83p-screenshot-initial.png)
+![RPN83P screenshot 1](images/rpn83p-initial.png)
 
 ### Quitting
 
@@ -342,11 +380,19 @@ The following buttons are used to enter and edit a number in the input buffer:
 - `(-)`: enters a negative sign, or changes the sign (same as `+/-` or `CHS` on
   HP calculators)
 - `DEL`: Backspace (same as `<-` on many HP calculators)
-- `CLEAR`: Clear `X` register (same as `CLx` or `CLX` on HP calculators), *or*
-  clear the input buffer, *or* clear the entire RPN stack.
+- `CLEAR`: Clear `X` register, same as `CLX`; *or* clear the input buffer
+- `CLEAR CLEAR CLEAR`: Clear the stack, same as `CLST`
 - `2ND` `EE`: adds an `E` to allow entry of scientific notation exponent (same
   as `E` or `EEX` on HP calculators)
 - `,`: same as `2ND` `EE`, allowing the `2ND` to be omitted for convenience
+
+The following keys are related to complex numbers and are explained in more
+detail in the [Complex Numbers](#complex-numbers) section below:
+
+- `2ND LINK`: convert `X` and `Y` into a complex number in `X`, or the reverse
+- `2ND ANGLE`: enter a complex number in polar degree form
+- `2ND ANGLE` `2ND ANGLE`: enter a complex number polar radian form
+- `2ND i`: enter a complex number in rectangular form
 
 The `(-)` button acts like the `+/-` or `CHS` button on HP calculators. It
 toggles the negative sign, adding it if it does not exist, and removing it if it
@@ -374,17 +420,9 @@ to reflect their mental state when starting a new calculation. The `CLST` menu
 function provides this feature, but is nested under the `ROOT > CLR > CLST` menu
 hierarchy. If you are deeply nested under another part of the menu hierarchy, it
 can be cumbersome to navigate back up to the `ROOT`, invoke the `CLST` button,
-then make your way back to the original menu location.
-
-On RPN calculators with multiple lines such as the HP-42S, the `CLEAR` menu bar
-can be reached using a direct keyboard shortcut, and the `CLST` function is only
-2 or 3 keystrokes away. The RPN83P app uses the key buttons already provided by
-the TI-83+ and TI-84+ calculators, and unfortunately, there is no obvious button
-shortcut that can be used for the `CLR` menu bar. The obvious choice would have
-been the `2ND CLEAR`, but the TI-OS does not support that. It returns the same
-keycode as just `CLEAR`. The only reasonable alternative was to overload the
-existing `CLEAR` button, so that it performs the additional function of `CLST`
-when the button is pressed multiple times.
+then make your way back to the original menu location. To solve this problem,
+the RPN83P app will invoke `CLST` function when `CLEAR` is hit 3 times. (The
+TI-OS does not support `2ND CLEAR`, it returns the same code as `CLEAR`.)
 
 An empty string will be interpreted as a `0` if the `ENTER` key or a function
 key is pressed.
@@ -635,14 +673,14 @@ bar was, and unlikely to want to go back there using the `ON/EXIT/ESC` key.
 
 Pressing the `HELP` menu button at the root menu activates the Help pages:
 
-![ROOT MenuRow 1](images/rpn83p-screenshot-menu-root-1.png)
+![ROOT MenuRow 1](images/rpn83p-menu-root-1.png)
 
 The contents of these pages are updated frequently so the screenshots below may
 not be identical to the current version:
 
 ![Help Page 1](images/rpn83p-help-page-1.png)
 ![Help Page 2](images/rpn83p-help-page-2.png)
-![Help Page 9](images/rpn83p-help-page-9.png)
+![Help Page Last](images/rpn83p-help-page-last.png)
 
 The Help pages are intended to capture some of the more obscure tidbits about
 the RPN83P app which may be hard to remember. Hopefully it reduces the number of
@@ -687,8 +725,8 @@ a few of them as described below:
 - `Err: Tol Not Met`
 - `Err: Undefined`
 
-These are shown in the Error Code line on the screen. For example, division by 0
-shows this:
+These are shown in the Error Code line on the screen. For example, if we try to
+divide `1 / 0`, a division by 0 error is shown:
 
 ![Err: Division By 0](images/rpn83p-errorcode-division-by-0.png)
 
@@ -699,9 +737,10 @@ UNKNOWN (##)` like this:
 ![Err: UNKNOWN](images/rpn83p-errorcode-unknown.png)
 
 The number in parenthesis is the internal numerical value of the error code. If
-the error is reproducible, please file a bug report containing the numerical
-error code so that I can add it to the list of error messages supported by
-RPN83P.
+the error is reproducible, please file a [bug
+report](https://github.com/bxparks/rpn83p/issues) containing the numerical error
+code and the steps needed to reproduce it so that I can add it to the list of
+error messages supported by RPN83P.
 
 ## Functions
 
@@ -732,15 +771,15 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
 `MATH` (HOME) keys to navigate the menu hierarchy.
 
 - `ROOT` (implicit)
-    - ![ROOT MenuRow 1](images/rpn83p-screenshot-menu-root-1.png)
-    - ![ROOT MenuRow 2](images/rpn83p-screenshot-menu-root-2.png)
-    - ![ROOT MenuRow 3](images/rpn83p-screenshot-menu-root-3.png)
+    - ![ROOT MenuRow 1](images/rpn83p-menu-root-1.png)
+    - ![ROOT MenuRow 2](images/rpn83p-menu-root-2.png)
+    - ![ROOT MenuRow 3](images/rpn83p-menu-root-3.png)
 - `ROOT` > `MATH`
-    - ![MATH MenuRow 1](images/rpn83p-screenshot-menu-root-math-1.png)
-    - ![MATH MenuRow 2](images/rpn83p-screenshot-menu-root-math-2.png)
+    - ![MATH MenuRow 1](images/rpn83p-menu-root-math-1.png)
+    - ![MATH MenuRow 2](images/rpn83p-menu-root-math-2.png)
     - `X^3`: cube of `X`
-    - `3 Root X`: cube root of `X`
-    - `X Root Y`: `X` root of `Y`
+    - `3RootX`: cube root of `X`
+    - `XRootY`: `X` root of `Y`
     - `ATN2`: `atan2(X, Y)` in degrees or radians, depending on current mode
         - `Y`: y-component, entered first
         - `X`: x-component, entered second
@@ -751,9 +790,9 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
     - `E^X-`: `e^x-1` accurate for small `x`
     - `LN1+`: `log(1+x)` accurate for small `x`
 - `ROOT` > `NUM`
-    - ![NUM MenuRow 1](images/rpn83p-screenshot-menu-root-num-1.png)
-    - ![NUM MenuRow 2](images/rpn83p-screenshot-menu-root-num-2.png)
-    - ![NUM MenuRow 3](images/rpn83p-screenshot-menu-root-num-3.png)
+    - ![NUM MenuRow 1](images/rpn83p-menu-root-num-1.png)
+    - ![NUM MenuRow 2](images/rpn83p-menu-root-num-2.png)
+    - ![NUM MenuRow 3](images/rpn83p-menu-root-num-3.png)
     - `%`: `X` percent of `Y`, leaving `Y` unchanged
     - `%CH`: percent change from `Y` to `X`, leaving `Y` unchanged
     - `GCD`: greatest common divisor of `X` and `Y`
@@ -774,38 +813,30 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
     - `MIN`: minimum of `X` and `Y`
     - `MAX`: maximum of `X` and `Y`
 - `ROOT` > `PROB`
-    - ![PROB MenuRow 1](images/rpn83p-screenshot-menu-root-prob-1.png)
+    - ![PROB MenuRow 1](images/rpn83p-menu-root-prob-1.png)
     - `COMB`: combination `C(n,r)` = `C(Y, X)`
     - `PERM`: permutation `P(n,r)` = `P(Y, X)`
     - `N!`: factorial of `X`
     - `RAND`: random number in the range `[0,1)`
     - `SEED`: set the random number generator seed to `X`
-- `ROOT` > `CONV`
-    - ![CONV MenuRow 1](images/rpn83p-screenshot-menu-root-conv-1.png)
-    - ![CONV MenuRow 2](images/rpn83p-screenshot-menu-root-conv-2.png)
-    - `>DEG`: convert radians to degrees
-    - `>RAD`: convert degrees to radians
-    - `>REC`: polar to rectangular
-        - input: `Y`=y, `X`=x
-        - output: `Y`=theta, `X`=r
-        - (consistent with HP-42S)
-    - `>POL`: rectangular to polar
-        - input: `Y`=theta, `X`=r
-        - output: `Y`=y, `X`=x
-        - (consistent with HP-42S)
-    - `>HR`: convert `HH.MMSSssss` to `HH.hhhh`
-    - `>HMS`: convert `HH.hhhh` to `HH.MMSSssss`
+- `ROOT` > `CPLX`
+    - ![CPLX MenuRow 1](images/rpn83p-menu-root-cplx-1.png)
+    - `REAL`: extract the real component of the complex number
+    - `IMAG`: extract the imaginary component of the complex number
+    - `CONJ`: calculate the complex conjugate
+    - `CABS`: calculate the magnitude of the complex number
+    - `CANG`: calculate the angle (i.e. argument) of the complex number
 - `ROOT` > `HELP`: display the Help pages
     - use arrow keys to view each Help page
 - `ROOT` > `BASE`
-    - ![BASE MenuRow 1](images/rpn83p-screenshot-menu-root-base-1.png)
-    - ![BASE MenuRow 2](images/rpn83p-screenshot-menu-root-base-2.png)
-    - ![BASE MenuRow 3](images/rpn83p-screenshot-menu-root-base-3.png)
-    - ![BASE MenuRow 4](images/rpn83p-screenshot-menu-root-base-4.png)
-    - ![BASE MenuRow 5](images/rpn83p-screenshot-menu-root-base-5.png)
-    - ![BASE MenuRow 6](images/rpn83p-screenshot-menu-root-base-6.png)
-    - ![BASE MenuRow 7](images/rpn83p-screenshot-menu-root-base-7.png)
-    - ![BASE MenuRow 8](images/rpn83p-screenshot-menu-root-base-8.png)
+    - ![BASE MenuRow 1](images/rpn83p-menu-root-base-1.png)
+    - ![BASE MenuRow 2](images/rpn83p-menu-root-base-2.png)
+    - ![BASE MenuRow 3](images/rpn83p-menu-root-base-3.png)
+    - ![BASE MenuRow 4](images/rpn83p-menu-root-base-4.png)
+    - ![BASE MenuRow 5](images/rpn83p-menu-root-base-5.png)
+    - ![BASE MenuRow 6](images/rpn83p-menu-root-base-6.png)
+    - ![BASE MenuRow 7](images/rpn83p-menu-root-base-7.png)
+    - ![BASE MenuRow 8](images/rpn83p-menu-root-base-8.png)
     - `DEC`: use decimal base 10
     - `HEX`: use hexadecimal base 16
         - display register values as 32-bit unsigned integer
@@ -848,8 +879,8 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
     - `WSIZ`: set integer word size (supported values: 8, 16, 24, 32)
     - `WSZ?`: return current integer word size (default: 32)
 - `ROOT` > `HYP`
-    - ![HYP MenuRow 1](images/rpn83p-screenshot-menu-root-hyp-1.png)
-    - ![HYP MenuRow 2](images/rpn83p-screenshot-menu-root-hyp-2.png)
+    - ![HYP MenuRow 1](images/rpn83p-menu-root-hyp-1.png)
+    - ![HYP MenuRow 2](images/rpn83p-menu-root-hyp-2.png)
     - `SINH`: hyperbolic `sin()`
     - `COSH`: hyperbolic `cos()`
     - `TANH`: hyperbolic `tan()`
@@ -858,9 +889,9 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
     - `ATNH`: hyperbolic `atan()`
 - `ROOT` > `STAT`
     - See Chapter 15 of the _HP-42S User's Manual_
-    - ![STAT MenuRow 1](images/rpn83p-screenshot-menu-root-stat-1.png)
-    - ![STAT MenuRow 2](images/rpn83p-screenshot-menu-root-stat-2.png)
-    - ![STAT MenuRow 3](images/rpn83p-screenshot-menu-root-stat-3.png)
+    - ![STAT MenuRow 1](images/rpn83p-menu-root-stat-1.png)
+    - ![STAT MenuRow 2](images/rpn83p-menu-root-stat-2.png)
+    - ![STAT MenuRow 3](images/rpn83p-menu-root-stat-3.png)
     - `Sigma+`: add `Y` and `X` data point to STAT registers
     - `Sigma-`: remove `Y` and `X` data point from STAT registers
     - `ALLSigma`: collect statistical sums for all curve fit models
@@ -886,8 +917,8 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
         - `pcov(X,Y) = <XY> - <X><Y>`
     - `ROOT` > `STAT` > `CFIT`
         - See Chapter 15 of the _HP-42S User's Manual_
-        - ![CFIT MenuRow 1](images/rpn83p-screenshot-menu-root-stat-cfit-1.png)
-        - ![CFIT MenuRow 2](images/rpn83p-screenshot-menu-root-stat-cfit-2.png)
+        - ![CFIT MenuRow 1](images/rpn83p-menu-root-stat-cfit-1.png)
+        - ![CFIT MenuRow 2](images/rpn83p-menu-root-stat-cfit-2.png)
         - `Y>X`: forecast X from Y
         - `X>Y`: forecast Y from X
         - `SLOP`: slope of curve fit model, i.e. `m` parameter
@@ -900,13 +931,76 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
         - `BEST`: automatically select the best model, i.e. the one with the
           largest absolute value of the correlation coefficient. The `CORR`
           value is returned in the `X` register for reference.
+- `ROOT` > `CONV`
+    - ![CONV MenuRow 1](images/rpn83p-menu-root-conv-1.png)
+    - ![CONV MenuRow 2](images/rpn83p-menu-root-conv-2.png)
+    - `>DEG`: convert radians to degrees
+    - `>RAD`: convert degrees to radians
+    - `>REC`: polar to rectangular
+        - input: `Y`=y, `X`=x
+        - output: `Y`=theta, `X`=r
+        - (consistent with HP-42S)
+    - `>POL`: rectangular to polar
+        - input: `Y`=theta, `X`=r
+        - output: `Y`=y, `X`=x
+        - (consistent with HP-42S)
+    - `>HR`: convert `HH.MMSSssss` to `HH.hhhh`
+    - `>HMS`: convert `HH.hhhh` to `HH.MMSSssss`
+- `ROOT` > `TVM` (time value of money)
+    - ![TVM MenuRow 1](images/rpn83p-menu-root-tvm-1.png)
+    - ![TVM MenuRow 2](images/rpn83p-menu-root-tvm-2.png)
+    - ![TVM MenuRow 3](images/rpn83p-menu-root-tvm-3.png)
+    - `N`: set or calculate Number of payment periods
+    - `I%YR`: set or calculate Interest Percent per Year
+    - `PV`: set or calculate Present Value
+    - `PMT`: set or calculate Payment per period
+    - `FV`: set or calculate Future Value
+    - `P/YR`: set number of payments per year
+    - `BEG`: payment occurs at the Beginning of each period
+    - `END`: payment occurs at the End of each period
+    - `CLTV`: clear TVM variables and parameters
+    - `IYR1`: set `I%YR` guess 1 for TVM Solver
+    - `IYR2`: set `I%YR` guess 2 for TVM Solver
+    - `TMAX`: set iteration max for TVM Solver
+    - `RSTV`: reset TVM Solver parameters to factory defaults
+- `ROOT` > `CLR`
+    - ![CLR MenuRow 1](images/rpn83p-menu-root-clr-1.png)
+    - `CLX`: clear `X` stack register (stack lift disabled)
+    - `CLST`: clear all RPN stack registers
+    - `CLRG`: clear all storage registers `R00` to `R24`
+    - `CLSigma`: clear STAT storage registers [`R11`, `R16`] or [`R11`, `R23`]
+    - `CLTV`: clear TVM variables and parameters
+- `ROOT` > `MODE`
+    - ![MODE MenuRow 1](images/rpn83p-menu-root-mode-1.png)
+    - ![MODE MenuRow 2](images/rpn83p-menu-root-mode-2.png)
+    - `FIX`: fixed mode with `N` digits after the decimal point
+        - set `N` to `99` for floating number of digits
+        - status line indicator is `FIX(N)`
+    - `SCI`: scientific notation with `N` digits after the decimal point
+        - set `N` to `99` for floating number of digits
+        - status line indicator is `SCI(N)`
+    - `ENG`: engineering notation with `N` digits after the decimal point
+        - set `N` to `99` for floating number of digits
+        - status line indicator is `ENG(N)`
+    - `RAD`: use radians for trigonometric functions
+    - `DEG`: use degrees for trigonometric functions
+    - `RRES`: real results only from real arguments
+    - `CRES`: complex results allowed from real arguments
+    - `RECT`: display complex number in rectangular form
+    - `PRAD`: display complex number in polar radian form
+    - `PDEG`: display complex number in polar degree form
+- `ROOT` > `STK`
+    - ![STK MenuRow 1](images/rpn83p-menu-root-stk-1.png)
+    - `R(up)`: roll stack up
+    - `R(down)`: roll stack down, also bound to `(` button
+    - `X<>Y`: exchange `X` and `Y`, also bound to `)` button
 - `ROOT` > `UNIT`
-    - ![UNIT MenuRow 1](images/rpn83p-screenshot-menu-root-unit-1.png)
-    - ![UNIT MenuRow 2](images/rpn83p-screenshot-menu-root-unit-2.png)
-    - ![UNIT MenuRow 3](images/rpn83p-screenshot-menu-root-unit-3.png)
-    - ![UNIT MenuRow 4](images/rpn83p-screenshot-menu-root-unit-4.png)
-    - ![UNIT MenuRow 5](images/rpn83p-screenshot-menu-root-unit-5.png)
-    - ![UNIT MenuRow 6](images/rpn83p-screenshot-menu-root-unit-6.png)
+    - ![UNIT MenuRow 1](images/rpn83p-menu-root-unit-1.png)
+    - ![UNIT MenuRow 2](images/rpn83p-menu-root-unit-2.png)
+    - ![UNIT MenuRow 3](images/rpn83p-menu-root-unit-3.png)
+    - ![UNIT MenuRow 4](images/rpn83p-menu-root-unit-4.png)
+    - ![UNIT MenuRow 5](images/rpn83p-menu-root-unit-5.png)
+    - ![UNIT MenuRow 6](images/rpn83p-menu-root-unit-6.png)
     - `>C`: Fahrenheit to Celsius
     - `>F`: Celsius to Fahrenheit
     - `>hPa`: hectopascals (i.e. millibars) to inches of mercury (Hg)
@@ -931,48 +1025,6 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
     - `>cal`: kilo Joules to kilo calories
     - `>kW`: horsepowers (mechanical) to kilo Watts
     - `>hp`: kilo Watts to horsepowers (mechanical)
-- `ROOT` > `TVM` (time value of money)
-    - ![TVM MenuRow 1](images/rpn83p-screenshot-menu-root-tvm-1.png)
-    - ![TVM MenuRow 2](images/rpn83p-screenshot-menu-root-tvm-2.png)
-    - ![TVM MenuRow 3](images/rpn83p-screenshot-menu-root-tvm-3.png)
-    - `N`: set or calculate Number of payment periods
-    - `I%YR`: set or calculate Interest Percent per Year
-    - `PV`: set or calculate Present Value
-    - `PMT`: set or calculate Payment per period
-    - `FV`: set or calculate Future Value
-    - `P/YR`: set number of payments per year
-    - `BEG`: payment occurs at the Beginning of each period
-    - `END`: payment occurs at the End of each period
-    - `CLTV`: clear TVM variables and parameters
-    - `IYR1`: set `I%YR` guess 1 for TVM Solver
-    - `IYR2`: set `I%YR` guess 2 for TVM Solver
-    - `TMAX`: set iteration max for TVM Solver
-    - `RSTV`: reset TVM Solver parameters to factory defaults
-- `ROOT` > `CLR`
-    - ![CLR MenuRow 1](images/rpn83p-screenshot-menu-root-clr-1.png)
-    - `CLX`: clear `X` stack register (stack lift disabled)
-    - `CLST`: clear all RPN stack registers
-    - `CLRG`: clear all storage registers `R00` to `R24`
-    - `CLSigma`: clear STAT storage registers [`R11`, `R16`] or [`R11`, `R23`]
-    - `CLTV`: clear TVM variables and parameters
-- `ROOT` > `MODE`
-    - ![MODE MenuRow 1](images/rpn83p-screenshot-menu-root-mode-1.png)
-    - `FIX`: fixed mode with `N` digits after the decimal point
-        - set `N` to `99` for floating number of digits
-        - status line indicator is `FIX(N)`
-    - `SCI`: scientific notation with `N` digits after the decimal point
-        - set `N` to `99` for floating number of digits
-        - status line indicator is `SCI(N)`
-    - `ENG`: engineering notation with `N` digits after the decimal point
-        - set `N` to `99` for floating number of digits
-        - status line indicator is `ENG(N)`
-    - `RAD`: use radians for trigonometric functions
-    - `DEG`: use degrees for trigonometric functions
-- `ROOT` > `STK`
-    - ![STK MenuRow 1](images/rpn83p-screenshot-menu-root-stk-1.png)
-    - `R(up)`: roll stack up
-    - `R(down)`: roll stack down, also bound to `(` button
-    - `X<>Y`: exchange `X` and `Y`, also bound to `)` button
 
 ## Advanced Usage
 
@@ -996,6 +1048,35 @@ The LCD screen should look like this before hitting `FINISH`:
 
 Turn off the calculator and turn it back on. It should directly go into the
 RPN83P application.
+
+### Input Limits and Long Numbers
+
+The input buffer is rendered using the Large Font which means that only 14
+characters can be displayed on a single line. Entering numbers longer than 14
+characters is now (v0.9) supported by scrolling excess characters off the screen
+to the left. When a leading digit scrolls off, an ellipsis character appears on
+the left to indicate that some digits are hidden.
+
+For example, if the number "123456.78901234" is entered, the input buffer look
+normal after 14 characters (see left), then when the 15th character is entered,
+some digits scroll off to the left (see right):
+
+![Long Number Entry 1](images/rpn83p-long-number-entry-1.png)
+![Long Number Entry 2](images/rpn83p-long-number-entry-2.png)
+
+In normal mode, the input system is configured to accept up to 20 digits because
+a TI-OS floating point number in scientific notation requires 20 digits to enter
+in full precision (14 significant digits plus 6 digits of notation overhead).
+
+In `BASE` mode, the digit limit is a variable that depends on the `WSIZ` and the
+base number (`DEC`, `HEX, `OCT`, `BIN`). As shown in [Base Input Digit
+Limit](#base-input-digit-limit), the input system will accept as many as 32
+digits for a `BIN` binary number.
+
+When the input system detects a [complex number in inlined entry
+mode](#complex-number-entry), through the presence of a `2ND i` or `2ND ANGLE`
+delimiter, the maximum number of characters is increased to 41 to allow 2
+floating point numbers to be entered with full precision.
 
 ### Floating Point Display Modes
 
@@ -1153,9 +1234,9 @@ To recall register `R00`, press:
 To clear the all storage registers, use the arrow keys for the menu system to
 get to:
 
-- ![ROOT MenuRow 3](images/rpn83p-screenshot-menu-root-3.png)
+- ![ROOT MenuRow 3](images/rpn83p-menu-root-3.png)
 - Press `CLR` to get
-  ![CLR MenuRow 1](images/rpn83p-screenshot-menu-root-clr-1.png)
+  ![CLR MenuRow 1](images/rpn83p-menu-root-clr-1.png)
 - Press `CLRG`
 
 The message `REGS cleared` will be displayed on the screen.
@@ -1165,20 +1246,20 @@ supported using the `STO` and `RCL` buttons followed by an arithmetic button.
 
 For example:
 
-- `STO` `+` `00`: add `X` to Reg 00
-- `STO` `-` `00`: subtract `X` from Reg 00
-- `STO` `*` `00`: multiply `X` to Reg 00
-- `STO` `/` `00`: divide `X` into Reg 00
+- `STO` `+` `00`: add `X` to `R00`
+- `STO` `-` `00`: subtract `X` from `R00`
+- `STO` `*` `00`: multiply `X` to `R00`
+- `STO` `/` `00`: divide `X` into `R00`
 
 Similarly:
 
-- `RCL` `+` `00`: add Reg 00 to `X`
-- `RCL` `-` `00`: subtract Reg 00 from `X`
-- `RCL` `*` `00`: multiply Reg 00 to `X`
-- `RCL` `/` `00`: divide Reg 00 into `X`
+- `RCL` `+` `00`: add `R00` to `X`
+- `RCL` `-` `00`: subtract `R00` from `X`
+- `RCL` `*` `00`: multiply `R00` to `X`
+- `RCL` `/` `00`: divide `R00` into `X`
 
-Indirect storage registers are not supported (as of v0.7.0). In other words, the
-`STO` `IND` `nn` and `RCL` `IND` `nn` functionality from the HP-42S.
+Indirect storage registers, the `STO` `IND` `nn` and `RCL` `IND` `nn`
+functionality from the HP-42S, are not supported (as of v0.9.0).
 
 ### Prime Factors
 
@@ -1226,15 +1307,15 @@ will be active. You can press `ON` key to break from the `PRIM` loop with an
 
 The `BASE` functions are available through the `ROOT` > `BASE` hierarchy:
 
-- ![ROOT MenuRow 2](images/rpn83p-screenshot-menu-root-2.png)
-    - ![BASE MenuRow 1](images/rpn83p-screenshot-menu-root-base-1.png)
-    - ![BASE MenuRow 2](images/rpn83p-screenshot-menu-root-base-2.png)
-    - ![BASE MenuRow 3](images/rpn83p-screenshot-menu-root-base-3.png)
-    - ![BASE MenuRow 4](images/rpn83p-screenshot-menu-root-base-4.png)
-    - ![BASE MenuRow 5](images/rpn83p-screenshot-menu-root-base-5.png)
-    - ![BASE MenuRow 6](images/rpn83p-screenshot-menu-root-base-6.png)
-    - ![BASE MenuRow 7](images/rpn83p-screenshot-menu-root-base-7.png)
-    - ![BASE MenuRow 8](images/rpn83p-screenshot-menu-root-base-8.png)
+- ![ROOT MenuRow 2](images/rpn83p-menu-root-2.png)
+    - ![BASE MenuRow 1](images/rpn83p-menu-root-base-1.png)
+    - ![BASE MenuRow 2](images/rpn83p-menu-root-base-2.png)
+    - ![BASE MenuRow 3](images/rpn83p-menu-root-base-3.png)
+    - ![BASE MenuRow 4](images/rpn83p-menu-root-base-4.png)
+    - ![BASE MenuRow 5](images/rpn83p-menu-root-base-5.png)
+    - ![BASE MenuRow 6](images/rpn83p-menu-root-base-6.png)
+    - ![BASE MenuRow 7](images/rpn83p-menu-root-base-7.png)
+    - ![BASE MenuRow 8](images/rpn83p-menu-root-base-8.png)
 
 These functions allow conversion of integers into different bases (10, 16, 8,
 2), as well as performing bitwise functions on those integers (bit-and, bit-or,
@@ -1266,7 +1347,7 @@ they are intended to be treated as unsigned integers.
 Let's start with the RPN stack containing the following numbers: -1, 17.1, 9E9,
 and 1234567, like this:
 
-![Numbers in Normal Mode](images/rpn83p-screenshot-base-normal.png)
+![Numbers in Normal Mode](images/rpn83p-base-normal.png)
 
 **DEC** (decimal)
 
@@ -1275,7 +1356,7 @@ numbers on the RPN stack are displayed as an integer, *as if* they were
 converted to an unsigned integer, but the RPN stack values are not modified. For
 the values given above, the display now looks like this:
 
-![Numbers in DEC Mode](images/rpn83p-screenshot-base-dec.png)
+![Numbers in DEC Mode](images/rpn83p-base-dec.png)
 
 If the value on the RPN stack is negative, a single `-` sign is shown.
 If the value is greater than or equal to `2^WSIZ`, then 3 dots `...` are shown
@@ -1290,7 +1371,7 @@ The `HEX` (hexadecimal) mode displays all numbers on the RPN stack using base
 16. Only the integer part is rendered as if the RPN stack values were
 converted to an unsigned integer.
 
-![Numbers in HEX Mode](images/rpn83p-screenshot-base-hex.png)
+![Numbers in HEX Mode](images/rpn83p-base-hex.png)
 
 If the value on the RPN stack is negative, a single `-` sign is shown.
 If the value is greater than or equal to `2^WSIZ`, then 3 dots `...` are shown
@@ -1311,7 +1392,7 @@ The `OCT` (octal) mode displays all numbers on the RPN stack using base 8. Only
 the integer part is rendered as if the RPN stack values were converted to an
 unsigned integer.
 
-![Numbers in OCT Mode](images/rpn83p-screenshot-base-oct.png)
+![Numbers in OCT Mode](images/rpn83p-base-oct.png)
 
 If the value on the RPN stack is negative, a single `-` sign is shown.
 If the value is greater than or equal to `2^WSIZ`, then 3 dots `...` are shown
@@ -1329,7 +1410,7 @@ The `BIN` (binary) mode displays all numbers on the RPN stack using base 2. Only
 the integer part is rendered as if the RPN stack values were converted to an
 unsigned integer.
 
-![Numbers in BIN Mode](images/rpn83p-screenshot-base-bin.png)
+![Numbers in BIN Mode](images/rpn83p-base-bin.png)
 
 If the value on the RPN stack is negative, a single `-` sign is shown.
 If the value is greater than or equal to `2^WSIZ`, then 3 dots `...` are shown
@@ -1348,7 +1429,7 @@ The `SHOW` function (bound to `2ND ENTRY` on the TI calculators) can be used to
 reveal all digits of the binary number, in groups of 4, using as many 4 lines of
 text like this:
 
-![Numbers in BIN Mode with SHOW](images/rpn83p-screenshot-base-bin-show.png)
+![Numbers in BIN Mode with SHOW](images/rpn83p-base-bin-show.png)
 
 We can now see that the number `1234567` in Base 2 is `0000 0000 0001 0010 1101
 0110 1000 0111`.
@@ -1443,38 +1524,36 @@ the integer operations instead of floating point operations.
 For example, suppose the following numbers are in the RPN stack *before*
 entering the `BASE` menu:
 
-![Base Arithmetic Part 1](images/rpn83p-screenshot-base-arithmetic-1-float.png)
+![Base Arithmetic Part 1](images/rpn83p-base-arithmetic-1-float.png)
 
 Entering the `BASE` menu shows this (assuming that the default base number was
 `DEC`):
 
-![Base Arithmetic Part 2](images/rpn83p-screenshot-base-arithmetic-2-dec.png)
+![Base Arithmetic Part 2](images/rpn83p-base-arithmetic-2-dec.png)
 
 Changing to `HEX` mode shows this:
 
-![Base Arithmetic Part 3](images/rpn83p-screenshot-base-arithmetic-3-hex.png)
+![Base Arithmetic Part 3](images/rpn83p-base-arithmetic-3-hex.png)
 
 Pressing the `+` button adds the `X` and `Y` registers, converting the
 values to 32-bit unsigned integers before the addition:
 
-![Base Arithmetic Part 4](images/rpn83p-screenshot-base-arithmetic-4-plus.png)
+![Base Arithmetic Part 4](images/rpn83p-base-arithmetic-4-plus.png)
 
 Changing back to `DEC` mode shows that the numbers were added using integer
 functions, and the fractional digits were truncated:
 
-![Base Arithmetic Part 5](images/rpn83p-screenshot-base-arithmetic-5-dec.png)
+![Base Arithmetic Part 5](images/rpn83p-base-arithmetic-5-dec.png)
 
 #### Carry Flag
 
 The RPN83P supports the *Carry Flag* implemented by most (all?) microprocessors.
-The Carry Flag is supported by the HP-16C but not by the HP-42S. When the Carry
-Flag is set, a small `C` letter appears on the display like this:
+The Carry Flag is supported by the HP-16C but not by the HP-42S. When the flag
+is off, a dash `-` is shown (left). When the Carry Flag is set, a small `C`
+letter appears (right):
 
+![Carry Flag Off](images/rpn83p-carry-flag-off.png)
 ![Carry Flag On](images/rpn83p-carry-flag-on.png)
-
-When the flag is off, a dash `-` is shown like this:
-
-![Carry Flag On](images/rpn83p-carry-flag-off.png)
 
 The Carry Flag can be explicitly cleared, set, and retrieved using the following
 menu items:
@@ -1613,46 +1692,41 @@ size without confusion. The `WSZ?` command returns the current word size in the
 think of any way around this, but I assume that this will not cause as much
 usability problems as the `WSIZ` command.
 
-### Base Input Digit Limit
+#### Base Input Digit Limit
 
 The maximum number of digits allowed to be entered into the input buffer is
-limited by a function which depends on:
-- the `WSIZ`
-- the current base number (`HEX` 16, `DEC` 10, `OCT` 8, `BIN` 2)
-- the width of the single line on the display
-
-Adding a limit during input hopefully reduces the likelihood that the user will
-enter a number that is greater than the maximum number of bits allowed in by the
-current `WSIZ` and base number.
+determined by a function which depends on both the `WSIZ` and the current base
+number (`HEX` 16, `DEC` 10, `OCT` 8, `BIN` 2). Adding a limit during input
+hopefully reduces the likelihood that the user will enter a number that is
+greater than the maximum number of bits allowed in by the current `WSIZ` and
+base number.
 
 Here are the limits:
 
 ```
-+------+------+-------------+-----------+
-| Base | WSIZ |     Max Num | MaxDigits |
-|------+------+-------------+-----------|
-|  DEC |    8 |         255 |         3 |
-|  DEC |   16 |       65535 |         5 |
-|  DEC |   24 |    16777215 |         8 |
-|  DEC |   32 |  4294967295 |        10 |
-|------+------+-------------+-----------|
-|  HEX |    8 |          FF |         2 |
-|  HEX |   16 |        FFFF |         4 |
-|  HEX |   24 |      FFFFFF |         6 |
-|  HEX |   32 |    FFFFFFFF |         8 |
-|------+------+-------------+-----------|
-|  OCT |    8 |         377 |         3 |
-|  OCT |   16 |      177777 |         5 |
-|  OCT |   24 |    77777777 |         8 |
-|  OCT |   32 | 37777777777 |        10 |
-|------+------+-------------+-----------|
-|  BIN |    8 |         255 |         8 |
-|  BIN |   16 |        4095 |    (*) 12 |
-|  BIN |   24 |        4095 |    (*) 12 |
-|  BIN |   32 |        4095 |    (*) 12 |
-+------+------+------------ +-----------+
-
-(*) Limit determined by width of a single line on the display.
++------+------+-------------+------------+
+| Base | WSIZ |  Max Number | Max Digits |
+|------+------+-------------+------------|
+|  DEC |    8 |         255 |          3 |
+|  DEC |   16 |       65535 |          5 |
+|  DEC |   24 |    16777215 |          8 |
+|  DEC |   32 |  4294967295 |         10 |
+|------+------+-------------+------------|
+|  HEX |    8 |          FF |          2 |
+|  HEX |   16 |        FFFF |          4 |
+|  HEX |   24 |      FFFFFF |          6 |
+|  HEX |   32 |    FFFFFFFF |          8 |
+|------+------+-------------+------------|
+|  OCT |    8 |         377 |          3 |
+|  OCT |   16 |      177777 |          5 |
+|  OCT |   24 |    77777777 |          8 |
+|  OCT |   32 | 37777777777 |         10 |
+|------+------+-------------+------------|
+|  BIN |    8 |         255 |          8 |
+|  BIN |   16 |       65535 |         16 |
+|  BIN |   24 |    16777215 |         24 |
+|  BIN |   32 |  4294967295 |         32 |
++------+------+------------ +------------+
 ```
 
 Limiting the number of digits during input does not completely prevent the user
@@ -1663,25 +1737,10 @@ bits does not correspond exactly to the representation in decimal. (A future
 enhancement may be to parse the input buffer upon `ENTER` and refuse to accept
 the number if it is greater than the maximum allowed by the `WSIZ`.)
 
-In `BIN` mode, the longest binary number that can be entered is limited by the
-width of the single line on the display, which in BIN mode is 12. You can apply
-arithmetic, logical, and bitwise operations to binary numbers to create larger
-results, but the largest binary number that can be entered manually is currently
-limited to 12 digits.
-
-It is assumed that most people will work with relatively small numbers in BIN
-mode. If they need to work with larger binary numbers, there may be
-two hacky workarounds:
-
-1. Enter the numbers in HEX instead of BIN.
-2. Split the BIN numbers in groups less than 12, then use the shift operators
-`SL`  to shift the binary digits, and add them together to form the larger
-binary number.
-
-A future enhancement would be allow up to `WSIZ` digits to be entered in `BIN`
-mode by scrolling the digits off the single line to the left. But currently
-(v0.8.0), this ability is not supported because the amount of work seems too
-great for the amount of benefits.
+The longest binary number that can be displayed on a single line in edit mode is
+14 digits. If the `WSIZ` is greater than 14 (i.e. greater than 8), then a binary
+number in `BIN` can exceed this limit and entering more digits will cause the
+left digits to scroll off the screen.
 
 #### Base Number Retention
 
@@ -1768,7 +1827,7 @@ Mar     11.70   0.43
 We would enter these data points like this:
 
 - Press `STAT` to see
-  ![STAT MenuRow 1](images/rpn83p-screenshot-menu-root-stat-1.png)
+  ![STAT MenuRow 1](images/rpn83p-menu-root-stat-1.png)
 - Press `ALLSigma` (select all curve fit models)
 - Press `CLSigma` to clear the summation registers. You should see a status
   message `STAT cleared`.
@@ -1787,13 +1846,13 @@ similar to the `ENTER` key. So the `N` values will be replaced by the next
 Let's calculate the basic statistics measures:
 
 - Press `DOWN` arrow key to see
-  ![STAT MenuRow 2](images/rpn83p-screenshot-menu-root-stat-2.png)
+  ![STAT MenuRow 2](images/rpn83p-menu-root-stat-2.png)
 - Press `SUM` to get `Y:84.89` and `X:5.19`
 - Press `MEAN` to get `Y:14.14833333` and `X:.865`
 - Press `WMN` to get `Y:14.72643545` and `X:.9003439746`
 - Press `N` to get `X:6`
 - Press `DOWN` arrow key to see
-  ![STAT MenuRow 3](images/rpn83p-screenshot-menu-root-stat-3.png)
+  ![STAT MenuRow 3](images/rpn83p-menu-root-stat-3.png)
 - Press `SDEV` to get `Y:3.032500069` and `X:1.015613115`
 - Press `SCOV` to get `X:.60007`
 - Press `PDEV` to get `Y:2.768281155` and `X:.9271236883`
@@ -1804,9 +1863,9 @@ for a given month is correlated with the minimum rainfall for the same month. We
 can use the CFIT routines to figure this out:
 
 - Press `CFIT` to see
-  ![CFIT MenuRow 1](images/rpn83p-screenshot-menu-root-stat-cfit-1.png)
+  ![CFIT MenuRow 1](images/rpn83p-menu-root-stat-cfit-1.png)
 - Press the `DOWN` arrow to see
-  ![CFIT MenuRow 2](images/rpn83p-screenshot-menu-root-stat-cfit-2.png)
+  ![CFIT MenuRow 2](images/rpn83p-menu-root-stat-cfit-2.png)
 - Verify that the `LINF` (linear fit) is selected
 - Press the `UP` arrow to get back to the main `CFIT` row.
 - Press `SLOP` to get `X:.5817619514`. This is the slope variable `m`.
@@ -1818,7 +1877,7 @@ can use the CFIT routines to figure this out:
 Let's see if a different curve fit model does better.
 
 - Press `DOWN` arrow to get to
-  ![CFIT MenuRow 2](images/rpn83p-screenshot-menu-root-stat-cfit-2.png)
+  ![CFIT MenuRow 2](images/rpn83p-menu-root-stat-cfit-2.png)
 - Press `BEST` button to request the app to automatically determine the
   best curve model. You should see `X:.2963586116` and the menu should have
   changed to select `PWRF`, like this:
@@ -1852,10 +1911,10 @@ Version 0.7.0 implements a usable Time Value of Money functionality that is
 inspired by RPN financial calculators such as the HP-12C and the HP-30b. They
 are available through the `ROOT` > `TVM` menu:
 
-- ![ROOT MenuRow 2](images/rpn83p-screenshot-menu-root-2.png)
-    - ![TVM MenuRow 1](images/rpn83p-screenshot-menu-root-tvm-1.png)
-    - ![TVM MenuRow 2](images/rpn83p-screenshot-menu-root-tvm-2.png)
-    - ![TVM MenuRow 3](images/rpn83p-screenshot-menu-root-tvm-3.png)
+- ![ROOT MenuRow 2](images/rpn83p-menu-root-2.png)
+    - ![TVM MenuRow 1](images/rpn83p-menu-root-tvm-1.png)
+    - ![TVM MenuRow 2](images/rpn83p-menu-root-tvm-2.png)
+    - ![TVM MenuRow 3](images/rpn83p-menu-root-tvm-3.png)
 
 This User Guide assumes that you are already know the theory of the Time Value
 of Money, and that you are familiar with TVM functions of RPN financial
@@ -2134,38 +2193,502 @@ We can persuade the TVM module to give us 2 solutions using the `IYR1` and
 - Press -30 `PMT`
 - Press 400 `FV`
 - Press 1 `P/YR`
-- Press `I%YR` (see `TVM Not Found`)
+- Press `I%YR` (should see `TVM Not Found`)
 - Modify the TVM Solver initial guesses to get the first solution
     - Press 10 `IYR1`
     - Press 20 `IYR2`
-- Press `I%YR` (see `TVM Calculated`)
+- Press `I%YR` (should see `TVM Calculated`)
 - Answer: 14.43587133%
 - Modify the TVM Solver initial guesses to get the second solution
     - Press 40 `IYR1`
     - Press 60 `IYR2`
-- Press `I%YR` (see `TVM Calculated`)
+- Press `I%YR` (should see `TVM Calculated`)
 - Answer: 53.17221327%
 
 Source:
 - [Solving the TVM equation for the interest
-  rate](https://www.hpmuseum.org/cgi-sys/cgiwrap/hpmuseum/archv021.cgi?read=234439)
+  rate](https://www.hpmuseum.org/cgi-sys/cgiwrap/hpmuseum/archv021.cgi?read=234439) (2012)
+
+### Complex Numbers
+
+Complex numbers can be entered in rectangular form `a+bi`, polar radian form `r
+e^(i theta)`, or polar degree form (`theta` in degrees). They can be also be
+displayed in all three forms. The entry modes and the display modes are
+independent of each other. For example, a complex number can be entered in
+rectangular form, even if the current display mode is polar form.
+
+#### Complex Numbers and Screen Size
+
+Complex numbers are rendering using the Small Font of the TI-83 and 84
+calculators instead of the Large Font. With the Large Font, we are limited to 16
+digits on a single line (including the stack label), which is not sufficient to
+display the 2 floating point numbers of a complex number. The Small Font allows
+us to display about 24 digits on a single line, which allows us to allocate 10
+digits for each of the two components of a complex number.
+
+Here is what the screen looks like with just Large Font (left), and a mix of
+Small and Large Fonts (right):
+
+![RPN83P Complex Font 1](images/rpn83p-complex-font-1.png)
+![RPN83P Complex Font 2](images/rpn83p-complex-font-2.png)
+
+Readability suffers a bit using the small font, but it seemed reasonable.
+
+#### Complex Number Entry
+
+There are 2 ways to enter complex numbers on the RPN83P app:
+
+- *linking* 2 real numbers in 2 stack registers into a single complex number
+- *inlining* both components on a single line.
+
+**Linking (2ND LINK)**
+
+The linking method borrows from the HP-42S which provides a `COMPLEX` key. It
+takes the `Y` and `X` registers and combines them into a complex number `Y +
+Xi`. By convention, the real part is entered first, `ENTER` is pressed, then the
+imaginary part is entered second. (Interestingly, this is the opposite order
+compared to the semantically related `ATN2` function or the `>POL` conversion
+function.) If the `COMPLEX` key is pressed again on a complex number, the
+reverse happens, where the complex number is broken up into 2 real numbers, with
+the `Y` register containing the real part, and the `X` register containing the
+imaginary part.
+
+The TI-83 Plus and TI-84 Plus calculators do not have a `COMPLEX` button. The
+closest key that seems reasonable is the `2ND LINK` button which is otherwise
+unused.
+
+For example, the number `1-2i` would be entered like this:
+
+```
+1
+ENTER
+2
+(-)
+2ND LINK
+```
+
+The display before and after the `2ND LINK` looks like this:
+
+![RPN83P Complex Linking 1](images/rpn83p-complex-linking-1.png)
+![RPN83P Complex Linking 2](images/rpn83p-complex-linking-2.png)
+
+Notice that the RPN83P follows the convention used by the HP-35s in rendering
+the complex number with an imaginary `i` delimiter between the two components.
+The negative sign on the `-2` appears *after* the `i`, because it is a delimiter
+not a multiplier of the number `-2`.
+
+Pressing `2ND LINK` on a complex number performs the *reverse* operation: the
+complex number is broken up into its real components. The real part goes into
+`Y` and the imaginary part goes into `X`.
+
+**Inlining (2ND i, 2ND ANGLE)**
+
+The inlined entry method borrows from the HP-35s which allows a complex number
+to be entered in its entirety on a single line. The `2ND i` button (above the
+`.` button), and the `2ND LINK` button (above the `x,t,theta,n` button) are used
+to delimit the 2 components of a complex number.
+
+To enter `1-2i` in rectangular mode, we would type:
+
+```
+1
+2ND i
+2
+(-)
+ENTER
+```
+
+The display before and after the `ENTER` looks like this:
+
+![RPN83P Complex Inlining RECT 1](images/rpn83p-complex-inlining-rect-1.png)
+![RPN83P Complex Inlining RECT 2](images/rpn83p-complex-inlining-rect-2.png)
+
+To enter `2 e^(i 60deg)` in polar-degree mode, we would type:
+
+```
+2
+2ND ANGLE
+60
+ENTER
+```
+
+The display before and after the `ENTER` looks like this:
+
+![RPN83P Complex Inlining PDEG 1](images/rpn83p-complex-inlining-pdeg-1.png)
+![RPN83P Complex Inlining PDEG 2](images/rpn83p-complex-inlining-pdeg-2.png)
+
+Notice that the complex number separator is an Angle symbol and a Degree symbol,
+which indicates that the input is expecting the angle to be entered in degrees.
+After the `ENTER`, the input buffer is parsed and a complex number is pushed
+into the RPN stack, like any other number:
+
+Note also that the number was entered in polar form, but the number is displayed
+in rectangular form. That is because the rendering of complex number is
+controlled by the [complex display mode](#complex-display-modes), currently set
+to `RECT`, which is independent of how the complex number is entered.
+
+We can enter complex numbers using angles in radians by typing `2ND ANGLE`
+twice. For example, to enter `2 Angle 1.047`, use the following keystrokes:
+
+```
+2
+2ND ANGLE
+2ND ANGLE
+1.047
+ENTER
+```
+
+The display before the `ENTER` looks like this, where the Angle symbol appears
+without the Degree symbol:
+
+![RPN83P Complex Inlining PRAD 1](images/rpn83p-complex-inlining-prad-1.png)
+![RPN83P Complex Inlining PRAD 2](images/rpn83p-complex-inlining-prad-2.png)
+
+The polar-degree mode was chosen to be the default, and the polar-radian mode
+available with an extra keystroke, because it seemed like the degree mode would
+be more useful when entering complex numbers as an inlined number on a single
+line. For example, a [three-phase electric
+power](https://en.wikipedia.org/wiki/Three-phase_electric_power) supply has
+three lines, each 120 degrees out of phase with each other. In contrast, the
+same angle in radians would involve rational multiples of Pi (e.g. 120 deg =
+pi/3 = 2.094395102 radians) so would probably be more difficult to enter.
+
+**Special Case for Solitary 2ND i**
+
+A solitary `2ND i` should be interpreted as `0 i 0` (0+0i) if the parsing rules
+were strictly followed, because an empty string should be interpreted as a `0`.
+However it seemed convenient to make a exception for a solitary `2ND i` and
+parse that as `0 i 1` instead, which becomes the pure imaginary number `i=0+1i`.
+Here are screenshots after a solitary `2ND i` and an `ENTER`:
+
+![RPN83P Complex Solitary i 1](images/rpn83p-complex-solitary-i-1.png)
+![RPN83P Complex Solitary i 2](images/rpn83p-complex-solitary-i-2.png)
+
+This special rule is triggered only by a solitary `2ND i`. If there is any digit
+before or after the `2ND i`, regular parsing rules are used. For example, `1 2ND
+i` is interpreted to be `1+0i` not `1+1i`.
+
+**HP-35s Compatibility Note 1**: The HP-35s uses a Theta symbol to display
+complex numbers in polar notation. The problem with the Theta symbol is that in
+the Small Font of the TI calculators, it looks too similar to the digit `0`. The
+Angle symbol seemed like a better choice as a delimiter because it is visually
+distinct from other digit characters. It is also the symbol used by the HP-42S.
+
+**HP-35s Compatibility Note 2**: The HP-35s uses `SHIFT Theta` button to enter
+complex numbers in polar notation. The `Theta` symbol is available on a TI
+calculator as `ALPHA Theta`. However, the `ALPHA` shifted key is used for no
+other functionality in the RPN83P app, and I found switching from `2ND` and
+`ALPHA` to invoke this function was too confusing for the muscle memory. The
+`2ND ANGLE` key was unused in the RPN83P app, and it matches the Angle symbol
+used to display complex numbers in polar notation.
+
+#### Complex Display Modes
+
+Just as there are 3 modes that complex numbers can be entered, there are 3 modes
+that complex numbers can be displayed. The complex display modes are: `RECT`,
+`PRAD`, and `PDEG`. These are available in row 2 of the `MODE` menu group, under
+`ROOT > MODE`, but the fastest way to reach this menu row is to use the `MODE`
+button shortcut on keyboard:
+
+- ![RPN83P Complex Mode Menu 1](images/rpn83p-complex-mode-menu-1.png)
+    - ![RPN83P Complex Mode Menu 2](images/rpn83p-complex-mode-menu-2.png)
+    - ![RPN83P Complex Mode Menu 3](images/rpn83p-complex-mode-menu-3.png)
+
+Pressing the `RECT`, `PRAD`, and `PDEG` menu buttons will change the display
+into the following:
+
+![RPN83P Complex Mode RECT](images/rpn83p-complex-mode-rect.png)
+![RPN83P Complex Mode PRAD](images/rpn83p-complex-mode-prad.png)
+![RPN83P Complex Mode PDEG](images/rpn83p-complex-mode-pdeg.png)
+
+This is probably a good place to note that the `2ND LINK` function is the only
+complex functionality that is affected by the display mode. The `2ND LINK`
+function will merge 2 real numbers from `Y` and `X` registers using the display
+mode that is *currently* in effect. (It did not make sense for it to do anything
+else.)
+
+In other words:
+
+- if `RECT`: the resulting number is `Y+Xi`
+- if `PRAD`: the resulting number is `Y e^(i X)`
+- if `PDEG`: the resulting number is `Y e^(i * X*pi/180)`, where `X` has been
+  converted from degrees to radians
+
+For example, let's set the display mode to `PDEG`, and enter the following:
+
+```
+1
+ENTER
+60
+2ND LINK
+```
+
+The display before and after the `2ND LINK` looks like this:
+
+![RPN83P Complex Linking PDEG 1](images/rpn83p-complex-linking-pdeg-1.png)
+![RPN83P Complex Linking PDEG 1](images/rpn83p-complex-linking-pdeg-2.png)
+
+The *unlinking* process is also affected by the complex display mode. Let's
+change the display mode to `RECT`, then hit `2ND LINK` to perform the unlinking.
+The display before and after the `2ND LINK` looks like this:
+
+![RPN83P Complex Unlinking RECT 1](images/rpn83p-complex-unlinking-rect-1.png)
+![RPN83P Complex Unlinking RECT 2](images/rpn83p-complex-unlinking-rect-2.png)
+
+#### Complex Polar Mode Overflow
+
+When a large complex number is converted to polar form, the magnitude value in
+the polar form, i.e. the `r` term, may overflow the usual floating point limit
+of the calculator. That's because `r=sqrt(a^2+b^2)`. For example,
+
+```
+(9e99 + 9e99i) = 1.2728e100 e^(i 0.785398163)
+```
+
+The number `1.2728e100` would normally generate an overflow error, but through a
+quirk in the underlying TI-OS, the `PRAD` and `PDEG` display modes will display
+these polar forms correctly, like this:
+
+![RPN83P Complex Overflow PRAD](images/rpn83p-complex-overflow-prad.png)
+![RPN83P Complex Overflow PDEG](images/rpn83p-complex-overflow-pdeg.png)
+
+However, if we try to unlink the 2 components using the `2ND LINK` function, an
+`Err: Overflow` code will be generated, because the magnitude `1.2728e100` is
+too large to be stored in the RPN register:
+
+![RPN83P Complex Overflow Unlink](images/rpn83p-complex-overflow-unlink.png)
+
+#### Complex SHOW
+
+The `SHOW` functionality (implemented by `2ND ENTRY`) supports complex numbers.
+All 14 internal digits of both the real and imaginary parts will be shown, using
+the current display mode (`RECT`, `PRAD`, `PDEG`).
+
+Here is the number `1+i` in 3 different modes using the SHOW function:
+
+![RPN83P Complex Show RECT](images/rpn83p-complex-show-rect.png)
+![RPN83P Complex Show PRAD](images/rpn83p-complex-show-prad.png)
+![RPN83P Complex Show PDEG](images/rpn83p-complex-show-pdeg.png)
+
+#### Complex FIX, SCI, ENG
+
+The floating point formatting modes `FIX`, `SCI`, and `ENG` can be applied to
+complex numbers:
+
+![RPN83P Complex FIX 4](images/rpn83p-complex-fmt-fix-4.png)
+![RPN83P Complex SCI 4](images/rpn83p-complex-fmt-sci-4.png)
+![RPN83P Complex ENG 4](images/rpn83p-complex-fmt-eng-4.png)
+
+#### Complex Functions
+
+The TI-OS provides versions of many functions that support complex numbers.
+Almost all of those functions have been implemented in the RPN83P app, and
+are transparently invoked by using a complex number argument. The following
+functions support complex numbers:
+
+- arithmetic: `+`, `-`, `*`, `/`
+- algebraic: `1/X`, `X^2`, `SQRT`, `X^3`, `3RootX`, `Y^X`, `XRootY`
+- transcendental: `LOG`, `10^X`, `LN`, `e^X`, `LOG2`, `2^X`, `LOGB`
+
+Trigonometric and hyperbolic functions do *not* support complex numbers because
+the underlying TI-OS functions do not support them.
+
+Additional functions specific to complex numbers are under the `ROOT > CPLX`
+menu:
+
+- ![RPN83P Complex CPLX Menu 1](images/rpn83p-complex-cplx-menu-1.png)
+    - ![RPN83P Complex CPLX Menu 2](images/rpn83p-complex-cplx-menu-2.png)
+
+They are:
+
+- `REAL`: extract the real part of a complex number
+- `IMAG`: extract the imaginary part of a complex number
+- `CONJ`: compute the complex conjugate of complex number
+- `CABS`: compute the magnitude `r=sqrt(a^2+b^2)` of complex number
+- `CANG`: compute the angle (i.e. "argument") of the complex number
+
+The `CANG` function returns the angle of the complex number in polar form. In
+mathematics, this function is normally called the "argument". But the word
+"argument" has too many other meanings in software and computer science.
+Therefore, this function is named `CANG` (complex angle) to be more
+self-descriptive.
+
+Since `CANG` returns the *angle*, it uses the trigonometric mode (`RAD`, `DEG`)
+to determine the unit of that angle. It is currently the *only* complex function
+that is affected by the trigonometric mode. An alternative was to use the
+complex *display* mode (`RECT`, `PRAD`, `PDEG`) to determine the unit of `CANG`,
+but it was too confusing for 2 reasons: 1) When the complex number is displayed
+in `RECT` format, there is no obvious reason why it should pick `RAD` over
+`DEG`, especially when, 2) The trigonometric mode is shown on the screen and can
+indicate one unit (e.g. `DEG`) but the `CANG` function could return another unit
+(e.g. radians).
+
+**Example 1: Arithmetic**
+
+Here is an example of adding the 3 complex numbers as described in p. 9-6 of the
+[HP-35s User's Guide](https://literature.hpcalc.org/items/171), shown in the
+following diagram:
+
+![RPN83P Complex Example1 Diagram](images/rpn83p-complex-example1-diagram.png)
+
+We can add them like this:
+
+```
+185 2ND ANGLE 62 ENTER
+170 2ND ANGLE 143 +
+100 2ND ANGLE 261 +
+
+RECT # shows -64.559244 i 166.885025
+PRAD # shows 178.937161 Angle 1.93991416
+PDEG # shows 178.937161 AngleDeg 111.148894
+```
+
+The result can be viewed in the 3 complex display formats by clicking on the
+`RECT`, `PRAD`, and `PDEG` menu buttons:
+
+![RPN83P Complex Example1 RECT](images/rpn83p-complex-example1-rect.png)
+![RPN83P Complex Example1 PRAD](images/rpn83p-complex-example1-prad.png)
+![RPN83P Complex Example1 PDEG](images/rpn83p-complex-example1-pdeg.png)
+
+**Remember**: Complex numbers are always stored internally in rectangular
+format. They can be displayed in 3 different formats. They can be entered in 3
+different formats regardless of the display setting.
+
+**Example 2: Y^X, SQRT**
+
+In this contrived example, we compute an expression involving all three
+representations of complex numbers:
+
+```
+# ignore the following comment line, comments are not supported by MarkDown
+\[ \sqrt{(1+i)^{(3 \angle 45^{\circ})} + (1 \angle 2)} \]
+```
+
+![RPN83P Complex Example2 Equation](images/rpn83p-complex-example2-equation.png)
+
+The keystrokes can be:
+```
+1 2ND i 1
+ENTER
+3 2ND ANGLE 45
+^
+1 2ND ANGLE 2ND ANGLE 2
++
+2ND SQRT
+
+RECT # shows .576363737 i 1.01949228
+PRAD # shows 1.17113606 Angle 1.05624914
+PDEG # shows 1.17113606 AngleDeg 60.518618
+```
+
+**Example 3: CANG, CABS**
+
+In this example, we calculate the magnitude and angle of the complex number
+`1+i`. We want the angle in degrees, so we have to first set the trigonometric
+mode to `DEG` (using `MODE DEG`), just like trigonometric functions. Enter the
+complex number in rectangular format:
+
+```
+1 2ND i 1
+CANG # shows 45, determined by DEG mode
+2ND ANS # LastX
+CABS # shows 1.414213562
+```
+
+The complex display mode (`RECT`, `PRAD`, `PDEG`) does *not* affect the value
+returned by `CANG`.
+
+If you want the angle value as shown on the screen, use the `2ND LINK` function
+to unlink the 2 components of the complex number. The value in the `X` register
+will be the angle value shown on the screen.
+
+#### Complex Computation Modes
+
+There are 2 computation mode settings under the `MODE` menu group which affect
+whether some functions return complex values or real values when the argument to
+the functions are real:
+
+- `RRES` (real results) return only real results for real arguments
+- `CRES` (complex results) allows complex results for real arguments
+
+These are available on row 2 of the `MODE` menu group, under `ROOT > MODE`, but
+the fastest way to reach this menu row is to use the `MODE` button shortcut:
+
+- ![RPN83P Complex Mode Menu 1](images/rpn83p-complex-mode-menu-1.png)
+    - ![RPN83P Complex Mode Menu 2](images/rpn83p-complex-mode-menu-2.png)
+    - ![RPN83P Complex Mode Menu 4](images/rpn83p-complex-mode-menu-4.png)
+
+Note that these settings do *not* affect how functions evaluate complex
+arguments. If the argument is complex, the results will always be complex.
+
+There are currently only a few functions which are affected by these settings:
+
+- `SQRT`, for arguments < 0
+- `LOG`, for arguments < 0
+- `LN`, for arguments < 0
+- `LOG2`, for arguments < 0
+- `LOGB`, for arguments < 0
+- `Y^X`, for `Y<0` and non-integer values of `X`
+- `XRootY`, for `Y<0` and non-integer values of `X`
+
+If `RRES` is selected, then these functions will return an `Err: Domain` error
+message. If `CRES` is selected, these functions will return a complex value.
+
+For example, if we try to take the sqrt(-1), in `RRES` mode, an error will be
+printed like this:
+
+![RPN83P Complex SQRT RRES](images/rpn83p-complex-sqrt-rres.png)
+
+But if we change the computation mode to `CRES`, we get a complex result:
+
+![RPN83P Complex SQRT CRES](images/rpn83p-complex-sqrt-cres.png)
+
+#### Complex Numbers and Trigonometric Modes
+
+In the `MODE` menu, there are 2 sets of menus related to degrees and radians.
+They are essentially independent of each other. This separation is different
+from other calculators that I am aware of. I hope that this is not too
+confusing.
+
+The first set of modes (`RAD`, `DEG`) contains the trigonometric modes that
+affect the computation of trigonometric functions. These determine the unit of
+the angles consumed or returned by these functions. Complex functions (except
+`CANG`) are not affected by the trigonometric modes: ![RPN83P MODE Menu
+1](images/rpn83p-mode-menu-1.png)
+
+The second set of modes (`RECT`, `PRAD`, `PDEG`) controls how complex numbers
+are displayed on the screen. These modes do not affect the behavior of any
+complex functions (except `2ND LINK`): ![RPN83P MODE Menu
+2](images/rpn83p-mode-menu-2.png)
+
+#### Complex Numbers in Storage Registers
+
+Both the RPN stack registers and the storage registers have been upgraded to
+accept real or complex numbers transparently. For example, we can store `1+2i`
+into `R00`, then add `2+3i` into it, to get `3+5i`:
+
+```
+1 2ND i 2
+STO 00
+2 2ND i 3
+STO+ 00
+RCL 00
+
+Answer: 3 i 5
+```
+
+![RPN83P Complex Storage Registers](images/rpn83p-complex-storage-registers.png)
 
 ## TI-OS Interaction
 
 The RPN83P app interacts with the underlying TI-OS in the following ways.
 
-- Two TI-OS List variables are used to store its internal floating point
-  numbers:
-    - `STK` holds the RPN stack registers (`X`, `Y`, `Z`, `T`, `LastX`)
-    - `REGS` holds the 25 storage registers `R00` to `R24`
-
-  **Warning**: While it is possible for a TI-BASIC program to access these List
-  variables, future versions of RPN83P will probably implement the storage in
-  different ways. The `STK` and `REGS` variables should *not* be considered to
-  form a stable API between RPN83P and TI-BASIC programs.
-- An appVar named `RPN83SAV` is used to preserve the internal state of the app
-  upon exiting. When the app is restarted, the appVar is read back in, so that
-  it can continue exactly where it had left off.
+- The `RPN83STK` appVar holds the RPN stack registers (`X`, `Y`, `Z`, `T`,
+  `LastX`).
+- The `RPN83REG` appVar holds the 25 storage registers (`R00` to `R24`).
+- The `RPN83SAV` appVar preserves the internal state of the app upon exiting.
+  When the app is restarted, the appVar is read back in, so that it can continue
+  exactly where it had left off.
 - The `X` register of RPN83P is copied to the `ANS` variable in the TI-OS when
   the RPN83P app exits. This means that the most recent `X` register from RPN83P
   is available in the TI-OS calculator using `2ND` `ANS`.
@@ -2175,13 +2698,14 @@ The RPN83P app interacts with the underlying TI-OS in the following ways.
   functionality is invoked in RPN83P as `2ND` `ANS`, this means that the TI-OS
   `ANS` value becomes available in RPN83P as `2ND` `ANS`.
 
-For a handful of configuration parameters, the RPN83P uses the same flags and
-global variables as the TI-OS. Changing these settings in RPN83P will cause the
-same change in the TI-OS (and vice versa) because the configuration parameters
-are shared:
+The RPN83P app uses some of the same flags and global variables for its `MODE`
+configuration as the TI-OS version of `MODE`. Starting with v0.9, these
+configurations are now decoupled and kept independent. Changing the `MODE`
+settings in one app will not cause changes to the other. Some of these `MODE`
+settings include:
 
 - trigonometric mode: `RAD` or `DEG`
-- floating point number settings: `FIX` (i.e. `NORMAL` in TI-OS), `SCI`, `ENG`
+- floating point number settings: `FIX` (named `NORMAL` in TI-OS), `SCI`, `ENG`
 
 The TVM module in the RPN83P uses some of the same TI-OS floating point
 variables used by the `Finance` app (automatically provided by the TI-OS on the
@@ -2206,36 +2730,50 @@ limited:
     - date/time components to and from epoch seconds
 - `GCD` and `LCM` functions are slow
     - Could be made significantly faster.
-- Allow resize of storage registers using `SIZE` command
+- allow resize of storage registers using `SIZE` command
     - The current default is fixed at 25.
     - It should be relatively straightforward to allow this to be
       user-definable, up to a `SIZE` of 100.
+- decouple STAT registers from regular storage registers
+    - STAT registers use R11-R23 storage registers, following the convention
+      used by the HP-42S
+    - there is no technical reason why RPN83P needs to follow this
+    - a better solution is to create a separate set of registers (e.g. an
+      `RPN83STA` appVar) just for STAT so that they don't interfere with normal
+      storage registers
+- add `ROND` menu function
+    - round real and complex numbers to the number of significant digits
+      displayed on the screen
+- support complex numbers in various `NUM` functions
+    - `IP`, `FP`, `FLR`, `CEIL`, `NEAR`
+    - we could support complex numbers to `%` and `%CH`, but does that make
+      sense? The HP-42S does not support it.
+- bigger RPN stack
+    - linking and unlinking a complex number to and from its 2 components
+      effectively reduces the stack size by 1
+    - an option to increase the size to 5 or maybe 8 seems worthwhile
+    - should the stack size be user-configurable, say between 4 and 8?
+    - I am not convinced that an infinite stack like RPL or the NSTK mode of
+      Free42 is worth the effort
 
 ### Medium Future
 
-- complex numbers
-    - The TI-OS provides internal subroutines to handle complex numbers, so in
-      theory, this should be relatively easy.
-    - The user interface may be difficult since a complex number requires 2
-      floating point numbers to be entered and displayed, and I have not figured
-      out how to do that within the UI of the RPN83P application.
-    - Additionally, all internal variables must be upgraded to accept a complex
-      number: RPN stack, storage registers nn
 - custom button bindings
     - a significant number of buttons on the TI-83/TI-84 keyboard are not used
       by RPN83P
     - it would be useful to allow the user to customize some of those buttons
       for quick access
-    - among the currently unassigned keys, here are some remarks about their
-      availability:
-        - unavailable, likely used by RPN83P in future: `2ND INS`, `2ND LIST`,
-          `2ND TEST`, `2ND ANGLE`, `2ND MATRIX` `2ND Imaginary-i`, `2ND
-          CATALOG`, `2ND MEM`, `VARS`, `PRGM`,
-        - reserved just in case: `XTTn`, `2ND LINK`, `2ND DISTR`, `2ND {`, `2ND
-          }`, `2ND [`, `2ND ]`
+    - among the currently unassigned keys, here are some notes on which may or
+      may not be be available:
+        - reserved for probable future use: `2ND INS`, `2ND LIST`, `2ND TEST`,
+          `2ND MATRIX` `2ND CATALOG`, `2ND MEM`, `APPS`, `PRGM`, `VARS`
+        - reserved for potential future use: `2ND DISTR`, `2ND {`, `2ND }`, `2ND
+          [`, `2ND ]`
+        - potentially available: all `ALPHA` keys, except probably `A`-`F`, ` `
+          (space), `"` (double quote), `:` (colon)
+        - probably available: `2ND u`, `2ND v`, `2ND w`, `XTTn`
         - definitely available:`2ND L1` to `2ND L6` (no obvious purpose in
           RPN83P)
-        - probably available: `2ND u`, `2ND v`, `2ND w`
 - user-defined alphanumeric variables
     - The HP-42S shows user-defined variables through the menu system.
     - Nice feature, but would require substantial refactoring of the current
@@ -2261,6 +2799,12 @@ limited:
     - The terminating tolerance could be selectable or more intelligent.
     - Maybe change the root solving algorithm from Secant method to Newton's
       method for faster convergence.
+- support insertion cursor using LEFT and RIGHT arrow keys
+    - currently the cursor always appears at the end of the input buffer
+    - it may be useful to support moving the cursor into the interior of the
+      input string using the LEFT and RIGHT arrow keys
+    - the DEL key would probably continue to delete to the left
+    - any other input would probably insert at the cursor position
 
 ### Far Future
 
@@ -2297,6 +2841,17 @@ curiosity and the technical challenge:
 - integration
     - another feature of advanced HP calculators which also depends on keystroke
       programming
+- interaction with TI-BASIC
+    - it might be possible to define a data conduit (i.e. an API) between RPN83P
+      and TI-BASIC, so that they can communicate with each other
+    - for example, the TI-BASIC predefined variables `A` to `Z` and `Theta` are
+      not used by RPN83P. They could be made accessible within RPN83P using a
+      new `STO` and `RCL` syntax, e.g. `STO OS A` and `RCL OS B` (maybe through
+      the currently unused `2ND DISTR` button, i.e. `STO 2ND DISTR 2ND ALPHA A`
+    - I think these would be different from the usual HP-42S alphabetic
+      variables of `STO "A"` and `RCL "B"`, which would be accessed through `STO
+      ALPHA A` and `RCL ALPHA B`.
+    - also to consider: TI-OS List, Matrix, and String variables
 
 ### Not Planned
 
