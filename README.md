@@ -294,14 +294,13 @@ Here is the animated GIF that shows this calculation:
 
 Let's add 4 complex numbers, divide by 4 to get their average, view the result
 in rectangular, polar radian, and polar degree modes, then extract the complex
-magnitude of the result.
+magnitude of the result. The following complex numbers were chosen to illustrate
+the 4 ways that complex numbers can be entered into RPN83P:
 
-The complex numbers are:
-
-- `100 - i/(2*pi*60*(1e-5))`
-- `100 + 250i`
-- `200 e^(i 10deg)`
-- `300 e^(i 0.1)`
+- `100 - i/(2*pi*60*(1e-5))` using `2ND LINK`
+- `100 + 250i` using `2ND i`
+- `200 e^(i 10deg)` using `2ND ANGLE`
+- `300 e^(i 0.1)` using `2ND ANGLE 2ND ANGLE`
 
 The keystrokes are:
 
@@ -310,7 +309,7 @@ The keystrokes are:
   ![MODE MenuRow 2](docs/images/rpn83p-menu-root-mode-2.png)
 - Press `100` `ENTER`
 - Press `2` `PI` `*` `60` `*` `1 EE 5` `(-)` `*` `1/X` `(-)` (-265.26)
-- Press `2ND LINK` (100 - 265.26i)
+- Press `2ND LINK` (100-265.26i)
 - Press `100` `2ND i` `250` `+` (200-15.26i)
 - Press `200` `2ND ANGLE` `10` `+` (396.96+19.47i)
 - Press `300` `2ND ANGLE` `2ND ANGLE` `0.1` `+` (695.46+49.42i)
