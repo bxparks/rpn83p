@@ -73,6 +73,11 @@
     - **Bug Fix**: Render 3-digit EE exponents correctly in `SHOW` mode.
         - 3-digit exponents can only be shown for complex numbers, so the bug
           was latent until complex numbers were added
+    - **Bug Fix**: Fix overflow in rectangular to polar conversion `>POL`
+        - the built-in TI-OS `RToP()` function has a bug which throws an
+          exception when `x^2+y^2` becomes `>=1e100`, which can happen for `x`
+          or `y` as low as `7.07e49`.
+        - reimplement using a custom `rectToPolar()` without the scaling bug
 - 0.8.0 (2023-12-03)
     - **Breaking**: Flip the order of polar-rectangular conversion menu function
       (`>POL` and `>REC`) so that they are consistent with the HP-42S. I don't
