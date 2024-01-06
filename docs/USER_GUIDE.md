@@ -2778,6 +2778,12 @@ limited:
     - The terminating tolerance could be selectable or more intelligent.
     - Maybe change the root solving algorithm from Secant method to Newton's
       method for faster convergence.
+- support insertion cursor using LEFT and RIGHT arrow keys
+    - currently the cursor always appears at the end of the input buffer
+    - it may be useful to support moving the cursor into the interior of the
+      input string using the LEFT and RIGHT arrow keys
+    - the DEL key would probably continue to delete to the left
+    - any other input would probably insert at the cursor position
 
 ### Far Future
 
