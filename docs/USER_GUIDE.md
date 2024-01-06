@@ -2225,10 +2225,10 @@ regardless of the display mode.
 
 Complex numbers are rendering using the Small Font of the TI-83 and 84
 calculators instead of the Large Font. With the Large Font, we are limited to 16
-digits on a single line (including the stack label), which is not sufficient to
+digits on a single line (including the stack label), which are not sufficient to
 display the 2 floating point numbers of a complex number. The Small Font allows
 us to display about 24 digits on a single line, which allows us to allocate 10
-digits for each of the two components of a complex number.
+digits for each component of a complex number.
 
 Here is what the screen looks like with just Large Font (left), and a mix of
 Small and Large Fonts (right):
