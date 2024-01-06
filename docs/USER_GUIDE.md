@@ -2834,15 +2834,14 @@ curiosity and the technical challenge:
 - automated testing infrastructure
     - assembly language programming is not amenable to unit testing because it
       is difficult if not almost impossible to isolate a piece of code to be
-      tested in isolation of neighboring code and its operating system
+      tested in isolation of its neighboring code and the operating system
       environment (i.e. TI-OS)
-    - however, the RPN83P code base has grown large enough that it is becoming
-      painful to add additional features without automated testing
-    - two solutions which may be possible:
-        - an automated integration testing framework hosted on the
-          desktop/laptop, through one of the TI calculator emulators
+    - unfortunately, the RPN83P code base has grown large enough that it is
+      becoming painful to add additional features without automated testing
+    - two possible solutions:
+        - testing through a TI calculator emulator hosted on a desktop/laptop
         - integration testing through keystroke programming within the RPN83P
-          itself
+          app itself
         - I'm not sure which solution would be easier and more maintainable
 - indirect `STO` and `RCL` operators
     - `STO IND nn`, `STO+ IND nn`, `STO- IND nn`, `STO* IND nn`, `STO/ IND nn`
