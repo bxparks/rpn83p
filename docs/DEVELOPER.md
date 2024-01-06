@@ -320,20 +320,20 @@ difficult to remember how to set or clear these flags, or whether the flag is a
 single digit, 2 digits, or 3 digits. RPN83P will expose all system configuration
 options through the menu system.
 
-User flags, on the other hand, may be provided in the future, probably when
+User flags, on the other hand, may be provided in the future if or when
 keystroke programming is added. They are definitely useful in calculator
 programs.
 
 ### Includes Useful Features
 
-There is no need to segment the features of RPN83P to different market segments
-(e.g. business, scientific, graphing, computer science). If a feature is useful
-or interesting, without regards to a product segment, and if it is reasonable to
-implement within the limitations of the Z80 assembly language and the underlying
-TI-OS, then it seems worth considering to include it in RPN83P.
+The RPN83P app has no need to segment the features of RPN83P to different market
+segments (e.g. business, scientific, graphing, computer science). I added
+features to RPN83P because they are useful, interesting, and are reasonable to
+implement within the constraints of the hardware, the TI-OS, and the Z80
+assembly language programming.
 
 ### Customizable
 
-Custom key bindings are now supported right now, but it seems important to add
-that in the future. Users will use the calculator in different ways, and some
-people may use some functions more frequently than others.
+Custom key bindings are not supported right now (v0.9), but it seems important
+to add that in the future. Users will use the calculator in different ways, and
+some people may use some functions more frequently than others.
