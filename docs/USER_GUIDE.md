@@ -2553,9 +2553,9 @@ ENTER
 +
 2ND SQRT
 
-RECT # show .576363737 i 1.01949228
-PRAD # show 1.17113606 Angle 1.05624914
-PDEG # show 1.17113606 AngleDeg 60.518618
+RECT # shows .576363737 i 1.01949228
+PRAD # shows 1.17113606 Angle 1.05624914
+PDEG # shows 1.17113606 AngleDeg 60.518618
 ```
 
 **Example 3: CANG, CABS**
@@ -2682,7 +2682,7 @@ settings in one app will not cause changes to the other. Some of these `MODE`
 settings include:
 
 - trigonometric mode: `RAD` or `DEG`
-- floating point number settings: `FIX` (i.e. `NORMAL` in TI-OS), `SCI`, `ENG`
+- floating point number settings: `FIX` (named `NORMAL` in TI-OS), `SCI`, `ENG`
 
 The TVM module in the RPN83P uses some of the same TI-OS floating point
 variables used by the `Finance` app (automatically provided by the TI-OS on the
