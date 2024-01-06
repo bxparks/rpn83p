@@ -5,628 +5,95 @@
 ; Functions related to parsing the inputBuf into a floating point number.
 ;------------------------------------------------------------------------------
 
-; Description: Initialize variables and flags related to the input buffer.
-; Output:
-;   - inputBuf set to empty
-;   - rpnFlagsEditing reset
-; Destroys: A
-initInputBuf:
-    res rpnFlagsEditing, (iy + rpnFlags)
-    ; [[fallthrough]]
-
-; Description: Clear the inputBuf.
-; Input: inputBuf
-; Output:
-;   - inputBuf cleared
-;   - inputBufEEPos set to 0
-;   - inputBufEELen set to 0
-;   - dirtyFlagsInput set
-; Destroys: none
-clearInputBuf:
-    push af
-    xor a
-    ld (inputBuf), a
-    ld (inputBufEEPos), a
-    ld (inputBufEELen), a
-    res inputBufFlagsDecPnt, (iy + inputBufFlags)
-    res inputBufFlagsEE, (iy + inputBufFlags)
-    set dirtyFlagsInput, (iy + dirtyFlags)
-    pop af
-    ret
-
-; Description: Append character to inputBuf.
-; Input:
-;   A: character to be appended
-; Output:
-;   - CF set when append fails
-;   - dirtyFlagsInput set
-; Destroys: all
-appendInputBuf:
-    ld c, a ; C=char
-    call getWordSizeDigits
-    ld b, a ; B=maxDigits
-    ld a, c ; A=char
-    ld hl, inputBuf
-    set dirtyFlagsInput, (iy + dirtyFlags)
-    jp appendString
-
-; Description: Close the input buffer by parsing the input, then copying the
-; float value into X. If not in edit mode, no need to parse the inputBuf, the X
-; register is not changed. Almost all functions/commands in RPN83P will call
-; this function at the very beginning of their handler.
+; Description: Close the inputBuf and transfer its contents to the X register
+; if it had been opened in edit mode. Otherwise, do nothing.
 ;
-; This function determines 2 flags which affect the stack lift:
-;
-; - rpnFlagsLiftEnabled: *Always* set after this call. It is up to the calling
-; handler to override this default and disable it if necessary (e.g. ENTER, or
-; Sigma+).
-; - inputBufFlagsClosedEmpty: Set if the inputBuf was an empty string before
-; being closed. This flag is cleared if the inputBuf was *not* in edit mode to
-; begin with.
-;
-; The rpnFlagsLiftEnabled is used by the next manual entry of a number (digits
-; 0-9 usualy, sometimes A-F in hexadecimal mode). Usually, the next manual
-; number entry lifts the stack, but this flag can be used to disable that.
-; (e.g. ENTER will disable the lift of the next number).
-;
-; The inputBufFlagsClosedEmpty flag is used by functions which do not consume
-; any value from the RPN stack, but simply push a value or two onto the X or Y
-; registers (e.g. PI, E, or various TVM functions, various STAT functions). If
-; the user had pressed CLEAR, to clear the input buffer, then it doesn't make
-; sense for these functions to lift the empty string (i.e. 0) up when pushing
-; the new values. These functions call pushX() or pushXY() which checks if the
-; inputBuf was closed when empty. If empty, pushX() or pushXY() will *not* lift
-; the stack, but simply replace the "0" in the X register with the new value.
-; This flag is cleared if the inputBuf was not in edit mode, with the
-; assumption that new X or Y values should lift the stack.
-;
+; Most button and menu handlers should probably use closeInputAndRecallX() and
+; closeInputAndRecallXY() instead, to transfer the X and Y parameters into the
+; OP1 and OP2 variables. This decouples the implementations of those handlers
+; from the RPN stack, and making them easier move to different Flash Pages if
+; needed.
 ; Input:
 ;   - rpnFlagsEditing: indicates if inputBuf is valid
 ;   - inputBuf: input buffer
 ; Output:
 ;   - rpnFlagsLiftEnabled: always set
-;   - inputBufFlagsClosedEmpty: set if inputBuf was an empty string when closed
+;   - inputBufFlagsClosedEmpty: set if inputBuf was in edit mode AND was an
+;   empty string when closed
 ;   - rpnFlagsEditing: always cleared
-;   - OP1: value of inputBuf if edited
-;   - X register: set to OP1 if inputBuf was edited
 ;   - inputBuf cleared to empty string
-; Destroys: all, OP1, OP2, OP4
-closeInputBuf:
+;   - X register: set to inputBuf if edited, otherwise unchanged
+; Destroys: all, OP1, OP2, OP3, OP4, OP5
+closeInput:
     set rpnFlagsLiftEnabled, (iy + rpnFlags)
     bit rpnFlagsEditing, (iy + rpnFlags)
-    jr nz, closeInputBufEditing
-    ; Not editing
+    jr nz, closeInputEditing
+    ; Not editing, so must clear inputBufFlagsClosedEmpty.
     res inputBufFlagsClosedEmpty, (iy + inputBufFlags)
     ret
-closeInputBufEditing:
-    ld a, (inputBuf)
-    or a
-    jr z, closeInputBufEmpty
-    ; inputBuf not empty
-    res inputBufFlagsClosedEmpty, (iy + inputBufFlags)
-    jr closeInputBufContinue
-closeInputBufEmpty:
-    set inputBufFlagsClosedEmpty, (iy + inputBufFlags)
-closeInputBufContinue:
-    call parseNum
+closeInputEditing:
+    bcall(_CloseInputBuf) ; OP1/OP2=real or complex number
     call stoX
-    call clearInputBuf
     res rpnFlagsEditing, (iy + rpnFlags)
-    ret
-
-;------------------------------------------------------------------------------
-
-clearArgBuf:
-    xor a
-    ld (argBuf), a
-    ; [[fallthrough]]
-initArgBuf:
-    res rpnFlagsArgMode, (iy + rpnFlags)
-    ret
-
-; Description: Append character in A to the argBuf.
-; Input:
-;   - A: character to append
-; Output:
-;   - dirtyFlagsInput set
-; Destroys: all
-appendArgBuf:
-    set dirtyFlagsInput, (iy + dirtyFlags)
-    ld hl, argBuf
-    ld b, a
-    ld a, (hl)
-    cp argBufSizeMax
-    ret nc ; limit total number of characters
-    ld a, b
-    ld b, argBufMax
-    jp appendString
-
-; Description: Convert (0 to 2 digit) argBuf into a binary number.
-; Input: argBuf
-; Output: A: value of argBuf
-; Destroys: A, B, C, HL
-parseArgBuf:
-    ld hl, argBuf
-    ld b, (hl) ; B = argBufSize
-    inc hl
-    ; check for 0 digit
-    ld a, b
-    or a
-    ret z
-    ; A = current sum
-    xor a
-    ; check for 1 digit
-    dec b
-    jr z, parseArgBufOneDigit
-parseArgBufTwoDigits:
-    call parseArgBufOneDigit
-    ; C = C * 10 = C * (2 * 5)
-    ld c, a
-    add a, a
-    add a, a
-    add a, c ; A = 5 * C
-    add a, a
-parseArgBufOneDigit:
-    ld c, a
-    ld a, (hl)
-    inc hl
-    sub '0'
-    add a, c
-    ret ; A = current sum
-
-;------------------------------------------------------------------------------
-
-; Description: Parse the input buffer into the parseBuf.
-; Input: inputBuf filled with keyboard characters
-; Output: OP1: floating point number
-; Destroys: all registers
-parseNum:
-    call parseNumInit
-    call checkZero
-    ret z
-    ld hl, inputBuf
-    bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
-    jr nz, parseBaseInteger
-parseFloat:
-    ; Parse floating point.
-    call calcDPPos
-    call extractMantissaExponent ; extract mantissa exponent to floatBuf
-    call extractMantissaSign ; extract mantissa sign to floatBuf
-    call parseMantissa ; parse mantissa digits from inputBuf into parseBuf
-    call extractMantissa ; copy mantissa digits from parseBuf into floatBuf
-    call parseExponent ; parse EE digits from inputBuf
-    call addExponent ; add EE exponent to floatBuf exponent
-    call copyFloatToOP1 ; copy floatBuf to OP1
-    ret
-
-parseBaseInteger:
-    ld a, (baseNumber)
-    cp 16
-    jr z, parseNumBase
-    cp 8
-    jr z, parseNumBase
-    cp 2
-    jr z, parseNumBase
-    cp 10
-    jr z, parseNumBase
-    ; all others interpreted as base 10
-    ld a, 10
-    ld (baseNumber), a
-    ; [[fallthrough]]
-
-; Description: Parse the baseNumber in the Pascal-string given by HL. The base
-; mode be 2, 8 or 16. This subroutine will actually supports any baseNumber <=
-; 36 probably (10 numerals and 26 letters).
-; Input:
-;   - HL: pointer to Pascal-string
-;   - A: base mode (2, 8, 10, 16)
-; Output: OP1: floating point value
-; Destroys: all
-parseNumBase:
-    push hl
-    bcall(_SetXXOP1) ; OP1 = A = base
-    bcall(_OP1ToOP4) ; OP4 = base
-    bcall(_OP1Set0)
-    pop hl
-    ld a, (hl) ; num of digits
-    or a
-    ret z
-    ld b, a ; num digits
-parseNumBaseLoop:
-    ; multiply by 10 before the next digit
-    push bc
-    push hl
-    bcall(_OP4ToOP2) ; OP2 = base
-    bcall(_FPMult) ; OP1 *= base; destroys OP3
-    pop hl
-    inc hl
-    ld a, (hl)
-    ; convert char into digit value
-    cp 'A'
-    jr c, parseNumBase0To9
-parseNumBaseAToF:
-    sub 'A'
-    add a, 10
-    jr parseNumBaseAddDigit
-parseNumBase0To9:
-    sub '0'
-parseNumBaseAddDigit:
-    push hl
-    bcall(_SetXXOP2) ; OP2 = A = digit value
-    bcall(_FPAdd) ; OP1 += OP2
-    pop hl
-    pop bc
-    djnz parseNumBaseLoop
-    ret
-
-;------------------------------------------------------------------------------
-
-; Description: Initialize the parseBuf.
-; Input: none
-; Output: (parseBuf) cleared
-; Destroys: all
-parseNumInit:
-    call clearParseBuf
-    call clearFloatBuf
-    ret
-
-; Description: Clear parseBuf by setting all digits to the character '0', and
-; setting size to 0. The trailing '0' characters make it easy to construct the
-; floating point number.
-clearParseBuf:
-    xor a
-    ld hl, parseBuf
-    ld (hl), a
-    ld a, '0'
-    ld b, parseBufMax
-    inc hl
-clearParseBufLoop:
-    ld (hl), a
-    inc hl
-    djnz clearParseBufLoop
-    ret
-
-; Description: Set floatBuf to 0.0.
-clearFloatBuf:
-    bcall(_OP1Set0)
-    ld de, floatBuf
-    bcall(_MovFrOP1)
-    ret
-
-;------------------------------------------------------------------------------
-
-; Description: Check if the inputBuf is effectively '0'. In other words, if
-; the inputBuf is composed of characters only in the set ['-', '.', '0'], then
-; it is effectively zero. Otherwise, not zero.
-; Input: inputBuf
-; Output: Z set if zero, otherwise not set
-; Destroys: A, B, HL
-checkZero:
-    ld hl, inputBuf
-    ld a, (hl) ; A = inputBufSize
-    ; Check for empty
-    or a
-    ret z
-    ; Check for any characters other than 0, '-', '.'
-    inc hl
-    ld b, a
-checkZeroLoop:
-    ld a, (hl)
-    cp '0'
-    jr z, checkZeroContinue
-    cp signChar
-    jr z, checkZeroContinue
-    cp '.'
-    jr z, checkZeroContinue
-    ret ; returns with ZF=0
-checkZeroContinue:
-    inc hl
-    djnz checkZeroLoop
-    xor a ; set ZF=1
-    ret
-
-;------------------------------------------------------------------------------
-
-; Description: Parse the mantissa digits from inputBuf into parseBuf, ignoring
-; negative sign, leading zeros, the decimal point, and the EE symbol. For
-; example:
-;   - "0.1" produces "1"
-;   - "-001.2" produces "12"
-;   - "23E-1" produces "23"
-; Input: inputBuf
-; Output: parseBuf filled with mantissa digits
-; Destroys: all registers
-parseMantissaLeadingFound equ 0 ; bit to set when lead digit found
-parseMantissa:
-    ld hl, inputBuf
-    ld a, (hl) ; A = inputBufSize
-    or a
-    ret z
-    ld b, a ; B = inputBufSize
-    res parseMantissaLeadingFound, c
-    inc hl
-parseMantissaLoop:
-    ld a, (hl)
-    cp Lexponent
-    ret z ; terminate loop at "E"
-    cp signChar
-    jr z, parseMantissaContinue
-    cp '.'
-    jr z, parseMantissaContinue
-    cp '0'
-    jr nz, parseMantissaNormalDigit
-    ; Check if we found leading digit.
-    bit parseMantissaLeadingFound, c
-    jr z, parseMantissaContinue
-parseMantissaNormalDigit:
-    set parseMantissaLeadingFound, c
-    push hl
-    push bc
-    call appendParseBuf
-    pop bc
-    pop hl
-parseMantissaContinue:
-    inc hl
-    djnz parseMantissaLoop
-    ret
-
-;------------------------------------------------------------------------------
-
-; Description: Find the position of the decimal point of the given number
-; string.
-; Input: assumes non-empty inputBuf
-; Output: A = decimal point position, signed integer
-; Destroys: all
-;
-; The returned value is the number of places the the decimal point needs to be
-; shifted to get back the original value after the mantissa is normalized with
-; the leading non-zero digit immediately to the right of the decimal place. The
-; normalized mantissa lies in the interval [0.1, 1.0). The shift can be a
-; negative number for values less than 0.1.
-;
-; For example, the following unnormalized number strings should return the
-; indicated decimal point position:
-;
-;   - "123.4" ->  .1234, 3
-;   - "012" ->  .12, 2
-;   - "12" ->  .12, 2
-;   - "1.2" ->  .12, 1
-;   - ".12" -> .12, 0
-;   - "0.123" -> .123, 0
-;   - ".012" -> .12, -1
-;   - "000.0012" -> .12, -2
-;
-; Here is the algorithm written in C:
-;
-; int8_t calcDPPos(const char *s, uint8_t stringSize) {
-;   bool leadingFound = false;
-;   bool dotFound = false;
-;   int_t pos = 0;
-;   for (int i = 0; i < stringSize; i++) {
-;       char c = s[i];
-;       if (c == 'E') break; // hit exponent symbol
-;       if (c == '-') continue;
-;       if (c == '.') {
-;           dotFound = true;
-;           continue;
-;       }
-;       // '0' is special only if no leading digit found yet
-;       if (c == '0' && !leadingFound) {
-;           if (dotFound) {
-;               pos--;
-;           }
-;       } else {
-;           // if leading has already been found, treat
-;           // '0' just like any other character
-;           leadingFound = true;
-;           if (!dotFound) {
-;               pos++;
-;           }
-;       }
-;   }
-;   return pos;
-calcDPLeadingFound equ 0 ; set if leading (non-zero) digit found
-calcDPDotFound equ 1; set if decimal point found
-calcDPPos:
-    ld hl, inputBuf
-    ld b, (hl) ; stringSize
-    xor a
-    ld c, a ; pos
-    ld d, a ; flags
-    inc hl
-calcDPLoop:
-    ld a, (hl)
-    ; break if EE symbol
-    cp Lexponent
-    jr z, calcDPEnd
-    ; ignore and skip '-'
-    cp signChar
-    jr z, calcDPContinue
-    ; check for '.'
-    cp '.'
-    jr nz, calcDPZero
-    set calcDPDotFound, d
-    jr calcDPContinue
-calcDPZero:
-    ; check for '0'
-    cp '0'
-    jr nz, calcDPNormalDigit
-    bit calcDPLeadingFound, d
-    jr nz, calcDPNormalDigit
-calcDPUpdatePos:
-    bit calcDPDotFound, d
-    jr z, calcDPContinue
-    dec c
-    jr calcDPContinue
-calcDPNormalDigit:
-    set calcDPLeadingFound, d
-    bit calcDPDotFound, d
-    jr nz, calcDPContinue
-    inc c
-calcDPContinue:
-    inc hl
-    djnz calcDPLoop
-calcDPEnd:
-    ld a, c
-    ret
-
-;------------------------------------------------------------------------------
-
-; Description: Append character in A to parseBuf
-; Input:
-;   - A: character to be appended
-; Output:
-;   - CF set when append fails
-; Destroys: all
-appendParseBuf:
-    ld hl, parseBuf
-    ld b, parseBufMax
-    jp appendString
-
-;------------------------------------------------------------------------------
-
-; Description: Set the exponent from the mantissa. The mantissaExp =
-; decimalPointPos - 1. But the floating exponent is shifted by $80.
-;   mantissaExponent = decimalPointPos - 1
-;   floatingExponent = mantissaExponent + $80
-;                    = decimalPointPos + $7F
-;
-; Input: A: decimalPointPos (from calcDPPos())
-; Output: floatBufExp = decimalPointPos + $7F
-; Destroys: A
-extractMantissaExponent:
-    add a, $7F
-    ld (floatBufExp), a
-    ret
-
-; Description: Extract mantissa sign from the first character in the inputBuf.
-; Input: inputBuf
-; Output: floatBuf sign set
-; Destroys: HL
-extractMantissaSign:
-    ld hl, inputBuf
-    ld a, (hl)
-    or a
-    ret z ; empty string, assume positive
-    inc hl
-    ld a, (hl)
-    cp signChar
-    ret nz ; '-' not found at first character
-    ld hl, floatBufType
-    set 7, (hl)
-    ret
-
-; Description: Extract the normalized mantissa digits from parseBuf to
-; floatBuf, 2
-; digits per byte.
-; Input: parseBuf
-; Output:
-; Destroys: A, BC, DE, HL
-extractMantissa:
-    ld hl, parseBuf
-    ld a, (hl)
-    or a
-    ret z
-    inc hl
-    ld de, floatBufMan
-    ld b, parseBufMax/2
-extractMantissaLoop:
-    ; Loop 2 digits at a time.
-    ld a, (hl)
-    sub '0'
-    sla a
-    sla a
-    sla a
-    sla a
-    ld c, a
-    inc hl
-    ld a, (hl)
-    sub '0'
-    or c
-    ld (de), a
-    inc de
-    inc hl
-    djnz extractMantissaLoop
-    ret
-
-; Description: Copy floatBuf into OP1
-copyFloatToOP1:
-    ld hl, floatBuf
-    bcall(_Mov9ToOP1)
     ret
 
 ;-----------------------------------------------------------------------------
 
-; Description: Parse the digits after the 'E' symbol in the inputBuf.
-; Input: inputBuf
-; Output: A: the exponent, in two's complement form
-; Destroys: A, BC, DE, HL
-; TODO: Instead of relying on inputBufEEPos and inputBufEELen, scan for 'E' and
-; parse out the exponent digits. This would remove the dependency to those 2
-; variables, and decouple the parsing routines from the input/editing routines.
-parseExponent:
-    ld b, 0 ; B=exponent value
-    ; Return if no 'E' symbol
-    ld a, (inputBufEEPos)
-    ld e, a ; E=EEpos
-    or a
-    ld a, b
-    ret z
-    ; Return if no digits after 'E'
-    ld a, (inputBufEELen)
-    ld c, a ; C=EELen
-    or a
-    ld a, b
-    ret z
-    ; Check for minus sign
-    ld hl, inputBuf
-    ld d, 0
-    add hl, de
-    inc hl ; HL=pointer to first digit of EE
-    ld a, (hl)
-    cp signChar
-    jr z, parseExponentSetSign
-    res inputBufFlagsExpSign, (iy+inputBufFlags)
-    jr parseExponentDigits
-parseExponentSetSign:
-    inc hl
-    set inputBufFlagsExpSign, (iy+inputBufFlags)
-parseExponentDigits:
-    ; Convert 1 or 2 digits of the exponent to 2's complement number in A
-    ld a, c ; A=EELen
-    cp 1
-    jr z, parseExponentOneDigit
-parseExponentTwoDigits:
-    ld a, (hl) ; first of 2 digits
-    inc hl
-    sub '0'
-    ; multiply by 10
-    add a, a
-    ld c, a ; C=2*A
-    add a, a
-    add a, a ; A=8*A
-    add a, c ; A=10*A
-    ld b, a ; save B
-parseExponentOneDigit:
-    ld a, (hl) ; second of 2 digits,or first of 1 digit
-    sub '0'
-    add a, b
-parseExponentNegIfSign:
-    bit inputBufFlagsExpSign, (iy+inputBufFlags)
-    ret z
-    neg
-    ret
+; Close the input buffer, and don't set OP1 to anything.
+; Output:
+;   - rpnFlagsTvmCalculate: cleared
+closeInputAndRecallNone:
+    res rpnFlagsTvmCalculate, (iy + rpnFlags)
+    jr closeInput
 
-; Description: Add the exponent in A to the floatBuf exponent.
-; Input: A: EE exponent parsed from inputBuf
-; Output: (floatBuf exponent) += A
-; Destroys: A, B, HL
-addExponent:
-    ld b, a
-    ld hl, floatBufExp
-    ld a, (hl)
-    sub $80
-    add a, b ; 2's complement
-    add a, $80
-    ld (hl), a
-    ret
+; Close the input buffer, and set OP1=X.
+; Output:
+;   - OP1=X
+;   - rpnFlagsTvmCalculate: cleared
+closeInputAndRecallX:
+    call closeInput
+    res rpnFlagsTvmCalculate, (iy + rpnFlags)
+    call rclX
+    cp rpnObjectTypeReal
+    ret z
+    bcall(_ErrDomain)
+
+; Close the input buffer, and recall real values into OP1=Y and OP2=X.
+; Output:
+;   - OP1=Y
+;   - OP2=X
+;   - rpnFlagsTvmCalculate: cleared
+closeInputAndRecallXY:
+    call closeInput
+    res rpnFlagsTvmCalculate, (iy + rpnFlags)
+    call rclX
+    cp rpnObjectTypeReal
+    jr nz, closeInputAndRecallXYErr
+    call op1ToOp2
+    call rclY
+    cp rpnObjectTypeReal
+    ret z
+closeInputAndRecallXYErr:
+    bcall(_ErrDomain)
+
+; Close the input buffer, and recall the real or complex X to OP1/OP2.
+; Output:
+;   - OP1=X
+;   - rpnFlagsTvmCalculate: cleared
+closeInputAndRecallUniversalX:
+    call closeInput
+    res rpnFlagsTvmCalculate, (iy + rpnFlags)
+    jp rclX
+
+; Close the input buffer, and recall the real or complex values X, Y into
+; OP1/OP2=Y and OP3/OP4=X.
+; Output:
+;   - OP1/OP2=Y
+;   - OP3/OP4=X
+;   - rpnFlagsTvmCalculate: cleared
+closeInputAndRecallUniversalXY:
+    call closeInput
+    res rpnFlagsTvmCalculate, (iy + rpnFlags)
+    call rclX
+    call cp1ToCp3
+    jp rclY

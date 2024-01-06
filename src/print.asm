@@ -28,6 +28,11 @@ printARepeatBLoop:
 
 ;-----------------------------------------------------------------------------
 
+; Description: Call vPutPS() using small font.
+vPutSmallPS:
+    res fracDrawLFont, (iy + fontFlags) ; use small font
+    ; [[fallthrough]]
+
 ; Description: Convenience wrapper around VPutSN() that works for zero-length
 ; strings. Also provides an API similar to PutPS() which takes a pointer to a
 ; Pascal string directly, instead of providing the length and (char*)
@@ -71,10 +76,18 @@ smallStringWidth:
 ;-----------------------------------------------------------------------------
 
 ; Description: Erase to end of line using small font. Same as bcall(_EraseEOL).
-; Prints a quad space (4 pixels side), 24 times, for 96 pixels.
-; Destroys: B
+; Prints a quad space (4 pixels side) as many times as necessary to overwrite
+; the remainder of the line.
+; Destroys: A, B
 vEraseEOL:
-    ld b, 24
+    ld a, (penCol)
+    sub 96 ; if A>=96: CF=0
+    ret nc
+    neg ; A=96-penCol=numPixelsToEnd
+    add a, 3 ; A=numPixelsToEnd+3
+    srl a
+    srl a ; A=numSpacesToPrint=(numPixelsToEnd+3)/4
+    ld b, a
 vEraseEOLLoop:
     ld a, SFourSpaces
     bcall(_VPutMap)
@@ -83,24 +96,29 @@ vEraseEOLLoop:
 
 ;-----------------------------------------------------------------------------
 
+; Description: Print the HL string using VPutMap(), using small font.
+; Input: HL: pointer to C-string
+; Output:
+;    - unlike VPutS(), the CF does *not* show if all of string was rendered
+; Destroys: all
+vPutSmallS:
+    res fracDrawLFont, (iy + fontFlags) ; use small font
+    ; [[fallthrough]]
+
 ; Description: Inlined version of bcall(_VPutS) so that it works for strings in
 ; flash (VPutS only works with strings in RAM). See TI-83 Plus System Routine
 ; SDK docs for VPutS() for a reference implementation of this function. See
-; also helpPutS() for an extended version of this that supported embedded font
+; also eVPutS() for an extended version of this that supported embedded font
 ; control characters.
 ;
-; Input: HL: pointer to string using small font
+; Input: HL: pointer to string
 ; Ouptut:
 ;    - unlike VPutS(), the CF does *not* show if all of string was rendered
 ; Destroys: all
 vPutS:
-    ; assume using small font
-    ld c, smallFontHeight ; C = current font height
-    res fracDrawLFont, (IY + fontFlags) ; start with small font
 vPutSLoop:
     ld a, (hl) ; A = current char
     inc hl
-vPutSCheckSpecialChars:
     or a ; Check for NUL
     ret z
     bcall(_VPutMap) ; preserves BC, HL
@@ -179,4 +197,18 @@ putPSLoop:
     cp c ; if currow == buttomRow: ZF=1
     ret z
     djnz putPSLoop
+    ret
+
+;-----------------------------------------------------------------------------
+
+; Description: Convert A into an Ascii Char ('0'-'9','A'-'F').
+; Destroys: A
+convertAToChar:
+    cp 10
+    jr c, convertAToCharDecimal
+    sub 10
+    add a, 'A'
+    ret
+convertAToCharDecimal:
+    add a, '0'
     ret

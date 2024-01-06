@@ -15,9 +15,9 @@ features from the
 
 The RPN83P is a flash application written in Z80 assembly language that consumes
 2 pages (32 kiB) of flash memory. Since it is stored in flash, it is preserved
-if the RAM is cleared. It consumes about 400 bytes of TI-OS RAM: 2 list
-variables named `REGS` (240 bytes) and `STK` (59 byte), and an appVar named
-`RPN83SAV` (101 bytes).
+if the RAM is cleared. It consumes about 735 bytes of TI-OS RAM through 3
+AppVars: `RPN83REG` (496 bytes), `RPN83STK` (116 bytes), and `RPN83SAV` (123
+bytes).
 
 Summary of features:
 
@@ -30,25 +30,27 @@ Summary of features:
     - storage arithmetics: `STO+ nn`, `STO- nn`, `STO* nn`, `STO/ nn`, `RCL+
       nn`, `RCL- nn`, `RCL* nn`, `RCL/ nn`
     - 25 storage registers: `nn = 00..24`
-- support for all math functions with dedicated buttons on the TI-83 Plus and
-  TI-84 Plus
+- all math functions with dedicated buttons on the TI-83 Plus and TI-84 Plus
     - arithmetic: `/`, `*`, `-`, `+`
-    - trigonometric: `SIN`, `COS`, `TAN`, etc.
     - algebraic: `1/X`, `X^2`, `SQRT`, `^` (i.e. `Y^X`)
     - transcendental: `LOG`, `10^X`, `LN`, `e^X`
+    - trigonometric: `SIN`, `COS`, `TAN`, `ASIN`, `ACOS`, `ATAN`
     - constants: `pi` and `e`
-- additional menu functions:
-    - `X^3`, `3RootX`, `XRootY`, `ATN2`, `2^X`, `LOG2`, `LOGB`
-    - `%`, `%CH`, `GCD`, `LCM`, `PRIM` (prime factor)
-    - `IP` (integer part), `FP` (fractional part), `FLR` (floor), `CEIL`
-      (ceiling), `NEAR` (nearest integer)
-    - `ABS`, `SIGN`, `MOD`, `MIN`, `MAX`
-    - probability: `PERM`, `COMB`, `N!`, `RAND`, `SEED`
+- additional menu functions
+    - arithmetic: `%`, `%CH`, `GCD`, `LCM`, `PRIM` (prime factor), `IP` (integer
+      part), `FP` (fractional part), `FLR` (floor), `CEIL` (ceiling), `NEAR`
+      (nearest integer), `ABS`, `SIGN`, `MOD`, `MIN`, `MAX`
+    - algebraic: `X^3`, `3RootX`
+    - transcendental: `XRootY`,`2^X`, `LOG2`, `LOGB`, `E^X-` (e^x-1), `LN1+`
+      (log(1+x))
+    - trigonometric: `ATN2`
     - hyperbolic: `SINH`, `COSH`, `TANH`, `ASNH`, `ACSH`, `ATNH`
+    - probability: `PERM`, `COMB`, `N!`, `RAND`, `SEED`
     - angle conversions: `>DEG`, `>RAD`, `>HR`, `>HMS`, `>REC`, `>POL`
-    - unit conversions: `>C`, `>F`, `>km`, `>mi`, etc
-- features inspired by HP-42S
-    - `E^X-` (e^x-1), `LN1+` (log(1+x))
+    - unit conversions: `>C`, `>F`, `>hPa`, `>inHg`, `>km`, `>mi`, `>m`, `>ft`,
+      `>cm`, `>in`, `>um`, `>mil`, `>kg`, `>lbs`, `>g`, `>oz`, `>L`, `>gal`,
+      `>mL`, `>floz`, `>kJ`, `>cal`, `>kW`, `>hp`
+- statistics and curve fitting, inspired by HP-42S
     - statistics: `Sigma+`, `Sigma-`, `SUM`, `MEAN`, `WMN` (weighted mean),
       `SDEV` (sample standard deviation), `SCOV` (sample covariance),
       `PDEV` (population standard deviation), `PCOV` (population covariance)
@@ -56,7 +58,7 @@ Summary of features:
       (correlation coefficient)
     - curve fit models: `LINF` (linear), `LOGF` (logarithmic), `EXPF`
       (exponential), `PWRF` (power)
-- features inspired by HP-16C and HP-42S
+- base conversion and bitwise operations, inspired by HP-16C and HP-42S
     - base conversions: `DEC`, `HEX`, `OCT`, `BIN`
     - bitwise operations: `AND`, `OR`, `XOR`, `NOT`, `NEG`, `REVB` (reverse
       bits), `CNTB` (count bits)
@@ -66,15 +68,29 @@ Summary of features:
       `SLn`, `SRn`, `RLn`, `RRn`, `RLCn`, `RRCn`
     - carry flag and bit masks: `CCF`, `SCF`, `CF?`, `CB`, `SB`, `B?`
     - word sizes: `WSIZ`, `WSZ?`: 8, 16, 24, 32 bits
-- features inspired by HP-12C and HP-30b
-    - time value of money (TVM): `N`, `I%YR`, `PV`, `PMT`, `FV`, `P/YR`, `BEG`,
-      `END`, `CLTV` (clear TVM)
-- various display modes
-    - `RAD`, `DEG`
-    - `FIX` (fixed point 0-9 digits)
-    - `SCI` (scientific 0-9 digits)
-    - `ENG` (engineering 0-9 digits)
-    - `SHOW` (`2ND ENTRY`) to display all 14 internal floating point digits
+- time value of money (TVM), inspired by HP-12C, HP-17B, and HP-30b
+    - `N`, `I%YR`, `PV`, `PMT`, `FV`, `P/YR`, `BEG`, `END`, `CLTV` (clear TVM)
+- complex numbers, inspired by HP-42S and HP-35s
+    - stored in RPN stack registers (`X`, `Y`, `Z`, `T`, `LastX`) and storage
+      registers `R00-R24`
+    - computation modes: `RRES` (real results), `CRES` (complex results)
+    - display modes: `RECT`, `PRAD` (polar radians), `PDEG` (polar degrees)
+    - linking/unlinking: `2ND LINK` (convert 2 reals to 1 complex, same as
+      `COMPLEX` on HP-42S)
+    - number entry: `2ND i` (rectangular), `2ND ANGLE` (polar degrees), `2ND
+      ANGLE 2ND ANGLE` (polar radians)
+    - extended regular functions: `+`, `-`, `*`, `/`, `1/x`, `x^2`, `SQRT`,
+      `Y^X`, `X^3`, `3RootY`, `XRootY`, `LOG`, `LN`, `10^x`, `e^x`, `2^x`,
+      `LOG2`, `LOGB`
+    - complex specific functions: `REAL`, `IMAG`, `CONJ`, `CABS`, `CANG`
+    - unsupported: trigonometric and hyperbolic functions (not supported by
+      TI-OS)
+- various modes (`MODE`)
+    - floating display: `FIX`, `SCI`, `ENG`
+    - trigonometric: `RAD`, `DEG`
+    - complex computation: `RRES`, `CRES`
+    - complex display: `RECT`, `PRAD`, `PDEG`
+    - `SHOW` (`2ND ENTRY`): display all 14 internal digits
 
 Missing features (partial list):
 
@@ -82,13 +98,13 @@ Missing features (partial list):
 - complex numbers
 - keystroke programming
 
-**Version**: 0.8.0 (2023-12-03)
+**Version**: 0.9.0 (2024-01-06)
 
 **Changelog**: [CHANGELOG.md](CHANGELOG.md)
 
 **Project Home**: https://github.com/bxparks/rpn83p
 
-**User Guide**: [USER_GUIDE.md](USER_GUIDE.md)
+**User Guide**: [USER_GUIDE.md](docs/USER_GUIDE.md)
 
 ## Table of Contents
 
@@ -98,7 +114,8 @@ Missing features (partial list):
     - [Example 1](#example-1)
     - [Example 2](#example-2)
     - [Example 3](#example-3)
-- [User Guide](#user-guide)
+    - [Example 4](#example-4)
+- [Documentation](#documentation)
 - [Compiling from Source](#compiling-from-source)
 - [Tools and Resources](#tools-and-resources)
 - [License](#license)
@@ -109,14 +126,15 @@ Missing features (partial list):
 
 RPN83P is a flash application that is packaged as a single file named
 `rpn83p.8xk`. Detailed instructions are given in the [RPN83P User
-Guide](USER_GUIDE.md), but here is the quick version:
+Guide](docs/USER_GUIDE.md), but here is the quick version:
 
 - Download the `rpn83p.8xk` file from the
   [releases page](https://github.com/bxparks/rpn83p/releases).
 - Upload the file to the TI-83 Plus or TI-84 Plus calculator. Use one of
   following link programs:
     - Windows: [TI Connect](https://education.ti.com/en/products/computer-software/ti-connect-sw)
-    - Linux: [tilp](https://github.com/debrouxl/tilp_and_gfm)
+    - Linux: [tilp](https://github.com/debrouxl/tilp_and_gfm) (`$ apt install
+      tilp2`)
 - Run the program using the `APPS`:
     - Press `APPS`
     - Scroll down to the `RPN83P` entry
@@ -127,7 +145,7 @@ Guide](USER_GUIDE.md), but here is the quick version:
 
 The RPN83P app starts directly into the calculator mode, like this:
 
-![RPN83P Hello 1](docs/rpn83p-screenshot-initial.png)
+![RPN83P Hello 1](docs/images/rpn83p-initial.png)
 
 ### Supported Hardware
 
@@ -182,7 +200,7 @@ outwards. Enter the following keystrokes:
 
 Here is an animated GIF that shows this calculation:
 
-![RPN83P Example 1 GIF](docs/rpn83p-example1.gif)
+![RPN83P Example 1 GIF](docs/images/rpn83p-example1.gif)
 
 (Note that the RPN83P provides a `X^3` menu function that could have been used
 for this formula, but I used the `LastX` feature to demonstrate its use.)
@@ -199,37 +217,37 @@ view the final result as a decimal number:
 
 - Press `MATH` to reset the menu to the home row.
 - Navigate the menu with the DOWN arrow to get to
-  ![ROOT MenuRow 2](docs/rpn83p-screenshot-menu-root-2.png)
+  ![ROOT MenuRow 2](docs/images/rpn83p-menu-root-2.png)
 - Press `BASE` menu to get to
-  ![BASE Menu DEC](docs/rpn83p-menu-base-dec.png)
+  ![BASE Menu DEC](docs/images/rpn83p-menu-base-dec.png)
 - Press `HEX` menu to get to
-  ![BASE Menu HEX](docs/rpn83p-menu-base-hex.png)
+  ![BASE Menu HEX](docs/images/rpn83p-menu-base-hex.png)
 - Press `ALPHA` `B` buttons
 - Press `6` button
 - Press `ENTER` button
 - Press `6` button
 - Press `5` button
 - Press DOWN arrow to get to the menu row with the `AND` menu item
-  ![BASE MenuRow AND](docs/rpn83p-screenshot-menu-root-base-2.png)
+  ![BASE MenuRow AND](docs/images/rpn83p-menu-root-base-2.png)
 - Press `AND` menu, the `X` register should show `00000024`
 - Press UP arrow to go back to
-  ![BASE Menu HEX](docs/rpn83p-menu-base-hex.png)
+  ![BASE Menu HEX](docs/images/rpn83p-menu-base-hex.png)
 - Press `OCT` menu, the `X` register should show `00000000044` with the menu
-  showing ![BASE Menu OCT](docs/rpn83p-menu-base-oct.png)
+  showing ![BASE Menu OCT](docs/images/rpn83p-menu-base-oct.png)
 - Press `BIN` menu, the `X` register should show `00000000100100` with the menu
-  showing ![BASE Menu BIN](docs/rpn83p-menu-base-bin.png)
+  showing ![BASE Menu BIN](docs/images/rpn83p-menu-base-bin.png)
 - Press DOWN DOWN (twice) to the menu row with the shift right `SR` item
-  ![BASE MenuRow SR](docs/rpn83p-screenshot-menu-root-base-3.png)
+  ![BASE MenuRow SR](docs/images/rpn83p-menu-root-base-3.png)
 - Press `SR` `SR` `SR` (three times) to show `00000000000100` and the Carry Flag
   `C` set
 - Press UP UP (twice) to reach the base conversion menu row
-  ![BASE Menu BIN](docs/rpn83p-menu-base-bin.png)
+  ![BASE Menu BIN](docs/images/rpn83p-menu-base-bin.png)
 - Press `DEC` menu, the `X` register should show `4` with the menu showing
-  ![BASE Menu DEC](docs/rpn83p-menu-base-dec.png)
+  ![BASE Menu DEC](docs/images/rpn83p-menu-base-dec.png)
 
 Here is the animated GIF that shows this calculation:
 
-![RPN83P Example 2 GIF](docs/rpn83p-example2.gif)
+![RPN83P Example 2 GIF](docs/images/rpn83p-example2.gif)
 
 ### Example 3
 
@@ -247,14 +265,14 @@ Here are the steps:
 
 - Press `MATH` to reset the menu to the home row.
 - Navigate the menu with the DOWN arrow to get to
-  ![ROOT MenuRow 2](docs/rpn83p-screenshot-menu-root-2.png)
+  ![ROOT MenuRow 2](docs/images/rpn83p-menu-root-2.png)
 - Press the `TVM` menu to get to
-  ![TVM MenuRow 1](docs/rpn83p-screenshot-menu-root-tvm-1.png)
+  ![TVM MenuRow 1](docs/images/rpn83p-menu-root-tvm-1.png)
 - Press the DOWN arrow to get to
-  ![TVM MenuRow 2](docs/rpn83p-screenshot-menu-root-tvm-2.png)
+  ![TVM MenuRow 2](docs/images/rpn83p-menu-root-tvm-2.png)
 - Press the `CLTV` button to clear the TVM variables.
 - Press the UP arrow to get back to
-  ![TVM MenuRow 1](docs/rpn83p-screenshot-menu-root-tvm-1.png)
+  ![TVM MenuRow 1](docs/images/rpn83p-menu-root-tvm-1.png)
 - Press `360` `N` (30 years * 12 months = 360 payments)
 - Press `8` `I%YR` (interest percent per year)
 - Press `500000` `PV` (present value)
@@ -270,7 +288,39 @@ Here are the steps:
 
 Here is the animated GIF that shows this calculation:
 
-![RPN83P Example 3 GIF](docs/rpn83p-example3.gif)
+![RPN83P Example 3 GIF](docs/images/rpn83p-example3.gif)
+
+### Example 4
+
+Let's add 4 complex numbers, divide by 4 to get their average, view the result
+in rectangular, polar radian, and polar degree modes, then extract the complex
+magnitude of the result. The following complex numbers were chosen to illustrate
+the 4 ways that complex numbers can be entered into RPN83P:
+
+- `100 - i/(2*pi*60*(1e-5))` using `2ND LINK`
+- `100 + 250i` using `2ND i`
+- `200 e^(i 10deg)` using `2ND ANGLE`
+- `300 e^(i 0.1)` using `2ND ANGLE 2ND ANGLE`
+
+The keystrokes are:
+
+- (optional) Press `CLEAR CLEAR CLEAR` to clear the RPN stack.
+- Press `MODE` `downarrow` `RECT`:
+  ![MODE MenuRow 2](docs/images/rpn83p-menu-root-mode-2.png)
+- Press `100` `ENTER`
+- Press `2` `PI` `*` `60` `*` `1 EE 5` `(-)` `*` `1/X` `(-)` (-265.26)
+- Press `2ND LINK` (100-265.26i)
+- Press `100` `2ND i` `250` `+` (200-15.26i)
+- Press `200` `2ND ANGLE` `10` `+` (396.96+19.47i)
+- Press `300` `2ND ANGLE` `2ND ANGLE` `0.1` `+` (695.46+49.42i)
+- Press `4` `/` (173.89+12.35i)
+- Press `PRAD` (174.30 e^(i 0.07)
+- Press `PDEG` (174.30 e^(4.04 deg))
+- Press `MATH` `CPLX`:
+  ![CPLX MenuRow 1](docs/images/rpn83p-menu-root-cplx-1.png)
+- Press `CABS` (174.30)
+
+![RPN83P Example 4 GIF](docs/images/rpn83p-example4.gif)
 
 ### Exiting the Menu
 
@@ -279,11 +329,13 @@ Press:
 - `ON` button (`ESC/EXIT`) multiple times to back to the home menu, or
 - `MATH` button (`HOME`) to go back directly.
 
-![ROOT MenuRow 1](docs/rpn83p-screenshot-menu-root-1.png)
+![ROOT MenuRow 1](docs/images/rpn83p-menu-root-1.png)
 
-## User Guide
+## Documentation
 
-See the [RPN83P User Guide](USER_GUIDE.md).
+- [RPN83P User Guide](docs/USER_GUIDE.md)
+- [TVM Algorithms](docs/TVM.md)
+- [Developer Notes](docs/DEVELOPER.md)
 
 ## Compiling from Source
 

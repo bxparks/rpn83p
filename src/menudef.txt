@@ -70,7 +70,7 @@ MenuGroup root mRoot [
         MenuItem ATN2 mAtan2
       ]
       MenuRow [
-        MenuItem 2<Scaret>X mAlog2 # 2^x
+        MenuItem 2<Scaret>X mTwoPow # 2^x
         MenuItem LOG2 mLog2 # log_base2(x)
         MenuItem LOGB mLogBase # log_base_x(y)
         MenuItem E<Scaret>X<Sdash> mExpMinusOne # exp(x)-1
@@ -87,7 +87,7 @@ MenuGroup root mRoot [
         MenuItem PRIM mPrime
       ]
       #MenuRow [
-      #  MenuItem PMOD mPrimeMod # for debugging modU32U16
+      #  MenuItem PMOD mPrimeMod # for debugging modU32ByDE
       #]
       MenuRow [
         MenuItem IP mIntPart
@@ -113,25 +113,14 @@ MenuGroup root mRoot [
         MenuItem SEED mRandomSeed
       ]
     ]
-    MenuGroup CONV mConv [
+    MenuGroup CPLX mComplex [
       MenuRow [
-        MenuItem <Sconvert>DEG mRToD
-        MenuItem <Sconvert>RAD mDToR
-        MenuItem * *
-        MenuItem <Sconvert>REC mPToR
-        MenuItem <Sconvert>POL mRToP
+        MenuItem REAL mComplexReal
+        MenuItem IMAG mComplexImag
+        MenuItem CONJ mComplexConj
+        MenuItem CABS mComplexAbs
+        MenuItem CANG mComplexAngle
       ]
-      MenuRow [
-        MenuItem <Sconvert>HR mHmsToHr
-        MenuItem <Sconvert>HMS mHrToHms
-      ]
-      # MenuRow [
-      #   MenuItem <Sconvert>UNIX mDateToUnixSeconds
-      #   menuItem <Sconvert>DATE mUnixSecondsToDate
-      #   menuItem LEAP mIsLeapYear
-      #   menuItem <Sconvert>SEC mDaysToSeconds
-      #   menuItem <Sconvert>DAYS mSecondsToDays
-      # ]
     ]
     MenuItem HELP mHelp
   ]
@@ -178,11 +167,11 @@ MenuGroup root mRoot [
         MenuItem CNTB mCountBit
       ]
       MenuRow [
-        MenuItem B<SplusSign> mBitwiseAdd
-        MenuItem B<Sdash> mBitwiseSubt
-        MenuItem B<Scross> mBitwiseMult
-        MenuItem B<Sslash> mBitwiseDiv
-        MenuItem BDIV mBitwiseDiv2
+        MenuItem B<SplusSign> mBaseAdd
+        MenuItem B<Sdash> mBaseSubt
+        MenuItem B<Scross> mBaseMult
+        MenuItem B<Sslash> mBaseDiv
+        MenuItem BDIV mBaseDiv2
       ]
       MenuRow [
         MenuItem CCF mClearCarryFlag
@@ -245,6 +234,83 @@ MenuGroup root mRoot [
         ]
       ]
     ]
+    MenuGroup CONV mConv [
+      MenuRow [
+        MenuItem <Sconvert>DEG mRToD
+        MenuItem <Sconvert>RAD mDToR
+        MenuItem * *
+        MenuItem <Sconvert>REC mPToR
+        MenuItem <Sconvert>POL mRToP
+      ]
+      MenuRow [
+        MenuItem <Sconvert>HR mHmsToHr
+        MenuItem <Sconvert>HMS mHrToHms
+      ]
+    ]
+    MenuGroup TVM mTvm [
+      MenuRow [
+        MenuItem N mTvmN
+        MenuItem I<Spercent>YR mTvmIYR
+        MenuItem PV mTvmPV
+        MenuItem PMT mTvmPMT
+        MenuItem FV mTvmFV
+      ]
+      MenuRow [
+        MenuItem P<Sslash>YR mTvmPYR
+        MenuItemAlt BEG BEG<Sblock> mTvmBegin
+        MenuItemAlt END END<Sblock> mTvmEnd
+        MenuItem * *
+        MenuItem CLTV mTvmClear
+      ]
+      MenuRow [
+        # TVM Solver's initial first and second guesses. The label shown to
+        # users is one-based, because a '0' looks like a capital 'O', and most
+        # non-software people are more familar with 1-based counting. But
+        # internally, we use a zero-based system and these variables are known
+        # consistently as i0 (IYR0) and i1 (IYR1) respectively.
+        MenuItemAlt IYR1 IY1<Sblock> mTvmIYR0 # TVM Solver's first guess
+        MenuItemAlt IYR2 IY2<Sblock> mTvmIYR1 # TVM Solver's second guess
+        MenuItemAlt TMAX TMX<Sblock> mTvmIterMax # TVM Solver max iter count
+        MenuItem * *
+        MenuItem RSTV mTvmSolverReset
+      ]
+    ]
+  ]
+  MenuRow [
+    MenuGroup CLR mClear [
+      MenuRow [
+        MenuItem CLX mClearX
+        MenuItem CLST mClearStack
+        MenuItem CLRG mClearRegs
+        MenuItem CL<ScapSigma> mClearStat
+        MenuItem CLTV mClearTvm
+      ]
+    ]
+    MenuGroup MODE mMode [
+      MenuRow [
+        MenuItemAlt FIX FIX<Sblock> mFix
+        MenuItemAlt SCI SCI<Sblock> mSci
+        MenuItemAlt ENG ENG<Sblock> mEng
+        MenuItemAlt RAD RAD<Sblock> mRad
+        MenuItemAlt DEG DEG<Sblock> mDeg
+      ]
+      MenuRow [
+        MenuItemAlt RRES RRE<Sblock> mNumResultModeReal
+        MenuItemAlt CRES CRE<Sblock> mNumResultModeComplex
+        MenuItemAlt RECT REC<Sblock> mComplexModeRect
+        MenuItemAlt PRAD PRA<Sblock> mComplexModeRad
+        MenuItemAlt PDEG PDE<Sblock> mComplexModeDeg
+      ]
+    ]
+    MenuGroup STK mStack [
+      MenuRow [
+        MenuItem * *
+        MenuItem R<SupArrow> mStackRollUp
+        MenuItem R<SdownArrow> mStackRollDown
+        MenuItem X<Sleft><Sconvert>Y mStackExchangeXY
+        MenuItem * *
+      ]
+    ]
     MenuGroup UNIT mUnit [
       MenuRow [
         MenuItem <Sconvert><Stemp>C mFToC
@@ -302,63 +368,6 @@ MenuGroup root mRoot [
       #   MenuItem * *
       #   MenuItem * *
       # ]
-    ]
-    MenuGroup TVM mTvm [
-      MenuRow [
-        MenuItem N mTvmN
-        MenuItem I<Spercent>YR mTvmIYR
-        MenuItem PV mTvmPV
-        MenuItem PMT mTvmPMT
-        MenuItem FV mTvmFV
-      ]
-      MenuRow [
-        MenuItem P<Sslash>YR mTvmPYR
-        MenuItemAlt BEG BEG<Sblock> mTvmBegin
-        MenuItemAlt END END<Sblock> mTvmEnd
-        MenuItem * *
-        MenuItem CLTV mTvmClear
-      ]
-      MenuRow [
-        # TVM Solver's initial first and second guesses. The label shown to
-        # users is one-based, because a '0' looks like a capital 'O', and most
-        # non-software people are more familar with 1-based counting. But
-        # internally, we use a zero-based system and these variables are known
-        # consistently as i0 (IYR0) and i1 (IYR1) respectively.
-        MenuItemAlt IYR1 IY1<Sblock> mTvmIYR0 # TVM Solver's first guess
-        MenuItemAlt IYR2 IY2<Sblock> mTvmIYR1 # TVM Solver's second guess
-        MenuItemAlt TMAX TMX<Sblock> mTvmIterMax # TVM Solver max iter count
-        MenuItem * *
-        MenuItem RSTV mTvmSolverReset
-      ]
-    ]
-  ]
-  MenuRow [
-    MenuGroup CLR mClear [
-      MenuRow [
-        MenuItem CLX mClearX
-        MenuItem CLST mClearStack
-        MenuItem CLRG mClearRegs
-        MenuItem CL<ScapSigma> mClearStat
-        MenuItem CLTV mClearTvm
-      ]
-    ]
-    MenuGroup MODE mMode [
-      MenuRow [
-        MenuItemAlt FIX FIX<Sblock> mFix
-        MenuItemAlt SCI SCI<Sblock> mSci
-        MenuItemAlt ENG ENG<Sblock> mEng
-        MenuItemAlt RAD RAD<Sblock> mRad
-        MenuItemAlt DEG DEG<Sblock> mDeg
-      ]
-    ]
-    MenuGroup STK mStack [
-      MenuRow [
-        MenuItem * *
-        MenuItem R<SupArrow> mStackRollUp
-        MenuItem R<SdownArrow> mStackRollDown
-        MenuItem X<Sleft><Sconvert>Y mStackExchangeXY
-        MenuItem * *
-      ]
     ]
   ]
 ]

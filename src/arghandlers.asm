@@ -46,7 +46,7 @@ handleArgKey9:
     jr handleArgNumber
 
 handleArgNumber:
-    call appendArgBuf ; sets dirtyFlagsInput
+    bcall(_AppendArgBuf) ; sets dirtyFlagsInput
     ld a, (argBuf) ; A = length of argBuf string
     cp a, argBufSizeMax
     ret nz ; if only 1 digit entered, just return
@@ -64,11 +64,11 @@ handleArgNumber:
 
 handleArgKeyEnter:
     ; If no argument digits entered, then do nothing.
-    ld a, (argBufSize)
+    ld a, (argBufLen)
     or a
     ret z
     ; Parse the argument digits into (argValue).
-    call parseArgBuf
+    bcall(_ParseArgBuf)
     ld (argValue), a
     set inputBufFlagsArgExit, (iy + inputBufFlags)
     ret
@@ -76,7 +76,7 @@ handleArgKeyEnter:
 handleArgKeyDel:
     set dirtyFlagsInput, (iy + dirtyFlags)
     ld hl, argBuf
-    ld a, (hl) ; A = inputBufSize
+    ld a, (hl) ; A=argBufLen
     or a
     ret z ; do nothing if buffer empty
     dec (hl)
@@ -84,7 +84,7 @@ handleArgKeyDel:
 
 handleArgKeyClear:
 handleArgKeyExit:
-    call clearArgBuf
+    bcall(_ClearArgBuf)
     ld a, argModifierCanceled
     ld (argModifier), a
     res rpnFlagsEditing, (iy + rpnFlags)

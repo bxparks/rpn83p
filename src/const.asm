@@ -19,6 +19,24 @@ op1Set0:
     ld hl, const0
     jp move9ToOp1
 
+; Description: Set OP1 to 0.0. Faster version of bcall(_OP1Set0).
+; Destroys: all, HL
+op2Set0:
+    ld hl, const0
+    jp move9ToOp2
+
+; Description: Set OP1 to 0.0. Faster version of bcall(_OP1Set0).
+; Destroys: all, HL
+op3Set0:
+    ld hl, const0
+    jp move9ToOp3
+
+; Description: Set OP1 to 0.0. Faster version of bcall(_OP1Set0).
+; Destroys: all, HL
+op4Set0:
+    ld hl, const0
+    jp move9ToOp4
+
 ;-----------------------------------------------------------------------------
 
 ; Description: Set OP2 to 10. The TI-OS Provides OP2Set60() but not
@@ -62,18 +80,9 @@ op2Set2Pow32:
 
 ;-----------------------------------------------------------------------------
 
-; Description: Set OP2 to 2^14.
-; Destroys: all, HL
-op2Set2Pow14:
-    ld hl, const2Pow14
-    jp move9ToOp2
-
-;-----------------------------------------------------------------------------
-
-; Description: Set OP2 to 2^16.
-; Destroys: all, HL
-op2Set2Pow16:
-    ld hl, const2Pow16
+; Description: Set OP2 to 1E14.
+op2Set1E14:
+    ld hl, const1E14
     jp move9ToOp2
 
 ;-----------------------------------------------------------------------------
@@ -220,14 +229,11 @@ const10: ; 10
 const100: ; 100
     .db $00, $82, $10, $00, $00, $00, $00, $00, $00
 
-const2Pow14: ; 2^14 = 16 384
-    .db $00, $84, $16, $38, $40, $00, $00, $00, $00
-
-const2Pow16: ; 2^16 = 65 536
-    .db $00, $84, $65, $53, $60, $00, $00, $00, $00
-
 const2Pow32: ; 2^32 = 4 294 967 296
     .db $00, $89, $42, $94, $96, $72, $96, $00, $00
+
+const1E14: ; 10^14, EXP=$80+14=$8E
+    .db $00, $8E, $10, $00, $00, $00, $00, $00, $00
 
 const1EM8: ; 10^-8
     .db $00, $78, $10, $00, $00, $00, $00, $00, $00

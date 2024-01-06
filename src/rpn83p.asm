@@ -25,7 +25,7 @@
 ; Define the Cursor character
 cursorChar equ LcurI
 cursorCharAlt equ LcurO
-signChar equ Lneg ; different from '-' which is LDash
+signChar equ Lneg ; different from Ldash ('-'), or Lhyphen
 
 ; Menu keys, left to right.
 keyMenu1 equ kYequ
@@ -68,10 +68,10 @@ dirtyFlagsErrorCode equ 4 ; set if the error code is dirty
 ; first cell, then write the "X:" label in small font. But doing this for every
 ; refresh of that line (e.g. when entering the digits of a number) would cause
 ; flickering of the "X:" label on every redraw. This flag allows us to optimize
-; the redraw algorithm so that the Lspace character *only* when transitioning
-; from the command arg mode to normal mode. That would cause a redraw of the
-; entire X line, so the slight flicker of the "X:" label should be completely
-; imperceptible.
+; the redraw algorithm so that the Lspace character is printed to overwrite the
+; label *only* when transitioning from the command arg mode to normal mode.
+; That would cause a redraw of the entire X line, so the slight flicker of the
+; "X:" label should be completely imperceptible.
 dirtyFlagsXLabel equ 5
 
 ; Flags for RPN stack modes. Offset from IY register.
@@ -89,12 +89,16 @@ rpnFlagsTvmCalculate equ 6 ; set if the next TVM function should calculate
 
 ; Flags for the inputBuf. Offset from IY register.
 inputBufFlags equ asm_Flag3
-inputBufFlagsDecPnt equ 0 ; set if decimal point exists
-inputBufFlagsEE equ 1 ; set if EE symbol exists
-inputBufFlagsClosedEmpty equ 2 ; inputBuf empty when closeInputBuf() called
-inputBufFlagsExpSign equ 3 ; exponent sign bit detected during parsing
-inputBufFlagsArgExit equ 4 ; set to exit CommandArg mode
-inputBufFlagsArgAllowModifier equ 5 ; allow */-+ modifier in CommandArg mode
+;inputBufFlagsDecPnt equ 0 ; set if decimal point exists
+;inputBufFlagsEE equ 1 ; set if EE symbol exists
+inputBufFlagsClosedEmpty equ 2 ; inputBuf empty when closeInput() called
+inputBufFlagsArgExit equ 3 ; set to exit CommandArg mode
+inputBufFlagsArgAllowModifier equ 4 ; allow */-+ modifier in CommandArg mode
+
+; Bit flags for the result of GetInputBufState().
+inputBufStateDecimalPoint equ 0 ; set if decimal point exists
+inputBufStateEE equ 1 ; set if 'E' exists
+inputBufStateComplex equ 2 ; set if input is a complex number
 
 ;-----------------------------------------------------------------------------
 ; RPN83P application variables and buffers.
@@ -108,10 +112,10 @@ rpn83pAppId equ $1E69
 ; initialize to the factory defaults. When an variable is added or deleted, the
 ; version does not absolutely need to be incremented, because the value of
 ; appStateSize will be checked, and since it will be different, the previous
-; state considered stale automatically. However, if the *semantics* of any
+; state is considered stale automatically. However, if the *semantics* of any
 ; variable is changed (e.g. if the meaning of a flag is changed), then we
 ; *must* increment the version number to mark the previous state as stale.
-rpn83pSchemaVersion equ 9
+rpn83pSchemaVersion equ 10
 
 ; Define true and false. Something else in spasm-ng defines the 'true' and
 ; 'false' symbols but I cannot find the definitions for them in the
@@ -121,6 +125,20 @@ rpn83pSchemaVersion equ 9
 rpnfalse equ 0
 rpntrue equ 1
 
+; RpnObect type enums.
+rpnObjectTypeReal equ 0
+rpnObjectTypeComplex equ $C ; same as TI-OS
+rpnObjectTypeComplexDeg equ $2C ; uses bit 5 and 6
+rpnObjectTypeComplexRad equ $4C ; uses bit 5 and 6
+rpnObjectTypeMask equ $1F ; TI-OS type uses only bits 0-4
+; An PpnObject is a struct of a type byte and 2 RpnFloats so that a complex
+; number can be stored. See the struct definitions in vars.asm. If the
+; rpnObjectSizeOf is changed, the rpnObjectIndexToSize() function must be
+; updated.
+rpnRealSizeOf equ 9 ; sizeof(float)
+rpnComplexSizeOf equ 18 ; sizeof(complex)
+rpnObjectSizeOf equ rpnComplexSizeOf + 1 ; type + sizeof(complex)
+
 ;-----------------------------------------------------------------------------
 
 ; Begin application variables at tempSwapArea. According to the TI-83 Plus SDK
@@ -129,19 +147,19 @@ rpntrue equ 1
 appStateBegin equ tempSwapArea
 
 ; CRC16CCITT of the appState data block, not including the CRC itself. 2 bytes.
-; This is used only in storeAppState() and restoreAppState(), so in theory, we
+; This is used only in StoreAppState() and RestoreAppState(), so in theory, we
 ; could remove it from here and save it only in the RPN83SAV AppVar. The
 ; advantage of duplicating the CRC here is that the content of the AppVar
 ; becomes *exactly* the same as this appState data block, so the serialization
 ; and deserialization code becomes almost trivial. Two bytes is not a large
 ; amount of memory, so let's keep things simple and duplicate the CRC field
 ; here.
-appStateCrc16 equ appStateBegin
+appStateCrc16 equ appStateBegin ; u16
 
 ; A somewhat unique id to distinguish this app from other apps. 2 bytes.
 ; Similar to the 'appStateCrc16' field, this does not need to be in the
 ; appState data block. But this simplifies the serialization code.
-appStateAppId equ appStateCrc16 + 2
+appStateAppId equ appStateCrc16 + 2 ; u16
 
 ; Schema version. 2 bytes. If we overflow the 16-bits, it's probably ok because
 ; schema version 0 was probably created so far in the past the likelihood of a
@@ -149,13 +167,20 @@ appStateAppId equ appStateCrc16 + 2
 ; an escape hatch: we can create a new appStateAppId upon overflow. Similar to
 ; AppStateAppId and appStateCrc16, this field does not need to be here, but
 ; having it here simplifies the serialization code.
-appStateSchemaVersion equ appStateAppId + 2
+appStateSchemaVersion equ appStateAppId + 2 ; u16
 
 ; Copy of the 3 asm_FlagN flags. These will be serialized into RPN83SAV by
-; storeAppState(), and deserialized into asm_FlagN by restoreAppState().
-appStateDirtyFlags equ appStateSchemaVersion + 2
-appStateRpnFlags equ appStateDirtyFlags + 1
-appStateInputBufFlags equ appStateRpnFlags + 1
+; StoreAppState(), and deserialized into asm_FlagN by RestoreAppState().
+appStateDirtyFlags equ appStateSchemaVersion + 2 ; u8
+appStateRpnFlags equ appStateDirtyFlags + 1 ; u8
+appStateInputBufFlags equ appStateRpnFlags + 1 ; u8
+
+; Copy of the trigFlags, fmtFlags, and fmtDigits as used by this app. When the
+; app starts, these values will be used to configure the corresponding OS
+; settings. When the app quits, the OS settings are copied here.
+appStateTrigFlags equ appStateInputBufFlags + 1 ; u8
+appStateFmtFlags equ appStateTrigFlags + 1 ; u8
+appStateFmtDigits equ appStateFmtFlags + 1 ; u8
 
 ; The result code after the execution of each handler. Success is code 0. If a
 ; TI-OS exception is thrown (through a `bcall(ErrXxx)`), the exception handler
@@ -164,81 +189,103 @@ appStateInputBufFlags equ appStateRpnFlags + 1
 ; upon success. (This makes coding easier because a successful handler can
 ; simply do a `ret` or a conditional `ret`.) A few handlers will set a custom,
 ; non-zero code to indicate an error.
-handlerCode equ appStateInputBufFlags + 1
+handlerCode equ appStateFmtDigits + 1 ; u8
 
 ; The errorCode is displayed on the LCD screen if non-zero. This is set to the
 ; value of handlerCode after every execution of a handler. Inside a handler,
 ; the errorCode will be the handlerCode of the previous handler. This is useful
 ; for the CLEAR handler which will simply clear the displayed errorCode if
 ; non-zero.
-errorCode equ handlerCode + 1
+errorCode equ handlerCode + 1 ; u8
 
 ; Current base mode number. Allowed values are: 2, 8, 10, 16. Anything else is
 ; interpreted as 10.
-baseNumber equ errorCode + 1
+baseNumber equ errorCode + 1 ; u8
 
 ; Base mode carry flag. Bit 0.
-baseCarryFlag equ baseNumber + 1
+baseCarryFlag equ baseNumber + 1 ; boolean
 
 ; Base mode word size: 8, 16, 24, 32 (maybe 40 in the future).
-baseWordSize equ baseCarryFlag + 1
+baseWordSize equ baseCarryFlag + 1 ; u8
 
-; String buffer for keyboard entry. This is a Pascal-style with a single size
-; byte at the start. It does not include the cursor displayed at the end of the
-; string. The equilvalent C struct is:
-;
-;   struct inputBuf {
-;       uint8_t size;
-;       char buf[14];
-;   };
-inputBuf equ baseWordSize + 1
-inputBufSize equ inputBuf ; size byte of the pascal string
-inputBufBuf equ inputBuf + 1
-inputBufMax equ 14 ; maximum size of buffer, not including appended cursor
-inputBufSizeOf equ inputBufMax + 1
+; The TI-OS floating point number supports 14 significant digits, but we need 6
+; more characters to hold the optional mantissa minus sign, the optional
+; decimal point, the optional 'E' symbol for the exponent, the 2-digit
+; exponent, and the optional minus sign on the exponent. That's a total of 20
+; characters. We need one more, to allow a complex delimiter to be entered.
+inputBufFloatMaxLen equ 20+1
 
-; When the inputBuf is used as a command argBuf, the maximum number of
-; characters in the buffer is 2.
-argBuf equ inputBuf
-argBufSize equ inputBufSize
-argBufMax equ inputBufMax
-argBufSizeMax equ 2
+; A complex number requires 2 floating point numbers, plus a delimiter.
+inputBufComplexMaxLen equ 20+20+1
 
-; Location (offset index) of the one past the 'E' symbol if it exists. Zero
-; indicates that 'E' does NOT exist.
-inputBufEEPos equ inputBuf + inputBufSizeOf
-; Length of EE digits. Maximum of 2.
-inputBufEELen equ inputBufEEPos + 1
 ; Max number of digits allowed for exponent.
-inputBufEELenMax equ 2
+inputBufEEMaxLen equ 2
 
-; Temporary buffer for parsing keyboard input into a floating point number. This
-; is a pascal string that contains the normalized floating point number, one
-; character per digit. It's a stepping stone before converting this into the
-; packed floating point number format used by TI-OS. The equivalent C struct
-; is:
+; String buffer for keyboard entry. Three types of numbers can be entered, each
+; type with different maxlen limits:
 ;
-;   struct parseBuf {
-;       uint8_t size; // number of digits in mantissa, 0 for 0.0
+; 1) floating point real numbers: 20 characters (inputBufFloatMaxLen)
+; 2) complex numbers: 20 * 2 = 40 characters (inputBufComplexMaxLen)
+; 3) base-2 numberrs: max of 32 digits (various, see getInputMaxLenBaseMode())
+;
+; The inputBuf must be the maximum of all of the above.
+;
+; This is a Pascal-style with a single size byte at the start. It does not
+; include the cursor displayed at the end of the string. The equilvalent C
+; struct is:
+;
+;   struct InputBuf {
+;       uint8_t len;
+;       char buf[inputBufCapacity];
+;   };
+inputBuf equ baseWordSize + 1 ; struct InputBuf
+inputBufLen equ inputBuf ; len byte of the pascal string
+inputBufBuf equ inputBuf + 1
+inputBufCapacity equ inputBufComplexMaxLen ; excludes trailing cursor
+inputBufSizeOf equ inputBufCapacity + 1 + 1 ; +1(len), +1(NUL)
+
+; argBuf can reuse inputBuf because argBuf is activated only after inputBuf is
+; closed.  The maximum number of characters in the buffer is 2.
+argBuf equ inputBuf ; struct InputBuf
+argBufLen equ inputBufLen
+argBufCapacity equ inputBufCapacity
+argBufSizeMax equ 2 ; max number of digits accepted on input
+
+; Temporary buffer for parsing keyboard input into a floating point number.
+; When the app is in BASE mode, the inputBuf is parsed directly, and this
+; buffer is not used. In normal floating point mode, each mantissa digit is
+; converted into this data structure, one byte per digit, before being
+; converted into the packed floating point number format used by TI-OS.
+;
+; The decimal point will not appear explicitly here because it is implicitly
+; present just before the first digit. The inputBuf can hold more than 14
+; digits, but those extra digits will be ignored when parsed into this data
+; structure.
+;
+; TODO: I *think* this can be moved into the appBufferStart area, because I
+; don't think it needs to be saved upon app exit.
+;
+; This is a Pascal string whose equivalent C struct is:
+;
+;   struct ParseBuf {
+;       uint8_t len; // number of digits in mantissa, 0 for 0.0
 ;       char man[14];  // mantissa, implicit starting decimal point
 ;   }
-;
-; A TI-OS floating number can have a mantissa of a maximum 14 digits.
-parseBuf equ inputBufEELen + 1
-parseBufSize equ parseBuf ; size byte of the pascal string
-parseBufMan equ parseBufSize + 1
-parseBufMax equ 14
-parseBufSizeOf equ parseBufMax + 1
+parseBuf equ inputBuf + inputBufSizeOf ; struct ParseBuf
+parseBufLen equ parseBuf ; len byte of the pascal string
+parseBufMan equ parseBufLen + 1
+parseBufCapacity equ 14
+parseBufSizeOf equ parseBufCapacity + 1
 
 ; Menu variables. Two variables determine the current state of the menu, the
 ; groupId and the rowIndex in the group. The C equivalent is:
 ;
-;   struct menu {
+;   struct Menu {
 ;     uint8_t groupId; // id of the current menu group
 ;     uint8_t rowIndex; // menu row, groups of 5
 ;   }
-menuGroupId equ parseBuf + parseBufSizeOf
-menuRowIndex equ menuGroupId + 1
+menuGroupId equ parseBuf + parseBufSizeOf ; u8
+menuRowIndex equ menuGroupId + 1 ; u8
 
 ; These variables remember the previous menuGroup/row pair when a shortcut was
 ; pressed to another menuGroup. On the ON/EXIT button is pressed, we can then
@@ -248,16 +295,16 @@ menuRowIndex equ menuGroupId + 1
 ; candidate. If jumpBackMenuGroupId is 0, then the memory feature is not
 ; active. If it is not 0, then the ON/EXIT button should go back to the menu
 ; defined by this pair.
-jumpBackMenuGroupId equ menuRowIndex + 1
-jumpBackMenuRowIndex equ jumpBackMenuGroupId + 1
+jumpBackMenuGroupId equ menuRowIndex + 1 ; u8
+jumpBackMenuRowIndex equ jumpBackMenuGroupId + 1 ; u8
 
 ; Menu name, copied here as a Pascal string.
 ;
-;   struct menuName {
-;       uint8_t size;
+;   struct MenuName {
+;       uint8_t len;
 ;       char buf[5];
 ;   }
-menuName equ jumpBackMenuRowIndex + 1
+menuName equ jumpBackMenuRowIndex + 1 ; struct menuName
 menuNameSize equ menuName
 menuNameBuf equ menuName + 1
 menuNameBufMax equ 5
@@ -266,16 +313,16 @@ menuNameSizeOf equ 6
 ; Data structure revelant to the command argument parser which handles
 ; something like "STO _ _". The C equivalent is:
 ;
-;   struct argParser {
+;   struct ArgParser {
 ;       char *argPrompt; // e.g. "STO"
 ;       char argModifier; // see argModifierXxx
 ;       uint8_t argValue;
 ;   }
 ; The argModifierXxx (0-4) MUST match the corresponding operation in the
 ; 'floatOps' array in vars.asm.
-argPrompt equ menuName + menuNameSizeOf
-argModifier equ argPrompt + 2
-argValue equ argModifier + 1
+argPrompt equ menuName + menuNameSizeOf ; (char*)
+argModifier equ argPrompt + 2 ; char
+argValue equ argModifier + 1 ; u8
 argModifierNone equ 0
 argModifierAdd equ 1 ; '+' pressed
 argModifierSub equ 2 ; '-' pressed
@@ -291,11 +338,15 @@ curveFitModel equ statAllEnabled + 1 ; u8
 
 ; Constants used by the TVM Solver.
 tvmSolverDefaultIterMax equ 15
-; tvmSolverResult enums indicate success or failure of the TVM Solver.
-tvmSolverResultFound equ 0
-tvmSolverResultNotFound equ 1
-tvmSolverResultIterMaxed equ 2
-tvmSolverResultBreak equ 3
+; tvmSolverResult enums indicate if the solver should stop or continue the
+; iterations
+tvmSolverResultContinue equ 0 ; loop should continue
+tvmSolverResultFound equ 1
+tvmSolverResultNoSolution equ 2
+tvmSolverResultNotFound equ 3
+tvmSolverResultIterMaxed equ 4
+tvmSolverResultBreak equ 5
+tvmSolverResultSingleStep equ 6 ; return after each iteration
 ; Bit position in tvmSolverOverrideFlags that determine if a specific parameter
 ; has been overridden.
 tvmSolverOverrideFlagIYR0 equ 0
@@ -312,7 +363,7 @@ tvmSolverOverrideFlags equ tvmIsBegin + 1 ; u8 flag
 ; but can be overridden using the 'IYR0', 'IYR1', and 'TMAX' menu buttons.
 tvmIYR0 equ tvmSolverOverrideFlags + 1 ; float
 tvmIYR1 equ tvmIYR0 + 9 ; float
-tvmIterMax equ tvmIYR1 + 9 ; u8 integer
+tvmIterMax equ tvmIYR1 + 9 ; u8
 
 ; Draw mode constants
 drawModeNormal equ 0
@@ -321,12 +372,26 @@ drawModeTvmSolverF equ 2 ; show npmt0, npmt1
 drawModeInputBuf equ 3 ; show inputBuf in debug line
 
 ; Draw/Debug mode, u8 integer. Activated by secret '2ND DRAW' button.
-drawMode equ tvmIterMax + 1
+drawMode equ tvmIterMax + 1 ; u8
+
+; Function result modes determines whether certain functions return real
+; results always, or will sometimes return a complex result.
+numResultModeReal equ 0 ; return real results only
+numResultModeComplex equ 1 ; return complex results
+numResultMode equ drawMode + 1 ; u8
+
+; Complex number display modes. The 2 complex polar mode (RAD and DEG) are
+; explicitly separate from the DEG and RAD settings that affect trigonometric
+; functions.
+complexModeRect equ 0
+complexModeRad equ 1
+complexModeDeg equ 2
+complexMode equ numResultMode + 1 ; u8
 
 ; End application variables.
-appStateEnd equ drawMode + 1
+appStateEnd equ complexMode + 1
 
-; Total size of vars
+; Total size of appState vars.
 appStateSize equ (appStateEnd - appStateBegin)
 
 ;-----------------------------------------------------------------------------
@@ -335,15 +400,21 @@ appStateSize equ (appStateEnd - appStateBegin)
 
 appBufferStart equ appStateEnd
 
+; Various OS flags and parameters are copied to these variables upon start of
+; the app, then restored when the app quits.
+savedTrigFlags equ appBufferStart ; u8
+savedFmtFlags equ savedTrigFlags + 1 ; u8
+savedFmtDigits equ savedFmtFlags + 1 ; u8
+
 ; FindMenuNode() copies the matching menuNode from menudef.asm (in flash page 1)
 ; to here so that routines in flash page 0 can access the information.
-menuNodeBuf equ appBufferStart ; 9 bytes, defined by menuNodeSizeOf
+menuNodeBuf equ savedFmtDigits + 1 ; 9 bytes, defined by menuNodeSizeOf
 
 ; FindMenuString() copies the name of the menu from flash page 1 to here so that
 ; routines in flash page 0 can access it. This is named 'menuStringBuf' to
 ; avoid conflicting with the existing 'menuNameBuf' which is a Pascal-string
 ; version of 'menuStringBuf'.
-menuStringBuf equ menuNodeBuf + 9 ; 6 bytes
+menuStringBuf equ menuNodeBuf + 9 ; char[6]
 menuStringBufSizeOf equ 6
 
 ; TVM Solver needs a bunch of workspace variables: interest rate, i0 and i1,
@@ -356,25 +427,82 @@ tvmNPMT1 equ tvmNPMT0 + 9 ; float
 ; TVM Solver status and result code. Transient, no need to persist them.
 tvmSolverIsRunning equ tvmNPMT1 + 9 ; boolean; true if active
 tvmSolverCount equ tvmSolverIsRunning + 1 ; u8; iteration count
-tvmSolverResult equ tvmSolverCount + 1 ; u8 enum; tvmSolverResultXxx
 
-appBufferEnd equ tvmSolverResult + 1
+; A Pascal-string that contains the rendered version of inputBuf, truncated and
+; formatted as needed, which can be printed on the screen. It is slightly
+; longer than inputBuf because sometimes a single character in inputBuf gets
+; expanded to multiple characters in inputDisplay (e.g. 'Ldegree' delimiter for
+; complex numbers gets expanded to 'Langle,Ltemp' pair).
+;
+; The C structure is:
+;
+; struct InputDisplay {
+;   uint8_t len;
+;   char buf[inputDisplayCapacity];
+; };
+inputDisplay equ tvmSolverCount + 1 ; struct InputDisplay; Pascal-string
+inputDisplayLen equ inputDisplay ; len byte of the string
+inputDisplayBuf equ inputDisplay + 1 ; start of actual buffer
+inputDisplayCapacity equ inputBufCapacity + 1 ; Ldegree -> Langle Ltemp
+inputDisplaySizeOf equ inputDisplayCapacity + 1 ; total size of data structure
+
+; Maximum number of characters that can be displayed during input/editing mode.
+; The LCD line can display 16 characters using the large font. We need 1 char
+; for the "X:" label, and 1 char for the trailing prompt "_", which leaves us
+; with 14 characters.
+inputDisplayMaxLen equ 14
+
+; Set of bit-flags that remember whether an RPN stack display line was rendered
+; in large or small font. We can optimize the drawing algorithm by performing a
+; pre-clear of the line only when the rendering transitions from a large font
+; to a small font. This prevents unnecessary flickering of the RPN stack line.
+; Normally large fonts are used so a cleared bit means large font. A set flag
+; means small font.
+displayStackFontFlagsX equ 1
+displayStackFontFlagsY equ 2
+displayStackFontFlagsZ equ 4
+displayStackFontFlagsT equ 8
+displayStackFontFlags equ inputDisplay + inputDisplaySizeOf ; u8
+
+appBufferEnd equ displayStackFontFlags + 1
+
+; Total size of appBuffer.
+appBufferSize equ appBufferEnd-appBufferStart
 
 ; Floating point number buffer, used only within parseNumBase10(). It is used
 ; only locally so it can probaly be anywhere. Let's just use OP3 instead of
 ; dedicating space within the appState area, because it does not need to be
 ; backed up. I think any OPx register except OP1 will work.
 ;
-;   struct floatBuf {
+;   struct FloatBuf {
 ;       uint8_t type;
 ;       uint8_t exp;
 ;       uint8_t man[7];
 ;   }
 floatBuf equ OP3
-floatBufType equ floatBuf ; type
+floatBufType equ floatBuf ; type byte, also contains sign bit
 floatBufExp equ floatBufType + 1 ; exponent, shifted by $80
 floatBufMan equ floatBufExp + 1 ; mantissa, 2 digits per byte
 floatBufSizeOf equ 9
+
+;-----------------------------------------------------------------------------
+; Validate that app memory buffers do not overflow the assigned RAM area.
+; According to the TI-83 Plus SDK docs: "tempSwapArea (82A5h) This is the start
+; of 323 bytes used only during Flash ROM loading. If this area is used, avoid
+; archiving variables."
+;-----------------------------------------------------------------------------
+
+; Print out the sizes of various sections.
+appMemSize equ appStateSize+appBufferSize
+appMemMax equ 323
+.echo "App State Size: ", appStateSize
+.echo "App Buffer Size: ", appBufferSize
+.echo "App Mem Size: ", appMemSize, " (max ", appMemMax, ")"
+
+; Make sure that appStateSize+appBufferSize <= appMemMax
+#if appMemSize > appMemMax
+  .error "App Mem Size ", appMemSize, " > ", appMemMax, " bytes"
+#endif
 
 ;-----------------------------------------------------------------------------
 ; Flash Page 0
@@ -402,10 +530,30 @@ defpage(0, "RPN83P")
 ; statements, so we have to define the bcall() label *after* the XxxLabel
 ; label.
 branchTableBase equ $4000
+; appstate.asm
+_StoreAppStateLabel:
+_StoreAppState equ _StoreAppStateLabel-branchTableBase
+    .dw StoreAppState
+    .db 1
+_RestoreAppStateLabel:
+_RestoreAppState equ _RestoreAppStateLabel-branchTableBase
+    .dw RestoreAppState
+    .db 1
+; osstate.asm
+_SaveOSStateLabel:
+_SaveOSState equ _SaveOSStateLabel-branchTableBase
+    .dw SaveOSState
+    .db 1
+_RestoreOSStateLabel:
+_RestoreOSState equ _RestoreOSStateLabel-branchTableBase
+    .dw RestoreOSState
+    .db 1
+; help.asm
 _ProcessHelpLabel:
 _ProcessHelp equ _ProcessHelpLabel-branchTableBase
     .dw ProcessHelp
     .db 1
+; menulookup.asm
 _FindMenuNodeLabel:
 _FindMenuNode equ _FindMenuNodeLabel-branchTableBase
     .dw FindMenuNode
@@ -414,12 +562,264 @@ _FindMenuStringLabel:
 _FindMenuString equ _FindMenuStringLabel-branchTableBase
     .dw FindMenuString
     .db 1
+; crc.asm
 _Crc16ccittLabel:
 _Crc16ccitt equ _Crc16ccittLabel-branchTableBase
     .dw Crc16ccitt
     .db 1
+; errorcode.asm
+_InitErrorCodeLabel:
+_InitErrorCode equ _InitErrorCodeLabel-branchTableBase
+    .dw InitErrorCode
+    .db 1
+_PrintErrorStringLabel:
+_PrintErrorString equ _PrintErrorStringLabel-branchTableBase
+    .dw PrintErrorString
+    .db 1
+_SetErrorCodeLabel:
+_SetErrorCode equ _SetErrorCodeLabel-branchTableBase
+    .dw SetErrorCode
+    .db 1
+_SetHandlerCodeFromSystemCodeLabel:
+_SetHandlerCodeFromSystemCode equ _SetHandlerCodeFromSystemCodeLabel-branchTableBase
+    .dw SetHandlerCodeFromSystemCode
+    .db 1
+; print1.asm
+_ConvertAToStringLabel:
+_ConvertAToString equ _ConvertAToStringLabel-branchTableBase
+    .dw ConvertAToString
+    .db 1
+; input1.asm
+_InitInputBufLabel:
+_InitInputBuf equ _InitInputBufLabel-branchTableBase
+    .dw InitInputBuf
+    .db 1
+_ClearInputBufLabel:
+_ClearInputBuf equ _ClearInputBufLabel-branchTableBase
+    .dw ClearInputBuf
+    .db 1
+_CloseInputBufLabel:
+_CloseInputBuf equ _CloseInputBufLabel-branchTableBase
+    .dw CloseInputBuf
+    .db 1
+_AppendInputBufLabel:
+_AppendInputBuf equ _AppendInputBufLabel-branchTableBase
+    .dw AppendInputBuf
+    .db 1
+_GetInputBufStateLabel:
+_GetInputBufState equ _GetInputBufStateLabel-branchTableBase
+    .dw GetInputBufState
+    .db 1
+_SetComplexDelimiterLabel:
+_SetComplexDelimiter equ _SetComplexDelimiterLabel-branchTableBase
+    .dw SetComplexDelimiter
+    .db 1
+; arg1.asm
+_ClearArgBufLabel:
+_ClearArgBuf equ _ClearArgBufLabel-branchTableBase
+    .dw ClearArgBuf
+    .db 1
+_InitArgBufLabel:
+_InitArgBuf equ _InitArgBufLabel-branchTableBase
+    .dw InitArgBuf
+    .db 1
+_AppendArgBufLabel:
+_AppendArgBuf equ _AppendArgBufLabel-branchTableBase
+    .dw AppendArgBuf
+    .db 1
+_ParseArgBufLabel:
+_ParseArgBuf equ _ParseArgBufLabel-branchTableBase
+    .dw ParseArgBuf
+    .db 1
+; pstring1.asm
+_AppendStringLabel:
+_AppendString equ _AppendStringLabel-branchTableBase
+    .dw AppendString
+    .db 1
+_InsertAtPosLabel:
+_InsertAtPos equ _InsertAtPosLabel-branchTableBase
+    .dw InsertAtPos
+    .db 1
+_DeleteAtPosLabel:
+_DeleteAtPos equ _DeleteAtPosLabel-branchTableBase
+    .dw DeleteAtPos
+    .db 1
+; integer1.asm
+_ConvertAToOP1PageOneLabel:
+_ConvertAToOP1PageOne equ _ConvertAToOP1PageOneLabel-branchTableBase
+    .dw ConvertAToOP1PageOne
+    .db 1
+; tvm.asm
+_TvmCalculateNLabel:
+_TvmCalculateN equ _TvmCalculateNLabel-branchTableBase
+    .dw TvmCalculateN
+    .db 1
+_TvmSolveLabel:
+_TvmSolve equ _TvmSolveLabel-branchTableBase
+    .dw TvmSolve
+    .db 1
+_TvmCalculatePVLabel:
+_TvmCalculatePV equ _TvmCalculatePVLabel-branchTableBase
+    .dw TvmCalculatePV
+    .db 1
+_TvmCalculatePMTLabel:
+_TvmCalculatePMT equ _TvmCalculatePMTLabel-branchTableBase
+    .dw TvmCalculatePMT
+    .db 1
+_TvmCalculateFVLabel:
+_TvmCalculateFV equ _TvmCalculateFVLabel-branchTableBase
+    .dw TvmCalculateFV
+    .db 1
+_TvmCalcIPPFromIYRLabel:
+_TvmCalcIPPFromIYR equ _TvmCalcIPPFromIYRLabel-branchTableBase
+    .dw TvmCalcIPPFromIYR
+    .db 1
+_TvmClearLabel:
+_TvmClear equ _TvmClearLabel-branchTableBase
+    .dw TvmClear
+    .db 1
+_TvmSolverResetLabel:
+_TvmSolverReset equ _TvmSolverResetLabel-branchTableBase
+    .dw TvmSolverReset
+    .db 1
+_RclTvmNLabel:
+_RclTvmN equ _RclTvmNLabel-branchTableBase
+    .dw RclTvmN
+    .db 1
+_StoTvmNLabel:
+_StoTvmN equ _StoTvmNLabel-branchTableBase
+    .dw StoTvmN
+    .db 1
+_RclTvmIYRLabel:
+_RclTvmIYR equ _RclTvmIYRLabel-branchTableBase
+    .dw RclTvmIYR
+    .db 1
+_StoTvmIYRLabel:
+_StoTvmIYR equ _StoTvmIYRLabel-branchTableBase
+    .dw StoTvmIYR
+    .db 1
+_RclTvmPVLabel:
+_RclTvmPV equ _RclTvmPVLabel-branchTableBase
+    .dw RclTvmPV
+    .db 1
+_StoTvmPVLabel:
+_StoTvmPV equ _StoTvmPVLabel-branchTableBase
+    .dw StoTvmPV
+    .db 1
+_RclTvmPMTLabel:
+_RclTvmPMT equ _RclTvmPMTLabel-branchTableBase
+    .dw RclTvmPMT
+    .db 1
+_StoTvmPMTLabel:
+_StoTvmPMT equ _StoTvmPMTLabel-branchTableBase
+    .dw StoTvmPMT
+    .db 1
+_RclTvmFVLabel:
+_RclTvmFV equ _RclTvmFVLabel-branchTableBase
+    .dw RclTvmFV
+    .db 1
+_StoTvmFVLabel:
+_StoTvmFV equ _StoTvmFVLabel-branchTableBase
+    .dw StoTvmFV
+    .db 1
+_RclTvmPYRLabel:
+_RclTvmPYR equ _RclTvmPYRLabel-branchTableBase
+    .dw RclTvmPYR
+    .db 1
+_StoTvmPYRLabel:
+_StoTvmPYR equ _StoTvmPYRLabel-branchTableBase
+    .dw StoTvmPYR
+    .db 1
+_RclTvmIYR0Label:
+_RclTvmIYR0 equ _RclTvmIYR0Label-branchTableBase
+    .dw RclTvmIYR0
+    .db 1
+_StoTvmIYR0Label:
+_StoTvmIYR0 equ _StoTvmIYR0Label-branchTableBase
+    .dw StoTvmIYR0
+    .db 1
+_RclTvmIYR1Label:
+_RclTvmIYR1 equ _RclTvmIYR1Label-branchTableBase
+    .dw RclTvmIYR1
+    .db 1
+_StoTvmIYR1Label:
+_StoTvmIYR1 equ _StoTvmIYR1Label-branchTableBase
+    .dw StoTvmIYR1
+    .db 1
+_RclTvmIterMaxLabel:
+_RclTvmIterMax equ _RclTvmIterMaxLabel-branchTableBase
+    .dw RclTvmIterMax
+    .db 1
+_StoTvmIterMaxLabel:
+_StoTvmIterMax equ _StoTvmIterMaxLabel-branchTableBase
+    .dw StoTvmIterMax
+    .db 1
+_RclTvmI0Label:
+_RclTvmI0 equ _RclTvmI0Label-branchTableBase
+    .dw RclTvmI0
+    .db 1
+_StoTvmI0Label:
+_StoTvmI0 equ _StoTvmI0Label-branchTableBase
+    .dw StoTvmI0
+    .db 1
+_RclTvmI1Label:
+_RclTvmI1 equ _RclTvmI1Label-branchTableBase
+    .dw RclTvmI1
+    .db 1
+_StoTvmI1Label:
+_StoTvmI1 equ _StoTvmI1Label-branchTableBase
+    .dw StoTvmI1
+    .db 1
+_RclTvmNPMT0Label:
+_RclTvmNPMT0 equ _RclTvmNPMT0Label-branchTableBase
+    .dw RclTvmNPMT0
+    .db 1
+_StoTvmNPMT0Label:
+_StoTvmNPMT0 equ _StoTvmNPMT0Label-branchTableBase
+    .dw StoTvmNPMT0
+    .db 1
+_RclTvmNPMT1Label:
+_RclTvmNPMT1 equ _RclTvmNPMT1Label-branchTableBase
+    .dw RclTvmNPMT1
+    .db 1
+_StoTvmNPMT1Label:
+_StoTvmNPMT1 equ _StoTvmNPMT1Label-branchTableBase
+    .dw StoTvmNPMT1
+    .db 1
+_RclTvmSolverCountLabel:
+_RclTvmSolverCount equ _RclTvmSolverCountLabel-branchTableBase
+    .dw RclTvmSolverCount
+    .db 1
+; float1.asm
+_LnOnePlusLabel:
+_LnOnePlus equ _LnOnePlusLabel-branchTableBase
+    .dw LnOnePlus
+    .db 1
+_ExpMinusOneLabel:
+_ExpMinusOne equ _ExpMinusOneLabel-branchTableBase
+    .dw ExpMinusOne
+    .db 1
+; hms.asm
+_HmsToHrLabel:
+_HmsToHr equ _HmsToHrLabel-branchTableBase
+    .dw HmsToHr
+    .db 1
+_HmsFromHrLabel:
+_HmsFromHr equ _HmsFromHrLabel-branchTableBase
+    .dw HmsFromHr
+    .db 1
+; prob.asm
+_ProbPermLabel:
+_ProbPerm equ _ProbPermLabel-branchTableBase
+    .dw ProbPerm
+    .db 1
+_ProbCombLabel:
+_ProbComb equ _ProbCombLabel-branchTableBase
+    .dw ProbComb
+    .db 1
 
 #ifdef DEBUG
+; debug.asm
 _DebugInputBufLabel:
 _DebugInputBuf equ _DebugInputBufLabel-branchTableBase
     .dw DebugInputBuf
@@ -444,10 +844,6 @@ _DebugOP1Label:
 _DebugOP1 equ _DebugOP1Label-branchTableBase
     .dw DebugOP1
     .db 1
-_DebugEEPosLabel:
-_DebugEEPos equ _DebugEEPosLabel-branchTableBase
-    .dw DebugEEPos
-    .db 1
 _DebugUnsignedALabel:
 _DebugUnsignedA equ _DebugUnsignedALabel-branchTableBase
     .dw DebugUnsignedA
@@ -463,6 +859,10 @@ _DebugFlags equ _DebugFlagsLabel-branchTableBase
 _DebugU32AsHexLabel:
 _DebugU32AsHex equ _DebugU32AsHexLabel-branchTableBase
     .dw DebugU32AsHex
+    .db 1
+_DebugHLLabel:
+_DebugHL equ _DebugHLLabel-branchTableBase
+    .dw DebugHL
     .db 1
 _DebugHLAsHexLabel:
 _DebugHLAsHex equ _DebugHLAsHexLabel-branchTableBase
@@ -485,22 +885,24 @@ _DebugU32DEAsHex equ _DebugU32DEAsHexLabel-branchTableBase
 #include "arghandlers.asm"
 #include "showparser.asm"
 #include "vars.asm"
-#include "pstring.asm"
 #include "input.asm"
 #include "display.asm"
 #include "show.asm"
-#include "errorcode.asm"
 #include "base.asm"
 #include "basehandlers.asm"
+#include "baseops.asm"
 #include "menu.asm"
 #include "menuhandlers.asm"
 #include "stathandlers.asm"
 #include "cfithandlers.asm"
 #include "tvmhandlers.asm"
+#include "complexhandlers.asm"
 #include "prime.asm"
 #include "common.asm"
-#include "integer.asm"
+#include "memory.asm"
 #include "float.asm"
+#include "complex.asm"
+#include "conv.asm"
 #include "print.asm"
 #include "const.asm"
 #include "handlertab.asm"
@@ -512,10 +914,26 @@ _DebugU32DEAsHex equ _DebugU32DEAsHexLabel-branchTableBase
 
 defpage(1)
 
+#include "appstate.asm"
+#include "osstate.asm"
 #include "help.asm"
 #include "menulookup.asm"
 #include "menudef.asm"
 #include "crc.asm"
+#include "errorcode.asm"
+#include "print1.asm"
+#include "input1.asm"
+#include "arg1.asm"
+#include "base1.asm"
+#include "pstring1.asm"
+#include "memory1.asm"
+#include "float1.asm"
+#include "integer1.asm"
+#include "const1.asm"
+#include "complex1.asm"
+#include "tvm.asm"
+#include "hms.asm"
+#include "prob.asm"
 #ifdef DEBUG
 #include "debug.asm"
 #endif

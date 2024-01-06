@@ -21,7 +21,8 @@ mNullHandler:
 ;   HL: pointer to MenuNode that was activated (ignored)
 mNotYetHandler:
     ld a, errorCodeNotYet
-    jp setHandlerCode
+    ld (handlerCode), a
+    ret
 
 ; Description: Default handler for MenuGroup nodes. This handler currently does
 ; nothing. The 'chdir' functionality is now handled by dispatchMenuNode()
@@ -47,98 +48,77 @@ mHelpHandler:
 ; Children nodes of MATH menu.
 ;-----------------------------------------------------------------------------
 
-; mCubeHandler(X) -> X^3
 ; Description: Calculate X^3.
 mCubeHandler:
-    call closeInputAndRecallX
-    bcall(_Cube)
+    call closeInputAndRecallUniversalX
+    call universalCube
     jp replaceX
 
-; mCubeRootHandler(X) -> X^(1/3)
-; Description: Calculate the cubic root of X. The SDK documentation has the OP1
-; and OP2 flipped.
+; Description: Calculate the cubic root of X, X^(1/3).
 mCubeRootHandler:
-    call closeInputAndRecallX
-    bcall(_OP1ToOP2) ; OP2=X
-    bcall(_OP1Set3) ; OP1=3
-    bcall(_XRootY) ; OP2^(1/OP1), SDK documentation is incorrect
+    call closeInputAndRecallUniversalX
+    call universalCubeRoot
     jp replaceX
 
-; mXRootYHandler(X,Y) -> Y^(1/X)
-; Description: Calculate the X root of Y. The SDK documentation has the OP1
-; and OP2 flipped.
+; Description: Calculate the X root of Y, Y^(1/X).
 mXRootYHandler:
-    call closeInputAndRecallXY ; OP1=Y; OP2=X
-    bcall(_OP1ExOP2) ; OP1=X, OP2=Y
-    bcall(_XRootY) ; OP2^(1/OP1), SDK documentation is incorrect
+    call closeInputAndRecallUniversalXY ; CP1=Y; CP3=X
+    call universalXRootY
     jp replaceXY
 
-; Description: Calculate the angle of the (X, Y) number in complex plane.
-; Use bcall(_RToP) instead of bcall(_ATan2) because ATan2 does not seem produce
-; the correct results. There must be something wrong with the documentation.
+; Description: Calculate the angle of the (X, Y) in x-y plane. The y-axis must
+; be pushed into the RPN stack first, then the x-axis. This order is consistent
+; with the the `>POL` conversion function.
 ;
-; (It turns out that the documentation does not describe the necessary values
-; of the D register which must be set before calling this. Apparently the D
-; register should be set to 0. See
+; The first version used bcall(_ATan2), but it does not seem produce the
+; correct results.
+;
+; The second version used bcall(_RToP), but it has an overflow and underflow
+; bug when r^2=x^2+y^2 is too large, which limits |r| to ~<7.1e63 and ~>1e-64.
+;
+; The third version uses ATan2() again, but sets an undocumented parameter to
+; fix the bug. Apparently, the D register must be set to 0 to get the
+; documented behavior. See
 ; https://wikiti.brandonw.net/index.php?title=83Plus:BCALLs:40D8 for more
-; details. Although that page refers to ATan2Rad(), I suspect a similar thing
-; is happening for ATan2().)
-;
-; The imaginary part (i.e. y-axis) must be entered first, then the real part
-; (i.e. x-axis). This order is consistent with the the `>POL` conversion
-; function.
+; details. Although that page refers to ATan2Rad(), but a similar thing happens
+; for ATan2().
 mAtan2Handler:
-    call closeInputAndRecallXY ; OP1=Y=imaginary; OP2=X=real
-    call op1ExOp2 ; OP1=X=real; OP2=Y=imaginary
-    bcall(_RToP) ; complex to polar
-    bcall(_OP2ToOP1) ; OP2 contains the angle with range of (-pi, pi]
+    call closeInputAndRecallXY ; OP1=Y; OP2=X
+    ld d, 0 ; set undocumented parameter for ATan2()
+    bcall(_ATan2) ; OP1=angle
     jp replaceXY
 
 ;-----------------------------------------------------------------------------
 
-; Calculate e^x-1 without round off errors around x=0.
+; Description: TwoPow(X) = 2^X
+mTwoPowHandler:
+    call closeInputAndRecallUniversalX
+    call universalTwoPow
+    jp replaceX
+
+; Description: Log2(X)=log(X)/log(2)
+mLog2Handler:
+    call closeInputAndRecallUniversalX
+    call universalLog2
+    jp replaceX
+
+; Description: LogBase(Y,X)=log(Y)/log(X)
+mLogBaseHandler:
+    call closeInputAndRecallUniversalXY ; CP1=Y; CP3=X
+    call universalLogBase
+    jp replaceXY
+
+; Description: Calculate e^x-1 without round off errors around x=0.
 mExpMinusOneHandler:
     call closeInputAndRecallX
-    call expMinusOne
+    bcall(_ExpMinusOne)
     jp replaceX
 
-; Calculate ln(1+x) without round off errors around x=0.
+; Description: Calculate ln(1+x) without round off errors around x=0.
 mLnOnePlusHandler:
     call closeInputAndRecallX
-    call lnOnePlus
+    bcall(_LnOnePlus)
     jp replaceX
-
-; Alog2(X) = 2^X
-mAlog2Handler:
-    call closeInputAndRecallX
-    bcall(_OP1ToOP2) ; OP2 = X
-    bcall(_OP1Set2) ; OP1 = 2
-    bcall(_YToX) ; OP1 = 2^X
-    jp replaceX
-
-; Log2(X) = log_base_2(X) = log(X)/log(2)
-mLog2Handler:
-    call closeInputBuf
-    res rpnFlagsTvmCalculate, (iy + rpnFlags)
-    bcall(_OP1Set2) ; OP2 = 2
-    bcall(_LnX) ; OP1 = ln(2)
-    bcall(_PushRealO1); FPS=[ln(2)]
-    call rclX ; OP1 = X
-    bcall(_LnX) ; OP1 = ln(X)
-    bcall(_PopRealO2) ; FPS=[]; OP2 = ln(2)
-    bcall(_FPDiv) ; OP1 = ln(X) / ln(2)
-    jp replaceX
-
-; LogBase(Y, X) = log_base_X(Y) = log(Y)/log(X)
-mLogBaseHandler:
-    call closeInputAndRecallX
-    bcall(_LnX) ; OP1 = ln(X)
-    bcall(_PushRealO1); FPS=[ln(X)]
-    call rclY ; OP1 = Y
-    bcall(_LnX) ; OP1 = ln(Y)
-    bcall(_PopRealO2) ; FPS=[]; OP2 = ln(X)
-    bcall(_FPDiv) ; OP1 = ln(Y) / ln(X)
-    jp replaceXY
 
 ;-----------------------------------------------------------------------------
 ; Children nodes of NUM menu.
@@ -160,17 +140,13 @@ mPercentHandler:
 ; resulting percentage can be given to the '%' menu key to get the delta
 ; change, then the '+' command will retrieve the original X.
 mPercentChangeHandler:
-    call closeInputBuf
-    res rpnFlagsTvmCalculate, (iy + rpnFlags)
-    call rclY
-    bcall(_OP1ToOP2) ; OP2 = Y
+    call closeInputAndRecallXY ; OP1=Y; OP2=X
     bcall(_PushRealO1) ; FPS=[Y]
-    call rclX ; OP1 = X
-    bcall(_FPSub) ; OP1 = X - Y
-    bcall(_PopRealO2) ; FPS=[]; OP2 = Y
-    bcall(_FPDiv) ; OP1 = (X-Y)/Y
+    bcall(_InvSub) ; OP1=X-Y
+    bcall(_PopRealO2) ; FPS=[]; OP2=Y
+    bcall(_FPDiv) ; OP1=(X-Y)/Y
     call op2Set100
-    bcall(_FPMult) ; OP1 = 100*(X-Y)/Y
+    bcall(_FPMult) ; OP1=100*(X-Y)/Y
     jp replaceX
 
 ;-----------------------------------------------------------------------------
@@ -193,25 +169,20 @@ mPercentChangeHandler:
 ; arguments, producing a 32-bit result. It's probably available somewhere on
 ; the internet, but I'm going to punt on that for now.
 mGcdHandler:
-    call closeInputBuf
-    res rpnFlagsTvmCalculate, (iy + rpnFlags)
+    call closeInputAndRecallXY
     call validatePosIntGcdLcm
-    call gcdOp1Op2 ; OP1 = gcd()
-    jp replaceXY ; X = OP1
+    call gcdOp1Op2 ; OP1=gcd(OP1,OP2)
+    jp replaceXY
 
 ; Description: Validate that X and Y are positive (> 0) integers. Calls
 ; ErrDomain exception upon failure.
-; Output:
-;   - OP1 = Y
-;   - OP2 = X
+; Input: OP1=Y; OP2=X
+; Output: OP1=Y; OP2=X
 validatePosIntGcdLcm:
-    call rclX
-    bcall(_CkOP1FP0)
-    jr z, validatePosIntGcdLcmError
-    bcall(_CkPosInt) ; if OP1 >= 0: ZF=1
-    jr nz, validatePosIntGcdLcmError
-    bcall(_OP1ToOP2) ; OP2=X=b
-    call rclY ; OP1=Y=a
+    call op1ExOp2
+    call validatePosIntGcdLcmCommon ; neat trick, calls the tail of itself
+    call op1ExOp2
+validatePosIntGcdLcmCommon:
     bcall(_CkOP1FP0) ; if OP1 >= 0: ZF=1
     jr z, validatePosIntGcdLcmError
     bcall(_CkPosInt)
@@ -236,10 +207,12 @@ gcdOp1Op2:
 ; LCM(Y, X) = Y * X / GCD(Y, X)
 ;           = Y * (X / GCD(Y,X))
 mLcmHandler:
-    call closeInputBuf
-    res rpnFlagsTvmCalculate, (iy + rpnFlags)
+    call closeInputAndRecallXY
     call validatePosIntGcdLcm
+    call lcdOp1Op2 ; OP1=lcd(OP1,OP2)
+    jp replaceXY ; X = lcm(X, Y)
 
+lcdOp1Op2:
     bcall(_PushRealO1) ; FPS=[Y]
     bcall(_PushRealO2) ; FPS=[Y,X]
     call gcdOp1Op2 ; OP1 = gcd()
@@ -248,8 +221,7 @@ mLcmHandler:
     bcall(_FPDiv) ; OP1 = X / gcd
     bcall(_PopRealO2) ; FPS=[]; OP2 = Y
     bcall(_FPMult) ; OP1 = Y * (X / gcd)
-
-    jp replaceXY ; X = lcm(X, Y)
+    ret
 
 ;-----------------------------------------------------------------------------
 
@@ -282,7 +254,6 @@ mPrimeHandler:
     bcall(_CpOP1OP2)
     jp nc, mPrimeHandlerError
 
-    bcall(_PushRealO1) ; FPS=[X]; save original X
     ; Choose one of the various primeFactorXXX() routines.
     ; OP1=1 if prime, or its smallest prime factor (>1) otherwise
 #ifdef USE_PRIME_FACTOR_FLOAT
@@ -301,9 +272,7 @@ mPrimeHandler:
     ; factor, which can be processed through 'PRIM` again. Running through this
     ; multiple times until a '1' is returns allows all prime factors to be
     ; discovered.
-    bcall(_OP1ToOP2) ; OP2=prime factor
-    bcall(_PopRealO1) ; FPS=[]; OP1=original X
-    jp replaceXWithOP1OP2
+    jp pushX
 
 mPrimeHandlerError:
     bcall(_ErrDomain) ; throw exception
@@ -311,7 +280,7 @@ mPrimeHandlerError:
 ;-----------------------------------------------------------------------------
 
 #ifdef ENABLE_PRIME_MOD
-; Description: Test modU32U16().
+; Description: Test modU32ByDE().
 ; Uses:
 ;   - OP1=Y
 ;   - OP2=X
@@ -330,7 +299,7 @@ mPrimeModHandler:
     ld d, (hl) ; DE=u16(X)
     ;
     ld hl, OP3
-    call modU32U16 ; BC=remainder=Y mod X
+    call modU32ByDE ; BC=remainder=Y mod X
     ld hl, OP3
     call setU32ToBC ; u32(OP3)=BC
     call convertU32ToOP1 ; OP1=float(OP3)
@@ -434,119 +403,20 @@ mNearHandler:
 ;-----------------------------------------------------------------------------
 
 ; Calculate the Permutation function:
-; P(y, x) = P(n, r) = n!/(n-r)! = n(n-1)...(n-r+1)
-;
-; TODO: (n,r) are limited to [0.255]. It should be relatively easy to extended
-; the range to [0,65535].
+; P(Y, X) = P(n, r) = n!/(n-r)! = n(n-1)...(n-r+1)
 mPermHandler:
-    call closeInputBuf
-    res rpnFlagsTvmCalculate, (iy + rpnFlags)
-    call validatePermComb
-
-    ; Do the calculation. Set initial Result to 1 so that P(N, 0) = 1.
-    bcall(_OP1Set1)
-    ld a, e ; A = X
-    or a
-    jr z, mPermHandlerEnd
-    ; Loop x times, multiple by (y-i)
-    ld b, a ; B = X, C = Y
-mPermHandlerLoop:
-    push bc
-    ld l, c ; L = C = Y
-    ld h, 0 ; HL = Y
-    bcall(_SetXXXXOP2)
-    bcall(_FPMult)
-    pop bc
-    dec c
-    djnz mPermHandlerLoop
-mPermHandlerEnd:
+    call closeInputAndRecallXY ; OP1=Y=n; OP2=X=r
+    bcall(_ProbPerm)
     jp replaceXY
 
 ;-----------------------------------------------------------------------------
 
 ; Calculate the Combintation function:
-; C(y, x) = C(n, r) = n!/(n-r)!/r! = n(n-1)...(n-r+1)/(r)(r-1)...(1).
-;
-; TODO: (n,r) are limited to [0.255]. It should be relatively easy to extended
-; the range to [0,65535].
-;
-; TODO: This algorithm below is a variation of the algorithm used for P(n,r)
-; above, with a division operation inside the loop that corresponds to each
-; term of the `r!` divisor. However, the division can cause intermediate result
-; to be non-integral. Eventually the final answer will be an integer, but
-; that's not guaranteed until the end of the loop. I think it should be
-; possible to rearrange the order of these divisions so that the intermediate
-; results are always integral.
+; C(Y, X) = C(n, r) = n!/(n-r)!/r! = n(n-1)...(n-r+1)/(r)(r-1)...(1).
 mCombHandler:
-    call closeInputBuf
-    res rpnFlagsTvmCalculate, (iy + rpnFlags)
-    call validatePermComb
-
-    ; Do the calculation. Set initial Result to 1 C(N, 0) = 1.
-    bcall(_OP1Set1)
-    ld a, e ; A = X
-    or a
-    jr z, mCombHandlerEnd
-    ; Loop X times, multiple by (Y-i), divide by i.
-    ld b, a ; B = X, C = Y
-mCombHandlerLoop:
-    push bc
-    ld l, c ; L = C = Y
-    ld h, 0 ; HL = Y
-    bcall(_SetXXXXOP2) ; OP2 = Y
-    bcall(_FPMult)
-    pop bc
-    push bc
-    ld l, b ; L = B = X
-    ld h, 0 ; HL = X
-    bcall(_SetXXXXOP2) ; OP2 = X
-    bcall(_FPDiv)
-    pop bc
-    dec c
-    djnz mCombHandlerLoop
-mCombHandlerEnd:
+    call closeInputAndRecallXY ; OP1=Y=n; OP2=X=r
+    bcall(_ProbComb)
     jp replaceXY
-
-;-----------------------------------------------------------------------------
-
-; Validate the n and r parameters of P(n,r) and C(n,r):
-;   - n, r are integers in the range of [0,255]
-;   - n >= r
-; Output:
-;   - C: Y
-;   - E: X
-; Destroys: A, BC, DE, HL
-validatePermComb:
-    ; Validate X
-    call rclX
-    call validatePermCombParam
-    ; Validate Y
-    call rclY
-    call validatePermCombParam
-
-    ; Convert X and Y into integers
-    bcall(_ConvOP1) ; OP1 = Y
-    push de ; save Y
-    bcall(_OP1ToOP2) ; OP2 = Y
-    call rclX
-    bcall(_ConvOP1) ; E = X
-    pop bc ; C = Y
-    ; Check that Y >= X
-    ld a, c ; A = Y
-    cp e ; Y - X
-    jr c, validatePermCombError
-    ret
-
-; Validate OP1 is an integer in the range of [0, 255].
-validatePermCombParam:
-    bcall(_CkPosInt) ; if OP1 >= 0: ZF=1
-    jr nz, validatePermCombError
-    ld hl, 256
-    bcall(_SetXXXXOP2) ; OP2=256
-    bcall(_CpOP1OP2)
-    ret c ; ok if OP1 < 255
-validatePermCombError:
-    bcall(_ErrDomain) ; throw exception
 
 ;-----------------------------------------------------------------------------
 
@@ -562,8 +432,7 @@ mFactorialHandler:
 ; mRandomHandler() -> rand()
 ; Description: Generate a random number [0,1) into the X register.
 mRandomHandler:
-    call closeInputBuf
-    res rpnFlagsTvmCalculate, (iy + rpnFlags)
+    call closeInputAndRecallNone
     bcall(_Random)
     jp pushX
 
@@ -769,16 +638,16 @@ mDToRHandler:
 ;   - Y: y
 ;   - X: x
 mPToRHandler:
-    call closeInputAndRecallX
-    bcall(_OP1ToOP2) ; OP2=X=r
-    call rclY ; OP1 =Y=theta
+    call closeInputAndRecallXY ; OP1=Y=theta; OP2=X=r
     call op1ExOp2  ; OP1=r; OP2=theta
     bcall(_PToR) ; OP1=x; OP2=y
     call op1ExOp2  ; OP1=y; OP2=x
     jp replaceXYWithOP1OP2 ; Y=OP2=y; X=OP1=x
 
 ; Rectangular to Polar. The order of arguments is intended to be consistent
-; with the HP-42S.
+; with the HP-42S. Early version used the RToP() TI-OS function, but it has an
+; overflow/underflow bug when r^2 becomes too big or small. Instead, use the
+; custom rectToPolar() function which does not overflow or underflow.
 ; Input:
 ;   - Y: y
 ;   - X: x
@@ -786,106 +655,26 @@ mPToRHandler:
 ;   - Y: theta
 ;   - X: r
 mRtoPHandler:
-    call closeInputAndRecallX
-    bcall(_OP1ToOP2) ; OP2=X=x
-    call rclY ; OP1=Y=y
+    call closeInputAndRecallXY ; OP1=Y; OP2=X
     call op1ExOp2  ; OP1=x; OP2=y
-    bcall(_RToP) ; OP1=r; OP2=theta
+    call rectToPolar ; OP1=r; OP2=theta
     call op1ExOp2  ; OP1=theta; OP2=r
     jp replaceXYWithOP1OP2 ; Y=OP1=theta; X=OP2=r
 
 ;-----------------------------------------------------------------------------
 
-; HR(hh.mmss) = int(hh.mmss) + int(mm.ss)/60 + int(ss.nnnn)/3600
+; Description: Convert "hh.mmss" to "hh.ddddd".
 ; Destroys: OP1, OP2, OP3, OP4 (temp)
 mHmsToHrHandler:
     call closeInputAndRecallX
-
-    ; Sometimes, the internal floating point value is slightly different than
-    ; the displayed value due to rounding errors. For example, a value
-    ; displayed as `10` (e.g. `e^(ln(10))`) could actually be `9.9999999999xxx`
-    ; internally due to rounding errors. This routine parses out the digits
-    ; after the decimal point and interprets them as minutes (mm) and seconds
-    ; (ss) components. Any rounding errors will cause incorrect results. To
-    ; mitigate this, we round the X value to 10 digits to make sure that the
-    ; internal value matches the displayed value.
-    bcall(_RndGuard)
-
-    ; Extract the whole 'hh' and push it into the FPS.
-    bcall(_OP1ToOP4) ; OP4 = hh.mmss (save in temp)
-    bcall(_Trunc) ; OP1 = int(hh.mmss)
-    bcall(_PushRealO1) ; FPS=[hh]
-
-    ; Extract the 'mm' and push it into the FPS.
-    bcall(_OP4ToOP1) ; OP1 = hh.mmss
-    bcall(_Frac) ; OP1 = .mmss
-    call op2Set100
-    bcall(_FPMult) ; OP1 = mm.ss
-    bcall(_OP1ToOP4) ; OP4 = mm.ss
-    bcall(_Trunc) ; OP1 = mm
-    bcall(_PushRealO1) ; FPS=[hh, mm]
-
-    ; Extract the 'ss.nnn' part
-    bcall(_OP4ToOP1) ; OP1 = mm.ssnnn
-    bcall(_Frac) ; OP1 = .ssnnn
-    call op2Set100
-    bcall(_FPMult) ; OP1 = ss.nnn
-
-    ; Reassemble in the form of `hh.nnn`.
-    ; Extract ss.nnn/60
-    bcall(_OP2Set60) ; OP2 = 60
-    bcall(_FPDiv) ; OP1 = ss.nnn/60
-    ; Extract mm/60
-    bcall(_PopRealO2) ; FPS=[hh]; OP1 = mm
-    bcall(_FPAdd) ; OP1 = mm + ss.nnn/60
-    bcall(_OP2Set60) ; OP2 = 60
-    bcall(_FPDiv) ; OP1 = (mm + ss.nnn/60) / 60
-    ; Extract the hh.
-    bcall(_PopRealO2) ; FPS=[]; OP1 = hh
-    bcall(_FPAdd) ; OP1 = hh + (mm + ss.nnn/60) / 60
-
+    bcall(_HmsToHr)
     jp replaceX
 
-; HMS(hh.nnn) = int(hh + (mm + ss.nnn/100)/100 where
-;   - mm = int(.nnn* 60)
-;   - ss.nnn = frac(.nnn*60)*60
+; Description: Convert "hh.dddd" to "hh.mmss".
 ; Destroys: OP1, OP2, OP3, OP4 (temp)
 mHrToHmsHandler:
     call closeInputAndRecallX
-
-    ; Extract the whole hh.
-    bcall(_OP1ToOP4) ; OP4 = hh.nnn (save in temp)
-    bcall(_Trunc) ; OP1 = int(hh.nnn)
-    bcall(_PushRealO1) ; FPS=[hh]
-
-    ; Extract the 'mm' and push it into the FPS
-    bcall(_OP4ToOP1) ; OP1 = hh.nnn
-    bcall(_Frac) ; OP1 = .nnn
-    bcall(_OP2Set60) ; OP2 = 60
-    bcall(_FPMult) ; OP1 = mm.nnn
-    bcall(_OP1ToOP4) ; OP4 = mm.nnn
-    bcall(_Trunc) ; OP1 = mm
-    bcall(_PushRealO1) ; FPS=[hh,mm]
-
-    ; Extract the 'ss.nnn' part
-    bcall(_OP4ToOP1) ; OP1 = mm.nnn
-    bcall(_Frac) ; OP1 = .nnn
-    bcall(_OP2Set60) ; OP2 = 60
-    bcall(_FPMult) ; OP1 = ss.nnn
-
-    ; Reassemble in the form of `hh.mmssnnn`.
-    ; Extract ss.nnn/100
-    call op2Set100
-    bcall(_FPDiv) ; OP1 = ss.nnn/100
-    ; Extract mm/100
-    bcall(_PopRealO2) ; FPS=[hh]; OP1 = mm
-    bcall(_FPAdd) ; OP1 = mm + ss.nnn/100
-    call op2Set100
-    bcall(_FPDiv) ; OP1 = (mm + ss.nnn/100) / 100
-    ; Extract the hh.
-    bcall(_PopRealO2) ; FPS=[]; OP1 = hh
-    bcall(_FPAdd) ; OP1 = hh + (mm + ss.nnn/100) / 100
-
+    bcall(_HmsFromHr)
     jp replaceX
 
 ;-----------------------------------------------------------------------------
@@ -893,8 +682,7 @@ mHrToHmsHandler:
 ;-----------------------------------------------------------------------------
 
 mFixHandler:
-    call closeInputBuf
-    res rpnFlagsTvmCalculate, (iy + rpnFlags)
+    call closeInputAndRecallNone
     ld hl, msgFixPrompt
     call startArgParser
     call processArgCommands
@@ -904,8 +692,7 @@ mFixHandler:
     jr saveFormatDigits
 
 mSciHandler:
-    call closeInputBuf
-    res rpnFlagsTvmCalculate, (iy + rpnFlags)
+    call closeInputAndRecallNone
     ld hl, msgSciPrompt
     call startArgParser
     call processArgCommands
@@ -915,8 +702,7 @@ mSciHandler:
     jr saveFormatDigits
 
 mEngHandler:
-    call closeInputBuf
-    res rpnFlagsTvmCalculate, (iy + rpnFlags)
+    call closeInputAndRecallNone
     ld hl, msgEngPrompt
     call startArgParser
     call processArgCommands
@@ -954,7 +740,7 @@ saveFormatDigitsContinue:
 
 ; Description: Select the display name of 'FIX' menu.
 ; Input:
-;   - A: nameId
+;   - A,B: nameId
 ;   - C: altNameId
 ;   - HL: pointer to MenuNode
 ; Output:
@@ -967,7 +753,7 @@ mFixNameSelector:
 
 ; Description: Select the display name of 'SCI' menu.
 ; Input:
-;   - A: nameId
+;   - A,B: nameId
 ;   - C: altNameId
 ;   - HL: pointer to MenuNode
 ; Output:
@@ -983,7 +769,7 @@ mSciNameSelectorMaybeOn:
 
 ; Description: Select the display name of 'ENG' menu.
 ; Input:
-;   - A: nameId
+;   - A,B: nameId
 ;   - C: altNameId
 ;   - HL: pointer to MenuNode
 ; Output:
@@ -1013,7 +799,7 @@ mDegHandler:
 
 ; Description: Select the display name of 'RAD' menu.
 ; Input:
-;   - A: nameId
+;   - A,B: nameId
 ;   - C: altNameId
 ;   - HL: pointer to MenuNode
 ; Output:
@@ -1026,7 +812,7 @@ mRadNameSelector:
 
 ; Description: Select the display name of 'DEG' menu.
 ; Input:
-;   - A: nameId
+;   - A,B: nameId
 ;   - C: altNameId
 ;   - HL: pointer to MenuNode
 ; Output:
@@ -1076,8 +862,7 @@ mAtanhHandler:
 ;-----------------------------------------------------------------------------
 
 mStackRollUpHandler:
-    call closeInputBuf
-    res rpnFlagsTvmCalculate, (iy + rpnFlags)
+    call closeInputAndRecallNone
     jp rollUpStack
 
 mStackRollDownHandler:
@@ -1091,20 +876,18 @@ mStackExchangeXYHandler:
 ;-----------------------------------------------------------------------------
 
 mClearRegsHandler:
-    call closeInputBuf
-    res rpnFlagsTvmCalculate, (iy + rpnFlags)
+    call closeInputAndRecallNone
     call clearRegs
     ld a, errorCodeRegsCleared
-    jp setHandlerCode
+    ld (handlerCode), a
+    ret
 
 mClearStackHandler:
-    call closeInputBuf
-    res rpnFlagsTvmCalculate, (iy + rpnFlags)
+    call closeInputAndRecallNone
     jp clearStack
 
 mClearXHandler:
-    call closeInputBuf
-    res rpnFlagsTvmCalculate, (iy + rpnFlags)
+    call closeInputAndRecallNone
     res rpnFlagsLiftEnabled, (iy + rpnFlags) ; disable stack lift
     bcall(_OP1Set0)
     jp stoX

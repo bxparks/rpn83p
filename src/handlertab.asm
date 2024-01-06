@@ -8,7 +8,7 @@
 ; search can be used instead of a linear search.
 ;-----------------------------------------------------------------------------
 
-keyCodeHandlerTableSize equ 67
+keyCodeHandlerTableSize equ 70
 kOnExit equ 0 ; ON key generates 00 as the key code
 
 keyCodeHandlerTable:
@@ -54,6 +54,12 @@ keyCodeHandlerTable:
     .dw handleKeyEE
     .db kComma
     .dw handleKeyEE
+
+    ; Complex numbers
+    .db kI
+    .dw handleKeyImagI
+    .db kAngle
+    .dw handleKeyAngle
 
     ; editing
     .db kDel
@@ -240,3 +246,9 @@ keyCodeHandlerTable:
     ; 2ND ENTRY = SHOW
     .db kLastEnt
     .dw handleKeyShow
+
+;-----------------------------------------------------------------------------
+
+    ; 2ND Link. Merge reals to complex, or split complex into reals.
+    .db kLinkIO
+    .dw handleKeyLink

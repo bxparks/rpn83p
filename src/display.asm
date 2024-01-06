@@ -23,8 +23,9 @@ statusPenRow equ statusCurRow*8
 statusMenuPenCol equ 0 ; left, up, down, 2px = 3*4 + 2 = 14px
 statusFloatModePenCol equ 14 ; (FIX|SCI|ENG), (, N, ), 4px = 5*4+2*3 = 26px
 statusTrigPenCol equ 40 ; (DEG|RAD), 4px = 4*4 = 16px
-statusBasePenCol equ 56 ; (C|-), 4px
-statusDebugPenCol equ 60 ; (D|-), 4px
+statusBasePenCol equ 56 ; (C|-), 4px + 4px
+statusComplexModePenCol equ 64 ; (aib|rLt|rLo), 4x4px = 16px
+statusEndPenCol equ 80
 
 ; Display coordinates of the debug line
 debugCurRow equ 1
@@ -117,12 +118,14 @@ menuPenColEnd   equ 96
 ;-----------------------------------------------------------------------------
 
 ; Description: Configure flags and variables related to rendering to a sane
-; state. This is always called, regardless of whether restoreAppState()
+; state. This is always called, regardless of whether RestoreAppState()
 ; succeeded in restoring the saved state.
 initDisplay:
     ; always set drawMode to drawModeNormal
     xor a
     ld (drawMode), a
+    ; clear the displayFontMasks
+    ld (displayStackFontFlags), a
     ; always disable SHOW mode
     res rpnFlagsShowModeEnabled, (iy + rpnFlags)
     ; set all dirty flags so that everything on the display is re-rendered
@@ -156,10 +159,12 @@ displayAll:
 ; Output: status line displayed
 ; Destroys: A, B, C, HL
 displayStatus:
+    res fracDrawLFont, (iy + fontFlags) ; use small font
     call displayStatusArrow
     call displayStatusFloatMode
     call displayStatusTrig
     call displayStatusBase
+    call displayStatusComplexMode
     ret
 
 ; Description: Display the up and down arrows that indicate whether there are
@@ -282,6 +287,42 @@ displayStatusBasePutS:
 
 ;-----------------------------------------------------------------------------
 
+; Description: Display the complexMode setting on the status line.
+displayStatusComplexMode:
+    bit dirtyFlagsStatus, (iy + dirtyFlags)
+    ret z
+    ld hl, statusPenRow*$100 + statusComplexModePenCol; $(penRow)(penCol)
+    ld (PenCol), hl
+    ; Determine state of complexMode
+    ld a, (complexMode)
+    ; Check complexModeRad
+    cp complexModeRad
+    jr nz, displayStatusComplexModeCheckDeg
+    ; complexModeRad
+    ld hl, msgComplexModeRadLabel
+    jr displayStatusComplexModePutS
+displayStatusComplexModeCheckDeg:
+    cp complexModeDeg
+    jr nz, displayStatusComplexModeCheckRect
+    ; complexModeDeg
+    ld hl, msgComplexModeDegLabel
+    jr displayStatusComplexModePutS
+displayStatusComplexModeCheckRect:
+    cp complexModeRect
+    jr z, displayStatusComplexModeRect
+displayStatusComplexModeFix:
+    ; Should never happen, but if it does, fix the darned complexMode.
+    ld a, complexModeRect
+    ld (complexMode), a
+displayStatusComplexModeRect:
+    ; complexModeRect
+    ld hl, msgComplexModeRectLabel
+displayStatusComplexModePutS:
+    call vPutS
+    ret
+
+;-----------------------------------------------------------------------------
+
 ; Description: Display the floating point format: FIX, SCI, ENG
 ; Destroys: A, HL
 displayStatusFloatMode:
@@ -335,43 +376,15 @@ displayErrorCode:
     ; Check if the error code changed
     bit dirtyFlagsErrorCode, (iy + dirtyFlags)
     ret z ; return if no change
-
     ; Display nothing if errorCode == OK (0)
+    res fracDrawLFont, (iy + fontFlags) ; use small font
     ld hl, errorPenRow*$100 ; $(penRow)(penCol)
     ld (PenCol), hl
     ld a, (errorCode)
     or a
     jr z, displayErrorCodeEnd
-
     ; Print error string and its numerical code.
-    call getErrorString
-    push hl ; save HL = C-string
-    call vPutS
-    pop hl
-
-    ; Append the numerical code only if the error message was errorStrUnknown.
-    ; This helps debugging if an unknown error code is detected.
-    ld de, errorStrUnknown
-    bcall(_CpHLDE)
-    jr nz, displayErrorCodeEnd
-
-displayErrorCodeNumerical:
-    ld a, Sspace
-    bcall(_VPutMap)
-    ;
-    ld a, ' '
-    bcall(_VPutMap)
-    ld a, '('
-    bcall(_VPutMap)
-    ;
-    ld a, (errorCode)
-    ld hl, OP1
-    call convertAToDec
-    call vPutS
-    ;
-    ld a, ')'
-    bcall(_VPutMap)
-
+    bcall(_PrintErrorString)
 displayErrorCodeEnd:
     call vEraseEOL
     res dirtyFlagsErrorCode, (iy + dirtyFlags)
@@ -430,36 +443,39 @@ displayStackYZT:
     ld hl, stTPenRow*$100 ; $(penRow)(penCol)
     ld (PenCol), hl
     ld hl, msgTLabel
-    call vPutS
+    call vPutSmallS
 
     ; print T value
     ld hl, stTCurCol*$100 + stTCurRow ; $(curCol)(curRow)
     ld (CurRow), hl
     call rclT
+    ld b, displayStackFontFlagsT
     call printOP1
 
     ; print Z label
     ld hl, stZPenRow*$100 ; $(penRow)(penCol)
     ld (PenCol), hl
     ld hl, msgZLabel
-    call vPutS
+    call vPutSmallS
 
     ; print Z value
     ld hl, stZCurCol*$100 + stZCurRow ; $(curCol)(curRow)
     ld (CurRow), hl
     call rclZ
+    ld b, displayStackFontFlagsZ
     call printOP1
 
     ; print Y label
     ld hl, stYPenRow*$100 ; $(penRow)(penCol)
     ld (PenCol), hl
     ld hl, msgYLabel
-    call vPutS
+    call vPutSmallS
 
     ; print Y value
     ld hl, stYCurCol*$100 + stYCurRow ; $(curCol)(curRow)
     ld (CurRow), hl
     call rclY
+    ld b, displayStackFontFlagsY
     call printOP1
 
     ret
@@ -500,6 +516,7 @@ displayStackXNormal:
     ld hl, stXCurCol*$100 + stXCurRow ; $(curCol)(curRow)
     ld (CurRow), hl
     call rclX
+    ld b, displayStackFontFlagsX
     jp printOP1
 
 displayStackXInput:
@@ -507,6 +524,8 @@ displayStackXInput:
     ; print the inputBuf
     ld hl, inputCurCol*$100 + inputCurRow ; $(curCol)(curRow)
     ld (CurRow), hl
+    ld b, displayStackFontFlagsX
+    call displayStackSetLargeFont
     jp printInputBuf
 
 ; Display the inputBuf in the debug line. Used for DRAW mode 3.
@@ -530,8 +549,10 @@ displayStackXLabelContinue:
     ld hl, inputPenRow*$100 ; $(penRow)(penCol)
     ld (PenCol), hl
     ld hl, msgXLabel
-    call vPutS
+    call vPutSmallS
     ret
+
+;-----------------------------------------------------------------------------
 
 ; Display the argBuf in the X register line.
 ; Input: (argBuf)
@@ -539,11 +560,10 @@ displayStackXLabelContinue:
 displayStackXArg:
     ld hl, argCurCol*$100 + argCurRow ; $(curCol)(curRow)
     ld (CurRow), hl
+    ld b, displayStackFontFlagsX
     ; [[fallthrough]]
 
-;-----------------------------------------------------------------------------
-
-; Description: Print the arg buffer.
+; Description: Print the arg buffer at the (CurRow) and (CurCol).
 ; Input:
 ;   - argBuf (same as inputBuf)
 ;   - argPrompt
@@ -551,12 +571,13 @@ displayStackXArg:
 ;   - (CurCol) cursor position
 ; Output:
 ;   - (CurCol) is updated
+;   - (displayStackFontFlagsX) cleared to indicate large font
 ; Destroys: A, HL; BC destroyed by PutPS()
 printArgBuf:
+    call displayStackSetLargeFont
     ; Print prompt and contents of argBuf
     ld hl, (argPrompt)
     call putS
-
     ; Print the argModifier if needed.
     ld a, (argModifier)
     cp argModifierCanceled
@@ -564,14 +585,12 @@ printArgBuf:
     ld hl, argModifierStrings
     call getString
     call putS
-
 printArgBufNumber:
     ; Print the command argument.
     ld hl, argBuf
     call putPS
-
     ; Append trailing cursor to fill 2 digits
-    ld a, (argBufSize)
+    ld a, (argBufLen)
     or a
     jr z, printArgBufTwoCursors
     cp 1
@@ -619,8 +638,11 @@ msgArgModifierIndirect:
 ;   - (CurCol) is updated
 ; Destroys: A, HL; BC destroyed by PutPS()
 printInputBuf:
-    ld hl, inputBuf
+    call formatInputBuf
+    call truncateInputDisplay
+    ld hl, inputDisplay
     call putPS
+    ; Append trailing '_' cursor.
     ld a, cursorChar
     bcall(_PutC)
     ; Skip EraseEOL() if the PutC() above wrapped to next line
@@ -628,6 +650,76 @@ printInputBuf:
     or a
     ret z
     bcall(_EraseEOL)
+    ret
+
+; Description: Convert the inputBuf into inputDisplay suitable for rendering on
+; the screen. If Ldegree character used for complex polar degree mode exists,
+; it is replaced by (Langle, Ltemp) pair.
+; Input: inputBuf
+; Output:
+;   - inputDisplay updated
+;   - HL=inputDisplay
+; Destroys: all registers
+formatInputBuf:
+    ld hl, inputBuf
+    ld de, inputDisplay
+    ld b, (hl) ; B=len(inputBuf)
+    ; check for zero string
+    ld a, b
+    ld (de), a ; len(displayBuf)=len(inputBuf) initially
+    or a
+    ret z
+    ; set up loop variables
+    inc hl ; skip past len byte
+    inc de ; skip past len byte
+    ld c, 0 ; C=targetLength
+formatInputBufLoop:
+    ld a, (hl)
+    inc hl
+    cp Ldegree
+    jr nz, formatInputBufCopy
+    ; Expand Ldegree into (Langle, Ltemp).
+    ld a, Langle
+    ld (de), a
+    inc de
+    inc c
+    ld a, Ltemp
+formatInputBufCopy:
+    ld (de), a
+    inc de
+    inc c
+    djnz formatInputBufLoop
+    ld hl, inputDisplay
+    ld (hl), c ; len(inputDisplay)=targetLen
+    ret
+
+; Description: Truncate inputDisplay to a maximum of 14 characters. If more
+; than 14 characters, add an ellipsis character on the left most character and
+; copy the last 13 characters.
+; Input: inputDisplay
+; Output: inputDisplay truncated if necessary
+; Destroys: all registers
+truncateInputDisplay:
+    ld hl, inputDisplay
+    ld a, (hl) ; A=len
+    inc hl ; skip past len byte
+    cp inputDisplayMaxLen+1 ; if len<15: CF=1
+    ret c
+    ; We are here if len>=15. Extract the last 13 characters, with an ellipsis
+    ; on the left most character.
+    sub inputDisplayMaxLen-1 ; A=len-13
+    ld e, a
+    ld d, 0
+    add hl, de ; HL=pointer to last 13 characters
+    ld a, inputDisplayMaxLen
+    ld de, inputDisplay
+    ld (de), a ; len=14
+    inc de; skip past len byte
+    ld a, Lellipsis
+    ld (de), a
+    inc de
+    ld bc, inputDisplayMaxLen-1
+    ldir ; shift the last 13 characters to the beginning of inputDisplay
     ret
 
 ;-----------------------------------------------------------------------------
@@ -641,19 +733,20 @@ displayTvm:
     ld hl, tvmNPenRow*$100 ; $(penRow)(penCol)
     ld (PenCol), hl
     ld hl, msgTvmNLabel
-    call vPutS
+    call vPutSmallS
 
     ; print TVM n value
     ld hl, tvmNCurCol*$100 + tvmNCurRow ; $(curCol)(curRow)
     ld (CurRow), hl
-    call rclTvmSolverCount
+    bcall(_RclTvmSolverCount)
+    ld b, displayStackFontFlagsT
     call printOP1
 
     ; print TVM i0 or npmt0 label
     ld hl, tvmI0PenRow*$100 ; $(penRow)(penCol)
     ld (PenCol), hl
     ld hl, msgTvmI0Label
-    call vPutS
+    call vPutSmallS
 
     ; print TVM i0 or npmt0 value
     ld hl, tvmI0CurCol*$100 + tvmI0CurRow ; $(curCol)(curRow)
@@ -661,18 +754,19 @@ displayTvm:
     ld a, (drawMode)
     cp a, drawModeTvmSolverI ; if drawMode==1: ZF=1
     jr z, displayTvmI0
-    call rclTvmNPMT0
+    bcall(_RclTvmNPMT0)
     jr displayTvm0
 displayTvmI0:
-    call rclTvmI0
+    bcall(_RclTvmI0)
 displayTvm0:
+    ld b, displayStackFontFlagsZ
     call printOP1
 
     ; print TVM i1 or npmt1 label
     ld hl, tvmI1PenRow*$100 ; $(penRow)(penCol)
     ld (PenCol), hl
     ld hl, msgTvmI1Label
-    call vPutS
+    call vPutSmallS
 
     ; print TVM i1 or npmt1 value
     ld hl, tvmI1CurCol*$100 + tvmI1CurRow ; $(curCol)(curRow)
@@ -680,11 +774,12 @@ displayTvm0:
     ld a, (drawMode)
     cp a, drawModeTvmSolverI ; if drawMode==1: ZF=1
     jr z, displayTvmI1
-    call rclTvmNPMT1
+    bcall(_RclTvmNPMT1)
     jr displayTvm1
 displayTvmI1:
-    call rclTvmI1
+    bcall(_RclTvmI1)
 displayTvm1:
+    ld b, displayStackFontFlagsY
     call printOP1
 
     ; print the TVM empty line
@@ -705,6 +800,7 @@ displayMenu:
     bit dirtyFlagsMenu, (iy + dirtyFlags)
     ret z
 
+    res fracDrawLFont, (iy + fontFlags) ; use small font
     ; get starting menuId
     call getCurrentMenuRowBeginId ; A=rowBeginId
     ; set up loop over 5 consecutive menu buttons
@@ -802,7 +898,7 @@ printMenuAtALeftPad:
 printMenuAtAPrintName:
     ; Print the menu name
     ld hl, menuName
-    call vPutPS
+    call vPutSmallPS
 printMenuAtARightPad:
     pop bc ; B = stringWidth; C = leftPadWidth
     ld a, menuPenWidth
@@ -836,14 +932,17 @@ displayShow:
     ld hl, errorPenRow*$100 ; $(penRow)(penCol)
     ld (PenCol), hl
     ld hl, msgShowLabel
-    call vputS
+    call vPutSmallS
     call vEraseEOL
     ; Call special FormShowable() function to show all digits of OP1.
     ld hl, showCurCol*$100 + showCurRow ; $(curCol)(curRow)
     ld (CurRow), hl
     call rclX
+    ; fmtString is a buffer of 65 bytes used by FormDCplx(). There should be no
+    ; problems using it as our string buffer.
+    ld de, fmtString
     call formShowable
-    ld hl, OP3
+    ld hl, fmtString
     call putS
     ret
 
@@ -869,11 +968,26 @@ clearShowAreaLoop:
 ; Description: Print floating point number at OP1 at the current cursor. Erase
 ; to the end of line (but only if the floating point did not spill over to the
 ; next line).
-; Input: OP1: floating point number
+; Input:
+;   - A: objectType
+;   - B: displayFontMask
+;   - OP1: floating point number
 ; Destroys: A, HL, OP3
 printOP1:
+    cp rpnObjectTypeComplex
+    jr z, printOP1Complex
+    ; [[fallthrough]]
+
+; Description: Print the real number in OP1, taking into account the BASE mode.
+; This routine always uses large font, so it never needs to clear the line with
+; EraseEOL(), so the displayFontMask does not need to be used.
+; Input:
+;   - OP1: real number
+;   - B: displayFontMask
+printOP1Real:
+    call displayStackSetLargeFont
     bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
-    jr z, printOP1AsFloat
+    jp z, printOP1AsFloat
     ld a, (baseNumber)
     cp 16
     jp z, printOP1Base16
@@ -882,6 +996,174 @@ printOP1:
     cp 2
     jp z, printOP1Base2
     jp printOP1Base10
+
+;-----------------------------------------------------------------------------
+
+; Description: Print a complex number. The LCD screen is 96 pixels wide. The
+; stack label is 6 pixels, leaving 90 pixels. Each small font character is 4
+; pixels wide for digits, exponent 'E', and minus sign. A decimal point is only
+; 2 pixels wide, so we have extra space. So that's 22 small-font characters.
+; The imaginary-i is 4 pixels. Add a space on either wide, for 2 more pixels.
+; So this means that we can print the Re and Im parts using a width of 10 each,
+; then add the imaginary-i character in between, and still fit inside the 96
+; pixel limit.
+;
+; A complex number is always printed using small font. If the previous
+; rendering was done using large font, then we must call EraseEOL() before
+; printing the small font characters, to avoid artifacts on the bottom row. The
+; displayFontMask in B will tell us the previous font.
+;
+; Input:
+;   - CP1: complex number
+;   - B: displayFontMask
+printOP1Complex:
+    call eraseEOLIfNeeded
+    call displayStackSetSmallFont
+    ld a, (complexMode)
+    cp a, complexModeRect
+    jr z, printOP1ComplexRect
+    cp a, complexModeRad
+    jr z, printOP1ComplexRad
+    cp a, complexModeDeg
+    jp z, printOP1ComplexDeg
+    ; [[falltrhough]]
+
+; Description: Print the complex numberin CP1 in rectangular form.
+; Input: CP1: complex number
+printOP1ComplexRect:
+    call splitCp1ToOp1Op2
+    ; Print Re(X)
+    ld a, 10 ; width of output
+    bcall(_FormReal)
+    ld hl, OP3
+    call vPutSmallS
+    ;
+    ; Print the complex-i
+    ld hl, msgComplexRectSpacer
+    call vPutSmallS
+    ; Print Im(X)
+    call op2ToOp1
+    ld a, 10 ; width of output
+    bcall(_FormReal)
+    ld hl, OP3
+    call vPutSmallS
+    ;
+    call vEraseEOL
+    ret
+
+msgComplexRectSpacer:
+    .db "  ", SimagI, " ", 0
+
+; Description: Print the complex numberin CP1 in polar form using radians.
+; Note: An r value >= 1e100 or <= 1e-100 can be returned by complexRToPRad()
+; and will be displayed by this function. This is useful because that means we
+; can display the entire domain of the rectangular complex numbers, even when
+; the 'r' value goes beyond 1e100 or 1e-100.
+; Input: CP1: complex number
+printOP1ComplexRad:
+    call complexToPolarRad ; OP1=r; OP2=theta(rad)
+    jr nc, printOP1ComplexRadOk
+    ld hl, msgPrintComplexError
+    call vPutSmallS
+    jp vEraseEOL
+printOP1ComplexRadOk:
+    ; Print 'r'
+    ld a, 10 ; width of output
+    bcall(_FormReal)
+    ld hl, OP3
+    call vPutSmallS
+    ; Print the angle symbol
+    ld hl, msgComplexPRadSpacer
+    call vPutSmallS
+    ; Print theta(rad)
+    call op2ToOp1
+    ld a, 10 ; width of output
+    bcall(_FormReal)
+    ld hl, OP3
+    call vPutSmallS
+    call vEraseEOL
+    ret
+
+msgComplexPRadSpacer:
+    .db "  ", Sangle, " ", 0
+
+; Description: Print the complex numberin CP1 in polar form using degrees.
+; Note: An r value >= 1e100 or <= 1e-100 can be returned by complexRToPRad()
+; and will be displayed by this function. This is useful because that means we
+; can display the entire domain of the rectangular complex numbers, even when
+; the 'r' value goes beyond 1e100 or 1e-100.
+; Input: CP1: complex number
+printOP1ComplexDeg:
+    call complexToPolarDeg ; OP1=r; OP2=theta(deg)
+    jr nc, printOP1ComplexDegOk
+    ld hl, msgPrintComplexError
+    call vPutSmallS
+    jp vEraseEOL
+printOP1ComplexDegOk:
+    ; Print 'r'
+    ld a, 10 ; width of output
+    bcall(_FormReal)
+    ld hl, OP3
+    call vPutSmallS
+    ; Print the angle-degree symbols
+    ld hl, msgComplexPDegSpacer
+    call vPutSmallS
+    ; Print theta(deg)
+    call op2ToOp1
+    ld a, 10 ; width of output
+    bcall(_FormReal)
+    ld hl, OP3
+    call vPutSmallS
+    ; Add a deg symbol
+    ; ld a, Stemp ; deg symbol
+    ; bcall(_VPutMap)
+    call vEraseEOL
+    ret
+
+msgComplexPDegSpacer:
+    .db "  ", Sangle, Stemp, " ", 0
+
+msgPrintComplexError:
+    .db "<overflow>", 0
+
+;-----------------------------------------------------------------------------
+
+; Erase the previous rendering on the line identified by the mask in B
+; if the previous rendering was done in large font (fontMask==0).
+; Input:
+;   - (displayStackFontFlags)
+;   - B: displayFontMask
+; Destroys: A, HL
+eraseEOLIfNeeded:
+    ld hl, displayStackFontFlags
+    ld a, (hl)
+    and b ; if previous==smallFont: ZF=0
+    ret nz ; if previous==smallFont: ret
+    bcall(_EraseEOL) ; all registered saved
+    ret
+
+; Description: Mark the stack line identified by B as using small font.
+; Input: B: displayFontMask
+; Output: displayStackFontFlags |= B
+; Destroys: A, HL
+displayStackSetSmallFont:
+    ld a, b
+    ld hl, displayStackFontFlags
+    or (hl) ; A=displayFontMask OR (displayStackFontFlags)
+    ld (hl), a
+    ret
+
+; Description: Mark the stack line identified by B as using large font.
+; Input: B: displayFontMask
+; Output: displayStackFontFlags &= (~B)
+; Destroys: A, HL
+displayStackSetLargeFont:
+    ld a, b
+    cpl ; A=~displayFontMask
+    ld hl, displayStackFontFlags
+    and (hl)
+    ld (hl), a
+    ret
 
 ;-----------------------------------------------------------------------------
 
@@ -928,36 +1210,32 @@ printOP1BaseNegative:
 ; Destroys: all, OP1, OP2, OP3, OP4
 printOP1Base10:
     ld hl, OP3
-    call convertOP1ToW32
-    call checkW32FitsWsize
-    ld a, (hl)
-    bit w32StatusCodeTooBig, a
+    call convertOP1ToU32StatusCode ; HL=U32; C=statusCode
+    call checkU32FitsWsize ; C=u32StatusCode
+    bit u32StatusCodeTooBig, c
     jr nz, printOP1BaseInvalid
-    bit w32StatusCodeNegative, a
+    bit u32StatusCodeNegative, c
     jr nz, printOP1BaseNegative
     ; Convert u32 into a base-10 string.
-    inc hl ; W32+1
     ld de, OP4
     call convertU32ToDecString
-printOP1BaseXX:
     ; Add '.' if OP1 has fractional component.
-    dec hl
     call appendHasFrac ; DE=rendered string
     ex de, hl ; HL=rendered string
     jr printHLString
 
-; Description: Append a '.' at the end of the string if W32.hasFrac is set.
+; Description: Append a '.' at the end of the string if u32StatusCode contains
+; u32StatusCodeHasFrac.
 ; Input:
-;   - HL: pointer to W32 struct
+;   - C: u32StatusCode
 ;   - DE: pointer to ascii string
 ; Output:
-;   - HL: pointer to W32 struct
-;   - DE: pointer to ascii string with '.' appended if w32.hasFrac is enabled
+;   - DE: pointer to ascii string with '.' appended if u32StatusCodehasFrac is
+;   enabled
 ; Destroys: A
+; Preserves, BC, DE, HL
 appendHasFrac:
-    ld a, (hl)
-appendHasFracUsingA: ; alternative entry where A replaces (HL)
-    bit w32StatusCodeHasFrac, a
+    bit u32StatusCodeHasFrac, c
     ret z
     ld a, '.'
     ex de, hl
@@ -975,19 +1253,16 @@ appendHasFracUsingA: ; alternative entry where A replaces (HL)
 ; Destroys: all, OP1, OP2, OP3, OP4
 printOP1Base16:
     ld hl, OP3
-    call convertOP1ToW32
-    call checkW32FitsWsize
-    ld a, (hl)
-    bit w32StatusCodeTooBig, a
+    call convertOP1ToU32StatusCode
+    call checkU32FitsWsize ; C=u32StatusCode
+    bit u32StatusCodeTooBig, c
     jr nz, printOP1BaseInvalid
-    bit w32StatusCodeNegative, a
+    bit u32StatusCodeNegative, c
     jr nz, printOP1BaseNegative
     ; Convert u32 into a base-16 string.
-    inc hl ; W32+1
     ld de, OP4
     call convertU32ToHexString ; DE=rendered string
     ; Append frac indicator
-    dec hl
     call appendHasFrac ; DE=rendered string
     ex de, hl ; HL=rendered string
     call truncateHexDigits
@@ -1016,19 +1291,16 @@ truncateHexDigits:
 ; Destroys: all, OP1, OP2, OP3, OP4, OP5
 printOP1Base8:
     ld hl, OP3
-    call convertOP1ToW32
-    call checkW32FitsWsize
-    ld a, (hl)
-    bit w32StatusCodeTooBig, a
+    call convertOP1ToU32StatusCode
+    call checkU32FitsWsize ; C=u32StatusCode
+    bit u32StatusCodeTooBig, c
     jr nz, printOP1BaseInvalid
-    bit w32StatusCodeNegative, a
+    bit u32StatusCodeNegative, c
     jr nz, printOP1BaseNegative
     ; Convert u32 into a base-8 string.
-    inc hl ; W32+1
     ld de, OP4
     call convertU32ToOctString
     ; Append frac indicator
-    dec hl
     call appendHasFrac ; DE=rendered string
     ex de, hl ; HL=rendered string
     call truncateOctDigits
@@ -1085,16 +1357,14 @@ truncateOctString:
 ; Destroys: all, OP1, OP2, OP3, OP4, OP5
 printOP1Base2:
     ld hl, OP3
-    call convertOP1ToW32
-    call checkW32FitsWsize
-    ld a, (hl)
-    bit w32StatusCodeTooBig, a
+    call convertOP1ToU32StatusCode
+    call checkU32FitsWsize ; C=u32StatusCode
+    bit u32StatusCodeTooBig, c
     jp nz, printOP1BaseInvalid
-    bit w32StatusCodeNegative, a
+    bit u32StatusCodeNegative, c
     jp nz, printOP1BaseNegative
     ; Move u32 to OP1 to free up OP3 for the formatted digits.
-    push af ; stack=[w32StatusCode]
-    inc hl ; W32+1
+    push bc ; stack=[u32StatusCode]
     ld de, OP1
     ld bc, 4
     ldir
@@ -1109,8 +1379,8 @@ printOP1Base2:
     ld de, OP3
     call formatBinDigits ; HL,DE preserved
     ; Append frac indicator
-    pop af ; stack=[]; A=w32StatusCode
-    call appendHasFracUsingA ; DE=rendered string
+    pop bc ; stack=[]; C=u32StatusCode
+    call appendHasFrac ; DE=rendered string
     ex de, hl ; HL=rendered string
     jp printHLString
 
@@ -1187,74 +1457,6 @@ formatBinDigitsEnd:
 
 ;-----------------------------------------------------------------------------
 
-; Description: Convert A to a NUL-terminated C-string of 1 to 3 digits at the
-; buffer pointed by HL. This is intended for debugging, so it is not optimized.
-; TODO: This can probably be written to be faster and smaller.
-; Input: HL: pointer to string buffer
-; Output: HL unchanged, with 1-3 ASCII string, terminated by NUL
-; Destroys: A, B, C
-convertAToDec:
-    push hl
-convertAToDec100:
-    ld b, 100
-    call divideAByB
-    or a
-    jr z, convertAToDec10
-    call convertAToChar
-    ld (hl), a
-    inc hl
-convertAToDec10:
-    ld a, b
-    ld b, 10
-    call divideAByB
-    or a
-    jr z, convertAToDec1
-    call convertAToChar
-    ld (hl), a
-    inc hl
-convertAToDec1:
-    ld a, b
-    call convertAToChar
-    ld (hl), a
-    inc hl
-convertAToDec0:
-    ld (hl), 0
-    pop hl
-    ret
-
-; Description: Return A / B using repeated substraction.
-; Input:
-;   - A: numerator
-;   - B: denominator
-; Output: A = A/B (quotient); B=A%B (remainder)
-; Destroys: C
-divideAByB:
-    ld c, 0
-divideAByBLoop:
-    sub b
-    jr c, divideAByBLoopEnd
-    inc c
-    jr divideAByBLoop
-divideAByBLoopEnd:
-    add a, b ; undo the last subtraction
-    ld b, a
-    ld a, c
-    ret
-
-; Description: Convert A into an Ascii Char ('0'-'9','A'-'F').
-; Destroys: A
-convertAToChar:
-    cp 10
-    jr c, convertAToCharDec
-    sub 10
-    add a, 'A'
-    ret
-convertAToCharDec:
-    add a, '0'
-    ret
-
-;-----------------------------------------------------------------------------
-
 ; Indicates number has overflowed the current Base mode.
 msgBaseInvalid:
     .db "...", 0
@@ -1296,3 +1498,11 @@ msgTvmI0Label:
     .db "0:", 0
 msgTvmI1Label:
     .db "1:", 0
+
+; ComplexMode labels
+msgComplexModeRectLabel:
+    .db "a", SimagI, "b", 0
+msgComplexModeRadLabel:
+    .db "r", Sangle, Stheta, 0
+msgComplexModeDegLabel:
+    .db "r", Sangle, Stemp, 0

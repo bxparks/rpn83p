@@ -7,27 +7,32 @@
 
 main:
     call setFastSpeed
+    bcall(_SaveOSState)
     bcall(_RunIndicOff)
     res appAutoScroll, (iy + appFlags) ; disable auto scroll
     res appTextSave, (iy + appFlags) ; disable shawdow text
     res lwrCaseActive, (iy + appLwrCaseFlag) ; disable ALPHA-ALPHA lowercase
     bcall(_ClrLCDFull)
 
-    call restoreAppState
+    bcall(_RestoreAppState)
     jr nc, initAlways
-    ; Initialize everything if restoreAppState() fails.
-    call initErrorCode
-    call initInputBuf
-    call initStack
-    call initRegs
+    ; Initialize everything if RestoreAppState() fails.
+    bcall(_InitErrorCode)
+    bcall(_InitInputBuf)
+    call initNumResultMode
+    call initComplexMode
     call initMenu
     call initBase
     call initStat
     call initCfit
     call initTvm
 initAlways:
-    ; If restoreAppState() suceeds, only the following are initialized.
-    call initArgBuf ; Start with Command Arg parser off.
+    ; If RestoreAppState() suceeds, only the following are initialized.
+    bcall(_InitArgBuf) ; Start with Command Arg parser off.
+    call updateNumResultMode
+    call updateComplexMode
+    call initStack
+    call initRegs
     call initLastX ; Always copy TI-OS 'ANS' to 'X'
     call initDisplay ; Always initialize the display.
     call initTvmSolver ; Always init TVM solver
@@ -48,14 +53,21 @@ initAlways:
 ;   - Called by TI-OS application monitor upon 2ND OFF.
 ; See the TI-83 Plus SDK reference for PutAway().
 mainExit:
+    ; Save appState and close the stack and storage registers.
     call rclX
-    bcall(_StoAns) ; transfer RPN83P 'X' to TI-OS 'ANS'
-    call storeAppState
+    bcall(_StoAns) ; transfer to TI-OS 'ANS' (supports complex numbers)
+    call closeStack
+    call closeRegs
+    bcall(_StoreAppState)
+
+    ; Clean up the screen.
     set appAutoScroll, (iy + appFlags)
     ld (iy + textFlags), 0 ; reset text flags
     bcall(_ClrLCDFull)
     bcall(_HomeUp)
 
+    ; Restore various OS states, and terminate the app.
+    bcall(_RestoreOSState)
     bcall(_ReloadAppEntryVecs) ; App Loader in control of monitor
     bit monAbandon, (iy + monFlags) ; if turning off: ZF=1
     jr nz, appTurningOff

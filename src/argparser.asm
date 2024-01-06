@@ -15,7 +15,7 @@ startArgParser:
     ld (argPrompt), hl
     xor a
     ld (argModifier), a
-    ld (argBufSize), a
+    ld (argBufLen), a
     res inputBufFlagsArgExit, (iy + inputBufFlags)
     res inputBufFlagsArgAllowModifier, (iy + inputBufFlags)
     set rpnFlagsArgMode, (iy + rpnFlags)

@@ -5,8 +5,9 @@
 ; Main input key code handlers.
 ;-----------------------------------------------------------------------------
 
-; Description: Append a number character to inputBuf or argBuf, updating various
-; flags.
+; Description: Append a number character to inputBuf or argBuf, updating
+; various flags. If the inputBuf is already complex, this routine must not be
+; called with Langle, LimagI or Ltheta.
 ; Input:
 ;   A: character to be appended
 ;   rpnFlagsEditing: whether we are already in Edit mode
@@ -27,23 +28,37 @@ handleKeyNumberFirstDigit:
     call liftStackIfEnabled
     pop af
     ; Go into editing mode.
-    call clearInputBuf
+    bcall(_ClearInputBuf) ; preserves A
     set rpnFlagsEditing, (iy + rpnFlags)
 handleKeyNumberCheckAppend:
-    ; Limit number of exponent digits to 2.
-    bit inputBufFlagsEE, (iy + inputBufFlags)
-    jp z, appendInputBuf ; append character in A.
-    ; Check inputBufEELen, while preserving A.
-    ld b, a
-    ld a, (inputBufEELen)
-    cp inputBufEELenMax
-    ld a, b
+    call isComplexDelimiter ; ZF=1 if complex delimiter
+    jr z, handleKeyNumberAppend
+    bcall(_GetInputBufState) ; C=inputBufState; D=inputBufEEPos; E=inputBufEELen
+    bit inputBufStateEE, c
+    jr z, handleKeyNumberAppend
+handleKeyNumberAppendExponent:
+    ; Append A to exponent, if len(exponent)<2.
+    ld b, a ; save A
+    ld a, e ; A=inputBufEELen
+    cp inputBufEEMaxLen
+    ld a, b ; restore A
     ret nc ; prevent more than 2 exponent digits
-    ; Try to append. Check for buffer full before incrementing counter.
-    call appendInputBuf
-    ret c ; return if buffer full
-    ld hl, inputBufEELen
-    inc (hl)
+handleKeyNumberAppend:
+    ; Try to append character
+    bcall(_AppendInputBuf)
+    ret
+
+; Description: Return ZF=1 if A is a complex number delimiter. Same as
+; isComplexDelimiterPageOne().
+; Input: A: char
+; Output: ZF=1 if delimiter
+; Destroys: none
+isComplexDelimiter:
+    cp LimagI
+    ret z
+    cp Langle
+    ret z
+    cp Ldegree
     ret
 
 ;-----------------------------------------------------------------------------
@@ -187,51 +202,73 @@ checkBase16:
     ret
 
 ; Description: Append a '.' if not already entered.
-; Input: none
-; Output: (iy+inputBufFlags) DecPnt set
-; Destroys: A, DE, HL
+; Input: inputBuf
+; Output: (inputBuf) updated
+; Destroys: A, BC, DE, HL
 handleKeyDecPnt:
     ; Do nothing in BASE mode.
     bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
     ret nz
+    ; Check prior characters in the inputBuf.
+    bcall(_GetInputBufState) ; C=inputBufState; D=inputBufEEPos; E=inputBufEELen
     ; Do nothing if a decimal point already exists.
-    bit inputBufFlagsDecPnt, (iy + inputBufFlags)
+    bit inputBufStateDecimalPoint, c
     ret nz
     ; Also do nothing if 'E' exists. Exponents cannot have a decimal point.
-    bit inputBufFlagsEE, (iy + inputBufFlags)
+    bit inputBufStateEE, c
     ret nz
     ; try insert '.'
     ld a, '.'
     call handleKeyNumber
-    ret c ; If CF: append failed so return without setting the DecPnt flag
-    set inputBufFlagsDecPnt, (iy + inputBufFlags)
     ret
 
 ; Description: Handle the EE for scientific notation. The 'EE' is mapped to
 ; 2ND-COMMA by default on the calculator. For faster entry, we map the COMMA
 ; key (withouth 2ND) to be EE as well.
 ; Input: none
-; Output: (inputBufEEPos), (inputBufFlagsEE, iy+inputBufFlags)
-; Destroys: A, HL
+; Output: (inputBuf) updated
+; Destroys: A, BC, DE, HL
 handleKeyEE:
     ; Do nothing in BASE mode.
     bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
     ret nz
-    ; do nothing if EE already exists
-    bit inputBufFlagsEE, (iy + inputBufFlags)
+    ; Check prior characters in the inputBuf.
+    bcall(_GetInputBufState) ; C=inputBufState; D=inputBufEEPos; E=inputBufEELen
+    ; Do nothing if EE already exists
+    bit inputBufStateEE, c
     ret nz
     ; try insert 'E'
     ld a, Lexponent
+    jp handleKeyNumber
+
+; Description: Add imaginary-i into the input buffer.
+handleKeyImagI:
+    ; Do nothing in BASE mode.
+    bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
+    ret nz
+    ; Try setting an existing complex delimiter.
+    set dirtyFlagsInput, (iy + dirtyFlags)
+    ld a, LimagI
+    bcall(_SetComplexDelimiter) ; CF=1 if complex number
+    ret c
+    ; Try inserting imaginary-i
+    ld a, LimagI
     call handleKeyNumber
-    ret c ; If CF: append failed so return without setting the EE flag
-    ; save the EE+1 position
-    ld a, (inputBuf) ; position after the 'E'
-    ld (inputBufEEPos), a
-    ; set the EE Len to 0
-    xor a
-    ld (inputBufEELen), a
-    ; set flag to indicate presence of EE
-    set inputBufFlagsEE, (iy + inputBufFlags)
+    ret
+
+; Description: Add Angle symbol into the input buffer for angle in degrees.
+handleKeyAngle:
+    ; Do nothing in BASE mode.
+    bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
+    ret nz
+    ; Try setting or toggling an existing complex delimiter.
+    set dirtyFlagsInput, (iy + dirtyFlags)
+    ld a, Ldegree
+    bcall(_SetComplexDelimiter) ; CF=1 if complex delimiter exists
+    ret c
+    ; Insert Ldegree delimiter for initial default.
+    ld a, Ldegree
+    call handleKeyNumber
     ret
 
 ;-----------------------------------------------------------------------------
@@ -265,47 +302,11 @@ handleKeyDel:
 handleKeyDelInEditMode:
     ; DEL pressed in edit mode.
     set dirtyFlagsInput, (iy + dirtyFlags)
-    ld a, (hl) ; A = inputBufSize
+    ld a, (hl) ; A = inputBufLen
     or a
     ret z ; do nothing if buffer empty
     ; shorten string by one
-    ld e, a ; E = inputBufSize
-    dec a
-    ld (hl), a
-    ; retrieve the character deleted
-    ld d, 0
-    add hl, de
-    ld a, (hl)
-handleKeyDelDecPnt:
-    ; reset decimal point flag if the deleted character was a '.'
-    cp a, '.'
-    jr nz, handleKeyDelEE
-    res inputBufFlagsDecPnt, (iy + inputBufFlags)
-    ret
-handleKeyDelEE:
-    ; reset EE flag if the deleted character was an 'E'
-    cp Lexponent
-    jr nz, handleKeyDelEEDigits
-    xor a
-    ld (inputBufEEPos), a
-    ld (inputBufEELen), a
-    res inputBufFlagsEE, (iy + inputBufFlags)
-    ret
-handleKeyDelEEDigits:
-    ; decrement exponent len counter
-    bit inputBufFlagsEE, (iy + inputBufFlags)
-    jr z, handleKeyDelExit
-    cp signChar
-    jr z, handleKeyDelExit ; no special handling of '-' in exponent
-    ; check if EELen is 0
-    ld hl, inputBufEELen
-    ld a, (hl)
-    or a
-    jr z, handleKeyDelExit ; don't decrement len below 0
-    ; decrement EELen
-    dec a
-    ld (hl), a
-handleKeyDelExit:
+    dec (hl)
     ret
 
 ;-----------------------------------------------------------------------------
@@ -364,11 +365,12 @@ handleKeyClearWhileClear:
     ; We are here if CLEAR was pressed while the inputBuffer was already empty.
     ; Go into ClearAgain mode, where the next CLEAR invokes CLST.
     ld a, errorCodeClearAgain
-    jp setHandlerCode
+    ld (handlerCode), a
+    ret
 handleKeyClearToEmptyInput:
     ; We are here if we were not in edit mode, so CLEAR should "clear the X
     ; register" by going into edit mode with an emtpy inputBuf.
-    call clearInputBuf
+    bcall(_ClearInputBuf)
     set rpnFlagsEditing, (iy + rpnFlags)
     ; We also disable stack lift. Testing seems to show that this is not seem
     ; strictly necessary because handleNumber() handles the edit mode properly
@@ -392,29 +394,30 @@ handleKeyChs:
     ret nz
     ; Clear TVM mode.
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
-    ; Toggle sign character in inputBuf in edit mode.
+    ; Check if edit mode.
     bit rpnFlagsEditing, (iy + rpnFlags)
     jr nz, handleKeyChsInputBuf
 handleKeyChsX:
-    ; CHS of X register
+    ; Not in edit mode, so change sign of X register
     call rclX
-    bcall(_InvOP1S)
+    call universalChs
     call stoX
     ret
 handleKeyChsInputBuf:
+    ; In edit mode, so change sign of Mantissa or Exponent.
     set dirtyFlagsInput, (iy + dirtyFlags)
-    ; Change sign of Mantissa or Exponent.
+    bcall(_GetInputBufState) ; C=inputBufState; D=inputBufEEPos; E=inputBufEELen
+    ld a, d ; A=inputBufEEPos or 0 if no 'E'
     ld hl, inputBuf
-    ld b, inputBufMax
-    ld a, (inputBufEEPos) ; offset to EE digit, or 0 if 'E' does not exist
+    ld b, inputBufCapacity
     ; [[fallthrough]]
 
 ; Description: Add or remove the '-' char at position A of the Pascal string at
 ; HL, with maximum length B.
 ; Input:
-;   A: inputBuf offset where the sign ought to be
+;   A: signPos, the offset where the sign ought to be
+;   B: inputBufCapacity, max size of Pasal string
 ;   HL: pointer to Pascal string
-;   B: max size of Pasal string
 ; Output:
 ;   (HL): updated with '-' removed or added
 ;   CF:
@@ -425,29 +428,29 @@ handleKeyChsInputBuf:
 flipInputBufSign:
     ld c, (hl) ; size of string
     cp c
-    jr c, flipInputBufSignInside ; If A < inputBufSize: interior position
-    ld a, c ; set A = inputBufSize, just in case
+    jr c, flipInputBufSignInside ; If A < inputBufLen: interior position
+    ld a, c ; set A = inputBufLen, just in case
     jr flipInputBufSignAdd
 flipInputBufSignInside:
     ; Check for the '-' and flip it.
     push hl
     inc hl ; skip size byte
     ld e, a
-    ld d, 0
+    ld d, 0 ; DE=signPos
     add hl, de
-    ld a, (hl)
+    ld a, (hl) ; A=char at signPos
     cp signChar
     pop hl
-    ld a, e ; A=sign position
+    ld a, e ; A=signPos
     jr nz, flipInputBufSignAdd
 flipInputBufSignRemove:
     ; Remove existing '-' sign
-    call deleteAtPos
+    bcall(_DeleteAtPos)
     scf ; set CF to indicate positive
     ret
 flipInputBufSignAdd:
     ; Add '-' sign.
-    call insertAtPos
+    bcall(_InsertAtPos)
     ret c ; Return if CF is set, indicating insert '-' failed
     ; Set newly created empty slot to '-'
     ld a, signChar
@@ -462,8 +465,7 @@ flipInputBufSignAdd:
 ; Output:
 ; Destroys: all, OP1, OP2, OP4
 handleKeyEnter:
-    call closeInputBuf
-    res rpnFlagsTvmCalculate, (iy + rpnFlags)
+    call closeInputAndRecallNone
     call liftStack ; always lift the stack
     res rpnFlagsLiftEnabled, (iy + rpnFlags)
     ret
@@ -651,45 +653,45 @@ handleKeyMenuSecondA:
 ; Description: Handle the Add key.
 ; Input: inputBuf
 ; Output:
-; Destroys: all, OP1, OP2, OP4
+; Destroys: all, OP1, OP2, OP3, OP4
 handleKeyAdd:
     bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
-    jp nz, mBitwiseAddHandler
-    call closeInputAndRecallXY
-    bcall(_FPAdd) ; Y + X
+    jp nz, mBaseAddHandler
+    call closeInputAndRecallUniversalXY ; CP1=Y; CP3=X
+    call universalAdd
     jp replaceXY
 
 ; Description: Handle the Sub key.
 ; Input: inputBuf
 ; Output:
-; Destroys: all, OP1, OP2, OP4
+; Destroys: all, OP1, OP2, OP3, OP4
 handleKeySub:
     bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
-    jp nz, mBitwiseSubtHandler
-    call closeInputAndRecallXY
-    bcall(_FPSub) ; Y - X
+    jp nz, mBaseSubtHandler
+    call closeInputAndRecallUniversalXY ; CP1=X; CP3=Y
+    call universalSub
     jp replaceXY
 
 ; Description: Handle the Mul key.
 ; Input: inputBuf
 ; Output:
-; Destroys: all, OP1, OP2, OP4, OP5
+; Destroys: all, OP1, OP2, OP3, OP4, OP5
 handleKeyMul:
     bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
-    jp nz, mBitwiseMultHandler
-    call closeInputAndRecallXY
-    bcall(_FPMult) ; Y * X
+    jp nz, mBaseMultHandler
+    call closeInputAndRecallUniversalXY ; CP1=Y; CP3=X
+    call universalMult
     jp replaceXY
 
 ; Description: Handle the Div key.
 ; Input: inputBuf
 ; Output:
-; Destroys: all, OP1, OP2, OP4
+; Destroys: all, OP1, OP2, OP3, OP4
 handleKeyDiv:
     bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
-    jp nz, mBitwiseDivHandler
-    call closeInputAndRecallXY
-    bcall(_FPDiv) ; Y / X
+    jp nz, mBaseDivHandler
+    call closeInputAndRecallUniversalXY ; CP1=Y; CP3=X
+    call universalDiv
     jp replaceXY
 
 ;-----------------------------------------------------------------------------
@@ -701,14 +703,12 @@ handleKeyDiv:
 ;-----------------------------------------------------------------------------
 
 handleKeyPi:
-    call closeInputBuf
-    res rpnFlagsTvmCalculate, (iy + rpnFlags)
+    call closeInputAndRecallNone
     call op1SetPi
     jp pushX
 
 handleKeyEuler:
-    call closeInputBuf
-    res rpnFlagsTvmCalculate, (iy + rpnFlags)
+    call closeInputAndRecallNone
     call op1SetEuler
     jp pushX
 
@@ -718,26 +718,26 @@ handleKeyEuler:
 
 ; Description: y^x
 handleKeyExpon:
-    call closeInputAndRecallXY
-    bcall(_YToX)
+    call closeInputAndRecallUniversalXY ; CP1=Y; CP3=X
+    call universalPow
     jp replaceXY
 
 ; Description: 1/x
 handleKeyInv:
-    call closeInputAndRecallX
-    bcall(_FPRecip)
+    call closeInputAndRecallUniversalX
+    call universalRecip
     jp replaceX
 
 ; Description: x^2
 handleKeySquare:
-    call closeInputAndRecallX
-    bcall(_FPSquare)
+    call closeInputAndRecallUniversalX
+    call universalSquare
     jp replaceX
 
 ; Description: sqrt(x)
 handleKeySqrt:
-    call closeInputAndRecallX
-    bcall(_SqRoot)
+    call closeInputAndRecallUniversalX
+    call universalSqRoot
     jp replaceX
 
 ;-----------------------------------------------------------------------------
@@ -745,18 +745,15 @@ handleKeySqrt:
 ;-----------------------------------------------------------------------------
 
 handleKeyRollDown:
-    call closeInputBuf
-    res rpnFlagsTvmCalculate, (iy + rpnFlags)
+    call closeInputAndRecallNone
     jp rollDownStack
 
 handleKeyExchangeXY:
-    call closeInputBuf
-    res rpnFlagsTvmCalculate, (iy + rpnFlags)
+    call closeInputAndRecallNone
     jp exchangeXYStack
 
 handleKeyAns:
-    call closeInputBuf
-    res rpnFlagsTvmCalculate, (iy + rpnFlags)
+    call closeInputAndRecallNone
     call rclL
     jp pushX
 
@@ -765,23 +762,23 @@ handleKeyAns:
 ;-----------------------------------------------------------------------------
 
 handleKeyLog:
-    call closeInputAndRecallX
-    bcall(_LogX)
+    call closeInputAndRecallUniversalX
+    call universalLog
     jp replaceX
 
 handleKeyALog:
-    call closeInputAndRecallX
-    bcall(_TenX)
+    call closeInputAndRecallUniversalX
+    call universalTenPow
     jp replaceX
 
 handleKeyLn:
-    call closeInputAndRecallX
-    bcall(_LnX)
+    call closeInputAndRecallUniversalX
+    call universalLn
     jp replaceX
 
 handleKeyExp:
-    call closeInputAndRecallX
-    bcall(_EToX)
+    call closeInputAndRecallUniversalX
+    call universalExp
     jp replaceX
 
 ;-----------------------------------------------------------------------------
@@ -823,8 +820,7 @@ handleKeyATan:
 ;-----------------------------------------------------------------------------
 
 handleKeySto:
-    call closeInputBuf
-    res rpnFlagsTvmCalculate, (iy + rpnFlags)
+    call closeInputAndRecallNone
     ld hl, msgStoPrompt
     call startArgParser
     set inputBufFlagsArgAllowModifier, (iy + inputBufFlags)
@@ -837,17 +833,17 @@ handleKeySto:
     ld a, (argValue)
     cp regsSize ; check if command argument too large
     jp nc, handleKeyStoError
-    ld c, a
+    ld c, a ; C=NN
     ld a, (argModifier)
-    ld b, a
-    jp stoOpNN
+    ld b, a ; B=op
+    jp stoOpRegNN
 handleKeyStoError:
     ld a, errorCodeDimension
-    jp setHandlerCode
+    ld (handlerCode), a
+    ret
 
 handleKeyRcl:
-    call closeInputBuf
-    res rpnFlagsTvmCalculate, (iy + rpnFlags)
+    call closeInputAndRecallNone
     ld hl, msgRclPrompt
     call startArgParser
     set inputBufFlagsArgAllowModifier, (iy + inputBufFlags)
@@ -855,8 +851,11 @@ handleKeyRcl:
     ret nc ; do nothing if canceled
     cp argModifierIndirect
     ret nc ; TODO: implement this
-    ; Implement RCL{op}NN, using slightly different algorithm for rclNN versus
-    ; rclOpNN.
+    ; Implement rclOpRegNN. There are 2 cases:
+    ; 1) If the {op} is a simple assignment, we call rclRegNN() and push the
+    ; value on to the RPN stack.
+    ; 2) If the {op} is an arithmetic operator, we call rclOpRegNN() and
+    ; *replace* the current X with the new X.
     ld a, (argValue)
     cp regsSize ; check if command argument too large
     jr nc, handleKeyRclError
@@ -865,21 +864,22 @@ handleKeyRcl:
     or a
     jr nz, handleKeyRclOpNN
 handleKeyRclNN:
-    ; rclNN *pushes* RegNN on to the RPN stack.
+    ; Call rclRegNN() and *push* RegNN onto the RPN stack.
     ld a, c
-    call rclNN
+    call rclRegNN
     jp pushX
 handleKeyRclOpNN:
-    ; rcl{op}NN *replaces* the X register with (OP1 {op} RegNN).
+    ; Call rclOpRegNN() and *replace* the X register with (OP1 {op} RegNN).
     ld b, a
     push bc
     call rclX ; OP1=X
     pop bc
-    call rclOpNN
+    call rclOpRegNN
     jp replaceX ; updates LastX
 handleKeyRclError:
     ld a, errorCodeDimension
-    jp setHandlerCode
+    ld (handlerCode), a
+    ret
 
 msgStoPrompt:
     .db "STO", 0
@@ -921,8 +921,7 @@ handleKeyQuit:
 ;-----------------------------------------------------------------------------
 
 handleKeyDraw:
-    call closeInputBuf
-    res rpnFlagsTvmCalculate, (iy + rpnFlags)
+    call closeInput ; preserve rpnFlagsTvmCalculate
     ld hl, msgDrawPrompt
     call startArgParser
     call processArgCommands
@@ -932,10 +931,11 @@ handleKeyDraw:
     ld (drawMode), a
     ; notify the dispatcher to clear and redraw the screen
     ld a, errorCodeClearScreen
-    jp setHandlerCode
+    ld (handlerCode), a
+    ret
 
 handleKeyShow:
-    call closeInputBuf
+    call closeInput ; preserve rpnFlagsTvmCalculate
     call processShowCommands
     ret
 
@@ -944,19 +944,34 @@ msgDrawPrompt:
     .db "DRAW", 0
 
 ;-----------------------------------------------------------------------------
-; Common code fragments, to save space.
+; Keys related to complex numbers.
 ;-----------------------------------------------------------------------------
 
-; Close the input buffer, and recall Y and X into OP1 and OP2 respectively.
-closeInputAndRecallXY:
-    call closeInputBuf
-    res rpnFlagsTvmCalculate, (iy + rpnFlags)
-    call rclX
-    bcall(_OP1ToOP2)
-    jp rclY
-
-; Close the input buffer, and recall X into OP1 respectively.
-closeInputAndRecallX:
-    call closeInputBuf
-    res rpnFlagsTvmCalculate, (iy + rpnFlags)
-    jp rclX
+; Description: Convert between 2 reals and a complex number, depending on the
+; complexMode setting (RECT, PRAD, PDEG).
+; Input: OP1,OP2 or CP1
+; Output; OP1,OP2 or CP1
+handleKeyLink:
+    call closeInputAndRecallNone
+    call rclX ; CP1=X; A=objectType
+    cp a, rpnObjectTypeComplex
+    jr nz, handleKeyLinkRealsToComplex
+    ; Convert complex into 2 reals
+    call complexToReals ; OP1=Re(X), OP2=Im(X)
+    jp nc, replaceXWithOP1OP2 ; replace X with OP1,OP2
+    bcall(_ErrDomain)
+handleKeyLinkRealsToComplex:
+    bcall(_PushRealO1) ; FPS=[Im]
+    ; Verify that Y is also real.
+    call rclY ; CP1=Y; A=objectType
+    cp a, rpnObjectTypeComplex
+    jr nz, handleKeyLinkRealsToComplexOk
+    ; Y is complex, so throw an error
+    bcall(_ErrArgument)
+handleKeyLinkRealsToComplexOk:
+    ; Convert 2 reals to complex
+    bcall(_PopRealO2) ; FPS=[]; OP2=X=Im; OP1=Y=Re
+    call realsToComplex ; CP1=complex(OP1,OP2)
+    jp nc, replaceXY ; replace X, Y with CP1
+    ; Handle error
+    bcall(_ErrDomain)

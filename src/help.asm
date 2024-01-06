@@ -21,7 +21,7 @@ processHelpGetKey:
     push bc
     bcall(_GetKey) ; pause for key
     pop bc
-    res onInterrupt, (IY+onFlags) ; reset flag set by ON button
+    res onInterrupt, (iy + onFlags) ; reset flag set by ON button
 
     ; Handle HELP keys
     or a ; A == ON
@@ -72,99 +72,13 @@ processHelpNextPage:
 
 processHelpExit:
     ld a, errorCodeClearScreen
-    ld (handlerCode), a ; cannot call setHandlerCode() on Flash Page 0
+    ld (handlerCode), a
     ret
 
 processHelpQuitApp:
     ld a, errorCodeQuitApp
-    ld (handlerCode), a ; cannot call setHandlerCode() on Flash Page 0
+    ld (handlerCode), a
     ret
-
-;-----------------------------------------------------------------------------
-
-; Description: Get the string pointer at index A given an array of pointers at
-; base pointer HL. Out-of-bounds is NOT checked. NOTE: This is a duplicate of
-; getString(), copied here so that routines in flash Page 1 can call this.
-;
-; Input:
-;   A: index
-;   HL: pointer to an array of pointers
-; Output: HL: pointer to a string
-; Destroys: DE, HL
-; Preserves: A
-getStringOnPage1:
-    ld e, a
-    ld d, 0
-    add hl, de ; HL += A * 2
-    add hl, de
-    ld e, (hl)
-    inc hl
-    ld d, (hl)
-    ex de, hl
-    ret
-
-; Description: Inlined and extended version of bcall(_VPutS) with additional
-; features. Place on flash Page 1 so that routines on that page can access
-; this.
-;
-;   - Works for strings in flash (VPutS only works with strings in RAM).
-;   - Interprets the `Senter` and `Lenter` characters to move the pen to the
-;   beginning of the next line.
-;   - Supports inlined escape characters (escapeLargeFont, escapeSmallFont) to
-;   change the font dynamically.
-;   - Automatically adjusts the line height to be 7px for small font and 8px
-;   for large font.
-;
-; See TI-83 Plus System Routine SDK docs for VPutS() for a reference
-; implementation of this function.
-;
-; Input: HL: pointer to string using small font
-; Ouptut:
-;    - unlike VPutS(), the CF does *not* show if all of string was rendered
-; Destroys: all
-escapeLargeFont equ $FE ; pseudo-char to switch to large font
-escapeSmallFont equ $FF ; pseudo-char to switch to small font
-eVPutS:
-    ; assume using small font
-    ld c, smallFontHeight ; C = current font height
-    res fracDrawLFont, (IY + fontFlags) ; start with small font
-eVPutSLoop:
-    ld a, (hl) ; A = current char
-    inc hl
-eVPutSCheckSpecialChars:
-    or a ; Check for NUL
-    ret z
-    cp a, Senter ; Check for Senter (same as Lenter)
-    jr z, eVPutSEnter
-    cp a, escapeLargeFont ; check for large font
-    jr z, eVPutSLargeFont
-    cp a, escapeSmallFont ; check for small font
-    jr z, eVPutSSmallFont
-eVPutSNormal:
-    bcall(_VPutMap) ; preserves BC, HL
-    jr eVPutSLoop
-eVPutSLargeFont:
-    ld c, largeFontHeight
-    set fracDrawLFont, (IY + fontFlags) ; use large font
-    jr eVPutSLoop
-eVPutSSmallFont:
-    ld c, smallFontHeight
-    res fracDrawLFont, (IY + fontFlags) ; use small font
-    jr eVPutSLoop
-eVPutSEnter:
-    ; move to the next line
-    push af
-    push hl
-    ld hl, PenCol
-    xor a
-    ld (hl), a ; PenCol = 0
-    inc hl ; PenRow
-    ld a, (hl) ; A = PenRow
-    add a, c ; A += C (font height)
-    ld (hl), a ; PenRow += 7
-    pop hl
-    pop af
-    jr eVPutSLoop
 
 ;-----------------------------------------------------------------------------
 
@@ -183,7 +97,7 @@ displayHelpPage:
 
     ; Get the string for page A, and display it.
     ld hl, helpPages ; HL = (char**)
-    call getStringOnPage1
+    call getStringPageOne
     call eVPutS
 
     pop hl
@@ -195,7 +109,7 @@ displayHelpPage:
 ;-----------------------------------------------------------------------------
 
 ; Array of (char*) pointers to C-strings.
-helpPageCount equ 13
+helpPageCount equ 15
 helpPages:
     .dw msgHelpPage1
     .dw msgHelpPage2
@@ -210,17 +124,19 @@ helpPages:
     .dw msgHelpPage11
     .dw msgHelpPage12
     .dw msgHelpPage13
+    .dw msgHelpPage14
+    .dw msgHelpPage15
 
 msgHelpPage1:
     .db escapeLargeFont, "RPN83P", Lenter
-    .db escapeSmallFont, "v0.8.0 (2023", Shyphen, "12", Shyphen, "03)", Senter
+    .db escapeSmallFont, "v0.9.0 (2024", Shyphen, "01", Shyphen, "06)", Senter
     .db "(c) 2023  Brian T. Park", Senter
     .db Senter
     .db "An RPN calculator for the", Senter
     .db "TI", Shyphen, "83 Plus and TI", Shyphen, "84 Plus", Senter
     .db "inspired by the HP", Shyphen, "42S.", Senter
     .db Senter
-    .db SlBrack, "1/13", SrBrack, " Any key to continue...", Senter
+    .db SlBrack, "1/15", SrBrack, " Any key to continue...", Senter
     .db 0
 
 msgHelpPage2:
@@ -232,7 +148,7 @@ msgHelpPage2:
     .db Senter
     .db "Quit:  2ND QUIT", Senter
     .db "Off:  2ND OFF", Senter
-    .db SlBrack, "2/13", SrBrack, " Any key to continue...", Senter
+    .db SlBrack, "2/15", SrBrack, " Any key to continue...", Senter
     .db 0
 
 msgHelpPage3:
@@ -244,7 +160,7 @@ msgHelpPage3:
     .db "CLST:  CLEAR CLEAR CLEAR", Senter
     .db Senter
     .db Senter
-    .db SlBrack, "3/13", SrBrack, " Any key to continue...", Senter
+    .db SlBrack, "3/15", SrBrack, " Any key to continue...", Senter
     .db 0
 
 msgHelpPage4:
@@ -256,7 +172,7 @@ msgHelpPage4:
     .db Senter
     .db Senter
     .db Senter
-    .db SlBrack, "4/13", SrBrack, " Any key to continue...", Senter
+    .db SlBrack, "4/15", SrBrack, " Any key to continue...", Senter
     .db 0
 
 msgHelpPage5:
@@ -268,10 +184,34 @@ msgHelpPage5:
     .db SFourSpaces, "nn: 11..99: Reset to floating", Senter
     .db "SHOW: 2ND ENTRY", Senter
     .db Senter
-    .db SlBrack, "5/13", SrBrack, " Any key to continue...", Senter
+    .db SlBrack, "5/15", SrBrack, " Any key to continue...", Senter
     .db 0
 
 msgHelpPage6:
+    .db escapeLargeFont, "Complex Modes", Lenter
+    .db escapeSmallFont, "RRES: real results", Senter
+    .db "CRES: complex results", Senter
+    .db Senter
+    .db "RECT: rectangular", Senter
+    .db "PRAD: polar radian", Senter
+    .db "PDEG: polar degree", Senter
+    .db Senter
+    .db SlBrack, "6/15", SrBrack, " Any key to continue...", Senter
+    .db 0
+
+msgHelpPage7:
+    .db escapeLargeFont, "Complex Entry", Lenter
+    .db escapeSmallFont, "2ND ", SimagI, ": a ", SimagI, " b", Senter
+    .db "2ND ANGLE: r ", Sangle, Stemp, " ", Stheta, Senter
+    .db "2ND ANGLE 2ND ANGLE: r ", Sangle, " ", Stheta, Senter
+    .db Senter
+    .db "2ND LINK: X,Y to complex", Senter
+    .db Senter
+    .db Senter
+    .db SlBrack, "7/15", SrBrack, " Any key to continue...", Senter
+    .db 0
+
+msgHelpPage8:
     .db escapeLargeFont, "Register Ops", Lenter
     .db escapeSmallFont, "STO nn", Senter
     .db "STO+ STO- STO* STO/ nn", Senter
@@ -280,22 +220,22 @@ msgHelpPage6:
     .db "nn: 0..24", Senter
     .db Senter
     .db Senter
-    .db SlBrack, "6/13", SrBrack, " Any key to continue...", Senter
+    .db SlBrack, "8/15", SrBrack, " Any key to continue...", Senter
     .db 0
 
-msgHelpPage7:
+msgHelpPage9:
     .db escapeLargeFont, "NUM Functions", Lenter
-    .db escapeSmallFont, "%: Y=Y; X=Y*X/100", Senter
-    .db "%CH: Y=Y; X=100*(X-Y)/Y", Senter
-    .db "PRIM: Prime factor of < 2^32", Senter
+    .db escapeSmallFont, "%: Y=Y, X=Y*X/100", Senter
+    .db "%CH: Y=Y, X=100*(X-Y)/Y", Senter
+    .db "PRIM: smallest prime factor", Senter
     .db Senter
     .db Senter
     .db Senter
     .db Senter
-    .db SlBrack, "7/13", SrBrack, " Any key to continue...", Senter
+    .db SlBrack, "9/15", SrBrack, " Any key to continue...", Senter
     .db 0
 
-msgHelpPage8:
+msgHelpPage10:
     .db escapeLargeFont, "CONV Arguments", Lenter
     .db escapeSmallFont, Sconvert, "POL ", Sconvert, "REC:", Senter
     .db SFourSpaces, "Y: y or ", Stheta, Senter
@@ -304,10 +244,10 @@ msgHelpPage8:
     .db "ATN2: same as ", Sconvert, "POL", Senter
     .db Senter
     .db Senter
-    .db SlBrack, "8/13", SrBrack, " Any key to continue...", Senter
+    .db SlBrack, "10/15", SrBrack, " Any key to continue...", Senter
     .db 0
 
-msgHelpPage9:
+msgHelpPage11:
     .db escapeLargeFont, "STAT Functions", Lenter
     .db escapeSmallFont, "WMN: Weighted Mean", Senter
     .db SFourSpaces, "Y: ", ScapSigma, "XY/", ScapSigma, "X", Senter
@@ -316,10 +256,10 @@ msgHelpPage9:
     .db "SCOV: Sample Covariance", Senter
     .db "PDEV: Pop Std Deviation", Senter
     .db "PCOV: Pop Covariance", Senter
-    .db SlBrack, "9/13", SrBrack, " Any key to continue...", Senter
+    .db SlBrack, "11/15", SrBrack, " Any key to continue...", Senter
     .db 0
 
-msgHelpPage10:
+msgHelpPage12:
     .db escapeLargeFont, "CFIT Models", Lenter
     .db escapeSmallFont, "LINF: y = B + M x", Senter
     .db "LOGF: y = B + M lnx", Senter
@@ -328,10 +268,10 @@ msgHelpPage10:
     .db "BEST: Select best model", Senter
     .db Senter
     .db Senter
-    .db SlBrack, "10/13", SrBrack, " Any key to continue...", Senter
+    .db SlBrack, "12/15", SrBrack, " Any key to continue...", Senter
     .db 0
 
-msgHelpPage11:
+msgHelpPage13:
     .db escapeLargeFont, "BASE Ops", Lenter
     .db escapeSmallFont, "SL,SR: Shift Logical", Senter
     .db "ASR: Arithmetic Shift Right", Senter
@@ -340,10 +280,10 @@ msgHelpPage11:
     .db "REVB: Reverse Bits", Senter
     .db "CNTB: Count Bits", Senter
     .db "WSIZ: 8, 16, 24, 32", Senter
-    .db SlBrack, "11/13", SrBrack, " Any key to continue...", Senter
+    .db SlBrack, "13/15", SrBrack, " Any key to continue...", Senter
     .db 0
 
-msgHelpPage12:
+msgHelpPage14:
     .db escapeLargeFont, "TVM", Lenter
     .db escapeSmallFont, "Outflow: -", Senter
     .db "Inflow: +", Senter
@@ -352,10 +292,10 @@ msgHelpPage12:
     .db "END: Payments at end", Senter
     .db "CLTV: Clear TVM",  Senter
     .db Senter
-    .db SlBrack, "12/13", SrBrack, " Any key to continue...", Senter
+    .db SlBrack, "14/15", SrBrack, " Any key to continue...", Senter
     .db 0
 
-msgHelpPage13:
+msgHelpPage15:
     .db escapeLargeFont, "TVM Solver", Lenter
     .db escapeSmallFont, "IYR1: I%YR guess 1",  Senter
     .db "IYR2: I%YR guess 2",  Senter
@@ -364,5 +304,5 @@ msgHelpPage13:
     .db Senter
     .db Senter
     .db Senter
-    .db SlBrack, "13/13", SrBrack, " Any key to return.", Senter
+    .db SlBrack, "15/15", SrBrack, " Any key to return.", Senter
     .db 0

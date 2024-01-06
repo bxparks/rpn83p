@@ -1,6 +1,80 @@
 # Changelog
 
-- Unreleased
+- 0.9.0 (2024-01-06)
+    - **Breaking**: Change names and internal formats of various appVars
+        - `STK` list variable replaced with `RPN83STK`
+        - `REGS` list variable replaced with `RPN83REG`
+        - `RPN83SAV` remains unchanged
+        - the old `STK` and `REGS` variables can be manually removed
+        - see [TI-OS Interaction](docs/USER_GUIDE.md#ti-os-interaction) for more
+          details
+    - **Breaking**: Add `CPLX` menu at the previous location of `CONV`
+        - `CPLX` menu seemed most convenient on row 1 of the `ROOT` menu where
+          the old `CONV` was located
+        - `CONV` got pushed to row 2, where the `UNIT` menu was previously
+          located
+        - `UNIT` got pushed to row 3, into an empty slot
+        - the RPN83P home menu row now has exactly the same items as the `MATH`
+          menu on the TI-OS:
+            - RPN83P: `MATH`, `NUM`, `PROB`, `CPLX`
+            - TI-OS: `MATH`, `NUM`, `CPX`, `PROB`
+    - Support more than 14 digits during edit/input
+        - When more than 14 digits are entered, the left most digits scroll off
+          to the left, with the left most digit replaced with an ellipsis
+          character indicates existence of extra digits.
+        - Normal mode:
+            - accepts maximum of 20 digits, which supports entering all 14
+              digits encoded by the TI-OS floating point number format
+        - Complex mode:
+            - accepts maximum of 41 digits to allow 2 floating point numbers
+        - `BASE BIN` mode
+            - accepts up to 32 digits, to allow a 32-bit binary number when the
+              `WSIZ` is 32.
+        - see [Input Limits and Long
+          Numbers](docs/USER_GUIDE.md#input-limits-and-long-numbers) for more
+          details
+    - `PROB`
+        - Expand range of `COMB(n,r)` and `PERM(n,r)` arguments to `n,r<=65535`
+          from `n,r<=255`.
+        - Improve performance of `COMB(n,r)` when `r>(n-r)` by taking advantage
+          of the symmetry of `COMB(n,r)==COMB(n,n-r)`.
+        - Eliminate floating point round-off errors in computing `COMB(n,r)` by
+          incrementing the divisor from 1 to `r`, instead of decrementing it
+          from `r` to 1.
+    - Complex Numbers
+        - redesign RPN stack and storage registers to support both real and
+          complex numbers
+        - extend arithmetic, algebraic, transcendental handlers to support
+          complex numbers
+        - add explicit CPLX menu group with: REAL, IMAG, CONJ, CABS, CANG
+        - support RRES (real result) and CRES (complex result) menu settings
+        - support RECT (rectangular), PRAD (polar radian), PDEG (polar degree)
+          menu settings
+        - display complex numbers in RPN stack in rect and polar modes
+        - support complex numbers in SHOW in rect and polar modes
+        - support Linking/Unlinking a complex number and its 2 real components
+          using 2ND LINK (equivalent to COMPLEX button on the HP-42S)
+        - support entry of complex numbers on a single line in RECT, PRAD, and
+          PDEG modes using the `2ND i` and `2ND ANGLE` keys.
+        - see [Complex Numbers](docs/USER_GUIDE.md#complex-numbers) for more
+          details.
+    - Save and restore app MODE settings independently from the TI-OS settings
+        - decouple the TI-OS MODE settings from the RPN83P MODE settings
+        - the TI-OS MODE settings are saved upon app start, and restored upon
+          app exit
+        - the app MODE settings are saved and restore independently
+        - for example, it is now possible to set the TI-OS to FIX(2) and DEG,
+          while setting RPN83P to SCI(4) and RAD and the 2 settings are managed
+          separately, even though there is only a single set of global OS
+          settings
+    - **Bug Fix**: Render 3-digit EE exponents correctly in `SHOW` mode.
+        - 3-digit exponents can only be shown for complex numbers, so the bug
+          was latent until complex numbers were added
+    - **Bug Fix**: Fix overflow in rectangular to polar conversion `>POL`
+        - the built-in TI-OS `RToP()` function has a bug which throws an
+          exception when `x^2+y^2` becomes `>=1e100`, which can happen for `x`
+          or `y` as low as `7.07e49`.
+        - reimplement using a custom `rectToPolar()` without the scaling bug
 - 0.8.0 (2023-12-03)
     - **Breaking**: Flip the order of polar-rectangular conversion menu function
       (`>POL` and `>REC`) so that they are consistent with the HP-42S. I don't
