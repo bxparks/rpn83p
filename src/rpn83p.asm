@@ -584,6 +584,11 @@ _SetHandlerCodeFromSystemCodeLabel:
 _SetHandlerCodeFromSystemCode equ _SetHandlerCodeFromSystemCodeLabel-branchTableBase
     .dw SetHandlerCodeFromSystemCode
     .db 1
+; print1.asm
+_ConvertAToStringLabel:
+_ConvertAToString equ _ConvertAToStringLabel-branchTableBase
+    .dw ConvertAToString
+    .db 1
 ; input1.asm
 _InitInputBufLabel:
 _InitInputBuf equ _InitInputBufLabel-branchTableBase
