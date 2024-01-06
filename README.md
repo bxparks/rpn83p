@@ -312,7 +312,7 @@ The keystrokes are:
 - Press `2` `PI` `*` `60` `*` `1 EE 5` `(-)` `*` `1/X` `(-)` (-265.26)
 - Press `2ND LINK` (100 - 265.26i)
 - Press `100` `2ND i` `250` `+` (200-15.26i)
-- Press `200` `2ND ANGLE` `10 `+` (396.96+19.47i)
+- Press `200` `2ND ANGLE` `10` `+` (396.96+19.47i)
 - Press `300` `2ND ANGLE` `2ND ANGLE` `0.1` `+` (695.46+49.42i)
 - Press `4` `/` (173.89+12.35i)
 - Press `PRAD` (174.30 e^(i 0.07)
