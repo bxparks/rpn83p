@@ -18,6 +18,7 @@ cannot remember how the code works.
 - [Complex Numbers](#complex-numbers)
     - [Complex Number Font](#complex-number-font)
     - [Complex Number Rendering](#complex-number-rendering)
+    - [Complex Delimiters](#complex-delimiters)
 - [Design Guidelines](#design-guidelines)
     - [No Keyboard Overlay](#no-keyboard-overlay)
     - [Utilize TI-OS](#utilize-ti-os)
@@ -230,6 +231,30 @@ rendering of the `argBuf` (the input buffer used for command arguments in `STO`,
 Developers who dig into the rendering code may wonder why all that complexity
 exists. Ironically, it's all there so that the vast majority end-users will
 never notice anything.
+
+### Complex Delimiters
+
+Internally, the complex delimiter is stored in the `inputBuf` as a single byte.
+The following three characters are used:
+
+- `LimagI`: rectangular, when `2ND i` is pressed
+- `Ldegree`: polar deg, when `2ND ANGLE` is pressed
+- `Langle`: polar rad, when `2ND ANGLE 2ND ANGLE` is pressed
+
+(See `isComplexDelimiter()` routine.) Using a single byte for the delimiter
+makes the complex number parsing code simpler.
+
+When the `2ND i` or `2ND ANGLE` key is pressed, the delimiter is overwritten or
+toggled between polar-rad and polar-deg modes. The function that perform that
+conversion is `SetComplexDelimiter()`.
+
+When the string inside `inputBuf` is rendered (after each press of a digit for
+example), the complex delimiter is converted into the following character before
+shown on the screen (see `formatInputBuf()`):
+
+- `LimagI`: `LimagI`
+- `Ldegree`: `Langle` `Ltemp` (`Ltemp` looks better than `Ldegree`)
+- `Langle`: `Langle`
 
 ## Design Guidelines
 

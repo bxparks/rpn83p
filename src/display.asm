@@ -1072,7 +1072,7 @@ printOP1ComplexRadOk:
     bcall(_FormReal)
     ld hl, OP3
     call vPutSmallS
-    ; Print the theta symbol
+    ; Print the angle symbol
     ld hl, msgComplexPRadSpacer
     call vPutSmallS
     ; Print theta(rad)
@@ -1105,7 +1105,7 @@ printOP1ComplexDegOk:
     bcall(_FormReal)
     ld hl, OP3
     call vPutSmallS
-    ; Print the angle symbol
+    ; Print the angle-degree symbols
     ld hl, msgComplexPDegSpacer
     call vPutSmallS
     ; Print theta(deg)
