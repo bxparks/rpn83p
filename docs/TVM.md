@@ -3,7 +3,7 @@
 Equations, algorithms, and other tricks used to calculate the Time Value of
 Money (TVM) variables in the RPN83P calculator app.
 
-**Version**: 0.9.0-dev (2023-12-23)
+**Version**: 0.9.0 (2024-01-06)
 
 **Project Home**: https://github.com/bxparks/rpn83p
 
@@ -240,7 +240,7 @@ also becomes infinitely differentiable at `i=0`.).
 
 **Note**: It is possible to enter values of `PV`, `PMT`, `FV` and `i` such that
 a negative value of `N` is calculated according to the `N(i)` equation. The
-RPN83P currently (v0.7.0) does not flag this condition, and returns the negative
+RPN83P currently (v0.9.0) does not flag this condition, and returns the negative
 value. Maybe it should test for a negative value and return `TVM No Solution`
 error message instead?
 
@@ -453,7 +453,7 @@ that can be used to solve for `NPMT(i) = 0`. Some of these are:
 - [Newton's method](https://en.wikipedia.org/wiki/Newton%27s_method)
 - [Halley's method](https://en.wikipedia.org/wiki/Halley%27s_method)
 
-The TVM Solver in RPN83P currently (v0.7.0) uses the *Secant Method*, because it
+The TVM Solver in RPN83P currently (v0.9.0) uses the *Secant Method*, because it
 seems to be a good compromise between simplicity of code and a relatively fast
 convergence rate:
 
@@ -472,7 +472,7 @@ of about 1e-8 within 7-8 iterations.
 ### Initial Guesses
 
 The Secant method (as well as other root finding methods) requires 2 initial
-guesses to be provided. The TVM Solver current (v0.7.0) uses the following
+guesses to be provided. The TVM Solver currently (v0.9.0) uses the following
 defaults:
 
 - `i0` = 0
@@ -504,7 +504,7 @@ message is returned.
 
 ### Tolerance
 
-Currently (v0.7.0), the TVM Solver iterates until the relative tolerance between
+Currently (v0.9.0), the TVM Solver iterates until the relative tolerance between
 two successive iterations is less than 1e-8. The value of 1e-8 is hardcoded.
 
 To avoid division by zero, the tolerance is calculated as:

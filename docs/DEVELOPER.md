@@ -3,7 +3,7 @@
 Notes for the developers of the RPN83P app, likely myself in 6 months when I
 cannot remember how the code works.
 
-**Version**: 0.9.0-dev (2024-01-05)
+**Version**: 0.9.0 (2024-01-06)
 
 **Project Home**: https://github.com/bxparks/rpn83p
 
@@ -156,7 +156,7 @@ factoring algorithm:
    returned *all* prime factors of a number `N` . It could be more efficient
    by restarting the loop at the previous prime factor. However, this new
    function would need support for vectors or arrays so that it can return
-   multiple numbers as the result. Vectors or arrays are not currently (v0.8.0)
+   multiple numbers as the result. Vectors or arrays are not currently (v0.9.0)
    supported.
 1. The [Prime Number
    Theorem](https://en.wikipedia.org/wiki/Prime_number_theorem) tells us that

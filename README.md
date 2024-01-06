@@ -98,7 +98,7 @@ Missing features (partial list):
 - complex numbers
 - keystroke programming
 
-**Version**: 0.9.0-dev (2024-01-05)
+**Version**: 0.9.0 (2024-01-06)
 
 **Changelog**: [CHANGELOG.md](CHANGELOG.md)
 

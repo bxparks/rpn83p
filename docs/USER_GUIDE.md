@@ -2,7 +2,7 @@
 
 RPN calculator app for the TI-83 Plus and TI-84 Plus inspired by the HP-42S.
 
-**Version**: 0.9.0-dev (2024-01-05)
+**Version**: 0.9.0 (2024-01-06)
 
 **Project Home**: https://github.com/bxparks/rpn83p
 
@@ -1907,9 +1907,9 @@ an `X=752.098` (a minimum rainfall of 752) which is not reasonable.
 
 ### TVM Functions
 
-Version 0.7.0 implements a usable Time Value of Money functionality that is
-inspired by RPN financial calculators such as the HP-12C and the HP-30b. They
-are available through the `ROOT` > `TVM` menu:
+The Time Value of Money (TVM) functionality is inspired by RPN financial
+calculators such as the HP-12C, HP-17B, and the HP-30b. They are available
+through the `ROOT` > `TVM` menu:
 
 - ![ROOT MenuRow 2](images/rpn83p-menu-root-2.png)
     - ![TVM MenuRow 1](images/rpn83p-menu-root-tvm-1.png)
@@ -2014,7 +2014,7 @@ The TVM Solver tries to handle the various cases as follows:
   solution must exist. The TVM Solver will return a `TVM Not Found` error
   message.
 - If the equation has 2 solutions, but the TVM Solver finds only one of the 2
-  solutions, the solver currently (v0.7.0) does not notify the user that another
+  solutions, the solver currently (v0.9.0) does not notify the user that another
   solution may exist. A normal `TVM Calculated` will be returned.
 - If there are 2 solutions, but the solver finds neither solution, a `TVM Not
   Found` message will be returned.
@@ -2027,7 +2027,7 @@ required, calculating the `I%YR` will take noticeably longer than the other
 variables. Somewhere between 1-3 seconds on the TI-84 Plus model has been
 observed.
 
-The RPN83P currently (v0.7.0) uses the [Newton-Secant
+The RPN83P currently (v0.9.0) uses the [Newton-Secant
 method](https://en.wikipedia.org/wiki/Secant_method) to solve for `I%YR`. For
 the purpose of debugging and to allow extra control for advanced users, three
 parameters that affect the progression and termination of the algorithm are
@@ -2120,7 +2120,7 @@ original menu with the addition of a question mark (e.g. `WSIZ` and `WSZ?`).
 This helps with discovery because each function is directly shown through the
 menu system, with no hidden features. But there are so many TVM variables and
 parameters, that adding the `?` variant of all those menu buttons would have
-made the menu rows too cluttered and hard to navigate. Currently (v0.7.0), the
+made the menu rows too cluttered and hard to navigate. Currently (v0.9.0), the
 TVM submenu is the only place where the `2ND` button is used for hidden menu
 functionality.
 

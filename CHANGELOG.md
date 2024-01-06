@@ -1,6 +1,6 @@
 # Changelog
 
-- Unreleased
+- 0.9.0 (2024-01-06)
     - **Breaking**: Change names and internal formats of various appVars
         - `STK` list variable replaced with `RPN83STK`
         - `REGS` list variable replaced with `RPN83REG`
@@ -58,9 +58,6 @@
           PDEG modes using the `2ND i` and `2ND ANGLE` keys.
         - see [Complex Numbers](docs/USER_GUIDE.md#complex-numbers) for more
           details.
-    - Rectangular to Polar conversion
-        - fix overflow and underflow caused by bug in the TI-OS `RToP()`
-          function by using a custom `rectToPolar()` function instead
     - Save and restore app MODE settings independently from the TI-OS settings
         - decouple the TI-OS MODE settings from the RPN83P MODE settings
         - the TI-OS MODE settings are saved upon app start, and restored upon
