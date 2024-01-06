@@ -2217,6 +2217,10 @@ displayed in all three forms. The entry modes and the display modes are
 independent of each other. For example, a complex number can be entered in
 rectangular form, even if the current display mode is polar form.
 
+Internally, complex numbers are *always* stored in rectangular format. They can
+be displayed in 3 different formats. They can be entered in 3 different formats
+regardless of the display mode.
+
 #### Complex Numbers and Screen Size
 
 Complex numbers are rendering using the Small Font of the TI-83 and 84
@@ -2232,14 +2236,15 @@ Small and Large Fonts (right):
 ![RPN83P Complex Font 1](images/rpn83p-complex-font-1.png)
 ![RPN83P Complex Font 2](images/rpn83p-complex-font-2.png)
 
-Readability suffers a bit using the small font, but it seemed reasonable.
+Readability suffers a bit using the small font, but it seems reasonable.
 
 #### Complex Number Entry
 
 There are 2 ways to enter complex numbers on the RPN83P app:
 
-- *linking* 2 real numbers in 2 stack registers into a single complex number
-- *inlining* both components on a single line.
+- *linking* two real numbers in the `X` and `Y` registers into a single complex
+  number
+- *inlining* both components on a single line into the `X` register
 
 **Linking (2ND LINK)**
 
@@ -2249,13 +2254,13 @@ Xi`. By convention, the real part is entered first, `ENTER` is pressed, then the
 imaginary part is entered second. (Interestingly, this is the opposite order
 compared to the semantically related `ATN2` function or the `>POL` conversion
 function.) If the `COMPLEX` key is pressed again on a complex number, the
-reverse happens, where the complex number is broken up into 2 real numbers, with
-the `Y` register containing the real part, and the `X` register containing the
+reverse happens. The complex number is broken up into 2 real numbers, with the
+`Y` register containing the real part, and the `X` register containing the
 imaginary part.
 
 The TI-83 Plus and TI-84 Plus calculators do not have a `COMPLEX` button. The
-closest key that seems reasonable is the `2ND LINK` button which is otherwise
-unused.
+closest alternative key seems to be the `2ND LINK` button which is otherwise
+unused in RPN83P.
 
 For example, the number `1-2i` would be entered like this:
 
@@ -2277,9 +2282,9 @@ the complex number with an imaginary `i` delimiter between the two components.
 The negative sign on the `-2` appears *after* the `i`, because it is a delimiter
 not a multiplier of the number `-2`.
 
-Pressing `2ND LINK` on a complex number performs the *reverse* operation: the
-complex number is broken up into its real components. The real part goes into
-`Y` and the imaginary part goes into `X`.
+Pressing `2ND LINK` on a complex number performs the *reverse* operation. The
+complex number is broken up into its real components, with the real part going
+into `Y` and the imaginary part going into `X`.
 
 **Inlining (2ND i, 2ND ANGLE)**
 
@@ -2317,15 +2322,15 @@ The display before and after the `ENTER` looks like this:
 ![RPN83P Complex Inlining PDEG 1](images/rpn83p-complex-inlining-pdeg-1.png)
 ![RPN83P Complex Inlining PDEG 2](images/rpn83p-complex-inlining-pdeg-2.png)
 
-Notice that the complex number separator is an Angle symbol and a Degree symbol,
-which indicates that the input is expecting the angle to be entered in degrees.
-After the `ENTER`, the input buffer is parsed and a complex number is pushed
-into the RPN stack, like any other number:
+Notice that the complex number separator is the combination of an Angle symbol
+and a Degree symbol, which indicates that the input is expecting the angle to be
+entered in degrees. After the `ENTER`, the input buffer is parsed and a complex
+number is pushed into the `X` register of the RPN stack.
 
-Note also that the number was entered in polar form, but the number is displayed
-in rectangular form. That is because the rendering of complex number is
-controlled by the [complex display mode](#complex-display-modes), currently set
-to `RECT`, which is independent of how the complex number is entered.
+Note also that the number was *entered* in polar form, but the number is
+*displayed* in rectangular form. That is because the rendering of complex number
+is controlled by the [Complex Display Mode](#complex-display-modes), currently
+set to `RECT`, which is independent of how the complex number is entered.
 
 We can enter complex numbers using angles in radians by typing `2ND ANGLE`
 twice. For example, to enter `2 Angle 1.047`, use the following keystrokes:
@@ -2346,20 +2351,20 @@ without the Degree symbol:
 
 The polar-degree mode was chosen to be the default, and the polar-radian mode
 available with an extra keystroke, because it seemed like the degree mode would
-be more useful when entering complex numbers as an inlined number on a single
-line. For example, a [three-phase electric
-power](https://en.wikipedia.org/wiki/Three-phase_electric_power) supply has
-three lines, each 120 degrees out of phase with each other. In contrast, the
-same angle in radians would involve rational multiples of Pi (e.g. 120 deg =
-pi/3 = 2.094395102 radians) so would probably be more difficult to enter.
+be more useful when a complex number is inlined. For example, a [three-phase
+electric power](https://en.wikipedia.org/wiki/Three-phase_electric_power) supply
+has three lines, each 120 degrees out of phase with each other. In contrast, the
+same angle in radians would involve a factor of Pi (120 deg = pi/3 = 2.094395102
+radians) so would be easier to enter using the `2ND LINK` functionality.
 
 **Special Case for Solitary 2ND i**
 
 A solitary `2ND i` should be interpreted as `0 i 0` (0+0i) if the parsing rules
-were strictly followed, because an empty string should be interpreted as a `0`.
-However it seemed convenient to make a exception for a solitary `2ND i` and
-parse that as `0 i 1` instead, which becomes the pure imaginary number `i=0+1i`.
-Here are screenshots after a solitary `2ND i` and an `ENTER`:
+were strictly followed, because the empty string on both sides of the `2ND i`
+delimiter should be interpreted as a `0`. However it seemed convenient to make a
+exception for a solitary `2ND i` so that it is parsed as `0 i 1` instead. This
+makes it easier to enter the pure imaginary number `i`. Here are screenshots
+after a solitary `2ND i` and an `ENTER`:
 
 ![RPN83P Complex Solitary i 1](images/rpn83p-complex-solitary-i-1.png)
 ![RPN83P Complex Solitary i 2](images/rpn83p-complex-solitary-i-2.png)
@@ -2376,11 +2381,11 @@ distinct from other digit characters. It is also the symbol used by the HP-42S.
 
 **HP-35s Compatibility Note 2**: The HP-35s uses `SHIFT Theta` button to enter
 complex numbers in polar notation. The `Theta` symbol is available on a TI
-calculator as `ALPHA Theta`. However, the `ALPHA` shifted key is used for no
-other functionality in the RPN83P app, and I found switching from `2ND` and
-`ALPHA` to invoke this function was too confusing for the muscle memory. The
-`2ND ANGLE` key was unused in the RPN83P app, and it matches the Angle symbol
-used to display complex numbers in polar notation.
+calculator as `ALPHA Theta`. However, the `ALPHA` shift key is used for no other
+functionality in the RPN83P app, and I found switching from `2ND` and `ALPHA` to
+invoke this function was too confusing for the muscle memory. The `2ND ANGLE`
+key, on the other hand, was previously unused in the RPN83P app, and it matches
+the Angle symbol used to display complex numbers in polar notation.
 
 #### Complex Display Modes
 
@@ -2401,10 +2406,16 @@ into the following:
 ![RPN83P Complex Mode PRAD](images/rpn83p-complex-mode-prad.png)
 ![RPN83P Complex Mode PDEG](images/rpn83p-complex-mode-pdeg.png)
 
-This is probably a good place to note that the `2ND LINK` function is the only
+Note that unlike most calculators with complex number support, the trigonometric
+modes (`DEG`, `RAD`) do *not* affect the rendering of complex numbers. The
+trigonometric modes affect only the *computation* of trigonometric functions.
+The complex display modes (`RECT`, `PRAD`, `PDEG`) are independent of the
+trigonometric modes.
+
+This is also a good place to note that the `2ND LINK` function is the only
 complex functionality that is affected by the display mode. The `2ND LINK`
-function will merge 2 real numbers from `Y` and `X` registers using the display
-mode that is *currently* in effect. (It did not make sense for it to do anything
+function merges 2 real numbers from `Y` and `X` registers using the display mode
+that is *currently* in effect. (It did not make sense for it to do anything
 else.)
 
 In other words:
@@ -2473,7 +2484,8 @@ Here is the number `1+i` in 3 different modes using the SHOW function:
 #### Complex FIX, SCI, ENG
 
 The floating point formatting modes `FIX`, `SCI`, and `ENG` can be applied to
-complex numbers:
+complex numbers. Here are screenshots of a complex number using `FIX(4)`,
+`SCI(4)`, and `ENG(4)`:
 
 ![RPN83P Complex FIX 4](images/rpn83p-complex-fmt-fix-4.png)
 ![RPN83P Complex SCI 4](images/rpn83p-complex-fmt-sci-4.png)
@@ -2484,7 +2496,7 @@ complex numbers:
 The TI-OS provides versions of many functions that support complex numbers.
 Almost all of those functions have been implemented in the RPN83P app, and
 are transparently invoked by using a complex number argument. The following
-functions support complex numbers:
+RPN83P functions have been extended to support complex numbers:
 
 - arithmetic: `+`, `-`, `*`, `/`
 - algebraic: `1/X`, `X^2`, `SQRT`, `X^3`, `3RootX`, `Y^X`, `XRootY`
@@ -2550,10 +2562,6 @@ The result can be viewed in the 3 complex display formats by clicking on the
 ![RPN83P Complex Example1 PRAD](images/rpn83p-complex-example1-prad.png)
 ![RPN83P Complex Example1 PDEG](images/rpn83p-complex-example1-pdeg.png)
 
-**Remember**: Complex numbers are always stored internally in rectangular
-format. They can be displayed in 3 different formats. They can be entered in 3
-different formats regardless of the display setting.
-
 **Example 2: Y^X, SQRT**
 
 In this contrived example, we compute an expression involving all three
@@ -2586,10 +2594,13 @@ PDEG # shows 1.17113606 AngleDeg 60.518618
 In this example, we calculate the magnitude and angle of the complex number
 `1+i`. We want the angle in degrees, so we have to first set the trigonometric
 mode to `DEG` (using `MODE DEG`), just like trigonometric functions. Enter the
-complex number in rectangular format:
+complex number in rectangular format, it does not matter what the complex
+display mode (`RECT`, `PRAD`, `PDEG`) is:
 
 ```
-1 2ND i 1
+MODE DEG # trig mode to DEG
+MATH CPLX # CPLX menu
+1 2ND i 1 # (1+i)
 CANG # shows 45, determined by DEG mode
 2ND ANS # LastX
 CABS # shows 1.414213562
@@ -2608,8 +2619,8 @@ There are 2 computation mode settings under the `MODE` menu group which affect
 whether some functions return complex values or real values when the argument to
 the functions are real:
 
-- `RRES` (real results) return only real results for real arguments
-- `CRES` (complex results) allows complex results for real arguments
+- `RRES` (real results): return only real results for real arguments
+- `CRES` (complex results): allow complex results for real arguments
 
 These are available on row 2 of the `MODE` menu group, under `ROOT > MODE`, but
 the fastest way to reach this menu row is to use the `MODE` button shortcut:
@@ -2618,8 +2629,9 @@ the fastest way to reach this menu row is to use the `MODE` button shortcut:
     - ![RPN83P Complex Mode Menu 2](images/rpn83p-complex-mode-menu-2.png)
     - ![RPN83P Complex Mode Menu 4](images/rpn83p-complex-mode-menu-4.png)
 
-Note that these settings do *not* affect how functions evaluate complex
-arguments. If the argument is complex, the results will always be complex.
+Note that these settings do not affect how functions evaluate *complex*
+arguments. If the argument is complex, all functions that support complex
+numbers will return complex results.
 
 There are currently only a few functions which are affected by these settings:
 
@@ -2645,21 +2657,21 @@ But if we change the computation mode to `CRES`, we get a complex result:
 
 #### Complex Numbers and Trigonometric Modes
 
-In the `MODE` menu, there are 2 sets of menus related to degrees and radians.
-They are essentially independent of each other. This separation is different
-from other calculators that I am aware of. I hope that this is not too
-confusing.
+In the `MODE` menu, there are 2 sets of menus related to degrees and radians:
+trigonometric modes, and complex displayed modes. They are essentially
+independent of each other. This separation is different from other calculators,
+and I hope that this is not too confusing.
 
-The first set of modes (`RAD`, `DEG`) contains the trigonometric modes that
-affect the computation of trigonometric functions. These determine the unit of
-the angles consumed or returned by these functions. Complex functions (except
-`CANG`) are not affected by the trigonometric modes: ![RPN83P MODE Menu
+The trigonometric modes (`RAD`, `DEG`) affect the computation of trigonometric
+functions. They determine the unit of the angles consumed or returned by
+trigonometric functions. Complex functions (with the sole exception of `CANG`,
+see above) are not affected by the trigonometric modes: ![RPN83P MODE Menu
 1](images/rpn83p-mode-menu-1.png)
 
-The second set of modes (`RECT`, `PRAD`, `PDEG`) controls how complex numbers
-are displayed on the screen. These modes do not affect the behavior of any
-complex functions (except `2ND LINK`): ![RPN83P MODE Menu
-2](images/rpn83p-mode-menu-2.png)
+The complex display modes (`RECT`, `PRAD`, `PDEG`) control how complex numbers
+are rendered on the screen. These modes do not affect the behavior of any
+complex functions (with the sole exception of `2ND LINK`, see above): ![RPN83P
+MODE Menu 2](images/rpn83p-mode-menu-2.png)
 
 #### Complex Numbers in Storage Registers
 
