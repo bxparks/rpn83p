@@ -163,12 +163,12 @@ Summary of features:
     - complex specific functions: `REAL`, `IMAG`, `CONJ`, `CABS`, `CANG`
     - unsupported: trigonometric and hyperbolic functions (not supported by
       TI-OS)
-- various display modes
-    - `RAD`, `DEG`
-    - `FIX` (fixed point 0-9 digits)
-    - `SCI` (scientific 0-9 digits)
-    - `ENG` (engineering 0-9 digits)
-    - `SHOW` (`2ND ENTRY`) to display all 14 internal floating point digits
+- various modes (`MODE`)
+    - floating display: `FIX`, `SCI`, `ENG`
+    - trigonometric: `RAD`, `DEG`
+    - complex computation: `RRES`, `CRES`
+    - complex display: `RECT`, `PRAD`, `PDEG`
+    - `SHOW` (`2ND ENTRY`): display all 14 internal digits
 
 Missing features (partial list):
 
