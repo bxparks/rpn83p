@@ -114,6 +114,7 @@ Missing features (partial list):
     - [Example 1](#example-1)
     - [Example 2](#example-2)
     - [Example 3](#example-3)
+    - [Example 4](#example-4)
 - [Documentation](#documentation)
 - [Compiling from Source](#compiling-from-source)
 - [Tools and Resources](#tools-and-resources)
@@ -288,6 +289,41 @@ Here are the steps:
 Here is the animated GIF that shows this calculation:
 
 ![RPN83P Example 3 GIF](docs/images/rpn83p-example3.gif)
+
+### Example 4
+
+Let's add 3 complex numbers, divide by 3 to get their average, compute the
+complex conjugate, then take their square, then view the result in rectangular,
+polar radian, and polar degree modes, then extract the imaginary component of
+the result.
+
+The complex numbers are:
+
+- `1-2i`
+- `2 e^(i 60deg)`
+- `3 e^(i 4.5)`
+
+The keystrokes are:
+
+- (optional) Press `CLEAR CLEAR CLEAR` to clear the RPN stack.
+- Press `1 2ND i 2 (-) ENTER`
+- Press `2 2ND ANGLE 60 +`
+- Press `3 2ND ANGLE 2ND ANGLE 4.5 +`
+- Press `3` `/` to divide by 3
+- Press `MATH` `CPLX`:
+![CPLX MenuRow 1](docs/images/rpn83p-menu-root-cplx-1.png)
+- Press `CONJ` to calculate the conjugate
+- Press `X^2` to square the complex number
+- Press `MODE` `downarrow` to get to row 2:
+![MODE MenuRow 2](docs/images/rpn83p-menu-root-mode-2.png)
+- Press `RECT` for rectangular form:
+![Example4 RECT](docs/images/rpn83p-example4-rect.png)
+- Press `PRAD` for polar rad form:
+![Example4 PRAD](docs/images/rpn83p-example4-prad.png)
+- Press `PDEG` for polar deg form:
+![Example4 PDEG](docs/images/rpn83p-example4-pdeg.png)
+
+![RPN83P Example 4 GIF](docs/images/rpn83p-example4.gif)
 
 ### Exiting the Menu
 
