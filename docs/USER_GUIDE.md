@@ -2355,14 +2355,11 @@ pi/3 = 2.094395102 radians) so would probably be more difficult to enter.
 
 **Special Case for Solitary 2ND i**
 
-Since `2ND i` is used as a *delimiter* in the RPN83P app, not as a
-multiplicative constant, entering the pure imaginary number `i` (i.e. `0+1i`)
-should be officially done by entering `2ND i 1`. That's because an empty string
-is normally interpreted as a `0`, so a solitary `2ND i` with an empty string
-following it would be parsed as `0+0i`. However, it seemed convenient to make a
-special case for a solitary `2ND i`. The input parser recognizes a solitary `2ND
-i` and parses it as `0 i 1` instead so that it becomes the mathematical
-expression `0+1i`. Here are screenshots after a solitary `2ND i` and an `ENTER`:
+A solitary `2ND i` should be interpreted as `0 i 0` (0+0i) if the parsing rules
+were strictly followed, because an empty string should be interpreted as a `0`.
+However it seemed convenient to make a exception for a solitary `2ND i` and
+parse that as `0 i 1` instead, which becomes the pure imaginary number `i=0+1i`.
+Here are screenshots after a solitary `2ND i` and an `ENTER`:
 
 ![RPN83P Complex Solitary i 1](images/rpn83p-complex-solitary-i-1.png)
 ![RPN83P Complex Solitary i 2](images/rpn83p-complex-solitary-i-2.png)
