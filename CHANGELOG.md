@@ -23,13 +23,13 @@
           to the left, with the left most digit replaced with an ellipsis
           character indicates existence of extra digits.
         - Normal mode:
-            - Accepts maximum of 20 digits, which supports entering all 14
-              digits encoded by the TI-OS floating point number format.
-            - 14 digits plus 1 decimal point, 1 mantissa minus sign, the 'E'
-              symbol, 1 exponent minus sign, 2 exponent digits.
+            - accepts maximum of 20 digits, which supports entering all 14
+              digits encoded by the TI-OS floating point number format
+        - Complex mode:
+            - accepts maximum of 41 digits to allow 2 floating point numbers
         - `BASE BIN` mode
-            - Accepts maximum of 32 digits, to allow all 32-bits of a binary
-              number to be entered when the `WSIZ` is 32.
+            - accepts up to 32 digits, to allow a 32-bit binary number when the
+              `WSIZ` is 32.
         - see [Input Limits and Long
           Numbers](docs/USER_GUIDE.md#input-limits-and-long-numbers) for more
           details
@@ -70,6 +70,9 @@
           while setting RPN83P to SCI(4) and RAD and the 2 settings are managed
           separately, even though there is only a single set of global OS
           settings
+    - **Bug Fix**: Render 3-digit EE exponents correctly in `SHOW` mode.
+        - 3-digit exponents can only be shown for complex numbers, so the bug
+          was latent until complex numbers were added
 - 0.8.0 (2023-12-03)
     - **Breaking**: Flip the order of polar-rectangular conversion menu function
       (`>POL` and `>REC`) so that they are consistent with the HP-42S. I don't
