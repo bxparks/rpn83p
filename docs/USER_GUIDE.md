@@ -2215,11 +2215,8 @@ Complex numbers can be entered in rectangular form `a+bi`, polar radian form `r
 e^(i theta)`, or polar degree form (`theta` in degrees). They can be also be
 displayed in all three forms. The entry modes and the display modes are
 independent of each other. For example, a complex number can be entered in
-rectangular form, even if the current display mode is polar form.
-
-Internally, complex numbers are *always* stored in rectangular format. They can
-be displayed in 3 different formats. They can be entered in 3 different formats
-regardless of the display mode.
+rectangular form, even if the current display mode is polar form. Internally,
+complex numbers are *always* stored in rectangular format.
 
 #### Complex Numbers and Screen Size
 
