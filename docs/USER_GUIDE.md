@@ -247,7 +247,7 @@ available, so I hope other people find it useful.
 The RPN83P app is packaged as a single file named `rpn83p.8xk`. There are at
 least 2 ways to obtain this:
 
-- [RPN83P release page on GitHub](https://github.com/bxparks/rpn83p/releases)
+- [RPN83P Releases page on GitHub](https://github.com/bxparks/rpn83p/releases)
     - go to the latest release
     - click and download the `rpn83p.8xk` file
 - Compile the binary locally
