@@ -2354,17 +2354,18 @@ available with an extra keystroke, because it seemed like the degree mode would
 be more useful when a complex number is inlined. For example, a [three-phase
 electric power](https://en.wikipedia.org/wiki/Three-phase_electric_power) supply
 has three lines, each 120 degrees out of phase with each other. In contrast, the
-same angle in radians would involve a factor of Pi (120 deg = pi/3 = 2.094395102
-radians) so would be easier to enter using the `2ND LINK` functionality.
+same angle in radians would involve a factor of `Pi` (120 deg = 2pi/3 =
+2.094395102 radians) so would be easier to enter using the `2ND LINK`
+functionality.
 
 **Special Case for Solitary 2ND i**
 
 A solitary `2ND i` should be interpreted as `0 i 0` (0+0i) if the parsing rules
 were strictly followed, because the empty string on both sides of the `2ND i`
-delimiter should be interpreted as a `0`. However it seemed convenient to make a
-exception for a solitary `2ND i` so that it is parsed as `0 i 1` instead. This
-makes it easier to enter the pure imaginary number `i`. Here are screenshots
-after a solitary `2ND i` and an `ENTER`:
+delimiter should be interpreted as a `0`. However it seemed convenient to make
+an exception for a solitary `2ND i` so that it is parsed as `0 i 1` instead.
+This makes it easier to enter the pure imaginary number `i`. Here are
+screenshots after a solitary `2ND i` and an `ENTER`:
 
 ![RPN83P Complex Solitary i 1](images/rpn83p-complex-solitary-i-1.png)
 ![RPN83P Complex Solitary i 2](images/rpn83p-complex-solitary-i-2.png)
