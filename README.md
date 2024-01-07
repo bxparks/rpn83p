@@ -95,7 +95,6 @@ Summary of features:
 Missing features (partial list):
 
 - vectors and matrices
-- complex numbers
 - keystroke programming
 
 **Version**: 0.9.0 (2024-01-06)
