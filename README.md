@@ -314,7 +314,7 @@ The keystrokes are:
 - Press `300` `2ND ANGLE` `2ND ANGLE` `0.1` `+` (695.46+49.42i)
 - Press `4` `/` (173.89+12.35i)
 - Press `PRAD` (174.30 e^(i 0.07)
-- Press `PDEG` (174.30 e^(4.04 deg))
+- Press `PDEG` (174.30 e^(i 4.04deg))
 - Press `MATH` `CPLX`:
   ![CPLX MenuRow 1](docs/images/rpn83p-menu-root-cplx-1.png)
 - Press `CABS` (174.30)
