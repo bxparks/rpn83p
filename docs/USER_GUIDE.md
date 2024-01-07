@@ -2659,7 +2659,7 @@ But if we change the computation mode to `CRES`, we get a complex result:
 #### Complex Numbers and Trigonometric Modes
 
 In the `MODE` menu, there are 2 sets of menus related to degrees and radians:
-trigonometric modes, and complex displayed modes. They are essentially
+trigonometric modes and complex display modes. They are essentially
 independent of each other. This separation is different from other calculators,
 and I hope that this is not too confusing.
 
