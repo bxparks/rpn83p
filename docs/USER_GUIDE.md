@@ -1069,7 +1069,7 @@ a TI-OS floating point number in scientific notation requires 20 digits to enter
 in full precision (14 significant digits plus 6 digits of notation overhead).
 
 In `BASE` mode, the digit limit is a variable that depends on the `WSIZ` and the
-base number (`DEC`, `HEX, `OCT`, `BIN`). As shown in [Base Input Digit
+base number (`DEC`, `HEX`, `OCT`, `BIN`). As shown in [Base Input Digit
 Limit](#base-input-digit-limit), the input system will accept as many as 32
 digits for a `BIN` binary number.
 
