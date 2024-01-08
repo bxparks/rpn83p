@@ -53,6 +53,25 @@ handleArgNumber:
     ; On the 2nd digit, invoke auto ENTER to execute the pending command.
     jr handleArgKeyEnterAlt
 
+;-----------------------------------------------------------------------------
+
+handleArgKeyA:
+    ld a, tA ; tA='A'
+    jr handleArgLetter
+
+handleArgLetter:
+    bit inputBufFlagsArgAllowLetter, (iy + inputBufFlags)
+    ret z
+    ; Update argBuf
+    ld hl, argBuf
+    ld (hl), 1
+    inc hl
+    ld (hl), a
+    ; Invoke ENTER immediately.
+    jr handleArgKeyEnterAlt
+
+;-----------------------------------------------------------------------------
+
 handleArgKeyEnter:
     ; If no argument digits entered, then do nothing.
     ld a, (argBufLen)

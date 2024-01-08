@@ -17,6 +17,7 @@ startArgParser:
     ld (argModifier), a
     ld (argBufLen), a
     res inputBufFlagsArgAllowModifier, (iy + inputBufFlags)
+    res inputBufFlagsArgAllowLetter, (iy + inputBufFlags)
     res inputBufFlagsArgExit, (iy + inputBufFlags)
     res inputBufFlagsArgCancel, (iy + inputBufFlags)
     set rpnFlagsArgMode, (iy + rpnFlags)
@@ -38,16 +39,18 @@ startArgParser:
 ;
 ; The calling routine should take the following steps:
 ;   1) call startArgParser()
-;   2) any custom configurations (inputBufFlagsArgAllowModifier)
+;   2) any custom configurations (inputBufFlagsArgAllowXxx)
 ;   3) call processArgCommands()
 ;   4) check if ZF=0 (was canceled)
-;   5) process the argument value in argValue
+;   5) process argType and argValue
 ;
 ; Input:
 ;   - inputBufFlagsArgAllowModifier: set if +,-,*,/,. are allowed
+;   - inputBufFlagsArgAllowLetter: set if A-Z,Theta are allowed
 ; Output:
 ;   - (argBuf): contains characters typed in by user
 ;   - (argModifier): modifier enum if a modifier key (+ - * / .) was selected
+;   - (argType): type of the argument, argTypeNumber, argTypeLetter
 ;   - (argValue): parsed integer value of argBuf
 ;   - A=argModifier
 ;   - ZF=0: if arg input was canceled (ON/EXIT or CLEAR)
@@ -77,9 +80,8 @@ processArgCommands:
     set dirtyFlagsInput, (iy + dirtyFlags)
     call displayStack
 
-    ; Parse the string into an integer.
-    bcall(_ParseArgBuf)
-    ld (argValue), a
+    ; Parse the string into an integer or letter.
+    bcall(_ParseArgBuf) ; argType, argValue updated
 
     ; Terminate argParser.
     res rpnFlagsArgMode, (iy + rpnFlags)

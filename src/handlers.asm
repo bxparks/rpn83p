@@ -824,6 +824,7 @@ handleKeySto:
     ld hl, msgStoPrompt
     call startArgParser
     set inputBufFlagsArgAllowModifier, (iy + inputBufFlags)
+    set inputBufFlagsArgAllowLetter, (iy + inputBufFlags)
     call processArgCommands
     ret nz ; do nothing if canceled
     cp argModifierIndirect
@@ -847,6 +848,7 @@ handleKeyRcl:
     ld hl, msgRclPrompt
     call startArgParser
     set inputBufFlagsArgAllowModifier, (iy + inputBufFlags)
+    set inputBufFlagsArgAllowLetter, (iy + inputBufFlags)
     call processArgCommands
     ret nz ; do nothing if canceled
     cp argModifierIndirect

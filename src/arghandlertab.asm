@@ -31,6 +31,10 @@ argKeyCodeHandlerTable:
     .db k9
     .dw handleArgKey9
 
+    ; letter entry (A-Z, Theta)
+    .db kCapA
+    .dw handleArgKeyA
+
     ; editing
     .db kDel
     .dw handleArgKeyDel
