@@ -215,7 +215,10 @@ best. It also has the advantage of having the
 [Free42](https://thomasokken.com/free42/) app (Android, iOS, Windows, MacOS,
 Linux) which faithfully reproduces every feature of the HP-42S. This is
 essential because I don't own an actual HP-42S anymore to verify obscure edge
-cases which may not be documented.
+cases which may not be documented. Another advantage of the HP-42S is that a
+hardware clone is currently in production by SwissMicros as the
+[DM42](https://www.swissmicros.com/product/dm42). This increases the number of
+users who may be familiar with the user interface and behavior of the HP-42S.
 
 The RPN83P app cannot be a clone of the HP-42S for several reasons:
 
