@@ -89,11 +89,10 @@ rpnFlagsTvmCalculate equ 6 ; set if the next TVM function should calculate
 
 ; Flags for the inputBuf. Offset from IY register.
 inputBufFlags equ asm_Flag3
-;inputBufFlagsDecPnt equ 0 ; set if decimal point exists
-;inputBufFlagsEE equ 1 ; set if EE symbol exists
-inputBufFlagsClosedEmpty equ 2 ; inputBuf empty when closeInput() called
-inputBufFlagsArgExit equ 3 ; set to exit CommandArg mode
-inputBufFlagsArgAllowModifier equ 4 ; allow */-+ modifier in CommandArg mode
+inputBufFlagsClosedEmpty equ 0 ; inputBuf empty when closeInput() called
+inputBufFlagsArgAllowModifier equ 1 ; allow */-+ modifier in CommandArg mode
+inputBufFlagsArgExit equ 2 ; set to exit CommandArg mode
+inputBufFlagsArgCancel equ 3 ; set if exit was caused by CLEAR or ON/EXIT
 
 ; Bit flags for the result of GetInputBufState().
 inputBufStateDecimalPoint equ 0 ; set if decimal point exists
@@ -330,7 +329,6 @@ argModifierSub equ 2 ; '-' pressed
 argModifierMul equ 3 ; '*' pressed
 argModifierDiv equ 4 ; '/' pressed
 argModifierIndirect equ 5 ; '.' pressed (not yet supported)
-argModifierCanceled equ 6 ; CLEAR or EXIT pressed
 
 ; STAT variables
 statAllEnabled equ argValue + 1 ; boolean, 1 if "ALLSigma" enabled

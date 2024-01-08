@@ -825,7 +825,7 @@ handleKeySto:
     call startArgParser
     set inputBufFlagsArgAllowModifier, (iy + inputBufFlags)
     call processArgCommands
-    ret nc ; do nothing if canceled
+    ret nz ; do nothing if canceled
     cp argModifierIndirect
     ret nc ; TODO: implement this
     call rclX
@@ -848,7 +848,7 @@ handleKeyRcl:
     call startArgParser
     set inputBufFlagsArgAllowModifier, (iy + inputBufFlags)
     call processArgCommands
-    ret nc ; do nothing if canceled
+    ret nz ; do nothing if canceled
     cp argModifierIndirect
     ret nc ; TODO: implement this
     ; Implement rclOpRegNN. There are 2 cases:
@@ -925,7 +925,7 @@ handleKeyDraw:
     ld hl, msgDrawPrompt
     call startArgParser
     call processArgCommands
-    ret nc ; do nothing if canceled
+    ret nz ; do nothing if canceled
     ; save (argValue)
     ld a, (argValue)
     ld (drawMode), a

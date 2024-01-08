@@ -431,9 +431,9 @@ displayStack:
     call nz, displayStackYZT
     ; display X if stack or inputBuf are dirty
     bit dirtyFlagsStack, (iy + dirtyFlags)
-    jp nz, displayStackX
+    jr nz, displayStackX
     bit dirtyFlagsInput, (iy + dirtyFlags)
-    jp nz, displayStackX
+    jr nz, displayStackX
     ret
 
 ;-----------------------------------------------------------------------------
@@ -578,10 +578,8 @@ printArgBuf:
     ; Print prompt and contents of argBuf
     ld hl, (argPrompt)
     call putS
-    ; Print the argModifier if needed.
+    ; Print the argModifier
     ld a, (argModifier)
-    cp argModifierCanceled
-    jr nc, printArgBufNumber
     ld hl, argModifierStrings
     call getString
     call putS

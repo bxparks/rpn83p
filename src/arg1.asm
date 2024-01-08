@@ -37,7 +37,7 @@ AppendArgBuf:
     ld b, argBufCapacity
     jp AppendString
 
-; Description: Convert (0 to 2 digit) argBuf into a binary number.
+; Description: Convert (0 to 2 digit) argBuf into an integer.
 ; Input: argBuf
 ; Output: A: value of argBuf
 ; Destroys: A, B, C, HL

@@ -7,7 +7,7 @@
 ;------------------------------------------------------------------------------
 
 ; Description: Configure the command arg parser and display before each
-; invocation. Use initArgBuf() to initialize at the start of application.
+; invocation. Use InitArgBuf() to initialize at the start of application.
 ; Input:
 ;   - HL: pointer to command argument label
 ; Destroys: A
@@ -16,8 +16,9 @@ startArgParser:
     xor a
     ld (argModifier), a
     ld (argBufLen), a
-    res inputBufFlagsArgExit, (iy + inputBufFlags)
     res inputBufFlagsArgAllowModifier, (iy + inputBufFlags)
+    res inputBufFlagsArgExit, (iy + inputBufFlags)
+    res inputBufFlagsArgCancel, (iy + inputBufFlags)
     set rpnFlagsArgMode, (iy + rpnFlags)
     set dirtyFlagsInput, (iy + dirtyFlags)
     set dirtyFlagsXLabel, (iy + dirtyFlags)
@@ -39,8 +40,8 @@ startArgParser:
 ;   1) call startArgParser()
 ;   2) any custom configurations (inputBufFlagsArgAllowModifier)
 ;   3) call processArgCommands()
-;   4) check if CF=0 (was canceled)
-;   5) process the string in argBuf
+;   4) check if ZF=0 (was canceled)
+;   5) process the argument value in argValue
 ;
 ; Input:
 ;   - inputBufFlagsArgAllowModifier: set if +,-,*,/,. are allowed
@@ -48,7 +49,8 @@ startArgParser:
 ;   - (argBuf): contains characters typed in by user
 ;   - (argModifier): modifier enum if a modifier key (+ - * / .) was selected
 ;   - (argValue): parsed integer value of argBuf
-;   - CF=0: if arg input was canceled (ON/EXIT or CLEAR)
+;   - A=argModifier
+;   - ZF=0: if arg input was canceled (ON/EXIT or CLEAR)
 processArgCommands:
     call displayAll
 
@@ -65,11 +67,27 @@ processArgCommands:
     bit inputBufFlagsArgExit, (iy + inputBufFlags)
     jr z, processArgCommands
 
+    ; Refresh display a final time to allow the user to see the 2nd digit
+    ; briefly. On a real HP-42S, the calculator seems to update the display on
+    ; the *press* of the digit, then trigger the command on the *release* of
+    ; the button, which allows the calculator to show the 2nd digit to the
+    ; user. The TI-OS GetKey() function used by this app does not give us that
+    ; level of control over the press and release events of a button. So we
+    ; need to hack this in.
+    set dirtyFlagsInput, (iy + dirtyFlags)
+    call displayStack
+
+    ; Parse the string into an integer.
+    bcall(_ParseArgBuf)
+    ld (argValue), a
+
     ; Terminate argParser.
     res rpnFlagsArgMode, (iy + rpnFlags)
     set dirtyFlagsInput, (iy + dirtyFlags)
-    ; Set CF=0 if ArgParser was canceled (because all other argModifierXxx is <
-    ; argModifierCanceled).
+
+    ; Set A=argModifier, for convenience of caller.
     ld a, (argModifier)
-    cp argModifierCanceled
+
+    ; Set ZF=0 if ArgParser was canceled.
+    bit inputBufFlagsArgCancel, (iy + inputBufFlags)
     ret

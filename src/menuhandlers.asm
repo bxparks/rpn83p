@@ -686,7 +686,7 @@ mFixHandler:
     ld hl, msgFixPrompt
     call startArgParser
     call processArgCommands
-    ret nc ; do nothing if canceled
+    ret nz ; do nothing if canceled
     res fmtExponent, (iy + fmtFlags)
     res fmtEng, (iy + fmtFlags)
     jr saveFormatDigits
@@ -696,7 +696,7 @@ mSciHandler:
     ld hl, msgSciPrompt
     call startArgParser
     call processArgCommands
-    ret nc ; do nothing if canceled
+    ret nz ; do nothing if canceled
     set fmtExponent, (iy + fmtFlags)
     res fmtEng, (iy + fmtFlags)
     jr saveFormatDigits
@@ -706,7 +706,7 @@ mEngHandler:
     ld hl, msgEngPrompt
     call startArgParser
     call processArgCommands
-    ret nc ; do nothing if canceled
+    ret nz ; do nothing if canceled
     set fmtExponent, (iy + fmtFlags)
     set fmtEng, (iy + fmtFlags)
     jr saveFormatDigits
@@ -719,6 +719,7 @@ msgEngPrompt:
     .db "ENG", 0
 
 ; Description: Save the (argValue) to (fmtDigits).
+; Input: (argValue)
 ; Output:
 ;   - dirtyFlagsStack set
 ;   - dirtyFlagsFloatMode set
