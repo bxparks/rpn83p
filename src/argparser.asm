@@ -34,9 +34,21 @@ startArgParser:
 ; - *, /, -, +: Converts STO and RCL to STO+, RCL+, etc.
 ; - 2ND QUIT
 ; - 2ND OFF
+;
+; The calling routine should take the following steps:
+;   1) call startArgParser()
+;   2) any custom configurations (inputBufFlagsArgAllowModifier)
+;   3) call processArgCommands()
+;   4) check if CF=0 (was canceled)
+;   5) process the string in argBuf
+;
+; Input:
+;   - inputBufFlagsArgAllowModifier: set if +,-,*,/,. are allowed
 ; Output:
-;   - (argModifier): modifier enum if selected
-;   - CF=0: if canceled
+;   - (argBuf): contains characters typed in by user
+;   - (argModifier): modifier enum if a modifier key (+ - * / .) was selected
+;   - (argValue): parsed integer value of argBuf
+;   - CF=0: if arg input was canceled (ON/EXIT or CLEAR)
 processArgCommands:
     call displayAll
 
@@ -56,7 +68,8 @@ processArgCommands:
     ; Terminate argParser.
     res rpnFlagsArgMode, (iy + rpnFlags)
     set dirtyFlagsInput, (iy + dirtyFlags)
-    ; Set CF=0 if ArgParser canceled
+    ; Set CF=0 if ArgParser was canceled (because all other argModifierXxx is <
+    ; argModifierCanceled).
     ld a, (argModifier)
     cp argModifierCanceled
     ret

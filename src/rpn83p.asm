@@ -323,6 +323,7 @@ menuNameSizeOf equ 6
 argPrompt equ menuName + menuNameSizeOf ; (char*)
 argModifier equ argPrompt + 2 ; char
 argValue equ argModifier + 1 ; u8
+; argModifier enums
 argModifierNone equ 0
 argModifierAdd equ 1 ; '+' pressed
 argModifierSub equ 2 ; '-' pressed
