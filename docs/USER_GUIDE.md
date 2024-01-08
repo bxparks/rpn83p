@@ -530,12 +530,12 @@ like this conceptually:
 
 There are 4 components:
 
-- `MenuGroup`: a folder of 1 or more `MenuRows`
+- `MenuGroup`: a folder of 1 or more `MenuRows` (e.g. `NUM`)
 - `MenuRow`: a list of exactly 5 `MenuNodes` corresponding to the 5 menu
   buttons below the LCD
 - `MenuNode`: one slot in the `MenuRow`, can be *either* a `MenuGroup` or a
   `MenuItem`
-- `MenuItem`: a leaf-node that maps directly to a function (e.g. `ASNH`) when
+- `MenuItem`: a leaf-node that maps directly to a function (e.g. `GCD`) when
   the corresponding menu button is pressed
 
 #### Menu Buttons
@@ -557,16 +557,17 @@ which are used to navigate the menu hierarchy:
 
 The appropriate key for the "menu back to parent" function would have been an
 `ESC` button. But the TI-83 and TI-84 calculators do not have an `ESC` button
-(unlike the TI-92 and TI Voyager 200 series calculators), so the `ON` button was
-recruited for this functionality. This seemed to make sense because the HP-42S
+(unlike the TI-89, TI-92, and TI Voyager 200 series calculators), so the `ON`
+button was recruited for this functionality. This seemed to make sense because
+the HP-42S
 uses the `ON` key which doubles as the `EXIT` or `ESC` key to perform this
 function.
 
 The `HOME` button is useful to go directly to the top of the menu hierarchy from
 anywhere in the menu hierarchy. The TI-83 and TI-84 calculators do not have a
-`HOME` button (unlike the TI-92 and TI Voyager 200 series again), so the `MATH`
-button was taken over to act as the `HOME` key. This choice was not completely
-random:
+`HOME` button (unlike the TI-89, TI-92, and TI Voyager 200 series again), so the
+`MATH` button was taken over to act as the `HOME` key. This choice was not
+completely random:
 
 1. The `HOME` button on the [TI-89 series
 calculator](https://en.wikipedia.org/wiki/TI-89_series) is located exactly where
