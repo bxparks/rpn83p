@@ -2614,8 +2614,8 @@ will be the angle value shown on the screen.
 #### Complex Computation Modes
 
 There are 2 computation mode settings under the `MODE` menu group which affect
-whether some functions return complex values or real values when the argument to
-the functions are real:
+whether some functions return complex values or real values when the arguments
+to the functions are real:
 
 - `RRES` (real results): return only real results for real arguments
 - `CRES` (complex results): allow complex results for real arguments
