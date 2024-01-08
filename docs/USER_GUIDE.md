@@ -2731,7 +2731,7 @@ variables that I could not synchronize between the 2 apps are:
 ## Future Enhancements
 
 There seems to be almost an endless number of features that could go into a
-calculator app. I have grouped them as follows, since my time and energy is
+calculator app. I have grouped them as follows, since my time and energy are
 limited:
 
 ### Near Future
