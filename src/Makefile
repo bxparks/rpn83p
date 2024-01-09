@@ -58,7 +58,7 @@ SRCS := \
 
 # TI Flash app. Use -DDEBUG to activate functions in debug.asm.
 rpn83p.8xk: $(SRCS) Makefile
-	$(SPASM) -I $(SPASM_INC) -N rpn83p.asm $@
+	$(SPASM) -DDEBUG -I $(SPASM_INC) -N rpn83p.asm $@
 
 # TI assembly program. No longer works because the program is > 8 kiB.
 #rpn83p.8xp: $(SRCS) Makefile

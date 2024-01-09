@@ -56,7 +56,111 @@ handleArgNumber:
 ;-----------------------------------------------------------------------------
 
 handleArgKeyA:
-    ld a, tA ; tA='A'
+    ld a, tA
+    jr handleArgLetter
+
+handleArgKeyB:
+    ld a, tB
+    jr handleArgLetter
+
+handleArgKeyC:
+    ld a, tC
+    jr handleArgLetter
+
+handleArgKeyD:
+    ld a, tD
+    jr handleArgLetter
+
+handleArgKeyE:
+    ld a, tE
+    jr handleArgLetter
+
+handleArgKeyF:
+    ld a, tF
+    jr handleArgLetter
+
+handleArgKeyG:
+    ld a, tG
+    jr handleArgLetter
+
+handleArgKeyH:
+    ld a, tH
+    jr handleArgLetter
+
+handleArgKeyI:
+    ld a, tI
+    jr handleArgLetter
+
+handleArgKeyJ:
+    ld a, tJ
+    jr handleArgLetter
+
+handleArgKeyK:
+    ld a, tK
+    jr handleArgLetter
+
+handleArgKeyL:
+    ld a, tL
+    jr handleArgLetter
+
+handleArgKeyM:
+    ld a, tM
+    jr handleArgLetter
+
+handleArgKeyN:
+    ld a, tN
+    jr handleArgLetter
+
+handleArgKeyO:
+    ld a, tO
+    jr handleArgLetter
+
+handleArgKeyP:
+    ld a, tP
+    jr handleArgLetter
+
+handleArgKeyQ:
+    ld a, tQ
+    jr handleArgLetter
+
+handleArgKeyR:
+    ld a, tR
+    jr handleArgLetter
+
+handleArgKeyS:
+    ld a, tS
+    jr handleArgLetter
+
+handleArgKeyT:
+    ld a, tT
+    jr handleArgLetter
+
+handleArgKeyU:
+    ld a, tU
+    jr handleArgLetter
+
+handleArgKeyV:
+    ld a, tV
+    jr handleArgLetter
+
+handleArgKeyW:
+    ld a, tW
+    jr handleArgLetter
+
+handleArgKeyX:
+    ld a, tX
+    jr handleArgLetter
+
+handleArgKeyY:
+    ld a, tY
+    jr handleArgLetter
+
+handleArgKeyZ:
+    ld a, tZ
+    jr handleArgLetter
+
+handleArgKeyTheta:
+    ld a, tTheta
     jr handleArgLetter
 
 handleArgLetter:
@@ -64,9 +168,9 @@ handleArgLetter:
     ret z
     ; Update argBuf
     ld hl, argBuf
-    ld (hl), 1
+    ld (hl), 1 ; argBufLen=1
     inc hl
-    ld (hl), a
+    ld (hl), a ; argBuf[0]=A
     ; Invoke ENTER immediately.
     jr handleArgKeyEnterAlt
 

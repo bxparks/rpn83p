@@ -62,7 +62,7 @@ ParseArgBuf:
     ld a, (hl)
     call isVariableLetter ; CF=1 if varLetter
     jr nc, parseArgBufDigits
-    ; is letter
+    ; here if A is letter
     ld (de), a ; argValue=char
     dec de
     ld a, argTypeLetter

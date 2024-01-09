@@ -929,9 +929,8 @@ stoOpRegNN:
     ret
 
 ; Description: Implement RCL{op} NN, with {op} defined by B and NN given by C.
-; WARNING: Works only for real not complex.
 ; Input:
-;   - OP1
+;   - OP1/OP2: real or complex number
 ;   - B: operation index [0,4] into floatOps, MUST be same as argModifierXxx
 ;   - C: register index NN, 0-based
 ; Output:
@@ -981,6 +980,124 @@ floatOpMul:
     jp universalMult
 floatOpDiv:
     jp universalDiv
+
+;-----------------------------------------------------------------------------
+; Predefined single-letter Real or Complex variables.
+;-----------------------------------------------------------------------------
+
+; Description: Store OP1/OP2 into the TI-OS variable named in A.
+; Input:
+;   - A: varName
+;   - OP1/OP2: real or complex number
+; Output: varName=OP1
+; Destroys: all
+stoVar:
+    ld b, a ; B=varName
+    push bc
+    bcall(_PushOP1) ; FPS=[OP1/OP2]
+    pop bc
+    call checkOp1Complex ; ZF=1 if complex
+    ; compute C=varType
+    jr z, stoVarComplex
+    ld c, RealObj
+    jr stoVarStore
+stoVarComplex:
+    ld c, CplxObj
+stoVarStore:
+    call createVarName ; OP1=varName
+    bcall(_StoOther) ; FPS=[]; (varName)=OP1/OP2
+    ret
+
+; Description: Recall OP1 from the TI-OS variable named in A. System error if
+; the varName does not exist.
+; Input: A=varName
+; Output: OP1/OP2=value
+; Destroys: all
+rclVar:
+    ld b, a ; B=varName
+    ld c, RealObj ; C=varType, probably ignored by RclVarSym()
+    call createVarName ; OP1=varName
+    bcall(_RclVarSym) ; OP1/OP2=value
+    ret
+
+; Description: Create a real variable name in OP1.
+; Input: B=varName; C=varType
+; Output: OP1=varName
+; Destroys: A, HL
+; Preserves: BC, DE
+createVarName:
+    ld hl, OP1
+    ld (hl), c ; (OP1)=varType
+    inc hl
+    ld (hl), b ; (OP1+1)=varName
+    inc hl
+    xor a
+    ld (hl), a
+    inc hl
+    ld (hl), a ; terminated by 2 NUL
+    inc hl
+    ret
+
+;-----------------------------------------------------------------------------
+
+; Description: Implement STO{op} LETTER. Very similar to stoOpRegNN().
+; Input:
+;   - OP1/OP2: real or complex number
+;   - B: operation index [0,4] into floatOps, MUST be same as argModifierXxx
+;   - C: LETTER, name of variable
+; Output:
+;   - VARS[LETTER]=(VARS[LETTER] {op} OP1/OP2), where {op} is defined by B, and
+;   can be a simple assignment operator
+; Destroys: all, OP3, OP4
+; Preserves: OP1, OP2
+stoOpVar:
+    push bc ; stack=[op,LETTER]
+    bcall(_PushOP1) ; FPS=[OP1/OP2]
+    call cp1ToCp3 ; OP3/OP4=OP1/OP2
+    ; Recall VARS[LETTER]
+    pop bc ; stack=[]; B=op; C=LETTER
+    push bc ; stack=[op,LETTER]
+    ld a, c ; A=LETTER
+    call rclVar ; OP1/OP2=VARS[LETTER]
+    ; Invoke op B
+    pop bc ; stack=[]; B=op; C=LETTER
+    push bc ; stack=[op,LETTER]
+    ld a, b ; A=op
+    ld hl, floatOps
+    call jumpAOfHL
+    ; Save VARS[LETTER]
+    pop bc ; stack=[]; B=op; C=LETTER
+    ld a, c ; A=LETTER
+    call stoVar
+    ; restore OP1, OP2
+    bcall(_PopOP1) ; FPS=[]; OP1/OP2=OP1/OP2
+    ret
+
+; Description: Implement RCL{op} LETTER, with {op} defined by B and LETTER
+; given by C. Very similar to rclOpRegNN().
+; Input:
+;   - OP1/OP2: real or complex number
+;   - B: operation index [0,4] into floatOps, MUST be same as argModifierXxx
+;   - C: LETTER, name of variable
+; Output:
+;   - OP1/OP2=(OP1/OP2 {op} REGS[LETTER]), where {op} is defined by B, and can
+;   be a simple assignment operator
+; Destroys: all, OP3, OP4
+rclOpVar:
+    push bc ; stack=[op,LETTER]
+    bcall(_PushOP1) ; FPS=[OP1/OP2]
+    ; Recall VARS[LETTER]
+    pop bc ; stack=[]; B=op; C=LETTER
+    push bc ; stack=[op,LETTER]
+    ld a, c ; A=LETTER
+    call rclVar ; OP1/OP2=VARS[LETTER]
+    call cp1ToCp3 ; OP3/OP4=OP1/OP2
+    bcall(_PopOP1) ; FPS=[]; OP1/OP2=OP1/OP2
+    ; Invoke op B
+    pop bc ; stack=[]; B=op; C=LETTER
+    ld a, b ; A=op
+    ld hl, floatOps
+    jp jumpAOfHL ; OP1/OP2=OP1/OP2{op}OP3/OP4
 
 ;-----------------------------------------------------------------------------
 ; STAT register functions.

@@ -830,7 +830,19 @@ handleKeySto:
     cp argModifierIndirect
     ret nc ; TODO: implement this
     call rclX
+    ; Check for TI-OS variable letter (A-Z,Theta)
+    ld a, (argType)
+    cp argTypeLetter
+    jr nz, handleKeyStoNumber
+    ; Implement STO{op}LETTER
+    ld a, (argValue) ; A=LETTER
+    ld c, a ; C=LETTER
+    ld a, (argModifier)
+    ld b, a ; B=op
+    jp stoOpVar
+handleKeyStoNumber:
     ; Implement STO{op}NN
+    ; TODO: move range check into stoOpRegNN().
     ld a, (argValue)
     cp regsSize ; check if command argument too large
     jp nc, handleKeyStoError
@@ -853,27 +865,53 @@ handleKeyRcl:
     ret nz ; do nothing if canceled
     cp argModifierIndirect
     ret nc ; TODO: implement this
+    ; Check for TI-OS variable letter (A-Z,Theta)
+    ld a, (argType)
+    cp argTypeLetter
+    jr nz, handleKeyRclNumber
+    ;
+    ; Handle RCL{op}LETTER
+    ld a, (argValue) ; A=varLetter
+    ld c, a ; C=LETTER
+    ld a, (argModifier)
+    or a
+    jr nz, handleKeyRclOpNN
+handleKeyRclLetter:
+    ; Call rclVar() and *push* RegNN onto the RPN stack.
+    ld a, c ; A=LETTER
+    call rclVar
+    jp pushX
+handleKeyRclOpLetter:
+    ; Call rclOpVar() and *replace* the X register with (OP1 {op} LETTER).
+    ld b, a ; B=modifier
+    push bc ; C=LETTER
+    call rclX ; OP1=X
+    pop bc
+    call rclOpVar
+    jp replaceX ; updates LastX
+handleKeyRclNumber:
     ; Implement rclOpRegNN. There are 2 cases:
     ; 1) If the {op} is a simple assignment, we call rclRegNN() and push the
     ; value on to the RPN stack.
     ; 2) If the {op} is an arithmetic operator, we call rclOpRegNN() and
     ; *replace* the current X with the new X.
+    ; TODO: move range check into stoOpRegNN().
     ld a, (argValue)
     cp regsSize ; check if command argument too large
     jr nc, handleKeyRclError
-    ld c, a
+    ld c, a ; C=NN
     ld a, (argModifier)
     or a
     jr nz, handleKeyRclOpNN
 handleKeyRclNN:
     ; Call rclRegNN() and *push* RegNN onto the RPN stack.
-    ld a, c
+    ld a, c ; A=NN
     call rclRegNN
     jp pushX
 handleKeyRclOpNN:
     ; Call rclOpRegNN() and *replace* the X register with (OP1 {op} RegNN).
-    ld b, a
-    push bc
+    ld b, a ; B=modifier
+    push bc ; C=NN
     call rclX ; OP1=X
     pop bc
     call rclOpRegNN
