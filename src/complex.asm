@@ -11,12 +11,11 @@
 
 ; Description: Return the rpnObjectType of OP1/OP2.
 ; Input: OP1
-; Output: A=C=rpnObjectType
+; Output: A=rpnObjectType
 ; Destroys: A
 getOp1RpnObjectType:
     ld a, (OP1)
     and $1f
-    ld c, a
     ret
 
 ; Description: Same as CkOP1Cplx() OS routine without the bcall() overhead.

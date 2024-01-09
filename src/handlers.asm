@@ -868,7 +868,7 @@ handleKeyRcl:
     ld c, a ; C=LETTER
     ld a, (argModifier)
     or a
-    jr nz, handleKeyRclOpNN
+    jr nz, handleKeyRclOpLetter
 handleKeyRclLetter:
     ; Call rclVar() and *push* value onto the RPN stack.
     call rclVar
@@ -894,7 +894,6 @@ handleKeyRclNumber:
     jr nz, handleKeyRclOpNN
 handleKeyRclNN:
     ; Call rclRegNN() and *push* value onto the RPN stack.
-    ld a, c ; A=NN
     call rclRegNN
     jp pushX
 handleKeyRclOpNN:
