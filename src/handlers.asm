@@ -825,8 +825,8 @@ handleKeySto:
     call startArgParser
     set inputBufFlagsArgAllowModifier, (iy + inputBufFlags)
     set inputBufFlagsArgAllowLetter, (iy + inputBufFlags)
-    call processArgCommands
-    ret nz ; do nothing if canceled
+    call processArgCommands ; ZF=0 if cancelled
+    ret nz ; do nothing if cancelled
     cp argModifierIndirect
     ret nc ; TODO: implement this
     call rclX
@@ -854,8 +854,8 @@ handleKeyRcl:
     call startArgParser
     set inputBufFlagsArgAllowModifier, (iy + inputBufFlags)
     set inputBufFlagsArgAllowLetter, (iy + inputBufFlags)
-    call processArgCommands
-    ret nz ; do nothing if canceled
+    call processArgCommands ; ZF=0 if cancelled
+    ret nz ; do nothing if cancelled
     cp argModifierIndirect
     ret nc ; TODO: implement this
     ; Check for TI-OS variable letter (A-Z,Theta)
@@ -948,8 +948,8 @@ handleKeyDraw:
     call closeInput ; preserve rpnFlagsTvmCalculate
     ld hl, msgDrawPrompt
     call startArgParser
-    call processArgCommands
-    ret nz ; do nothing if canceled
+    call processArgCommands ; ZF=0 if cancelled
+    ret nz ; do nothing if cancelled
     ; save (argValue)
     ld a, (argValue)
     ld (drawMode), a

@@ -298,8 +298,8 @@ mSetWordSizeHandler:
     call closeInputAndRecallNone
     ld hl, msgWordSizePrompt
     call startArgParser
-    call processArgCommands ; CF=0 if canceled; (argModified), (argValue)
-    ret nz ; do nothing if canceled
+    call processArgCommands ; CF=0 if cancelled; (argModifier), (argValue)
+    ret nz ; do nothing if cancelled
     ld a, (argValue)
     jp baseSetWordSize
 

@@ -685,8 +685,8 @@ mFixHandler:
     call closeInputAndRecallNone
     ld hl, msgFixPrompt
     call startArgParser
-    call processArgCommands
-    ret nz ; do nothing if canceled
+    call processArgCommands ; ZF=0 if cancelled
+    ret nz ; do nothing if cancelled
     res fmtExponent, (iy + fmtFlags)
     res fmtEng, (iy + fmtFlags)
     jr saveFormatDigits
@@ -695,8 +695,8 @@ mSciHandler:
     call closeInputAndRecallNone
     ld hl, msgSciPrompt
     call startArgParser
-    call processArgCommands
-    ret nz ; do nothing if canceled
+    call processArgCommands ; ZF=0 if cancelled
+    ret nz ; do nothing if cancelled
     set fmtExponent, (iy + fmtFlags)
     res fmtEng, (iy + fmtFlags)
     jr saveFormatDigits
@@ -705,8 +705,8 @@ mEngHandler:
     call closeInputAndRecallNone
     ld hl, msgEngPrompt
     call startArgParser
-    call processArgCommands
-    ret nz ; do nothing if canceled
+    call processArgCommands ; ZF=0 if cancelled
+    ret nz ; do nothing if cancelled
     set fmtExponent, (iy + fmtFlags)
     set fmtEng, (iy + fmtFlags)
     jr saveFormatDigits

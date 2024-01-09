@@ -41,7 +41,7 @@ startArgParser:
 ;   1) call startArgParser()
 ;   2) any custom configurations (inputBufFlagsArgAllowXxx)
 ;   3) call processArgCommands()
-;   4) check if ZF=0 (was canceled)
+;   4) check if ZF=0 (was cancelled)
 ;   5) process argType and argValue
 ;
 ; Input:
@@ -53,7 +53,7 @@ startArgParser:
 ;   - (argType): type of the argument, argTypeNumber, argTypeLetter
 ;   - (argValue): parsed integer value of argBuf
 ;   - A=argModifier
-;   - ZF=0: if arg input was canceled (ON/EXIT or CLEAR)
+;   - ZF=0: if arg input was cancelled (ON/EXIT or CLEAR)
 processArgCommands:
     call displayAll
 
@@ -68,7 +68,7 @@ processArgCommands:
 
     ; Check for terminate flag.
     bit inputBufFlagsArgExit, (iy + inputBufFlags)
-    jr z, processArgCommands
+    jr z, processArgCommands ; ZF=0 if cancelled
 
     ; Refresh display a final time to allow the user to see the 2nd digit
     ; briefly. On a real HP-42S, the calculator seems to update the display on
@@ -90,6 +90,6 @@ processArgCommands:
     ; Set A=argModifier, for convenience of caller.
     ld a, (argModifier)
 
-    ; Set ZF=0 if ArgParser was canceled.
+    ; Set ZF=0 if ArgParser was cancelled.
     bit inputBufFlagsArgCancel, (iy + inputBufFlags)
     ret
