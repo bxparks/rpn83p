@@ -133,7 +133,7 @@ rpnObjectTypeComplexRad equ $4C ; uses bit 5 and 6
 rpnObjectTypeMask equ $1F ; TI-OS type uses only bits 0-4
 ; An PpnObject is a struct of a type byte and 2 RpnFloats so that a complex
 ; number can be stored. See the struct definitions in vars.asm. If the
-; rpnObjectSizeOf is changed, the rpnObjectIndexToSize() function must be
+; rpnObjectSizeOf is changed, the rpnObjectIndexToOffset() function must be
 ; updated.
 rpnRealSizeOf equ 9 ; sizeof(float)
 rpnComplexSizeOf equ 18 ; sizeof(complex)

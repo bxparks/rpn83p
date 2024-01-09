@@ -71,7 +71,7 @@
 
 ;-----------------------------------------------------------------------------
 ; Each RpnObject is large enough to hold a Real or Complex number. If the size
-; of RpnObject changes, then rpnObjectIndexToSize() must be updated.
+; of RpnObject changes, then rpnObjectIndexToOffset() must be updated.
 ;
 ; struct RpnFloat { // sizeof(RpnFloat)==9
 ;   uint8_t float_type;
@@ -125,7 +125,7 @@ initRpnObjectListCreate:
     ; We are here if the appVar does not exist. So create.
     ; OP1=appVarName; B=len
     push bc ; stack=[len]
-    call rpnObjectIndexToSize ; HL=expectedSize
+    call rpnObjectIndexToOffset ; HL=expectedSize
     bcall(_CreateAppVar) ; DE=dataPointer
     pop bc ; stack=[]; B=len
     ; [[fallthrough]]
@@ -141,7 +141,7 @@ initRpnObjectListClear:
     call op1Set0 ; OP1=0.0
     pop de ; stack=[len]; DE=dataPointer
     inc de
-    inc de ; skip past the dataSize field
+    inc de ; skip past the appVarSize field
     inc de
     inc de ; skip past the CRC field
     ; insert appId
@@ -185,11 +185,11 @@ initRpnObjectListLoopTrailing:
 validateRpnObjectList:
     push bc ; stack=[expectedLen]
     ; Validate expected size of data segment
-    call rpnObjectIndexToSize ; HL=expectedSize
+    call rpnObjectIndexToOffset ; HL=expectedSize
     ex de, hl ; HL=dataPointer; DE=expectedSize
     ld c, (hl)
     inc hl
-    ld b, (hl) ; BC=size(appVar)
+    ld b, (hl) ; BC=appVarSize
     inc hl
     ; Compare expected size
     push hl ; stack=[expectedLen, dataPointer]
@@ -205,7 +205,7 @@ validateRpnObjectList:
     ld d, (hl) ; DE=CRC16
     inc hl
     dec bc
-    dec bc ; BC=size(appVar)-2; skip the CRC field itself
+    dec bc ; BC=appVarSize-2; skip the CRC field itself
     ; Compare CRC
     push hl ; stack=[expectedLen, dataPointer]
     push de ; stack=[expectedLen, dataPointer, expectedCRC]
@@ -259,7 +259,8 @@ closeRpnObjectList:
 ;-----------------------------------------------------------------------------
 
 ; Description: Convert rpnObject index to the object pointer, including 2 bytes
-; for the CRC16 checksum, and the 2-byte size field.
+; for the appVarSize (managed by the OS), 2 bytes for the CRC16 checksum, and 2
+; bytes for the appId.
 ; Input:
 ;   - B=index
 ;   - DE=appDataPointer to the begining of the appVar which is the 2-byte
@@ -269,34 +270,35 @@ closeRpnObjectList:
 ;   - CF=1 if within bounds, otherwise 0
 ; Preserves: A, BC, DE
 rpnObjectIndexToPointer:
-    call rpnObjectIndexToSize ; HL=dataSize; TODO: rename to dataOffset
+    call rpnObjectIndexToOffset ; HL=dataOffset
     push bc ; stack=[BC]
     push de ; stack=[BC,DE]
     ; check pointer out of bounds
-    ex de, hl ; HL=appDataPointer; DE=dataSize
+    ex de, hl ; HL=appDataPointer; DE=dataOffset
     ld c, (hl)
     inc hl
     ld b, (hl) ; BC=appVarSize
     inc hl
     ; calculate pointer to item at index
-    add hl, de ; HL=objectPointer=dataSize+appDataPointer+2
-    ex de, hl ; HL=dataSize; DE=objectPointer
+    add hl, de ; HL=objectPointer=dataOffset+appDataPointer+2
+    ex de, hl ; HL=dataOffset; DE=objectPointer
     ; check array bounds
     or a ; CF=0
-    sbc hl, bc ; if dataSize < appVarSize; CF=1
+    sbc hl, bc ; if dataOffset < appVarSize; CF=1
     ; restore registers
     ex de, hl ; HL=objectPointer
     pop de ; stack=[BC]
     pop bc ; stack=[]
     ret
 
-; Description: Convert rpnObject len or index to the data size of the appVas.
-; This is the value stored by the TI-OS. Size = len*rpnObjectSizeOf + 2 (crc16)
-; + 2 (appId).
-; Input: B: len or index
+; Description: Convert rpnObject index to the offset into the appVar data
+; segment. If 'index' is the 'len', then this is the value stored by the TI-OS
+; in the appVarSize field at the beginning of the data segment: appVarSize =
+; len*rpnObjectSizeOf + 2 (crc16) + 2 (appId).
+; Input: B: index or len
 ; Output: HL: byteSize
 ; Preserves: A, BC, DE
-rpnObjectIndexToSize: ; TODO: rename to rpnObjectIndexToOffset()
+rpnObjectIndexToOffset:
     push de
     ld l, b
     ld h, 0
