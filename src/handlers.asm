@@ -842,18 +842,11 @@ handleKeySto:
     jp stoOpVar
 handleKeyStoNumber:
     ; Implement STO{op}NN
-    ; TODO: move range check into stoOpRegNN().
     ld a, (argValue)
-    cp regsSize ; check if command argument too large
-    jp nc, handleKeyStoError
     ld c, a ; C=NN
     ld a, (argModifier)
     ld b, a ; B=op
     jp stoOpRegNN
-handleKeyStoError:
-    ld a, errorCodeDimension
-    ld (handlerCode), a
-    ret
 
 handleKeyRcl:
     call closeInputAndRecallNone
@@ -895,10 +888,7 @@ handleKeyRclNumber:
     ; value on to the RPN stack.
     ; 2) If the {op} is an arithmetic operator, we call rclOpRegNN() and
     ; *replace* the current X with the new X.
-    ; TODO: move range check into stoOpRegNN().
     ld a, (argValue)
-    cp regsSize ; check if command argument too large
-    jr nc, handleKeyRclError
     ld c, a ; C=NN
     ld a, (argModifier)
     or a
@@ -916,10 +906,6 @@ handleKeyRclOpNN:
     pop bc
     call rclOpRegNN
     jp replaceX ; updates LastX
-handleKeyRclError:
-    ld a, errorCodeDimension
-    ld (handlerCode), a
-    ret
 
 msgStoPrompt:
     .db "STO", 0

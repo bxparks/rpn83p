@@ -262,15 +262,32 @@ closeRpnObjectList:
 ; for the CRC16 checksum, and the 2-byte size field.
 ; Input:
 ;   - B=index
-;   - DE=dataPointer to the begining of the appVar which is the 2-byte size
-;   field provided by the OS
-; Output: HL=objectPointer
+;   - DE=appDataPointer to the begining of the appVar which is the 2-byte
+;   appVarSize field provided by the OS
+; Output:
+;   - HL=objectPointer
+;   - CF=1 if within bounds, otherwise 0
 ; Preserves: A, BC, DE
 rpnObjectIndexToPointer:
-    call rpnObjectIndexToSize ; HL=dataSize
-    add hl, de ; HL=dataSize+dataPointer
+    call rpnObjectIndexToSize ; HL=dataSize; TODO: rename to dataOffset
+    push bc ; stack=[BC]
+    push de ; stack=[BC,DE]
+    ; check pointer out of bounds
+    ex de, hl ; HL=appDataPointer; DE=dataSize
+    ld c, (hl)
     inc hl
-    inc hl ; skip past the size field
+    ld b, (hl) ; BC=appVarSize
+    inc hl
+    ; calculate pointer to item at index
+    add hl, de ; HL=objectPointer=dataSize+appDataPointer+2
+    ex de, hl ; HL=dataSize; DE=objectPointer
+    ; check array bounds
+    or a ; CF=0
+    sbc hl, bc ; if dataSize < appVarSize; CF=1
+    ; restore registers
+    ex de, hl ; HL=objectPointer
+    pop de ; stack=[BC]
+    pop bc ; stack=[]
     ret
 
 ; Description: Convert rpnObject len or index to the data size of the appVas.
@@ -279,7 +296,7 @@ rpnObjectIndexToPointer:
 ; Input: B: len or index
 ; Output: HL: byteSize
 ; Preserves: A, BC, DE
-rpnObjectIndexToSize:
+rpnObjectIndexToSize: ; TODO: rename to rpnObjectIndexToOffset()
     push de
     ld l, b
     ld h, 0
@@ -308,6 +325,8 @@ rpnObjectIndexToSize:
 ;   - HL: name of appVar
 ; Output:
 ;   - none
+;   - throws ErrDimension if index out of bounds
+;   - throws ErrUndefined if appVar not found
 ; Destroys: all
 stoRpnObject:
     push bc ; stack=[index, objectType]
@@ -316,18 +335,15 @@ stoRpnObject:
     pop hl ; stack=[index, objectType]; HL=varName
     call move9ToOp1 ; OP1=varName
     bcall(_ChkFindSym) ; DE=dataPointer; CF=1 if not found
-    jr nc, stoRpnObjectContinue
-    ; Not found, this should never happen.
-    bcall(_PopOP1) ; FPS=[]; OP1/OP2
-    pop bc ; stack=[]; C=objectType; B=index
-    ret
-stoRpnObjectContinue:
+    jr c, rpnObjectUndefined ; Not found, this should never happen.
+    ;
     push de ; stack=[index, objectType, dataPointer]
     bcall(_PopOP1) ; FPS=[]; OP1/OP2
     pop de ; stack=[index, objectType]; DE=dataPointer
     pop bc ; stack=[]; C=objectType; B=index
     ;
     call rpnObjectIndexToPointer ; HL=objectPointer
+    jr nc, rpnObjectOutOfBounds
     ld (hl), c ; (hl)=objectType
     inc hl
     ld a, c
@@ -345,10 +361,15 @@ stoRpnObjectCopyComplex:
     ld bc, rpnRealSizeOf
     ldir
     inc hl
-    inc hl ; OPx registers are 11 bytes, not 9 bytes
+    inc hl ; skip 2 bytes, OPx registers are 11 bytes, not 9 bytes
     ld bc, rpnRealSizeOf
     ldir
     ret
+
+rpnObjectOutOfBounds:
+    bcall(_ErrDimension)
+rpnObjectUndefined:
+    bcall(_ErrUndefined)
 
 ; Description: Return the RPN object in OP1,OP2
 ; Input:
@@ -357,14 +378,18 @@ stoRpnObjectCopyComplex:
 ; Output:
 ;   - A: rpnObjectType
 ;   - OP1/OP2: float or complex number
+;   - throws ErrDimension if index out of bounds
+;   - throws ErrUndefined if appVar not found
 ; Destroys: all
 rclRpnObject:
     push bc
     call move9ToOp1 ; OP1=varName
     bcall(_ChkFindSym) ; DE=dataPointer; CF=1 if not found
     pop bc
-    ret c ; TODO: throw an exception?
+    jr c, rpnObjectUndefined
+    ;
     call rpnObjectIndexToPointer ; HL=objectPointer
+    jr nc, rpnObjectOutOfBounds
     ; figure out how much to copy
     ld de, OP1
     ld a, (hl) ; A=objectType
