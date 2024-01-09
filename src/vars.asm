@@ -1012,57 +1012,59 @@ floatOpDiv:
 ; Predefined single-letter Real or Complex variables.
 ;-----------------------------------------------------------------------------
 
-; Description: Store OP1/OP2 into the TI-OS variable named in A.
+; Description: Store OP1/OP2 into the TI-OS variable named in C.
 ; Input:
-;   - A: varName
+;   - C: varName
 ;   - OP1/OP2: real or complex number
 ; Output: varName=OP1
 ; Destroys: all
 stoVar:
-    ld b, a ; B=varName
     push bc
     bcall(_PushOP1) ; FPS=[OP1/OP2]
     pop bc
     call checkOp1Complex ; ZF=1 if complex
     ; compute C=varType
     jr z, stoVarComplex
-    ld c, RealObj
+    ld b, RealObj
     jr stoVarStore
 stoVarComplex:
-    ld c, CplxObj
+    ld b, CplxObj
 stoVarStore:
     call createVarName ; OP1=varName
+    ; TODO: The SDK documentation says that the variable will be created if it
+    ; doesn't exist. But I think this throws an Err:Undefined exception
+    ; instead. Need to double-check.
     bcall(_StoOther) ; FPS=[]; (varName)=OP1/OP2
     ret
 
-; Description: Recall OP1 from the TI-OS variable named in A. System error if
-; the varName does not exist.
-; Input: A=varName
+; Description: Recall OP1 from the TI-OS variable named in C. Throws
+; ErrUndefined if the varName does not exist.
+; Input: C=varName
 ; Output: OP1/OP2=value
 ; Destroys: all
 rclVar:
-    ld b, a ; B=varName
-    ld c, RealObj ; C=varType, probably ignored by RclVarSym()
+    ld b, RealObj ; B=varType, probably ignored by RclVarSym()
     call createVarName ; OP1=varName
     bcall(_RclVarSym) ; OP1/OP2=value
     ret
 
 ; Description: Create a real variable name in OP1.
-; Input: B=varName; C=varType
+; Input: B=varType; C=varName
 ; Output: OP1=varName
 ; Destroys: A, HL
 ; Preserves: BC, DE
 createVarName:
     ld hl, OP1
-    ld (hl), c ; (OP1)=varType
+    ld (hl), b ; (OP1)=varType
     inc hl
-    ld (hl), b ; (OP1+1)=varName
+    ld (hl), c ; (OP1+1)=varName
     inc hl
     xor a
     ld (hl), a
     inc hl
     ld (hl), a ; terminated by 2 NUL
     inc hl
+    ; next 5 bytes in OP1 can be anything so no need to set them
     ret
 
 ;-----------------------------------------------------------------------------
@@ -1084,7 +1086,6 @@ stoOpVar:
     ; Recall VARS[LETTER]
     pop bc ; stack=[]; B=op; C=LETTER
     push bc ; stack=[op,LETTER]
-    ld a, c ; A=LETTER
     call rclVar ; OP1/OP2=VARS[LETTER]
     ; Invoke op B
     pop bc ; stack=[]; B=op; C=LETTER
@@ -1094,7 +1095,6 @@ stoOpVar:
     call jumpAOfHL
     ; Save VARS[LETTER]
     pop bc ; stack=[]; B=op; C=LETTER
-    ld a, c ; A=LETTER
     call stoVar
     ; restore OP1, OP2
     bcall(_PopOP1) ; FPS=[]; OP1/OP2=OP1/OP2
@@ -1116,7 +1116,6 @@ rclOpVar:
     ; Recall VARS[LETTER]
     pop bc ; stack=[]; B=op; C=LETTER
     push bc ; stack=[op,LETTER]
-    ld a, c ; A=LETTER
     call rclVar ; OP1/OP2=VARS[LETTER]
     call cp1ToCp3 ; OP3/OP4=OP1/OP2
     bcall(_PopOP1) ; FPS=[]; OP1/OP2=OP1/OP2

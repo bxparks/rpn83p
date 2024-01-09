@@ -870,8 +870,7 @@ handleKeyRcl:
     or a
     jr nz, handleKeyRclOpNN
 handleKeyRclLetter:
-    ; Call rclVar() and *push* RegNN onto the RPN stack.
-    ld a, c ; A=LETTER
+    ; Call rclVar() and *push* value onto the RPN stack.
     call rclVar
     jp pushX
 handleKeyRclOpLetter:
@@ -894,7 +893,7 @@ handleKeyRclNumber:
     or a
     jr nz, handleKeyRclOpNN
 handleKeyRclNN:
-    ; Call rclRegNN() and *push* RegNN onto the RPN stack.
+    ; Call rclRegNN() and *push* value onto the RPN stack.
     ld a, c ; A=NN
     call rclRegNN
     jp pushX
