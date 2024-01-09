@@ -1106,7 +1106,7 @@ stoOpVar:
 ;   be a simple assignment operator
 ; Destroys: all, OP3, OP4
 rclOpVar:
-    push bc ; stack=[op,LETTER]
+    push bc ; stack=[op/LETTER]
     bcall(_PushOP1) ; FPS=[OP1/OP2]
     ; Recall VARS[LETTER]
     pop bc ; stack=[]; B=op; C=LETTER
@@ -1119,6 +1119,44 @@ rclOpVar:
     ld a, b ; A=op
     ld hl, floatOps
     jp jumpAOfHL ; OP1/OP2=OP1/OP2{op}OP3/OP4
+
+;-----------------------------------------------------------------------------
+; Universal Sto, Rcl, Sto{op}, Rcl{op} which work for both numeric storage
+; registers and single-letter variables.
+;-----------------------------------------------------------------------------
+
+; Description: Implement stoVar() or stoRegNN() depending on the argType in A.
+; Input: A=varType; C=indexOrLetter
+; Output: none
+stoGeneric:
+    cp a, argTypeLetter
+    jp z, stoVar
+    jp stoRegNN
+
+; Description: Implement rclVar() or rclRegNN() depending on the argType in A.
+; Input: A=varType; C=indexOrLetter
+; Output: none
+rclGeneric:
+    cp a, argTypeLetter
+    jp z, rclVar
+    jp rclRegNN
+
+; Description: Implement stoOpVar() or stoOpRegNN() depending on the argType in
+; A.
+; Input: A=varType; B=op; C=indexOrLetter
+; Output: OP1/OP2: updated
+stoOpGeneric:
+    cp a, argTypeLetter
+    jp z, stoOpVar
+    jp stoOpRegNN
+
+; Description: Implement rclVar() or rclRegNN() depending on the argType in A.
+; Input: A=varType; B=op; C=indexOrLetter
+; Output: OP1/OP2: updated
+rclOpGeneric:
+    cp a, argTypeLetter
+    jp z, rclOpVar
+    jp rclOpRegNN
 
 ;-----------------------------------------------------------------------------
 ; STAT register functions.

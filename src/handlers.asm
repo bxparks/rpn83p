@@ -829,25 +829,20 @@ handleKeySto:
     ret nz ; do nothing if cancelled
     cp argModifierIndirect
     ret nc ; TODO: implement this
-    call rclX
-    ; Check for TI-OS variable letter (A-Z,Theta)
-    ld a, (argType)
-    cp argTypeLetter
-    jr nz, handleKeyStoNumber
-    ; Implement STO{op}LETTER
-    ld a, (argValue) ; A=LETTER
-    ld c, a ; C=LETTER
+    call rclX ; OP1/OP2=X
+    ; Set up Sto parameters
+    ld a, (argValue) ; A=indexOrLetter
+    ld c, a ; C=index or letter
     ld a, (argModifier)
     ld b, a ; B=op
-    jp stoOpVar
-handleKeyStoNumber:
-    ; Implement STO{op}NN
-    ld a, (argValue)
-    ld c, a ; C=NN
-    ld a, (argModifier)
-    ld b, a ; B=op
-    jp stoOpRegNN
+    ld a, (argType) ; A=argType
+    jp stoOpGeneric
 
+; Description: Handle the RCL button. There are 2 cases:
+; 1) If {op} is empty, it's a simple assignment, so we call rclGeneric() and
+; push the value on to the RPN stack.
+; 2) If the {op} is not empty, it is an arithmetic operator, we call
+; rclOpGeneric() and *replace* the current X with the new X.
 handleKeyRcl:
     call closeInputAndRecallNone
     ld hl, msgRclPrompt
@@ -858,51 +853,24 @@ handleKeyRcl:
     ret nz ; do nothing if cancelled
     cp argModifierIndirect
     ret nc ; TODO: implement this
-    ; Check for TI-OS variable letter (A-Z,Theta)
-    ld a, (argType)
-    cp argTypeLetter
-    jr nz, handleKeyRclNumber
-    ;
-    ; Handle RCL{op}LETTER
     ld a, (argValue) ; A=varLetter
-    ld c, a ; C=LETTER
+    ld c, a ; C=indexOrLetter
     ld a, (argModifier)
-    or a
-    jr nz, handleKeyRclOpLetter
-handleKeyRclLetter:
-    ; Call rclVar() and *push* value onto the RPN stack.
-    call rclVar
-    jp pushX
-handleKeyRclOpLetter:
-    ; Call rclOpVar() and *replace* the X register with (OP1 {op} LETTER).
     ld b, a ; B=modifier
-    push bc ; C=LETTER
-    call rclX ; OP1=X
-    pop bc
-    call rclOpVar
-    jp replaceX ; updates LastX
-handleKeyRclNumber:
-    ; Implement rclOpRegNN. There are 2 cases:
-    ; 1) If the {op} is a simple assignment, we call rclRegNN() and push the
-    ; value on to the RPN stack.
-    ; 2) If the {op} is an arithmetic operator, we call rclOpRegNN() and
-    ; *replace* the current X with the new X.
-    ld a, (argValue)
-    ld c, a ; C=NN
-    ld a, (argModifier)
     or a
-    jr nz, handleKeyRclOpNN
-handleKeyRclNN:
-    ; Call rclRegNN() and *push* value onto the RPN stack.
-    call rclRegNN
+    jr nz, handleKeyRclOp
+    ; No modifier, so call rclGeneric() and *push* value onto the RPN stack.
+    ld a, (argType) ; A=argType
+    call rclGeneric
     jp pushX
-handleKeyRclOpNN:
-    ; Call rclOpRegNN() and *replace* the X register with (OP1 {op} RegNN).
-    ld b, a ; B=modifier
-    push bc ; C=NN
+handleKeyRclOp:
+    ; Modifier provided, so call rclOpGeneric() and *replace* the X register
+    ; with (OP1 {op} registerOrVariable).
+    push bc ; stack=[BC saved]
     call rclX ; OP1=X
-    pop bc
-    call rclOpRegNN
+    pop bc ; BC=restored
+    ld a, (argType) ; A=argType
+    call rclOpGeneric
     jp replaceX ; updates LastX
 
 msgStoPrompt:
