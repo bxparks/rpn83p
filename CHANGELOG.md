@@ -1,8 +1,14 @@
 # Changelog
 
 - Unreleased
-    - **Bug Fix** Fix broken `CLRG`.
-        - Broke when 'REGS' was replaced by 'RPN83REG'.
+    - **Bug Fix** Fix broken `CLRG`
+        - broke when 'REGS' was replaced by 'RPN83REG'
+    - Store and recall TI-OS single-letter variables
+        - TI-OS supports 27 single-letter variables (A-Z, Theta) for real and
+          complex numbers
+        - extend `STO`, `RCL`, `STO{op}`, and `RCL{op}` to accept a
+          single-letter in addition to digits (e.g. `STO ALPHA A`, `RCL+
+          ALPHA B`)
 - 0.9.0 (2024-01-06)
     - **Breaking**: Change names and internal formats of various appVars
         - `STK` list variable replaced with `RPN83STK`
