@@ -8,7 +8,6 @@
 ; search can be used instead of a linear search.
 ;-----------------------------------------------------------------------------
 
-keyCodeHandlerTableSize equ 70
 kOnExit equ 0 ; ON key generates 00 as the key code
 
 keyCodeHandlerTable:
@@ -252,3 +251,9 @@ keyCodeHandlerTable:
     ; 2ND Link. Merge reals to complex, or split complex into reals.
     .db kLinkIO
     .dw handleKeyLink
+
+;-----------------------------------------------------------------------------
+
+; Auto-calculate the number of entries in the table.
+keyCodeHandlerTableEnd:
+keyCodeHandlerTableSize equ (keyCodeHandlerTableEnd-keyCodeHandlerTable)/3

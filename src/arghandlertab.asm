@@ -6,8 +6,6 @@
 ; argument dialog box (e.g. "FIX _ _").
 ;------------------------------------------------------------------------------
 
-argKeyCodeTableSize equ 46
-
 argKeyCodeHandlerTable:
     ; number entry
     .db k0
@@ -110,3 +108,10 @@ argKeyCodeHandlerTable:
     .dw handleArgKeyMul
     .db kDiv
     .dw handleArgKeyDiv
+
+;-----------------------------------------------------------------------------
+
+; Auto-calculate the number of entries in the table.
+argKeyCodeHandlerTableEnd:
+argKeyCodeTableSize equ (argKeyCodeHandlerTableEnd-argKeyCodeHandlerTable)/3
+
