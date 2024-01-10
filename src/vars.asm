@@ -71,7 +71,7 @@
 
 ;-----------------------------------------------------------------------------
 ; Each RpnObject is large enough to hold a Real or Complex number. If the size
-; of RpnObject changes, then rpnObjectIndexToSize() must be updated.
+; of RpnObject changes, then rpnObjectIndexToOffset() must be updated.
 ;
 ; struct RpnFloat { // sizeof(RpnFloat)==9
 ;   uint8_t float_type;
@@ -98,7 +98,7 @@
 ; Description: Initialize the AppVar to contain an array of RpnObjects.
 ; Input:
 ;   - HL: name of list to create
-;   - B: len of list, [0,99]
+;   - C: len of list, [0,99]
 ; Destroys: A, BC, DE, HL, OP1
 initRpnObjectList:
     push bc ; stack=[len]
@@ -125,14 +125,14 @@ initRpnObjectListCreate:
     ; We are here if the appVar does not exist. So create.
     ; OP1=appVarName; B=len
     push bc ; stack=[len]
-    call rpnObjectIndexToSize ; HL=expectedSize
+    call rpnObjectIndexToOffset ; HL=expectedSize
     bcall(_CreateAppVar) ; DE=dataPointer
     pop bc ; stack=[]; B=len
     ; [[fallthrough]]
 
 ; Description: Clear the given data segment in the appVar.
 ; Input:
-;   - B: len
+;   - C: len
 ;   - DE: data pointer
 ; Destroys;: all, OP1
 initRpnObjectListClear:
@@ -141,7 +141,7 @@ initRpnObjectListClear:
     call op1Set0 ; OP1=0.0
     pop de ; stack=[len]; DE=dataPointer
     inc de
-    inc de ; skip past the dataSize field
+    inc de ; skip past the appVarSize field
     inc de
     inc de ; skip past the CRC field
     ; insert appId
@@ -153,7 +153,7 @@ initRpnObjectListClear:
     inc hl
     ex de, hl ; DE=dataPointer
     ;
-    pop bc ; stack=[]; B=len
+    pop bc ; stack=[]; C=len
 initRpnObjectListLoop:
     ; Copy OP1 into AppVar.
     ld a, rpnObjectTypeReal
@@ -168,14 +168,15 @@ initRpnObjectListLoopTrailing:
     ld (de), a
     inc de
     djnz initRpnObjectListLoopTrailing
-    pop bc ; stack=[]; B=len
-    djnz initRpnObjectListLoop
+    pop bc ; stack=[]; C=len
+    dec c
+    jr nz, initRpnObjectListLoop
     ret
 
 ; Description: Validate the size and CRC16 checksum of the rpnObjectList data
 ; array.
 ; Input:
-;   - B=expectedLen
+;   - C=expectedLen
 ;   - DE=dataPointer to appVar contents
 ;   - (appVar): 2 bytes (len), 2 bytes (crc16), 2 bytes (appId), data[]
 ; Output:
@@ -185,11 +186,11 @@ initRpnObjectListLoopTrailing:
 validateRpnObjectList:
     push bc ; stack=[expectedLen]
     ; Validate expected size of data segment
-    call rpnObjectIndexToSize ; HL=expectedSize
+    call rpnObjectIndexToOffset ; HL=expectedSize
     ex de, hl ; HL=dataPointer; DE=expectedSize
     ld c, (hl)
     inc hl
-    ld b, (hl) ; BC=size(appVar)
+    ld b, (hl) ; BC=appVarSize
     inc hl
     ; Compare expected size
     push hl ; stack=[expectedLen, dataPointer]
@@ -205,7 +206,7 @@ validateRpnObjectList:
     ld d, (hl) ; DE=CRC16
     inc hl
     dec bc
-    dec bc ; BC=size(appVar)-2; skip the CRC field itself
+    dec bc ; BC=appVarSize-2; skip the CRC field itself
     ; Compare CRC
     push hl ; stack=[expectedLen, dataPointer]
     push de ; stack=[expectedLen, dataPointer, expectedCRC]
@@ -224,7 +225,7 @@ validateRpnObjectList:
     or a ; CF=0
     sbc hl, de ; if appId matches: ZF=1
 validateRpnObjectListEnd:
-    pop bc ; stack=[] BC=expectedLen
+    pop bc ; stack=[] C=expectedLen
     ret
 
 ; Description: Close the rpnObjectList by updating the CRC16 checksum. This is
@@ -259,30 +260,49 @@ closeRpnObjectList:
 ;-----------------------------------------------------------------------------
 
 ; Description: Convert rpnObject index to the object pointer, including 2 bytes
-; for the CRC16 checksum, and the 2-byte size field.
+; for the appVarSize (managed by the OS), 2 bytes for the CRC16 checksum, and 2
+; bytes for the appId.
 ; Input:
-;   - B=index
-;   - DE=dataPointer to the begining of the appVar which is the 2-byte size
-;   field provided by the OS
-; Output: HL=objectPointer
+;   - C=index
+;   - DE=appDataPointer to the begining of the appVar which is the 2-byte
+;   appVarSize field provided by the OS
+; Output:
+;   - HL=objectPointer
+;   - CF=1 if within bounds, otherwise 0
 ; Preserves: A, BC, DE
 rpnObjectIndexToPointer:
-    call rpnObjectIndexToSize ; HL=dataSize
-    add hl, de ; HL=dataSize+dataPointer
+    call rpnObjectIndexToOffset ; HL=dataOffset
+    push bc ; stack=[BC]
+    push de ; stack=[BC,DE]
+    ; check pointer out of bounds
+    ex de, hl ; HL=appDataPointer; DE=dataOffset
+    ld c, (hl)
     inc hl
-    inc hl ; skip past the size field
+    ld b, (hl) ; BC=appVarSize
+    inc hl
+    ; calculate pointer to item at index
+    add hl, de ; HL=objectPointer=dataOffset+appDataPointer+2
+    ex de, hl ; HL=dataOffset; DE=objectPointer
+    ; check array bounds
+    or a ; CF=0
+    sbc hl, bc ; if dataOffset < appVarSize; CF=1
+    ; restore registers
+    ex de, hl ; HL=objectPointer
+    pop de ; stack=[BC]
+    pop bc ; stack=[]
     ret
 
-; Description: Convert rpnObject len or index to the data size of the appVas.
-; This is the value stored by the TI-OS. Size = len*rpnObjectSizeOf + 2 (crc16)
-; + 2 (appId).
-; Input: B: len or index
+; Description: Convert rpnObject index to the offset into the appVar data
+; segment. If 'index' is the 'len', then this is the value stored by the TI-OS
+; in the appVarSize field at the beginning of the data segment: appVarSize =
+; len*rpnObjectSizeOf + 2 (crc16) + 2 (appId).
+; Input: C: index or len
 ; Output: HL: byteSize
 ; Preserves: A, BC, DE
-rpnObjectIndexToSize:
+rpnObjectIndexToOffset:
     push de
-    ld l, b
-    ld h, 0
+    ld l, c
+    ld h, 0 ; HL=len
     ld e, l
     ld d, h ; DE=len
     add hl, hl ; HL=sum=2*len
@@ -291,7 +311,7 @@ rpnObjectIndexToSize:
     ex de, hl ; DE=sum=3*len; HL=2*len
     add hl, hl
     add hl, hl
-    add hl, hl ; De=sum=3*len; HL=16*len
+    add hl, hl ; DE=sum=3*len; HL=16*len
     add hl, de ; HL=sum=19*len
     ld de, 4
     add hl, de ; HL=sum=19*len+4
@@ -300,38 +320,39 @@ rpnObjectIndexToSize:
 
 ;-----------------------------------------------------------------------------
 
-; Description: Store the OP1/OP2/OP3 rpnObject to the given AppVar.
+; Description: Store the OP1/OP2 rpnObject to the given AppVar at index C.
 ; Input:
-;   - C: objectType
 ;   - OP1, OP2: real or complex
-;   - B: index
-;   - HL: name of appVar
+;   - C: index
+;   - HL: varName
 ; Output:
 ;   - none
+;   - throws ErrDimension if index out of bounds
+;   - throws ErrUndefined if appVar not found
 ; Destroys: all
 stoRpnObject:
-    push bc ; stack=[index, objectType]
-    push hl ; stack=[index, objectType, varName]
+    call getOp1RpnObjectType ; A=rpnObjectType
+    ld b, a ; B=rpnObjectType
+    ; find varName
+    push bc ; stack=[index/objectType]
+    push hl ; stack=[index/objectType, varName]
     bcall(_PushOP1) ; FPS=[OP1/OP2]
     pop hl ; stack=[index, objectType]; HL=varName
     call move9ToOp1 ; OP1=varName
     bcall(_ChkFindSym) ; DE=dataPointer; CF=1 if not found
-    jr nc, stoRpnObjectContinue
-    ; Not found, this should never happen.
-    bcall(_PopOP1) ; FPS=[]; OP1/OP2
-    pop bc ; stack=[]; C=objectType; B=index
-    ret
-stoRpnObjectContinue:
-    push de ; stack=[index, objectType, dataPointer]
-    bcall(_PopOP1) ; FPS=[]; OP1/OP2
-    pop de ; stack=[index, objectType]; DE=dataPointer
-    pop bc ; stack=[]; C=objectType; B=index
+    jr c, rpnObjectUndefined ; Not found, this should never happen.
     ;
+    push de ; stack=[index/objectType, dataPointer]
+    bcall(_PopOP1) ; FPS=[]; OP1/OP2
+    pop de ; stack=[index/objectType]; DE=dataPointer
+    pop bc ; stack=[]; B=objectType; C=index
+    ; find objectPointer of index
     call rpnObjectIndexToPointer ; HL=objectPointer
-    ld (hl), c ; (hl)=objectType
+    jr nc, rpnObjectOutOfBounds
+    ld (hl), b ; (hl)=objectType
     inc hl
-    ld a, c
     ex de, hl ; DE=objectPointer+1
+    ld a, b ; A=objectType
     cp rpnObjectTypeComplex
     jr z, stoRpnObjectCopyComplex
     ; copy real
@@ -345,26 +366,35 @@ stoRpnObjectCopyComplex:
     ld bc, rpnRealSizeOf
     ldir
     inc hl
-    inc hl ; OPx registers are 11 bytes, not 9 bytes
+    inc hl ; skip 2 bytes, OPx registers are 11 bytes, not 9 bytes
     ld bc, rpnRealSizeOf
     ldir
     ret
 
+rpnObjectOutOfBounds:
+    bcall(_ErrDimension)
+rpnObjectUndefined:
+    bcall(_ErrUndefined)
+
 ; Description: Return the RPN object in OP1,OP2
 ; Input:
-;   - B: index
+;   - C: index
 ;   - HL: name of appVar e.g. "RPN83STK", "RPN83REG"
 ; Output:
 ;   - A: rpnObjectType
 ;   - OP1/OP2: float or complex number
+;   - throws ErrDimension if index out of bounds
+;   - throws ErrUndefined if appVar not found
 ; Destroys: all
 rclRpnObject:
-    push bc
+    push bc ; stack=[index]
     call move9ToOp1 ; OP1=varName
     bcall(_ChkFindSym) ; DE=dataPointer; CF=1 if not found
-    pop bc
-    ret c ; TODO: throw an exception?
+    pop bc ; C=[index]
+    jr c, rpnObjectUndefined
+    ;
     call rpnObjectIndexToPointer ; HL=objectPointer
+    jr nc, rpnObjectOutOfBounds
     ; figure out how much to copy
     ld de, OP1
     ld a, (hl) ; A=objectType
@@ -411,7 +441,7 @@ stackName:
 initStack:
     set rpnFlagsLiftEnabled, (iy + rpnFlags)
     ld hl, stackName
-    ld b, stackSize
+    ld c, stackSize
     jp initRpnObjectList
 
 ; Description: Initialize LastX with the contents of 'ANS' variable from TI-OS
@@ -437,7 +467,7 @@ clearStack:
     call move9ToOp1
     bcall(_ChkFindSym) ; DE=dataPointer; CF=1 if not found
     ret c
-    ld b, stackSize
+    ld c, stackSize
     jp initRpnObjectListClear
 
 ; Description: Should be called just before existing the app.
@@ -451,7 +481,7 @@ closeStack:
 
 ; Description: Store OP1/OP2 to STK[nn], setting dirty flag.
 ; Input:
-;   - A: stack register index, 0-based
+;   - C: stack register index, 0-based
 ;   - OP1/OP2: float value
 ; Output:
 ;   - STK[nn] = OP1/OP2
@@ -460,13 +490,11 @@ closeStack:
 stoStackNN:
     set dirtyFlagsStack, (iy + dirtyFlags)
     ld hl, stackName
-    ld b, a ; B=index
-    call getOp1RpnObjectType ; C=rpnObjectType
     jp stoRpnObject
 
 ; Description: Copy STK[nn] to OP1/OP2.
 ; Input:
-;   - A: stack register index, 0-based
+;   - C: stack register index, 0-based
 ;   - 'STK' app variable
 ; Output:
 ;   - OP1/OP2: float value
@@ -474,7 +502,6 @@ stoStackNN:
 ; Destroys: all
 rclStackNN:
     ld hl, stackName
-    ld b, a ; B=index
     jp rclRpnObject ; OP1/OP2=STK[A]
 
 ;-----------------------------------------------------------------------------
@@ -482,14 +509,14 @@ rclStackNN:
 ; Description: Store OP1/OP2 to X.
 ; Destroys: all
 stoX:
-    ld a, stackXIndex
+    ld c, stackXIndex
     jr stoStackNN
 
 ; Description: Recall X to OP1/OP2.
 ; Output: A=objectType
 ; Destroys: all
 rclX:
-    ld a, stackXIndex
+    ld c, stackXIndex
     jr rclStackNN
 
 ;-----------------------------------------------------------------------------
@@ -497,14 +524,14 @@ rclX:
 ; Description: Store OP1/OP2 to Y.
 ; Destroys: all
 stoY:
-    ld a, stackYIndex
+    ld c, stackYIndex
     jr stoStackNN
 
 ; Description: Recall Y to OP1/OP2.
 ; Output: A=objectType
 ; Destroys: all
 rclY:
-    ld a, stackYIndex
+    ld c, stackYIndex
     jr rclStackNN
 
 ;-----------------------------------------------------------------------------
@@ -512,14 +539,14 @@ rclY:
 ; Description: Store OP1/OP2 to Z.
 ; Destroys: all
 stoZ:
-    ld a, stackZIndex
+    ld c, stackZIndex
     jr stoStackNN
 
 ; Description: Recall Z to OP1/OP2.
 ; Output: A=objectType
 ; Destroys: all
 rclZ:
-    ld a, stackZIndex
+    ld c, stackZIndex
     jr rclStackNN
 
 ;-----------------------------------------------------------------------------
@@ -527,14 +554,14 @@ rclZ:
 ; Description: Store OP1/OP2 to T.
 ; Destroys: all
 stoT:
-    ld a, stackTIndex
+    ld c, stackTIndex
     jr stoStackNN
 
 ; Description: Recall T to OP1/OP2.
 ; Output: A=objectType
 ; Destroys: all
 rclT:
-    ld a, stackTIndex
+    ld c, stackTIndex
     jr rclStackNN
 
 ;-----------------------------------------------------------------------------
@@ -542,14 +569,14 @@ rclT:
 ; Description: Store OP1/OP2 to L.
 ; Destroys: all
 stoL:
-    ld a, stackLIndex
+    ld c, stackLIndex
     jr stoStackNN
 
 ; Description: Recall L to OP1/OP2.
 ; Output: A=objectType
 ; Destroys: all
 rclL:
-    ld a, stackLIndex
+    ld c, stackLIndex
     jr rclStackNN
 
 ;-----------------------------------------------------------------------------
@@ -827,7 +854,7 @@ regsName:
 ; Destroys: all
 initRegs:
     ld hl, regsName
-    ld b, regsSize
+    ld c, regsSize
     jp initRpnObjectList
 
 ; Description: Clear all REGS elements.
@@ -839,7 +866,7 @@ clearRegs:
     call move9ToOp1
     bcall(_ChkFindSym) ; DE=dataPointer; CF=1 if not found
     ret c
-    ld b, regsSize
+    ld c, regsSize
     jp initRpnObjectListClear
 
 ; Description: Should be called just before existing the app.
@@ -851,7 +878,7 @@ closeRegs:
 
 ; Description: Store OP1/OP2 into REGS[NN]. Works for complex.
 ; Input:
-;   - A: register index, 0-based
+;   - C: register index, 0-based
 ;   - OP1: float value
 ; Output:
 ;   - REGS[NN] = OP1
@@ -859,13 +886,11 @@ closeRegs:
 ; Preserves: OP1
 stoRegNN:
     ld hl, regsName
-    ld b, a ; B=index
-    call getOp1RpnObjectType ; C=rpnObjectType
     jp stoRpnObject
 
 ; Description: Recall REGS[NN] into OP1/OP2. Works for complex.
 ; Input:
-;   - A: register index, 0-based
+;   - C: register index, 0-based
 ;   - 'REGS' list variable
 ; Output:
 ;   - OP1: float value
@@ -874,20 +899,20 @@ stoRegNN:
 ; Preserves: OP2
 rclRegNN:
     ld hl, regsName
-    ld b, a ; B=index
-    jp rclRpnObject ; OP1/OP2=STK[A]
+    jp rclRpnObject ; OP1/OP2=STK[C]
 
 ; Description: Recall REGS[NN] to OP2. WARNING: Assumes real not complex.
 ; Input:
-;   - A: register index, 0-based
+;   - C: register index, 0-based
 ;   - 'REGS' list variable
 ; Output:
 ;   - OP2: float value
+; Destroys: all
 ; Preserves: OP1
 rclRegNNToOP2:
-    push af
+    push bc ; stack=[NN]
     bcall(_PushRealO1) ; FPS=[OP1]
-    pop af
+    pop bc ; C=NN
     call rclRegNN
     bcall(_OP1ToOP2)
     bcall(_PopRealO1) ; FPS=[]; OP1=OP1
@@ -912,7 +937,6 @@ stoOpRegNN:
     ; Recall REGS[NN]
     pop bc ; stack=[]; B=op; C=NN
     push bc ; stack=[op,NN]
-    ld a, c ; A=NN
     call rclRegNN ; OP1/OP2=REGS[NN]
     ; Invoke op B
     pop bc ; stack=[]; B=op; C=NN
@@ -922,16 +946,14 @@ stoOpRegNN:
     call jumpAOfHL
     ; Save REGS[C]
     pop bc ; stack=[]; B=op; C=NN
-    ld a, c ; A=NN
     call stoRegNN
     ; restore OP1, OP2
     bcall(_PopOP1) ; FPS=[]; OP1/OP2=OP1/OP2
     ret
 
 ; Description: Implement RCL{op} NN, with {op} defined by B and NN given by C.
-; WARNING: Works only for real not complex.
 ; Input:
-;   - OP1
+;   - OP1/OP2: real or complex number
 ;   - B: operation index [0,4] into floatOps, MUST be same as argModifierXxx
 ;   - C: register index NN, 0-based
 ; Output:
@@ -944,7 +966,6 @@ rclOpRegNN:
     ; Recall REGS[NN]
     pop bc ; stack=[]; B=op; C=NN
     push bc ; stack=[op,NN]
-    ld a, c ; A=NN
     call rclRegNN ; OP1/OP2=REGS[NN]
     call cp1ToCp3 ; OP3/OP4=OP1/OP2
     bcall(_PopOP1) ; FPS=[]; OP1/OP2=OP1/OP2
@@ -983,6 +1004,163 @@ floatOpDiv:
     jp universalDiv
 
 ;-----------------------------------------------------------------------------
+; Predefined single-letter Real or Complex variables.
+;-----------------------------------------------------------------------------
+
+; Description: Store OP1/OP2 into the TI-OS variable named in C.
+; Input:
+;   - C: varName
+;   - OP1/OP2: real or complex number
+; Output: OP1/OP2: value stored
+; Destroys: all
+; Preserves: OP1/OP2
+stoVar:
+    push bc
+    bcall(_PushOP1) ; FPS=[OP1/OP2]
+    pop bc
+    call checkOp1Complex ; ZF=1 if complex
+    jr z, stoVarComplex
+    ld b, RealObj
+    jr stoVarSave
+stoVarComplex:
+    ld b, CplxObj
+stoVarSave:
+    call createVarName ; OP1=varName
+    bcall(_StoOther) ; FPS=[]; (varName)=OP1/OP2; var created if necessary
+    ret
+
+; Description: Recall OP1 from the TI-OS variable named in C. Throws
+; ErrUndefined if the varName does not exist.
+; Input: C: varName
+; Output: OP1/OP2: real or comple number
+; Destroys: all
+rclVar:
+    ld b, RealObj ; B=varType, probably ignored by RclVarSym()
+    call createVarName ; OP1=varName
+    bcall(_RclVarSym) ; OP1/OP2=value
+    ret
+
+; Description: Create a real variable name in OP1.
+; Input: B=varType; C=varName
+; Output: OP1=varName
+; Destroys: A, HL
+; Preserves: BC, DE
+createVarName:
+    ld hl, OP1
+    ld (hl), b ; (OP1)=varType
+    inc hl
+    ld (hl), c ; (OP1+1)=varName
+    inc hl
+    xor a
+    ld (hl), a
+    inc hl
+    ld (hl), a ; terminated by 2 NUL
+    inc hl
+    ; next 5 bytes in OP1 can be anything so no need to set them
+    ret
+
+;-----------------------------------------------------------------------------
+
+; Description: Implement STO{op} LETTER. Very similar to stoOpRegNN().
+; Input:
+;   - OP1/OP2: real or complex number
+;   - B: operation index [0,4] into floatOps, MUST be same as argModifierXxx
+;   - C: LETTER, name of variable
+; Output:
+;   - VARS[LETTER]=(VARS[LETTER] {op} OP1/OP2), where {op} is defined by B, and
+;   can be a simple assignment operator (argModifierNone)
+; Destroys: all, OP3, OP4
+; Preserves: OP1/OP2
+stoOpVar:
+    ; Use stoVar() to avoid error in rclVar() if the {op} is argModifierNone.
+    ld a, b ; A=op
+    or a ; ZF=1 if op==argModifierNone
+    jr z, stoVar
+    ;
+    push bc ; stack=[op,LETTER]
+    bcall(_PushOP1) ; FPS=[OP1/OP2]
+    call cp1ToCp3 ; OP3/OP4=OP1/OP2
+    ; Recall VARS[LETTER]
+    pop bc ; stack=[]; B=op; C=LETTER
+    push bc ; stack=[op,LETTER]
+    call rclVar ; OP1/OP2=VARS[LETTER]
+    ; Invoke op B
+    pop bc ; stack=[]; B=op; C=LETTER
+    push bc ; stack=[op,LETTER]
+    ld a, b ; A=op
+    ld hl, floatOps
+    call jumpAOfHL
+    ; Save VARS[LETTER]
+    pop bc ; stack=[]; B=op; C=LETTER
+    call stoVar
+    ; restore OP1, OP2
+    bcall(_PopOP1) ; FPS=[]; OP1/OP2=OP1/OP2
+    ret
+
+; Description: Implement RCL{op} LETTER, with {op} defined by B and LETTER
+; given by C. Very similar to rclOpRegNN().
+; Input:
+;   - OP1/OP2: real or complex number
+;   - B: operation index [0,4] into floatOps, MUST be same as argModifierXxx
+;   - C: LETTER, name of variable
+; Output:
+;   - OP1/OP2=(OP1/OP2 {op} REGS[LETTER]), where {op} is defined by B, and can
+;   be a simple assignment operator
+; Destroys: all, OP3, OP4
+rclOpVar:
+    push bc ; stack=[op/LETTER]
+    bcall(_PushOP1) ; FPS=[OP1/OP2]
+    ; Recall VARS[LETTER]
+    pop bc ; stack=[]; B=op; C=LETTER
+    push bc ; stack=[op,LETTER]
+    call rclVar ; OP1/OP2=VARS[LETTER]
+    call cp1ToCp3 ; OP3/OP4=OP1/OP2
+    bcall(_PopOP1) ; FPS=[]; OP1/OP2=OP1/OP2
+    ; Invoke op B
+    pop bc ; stack=[]; B=op; C=LETTER
+    ld a, b ; A=op
+    ld hl, floatOps
+    jp jumpAOfHL ; OP1/OP2=OP1/OP2{op}OP3/OP4
+
+;-----------------------------------------------------------------------------
+; Universal Sto, Rcl, Sto{op}, Rcl{op} which work for both numeric storage
+; registers and single-letter variables.
+;-----------------------------------------------------------------------------
+
+; Description: Implement stoVar() or stoRegNN() depending on the argType in A.
+; Input: A=varType; C=indexOrLetter
+; Output: none
+stoGeneric:
+    cp a, argTypeLetter
+    jp z, stoVar
+    jp stoRegNN
+
+; Description: Implement rclVar() or rclRegNN() depending on the argType in A.
+; Input: A=varType; C=indexOrLetter
+; Output: none
+rclGeneric:
+    cp a, argTypeLetter
+    jp z, rclVar
+    jp rclRegNN
+
+; Description: Implement stoOpVar() or stoOpRegNN() depending on the argType in
+; A.
+; Input: A=varType; B=op; C=indexOrLetter
+; Output: OP1/OP2: updated
+stoOpGeneric:
+    cp a, argTypeLetter
+    jp z, stoOpVar
+    jp stoOpRegNN
+
+; Description: Implement rclVar() or rclRegNN() depending on the argType in A.
+; Input: A=varType; B=op; C=indexOrLetter
+; Output: OP1/OP2: updated
+rclOpGeneric:
+    cp a, argTypeLetter
+    jp z, rclOpVar
+    jp rclOpRegNN
+
+;-----------------------------------------------------------------------------
 ; STAT register functions.
 ; TODO: Move stat registers to a separate "RPN83STA" appVar so that we don't
 ; overlap with [R11,R23].
@@ -992,19 +1170,21 @@ floatOpDiv:
 ; WARNING: Works only for real not complex.
 ; Input:
 ;   OP1: float value
-;   A: register index NN, 0-based
+;   C: register index NN, 0-based
 ; Output:
 ;   REGS[NN] += OP1
 ; Destroys: all
 ; Preserves: OP1, OP2
 stoAddRegNN:
-    push af ; A=NN
+    push bc ; stack=[NN]
     bcall(_PushRealO1) ; FPS=[OP1]
     bcall(_PushRealO2) ; FPS=[OP1,OP2]
     bcall(_OP1ToOP2)
-    call rclRegNN ; I guess A is preserved by the previous bcalls
+    pop bc ; C=NN
+    push bc ; stack=[NN]
+    call rclRegNN
     bcall(_FPAdd) ; OP1 += OP2
-    pop af ; A=NN
+    pop bc ; C=NN
     call stoRegNN
     bcall(_PopRealO2) ; FPS=[OP1]
     bcall(_PopRealO1) ; FPS=[]; OP1=OP1
@@ -1014,19 +1194,21 @@ stoAddRegNN:
 ; WARNING: Works only for real not complex.
 ; Input:
 ;   OP1: float value
-;   A: register index NN, 0-based
+;   C: register index NN, 0-based
 ; Output:
 ;   REGS[NN] -= OP1
 ; Destroys: all
 ; Preserves: OP1, OP2
 stoSubRegNN:
-    push af ; A=NN
+    push bc ; stack=[NN]
     bcall(_PushRealO1) ; FPS=[OP1]
     bcall(_PushRealO2) ; FPS=[OP1,OP2]
     bcall(_OP1ToOP2)
-    call rclRegNN ; I guess A is preserved by the previous bcalls
+    pop bc ; C=NN
+    push bc
+    call rclRegNN
     bcall(_FPSub) ; OP1 -= OP2
-    pop af ; A=NN
+    pop bc ; C=NN
     call stoRegNN
     bcall(_PopRealO2) ; FPS=[OP1]
     bcall(_PopRealO1) ; FPS=[]; OP1=OP1

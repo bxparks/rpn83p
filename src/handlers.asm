@@ -824,62 +824,54 @@ handleKeySto:
     ld hl, msgStoPrompt
     call startArgParser
     set inputBufFlagsArgAllowModifier, (iy + inputBufFlags)
-    call processArgCommands
-    ret nc ; do nothing if canceled
+    set inputBufFlagsArgAllowLetter, (iy + inputBufFlags)
+    call processArgCommands ; ZF=0 if cancelled
+    ret nz ; do nothing if cancelled
     cp argModifierIndirect
     ret nc ; TODO: implement this
-    call rclX
-    ; Implement STO{op}NN
-    ld a, (argValue)
-    cp regsSize ; check if command argument too large
-    jp nc, handleKeyStoError
-    ld c, a ; C=NN
+    call rclX ; OP1/OP2=X
+    ; Set up Sto parameters
+    ld a, (argValue) ; A=indexOrLetter
+    ld c, a ; C=index or letter
     ld a, (argModifier)
     ld b, a ; B=op
-    jp stoOpRegNN
-handleKeyStoError:
-    ld a, errorCodeDimension
-    ld (handlerCode), a
-    ret
+    ld a, (argType) ; A=argType
+    jp stoOpGeneric
 
+; Description: Handle the RCL button. There are 2 cases:
+; 1) If {op} is empty, it's a simple assignment, so we call rclGeneric() and
+; push the value on to the RPN stack.
+; 2) If the {op} is not empty, it is an arithmetic operator, we call
+; rclOpGeneric() and *replace* the current X with the new X.
 handleKeyRcl:
     call closeInputAndRecallNone
     ld hl, msgRclPrompt
     call startArgParser
     set inputBufFlagsArgAllowModifier, (iy + inputBufFlags)
-    call processArgCommands
-    ret nc ; do nothing if canceled
+    set inputBufFlagsArgAllowLetter, (iy + inputBufFlags)
+    call processArgCommands ; ZF=0 if cancelled
+    ret nz ; do nothing if cancelled
     cp argModifierIndirect
     ret nc ; TODO: implement this
-    ; Implement rclOpRegNN. There are 2 cases:
-    ; 1) If the {op} is a simple assignment, we call rclRegNN() and push the
-    ; value on to the RPN stack.
-    ; 2) If the {op} is an arithmetic operator, we call rclOpRegNN() and
-    ; *replace* the current X with the new X.
-    ld a, (argValue)
-    cp regsSize ; check if command argument too large
-    jr nc, handleKeyRclError
-    ld c, a
+    ld a, (argValue) ; A=varLetter
+    ld c, a ; C=indexOrLetter
     ld a, (argModifier)
+    ld b, a ; B=modifier
     or a
-    jr nz, handleKeyRclOpNN
-handleKeyRclNN:
-    ; Call rclRegNN() and *push* RegNN onto the RPN stack.
-    ld a, c
-    call rclRegNN
+    jr nz, handleKeyRclOp
+    ; No modifier, so call rclGeneric() and *push* value onto the RPN stack.
+    ld a, (argType) ; A=argType
+    call rclGeneric
     jp pushX
-handleKeyRclOpNN:
-    ; Call rclOpRegNN() and *replace* the X register with (OP1 {op} RegNN).
-    ld b, a
-    push bc
+handleKeyRclOp:
+    ; Modifier provided, so call rclOpGeneric() and *replace* the X register
+    ; with (OP1 {op} registerOrVariable).
+    push bc ; stack=[BC saved]
     call rclX ; OP1=X
-    pop bc
-    call rclOpRegNN
+    pop bc ; BC=restored
+    ld a, (argType) ; A=argType
+    call rclOpGeneric
     jp replaceX ; updates LastX
-handleKeyRclError:
-    ld a, errorCodeDimension
-    ld (handlerCode), a
-    ret
 
 msgStoPrompt:
     .db "STO", 0
@@ -924,8 +916,8 @@ handleKeyDraw:
     call closeInput ; preserve rpnFlagsTvmCalculate
     ld hl, msgDrawPrompt
     call startArgParser
-    call processArgCommands
-    ret nc ; do nothing if canceled
+    call processArgCommands ; ZF=0 if cancelled
+    ret nz ; do nothing if cancelled
     ; save (argValue)
     ld a, (argValue)
     ld (drawMode), a

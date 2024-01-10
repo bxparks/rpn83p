@@ -89,11 +89,11 @@ rpnFlagsTvmCalculate equ 6 ; set if the next TVM function should calculate
 
 ; Flags for the inputBuf. Offset from IY register.
 inputBufFlags equ asm_Flag3
-;inputBufFlagsDecPnt equ 0 ; set if decimal point exists
-;inputBufFlagsEE equ 1 ; set if EE symbol exists
-inputBufFlagsClosedEmpty equ 2 ; inputBuf empty when closeInput() called
+inputBufFlagsClosedEmpty equ 0 ; inputBuf empty when closeInput() called
+inputBufFlagsArgAllowModifier equ 1 ; allow */-+ modifier in CommandArg mode
+inputBufFlagsArgAllowLetter equ 2 ; allow A-Z,Theta in CommandArg mode
 inputBufFlagsArgExit equ 3 ; set to exit CommandArg mode
-inputBufFlagsArgAllowModifier equ 4 ; allow */-+ modifier in CommandArg mode
+inputBufFlagsArgCancel equ 4 ; set if exit was caused by CLEAR or ON/EXIT
 
 ; Bit flags for the result of GetInputBufState().
 inputBufStateDecimalPoint equ 0 ; set if decimal point exists
@@ -133,7 +133,7 @@ rpnObjectTypeComplexRad equ $4C ; uses bit 5 and 6
 rpnObjectTypeMask equ $1F ; TI-OS type uses only bits 0-4
 ; An PpnObject is a struct of a type byte and 2 RpnFloats so that a complex
 ; number can be stored. See the struct definitions in vars.asm. If the
-; rpnObjectSizeOf is changed, the rpnObjectIndexToSize() function must be
+; rpnObjectSizeOf is changed, the rpnObjectIndexToOffset() function must be
 ; updated.
 rpnRealSizeOf equ 9 ; sizeof(float)
 rpnComplexSizeOf equ 18 ; sizeof(complex)
@@ -316,20 +316,26 @@ menuNameSizeOf equ 6
 ;   struct ArgParser {
 ;       char *argPrompt; // e.g. "STO"
 ;       char argModifier; // see argModifierXxx
+;       char argType; // argTypeXxx
 ;       uint8_t argValue;
 ;   }
 ; The argModifierXxx (0-4) MUST match the corresponding operation in the
 ; 'floatOps' array in vars.asm.
 argPrompt equ menuName + menuNameSizeOf ; (char*)
 argModifier equ argPrompt + 2 ; char
-argValue equ argModifier + 1 ; u8
+argType equ argModifier + 1 ; u8
+argValue equ argType + 1 ; u8
+; argModifier enums
 argModifierNone equ 0
 argModifierAdd equ 1 ; '+' pressed
 argModifierSub equ 2 ; '-' pressed
 argModifierMul equ 3 ; '*' pressed
 argModifierDiv equ 4 ; '/' pressed
 argModifierIndirect equ 5 ; '.' pressed (not yet supported)
-argModifierCanceled equ 6 ; CLEAR or EXIT pressed
+; argType enums
+argTypeEmpty equ 0 ; empty string
+argTypeNumber equ 1 ; 1 or 2 digit arguments
+argTypeLetter equ 2 ; a TI-OS variable letter, 'A'-'Z', 'Theta'
 
 ; STAT variables
 statAllEnabled equ argValue + 1 ; boolean, 1 if "ALLSigma" enabled

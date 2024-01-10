@@ -727,7 +727,7 @@ a few of them as described below:
 - `Err: StatPlot`
 - `Err: Syntax`: incorrect math expression syntax
 - `Err: Tol Not Met`
-- `Err: Undefined`
+- `Err: Undefined`: variable not found
 
 These are shown in the Error Code line on the screen. For example, if we try to
 divide `1 / 0`, a division by 0 error is shown:
