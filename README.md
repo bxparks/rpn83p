@@ -131,7 +131,7 @@ Guide](docs/USER_GUIDE.md), but here is the quick version:
   [releases page](https://github.com/bxparks/rpn83p/releases).
 - Upload the file to the TI-83 Plus or TI-84 Plus calculator. Use one of
   following link programs:
-    - Windows: [TI Connect](https://education.ti.com/en/products/computer-software/ti-connect-sw)
+    - Windows or MacOS: [TI Connect](https://education.ti.com/en/products/computer-software/ti-connect-sw)
     - Linux: [tilp](https://github.com/debrouxl/tilp_and_gfm) (`$ apt install
       tilp2`)
 - Run the program using the `APPS`:
@@ -144,7 +144,7 @@ Guide](docs/USER_GUIDE.md), but here is the quick version:
 
 The RPN83P app starts directly into the calculator mode, like this:
 
-![RPN83P Hello 1](docs/images/rpn83p-initial.png)
+![RPN83P Initial Start Screen](docs/images/rpn83p-initial.png)
 
 ### Supported Hardware
 
