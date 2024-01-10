@@ -102,15 +102,16 @@ parseArgBufAddDigit:
     ld c, a ; sum+=u8(HL)
     ret
 
-; Description: Check if the character in 'A' is a TI-OS variable (A-Z, Theta).
+; Description: Check if the character in A is a TI-OS variable ('A'-'Z',
+; 'tTheta').
 ; Input: A: char
 ; Output: CF=1 if valid
 ; Preserves: all
 isVariableLetter:
     cp tA ; if A<'A': CF=1
     jr c, isVariableLetterFalse
-    cp tTheta ; if A<='Theta': CF=1
-    ret c
+    cp tTheta+1 ; if A<='Theta': CF=1
+    ret
 isVariableLetterFalse:
     or a ; CF=0
     ret
