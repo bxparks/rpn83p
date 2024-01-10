@@ -3,6 +3,7 @@
 - Unreleased
     - **Bug Fix** Fix broken `CLRG`
         - broke when 'REGS' was replaced by 'RPN83REG'
+    - **Bug Fix** Disallow `A-F` in non-BASE mode
     - Store and recall TI-OS single-letter variables
         - TI-OS supports 27 single-letter variables (A-Z, Theta) for real and
           complex numbers

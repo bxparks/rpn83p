@@ -75,130 +75,133 @@ handleKey1:
 
 ; Description: Append '2' to inputBuf.
 handleKey2:
-    call checkBase8Or10Or16
+    call checkAllowOct ; ZF=1 if oct digits 0-7 allowed
     ret nz
     ld a, '2'
     jr handleKeyNumber
 
 ; Description: Append '3' to inputBuf.
 handleKey3:
-    call checkBase8Or10Or16
+    call checkAllowOct ; ZF=1 if oct digits 0-7 allowed
     ret nz
     ld a, '3'
     jr handleKeyNumber
 
 ; Description: Append '4' to inputBuf.
 handleKey4:
-    call checkBase8Or10Or16
+    call checkAllowOct ; ZF=1 if oct digits 0-7 allowed
     ret nz
     ld a, '4'
     jr handleKeyNumber
 
 ; Description: Append '5' to inputBuf.
 handleKey5:
-    call checkBase8Or10Or16
+    call checkAllowOct ; ZF=1 if oct digits 0-7 allowed
     ret nz
     ld a, '5'
     jr handleKeyNumber
 
 ; Description: Append '6' to inputBuf.
 handleKey6:
-    call checkBase8Or10Or16
+    call checkAllowOct ; ZF=1 if oct digits 0-7 allowed
     ret nz
     ld a, '6'
     jr handleKeyNumber
 
 ; Description: Append '7' to inputBuf.
 handleKey7:
-    call checkBase8Or10Or16
+    call checkAllowOct ; ZF=1 if oct digits 0-7 allowed
     ret nz
     ld a, '7'
     jr handleKeyNumber
 
 ; Description: Append '8' to inputBuf.
 handleKey8:
-    call checkBase10Or16
+    call checkAllowDec ; ZF=1 if decimal digits 0-9 allowed.
     ret nz
     ld a, '8'
     jr handleKeyNumber
 
 ; Description: Append '9' to inputBuf.
 handleKey9:
-    call checkBase10Or16
+    call checkAllowDec ; ZF=1 if decimal digits 0-9 allowed.
     ret nz
     ld a, '9'
     jp handleKeyNumber
 
 ; Description: Append 'A' to inputBuf.
 handleKeyA:
-    call checkBase16
+    call checkAllowHex ; ZF=1 if hex digits A-F allowed
     ret nz
     ld a, 'A'
     jp handleKeyNumber
 
 ; Description: Append 'B' to inputBuf.
 handleKeyB:
-    call checkBase16
+    call checkAllowHex ; ZF=1 if hex digits A-F allowed
     ret nz
     ld a, 'B'
     jp handleKeyNumber
 
 ; Description: Append 'C' to inputBuf.
 handleKeyC:
-    call checkBase16
+    call checkAllowHex ; ZF=1 if hex digits A-F allowed
     ret nz
     ld a, 'C'
     jp handleKeyNumber
 
 ; Description: Append 'D' to inputBuf.
 handleKeyD:
-    call checkBase16
+    call checkAllowHex ; ZF=1 if hex digits A-F allowed
     ret nz
     ld a, 'D'
     jp handleKeyNumber
 
 ; Description: Append 'E' to inputBuf.
 handleKeyE:
-    call checkBase16
+    call checkAllowHex ; ZF=1 if hex allowed
     ret nz
     ld a, 'E'
     jp handleKeyNumber
 
 ; Description: Append 'F' to inputBuf.
 handleKeyF:
-    call checkBase16
+    call checkAllowHex ; ZF=1 if hex allowed
     ret nz
     ld a, 'F'
     jp handleKeyNumber
 
-; Description: Return ZF=1 if baseNumber is float, 8, 10, or 16.
-checkBase8Or10Or16:
+; Description: Return ZF=1 if octal digits (0-7) are allowed.
+checkAllowOct:
+    bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
+    ret z ; ZF=1 if non-BASE
     ld a, (baseNumber)
     cp 8
     ret z
     cp 10
     ret z
-    bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
-    ret z
     cp 16
     ret
 
-; Description: Return ZF=1 if baseNumber is float, 10, or 16.
-checkBase10Or16:
+; Description: Return ZF=1 if decimal digits (0-9) are allowed.
+checkAllowDec:
+    bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
+    ret z ; ZF=1 if non-BASE mode
     ld a, (baseNumber)
     cp 10
     ret z
-    bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
-    ret z
     cp 16
     ret
 
-; Description: Return ZF=1 if baseNumber is (not float and base 16).
-checkBase16:
+; Description: Return ZF=1 if hexadecimal (A-F) are allowed.
+checkAllowHex:
     bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
-    ret z
+    jr z, checkAllowHexFalse ; set ZF=0 if non-BASE
     ld a, (baseNumber)
-    cp 16
+    cp 16 ; ZF=1 if baseNumber==16
+    ret
+checkAllowHexFalse:
+    or 1 ; ZF=0
     ret
 
 ; Description: Append a '.' if not already entered.
