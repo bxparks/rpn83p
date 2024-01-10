@@ -1011,25 +1011,22 @@ floatOpDiv:
 ; Input:
 ;   - C: varName
 ;   - OP1/OP2: real or complex number
-; Output: varName=OP1
+; Output: OP1/OP2: value stored
 ; Destroys: all
+; Preserves: OP1/OP2
 stoVar:
     push bc
     bcall(_PushOP1) ; FPS=[OP1/OP2]
     pop bc
     call checkOp1Complex ; ZF=1 if complex
-    ; compute C=varType
     jr z, stoVarComplex
     ld b, RealObj
-    jr stoVarStore
+    jr stoVarSave
 stoVarComplex:
     ld b, CplxObj
-stoVarStore:
+stoVarSave:
     call createVarName ; OP1=varName
-    ; TODO: The SDK documentation says that the variable will be created if it
-    ; doesn't exist. But I think this throws an Err:Undefined exception
-    ; instead. Need to double-check.
-    bcall(_StoOther) ; FPS=[]; (varName)=OP1/OP2
+    bcall(_StoOther) ; FPS=[]; (varName)=OP1/OP2; var created if necessary
     ret
 
 ; Description: Recall OP1 from the TI-OS variable named in C. Throws
@@ -1071,10 +1068,15 @@ createVarName:
 ;   - C: LETTER, name of variable
 ; Output:
 ;   - VARS[LETTER]=(VARS[LETTER] {op} OP1/OP2), where {op} is defined by B, and
-;   can be a simple assignment operator
+;   can be a simple assignment operator (argModifierNone)
 ; Destroys: all, OP3, OP4
-; Preserves: OP1, OP2
+; Preserves: OP1/OP2
 stoOpVar:
+    ; Use stoVar() to avoid error in rclVar() if the {op} is argModifierNone.
+    ld a, b ; A=op
+    or a ; ZF=1 if op==argModifierNone
+    jr z, stoVar
+    ;
     push bc ; stack=[op,LETTER]
     bcall(_PushOP1) ; FPS=[OP1/OP2]
     call cp1ToCp3 ; OP3/OP4=OP1/OP2
