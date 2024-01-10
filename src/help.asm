@@ -129,7 +129,7 @@ helpPages:
 
 msgHelpPage1:
     .db escapeLargeFont, "RPN83P", Lenter
-    .db escapeSmallFont, "v0.10.0-dev (2024", Shyphen, "01", Shyphen, "09)", Senter
+    .db escapeSmallFont, "v0.10.0-dev (2024", Shyphen, "01", Shyphen, "10)", Senter
     .db "(c) 2023  Brian T. Park", Senter
     .db Senter
     .db "An RPN calculator for the", Senter
@@ -218,7 +218,7 @@ msgHelpPage8:
     .db "RCL nn", Senter
     .db "RCL+ RCL- RCL* RCL/ nn", Senter
     .db "nn: 0..24", Senter
-    .db Senter
+    .db "nn: A-Z,", Stheta, Senter
     .db Senter
     .db SlBrack, "8/15", SrBrack, " Any key to continue...", Senter
     .db 0
