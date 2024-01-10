@@ -1,5 +1,8 @@
 # Changelog
 
+- Unreleased
+    - **Bug Fix** Fix broken `CLRG`.
+        - Broke when 'REGS' was replaced by 'RPN83REG'.
 - 0.9.0 (2024-01-06)
     - **Breaking**: Change names and internal formats of various appVars
         - `STK` list variable replaced with `RPN83STK`

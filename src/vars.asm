@@ -836,7 +836,6 @@ initRegs:
 ; Destroys: all
 clearRegs:
     ld hl, regsName
-    bcall(_FindSym)
     call move9ToOp1
     bcall(_ChkFindSym) ; DE=dataPointer; CF=1 if not found
     ret c
