@@ -77,6 +77,7 @@ RPN calculator app for the TI-83 Plus and TI-84 Plus inspired by the HP-42S.
     - [Near Future](#near-future)
     - [Medium Future](#medium-future)
     - [Far Future](#far-future)
+    - [Highly Unlikely](#highly-unlikely)
     - [Not Planned](#not-planned)
 
 ## Introduction
@@ -2740,10 +2741,15 @@ limited:
 
 ### Near Future
 
+- add `ROND` menu function
+    - round real and complex numbers to the number of significant digits
+      displayed on the screen
+- support complex numbers in various `NUM` functions
+    - `IP`, `FP`, `FLR`, `CEIL`, `NEAR`
+    - we could support complex numbers to `%` and `%CH`, but does that make
+      sense? The HP-42S does not support it.
 - datetime conversions
     - date/time components to and from epoch seconds
-- `GCD` and `LCM` functions are slow
-    - Could be made significantly faster.
 - allow resize of storage registers using `SIZE` command
     - The current default is fixed at 25.
     - It should be relatively straightforward to allow this to be
@@ -2755,13 +2761,6 @@ limited:
     - a better solution is to create a separate set of registers (e.g. an
       `RPN83STA` appVar) just for STAT so that they don't interfere with normal
       storage registers
-- add `ROND` menu function
-    - round real and complex numbers to the number of significant digits
-      displayed on the screen
-- support complex numbers in various `NUM` functions
-    - `IP`, `FP`, `FLR`, `CEIL`, `NEAR`
-    - we could support complex numbers to `%` and `%CH`, but does that make
-      sense? The HP-42S does not support it.
 - bigger RPN stack
     - linking and unlinking a complex number to and from its 2 components
       effectively reduces the stack size by 1
@@ -2785,20 +2784,31 @@ limited:
           `2ND MATRIX` `2ND CATALOG`, `2ND MEM`, `APPS`, `PRGM`, `VARS`
         - reserved for potential future use: `2ND DISTR`, `2ND {`, `2ND }`, `2ND
           [`, `2ND ]`
-        - potentially available: all `ALPHA` keys, except probably `A`-`F`, ` `
+        - potentially available: all `ALPHA` keys, except maybe `A`-`F`, ` `
           (space), `"` (double quote), `:` (colon)
         - probably available: `2ND u`, `2ND v`, `2ND w`, `XTTn`
         - definitely available:`2ND L1` to `2ND L6` (no obvious purpose in
           RPN83P)
-- user-defined alphanumeric variables
-    - The HP-42S shows user-defined variables through the menu system.
-    - Nice feature, but would require substantial refactoring of the current
-      menu system code.
 - custom menu items
     - The HP-42S supports up to 18 (3 rows of 6 menus) to be customized through
       the `ASSIGN` and `CUSTOM` menus.
-    - This seems like a useful feature, but would require substantial
-      refactoring of the current menu system code, like user-defined variables.
+    - This seems like a useful feature, but may require substantial refactoring
+      of the current menu system code.
+- keystroke programming
+    - The usefulness of RPN83P would be substantially enhanced with keystroke
+      programming because it would allow end-users to automate repetitive
+      keystrokes.
+    - Especially if keystroke programs can be assigned to custom buttons or menu
+      items.
+    - This is a huge feature that requires at least 7 new subsystems:
+        - program entry and editing
+        - program listing and display
+        - program parsing and interpreter loop
+        - byte code formats and storage
+        - stable function identifiers for backwards compatibility
+        - input and output functions within programs
+        - flow control operators and functions (e.g. `LBL`, `GOTO`, `CALL`,
+          maybe structured statement, like `IF`, `WHILE`, `FOR`, etc.)
 - polynomial solvers
     - Quadratic, cubic, and quartic equations have analytical solutions so
       should be relatively straightforward... Except that they need complex
@@ -2811,7 +2821,16 @@ limited:
       self-documenting and distinctive
 - `TVM` (time value of money)
     - Improve TVM Solver for `I%YR`.
-    - The initial guesses could be better.
+    - The current default initial guess is 0% and 100% so that positive interest
+      rates are required (because a sign change over the initial guesses are
+      required). If there is a rounding error, the actual numerical solution
+      could be slighlty negative, which would cause an `TVM Not Fount` error
+      message because a sign-change is currently required over the 2 initial
+      guesses.
+    - One solution could be use something like `-1%` for the lower guess, and
+      then check for a sign change over 2 sub-intervals: `[-1%,0%]` and
+      `[0%,100%]`. We also have to careful to detect cases where expected
+      solution is exactly `0%`.
     - The terminating tolerance could be selectable or more intelligent.
     - Maybe change the root solving algorithm from Secant method to Newton's
       method for faster convergence.
@@ -2821,18 +2840,21 @@ limited:
       input string using the LEFT and RIGHT arrow keys
     - the DEL key would probably continue to delete to the left
     - any other input would probably insert at the cursor position
+- `GCD` and `LCM` functions are slow
+    - Could be made significantly faster using integer operations, instead of
+      floating point operations.
+    - But not a high priority.
+- interoperability with TI-BASIC
+    - If a TI-BASIC can be called from RPN83P, and a stable data conduit (i.e.
+      an API) can be defined between RPN83P and TI-BASIC, then it may be
+      possible to offload some advanced features to the TI-OS and TI-BASIC
+      programs instead (see `Solver` and `fnInt` below)
+    - For example, single-letter variables `A` to `Z` and `Theta` are now
+      (v0.10.0) available through `STO` and `RCL`.
+    - Other types may be useful: List, Matrix, and String types.
 
 ### Far Future
 
-I'm not sure these features are worth the effort, but I may do them for
-curiosity and the technical challenge:
-
-- keystroke programming
-    - Although I think it is technically possible for the RPN83P app to support
-      keystroke programming, like the HP-42S, I am not sure that the calculator
-      world needs yet another calculator programming language.
-    - Is it sufficient that the user can drop into TI-BASIC programming if that
-      is required?
 - automated testing infrastructure
     - assembly language programming is not amenable to unit testing because it
       is difficult if not almost impossible to isolate a piece of code to be
@@ -2857,29 +2879,50 @@ curiosity and the technical challenge:
     - Similar to indirect `STO` and `RCL` operators, I think these are mainly
       useful for keystroke programming, so let's implement keystroke programming
       before this.
-- matrix and vectors
+- local RPN stack and local storage registers
+    - After keystroke programming is added, it may be useful to support local
+      RPN and storage registers, on a per-program basis.
+- vectors
+    - It might be possible to support 3D or 4D vectors with reasonable effort.
+    - That allows us to add basic vector functions like dot products and cross
+      products.
+    - Arbitrary-sized vectors may not be worth the effort.
+
+### Highly Unlikely
+
+These are useful features which are estimated to take too much time and effort,
+especially using low-level Z80 assembly language, so they will likely never get
+added to RPN83P.
+
+- user-defined alphanumeric variables
+    - TI-OS supports only single-letter variables for real or complex types.
+      Access to these are provided in v0.10.0. Multi-letter user-defined names
+      are available only for real or complex Lists.
+    - The HP-42S allows multi-letter user-defined variables which are accessible
+      through the menu system.
+    - We would have to write our own symbol management and garage collection
+      subsystem to handle user-defined variables, which does not seem worth it.
+    - We would also require substantial refactoring of the current menu system
+      code.
+    - Overall, it doesn't seem worth the effort.
+- root finder (i.e. SOLVE)
+    - one of the hallmarks of advanced HP calculators
+    - requires keystroke programming
+    - the TI-OS already provides a solver (`Solver`), maybe that is
+      sufficient?
+- numerical integration
+    - another feature of advanced HP calculators
+    - depends on keystroke programming
+    - the TI-OS already provides an integrator (`fnInt`), is that enough?
+- matrices
     - I don't know how much matrix functionality is provided by TI-OS SDK.
     - Creating a reasonable user-interface in the RPN83P could be a challenge.
     - It is not clear that adding matrix functions into a calculator is worth
-      the effort. For non-trivial calculations, it is probably easier to use
-      a desktop computer and application (e.g. MATLAB, Octave, Mathematica).
-- root finder (i.e. SOLVE)
-    - one of the hallmarks of advanced HP calculators, but I think this feature
-      would only be useful with keystroke programming
-- integration
-    - another feature of advanced HP calculators which also depends on keystroke
-      programming
-- interaction with TI-BASIC
-    - it might be possible to define a data conduit (i.e. an API) between RPN83P
-      and TI-BASIC, so that they can communicate with each other
-    - for example, the TI-BASIC predefined variables `A` to `Z` and `Theta` are
-      not used by RPN83P. They could be made accessible within RPN83P using a
-      new `STO` and `RCL` syntax, e.g. `STO OS A` and `RCL OS B` (maybe through
-      the currently unused `2ND DISTR` button, i.e. `STO 2ND DISTR 2ND ALPHA A`
-    - I think these would be different from the usual HP-42S alphabetic
-      variables of `STO "A"` and `RCL "B"`, which would be accessed through `STO
-      ALPHA A` and `RCL ALPHA B`.
-    - also to consider: TI-OS List, Matrix, and String variables
+      the effort.
+    - For non-trivial calculations, it is probably easier to use a desktop
+      computer and application (e.g. MATLAB, Octave, Mathematica).
+    - The TI-OS also provides substantial number of matrix features and
+      functions.
 
 ### Not Planned
 
