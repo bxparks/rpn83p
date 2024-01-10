@@ -11,7 +11,7 @@
 #	- https://stackoverflow.com/questions/13515893 (margin size)
 #	- https://stackoverflow.com/questions/23811002 (fontsize)
 #
-# I use '-f gfm' instead of '-f markdown' to handler embedded images better.
+# I use '-f gfm' instead of '-f markdown' to handle embedded images better.
 # The `-f mardown` option separates out the images into separate Figures which
 # are out of context from the text. The `-f gfm` embeds the images directly
 # into the flow of the text.
