@@ -396,7 +396,7 @@ displayErrorCodeEnd:
 
 ; Description: Display the main area, depending on the drawMode. It will
 ; usually the RPN stack, but can be something else for debugging.
-; Destroys: A
+; Destroys: A, OP3-OP6
 displayMain:
     bit rpnFlagsShowModeEnabled, (iy + rpnFlags)
     jp nz, displayShow
@@ -424,7 +424,7 @@ displayTvmMaybe:
 ; Description: Display the RPN stack variables
 ; Input: none
 ; Output: (dirtyFlagsMenu) reset
-; Destroys: A, HL
+; Destroys: A, HL, OP1-OP6
 displayStack:
     ; display YZT if stack is dirty
     bit dirtyFlagsStack, (iy + dirtyFlags)
@@ -438,6 +438,7 @@ displayStack:
 
 ;-----------------------------------------------------------------------------
 
+; Destroys: A, HL, OP1-OP6
 displayStackYZT:
     ; print T label
     ld hl, stTPenRow*$100 ; $(penRow)(penCol)
@@ -490,6 +491,7 @@ displayStackYZT:
 ; Well... unless drawMode==drawModeInputBuf, in which case the inputBuf is
 ; displayed separately on the debug line, and the X register is always printed
 ; on the X line.
+; Destroys: OP1-OP6
 displayStackX:
     bit rpnFlagsArgMode, (iy + rpnFlags)
     jr nz, displayStackXArg
@@ -726,6 +728,7 @@ truncateInputDisplay:
 
 ; Description: Display the intermediate state of the TVM Solver. This routine
 ; will be invoked only if drawMode==1 or 2.
+; Destroys: OP3-OP6
 displayTvm:
     ; print TVM n label
     ld hl, tvmNPenRow*$100 ; $(penRow)(penCol)
@@ -970,7 +973,7 @@ clearShowAreaLoop:
 ;   - A: objectType
 ;   - B: displayFontMask
 ;   - OP1: floating point number
-; Destroys: A, HL, OP3
+; Destroys: A, HL, OP3-OP6
 printOP1:
     cp rpnObjectTypeComplex
     jr z, printOP1Complex
@@ -982,6 +985,7 @@ printOP1:
 ; Input:
 ;   - OP1: real number
 ;   - B: displayFontMask
+; Destroys: OP3-OP6
 printOP1Real:
     call displayStackSetLargeFont
     bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
@@ -1014,6 +1018,7 @@ printOP1Real:
 ; Input:
 ;   - CP1: complex number
 ;   - B: displayFontMask
+; Destroys: OP3-OP6
 printOP1Complex:
     call eraseEOLIfNeeded
     call displayStackSetSmallFont
@@ -1028,6 +1033,7 @@ printOP1Complex:
 
 ; Description: Print the complex numberin CP1 in rectangular form.
 ; Input: CP1: complex number
+; Destroys: OP3-OP6
 printOP1ComplexRect:
     call splitCp1ToOp1Op2
     ; Print Re(X)
@@ -1058,6 +1064,7 @@ msgComplexRectSpacer:
 ; can display the entire domain of the rectangular complex numbers, even when
 ; the 'r' value goes beyond 1e100 or 1e-100.
 ; Input: CP1: complex number
+; Destroys: OP3-OP6
 printOP1ComplexRad:
     call complexToPolarRad ; OP1=r; OP2=theta(rad)
     jr nc, printOP1ComplexRadOk
@@ -1091,6 +1098,7 @@ msgComplexPRadSpacer:
 ; can display the entire domain of the rectangular complex numbers, even when
 ; the 'r' value goes beyond 1e100 or 1e-100.
 ; Input: CP1: complex number
+; Destroys: A, HL, OP3-OP6
 printOP1ComplexDeg:
     call complexToPolarDeg ; OP1=r; OP2=theta(deg)
     jr nc, printOP1ComplexDegOk

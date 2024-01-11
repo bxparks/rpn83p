@@ -54,6 +54,7 @@ startArgParser:
 ;   - (argValue): parsed integer value of argBuf
 ;   - A=argModifier
 ;   - ZF=0: if arg input was cancelled (ON/EXIT or CLEAR)
+; Destroys: all, OP1-OP6
 processArgCommands:
     call displayAll
 

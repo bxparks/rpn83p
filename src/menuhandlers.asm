@@ -414,7 +414,11 @@ mRoundToNHandler:
     call closeInputAndRecallX ; OP1=X
     ld hl, msgRoundPrompt
     call startArgParser
-    call processArgCommands ; ZF=0 if cancelled
+    bcall(_PushRealO1)
+    call processArgCommands ; ZF=0 if cancelled; destroys OP1-OP6
+    push af
+    bcall(_PopRealO1)
+    pop af
     ret nz ; do nothing if cancelled
     ld a, (argValue)
     cp 10
