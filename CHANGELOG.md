@@ -10,6 +10,10 @@
         - extend `STO`, `RCL`, `STO{op}`, and `RCL{op}` to accept a
           single-letter in addition to digits (e.g. `STO ALPHA A`, `RCL+
           ALPHA B`)
+    - Add `RNDF`, `RNDG`, `RNDN` rounding functions
+        - `RNDF`: round to current FIX/SCI/ENG digits
+        - `RNDG`: round to 10 digits, removing guard digits
+        - `RNDN`: round to user-specified `N` digits (0-9)
 - 0.9.0 (2024-01-06)
     - **Breaking**: Change names and internal formats of various appVars
         - `STK` list variable replaced with `RPN83STK`

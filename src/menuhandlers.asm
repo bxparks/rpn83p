@@ -399,6 +399,34 @@ mNearHandler:
     jp replaceX
 
 ;-----------------------------------------------------------------------------
+
+mRoundToFixHandler:
+    call closeInputAndRecallX ; OP1=X
+    bcall(_RnFx) ; round to FIX/SCI/ENG digits, do nothing if digits==floating
+    jp replaceX
+
+mRoundToGuardHandler:
+    call closeInputAndRecallX ; OP1=X
+    bcall(_RndGuard) ; round to 10 digits, removing guard digits
+    jp replaceX
+
+mRoundToNHandler:
+    call closeInputAndRecallX ; OP1=X
+    ld hl, msgRoundPrompt
+    call startArgParser
+    call processArgCommands ; ZF=0 if cancelled
+    ret nz ; do nothing if cancelled
+    ld a, (argValue)
+    cp 10
+    ret nc ; return if argValue>=10
+    ld d, a
+    bcall(_Round) ; round to D digits
+    jp replaceX
+
+msgRoundPrompt:
+    .db "ROUND", 0
+
+;-----------------------------------------------------------------------------
 ; Children nodes of PROB menu.
 ;-----------------------------------------------------------------------------
 

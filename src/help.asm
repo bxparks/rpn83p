@@ -109,7 +109,6 @@ displayHelpPage:
 ;-----------------------------------------------------------------------------
 
 ; Array of (char*) pointers to C-strings.
-helpPageCount equ 15
 helpPages:
     .dw msgHelpPage1
     .dw msgHelpPage2
@@ -126,10 +125,12 @@ helpPages:
     .dw msgHelpPage13
     .dw msgHelpPage14
     .dw msgHelpPage15
+helpPagesEnd:
+helpPageCount equ helpPagesEnd-helpPages
 
 msgHelpPage1:
     .db escapeLargeFont, "RPN83P", Lenter
-    .db escapeSmallFont, "v0.10.0-dev (2024", Shyphen, "01", Shyphen, "10)", Senter
+    .db escapeSmallFont, "v0.10.0-dev (2024", Shyphen, "01", Shyphen, "11)", Senter
     .db "(c) 2023  Brian T. Park", Senter
     .db Senter
     .db "An RPN calculator for the", Senter
@@ -229,9 +230,9 @@ msgHelpPage9:
     .db "%CH: Y=Y, X=100*(X-Y)/Y", Senter
     .db "PRIM: smallest prime factor", Senter
     .db Senter
-    .db Senter
-    .db Senter
-    .db Senter
+    .db "RNDF: Round to FIX/SCI/ENG", Senter
+    .db "RNDG: Round to guard digits", Senter
+    .db "RNDN: Round to N digits", Senter
     .db SlBrack, "9/15", SrBrack, " Any key to continue...", Senter
     .db 0
 

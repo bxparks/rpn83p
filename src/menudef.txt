@@ -103,6 +103,11 @@ MenuGroup root mRoot [
         MenuItem MIN mMin
         MenuItem MAX mMax
       ]
+      MenuRow [
+        MenuItem RNDF mRoundToFix # round to FIX (ENG, SCI)
+        MenuItem RNDG mRoundToGuard # round to 10 digits, removing guard digits
+        MenuItem RNDN mRoundToN # round to specified N digits
+      ]
     ]
     MenuGroup PROB mProb [
       MenuRow [
