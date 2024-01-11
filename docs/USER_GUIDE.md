@@ -2741,13 +2741,6 @@ limited:
 
 ### Near Future
 
-- add `ROND` menu function
-    - round real and complex numbers to the number of significant digits
-      displayed on the screen
-- support complex numbers in various `NUM` functions
-    - `IP`, `FP`, `FLR`, `CEIL`, `NEAR`
-    - we could support complex numbers to `%` and `%CH`, but does that make
-      sense? The HP-42S does not support it.
 - datetime conversions
     - date/time components to and from epoch seconds
 - allow resize of storage registers using `SIZE` command
