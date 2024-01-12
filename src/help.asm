@@ -126,11 +126,11 @@ helpPages:
     .dw msgHelpPage14
     .dw msgHelpPage15
 helpPagesEnd:
-helpPageCount equ helpPagesEnd-helpPages
+helpPageCount equ (helpPagesEnd-helpPages)/2
 
 msgHelpPage1:
     .db escapeLargeFont, "RPN83P", Lenter
-    .db escapeSmallFont, "v0.10.0-dev (2024", Shyphen, "01", Shyphen, "11)", Senter
+    .db escapeSmallFont, "v0.10.0-dev (2024", Shyphen, "01", Shyphen, "12)", Senter
     .db "(c) 2023  Brian T. Park", Senter
     .db Senter
     .db "An RPN calculator for the", Senter
