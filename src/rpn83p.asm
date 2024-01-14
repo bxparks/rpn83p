@@ -387,13 +387,11 @@ complexModeRad equ 1
 complexModeDeg equ 2
 complexMode equ numResultMode + 1 ; u8
 
-; CommaEE button mode. In default mode, the CommaEE buton behaves according to
-; the factory label. In swapped mode, the CommaEE button does exactly the
-; opposite. Hitting Comma twice changes the input character to the other. So
-; comma-comma in default mode inserts an EE, while in swapped mode inserts a
-; comma.
+; CommaEE button mode. In "Normal" mode, the CommaEE buton behaves according to
+; the factory label. In "Swapped" mode, the CommaEE button does exactly the
+; opposite.
 commaEEMode equ complexMode+1 ; u8
-commaEEModeDefault equ 0
+commaEEModeNormal equ 0
 commaEEModeSwapped equ 1
 
 ; End application variables.

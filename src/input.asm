@@ -7,7 +7,7 @@
 
 ; Description: Initialize the commaEEMode.
 initCommaEEMode:
-    ld a, commaEEModeDefault
+    ld a, commaEEModeSwapped ; factory default setting is "Swapped"
     ld (commaEEMode), a
     ret
 

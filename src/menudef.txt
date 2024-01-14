@@ -306,6 +306,10 @@ MenuGroup root mRoot [
         MenuItemAlt PRAD PRA<Sblock> mComplexModeRad
         MenuItemAlt PDEG PDE<Sblock> mComplexModeDeg
       ]
+      MenuRow [
+        MenuItemAlt <Scomma>EE <Scomma>EE<Sblock> mCommaEENormal
+        MenuItemAlt EE<Scomma> EE<Scomma><Sblock> mCommaEESwapped
+      ]
     ]
     MenuGroup STK mStack [
       MenuRow [
