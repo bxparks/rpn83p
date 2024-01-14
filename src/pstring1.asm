@@ -153,6 +153,26 @@ deleteAtPosShiftLeft:
 
 ;-----------------------------------------------------------------------------
 
+; Description: Return the last character in the Pascal string, or 0 if the
+; string is empty.
+; Input: HL: Pascal string pointer
+; Output: A: lastChar (0 if empty)
+; Destroys: A, BC, HL
+; Preserves: DE
+GetLastChar:
+    ld a, (hl)
+    or a
+    ret z
+    ; No need to 'inc hl' to skip past the size byte, since we'd have to do a
+    ; 'dec hl' anyway.
+    ld c, a
+    ld b, 0
+    add hl, bc
+    ld a, (hl)
+    ret
+
+;-----------------------------------------------------------------------------
+
 ; Description: Find the given character in the given pascal string.
 ; Input:
 ;   A: character to find

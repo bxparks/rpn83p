@@ -662,6 +662,10 @@ _DeleteAtPosLabel:
 _DeleteAtPos equ _DeleteAtPosLabel-branchTableBase
     .dw DeleteAtPos
     .db 1
+_GetLastCharLabel:
+_GetLastChar equ _GetLastCharLabel-branchTableBase
+    .dw GetLastChar
+    .db 1
 ; integerconv1.asm
 _ConvertAToOP1Label:
 _ConvertAToOP1 equ _ConvertAToOP1Label-branchTableBase

@@ -231,6 +231,7 @@ handleKeyEE:
     ; Do nothing in BASE mode.
     bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
     ret nz
+    ; Check if Comma and EE are swapped.
     ld a, (commaEEMode)
     cp commaEEModeSwapped
     jr z, handleKeyCommaAlt
@@ -238,7 +239,7 @@ handleKeyEEAlt:
     ; Check prior characters in the inputBuf.
     bcall(_CheckInputBufEE) ; CF=1 if E exists; A=eeLen
     ret c
-    ; try insert 'E'
+    ; Append 'E'
     ld a, Lexponent
     jp handleKeyNumber
 
@@ -305,6 +306,7 @@ handleKeyComma:
     ; Do nothing in BASE mode.
     bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
     ret nz
+    ; Check if Comma and EE are swapped.
     ld a, (commaEEMode)
     cp commaEEModeSwapped
     jr z, handleKeyEEAlt
@@ -314,7 +316,16 @@ handleKeyCommaAlt:
     ret nc ; return if not in data structure mode
     or a
     ret z ; return if braceLevel==0
-    ; Comma allowed
+    ; Prevent double-comma or comma after opening left brace.
+    ld hl, inputBuf
+    bcall(_GetLastChar) ; A=lastChar
+    or a
+    ret z ; return if empty
+    cp ','
+    ret z ; return if comma
+    cp LlBrace
+    ret z ; return if '{'
+    ; Append the comma
     ld a, ','
     jp handleKeyNumber
 
