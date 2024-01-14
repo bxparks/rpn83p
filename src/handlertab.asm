@@ -48,17 +48,22 @@ keyCodeHandlerTable:
     .dw handleKeyF
     .db kDecPnt
     .dw handleKeyDecPnt
-    ; Comma/EE can be configured to be swapped
     .db kEE
     .dw handleKeyEE
-    .db kComma
-    .dw handleKeyComma
 
     ; Complex numbers
     .db kI
     .dw handleKeyImagI
     .db kAngle
     .dw handleKeyAngle
+
+    ; Data records usng '{', '}', ','
+    .db kLBrace
+    .dw handleKeyLBrace
+    .db kRBrace
+    .dw handleKeyRBrace
+    .db kComma
+    .dw handleKeyComma
 
     ; editing
     .db kDel

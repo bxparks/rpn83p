@@ -242,25 +242,6 @@ handleKeyEEAlt:
     ld a, Lexponent
     jp handleKeyNumber
 
-; Description: Handle the Comma button.
-; Input: (commaEEMode)
-; Output: (inputBuf) updated
-; Destroys: all
-handleKeyComma:
-    ; Do nothing in BASE mode.
-    bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
-    ret nz
-    ld a, (commaEEMode)
-    cp commaEEModeSwapped
-    jr z, handleKeyEEAlt
-handleKeyCommaAlt:
-    ; Check prior characters in the inputBuf.
-    bcall(_CheckInputBufStruct) ; CF=1 if inputBuf is a data struct
-    ret nc
-    ; try insert ','
-    ld a, ','
-    jp handleKeyNumber
-
 ; Description: Add imaginary-i into the input buffer.
 handleKeyImagI:
     ; Do nothing in BASE mode.
@@ -290,6 +271,45 @@ handleKeyAngle:
     ld a, Ldegree
     call handleKeyNumber
     ret
+
+;-----------------------------------------------------------------------------
+
+handleKeyLBrace:
+    ; Do nothing in BASE mode.
+    bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
+    ret nz
+    bcall(_CheckInputBufStruct) ; CF=1 if inputBuf is a data struct
+    ret c ; return if already in data structure mode.
+    ld a, LlBrace
+    jp handleKeyNumber
+
+handleKeyRBrace:
+    ; Do nothing in BASE mode.
+    bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
+    ret nz
+    ; Check if in data record mode.
+    bcall(_CheckInputBufStruct) ; CF=1 if inputBuf is a data struct
+    ret nc ; return if *not* in data structure mode.
+    ld a, LrBrace
+    jp handleKeyNumber
+
+; Description: Handle the Comma button.
+; Input: (commaEEMode)
+; Output: (inputBuf) updated
+; Destroys: all
+handleKeyComma:
+    ; Do nothing in BASE mode.
+    bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
+    ret nz
+    ld a, (commaEEMode)
+    cp commaEEModeSwapped
+    jr z, handleKeyEEAlt
+handleKeyCommaAlt:
+    ; Check if in data record mode.
+    bcall(_CheckInputBufStruct) ; CF=1 if inputBuf is a data struct
+    ret nc
+    ld a, ','
+    jp handleKeyNumber
 
 ;-----------------------------------------------------------------------------
 
