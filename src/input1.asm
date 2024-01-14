@@ -187,74 +187,160 @@ wordSizeDigitsArray:
 
 ;------------------------------------------------------------------------------
 
-; Description: Check various characteristics of the characters in the inputBuf
-; by scanning backwards from the end of the string. The following conditions
-; are checked:
-;   - inputBufStateDecimalPoint: set if decimal point exists
-;   - inputBufStateEE: set if exponent 'E' character exists
-;   - inputBufStateComplex: set if complex number
-;   - inputBufEEPos: pos of char after 'E', or the first character of the
-;   number component if no 'E'
-;   - inputBufEELen: number of EE digits if inputBufStateEE is set
+; Description: Check if the 'E' character exists in the last floating point
+; number in the inputBuf by scanning backwards from the end of the string. If
+; the EE character exists, then return the number of digits in the exponent.
 ; Input: inputBuf
 ; Output:
-;   - C: inputBufState flags updated
-;   - D: inputBufEEPos, pos of char after 'E' or at start of number
-;   - E: inputBufEELen, number of EE digits if inputBufStateEE is set
-; Destroys: BC, DE, HL
-; Preserves: AF
-GetInputBufState:
-    push af
+;   - CF=1 if exponent exists
+;   - A: eeLen, number of EE digits if exponent exists
+; Destroys: BC, HL
+; Preserves: DE
+CheckInputBufEE:
     ld hl, inputBuf
     ld c, (hl) ; C=len
     ld b, 0 ; BC=len
     inc hl ; skip past len byte
     add hl, bc ; HL=pointer to end of string
-    ; swap B and C
-    ld a, c ; A=len
-    ld c, b ; C=inputBufState=0
-    ld b, a ; B=len
     ; check for len==0
+    ld a, c ; A=len
     or a ; if len==0: ZF=0
-    jr z, getInputBufStateEnd
-    ; D=inputBufEEPos=0; E=inputBufEELen=0
-    ld de, 0
-getInputBufStateLoop:
+    ret z
+    ld c, b ; C=0
+    ld b, a ; B=counter
+checkInputBufEELoop:
     ; Loop backwards from end of string and update inputBufState flags
     dec hl
     ld a, (hl)
-    ; check for '0'-'9'
-    call isValidUnsignedDigit ; if valid: CF=1
-    jr nc, getInputBufStateCheckDecimalPoint
-    ; if not EE: increment inputBufEELen
-    bit inputBufStateEE, c
-    jr nz, getInputBufStateCheckDecimalPoint
-    inc e ; inputBufEELen++
-getInputBufStateCheckDecimalPoint:
-    cp '.'
-    jr nz, getInputBufStateCheckEE
-    set inputBufStateDecimalPoint, c
-getInputBufStateCheckEE:
-    cp Lexponent
-    jr nz, getInputBufStateCheckTermination
-    set inputBufStateEE, c
-    ld d, b ; inputBufEEPos=B
-getInputBufStateCheckTermination:
+    call isNumberDelimiterPageOne ; ZF=1 if delimiter
+    jr z, checkInputBufEENone
     call isComplexDelimiterPageOne ; ZF=1 if complex delimiter
-    jr z, getInputBufStateComplex
+    jr z, checkInputBufEENone
+    cp Lexponent
+    jr z, checkInputBufEEFound
+    cp '.'
+    jr z, checkInputBufEENone
+    call isValidUnsignedDigit ; if valid: CF=1
+    jr nc, checkInputBufEEContinue
+    ; if inside EE digit: increment eeLen
+    inc c ; eeLen++
+checkInputBufEEContinue:
     ; Loop until we reach the start of string
-    djnz getInputBufStateLoop
-    jr getInputBufStateEnd
-getInputBufStateComplex:
-    set inputBufStateComplex, c
-getInputBufStateEnd:
-    ; If no 'E', set inputBufEEPos to the start of current number, which could
-    ; be the imaginary or angle part of a complex number.
-    bit inputBufStateEE, c
-    jr nz, getInputBufStateReturn
-    ld d, b
-getInputBufStateReturn:
-    pop af
+    djnz checkInputBufEELoop
+checkInputBufEENone:
+    or a ; CF=0
+    ret
+checkInputBufEEFound:
+    scf ; CF=1 to indicate 'E' found
+    ld a, c ; A=eeLen
+    ret
+
+;------------------------------------------------------------------------------
+
+; Description: Check if the most recent floating number has a negative sign
+; that can be mutated by the CHS (+/-) button, by scanning backwards from the
+; end of the string. Return the position of the sign in B.
+; Input: inputBuf
+; Output:
+;   - A: inputBufChsPos, the position where a sign character can be added or
+;   removed (i.e. after an 'E', after the complex delimiter, or at the start of
+;   the buffer if empty)
+; Destroys: BC, HL
+; Preserves: DE
+CheckInputBufChs:
+    ld hl, inputBuf
+    ld c, (hl) ; C=len
+    ld b, 0 ; BC=len
+    inc hl ; skip past len byte
+    add hl, bc ; HL=pointer to end of string
+    ; check for len==0
+    ld a, c ; A=len
+    or a ; if len==0: ZF=0
+    ret z
+    ld b, a
+checkInputBufChsLoop:
+    ; Loop backwards from end of string and update inputBufState flags
+    dec hl
+    ld a, (hl)
+    cp Lexponent
+    jr z, checkInputBufChsEnd
+    call isComplexDelimiterPageOne ; ZF=1 if complex delimiter
+    jr z, checkInputBufChsEnd
+    call isNumberDelimiterPageOne ; ZF=1 if number delimiter
+    jr z, checkInputBufChsEnd
+    djnz checkInputBufChsLoop
+checkInputBufChsEnd:
+    ld a, b
+    ret
+
+;------------------------------------------------------------------------------
+
+; Description: Check if the right most floating point number already has a
+; decimal point.
+; Input: inputBuf
+; Output: CF=1 if the last floating point number has a decimal point
+; Destroys: A, BC, HL
+; Preserves: DE
+CheckInputBufDecimalPoint:
+    ld hl, inputBuf
+    ld c, (hl) ; C=len
+    ld b, 0 ; BC=len
+    inc hl ; skip past len byte
+    add hl, bc ; HL=pointer to end of string
+    ; check for len==0
+    ld a, c ; A=len
+    or a ; if len==0: ZF=0
+    jr z, checkInputBufDecimalPointNone
+    ld b, a ; B=len
+checkInputBufDecimalPointLoop:
+    ; Loop backwards from end of string and update inputBufState flags
+    dec hl
+    ld a, (hl)
+    cp '.'
+    jr z, checkInputBufDecimalPointFound
+    call isNumberDelimiterPageOne ; ZF=1 if delimiter
+    jr z, checkInputBufDecimalPointNone
+    call isComplexDelimiterPageOne ; ZF=1 if complex delimiter
+    jr z, checkInputBufDecimalPointNone
+    djnz checkInputBufDecimalPointLoop
+checkInputBufDecimalPointNone:
+    or a
+    ret
+checkInputBufDecimalPointFound:
+    scf
+    ret
+
+;------------------------------------------------------------------------------
+
+; Description: Check if the inputBuf is a data structure, i.e. contains a left
+; curly brace '{'.
+; Input: inputBuf
+; Output: CF=1 if the inputBuf contains a data structure
+; Destroys: A, BC, HL
+; Preserves: DE
+CheckInputBufStruct:
+    ld hl, inputBuf
+    ld c, (hl) ; C=len
+    ld b, 0 ; BC=len
+    inc hl ; skip past len byte
+    add hl, bc ; HL=pointer to end of string
+    ; check for len==0
+    ld a, c ; A=len
+    or a ; if len==0: ZF=0
+    jr z, checkInputBufDecimalPointNone
+    ld b, a ; B=len
+checkInputBufStructLoop:
+    ; Loop backwards from end of string and update inputBufState flags
+    dec hl
+    ld a, (hl)
+    cp LlBrace
+    jr z, checkInputBufStructFound
+    djnz checkInputBufStructLoop
+checkInputBufStructNone:
+    or a
+    ret
+checkInputBufStructFound:
+    scf
     ret
 
 ;------------------------------------------------------------------------------
@@ -979,4 +1065,14 @@ isComplexDelimiterPageOne:
     cp Langle
     ret z
     cp Ldegree
+    ret
+
+; Description: Return ZF=1 if A is a real or complex number delimiter.
+; Input: A: char
+; Output: ZF=1 if delimiter
+; Destroys: none
+isNumberDelimiterPageOne:
+    cp LlBrace ; '{'
+    ret z
+    cp ','
     ret

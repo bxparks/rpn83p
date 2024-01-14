@@ -48,11 +48,11 @@ keyCodeHandlerTable:
     .dw handleKeyF
     .db kDecPnt
     .dw handleKeyDecPnt
-    ; For convenience, both EE (2ND-COMMA) and COMMA are mapped to handleKeyEE.
+    ; Comma/EE can be configured to be swapped
     .db kEE
     .dw handleKeyEE
     .db kComma
-    .dw handleKeyEE
+    .dw handleKeyComma
 
     ; Complex numbers
     .db kI

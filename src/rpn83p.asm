@@ -95,11 +95,6 @@ inputBufFlagsArgAllowLetter equ 2 ; allow A-Z,Theta in CommandArg mode
 inputBufFlagsArgExit equ 3 ; set to exit CommandArg mode
 inputBufFlagsArgCancel equ 4 ; set if exit was caused by CLEAR or ON/EXIT
 
-; Bit flags for the result of GetInputBufState().
-inputBufStateDecimalPoint equ 0 ; set if decimal point exists
-inputBufStateEE equ 1 ; set if 'E' exists
-inputBufStateComplex equ 2 ; set if input is a complex number
-
 ;-----------------------------------------------------------------------------
 ; RPN83P application variables and buffers.
 ;-----------------------------------------------------------------------------
@@ -392,8 +387,17 @@ complexModeRad equ 1
 complexModeDeg equ 2
 complexMode equ numResultMode + 1 ; u8
 
+; CommaEE button mode. In default mode, the CommaEE buton behaves according to
+; the factory label. In swapped mode, the CommaEE button does exactly the
+; opposite. Hitting Comma twice changes the input character to the other. So
+; comma-comma in default mode inserts an EE, while in swapped mode inserts a
+; comma.
+commaEEMode equ complexMode+1 ; u8
+commaEEModeDefault equ 0
+commaEEModeSwapped equ 1
+
 ; End application variables.
-appStateEnd equ complexMode + 1
+appStateEnd equ commaEEMode + 1
 
 ; Total size of appState vars.
 appStateSize equ (appStateEnd - appStateBegin)
@@ -610,9 +614,21 @@ _AppendInputBufLabel:
 _AppendInputBuf equ _AppendInputBufLabel-branchTableBase
     .dw AppendInputBuf
     .db 1
-_GetInputBufStateLabel:
-_GetInputBufState equ _GetInputBufStateLabel-branchTableBase
-    .dw GetInputBufState
+_CheckInputBufEELabel:
+_CheckInputBufEE equ _CheckInputBufEELabel-branchTableBase
+    .dw CheckInputBufEE
+    .db 1
+_CheckInputBufChsLabel:
+_CheckInputBufChs equ _CheckInputBufChsLabel-branchTableBase
+    .dw CheckInputBufChs
+    .db 1
+_CheckInputBufDecimalPointLabel:
+_CheckInputBufDecimalPoint equ _CheckInputBufDecimalPointLabel-branchTableBase
+    .dw CheckInputBufDecimalPoint
+    .db 1
+_CheckInputBufStructLabel:
+_CheckInputBufStruct equ _CheckInputBufStructLabel-branchTableBase
+    .dw CheckInputBufStruct
     .db 1
 _SetComplexDelimiterLabel:
 _SetComplexDelimiter equ _SetComplexDelimiterLabel-branchTableBase

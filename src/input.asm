@@ -5,6 +5,12 @@
 ; Functions related to parsing the inputBuf into a floating point number.
 ;------------------------------------------------------------------------------
 
+; Description: Initialize the commaEEMode.
+initCommaEEMode:
+    ld a, commaEEModeDefault
+    ld (commaEEMode), a
+    ret
+
 ; Description: Close the inputBuf and transfer its contents to the X register
 ; if it had been opened in edit mode. Otherwise, do nothing.
 ;

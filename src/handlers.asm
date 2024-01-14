@@ -33,18 +33,16 @@ handleKeyNumberFirstDigit:
 handleKeyNumberCheckAppend:
     call isComplexDelimiter ; ZF=1 if complex delimiter
     jr z, handleKeyNumberAppend
-    bcall(_GetInputBufState) ; C=inputBufState; D=inputBufEEPos; E=inputBufEELen
-    bit inputBufStateEE, c
-    jr z, handleKeyNumberAppend
-handleKeyNumberAppendExponent:
-    ; Append A to exponent, if len(exponent)<2.
-    ld b, a ; save A
-    ld a, e ; A=inputBufEELen
+    ; Check if EE exists and check num digits in EE.
+    ld d, a ; D=saved A
+    bcall(_CheckInputBufEE) ; CF=1 if E exists; A=eeLen
+    jr nc, handleKeyNumberRestoreAppend
+    ; Check if eeLen<2.
     cp inputBufEEMaxLen
-    ld a, b ; restore A
     ret nc ; prevent more than 2 exponent digits
+handleKeyNumberRestoreAppend:
+    ld a, d ; A=restored
 handleKeyNumberAppend:
-    ; Try to append character
     bcall(_AppendInputBuf)
     ret
 
@@ -212,14 +210,12 @@ handleKeyDecPnt:
     ; Do nothing in BASE mode.
     bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
     ret nz
-    ; Check prior characters in the inputBuf.
-    bcall(_GetInputBufState) ; C=inputBufState; D=inputBufEEPos; E=inputBufEELen
-    ; Do nothing if a decimal point already exists.
-    bit inputBufStateDecimalPoint, c
-    ret nz
-    ; Also do nothing if 'E' exists. Exponents cannot have a decimal point.
-    bit inputBufStateEE, c
-    ret nz
+    ; Do nothing if decimal point already exists in the last number.
+    bcall(_CheckInputBufDecimalPoint) ; CF=1 if decimal exists
+    ret c
+    ; Do nothing if 'E' exists. Exponents cannot have a decimal point.
+    bcall(_CheckInputBufEE) ; CF=1 if E exists; A=eeLen
+    ret c
     ; try insert '.'
     ld a, '.'
     call handleKeyNumber
@@ -235,13 +231,34 @@ handleKeyEE:
     ; Do nothing in BASE mode.
     bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
     ret nz
+    ld a, (commaEEMode)
+    cp commaEEModeSwapped
+    jr z, handleKeyCommaAlt
+handleKeyEEAlt:
     ; Check prior characters in the inputBuf.
-    bcall(_GetInputBufState) ; C=inputBufState; D=inputBufEEPos; E=inputBufEELen
-    ; Do nothing if EE already exists
-    bit inputBufStateEE, c
-    ret nz
+    bcall(_CheckInputBufEE) ; CF=1 if E exists; A=eeLen
+    ret c
     ; try insert 'E'
     ld a, Lexponent
+    jp handleKeyNumber
+
+; Description: Handle the Comma button.
+; Input: (commaEEMode)
+; Output: (inputBuf) updated
+; Destroys: all
+handleKeyComma:
+    ; Do nothing in BASE mode.
+    bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
+    ret nz
+    ld a, (commaEEMode)
+    cp commaEEModeSwapped
+    jr z, handleKeyEEAlt
+handleKeyCommaAlt:
+    ; Check prior characters in the inputBuf.
+    bcall(_CheckInputBufStruct) ; CF=1 if inputBuf is a data struct
+    ret nc
+    ; try insert ','
+    ld a, ','
     jp handleKeyNumber
 
 ; Description: Add imaginary-i into the input buffer.
@@ -409,8 +426,7 @@ handleKeyChsX:
 handleKeyChsInputBuf:
     ; In edit mode, so change sign of Mantissa or Exponent.
     set dirtyFlagsInput, (iy + dirtyFlags)
-    bcall(_GetInputBufState) ; C=inputBufState; D=inputBufEEPos; E=inputBufEELen
-    ld a, d ; A=inputBufEEPos or 0 if no 'E'
+    bcall(_CheckInputBufChs) ; A=chsPos
     ld hl, inputBuf
     ld b, inputBufCapacity
     ; [[fallthrough]]

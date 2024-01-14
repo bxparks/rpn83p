@@ -21,6 +21,7 @@ main:
     bcall(_InitInputBuf)
     call initNumResultMode
     call initComplexMode
+    call initCommaEEMode
     call initMenu
     call initBase
     call initStat
