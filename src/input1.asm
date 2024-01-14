@@ -313,34 +313,47 @@ checkInputBufDecimalPointFound:
 ;------------------------------------------------------------------------------
 
 ; Description: Check if the inputBuf is a data structure, i.e. contains a left
-; curly brace '{'.
+; or right curly brace '{', and count the nesting level. Positive for open left
+; curly, negative for close right curly.
 ; Input: inputBuf
-; Output: CF=1 if the inputBuf contains a data structure
-; Destroys: A, BC, HL
-; Preserves: DE
+; Output:
+;   - CF=1 if the inputBuf contains a data structure
+;   - A:i8=braceLevel if CF=1
+; Destroys: A, DE, BC, HL
 CheckInputBufStruct:
     ld hl, inputBuf
-    ld c, (hl) ; C=len
-    ld b, 0 ; BC=len
+    ld b, (hl) ; C=len
     inc hl ; skip past len byte
-    add hl, bc ; HL=pointer to end of string
     ; check for len==0
-    ld a, c ; A=len
+    ld a, b ; A=len
     or a ; if len==0: ZF=0
-    jr z, checkInputBufDecimalPointNone
-    ld b, a ; B=len
+    jr z, checkInputBufStructNone
+    ld c, 0 ; C=braceLevel
+    ld d, rpnfalse ; D=isBrace
 checkInputBufStructLoop:
-    ; Loop backwards from end of string and update inputBufState flags
-    dec hl
+    ; Loop forwards and update brace level.
     ld a, (hl)
+    inc hl
     cp LlBrace
-    jr z, checkInputBufStructFound
+    jr nz, checkInputBufStructCheckRbrace
+    inc c ; braceLevel++
+    ld d, rpntrue
+checkInputBufStructCheckRbrace:
+    cp LrBrace
+    jr nz, checkInputBufStructCheckTermination
+    dec c ; braceLevel--
+    ld d, rpntrue
+checkInputBufStructCheckTermination:
     djnz checkInputBufStructLoop
-checkInputBufStructNone:
-    or a
-    ret
 checkInputBufStructFound:
+    ld a, d ; A=isBrace
+    or a
+    ret z
+    ld a, c
     scf
+    ret
+checkInputBufStructNone:
+    or a ; CF=0
     ret
 
 ;------------------------------------------------------------------------------

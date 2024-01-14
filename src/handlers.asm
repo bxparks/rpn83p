@@ -290,6 +290,10 @@ handleKeyRBrace:
     ; Check if in data record mode.
     bcall(_CheckInputBufStruct) ; CF=1 if inputBuf is a data struct
     ret nc ; return if *not* in data structure mode.
+    ; Check braceLevel
+    or a
+    ret z ; return if braceLevel<=0
+    ; RBrace allowed.
     ld a, LrBrace
     jp handleKeyNumber
 
@@ -307,7 +311,10 @@ handleKeyComma:
 handleKeyCommaAlt:
     ; Check if in data record mode.
     bcall(_CheckInputBufStruct) ; CF=1 if inputBuf is a data struct
-    ret nc
+    ret nc ; return if not in data structure mode
+    or a
+    ret z ; return if braceLevel==0
+    ; Comma allowed
     ld a, ','
     jp handleKeyNumber
 
