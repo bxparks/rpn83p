@@ -891,6 +891,7 @@ _DebugU32DEAsHex equ _DebugU32DEAsHexLabel-branchTableBase
 #include "arghandlers.asm"
 #include "showparser.asm"
 #include "vars.asm"
+#include "fps.asm"
 #include "input.asm"
 #include "display.asm"
 #include "show.asm"

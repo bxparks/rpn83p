@@ -27,6 +27,7 @@ SRCS := \
 	errorcode.asm \
 	float.asm \
 	float1.asm \
+	fps.asm \
 	handlers.asm \
 	handlertab.asm \
 	help.asm \

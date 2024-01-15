@@ -244,8 +244,8 @@ realsToComplex:
 ; Destroys: all, OP1-OP5
 complexToPolarRad:
     ; Cabs() does not seem to suffer the internal overflow and underflow
-    ; problems of RToP(). This implementation also uses fewer bcall() which is
-    ; very expensive, so I think this is the winner.
+    ; problems of RToP(). This implementation also uses fewer of the expensive
+    ; bcall() so I think this is the winner.
     bcall(_PushOP1) ; FPS=[Z]
     call op1ExOp2 ; OP1=Im(Z)=y; OP2=Re(Z)=x
     ld d, 0 ; set undocumented parameter for ATan2Rad()

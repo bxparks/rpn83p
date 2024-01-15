@@ -336,14 +336,14 @@ stoRpnObject:
     ; find varName
     push bc ; stack=[index/objectType]
     push hl ; stack=[index/objectType, varName]
-    bcall(_PushOP1) ; FPS=[OP1/OP2]
+    call pushRpnObject1 ; FPS=[OP1/OP2]
     pop hl ; stack=[index, objectType]; HL=varName
     call move9ToOp1 ; OP1=varName
     bcall(_ChkFindSym) ; DE=dataPointer; CF=1 if not found
     jr c, rpnObjectUndefined ; Not found, this should never happen.
     ;
     push de ; stack=[index/objectType, dataPointer]
-    bcall(_PopOP1) ; FPS=[]; OP1/OP2
+    call popRpnObject1 ; FPS=[]; OP1/OP2
     pop de ; stack=[index/objectType]; DE=dataPointer
     pop bc ; stack=[]; B=objectType; C=index
     ; find objectPointer of index
@@ -589,10 +589,10 @@ rclL:
 ; Preserves: OP1, OP2
 replaceX:
     bcall(_CkValidNum)
-    bcall(_PushOP1) ; FPS=[OP1/OP1]
+    call pushRpnObject1 ; FPS=[OP1/OP2]
     call rclX
     call stoL
-    bcall(_PopOP1) ; FPS=[]; OP1/OP2=OP1/OP2
+    call popRpnObject1 ; FPS=[]; OP1/OP2=OP1/OP2
     call stoX
     ret
 
@@ -601,11 +601,11 @@ replaceX:
 ; Preserves: OP1, OP2
 replaceXY:
     bcall(_CkValidNum)
-    bcall(_PushOP1) ; FPS=[OP1/OP1]
+    call pushRpnObject1 ; FPS=[OP1/OP2]
     call rclX
     call stoL
     call dropStack
-    bcall(_PopOP1) ; FPS=[]; OP1/OP1=OP1/OP2
+    call popRpnObject1 ; FPS=[]; OP1/OP2=OP1/OP2
     call stoX
     ret
 
@@ -730,7 +730,7 @@ liftStackIfEnabled:
 ; TODO: Make this more efficient by taking advantage of the fact that stack
 ; registers are contiguous.
 liftStack:
-    bcall(_PushOP1) ; FPS=[OP1/OP2]
+    call pushRpnObject1 ; FPS=[OP1/OP2]
     ; T = Z
     call rclZ
     call stoT
@@ -741,7 +741,7 @@ liftStack:
     call rclX
     call stoY
     ; X = X
-    bcall(_PopOP1) ; FPS=[]; OP1/OP2=OP1/OP2
+    call popRpnObject1 ; FPS=[]; OP1/OP2=OP1/OP2
     ret
 
 ;-----------------------------------------------------------------------------
@@ -754,7 +754,7 @@ liftStack:
 ; TODO: Make this more efficient by taking advantage of the fact that stack
 ; registers are contiguous.
 dropStack:
-    bcall(_PushOP1) ; FPS=[OP1/OP2]
+    call pushRpnObject1 ; FPS=[OP1/OP2]
     ; X = Y
     call rclY
     call stoX
@@ -765,7 +765,7 @@ dropStack:
     call rclT
     call stoZ
     ; T = T
-    bcall(_PopOP1) ; FPS=[]; OP1/OP2=OP1/OP2
+    call popRpnObject1 ; FPS=[]; OP1/OP2=OP1/OP2
     ret
 
 ;-----------------------------------------------------------------------------
@@ -780,7 +780,7 @@ dropStack:
 rollDownStack:
     ; save X in FPS
     call rclX
-    bcall(_PushOP1) ; FPS=[OP1/OP2]
+    call pushRpnObject1 ; FPS=[OP1/OP2]
     ; X = Y
     call rclY
     call stoX
@@ -791,7 +791,7 @@ rollDownStack:
     call rclT
     call stoZ
     ; T = X
-    bcall(_PopOP1) ; FPS=[]; OP1/OP2=OP1/OP2
+    call popRpnObject1 ; FPS=[]; OP1/OP2=OP1/OP2
     call stoT
     ret
 
@@ -807,7 +807,7 @@ rollDownStack:
 rollUpStack:
     ; save T in FPS
     call rclT
-    bcall(_PushOP1) ; FPS=[OP1/OP2]
+    call pushRpnObject1 ; FPS=[OP1/OP2]
     ; T = Z
     call rclZ
     call stoT
@@ -818,7 +818,7 @@ rollUpStack:
     call rclX
     call stoY
     ; X = T
-    bcall(_PopOP1) ; FPS=[]; OP1/OP2=OP1/OP2
+    call popRpnObject1 ; FPS=[]; OP1/OP2=OP1/OP2
     call stoX
     ret
 
@@ -829,11 +829,13 @@ rollUpStack:
 ; Output: X=Y; Y=X
 ; Destroys: all, OP1, OP2
 exchangeXYStack:
+    ; TODO: Make this a lot faster by directly swapping the memory allocated to
+    ; X and Y within the appVar.
     call rclX
-    bcall(_PushOP1)
+    call pushRpnObject1 ; FPS=[OP1/OP2]
     call rclY
     call stoX
-    bcall(_PopOP1)
+    call popRpnObject1 ; FPS=[]; OP1/OP2=OP1/OP2
     call stoY
     ret
 
@@ -932,7 +934,7 @@ rclRegNNToOP2:
 ; Preserves: OP1, OP2
 stoOpRegNN:
     push bc ; stack=[op,NN]
-    bcall(_PushOP1) ; FPS=[OP1/OP2]
+    call pushRpnObject1 ; FPS=[OP1/OP2]
     call cp1ToCp3 ; OP3/OP4=OP1/OP2
     ; Recall REGS[NN]
     pop bc ; stack=[]; B=op; C=NN
@@ -948,7 +950,7 @@ stoOpRegNN:
     pop bc ; stack=[]; B=op; C=NN
     call stoRegNN
     ; restore OP1, OP2
-    bcall(_PopOP1) ; FPS=[]; OP1/OP2=OP1/OP2
+    call popRpnObject1 ; FPS=[]; OP1/OP2=OP1/OP2
     ret
 
 ; Description: Implement RCL{op} NN, with {op} defined by B and NN given by C.
@@ -962,13 +964,13 @@ stoOpRegNN:
 ; Destroys: all, OP3, OP4
 rclOpRegNN:
     push bc ; stack=[op,NN]
-    bcall(_PushOP1) ; FPS=[OP1/OP2]
+    call pushRpnObject1 ; FPS=[OP1/OP2]
     ; Recall REGS[NN]
     pop bc ; stack=[]; B=op; C=NN
     push bc ; stack=[op,NN]
     call rclRegNN ; OP1/OP2=REGS[NN]
     call cp1ToCp3 ; OP3/OP4=OP1/OP2
-    bcall(_PopOP1) ; FPS=[]; OP1/OP2=OP1/OP2
+    call popRpnObject1 ; FPS=[]; OP1/OP2=OP1/OP2
     ; Invoke op B
     pop bc ; stack=[]; B=op; C=NN
     ld a, b ; A=op
@@ -1016,7 +1018,7 @@ floatOpDiv:
 ; Preserves: OP1/OP2
 stoVar:
     push bc
-    bcall(_PushOP1) ; FPS=[OP1/OP2]
+    call pushRpnObject1 ; FPS=[OP1/OP2]
     pop bc
     call checkOp1Complex ; ZF=1 if complex
     jr z, stoVarComplex
@@ -1078,7 +1080,7 @@ stoOpVar:
     jr z, stoVar
     ;
     push bc ; stack=[op,LETTER]
-    bcall(_PushOP1) ; FPS=[OP1/OP2]
+    call pushRpnObject1 ; FPS=[OP1/OP2]
     call cp1ToCp3 ; OP3/OP4=OP1/OP2
     ; Recall VARS[LETTER]
     pop bc ; stack=[]; B=op; C=LETTER
@@ -1094,7 +1096,7 @@ stoOpVar:
     pop bc ; stack=[]; B=op; C=LETTER
     call stoVar
     ; restore OP1, OP2
-    bcall(_PopOP1) ; FPS=[]; OP1/OP2=OP1/OP2
+    call popRpnObject1 ; FPS=[]; OP1/OP2=OP1/OP2
     ret
 
 ; Description: Implement RCL{op} LETTER, with {op} defined by B and LETTER
@@ -1109,13 +1111,13 @@ stoOpVar:
 ; Destroys: all, OP3, OP4
 rclOpVar:
     push bc ; stack=[op/LETTER]
-    bcall(_PushOP1) ; FPS=[OP1/OP2]
+    call pushRpnObject1 ; FPS=[OP1/OP2]
     ; Recall VARS[LETTER]
     pop bc ; stack=[]; B=op; C=LETTER
     push bc ; stack=[op,LETTER]
     call rclVar ; OP1/OP2=VARS[LETTER]
     call cp1ToCp3 ; OP3/OP4=OP1/OP2
-    bcall(_PopOP1) ; FPS=[]; OP1/OP2=OP1/OP2
+    call popRpnObject1 ; FPS=[]; OP1/OP2=OP1/OP2
     ; Invoke op B
     pop bc ; stack=[]; B=op; C=LETTER
     ld a, b ; A=op
