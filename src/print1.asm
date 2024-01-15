@@ -32,6 +32,7 @@ getStringPageOne:
 
 ;------------------------------------------------------------------------------
 
+; TODO: Move to format1.asm.
 ; Description: Convert A to a string of 1 to 3 digits, with the leading '0'
 ; suppressed, and append at the string buffer pointed by HL. NUL terminated.
 ; Input: HL: pointer to string buffer
@@ -77,6 +78,7 @@ convertAToStringOne:
     pop de
     ret
 
+; TODO: Move to float1.asm.
 ; Description: Return A / B using repeated substraction.
 ; Input:
 ;   - A: numerator
@@ -96,6 +98,7 @@ divideAByBLoopEnd:
     ld a, c
     ret
 
+; TODO: Move to format1.asm
 ; Description: Convert A into an Ascii Char ('0'-'9','A'-'F').
 ; Destroys: A
 convertAToCharPageOne:

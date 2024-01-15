@@ -90,9 +90,11 @@ appendInputBufContinue:
 ;   - inputBufFlagsClosedEmpty: set if inputBuf was an empty string when closed
 ;   - inputBuf cleared to empty string
 ;   - OP1: value of inputBuf
+;   - A: rpnObjectType
 ; Destroys: all, OP1, OP2, OP4
 CloseInputBuf:
-    ld a, (inputBuf)
+    ld hl, inputBuf
+    call GetFirstChar
     or a
     jr z, closeInputBufEmpty
     ; inputBuf not empty
@@ -101,7 +103,12 @@ CloseInputBuf:
 closeInputBufEmpty:
     set inputBufFlagsClosedEmpty, (iy + inputBufFlags)
 closeInputBufContinue:
-    call parseInputBuf ; OP1/OP2=float or complex
+    cp LlBrace ; '{'
+    jr z, closeInputBufDateTime
+    call parseInputBufNumber ; OP1/OP2=float or complex
+    jp ClearInputBuf
+closeInputBufDateTime:
+    call parseInputBufDate ; TODO: Support other data record types
     jp ClearInputBuf
 
 ;------------------------------------------------------------------------------
@@ -320,7 +327,7 @@ checkInputBufDecimalPointFound:
 ;   - CF=1 if the inputBuf contains a data structure
 ;   - A:i8=braceLevel if CF=1
 ; Destroys: A, DE, BC, HL
-CheckInputBufStruct:
+CheckInputBufStruct: ; TODO: Rename to CheckInputBufRecord
     ld hl, inputBuf
     ld b, (hl) ; C=len
     inc hl ; skip past len byte
@@ -362,7 +369,7 @@ checkInputBufStructNone:
 ; Input: inputBuf filled with keyboard characters
 ; Output: OP1/OP2: real or complex number
 ; Destroys: all registers, OP1-OP5 (due to SinCosRad())
-parseInputBuf:
+parseInputBufNumber:
     call initInputBufForParsing
     ld hl, inputBuf
     inc hl
@@ -1088,4 +1095,20 @@ isNumberDelimiterPageOne:
     cp LlBrace ; '{'
     ret z
     cp ','
+    ret
+
+;-----------------------------------------------------------------------------
+
+; Description: Parse the inputBuf for a Date Record.
+parseInputBufDate:
+    call initInputBufForParsing
+    ; source string
+    ld hl, inputBuf
+    inc hl ; skip len byte
+    ; dest record buffer
+    ld de, OP1
+    ld a, rpnObjectTypeDate
+    ld (de), a
+    inc de
+    call parseDate ; parse Date record into OP1
     ret

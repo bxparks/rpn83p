@@ -153,6 +153,20 @@ deleteAtPosShiftLeft:
 
 ;-----------------------------------------------------------------------------
 
+; Description: Return the first character in the Pascal string, or 0 if the
+; string is empty.
+; Input: HL: Pascal string pointer
+; Output: A: firstChar (0 if empty)
+; Destroys: A, BC, HL
+; Preserves: DE
+GetFirstChar:
+    ld a, (hl)
+    or a
+    ret z
+    inc hl ; skip past the len byte
+    ld a, (hl)
+    ret
+
 ; Description: Return the last character in the Pascal string, or 0 if the
 ; string is empty.
 ; Input: HL: Pascal string pointer

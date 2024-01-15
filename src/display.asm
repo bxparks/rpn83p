@@ -966,15 +966,18 @@ clearShowAreaLoop:
 ; Low-level helper routines.
 ;-----------------------------------------------------------------------------
 
-; Description: Print floating point number at OP1 at the current cursor. Erase
-; to the end of line (but only if the floating point did not spill over to the
-; next line).
+; Description: Print data in OP1 at the current cursor. The data could be a
+; real number, a complex number, for a Date record. Erase to the end of line
+; (but only if the floating point did not spill over to the next line).
 ; Input:
 ;   - A: objectType
 ;   - B: displayFontMask
 ;   - OP1: floating point number
 ; Destroys: A, HL, OP3-OP6
 printOP1:
+    call getOp1RpnObjectType ; A=objectType
+    cp rpnObjectTypeDate
+    jp z, printOP1DateRecord
     cp rpnObjectTypeComplex
     jr z, printOP1Complex
     ; [[fallthrough]]
@@ -1397,6 +1400,27 @@ formatBinDigitsEnd:
     pop hl
     pop de
     ret
+
+;-----------------------------------------------------------------------------
+
+; Description: Print the Date Record in OP1 using small font.
+; Input:
+;   - OP1: Date Record
+;   - B: displayFontMask
+; Destroys: OP3-OP6
+printOP1DateRecord:
+    call eraseEOLIfNeeded
+    call displayStackSetSmallFont
+    ld hl, OP1
+    ld de, OP3 ; destPointer
+    push de
+    bcall(_FormatDateRecord)
+    xor a
+    ld (de), a ; add NUL terminator
+    ; print string in OP3
+    pop hl ; HL=OP3
+    call vPutSmallS
+    jp vEraseEOL
 
 ;-----------------------------------------------------------------------------
 

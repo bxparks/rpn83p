@@ -7,7 +7,7 @@
 
 ; Description: Initialize the commaEEMode.
 initCommaEEMode:
-    ld a, commaEEModeSwapped ; factory default setting is "Swapped"
+    ld a, commaEEModeNormal ; factory default setting is "Normal"
     ld (commaEEMode), a
     ret
 
@@ -103,3 +103,14 @@ closeInputAndRecallUniversalXY:
     call rclX ; A=objectType
     call cp1ToCp3
     jp rclY
+
+;-----------------------------------------------------------------------------
+
+; Close the input buffer, parse D{} record, place it into OP1.
+closeInputAndRecallDateX:
+    call closeInput
+    res rpnFlagsTvmCalculate, (iy + rpnFlags)
+    call rclX ; A=objectType
+    cp rpnObjectTypeDate
+    ret z
+    bcall(_ErrDataType)
