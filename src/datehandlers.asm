@@ -3,6 +3,13 @@
 ; Copyright (c) 2024 Brian T. Park
 ;-----------------------------------------------------------------------------
 
+mLeapYearHandler:
+    call closeInputAndRecallX ; OP1=X=year
+    bcall(_IsLeap) ; OP1=0 or 1
+    jp replaceX
+
+;-----------------------------------------------------------------------------
+
 ; DATE/Row1
 mNowHandler:
 mConvertTimeZoneHandler:
@@ -27,7 +34,6 @@ mEpochGetCustomHandler:
 
 ; DATE/D.FN/Row1
 mDayOfWeekHandler:
-mLeapYearHandler:
 
 ; DATE/DUR/Row1
 mDurationToSecondsHandler:

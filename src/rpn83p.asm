@@ -929,6 +929,11 @@ _FormatComplexPolarDegLabel:
 _FormatComplexPolarDeg equ _FormatComplexPolarDegLabel-branchTableBase
     .dw FormatComplexPolarDeg
     .db 1
+; date1.asm
+_IsLeap:
+_IsLeap equ _IsLeap-branchTableBase
+    .dw IsLeap
+    .db 1
 
 #ifdef DEBUG
 ; debug.asm
@@ -1053,6 +1058,7 @@ defpage(1)
 #include "const1.asm"
 #include "complex1.asm"
 #include "complexformat1.asm"
+#include "date1.asm"
 #include "tvm.asm"
 #include "hms.asm"
 #include "prob.asm"
