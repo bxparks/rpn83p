@@ -10,6 +10,22 @@
         - extend `STO`, `RCL`, `STO{op}`, and `RCL{op}` to accept a
           single-letter in addition to digits (e.g. `STO ALPHA A`, `RCL+
           ALPHA B`)
+    - **Bug Fix** Parse floating numbers equivalent to 0.0 more correctly.
+        - The canonical internal representation of 0.0 in TI-OS has an exponent
+          value of `$80` (i.e. 0), with all mantissa digits set to `0`.
+        - The previous code set the mantissa digits correctly, but incorrectly
+          set the exponent to `$7F` or some other value depending on the
+          position of the decimal point relative to the `0` digits.
+        - It made almost no difference because various floating point routines
+          seem to canonicalize the exponent to the correct `$80` before
+          continuing.
+        - However, in an upcoming feature, the validation `CkPosInt()` is called
+          before canonicalization can take place, the `CkPosInt()` returns an
+          incorrect result.
+        - The fix correctly detects all variations of a 0.0 (e.g. an empty
+          string "", "0.0", "000.0", "-000.000E1", "00.00E0") and correctly
+          returns the canonical representation of 0.0 which works with
+          `CkPosInt()`.
     - Add `RNDF`, `RNDG`, `RNDN` rounding functions
         - `RNDF`: round to current FIX/SCI/ENG digits
         - `RNDG`: round to 10 digits, removing guard digits

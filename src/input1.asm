@@ -325,8 +325,8 @@ parseFloat:
     call extractMantissaExponent ; extract mantissa exponent to floatBuf
     call extractMantissaSign ; extract mantissa sign to floatBuf
     call parseMantissa ; parse mantissa digits from inputBuf into parseBuf
-    call extractMantissa ; copy mantissa digits from parseBuf into floatBuf
-    call extractExponent ; floatBuf updated
+    call extractMantissa ; convert mantissa digits in parseBuf to floatBuf
+    call extractExponent ; extract exponent from inputBuf to floatBuf
     push hl
     ld hl, floatBuf
     call move9ToOp1PageOne
@@ -450,11 +450,16 @@ clearFloatBuf:
 ; Description: Parse the mantissa digits from inputBuf into parseBuf, ignoring
 ; negative sign, leading zeros, the decimal point, and the EE symbol. For
 ; example:
+;   - "0.0" produces ""
+;   - "-00.00" produces ""
 ;   - "0.1" produces "1"
 ;   - "-001.2" produces "12"
 ;   - "23E-1" produces "23"
-; Input: HL: pointer to C-string
-; Output: parseBuf filled with mantissa digits
+; Input:
+;   - HL: pointer to C-string
+;   - parseBuf: Pascal string, initially set to empty string
+; Output:
+;   - parseBuf: filled with mantissa digits or an empty string if all 0
 ; Destroys: A, BC, DE
 ; Preserves: HL
 parseMantissaLeadingFound equ 0 ; bit to set when lead digit found
@@ -491,11 +496,9 @@ findDecimalPointLeadingFound equ 0 ; set if leading (non-zero) digit found
 findDecimalPointDotFound equ 1; set if decimal point found
 
 ; Description: Find the position of the decimal point of the given number
-; string.
-; Input: HL: pointer to floating point C-string
-; Output: A: decimalPointPos, signed integer
-; Destroys: A, BC, DE
-; Preservers: HL
+; string. If the input string is effectively 0, then position of 1 is returned
+; so that the final floating point number has an exponent of $80, which is the
+; canonical representation of 0.0 in the TI-OS.
 ;
 ; The returned value is the number of places the the decimal point needs to be
 ; shifted to get back the original value after the mantissa is normalized with
@@ -503,9 +506,16 @@ findDecimalPointDotFound equ 1; set if decimal point found
 ; normalized mantissa lies in the interval [0.1, 1.0). The shift can be a
 ; negative number for values less than 0.1.
 ;
+; A string that has no leading digit will always parse to 0, for example "0" or
+; "0.00" or "000.00". This condition will be detected and the position is
+; returned as 1, so that the final floating point number has an exponent of $80
+; (i.e. 0) which is the canonical representation of 0.0 in the TI-OS.
+;
 ; For example, the following unnormalized number strings should return the
 ; indicated decimal point position:
 ;
+;   - "0" -> .0, 1
+;   - "00.000" -> .0, 1
 ;   - "123.4" ->  .1234, 3
 ;   - "012" ->  .12, 2
 ;   - "12" ->  .12, 2
@@ -535,12 +545,17 @@ findDecimalPointDotFound equ 1; set if decimal point found
 ;               pos--;
 ;           }
 ;       } else { // c!='0' || leadingFound
-;           if (dotFound) break;
 ;           leadingFound = true;
+;           if (dotFound) break;
 ;           pos++;
 ;       }
 ;   }
-;   return pos;
+;   return (leadingFound ? pos : 1);
+;
+; Input: HL: pointer to floating point C-string
+; Output: A: decimalPointPos, signed integer
+; Destroys: A, BC, DE
+; Preservers: HL
 findDecimalPoint:
     push hl
     xor a
@@ -572,14 +587,17 @@ findDecimalPointCheckZero:
     dec c
     jr findDecimalPointLoop
 findDecimalPointNormalDigit:
+    set findDecimalPointLeadingFound, d
     bit findDecimalPointDotFound, d
     jr nz, findDecimalPointEnd
-    set findDecimalPointLeadingFound, d
     inc c
     jr findDecimalPointLoop
 findDecimalPointEnd:
-    ld a, c
     pop hl
+    ld a, c
+    bit findDecimalPointLeadingFound, d
+    ret nz
+    ld a, 1 ; if no leading digit found: return pos=1
     ret
 
 ;------------------------------------------------------------------------------
@@ -634,7 +652,8 @@ extractMantissaSign:
     ret
 
 ; Description: Extract the normalized mantissa digits from parseBuf to
-; floatBuf, 2 digits per byte.
+; floatBuf, 2 digits per byte. If the mantissa is an empty string or
+; effectively 0, do nothing.
 ; Input: parseBuf
 ; Output: floatBuf updated
 ; Destroys: A, BC, DE
@@ -644,7 +663,7 @@ extractMantissa:
     ld hl, parseBuf
     ld a, (hl)
     or a
-    jr z, extractMantissaEnd
+    jr z, extractMantissaEnd ; if mantissa is effectively 0 or "", do nothing
     inc hl
     ld de, floatBufMan
     ld b, parseBufCapacity/2
@@ -671,12 +690,18 @@ extractMantissaEnd:
 
 ;-----------------------------------------------------------------------------
 
-; Description: Extract the EE exponent digits (if any) to floatBuf.
+; Description: Extract the EE exponent digits (if any) to floatBuf. If the
+; mantissa is effectively 0 or an empty string, do nothing.
 ; Input: HL: pointer to floating number C-string
 ; Output: floatBuf updated
 ; Destroys: A, BC, DE
 ; Preserves: HL
 extractExponent:
+    ; If the mantissa is effectively 0, then no need to parse the exponent.
+    ld a, (parseBuf)
+    or a
+    ret z
+    ;
     push hl
     call findExponent ; HL=pointerEEDigit; CF=1 if found
     jr nc, extractExponentEnd
