@@ -8,6 +8,17 @@ mLeapYearHandler:
     bcall(_IsLeap) ; OP1=0 or 1
     jp replaceX
 
+mDateToEpochDaysHandler:
+    call closeInputAndRecallDateX ; OP1=X=DateRecord
+    ;
+    ld hl, OP1
+    ld de, OP3
+    bcall(_DateToEpochDays) ; OP3=u40(days)
+    ;
+    ld hl, OP3
+    bcall(_ConvertU40ToOP1) ; OP1=float(days)
+    jp replaceX
+
 ;-----------------------------------------------------------------------------
 
 ; DATE/Row1
@@ -20,7 +31,6 @@ mZoneOffsetSetHandler:
 mZoneOffsetGetHandler:
 
 ; DATE/EPCH/Row1
-mDateToEpochDaysHandler:
 mEpochDaystoDateHandler:
 mDateTimeToEpochSecondsHandler:
 mEpochSecondstoDateTimeHandler:

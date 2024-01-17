@@ -677,6 +677,10 @@ _AddAToOP1Label:
 _AddAToOP1 equ _AddAToOP1Label-branchTableBase
     .dw AddAToOP1
     .db 1
+_ConvertU40ToOP1PageOneLabel:
+_ConvertU40ToOP1 equ _ConvertU40ToOP1PageOneLabel-branchTableBase
+    .dw ConvertU40ToOP1
+    .db 1
 ; tvm.asm
 _TvmCalculateNLabel:
 _TvmCalculateN equ _TvmCalculateNLabel-branchTableBase
@@ -934,6 +938,10 @@ _IsLeap:
 _IsLeap equ _IsLeap-branchTableBase
     .dw IsLeap
     .db 1
+_DateToEpochDays:
+_DateToEpochDays equ _DateToEpochDays-branchTableBase
+    .dw DateToEpochDays
+    .db 1
 
 #ifdef DEBUG
 ; debug.asm
@@ -976,6 +984,10 @@ _DebugFlags equ _DebugFlagsLabel-branchTableBase
 _DebugU32AsHexLabel:
 _DebugU32AsHex equ _DebugU32AsHexLabel-branchTableBase
     .dw DebugU32AsHex
+    .db 1
+_DebugU40AsHexLabel:
+_DebugU40AsHex equ _DebugU40AsHexLabel-branchTableBase
+    .dw DebugU40AsHex
     .db 1
 _DebugHLLabel:
 _DebugHL equ _DebugHLLabel-branchTableBase
