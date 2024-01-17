@@ -13,10 +13,10 @@ mDateToEpochDaysHandler:
     ;
     ld hl, OP1
     ld de, OP3
-    bcall(_DateToEpochDays) ; OP3=u40(days)
+    bcall(_DateToEpochDays) ; OP3=i40(days)
     ;
     ld hl, OP3
-    bcall(_ConvertU40ToOP1) ; OP1=float(days)
+    bcall(_ConvertI40ToOP1) ; OP1=float(days)
     jp replaceX
 
 ;-----------------------------------------------------------------------------

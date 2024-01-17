@@ -10,6 +10,20 @@
 ; entry.
 ;------------------------------------------------------------------------------
 
+; Description: Convert the i40 (signed integer) referenced by HL to a floating
+; point number in OP1.
+; Input: HL: pointer to i40 (must not be OP2)
+; Output: OP1: floating point equivalent of u40(HL)
+; Destroys: A, B, C, DE
+; Preserves: HL, OP2
+ConvertI40ToOP1:
+    call isPosU40 ; ZF=1 if positive or zero
+    jr z, ConvertU40ToOP1
+    call negU40 ; U40=-U40
+    call ConvertU40ToOP1
+    bcall(_InvOP1S) ; invert the sign
+    ret
+
 ; Description: Convert the u40 referenced by HL to a floating point number in
 ; OP1.
 ; Input: HL: pointer to u40 (must not be OP2)
@@ -432,6 +446,43 @@ divU40U40NextBit:
     pop af
     dec a
     jr nz, divU40U40Loop
+    ret
+
+;------------------------------------------------------------------------------
+
+; Description: Perform the two's complement of the u40 integer pointed by HL.
+; Input: HL:u40 pointer
+; Output: HL:neg(HL)
+; Destroys: A
+negU40:
+    push hl
+    push bc
+    ld a, (hl)
+    neg
+    ld (hl), a
+    ld b, 4
+negU40Loop:
+    inc hl
+    ld a, 0 ; cannot use 'xor a' because we need to preserve CF
+    sbc a, (hl)
+    ld (hl), a
+    djnz negU40Loop
+    pop bc
+    pop hl
+    ret
+
+; Description: Return ZF=1 if u40 is positive or zero, i.e. the most
+; significant bit is not set.
+; Input: HL:u40 pointer
+; Destroys: none
+isPosU40:
+    push bc
+    push hl
+    ld bc, 4
+    add hl, bc
+    bit 7, (hl) ; ZF=0 if negative
+    pop hl
+    pop bc
     ret
 
 ;------------------------------------------------------------------------------

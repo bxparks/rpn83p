@@ -677,9 +677,13 @@ _AddAToOP1Label:
 _AddAToOP1 equ _AddAToOP1Label-branchTableBase
     .dw AddAToOP1
     .db 1
-_ConvertU40ToOP1PageOneLabel:
-_ConvertU40ToOP1 equ _ConvertU40ToOP1PageOneLabel-branchTableBase
+_ConvertU40ToOP1Label:
+_ConvertU40ToOP1 equ _ConvertU40ToOP1Label-branchTableBase
     .dw ConvertU40ToOP1
+    .db 1
+_ConvertI40ToOP1Label:
+_ConvertI40ToOP1 equ _ConvertI40ToOP1Label-branchTableBase
+    .dw ConvertI40ToOP1
     .db 1
 ; tvm.asm
 _TvmCalculateNLabel:
