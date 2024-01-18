@@ -35,6 +35,7 @@ SRCS := \
 	input.asm \
 	input1.asm \
 	integer1.asm \
+	integerconv1.asm \
 	main.asm \
 	mainparser.asm \
 	memory.asm \

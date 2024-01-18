@@ -648,7 +648,7 @@ _DeleteAtPosLabel:
 _DeleteAtPos equ _DeleteAtPosLabel-branchTableBase
     .dw DeleteAtPos
     .db 1
-; integer1.asm
+; integerconv1.asm
 _ConvertAToOP1PageOneLabel:
 _ConvertAToOP1PageOne equ _ConvertAToOP1PageOneLabel-branchTableBase
     .dw ConvertAToOP1PageOne
@@ -959,6 +959,7 @@ defpage(1)
 #include "fps1.asm"
 #include "float1.asm"
 #include "integer1.asm"
+#include "integerconv1.asm"
 #include "const1.asm"
 #include "complex1.asm"
 #include "tvm.asm"
