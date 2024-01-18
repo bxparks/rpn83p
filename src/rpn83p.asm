@@ -677,6 +677,7 @@ _AddAToOP1Label:
 _AddAToOP1 equ _AddAToOP1Label-branchTableBase
     .dw AddAToOP1
     .db 1
+; integerconv40.asm
 _ConvertU40ToOP1Label:
 _ConvertU40ToOP1 equ _ConvertU40ToOP1Label-branchTableBase
     .dw ConvertU40ToOP1
@@ -1070,6 +1071,8 @@ defpage(1)
 #include "float1.asm"
 #include "integer1.asm"
 #include "integerconv1.asm"
+#include "integer40.asm"
+#include "integerconv40.asm"
 #include "format1.asm"
 #include "const1.asm"
 #include "complex1.asm"
