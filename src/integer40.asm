@@ -149,6 +149,29 @@ addU40U40IX:
     pop de
     ret
 
+; Description: Add A to u40 pointed by HL.
+; Input:
+;   - HL: pointer to u40
+;   - A: u8 to add
+; Output: (HL) += A
+; Destroys: none
+addU40ByA:
+    push hl
+    push bc
+    ld bc, $500 ; B=5; C=0
+    add a, (hl)
+    jr addU40ByALoopEntry
+addU40ByALoop:
+    ld a, (hl)
+    adc a, c ; C=0
+addU40ByALoopEntry:
+    ld (hl), a
+    inc hl
+    djnz addU40ByALoop
+    pop bc
+    pop hl
+    ret
+
 ;------------------------------------------------------------------------------
 
 ; Description: Subtract 2 u40 integers.
@@ -248,6 +271,49 @@ multU40U40End:
     dec hl
     dec hl
     ; restore BC
+    pop bc
+    ret
+
+;------------------------------------------------------------------------------
+
+; Description: Calculate (HL) = u40(HL) * 10.
+; Input:
+;   - HL: pointer to a u40 integer, little-endian format
+; Output:
+;   - u40(HL) = u40(HL) * 10
+; Destroys: A
+; Preserves: BC, DE, HL
+multU40By10:
+    push bc
+    push de
+    push hl
+    ; Create 6 bytes of temp U40 on the stack
+    ld de, 0
+    push de
+    push de
+    push de ; SP=tempU40
+    ; copy inputU40 to tempU40
+    ex de, hl ; DE=inputU40
+    add hl, sp ; HL=tempU40
+    ex de, hl ; DE=tempU40; HL=inputU40
+    ld bc, 5
+    push de
+    push hl
+    ldir ; tempU40=inputU40
+    pop hl
+    pop de
+    ; (HL) = 4 * (HL)
+    call shiftLeftLogicalU40 ; (HL) *= 2
+    call shiftLeftLogicalU40 ; (HL) *= 2
+    call addU40U40 ; (HL) += input40
+    call shiftLeftLogicalU40 ; (HL)=2*(HL)=10*inputU40
+    ; Remove temp U40 on stack
+    pop bc
+    pop bc
+    pop bc
+    ; Restore registers
+    pop hl
+    pop de
     pop bc
     ret
 

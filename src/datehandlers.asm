@@ -19,6 +19,14 @@ mDateToEpochDaysHandler:
     bcall(_ConvertI40ToOP1) ; OP1=float(days)
     jp replaceX
 
+mEpochDaystoDateHandler:
+    call closeInputAndRecallX ; OP1=X=epochDays
+    ld hl, OP3
+    bcall(_ConvertOP1ToI40) ; OP3=i40(X)
+    ; TODO: Replace below with EpochDaysToDate().
+    bcall(_ConvertI40ToOP1) ; OP1=float(i40(X))
+    ret
+
 ;-----------------------------------------------------------------------------
 
 ; DATE/Row1
@@ -31,7 +39,6 @@ mZoneOffsetSetHandler:
 mZoneOffsetGetHandler:
 
 ; DATE/EPCH/Row1
-mEpochDaystoDateHandler:
 mDateTimeToEpochSecondsHandler:
 mEpochSecondstoDateTimeHandler:
 
