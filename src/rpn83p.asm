@@ -896,7 +896,7 @@ _FormatU8ToD2Label:
 _FormatU8ToD2 equ _FormatU8ToD2Label-branchTableBase
     .dw FormatU8ToD2
     .db 1
-_FormatDateRecord:
+_FormatDateRecordLabel:
 _FormatDateRecord equ _FormatDateRecord-branchTableBase
     .dw FormatDateRecord
     .db 1
@@ -947,13 +947,17 @@ _FormatComplexPolarDeg equ _FormatComplexPolarDegLabel-branchTableBase
     .dw FormatComplexPolarDeg
     .db 1
 ; date1.asm
-_IsLeap:
-_IsLeap equ _IsLeap-branchTableBase
+_IsLeapLabel:
+_IsLeap equ _IsLeapLabel-branchTableBase
     .dw IsLeap
     .db 1
-_DateToEpochDays:
-_DateToEpochDays equ _DateToEpochDays-branchTableBase
+_DateToEpochDaysLabel:
+_DateToEpochDays equ _DateToEpochDaysLabel-branchTableBase
     .dw DateToEpochDays
+    .db 1
+_EpochDaysToDateLabel:
+_EpochDaysToDate equ _EpochDaysToDateLabel-branchTableBase
+    .dw EpochDaysToDate
     .db 1
 
 #ifdef DEBUG

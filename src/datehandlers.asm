@@ -19,13 +19,16 @@ mDateToEpochDaysHandler:
     bcall(_ConvertI40ToOP1) ; OP1=float(days)
     jp replaceX
 
-mEpochDaystoDateHandler:
+mEpochDaysToDateHandler:
     call closeInputAndRecallX ; OP1=X=epochDays
+    ;
     ld hl, OP3
     bcall(_ConvertOP1ToI40) ; OP3=i40(X)
-    ; TODO: Replace below with EpochDaysToDate().
-    bcall(_ConvertI40ToOP1) ; OP1=float(i40(X))
-    ret
+    ;
+    ld hl, OP3
+    ld de, OP1
+    bcall(_EpochDaysToDate) ; DE=OP1=DateRecord(u40(epochDays))
+    jp replaceX
 
 ;-----------------------------------------------------------------------------
 

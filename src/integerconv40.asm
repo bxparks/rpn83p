@@ -78,21 +78,28 @@ ConvertOP1ToI40:
     ld a, (OP1)
     bit 7, a ; ZF=0 if negative
     jr z, convertOP1ToI40Pos
-    ; Handle negative. Strictly speaking, this code does not handle the
-    ; smallest negative value of -2^39, but that's beyond the normal usage of
-    ; this function, so it's not worth spending effort to handle that special
-    ; case.
+    ; Handle negative by changing the sign of the floating point, converting it
+    ; to U40, then doing a two's complement to get an i40.  Strictly speaking,
+    ; this code does not handle the smallest negative value of -2^39, but
+    ; that's beyond the normal usage of this function, so it's not worth
+    ; spending effort to handle that special case.
     res 7, a
     ld (OP1), a
     call convertOP1ToI40Pos
+    ld a, (OP1)
     set 7, a
     ld (OP1), a
+    call negU40 ; two's complement
     ret
 convertOP1ToI40Pos:
+    push hl
     call op2Set2Pow39PageOne
     bcall(_CpOP1OP2) ; if OP1 >= 2^39: CF=0
+    pop hl
     jr nc, convertOP1ToU40Error
     ; [[fallthrough]]
+
+;------------------------------------------------------------------------------
 
 ; Description: Convert OP1 to a u40 integer, throwing an Err:Domain exception
 ; if OP1 is:

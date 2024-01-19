@@ -38,6 +38,21 @@ clearU40BC:
 
 ;------------------------------------------------------------------------------
 
+; Description: Copy U40 from HL to DE.
+; Destroys: none
+copyU40:
+    push bc
+    push de
+    push hl
+    ld bc, 5
+    ldir
+    pop hl
+    pop de
+    pop bc
+    ret
+
+;------------------------------------------------------------------------------
+
 ; Description: Set u40 pointed by HL to value in A.
 ; Input:
 ;   - A: u8
