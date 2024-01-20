@@ -588,7 +588,7 @@ rclL:
 ; setting dirty flag. Works for complex numbers.
 ; Preserves: OP1, OP2
 replaceX:
-    bcall(_CkValidNum)
+    call checkValid
     bcall(_PushRpnObject1) ; FPS=[OP1/OP2]
     call rclX
     call stoL
@@ -600,7 +600,7 @@ replaceX:
 ; and setting dirty flag. Works for complex numbers.
 ; Preserves: OP1, OP2
 replaceXY:
-    bcall(_CkValidNum)
+    call checkValid
     bcall(_PushRpnObject1) ; FPS=[OP1/OP2]
     call rclX
     call stoL
@@ -621,16 +621,16 @@ replaceXY:
 ; Preserves: OP1, OP2
 replaceXYWithOP1OP2:
     ; validate OP1 and OP2 before modifying X and Y
-    bcall(_CkValidNum)
+    call checkValidReal
     bcall(_OP1ExOP2)
-    bcall(_CkValidNum)
+    call checkValidReal
     bcall(_OP1ExOP2)
-
+    ;
     call stoY ; Y = OP1
     bcall(_PushRealO1) ; FPS=[OP1]
     call rclX
     call stoL; LastX = X
-
+    ;
     bcall(_OP2ToOP1)
     call stoX ; X = OP2
     bcall(_PopRealO1) ; FPS=[]; OP1=OP1
@@ -646,10 +646,10 @@ replaceXYWithOP1OP2:
 ; Preserves: OP1, OP2
 replaceXWithOP1OP2:
     ; validate OP1 and OP2 before modifying X and Y
-    bcall(_CkValidNum)
+    call checkValidReal
     bcall(_PushRealO1) ; FPS=[OP1]
     call op2ToOp1
-    bcall(_CkValidNum)
+    call checkValidReal
     bcall(_PushRealO1) ; FPS=[OP1,OP2]
     call exchangeFPSFPS ; FPS=[OP2,OP1]
 
@@ -672,7 +672,7 @@ replaceXWithOP1OP2:
 ; Destroys: all
 ; Preserves: OP1, OP2, LastX
 pushToX:
-    bcall(_CkValidNum)
+    call checkValid
     call liftStackIfNonEmpty
     call stoX
     ret
@@ -688,9 +688,9 @@ pushToX:
 ; Destroys: all
 ; Preserves: OP1, OP2, LastX
 pushToXY:
-    bcall(_CkValidNum)
+    call checkValidReal
     bcall(_OP1ExOP2)
-    bcall(_CkValidNum)
+    call checkValidReal
     bcall(_OP1ExOP2)
     call liftStackIfNonEmpty
     call stoX
@@ -699,6 +699,29 @@ pushToXY:
     call stoX
     bcall(_OP1ExOP2)
     ret
+
+; Description: Check that OP1/OP2 is real, complex, or a data record. If real
+; or complex, verify validity of number using CkValidNum().
+; Destroys: A
+checkValid:
+    ld a, (OP1)
+    and $1f
+    cp rpnObjectTypeDate
+    ret z
+    bcall(_CkValidNum)
+    ret
+
+; Description: Check that OP1 is real. Throws Err:NonReal if not real.
+; Destroys: A
+checkValidReal:
+    ld a, (OP1)
+    and $1f
+    cp rpnObjectTypeReal
+    jr nz, checkValidRealErr
+    bcall(_CkValidNum)
+    ret
+checkValidRealErr:
+    bcall(_ErrNonReal)
 
 ;-----------------------------------------------------------------------------
 
