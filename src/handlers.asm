@@ -708,12 +708,12 @@ handleKeyDiv:
 handleKeyPi:
     call closeInputAndRecallNone
     call op1SetPi
-    jp pushX
+    jp pushToX
 
 handleKeyEuler:
     call closeInputAndRecallNone
     call op1SetEuler
-    jp pushX
+    jp pushToX
 
 ;-----------------------------------------------------------------------------
 ; Alegbraic functions.
@@ -758,7 +758,7 @@ handleKeyExchangeXY:
 handleKeyAns:
     call closeInputAndRecallNone
     call rclL
-    jp pushX
+    jp pushToX
 
 ;-----------------------------------------------------------------------------
 ; Transcendentals
@@ -865,7 +865,7 @@ handleKeyRcl:
     ; No modifier, so call rclGeneric() and *push* value onto the RPN stack.
     ld a, (argType) ; A=argType
     call rclGeneric
-    jp pushX
+    jp pushToX
 handleKeyRclOp:
     ; Modifier provided, so call rclOpGeneric() and *replace* the X register
     ; with (OP1 {op} registerOrVariable).

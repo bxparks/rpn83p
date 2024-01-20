@@ -111,14 +111,14 @@ mStatSumHandler:
     call rclRegNN ; OP1=Ysum
     ld c, statRegX
     call rclRegNNToOP2 ; OP2=Xsum
-    jp pushXY
+    jp pushToXY
 
 ; Description: Calculate the average of X and Y into X and Y registers.
 mStatMeanHandler:
     call closeInputAndRecallNone
     ld ix, cfitModelLinear ; use linear model for simple statistics
     call statMean
-    jp pushXY
+    jp pushToXY
 
 ; Description: Calculate the weighted mean of X and Y.
 ; Output:
@@ -128,14 +128,14 @@ mStatWeightedMeanHandler:
     call closeInputAndRecallNone
     ld ix, cfitModelLinear ; use linear model for simple statistics
     call statWeightedMean ; OP1=WeightedY, OP2=WeightedX
-    jp pushXY
+    jp pushToXY
 
 ; Description: Return the number of items entered. Mostly for convenience.
 mStatNHandler:
     call closeInputAndRecallNone
     ld c, statRegN
     call rclRegNN
-    jp pushX
+    jp pushToX
 
 ;-----------------------------------------------------------------------------
 
@@ -148,7 +148,7 @@ mStatPopSdevHandler:
     call closeInputAndRecallNone
     ld ix, cfitModelLinear ; use linear model for simple statistics
     call statStdDev
-    jp pushXY
+    jp pushToXY
 
 ; Description: Calculate the sample standard deviation.
 ; Output:
@@ -170,7 +170,7 @@ mStatSampleSdevHandler:
     bcall(_PopRealO2) ; FPS=[]; OP2=SVAR(Y)
     bcall(_OP1ExOP2) ; OP1=SVAR(Y), OP2=SVAR(X)
     call statStdDevAltEntry
-    jp pushXY
+    jp pushToXY
 
 ; Description: Calculate the population covariance. PCOV<X,Y> = <XY> - <X><Y>.
 ; See https://en.wikipedia.org/wiki/Sample_mean_and_covariance
@@ -181,7 +181,7 @@ mStatPopCovHandler:
     call closeInputAndRecallNone
     ld ix, cfitModelLinear ; use linear model for simple statistics
     call statCovariance
-    jp pushX
+    jp pushToX
 
 ; Description: Calculate the sample covariance. SCOV<X,Y> = (N/(N-1)) PCOV(X,Y).
 ; See https://en.wikipedia.org/wiki/Sample_mean_and_covariance
@@ -194,7 +194,7 @@ mStatSampleCovHandler:
     call statCovariance ; OP1=PCOV(X,Y)
     call statFactorPopToSampleOP2 ; OP2=N/(N-1)
     bcall(_FPMult); OP1=SCOV(X,Y)
-    jp pushX
+    jp pushToX
 
 ;-----------------------------------------------------------------------------
 ; Low-level stats routines.

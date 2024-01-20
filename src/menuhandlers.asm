@@ -272,7 +272,7 @@ mPrimeHandler:
     ; factor, which can be processed through 'PRIM` again. Running through this
     ; multiple times until a '1' is returns allows all prime factors to be
     ; discovered.
-    jp pushX
+    jp pushToX
 
 mPrimeHandlerError:
     bcall(_ErrDomain) ; throw exception
@@ -466,7 +466,7 @@ mFactorialHandler:
 mRandomHandler:
     call closeInputAndRecallNone
     bcall(_Random)
-    jp pushX
+    jp pushToX
 
 ;-----------------------------------------------------------------------------
 

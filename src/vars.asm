@@ -671,7 +671,7 @@ replaceXWithOP1OP2:
 ;   - X=OP1
 ; Destroys: all
 ; Preserves: OP1, OP2, LastX
-pushX:
+pushToX:
     bcall(_CkValidNum)
     call liftStackIfNonEmpty
     call stoX
@@ -687,7 +687,7 @@ pushX:
 ;   - X=OP2
 ; Destroys: all
 ; Preserves: OP1, OP2, LastX
-pushXY:
+pushToXY:
     bcall(_CkValidNum)
     bcall(_OP1ExOP2)
     bcall(_CkValidNum)

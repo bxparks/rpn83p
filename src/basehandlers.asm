@@ -288,7 +288,7 @@ mSetCarryFlagHandler:
 mGetCarryFlagHandler:
     call closeInputAndRecallNone
     call baseGetCarryFlag ; OP1=float(baseCarryFlag)
-    jp pushX
+    jp pushToX
 
 ;-----------------------------------------------------------------------------
 
@@ -309,4 +309,4 @@ msgWordSizePrompt:
 mGetWordSizeHandler:
     call closeInputAndRecallNone
     call baseGetWordSize
-    jp pushX
+    jp pushToX

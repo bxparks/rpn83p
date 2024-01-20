@@ -57,7 +57,7 @@ mTvmNHandler:
     ret
 mTvmNGet:
     bcall(_RclTvmN)
-    call pushX
+    call pushToX
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld a, errorCodeTvmRecalled
     ld (handlerCode), a
@@ -65,7 +65,7 @@ mTvmNGet:
 mTvmNCalculate:
     bcall(_TvmCalculateN)
     bcall(_StoTvmN)
-    call pushX
+    call pushToX
     ld a, errorCodeTvmCalculated
     ld (handlerCode), a
     ret
@@ -115,7 +115,7 @@ mTvmIYRSet:
     ret
 mTvmIYRGet:
     bcall(_RclTvmIYR)
-    call pushX
+    call pushToX
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld a, errorCodeTvmRecalled
     ld (handlerCode), a
@@ -127,7 +127,7 @@ mTvmIYRCalculate:
     cp errorCodeTvmCalculated
     ret nz
     bcall(_StoTvmIYR)
-    call pushX
+    call pushToX
     ret
 
 ; Description: Call the tvmSolver() as often as necessary (e.g. during
@@ -218,7 +218,7 @@ mTvmPVHandler:
     ret
 mTvmPVGet:
     bcall(_RclTvmPV)
-    call pushX
+    call pushToX
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld a, errorCodeTvmRecalled
     ld (handlerCode), a
@@ -226,7 +226,7 @@ mTvmPVGet:
 mTvmPVCalculate:
     bcall(_TvmCalculatePV)
     bcall(_StoTvmPV)
-    call pushX
+    call pushToX
     ld a, errorCodeTvmCalculated
     ld (handlerCode), a
     ret
@@ -250,7 +250,7 @@ mTvmPMTHandler:
     ret
 mTvmPMTGet:
     bcall(_RclTvmPMT)
-    call pushX
+    call pushToX
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld a, errorCodeTvmRecalled
     ld (handlerCode), a
@@ -258,7 +258,7 @@ mTvmPMTGet:
 mTvmPMTCalculate:
     bcall(_TvmCalculatePMT)
     bcall(_StoTvmPMT)
-    call pushX
+    call pushToX
     ld a, errorCodeTvmCalculated
     ld (handlerCode), a
     ret
@@ -282,7 +282,7 @@ mTvmFVHandler:
     ret
 mTvmFVGet:
     bcall(_RclTvmFV)
-    call pushX
+    call pushToX
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld a, errorCodeTvmRecalled
     ld (handlerCode), a
@@ -290,7 +290,7 @@ mTvmFVGet:
 mTvmFVCalculate:
     bcall(_TvmCalculateFV)
     bcall(_StoTvmFV)
-    call pushX
+    call pushToX
     ld a, errorCodeTvmCalculated
     ld (handlerCode), a
     ret
@@ -317,7 +317,7 @@ mTvmPYRHandlerSet:
     ret
 mTvmPYRGet:
     bcall(_RclTvmPYR)
-    call pushX
+    call pushToX
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld a, errorCodeTvmRecalled
     ld (handlerCode), a
@@ -388,7 +388,7 @@ mTvmIYR0Handler:
     ret
 mTvmIYR0Get:
     bcall(_RclTvmIYR0)
-    call pushX
+    call pushToX
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld a, errorCodeTvmRecalled
     ld (handlerCode), a
@@ -423,7 +423,7 @@ mTvmIYR1Handler:
     ret
 mTvmIYR1Get:
     bcall(_RclTvmIYR1)
-    call pushX
+    call pushToX
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld a, errorCodeTvmRecalled
     ld (handlerCode), a
@@ -458,7 +458,7 @@ mTvmIterMaxHandler:
     ret
 mTvmIterMaxGet:
     bcall(_RclTvmIterMax)
-    call pushX
+    call pushToX
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld a, errorCodeTvmRecalled
     ld (handlerCode), a

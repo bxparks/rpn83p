@@ -178,7 +178,7 @@ mCfitSlopeHandler:
     call fitLeastSquare ; OP1=intercept,OP2=slope
     bcall(_OP1ExOP2)
     call convertMPrimeToM
-    jp pushX
+    jp pushToX
 
 ; Description: Calculate the least square fit intercept into X register.
 mCfitInterceptHandler:
@@ -187,7 +187,7 @@ mCfitInterceptHandler:
     call selectCfitModel
     call fitLeastSquare ; OP1=intercept,OP2=slope
     call convertBPrimeToB
-    jp pushX
+    jp pushToX
 
 ; Description: Calculate the correlation coefficient into X register.
 mCfitCorrelationHandler:
@@ -195,7 +195,7 @@ mCfitCorrelationHandler:
     ld a, (curveFitModel)
     call selectCfitModel
     call statCorrelation
-    jp pushX
+    jp pushToX
 
 ;-----------------------------------------------------------------------------
 
@@ -328,7 +328,7 @@ mCfitBestSelect:
     ld (curveFitModel), a
     set dirtyFlagsMenu, (iy + dirtyFlags)
     bcall(_OP5ToOP1) ; OP1=abs(corr(best))
-    jp pushX ; push the |corr| to the stack to notify the user
+    jp pushToX ; push the |corr| to the stack to notify the user
 
 ;-----------------------------------------------------------------------------
 
