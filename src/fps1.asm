@@ -3,14 +3,48 @@
 ; Copyright (c) 2023 Brian T. Park
 ;
 ; Routines related to the TI-OS Floating Point Stack.
+;
+; Labels with Capital letters are intended to be exported to other flash pages
+; and should be placed in the branch table on Flash Page 0. Labels with
+; lowercase letters are intended to be private so do not need a branch table
+; entry.
+;-----------------------------------------------------------------------------
+
+PushRpnObject1:
+    ld hl, OP1
+    jr pushRpnObject
+
+PopRpnObject1:
+    ld de, OP1
+    jr popRpnObject
+
+PushRpnObject3:
+    ld hl, OP3
+    jr pushRpnObject
+
+PopRpnObject3:
+    ld de, OP3
+    jr popRpnObject
+
+PushRpnObject5:
+    ld hl, OP5
+    jr pushRpnObject
+
+PopRpnObject5:
+    ld de, OP5
+    jr popRpnObject
+
 ;-----------------------------------------------------------------------------
 
 ; Description: Push the RpnObject in OP1/OP2 into the FPS, no matter the
 ; RpnObject type (e.g. real, complex, date, etc).
-; Input: OP1/OP2
+; Input:
+;   - HL:pointer to an OP register
 ; Output:
 ;   - FPS increased by 18 bytes
-pushRpnObject1:
+; Destroys: all
+pushRpnObject:
+    push hl ; stack=[OPx]
     ld hl, 18
     bcall(_AllocFPS1)
     ld hl, (FPS)
@@ -18,7 +52,7 @@ pushRpnObject1:
     or a ; CF=0
     sbc hl, de ; HL=pointer to RpnObject on FPS
     ex de, hl ; DE=pointer to RpnObject on FPS
-    ld hl, OP1
+    pop hl ; stack=[]; HL=OPx
     ; copy OP1 into RpnObject on FPS
     ld bc, 9
     ldir
@@ -31,16 +65,18 @@ pushRpnObject1:
 
 ; Description: Pop the RpnObject from FPS to OP1/OP2 no matter the RpnObject
 ; type.
-; Input: FPS
+; Input:
+;   - DE: pointer to an OP register
+;   - FPS
 ; Output:
-;   - OP1/OP2 updated
+;   - OPx register updated
 ;   - FPS decreased by 18 bytes
-popRpnObject1:
+; Destroys: all
+popRpnObject:
     ld hl, (FPS)
-    ld de, 18
+    ld bc, 18
     or a ; CF=0
-    sbc hl, de ; HL=pointer to RpnObject on FPS
-    ld de, OP1
+    sbc hl, bc ; HL=pointer to RpnObject on FPS
     ; copy RpnObject on FPS to OP1
     ld bc, 9
     ldir

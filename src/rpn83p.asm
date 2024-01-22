@@ -821,6 +821,31 @@ _ProbCombLabel:
 _ProbComb equ _ProbCombLabel-branchTableBase
     .dw ProbComb
     .db 1
+; fps1.asm
+_PushRpnObject1Label:
+_PushRpnObject1 equ _PushRpnObject1Label-branchTableBase
+    .dw PushRpnObject1
+    .db 1
+_PopRpnObject1Label:
+_PopRpnObject1 equ _PopRpnObject1Label-branchTableBase
+    .dw PopRpnObject1
+    .db 1
+_PushRpnObject3Label:
+_PushRpnObject3 equ _PushRpnObject3Label-branchTableBase
+    .dw PushRpnObject3
+    .db 1
+_PopRpnObject3Label:
+_PopRpnObject3 equ _PopRpnObject3Label-branchTableBase
+    .dw PopRpnObject3
+    .db 1
+_PushRpnObject5Label:
+_PushRpnObject5 equ _PushRpnObject5Label-branchTableBase
+    .dw PushRpnObject5
+    .db 1
+_PopRpnObject5Label:
+_PopRpnObject5 equ _PopRpnObject5Label-branchTableBase
+    .dw PopRpnObject5
+    .db 1
 
 #ifdef DEBUG
 ; debug.asm
@@ -889,7 +914,6 @@ _DebugU32DEAsHex equ _DebugU32DEAsHexLabel-branchTableBase
 #include "arghandlers.asm"
 #include "showparser.asm"
 #include "vars.asm"
-#include "fps.asm"
 #include "input.asm"
 #include "display.asm"
 #include "show.asm"
@@ -932,6 +956,7 @@ defpage(1)
 #include "base1.asm"
 #include "pstring1.asm"
 #include "memory1.asm"
+#include "fps1.asm"
 #include "float1.asm"
 #include "integer1.asm"
 #include "const1.asm"
