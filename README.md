@@ -166,7 +166,7 @@ I have tested it on the following calculators that I own:
 - TI-83 Plus Silver Edition, OS v1.19
 - TI-84 Plus Silver Edition, OS v2.55MP
 
-It *should* work on the TI-84 Plus, but I have not actually tested it.
+Community members have verified that it works on the TI-84 Plus.
 
 The following calculators are *not* supported because their internal hardware is
 too different:
