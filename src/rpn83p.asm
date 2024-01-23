@@ -959,6 +959,10 @@ _EpochDaysToDateLabel:
 _EpochDaysToDate equ _EpochDaysToDateLabel-branchTableBase
     .dw EpochDaysToDate
     .db 1
+_AddDateByDaysLabel:
+_AddDateByDays equ _AddDateByDaysLabel-branchTableBase
+    .dw AddDateByDays
+    .db 1
 
 #ifdef DEBUG
 ; debug.asm

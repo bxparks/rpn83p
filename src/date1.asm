@@ -8,6 +8,24 @@
 ; entry.
 ;-----------------------------------------------------------------------------
 
+; Description: Check if OP1 is a DateRecord.
+; Output: ZF=1 if DateRecord
+checkOp1DatePageOne:
+    ld a, (OP1)
+    and $1f
+    cp rpnObjectTypeDate
+    ret
+
+; Description: Check if OP3 is a DateRecord.
+; Output: ZF=1 if DateRecord
+checkOp3DatePageOne:
+    ld a, (OP3)
+    and $1f
+    cp rpnObjectTypeDate
+    ret
+
+;-----------------------------------------------------------------------------
+
 ; Description: Determine if OP1 is leap year.
 ; Input: OP1
 ; Output: 1 or 0
@@ -477,4 +495,40 @@ yearPrimeToYear:
     cp 3 ; CF=1 if month<=2
     ret nc
     inc hl
+    ret
+
+;-----------------------------------------------------------------------------
+
+; Description: Add OP2 number of days to OP1 Date.
+; Input:
+;   - OP1:Date or days
+;   - OP3:Date or days
+; Output:
+;   - OP1:date+days
+AddDateByDays:
+    call checkOp1DatePageOne ; ZF=1 if typeof(CP1)==Date
+    jr nz, addDateByDaysAdd
+    call cp1ExCp3PageOne ; CP1=days; CP3=Date
+addDateByDaysAdd:
+    ; CP1=days, CP3=Date
+    call PushRpnObject3 ; FPS=[Date]
+    ld hl, OP3
+    call ConvertOP1ToU40 ; OP3=u40(days)
+    ;
+    call PopRpnObject1 ; FPS=[]; CP1=Date
+    call PushRpnObject3 ; FPS=[u40(days)]
+    ;
+    ld hl, OP1
+    ld de, OP3
+    call DateToEpochDays ; OP3=u40(epochDays)
+    call PopRpnObject1 ; FPS=[]; OP1=u40(days)
+    ;
+    ld hl, OP1
+    ld de, OP3
+    call addU40U40 ; HL=OP1=u40(epochDays+days)
+    ;
+    call op1ToOp2PageOne ; OP2=u40(epochDays+days)
+    ld hl, OP2
+    ld de, OP1
+    call EpochDaysToDate ; DE=OP1=newDate
     ret

@@ -46,7 +46,11 @@ exchangeFPSHLPageOne:
 ; Destroys: all registers
 exchangeFloatPageOne:
     ld b, 9
-exchangeFloatPageOneLoop:
+    ; [[fallthrough]]
+
+; Description: Exchange 'B' bytes between DE and HL.
+; Destroys: all registers
+exchangePageOneLoop:
     ld a, (de)
     ld c, (hl)
     ld (hl), a
@@ -54,7 +58,7 @@ exchangeFloatPageOneLoop:
     ld (de), a
     inc de
     inc hl
-    djnz exchangeFloatPageOneLoop
+    djnz exchangePageOneLoop
     ret
 
 ; Description: Exchange the top 2 floating point numbers on the FPS.
@@ -156,3 +160,12 @@ op1ExOp2PageOne:
     ld hl, OP1
     ld de, OP2
     jr exchangeFloatPageOne
+
+;-----------------------------------------------------------------------------
+
+; Description: Exchange CP1=OP1/OP2 with CP3=OP3/OP4.
+cp1ExCp3PageOne:
+    ld de, OP1
+    ld hl, OP3
+    ld b, 22 ; each OP register is 11 bytes
+    jp exchangePageOneLoop

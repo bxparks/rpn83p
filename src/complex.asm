@@ -18,6 +18,30 @@ getOp1RpnObjectType:
     and $1f
     ret
 
+;-----------------------------------------------------------------------------
+
+; Description: Check that OP1 is a Real number.
+; Input: OP1
+; Output: ZF=1 if real
+; Destroys: A
+checkOp1Real:
+    ld a, (OP1)
+    and $1f
+    cp rpnObjectTypeReal
+    ret
+
+; Description: Check that OP3 is a Real number.
+; Input: OP3
+; Output: ZF=1 if real
+; Destroys: A
+checkOp3Real:
+    ld a, (OP3)
+    and $1f
+    cp rpnObjectTypeReal
+    ret
+
+;-----------------------------------------------------------------------------
+
 ; Description: Same as CkOP1Cplx() OS routine without the bcall() overhead.
 ; Input: OP1
 ; Output: ZF=1 if complex
@@ -32,7 +56,7 @@ checkOp1Complex:
 ; Input: OP1, OP3
 ; Output: ZF=1 if either parameter is complex
 ; Destroys: A
-checkOp1OrOP3Complex:
+checkOp1OrOP3Complex: ; TODO: Rename to checkOp1OrOp3Complex() for consistency
     call checkOp1Complex ; ZF=1 if complex
     ret z
     ; [[fallthrough]]
@@ -45,6 +69,24 @@ checkOp3Complex:
     ld a, (OP3)
     and $1f
     cp rpnObjectTypeComplex
+    ret
+
+;-----------------------------------------------------------------------------
+
+; Description: Check if OP1 is a DateRecord.
+; Output: ZF=1 if DateRecord
+checkOp1Date:
+    ld a, (OP1)
+    and $1f
+    cp rpnObjectTypeDate
+    ret
+
+; Description: Check if OP3 is a DateRecord.
+; Output: ZF=1 if DateRecord
+checkOp3Date:
+    ld a, (OP3)
+    and $1f
+    cp rpnObjectTypeDate
     ret
 
 ;-----------------------------------------------------------------------------
@@ -261,13 +303,18 @@ complexAngle:
 ; Arithmetic operations.
 ;-----------------------------------------------------------------------------
 
-; Description: Addition for real and complex numbers.
+; Description: Addition for real, complex, and Date objects.
 ; Input:
 ;   - OP1/OP2: Y
 ;   - OP3/OP4: X
 ; Output:
 ;   - OP1/OP2: Y+X
 universalAdd:
+    call checkOp1Date ; ZF=1 if Date
+    jr z, universalAddDatePlusDays
+    call checkOp3Date ; ZF=1 if Date
+    jr z, universalAddDaysPlusDate
+    ;
     call checkOp1OrOP3Complex ; ZF=1 if complex
     jr z, universalAddComplex
     ; X and Y are real numbers.
@@ -281,6 +328,18 @@ universalAddComplex:
     call convertOp1ToCp1
     bcall(_CAdd) ; OP1/OP2 += FPS[OP1/OP2]; FPS=[]
     ret
+universalAddDatePlusDays:
+    call checkOp3Real
+    jr nz, universalAddErr
+    bcall(_AddDateByDays) ; OP1=Date(OP1)+days(OP3)
+    ret
+universalAddDaysPlusDate:
+    call checkOp3Date
+    jr nz, universalAddErr
+    bcall(_AddDateByDays) ; OP1=Date(OP1)+days(OP3)
+    ret
+universalAddErr:
+    bcall(_ErrDataType)
 
 ; Description: Subtractions for real and complex numbers.
 ; Input:
