@@ -257,8 +257,8 @@ daysUntilMonthPrime:
 ;
 ; Input:
 ;   - HL:u40=pointerToEpochDays
-;   - DE:DateRecord=pointerToDateRecord
-; Output: (DE) updated
+;   - DE:DateRecord=pointerToDateRecord, probably OP2
+; Output: (DE) updated, cannot be OP3-OP6
 ; Destroys: all, OP3-OP6
 epochToDateYearPrime equ OP3 ; u16
 epochToDateMonthPrime equ OP3+2 ; u8; also holds monthPrime->month
@@ -499,7 +499,7 @@ yearPrimeToYear:
 
 ;-----------------------------------------------------------------------------
 
-; Description: Add OP2 number of days to OP1 Date.
+; Description: Add OP1 Date by OP3 days.
 ; Input:
 ;   - OP1:Date or days
 ;   - OP3:Date or days
@@ -513,7 +513,7 @@ addDateByDaysAdd:
     ; CP1=days, CP3=Date
     call PushRpnObject3 ; FPS=[Date]
     ld hl, OP3
-    call ConvertOP1ToU40 ; OP3=u40(days)
+    call ConvertOP1ToI40 ; OP3=u40(days)
     ;
     call PopRpnObject1 ; FPS=[]; CP1=Date
     call PushRpnObject3 ; FPS=[u40(days)]
@@ -530,5 +530,49 @@ addDateByDaysAdd:
     call op1ToOp2PageOne ; OP2=u40(epochDays+days)
     ld hl, OP2
     ld de, OP1
-    call EpochDaysToDate ; DE=OP1=newDate
-    ret
+    jp EpochDaysToDate ; DE=OP1=newDate
+
+;-----------------------------------------------------------------------------
+
+; Description: Subtract Date minus Date or days.
+; Input:
+;   - OP1:Date=Y
+;   - OP3:Date or days=X
+; Output:
+;   - OP1:(Date-days) or (Date-Date).
+SubDateByDateOrDays:
+    call PushRpnObject3 ; FPS=[Date or days]
+    ld de, OP3
+    ld hl, OP1
+    call DateToEpochDays ; OP3=u40(Y.days)
+    call exchangeFPSCP3PageOne ; FPS=[u40(Y.days)]; OP3=Date or days
+    call checkOp3DatePageOne ; ZF=1 if type(OP3)==Date
+    jr z, subDateByDate
+    ; Subtract by OP3=days
+    call op3ToOp1PageOne ; OP1=days
+    ld hl, OP3
+    call ConvertOP1ToI40 ; HL=OP3=u40(X.days)
+    call PopRpnObject1 ; FPS=[]; OP1=u40(Y.days)
+    ld hl, OP1
+    ld de, OP3
+    call subU40U40 ; HL=OP1=Y.days-X.days
+    ;
+    call op1ToOp2PageOne ; OP2=Y.days-X.days
+    ld de, OP1
+    ld hl, OP2
+    jp EpochDaysToDate ; OP1=DateRecord
+subDateByDate:
+    ; Subtract by OP3=Date
+    ld de, OP1
+    ld hl, OP3
+    call DateToEpochDays ; OP1=u40(days(X))
+    call op1ToOp3PageOne ; OP3=u40(days(X))
+    ;
+    call PopRpnObject1 ; FPS=[]; OP1=u40(Y.days)
+    ld hl, OP1
+    ld de, OP3
+    call subU40U40 ; HL=OP1=u40(Y.days)-u40(X.days)
+    ;
+    call op1ToOp3PageOne ; OP3=Y.days-X.days
+    ld hl, OP3
+    jp ConvertI40ToOP1 ; OP1=Y.date-X.date

@@ -341,13 +341,18 @@ universalAddDaysPlusDate:
 universalAddErr:
     bcall(_ErrDataType)
 
-; Description: Subtractions for real and complex numbers.
+; Description: Subtractions for real, complex, and Date objects.
 ; Input:
 ;   - OP1/OP2: Y
 ;   - OP3/OP4: X
 ; Output:
 ;   - OP1/OP2: Y-X
 universalSub:
+    call checkOp1Date ; ZF=1 if Date
+    jr z, universalSubDateMinusObject
+    call checkOp3Date ; ZF=1 if Date
+    jr z, universalSubErr ; cannot subtract a Date
+    ;
     call checkOp1OrOP3Complex ; ZF=1 if complex
     jr z, universalSubComplex
     ; X and Y are real numbers.
@@ -361,6 +366,18 @@ universalSubComplex:
     call convertOp1ToCp1
     bcall(_CSub) ; OP1/OP2 = FPS[OP1/OP2] - OP1/OP2; FPS=[]
     ret
+universalSubDateMinusObject:
+    call checkOp3Real
+    jr z, universalSubDateMinusDays
+    call checkOp3Date
+    jr z, universalSubDateMinusDate
+    jr universalSubErr
+universalSubDateMinusDays:
+universalSubDateMinusDate:
+    bcall(_SubDateByDateOrDays)
+    ret
+universalSubErr:
+    bcall(_ErrDataType)
 
 ; Description: Multiplication for real and complex numbers.
 ; Input:

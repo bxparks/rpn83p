@@ -963,6 +963,10 @@ _AddDateByDaysLabel:
 _AddDateByDays equ _AddDateByDaysLabel-branchTableBase
     .dw AddDateByDays
     .db 1
+_SubDateByDateOrDaysLabel:
+_SubDateByDateOrDays equ _SubDateByDateOrDaysLabel-branchTableBase
+    .dw SubDateByDateOrDays
+    .db 1
 
 #ifdef DEBUG
 ; debug.asm

@@ -44,7 +44,7 @@ exchangeFPSHLPageOne:
 ; Input: DE, HL: pointers to floating point values
 ; Output: 9-byte contents of DE, HL exchanged
 ; Destroys: all registers
-exchangeFloatPageOne:
+exchange9PageOne:
     ld b, 9
     ; [[fallthrough]]
 
@@ -72,7 +72,35 @@ exchangeFPSFPSPageOne:
     ld e, l
     ld d, h
     sbc hl, bc ; HL=(FPS)-18
-    jr exchangeFloatPageOne
+    jr exchange9PageOne
+
+;-----------------------------------------------------------------------------
+
+; Description: Exchange CP3=OP3/OP4 with top of FPS.
+; Destroys: all
+exchangeFPSCP3PageOne:
+    ld hl, OP3
+    jr exchangeFPS18HLPageOne
+
+; Description: Exchange CP1=OP1/OP2 with top of FPS.
+; Destroys: all
+exchangeFPSCP1PageOne:
+    ld hl, OP1
+    ; [[fallthrough]]
+
+; Description: Exchange the 18 bytes from the top of the FPS with HL.
+; Input: HL=rpnObjectPointer
+; Destroys: all
+exchangeFPS18HLPageOne:
+    ex de, hl ; DE=pointer to OPx
+    ld hl, (FPS)
+    ld bc, 18
+    or a ; CF=0
+    sbc hl, bc
+    call exchange9PageOne
+    inc de
+    inc de ; skip past extra 2 bytes in OPx
+    jr exchange9PageOne
 
 ;-----------------------------------------------------------------------------
 
@@ -128,15 +156,15 @@ move9FromOp1PageOne:
 
 ;-----------------------------------------------------------------------------
 
-; Description: Move OP1 to OP2. This is used so frequently that it's worth
-; inlining it to avoid the overhead of calling bcall(_OP1ToOP2).
+; Description: Move 9 bytes from OP1 to OP2, avoiding the overhead of
+; bcall(_OP1ToOP2).
 ; Destroys: BC, DE, HL
 ; Preserves: A
 op1ToOp2PageOne:
     ld hl, OP1
     jr move9ToOp2PageOne
 
-; Description: Move 9 bytes from OP2 to OP1.
+; Description: Move 9 bytes from OP1 to OP3.
 ; Destroys: BC, DE, HL
 ; Preserves: A
 op1ToOp3PageOne:
@@ -150,6 +178,20 @@ op2ToOp1PageOne:
     ld hl, OP2
     jr move9ToOp1PageOne
 
+; Description: Move 9 bytes from OP3 to OP1.
+; Destroys: BC, DE, HL
+; Preserves: A
+op3ToOp1PageOne:
+    ld hl, OP3
+    jr move9ToOp1PageOne
+
+; Description: Move 9 bytes from OP3 to OP2.
+; Destroys: BC, DE, HL
+; Preserves: A
+op3ToOp2PageOne:
+    ld hl, OP3
+    jr move9ToOp2PageOne
+
 ;-----------------------------------------------------------------------------
 
 ; Description: Exchange OP1 with OP2. Inlined version of bcall(_OP1ExOP2) to
@@ -159,9 +201,7 @@ op2ToOp1PageOne:
 op1ExOp2PageOne:
     ld hl, OP1
     ld de, OP2
-    jr exchangeFloatPageOne
-
-;-----------------------------------------------------------------------------
+    jr exchange9PageOne
 
 ; Description: Exchange CP1=OP1/OP2 with CP3=OP3/OP4.
 cp1ExCp3PageOne:
