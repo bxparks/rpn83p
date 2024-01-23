@@ -33,14 +33,11 @@ exchangeFPSOP1PageOne:
 ; Destroys: all registers
 ; Preserves: all OPx registers
 exchangeFPSHLPageOne:
-    ld c, l
-    ld b, h ; BC=HL
+    ex de, hl ; DE=saved
     ld hl, (FPS)
-    ld de, 9
-    or a ; clear CF
-    sbc hl, de ; HL=(FPS) - 9
-    ld e, c
-    ld d, b ; DE=original HL
+    ld bc, 9
+    or a ; CF=0
+    sbc hl, bc ; HL=(FPS)-9
     ; [[fallthrough]]
 
 ; Description: Implement bcall(_Exch9) without the overhead of a bcall().
