@@ -21,6 +21,7 @@ SRCS := \
 	const1.asm \
 	conv.asm \
 	crc.asm \
+	cstring.asm \
 	debug.asm \
 	display.asm \
 	errorcode.asm \

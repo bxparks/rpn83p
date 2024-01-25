@@ -928,6 +928,7 @@ _DebugU32DEAsHex equ _DebugU32DEAsHexLabel-branchTableBase
 #include "prime.asm"
 #include "common.asm"
 #include "memory.asm"
+#include "cstring.asm"
 #include "float.asm"
 #include "complex.asm"
 #include "conv.asm"
