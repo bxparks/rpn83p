@@ -11,7 +11,6 @@ SRCS := \
 	argparser.asm \
 	base.asm \
 	base1.asm \
-	baseops.asm \
 	basehandlers.asm \
 	cfithandlers.asm \
 	common.asm \
@@ -36,6 +35,8 @@ SRCS := \
 	input1.asm \
 	integer1.asm \
 	integerconv1.asm \
+	integer32.asm \
+	integerconv32.asm \
 	main.asm \
 	mainparser.asm \
 	memory.asm \

@@ -919,7 +919,6 @@ _DebugU32DEAsHex equ _DebugU32DEAsHexLabel-branchTableBase
 #include "show.asm"
 #include "base.asm"
 #include "basehandlers.asm"
-#include "baseops.asm"
 #include "menu.asm"
 #include "menuhandlers.asm"
 #include "stathandlers.asm"
@@ -934,6 +933,8 @@ _DebugU32DEAsHex equ _DebugU32DEAsHexLabel-branchTableBase
 #include "conv.asm"
 #include "print.asm"
 #include "const.asm"
+#include "integer32.asm"
+#include "integerconv32.asm"
 #include "handlertab.asm"
 #include "arghandlertab.asm"
 
