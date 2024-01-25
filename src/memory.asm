@@ -31,14 +31,11 @@ exchangeFPSOP1:
 ; Destroys: all registers
 ; Preserves: all OPx registers
 exchangeFPSHL:
-    ld c, l
-    ld b, h ; BC=HL
+    ex de, hl ; DE=saved
     ld hl, (FPS)
-    ld de, 9
+    ld bc, 9
     or a ; clear CF
-    sbc hl, de ; HL=(FPS) - 9
-    ld e, c
-    ld d, b ; DE=original HL
+    sbc hl, bc ; HL=(FPS)-9
     ; [[fallthrough]]
 
 ; Description: Implement bcall(_Exch9) without the overhead of a bcall().
@@ -63,14 +60,12 @@ exchangeFloatLoop:
 ; Preserves: OP1, OP2
 exchangeFPSFPS:
     ld hl, (FPS)
-    ld de, 9
+    ld bc, 9
     or a ; clear CF
-    sbc hl, de ; HL=(FPS) - 9
-    ld c, l
-    ld b, h
-    sbc hl, de ; HL=(FPS) - 18
-    ld e, c
-    ld d, b
+    sbc hl, bc ; HL=(FPS)-9
+    ld e, l
+    ld d, h
+    sbc hl, bc ; HL=(FPS)-18
     jr exchangeFloat
 
 ;-----------------------------------------------------------------------------

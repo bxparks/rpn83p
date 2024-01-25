@@ -62,14 +62,12 @@ exchangeFloatPageOneLoop:
 ; Preserves: OP1, OP2
 exchangeFPSFPSPageOne:
     ld hl, (FPS)
-    ld de, 9
+    ld bc, 9
     or a ; clear CF
-    sbc hl, de ; HL=(FPS) - 9
-    ld c, l
-    ld b, h
-    sbc hl, de ; HL=(FPS) - 18
-    ld e, c
-    ld d, b
+    sbc hl, bc ; HL=(FPS)-9
+    ld e, l
+    ld d, h
+    sbc hl, bc ; HL=(FPS)-18
     jr exchangeFloatPageOne
 
 ;-----------------------------------------------------------------------------
