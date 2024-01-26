@@ -16,54 +16,85 @@
 ;   - HL: charPointer, C-string pointer
 ;   - DE: destPointer
 ; Output:
+;   - A: rpnObjectTypeDate or rpnObjectTypeDateTime
 ;   - (DE): DateRecord
 ;   - DE=DE+4
-;   - HL=HL+12
+;   - HL=points to character after last '}'
 ; Throws: Err:Syntax if there is a syntax error
 ; Destroys: all
 parseDate:
-    ld a, (hl) ; should be '{'
+    call parseLeftBrace ; '{'
+    call parseU16D4 ; year
+    call parseComma
+    call parseU8D2 ; month
+    call parseComma
+    call parseU8D2 ; day
+    ; check if the next character is ',' or '}'
+    ld a, (hl)
+    cp ','
+    jr z, parseDateTime
+    ; terminate with just a Date
+    call parseRightBrace ; '}'
+    ld a, rpnObjectTypeDate
+    ret
+parseDateTime:
+    call parseComma
+    call parseU8D2 ; hour
+    call parseComma
+    call parseU8D2 ; minute
+    call parseComma
+    call parseU8D2 ; second
+    call parseRightBrace ; '}'
+    ld a, rpnObjectTypeDateTime
+    ret
+
+;------------------------------------------------------------------------------
+
+parseDateErr:
+    bcall(_ErrSyntax)
+
+; Description: Parse an expected '{' character,
+parseLeftBrace:
+    ld a, (hl)
     inc hl
-    ; check for beginning '{'
     cp LlBrace
     jr nz, parseDateErr
-    ; parse yyyy
-    call parseU16D4
-    ; check for ','
-    ld a, (hl)
-    inc hl
-    cp ','
-    jr nz, parseDateErr
-    ; parse mm
-    call parseU8D2
-    ; check for ','
-    ld a, (hl)
-    inc hl
-    cp ','
-    jr nz, parseDateErr
-    ; parse dd
-    call parseU8D2
-    ; check for '}'
+    ret
+
+; Description: Parse an expected '}' character,
+parseRightBrace:
     ld a, (hl)
     inc hl
     cp LrBrace
     jr nz, parseDateErr
     ret
 
-parseDateErr:
-    bcall(_ErrSyntax)
+; Description: Parse an expected ',' character. Otherwise, throw Err:Syntax.
+; Input: HL
+; Output: HL
+parseComma:
+    ld a, (hl)
+    inc hl
+    cp ','
+    jr nz, parseDateErr
+    ret
 
 ; Description: Parse up to 4 decimal digits at HL to a U16 at DE.
 ; Input:
-;   - DE: destPoint
+;   - DE: destPointer
 ;   - HL: charPointer
 ; Output:
 ;   - (DE): u16, little endian
 ;   - DE: incremented by 2 bytes
-;   - HL: incremented by 0-4 characters
+;   - HL: incremented by 0-4 characters to the next char
 ; Destroys: A, HL
 ; Preserves: BC
 parseU16D4:
+    ; first character must be valid digit
+    ld a, (hl)
+    call isValidUnsignedDigit ; CF=1 is valid
+    jr nc, parseDateErr
+    ;
     push bc
     push de ; stack=[destPointer]
     ld de, 0 ; DE=sum
@@ -98,8 +129,14 @@ parseU16D4End:
 ; Output:
 ;   - (DE): u8
 ;   - DE: incremented by 1 byte
-;   - HL: incremented by 0-2 characters
+;   - HL: incremented by 0-2 characters to the next char
+; Destroys: A
 parseU8D2:
+    ; first character must be valid digit
+    ld a, (hl)
+    call isValidUnsignedDigit ; CF=1 is valid
+    jr nc, parseDateErr
+    ;
     push bc
     push de
     ld de, 0 ; DE=sum

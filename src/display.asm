@@ -978,6 +978,8 @@ printOP1:
     call getOp1RpnObjectType ; A=objectType
     cp rpnObjectTypeDate
     jp z, printOP1DateRecord
+    cp rpnObjectTypeDateTime
+    jp z, printOP1DateTimeRecord
     cp rpnObjectTypeComplex
     jr z, printOP1Complex
     ; [[fallthrough]]
@@ -1023,7 +1025,7 @@ printOP1Real:
 ;   - B: displayFontMask
 ; Destroys: OP3-OP6
 printOP1Complex:
-    call eraseEOLIfNeeded
+    call eraseEOLIfNeeded ; uses B
     call displayStackSetSmallFont
     ld a, (complexMode)
     cp a, complexModeRect
@@ -1409,7 +1411,7 @@ formatBinDigitsEnd:
 ;   - B: displayFontMask
 ; Destroys: OP3-OP6
 printOP1DateRecord:
-    call eraseEOLIfNeeded
+    call eraseEOLIfNeeded ; uses B
     call displayStackSetSmallFont
     ld hl, OP1
     ld de, OP3 ; destPointer
@@ -1417,6 +1419,23 @@ printOP1DateRecord:
     bcall(_FormatDateRecord)
     xor a
     ld (de), a ; add NUL terminator
+    ; print string in OP3
+    pop hl ; HL=OP3
+    call vPutSmallS
+    jp vEraseEOL
+
+; Description: Print the DateTime Record in OP1 using small font.
+; Input:
+;   - OP1: DateTime Record
+;   - B: displayFontMask
+; Destroys: OP3-OP6
+printOP1DateTimeRecord:
+    call eraseEOLIfNeeded ; uses B
+    call displayStackSetSmallFont
+    ld hl, OP1
+    ld de, OP3 ; destPointer
+    push de
+    bcall(_FormatDateTimeRecord)
     ; print string in OP3
     pop hl ; HL=OP3
     call vPutSmallS

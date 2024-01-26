@@ -11,24 +11,34 @@ initCommaEEMode:
     ld (commaEEMode), a
     ret
 
-; Description: Close the inputBuf and transfer its contents to the X register
-; if it had been opened in edit mode. Otherwise, do nothing.
+; Description: Close the inputBuf by parsing its content into OP1, then
+; transfer OP1 into the X register. If the app is *not* in edit mode, do
+; nothing (except to reset the 'inputBufFlagsClosedEmpty' flag which should
+; only be set if it was in editMode and the inputBuf was empty).
+;
+; The 'rpnFlagsLiftEnabled' flag is always* set after this call. It is up to
+; the calling handler to override this default and disable it if necessary
+; (e.g. ENTER, or Sigma+). The rpnFlagsLiftEnabled is used by the next manual
+; entry of a number (digits 0-9 usualy, sometimes A-F in hexadecimal mode).
+; Usually, the next manual number entry lifts the stack, but this flag can be
+; used to disable that. (e.g. ENTER will disable the lift of the next number).
 ;
 ; Most button and menu handlers should probably use closeInputAndRecallX() and
 ; closeInputAndRecallXY() instead, to transfer the X and Y parameters into the
 ; OP1 and OP2 variables. This decouples the implementations of those handlers
 ; from the RPN stack, and making them easier move to different Flash Pages if
 ; needed.
+;
 ; Input:
 ;   - rpnFlagsEditing: indicates if inputBuf is valid
 ;   - inputBuf: input buffer
 ; Output:
+;   - X register: set to inputBuf if edited, otherwise unchanged
 ;   - rpnFlagsLiftEnabled: always set
 ;   - inputBufFlagsClosedEmpty: set if inputBuf was in edit mode AND was an
 ;   empty string when closed
 ;   - rpnFlagsEditing: always cleared
 ;   - inputBuf cleared to empty string
-;   - X register: set to inputBuf if edited, otherwise unchanged
 ; Destroys: all, OP1, OP2, OP3, OP4, OP5
 closeInput:
     set rpnFlagsLiftEnabled, (iy + rpnFlags)

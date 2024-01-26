@@ -53,27 +53,14 @@ appendInputBufContinue:
     set dirtyFlagsInput, (iy + dirtyFlags)
     jp AppendString
 
-; Description: Close the input buffer by parsing the input, then copying the
-; float value into X. If not in edit mode, no need to parse the inputBuf, the X
-; register is not changed. Almost all functions/commands in RPN83P will call
-; this function through the closeInput() function.
+; Description: Parse the object in inputBuf into OP1. This routine assumes that
+; the app was in edit mode when this was called, so assumes that the inputBuf
+; is valid. If the app was not in edit mode, this routine should NOT have been
+; called.
 ;
-; This function determines 2 flags which affect the stack lift:
-;
-; - rpnFlagsLiftEnabled: *Always* set after this call. It is up to the calling
-; handler to override this default and disable it if necessary (e.g. ENTER, or
-; Sigma+).
-; - inputBufFlagsClosedEmpty: Set if the inputBuf was an empty string before
-; being closed. This flag is cleared if the inputBuf was *not* in edit mode to
-; begin with.
-;
-; The rpnFlagsLiftEnabled is used by the next manual entry of a number (digits
-; 0-9 usualy, sometimes A-F in hexadecimal mode). Usually, the next manual
-; number entry lifts the stack, but this flag can be used to disable that.
-; (e.g. ENTER will disable the lift of the next number).
-;
-; The inputBufFlagsClosedEmpty flag is used by functions which do not consume
-; any value from the RPN stack, but simply push a value or two onto the X or Y
+; The inputBufFlagsClosedEmpty flag is set if the inputBuf was an empty string
+; before being closed. The flag is used by functions which do not consume any
+; value from the RPN stack, but simply push a value or two onto the X or Y
 ; registers (e.g. PI, E, or various TVM functions, various STAT functions). If
 ; the user had pressed CLEAR, to clear the input buffer, then it doesn't make
 ; sense for these functions to lift the empty string (i.e. 0) up when pushing
@@ -86,15 +73,14 @@ appendInputBufContinue:
 ; Input:
 ;   - inputBuf: input buffer
 ; Output:
-;   - rpnFlagsLiftEnabled: always set
-;   - inputBufFlagsClosedEmpty: set if inputBuf was an empty string when closed
-;   - inputBuf cleared to empty string
 ;   - OP1: value of inputBuf
 ;   - A: rpnObjectType
+;   - inputBufFlagsClosedEmpty: set if inputBuf was an empty string when closed
+;   - inputBuf cleared to empty string
 ; Destroys: all, OP1, OP2, OP4
-CloseInputBuf:
+CloseInputBuf: ; TODO: Rename this ParseInputBuf().
     ld hl, inputBuf
-    call GetFirstChar
+    call GetFirstChar ; A=first char, or 0 if empty
     or a
     jr z, closeInputBufEmpty
     ; inputBuf not empty
@@ -102,6 +88,8 @@ CloseInputBuf:
     jr closeInputBufContinue
 closeInputBufEmpty:
     set inputBufFlagsClosedEmpty, (iy + inputBufFlags)
+    call op1Set0PageOne
+    jp ClearInputBuf
 closeInputBufContinue:
     cp LlBrace ; '{'
     jr z, closeInputBufDateTime
@@ -1107,8 +1095,9 @@ parseInputBufDate:
     inc hl ; skip len byte
     ; dest record buffer
     ld de, OP1
-    ld a, rpnObjectTypeDate
-    ld (de), a
-    inc de
-    call parseDate ; parse Date record into OP1
+    push de
+    inc de ; skip type byte
+    call parseDate ; parse Date or DateTime record into OP1
+    pop de
+    ld (de), a ; rpnObjectType
     ret

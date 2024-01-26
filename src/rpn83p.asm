@@ -125,6 +125,10 @@ rpnObjectTypeReal equ 0
 rpnObjectTypeComplex equ $0C ; same as TI-OS
 ; Date Record: struct {type:u8, year:u16, month:u8, day:u8}, 5 bytes.
 rpnObjectTypeDate equ $18 ; next unused object type
+; DateTime Record:
+; struct {type:u8, year:u16, month:u8, day:u8, hour:u8, min:u8, sec: u8}, 8
+; bytes.
+rpnObjectTypeDateTime equ $19
 
 ; An RpnObject is a struct of a type byte and 2 RpnFloat objects so that a
 ; complex number can be stored. See the struct definitions in vars.asm. If the
@@ -888,17 +892,13 @@ _PopRpnObject5 equ _PopRpnObject5Label-branchTableBase
     .dw PopRpnObject5
     .db 1
 ; format1.asm
-_FormatU16ToD4Label:
-_FormatU16ToD4 equ _FormatU16ToD4Label-branchTableBase
-    .dw FormatU16ToD4
-    .db 1
-_FormatU8ToD2Label:
-_FormatU8ToD2 equ _FormatU8ToD2Label-branchTableBase
-    .dw FormatU8ToD2
-    .db 1
 _FormatDateRecordLabel:
 _FormatDateRecord equ _FormatDateRecord-branchTableBase
     .dw FormatDateRecord
+    .db 1
+_FormatDateTimeRecordLabel:
+_FormatDateTimeRecord equ _FormatDateTimeRecord-branchTableBase
+    .dw FormatDateTimeRecord
     .db 1
 ; complex1.asm
 _RectToComplexLabel:

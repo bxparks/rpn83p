@@ -8,12 +8,130 @@
 ; entry.
 ;-----------------------------------------------------------------------------
 
+; Description: Format the Date Record in HL to DE.
+; Input:
+;   - HL: dateRecordPointer
+;   - DE: stringBufPointer
+; Output:
+;   - HL: incremented to next record field
+;   - DE: points to NUL char at end of string
+FormatDateRecord:
+    inc hl ; skip type byte
+    ; print '{'
+    ld a, LlBrace
+    ld (de), a
+    inc de
+    ;
+    call formatYearMonthDay
+    ; print '}'
+    ld a, LrBrace
+    ld (de), a
+    inc de
+    ; add NUL
+    xor a
+    ld (de), a ; add NUL terminator
+    ret
+
+; Description: Format the DateTime Record in HL to DE.
+; Input:
+;   - HL: dateTimeRecordPointer
+;   - DE: stringBufPointer
+; Output:
+;   - HL: incremented to next record field
+;   - DE: points to NUL char at end of string
+FormatDateTimeRecord:
+    inc hl ; skip type byte
+    ; print '{'
+    ld a, LlBrace
+    ld (de), a
+    inc de
+    ;
+    call formatYearMonthDay
+    ; print ','
+    ld a, ','
+    ld (de), a
+    inc de
+    ;
+    call formatHourMinuteSecond
+    ; print '}'
+    ld a, LrBrace
+    ld (de), a
+    inc de
+    ; add NUL
+    xor a
+    ld (de), a ; add NUL terminator
+    ret
+
+; Description: Format year,month,day of HL record to C string in DE.
+; Input:
+;   - HL: recordPointer
+;   - DE: stringBufPointer
+; Output:
+;   - HL: incremented to next record field
+;   - DE: points to char after last char, no NUL
+formatYearMonthDay:
+    ; print 'year'
+    ld c, (hl)
+    inc hl
+    ld b, (hl)
+    inc hl
+    call formatU16ToD4
+    ; print ','
+    ld a, ','
+    ld (de), a
+    inc de
+    ; print 'month'
+    ld a, (hl)
+    inc hl
+    call formatU8ToD2
+    ; print ','
+    ld a, ','
+    ld (de), a
+    inc de
+    ; print 'day'
+    ld a, (hl)
+    inc hl
+    call formatU8ToD2
+    ret
+
+; Description: Format year,month,day of HL record to C string in DE.
+; Input:
+;   - HL: recordPointer
+;   - DE: stringBufPointer
+; Output:
+;   - HL: incremented to next record field
+;   - DE: points to char after last char, no NUL
+formatHourMinuteSecond:
+    ; print 'hour'
+    ld a, (hl)
+    inc hl
+    call formatU8ToD2
+    ; print ','
+    ld a, ','
+    ld (de), a
+    inc de
+    ; print 'minute'
+    ld a, (hl)
+    inc hl
+    call formatU8ToD2
+    ; print ','
+    ld a, ','
+    ld (de), a
+    inc de
+    ; print 'second'
+    ld a, (hl)
+    inc hl
+    call formatU8ToD2
+    ret
+
+;-----------------------------------------------------------------------------
+
 ; Description: Format the u16 in BC to 4 digits in DE.
 ; Input: BC:u16; DE:destPointer
 ; Output: DE=DE+4
 ; Destroys: A, BC
 ; Preserves: HL
-FormatU16ToD4:
+formatU16ToD4:
     push hl ; stack=[HL]
     push de ; stack=[HL,origDestPointer]
     ld l, c
@@ -40,7 +158,7 @@ formatU16ToD4Loop:
 ; Output: DE=DE+2
 ; Destroys: A, BC
 ; Preserves: HL
-FormatU8ToD2:
+formatU8ToD2:
     push hl
     ld l, a
     ld h, 0
@@ -59,47 +177,6 @@ FormatU8ToD2:
     inc de
     inc de ; DE=newDestPointer
     pop hl
-    ret
-
-; Description: Format the Date Record in HL to DE.
-; Input:
-;   - HL: dateRecordPointer
-;   - DE: stringBufPointer
-; Output:
-;   (DE): updated, no NUL
-;   DE: points to char after last digit
-FormatDateRecord:
-    inc hl ; skip type byte
-    ; print '{'
-    ld a, LlBrace
-    ld (de), a
-    inc de
-    ; print 'year'
-    ld c, (hl)
-    inc hl
-    ld b, (hl)
-    inc hl
-    call FormatU16ToD4
-    ; print ','
-    ld a, ','
-    ld (de), a
-    inc de
-    ; print 'month'
-    ld a, (hl)
-    inc hl
-    call FormatU8ToD2
-    ; print ','
-    ld a, ','
-    ld (de), a
-    inc de
-    ; print 'day'
-    ld a, (hl)
-    inc hl
-    call FormatU8ToD2
-    ; print '}'
-    ld a, LrBrace
-    ld (de), a
-    inc de
     ret
 
 ;-----------------------------------------------------------------------------
