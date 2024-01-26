@@ -846,6 +846,52 @@ _PopRpnObject5Label:
 _PopRpnObject5 equ _PopRpnObject5Label-branchTableBase
     .dw PopRpnObject5
     .db 1
+; complex1.asm
+_RectToComplexLabel:
+_RectToComplex equ _RectToComplexLabel-branchTableBase
+    .dw RectToComplex
+    .db 1
+_Rect3ToComplex3Label:
+_Rect3ToComplex3 equ _Rect3ToComplex3Label-branchTableBase
+    .dw Rect3ToComplex3
+    .db 1
+_PolarRadToComplexLabel:
+_PolarRadToComplex equ _PolarRadToComplexLabel-branchTableBase
+    .dw PolarRadToComplex
+    .db 1
+_PolarDegToComplexLabel:
+_PolarDegToComplex equ _PolarDegToComplexLabel-branchTableBase
+    .dw PolarDegToComplex
+    .db 1
+_ComplexToRectLabel:
+_ComplexToRect equ _ComplexToRectLabel-branchTableBase
+    .dw ComplexToRect
+    .db 1
+_Complex3ToRect3Label:
+_Complex3ToRect3 equ _Complex3ToRect3Label-branchTableBase
+    .dw Complex3ToRect3
+    .db 1
+_ComplexToPolarRadLabel:
+_ComplexToPolarRad equ _ComplexToPolarRadLabel-branchTableBase
+    .dw ComplexToPolarRad
+    .db 1
+_ComplexToPolarDegLabel:
+_ComplexToPolarDeg equ _ComplexToPolarDegLabel-branchTableBase
+    .dw ComplexToPolarDeg
+    .db 1
+; complexformat1.asm
+_FormatComplexRectLabel:
+_FormatComplexRect equ _FormatComplexRectLabel-branchTableBase
+    .dw FormatComplexRect
+    .db 1
+_FormatComplexPolarRadLabel:
+_FormatComplexPolarRad equ _FormatComplexPolarRadLabel-branchTableBase
+    .dw FormatComplexPolarRad
+    .db 1
+_FormatComplexPolarDegLabel:
+_FormatComplexPolarDeg equ _FormatComplexPolarDegLabel-branchTableBase
+    .dw FormatComplexPolarDeg
+    .db 1
 
 #ifdef DEBUG
 ; debug.asm
@@ -957,6 +1003,7 @@ defpage(1)
 #include "input1.asm"
 #include "arg1.asm"
 #include "base1.asm"
+#include "cstring1.asm"
 #include "pstring1.asm"
 #include "memory1.asm"
 #include "fps1.asm"
@@ -965,6 +1012,7 @@ defpage(1)
 #include "integerconv1.asm"
 #include "const1.asm"
 #include "complex1.asm"
+#include "complexformat1.asm"
 #include "tvm.asm"
 #include "hms.asm"
 #include "prob.asm"

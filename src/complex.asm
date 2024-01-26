@@ -59,28 +59,7 @@ convertOp1ToCp1:
     call checkOp1Complex ; ZF=1 if complex
     ret z
     call op2Set0
-    ; [[fallthrough]]
-
-; Description: Convert real numbers in OP1 and OP2 into a complex number.
-; Destroys: A
-mergeOp1Op2ToCp1:
-    ld a, (OP1)
-    or rpnObjectTypeComplex
-    ld (OP1), a
-    ld a, (OP2)
-    or rpnObjectTypeComplex
-    ld (OP2), a
-    ret
-
-; Description: Convert the complex number in OP1 and OP2 into 2 real numbers.
-; Destroys: A
-splitCp1ToOp1Op2:
-    ld a, (OP1)
-    and ~rpnObjectTypeComplex
-    ld (OP1), a
-    ld a, (OP2)
-    and ~rpnObjectTypeComplex
-    ld (OP2), a
+    bcall(_RectToComplex)
     ret
 
 ; Description: Convert a complex number to real if the imaginary part is zero.
@@ -89,10 +68,9 @@ convertCp1ToOp1:
     call checkOp1Complex ; ZF-1 if complex
     ret nz
     bcall(_CkOP2FP0) ; ZF=1 if im(CP1)==0
-    jr z, splitCp1ToOp1Op2
+    ret nz
+    bcall(_ComplexToRect)
     ret
-
-;-----------------------------------------------------------------------------
 
 ; Description: Convert a real number in OP3 to a complex number in OP3/OP4 by
 ; setting the OP4 to 0, and setting the objectType to complex. If already a
@@ -104,28 +82,7 @@ convertOp3ToCp3:
     call checkOp3Complex ; ZF=1 if complex
     ret z
     call op4Set0
-    ; [[fallthrough]]
-
-; Description: Convert real numbers in OP3 and OP4 into a complex number in OP3.
-; Destroys: A
-mergeOp3Op4ToCp3:
-    ld a, (OP3)
-    or rpnObjectTypeComplex
-    ld (OP3), a
-    ld a, (OP4)
-    or rpnObjectTypeComplex
-    ld (OP4), a
-    ret
-
-; Description: Convert the complex number in OP3 and OP4 into 2 real numbers.
-; Destroys: A
-splitCp3ToOp3Op4:
-    ld a, (OP3)
-    and ~rpnObjectTypeComplex
-    ld (OP3), a
-    ld a, (OP4)
-    and ~rpnObjectTypeComplex
-    ld (OP4), a
+    bcall(_Rect3ToComplex3)
     ret
 
 ;-----------------------------------------------------------------------------
@@ -183,158 +140,48 @@ initComplexMode:
     ret
 
 ;-----------------------------------------------------------------------------
-; Conversion bewteen complex and reals.
+; Conversion bewteen complex and reals, to handle the '2ND LINK' function.
 ;-----------------------------------------------------------------------------
 
 ; Description: Convert the complex number in CP1 to either (a,b) or (r,theta)
 ; in OP1/OP2, depending on the complexMode.
 ; Input: CP1=complex
-; Output:
-;   - OP1,OP2=(a,b) or (r,theta)
-;   - CF=1 if error; 0 if no error
+; Output: OP1,OP2=(a,b) or (r,theta)
 ; Destroys: all
 complexToReals:
     ld a, (complexMode)
     cp a, complexModeRad
-    jr z, complexToPolarRad
+    jr nz, complexToRealsCheckDeg
+    bcall(_ComplexToPolarRad)
+    ret
+complexToRealsCheckDeg:
     cp a, complexModeDeg
-    jr z, complexToPolarDeg
-    ; Everything else, assume Rect
-    call splitCp1ToOp1Op2
-    or a ; CF=0
+    jr nz, complexToRealsRect
+    bcall(_ComplexToPolarDeg)
+    ret
+complexToRealsRect:
+    bcall(_ComplexToRect)
     ret
 
 ; Description: Convert the (a,b) or (r,theta) (depending on complexMode) to a
 ; complex number in CP1.
 ; Input: OP1,OP2=(a,b) or (r,theta)
-; Output:
-;   - CP1=complex
-;   - CF=1 on error; CF=0 if ok
+; Output: CP1=complex
 ; Destroys: all
 realsToComplex:
     ld a, (complexMode)
     cp a, complexModeRad
-    jp z, polarRadToComplex
+    jr nz, realsToComplexCheckDeg
+    bcall(_PolarRadToComplex)
+    ret
+realsToComplexCheckDeg:
     cp a, complexModeDeg
-    jp z, polarDegToComplex
-    ; Everything else, assume Rect
-    call mergeOp1Op2ToCp1
-    or a ; CF=0
+    jr nz, realsToComplexRect
+    bcall(_PolarDegToComplex)
     ret
-
-;-----------------------------------------------------------------------------
-; Complex rectangular and polar conversions. We create custom implementations,
-; instead of using the built-in RToP() and PToR() TI-OS functions, for two
-; reasons:
-; 1) The OS functions are buggy. For example, RToP() overflows internally when
-; it calculators r^2 = a^2 + b^2. For example, it throws an exception when
-; a=b=7.1e63 (1/sqrt(2)*10^64).
-; 2) The output of the OS routines depend on the 'trigFlags' global parameter,
-; but our routines must be deterministic, instead of changing its results
-; depending on the DEG or RAD modes.
-;-----------------------------------------------------------------------------
-
-; Description: Convert complex number into polar-rad form.
-; It looks like Cabs() does *not* throw an Err:Overflow exception when the
-; exponent becomes >=100. An 'r' of >=1E100 can be returned and will be
-; displayed on the screen in polar mode.
-;
-; Input: CP1: Z, complex number
-; Output: OP1,OP2: (r, thetaRad)
-; Destroys: all, OP1-OP5
-complexToPolarRad:
-    ; Cabs() does not seem to suffer the internal overflow and underflow
-    ; problems of RToP(). This implementation also uses fewer of the expensive
-    ; bcall() so I think this is the winner.
-    bcall(_PushOP1) ; FPS=[Z]
-    call op1ExOp2 ; OP1=Im(Z)=y; OP2=Re(Z)=x
-    ld d, 0 ; set undocumented parameter for ATan2Rad()
-    bcall(_ATan2Rad) ; OP1=Angle(Z), destroys OP1-OP5
-    call op1ToOp3 ; OP3=Angle(Z)
-    bcall(_PopOP1) ; FPS=[]; CP1=Z
-    bcall(_PushRealO3) ; FPS=[Angle(Z)]
-    bcall(_CAbs) ; OP1=Cabs(Z); destroys OP1-OP4
-    bcall(_PopRealO2) ; FPS=[]; OP2=Angle(Z)
+realsToComplexRect:
+    bcall(_RectToComplex)
     ret
-
-; Description: Convert complex number into polar-degree form.
-; Input: CP1: Z, complex number
-; Output: OP1,OP2: (r, thetaDeg)
-; Destroys: all
-complexToPolarDeg:
-    call complexToPolarRad ; OP1=abs(Z); OP2=radian(Z)
-    bcall(_PushRealO1) ; FPS=[abs(Z)]
-    call op2ToOp1 ; OP1=radian(Z)
-    bcall(_RToD) ; OP1=degree(Z)
-    call op1ToOp2 ; OP2=degree(Z)
-    bcall(_PopRealO1) ; FPS=[]; OP1=abs(Z)
-    ret
-
-#ifdef USE_RTOP_WITH_SCALING
-; Description: Scale OP1,OP2 by the max(|OP1|,|OP2|). NOTE: Maybe it's easier
-; to just call the CAbs() and Angle() functions separately, instead of trying
-; to work around the bug/limitation of RToP().
-; Input: OP1=a,OP2=b
-; Output: OP3=scale=max(|OP1|,|OP2|,1.0)
-complexNormalize:
-    bcall(_AbsO1O2Cp) ; if Abs(OP1)>=Abs(OP2): CF=0
-    jr nc, complexNormalizeOP1Bigger
-    ; OP2 bigger
-    call op2ToOp3 ; OP3=scale
-    jr complexNormalizeCheckScale
-complexNormalizeOP1Bigger:
-    call op1ToOP3 ; OP3=scale
-complexNormalizeCheckScale:
-    ; Check the scaling factor for zer0
-    call checkOp3FP0 ; if zero: ZF=1
-    jr nz, complexNormalizeCheckReduce
-    bcall(_OP3Set1) ; OP3=1.0
-complexNormalizeCheckReduce:
-    call clearOp3Sign ; OP3=scale=max(|a|,|b|,1.0)
-    ; Reduce OP1,OP2 by scale. Sorry for all the stack juggling.
-    bcall(_PushRealO3) ; FPS=[scale]
-    bcall(_PushRealO3) ; FPS=[scale,scale]
-    bcall(_PushRealO2) ; FPS=[scale,scale,b]
-    call op3ToOp2 ; OP2=scale
-    bcall(_FPDiv) ; OP1=a/scale
-    call exchangeFPSOP1 ; FPS=[scale,scale,a/scale]; OP1=b
-    call exchangeFPSFPS ; FPS=[scale,a/scale,scale]
-    bcall(_PopRealO2) ; FPS=[scale,a/scale]; OP2=scale
-    bcall(_FPDiv) ; OP1=b/scale
-    call op1ToOp2 ; OP2=/b/scale
-    bcall(_PopRealO1) ; FPS=[scale]; OP1=a/scale
-    bcall(_PopRealO3) ; FPS=[]; OP3=scale
-    ret
-#endif
-
-;-----------------------------------------------------------------------------
-
-; Description: Convert polar radian form (OP1,OP2)=(r,radian) to a complex
-; number in CP1.
-; Input: OP1,OP2=(r,thetaRad)
-; Output: CP1=(a+bi)
-polarRadToComplex:
-    bcall(_PushRealO1) ; FPS=[r]
-    call op2ToOp1 ; OP1=rad
-    bcall(_SinCosRad) ; OP1=sin(rad); OP2=cos(rad)
-    call op1ExOp2 ; OP1=cos(rad); OP2=sin(rad)
-    bcall(_PopRealO3) ; FPS=[]; OP3=r
-    bcall(_CMltByReal) ; OP1=r*cos(rad); OP2=r*sin(rad)
-    jp mergeOp1Op2ToCp1 ; CP1=(OP1,OP2)
-
-; Description: Convert polar degree form (OP1,OP2)=(r,degree) to a complex
-; number in CP1.
-; Input: OP1,OP2=(r,thetaDeg)
-; Output: CP1=(a+bi)
-polarDegToComplex:
-    bcall(_PushRealO1) ; FPS=[r]
-    call op2ToOp1 ; OP1=thetaDeg
-    bcall(_DToR) ; OP1=thetaRad
-    bcall(_SinCosRad) ; OP1=sin(rad); OP2=cos(rad)
-    call op1ExOp2 ; OP1=cos(rad); OP2=sin(rad)
-    bcall(_PopRealO3) ; FPS=[]; OP3=r
-    bcall(_CMltByReal) ; OP1=r*cos(rad); OP2=r*sin(rad)
-    jp mergeOp1Op2ToCp1 ; CP1=(OP1,OP2)
 
 ;-----------------------------------------------------------------------------
 ; Complex misc operations. To avoid confusing the user, these throw an
@@ -358,14 +205,15 @@ complexConj:
 complexReal:
     call checkOp1Complex ; ZF=1 if complex
     jr nz, complexDataTypeErr
-    jp splitCp1ToOp1Op2 ; OP1=Re(Z); OP2=Im(Z)
+    bcall(_ComplexToRect) ; OP1=Re(Z); OP2=Im(Z)
+    ret
 
 ; Description: Extract the imaginary part of complex(OP1/OP2).
 ; Output: OP1=Im(OP1/OP2)
 complexImag:
     call checkOp1Complex ; ZF=1 if complex
     jr nz, complexDataTypeErr
-    call splitCp1ToOp1Op2 ; OP1=Re(Z); OP2=Im(Z)
+    bcall(_ComplexToRect) ; OP1=Re(Z); OP2=Im(Z)
     jp op2ToOp1 ; OP1=Im(Z)
 
 ; Description: Return the magnitude or absolute value 'r' of the complex

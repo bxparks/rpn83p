@@ -16,12 +16,14 @@ SRCS := \
 	common.asm \
 	complex.asm \
 	complex1.asm \
+	complexformat1.asm \
 	complexhandlers.asm \
 	const.asm \
 	const1.asm \
 	conv.asm \
 	crc.asm \
 	cstring.asm \
+	cstring1.asm \
 	debug.asm \
 	display.asm \
 	errorcode.asm \

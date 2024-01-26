@@ -24,7 +24,7 @@
 ; Output:
 ;   - OP1,OP2: (r, theta)
 rectToPolar:
-    call mergeOp1Op2ToCp1 ; CP1=Z=complex(OP1,OP2)
+    bcall(_RectToComplex) ; CP1=Z=complex(OP1,OP2)
     bcall(_PushOP1) ; FPS=[Z]
     bcall(_Angle) ; OP1=Angle(Z)
     call op1ToOp5 ; OP5=Angle(Z)

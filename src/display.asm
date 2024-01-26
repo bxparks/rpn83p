@@ -1035,28 +1035,11 @@ printOP1Complex:
 ; Input: CP1: complex number
 ; Destroys: OP3-OP6
 printOP1ComplexRect:
-    call splitCp1ToOp1Op2
-    ; Print Re(X)
-    ld a, 10 ; width of output
-    bcall(_FormReal)
-    ld hl, OP3
+    ld de, fmtString
+    bcall(_FormatComplexRect)
+    ld hl, fmtString
     call vPutSmallS
-    ;
-    ; Print the complex-i
-    ld hl, msgComplexRectSpacer
-    call vPutSmallS
-    ; Print Im(X)
-    call op2ToOp1
-    ld a, 10 ; width of output
-    bcall(_FormReal)
-    ld hl, OP3
-    call vPutSmallS
-    ;
-    call vEraseEOL
-    ret
-
-msgComplexRectSpacer:
-    .db "  ", SimagI, " ", 0
+    jp vEraseEOL
 
 ; Description: Print the complex numberin CP1 in polar form using radians.
 ; Note: An r value >= 1e100 or <= 1e-100 can be returned by complexRToPRad()
@@ -1066,31 +1049,11 @@ msgComplexRectSpacer:
 ; Input: CP1: complex number
 ; Destroys: OP3-OP6
 printOP1ComplexRad:
-    call complexToPolarRad ; OP1=r; OP2=theta(rad)
-    jr nc, printOP1ComplexRadOk
-    ld hl, msgPrintComplexError
+    ld de, fmtString
+    bcall(_FormatComplexPolarRad)
+    ld hl, fmtString
     call vPutSmallS
     jp vEraseEOL
-printOP1ComplexRadOk:
-    ; Print 'r'
-    ld a, 10 ; width of output
-    bcall(_FormReal)
-    ld hl, OP3
-    call vPutSmallS
-    ; Print the angle symbol
-    ld hl, msgComplexPRadSpacer
-    call vPutSmallS
-    ; Print theta(rad)
-    call op2ToOp1
-    ld a, 10 ; width of output
-    bcall(_FormReal)
-    ld hl, OP3
-    call vPutSmallS
-    call vEraseEOL
-    ret
-
-msgComplexPRadSpacer:
-    .db "  ", Sangle, " ", 0
 
 ; Description: Print the complex numberin CP1 in polar form using degrees.
 ; Note: An r value >= 1e100 or <= 1e-100 can be returned by complexRToPRad()
@@ -1100,37 +1063,11 @@ msgComplexPRadSpacer:
 ; Input: CP1: complex number
 ; Destroys: A, HL, OP3-OP6
 printOP1ComplexDeg:
-    call complexToPolarDeg ; OP1=r; OP2=theta(deg)
-    jr nc, printOP1ComplexDegOk
-    ld hl, msgPrintComplexError
+    ld de, fmtString
+    bcall(_FormatComplexPolarDeg)
+    ld hl, fmtString
     call vPutSmallS
     jp vEraseEOL
-printOP1ComplexDegOk:
-    ; Print 'r'
-    ld a, 10 ; width of output
-    bcall(_FormReal)
-    ld hl, OP3
-    call vPutSmallS
-    ; Print the angle-degree symbols
-    ld hl, msgComplexPDegSpacer
-    call vPutSmallS
-    ; Print theta(deg)
-    call op2ToOp1
-    ld a, 10 ; width of output
-    bcall(_FormReal)
-    ld hl, OP3
-    call vPutSmallS
-    ; Add a deg symbol
-    ; ld a, Stemp ; deg symbol
-    ; bcall(_VPutMap)
-    call vEraseEOL
-    ret
-
-msgComplexPDegSpacer:
-    .db "  ", Sangle, Stemp, " ", 0
-
-msgPrintComplexError:
-    .db "<overflow>", 0
 
 ;-----------------------------------------------------------------------------
 

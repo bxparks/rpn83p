@@ -132,7 +132,7 @@ formComplexString:
 ; Input: DE: stringPointer
 ; Output: DE: updated
 formComplexRectString:
-    call splitCp1ToOp1Op2 ; OP1=Re(Z); OP2=Im(Z)
+    bcall(_ComplexToRect) ; OP1=Re(Z); OP2=Im(Z)
     ; Format real part
     push de
     bcall(_PushRealO2) ; FPS=[Im(Z)]
@@ -155,13 +155,8 @@ msgShowComplexRectSpacer:
 ; Output: DE: updated
 formComplexRadString:
     push de
-    call complexToPolarRad ; OP1=r; OP2=radians; CF=1 if error
+    bcall(_ComplexToPolarRad) ; OP1=r; OP2=radians
     pop de
-    jr nc, formComplexRadStringOk
-    ld hl, msgPrintComplexError ; "<overflow>"
-    bcall(_StrCopy)
-    ret
-formComplexRadStringOk:
     ; Format the magnitude
     push de
     bcall(_PushRealO2) ; FPS=[theta]
@@ -184,13 +179,8 @@ msgShowComplexRadSpacer:
 ; Output: DE: updated
 formComplexDegString:
     push de
-    call complexToPolarDeg ; OP1=r; OP2=degrees; CF=1 if error
+    bcall(_ComplexToPolarDeg) ; OP1=r; OP2=degrees
     pop de
-    jr nc, formComplexDegStringOk
-    ld hl, msgPrintComplexError ; "<overflow>"
-    bcall(_StrCopy)
-    ret
-formComplexDegStringOk:
     ; Format the magnitude
     push de
     bcall(_PushRealO2) ; FPS=[theta]

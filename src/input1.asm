@@ -302,10 +302,10 @@ parseInputBufNonEmptyImaginary:
     ; convert 2 real numbers in OP1/OP2 into a complex number
     ld a, c ; A=delimiter
     cp Langle
-    jp z, pradToComplex
+    jp z, PolarRadToComplex
     cp Ldegree
-    jp z, pdegToComplex
-    jp rectToComplex
+    jp z, PolarDegToComplex
+    jp RectToComplex
 
 ; Description: Parse the floating point number at HL.
 ; Input: HL: pointer to a floating point number C-string

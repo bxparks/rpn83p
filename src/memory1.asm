@@ -96,13 +96,17 @@ move9ToOp2PageOne:
     ldir
     ret
 
-; Description: Move OP1 to OP2. This is used so frequently that it's worth
-; inlining it to avoid the overhead of calling bcall(_OP1ToOP2).
+; Description: Move 9 bytes (size of TI-OS floating point number) from HL to
+; OP3. Implements bcall(_Mov9ToOP3) without the overhead of a bcall().
+; Input: HL=pointer to float
+; Output: (OP2)=contains float
 ; Destroys: BC, DE, HL
 ; Preserves: A
-op1ToOp2PageOne:
-    ld de, OP2
-    ; [[fallthrough]]
+move9ToOp3PageOne:
+    ld de, OP3
+    ld bc, 9
+    ldir
+    ret
 
 ; Description: Move 9 bytes (size of TI-OS floating point number) from OP1 to
 ; DE. Implements bcall(_MovFrOP1) without the overhead of a bcall().
@@ -118,15 +122,31 @@ move9FromOp1PageOne:
     ldir
     ret
 
+;-----------------------------------------------------------------------------
+
+; Description: Move OP1 to OP2. This is used so frequently that it's worth
+; inlining it to avoid the overhead of calling bcall(_OP1ToOP2).
+; Destroys: BC, DE, HL
+; Preserves: A
+op1ToOp2PageOne:
+    ld hl, OP1
+    jr move9ToOp2PageOne
+
+; Description: Move 9 bytes from OP2 to OP1.
+; Destroys: BC, DE, HL
+; Preserves: A
+op1ToOp3PageOne:
+    ld hl, OP1
+    jr move9ToOp3PageOne
+
 ; Description: Move 9 bytes from OP2 to OP1.
 ; Destroys: BC, DE, HL
 ; Preserves: A
 op2ToOp1PageOne:
-    ld de, OP1
     ld hl, OP2
-    ld bc, 9
-    ldir
-    ret
+    jr move9ToOp1PageOne
+
+;-----------------------------------------------------------------------------
 
 ; Description: Exchange OP1 with OP2. Inlined version of bcall(_OP1ExOP2) to
 ; avoid the overhead of bcall().
@@ -136,4 +156,3 @@ op1ExOp2PageOne:
     ld hl, OP1
     ld de, OP2
     jr exchangeFloatPageOne
-
