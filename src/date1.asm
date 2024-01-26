@@ -77,6 +77,31 @@ isLeapYearTrue:
 
 ;-----------------------------------------------------------------------------
 
+; Description: Return the ISO day of week (1=Monday, 7=Sunday).
+; Input: HL: Date or DateTime
+; Output: A: 1-7
+DayOfWeekIso:
+    ld de, OP3
+    call DateToEpochDays ; DE=OP3=epochDays
+    ld a, 7
+    ld hl, OP4
+    call setU40ToA ; OP4=7
+    ex de, hl ; HL=OP3=epochDays; DE=OP4=7
+    ld bc, OP5 ; BC=OP5=remainder
+    call divU40U40 ; HL=quotient
+    ld a, (bc) ; A=remainder=0-6
+    ; 2000-01-01 is epoch 0, so returns 0, but it was a Sat, so should be a 6.
+    ; Readjust the result modulo 7 to conform to ISO weekday numbering.
+    add a, 5
+    cp 7
+    jr c, dayOfWeekIsoEnd
+    sub 7
+dayOfWeekIsoEnd:
+    inc a
+    ret
+
+;-----------------------------------------------------------------------------
+
 ; Description: Convert DateRecord to epochDays.
 ;
 ; NOTE: If we restrict the 'year' component to be less than 10,000, then the
@@ -92,7 +117,8 @@ isLeapYearTrue:
 ;   - DE: u40Pointer, most likely OP3
 ; Output:
 ;   - u40(DE) updated
-; Destroys: all, OP4-OP6
+; Destroys: A, BC, OP4-OP6
+; Preserves: DE, HL
 dateToEpochRecord equ OP4
 dateToEpochYear equ OP4 ; year:u16
 dateToEpochMonth equ OP4+2 ; month:u8
@@ -105,7 +131,8 @@ dateToEpochP1 equ OP5+5 ; param1:u40
 dateToEpochP2 equ OP6 ; param2:u40
 dateToEpochP3 equ OP6+5 ; param3:u40
 DateToEpochDays:
-    push de ; save output U40
+    push hl ; stack=[dateRecord]
+    push de ; stack=[dateRecord, destPointer]
     inc hl ; skip type byte
     ld de, dateToEpochRecord
     ld bc, 4
@@ -203,9 +230,12 @@ DateToEpochDays:
     ex de, hl ; HL=dayOfEpochPrime; DE=offset
     call subU40U40 ; HL=epochDays=dayOfEpochPrime-offset
     ; copy to destination U40
-    pop de ; DE=destination U40
+    pop de ; stack=[dateRecord]; DE=destPointer
+    push de ; stack=[dateRecord, destPointer]
     ld bc, 5
     ldir ; DE=u40 result
+    pop de ; stack=[dateRecord]; DE=destPointer
+    pop hl ; stack=[]; HL=dateRecord
     ret
 
 ; Description: Calculate yearPrime=year-((month<=2)?1:0).
@@ -256,10 +286,11 @@ daysUntilMonthPrime:
 ; would be required when working with seconds.
 ;
 ; Input:
-;   - HL:u40=pointerToEpochDays
-;   - DE:DateRecord=pointerToDateRecord, probably OP2
+;   - HL:u40=epochDays
+;   - DE:DateRecord, probably OP2
 ; Output: (DE) updated, cannot be OP3-OP6
-; Destroys: all, OP3-OP6
+; Destroys: A, BC, OP3-OP6
+; Preserves: DE, HL
 epochToDateYearPrime equ OP3 ; u16
 epochToDateMonthPrime equ OP3+2 ; u8; also holds monthPrime->month
 epochToDateDay equ OP3+3 ; u8
@@ -273,7 +304,8 @@ epochToDateP4 equ OP5+5 ; u40; sum, yearOfYear
 epochToDateP5 equ OP6 ; u40; dividend (e.g. dayOfEra)
 epochToDateP6 equ OP6+5 ; u40; remainder
 EpochDaysToDate:
-    push de ; stack=[pointerToDateRecord]
+    push hl ; stack=[epochDays]
+    push de ; stack=[epochDays, dateRecord]
     ; ==== Calculate dayOfEpochPrime
     ; copy epochDays to P1
     ld de, epochToDateP1
@@ -453,7 +485,8 @@ EpochDaysToDate:
     call yearPrimeToYear ; HL=year
     ; ==== update DateRecord
     ex de, hl ; DE=year
-    pop hl ; stack=[]; HL=DateRecord
+    pop hl ; stack=[epochDays]; HL=DateRecord
+    push hl ; stack=[epochDays, dateRecord]
     ; DateRecord.type
     ld a, rpnObjectTypeDate
     ld (hl), a
@@ -470,6 +503,8 @@ EpochDaysToDate:
     ; DateRecord.day
     ld a, (epochToDateDay)
     ld (hl), a
+    pop de ; stack=[epochDays]; DE=dateRecord
+    pop hl ; stack=[]; HL=epochDays
     ret
 
 ; Description: Convert monthPrime to normal month where `month = (monthPrime <

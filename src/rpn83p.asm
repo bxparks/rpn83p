@@ -951,6 +951,10 @@ _IsLeapLabel:
 _IsLeap equ _IsLeapLabel-branchTableBase
     .dw IsLeap
     .db 1
+_DayOfWeekIsoLabel:
+_DayOfWeekIso equ _DayOfWeekIsoLabel-branchTableBase
+    .dw DayOfWeekIso
+    .db 1
 _DateToEpochDaysLabel:
 _DateToEpochDays equ _DateToEpochDaysLabel-branchTableBase
     .dw DateToEpochDays

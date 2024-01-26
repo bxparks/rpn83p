@@ -25,7 +25,7 @@ ConvertI40ToOP1:
     ret
 
 ; Description: Convert the u40 referenced by HL to a floating point number in
-; OP1.
+; OP1. This is very similar to the convertU32ToOP1() function.
 ; Input: HL: pointer to u40 (must not be OP2)
 ; Output: OP1: floating point equivalent of u40(HL)
 ; Destroys: A, B, C, DE
@@ -38,14 +38,14 @@ ConvertU40ToOP1:
     push hl
     ld de, 4
     add hl, de ; HL points to most significant byte
+    ; set up loop
     ld b, 5
 convertU40ToOP1Loop:
     ld a, (hl)
     dec hl
-    push bc
-    call AddAToOP1
-    pop bc
+    call AddAToOP1 ; preserves BC
     djnz convertU40ToOP1Loop
+    ;
     bcall(_PopRealO2) ; FPS=[]; OP2=OP2 saved
     pop hl
     ret

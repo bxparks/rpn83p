@@ -8,6 +8,13 @@ mLeapYearHandler:
     bcall(_IsLeap) ; OP1=0 or 1
     jp replaceX
 
+mDayOfWeekHandler:
+    call closeInputAndRecallDateX ; OP1=X=DateRecord
+    ld hl, OP1
+    bcall(_DayOfWeekIso) ; A=[1,7]
+    bcall(_ConvertAToOP1)
+    jp replaceX
+
 mDateToEpochDaysHandler:
     call closeInputAndRecallDateX ; OP1=X=DateRecord
     ;
@@ -51,9 +58,6 @@ mEpochNTPHandler:
 mEpochGPSHandler:
 mEpochSetCustomHandler:
 mEpochGetCustomHandler:
-
-; DATE/D.FN/Row1
-mDayOfWeekHandler:
 
 ; DATE/DUR/Row1
 mDurationToSecondsHandler:

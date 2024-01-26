@@ -349,13 +349,14 @@ multU40By10:
 ;   - BC: pointer to u40 remainder
 ;   - CF: 0 (division always clears the carry flag)
 ; Destroys: A
+; Preserves: BC, DE, HL
 divU40U40:
     call clearU40BC ; clear remainder, dividend will shift into this
     ld a, 40 ; iterate for 40 bits of a u40
 divU40U40Loop:
-    push af ; save A loop counter
+    push af ; stack=[loopCounter]
     call shiftLeftLogicalU40 ; dividend(HL) <<= 1; CF=left-most-bit
-    push hl ; save HL=dividend/quotient
+    push hl ; stack=[loopCounter, dividend/quotient]
     ld l, c
     ld h, b ; HL=BC=remainder
     call rotateLeftCarryU40 ; rotate CF into remainder
@@ -364,14 +365,14 @@ divU40U40Loop:
     jr c, divU40U40QuotientZero
 divU40U40QuotientOne:
     call subU40U40 ; remainder(HL) -= divisor(DE)
-    pop hl ; HL=dividend/quotient
+    pop hl ; stack=[loopCounter]; HL=dividend/quotient
     ; Set bit 0 of byte 0 of quotient
     set 0, (hl)
     jr divU40U40NextBit
 divU40U40QuotientZero:
-    pop hl ; HL=dividend/quotient
+    pop hl ; stack=[loopCounter]; HL=dividend/quotient
 divU40U40NextBit:
-    pop af
+    pop af ; stack=[]; A=loopCounter
     dec a
     jr nz, divU40U40Loop
     ret
@@ -382,6 +383,7 @@ divU40U40NextBit:
 ; Input: HL:u40 pointer
 ; Output: HL:neg(HL)
 ; Destroys: A
+; Preserves: BC, DE, HL
 negU40:
     push hl
     push bc
