@@ -333,7 +333,8 @@ baseCountBits:
     call convertOP1ToUxx ; HL=OP3=u32(OP1)
     call truncToWordSize
     call countU32Bits ; A=countBits(OP3)
-    jp convertAToOP1 ; OP1=float(A)
+    bcall(_ConvertAToOP1) ; OP1=float(A)
+    ret
 
 baseSetBit:
     call convertOP1OP2ToUxxN ; HL=OP3=u32(OP1); A=u8(OP2); ZF=1 if A==0
@@ -351,7 +352,8 @@ baseGetBit:
     call convertOP1OP2ToUxxN ; HL=OP3=u32(OP1); A=u8(OP2); ZF=1 if A==0
     ld c, a
     call getU32Bit ; A=1 or 0
-    jp convertAToOP1 ; OP1=float(A)
+    bcall(_ConvertAToOP1) ; OP1=float(A)
+    ret
 
 ;-----------------------------------------------------------------------------
 ; Recall and store the Carry Flag.
@@ -418,4 +420,5 @@ setWordSize:
 ; Destroys; A
 baseGetWordSize:
     ld a, (baseWordSize)
-    jp convertAToOP1 ; OP1=float(A)
+    bcall(_ConvertAToOP1) ; OP1=float(A)
+    ret

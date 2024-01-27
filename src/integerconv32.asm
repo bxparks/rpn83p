@@ -211,68 +211,19 @@ convertU32ToOP1:
     bcall(_PushRealO2) ; FPS=[OP2 saved]
     bcall(_OP1Set0)
     pop hl
-
+    push hl
     inc hl
     inc hl
     inc hl ; HL points to most significant byte
-
+    ; set up loop
+    ld b, 4
+convertU32ToOP1Loop:
     ld a, (hl)
     dec hl
-    call addAToOP1
-
-    ld a, (hl)
-    dec hl
-    call addAToOP1
-
-    ld a, (hl)
-    dec hl
-    call addAToOP1
-
-    ld a, (hl)
-    call addAToOP1
-
-    push hl
+    bcall(_AddAToOP1) ; preserves BC, HL
+    djnz convertU32ToOP1Loop
+    ;
     bcall(_PopRealO2) ; FPS=[]; OP2=OP2 saved
-    pop hl
-    ret
-
-; Description: Convert the u8 in A to floating pointer number in OP1. This
-; supports the full range of A from 0 to 255, compared to the SetXXOP1()
-; function in the SDK which supports only integers between 0 and 99.
-; Input:
-;   - A: u8 integer
-; Output:
-;   - OP1: floating point value of A
-; Destroys: A, B, DE, OP2
-; Preserves: C, HL
-convertAToOP1:
-    push af
-    bcall(_OP1Set0)
-    pop af
-    ; [[fallthrough]]
-
-; Description: Convert the u8 in A to floating point number, and add it to OP1.
-; Input:
-;   - A: u8 integer
-;   - OP1: current floating point value, set to 0.0 to start fresh
-; Destroys: A, B, DE, OP2
-; Preserves: C, HL
-addAToOP1:
-    push hl
-    ld b, 8 ; loop for 8 bits in u8
-addAToOP1Loop:
-    push bc
-    push af
-    bcall(_Times2) ; OP1 *= 2
-    pop af
-    sla a
-    jr nc, addAToOP1Check
-    push af
-    bcall(_Plus1) ; OP1 += 1
-    pop af
-addAToOP1Check:
-    pop bc
-    djnz addAToOP1Loop
     pop hl
     ret
 

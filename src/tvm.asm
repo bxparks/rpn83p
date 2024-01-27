@@ -110,7 +110,7 @@ StoTvmIYR1:
 ; Description: Recall tvmIterMax to OP1.
 RclTvmIterMax:
     ld a, (tvmIterMax)
-    call ConvertAToOP1PageOne
+    call ConvertAToOP1
     ret
 
 ; Description: Store OP1 to tvmIterMax variable.
@@ -173,7 +173,7 @@ StoTvmNPMT1:
 ; Description: Recall the TVM solver iteration counter as a float in OP1.
 RclTvmSolverCount:
     ld a, (tvmSolverCount)
-    call ConvertAToOP1PageOne ; OP1=float(A)
+    call ConvertAToOP1 ; OP1=float(A)
     ret
 
 ;-----------------------------------------------------------------------------

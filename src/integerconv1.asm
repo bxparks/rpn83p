@@ -21,36 +21,37 @@
 ;   - OP1: floating point value of A
 ; Destroys: A, B, DE, OP2
 ; Preserves: C, HL
-ConvertAToOP1PageOne:
+ConvertAToOP1:
     push af
     bcall(_OP1Set0)
     pop af
     ; [[fallthrough]]
 
 ; Description: Convert the u8 in A to floating point number, and add it to OP1.
-; This is the same as addAToOP1() in base.asm, but is duplicated here to
-; decouple this from BASE functions in base.asm, base1.asm, and baseops.asm.
 ; Input:
 ;   - A: u8 integer
 ;   - OP1: current floating point value, set to 0.0 to start fresh
-; Destroys: A, B, DE, OP2
-; Preserves: C, HL
-addAToOP1PageOne:
+; Destroys: A, DE, OP2
+; Preserves: BC, HL
+AddAToOP1:
     push hl
+    push bc
     ld b, 8 ; loop for 8 bits in u8
-addAToOP1PageOneLoop:
+addAToOP1Loop:
     push bc
     push af
     bcall(_Times2) ; OP1 *= 2
     pop af
     sla a
-    jr nc, addAToOP1PageOneCheck
+    jr nc, addAToOP1Check
     push af
     bcall(_Plus1) ; OP1 += 1
     pop af
-addAToOP1PageOneCheck:
+addAToOP1Check:
     pop bc
-    djnz addAToOP1PageOneLoop
+    djnz addAToOP1Loop
+    ;
+    pop bc
     pop hl
     ret
 

@@ -649,9 +649,13 @@ _DeleteAtPos equ _DeleteAtPosLabel-branchTableBase
     .dw DeleteAtPos
     .db 1
 ; integerconv1.asm
-_ConvertAToOP1PageOneLabel:
-_ConvertAToOP1PageOne equ _ConvertAToOP1PageOneLabel-branchTableBase
-    .dw ConvertAToOP1PageOne
+_ConvertAToOP1Label:
+_ConvertAToOP1 equ _ConvertAToOP1Label-branchTableBase
+    .dw ConvertAToOP1
+    .db 1
+_AddAToOP1Label:
+_AddAToOP1 equ _AddAToOP1Label-branchTableBase
+    .dw AddAToOP1
     .db 1
 ; tvm.asm
 _TvmCalculateNLabel:
