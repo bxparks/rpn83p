@@ -37,6 +37,18 @@ mEpochDaysToDateHandler:
     bcall(_EpochDaysToDate) ; DE=OP1=DateRecord(u40(epochDays))
     jp replaceX
 
+mDateTimeToEpochSecondsHandler:
+    call closeInputAndRecallDateX ; OP1=X=DateRecord
+    ld hl, OP1
+    ld de, OP3
+    bcall(_DateTimeToEpochSeconds) ; OP3=i40(seconds)
+    ld hl, OP3
+    bcall(_ConvertI40ToOP1) ; OP1=float(seconds)
+    jp replaceX
+
+mEpochSecondstoDateTimeHandler:
+    jp mNotYetHandler
+
 ;-----------------------------------------------------------------------------
 
 ; DATE/Row1
@@ -47,10 +59,6 @@ mConvertTimeZoneHandler:
 mZoneOffsetUTCHandler:
 mZoneOffsetSetHandler:
 mZoneOffsetGetHandler:
-
-; DATE/EPCH/Row1
-mDateTimeToEpochSecondsHandler:
-mEpochSecondstoDateTimeHandler:
 
 ; DATE/EPCH/Row2
 mEpochUnixHandler:

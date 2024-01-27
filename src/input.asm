@@ -116,11 +116,13 @@ closeInputAndRecallUniversalXY:
 
 ;-----------------------------------------------------------------------------
 
-; Close the input buffer, parse D{} record, place it into OP1.
+; Close the input buffer, parse Date{} or DateTime{} record, place it into OP1.
 closeInputAndRecallDateX:
     call closeInput
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     call rclX ; A=objectType
     cp rpnObjectTypeDate
+    ret z
+    cp rpnObjectTypeDateTime
     ret z
     bcall(_ErrDataType)

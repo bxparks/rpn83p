@@ -114,7 +114,7 @@ dayOfWeekIsoEnd:
 ;
 ; Input:
 ;   - HL: dateRecord, most likely OP1
-;   - DE: u40Pointer, most likely OP3
+;   - DE: resultPointer to u40, most likely OP3
 ; Output:
 ;   - u40(DE) updated
 ; Destroys: A, BC, OP4-OP6
@@ -131,12 +131,13 @@ dateToEpochP1 equ OP5+5 ; param1:u40
 dateToEpochP2 equ OP6 ; param2:u40
 dateToEpochP3 equ OP6+5 ; param3:u40
 DateToEpochDays:
-    push hl ; stack=[dateRecord]
-    push de ; stack=[dateRecord, destPointer]
+    push de ; stack=[resultPointer]
     inc hl ; skip type byte
     ld de, dateToEpochRecord
     ld bc, 4
     ldir
+    ex (sp), hl ; stack=[dateRecord+5]; HL=resultPointer
+    push hl ; stack=[dateRecord+5, resultPointer]
     ; isLowMonth=(month <= 2) ? 1 : 0)
     ld a, (dateToEpochMonth) ; A=month
     ld hl, (dateToEpochYear) ; HL=year
@@ -230,12 +231,12 @@ DateToEpochDays:
     ex de, hl ; HL=dayOfEpochPrime; DE=offset
     call subU40U40 ; HL=epochDays=dayOfEpochPrime-offset
     ; copy to destination U40
-    pop de ; stack=[dateRecord]; DE=destPointer
-    push de ; stack=[dateRecord, destPointer]
+    pop de ; stack=[dateRecord+5]; DE=resultPointer
+    push de ; stack=[dateRecord+5, resultPointer]
     ld bc, 5
     ldir ; DE=u40 result
-    pop de ; stack=[dateRecord]; DE=destPointer
-    pop hl ; stack=[]; HL=dateRecord
+    pop de ; stack=[dateRecord+5]; DE=resultPointer
+    pop hl ; stack=[]; HL=dateRecord+5
     ret
 
 ; Description: Calculate yearPrime=year-((month<=2)?1:0).
@@ -540,6 +541,7 @@ yearPrimeToYear:
 ;   - OP3:Date or days
 ; Output:
 ;   - OP1:date+days
+; Destroys: OP1, OP2, OP3-OP6
 AddDateByDays:
     call checkOp1DatePageOne ; ZF=1 if typeof(CP1)==Date
     jr nz, addDateByDaysAdd
@@ -575,6 +577,7 @@ addDateByDaysAdd:
 ;   - OP3:Date or days=X
 ; Output:
 ;   - OP1:(Date-days) or (Date-Date).
+; Destroys: OP1, OP2, OP3-OP6
 SubDateByDateOrDays:
     call PushRpnObject3 ; FPS=[Date or days]
     ld de, OP3
@@ -611,3 +614,65 @@ subDateByDate:
     call op1ToOp3PageOne ; OP3=Y.days-X.days
     ld hl, OP3
     jp ConvertI40ToOP1 ; OP1=Y.date-X.date
+
+;-----------------------------------------------------------------------------
+
+; Description: Convert DateTime{} record to epochSeconds.
+; Input:
+;   - HL:(DateTime*): dateTime, most likely OP1
+;   - DE:(u40*)=resultPointer, most likely OP3
+; Output:
+;   - (*DE)=result
+; Destroys: A, BC, OP4-OP6
+DateTimeToEpochSeconds:
+    call DateToEpochDays ; DE=epochDays; HL=timePointer=dateTime+5
+    push hl ; stack=[timePointer]
+    ; convert days to seconds
+    ld hl, OP4
+    ld a, 1
+    ld bc, 20864 ; ABC=86400 seconds per day
+    call setU40ToABC ; HL=OP4=86400
+    ex de, hl ; HL=result; DE=OP4=86400
+    call multU40U40 ; HL=result=86400*epochDays
+    ; convert time to seconds
+    ex (sp), hl ; stack=[resultPointer]; HL=timePointer
+    ex de, hl ; DE=timePointer
+    ld hl, OP5
+    call hmsToSeconds ; HL=OP5=timeSeconds
+    ; add timeSeconds to epochDays*86400
+    ex de, hl ; DE=OP5=timeSeconds
+    pop hl ; stack=[]; HL=resultPointer
+    call addU40U40 ; HL=result=epochDays*86400+timeSeconds
+    ret
+
+; Description: Convert (hh,mm,ss) to seconds.
+; Input:
+;   - DE: pointer to 3 bytes (hh,mm,ss).
+;   - HL: pointer to u40 result
+; Output:
+;   - (HL): updated
+;   - DE=DE+3
+; Destroys: A, DE
+; Preserves: BC, HL
+hmsToSeconds:
+    push hl ; stack=[result]
+    ; read hour
+    ld a, (de)
+    inc de
+    call setU40ToA ; HL=A
+    ; multiply by 60
+    ld a, 60
+    call multU40ByA ; HL=result=HL*60
+    ; add minute
+    ld a, (de)
+    inc de
+    call addU40ByA ; HL=HL+A
+    ; multiply by 60
+    ld a, 60
+    call multU40ByA ; HL=HL*60
+    ; add second
+    ld a, (de)
+    inc de
+    call addU40ByA ; HL=HL+A
+    pop hl ; HL=result
+    ret

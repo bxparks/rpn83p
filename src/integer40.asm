@@ -242,7 +242,7 @@ multU40U40:
     push hl
     push hl
     add hl, sp ; (HL) = (SP) = result
-    ; Set up loop of 32.
+    ; Set up loop of 40.
     ld b, 40
     ld c, 0 ; carry flag
 multU40U40Loop:
@@ -323,6 +323,62 @@ multU40By10:
     call addU40U40 ; (HL) += input40
     call shiftLeftLogicalU40 ; (HL)=2*(HL)=10*inputU40
     ; Remove temp U40 on stack
+    pop bc
+    pop bc
+    pop bc
+    ; Restore registers
+    pop hl
+    pop de
+    pop bc
+    ret
+
+;------------------------------------------------------------------------------
+
+; Description: Calculate (HL) = u40(HL) * A.
+; Input:
+;   - HL: pointer to a u40 integer, little-endian format
+;   - A: multiplier
+; Output:
+;   - u40(HL) = u40(HL) * A
+;   - CF: carry flag
+; Preserves: A, BC, DE, HL
+multU40ByA:
+    push bc
+    push de
+    push hl
+    ; Create 6 bytes of temp U40 on the stack
+    ld de, 0
+    push de
+    push de
+    push de ; SP=sumU40
+    ex de, hl ; DE=inputU40
+    add hl, sp ; HL=sumU40
+    ; Set up loop of 8
+    ld b, a ; B=multipler
+    ld a, 8 ; A=counter
+    ld c, 0 ; carry flag
+multU40ByALoop:
+    push af ; stack=[counter]
+    call shiftLeftLogicalU40 ; (HL)=2*(HL)
+    jr nc, multU40ALoopNoCarry
+    set 0, c ; set carry bit in C register
+multU40ALoopNoCarry:
+    rlc b
+    jr nc, multU40ByANoMult
+    call addU40U40 ; HL=sum40+=inputU40
+multU40ByANoMult:
+    pop af
+    dec a
+    jr nz, multU40ByALoop
+multU40ByAEnd:
+    ; transfer carry flag in C to CF
+    ld a, c
+    rra ; CF=bit0 of C
+    ld a, b ; restore A
+    ; Move sum40 to input40
+    ld bc, 5
+    ldir
+    ; Remove 6 bytes from stack
     pop bc
     pop bc
     pop bc

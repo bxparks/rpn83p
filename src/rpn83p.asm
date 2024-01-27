@@ -971,6 +971,10 @@ _SubDateByDateOrDaysLabel:
 _SubDateByDateOrDays equ _SubDateByDateOrDaysLabel-branchTableBase
     .dw SubDateByDateOrDays
     .db 1
+_DateTimeToEpochSecondsLabel:
+_DateTimeToEpochSeconds equ _DateTimeToEpochSecondsLabel-branchTableBase
+    .dw DateTimeToEpochSeconds
+    .db 1
 
 #ifdef DEBUG
 ; debug.asm
