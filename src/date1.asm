@@ -26,6 +26,36 @@ checkOp3DatePageOne:
 
 ;-----------------------------------------------------------------------------
 
+; Description: Convert RpnDate to RpnDateTime if necessary.
+; Input: HL:RpnDate
+; Output; HL:RpnDateTime
+; Destroys: A
+; Preserves: HL
+ConvertToDateTime:
+    ld a, (hl) ; A=rpnType
+    cp rpnObjectTypeDateTime
+    ret z
+    ; convert RpnDate to RpnDateTime
+    push hl
+    ld a, rpnObjectTypeDateTime
+    ld (hl), a
+    inc hl ; year
+    inc hl ; year+1
+    inc hl ; month
+    inc hl ; day
+    inc hl ; hour
+    ; set the Time{} part to 00:00:00
+    xor a
+    ld (hl), a ; hour=0
+    inc hl
+    ld (hl), a ; min=0
+    inc hl
+    ld (hl), a ; sec=0
+    pop hl
+    ret
+
+;-----------------------------------------------------------------------------
+
 ; Description: Determine if OP1 is leap year.
 ; Input: OP1
 ; Output: 1 or 0
@@ -118,8 +148,9 @@ dayOfWeekIsoEnd:
 ;   - DE: resultPointer to u40, most likely OP3
 ; Output:
 ;   - u40(DE) updated
-; Destroys: A, BC, OP4-OP6
-; Preserves: DE, HL
+;   - HL=HL+4
+; Destroys: A, BC, HL, OP4-OP6
+; Preserves: DE
 dateToEpochRecord equ OP4
 dateToEpochYear equ OP4 ; year:u16
 dateToEpochMonth equ OP4+2 ; month:u8
@@ -136,8 +167,8 @@ DateToEpochDays:
     ld de, dateToEpochRecord
     ld bc, 4
     ldir
-    ex (sp), hl ; stack=[date+5]; HL=resultPointer
-    push hl ; stack=[date+5, resultPointer]
+    ex (sp), hl ; stack=[Date+4]; HL=resultPointer
+    push hl ; stack=[Date+4, resultPointer]
     ; isLowMonth=(month <= 2) ? 1 : 0)
     ld a, (dateToEpochMonth) ; A=month
     ld hl, (dateToEpochYear) ; HL=year
@@ -231,12 +262,13 @@ DateToEpochDays:
     ex de, hl ; HL=dayOfEpochPrime; DE=offset
     call subU40U40 ; HL=epochDays=dayOfEpochPrime-offset
     ; copy to destination U40
-    pop de ; stack=[date+5]; DE=resultPointer
-    push de ; stack=[date+5, resultPointer]
+    pop de ; stack=[Date+4]; DE=resultPointer
+    push de ; stack=[Date+4, resultPointer]
     ld bc, 5
-    ldir ; DE=u40 result
-    pop de ; stack=[date+5]; DE=resultPointer
-    pop hl ; stack=[]; HL=date+5
+    ldir
+    ;
+    pop de ; stack=[Date+4]; DE=resultPointer
+    pop hl ; stack=[]; HL=Date+4
     ret
 
 ; Description: Calculate yearPrime=year-((month<=2)?1:0).
@@ -631,7 +663,7 @@ subRpnDateByRpnDate:
 ;   - (*DE)=result
 ; Destroys: A, BC, OP4-OP6
 DateTimeToEpochSeconds:
-    call DateToEpochDays ; DE=epochDays; HL=timePointer=dateTime+5
+    call DateToEpochDays ; DE=epochDays; HL=timePointer=dateTime+4
     push hl ; stack=[timePointer]
     ; convert days to seconds
     ld hl, OP4

@@ -37,7 +37,9 @@ mEpochDaysToDateHandler:
 
 mDateTimeToEpochSecondsHandler:
     call closeInputAndRecallRpnDateX ; OP1=X=RpnDate
-    ld hl, OP1+1 ; skip type byte
+    ld hl, OP1
+    bcall(_ConvertToDateTime) ; preserves HL
+    inc hl ; skip type byte
     ld de, OP3
     bcall(_DateTimeToEpochSeconds) ; OP3=i40(seconds)
     ld hl, OP3

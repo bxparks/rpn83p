@@ -949,6 +949,10 @@ _FormatComplexPolarDeg equ _FormatComplexPolarDegLabel-branchTableBase
     .dw FormatComplexPolarDeg
     .db 1
 ; date1.asm
+_ConvertToDateTimeLabel:
+_ConvertToDateTime equ _ConvertToDateTimeLabel-branchTableBase
+    .dw ConvertToDateTime
+    .db 1
 _IsLeapLabel:
 _IsLeap equ _IsLeapLabel-branchTableBase
     .dw IsLeap
