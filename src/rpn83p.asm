@@ -123,11 +123,13 @@ rpntrue equ 1
 ; RpnObect type enums.
 rpnObjectTypeReal equ 0
 rpnObjectTypeComplex equ $0C ; same as TI-OS
-; Date Record: struct {type:u8, year:u16, month:u8, day:u8}, 5 bytes.
+; Date object:
+; - struct Date{year:u16, mon:u8, day:u8}, 4 bytes
+; - struct RpnDate{type:u8, date:Date}, 5 bytes
 rpnObjectTypeDate equ $18 ; next unused object type
-; DateTime Record:
-; struct {type:u8, year:u16, month:u8, day:u8, hour:u8, min:u8, sec: u8}, 8
-; bytes.
+; DateTime object:
+; - struct DateTime{date:Date, hour:u8, min:u8, sec:u8}, 7 bytes
+; - struct RpnDateTime{type:u8, dateTime:DateTime}, 8 bytes
 rpnObjectTypeDateTime equ $19
 
 ; An RpnObject is a struct of a type byte and 2 RpnFloat objects so that a
@@ -963,13 +965,13 @@ _EpochDaysToDateLabel:
 _EpochDaysToDate equ _EpochDaysToDateLabel-branchTableBase
     .dw EpochDaysToDate
     .db 1
-_AddDateByDaysLabel:
-_AddDateByDays equ _AddDateByDaysLabel-branchTableBase
-    .dw AddDateByDays
+_AddRpnDateByDaysLabel:
+_AddRpnDateByDays equ _AddRpnDateByDaysLabel-branchTableBase
+    .dw AddRpnDateByDays
     .db 1
-_SubDateByDateOrDaysLabel:
-_SubDateByDateOrDays equ _SubDateByDateOrDaysLabel-branchTableBase
-    .dw SubDateByDateOrDays
+_SubRpnDateByRpnDateOrDaysLabel:
+_SubRpnDateByRpnDateOrDays equ _SubRpnDateByRpnDateOrDaysLabel-branchTableBase
+    .dw SubRpnDateByRpnDateOrDays
     .db 1
 _DateTimeToEpochSecondsLabel:
 _DateTimeToEpochSeconds equ _DateTimeToEpochSecondsLabel-branchTableBase

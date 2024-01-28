@@ -9,37 +9,35 @@ mLeapYearHandler:
     jp replaceX
 
 mDayOfWeekHandler:
-    call closeInputAndRecallDateX ; OP1=X=DateRecord
-    ld hl, OP1
+    call closeInputAndRecallRpnDateX ; OP1=X=RpnDate
+    ld hl, OP1+1 ; skip type byte
     bcall(_DayOfWeekIso) ; A=[1,7]
     bcall(_ConvertAToOP1)
     jp replaceX
 
 mDateToEpochDaysHandler:
-    call closeInputAndRecallDateX ; OP1=X=DateRecord
-    ;
-    ld hl, OP1
+    call closeInputAndRecallRpnDateX ; OP1=X=RpnDate
+    ld hl, OP1+1 ; skip type byte
     ld de, OP3
     bcall(_DateToEpochDays) ; OP3=i40(days)
-    ;
     ld hl, OP3
     bcall(_ConvertI40ToOP1) ; OP1=float(days)
     jp replaceX
 
 mEpochDaysToDateHandler:
     call closeInputAndRecallX ; OP1=X=epochDays
-    ;
     ld hl, OP3
     bcall(_ConvertOP1ToI40) ; OP3=i40(X)
-    ;
     ld hl, OP3
-    ld de, OP1
+    ld de, OP1+1 ; skip type byte
     bcall(_EpochDaysToDate) ; DE=OP1=DateRecord(u40(epochDays))
+    ld a, rpnObjectTypeDate
+    ld (OP1), a
     jp replaceX
 
 mDateTimeToEpochSecondsHandler:
-    call closeInputAndRecallDateX ; OP1=X=DateRecord
-    ld hl, OP1
+    call closeInputAndRecallRpnDateX ; OP1=X=RpnDate
+    ld hl, OP1+1 ; skip type byte
     ld de, OP3
     bcall(_DateTimeToEpochSeconds) ; OP3=i40(seconds)
     ld hl, OP3

@@ -331,12 +331,12 @@ universalAddComplex:
 universalAddDatePlusDays:
     call checkOp3Real
     jr nz, universalAddErr
-    bcall(_AddDateByDays) ; OP1=Date(OP1)+days(OP3)
+    bcall(_AddRpnDateByDays) ; OP1=Date(OP1)+days(OP3)
     ret
 universalAddDaysPlusDate:
     call checkOp3Date
     jr nz, universalAddErr
-    bcall(_AddDateByDays) ; OP1=Date(OP1)+days(OP3)
+    bcall(_AddRpnDateByDays) ; OP1=Date(OP1)+days(OP3)
     ret
 universalAddErr:
     bcall(_ErrDataType)
@@ -374,7 +374,7 @@ universalSubDateMinusObject:
     jr universalSubErr
 universalSubDateMinusDays:
 universalSubDateMinusDate:
-    bcall(_SubDateByDateOrDays)
+    bcall(_SubRpnDateByRpnDateOrDays)
     ret
 universalSubErr:
     bcall(_ErrDataType)

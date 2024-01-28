@@ -8,16 +8,16 @@
 ; entry.
 ;-----------------------------------------------------------------------------
 
-; Description: Check if OP1 is a DateRecord.
-; Output: ZF=1 if DateRecord
+; Description: Check if OP1 is a RpnDate.
+; Output: ZF=1 if RpnDate
 checkOp1DatePageOne:
     ld a, (OP1)
     and $1f
     cp rpnObjectTypeDate
     ret
 
-; Description: Check if OP3 is a DateRecord.
-; Output: ZF=1 if DateRecord
+; Description: Check if OP3 is a RpnDate.
+; Output: ZF=1 if RpnDate
 checkOp3DatePageOne:
     ld a, (OP3)
     and $1f
@@ -77,8 +77,9 @@ isLeapYearTrue:
 
 ;-----------------------------------------------------------------------------
 
-; Description: Return the ISO day of week (1=Monday, 7=Sunday).
-; Input: HL: Date or DateTime
+; Description: Return the ISO day of week (1=Monday, 7=Sunday) of the given
+; Date{} record.
+; Input: HL: Date{} record
 ; Output: A: 1-7
 DayOfWeekIso:
     ld de, OP3
@@ -102,7 +103,7 @@ dayOfWeekIsoEnd:
 
 ;-----------------------------------------------------------------------------
 
-; Description: Convert DateRecord to epochDays.
+; Description: Convert Date{} to epochDays.
 ;
 ; NOTE: If we restrict the 'year' component to be less than 10,000, then the
 ; maximum number of days is 3,652,425, which would fit inside an i32 or u32. So
@@ -113,7 +114,7 @@ dayOfWeekIsoEnd:
 ; would be required when working with seconds.
 ;
 ; Input:
-;   - HL: dateRecord, most likely OP1
+;   - HL:Date{}, most likely OP1+1
 ;   - DE: resultPointer to u40, most likely OP3
 ; Output:
 ;   - u40(DE) updated
@@ -132,12 +133,11 @@ dateToEpochP2 equ OP6 ; param2:u40
 dateToEpochP3 equ OP6+5 ; param3:u40
 DateToEpochDays:
     push de ; stack=[resultPointer]
-    inc hl ; skip type byte
     ld de, dateToEpochRecord
     ld bc, 4
     ldir
-    ex (sp), hl ; stack=[dateRecord+5]; HL=resultPointer
-    push hl ; stack=[dateRecord+5, resultPointer]
+    ex (sp), hl ; stack=[date+5]; HL=resultPointer
+    push hl ; stack=[date+5, resultPointer]
     ; isLowMonth=(month <= 2) ? 1 : 0)
     ld a, (dateToEpochMonth) ; A=month
     ld hl, (dateToEpochYear) ; HL=year
@@ -231,12 +231,12 @@ DateToEpochDays:
     ex de, hl ; HL=dayOfEpochPrime; DE=offset
     call subU40U40 ; HL=epochDays=dayOfEpochPrime-offset
     ; copy to destination U40
-    pop de ; stack=[dateRecord+5]; DE=resultPointer
-    push de ; stack=[dateRecord+5, resultPointer]
+    pop de ; stack=[date+5]; DE=resultPointer
+    push de ; stack=[date+5, resultPointer]
     ld bc, 5
     ldir ; DE=u40 result
-    pop de ; stack=[dateRecord+5]; DE=resultPointer
-    pop hl ; stack=[]; HL=dateRecord+5
+    pop de ; stack=[date+5]; DE=resultPointer
+    pop hl ; stack=[]; HL=date+5
     ret
 
 ; Description: Calculate yearPrime=year-((month<=2)?1:0).
@@ -276,7 +276,7 @@ daysUntilMonthPrime:
 
 ;-----------------------------------------------------------------------------
 
-; Description: Convert epochDays to (year,month,day) record.
+; Description: Convert epochDays to Date{} record.
 ;
 ; NOTE: If we restrict the 'year' component to be less than 10,000, then the
 ; maximum number of days is 3,652,425, which would fit inside an i32 or u32. So
@@ -288,7 +288,7 @@ daysUntilMonthPrime:
 ;
 ; Input:
 ;   - HL:u40=epochDays
-;   - DE:DateRecord, probably OP2
+;   - DE:Date{}, probably OP2+1
 ; Output: (DE) updated, cannot be OP3-OP6
 ; Destroys: A, BC, OP3-OP6
 ; Preserves: DE, HL
@@ -306,7 +306,7 @@ epochToDateP5 equ OP6 ; u40; dividend (e.g. dayOfEra)
 epochToDateP6 equ OP6+5 ; u40; remainder
 EpochDaysToDate:
     push hl ; stack=[epochDays]
-    push de ; stack=[epochDays, dateRecord]
+    push de ; stack=[epochDays, Date{}]
     ; ==== Calculate dayOfEpochPrime
     ; copy epochDays to P1
     ld de, epochToDateP1
@@ -484,27 +484,23 @@ EpochDaysToDate:
     ; year
     ld hl, (epochToDateYearPrime) ; HL=yearPrime
     call yearPrimeToYear ; HL=year
-    ; ==== update DateRecord
+    ; ==== update Date{}
     ex de, hl ; DE=year
-    pop hl ; stack=[epochDays]; HL=DateRecord
-    push hl ; stack=[epochDays, dateRecord]
-    ; DateRecord.type
-    ld a, rpnObjectTypeDate
-    ld (hl), a
-    inc hl
-    ; DateRecord.year
+    pop hl ; stack=[epochDays]; HL=Date{}
+    push hl ; stack=[epochDays, Date{}]
+    ; Date{}.year
     ld (hl), e
     inc hl
     ld (hl), d ; yearPrime=year
     inc hl
-    ; DateRecord.month
+    ; Date{}.month
     ld a, (epochToDateMonthPrime)
     ld (hl), a
     inc hl
-    ; DateRecord.day
+    ; Date{}.day
     ld a, (epochToDateDay)
     ld (hl), a
-    pop de ; stack=[epochDays]; DE=dateRecord
+    pop de ; stack=[epochDays]; DE=Date{}
     pop hl ; stack=[]; HL=epochDays
     ret
 
@@ -535,27 +531,27 @@ yearPrimeToYear:
 
 ;-----------------------------------------------------------------------------
 
-; Description: Add OP1 Date by OP3 days.
+; Description: Add (RpnDate plus days) or (days plus RpnDate).
 ; Input:
-;   - OP1:Date or days
-;   - OP3:Date or days
+;   - OP1:Union[RpnDate,RpnReal]=rpnDate or days
+;   - OP3:Union[RpnDate,RpnReal]=rpnDate or days
 ; Output:
-;   - OP1:date+days
+;   - OP1:RpnDate=RpnDate+days
 ; Destroys: OP1, OP2, OP3-OP6
-AddDateByDays:
-    call checkOp1DatePageOne ; ZF=1 if typeof(CP1)==Date
-    jr nz, addDateByDaysAdd
-    call cp1ExCp3PageOne ; CP1=days; CP3=Date
-addDateByDaysAdd:
-    ; CP1=days, CP3=Date
-    call PushRpnObject3 ; FPS=[Date]
+AddRpnDateByDays:
+    call checkOp1DatePageOne ; ZF=1 if CP1 is an RpnDate
+    jr nz, addRpnDateByDaysAdd
+    call cp1ExCp3PageOne ; CP1=days; CP3=RpnDate
+addRpnDateByDaysAdd:
+    ; CP1=days, CP3=RpnDate
+    call PushRpnObject3 ; FPS=[RpnDate]
     ld hl, OP3
-    call ConvertOP1ToI40 ; OP3=u40(days)
+    call ConvertOP1ToI40 ; HL=OP3=u40(days)
     ;
-    call PopRpnObject1 ; FPS=[]; CP1=Date
+    call PopRpnObject1 ; FPS=[]; CP1=RpnDate
     call PushRpnObject3 ; FPS=[u40(days)]
     ;
-    ld hl, OP1
+    ld hl, OP1+1 ; HL=OP1+1=Date
     ld de, OP3
     call DateToEpochDays ; OP3=u40(epochDays)
     call PopRpnObject1 ; FPS=[]; OP1=u40(days)
@@ -566,26 +562,30 @@ addDateByDaysAdd:
     ;
     call op1ToOp2PageOne ; OP2=u40(epochDays+days)
     ld hl, OP2
-    ld de, OP1
-    jp EpochDaysToDate ; DE=OP1=newDate
+    ld de, OP1+1 ; DE=OP1+1=Date
+    call EpochDaysToDate ; DE=OP1+1:Date=newDate
+    ;
+    ld a, rpnObjectTypeDate
+    ld (OP1), a ; OP1:RpnDate=newRpnDate
+    ret
 
 ;-----------------------------------------------------------------------------
 
-; Description: Subtract Date minus Date or days.
+; Description: Subtract RpnDate minus Date or days.
 ; Input:
-;   - OP1:Date=Y
-;   - OP3:Date or days=X
+;   - OP1:RpnDate=Y
+;   - OP3:RpnDate or days=X
 ; Output:
-;   - OP1:(Date-days) or (Date-Date).
+;   - OP1:(RpnDate-days) or (RpnDate-RpnDate).
 ; Destroys: OP1, OP2, OP3-OP6
-SubDateByDateOrDays:
+SubRpnDateByRpnDateOrDays:
     call PushRpnObject3 ; FPS=[Date or days]
     ld de, OP3
-    ld hl, OP1
+    ld hl, OP1+1
     call DateToEpochDays ; OP3=u40(Y.days)
     call exchangeFPSCP3PageOne ; FPS=[u40(Y.days)]; OP3=Date or days
     call checkOp3DatePageOne ; ZF=1 if type(OP3)==Date
-    jr z, subDateByDate
+    jr z, subRpnDateByRpnDate
     ; Subtract by OP3=days
     call op3ToOp1PageOne ; OP1=days
     ld hl, OP3
@@ -596,13 +596,17 @@ SubDateByDateOrDays:
     call subU40U40 ; HL=OP1=Y.days-X.days
     ;
     call op1ToOp2PageOne ; OP2=Y.days-X.days
-    ld de, OP1
+    ld de, OP1+1
     ld hl, OP2
-    jp EpochDaysToDate ; OP1=DateRecord
-subDateByDate:
+    call EpochDaysToDate ; OP1+1:Date
+    ;
+    ld a, rpnObjectTypeDate
+    ld (OP1), a ; OP1:RpnDate
+    ret
+subRpnDateByRpnDate:
     ; Subtract by OP3=Date
     ld de, OP1
-    ld hl, OP3
+    ld hl, OP3+1
     call DateToEpochDays ; OP1=u40(days(X))
     call op1ToOp3PageOne ; OP3=u40(days(X))
     ;
@@ -619,7 +623,7 @@ subDateByDate:
 
 ; Description: Convert DateTime{} record to epochSeconds.
 ; Input:
-;   - HL:(DateTime*): dateTime, most likely OP1
+;   - HL:(DateTime*): dateTime, most likely OP1+1
 ;   - DE:(u40*)=resultPointer, most likely OP3
 ; Output:
 ;   - (*DE)=result

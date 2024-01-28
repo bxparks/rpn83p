@@ -10,15 +10,15 @@
 ; not need a branch table entry.
 ;------------------------------------------------------------------------------
 
-; Description: Parse a data record of the form "{yyyy,mm,dd}" into a Date data
-; record type.
+; Description: Parse a data record of the form "{yyyy,mm,dd}" into an Date{} or
+; DateTime{} record type.
 ; Input:
 ;   - HL: charPointer, C-string pointer
-;   - DE: destPointer
+;   - DE: pointer to buffer that can hold a Date{} or DateTime{}
 ; Output:
 ;   - A: rpnObjectTypeDate or rpnObjectTypeDateTime
-;   - (DE): DateRecord
-;   - DE=DE+4
+;   - (DE): Date{} or DateTime{}
+;   - DE=DE+4 or DE+7
 ;   - HL=points to character after last '}'
 ; Throws: Err:Syntax if there is a syntax error
 ; Destroys: all
@@ -81,8 +81,8 @@ parseComma:
 
 ; Description: Parse up to 4 decimal digits at HL to a U16 at DE.
 ; Input:
-;   - DE: destPointer
-;   - HL: charPointer
+;   - DE:u16Pointer
+;   - HL:charPointer
 ; Output:
 ;   - (DE): u16, little endian
 ;   - DE: incremented by 2 bytes

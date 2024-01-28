@@ -116,8 +116,9 @@ closeInputAndRecallUniversalXY:
 
 ;-----------------------------------------------------------------------------
 
-; Close the input buffer, parse Date{} or DateTime{} record, place it into OP1.
-closeInputAndRecallDateX:
+; Close the input buffer, parse RpnDate{} or RpnDateTime{} record, place it
+; into OP1.
+closeInputAndRecallRpnDateX:
     call closeInput
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     call rclX ; A=objectType
