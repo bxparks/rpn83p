@@ -343,7 +343,9 @@ EpochDaysToDate:
     ; P5=P3=dayOfEra
     ld de, epochToDateP5
     call copyU40 ; DE=P5=dayOfEra
-    ; P5=P5/146096=dayOfEra/146096
+    ; P5=P5/146096=dayOfEra/146096.
+    ; TODO: Replace divU40U40() with a cmpU40U40() to evaluate
+    ; (dayOfEra==146096?1:0).
     ld a, 2
     ld bc, 15024 ; ABC=146096
     ld hl, epochToDateP2 ; HL=P2
@@ -431,7 +433,7 @@ EpochDaysToDate:
     call setU40ToBC ; HL=P2=365
     ex de, hl ; HL=P4=yearOfEra; DE=P2=4
     ld bc, epochToDateP6 ; BC=P6=remainder
-    call divU40U40 ; HL=P4=yearOfEra/4
+    call divU40U40 ; HL=P4=yearOfEra/4; TODO: replace with divU40ByD()
     ;
     ex de, hl ; DE=P4=yearOfEra/4
     ld hl, epochToDateP1 ; HL=P1=dayOfYearPrime
@@ -446,7 +448,7 @@ EpochDaysToDate:
     call setU40ToBC ; HL=P2=100
     ex de, hl ; HL=P4=yearOfEra; DE=P2=100
     ld bc, epochToDateP6 ; BC=P6=remainder
-    call divU40U40 ; HL=P4=yearOfEra/100
+    call divU40U40 ; HL=P4=yearOfEra/100; TODO: replace with divU40ByD()
     ;
     ex de, hl ; DE=P4=yearOfEra/100
     ld hl, epochToDateP1
@@ -679,4 +681,75 @@ hmsToSeconds:
     inc de
     call addU40ByA ; HL=HL+A
     pop hl ; HL=result
+    ret
+
+;-----------------------------------------------------------------------------
+
+; Description: Convert epochSeconds to DateTime{} structure.
+; Input:
+;   - HL:(i40*)=epochSeconds, probably OP1
+;   - DE:(DateTime*)=dateTime, probably OP2+1
+; Output:
+;   - *DE=dateTime result
+; Destroys: A, BC, OP3-OP6
+EpochSecondsToDateTime:
+    push de ; stack=[dateTime]
+    push hl ; stack=[dateTime,epochSeconds]
+    ; (epochDays,seconds)=div2(epochSeconds,86400)
+    ld a, 1
+    ld bc, 20864 ; ABC=86400 seconds per day
+    ld hl, OP3
+    call setU40ToABC ; HL=OP4=86400
+    ;
+    ex de, hl ; DE=OP4=divisor=86400
+    pop hl ; stack=[dateTime]; HL=epochSeconds
+    ld bc, OP4 ; remainder
+    call divI40U40 ; HL=epochDays; BC=OP4=seconds
+    ;
+    ex (sp), hl ; stack=[epochDays]; HL=dateTime
+    push hl ; stack=[epochDays,dateTime]
+    inc hl
+    inc hl
+    inc hl
+    inc hl ; HL=dateTime+4
+    ; ex bc, hl
+    push hl
+    push bc
+    pop hl ; HL=OP4=remainder
+    pop bc ; BC=dateTime+4
+    call secondsToHms ; BC=dateTime+4 updated
+    ;
+    pop de ; stack=[epochDays]; DE=dateTime
+    pop hl ; stack=[]; HL=epochDays
+    jp EpochDaysToDate ; DE=date
+
+; Description: Convert seconds in a day to (hh,mm,ss).
+; Input:
+;   - HL:(u40*)=secondsPointer
+;   - BC:(Time*)=hmsPointer
+; Output:
+;   - HL: destroyed
+;   - BC: updated
+; Destroys: A, (HL)
+; Preserves: BC, DE, HL
+secondsToHms:
+    push de
+    inc bc
+    inc bc
+    ld d, 60
+    ;
+    call divU40ByD ; E=remainder; HL=quotient
+    ld a, e
+    ld (bc), a
+    dec bc
+    ;
+    call divU40ByD ; E=remainder, HL=quotient
+    ld a, e
+    ld (bc), a
+    dec bc
+    ;
+    ld a, (hl)
+    ld (bc), a
+    ;
+    pop de
     ret

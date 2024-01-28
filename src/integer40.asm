@@ -408,7 +408,7 @@ multU40ByAEnd:
 ; Preserves: BC, DE, HL
 divU40U40:
     call clearU40BC ; clear remainder, dividend will shift into this
-    ld a, 40 ; iterate for 40 bits of a u40
+    ld a, 40 ; iterate for 40 bits of the u40 dividend
 divU40U40Loop:
     push af ; stack=[loopCounter]
     call shiftLeftLogicalU40 ; dividend(HL) <<= 1; CF=left-most-bit
@@ -431,6 +431,84 @@ divU40U40NextBit:
     pop af ; stack=[]; A=loopCounter
     dec a
     jr nz, divU40U40Loop
+    ret
+
+;------------------------------------------------------------------------------
+
+; Description: Divide i40(HL) by u40(DE), remainder in u40(BC). This version
+; truncates the quotient towards -infinity, which causes the remainder to be
+; positive in the range of [0,divisor-1].
+; Input:
+;   - HL: pointer to i40 dividend
+;   - DE: pointer to u40 divisor
+;   - BC: pointer to empty u40, used as remainder
+; Output:
+;   - HL: pointer to i40 quotient
+;   - DE: divisor, unchanged
+;   - BC: pointer to u40 remainder
+;   - CF: 0 (division always clears the carry flag)
+; Destroys: A
+; Preserves: BC, DE, HL
+divI40U40:
+    call isPosU40 ; ZF=1 if HL>=0
+    jr z, divU40U40
+    ; HL is negative
+    call negU40 ; HL=neg(dividend)
+    call divU40U40
+    ; check if the remainder is zero
+    push hl ; stack=[quotient]
+    call negU40 ; HL=-quotient
+    ld l, c
+    ld h, b
+    call testU40 ; ZF=1 if remainder==0
+    jr z, divI40U40ZeroRemainder
+    ; normalizedRemainder=divsor-remainder
+    call negU40 ; HL=neg(remainder)
+    call addU40U40 ; HL=neg(remainder)+divisor
+    pop hl ; stack=[]; HL=quotient
+    call decU40 ; HL=-quotient-1
+    ret
+divI40U40ZeroRemainder:
+    pop hl
+    ret
+
+;------------------------------------------------------------------------------
+
+; Description: Divide u40(HL) by D, remainder in E. This is an expanded u40
+; version of the "Fast 8-bit division" given in
+; https://tutorials.eeems.ca/Z80ASM/part4.htm and
+; https://wikiti.brandonw.net/index.php?title=Z80_Routines:Math:Division#32.2F16_division
+;
+; Input:
+;   - HL: pointer to u40 dividend
+;   - D: u8 divisor
+; Output:
+;   - HL: pointer to u40 quotient
+;   - D: u8 divisor, unchanged
+;   - E: u8 remainder
+;   - CF: 0 (division always clears the carry flag)
+; Destroys: A, DE
+; Preserves: BC, HL
+divU40ByD:
+    push bc ; stack=[BC]
+    ld e, 0
+    ld b, 40 ; iterate for 40 bits of a u40
+divU40ByDLoop:
+    call shiftLeftLogicalU40 ; dividend(HL) <<= 1; CF=left-most-bit
+    ld a, e
+    rla ; rotate CF into remainder
+    ld e, a
+    jr c, divU40ByDQuotientOne
+    cp d
+    jr c, divU40ByDQuotientZero
+divU40ByDQuotientOne:
+    sub d
+    ld e, a
+    set 0, (hl)
+divU40ByDQuotientZero:
+    djnz divU40ByDLoop
+    pop bc
+    or a ; CF=0
     ret
 
 ;------------------------------------------------------------------------------
@@ -460,6 +538,7 @@ negU40Loop:
 ; Description: Return ZF=1 if u40 is positive or zero, i.e. the most
 ; significant bit is not set.
 ; Input: HL:u40 pointer
+; Output; ZF=1 if HL is positive or zero
 ; Destroys: none
 isPosU40:
     push bc
@@ -467,6 +546,28 @@ isPosU40:
     ld bc, 4
     add hl, bc
     bit 7, (hl) ; ZF=0 if negative
+    pop hl
+    pop bc
+    ret
+
+;------------------------------------------------------------------------------
+
+; Description: Decrement the u40 at HL.
+; Input: HL:u40
+; Output: HL:u40=HL-1
+; Destroys: A
+; Preserves: all
+decU40:
+    push bc
+    push hl
+    dec (hl)
+    ld b, 4
+decU40Loop:
+    inc hl
+    ld a, (hl)
+    sbc a, 0
+    ld (hl), a
+    djnz decU40Loop
     pop hl
     pop bc
     ret
@@ -507,6 +608,29 @@ cmpU40U40End:
     pop de
     pop hl
     ret
+
+;------------------------------------------------------------------------------
+
+; Description: Test if U40 is 0 or not.
+; Input: HL: pointer to u40 or i40
+; Output: ZF=1 if zero
+; Destroys: A
+testU40:
+    push hl
+    push bc
+    ld b, 5
+testU40Loop:
+    ld a, (hl)
+    inc hl
+    or a
+    jr nz, testU40End
+    djnz testU40Loop
+testU40End:
+    pop bc
+    pop hl
+    ret
+
+;------------------------------------------------------------------------------
 
 ; Description: Shift left logical the u40 pointed by HL.
 ; Input:

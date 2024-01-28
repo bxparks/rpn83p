@@ -45,7 +45,17 @@ mDateTimeToEpochSecondsHandler:
     jp replaceX
 
 mEpochSecondstoDateTimeHandler:
-    jp mNotYetHandler
+    call closeInputAndRecallX ; OP1=X=epochSeconds
+    ld hl, OP3
+    bcall(_ConvertOP1ToI40) ; OP3=i40(X)
+    call op3ToOp1 ; OP1=i40(X)
+    ld hl, OP1
+    ld de, OP2+1 ; dateTime
+    bcall(_EpochSecondsToDateTime)
+    ld a, rpnObjectTypeDateTime
+    ld (OP2), a
+    call op2ToOp1
+    jp replaceX
 
 ;-----------------------------------------------------------------------------
 

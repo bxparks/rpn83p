@@ -977,6 +977,10 @@ _DateTimeToEpochSecondsLabel:
 _DateTimeToEpochSeconds equ _DateTimeToEpochSecondsLabel-branchTableBase
     .dw DateTimeToEpochSeconds
     .db 1
+_EpochSecondsToDateTimeLabel:
+_EpochSecondsToDateTime equ _EpochSecondsToDateTimeLabel-branchTableBase
+    .dw EpochSecondsToDateTime
+    .db 1
 
 #ifdef DEBUG
 ; debug.asm
