@@ -584,8 +584,9 @@ rclL:
 ; OP2 to the RPN stack.
 ;-----------------------------------------------------------------------------
 
-; Description: Replace X with OP1/OP2, saving previous X to LastX, and
-; setting dirty flag. Works for complex numbers.
+; Description: Replace X with RpnObject in OP1/OP2, saving previous X to LastX,
+; and setting dirty flag. Works for all RpnObject types.
+; Input: CP1=OP1/OP2:RpnObject
 ; Preserves: OP1, OP2
 replaceX:
     call checkValid
@@ -596,8 +597,9 @@ replaceX:
     call stoX
     ret
 
-; Description: Replace X and Y pair with OP1/OP2, saving previous X to LastX,
-; and setting dirty flag. Works for complex numbers.
+; Description: Replace X and Y with RpnObject in OP1/OP2, saving previous X to
+; LastX, and setting dirty flag. Works for all RpnObject types.
+; Input: CP1=OP1/OP2:RpnObject
 ; Preserves: OP1, OP2
 replaceXY:
     call checkValid
@@ -609,11 +611,10 @@ replaceXY:
     call stoX
     ret
 
-; Description: Replace X and Y with push of OP1 and OP2 on the stack in that
-; order. This causes X=OP2 and Y=OP1, saving the previous X to LastX, and
-; setting dirty flag.
-; WARNING: Assumes that OP1 and OP2 are real not complex.
-; Input: X, Y, OP1, OP2
+; Description: Replace X and Y with Real numbers OP1 and OP2, in that order.
+; This causes X=OP2 and Y=OP1, saving the previous X to LastX, and setting
+; dirty flag.
+; Input: OP1:Real, OP2:Real
 ; Output:
 ;   - Y=OP1
 ;   - X=OP2
@@ -622,23 +623,22 @@ replaceXY:
 replaceXYWithOP1OP2:
     ; validate OP1 and OP2 before modifying X and Y
     call checkValidReal
-    bcall(_OP1ExOP2)
+    call op1ExOp2
     call checkValidReal
-    bcall(_OP1ExOP2)
+    call op1ExOp2
     ;
     call stoY ; Y = OP1
     bcall(_PushRealO1) ; FPS=[OP1]
     call rclX
     call stoL; LastX = X
     ;
-    bcall(_OP2ToOP1)
+    call op2ToOp1
     call stoX ; X = OP2
     bcall(_PopRealO1) ; FPS=[]; OP1=OP1
     ret
 
-; Description: Replace X with OP1, and OP2 pushed onto the stack in that order.
-; WARNING: Assumes that OP1 and OP2 are real not complex.
-; Input: X, OP1 (Re), OP2 (Im)
+; Description: Replace X with Real numbers OP1 and OP2 in that order.
+; Input: OP1:Real, OP2:Real
 ; Output:
 ;   - Y=OP1
 ;   - X=OP2
@@ -662,13 +662,13 @@ replaceXWithOP1OP2:
     call stoX
     ret
 
-; Description: Push OP1 to the X register. LastX is not updated because the
-; previous X is not consumed, and is availabe as the Y register. Works for
-; complex numbers.
-; Input: X, OP1/OP2
+; Description: Push RpnOjbect in OP1/OP2 to the X register. LastX is not
+; updated because the previous X is not consumed, and is availabe as the Y
+; register. Works for all RpnObject types.
+; Input: CP1=OP1/OP2:RpnObject
 ; Output:
 ;   - Stack lifted (if the inputBuf was not an empty string)
-;   - X=OP1
+;   - X=OP1/OP2
 ; Destroys: all
 ; Preserves: OP1, OP2, LastX
 pushToX:
@@ -677,10 +677,10 @@ pushToX:
     call stoX
     ret
 
-; Description: Push OP1 then OP2 onto the stack. LastX is not updated because
-; the previous X is not consumed, and is available as the Z register.
-; WARNING: Assumes OP1 and OP2 are real not complex.
-; Input: X, Y, OP1, OP2
+; Description: Push Real numbers OP1 then OP2 onto the stack. LastX is not
+; updated because the previous X is not consumed, and is available as the Z
+; register.
+; Input: OP1:Real, OP2:Real
 ; Output:
 ;   - Stack lifted (if the inputBuf was not an empty string)
 ;   - Y=OP1
@@ -689,20 +689,22 @@ pushToX:
 ; Preserves: OP1, OP2, LastX
 pushToXY:
     call checkValidReal
-    bcall(_OP1ExOP2)
+    call op1ExOp2
     call checkValidReal
-    bcall(_OP1ExOP2)
+    call op1ExOp2
     call liftStackIfNonEmpty
     call stoX
     call liftStack
-    bcall(_OP1ExOP2)
+    call op1ExOp2
     call stoX
-    bcall(_OP1ExOP2)
+    call op1ExOp2
     ret
 
-; Description: Check that OP1/OP2 is real, complex, or a data record. If real
-; or complex, verify validity of number using CkValidNum().
-; Destroys: A
+; Description: Check that OP1/OP2 is a valid RpnObject type (real, complex,
+; RpnDate or RpnDateTime). If real or complex, verify validity of number using
+; CkValidNum().
+; Input: OP1/OP2:RpnObject
+; Destroys: A, HL
 checkValid:
     ld a, (OP1)
     and $1f
@@ -710,17 +712,18 @@ checkValid:
     ret z
     cp rpnObjectTypeDateTime
     ret z
-    bcall(_CkValidNum)
+    bcall(_CkValidNum) ; destroys AF, HL
     ret
 
 ; Description: Check that OP1 is real. Throws Err:NonReal if not real.
-; Destroys: A
+; Input: OP1/OP2:RpnObject
+; Destroys: A, HL
 checkValidReal:
     ld a, (OP1)
     and $1f
     cp rpnObjectTypeReal
     jr nz, checkValidRealErr
-    bcall(_CkValidNum)
+    bcall(_CkValidNum) ; dstroys AF, HL
     ret
 checkValidRealErr:
     bcall(_ErrNonReal)
@@ -941,7 +944,7 @@ rclRegNNToOP2:
     bcall(_PushRealO1) ; FPS=[OP1]
     pop bc ; C=NN
     call rclRegNN
-    bcall(_OP1ToOP2)
+    call op1ToOp2
     bcall(_PopRealO1) ; FPS=[]; OP1=OP1
     ret
 
@@ -1206,7 +1209,7 @@ stoAddRegNN:
     push bc ; stack=[NN]
     bcall(_PushRealO1) ; FPS=[OP1]
     bcall(_PushRealO2) ; FPS=[OP1,OP2]
-    bcall(_OP1ToOP2)
+    call op1ToOp2
     pop bc ; C=NN
     push bc ; stack=[NN]
     call rclRegNN
@@ -1230,7 +1233,7 @@ stoSubRegNN:
     push bc ; stack=[NN]
     bcall(_PushRealO1) ; FPS=[OP1]
     bcall(_PushRealO2) ; FPS=[OP1,OP2]
-    bcall(_OP1ToOP2)
+    call op1ToOp2
     pop bc ; C=NN
     push bc
     call rclRegNN
@@ -1250,7 +1253,7 @@ stoSubRegNN:
 ;   - OP1: 0
 ; Destroys: all, OP1
 clearStatRegs:
-    bcall(_OP1Set0)
+    call op1Set0
     ld c, 11 ; begin clearing register 11
     ; Check AllMode or LinearMode.
     ld a, (statAllEnabled)
