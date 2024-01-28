@@ -708,6 +708,8 @@ checkValid:
     and $1f
     cp rpnObjectTypeDate
     ret z
+    cp rpnObjectTypeDateTime
+    ret z
     bcall(_CkValidNum)
     ret
 

@@ -44,7 +44,7 @@ mDateTimeToEpochSecondsHandler:
     bcall(_ConvertI40ToOP1) ; OP1=float(seconds)
     jp replaceX
 
-mEpochSecondstoDateTimeHandler:
+mEpochSecondsToDateTimeHandler:
     call closeInputAndRecallX ; OP1=X=epochSeconds
     ld hl, OP3
     bcall(_ConvertOP1ToI40) ; OP3=i40(X)
