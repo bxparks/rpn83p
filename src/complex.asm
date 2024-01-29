@@ -343,7 +343,7 @@ universalAdd:
     ;
     call checkOp1OrOP3Complex ; ZF=1 if complex
     jr z, universalAddComplex
-    ; X and Y are real numbers.
+universalAddReal:
     call op3ToOp2
     bcall(_FPAdd) ; OP1=Y+X
     ret
@@ -436,20 +436,36 @@ universalSubErr:
 ; Output:
 ;   - OP1/OP2: Y*X
 universalMult:
-    call checkOp1OrOP3Complex ; ZF=1 if complex
+    call checkOp1Real ; ZF=1 if real
+    jr z, universalMultReal
+    call checkOp1Complex ; ZF=1 if complex
     jr z, universalMultComplex
-    ; X and Y are real numbers.
+universalMultErr:
+    bcall(_ErrDataType)
+universalMultReal:
+    call checkOp3Real ; ZF=1 if real
+    jr z, universalMultRealReal
+    call checkOp3Complex ; ZF1 if complex
+    jr nz, universalMultErr
+universalMultRealComplex:
+    call cp1ExCp3 ; CP1=complex; CP3=real
+    jr universalMultComplexReal
+universalMultRealReal:
     call op3ToOp2
     bcall(_FPMult) ; OP1=Y*X
     ret
 universalMultComplex:
-    call convertOp1ToCp1
+    call checkOp3Real
+    jr z, universalMultComplexReal
+    call checkOp3Complex
+    jr nz, universalMultErr
+universalMultComplexComplex:
     bcall(_PushOP1) ; FPS=[Y]
     call cp3ToCp1 ; OP1/OP2=OP3/OP4
-    call convertOp1ToCp1
-    ; TODO: If one of the arguments is real, then we could use CMltByReal() for
-    ; a little bit of efficiency, probably.
     bcall(_CMult) ; OP1/OP2 = FPS[OP1/OP2] * OP1/OP2; FPS=[]
+    ret
+universalMultComplexReal:
+    bcall(_CMltByReal) ; CP1=CP1*OP3
     ret
 
 ; Description: Division for real and complex numbers.
@@ -459,20 +475,39 @@ universalMultComplex:
 ; Output:
 ;   - OP1/OP2: Y/X
 universalDiv:
-    call checkOp1OrOP3Complex ; ZF=1 if complex
+    call checkOp1Real ; ZF=1 if real
+    jr z, universalDivReal
+    call checkOp1Complex ; ZF=1 if complex
     jr z, universalDivComplex
-    ; X and Y are real numbers.
+universalDivErr:
+    bcall(_ErrDataType)
+universalDivReal:
+    call checkOp3Real ; ZF=1 if real
+    jr z, universalDivRealReal
+    call checkOp3Complex ; ZF=1 if complex
+    jr nz, universalDivErr
+universalDivRealComplex:
+    call convertOp1ToCp1
+    bcall(_PushOP1)
+    call cp3ToCp1
+    bcall(_CDiv)
+    ret
+universalDivRealReal:
     call op3ToOp2
     bcall(_FPDiv) ; OP1=Y/X
     ret
 universalDivComplex:
-    call convertOp1ToCp1
+    call checkOp3Real
+    jr z, universalDivComplexReal
+    call checkOp3Complex
+    jr nz, universalDivErr
+universalDivComplexComplex:
     bcall(_PushOP1) ; FPS=[Y]
     call cp3ToCp1 ; OP1/OP2=OP3/OP4
-    call convertOp1ToCp1
-    ; TODO: If the divisor is real, then we could use CDivByReal() for a little
-    ; bit of efficiency, probably.
     bcall(_CDiv) ; OP1/OP2 = FPS[OP1/OP2] / OP1/OP2; FPS=[]
+    ret
+universalDivComplexReal:
+    bcall(_CDivByReal) ; CP1=CP1/OP3
     ret
 
 ;-----------------------------------------------------------------------------
@@ -483,9 +518,13 @@ universalDivComplex:
 ; Output:
 ;   - OP1/OP2: -Y
 universalChs:
+    call checkOp1Real ; ZF=1 if real
+    jr z, universalChsReal
     call checkOp1Complex ; ZF=1 if complex
     jr z, universalChsComplex
-    ; X is a real number
+universalChsErr:
+    bcall(_ErrDataType)
+universalChsReal:
     bcall(_InvOP1S)
     ret
 universalChsComplex:
@@ -500,9 +539,13 @@ universalChsComplex:
 ; Input: OP1/OP2: X
 ; Output: OP1/OP2: 1/X
 universalRecip:
+    call checkOp1Real ; ZF=1 if real
+    jr z, universalRecipReal
     call checkOp1Complex ; ZF=1 if complex
     jr z, universalRecipComplex
-    ; X is a real number
+universalRecipErr:
+    bcall(_ErrDataType)
+universalRecipReal:
     bcall(_FPRecip)
     ret
 universalRecipComplex:
@@ -513,9 +556,13 @@ universalRecipComplex:
 ; Input: OP1/OP2: X
 ; Output: OP1/OP2: X^2
 universalSquare:
+    call checkOp1Real ; ZF=1 if real
+    jr z, universalSquareReal
     call checkOp1Complex ; ZF=1 if complex
     jr z, universalSquareComplex
-    ; X is a real number
+universalSquareErr:
+    bcall(_ErrDataType)
+universalSquareReal:
     bcall(_FPSquare)
     ret
 universalSquareComplex:
@@ -526,9 +573,13 @@ universalSquareComplex:
 ; Input: OP1/OP2: X; numResultMode
 ; Output: OP1/OP2: sqrt(X)
 universalSqRoot:
+    call checkOp1Real ; ZF=1 if complex
+    jr z, universalSqRootReal
     call checkOp1Complex ; ZF=1 if complex
     jr z, universalSqRootComplex
-    ; X is a real number
+universalSqRootErr:
+    bcall(_ErrDataType)
+universalSqRootReal:
     call checkNumResultModeComplex ; ZF=1 if complex
     jr nz, universalSqRootNumResultModeReal
     ; The argument is real but the result could be complex, so we calculate the
@@ -553,9 +604,13 @@ universalSqRootComplex:
 ; Output: OP1/OP2: X^3
 ; Destroys: all, OP1-OP6
 universalCube:
+    call checkOp1Real ; ZF=1 if real
+    jr z, universalCubeReal
     call checkOp1Complex ; ZF=1 if complex
     jr z, universalCubeComplex
-    ; X is real
+universalCubeErr:
+    bcall(_ErrDataType)
+universalCubeReal:
     bcall(_Cube)
     ret
 universalCubeComplex:
@@ -570,8 +625,13 @@ universalCubeComplex:
 ; Input: OP1/OP2: X
 ; Output: OP1/OP2: X^(1/3)
 universalCubeRoot:
+    call checkOp1Real ; ZF=1 if real
+    jr z, universalCubeRootReal
     call checkOp1Complex ; ZF=1 if complex
     jr z, universalCubeRootComplex
+universalCubeRootErr:
+    bcall(_ErrDataType)
+universalCubeRootReal:
     ; X is real, the result will always be real
     bcall(_OP1ToOP2) ; OP2=X
     bcall(_OP1Set3) ; OP1=3
@@ -594,26 +654,46 @@ universalCubeRootComplex:
 ; Output:
 ;   - OP1/OP2: Y^X
 universalPow:
-    call checkOp1OrOP3Complex ; ZF=1 if complex
+    call checkOp1Real ; ZF=1 if real
+    jr z, universalPowReal
+    call checkOp1Complex ; ZF=1 if complex
     jr z, universalPowComplex
+universalPowErr:
+    bcall(_ErrDataType)
+universalPowReal:
+    call checkOp3Real
+    jr z, universalPowRealReal
+    call checkOp3Complex
+    jr nz, universalPowErr
+universalPowRealComplex:
+    call convertOp1ToCp1
+    jr universalPowComplexComplex
+universalPowRealReal:
     ; Both X and Y are real. Now check if numResultMode is Real or Complex.
     call checkNumResultModeComplex ; ZF=1 if complex
     jr nz, universalPowNumResultModeReal
     ; Both are real, but the result could be complex, so we calculate the
     ; complex result, and chop off the imaginary part if it's zero.
-    call universalPowComplex ; awesome assembly trick, calling our own tail
+    call convertOp1ToCp1
+    call universalPowComplexReal
     jp convertCp1ToOp1
 universalPowNumResultModeReal:
     call op3ToOp2 ; OP2=X
     bcall(_YToX) ; OP1=OP1^OP2=Y^X
     ret
 universalPowComplex:
-    call convertOp1ToCp1
+    call checkOp3Real
+    jr z, universalPowComplexReal
+    call checkOp3Complex
+    jr nz, universalPowErr
+universalPowComplexComplex:
     bcall(_PushOP1) ; FPS=[Y]
     call cp3ToCp1 ; CP1=OP3/OP4=X
-    call convertOp1ToCp1
     bcall(_CYtoX) ; CP1=(FPS)^(CP1)=Y^X; FPS=[]
     ret
+universalPowComplexReal:
+    call convertOp3ToCp3 ; CP3=complex(X)
+    jr universalPowComplexComplex
 
 ; Description: Calculate XRootY(Y)=Y^(1/X) for real and complex numbers.
 ; Input:
@@ -622,14 +702,28 @@ universalPowComplex:
 ;   - numResultMode
 ; Output: OP1/OP2: Y^(1/X)
 universalXRootY:
-    call checkOp1OrOP3Complex ; ZF=1 if complex
+    call checkOp1Real ; ZF=1 if real
+    jr z, universalXRootYReal
+    call checkOp1Complex ; ZF=1 if complex
     jr z, universalXRootYComplex
+universalXRootYErr:
+    bcall(_ErrDataType)
+universalXRootYReal:
+    call checkOp3Real ; ZF=1 if real
+    jr z, universalXRootYRealReal
+    call checkOp3Complex ; ZF1=1 if complex
+    jr nz, universalXRootYErr
+universalXRootYRealComplex:
+    call convertOp1ToCp1
+    jr universalXRootYComplexComplex
+universalXRootYRealReal:
     ; Both X and Y are real. Now check if numResultMode is Real or Complex.
     call checkNumResultModeComplex ; ZF=1 if complex
     jr nz, universalXRootYNumResultModeReal
     ; Both are real, but the result could be complex, so we calculate the
     ; complex result, and chop off the imaginary part if it's zero.
-    call universalXRootYComplex ; awesome assembly trick, calling our own tail
+    call convertOp1ToCp1
+    call universalXRootYComplexReal
     jp convertCp1ToOp1 ; chop off the imaginary part if zero
 universalXRootYNumResultModeReal:
     call op1ToOp2 ; OP2=Y
@@ -637,11 +731,17 @@ universalXRootYNumResultModeReal:
     bcall(_XRootY) ; OP1=OP2^(1/OP1), SDK documentation is incorrect
     ret
 universalXRootYComplex:
-    call convertOp1ToCp1
-    call convertOp3ToCp3
+    call checkOp3Real
+    jr z, universalXRootYComplexReal
+    call checkOp3Complex
+    jr nz, universalXRootYErr
+universalXRootYComplexComplex:
     bcall(_PushOp3) ; FPS=[X]
     bcall(_CXrootY) ; CP1=CP1^(1/FPS)=Y^(1/X); FPS=[]
     ret
+universalXRootYComplexReal:
+    call convertOp3ToCp3
+    jr universalXRootYComplexComplex
 
 ;-----------------------------------------------------------------------------
 ; Transcendentals
@@ -651,9 +751,13 @@ universalXRootYComplex:
 ; Input: OP1/OP2: X; numResultMode
 ; Output: OP1/OP2: Log(X) (base 10)
 universalLog:
+    call checkOp1Real ; ZF=1 if real
+    jr z, universalLogReal
     call checkOp1Complex ; ZF=1 if complex
     jr z, universalLogComplex
-    ; X is a real number
+universalLogErr:
+    bcall(_ErrDataType)
+universalLogReal:
     call checkNumResultModeComplex ; ZF=1 if complex
     jr nz, universalLogNumResultModeReal
     ; The argument is real but the result could be complex, so we calculate the
@@ -676,9 +780,13 @@ universalLogComplex:
 ; Input: OP1/OP2: X
 ; Output: OP1/OP2: 10^X
 universalTenPow:
+    call checkOp1Real ; ZF=1 if real
+    jr z, universalTenPowReal
     call checkOp1Complex ; ZF=1 if complex
     jr z, universalTenPowComplex
-    ; X is a real number
+universalTenPowErr:
+    bcall(_ErrDataType)
+universalTenPowReal:
     bcall(_TenX)
     ret
 universalTenPowComplex:
@@ -689,8 +797,13 @@ universalTenPowComplex:
 ; Input: OP1/OP2: X; numResultMode
 ; Output: OP1/OP2: Ln(X)
 universalLn:
+    call checkOp1Real ; ZF=1 if real
+    jr z, universalLnReal
     call checkOp1Complex ; ZF=1 if complex
     jr z, universalLnComplex
+universlLnErr:
+    bcall(_ErrDataType)
+universalLnReal:
     ; X is a real number
     call checkNumResultModeComplex ; ZF=1 if complex
     jr nz, universalLnNumResultModeReal
@@ -713,9 +826,13 @@ universalLnComplex:
 ; Input: OP1/OP2: X
 ; Output: OP1/OP2: e^X
 universalExp:
+    call checkOp1Real ; ZF=1 if real
+    jr z, universalExpReal
     call checkOp1Complex ; ZF=1 if complex
     jr z, universalExpComplex
-    ; X is a real number
+universlExpErr:
+    bcall(_ErrDataType)
+universalExpReal:
     bcall(_EtoX)
     ret
 universalExpComplex:
@@ -726,9 +843,13 @@ universalExpComplex:
 ; Input: OP1/OP2: X
 ; Output: OP1/OP2: 2^X
 universalTwoPow:
+    call checkOp1Real ; ZF=1 if real
+    jr z, universalTwoPowReal
     call checkOp1Complex ; ZF=1 if complex
     jr z, universalTwoPowComplex
-    ; X is a real number
+universlTwoPowErr:
+    bcall(_ErrDataType)
+universalTwoPowReal:
     call op1ToOp2 ; OP2 = X
     bcall(_OP1Set2) ; OP1 = 2
     bcall(_YToX) ; OP1=OP1^OP2=2^X
