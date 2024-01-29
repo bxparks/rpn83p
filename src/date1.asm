@@ -711,6 +711,56 @@ subRpnDateByRpnDate:
 
 ;-----------------------------------------------------------------------------
 
+; Description: Subtract RpnDateTime minus DateTime or seconds.
+; Input:
+;   - OP1:RpnDateTime=Y
+;   - OP3:RpnDateTime or seconds=X
+; Output:
+;   - OP1:(RpnDateTime-seconds) or (RpnDateTime-RpnDateTime).
+; Destroys: OP1, OP2, OP3-OP6
+SubRpnDateTimeByRpnDateTimeOrSeconds:
+    call PushRpnObject3 ; FPS=[DateTime or seconds]
+    ld de, OP3
+    ld hl, OP1+1
+    call DateTimeToEpochSeconds ; OP3=u40(Y.seconds)
+    call exchangeFPSCP3PageOne ; FPS=[u40(Y.seconds)]; OP3=DateTime or seconds
+    call checkOp3DateTimePageOne ; ZF=1 if type(OP3)==DateTime
+    jr z, subRpnDateTimeByRpnDateTime
+    ; Subtract by OP3=seconds
+    call op3ToOp1PageOne ; OP1=seconds
+    ld hl, OP3
+    call ConvertOP1ToI40 ; HL=OP3=u40(X.seconds)
+    call PopRpnObject1 ; FPS=[]; OP1=u40(Y.seconds)
+    ld hl, OP1
+    ld de, OP3
+    call subU40U40 ; HL=OP1=Y.seconds-X.seconds
+    ;
+    call op1ToOp2PageOne ; OP2=Y.seconds-X.seconds
+    ld de, OP1+1
+    ld hl, OP2
+    call EpochSecondsToDateTime ; OP1+1:DateTime
+    ;
+    ld a, rpnObjectTypeDateTime
+    ld (OP1), a ; OP1:RpnDateTime
+    ret
+subRpnDateTimeByRpnDateTime:
+    ; Subtract by OP3=DateTime
+    ld de, OP1
+    ld hl, OP3+1
+    call DateTimeToEpochSeconds ; OP1=u40(seconds(X))
+    call op1ToOp3PageOne ; OP3=u40(seconds(X))
+    ;
+    call PopRpnObject1 ; FPS=[]; OP1=u40(Y.seconds)
+    ld hl, OP1
+    ld de, OP3
+    call subU40U40 ; HL=OP1=u40(Y.seconds)-u40(X.seconds)
+    ;
+    call op1ToOp3PageOne ; OP3=Y.seconds-X.seconds
+    ld hl, OP3
+    jp ConvertI40ToOP1 ; OP1=Y.date-X.date
+
+;-----------------------------------------------------------------------------
+
 ; Description: Convert DateTime{} record to epochSeconds.
 ; Input:
 ;   - HL:(DateTime*): dateTime, most likely OP1+1

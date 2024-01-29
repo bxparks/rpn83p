@@ -989,6 +989,10 @@ _AddRpnDateTimeBySecondsLabel:
 _AddRpnDateTimeBySeconds equ _AddRpnDateTimeBySecondsLabel-branchTableBase
     .dw AddRpnDateTimeBySeconds
     .db 1
+_SubRpnDateTimeByRpnDateTimeOrSecondsLabel:
+_SubRpnDateTimeByRpnDateTimeOrSeconds equ _SubRpnDateTimeByRpnDateTimeOrSecondsLabel-branchTableBase
+    .dw SubRpnDateTimeByRpnDateTimeOrSeconds
+    .db 1
 
 #ifdef DEBUG
 ; debug.asm

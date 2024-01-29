@@ -319,6 +319,9 @@ complexAngle:
 
 ;-----------------------------------------------------------------------------
 ; Arithmetic operations.
+; TODO: Move the following universal routines to a different file, since they
+; now support more than real and complex numbers. Maybe universal.asm, or
+; arithmetic.asm, algebraic.asm, transcendental.asm, etc.
 ;-----------------------------------------------------------------------------
 
 ; Description: Addition for real, complex, Date, and DateTime objects.
@@ -383,8 +386,12 @@ universalAddErr:
 universalSub:
     call checkOp1Date ; ZF=1 if Date
     jr z, universalSubDateMinusObject
+    call checkOp1DateTime ; ZF=1 if DateTime
+    jr z, universalSubDateTimeMinusObject
     call checkOp3Date ; ZF=1 if Date
     jr z, universalSubErr ; cannot subtract a Date
+    call checkOp3DateTime ; ZF=1 if DateTime
+    jr z, universalSubErr ; cannot subtract a DateTime
     ;
     call checkOp1OrOP3Complex ; ZF=1 if complex
     jr z, universalSubComplex
@@ -408,6 +415,16 @@ universalSubDateMinusObject:
 universalSubDateMinusDays:
 universalSubDateMinusDate:
     bcall(_SubRpnDateByRpnDateOrDays)
+    ret
+universalSubDateTimeMinusObject:
+    call checkOp3Real
+    jr z, universalSubDateTimeMinusSeconds
+    call checkOp3DateTime
+    jr z, universalSubDateTimeMinusDateTime
+    jr universalSubErr
+universalSubDateTimeMinusSeconds:
+universalSubDateTimeMinusDateTime:
+    bcall(_SubRpnDateTimeByRpnDateTimeOrSeconds)
     ret
 universalSubErr:
     bcall(_ErrDataType)
