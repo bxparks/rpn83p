@@ -99,8 +99,11 @@ closeInputBufContinue:
 closeInputBufDateOrDateTime:
     call parseInputBufDateOrDateTime ; HL=OP1
     inc hl ; skip type byte
-    call validateDate ; CF=1 if valid
-    jp c, ClearInputBuf
+    call validateDate ; CF=1 if valid, HL=HL+4
+    jr nc, closeInputBufErr
+    call validateTime ; CF=1 if valid, HL=HL+3
+    jr nc, closeInputBufErr
+    jp ClearInputBuf
 closeInputBufErr:
     bcall(_ErrInvalid)
 

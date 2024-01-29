@@ -47,35 +47,40 @@ checkOp3DateTimePageOne:
 ; Input: HL:(*Date) pointer
 ; Output:
 ;   - CF=0 if not valid, 1 if valid
-; Destroys: A, BC, DE, HL
+;   - HL=HL+4
+; Destroys: A, BC, DE
 validateDate:
     ld c, (hl)
     inc hl
     ld b, (hl)
     inc hl ; BC=year
-    ; check month
-    ld a, (hl) ; A=month
+    ld e, (hl) ; E=month
     inc hl
-    dec a ; A=month-1
+    dec e ; E=month-1
+    ld d, (hl) ; D=day
+    inc hl
+    dec d ; D=day-1
+    ; check month
+    ld a, e ; A=month-1
     cp 12 ; CF=0 if month-1>=12
     ret nc
-    ; check day
-    ld e, a ; E=month-1
-    ld d, 0
-    ld a, (hl) ; A=day
-    dec a ; A=day-1
     ; get maxDay
+    ld a, d ; A=day-1
+    push de
+    push hl
+    ld d, 0 ; DE=month-1
     ld hl, maxDaysPerMonth
     add hl, de
     cp (hl) ; CF=0 if day-1>=maxDaysPerMonth
+    pop hl
+    pop de
     ret nc
     ; check special case for Feb
-    ld d, a ; D=day-1
     ld a, e ; A=month-1
     cp 1 ; ZF=1 if month==Feb
     jr nz, validateDateOk
     ; if Feb and leap year: no additional testing needed
-    call isLeapYear ; CF=1 if leap; preserves BC, DE
+    call isLeapYear ; CF=1 if leap; preserves BC, DE, HL
     ret c
     ; if not leap year: check that Feb has max of 28 days
     ld a, d ; A=day-1
@@ -99,6 +104,29 @@ maxDaysPerMonth:
     .db 31 ; Oct
     .db 30 ; Nov
     .db 31 ; Dec
+
+;-----------------------------------------------------------------------------
+
+; Description: Validate the Time components (h,m,s) of the Time{} record in HL.
+; Input: HL:(*Time) pointer (h,m,s)
+; Output:
+;   - CF=0 if not valid, 1 if valid
+;   - HL=HL+3
+; Destroys: A, HL
+; Preserves: BC, DE
+validateTime:
+    ld a, (hl) ; A=hour
+    inc hl
+    cp 24
+    ret nc ; if hour>=24: CF=0
+    ld a, (hl) ; A=minute
+    inc hl
+    cp 60 ; if minute>=60: CF=0
+    ret nc
+    ld a, (hl) ; A=second
+    inc hl
+    cp 60
+    ret
 
 ;-----------------------------------------------------------------------------
 
@@ -152,38 +180,41 @@ isLeapTrue:
 ; ((year % 4 == 0) && (year % 100 != 0)) || (year % 400 == 0)
 ; Input: BC: year
 ; Output: CF=1 if leap
-; Destroys: A, HL
-; Preserves: BC, DE
+; Destroys: A
+; Preserves: BC, DE, HL
 isLeapYear:
-    push de ; stack=[DE]
+    push hl ; stack=[HL]
+    push de ; stack=[HL,DE]
     ld a, c
     and $03 ; A=year%4
     jr nz, isLeapYearFalse ; if not multiple of 4: not leap
     ; check if divisible by 100
-    push bc ; stack=[DE, year]
+    push bc ; stack=[HL,DE,year]
     ld l, c
     ld h, b ; HL=year
     ld c, 100
     call divHLByC ; HL=quotient; A=remainder
     or a ; if remainder==0: ZF=1
-    pop bc ; stack=[DE]; BC=year
+    pop bc ; stack=[HL,DE]; BC=year
     jr nz, isLeapYearTrue
     ; check if divisible by 400
-    push bc ; stack=[DE, year]
+    push bc ; stack=[HL,DE,year]
     ld l, c
     ld h, b ; HL=year
     ld bc, 400
     call divHLByBC ; HL=quotient; DE=remainder
     ld a, e
     or d ; if remainder==0: ZF=1
-    pop bc ; stack=[DE]; BC=year
+    pop bc ; stack=[HL,DE]; BC=year
     jr z, isLeapYearTrue ; if multiple of 400: leap
 isLeapYearFalse:
-    pop de ; stack=[]; DE=DE
+    pop de ; stack=[HL]; DE=DE
+    pop hl ; stack=[]; HL=HL
     or a
     ret
 isLeapYearTrue:
-    pop de ; stack=[]; DE=DE
+    pop de ; stack=[HL]; DE=DE
+    pop hl ; stack=[]; HL=HL
     scf
     ret
 
