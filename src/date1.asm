@@ -24,6 +24,22 @@ checkOp3DatePageOne:
     cp rpnObjectTypeDate
     ret
 
+; Description: Check if OP1 is a RpnDateTime.
+; Output: ZF=1 if RpnDateTime
+checkOp1DateTimePageOne:
+    ld a, (OP1)
+    and $1f
+    cp rpnObjectTypeDateTime
+    ret
+
+; Description: Check if OP3 is a RpnDateTime.
+; Output: ZF=1 if RpnDateTime
+checkOp3DateTimePageOne:
+    ld a, (OP3)
+    and $1f
+    cp rpnObjectTypeDateTime
+    ret
+
 ;-----------------------------------------------------------------------------
 
 ; Description: Convert RpnDate to RpnDateTime if necessary.
@@ -601,6 +617,46 @@ addRpnDateByDaysAdd:
     ;
     ld a, rpnObjectTypeDate
     ld (OP1), a ; OP1:RpnDate=newRpnDate
+    ret
+
+;-----------------------------------------------------------------------------
+
+; Description: Add (RpnDateTime plus seconds) or (seconds plus RpnDateTime).
+; Input:
+;   - OP1:Union[RpnDateTime,RpnReal]=rpnDateTime or seconds
+;   - OP3:Union[RpnDateTime,RpnReal]=rpnDateTime or seconds
+; Output:
+;   - OP1:RpnDateTime=RpnDateTime+seconds
+; Destroys: OP1, OP2, OP3-OP6
+AddRpnDateTimeBySeconds:
+    call checkOp1DateTimePageOne ; ZF=1 if CP1 is an RpnDateTime
+    jr nz, addRpnDateTimeBySecondsAdd
+    call cp1ExCp3PageOne ; CP1=seconds; CP3=RpnDateTime
+addRpnDateTimeBySecondsAdd:
+    ; CP1=seconds, CP3=RpnDateTime
+    call PushRpnObject3 ; FPS=[RpnDateTime]
+    ld hl, OP3
+    call ConvertOP1ToI40 ; HL=OP3=u40(seconds)
+    ;
+    call PopRpnObject1 ; FPS=[]; CP1=RpnDateTime
+    call PushRpnObject3 ; FPS=[u40(seconds)]
+    ;
+    ld hl, OP1+1 ; HL=OP1+1=DateTime
+    ld de, OP3
+    call DateTimeToEpochSeconds ; OP3=u40(epochSeconds)
+    call PopRpnObject1 ; FPS=[]; OP1=u40(seconds)
+    ;
+    ld hl, OP1
+    ld de, OP3
+    call addU40U40 ; HL=OP1=u40(epochSeconds+seconds)
+    ;
+    call op1ToOp2PageOne ; OP2=u40(epochSeconds+seconds)
+    ld hl, OP2
+    ld de, OP1+1 ; DE=OP1+1=DateTime
+    call EpochSecondsToDateTime ; DE=OP1+1:DateTime=newDateTime
+    ;
+    ld a, rpnObjectTypeDateTime
+    ld (OP1), a ; OP1:RpnDateTime=newRpnDateTime
     ret
 
 ;-----------------------------------------------------------------------------

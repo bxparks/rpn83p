@@ -73,20 +73,38 @@ checkOp3Complex:
 
 ;-----------------------------------------------------------------------------
 
-; Description: Check if OP1 is a DateRecord.
-; Output: ZF=1 if DateRecord
+; Description: Check if OP1 is an RpnDate.
+; Output: ZF=1 if RpnDate
 checkOp1Date:
     ld a, (OP1)
     and $1f
     cp rpnObjectTypeDate
     ret
 
-; Description: Check if OP3 is a DateRecord.
-; Output: ZF=1 if DateRecord
+; Description: Check if OP3 is an RpnDate.
+; Output: ZF=1 if RpnDate
 checkOp3Date:
     ld a, (OP3)
     and $1f
     cp rpnObjectTypeDate
+    ret
+
+;-----------------------------------------------------------------------------
+
+; Description: Check if OP1 is an RpnDateTime.
+; Output: ZF=1 if RpnDateTime
+checkOp1DateTime:
+    ld a, (OP1)
+    and $1f
+    cp rpnObjectTypeDateTime
+    ret
+
+; Description: Check if OP3 is an RpnDateTime.
+; Output: ZF=1 if RpnDateTime
+checkOp3DateTime:
+    ld a, (OP3)
+    and $1f
+    cp rpnObjectTypeDateTime
     ret
 
 ;-----------------------------------------------------------------------------
@@ -303,7 +321,7 @@ complexAngle:
 ; Arithmetic operations.
 ;-----------------------------------------------------------------------------
 
-; Description: Addition for real, complex, and Date objects.
+; Description: Addition for real, complex, Date, and DateTime objects.
 ; Input:
 ;   - OP1/OP2: Y
 ;   - OP3/OP4: X
@@ -314,6 +332,11 @@ universalAdd:
     jr z, universalAddDatePlusDays
     call checkOp3Date ; ZF=1 if Date
     jr z, universalAddDaysPlusDate
+    ;
+    call checkOp1DateTime ; ZF=1 if DateTime
+    jr z, universalAddDateTimePlusSeconds
+    call checkOp3DateTime ; ZF=1 if DateTime
+    jr z, universalAddSecondsPlusDateTime
     ;
     call checkOp1OrOP3Complex ; ZF=1 if complex
     jr z, universalAddComplex
@@ -337,6 +360,16 @@ universalAddDaysPlusDate:
     call checkOp3Date
     jr nz, universalAddErr
     bcall(_AddRpnDateByDays) ; OP1=Date(OP1)+days(OP3)
+    ret
+universalAddDateTimePlusSeconds:
+    call checkOp3Real
+    jr nz, universalAddErr
+    bcall(_AddRpnDateTimeBySeconds) ; OP1=DateTime(OP1)+seconds(OP3)
+    ret
+universalAddSecondsPlusDateTime:
+    call checkOp3DateTime
+    jr nz, universalAddErr
+    bcall(_AddRpnDateTimeBySeconds) ; OP1=DateTime(OP1)+seconds(OP3)
     ret
 universalAddErr:
     bcall(_ErrDataType)
