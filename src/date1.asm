@@ -42,6 +42,66 @@ checkOp3DateTimePageOne:
 
 ;-----------------------------------------------------------------------------
 
+; Description: Validate that the given Date{} is a valid Gregorian calendar
+; date between year 0000 and 9999, inclusive.
+; Input: HL:(*Date) pointer
+; Output:
+;   - CF=0 if not valid, 1 if valid
+; Destroys: A, BC, DE, HL
+validateDate:
+    ld c, (hl)
+    inc hl
+    ld b, (hl)
+    inc hl ; BC=year
+    ; check month
+    ld a, (hl) ; A=month
+    inc hl
+    dec a ; A=month-1
+    cp 12 ; CF=0 if month-1>=12
+    ret nc
+    ; check day
+    ld e, a ; E=month-1
+    ld d, 0
+    ld a, (hl) ; A=day
+    dec a ; A=day-1
+    ; get maxDay
+    ld hl, maxDaysPerMonth
+    add hl, de
+    cp (hl) ; CF=0 if day-1>=maxDaysPerMonth
+    ret nc
+    ; check special case for Feb
+    ld d, a ; D=day-1
+    ld a, e ; A=month-1
+    cp 1 ; ZF=1 if month==Feb
+    jr nz, validateDateOk
+    ; if Feb and leap year: no additional testing needed
+    call isLeapYear ; CF=1 if leap; preserves BC, DE
+    ret c
+    ; if not leap year: check that Feb has max of 28 days
+    ld a, d ; A=day-1
+    cp 28 ; if day-1>=28: CF=0
+    ret nc
+validateDateOk:
+    scf
+    ret
+
+; Description: The maximum value of 'day' for each month.
+maxDaysPerMonth:
+    .db 31 ; Jan
+    .db 29 ; Feb
+    .db 31 ; Mar
+    .db 30 ; Apr
+    .db 31 ; May
+    .db 30 ; Jun
+    .db 31 ; Jul
+    .db 31 ; Aug
+    .db 30 ; Sep
+    .db 31 ; Oct
+    .db 30 ; Nov
+    .db 31 ; Dec
+
+;-----------------------------------------------------------------------------
+
 ; Description: Convert RpnDate to RpnDateTime if necessary.
 ; Input: HL:RpnDate
 ; Output; HL:RpnDateTime
@@ -92,32 +152,38 @@ isLeapTrue:
 ; ((year % 4 == 0) && (year % 100 != 0)) || (year % 400 == 0)
 ; Input: BC: year
 ; Output: CF=1 if leap
-; Destroys: A
-; Preserves: BC
+; Destroys: A, HL
+; Preserves: BC, DE
 isLeapYear:
+    push de ; stack=[DE]
     ld a, c
-    and $03
-    ret nz ; not leap, and CF=0 already
+    and $03 ; A=year%4
+    jr nz, isLeapYearFalse ; if not multiple of 4: not leap
     ; check if divisible by 100
-    push bc ; save
+    push bc ; stack=[DE, year]
     ld l, c
     ld h, b ; HL=year
     ld c, 100
     call divHLByC ; HL=quotient; A=remainder
     or a ; if remainder==0: ZF=1
-    pop bc
+    pop bc ; stack=[DE]; BC=year
     jr nz, isLeapYearTrue
     ; check if divisible by 400
-    push bc ; save
+    push bc ; stack=[DE, year]
     ld l, c
     ld h, b ; HL=year
     ld bc, 400
     call divHLByBC ; HL=quotient; DE=remainder
     ld a, e
     or d ; if remainder==0: ZF=1
-    pop bc
-    ret nz ; if not multiple of 400: not leap
+    pop bc ; stack=[DE]; BC=year
+    jr z, isLeapYearTrue ; if multiple of 400: leap
+isLeapYearFalse:
+    pop de ; stack=[]; DE=DE
+    or a
+    ret
 isLeapYearTrue:
+    pop de ; stack=[]; DE=DE
     scf
     ret
 

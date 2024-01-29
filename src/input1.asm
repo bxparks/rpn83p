@@ -73,10 +73,11 @@ appendInputBufContinue:
 ; Input:
 ;   - inputBuf: input buffer
 ; Output:
-;   - OP1: value of inputBuf
+;   - OP1: value of inputBuf parsed into an RpnObject
 ;   - A: rpnObjectType
 ;   - inputBufFlagsClosedEmpty: set if inputBuf was an empty string when closed
 ;   - inputBuf cleared to empty string
+; Throws: ErrInvalid if Date or DateTime is invalid
 ; Destroys: all, OP1, OP2, OP4
 CloseInputBuf: ; TODO: Rename this ParseInputBuf().
     ld hl, inputBuf
@@ -92,12 +93,16 @@ closeInputBufEmpty:
     jp ClearInputBuf
 closeInputBufContinue:
     cp LlBrace ; '{'
-    jr z, closeInputBufDateTime
+    jr z, closeInputBufDateOrDateTime
     call parseInputBufNumber ; OP1/OP2=float or complex
     jp ClearInputBuf
-closeInputBufDateTime:
-    call parseInputBufDate ; TODO: Support other data record types
-    jp ClearInputBuf
+closeInputBufDateOrDateTime:
+    call parseInputBufDateOrDateTime ; HL=OP1
+    inc hl ; skip type byte
+    call validateDate ; CF=1 if valid
+    jp c, ClearInputBuf
+closeInputBufErr:
+    bcall(_ErrInvalid)
 
 ;------------------------------------------------------------------------------
 
@@ -1087,8 +1092,11 @@ isNumberDelimiterPageOne:
 
 ;-----------------------------------------------------------------------------
 
-; Description: Parse the inputBuf for a Date Record.
-parseInputBufDate:
+; Description: Parse the inputBuf for a Date or DateTime record into OP1.
+; Input: inputBuf
+; Output: HL=OP1=RpnDate or RpnDateTime
+; Uses: parseBuf
+parseInputBufDateOrDateTime:
     call initInputBufForParsing
     ; source string
     ld hl, inputBuf
@@ -1097,7 +1105,7 @@ parseInputBufDate:
     ld de, OP1
     push de
     inc de ; skip type byte
-    call parseDate ; parse Date or DateTime record into OP1
-    pop de
-    ld (de), a ; rpnObjectType
+    call parseDateOrDateTime ; parse Date or DateTime, A=objectType
+    pop hl
+    ld (hl), a ; rpnObjectType
     ret

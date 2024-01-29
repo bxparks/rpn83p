@@ -22,7 +22,7 @@
 ;   - HL=points to character after last '}'
 ; Throws: Err:Syntax if there is a syntax error
 ; Destroys: all
-parseDate:
+parseDateOrDateTime:
     call parseLeftBrace ; '{'
     call parseU16D4 ; year
     call parseComma
