@@ -27,6 +27,7 @@ main:
     call initStat
     call initCfit
     call initTvm
+    call initDate
 initAlways:
     ; If RestoreAppState() suceeds, only the following are initialized.
     bcall(_InitArgBuf) ; Start with Command Arg parser off.

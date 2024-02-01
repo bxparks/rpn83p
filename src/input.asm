@@ -62,7 +62,7 @@ closeInputAndRecallNone:
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     jr closeInput
 
-; Close the input buffer, and set OP1=X.
+; Close the input buffer, and recall real X into OP1.
 ; Output:
 ;   - OP1=X
 ;   - rpnFlagsTvmCalculate: cleared

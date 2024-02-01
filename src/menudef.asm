@@ -2190,36 +2190,36 @@ mEpochUnixId equ 232
     .db mEpochId ; parentId
     .db mEpochUnixNameId ; nameId
     .db 0 ; numRows
-    .db 0 ; rowBeginId or altNameId
+    .db mEpochUnixAltNameId ; rowBeginId or altNameId
     .dw mEpochUnixHandler ; handler (to be implemented)
-    .dw 0 ; nameSelector
-mEpochNTP:
-mEpochNTPId equ 233
-    .db mEpochNTPId ; id
+    .dw mEpochUnixNameSelector ; nameSelector
+mEpochNtp:
+mEpochNtpId equ 233
+    .db mEpochNtpId ; id
     .db mEpochId ; parentId
-    .db mEpochNTPNameId ; nameId
+    .db mEpochNtpNameId ; nameId
     .db 0 ; numRows
-    .db 0 ; rowBeginId or altNameId
-    .dw mEpochNTPHandler ; handler (to be implemented)
-    .dw 0 ; nameSelector
-mEpochGPS:
-mEpochGPSId equ 234
-    .db mEpochGPSId ; id
+    .db mEpochNtpAltNameId ; rowBeginId or altNameId
+    .dw mEpochNtpHandler ; handler (to be implemented)
+    .dw mEpochNtpNameSelector ; nameSelector
+mEpochGps:
+mEpochGpsId equ 234
+    .db mEpochGpsId ; id
     .db mEpochId ; parentId
-    .db mEpochGPSNameId ; nameId
+    .db mEpochGpsNameId ; nameId
     .db 0 ; numRows
-    .db 0 ; rowBeginId or altNameId
-    .dw mEpochGPSHandler ; handler (to be implemented)
-    .dw 0 ; nameSelector
-mEpochSetCustom:
-mEpochSetCustomId equ 235
-    .db mEpochSetCustomId ; id
+    .db mEpochGpsAltNameId ; rowBeginId or altNameId
+    .dw mEpochGpsHandler ; handler (to be implemented)
+    .dw mEpochGpsNameSelector ; nameSelector
+mEpochCustom:
+mEpochCustomId equ 235
+    .db mEpochCustomId ; id
     .db mEpochId ; parentId
-    .db mEpochSetCustomNameId ; nameId
+    .db mEpochCustomNameId ; nameId
     .db 0 ; numRows
-    .db 0 ; rowBeginId or altNameId
-    .dw mEpochSetCustomHandler ; handler (to be implemented)
-    .dw 0 ; nameSelector
+    .db mEpochCustomAltNameId ; rowBeginId or altNameId
+    .dw mEpochCustomHandler ; handler (to be implemented)
+    .dw mEpochCustomNameSelector ; nameSelector
 mEpochGetCustom:
 mEpochGetCustomId equ 236
     .db mEpochGetCustomId ; id
@@ -2231,7 +2231,7 @@ mEpochGetCustomId equ 236
     .dw 0 ; nameSelector
 
 ; Table of 2-byte pointers to names in the pool of strings below.
-mMenuNameTableSize equ 229
+mMenuNameTableSize equ 233
 mMenuNameTable:
 mNullNameId equ 0
     .dw mNullName
@@ -2683,13 +2683,21 @@ mEpochSecondstoDateTimeNameId equ 223
     .dw mEpochSecondstoDateTimeName
 mEpochUnixNameId equ 224
     .dw mEpochUnixName
-mEpochNTPNameId equ 225
-    .dw mEpochNTPName
-mEpochGPSNameId equ 226
-    .dw mEpochGPSName
-mEpochSetCustomNameId equ 227
-    .dw mEpochSetCustomName
-mEpochGetCustomNameId equ 228
+mEpochUnixAltNameId equ 225
+    .dw mEpochUnixAltName
+mEpochNtpNameId equ 226
+    .dw mEpochNtpName
+mEpochNtpAltNameId equ 227
+    .dw mEpochNtpAltName
+mEpochGpsNameId equ 228
+    .dw mEpochGpsName
+mEpochGpsAltNameId equ 229
+    .dw mEpochGpsAltName
+mEpochCustomNameId equ 230
+    .dw mEpochCustomName
+mEpochCustomAltNameId equ 231
+    .dw mEpochCustomAltName
+mEpochGetCustomNameId equ 232
     .dw mEpochGetCustomName
 
 ; Table of names as NUL terminated C strings.
@@ -3143,11 +3151,19 @@ mEpochSecondstoDateTimeName:
     .db 'E', 'S', Sconvert, 'D', 0
 mEpochUnixName:
     .db "UNIX", 0
-mEpochNTPName:
+mEpochUnixAltName:
+    .db 'U', 'N', 'I', Sblock, 0
+mEpochNtpName:
     .db "NTP", 0
-mEpochGPSName:
+mEpochNtpAltName:
+    .db 'N', 'T', 'P', Sblock, 0
+mEpochGpsName:
     .db "GPS", 0
-mEpochSetCustomName:
+mEpochGpsAltName:
+    .db 'G', 'P', 'S', Sblock, 0
+mEpochCustomName:
     .db "EPC", 0
+mEpochCustomAltName:
+    .db 'E', 'P', 'C', Sblock, 0
 mEpochGetCustomName:
     .db 'E', 'P', 'C', Squestion, 0

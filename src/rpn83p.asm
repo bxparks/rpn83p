@@ -402,8 +402,20 @@ commaEEMode equ complexMode+1 ; u8
 commaEEModeNormal equ 0
 commaEEModeSwapped equ 1
 
+; Epoch type.
+epochTypeUnix equ 0
+epochTypeNtp equ 1
+epochTypeGps equ 2
+epochTypeCustom equ 3
+
+; Store the current Epoch.
+epochType equ commaEEMode + 1 ; u8
+
+; Value of the Epoch Date if epochTypeCustom selected.
+epochDate equ epochType + 1 ; Date{y,m,d}, 4 bytes
+
 ; End application variables.
-appStateEnd equ commaEEMode + 1
+appStateEnd equ epochDate + 4
 
 ; Total size of appState vars.
 appStateSize equ (appStateEnd - appStateBegin)
@@ -992,6 +1004,27 @@ _AddRpnDateTimeBySeconds equ _AddRpnDateTimeBySecondsLabel-branchTableBase
 _SubRpnDateTimeByRpnDateTimeOrSecondsLabel:
 _SubRpnDateTimeByRpnDateTimeOrSeconds equ _SubRpnDateTimeByRpnDateTimeOrSecondsLabel-branchTableBase
     .dw SubRpnDateTimeByRpnDateTimeOrSeconds
+    .db 1
+;
+_SetUnixEpochDateLabel:
+_SetUnixEpochDate equ _SetUnixEpochDateLabel-branchTableBase
+    .dw SetUnixEpochDate
+    .db 1
+_SetNtpEpochDateLabel:
+_SetNtpEpochDate equ _SetNtpEpochDateLabel-branchTableBase
+    .dw SetNtpEpochDate
+    .db 1
+_SetGpsEpochDateLabel:
+_SetGpsEpochDate equ _SetGpsEpochDateLabel-branchTableBase
+    .dw SetGpsEpochDate
+    .db 1
+_SetCustomEpochDateLabel:
+_SetCustomEpochDate equ _SetCustomEpochDateLabel-branchTableBase
+    .dw SetCustomEpochDate
+    .db 1
+_GetCustomEpochDateLabel:
+_GetCustomEpochDate equ _GetCustomEpochDateLabel-branchTableBase
+    .dw GetCustomEpochDate
     .db 1
 
 #ifdef DEBUG

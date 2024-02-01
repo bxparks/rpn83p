@@ -988,3 +988,85 @@ secondsToHms:
     ;
     pop de
     ret
+
+;-----------------------------------------------------------------------------
+
+; Description: Set epochType and epochDate to UNIX (1970-01-01).
+SetUnixEpochDate:
+    ld a, epochTypeUnix
+    ld (epochType), a
+    set dirtyFlagsMenu, (iy + dirtyFlags)
+    ;
+    ld hl, unixDate
+    ld de, epochDate
+    ld bc, 4
+    ldir
+    ret
+
+; Description: Set epochType and epochDate to NTP (1900-01-01).
+SetNtpEpochDate:
+    ld a, epochTypeNtp
+    ld (epochType), a
+    set dirtyFlagsMenu, (iy + dirtyFlags)
+    ;
+    ld hl, ntpDate
+    ld de, epochDate
+    ld bc, 4
+    ldir
+    ret
+
+; Description: Set epochType and epochDate to GPS (1980-01-06).
+SetGpsEpochDate:
+    ld a, epochTypeGps
+    ld (epochType), a
+    set dirtyFlagsMenu, (iy + dirtyFlags)
+    ;
+    ld hl, gpsDate
+    ld de, epochDate
+    ld bc, 4
+    ldir
+    ret
+
+; Description: Set the current epoch to the date given in OP1.
+; Input: OP1: RpnDate{}
+; Output: (epochDate) updated
+SetCustomEpochDate:
+    call checkOp1DatePageOne ; ZF=1 if CP1 is an RpnDate
+    jr nz, setCustomEpochDateErr
+    ;
+    ld a, epochTypeCustom
+    ld (epochType), a
+    set dirtyFlagsMenu, (iy + dirtyFlags)
+    ;
+    ld de, epochDate
+    ld hl, OP1+1
+    ld bc, 4
+    ldir
+    ret
+setCustomEpochDateErr:
+    bcall(_ErrDataType)
+
+; Description: Get the current epoch date into OP1.
+; Input: none
+; Output: OP1=epochDate
+GetCustomEpochDate:
+    ld de, OP1+1
+    ld hl, epochDate
+    ld bc, 4
+    ldir
+    ld a, rpnObjectTypeDate
+    ld (OP1), a
+    ret
+
+unixDate:
+    .dw 1970
+    .db 1
+    .db 1
+ntpDate:
+    .dw 1900
+    .db 1
+    .db 1
+gpsDate:
+    .dw 1980
+    .db 1
+    .db 6

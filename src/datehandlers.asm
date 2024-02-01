@@ -3,6 +3,11 @@
 ; Copyright (c) 2024 Brian T. Park
 ;-----------------------------------------------------------------------------
 
+initDate:
+    jp mEpochUnixHandler
+
+;-----------------------------------------------------------------------------
+
 mLeapYearHandler:
     call closeInputAndRecallX ; OP1=X=year
     bcall(_IsLeap) ; OP1=0 or 1
@@ -60,6 +65,85 @@ mEpochSecondsToDateTimeHandler:
     jp replaceX
 
 ;-----------------------------------------------------------------------------
+; DATE/EPCH/Row2
+;-----------------------------------------------------------------------------
+
+mEpochUnixHandler:
+    bcall(_SetUnixEpochDate)
+    ret
+
+; Input: A, B: nameId; C: altNameId
+mEpochUnixNameSelector:
+    ld a, (epochType)
+    cp epochTypeUnix
+    jr z, mEpochUnixNameSelectorAlt
+    ld a, b
+    ret
+mEpochUnixNameSelectorAlt:
+    ld a, c
+    ret
+
+;-----------------------------------------------------------------------------
+
+mEpochNtpHandler:
+    bcall(_SetNtpEpochDate)
+    ret
+
+; Input: A, B: nameId; C: altNameId
+mEpochNtpNameSelector:
+    ld a, (epochType)
+    cp epochTypeNtp
+    jr z, mEpochNtpNameSelectorAlt
+    ld a, b
+    ret
+mEpochNtpNameSelectorAlt:
+    ld a, c
+    ret
+
+;-----------------------------------------------------------------------------
+
+mEpochGpsHandler:
+    bcall(_SetGpsEpochDate)
+    ret
+
+; Input: A, B: nameId; C: altNameId
+mEpochGpsNameSelector:
+    ld a, (epochType)
+    cp epochTypeGps
+    jr z, mEpochGpsNameSelectorAlt
+    ld a, b
+    ret
+mEpochGpsNameSelectorAlt:
+    ld a, c
+    ret
+
+;-----------------------------------------------------------------------------
+
+mEpochCustomHandler:
+    call closeInputAndRecallRpnDateX ; OP1=X=RpnDate{}
+    bcall(_SetCustomEpochDate)
+    ret
+
+; Input: A, B: nameId; C: altNameId
+mEpochCustomNameSelector:
+    ld a, (epochType)
+    cp epochTypeCustom
+    jr z, mEpochCustomNameSelectorAlt
+    ld a, b
+    ret
+mEpochCustomNameSelectorAlt:
+    ld a, c
+    ret
+
+;-----------------------------------------------------------------------------
+
+mEpochGetCustomHandler:
+    bcall(_GetCustomEpochDate)
+    jp pushToX
+
+;-----------------------------------------------------------------------------
+; Other DATE functions
+;-----------------------------------------------------------------------------
 
 ; DATE/Row1
 mNowHandler:
@@ -69,13 +153,6 @@ mConvertTimeZoneHandler:
 mZoneOffsetUTCHandler:
 mZoneOffsetSetHandler:
 mZoneOffsetGetHandler:
-
-; DATE/EPCH/Row2
-mEpochUnixHandler:
-mEpochNTPHandler:
-mEpochGPSHandler:
-mEpochSetCustomHandler:
-mEpochGetCustomHandler:
 
 ; DATE/DUR/Row1
 mDurationToSecondsHandler:
