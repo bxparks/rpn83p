@@ -22,46 +22,24 @@ mDayOfWeekHandler:
 
 mDateToEpochDaysHandler:
     call closeInputAndRecallRpnDateX ; OP1=X=RpnDate
-    ld hl, OP1+1 ; skip type byte
-    ld de, OP3
-    bcall(_DateToEpochDays) ; OP3=i40(days)
-    ld hl, OP3
-    bcall(_ConvertI40ToOP1) ; OP1=float(days)
+    bcall(_RpnDateToEpochDays) ; OP1=float(days)
     jp replaceX
 
 mEpochDaysToDateHandler:
     call closeInputAndRecallX ; OP1=X=epochDays
-    ld hl, OP3
-    bcall(_ConvertOP1ToI40) ; OP3=i40(X)
-    ld hl, OP3
-    ld de, OP1+1 ; skip type byte
-    bcall(_EpochDaysToDate) ; DE=OP1=DateRecord(u40(epochDays))
-    ld a, rpnObjectTypeDate
-    ld (OP1), a
+    bcall(_EpochDaysToRpnDate) ; OP1=Date(epochDays)
     jp replaceX
 
 mDateTimeToEpochSecondsHandler:
     call closeInputAndRecallRpnDateX ; OP1=X=RpnDate
     ld hl, OP1
     bcall(_ConvertToDateTime) ; preserves HL
-    inc hl ; skip type byte
-    ld de, OP3
-    bcall(_DateTimeToEpochSeconds) ; OP3=i40(seconds)
-    ld hl, OP3
-    bcall(_ConvertI40ToOP1) ; OP1=float(seconds)
+    bcall(_RpnDateTimeToEpochSeconds) ; OP3=i40(seconds)
     jp replaceX
 
 mEpochSecondsToDateTimeHandler:
     call closeInputAndRecallX ; OP1=X=epochSeconds
-    ld hl, OP3
-    bcall(_ConvertOP1ToI40) ; OP3=i40(X)
-    call op3ToOp1 ; OP1=i40(X)
-    ld hl, OP1
-    ld de, OP2+1 ; dateTime
-    bcall(_EpochSecondsToDateTime)
-    ld a, rpnObjectTypeDateTime
-    ld (OP2), a
-    call op2ToOp1
+    bcall(_EpochSecondsToRpnDateTime) ; OP1=DateTime(epochSeconds)
     jp replaceX
 
 ;-----------------------------------------------------------------------------

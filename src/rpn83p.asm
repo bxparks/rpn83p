@@ -973,13 +973,13 @@ _DayOfWeekIsoLabel:
 _DayOfWeekIso equ _DayOfWeekIsoLabel-branchTableBase
     .dw DayOfWeekIso
     .db 1
-_DateToEpochDaysLabel:
-_DateToEpochDays equ _DateToEpochDaysLabel-branchTableBase
-    .dw DateToEpochDays
+_RpnDateToEpochDaysLabel:
+_RpnDateToEpochDays equ _RpnDateToEpochDaysLabel-branchTableBase
+    .dw RpnDateToEpochDays
     .db 1
-_EpochDaysToDateLabel:
-_EpochDaysToDate equ _EpochDaysToDateLabel-branchTableBase
-    .dw EpochDaysToDate
+_EpochDaysToRpnDateLabel:
+_EpochDaysToRpnDate equ _EpochDaysToRpnDateLabel-branchTableBase
+    .dw EpochDaysToRpnDate
     .db 1
 _AddRpnDateByDaysLabel:
 _AddRpnDateByDays equ _AddRpnDateByDaysLabel-branchTableBase
@@ -989,13 +989,13 @@ _SubRpnDateByRpnDateOrDaysLabel:
 _SubRpnDateByRpnDateOrDays equ _SubRpnDateByRpnDateOrDaysLabel-branchTableBase
     .dw SubRpnDateByRpnDateOrDays
     .db 1
-_DateTimeToEpochSecondsLabel:
-_DateTimeToEpochSeconds equ _DateTimeToEpochSecondsLabel-branchTableBase
-    .dw DateTimeToEpochSeconds
+_RpnDateTimeToEpochSecondsLabel:
+_RpnDateTimeToEpochSeconds equ _RpnDateTimeToEpochSecondsLabel-branchTableBase
+    .dw RpnDateTimeToEpochSeconds
     .db 1
-_EpochSecondsToDateTimeLabel:
-_EpochSecondsToDateTime equ _EpochSecondsToDateTimeLabel-branchTableBase
-    .dw EpochSecondsToDateTime
+_EpochSecondsToRpnDateTimeLabel:
+_EpochSecondsToRpnDateTime equ _EpochSecondsToRpnDateTimeLabel-branchTableBase
+    .dw EpochSecondsToRpnDateTime
     .db 1
 _AddRpnDateTimeBySecondsLabel:
 _AddRpnDateTimeBySeconds equ _AddRpnDateTimeBySecondsLabel-branchTableBase

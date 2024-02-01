@@ -44,6 +44,11 @@ checkOp3DateTimePageOne:
 
 ; Description: Validate that the given Date{} is a valid Gregorian calendar
 ; date between year 0000 and 9999, inclusive.
+;
+; TODO: Add the code to check for 0000 and 9999. Also, I think 0001 may make
+; more sense, to avoid negative Gregorian era number in
+; dateToInternalEpochDays().
+;
 ; Input: HL:(*Date) pointer
 ; Output:
 ;   - CF=0 if not valid, 1 if valid
@@ -160,6 +165,37 @@ ConvertToDateTime:
 
 ;-----------------------------------------------------------------------------
 
+; Description: Multiply the u40 days pointed by HL by 86400 seconds/day to get
+; seconds.
+; Input: HL:(*u40)=days
+; Output: HL:(*u40)=seconds
+; Destroys: A
+; Preserves: BC, DE, HL
+convertU40DaysToU40Seconds:
+    push de ; stack=[DE]
+    ex de, hl ; DE=days
+    ; Push 86400 onto stack
+    ld hl, 0
+    push hl
+    ld hl, 1
+    push hl
+    ld hl, 20864
+    push hl
+    ld hl, 0
+    add hl, sp ; HL=SP=u40=86400
+    ; Multiply days by 86400
+    ex de, hl ; DE=86400, HL=days
+    call multU40U40 ; HL=days*86400
+    ; Remove 86400 from stack
+    pop de
+    pop de
+    pop de
+    ; Restore
+    pop de ; stack=[]; DE=DE
+    ret
+
+;-----------------------------------------------------------------------------
+
 ; Description: Determine if OP1 is leap year.
 ; Input: OP1
 ; Output: 1 or 0
@@ -226,7 +262,7 @@ isLeapYearTrue:
 ; Output: A: 1-7
 DayOfWeekIso:
     ld de, OP3
-    call DateToEpochDays ; DE=OP3=epochDays
+    call dateToInternalEpochDays ; DE=OP3=epochDays
     ld a, 7
     ld hl, OP4
     call setU40ToA ; OP4=7
@@ -246,7 +282,40 @@ dayOfWeekIsoEnd:
 
 ;-----------------------------------------------------------------------------
 
-; Description: Convert Date{} to epochDays.
+; Description: Convert RpnDate{} object to epochDays relative to the current
+; epochDate.
+; Input:
+;   - OP1:RpnDate
+;   - (epochDate):Date{}=current epoch date
+; Output:
+;   - OP1:epochDays(RpnDate)
+; Destroys: A, DE, BC, HL, OP1-OP3, OP4-OP6
+RpnDateToEpochDays:
+    ; convert input to epochDays
+    ld hl, OP1+1
+    ld de, OP3
+    call dateToInternalEpochDays ; OP3=epochDays(input)
+    call op3ToOp2PageOne ; OP2=internalEpochDays(input)
+    ; convert current epochDate to current epochDays
+    ld hl, epochDate
+    ld de, OP1
+    call dateToInternalEpochDays ; OP1=epochDays(currentEpochDate)
+    ; convert epochDays relatives to current epochDays
+    ld hl, OP3
+    ld de, OP1
+    call subU40U40 ; OP3=epochDays(input)-epochDays(currentEpochDate)
+    ;
+    call ConvertI40ToOP1 ; OP1=float(OP3)
+    ret
+
+; Description: Convert Date{} to internal epochDays.
+;
+; TODO: The internal epoch date is currently 2000-01-01 to make debugging
+; easier (because the result is a small integer value for modern dates.) We can
+; change it to anything we want, because this is used only internally.
+; Algorithmically, it probably makes more sense to make the internal epoch date
+; something like 0001-01-01 or 0000-01-01, because it would simplify some of
+; the code below.
 ;
 ; NOTE: If we restrict the 'year' component to be less than 10,000, then the
 ; maximum number of days is 3,652,425, which would fit inside an i32 or u32. So
@@ -275,7 +344,7 @@ dateToEpochDayOfEra equ OP5 ; dayOfEra:u40; also 'dayOfEpochPrime'
 dateToEpochP1 equ OP5+5 ; param1:u40
 dateToEpochP2 equ OP6 ; param2:u40
 dateToEpochP3 equ OP6+5 ; param3:u40
-DateToEpochDays:
+dateToInternalEpochDays:
     push de ; stack=[resultPointer]
     ld de, dateToEpochRecord
     ld bc, 4
@@ -288,6 +357,7 @@ DateToEpochDays:
     call yearToYearPrime ; HL=yearPrime
     ld (dateToEpochYear), hl ; dateToEpochYear=yearPrime
     ; era=yearPrime/400; yearOfEra=yearPrime%400
+    ; TODO: This formulation does not work for dates before 0001-03-01.
     ld bc, 400
     call divHLByBC ; HL=era=yearPrime/400=[0,24]; DE=yearOfEra
     ld (dateToEpochEra), hl ; (dateToEpochEra)=era
@@ -421,7 +491,39 @@ daysUntilMonthPrime:
 
 ;-----------------------------------------------------------------------------
 
-; Description: Convert epochDays to Date{} record.
+; Description: Convert the current epochDays (relative to the current
+; epochDate) to an RpnDate{} record.
+; Input: OP1: float(epochDays)
+; Output: OP1: RpnDate
+; Destroys: all, OP1-OP6
+EpochDaysToRpnDate:
+    ; get relative epochDays
+    ld hl, OP2
+    bcall(_ConvertOP1ToI40) ; OP2=i40(epochDays)
+    ; convert relative epochDays to internal epochDays
+    ld hl, epochDate
+    ld de, OP1
+    call dateToInternalEpochDays ; DE=OP1=currentInternalEpochDays
+    ld hl, OP1
+    ld de, OP2
+    call addU40U40 ; HL=OP1=internal epochDays
+    ; convert internal epochDays to RpnDate
+    ld a, rpnObjectTypeDate
+    ld (de), a
+    inc de
+    call internalEpochDaysToDate ; DE=OP2=RpnDate{}
+    ;
+    call op2ToOp1PageOne
+    ret
+
+; Description: Convert internal epochDays to Date{} record.
+;
+; TODO: The internal epoch date is currently 2000-01-01 to make debugging
+; easier (because the result is a small integer value for modern dates.) We can
+; change it to anything we want, because this is used only internally.
+; Algorithmically, it probably makes more sense to make the internal epoch date
+; something like 0001-01-01 or 0000-01-01, because it would simplify some of
+; the code below.
 ;
 ; NOTE: If we restrict the 'year' component to be less than 10,000, then the
 ; maximum number of days is 3,652,425, which would fit inside an i32 or u32. So
@@ -449,7 +551,7 @@ epochToDateP3 equ OP5 ; u40; dayOfEra
 epochToDateP4 equ OP5+5 ; u40; sum, yearOfYear
 epochToDateP5 equ OP6 ; u40; dividend (e.g. dayOfEra)
 epochToDateP6 equ OP6+5 ; u40; remainder
-EpochDaysToDate:
+internalEpochDaysToDate:
     push hl ; stack=[epochDays]
     push de ; stack=[epochDays, Date{}]
     ; ==== Calculate dayOfEpochPrime
@@ -700,7 +802,7 @@ addRpnDateByDaysAdd:
     ;
     ld hl, OP1+1 ; HL=OP1+1=Date
     ld de, OP3
-    call DateToEpochDays ; OP3=u40(epochDays)
+    call dateToInternalEpochDays ; OP3=u40(epochDays)
     call PopRpnObject1 ; FPS=[]; OP1=u40(days)
     ;
     ld hl, OP1
@@ -710,7 +812,7 @@ addRpnDateByDaysAdd:
     call op1ToOp2PageOne ; OP2=u40(epochDays+days)
     ld hl, OP2
     ld de, OP1+1 ; DE=OP1+1=Date
-    call EpochDaysToDate ; DE=OP1+1:Date=newDate
+    call internalEpochDaysToDate ; DE=OP1+1:Date=newDate
     ;
     ld a, rpnObjectTypeDate
     ld (OP1), a ; OP1:RpnDate=newRpnDate
@@ -740,7 +842,7 @@ addRpnDateTimeBySecondsAdd:
     ;
     ld hl, OP1+1 ; HL=OP1+1=DateTime
     ld de, OP3
-    call DateTimeToEpochSeconds ; OP3=u40(epochSeconds)
+    call dateTimeToInternalEpochSeconds ; OP3=u40(epochSeconds)
     call PopRpnObject1 ; FPS=[]; OP1=u40(seconds)
     ;
     ld hl, OP1
@@ -750,7 +852,7 @@ addRpnDateTimeBySecondsAdd:
     call op1ToOp2PageOne ; OP2=u40(epochSeconds+seconds)
     ld hl, OP2
     ld de, OP1+1 ; DE=OP1+1=DateTime
-    call EpochSecondsToDateTime ; DE=OP1+1:DateTime=newDateTime
+    call internalEpochSecondsToDateTime ; DE=OP1+1:DateTime=newDateTime
     ;
     ld a, rpnObjectTypeDateTime
     ld (OP1), a ; OP1:RpnDateTime=newRpnDateTime
@@ -769,7 +871,7 @@ SubRpnDateByRpnDateOrDays:
     call PushRpnObject3 ; FPS=[Date or days]
     ld de, OP3
     ld hl, OP1+1
-    call DateToEpochDays ; OP3=u40(Y.days)
+    call dateToInternalEpochDays ; OP3=u40(Y.days)
     call exchangeFPSCP3PageOne ; FPS=[u40(Y.days)]; OP3=Date or days
     call checkOp3DatePageOne ; ZF=1 if type(OP3)==Date
     jr z, subRpnDateByRpnDate
@@ -785,7 +887,7 @@ SubRpnDateByRpnDateOrDays:
     call op1ToOp2PageOne ; OP2=Y.days-X.days
     ld de, OP1+1
     ld hl, OP2
-    call EpochDaysToDate ; OP1+1:Date
+    call internalEpochDaysToDate ; OP1+1:Date
     ;
     ld a, rpnObjectTypeDate
     ld (OP1), a ; OP1:RpnDate
@@ -794,7 +896,7 @@ subRpnDateByRpnDate:
     ; Subtract by OP3=Date
     ld de, OP1
     ld hl, OP3+1
-    call DateToEpochDays ; OP1=u40(days(X))
+    call dateToInternalEpochDays ; OP1=u40(days(X))
     call op1ToOp3PageOne ; OP3=u40(days(X))
     ;
     call PopRpnObject1 ; FPS=[]; OP1=u40(Y.days)
@@ -819,7 +921,7 @@ SubRpnDateTimeByRpnDateTimeOrSeconds:
     call PushRpnObject3 ; FPS=[DateTime or seconds]
     ld de, OP3
     ld hl, OP1+1
-    call DateTimeToEpochSeconds ; OP3=u40(Y.seconds)
+    call dateTimeToInternalEpochSeconds ; OP3=u40(Y.seconds)
     call exchangeFPSCP3PageOne ; FPS=[u40(Y.seconds)]; OP3=DateTime or seconds
     call checkOp3DateTimePageOne ; ZF=1 if type(OP3)==DateTime
     jr z, subRpnDateTimeByRpnDateTime
@@ -835,7 +937,7 @@ SubRpnDateTimeByRpnDateTimeOrSeconds:
     call op1ToOp2PageOne ; OP2=Y.seconds-X.seconds
     ld de, OP1+1
     ld hl, OP2
-    call EpochSecondsToDateTime ; OP1+1:DateTime
+    call internalEpochSecondsToDateTime ; OP1+1:DateTime
     ;
     ld a, rpnObjectTypeDateTime
     ld (OP1), a ; OP1:RpnDateTime
@@ -844,7 +946,7 @@ subRpnDateTimeByRpnDateTime:
     ; Subtract by OP3=DateTime
     ld de, OP1
     ld hl, OP3+1
-    call DateTimeToEpochSeconds ; OP1=u40(seconds(X))
+    call dateTimeToInternalEpochSeconds ; OP1=u40(seconds(X))
     call op1ToOp3PageOne ; OP3=u40(seconds(X))
     ;
     call PopRpnObject1 ; FPS=[]; OP1=u40(Y.seconds)
@@ -858,6 +960,31 @@ subRpnDateTimeByRpnDateTime:
 
 ;-----------------------------------------------------------------------------
 
+; Description: Convert the RpnDate{} record in OP1 to epochSeconds relative to
+; the current epochDate.
+; Input: OP1:RpnDateTime=input
+; Output: OP1:real
+; Destroys: all, OP1-OP6
+RpnDateTimeToEpochSeconds:
+    ; convert input to relative epochSeconds
+    ld hl, OP1+1
+    ld de, OP3
+    call dateTimeToInternalEpochSeconds ; OP3=epochSeconds(input)
+    call op3ToOp2PageOne ; OP2=internalEpochSeconds(input)
+    ; convert current epochDate to current epochSeconds
+    ld hl, epochDate
+    ld de, OP1
+    call dateToInternalEpochDays ; DE=OP1=epochDays
+    ex de, hl ; HL=OP1=epochDays
+    call convertU40DaysToU40Seconds ; HL=OP1=epochSeconds
+    ; convert relative epochSeconds to internal epochSeconds
+    ld hl, OP3
+    ld de, OP1
+    call subU40U40 ; OP3=epochSeconds(input)-epochSeconds(currentEpochDate)
+    ;
+    call ConvertI40ToOP1 ; OP1=float(OP3)
+    ret
+
 ; Description: Convert DateTime{} record to epochSeconds.
 ; Input:
 ;   - HL:(DateTime*): dateTime, most likely OP1+1
@@ -865,8 +992,8 @@ subRpnDateTimeByRpnDateTime:
 ; Output:
 ;   - (*DE)=result
 ; Destroys: A, BC, OP4-OP6
-DateTimeToEpochSeconds:
-    call DateToEpochDays ; DE=epochDays; HL=timePointer=dateTime+4
+dateTimeToInternalEpochSeconds:
+    call dateToInternalEpochDays ; DE=epochDays; HL=timePointer=dateTime+4
     push hl ; stack=[timePointer]
     ; convert days to seconds
     ld hl, OP4
@@ -920,14 +1047,35 @@ hmsToSeconds:
 
 ;-----------------------------------------------------------------------------
 
-; Description: Convert epochSeconds to DateTime{} structure.
+EpochSecondsToRpnDateTime:
+    ; get relative epochSeconds
+    ld hl, OP2
+    bcall(_ConvertOP1ToI40) ; OP2=i40(epochSeconds)
+    ; convert relative epochSeconds to internal epochSeconds
+    ld hl, epochDate
+    ld de, OP1
+    call dateToInternalEpochDays ; DE=OP1=epochDays
+    ex de, hl ; HL=OP1=epochDays
+    call convertU40DaysToU40Seconds ; HL=OP1=epochSeconds
+    ld de, OP2
+    call addU40U40 ; HL=OP1=internal epochSeconds
+    ; convert internal epochSeconds to RpnDateTime
+    ld a, rpnObjectTypeDateTime
+    ld (de), a
+    inc de
+    call internalEpochSecondsToDateTime ; DE=OP2=RpnDateTime{}
+    ;
+    call op2ToOp1PageOne
+    ret
+
+; Description: Convert internal epochSeconds to DateTime{} structure.
 ; Input:
 ;   - HL:(i40*)=epochSeconds, probably OP1
 ;   - DE:(DateTime*)=dateTime, probably OP2+1
 ; Output:
 ;   - *DE=dateTime result
 ; Destroys: A, BC, OP3-OP6
-EpochSecondsToDateTime:
+internalEpochSecondsToDateTime:
     push de ; stack=[dateTime]
     push hl ; stack=[dateTime,epochSeconds]
     ; (epochDays,seconds)=div2(epochSeconds,86400)
@@ -956,7 +1104,7 @@ EpochSecondsToDateTime:
     ;
     pop de ; stack=[epochDays]; DE=dateTime
     pop hl ; stack=[]; HL=epochDays
-    jp EpochDaysToDate ; DE=date
+    jp internalEpochDaysToDate ; DE=date
 
 ; Description: Convert seconds in a day to (hh,mm,ss).
 ; Input:
