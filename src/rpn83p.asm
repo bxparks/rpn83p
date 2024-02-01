@@ -110,7 +110,7 @@ rpn83pAppId equ $1E69
 ; state is considered stale automatically. However, if the *semantics* of any
 ; variable is changed (e.g. if the meaning of a flag is changed), then we
 ; *must* increment the version number to mark the previous state as stale.
-rpn83pSchemaVersion equ 11
+rpn83pSchemaVersion equ 12
 
 ; Define true and false. Something else in spasm-ng defines the 'true' and
 ; 'false' symbols but I cannot find the definitions for them in the
@@ -403,19 +403,23 @@ commaEEModeNormal equ 0
 commaEEModeSwapped equ 1
 
 ; Epoch type.
-epochTypeUnix equ 0
-epochTypeNtp equ 1
-epochTypeGps equ 2
-epochTypeCustom equ 3
+epochTypeCustom equ 0
+epochTypeUnix equ 1
+epochTypeNtp equ 2
+epochTypeGps equ 3
+epochTypeTios equ 4
 
 ; Store the current Epoch.
 epochType equ commaEEMode + 1 ; u8
 
-; Value of the Epoch Date if epochTypeCustom selected.
+; Current value of the Epoch Date as selected by epochType.
 epochDate equ epochType + 1 ; Date{y,m,d}, 4 bytes
 
+; Custom value of the Epoch Date if epochTypeCustom selected.
+epochDateCustom equ epochDate + 4 ; Date{y,m,d}, 4 bytes
+
 ; End application variables.
-appStateEnd equ epochDate + 4
+appStateEnd equ epochDateCustom + 4
 
 ; Total size of appState vars.
 appStateSize equ (appStateEnd - appStateBegin)
@@ -961,6 +965,10 @@ _FormatComplexPolarDeg equ _FormatComplexPolarDegLabel-branchTableBase
     .dw FormatComplexPolarDeg
     .db 1
 ; date1.asm
+_InitDateLabel:
+_InitDate equ _InitDateLabel-branchTableBase
+    .dw InitDate
+    .db 1
 _ConvertToDateTimeLabel:
 _ConvertToDateTime equ _ConvertToDateTimeLabel-branchTableBase
     .dw ConvertToDateTime
@@ -1006,17 +1014,25 @@ _SubRpnDateTimeByRpnDateTimeOrSeconds equ _SubRpnDateTimeByRpnDateTimeOrSecondsL
     .dw SubRpnDateTimeByRpnDateTimeOrSeconds
     .db 1
 ;
-_SetUnixEpochDateLabel:
-_SetUnixEpochDate equ _SetUnixEpochDateLabel-branchTableBase
-    .dw SetUnixEpochDate
+_SelectUnixEpochDateLabel:
+_SelectUnixEpochDate equ _SelectUnixEpochDateLabel-branchTableBase
+    .dw SelectUnixEpochDate
     .db 1
-_SetNtpEpochDateLabel:
-_SetNtpEpochDate equ _SetNtpEpochDateLabel-branchTableBase
-    .dw SetNtpEpochDate
+_SelectNtpEpochDateLabel:
+_SelectNtpEpochDate equ _SelectNtpEpochDateLabel-branchTableBase
+    .dw SelectNtpEpochDate
     .db 1
-_SetGpsEpochDateLabel:
-_SetGpsEpochDate equ _SetGpsEpochDateLabel-branchTableBase
-    .dw SetGpsEpochDate
+_SelectGpsEpochDateLabel:
+_SelectGpsEpochDate equ _SelectGpsEpochDateLabel-branchTableBase
+    .dw SelectGpsEpochDate
+    .db 1
+_SelectTiosEpochDateLabel:
+_SelectTiosEpochDate equ _SelectTiosEpochDateLabel-branchTableBase
+    .dw SelectTiosEpochDate
+    .db 1
+_SelectCustomEpochDateLabel:
+_SelectCustomEpochDate equ _SelectCustomEpochDateLabel-branchTableBase
+    .dw SelectCustomEpochDate
     .db 1
 _SetCustomEpochDateLabel:
 _SetCustomEpochDate equ _SetCustomEpochDateLabel-branchTableBase

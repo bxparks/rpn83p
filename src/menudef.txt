@@ -400,11 +400,18 @@ MenuGroup root mRoot [
             MenuItem ES<Sconvert>D mEpochSecondstoDateTime
           ]
           MenuRow [
+            MenuItemAlt CUST CUS<Sblock> mEpochCustom # custom, defined by EPC
             MenuItemAlt UNIX UNI<Sblock> mEpochUnix # 1970-01-01T00:00:00
             MenuItemAlt NTP NTP<Sblock> mEpochNtp # 1900-01-01T00:00:00
             MenuItemAlt GPS GPS<Sblock> mEpochGps # 1980-01-06T00:00:00
-            MenuItemAlt EPC EPC<Sblock> mEpochCustom # set custom epoch
-            MenuItem EPC<Squestion> mEpochGetCustom # get custom
+            MenuItemAlt TIOS TI<Sblock> mEpochTios # 1997-01-00T00:00:00
+          ]
+          MenuRow [
+            MenuItem * *
+            MenuItem * *
+            MenuItem * *
+            MenuItem EPC mEpochSetCustom # set custom epoch
+            MenuItem EPC<Squestion> mEpochGetCustom # get custom epoch
           ]
         ]
       ]

@@ -19,6 +19,7 @@ main:
     ; Initialize everything if RestoreAppState() fails.
     bcall(_InitErrorCode)
     bcall(_InitInputBuf)
+    bcall(_InitDate)
     call initNumResultMode
     call initComplexMode
     call initCommaEEMode
@@ -27,7 +28,6 @@ main:
     call initStat
     call initCfit
     call initTvm
-    call initDate
 initAlways:
     ; If RestoreAppState() suceeds, only the following are initialized.
     bcall(_InitArgBuf) ; Start with Command Arg parser off.

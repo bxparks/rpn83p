@@ -8,6 +8,14 @@
 ; entry.
 ;-----------------------------------------------------------------------------
 
+InitDate:
+    call SelectUnixEpochDate
+    ; Set the default custom epochDate to 2000-01-01
+    ld hl, y2kDate
+    jp setEpochDateCustom
+
+;-----------------------------------------------------------------------------
+
 ; Description: Check if OP1 is a RpnDate.
 ; Output: ZF=1 if RpnDate
 checkOp1DatePageOne:
@@ -1140,40 +1148,70 @@ secondsToHms:
 ;-----------------------------------------------------------------------------
 
 ; Description: Set epochType and epochDate to UNIX (1970-01-01).
-SetUnixEpochDate:
+SelectUnixEpochDate:
     ld a, epochTypeUnix
     ld (epochType), a
     set dirtyFlagsMenu, (iy + dirtyFlags)
-    ;
     ld hl, unixDate
-    ld de, epochDate
-    ld bc, 4
-    ldir
-    ret
+    jr setEpochDate
 
 ; Description: Set epochType and epochDate to NTP (1900-01-01).
-SetNtpEpochDate:
+SelectNtpEpochDate:
     ld a, epochTypeNtp
     ld (epochType), a
     set dirtyFlagsMenu, (iy + dirtyFlags)
-    ;
     ld hl, ntpDate
+    jr setEpochDate
+
+; Description: Set epochType and epochDate to GPS (1980-01-06).
+SelectGpsEpochDate:
+    ld a, epochTypeGps
+    ld (epochType), a
+    set dirtyFlagsMenu, (iy + dirtyFlags)
+    ld hl, gpsDate
+    jr setEpochDate
+
+; Description: Set epochType and epochDate to TIOS epoch (1997-01-01).
+SelectTiosEpochDate:
+    ld a, epochTypeTios
+    ld (epochType), a
+    set dirtyFlagsMenu, (iy + dirtyFlags)
+    ld hl, tiosDate
+    jr setEpochDate
+
+; Description: Set epochType and epochDate to the custom epochDate.
+SelectCustomEpochDate:
+    ld a, epochTypeCustom
+    ld (epochType), a
+    set dirtyFlagsMenu, (iy + dirtyFlags)
+    ld hl, epochDateCustom
+    jr setEpochDate
+
+;-----------------------------------------------------------------------------
+
+; Description: Copy the Date{} pointed by HL to (epochDateCustom).
+; Input: HL:Date{}
+; Output: (epochDate) updated
+; Destroys: all
+; Preserves: A
+setEpochDateCustom:
+    ld de, epochDateCustom
+    ld bc, 4
+    ldir
+    ret
+
+; Description: Copy the Date{} pointed by HL to (epochDate).
+; Input: HL:Date{}
+; Output: (epochDate) updated
+; Destroys: all
+; Preserves: A
+setEpochDate:
     ld de, epochDate
     ld bc, 4
     ldir
     ret
 
-; Description: Set epochType and epochDate to GPS (1980-01-06).
-SetGpsEpochDate:
-    ld a, epochTypeGps
-    ld (epochType), a
-    set dirtyFlagsMenu, (iy + dirtyFlags)
-    ;
-    ld hl, gpsDate
-    ld de, epochDate
-    ld bc, 4
-    ldir
-    ret
+;-----------------------------------------------------------------------------
 
 ; Description: Set the current epoch to the date given in OP1.
 ; Input: OP1: RpnDate{}
@@ -1181,16 +1219,9 @@ SetGpsEpochDate:
 SetCustomEpochDate:
     call checkOp1DatePageOne ; ZF=1 if CP1 is an RpnDate
     jr nz, setCustomEpochDateErr
-    ;
-    ld a, epochTypeCustom
-    ld (epochType), a
-    set dirtyFlagsMenu, (iy + dirtyFlags)
-    ;
-    ld de, epochDate
     ld hl, OP1+1
-    ld bc, 4
-    ldir
-    ret
+    call setEpochDateCustom
+    jr SelectCustomEpochDate ; automatically select the Custom epoch date
 setCustomEpochDateErr:
     bcall(_ErrDataType)
 
@@ -1198,12 +1229,13 @@ setCustomEpochDateErr:
 ; Input: none
 ; Output: OP1=epochDate
 GetCustomEpochDate:
-    ld de, OP1+1
-    ld hl, epochDate
+    ld de, OP1
+    ld a, rpnObjectTypeDate
+    ld (de), a
+    inc de
+    ld hl, epochDateCustom
     ld bc, 4
     ldir
-    ld a, rpnObjectTypeDate
-    ld (OP1), a
     ret
 
 unixDate:
@@ -1218,3 +1250,11 @@ gpsDate:
     .dw 1980
     .db 1
     .db 6
+tiosDate:
+    .dw 1997
+    .db 1
+    .db 1
+y2kDate:
+    .dw 2000
+    .db 1
+    .db 1

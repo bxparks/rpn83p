@@ -3,11 +3,6 @@
 ; Copyright (c) 2024 Brian T. Park
 ;-----------------------------------------------------------------------------
 
-initDate:
-    jp mEpochUnixHandler
-
-;-----------------------------------------------------------------------------
-
 mLeapYearHandler:
     call closeInputAndRecallX ; OP1=X=year
     bcall(_IsLeap) ; OP1=0 or 1
@@ -47,7 +42,7 @@ mEpochSecondsToDateTimeHandler:
 ;-----------------------------------------------------------------------------
 
 mEpochUnixHandler:
-    bcall(_SetUnixEpochDate)
+    bcall(_SelectUnixEpochDate)
     ret
 
 ; Input: A, B: nameId; C: altNameId
@@ -64,7 +59,7 @@ mEpochUnixNameSelectorAlt:
 ;-----------------------------------------------------------------------------
 
 mEpochNtpHandler:
-    bcall(_SetNtpEpochDate)
+    bcall(_SelectNtpEpochDate)
     ret
 
 ; Input: A, B: nameId; C: altNameId
@@ -81,7 +76,7 @@ mEpochNtpNameSelectorAlt:
 ;-----------------------------------------------------------------------------
 
 mEpochGpsHandler:
-    bcall(_SetGpsEpochDate)
+    bcall(_SelectGpsEpochDate)
     ret
 
 ; Input: A, B: nameId; C: altNameId
@@ -97,9 +92,25 @@ mEpochGpsNameSelectorAlt:
 
 ;-----------------------------------------------------------------------------
 
+mEpochTiosHandler:
+    bcall(_SelectTiosEpochDate)
+    ret
+
+; Input: A, B: nameId; C: altNameId
+mEpochTiosNameSelector:
+    ld a, (epochType)
+    cp epochTypeTios
+    jr z, mEpochTiosNameSelectorAlt
+    ld a, b
+    ret
+mEpochTiosNameSelectorAlt:
+    ld a, c
+    ret
+
+;-----------------------------------------------------------------------------
+
 mEpochCustomHandler:
-    call closeInputAndRecallRpnDateX ; OP1=X=RpnDate{}
-    bcall(_SetCustomEpochDate)
+    bcall(_SelectCustomEpochDate)
     ret
 
 ; Input: A, B: nameId; C: altNameId
@@ -115,7 +126,13 @@ mEpochCustomNameSelectorAlt:
 
 ;-----------------------------------------------------------------------------
 
+mEpochSetCustomHandler:
+    call closeInputAndRecallRpnDateX ; OP1=X=RpnDate{}
+    bcall(_SetCustomEpochDate)
+    ret
+
 mEpochGetCustomHandler:
+    call closeInputAndRecallNone
     bcall(_GetCustomEpochDate)
     jp pushToX
 
