@@ -40,6 +40,20 @@ checkOp3Real:
     cp rpnObjectTypeReal
     ret
 
+; Description: Check that both OP1 and OP3 are Real.
+; Input: OP1, OP3
+; Output: ZF=1 if both are real, ZF=0 otherwise
+; Destroys: A
+checkOp1AndOp3Real:
+    ld a, (OP1)
+    and $1f
+    cp rpnObjectTypeReal
+    ret nz
+    ld a, (OP3)
+    and $1f
+    cp rpnObjectTypeReal
+    ret
+
 ;-----------------------------------------------------------------------------
 
 ; Description: Same as CkOP1Cplx() OS routine without the bcall() overhead.
@@ -56,7 +70,7 @@ checkOp1Complex:
 ; Input: OP1, OP3
 ; Output: ZF=1 if either parameter is complex
 ; Destroys: A
-checkOp1OrOP3Complex: ; TODO: Rename to checkOp1OrOp3Complex() for consistency
+checkOp1OrOp3Complex:
     call checkOp1Complex ; ZF=1 if complex
     ret z
     ; [[fallthrough]]
@@ -118,6 +132,8 @@ checkOp3DateTime:
 convertOp1ToCp1:
     call checkOp1Complex ; ZF=1 if complex
     ret z
+    call checkOp1Real
+    jr nz, convertErr
     call op2Set0
     bcall(_RectToComplex)
     ret
@@ -141,9 +157,15 @@ convertCp1ToOp1:
 convertOp3ToCp3:
     call checkOp3Complex ; ZF=1 if complex
     ret z
+    call checkOp3Real
+    jr nz, convertErr
     call op4Set0
     bcall(_Rect3ToComplex3)
     ret
+
+; Description: Throw an Err:DataType exception.
+convertErr:
+    bcall(_ErrDataType)
 
 ;-----------------------------------------------------------------------------
 ; Complex result modes.
@@ -331,6 +353,12 @@ complexAngle:
 ; Output:
 ;   - OP1/OP2: Y+X
 universalAdd:
+    call checkOp1AndOp3Real
+    jr z, universalAddReal
+    ;
+    call checkOp1OrOp3Complex ; ZF=1 if complex
+    jr z, universalAddComplex
+    ;
     call checkOp1Date ; ZF=1 if Date
     jr z, universalAddDatePlusDays
     call checkOp3Date ; ZF=1 if Date
@@ -340,9 +368,9 @@ universalAdd:
     jr z, universalAddDateTimePlusSeconds
     call checkOp3DateTime ; ZF=1 if DateTime
     jr z, universalAddSecondsPlusDateTime
-    ;
-    call checkOp1OrOP3Complex ; ZF=1 if complex
-    jr z, universalAddComplex
+universalAddErr:
+    ; throw Err:DataType if nothing matches
+    bcall(_ErrDataType)
 universalAddReal:
     call op3ToOp2
     bcall(_FPAdd) ; OP1=Y+X
@@ -374,8 +402,6 @@ universalAddSecondsPlusDateTime:
     jr nz, universalAddErr
     bcall(_AddRpnDateTimeBySeconds) ; OP1=DateTime(OP1)+seconds(OP3)
     ret
-universalAddErr:
-    bcall(_ErrDataType)
 
 ; Description: Subtractions for real, complex, and Date objects.
 ; Input:
@@ -384,18 +410,24 @@ universalAddErr:
 ; Output:
 ;   - OP1/OP2: Y-X
 universalSub:
+    call checkOp1AndOp3Real ; ZF=1 if both are Real
+    jr z, universalSubReal
+    ;
+    call checkOp1OrOp3Complex ; ZF=1 if either are complex
+    jr z, universalSubComplex
+    ;
     call checkOp1Date ; ZF=1 if Date
     jr z, universalSubDateMinusObject
     call checkOp1DateTime ; ZF=1 if DateTime
     jr z, universalSubDateTimeMinusObject
+    ;
     call checkOp3Date ; ZF=1 if Date
     jr z, universalSubErr ; cannot subtract a Date
     call checkOp3DateTime ; ZF=1 if DateTime
     jr z, universalSubErr ; cannot subtract a DateTime
-    ;
-    call checkOp1OrOP3Complex ; ZF=1 if complex
-    jr z, universalSubComplex
-    ; X and Y are real numbers.
+universalSubErr:
+    bcall(_ErrDataType)
+universalSubReal:
     call op3ToOp2
     bcall(_FPSub) ; OP1=Y-X
     ret
@@ -426,8 +458,6 @@ universalSubDateTimeMinusSeconds:
 universalSubDateTimeMinusDateTime:
     bcall(_SubRpnDateTimeByRpnDateTimeOrSeconds)
     ret
-universalSubErr:
-    bcall(_ErrDataType)
 
 ; Description: Multiplication for real and complex numbers.
 ; Input:
