@@ -992,6 +992,9 @@ printOP1:
     cp rpnObjectTypeOffset
     jp z, printOP1OffsetRecord
     ;
+    cp rpnObjectTypeOffsetDateTime
+    jp z, printOP1OffsetDateTimeRecord
+    ;
     ld hl, msgRpnObjectTypeUnknown
     jp printHLString
 
@@ -1458,6 +1461,11 @@ printOP1DateTimeRecord:
     call vPutSmallS
     jp vEraseEOL
 
+; Description: Print the Offset Record in OP1 using small font.
+; Input:
+;   - OP1: Offset Record
+;   - B: displayFontMask
+; Destroys: OP3-OP6
 printOP1OffsetRecord:
     call eraseEOLIfNeeded ; uses B
     call displayStackSetSmallFont
@@ -1465,6 +1473,24 @@ printOP1OffsetRecord:
     ld de, OP3 ; destPointer
     push de
     bcall(_FormatOffsetRecord)
+    ; print string stored in OP3
+    pop hl ; HL=OP3
+    call vPutSmallS
+    jp vEraseEOL
+
+; Description: Print the OffsetDateTime Record in OP1 using small font.
+; Input:
+;   - OP1: OffsetDateTime Record
+;   - B: displayFontMask
+; Destroys: OP3-OP6
+printOP1OffsetDateTimeRecord:
+    call eraseEOLIfNeeded ; uses B
+    call displayStackSetSmallFont
+    ; format OP1
+    ld hl, OP1
+    ld de, OP3 ; destPointer
+    push de
+    bcall(_FormatOffsetDateTimeRecord)
     ; print string stored in OP3
     pop hl ; HL=OP3
     call vPutSmallS

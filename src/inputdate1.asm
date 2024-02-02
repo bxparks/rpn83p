@@ -75,6 +75,37 @@ parseOffset:
     call parseRightBrace ; '}'
     ret
 
+; Description: Parse a string of the form "{yyyy,MM,dd,hh,mm,dd,ohh,odd}" into
+; an OffsetDateTime{} record.
+; Input:
+;   - HL: charPointer, C-string pointer
+;   - DE: pointer to buffer that can hold an OffsetDateTime{}
+; Output:
+;   - (DE): OffsetDateTime{}
+;   - DE=DE+9
+;   - HL=points to character after last '}'
+; Throws: Err:Syntax if there is a syntax error
+; Destroys: all
+parseOffsetDateTime:
+    call parseLeftBrace ; '{'
+    call parseU16D4 ; year
+    call parseComma
+    call parseU8D2 ; month
+    call parseComma
+    call parseU8D2 ; day
+    call parseComma
+    call parseU8D2 ; hour
+    call parseComma
+    call parseU8D2 ; minute
+    call parseComma
+    call parseU8D2 ; second
+    call parseComma
+    call parseI8D2 ; offset hour
+    call parseComma
+    call parseI8D2 ; offset minute
+    call parseRightBrace ; '}'
+    ret
+
 ;------------------------------------------------------------------------------
 
 ; Description: Count the number of commas in the input string that is supposed

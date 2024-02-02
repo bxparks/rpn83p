@@ -75,18 +75,44 @@ FormatOffsetRecord:
     ld a, LlBrace
     ld (de), a
     inc de
-    ; print Offset.hour
-    ld a, (hl)
-    inc hl
-    call formatI8ToD2
+    ; format fields
+    call formatOffsetHourMinute
+    ; print '}'
+    ld a, LrBrace
+    ld (de), a
+    inc de
+    ; add NUL
+    xor a
+    ld (de), a ; add NUL terminator
+    ret
+
+; Description: Format the OffsetDateTime Record in HL to DE.
+; Input:
+;   - HL: offsetDateTimeRecordPointer
+;   - DE: stringBufPointer
+; Output:
+;   - HL: incremented to next record field
+;   - DE: points to NUL char at end of string
+FormatOffsetDateTimeRecord:
+    inc hl ; skip type byte
+    ; print '{'
+    ld a, LlBrace
+    ld (de), a
+    inc de
+    ;
+    call formatYearMonthDay
     ; print ','
     ld a, ','
     ld (de), a
     inc de
-    ; print Offset.minute
-    ld a, (hl)
-    inc hl
-    call formatI8ToD2
+    ;
+    call formatHourMinuteSecond
+    ; print ','
+    ld a, ','
+    ld (de), a
+    inc de
+    ;
+    call formatOffsetHourMinute
     ; print '}'
     ld a, LrBrace
     ld (de), a
@@ -158,6 +184,29 @@ formatHourMinuteSecond:
     ld a, (hl)
     inc hl
     call formatU8ToD2
+    ret
+
+; Description: Format the (signed) hour and minute components of an Offset
+; record in HL to C-string in DE.
+; Input:
+;   - HL: recordPointer
+;   - DE: stringBufPointer
+; Output:
+;   - HL: incremented to next record field
+;   - DE: points to char after last char, no NUL
+formatOffsetHourMinute:
+    ; print Offset.hour
+    ld a, (hl)
+    inc hl
+    call formatI8ToD2
+    ; print ','
+    ld a, ','
+    ld (de), a
+    inc de
+    ; print Offset.minute
+    ld a, (hl)
+    inc hl
+    call formatI8ToD2
     ret
 
 ;-----------------------------------------------------------------------------

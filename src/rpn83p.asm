@@ -135,10 +135,14 @@ rpnObjectTypeDate equ $18 ; next unused object type
 ; - struct DateTime{date:Date, hour:u8, min:u8, sec:u8}, 7 bytes
 ; - struct RpnDateTime{type:u8, dateTime:DateTime}, 8 bytes
 rpnObjectTypeDateTime equ $19
-; UTCOffset object:
+; Offset object:
 ; - struct Offset{hour:i8, min:i8}, 2 bytes
 ; - struct RpnOffset{type:u8, offset:Offset}, 3 bytes
 rpnObjectTypeOffset equ $1A
+; OffsetDateTime object:
+; - struct OffsetDateTime{datetime:DateTime, offset:Offset}, 9 bytes
+; - struct RpnOffsetDateTime{type:u8, offset:Offset}, 10 bytes
+rpnObjectTypeOffsetDateTime equ $1B
 
 ; An RpnObject is a struct of a type byte and 2 RpnFloat objects so that a
 ; complex number can be stored. See the struct definitions in vars.asm. If the
@@ -224,18 +228,24 @@ baseWordSize equ baseCarryFlag + 1 ; u8
 ; characters. We need one more, to allow a complex delimiter to be entered.
 inputBufFloatMaxLen equ 20+1
 
-; A complex number requires 2 floating point numbers, plus a delimiter.
+; A complex number requires 2 floating point numbers, plus the
+; LimagI/Langle/Ldegree delimiter.
 inputBufComplexMaxLen equ 20+20+1
+
+; The longest record is currently OffsetDateTime{} which may be entered as
+; "{yyyy,MM,dd,hh,mm,ss,ohh,omm}", so 29 characters max.
+inputBufRecordMaxLen equ 29
 
 ; Max number of digits allowed for exponent.
 inputBufEEMaxLen equ 2
 
-; String buffer for keyboard entry. Three types of numbers can be entered, each
-; type with different maxlen limits:
+; String buffer for keyboard entry. Different types of objects can be entered
+; with different maxlen limits:
 ;
 ; 1) floating point real numbers: 20 characters (inputBufFloatMaxLen)
 ; 2) complex numbers: 20 * 2 = 40 characters (inputBufComplexMaxLen)
-; 3) base-2 numberrs: max of 32 digits (various, see getInputMaxLenBaseMode())
+; 3) base-2 numbers: max of 32 digits (various, see getInputMaxLenBaseMode())
+; 4) data records: max of 29 characters (various, see getInputMaxLenBaseMode())
 ;
 ; The inputBuf must be the maximum of all of the above.
 ;
@@ -929,6 +939,10 @@ _FormatDateTimeRecord equ _FormatDateTimeRecord-branchTableBase
 _FormatOffsetRecordLabel:
 _FormatOffsetRecord equ _FormatOffsetRecord-branchTableBase
     .dw FormatOffsetRecord
+    .db 1
+_FormatOffsetDateTimeRecordLabel:
+_FormatOffsetDateTimeRecord equ _FormatOffsetDateTimeRecord-branchTableBase
+    .dw FormatOffsetDateTimeRecord
     .db 1
 ; complex1.asm
 _RectToComplexLabel:
