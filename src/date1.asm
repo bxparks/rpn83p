@@ -49,6 +49,8 @@ checkOp3DateTimePageOne:
     ret
 
 ;-----------------------------------------------------------------------------
+; Validate various date-related records.
+;-----------------------------------------------------------------------------
 
 ; Description: Validate that the given Date{} is a valid Gregorian calendar
 ; date between year 0000 and 9999, inclusive.
@@ -59,9 +61,9 @@ checkOp3DateTimePageOne:
 ;
 ; Input: HL:(*Date) pointer
 ; Output:
-;   - CF=0 if not valid, 1 if valid
 ;   - HL=HL+4
 ; Destroys: A, BC, DE
+; Throws: ErrInvalid on failure
 validateDate:
     ld c, (hl)
     inc hl
@@ -76,7 +78,7 @@ validateDate:
     ; check month
     ld a, e ; A=month-1
     cp 12 ; CF=0 if month-1>=12
-    ret nc
+    jr nc, validateDateErr
     ; get maxDay
     ld a, d ; A=day-1
     push de
@@ -87,21 +89,20 @@ validateDate:
     cp (hl) ; CF=0 if day-1>=maxDaysPerMonth
     pop hl
     pop de
-    ret nc
+    jr nc, validateDateErr
     ; check special case for Feb
     ld a, e ; A=month-1
     cp 1 ; ZF=1 if month==Feb
-    jr nz, validateDateOk
+    ret nz
     ; if Feb and leap year: no additional testing needed
     call isLeapYear ; CF=1 if leap; preserves BC, DE, HL
     ret c
     ; if not leap year: check that Feb has max of 28 days
     ld a, d ; A=day-1
     cp 28 ; if day-1>=28: CF=0
-    ret nc
-validateDateOk:
-    scf
-    ret
+    ret c
+validateDateErr:
+    bcall(_ErrInvalid)
 
 ; Description: The maximum value of 'day' for each month.
 maxDaysPerMonth:
@@ -122,25 +123,105 @@ maxDaysPerMonth:
 
 ; Description: Validate the Time components (h,m,s) of the Time{} record in HL.
 ; Input: HL:(*Time) pointer (h,m,s)
-; Output:
-;   - CF=0 if not valid, 1 if valid
-;   - HL=HL+3
+; Output: HL=HL+3
 ; Destroys: A, HL
 ; Preserves: BC, DE
+; Throws: Err:Invalid on failure
 validateTime:
     ld a, (hl) ; A=hour
     inc hl
     cp 24
-    ret nc ; if hour>=24: CF=0
+    jr nc, validateTimeErr ; if hour>=24: err
     ld a, (hl) ; A=minute
     inc hl
-    cp 60 ; if minute>=60: CF=0
-    ret nc
+    cp 60
+    jr nc, validateTimeErr ; if minute>=60: err
     ld a, (hl) ; A=second
     inc hl
     cp 60
+    ret c ; if second>=60: err
+validateTimeErr:
+    bcall(_ErrInvalid)
+
+;-----------------------------------------------------------------------------
+
+; Description: Validate the DateTime object in HL.
+; Input: HL:(*DateTime) pointer to {y,M,d,h,m,s}
+; Output:
+;   - HL=HL+7
+; Destroys: A, HL
+; Preserves: BC, DE
+; Throws: Err:Invalid on failure
+validateDateTime:
+    call validateDate
+    call validateTime
     ret
 
+;-----------------------------------------------------------------------------
+
+; Description: Validate the Offset object in HL. Restrict the range of the
+; offset to "-24:00" to "+24:00" exclusive. Also verify that the sign of the
+; hour and minute match. In other words, {0,0}, {0,30}, {1,0}, {8,30} {-1,0},
+; {-8,-30}, are allowed, but {8,-30}, {-1,30}, {1,-30} are invalid.
+;
+; Input: HL:(*Offset) pointer to {h,m}
+; Output:
+;   - HL=HL+2
+; Destroys: A, HL
+; Preserves: BC, DE
+; Throws: Err:Invalid on failure
+validateOffset:
+    ; read hour, minute
+    push bc
+    ld b, (hl) ; B=hour
+    inc hl
+    ld c, (hl) ; C=minute
+    inc hl
+    ;
+    call validateOffsetMagnitudes
+    call validateOffsetSigns
+    pop bc
+    ret
+
+validateOffsetMagnitudes:
+    ; validate hour
+    ld a, b
+    bit 7, a
+    jr z, validateOffsetPosHour
+    neg
+validateOffsetPosHour:
+    cp 24
+    jr nc, validateOffsetErr ; if hour>=24: err
+    ; validate minute
+    ld a, c
+    bit 7, a
+    jr z, validateOffsetPosMinute
+    neg
+validateOffsetPosMinute:
+    cp 60
+    jr nc, validateOffsetErr ; if minute>=60: err
+    ret
+
+validateOffsetErr:
+    bcall(_ErrInvalid)
+
+validateOffsetSigns:
+    ; if either hour or minute is 0, then the other can be any sign
+    ld a, b
+    or a
+    ret z
+    ld a, c
+    or a
+    ret z
+    ; compare the sign bits of hour and minute
+    ld a, b
+    xor c
+    bit 7, a
+    jr nz, validateOffsetErr ; if sign(hour) != sign(minute): err
+    ret
+
+;-----------------------------------------------------------------------------
+; Converters.
 ;-----------------------------------------------------------------------------
 
 ; Description: Convert RpnDate to RpnDateTime if necessary.
@@ -202,6 +283,8 @@ convertU40DaysToU40Seconds:
     pop de ; stack=[]; DE=DE
     ret
 
+;-----------------------------------------------------------------------------
+; Implement various menu functions.
 ;-----------------------------------------------------------------------------
 
 ; Description: Determine if OP1 is leap year.

@@ -976,13 +976,26 @@ clearShowAreaLoop:
 ; Destroys: A, HL, OP3-OP6
 printOP1:
     call getOp1RpnObjectType ; A=objectType
-    cp rpnObjectTypeDate
-    jp z, printOP1DateRecord
-    cp rpnObjectTypeDateTime
-    jp z, printOP1DateTimeRecord
+    ; The rpnObjecTypes are tested in order of decreasing frequency.
+    cp rpnObjectTypeReal
+    jr z, printOP1Real
+    ;
     cp rpnObjectTypeComplex
     jr z, printOP1Complex
-    ; [[fallthrough]]
+    ;
+    cp rpnObjectTypeDate
+    jp z, printOP1DateRecord
+    ;
+    cp rpnObjectTypeDateTime
+    jp z, printOP1DateTimeRecord
+    ;
+    cp rpnObjectTypeOffset
+    jp z, printOP1OffsetRecord
+    ;
+    ld hl, msgRpnObjectTypeUnknown
+    jp printHLString
+
+;-----------------------------------------------------------------------------
 
 ; Description: Print the real number in OP1, taking into account the BASE mode.
 ; This routine always uses large font, so it never needs to clear the line with
@@ -1404,6 +1417,8 @@ formatBinDigitsEnd:
     ret
 
 ;-----------------------------------------------------------------------------
+; RpnObject records.
+;-----------------------------------------------------------------------------
 
 ; Description: Print the Date Record in OP1 using small font.
 ; Input:
@@ -1413,13 +1428,14 @@ formatBinDigitsEnd:
 printOP1DateRecord:
     call eraseEOLIfNeeded ; uses B
     call displayStackSetSmallFont
+    ; format OP1
     ld hl, OP1
     ld de, OP3 ; destPointer
     push de
     bcall(_FormatDateRecord)
     xor a
     ld (de), a ; add NUL terminator
-    ; print string in OP3
+    ; print string stored in OP3
     pop hl ; HL=OP3
     call vPutSmallS
     jp vEraseEOL
@@ -1432,15 +1448,30 @@ printOP1DateRecord:
 printOP1DateTimeRecord:
     call eraseEOLIfNeeded ; uses B
     call displayStackSetSmallFont
+    ; format OP1
     ld hl, OP1
     ld de, OP3 ; destPointer
     push de
     bcall(_FormatDateTimeRecord)
-    ; print string in OP3
+    ; print string stored in OP3
     pop hl ; HL=OP3
     call vPutSmallS
     jp vEraseEOL
 
+printOP1OffsetRecord:
+    call eraseEOLIfNeeded ; uses B
+    call displayStackSetSmallFont
+    ld hl, OP1
+    ld de, OP3 ; destPointer
+    push de
+    bcall(_FormatOffsetRecord)
+    ; print string stored in OP3
+    pop hl ; HL=OP3
+    call vPutSmallS
+    jp vEraseEOL
+
+;-----------------------------------------------------------------------------
+; String constants.
 ;-----------------------------------------------------------------------------
 
 ; Indicates number has overflowed the current Base mode.
@@ -1492,3 +1523,7 @@ msgComplexModeRadLabel:
     .db "r", Sangle, Stheta, 0
 msgComplexModeDegLabel:
     .db "r", Sangle, Stemp, 0
+
+; Unknown RpnObjectType
+msgRpnObjectTypeUnknown:
+    .db "{Unknown}", 0

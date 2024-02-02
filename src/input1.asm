@@ -93,19 +93,12 @@ closeInputBufEmpty:
     jp ClearInputBuf
 closeInputBufContinue:
     cp LlBrace ; '{'
-    jr z, closeInputBufDateOrDateTime
+    jr z, closeInputBufRecord
     call parseInputBufNumber ; OP1/OP2=float or complex
     jp ClearInputBuf
-closeInputBufDateOrDateTime:
-    call parseInputBufDateOrDateTime ; HL=OP1
-    inc hl ; skip type byte
-    call validateDate ; CF=1 if valid, HL=HL+4
-    jr nc, closeInputBufErr
-    call validateTime ; CF=1 if valid, HL=HL+3
-    jr nc, closeInputBufErr
+closeInputBufRecord:
+    call parseInputBufRecord ; HL=OP1
     jp ClearInputBuf
-closeInputBufErr:
-    bcall(_ErrInvalid)
 
 ;------------------------------------------------------------------------------
 
@@ -366,9 +359,8 @@ checkInputBufStructNone:
 ; Output: OP1/OP2: real or complex number
 ; Destroys: all registers, OP1-OP5 (due to SinCosRad())
 parseInputBufNumber:
-    call initInputBufForParsing
-    ld hl, inputBuf
-    inc hl
+    call initInputBufForParsing ; HL=inputBuf
+    inc hl ; skip length byte
     bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
     jr nz, parseBaseInteger
     ; parse a real or real component
@@ -502,16 +494,20 @@ parseNumBaseAddDigit:
 ; to the Pascal string. The capacity of inputBuf is one character larger than
 ; necessary to hold the extra NUL character.
 ; Input: inputBuf
-; Output: inputBuf with NUL terminator
+; Output:
+;   - inputBuf with NUL terminator
+;   - HL=inputBuf
 ; Destroys: A, DE, HL
 initInputBufForParsing:
     ld hl, inputBuf
+    push hl
     ld e, (hl)
     xor a
     ld d, a
     inc hl ; skip len byte
     add hl, de ; HL=pointerToNUL
     ld (hl), a
+    pop hl
     ret
 
 ; Description: Clear parseBuf by setting all digits to the character '0', and
@@ -1095,20 +1091,52 @@ isNumberDelimiterPageOne:
 
 ;-----------------------------------------------------------------------------
 
-; Description: Parse the inputBuf for a Date or DateTime record into OP1.
+; Description: Parse the inputBuf containing a Record into OP1.
 ; Input: inputBuf
-; Output: HL=OP1=RpnDate or RpnDateTime
+; Output: HL=OP1=RpnDate, RpnDateTime, RpnOffset
 ; Uses: parseBuf
-parseInputBufDateOrDateTime:
-    call initInputBufForParsing
-    ; source string
-    ld hl, inputBuf
+; Throws:
+;   - Err:Syntax if the syntax is incorrect
+;   - Err:Invalid if validation fails
+parseInputBufRecord:
+    call initInputBufForParsing ; HL=inputBuf
     inc hl ; skip len byte
-    ; dest record buffer
+    call countCommas ; A=numCommas, preserves HL
+    cp 1
+    jr z, parseInputBufOffset
+    cp 2
+    jr z, parseInputBufDate
+    cp 5
+    jr z, parseInputBufDateTime
+parseInputBufRecordErr:
+    bcall(_ErrSyntax)
+parseInputBufOffset:
     ld de, OP1
+    ld a, rpnObjectTypeOffset
+    ld (de), a
+    inc de
     push de
+    call parseOffset
+    pop hl ; HL=OP1+1
+    call validateOffset
+    ret
+parseInputBufDate:
+    ld de, OP1
+    ld a, rpnObjectTypeDate
+    ld (de), a
     inc de ; skip type byte
-    call parseDateOrDateTime ; parse Date or DateTime, A=objectType
-    pop hl
-    ld (hl), a ; rpnObjectType
+    push de
+    call parseDate
+    pop hl ; HL=OP1+1
+    call validateDate
+    ret
+parseInputBufDateTime:
+    ld de, OP1
+    ld a, rpnObjectTypeDateTime
+    ld (de), a
+    inc de ; skip type byte
+    push de
+    call parseDateTime
+    pop hl ; HL=OP1+1
+    call validateDateTime
     ret
