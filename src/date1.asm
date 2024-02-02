@@ -159,7 +159,65 @@ validateDateTime:
 
 ;-----------------------------------------------------------------------------
 
+; Description: Validate the Offset object in HL. Restrict the range of the
+; offset to "-24:00" to "+24:00" exclusive. Also verify that the sign of the
+; hour and minute match. In other words, {0,0}, {0,30}, {1,0}, {8,30} {-1,0},
+; {-8,-30}, are allowed, but {8,-30}, {-1,30}, {1,-30} are invalid.
+;
+; Input: HL:(*Offset) pointer to {h,m}
+; Output:
+;   - HL=HL+2
+; Destroys: A, HL
+; Preserves: BC, DE
+; Throws: Err:Invalid on failure
 validateOffset:
+    ; read hour, minute
+    push bc
+    ld b, (hl) ; B=hour
+    inc hl
+    ld c, (hl) ; C=minute
+    inc hl
+    ;
+    call validateOffsetMagnitudes
+    call validateOffsetSigns
+    pop bc
+    ret
+
+validateOffsetMagnitudes:
+    ; validate hour
+    ld a, b
+    bit 7, a
+    jr z, validateOffsetPosHour
+    neg
+validateOffsetPosHour:
+    cp 24
+    jr nc, validateOffsetErr ; if hour>=24: err
+    ; validate minute
+    ld a, c
+    bit 7, a
+    jr z, validateOffsetPosMinute
+    neg
+validateOffsetPosMinute:
+    cp 60
+    jr nc, validateOffsetErr ; if minute>=60: err
+    ret
+
+validateOffsetErr:
+    bcall(_ErrInvalid)
+
+validateOffsetSigns:
+    ; if either hour or minute is 0, then the other can be any sign
+    ld a, b
+    or a
+    ret z
+    ld a, c
+    or a
+    ret z
+    ; compare the sign bits of hour and minute
+    ld a, b
+    xor c
+    bit 7, a
+    jr nz, validateOffsetErr ; if sign(hour) != sign(minute): err
     ret
 
 ;-----------------------------------------------------------------------------
