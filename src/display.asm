@@ -976,13 +976,26 @@ clearShowAreaLoop:
 ; Destroys: A, HL, OP3-OP6
 printOP1:
     call getOp1RpnObjectType ; A=objectType
-    cp rpnObjectTypeDate
-    jp z, printOP1DateRecord
-    cp rpnObjectTypeDateTime
-    jp z, printOP1DateTimeRecord
+    ; The rpnObjecTypes are tested in order of decreasing frequency.
+    cp rpnObjectTypeReal
+    jr z, printOP1Real
+    ;
     cp rpnObjectTypeComplex
     jr z, printOP1Complex
-    ; [[fallthrough]]
+    ;
+    cp rpnObjectTypeDate
+    jp z, printOP1DateRecord
+    ;
+    cp rpnObjectTypeDateTime
+    jp z, printOP1DateTimeRecord
+    ;
+    cp rpnObjectTypeOffset
+    jp z, printOP1OffsetRecord
+    ;
+    ld hl, msgRpnObjectTypeUnknown
+    jp printHLString
+
+;-----------------------------------------------------------------------------
 
 ; Description: Print the real number in OP1, taking into account the BASE mode.
 ; This routine always uses large font, so it never needs to clear the line with
@@ -1404,6 +1417,8 @@ formatBinDigitsEnd:
     ret
 
 ;-----------------------------------------------------------------------------
+; RpnObject records.
+;-----------------------------------------------------------------------------
 
 ; Description: Print the Date Record in OP1 using small font.
 ; Input:
@@ -1441,6 +1456,15 @@ printOP1DateTimeRecord:
     call vPutSmallS
     jp vEraseEOL
 
+printOP1OffsetRecord:
+    call eraseEOLIfNeeded ; uses B
+    call displayStackSetSmallFont
+    ld hl, msgRpnObjectTypeUnknown
+    call vPutSmallS
+    jp vEraseEOL
+
+;-----------------------------------------------------------------------------
+; String constants.
 ;-----------------------------------------------------------------------------
 
 ; Indicates number has overflowed the current Base mode.
@@ -1492,3 +1516,7 @@ msgComplexModeRadLabel:
     .db "r", Sangle, Stheta, 0
 msgComplexModeDegLabel:
     .db "r", Sangle, Stemp, 0
+
+; Unknown RpnObjectType
+msgRpnObjectTypeUnknown:
+    .db "{Unknown}", 0

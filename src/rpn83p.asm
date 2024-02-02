@@ -136,7 +136,7 @@ rpnObjectTypeDate equ $18 ; next unused object type
 ; - struct RpnDateTime{type:u8, dateTime:DateTime}, 8 bytes
 rpnObjectTypeDateTime equ $19
 ; UTCOffset object:
-; - struct Offset{hour:u8, min:u8}, 2 bytes
+; - struct Offset{hour:i8, min:i8}, 2 bytes
 ; - struct RpnOffset{type:u8, offset:Offset}, 3 bytes
 rpnObjectTypeOffset equ $1A
 

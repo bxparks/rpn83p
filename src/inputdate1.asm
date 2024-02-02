@@ -69,9 +69,9 @@ parseDateTime:
 ; Destroys: all
 parseOffset:
     call parseLeftBrace ; '{'
-    call parseU8D2 ; hour
+    call parseI8D2 ; hour
     call parseComma
-    call parseU8D2 ; min
+    call parseI8D2 ; min
     call parseRightBrace ; '}'
     ret
 
@@ -132,7 +132,7 @@ parseComma:
     jr nz, parseDateErr
     ret
 
-; Description: Parse up to 4 decimal digits at HL to a U16 at DE.
+; Description: Parse up to 4 decimal digits at HL to a u16 at DE.
 ; Input:
 ;   - DE:u16Pointer
 ;   - HL:charPointer
@@ -175,7 +175,7 @@ parseU16D4End:
     pop bc
     ret
 
-; Description: Parse up to 2 decimal digits at HL to a U8 at DE.
+; Description: Parse up to 2 decimal digits at HL to a u8 at DE.
 ; Input:
 ;   - DE: destPoint
 ;   - HL: charPointer
@@ -213,4 +213,30 @@ parseU8D2End:
     ex de, hl ; DE=destPointer
     pop hl ; HL= charPointer
     pop bc
+    ret
+
+; Description: Parse optional negative sign and up to 2 decimal digits at HL to
+; an i8 at DE.
+; Input:
+;   - DE: destPoint
+;   - HL: charPointer
+; Output:
+;   - (DE): i8
+;   - DE: incremented by 1 byte
+;   - HL: incremented by 0-3 characters to the next char
+; Destroys: A
+parseI8D2:
+    ; first character must be valid digit or '-'
+    ld a, (hl)
+    cp '-'
+    jr nz, parseU8D2
+    ; parse the unsigned part, then negate the result.
+    inc hl
+    call parseU8D2
+    ; negate the result
+    dec de
+    ld a, (de)
+    neg
+    ld (de), a
+    inc de
     ret
