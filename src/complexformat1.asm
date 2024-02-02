@@ -24,7 +24,7 @@ FormatComplexRect:
     call formatComplexRectFormatOP1 ; assembly allows calling our own tail
     ; add the spacer
     ld hl, msgFormatComplexRectSpacer
-    call copyCString
+    call copyCStringPageOne
     ; format Im(Z)
     push de
     call op2ToOp1PageOne
@@ -35,7 +35,7 @@ formatComplexRectFormatOP1:
     bcall(_FormReal)
     pop de
     ld hl, OP3
-    jp copyCString
+    jp copyCStringPageOne
 
 msgFormatComplexRectSpacer:
     .db "  ", SimagI, " ", 0
@@ -58,7 +58,7 @@ FormatComplexPolarRad:
     call formatComplexPolarRadFormatOP1 ; assembly allows calling our own tail
     ; add the spacer
     ld hl, msgFormatComplexPolarRadSpacer
-    call copyCString
+    call copyCStringPageOne
     ; format Ang(Z)
     push de
     call op2ToOp1PageOne
@@ -69,7 +69,7 @@ formatComplexPolarRadFormatOP1:
     bcall(_FormReal)
     pop de
     ld hl, OP3
-    jp copyCString
+    jp copyCStringPageOne
 
 msgFormatComplexPolarRadSpacer:
     .db "  ", Sangle, " ", 0
@@ -92,7 +92,7 @@ FormatComplexPolarDeg:
     call formatComplexPolarDegFormatOP1 ; assembly allows calling our own tail
     ; add the spacer
     ld hl, msgFormatComplexPolarDegSpacer
-    call copyCString
+    call copyCStringPageOne
     ; format Ang(Z)
     push de
     call op2ToOp1PageOne
@@ -103,7 +103,7 @@ formatComplexPolarDegFormatOP1:
     bcall(_FormReal)
     pop de
     ld hl, OP3
-    jp copyCString
+    jp copyCStringPageOne
 
 msgFormatComplexPolarDegSpacer:
     .db "  ", Sangle, Stemp, " ", 0
