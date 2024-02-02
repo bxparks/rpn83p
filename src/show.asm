@@ -23,13 +23,22 @@
 formShowable:
     bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
     jr nz, formShowableBase
-    call checkOp1Complex ; if complex: ZF=1
+    call getOp1RpnObjectType
+    ; real
+    cp rpnObjectTypeReal
+    jr z, formShowableReal
+    ; complex
+    cp rpnObjectTypeComplex
     jr z, formShowableComplex
-formShowableReal:
-    call formRealString
-    jr formShowableEnd
+    ; Print "{unknown}" if object not known
+    ; TODO: Add formatters for various record objects.
+    ld hl, msgRpnObjectTypeUnknown
+    jp copyCString
 formShowableBase:
     call formBaseString
+    jr formShowableEnd
+formShowableReal:
+    call formRealString
     jr formShowableEnd
 formShowableComplex:
     call formComplexString
