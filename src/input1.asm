@@ -73,7 +73,7 @@ appendInputBufContinue:
 ; Input:
 ;   - inputBuf: input buffer
 ; Output:
-;   - OP1: value of inputBuf parsed into an RpnObject
+;   - OP1/OP2: value of inputBuf parsed into an RpnObject
 ;   - A: rpnObjectType
 ;   - inputBufFlagsClosedEmpty: set if inputBuf was an empty string when closed
 ;   - inputBuf cleared to empty string
@@ -83,15 +83,13 @@ CloseInputBuf: ; TODO: Rename this ParseInputBuf().
     ld hl, inputBuf
     call GetFirstChar ; A=first char, or 0 if empty
     or a
-    jr z, closeInputBufEmpty
-    ; inputBuf not empty
-    res inputBufFlagsClosedEmpty, (iy + inputBufFlags)
-    jr closeInputBufContinue
+    jr nz, closeInputBufNonEmpty
 closeInputBufEmpty:
     set inputBufFlagsClosedEmpty, (iy + inputBufFlags)
     call op1Set0PageOne
     jp ClearInputBuf
-closeInputBufContinue:
+closeInputBufNonEmpty:
+    res inputBufFlagsClosedEmpty, (iy + inputBufFlags)
     cp LlBrace ; '{'
     jr z, closeInputBufRecord
     call parseInputBufNumber ; OP1/OP2=float or complex
@@ -1135,8 +1133,9 @@ checkRecordDelimiterPFound:
 
 ; Description: Parse the inputBuf containing a Record into OP1.
 ; Input: inputBuf
-; Output: HL=OP1=RpnDate, RpnDateTime, RpnOffset
+; Output: OP1/OP2=RpnDate, RpnDateTime, RpnOffset, RpnOffsetDateTime
 ; Uses: parseBuf
+; Destroys: all
 ; Throws:
 ;   - Err:Syntax if the syntax is incorrect
 ;   - Err:Invalid if validation fails
@@ -1193,4 +1192,5 @@ parseInputBufOffsetDateTime:
     call parseOffsetDateTime
     pop hl ; HL=OP1+1
     call validateOffsetDateTime
+    call expandOp1IntoOp2PageOne ; sizeof(OffsetDateTime)>9
     ret

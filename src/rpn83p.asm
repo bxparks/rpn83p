@@ -141,7 +141,11 @@ rpnObjectTypeDateTime equ $19
 rpnObjectTypeOffset equ $1A
 ; OffsetDateTime object:
 ; - struct OffsetDateTime{datetime:DateTime, offset:Offset}, 9 bytes
-; - struct RpnOffsetDateTime{type:u8, offset:Offset}, 10 bytes
+; - struct RpnOffsetDateTime{type:u8, offsetDateTime:OffsetDateTime}, 10 bytes
+; The sizeof(RpnOffsetDateTime) is 10, which is greater than the 9 bytes of a
+; TI-OS floating point number. But OPx registers are 11 bytes long. We have
+; to careful and use expandOp1ToOp2() and shrinkOp2ToOp1() when parsing or
+; manipulating this object.
 rpnObjectTypeOffsetDateTime equ $1B
 
 ; An RpnObject is a struct of a type byte and 2 RpnFloat objects so that a

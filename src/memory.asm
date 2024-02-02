@@ -371,3 +371,29 @@ cp1ExCp3:
 exchangeComplex:
     ld b, 22
     jp exchangeFloatLoop
+
+;-----------------------------------------------------------------------------
+
+; Description: Shift the 9 bytes starting at OP1+9, down 2 bytes into OP2. This
+; is required because the OP1 is 11 bytes bytes and anything that is parsed
+; into the last 2 bytes must be shifted into OP2 before those bytes can be
+; saved properly into the RPN registers or the storage
+; registers.
+; Destroys: BC, DE, HL
+; Preserves: A
+expandOp1IntoOp2:
+    ld de, OP2+9-1
+    ld hl, OP2+7-1
+    ld bc, 9
+    lddr
+    ret
+
+; Description: The reverse of expandOp1IntoOp2().
+; Destroys: BC, DE, HL
+; Preserves: A
+shrinkOp2IntoOp1:
+    ld de, OP1+9
+    ld hl, OP2
+    ld bc, 9
+    ldir
+    ret

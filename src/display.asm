@@ -1465,7 +1465,7 @@ printOP1DateTimeRecord:
 ; Input:
 ;   - OP1: Offset Record
 ;   - B: displayFontMask
-; Destroys: OP3-OP6
+; Destroys: all, OP3-OP6
 printOP1OffsetRecord:
     call eraseEOLIfNeeded ; uses B
     call displayStackSetSmallFont
@@ -1482,15 +1482,17 @@ printOP1OffsetRecord:
 ; Input:
 ;   - OP1: OffsetDateTime Record
 ;   - B: displayFontMask
-; Destroys: OP3-OP6
+; Destroys: all, OP3-OP6
 printOP1OffsetDateTimeRecord:
     call eraseEOLIfNeeded ; uses B
     call displayStackSetSmallFont
     ; format OP1
+    call shrinkOp2IntoOp1
     ld hl, OP1
     ld de, OP3 ; destPointer
     push de
     bcall(_FormatOffsetDateTimeRecord)
+    call expandOp1IntoOp2
     ; print string stored in OP3
     pop hl ; HL=OP3
     call vPutSmallS
