@@ -926,6 +926,10 @@ _FormatDateTimeRecordLabel:
 _FormatDateTimeRecord equ _FormatDateTimeRecord-branchTableBase
     .dw FormatDateTimeRecord
     .db 1
+_FormatOffsetRecordLabel:
+_FormatOffsetRecord equ _FormatOffsetRecord-branchTableBase
+    .dw FormatOffsetRecord
+    .db 1
 ; complex1.asm
 _RectToComplexLabel:
 _RectToComplex equ _RectToComplexLabel-branchTableBase

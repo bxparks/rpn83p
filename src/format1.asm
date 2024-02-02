@@ -62,6 +62,42 @@ FormatDateTimeRecord:
     ld (de), a ; add NUL terminator
     ret
 
+; Description: Format the Offset Record in HL to DE.
+; Input:
+;   - HL: dateTimeRecordPointer
+;   - DE: stringBufPointer
+; Output:
+;   - HL: incremented to next record field
+;   - DE: points to NUL char at end of string
+FormatOffsetRecord:
+    inc hl ; skip type byte
+    ; print '{'
+    ld a, LlBrace
+    ld (de), a
+    inc de
+    ; print Offset.hour
+    ld a, (hl)
+    inc hl
+    call formatI8ToD2
+    ; print ','
+    ld a, ','
+    ld (de), a
+    inc de
+    ; print Offset.minute
+    ld a, (hl)
+    inc hl
+    call formatI8ToD2
+    ; print '}'
+    ld a, LrBrace
+    ld (de), a
+    inc de
+    ; add NUL
+    xor a
+    ld (de), a ; add NUL terminator
+    ret
+
+;-----------------------------------------------------------------------------
+
 ; Description: Format year,month,day of HL record to C string in DE.
 ; Input:
 ;   - HL: recordPointer
@@ -153,7 +189,7 @@ formatU16ToD4Loop:
     pop hl ; stack=[]; HL=orig HL
     ret
 
-; Description: Format the u16 in BC to 4 digits in DE.
+; Description: Format the u8 in A to 2 digits in DE.
 ; Input: A:u8; DE:destPointer
 ; Output: DE=DE+2
 ; Destroys: A, BC
@@ -178,6 +214,23 @@ formatU8ToD2:
     inc de ; DE=newDestPointer
     pop hl
     ret
+
+; Description: Format the i8 in A to 2 digits in DE.
+; Input: A:i8; DE:destPointer
+; Output: DE=DE+2,3
+; Destroys: A, BC
+; Preserves: HL
+formatI8ToD2:
+    bit 7, a
+    jr z, formatU8ToD2
+    ; output a '-', then negate, and print the integer.
+    push af
+    ld a, signChar
+    ld (de), a
+    inc de
+    pop af
+    neg
+    jr formatU8ToD2
 
 ;-----------------------------------------------------------------------------
 

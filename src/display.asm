@@ -1428,13 +1428,14 @@ formatBinDigitsEnd:
 printOP1DateRecord:
     call eraseEOLIfNeeded ; uses B
     call displayStackSetSmallFont
+    ; format OP1
     ld hl, OP1
     ld de, OP3 ; destPointer
     push de
     bcall(_FormatDateRecord)
     xor a
     ld (de), a ; add NUL terminator
-    ; print string in OP3
+    ; print string stored in OP3
     pop hl ; HL=OP3
     call vPutSmallS
     jp vEraseEOL
@@ -1447,11 +1448,12 @@ printOP1DateRecord:
 printOP1DateTimeRecord:
     call eraseEOLIfNeeded ; uses B
     call displayStackSetSmallFont
+    ; format OP1
     ld hl, OP1
     ld de, OP3 ; destPointer
     push de
     bcall(_FormatDateTimeRecord)
-    ; print string in OP3
+    ; print string stored in OP3
     pop hl ; HL=OP3
     call vPutSmallS
     jp vEraseEOL
@@ -1459,7 +1461,12 @@ printOP1DateTimeRecord:
 printOP1OffsetRecord:
     call eraseEOLIfNeeded ; uses B
     call displayStackSetSmallFont
-    ld hl, msgRpnObjectTypeUnknown
+    ld hl, OP1
+    ld de, OP3 ; destPointer
+    push de
+    bcall(_FormatOffsetRecord)
+    ; print string stored in OP3
+    pop hl ; HL=OP3
     call vPutSmallS
     jp vEraseEOL
 

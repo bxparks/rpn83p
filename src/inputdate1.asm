@@ -228,7 +228,7 @@ parseU8D2End:
 parseI8D2:
     ; first character must be valid digit or '-'
     ld a, (hl)
-    cp '-'
+    cp signChar
     jr nz, parseU8D2
     ; parse the unsigned part, then negate the result.
     inc hl
