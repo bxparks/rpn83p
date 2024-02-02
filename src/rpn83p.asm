@@ -120,8 +120,12 @@ rpn83pSchemaVersion equ 12
 rpnfalse equ 0
 rpntrue equ 1
 
-; RpnObect type enums.
-rpnObjectTypeReal equ 0
+; RpnObect type enums. TIOS defines object types from $00 (RealObj) to
+; $17 (GroupObj). We'll continue from there.
+;
+; Real number object. Use the same constant as TIOS.
+rpnObjectTypeReal equ 0 ; same as TI-OS
+; Complex number object. Use the same constant as TIOS.
 rpnObjectTypeComplex equ $0C ; same as TI-OS
 ; Date object:
 ; - struct Date{year:u16, mon:u8, day:u8}, 4 bytes
@@ -131,6 +135,10 @@ rpnObjectTypeDate equ $18 ; next unused object type
 ; - struct DateTime{date:Date, hour:u8, min:u8, sec:u8}, 7 bytes
 ; - struct RpnDateTime{type:u8, dateTime:DateTime}, 8 bytes
 rpnObjectTypeDateTime equ $19
+; UTCOffset object:
+; - struct Offset{hour:u8, min:u8}, 2 bytes
+; - struct RpnOffset{type:u8, offset:Offset}, 3 bytes
+rpnObjectTypeOffset equ $1A
 
 ; An RpnObject is a struct of a type byte and 2 RpnFloat objects so that a
 ; complex number can be stored. See the struct definitions in vars.asm. If the

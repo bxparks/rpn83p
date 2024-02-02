@@ -10,34 +10,44 @@
 ; not need a branch table entry.
 ;------------------------------------------------------------------------------
 
-; Description: Parse a data record of the form "{yyyy,mm,dd}" into an Date{} or
-; DateTime{} record type.
+; Description: Parse a string of the form "{yyyy,mm,dd}" into a Date{} record.
 ; Input:
 ;   - HL: charPointer, C-string pointer
 ;   - DE: pointer to buffer that can hold a Date{} or DateTime{}
 ; Output:
-;   - A: rpnObjectTypeDate or rpnObjectTypeDateTime
-;   - (DE): Date{} or DateTime{}
-;   - DE=DE+4 or DE+7
+;   - (DE): Date{}
+;   - DE=DE+4
 ;   - HL=points to character after last '}'
 ; Throws: Err:Syntax if there is a syntax error
 ; Destroys: all
-parseDateOrDateTime:
+parseDate:
     call parseLeftBrace ; '{'
     call parseU16D4 ; year
     call parseComma
     call parseU8D2 ; month
     call parseComma
     call parseU8D2 ; day
-    ; check if the next character is ',' or '}'
-    ld a, (hl)
-    cp ','
-    jr z, parseDateTime
-    ; terminate with just a Date
     call parseRightBrace ; '}'
-    ld a, rpnObjectTypeDate
     ret
+
+; Description: Parse a string of the form "{yyyy,MM,dd,hh,mm,dd}" into a
+; DateTime{} record.
+; Input:
+;   - HL: charPointer, C-string pointer
+;   - DE: pointer to buffer that can hold a DateTime{}
+; Output:
+;   - (DE): DateTime{}
+;   - DE=DE+7
+;   - HL=points to character after last '}'
+; Throws: Err:Syntax if there is a syntax error
+; Destroys: all
 parseDateTime:
+    call parseLeftBrace ; '{'
+    call parseU16D4 ; year
+    call parseComma
+    call parseU8D2 ; month
+    call parseComma
+    call parseU8D2 ; day
     call parseComma
     call parseU8D2 ; hour
     call parseComma
@@ -45,7 +55,50 @@ parseDateTime:
     call parseComma
     call parseU8D2 ; second
     call parseRightBrace ; '}'
-    ld a, rpnObjectTypeDateTime
+    ret
+
+; Description: Parse a data record of the form "{hh,dd}" representing an offset
+; from UTC into an Offset{} record.
+; Input:
+;   - HL:(*char)=charPointer to C-string
+;   - DE:(*Offset)=pointer to buffer that holds an Offset{}
+; Output:
+;   - DE=DE+2
+;   - HL=points to character after '}'
+; Throws: Err:Syntax if there is a syntax err
+; Destroys: all
+parseOffset:
+    call parseLeftBrace ; '{'
+    call parseU8D2 ; hour
+    call parseComma
+    call parseU8D2 ; min
+    call parseRightBrace ; '}'
+    ret
+
+;------------------------------------------------------------------------------
+
+; Description: Count the number of commas in the input string that is supposed
+; to contains a record containing '{' and '}'.
+; Input: HL:(*char)=charPointer to C-string
+; Output: A:u8=count
+; Destroys: none
+countCommas:
+    push hl
+    push bc
+    ld b, 0
+countCommasLoop:
+    ld a, (hl)
+    or a
+    jr z, countCommasEnd
+    inc hl
+    cp ','
+    jr nz, countCommasLoop
+    inc b
+    jr countCommasLoop
+countCommasEnd:
+    ld a, b
+    pop bc
+    pop hl
     ret
 
 ;------------------------------------------------------------------------------
