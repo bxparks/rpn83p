@@ -75,18 +75,44 @@ FormatOffsetRecord:
     ld a, LlBrace
     ld (de), a
     inc de
-    ; print Offset.hour
-    ld a, (hl)
-    inc hl
-    call formatI8ToD2
+    ; format fields
+    call formatOffsetHourMinute
+    ; print '}'
+    ld a, LrBrace
+    ld (de), a
+    inc de
+    ; add NUL
+    xor a
+    ld (de), a ; add NUL terminator
+    ret
+
+; Description: Format the OffsetDateTime Record in HL to DE.
+; Input:
+;   - HL: offsetDateTimeRecordPointer
+;   - DE: stringBufPointer
+; Output:
+;   - HL: incremented to next record field
+;   - DE: points to NUL char at end of string
+FormatOffsetDateTimeRecord:
+    inc hl ; skip type byte
+    ; print '{'
+    ld a, LlBrace
+    ld (de), a
+    inc de
+    ;
+    call formatYearMonthDay
     ; print ','
     ld a, ','
     ld (de), a
     inc de
-    ; print Offset.minute
-    ld a, (hl)
-    inc hl
-    call formatI8ToD2
+    ;
+    call formatHourMinuteSecond
+    ; print ','
+    ld a, ','
+    ld (de), a
+    inc de
+    ;
+    call formatOffsetHourMinute
     ; print '}'
     ld a, LrBrace
     ld (de), a
@@ -160,12 +186,35 @@ formatHourMinuteSecond:
     call formatU8ToD2
     ret
 
+; Description: Format the (signed) hour and minute components of an Offset
+; record in HL to C-string in DE.
+; Input:
+;   - HL: recordPointer
+;   - DE: stringBufPointer
+; Output:
+;   - HL: incremented to next record field
+;   - DE: points to char after last char, no NUL
+formatOffsetHourMinute:
+    ; print Offset.hour
+    ld a, (hl)
+    inc hl
+    call formatI8ToD2
+    ; print ','
+    ld a, ','
+    ld (de), a
+    inc de
+    ; print Offset.minute
+    ld a, (hl)
+    inc hl
+    call formatI8ToD2
+    ret
+
 ;-----------------------------------------------------------------------------
 
 ; Description: Format the u16 in BC to 4 digits in DE.
 ; Input: BC:u16; DE:destPointer
 ; Output: DE=DE+4
-; Destroys: A, BC
+; Destroys: A, BC, DE
 ; Preserves: HL
 formatU16ToD4:
     push hl ; stack=[HL]
@@ -189,29 +238,38 @@ formatU16ToD4Loop:
     pop hl ; stack=[]; HL=orig HL
     ret
 
-; Description: Format the u8 in A to 2 digits in DE.
+; Description: Format the u8 in A to 2 digits in DE. Leading zero is
+; suppressed.
 ; Input: A:u8; DE:destPointer
 ; Output: DE=DE+2
-; Destroys: A, BC
+; Destroys: A, BC, DE
 ; Preserves: HL
 formatU8ToD2:
     push hl
-    ld l, a
-    ld h, 0
-    ld c, 10
+    ex de, hl ; HL=destPointer
+    cp 10
+    jr c, formatU8ToD2SingleDigit
+formatU8ToD2TwoDigits:
+    ld d, a
+    ld e, 10
+    call divDByE ; D=quotient; A=remainder
     ; digit0
-    call divHLByC ; HL=quotient; A=remainder; preserves BC
     call convertAToCharPageOne ; A=digit
-    inc de
-    ld (de), a
+    inc hl
+    ld (hl), a
     ; digit1
-    call divHLByC ; HL=quotient; A=remainder; preserves BC
+    call divDByE ; D=quotient; A=remainder
     call convertAToCharPageOne ; A=digit
-    dec de
-    ld (de), a
-    ; Set DE to just after the 2 digits
-    inc de
-    inc de ; DE=newDestPointer
+    dec hl
+    ld (hl), a
+    inc hl
+    jr formatU8ToD2End
+formatU8ToD2SingleDigit:
+    call convertAToCharPageOne ; A=digit
+    ld (hl), a
+formatU8ToD2End:
+    inc hl
+    ex de, hl ; DE=destPointer+N
     pop hl
     ret
 

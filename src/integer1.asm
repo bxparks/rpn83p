@@ -66,6 +66,31 @@ multHLBy10:
 
 ;------------------------------------------------------------------------------
 
+; Description: Divide D by E, remainder in A.
+; Input: D:dividend; E=divisor
+; Output: D:quotient; A:remainder
+; Destroys: A, DE
+; Preserves: BC, HL
+divDByE:
+    push bc
+    xor a ; A=remainder
+    ld b, 8
+divDByELoop:
+    sla d
+    rla
+    jr c, divDByEOne ; remainder overflowed, so must substract
+    cp e ; if remainder(A) < divisor(E): CF=1
+    jr c, divDByEZero
+divDByEOne:
+    sub e
+    inc d ; set bit 0 of quotient
+divDByEZero:
+    djnz divDByELoop
+    pop bc
+    ret
+
+;------------------------------------------------------------------------------
+
 ; Description: Divide HL by C
 ; Input: HL:dividend; C=divisor
 ; Output: HL:quotient; A:remainder

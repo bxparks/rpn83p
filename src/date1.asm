@@ -221,6 +221,21 @@ validateOffsetSigns:
     ret
 
 ;-----------------------------------------------------------------------------
+
+; Description: Validate the OffsetDateTime object in HL.
+; Input: HL:(*OffsetDateTime) pointer to {y,M,d,h,m,s,oh,os}
+; Output:
+;   - HL=HL+9
+; Destroys: A, HL
+; Preserves: BC, DE
+; Throws: Err:Invalid on failure
+validateOffsetDateTime:
+    call validateDate
+    call validateTime
+    call validateOffset
+    ret
+
+;-----------------------------------------------------------------------------
 ; Converters.
 ;-----------------------------------------------------------------------------
 

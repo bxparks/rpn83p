@@ -73,7 +73,7 @@ appendInputBufContinue:
 ; Input:
 ;   - inputBuf: input buffer
 ; Output:
-;   - OP1: value of inputBuf parsed into an RpnObject
+;   - OP1/OP2: value of inputBuf parsed into an RpnObject
 ;   - A: rpnObjectType
 ;   - inputBufFlagsClosedEmpty: set if inputBuf was an empty string when closed
 ;   - inputBuf cleared to empty string
@@ -83,15 +83,13 @@ CloseInputBuf: ; TODO: Rename this ParseInputBuf().
     ld hl, inputBuf
     call GetFirstChar ; A=first char, or 0 if empty
     or a
-    jr z, closeInputBufEmpty
-    ; inputBuf not empty
-    res inputBufFlagsClosedEmpty, (iy + inputBufFlags)
-    jr closeInputBufContinue
+    jr nz, closeInputBufNonEmpty
 closeInputBufEmpty:
     set inputBufFlagsClosedEmpty, (iy + inputBufFlags)
     call op1Set0PageOne
     jp ClearInputBuf
-closeInputBufContinue:
+closeInputBufNonEmpty:
+    res inputBufFlagsClosedEmpty, (iy + inputBufFlags)
     cp LlBrace ; '{'
     jr z, closeInputBufRecord
     call parseInputBufNumber ; OP1/OP2=float or complex
@@ -104,7 +102,9 @@ closeInputBufRecord:
 
 ; Description: Return the number of digits which are accepted or displayed for
 ; the given (baseWordSize) and (baseNumber).
-;   - floating mode: inputBufFloatMaxLen
+;   - real mode: inputBufFloatMaxLen
+;   - complex mode: inputBufComplexMaxLen
+;   - record mode: inputBufRecordMaxLen
 ;   - BASE 2: inputMaxLen = baseWordSize
 ;       - 8 -> 8
 ;       - 16 -> 16
@@ -142,15 +142,21 @@ getInputMaxLen:
     bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
     jr nz, getInputMaxLenBaseMode
     ; In normal floating point input mode, i.e. not BASE mode.
-    ; Return either the normal float limit or the complex limit.
+    ; Check for various object types.
     ld hl, inputBuf
     call checkComplexDelimiterP ; CF=1 if complex
-    jr nc, getInputMaxLenNormalMaxLen
-    ; allow extra characters for complex numbers
+    jr c, getInputMaxLenComplex
+    call checkRecordDelimiterP ; CF=1 if record
+    jr c, getInputMaxLenRecord
+getInputMaxLenNormal:
+    ; default
+    ld a, inputBufFloatMaxLen
+    ret
+getInputMaxLenComplex:
     ld a, inputBufComplexMaxLen
     ret
-getInputMaxLenNormalMaxLen:
-    ld a, inputBufFloatMaxLen
+getInputMaxLenRecord:
+    ld a, inputBufRecordMaxLen
     ret
 getInputMaxLenBaseMode:
     ; If BASE mode, the maximum number of digits depends on baseNumber and
@@ -1048,11 +1054,14 @@ findComplexDelimiterFound:
 ; Description: Check if complex delimiter exists in the given Pascal string.
 ; Input: HL: pointer to pascal string
 ; Output: CF=1 if complex, 0 otherwise
+; Destroys: A, B
+; Preserves: HL
 checkComplexDelimiterP:
+    push hl
     ld a, (hl) ; A=len
     inc hl
     or a ; ZF=0 if len==0; CF=0
-    ret z
+    jr z, checkComplexDelimiterPNot
     ld b, a
 checkComplexDelimiterPLoop:
     ld a, (hl)
@@ -1060,9 +1069,12 @@ checkComplexDelimiterPLoop:
     call isComplexDelimiterPageOne
     jr z, checkComplexDelimiterPFound
     djnz checkComplexDelimiterPLoop
+checkComplexDelimiterPNot:
+    pop hl
     or a ; CF=0
     ret
 checkComplexDelimiterPFound:
+    pop hl
     scf ; CF=1
     ret
 
@@ -1089,12 +1101,41 @@ isNumberDelimiterPageOne:
     cp ','
     ret
 
+; Description: Check if the data record delimiter '{' exists in the given
+; Pascal string.
+; Input: HL: pointer to pascal string
+; Output: CF=1 if record type, 0 otherwise
+; Destroys: A, B
+; Preserves: HL
+checkRecordDelimiterP:
+    push hl
+    ld a, (hl) ; A=len
+    inc hl
+    or a ; ZF=0 if len==0; CF=0
+    jr z, checkRecordDelimiterPNot
+    ld b, a
+checkRecordDelimiterPLoop:
+    ld a, (hl)
+    inc hl
+    cp '{'
+    jr z, checkRecordDelimiterPFound
+    djnz checkRecordDelimiterPLoop
+checkRecordDelimiterPNot:
+    pop hl
+    or a ; CF=0
+    ret
+checkRecordDelimiterPFound:
+    pop hl
+    scf ; CF=1
+    ret
+
 ;-----------------------------------------------------------------------------
 
 ; Description: Parse the inputBuf containing a Record into OP1.
 ; Input: inputBuf
-; Output: HL=OP1=RpnDate, RpnDateTime, RpnOffset
+; Output: OP1/OP2=RpnDate, RpnDateTime, RpnOffset, RpnOffsetDateTime
 ; Uses: parseBuf
+; Destroys: all
 ; Throws:
 ;   - Err:Syntax if the syntax is incorrect
 ;   - Err:Invalid if validation fails
@@ -1108,6 +1149,8 @@ parseInputBufRecord:
     jr z, parseInputBufDate
     cp 5
     jr z, parseInputBufDateTime
+    cp 7
+    jr z, parseInputBufOffsetDateTime
 parseInputBufRecordErr:
     bcall(_ErrSyntax)
 parseInputBufOffset:
@@ -1139,4 +1182,15 @@ parseInputBufDateTime:
     call parseDateTime
     pop hl ; HL=OP1+1
     call validateDateTime
+    ret
+parseInputBufOffsetDateTime:
+    ld de, OP1
+    ld a, rpnObjectTypeOffsetDateTime
+    ld (de), a
+    inc de ; skip type byte
+    push de
+    call parseOffsetDateTime
+    pop hl ; HL=OP1+1
+    call validateOffsetDateTime
+    call expandOp1IntoOp2PageOne ; sizeof(OffsetDateTime)>9
     ret
