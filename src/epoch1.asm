@@ -26,11 +26,11 @@
 ; would be required when working with seconds.
 ;
 ; Input:
-;   - HL:Date{}, most likely OP1+1
-;   - DE: resultPointer to u40, most likely OP3
+;   - HL:(Date*), most likely OP1+1
+;   - DE:(u40*)=resultPointer to u40, most likely OP3
 ; Output:
-;   - u40(DE) updated
-;   - HL=HL+4
+;   - (*DE) updated
+;   - HL=HL+rpnObjectTypeDateSizeOf=HL+4
 ; Destroys: A, BC, HL, OP4-OP6
 ; Preserves: DE
 dateToEpochRecord equ OP4
@@ -457,11 +457,13 @@ yearPrimeToYear:
 
 ; Description: Convert DateTime{} record to epochSeconds.
 ; Input:
-;   - HL:(DateTime*): dateTime, most likely OP1+1
+;   - HL:(DateTime*)=dateTimePointer, most likely OP1+1
 ;   - DE:(u40*)=resultPointer, most likely OP3
 ; Output:
 ;   - (*DE)=result
-; Destroys: A, BC, OP4-OP6
+;   - HL=HL+rpnObjectTypeDateTimeSizeOf=HL+8
+; Destroys: A, BC, HL, OP4-OP6
+; Preserves: DE
 dateTimeToInternalEpochSeconds:
     call dateToInternalEpochDays ; DE=epochDays; HL=timePointer=dateTime+4
     push hl ; stack=[timePointer]
@@ -475,12 +477,13 @@ dateTimeToInternalEpochSeconds:
     ; convert time to seconds
     ex (sp), hl ; stack=[resultPointer]; HL=timePointer
     ex de, hl ; DE=timePointer
-    ld hl, OP5
-    call hmsToSeconds ; HL=OP5=timeSeconds
+    ld hl, OP4
+    call hmsToSeconds ; HL=OP4=u40(timeSeconds); DE=timePointer+3=dateTime+8
+    ex de, hl ; HL=dateTimePointer+8; DE=u40(timeSeconds)
+    ex (sp), hl ; stack=[dateTime+8]; HL=resultPointer
     ; add timeSeconds to epochDays*86400
-    ex de, hl ; DE=OP5=timeSeconds
-    pop hl ; stack=[]; HL=resultPointer
     call addU40U40 ; HL=result=epochDays*86400+timeSeconds
+    pop hl ; stack=[]; HL=dateTime+8
     ret
 
 ; Description: Convert (hh,mm,ss) to seconds.
