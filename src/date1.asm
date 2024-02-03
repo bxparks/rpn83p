@@ -15,6 +15,8 @@ InitDate:
     jp setEpochDateCustom
 
 ;-----------------------------------------------------------------------------
+; RpnObjecType checkers.
+;-----------------------------------------------------------------------------
 
 ; Description: Check if OP1 is a RpnDate.
 ; Output: ZF=1 if RpnDate
@@ -299,7 +301,7 @@ convertU40DaysToU40Seconds:
     ret
 
 ;-----------------------------------------------------------------------------
-; Implement various menu functions.
+; Simple date functions.
 ;-----------------------------------------------------------------------------
 
 ; Description: Determine if OP1 is leap year.
@@ -387,8 +389,10 @@ dayOfWeekIsoEnd:
     ret
 
 ;-----------------------------------------------------------------------------
+; RpnDate functions.
+;-----------------------------------------------------------------------------
 
-; Description: Convert RpnDate{} object to epochDays relative to the current
+; Description: Convert RpnDate*{} object to epochDays relative to the current
 ; epochDate.
 ; Input:
 ;   - OP1:RpnDate
@@ -483,47 +487,7 @@ addRpnDateByDaysAdd:
 
 ;-----------------------------------------------------------------------------
 
-; Description: Add (RpnDateTime plus seconds) or (seconds plus RpnDateTime).
-; Input:
-;   - OP1:Union[RpnDateTime,RpnReal]=rpnDateTime or seconds
-;   - OP3:Union[RpnDateTime,RpnReal]=rpnDateTime or seconds
-; Output:
-;   - OP1:RpnDateTime=RpnDateTime+seconds
-; Destroys: OP1, OP2, OP3-OP6
-AddRpnDateTimeBySeconds:
-    call checkOp1DateTimePageOne ; ZF=1 if CP1 is an RpnDateTime
-    jr nz, addRpnDateTimeBySecondsAdd
-    call cp1ExCp3PageOne ; CP1=seconds; CP3=RpnDateTime
-addRpnDateTimeBySecondsAdd:
-    ; CP1=seconds, CP3=RpnDateTime
-    call PushRpnObject3 ; FPS=[RpnDateTime]
-    ld hl, OP3
-    call ConvertOP1ToI40 ; HL=OP3=u40(seconds)
-    ;
-    call PopRpnObject1 ; FPS=[]; CP1=RpnDateTime
-    call PushRpnObject3 ; FPS=[u40(seconds)]
-    ;
-    ld hl, OP1+1 ; HL=OP1+1=DateTime
-    ld de, OP3
-    call dateTimeToInternalEpochSeconds ; OP3=u40(epochSeconds)
-    call PopRpnObject1 ; FPS=[]; OP1=u40(seconds)
-    ;
-    ld hl, OP1
-    ld de, OP3
-    call addU40U40 ; HL=OP1=u40(epochSeconds+seconds)
-    ;
-    call op1ToOp2PageOne ; OP2=u40(epochSeconds+seconds)
-    ld hl, OP2
-    ld de, OP1+1 ; DE=OP1+1=DateTime
-    call internalEpochSecondsToDateTime ; DE=OP1+1:DateTime=newDateTime
-    ;
-    ld a, rpnObjectTypeDateTime
-    ld (OP1), a ; OP1:RpnDateTime=newRpnDateTime
-    ret
-
-;-----------------------------------------------------------------------------
-
-; Description: Subtract RpnDate minus Date or days.
+; Description: Subtract RpnDate minus RpnDate or days.
 ; Input:
 ;   - OP1:RpnDate=Y
 ;   - OP3:RpnDate or days=X
@@ -572,8 +536,105 @@ subRpnDateByRpnDate:
     jp ConvertI40ToOP1 ; OP1=Y.date-X.date
 
 ;-----------------------------------------------------------------------------
+; RpnDateTime functions.
+;-----------------------------------------------------------------------------
 
-; Description: Subtract RpnDateTime minus DateTime or seconds.
+; Description: Convert the RpnDateTime{} record in OP1 to epochSeconds relative
+; to the current epochDate.
+; Input: OP1:RpnDateTime=input
+; Output: OP1:real
+; Destroys: all, OP1-OP6
+RpnDateTimeToEpochSeconds:
+    ; convert input to relative epochSeconds
+    ld hl, OP1+1
+    ld de, OP3
+    call dateTimeToInternalEpochSeconds ; OP3=epochSeconds(input)
+    call op3ToOp2PageOne ; OP2=internalEpochSeconds(input)
+    ; convert current epochDate to current epochSeconds
+    ld hl, epochDate
+    ld de, OP1
+    call dateToInternalEpochDays ; DE=OP1=epochDays
+    ex de, hl ; HL=OP1=epochDays
+    call convertU40DaysToU40Seconds ; HL=OP1=epochSeconds
+    ; convert relative epochSeconds to internal epochSeconds
+    ld hl, OP3
+    ld de, OP1
+    call subU40U40 ; OP3=epochSeconds(input)-epochSeconds(currentEpochDate)
+    ;
+    call ConvertI40ToOP1 ; OP1=float(OP3)
+    ret
+
+;-----------------------------------------------------------------------------
+
+; Description: Convert the current epochSeconds (relative to the current
+; epochDate) to an RpnDateTime{} record.
+; Input: OP1: float(epochSeconds)
+; Output: OP1: RpnDateTime
+; Destroys: all, OP1-OP6
+EpochSecondsToRpnDateTime:
+    ; get relative epochSeconds
+    ld hl, OP2
+    bcall(_ConvertOP1ToI40) ; OP2=i40(epochSeconds)
+    ; convert relative epochSeconds to internal epochSeconds
+    ld hl, epochDate
+    ld de, OP1
+    call dateToInternalEpochDays ; DE=OP1=epochDays
+    ex de, hl ; HL=OP1=epochDays
+    call convertU40DaysToU40Seconds ; HL=OP1=epochSeconds
+    ld de, OP2
+    call addU40U40 ; HL=OP1=internal epochSeconds
+    ; convert internal epochSeconds to RpnDateTime
+    ld a, rpnObjectTypeDateTime
+    ld (de), a
+    inc de
+    call internalEpochSecondsToDateTime ; DE=OP2=RpnDateTime{}
+    ;
+    call op2ToOp1PageOne
+    ret
+
+;-----------------------------------------------------------------------------
+
+; Description: Add (RpnDateTime plus seconds) or (seconds plus RpnDateTime).
+; Input:
+;   - OP1:Union[RpnDateTime,RpnReal]=rpnDateTime or seconds
+;   - OP3:Union[RpnDateTime,RpnReal]=rpnDateTime or seconds
+; Output:
+;   - OP1:RpnDateTime=RpnDateTime+seconds
+; Destroys: OP1, OP2, OP3-OP6
+AddRpnDateTimeBySeconds:
+    call checkOp1DateTimePageOne ; ZF=1 if CP1 is an RpnDateTime
+    jr nz, addRpnDateTimeBySecondsAdd
+    call cp1ExCp3PageOne ; CP1=seconds; CP3=RpnDateTime
+addRpnDateTimeBySecondsAdd:
+    ; CP1=seconds, CP3=RpnDateTime
+    call PushRpnObject3 ; FPS=[RpnDateTime]
+    ld hl, OP3
+    call ConvertOP1ToI40 ; HL=OP3=u40(seconds)
+    ;
+    call PopRpnObject1 ; FPS=[]; CP1=RpnDateTime
+    call PushRpnObject3 ; FPS=[u40(seconds)]
+    ;
+    ld hl, OP1+1 ; HL=OP1+1=DateTime
+    ld de, OP3
+    call dateTimeToInternalEpochSeconds ; OP3=u40(epochSeconds)
+    call PopRpnObject1 ; FPS=[]; OP1=u40(seconds)
+    ;
+    ld hl, OP1
+    ld de, OP3
+    call addU40U40 ; HL=OP1=u40(epochSeconds+seconds)
+    ;
+    call op1ToOp2PageOne ; OP2=u40(epochSeconds+seconds)
+    ld hl, OP2
+    ld de, OP1+1 ; DE=OP1+1=DateTime
+    call internalEpochSecondsToDateTime ; DE=OP1+1:DateTime=newDateTime
+    ;
+    ld a, rpnObjectTypeDateTime
+    ld (OP1), a ; OP1:RpnDateTime=newRpnDateTime
+    ret
+
+;-----------------------------------------------------------------------------
+
+; Description: Subtract RpnDateTime minus RpnDateTime or seconds.
 ; Input:
 ;   - OP1:RpnDateTime=Y
 ;   - OP3:RpnDateTime or seconds=X
@@ -622,55 +683,7 @@ subRpnDateTimeByRpnDateTime:
     jp ConvertI40ToOP1 ; OP1=Y.date-X.date
 
 ;-----------------------------------------------------------------------------
-
-; Description: Convert the RpnDate{} record in OP1 to epochSeconds relative to
-; the current epochDate.
-; Input: OP1:RpnDateTime=input
-; Output: OP1:real
-; Destroys: all, OP1-OP6
-RpnDateTimeToEpochSeconds:
-    ; convert input to relative epochSeconds
-    ld hl, OP1+1
-    ld de, OP3
-    call dateTimeToInternalEpochSeconds ; OP3=epochSeconds(input)
-    call op3ToOp2PageOne ; OP2=internalEpochSeconds(input)
-    ; convert current epochDate to current epochSeconds
-    ld hl, epochDate
-    ld de, OP1
-    call dateToInternalEpochDays ; DE=OP1=epochDays
-    ex de, hl ; HL=OP1=epochDays
-    call convertU40DaysToU40Seconds ; HL=OP1=epochSeconds
-    ; convert relative epochSeconds to internal epochSeconds
-    ld hl, OP3
-    ld de, OP1
-    call subU40U40 ; OP3=epochSeconds(input)-epochSeconds(currentEpochDate)
-    ;
-    call ConvertI40ToOP1 ; OP1=float(OP3)
-    ret
-
-;-----------------------------------------------------------------------------
-
-EpochSecondsToRpnDateTime:
-    ; get relative epochSeconds
-    ld hl, OP2
-    bcall(_ConvertOP1ToI40) ; OP2=i40(epochSeconds)
-    ; convert relative epochSeconds to internal epochSeconds
-    ld hl, epochDate
-    ld de, OP1
-    call dateToInternalEpochDays ; DE=OP1=epochDays
-    ex de, hl ; HL=OP1=epochDays
-    call convertU40DaysToU40Seconds ; HL=OP1=epochSeconds
-    ld de, OP2
-    call addU40U40 ; HL=OP1=internal epochSeconds
-    ; convert internal epochSeconds to RpnDateTime
-    ld a, rpnObjectTypeDateTime
-    ld (de), a
-    inc de
-    call internalEpochSecondsToDateTime ; DE=OP2=RpnDateTime{}
-    ;
-    call op2ToOp1PageOne
-    ret
-
+; Current EpochDate functions.
 ;-----------------------------------------------------------------------------
 
 ; Description: Set epochType and epochDate to UNIX (1970-01-01).
@@ -715,30 +728,6 @@ SelectCustomEpochDate:
 
 ;-----------------------------------------------------------------------------
 
-; Description: Copy the Date{} pointed by HL to (epochDateCustom).
-; Input: HL:Date{}
-; Output: (epochDate) updated
-; Destroys: all
-; Preserves: A
-setEpochDateCustom:
-    ld de, epochDateCustom
-    ld bc, 4
-    ldir
-    ret
-
-; Description: Copy the Date{} pointed by HL to (epochDate).
-; Input: HL:Date{}
-; Output: (epochDate) updated
-; Destroys: all
-; Preserves: A
-setEpochDate:
-    ld de, epochDate
-    ld bc, 4
-    ldir
-    ret
-
-;-----------------------------------------------------------------------------
-
 ; Description: Set the current epoch to the date given in OP1.
 ; Input: OP1: RpnDate{}
 ; Output: (epochDate) updated
@@ -763,6 +752,32 @@ GetCustomEpochDate:
     ld bc, 4
     ldir
     ret
+
+;-----------------------------------------------------------------------------
+
+; Description: Copy the Date{} pointed by HL to (epochDateCustom).
+; Input: HL:Date{}
+; Output: (epochDate) updated
+; Destroys: all
+; Preserves: A
+setEpochDateCustom:
+    ld de, epochDateCustom
+    ld bc, 4
+    ldir
+    ret
+
+; Description: Copy the Date{} pointed by HL to (epochDate).
+; Input: HL:Date{}
+; Output: (epochDate) updated
+; Destroys: all
+; Preserves: A
+setEpochDate:
+    ld de, epochDate
+    ld bc, 4
+    ldir
+    ret
+
+;-----------------------------------------------------------------------------
 
 unixDate:
     .dw 1970
