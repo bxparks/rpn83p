@@ -452,3 +452,136 @@ yearPrimeToYear:
     ret nc
     inc hl
     ret
+
+;-----------------------------------------------------------------------------
+
+; Description: Convert DateTime{} record to epochSeconds.
+; Input:
+;   - HL:(DateTime*): dateTime, most likely OP1+1
+;   - DE:(u40*)=resultPointer, most likely OP3
+; Output:
+;   - (*DE)=result
+; Destroys: A, BC, OP4-OP6
+dateTimeToInternalEpochSeconds:
+    call dateToInternalEpochDays ; DE=epochDays; HL=timePointer=dateTime+4
+    push hl ; stack=[timePointer]
+    ; convert days to seconds
+    ld hl, OP4
+    ld a, 1
+    ld bc, 20864 ; ABC=86400 seconds per day
+    call setU40ToABC ; HL=OP4=86400
+    ex de, hl ; HL=result; DE=OP4=86400
+    call multU40U40 ; HL=result=86400*epochDays
+    ; convert time to seconds
+    ex (sp), hl ; stack=[resultPointer]; HL=timePointer
+    ex de, hl ; DE=timePointer
+    ld hl, OP5
+    call hmsToSeconds ; HL=OP5=timeSeconds
+    ; add timeSeconds to epochDays*86400
+    ex de, hl ; DE=OP5=timeSeconds
+    pop hl ; stack=[]; HL=resultPointer
+    call addU40U40 ; HL=result=epochDays*86400+timeSeconds
+    ret
+
+; Description: Convert (hh,mm,ss) to seconds.
+; Input:
+;   - DE: pointer to 3 bytes (hh,mm,ss).
+;   - HL: pointer to u40 result
+; Output:
+;   - (HL): updated
+;   - DE=DE+3
+; Destroys: A, DE
+; Preserves: BC, HL
+hmsToSeconds:
+    push hl ; stack=[result]
+    ; read hour
+    ld a, (de)
+    inc de
+    call setU40ToA ; HL=A
+    ; multiply by 60
+    ld a, 60
+    call multU40ByA ; HL=result=HL*60
+    ; add minute
+    ld a, (de)
+    inc de
+    call addU40ByA ; HL=HL+A
+    ; multiply by 60
+    ld a, 60
+    call multU40ByA ; HL=HL*60
+    ; add second
+    ld a, (de)
+    inc de
+    call addU40ByA ; HL=HL+A
+    pop hl ; HL=result
+    ret
+
+;-----------------------------------------------------------------------------
+
+; Description: Convert internal epochSeconds to DateTime{} structure.
+; Input:
+;   - HL:(i40*)=epochSeconds, probably OP1
+;   - DE:(DateTime*)=dateTime, probably OP2+1
+; Output:
+;   - *DE=dateTime result
+; Destroys: A, BC, OP3-OP6
+internalEpochSecondsToDateTime:
+    push de ; stack=[dateTime]
+    push hl ; stack=[dateTime,epochSeconds]
+    ; (epochDays,seconds)=div2(epochSeconds,86400)
+    ld a, 1
+    ld bc, 20864 ; ABC=86400 seconds per day
+    ld hl, OP3
+    call setU40ToABC ; HL=OP4=86400
+    ;
+    ex de, hl ; DE=OP4=divisor=86400
+    pop hl ; stack=[dateTime]; HL=epochSeconds
+    ld bc, OP4 ; remainder
+    call divI40U40 ; HL=epochDays; BC=OP4=seconds
+    ;
+    ex (sp), hl ; stack=[epochDays]; HL=dateTime
+    push hl ; stack=[epochDays,dateTime]
+    inc hl
+    inc hl
+    inc hl
+    inc hl ; HL=dateTime+4
+    ; ex bc, hl
+    push hl
+    push bc
+    pop hl ; HL=OP4=remainder
+    pop bc ; BC=dateTime+4
+    call secondsToHms ; BC=dateTime+4 updated
+    ;
+    pop de ; stack=[epochDays]; DE=dateTime
+    pop hl ; stack=[]; HL=epochDays
+    jp internalEpochDaysToDate ; DE=date
+
+; Description: Convert seconds in a day to (hh,mm,ss).
+; Input:
+;   - HL:(u40*)=secondsPointer
+;   - BC:(Time*)=hmsPointer
+; Output:
+;   - HL: destroyed
+;   - BC: updated
+; Destroys: A, (HL)
+; Preserves: BC, DE, HL
+secondsToHms:
+    push de
+    inc bc
+    inc bc
+    ld d, 60
+    ;
+    call divU40ByD ; E=remainder; HL=quotient
+    ld a, e
+    ld (bc), a
+    dec bc
+    ;
+    call divU40ByD ; E=remainder, HL=quotient
+    ld a, e
+    ld (bc), a
+    dec bc
+    ;
+    ld a, (hl)
+    ld (bc), a
+    ;
+    pop de
+    ret
