@@ -999,10 +999,6 @@ _InitDateLabel:
 _InitDate equ _InitDateLabel-branchTableBase
     .dw InitDate
     .db 1
-_ConvertToDateTimeLabel:
-_ConvertToDateTime equ _ConvertToDateTimeLabel-branchTableBase
-    .dw ConvertToDateTime
-    .db 1
 _IsLeapLabel:
 _IsLeap equ _IsLeapLabel-branchTableBase
     .dw IsLeap
@@ -1075,6 +1071,11 @@ _SetCustomEpochDate equ _SetCustomEpochDateLabel-branchTableBase
 _GetCustomEpochDateLabel:
 _GetCustomEpochDate equ _GetCustomEpochDateLabel-branchTableBase
     .dw GetCustomEpochDate
+    .db 1
+; offset1.asm
+_RpnOffsetToSecondsLabel:
+_RpnOffsetToSeconds equ _RpnOffsetToSecondsLabel-branchTableBase
+    .dw RpnOffsetToSeconds
     .db 1
 
 #ifdef DEBUG
@@ -1208,6 +1209,7 @@ defpage(1)
 #include "complexformat1.asm"
 #include "epoch1.asm"
 #include "date1.asm"
+#include "offset1.asm"
 #include "tvm.asm"
 #include "hms.asm"
 #include "prob.asm"

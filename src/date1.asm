@@ -246,7 +246,7 @@ validateOffsetDateTime:
 ; Output; HL:RpnDateTime
 ; Destroys: A
 ; Preserves: HL
-ConvertToDateTime:
+convertToDateTime:
     ld a, (hl) ; A=rpnType
     cp rpnObjectTypeDateTime
     ret z

@@ -116,6 +116,27 @@ setU40ToABC:
 
 ;------------------------------------------------------------------------------
 
+; Description: Set i40 pointed by HL to signed value in A.
+; Input:
+;   - A: i8
+;   - HL: pointer to i40
+; Output:
+;   - (HL)=A
+; Preserves: all
+setI40ToA:
+    call clearU40
+    bit 7, a
+    jr z, setI40ToAPos
+    ; negative
+    neg
+    ld (hl), a
+    jp negU40
+setI40ToAPos:
+    ld (hl), a
+    ret
+
+;------------------------------------------------------------------------------
+
 ; Description: Add 2 u40 integers.
 ; Input:
 ;   - HL: pointer to result u40 integer in little-endian format.
