@@ -26,10 +26,19 @@ mEpochDaysToDateHandler:
     jp replaceX
 
 mDateTimeToEpochSecondsHandler:
-    call closeInputAndRecallRpnDateX ; OP1=X=RpnDate
-    ld hl, OP1
-    bcall(_ConvertToDateTime) ; preserves HL
+    call closeInputAndRecallRpnDateLikeX ; OP1=X=RpnDateLike
+    call checkOp1Date ; ZF=1 if RpnDate
+    jr z, mDateTimeToEpochSecondsHandlerDate
+    call checkOp1DateTime ; ZF=1 if RpnDateTime
+    jr z, mDateTimeToEpochSecondsHandlerDateTime
+    bcall(_ErrDataType)
+mDateTimeToEpochSecondsHandlerDate:
+    bcall(_RpnDateToEpochSeconds) ; OP3=i40(seconds)
+    jr mDateTimeToEpochSecondsHandlerEnd
+mDateTimeToEpochSecondsHandlerDateTime:
     bcall(_RpnDateTimeToEpochSeconds) ; OP3=i40(seconds)
+    ; [[fallthrough]]
+mDateTimeToEpochSecondsHandlerEnd:
     jp replaceX
 
 mEpochSecondsToDateTimeHandler:

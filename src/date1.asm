@@ -392,16 +392,40 @@ dayOfWeekIsoEnd:
 ; RpnDate functions.
 ;-----------------------------------------------------------------------------
 
-; Description: Convert RpnDate*{} object to epochDays relative to the current
+; Description: Convert RpnDate{} to epochDays relative to the current
 ; epochDate.
 ; Input:
 ;   - OP1:RpnDate
 ;   - (epochDate):Date{}=current epoch date
 ; Output:
-;   - OP1:epochDays(RpnDate)
+;   - OP1:epochDays
 ; Destroys: A, DE, BC, HL, OP1-OP3, OP4-OP6
 RpnDateToEpochDays:
-    ; convert input to epochDays
+    call dateToEpochDays ; HL=OP3=epochDays
+    call ConvertI40ToOP1 ; OP1=float(OP3)
+    ret
+
+; Description: Convert RpnDate{} to epochSeconds relative to the current
+; epochDate.
+; Input:
+;   - OP1:RpnDate
+;   - (epochDate):Date{}=current epoch date
+; Output:
+;   - OP1:epochSeconds
+; Destroys: A, DE, BC, HL, OP1-OP3, OP4-OP6
+RpnDateToEpochSeconds:
+    call dateToEpochDays ; HL=OP3=epochDays
+    call convertU40DaysToU40Seconds
+    call ConvertI40ToOP1
+    ret
+
+; Description: Convert Date{} to epochSeconds.
+; Input:
+;   - OP1:Date
+; Output:
+;   - HL=OP3
+;   - OP3:u40=days
+dateToEpochDays:
     ld hl, OP1+1
     ld de, OP3
     call dateToInternalEpochDays ; OP3=epochDays(input)
@@ -414,8 +438,6 @@ RpnDateToEpochDays:
     ld hl, OP3
     ld de, OP1
     call subU40U40 ; OP3=epochDays(input)-epochDays(currentEpochDate)
-    ;
-    call ConvertI40ToOP1 ; OP1=float(OP3)
     ret
 
 ;-----------------------------------------------------------------------------

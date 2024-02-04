@@ -1015,6 +1015,10 @@ _RpnDateToEpochDaysLabel:
 _RpnDateToEpochDays equ _RpnDateToEpochDaysLabel-branchTableBase
     .dw RpnDateToEpochDays
     .db 1
+_RpnDateToEpochSecondsLabel:
+_RpnDateToEpochSeconds equ _RpnDateToEpochSecondsLabel-branchTableBase
+    .dw RpnDateToEpochSeconds
+    .db 1
 _EpochDaysToRpnDateLabel:
 _EpochDaysToRpnDate equ _EpochDaysToRpnDateLabel-branchTableBase
     .dw EpochDaysToRpnDate
