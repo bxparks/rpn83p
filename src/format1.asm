@@ -17,6 +17,10 @@
 ;   - DE: points to NUL char at end of string
 FormatDateRecord:
     inc hl ; skip type byte
+    ; 'print 'D'
+    ld a, 'D'
+    ld (de), a
+    inc de
     ; print '{'
     ld a, LlBrace
     ld (de), a
@@ -41,6 +45,13 @@ FormatDateRecord:
 ;   - DE: points to NUL char at end of string
 FormatDateTimeRecord:
     inc hl ; skip type byte
+    ; 'print 'DT'
+    ld a, 'D'
+    ld (de), a
+    inc de
+    ld a, 'T'
+    ld (de), a
+    inc de
     ; print '{'
     ld a, LlBrace
     ld (de), a
@@ -62,7 +73,9 @@ FormatDateTimeRecord:
     ld (de), a ; add NUL terminator
     ret
 
-; Description: Format the Offset Record in HL to DE.
+; Description: Format the Offset Record in HL to DE. Eventually, an actual
+; TimeZone object may be created. For now, the Offset object will take the
+; place of the TimeZone object.
 ; Input:
 ;   - HL: dateTimeRecordPointer
 ;   - DE: stringBufPointer
@@ -71,6 +84,13 @@ FormatDateTimeRecord:
 ;   - DE: points to NUL char at end of string
 FormatOffsetRecord:
     inc hl ; skip type byte
+    ; 'print 'TZ'
+    ld a, 'T'
+    ld (de), a
+    inc de
+    ld a, 'Z'
+    ld (de), a
+    inc de
     ; print '{'
     ld a, LlBrace
     ld (de), a
@@ -95,6 +115,14 @@ FormatOffsetRecord:
 ;   - DE: points to NUL char at end of string
 FormatOffsetDateTimeRecord:
     inc hl ; skip type byte
+    ; 'print 'DZ'. Eventually, this might become a ZonedDateTime but for now,
+    ; we will use the OffsetDateTime and print it as 'DZ'.
+    ld a, 'D'
+    ld (de), a
+    inc de
+    ld a, 'Z'
+    ld (de), a
+    inc de
     ; print '{'
     ld a, LlBrace
     ld (de), a
