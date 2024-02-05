@@ -1192,5 +1192,5 @@ parseInputBufOffsetDateTime:
     call parseOffsetDateTime
     pop hl ; HL=OP1+1
     call validateOffsetDateTime
-    call expandOp1IntoOp2PageOne ; sizeof(OffsetDateTime)>9
+    call expandOp1ToOp2PageOne ; sizeof(OffsetDateTime)>9
     ret

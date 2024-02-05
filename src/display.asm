@@ -1487,12 +1487,12 @@ printOP1OffsetDateTimeRecord:
     call eraseEOLIfNeeded ; uses B
     call displayStackSetSmallFont
     ; format OP1
-    call shrinkOp2IntoOp1
+    call shrinkOp2ToOp1
     ld hl, OP1
     ld de, OP3 ; destPointer
     push de
     bcall(_FormatOffsetDateTimeRecord)
-    call expandOp1IntoOp2
+    call expandOp1ToOp2
     ; print string stored in OP3
     pop hl ; HL=OP3
     call vPutSmallS

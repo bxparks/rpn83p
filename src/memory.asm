@@ -381,17 +381,17 @@ exchangeComplex:
 ; registers.
 ; Destroys: BC, DE, HL
 ; Preserves: A
-expandOp1IntoOp2:
+expandOp1ToOp2:
     ld de, OP2+9-1
     ld hl, OP2+7-1
     ld bc, 9
     lddr
     ret
 
-; Description: The reverse of expandOp1IntoOp2().
+; Description: The reverse of expandOp1ToOp2().
 ; Destroys: BC, DE, HL
 ; Preserves: A
-shrinkOp2IntoOp1:
+shrinkOp2ToOp1:
     ld de, OP1+9
     ld hl, OP2
     ld bc, 9

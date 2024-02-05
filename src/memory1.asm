@@ -219,9 +219,19 @@ cp1ExCp3PageOne:
 ; registers.
 ; Destroys: BC, DE, HL
 ; Preserves: A
-expandOp1IntoOp2PageOne:
+expandOp1ToOp2PageOne:
     ld de, OP2+9-1
     ld hl, OP2+7-1
     ld bc, 9
     lddr
+    ret
+
+; Description: The reverse of expandOp1ToOp2().
+; Destroys: BC, DE, HL
+; Preserves: A
+shrinkOp2ToOp1PageOne:
+    ld de, OP1+9
+    ld hl, OP2
+    ld bc, 9
+    ldir
     ret
