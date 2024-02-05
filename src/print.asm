@@ -78,6 +78,15 @@ smallStringWidth:
 ; Description: Erase to end of line using small font. Same as bcall(_EraseEOL).
 ; Prints a quad space (4 pixels side) as many times as necessary to overwrite
 ; the remainder of the line.
+;
+; There are 2 loops below, one printing quad-column spaces, and one printing
+; single-column spaces. There seems to be a bug with VPutMap() where the very
+; last pixel column does not seem get erased properly with an SFourSpaces
+; character. If the character on the last column is a '}' for example, a single
+; dot from the point of the '}' remains on the screen. If we switch to printing
+; single-column wide Sspace for the last 4 pixels, the problem seems to go
+; away.
+;
 ; Destroys: A, B
 vEraseEOL:
     ld a, (penCol)
@@ -87,11 +96,20 @@ vEraseEOL:
     add a, 3 ; A=numPixelsToEnd+3
     srl a
     srl a ; A=numSpacesToPrint=(numPixelsToEnd+3)/4
+    dec a
+    jr z, vEraseEOLSingles ; switch to print single-spaces for the last 4
+vEraseEOLQuads:
     ld b, a
 vEraseEOLLoop:
     ld a, SFourSpaces
     bcall(_VPutMap)
     djnz vEraseEOLLoop
+vEraseEOLSingles:
+    ld b, 4
+vEraseEOLLoop2:
+    ld a, Sspace
+    bcall(_VPutMap)
+    djnz vEraseEOLLoop2
     ret
 
 ;-----------------------------------------------------------------------------
