@@ -143,6 +143,24 @@ checkOp3Offset:
 ; Conversions from real numbers in OP1/OP2 to complex numbers in CP1.
 ;-----------------------------------------------------------------------------
 
+; Description: Check if OP1 is an RpnOffsetDateTime.
+; Output: ZF=1 if RpnOffsetDateTime
+checkOp1OffsetDateTime:
+    ld a, (OP1)
+    and $1f
+    cp rpnObjectTypeOffsetDateTime
+    ret
+
+; Description: Check if OP3 is an RpnOffsetDateTime.
+; Output: ZF=1 if RpnOffsetDateTime
+checkOp3OffsetDateTime:
+    ld a, (OP3)
+    and $1f
+    cp rpnObjectTypeOffsetDateTime
+    ret
+
+;-----------------------------------------------------------------------------
+
 ; Description: Convert a real number in OP1 to a complex number in OP1/OP2 by
 ; setting the OP2 to 0, and setting the objectType to complex. If already a
 ; complex number, do nothing.

@@ -8,6 +8,10 @@
 ; entry.
 ;-----------------------------------------------------------------------------
 
+;-----------------------------------------------------------------------------
+; RpnOffset functions.
+;-----------------------------------------------------------------------------
+
 ; Description: Convert the RpnOffset{} record in OP1 to relative seconds.
 ; Input: OP1:RpnOffet
 ; Output: OP1:real
@@ -100,3 +104,63 @@ hmToSecondsPos:
     ; multiply by 60
     ld a, 60
     jp multU40ByA ; HL=HL*60
+
+;-----------------------------------------------------------------------------
+; RpnOffsetDateTime functions.
+;-----------------------------------------------------------------------------
+
+; Description: Convert the RpnDateTime{} record in OP1 to epochSeconds relative
+; to the current epochDate.
+; Input: OP1/OP2:RpnOffsetDateTime=input
+; Output: OP1:real
+; Destroys: all, OP1-OP6
+RpnOffsetDateTimeToEpochSeconds:
+    call shrinkOp2ToOp1PageOne
+    ld hl, OP1
+    call convertToOffsetDateTime ; preserves HL
+    call rpnDateTimeToU40EpochSeconds ; OP3=dateTimeSeconds
+    ;
+    ld de, OP1+rpnObjectTypeDateTimeSizeOf ; DE:(Offset*)
+    ld hl, OP4
+    call hmToSeconds ; OP4:i40=offsetSeconds
+    ;
+    ld hl, OP3
+    ld de, OP4
+    call subU40U40 ; HL:(u40*)=OP3=dateTimeSeconds-offsetSeconds
+    jp ConvertI40ToOP1 ; OP1=float(OP3)
+
+; Description: Convert the current epochSeconds (relative to the current
+; epochDate) to an RpnOffsetDateTime{} record.
+; Input: OP1: float(epochSeconds)
+; Output: OP1: RpnDateTime
+; Destroys: all, OP1-OP6
+EpochSecondsToRpnOffsetDateTime:
+    ; get relative epochSeconds
+    ld hl, OP2
+    bcall(_ConvertOP1ToI40) ; OP2=i40(epochSeconds)
+    ; convert relative epochSeconds to internal epochSeconds
+    ld hl, epochDate
+    ld de, OP1
+    call dateToInternalEpochDays ; DE=OP1=epochDays
+    ex de, hl ; HL=OP1=epochDays
+    call convertU40DaysToU40Seconds ; HL=OP1=epochSeconds
+    ld de, OP2
+    call addU40U40 ; HL=OP1=internal epochSeconds
+    ; convert internal epochSeconds to RpnDateTime
+    ld a, rpnObjectTypeOffsetDateTime
+    ld (de), a
+    inc de
+    call internalEpochSecondsToDateTime ; DE=OP2=RpnDateTime{}
+    call op2ToOp1PageOne ; OP1=RpnDateTime(OP2)
+    ; TODO: shift the DateTime components by the current TimeZone, then update
+    ; the TimeZone fields in the OffsetDateTime. For now, just set them to 0.
+    ld hl, OP1
+    ld de, rpnObjectTypeDateTimeSizeOf
+    add hl, de ; HL=pointer to Offset(hh,mm) fields
+    xor a
+    ld (hl), a
+    inc hl
+    ld (hl), a
+    ;
+    call expandOp1ToOp2PageOne
+    ret

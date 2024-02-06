@@ -9,14 +9,14 @@ mLeapYearHandler:
     jp replaceX
 
 mDayOfWeekHandler:
-    call closeInputAndRecallRpnDateX ; OP1=X=RpnDate
+    call closeInputAndRecallRpnDateLikeX ; OP1=X=RpnDateLike{}
     ld hl, OP1+1 ; skip type byte
     bcall(_DayOfWeekIso) ; A=[1,7]
     bcall(_ConvertAToOP1)
     jp replaceX
 
 mDateToEpochDaysHandler:
-    call closeInputAndRecallRpnDateX ; OP1=X=RpnDate
+    call closeInputAndRecallRpnDateLikeX ; OP1=X=RpnDateLike{}
     bcall(_RpnDateToEpochDays) ; OP1=float(days)
     jp replaceX
 
@@ -33,6 +33,8 @@ mDateTimeToEpochSecondsHandler:
     jr z, mDateTimeToEpochSecondsHandlerDateTime
     call checkOp1Offset ; ZF=1 if RpnOffset
     jr z, mDateTimeToEpochSecondsHandlerOffset
+    call checkOp1OffsetDateTime ; ZF=1 if RpnOffsetDateTime
+    jr z, mDateTimeToEpochSecondsHandlerOffsetDateTime
     bcall(_ErrDataType)
 mDateTimeToEpochSecondsHandlerDate:
     bcall(_RpnDateToEpochSeconds) ; OP1=epochSeconds
@@ -42,13 +44,16 @@ mDateTimeToEpochSecondsHandlerDateTime:
     jr mDateTimeToEpochSecondsHandlerEnd
 mDateTimeToEpochSecondsHandlerOffset:
     bcall(_RpnOffsetToSeconds) ; OP1=seconds
+    jr mDateTimeToEpochSecondsHandlerEnd
+mDateTimeToEpochSecondsHandlerOffsetDateTime:
+    bcall(_RpnOffsetDateTimeToEpochSeconds) ; OP1=epochSeconds
     ; [[fallthrough]]
 mDateTimeToEpochSecondsHandlerEnd:
     jp replaceX
 
 mEpochSecondsToDateTimeHandler:
     call closeInputAndRecallX ; OP1=X=epochSeconds
-    bcall(_EpochSecondsToRpnDateTime) ; OP1=DateTime(epochSeconds)
+    bcall(_EpochSecondsToRpnOffsetDateTime) ; OP1=OffsetDateTime(epochSeconds)
     jp replaceX
 
 ;-----------------------------------------------------------------------------

@@ -526,7 +526,8 @@ hmsToSeconds:
 ;   - DE:(DateTime*)=dateTime, probably OP2+1
 ; Output:
 ;   - *DE=dateTime result
-; Destroys: A, BC, OP3-OP6
+; Preserves: DE
+; Destroys: A, BC, HL, OP3-OP6
 internalEpochSecondsToDateTime:
     push de ; stack=[dateTime]
     push hl ; stack=[dateTime,epochSeconds]

@@ -241,31 +241,50 @@ validateOffsetDateTime:
 ; Converters.
 ;-----------------------------------------------------------------------------
 
-; Description: Convert RpnDate to RpnDateTime if necessary.
-; Input: HL:RpnDate
-; Output; HL:RpnDateTime
+; Description: Convert RpnDate or RpnDateTime to RpnOffsetDateTime. The
+; conversion is done in situ.
+; Input: HL:RpnDate or RpnDateTime
+; Output; HL:RpnOffsetDateTime
 ; Destroys: A
-; Preserves: HL
-convertToDateTime:
+; Preserves: BC, DE, HL
+convertToOffsetDateTime:
+    ; check if already RpnOffsetDateTime
     ld a, (hl) ; A=rpnType
-    cp rpnObjectTypeDateTime
+    cp rpnObjectTypeOffsetDateTime
     ret z
-    ; convert RpnDate to RpnDateTime
+    ;
     push hl
-    ld a, rpnObjectTypeDateTime
-    ld (hl), a
-    inc hl ; year
-    inc hl ; year+1
-    inc hl ; month
-    inc hl ; day
-    inc hl ; hour
-    ; set the Time{} part to 00:00:00
-    xor a
-    ld (hl), a ; hour=0
-    inc hl
-    ld (hl), a ; min=0
-    inc hl
-    ld (hl), a ; sec=0
+    push de
+    push bc
+    ; check if RpnDateTime
+    cp rpnObjectTypeDateTime
+    jr z, convertToOffsetDateTimeFromDateTime
+    ; check if RpnDate
+    cp rpnObjectTypeDate
+    jr z, convertToOffsetDateTimeFromDate
+    bcall(_ErrDataType)
+convertToOffsetDateTimeFromDateTime:
+    ld bc, rpnObjectTypeDateTimeSizeOf
+    jr convertToOffsetDateTimeClear
+convertToOffsetDateTimeFromDate:
+    ld bc, rpnObjectTypeDateSizeOf
+convertToOffsetDateTimeClear:
+    add hl, bc ; HL=pointerToClearArea
+    ex de, hl ; DE=pointerToClearArea
+    ld hl, rpnObjectTypeOffsetDateTimeSizeOf
+    scf; CF=1
+    sbc hl, bc ; HL=numBytesToClear=rpnObjectTypeOffsetDateTimeSizeOf-sizeOf-1
+    ;
+    ld c, l
+    ld b, h ; BC=numBytesToClear
+    ld l, e
+    ld h, d ; HL=pointerToClearArea
+    inc de ; DE=HL+1
+    ld (hl), 0 ; clear the first byte
+    ldir ; clear the rest
+    ;
+    pop bc
+    pop de
     pop hl
     ret
 
@@ -567,6 +586,14 @@ subRpnDateByRpnDate:
 ; Output: OP1:real
 ; Destroys: all, OP1-OP6
 RpnDateTimeToEpochSeconds:
+    ld hl, OP1
+    call convertToOffsetDateTime ; preserves HL
+    call rpnDateTimeToU40EpochSeconds
+    jp ConvertI40ToOP1 ; OP1=float(OP3)
+
+; Input: OP1:(DateTime*)=input
+; Output: OP3:(u40*)=epochSeconds
+rpnDateTimeToU40EpochSeconds:
     ; convert input to relative epochSeconds
     ld hl, OP1+1
     ld de, OP3
@@ -582,8 +609,6 @@ RpnDateTimeToEpochSeconds:
     ld hl, OP3
     ld de, OP1
     call subU40U40 ; OP3=epochSeconds(input)-epochSeconds(currentEpochDate)
-    ;
-    call ConvertI40ToOP1 ; OP1=float(OP3)
     ret
 
 ;-----------------------------------------------------------------------------

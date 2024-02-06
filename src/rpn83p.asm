@@ -131,14 +131,17 @@ rpnObjectTypeComplex equ $0C ; same as TI-OS
 ; - struct Date{year:u16, mon:u8, day:u8}, 4 bytes
 ; - struct RpnDate{type:u8, date:Date}, 5 bytes
 rpnObjectTypeDate equ $18 ; next unused object type
+rpnObjectTypeDateSizeOf equ 5
 ; DateTime object:
 ; - struct DateTime{date:Date, hour:u8, min:u8, sec:u8}, 7 bytes
 ; - struct RpnDateTime{type:u8, dateTime:DateTime}, 8 bytes
 rpnObjectTypeDateTime equ $19
+rpnObjectTypeDateTimeSizeOf equ 8
 ; Offset object:
 ; - struct Offset{hour:i8, min:i8}, 2 bytes
 ; - struct RpnOffset{type:u8, offset:Offset}, 3 bytes
 rpnObjectTypeOffset equ $1A
+rpnObjectTypeOffsetSizeOf equ 3
 ; OffsetDateTime object:
 ; - struct OffsetDateTime{datetime:DateTime, offset:Offset}, 9 bytes
 ; - struct RpnOffsetDateTime{type:u8, offsetDateTime:OffsetDateTime}, 10 bytes
@@ -147,6 +150,7 @@ rpnObjectTypeOffset equ $1A
 ; to careful and use expandOp1ToOp2() and shrinkOp2ToOp1() when parsing or
 ; manipulating this object.
 rpnObjectTypeOffsetDateTime equ $1B
+rpnObjectTypeOffsetDateTimeSizeOf equ 10
 
 ; An RpnObject is a struct of a type byte and 2 RpnFloat objects so that a
 ; complex number can be stored. See the struct definitions in vars.asm. If the
@@ -994,6 +998,7 @@ _FormatComplexPolarDegLabel:
 _FormatComplexPolarDeg equ _FormatComplexPolarDegLabel-branchTableBase
     .dw FormatComplexPolarDeg
     .db 1
+
 ; date1.asm
 _InitDateLabel:
 _InitDate equ _InitDateLabel-branchTableBase
@@ -1035,6 +1040,7 @@ _EpochSecondsToRpnDateTimeLabel:
 _EpochSecondsToRpnDateTime equ _EpochSecondsToRpnDateTimeLabel-branchTableBase
     .dw EpochSecondsToRpnDateTime
     .db 1
+;
 _AddRpnDateTimeBySecondsLabel:
 _AddRpnDateTimeBySeconds equ _AddRpnDateTimeBySecondsLabel-branchTableBase
     .dw AddRpnDateTimeBySeconds
@@ -1072,10 +1078,19 @@ _GetCustomEpochDateLabel:
 _GetCustomEpochDate equ _GetCustomEpochDateLabel-branchTableBase
     .dw GetCustomEpochDate
     .db 1
+
 ; offset1.asm
 _RpnOffsetToSecondsLabel:
 _RpnOffsetToSeconds equ _RpnOffsetToSecondsLabel-branchTableBase
     .dw RpnOffsetToSeconds
+    .db 1
+_RpnOffsetDateTimeToEpochSecondsLabel:
+_RpnOffsetDateTimeToEpochSeconds equ _RpnOffsetDateTimeToEpochSecondsLabel-branchTableBase
+    .dw RpnOffsetDateTimeToEpochSeconds
+    .db 1
+_EpochSecondsToRpnOffsetDateTimeLabel:
+_EpochSecondsToRpnOffsetDateTime equ _EpochSecondsToRpnOffsetDateTimeLabel-branchTableBase
+    .dw EpochSecondsToRpnOffsetDateTime
     .db 1
 
 #ifdef DEBUG
