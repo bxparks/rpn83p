@@ -259,18 +259,18 @@ closeRpnObjectList:
 
 ;-----------------------------------------------------------------------------
 
-; Description: Convert rpnObject index to the object pointer, including 2 bytes
-; for the appVarSize (managed by the OS), 2 bytes for the CRC16 checksum, and 2
-; bytes for the appId.
+; Description: Convert rpnObject index to the array element pointer, including
+; 2 bytes for the appVarSize (managed by the OS), 2 bytes for the CRC16
+; checksum, and 2 bytes for the appId.
 ; Input:
 ;   - C=index
 ;   - DE=appDataPointer to the begining of the appVar which is the 2-byte
 ;   appVarSize field provided by the OS
 ; Output:
-;   - HL=objectPointer
+;   - HL=elementPointer
 ;   - CF=1 if within bounds, otherwise 0
 ; Preserves: A, BC, DE
-rpnObjectIndexToPointer:
+rpnObjectIndexToElementPointer:
     call rpnObjectIndexToOffset ; HL=dataOffset
     push bc ; stack=[BC]
     push de ; stack=[BC,DE]
@@ -281,13 +281,13 @@ rpnObjectIndexToPointer:
     ld b, (hl) ; BC=appVarSize
     inc hl
     ; calculate pointer to item at index
-    add hl, de ; HL=objectPointer=dataOffset+appDataPointer+2
-    ex de, hl ; HL=dataOffset; DE=objectPointer
+    add hl, de ; HL=elementPointer=dataOffset+appDataPointer+2
+    ex de, hl ; HL=dataOffset; DE=elementPointer
     ; check array bounds
     or a ; CF=0
     sbc hl, bc ; if dataOffset < appVarSize; CF=1
     ; restore registers
-    ex de, hl ; HL=objectPointer
+    ex de, hl ; HL=elementPointer
     pop de ; stack=[BC]
     pop bc ; stack=[]
     ret
@@ -333,38 +333,38 @@ rpnObjectIndexToOffset:
 stoRpnObject:
     call getOp1RpnObjectType ; A=rpnObjectType
     ld b, a ; B=rpnObjectType
-    ; find varName
     push bc ; stack=[index/objectType]
+    ; save OP1/OP2 to FPS
     push hl ; stack=[index/objectType, varName]
     bcall(_PushRpnObject1) ; FPS=[OP1/OP2]
     pop hl ; stack=[index, objectType]; HL=varName
+    ; find varName
     call move9ToOp1 ; OP1=varName
     bcall(_ChkFindSym) ; DE=dataPointer; CF=1 if not found
     jr c, rpnObjectUndefined ; Not found, this should never happen.
-    ;
-    push de ; stack=[index/objectType, dataPointer]
-    bcall(_PopRpnObject1) ; FPS=[]; OP1/OP2
-    pop de ; stack=[index/objectType]; DE=dataPointer
+    ; find elementPointer of index
     pop bc ; stack=[]; B=objectType; C=index
-    ; find objectPointer of index
-    call rpnObjectIndexToPointer ; HL=objectPointer
+    call rpnObjectIndexToElementPointer ; HL=elementPointer
     jr nc, rpnObjectOutOfBounds
+    ; retrieve OP1/OP2 from FPS
+    push hl ; stack=[elementPointer]
+    push bc
+    bcall(_PopRpnObject1) ; FPS=[]; OP1/OP2
+    pop bc
+    pop hl ; stack=[]; HL=elementPointer
+    ; copy from OP1/OP2 into AppVar element
     ld (hl), b ; (hl)=objectType
     inc hl
-    ex de, hl ; DE=objectPointer+1
-    ld a, b ; A=objectType
-    cp rpnObjectTypeComplex
-    jr z, stoRpnObjectCopyComplex
-    ; copy real
+    ld a, b
+    ex de, hl ; DE=elementPointer+1
     ld hl, OP1
+    ; copy first 9 bytes
     ld bc, rpnRealSizeOf
     ldir
-    ret
-stoRpnObjectCopyComplex:
-    ; copy complex
-    ld hl, OP1
-    ld bc, rpnRealSizeOf
-    ldir
+    ; return early if Real
+    cp rpnObjectTypeReal
+    ret z
+    ; copy next 9 bytes for everything else
     inc hl
     inc hl ; skip 2 bytes, OPx registers are 11 bytes, not 9 bytes
     ld bc, rpnRealSizeOf
@@ -387,28 +387,27 @@ rpnObjectUndefined:
 ;   - throws ErrUndefined if appVar not found
 ; Destroys: all
 rclRpnObject:
+    ; find varName
     push bc ; stack=[index]
     call move9ToOp1 ; OP1=varName
     bcall(_ChkFindSym) ; DE=dataPointer; CF=1 if not found
     pop bc ; C=[index]
     jr c, rpnObjectUndefined
-    ;
-    call rpnObjectIndexToPointer ; HL=objectPointer
+    ; find elementPointer of index
+    call rpnObjectIndexToElementPointer ; HL=elementPointer
     jr nc, rpnObjectOutOfBounds
-    ; figure out how much to copy
+    ; copy from AppVar to OP1/OP2
     ld de, OP1
     ld a, (hl) ; A=objectType
     inc hl
-    cp rpnObjectTypeComplex
-    jr z, rclRpnObjectCopyComplex
-    ; copy real
+    and $1f
+    ; copy first 9 bytes
     ld bc, rpnRealSizeOf
     ldir
-    ret
-rclRpnObjectCopyComplex:
-    ; copy complex
-    ld bc, rpnRealSizeOf
-    ldir
+    ; return early if Real
+    cp rpnObjectTypeReal
+    ret z
+    ; copy next 9 bytes for everything else
     inc de
     inc de ; OPx registers are 11 bytes, not 9 bytes
     ld bc, rpnRealSizeOf

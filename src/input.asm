@@ -66,6 +66,7 @@ closeInputAndRecallNone:
 ; Output:
 ;   - OP1=X
 ;   - rpnFlagsTvmCalculate: cleared
+; Destroys: OP1-OP2
 closeInputAndRecallX:
     call closeInput
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
@@ -79,16 +80,18 @@ closeInputAndRecallX:
 ;   - OP1=Y
 ;   - OP2=X
 ;   - rpnFlagsTvmCalculate: cleared
+; Destroys: OP1-OP4
 closeInputAndRecallXY:
     call closeInput
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
-    call rclX ; A=objectType
+    call rclX ; A=objectType; OP1/OP2=X
     cp rpnObjectTypeReal
     jr nz, closeInputAndRecallXYErr
-    call op1ToOp2
-    call rclY ; A=objectType
+    call cp1ToCp3 ; OP3/OP4=X
+    call rclY ; A=objectType; OP1/OP2=Y
     cp rpnObjectTypeReal
-    ret z
+    jr nz, closeInputAndRecallXYErr
+    jp op3ToOp2 ; OP2=Real(X)
 closeInputAndRecallXYErr:
     bcall(_ErrDataType)
 
