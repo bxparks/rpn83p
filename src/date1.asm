@@ -414,17 +414,17 @@ RpnDateToEpochDays:
 ;   - OP1:epochSeconds
 ; Destroys: A, DE, BC, HL, OP1-OP3, OP4-OP6
 RpnDateToEpochSeconds:
-    call dateToEpochDays ; HL=OP3=epochDays
+    call dateToEpochDays ; HL=OP3=(i40*)=relative epochDays
     call convertU40DaysToU40Seconds
     call ConvertI40ToOP1
     ret
 
-; Description: Convert Date{} to epochSeconds.
+; Description: Convert Date{} to relative epochSeconds.
 ; Input:
 ;   - OP1:Date
 ; Output:
 ;   - HL=OP3
-;   - OP3:u40=days
+;   - OP3:i40=days
 dateToEpochDays:
     ld hl, OP1+1
     ld de, OP3

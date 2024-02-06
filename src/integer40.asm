@@ -458,7 +458,17 @@ divU40U40NextBit:
 
 ; Description: Divide i40(HL) by u40(DE), remainder in u40(BC). This version
 ; truncates the quotient towards -infinity, which causes the remainder to be
-; positive in the range of [0,divisor-1].
+; positive in the range of [0,divisor-1]. The algorithm is:
+;
+;   def divI40U40(x,d) -> (q,r):
+;       if x >= 0:
+;           return divU40U40(x,d)
+;       q, r = divU40U40(-x,d)
+;       if r == 0:
+;           return (-q,r)
+;       else:
+;           return (-q-1,d-r)
+;
 ; Input:
 ;   - HL: pointer to i40 dividend
 ;   - DE: pointer to u40 divisor
@@ -485,7 +495,7 @@ divI40U40:
     jr z, divI40U40ZeroRemainder
     ; normalizedRemainder=divsor-remainder
     call negU40 ; HL=neg(remainder)
-    call addU40U40 ; HL=neg(remainder)+divisor
+    call addU40U40 ; HL=divisor-remainder
     pop hl ; stack=[]; HL=quotient
     call decU40 ; HL=-quotient-1
     ret
@@ -581,8 +591,10 @@ isPosU40:
 decU40:
     push bc
     push hl
-    dec (hl)
     ld b, 4
+    ld a, (hl)
+    sub 1 ; cannot use dec(hl) because it does not update the CF
+    ld (hl), a
 decU40Loop:
     inc hl
     ld a, (hl)
@@ -636,14 +648,15 @@ cmpU40U40End:
 ; Input: HL: pointer to u40 or i40
 ; Output: ZF=1 if zero
 ; Destroys: A
+; Preserves: BC, DE, HL
 testU40:
     push hl
     push bc
-    ld b, 5
-testU40Loop:
+    ld b, 4
     ld a, (hl)
+testU40Loop:
     inc hl
-    or a
+    or (hl)
     jr nz, testU40End
     djnz testU40Loop
 testU40End:
