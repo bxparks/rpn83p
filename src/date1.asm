@@ -477,14 +477,14 @@ EpochDaysToRpnDate:
     ld hl, OP1
     ld de, OP2
     call addU40U40 ; HL=OP1=internal epochDays
+    call op1ToOp2PageOne ; OP2=internal epochDays
     ; convert internal epochDays to RpnDate
+    ld hl, OP2
+    ld de, OP1
     ld a, rpnObjectTypeDate
     ld (de), a
     inc de
-    call internalEpochDaysToDate ; DE=OP2=RpnDate{}
-    ;
-    call op2ToOp1PageOne
-    ret
+    jp internalEpochDaysToDate ; DE=OP1+sizeof(RpnDate)
 
 ;-----------------------------------------------------------------------------
 
@@ -519,12 +519,11 @@ addRpnDateByDaysAdd:
     ;
     call op1ToOp2PageOne ; OP2=u40(epochDays+days)
     ld hl, OP2
-    ld de, OP1+1 ; DE=OP1+1=Date
-    call internalEpochDaysToDate ; DE=OP1+1:Date=newDate
-    ;
+    ld de, OP1
     ld a, rpnObjectTypeDate
-    ld (OP1), a ; OP1:RpnDate=newRpnDate
-    ret
+    ld (de), a
+    inc de
+    jp internalEpochDaysToDate ; DE=OP1+sizeof(RpnDate)
 
 ;-----------------------------------------------------------------------------
 
@@ -551,15 +550,14 @@ SubRpnDateByRpnDateOrDays:
     ld hl, OP1
     ld de, OP3
     call subU40U40 ; HL=OP1=Y.days-X.days
-    ;
+    ; conver to RpnDate
     call op1ToOp2PageOne ; OP2=Y.days-X.days
-    ld de, OP1+1
     ld hl, OP2
-    call internalEpochDaysToDate ; OP1+1:Date
-    ;
+    ld de, OP1
     ld a, rpnObjectTypeDate
-    ld (OP1), a ; OP1:RpnDate
-    ret
+    ld (de), a
+    inc de
+    jp internalEpochDaysToDate ; DE=OP1+sizeof(RpnDate)
 subRpnDateByRpnDate:
     ; Subtract by OP3=Date
     ld de, OP1

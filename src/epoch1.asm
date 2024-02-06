@@ -210,8 +210,10 @@ daysUntilMonthPrime:
 ;
 ; Input:
 ;   - HL:u40=epochDays
-;   - DE:Date{}, probably OP2+1
-; Output: (DE) updated, cannot be OP3-OP6
+;   - DE:pointer to Date{}, probably OP2+1
+; Output:
+;   - (DE) set to Date{}, cannot be OP3-OP6
+;   - DE=DE+sizeof(Date)
 ; Destroys: A, BC, OP3-OP6
 ; Preserves: DE, HL
 epochToDateYearPrime equ OP3 ; u16
@@ -425,6 +427,10 @@ internalEpochDaysToDate:
     ld a, (epochToDateDay)
     ld (hl), a
     pop de ; stack=[epochDays]; DE=Date{}
+    inc de
+    inc de
+    inc de
+    inc de ; DE+=4
     pop hl ; stack=[]; HL=epochDays
     ret
 
@@ -526,8 +532,8 @@ hmsToSeconds:
 ;   - DE:(DateTime*)=dateTime, probably OP2+1
 ; Output:
 ;   - *DE=dateTime result
-; Preserves: DE
-; Destroys: A, BC, HL, OP3-OP6
+;   - DE=DE+sizeof(DateTime)
+; Destroys: A, BC, DE, HL, OP3-OP6
 internalEpochSecondsToDateTime:
     push de ; stack=[dateTime]
     push hl ; stack=[dateTime,epochSeconds]
@@ -535,12 +541,12 @@ internalEpochSecondsToDateTime:
     ld a, 1
     ld bc, 20864 ; ABC=86400 seconds per day
     ld hl, OP3
-    call setU40ToABC ; HL=OP4=86400
+    call setU40ToABC ; HL=OP3=86400
     ;
-    ex de, hl ; DE=OP4=divisor=86400
+    ex de, hl ; DE=OP3=divisor=86400
     pop hl ; stack=[dateTime]; HL=epochSeconds
     ld bc, OP4 ; remainder
-    call divI40U40 ; HL=epochDays; BC=OP4=seconds
+    call divI40U40 ; HL=epochDays; BC=OP4=remainderSeconds
     ;
     ex (sp), hl ; stack=[epochDays]; HL=dateTime
     push hl ; stack=[epochDays,dateTime]

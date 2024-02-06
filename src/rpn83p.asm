@@ -127,22 +127,22 @@ rpntrue equ 1
 rpnObjectTypeReal equ 0 ; same as TI-OS
 ; Complex number object. Use the same constant as TIOS.
 rpnObjectTypeComplex equ $0C ; same as TI-OS
-; Date object:
+; Date and RpnDate objects:
 ; - struct Date{year:u16, mon:u8, day:u8}, 4 bytes
 ; - struct RpnDate{type:u8, date:Date}, 5 bytes
 rpnObjectTypeDate equ $18 ; next unused object type
 rpnObjectTypeDateSizeOf equ 5
-; DateTime object:
+; DateTime and RpnDateTime objects:
 ; - struct DateTime{date:Date, hour:u8, min:u8, sec:u8}, 7 bytes
 ; - struct RpnDateTime{type:u8, dateTime:DateTime}, 8 bytes
 rpnObjectTypeDateTime equ $19
 rpnObjectTypeDateTimeSizeOf equ 8
-; Offset object:
+; Offset and RpnOffset object:
 ; - struct Offset{hour:i8, min:i8}, 2 bytes
 ; - struct RpnOffset{type:u8, offset:Offset}, 3 bytes
 rpnObjectTypeOffset equ $1A
 rpnObjectTypeOffsetSizeOf equ 3
-; OffsetDateTime object:
+; OffsetDateTime and RpnOffsetDateTime objects:
 ; - struct OffsetDateTime{datetime:DateTime, offset:Offset}, 9 bytes
 ; - struct RpnOffsetDateTime{type:u8, offsetDateTime:OffsetDateTime}, 10 bytes
 ; The sizeof(RpnOffsetDateTime) is 10, which is greater than the 9 bytes of a
