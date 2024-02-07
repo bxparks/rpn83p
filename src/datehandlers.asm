@@ -3,6 +3,10 @@
 ; Copyright (c) 2024 Brian T. Park
 ;-----------------------------------------------------------------------------
 
+;-----------------------------------------------------------------------------
+; DATE > Row 1
+;-----------------------------------------------------------------------------
+
 mLeapYearHandler:
     call closeInputAndRecallX ; OP1=X=year
     bcall(_IsLeap) ; OP1=0 or 1
@@ -25,30 +29,39 @@ mEpochDaysToDateHandler:
     bcall(_EpochDaysToRpnDate) ; OP1=Date(epochDays)
     jp replaceX
 
-mDateTimeToEpochSecondsHandler:
+;-----------------------------------------------------------------------------
+; DATE > Row 2
+;-----------------------------------------------------------------------------
+
+mDateLikeToEpochSecondsHandler:
     call closeInputAndRecallRpnDateLikeOrOffsetX ; OP1=X=RpnDateLike or Offset
     call checkOp1Date ; ZF=1 if RpnDate
-    jr z, mDateTimeToEpochSecondsHandlerDate
+    jr z, mDateLikeToEpochSecondsHandlerDate
     call checkOp1DateTime ; ZF=1 if RpnDateTime
-    jr z, mDateTimeToEpochSecondsHandlerDateTime
+    jr z, mDateLikeToEpochSecondsHandlerDateTime
     call checkOp1Offset ; ZF=1 if RpnOffset
-    jr z, mDateTimeToEpochSecondsHandlerOffset
+    jr z, mDateLikeToEpochSecondsHandlerOffset
     call checkOp1OffsetDateTime ; ZF=1 if RpnOffsetDateTime
-    jr z, mDateTimeToEpochSecondsHandlerOffsetDateTime
+    jr z, mDateLikeToEpochSecondsHandlerOffsetDateTime
     bcall(_ErrDataType)
-mDateTimeToEpochSecondsHandlerDate:
+mDateLikeToEpochSecondsHandlerDate:
     bcall(_RpnDateToEpochSeconds) ; OP1=epochSeconds
-    jr mDateTimeToEpochSecondsHandlerEnd
-mDateTimeToEpochSecondsHandlerDateTime:
+    jr mDateLikeToEpochSecondsHandlerEnd
+mDateLikeToEpochSecondsHandlerDateTime:
     bcall(_RpnDateTimeToEpochSeconds) ; OP1=epochSeconds
-    jr mDateTimeToEpochSecondsHandlerEnd
-mDateTimeToEpochSecondsHandlerOffset:
+    jr mDateLikeToEpochSecondsHandlerEnd
+mDateLikeToEpochSecondsHandlerOffset:
     bcall(_RpnOffsetToSeconds) ; OP1=seconds
-    jr mDateTimeToEpochSecondsHandlerEnd
-mDateTimeToEpochSecondsHandlerOffsetDateTime:
+    jr mDateLikeToEpochSecondsHandlerEnd
+mDateLikeToEpochSecondsHandlerOffsetDateTime:
     bcall(_RpnOffsetDateTimeToEpochSeconds) ; OP1=epochSeconds
     ; [[fallthrough]]
-mDateTimeToEpochSecondsHandlerEnd:
+mDateLikeToEpochSecondsHandlerEnd:
+    jp replaceX
+
+mEpochSecondsToDateHandler:
+    call closeInputAndRecallX ; OP1=X=epochSeconds
+    bcall(_EpochSecondsToRpnDate) ; OP1=Date(epochSeconds)
     jp replaceX
 
 mEpochSecondsToDateTimeHandler:
@@ -56,8 +69,13 @@ mEpochSecondsToDateTimeHandler:
     bcall(_EpochSecondsToRpnDateTime) ; OP1=DateTime(epochSeconds)
     jp replaceX
 
+mEpochSecondsToOffsetDateTimeHandler:
+    call closeInputAndRecallX ; OP1=X=epochSeconds
+    bcall(_EpochSecondsToRpnOffsetDateTime) ; OP1=OffsetDateTime(epochSeconds)
+    jp replaceX
+
 ;-----------------------------------------------------------------------------
-; DATE/EPCH/Row2
+; DATE > EPCH > Row 1
 ;-----------------------------------------------------------------------------
 
 mEpochUnixHandler:
@@ -144,6 +162,8 @@ mEpochCustomNameSelectorAlt:
     ret
 
 ;-----------------------------------------------------------------------------
+; DATE > EPCH > Row 2
+;-----------------------------------------------------------------------------
 
 mEpochSetCustomHandler:
     call closeInputAndRecallRpnDateX ; OP1=X=RpnDate{}
@@ -159,26 +179,26 @@ mEpochGetCustomHandler:
 ; Other DATE functions
 ;-----------------------------------------------------------------------------
 
-; DATE/Row1
+; DATE > Row1
 mNowHandler:
 mConvertTimeZoneHandler:
 
-; DATE/ZONE/Row1
+; DATE > ZONE > Row1
 mZoneOffsetUTCHandler:
 mZoneOffsetSetHandler:
 mZoneOffsetGetHandler:
 
-; DATE/DUR/Row1
+; DATE > DUR > Row1
 mDurationToSecondsHandler:
 mSecondsToDurationHandler:
 
-; DATE/JUL/Row1
+; DATE > JUL > Row1
 mDateTimeToJulianHandler:
 mJulianToDateTimeHandler:
 mDateTimeToModifiedJulianHandler:
 mModifiedJulianToDateTimeHandler:
 
-; DATE/ISO/Row1
+; DATE > ISO > Row1
 mDateToIsoWeekDayHandler:
 mIsoWeekDayToDateHandler:
 

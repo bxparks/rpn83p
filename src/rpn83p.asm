@@ -1004,10 +1004,12 @@ _InitDateLabel:
 _InitDate equ _InitDateLabel-branchTableBase
     .dw InitDate
     .db 1
+; Year functions
 _IsLeapLabel:
 _IsLeap equ _IsLeapLabel-branchTableBase
     .dw IsLeap
     .db 1
+; RpnDate and days functions
 _DayOfWeekIsoLabel:
 _DayOfWeekIso equ _DayOfWeekIsoLabel-branchTableBase
     .dw DayOfWeekIso
@@ -1032,6 +1034,7 @@ _SubRpnDateByRpnDateOrDaysLabel:
 _SubRpnDateByRpnDateOrDays equ _SubRpnDateByRpnDateOrDaysLabel-branchTableBase
     .dw SubRpnDateByRpnDateOrDays
     .db 1
+; RpnDate like and seconds functions
 _RpnDateTimeToEpochSecondsLabel:
 _RpnDateTimeToEpochSeconds equ _RpnDateTimeToEpochSecondsLabel-branchTableBase
     .dw RpnDateTimeToEpochSeconds
@@ -1040,7 +1043,10 @@ _EpochSecondsToRpnDateTimeLabel:
 _EpochSecondsToRpnDateTime equ _EpochSecondsToRpnDateTimeLabel-branchTableBase
     .dw EpochSecondsToRpnDateTime
     .db 1
-;
+_EpochSecondsToRpnDateLabel:
+_EpochSecondsToRpnDate equ _EpochSecondsToRpnDateLabel-branchTableBase
+    .dw EpochSecondsToRpnDate
+    .db 1
 _AddRpnDateTimeBySecondsLabel:
 _AddRpnDateTimeBySeconds equ _AddRpnDateTimeBySecondsLabel-branchTableBase
     .dw AddRpnDateTimeBySeconds
@@ -1049,7 +1055,7 @@ _SubRpnDateTimeByRpnDateTimeOrSecondsLabel:
 _SubRpnDateTimeByRpnDateTimeOrSeconds equ _SubRpnDateTimeByRpnDateTimeOrSecondsLabel-branchTableBase
     .dw SubRpnDateTimeByRpnDateTimeOrSeconds
     .db 1
-;
+; Epoch selection functions
 _SelectUnixEpochDateLabel:
 _SelectUnixEpochDate equ _SelectUnixEpochDateLabel-branchTableBase
     .dw SelectUnixEpochDate
@@ -1070,6 +1076,7 @@ _SelectCustomEpochDateLabel:
 _SelectCustomEpochDate equ _SelectCustomEpochDateLabel-branchTableBase
     .dw SelectCustomEpochDate
     .db 1
+; Custom epoch date functions
 _SetCustomEpochDateLabel:
 _SetCustomEpochDate equ _SetCustomEpochDateLabel-branchTableBase
     .dw SetCustomEpochDate

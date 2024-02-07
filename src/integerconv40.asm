@@ -131,6 +131,8 @@ convertOP1ToU40Error:
 ; Input:
 ;   - OP1: floating point number
 ;   - HL: pointer to u40 in memory, cannot be OP2
+; TODO: Allow OP2 to be the destination, by using the FPS as temporary storage
+; for the result, then copying it into HL. Or output the result back into OP1.
 ; Output:
 ;   - HL: pointer to u40
 ;   - C: u40StatusCode
@@ -181,6 +183,8 @@ convertOP1ToU40StatusCodeContinue:
 ; Input:
 ;   - OP1: unsigned 32-bit integer as a floating point number
 ;   - HL: pointer to a u40 in memory, cannot be OP2
+; TODO: Allow OP2 to be the destination, by using the FPS as temporary storage
+; for the result, then copying it into HL. Or output the result back into OP1.
 ; Output:
 ;   - HL: OP1 converted to a u40, in little-endian format
 ; Destroys: A, B, DE

@@ -137,7 +137,7 @@ RpnOffsetDateTimeToEpochSeconds:
 EpochSecondsToRpnOffsetDateTime:
     ; get relative epochSeconds
     ld hl, OP2
-    bcall(_ConvertOP1ToI40) ; OP2=i40(epochSeconds)
+    call ConvertOP1ToI40 ; OP2=i40(epochSeconds)
     ; convert relative epochSeconds to internal epochSeconds
     ld hl, epochDate
     ld de, OP1

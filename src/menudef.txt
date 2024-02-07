@@ -380,25 +380,21 @@ MenuGroup root mRoot [
     ]
     MenuGroup DATE mDate [
       MenuRow [
-        MenuItem NOW mNow
-        MenuItem TZCV mConvertTimeZone
-        MenuItem * * 
-        MenuGroup ZONE mTimeZone [
-          MenuRow [
-            MenuItem UTC mZoneOffsetUTC
-            MenuItem UOFF mZoneOffsetSet
-            MenuItem UOF<Squestion> mZoneOffsetGet
-            # MenuItem TZ mZoneTzSelect
-          ]
-        ]
+        MenuItem LEAP mLeapYear # operates on year
+        MenuItem * *
+        MenuItem DOW mDayOfWeek # operates on Date
+        MenuItem D<Sconvert>DY mDateToEpochDays
+        MenuItem DY<Sconvert>D mEpochDaysToDate
+      ]
+      MenuRow [
+        MenuItem D<Scross><Sconvert>S mDateLikeToEpochSeconds
+        MenuItem * *
+        MenuItem S<Sconvert>D mEpochSecondstoDate
+        MenuItem S<Sconvert>DT mEpochSecondstoDateTime
+        MenuItem S<Sconvert>DZ mEpochSecondstoOffsetDateTime
+      ]
+      MenuRow [
         MenuGroup EPCH mEpoch [
-          MenuRow [
-            MenuItem D<Sconvert>ED mDateToEpochDays
-            MenuItem ED<Sconvert>D mEpochDaysToDate
-            MenuItem * *
-            MenuItem D<Sconvert>ES mDateTimeToEpochSeconds
-            MenuItem ES<Sconvert>D mEpochSecondstoDateTime
-          ]
           MenuRow [
             MenuItemAlt CUST CUS<Sblock> mEpochCustom # custom, defined by EPC
             MenuItemAlt UNIX UNI<Sblock> mEpochUnix # 1970-01-01T00:00:00
@@ -414,29 +410,44 @@ MenuGroup root mRoot [
             MenuItem EPC<Squestion> mEpochGetCustom # get custom epoch
           ]
         ]
-      ]
-      MenuRow [
-        MenuItem DOW mDayOfWeek
-        MenuItem LEAP mLeapYear
-        #MenuItem * * 
-        #MenuItem R<Sconvert>SS mDurationToSeconds
-        #MenuItem SS<Sconvert>R mSecondsToDuration
-        # MenuGroup ISO mIso [
+        MenuGroup ZONE mTimeZone [
+          MenuRow [
+            MenuItem UTC mZoneOffsetUTC
+            MenuItem UOFF mZoneOffsetSet
+            MenuItem UOF<Squestion> mZoneOffsetGet
+            # MenuItem TZ mZoneTzSelect
+          ]
+        ]
+        # MenuGroup RTC mRtc [
         #   MenuRow [
-        #     MenuItem D<Sconvert>IS mDateToIsoWeekDay
-        #     MenuItem IS<Sconvert>D mIsoWeekDayToDate
-        #   ]
-        # ]
-        # MenuGroup JULN mJulian [
-        #   MenuRow [
-        #     MenuItem D<Sconvert>JU mDateTimeToJulian
-        #     MenuItem JU<Sconvert>D mJulianToDateTime
-        #     MenuItem * *
-        #     MenuItem D<Sconvert>MJ mDateTimeToModifiedJulian
-        #     MenuItem MJ<Sconvert>D mModifiedJulianToDateTime
+        #     MenuItem NOW mNow
+        #     MenuItem D? mGetDate
+        #     MenuItem DT? mGetDateTime
+        #     MenuItem DZ? mGetOffsetDateTime
+        #     MenuItem TZC mSetClockTimeZone
+        #     MenuItem TZC? mGetClockTimeZone
         #   ]
         # ]
       ]
+      # MenuRow [
+      #  MenuItem R<Sconvert>SS mDurationToSeconds
+      #  MenuItem SS<Sconvert>R mSecondsToDuration
+      #   MenuGroup ISO mIso [
+      #     MenuRow [
+      #       MenuItem D<Sconvert>IS mDateToIsoWeekDay
+      #       MenuItem IS<Sconvert>D mIsoWeekDayToDate
+      #     ]
+      #   ]
+      #   MenuGroup JUL mJulian [
+      #     MenuRow [
+      #       MenuItem D<Sconvert>JU mDateTimeToJulian
+      #       MenuItem JU<Sconvert>D mJulianToDateTime
+      #       MenuItem * *
+      #       MenuItem D<Sconvert>MJ mDateTimeToModifiedJulian
+      #       MenuItem MJ<Sconvert>D mModifiedJulianToDateTime
+      #     ]
+      #   ]
+      # ]
     ]
   ]
 ]

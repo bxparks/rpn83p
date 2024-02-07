@@ -468,8 +468,9 @@ dateToEpochDays:
 ; Destroys: all, OP1-OP6
 EpochDaysToRpnDate:
     ; get relative epochDays
-    ld hl, OP2
-    bcall(_ConvertOP1ToI40) ; OP2=i40(epochDays)
+    ld hl, OP2 ; TODO: I think this needs to be OP3
+    call ConvertOP1ToI40 ; OP2=i40(epochDays)
+epochDaysU40ToRpnDate:
     ; convert relative epochDays to internal epochDays
     ld hl, epochDate
     ld de, OP1
@@ -485,6 +486,31 @@ EpochDaysToRpnDate:
     ld (de), a
     inc de
     jp internalEpochDaysToDate ; DE=OP1+sizeof(RpnDate)
+
+;-----------------------------------------------------------------------------
+
+; Description: Convert the current epochSeconds (relative to the current
+; epochDate) to an RpnDate{} object.
+; Input: OP1: float(epochSeconds)
+; Output: OP1: RpnDate
+; Destroys: all, OP1-OP6
+EpochSecondsToRpnDate:
+    ; get relative epochSeconds
+    ld hl, OP3 ; cannot be OP2
+    call ConvertOP1ToI40 ; HL=OP3=i40(epochSeconds)
+    call op3ToOp2PageOne ; OP2=epochSeconds
+    ; divisor=86400
+    ld hl, OP4
+    ld a, 1
+    ld bc, 20864 ; ABC=86400 seconds per day
+    call setU40ToABC ; HL=OP4=86400
+    ; divide epochSeconds by 86400 to get epochDays, truncate towards -infinity
+    ex de, hl ; DE=OP4=86400
+    ld hl, OP2 ; HL=OP2=epochSeconds
+    ld bc, OP3
+    call divI40U40 ; BC=OP3=remainder; HL=OP2=epochDays
+    ;
+    jr epochDaysU40ToRpnDate
 
 ;-----------------------------------------------------------------------------
 
@@ -620,7 +646,7 @@ rpnDateTimeToU40EpochSeconds:
 EpochSecondsToRpnDateTime:
     ; get relative epochSeconds
     ld hl, OP3 ; cannot be OP2
-    bcall(_ConvertOP1ToI40) ; HL=OP3=i40(epochSeconds)
+    call ConvertOP1ToI40 ; HL=OP3=i40(epochSeconds)
     call op3ToOp2PageOne ; OP2=relative epochSeconds
     ld hl, OP2
     ; set up OP1 as DateTime
