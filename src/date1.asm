@@ -645,6 +645,7 @@ EpochSecondsToRpnDateTime:
 ;   - OP3:Union[RpnDateTime,RpnReal]=rpnDateTime or seconds
 ; Output:
 ;   - OP1:RpnDateTime=RpnDateTime+seconds
+;   - DE=OP1+sizeof(DateTime)
 ; Destroys: OP1, OP2, OP3-OP6
 AddRpnDateTimeBySeconds:
     call checkOp1DateTimePageOne ; ZF=1 if CP1 is an RpnDateTime
@@ -670,12 +671,11 @@ addRpnDateTimeBySecondsAdd:
     ;
     call op1ToOp2PageOne ; OP2=u40(epochSeconds+seconds)
     ld hl, OP2
-    ld de, OP1+1 ; DE=OP1+1=DateTime
-    call internalEpochSecondsToDateTime ; DE=OP1+1:DateTime=newDateTime
-    ;
+    ld de, OP1 ; DE=OP1+1=DateTime
     ld a, rpnObjectTypeDateTime
-    ld (OP1), a ; OP1:RpnDateTime=newRpnDateTime
-    ret
+    ld (de), a
+    inc de
+    jp internalEpochSecondsToDateTime ; DE=OP1+sizeof(DateTime)
 
 ;-----------------------------------------------------------------------------
 
@@ -704,13 +704,12 @@ SubRpnDateTimeByRpnDateTimeOrSeconds:
     call subU40U40 ; HL=OP1=Y.seconds-X.seconds
     ;
     call op1ToOp2PageOne ; OP2=Y.seconds-X.seconds
-    ld de, OP1+1
     ld hl, OP2
-    call internalEpochSecondsToDateTime ; OP1+1:DateTime
-    ;
+    ld de, OP1
     ld a, rpnObjectTypeDateTime
-    ld (OP1), a ; OP1:RpnDateTime
-    ret
+    ld (de), a ; OP1:RpnDateTime
+    inc de
+    jp internalEpochSecondsToDateTime ; DE=OP1+sizeof(DateTime)
 subRpnDateTimeByRpnDateTime:
     ; Subtract by OP3=DateTime
     ld de, OP1

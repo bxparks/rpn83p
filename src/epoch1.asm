@@ -30,7 +30,7 @@
 ;   - DE:(u40*)=resultPointer to u40, most likely OP3
 ; Output:
 ;   - (*DE) updated
-;   - HL=HL+rpnObjectTypeDateSizeOf=HL+4
+;   - HL=HL+sizeof(Date)=HL+4
 ; Destroys: A, BC, HL, OP4-OP6
 ; Preserves: DE
 dateToEpochRecord equ OP4
@@ -215,7 +215,7 @@ daysUntilMonthPrime:
 ;   - (DE) set to Date{}, cannot be OP3-OP6
 ;   - DE=DE+sizeof(Date)
 ; Destroys: A, BC, OP3-OP6
-; Preserves: DE, HL
+; Preserves: HL
 epochToDateYearPrime equ OP3 ; u16
 epochToDateMonthPrime equ OP3+2 ; u8; also holds monthPrime->month
 epochToDateDay equ OP3+3 ; u8
@@ -430,7 +430,7 @@ internalEpochDaysToDate:
     inc de
     inc de
     inc de
-    inc de ; DE+=4
+    inc de ; DE+=sizeof(Date)
     pop hl ; stack=[]; HL=epochDays
     ret
 
@@ -467,7 +467,7 @@ yearPrimeToYear:
 ;   - DE:(u40*)=resultPointer, most likely OP3
 ; Output:
 ;   - (*DE)=result
-;   - HL=HL+rpnObjectTypeDateTimeSizeOf=HL+8
+;   - HL=HL+sizeof(DateTime)=HL+7
 ; Destroys: A, BC, HL, OP4-OP6
 ; Preserves: DE
 dateTimeToInternalEpochSeconds:
@@ -547,23 +547,31 @@ internalEpochSecondsToDateTime:
     pop hl ; stack=[dateTime]; HL=epochSeconds
     ld bc, OP4 ; remainder
     call divI40U40 ; HL=epochDays; BC=OP4=remainderSeconds
-    ;
-    ex (sp), hl ; stack=[epochDays]; HL=dateTime
-    push hl ; stack=[epochDays,dateTime]
-    inc hl
-    inc hl
-    inc hl
-    inc hl ; HL=dateTime+4
-    ; ex bc, hl
-    push hl
+    pop de ; stack=[]; DE=dateTime
+    ; save remainderSeconds on stack
+    ld bc, (OP4)
     push bc
-    pop hl ; HL=OP4=remainder
-    pop bc ; BC=dateTime+4
-    call secondsToHms ; BC=dateTime+4 updated
-    ;
-    pop de ; stack=[epochDays]; DE=dateTime
-    pop hl ; stack=[]; HL=epochDays
-    jp internalEpochDaysToDate ; DE=date
+    ld bc, (OP4+2)
+    push bc
+    ld bc, (OP4+4)
+    push bc ; stack=[remainderSeconds]
+    ; calculate Date components from epochDays
+    call internalEpochDaysToDate ; DE=dateTime+4
+    ; pop remainderSeconds from stack
+    pop bc
+    ld (OP4+4), bc
+    pop bc
+    ld (OP4+2), bc
+    pop bc
+    ld (OP4), bc ; stack=[]; OP4=remainderSeconds
+    ; populate Time components from remainderSeconds
+    ld hl, OP4
+    ld c, e
+    ld b, d
+    call secondsToHms ; BC=BC+3=dateTime+sizeof(DateTime)
+    ld e, c
+    ld d, b ; DE=dateTime+sizeof(DateTime)
+    ret
 
 ; Description: Convert seconds in a day to (hh,mm,ss).
 ; Input:
@@ -571,7 +579,8 @@ internalEpochSecondsToDateTime:
 ;   - BC:(Time*)=hmsPointer
 ; Output:
 ;   - HL: destroyed
-;   - BC: updated
+;   - BC=BC+sizeof(Time)=BC+3
+;   - (BC):filled
 ; Destroys: A, (HL)
 ; Preserves: BC, DE, HL
 secondsToHms:
@@ -579,19 +588,23 @@ secondsToHms:
     inc bc
     inc bc
     ld d, 60
-    ;
+    ; fill second
     call divU40ByD ; E=remainder; HL=quotient
     ld a, e
     ld (bc), a
     dec bc
-    ;
+    ; fill minute
     call divU40ByD ; E=remainder, HL=quotient
     ld a, e
     ld (bc), a
     dec bc
-    ;
+    ; fill hour
     ld a, (hl)
     ld (bc), a
     ;
     pop de
+    ; move pointer past the Time{} record.
+    inc bc
+    inc bc
+    inc bc
     ret

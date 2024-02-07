@@ -146,21 +146,19 @@ EpochSecondsToRpnOffsetDateTime:
     call convertU40DaysToU40Seconds ; HL=OP1=epochSeconds
     ld de, OP2
     call addU40U40 ; HL=OP1=internal epochSeconds
+    call op1ToOp2PageOne ; OP2=internal epochSeconds
     ; convert internal epochSeconds to RpnDateTime
+    ld hl, OP2
+    ld de, OP1
     ld a, rpnObjectTypeOffsetDateTime
     ld (de), a
     inc de
-    call internalEpochSecondsToDateTime ; DE=OP2=RpnDateTime{}
-    call op2ToOp1PageOne ; OP1=RpnDateTime(OP2)
-    ; TODO: shift the DateTime components by the current TimeZone, then update
-    ; the TimeZone fields in the OffsetDateTime. For now, just set them to 0.
-    ld hl, OP1
-    ld de, rpnObjectTypeDateTimeSizeOf
-    add hl, de ; HL=pointer to Offset(hh,mm) fields
+    call internalEpochSecondsToDateTime ; DE=OP1+sizeof(RpnDateTime)
+    ; Convert RpnDateTime to RpnOffsetDateTime. This uses 10 bytes, which
+    ; fits inside OP1 which is 11 bytes big.
+    ; TODO: Implement the Offset calcualtion. For now, just set them to 0.
     xor a
-    ld (hl), a
-    inc hl
-    ld (hl), a
-    ;
-    call expandOp1ToOp2PageOne
-    ret
+    ld (de), a
+    inc de
+    ld (de), a
+    jp expandOp1ToOp2PageOne
