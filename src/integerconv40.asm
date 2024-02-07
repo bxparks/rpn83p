@@ -112,6 +112,8 @@ convertOP1ToI40Pos:
 ; Input:
 ;   - OP1: unsigned 40-bit integer as a floating point number
 ;   - HL: pointer to a u40 in memory, cannot be OP2
+; TODO: Allow OP2 to be the destination, by using the FPS as temporary storage
+; for the result, then copying it into HL. Or output the result back into OP1.
 ; Output:
 ;   - HL: OP1 converted to a u40, in little-endian format
 ;   - C: u40StatusCode

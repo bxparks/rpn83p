@@ -53,7 +53,7 @@ mDateTimeToEpochSecondsHandlerEnd:
 
 mEpochSecondsToDateTimeHandler:
     call closeInputAndRecallX ; OP1=X=epochSeconds
-    bcall(_EpochSecondsToRpnOffsetDateTime) ; OP1=OffsetDateTime(epochSeconds)
+    bcall(_EpochSecondsToRpnDateTime) ; OP1=DateTime(epochSeconds)
     jp replaceX
 
 ;-----------------------------------------------------------------------------
