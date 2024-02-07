@@ -10,6 +10,8 @@
 ; entry.
 ;-----------------------------------------------------------------------------
 
+; Description: Push OP1/OP2 to FPS.
+; Output: HL=pointer to RpnObject on FPS.
 PushRpnObject1:
     ld hl, OP1
     jr pushRpnObject
@@ -18,6 +20,8 @@ PopRpnObject1:
     ld de, OP1
     jr popRpnObject
 
+; Description: Push OP3/OP4 to FPS.
+; Output: HL=pointer to RpnObject on FPS.
 PushRpnObject3:
     ld hl, OP3
     jr pushRpnObject
@@ -26,6 +30,8 @@ PopRpnObject3:
     ld de, OP3
     jr popRpnObject
 
+; Description: Push OP5/OP6 to FPS.
+; Output: HL=pointer to RpnObject on FPS.
 PushRpnObject5:
     ld hl, OP5
     jr pushRpnObject
@@ -42,18 +48,19 @@ PopRpnObject5:
 ;   - HL:pointer to an OP register
 ; Output:
 ;   - FPS increased by 18 bytes
+;   - HL=pointer to RpnObject on FPS
 ; Destroys: all
 pushRpnObject:
     push hl ; stack=[OPx]
+    ld hl, (FPS) ; HL=FPS1=futureFPS-18
+    push hl ; stack=[OPx,FPS1]
+    ; allocate space on stack
     ld hl, 18
     bcall(_AllocFPS1)
-    ld hl, (FPS)
-    ld de, 18
-    or a ; CF=0
-    sbc hl, de ; HL=pointer to RpnObject on FPS
-    ex de, hl ; DE=pointer to RpnObject on FPS
-    pop hl ; stack=[]; HL=OPx
     ; copy OP1 into RpnObject on FPS
+    pop de ; stack=[Opx]; DE=FPS1
+    pop hl ; stack=[]; HL=OPx
+    push de ; stack=[FPS1]
     ld bc, 9
     ldir
     inc hl ; skip 2 extra bytes in OP1
@@ -61,6 +68,7 @@ pushRpnObject:
     ; copy OP2 into RpnObject on FPS
     ld bc, 9
     ldir
+    pop hl ; stack=[]; HL=FPS1
     ret
 
 ; Description: Pop the RpnObject from FPS to OP1/OP2 no matter the RpnObject
@@ -89,6 +97,3 @@ popRpnObject:
     ld de, 18
     bcall(_DeallocFPS1)
     ret
-
-;-----------------------------------------------------------------------------
-
