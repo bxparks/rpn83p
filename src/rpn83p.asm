@@ -1212,12 +1212,13 @@ defpage(1)
 #include "const1.asm"
 #include "complex1.asm"
 #include "complexformat1.asm"
-#include "epoch1.asm"
-#include "date1.asm"
-#include "offset1.asm"
 #include "tvm.asm"
 #include "hms.asm"
 #include "prob.asm"
+#include "epoch1.asm"
+#include "selectepoch1.asm"
+#include "date1.asm"
+#include "offset1.asm"
 #ifdef DEBUG
 #include "debug.asm"
 #endif
