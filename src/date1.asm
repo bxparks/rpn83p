@@ -573,24 +573,29 @@ AddRpnDateByDays:
 addRpnDateByDaysAdd:
     ; CP1=days, CP3=RpnDate
     call ConvertOP1ToI40 ; HL=OP1=u40(days)
-    call pushRaw9Op1 ; FPS=[u40(days)]
-    ;
-    ld hl, OP3+1 ; HL=OP1+1=Date
-    ld de, OP1
-    call dateToInternalEpochDays ; OP1=u40(epochDays)
-    call popRaw9Op2 ; FPS=[]; OP2=u40(days)
-    ;
-    ld hl, OP1
-    ld de, OP2
-    call addU40U40 ; HL=OP1=u40(epochDays+days)
-    ;
-    call op1ToOp2PageOne ; OP2=u40(epochDays+days)
-    ld hl, OP2
-    ld de, OP1
+    call pushRaw9Op1 ; FPS=[u40(days)]; HL=days
+    push hl ; stack=[days]
+    ; convert CP3=RpnDate to days
+    call pushRaw9Op1 ; FPS=[days,dateDays]; HL=dateDays
+    push hl ; stack=[days,dateDays]
+    call op3ToOp1PageOne
+    call pushRaw9Op1 ; FPS=[days,dateDays,rpnDate]; HL=rpnDate
+    pop de ; stack=[days]; DE=dateDays
+    inc hl ; HL=rpnDate+1
+    call dateToInternalEpochDays ; DE=dateDays
+    call dropRaw9 ; FPS=[days,dateDays]
+    ; add days, dateDays
+    pop hl ; stack=[]; HL=days
+    call addU40U40 ; HL=days=dateDays+days; DE=dateDays
+    ; convert days to RpnDate, reuse DE=rpnDate
     ld a, rpnObjectTypeDate
     ld (de), a
     inc de
-    jp internalEpochDaysToDate ; DE=OP1+sizeof(RpnDate)
+    call internalEpochDaysToDate ; DE=DE+sizeof(RpnDate)
+    ; extract FPS to OP1
+    call popRaw9Op1
+    call dropRaw9
+    ret
 
 ;-----------------------------------------------------------------------------
 
