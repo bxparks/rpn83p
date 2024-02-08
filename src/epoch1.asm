@@ -484,12 +484,12 @@ dateTimeToInternalEpochSeconds:
     ex (sp), hl ; stack=[resultPointer]; HL=timePointer
     ex de, hl ; DE=timePointer
     ld hl, OP4
-    call hmsToSeconds ; HL=OP4=u40(timeSeconds); DE=timePointer+3=dateTime+8
-    ex de, hl ; HL=dateTimePointer+8; DE=u40(timeSeconds)
-    ex (sp), hl ; stack=[dateTime+8]; HL=resultPointer
+    call hmsToSeconds ; HL=OP4=u40(timeSeconds); DE=timePointer+3=dateTime+7
+    ex de, hl ; HL=dateTime+7; DE=u40(timeSeconds)
+    ex (sp), hl ; stack=[dateTime+7]; HL=resultPointer
     ; add timeSeconds to epochDays*86400
     call addU40U40 ; HL=result=epochDays*86400+timeSeconds
-    pop hl ; stack=[]; HL=dateTime+8
+    pop hl ; stack=[]; HL=dateTime+7
     ret
 
 ; Description: Convert (hh,mm,ss) to seconds.
