@@ -2007,23 +2007,23 @@ mLeapYearId equ 212
     .db 0 ; rowBeginId or altNameId
     .dw mLeapYearHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
-mBlank213:
-mBlank213Id equ 213
-    .db mBlank213Id ; id
-    .db mDateId ; parentId
-    .db mNullNameId ; nameId
-    .db 0 ; numRows
-    .db 0 ; rowBeginId or altNameId
-    .dw mNullHandler ; handler (predefined)
-    .dw 0 ; nameSelector
 mDayOfWeek:
-mDayOfWeekId equ 214
+mDayOfWeekId equ 213
     .db mDayOfWeekId ; id
     .db mDateId ; parentId
     .db mDayOfWeekNameId ; nameId
     .db 0 ; numRows
     .db 0 ; rowBeginId or altNameId
     .dw mDayOfWeekHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
+mBlank214:
+mBlank214Id equ 214
+    .db mBlank214Id ; id
+    .db mDateId ; parentId
+    .db mNullNameId ; nameId
+    .db 0 ; numRows
+    .db 0 ; rowBeginId or altNameId
+    .dw mNullHandler ; handler (predefined)
     .dw 0 ; nameSelector
 mDateToEpochDays:
 mDateToEpochDaysId equ 215

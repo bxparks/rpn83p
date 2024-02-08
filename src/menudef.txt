@@ -381,8 +381,8 @@ MenuGroup root mRoot [
     MenuGroup DATE mDate [
       MenuRow [
         MenuItem LEAP mLeapYear # operates on year
-        MenuItem * *
         MenuItem DOW mDayOfWeek # operates on Date
+        MenuItem * *
         MenuItem D<Sconvert>DY mDateToEpochDays
         MenuItem DY<Sconvert>D mEpochDaysToDate
       ]
