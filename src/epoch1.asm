@@ -463,8 +463,8 @@ yearPrimeToYear:
 
 ; Description: Convert DateTime{} record to epochSeconds.
 ; Input:
-;   - HL:(DateTime*)=dateTimePointer, most likely OP1+1
-;   - DE:(u40*)=resultPointer, most likely OP3
+;   - HL:(DateTime*)=dateTimePointer, must not be OPx
+;   - DE:(u40*)=resultPointer, must not be OPx
 ; Output:
 ;   - (*DE)=result
 ;   - HL=HL+sizeof(DateTime)=HL+7
