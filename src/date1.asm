@@ -587,15 +587,14 @@ addRpnDateByDaysAdd:
     ; add days, dateDays
     pop hl ; stack=[]; HL=days
     call addU40U40 ; HL=days=dateDays+days; DE=dateDays
-    ; convert days to RpnDate, reuse DE=rpnDate
+    ; convert days to RpnDate
     ld a, rpnObjectTypeDate
     ld (de), a
-    inc de
-    call internalEpochDaysToDate ; DE=DE+sizeof(RpnDate)
+    inc de ; DE=FPS.dateDays+1=newDate; HL=days
+    call internalEpochDaysToDate ; DE=DE+sizeof(Date)
     ; extract FPS to OP1
-    call popRaw9Op1
-    call dropRaw9
-    ret
+    call popRaw9Op1 ; FPS=[days]; OP1=rpnDate
+    jp dropRaw9 ; FPS=[]
 
 ;-----------------------------------------------------------------------------
 
@@ -604,46 +603,37 @@ addRpnDateByDaysAdd:
 ;   - OP1:RpnDate=Y
 ;   - OP3:RpnDate or days=X
 ; Output:
-;   - OP1:(RpnDate-days) or (RpnDate-RpnDate).
+;   - OP1:RpnDate(RpnDate-days) or i40(RpnDate-RpnDate).
 ; Destroys: OP1, OP2, OP3-OP6
 SubRpnDateByRpnDateOrDays:
-    call PushRpnObject3 ; FPS=[RpnDate or days]
-    ld de, OP3
-    ld hl, OP1+1
-    call dateToInternalEpochDays ; OP3=u40(Y.days)
-    call exchangeFPSCP3PageOne ; FPS=[u40(Y.days)]; OP3=RpnDate or days
     call checkOp3DatePageOne ; ZF=1 if type(OP3)==Date
     jr z, subRpnDateByRpnDate
-    ; Subtract OP1:RpnDate by OP3=days
-    call op3ToOp1PageOne
-    call ConvertOP1ToI40 ; OP1=u40(X.days)
-    call PopRpnObject3 ; FPS=[]; OP3=u40(Y.days)
-    ld hl, OP3
-    ld de, OP1
-    call subU40U40 ; HL=OP3=Y.days-X.days
-    ; convert to RpnDate
-    call op3ToOp2PageOne ; OP2=Y.days-X.days
-    ld hl, OP2
-    ld de, OP1
-    ld a, rpnObjectTypeDate
-    ld (de), a
-    inc de
-    jp internalEpochDaysToDate ; DE=OP1+sizeof(RpnDate)
+subRpnDateByDays:
+    ; exchage CP1/CP3, invert the sign, then call addRpnDateByDaysAdd()
+    call cp1ExCp3PageOne
+    bcall(_InvOP1S) ; OP1=-OP1
+    jr addRpnDateByDaysAdd
 subRpnDateByRpnDate:
-    ; Subtract OP1:RpnDate by OP3=Date
-    ld de, OP1
-    ld hl, OP3+1
-    call dateToInternalEpochDays ; OP1=u40(days(X))
-    call op1ToOp3PageOne ; OP3=u40(days(X))
-    ;
-    call PopRpnObject1 ; FPS=[]; OP1=u40(Y.days)
-    ld hl, OP1
-    ld de, OP3
-    call subU40U40 ; HL=OP1=u40(Y.days)-u40(X.days)
-    ;
-    call op1ToOp3PageOne ; OP3=Y.days-X.days
-    ld hl, OP3
-    jp ConvertI40ToOP1 ; OP1=Y.date-X.date
+    ; convert OP3 to days, on FPS stack
+    call pushRaw9Op1 ; make space on FPS=[X.days]; HL=X.days
+    push hl ; stack=[X.days]
+    ex de, hl ; DE=X.days
+    ld hl, OP3+1 ; HL=Date{}
+    call dateToInternalEpochDays ; FPS.X.days updated; DE=X.days
+    ; convert OP1 to days, on FPS stack
+    call pushRaw9Op1 ; make space, FPS=[X.days,Y.days]; HL=Y.days
+    push hl ; stack=[X.days,Y.days]
+    ex de, hl ; DE=Y.days
+    ld hl, OP1+1 ; HL=Date{}
+    call dateToInternalEpochDays ; FPS.Y.days updated; DE=Y.days
+    ; subtract Y.days-X.days
+    pop hl ; HL=Y.days
+    pop de ; De=X.days
+    call subU40U40 ; HL=Y.days-X.days
+    ; pop result into OP1
+    call popRaw9Op1 ; FPS=[X.days]; OP1=Y.days-X.days
+    call ConvertI40ToOP1 ; OP1=float(i40)
+    jp dropRaw9 ; FPS=[]
 
 ;-----------------------------------------------------------------------------
 ; RpnDateTime functions.
