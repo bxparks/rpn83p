@@ -467,14 +467,12 @@ dateToEpochDays:
 ; Output: OP1: RpnDate
 ; Destroys: all, OP1-OP6
 EpochDaysToRpnDate:
-    ; get relative epochDays
-    ld hl, OP2 ; TODO: I think this needs to be OP3
-    call ConvertOP1ToI40 ; OP2=i40(epochDays)
+    call ConvertOP1ToI40 ; OP1=i40(epochDays)
 epochDaysU40ToRpnDate:
     ; convert relative epochDays to internal epochDays
     ld hl, epochDate
-    ld de, OP1
-    call dateToInternalEpochDays ; DE=OP1=currentInternalEpochDays
+    ld de, OP2
+    call dateToInternalEpochDays ; DE=OP2=currentInternalEpochDays
     ld hl, OP1
     ld de, OP2
     call addU40U40 ; HL=OP1=internal epochDays
@@ -496,19 +494,17 @@ epochDaysU40ToRpnDate:
 ; Destroys: all, OP1-OP6
 EpochSecondsToRpnDate:
     ; get relative epochSeconds
-    ld hl, OP3 ; cannot be OP2
-    call ConvertOP1ToI40 ; HL=OP3=i40(epochSeconds)
-    call op3ToOp2PageOne ; OP2=epochSeconds
+    call ConvertOP1ToI40 ; HL=OP1=i40(epochSeconds)
     ; divisor=86400
-    ld hl, OP4
+    ld hl, OP2
     ld a, 1
     ld bc, 20864 ; ABC=86400 seconds per day
-    call setU40ToABC ; HL=OP4=86400
+    call setU40ToABC ; HL=OP2=86400
     ; divide epochSeconds by 86400 to get epochDays, truncate towards -infinity
-    ex de, hl ; DE=OP4=86400
-    ld hl, OP2 ; HL=OP2=epochSeconds
+    ex de, hl ; DE=OP2=86400
+    ld hl, OP1 ; HL=OP1=epochSeconds
     ld bc, OP3
-    call divI40U40 ; BC=OP3=remainder; HL=OP2=epochDays
+    call divI40U40 ; BC=OP3=remainder; HL=OP1=epochDays
     ;
     jr epochDaysU40ToRpnDate
 
@@ -527,20 +523,16 @@ AddRpnDateByDays:
     call cp1ExCp3PageOne ; CP1=days; CP3=RpnDate
 addRpnDateByDaysAdd:
     ; CP1=days, CP3=RpnDate
-    call PushRpnObject3 ; FPS=[RpnDate]
-    ld hl, OP3
-    call ConvertOP1ToI40 ; HL=OP3=u40(days)
+    call ConvertOP1ToI40 ; HL=OP1=u40(days)
+    call pushRaw9Op1 ; FPS=[u40(days)]
     ;
-    call PopRpnObject1 ; FPS=[]; CP1=RpnDate
-    call PushRpnObject3 ; FPS=[u40(days)]
-    ;
-    ld hl, OP1+1 ; HL=OP1+1=Date
-    ld de, OP3
-    call dateToInternalEpochDays ; OP3=u40(epochDays)
-    call PopRpnObject1 ; FPS=[]; OP1=u40(days)
+    ld hl, OP3+1 ; HL=OP1+1=Date
+    ld de, OP1
+    call dateToInternalEpochDays ; OP1=u40(epochDays)
+    call popRaw9Op2 ; FPS=[]; OP2=u40(days)
     ;
     ld hl, OP1
-    ld de, OP3
+    ld de, OP2
     call addU40U40 ; HL=OP1=u40(epochDays+days)
     ;
     call op1ToOp2PageOne ; OP2=u40(epochDays+days)
@@ -561,23 +553,22 @@ addRpnDateByDaysAdd:
 ;   - OP1:(RpnDate-days) or (RpnDate-RpnDate).
 ; Destroys: OP1, OP2, OP3-OP6
 SubRpnDateByRpnDateOrDays:
-    call PushRpnObject3 ; FPS=[Date or days]
+    call PushRpnObject3 ; FPS=[RpnDate or days]
     ld de, OP3
     ld hl, OP1+1
     call dateToInternalEpochDays ; OP3=u40(Y.days)
-    call exchangeFPSCP3PageOne ; FPS=[u40(Y.days)]; OP3=Date or days
+    call exchangeFPSCP3PageOne ; FPS=[u40(Y.days)]; OP3=RpnDate or days
     call checkOp3DatePageOne ; ZF=1 if type(OP3)==Date
     jr z, subRpnDateByRpnDate
-    ; Subtract by OP3=days
-    call op3ToOp1PageOne ; OP1=days
+    ; Subtract OP1:RpnDate by OP3=days
+    call op3ToOp1PageOne
+    call ConvertOP1ToI40 ; OP1=u40(X.days)
+    call PopRpnObject3 ; FPS=[]; OP3=u40(Y.days)
     ld hl, OP3
-    call ConvertOP1ToI40 ; HL=OP3=u40(X.days)
-    call PopRpnObject1 ; FPS=[]; OP1=u40(Y.days)
-    ld hl, OP1
-    ld de, OP3
-    call subU40U40 ; HL=OP1=Y.days-X.days
-    ; conver to RpnDate
-    call op1ToOp2PageOne ; OP2=Y.days-X.days
+    ld de, OP1
+    call subU40U40 ; HL=OP3=Y.days-X.days
+    ; convert to RpnDate
+    call op3ToOp2PageOne ; OP2=Y.days-X.days
     ld hl, OP2
     ld de, OP1
     ld a, rpnObjectTypeDate
@@ -585,7 +576,7 @@ SubRpnDateByRpnDateOrDays:
     inc de
     jp internalEpochDaysToDate ; DE=OP1+sizeof(RpnDate)
 subRpnDateByRpnDate:
-    ; Subtract by OP3=Date
+    ; Subtract OP1:RpnDate by OP3=Date
     ld de, OP1
     ld hl, OP3+1
     call dateToInternalEpochDays ; OP1=u40(days(X))
@@ -645,9 +636,8 @@ rpnDateTimeToU40EpochSeconds:
 ; Destroys: all, OP1-OP6
 EpochSecondsToRpnDateTime:
     ; get relative epochSeconds
-    ld hl, OP3 ; cannot be OP2
-    call ConvertOP1ToI40 ; HL=OP3=i40(epochSeconds)
-    call op3ToOp2PageOne ; OP2=relative epochSeconds
+    call ConvertOP1ToI40 ; HL=OP2=i40(epochSeconds)
+    call op1ToOp2PageOne ; OP2=i40(epochSeconds)
     ld hl, OP2
     ; set up OP1 as DateTime
     ld de, OP1
@@ -698,20 +688,16 @@ AddRpnDateTimeBySeconds:
     call cp1ExCp3PageOne ; CP1=seconds; CP3=RpnDateTime
 addRpnDateTimeBySecondsAdd:
     ; CP1=seconds, CP3=RpnDateTime
-    call PushRpnObject3 ; FPS=[RpnDateTime]
-    ld hl, OP3
-    call ConvertOP1ToI40 ; HL=OP3=u40(seconds)
+    call ConvertOP1ToI40 ; HL=OP1=u40(seconds)
+    call pushRaw9Op1 ; FPS=[u40(seconds)]
     ;
-    call PopRpnObject1 ; FPS=[]; CP1=RpnDateTime
-    call PushRpnObject3 ; FPS=[u40(seconds)]
-    ;
-    ld hl, OP1+1 ; HL=OP1+1=DateTime
-    ld de, OP3
-    call dateTimeToInternalEpochSeconds ; OP3=u40(epochSeconds)
-    call PopRpnObject1 ; FPS=[]; OP1=u40(seconds)
+    ld hl, OP3+1 ; HL=OP1+1=DateTime
+    ld de, OP1
+    call dateTimeToInternalEpochSeconds ; OP1=u40(epochSeconds)
+    call popRaw9Op2 ; FPS=[]; OP2=u40(seconds)
     ;
     ld hl, OP1
-    ld de, OP3
+    ld de, OP2
     call addU40U40 ; HL=OP1=u40(epochSeconds+seconds)
     ;
     call op1ToOp2PageOne ; OP2=u40(epochSeconds+seconds)
@@ -740,15 +726,14 @@ SubRpnDateTimeByRpnDateTimeOrSeconds:
     call checkOp3DateTimePageOne ; ZF=1 if type(OP3)==DateTime
     jr z, subRpnDateTimeByRpnDateTime
     ; Subtract by OP3=seconds
-    call op3ToOp1PageOne ; OP1=seconds
+    call op3ToOp1PageOne
+    call ConvertOP1ToI40 ; HL=OP1=u40(X.seconds)
+    call PopRpnObject3 ; FPS=[]; OP3=u40(Y.seconds)
     ld hl, OP3
-    call ConvertOP1ToI40 ; HL=OP3=u40(X.seconds)
-    call PopRpnObject1 ; FPS=[]; OP1=u40(Y.seconds)
-    ld hl, OP1
-    ld de, OP3
-    call subU40U40 ; HL=OP1=Y.seconds-X.seconds
+    ld de, OP1
+    call subU40U40 ; HL=OP3=Y.seconds-X.seconds
     ;
-    call op1ToOp2PageOne ; OP2=Y.seconds-X.seconds
+    call op3ToOp2PageOne ; OP2=Y.seconds-X.seconds
     ld hl, OP2
     ld de, OP1
     ld a, rpnObjectTypeDateTime

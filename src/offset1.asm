@@ -136,17 +136,15 @@ RpnOffsetDateTimeToEpochSeconds:
 ; Destroys: all, OP1-OP6
 EpochSecondsToRpnOffsetDateTime:
     ; get relative epochSeconds
-    ld hl, OP2
-    call ConvertOP1ToI40 ; OP2=i40(epochSeconds)
+    call ConvertOP1ToI40 ; OP1=i40(epochSeconds)
     ; convert relative epochSeconds to internal epochSeconds
     ld hl, epochDate
-    ld de, OP1
-    call dateToInternalEpochDays ; DE=OP1=epochDays
-    ex de, hl ; HL=OP1=epochDays
-    call convertU40DaysToU40Seconds ; HL=OP1=epochSeconds
     ld de, OP2
-    call addU40U40 ; HL=OP1=internal epochSeconds
-    call op1ToOp2PageOne ; OP2=internal epochSeconds
+    call dateToInternalEpochDays ; DE=OP2=epochDays
+    ex de, hl ; HL=OP2=epochDays
+    call convertU40DaysToU40Seconds ; HL=OP2=epochSeconds
+    ld de, OP1
+    call addU40U40 ; HL=OP2=internal epochSeconds
     ; convert internal epochSeconds to RpnDateTime
     ld hl, OP2
     ld de, OP1

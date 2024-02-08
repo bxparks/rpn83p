@@ -162,7 +162,13 @@ popRaw9:
     or a ; CF=0
     sbc hl, bc ; HL=pointer to raw 9 bytes on FPS
     ldir
-    ; deallocate
+    ; [[fallthrough]]
+
+; Description: Drop the raw 9 bytes from FPS.
+; Input: none
+; Output: (FPS) decreased by 9 bytes
+; Destroys: DE
+dropRaw9:
     ld de, 9
     bcall(_DeallocFPS1)
     ret

@@ -725,23 +725,6 @@ _AddAToOP1Label:
 _AddAToOP1 equ _AddAToOP1Label-branchTableBase
     .dw AddAToOP1
     .db 1
-; integerconv40.asm
-_ConvertU40ToOP1Label:
-_ConvertU40ToOP1 equ _ConvertU40ToOP1Label-branchTableBase
-    .dw ConvertU40ToOP1
-    .db 1
-_ConvertI40ToOP1Label:
-_ConvertI40ToOP1 equ _ConvertI40ToOP1Label-branchTableBase
-    .dw ConvertI40ToOP1
-    .db 1
-_ConvertOP1ToU40Label:
-_ConvertOP1ToU40 equ _ConvertOP1ToU40Label-branchTableBase
-    .dw ConvertOP1ToU40
-    .db 1
-_ConvertOP1ToI40Label:
-_ConvertOP1ToI40 equ _ConvertOP1ToI40Label-branchTableBase
-    .dw ConvertOP1ToI40
-    .db 1
 ; tvm.asm
 _TvmCalculateNLabel:
 _TvmCalculateN equ _TvmCalculateNLabel-branchTableBase
