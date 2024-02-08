@@ -26,8 +26,8 @@
 ; would be required when working with seconds.
 ;
 ; Input:
-;   - HL:(Date*), most likely OP1+1
-;   - DE:(u40*)=resultPointer to u40, most likely OP3
+;   - HL:(Date*), must not be OPx
+;   - DE:(u40*)=resultPointer to u40, must not be OPx
 ; Output:
 ;   - (*DE) updated
 ;   - HL=HL+sizeof(Date)=HL+4
@@ -209,10 +209,10 @@ daysUntilMonthPrime:
 ; would be required when working with seconds.
 ;
 ; Input:
-;   - HL:u40=epochDays
-;   - DE:pointer to Date{}, probably OP2+1
+;   - HL:u40=epochDays, must not be OPx
+;   - DE:pointer to Date{}, must not be OPx
 ; Output:
-;   - (DE) set to Date{}, cannot be OP3-OP6
+;   - (DE) set to Date{}, must not be OPx
 ;   - DE=DE+sizeof(Date)
 ; Destroys: A, BC, OP3-OP6
 ; Preserves: HL
