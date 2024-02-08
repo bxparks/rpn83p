@@ -118,7 +118,7 @@ RpnOffsetDateTimeToEpochSeconds:
     call shrinkOp2ToOp1PageOne
     ld hl, OP1
     call convertToOffsetDateTime ; preserves HL
-    call rpnDateTimeToU40EpochSeconds ; OP3=dateTimeSeconds
+    call dateTimeToEpochSeconds ; OP3=dateTimeSeconds
     ;
     ld de, OP1+rpnObjectTypeDateTimeSizeOf ; DE:(Offset*)
     ld hl, OP4

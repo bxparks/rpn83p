@@ -19,11 +19,11 @@
 ;
 ; NOTE: If we restrict the 'year' component to be less than 10,000, then the
 ; maximum number of days is 3,652,425, which would fit inside an i32 or u32. So
-; all the u40 routines below could be replaced by U32 routines from baseops.asm
-; routines if/when they are moved over to Flash Page 1. However, when the
-; epochDays are converted to epochSeconds, then we will exceed the maximum
-; value of i32 or u32 in 68 or 136 years, respectively. So the u40 routines
-; would be required when working with seconds.
+; all the u40 routines below could be replaced by U32 routines from
+; integer32.asm routines if/when they are moved over to Flash Page 1. However,
+; when the epochDays are converted to epochSeconds, then we will exceed the
+; maximum value of i32 or u32 in 68 or 136 years, respectively. So the u40
+; routines would be required when working with seconds.
 ;
 ; Input:
 ;   - HL:(Date*), must not be OPx
@@ -492,7 +492,8 @@ dateTimeToInternalEpochSeconds:
     pop hl ; stack=[]; HL=dateTime+7
     ret
 
-; Description: Convert (hh,mm,ss) to seconds.
+; Description: Convert (hh,mm,ss) to seconds. TODO: Maybe rename this
+; timeToSeconds().
 ; Input:
 ;   - DE: pointer to 3 bytes (hh,mm,ss).
 ;   - HL: pointer to u40 result
