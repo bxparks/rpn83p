@@ -146,26 +146,22 @@ RpnOffsetDateTimeToEpochSeconds:
 EpochSecondsToRpnOffsetDateTime:
     ; get relative epochSeconds
     call ConvertOP1ToI40 ; OP1=i40(epochSeconds)
-    ; convert relative epochSeconds to internal epochSeconds
-    ld hl, epochDate
-    ld de, OP2
-    call dateToInternalEpochDays ; DE=OP2=epochDays
-    ex de, hl ; HL=OP2=epochDays
-    call convertU40DaysToU40Seconds ; HL=OP2=epochSeconds
-    ld de, OP1
-    call addU40U40 ; HL=OP2=internal epochSeconds
-    ; convert internal epochSeconds to RpnDateTime
-    ld hl, OP2
-    ld de, OP1
+    ; reserve 2 slots on the FPS, using RpnObject to reserve 18 bytes
+    call PushRpnObject1 ; FPS=[rpnOffsetDateTime]; HL=rpnDateTime
+    ex de, hl ; DE=rpnDateTime
+    call pushRaw9Op1 ; FPS=[rpnOffsetDateTime,epochSeconds]; HL=epochSeconds
+    ; convert to RpnDateTime
     ld a, rpnObjectTypeOffsetDateTime
     ld (de), a
-    inc de
-    call internalEpochSecondsToDateTime ; DE=OP1+sizeof(RpnDateTime)
+    inc de ; DE=rpnOffsetDateTime+1=offsetDateTime
+    call epochSecondsToDateTime ; DE=DE+sizeof(DateTime)
+    ; TODO: Implement the Offset calculation. For now, just set them to 0.
     ; Convert RpnDateTime to RpnOffsetDateTime. This uses 10 bytes, which
     ; fits inside OP1 which is 11 bytes big.
-    ; TODO: Implement the Offset calcualtion. For now, just set them to 0.
     xor a
     ld (de), a
     inc de
     ld (de), a
-    jp expandOp1ToOp2PageOne
+    ; clean up FPS
+    call dropRaw9
+    jp PopRpnObject1 ; OP1=RpnOffsetDateTime
