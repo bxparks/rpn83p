@@ -17,11 +17,13 @@
 ; Output: OP1:real
 ; Destroys: all, OP1-OP4
 RpnOffsetToSeconds:
-    ld de, OP1+1
-    ld hl, OP3 ; cannot be OP2
-    call hmToSeconds ; HL=OP3=(i40*)=seconds
-    call ConvertI40ToOP1 ; OP1=float(OP3); HL cannot be OP2
-    ret
+    call pushRaw9Op1 ; FPS=[rpnOffset]; HL=rpnOffset
+    inc hl ; HL=offset
+    ex de, hl ; DE=offset
+    ld hl, OP1
+    call offsetToSeconds ; DE=offset+2; HL=OP1=seconds
+    call dropRaw9 ; FPS=[]
+    jp ConvertI40ToOP1 ; OP1=float(OP1)
 
 ;-----------------------------------------------------------------------------
 
@@ -36,6 +38,16 @@ isOffsetPos:
     or (hl)
     dec hl
     bit 7, a ; ZF=1 if both sign bits are 0
+    ret
+
+; Description: Return ZF=1 if (hh,mm) in BC is zero or positive.
+; Input: BC=(hh,mm)
+; Output: ZF=1 if zero or positive
+; Destroys: A
+isHmComponentsPos:
+    ld a, b
+    or c
+    bit 7, a
     ret
 
 ;-----------------------------------------------------------------------------
@@ -58,48 +70,56 @@ chsOffset:
 
 ;-----------------------------------------------------------------------------
 
-; Description: Convert Offset(hh,mm) to i40 seconds.
-; Input:
-;   - DE:(Offset*)=offsetPointer
-;   - HL:(i40*)=result
-; Output:
-;   - (*HL):i40 updated
-;   - DE=DE+2
-; Destroys: A, DE
-; Preserves: BC, HL
-hmToSeconds:
-    ex de, hl ; DE=result; HL=offsetPointer
-    call isOffsetPos ; ZF=1 if zero or positive
-    ex de, hl ; DE=offsetPointer; HL=result
-    jr z, hmToSecondsPos
-hmToSecondsNeg:
-    ex de, hl ; DE=result; HL=offsetPointer
-    call chsOffset ; change sign of Offset
-    ex de, hl ; DE=offsetPointer; HL=result
-    call hmToSecondsPos
-    call negU40
-    ret
-
-; Description: Convert (hh,mm) into seconds.
+; Description: Convert (hh,mm) to i40 seconds.
 ; Input:
 ;   - DE:(Offset*)=offset
-;   - HL:(u40*)=result
+;   - HL:(i40*)=seconds
 ; Output:
 ;   - DE=DE+2
-;   - (*HL) updated
+;   - (*HL):i40 updated
 ; Destroys: A
-; Preserves: BC, HL
-hmToSecondsPos:
-    ; read hour
-    ld a, (de)
-    inc de
+; Preserves: BC, DE, HL
+offsetToSeconds:
+    push bc ; stack=[BC]
+    ex de, hl ; DE=seconds; HL=offset
+    ld b, (hl)
+    inc hl
+    ld c, (hl)
+    inc hl
+    ex de, hl ; DE=offset; HL=seconds
+    call isHmComponentsPos ; ZF=1 if zero or positive
+    jr z, offsetToSecondsPos
+offsetToSecondsNeg:
+    ; negate (hh,mm)
+    ld a, b
+    neg
+    ld b, a
+    ld a, c
+    neg
+    ld c, a
+    ;
+    call hmComponentsToSeconds
+    call negU40
+    pop bc ; stack=[]; BC=restored
+    ret
+offsetToSecondsPos:
+    call hmComponentsToSeconds
+    pop bc ; stack=[]; BC=restored
+    ret
+
+; Description: Convert positive (hh,mm) in BC to seconds.
+; Input: BC=(hh,mm)
+; Output: HL:(u40*)=offsetSeconds
+; Preserves: DE, HL
+hmComponentsToSeconds:
+    ; set hour
+    ld a, b
     call setU40ToA ; u40(*HL)=A
     ; multiply by 60
     ld a, 60
     call multU40ByA ; HL=result=HL*60
     ; add minute
-    ld a, (de)
-    inc de
+    ld a, c
     call addU40ByA ; HL=HL+A
     ; multiply by 60
     ld a, 60
@@ -128,7 +148,7 @@ RpnOffsetDateTimeToEpochSeconds:
     ; convert Offset to seconds
     ex de, hl ; DE=offset
     ld hl, OP1 ; HL=OP1=offsetSeconds
-    call hmToSeconds ; HL=offsetSeconds; DE+=sizeof(Offset)
+    call offsetToSeconds ; HL=offsetSeconds; DE+=sizeof(Offset)
     ; add offsetSeconds to dateTimeSeconds
     ex de, hl ; DE=offsetSeconds
     pop hl ; stack=[]; HL=dateTimeSeconds
