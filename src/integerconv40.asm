@@ -14,10 +14,9 @@
 ; u40 or i40 to OP1
 ;------------------------------------------------------------------------------
 
-; Description: Convert the i40 (signed integer) referenced by HL to a floating
-; point number in OP1.
-; Input: HL: pointer to i40, any OPx allowed
-; Output: OP1: floating point equivalent of u40(HL)
+; Description: Convert the i40 in OP1 to floating point number in OP1.
+; Input: OP1:i40
+; Output: OP1: floating point equivalent of u40
 ; Destroys: all
 ; Preserves: OP2-OP6
 ConvertI40ToOP1:
@@ -29,11 +28,8 @@ ConvertI40ToOP1:
     bcall(_InvOP1S) ; invert the sign
     ret
 
-; Description: Convert the u40 referenced by HL to a floating point number in
-; OP1. This is very similar to the convertU32ToOP1() function. The u40 will
-; be one of the OPx registers. Any of them are allowed, because the u40 is
-; copied to the FPS before internal calculations are performed.
-;
+; Description: Convert the u40 in OP1 to a floating point number in OP1. This
+; is similar to the convertU32ToOP1() function.
 ; Input: OP1:u40
 ; Output: OP1: floating point equivalent of u40
 ; Destroys: A, B, C, DE, HL
