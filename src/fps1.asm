@@ -10,6 +10,10 @@
 ; entry.
 ;-----------------------------------------------------------------------------
 
+;-----------------------------------------------------------------------------
+; RpnObject (OP1/OP2, OP3/OP4, OP5,OP6) to FPS.
+;-----------------------------------------------------------------------------
+
 ; Description: Push OP1/OP2 to FPS.
 ; Output: HL=pointer to RpnObject on FPS.
 ; Destroys: A, HL
@@ -131,6 +135,21 @@ popRpnObject:
     pop bc ; stack=[]; BC=restored
     ret
 
+; Description: Drop the RpnObject (18 byte) from FPS.
+; Input: none
+; Output: (FPS) decreased by 18 bytes
+; Preserves: all
+dropRpnObject:
+    push hl
+    push de
+    ld de, 18
+    bcall(_DeallocFPS1)
+    pop de
+    pop hl
+    ret
+
+;-----------------------------------------------------------------------------
+; Raw 9 bytes from OPx to FPS.
 ;-----------------------------------------------------------------------------
 
 ; Description: Push 9 raw bytes from OP1 into FPS.

@@ -482,6 +482,40 @@ DebugHLAsHex:
 
 ;------------------------------------------------------------------------------
 
+; Description: print DE and HL as hexadecimal
+DebugDEHLAsHex:
+    push af
+    push bc
+    push de
+    push hl
+    ld bc, (CurRow)
+    push bc
+    ;
+    ld bc, debugCurCol*$100+debugCurRow ; $(curCol)(curRow)
+    ld (CurRow), bc
+    ;
+    ld a, d
+    call debugUnsignedAAsHex
+    ld a, e
+    call debugUnsignedAAsHex
+    ld a, ' '
+    bcall(_PutC)
+    ld a, h
+    call debugUnsignedAAsHex
+    ld a, l
+    call debugUnsignedAAsHex
+    bcall(_EraseEOL)
+    ;
+    pop bc
+    ld (CurRow), bc
+    pop hl
+    pop de
+    pop bc
+    pop af
+    ret
+
+;------------------------------------------------------------------------------
+
 ; Description: Pause and wait for a keyboard input.
 ; Input: none
 ; Output: none

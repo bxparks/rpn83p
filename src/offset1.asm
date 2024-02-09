@@ -88,7 +88,7 @@ hmToSecondsNeg:
 ;   - DE=DE+2
 ;   - (*HL) updated
 ; Destroys: A
-; Preserves: BC
+; Preserves: BC, HL
 hmToSecondsPos:
     ; read hour
     ld a, (de)
@@ -109,25 +109,34 @@ hmToSecondsPos:
 ; RpnOffsetDateTime functions.
 ;-----------------------------------------------------------------------------
 
-; Description: Convert the RpnDateTime{} record in OP1 to epochSeconds relative
-; to the current epochDate.
+; Description: Convert the RpnOffsetDateTime{} record in OP1 to epochSeconds
+; relative to the current epochDate.
 ; Input: OP1/OP2:RpnOffsetDateTime=input
 ; Output: OP1:real
 ; Destroys: all, OP1-OP6
 RpnOffsetDateTimeToEpochSeconds:
-    call shrinkOp2ToOp1PageOne
-    ld hl, OP1
-    call convertToOffsetDateTime ; preserves HL
-    call dateTimeToEpochSeconds ; OP3=dateTimeSeconds
-    ;
-    ld de, OP1+rpnObjectTypeDateTimeSizeOf ; DE:(Offset*)
-    ld hl, OP4
-    call hmToSeconds ; OP4:i40=offsetSeconds
-    ;
-    ld hl, OP3
-    ld de, OP4
-    call subU40U40 ; HL:(u40*)=OP3=dateTimeSeconds-offsetSeconds
-    jp ConvertI40ToOP1 ; OP1=float(OP3)
+    ; push OP1/OP2 onto the FPS, which has the side-effect of removing the
+    ; 2-byte gap between OP1 and OP2
+    call PushRpnObject1 ; FPS=[rpnOffsetDateTime]; HL=rpnOffsetDateTime
+    ex de, hl ; DE=rpnOffsetDateTime
+    call pushRaw9Op2 ; FPS=[rpnOffsetDateTime,epochSeconds]; HL=epochSeconds
+    ; convert DateTime to epochSeconds, then offset to epochSeconds
+    inc de ; DE=offsetDateTime, skip type byte
+    ex de, hl ; DE=dateTimeSeconds; HL=offsetDateTime
+    call dateTimeToEpochSeconds ; DE=dateTimeSeconds; HL+=sizeof(DateTime)
+    push de ; stack=[dateTimeSeconds]
+    ; convert Offset to seconds
+    ex de, hl ; DE=offset
+    ld hl, OP1 ; HL=OP1=offsetSeconds
+    call hmToSeconds ; HL=offsetSeconds; DE+=sizeof(Offset)
+    ; add offsetSeconds to dateTimeSeconds
+    ex de, hl ; DE=offsetSeconds
+    pop hl ; stack=[]; HL=dateTimeSeconds
+    call subU40U40 ; HL=epochSeconds=dateTimeSeconds-offsetSeconds
+    ; copy back to OP1
+    call popRaw9Op1 ; FPS=[rpnOffsetDateTime]; DE=OP1=epochSeconds
+    call dropRpnObject ; FPS=[]
+    jp ConvertI40ToOP1 ; OP1=float(OP1)
 
 ; Description: Convert the current epochSeconds (relative to the current
 ; epochDate) to an RpnOffsetDateTime{} record.
