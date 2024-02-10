@@ -236,7 +236,9 @@ errorCodeTvmSolverReset equ     76 ; TVM Solver params reset
     .dw errorStrTvmSolverReset
 errorCodeClearAgain equ         77 ; next CLEAR button invokes CLST
     .dw errorStrClearAgain
-errorCodeCount equ              78 ; total number of error codes
+errorCodeTzStored equ           78 ; TZ stored
+    .dw errorStrTzStored
+errorCodeCount equ              79 ; total number of error codes
 
 ; The C strings for each error code. In alphabetical order, as listed in the TI
 ; 83 Plus SDK docs.
@@ -330,3 +332,5 @@ errorStrTvmSolverReset:
     .db "TVM Solver Reset", 0 ; Info: TVM Solver parameters reset to defaults
 errorStrClearAgain:
     .db "CLEAR Again to Clear Stack", 0 ; Info: Next CLEAR will invoke CLST
+errorStrTzStored:
+    .db "TZ Stored", 0 ; Info: TZ was stored
