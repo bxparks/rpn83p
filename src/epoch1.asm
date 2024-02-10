@@ -26,13 +26,13 @@
 ; routines would be required when working with seconds.
 ;
 ; Input:
-;   - HL:(Date*), must not be OPx
-;   - DE:(u40*)=resultPointer to u40, must not be OPx
+;   - DE:(Date*)=inputDate, must not be OPx
+;   - HL:(u40*)=resultPointer to u40, must not be OPx
 ; Output:
-;   - (*DE) updated
-;   - HL=HL+sizeof(Date)=HL+4
-; Destroys: A, BC, HL, OP4-OP6
-; Preserves: DE
+;   - DE=DE+sizeof(Date)=DE+4
+;   - (*HL) filled
+; Destroys: A, BC, DE, OP4-OP6
+; Preserves: HL
 dateToEpochRecord equ OP4
 dateToEpochYear equ OP4 ; year:u16
 dateToEpochMonth equ OP4+2 ; month:u8
@@ -45,12 +45,14 @@ dateToEpochP1 equ OP5+5 ; param1:u40
 dateToEpochP2 equ OP6 ; param2:u40
 dateToEpochP3 equ OP6+5 ; param3:u40
 dateToInternalEpochDays:
-    push de ; stack=[resultPointer]
+    ; Copy inputDate to dateToEpochRecord to access year, month, day fields.
+    push hl ; stack=[resultPointer]
+    ex de, hl ; HL=inputDate
     ld de, dateToEpochRecord
     ld bc, 4
-    ldir
-    ex (sp), hl ; stack=[Date+4]; HL=resultPointer
-    push hl ; stack=[Date+4, resultPointer]
+    ldir ; HL=inputDate+4
+    ex (sp), hl ; stack=[inputDate+4]; HL=resultPointer
+    push hl ; stack=[inputDate+4, resultPointer]
     ; isLowMonth=(month <= 2) ? 1 : 0)
     ld a, (dateToEpochMonth) ; A=month
     ld hl, (dateToEpochYear) ; HL=year
@@ -136,7 +138,7 @@ dateToInternalEpochDays:
     ; offset=-(kInternalEpochYear/400)*146097 + 60
     ;       =-(2000/400)*146097 + 60
     ;       =-730425
-    ;       =-11*65536-9529
+    ;       =-(11*65536+9529)
     ld a, 11
     ld bc, 9529
     ld hl, dateToEpochP1
@@ -145,13 +147,13 @@ dateToInternalEpochDays:
     ex de, hl ; HL=dayOfEpochPrime; DE=offset
     call subU40U40 ; HL=epochDays=dayOfEpochPrime-offset
     ; copy to destination U40
-    pop de ; stack=[Date+4]; DE=resultPointer
-    push de ; stack=[Date+4, resultPointer]
+    pop de ; stack=[inputDate+4]; DE=resultPointer
+    push de ; stack=[inputDate+4, resultPointer]
     ld bc, 5
     ldir
     ;
-    pop de ; stack=[Date+4]; DE=resultPointer
-    pop hl ; stack=[]; HL=Date+4
+    pop hl ; stack=[inputDate+4]; HL=resultPointer
+    pop de ; stack=[]; DE=inputDate+4
     ret
 
 ; Description: Calculate yearPrime=year-((month<=2)?1:0).
@@ -209,13 +211,13 @@ daysUntilMonthPrime:
 ; would be required when working with seconds.
 ;
 ; Input:
-;   - HL:u40=epochDays, must not be OPx
-;   - DE:pointer to Date{}, must not be OPx
+;   - DE:u40=epochDays, must not be OPx
+;   - HL:pointer to Date{}, must not be OPx
 ; Output:
-;   - (DE) set to Date{}, must not be OPx
-;   - DE=DE+sizeof(Date)
-; Destroys: A, BC, OP3-OP6
-; Preserves: HL
+;   - (HL) set to Date{}, must not be OPx
+;   - HL=HL+sizeof(Date)
+; Destroys: A, BC, HL, OP3-OP6
+; Preserves: DE
 epochToDateYearPrime equ OP3 ; u16
 epochToDateMonthPrime equ OP3+2 ; u8; also holds monthPrime->month
 epochToDateDay equ OP3+3 ; u8
@@ -229,10 +231,11 @@ epochToDateP4 equ OP5+5 ; u40; sum, yearOfYear
 epochToDateP5 equ OP6 ; u40; dividend (e.g. dayOfEra)
 epochToDateP6 equ OP6+5 ; u40; remainder
 internalEpochDaysToDate:
-    push hl ; stack=[epochDays]
-    push de ; stack=[epochDays, Date{}]
+    push de ; stack=[epochDays]
+    push hl ; stack=[epochDays, Date{}]
     ; ==== Calculate dayOfEpochPrime
     ; copy epochDays to P1
+    ex de, hl ; HL=epochDays
     ld de, epochToDateP1
     call copyU40 ; DE=P1=epochDays
     ; offset= 730425
@@ -410,10 +413,9 @@ internalEpochDaysToDate:
     ; year
     ld hl, (epochToDateYearPrime) ; HL=yearPrime
     call yearPrimeToYear ; HL=year
-    ; ==== update Date{}
     ex de, hl ; DE=year
+    ; ==== update Date{}
     pop hl ; stack=[epochDays]; HL=Date{}
-    push hl ; stack=[epochDays, Date{}]
     ; Date{}.year
     ld (hl), e
     inc hl
@@ -426,12 +428,9 @@ internalEpochDaysToDate:
     ; Date{}.day
     ld a, (epochToDateDay)
     ld (hl), a
-    pop de ; stack=[epochDays]; DE=Date{}
-    inc de
-    inc de
-    inc de
-    inc de ; DE+=sizeof(Date)
-    pop hl ; stack=[]; HL=epochDays
+    inc hl
+    ; restore DE
+    pop de ; stack=[]; DE=epochDays
     ret
 
 ; Description: Convert monthPrime to normal month where `month = (monthPrime <
@@ -463,22 +462,23 @@ yearPrimeToYear:
 
 ; Description: Convert DateTime{} record to epochSeconds.
 ; Input:
-;   - HL:(DateTime*)=dateTimePointer, must not be OPx
-;   - DE:(u40*)=resultPointer, must not be OPx
+;   - DE:(DateTime*)=dateTimePointer, must not be OPx
+;   - HL:(u40*)=resultPointer, must not be OPx
 ; Output:
-;   - (*DE)=result
-;   - HL=HL+sizeof(DateTime)=HL+7
-; Destroys: A, BC, HL, OP4-OP6
-; Preserves: DE
+;   - DE=DE+sizeof(DateTime)=DE+7
+;   - (*HL) filled
+; Destroys: A, BC, DE, OP4-OP6
+; Preserves: HL
 dateTimeToInternalEpochSeconds:
-    call dateToInternalEpochDays ; DE=epochDays; HL=timePointer=dateTime+4
-    push hl ; stack=[timePointer]
+    call dateToInternalEpochDays ; HL=epochDays; DE=timePointer=dateTime+4
+    push de ; stack=[timePointer]
     ; convert days to seconds
+    ex de, hl ; DE=resultPointer
     ld hl, OP4
     ld a, 1
     ld bc, 20864 ; ABC=86400 seconds per day
     call setU40ToABC ; HL=OP4=86400
-    ex de, hl ; HL=result; DE=OP4=86400
+    ex de, hl ; HL=resultPointer; DE=OP4=86400
     call multU40U40 ; HL=result=86400*epochDays
     ; convert time to seconds
     ex (sp), hl ; stack=[resultPointer]; HL=timePointer
@@ -489,7 +489,7 @@ dateTimeToInternalEpochSeconds:
     ex (sp), hl ; stack=[dateTime+7]; HL=resultPointer
     ; add timeSeconds to epochDays*86400
     call addU40U40 ; HL=result=epochDays*86400+timeSeconds
-    pop hl ; stack=[]; HL=dateTime+7
+    pop de ; stack=[]; DE=dateTime+7
     ret
 
 ; Description: Convert (hh,mm,ss) to seconds. TODO: Maybe rename this
@@ -529,15 +529,15 @@ hmsToSeconds:
 
 ; Description: Convert internal epochSeconds to DateTime{} structure.
 ; Input:
-;   - HL:(i40*)=epochSeconds, probably OP1
-;   - DE:(DateTime*)=dateTime, probably OP2+1
+;   - DE:(i40*)=epochSeconds, must not be OPx
+;   - HL:(DateTime*)=dateTime, must not be OPx
 ; Output:
-;   - *DE=dateTime result
-;   - DE=DE+sizeof(DateTime)
+;   - (*HL)=dateTime result
+;   - HL=HL+sizeof(DateTime)
 ; Destroys: A, BC, DE, HL, OP3-OP6
 internalEpochSecondsToDateTime:
-    push de ; stack=[dateTime]
-    push hl ; stack=[dateTime,epochSeconds]
+    push hl ; stack=[dateTime]
+    push de ; stack=[dateTime,epochSeconds]
     ; (epochDays,seconds)=div2(epochSeconds,86400)
     ld a, 1
     ld bc, 20864 ; ABC=86400 seconds per day
@@ -548,7 +548,8 @@ internalEpochSecondsToDateTime:
     pop hl ; stack=[dateTime]; HL=epochSeconds
     ld bc, OP4 ; remainder
     call divI40U40 ; HL=epochDays; BC=OP4=remainderSeconds
-    pop de ; stack=[]; DE=dateTime
+    ex de, hl ; DE=epochDays
+    pop hl ; stack=[]; HL=dateTime
     ; save remainderSeconds on stack
     ld bc, (OP4)
     push bc
@@ -557,8 +558,8 @@ internalEpochSecondsToDateTime:
     ld bc, (OP4+4)
     push bc ; stack=[remainderSeconds]
     ; calculate Date components from epochDays
-    call internalEpochDaysToDate ; DE=dateTime+4
-    ; pop remainderSeconds from stack
+    call internalEpochDaysToDate ; HL=dateTime+4=time
+    ; pop remainderSeconds from stack into OP4
     pop bc
     ld (OP4+4), bc
     pop bc
@@ -566,30 +567,30 @@ internalEpochSecondsToDateTime:
     pop bc
     ld (OP4), bc ; stack=[]; OP4=remainderSeconds
     ; populate Time components from remainderSeconds
-    ld hl, OP4
-    ld c, e
-    ld b, d
-    call secondsToHms ; BC=BC+3=dateTime+sizeof(DateTime)
-    ld e, c
-    ld d, b ; DE=dateTime+sizeof(DateTime)
+    ld de, OP4
+    call secondsToHms ; HL=HL+3=dateTime+sizeof(DateTime)
     ret
 
 ; Description: Convert seconds in a day to (hh,mm,ss).
 ; Input:
-;   - HL:(u40*)=secondsPointer
-;   - BC:(Time*)=hmsPointer
+;   - DE:(u40*)=secondsPointer
+;   - HL:(Time*)=hmsPointer
 ; Output:
-;   - HL: destroyed
-;   - BC=BC+sizeof(Time)=BC+3
-;   - (BC):filled
-; Destroys: A, (HL)
-; Preserves: BC, DE, HL
+;   - HL=HL+sizeof(Time)=HL+3
+;   - (HL):filled
+; Destroys: A, (secondsPointer)
+; Preserves: BC, DE
 secondsToHms:
-    push de
+    push bc ; stack=[BC]
+    push de ; stack=[BC,secondsPointer]
+    ld c, l
+    ld b, h ; BC:Time*=hmsPointer
+    ex de, hl ; HL=secondsPointer
+    ; move to 'second' field
     inc bc
     inc bc
-    ld d, 60
     ; fill second
+    ld d, 60
     call divU40ByD ; E=remainder; HL=quotient
     ld a, e
     ld (bc), a
@@ -602,10 +603,12 @@ secondsToHms:
     ; fill hour
     ld a, (hl)
     ld (bc), a
-    ;
-    pop de
     ; move pointer past the Time{} record.
     inc bc
     inc bc
     inc bc
+    ld l, c
+    ld h, b ; HL=hmsPointer+3
+    pop de ; stack=[BC]; DE=secondsPointer
+    pop bc ; stack=[]; BC=restored
     ret

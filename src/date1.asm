@@ -387,9 +387,12 @@ isLeapYearTrue:
 ; Date{} record.
 ; Input: HL: Date{} record
 ; Output: A: 1-7
+; Destroys: OP3-OP5
 DayOfWeekIso:
-    ld de, OP3
-    call dateToInternalEpochDays ; DE=OP3=epochDays
+    ex de, hl ; DE=inputDate
+    ld hl, OP3
+    call dateToInternalEpochDays ; HL=OP3=epochDays
+    ex de, hl ; DE=OP3=epochDays
     ld a, 7
     ld hl, OP4
     call setU40ToA ; OP4=7
@@ -415,7 +418,7 @@ dayOfWeekIsoEnd:
 ; epochDate.
 ; Input:
 ;   - OP1:(RpnDate*)=rpnDate
-;   - (epochDate):Date{}=current epoch date
+;   - (epochDate):Date{}=reference epoch date
 ; Output:
 ;   - OP1:(i40*)=epochDays
 ; Destroys: A, DE, BC, HL, OP1, OP4-OP6
@@ -423,10 +426,11 @@ RpnDateToEpochDays:
     ; reserve 2 slots on FPS
     call pushRaw9Op2 ; FPS=[epochDays]; HL=epochDays
     ex de, hl ; DE=epochDays
-    call pushRaw9Op1 ; FPS=[epochDays,RpnDate]; HL=i40*=rpnDate
+    call pushRaw9Op1 ; FPS=[epochDays,rpnDate]; HL=i40*=rpnDate
     inc hl ; HL=Date
     ; do conversion
-    call dateToEpochDays ; DE=epochDays
+    ex de, hl ; DE=rpnDate; HL=epochDays
+    call dateToEpochDays ; HL=epochDays
     ; copy back to OP1
     call dropRaw9 ; FPS=[epochDays]
     call popRaw9Op1 ; FPS=[]; OP1=epochDays
@@ -437,7 +441,7 @@ RpnDateToEpochDays:
 ; epochDate.
 ; Input:
 ;   - OP1:(RpnDate*)=rpnDate
-;   - (epochDate):Date{}=current epoch date
+;   - (epochDate):Date{}=reference epoch date
 ; Output:
 ;   - OP1:(i40*)=epochSeconds
 ; Destroys: A, DE, BC, HL, OP1-OP3, OP4-OP6
@@ -445,12 +449,12 @@ RpnDateToEpochSeconds:
     ; reserve 2 slots on FPS
     call pushRaw9Op2 ; FPS=[epochDays]; HL=epochDays
     ex de, hl ; DE=epochDays
-    call pushRaw9Op1 ; FPS=[epochDays,RpnDate]; HL=epochDays
+    call pushRaw9Op1 ; FPS=[epochDays,RpnDate]; HL=rpnDate
     inc hl ; HL=Date
     ; convert to days
-    call dateToEpochDays ; DE=(i40*)=epochDays
+    ex de, hl ; DE=rpnDate; HL=epochDays
+    call dateToEpochDays ; HL=(i40*)=epochDays
     ; convert to seconds
-    ex de, hl ; HL=epochDays
     call convertU40DaysToU40Seconds ; HL=epochSeconds
     ; copy back to OP1
     call dropRaw9 ; FPS=[epochSeconds]
@@ -460,82 +464,80 @@ RpnDateToEpochSeconds:
 
 ; Description: Convert Date{} to relative epochSeconds.
 ; Input:
-;   - HL:(Date*)=date, must not be OPx
-;   - DE:(i40*)=resultDays, must not be OPx
+;   - DE:(Date*)=inputDate, must not be OPx
+;   - HL:(i40*)=resultDays, must not be OPx
 ; Output:
-;   - HL=HL+sizeof(Date)
-;   - (*DE)=i40=resultDays
+;   - DE=DE+sizeof(Date)
+;   - (*HL)=i40=resultDays
 ; Preserves: DE
 dateToEpochDays:
     ; convert given date to internal epochDays
-    push de ; stack=[resultDays]
-    call dateToInternalEpochDays ; DE=epochDays; HL=date+4
-    ex (sp), hl ; stack=[date+4]; HL=resultDays
+    call dateToInternalEpochDays ; HL=epochDays
+    push de ; stack=[date+4]
     push hl ; stack=[date+4,resultDays]
-    ; convert current epochDate to currentEpochDays
-    ; TODO: precompute the currentEpochDays
-    call pushRaw9Op1 ; FPS=[currentEpochDays]; HL=currentEpochDays
-    ex de, hl ; DE=currentEpochDays
-    ld hl, epochDate
-    call dateToInternalEpochDays ; DE=currentEpochDays
+    ; convert reference epochDate to refEpochDays
+    ; TODO: precompute the refEpochDays
+    call reserveRaw9 ; FPS=[refEpochDays]; HL=refEpochDays
+    ld de, epochDate
+    call dateToInternalEpochDays ; HL=refEpochDays
     ; convert to relative epochDays
+    ex de, hl ; DE=refEpochDays
     pop hl ; stack=[date+4]; HL=resultDays
-    call subU40U40 ; HL=resultDays=epochDays-currentEpochDays
+    call subU40U40 ; HL=resultDays=epochDays-refEpochDays
     ; clean up FPS
     call dropRaw9
-    ex de, hl ; DE=resultDays
-    pop hl ; stack=[]; HL=date+4
+    pop de ; stack=[]; DE=date+4
     ret
 
 ;-----------------------------------------------------------------------------
 
-; Description: Convert the current epochDays (relative to the current
-; epochDate) to an RpnDate{} record.
-; Input: OP1: float(epochDays)
-; Output: OP1: RpnDate
+; Description: Convert the relative epochDays to an RpnDate{} record.
+; Input: OP1:Real=epochDays
+; Output: OP1:RpnDate
 ; Destroys: all, OP1-OP6
 EpochDaysToRpnDate:
-    call ConvertOP1ToI40 ; OP1=i40(epochDays)
+    call ConvertOP1ToI40 ; OP1:i40=epochDays
 epochDaysToRpnDateAlt:
     ; reserve 2 slots on the FPS
-    call pushRaw9Op2 ; FPS=[rpnDate]; HL=rpnDate
-    ex de, hl ; DE=rpnDate
-    call pushRaw9Op1 ; FPS=[rpnDate,epochDays]; HL=epochDays
+    call pushRaw9Op1 ; FPS=[epochDays]; HL=epochDays
+    ex de, hl ; DE=epochDays
+    call reserveRaw9 ; FPS=[epochDays,rpnDate]; HL=rpnDate
     ; convert to RpnDate
     ld a, rpnObjectTypeDate
-    ld (de), a
-    inc de ; DE=RpnDate+1=Date
+    ld (hl), a
+    inc hl ; HL=RpnDate+1=Date
     call epochDaysToDate
     ; clean up FPS
-    call dropRaw9
-    jp popRaw9Op1
+    call popRaw9Op1
+    jp dropRaw9
 
 ; Description: Convert the epochDays to Date.
 ; Input:
-;   - HL:(u40*)=epochDays, must not be an OPx
-;   - DE:(Date*)=date, must not be an OPx
+;   - DE:(u40*)=epochDays, must not be an OPx
+;   - HL:(Date*)=resultDate, must not be an OPx
 ; Output:
-;   - (DE): filled
-;   - DE=DE+sizeof(Date)=DE+4
+;   - (HL): filled
+;   - HL=HL+sizeof(Date)=HL+4
 ; Destroys: all, OP2, OP3-6
 epochDaysToDate:
-    push de ; stack=[date]
-    push hl ; stack=[date,epochDays]
-    ; TODO: precompute the currentEpochDays
-    ld hl, epochDate
-    ld de, OP2
-    call dateToInternalEpochDays ; DE=OP2=currentEpochDays
+    push hl ; stack=[resultDate]
+    push de ; stack=[resultDate,epochDays]
+    ; TODO: precompute the refEpochDays
+    ld de, epochDate
+    ld hl, OP2
+    call dateToInternalEpochDays ; HL=OP2=refEpochDays
     ; convert relative epochDays to internal epochDays
-    pop hl ; stack=[date]; HL=epochDays
+    ex de, hl ; DE=refEpochDays
+    pop hl ; stack=[resultDate]; HL=epochDays
     call addU40U40 ; HL=internal epochDays
     ; convert internal epochDays to RpnDate
-    pop de ; stack=[]; DE=date
-    jp internalEpochDaysToDate ; DE=DE+sizeof(Date)
+    ex de, hl ; DE=internalEpochDays
+    pop hl ; stack=[]; HL=resultDate
+    jp internalEpochDaysToDate ; HL=HL+sizeof(Date); (HL)=resultDate
 
 ;-----------------------------------------------------------------------------
 
-; Description: Convert the current epochSeconds (relative to the current
-; epochDate) to an RpnDate{} object.
+; Description: Convert the relative epochSeconds to an RpnDate{} object.
 ; Input: OP1: float(epochSeconds)
 ; Output: OP1: RpnDate
 ; Destroys: all, OP1-OP6
@@ -563,7 +565,7 @@ EpochSecondsToRpnDate:
 ;   - OP3:Union[RpnDate,RpnReal]=rpnDate or days
 ; Output:
 ;   - OP1:RpnDate=RpnDate+days
-; Destroys: OP1, OP2, OP3-OP6
+; Destroys: all, OP1, OP2, OP3-OP6
 AddRpnDateByDays:
     call checkOp1DatePageOne ; ZF=1 if CP1 is an RpnDate
     jr nz, addRpnDateByDaysAdd
@@ -571,28 +573,24 @@ AddRpnDateByDays:
 addRpnDateByDaysAdd:
     ; CP1=days, CP3=RpnDate
     call ConvertOP1ToI40 ; HL=OP1=u40(days)
-    call pushRaw9Op1 ; FPS=[u40(days)]; HL=days
-    push hl ; stack=[days]
-    ; convert CP3=RpnDate to days
-    call pushRaw9Op1 ; FPS=[days,dateDays]; HL=dateDays
-    push hl ; stack=[days,dateDays]
-    call op3ToOp1PageOne
-    call pushRaw9Op1 ; FPS=[days,dateDays,rpnDate]; HL=rpnDate
-    pop de ; stack=[days]; DE=dateDays
-    inc hl ; HL=rpnDate+1
-    call dateToInternalEpochDays ; DE=dateDays
-    call dropRaw9 ; FPS=[days,dateDays]
+    call pushRaw9Op1 ; FPS=[days]; HL=days
+    ; convert CP3=RpnDate to OP1=days
+    ld de, OP3+1 ; DE=Date
+    ld hl, OP1
+    call dateToInternalEpochDays ; HL=OP1=dateDays
     ; add days, dateDays
-    pop hl ; stack=[]; HL=days
-    call addU40U40 ; HL=days=dateDays+days; DE=dateDays
-    ; convert days to RpnDate
+    call popRaw9Op2 ; FPS=[]; OP2=days
+    ld de, OP2
+    ld hl, OP1
+    call addU40U40 ; HL=resultDays=dateDays+days
+    ; convert days to OP1=RpnDate
+    call op1ToOp2PageOne ; OP2=resultDays
+    ld de, OP2
+    ld hl, OP1
     ld a, rpnObjectTypeDate
-    ld (de), a
-    inc de ; DE=FPS.dateDays+1=newDate; HL=days
-    call internalEpochDaysToDate ; DE=DE+sizeof(Date)
-    ; extract FPS to OP1
-    call popRaw9Op1 ; FPS=[days]; OP1=rpnDate
-    jp dropRaw9 ; FPS=[]
+    ld (hl), a
+    inc hl ; HL:(Date*)=newDate
+    jp internalEpochDaysToDate ; HL=OP1+sizeof(Date)
 
 ;-----------------------------------------------------------------------------
 
@@ -613,17 +611,15 @@ subRpnDateByDays:
     jr addRpnDateByDaysAdd
 subRpnDateByRpnDate:
     ; convert OP3 to days, on FPS stack
-    call pushRaw9Op1 ; make space on FPS=[X.days]; HL=X.days
+    call reserveRaw9 ; make space on FPS=[X.days]; HL=X.days
     push hl ; stack=[X.days]
-    ex de, hl ; DE=X.days
-    ld hl, OP3+1 ; HL=Date{}
-    call dateToInternalEpochDays ; FPS.X.days updated; DE=X.days
+    ld de, OP3+1 ; DE=Date{}
+    call dateToInternalEpochDays ; HL=FPS.X.days updated
     ; convert OP1 to days, on FPS stack
-    call pushRaw9Op1 ; make space, FPS=[X.days,Y.days]; HL=Y.days
+    call reserveRaw9 ; make space, FPS=[X.days,Y.days]; HL=Y.days
     push hl ; stack=[X.days,Y.days]
-    ex de, hl ; DE=Y.days
-    ld hl, OP1+1 ; HL=Date{}
-    call dateToInternalEpochDays ; FPS.Y.days updated; DE=Y.days
+    ld de, OP1+1 ; DE=Date{}
+    call dateToInternalEpochDays ; HL=FPS.Y.days updated
     ; subtract Y.days-X.days
     pop hl ; HL=Y.days
     pop de ; De=X.days
@@ -637,8 +633,7 @@ subRpnDateByRpnDate:
 ; RpnDateTime functions.
 ;-----------------------------------------------------------------------------
 
-; Description: Convert the RpnDateTime{} record in OP1 to epochSeconds relative
-; to the current epochDate.
+; Description: Convert the RpnDateTime{} record in OP1 to relative epochSeconds.
 ; Input: OP1:RpnDateTime=input
 ; Output: OP1:real
 ; Destroys: all, OP1-OP6
@@ -646,90 +641,86 @@ RpnDateTimeToEpochSeconds:
     ; reserve 2 slots on FPS
     call pushRaw9Op1 ; FPS=[rpnDateTime]; HL=rpnDateTime
     ex de, hl ; DE=rpnDateTime
-    call pushRaw9Op2 ; FPS=[rpnDateTime,epochSeconds]; HL=epochSeconds
+    call reserveRaw9 ; FPS=[rpnDateTime,epochSeconds]; HL=epochSeconds
     ; convert to epochSeconds
     inc de ; DE=dateTime, skip type byte
-    ex de, hl ; DE=epochSeconds; HL=dateTime
-    call dateTimeToEpochSeconds ; DE=epochSeconds
+    call dateTimeToEpochSeconds ; HL=epochSeconds
     ; copy back to OP1
-    call popRaw9Op1 ; OP1=epochSeconds
-    call dropRaw9
+    call popRaw9Op1 ; FPS=[rpnDateTime]; OP1=epochSeconds
+    call dropRaw9 ; FPS=[]
     jp ConvertI40ToOP1 ; OP1=float(epochSeconds)
 
 ; Description: Convert DateTime{} to relative epochSeconds.
 ; Input:
-;   - HL:(DateTime*)=dateTime, must not be OPx
-;   - DE:(i40*)=resultSeconds, must not be OPx
+;   - DE:(DateTime*)=dateTime, must not be OPx
+;   - HL:(i40*)=resultSeconds, must not be OPx
 ; Output:
-;   - HL=HL+sizeof(DateTime)
-;   - (*DE)=i40=resultSeconds
-; Preserves: DE
+;   - DE=DE+sizeof(DateTime)
+;   - (*HL)=i40=resultSeconds
+; Preserves: HL
 dateTimeToEpochSeconds:
     ; convert Date to relative epochSeconds
-    call dateToEpochDays ; DE=resultDays; HL=HL+sizeof(Date)=(Time*)
-    ex de, hl ; HL=resultDays; DE=time
-    call convertU40DaysToU40Seconds ; HL=epochSeconds
+    call dateToEpochDays ; HL=resultDays; DE=DE+sizeof(Date)=(Time*)
+    call convertU40DaysToU40Seconds ; HL=resultSeconds
     ; convert Time to seconds
-    push hl ; stack=[epochSeconds]
-    call pushRaw9Op1 ; FPS=[timeSeconds]; HL=timeSeconds
+    push hl ; stack=[resultSeconds]
+    call reserveRaw9 ; FPS=[timeSeconds]; HL=timeSeconds
     call hmsToSeconds ; FPS.timeSeconds updated; DE=DE+sizeof(Time)
-    ; add timeSeconds to epochSeconds
+    ; add timeSeconds to resultSeconds
     ex de, hl ; HL=dateTime+7; DE=timeSeconds
-    ex (sp), hl ; stack=[dateTime+7]; HL=epochSeconds
-    call addU40U40 ; HL=epochSeconds+=timeSeconds
-    ex de, hl ; DE=epochSeconds
-    pop hl ; stack=[]; HL=dateTime+7
+    ex (sp), hl ; stack=[dateTime+7]; HL=resultSeconds
+    call addU40U40 ; HL=resultSeconds+=timeSeconds
+    pop de ; stack=[]; DE=dateTime+7
     jp dropRaw9 ; FPS=[]
 
 ;-----------------------------------------------------------------------------
 
-; Description: Convert the current epochSeconds (relative to the current
-; epochDate) to an RpnDateTime{} record.
-; Input: OP1: float(epochSeconds)
-; Output: OP1: RpnDateTime
+; Description: Convert the relative epochSeconds to an RpnDateTime{} record.
+; Input: OP1:Real=epochSeconds
+; Output: OP1:RpnDateTime
 ; Destroys: all, OP1-OP6
 EpochSecondsToRpnDateTime:
     ; get relative epochSeconds
-    call ConvertOP1ToI40 ; HL=OP2=i40(epochSeconds)
+    call ConvertOP1ToI40 ; OP1=i40(epochSeconds)
     ; reserve 2 slots on the FPS
-    call pushRaw9Op2 ; FPS=[rpnDateTime]; HL=rpnDateTime
+    call reserveRaw9 ; FPS=[rpnDateTime]; HL=rpnDateTime
     ex de, hl ; DE=rpnDateTime
     call pushRaw9Op1 ; FPS=[rpnDateTime,epochSeconds]; HL=epochSeconds
     ; convert to RpnDateTime
+    ex de, hl ; DE=epochSeconds; HL=rpnDateTime
     ld a, rpnObjectTypeDateTime
-    ld (de), a
-    inc de ; DE=rpnDateTime+1=dateTime
-    call epochSecondsToDateTime
+    ld (hl), a
+    inc hl ; HL=rpnDateTime+1=dateTime
+    call epochSecondsToDateTime ; HL=HL+sizeof(DateTime)
     ; clean up FPS
     call dropRaw9
     jp popRaw9Op1
 
 ; Description: Convert relative epochSeconds to DateTime.
 ; Input:
-;   - HL=epochSeconds, must not be an OPx
-;   - DE:(DateTime*)=dateTime result, must not be an OPx
+;   - DE=epochSeconds, must not be an OPx
+;   - HL:(DateTime*)=dateTime result, must not be an OPx
 ; Output:
-;   - (DE)=DateTime
-;   - DE=DE+sizeof(DateTime)
+;   - (HL)=DateTime
+;   - HL=HL+sizeof(DateTime)
 ; Destroys: all, OP1-OP6
 epochSecondsToDateTime:
-    push de ; stack=[dateTime]
-    push hl ; stack=[dateTime,epochSeconds]
-    ; get currentEpochSeconds
-    ; TODO: Replace this with pre-calculated currentEpochSeconds.
-    ld hl, epochDate
-    ld de, OP2
-    call dateToInternalEpochDays ; DE=OP2=currentEpochDays
+    push hl ; stack=[dateTime]
+    push de ; stack=[dateTime,epochSeconds]
+    ; TODO: Precompute the refEpochSeconds.
+    ld de, epochDate
+    ld hl, OP2
+    call dateToInternalEpochDays ; HL=OP2=refEpochDays
     ; convert days to seconds
-    ex de, hl ; HL=OP2=epochDays
-    call convertU40DaysToU40Seconds ; HL=OP2=currentEpochSeconds
-    ex de, hl ; DE=OP2=currentEpochSeconds
+    call convertU40DaysToU40Seconds ; HL=OP2=refEpochSeconds
     ; calculate internal epochSeconds
+    ex de, hl ; DE=OP2=refEpochSeconds
     pop hl ; stack=[dateTime]; HL=epochSeconds
     call addU40U40 ; HL=internal epochSeconds
     ; convert internal epochSeconds to RpnDateTime
-    pop de ; stack=[]; DE=dateTime
-    jp internalEpochSecondsToDateTime ; DE=DE+sizeof(DateTime)
+    ex de, hl ; DE=epochSeconds
+    pop hl ; stack=[]; HL=dateTime
+    jp internalEpochSecondsToDateTime ; HL=HL+sizeof(DateTime)
 
 ;-----------------------------------------------------------------------------
 
@@ -748,24 +739,24 @@ AddRpnDateTimeBySeconds:
 addRpnDateTimeBySecondsAdd:
     ; CP1=seconds, CP3=RpnDateTime
     call ConvertOP1ToI40 ; HL=OP1=u40(seconds)
-    call pushRaw9Op1 ; FPS=[u40(seconds)]
-    ;
-    ld hl, OP3+1 ; HL=OP1+1=DateTime
-    ld de, OP1
-    call dateTimeToInternalEpochSeconds ; OP1=u40(epochSeconds)
-    call popRaw9Op2 ; FPS=[]; OP2=u40(seconds)
-    ;
+    call pushRaw9Op1 ; FPS=[seconds]
+    ; convert CP3=RpnDateTime to OP1=seconds
+    ld de, OP3+1 ; DE=DateTime
     ld hl, OP1
+    call dateTimeToInternalEpochSeconds ; HL=OP1=dateTimeSeconds
+    ; add seconds, dateSeconds
+    call popRaw9Op2 ; FPS=[]; OP2=seconds
     ld de, OP2
-    call addU40U40 ; HL=OP1=u40(epochSeconds+seconds)
-    ;
-    call op1ToOp2PageOne ; OP2=u40(epochSeconds+seconds)
-    ld hl, OP2
-    ld de, OP1 ; DE=OP1+1=DateTime
+    ld hl, OP1
+    call addU40U40 ; HL=OP1=resultSeconds=dateTimeSeconds+seconds
+    ; convert seconds to OP1=RpnDateTime
+    call op1ToOp2PageOne ; OP2=resultSeconds
+    ld de, OP2
+    ld hl, OP1
     ld a, rpnObjectTypeDateTime
-    ld (de), a
-    inc de
-    jp internalEpochSecondsToDateTime ; DE=OP1+sizeof(DateTime)
+    ld (hl), a
+    inc hl ; HL:(DateTime*)=newDateTime
+    jp internalEpochSecondsToDateTime ; HL=OP1+sizeof(DateTime)
 
 ;-----------------------------------------------------------------------------
 
@@ -786,17 +777,15 @@ subRpnDateTimeBySeconds:
     jr addRpnDateTimeBySecondsAdd
 subRpnDateTimeByRpnDateTime:
     ; convert OP3 to seconds on the FPS stack
-    call pushRaw9Op1 ; make space on FPS=[X.seconds]; HL=X.seconds
+    call reserveRaw9 ; FPS=[X.seconds]; HL=X.seconds
     push hl ; stack=[X.seconds]
-    ex de, hl ; DE=X.seconds
-    ld hl, OP3+1 ; HL=DateTime{}
-    call dateTimeToInternalEpochSeconds ; FPS.X.seconds updated; DE=X.seconds
+    ld de, OP3+1 ; HL=DateTime{}
+    call dateTimeToInternalEpochSeconds ; FPS.X.seconds updated; HL=X.seconds
     ; convert OP1 to seconds on FPS stack
     call pushRaw9Op1 ; make space on FPS=[X.seconds,Y.seconds]; HL=Y.seconds
     push hl ; stack=[X.seconds,Y.seconds]
-    ex de, hl ; DE=Y.seconds
-    ld hl, OP1+1 ; HL=DateTime{}
-    call dateTimeToInternalEpochSeconds ; FPS.Y.seconds updated; DE=Y.seconds
+    ld de, OP1+1 ; HL=DateTime{}
+    call dateTimeToInternalEpochSeconds ; FPS.Y.seconds updated; HL=Y.seconds
     ; subtract Y.seconds-X.seconds
     pop hl ; HL=Y.seconds
     pop de ; DE=X.seconds

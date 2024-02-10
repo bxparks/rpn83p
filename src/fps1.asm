@@ -101,6 +101,22 @@ pushRpnObject:
     pop bc ; stack=[]; BC=restored
     ret
 
+; Description: Reserver an RpnObject on the FPS.
+; Input: none
+; Output: HL=pointer to RpnObject on FPS
+; Preserves: BC, DE
+reserveRpnObject:
+    push bc
+    push de
+    ld hl, (FPS)
+    push hl
+    ld hl, 18
+    bcall(_AllocFPS1) ; destroys all
+    pop hl ; HL=FPS-18
+    pop de
+    pop bc
+    ret
+
 ; Description: Pop the RpnObject from FPS to DE no matter the RpnObject type.
 ; Input:
 ;   - DE: pointer to an OPx register
@@ -212,6 +228,22 @@ pushRaw9:
     pop hl ; stack=[BC,DE]; HL=FPS-9
     pop de ; stack=[BC]; DE=restored
     pop bc ; stack=[]; BC=restored
+    ret
+
+; Description: Reserve 9 raw bytes on FPS.
+; Input: none
+; Output: HL=pointer to raw 9 bytes on FPS.
+; Preserved: BC, DE
+reserveRaw9:
+    push bc
+    push de
+    ld hl, (FPS)
+    push hl ; stack=[FPS-9]
+    ld hl, 9
+    bcall(_AllocFPS1)
+    pop hl ; HL=FPS-18
+    pop de
+    pop bc
     ret
 
 ; Description: Pop the Raw 9 bytes from FPS to DE.

@@ -78,7 +78,7 @@ chsOffset:
 ;   - DE=DE+2
 ;   - (*HL):i40 updated
 ; Destroys: A
-; Preserves: BC, DE, HL
+; Preserves: BC, HL
 offsetToSeconds:
     push bc ; stack=[BC]
     ex de, hl ; DE=seconds; HL=offset
@@ -129,8 +129,8 @@ hmComponentsToSeconds:
 ; RpnOffsetDateTime functions.
 ;-----------------------------------------------------------------------------
 
-; Description: Convert the RpnOffsetDateTime{} record in OP1 to epochSeconds
-; relative to the current epochDate.
+; Description: Convert the RpnOffsetDateTime{} record in OP1 to relative
+; epochSeconds.
 ; Input: OP1/OP2:RpnOffsetDateTime=input
 ; Output: OP1:real
 ; Destroys: all, OP1-OP6
@@ -139,49 +139,48 @@ RpnOffsetDateTimeToEpochSeconds:
     ; 2-byte gap between OP1 and OP2
     call PushRpnObject1 ; FPS=[rpnOffsetDateTime]; HL=rpnOffsetDateTime
     ex de, hl ; DE=rpnOffsetDateTime
-    call pushRaw9Op2 ; FPS=[rpnOffsetDateTime,epochSeconds]; HL=epochSeconds
-    ; convert DateTime to epochSeconds, then offset to epochSeconds
+    call reserveRaw9 ; FPS=[rpnOffsetDateTime,reserved]
+    ; convert DateTime to dateTimeSeconds
     inc de ; DE=offsetDateTime, skip type byte
-    ex de, hl ; DE=dateTimeSeconds; HL=offsetDateTime
-    call dateTimeToEpochSeconds ; DE=dateTimeSeconds; HL+=sizeof(DateTime)
-    push de ; stack=[dateTimeSeconds]
-    ; convert Offset to seconds
-    ex de, hl ; DE=offset
+    call dateTimeToEpochSeconds ; HL=FPS.dateTimeSeconds; DE+=sizeof(DateTime)
+    push hl ; stack=[FPS.dateTimeSeconds]
+    ; convert Offset to seconds in OP1
     ld hl, OP1 ; HL=OP1=offsetSeconds
-    call offsetToSeconds ; HL=offsetSeconds; DE+=sizeof(Offset)
+    call offsetToSeconds ; HL=OP1=offsetSeconds; DE+=sizeof(Offset)
     ; add offsetSeconds to dateTimeSeconds
     ex de, hl ; DE=offsetSeconds
-    pop hl ; stack=[]; HL=dateTimeSeconds
-    call subU40U40 ; HL=epochSeconds=dateTimeSeconds-offsetSeconds
+    pop hl ; stack=[]; HL=FPS.dateTimeSeconds
+    call subU40U40 ; HL=FPS.dateTimeSeconds=dateTimeSeconds-offsetSeconds
     ; copy back to OP1
-    call popRaw9Op1 ; FPS=[rpnOffsetDateTime]; DE=OP1=epochSeconds
+    call popRaw9Op1 ; FPS=[rpnOffsetDateTime]; HL=OP1=dateTimeSeconds
     call dropRpnObject ; FPS=[]
     jp ConvertI40ToOP1 ; OP1=float(OP1)
 
-; Description: Convert the current epochSeconds (relative to the current
-; epochDate) to an RpnOffsetDateTime{} record.
+; Description: Convert the relative epochSeconds to an RpnOffsetDateTime{}
+; record.
 ; Input: OP1: float(epochSeconds)
 ; Output: OP1: RpnDateTime
 ; Destroys: all, OP1-OP6
 EpochSecondsToRpnOffsetDateTime:
     ; get relative epochSeconds
     call ConvertOP1ToI40 ; OP1=i40(epochSeconds)
-    ; reserve 2 slots on the FPS, using RpnObject to reserve 18 bytes
-    call PushRpnObject1 ; FPS=[rpnOffsetDateTime]; HL=rpnDateTime
-    ex de, hl ; DE=rpnDateTime
+    ; reserve RpnObject on FPS
+    call reserveRpnObject ; FPS=[rpnOffsetDateTime]; HL=rpnOffsetDateTime
+    ex de, hl ; DE=rpnOffsetDateTime
     call pushRaw9Op1 ; FPS=[rpnOffsetDateTime,epochSeconds]; HL=epochSeconds
-    ; convert to RpnDateTime
+    ; convert to RpnOffsetDateTime
+    ex de, hl ; DE=epochSeconds; HL=rpnOffsetDateTime
     ld a, rpnObjectTypeOffsetDateTime
-    ld (de), a
-    inc de ; DE=rpnOffsetDateTime+1=offsetDateTime
-    call epochSecondsToDateTime ; DE=DE+sizeof(DateTime)
+    ld (hl), a
+    inc hl ; HL=rpnOffsetDateTime+1=offsetDateTime
+    call epochSecondsToDateTime ; HL=HL+sizeof(DateTime)
     ; TODO: Implement the Offset calculation. For now, just set them to 0.
     ; Convert RpnDateTime to RpnOffsetDateTime. This uses 10 bytes, which
     ; fits inside OP1 which is 11 bytes big.
     xor a
-    ld (de), a
-    inc de
-    ld (de), a
+    ld (hl), a
+    inc hl
+    ld (hl), a
     ; clean up FPS
     call dropRaw9
     jp PopRpnObject1 ; OP1=RpnOffsetDateTime

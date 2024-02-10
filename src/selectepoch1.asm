@@ -50,7 +50,7 @@ SelectCustomEpochDate:
 
 ;-----------------------------------------------------------------------------
 
-; Description: Set the current epoch to the date given in OP1.
+; Description: Set the reference epoch to the date given in OP1.
 ; Input: OP1: RpnDate{}
 ; Output: (epochDate) updated
 SetCustomEpochDate:
@@ -62,7 +62,7 @@ SetCustomEpochDate:
 setCustomEpochDateErr:
     bcall(_ErrDataType)
 
-; Description: Get the current epoch date into OP1.
+; Description: Get the reference epoch date into OP1.
 ; Input: none
 ; Output: OP1=epochDate
 GetCustomEpochDate:

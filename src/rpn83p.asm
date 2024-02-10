@@ -435,7 +435,7 @@ epochTypeNtp equ 2
 epochTypeGps equ 3
 epochTypeTios equ 4
 
-; Store the current Epoch.
+; Store the reference Epoch.
 epochType equ commaEEMode + 1 ; u8
 
 ; Current value of the Epoch Date as selected by epochType.
