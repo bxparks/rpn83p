@@ -176,17 +176,26 @@ mEpochGetCustomHandler:
     jp pushToX
 
 ;-----------------------------------------------------------------------------
+; DATE > ZONE > Row1
+;-----------------------------------------------------------------------------
+
+mSetTimeZoneHandler:
+    call closeInputAndRecallRpnOffsetX
+    bcall(_SetTimeZone)
+    ret
+
+mGetTimeZoneHandler:
+    call closeInputAndRecallNone
+    bcall(_GetTimeZone)
+    jp pushToX
+
+;-----------------------------------------------------------------------------
 ; Other DATE functions
 ;-----------------------------------------------------------------------------
 
 ; DATE > Row1
 mNowHandler:
 mConvertTimeZoneHandler:
-
-; DATE > ZONE > Row1
-mZoneOffsetUTCHandler:
-mZoneOffsetSetHandler:
-mZoneOffsetGetHandler:
 
 ; DATE > DUR > Row1
 mDurationToSecondsHandler:

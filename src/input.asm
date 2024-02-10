@@ -155,3 +155,12 @@ closeInputAndRecallRpnDateLikeOrOffsetX:
     cp rpnObjectTypeOffsetDateTime
     ret z
     bcall(_ErrDataType)
+
+; Close the input buffer, parse RpnOffset{} record, place it into OP1.
+closeInputAndRecallRpnOffsetX:
+    call closeInput
+    res rpnFlagsTvmCalculate, (iy + rpnFlags)
+    call rclX ; A=objectType
+    cp rpnObjectTypeOffset
+    ret z
+    bcall(_ErrDataType)

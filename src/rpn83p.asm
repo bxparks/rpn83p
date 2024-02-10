@@ -444,8 +444,11 @@ epochDate equ epochType + 1 ; Date{y,m,d}, 4 bytes
 ; Custom value of the Epoch Date if epochTypeCustom selected.
 epochDateCustom equ epochDate + 4 ; Date{y,m,d}, 4 bytes
 
+; Set default time zone
+timeZone equ epochDateCustom + 4 ; Offset{hh,mm}, 2 bytes
+
 ; End application variables.
-appStateEnd equ epochDateCustom + 4
+appStateEnd equ timeZone + 2
 
 ; Total size of appState vars.
 appStateSize equ (appStateEnd - appStateBegin)
@@ -595,6 +598,7 @@ _RestoreAppStateLabel:
 _RestoreAppState equ _RestoreAppStateLabel-branchTableBase
     .dw RestoreAppState
     .db 1
+
 ; osstate.asm
 _SaveOSStateLabel:
 _SaveOSState equ _SaveOSStateLabel-branchTableBase
@@ -604,11 +608,13 @@ _RestoreOSStateLabel:
 _RestoreOSState equ _RestoreOSStateLabel-branchTableBase
     .dw RestoreOSState
     .db 1
+
 ; help.asm
 _ProcessHelpLabel:
 _ProcessHelp equ _ProcessHelpLabel-branchTableBase
     .dw ProcessHelp
     .db 1
+
 ; menulookup.asm
 _FindMenuNodeLabel:
 _FindMenuNode equ _FindMenuNodeLabel-branchTableBase
@@ -618,11 +624,13 @@ _FindMenuStringLabel:
 _FindMenuString equ _FindMenuStringLabel-branchTableBase
     .dw FindMenuString
     .db 1
+
 ; crc.asm
 _Crc16ccittLabel:
 _Crc16ccitt equ _Crc16ccittLabel-branchTableBase
     .dw Crc16ccitt
     .db 1
+
 ; errorcode.asm
 _InitErrorCodeLabel:
 _InitErrorCode equ _InitErrorCodeLabel-branchTableBase
@@ -640,11 +648,13 @@ _SetHandlerCodeFromSystemCodeLabel:
 _SetHandlerCodeFromSystemCode equ _SetHandlerCodeFromSystemCodeLabel-branchTableBase
     .dw SetHandlerCodeFromSystemCode
     .db 1
+
 ; print1.asm
 _ConvertAToStringLabel:
 _ConvertAToString equ _ConvertAToStringLabel-branchTableBase
     .dw ConvertAToString
     .db 1
+
 ; input1.asm
 _InitInputBufLabel:
 _InitInputBuf equ _InitInputBufLabel-branchTableBase
@@ -682,6 +692,7 @@ _SetComplexDelimiterLabel:
 _SetComplexDelimiter equ _SetComplexDelimiterLabel-branchTableBase
     .dw SetComplexDelimiter
     .db 1
+
 ; arg1.asm
 _ClearArgBufLabel:
 _ClearArgBuf equ _ClearArgBufLabel-branchTableBase
@@ -699,6 +710,7 @@ _ParseArgBufLabel:
 _ParseArgBuf equ _ParseArgBufLabel-branchTableBase
     .dw ParseArgBuf
     .db 1
+
 ; pstring1.asm
 _AppendStringLabel:
 _AppendString equ _AppendStringLabel-branchTableBase
@@ -716,6 +728,7 @@ _GetLastCharLabel:
 _GetLastChar equ _GetLastCharLabel-branchTableBase
     .dw GetLastChar
     .db 1
+
 ; integerconv1.asm
 _ConvertAToOP1Label:
 _ConvertAToOP1 equ _ConvertAToOP1Label-branchTableBase
@@ -725,6 +738,7 @@ _AddAToOP1Label:
 _AddAToOP1 equ _AddAToOP1Label-branchTableBase
     .dw AddAToOP1
     .db 1
+
 ; tvm.asm
 _TvmCalculateNLabel:
 _TvmCalculateN equ _TvmCalculateNLabel-branchTableBase
@@ -866,6 +880,7 @@ _RclTvmSolverCountLabel:
 _RclTvmSolverCount equ _RclTvmSolverCountLabel-branchTableBase
     .dw RclTvmSolverCount
     .db 1
+
 ; float1.asm
 _LnOnePlusLabel:
 _LnOnePlus equ _LnOnePlusLabel-branchTableBase
@@ -875,6 +890,7 @@ _ExpMinusOneLabel:
 _ExpMinusOne equ _ExpMinusOneLabel-branchTableBase
     .dw ExpMinusOne
     .db 1
+
 ; hms.asm
 _HmsToHrLabel:
 _HmsToHr equ _HmsToHrLabel-branchTableBase
@@ -884,6 +900,7 @@ _HmsFromHrLabel:
 _HmsFromHr equ _HmsFromHrLabel-branchTableBase
     .dw HmsFromHr
     .db 1
+
 ; prob.asm
 _ProbPermLabel:
 _ProbPerm equ _ProbPermLabel-branchTableBase
@@ -893,6 +910,7 @@ _ProbCombLabel:
 _ProbComb equ _ProbCombLabel-branchTableBase
     .dw ProbComb
     .db 1
+
 ; fps1.asm
 _PushRpnObject1Label:
 _PushRpnObject1 equ _PushRpnObject1Label-branchTableBase
@@ -918,6 +936,7 @@ _PopRpnObject5Label:
 _PopRpnObject5 equ _PopRpnObject5Label-branchTableBase
     .dw PopRpnObject5
     .db 1
+
 ; format1.asm
 _FormatDateRecordLabel:
 _FormatDateRecord equ _FormatDateRecord-branchTableBase
@@ -935,6 +954,7 @@ _FormatOffsetDateTimeRecordLabel:
 _FormatOffsetDateTimeRecord equ _FormatOffsetDateTimeRecord-branchTableBase
     .dw FormatOffsetDateTimeRecord
     .db 1
+
 ; complex1.asm
 _RectToComplexLabel:
 _RectToComplex equ _RectToComplexLabel-branchTableBase
@@ -968,6 +988,7 @@ _ComplexToPolarDegLabel:
 _ComplexToPolarDeg equ _ComplexToPolarDegLabel-branchTableBase
     .dw ComplexToPolarDeg
     .db 1
+
 ; complexformat1.asm
 _FormatComplexRectLabel:
 _FormatComplexRect equ _FormatComplexRectLabel-branchTableBase
@@ -1081,6 +1102,16 @@ _RpnOffsetDateTimeToEpochSeconds equ _RpnOffsetDateTimeToEpochSecondsLabel-branc
 _EpochSecondsToRpnOffsetDateTimeLabel:
 _EpochSecondsToRpnOffsetDateTime equ _EpochSecondsToRpnOffsetDateTimeLabel-branchTableBase
     .dw EpochSecondsToRpnOffsetDateTime
+    .db 1
+
+; zone1.asm
+_SetTimeZoneLabel:
+_SetTimeZone equ _SetTimeZoneLabel-branchTableBase
+    .dw SetTimeZone
+    .db 1
+_GetTimeZoneLabel:
+_GetTimeZone equ _GetTimeZoneLabel-branchTableBase
+    .dw GetTimeZone
     .db 1
 
 #ifdef DEBUG
@@ -1219,6 +1250,7 @@ defpage(1)
 #include "selectepoch1.asm"
 #include "date1.asm"
 #include "offset1.asm"
+#include "zone1.asm"
 #ifdef DEBUG
 #include "debug.asm"
 #endif

@@ -2105,7 +2105,7 @@ mTimeZoneId equ 223
     .db mDateId ; parentId
     .db mTimeZoneNameId ; nameId
     .db 1 ; numRows
-    .db mZoneOffsetUTCId ; rowBeginId or altNameId
+    .db mSetTimeZoneId ; rowBeginId or altNameId
     .dw mGroupHandler ; handler (predefined)
     .dw 0 ; nameSelector
 mBlank224:
@@ -2230,32 +2230,32 @@ mEpochGetCustomId equ 236
     .dw 0 ; nameSelector
 ; MenuGroup ZONE: children
 ; MenuGroup ZONE: children: row 0
-mZoneOffsetUTC:
-mZoneOffsetUTCId equ 237
-    .db mZoneOffsetUTCId ; id
+mSetTimeZone:
+mSetTimeZoneId equ 237
+    .db mSetTimeZoneId ; id
     .db mTimeZoneId ; parentId
-    .db mZoneOffsetUTCNameId ; nameId
+    .db mSetTimeZoneNameId ; nameId
     .db 0 ; numRows
     .db 0 ; rowBeginId or altNameId
-    .dw mZoneOffsetUTCHandler ; handler (to be implemented)
+    .dw mSetTimeZoneHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
-mZoneOffsetSet:
-mZoneOffsetSetId equ 238
-    .db mZoneOffsetSetId ; id
+mGetTimeZone:
+mGetTimeZoneId equ 238
+    .db mGetTimeZoneId ; id
     .db mTimeZoneId ; parentId
-    .db mZoneOffsetSetNameId ; nameId
+    .db mGetTimeZoneNameId ; nameId
     .db 0 ; numRows
     .db 0 ; rowBeginId or altNameId
-    .dw mZoneOffsetSetHandler ; handler (to be implemented)
+    .dw mGetTimeZoneHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
-mZoneOffsetGet:
-mZoneOffsetGetId equ 239
-    .db mZoneOffsetGetId ; id
+mBlank239:
+mBlank239Id equ 239
+    .db mBlank239Id ; id
     .db mTimeZoneId ; parentId
-    .db mZoneOffsetGetNameId ; nameId
+    .db mNullNameId ; nameId
     .db 0 ; numRows
     .db 0 ; rowBeginId or altNameId
-    .dw mZoneOffsetGetHandler ; handler (to be implemented)
+    .dw mNullHandler ; handler (predefined)
     .dw 0 ; nameSelector
 mBlank240:
 mBlank240Id equ 240
@@ -2277,7 +2277,7 @@ mBlank241Id equ 241
     .dw 0 ; nameSelector
 
 ; Table of 2-byte pointers to names in the pool of strings below.
-mMenuNameTableSize equ 236
+mMenuNameTableSize equ 235
 mMenuNameTable:
 mNullNameId equ 0
     .dw mNullName
@@ -2745,12 +2745,10 @@ mEpochSetCustomNameId equ 231
     .dw mEpochSetCustomName
 mEpochGetCustomNameId equ 232
     .dw mEpochGetCustomName
-mZoneOffsetUTCNameId equ 233
-    .dw mZoneOffsetUTCName
-mZoneOffsetSetNameId equ 234
-    .dw mZoneOffsetSetName
-mZoneOffsetGetNameId equ 235
-    .dw mZoneOffsetGetName
+mSetTimeZoneNameId equ 233
+    .dw mSetTimeZoneName
+mGetTimeZoneNameId equ 234
+    .dw mGetTimeZoneName
 
 ; Table of names as NUL terminated C strings.
 mNullName:
@@ -3219,9 +3217,7 @@ mEpochSetCustomName:
     .db "EPC", 0
 mEpochGetCustomName:
     .db 'E', 'P', 'C', Squestion, 0
-mZoneOffsetUTCName:
-    .db "UTC", 0
-mZoneOffsetSetName:
-    .db "UOFF", 0
-mZoneOffsetGetName:
-    .db 'U', 'O', 'F', Squestion, 0
+mSetTimeZoneName:
+    .db "TZ", 0
+mGetTimeZoneName:
+    .db 'T', 'Z', Squestion, 0

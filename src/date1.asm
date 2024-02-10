@@ -9,10 +9,15 @@
 ;-----------------------------------------------------------------------------
 
 InitDate:
+    ; select Unix epoch by default.
     call SelectUnixEpochDate
     ; Set the default custom epochDate to 2000-01-01
     ld hl, y2kDate
-    jp setEpochDateCustom
+    call setEpochDateCustom
+    ; set default TimeZone to UTC
+    ld hl, 0
+    ld (timeZone),hl
+    ret
 
 ;-----------------------------------------------------------------------------
 ; RpnObjecType checkers.

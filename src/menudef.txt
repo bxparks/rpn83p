@@ -412,10 +412,8 @@ MenuGroup root mRoot [
         ]
         MenuGroup ZONE mTimeZone [
           MenuRow [
-            MenuItem UTC mZoneOffsetUTC
-            MenuItem UOFF mZoneOffsetSet
-            MenuItem UOF<Squestion> mZoneOffsetGet
-            # MenuItem TZ mZoneTzSelect
+            MenuItem TZ mSetTimeZone
+            MenuItem TZ<Squestion> mGetTimeZone
           ]
         ]
         # MenuGroup RTC mRtc [
