@@ -158,8 +158,8 @@ RpnOffsetDateTimeToEpochSeconds:
 
 ; Description: Convert the relative epochSeconds to an RpnOffsetDateTime{}
 ; record.
-; Input: OP1: float(epochSeconds)
-; Output: OP1: RpnDateTime
+; Input: OP1:Real=epochSeconds
+; Output: OP1:RpnDateTime
 ; Destroys: all, OP1-OP6
 EpochSecondsToRpnOffsetDateTime:
     ; get relative epochSeconds
@@ -173,14 +173,48 @@ EpochSecondsToRpnOffsetDateTime:
     ld a, rpnObjectTypeOffsetDateTime
     ld (hl), a
     inc hl ; HL=rpnOffsetDateTime+1=offsetDateTime
-    call epochSecondsToDateTime ; HL=HL+sizeof(DateTime)
-    ; TODO: Implement the Offset calculation. For now, just set them to 0.
-    ; Convert RpnDateTime to RpnOffsetDateTime. This uses 10 bytes, which
-    ; fits inside OP1 which is 11 bytes big.
-    xor a
-    ld (hl), a
-    inc hl
-    ld (hl), a
+    ; select the currently selected TZ offset
+    ld bc, timeZone
+    call epochSecondsToOffsetDateTime ; HL=HL+sizeof(OffsetDateTime)
     ; clean up FPS
     call dropRaw9
     jp PopRpnObject1 ; OP1=RpnOffsetDateTime
+
+; Description: Convert the relative epochSeconds to an OffsetDateTime{} with
+; the given Offset{}.
+; Input:
+;   - BC:(const Offset*)=offset
+;   - DE:(const i40*)=epochSeconds, must not be an OPx
+;   - HL:(OffsetDateTime*)=offsetDateTime, must not be an OPx
+; Output:
+;   - (*HL)=offsetDateTime updated
+;   - HL=HL+sizeof(OffsetDateTime)
+; Destroys: all, OP1-OP6
+epochSecondsToOffsetDateTime:
+    push bc ; stack=[offset]
+    push hl ; stack=[offset,offsetDateTime]
+    push de ; stack=[offset,offsetDateTime,epochSeconds]
+    ; convert offset (BC) to seconds
+    call reserveRaw9 ; FPS=[offsetSeconds]; HL=offsetSeconds
+    ld e, c
+    ld d, b
+    call offsetToSeconds ; HL=offsetSeconds updated
+    ; shift the epochSeconds to the given Offset
+    pop de ; stack=[offset,offsetDateTime]; DE=epochSeconds
+    call addU40U40 ; HL=effEpochSeconds=offsetSeconds+epochSeconds
+    ; convert effEpochSeconds to DateTime
+    ex de, hl ; DE=effEpochSeconds
+    pop hl ; stack=[offset]; HL=offsetDateTime
+    call epochSecondsToDateTime ; HL=offsetDateTime+sizeof(DateTime)
+    ; copy the given offset into OffsetDateTime.offset
+    pop bc ; stack=[]; BC=offset
+    ld a, (bc)
+    inc bc
+    ld (hl), a
+    inc hl
+    ld a, (bc)
+    inc bc
+    ld (hl), a
+    inc hl
+    ; cleanup FPS
+    jp dropRaw9 ; FPS=[]

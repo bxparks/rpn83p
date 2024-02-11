@@ -329,8 +329,8 @@ convertU40DaysToU40Seconds:
 ;-----------------------------------------------------------------------------
 
 ; Description: Determine if OP1 is leap year.
-; Input: OP1
-; Output: 1 or 0
+; Input: OP1:Real=year
+; Output: OP1:Real=1 or 0
 ; Destroys: all
 IsLeap:
     call convertOP1ToHLPageOne ; HL=u16(OP1) else Err:Domain
@@ -543,8 +543,8 @@ epochDaysToDate:
 ;-----------------------------------------------------------------------------
 
 ; Description: Convert the relative epochSeconds to an RpnDate{} object.
-; Input: OP1: float(epochSeconds)
-; Output: OP1: RpnDate
+; Input: OP1:Real=epochSeconds
+; Output: OP1:RpnDate
 ; Destroys: all, OP1-OP6
 EpochSecondsToRpnDate:
     ; get relative epochSeconds
@@ -657,11 +657,11 @@ RpnDateTimeToEpochSeconds:
 
 ; Description: Convert DateTime{} to relative epochSeconds.
 ; Input:
-;   - DE:(DateTime*)=dateTime, must not be OPx
+;   - DE:(const DateTime*)=dateTime, must not be OPx
 ;   - HL:(i40*)=resultSeconds, must not be OPx
 ; Output:
 ;   - DE=DE+sizeof(DateTime)
-;   - (*HL)=i40=resultSeconds
+;   - (*HL):i40=resultSeconds
 ; Preserves: HL
 dateTimeToEpochSeconds:
     ; convert Date to relative epochSeconds
@@ -703,10 +703,10 @@ EpochSecondsToRpnDateTime:
 
 ; Description: Convert relative epochSeconds to DateTime.
 ; Input:
-;   - DE=epochSeconds, must not be an OPx
-;   - HL:(DateTime*)=dateTime result, must not be an OPx
+;   - DE:(const i40*)=epochSeconds, must not be an OPx
+;   - HL:(DateTime*)=dateTime, must not be an OPx
 ; Output:
-;   - (HL)=DateTime
+;   - (*HL)=dateTime updated
 ;   - HL=HL+sizeof(DateTime)
 ; Destroys: all, OP1-OP6
 epochSecondsToDateTime:
