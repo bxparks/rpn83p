@@ -406,6 +406,11 @@ universalAdd:
     jr z, universalAddDateTimePlusSeconds
     call checkOp3DateTime ; ZF=1 if DateTime
     jr z, universalAddSecondsPlusDateTime
+    ;
+    call checkOp1OffsetDateTime ; ZF=1 if OffsetDateTime
+    jr z, universalAddOffsetDateTimePlusSeconds
+    call checkOp3OffsetDateTime ; ZF=1 if OffsetDateTime
+    jr z, universalAddSecondsPlusOffsetDateTime
 universalAddErr:
     ; throw Err:DataType if nothing matches
     bcall(_ErrDataType)
@@ -439,6 +444,16 @@ universalAddSecondsPlusDateTime:
     call checkOp3DateTime
     jr nz, universalAddErr
     bcall(_AddRpnDateTimeBySeconds) ; OP1=DateTime(OP1)+seconds(OP3)
+    ret
+universalAddOffsetDateTimePlusSeconds:
+    call checkOp3Real
+    jr nz, universalAddErr
+    bcall(_AddRpnOffsetDateTimeBySeconds) ; OP1=OffsetDateTime(OP1)+seconds(OP3)
+    ret
+universalAddSecondsPlusOffsetDateTime:
+    call checkOp3OffsetDateTime
+    jr nz, universalAddErr
+    bcall(_AddRpnOffsetDateTimeBySeconds) ; OP1=OffsetDateTime(OP1)+seconds(OP3)
     ret
 
 ; Description: Subtractions for real, complex, and Date objects.

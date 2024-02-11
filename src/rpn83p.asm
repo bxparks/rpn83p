@@ -1103,6 +1103,10 @@ _EpochSecondsToRpnOffsetDateTimeLabel:
 _EpochSecondsToRpnOffsetDateTime equ _EpochSecondsToRpnOffsetDateTimeLabel-branchTableBase
     .dw EpochSecondsToRpnOffsetDateTime
     .db 1
+_AddRpnOffsetDateTimeBySecondsLabel:
+_AddRpnOffsetDateTimeBySeconds equ _AddRpnOffsetDateTimeBySecondsLabel-branchTableBase
+    .dw AddRpnOffsetDateTimeBySeconds
+    .db 1
 
 ; zone1.asm
 _SetTimeZoneLabel:

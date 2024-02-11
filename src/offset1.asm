@@ -236,3 +236,48 @@ epochSecondsToOffsetDateTime:
     inc hl
     ; cleanup FPS
     jp dropRaw9 ; FPS=[]
+
+;-----------------------------------------------------------------------------
+
+; Description: Add (RpnOffsetDateTime plus seconds) or (seconds plus
+; RpnDateTime).
+; Input:
+;   - OP1:Union[RpnOffsetDateTime,RpnReal]=rpnOffsetDateTime or seconds
+;   - OP3:Union[RpnOffsetDateTime,RpnReal]=rpnOffsetDateTime or seconds
+; Output:
+;   - OP1:RpnOffsetDateTime=RpnOffsetDateTime+seconds
+;   - DE=OP1+sizeof(OffsetDateTime)
+; Destroys: OP1, OP2, OP3-OP6
+AddRpnOffsetDateTimeBySeconds:
+    call checkOp1OffsetDateTimePageOne ; ZF=1 if CP1 is an RpnDateTime
+    jr nz, addRpnOffsetDateTimeBySecondsAdd
+    call cp1ExCp3PageOne ; CP1=seconds; CP3=RpnDateTime
+addRpnOffsetDateTimeBySecondsAdd:
+    ; CP1=seconds, CP3=RpnOffsetDateTime
+    call ConvertOP1ToI40 ; HL=OP1=u40(seconds)
+    call pushRaw9Op1 ; FPS=[seconds]
+    push hl ; stack=[seconds]
+    ; convert rpnOffsetDateTime to OP1=seconds
+    call PushRpnObject3 ; FPS[seconds,rpnOffsetDateTime];
+    ex de, hl ; DE=rpnOffsetDateTime
+    inc de
+    ld hl, OP1
+    call offsetDateTimeToEpochSeconds ; HL=OP1=offsetDateTimeSeconds
+    ld c, e
+    ld b, d ; BC=offsetDateTime+sizeof(OffsetDateTime)
+    dec bc
+    dec bc ; BC:(Offset*)
+    ; add seconds + dateSeconds
+    ex de, hl ; DE=offsetDateTimeSeconds
+    pop hl ; stack=[]; HL=FPS.seconds
+    call addU40U40 ; HL=FPS.resultSeconds=offsetDateTimeSeconds+seconds
+    ; convert seconds to RpnOffsetDateTime
+    ex de, hl ; DE=resultSeconds
+    ld hl, OP1
+    ld a, rpnObjectTypeOffsetDateTime
+    ld (hl), a
+    inc hl ; HL:(OffsetDateTime*)=newOffsetDateTime
+    call epochSecondsToOffsetDateTime ; HL=OP1+sizeof(OffsetDateTime)
+    ; clean up stack and FPS
+    call dropRpnObject
+    jp dropRaw9

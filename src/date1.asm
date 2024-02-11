@@ -55,6 +55,22 @@ checkOp3DateTimePageOne:
     cp rpnObjectTypeDateTime
     ret
 
+; Description: Check if OP1 is a RpnOffsetDateTime.
+; Output: ZF=1 if RpnOffsetDateTime
+checkOp1OffsetDateTimePageOne:
+    ld a, (OP1)
+    and $1f
+    cp rpnObjectTypeOffsetDateTime
+    ret
+
+; Description: Check if OP3 is a RpnOffsetDateTime.
+; Output: ZF=1 if RpnOffsetDateTime
+checkOp3OffsetDateTimePageOne:
+    ld a, (OP3)
+    and $1f
+    cp rpnObjectTypeOffsetDateTime
+    ret
+
 ;-----------------------------------------------------------------------------
 ; Validate various date-related records.
 ;-----------------------------------------------------------------------------
