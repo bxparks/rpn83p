@@ -212,6 +212,7 @@ epochSecondsToOffsetDateTime:
     inc bc
     ld (hl), a
     inc hl
+    ;
     ld a, (bc)
     inc bc
     ld (hl), a

@@ -10,8 +10,8 @@
 
 ; Description: Format the Date Record in HL to DE.
 ; Input:
-;   - HL: dateRecordPointer
-;   - DE: stringBufPointer
+;   - HL:(const Date*)=date
+;   - DE:(char*)
 ; Output:
 ;   - HL: incremented to next record field
 ;   - DE: points to NUL char at end of string
@@ -38,8 +38,8 @@ FormatDateRecord:
 
 ; Description: Format the DateTime Record in HL to DE.
 ; Input:
-;   - HL: dateTimeRecordPointer
-;   - DE: stringBufPointer
+;   - HL:(const DateTime*)
+;   - DE:(char*)
 ; Output:
 ;   - HL: incremented to next record field
 ;   - DE: points to NUL char at end of string
@@ -77,8 +77,8 @@ FormatDateTimeRecord:
 ; TimeZone object may be created. For now, the Offset object will take the
 ; place of the TimeZone object.
 ; Input:
-;   - HL: dateTimeRecordPointer
-;   - DE: stringBufPointer
+;   - HL:(const Offset*)
+;   - DE:(char*)
 ; Output:
 ;   - HL: incremented to next record field
 ;   - DE: points to NUL char at end of string
@@ -108,8 +108,8 @@ FormatOffsetRecord:
 
 ; Description: Format the OffsetDateTime Record in HL to DE.
 ; Input:
-;   - HL: offsetDateTimeRecordPointer
-;   - DE: stringBufPointer
+;   - HL:(const OffsetDateTime*)
+;   - DE:(char*)
 ; Output:
 ;   - HL: incremented to next record field
 ;   - DE: points to NUL char at end of string
@@ -154,8 +154,8 @@ FormatOffsetDateTimeRecord:
 
 ; Description: Format year,month,day of HL record to C string in DE.
 ; Input:
-;   - HL: recordPointer
-;   - DE: stringBufPointer
+;   - HL:(const Date*)
+;   - DE:(char*)
 ; Output:
 ;   - HL: incremented to next record field
 ;   - DE: points to char after last char, no NUL
@@ -184,10 +184,10 @@ formatYearMonthDay:
     call formatU8ToD2
     ret
 
-; Description: Format year,month,day of HL record to C string in DE.
+; Description: Format hour,minute,second of HL to C string in DE.
 ; Input:
-;   - HL: recordPointer
-;   - DE: stringBufPointer
+;   - HL:(const Time*)=time
+;   - DE:(char*)
 ; Output:
 ;   - HL: incremented to next record field
 ;   - DE: points to char after last char, no NUL
@@ -217,8 +217,8 @@ formatHourMinuteSecond:
 ; Description: Format the (signed) hour and minute components of an Offset
 ; record in HL to C-string in DE.
 ; Input:
-;   - HL: recordPointer
-;   - DE: stringBufPointer
+;   - HL:(const Offset*)
+;   - DE:(char*)
 ; Output:
 ;   - HL: incremented to next record field
 ;   - DE: points to char after last char, no NUL
@@ -240,7 +240,9 @@ formatOffsetHourMinute:
 ;-----------------------------------------------------------------------------
 
 ; Description: Format the u16 in BC to 4 digits in DE.
-; Input: BC:u16; DE:destPointer
+; Input:
+;   - BC:u16
+;   - DE:(char*)=destPointer
 ; Output: DE=DE+4
 ; Destroys: A, BC, DE
 ; Preserves: HL
@@ -268,7 +270,9 @@ formatU16ToD4Loop:
 
 ; Description: Format the u8 in A to 2 digits in DE. Leading zero is
 ; suppressed.
-; Input: A:u8; DE:destPointer
+; Input:
+;   - A:u8
+;   - DE:(char*)=destPointer
 ; Output: DE=DE+2
 ; Destroys: A, BC, DE
 ; Preserves: HL
@@ -302,7 +306,9 @@ formatU8ToD2End:
     ret
 
 ; Description: Format the i8 in A to 2 digits in DE.
-; Input: A:i8; DE:destPointer
+; Input:
+;   - A:i8
+;   - DE:(char*)=destPointer
 ; Output: DE=DE+2,3
 ; Destroys: A, BC
 ; Preserves: HL
@@ -322,8 +328,8 @@ formatI8ToD2:
 
 ; Description: Reverses the chars of the string referenced by HL.
 ; Input:
-;   - HL: pointer to array of characters
-;   - B: number of characters
+;   - HL:(char*)
+;   - B:numChars
 ; Output: string in (HL) reversed
 ; Destroys: A, B, DE, HL
 reverseStringPageOne:
