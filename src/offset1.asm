@@ -327,3 +327,83 @@ subRpnOffsetDateTimeByRpnOffsetDateTime:
     call dropRaw9
     call dropRpnObject
     jp dropRpnObject
+
+;-----------------------------------------------------------------------------
+; OffsetDateTime or DateTime to target Offset timeZone conversion.
+;-----------------------------------------------------------------------------
+
+; Description: Convert the RpnDateTime (OP1) to the timeZone specified by
+; RpnOffset (OP3).
+; Input:
+;   - OP1:RpnDateTime
+;   - OP3:RpnOffset
+; Output:
+;   - OP1; RpnOffsetDatetime
+; Destroys: all, OP3-OP6
+ConvertRpnDateTimeToOffset:
+    call checkOp1DateTimePageOne ; ZF=1 if CP1 is an RpnDateTime
+    jr z, convertRpnDateTimeToOffsetConvert
+    call cp1ExCp3PageOne ; CP1=rpnDateTime; CP3=rpnOffset
+convertRpnDateTimeToOffsetConvert:
+    ; CP1=rpnDateTime; CP3=rpnOffset
+    call PushRpnObject1 ; FPS=[rpnDateTime]; HL=rpnDateTime
+    inc hl ; HL=dateTime
+    ex de, hl ; DE=dateTime
+    ;
+    call pushRaw9Op3 ; FPS=[rpnDateTime,rpnOffset]; HL=rpnOffset
+    inc hl ; HL=offset
+    push hl ; stack=[offset]
+    ; convert DateTime to epochSeconds
+    call reserveRaw9 ; FPS=[rpnDateTime,rpnOffset,epochSeconds]
+    call dateTimeToEpochSeconds ; HL=epochSeconds
+    ; convert to OffsetDateTime
+    ex de, hl ; DE=epochSeconds
+    pop bc ; stack=[]; BC=offset
+    ld hl, OP1
+    ld a, rpnObjectTypeOffsetDateTime
+    ld (hl), a
+    inc hl
+    call epochSecondsToOffsetDateTime ; HL=OP1=offsetDateTime
+    call expandOp1ToOp2PageOne
+    ; clean up FPS
+    call dropRaw9 ; FPS=[rpnDateTime,rpnOffset]
+    call dropRaw9 ; FPS=[rpnDateTime]
+    jp dropRpnObject ; FPS=[]
+
+; Description: Convert the RpnOffsetDateTime (OP1) to the timeZone specified by
+; RpnOffset (OP3).
+; Input:
+;   - OP1:RpnOffsetDateTime
+;   - OP3:RpnOffset
+; Output:
+;   - OP1; RpnOffsetDatetime
+; Destroys: all, OP3-OP6
+ConvertRpnOffsetDateTimeToOffset:
+    call checkOp1OffsetDateTimePageOne ; ZF=1 if CP1 is an RpnOffsetDateTime
+    jr z, convertRpnOffsetDateTimeToOffsetConvert
+    call cp1ExCp3PageOne ; CP1=rpnOffsetDateTime; CP3=rpnOffset
+convertRpnOffsetDateTimeToOffsetConvert:
+    ; CP1=rpnOffsetDateTime; CP3=rpnOffset
+    call PushRpnObject1 ; FPS=[rpnOffsetDateTime]; HL=rpnOffsetDateTime
+    inc hl ; HL=offsetDateTime
+    ex de, hl ; DE=offsetDateTime
+    ;
+    call pushRaw9Op3 ; FPS=[rpnOffsetDateTime,rpnOffset]; HL=rpnOffset
+    inc hl ; HL=offset
+    push hl ; stack=[offset]
+    ; convert OffsetDateTime to epochSeconds
+    call reserveRaw9 ; FPS=[rpnOffsetDateTime,rpnOffset,epochSeconds]
+    call offsetDateTimeToEpochSeconds ; HL=epochSeconds
+    ; convert to OffsetDateTime
+    ex de, hl ; DE=epochSeconds
+    pop bc ; stack=[]; BC=offset
+    ld hl, OP1
+    ld a, rpnObjectTypeOffsetDateTime
+    ld (hl), a
+    inc hl
+    call epochSecondsToOffsetDateTime ; HL=OP1=offsetDateTime
+    call expandOp1ToOp2PageOne
+    ; clean up FPS
+    call dropRaw9 ; FPS=[rpnOffsetDateTime,rpnOffset]
+    call dropRaw9 ; FPS=[rpnOffsetDateTime]
+    jp dropRpnObject ; FPS=[]

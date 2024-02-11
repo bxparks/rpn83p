@@ -1111,6 +1111,14 @@ _SubRpnOffsetDateTimeByRpnOffsetDateTimeOrSecondsLabel:
 _SubRpnOffsetDateTimeByRpnOffsetDateTimeOrSeconds equ _SubRpnOffsetDateTimeByRpnOffsetDateTimeOrSecondsLabel-branchTableBase
     .dw SubRpnOffsetDateTimeByRpnOffsetDateTimeOrSeconds
     .db 1
+_ConvertRpnDateTimeToOffsetLabel:
+_ConvertRpnDateTimeToOffset equ _ConvertRpnDateTimeToOffsetLabel-branchTableBase
+    .dw ConvertRpnDateTimeToOffset
+    .db 1
+_ConvertRpnOffsetDateTimeToOffsetLabel:
+_ConvertRpnOffsetDateTimeToOffset equ _ConvertRpnOffsetDateTimeToOffsetLabel-branchTableBase
+    .dw ConvertRpnOffsetDateTimeToOffset
+    .db 1
 
 ; zone1.asm
 _SetTimeZoneLabel:

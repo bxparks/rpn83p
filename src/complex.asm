@@ -140,8 +140,6 @@ checkOp3Offset:
     ret
 
 ;-----------------------------------------------------------------------------
-; Conversions from real numbers in OP1/OP2 to complex numbers in CP1.
-;-----------------------------------------------------------------------------
 
 ; Description: Check if OP1 is an RpnOffsetDateTime.
 ; Output: ZF=1 if RpnOffsetDateTime
@@ -159,6 +157,8 @@ checkOp3OffsetDateTime:
     cp rpnObjectTypeOffsetDateTime
     ret
 
+;-----------------------------------------------------------------------------
+; Conversions from real numbers in OP1/OP2 to complex numbers in CP1.
 ;-----------------------------------------------------------------------------
 
 ; Description: Convert a real number in OP1 to a complex number in OP1/OP2 by
@@ -391,7 +391,7 @@ complexAngle:
 ; Output:
 ;   - OP1/OP2: Y+X
 universalAdd:
-    call checkOp1AndOp3Real
+    call checkOp1AndOp3Real ; ZF=1 if real
     jr z, universalAddReal
     ;
     call checkOp1OrOp3Complex ; ZF=1 if complex
@@ -538,10 +538,21 @@ universalSubOffsetDateTimeMinusOffsetDateTime:
 ; Output:
 ;   - OP1/OP2: Y*X
 universalMult:
-    call checkOp1Real ; ZF=1 if real
+    call checkOp1AndOp3Real ; ZF=1 if real
     jr z, universalMultReal
-    call checkOp1Complex ; ZF=1 if complex
+    ;
+    call checkOp1OrOp3Complex ; ZF=1 if complex
     jr z, universalMultComplex
+    ;
+    call checkOp1DateTime ; ZF=1 if DateTime
+    jr z, universalMultDateTimeByOffset
+    call checkOp3DateTime ; ZF=1 if DateTime
+    jr z, universalMultOffsetByDateTime
+    ;
+    call checkOp1OffsetDateTime ; ZF=1 if OffsetDateTime
+    jr z, universalMultOffsetDateTimeByOffset
+    call checkOp3OffsetDateTime ; ZF=1 if OffsetDateTime
+    jr z, universalMultOffsetByOffsetDateTime
 universalMultErr:
     bcall(_ErrDataType)
 universalMultReal:
@@ -568,6 +579,26 @@ universalMultComplexComplex:
     ret
 universalMultComplexReal:
     bcall(_CMltByReal) ; CP1=CP1*OP3
+    ret
+universalMultDateTimeByOffset:
+    call checkOp3Offset
+    jr nz, universalMultErr
+    bcall(_ConvertRpnDateTimeToOffset)
+    ret
+universalMultOffsetByDateTime:
+    call checkOp1Offset
+    jr nz, universalMultErr
+    bcall(_ConvertRpnDateTimeToOffset)
+    ret
+universalMultOffsetDateTimeByOffset:
+    call checkOp3Offset
+    jr nz, universalMultErr
+    bcall(_ConvertRpnOffsetDateTimeToOffset)
+    ret
+universalMultOffsetByOffsetDateTime:
+    call checkOp1Offset
+    jr nz, universalMultErr
+    bcall(_ConvertRpnOffsetDateTimeToOffset)
     ret
 
 ; Description: Division for real and complex numbers.

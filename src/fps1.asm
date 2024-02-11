@@ -184,7 +184,7 @@ popRaw9Op1:
     ld de, OP1
     jr popRaw9
 
-; Description: Push 9 raw bytes from OP1 into FPS.
+; Description: Push 9 raw bytes from OP2 into FPS.
 ; Output: HL=pointer to raw 9 bytes on FPS.
 ; Destroys: A, HL
 ; Preserves: BC, DE
@@ -198,6 +198,22 @@ pushRaw9Op2:
 ; Preserves: BC, HL
 popRaw9Op2:
     ld de, OP2
+    jr popRaw9
+
+; Description: Push 9 raw bytes from OP3 into FPS.
+; Output: HL=pointer to raw 9 bytes on FPS.
+; Destroys: A, HL
+; Preserves: BC, DE
+pushRaw9Op3:
+    ld hl, OP3
+    jr pushRaw9
+
+; Description: Pop 9 raw bytes from FPS to OP3.
+; Output: DE=OP3
+; Destroys: DE
+; Preserves: BC, HL
+popRaw9Op3:
+    ld de, OP3
     jr popRaw9
 
 ;-----------------------------------------------------------------------------
