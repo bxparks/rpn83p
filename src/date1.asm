@@ -442,7 +442,7 @@ dayOfWeekIsoEnd:
 ;   - (epochDate):Date{}=reference epoch date
 ; Output:
 ;   - OP1:(i40*)=epochDays
-; Destroys: A, DE, BC, HL, OP1, OP4-OP6
+; Destroys: A, DE, BC, HL, OP4-OP6
 RpnDateToEpochDays:
     ; reserve 2 slots on FPS
     call pushRaw9Op2 ; FPS=[epochDays]; HL=epochDays
@@ -678,6 +678,7 @@ RpnDateTimeToEpochSeconds:
 ; Output:
 ;   - DE=DE+sizeof(DateTime)
 ;   - (*HL):i40=resultSeconds
+; Destroys: OP4-OP6
 ; Preserves: HL
 dateTimeToEpochSeconds:
     ; convert Date to relative epochSeconds

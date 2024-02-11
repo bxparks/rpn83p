@@ -473,11 +473,17 @@ universalSub:
     jr z, universalSubDateMinusObject
     call checkOp1DateTime ; ZF=1 if DateTime
     jr z, universalSubDateTimeMinusObject
+    call checkOp1OffsetDateTime ; ZF=1 if OffsetDateTime
+    jr z, universalSubOffsetDateTimeMinusObject
     ;
     call checkOp3Date ; ZF=1 if Date
     jr z, universalSubErr ; cannot subtract a Date
     call checkOp3DateTime ; ZF=1 if DateTime
     jr z, universalSubErr ; cannot subtract a DateTime
+    call checkOp3Offset ; ZF=1 if Offset
+    jr z, universalSubErr ; cannot subtract an Offset
+    call checkOp3OffsetDateTime ; ZF=1 if OffsetDateTime
+    jr z, universalSubErr ; cannot subtract an OffsetDateTime
 universalSubErr:
     bcall(_ErrDataType)
 universalSubReal:
@@ -491,6 +497,7 @@ universalSubComplex:
     call convertOp1ToCp1
     bcall(_CSub) ; OP1/OP2 = FPS[OP1/OP2] - OP1/OP2; FPS=[]
     ret
+;
 universalSubDateMinusObject:
     call checkOp3Real
     jr z, universalSubDateMinusDays
@@ -501,6 +508,7 @@ universalSubDateMinusDays:
 universalSubDateMinusDate:
     bcall(_SubRpnDateByRpnDateOrDays)
     ret
+;
 universalSubDateTimeMinusObject:
     call checkOp3Real
     jr z, universalSubDateTimeMinusSeconds
@@ -510,6 +518,17 @@ universalSubDateTimeMinusObject:
 universalSubDateTimeMinusSeconds:
 universalSubDateTimeMinusDateTime:
     bcall(_SubRpnDateTimeByRpnDateTimeOrSeconds)
+    ret
+;
+universalSubOffsetDateTimeMinusObject:
+    call checkOp3Real
+    jr z, universalSubOffsetDateTimeMinusSeconds
+    call checkOp3OffsetDateTime
+    jr z, universalSubOffsetDateTimeMinusOffsetDateTime
+    jr universalSubErr
+universalSubOffsetDateTimeMinusSeconds:
+universalSubOffsetDateTimeMinusOffsetDateTime:
+    bcall(_SubRpnOffsetDateTimeByRpnOffsetDateTimeOrSeconds)
     ret
 
 ; Description: Multiplication for real and complex numbers.

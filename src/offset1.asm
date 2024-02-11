@@ -155,6 +155,7 @@ RpnOffsetDateTimeToEpochSeconds:
 ; Output:
 ;   - DE=DE+sizeof(OffsetDateTime)
 ;   - (*HL):i40=resultSeconds
+; Destroys: OP4-OP6
 ; Preserves: HL
 offsetDateTimeToEpochSeconds:
     ; convert DateTime to relative epochSeconds
@@ -281,3 +282,48 @@ addRpnOffsetDateTimeBySecondsAdd:
     ; clean up stack and FPS
     call dropRpnObject
     jp dropRaw9
+
+;-----------------------------------------------------------------------------
+
+; Description: Subtract RpnOffsetDateTime minus RpnOffsetDateTime or seconds.
+; Input:
+;   - OP1:RpnOffsetDateTime=Y
+;   - OP3:RpnOffsetDateTime or seconds=X
+; Output:
+;   - OP1:(RpnOffsetDateTime-seconds) or (RpnOffsetDateTime-RpnOffsetDateTime).
+; Destroys: OP1, OP2, OP3-OP6
+SubRpnOffsetDateTimeByRpnOffsetDateTimeOrSeconds:
+    call checkOp3OffsetDateTimePageOne ; ZF=1 if type(OP3)==OffsetDateTime
+    jr z, subRpnOffsetDateTimeByRpnOffsetDateTime
+subRpnOffsetDateTimeBySeconds:
+    ; exchage CP1/CP3, invert the sign, then call
+    ; addRpnOffsetDateTimeBySecondsAdd()
+    call cp1ExCp3PageOne
+    bcall(_InvOP1S) ; OP1=-OP1
+    jr addRpnOffsetDateTimeBySecondsAdd
+subRpnOffsetDateTimeByRpnOffsetDateTime:
+    ; save copies of X, Y OffsetDateTime to FPS
+    call PushRpnObject1 ; FPS=[Yodt]; HL=Yodt
+    push hl ; stack=[Yodt]
+    call PushRpnObject3 ; FPS=[Yodt,Xodt]; HL=Xodt
+    ; calculate X epochSeconds
+    ex de, hl ; DE=Xodt
+    inc de ; skip type byte
+    call reserveRaw9 ; FPS=[Yodt,Xodt,Xeps]; HL=Xeps
+    call offsetDateTimeToEpochSeconds ; HL=Xeps filled
+    ; calculate Y epochSeconds
+    ex (sp), hl ; stack=[Xeps]; HL=Yodt
+    ex de, hl ; DE=Yodt
+    inc de ; skip type byte
+    call reserveRaw9 ; FPS=[Yodt,Xodt,Xeps,Yeps]; HL=Yeps
+    call offsetDateTimeToEpochSeconds ; HL=Yeps filled
+    ; subtract Yeps-Xeps
+    pop de ; stack=[]; DE=Xeps
+    call subU40U40 ; HL=Yeps=Y-X
+    ; copy result to OP1
+    call popRaw9Op1 ; OP1=Yeps-Xeps
+    call ConvertI40ToOP1 ; OP1=float(Y-X)
+    ; clean up FPS
+    call dropRaw9
+    call dropRpnObject
+    jp dropRpnObject

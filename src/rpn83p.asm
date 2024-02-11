@@ -1107,6 +1107,10 @@ _AddRpnOffsetDateTimeBySecondsLabel:
 _AddRpnOffsetDateTimeBySeconds equ _AddRpnOffsetDateTimeBySecondsLabel-branchTableBase
     .dw AddRpnOffsetDateTimeBySeconds
     .db 1
+_SubRpnOffsetDateTimeByRpnOffsetDateTimeOrSecondsLabel:
+_SubRpnOffsetDateTimeByRpnOffsetDateTimeOrSeconds equ _SubRpnOffsetDateTimeByRpnOffsetDateTimeOrSecondsLabel-branchTableBase
+    .dw SubRpnOffsetDateTimeByRpnOffsetDateTimeOrSeconds
+    .db 1
 
 ; zone1.asm
 _SetTimeZoneLabel:
