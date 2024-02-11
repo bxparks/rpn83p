@@ -675,6 +675,7 @@ dateTimeToEpochSeconds:
     ex de, hl ; HL=dateTime+7; DE=timeSeconds
     ex (sp), hl ; stack=[dateTime+7]; HL=resultSeconds
     call addU40U40 ; HL=resultSeconds+=timeSeconds
+    ; clean up stack and FPS
     pop de ; stack=[]; DE=dateTime+7
     jp dropRaw9 ; FPS=[]
 

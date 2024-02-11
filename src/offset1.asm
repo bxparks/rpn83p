@@ -142,19 +142,36 @@ RpnOffsetDateTimeToEpochSeconds:
     call reserveRaw9 ; FPS=[rpnOffsetDateTime,reserved]
     ; convert DateTime to dateTimeSeconds
     inc de ; DE=offsetDateTime, skip type byte
-    call dateTimeToEpochSeconds ; HL=FPS.dateTimeSeconds; DE+=sizeof(DateTime)
-    push hl ; stack=[FPS.dateTimeSeconds]
-    ; convert Offset to seconds in OP1
-    ld hl, OP1 ; HL=OP1=offsetSeconds
-    call offsetToSeconds ; HL=OP1=offsetSeconds; DE+=sizeof(Offset)
-    ; add offsetSeconds to dateTimeSeconds
-    ex de, hl ; DE=offsetSeconds
-    pop hl ; stack=[]; HL=FPS.dateTimeSeconds
-    call subU40U40 ; HL=FPS.dateTimeSeconds=dateTimeSeconds-offsetSeconds
+    call offsetDateTimeToEpochSeconds ; HL=epochSeconds
     ; copy back to OP1
-    call popRaw9Op1 ; FPS=[rpnOffsetDateTime]; HL=OP1=dateTimeSeconds
+    call popRaw9Op1 ; FPS=[rpnOffsetDateTime]; HL=OP1=epochSeconds
     call dropRpnObject ; FPS=[]
     jp ConvertI40ToOP1 ; OP1=float(OP1)
+
+; Description: Convert OffsetDateTime{} to relative epochSeconds.
+; Input:
+;   - DE:(const OffsetDateTime*)=dateTime, must not be OPx
+;   - HL:(i40*)=resultSeconds, must not be OPx
+; Output:
+;   - DE=DE+sizeof(OffsetDateTime)
+;   - (*HL):i40=resultSeconds
+; Preserves: HL
+offsetDateTimeToEpochSeconds:
+    ; convert DateTime to relative epochSeconds
+    call dateTimeToEpochSeconds ; HL=dateTimeSeconds; DE+=sizeof(DateTime)
+    push hl ; stack=[dateTimeSeconds]
+    ; convert Offset to seconds in OP1
+    call reserveRaw9 ; FPS=[offsetSeconds]; HL=offsetSeconds
+    call offsetToSeconds ; HL=offsetSeconds; DE+=sizeof(Offset)
+    ; add offsetSeconds to dateTimeSeconds
+    ex de, hl ; DE=offsetSeconds; HL=offsetDateTime+9
+    ex (sp), hl ; stack=[offsetDateTime+7]; HL=datetimeSeconds
+    call subU40U40 ; HL=resultSeconds=dateTimeSeconds-offsetSeconds
+    ; clean up stack and FPS
+    pop de ; stack=[]; DE=offsetDateTime+7
+    jp dropRaw9
+
+;-----------------------------------------------------------------------------
 
 ; Description: Convert the relative epochSeconds to an RpnOffsetDateTime{}
 ; record.
