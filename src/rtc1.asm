@@ -42,7 +42,7 @@ getRtcNowAsEpochSeconds:
     ld (hl), 0
     pop hl ; stack=[]; HL=rtcSeconds
     ; Convert rtcSeconds to internal epochSeconds
-    ld de, tiosDate ; DE=Date{1997,1,1}
+    ld de, tiosEpochDate ; DE=Date{1997,1,1}
     call convertRelativeToInternalEpochSeconds ; HL=rtcSeconds
     ; Convert to relative epochSeconds relative to current timeZone
     ld de, epochDate ; DE=(Date*)=current epochDate

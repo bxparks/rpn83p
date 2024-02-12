@@ -13,7 +13,7 @@ SelectUnixEpochDate:
     ld a, epochTypeUnix
     ld (epochType), a
     set dirtyFlagsMenu, (iy + dirtyFlags)
-    ld hl, unixDate
+    ld hl, unixEpochDate
     jr setEpochDate
 
 ; Description: Set epochType and epochDate to NTP (1900-01-01).
@@ -21,7 +21,7 @@ SelectNtpEpochDate:
     ld a, epochTypeNtp
     ld (epochType), a
     set dirtyFlagsMenu, (iy + dirtyFlags)
-    ld hl, ntpDate
+    ld hl, ntpEpochDate
     jr setEpochDate
 
 ; Description: Set epochType and epochDate to GPS (1980-01-06).
@@ -29,7 +29,7 @@ SelectGpsEpochDate:
     ld a, epochTypeGps
     ld (epochType), a
     set dirtyFlagsMenu, (iy + dirtyFlags)
-    ld hl, gpsDate
+    ld hl, gpsEpochDate
     jr setEpochDate
 
 ; Description: Set epochType and epochDate to TIOS epoch (1997-01-01).
@@ -37,7 +37,7 @@ SelectTiosEpochDate:
     ld a, epochTypeTios
     ld (epochType), a
     set dirtyFlagsMenu, (iy + dirtyFlags)
-    ld hl, tiosDate
+    ld hl, tiosEpochDate
     jr setEpochDate
 
 ; Description: Set epochType and epochDate to the custom epochDate.
@@ -101,26 +101,23 @@ setEpochDate:
 
 ;-----------------------------------------------------------------------------
 
-; TODO: Rename these to unixEpochDate, ntpEpochDate, gpsEpochDate,
-; tiosEpochDate, y2kEpochDate, etc.
-
-unixDate:
+unixEpochDate:
     .dw 1970
     .db 1
     .db 1
-ntpDate:
+ntpEpochDate:
     .dw 1900
     .db 1
     .db 1
-gpsDate:
+gpsEpochDate:
     .dw 1980
     .db 1
     .db 6
-tiosDate:
+tiosEpochDate:
     .dw 1997
     .db 1
     .db 1
-y2kDate:
+y2kEpochDate:
     .dw 2000
     .db 1
     .db 1
