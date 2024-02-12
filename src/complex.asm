@@ -567,10 +567,16 @@ universalMultRealReal:
     ret
 ; Complex*(Real|Complex)
 universalMultComplex:
+    call checkOp1Complex
+    jr z, universalMultComplexSomething
+    call cp1ExCp3 ; CP1:Complex; CP3:something
+universalMultComplexSomething:
     call checkOp3Real
     jr z, universalMultComplexReal
     call checkOp3Complex
-    jr nz, universalMultErr
+    jr z, universalMultComplexComplex
+    jr universalMultErr
+universalMultComplexComplex:
     ; Complex*Complex
     bcall(_PushOP1) ; FPS=[Y]
     call cp3ToCp1 ; OP1/OP2=OP3/OP4
