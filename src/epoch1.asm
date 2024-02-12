@@ -193,6 +193,51 @@ daysUntilMonthPrime:
 
 ;-----------------------------------------------------------------------------
 
+; Description: Convert Date to internal epochSeconds. Same as
+; dateToInternalEpochDays() * 86400.
+; Input:
+;   - DE:(Date*)=inputDate, must not be OPx
+;   - HL:(u40*)=resultPointer to u40, must not be OPx
+; Output:
+;   - DE=DE+sizeof(Date)=DE+4
+;   - (*HL) filled
+; Destroys: A, BC, DE, OP4-OP6
+; Preserves: HL
+dateToInternalEpochSeconds:
+    call dateToInternalEpochDays ; HL=epochDays
+    ; [[fallthrough]]
+
+; Description: Multiply the u40 days pointed by HL by 86400 seconds/day to get
+; seconds.
+; Input: HL:(*u40)=days
+; Output: HL:(*u40)=seconds
+; Destroys: A
+; Preserves: BC, DE, HL
+convertU40DaysToU40Seconds:
+    push de ; stack=[DE]
+    ex de, hl ; DE=days
+    ; Push 86400 onto stack
+    ld hl, 0
+    push hl
+    ld hl, 1
+    push hl
+    ld hl, 20864
+    push hl
+    ld hl, 0
+    add hl, sp ; HL=SP=u40=86400
+    ; Multiply days by 86400
+    ex de, hl ; DE=86400, HL=days
+    call multU40U40 ; HL=days*86400
+    ; Remove 86400 from stack
+    pop de
+    pop de
+    pop de
+    ; Restore
+    pop de ; stack=[]; DE=DE
+    ret
+
+;-----------------------------------------------------------------------------
+
 ; Description: Convert internal epochDays to Date{} record.
 ;
 ; TODO: The internal epoch date is currently 2000-01-01 to make debugging

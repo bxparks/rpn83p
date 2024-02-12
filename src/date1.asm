@@ -311,35 +311,6 @@ convertToOffsetDateTimeClear:
 
 ;-----------------------------------------------------------------------------
 
-; Description: Multiply the u40 days pointed by HL by 86400 seconds/day to get
-; seconds.
-; Input: HL:(*u40)=days
-; Output: HL:(*u40)=seconds
-; Destroys: A
-; Preserves: BC, DE, HL
-convertU40DaysToU40Seconds:
-    push de ; stack=[DE]
-    ex de, hl ; DE=days
-    ; Push 86400 onto stack
-    ld hl, 0
-    push hl
-    ld hl, 1
-    push hl
-    ld hl, 20864
-    push hl
-    ld hl, 0
-    add hl, sp ; HL=SP=u40=86400
-    ; Multiply days by 86400
-    ex de, hl ; DE=86400, HL=days
-    call multU40U40 ; HL=days*86400
-    ; Remove 86400 from stack
-    pop de
-    pop de
-    pop de
-    ; Restore
-    pop de ; stack=[]; DE=DE
-    ret
-
 ;-----------------------------------------------------------------------------
 ; Simple date functions.
 ;-----------------------------------------------------------------------------
@@ -734,7 +705,6 @@ epochSecondsToDateTime:
     ld de, epochDate
     ld hl, OP2
     call dateToInternalEpochDays ; HL=OP2=refEpochDays
-    ; convert days to seconds
     call convertU40DaysToU40Seconds ; HL=OP2=refEpochSeconds
     ; calculate internal epochSeconds
     ex de, hl ; DE=OP2=refEpochSeconds
