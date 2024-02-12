@@ -128,12 +128,12 @@ hmComponentsToSeconds:
 ;-----------------------------------------------------------------------------
 
 ; Description: Convert floating hours (e.g. 8.25, 8.5, 8.75) into an Offset
-; record {hh,mm}. The floatHours is restricted in the following way:
+; record {hh,mm}. The offsetHour is restricted in the following way:
 ;   - must be a multiple of 15 minutes. (If the floating hours is multiplied by
 ;   4, the result should be an integer.)
 ;   - must be within the interval [-23:45,+23:45]
 ;Input:
-;   - OP1:Real=floatHours
+;   - OP1:Real=offsetHour
 ;   - HL:(Offset*)=offset
 ; Output:
 ;   - HL:(Offset*)=offset filled
@@ -141,15 +141,15 @@ hmComponentsToSeconds:
 ; Preserves: HL
 ; Throws: Err:Domain if greater than or equal to +/-24:00, or not a multiple of
 ; 15 minutes.
-floatHoursToOffset:
+offsetHourToOffset:
     ld a, (OP1) ; bit7=sign bit
     rla ; CF=1 if negative
-    jr nc, floatHoursToOffsetPos
-floatHoursToOffsetNeg:
+    jr nc, offsetHourToOffsetPos
+offsetHourToOffsetNeg:
     ; If negative, invert the sign of input, convert to Offset, then invert the
     ; sign of the ouput.
     bcall(_InvOP1S) ; OP1=-OP1
-    call floatHoursToOffsetPos ; Preserves HL=offset
+    call offsetHourToOffsetPos ; Preserves HL=offset
     ; invert the signs of offset{hh,mm}
     ld a, (hl)
     neg
@@ -161,13 +161,17 @@ floatHoursToOffsetNeg:
     dec hl ; preserve HL
     ret
 
+; Convert offsetHour (offset represented as a real number, in multiples of
+; 0.25) to Offset{} object.
 ; Input:
-;   -OP1:floatHours
-;   - HL=offset
+;   - OP1:real=offsetHour
+;   - HL:(Offset*)=offset
 ; Output:
-;   - HL=offset
+;   - HL=offset updated
 ; Preserves: HL
-floatHoursToOffsetPos:
+; Throws: Err:Domain if offsetHour is outside of [-23.75,23.75] or if
+; offsetHour is not a multiple of 0.25 (i.e. 15 minutes)
+offsetHourToOffsetPos:
     ; reserve space for Offset object
     push hl ; stack=[offset]
     ; extract whole hh
@@ -175,16 +179,17 @@ floatHoursToOffsetPos:
     ; check within +/-24:00
     call op2Set24PageOne ; OP2=24
     bcall(_CpOP1OP2) ; CF=1 if OP1<OP2
-    jr nc, floatHoursToOffsetErr
-    ; check multiple of 15 minutes
+    jr nc, offsetHourToOffsetErr
+    ; check offsetHour is a multiple of 15 minutes
     bcall(_Times2) ; OP1*=2
-    bcall(_Times2) ; OP1=floatQuarters=floatHours*4
+    bcall(_Times2) ; OP1=offsetQuarter=offsetHour*4
     bcall(_CkPosInt) ; ZF=1 if OP1 is an integer >= 0
-    jr nz, floatHoursToOffsetErr ; err if not a multiple of 15
-    ; Convert floatQuarters into (hour,minute)
-    call ConvertOP1ToI40 ; OP1=quarters=u40(floatQuarters)
-    ld bc, (OP1) ; BC=floatQuarters
-    call quartersToHourMinute ; DE=(hour,minute)
+    jr nz, offsetHourToOffsetErr ; err if not a multiple of 15
+    ; Convert offsetQuarter into (hour,minute). offsetQuarter is < 96 (24*4),
+    ; so only a single byte is needed.
+    call ConvertOP1ToI40 ; OP1:u40=offsetQuarter, [
+    ld bc, (OP1) ; BC=offsetQuarter
+    call offsetQuarterToHourMinute ; DE=(hour,minute)
     ; Fill offset
     pop hl ; stack=[]; HL=offset
     ld (hl), d ; offset.hh=hour
@@ -192,19 +197,21 @@ floatHoursToOffsetPos:
     ld (hl), e ; offset.mm=minute
     dec hl ; HL=offset
     ret
-floatHoursToOffsetErr:
+offsetHourToOffsetErr:
     bcall(_ErrDomain)
 
-; Description: Convert quarters (multiple of 15 minutes) into (hour,minute).
+; Description: Convert offsetQuarter (multiple of 15 minutes) into
+; (hour,minute).
 ; Input:
-;   - BC:u16=quarters
+;   - BC:u16=offsetQuarter
 ; Output:
 ;   - D:u8=hour
 ;   - E:u8=minute
 ; Destroys: A, BC
-quartersToHourMinute:
+; Preserves: HL
+offsetQuarterToHourMinute:
     ld a, c
-    and $03 ; A=remainderQuarter=quarters%4
+    and $03 ; A=remainderQuarter=offsetQuarter%4
     ld e, a ; E=remainderQuarter
     add a, a
     add a, a
@@ -217,7 +224,7 @@ quartersToHourMinute:
     rr c ; BC/=2
     srl b
     rr c ; BC/=2
-    ld d, c ; D=hour=quarters/4
+    ld d, c ; D=hour=offsetQuarter/4
     ret
 
 ;-----------------------------------------------------------------------------
@@ -485,7 +492,7 @@ convertRpnDateTimeToRealConvert:
     ld a, rpnObjectTypeOffset
     ld (hl), a
     inc hl
-    call floatHoursToOffset ; HL=OP3+1=offset
+    call offsetHourToOffset ; HL=OP3+1=offset
     ; clean up FPS
     call PopRpnObject1 ; FPS=[]; OP1=rpnDateTime
     jr convertRpnDateTimeToOffsetConvert
@@ -550,7 +557,7 @@ convertRpnOffsetDateTimeToRealConvert:
     ld a, rpnObjectTypeOffset
     ld (hl), a
     inc hl
-    call floatHoursToOffset ; HL=OP3+1=offset
+    call offsetHourToOffset ; HL=OP3+1=offset
     ; clean up FPS
     call PopRpnObject1 ; FPS=[]; OP1=rpnOffsetDateTime
     jr convertRpnOffsetDateTimeToOffsetConvert
