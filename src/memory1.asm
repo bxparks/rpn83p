@@ -171,6 +171,13 @@ op1ToOp3PageOne:
     ld hl, OP1
     jr move9ToOp3PageOne
 
+; Description: Move 9 bytes from OP1 to OP4.
+; Destroys: BC, DE, HL
+; Preserves: A
+op1ToOp4PageOne:
+    ld de, OP4
+    jr move9FromOp1PageOne
+
 ; Description: Move 9 bytes from OP2 to OP1.
 ; Destroys: BC, DE, HL
 ; Preserves: A
@@ -192,6 +199,13 @@ op3ToOp2PageOne:
     ld hl, OP3
     jr move9ToOp2PageOne
 
+; Description: Move 9 bytes from OP4 to OP1.
+; Destroys: BC, DE, HL
+; Preserves: A
+op4ToOp1PageOne:
+    ld hl, OP4
+    jr move9ToOp1PageOne
+
 ;-----------------------------------------------------------------------------
 
 ; Description: Exchange OP1 with OP2. Inlined version of bcall(_OP1ExOP2) to
@@ -201,7 +215,7 @@ op3ToOp2PageOne:
 op1ExOp2PageOne:
     ld hl, OP1
     ld de, OP2
-    jr exchange9PageOne
+    jp exchange9PageOne
 
 ; Description: Exchange CP1=OP1/OP2 with CP3=OP3/OP4.
 cp1ExCp3PageOne:

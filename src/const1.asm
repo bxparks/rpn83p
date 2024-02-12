@@ -13,6 +13,15 @@ op1Set0PageOne:
 
 ;-----------------------------------------------------------------------------
 
+; Description: Set OP2 to 24. The TI-OS Provides OP2Set60() but not
+; OP2Set24().
+; Destroys: all, HL
+op2Set24PageOne:
+    ld hl, const24PageOne
+    jp move9ToOp2PageOne
+
+;-----------------------------------------------------------------------------
+
 ; Description: Set OP1 to 100. The TI-OS Provides OP2Set60() but not
 ; OP2Set100().
 ; Destroys: all, HL
@@ -71,6 +80,9 @@ op2Set2Pow40PageOne:
 
 const0PageOne: ; 0.0
     .db $00, $80, $00, $00, $00, $00, $00, $00, $00
+
+const24PageOne: ; 24
+    .db $00, $81, $24, $00, $00, $00, $00, $00, $00
 
 const100PageOne: ; 100
     .db $00, $82, $10, $00, $00, $00, $00, $00, $00

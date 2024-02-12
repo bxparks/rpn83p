@@ -17,7 +17,7 @@
 ; Output: A=0 or 1
 ; Preserves: BC
 signOfOp1PageOne:
-    ld a, (OP1); bit7=sign bit
+    ld a, (OP1) ; bit7=sign bit
     rlca
     and $01
     ret

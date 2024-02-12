@@ -1115,9 +1115,17 @@ _ConvertRpnDateTimeToOffsetLabel:
 _ConvertRpnDateTimeToOffset equ _ConvertRpnDateTimeToOffsetLabel-branchTableBase
     .dw ConvertRpnDateTimeToOffset
     .db 1
+_ConvertRpnDateTimeToRealLabel:
+_ConvertRpnDateTimeToReal equ _ConvertRpnDateTimeToRealLabel-branchTableBase
+    .dw ConvertRpnDateTimeToReal
+    .db 1
 _ConvertRpnOffsetDateTimeToOffsetLabel:
 _ConvertRpnOffsetDateTimeToOffset equ _ConvertRpnOffsetDateTimeToOffsetLabel-branchTableBase
     .dw ConvertRpnOffsetDateTimeToOffset
+    .db 1
+_ConvertRpnOffsetDateTimeToRealLabel:
+_ConvertRpnOffsetDateTimeToReal equ _ConvertRpnOffsetDateTimeToRealLabel-branchTableBase
+    .dw ConvertRpnOffsetDateTimeToReal
     .db 1
 
 ; zone1.asm

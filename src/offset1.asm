@@ -126,6 +126,101 @@ hmComponentsToSeconds:
     jp multU40ByA ; HL=HL*60
 
 ;-----------------------------------------------------------------------------
+
+; Description: Convert floating hours (e.g. 8.25, 8.5, 8.75) into an Offset
+; record {hh,mm}. The floatHours is restricted in the following way:
+;   - must be a multiple of 15 minutes. (If the floating hours is multiplied by
+;   4, the result should be an integer.)
+;   - must be within the interval [-23:45,+23:45]
+;Input:
+;   - OP1:Real=floatHours
+;   - HL:(Offset*)=offset
+; Output:
+;   - HL:(Offset*)=offset filled
+; Destroys: A, BC, DE
+; Preserves: HL
+; Throws: Err:Domain if greater than or equal to +/-24:00, or not a multiple of
+; 15 minutes.
+floatHoursToOffset:
+    ld a, (OP1) ; bit7=sign bit
+    rla ; CF=1 if negative
+    jr nc, floatHoursToOffsetPos
+floatHoursToOffsetNeg:
+    ; If negative, invert the sign of input, convert to Offset, then invert the
+    ; sign of the ouput.
+    bcall(_InvOP1S) ; OP1=-OP1
+    call floatHoursToOffsetPos ; Preserves HL=offset
+    ; invert the signs of offset{hh,mm}
+    ld a, (hl)
+    neg
+    ld (hl), a
+    inc hl
+    ld a, (hl)
+    neg
+    ld (hl), a
+    dec hl ; preserve HL
+    ret
+
+; Input:
+;   -OP1:floatHours
+;   - HL=offset
+; Output:
+;   - HL=offset
+; Preserves: HL
+floatHoursToOffsetPos:
+    ; reserve space for Offset object
+    push hl ; stack=[offset]
+    ; extract whole hh
+    bcall(_RndGuard) ; eliminating invisible rounding errors
+    ; check within +/-24:00
+    call op2Set24PageOne ; OP2=24
+    bcall(_CpOP1OP2) ; CF=1 if OP1<OP2
+    jr nc, floatHoursToOffsetErr
+    ; check multiple of 15 minutes
+    bcall(_Times2) ; OP1*=2
+    bcall(_Times2) ; OP1=floatQuarters=floatHours*4
+    bcall(_CkPosInt) ; ZF=1 if OP1 is an integer >= 0
+    jr nz, floatHoursToOffsetErr ; err if not a multiple of 15
+    ; Convert floatQuarters into (hour,minute)
+    call ConvertOP1ToI40 ; OP1=quarters=u40(floatQuarters)
+    ld bc, (OP1) ; BC=floatQuarters
+    call quartersToHourMinute ; DE=(hour,minute)
+    ; Fill offset
+    pop hl ; stack=[]; HL=offset
+    ld (hl), d ; offset.hh=hour
+    inc hl
+    ld (hl), e ; offset.mm=minute
+    dec hl ; HL=offset
+    ret
+floatHoursToOffsetErr:
+    bcall(_ErrDomain)
+
+; Description: Convert quarters (multiple of 15 minutes) into (hour,minute).
+; Input:
+;   - BC:u16=quarters
+; Output:
+;   - D:u8=hour
+;   - E:u8=minute
+; Destroys: A, BC
+quartersToHourMinute:
+    ld a, c
+    and $03 ; A=remainderQuarter=quarters%4
+    ld e, a ; E=remainderQuarter
+    add a, a
+    add a, a
+    add a, a
+    add a, a ; A=remainderQuarter*16
+    sub e ; A=minutes=remainderQuarter*(16-1)
+    ld e, a ; E=minutes
+    ; divide BC by 4
+    srl b
+    rr c ; BC/=2
+    srl b
+    rr c ; BC/=2
+    ld d, c ; D=hour=quarters/4
+    ret
+
+;-----------------------------------------------------------------------------
 ; RpnOffsetDateTime functions.
 ;-----------------------------------------------------------------------------
 
@@ -329,7 +424,7 @@ subRpnOffsetDateTimeByRpnOffsetDateTime:
     jp dropRpnObject
 
 ;-----------------------------------------------------------------------------
-; OffsetDateTime or DateTime to target Offset timeZone conversion.
+; Convert OffsetDateTime or DateTime to target Offset timeZone.
 ;-----------------------------------------------------------------------------
 
 ; Description: Convert the RpnDateTime (OP1) to the timeZone specified by
@@ -370,6 +465,29 @@ convertRpnDateTimeToOffsetConvert:
     call dropRaw9 ; FPS=[rpnDateTime]
     jp dropRpnObject ; FPS=[]
 
+; Description: Convert the RpnDateTime (OP1) to the timeZone specified by
+; (hour,minute) as a floating point number (OP3) (e.g. 8.5 for Offset{8,30}).
+; Input:
+;   - OP1:RpnDateTime
+;   - OP3:Real
+; Output:
+;   - OP1; RpnOffsetDatetime
+; Destroys: all, OP3-OP6
+ConvertRpnDateTimeToReal:
+    call PushRpnObject1 ; FPS=[rpnDateTime]; HL=rpnDateTime
+    call op3ToOp1PageOne ; OP1=real
+    ; convert real to RpnOffset
+    ld hl, OP3
+    ld a, rpnObjectTypeOffset
+    ld (hl), a
+    inc hl
+    call floatHoursToOffset ; HL=OP3+1=offset
+    ; clean up FPS
+    call PopRpnObject1 ; FPS=[]; OP1=rpnDateTime
+    jr convertRpnDateTimeToOffsetConvert
+
+;-----------------------------------------------------------------------------
+
 ; Description: Convert the RpnOffsetDateTime (OP1) to the timeZone specified by
 ; RpnOffset (OP3).
 ; Input:
@@ -407,3 +525,24 @@ convertRpnOffsetDateTimeToOffsetConvert:
     call dropRaw9 ; FPS=[rpnOffsetDateTime,rpnOffset]
     call dropRaw9 ; FPS=[rpnOffsetDateTime]
     jp dropRpnObject ; FPS=[]
+
+; Description: Convert the RpnOffsetDateTime (OP1) to the timeZone specified by
+; (hour,minute) as a floating point number (OP3) (e.g. 8.5 for Offset{8,30}).
+; Input:
+;   - OP1:RpnOffsetDateTime
+;   - OP3:Real
+; Output:
+;   - OP1; RpnOffsetDatetime
+; Destroys: all, OP3-OP6
+ConvertRpnOffsetDateTimeToReal:
+    call PushRpnObject1 ; FPS=[rpnOffsetDateTime]; HL=rpnOffsetDateTime
+    call op3ToOp1PageOne ; OP1=real
+    ; convert real to RpnOffset
+    ld hl, OP3
+    ld a, rpnObjectTypeOffset
+    ld (hl), a
+    inc hl
+    call floatHoursToOffset ; HL=OP3+1=offset
+    ; clean up FPS
+    call PopRpnObject1 ; FPS=[]; OP1=rpnOffsetDateTime
+    jr convertRpnOffsetDateTimeToOffsetConvert
