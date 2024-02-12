@@ -1138,6 +1138,28 @@ _GetTimeZone equ _GetTimeZoneLabel-branchTableBase
     .dw GetTimeZone
     .db 1
 
+; rtc1.asm
+_GetRtcNowLabel:
+_GetRtcNow equ _GetRtcNowLabel-branchTableBase
+    .dw GetRtcNow
+    .db 1
+_GetRtcTodayLabel:
+_GetRtcToday equ _GetRtcTodayLabel-branchTableBase
+    .dw GetRtcToday
+    .db 1
+_SetRtcClockLabel:
+_SetRtcClock equ _SetRtcClockLabel-branchTableBase
+    .dw SetRtcClock
+    .db 1
+_SetRtcTimeZoneLabel:
+_SetRtcTimeZone equ _SetRtcTimeZoneLabel-branchTableBase
+    .dw SetRtcTimeZone
+    .db 1
+_GetRtcTimeZoneLabel:
+_GetRtcTimeZone equ _GetRtcTimeZoneLabel-branchTableBase
+    .dw GetRtcTimeZone
+    .db 1
+
 #ifdef DEBUG
 ; debug.asm
 _DebugInputBufLabel:
@@ -1275,6 +1297,7 @@ defpage(1)
 #include "date1.asm"
 #include "offset1.asm"
 #include "zone1.asm"
+#include "rtc1.asm"
 #ifdef DEBUG
 #include "debug.asm"
 #endif

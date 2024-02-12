@@ -416,16 +416,15 @@ MenuGroup root mRoot [
             MenuItem TZ<Squestion> mGetTimeZone
           ]
         ]
-        # MenuGroup RTC mRtc [
-        #   MenuRow [
-        #     MenuItem NOW mNow
-        #     MenuItem D? mGetDate
-        #     MenuItem DT? mGetDateTime
-        #     MenuItem DZ? mGetOffsetDateTime
-        #     MenuItem TZC mSetClockTimeZone
-        #     MenuItem TZC? mGetClockTimeZone
-        #   ]
-        # ]
+        MenuGroup RTC mRtc [
+          MenuRow [
+            MenuItem NOW mNow # current OffsetDateTime
+            MenuItem TDAY mToday # current Date
+            MenuItem SETC mSetClock # set current clock
+            MenuItem TZC mSetClockTimeZone
+            MenuItem TZC<Squestion> mGetClockTimeZone
+          ]
+        ]
       ]
       # MenuRow [
       #  MenuItem R<Sconvert>SS mDurationToSeconds

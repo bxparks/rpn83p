@@ -101,6 +101,9 @@ setEpochDate:
 
 ;-----------------------------------------------------------------------------
 
+; TODO: Rename these to unixEpochDate, ntpEpochDate, gpsEpochDate,
+; tiosEpochDate, y2kEpochDate, etc.
+
 unixDate:
     .dw 1970
     .db 1

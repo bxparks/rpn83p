@@ -279,11 +279,12 @@ offsetDateTimeToEpochSeconds:
 ; Description: Convert the relative epochSeconds to an RpnOffsetDateTime{}
 ; record.
 ; Input: OP1:Real=epochSeconds
-; Output: OP1:RpnDateTime
+; Output: OP1:RpnOffsetDateTime
 ; Destroys: all, OP1-OP6
 EpochSecondsToRpnOffsetDateTime:
     ; get relative epochSeconds
     call ConvertOP1ToI40 ; OP1=i40(epochSeconds)
+epochSecondsToRpnOffsetDateTimeAlt:
     ; reserve RpnObject on FPS
     call reserveRpnObject ; FPS=[rpnOffsetDateTime]; HL=rpnOffsetDateTime
     ex de, hl ; DE=rpnOffsetDateTime

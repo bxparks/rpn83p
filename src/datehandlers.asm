@@ -176,7 +176,7 @@ mEpochGetCustomHandler:
     jp pushToX
 
 ;-----------------------------------------------------------------------------
-; DATE > ZONE > Row1
+; DATE > ZONE > Row 1
 ;-----------------------------------------------------------------------------
 
 mSetTimeZoneHandler:
@@ -192,25 +192,44 @@ mGetTimeZoneHandler:
     jp pushToX
 
 ;-----------------------------------------------------------------------------
+; RTC > Row 1
+;-----------------------------------------------------------------------------
+
+mNowHandler:
+    call closeInputAndRecallNone
+    bcall(_GetRtcNow)
+    jp pushToX
+
+mTodayHandler:
+    call closeInputAndRecallNone
+    bcall(_GetRtcToday)
+    jp pushToX
+
+mSetClockHandler:
+    call closeInputAndRecallRpnOffsetDateTimeX
+    bcall(_SetRtcClock)
+    ret
+
+mSetClockTimeZoneHandler:
+    call closeInputAndRecallRpnOffsetX
+    bcall(_SetRtcTimeZone)
+    ret
+
+mGetClockTimeZoneHandler:
+    call closeInputAndRecallNone
+    bcall(_GetRtcTimeZone)
+    jp pushToX
+
+;-----------------------------------------------------------------------------
 ; Other DATE functions
 ;-----------------------------------------------------------------------------
 
-; DATE > Row1
-mNowHandler:
-mConvertTimeZoneHandler:
+; DATE > JUL > Row 1
+;mDateTimeToJulianHandler:
+;mJulianToDateTimeHandler:
+;mDateTimeToModifiedJulianHandler:
+;mModifiedJulianToDateTimeHandler:
 
-; DATE > DUR > Row1
-mDurationToSecondsHandler:
-mSecondsToDurationHandler:
-
-; DATE > JUL > Row1
-mDateTimeToJulianHandler:
-mJulianToDateTimeHandler:
-mDateTimeToModifiedJulianHandler:
-mModifiedJulianToDateTimeHandler:
-
-; DATE > ISO > Row1
-mDateToIsoWeekDayHandler:
-mIsoWeekDayToDateHandler:
-
-    jp mNotYetHandler
+; DATE > ISO > Row 1
+;mDateToIsoWeekDayHandler:
+;mIsoWeekDayToDateHandler:

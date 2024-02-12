@@ -657,3 +657,53 @@ secondsToHms:
     pop de ; stack=[BC]; DE=secondsPointer
     pop bc ; stack=[]; BC=restored
     ret
+
+;-----------------------------------------------------------------------------
+; Convert epochSeconds.
+;-----------------------------------------------------------------------------
+
+; Description: Convert inputSeconds relative to inputRefDate to
+; internalEpochSeconds. The formula is: outputEpochSeconds = (inputSeconds +
+; inputRefSeconds).
+;
+; Input:
+;   - DE:(Date*)=inputRefDate
+;   - HL:(i40*)=inputSeconds
+; Output:
+;   - HL:(i40*)=outputEpochSeconds
+; Destroys: DE
+; Preserves: HL
+convertRelativeToInternalEpochSeconds:
+    push hl ; stack=[inputSeconds]
+    ; calc inputRefSeconds
+    call reserveRaw9 ; FPS=[inputRefDate]; HL=inputRefSeconds
+    call dateToInternalEpochSeconds ; HL=inputRefSeconds
+    ; adjust the inputSeconds
+    ex de, hl ; DE=inputRefSeconds
+    pop hl ; stack=[]; HL=inputSeconds
+    call addU40U40 ; HL=outputEpochSeconds=inputSeconds+inputRefSeconds
+    ; clean up FPS
+    jp dropRaw9
+
+; Description: Convert internal inputSeconds to a relative epochSeconds
+; relative to outputRefDate. The formula is: outputEpochSeconds = (inputSeconds
+; - outputRefSeconds).
+;
+; Input:
+;   - DE:(Date*)=outputRefDate
+;   - HL:(i40*)=inputSeconds
+; Output:
+;   - HL:(i40*)=outputEpochSeconds
+; Destroys: DE
+; Preserves: HL
+convertInternalToRelativeEpochSeconds:
+    push hl ; stack=[inputSeconds]
+    ; calc outputRefSeconds
+    call reserveRaw9 ; FPS=[outputRefDate]; HL=outputRefSeconds
+    call dateToInternalEpochSeconds ; HL=outputRefSeconds
+    ; adjust the inputSeconds
+    ex de, hl ; DE=outputRefSeconds
+    pop hl ; stack=[]; HL=inputSeconds
+    call subU40U40 ; HL=outputEpochSeconds=inputSeconds+outputRefSeconds
+    ; clean up FPS
+    jp dropRaw9
