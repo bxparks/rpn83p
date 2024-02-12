@@ -430,8 +430,8 @@ subRpnOffsetDateTimeByRpnOffsetDateTime:
 ; Description: Convert the RpnDateTime (OP1) to the timeZone specified by
 ; RpnOffset (OP3).
 ; Input:
-;   - OP1:RpnDateTime
-;   - OP3:RpnOffset
+;   - OP1:RpnDateTime or RpnOffset
+;   - OP3:RpnOffset or RpnDateTime
 ; Output:
 ;   - OP1; RpnOffsetDatetime
 ; Destroys: all, OP3-OP6
@@ -465,18 +465,22 @@ convertRpnDateTimeToOffsetConvert:
     call dropRaw9 ; FPS=[rpnDateTime]
     jp dropRpnObject ; FPS=[]
 
-; Description: Convert the RpnDateTime (OP1) to the timeZone specified by
-; (hour,minute) as a floating point number (OP3) (e.g. 8.5 for Offset{8,30}).
+; Description: Convert the RpnDateTime to the timeZone specified as offsetHour
+; (e.g. 8.5 for Offset{8,30}).
 ; Input:
-;   - OP1:RpnDateTime
-;   - OP3:Real
+;   - OP1:RpnDateTime or Real
+;   - OP3:Real or RpnDateTime
 ; Output:
 ;   - OP1; RpnOffsetDatetime
 ; Destroys: all, OP3-OP6
 ConvertRpnDateTimeToReal:
+    call checkOp1DateTimePageOne ; ZF=1 if CP1 is an RpnDateTime
+    jr z, convertRpnDateTimeToRealConvert
+    call cp1ExCp3PageOne ; CP1=rpnDateTime; CP3=offsetHour
+convertRpnDateTimeToRealConvert:
     call PushRpnObject1 ; FPS=[rpnDateTime]; HL=rpnDateTime
-    call op3ToOp1PageOne ; OP1=real
-    ; convert real to RpnOffset
+    call op3ToOp1PageOne ; OP1=offsetHour
+    ; convert offsetHour to RpnOffset
     ld hl, OP3
     ld a, rpnObjectTypeOffset
     ld (hl), a
@@ -535,9 +539,13 @@ convertRpnOffsetDateTimeToOffsetConvert:
 ;   - OP1; RpnOffsetDatetime
 ; Destroys: all, OP3-OP6
 ConvertRpnOffsetDateTimeToReal:
+    call checkOp1OffsetDateTimePageOne ; ZF=1 if CP1 is an RpnOffsetDateTime
+    jr z, convertRpnOffsetDateTimeToRealConvert
+    call cp1ExCp3PageOne ; CP1=rpnOffsetDateTime; CP3=offsetHour
+convertRpnOffsetDateTimeToRealConvert:
     call PushRpnObject1 ; FPS=[rpnOffsetDateTime]; HL=rpnOffsetDateTime
-    call op3ToOp1PageOne ; OP1=real
-    ; convert real to RpnOffset
+    call op3ToOp1PageOne ; OP1=offsetHour
+    ; convert offsetHour to RpnOffset
     ld hl, OP3
     ld a, rpnObjectTypeOffset
     ld (hl), a

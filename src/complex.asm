@@ -547,10 +547,15 @@ universalMult:
     call checkOp1DateTime ; ZF=1 if DateTime
     jr z, universalMultDateTimeByTimeZone
     ;
+    call checkOp3DateTime ; ZF=1 if DateTime
+    jr z, universalMultTimeZoneByDateTime
+    ;
     call checkOp1OffsetDateTime ; ZF=1 if OffsetDateTime
     jr z, universalMultOffsetDateTimeByTimeZone
-universalMultErr:
-    bcall(_ErrDataType)
+    ;
+    call checkOp3OffsetDateTime ; ZF=1 if OffsetDateTime
+    jr z, universalMultTimeZoneByOffsetDateTime
+    jr universalMultErr
 ; Real*(Real|Complex)
 universalMultReal:
     call checkOp3Real ; ZF=1 if real
@@ -586,6 +591,9 @@ universalMultComplexReal:
     ; Complex*Real
     bcall(_CMltByReal) ; CP1=CP1*OP3
     ret
+; Placed in the middle, so that 'jr' can be used instead of 'jp'.
+universalMultErr:
+    bcall(_ErrDataType)
 ; DateTime*(Offset|Real)
 universalMultDateTimeByTimeZone:
     call checkOp3Offset
@@ -599,6 +607,19 @@ universalMultDateTimeByOffset:
 universalMultDateTimeByReal:
     bcall(_ConvertRpnDateTimeToReal)
     ret
+; (Offset|Real)*DateTime
+universalMultTimeZoneByDateTime:
+    call checkOp1Offset
+    jr z, universalMultOffsetByDateTime
+    call checkOp1Real
+    jr z, universalMultRealByDateTime
+    jr universalMultErr
+universalMultOffsetByDateTime:
+    bcall(_ConvertRpnDateTimeToOffset)
+    ret
+universalMultRealByDateTime:
+    bcall(_ConvertRpnDateTimeToReal)
+    ret
 ; OffsetDateTime*(Offset|Real)
 universalMultOffsetDateTimeByTimeZone:
     call checkOp3Offset
@@ -610,6 +631,19 @@ universalMultOffsetDateTimeByOffset:
     bcall(_ConvertRpnOffsetDateTimeToOffset)
     ret
 universalMultOffsetDateTimeByReal:
+    bcall(_ConvertRpnOffsetDateTimeToReal)
+    ret
+; (Offset|Real)*OffsetDateTime
+universalMultTimeZoneByOffsetDateTime:
+    call checkOp1Offset
+    jr z, universalMultOffsetByOffsetDateTime
+    call checkOp1Real
+    jr z, universalMultRealByOffsetDateTime
+    jr universalMultErr
+universalMultOffsetByOffsetDateTime:
+    bcall(_ConvertRpnOffsetDateTimeToOffset)
+    ret
+universalMultRealByOffsetDateTime:
     bcall(_ConvertRpnOffsetDateTimeToReal)
     ret
 
