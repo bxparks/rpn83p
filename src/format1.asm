@@ -36,6 +36,34 @@ FormatDateRecord:
     ld (de), a ; add NUL terminator
     ret
 
+; Description: Format the Time Record in HL to DE.
+; Input:
+;   - HL:(const Time*)=time
+;   - DE:(char*)
+; Output:
+;   - HL: incremented to next record field
+;   - DE: points to NUL char at end of string
+FormatTimeRecord:
+    inc hl ; skip type byte
+    ; 'print 'D'
+    ld a, 'T'
+    ld (de), a
+    inc de
+    ; print '{'
+    ld a, LlBrace
+    ld (de), a
+    inc de
+    ;
+    call formatHourMinuteSecond
+    ; print '}'
+    ld a, LrBrace
+    ld (de), a
+    inc de
+    ; add NUL
+    xor a
+    ld (de), a ; add NUL terminator
+    ret
+
 ; Description: Format the DateTime Record in HL to DE.
 ; Input:
 ;   - HL:(const DateTime*)

@@ -208,7 +208,6 @@ mRtcGetDateHandler:
 mRtcGetTimeHandler:
     call closeInputAndRecallNone
     bcall(_RtcGetTime)
-    jp mNotYetHandler
     jp pushToX
 
 mRtcGetOffsetDateTimeHandler:

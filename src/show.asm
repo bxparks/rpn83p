@@ -33,6 +33,9 @@ formShowable:
     ; RpnDate{}
     cp rpnObjectTypeDate
     jr z, formShowableDate
+    ; RpnTime{}
+    cp rpnObjectTypeTime
+    jr z, formShowableTime
     ; RpnDateTime{}
     cp rpnObjectTypeDateTime
     jr z, formShowableDateTime
@@ -58,6 +61,10 @@ formShowableComplex:
 formShowableDate:
     ld hl, OP1
     bcall(_FormatDateRecord)
+    jr formShowableEnd
+formShowableTime:
+    ld hl, OP1
+    bcall(_FormatTimeRecord)
     jr formShowableEnd
 formShowableDateTime:
     ld hl, OP1

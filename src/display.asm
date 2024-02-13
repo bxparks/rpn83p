@@ -986,6 +986,9 @@ printOP1:
     cp rpnObjectTypeDate
     jp z, printOP1DateRecord
     ;
+    cp rpnObjectTypeTime
+    jp z, printOP1TimeRecord
+    ;
     cp rpnObjectTypeDateTime
     jp z, printOP1DateTimeRecord
     ;
@@ -1436,6 +1439,26 @@ printOP1DateRecord:
     ld de, OP3 ; destPointer
     push de
     bcall(_FormatDateRecord)
+    xor a
+    ld (de), a ; add NUL terminator
+    ; print string stored in OP3
+    pop hl ; HL=OP3
+    call vPutSmallS
+    jp vEraseEOL
+
+; Description: Print the Time Record in OP1 using small font.
+; Input:
+;   - OP1: Time Record
+;   - B: displayFontMask
+; Destroys: OP3-OP6
+printOP1TimeRecord:
+    call eraseEOLIfNeeded ; uses B
+    call displayStackSetSmallFont
+    ; format OP1
+    ld hl, OP1
+    ld de, OP3 ; destPointer
+    push de
+    bcall(_FormatTimeRecord)
     xor a
     ld (de), a ; add NUL terminator
     ; print string stored in OP3

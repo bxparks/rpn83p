@@ -110,7 +110,7 @@ rpn83pAppId equ $1E69
 ; state is considered stale automatically. However, if the *semantics* of any
 ; variable is changed (e.g. if the meaning of a flag is changed), then we
 ; *must* increment the version number to mark the previous state as stale.
-rpn83pSchemaVersion equ 12
+rpn83pSchemaVersion equ 13
 
 ; Define true and false. Something else in spasm-ng defines the 'true' and
 ; 'false' symbols but I cannot find the definitions for them in the
@@ -132,15 +132,20 @@ rpnObjectTypeComplex equ $0C ; same as TI-OS
 ; - struct RpnDate{type:u8, date:Date}, 5 bytes
 rpnObjectTypeDate equ $18 ; next unused object type
 rpnObjectTypeDateSizeOf equ 5
+; Time and RpnTime objects:
+; - struct Time{hour:u8, minute:u8, second:u8}, 3 bytes
+; - struct RpnTime{type:u8, date:Time}, 5 bytes
+rpnObjectTypeTime equ $19 ; next unused object type
+rpnObjectTypeTimeSizeOf equ 4
 ; DateTime and RpnDateTime objects:
 ; - struct DateTime{date:Date, hour:u8, min:u8, sec:u8}, 7 bytes
 ; - struct RpnDateTime{type:u8, dateTime:DateTime}, 8 bytes
-rpnObjectTypeDateTime equ $19
+rpnObjectTypeDateTime equ $1A
 rpnObjectTypeDateTimeSizeOf equ 8
 ; Offset and RpnOffset object:
 ; - struct Offset{hour:i8, min:i8}, 2 bytes
 ; - struct RpnOffset{type:u8, offset:Offset}, 3 bytes
-rpnObjectTypeOffset equ $1A
+rpnObjectTypeOffset equ $1B
 rpnObjectTypeOffsetSizeOf equ 3
 ; OffsetDateTime and RpnOffsetDateTime objects:
 ; - struct OffsetDateTime{datetime:DateTime, offset:Offset}, 9 bytes
@@ -149,7 +154,7 @@ rpnObjectTypeOffsetSizeOf equ 3
 ; TI-OS floating point number. But OPx registers are 11 bytes long. We have
 ; to careful and use expandOp1ToOp2() and shrinkOp2ToOp1() when parsing or
 ; manipulating this object.
-rpnObjectTypeOffsetDateTime equ $1B
+rpnObjectTypeOffsetDateTime equ $1C
 rpnObjectTypeOffsetDateTimeSizeOf equ 10
 
 ; An RpnObject is a struct of a type byte and 2 RpnFloat objects so that a
@@ -941,6 +946,10 @@ _PopRpnObject5 equ _PopRpnObject5Label-branchTableBase
 _FormatDateRecordLabel:
 _FormatDateRecord equ _FormatDateRecord-branchTableBase
     .dw FormatDateRecord
+    .db 1
+_FormatTimeRecordLabel:
+_FormatTimeRecord equ _FormatTimeRecord-branchTableBase
+    .dw FormatTimeRecord
     .db 1
 _FormatDateTimeRecordLabel:
 _FormatDateTimeRecord equ _FormatDateTimeRecord-branchTableBase

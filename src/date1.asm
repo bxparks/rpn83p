@@ -268,9 +268,11 @@ validateOffsetDateTime:
 ; Output; HL:RpnOffsetDateTime
 ; Destroys: A
 ; Preserves: BC, DE, HL
+; Throws: Err:DateType if input is the wrong type
 convertToOffsetDateTime:
     ; check if already RpnOffsetDateTime
     ld a, (hl) ; A=rpnType
+    and $1f
     cp rpnObjectTypeOffsetDateTime
     ret z
     ;
@@ -309,7 +311,65 @@ convertToOffsetDateTimeClear:
     pop hl
     ret
 
-;-----------------------------------------------------------------------------
+; Description: Convert RpnDateTime, RpnOffsetDateTime to RpnDate.
+; Input: HL:(RpnDateTime*) or (RpnOffsetDateTime*)
+; Output: HL:(RpnDate*)=rpnDate
+; Destroys: A
+; Preserves: BC, DE, HL
+; Throws: Err:DateType if input is the wrong type
+convertToDate:
+    ld a, (hl) ; A=rpnType
+    and $1f
+    cp rpnObjectTypeTime
+    ret z
+    cp rpnObjectTypeDateTime
+    jr z, convertToDateConvert
+    cp rpnObjectTypeOffsetDateTime
+    jr z, convertToDateConvert
+    bcall(_ErrDataType)
+convertToDateConvert:
+    ld a, rpnObjectTypeDate
+    ld (hl), a
+    ret
+
+; Description: Convert RpnDateTime, RpnOffsetDateTime to RpnTime.
+; Input: HL:(RpnDateTime*) or (RpnOffsetDateTime*)
+; Output: HL:(RpnTime*)=rpnTime
+; Destroys: A
+; Preserves: BC, DE, HL
+; Throws: Err:DateType if input is the wrong type
+convertToTime:
+    ld a, (hl) ; A=rpnType
+    and $1f
+    cp rpnObjectTypeTime
+    ret z
+    cp rpnObjectTypeDateTime
+    jr z, convertToTimeConvert
+    cp rpnObjectTypeOffsetDateTime
+    jr z, convertToTimeConvert
+    bcall(_ErrDataType)
+convertToTimeConvert:
+    push bc ; stack=[BC]
+    push de ; stack=[BC,DE]
+    push hl ; stack=[BC,DE,rpnTime]
+    ld a, rpnObjectTypeTime
+    ld (hl), a
+    ; move pointers to last Time field
+    ld de, rpnObjectTypeDateTimeSizeOf-1
+    add hl, de ; HL=last byte of old Time object
+    ld e, l
+    ld d, h
+    dec de
+    dec de
+    dec de
+    dec de ; DE=last byte of new Time object
+    ld bc, 3
+    lddr ; shift Time fields by 4 bytes to the left
+    ; clean up stack
+    pop hl ; stack=[BC,DE]; HL=rpnTime
+    pop de ; stack=[BC]; DE=restored
+    pop bc ; stack=[]; BC=restored
+    ret
 
 ;-----------------------------------------------------------------------------
 ; Simple date functions.

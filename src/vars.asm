@@ -707,10 +707,21 @@ pushToXY:
 checkValid:
     ld a, (OP1)
     and $1f
+    cp rpnObjectTypeReal
+    jr z, checkValidNumber
+    cp rpnObjectTypeComplex
+    jr z, checkValidNumber
     cp rpnObjectTypeDate
+    ret z
+    cp rpnObjectTypeTime
     ret z
     cp rpnObjectTypeDateTime
     ret z
+    cp rpnObjectTypeOffsetDateTime
+    ret z
+    cp rpnObjectTypeOffset
+    ret z
+checkValidNumber:
     bcall(_CkValidNum) ; destroys AF, HL
     ret
 
