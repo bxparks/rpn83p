@@ -14,9 +14,9 @@ InitDate:
     ; Set the default custom epochDate to 2000-01-01
     ld hl, y2kEpochDate
     call setEpochDateCustom
-    ; set default TimeZone to UTC
+    ; set current TimeZone to UTC initially
     ld hl, 0
-    ld (timeZone),hl
+    ld (timeZone), hl
     ret
 
 ;-----------------------------------------------------------------------------

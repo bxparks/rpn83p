@@ -9,37 +9,35 @@
 ;-----------------------------------------------------------------------------
 
 ; Description: Set the current time zone to the Offset{} given in OP1.
-; Input: OP1:Offset{}
+; Input: OP1:RpnOffset{}
 ; Output: none
+; Destroys: BC, HL
 SetTimeZone:
     ld hl, OP1
     ld a, (hl)
     inc hl
     cp rpnObjectTypeOffset
     jr nz, setTimeZoneErr
-    ld a, (hl)
+    ld c, (hl)
     inc hl
-    ld (timeZone), a
-    ld a, (hl)
-    inc hl
-    ld (timeZone+1), a
+    ld b, (hl)
+    ld (timeZone), bc
     ret
 setTimeZoneErr:
     bcall(_ErrDataType)
 
-; Description: Get the current time zone in OP1.
-; Input: OP1:Offset{}
+; Description: Get the current time zone into OP1.
+; Input: OP1:RpnOffset{}
 ; Output: none
+; Destroys: BC, HL
 GetTimeZone:
     ld hl, OP1
     ld a, rpnObjectTypeOffset
     ld (hl), a
     inc hl
     ;
-    ld a, (timeZone)
-    ld (hl), a
+    ld bc, (timeZone)
+    ld (hl), c
     inc hl
-    ld a, (timeZone+1)
-    ld (hl), a
-    inc hl
+    ld (hl), b
     ret

@@ -452,8 +452,11 @@ epochDateCustom equ epochDate + 4 ; Date{y,m,d}, 4 bytes
 ; Set default time zone
 timeZone equ epochDateCustom + 4 ; Offset{hh,mm}, 2 bytes
 
+; Set clock time zone
+rtcTimeZone equ timeZone + 2 ; Offset{hh,mm}, 2 bytes
+
 ; End application variables.
-appStateEnd equ timeZone + 2
+appStateEnd equ rtcTimeZone + 2
 
 ; Total size of appState vars.
 appStateSize equ (appStateEnd - appStateBegin)
@@ -1148,6 +1151,10 @@ _GetTimeZone equ _GetTimeZoneLabel-branchTableBase
     .db 1
 
 ; rtc1.asm
+_RtcInitLabel:
+_RtcInit equ _RtcInitLabel-branchTableBase
+    .dw RtcInit
+    .db 1
 _RtcGetNowLabel:
 _RtcGetNow equ _RtcGetNowLabel-branchTableBase
     .dw RtcGetNow

@@ -228,6 +228,8 @@ mRtcSetClockHandler:
 mRtcSetTimeZoneHandler:
     call closeInputAndRecallRpnOffsetX
     bcall(_RtcSetTimeZone)
+    ld a, errorCodeTzStored
+    ld (handlerCode), a
     ret
 
 mRtcGetTimeZoneHandler:

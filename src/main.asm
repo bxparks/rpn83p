@@ -20,6 +20,7 @@ main:
     bcall(_InitErrorCode)
     bcall(_InitInputBuf)
     bcall(_InitDate)
+    bcall(_RtcInit)
     call initNumResultMode
     call initComplexMode
     call initCommaEEMode
