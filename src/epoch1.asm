@@ -625,7 +625,7 @@ internalEpochSecondsToDateTime:
 ;   - (HL):filled
 ; Destroys: A, (secondsPointer)
 ; Preserves: BC, DE
-secondsToHms:
+secondsToHms: ; TODO: Rename to secondsToTime()
     push bc ; stack=[BC]
     push de ; stack=[BC,secondsPointer]
     ld c, l

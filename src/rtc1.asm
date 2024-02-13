@@ -83,6 +83,16 @@ getRtcNowAsEpochSecondsLoop:
     djnz getRtcNowAsEpochSecondsLoop
     ld (hl), 0
     pop hl ; stack=[]; HL=rtcSeconds
+    ; Convert rtcSeconds relative to the rtcTimeZone to utcSeconds by
+    ; subtracting the seconds(rtcTimeZone).
+    push hl ; stack=[rtcSeconds]
+    call reserveRaw9 ; FPS=[rtcTimeZoneSeconds]; HL=rtcTimeZoneSeconds
+    ld de, rtcTimeZone
+    call offsetToSeconds ; HL=rtcTimeZoneSeconds
+    ex de, hl ; DE=rtcTimeZoneSeconds
+    pop hl ; stack=[]; HL=rtcSeconds
+    call subU40U40 ; HL=utcSeconds=rtcSeconds-rtcTimeZoneSeconds
+    call dropRaw9 ; FPS=[]
     ; Convert rtcSeconds to internal epochSeconds
     ld de, tiosEpochDate ; DE=Date{1997,1,1}
     call convertRelativeToInternalEpochSeconds ; HL=rtcSeconds
