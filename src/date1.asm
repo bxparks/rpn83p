@@ -718,7 +718,7 @@ dateTimeToEpochSeconds:
     ; convert Time to seconds
     push hl ; stack=[resultSeconds]
     call reserveRaw9 ; FPS=[timeSeconds]; HL=timeSeconds
-    call hmsToSeconds ; FPS.timeSeconds updated; DE=DE+sizeof(Time)
+    call timeToSeconds ; FPS.timeSeconds updated; DE=DE+sizeof(Time)
     ; add timeSeconds to resultSeconds
     ex de, hl ; HL=dateTime+7; DE=timeSeconds
     ex (sp), hl ; stack=[dateTime+7]; HL=resultSeconds

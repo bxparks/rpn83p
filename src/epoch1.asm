@@ -529,7 +529,7 @@ dateTimeToInternalEpochSeconds:
     ex (sp), hl ; stack=[resultPointer]; HL=timePointer
     ex de, hl ; DE=timePointer
     ld hl, OP4
-    call hmsToSeconds ; HL=OP4=u40(timeSeconds); DE=timePointer+3=dateTime+7
+    call timeToSeconds ; HL=OP4=u40(timeSeconds); DE=timePointer+3=dateTime+7
     ex de, hl ; HL=dateTime+7; DE=u40(timeSeconds)
     ex (sp), hl ; stack=[dateTime+7]; HL=resultPointer
     ; add timeSeconds to epochDays*86400
@@ -537,25 +537,24 @@ dateTimeToInternalEpochSeconds:
     pop de ; stack=[]; DE=dateTime+7
     ret
 
-; Description: Convert (hh,mm,ss) to seconds. TODO: Maybe rename this
-; timeToSeconds().
+; Description: Convert Time{hh,mm,ss} to seconds.
 ; Input:
-;   - DE: pointer to 3 bytes (hh,mm,ss).
-;   - HL: pointer to u40 result
+;   - DE:(Time*)=time
+;   - HL:(u40*)=resultSeconds
 ; Output:
 ;   - (HL): updated
 ;   - DE=DE+3
 ; Destroys: A, DE
 ; Preserves: BC, HL
-hmsToSeconds:
-    push hl ; stack=[result]
+timeToSeconds:
+    push hl ; stack=[resultSeconds]
     ; read hour
     ld a, (de)
     inc de
     call setU40ToA ; HL=A
     ; multiply by 60
     ld a, 60
-    call multU40ByA ; HL=result=HL*60
+    call multU40ByA ; HL=resultSeconds=HL*60
     ; add minute
     ld a, (de)
     inc de
@@ -567,7 +566,7 @@ hmsToSeconds:
     ld a, (de)
     inc de
     call addU40ByA ; HL=HL+A
-    pop hl ; HL=result
+    pop hl ; HL=resultSeconds
     ret
 
 ;-----------------------------------------------------------------------------
@@ -613,24 +612,24 @@ internalEpochSecondsToDateTime:
     ld (OP4), bc ; stack=[]; OP4=remainderSeconds
     ; populate Time components from remainderSeconds
     ld de, OP4
-    call secondsToHms ; HL=HL+3=dateTime+sizeof(DateTime)
+    call secondsToTime ; HL=HL+3=dateTime+sizeof(DateTime)
     ret
 
-; Description: Convert seconds in a day to (hh,mm,ss).
+; Description: Convert seconds in a day to Time{hh,mm,ss}.
 ; Input:
-;   - DE:(u40*)=secondsPointer
-;   - HL:(Time*)=hmsPointer
+;   - DE:(u40*)=seconds
+;   - HL:(Time*)=time
 ; Output:
 ;   - HL=HL+sizeof(Time)=HL+3
 ;   - (HL):filled
-; Destroys: A, (secondsPointer)
+; Destroys: A, (seconds)
 ; Preserves: BC, DE
-secondsToHms: ; TODO: Rename to secondsToTime()
+secondsToTime:
     push bc ; stack=[BC]
-    push de ; stack=[BC,secondsPointer]
+    push de ; stack=[BC,seconds]
     ld c, l
-    ld b, h ; BC:Time*=hmsPointer
-    ex de, hl ; HL=secondsPointer
+    ld b, h ; BC:Time*=time
+    ex de, hl ; HL=seconds
     ; move to 'second' field
     inc bc
     inc bc
@@ -653,8 +652,8 @@ secondsToHms: ; TODO: Rename to secondsToTime()
     inc bc
     inc bc
     ld l, c
-    ld h, b ; HL=hmsPointer+3
-    pop de ; stack=[BC]; DE=secondsPointer
+    ld h, b ; HL=time+3
+    pop de ; stack=[BC]; DE=seconds
     pop bc ; stack=[]; BC=restored
     ret
 
