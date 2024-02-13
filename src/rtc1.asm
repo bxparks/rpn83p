@@ -63,27 +63,24 @@ RtcGetOffsetDateTime:
 ;-----------------------------------------------------------------------------
 
 ; Description: Retrieve current RTC as internal epochSeconds.
-; Input: HL:(i40*)=pointer to rtcSeconds
+; Input: HL:(i40*)=rtcSeconds
 ; Output: (*HL) updated
-; Destroys: A, DE
+; Destroys: A, BC, DE
 ; Preserves: HL
 getRtcNowAsEpochSeconds:
     push hl ; stack=[rtcSeconds]
     ; Read epochSeconds (relative TIOS epoch) from 45h-48h ports to OP1.
     ; See https://wikiti.brandonw.net/index.php?title=83Plus:Ports:45
-    ; TODO: Use INIR instruction.
-    in a, (45h)
+    ld c, 45h
+    ld b, 4
+getRtcNowAsEpochSecondsLoop:
+    ; TODO: Do I need to disable interrupts, to prevent non-atomic read of the
+    ; 4 bytes?
+    in a, (c)
     ld (hl), a
+    inc c
     inc hl
-    in a, (46h)
-    ld (hl), a
-    inc hl
-    in a, (47h)
-    ld (hl), a
-    inc hl
-    in a, (48h)
-    ld (hl), a
-    inc hl
+    djnz getRtcNowAsEpochSecondsLoop
     ld (hl), 0
     pop hl ; stack=[]; HL=rtcSeconds
     ; Convert rtcSeconds to internal epochSeconds
