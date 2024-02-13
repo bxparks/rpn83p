@@ -1139,25 +1139,34 @@ _GetTimeZone equ _GetTimeZoneLabel-branchTableBase
     .db 1
 
 ; rtc1.asm
-_GetRtcNowLabel:
-_GetRtcNow equ _GetRtcNowLabel-branchTableBase
-    .dw GetRtcNow
+_RtcGetNowLabel:
+_RtcGetNow equ _RtcGetNowLabel-branchTableBase
+    .dw RtcGetNow
     .db 1
-_GetRtcTodayLabel:
-_GetRtcToday equ _GetRtcTodayLabel-branchTableBase
-    .dw GetRtcToday
+_RtcGetDateLabel:
+_RtcGetDate equ _RtcGetDateLabel-branchTableBase
+    .dw RtcGetDate
     .db 1
-_SetRtcClockLabel:
-_SetRtcClock equ _SetRtcClockLabel-branchTableBase
-    .dw SetRtcClock
+_RtcGetTimeLabel:
+_RtcGetTime equ _RtcGetTimeLabel-branchTableBase
+    .dw RtcGetTime
     .db 1
-_SetRtcTimeZoneLabel:
-_SetRtcTimeZone equ _SetRtcTimeZoneLabel-branchTableBase
-    .dw SetRtcTimeZone
+_RtcGetOffsetDateTimeLabel:
+_RtcGetOffsetDateTime equ _RtcGetOffsetDateTimeLabel-branchTableBase
+    .dw RtcGetOffsetDateTime
     .db 1
-_GetRtcTimeZoneLabel:
-_GetRtcTimeZone equ _GetRtcTimeZoneLabel-branchTableBase
-    .dw GetRtcTimeZone
+;
+_RtcSetClockLabel:
+_RtcSetClock equ _RtcSetClockLabel-branchTableBase
+    .dw RtcSetClock
+    .db 1
+_RtcSetTimeZoneLabel:
+_RtcSetTimeZone equ _RtcSetTimeZoneLabel-branchTableBase
+    .dw RtcSetTimeZone
+    .db 1
+_RtcGetTimeZoneLabel:
+_RtcGetTimeZone equ _RtcGetTimeZoneLabel-branchTableBase
+    .dw RtcGetTimeZone
     .db 1
 
 #ifdef DEBUG

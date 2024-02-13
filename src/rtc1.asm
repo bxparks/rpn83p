@@ -8,15 +8,40 @@
 ; entry.
 ;-----------------------------------------------------------------------------
 
+; Description: Retrieve the current RTC as seconds relative to the current
+; epochDate.
+; Input: none
+; Output: OP1:real=seconds relative to current epochDate.
+RtcGetNow:
+    ld hl, OP1
+    call getRtcNowAsEpochSeconds ; HL=OP1=epochSeconds
+    jp ConvertI40ToOP1
+
+RtcGetTime:
+    ret
+
+RtcGetDate:
+    ld hl, OP1
+    call getRtcNowAsEpochSeconds ; HL=OP1=epochSeconds
+    ; Convert to RpnOffsetDateTime using current offset
+    call epochSecondsToRpnOffsetDateTimeAlt ; OP1=RpnOffsetDateTime
+    ; Convert RpnOffsetDateTime to RpnDate.
+    ld hl, OP1
+    ld a, rpnObjectTypeDate
+    ld (hl), a
+    ret
+
 ; Description: Retrieve the current RTC as an OffsetDateTime using the current
 ; timeZone.
 ; Input: none
 ; Output: OP1:(OffsetDateTime*)=current datetime
-GetRtcNow:
+RtcGetOffsetDateTime:
     ld hl, OP1
     call getRtcNowAsEpochSeconds ; HL=OP1=epochSeconds
     ; Convert to RpnOffsetDateTime using current offset
     jp epochSecondsToRpnOffsetDateTimeAlt ; OP1=RpnOffsetDateTime
+
+;-----------------------------------------------------------------------------
 
 ; Description: Retrieve current RTC as internal epochSeconds.
 ; Input: HL:(i40*)=pointer to rtcSeconds
@@ -48,8 +73,9 @@ getRtcNowAsEpochSeconds:
     ld de, epochDate ; DE=(Date*)=current epochDate
     jp convertInternalToRelativeEpochSeconds ; HL=rtcSeconds
 
-GetRtcToday:
-SetRtcClock:
-SetRtcTimeZone:
-GetRtcTimeZone:
+;-----------------------------------------------------------------------------
+
+RtcSetClock:
+RtcSetTimeZone:
+RtcGetTimeZone:
     ret

@@ -418,11 +418,15 @@ MenuGroup root mRoot [
         ]
         MenuGroup RTC mRtc [
           MenuRow [
-            MenuItem NOW mNow # current OffsetDateTime
-            MenuItem TDAY mToday # current Date
-            MenuItem SETC mSetClock # set current clock
-            MenuItem TZC mSetClockTimeZone
-            MenuItem TZC<Squestion> mGetClockTimeZone
+            MenuItem NOW mRtcGetNow # current epochSeconds
+            MenuItem NOWD mRtcGetDate # current Date
+            MenuItem NOWT mRtcGetTime # current Time
+            MenuItem NWDZ mRtcGetOffsetDateTime # current OffsetDateTime
+          ]
+          MenuRow [
+            MenuItem SETC mRtcSetClock # set current clock
+            MenuItem TZC mRtcSetTimeZone
+            MenuItem TZC<Squestion> mRtcGetTimeZone
           ]
         ]
       ]

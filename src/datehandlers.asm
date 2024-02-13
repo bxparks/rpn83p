@@ -195,29 +195,45 @@ mGetTimeZoneHandler:
 ; RTC > Row 1
 ;-----------------------------------------------------------------------------
 
-mNowHandler:
+mRtcGetNowHandler:
     call closeInputAndRecallNone
-    bcall(_GetRtcNow)
+    bcall(_RtcGetNow)
     jp pushToX
 
-mTodayHandler:
+mRtcGetDateHandler:
     call closeInputAndRecallNone
-    bcall(_GetRtcToday)
+    bcall(_RtcGetDate)
     jp pushToX
 
-mSetClockHandler:
+mRtcGetTimeHandler:
+    call closeInputAndRecallNone
+    bcall(_RtcGetTime)
+    jp mNotYetHandler
+    jp pushToX
+
+mRtcGetOffsetDateTimeHandler:
+    call closeInputAndRecallNone
+    bcall(_RtcGetOffsetDateTime)
+    jp pushToX
+
+
+;-----------------------------------------------------------------------------
+; RTC > Row 2
+;-----------------------------------------------------------------------------
+
+mRtcSetClockHandler:
     call closeInputAndRecallRpnOffsetDateTimeX
-    bcall(_SetRtcClock)
+    bcall(_RtcSetClock)
     ret
 
-mSetClockTimeZoneHandler:
+mRtcSetTimeZoneHandler:
     call closeInputAndRecallRpnOffsetX
-    bcall(_SetRtcTimeZone)
+    bcall(_RtcSetTimeZone)
     ret
 
-mGetClockTimeZoneHandler:
+mRtcGetTimeZoneHandler:
     call closeInputAndRecallNone
-    bcall(_GetRtcTimeZone)
+    bcall(_RtcGetTimeZone)
     jp pushToX
 
 ;-----------------------------------------------------------------------------
