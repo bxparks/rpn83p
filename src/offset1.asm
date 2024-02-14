@@ -228,6 +228,47 @@ offsetQuarterToHourMinute:
     ret
 
 ;-----------------------------------------------------------------------------
+
+; Description: Convert the utcEpochSeconds to an epochSeconds relative to the
+; given Offset, so that when that is converted to Date or DateTime, the result
+; is accurate for the given Offset.
+; Input:
+;   - DE:(Offset*)=offset
+;   - HL:(i40*)=utcEpochSeconds
+; Output:
+;   - DE=offset+2
+;   - HL=localEpochSeconds
+; Preserves: BC, DE
+utcEpochSecondsToLocalEpochSeconds:
+    push hl ; stack=[utcEpochSeconds]
+    call reserveRaw9 ; FPS=[offset, offsetSeconds]; HL=offsetSeconds
+    call offsetToSeconds ; HL=offsetSeconds updated
+    ex de, hl ; DE=offsetSeconds; HL=offset+2
+    ex (sp), hl ; stack=[offset+2]; HL=utcEpochSeconds
+    call addU40U40 ; HL=localEpochSeconds=utcEpochSeconds+offseSeconds
+    pop de ; stack=[]; DE=offset+2
+    jp dropRaw9
+
+; Description: Convert the localEpochSeconds relative to the given Offset to
+; the utcEpochSeconds.
+; Input:
+;   - DE:(Offset*)=offset
+;   - HL:(i40*)=localEpochSeconds
+; Output:
+;   - DE=offset+2
+;   - HL=utcEpochSeconds
+; Preserves: BC, DE
+localEpochSecondsToUtcEpochSeconds:
+    push hl ; stack=[localEpochSeconds]
+    call reserveRaw9 ; FPS=[offsetSeconds]; HL=offsetSeconds
+    call offsetToSeconds ; HL=offsetSeconds updated
+    ex de, hl ; DE=offsetSeconds; HL=offset+2
+    ex (sp), hl ; stack=[offset+2]; HL=localEpochSeconds
+    call subU40U40 ; HL=utcEpochSeconds=localEpochSeconds-offsetSeconds
+    pop de ; stack=[]; DE=offset+2
+    jp dropRaw9
+
+;-----------------------------------------------------------------------------
 ; RpnOffsetDateTime functions.
 ;-----------------------------------------------------------------------------
 
@@ -262,17 +303,9 @@ RpnOffsetDateTimeToEpochSeconds:
 offsetDateTimeToEpochSeconds:
     ; convert DateTime to relative epochSeconds
     call dateTimeToEpochSeconds ; HL=dateTimeSeconds; DE+=sizeof(DateTime)
-    push hl ; stack=[dateTimeSeconds]
-    ; convert Offset to seconds in OP1
-    call reserveRaw9 ; FPS=[offsetSeconds]; HL=offsetSeconds
-    call offsetToSeconds ; HL=offsetSeconds; DE+=sizeof(Offset)
-    ; add offsetSeconds to dateTimeSeconds
-    ex de, hl ; DE=offsetSeconds; HL=offsetDateTime+9
-    ex (sp), hl ; stack=[offsetDateTime+7]; HL=datetimeSeconds
-    call subU40U40 ; HL=resultSeconds=dateTimeSeconds-offsetSeconds
-    ; clean up stack and FPS
-    pop de ; stack=[]; DE=offsetDateTime+7
-    jp dropRaw9
+    ; convert localEpochSeconds to utcEpochSeconds
+    call localEpochSecondsToUtcEpochSeconds ; HL=utcEpochSeconds; DE+=2
+    ret
 
 ;-----------------------------------------------------------------------------
 
@@ -308,38 +341,36 @@ epochSecondsToRpnOffsetDateTimeAlt:
 ;   - DE:(const i40*)=epochSeconds, must not be an OPx
 ;   - HL:(OffsetDateTime*)=offsetDateTime, must not be an OPx
 ; Output:
+;   - BC=offset+2
 ;   - (*HL)=offsetDateTime updated
 ;   - HL=HL+sizeof(OffsetDateTime)
 ; Destroys: all, OP1-OP6
+; Preserves: DE
 epochSecondsToOffsetDateTime:
-    push bc ; stack=[offset]
-    push hl ; stack=[offset,offsetDateTime]
-    push de ; stack=[offset,offsetDateTime,epochSeconds]
-    ; convert offset (BC) to seconds
-    call reserveRaw9 ; FPS=[offsetSeconds]; HL=offsetSeconds
+    push de ; stack=[epochSeconds]
+    push bc ; stack=[epochSeconds,offset]
+    push hl ; stack=[epochSeconds,offset,offsetDateTime]
+    ; convert utcEpochSeconds to localEpochSeconds
+    ex de, hl ; HL=utcEpochSeconds
     ld e, c
-    ld d, b
-    call offsetToSeconds ; HL=offsetSeconds updated
-    ; shift the epochSeconds to the given Offset
-    pop de ; stack=[offset,offsetDateTime]; DE=epochSeconds
-    call addU40U40 ; HL=effEpochSeconds=offsetSeconds+epochSeconds
-    ; convert effEpochSeconds to DateTime
-    ex de, hl ; DE=effEpochSeconds
-    pop hl ; stack=[offset]; HL=offsetDateTime
+    ld d, b ; DE=offset
+    call utcEpochSecondsToLocalEpochSeconds ; HL=localEpochSeconds; DE+=2
+    ; convert localEpochSeconds to DateTime
+    ex de, hl ; DE=localEpochSeconds
+    pop hl ; stack=[epochSeconds,offset]; HL=offsetDateTime
     call epochSecondsToDateTime ; HL=offsetDateTime+sizeof(DateTime)
     ; copy the given offset into OffsetDateTime.offset
-    pop bc ; stack=[]; BC=offset
+    pop bc ; stack=[epochSeconds]; BC=offset
     ld a, (bc)
     inc bc
     ld (hl), a
     inc hl
-    ;
     ld a, (bc)
     inc bc
     ld (hl), a
-    inc hl
-    ; cleanup FPS
-    jp dropRaw9 ; FPS=[]
+    inc hl ; HL=HL+sizeof(OffsetDateTime)
+    pop de ; stack=[]; DE=epochSeconds
+    ret
 
 ;-----------------------------------------------------------------------------
 
