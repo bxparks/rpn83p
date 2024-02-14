@@ -2323,17 +2323,8 @@ mBlank246Id equ 246
     .dw mNullHandler ; handler (predefined)
     .dw 0 ; nameSelector
 ; MenuGroup RTC: children: row 1
-mRtcSetClock:
-mRtcSetClockId equ 247
-    .db mRtcSetClockId ; id
-    .db mRtcId ; parentId
-    .db mRtcSetClockNameId ; nameId
-    .db 0 ; numRows
-    .db 0 ; rowBeginId or altNameId
-    .dw mRtcSetClockHandler ; handler (to be implemented)
-    .dw 0 ; nameSelector
 mRtcSetTimeZone:
-mRtcSetTimeZoneId equ 248
+mRtcSetTimeZoneId equ 247
     .db mRtcSetTimeZoneId ; id
     .db mRtcId ; parentId
     .db mRtcSetTimeZoneNameId ; nameId
@@ -2342,13 +2333,22 @@ mRtcSetTimeZoneId equ 248
     .dw mRtcSetTimeZoneHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
 mRtcGetTimeZone:
-mRtcGetTimeZoneId equ 249
+mRtcGetTimeZoneId equ 248
     .db mRtcGetTimeZoneId ; id
     .db mRtcId ; parentId
     .db mRtcGetTimeZoneNameId ; nameId
     .db 0 ; numRows
     .db 0 ; rowBeginId or altNameId
     .dw mRtcGetTimeZoneHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
+mBlank249:
+mBlank249Id equ 249
+    .db mBlank249Id ; id
+    .db mRtcId ; parentId
+    .db mNullNameId ; nameId
+    .db 0 ; numRows
+    .db 0 ; rowBeginId or altNameId
+    .dw mNullHandler ; handler (predefined)
     .dw 0 ; nameSelector
 mBlank250:
 mBlank250Id equ 250
@@ -2359,14 +2359,14 @@ mBlank250Id equ 250
     .db 0 ; rowBeginId or altNameId
     .dw mNullHandler ; handler (predefined)
     .dw 0 ; nameSelector
-mBlank251:
-mBlank251Id equ 251
-    .db mBlank251Id ; id
+mRtcSetClock:
+mRtcSetClockId equ 251
+    .db mRtcSetClockId ; id
     .db mRtcId ; parentId
-    .db mNullNameId ; nameId
+    .db mRtcSetClockNameId ; nameId
     .db 0 ; numRows
     .db 0 ; rowBeginId or altNameId
-    .dw mNullHandler ; handler (predefined)
+    .dw mRtcSetClockHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
 
 ; Table of 2-byte pointers to names in the pool of strings below.
@@ -2852,12 +2852,12 @@ mRtcGetTimeNameId equ 238
     .dw mRtcGetTimeName
 mRtcGetOffsetDateTimeNameId equ 239
     .dw mRtcGetOffsetDateTimeName
-mRtcSetClockNameId equ 240
-    .dw mRtcSetClockName
-mRtcSetTimeZoneNameId equ 241
+mRtcSetTimeZoneNameId equ 240
     .dw mRtcSetTimeZoneName
-mRtcGetTimeZoneNameId equ 242
+mRtcGetTimeZoneNameId equ 241
     .dw mRtcGetTimeZoneName
+mRtcSetClockNameId equ 242
+    .dw mRtcSetClockName
 
 ; Table of names as NUL terminated C strings.
 mNullName:
@@ -3340,9 +3340,9 @@ mRtcGetTimeName:
     .db "NOWT", 0
 mRtcGetOffsetDateTimeName:
     .db "NWDZ", 0
-mRtcSetClockName:
-    .db "SETC", 0
 mRtcSetTimeZoneName:
     .db "TZC", 0
 mRtcGetTimeZoneName:
     .db 'T', 'Z', 'C', Squestion, 0
+mRtcSetClockName:
+    .db "SETC", 0
