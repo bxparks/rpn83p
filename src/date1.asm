@@ -783,33 +783,45 @@ epochSecondsToDateTime:
 ;   - OP3:Union[RpnDateTime,RpnReal]=rpnDateTime or seconds
 ; Output:
 ;   - OP1:RpnDateTime=RpnDateTime+seconds
-;   - DE=OP1+sizeof(DateTime)
-; Destroys: OP1, OP2, OP3-OP6
+; Destroys: all, OP1, OP2, OP3-OP6
 AddRpnDateTimeBySeconds:
     call checkOp1DateTimePageOne ; ZF=1 if CP1 is an RpnDateTime
-    jr nz, addRpnDateTimeBySecondsAdd
-    call cp1ExCp3PageOne ; CP1=seconds; CP3=RpnDateTime
+    jr z, addRpnDateTimeBySecondsAdd
+    call cp1ExCp3PageOne ; CP1=rpnDateTime, CP3=seconds
 addRpnDateTimeBySecondsAdd:
-    ; CP1=seconds, CP3=RpnDateTime
-    call ConvertOP1ToI40 ; HL=OP1=u40(seconds)
-    call pushRaw9Op1 ; FPS=[seconds]
-    ; convert CP3=RpnDateTime to OP1=seconds
-    ld de, OP3+1 ; DE=DateTime
+    ; CP1=rpnDateTime, CP3=seconds
+    ; Push rpnDateTime to FPS.
+    call PushRpnObject1 ; FPS=[rpnDateTime]
+    push hl ; stack=[rpnDateTime]
+    ; convert OP3 to i40, then push to FPS
+    call op3ToOp1PageOne ; OP1:real=seconds
+    call ConvertOP1ToI40 ; OP1:u40=seconds
+    call pushRaw9Op1 ; FPS=[rpnDateTime,seconds]; HL=seconds
+    ex (sp), hl ; stack=[seconds]; HL=rpnDateTime
+    ; convert rpnDateTime to i40 seconds
+    ex de, hl ; DE=rpnDateTime
+    inc de ; skip type byte
     ld hl, OP1
     call dateTimeToInternalEpochSeconds ; HL=OP1=dateTimeSeconds
-    ; add seconds, dateSeconds
-    call popRaw9Op2 ; FPS=[]; OP2=seconds
-    ld de, OP2
-    ld hl, OP1
-    call addU40U40 ; HL=OP1=resultSeconds=dateTimeSeconds+seconds
-    ; convert seconds to OP1=RpnDateTime
-    call op1ToOp2PageOne ; OP2=resultSeconds
-    ld de, OP2
-    ld hl, OP1
+    ; add seconds + dateSeconds
+    ex de, hl ; DE=dateTimeSeconds
+    pop hl ; stack=[]; HL=FPS.seconds
+    call addU40U40 ; HL=FPS.resultSeconds=dateTimeSeconds+seconds
+    ; Convert resultSeconds to RpnDateTime. Technically, we don't have to
+    ; reserve an RpnObject on the FPS, we could have created the result
+    ; directly in OP1, because an RpnDateTime will fit inside an OP1. But using
+    ; it makes this routine follow the same pattern as
+    ; AddRpnOffsetDateTimeBySeconds(), which makes things easier to maintain.
+    ex de, hl ; DE=resultSeconds
+    call reserveRpnObject ; FPS=[rpnDateTime,seconds,rpnDateTime]
     ld a, rpnObjectTypeDateTime
     ld (hl), a
-    inc hl ; HL:(DateTime*)=newDateTime
-    jp internalEpochSecondsToDateTime ; HL=OP1+sizeof(DateTime)
+    inc hl ; HL:(DateTime*)=resultDateTime
+    call internalEpochSecondsToDateTime ; HL=resultDateTime+sizeof(DateTime)
+    ; clean up stack and FPS
+    call PopRpnObject1 ; FPS=[rpnDateTime,seconds]; OP1=resultDateTime
+    call dropRaw9 ; FPS=[rpnDateTime,seconds]
+    jp dropRpnObject ; FPS=[]
 
 ;-----------------------------------------------------------------------------
 
@@ -824,9 +836,10 @@ SubRpnDateTimeByRpnDateTimeOrSeconds:
     call checkOp3DateTimePageOne ; ZF=1 if type(OP3)==DateTime
     jr z, subRpnDateTimeByRpnDateTime
 subRpnDateTimeBySeconds:
-    ; exchage CP1/CP3, invert the sign, then call addRpnDateTimeBySecondsAdd()
+    ; invert the sign of OP3, then call addRpnDateTimeBySecondsAdd()
     call cp1ExCp3PageOne
     bcall(_InvOP1S) ; OP1=-OP1
+    call cp1ExCp3PageOne
     jr addRpnDateTimeBySecondsAdd
 subRpnDateTimeByRpnDateTime:
     ; convert OP3 to seconds on the FPS stack

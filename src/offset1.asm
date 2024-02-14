@@ -394,10 +394,10 @@ addRpnOffsetDateTimeBySecondsAdd:
     push hl ; stack=[rpnOffsetDateTime]
     ; convert OP3 to i40, then push to FPS
     call op3ToOp1PageOne ; OP1:real=seconds
-    call ConvertOP1ToI40 ; HL:(i40*)=seconds
+    call ConvertOP1ToI40 ; OP1:(i40*)=seconds
     call pushRaw9Op1 ; FPS=[rpnOffsetDateTime,seconds]; HL=seconds
     ex (sp), hl ; stack=[seconds]; HL=rpnOffsetDateTime
-    ; convert  rpnOffsetDateTime to i40
+    ; convert rpnOffsetDateTime to i40 seconds
     ex de, hl ; DE=rpnOffsetDateTime
     inc de ; skip type byte
     ld hl, OP1
@@ -411,18 +411,19 @@ addRpnOffsetDateTimeBySecondsAdd:
     ex de, hl ; DE=offsetDateTimeSeconds
     pop hl ; stack=[]; HL=FPS.seconds
     call addU40U40 ; HL=FPS.resultSeconds=offsetDateTimeSeconds+seconds
-    ; convert seconds to RpnOffsetDateTime (use FPS to avoid the 2-byte gap)
+    ; convert resultSeconds to RpnOffsetDateTime (use FPS to avoid the 2-byte
+    ; gap)
     ex de, hl ; DE=resultSeconds
     ; after the call below:
-    ; FPS=[rpnOffsetDateTime,resultSeconds,resultOffsetDateTime],
-    ; HL=resultOffsetDatetime
+    ;   - FPS=[rpnOffsetDateTime,resultSeconds,resultOffsetDateTime]
+    ;   - HL=resultOffsetDatetime
     call reserveRpnObject
     ld a, rpnObjectTypeOffsetDateTime
     ld (hl), a
     inc hl ; HL:(OffsetDateTime*)=newOffsetDateTime
-    call epochSecondsToOffsetDateTime ; HL=resultOffsetDateTime
+    call epochSecondsToOffsetDateTime ; HL=resultOffsetDateTime+sizeof(ODT)
     ; clean up stack and FPS
-    call PopRpnObject1 ; FPS=[rpnOffsetDateTime,resultSeconds]
+    call PopRpnObject1 ; FPS=[rpnOffsetDateTime,resultSeconds]; OP1=result
     call dropRaw9 ; FPS=[rpnOffsetDateTime]
     jp dropRpnObject ; FPS=[]
 
