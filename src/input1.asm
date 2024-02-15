@@ -322,39 +322,39 @@ checkInputBufDecimalPointFound:
 ;   - CF=1 if the inputBuf contains a data structure
 ;   - A:i8=braceLevel if CF=1
 ; Destroys: A, DE, BC, HL
-CheckInputBufStruct: ; TODO: Rename to CheckInputBufRecord
+CheckInputBufRecord:
     ld hl, inputBuf
     ld b, (hl) ; C=len
     inc hl ; skip past len byte
     ; check for len==0
     ld a, b ; A=len
     or a ; if len==0: ZF=0
-    jr z, checkInputBufStructNone
+    jr z, checkInputBufRecordNone
     ld c, 0 ; C=braceLevel
     ld d, rpnfalse ; D=isBrace
-checkInputBufStructLoop:
+checkInputBufRecordLoop:
     ; Loop forwards and update brace level.
     ld a, (hl)
     inc hl
     cp LlBrace
-    jr nz, checkInputBufStructCheckRbrace
+    jr nz, checkInputBufRecordCheckRbrace
     inc c ; braceLevel++
     ld d, rpntrue
-checkInputBufStructCheckRbrace:
+checkInputBufRecordCheckRbrace:
     cp LrBrace
-    jr nz, checkInputBufStructCheckTermination
+    jr nz, checkInputBufRecordCheckTermination
     dec c ; braceLevel--
     ld d, rpntrue
-checkInputBufStructCheckTermination:
-    djnz checkInputBufStructLoop
-checkInputBufStructFound:
+checkInputBufRecordCheckTermination:
+    djnz checkInputBufRecordLoop
+checkInputBufRecordFound:
     ld a, d ; A=isBrace
     or a
     ret z
     ld a, c
     scf
     ret
-checkInputBufStructNone:
+checkInputBufRecordNone:
     or a ; CF=0
     ret
 

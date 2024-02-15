@@ -279,7 +279,7 @@ handleKeyLBrace:
     ; Do nothing in BASE mode.
     bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
     ret nz
-    bcall(_CheckInputBufStruct) ; CF=1 if inputBuf is a data struct
+    bcall(_CheckInputBufRecord) ; CF=1 if inputBuf is a data record
     ret c ; return if already in data structure mode.
     ld a, LlBrace
     jp handleKeyNumber
@@ -289,7 +289,7 @@ handleKeyRBrace:
     bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
     ret nz
     ; Check if in data record mode.
-    bcall(_CheckInputBufStruct) ; CF=1 if inputBuf is a data struct
+    bcall(_CheckInputBufRecord) ; CF=1 if inputBuf is a data record
     ret nc ; return if *not* in data structure mode.
     ; Check braceLevel
     or a
@@ -312,7 +312,7 @@ handleKeyComma:
     jr z, handleKeyEEAlt
 handleKeyCommaAlt:
     ; Check if in data record mode.
-    bcall(_CheckInputBufStruct) ; CF=1 if inputBuf is a data struct
+    bcall(_CheckInputBufRecord) ; CF=1 if inputBuf is a data record
     ret nc ; return if not in data structure mode
     or a
     ret z ; return if braceLevel==0

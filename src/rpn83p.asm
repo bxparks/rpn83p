@@ -692,9 +692,9 @@ _CheckInputBufDecimalPointLabel:
 _CheckInputBufDecimalPoint equ _CheckInputBufDecimalPointLabel-branchTableBase
     .dw CheckInputBufDecimalPoint
     .db 1
-_CheckInputBufStructLabel:
-_CheckInputBufStruct equ _CheckInputBufStructLabel-branchTableBase
-    .dw CheckInputBufStruct
+_CheckInputBufRecordLabel:
+_CheckInputBufRecord equ _CheckInputBufRecordLabel-branchTableBase
+    .dw CheckInputBufRecord
     .db 1
 _SetComplexDelimiterLabel:
 _SetComplexDelimiter equ _SetComplexDelimiterLabel-branchTableBase
