@@ -953,7 +953,7 @@ _ComplexToPolarDeg equ _ComplexToPolarDegLabel-branchTableBase
     .dw ComplexToPolarDeg
     .db 1
 
-; complexformat1.asm
+; formatcomplex1.asm
 _FormatComplexRectLabel:
 _FormatComplexRect equ _FormatComplexRectLabel-branchTableBase
     .dw FormatComplexRect
@@ -1339,7 +1339,7 @@ defpage(1)
 #include "integerconv1.asm"
 #include "const1.asm"
 #include "complex1.asm"
-#include "complexformat1.asm"
+#include "formatcomplex1.asm"
 #include "tvm.asm"
 #include "hms.asm"
 #include "prob.asm"
