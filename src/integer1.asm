@@ -39,3 +39,19 @@ multHLBy10:
     add hl, de ; HL=10*HL
     pop de
     ret
+
+;------------------------------------------------------------------------------
+
+; Description: Multiply A by 10.
+; Input: A
+; Output: A
+; Destroys: none
+multABy10:
+    push bc
+    add a, a
+    ld c, a ; C=2*A
+    add a, a
+    add a, a ; A=8*A
+    add a, c ; A=10*A
+    pop bc
+    ret

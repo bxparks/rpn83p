@@ -884,20 +884,6 @@ parseExponentEnd:
     neg
     ret
 
-; Description: Multiply A by 10.
-; Input: A
-; Output: A
-; Destroys: none
-multABy10:
-    push bc
-    add a, a
-    ld c, a ; C=2*A
-    add a, a
-    add a, a ; A=8*A
-    add a, c ; A=10*A
-    pop bc
-    ret
-
 ; Description: Add the exponent in A to the floatBuf exponent.
 ; Input: A: EE exponent parsed from inputBuf
 ; Output: (floatBuf exponent) += A
