@@ -4,12 +4,6 @@
     - **Bug Fix** Fix broken `CLRG`
         - broke when 'REGS' was replaced by 'RPN83REG'
     - **Bug Fix** Disallow `A-F` in non-BASE mode
-    - Store and recall TI-OS single-letter variables
-        - TI-OS supports 27 single-letter variables (A-Z, Theta) for real and
-          complex numbers
-        - extend `STO`, `RCL`, `STO{op}`, and `RCL{op}` to accept a
-          single-letter in addition to digits (e.g. `STO ALPHA A`, `RCL+
-          ALPHA B`)
     - **Bug Fix** Parse floating numbers equivalent to 0.0 more correctly.
         - The canonical internal representation of 0.0 in TI-OS has an exponent
           value of `$80` (i.e. 0), with all mantissa digits set to `0`.
@@ -26,6 +20,12 @@
           string "", "0.0", "000.0", "-000.000E1", "00.00E0") and correctly
           returns the canonical representation of 0.0 which works with
           `CkPosInt()`.
+    - Store and recall TI-OS single-letter variables
+        - TI-OS supports 27 single-letter variables (A-Z, Theta) for real and
+          complex numbers
+        - extend `STO`, `RCL`, `STO{op}`, and `RCL{op}` to accept a
+          single-letter in addition to digits (e.g. `STO ALPHA A`, `RCL+
+          ALPHA B`)
     - Add `RNDF`, `RNDG`, `RNDN` rounding functions
         - `RNDF`: round to current FIX/SCI/ENG digits
         - `RNDG`: round to 10 digits, removing guard digits
@@ -34,6 +34,15 @@
         - when a function does not accept a complex number, an error message is
           shown
         - change the message from `Err:Domain` to `Err:DataType`
+    - Add `DATE` menu hierarchy with Date, Time, DateTime, Clock functions
+        - TODO: add documentation
+        - TODO: polish the user interface
+        - TODO: add appropriate data type checking across all other functions to
+          prevent unexpected behaviro
+        - TODO: fix out of flash memory, expand to 3 flash pages
+        - TODO: add alternate string display modes for DateTime types
+        - TODO: disable RTC for 83+, 83+SE, which don't have real time clocks
+        - TODO: add sub-record extractors
 - 0.9.0 (2024-01-06)
     - **Breaking**: Change names and internal formats of various appVars
         - `STK` list variable replaced with `RPN83STK`
