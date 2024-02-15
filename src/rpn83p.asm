@@ -1308,7 +1308,7 @@ _DebugU32DEAsHex equ _DebugU32DEAsHexLabel-branchTableBase
 #include "const.asm"
 #include "integer32.asm"
 #include "integerconv32.asm"
-#include "integerformat32.asm"
+#include "formatinteger32.asm"
 #include "handlertab.asm"
 #include "arghandlertab.asm"
 
