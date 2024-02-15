@@ -2,7 +2,7 @@
 ; MIT License
 ; Copyright (c) 2024 Brian T. Park
 ;
-; Formatting routines similar to format1. asm but located in Flash Page 2.
+; Low-level formatting routines.
 ;
 ; Capitalized labels are intended to be exported to the branch table on flash
 ; page 0. Lowercased labels are intended to be local to the current flash page.

@@ -1326,6 +1326,7 @@ defpage(1)
 #include "crc.asm"
 #include "errorcode.asm"
 #include "print1.asm"
+#include "format1.asm"
 #include "input1.asm"
 #include "inputdate1.asm"
 #include "arg1.asm"
