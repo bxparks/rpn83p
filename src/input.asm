@@ -48,7 +48,7 @@ closeInput:
     res inputBufFlagsClosedEmpty, (iy + inputBufFlags)
     ret
 closeInputEditing:
-    bcall(_CloseInputBuf) ; OP1/OP2=real or complex number
+    bcall(_ParseAndClearInputBuf) ; OP1/OP2:RpnObject
     call stoX
     res rpnFlagsEditing, (iy + rpnFlags)
     ret

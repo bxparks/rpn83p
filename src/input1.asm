@@ -71,31 +71,31 @@ appendInputBufContinue:
 ; the assumption that new X or Y values should lift the stack.
 ;
 ; Input:
-;   - inputBuf: input buffer
+;   - inputBuf:PascalString
 ; Output:
-;   - OP1/OP2: value of inputBuf parsed into an RpnObject
+;   - OP1/OP2:RpnObject
 ;   - A: rpnObjectType
 ;   - inputBufFlagsClosedEmpty: set if inputBuf was an empty string when closed
 ;   - inputBuf cleared to empty string
 ; Throws: ErrInvalid if Date or DateTime is invalid
 ; Destroys: all, OP1, OP2, OP4
-CloseInputBuf: ; TODO: Rename this ParseInputBuf().
+ParseAndClearInputBuf:
     ld hl, inputBuf
     call GetFirstChar ; A=first char, or 0 if empty
     or a
-    jr nz, closeInputBufNonEmpty
-closeInputBufEmpty:
+    jr nz, parseAndClearInputBufNonEmpty
+parseAndClearInputBufEmpty:
     set inputBufFlagsClosedEmpty, (iy + inputBufFlags)
     call op1Set0PageOne
     jp ClearInputBuf
-closeInputBufNonEmpty:
+parseAndClearInputBufNonEmpty:
     res inputBufFlagsClosedEmpty, (iy + inputBufFlags)
     cp LlBrace ; '{'
-    jr z, closeInputBufRecord
-    call parseInputBufNumber ; OP1/OP2=float or complex
+    jr z, parseAndClearInputBufRecord
+    call parseInputBufNumber ; OP1/OP2=real or complex
     jp ClearInputBuf
-closeInputBufRecord:
-    call parseInputBufRecord ; HL=OP1
+parseAndClearInputBufRecord:
+    call parseInputBufRecord ; OP1/OP2:record
     jp ClearInputBuf
 
 ;------------------------------------------------------------------------------

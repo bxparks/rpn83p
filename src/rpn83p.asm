@@ -672,9 +672,9 @@ _ClearInputBufLabel:
 _ClearInputBuf equ _ClearInputBufLabel-branchTableBase
     .dw ClearInputBuf
     .db 1
-_CloseInputBufLabel:
-_CloseInputBuf equ _CloseInputBufLabel-branchTableBase
-    .dw CloseInputBuf
+_ParseAndClearInputBufLabel:
+_ParseAndClearInputBuf equ _ParseAndClearInputBufLabel-branchTableBase
+    .dw ParseAndClearInputBuf
     .db 1
 _AppendInputBufLabel:
 _AppendInputBuf equ _AppendInputBufLabel-branchTableBase
