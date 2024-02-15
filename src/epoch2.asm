@@ -20,7 +20,7 @@
 ; NOTE: If we restrict the 'year' component to be less than 10,000, then the
 ; maximum number of days is 3,652,425, which would fit inside an i32 or u32. So
 ; all the u40 routines below could be replaced by U32 routines from
-; integer32.asm routines if/when they are moved over to Flash Page 1. However,
+; integer32.asm routines if those were available on this Flash Page. However,
 ; when the epochDays are converted to epochSeconds, then we will exceed the
 ; maximum value of i32 or u32 in 68 or 136 years, respectively. So the u40
 ; routines would be required when working with seconds.
@@ -61,7 +61,7 @@ dateToInternalEpochDays:
     ; era=yearPrime/400; yearOfEra=yearPrime%400
     ; TODO: This formulation does not work for dates before 0001-03-01.
     ld bc, 400
-    call divHLByBC ; HL=era=yearPrime/400=[0,24]; DE=yearOfEra
+    call divHLByBCPageTwo ; HL=era=yearPrime/400=[0,24]; DE=yearOfEra
     ld (dateToEpochEra), hl ; (dateToEpochEra)=era
     ld (dateToEpochYearOfEra), de ; (dateToEpochYearOfEra)=yearOfEra
     ; monthPrime=(month<=2) ? month+9 : month-3; [0,11]
@@ -73,7 +73,7 @@ dateToInternalEpochDays:
     call daysUntilMonthPrime ; HL=daysUntilMonthPrime; destroys DE
     ; dayOfYearPrime=daysUntilMonthPrime+day-1
     ld a, (dateToEpochDay)
-    call addHLByA ; HL=dayOfYearPrime+day
+    call addHLByAPageTwo ; HL=dayOfYearPrime+day
     dec hl ; HL=dayOfYearPrime=dayOfYearPrime+day-1
     ; Long section to calculate dayOfEra:
     ; dayOfEra=365*yearOfEra + (yearOfEra/4) - (yearOfEra/100) + dayOfYearPrime
@@ -184,11 +184,11 @@ monthToMonthPrime:
 ; Destroys: DE
 daysUntilMonthPrime:
     ld bc, 153
-    call multHLByBC ; HL=monthPrime*153
+    call multHLByBCPageTwo ; HL=monthPrime*153
     inc hl
     inc hl ; HL=monthPrime*153+2
     ld c, 5
-    call divHLByC ; HL=(153*monthPrime+2)/5
+    call divHLByCPageTwo ; HL=(153*monthPrime+2)/5
     ret
 
 ;-----------------------------------------------------------------------------
@@ -249,18 +249,18 @@ convertU40DaysToU40Seconds:
 ;
 ; NOTE: If we restrict the 'year' component to be less than 10,000, then the
 ; maximum number of days is 3,652,425, which would fit inside an i32 or u32. So
-; all the u40 routines below could be replaced by U32 routines from baseops.asm
-; routines if/when they are moved over to Flash Page 1. However, when the
-; epochDays are converted to epochSeconds, then we will exceed the maximum
-; value of i32 or u32 in 68 or 136 years, respectively. So the u40 routines
-; would be required when working with seconds.
+; all the u40 routines below could be replaced by U32 routines from
+; integer32.asm routines if those were available on this Flash Page. However,
+; when the epochDays are converted to epochSeconds, then we will exceed the
+; maximum value of i32 or u32 in 68 or 136 years, respectively. So the u40
+; routines would be required when working with seconds.
 ;
 ; Input:
-;   - DE:u40=epochDays, must not be OPx
-;   - HL:pointer to Date{}, must not be OPx
+;   - DE:(u40*)=epochDays, must not be OPx
+;   - HL:(Date*), must not be OPx
 ; Output:
-;   - (HL) set to Date{}, must not be OPx
-;   - HL=HL+sizeof(Date)
+;   - HL=HL+sizeof(Date)=HL+4
+;   - (*HL) filled
 ; Destroys: A, BC, HL, OP3-OP6
 ; Preserves: DE
 epochToDateYearPrime equ OP3 ; u16
@@ -373,7 +373,7 @@ internalEpochDaysToDate:
     ; ==== Calculate yearPrime
     ld bc, 400
     ld hl, (epochToDateEra)
-    call multHLByBC ; HL=era*400
+    call multHLByBCPageTwo ; HL=era*400
     ld bc, (epochToDateYearOfEra)
     add hl, bc; HL=yearPrime=era*400+yearOfEra
     ld (epochToDateYearPrime), hl ; yearPrime=HL
@@ -437,7 +437,7 @@ internalEpochDaysToDate:
     inc hl
     inc hl ; HL=5*dayOfYearPrime+2
     ld c, 153
-    call divHLByC ; HL=monthPrime=(5*dayOfYearPrime+2)/153
+    call divHLByCPageTwo ; HL=monthPrime=(5*dayOfYearPrime+2)/153
     ld a, l
     ld (epochToDateMonthPrime), a ; monthPrime=L
     ; ==== Calculate daysUntilMonthPrime

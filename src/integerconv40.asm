@@ -47,7 +47,7 @@ ConvertU40ToOP1:
 convertU40ToOP1Loop:
     ld a, (hl)
     dec hl
-    call AddAToOP1 ; preserves BC
+    bcall(_AddAToOP1) ; preserves BC, HL
     djnz convertU40ToOP1Loop
     ;
     bcall(_PopRealO2) ; FPS=[OP1]; OP2=OP2
@@ -97,7 +97,7 @@ ConvertOP1ToI40:
 convertOP1ToI40Pos:
     ; check overflow of postive i40
     bcall(_PushRealO2)
-    call op2Set2Pow39PageOne
+    call op2Set2Pow39PageTwo
     bcall(_CpOP1OP2) ; if OP1 >= 2^39: CF=0
     jr nc, convertOP1ToU40Error
     bcall(_PopRealO2)
@@ -144,7 +144,7 @@ convertOP1ToU40StatusCode:
     bcall(_CkOP1Pos) ; if OP1<0: ZF=0
     jr nz, convertOP1ToU40StatusCodeNegative
     ; check too big
-    call op2Set2Pow40PageOne
+    call op2Set2Pow40PageTwo
     bcall(_CpOP1OP2) ; if OP1 >= 2^40: CF=0
     jr nc, convertOP1ToU40StatusCodeTooBig
     ; check has fraction
@@ -176,7 +176,7 @@ convertOP1ToU40StatusCodeHasFrac:
 
 ; Description: Convert floating point OP1 to a u40, in situ. This routine
 ; assume that OP1 is a floating point number between [0, 2^40). Fractional
-; digits are ignored when converting to u40 integer. Use convertOP1ToU40() to
+; digits are ignored when converting to u40 integer. Use ConvertOP1ToU40() to
 ; perform a validation check that throws an exception.
 ; Input:
 ;   - OP1: unsigned 32-bit integer as a floating point number

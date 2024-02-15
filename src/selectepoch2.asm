@@ -54,7 +54,7 @@ SelectCustomEpochDate:
 ; Input: OP1: RpnDate{}
 ; Output: (epochDate) updated
 SetCustomEpochDate:
-    call checkOp1DatePageOne ; ZF=1 if CP1 is an RpnDate
+    call checkOp1DatePageTwo ; ZF=1 if CP1 is an RpnDate
     jr nz, setCustomEpochDateErr
     ld hl, OP1+1
     call setEpochDateCustom

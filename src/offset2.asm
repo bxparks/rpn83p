@@ -177,7 +177,7 @@ offsetHourToOffsetPos:
     ; extract whole hh
     bcall(_RndGuard) ; eliminating invisible rounding errors
     ; check within +/-24:00
-    call op2Set24PageOne ; OP2=24
+    call op2Set24PageTwo ; OP2=24
     bcall(_CpOP1OP2) ; CF=1 if OP1<OP2
     jr nc, offsetHourToOffsetErr
     ; check offsetHour is a multiple of 15 minutes
@@ -383,9 +383,9 @@ epochSecondsToOffsetDateTime:
 ;   - OP1:RpnOffsetDateTime=RpnOffsetDateTime+seconds
 ; Destroys: all, OP1, OP2, OP3-OP6
 AddRpnOffsetDateTimeBySeconds:
-    call checkOp1OffsetDateTimePageOne ; ZF=1 if CP1 is an RpnOffsetDateTime
+    call checkOp1OffsetDateTimePageTwo ; ZF=1 if CP1 is an RpnOffsetDateTime
     jr z, addRpnOffsetDateTimeBySecondsAdd
-    call cp1ExCp3PageOne ; CP1=rpnOffsetDateTime; CP3=seconds
+    call cp1ExCp3PageTwo ; CP1=rpnOffsetDateTime; CP3=seconds
 addRpnOffsetDateTimeBySecondsAdd:
     ; CP1=rpnOffsetDateTime, CP3=seconds
     ; Push rpnOffsetDateTime to FPS, which also removes the 2-byte gap between
@@ -393,7 +393,7 @@ addRpnOffsetDateTimeBySecondsAdd:
     call PushRpnObject1 ; FPS=[rpnOffsetDateTime]
     push hl ; stack=[rpnOffsetDateTime]
     ; convert OP3 to i40, then push to FPS
-    call op3ToOp1PageOne ; OP1:real=seconds
+    call op3ToOp1PageTwo ; OP1:real=seconds
     call ConvertOP1ToI40 ; OP1:(i40*)=seconds
     call pushRaw9Op1 ; FPS=[rpnOffsetDateTime,seconds]; HL=seconds
     ex (sp), hl ; stack=[seconds]; HL=rpnOffsetDateTime
@@ -437,13 +437,13 @@ addRpnOffsetDateTimeBySecondsAdd:
 ;   - OP1:(RpnOffsetDateTime-seconds) or (RpnOffsetDateTime-RpnOffsetDateTime).
 ; Destroys: OP1, OP2, OP3-OP6
 SubRpnOffsetDateTimeByRpnOffsetDateTimeOrSeconds:
-    call checkOp3OffsetDateTimePageOne ; ZF=1 if type(OP3)==OffsetDateTime
+    call checkOp3OffsetDateTimePageTwo ; ZF=1 if type(OP3)==OffsetDateTime
     jr z, subRpnOffsetDateTimeByRpnOffsetDateTime
 subRpnOffsetDateTimeBySeconds:
     ; invert the sign of OP3, then call addRpnOffsetDateTimeBySecondsAdd()
-    call cp1ExCp3PageOne
+    call cp1ExCp3PageTwo
     bcall(_InvOP1S) ; OP1=-OP1
-    call cp1ExCp3PageOne
+    call cp1ExCp3PageTwo
     jr addRpnOffsetDateTimeBySecondsAdd
 subRpnOffsetDateTimeByRpnOffsetDateTime:
     ; save copies of X, Y OffsetDateTime to FPS
@@ -485,9 +485,9 @@ subRpnOffsetDateTimeByRpnOffsetDateTime:
 ;   - OP1; RpnOffsetDatetime
 ; Destroys: all, OP3-OP6
 ConvertRpnDateTimeToOffset:
-    call checkOp1DateTimePageOne ; ZF=1 if CP1 is an RpnDateTime
+    call checkOp1DateTimePageTwo ; ZF=1 if CP1 is an RpnDateTime
     jr z, convertRpnDateTimeToOffsetConvert
-    call cp1ExCp3PageOne ; CP1=rpnDateTime; CP3=rpnOffset
+    call cp1ExCp3PageTwo ; CP1=rpnDateTime; CP3=rpnOffset
 convertRpnDateTimeToOffsetConvert:
     ; CP1=rpnDateTime; CP3=rpnOffset
     call PushRpnObject1 ; FPS=[rpnDateTime]; HL=rpnDateTime
@@ -508,7 +508,7 @@ convertRpnDateTimeToOffsetConvert:
     ld (hl), a
     inc hl
     call epochSecondsToOffsetDateTime ; HL=OP1=offsetDateTime
-    call expandOp1ToOp2PageOne
+    call expandOp1ToOp2PageTwo
     ; clean up FPS
     call dropRaw9 ; FPS=[rpnDateTime,rpnOffset]
     call dropRaw9 ; FPS=[rpnDateTime]
@@ -523,12 +523,12 @@ convertRpnDateTimeToOffsetConvert:
 ;   - OP1; RpnOffsetDatetime
 ; Destroys: all, OP3-OP6
 ConvertRpnDateTimeToReal:
-    call checkOp1DateTimePageOne ; ZF=1 if CP1 is an RpnDateTime
+    call checkOp1DateTimePageTwo ; ZF=1 if CP1 is an RpnDateTime
     jr z, convertRpnDateTimeToRealConvert
-    call cp1ExCp3PageOne ; CP1=rpnDateTime; CP3=offsetHour
+    call cp1ExCp3PageTwo ; CP1=rpnDateTime; CP3=offsetHour
 convertRpnDateTimeToRealConvert:
     call PushRpnObject1 ; FPS=[rpnDateTime]; HL=rpnDateTime
-    call op3ToOp1PageOne ; OP1=offsetHour
+    call op3ToOp1PageTwo ; OP1=offsetHour
     ; convert offsetHour to RpnOffset
     ld hl, OP3
     ld a, rpnObjectTypeOffset
@@ -550,9 +550,9 @@ convertRpnDateTimeToRealConvert:
 ;   - OP1; RpnOffsetDatetime
 ; Destroys: all, OP3-OP6
 ConvertRpnOffsetDateTimeToOffset:
-    call checkOp1OffsetDateTimePageOne ; ZF=1 if CP1 is an RpnOffsetDateTime
+    call checkOp1OffsetDateTimePageTwo ; ZF=1 if CP1 is an RpnOffsetDateTime
     jr z, convertRpnOffsetDateTimeToOffsetConvert
-    call cp1ExCp3PageOne ; CP1=rpnOffsetDateTime; CP3=rpnOffset
+    call cp1ExCp3PageTwo ; CP1=rpnOffsetDateTime; CP3=rpnOffset
 convertRpnOffsetDateTimeToOffsetConvert:
     ; CP1=rpnOffsetDateTime; CP3=rpnOffset
     call PushRpnObject1 ; FPS=[rpnOffsetDateTime]; HL=rpnOffsetDateTime
@@ -573,7 +573,7 @@ convertRpnOffsetDateTimeToOffsetConvert:
     ld (hl), a
     inc hl
     call epochSecondsToOffsetDateTime ; HL=OP1=offsetDateTime
-    call expandOp1ToOp2PageOne
+    call expandOp1ToOp2PageTwo
     ; clean up FPS
     call dropRaw9 ; FPS=[rpnOffsetDateTime,rpnOffset]
     call dropRaw9 ; FPS=[rpnOffsetDateTime]
@@ -588,12 +588,12 @@ convertRpnOffsetDateTimeToOffsetConvert:
 ;   - OP1; RpnOffsetDatetime
 ; Destroys: all, OP3-OP6
 ConvertRpnOffsetDateTimeToReal:
-    call checkOp1OffsetDateTimePageOne ; ZF=1 if CP1 is an RpnOffsetDateTime
+    call checkOp1OffsetDateTimePageTwo ; ZF=1 if CP1 is an RpnOffsetDateTime
     jr z, convertRpnOffsetDateTimeToRealConvert
-    call cp1ExCp3PageOne ; CP1=rpnOffsetDateTime; CP3=offsetHour
+    call cp1ExCp3PageTwo ; CP1=rpnOffsetDateTime; CP3=offsetHour
 convertRpnOffsetDateTimeToRealConvert:
     call PushRpnObject1 ; FPS=[rpnOffsetDateTime]; HL=rpnOffsetDateTime
-    call op3ToOp1PageOne ; OP1=offsetHour
+    call op3ToOp1PageTwo ; OP1=offsetHour
     ; convert offsetHour to RpnOffset
     ld hl, OP3
     ld a, rpnObjectTypeOffset

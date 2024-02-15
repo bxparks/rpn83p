@@ -14,8 +14,8 @@ rpn83p.8xk: $(SRCS) Makefile
 #rpn83p.8xp: $(SRCS) Makefile
 #	$(SPASM) -I $(SPASM_INC) -N rpn83p.asm $@
 
-rpn83p.lst: $(SRCS) Makefile
-	$(SPASM) -I $(SPASM_INC) -N -T rpn83p.asm rpn83p.8xp
+rpn83p.lst: $(SRCS) Makefile rpn83p.8xk
+	$(SPASM) -I $(SPASM_INC) -N -T rpn83p.asm rpn83p.8xk
 
 menudef.asm: menudef.txt ../tools/compilemenu.py
 	../tools/compilemenu.py -o $@ $<

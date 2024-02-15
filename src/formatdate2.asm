@@ -282,8 +282,8 @@ formatU16ToD4:
     ld b, 4
     ld c, 10
 formatU16ToD4Loop:
-    call divHLByC ; HL=quotient; A=remainder; preserves BC
-    call convertAToCharPageOne ; A=digit
+    call divHLByCPageTwo ; HL=quotient; A=remainder; preserves BC
+    call convertAToCharPageTwo ; A=digit
     ld (de), a
     inc de
     djnz formatU16ToD4Loop
@@ -291,7 +291,7 @@ formatU16ToD4Loop:
     ex de, hl ; HL=newDestPointer
     ex (sp), hl ; stack=[HL,newDestPointer], HL=origDestPointer
     ld b, 4
-    call reverseStringPageOne
+    call reverseStringPageTwo
     pop de ; stack=[HL]; DE=newDestPointer
     pop hl ; stack=[]; HL=orig HL
     ret
@@ -312,20 +312,20 @@ formatU8ToD2:
 formatU8ToD2TwoDigits:
     ld d, a
     ld e, 10
-    call divDByE ; D=quotient; A=remainder
+    call divDByEPageTwo ; D=quotient; A=remainder
     ; digit0
-    call convertAToCharPageOne ; A=digit
+    call convertAToCharPageTwo ; A=digit
     inc hl
     ld (hl), a
     ; digit1
-    call divDByE ; D=quotient; A=remainder
-    call convertAToCharPageOne ; A=digit
+    call divDByEPageTwo ; D=quotient; A=remainder
+    call convertAToCharPageTwo ; A=digit
     dec hl
     ld (hl), a
     inc hl
     jr formatU8ToD2End
 formatU8ToD2SingleDigit:
-    call convertAToCharPageOne ; A=digit
+    call convertAToCharPageTwo ; A=digit
     ld (hl), a
 formatU8ToD2End:
     inc hl
@@ -360,7 +360,7 @@ formatI8ToD2:
 ;   - B:numChars
 ; Output: string in (HL) reversed
 ; Destroys: A, B, DE, HL
-reverseStringPageOne:
+reverseStringPageTwo:
     ; test for 0-length string
     ld a, b
     or a
@@ -375,7 +375,7 @@ reverseStringPageOne:
     ; set up loop
     srl b ; B = num / 2
     ret z ; NOTE: Failing to check for this zero took 2 days to debug!
-reverseStringPageOneLoop:
+reverseStringPageTwoLoop:
     ld a, (de)
     ld c, (hl)
     ld (hl), a
@@ -383,5 +383,5 @@ reverseStringPageOneLoop:
     ld (de), a
     inc hl
     dec de
-    djnz reverseStringPageOneLoop
+    djnz reverseStringPageTwoLoop
     ret

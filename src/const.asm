@@ -2,7 +2,7 @@
 ; MIT License
 ; Copyright (c) 2023 Brian T. Park
 ;
-; Constants, usually floating point.
+; Floating point constants for routines in Flash Page 0.
 ;-----------------------------------------------------------------------------
 
 ; Description: Set OP1 to -1.0, avoiding the overhead of bcall.

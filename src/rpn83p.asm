@@ -919,54 +919,6 @@ _ProbComb equ _ProbCombLabel-branchTableBase
     .dw ProbComb
     .db 1
 
-; fps1.asm
-_PushRpnObject1Label:
-_PushRpnObject1 equ _PushRpnObject1Label-branchTableBase
-    .dw PushRpnObject1
-    .db 1
-_PopRpnObject1Label:
-_PopRpnObject1 equ _PopRpnObject1Label-branchTableBase
-    .dw PopRpnObject1
-    .db 1
-_PushRpnObject3Label:
-_PushRpnObject3 equ _PushRpnObject3Label-branchTableBase
-    .dw PushRpnObject3
-    .db 1
-_PopRpnObject3Label:
-_PopRpnObject3 equ _PopRpnObject3Label-branchTableBase
-    .dw PopRpnObject3
-    .db 1
-_PushRpnObject5Label:
-_PushRpnObject5 equ _PushRpnObject5Label-branchTableBase
-    .dw PushRpnObject5
-    .db 1
-_PopRpnObject5Label:
-_PopRpnObject5 equ _PopRpnObject5Label-branchTableBase
-    .dw PopRpnObject5
-    .db 1
-
-; format1.asm
-_FormatDateRecordLabel:
-_FormatDateRecord equ _FormatDateRecord-branchTableBase
-    .dw FormatDateRecord
-    .db 1
-_FormatTimeRecordLabel:
-_FormatTimeRecord equ _FormatTimeRecord-branchTableBase
-    .dw FormatTimeRecord
-    .db 1
-_FormatDateTimeRecordLabel:
-_FormatDateTimeRecord equ _FormatDateTimeRecord-branchTableBase
-    .dw FormatDateTimeRecord
-    .db 1
-_FormatOffsetRecordLabel:
-_FormatOffsetRecord equ _FormatOffsetRecord-branchTableBase
-    .dw FormatOffsetRecord
-    .db 1
-_FormatOffsetDateTimeRecordLabel:
-_FormatOffsetDateTimeRecord equ _FormatOffsetDateTimeRecord-branchTableBase
-    .dw FormatOffsetDateTimeRecord
-    .db 1
-
 ; complex1.asm
 _RectToComplexLabel:
 _RectToComplex equ _RectToComplexLabel-branchTableBase
@@ -1015,175 +967,250 @@ _FormatComplexPolarDeg equ _FormatComplexPolarDegLabel-branchTableBase
     .dw FormatComplexPolarDeg
     .db 1
 
-; date1.asm
+;-----------------------------------------------------------------------------
+
+; fps2.asm
+_PushRpnObject1Label:
+_PushRpnObject1 equ _PushRpnObject1Label-branchTableBase
+    .dw PushRpnObject1
+    .db 2
+_PopRpnObject1Label:
+_PopRpnObject1 equ _PopRpnObject1Label-branchTableBase
+    .dw PopRpnObject1
+    .db 2
+_PushRpnObject3Label:
+_PushRpnObject3 equ _PushRpnObject3Label-branchTableBase
+    .dw PushRpnObject3
+    .db 2
+_PopRpnObject3Label:
+_PopRpnObject3 equ _PopRpnObject3Label-branchTableBase
+    .dw PopRpnObject3
+    .db 2
+_PushRpnObject5Label:
+_PushRpnObject5 equ _PushRpnObject5Label-branchTableBase
+    .dw PushRpnObject5
+    .db 2
+_PopRpnObject5Label:
+_PopRpnObject5 equ _PopRpnObject5Label-branchTableBase
+    .dw PopRpnObject5
+    .db 2
+
+; formatdate2.asm
+_FormatDateRecordLabel:
+_FormatDateRecord equ _FormatDateRecord-branchTableBase
+    .dw FormatDateRecord
+    .db 2
+_FormatTimeRecordLabel:
+_FormatTimeRecord equ _FormatTimeRecord-branchTableBase
+    .dw FormatTimeRecord
+    .db 2
+_FormatDateTimeRecordLabel:
+_FormatDateTimeRecord equ _FormatDateTimeRecord-branchTableBase
+    .dw FormatDateTimeRecord
+    .db 2
+_FormatOffsetRecordLabel:
+_FormatOffsetRecord equ _FormatOffsetRecord-branchTableBase
+    .dw FormatOffsetRecord
+    .db 2
+_FormatOffsetDateTimeRecordLabel:
+_FormatOffsetDateTimeRecord equ _FormatOffsetDateTimeRecord-branchTableBase
+    .dw FormatOffsetDateTimeRecord
+    .db 2
+
+; date2.asm
 _InitDateLabel:
 _InitDate equ _InitDateLabel-branchTableBase
     .dw InitDate
-    .db 1
+    .db 2
+; Validation of various records.
+_ValidateDateLabel:
+_ValidateDate equ _ValidateDateLabel-branchTableBase
+    .dw ValidateDate
+    .db 2
+_ValidateTimeLabel:
+_ValidateTime equ _ValidateTimeLabel-branchTableBase
+    .dw ValidateTime
+    .db 2
+_ValidateDateTimeLabel:
+_ValidateDateTime equ _ValidateDateTimeLabel-branchTableBase
+    .dw ValidateDateTime
+    .db 2
+_ValidateOffsetLabel:
+_ValidateOffset equ _ValidateOffsetLabel-branchTableBase
+    .dw ValidateOffset
+    .db 2
+_ValidateOffsetDateTimeLabel:
+_ValidateOffsetDateTime equ _ValidateOffsetDateTimeLabel-branchTableBase
+    .dw ValidateOffsetDateTime
+    .db 2
 ; Year functions
 _IsLeapLabel:
 _IsLeap equ _IsLeapLabel-branchTableBase
     .dw IsLeap
-    .db 1
+    .db 2
 ; RpnDate and days functions
 _DayOfWeekIsoLabel:
 _DayOfWeekIso equ _DayOfWeekIsoLabel-branchTableBase
     .dw DayOfWeekIso
-    .db 1
+    .db 2
 _RpnDateToEpochDaysLabel:
 _RpnDateToEpochDays equ _RpnDateToEpochDaysLabel-branchTableBase
     .dw RpnDateToEpochDays
-    .db 1
+    .db 2
 _RpnDateToEpochSecondsLabel:
 _RpnDateToEpochSeconds equ _RpnDateToEpochSecondsLabel-branchTableBase
     .dw RpnDateToEpochSeconds
-    .db 1
+    .db 2
 _EpochDaysToRpnDateLabel:
 _EpochDaysToRpnDate equ _EpochDaysToRpnDateLabel-branchTableBase
     .dw EpochDaysToRpnDate
-    .db 1
+    .db 2
 _AddRpnDateByDaysLabel:
 _AddRpnDateByDays equ _AddRpnDateByDaysLabel-branchTableBase
     .dw AddRpnDateByDays
-    .db 1
+    .db 2
 _SubRpnDateByRpnDateOrDaysLabel:
 _SubRpnDateByRpnDateOrDays equ _SubRpnDateByRpnDateOrDaysLabel-branchTableBase
     .dw SubRpnDateByRpnDateOrDays
-    .db 1
+    .db 2
 ; RpnDate like and seconds functions
 _RpnDateTimeToEpochSecondsLabel:
 _RpnDateTimeToEpochSeconds equ _RpnDateTimeToEpochSecondsLabel-branchTableBase
     .dw RpnDateTimeToEpochSeconds
-    .db 1
+    .db 2
 _EpochSecondsToRpnDateTimeLabel:
 _EpochSecondsToRpnDateTime equ _EpochSecondsToRpnDateTimeLabel-branchTableBase
     .dw EpochSecondsToRpnDateTime
-    .db 1
+    .db 2
 _EpochSecondsToRpnDateLabel:
 _EpochSecondsToRpnDate equ _EpochSecondsToRpnDateLabel-branchTableBase
     .dw EpochSecondsToRpnDate
-    .db 1
+    .db 2
 _AddRpnDateTimeBySecondsLabel:
 _AddRpnDateTimeBySeconds equ _AddRpnDateTimeBySecondsLabel-branchTableBase
     .dw AddRpnDateTimeBySeconds
-    .db 1
+    .db 2
 _SubRpnDateTimeByRpnDateTimeOrSecondsLabel:
 _SubRpnDateTimeByRpnDateTimeOrSeconds equ _SubRpnDateTimeByRpnDateTimeOrSecondsLabel-branchTableBase
     .dw SubRpnDateTimeByRpnDateTimeOrSeconds
-    .db 1
+    .db 2
+
+; selectepoch2.asm
 ; Epoch selection functions
 _SelectUnixEpochDateLabel:
 _SelectUnixEpochDate equ _SelectUnixEpochDateLabel-branchTableBase
     .dw SelectUnixEpochDate
-    .db 1
+    .db 2
 _SelectNtpEpochDateLabel:
 _SelectNtpEpochDate equ _SelectNtpEpochDateLabel-branchTableBase
     .dw SelectNtpEpochDate
-    .db 1
+    .db 2
 _SelectGpsEpochDateLabel:
 _SelectGpsEpochDate equ _SelectGpsEpochDateLabel-branchTableBase
     .dw SelectGpsEpochDate
-    .db 1
+    .db 2
 _SelectTiosEpochDateLabel:
 _SelectTiosEpochDate equ _SelectTiosEpochDateLabel-branchTableBase
     .dw SelectTiosEpochDate
-    .db 1
+    .db 2
 _SelectCustomEpochDateLabel:
 _SelectCustomEpochDate equ _SelectCustomEpochDateLabel-branchTableBase
     .dw SelectCustomEpochDate
-    .db 1
+    .db 2
 ; Custom epoch date functions
 _SetCustomEpochDateLabel:
 _SetCustomEpochDate equ _SetCustomEpochDateLabel-branchTableBase
     .dw SetCustomEpochDate
-    .db 1
+    .db 2
 _GetCustomEpochDateLabel:
 _GetCustomEpochDate equ _GetCustomEpochDateLabel-branchTableBase
     .dw GetCustomEpochDate
-    .db 1
+    .db 2
 
-; offset1.asm
+; offset2.asm
 _RpnOffsetToSecondsLabel:
 _RpnOffsetToSeconds equ _RpnOffsetToSecondsLabel-branchTableBase
     .dw RpnOffsetToSeconds
-    .db 1
+    .db 2
 _RpnOffsetDateTimeToEpochSecondsLabel:
 _RpnOffsetDateTimeToEpochSeconds equ _RpnOffsetDateTimeToEpochSecondsLabel-branchTableBase
     .dw RpnOffsetDateTimeToEpochSeconds
-    .db 1
+    .db 2
 _EpochSecondsToRpnOffsetDateTimeLabel:
 _EpochSecondsToRpnOffsetDateTime equ _EpochSecondsToRpnOffsetDateTimeLabel-branchTableBase
     .dw EpochSecondsToRpnOffsetDateTime
-    .db 1
+    .db 2
 _AddRpnOffsetDateTimeBySecondsLabel:
 _AddRpnOffsetDateTimeBySeconds equ _AddRpnOffsetDateTimeBySecondsLabel-branchTableBase
     .dw AddRpnOffsetDateTimeBySeconds
-    .db 1
+    .db 2
 _SubRpnOffsetDateTimeByRpnOffsetDateTimeOrSecondsLabel:
 _SubRpnOffsetDateTimeByRpnOffsetDateTimeOrSeconds equ _SubRpnOffsetDateTimeByRpnOffsetDateTimeOrSecondsLabel-branchTableBase
     .dw SubRpnOffsetDateTimeByRpnOffsetDateTimeOrSeconds
-    .db 1
+    .db 2
 _ConvertRpnDateTimeToOffsetLabel:
 _ConvertRpnDateTimeToOffset equ _ConvertRpnDateTimeToOffsetLabel-branchTableBase
     .dw ConvertRpnDateTimeToOffset
-    .db 1
+    .db 2
 _ConvertRpnDateTimeToRealLabel:
 _ConvertRpnDateTimeToReal equ _ConvertRpnDateTimeToRealLabel-branchTableBase
     .dw ConvertRpnDateTimeToReal
-    .db 1
+    .db 2
 _ConvertRpnOffsetDateTimeToOffsetLabel:
 _ConvertRpnOffsetDateTimeToOffset equ _ConvertRpnOffsetDateTimeToOffsetLabel-branchTableBase
     .dw ConvertRpnOffsetDateTimeToOffset
-    .db 1
+    .db 2
 _ConvertRpnOffsetDateTimeToRealLabel:
 _ConvertRpnOffsetDateTimeToReal equ _ConvertRpnOffsetDateTimeToRealLabel-branchTableBase
     .dw ConvertRpnOffsetDateTimeToReal
-    .db 1
+    .db 2
 
-; zone1.asm
+; zone2.asm
 _SetTimeZoneLabel:
 _SetTimeZone equ _SetTimeZoneLabel-branchTableBase
     .dw SetTimeZone
-    .db 1
+    .db 2
 _GetTimeZoneLabel:
 _GetTimeZone equ _GetTimeZoneLabel-branchTableBase
     .dw GetTimeZone
-    .db 1
+    .db 2
 
-; rtc1.asm
+; rtc2.asm
 _RtcInitLabel:
 _RtcInit equ _RtcInitLabel-branchTableBase
     .dw RtcInit
-    .db 1
+    .db 2
 _RtcGetNowLabel:
 _RtcGetNow equ _RtcGetNowLabel-branchTableBase
     .dw RtcGetNow
-    .db 1
+    .db 2
 _RtcGetDateLabel:
 _RtcGetDate equ _RtcGetDateLabel-branchTableBase
     .dw RtcGetDate
-    .db 1
+    .db 2
 _RtcGetTimeLabel:
 _RtcGetTime equ _RtcGetTimeLabel-branchTableBase
     .dw RtcGetTime
-    .db 1
+    .db 2
 _RtcGetOffsetDateTimeLabel:
 _RtcGetOffsetDateTime equ _RtcGetOffsetDateTimeLabel-branchTableBase
     .dw RtcGetOffsetDateTime
-    .db 1
+    .db 2
 ;
 _RtcSetClockLabel:
 _RtcSetClock equ _RtcSetClockLabel-branchTableBase
     .dw RtcSetClock
-    .db 1
+    .db 2
 _RtcSetTimeZoneLabel:
 _RtcSetTimeZone equ _RtcSetTimeZoneLabel-branchTableBase
     .dw RtcSetTimeZone
-    .db 1
+    .db 2
 _RtcGetTimeZoneLabel:
 _RtcGetTimeZone equ _RtcGetTimeZoneLabel-branchTableBase
     .dw RtcGetTimeZone
-    .db 1
+    .db 2
+
+;-----------------------------------------------------------------------------
 
 #ifdef DEBUG
 ; debug.asm
@@ -1249,6 +1276,8 @@ _DebugU32DEAsHex equ _DebugU32DEAsHexLabel-branchTableBase
     .db 1
 #endif
 
+;-----------------------------------------------------------------------------
+
 #include "main.asm"
 #include "mainparser.asm"
 #include "handlers.asm"
@@ -1304,28 +1333,39 @@ defpage(1)
 #include "cstring1.asm"
 #include "pstring1.asm"
 #include "memory1.asm"
-#include "fps1.asm"
 #include "float1.asm"
 #include "integer1.asm"
 #include "integerconv1.asm"
-#include "integer40.asm"
-#include "integerconv40.asm"
-#include "format1.asm"
 #include "const1.asm"
 #include "complex1.asm"
 #include "complexformat1.asm"
 #include "tvm.asm"
 #include "hms.asm"
 #include "prob.asm"
-#include "epoch1.asm"
-#include "selectepoch1.asm"
-#include "date1.asm"
-#include "offset1.asm"
-#include "zone1.asm"
-#include "rtc1.asm"
 #ifdef DEBUG
 #include "debug.asm"
 #endif
+
+;-----------------------------------------------------------------------------
+; Flash Page 2
+;-----------------------------------------------------------------------------
+
+defpage(2)
+
+#include "selectepoch2.asm"
+#include "epoch2.asm"
+#include "date2.asm"
+#include "offset2.asm"
+#include "zone2.asm"
+#include "rtc2.asm"
+#include "formatdate2.asm"
+#include "integer40.asm"
+#include "integerconv40.asm"
+#include "fps2.asm"
+#include "format2.asm"
+#include "memory2.asm"
+#include "const2.asm"
+#include "integer2.asm"
 
 .end
 

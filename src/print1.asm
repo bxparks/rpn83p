@@ -2,8 +2,7 @@
 ; MIT License
 ; Copyright (c) 2023 Brian T. Park
 ;
-; Print routines similar to print.asm and common.asm but located in Flash Page
-; 1 so that they can be used by code in this flash page.
+; Print routines similar to print.asm but located in Flash Page 1.
 ;
 ; Capitalized labels are intended to be exported to the branch table on flash
 ; page 0. Lowercased labels are intended to be local to the current flash page.
@@ -206,8 +205,7 @@ putPSPageOneLoop:
 
 ;------------------------------------------------------------------------------
 
-; Description: Inlined version of bcall(_PutS), identical to putS(), but
-; located in Flash Page 1.
+; Description: Inlined version of bcall(_PutS), identical to putS().
 ;
 ; Input: HL: pointer to C-string
 ; Output:

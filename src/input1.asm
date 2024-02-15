@@ -1161,7 +1161,7 @@ parseInputBufOffset:
     push de
     call parseOffset
     pop hl ; HL=OP1+1
-    call validateOffset
+    bcall(_ValidateOffset)
     ret
 parseInputBufDate:
     ld de, OP1
@@ -1171,7 +1171,7 @@ parseInputBufDate:
     push de
     call parseDate
     pop hl ; HL=OP1+1
-    call validateDate
+    bcall(_ValidateDate)
     ret
 parseInputBufDateTime:
     ld de, OP1
@@ -1181,7 +1181,7 @@ parseInputBufDateTime:
     push de
     call parseDateTime
     pop hl ; HL=OP1+1
-    call validateDateTime
+    bcall(_ValidateDateTime)
     ret
 parseInputBufOffsetDateTime:
     ld de, OP1
@@ -1191,6 +1191,6 @@ parseInputBufOffsetDateTime:
     push de
     call parseOffsetDateTime
     pop hl ; HL=OP1+1
-    call validateOffsetDateTime
+    bcall(_ValidateOffsetDateTime)
     call expandOp1ToOp2PageOne ; sizeof(OffsetDateTime)>9
     ret

@@ -25,7 +25,7 @@ InitDate:
 
 ; Description: Check if OP1 is a RpnDate.
 ; Output: ZF=1 if RpnDate
-checkOp1DatePageOne:
+checkOp1DatePageTwo:
     ld a, (OP1)
     and $1f
     cp rpnObjectTypeDate
@@ -33,7 +33,7 @@ checkOp1DatePageOne:
 
 ; Description: Check if OP3 is a RpnDate.
 ; Output: ZF=1 if RpnDate
-checkOp3DatePageOne:
+checkOp3DatePageTwo:
     ld a, (OP3)
     and $1f
     cp rpnObjectTypeDate
@@ -41,7 +41,7 @@ checkOp3DatePageOne:
 
 ; Description: Check if OP1 is a RpnDateTime.
 ; Output: ZF=1 if RpnDateTime
-checkOp1DateTimePageOne:
+checkOp1DateTimePageTwo:
     ld a, (OP1)
     and $1f
     cp rpnObjectTypeDateTime
@@ -49,7 +49,7 @@ checkOp1DateTimePageOne:
 
 ; Description: Check if OP3 is a RpnDateTime.
 ; Output: ZF=1 if RpnDateTime
-checkOp3DateTimePageOne:
+checkOp3DateTimePageTwo:
     ld a, (OP3)
     and $1f
     cp rpnObjectTypeDateTime
@@ -57,7 +57,7 @@ checkOp3DateTimePageOne:
 
 ; Description: Check if OP1 is a RpnOffsetDateTime.
 ; Output: ZF=1 if RpnOffsetDateTime
-checkOp1OffsetDateTimePageOne:
+checkOp1OffsetDateTimePageTwo:
     ld a, (OP1)
     and $1f
     cp rpnObjectTypeOffsetDateTime
@@ -65,7 +65,7 @@ checkOp1OffsetDateTimePageOne:
 
 ; Description: Check if OP3 is a RpnOffsetDateTime.
 ; Output: ZF=1 if RpnOffsetDateTime
-checkOp3OffsetDateTimePageOne:
+checkOp3OffsetDateTimePageTwo:
     ld a, (OP3)
     and $1f
     cp rpnObjectTypeOffsetDateTime
@@ -87,7 +87,7 @@ checkOp3OffsetDateTimePageOne:
 ;   - HL=HL+4
 ; Destroys: A, BC, DE
 ; Throws: ErrInvalid on failure
-validateDate:
+ValidateDate:
     ld c, (hl)
     inc hl
     ld b, (hl)
@@ -150,7 +150,7 @@ maxDaysPerMonth:
 ; Destroys: A, HL
 ; Preserves: BC, DE
 ; Throws: Err:Invalid on failure
-validateTime:
+ValidateTime:
     ld a, (hl) ; A=hour
     inc hl
     cp 24
@@ -175,9 +175,9 @@ validateTimeErr:
 ; Destroys: A, HL
 ; Preserves: BC, DE
 ; Throws: Err:Invalid on failure
-validateDateTime:
-    call validateDate
-    call validateTime
+ValidateDateTime:
+    call ValidateDate
+    call ValidateTime
     ret
 
 ;-----------------------------------------------------------------------------
@@ -193,7 +193,7 @@ validateDateTime:
 ; Destroys: A, HL
 ; Preserves: BC, DE
 ; Throws: Err:Invalid on failure
-validateOffset:
+ValidateOffset:
     ; read hour, minute
     push bc
     ld b, (hl) ; B=hour
@@ -252,10 +252,10 @@ validateOffsetSigns:
 ; Destroys: A, HL
 ; Preserves: BC, DE
 ; Throws: Err:Invalid on failure
-validateOffsetDateTime:
-    call validateDate
-    call validateTime
-    call validateOffset
+ValidateOffsetDateTime:
+    call ValidateDate
+    call ValidateTime
+    call ValidateOffset
     ret
 
 ;-----------------------------------------------------------------------------
@@ -380,9 +380,11 @@ convertToTimeConvert:
 ; Output: OP1:Real=1 or 0
 ; Destroys: all
 IsLeap:
-    call convertOP1ToHLPageOne ; HL=u16(OP1) else Err:Domain
-    ld c, l
-    ld b, h
+    call ConvertOP1ToU40 ; HL=u40(OP1) else Err:Domain
+    ; TODO: Add domain check for 1<=year<=9999.
+    ld c, (hl)
+    inc hl
+    ld b, (hl)
     call isLeapYear ; CF=1 if leap
     jr c, isLeapTrue
     bcall(_OP1Set0)
@@ -408,7 +410,7 @@ isLeapYear:
     ld l, c
     ld h, b ; HL=year
     ld c, 100
-    call divHLByC ; HL=quotient; A=remainder
+    call divHLByCPageTwo ; HL=quotient; A=remainder
     or a ; if remainder==0: ZF=1
     pop bc ; stack=[HL,DE]; BC=year
     jr nz, isLeapYearTrue
@@ -417,7 +419,7 @@ isLeapYear:
     ld l, c
     ld h, b ; HL=year
     ld bc, 400
-    call divHLByBC ; HL=quotient; DE=remainder
+    call divHLByBCPageTwo ; HL=quotient; DE=remainder
     ld a, e
     or d ; if remainder==0: ZF=1
     pop bc ; stack=[HL,DE]; BC=year
@@ -619,9 +621,9 @@ EpochSecondsToRpnDate:
 ;   - OP1:RpnDate=RpnDate+days
 ; Destroys: all, OP1, OP2, OP3-OP6
 AddRpnDateByDays:
-    call checkOp1DatePageOne ; ZF=1 if CP1 is an RpnDate
+    call checkOp1DatePageTwo ; ZF=1 if CP1 is an RpnDate
     jr nz, addRpnDateByDaysAdd
-    call cp1ExCp3PageOne ; CP1=days; CP3=RpnDate
+    call cp1ExCp3PageTwo ; CP1=days; CP3=RpnDate
 addRpnDateByDaysAdd:
     ; CP1=days, CP3=RpnDate
     call ConvertOP1ToI40 ; HL=OP1=u40(days)
@@ -636,7 +638,7 @@ addRpnDateByDaysAdd:
     ld hl, OP1
     call addU40U40 ; HL=resultDays=dateDays+days
     ; convert days to OP1=RpnDate
-    call op1ToOp2PageOne ; OP2=resultDays
+    call op1ToOp2PageTwo ; OP2=resultDays
     ld de, OP2
     ld hl, OP1
     ld a, rpnObjectTypeDate
@@ -654,11 +656,11 @@ addRpnDateByDaysAdd:
 ;   - OP1:RpnDate(RpnDate-days) or i40(RpnDate-RpnDate).
 ; Destroys: OP1, OP2, OP3-OP6
 SubRpnDateByRpnDateOrDays:
-    call checkOp3DatePageOne ; ZF=1 if type(OP3)==Date
+    call checkOp3DatePageTwo ; ZF=1 if type(OP3)==Date
     jr z, subRpnDateByRpnDate
 subRpnDateByDays:
     ; exchage CP1/CP3, invert the sign, then call addRpnDateByDaysAdd()
-    call cp1ExCp3PageOne
+    call cp1ExCp3PageTwo
     bcall(_InvOP1S) ; OP1=-OP1
     jr addRpnDateByDaysAdd
 subRpnDateByRpnDate:
@@ -785,16 +787,16 @@ epochSecondsToDateTime:
 ;   - OP1:RpnDateTime=RpnDateTime+seconds
 ; Destroys: all, OP1, OP2, OP3-OP6
 AddRpnDateTimeBySeconds:
-    call checkOp1DateTimePageOne ; ZF=1 if CP1 is an RpnDateTime
+    call checkOp1DateTimePageTwo ; ZF=1 if CP1 is an RpnDateTime
     jr z, addRpnDateTimeBySecondsAdd
-    call cp1ExCp3PageOne ; CP1=rpnDateTime, CP3=seconds
+    call cp1ExCp3PageTwo ; CP1=rpnDateTime, CP3=seconds
 addRpnDateTimeBySecondsAdd:
     ; CP1=rpnDateTime, CP3=seconds
     ; Push rpnDateTime to FPS.
     call PushRpnObject1 ; FPS=[rpnDateTime]
     push hl ; stack=[rpnDateTime]
     ; convert OP3 to i40, then push to FPS
-    call op3ToOp1PageOne ; OP1:real=seconds
+    call op3ToOp1PageTwo ; OP1:real=seconds
     call ConvertOP1ToI40 ; OP1:u40=seconds
     call pushRaw9Op1 ; FPS=[rpnDateTime,seconds]; HL=seconds
     ex (sp), hl ; stack=[seconds]; HL=rpnDateTime
@@ -833,13 +835,13 @@ addRpnDateTimeBySecondsAdd:
 ;   - OP1:(RpnDateTime-seconds) or (RpnDateTime-RpnDateTime).
 ; Destroys: OP1, OP2, OP3-OP6
 SubRpnDateTimeByRpnDateTimeOrSeconds:
-    call checkOp3DateTimePageOne ; ZF=1 if type(OP3)==DateTime
+    call checkOp3DateTimePageTwo ; ZF=1 if type(OP3)==DateTime
     jr z, subRpnDateTimeByRpnDateTime
 subRpnDateTimeBySeconds:
     ; invert the sign of OP3, then call addRpnDateTimeBySecondsAdd()
-    call cp1ExCp3PageOne
+    call cp1ExCp3PageTwo
     bcall(_InvOP1S) ; OP1=-OP1
-    call cp1ExCp3PageOne
+    call cp1ExCp3PageTwo
     jr addRpnDateTimeBySecondsAdd
 subRpnDateTimeByRpnDateTime:
     ; convert OP3 to seconds on the FPS stack
