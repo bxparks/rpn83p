@@ -6,6 +6,12 @@
 ; to the u32 integers required by the BASE functions in baseops.asm.
 ;-----------------------------------------------------------------------------
 
+; TODO: Instead of accepting HL as the destination pointer, we should allocate
+; a temporary buffer in FPS, then perform the conversion, then copy the result
+; back into OP1. This eliminates potential memory conflicts, which allows the
+; various warnings below about "cannot be OP2" to be removed. See
+; integerconv40.asm which has been refactored along these lines.
+
 ;-----------------------------------------------------------------------------
 ; Convert TI floating point number to u8 or u32.
 ;-----------------------------------------------------------------------------

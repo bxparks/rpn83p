@@ -33,18 +33,16 @@ handleKeyNumberFirstDigit:
 handleKeyNumberCheckAppend:
     call isComplexDelimiter ; ZF=1 if complex delimiter
     jr z, handleKeyNumberAppend
-    bcall(_GetInputBufState) ; C=inputBufState; D=inputBufEEPos; E=inputBufEELen
-    bit inputBufStateEE, c
-    jr z, handleKeyNumberAppend
-handleKeyNumberAppendExponent:
-    ; Append A to exponent, if len(exponent)<2.
-    ld b, a ; save A
-    ld a, e ; A=inputBufEELen
+    ; Check if EE exists and check num digits in EE.
+    ld d, a ; D=saved A
+    bcall(_CheckInputBufEE) ; CF=1 if E exists; A=eeLen
+    jr nc, handleKeyNumberRestoreAppend
+    ; Check if eeLen<2.
     cp inputBufEEMaxLen
-    ld a, b ; restore A
     ret nc ; prevent more than 2 exponent digits
+handleKeyNumberRestoreAppend:
+    ld a, d ; A=restored
 handleKeyNumberAppend:
-    ; Try to append character
     bcall(_AppendInputBuf)
     ret
 
@@ -212,14 +210,12 @@ handleKeyDecPnt:
     ; Do nothing in BASE mode.
     bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
     ret nz
-    ; Check prior characters in the inputBuf.
-    bcall(_GetInputBufState) ; C=inputBufState; D=inputBufEEPos; E=inputBufEELen
-    ; Do nothing if a decimal point already exists.
-    bit inputBufStateDecimalPoint, c
-    ret nz
-    ; Also do nothing if 'E' exists. Exponents cannot have a decimal point.
-    bit inputBufStateEE, c
-    ret nz
+    ; Do nothing if decimal point already exists in the last number.
+    bcall(_CheckInputBufDecimalPoint) ; CF=1 if decimal exists
+    ret c
+    ; Do nothing if 'E' exists. Exponents cannot have a decimal point.
+    bcall(_CheckInputBufEE) ; CF=1 if E exists; A=eeLen
+    ret c
     ; try insert '.'
     ld a, '.'
     call handleKeyNumber
@@ -235,12 +231,15 @@ handleKeyEE:
     ; Do nothing in BASE mode.
     bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
     ret nz
+    ; Check if Comma and EE are swapped.
+    ld a, (commaEEMode)
+    cp commaEEModeSwapped
+    jr z, handleKeyCommaAlt
+handleKeyEEAlt:
     ; Check prior characters in the inputBuf.
-    bcall(_GetInputBufState) ; C=inputBufState; D=inputBufEEPos; E=inputBufEELen
-    ; Do nothing if EE already exists
-    bit inputBufStateEE, c
-    ret nz
-    ; try insert 'E'
+    bcall(_CheckInputBufEE) ; CF=1 if E exists; A=eeLen
+    ret c
+    ; Append 'E'
     ld a, Lexponent
     jp handleKeyNumber
 
@@ -273,6 +272,62 @@ handleKeyAngle:
     ld a, Ldegree
     call handleKeyNumber
     ret
+
+;-----------------------------------------------------------------------------
+
+handleKeyLBrace:
+    ; Do nothing in BASE mode.
+    bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
+    ret nz
+    bcall(_CheckInputBufStruct) ; CF=1 if inputBuf is a data struct
+    ret c ; return if already in data structure mode.
+    ld a, LlBrace
+    jp handleKeyNumber
+
+handleKeyRBrace:
+    ; Do nothing in BASE mode.
+    bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
+    ret nz
+    ; Check if in data record mode.
+    bcall(_CheckInputBufStruct) ; CF=1 if inputBuf is a data struct
+    ret nc ; return if *not* in data structure mode.
+    ; Check braceLevel
+    or a
+    ret z ; return if braceLevel<=0
+    ; RBrace allowed.
+    ld a, LrBrace
+    jp handleKeyNumber
+
+; Description: Handle the Comma button.
+; Input: (commaEEMode)
+; Output: (inputBuf) updated
+; Destroys: all
+handleKeyComma:
+    ; Do nothing in BASE mode.
+    bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
+    ret nz
+    ; Check if Comma and EE are swapped.
+    ld a, (commaEEMode)
+    cp commaEEModeSwapped
+    jr z, handleKeyEEAlt
+handleKeyCommaAlt:
+    ; Check if in data record mode.
+    bcall(_CheckInputBufStruct) ; CF=1 if inputBuf is a data struct
+    ret nc ; return if not in data structure mode
+    or a
+    ret z ; return if braceLevel==0
+    ; Prevent double-comma or comma after opening left brace.
+    ld hl, inputBuf
+    bcall(_GetLastChar) ; A=lastChar
+    or a
+    ret z ; return if empty
+    cp ','
+    ret z ; return if comma
+    cp LlBrace
+    ret z ; return if '{'
+    ; Append the comma
+    ld a, ','
+    jp handleKeyNumber
 
 ;-----------------------------------------------------------------------------
 
@@ -409,8 +464,7 @@ handleKeyChsX:
 handleKeyChsInputBuf:
     ; In edit mode, so change sign of Mantissa or Exponent.
     set dirtyFlagsInput, (iy + dirtyFlags)
-    bcall(_GetInputBufState) ; C=inputBufState; D=inputBufEEPos; E=inputBufEELen
-    ld a, d ; A=inputBufEEPos or 0 if no 'E'
+    bcall(_CheckInputBufChs) ; A=chsPos
     ld hl, inputBuf
     ld b, inputBufCapacity
     ; [[fallthrough]]

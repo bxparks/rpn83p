@@ -9,14 +9,14 @@
 ; Input: HL, DE: C string
 ; Output: DE: points to terminating NUL
 ; Destroys: A
-copyCString:
+copyCStringPageOne:
     ld a, (hl)
     ld (de), a
     or a
     ret z
     inc hl
     inc de
-    jr copyCString
+    jr copyCStringPageOne
 
 ; Description: Set the character A at the C string in DE.
 ; Input:

@@ -966,18 +966,42 @@ clearShowAreaLoop:
 ; Low-level helper routines.
 ;-----------------------------------------------------------------------------
 
-; Description: Print floating point number at OP1 at the current cursor. Erase
-; to the end of line (but only if the floating point did not spill over to the
-; next line).
+; Description: Print data in OP1 at the current cursor. The data could be a
+; real number, a complex number, for a Date record. Erase to the end of line
+; (but only if the floating point did not spill over to the next line).
 ; Input:
 ;   - A: objectType
 ;   - B: displayFontMask
 ;   - OP1: floating point number
 ; Destroys: A, HL, OP3-OP6
 printOP1:
+    call getOp1RpnObjectType ; A=objectType
+    ; The rpnObjecTypes are tested in order of decreasing frequency.
+    cp rpnObjectTypeReal
+    jr z, printOP1Real
+    ;
     cp rpnObjectTypeComplex
     jr z, printOP1Complex
-    ; [[fallthrough]]
+    ;
+    cp rpnObjectTypeDate
+    jp z, printOP1DateRecord
+    ;
+    cp rpnObjectTypeTime
+    jp z, printOP1TimeRecord
+    ;
+    cp rpnObjectTypeDateTime
+    jp z, printOP1DateTimeRecord
+    ;
+    cp rpnObjectTypeOffset
+    jp z, printOP1OffsetRecord
+    ;
+    cp rpnObjectTypeOffsetDateTime
+    jp z, printOP1OffsetDateTimeRecord
+    ;
+    ld hl, msgRpnObjectTypeUnknown
+    jp printHLString
+
+;-----------------------------------------------------------------------------
 
 ; Description: Print the real number in OP1, taking into account the BASE mode.
 ; This routine always uses large font, so it never needs to clear the line with
@@ -1020,7 +1044,7 @@ printOP1Real:
 ;   - B: displayFontMask
 ; Destroys: OP3-OP6
 printOP1Complex:
-    call eraseEOLIfNeeded
+    call eraseEOLIfNeeded ; uses B
     call displayStackSetSmallFont
     ld a, (complexMode)
     cp a, complexModeRect
@@ -1399,6 +1423,107 @@ formatBinDigitsEnd:
     ret
 
 ;-----------------------------------------------------------------------------
+; RpnObject records.
+;-----------------------------------------------------------------------------
+
+; Description: Print the Date Record in OP1 using small font.
+; Input:
+;   - OP1: Date Record
+;   - B: displayFontMask
+; Destroys: OP3-OP6
+printOP1DateRecord:
+    call eraseEOLIfNeeded ; uses B
+    call displayStackSetSmallFont
+    ; format OP1
+    ld hl, OP1
+    ld de, OP3 ; destPointer
+    push de
+    bcall(_FormatDateRecord)
+    xor a
+    ld (de), a ; add NUL terminator
+    ; print string stored in OP3
+    pop hl ; HL=OP3
+    call vPutSmallS
+    jp vEraseEOL
+
+; Description: Print the Time Record in OP1 using small font.
+; Input:
+;   - OP1: Time Record
+;   - B: displayFontMask
+; Destroys: OP3-OP6
+printOP1TimeRecord:
+    call eraseEOLIfNeeded ; uses B
+    call displayStackSetSmallFont
+    ; format OP1
+    ld hl, OP1
+    ld de, OP3 ; destPointer
+    push de
+    bcall(_FormatTimeRecord)
+    xor a
+    ld (de), a ; add NUL terminator
+    ; print string stored in OP3
+    pop hl ; HL=OP3
+    call vPutSmallS
+    jp vEraseEOL
+
+; Description: Print the DateTime Record in OP1 using small font.
+; Input:
+;   - OP1: DateTime Record
+;   - B: displayFontMask
+; Destroys: OP3-OP6
+printOP1DateTimeRecord:
+    call eraseEOLIfNeeded ; uses B
+    call displayStackSetSmallFont
+    ; format OP1
+    ld hl, OP1
+    ld de, OP3 ; destPointer
+    push de
+    bcall(_FormatDateTimeRecord)
+    ; print string stored in OP3
+    pop hl ; HL=OP3
+    call vPutSmallS
+    jp vEraseEOL
+
+; Description: Print the Offset Record in OP1 using small font.
+; Input:
+;   - OP1: Offset Record
+;   - B: displayFontMask
+; Destroys: all, OP3-OP6
+printOP1OffsetRecord:
+    call eraseEOLIfNeeded ; uses B
+    call displayStackSetSmallFont
+    ld hl, OP1
+    ld de, OP3 ; destPointer
+    push de
+    bcall(_FormatOffsetRecord)
+    ; print string stored in OP3
+    pop hl ; HL=OP3
+    call vPutSmallS
+    jp vEraseEOL
+
+; Description: Print the OffsetDateTime Record in OP1 using small font.
+; Input:
+;   - OP1: OffsetDateTime Record
+;   - B: displayFontMask
+; Destroys: all, OP3-OP6
+printOP1OffsetDateTimeRecord:
+    call eraseEOLIfNeeded ; uses B
+    call displayStackSetSmallFont
+    ; format OP1
+    call shrinkOp2ToOp1
+    ld hl, OP1
+    ld de, OP3 ; destPointer
+    push de
+    bcall(_FormatOffsetDateTimeRecord)
+    call expandOp1ToOp2
+    ; print string stored in OP3
+    pop hl ; HL=OP3
+    call vPutSmallS
+    jp vEraseEOL
+
+;-----------------------------------------------------------------------------
+; String constants.
+;-----------------------------------------------------------------------------
 
 ; Indicates number has overflowed the current Base mode.
 msgBaseInvalid:
@@ -1449,3 +1574,7 @@ msgComplexModeRadLabel:
     .db "r", Sangle, Stheta, 0
 msgComplexModeDegLabel:
     .db "r", Sangle, Stemp, 0
+
+; Unknown RpnObjectType
+msgRpnObjectTypeUnknown:
+    .db "{Unknown}", 0

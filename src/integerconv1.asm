@@ -2,9 +2,8 @@
 ; MIT License
 ; Copyright (c) 2023 Brian T. Park
 ;
-; Functions to convert between TI-OS floating point and integer types, mostly
-; to u40/i40 integers. Functions related to u32 integers are on Flash Page 0 in
-; base.asm.
+; Functions to convert between TI-OS floating point and u8 and u16 integers.
+; Functions related to u32 integers are on Flash Page 0 in base.asm.
 ;
 ; Labels with Capital letters are intended to be exported to other flash pages
 ; and should be placed in the branch table on Flash Page 0. Labels with

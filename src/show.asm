@@ -14,29 +14,75 @@
 ; Description: Format the number in OP1 to a NUL terminated string that shows
 ; all significant digits, suitable for a SHOW function.
 ; Input:
-;   - OP1/OP2: real, complex, or integer number
+;   - OP1/OP2: real, complex, or record (e.g. Date{}, DateTime{}, Offset{})
 ;   - DE: pointer to output string buffer
 ; Output:
 ;   - (DE): string buffer updated and NUL terminated
-;   - DE: points to the character after the NUL
+;   - DE: points to NUL at the end of string, to allow chaining
 ; Destroys: all, OP1-OP6
 formShowable:
     bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
     jr nz, formShowableBase
-    call checkOp1Complex ; if complex: ZF=1
+    call getOp1RpnObjectType
+    ; real
+    cp rpnObjectTypeReal
+    jr z, formShowableReal
+    ; complex
+    cp rpnObjectTypeComplex
     jr z, formShowableComplex
-formShowableReal:
-    call formRealString
-    jr formShowableEnd
+    ; RpnDate{}
+    cp rpnObjectTypeDate
+    jr z, formShowableDate
+    ; RpnTime{}
+    cp rpnObjectTypeTime
+    jr z, formShowableTime
+    ; RpnDateTime{}
+    cp rpnObjectTypeDateTime
+    jr z, formShowableDateTime
+    ; RpnOffset{}
+    cp rpnObjectTypeOffset
+    jr z, formShowableOffset
+    ; RpnOffsetDateTime{}
+    cp rpnObjectTypeOffsetDateTime
+    jr z, formShowableOffsetDateTime
+formShowableUnknown:
+    ; Print "{unknown}" if object not known
+    ld hl, msgRpnObjectTypeUnknown
+    jp copyCString
 formShowableBase:
     call formBaseString
     jr formShowableEnd
+formShowableReal:
+    call formRealString
+    jr formShowableEnd
 formShowableComplex:
     call formComplexString
+    jr formShowableEnd
+formShowableDate:
+    ld hl, OP1
+    bcall(_FormatDateRecord)
+    jr formShowableEnd
+formShowableTime:
+    ld hl, OP1
+    bcall(_FormatTimeRecord)
+    jr formShowableEnd
+formShowableDateTime:
+    ld hl, OP1
+    bcall(_FormatDateTimeRecord)
+    jr formShowableEnd
+formShowableOffset:
+    ld hl, OP1
+    bcall(_FormatOffsetRecord)
+    jr formShowableEnd
+formShowableOffsetDateTime:
+    call shrinkOp2ToOp1
+    ld hl, OP1
+    bcall(_FormatOffsetDateTimeRecord)
+    call expandOp1ToOp2
+    ; [[fallthrough]]
 formShowableEnd:
     xor a
     ld (de), a ; terminate with NUL
-    inc de
     ret
 
 ;------------------------------------------------------------------------------

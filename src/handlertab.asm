@@ -48,10 +48,7 @@ keyCodeHandlerTable:
     .dw handleKeyF
     .db kDecPnt
     .dw handleKeyDecPnt
-    ; For convenience, both EE (2ND-COMMA) and COMMA are mapped to handleKeyEE.
     .db kEE
-    .dw handleKeyEE
-    .db kComma
     .dw handleKeyEE
 
     ; Complex numbers
@@ -59,6 +56,14 @@ keyCodeHandlerTable:
     .dw handleKeyImagI
     .db kAngle
     .dw handleKeyAngle
+
+    ; Data records usng '{', '}', ','
+    .db kLBrace
+    .dw handleKeyLBrace
+    .db kRBrace
+    .dw handleKeyRBrace
+    .db kComma
+    .dw handleKeyComma
 
     ; editing
     .db kDel

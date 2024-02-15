@@ -53,27 +53,14 @@ appendInputBufContinue:
     set dirtyFlagsInput, (iy + dirtyFlags)
     jp AppendString
 
-; Description: Close the input buffer by parsing the input, then copying the
-; float value into X. If not in edit mode, no need to parse the inputBuf, the X
-; register is not changed. Almost all functions/commands in RPN83P will call
-; this function through the closeInput() function.
+; Description: Parse the object in inputBuf into OP1. This routine assumes that
+; the app was in edit mode when this was called, so assumes that the inputBuf
+; is valid. If the app was not in edit mode, this routine should NOT have been
+; called.
 ;
-; This function determines 2 flags which affect the stack lift:
-;
-; - rpnFlagsLiftEnabled: *Always* set after this call. It is up to the calling
-; handler to override this default and disable it if necessary (e.g. ENTER, or
-; Sigma+).
-; - inputBufFlagsClosedEmpty: Set if the inputBuf was an empty string before
-; being closed. This flag is cleared if the inputBuf was *not* in edit mode to
-; begin with.
-;
-; The rpnFlagsLiftEnabled is used by the next manual entry of a number (digits
-; 0-9 usualy, sometimes A-F in hexadecimal mode). Usually, the next manual
-; number entry lifts the stack, but this flag can be used to disable that.
-; (e.g. ENTER will disable the lift of the next number).
-;
-; The inputBufFlagsClosedEmpty flag is used by functions which do not consume
-; any value from the RPN stack, but simply push a value or two onto the X or Y
+; The inputBufFlagsClosedEmpty flag is set if the inputBuf was an empty string
+; before being closed. The flag is used by functions which do not consume any
+; value from the RPN stack, but simply push a value or two onto the X or Y
 ; registers (e.g. PI, E, or various TVM functions, various STAT functions). If
 ; the user had pressed CLEAR, to clear the input buffer, then it doesn't make
 ; sense for these functions to lift the empty string (i.e. 0) up when pushing
@@ -86,29 +73,38 @@ appendInputBufContinue:
 ; Input:
 ;   - inputBuf: input buffer
 ; Output:
-;   - rpnFlagsLiftEnabled: always set
+;   - OP1/OP2: value of inputBuf parsed into an RpnObject
+;   - A: rpnObjectType
 ;   - inputBufFlagsClosedEmpty: set if inputBuf was an empty string when closed
 ;   - inputBuf cleared to empty string
-;   - OP1: value of inputBuf
+; Throws: ErrInvalid if Date or DateTime is invalid
 ; Destroys: all, OP1, OP2, OP4
-CloseInputBuf:
-    ld a, (inputBuf)
+CloseInputBuf: ; TODO: Rename this ParseInputBuf().
+    ld hl, inputBuf
+    call GetFirstChar ; A=first char, or 0 if empty
     or a
-    jr z, closeInputBufEmpty
-    ; inputBuf not empty
-    res inputBufFlagsClosedEmpty, (iy + inputBufFlags)
-    jr closeInputBufContinue
+    jr nz, closeInputBufNonEmpty
 closeInputBufEmpty:
     set inputBufFlagsClosedEmpty, (iy + inputBufFlags)
-closeInputBufContinue:
-    call parseInputBuf ; OP1/OP2=float or complex
+    call op1Set0PageOne
+    jp ClearInputBuf
+closeInputBufNonEmpty:
+    res inputBufFlagsClosedEmpty, (iy + inputBufFlags)
+    cp LlBrace ; '{'
+    jr z, closeInputBufRecord
+    call parseInputBufNumber ; OP1/OP2=float or complex
+    jp ClearInputBuf
+closeInputBufRecord:
+    call parseInputBufRecord ; HL=OP1
     jp ClearInputBuf
 
 ;------------------------------------------------------------------------------
 
 ; Description: Return the number of digits which are accepted or displayed for
 ; the given (baseWordSize) and (baseNumber).
-;   - floating mode: inputBufFloatMaxLen
+;   - real mode: inputBufFloatMaxLen
+;   - complex mode: inputBufComplexMaxLen
+;   - record mode: inputBufRecordMaxLen
 ;   - BASE 2: inputMaxLen = baseWordSize
 ;       - 8 -> 8
 ;       - 16 -> 16
@@ -146,15 +142,21 @@ getInputMaxLen:
     bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
     jr nz, getInputMaxLenBaseMode
     ; In normal floating point input mode, i.e. not BASE mode.
-    ; Return either the normal float limit or the complex limit.
+    ; Check for various object types.
     ld hl, inputBuf
     call checkComplexDelimiterP ; CF=1 if complex
-    jr nc, getInputMaxLenNormalMaxLen
-    ; allow extra characters for complex numbers
+    jr c, getInputMaxLenComplex
+    call checkRecordDelimiterP ; CF=1 if record
+    jr c, getInputMaxLenRecord
+getInputMaxLenNormal:
+    ; default
+    ld a, inputBufFloatMaxLen
+    ret
+getInputMaxLenComplex:
     ld a, inputBufComplexMaxLen
     ret
-getInputMaxLenNormalMaxLen:
-    ld a, inputBufFloatMaxLen
+getInputMaxLenRecord:
+    ld a, inputBufRecordMaxLen
     ret
 getInputMaxLenBaseMode:
     ; If BASE mode, the maximum number of digits depends on baseNumber and
@@ -187,74 +189,173 @@ wordSizeDigitsArray:
 
 ;------------------------------------------------------------------------------
 
-; Description: Check various characteristics of the characters in the inputBuf
-; by scanning backwards from the end of the string. The following conditions
-; are checked:
-;   - inputBufStateDecimalPoint: set if decimal point exists
-;   - inputBufStateEE: set if exponent 'E' character exists
-;   - inputBufStateComplex: set if complex number
-;   - inputBufEEPos: pos of char after 'E', or the first character of the
-;   number component if no 'E'
-;   - inputBufEELen: number of EE digits if inputBufStateEE is set
+; Description: Check if the 'E' character exists in the last floating point
+; number in the inputBuf by scanning backwards from the end of the string. If
+; the EE character exists, then return the number of digits in the exponent.
 ; Input: inputBuf
 ; Output:
-;   - C: inputBufState flags updated
-;   - D: inputBufEEPos, pos of char after 'E' or at start of number
-;   - E: inputBufEELen, number of EE digits if inputBufStateEE is set
-; Destroys: BC, DE, HL
-; Preserves: AF
-GetInputBufState:
-    push af
+;   - CF=1 if exponent exists
+;   - A: eeLen, number of EE digits if exponent exists
+; Destroys: BC, HL
+; Preserves: DE
+CheckInputBufEE:
     ld hl, inputBuf
     ld c, (hl) ; C=len
     ld b, 0 ; BC=len
     inc hl ; skip past len byte
     add hl, bc ; HL=pointer to end of string
-    ; swap B and C
-    ld a, c ; A=len
-    ld c, b ; C=inputBufState=0
-    ld b, a ; B=len
     ; check for len==0
+    ld a, c ; A=len
     or a ; if len==0: ZF=0
-    jr z, getInputBufStateEnd
-    ; D=inputBufEEPos=0; E=inputBufEELen=0
-    ld de, 0
-getInputBufStateLoop:
+    ret z
+    ld c, b ; C=0
+    ld b, a ; B=counter
+checkInputBufEELoop:
     ; Loop backwards from end of string and update inputBufState flags
     dec hl
     ld a, (hl)
-    ; check for '0'-'9'
-    call isValidUnsignedDigit ; if valid: CF=1
-    jr nc, getInputBufStateCheckDecimalPoint
-    ; if not EE: increment inputBufEELen
-    bit inputBufStateEE, c
-    jr nz, getInputBufStateCheckDecimalPoint
-    inc e ; inputBufEELen++
-getInputBufStateCheckDecimalPoint:
-    cp '.'
-    jr nz, getInputBufStateCheckEE
-    set inputBufStateDecimalPoint, c
-getInputBufStateCheckEE:
-    cp Lexponent
-    jr nz, getInputBufStateCheckTermination
-    set inputBufStateEE, c
-    ld d, b ; inputBufEEPos=B
-getInputBufStateCheckTermination:
+    call isNumberDelimiterPageOne ; ZF=1 if delimiter
+    jr z, checkInputBufEENone
     call isComplexDelimiterPageOne ; ZF=1 if complex delimiter
-    jr z, getInputBufStateComplex
+    jr z, checkInputBufEENone
+    cp Lexponent
+    jr z, checkInputBufEEFound
+    cp '.'
+    jr z, checkInputBufEENone
+    call isValidUnsignedDigit ; if valid: CF=1
+    jr nc, checkInputBufEEContinue
+    ; if inside EE digit: increment eeLen
+    inc c ; eeLen++
+checkInputBufEEContinue:
     ; Loop until we reach the start of string
-    djnz getInputBufStateLoop
-    jr getInputBufStateEnd
-getInputBufStateComplex:
-    set inputBufStateComplex, c
-getInputBufStateEnd:
-    ; If no 'E', set inputBufEEPos to the start of current number, which could
-    ; be the imaginary or angle part of a complex number.
-    bit inputBufStateEE, c
-    jr nz, getInputBufStateReturn
-    ld d, b
-getInputBufStateReturn:
-    pop af
+    djnz checkInputBufEELoop
+checkInputBufEENone:
+    or a ; CF=0
+    ret
+checkInputBufEEFound:
+    scf ; CF=1 to indicate 'E' found
+    ld a, c ; A=eeLen
+    ret
+
+;------------------------------------------------------------------------------
+
+; Description: Check if the most recent floating number has a negative sign
+; that can be mutated by the CHS (+/-) button, by scanning backwards from the
+; end of the string. Return the position of the sign in B.
+; Input: inputBuf
+; Output:
+;   - A: inputBufChsPos, the position where a sign character can be added or
+;   removed (i.e. after an 'E', after the complex delimiter, or at the start of
+;   the buffer if empty)
+; Destroys: BC, HL
+; Preserves: DE
+CheckInputBufChs:
+    ld hl, inputBuf
+    ld c, (hl) ; C=len
+    ld b, 0 ; BC=len
+    inc hl ; skip past len byte
+    add hl, bc ; HL=pointer to end of string
+    ; check for len==0
+    ld a, c ; A=len
+    or a ; if len==0: ZF=0
+    ret z
+    ld b, a
+checkInputBufChsLoop:
+    ; Loop backwards from end of string and update inputBufState flags
+    dec hl
+    ld a, (hl)
+    cp Lexponent
+    jr z, checkInputBufChsEnd
+    call isComplexDelimiterPageOne ; ZF=1 if complex delimiter
+    jr z, checkInputBufChsEnd
+    call isNumberDelimiterPageOne ; ZF=1 if number delimiter
+    jr z, checkInputBufChsEnd
+    djnz checkInputBufChsLoop
+checkInputBufChsEnd:
+    ld a, b
+    ret
+
+;------------------------------------------------------------------------------
+
+; Description: Check if the right most floating point number already has a
+; decimal point.
+; Input: inputBuf
+; Output: CF=1 if the last floating point number has a decimal point
+; Destroys: A, BC, HL
+; Preserves: DE
+CheckInputBufDecimalPoint:
+    ld hl, inputBuf
+    ld c, (hl) ; C=len
+    ld b, 0 ; BC=len
+    inc hl ; skip past len byte
+    add hl, bc ; HL=pointer to end of string
+    ; check for len==0
+    ld a, c ; A=len
+    or a ; if len==0: ZF=0
+    jr z, checkInputBufDecimalPointNone
+    ld b, a ; B=len
+checkInputBufDecimalPointLoop:
+    ; Loop backwards from end of string and update inputBufState flags
+    dec hl
+    ld a, (hl)
+    cp '.'
+    jr z, checkInputBufDecimalPointFound
+    call isNumberDelimiterPageOne ; ZF=1 if delimiter
+    jr z, checkInputBufDecimalPointNone
+    call isComplexDelimiterPageOne ; ZF=1 if complex delimiter
+    jr z, checkInputBufDecimalPointNone
+    djnz checkInputBufDecimalPointLoop
+checkInputBufDecimalPointNone:
+    or a
+    ret
+checkInputBufDecimalPointFound:
+    scf
+    ret
+
+;------------------------------------------------------------------------------
+
+; Description: Check if the inputBuf is a data structure, i.e. contains a left
+; or right curly brace '{', and count the nesting level. Positive for open left
+; curly, negative for close right curly.
+; Input: inputBuf
+; Output:
+;   - CF=1 if the inputBuf contains a data structure
+;   - A:i8=braceLevel if CF=1
+; Destroys: A, DE, BC, HL
+CheckInputBufStruct: ; TODO: Rename to CheckInputBufRecord
+    ld hl, inputBuf
+    ld b, (hl) ; C=len
+    inc hl ; skip past len byte
+    ; check for len==0
+    ld a, b ; A=len
+    or a ; if len==0: ZF=0
+    jr z, checkInputBufStructNone
+    ld c, 0 ; C=braceLevel
+    ld d, rpnfalse ; D=isBrace
+checkInputBufStructLoop:
+    ; Loop forwards and update brace level.
+    ld a, (hl)
+    inc hl
+    cp LlBrace
+    jr nz, checkInputBufStructCheckRbrace
+    inc c ; braceLevel++
+    ld d, rpntrue
+checkInputBufStructCheckRbrace:
+    cp LrBrace
+    jr nz, checkInputBufStructCheckTermination
+    dec c ; braceLevel--
+    ld d, rpntrue
+checkInputBufStructCheckTermination:
+    djnz checkInputBufStructLoop
+checkInputBufStructFound:
+    ld a, d ; A=isBrace
+    or a
+    ret z
+    ld a, c
+    scf
+    ret
+checkInputBufStructNone:
+    or a ; CF=0
     ret
 
 ;------------------------------------------------------------------------------
@@ -263,10 +364,9 @@ getInputBufStateReturn:
 ; Input: inputBuf filled with keyboard characters
 ; Output: OP1/OP2: real or complex number
 ; Destroys: all registers, OP1-OP5 (due to SinCosRad())
-parseInputBuf:
-    call initInputBufForParsing
-    ld hl, inputBuf
-    inc hl
+parseInputBufNumber:
+    call initInputBufForParsing ; HL=inputBuf
+    inc hl ; skip length byte
     bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
     jr nz, parseBaseInteger
     ; parse a real or real component
@@ -400,16 +500,20 @@ parseNumBaseAddDigit:
 ; to the Pascal string. The capacity of inputBuf is one character larger than
 ; necessary to hold the extra NUL character.
 ; Input: inputBuf
-; Output: inputBuf with NUL terminator
+; Output:
+;   - inputBuf with NUL terminator
+;   - HL=inputBuf
 ; Destroys: A, DE, HL
 initInputBufForParsing:
     ld hl, inputBuf
+    push hl
     ld e, (hl)
     xor a
     ld d, a
     inc hl ; skip len byte
     add hl, de ; HL=pointerToNUL
     ld (hl), a
+    pop hl
     ret
 
 ; Description: Clear parseBuf by setting all digits to the character '0', and
@@ -950,11 +1054,14 @@ findComplexDelimiterFound:
 ; Description: Check if complex delimiter exists in the given Pascal string.
 ; Input: HL: pointer to pascal string
 ; Output: CF=1 if complex, 0 otherwise
+; Destroys: A, B
+; Preserves: HL
 checkComplexDelimiterP:
+    push hl
     ld a, (hl) ; A=len
     inc hl
     or a ; ZF=0 if len==0; CF=0
-    ret z
+    jr z, checkComplexDelimiterPNot
     ld b, a
 checkComplexDelimiterPLoop:
     ld a, (hl)
@@ -962,9 +1069,12 @@ checkComplexDelimiterPLoop:
     call isComplexDelimiterPageOne
     jr z, checkComplexDelimiterPFound
     djnz checkComplexDelimiterPLoop
+checkComplexDelimiterPNot:
+    pop hl
     or a ; CF=0
     ret
 checkComplexDelimiterPFound:
+    pop hl
     scf ; CF=1
     ret
 
@@ -979,4 +1089,108 @@ isComplexDelimiterPageOne:
     cp Langle
     ret z
     cp Ldegree
+    ret
+
+; Description: Return ZF=1 if A is a real or complex number delimiter.
+; Input: A: char
+; Output: ZF=1 if delimiter
+; Destroys: none
+isNumberDelimiterPageOne:
+    cp LlBrace ; '{'
+    ret z
+    cp ','
+    ret
+
+; Description: Check if the data record delimiter '{' exists in the given
+; Pascal string.
+; Input: HL: pointer to pascal string
+; Output: CF=1 if record type, 0 otherwise
+; Destroys: A, B
+; Preserves: HL
+checkRecordDelimiterP:
+    push hl
+    ld a, (hl) ; A=len
+    inc hl
+    or a ; ZF=0 if len==0; CF=0
+    jr z, checkRecordDelimiterPNot
+    ld b, a
+checkRecordDelimiterPLoop:
+    ld a, (hl)
+    inc hl
+    cp '{'
+    jr z, checkRecordDelimiterPFound
+    djnz checkRecordDelimiterPLoop
+checkRecordDelimiterPNot:
+    pop hl
+    or a ; CF=0
+    ret
+checkRecordDelimiterPFound:
+    pop hl
+    scf ; CF=1
+    ret
+
+;-----------------------------------------------------------------------------
+
+; Description: Parse the inputBuf containing a Record into OP1.
+; Input: inputBuf
+; Output: OP1/OP2=RpnDate, RpnDateTime, RpnOffset, RpnOffsetDateTime
+; Uses: parseBuf
+; Destroys: all
+; Throws:
+;   - Err:Syntax if the syntax is incorrect
+;   - Err:Invalid if validation fails
+parseInputBufRecord:
+    call initInputBufForParsing ; HL=inputBuf
+    inc hl ; skip len byte
+    call countCommas ; A=numCommas, preserves HL
+    cp 1
+    jr z, parseInputBufOffset
+    cp 2
+    jr z, parseInputBufDate
+    cp 5
+    jr z, parseInputBufDateTime
+    cp 7
+    jr z, parseInputBufOffsetDateTime
+parseInputBufRecordErr:
+    bcall(_ErrSyntax)
+parseInputBufOffset:
+    ld de, OP1
+    ld a, rpnObjectTypeOffset
+    ld (de), a
+    inc de
+    push de
+    call parseOffset
+    pop hl ; HL=OP1+1
+    call validateOffset
+    ret
+parseInputBufDate:
+    ld de, OP1
+    ld a, rpnObjectTypeDate
+    ld (de), a
+    inc de ; skip type byte
+    push de
+    call parseDate
+    pop hl ; HL=OP1+1
+    call validateDate
+    ret
+parseInputBufDateTime:
+    ld de, OP1
+    ld a, rpnObjectTypeDateTime
+    ld (de), a
+    inc de ; skip type byte
+    push de
+    call parseDateTime
+    pop hl ; HL=OP1+1
+    call validateDateTime
+    ret
+parseInputBufOffsetDateTime:
+    ld de, OP1
+    ld a, rpnObjectTypeOffsetDateTime
+    ld (de), a
+    inc de ; skip type byte
+    push de
+    call parseOffsetDateTime
+    pop hl ; HL=OP1+1
+    call validateOffsetDateTime
+    call expandOp1ToOp2PageOne ; sizeof(OffsetDateTime)>9
     ret

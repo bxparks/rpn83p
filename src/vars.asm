@@ -259,18 +259,18 @@ closeRpnObjectList:
 
 ;-----------------------------------------------------------------------------
 
-; Description: Convert rpnObject index to the object pointer, including 2 bytes
-; for the appVarSize (managed by the OS), 2 bytes for the CRC16 checksum, and 2
-; bytes for the appId.
+; Description: Convert rpnObject index to the array element pointer, including
+; 2 bytes for the appVarSize (managed by the OS), 2 bytes for the CRC16
+; checksum, and 2 bytes for the appId.
 ; Input:
 ;   - C=index
 ;   - DE=appDataPointer to the begining of the appVar which is the 2-byte
 ;   appVarSize field provided by the OS
 ; Output:
-;   - HL=objectPointer
+;   - HL=elementPointer
 ;   - CF=1 if within bounds, otherwise 0
 ; Preserves: A, BC, DE
-rpnObjectIndexToPointer:
+rpnObjectIndexToElementPointer:
     call rpnObjectIndexToOffset ; HL=dataOffset
     push bc ; stack=[BC]
     push de ; stack=[BC,DE]
@@ -281,13 +281,13 @@ rpnObjectIndexToPointer:
     ld b, (hl) ; BC=appVarSize
     inc hl
     ; calculate pointer to item at index
-    add hl, de ; HL=objectPointer=dataOffset+appDataPointer+2
-    ex de, hl ; HL=dataOffset; DE=objectPointer
+    add hl, de ; HL=elementPointer=dataOffset+appDataPointer+2
+    ex de, hl ; HL=dataOffset; DE=elementPointer
     ; check array bounds
     or a ; CF=0
     sbc hl, bc ; if dataOffset < appVarSize; CF=1
     ; restore registers
-    ex de, hl ; HL=objectPointer
+    ex de, hl ; HL=elementPointer
     pop de ; stack=[BC]
     pop bc ; stack=[]
     ret
@@ -333,38 +333,38 @@ rpnObjectIndexToOffset:
 stoRpnObject:
     call getOp1RpnObjectType ; A=rpnObjectType
     ld b, a ; B=rpnObjectType
-    ; find varName
     push bc ; stack=[index/objectType]
+    ; save OP1/OP2 to FPS
     push hl ; stack=[index/objectType, varName]
     bcall(_PushRpnObject1) ; FPS=[OP1/OP2]
     pop hl ; stack=[index, objectType]; HL=varName
+    ; find varName
     call move9ToOp1 ; OP1=varName
     bcall(_ChkFindSym) ; DE=dataPointer; CF=1 if not found
     jr c, rpnObjectUndefined ; Not found, this should never happen.
-    ;
-    push de ; stack=[index/objectType, dataPointer]
-    bcall(_PopRpnObject1) ; FPS=[]; OP1/OP2
-    pop de ; stack=[index/objectType]; DE=dataPointer
+    ; find elementPointer of index
     pop bc ; stack=[]; B=objectType; C=index
-    ; find objectPointer of index
-    call rpnObjectIndexToPointer ; HL=objectPointer
+    call rpnObjectIndexToElementPointer ; HL=elementPointer
     jr nc, rpnObjectOutOfBounds
+    ; retrieve OP1/OP2 from FPS
+    push hl ; stack=[elementPointer]
+    push bc
+    bcall(_PopRpnObject1) ; FPS=[]; OP1/OP2
+    pop bc
+    pop hl ; stack=[]; HL=elementPointer
+    ; copy from OP1/OP2 into AppVar element
     ld (hl), b ; (hl)=objectType
     inc hl
-    ex de, hl ; DE=objectPointer+1
-    ld a, b ; A=objectType
-    cp rpnObjectTypeComplex
-    jr z, stoRpnObjectCopyComplex
-    ; copy real
+    ld a, b
+    ex de, hl ; DE=elementPointer+1
     ld hl, OP1
+    ; copy first 9 bytes
     ld bc, rpnRealSizeOf
     ldir
-    ret
-stoRpnObjectCopyComplex:
-    ; copy complex
-    ld hl, OP1
-    ld bc, rpnRealSizeOf
-    ldir
+    ; return early if Real
+    cp rpnObjectTypeReal
+    ret z
+    ; copy next 9 bytes for everything else
     inc hl
     inc hl ; skip 2 bytes, OPx registers are 11 bytes, not 9 bytes
     ld bc, rpnRealSizeOf
@@ -387,28 +387,27 @@ rpnObjectUndefined:
 ;   - throws ErrUndefined if appVar not found
 ; Destroys: all
 rclRpnObject:
+    ; find varName
     push bc ; stack=[index]
     call move9ToOp1 ; OP1=varName
     bcall(_ChkFindSym) ; DE=dataPointer; CF=1 if not found
     pop bc ; C=[index]
     jr c, rpnObjectUndefined
-    ;
-    call rpnObjectIndexToPointer ; HL=objectPointer
+    ; find elementPointer of index
+    call rpnObjectIndexToElementPointer ; HL=elementPointer
     jr nc, rpnObjectOutOfBounds
-    ; figure out how much to copy
+    ; copy from AppVar to OP1/OP2
     ld de, OP1
     ld a, (hl) ; A=objectType
     inc hl
-    cp rpnObjectTypeComplex
-    jr z, rclRpnObjectCopyComplex
-    ; copy real
+    and $1f
+    ; copy first 9 bytes
     ld bc, rpnRealSizeOf
     ldir
-    ret
-rclRpnObjectCopyComplex:
-    ; copy complex
-    ld bc, rpnRealSizeOf
-    ldir
+    ; return early if Real
+    cp rpnObjectTypeReal
+    ret z
+    ; copy next 9 bytes for everything else
     inc de
     inc de ; OPx registers are 11 bytes, not 9 bytes
     ld bc, rpnRealSizeOf
@@ -584,11 +583,12 @@ rclL:
 ; OP2 to the RPN stack.
 ;-----------------------------------------------------------------------------
 
-; Description: Replace X with OP1/OP2, saving previous X to LastX, and
-; setting dirty flag. Works for complex numbers.
+; Description: Replace X with RpnObject in OP1/OP2, saving previous X to LastX,
+; and setting dirty flag. Works for all RpnObject types.
+; Input: CP1=OP1/OP2:RpnObject
 ; Preserves: OP1, OP2
 replaceX:
-    bcall(_CkValidNum)
+    call checkValid
     bcall(_PushRpnObject1) ; FPS=[OP1/OP2]
     call rclX
     call stoL
@@ -596,11 +596,12 @@ replaceX:
     call stoX
     ret
 
-; Description: Replace X and Y pair with OP1/OP2, saving previous X to LastX,
-; and setting dirty flag. Works for complex numbers.
+; Description: Replace X and Y with RpnObject in OP1/OP2, saving previous X to
+; LastX, and setting dirty flag. Works for all RpnObject types.
+; Input: CP1=OP1/OP2:RpnObject
 ; Preserves: OP1, OP2
 replaceXY:
-    bcall(_CkValidNum)
+    call checkValid
     bcall(_PushRpnObject1) ; FPS=[OP1/OP2]
     call rclX
     call stoL
@@ -609,11 +610,10 @@ replaceXY:
     call stoX
     ret
 
-; Description: Replace X and Y with push of OP1 and OP2 on the stack in that
-; order. This causes X=OP2 and Y=OP1, saving the previous X to LastX, and
-; setting dirty flag.
-; WARNING: Assumes that OP1 and OP2 are real not complex.
-; Input: X, Y, OP1, OP2
+; Description: Replace X and Y with Real numbers OP1 and OP2, in that order.
+; This causes X=OP2 and Y=OP1, saving the previous X to LastX, and setting
+; dirty flag.
+; Input: OP1:Real, OP2:Real
 ; Output:
 ;   - Y=OP1
 ;   - X=OP2
@@ -621,24 +621,23 @@ replaceXY:
 ; Preserves: OP1, OP2
 replaceXYWithOP1OP2:
     ; validate OP1 and OP2 before modifying X and Y
-    bcall(_CkValidNum)
-    bcall(_OP1ExOP2)
-    bcall(_CkValidNum)
-    bcall(_OP1ExOP2)
-
+    call checkValidReal
+    call op1ExOp2
+    call checkValidReal
+    call op1ExOp2
+    ;
     call stoY ; Y = OP1
     bcall(_PushRealO1) ; FPS=[OP1]
     call rclX
     call stoL; LastX = X
-
-    bcall(_OP2ToOP1)
+    ;
+    call op2ToOp1
     call stoX ; X = OP2
     bcall(_PopRealO1) ; FPS=[]; OP1=OP1
     ret
 
-; Description: Replace X with OP1, and OP2 pushed onto the stack in that order.
-; WARNING: Assumes that OP1 and OP2 are real not complex.
-; Input: X, OP1 (Re), OP2 (Im)
+; Description: Replace X with Real numbers OP1 and OP2 in that order.
+; Input: OP1:Real, OP2:Real
 ; Output:
 ;   - Y=OP1
 ;   - X=OP2
@@ -646,10 +645,10 @@ replaceXYWithOP1OP2:
 ; Preserves: OP1, OP2
 replaceXWithOP1OP2:
     ; validate OP1 and OP2 before modifying X and Y
-    bcall(_CkValidNum)
+    call checkValidReal
     bcall(_PushRealO1) ; FPS=[OP1]
     call op2ToOp1
-    bcall(_CkValidNum)
+    call checkValidReal
     bcall(_PushRealO1) ; FPS=[OP1,OP2]
     call exchangeFPSFPS ; FPS=[OP2,OP1]
 
@@ -662,25 +661,25 @@ replaceXWithOP1OP2:
     call stoX
     ret
 
-; Description: Push OP1 to the X register. LastX is not updated because the
-; previous X is not consumed, and is availabe as the Y register. Works for
-; complex numbers.
-; Input: X, OP1/OP2
+; Description: Push RpnOjbect in OP1/OP2 to the X register. LastX is not
+; updated because the previous X is not consumed, and is availabe as the Y
+; register. Works for all RpnObject types.
+; Input: CP1=OP1/OP2:RpnObject
 ; Output:
 ;   - Stack lifted (if the inputBuf was not an empty string)
-;   - X=OP1
+;   - X=OP1/OP2
 ; Destroys: all
 ; Preserves: OP1, OP2, LastX
 pushToX:
-    bcall(_CkValidNum)
+    call checkValid
     call liftStackIfNonEmpty
     call stoX
     ret
 
-; Description: Push OP1 then OP2 onto the stack. LastX is not updated because
-; the previous X is not consumed, and is available as the Z register.
-; WARNING: Assumes OP1 and OP2 are real not complex.
-; Input: X, Y, OP1, OP2
+; Description: Push Real numbers OP1 then OP2 onto the stack. LastX is not
+; updated because the previous X is not consumed, and is available as the Z
+; register.
+; Input: OP1:Real, OP2:Real
 ; Output:
 ;   - Stack lifted (if the inputBuf was not an empty string)
 ;   - Y=OP1
@@ -688,17 +687,56 @@ pushToX:
 ; Destroys: all
 ; Preserves: OP1, OP2, LastX
 pushToXY:
-    bcall(_CkValidNum)
-    bcall(_OP1ExOP2)
-    bcall(_CkValidNum)
-    bcall(_OP1ExOP2)
+    call checkValidReal
+    call op1ExOp2
+    call checkValidReal
+    call op1ExOp2
     call liftStackIfNonEmpty
     call stoX
     call liftStack
-    bcall(_OP1ExOP2)
+    call op1ExOp2
     call stoX
-    bcall(_OP1ExOP2)
+    call op1ExOp2
     ret
+
+; Description: Check that OP1/OP2 is a valid RpnObject type (real, complex,
+; RpnDate or RpnDateTime). If real or complex, verify validity of number using
+; CkValidNum().
+; Input: OP1/OP2:RpnObject
+; Destroys: A, HL
+checkValid:
+    ld a, (OP1)
+    and $1f
+    cp rpnObjectTypeReal
+    jr z, checkValidNumber
+    cp rpnObjectTypeComplex
+    jr z, checkValidNumber
+    cp rpnObjectTypeDate
+    ret z
+    cp rpnObjectTypeTime
+    ret z
+    cp rpnObjectTypeDateTime
+    ret z
+    cp rpnObjectTypeOffsetDateTime
+    ret z
+    cp rpnObjectTypeOffset
+    ret z
+checkValidNumber:
+    bcall(_CkValidNum) ; destroys AF, HL
+    ret
+
+; Description: Check that OP1 is real. Throws Err:NonReal if not real.
+; Input: OP1/OP2:RpnObject
+; Destroys: A, HL
+checkValidReal:
+    ld a, (OP1)
+    and $1f
+    cp rpnObjectTypeReal
+    jr nz, checkValidRealErr
+    bcall(_CkValidNum) ; dstroys AF, HL
+    ret
+checkValidRealErr:
+    bcall(_ErrNonReal)
 
 ;-----------------------------------------------------------------------------
 
@@ -916,7 +954,7 @@ rclRegNNToOP2:
     bcall(_PushRealO1) ; FPS=[OP1]
     pop bc ; C=NN
     call rclRegNN
-    bcall(_OP1ToOP2)
+    call op1ToOp2
     bcall(_PopRealO1) ; FPS=[]; OP1=OP1
     ret
 
@@ -1181,7 +1219,7 @@ stoAddRegNN:
     push bc ; stack=[NN]
     bcall(_PushRealO1) ; FPS=[OP1]
     bcall(_PushRealO2) ; FPS=[OP1,OP2]
-    bcall(_OP1ToOP2)
+    call op1ToOp2
     pop bc ; C=NN
     push bc ; stack=[NN]
     call rclRegNN
@@ -1205,7 +1243,7 @@ stoSubRegNN:
     push bc ; stack=[NN]
     bcall(_PushRealO1) ; FPS=[OP1]
     bcall(_PushRealO2) ; FPS=[OP1,OP2]
-    bcall(_OP1ToOP2)
+    call op1ToOp2
     pop bc ; C=NN
     push bc
     call rclRegNN
@@ -1225,7 +1263,7 @@ stoSubRegNN:
 ;   - OP1: 0
 ; Destroys: all, OP1
 clearStatRegs:
-    bcall(_OP1Set0)
+    call op1Set0
     ld c, 11 ; begin clearing register 11
     ; Check AllMode or LinearMode.
     ld a, (statAllEnabled)

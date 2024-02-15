@@ -19,8 +19,11 @@ main:
     ; Initialize everything if RestoreAppState() fails.
     bcall(_InitErrorCode)
     bcall(_InitInputBuf)
+    bcall(_InitDate)
+    bcall(_RtcInit)
     call initNumResultMode
     call initComplexMode
+    call initCommaEEMode
     call initMenu
     call initBase
     call initStat
@@ -54,8 +57,7 @@ initAlways:
 ; See the TI-83 Plus SDK reference for PutAway().
 mainExit:
     ; Save appState and close the stack and storage registers.
-    call rclX
-    bcall(_StoAns) ; transfer to TI-OS 'ANS' (supports complex numbers)
+    call storeAns
     call closeStack
     call closeRegs
     bcall(_StoreAppState)
@@ -82,6 +84,16 @@ mainExit:
     bjump(_JForceCmdNoChar) ; force to home screen
 appTurningOff:
     bjump(_PutAway) ; force App locader to do its put away
+
+; Description: Store OP1 to Ans, but only if OP1 is Real or Complex.
+storeAns:
+    call checkOp1Real
+    ret nz
+    call checkOp1Complex
+    ret nz
+    call rclX
+    bcall(_StoAns) ; transfer to TI-OS 'ANS' (supports complex numbers)
+    ret
 
 ; Set up the AppVectors so that we can intercept the Put Away Notification upon
 ; '2ND QUIT' or '2ND OFF'. See TI-83 Plus SDK documentation.

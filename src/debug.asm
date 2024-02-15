@@ -326,44 +326,34 @@ debugPrintFlagMinus:
 ; Destroys: None
 DebugU32AsHex:
     push af
+    push bc
     push de
     push hl
-
     ; Set cursor position, saving the previous on the stack.
     ld de, (CurRow)
     push de
     ld de, debugCurCol*$100+debugCurRow ; $(curCol)(curRow)
     ld (CurRow), de
-
-debugU32AsHexAltEntry:
+    ; Prep loop
+    ld b, 4
+debugU32AsHexLoop:
     ld a, (hl)
     call debugUnsignedAAsHex
     inc hl
     ld a, ' '
-    bcall(_PutC)
-
-    ld a, (hl)
-    call debugUnsignedAAsHex
-    inc hl
-    ld a, ' '
-    bcall(_PutC)
-
-    ld a, (hl)
-    call debugUnsignedAAsHex
-    inc hl
-    ld a, ' '
-    bcall(_PutC)
-
-    ld a, (hl)
-    call debugUnsignedAAsHex
-
+    bcall(_PutC) ; preserves B
+    djnz debugU32AsHexLoop
+    ;
     pop de
     ld (CurRow), de
     pop hl
     pop de
+    pop bc
     pop af
     ret
 
+; Description: Print A has a 2-digit hex.
+; Destroys: A
 debugUnsignedAAsHex:
     push af
     srl a
@@ -372,31 +362,54 @@ debugUnsignedAAsHex:
     srl a
     call convertAToCharPageOne
     bcall(_PutC)
-
+    ;
     pop af
     and $0F
     call convertAToCharPageOne
     bcall(_PutC)
     ret
 
-;------------------------------------------------------------------------------
-
 ; Description: Print the 4 bytes pointed by DE into the error code line.
-; Input: De: pointer to 4 bytes
+; Input: DE: pointer to 4 bytes
 ; Destroys: None
 DebugU32DEAsHex:
+    ex de, hl
+    call DebugU32AsHex
+    ex de, hl
+    ret
+
+;------------------------------------------------------------------------------
+
+; Description: Print the 5 bytes pointed by HL.
+; Input: HL: pointer to 5 bytes
+; Destroys: None
+DebugU40AsHex:
     push af
+    push bc
     push de
     push hl
-    ex de, hl
-
     ; Set cursor position, saving the previous on the stack.
     ld de, (CurRow)
     push de
-    ld de, errorCurCol*$100+errorCurRow ; $(curCol)(curRow)
+    ld de, debugCurCol*$100+debugCurRow ; $(curCol)(curRow)
     ld (CurRow), de
-
-    jp debugU32AsHexAltEntry
+    ; Prep loop
+    ld b, 5
+debugU40AsHexLoop:
+    ld a, (hl)
+    call debugUnsignedAAsHex
+    inc hl
+    ld a, ' '
+    bcall(_PutC) ; preserves B
+    djnz debugU40AsHexLoop
+    ;
+    pop de
+    ld (CurRow), de
+    pop hl
+    pop de
+    pop bc
+    pop af
+    ret
 
 ;------------------------------------------------------------------------------
 
@@ -461,6 +474,40 @@ DebugHLAsHex:
     ;
     pop de
     ld (CurRow), de
+    pop hl
+    pop de
+    pop bc
+    pop af
+    ret
+
+;------------------------------------------------------------------------------
+
+; Description: print DE and HL as hexadecimal
+DebugDEHLAsHex:
+    push af
+    push bc
+    push de
+    push hl
+    ld bc, (CurRow)
+    push bc
+    ;
+    ld bc, debugCurCol*$100+debugCurRow ; $(curCol)(curRow)
+    ld (CurRow), bc
+    ;
+    ld a, d
+    call debugUnsignedAAsHex
+    ld a, e
+    call debugUnsignedAAsHex
+    ld a, ' '
+    bcall(_PutC)
+    ld a, h
+    call debugUnsignedAAsHex
+    ld a, l
+    call debugUnsignedAAsHex
+    bcall(_EraseEOL)
+    ;
+    pop bc
+    ld (CurRow), bc
     pop hl
     pop de
     pop bc

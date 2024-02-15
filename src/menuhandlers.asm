@@ -857,6 +857,54 @@ mDegNameSelector:
     ret
 
 ;-----------------------------------------------------------------------------
+
+mCommaEENormalHandler:
+    ld a, commaEEModeNormal
+    ld (commaEEMode), a
+    set dirtyFlagsMenu, (iy + dirtyFlags)
+    ret
+
+; Description: Select the display name of ',EE' menu.
+; Input:
+;   - A,B: nameId
+;   - C: altNameId
+;   - HL: pointer to MenuNode
+; Output:
+;   - A: either A or C
+mCommaEENormalNameSelector:
+    ld a, (commaEEMode)
+    cp commaEEModeNormal
+    jr z, mCommaEENormalSelected
+    ld a, b
+    ret
+mCommaEENormalSelected:
+    ld a, c
+    ret
+
+mCommaEESwappedHandler:
+    ld a, commaEEModeSwapped
+    ld (commaEEMode), a
+    set dirtyFlagsMenu, (iy + dirtyFlags)
+    ret
+
+; Description: Select the display name of 'EE,' menu.
+; Input:
+;   - A,B: nameId
+;   - C: altNameId
+;   - HL: pointer to MenuNode
+; Output:
+;   - A: either A or C
+mCommaEESwappedNameSelector:
+    ld a, (commaEEMode)
+    cp commaEEModeSwapped
+    jr z, mCommaEESwappedSelected
+    ld a, b
+    ret
+mCommaEESwappedSelected:
+    ld a, c
+    ret
+
+;-----------------------------------------------------------------------------
 ; Children nodes of HYP menu.
 ;-----------------------------------------------------------------------------
 
