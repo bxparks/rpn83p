@@ -633,7 +633,7 @@ _FindMenuString equ _FindMenuStringLabel-branchTableBase
     .dw FindMenuString
     .db 1
 
-; crc.asm
+; crc1.asm
 _Crc16ccittLabel:
 _Crc16ccitt equ _Crc16ccittLabel-branchTableBase
     .dw Crc16ccitt
@@ -1323,7 +1323,7 @@ defpage(1)
 #include "help.asm"
 #include "menulookup.asm"
 #include "menudef.asm"
-#include "crc.asm"
+#include "crc1.asm"
 #include "errorcode.asm"
 #include "print1.asm"
 #include "format1.asm"
