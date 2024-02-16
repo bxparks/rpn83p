@@ -639,7 +639,7 @@ _Crc16ccitt equ _Crc16ccittLabel-branchTableBase
     .dw Crc16ccitt
     .db 1
 
-; errorcode.asm
+; errorcode1.asm
 _InitErrorCodeLabel:
 _InitErrorCode equ _InitErrorCodeLabel-branchTableBase
     .dw InitErrorCode
@@ -1324,7 +1324,7 @@ defpage(1)
 #include "menulookup1.asm"
 #include "menudef.asm"
 #include "crc1.asm"
-#include "errorcode.asm"
+#include "errorcode1.asm"
 #include "print1.asm"
 #include "format1.asm"
 #include "input1.asm"
