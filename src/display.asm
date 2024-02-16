@@ -1185,7 +1185,7 @@ printOP1Base10:
     jr nz, printOP1BaseNegative
     ; Convert u32 into a base-10 string.
     ld de, OP4
-    call convertU32ToDecString
+    call formatU32ToDecString
     ; Add '.' if OP1 has fractional component.
     call appendHasFrac ; DE=rendered string
     ex de, hl ; HL=rendered string
@@ -1228,7 +1228,7 @@ printOP1Base16:
     jr nz, printOP1BaseNegative
     ; Convert u32 into a base-16 string.
     ld de, OP4
-    call convertU32ToHexString ; DE=rendered string
+    call formatU32ToHexString ; DE=rendered string
     ; Append frac indicator
     call appendHasFrac ; DE=rendered string
     ex de, hl ; HL=rendered string
@@ -1266,7 +1266,7 @@ printOP1Base8:
     jr nz, printOP1BaseNegative
     ; Convert u32 into a base-8 string.
     ld de, OP4
-    call convertU32ToOctString
+    call formatU32ToOctString
     ; Append frac indicator
     call appendHasFrac ; DE=rendered string
     ex de, hl ; HL=rendered string
@@ -1338,7 +1338,7 @@ printOP1Base2:
     ; Convert u32 into a base-2 string.
     ld hl, OP1
     ld de, OP4
-    call convertU32ToBinString ; DE points to a 32-character string + NUL.
+    call formatU32ToBinString ; DE points to a 32-character string + NUL.
     ; Truncate leading digits to fit display (12 or 8 digits)
     ex de, hl
     call truncateBinDigits ; HL=truncated string

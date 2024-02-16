@@ -141,7 +141,7 @@ formBinString:
     ; Convert to a 32-digit binary string at OP4.
     ld hl, OP1
     ld de, OP4
-    call convertU32ToBinString ; DE points to a 32-character string + NUL.
+    call formatU32ToBinString ; DE points to a 32-character string + NUL.
     ; Find the beginning of the binary string, depending on baseWordSize.
     ld a, 32
     ld hl, baseWordSize

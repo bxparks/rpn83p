@@ -13,8 +13,8 @@ hexNumberWidth equ 8 ; 4 bits * 8 = 32 bits
 
 ; Description: Converts 32-bit unsigned integer referenced by HL to a hex
 ; string in buffer referenced by DE.
-; TODO: It might be possible to combine convertU32ToHexString(),
-; convertU32ToOctString(), and convertU32ToBinString() into a single routine.
+; TODO: It might be possible to combine formatU32ToHexString(),
+; formatU32ToOctString(), and formatU32ToBinString() into a single routine.
 ;
 ; Input:
 ;   - HL: pointer to 32-bit unsigned integer
@@ -25,13 +25,13 @@ hexNumberWidth equ 8 ; 4 bits * 8 = 32 bits
 ;   - (DE): C-string representation of u32 as hexadecimal
 ; Destroys: A
 ; Preserves: BC, DE, HL
-convertU32ToHexString:
+formatU32ToHexString:
     push bc
     push hl
     push de
 
     ld b, hexNumberWidth
-convertU32ToHexStringLoop:
+formatU32ToHexStringLoop:
     ; convert to hexadecimal, but the characters are in reverse order
     ld a, (hl)
     and $0F ; last 4 bits
@@ -42,7 +42,7 @@ convertU32ToHexStringLoop:
     call shiftRightLogicalU32
     call shiftRightLogicalU32
     call shiftRightLogicalU32
-    djnz convertU32ToHexStringLoop
+    djnz formatU32ToHexStringLoop
     xor a
     ld (de), a ; NUL termination
 
@@ -74,13 +74,13 @@ octNumberWidth equ 11 ; 3 bits * 11 = 33 bits
 ;   - (DE): C-string representation of u32 as octal digits
 ; Destroys: A
 ; Preserves: BC, DE, HL
-convertU32ToOctString:
+formatU32ToOctString:
     push bc
     push hl
     push de
 
     ld b, octNumberWidth
-convertU32ToOctStringLoop:
+formatU32ToOctStringLoop:
     ld a, (hl)
     and $07 ; last 3 bits
     add a, '0' ; convert to octal
@@ -89,7 +89,7 @@ convertU32ToOctStringLoop:
     call shiftRightLogicalU32
     call shiftRightLogicalU32
     call shiftRightLogicalU32
-    djnz convertU32ToOctStringLoop
+    djnz formatU32ToOctStringLoop
     xor a
     ld (de), a ; NUL terminator
 
@@ -121,20 +121,20 @@ binNumberWidth equ 32
 ;   - (DE): C-string representation of u32 as binary digits
 ; Destroys: A
 ; Preserves: BC, DE, HL
-convertU32ToBinString:
+formatU32ToBinString:
     push bc
     push hl
     push de
 
     ld b, binNumberWidth ; 14 bits maximum
-convertU32ToBinStringLoop:
+formatU32ToBinStringLoop:
     ld a, (hl)
     and $01 ; last bit
     add a, '0' ; convert to '0' or '1'
     ld (de), a
     inc de
     call shiftRightLogicalU32
-    djnz convertU32ToBinStringLoop
+    djnz formatU32ToBinStringLoop
     xor a
     ld (de), a ; NUL terminator
 
@@ -166,12 +166,12 @@ decNumberWidth equ 10 ; 2^32 needs 10 digits
 ;   - (DE): C-string representation of u32 as hexadecimal
 ; Destroys: A
 ; Preserves: BC, DE, HL
-convertU32ToDecString:
+formatU32ToDecString:
     push bc
     push hl
     push de ; push destination buffer last
     ld b, decNumberWidth
-convertU32ToDecStringLoop:
+formatU32ToDecStringLoop:
     ; convert to decimal integer, but the characters are in reverse order
     push de
     ld d, 10
@@ -181,7 +181,7 @@ convertU32ToDecStringLoop:
     pop de
     ld (de), a
     inc de
-    djnz convertU32ToDecStringLoop
+    djnz formatU32ToDecStringLoop
     xor a
     ld (de), a ; NUL termination
 
