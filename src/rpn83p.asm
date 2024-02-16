@@ -617,7 +617,7 @@ _RestoreOSState equ _RestoreOSStateLabel-branchTableBase
     .dw RestoreOSState
     .db 1
 
-; help.asm
+; help1.asm
 _ProcessHelpLabel:
 _ProcessHelp equ _ProcessHelpLabel-branchTableBase
     .dw ProcessHelp
@@ -1320,7 +1320,7 @@ defpage(1)
 
 #include "appstate.asm"
 #include "osstate.asm"
-#include "help.asm"
+#include "help1.asm"
 #include "menulookup.asm"
 #include "menudef.asm"
 #include "crc1.asm"
