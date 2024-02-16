@@ -747,7 +747,7 @@ _AddAToOP1 equ _AddAToOP1Label-branchTableBase
     .dw AddAToOP1
     .db 1
 
-; tvm.asm
+; tvm1.asm
 _TvmCalculateNLabel:
 _TvmCalculateN equ _TvmCalculateNLabel-branchTableBase
     .dw TvmCalculateN
@@ -1340,7 +1340,7 @@ defpage(1)
 #include "const1.asm"
 #include "complex1.asm"
 #include "formatcomplex1.asm"
-#include "tvm.asm"
+#include "tvm1.asm"
 #include "hms1.asm"
 #include "prob1.asm"
 #ifdef DEBUG
