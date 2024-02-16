@@ -351,37 +351,3 @@ formatI8ToD2:
     pop af
     neg
     jr formatU8ToD2
-
-;-----------------------------------------------------------------------------
-
-; Description: Reverses the chars of the string referenced by HL.
-; Input:
-;   - HL:(char*)
-;   - B:numChars
-; Output: string in (HL) reversed
-; Destroys: A, B, DE, HL
-reverseStringPageTwo:
-    ; test for 0-length string
-    ld a, b
-    or a
-    ret z
-    ; find end of string
-    ld e, b
-    ld d, 0
-    ex de, hl
-    add hl, de
-    ex de, hl ; DE = DE + B = end of string
-    dec de
-    ; set up loop
-    srl b ; B = num / 2
-    ret z ; NOTE: Failing to check for this zero took 2 days to debug!
-reverseStringPageTwoLoop:
-    ld a, (de)
-    ld c, (hl)
-    ld (hl), a
-    ld a, c
-    ld (de), a
-    inc hl
-    dec de
-    djnz reverseStringPageTwoLoop
-    ret
