@@ -296,6 +296,8 @@ convertOP1OP2ToUxxErr:
     bcall(_ErrDomain) ; throw exception if X >= baseWordSize
 
 ;-----------------------------------------------------------------------------
+; Routines that query (baseWordSize).
+;-----------------------------------------------------------------------------
 
 ; Description: Check if the given u32 fits in the given WSIZE.
 ; Input:
@@ -329,3 +331,30 @@ checkU32FitsWsizeTooBig:
     set u32StatusCodeTooBig, c
     pop hl
     ret
+
+; Description: Return the index corresponding to each of the potential values
+; of (baseWordSize). For the values of (8, 16, 24, 32) this returns (0, 1, 2,
+; 3).
+; Input: (baseWordSize)
+; Output: A=(baseWordSize)/8-1
+; Throws: Err:Domain if not 8, 16, 24, 32.
+; Destroys: A
+; Preserves: BC, DE, HL
+getWordSizeIndex:
+    push bc
+    ld a, (baseWordSize)
+    ld b, a
+    and $07 ; 0b0000_0111
+    jr nz, getWordSizeIndexErr
+    ld a, b
+    rrca
+    rrca
+    rrca
+    dec a
+    ld b, a
+    and $FC ; 0b1111_1100
+    ld a, b
+    pop bc
+    ret z
+getWordSizeIndexErr:
+    bcall(_ErrDomain)

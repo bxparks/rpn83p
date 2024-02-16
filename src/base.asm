@@ -20,33 +20,6 @@ initBase:
 ; Helper routines related to baseWordSize.
 ;-----------------------------------------------------------------------------
 
-; Description: Return the index corresponding to each of the potential values
-; of (baseWordSize). For the values of (8, 16, 24, 32) this returns (0, 1, 2,
-; 3).
-; Input: (baseWordSize)
-; Output: A=(baseWordSize)/8-1
-; Throws: Err:Domain if not 8, 16, 24, 32.
-; Destroys: A
-; Preserves: BC, DE, HL
-getWordSizeIndex:
-    push bc
-    ld a, (baseWordSize)
-    ld b, a
-    and $07 ; 0b0000_0111
-    jr nz, getWordSizeIndexErr
-    ld a, b
-    rrca
-    rrca
-    rrca
-    dec a
-    ld b, a
-    and $FC ; 0b1111_1100
-    ld a, b
-    pop bc
-    ret z
-getWordSizeIndexErr:
-    bcall(_ErrDomain)
-
 ; Description: Truncate the u32(HL) to the number of bits given by
 ; (baseWordSize).
 ; Input:
