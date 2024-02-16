@@ -6,32 +6,11 @@
 ; integer arguments. The arguments to the lower-level functions are u32,
 ; u24, u16, or u8 integers, usually stored using up to 4 bytes in little endian
 ; format.
-;
-; TODO: Remove dependency to (baseWordSize) by passing it as a parameter in one
-; of the registers. That would allow these routines to be tested in isolation.
 ;-----------------------------------------------------------------------------
 
 ;-----------------------------------------------------------------------------
 ; Shift and rotate operations.
 ;-----------------------------------------------------------------------------
-
-; Description: Call the appropriate shiftLeftLogicalLeftUXX() depending on
-; (baseWordSize).
-; Input:
-;   - HL: pointer to a u32 integer in little-endian format.
-; Output:
-;   - u32 pointed by HL is shifted left
-;   - CF: bit 7 of the most significant byte of input
-; Destroys: A
-shiftLeftLogicalUxx:
-    call getWordSizeIndex
-    or a
-    jr z, shiftLeftLogicalU8
-    dec a
-    jr z, shiftLeftLogicalU16
-    dec a
-    jr z, shiftLeftLogicalU24
-    ; [[fallthrough]]
 
 shiftLeftLogicalU32:
     push hl
@@ -67,23 +46,6 @@ shiftLeftLogicalU8:
     ret
 
 ;-----------------------------------------------------------------------------
-
-; Description: Call the appropriate shiftRightLogicalUXX() depending on
-; (baseWordSize).
-; Input: HL: pointer to u32
-; Output:
-;   - HL: pointer result
-;   - CF: bit 0 of the least signficant byte of input
-; Destroys: A
-shiftRightLogicalUxx:
-    call getWordSizeIndex
-    or a
-    jr z, shiftRightLogicalU8
-    dec a
-    jr z, shiftRightLogicalU16
-    dec a
-    jr z, shiftRightLogicalU24
-    ; [[fallthrough]]
 
 shiftRightLogicalU32:
     inc hl
@@ -121,23 +83,6 @@ shiftRightLogicalU8:
 
 ;-----------------------------------------------------------------------------
 
-; Description: Call the appropriate shiftRightArithmeticUXX() depending on
-; (baseWordSize).
-; Input: HL: pointer to u32
-; Output:
-;   - HL: pointer result
-;   - CF: bit 0 of the least signficant byte of input
-; Destroys: A
-shiftRightArithmeticUxx:
-    call getWordSizeIndex
-    or a
-    jr z, shiftRightArithmeticU8
-    dec a
-    jr z, shiftRightArithmeticU16
-    dec a
-    jr z, shiftRightArithmeticU24
-    ; [[fallthrough]]
-
 shiftRightArithmeticU32:
     inc hl
     inc hl
@@ -173,24 +118,6 @@ shiftRightArithmeticU8:
     ret
 
 ;-----------------------------------------------------------------------------
-
-; Description: Call the appropriate rotateLeftCircularUXX() depending on
-; (baseWordSize).
-; Input:
-;   - HL: pointer to u32
-; Output:
-;   - HL: pointer to result
-;   - CF: bit 7 of most significant byte of input
-; Destroys: A
-rotateLeftCircularUxx:
-    call getWordSizeIndex
-    or a
-    jr z, rotateLeftCircularU8
-    dec a
-    jr z, rotateLeftCircularU16
-    dec a
-    jr z, rotateLeftCircularU24
-    ; [[fallthrough]]
 
 rotateLeftCircularU32:
     push hl
@@ -232,24 +159,6 @@ rotateLeftCircularU8:
     ret
 
 ;-----------------------------------------------------------------------------
-
-; Description: Call the appropriate rotateRightCircularUXX() depending on
-; (baseWordSize).
-; Input:
-;   - HL: pointer to u32
-; Output:
-;   - HL: pointer to result
-;   - CF: bit 0 of least significant byte of input
-; Destroys: A
-rotateRightCircularUxx:
-    call getWordSizeIndex
-    or a
-    jr z, rotateRightCircularU8
-    dec a
-    jr z, rotateRightCircularU16
-    dec a
-    jr z, rotateRightCircularU24
-    ; [[fallthrough]]
 
 rotateRightCircularU32:
     push bc
@@ -299,26 +208,6 @@ rotateRightCircularU8:
 
 ;-----------------------------------------------------------------------------
 
-; Description: Call the appropriate rotateLeftCarryUXX() depending on
-; (baseWordSize).
-; Input:
-;   - HL: pointer to u32
-;   - CF: the existing carry flag in bit 0
-; Output:
-;   - HL: pointer to result
-;   - CF: most significant bit of the input
-; Destroys: A, C
-rotateLeftCarryUxx:
-    rl c ; save CF
-    call getWordSizeIndex
-    or a
-    jr z, rotateLeftCarryU8Alt
-    dec a
-    jr z, rotateLeftCarryU16Alt
-    dec a
-    jr z, rotateLeftCarryU24Alt
-    ; [[fallthrough]]
-
 rotateLeftCarryU32Alt:
     rr c
 rotateLeftCarryU32:
@@ -361,26 +250,6 @@ rotateLeftCarryU8:
     ret
 
 ;-----------------------------------------------------------------------------
-
-; Description: Call the appropriate rotateRightCarryUXX() depending on
-; (baseWordSize).
-; Input:
-;   - HL: pointer to u32
-;   - CF: existing carry flag
-; Output:
-;   - HL: pointer to result
-;   - CF: the least significant bit of input
-; Destroys: A, C
-rotateRightCarryUxx:
-    rl c ; save CF
-    call getWordSizeIndex
-    or a
-    jr z, rotateRightCarryU8Alt
-    dec a
-    jr z, rotateRightCarryU16Alt
-    dec a
-    jr z, rotateRightCarryU24Alt
-    ; [[fallthrough]]
 
 rotateRightCarryU32Alt:
     rr c
@@ -430,9 +299,9 @@ rotateRightCarryU8:
 
 ; Description: Calculate (HL) = u32(HL) * 10.
 ; Input:
-;   - HL: pointer to a u32 integer, little-endian format
+;   - HL:(u32*)-input
 ; Output:
-;   - u32(HL) = u32(HL) * 10
+;   - (*HL)*=10
 ; Destroys: A
 ; Preserves: BC, DE, HL
 multU32By10:
@@ -490,37 +359,17 @@ multU32By10:
 
 ;-----------------------------------------------------------------------------
 
-; Description: Call the appropriate multUxxUxx() depending on (baseWordSize).
-; Input:
-;   - HL: pointer to result u32
-;   - DE: pointer to operand u32
-;   - CF: the existing carry flag in bit 0
-; Output:
-;   - HL*=DE
-;   - CF: carry flag set if result overflowed U32
-; Destroys: A, IX
-; Preserves: BC, DE, HL, (DE)
-multUxxUxx:
-    call getWordSizeIndex
-    or a
-    jr z, multU8U8
-    dec a
-    jr z, multU16U16
-    dec a
-    jr z, multU24U24
-    ; [[fallthrough]]
-
 ; Description: Multiply u32 by u32, u32(HL) *= u32(DE). This algorithm is
 ; similar to the u16*u16 algorithm in
 ; https://tutorials.eeems.ca/Z80ASM/part4.htm, except that this implements a
 ; u32*u32.
 ; Input:
-;   - HL: pointer to result u32
-;   - DE: pointer to operand u32
+;   - HL:(u32*)=input
+;   - DE:(u32*)=multiplier
 ; Output:
-;   - u32(HL) *= u32(DE)
-;   - CF: carry flag set if result overflowed U32
-;   - A: most significant byte of u32 result (used by multU24U24)
+;   - (*HL)*=(*DE)
+;   - CF=set if result overflowed U32
+;   - A=most significant byte of u32 result (used by multU24U24)
 ; Destroys: A, IX
 ; Preserves: BC, DE, HL, (DE)
 multU32U32:
@@ -577,11 +426,11 @@ multU32U32End:
 
 ; Description: Multiply u24 by u24, u24(HL) *= u24(DE).
 ; Input:
-;   - HL: pointer to result u24
-;   - DE: pointer to operand u24
+;   - HL:(u24*)=input
+;   - DE:(u24*)=multiplier
 ; Output:
-;   - u24(HL) *= u24(DE)
-;   - CF: carry flag set if result overflowed u24
+;   - (*HL)*=(*DE)
+;   - CF=set if result overflowed u24
 ; Destroys: A, IX
 ; Preserves: BC, DE, HL, (DE)
 multU24U24:
@@ -594,11 +443,11 @@ multU24U24:
 
 ; Description: Multiply u16 by u16, u16(HL) *= u16(DE).
 ; Input:
-;   - HL: pointer to result u16
-;   - DE: pointer to operand u16
+;   - HL:(u16*)=input
+;   - DE:(u16*)=multiplier
 ; Output:
-;   - u16(HL) *= u16(DE)
-;   - CF: carry flag set if result overflowed u16
+;   - (*HL)*=(*DE)
+;   - CF=set if result overflowed u16
 ; Destroys: A, IX
 ; Preserves: BC, DE, HL, (DE)
 multU16U16:
@@ -615,11 +464,11 @@ multU16U16:
 
 ; Description: Multiply u8 by u8, u8(HL) *= u8(DE).
 ; Input:
-;   - HL: pointer to result u8
-;   - DE: pointer to operand u8
+;   - HL:(u8*)=input
+;   - DE:(u8*)=multiplier
 ; Output:
-;   - u8(HL) *= u8(DE)
-;   - CF: carry flag set if result overflowed u8
+;   - (*HL)*=(*DE)
+;   - CF=set if result overflowed u8
 ; Destroys: A, IX
 ; Preserves: BC, DE, HL, (DE)
 ; TODO: Implement a more efficient u8*u8 algorithm, instead of calling u32*u32.
@@ -640,13 +489,12 @@ multU8U8:
 
 ; Description: Add A to u32 pointed by HL.
 ; Input:
-;   - HL: pointer to u32
-;   - A: u8 to add
-; Output: (HL) += A
+;   - HL:(u32*)=input
+;   - A:u8=operand
+; Output: (*HL)+=A
 ; Destroys: none
 addU32ByA:
     push hl
-
     add a, (hl)
     ld (hl), a
     inc hl
@@ -664,31 +512,18 @@ addU32ByA:
     ld a, (hl)
     adc a, 0
     ld (hl), a
-
     pop hl
     ret
 
 ;-----------------------------------------------------------------------------
 
-; Description: Call the appropriate addUxxUxx() depending on (baseWordSize).
+; Description: Add two u32 numbers pointed by HL and DE.
 ; Input:
-;   - HL: pointer to result u32 integer in little-endian format.
-;   - DE: pointer to operand u32 integer in little-endian format.
+;   - HL:(u32*)=input
+;   - DE:(const u32*)=operand
 ; Output:
-;   - (HL) += (DE)
-;   - CF=carry flag
-; Destroys: A
-; Preserves: BC, DE, HL, (DE)
-addUxxUxx:
-    call getWordSizeIndex
-    or a
-    jr z, addU8U8
-    dec a
-    jr z, addU16U16
-    dec a
-    jr z, addU24U24
-    ; [[fallthrough]]
-
+;   - (*HL)+=(*DE)
+;   - CF updated
 ; Output: A=byte 3 (most significant byte) of result
 addU32U32:
     push de
@@ -721,6 +556,13 @@ addU32U32:
     pop de
     ret
 
+; Description: Add two u24 numbers pointed by HL and DE.
+; Input:
+;   - HL:(u24*)=input
+;   - DE:(const u24*)=operand
+; Output:
+;   - (*HL)+=(*DE)
+;   - CF updated
 addU24U24:
     call addU32U32
     ret c
@@ -729,6 +571,13 @@ addU24U24:
     scf
     ret
 
+; Description: Add two u16 numbers pointed by HL and DE.
+; Input:
+;   - HL:(u16*)=input
+;   - DE:(const u16*)=operand
+; Output:
+;   - (*HL)+=(*DE)
+;   - CF updated
 addU16U16:
     call addU32U32
     ret c
@@ -741,6 +590,13 @@ addU16U16:
     scf
     ret
 
+; Description: Add two u8 numbers pointed by HL and DE.
+; Input:
+;   - HL:(u8*)=input
+;   - DE:(const u8*)=operand
+; Output:
+;   - (*HL)+=(*DE)
+;   - CF updated
 addU8U8:
     call addU32U32
     ret c
@@ -754,12 +610,15 @@ addU8U8:
     scf
     ret
 
-; Description: Add u32 to u32, u32(HL) += u32(IX)
+; Description: Add two u32 referened by HL and IX.
+; Input
+;   - HL:(u32*)=input
+;   - DE:(const u32*)=operand
 ; Output:
-;   - (HL) += (IX)
-;   - CF=carry flag
+;   - (*HL)+=(*IX)
+;   - CF updated
 ; Destroys: A
-; Preserves: BC, DE, HL, (BC), IX
+; Preserves: BC, DE, HL, IX
 addU32U32IX:
     ; ex ix, de
     push ix
@@ -776,25 +635,13 @@ addU32U32IX:
 
 ;-----------------------------------------------------------------------------
 
-; Description: Call the appropriate subUxxUxx() dependingon (baseWordSize).
+; Description: Subtract two u32 numbers pointed by HL and DE.
 ; Input:
-;   - HL: pointer to destination u32 integer in little-endian format.
-;   - DE: pointer to operand u32 integer in little-endian format.
+;   - HL:(u32*)=input
+;   - DE:(const u32*)=operand
 ; Output:
-;   - (HL) -= (DE)
-;   - CF: carry flag
-; Destroys: A
-; Preserves: BC, DE, HL, (DE)
-subUxxUxx:
-    call getWordSizeIndex
-    or a
-    jr z, subU8U8
-    dec a
-    jr z, subU16U16
-    dec a
-    jr z, subU24U24
-    ; [[fallthrough]]
-
+;   - (*HL)-=(*DE)
+;   - CF updated
 ; Output: A: byte 3 of the result u32
 subU32U32:
     push de
@@ -827,6 +674,13 @@ subU32U32:
     pop de
     ret
 
+; Description: Subtract two u24 numbers pointed by HL and DE.
+; Input:
+;   - HL:(u24*)=input
+;   - DE:(const u24*)=operand
+; Output:
+;   - (*HL)-=(*DE)
+;   - CF updated
 subU24U24:
     call subU32U32
     ret c
@@ -835,6 +689,13 @@ subU24U24:
     scf
     ret
 
+; Description: Subtract two u16 numbers pointed by HL and DE.
+; Input:
+;   - HL:(u16*)=input
+;   - DE:(const u16*)=operand
+; Output:
+;   - (*HL)-=(*DE)
+;   - CF updated
 subU16U16:
     call subU32U32
     ret c
@@ -847,6 +708,13 @@ subU16U16:
     scf
     ret
 
+; Description: Subtract two u8 numbers pointed by HL and DE.
+; Input:
+;   - HL:(u8*)=input
+;   - DE:(const u8*)=operand
+; Output:
+;   - (*HL)-=(*DE)
+;   - CF updated
 subU8U8:
     call subU32U32
     ret c
@@ -868,16 +736,15 @@ subU8U8:
 ; https://wikiti.brandonw.net/index.php?title=Z80_Routines:Math:Division#32.2F16_division
 ;
 ; Input:
-;   - HL: pointer to u32 dividend
-;   - DE: pointer to u32 divisor
-;   - BC: pointer to empty u32, used as remainder
+;   - HL:(u32*)=dividend
+;   - DE:(const u32*)=divisor
+;   - BC:(u32*)=remainder
 ; Output:
-;   - HL: pointer to u32 quotient
-;   - DE: divisor, unchanged
-;   - BC: pointer to u32 remainder
-;   - CF: 0 (division always clears the carry flag)
+;   - HL:(u32*)=quotient updated
+;   - DE=divisor, unchanged
+;   - BC:(u32*)=remainder updated
+;   - CF=0 (division always clears the carry flag)
 ; Destroys: A
-divUxxUxx:
 divU32U32:
     call clearU32BC ; clear remainder, dividend will shift into this
     ld a, 32 ; iterate for 32 bits of a u32
@@ -1393,22 +1260,6 @@ negU32:
 
 ;-----------------------------------------------------------------------------
 
-; Description: Call the appropriate reverseUXX() depending on the
-; (baseWordSize).
-; Input: HL=pointer to u32
-; Output: HL=reverse(HL)
-; Destroys: A, BC
-; Preserves: HL, DE
-reverseUxxBits:
-    call getWordSizeIndex
-    or a
-    jr z, reverseU8Bits
-    dec a
-    jr z, reverseU16Bits
-    dec a
-    jr z, reverseU24Bits
-    ; [[fallthrough]]
-
 ; Description: Reverse the bits of u32(HL).
 reverseU32Bits:
     push hl
@@ -1572,6 +1423,8 @@ setU32Bit:
     pop hl
     ret
 
+;-----------------------------------------------------------------------------
+
 ; Description: Clear bit 'C' of u32(HL).
 ; Input:
 ;   - HL=pointer to u32
@@ -1588,6 +1441,8 @@ clearU32Bit:
     ld (hl), a
     pop hl
     ret
+
+;-----------------------------------------------------------------------------
 
 ; Description: Return the status of bit C of u32(HL).
 ; Input:
@@ -1607,6 +1462,8 @@ getU32Bit:
 getU32BitEnd:
     pop hl
     ret
+
+;-----------------------------------------------------------------------------
 
 ; Description: Calculate the offset and mask of bit C of u32(HL).
 ; Input:
@@ -1643,36 +1500,4 @@ bitMaskB:
 setBitBofALoop:
     rlca
     djnz setBitBofALoop
-    ret
-
-;-----------------------------------------------------------------------------
-; Word size operations.
-;-----------------------------------------------------------------------------
-
-; Description: Truncate the u32(HL) to the number of bits given by
-; (baseWordSize).
-; Input:
-;   - HL=pointer to u32
-;   - (baseWordSize)=8, 16, 24, 32
-; Output:
-;   - HL=pointer to u8, u16, u24, or u32
-; Destroys: A
-; Preserves: HL
-truncToWordSize:
-    push hl
-    inc hl
-    inc hl
-    inc hl
-    call getWordSizeIndex
-    sub 3
-    neg ; [u8,u16,u24,u32] -> [3,2,1,0]
-    jr truncToWordSizeEntry
-truncToWordSizeLoop:
-    ld (hl), 0
-    dec hl
-    dec a
-truncToWordSizeEntry:
-    jr nz, truncToWordSizeLoop
-truncWordSizeExit:
-    pop hl
     ret
