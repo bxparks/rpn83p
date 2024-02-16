@@ -658,9 +658,9 @@ _SetHandlerCodeFromSystemCode equ _SetHandlerCodeFromSystemCodeLabel-branchTable
     .db 1
 
 ; print1.asm
-_ConvertAToStringLabel:
-_ConvertAToString equ _ConvertAToStringLabel-branchTableBase
-    .dw ConvertAToString
+_FormatAToStringLabel:
+_FormatAToString equ _FormatAToStringLabel-branchTableBase
+    .dw FormatAToString
     .db 1
 
 ; input1.asm

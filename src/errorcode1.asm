@@ -66,7 +66,8 @@ PrintErrorString:
     ld a, (errorCode)
     ld hl, OP1
     push hl
-    call ConvertAToString ; HL updated, NUL terminated
+    call FormatAToString ; HL updated
+    ld (hl), 0 ; add NUL
     pop hl
     call vPutSPageOne
     ;

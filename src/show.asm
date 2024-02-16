@@ -15,7 +15,7 @@
 ; all significant digits, suitable for a SHOW function.
 ; Input:
 ;   - OP1/OP2: real, complex, or record (e.g. Date{}, DateTime{}, Offset{})
-;   - DE: pointer to output string buffer
+;   - DE:(char*)=output string buffer
 ; Output:
 ;   - (DE): string buffer updated and NUL terminated
 ;   - DE: points to NUL at the end of string, to allow chaining
@@ -95,7 +95,7 @@ formShowableEnd:
 ;
 ; Input:
 ;   - OP1: an integer represented as a floating point number
-;   - DE: bufPointer
+;   - DE:(char*)=bufPointer
 ; Output:
 ;   - (DE): contains the integer rendered as an integer string
 ;   - DE: updated
@@ -158,9 +158,9 @@ formBinString:
 ; Format the complex number in OP1/OP2 into the C string buffer pointed by DE.
 ; Input:
 ;   - OP1/OP2=Z, complex number
-;   - DE: pointer to output string buffer
+;   - DE:(char*)=cstringPointer
 ; Output:
-;   - (DE): C string buffer updated and NUL terminated
+;   - (DE): C string buffer updated, *not* NUL terminated
 ;   - DE: points to the next character
 ; Destroys: all, OP1-OP6
 formComplexString:
@@ -175,7 +175,7 @@ formComplexString:
     ; [[falltrhough]]
 
 ; Description: Format the complex number in rectangular form.
-; Input: DE: stringPointer
+; Input: DE:(char*)=cstringPointer
 ; Output: DE: updated
 formComplexRectString:
     bcall(_ComplexToRect) ; OP1=Re(Z); OP2=Im(Z)
@@ -197,7 +197,7 @@ msgShowComplexRectSpacer:
     .db " ", LimagI, " ", 0
 
 ; Description: Format the complex number in polar radian form.
-; Input: DE: cstringPointer
+; Input: DE:(char*)=cstringPointer
 ; Output: DE: updated
 formComplexRadString:
     push de
@@ -221,7 +221,7 @@ msgShowComplexRadSpacer:
     .db " ", Langle, " ", 0
 
 ; Description: Format the complex number in polar degree form.
-; Input: DE: cstringPointer
+; Input: DE:(char*)=cstringPointer
 ; Output: DE: updated
 formComplexDegString:
     push de
@@ -297,9 +297,9 @@ formRealStringInt:
 ;
 ; Input:
 ;   - OP1: floating point number
-;   - DE: bufPointer
+;   - DE:(char*)=bufPointer
 ; Output:
-;   - (DE): floating point rendered in scientific notation, no NUL terminator
+;   - (DE): floating point rendered in scientific notation, *not* NUL terminated
 ;   - DE: updated
 ; Destroys: A, B, C, DE, HL
 formSciString:
@@ -392,7 +392,7 @@ formSciStringExp:
     neg ; A=-EXP
 formSciStringPosExp:
     ex de, hl
-    bcall(_ConvertAToString) ; HL string updated, NUL terminated
+    bcall(_FormatAToString) ; HL string updated, no NUL
     ex de, hl
     ret
 
@@ -408,7 +408,7 @@ formSciStringPosExp:
 ;
 ; Input:
 ;   - OP1: an integer represented as a floating point number
-;   - DE: bufPointer
+;   - DE:(char*)=bufPointer
 ; Output:
 ;   - (DE): floating point rendered in scientific notation, no NUL terminator
 ;   - DE: updated
@@ -464,8 +464,8 @@ formIntStringLoop:
 ; which is smaller than the 44 bytes available using OP3-OP6.
 ;
 ; Input:
-;   - HL: pointer to source base-2 string (probably OP4)
-;   - DE: destination string buffer (sometimes OP3)
+;   - HL:(char*)=source base-2 string (probably OP4)
+;   - DE:(char*)=destination string buffer (sometimes OP3)
 ; Output:
 ;   - (DE): base-2 string formatted in lines of 8 digits, in 2 groups of 4
 ;   digits
