@@ -899,7 +899,7 @@ _ExpMinusOne equ _ExpMinusOneLabel-branchTableBase
     .dw ExpMinusOne
     .db 1
 
-; hms.asm
+; hms1.asm
 _HmsToHrLabel:
 _HmsToHr equ _HmsToHrLabel-branchTableBase
     .dw HmsToHr
@@ -1341,7 +1341,7 @@ defpage(1)
 #include "complex1.asm"
 #include "formatcomplex1.asm"
 #include "tvm.asm"
-#include "hms.asm"
+#include "hms1.asm"
 #include "prob1.asm"
 #ifdef DEBUG
 #include "debug.asm"
