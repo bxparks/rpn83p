@@ -607,7 +607,7 @@ _RestoreAppState equ _RestoreAppStateLabel-branchTableBase
     .dw RestoreAppState
     .db 1
 
-; osstate.asm
+; osstate1.asm
 _SaveOSStateLabel:
 _SaveOSState equ _SaveOSStateLabel-branchTableBase
     .dw SaveOSState
@@ -1319,7 +1319,7 @@ _DebugU32DEAsHex equ _DebugU32DEAsHexLabel-branchTableBase
 defpage(1)
 
 #include "appstate1.asm"
-#include "osstate.asm"
+#include "osstate1.asm"
 #include "help1.asm"
 #include "menulookup1.asm"
 #include "menudef.asm"
