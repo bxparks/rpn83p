@@ -909,7 +909,7 @@ _HmsFromHr equ _HmsFromHrLabel-branchTableBase
     .dw HmsFromHr
     .db 1
 
-; prob.asm
+; prob1.asm
 _ProbPermLabel:
 _ProbPerm equ _ProbPermLabel-branchTableBase
     .dw ProbPerm
@@ -1342,7 +1342,7 @@ defpage(1)
 #include "formatcomplex1.asm"
 #include "tvm.asm"
 #include "hms.asm"
-#include "prob.asm"
+#include "prob1.asm"
 #ifdef DEBUG
 #include "debug.asm"
 #endif
