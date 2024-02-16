@@ -1213,7 +1213,7 @@ _RtcGetTimeZone equ _RtcGetTimeZoneLabel-branchTableBase
 ;-----------------------------------------------------------------------------
 
 #ifdef DEBUG
-; debug.asm
+; debug1.asm
 _DebugInputBufLabel:
 _DebugInputBuf equ _DebugInputBufLabel-branchTableBase
     .dw DebugInputBuf
@@ -1344,7 +1344,7 @@ defpage(1)
 #include "hms1.asm"
 #include "prob1.asm"
 #ifdef DEBUG
-#include "debug.asm"
+#include "debug1.asm"
 #endif
 
 ;-----------------------------------------------------------------------------

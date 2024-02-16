@@ -5,7 +5,7 @@ SPASM_INC := $(SPASM_DIR)/inc
 SPASM := $(SPASM_DIR)/spasm
 SRCS := $(wildcard *.asm)
 
-# TI Flash app. Use -DDEBUG to activate functions in debug.asm.
+# TI Flash app. Use -DDEBUG to activate functions in debug1.asm.
 rpn83p.8xk: $(SRCS) Makefile
 	$(SPASM) -I $(SPASM_INC) -N rpn83p.asm $@
 	@#$(SPASM) -DDEBUG -I $(SPASM_INC) -N rpn83p.asm $@
