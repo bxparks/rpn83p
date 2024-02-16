@@ -47,39 +47,6 @@ getWordSizeIndex:
 getWordSizeIndexErr:
     bcall(_ErrDomain)
 
-; Description: Check if the given u32 fits in the given WSIZE.
-; Input:
-;   - HL:(const u32*)
-;   - C: u32StatusCode
-;   - (baseWordSize): current word size
-; Output:
-;   - C: u32StatusCodeTooBig bit set if u32 is too big for baseWordSize
-; Destroys: A, B, C
-; Preserves: DE, HL
-checkU32FitsWsize:
-    call getWordSizeIndex ; A=0,1,2,3
-    sub 3 ; A=A-3
-    neg ; A=3-A
-    ret z ; if A==0 (i.e. wordSize==32): return
-    ld b, a ; B=number of upper bytes of u32 to check
-    xor a
-    push hl
-    inc hl
-    inc hl
-    inc hl
-checkU32FitsLoop:
-    or (hl)
-    dec hl
-    jr nz, checkU32FitsWsizeTooBig
-    djnz checkU32FitsLoop
-checkU32FitsWsizeOk:
-    pop hl
-    ret
-checkU32FitsWsizeTooBig:
-    set u32StatusCodeTooBig, c
-    pop hl
-    ret
-
 ; Description: Truncate the u32(HL) to the number of bits given by
 ; (baseWordSize).
 ; Input:
