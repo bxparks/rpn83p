@@ -11,7 +11,7 @@
 ;------------------------------------------------------------------------------
 
 ; Description: Clear the u40 pointed by HL.
-; Input: HL: pointer to u40
+; Input: HL:(u40*)
 ; Destroys: none
 clearU40:
     push hl
@@ -27,7 +27,7 @@ clearU40Loop:
     ret
 
 ; Description: Clear the u40 pointed by BC.
-; Input: BC: pointer to u40
+; Input: BC:(u40*)
 ; Destroys: none
 clearU40BC:
     push hl
@@ -56,7 +56,7 @@ copyU40:
 ; Description: Set u40 pointed by HL to value in A.
 ; Input:
 ;   - A: u8
-;   - HL: pointer to u40
+;   - HL:(u40*)
 ; Output:
 ;   - (HL)=A
 ; Preserves: all
@@ -67,10 +67,10 @@ setU40ToA:
 
 ; Description: Set u40 pointed by HL to u16 value in BC.
 ; Input:
-;   - BC: u16
-;   - HL: pointer to u40
+;   - BC:u16
+;   - HL:(u40*)
 ; Output:
-;   - u40(HL)=BC
+;   - (*HL)=BC
 ; Preserves: all
 setU40ToBC:
     push af
@@ -92,10 +92,10 @@ setU40ToBC:
 ; Description: Set u40 pointed by HL to u24 value in ABC.
 ; Input:
 ;   - A: u8
-;   - BC: u16
-;   - HL: pointer to u40
+;   - BC:u16
+;   - HL:(u40*)
 ; Output:
-;   - u40(HL)=ABC
+;   - (*HL)=ABC
 ; Preserves: all
 setU40ToABC:
     push af
@@ -119,7 +119,7 @@ setU40ToABC:
 ; Description: Set i40 pointed by HL to signed value in A.
 ; Input:
 ;   - A: i8
-;   - HL: pointer to i40
+;   - HL:(*i40)
 ; Output:
 ;   - (HL)=A
 ; Preserves: all
@@ -187,7 +187,7 @@ addU40U40IX:
 
 ; Description: Add A to u40 pointed by HL.
 ; Input:
-;   - HL: pointer to u40
+;   - HL:(u40*)
 ;   - A: u8 to add
 ; Output: (HL) += A
 ; Destroys: none
@@ -212,7 +212,7 @@ addU40ByALoopEntry:
 
 ; Description: Subtract 2 u40 integers.
 ; Input:
-;   - HL: pointer to result u40 integer in little-endian format.
+;   - HL:(u40*)
 ;   - DE: pointer to operand u40 integer in little-endian format.
 ; Output:
 ;   - (HL) -= (DE)
@@ -245,7 +245,7 @@ subU40U40Loop:
 ; https://tutorials.eeems.ca/Z80ASM/part4.htm, except that this implements a
 ; u40*u40.
 ; Input:
-;   - HL: pointer to result u40
+;   - HL:(u40*)
 ;   - DE: pointer to operand u40
 ; Output:
 ;   - u40(HL) *= u40(DE)
@@ -314,7 +314,7 @@ multU40U40End:
 
 ; Description: Calculate (HL) = u40(HL) * 10.
 ; Input:
-;   - HL: pointer to a u40 integer, little-endian format
+;   - HL:(u40*)
 ; Output:
 ;   - u40(HL) = u40(HL) * 10
 ; Destroys: A
@@ -357,7 +357,7 @@ multU40By10:
 
 ; Description: Calculate (HL) = u40(HL) * A.
 ; Input:
-;   - HL: pointer to a u40 integer, little-endian format
+;   - HL:(u40*)
 ;   - A: multiplier
 ; Output:
 ;   - u40(HL) = u40(HL) * A
@@ -417,14 +417,14 @@ multU40ByAEnd:
 ; https://wikiti.brandonw.net/index.php?title=Z80_Routines:Math:Division#32.2F16_division
 ;
 ; Input:
-;   - HL: pointer to u40 dividend
-;   - DE: pointer to u40 divisor
-;   - BC: pointer to empty u40, used as remainder
+;   - HL:(u40*)=dividend
+;   - DE:(u40*)=divisor
+;   - BC:(u40*)=remainder
 ; Output:
-;   - HL: pointer to u40 quotient
-;   - DE: divisor, unchanged
-;   - BC: pointer to u40 remainder
-;   - CF: 0 (division always clears the carry flag)
+;   - HL:(u40*)=quotient
+;   - DE unchanged
+;   - BC:(u40*)=remainder
+;   - CF=0 (division always clears the carry flag)
 ; Destroys: A
 ; Preserves: BC, DE, HL
 divU40U40:
@@ -470,14 +470,14 @@ divU40U40NextBit:
 ;           return (-q-1,d-r)
 ;
 ; Input:
-;   - HL: pointer to i40 dividend
-;   - DE: pointer to u40 divisor
-;   - BC: pointer to empty u40, used as remainder
+;   - HL:(i40*)=dividend
+;   - DE:(u40*)=divisor
+;   - BC:(u40*)=remainder
 ; Output:
-;   - HL: pointer to i40 quotient
-;   - DE: divisor, unchanged
-;   - BC: pointer to u40 remainder
-;   - CF: 0 (division always clears the carry flag)
+;   - HL:(i40*)=quotient
+;   - DE=divisor unchanged
+;   - BC:(u40*)=remainder
+;   - CF=0 (division always clears the carry flag)
 ; Destroys: A
 ; Preserves: BC, DE, HL
 divI40U40:
@@ -511,13 +511,13 @@ divI40U40ZeroRemainder:
 ; https://wikiti.brandonw.net/index.php?title=Z80_Routines:Math:Division#32.2F16_division
 ;
 ; Input:
-;   - HL: pointer to u40 dividend
-;   - D: u8 divisor
+;   - HL:(u40*)=dividend
+;   - D:u8=divisor
 ; Output:
-;   - HL: pointer to u40 quotient
-;   - D: u8 divisor, unchanged
-;   - E: u8 remainder
-;   - CF: 0 (division always clears the carry flag)
+;   - HL:(u40*)=quotient
+;   - D:u8=divisor, unchanged
+;   - E:u8=remainder
+;   - CF=0 (division always clears the carry flag)
 ; Destroys: A, DE
 ; Preserves: BC, HL
 divU40ByD:
@@ -545,8 +545,8 @@ divU40ByDQuotientZero:
 ;------------------------------------------------------------------------------
 
 ; Description: Perform the two's complement of the u40 integer pointed by HL.
-; Input: HL:u40 pointer
-; Output: HL:neg(HL)
+; Input: HL:(u40*)
+; Output: (*HL)=neg(*HL)
 ; Destroys: A
 ; Preserves: BC, DE, HL
 negU40:
@@ -568,7 +568,7 @@ negU40Loop:
 
 ; Description: Return ZF=1 if u40 is positive or zero, i.e. the most
 ; significant bit is not set.
-; Input: HL:u40 pointer
+; Input: HL:(u40*)
 ; Output; ZF=1 if HL is positive or zero
 ; Destroys: none
 isPosU40:
@@ -584,8 +584,8 @@ isPosU40:
 ;------------------------------------------------------------------------------
 
 ; Description: Decrement the u40 at HL.
-; Input: HL:u40
-; Output: HL:u40=HL-1
+; Input: HL:(u40*)
+; Output: (*HL)-=1
 ; Destroys: A
 ; Preserves: all
 decU40:
@@ -611,8 +611,8 @@ decU40Loop:
 ; and ZF=1 if u40(HL) == u40(DE). The order of the parameters is the same as
 ; subU40U40().
 ; Input:
-;   - HL: pointer to u40 = arg1
-;   - DE: pointer to u40 = arg2
+;   - HL:(u40*)=arg1
+;   - DE:(u40*)=arg2
 ; Output:
 ;   - CF=1 if (HL) < (DE)
 ;   - ZF=1 if (HL) == (DE)
@@ -645,7 +645,7 @@ cmpU40U40End:
 ;------------------------------------------------------------------------------
 
 ; Description: Test if U40 is 0 or not.
-; Input: HL: pointer to u40 or i40
+; Input: HL:(u40*)
 ; Output: ZF=1 if zero
 ; Destroys: A
 ; Preserves: BC, DE, HL
@@ -668,10 +668,10 @@ testU40End:
 
 ; Description: Shift left logical the u40 pointed by HL.
 ; Input:
-;   - HL: pointer to u40
+;   - HL:(u40*)=input
 ; Output:
-;   - HL: pointer to result
-;   - CF: bit 7 of most significant byte of input
+;   - (*HL) shifted left
+;   - CF=bit 7 of most significant byte of input
 ; Destroys: A
 ; Preserves: HL
 shiftLeftLogicalU40:
@@ -690,10 +690,10 @@ shiftLeftLogicalU40:
 
 ; Description: Rotate left circular the u40 pointed by HL.
 ; Input:
-;   - HL: pointer to u40
+;   - HL:(u40*)=input
 ; Output:
-;   - HL: pointer to result
-;   - CF: bit 7 of most significant byte of input
+;   - (*HL) rotated left circular
+;   - CF=bit 7 of most significant byte of input
 ; Destroys: A
 ; Preserves: HL
 rotateLeftCircularU40:
@@ -713,13 +713,12 @@ rotateLeftCircularU40:
     ret
 
 ; Description: Rotate left carry of U40(HL).
-; (baseWordSize).
 ; Input:
-;   - HL: pointer to u40
-;   - CF: the existing carry flag in bit 0
+;   - HL:(u40*)=input
+;   - CF=existing carry flag
 ; Output:
-;   - HL: pointer to result
-;   - CF: most significant bit of the input
+;   - (*HL) rotated left through carry
+;   - CF=most significant bit of the input
 ; Destroys: none
 rotateLeftCarryU40:
     push hl
