@@ -1210,6 +1210,185 @@ _RtcGetTimeZone equ _RtcGetTimeZoneLabel-branchTableBase
     .dw RtcGetTimeZone
     .db 2
 
+; base.asm
+_InitBaseLabel:
+_InitBase equ _InitBaseLabel-branchTableBase
+    .dw InitBase
+    .db 2
+_BitwiseAndLabel:
+_BitwiseAnd equ _BitwiseAndLabel-branchTableBase
+    .dw BitwiseAnd
+    .db 2
+_BitwiseOrLabel:
+_BitwiseOr equ _BitwiseOrLabel-branchTableBase
+    .dw BitwiseOr
+    .db 2
+_BitwiseXorLabel:
+_BitwiseXor equ _BitwiseXorLabel-branchTableBase
+    .dw BitwiseXor
+    .db 2
+_BitwiseNotLabel:
+_BitwiseNot equ _BitwiseNotLabel-branchTableBase
+    .dw BitwiseNot
+    .db 2
+_BitwiseNegLabel:
+_BitwiseNeg equ _BitwiseNegLabel-branchTableBase
+    .dw BitwiseNeg
+    .db 2
+;
+_BaseShiftLeftLogicalLabel:
+_BaseShiftLeftLogical equ _BaseShiftLeftLogicalLabel-branchTableBase
+    .dw BaseShiftLeftLogical
+    .db 2
+_BaseShiftRightLogicalLabel:
+_BaseShiftRightLogical equ _BaseShiftRightLogicalLabel-branchTableBase
+    .dw BaseShiftRightLogical
+    .db 2
+_BaseShiftRightArithmeticLabel:
+_BaseShiftRightArithmetic equ _BaseShiftRightArithmeticLabel-branchTableBase
+    .dw BaseShiftRightArithmetic
+    .db 2
+_BaseShiftLeftLogicalNLabel:
+_BaseShiftLeftLogicalN equ _BaseShiftLeftLogicalNLabel-branchTableBase
+    .dw BaseShiftLeftLogicalN
+    .db 2
+_BaseShiftRightLogicalNLabel:
+_BaseShiftRightLogicalN equ _BaseShiftRightLogicalNLabel-branchTableBase
+    .dw BaseShiftRightLogicalN
+    .db 2
+;
+_BaseRotateLeftCircularLabel:
+_BaseRotateLeftCircular equ _BaseRotateLeftCircularLabel-branchTableBase
+    .dw BaseRotateLeftCircular
+    .db 2
+_BaseRotateRightCircularLabel:
+_BaseRotateRightCircular equ _BaseRotateRightCircularLabel-branchTableBase
+    .dw BaseRotateRightCircular
+    .db 2
+_BaseRotateLeftCarryLabel:
+_BaseRotateLeftCarry equ _BaseRotateLeftCarryLabel-branchTableBase
+    .dw BaseRotateLeftCarry
+    .db 2
+_BaseRotateRightCarryLabel:
+_BaseRotateRightCarry equ _BaseRotateRightCarryLabel-branchTableBase
+    .dw BaseRotateRightCarry
+    .db 2
+;
+_BaseRotateLeftCircularNLabel:
+_BaseRotateLeftCircularN equ _BaseRotateLeftCircularNLabel-branchTableBase
+    .dw BaseRotateLeftCircularN
+    .db 2
+_BaseRotateRightCircularNLabel:
+_BaseRotateRightCircularN equ _BaseRotateRightCircularNLabel-branchTableBase
+    .dw BaseRotateRightCircularN
+    .db 2
+_BaseRotateLeftCarryNLabel:
+_BaseRotateLeftCarryN equ _BaseRotateLeftCarryNLabel-branchTableBase
+    .dw BaseRotateLeftCarryN
+    .db 2
+_BaseRotateRightCarryNLabel:
+_BaseRotateRightCarryN equ _BaseRotateRightCarryNLabel-branchTableBase
+    .dw BaseRotateRightCarryN
+    .db 2
+;
+_BaseAddLabel:
+_BaseAdd equ _BaseAddLabel-branchTableBase
+    .dw BaseAdd
+    .db 2
+_BaseSubLabel:
+_BaseSub equ _BaseSubLabel-branchTableBase
+    .dw BaseSub
+    .db 2
+_BaseMultLabel:
+_BaseMult equ _BaseMultLabel-branchTableBase
+    .dw BaseMult
+    .db 2
+_BaseDivLabel:
+_BaseDiv equ _BaseDivLabel-branchTableBase
+    .dw BaseDiv
+    .db 2
+_BaseDiv2Label:
+_BaseDiv2 equ _BaseDiv2Label-branchTableBase
+    .dw BaseDiv2
+    .db 2
+;
+_BaseReverseBitsLabel:
+_BaseReverseBits equ _BaseReverseBitsLabel-branchTableBase
+    .dw BaseReverseBits
+    .db 2
+_BaseCountBitsLabel:
+_BaseCountBits equ _BaseCountBitsLabel-branchTableBase
+    .dw BaseCountBits
+    .db 2
+_BaseSetBitLabel:
+_BaseSetBit equ _BaseSetBitLabel-branchTableBase
+    .dw BaseSetBit
+    .db 2
+_BaseClearBitLabel:
+_BaseClearBit equ _BaseClearBitLabel-branchTableBase
+    .dw BaseClearBit
+    .db 2
+_BaseGetBitLabel:
+_BaseGetBit equ _BaseGetBitLabel-branchTableBase
+    .dw BaseGetBit
+    .db 2
+;
+_BaseStoreCarryFlagLabel:
+_BaseStoreCarryFlag equ _BaseStoreCarryFlagLabel-branchTableBase
+    .dw BaseStoreCarryFlag
+    .db 2
+_BaseGetCarryFlagLabel:
+_BaseGetCarryFlag equ _BaseGetCarryFlagLabel-branchTableBase
+    .dw BaseGetCarryFlag
+    .db 2
+;
+_BaseSetWordSizeLabel:
+_BaseSetWordSize equ _BaseSetWordSizeLabel-branchTableBase
+    .dw BaseSetWordSize
+    .db 2
+_BaseGetWordSizeLabel:
+_BaseGetWordSize equ _BaseGetWordSizeLabel-branchTableBase
+    .dw BaseGetWordSize
+    .db 2
+
+; prime.asm
+_PrimeFactorLabel:
+_PrimeFactor equ _PrimeFactorLabel-branchTableBase
+    .dw PrimeFactor
+    .db 2
+
+; integerconv32.asm
+_ConvertOP1ToU32StatusCodeLabel:
+_ConvertOP1ToU32StatusCode equ _ConvertOP1ToU32StatusCodeLabel-branchTableBase
+    .dw ConvertOP1ToU32StatusCode
+    .db 2
+_CheckU32FitsWsizeLabel:
+_CheckU32FitsWsize equ _CheckU32FitsWsizeLabel-branchTableBase
+    .dw CheckU32FitsWsize
+    .db 2
+
+; formatinteger32.asm
+_ReformatBaseTwoStringLabel:
+_ReformatBaseTwoString equ _ReformatBaseTwoStringLabel-branchTableBase
+    .dw ReformatBaseTwoString
+    .db 2
+_FormatU32ToHexStringLabel:
+_FormatU32ToHexString equ _FormatU32ToHexStringLabel-branchTableBase
+    .dw FormatU32ToHexString
+    .db 2
+_FormatU32ToOctStringLabel:
+_FormatU32ToOctString equ _FormatU32ToOctStringLabel-branchTableBase
+    .dw FormatU32ToOctString
+    .db 2
+_FormatU32ToBinStringLabel:
+_FormatU32ToBinString equ _FormatU32ToBinStringLabel-branchTableBase
+    .dw FormatU32ToBinString
+    .db 2
+_FormatU32ToDecStringLabel:
+_FormatU32ToDecString equ _FormatU32ToDecStringLabel-branchTableBase
+    .dw FormatU32ToDecString
+    .db 2
+
 ;-----------------------------------------------------------------------------
 
 #ifdef DEBUG
@@ -1288,7 +1467,6 @@ _DebugU32DEAsHex equ _DebugU32DEAsHexLabel-branchTableBase
 #include "input.asm"
 #include "display.asm"
 #include "show.asm"
-#include "base.asm"
 #include "basehandlers.asm"
 #include "menu.asm"
 #include "menuhandlers.asm"
@@ -1297,7 +1475,6 @@ _DebugU32DEAsHex equ _DebugU32DEAsHexLabel-branchTableBase
 #include "tvmhandlers.asm"
 #include "complexhandlers.asm"
 #include "datehandlers.asm"
-#include "prime.asm"
 #include "common.asm"
 #include "memory.asm"
 #include "cstring.asm"
@@ -1306,9 +1483,6 @@ _DebugU32DEAsHex equ _DebugU32DEAsHexLabel-branchTableBase
 #include "conv.asm"
 #include "print.asm"
 #include "const.asm"
-#include "integer32.asm"
-#include "integerconv32.asm"
-#include "formatinteger32.asm"
 #include "handlertab.asm"
 #include "arghandlertab.asm"
 #include "format.asm"
@@ -1368,6 +1542,12 @@ defpage(2)
 #include "memory2.asm"
 #include "const2.asm"
 #include "integer2.asm"
+;
+#include "prime.asm"
+#include "base.asm"
+#include "integerconv32.asm"
+#include "formatinteger32.asm"
+#include "integer32.asm"
 
 .end
 

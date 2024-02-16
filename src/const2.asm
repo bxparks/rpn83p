@@ -14,6 +14,14 @@ op2Set24PageTwo:
 
 ;-----------------------------------------------------------------------------
 
+; Description: Set OP2 to 2^32.
+; Destroys: all, HL
+op2Set2Pow32PageTwo:
+    ld hl, const2Pow32PageTwo
+    jp move9ToOp2PageTwo
+
+;-----------------------------------------------------------------------------
+
 ; Description: Set OP2 to 2^39.
 ; Destroys: all, HL
 op2Set2Pow39PageTwo:
@@ -32,6 +40,9 @@ op2Set2Pow40PageTwo:
 
 const24PageTwo: ; 24
     .db $00, $81, $24, $00, $00, $00, $00, $00, $00
+
+const2Pow32PageTwo: ; 2^32 = 4 294 967 296
+    .db $00, $89, $42, $94, $96, $72, $96, $00, $00
 
 const2Pow39PageTwo: ; 2^39 = 549 755 813 888
     .db $00, $8B, $54, $97, $55, $81, $38, $88, $00

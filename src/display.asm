@@ -1177,15 +1177,17 @@ printOP1BaseNegative:
 ; Destroys: all, OP1, OP2, OP3, OP4
 printOP1Base10:
     ld hl, OP3
-    call convertOP1ToU32StatusCode ; HL=U32; C=statusCode
-    call checkU32FitsWsize ; C=u32StatusCode
+    ; TODO: Combine _ConvertOP1ToU32StatusCode() and _CheckU32FitsWsize() into
+    ; a single bcall().
+    bcall(_ConvertOP1ToU32StatusCode) ; HL=U32; C=statusCode
+    bcall(_CheckU32FitsWsize) ; C=u32StatusCode
     bit u32StatusCodeTooBig, c
     jr nz, printOP1BaseInvalid
     bit u32StatusCodeNegative, c
     jr nz, printOP1BaseNegative
     ; Convert u32 into a base-10 string.
     ld de, OP4
-    call formatU32ToDecString
+    bcall(_FormatU32ToDecString)
     ; Add '.' if OP1 has fractional component.
     call appendHasFrac ; DE=rendered string
     ex de, hl ; HL=rendered string
@@ -1220,15 +1222,17 @@ appendHasFrac:
 ; Destroys: all, OP1, OP2, OP3, OP4
 printOP1Base16:
     ld hl, OP3
-    call convertOP1ToU32StatusCode
-    call checkU32FitsWsize ; C=u32StatusCode
+    ; TODO: Combine _ConvertOP1ToU32StatusCode() and _CheckU32FitsWsize() into
+    ; a single bcall().
+    bcall(_ConvertOP1ToU32StatusCode)
+    bcall(_CheckU32FitsWsize) ; C=u32StatusCode
     bit u32StatusCodeTooBig, c
     jr nz, printOP1BaseInvalid
     bit u32StatusCodeNegative, c
     jr nz, printOP1BaseNegative
     ; Convert u32 into a base-16 string.
     ld de, OP4
-    call formatU32ToHexString ; DE=rendered string
+    bcall(_FormatU32ToHexString) ; DE=rendered string
     ; Append frac indicator
     call appendHasFrac ; DE=rendered string
     ex de, hl ; HL=rendered string
@@ -1258,15 +1262,17 @@ truncateHexDigits:
 ; Destroys: all, OP1, OP2, OP3, OP4, OP5
 printOP1Base8:
     ld hl, OP3
-    call convertOP1ToU32StatusCode
-    call checkU32FitsWsize ; C=u32StatusCode
+    ; TODO: Combine _ConvertOP1ToU32StatusCode() and _CheckU32FitsWsize() into
+    ; a single bcall().
+    bcall(_ConvertOP1ToU32StatusCode)
+    bcall(_CheckU32FitsWsize) ; C=u32StatusCode
     bit u32StatusCodeTooBig, c
     jr nz, printOP1BaseInvalid
     bit u32StatusCodeNegative, c
     jr nz, printOP1BaseNegative
     ; Convert u32 into a base-8 string.
     ld de, OP4
-    call formatU32ToOctString
+    bcall(_FormatU32ToOctString)
     ; Append frac indicator
     call appendHasFrac ; DE=rendered string
     ex de, hl ; HL=rendered string
@@ -1324,8 +1330,10 @@ truncateOctString:
 ; Destroys: all, OP1, OP2, OP3, OP4, OP5
 printOP1Base2:
     ld hl, OP3
-    call convertOP1ToU32StatusCode
-    call checkU32FitsWsize ; C=u32StatusCode
+    ; TODO: Combine _ConvertOP1ToU32StatusCode() and _CheckU32FitsWsize() into
+    ; a single bcall().
+    bcall(_ConvertOP1ToU32StatusCode)
+    bcall(_CheckU32FitsWsize) ; C=u32StatusCode
     bit u32StatusCodeTooBig, c
     jp nz, printOP1BaseInvalid
     bit u32StatusCodeNegative, c
@@ -1338,7 +1346,7 @@ printOP1Base2:
     ; Convert u32 into a base-2 string.
     ld hl, OP1
     ld de, OP4
-    call formatU32ToBinString ; DE points to a 32-character string + NUL.
+    bcall(_FormatU32ToBinString) ; DE points to a 32-character string + NUL.
     ; Truncate leading digits to fit display (12 or 8 digits)
     ex de, hl
     call truncateBinDigits ; HL=truncated string
@@ -1400,6 +1408,7 @@ truncateBinDigitsNoOverflow:
 ;   - DE: string reformatted in groups of 4
 ; Destroys: A, BC
 ; Preserves: DE, HL
+; TODO: Move to formatinteger32.asm.
 formatBinDigits:
     push de
     push hl

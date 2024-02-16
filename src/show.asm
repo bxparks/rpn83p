@@ -123,8 +123,10 @@ formBinString:
     push de ; stack=[bufPointer]
     ; Check if OP1 fits in the current baseWordSize.
     ld hl, OP3
-    call convertOP1ToU32StatusCode ; HL=OP3=u32(OP1); C=u32StatusCode
-    call checkU32FitsWsize ; C=u32StatusCode
+    ; TODO: Combine _ConvertOP1ToU32StatusCode() and _CheckU32FitsWsize() into
+    ; a single bcall().
+    bcall(_ConvertOP1ToU32StatusCode) ; HL=OP3=u32(OP1); C=u32StatusCode
+    bcall(_CheckU32FitsWsize) ; C=u32StatusCode
     ; Check for too big.
     bit u32StatusCodeTooBig, c
     pop de ; stack=[]; DE=bufPointer
@@ -141,7 +143,7 @@ formBinString:
     ; Convert to a 32-digit binary string at OP4.
     ld hl, OP1
     ld de, OP4
-    call formatU32ToBinString ; DE points to a 32-character string + NUL.
+    bcall(_FormatU32ToBinString) ; DE points to a 32-character string + NUL.
     ; Find the beginning of the binary string, depending on baseWordSize.
     ld a, 32
     ld hl, baseWordSize
@@ -151,7 +153,8 @@ formBinString:
     ld hl, OP4
     add hl, de ; HL=pointer to beginning of binary string
     pop de ; stack=[]; DE=bufPointer
-    jp reformatBaseTwoString
+    bcall(_ReformatBaseTwoString)
+    ret
 
 ;------------------------------------------------------------------------------
 
@@ -448,46 +451,4 @@ formIntStringLoop:
     ld (de), a
     inc de
     djnz formIntStringLoop
-    ret
-
-;------------------------------------------------------------------------------
-
-; Description: Reformat the base-2 string in groups of 4, 2 groups per line.
-; The source string is probably at OP4. The destination string is probably OP3,
-; which is 11 bytes before OP4. The original string is a maximum of 32
-; characters long. The formatted string adds 2 characters per line, for a
-; maximum of 8 characters, which is less than the 11 bytes that OP3 is before
-; OP4. Therefore the formatting can be done in-situ because at every point in
-; the iteration, the resulting string does not affect the upcoming digits.
-;
-; The maximum length of the final string is 4 lines * 10 bytes = 40 bytes,
-; which is smaller than the 44 bytes available using OP3-OP6.
-;
-; Input:
-;   - HL:(char*)=source base-2 string (probably OP4)
-;   - DE:(char*)=destination string buffer (sometimes OP3)
-; Output:
-;   - (DE): base-2 string formatted in lines of 8 digits, in 2 groups of 4
-;   digits
-;   - DE updated
-reformatBaseTwoString:
-    call getWordSizeIndex
-    inc a ; A=baseWordSize/8=number of bytes
-    ld b, a
-reformatBaseTwoStringLoop:
-    push bc
-    ld bc, 4
-    ldir
-    ld a, ' '
-    ld (de), a
-    inc de
-    ;
-    ld bc, 4
-    ldir
-    ld a, Lenter
-    ld (de), a
-    inc de
-    ;
-    pop bc
-    djnz reformatBaseTwoStringLoop
     ret

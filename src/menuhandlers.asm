@@ -238,33 +238,7 @@ lcdOp1Op2:
 ;   - "Err: Domain" if X is not an integer in the range of [2, 2^32).
 mPrimeHandler:
     call closeInputAndRecallX
-    ; Check 0
-    bcall(_CkOP1FP0)
-    jp z, mPrimeHandlerError
-    ; Check 1
-    bcall(_OP2Set1) ; OP2 = 1
-    bcall(_CpOP1OP2) ; if OP1==1: ZF=1
-    jp z, mPrimeHandlerError
-    bcall(_OP1ToOP4) ; save OP4 = X
-    ; Check integer >= 0
-    bcall(_CkPosInt) ; if OP1 >= 0: ZF=1
-    jp nz, mPrimeHandlerError
-    ; Check unsigned 32-bit integer, i.e. < 2^32.
-    call op2Set2Pow32 ; if OP1 >= 2^32: CF=0
-    bcall(_CpOP1OP2)
-    jp nc, mPrimeHandlerError
-
-    ; Choose one of the various primeFactorXXX() routines.
-    ; OP1=1 if prime, or its smallest prime factor (>1) otherwise
-#ifdef USE_PRIME_FACTOR_FLOAT
-    call primeFactorFloat
-#else
-    #ifdef USE_PRIME_FACTOR_INT
-        call primeFactorInt
-    #else
-        call primeFactorMod
-    #endif
-#endif
+    bcall(_PrimeFactor)
     bcall(_RunIndicOff) ; disable run indicator
 
     ; Instead of replacing the original X, push the prime factor into the RPN
@@ -273,9 +247,6 @@ mPrimeHandler:
     ; multiple times until a '1' is returns allows all prime factors to be
     ; discovered.
     jp pushToX
-
-mPrimeHandlerError:
-    bcall(_ErrDomain) ; throw exception
 
 ;-----------------------------------------------------------------------------
 

@@ -96,138 +96,117 @@ mBaseNameSelector:
 
 ;-----------------------------------------------------------------------------
 
-; Description: Dispatch to the appropriate handler for the current baseWordSize.
-; Input:
-;   - HL: pointer to handlers (usually 4 entries)
-;   - (baseWordSize): current word size, 8, 16, 24, 32
-; Output:
-;   - jumps to the appropriate handler (can be invoked using a 'call')
-;   - throws exception if (baseWordSize) is not validf
-; Destroys: A
-;baseDispatcher:
-;    call getWordSizeIndex
-;    ld e, a
-;    ld d, 0
-;    add hl, de
-;    ld a, (hl)
-;    inc hl
-;    ld h, (hl)
-;    ld l, a ; HL=(HL+baseOffset)
-;    jp (hl)
-
-;-----------------------------------------------------------------------------
-
 mBitwiseAndHandler:
     call closeInputAndRecallXY ; OP1=Y; OP2=X
-    call bitwiseAnd ; OP1=X AND Y
+    bcall(_BitwiseAnd) ; OP1=X AND Y
     jp replaceXY
 
 mBitwiseOrHandler:
     call closeInputAndRecallXY ; OP1=Y; OP2=X
-    call bitwiseOr ; OP1=X OR Y
+    bcall(_BitwiseOr) ; OP1=X OR Y
     jp replaceXY
 
 mBitwiseXorHandler:
     call closeInputAndRecallXY ; OP1=Y; OP2=X
-    call bitwiseXor ; OP1=X XOR Y
+    bcall(_BitwiseXor) ; OP1=X XOR Y
     jp replaceXY
 
 mBitwiseNotHandler:
     call closeInputAndRecallX ; OP1=X
-    call bitwiseNot ; OP1=NOT(X)
+    bcall(_BitwiseNot) ; OP1=NOT(X)
     jp replaceX
 
 mBitwiseNegHandler:
     call closeInputAndRecallX ; OP1=X
-    call bitwiseNeg ; OP1=NEG(X)
+    bcall(_BitwiseNeg) ; OP1=NEG(X)
     jp replaceX
 
 ;-----------------------------------------------------------------------------
 
 mShiftLeftLogicalHandler:
     call closeInputAndRecallX ; OP1=X
-    call baseShiftLeftLogical ; OP1=shiftLeftLogical(OP1)
+    bcall(_BaseShiftLeftLogical) ; OP1=shiftLeftLogical(OP1)
     jp replaceX
 
 mShiftRightLogicalHandler:
     call closeInputAndRecallX ; OP1=X
-    call baseShiftRightLogical ; OP1=shiftRightLogical(OP1)
+    bcall(_BaseShiftRightLogical) ; OP1=shiftRightLogical(OP1)
     jp replaceX
 
 mShiftRightArithmeticHandler:
     call closeInputAndRecallX ; OP1=X
-    call baseShiftRightArithmetic ; OP1=shiftRightArithmetic(OP1)
+    bcall(_BaseShiftRightArithmetic) ; OP1=shiftRightArithmetic(OP1)
     jp replaceX
 
 mShiftLeftLogicalNHandler:
     call closeInputAndRecallXY ; OP1=Y; OP2=X
-    call baseShiftLeftLogicalN ; OP1=shiftLeftLogicalN(OP1,OP2)
+    bcall(_BaseShiftLeftLogicalN) ; OP1=shiftLeftLogicalN(OP1,OP2)
     jp replaceXY
 
 mShiftRightLogicalNHandler:
     call closeInputAndRecallXY ; OP1=Y; OP2=X
-    call baseShiftRightLogicalN ; OP1=shiftRightLogicalN(OP1,OP2)
+    bcall(_BaseShiftRightLogicalN) ; OP1=shiftRightLogicalN(OP1,OP2)
     jp replaceXY
 
 ;-----------------------------------------------------------------------------
 
 mRotateLeftCircularHandler:
     call closeInputAndRecallX ; OP1=X
-    call baseRotateLeftCircular; OP3=rotateLeftCircular(OP3)
+    bcall(_BaseRotateLeftCircular) ; OP3=rotateLeftCircular(OP3)
     jp replaceX
 
 mRotateRightCircularHandler:
     call closeInputAndRecallX ; OP1=X
-    call baseRotateRightCircular; OP1=rotateRightCircular(OP1)
+    bcall(_BaseRotateRightCircular) ; OP1=rotateRightCircular(OP1)
     jp replaceX
 
 mRotateLeftCarryHandler:
     call closeInputAndRecallX ; OP1=X
-    call baseRotateLeftCarry ; OP1=rotateLeftCarry(OP1)
+    bcall(_BaseRotateLeftCarry) ; OP1=rotateLeftCarry(OP1)
     jp replaceX
 
 mRotateRightCarryHandler:
     call closeInputAndRecallX ; OP1=X
-    call baseRotateRightCarry ; OP1=rotateRightCarry(OP1)
+    bcall(_BaseRotateRightCarry) ; OP1=rotateRightCarry(OP1)
     jp replaceX
 
 ;-----------------------------------------------------------------------------
 
 mRotateLeftCircularNHandler:
     call closeInputAndRecallXY ; OP1=Y; OP2=X
-    call baseRotateLeftCircularN
+    bcall(_BaseRotateLeftCircularN)
     jp replaceXY
 
 mRotateRightCircularNHandler:
     call closeInputAndRecallXY ; OP1=Y; OP2=X
-    call baseRotateRightCircularN
+    bcall(_BaseRotateRightCircularN)
     jp replaceXY
 
 mRotateLeftCarryNHandler:
     call closeInputAndRecallXY ; OP1=Y; OP2=X
-    call baseRotateLeftCarryN
+    bcall(_BaseRotateLeftCarryN)
     jp replaceXY
 
 mRotateRightCarryNHandler:
     call closeInputAndRecallXY ; OP1=Y; OP2=X
-    call baseRotateRightCarryN
+    bcall(_BaseRotateRightCarryN)
     jp replaceXY
 
 ;-----------------------------------------------------------------------------
 
 mBaseAddHandler:
     call closeInputAndRecallXY ; OP1=Y; OP2=X
-    call baseAdd ; OP1+=OP2
+    bcall(_BaseAdd) ; OP1+=OP2
     jp replaceXY
 
 mBaseSubtHandler:
     call closeInputAndRecallXY ; OP1=Y; OP2=X
-    call baseSub ; OP1-=OP2
+    bcall(_BaseSub) ; OP1-=OP2
     jp replaceXY
 
 mBaseMultHandler:
     call closeInputAndRecallXY ; OP1=Y; OP2=X
-    call baseMult ; OP1*=OP2
+    bcall(_BaseMult) ; OP1*=OP2
     jp replaceXY
 
 ; Description: Calculate base x/y.
@@ -236,7 +215,7 @@ mBaseMultHandler:
 ;   - remainder thrown away
 mBaseDivHandler:
     call closeInputAndRecallXY ; OP1=Y; OP2=X
-    call baseDiv ; OP1=OP1/OP2
+    bcall(_BaseDiv) ; OP1=OP1/OP2
     jp replaceXY
 
 ; Description: Calculate base div(x, y) -> (y/x, y % x).
@@ -245,49 +224,53 @@ mBaseDivHandler:
 ;   - Y=quotient
 mBaseDiv2Handler:
     call closeInputAndRecallXY ; OP1=Y; OP2=X
-    call baseDiv2 ; OP1=remainder; OP2=quotient
+    bcall(_BaseDiv2) ; OP1=remainder; OP2=quotient
     jp replaceXYWithOP1OP2 ; Y=remainder, X=quotient
 
 ;-----------------------------------------------------------------------------
 
 mReverseBitHandler:
     call closeInputAndRecallX ; OP1=X
-    call baseReverseBits ; OP1=reverseBits(OP1)
+    bcall(_BaseReverseBits) ; OP1=reverseBits(OP1)
     jp replaceX
 
 mCountBitHandler:
     call closeInputAndRecallX ; OP1=X
-    call baseCountBits ; OP1=countBits(OP1)
+    bcall(_BaseCountBits) ; OP1=countBits(OP1)
     jp replaceX
-
-mSetBitHandler:
-    call closeInputAndRecallXY ; OP1=Y; OP2=X
-    call baseSetBit ; OP1=setBit(OP1,OP2)
-    jp replaceXY
 
 mClearBitHandler:
     call closeInputAndRecallXY ; OP1=Y; OP2=X
-    call baseClearBit ; OP1=clearBit(OP1,OP2)
+    bcall(_BaseClearBit) ; OP1=clearBit(OP1,OP2)
+    jp replaceXY
+
+mSetBitHandler:
+    call closeInputAndRecallXY ; OP1=Y; OP2=X
+    bcall(_BaseSetBit) ; OP1=setBit(OP1,OP2)
     jp replaceXY
 
 mGetBitHandler:
     call closeInputAndRecallXY ; OP1=Y; OP2=X
-    call baseGetBit ; OP1=bit(OP1,OP2)
+    bcall(_BaseGetBit) ; OP1=bit(OP1,OP2)
     jp replaceXY
 
 ;-----------------------------------------------------------------------------
 
 mClearCarryFlagHandler:
+    call closeInputAndRecallNone
     or a ; CF=0
-    jp storeCarryFlag
+    bcall(_BaseStoreCarryFlag)
+    ret
 
 mSetCarryFlagHandler:
+    call closeInputAndRecallNone
     scf ; CF=1
-    jp storeCarryFlag
+    bcall(_BaseStoreCarryFlag)
+    ret
 
 mGetCarryFlagHandler:
     call closeInputAndRecallNone
-    call baseGetCarryFlag ; OP1=float(baseCarryFlag)
+    bcall(_BaseGetCarryFlag) ; OP1=float(baseCarryFlag)
     jp pushToX
 
 ;-----------------------------------------------------------------------------
@@ -301,12 +284,13 @@ mSetWordSizeHandler:
     call processArgCommands ; CF=0 if cancelled; (argModifier), (argValue)
     ret nz ; do nothing if cancelled
     ld a, (argValue)
-    jp baseSetWordSize
+    bcall(_BaseSetWordSize)
+    ret
 
 msgWordSizePrompt:
     .db "WSIZ", 0
 
 mGetWordSizeHandler:
     call closeInputAndRecallNone
-    call baseGetWordSize
+    bcall(_BaseGetWordSize)
     jp pushToX
