@@ -279,35 +279,6 @@ mPrimeHandlerError:
 
 ;-----------------------------------------------------------------------------
 
-#ifdef ENABLE_PRIME_MOD
-; Description: Test modU32ByDE().
-; Uses:
-;   - OP1=Y
-;   - OP2=X
-;   - OP3=u32(Y)
-;   - OP4=u32(X)
-mPrimeModHandler:
-    call closeInputAndRecallXY ; OP2 = X; OP1 = Y
-    ld hl, OP3
-    call convertOP1ToU32 ; OP3=u32(Y)
-    bcall(_OP2ToOP1)
-    ld hl, OP4
-    call convertOP1ToU32 ; OP4=u32(X)
-    ;
-    ld e, (hl)
-    inc hl
-    ld d, (hl) ; DE=u16(X)
-    ;
-    ld hl, OP3
-    call modU32ByDE ; BC=remainder=Y mod X
-    ld hl, OP3
-    call setU32ToBC ; u32(OP3)=BC
-    call convertU32ToOP1 ; OP1=float(OP3)
-    jp replaceXY
-#endif
-
-;-----------------------------------------------------------------------------
-
 ; mAbsHandler(X) -> Abs(X)
 mAbsHandler:
     call closeInputAndRecallX
