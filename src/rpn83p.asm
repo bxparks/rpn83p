@@ -1311,6 +1311,7 @@ _DebugU32DEAsHex equ _DebugU32DEAsHexLabel-branchTableBase
 #include "formatinteger32.asm"
 #include "handlertab.asm"
 #include "arghandlertab.asm"
+#include "format.asm"
 
 ;-----------------------------------------------------------------------------
 ; Flash Page 1
