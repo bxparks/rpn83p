@@ -3,7 +3,7 @@
 ; Copyright (c) 2023 Brian T. Park
 ;
 ; Routines to convert between TI-OS floating point numbers in OP1 or OP2
-; to the u32 integers required by the BASE functions in baseops.asm.
+; to the u32 integers required by the BASE functions in integer32.asm.
 ;-----------------------------------------------------------------------------
 
 ; TODO: Instead of accepting HL as the destination pointer, we should allocate

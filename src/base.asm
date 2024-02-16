@@ -3,7 +3,7 @@
 ; Copyright (c) 2023 Brian T. Park
 ;
 ; Routines to convert between TI-OS floating point numbers in OP1 or OP2
-; to the u32 integers required by the BASE functions in baseops.asm.
+; to the u32 integers required by the BASE functions in integer32.asm.
 ;-----------------------------------------------------------------------------
 
 initBase:
@@ -80,8 +80,8 @@ checkU32FitsWsizeTooBig:
 
 ;-----------------------------------------------------------------------------
 ; Entry point of BASE operation from basehandlers.asm. This indirection layer
-; becomes the API to the lower-level baseops.asm routines, allowing us to move
-; baseops.asm to another flash page more easily.
+; becomes the API to the lower-level integer32.asm routines, allowing us to
+; move integer32.asm to another flash page more easily.
 ;-----------------------------------------------------------------------------
 
 ; Description: Calculate the bitwise-and between the integers in OP1 and OP2.
