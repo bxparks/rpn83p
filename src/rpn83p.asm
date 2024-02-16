@@ -597,7 +597,7 @@ defpage(0, "RPN83P")
 ; statements, so we have to define the bcall() label *after* the XxxLabel
 ; label.
 branchTableBase equ $4000
-; appstate.asm
+; appstate1.asm
 _StoreAppStateLabel:
 _StoreAppState equ _StoreAppStateLabel-branchTableBase
     .dw StoreAppState
@@ -1318,7 +1318,7 @@ _DebugU32DEAsHex equ _DebugU32DEAsHexLabel-branchTableBase
 
 defpage(1)
 
-#include "appstate.asm"
+#include "appstate1.asm"
 #include "osstate.asm"
 #include "help1.asm"
 #include "menulookup1.asm"
