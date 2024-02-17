@@ -20,58 +20,6 @@ InitDate:
     ret
 
 ;-----------------------------------------------------------------------------
-; RpnObjecType checkers.
-;-----------------------------------------------------------------------------
-
-; Description: Check if OP1 is a RpnDate.
-; Output: ZF=1 if RpnDate
-checkOp1DatePageTwo:
-    ld a, (OP1)
-    and $1f
-    cp rpnObjectTypeDate
-    ret
-
-; Description: Check if OP3 is a RpnDate.
-; Output: ZF=1 if RpnDate
-checkOp3DatePageTwo:
-    ld a, (OP3)
-    and $1f
-    cp rpnObjectTypeDate
-    ret
-
-; Description: Check if OP1 is a RpnDateTime.
-; Output: ZF=1 if RpnDateTime
-checkOp1DateTimePageTwo:
-    ld a, (OP1)
-    and $1f
-    cp rpnObjectTypeDateTime
-    ret
-
-; Description: Check if OP3 is a RpnDateTime.
-; Output: ZF=1 if RpnDateTime
-checkOp3DateTimePageTwo:
-    ld a, (OP3)
-    and $1f
-    cp rpnObjectTypeDateTime
-    ret
-
-; Description: Check if OP1 is a RpnOffsetDateTime.
-; Output: ZF=1 if RpnOffsetDateTime
-checkOp1OffsetDateTimePageTwo:
-    ld a, (OP1)
-    and $1f
-    cp rpnObjectTypeOffsetDateTime
-    ret
-
-; Description: Check if OP3 is a RpnOffsetDateTime.
-; Output: ZF=1 if RpnOffsetDateTime
-checkOp3OffsetDateTimePageTwo:
-    ld a, (OP3)
-    and $1f
-    cp rpnObjectTypeOffsetDateTime
-    ret
-
-;-----------------------------------------------------------------------------
 ; Validate various date-related records.
 ;-----------------------------------------------------------------------------
 

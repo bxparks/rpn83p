@@ -1543,6 +1543,7 @@ defpage(2)
 #include "memory2.asm"
 #include "const2.asm"
 #include "integer2.asm"
+#include "rpnobject2.asm"
 ;
 #include "prime2.asm"
 #include "base2.asm"
