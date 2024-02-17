@@ -20,6 +20,8 @@
           string "", "0.0", "000.0", "-000.000E1", "00.00E0") and correctly
           returns the canonical representation of 0.0 which works with
           `CkPosInt()`.
+    - **Bug Fix** Validate data type for `STAT` functions
+        - allow only Real numbers for `Sigma+` and `Sigma-`
     - Store and recall TI-OS single-letter variables
         - TI-OS supports 27 single-letter variables (A-Z, Theta) for real and
           complex numbers

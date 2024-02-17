@@ -40,7 +40,7 @@ initStat:
 ;-----------------------------------------------------------------------------
 
 mStatPlusHandler:
-    call closeInputAndRecallNone
+    call closeInputAndRecallXY ; validates X,Y are Real, OP1,OP2 not used
     call statSigmaPlus
     ld c, statRegN
     call rclRegNN ; OP1=R[sigmaN]
@@ -49,7 +49,7 @@ mStatPlusHandler:
     ret
 
 mStatMinusHandler:
-    call closeInputAndRecallNone
+    call closeInputAndRecallXY ; validates X is Real, OP1 not used
     call statSigmaMinus
     ld c, statRegN
     call rclRegNN ; OP1=R[sigmaN]
