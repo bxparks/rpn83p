@@ -231,21 +231,31 @@ cp1ExCp3PageOne:
 ; into the last 2 bytes must be shifted into OP2 before those bytes can be
 ; saved properly into the RPN registers or the storage
 ; registers.
-; Destroys: BC, DE, HL
-; Preserves: A
+; Destroys: none
 expandOp1ToOp2PageOne:
+    push bc
+    push de
+    push hl
     ld de, OP2+9-1
     ld hl, OP2+7-1
     ld bc, 9
     lddr
+    pop hl
+    pop de
+    pop bc
     ret
 
 ; Description: The reverse of expandOp1ToOp2().
-; Destroys: BC, DE, HL
-; Preserves: A
+; Destroys: none
 shrinkOp2ToOp1PageOne:
+    push bc
+    push de
+    push hl
     ld de, OP1+9
     ld hl, OP2
     ld bc, 9
     ldir
+    pop hl
+    pop de
+    pop bc
     ret

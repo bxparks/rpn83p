@@ -942,7 +942,7 @@ displayShow:
     ; fmtString is a buffer of 65 bytes used by FormDCplx(). There should be no
     ; problems using it as our string buffer.
     ld de, fmtString
-    call formShowable
+    bcall(_FormShowable)
     ld hl, fmtString
     call putS
     ret
