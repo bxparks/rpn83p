@@ -36,6 +36,16 @@
         - when a function does not accept a complex number, an error message is
           shown
         - change the message from `Err:Domain` to `Err:DataType`
+    - Add `MODE` option to invert the behavior of `,` and `2ND EE` button
+        - Previously, both the `,` button and `2ND EE` button were mapped to
+          `EE`, to make entry of floating point numbers with exponents easier.
+        - But the new Date/Time records require the `,` button for entry.
+        - Add 2 selectors into `MODE` menu:
+            - `,EE` causes the button to behave as labeled (default)
+            - `EE,` inverts the mapping, so that `,` invokes the `EE` function,
+              and `2ND EE` invokes the `,` function
+        - This allows the end user to select the most convenient behavior.
+        - The selected option is saved and restored upon restart of the app.
     - Add `DATE` menu hierarchy with Date, Time, DateTime, Clock functions
         - TODO: add documentation
         - TODO: polish the user interface
