@@ -62,24 +62,24 @@ formShowableComplex:
     jr formShowableEnd
 formShowableDate:
     ld hl, OP1
-    bcall(_FormatDateRecord)
+    call FormatDateRecord
     jr formShowableEnd
 formShowableTime:
     ld hl, OP1
-    bcall(_FormatTimeRecord)
+    call FormatTimeRecord
     jr formShowableEnd
 formShowableDateTime:
     ld hl, OP1
-    bcall(_FormatDateTimeRecord)
+    call FormatDateTimeRecord
     jr formShowableEnd
 formShowableOffset:
     ld hl, OP1
-    bcall(_FormatOffsetRecord)
+    call FormatOffsetRecord
     jr formShowableEnd
 formShowableOffsetDateTime:
     call shrinkOp2ToOp1PageTwo
     ld hl, OP1
-    bcall(_FormatOffsetDateTimeRecord)
+    call FormatOffsetDateTimeRecord
     call expandOp1ToOp2PageTwo
     ; [[fallthrough]]
 formShowableEnd:
@@ -127,8 +127,8 @@ formBinString:
     ld hl, OP3
     ; TODO: Combine _ConvertOP1ToU32StatusCode() and _CheckU32FitsWsize() into
     ; a single bcall().
-    bcall(_ConvertOP1ToU32StatusCode) ; HL=OP3=u32(OP1); C=u32StatusCode
-    bcall(_CheckU32FitsWsize) ; C=u32StatusCode
+    call ConvertOP1ToU32StatusCode ; HL=OP3=u32(OP1); C=u32StatusCode
+    call CheckU32FitsWsize ; C=u32StatusCode
     ; Check for too big.
     bit u32StatusCodeTooBig, c
     pop de ; stack=[]; DE=bufPointer
@@ -145,7 +145,7 @@ formBinString:
     ; Convert to a 32-digit binary string at OP4.
     ld hl, OP1
     ld de, OP4
-    bcall(_FormatU32ToBinString) ; DE points to a 32-character string + NUL.
+    call FormatU32ToBinString ; DE points to a 32-character string + NUL.
     ; Find the beginning of the binary string, depending on baseWordSize.
     ld a, 32
     ld hl, baseWordSize
@@ -155,7 +155,7 @@ formBinString:
     ld hl, OP4
     add hl, de ; HL=pointer to beginning of binary string
     pop de ; stack=[]; DE=bufPointer
-    bcall(_ReformatBaseTwoString)
+    call ReformatBaseTwoString
     ret
 
 ;------------------------------------------------------------------------------
@@ -397,7 +397,7 @@ formSciStringExp:
     neg ; A=-EXP
 formSciStringPosExp:
     ex de, hl
-    bcall(_FormatAToString) ; HL string updated, no NUL
+    call FormatAToString ; HL string updated, no NUL
     ex de, hl
     ret
 
