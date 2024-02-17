@@ -1210,7 +1210,7 @@ _RtcGetTimeZone equ _RtcGetTimeZoneLabel-branchTableBase
     .dw RtcGetTimeZone
     .db 2
 
-; base.asm
+; base2.asm
 _InitBaseLabel:
 _InitBase equ _InitBaseLabel-branchTableBase
     .dw InitBase
@@ -1544,7 +1544,7 @@ defpage(2)
 #include "integer2.asm"
 ;
 #include "prime2.asm"
-#include "base.asm"
+#include "base2.asm"
 #include "integerconv32.asm"
 #include "formatinteger32.asm"
 #include "integer32.asm"
