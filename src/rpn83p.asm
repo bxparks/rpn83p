@@ -991,23 +991,23 @@ _PopRpnObject5 equ _PopRpnObject5Label-branchTableBase
 
 ; formatdate2.asm
 _FormatDateRecordLabel:
-_FormatDateRecord equ _FormatDateRecord-branchTableBase
+_FormatDateRecord equ _FormatDateRecordLabel-branchTableBase
     .dw FormatDateRecord
     .db 2
 _FormatTimeRecordLabel:
-_FormatTimeRecord equ _FormatTimeRecord-branchTableBase
+_FormatTimeRecord equ _FormatTimeRecordLabel-branchTableBase
     .dw FormatTimeRecord
     .db 2
 _FormatDateTimeRecordLabel:
-_FormatDateTimeRecord equ _FormatDateTimeRecord-branchTableBase
+_FormatDateTimeRecord equ _FormatDateTimeRecordLabel-branchTableBase
     .dw FormatDateTimeRecord
     .db 2
 _FormatOffsetRecordLabel:
-_FormatOffsetRecord equ _FormatOffsetRecord-branchTableBase
+_FormatOffsetRecord equ _FormatOffsetRecordLabel-branchTableBase
     .dw FormatOffsetRecord
     .db 2
 _FormatOffsetDateTimeRecordLabel:
-_FormatOffsetDateTimeRecord equ _FormatOffsetDateTimeRecord-branchTableBase
+_FormatOffsetDateTimeRecord equ _FormatOffsetDateTimeRecordLabel-branchTableBase
     .dw FormatOffsetDateTimeRecord
     .db 2
 
@@ -1383,10 +1383,16 @@ _FormatU32ToDecString equ _FormatU32ToDecStringLabel-branchTableBase
     .dw FormatU32ToDecString
     .db 2
 
-; format2asm
+; format2.asm
 _FormatAToStringLabel:
 _FormatAToString equ _FormatAToStringLabel-branchTableBase
     .dw FormatAToString
+    .db 2
+
+; show2.asm
+_FormShowableLabel:
+_FormShowable equ _FormShowableLabel-branchTableBase
+    .dw FormShowable
     .db 2
 
 ;-----------------------------------------------------------------------------
@@ -1466,7 +1472,6 @@ _DebugU32DEAsHex equ _DebugU32DEAsHexLabel-branchTableBase
 #include "vars.asm"
 #include "input.asm"
 #include "display.asm"
-#include "show.asm"
 #include "basehandlers.asm"
 #include "menu.asm"
 #include "menuhandlers.asm"
@@ -1540,10 +1545,12 @@ defpage(2)
 #include "integerconv40.asm"
 #include "fps2.asm"
 #include "format2.asm"
+#include "show2.asm"
 #include "memory2.asm"
 #include "const2.asm"
 #include "integer2.asm"
 #include "rpnobject2.asm"
+#include "cstring2.asm"
 ;
 #include "prime2.asm"
 #include "base2.asm"

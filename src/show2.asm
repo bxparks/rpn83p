@@ -7,8 +7,10 @@
 ; If the number is floating point, then it is shown in scientific notation with
 ; 14 significant digits.
 ;
-; This is placed in Flash Page 0. I had hoped that it could be placed in Flash
-; Page 1, but it needs too many routines from base.asm.
+; Labels with Capital letters are intended to be exported to other flash pages
+; and should be placed in the branch table on Flash Page 0. Labels with
+; lowercase letters are intended to be private so do not need a branch table
+; entry.
 ;------------------------------------------------------------------------------
 
 ; Description: Format the number in OP1 to a NUL terminated string that shows
@@ -20,10 +22,10 @@
 ;   - (DE): string buffer updated and NUL terminated
 ;   - DE: points to NUL at the end of string, to allow chaining
 ; Destroys: all, OP1-OP6
-formShowable:
+FormShowable:
     bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
     jr nz, formShowableBase
-    call getOp1RpnObjectType
+    call getOp1RpnObjectTypePageTwo
     ; real
     cp rpnObjectTypeReal
     jr z, formShowableReal
@@ -48,7 +50,7 @@ formShowable:
 formShowableUnknown:
     ; Print "{unknown}" if object not known
     ld hl, msgRpnObjectTypeUnknown
-    jp copyCString
+    jp copyCStringPageTwo
 formShowableBase:
     call formBaseString
     jr formShowableEnd
@@ -75,10 +77,10 @@ formShowableOffset:
     bcall(_FormatOffsetRecord)
     jr formShowableEnd
 formShowableOffsetDateTime:
-    call shrinkOp2ToOp1
+    call shrinkOp2ToOp1PageTwo
     ld hl, OP1
     bcall(_FormatOffsetDateTimeRecord)
-    call expandOp1ToOp2
+    call expandOp1ToOp2PageTwo
     ; [[fallthrough]]
 formShowableEnd:
     xor a
@@ -102,7 +104,7 @@ formShowableEnd:
 ; Destroys: A, B, C, DE, HL, OP2-OP6
 formBaseString:
     ; Check for complex number, and use Complex formatting.
-    call checkOp1Complex
+    call checkOp1ComplexPageTwo
     jr z, formComplexString
     ; Check for negative number, and use Real formatting.
     push de
@@ -139,7 +141,7 @@ formBinString:
     ; We are here if OP1 is a positive integer < 2^WSIZ.
     push de ; stack=[bufPointer]
     ; Move u32(OP3) to OP1, to free up OP3.
-    call move9ToOp1
+    call move9ToOp1PageTwo
     ; Convert to a 32-digit binary string at OP4.
     ld hl, OP1
     ld de, OP4
@@ -274,7 +276,7 @@ formRealStringNonZero:
     push de ; stack=[bufPointer]
     bcall(_PushRealO1) ; FPS=[OP1]
     bcall(_ClrOP1S) ; clear sign bit of OP1
-    call op2Set1E14 ; OP2=1E14
+    call op2Set1E14PageTwo ; OP2=1E14
     bcall(_CpOP1OP2) ; if OP1 >= OP2: CF=0
     jr nc, formRealStringFloat
     ; Check for integer
@@ -329,7 +331,7 @@ formSciStringDigits:
     srl a
     srl a
     srl a
-    call convertAToChar
+    call convertAToCharPageTwo
     ; Push the position of the last non-zero trailing digit in the mantissa.
     ; I need an extra copy of DE, but I'm out of registers, so use the stack.
     ; If I try to use IX, transferring from DE to IX requires the stack anyway,
@@ -356,7 +358,7 @@ formSciStringLoop:
     ld l, e
     ex (sp), hl ; stack=[EXP, new lastNonZeroDE]; HL preserved
 formSciStringMaintainLastDE1:
-    call convertAToChar
+    call convertAToCharPageTwo
 formSciStringLoopAltEntry:
     ld (de), a
     inc de
@@ -372,7 +374,7 @@ formSciStringLoopAltEntry:
     ld l, e
     ex (sp), hl ; stack=[EXP, lastNonZeroDE]
 formSciStringMaintainLastDE2:
-    call convertAToChar
+    call convertAToCharPageTwo
     ld (de), a
     inc de
     djnz formSciStringLoop
@@ -439,7 +441,7 @@ formIntStringLoop:
     srl a
     srl a
     srl a
-    call convertAToChar
+    call convertAToCharPageTwo
     ld (de), a
     inc de
     dec b
@@ -447,7 +449,7 @@ formIntStringLoop:
     ; print the second digit
     ld a, c ; A=BCD digit
     and $0F
-    call convertAToChar
+    call convertAToCharPageTwo
     ld (de), a
     inc de
     djnz formIntStringLoop

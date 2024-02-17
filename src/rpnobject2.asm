@@ -8,6 +8,29 @@
 ; entry.
 ;-----------------------------------------------------------------------------
 
+; Description: Return the rpnObjectType of OP1/OP2.
+; Input: OP1
+; Output: A=rpnObjectType
+; Destroys: A
+getOp1RpnObjectTypePageTwo:
+    ld a, (OP1)
+    and $1f
+    ret
+
+;-----------------------------------------------------------------------------
+
+; Description: Same as CkOP1Cplx() OS routine without the bcall() overhead.
+; Input: OP1
+; Output: ZF=1 if complex
+; Destroys: A
+checkOp1ComplexPageTwo:
+    ld a, (OP1)
+    and $1f
+    cp rpnObjectTypeComplex
+    ret
+
+;-----------------------------------------------------------------------------
+
 ; Description: Check if OP1 is a RpnDate.
 ; Output: ZF=1 if RpnDate
 checkOp1DatePageTwo:
