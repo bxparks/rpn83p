@@ -337,7 +337,9 @@ primeFactorModCheckDiv:
 ; Throws: Err:Domain if OP1 is not an integer in the interval [2,2^32-1].
 PrimeFactor:
     ; TODO: Replace the following validation with convertOP1ToU32(). I think we
-    ; just need to check for 0 and 1.
+    ; just need to check for 0 and 1. Oh, and create a sqrtU32() replacement
+    ; for the floating point function _SqRoot().
+    ;
     ; Check 0
     bcall(_CkOP1FP0)
     jr z, primeFactorError
