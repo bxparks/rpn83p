@@ -25,7 +25,7 @@ main:
     call initComplexMode
     call initCommaEEMode
     call initMenu
-    call initBase
+    bcall(_InitBase)
     call initStat
     call initCfit
     call initTvm

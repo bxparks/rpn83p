@@ -4,9 +4,12 @@
 ;
 ; Routines to convert between TI-OS floating point numbers in OP1 or OP2
 ; to the u32 integers required by the BASE functions in integer32.asm.
+;
+; Capitalized labels are intended to be exported to the branch table on flash
+; page 0. Lowercased labels are intended to be local to the current flash page.
 ;-----------------------------------------------------------------------------
 
-initBase:
+InitBase:
     res rpnFlagsBaseModeEnabled, (iy + rpnFlags)
     ld a, 10
     ld (baseNumber), a
@@ -60,7 +63,7 @@ truncWordSizeExit:
 ; Description: Calculate the bitwise-and between the integers in OP1 and OP2.
 ; Input: OP1, OP2
 ; Output: OP1: result as a floating number
-bitwiseAnd:
+BitwiseAnd:
     call convertOP1OP2ToUxx ; HL=OP3=u32(OP1); DE=OP4=u32(OP2)
     call truncToWordSize
     ex de, hl
@@ -73,7 +76,7 @@ bitwiseAnd:
 ; Description: Calculate the bitwise-or between the integers in OP1 and OP2.
 ; Input: OP1, OP2
 ; Output: OP1: result as a floating number
-bitwiseOr:
+BitwiseOr:
     call convertOP1OP2ToUxx ; HL=OP3=u32(OP1); DE=OP4=u32(OP2)
     call truncToWordSize
     ex de, hl
@@ -86,7 +89,7 @@ bitwiseOr:
 ; Description: Calculate the bitwise-xor between the integers in OP1 and OP2.
 ; Input: OP1, OP2
 ; Output: OP1: result as a floating number
-bitwiseXor:
+BitwiseXor:
     call convertOP1OP2ToUxx ; HL=OP3=u32(OP1); DE=OP4=u32(OP2)
     call truncToWordSize
     ex de, hl
@@ -99,7 +102,7 @@ bitwiseXor:
 ; Description: Calculate the bitwise-not of OP1
 ; Input: OP1
 ; Output: OP1: result as a floating number
-bitwiseNot:
+BitwiseNot:
     call convertOP1ToUxx ; HL=OP3=u32(OP1)
     call truncToWordSize
     call notU32 ; OP3=NOT(OP3)
@@ -109,7 +112,7 @@ bitwiseNot:
 ; Description: Calculate the bitwise-neg of OP1
 ; Input: OP1
 ; Output: OP1: result as a floating number
-bitwiseNeg:
+BitwiseNeg:
     call convertOP1ToUxx ; HL=OP3=u32(OP1)
     call truncToWordSize
     call negU32 ; OP3=NEG(OP3)
@@ -118,7 +121,7 @@ bitwiseNeg:
 
 ;-----------------------------------------------------------------------------
 
-baseShiftLeftLogical:
+BaseShiftLeftLogical:
     call convertOP1ToUxx ; HL=OP3=u32(OP1)
     call shiftLeftLogicalUxx ; OP3=shiftLeftLogical(OP3)
     call storeCarryFlag
@@ -144,7 +147,7 @@ shiftLeftLogicalUxx:
 
 ;-----------------------------------------------------------------------------
 
-baseShiftRightLogical:
+BaseShiftRightLogical:
     call convertOP1ToUxx ; HL=OP3=u32(OP1)
     call shiftRightLogicalUxx ; OP3=shiftRightLogical(OP3)
     call storeCarryFlag
@@ -170,7 +173,7 @@ shiftRightLogicalUxx:
 
 ;-----------------------------------------------------------------------------
 
-baseShiftRightArithmetic:
+BaseShiftRightArithmetic:
     call convertOP1ToUxx ; HL=OP3=u32(OP1)
     call shiftRightArithmeticUxx ; OP3=shiftRightArithmetic(OP3)
     call storeCarryFlag
@@ -196,7 +199,7 @@ shiftRightArithmeticUxx:
 
 ;-----------------------------------------------------------------------------
 
-baseShiftLeftLogicalN:
+BaseShiftLeftLogicalN:
     call convertOP1OP2ToUxxN ; HL=OP3=u32(OP1); A=u8(OP2); ZF=1 if A==0
     ret z
     ld b, a
@@ -208,7 +211,7 @@ baseShiftLeftLogicalNLoop:
 
 ;-----------------------------------------------------------------------------
 
-baseShiftRightLogicalN:
+BaseShiftRightLogicalN:
     call convertOP1OP2ToUxxN ; HL=OP3=u32(OP1); A=u8(OP2); ZF=1 if A==0
     ret z
     ld b, a
@@ -220,7 +223,7 @@ baseShiftRightLogicalNLoop:
 
 ;-----------------------------------------------------------------------------
 
-baseRotateLeftCircular:
+BaseRotateLeftCircular:
     call convertOP1ToUxx ; HL=OP3=u32(OP1)
     call rotateLeftCircularUxx ; OP3=rotateLeftCircular(OP3)
     call storeCarryFlag
@@ -246,7 +249,7 @@ rotateLeftCircularUxx:
 
 ;-----------------------------------------------------------------------------
 
-baseRotateRightCircular:
+BaseRotateRightCircular:
     call convertOP1ToUxx ; HL=OP3=u32(OP1)
     call rotateRightCircularUxx ; OP3=rotateRightCircular(OP3)
     call storeCarryFlag
@@ -272,7 +275,7 @@ rotateRightCircularUxx:
 
 ;-----------------------------------------------------------------------------
 
-baseRotateLeftCarry:
+BaseRotateLeftCarry:
     call convertOP1ToUxx ; HL=OP3=u32(OP1)
     call recallCarryFlag ; CF=(baseCarryFlag)
     call rotateLeftCarryUxx ; OP3=rotateLeftCarry(OP3)
@@ -301,7 +304,7 @@ rotateLeftCarryUxx:
 
 ;-----------------------------------------------------------------------------
 
-baseRotateRightCarry:
+BaseRotateRightCarry:
     call convertOP1ToUxx ; HL=OP3=u32(OP1)
     call recallCarryFlag ; CF=(baseCarryFlag)
     call rotateRightCarryUxx ; OP3=rotateRightCarry(OP3)
@@ -330,7 +333,7 @@ rotateRightCarryUxx:
 
 ;-----------------------------------------------------------------------------
 
-baseRotateLeftCircularN:
+BaseRotateLeftCircularN:
     call convertOP1OP2ToUxxN ; HL=OP3=u32(OP1); A=u8(OP2); ZF=1 if A==0
     ret z
     ld b, a
@@ -343,7 +346,7 @@ baseRotateLeftCircularNLoop:
 
 ;-----------------------------------------------------------------------------
 
-baseRotateRightCircularN:
+BaseRotateRightCircularN:
     call convertOP1OP2ToUxxN ; HL=OP3=u32(OP1); A=u8(OP2); ZF=1 if A==0
     ret z
     ld b, a
@@ -356,7 +359,7 @@ baseRotateRightCircularNLoop:
 
 ;-----------------------------------------------------------------------------
 
-baseRotateLeftCarryN:
+BaseRotateLeftCarryN:
     call convertOP1OP2ToUxxN ; HL=OP3=u32(OP1); A=u8(OP2); ZF=1 if A==0
     ret z
     ld b, a
@@ -369,7 +372,7 @@ baseRotateLeftCarryNLoop:
 
 ;-----------------------------------------------------------------------------
 
-baseRotateRightCarryN:
+BaseRotateRightCarryN:
     call convertOP1OP2ToUxxN ; HL=OP3=u32(OP1); A=u8(OP2); ZF=1 if A==0
     ret z
     ld b, a
@@ -382,7 +385,7 @@ baseRotateRightCarryNLoop:
 
 ;-----------------------------------------------------------------------------
 
-baseAdd:
+BaseAdd:
     call convertOP1OP2ToUxx ; HL=OP3=u32(OP1); DE=OP4=u32(OP2)
     call truncToWordSize
     call addUxxUxx ; OP3+=OP4
@@ -411,7 +414,7 @@ addUxxUxx:
 
 ;-----------------------------------------------------------------------------
 
-baseSub:
+BaseSub:
     call convertOP1OP2ToUxx ; HL=OP3=u32(OP1); DE=OP4=u32(OP2)
     call truncToWordSize
     call subUxxUxx ; OP3-=OP4
@@ -440,7 +443,7 @@ subUxxUxx:
 
 ;-----------------------------------------------------------------------------
 
-baseMult:
+BaseMult:
     call convertOP1OP2ToUxx ; HL=OP3=u32(OP1); DE=OP4=u32(OP2)
     call truncToWordSize
     call multUxxUxx ; OP3*=OP4
@@ -473,7 +476,7 @@ multUxxUxx:
 ;   - OP1=dividend
 ;   - OP2=divisor
 ; Output: OP1=quotient
-baseDiv:
+BaseDiv:
     call baseDivCommon
     jp convertU32ToOP1 ; OP1=quotient(OP3)
 
@@ -481,7 +484,7 @@ baseDiv:
 ;   - OP1=dividend
 ;   - OP2=divisor
 ; Output: OP1=remainder; OP2=quotient
-baseDiv2:
+BaseDiv2:
     call baseDivCommon ; HL=OP3=quotient; BC=OP5=remainder
     push bc ; stack=[remainder]
     ; convert HL=quotient into OP2
@@ -515,7 +518,7 @@ baseDivByZeroErr:
 
 ;-----------------------------------------------------------------------------
 
-baseReverseBits:
+BaseReverseBits:
     call convertOP1ToUxx ; HL=OP3=u32(OP1)
     call truncToWordSize
     call reverseUxxBits
@@ -539,7 +542,7 @@ reverseUxxBits:
 
 ;-----------------------------------------------------------------------------
 
-baseCountBits:
+BaseCountBits:
     call convertOP1ToUxx ; HL=OP3=u32(OP1)
     call truncToWordSize
     call countU32Bits ; A=countBits(OP3)
@@ -548,7 +551,7 @@ baseCountBits:
 
 ;-----------------------------------------------------------------------------
 
-baseSetBit:
+BaseSetBit:
     call convertOP1OP2ToUxxN ; HL=OP3=u32(OP1); A=u8(OP2); ZF=1 if A==0
     ld c, a
     call setU32Bit ; OP3=setBit(OP3,C)
@@ -556,7 +559,7 @@ baseSetBit:
 
 ;-----------------------------------------------------------------------------
 
-baseClearBit:
+BaseClearBit:
     call convertOP1OP2ToUxxN ; HL=OP3=u32(OP1); A=u8(OP2); ZF=1 if A==0
     ld c, a
     call clearU32Bit ; OP3=clearBit(OP3,C)
@@ -564,7 +567,7 @@ baseClearBit:
 
 ;-----------------------------------------------------------------------------
 
-baseGetBit:
+BaseGetBit:
     call convertOP1OP2ToUxxN ; HL=OP3=u32(OP1); A=u8(OP2); ZF=1 if A==0
     ld c, a
     call getU32Bit ; A=1 or 0
@@ -579,11 +582,24 @@ baseGetBit:
 ; Input: CF
 ; Output: (baseCarryFlag)
 ; Destroys: A
+BaseStoreCarryFlag:
 storeCarryFlag:
     rla ; shift CF into bit-0
     and $1
     ld (baseCarryFlag), a
     set dirtyFlagsStatus, (iy + dirtyFlags)
+    ret
+
+; Description: Return the baseCarryFlag as OP1.
+; Input: (baseCarryFlag)
+; Output: OP1=flaot(baseCarryFlag)
+BaseGetCarryFlag:
+    call recallCarryFlag
+    jr c, baseGetCarryFlagSet1
+    bcall(_OP1Set0)
+    ret
+baseGetCarryFlagSet1:
+    bcall(_OP1Set1)
     ret
 
 ; Description: Transfer bit 0 of (baseCarryFlag) into CF.
@@ -595,18 +611,6 @@ recallCarryFlag:
     rra ; shift bit 0 into CF
     ret
 
-; Description: Return the baseCarryFlag as OP1.
-; Input: (baseCarryFlag)
-; Output: OP1=flaot(baseCarryFlag)
-baseGetCarryFlag:
-    call recallCarryFlag
-    jr c, baseGetCarryFlagSet1
-    bcall(_OP1Set0)
-    ret
-baseGetCarryFlagSet1:
-    bcall(_OP1Set1)
-    ret
-
 ;-----------------------------------------------------------------------------
 ; Word size operations.
 ;-----------------------------------------------------------------------------
@@ -616,7 +620,7 @@ baseGetCarryFlagSet1:
 ; Input: A=new wordSize
 ; Output: (baseWordSize)=A
 ; Destroys: none
-baseSetWordSize:
+BaseSetWordSize:
     cp 8
     jr z, setWordSize
     cp 16
@@ -636,7 +640,7 @@ setWordSize:
 ; Input: None
 ; Output: OP1=float(baseWordSize)
 ; Destroys; A
-baseGetWordSize:
+BaseGetWordSize:
     ld a, (baseWordSize)
     bcall(_ConvertAToOP1) ; OP1=float(A)
     ret

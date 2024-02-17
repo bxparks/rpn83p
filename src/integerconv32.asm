@@ -38,7 +38,7 @@ u32StatusCodeFatalMask equ $03
 ; Destroys: A, B, C, DE
 ; Preserves: HL, OP1, OP2
 convertOP1ToU32AllowFrac:
-    call convertOP1ToU32StatusCode ; OP3=u32(OP1); C=u32StatusCode
+    call ConvertOP1ToU32StatusCode ; OP3=u32(OP1); C=u32StatusCode
     ld a, c
     and u32StatusCodeFatalMask
     jr nz, convertOP1ToU32Error
@@ -84,13 +84,14 @@ convertOP2ToU32AllowFrac:
 ; Destroys: A, B, C, DE
 ; Preserves: HL, OP1, OP2
 convertOP1ToU32:
-    call convertOP1ToU32StatusCode ; OP3=u32(OP1); C=u32StatusCode
+    call ConvertOP1ToU32StatusCode ; OP3=u32(OP1); C=u32StatusCode
     ld a, c
     or a
     jr nz, convertOP1ToU32Error
     ret
 
-; Description: Convert OP1 to U32 with u32StatusCode.
+; Description: Convert OP1 to U32 with u32StatusCode. This routine allows the
+; calling code to handle various error conditions with more flexibility.
 ; Input:
 ;   - OP1: floating point number
 ;   - HL: pointer to u32 in memory, cannot be OP2
@@ -99,7 +100,7 @@ convertOP1ToU32:
 ;   - C: u32StatusCode
 ; Destroys: A, B, C, DE
 ; Preserves: HL, OP1, OP2
-convertOP1ToU32StatusCode:
+ConvertOP1ToU32StatusCode:
     call clearU32 ; ensure u32=0 even when error conditions are detected
     push hl ; stack=[u32]
     ld c, 0 ; u32StatusCode
@@ -114,7 +115,7 @@ convertOP1ToU32StatusCode:
     set u32StatusCodeNegative, c
     ret
 convertOP1ToU32StatusCodeCheckTooBig:
-    call op2Set2Pow32
+    call op2Set2Pow32PageTwo
     bcall(_CpOP1OP2) ; if OP1 >= 2^32: CF=0
     jr c, convertOP1ToU32StatusCodeCheckInt
     bcall(_PopRealO2) ; FPS=[]; OP2=OP2 saved
@@ -244,8 +245,8 @@ convertU32ToOP1Loop:
 ;   - HL=OP3
 convertOP1ToUxx:
     ld hl, OP3
-    call convertOP1ToU32StatusCode ; OP3=u32(OP1); C=u32StatusCode
-    call checkU32FitsWsize ; C=u32StatusCode
+    call ConvertOP1ToU32StatusCode ; OP3=u32(OP1); C=u32StatusCode
+    call CheckU32FitsWsize ; C=u32StatusCode
     ld a, c
     and u32StatusCodeFatalMask
     jp nz, convertOP1ToU32Error
@@ -259,14 +260,14 @@ convertOP1ToUxx:
 convertOP1OP2ToUxx:
     ld hl, OP3
     call convertOP1ToU32AllowFrac ; OP3=u32(OP1)
-    call checkU32FitsWsize ; C=u32StatusCode
+    call CheckU32FitsWsize ; C=u32StatusCode
     ld a, c
     and u32StatusCodeFatalMask
     jp nz, convertOP1ToU32Error
     ;
     ld hl, OP4
     call convertOP2ToU32AllowFrac ; OP4=u32(OP2)
-    call checkU32FitsWsize ; C=u32StatusCode
+    call CheckU32FitsWsize ; C=u32StatusCode
     ld a, c
     and u32StatusCodeFatalMask
     jp nz, convertOP1ToU32Error
@@ -308,7 +309,7 @@ convertOP1OP2ToUxxErr:
 ;   - C: u32StatusCodeTooBig bit set if u32 is too big for baseWordSize
 ; Destroys: A, B, C
 ; Preserves: DE, HL
-checkU32FitsWsize:
+CheckU32FitsWsize:
     call getWordSizeIndex ; A=0,1,2,3
     sub 3 ; A=A-3
     neg ; A=3-A

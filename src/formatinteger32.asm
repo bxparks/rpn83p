@@ -13,8 +13,8 @@ hexNumberWidth equ 8 ; 4 bits * 8 = 32 bits
 
 ; Description: Converts 32-bit unsigned integer referenced by HL to a hex
 ; string in buffer referenced by DE.
-; TODO: It might be possible to combine formatU32ToHexString(),
-; formatU32ToOctString(), and formatU32ToBinString() into a single routine.
+; TODO: It might be possible to combine FormatU32ToHexString(),
+; FormatU32ToOctString(), and FormatU32ToBinString() into a single routine.
 ;
 ; Input:
 ;   - HL: pointer to 32-bit unsigned integer
@@ -25,7 +25,7 @@ hexNumberWidth equ 8 ; 4 bits * 8 = 32 bits
 ;   - (DE): C-string representation of u32 as hexadecimal
 ; Destroys: A
 ; Preserves: BC, DE, HL
-formatU32ToHexString:
+FormatU32ToHexString:
     push bc
     push hl
     push de
@@ -35,7 +35,7 @@ formatU32ToHexStringLoop:
     ; convert to hexadecimal, but the characters are in reverse order
     ld a, (hl)
     and $0F ; last 4 bits
-    call convertAToChar
+    call convertAToCharPageTwo
     ld (de), a
     inc de
     call shiftRightLogicalU32
@@ -50,7 +50,7 @@ formatU32ToHexStringLoop:
     pop hl ; HL = destination string pointer
     push hl
     ld b, hexNumberWidth
-    call reverseString
+    call reverseStringPageTwo
 
     pop de
     pop hl
@@ -74,7 +74,7 @@ octNumberWidth equ 11 ; 3 bits * 11 = 33 bits
 ;   - (DE): C-string representation of u32 as octal digits
 ; Destroys: A
 ; Preserves: BC, DE, HL
-formatU32ToOctString:
+FormatU32ToOctString:
     push bc
     push hl
     push de
@@ -97,7 +97,7 @@ formatU32ToOctStringLoop:
     pop hl ; HL = destination string pointer
     push hl
     ld b, octNumberWidth
-    call reverseString
+    call reverseStringPageTwo
 
     pop de
     pop hl
@@ -121,7 +121,7 @@ binNumberWidth equ 32
 ;   - (DE): C-string representation of u32 as binary digits
 ; Destroys: A
 ; Preserves: BC, DE, HL
-formatU32ToBinString:
+FormatU32ToBinString:
     push bc
     push hl
     push de
@@ -142,11 +142,53 @@ formatU32ToBinStringLoop:
     pop hl ; HL = destination string pointer
     push hl
     ld b, binNumberWidth
-    call reverseString
+    call reverseStringPageTwo
 
     pop de
     pop hl
     pop bc
+    ret
+
+;------------------------------------------------------------------------------
+
+; Description: Reformat the base-2 string in groups of 4, 2 groups per line.
+; The source string is probably at OP4. The destination string is probably OP3,
+; which is 11 bytes before OP4. The original string is a maximum of 32
+; characters long. The formatted string adds 2 characters per line, for a
+; maximum of 8 characters, which is less than the 11 bytes that OP3 is before
+; OP4. Therefore the formatting can be done in-situ because at every point in
+; the iteration, the resulting string does not affect the upcoming digits.
+;
+; The maximum length of the final string is 4 lines * 10 bytes = 40 bytes,
+; which is smaller than the 44 bytes available using OP3-OP6.
+;
+; Input:
+;   - HL:(char*)=source base-2 string (probably OP4)
+;   - DE:(char*)=destination string buffer (sometimes OP3)
+; Output:
+;   - (DE): base-2 string formatted in lines of 8 digits, in 2 groups of 4
+;   digits
+;   - DE updated
+ReformatBaseTwoString:
+    call getWordSizeIndex
+    inc a ; A=baseWordSize/8=number of bytes
+    ld b, a
+reformatBaseTwoStringLoop:
+    push bc
+    ld bc, 4
+    ldir
+    ld a, ' '
+    ld (de), a
+    inc de
+    ;
+    ld bc, 4
+    ldir
+    ld a, Lenter
+    ld (de), a
+    inc de
+    ;
+    pop bc
+    djnz reformatBaseTwoStringLoop
     ret
 
 ;-----------------------------------------------------------------------------
@@ -166,7 +208,7 @@ decNumberWidth equ 10 ; 2^32 needs 10 digits
 ;   - (DE): C-string representation of u32 as hexadecimal
 ; Destroys: A
 ; Preserves: BC, DE, HL
-formatU32ToDecString:
+FormatU32ToDecString:
     push bc
     push hl
     push de ; push destination buffer last
@@ -177,7 +219,7 @@ formatU32ToDecStringLoop:
     ld d, 10
     call divU32ByD ; u32(HL)=quotient, D=10, E=remainder
     ld a, e
-    call convertAToChar
+    call convertAToCharPageTwo
     pop de
     ld (de), a
     inc de
@@ -190,7 +232,7 @@ formatU32ToDecStringLoop:
     push hl
     ld b, decNumberWidth
     call truncateTrailingZeros ; B=length of new string
-    call reverseString ; reverse the characters
+    call reverseStringPageTwo
 
     pop de
     pop hl

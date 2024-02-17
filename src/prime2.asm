@@ -326,3 +326,43 @@ primeFactorModCheckDiv:
     ld a, b
     or c ; if BC==0: ZF=1
     ret
+
+;-----------------------------------------------------------------------------
+
+; Description: Choose one of the various primeFactorXXX() routines.
+; Input:
+;   - OP1:real=input
+; Output:
+;   - OP1=1 if prime, or its smallest prime factor (>1) otherwise
+; Throws: Err:Domain if OP1 is not an integer in the interval [2,2^32-1].
+PrimeFactor:
+    ; TODO: Replace the following validation with convertOP1ToU32(). I think we
+    ; just need to check for 0 and 1.
+    ; Check 0
+    bcall(_CkOP1FP0)
+    jr z, primeFactorError
+    ; Check 1
+    bcall(_OP2Set1) ; OP2 = 1
+    bcall(_CpOP1OP2) ; if OP1==1: ZF=1
+    jr z, primeFactorError
+    bcall(_OP1ToOP4) ; save OP4 = X
+    ; Check integer >= 0
+    bcall(_CkPosInt) ; if OP1 >= 0: ZF=1
+    jr nz, primeFactorError
+    ; Check unsigned 32-bit integer, i.e. < 2^32.
+    call op2Set2Pow32PageTwo ; if OP1 >= 2^32: CF=0
+    bcall(_CpOP1OP2)
+    jr nc, primeFactorError
+
+#ifdef USE_PRIME_FACTOR_FLOAT
+    jp primeFactorFloat
+#else
+    #ifdef USE_PRIME_FACTOR_INT
+        jp primeFactorInt
+    #else
+        jp primeFactorMod
+    #endif
+#endif
+
+primeFactorError:
+    bcall(_ErrDomain) ; throw exception
