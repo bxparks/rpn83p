@@ -657,12 +657,6 @@ _SetHandlerCodeFromSystemCode equ _SetHandlerCodeFromSystemCodeLabel-branchTable
     .dw SetHandlerCodeFromSystemCode
     .db 1
 
-; print1.asm
-_FormatAToStringLabel:
-_FormatAToString equ _FormatAToStringLabel-branchTableBase
-    .dw FormatAToString
-    .db 1
-
 ; input1.asm
 _InitInputBufLabel:
 _InitInputBuf equ _InitInputBufLabel-branchTableBase
@@ -1389,6 +1383,12 @@ _FormatU32ToDecString equ _FormatU32ToDecStringLabel-branchTableBase
     .dw FormatU32ToDecString
     .db 2
 
+; format2asm
+_FormatAToStringLabel:
+_FormatAToString equ _FormatAToStringLabel-branchTableBase
+    .dw FormatAToString
+    .db 2
+
 ;-----------------------------------------------------------------------------
 
 #ifdef DEBUG
@@ -1503,7 +1503,6 @@ defpage(1)
 #include "crc1.asm"
 #include "errorcode1.asm"
 #include "print1.asm"
-#include "format1.asm"
 #include "input1.asm"
 #include "inputdate1.asm"
 #include "arg1.asm"
