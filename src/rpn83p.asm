@@ -1480,6 +1480,7 @@ _DebugU32DEAsHex equ _DebugU32DEAsHexLabel-branchTableBase
 #include "cstring.asm"
 #include "float.asm"
 #include "complex.asm"
+#include "rpnobject.asm"
 #include "conv.asm"
 #include "print.asm"
 #include "const.asm"
