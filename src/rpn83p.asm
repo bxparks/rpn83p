@@ -1351,7 +1351,7 @@ _BaseGetWordSize equ _BaseGetWordSizeLabel-branchTableBase
     .dw BaseGetWordSize
     .db 2
 
-; prime.asm
+; prime2.asm
 _PrimeFactorLabel:
 _PrimeFactor equ _PrimeFactorLabel-branchTableBase
     .dw PrimeFactor
@@ -1543,7 +1543,7 @@ defpage(2)
 #include "const2.asm"
 #include "integer2.asm"
 ;
-#include "prime.asm"
+#include "prime2.asm"
 #include "base.asm"
 #include "integerconv32.asm"
 #include "formatinteger32.asm"
