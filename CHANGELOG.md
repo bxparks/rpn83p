@@ -26,6 +26,8 @@
         - allow only Real numbers for TVM functions
     - **Bug Fix** Validate data type for `%` function
         - allow only Real numbers for `X` and `Y`
+    - **Bug Fix** Validate data type when storing to `ANS` upon app exit
+        - allow only Real or Complex numbers to stored to `ANS`
     - Store and recall TI-OS single-letter variables
         - TI-OS supports 27 single-letter variables (A-Z, Theta) for real and
           complex numbers

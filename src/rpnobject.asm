@@ -91,6 +91,20 @@ checkOp3Complex:
 
 ;-----------------------------------------------------------------------------
 
+; Description: Check if OP1 is either Real or Complex.
+; Input: OP1/OP2
+; Output: ZF=1 if Real or Complex
+; Destroys: A
+checkOp1RealOrComplex:
+    ld a, (OP1)
+    and $1f
+    cp rpnObjectTypeReal
+    ret z
+    cp rpnObjectTypeComplex
+    ret
+
+;-----------------------------------------------------------------------------
+
 ; Description: Check if OP1 is an RpnDate.
 ; Output: ZF=1 if RpnDate
 checkOp1Date:
