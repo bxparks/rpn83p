@@ -127,12 +127,10 @@ mLnOnePlusHandler:
 ; mPercentHandler(Y, X) -> (Y, Y*(X/100))
 ; Description: Calculate the X percent of Y.
 mPercentHandler:
-    call closeInputAndRecallX
+    call closeInputAndRecallXY ; OP1=Y; OP2=X
+    bcall(_FPMult) ; OP1=OP1*OP2=X*Y
     call op2Set100
-    bcall(_FPDiv)
-    bcall(_OP1ToOP2)
-    call rclY
-    bcall(_FPMult)
+    bcall(_FPDiv) ; OP1=X*Y/100
     jp replaceX
 
 ; mPercentChangeHandler(Y, X) -> (Y, 100*(X-Y)/Y)

@@ -24,6 +24,8 @@
         - allow only Real numbers for `Sigma+` and `Sigma-`
     - **Bug Fix** Validate data type for `TVM` functions
         - allow only Real numbers for TVM functions
+    - **Bug Fix** Validate data type for `%` function
+        - allow only Real numbers for `X` and `Y`
     - Store and recall TI-OS single-letter variables
         - TI-OS supports 27 single-letter variables (A-Z, Theta) for real and
           complex numbers
