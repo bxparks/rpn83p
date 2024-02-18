@@ -1054,12 +1054,17 @@ floatOpDiv:
 ; Output: OP1/OP2: value stored
 ; Destroys: all
 ; Preserves: OP1/OP2
+; Throws: Err:DataType if not Real or Complex
 stoVar:
     push bc
     bcall(_PushRpnObject1) ; FPS=[OP1/OP2]
     pop bc
     call checkOp1Complex ; ZF=1 if complex
     jr z, stoVarComplex
+    call checkOp1Real ; ZF=1 if real
+    jr z, stoVarReal
+    bcall(_ErrDataType)
+stoVarReal:
     ld b, RealObj
     jr stoVarSave
 stoVarComplex:
