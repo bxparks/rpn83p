@@ -50,6 +50,14 @@ checkOp1AndOp3Real:
     cp rpnObjectTypeReal
     ret
 
+; Description: Verify that X is real.
+; Throws: Err:DateType if not
+; Destroys: OP1/OP2
+validateOp1Real:
+    call checkOp1Real
+    ret z
+    bcall(_ErrDataType)
+
 ;-----------------------------------------------------------------------------
 
 ; Description: Same as CkOP1Cplx() OS routine without the bcall() overhead.

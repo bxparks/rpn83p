@@ -22,6 +22,8 @@
           `CkPosInt()`.
     - **Bug Fix** Validate data type for `STAT` functions
         - allow only Real numbers for `Sigma+` and `Sigma-`
+    - **Bug Fix** Validate data type for `TVM` functions
+        - allow only Real numbers for TVM functions
     - Store and recall TI-OS single-letter variables
         - TI-OS supports 27 single-letter variables (A-Z, Theta) for real and
           complex numbers

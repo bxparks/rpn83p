@@ -50,6 +50,7 @@ mTvmNHandler:
     jr nz, mTvmNCalculate
     ; save the inputBuf value
     call rclX
+    call validateOp1Real
     bcall(_StoTvmN)
     set rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld a, errorCodeTvmStored
@@ -100,13 +101,12 @@ mTvmIYRHandler:
     jr nz, mTvmIYRCalculate
     ; save the inputBuf value
     call rclX
+    call validateOp1Real
     bcall(_TvmCalcIPPFromIYR)
     call op1ToOp2 ; OP2=IYR/N=i
     call op1SetM1 ; OP1=-1
     bcall(_CpOP1OP2) ; if -1<i: CF=1 (valid)
-    jr c, mTvmIYRSet
-    bcall(_ErrDomain)
-mTvmIYRSet:
+    jr nc, mTvmIYRErr
     call rclX
     bcall(_StoTvmIYR)
     set rpnFlagsTvmCalculate, (iy + rpnFlags)
@@ -129,6 +129,8 @@ mTvmIYRCalculate:
     bcall(_StoTvmIYR)
     call pushToX
     ret
+mTvmIYRErr:
+    bcall(_ErrDomain)
 
 ; Description: Call the tvmSolver() as often as necessary (e.g. during
 ; debugging single step) to arrive a solution, or determine that there is no
@@ -211,6 +213,7 @@ mTvmPVHandler:
     jr nz, mTvmPVCalculate
     ; save the inputBuf value
     call rclX
+    call validateOp1Real
     bcall(_StoTvmPV)
     set rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld a, errorCodeTvmStored
@@ -243,6 +246,7 @@ mTvmPMTHandler:
     jr nz, mTvmPMTCalculate
     ; save the inputBuf value
     call rclX
+    call validateOp1Real
     bcall(_StoTvmPMT)
     set rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld a, errorCodeTvmStored
@@ -275,6 +279,7 @@ mTvmFVHandler:
     jr nz, mTvmFVCalculate
     ; save the inputBuf value
     call rclX
+    call validateOp1Real
     bcall(_StoTvmFV)
     set rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld a, errorCodeTvmStored
@@ -306,6 +311,7 @@ mTvmPYRHandler:
     ; save the inputBuf value in OP1
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     call rclX
+    call validateOp1Real
     bcall(_PosNo0Int) ; if posnonzeroint(x): ZF=1
     jr z, mTvmPYRHandlerSet
     bcall(_ErrDomain)
@@ -380,6 +386,7 @@ mTvmIYR0Handler:
     jr nz, mTvmIYR0Get
     ; save the inputBuf value in OP1
     call rclX
+    call validateOp1Real
     bcall(_StoTvmIYR0)
     call tvmSolverSetOverrideFlagIYR0
     set rpnFlagsTvmCalculate, (iy + rpnFlags)
@@ -415,6 +422,7 @@ mTvmIYR1Handler:
     jr nz, mTvmIYR1Get
     ; save the inputBuf value in OP1
     call rclX
+    call validateOp1Real
     bcall(_StoTvmIYR1)
     call tvmSolverSetOverrideFlagIYR1
     set rpnFlagsTvmCalculate, (iy + rpnFlags)
@@ -450,6 +458,7 @@ mTvmIterMaxHandler:
     jr nz, mTvmIterMaxGet
     ; save the inputBuf value in OP1
     call rclX
+    call validateOp1Real
     bcall(_StoTvmIterMax)
     call tvmSolverSetOverrideFlagIterMax
     set rpnFlagsTvmCalculate, (iy + rpnFlags)
