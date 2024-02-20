@@ -227,11 +227,11 @@ getMenuRowBeginId:
 ; Output:
 ;   - A=numRows (0 indicates MenuItem; >0 indicates MenuGroup)
 ;   - DE=handler
-; Preserves: BC, HL
-; Destroys: A, DE, IX
+;   - IX=menuNode
+; Destroys: A, BC, DE, HL, IX
 GetMenuNodeHandler:
     call findMenuNodeIX ; IX:(MenuNode*)=menuNode
-    ld a, (ix + menuNodeFieldNumRows) ; C=numRows
+    ld a, (ix + menuNodeFieldNumRows) ; A=numRows
     ld e, (ix + menuNodeFieldHandler)
     ld d, (ix + menuNodeFieldHandler + 1) ; DE=handler
     ret
@@ -240,8 +240,8 @@ GetMenuNodeHandler:
 
 ; Description: Return the pointer to menuNode of HL in IX.
 ; Input: HL=menuNodeId
-; Output: IX:(MenuNode*)=address of node
-; Destroys: HL
+; Output: HL,IX:(MenuNode*)=address of node
+; Destroys: HL, IX
 ; Preserves: A, BC, DE
 GetMenuNodeIX:
     push af

@@ -280,19 +280,15 @@ changeMenuGroup:
     push af ; stack=[targetMenuGroupId,targetRowIndex]
     ; 1) Invoke the onExit() handler of the previous MenuGroup by setting CF=1.
     ld hl, (currentMenuGroupId)
-    bcall(_GetMenuNodeIX) ; IX:(MenuNode*)=menuNode
-    ld e, (ix + menuNodeFieldHandler)
-    ld d, (ix + menuNodeFieldHandler + 1)
+    bcall(_GetMenuNodeHandler) ; A=numRows; DE=handler; IX=menuNode
     scf ; CF=1 means "onExit()" event
     call jumpDE
     ; 2) Invoke the onEnter() handler of the target MenuGroup by setting CF=0.
     pop af ; stack=[targetMenuGroupId]; A=targetRowIndex
     pop hl ; stack=[]; HL=targeMenuGroupId
-    ld (currentMenuGroupId), hl
     ld (currentMenuRowIndex), a
-    bcall(_GetMenuNodeIX) ; IX=menuNode
-    ld e, (ix + menuNodeFieldHandler)
-    ld d, (ix + menuNodeFieldHandler + 1)
+    ld (currentMenuGroupId), hl
+    bcall(_GetMenuNodeHandler) ; A=numRows; DE=handler; IX=menuNode
     or a ; set CF=0
     set dirtyFlagsMenu, (iy + dirtyFlags)
     jp jumpDE
