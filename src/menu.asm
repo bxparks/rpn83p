@@ -35,16 +35,16 @@
 ;
 ;-----------------------------------------------------------------------------
 
-; Offsets into the MenuNode struct.
-; TODO: Rename these "menuNodeFieldXxxx" to be more self-descriptive.
-menuNodeId equ 0
-menuNodeParentId equ 2
-menuNodeNameId equ 4
-menuNodeNumRows equ 6
-menuNodeRowBeginId equ 7
-menuNodeAltNameId equ 7
-menuNodeHandler equ 9
-menuNodeNameSelector equ 11
+; Offsets into the MenuNode struct. Intended to be used as offset to the IX
+; register after calling getMenuNodeIX().
+menuNodeFieldId equ 0
+menuNodeFieldParentId equ 2
+menuNodeFieldNameId equ 4
+menuNodeFieldNumRows equ 6
+menuNodeFieldRowBeginId equ 7
+menuNodeFieldAltNameId equ 7
+menuNodeFieldHandler equ 9
+menuNodeFieldNameSelector equ 11
 
 ; Description: Set initial values for various menu node variables.
 ; Input: none
@@ -87,12 +87,12 @@ sanitizeMenu:
     jr nc, sanitizeMenuReset
     ; Check for MenuGroup.
     call getMenuNodeIX ; IX=menuNode
-    ld a, (ix + menuNodeNumRows)
+    ld a, (ix + menuNodeFieldNumRows)
     or a
     jr z, sanitizeMenuReset ; jump if node was a MenuItem
     ; Check menuRowIndex
     ld a, (menuRowIndex)
-    cp (ix + menuNodeNumRows)
+    cp (ix + menuNodeFieldNumRows)
     ret c
     ; [[fallthrough]] if menuRowIndex >= menuNodeNumRows
 sanitizeMenuReset:
@@ -145,7 +145,7 @@ getCurrentMenuRowBeginId:
 getMenuRowBeginId:
     call getMenuNode ; HL=menuNode
     ; extract the rowBeginId
-    ld de, menuNodeRowBeginId
+    ld de, menuNodeFieldRowBeginId
     add hl, de ; HL=menuNode.rowBeginId
     ld e, (hl)
     inc hl
@@ -210,8 +210,8 @@ getMenuName:
     push de
     call getMenuNodeIX ; IX=(MenuNode*)
     ; if nameSelector!=NULL: call nameSelector()
-    ld e, (ix + menuNodeNameSelector)
-    ld d, (ix + menuNodeNameSelector+1) ; DE=nameSelector
+    ld e, (ix + menuNodeFieldNameSelector)
+    ld d, (ix + menuNodeFieldNameSelector + 1) ; DE=nameSelector
     ld a, e
     or d ; if DE==0: ZF=1
     jr z, getMenuNameSelectNormal
@@ -220,13 +220,13 @@ getMenuName:
     jr c, getMenuNameSelectAlt
 getMenuNameSelectNormal:
     ; select normal name
-    ld l, (ix + menuNodeNameId)
-    ld h, (ix + menuNodeNameId+1)
+    ld l, (ix + menuNodeFieldNameId)
+    ld h, (ix + menuNodeFieldNameId + 1)
     jr getMenuNameFind
 getMenuNameSelectAlt:
     ; select alt name
-    ld l, (ix + menuNodeAltNameId)
-    ld h, (ix + menuNodeAltNameId+1)
+    ld l, (ix + menuNodeFieldAltNameId)
+    ld h, (ix + menuNodeFieldAltNameId + 1)
 getMenuNameFind:
     bcall(_FindMenuString) ; HL=menuString
     pop de
@@ -311,9 +311,9 @@ dispatchMenuNodeWithJumpBack:
 getMenuNodeHandler:
     push hl ; stack=[menuNode]
     pop ix ; stack=[]; IX=menuNode
-    ld a, (ix + menuNodeNumRows) ; C=numRows
-    ld e, (ix + menuNodeHandler)
-    ld d, (ix + menuNodeHandler + 1) ; DE=handler
+    ld a, (ix + menuNodeFieldNumRows) ; C=numRows
+    ld e, (ix + menuNodeFieldHandler)
+    ld d, (ix + menuNodeFieldHandler + 1) ; DE=handler
     ret
 
 ;-----------------------------------------------------------------------------
@@ -361,13 +361,13 @@ exitMenuGroupToParent:
     ; Get target groupId and rowIndex of the parent group.
     push hl ; stack=[childId]
     call getMenuNodeIX ; IX=menuNode
-    ld l, (ix + menuNodeParentId)
-    ld h, (ix + menuNodeParentId+1) ; HL=parentId
+    ld l, (ix + menuNodeFieldParentId)
+    ld h, (ix + menuNodeFieldParentId + 1) ; HL=parentId
     push hl ; stack=[childId,parentId]
     call getMenuNodeIX ; IX=parentMenuNode
-    ld b, (ix + menuNodeNumRows) ; B=parent.numRows
-    ld e, (ix + menuNodeRowBeginId)
-    ld d, (ix + menuNodeRowBeginId+1) ; DE=parent.rowBeginId
+    ld b, (ix + menuNodeFieldNumRows) ; B=parent.numRows
+    ld e, (ix + menuNodeFieldRowBeginId)
+    ld d, (ix + menuNodeFieldRowBeginId + 1) ; DE=parent.rowBeginId
     ; Deduce the parent's rowIndex which matches the childId.
     pop hl ; stack=[childId]; HL=parentId
     ex (sp), hl ; stack=[parentId]; HL=childId
@@ -393,8 +393,8 @@ changeMenuGroup:
     ; 1) Invoke the onExit() handler of the previous MenuGroup by setting CF=1.
     ld hl, (menuGroupId)
     call getMenuNodeIX ; IX:(MenuNode*)=menuNode
-    ld e, (ix + menuNodeHandler)
-    ld d, (ix + menuNodeHandler + 1)
+    ld e, (ix + menuNodeFieldHandler)
+    ld d, (ix + menuNodeFieldHandler + 1)
     scf ; CF=1 means "onExit()" event
     call jumpDE
     ; 2) Invoke the onEnter() handler of the target MenuGroup by setting CF=0.
@@ -403,8 +403,8 @@ changeMenuGroup:
     ld (menuGroupId), hl
     ld (menuRowIndex), a
     call getMenuNodeIX ; IX=menuNode
-    ld e, (ix + menuNodeHandler)
-    ld d, (ix + menuNodeHandler + 1)
+    ld e, (ix + menuNodeFieldHandler)
+    ld d, (ix + menuNodeFieldHandler + 1)
     or a ; set CF=0
     set dirtyFlagsMenu, (iy + dirtyFlags)
     jp jumpDE

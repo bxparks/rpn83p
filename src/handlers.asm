@@ -540,7 +540,7 @@ handleKeyUp:
     ld a, (menuRowIndex)
     call getMenuNodeIX ; IX:(MenuNode*)=menuNode
     ; if numRows==1: return
-    ld a, (ix + menuNodeNumRows)
+    ld a, (ix + menuNodeFieldNumRows)
     cp 2 ; CF=1 if numRows<=1
     ret c
     ; menuRowIndex=(menuRowIndex-1) mod numRows
@@ -566,7 +566,7 @@ handleKeyDown:
     ld a, (menuRowIndex)
     call getMenuNodeIX ; IX=menuNode
     ; if numRows==1: return
-    ld a, (ix + menuNodeNumRows)
+    ld a, (ix + menuNodeFieldNumRows)
     cp 2
     ret c
     ; menuRowIndex=(menuRowIndex+1) mod numRows

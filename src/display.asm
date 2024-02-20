@@ -181,7 +181,7 @@ displayStatusArrow:
     ld hl, (menuGroupId)
     ld a, (menuRowIndex)
     call getMenuNodeIX ; IX=menuNode
-    ld a, (ix + menuNodeNumRows) ; A=numRows
+    ld a, (ix + menuNodeFieldNumRows) ; A=numRows
     ld hl, statusPenRow*$100 + statusMenuPenCol; $(penRow)(penCol)
     ld (PenCol), hl
     ; If numRows==0: don't do anything. This should never happen if there
@@ -191,8 +191,8 @@ displayStatusArrow:
 
 ; Show left arrow if there exists a parent node.
 displayStatusArrowLeft:
-    ld a, (ix + menuNodeParentId)
-    or (ix + menuNodeParentId+1) ; if parentId==0: ZF=1
+    ld a, (ix + menuNodeFieldParentId)
+    or (ix + menuNodeFieldParentId + 1) ; if parentId==0: ZF=1
     jr z, displayStatusArrowLeftNone
     ; display left arrow
     ld a, Sleft
@@ -208,7 +208,7 @@ displayStatusArrowLeftDisplay:
 displayStatusArrowDown:
     ld a, (menuRowIndex)
     inc a
-    cp (ix + menuNodeNumRows) ; if rowIndex+1<numRows: CF=1
+    cp (ix + menuNodeFieldNumRows) ; if rowIndex+1<numRows: CF=1
     jr nc, displayStatusArrowDownNone
     ld a, SdownArrow
     push ix
