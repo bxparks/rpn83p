@@ -663,6 +663,10 @@ _GetMenuNodeHandlerLabel:
 _GetMenuNodeHandler equ _GetMenuNodeHandlerLabel-branchTableBase
     .dw GetMenuNodeHandler
     .db 1
+_GetMenuNodeParentLabel:
+_GetMenuNodeParent equ _GetMenuNodeParentLabel-branchTableBase
+    .dw GetMenuNodeParent
+    .db 1
 
 ; crc1.asm
 _Crc16ccittLabel:

@@ -205,9 +205,8 @@ exitMenuGroupHierarchy:
 exitMenuGroupToParent:
     ; Get target groupId and rowIndex of the parent group.
     push hl ; stack=[childId]
-    bcall(_GetMenuNodeIX) ; IX=menuNode
-    ld l, (ix + menuNodeFieldParentId)
-    ld h, (ix + menuNodeFieldParentId + 1) ; HL=parentId
+    bcall(_GetMenuNodeParent) ; A=numRows; DE=parentId; IX=menuNode
+    ex de, hl ; HL=parentId
     push hl ; stack=[childId,parentId]
     bcall(_GetMenuNodeIX) ; IX=parentMenuNode
     ld b, (ix + menuNodeFieldNumRows) ; B=parent.numRows

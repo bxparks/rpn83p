@@ -238,6 +238,23 @@ GetMenuNodeHandler:
 
 ;-----------------------------------------------------------------------------
 
+; Description: Retrieve the parentId of the given MenuNode.
+; Input:
+;   - HL=menuNodeId
+; Output:
+;   - A=numRows (0 indicates MenuItem; >0 indicates MenuGroup)
+;   - DE=parentId
+;   - IX=menuNode
+; Destroys: A, BC, DE, HL, IX
+GetMenuNodeParent:
+    call findMenuNodeIX ; IX:(MenuNode*)=menuNode
+    ld a, (ix + menuNodeFieldNumRows) ; A=numRows
+    ld e, (ix + menuNodeFieldParentId)
+    ld d, (ix + menuNodeFieldParentId + 1) ; DE=parentId
+    ret
+
+;-----------------------------------------------------------------------------
+
 ; Description: Return the pointer to menuNode of HL in IX.
 ; Input: HL=menuNodeId
 ; Output: HL,IX:(MenuNode*)=address of node
