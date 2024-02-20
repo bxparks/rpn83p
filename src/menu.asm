@@ -143,14 +143,10 @@ getCurrentMenuRowBeginId:
 ; Destroys: A, DE, HL
 ; Preserves: BC
 getMenuRowBeginId:
-    call getMenuNode ; HL=menuNode
-    ; extract the rowBeginId
-    ld de, menuNodeFieldRowBeginId
-    add hl, de ; HL=menuNode.rowBeginId
-    ld e, (hl)
-    inc hl
-    ld d, (hl) ; DE=menuNode.rowBeginId
-    ; Calc the menuId at given rowIndex: menuId=rowBeginId+5*rowIndex
+    call getMenuNodeIX ; IX=menuNode
+    ld e, (ix + menuNodeFieldRowBeginId)
+    ld d, (ix + menuNodeFieldRowBeginId + 1) ; DE=menuNode.rowBeginId
+    ; Calc the rowMenuId at given rowIndex: rowMenuId=rowBeginId+5*rowIndex
     ld l, a ; L=rowIndex
     add a, a
     add a, a
@@ -158,7 +154,7 @@ getMenuRowBeginId:
     ld l, a
     ld h, 0 ; HL=5*rowIndex
     ; calc rowMenuId=rowBeginId+5*rowIndex
-    add hl, de ; HL=rowMenuId
+    add hl, de ; HL=rowMenuId=rowBeginId+5*rowIndex
     ret
 
 ; Description: Return the pointer to menu node identified by menuNodeId.
