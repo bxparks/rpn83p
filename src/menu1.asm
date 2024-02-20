@@ -51,7 +51,7 @@ SanitizeMenu:
     call cpHLDEPageOne ; CF=0 if currentMenuGroupId>=mMenuTableSize
     jr nc, sanitizeMenuReset
     ; Check for MenuGroup.
-    call GetMenuNodeIX ; IX=menuNode
+    call findMenuNodeIX ; IX=menuNode
     ld a, (ix + menuNodeFieldNumRows); A=numRows
     or a
     jr z, sanitizeMenuReset ; reset if current node is a MenuItem
@@ -120,7 +120,7 @@ GetCurrentMenuArrowStatus:
     ld b, 0 ; B=menuArrowFlag
     ; Defensive check for MenuItem instead of MenuGroup.
     ld hl, (currentMenuGroupId)
-    call GetMenuNodeIX ; IX=menuNode
+    call findMenuNodeIX ; IX=menuNode
     ld a, (ix + menuNodeFieldNumRows) ; A=numRows
     or a
     ld c, a ; C=numRows
@@ -186,7 +186,7 @@ GetCurrentMenuRowBeginId:
 ; Output: A=numRows
 GetCurrentMenuGroupNumRows:
     ld hl, (currentMenuGroupId)
-    call GetMenuNodeIX ; IX:(MenuNode*)=menuNode
+    call findMenuNodeIX ; IX:(MenuNode*)=menuNode
     ld a, (ix + menuNodeFieldNumRows)
     ret
 
@@ -205,7 +205,7 @@ GetCurrentMenuGroupNumRows:
 ; Destroys: A, DE, HL
 ; Preserves: BC
 getMenuRowBeginId:
-    call GetMenuNodeIX ; IX=menuNode
+    call findMenuNodeIX ; IX=menuNode
     ld e, (ix + menuNodeFieldRowBeginId)
     ld d, (ix + menuNodeFieldRowBeginId + 1) ; DE=menuNode.rowBeginId
     ; Calc the rowMenuId at given rowIndex: rowMenuId=rowBeginId+5*rowIndex
@@ -230,7 +230,7 @@ getMenuRowBeginId:
 ; Preserves: BC, HL
 ; Destroys: A, DE, IX
 GetMenuNodeHandler:
-    call GetMenuNodeIX ; IX:(MenuNode*)=menuNode
+    call findMenuNodeIX ; IX:(MenuNode*)=menuNode
     ld a, (ix + menuNodeFieldNumRows) ; C=numRows
     ld e, (ix + menuNodeFieldHandler)
     ld d, (ix + menuNodeFieldHandler + 1) ; DE=handler
@@ -247,12 +247,32 @@ GetMenuNodeIX:
     push af
     push bc
     push de
+    ;
     call findMenuNode
+    ; Copy it to (menuNodeBuf).
+    ld de, menuNodeBuf
+    ld bc, menuNodeSizeOf
+    ldir
+    ld hl, menuNodeBuf
     push hl
     pop ix
+    ;
     pop de
     pop bc
     pop af
+    ret
+
+; Description: Find the MenuNode identified by menuId and return the pointer to
+; the MenuNode in HL. No bounds checking is performed.
+; Input:
+;   - HL=menuId
+; Output:
+;   - HL(MenuNode*)=menuNode
+; Destroys: all
+findMenuNode:
+    call calcMenuNodeOffset ; HL=offset
+    ld de, mMenuTable
+    add hl, de ; HL=menuNode
     ret
 
 ; Description: Find the MenuNode identified by menuId, and copy it into
@@ -260,11 +280,21 @@ GetMenuNodeIX:
 ; Input:
 ;   - HL=menuId
 ; Output:
-;   - HL=menuNodeBuf
-;   - (menuNodeBuf) contains copy of the matching MenuNode
+;   - IX:(MenuNode*)=menuNode
 ; Destroys: all
-findMenuNode:
-    ; HL=menuId*sizeof(MenuNode)=menuId*13=menuId*(8+4+1)
+findMenuNodeIX:
+    call calcMenuNodeOffset ; HL=offset
+    ex de, hl ; DE=offset
+    ld ix, mMenuTable
+    add ix, de ; IX=menuNode
+    ret
+
+; Description: Return the byte offset of menuId into the the mMenuTable.
+; The formula is: offset=menuId*sizeof(MenuNode)=menuId*13=menuId*(8+4+1)
+; Input: HL=menuId
+; Output: HL=offset
+; Destroys: BC, DE
+calcMenuNodeOffset:
     ld c, l
     ld b, h ; BC=menuId
     add hl, hl
@@ -274,14 +304,6 @@ findMenuNode:
     add hl, hl ; 8*menuId
     add hl, de ; 12*menuId
     add hl, bc ; 13*menuId
-    ; HL=mMenuTable+13*menuId
-    ld de, mMenuTable
-    add hl, de
-    ; Copy it to (menuNodeBuf). TODO: Move this copy code to GetMenuNodeIX().
-    ld de, menuNodeBuf
-    ld bc, menuNodeSizeOf
-    ldir
-    ld hl, menuNodeBuf
     ret
 
 ;-----------------------------------------------------------------------------
@@ -312,7 +334,7 @@ findMenuNode:
 ExtractMenuNames:
     push de ; stack=[normalName]
     push bc ; stack=[normalName,altName]
-    call GetMenuNodeIX ; IX=(MenuNode*)
+    call findMenuNodeIX ; IX=(MenuNode*)
     ; extract alt name
     ld l, (ix + menuNodeFieldAltNameId)
     ld h, (ix + menuNodeFieldAltNameId + 1)
