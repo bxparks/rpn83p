@@ -651,10 +651,6 @@ _GetCurrentMenuGroupNumRows equ _GetCurrentMenuGroupNumRowsLabel-branchTableBase
     .dw GetCurrentMenuGroupNumRows
     .db 1
 ;
-_GetMenuNodeIXLabel:
-_GetMenuNodeIX equ _GetMenuNodeIXLabel-branchTableBase
-    .dw GetMenuNodeIX
-    .db 1
 _ExtractMenuNamesLabel:
 _ExtractMenuNames equ _ExtractMenuNamesLabel-branchTableBase
     .dw ExtractMenuNames

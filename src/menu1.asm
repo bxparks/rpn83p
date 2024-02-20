@@ -270,30 +270,6 @@ GetMenuNodeParent:
 
 ;-----------------------------------------------------------------------------
 
-; Description: Return the pointer to menuNode of HL in IX.
-; Input: HL=menuNodeId
-; Output: HL,IX:(MenuNode*)=address of node
-; Destroys: HL, IX
-; Preserves: A, BC, DE
-GetMenuNodeIX:
-    push af
-    push bc
-    push de
-    ;
-    call findMenuNode
-    ; Copy it to (menuNodeBuf).
-    ld de, menuNodeBuf
-    ld bc, menuNodeSizeOf
-    ldir
-    ld hl, menuNodeBuf
-    push hl
-    pop ix
-    ;
-    pop de
-    pop bc
-    pop af
-    ret
-
 ; Description: Find the MenuNode identified by menuId and return the pointer to
 ; the MenuNode in HL. No bounds checking is performed.
 ; Input:
@@ -308,8 +284,8 @@ findMenuNode:
     add hl, de ; HL=menuNode
     ret
 
-; Description: Find the MenuNode identified by menuId, and copy it into
-; (menuNodeBuf). No bounds checking is performed.
+; Description: Find the MenuNode identified by menuId. No bounds checking is
+; performed.
 ; Input:
 ;   - HL=menuId
 ; Output:

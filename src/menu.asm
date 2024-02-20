@@ -36,7 +36,7 @@
 ;-----------------------------------------------------------------------------
 
 ; Offsets into the MenuNode struct. Intended to be used as offset to the IX
-; register after calling getMenuNodeIX().
+; register after calling findMenuNodeIX().
 menuNodeFieldId equ 0
 menuNodeFieldParentId equ 2
 menuNodeFieldNameId equ 4
