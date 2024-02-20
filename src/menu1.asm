@@ -270,20 +270,6 @@ GetMenuNodeParent:
 
 ;-----------------------------------------------------------------------------
 
-; Description: Find the MenuNode identified by menuId and return the pointer to
-; the MenuNode in HL. No bounds checking is performed.
-; Input:
-;   - HL=menuId
-; Output:
-;   - HL(MenuNode*)=menuNode
-; Destroys: BC, DE, HL, IX
-; Preserves: A
-findMenuNode:
-    call calcMenuNodeOffset ; HL=offset
-    ld de, mMenuTable
-    add hl, de ; HL=menuNode
-    ret
-
 ; Description: Find the MenuNode identified by menuId. No bounds checking is
 ; performed.
 ; Input:
