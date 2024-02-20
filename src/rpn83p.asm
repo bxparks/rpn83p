@@ -478,17 +478,10 @@ savedFmtDigits equ savedFmtFlags + 1 ; u8
 menuNodeBuf equ savedFmtDigits + 1 ; 13 bytes, defined by menuNodeSizeOf
 menuNodeSizeOf equ 13
 
-; FindMenuString() copies the name of the menu from flash page 1 to here so that
-; routines in flash page 0 can access it. This is named 'menuStringBuf' to
-; avoid conflicting with the existing 'menuNameBuf' which is a Pascal-string
-; version of 'menuStringBuf'.
-menuStringBuf equ menuNodeBuf + menuNodeSizeOf ; char[6]
-menuStringBufSizeOf equ 6
-
 ; TVM Solver needs a bunch of workspace variables: interest rate, i0 and i1,
 ; plus the next interest rate i2, and the value of the NPMT() function at each
 ; of those points. Transient, so no need to persist them.
-tvmI0 equ menuStringBuf + menuStringBufSizeOf ; float
+tvmI0 equ menuNodeBuf + menuNodeSizeOf ; float
 tvmI1 equ tvmI0 + 9 ; float
 tvmNPMT0 equ tvmI1 + 9 ; float
 tvmNPMT1 equ tvmNPMT0 + 9 ; float
@@ -629,9 +622,9 @@ _FindMenuNodeLabel:
 _FindMenuNode equ _FindMenuNodeLabel-branchTableBase
     .dw FindMenuNode
     .db 1
-_FindMenuStringLabel:
-_FindMenuString equ _FindMenuStringLabel-branchTableBase
-    .dw FindMenuString
+_ExtractMenuStringLabel:
+_ExtractMenuString equ _ExtractMenuStringLabel-branchTableBase
+    .dw ExtractMenuString
     .db 1
 
 ; crc1.asm

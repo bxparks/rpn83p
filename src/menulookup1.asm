@@ -37,35 +37,40 @@ FindMenuNode:
     ld hl, menuNodeBuf
     ret
 
-; Description: Copy the menu name identified by the id in HL into
-; (menuStringBuf). (The (menuNameBuf) is a Pascal-string used to determine the
-; pixel width of the menu.)
+; Description: Copy the menu name identified by HL into the C-string buffer at
+; DE.
 ; Input:
-;   - HL: menuNameId
+;   - HL=menuNameId
+;   - DE:(char*)=dest
 ; Output:
-;   - HL=menuStringBuf
-;   - (menuStringBuf) contains a copy of the matching string.
-; Destroys: all
-FindMenuString:
+;   - (*DE)=destString updated
+; Destroys: A
+; Preserves: BC, DE, HL
+ExtractMenuString:
+    push bc ; stack=[BC]
+    push hl ; stack=[BC,menuNameId]
+    push de ; stack=[BC,menuNameId,dest]
     ex de, hl ; DE=menuNameId
     ld hl, mMenuNameTable
     call getDEStringPageOne ; HL:(const char*)=name
-copyToMenuStringBuf:
-    ; Copy the name to (menuStringBuf)
-    ld de, menuStringBuf
+    ; Copy the name to DE
+    pop de ; stack=[BC,menuNameId]; DE=dest
+    push de ; stack=[BC,menuNameId,dest]
     ld b, 6 ; at most 6 bytes, including NUL terminator
-findMenuStringLoop:
+extractMenuStringLoop:
     ld a, (hl)
     ld (de), a
     inc hl
     inc de
     or a
-    jr z, findMenuStringEnd
-    djnz findMenuStringLoop
+    jr z, extractMenuStringEnd
+    djnz extractMenuStringLoop
     ; Clobber the last byte with NUL to terminate the C-string
     dec de
     xor a
     ld (de), a
-findMenuStringEnd:
-    ld hl, menuStringBuf
+extractMenuStringEnd:
+    pop de ; stack=]BC,menunameId]; DE=dest restored
+    pop hl ; stack=[BC]; HL=menuNameId restored
+    pop bc ; stack=[]; BC=restored
     ret

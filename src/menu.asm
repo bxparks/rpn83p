@@ -237,10 +237,52 @@ getMenuNodeIX:
     pop ix
     ret
 
-; Description: Return the pointer to the name string of the menu node at id A.
+; Description: Return the pointer to the name string of the menu node at HL.
 ; If MenuNode.nameSelector is 0, then the display name is simply the nameId.
 ; But if the MenuNode.nameSelector is not 0, then it is a pointer to a function
 ; that returns the display name.
+;
+; The input to the nameSelector() function is:
+;   - HL: pointer to MenuNode (in case it is needed)
+; The output of the nameSelector() is:
+;   - CF=0 to select the normal name, CF=1 to select the alt name
+;
+; The name is selected according to the relevant internal state (e.g. DEG or
+; RAD). The nameSelector is allowed to modify BC, DE, since they are restored
+; before returning from this function. It is also allowed to modify HL since it
+; gets clobbered with string pointer before returning from this function.
+;
+; Input: HL:u16=menuId
+; Output: HL:(const char*)=menuName
+; Destroys: A, HL, OP3, OP4
+; Preserves: BC, DE
+getMenuName:
+    push bc
+    push de
+    ld bc, OP3
+    ld de, OP4
+    call extractMenuNames ; BC=altName; DE=normalName; HL=selector
+    ; if nameSelector!=NULL: call nameSelector()
+    ld a, l
+    or h ; if HL==0: ZF=1
+    jr z, getMenuNameSelectNormal
+    ; call nameSelector() to select the name string
+    call jumpHL ; call nameSelector(); CF=1 if altName selected
+    jr c, getMenuNameSelectAlt
+getMenuNameSelectNormal:
+    ex de, hl ; HL=normalName
+    jr getMenuNameFind
+getMenuNameSelectAlt:
+    ld l, c
+    ld h, b ; HL=altName
+getMenuNameFind:
+    pop de
+    pop bc
+    ret
+
+; Description: Extract the normal and alternate menu names of the menu node
+; identified by HL. Also returns the pointer to the nameSelector() function
+; which selects the name which should be used.
 ;
 ; The input to the nameSelector() function is:
 ;   - HL: pointer to MenuNode (in case it is needed)
@@ -252,35 +294,36 @@ getMenuNodeIX:
 ; gets clobbered with string pointer before returning from this function.
 ;
 ; Input: HL:u16=menuId
-; Output: HL:(const char*)=menuName
+;   - BC:(char*)=altName (e.g. OP4)
+;   - DE:(char*)=normalName (e.g. OP3)
+;   - HL:u16=menuId
+; Output:
+;   - (*BC) filled with altName
+;   - (*DE) filled with normalName
+;   - HL=nameSelector
 ; Destroys: A, HL
 ; Preserves: BC, DE
-getMenuName:
-    push bc
-    push de
+extractMenuNames:
+    push de ; stack=[normalName]
+    push bc ; stack=[normalName,altName]
     call getMenuNodeIX ; IX=(MenuNode*)
-    ; if nameSelector!=NULL: call nameSelector()
-    ld e, (ix + menuNodeFieldNameSelector)
-    ld d, (ix + menuNodeFieldNameSelector + 1) ; DE=nameSelector
-    ld a, e
-    or d ; if DE==0: ZF=1
-    jr z, getMenuNameSelectNormal
-    ; call nameSelector() to select the name string
-    call jumpDE ; call nameSelector(); CF=1 if altName selected
-    jr c, getMenuNameSelectAlt
-getMenuNameSelectNormal:
-    ; select normal name
-    ld l, (ix + menuNodeFieldNameId)
-    ld h, (ix + menuNodeFieldNameId + 1)
-    jr getMenuNameFind
-getMenuNameSelectAlt:
-    ; select alt name
+    ; extract alt name
     ld l, (ix + menuNodeFieldAltNameId)
     ld h, (ix + menuNodeFieldAltNameId + 1)
-getMenuNameFind:
-    bcall(_FindMenuString) ; HL=menuString
-    pop de
-    pop bc
+    pop de ; [normalName] ; DE=altName
+    bcall(_ExtractMenuString) ; (*DE)=altName
+    ; select normal name
+    ex de, hl ; HL=altName
+    ex (sp), hl ; stack=[altName] ; HL=normalName
+    ex de, hl ; DE=normalName
+    ld l, (ix + menuNodeFieldNameId)
+    ld h, (ix + menuNodeFieldNameId + 1)
+    bcall(_ExtractMenuString) ; (*DE)=normalName
+    ; nameSelector
+    ld l, (ix + menuNodeFieldNameSelector)
+    ld h, (ix + menuNodeFieldNameSelector + 1) ; HL=nameSelector
+    ;
+    pop bc ; stack=[]; BC=altname
     ret
 
 ;-----------------------------------------------------------------------------

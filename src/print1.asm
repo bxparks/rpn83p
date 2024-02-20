@@ -34,7 +34,7 @@ getStringPageOne: ; TODO: Move to common1.asm
 ; Output:
 ;   - HL:(const char*)=string
 ; Destroys: DE, HL
-; Preserves: A
+; Preserves: A, BC
 getDEStringPageOne: ; TODO: Move to common1.asm
     add hl, de ; HL+=DE*2
     add hl, de
