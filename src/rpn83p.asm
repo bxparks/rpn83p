@@ -617,7 +617,7 @@ _ProcessHelp equ _ProcessHelpLabel-branchTableBase
     .dw ProcessHelp
     .db 1
 
-; menulookup1.asm
+; menu1.asm
 _FindMenuNodeLabel:
 _FindMenuNode equ _FindMenuNodeLabel-branchTableBase
     .dw FindMenuNode
@@ -1498,7 +1498,7 @@ defpage(1)
 #include "appstate1.asm"
 #include "osstate1.asm"
 #include "help1.asm"
-#include "menulookup1.asm"
+#include "menu1.asm"
 #include "menudef.asm"
 #include "crc1.asm"
 #include "errorcode1.asm"

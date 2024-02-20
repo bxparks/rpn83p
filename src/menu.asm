@@ -212,7 +212,7 @@ getMenuRowBeginId:
     ret
 
 ; Description: Return the pointer to menu node identified by menuNodeId.
-; TODO: Move to menulookup1.asm.
+; TODO: Move to menu1.asm.
 ; Input: HL=menuNodeId
 ; Output: HL:(MenuNode*)=address of node
 ; Destroys: DE, HL
@@ -226,7 +226,7 @@ getMenuNode:
     ret
 
 ; Description: Return the pointer to the menu node at id A in register IX.
-; TODO: Move to menulookup1.asm.
+; TODO: Move to menu1.asm.
 ; Input: HL=menuNodeId
 ; Output: IX:(MenuNode*)=address of node
 ; Destroys: DE, HL
