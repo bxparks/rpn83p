@@ -170,28 +170,27 @@ displayStatus:
 ;-----------------------------------------------------------------------------
 
 ; Description: Display the up and down arrows that indicate whether there are
-; additional menus above or below the current set of 5 menu buttons.
+; additional menus above or below the current set of 5 menu buttons. Each of
+; the Sleft, SdownArrow, and SupArrow characters nominally take 4 pixel
+; columns. However, when the SdownArrow and SupArrow are printed next to each
+; other, one pixel-column seems to be removed (some sort of kerning?). So we
+; have to insert an extra one-pixel-column space between the two.
 displayStatusArrow:
     bit dirtyFlagsMenu, (iy + dirtyFlags)
     ret z
-
-    ; Determine if multiple menu rows exist.
-    ; TODO: maybe cache the numRows of the current node to make this
-    ; calculation a little shorter and easier.
-    ld hl, (currentMenuGroupId)
-    call getMenuNodeIX ; IX=menuNode
-    ld a, (ix + menuNodeFieldNumRows) ; A=numRows
     ld hl, statusPenRow*$100 + statusMenuPenCol; $(penRow)(penCol)
     ld (PenCol), hl
-    ; If numRows==0: don't do anything. This should never happen if there
-    ; are no bugs in the program.
-    or a
-    jr z, displayStatusArrowClear
+    ; check arrow status
+    call getCurrentMenuArrowStatus ; B=menuArrowStatus
+    call displayStatusArrowLeft
+    call displayStatusArrowDown
+    call displayStatusArrowUp
+    ret
 
-; Show left arrow if there exists a parent node.
+; Description: Show left arrow if a parent node exists.
+; Input: B=menuArrowStatus
 displayStatusArrowLeft:
-    ld a, (ix + menuNodeFieldParentId)
-    or (ix + menuNodeFieldParentId + 1) ; if parentId==0: ZF=1
+    bit menuArrowFlagLeft, b
     jr z, displayStatusArrowLeftNone
     ; display left arrow
     ld a, Sleft
@@ -199,36 +198,31 @@ displayStatusArrowLeft:
 displayStatusArrowLeftNone:
     ld a, SFourSpaces
 displayStatusArrowLeftDisplay:
-    push ix
     bcall(_VPutMap) ; destroys IX
-    pop ix
+    ret
 
-; If rowIndex < (numRows - 1): show Down arrow
+; Description: If show Down arrow if additional rows exist.
+; Input: B=menuArrowStatus
 displayStatusArrowDown:
-    ld a, (currentMenuRowIndex)
-    inc a
-    cp (ix + menuNodeFieldNumRows) ; if rowIndex+1<numRows: CF=1
-    jr nc, displayStatusArrowDownNone
-    ld a, SdownArrow
-    push ix
-    bcall(_VPutMap) ; destroys IX
-    pop ix
-    ; Add an extra space after the downArrow because when an upArrow is
+    bit menuArrowFlagDown, b
+    jr z, displayStatusArrowDownNone
+    ; Print a Down arrow with an extra space because when an upArrow is
     ; displayed immediately after, the 1px of space on the right side of the
     ; downArrow character seems to ellided so the downArrow occupies only 3px.
+    ld a, SdownArrow
+    bcall(_VPutMap) ; destroys IX
     ld a, Sspace
     jr displayStatusArrowDownDisplay
 displayStatusArrowDownNone:
     ld a, SFourSpaces
 displayStatusArrowDownDisplay:
-    push ix
     bcall(_VPutMap) ; destroys IX
-    pop ix
+    ret
 
-; If rowIndex > 0: show Up arrow
+; Description: If show Up arrow if previous rows exist.
+; Input: B=menuArrowStatus
 displayStatusArrowUp:
-    ld a, (currentMenuRowIndex)
-    or a
+    bit menuArrowFlagUp, b
     jr z, displayStatusArrowUpNone
     ld a, SupArrow
     jr displayStatusArrowUpDisplay
@@ -237,12 +231,6 @@ displayStatusArrowUpNone:
 displayStatusArrowUpDisplay:
     bcall(_VPutMap)
     ret
-
-; Clear 8 px, this never happen unless there's a programming bug, but if it
-; does, do something that doesn't crash.
-displayStatusArrowClear:
-    call displayStatusArrowUpNone
-    jr displayStatusArrowUpNone
 
 ;-----------------------------------------------------------------------------
 

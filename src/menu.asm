@@ -145,6 +145,46 @@ getCurrentMenuGroupNumRows:
     ld a, (ix + menuNodeFieldNumRows)
     ret
 
+; Bit flags that indicate if the corresponding menu arrow should be shown.
+menuArrowFlagLeft equ 0
+menuArrowFlagDown equ 1
+menuArrowFlagUp equ 2
+
+; Description: Return the status of menu arrow indicators.
+; Input:
+;   - (currentMenuGroupId)
+;   - (currentMenuRowIndex)
+; Output:
+;   - B:menuArrowFlag
+; Destroys: A, B, C, HL
+getCurrentMenuArrowStatus:
+    ld b, 0 ; B=menuArrowFlag
+    ; Defensive check for MenuItem instead of MenuGroup.
+    ld hl, (currentMenuGroupId)
+    call getMenuNodeIX ; IX=menuNode
+    ld a, (ix + menuNodeFieldNumRows) ; A=numRows
+    or a
+    ld c, a ; C=numRows
+    ret z ; if numRows==0: display no arrows
+    ; Check if left arrow should be shown.
+    ld a, (ix + menuNodeFieldParentId)
+    or (ix + menuNodeFieldParentId + 1) ; if parentId==0: ZF=1
+    jr z, getCurrentMenuArrowStatusCheckDown
+    set menuArrowFlagLeft, b
+getCurrentMenuArrowStatusCheckDown:
+    ; Check if Down arrow should be shown.
+    ld a, (currentMenuRowIndex)
+    inc a
+    cp c ; if rowIndex+1<numRows: CF=1
+    jr nc, getCurrentMenuArrowStatusCheckUp
+    set menuArrowFlagDown, b
+getCurrentMenuArrowStatusCheckUp:
+    ; Check if Up arrow should be shown.
+    dec a ; ZF=1 if numRows==0
+    ret z
+    set menuArrowFlagUp, b
+    ret
+
 ;-----------------------------------------------------------------------------
 
 ; Description: Return the first menuNodeId for menuGroupId (HL) at rowIndex (A).
