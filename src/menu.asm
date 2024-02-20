@@ -107,6 +107,8 @@ sanitizeMenuReset:
 ; Description: Get the menuId corresponding to the soft menu button given by A.
 ; Input:
 ;   - A=buttonIndex (0-4)
+;   - (currentMenuGroupId)
+;   - (currentMenuRowIndex)
 ; Output:
 ;   - HL=u16=menuId
 ; Destroys: DE, HL
@@ -133,7 +135,17 @@ getMenuIdOfButton:
 getCurrentMenuRowBeginId:
     ld hl, (currentMenuGroupId)
     ld a, (currentMenuRowIndex)
-    ; [[fallthrough]]
+    jr getMenuRowBeginId
+
+; Description: Return the number of rows in the current menu group.
+; Input: (currentMenuGroupId)
+getCurrentMenuGroupNumRows:
+    ld hl, (currentMenuGroupId)
+    call getMenuNodeIX ; IX:(MenuNode*)=menuNode
+    ld a, (ix + menuNodeFieldNumRows)
+    ret
+
+;-----------------------------------------------------------------------------
 
 ; Description: Return the first menuNodeId for menuGroupId (HL) at rowIndex (A).
 ; Input:
@@ -159,8 +171,6 @@ getMenuRowBeginId:
     add hl, de ; HL=rowMenuId=rowBeginId+5*rowIndex
     ret
 
-;-----------------------------------------------------------------------------
-
 ; Description: Return the pointer to menu node identified by menuNodeId.
 ; TODO: Move to menulookup1.asm.
 ; Input: HL=menuNodeId
@@ -185,14 +195,6 @@ getMenuNodeIX:
     call getMenuNode
     push hl
     pop ix
-    ret
-
-; Description: Return the number of rows in the current menu group.
-; Input: (currentMenuGroupId)
-getCurrentMenuGroupNumRows:
-    ld hl, (currentMenuGroupId)
-    call getMenuNodeIX ; IX:(MenuNode*)=menuNode
-    ld a, (ix + menuNodeFieldNumRows)
     ret
 
 ; Description: Return the pointer to the name string of the menu node at id A.
