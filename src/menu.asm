@@ -353,7 +353,6 @@ extractMenuNames:
 ; Destroys: A, B, C, DE, HL, IX
 dispatchMenuNode:
     push hl ; stack=[targetNodeId]
-    call getMenuNode ; HL:(MenuNode*)=menuNode
     call getMenuNodeHandler ; A=numRows; DE=handler; HL=menuNode
     ; Invoke a MenuItem.
     or a ; if numRows == 0: ZF=1 (i.e. a MenuItem)
@@ -378,7 +377,6 @@ dispatchMenuNode:
 ; Destroys: B
 dispatchMenuNodeWithJumpBack:
     push hl ; stack=[targetNodeId]
-    call getMenuNode ; HL:(MenuNode*)=menuNode
     call getMenuNodeHandler ; A=numRows; DE=handler; HL=menuNode
     ; Invoke a MenuItem.
     or a ; if numRows == 0: ZF=1 (i.e. a MenuItem)
@@ -395,15 +393,14 @@ dispatchMenuNodeWithJumpBack:
 
 ; Description: Retrieve the mXxxHandler of the given MenuNode.
 ; Input:
-;   - HL:(MenuNode*)=menuNode
+;   - HL=menuNodeId
 ; Output:
 ;   - A=numRows (0 indicates MenuItem; >0 indicates MenuGroup)
 ;   - DE=handler
 ; Preserves: BC, HL
 ; Destroys: A, DE, IX
 getMenuNodeHandler:
-    push hl ; stack=[menuNode]
-    pop ix ; stack=[]; IX=menuNode
+    call getMenuNodeIX ; IX:(MenuNode*)=menuNode
     ld a, (ix + menuNodeFieldNumRows) ; C=numRows
     ld e, (ix + menuNodeFieldHandler)
     ld d, (ix + menuNodeFieldHandler + 1) ; DE=handler
