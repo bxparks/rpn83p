@@ -16,6 +16,7 @@
 ;   - HL=menuNodeBuf
 ;   - (menuNodeBuf) contains copy of the matching MenuNode
 ; Destroys: all
+; TODO: Rename to findMenuNode() after moving getMenuNodeIX() to Flash Page 1.
 FindMenuNode:
     ; HL=menuId*sizeof(MenuNode)=menuId*13=menuId*(8+4+1)
     ld c, l

@@ -211,30 +211,21 @@ getMenuRowBeginId:
     add hl, de ; HL=rowMenuId=rowBeginId+5*rowIndex
     ret
 
-; Description: Return the pointer to menu node identified by menuNodeId.
-; TODO: Move to menu1.asm.
-; Input: HL=menuNodeId
-; Output: HL:(MenuNode*)=address of node
-; Destroys: DE, HL
-; Preserves: A, BC
-getMenuNode:
-    push af
-    push bc
-    bcall(_FindMenuNode)
-    pop bc
-    pop af
-    ret
-
-; Description: Return the pointer to the menu node at id A in register IX.
-; TODO: Move to menu1.asm.
+; Description: Return the pointer to menuNode of HL in IX.
 ; Input: HL=menuNodeId
 ; Output: IX:(MenuNode*)=address of node
-; Destroys: DE, HL
-; Preserves: A, BC
+; Destroys: HL
+; Preserves: A, BC, DE
 getMenuNodeIX:
-    call getMenuNode
+    push af
+    push bc
+    push de
+    bcall(_FindMenuNode)
     push hl
     pop ix
+    pop de
+    pop bc
+    pop af
     ret
 
 ; Description: Return the pointer to the name string of the menu node at HL.
