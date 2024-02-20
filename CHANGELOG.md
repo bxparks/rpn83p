@@ -52,6 +52,8 @@
               and `2ND EE` invokes the `,` function
         - This allows the end user to select the most convenient behavior.
         - The selected option is saved and restored upon restart of the app.
+    - Update menu compiler and menu routines to support more than 255 items.
+        - Move most menu routines into Flash Page 1.
     - Add `DATE` menu hierarchy with Date, Time, DateTime, Clock functions
         - TODO: add documentation
         - TODO: polish the user interface
