@@ -473,15 +473,10 @@ savedTrigFlags equ appBufferStart ; u8
 savedFmtFlags equ savedTrigFlags + 1 ; u8
 savedFmtDigits equ savedFmtFlags + 1 ; u8
 
-; FindMenuNode() copies the matching menuNode from menudef.asm (in flash page 1)
-; to here so that routines in flash page 0 can access the information.
-menuNodeBuf equ savedFmtDigits + 1 ; 13 bytes, defined by menuNodeSizeOf
-menuNodeSizeOf equ 13
-
 ; TVM Solver needs a bunch of workspace variables: interest rate, i0 and i1,
 ; plus the next interest rate i2, and the value of the NPMT() function at each
 ; of those points. Transient, so no need to persist them.
-tvmI0 equ menuNodeBuf + menuNodeSizeOf ; float
+tvmI0 equ savedFmtDigits + 1 ; float
 tvmI1 equ tvmI0 + 9 ; float
 tvmNPMT0 equ tvmI1 + 9 ; float
 tvmNPMT1 equ tvmNPMT0 + 9 ; float
