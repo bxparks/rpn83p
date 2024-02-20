@@ -183,6 +183,14 @@ getMenuNodeIX:
     pop ix
     ret
 
+; Description: Return the number of rows in the current menu group.
+; Input: (menuGroupId)
+getCurrentMenuGroupNumRows:
+    ld hl, (menuGroupId)
+    call getMenuNodeIX ; IX:(MenuNode*)=menuNode
+    ld a, (ix + menuNodeFieldNumRows)
+    ret
+
 ; Description: Return the pointer to the name string of the menu node at id A.
 ; If MenuNode.nameSelector is 0, then the display name is simply the nameId.
 ; But if the MenuNode.nameSelector is not 0, then it is a pointer to a function

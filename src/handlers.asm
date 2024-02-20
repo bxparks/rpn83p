@@ -536,11 +536,8 @@ handleKeyEnter:
 ; Output: (menuRowIndex) decremented, or wrapped around
 ; Destroys: all
 handleKeyUp:
-    ld hl, (menuGroupId)
-    ld a, (menuRowIndex)
-    call getMenuNodeIX ; IX:(MenuNode*)=menuNode
+    call getCurrentMenuGroupNumRows ; A=numRows
     ; if numRows==1: return
-    ld a, (ix + menuNodeFieldNumRows)
     cp 2 ; CF=1 if numRows<=1
     ret c
     ; menuRowIndex=(menuRowIndex-1) mod numRows
@@ -562,11 +559,8 @@ handleKeyUpContinue:
 ; Output: (menuRowIndex) incremented mod numRows
 ; Destroys: all
 handleKeyDown:
-    ld hl, (menuGroupId)
-    ld a, (menuRowIndex)
-    call getMenuNodeIX ; IX=menuNode
+    call getCurrentMenuGroupNumRows ; A=numRows
     ; if numRows==1: return
-    ld a, (ix + menuNodeFieldNumRows)
     cp 2
     ret c
     ; menuRowIndex=(menuRowIndex+1) mod numRows
