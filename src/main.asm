@@ -21,17 +21,18 @@ main:
     bcall(_InitInputBuf)
     bcall(_InitDate)
     bcall(_RtcInit)
+    bcall(_InitMenu)
+    bcall(_InitBase)
     call initNumResultMode
     call initComplexMode
     call initCommaEEMode
-    call initMenu
-    bcall(_InitBase)
     call initStat
     call initCfit
     call initTvm
 initAlways:
     ; If RestoreAppState() suceeds, only the following are initialized.
     bcall(_InitArgBuf) ; Start with Command Arg parser off.
+    bcall(_SanitizeMenu) ; Sanitize currentMenuGroupId currentMenuRowIndex
     call updateNumResultMode
     call updateComplexMode
     call initStack
@@ -39,7 +40,6 @@ initAlways:
     call initLastX ; Always copy TI-OS 'ANS' to 'X'
     call initDisplay ; Always initialize the display.
     call initTvmSolver ; Always init TVM solver
-    call sanitizeMenu ; Sanitize the currentMenuGroupId and currentMenuRowIndex
 
     ; Initialize the App monitor so that we can intercept the Put Away (2ND
     ; OFF) signal.

@@ -46,187 +46,10 @@ menuNodeFieldAltNameId equ 7
 menuNodeFieldHandler equ 9
 menuNodeFieldNameSelector equ 11
 
-; Description: Set initial values for various menu node variables.
-; Input: none
-; Output:
-;   - (currentMenuGroupId) = mRootId
-;   - (currentMenuRowIndex) = 0
-;   - (jumpBackMenuGroupId) = 0
-;   - (jumpBackMenuRowIndex) = 0
-; Destroys: A, HL
-initMenu:
-    ld hl, mRootId
-    ld (currentMenuGroupId), hl
-    xor a
-    ld (currentMenuRowIndex), a
-    call clearJumpBack
-    set dirtyFlagsMenu, (iy + dirtyFlags)
-    ret
-
-; Description: Sanitize the current menuGroup upon application start. This is
-; needed when the version of the app that saved its menu state (in RPN83SAV)
-; has a different menu hierarchy than the current version of the app. It is
-; then possible for the (currentMenuGroupId) to point to a completely different
-; or non-existent menuGroup, which causes the menu bar to be rendered
-; incorrectly. In the worse case, it may cause the system to hang. This
-; function checks if the (currentMenuGroupId) is actually a valid MenuGroup. If
-; not, we reset the menu to the ROOT.
-;
-; The problem would not exist if we incremented the appStateSchemaVersion when
-; the menu hierarchy is changed using menudef.txt. But this is easy to forget,
-; because changing the menu hierarchy does not change the *layout* of the app
-; variables. It only changes the *semantic* meaning of the value stored in the
-; (currentMenuGroupId) variable.
-;
-; Destroys: A, HL, IX
-sanitizeMenu:
-    ; Check valid menuId.
-    ld hl, (currentMenuGroupId)
-    ld de, mMenuTableSize
-    call cpHLDE ; CF=0 if currentMenuGroupId>=mMenuTableSize
-    jr nc, sanitizeMenuReset
-    ; Check for MenuGroup.
-    call getMenuNodeIX ; IX=menuNode
-    ld a, (ix + menuNodeFieldNumRows); A=numRows
-    or a
-    jr z, sanitizeMenuReset ; reset if current node is a MenuItem
-    ; Check currentMenuRowIndex
-    ld a, (currentMenuRowIndex)
-    cp (ix + menuNodeFieldNumRows)
-    ret c
-    ; [[fallthrough]] if currentMenuRowIndex >= numRows
-sanitizeMenuReset:
-    ld hl, mRootId
-    ld (currentMenuGroupId), hl
-    xor a
-    ld (currentMenuRowIndex), a
-    ret
-
 ;-----------------------------------------------------------------------------
-
-; Description: Get the menuId corresponding to the soft menu button given by A.
-; Input:
-;   - A=buttonIndex (0-4)
-;   - (currentMenuGroupId)
-;   - (currentMenuRowIndex)
-; Output:
-;   - HL=u16=menuId
-; Destroys: DE, HL
-getMenuIdOfButton:
-    ld e, a
-    ld d, 0
-    push de ; stack=[buttonIndex]
-    call getCurrentMenuRowBeginId ; HL=rowMenuId
-    pop de
-    add hl, de ; HL=menuId
-    ret
-
-; Description: Return the node id of the first item in the menu row at
-; `currentMenuRowIndex` of the `currentMenuGroupId`. The next 4 node
-; ids in sequential order define the other 4 menu buttons.
-; Input:
-;   - (currentMenuGroupId)
-;   - (currentMenuRowIndex)
-; Output:
-;   - DE=rowBeginId=menuId of first item of row 0
-;   - HL=rowMenuId=menuId of the first item of row 'rowIndex'
-; Destroys: A, DE, HL
-; Preserves: BC
-getCurrentMenuRowBeginId:
-    ld hl, (currentMenuGroupId)
-    ld a, (currentMenuRowIndex)
-    jr getMenuRowBeginId
-
-; Description: Return the number of rows in the current menu group.
-; Input: (currentMenuGroupId)
-getCurrentMenuGroupNumRows:
-    ld hl, (currentMenuGroupId)
-    call getMenuNodeIX ; IX:(MenuNode*)=menuNode
-    ld a, (ix + menuNodeFieldNumRows)
-    ret
-
-; Bit flags that indicate if the corresponding menu arrow should be shown.
-menuArrowFlagLeft equ 0
-menuArrowFlagDown equ 1
-menuArrowFlagUp equ 2
-
-; Description: Return the status of menu arrow indicators.
-; Input:
-;   - (currentMenuGroupId)
-;   - (currentMenuRowIndex)
-; Output:
-;   - B:menuArrowFlag
-; Destroys: A, B, C, HL
-getCurrentMenuArrowStatus:
-    ld b, 0 ; B=menuArrowFlag
-    ; Defensive check for MenuItem instead of MenuGroup.
-    ld hl, (currentMenuGroupId)
-    call getMenuNodeIX ; IX=menuNode
-    ld a, (ix + menuNodeFieldNumRows) ; A=numRows
-    or a
-    ld c, a ; C=numRows
-    ret z ; if numRows==0: display no arrows
-    ; Check if left arrow should be shown.
-    ld a, (ix + menuNodeFieldParentId)
-    or (ix + menuNodeFieldParentId + 1) ; if parentId==0: ZF=1
-    jr z, getCurrentMenuArrowStatusCheckDown
-    set menuArrowFlagLeft, b
-getCurrentMenuArrowStatusCheckDown:
-    ; Check if Down arrow should be shown.
-    ld a, (currentMenuRowIndex)
-    inc a
-    cp c ; if rowIndex+1<numRows: CF=1
-    jr nc, getCurrentMenuArrowStatusCheckUp
-    set menuArrowFlagDown, b
-getCurrentMenuArrowStatusCheckUp:
-    ; Check if Up arrow should be shown.
-    dec a ; ZF=1 if numRows==0
-    ret z
-    set menuArrowFlagUp, b
-    ret
-
+; These routines cannot be moved into menu1.asm because they invoke callback
+; functions which are defined on Flash Page 0.
 ;-----------------------------------------------------------------------------
-
-; Description: Return the first menuNodeId for menuGroupId (HL) at rowIndex (A).
-; Input:
-;   - A=rowIndex
-;   - HL=menuGroupId
-; Output:
-;   - DE=rowBeginId=menuId of first item of row 0
-;   - HL=rowMenuId=menuId of the first item of row 'rowIndex'
-; Destroys: A, DE, HL
-; Preserves: BC
-getMenuRowBeginId:
-    call getMenuNodeIX ; IX=menuNode
-    ld e, (ix + menuNodeFieldRowBeginId)
-    ld d, (ix + menuNodeFieldRowBeginId + 1) ; DE=menuNode.rowBeginId
-    ; Calc the rowMenuId at given rowIndex: rowMenuId=rowBeginId+5*rowIndex
-    ld l, a ; L=rowIndex
-    add a, a
-    add a, a
-    add a, l ; A=5*rowIndex
-    ld l, a
-    ld h, 0 ; HL=5*rowIndex
-    ; calc rowMenuId=rowBeginId+5*rowIndex
-    add hl, de ; HL=rowMenuId=rowBeginId+5*rowIndex
-    ret
-
-; Description: Return the pointer to menuNode of HL in IX.
-; Input: HL=menuNodeId
-; Output: IX:(MenuNode*)=address of node
-; Destroys: HL
-; Preserves: A, BC, DE
-getMenuNodeIX:
-    push af
-    push bc
-    push de
-    bcall(_FindMenuNode)
-    push hl
-    pop ix
-    pop de
-    pop bc
-    pop af
-    ret
 
 ; Description: Return the pointer to the name string of the menu node at HL.
 ; If MenuNode.nameSelector is 0, then the display name is simply the nameId.
@@ -252,7 +75,7 @@ getMenuName:
     push de
     ld bc, OP3
     ld de, OP4
-    call extractMenuNames ; BC=altName; DE=normalName; HL=selector
+    bcall(_ExtractMenuNames) ; BC=altName; DE=normalName; HL=selector
     ; if nameSelector!=NULL: call nameSelector()
     ld a, l
     or h ; if HL==0: ZF=1
@@ -269,52 +92,6 @@ getMenuNameSelectAlt:
 getMenuNameFind:
     pop de
     pop bc
-    ret
-
-; Description: Extract the normal and alternate menu names of the menu node
-; identified by HL. Also returns the pointer to the nameSelector() function
-; which selects the name which should be used.
-;
-; The input to the nameSelector() function is:
-;   - HL: pointer to MenuNode (in case it is needed)
-; The output of the nameSelector() is:
-;   - CF=0 to select the normal name, CF=1 to select the alt name
-; The name is selected according to the relevant internal state (e.g. DEG or
-; RAD). The nameSelector is allowed to modify BC, DE, since they are restored
-; before returning from this function. It is also allowed to modify HL since it
-; gets clobbered with string pointer before returning from this function.
-;
-; Input: HL:u16=menuId
-;   - BC:(char*)=altName (e.g. OP4)
-;   - DE:(char*)=normalName (e.g. OP3)
-;   - HL:u16=menuId
-; Output:
-;   - (*BC) filled with altName
-;   - (*DE) filled with normalName
-;   - HL=nameSelector
-; Destroys: A, HL
-; Preserves: BC, DE
-extractMenuNames:
-    push de ; stack=[normalName]
-    push bc ; stack=[normalName,altName]
-    call getMenuNodeIX ; IX=(MenuNode*)
-    ; extract alt name
-    ld l, (ix + menuNodeFieldAltNameId)
-    ld h, (ix + menuNodeFieldAltNameId + 1)
-    pop de ; [normalName] ; DE=altName
-    bcall(_ExtractMenuString) ; (*DE)=altName
-    ; select normal name
-    ex de, hl ; HL=altName
-    ex (sp), hl ; stack=[altName] ; HL=normalName
-    ex de, hl ; DE=normalName
-    ld l, (ix + menuNodeFieldNameId)
-    ld h, (ix + menuNodeFieldNameId + 1)
-    bcall(_ExtractMenuString) ; (*DE)=normalName
-    ; nameSelector
-    ld l, (ix + menuNodeFieldNameSelector)
-    ld h, (ix + menuNodeFieldNameSelector + 1) ; HL=nameSelector
-    ;
-    pop bc ; stack=[]; BC=altname
     ret
 
 ;-----------------------------------------------------------------------------
@@ -344,14 +121,14 @@ extractMenuNames:
 ; Destroys: A, B, C, DE, HL, IX
 dispatchMenuNode:
     push hl ; stack=[targetNodeId]
-    call getMenuNodeHandler ; A=numRows; DE=handler; HL=menuNode
+    bcall(_GetMenuNodeHandler) ; A=numRows; DE=handler; HL=menuNode
     ; Invoke a MenuItem.
     or a ; if numRows == 0: ZF=1 (i.e. a MenuItem)
     pop hl ; stack=[]; HL=targetNodeId
     jp z, jumpDE ; Invoke menuHandler().
     ; Item was a menuGroup, so change into the target menu group. First clear
     ; the jumpBack registers. Then invoke changeMenuGroup().
-    call clearJumpBack
+    bcall(_ClearJumpBack)
     xor a ; A=targetRowIndex=0
     jr changeMenuGroup
 
@@ -368,7 +145,7 @@ dispatchMenuNode:
 ; Destroys: B
 dispatchMenuNodeWithJumpBack:
     push hl ; stack=[targetNodeId]
-    call getMenuNodeHandler ; A=numRows; DE=handler; HL=menuNode
+    bcall(_GetMenuNodeHandler) ; A=numRows; DE=handler; HL=menuNode
     ; Invoke a MenuItem.
     or a ; if numRows == 0: ZF=1 (i.e. a MenuItem)
     pop hl ; stack=[]; HL=targetNodeId
@@ -378,24 +155,11 @@ dispatchMenuNodeWithJumpBack:
     ; changeMenuGroup().
     ld de, (currentMenuGroupId)
     call cpHLDE ; ZF=1 if targetNodeId==currentMenuGroupId
-    call nz, saveJumpBack
+    jr z, dispatchMenuNodeWithJumpBackChange
+    bcall(_SaveJumpBack)
+dispatchMenuNodeWithJumpBackChange:
     xor a ; A=rowIndex=0
     jr changeMenuGroup
-
-; Description: Retrieve the mXxxHandler of the given MenuNode.
-; Input:
-;   - HL=menuNodeId
-; Output:
-;   - A=numRows (0 indicates MenuItem; >0 indicates MenuGroup)
-;   - DE=handler
-; Preserves: BC, HL
-; Destroys: A, DE, IX
-getMenuNodeHandler:
-    call getMenuNodeIX ; IX:(MenuNode*)=menuNode
-    ld a, (ix + menuNodeFieldNumRows) ; C=numRows
-    ld e, (ix + menuNodeFieldHandler)
-    ld d, (ix + menuNodeFieldHandler + 1) ; DE=handler
-    ret
 
 ;-----------------------------------------------------------------------------
 
@@ -422,7 +186,7 @@ exitMenuGroupThroughJumpBack:
     ; Go to jumpBack MenuGroup.
     ld a, (jumpBackMenuRowIndex)
     ; But clear the jumpBack before going back.
-    call clearJumpBack
+    bcall(_ClearJumpBack)
     jr changeMenuGroup
 exitMenuGroupHierarchy:
     ; Check if already at rootGroup
@@ -441,11 +205,11 @@ exitMenuGroupHierarchy:
 exitMenuGroupToParent:
     ; Get target groupId and rowIndex of the parent group.
     push hl ; stack=[childId]
-    call getMenuNodeIX ; IX=menuNode
+    bcall(_GetMenuNodeIX) ; IX=menuNode
     ld l, (ix + menuNodeFieldParentId)
     ld h, (ix + menuNodeFieldParentId + 1) ; HL=parentId
     push hl ; stack=[childId,parentId]
-    call getMenuNodeIX ; IX=parentMenuNode
+    bcall(_GetMenuNodeIX) ; IX=parentMenuNode
     ld b, (ix + menuNodeFieldNumRows) ; B=parent.numRows
     ld e, (ix + menuNodeFieldRowBeginId)
     ld d, (ix + menuNodeFieldRowBeginId + 1) ; DE=parent.rowBeginId
@@ -454,41 +218,7 @@ exitMenuGroupToParent:
     ex (sp), hl ; stack=[parentId]; HL=childId
     call deduceRowIndex ; A=rowIndex
     pop hl ; stack=[]; HL=parentId
-    ; [[fallthrough]]
-
-; Description: Change the current menu group to the target menuGroup and
-; rowIndex. Sends an onExit() event to the previous menuGroupHandler by setting
-; at CF=1. Then sends an onEnter() event to the new menuGroupHandler by setting
-; CF=0.
-; Input:
-;   - A=targetRowIndex
-;   - HL=targetMenuGroupId
-; Output:
-;   - (currentMenuGroupId)=target nodeId
-;   - (currentMenuRowIndex)=target rowIndex
-;   - dirtyFlagsMenu set
-; Destroys: A, DE, HL, IX
-changeMenuGroup:
-    push hl ; stack=[targetMenuGroupId]
-    push af ; stack=[targetMenuGroupId,targetRowIndex]
-    ; 1) Invoke the onExit() handler of the previous MenuGroup by setting CF=1.
-    ld hl, (currentMenuGroupId)
-    call getMenuNodeIX ; IX:(MenuNode*)=menuNode
-    ld e, (ix + menuNodeFieldHandler)
-    ld d, (ix + menuNodeFieldHandler + 1)
-    scf ; CF=1 means "onExit()" event
-    call jumpDE
-    ; 2) Invoke the onEnter() handler of the target MenuGroup by setting CF=0.
-    pop af ; stack=[targetMenuGroupId]; A=targetRowIndex
-    pop hl ; stack=[]; HL=targeMenuGroupId
-    ld (currentMenuGroupId), hl
-    ld (currentMenuRowIndex), a
-    call getMenuNodeIX ; IX=menuNode
-    ld e, (ix + menuNodeFieldHandler)
-    ld d, (ix + menuNodeFieldHandler + 1)
-    or a ; set CF=0
-    set dirtyFlagsMenu, (iy + dirtyFlags)
-    jp jumpDE
+    jr changeMenuGroup
 
 ; Description: Deduce the rowIndex location of the childId (HL) within a parent
 ; menuGroup that contains parentNumRows (B) which begin with parentRowBeginId
@@ -533,33 +263,36 @@ deduceRowIndexEnd:
 
 ;-----------------------------------------------------------------------------
 
-; Description: Clear the jumpBack variables.
-; Input: (jumpBackMenuGroupId), (jumpBackMenuRowIndex)
-; Output: (jumpBackMenuGroupId), (jumpBackMenuRowIndex) both set to 0
-; Destroys: none
-clearJumpBack:
-    push hl
-    push af
-    ld hl, 0
-    ld (jumpBackMenuGroupId), hl ; set to 0
-    ld a, l
-    ld (jumpBackMenuRowIndex), a ; set to 0
-    pop af
-    pop hl
-    ret
-
-; Description: Save the current (currentMenuGroupId) and (currentMenuRowIndex)
-; to the jumpBack variables.
-; Input: (currentMenuGroupId), (currentMenuRowIndex)
-; Output: (jumpBackMenuGroupId), (jumpBackMenuRowIndex) set
-; Destroys: none
-saveJumpBack:
-    push hl
-    push af
+; Description: Change the current menu group to the target menuGroup and
+; rowIndex. Sends an onExit() event to the previous menuGroupHandler by setting
+; at CF=1. Then sends an onEnter() event to the new menuGroupHandler by setting
+; CF=0.
+; Input:
+;   - A=targetRowIndex
+;   - HL=targetMenuGroupId
+; Output:
+;   - (currentMenuGroupId)=target nodeId
+;   - (currentMenuRowIndex)=target rowIndex
+;   - dirtyFlagsMenu set
+; Destroys: A, DE, HL, IX
+changeMenuGroup:
+    push hl ; stack=[targetMenuGroupId]
+    push af ; stack=[targetMenuGroupId,targetRowIndex]
+    ; 1) Invoke the onExit() handler of the previous MenuGroup by setting CF=1.
     ld hl, (currentMenuGroupId)
-    ld (jumpBackMenuGroupId), hl
-    ld a, (currentMenuRowIndex)
-    ld (jumpBackMenuRowIndex), a
-    pop af
-    pop hl
-    ret
+    bcall(_GetMenuNodeIX) ; IX:(MenuNode*)=menuNode
+    ld e, (ix + menuNodeFieldHandler)
+    ld d, (ix + menuNodeFieldHandler + 1)
+    scf ; CF=1 means "onExit()" event
+    call jumpDE
+    ; 2) Invoke the onEnter() handler of the target MenuGroup by setting CF=0.
+    pop af ; stack=[targetMenuGroupId]; A=targetRowIndex
+    pop hl ; stack=[]; HL=targeMenuGroupId
+    ld (currentMenuGroupId), hl
+    ld (currentMenuRowIndex), a
+    bcall(_GetMenuNodeIX) ; IX=menuNode
+    ld e, (ix + menuNodeFieldHandler)
+    ld d, (ix + menuNodeFieldHandler + 1)
+    or a ; set CF=0
+    set dirtyFlagsMenu, (iy + dirtyFlags)
+    jp jumpDE

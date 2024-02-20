@@ -618,13 +618,50 @@ _ProcessHelp equ _ProcessHelpLabel-branchTableBase
     .db 1
 
 ; menu1.asm
-_FindMenuNodeLabel:
-_FindMenuNode equ _FindMenuNodeLabel-branchTableBase
-    .dw FindMenuNode
+_InitMenuLabel:
+_InitMenu equ _InitMenuLabel-branchTableBase
+    .dw InitMenu
     .db 1
-_ExtractMenuStringLabel:
-_ExtractMenuString equ _ExtractMenuStringLabel-branchTableBase
-    .dw ExtractMenuString
+_SanitizeMenuLabel:
+_SanitizeMenu equ _SanitizeMenuLabel-branchTableBase
+    .dw SanitizeMenu
+    .db 1
+_ClearJumpBackLabel:
+_ClearJumpBack equ _ClearJumpBackLabel-branchTableBase
+    .dw ClearJumpBack
+    .db 1
+_SaveJumpBackLabel:
+_SaveJumpBack equ _SaveJumpBackLabel-branchTableBase
+    .dw SaveJumpBack
+    .db 1
+_GetCurrentMenuArrowStatusLabel:
+_GetCurrentMenuArrowStatus equ _GetCurrentMenuArrowStatusLabel-branchTableBase
+    .dw GetCurrentMenuArrowStatus
+    .db 1
+_GetMenuIdOfButtonLabel:
+_GetMenuIdOfButton equ _GetMenuIdOfButtonLabel-branchTableBase
+    .dw GetMenuIdOfButton
+    .db 1
+_GetCurrentMenuRowBeginIdLabel:
+_GetCurrentMenuRowBeginId equ _GetCurrentMenuRowBeginIdLabel-branchTableBase
+    .dw GetCurrentMenuRowBeginId
+    .db 1
+_GetCurrentMenuGroupNumRowsLabel:
+_GetCurrentMenuGroupNumRows equ _GetCurrentMenuGroupNumRowsLabel-branchTableBase
+    .dw GetCurrentMenuGroupNumRows
+    .db 1
+;
+_GetMenuNodeIXLabel:
+_GetMenuNodeIX equ _GetMenuNodeIXLabel-branchTableBase
+    .dw GetMenuNodeIX
+    .db 1
+_ExtractMenuNamesLabel:
+_ExtractMenuNames equ _ExtractMenuNamesLabel-branchTableBase
+    .dw ExtractMenuNames
+    .db 1
+_GetMenuNodeHandlerLabel:
+_GetMenuNodeHandler equ _GetMenuNodeHandlerLabel-branchTableBase
+    .dw GetMenuNodeHandler
     .db 1
 
 ; crc1.asm

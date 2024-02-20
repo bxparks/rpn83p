@@ -10,6 +10,22 @@
 ; entry.
 ;------------------------------------------------------------------------------
 
+; Description: Non-destructive compare of (HL-DE). Same as bcall(_CpHLDE)
+; without the overhead of the bcall().
+; Input: HL, DE
+; Output:
+;   - CF=1,ZF=0 if HL<DE
+;   - CF=0,ZF=1 if HL==DE
+;   - CF=0,ZF=0 if HL>DE
+cpHLDEPageOne:
+    or a ; CF=0
+    push hl
+    sbc hl, de
+    pop hl
+    ret
+
+;------------------------------------------------------------------------------
+
 ; Description: Add A to HL.
 ; Input: HL, A
 ; Output: HL+=A

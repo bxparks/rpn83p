@@ -536,7 +536,7 @@ handleKeyEnter:
 ; Output: (currentMenuRowIndex) decremented, or wrapped around
 ; Destroys: all
 handleKeyUp:
-    call getCurrentMenuGroupNumRows ; A=numRows
+    bcall(_GetCurrentMenuGroupNumRows) ; A=numRows
     ; if numRows==1: return
     cp 2 ; CF=1 if numRows<=1
     ret c
@@ -559,7 +559,7 @@ handleKeyUpContinue:
 ; Output: (currentMenuRowIndex) incremented mod numRows
 ; Destroys: all
 handleKeyDown:
-    call getCurrentMenuGroupNumRows ; A=numRows
+    bcall(_GetCurrentMenuGroupNumRows) ; A=numRows
     ; if numRows==1: return
     cp 2
     ret c
@@ -670,7 +670,7 @@ handleKeyMenuSecond5:
 handleKeyMenuA:
     res rpnFlagsSecondKey, (iy + rpnFlags)
 handleKeyMenuAltEntry:
-    call getMenuIdOfButton ; HL=menuId of button
+    bcall(_GetMenuIdOfButton) ; HL=menuId of button
     jp dispatchMenuNode
 
 ; Description: Same as handleKeyMenuA() except that the menu key was invoked

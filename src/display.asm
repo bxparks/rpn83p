@@ -181,7 +181,7 @@ displayStatusArrow:
     ld hl, statusPenRow*$100 + statusMenuPenCol; $(penRow)(penCol)
     ld (PenCol), hl
     ; check arrow status
-    call getCurrentMenuArrowStatus ; B=menuArrowStatus
+    bcall(_GetCurrentMenuArrowStatus) ; B=menuArrowStatus
     call displayStatusArrowLeft
     call displayStatusArrowDown
     call displayStatusArrowUp
@@ -789,7 +789,7 @@ displayMenu:
     ret z
     ; get starting menuId
     res fracDrawLFont, (iy + fontFlags) ; use small font
-    call getCurrentMenuRowBeginId ; HL=rowMenuId
+    bcall(_GetCurrentMenuRowBeginId) ; HL=rowMenuId
     ; set up loop over 5 consecutive menu buttons
     ld e, 0 ; E = menuIndex [0,4]
     ld c, menuPenCol0 ; C = penCol
