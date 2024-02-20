@@ -208,10 +208,7 @@ exitMenuGroupToParent:
     bcall(_GetMenuNodeParent) ; A=numRows; DE=parentId; IX=menuNode
     ex de, hl ; HL=parentId
     push hl ; stack=[childId,parentId]
-    bcall(_GetMenuNodeIX) ; IX=parentMenuNode
-    ld b, (ix + menuNodeFieldNumRows) ; B=parent.numRows
-    ld e, (ix + menuNodeFieldRowBeginId)
-    ld d, (ix + menuNodeFieldRowBeginId + 1) ; DE=parent.rowBeginId
+    bcall(_GetMenuNodeRowBeginId) ; A=numRows; DE=rowBeginId; IX=parentMenuNode
     ; Deduce the parent's rowIndex which matches the childId.
     pop hl ; stack=[childId]; HL=parentId
     ex (sp), hl ; stack=[parentId]; HL=childId
@@ -229,7 +226,7 @@ exitMenuGroupToParent:
 ; row that contains the childId.
 ;
 ; Input:
-;   - B=parentNumRows
+;   - A=parentNumRows
 ;   - DE=parentRowBeginId
 ;   - HL=childId
 ; Output:
@@ -237,6 +234,7 @@ exitMenuGroupToParent:
 ; Destroys: A, BC, DE
 ; Preserves: HL
 deduceRowIndex:
+    ld b, a ; B=numRows
     ld c, 0 ; C=rowIndex
     ; begin with DE=rowId=parentRowBeginId
 deduceRowIndexLoop:

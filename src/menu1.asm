@@ -219,6 +219,21 @@ getMenuRowBeginId:
     add hl, de ; HL=rowMenuId=rowBeginId+5*rowIndex
     ret
 
+; Description: Get the rowBeginId of the given MenuNode.
+; Input:
+;   - HL=menuNodeId
+; Output:
+;   - A=numRows
+;   - DE=rowBeginId
+;   - IX=menuNode
+; Destroys: A, BC, DE, HL, IX
+GetMenuNodeRowBeginId:
+    call findMenuNodeIX ; IX=menuNode
+    ld a, (ix + menuNodeFieldNumRows) ; A=numRows
+    ld e, (ix + menuNodeFieldRowBeginId)
+    ld d, (ix + menuNodeFieldRowBeginId + 1) ; DE=rowBeginId
+    ret
+
 ;-----------------------------------------------------------------------------
 
 ; Description: Retrieve the mXxxHandler of the given MenuNode.
@@ -285,7 +300,8 @@ GetMenuNodeIX:
 ;   - HL=menuId
 ; Output:
 ;   - HL(MenuNode*)=menuNode
-; Destroys: all
+; Destroys: BC, DE, HL, IX
+; Preserves: A
 findMenuNode:
     call calcMenuNodeOffset ; HL=offset
     ld de, mMenuTable
@@ -298,7 +314,8 @@ findMenuNode:
 ;   - HL=menuId
 ; Output:
 ;   - IX:(MenuNode*)=menuNode
-; Destroys: all
+; Destroys: BC, DE, HL, IX
+; Preserves: A
 findMenuNodeIX:
     call calcMenuNodeOffset ; HL=offset
     ex de, hl ; DE=offset
@@ -310,7 +327,8 @@ findMenuNodeIX:
 ; The formula is: offset=menuId*sizeof(MenuNode)=menuId*13=menuId*(8+4+1)
 ; Input: HL=menuId
 ; Output: HL=offset
-; Destroys: BC, DE
+; Destroys: BC, DE, HL
+; Preserves: A, IX
 calcMenuNodeOffset:
     ld c, l
     ld b, h ; BC=menuId
