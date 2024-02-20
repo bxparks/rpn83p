@@ -711,49 +711,45 @@ saveFormatDigitsContinue:
 
 ;-----------------------------------------------------------------------------
 
-; Description: Select the display name of 'FIX' menu.
-; Input:
-;   - A,B: nameId
-;   - C: altNameId
-;   - HL: pointer to MenuNode
-; Output:
-;   - A: either A or C
+; Description: Select menu name.
+; Output: CF=0 for normal, CF=1 or alternate
 mFixNameSelector:
     bit fmtExponent, (iy + fmtFlags)
-    ret nz
-    ld a, c
+    jr z, mFixNameSelectorAlt
+    or a ; CF=0
+    ret
+mFixNameSelectorAlt:
+    scf
     ret
 
-; Description: Select the display name of 'SCI' menu.
-; Input:
-;   - A,B: nameId
-;   - C: altNameId
-;   - HL: pointer to MenuNode
-; Output:
-;   - A: either A or C
+; Description: Select menu name.
+; Output: CF=0 for normal, CF=1 or alternate
 mSciNameSelector:
     bit fmtExponent, (iy + fmtFlags)
-    ret z
+    jr z, mSciNameSelectorNormal
 mSciNameSelectorMaybeOn:
     bit fmtEng, (iy + fmtFlags)
-    ret nz
-    ld a, c
+    jr z, mSciNameSelectorAlt
+mSciNameSelectorNormal:
+    or a ; CF=0
+    ret
+mSciNameSelectorAlt:
+    scf
     ret
 
-; Description: Select the display name of 'ENG' menu.
-; Input:
-;   - A,B: nameId
-;   - C: altNameId
-;   - HL: pointer to MenuNode
-; Output:
-;   - A: either A or C
+; Description: Select menu name.
+; Output: CF=0 for normal, CF=1 or alternate
 mEngNameSelector:
     bit fmtExponent, (iy + fmtFlags)
-    ret z
+    jr z, mEngNameSelectorNormal
 mEngNameSelectorMaybeOn:
     bit fmtEng, (iy + fmtFlags)
     ret z
-    ld a, c
+mEngNameSelectorNormal:
+    or a ; CF=0
+    ret
+mEngNameSelectorAlt:
+    scf
     ret
 
 ;-----------------------------------------------------------------------------
@@ -770,30 +766,26 @@ mDegHandler:
     set dirtyFlagsMenu, (iy + dirtyFlags)
     ret
 
-; Description: Select the display name of 'RAD' menu.
-; Input:
-;   - A,B: nameId
-;   - C: altNameId
-;   - HL: pointer to MenuNode
-; Output:
-;   - A: either A or C
+; Description: Select menu name.
+; Output: CF=0 for normal, CF=1 or alternate
 mRadNameSelector:
     bit trigDeg, (iy + trigFlags)
-    ret nz
-    ld a, c
+    jr z, mEngNameSelectorAlt
+    or a ; CF=0
+    ret
+mRadNameSelectorAlt:
+    scf
     ret
 
-; Description: Select the display name of 'DEG' menu.
-; Input:
-;   - A,B: nameId
-;   - C: altNameId
-;   - HL: pointer to MenuNode
-; Output:
-;   - A: either A or C
+; Description: Select menu name.
+; Output: CF=0 for normal, CF=1 or alternate
 mDegNameSelector:
     bit trigDeg, (iy + trigFlags)
-    ret z
-    ld a, c
+    jr nz, mDegNameSelectorAlt
+    or a ; CF=0
+    ret
+mDegNameSelectorAlt:
+    scf
     ret
 
 ;-----------------------------------------------------------------------------
@@ -804,21 +796,16 @@ mCommaEENormalHandler:
     set dirtyFlagsMenu, (iy + dirtyFlags)
     ret
 
-; Description: Select the display name of ',EE' menu.
-; Input:
-;   - A,B: nameId
-;   - C: altNameId
-;   - HL: pointer to MenuNode
-; Output:
-;   - A: either A or C
+; Description: Select menu name.
+; Output: CF=0 for normal, CF=1 or alternate
 mCommaEENormalNameSelector:
     ld a, (commaEEMode)
     cp commaEEModeNormal
-    jr z, mCommaEENormalSelected
-    ld a, b
+    jr z, mCommaEENormalNameSelectorAlt
+    or a ; CF=0
     ret
-mCommaEENormalSelected:
-    ld a, c
+mCommaEENormalNameSelectorAlt:
+    scf
     ret
 
 mCommaEESwappedHandler:
@@ -827,21 +814,16 @@ mCommaEESwappedHandler:
     set dirtyFlagsMenu, (iy + dirtyFlags)
     ret
 
-; Description: Select the display name of 'EE,' menu.
-; Input:
-;   - A,B: nameId
-;   - C: altNameId
-;   - HL: pointer to MenuNode
-; Output:
-;   - A: either A or C
+; Description: Select menu name.
+; Output: CF=0 for normal, CF=1 or alternate
 mCommaEESwappedNameSelector:
     ld a, (commaEEMode)
     cp commaEEModeSwapped
-    jr z, mCommaEESwappedSelected
-    ld a, b
+    jr z, mCommaEESwappedNameSelectorAlt
+    or a ; CF=0
     ret
-mCommaEESwappedSelected:
-    ld a, c
+mCommaEESwappedNameSelectorAlt:
+    scf
     ret
 
 ;-----------------------------------------------------------------------------

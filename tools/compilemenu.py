@@ -725,11 +725,11 @@ mMenuTableSize equ {self.menu_table_size}
 mMenuTable:
 mNull:
 mNullId equ 0
-    .db mNullId ; id
-    .db mNullId ; parentId
-    .db mNullNameId ; nameId
+    .dw mNullId ; id
+    .dw mNullId ; parentId
+    .dw mNullNameId ; nameId
     .db 0 ; numRows
-    .db 0 ; rowBeginId
+    .dw 0 ; rowBeginId
     .dw mNullHandler
     .dw 0
 """, file=self.output, end='')
@@ -793,11 +793,11 @@ mNullId equ 0
         print(f"""\
 {label}:
 {label}Id equ {id}
-    .db {node_id} ; id
-    .db {parent_node_label}Id ; parentId
-    .db {name_id} ; nameId
+    .dw {node_id} ; id
+    .dw {parent_node_label}Id ; parentId
+    .dw {name_id} ; nameId
     .db {num_rows} ; numRows
-    .db {row_begin_id} ; rowBeginId or altNameId
+    .dw {row_begin_id} ; rowBeginId or altNameId
     .dw {handler} ; handler ({handler_comment})
     .dw {name_selector} ; nameSelector
 """, file=self.output, end='')

@@ -82,15 +82,16 @@ mEpochUnixHandler:
     bcall(_SelectUnixEpochDate)
     ret
 
-; Input: A, B: nameId; C: altNameId
+; Description: Select menu name.
+; Output: CF=0 for normal, CF=1 or alternate
 mEpochUnixNameSelector:
     ld a, (epochType)
     cp epochTypeUnix
     jr z, mEpochUnixNameSelectorAlt
-    ld a, b
+    or a ; CF=0
     ret
 mEpochUnixNameSelectorAlt:
-    ld a, c
+    scf
     ret
 
 ;-----------------------------------------------------------------------------
@@ -99,15 +100,16 @@ mEpochNtpHandler:
     bcall(_SelectNtpEpochDate)
     ret
 
-; Input: A, B: nameId; C: altNameId
+; Description: Select menu name.
+; Output: CF=0 for normal, CF=1 or alternate
 mEpochNtpNameSelector:
     ld a, (epochType)
     cp epochTypeNtp
     jr z, mEpochNtpNameSelectorAlt
-    ld a, b
+    or a ; CF=0
     ret
 mEpochNtpNameSelectorAlt:
-    ld a, c
+    scf
     ret
 
 ;-----------------------------------------------------------------------------
@@ -116,15 +118,16 @@ mEpochGpsHandler:
     bcall(_SelectGpsEpochDate)
     ret
 
-; Input: A, B: nameId; C: altNameId
+; Description: Select menu name.
+; Output: CF=0 for normal, CF=1 or alternate
 mEpochGpsNameSelector:
     ld a, (epochType)
     cp epochTypeGps
     jr z, mEpochGpsNameSelectorAlt
-    ld a, b
+    or a
     ret
 mEpochGpsNameSelectorAlt:
-    ld a, c
+    scf
     ret
 
 ;-----------------------------------------------------------------------------
@@ -133,15 +136,16 @@ mEpochTiosHandler:
     bcall(_SelectTiosEpochDate)
     ret
 
-; Input: A, B: nameId; C: altNameId
+; Description: Select menu name.
+; Output: CF=0 for normal, CF=1 or alternate
 mEpochTiosNameSelector:
     ld a, (epochType)
     cp epochTypeTios
     jr z, mEpochTiosNameSelectorAlt
-    ld a, b
+    or a ; CF=0
     ret
 mEpochTiosNameSelectorAlt:
-    ld a, c
+    scf
     ret
 
 ;-----------------------------------------------------------------------------
@@ -150,15 +154,16 @@ mEpochCustomHandler:
     bcall(_SelectCustomEpochDate)
     ret
 
-; Input: A, B: nameId; C: altNameId
+; Description: Select menu name.
+; Output: CF=0 for normal, CF=1 or alternate
 mEpochCustomNameSelector:
     ld a, (epochType)
     cp epochTypeCustom
     jr z, mEpochCustomNameSelectorAlt
-    ld a, b
+    or a ; CF=0
     ret
 mEpochCustomNameSelectorAlt:
-    ld a, c
+    scf
     ret
 
 ;-----------------------------------------------------------------------------

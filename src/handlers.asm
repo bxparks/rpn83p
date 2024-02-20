@@ -536,21 +536,15 @@ handleKeyEnter:
 ; Output: (menuRowIndex) decremented, or wrapped around
 ; Destroys: all
 handleKeyUp:
-    ld hl, menuGroupId
-    ld a, (hl) ; A = menuGroupId
-    inc hl
-    ld b, (hl) ; B = menuRowIndex
-    call getMenuNode ; HL = pointer to MenuNode
-    inc hl
-    inc hl
-    inc hl
-    ; if numRows==1: return TODO: Check for 0, but that should never happen.
-    ld c, (hl) ; C = numRows
-    ld a, c
-    cp 1
-    ret z
-
-    ; (menuRowIndex-1) mod numRows
+    ld hl, (menuGroupId)
+    ld a, (menuRowIndex)
+    call getMenuNodeIX ; IX:(MenuNode*)=menuNode
+    ; if numRows==1: return
+    ld a, (ix + menuNodeNumRows)
+    cp 2 ; CF=1 if numRows<=1
+    ret c
+    ; menuRowIndex=(menuRowIndex-1) mod numRows
+    ld c, a ; C=numRows
     ld a, (menuRowIndex)
     or a
     jr nz, handleKeyUpContinue
@@ -558,7 +552,6 @@ handleKeyUp:
 handleKeyUpContinue:
     dec a
     ld (menuRowIndex), a
-
     set dirtyFlagsMenu, (iy + dirtyFlags)
     ret
 
@@ -569,21 +562,15 @@ handleKeyUpContinue:
 ; Output: (menuRowIndex) incremented mod numRows
 ; Destroys: all
 handleKeyDown:
-    ld hl, menuGroupId
-    ld a, (hl)
-    inc hl
-    ld b, (hl) ; menuRowIndex
-    call getMenuNode
-    inc hl
-    inc hl
-    inc hl
-    ; if numRows==1: returt TODO: Check for 0, but that should never happen.
-    ld c, (hl) ; numRows
-    ld a, c
-    cp 1
-    ret z
-
-    ; (menuRowIndex+1) mod numRows
+    ld hl, (menuGroupId)
+    ld a, (menuRowIndex)
+    call getMenuNodeIX ; IX=menuNode
+    ; if numRows==1: return
+    ld a, (ix + menuNodeNumRows)
+    cp 2
+    ret c
+    ; menuRowIndex=(menuRowIndex+1) mod numRows
+    ld c, a
     ld a, (menuRowIndex)
     inc a
     cp c
@@ -591,7 +578,6 @@ handleKeyDown:
     xor a
 handleKeyDownContinue:
     ld (menuRowIndex), a
-
     set dirtyFlagsMenu, (iy + dirtyFlags)
     ret
 
@@ -601,7 +587,8 @@ handleKeyDownContinue:
 ; already at the rootMenu, and the rowIndex is not 0, then reset the
 ; rowIndex to 0 so that we return to the default, top-level view of the menu
 ; hierarchy.
-; Input: (menuGroupId), the current (child) menu group
+; Input:
+;   - (menuGroupId), the current (child) menu group
 ; Output:
 ;   - (menuGroupId) at parentId
 ;   - (menuRowIndex) of the input (child) menu group
@@ -689,9 +676,7 @@ handleKeyMenuSecond5:
 handleKeyMenuA:
     res rpnFlagsSecondKey, (iy + rpnFlags)
 handleKeyMenuAltEntry:
-    ld c, a ; save A (menu button index 0-4)
-    call getCurrentMenuRowBeginId ; A=row begin id
-    add a, c ; menu node ids are sequential starting with beginId
+    call getMenuIdOfButton ; HL=menuId of button
     jp dispatchMenuNode
 
 ; Description: Same as handleKeyMenuA() except that the menu key was invoked
@@ -942,19 +927,19 @@ msgRclPrompt:
 ; Description: Handle the MATH key as the "HOME" key, going up to the top of
 ; the menu hierarchy.
 handleKeyMath:
-    ld a, mRootId
+    ld hl, mRootId
     jp dispatchMenuNode
 
 ; Description: Handle the MODE key as a shortcut to `ROOT > MODE`, except this
 ; saves the current MenuGroup as the jumpBack menu, and the ON/EXIT
 handleKeyMode:
-    ld a, mModeId
+    ld hl, mModeId
     jp dispatchMenuNodeWithJumpBack
 
 ; Description: Handle the STAT key as a shortcut to `ROOT > STAT`, but unlike
 ; `MODE`, this does *not* save the current MenuGroup in the jumpBack variables.
 handleKeyStat:
-    ld a, mStatId
+    ld hl, mStatId
     jp dispatchMenuNode
 
 ;-----------------------------------------------------------------------------

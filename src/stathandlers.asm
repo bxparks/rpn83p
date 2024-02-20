@@ -71,28 +71,22 @@ mStatLinearModeHandler:
     set dirtyFlagsMenu, (iy + dirtyFlags)
     ret
 
-; Description: Select the display name of 'ALL<Sigma>'.
-; Input:
-;   - A,B: nameId
-;   - C: altNameId
+; Description: Select menu name.
+; Output: CF=0 for normal, CF=1 or alternate
 mStatAllModeNameSelector:
     ld a, (statAllEnabled)
-    or a
-    ld a, b
+    or a ; CF=0; if A==0: ZF=1
     ret z
-    ld a, c
+    scf
     ret
 
-; Description: Select the display name of 'LIN<Sigma>'.
-; Input:
-;   - A,B: nameId
-;   - C: altNameId
+; Description: Select menu name.
+; Output: CF=0 for normal, CF=1 or alternate
 mStatLinearModeNameSelector:
     ld a, (statAllEnabled)
-    or a
-    ld a, b
+    or a ; CF=0; if A==0: ZF=1
     ret nz
-    ld a, c
+    scf
     ret
 
 mStatClearHandler:

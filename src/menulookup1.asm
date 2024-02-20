@@ -8,26 +8,27 @@
 ; page 0. Lowercased labels are intended to be local to the current flash page.
 ;-----------------------------------------------------------------------------
 
-; Description: Copy the MenuNode matching the menuId in A into (menuNodeBuf).
-; No bounds checking is performed.
-; Input: A: menuId
+; Description: Find the MenuNode identified by menuId, and copy it into
+; (menuNodeBuf). No bounds checking is performed.
+; Input:
+;   - HL=menuId
 ; Output:
 ;   - HL=menuNodeBuf
 ;   - (menuNodeBuf) contains copy of the matching MenuNode
 ; Destroys: all
 FindMenuNode:
-    ; HL = A * sizeof(MenuNode) = 9*A
-    ld l, a
-    ld h, 0
+    ; HL=menuId*sizeof(MenuNode)=menuId*13=menuId*(8+4+1)
+    ld c, l
+    ld b, h ; BC=menuId
+    add hl, hl
+    add hl, hl ; HL=4*menuId
     ld e, l
-    ld d, h
-    add hl, hl
-    add hl, hl
-    add hl, hl ; 8*A
-    add hl, de ; 9*A
-    ; HL = mMenuTable + 9*A
-    ex de, hl
-    ld hl, mMenuTable
+    ld d, h ; DE=4*menuId
+    add hl, hl ; 8*menuId
+    add hl, de ; 12*menuId
+    add hl, bc ; 13*menuId
+    ; HL=mMenuTable+13*menuId
+    ld de, mMenuTable
     add hl, de
     ; Copy it to (menuNodeBuf)
     ld de, menuNodeBuf
@@ -36,17 +37,19 @@ FindMenuNode:
     ld hl, menuNodeBuf
     ret
 
-; Description: Copy the menu name identified by the id in 'A' into
+; Description: Copy the menu name identified by the id in HL into
 ; (menuStringBuf). (The (menuNameBuf) is a Pascal-string used to determine the
 ; pixel width of the menu.)
-; Input: A: menuNameId
+; Input:
+;   - HL: menuNameId
 ; Output:
 ;   - HL=menuStringBuf
 ;   - (menuStringBuf) contains a copy of the matching string.
 ; Destroys: all
 FindMenuString:
+    ex de, hl ; DE=menuNameId
     ld hl, mMenuNameTable
-    call getStringPageOne ; HL=name string
+    call getDEStringPageOne ; HL:(const char*)=name
 copyToMenuStringBuf:
     ; Copy the name to (menuStringBuf)
     ld de, menuStringBuf

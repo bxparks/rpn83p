@@ -339,17 +339,13 @@ mTvmBeginHandler:
     set dirtyFlagsMenu, (iy + dirtyFlags)
     ret
 
-; Description: Return B if tvmIsBegin is false, C otherwise.
-; Input: A, B: normal nameId; C: alt nameId
-; Output: A
+; Description: Select menu name.
+; Output: CF=0 for normal, CF=1 or alternate
 mTvmBeginNameSelector:
     ld a, (tvmIsBegin)
-    or a
-    jr nz, mTvmBeginNameSelectorC
-    ld a, b
-    ret
-mTvmBeginNameSelectorC:
-    ld a, c
+    or a ; CF=0; ZF=1 if tvmIsBegin==0
+    ret z
+    scf
     ret
 
 ;-----------------------------------------------------------------------------
@@ -362,19 +358,13 @@ mTvmEndHandler:
     set dirtyFlagsMenu, (iy + dirtyFlags)
     ret
 
-; Description: Return C if tvmIsBegin is false, B otherwise.
-; Input:
-;   - A, B: normal nameId
-;   - C: alt nameId
-; Output: A
+; Description: Select menu name.
+; Output: CF=0 for normal, CF=1 or alternate
 mTvmEndNameSelector:
     ld a, (tvmIsBegin)
-    or a
-    jr z, mTvmEndNameSelectorC
-    ld a, b
-    ret
-mTvmEndNameSelectorC:
-    ld a, c
+    or a ; CF=0; ZF=1 if tvmIsBegin==0
+    ret nz
+    scf
     ret
 
 ;-----------------------------------------------------------------------------
@@ -401,16 +391,15 @@ mTvmIYR0Get:
     ld (handlerCode), a
     ret
 
-; Description: Return B if tvmIsBegin is false, C otherwise.
-; Input: A, B: normal nameId; C: alt nameId
-; Output: A
+; Description: Select menu name.
+; Output: CF=0 for normal, CF=1 or alternate
 mTvmIYR0NameSelector:
     call tvmSolverBitOverrideFlagIYR0
-    jr nz, mTvmIYR0NameSelectorC
-    ld a, b
+    jr nz, mTvmIYR0NameSelectorAlt
+    or a ; CF=0
     ret
-mTvmIYR0NameSelectorC:
-    ld a, c
+mTvmIYR0NameSelectorAlt:
+    scf
     ret
 
 ;-----------------------------------------------------------------------------
@@ -437,16 +426,15 @@ mTvmIYR1Get:
     ld (handlerCode), a
     ret
 
-; Description: Return B if tvmIsBegin is false, C otherwise.
-; Input: A, B: nameId; C: altNameId
-; Output: A
+; Description: Select menu name.
+; Output: CF=0 for normal, CF=1 or alternate
 mTvmIYR1NameSelector:
     call tvmSolverBitOverrideFlagIYR1
     jr nz, mTvmIYR1NameSelectorC
-    ld a, b
+    or a ; CF=0
     ret
 mTvmIYR1NameSelectorC:
-    ld a, c
+    scf
     ret
 
 ;-----------------------------------------------------------------------------
@@ -473,16 +461,15 @@ mTvmIterMaxGet:
     ld (handlerCode), a
     ret
 
-; Description: Return B if tvmIsBegin is false, C otherwise.
-; Input: A, B: normal nameId; C: alt nameId
-; Output: A
+; Description: Select menu name.
+; Output: CF=0 for normal, CF=1 or alternate
 mTvmIterMaxNameSelector:
     call tvmSolverBitOverrideFlagIterMax
-    jr nz, mTvmIterMaxNameSelectorC
-    ld a, b
+    jr nz, mTvmIterMaxNameSelectorAlt
+    or a ; CF=0
     ret
-mTvmIterMaxNameSelectorC:
-    ld a, c
+mTvmIterMaxNameSelectorAlt:
+    scf
     ret
 
 ;-----------------------------------------------------------------------------
