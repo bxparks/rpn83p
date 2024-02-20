@@ -167,39 +167,30 @@ displayStatus:
     call displayStatusComplexMode
     ret
 
+;-----------------------------------------------------------------------------
+
 ; Description: Display the up and down arrows that indicate whether there are
-; additional menus above or below the current set of 5 menu buttons.
+; additional menus above or below the current set of 5 menu buttons. Each of
+; the Sleft, SdownArrow, and SupArrow characters nominally take 4 pixel
+; columns. However, when the SdownArrow and SupArrow are printed next to each
+; other, one pixel-column seems to be removed (some sort of kerning?). So we
+; have to insert an extra one-pixel-column space between the two.
 displayStatusArrow:
     bit dirtyFlagsMenu, (iy + dirtyFlags)
     ret z
-
-    ; TODO: maybe cache the numRows of the current node to make this
-    ; calculation a little shorter and easier.
-
-    ; Determine if multiple menu rows exist.
-    ld hl, menuGroupId
-    ld a, (hl) ; A=menuGroupId
-    inc hl
-    ld b, (hl) ; B=menuRowIndex
-    call getMenuNode ; HL = pointer to MenuNode
-    inc hl
-    ld d, (hl) ; D = parentId
-    inc hl
-    inc hl
-    ld c, (hl) ; C=numRows
-
     ld hl, statusPenRow*$100 + statusMenuPenCol; $(penRow)(penCol)
     ld (PenCol), hl
+    ; check arrow status
+    bcall(_GetCurrentMenuArrowStatus) ; B=menuArrowStatus
+    call displayStatusArrowLeft
+    call displayStatusArrowDown
+    call displayStatusArrowUp
+    ret
 
-    ; If numRows==0: don't do anything. This should never happen if there
-    ; are no bugs in the program.
-    ld a, c ; A = numRows
-    or a
-    jr z, displayStatusArrowClear
-
+; Description: Show left arrow if a parent node exists.
+; Input: B=menuArrowStatus
 displayStatusArrowLeft:
-    ld a, d
-    or a ; if parentId==0: ZF=1
+    bit menuArrowFlagLeft, b
     jr z, displayStatusArrowLeftNone
     ; display left arrow
     ld a, Sleft
@@ -207,30 +198,31 @@ displayStatusArrowLeft:
 displayStatusArrowLeftNone:
     ld a, SFourSpaces
 displayStatusArrowLeftDisplay:
-    bcall(_VPutMap)
+    bcall(_VPutMap) ; destroys IX
+    ret
 
+; Description: If show Down arrow if additional rows exist.
+; Input: B=menuArrowStatus
 displayStatusArrowDown:
-    ; If rowIndex < (numRows - 1): show Down arrow
-    ld a, b ; A = rowIndex
-    dec c ; C = numRows - 1
-    cp c
-    jr nc, displayStatusArrowDownNone
-    ld a, SdownArrow
-    bcall(_VPutMap)
-    ; Add an extra space after the downArrow because when an upArrow is
+    bit menuArrowFlagDown, b
+    jr z, displayStatusArrowDownNone
+    ; Print a Down arrow with an extra space because when an upArrow is
     ; displayed immediately after, the 1px of space on the right side of the
     ; downArrow character seems to ellided so the downArrow occupies only 3px.
+    ld a, SdownArrow
+    bcall(_VPutMap) ; destroys IX
     ld a, Sspace
     jr displayStatusArrowDownDisplay
 displayStatusArrowDownNone:
     ld a, SFourSpaces
 displayStatusArrowDownDisplay:
-    bcall(_VPutMap)
+    bcall(_VPutMap) ; destroys IX
+    ret
 
+; Description: If show Up arrow if previous rows exist.
+; Input: B=menuArrowStatus
 displayStatusArrowUp:
-    ; If rowIndex > 0: show Up arrow
-    ld a, b
-    or a
+    bit menuArrowFlagUp, b
     jr z, displayStatusArrowUpNone
     ld a, SupArrow
     jr displayStatusArrowUpDisplay
@@ -239,11 +231,6 @@ displayStatusArrowUpNone:
 displayStatusArrowUpDisplay:
     bcall(_VPutMap)
     ret
-
-    ; clear 8 px
-displayStatusArrowClear:
-    call displayStatusArrowUpNone
-    jr displayStatusArrowUpNone
 
 ;-----------------------------------------------------------------------------
 
@@ -800,29 +787,24 @@ displayTvm1:
 displayMenu:
     bit dirtyFlagsMenu, (iy + dirtyFlags)
     ret z
-
-    res fracDrawLFont, (iy + fontFlags) ; use small font
     ; get starting menuId
-    call getCurrentMenuRowBeginId ; A=rowBeginId
+    res fracDrawLFont, (iy + fontFlags) ; use small font
+    bcall(_GetCurrentMenuRowBeginId) ; HL=rowMenuId
     ; set up loop over 5 consecutive menu buttons
-    ld d, a ; D = menuId
     ld e, 0 ; E = menuIndex [0,4]
     ld c, menuPenCol0 ; C = penCol
     ld b, 5 ; B = loop 5 times
 displayMenuLoop:
-    ld a, d ; A = menuId
-    call getMenuName ; HL = menu name of menuId in A
-
-    ld a, c ; A = penCol
+    push hl ; stack=[menuId]
+    call getMenuName ; HL:(const char*)=menuName
     call printMenuAtA
-
-    inc d ; D = menuId + 1
-    inc e ; E =  menuIndex + 1
-
+    pop hl ; stack=[]; HL=menuId
+    ; increment to next menu
+    inc hl ; HL=menuId+1
+    inc e ; E=menuIndex+1
     ld a, c ; A = penCol
     add a, menuPenWidth + 1 ; A += menuWidth + 1 (1px spacing)
     ld c, a ; C += menuPenWidth + 1
-
     djnz displayMenuLoop
     ret
 
@@ -832,30 +814,26 @@ displayMenuLoop:
 ; small and inverted font, centering the menu name in the middle of the 18 px
 ; width of a menu box.
 ; Inputs:
-;   A: penCol
-;   B: loop counter (must be preserved)
-;   C: penCol (must be preserved)
-;   D: menuId (ignored but must be preserved, useful for debugging)
-;   E: menuIndex [0-4] (ignored but must be preserved, useful for debugging)
-;   HL: C string
+;   B=loopCounter (must be preserved)
+;   C=penCol (must be preserved)
+;   E=menuIndex [0-4] (ignored but must be preserved, useful for debugging)
+;   HL:(const char*)=menuName
 ; Destroys: A, HL
 ; Preserves: BC, DE
-printMenuAtA:
-    push bc ; B = loop counter
-    push de ; D = menuId; E = menuIndex
-
+printMenuAtA: ; TODO: Rename this to printMenuNameAtC().
+    push bc ; stack=[loopCounter/penCol]
+    push de ; stack=[loopCounter/penCol,menuIndex]
     ; Set (PenCol,PenRow), preserving HL
+    ld a, c ; A=penCol
     ld (PenCol), a
     ld a, menuPenRow
     ld (PenRow), a
-
     ; Predict the width of menu name.
     ld de, menuName
     ld c, menuNameBufMax
     call copyCToPascal ; C, DE are preserved
     ex de, hl ; HL = menuName
     call smallStringWidth ; A = B = string width
-
 printMenuAtANoAdjust:
     ; Calculate the starting pixel to center the string
     ld a, menuPenWidth
@@ -874,9 +852,9 @@ printMenuAtAFitsInside:
     ; padding on both sides.
     inc a
     rra ; CF=0, divide by 2 for centering; A = padWidth
-
+    ;
     ld c, a ; C = A = leftPadWidth
-    push bc ; B = stringWidth; C = leftPadWidth
+    push bc ; B=stringWidth; C=leftPadWidth
     set textInverse, (iy + textFlags)
     ; The code below sets the textEraseBelow flag to fix a font rendering
     ; problem on the very last row of pixels on the LCD display, where the menu
@@ -911,12 +889,11 @@ printMenuAtARightPad:
     ld b, a ; B = rightPadWidth
     ld a, Sspace
     call printARepeatB
-
 printMenuAtAExit:
     res textInverse, (iy + textFlags)
     res textEraseBelow, (iy + textFlags)
-    pop de ; D = menuId; E = menuIndex
-    pop bc ; B = loop counter
+    pop de ; stack=[loopCounter/penCol]; E=menuIndex
+    pop bc ; stack=[]; BC=loopCounter/penCol
     ret
 
 ;-----------------------------------------------------------------------------

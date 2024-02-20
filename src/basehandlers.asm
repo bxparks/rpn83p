@@ -57,41 +57,45 @@ setBaseNumber:
 
 ;-----------------------------------------------------------------------------
 
-; Input: A, B: nameId; C: altNameId
+; Description: Select menu name.
+; Output: CF=0 for normal, CF=1 or alternate
 mDecNameSelector:
     ld a, 10
     jr mBaseNameSelector
 
-; Input: A, B: nameId; C: altNameId
+; Description: Select menu name.
+; Output: CF=0 for normal, CF=1 or alternate
 mHexNameSelector:
     ld a, 16
     jr mBaseNameSelector
 
-; Input: A, B: nameId; C: altNameId
+; Description: Select menu name.
+; Output: CF=0 for normal, CF=1 or alternate
 mOctNameSelector:
     ld a, 8
     jr mBaseNameSelector
 
-; Input: A, B: nameId; C: altNameId
+; Description: Select menu name.
+; Output: CF=0 for normal, CF=1 or alternate
 mBinNameSelector:
     ld a, 2
     ; [[fallthrough]]
 
-; Description: Select the display name of 'DEC', 'HEX', 'OCT', and 'BIN' menus.
+; Description: Select the menu name of 'DEC', 'HEX', 'OCT', and 'BIN' menus.
 ; Input:
 ;   - A: selectedBase (2, 8, 10, 16)
-;   - B: nameId
-;   - C: altNameId
-;   - HL: pointer to MenuNode
 ; Output:
-;   - A: either B or C
+;   - CF=0 or 1
 ; Destroys: HL
+; Output: CF=0 for normal, CF=1 or alternate
 mBaseNameSelector:
     ld hl, baseNumber
     cp (hl) ; if selectedBase==(baseNumber): ZF=1
-    ld a, b
-    ret nz
-    ld a, c
+    jr z, mBaseNameSelectorAlt
+    or a ; CF=0
+    ret
+mBaseNameSelectorAlt:
+    scf
     ret
 
 ;-----------------------------------------------------------------------------

@@ -205,13 +205,16 @@ mCfitLinearHandler:
     set dirtyFlagsMenu, (iy + dirtyFlags)
     ret
 
+; Description: Select menu name.
+; Output: CF=0 for normal, CF=1 or alternate
 mCfitLinearNameSelector:
-    ld b, a
     ld a, (curveFitModel)
     cp curveFitModelLinear
-    ld a, b
-    ret nz
-    ld a, c
+    jr z, mCfitLinearNameSelectorAlt
+    or a ; CF=0
+    ret
+mCfitLinearNameSelectorAlt:
+    scf
     ret
 
 ;-----------------------------------------------------------------------------
@@ -222,13 +225,16 @@ mCfitLogHandler:
     set dirtyFlagsMenu, (iy + dirtyFlags)
     ret
 
+; Description: Select menu name.
+; Output: CF=0 for normal, CF=1 or alternate
 mCfitLogNameSelector:
-    ld b, a
     ld a, (curveFitModel)
     cp curveFitModelLog
-    ld a, b
-    ret nz
-    ld a, c
+    jr z, mCfitLogNameSelectorAlt
+    or a ; CF=0
+    ret
+mCfitLogNameSelectorAlt:
+    scf
     ret
 
 ;-----------------------------------------------------------------------------
@@ -239,13 +245,16 @@ mCfitExpHandler:
     set dirtyFlagsMenu, (iy + dirtyFlags)
     ret
 
+; Description: Select menu name.
+; Output: CF=0 for normal, CF=1 or alternate
 mCfitExpNameSelector:
-    ld b, a
     ld a, (curveFitModel)
     cp curveFitModelExp
-    ld a, b
-    ret nz
-    ld a, c
+    jr z, mCfitExpNameSelectorAlt
+    or a ; CF=0
+    ret
+mCfitExpNameSelectorAlt:
+    scf
     ret
 
 ;-----------------------------------------------------------------------------
@@ -256,13 +265,16 @@ mCfitPowerHandler:
     set dirtyFlagsMenu, (iy + dirtyFlags)
     ret
 
+; Description: Select menu name.
+; Output: CF=0 for normal, CF=1 or alternate
 mCfitPowerNameSelector:
-    ld b, a
     ld a, (curveFitModel)
     cp curveFitModelPower
-    ld a, b
-    ret nz
-    ld a, c
+    jr z, mCfitPowerNameSelectorAlt
+    or a ; CF=0
+    ret
+mCfitPowerNameSelectorAlt:
+    scf
     ret
 
 ;-----------------------------------------------------------------------------

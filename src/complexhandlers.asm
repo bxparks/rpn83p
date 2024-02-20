@@ -40,14 +40,16 @@ mNumResultModeRealHandler:
     set dirtyFlagsMenu, (iy + dirtyFlags)
     ret
 
-; Input: A=B=menuLabel; C=altLabel
-; Output: A=selectedLabel
+; Description: Select menu name.
+; Output: CF=0 for normal, CF=1 or alternate
 mNumResultModeRealNameSelector:
     ld a, (numResultMode)
     cp numResultModeReal
-    ld a, b
-    ret nz
-    ld a, c
+    jr z, mNumResultModeRealNameSelectorAlt
+    or a ; CF=0
+    ret
+mNumResultModeRealNameSelectorAlt:
+    scf
     ret
 
 mNumResultModeComplexHandler:
@@ -58,14 +60,16 @@ mNumResultModeComplexHandler:
     set dirtyFlagsMenu, (iy + dirtyFlags)
     ret
 
-; Input: A=B=menuLabel; C=altLabel
-; Output: A=selectedLabel
+; Description: Select menu name.
+; Output: CF=0 for normal, CF=1 or alternate
 mNumResultModeComplexNameSelector:
     ld a, (numResultMode)
     cp numResultModeComplex
-    ld a, b
-    ret nz
-    ld a, c
+    jr z, mNumResultModeComplexNameSelectorAlt
+    or a ; CF=0
+    ret
+mNumResultModeComplexNameSelectorAlt:
+    scf
     ret
 
 ;-----------------------------------------------------------------------------
@@ -79,14 +83,16 @@ mComplexModeRectHandler:
     set dirtyFlagsStatus, (iy + dirtyFlags)
     ret
 
-; Input: A=B=menuLabel; C=altLabel
-; Output: A=selectedLabel
+; Description: Select menu name.
+; Output: CF=0 for normal, CF=1 or alternate
 mComplexModeRectNameSelector:
     ld a, (complexMode)
     cp complexModeRect
-    ld a, b
-    ret nz
-    ld a, c
+    jr z, mComplexModeRectNameSelectorAlt
+    or a ; CF=0
+    ret
+mComplexModeRectNameSelectorAlt:
+    scf
     ret
 
 mComplexModeRadHandler:
@@ -98,14 +104,16 @@ mComplexModeRadHandler:
     set dirtyFlagsStatus, (iy + dirtyFlags)
     ret
 
-; Input: A=B=menuLabel; C=altLabel
-; Output: A=selectedLabel
+; Description: Select menu name.
+; Output: CF=0 for normal, CF=1 or alternate
 mComplexModeRadNameSelector:
     ld a, (complexMode)
     cp complexModeRad
-    ld a, b
-    ret nz
-    ld a, c
+    jr z, mComplexModeRadNameSelectorAlt
+    or a ; CF=0
+    ret
+mComplexModeRadNameSelectorAlt:
+    scf
     ret
 
 mComplexModeDegHandler:
@@ -117,12 +125,14 @@ mComplexModeDegHandler:
     set dirtyFlagsStatus, (iy + dirtyFlags)
     ret
 
-; Input: A=B=menuLabel; C=altLabel
-; Output: A=selectedLabel
+; Description: Select menu name.
+; Output: CF=0 for normal, CF=1 or alternate
 mComplexModeDegNameSelector:
     ld a, (complexMode)
     cp complexModeDeg
-    ld a, b
-    ret nz
-    ld a, c
+    jr z, mComplexModeDegNameSelectorAlt
+    or a ; CF=0
+    ret
+mComplexModeDegNameSelectorAlt:
+    scf
     ret

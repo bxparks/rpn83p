@@ -110,7 +110,7 @@ rpn83pAppId equ $1E69
 ; state is considered stale automatically. However, if the *semantics* of any
 ; variable is changed (e.g. if the meaning of a flag is changed), then we
 ; *must* increment the version number to mark the previous state as stale.
-rpn83pSchemaVersion equ 13
+rpn83pSchemaVersion equ 14
 
 ; Define true and false. Something else in spasm-ng defines the 'true' and
 ; 'false' symbols but I cannot find the definitions for them in the
@@ -313,11 +313,11 @@ parseBufSizeOf equ parseBufCapacity + 1
 ; groupId and the rowIndex in the group. The C equivalent is:
 ;
 ;   struct Menu {
-;     uint8_t groupId; // id of the current menu group
+;     uint16_t groupId; // id of the current menu group
 ;     uint8_t rowIndex; // menu row, groups of 5
 ;   }
-menuGroupId equ parseBuf + parseBufSizeOf ; u8
-menuRowIndex equ menuGroupId + 1 ; u8
+currentMenuGroupId equ parseBuf + parseBufSizeOf ; u16
+currentMenuRowIndex equ currentMenuGroupId + 2 ; u8
 
 ; These variables remember the previous menuGroup/row pair when a shortcut was
 ; pressed to another menuGroup. On the ON/EXIT button is pressed, we can then
@@ -327,8 +327,8 @@ menuRowIndex equ menuGroupId + 1 ; u8
 ; candidate. If jumpBackMenuGroupId is 0, then the memory feature is not
 ; active. If it is not 0, then the ON/EXIT button should go back to the menu
 ; defined by this pair.
-jumpBackMenuGroupId equ menuRowIndex + 1 ; u8
-jumpBackMenuRowIndex equ jumpBackMenuGroupId + 1 ; u8
+jumpBackMenuGroupId equ currentMenuRowIndex + 1 ; u16
+jumpBackMenuRowIndex equ jumpBackMenuGroupId + 2 ; u8
 
 ; Menu name, copied here as a Pascal string.
 ;
@@ -475,19 +475,13 @@ savedFmtDigits equ savedFmtFlags + 1 ; u8
 
 ; FindMenuNode() copies the matching menuNode from menudef.asm (in flash page 1)
 ; to here so that routines in flash page 0 can access the information.
-menuNodeBuf equ savedFmtDigits + 1 ; 9 bytes, defined by menuNodeSizeOf
-
-; FindMenuString() copies the name of the menu from flash page 1 to here so that
-; routines in flash page 0 can access it. This is named 'menuStringBuf' to
-; avoid conflicting with the existing 'menuNameBuf' which is a Pascal-string
-; version of 'menuStringBuf'.
-menuStringBuf equ menuNodeBuf + 9 ; char[6]
-menuStringBufSizeOf equ 6
+menuNodeBuf equ savedFmtDigits + 1 ; 13 bytes, defined by menuNodeSizeOf
+menuNodeSizeOf equ 13
 
 ; TVM Solver needs a bunch of workspace variables: interest rate, i0 and i1,
 ; plus the next interest rate i2, and the value of the NPMT() function at each
 ; of those points. Transient, so no need to persist them.
-tvmI0 equ menuStringBuf + menuStringBufSizeOf ; float
+tvmI0 equ menuNodeBuf + menuNodeSizeOf ; float
 tvmI1 equ tvmI0 + 9 ; float
 tvmNPMT0 equ tvmI1 + 9 ; float
 tvmNPMT1 equ tvmNPMT0 + 9 ; float
@@ -623,14 +617,51 @@ _ProcessHelp equ _ProcessHelpLabel-branchTableBase
     .dw ProcessHelp
     .db 1
 
-; menulookup1.asm
-_FindMenuNodeLabel:
-_FindMenuNode equ _FindMenuNodeLabel-branchTableBase
-    .dw FindMenuNode
+; menu1.asm
+_InitMenuLabel:
+_InitMenu equ _InitMenuLabel-branchTableBase
+    .dw InitMenu
     .db 1
-_FindMenuStringLabel:
-_FindMenuString equ _FindMenuStringLabel-branchTableBase
-    .dw FindMenuString
+_SanitizeMenuLabel:
+_SanitizeMenu equ _SanitizeMenuLabel-branchTableBase
+    .dw SanitizeMenu
+    .db 1
+_ClearJumpBackLabel:
+_ClearJumpBack equ _ClearJumpBackLabel-branchTableBase
+    .dw ClearJumpBack
+    .db 1
+_SaveJumpBackLabel:
+_SaveJumpBack equ _SaveJumpBackLabel-branchTableBase
+    .dw SaveJumpBack
+    .db 1
+_GetCurrentMenuArrowStatusLabel:
+_GetCurrentMenuArrowStatus equ _GetCurrentMenuArrowStatusLabel-branchTableBase
+    .dw GetCurrentMenuArrowStatus
+    .db 1
+_GetMenuIdOfButtonLabel:
+_GetMenuIdOfButton equ _GetMenuIdOfButtonLabel-branchTableBase
+    .dw GetMenuIdOfButton
+    .db 1
+_GetCurrentMenuRowBeginIdLabel:
+_GetCurrentMenuRowBeginId equ _GetCurrentMenuRowBeginIdLabel-branchTableBase
+    .dw GetCurrentMenuRowBeginId
+    .db 1
+_GetCurrentMenuGroupNumRowsLabel:
+_GetCurrentMenuGroupNumRows equ _GetCurrentMenuGroupNumRowsLabel-branchTableBase
+    .dw GetCurrentMenuGroupNumRows
+    .db 1
+;
+_GetMenuNodeIXLabel:
+_GetMenuNodeIX equ _GetMenuNodeIXLabel-branchTableBase
+    .dw GetMenuNodeIX
+    .db 1
+_ExtractMenuNamesLabel:
+_ExtractMenuNames equ _ExtractMenuNamesLabel-branchTableBase
+    .dw ExtractMenuNames
+    .db 1
+_GetMenuNodeHandlerLabel:
+_GetMenuNodeHandler equ _GetMenuNodeHandlerLabel-branchTableBase
+    .dw GetMenuNodeHandler
     .db 1
 
 ; crc1.asm
@@ -1483,6 +1514,7 @@ _DebugU32DEAsHex equ _DebugU32DEAsHexLabel-branchTableBase
 #include "common.asm"
 #include "memory.asm"
 #include "cstring.asm"
+#include "integer.asm"
 #include "float.asm"
 #include "complex.asm"
 #include "universal.asm"
@@ -1503,7 +1535,7 @@ defpage(1)
 #include "appstate1.asm"
 #include "osstate1.asm"
 #include "help1.asm"
-#include "menulookup1.asm"
+#include "menu1.asm"
 #include "menudef.asm"
 #include "crc1.asm"
 #include "errorcode1.asm"
@@ -1515,8 +1547,8 @@ defpage(1)
 #include "cstring1.asm"
 #include "pstring1.asm"
 #include "memory1.asm"
-#include "float1.asm"
 #include "integer1.asm"
+#include "float1.asm"
 #include "integerconv1.asm"
 #include "const1.asm"
 #include "complex1.asm"
@@ -1524,6 +1556,7 @@ defpage(1)
 #include "tvm1.asm"
 #include "hms1.asm"
 #include "prob1.asm"
+#include "format1.asm"
 #ifdef DEBUG
 #include "debug1.asm"
 #endif
