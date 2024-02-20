@@ -23,8 +23,6 @@
 ;   - DE: points to NUL at the end of string, to allow chaining
 ; Destroys: all, OP1-OP6
 FormShowable:
-    bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
-    jr nz, formShowableBase
     call getOp1RpnObjectTypePageTwo
     ; real
     cp rpnObjectTypeReal
@@ -51,11 +49,13 @@ formShowableUnknown:
     ; Print "{unknown}" if object not known
     ld hl, msgRpnObjectTypeUnknown
     jp copyCStringPageTwo
+formShowableReal:
+    bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
+    jr nz, formShowableBase
+    call formRealString
+    jr formShowableEnd
 formShowableBase:
     call formBaseString
-    jr formShowableEnd
-formShowableReal:
-    call formRealString
     jr formShowableEnd
 formShowableComplex:
     call formComplexString
