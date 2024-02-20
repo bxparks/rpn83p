@@ -316,8 +316,8 @@ parseBufSizeOf equ parseBufCapacity + 1
 ;     uint16_t groupId; // id of the current menu group
 ;     uint8_t rowIndex; // menu row, groups of 5
 ;   }
-menuGroupId equ parseBuf + parseBufSizeOf ; u16
-menuRowIndex equ menuGroupId + 2 ; u8
+currentMenuGroupId equ parseBuf + parseBufSizeOf ; u16
+currentMenuRowIndex equ currentMenuGroupId + 2 ; u8
 
 ; These variables remember the previous menuGroup/row pair when a shortcut was
 ; pressed to another menuGroup. On the ON/EXIT button is pressed, we can then
@@ -327,7 +327,7 @@ menuRowIndex equ menuGroupId + 2 ; u8
 ; candidate. If jumpBackMenuGroupId is 0, then the memory feature is not
 ; active. If it is not 0, then the ON/EXIT button should go back to the menu
 ; defined by this pair.
-jumpBackMenuGroupId equ menuRowIndex + 1 ; u16
+jumpBackMenuGroupId equ currentMenuRowIndex + 1 ; u16
 jumpBackMenuRowIndex equ jumpBackMenuGroupId + 2 ; u8
 
 ; Menu name, copied here as a Pascal string.

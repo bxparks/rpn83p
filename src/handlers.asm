@@ -533,22 +533,22 @@ handleKeyEnter:
 
 ; Description: Go to the previous menu row, with rowIndex decreasing upwards.
 ; Input: none
-; Output: (menuRowIndex) decremented, or wrapped around
+; Output: (currentMenuRowIndex) decremented, or wrapped around
 ; Destroys: all
 handleKeyUp:
     call getCurrentMenuGroupNumRows ; A=numRows
     ; if numRows==1: return
     cp 2 ; CF=1 if numRows<=1
     ret c
-    ; menuRowIndex=(menuRowIndex-1) mod numRows
+    ; currentMenuRowIndex=(currentMenuRowIndex-1) mod numRows
     ld c, a ; C=numRows
-    ld a, (menuRowIndex)
+    ld a, (currentMenuRowIndex)
     or a
     jr nz, handleKeyUpContinue
     ld a, c ; A = numRows
 handleKeyUpContinue:
     dec a
-    ld (menuRowIndex), a
+    ld (currentMenuRowIndex), a
     set dirtyFlagsMenu, (iy + dirtyFlags)
     ret
 
@@ -556,22 +556,22 @@ handleKeyUpContinue:
 
 ; Description: Go to the next menu row, with rowIndex increasing downwards.
 ; Input: none
-; Output: (menuRowIndex) incremented mod numRows
+; Output: (currentMenuRowIndex) incremented mod numRows
 ; Destroys: all
 handleKeyDown:
     call getCurrentMenuGroupNumRows ; A=numRows
     ; if numRows==1: return
     cp 2
     ret c
-    ; menuRowIndex=(menuRowIndex+1) mod numRows
+    ; currentMenuRowIndex=(currentMenuRowIndex+1) mod numRows
     ld c, a
-    ld a, (menuRowIndex)
+    ld a, (currentMenuRowIndex)
     inc a
     cp c
     jr c, handleKeyDownContinue
     xor a
 handleKeyDownContinue:
-    ld (menuRowIndex), a
+    ld (currentMenuRowIndex), a
     set dirtyFlagsMenu, (iy + dirtyFlags)
     ret
 
@@ -582,10 +582,10 @@ handleKeyDownContinue:
 ; rowIndex to 0 so that we return to the default, top-level view of the menu
 ; hierarchy.
 ; Input:
-;   - (menuGroupId), the current (child) menu group
+;   - (currentMenuGroupId), the current (child) menu group
 ; Output:
-;   - (menuGroupId) at parentId
-;   - (menuRowIndex) of the input (child) menu group
+;   - (currentMenuGroupId) at parentId
+;   - (currentMenuRowIndex) of the input (child) menu group
 ; Destroys: all
 handleKeyExit:
     jp exitMenuGroup

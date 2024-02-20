@@ -178,8 +178,7 @@ displayStatusArrow:
     ; Determine if multiple menu rows exist.
     ; TODO: maybe cache the numRows of the current node to make this
     ; calculation a little shorter and easier.
-    ld hl, (menuGroupId)
-    ld a, (menuRowIndex)
+    ld hl, (currentMenuGroupId)
     call getMenuNodeIX ; IX=menuNode
     ld a, (ix + menuNodeFieldNumRows) ; A=numRows
     ld hl, statusPenRow*$100 + statusMenuPenCol; $(penRow)(penCol)
@@ -206,7 +205,7 @@ displayStatusArrowLeftDisplay:
 
 ; If rowIndex < (numRows - 1): show Down arrow
 displayStatusArrowDown:
-    ld a, (menuRowIndex)
+    ld a, (currentMenuRowIndex)
     inc a
     cp (ix + menuNodeFieldNumRows) ; if rowIndex+1<numRows: CF=1
     jr nc, displayStatusArrowDownNone
@@ -228,7 +227,7 @@ displayStatusArrowDownDisplay:
 
 ; If rowIndex > 0: show Up arrow
 displayStatusArrowUp:
-    ld a, (menuRowIndex)
+    ld a, (currentMenuRowIndex)
     or a
     jr z, displayStatusArrowUpNone
     ld a, SupArrow

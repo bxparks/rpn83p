@@ -39,7 +39,7 @@ initAlways:
     call initLastX ; Always copy TI-OS 'ANS' to 'X'
     call initDisplay ; Always initialize the display.
     call initTvmSolver ; Always init TVM solver
-    call sanitizeMenu ; Sanitize the current (menuGroupId)
+    call sanitizeMenu ; Sanitize the currentMenuGroupId and currentMenuRowIndex
 
     ; Initialize the App monitor so that we can intercept the Put Away (2ND
     ; OFF) signal.
