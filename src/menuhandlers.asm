@@ -827,6 +827,46 @@ mCommaEESwappedNameSelectorAlt:
     ret
 
 ;-----------------------------------------------------------------------------
+
+mFormatRecordRawHandler:
+    ld a, formatRecordModeRaw
+    ld (formatRecordMode), a
+    set dirtyFlagsMenu, (iy + dirtyFlags)
+    set dirtyFlagsStack, (iy + dirtyFlags)
+    ret
+
+; Description: Select menu name.
+; Output: CF=0 for normal, CF=1 or alternate
+mFormatRecordRawNameSelector:
+    ld a, (formatRecordMode)
+    cp formatRecordModeRaw
+    jr z, mFormatRecordRawNameSelectorAlt
+    or a ; CF=0
+    ret
+mFormatRecordRawNameSelectorAlt:
+    scf
+    ret
+
+mFormatRecordStringHandler:
+    ld a, formatRecordModeString
+    ld (formatRecordMode), a
+    set dirtyFlagsMenu, (iy + dirtyFlags)
+    set dirtyFlagsStack, (iy + dirtyFlags)
+    ret
+
+; Description: Select menu name.
+; Output: CF=0 for normal, CF=1 or alternate
+mFormatRecordStringNameSelector:
+    ld a, (formatRecordMode)
+    cp formatRecordModeString
+    jr z, mFormatRecordStringNameSelectorAlt
+    or a ; CF=0
+    ret
+mFormatRecordStringNameSelectorAlt:
+    scf
+    ret
+
+;-----------------------------------------------------------------------------
 ; Children nodes of HYP menu.
 ;-----------------------------------------------------------------------------
 

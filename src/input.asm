@@ -5,14 +5,6 @@
 ; Functions related to parsing the inputBuf into a floating point number.
 ;------------------------------------------------------------------------------
 
-; Description: Initialize the commaEEMode.
-initCommaEEMode:
-    ld a, commaEEModeNormal ; factory default setting is "Normal"
-    ld (commaEEMode), a
-    ret
-
-;-----------------------------------------------------------------------------
-
 ; Description: Close the inputBuf by parsing its content into OP1, then
 ; transfer OP1 into the X register. If the app is *not* in edit mode, do
 ; nothing (except to reset the 'inputBufFlagsClosedEmpty' flag which should

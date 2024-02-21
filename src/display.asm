@@ -1414,7 +1414,7 @@ formatBinDigitsEnd:
 
 ; Description: Print the Date Record in OP1 using small font.
 ; Input:
-;   - OP1: Date Record
+;   - OP1:RpnDate
 ;   - B: displayFontMask
 ; Destroys: OP3-OP6
 printOP1DateRecord:
@@ -1424,7 +1424,7 @@ printOP1DateRecord:
     ld hl, OP1
     ld de, OP3 ; destPointer
     push de
-    bcall(_FormatDateRecord)
+    bcall(_FormatDate)
     xor a
     ld (de), a ; add NUL terminator
     ; print string stored in OP3
@@ -1444,7 +1444,7 @@ printOP1TimeRecord:
     ld hl, OP1
     ld de, OP3 ; destPointer
     push de
-    bcall(_FormatTimeRecord)
+    bcall(_FormatTime)
     xor a
     ld (de), a ; add NUL terminator
     ; print string stored in OP3
@@ -1464,7 +1464,7 @@ printOP1DateTimeRecord:
     ld hl, OP1
     ld de, OP3 ; destPointer
     push de
-    bcall(_FormatDateTimeRecord)
+    bcall(_FormatDateTime)
     ; print string stored in OP3
     pop hl ; HL=OP3
     call vPutSmallS
@@ -1481,7 +1481,7 @@ printOP1OffsetRecord:
     ld hl, OP1
     ld de, OP3 ; destPointer
     push de
-    bcall(_FormatOffsetRecord)
+    bcall(_FormatOffset)
     ; print string stored in OP3
     pop hl ; HL=OP3
     call vPutSmallS
@@ -1500,7 +1500,7 @@ printOP1OffsetDateTimeRecord:
     ld hl, OP1
     ld de, OP3 ; destPointer
     push de
-    bcall(_FormatOffsetDateTimeRecord)
+    bcall(_FormatOffsetDateTime)
     call expandOp1ToOp2
     ; print string stored in OP3
     pop hl ; HL=OP3

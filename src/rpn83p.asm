@@ -433,6 +433,13 @@ commaEEMode equ complexMode+1 ; u8
 commaEEModeNormal equ 0
 commaEEModeSwapped equ 1
 
+; FormatRecord button mode. In "Raw" mode, Record objects are formatted using
+; {} notation. In "String" mode, Record objects are formatted using their
+; human-readable string format.
+formatRecordMode equ commaEEMode+1 ; u8
+formatRecordModeRaw equ 0
+formatRecordModeString equ 1
+
 ; Epoch type.
 epochTypeCustom equ 0
 epochTypeUnix equ 1
@@ -441,7 +448,7 @@ epochTypeGps equ 3
 epochTypeTios equ 4
 
 ; Store the reference Epoch.
-epochType equ commaEEMode + 1 ; u8
+epochType equ formatRecordMode + 1 ; u8
 
 ; Current value of the Epoch Date as selected by epochType.
 epochDate equ epochType + 1 ; Date{y,m,d}, 4 bytes
@@ -993,6 +1000,12 @@ _FormatComplexPolarDeg equ _FormatComplexPolarDegLabel-branchTableBase
 
 ;-----------------------------------------------------------------------------
 
+; modes2.asm
+_InitModesLabel:
+_InitModes equ _InitModesLabel-branchTableBase
+    .dw InitModes
+    .db 2
+
 ; fps2.asm
 _PushRpnObject1Label:
 _PushRpnObject1 equ _PushRpnObject1Label-branchTableBase
@@ -1020,25 +1033,25 @@ _PopRpnObject5 equ _PopRpnObject5Label-branchTableBase
     .db 2
 
 ; formatdate2.asm
-_FormatDateRecordLabel:
-_FormatDateRecord equ _FormatDateRecordLabel-branchTableBase
-    .dw FormatDateRecord
+_FormatDateLabel:
+_FormatDate equ _FormatDateLabel-branchTableBase
+    .dw FormatDate
     .db 2
-_FormatTimeRecordLabel:
-_FormatTimeRecord equ _FormatTimeRecordLabel-branchTableBase
-    .dw FormatTimeRecord
+_FormatTimeLabel:
+_FormatTime equ _FormatTimeLabel-branchTableBase
+    .dw FormatTime
     .db 2
-_FormatDateTimeRecordLabel:
-_FormatDateTimeRecord equ _FormatDateTimeRecordLabel-branchTableBase
-    .dw FormatDateTimeRecord
+_FormatDateTimeLabel:
+_FormatDateTime equ _FormatDateTimeLabel-branchTableBase
+    .dw FormatDateTime
     .db 2
-_FormatOffsetRecordLabel:
-_FormatOffsetRecord equ _FormatOffsetRecordLabel-branchTableBase
-    .dw FormatOffsetRecord
+_FormatOffsetLabel:
+_FormatOffset equ _FormatOffsetLabel-branchTableBase
+    .dw FormatOffset
     .db 2
-_FormatOffsetDateTimeRecordLabel:
-_FormatOffsetDateTimeRecord equ _FormatOffsetDateTimeRecordLabel-branchTableBase
-    .dw FormatOffsetDateTimeRecord
+_FormatOffsetDateTimeLabel:
+_FormatOffsetDateTime equ _FormatOffsetDateTimeLabel-branchTableBase
+    .dw FormatOffsetDateTime
     .db 2
 
 ; date2.asm
@@ -1566,6 +1579,7 @@ defpage(1)
 
 defpage(2)
 
+#include "modes2.asm"
 #include "selectepoch2.asm"
 #include "epoch2.asm"
 #include "date2.asm"
