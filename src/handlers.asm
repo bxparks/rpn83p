@@ -982,24 +982,23 @@ msgDrawPrompt:
 handleKeyLink:
     call closeInputAndRecallNone
     call rclX ; CP1=X; A=objectType
+    cp a, rpnObjectTypeReal
+    jr z, handleKeyLinkRealsToComplex
     cp a, rpnObjectTypeComplex
-    jr nz, handleKeyLinkRealsToComplex
+    jr z, handleKeyLinkComplexToReals
+handleKeyLinkErrDataType:
+    bcall(_ErrDataType)
+handleKeyLinkComplexToReals:
     ; Convert complex into 2 reals
     call complexToReals ; OP1=Re(X), OP2=Im(X)
-    jp nc, replaceXWithOP1OP2 ; replace X with OP1,OP2
-    bcall(_ErrDomain)
+    jp replaceXWithOP1OP2 ; replace X with OP1,OP2
 handleKeyLinkRealsToComplex:
     bcall(_PushRealO1) ; FPS=[Im]
     ; Verify that Y is also real.
     call rclY ; CP1=Y; A=objectType
-    cp a, rpnObjectTypeComplex
-    jr nz, handleKeyLinkRealsToComplexOk
-    ; Y is complex, so throw an error
-    bcall(_ErrArgument)
-handleKeyLinkRealsToComplexOk:
+    cp a, rpnObjectTypeReal
+    jr nz, handleKeyLinkErrDataType
     ; Convert 2 reals to complex
     bcall(_PopRealO2) ; FPS=[]; OP2=X=Im; OP1=Y=Re
     call realsToComplex ; CP1=complex(OP1,OP2)
-    jp nc, replaceXY ; replace X, Y with CP1
-    ; Handle error
-    bcall(_ErrDomain)
+    jp replaceXY ; replace X, Y with CP1

@@ -45,6 +45,7 @@ Rect3ToComplex3:
 ; depending on the DEG or RAD modes.
 ;
 ; Input: OP1/OP2=(r,radian)
+; Output: OP1/OP2=complex
 PolarRadToComplex:
     bcall(_PushRealO1) ; FPS=[r]
     call op2ToOp1PageOne ; OP1=rad
