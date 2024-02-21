@@ -8,23 +8,32 @@
 ; entry.
 ;-----------------------------------------------------------------------------
 
-; Description: Set the current time zone to the Offset{} given in OP1.
-; Input: OP1:RpnOffset{}
+; Description: Set the current time zone to the Offset{} or Real given in OP1.
+; If a Real is given, it is converted into an Offset{}, then stored.
+; Input: OP1:RpnOffset{} or Real
 ; Output: none
 ; Destroys: BC, HL
 SetTimeZone:
     ld hl, OP1
     ld a, (hl)
+    and $1f
     inc hl
     cp rpnObjectTypeOffset
-    jr nz, setTimeZoneErr
+    jr z, setTimeZoneForOffset
+    cp rpnObjectTypeReal
+    jr z, setTimeZoneForReal
+setTimeZoneErr:
+    bcall(_ErrDataType)
+setTimeZoneForReal:
+    ; convert OP1 to RpnOffset
+    ld hl, OP3
+    call offsetHourToOffset
+setTimeZoneForOffset:
     ld c, (hl)
     inc hl
     ld b, (hl)
     ld (timeZone), bc
     ret
-setTimeZoneErr:
-    bcall(_ErrDataType)
 
 ; Description: Get the current time zone into OP1.
 ; Input: OP1:RpnOffset{}

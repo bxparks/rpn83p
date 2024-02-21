@@ -185,7 +185,7 @@ mEpochGetCustomHandler:
 ;-----------------------------------------------------------------------------
 
 mSetTimeZoneHandler:
-    call closeInputAndRecallRpnOffsetX
+    call closeInputAndRecallRpnOffsetX ; A=rpnObjectType; OP1=X
     bcall(_SetTimeZone)
     ld a, errorCodeTzStored
     ld (handlerCode), a

@@ -96,22 +96,31 @@ getRtcNowAsEpochSecondsLoop:
 
 ;-----------------------------------------------------------------------------
 
-; Description: Set the RTC time zone to the Offset{} given in OP1.
-; Input: OP1:RpnOffset{}
+; Description: Set the RTC time zone to the Offset{} or Real given in OP1.
+; If a Real is given, it is converted into an Offset{}, then stored.
+; Input: OP1:RpnOffset{} or Real
 ; Output: none
 RtcSetTimeZone:
     ld hl, OP1
     ld a, (hl)
+    and $1f
     inc hl
     cp rpnObjectTypeOffset
-    jr nz, rtcSetTimeZoneErr
+    jr z, rtcSetTimeZoneForOffset
+    cp rpnObjectTypeReal
+    jr z, rtcSetTimeZoneForReal
+rtcSetTimeZoneErr:
+    bcall(_ErrDataType)
+rtcSetTimeZoneForReal:
+    ; convert OP1 to RpnOffset
+    ld hl, OP3
+    call offsetHourToOffset
+rtcSetTimeZoneForOffset:
     ld c, (hl)
     inc hl
     ld b, (hl)
     ld (rtcTimeZone), bc
     ret
-rtcSetTimeZoneErr:
-    bcall(_ErrDataType)
 
 ; Description: Get the RTC time zone into OP1.
 ; Input: OP1:RpnOffset{}
