@@ -427,8 +427,8 @@ MenuGroup root mRoot [
             MenuItem NWDZ mRtcGetOffsetDateTime # current OffsetDateTime
           ]
           MenuRow [
-            MenuItem TZC mRtcSetTimeZone
-            MenuItem TZC<Squestion> mRtcGetTimeZone
+            MenuItem CTZ mRtcSetTimeZone
+            MenuItem CTZ<Squestion> mRtcGetTimeZone
             MenuItem * *
             MenuItem * *
             MenuItem SETC mRtcSetClock # set current clock

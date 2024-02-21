@@ -3357,8 +3357,8 @@ mRtcGetTimeName:
 mRtcGetOffsetDateTimeName:
     .db "NWDZ", 0
 mRtcSetTimeZoneName:
-    .db "TZC", 0
+    .db "CTZ", 0
 mRtcGetTimeZoneName:
-    .db 'T', 'Z', 'C', Squestion, 0
+    .db 'C', 'T', 'Z', Squestion, 0
 mRtcSetClockName:
     .db "SETC", 0
