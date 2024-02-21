@@ -28,3 +28,38 @@ appendCStringAtEnd:
     ld (hl), 0
     pop hl
     ret
+
+;-----------------------------------------------------------------------------
+
+; Description: Get the string pointer at index A given an array of pointers at
+; base pointer HL. Out-of-bounds is NOT checked.
+; Input:
+;   - A=index
+;   - HL:(const char* const*)=pointer to an array of string pointers
+; Output:
+;   - HL:(const char*)=string
+; Destroys: DE, HL
+; Preserves: A
+getString:
+    ld e, a
+    ld d, 0
+    ; [[fallthrough]]
+
+; Description: Get the string pointer at index DE given an array of pointers at
+; base pointer HL. Out-of-bounds is NOT checked.
+;
+; Input:
+;   - DE=index
+;   - HL:(const char* const*)=pointer to array of string pointers
+; Output:
+;   - HL:(const char*)=string
+; Destroys: DE, HL
+; Preserves: A, BC
+getDEString:
+    add hl, de ; HL+=A*2
+    add hl, de
+    ld e, (hl)
+    inc hl
+    ld d, (hl)
+    ex de, hl
+    ret
