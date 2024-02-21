@@ -433,6 +433,13 @@ commaEEMode equ complexMode+1 ; u8
 commaEEModeNormal equ 0
 commaEEModeSwapped equ 1
 
+; FormatRecord button mode. In "Raw" mode, Record objects are formatted using
+; {} notation. In "String" mode, Record objects are formatted using their
+; human-readable string format.
+formatRecordMode equ commaEEMode+1 ; u8
+formatRecordModeRaw equ 0
+formatRecordModeString equ 1
+
 ; Epoch type.
 epochTypeCustom equ 0
 epochTypeUnix equ 1
@@ -441,7 +448,7 @@ epochTypeGps equ 3
 epochTypeTios equ 4
 
 ; Store the reference Epoch.
-epochType equ commaEEMode + 1 ; u8
+epochType equ formatRecordMode + 1 ; u8
 
 ; Current value of the Epoch Date as selected by epochType.
 epochDate equ epochType + 1 ; Date{y,m,d}, 4 bytes
@@ -992,6 +999,12 @@ _FormatComplexPolarDeg equ _FormatComplexPolarDegLabel-branchTableBase
     .db 1
 
 ;-----------------------------------------------------------------------------
+
+; modes2.asm
+_InitModesLabel:
+_InitModes equ _InitModesLabel-branchTableBase
+    .dw InitModes
+    .db 2
 
 ; fps2.asm
 _PushRpnObject1Label:
@@ -1566,6 +1579,7 @@ defpage(1)
 
 defpage(2)
 
+#include "modes2.asm"
 #include "selectepoch2.asm"
 #include "epoch2.asm"
 #include "date2.asm"

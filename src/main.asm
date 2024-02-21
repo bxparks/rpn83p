@@ -23,9 +23,9 @@ main:
     bcall(_RtcInit)
     bcall(_InitMenu)
     bcall(_InitBase)
+    bcall(_InitModes)
     call initNumResultMode
     call initComplexMode
-    call initCommaEEMode
     call initStat
     call initCfit
     call initTvm
