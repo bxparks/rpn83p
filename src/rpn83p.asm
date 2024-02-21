@@ -1033,25 +1033,25 @@ _PopRpnObject5 equ _PopRpnObject5Label-branchTableBase
     .db 2
 
 ; formatdate2.asm
-_FormatDateRecordLabel:
-_FormatDateRecord equ _FormatDateRecordLabel-branchTableBase
-    .dw FormatDateRecord
+_FormatDateLabel:
+_FormatDate equ _FormatDateLabel-branchTableBase
+    .dw FormatDate
     .db 2
-_FormatTimeRecordLabel:
-_FormatTimeRecord equ _FormatTimeRecordLabel-branchTableBase
-    .dw FormatTimeRecord
+_FormatTimeLabel:
+_FormatTime equ _FormatTimeLabel-branchTableBase
+    .dw FormatTime
     .db 2
-_FormatDateTimeRecordLabel:
-_FormatDateTimeRecord equ _FormatDateTimeRecordLabel-branchTableBase
-    .dw FormatDateTimeRecord
+_FormatDateTimeLabel:
+_FormatDateTime equ _FormatDateTimeLabel-branchTableBase
+    .dw FormatDateTime
     .db 2
-_FormatOffsetRecordLabel:
-_FormatOffsetRecord equ _FormatOffsetRecordLabel-branchTableBase
-    .dw FormatOffsetRecord
+_FormatOffsetLabel:
+_FormatOffset equ _FormatOffsetLabel-branchTableBase
+    .dw FormatOffset
     .db 2
-_FormatOffsetDateTimeRecordLabel:
-_FormatOffsetDateTimeRecord equ _FormatOffsetDateTimeRecordLabel-branchTableBase
-    .dw FormatOffsetDateTimeRecord
+_FormatOffsetDateTimeLabel:
+_FormatOffsetDateTime equ _FormatOffsetDateTimeLabel-branchTableBase
+    .dw FormatOffsetDateTime
     .db 2
 
 ; date2.asm

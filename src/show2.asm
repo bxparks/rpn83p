@@ -16,7 +16,7 @@
 ; Description: Format the number in OP1 to a NUL terminated string that shows
 ; all significant digits, suitable for a SHOW function.
 ; Input:
-;   - OP1/OP2: real, complex, or record (e.g. Date{}, DateTime{}, Offset{})
+;   - OP1/OP2: real, complex, or record (e.g. RpnDate{}, RpnDateTime{})
 ;   - DE:(char*)=output string buffer
 ; Output:
 ;   - (DE): string buffer updated and NUL terminated
@@ -62,24 +62,24 @@ formShowableComplex:
     jr formShowableEnd
 formShowableDate:
     ld hl, OP1
-    call FormatDateRecord
+    call formatRpnDateRaw
     jr formShowableEnd
 formShowableTime:
     ld hl, OP1
-    call FormatTimeRecord
+    call formatRpnTimeRaw
     jr formShowableEnd
 formShowableDateTime:
     ld hl, OP1
-    call FormatDateTimeRecord
+    call formatRpnDateTimeRaw
     jr formShowableEnd
 formShowableOffset:
     ld hl, OP1
-    call FormatOffsetRecord
+    call formatRpnOffsetRaw
     jr formShowableEnd
 formShowableOffsetDateTime:
     call shrinkOp2ToOp1PageTwo
     ld hl, OP1
-    call FormatOffsetDateTimeRecord
+    call formatRpnOffsetDateTimeRaw
     call expandOp1ToOp2PageTwo
     ; [[fallthrough]]
 formShowableEnd:
