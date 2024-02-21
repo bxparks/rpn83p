@@ -68,6 +68,19 @@ chsOffset:
     dec hl
     ret
 
+; Description: Negate the (hh,mm) Offset components in BC.
+; Input: B, C
+; Output: B=-B, C=-C
+; Destroys: A
+chsHmComponents:
+    ld a, b
+    neg
+    ld b, a
+    ld a, c
+    neg
+    ld c, a
+    ret
+
 ;-----------------------------------------------------------------------------
 
 ; Description: Convert (hh,mm) to i40 seconds.
@@ -90,14 +103,7 @@ offsetToSeconds:
     call isHmComponentsPos ; ZF=1 if zero or positive
     jr z, offsetToSecondsPos
 offsetToSecondsNeg:
-    ; negate (hh,mm)
-    ld a, b
-    neg
-    ld b, a
-    ld a, c
-    neg
-    ld c, a
-    ;
+    call chsHmComponents
     call hmComponentsToSeconds
     call negU40
     pop bc ; stack=[]; BC=restored
