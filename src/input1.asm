@@ -79,7 +79,8 @@ appendInputBufContinue:
 ;   - A: rpnObjectType
 ;   - inputBufFlagsClosedEmpty: set if inputBuf was an empty string when closed
 ;   - inputBuf cleared to empty string
-; Throws: ErrInvalid if Date or DateTime is invalid
+; Throws:
+;   - Err:Syntax if there is a syntax error
 ; Destroys: all, OP1, OP2, OP4
 ParseAndClearInputBuf:
     ld hl, inputBuf
@@ -1127,7 +1128,6 @@ checkRecordDelimiterPFound:
 ; Destroys: all
 ; Throws:
 ;   - Err:Syntax if the syntax is incorrect
-;   - Err:Invalid if validation fails
 parseInputBufRecord:
     call initInputBufForParsing ; HL=inputBuf
     inc hl ; skip len byte
