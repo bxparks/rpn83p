@@ -53,6 +53,8 @@ appendInputBufContinue:
     set dirtyFlagsInput, (iy + dirtyFlags)
     jp AppendString
 
+;------------------------------------------------------------------------------
+
 ; Description: Parse the object in inputBuf into OP1. This routine assumes that
 ; the app was in edit mode when this was called, so assumes that the inputBuf
 ; is valid. If the app was not in edit mode, this routine should NOT have been
@@ -81,7 +83,7 @@ appendInputBufContinue:
 ; Destroys: all, OP1, OP2, OP4
 ParseAndClearInputBuf:
     ld hl, inputBuf
-    call GetFirstChar ; A=first char, or 0 if empty
+    ld a, (hl) ; A=stringSize
     or a
     jr nz, parseAndClearInputBufNonEmpty
 parseAndClearInputBufEmpty:
@@ -90,8 +92,9 @@ parseAndClearInputBufEmpty:
     jp ClearInputBuf
 parseAndClearInputBufNonEmpty:
     res inputBufFlagsClosedEmpty, (iy + inputBufFlags)
-    cp LlBrace ; '{'
-    jr z, parseAndClearInputBufRecord
+    ld a, LlBrace ; A='{'
+    call findChar ; CF=1 if found
+    jr c, parseAndClearInputBufRecord
     call parseInputBufNumber ; OP1/OP2=real or complex
     jp ClearInputBuf
 parseAndClearInputBufRecord:
