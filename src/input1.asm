@@ -368,6 +368,7 @@ checkInputBufRecordNone:
 ; Input: inputBuf filled with keyboard characters
 ; Output: OP1/OP2: real or complex number
 ; Destroys: all registers, OP1-OP5 (due to SinCosRad())
+; Throws: Err:Syntax if there is a parsing error
 parseInputBufNumber:
     call initInputBufForParsing ; HL=inputBuf
     inc hl ; skip length byte
@@ -412,12 +413,13 @@ parseInputBufNonEmptyImaginary:
     jp RectToComplex
 
 ; Description: Parse the floating point number at HL.
-; Input: HL: pointer to a floating point number C-string
+; Input:
+;   - HL:(const char*)=floatingPointString
 ; Output:
 ;   - OP1: floating point number
+;   - HL=points to character just after the number
 ;   - CF: 0 if empty string, 1 non-empty
-; Destroys: A, BC, DE
-; Preserves: HL
+; Destroys: A, BC, DE, HL
 parseFloat:
     call clearParseBuf
     call clearFloatBuf ; OP1=0.0
@@ -434,7 +436,7 @@ parseFloat:
     push hl
     ld hl, floatBuf
     call move9ToOp1PageOne
-    pop hl
+    pop hl ; HL=points to char after floatPointString
     scf ; CF=1
     ret
 
@@ -564,7 +566,7 @@ clearFloatBuf:
 ;   - "-001.2" produces "12"
 ;   - "23E-1" produces "23"
 ; Input:
-;   - HL: pointer to C-string
+;   - HL:(char*)=inputBuf
 ;   - parseBuf: Pascal string, initially set to empty string
 ; Output:
 ;   - parseBuf: filled with mantissa digits or an empty string if all 0
@@ -798,34 +800,35 @@ extractMantissaEnd:
 
 ;-----------------------------------------------------------------------------
 
-; Description: Extract the EE exponent digits (if any) to floatBuf. If the
-; mantissa is effectively 0 or an empty string, do nothing.
-; Input: HL: pointer to floating number C-string
-; Output: floatBuf updated
+; Description: Extract the EE exponent digits in HL (inputBuf) to floatBuf. If
+; the mantissa (normalized in parseBuf) is effectively 0 or an empty string, do
+; nothing.
+; Input:
+;   - HL:(char*)=floatingPointString
+;   - (parseBuf):(char*)=mantissaDigits
+; Output:
+;   - (floatBuf) updated
+;   - HL=points to char after floatingPointString
 ; Destroys: A, BC, DE
-; Preserves: HL
 extractExponent:
     ; If the mantissa is effectively 0, then no need to parse the exponent.
     ld a, (parseBuf)
     or a
-    ret z
-    ;
-    push hl
-    call findExponent ; HL=pointerEEDigit; CF=1 if found
-    jr nc, extractExponentEnd
-    call parseExponent ; A=exponentValue of HL string
-    call addExponent ; add EE exponent to floatBuf exponent
-extractExponentEnd:
-    pop hl
+    ret z ; return if nothing left in parseBuf
+    call findExponent ; if found: HL=eeDigit; CF=1
+    ret nc
+    call parseExponent ; A=exponentValue; HL=points to char after number
+    call addExponent ; add A=exponentValue to floatBuf exponent; preserves HL
     ret
 
 ; Description: Find the next 'E' character and return the number of exponent
 ; digits.
 ; Input:
-;   - HL: pointer to scientific floating point C-string
+;   - HL:(const char*)=floatinPointString
 ; Output:
-;   - CF: 0 if not found, 1 if found
-;   - HL: pointer to the first character after the 'E' symbol
+;   - CF=0 if not found, 1 if found
+;   - HL=pointer to the first character after the 'E' symbol if found,
+;   or the first character after the floating point number if 'E' not found
 ; Destroys: BC, DE, HL
 findExponent:
     ld a, (hl)
@@ -834,18 +837,29 @@ findExponent:
     jr z, findExponentFound
     call isValidFloatDigit ; if isValidFloatDigit(A): CF=1
     jr c, findExponent
+    dec hl ; pushback non-floating char
     ret ; CF=0
 findExponentFound:
     scf ; CF=1
     ret
 
-; Description: Parse the digits after the 'E' symbol in the inputBuf.
-; Input: HL: pointer to EE digits
-; Output: A: the exponent, in two's complement form
+; Description: Parse 0 or more digits after the 'E' symbol in the inputBuf,
+; allowing for an initial minus sign. If more than 2 digits are entered, the
+; characters are parsed, but the carry flag (CF) is set to indicate an error.
+; Input:
+;   - HL:(const char*)=eeDigits
+; Output:
+;   - A:i8=exponent
+;   - HL=points to character after eeDigits
 ; Destroys: A, BC, DE, HL
+parseExponentFlagIsNeg equ 0 ; set if eeDigits begins with '-' sign
+parseExponentFlagSignConsumed equ 1 ; set if at least 1 char parsed
 parseExponent:
-    ld b, 0 ; B=exponentValue
-    ld d, rpnfalse ; D=isEENeg=false
+    xor a
+    ld b, a ; B=exponentValue=0
+    ld c, a ; C=numDigits=0
+    ld d, a ; D=parseExponentFlag=0
+parseExponentLoop:
     ; Check for valid char
     ld a, (hl); A==NUL if end of string
     inc hl
@@ -853,46 +867,46 @@ parseExponent:
     jr nc, parseExponentEnd
     ; Check for '-'
     cp signChar
-    jr z, parseExponentSetSign
-    jr parseExponentDigits
+    jr nz, parseExponentDigits
 parseExponentSetSign:
-    ld d, rpntrue ; D=isEENeg=true
-    ld a, (hl)
-    inc hl
+    bit parseExponentFlagSignConsumed, d
+    jr nz, parseExponentErr ; sign already consumed, so a second '-' is illegal
+    set parseExponentFlagSignConsumed, d
+    set parseExponentFlagIsNeg, d
+    jr parseExponentLoop
 parseExponentDigits:
-    ; process the first digit if any, A==NUL if end of string
-    call isValidUnsignedDigit ; if valid: CF=1
-    jr nc, parseExponentEnd
-    sub '0'
-    add a, b
-    ld b, a
-    ; process the second digit if any
-    ld a, (hl) ; second of 2 digits, A==NUL if end of string
-    inc hl
-    call isValidUnsignedDigit; if valid: CF=1
-    jr nc, parseExponentEnd
-    ld c, a ; C=save A
+    bit parseExponentFlagSignConsumed, d
+    ; add incoming eeDigit to exponentValue
+    ld e, a ; E=save A
     ld a, b
     call multABy10
-    ld b, a
-    ld a, c ; A=restored C
+    ld b, a ; B=10*B
+    ld a, e ; A=restored E
     sub '0'
     add a, b
     ld b, a
-    ; [[fallthrough]]
+    inc c ; C=numDigits++
+    jr parseExponentLoop
 parseExponentEnd:
-    ld a, d ; A=isEENeg
-    or a ; if isEENeg: ZF=0
+    dec hl ; pushback char after exponent
+    ld a, c ; A=numDigits
+    cp inputBufEEMaxLen+1
+    jr nc, parseExponentErr ; if numDigits>inputBufEEMaxLen: error
+    bit parseExponentFlagIsNeg, d ; ZF=0 if negative
     ld a, b ; A=exponentValue
     ret z
-    neg
+    neg ; A=-exponentValue
     ret
+parseExponentErr:
+    bcall(_ErrSyntax)
 
 ; Description: Add the exponent in A to the floatBuf exponent.
-; Input: A: EE exponent parsed from inputBuf
+; Input: A:i8=exponentValue
 ; Output: (floatBuf exponent) += A
-; Destroys: A, B, HL
+; Destroys: A, B
+; Preserves: DE, HL
 addExponent:
+    push hl
     ld b, a
     ld hl, floatBufExp
     ld a, (hl)
@@ -900,6 +914,7 @@ addExponent:
     add a, b ; 2's complement
     add a, $80
     ld (hl), a
+    pop hl
     ret
 
 ;-----------------------------------------------------------------------------
