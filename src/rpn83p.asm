@@ -452,7 +452,9 @@ appBufferStart equ appStateEnd
 ; When the app is in BASE mode, the inputBuf is parsed directly, and this
 ; buffer is not used. In normal floating point mode, each mantissa digit is
 ; converted into this data structure, one byte per digit, before being
-; converted into the packed floating point number format used by TI-OS.
+; converted into the packed floating point number format used by TI-OS. This
+; essentially has the same role as the "Abstract Syntax Tree" of more
+; complicated parsers.
 ;
 ; The decimal point will not appear explicitly here because it is implicitly
 ; present just before the first digit. The inputBuf can hold more than 14
@@ -467,13 +469,21 @@ appBufferStart equ appStateEnd
 ;   }
 parseBuf equ appBufferStart ; struct ParseBuf
 parseBufLen equ parseBuf ; len byte of the pascal string
-parseBufMan equ parseBufLen + 1
+parseBufMan equ parseBufLen + 1 ; actual string
 parseBufCapacity equ 14
 parseBufSizeOf equ parseBufCapacity + 1
 
+; Internal flags updated during parsing of number string.
+parseBufFlags equ parseBuf + parseBufSizeOf ; u8
+parseBufFlagMantissaNeg equ 0 ; set if mantissa has a negative sign
+
+; Floating point number exponent value extracted from the mantissa and the
+; exponent digits.
+parseBufExponent equ parseBufFlags + 1 ; i8
+
 ; Various OS flags and parameters are copied to these variables upon start of
 ; the app, then restored when the app quits.
-savedTrigFlags equ parseBuf + parseBufSizeOf ; u8
+savedTrigFlags equ parseBufExponent + 1 ; u8
 savedFmtFlags equ savedTrigFlags + 1 ; u8
 savedFmtDigits equ savedFmtFlags + 1 ; u8
 
