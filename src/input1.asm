@@ -376,9 +376,15 @@ parseInputBufNumber:
     jr nz, parseBaseInteger
     ; parse a real or real component
     call parseFloat ; OP1=float; CF=0 if empty string
-    rl b ; B=first.isNonEmpty
-    call findComplexDelimiter ; if complex: CF=1, A=delimiter, HL=pointer
-    ret nc
+    rl b ; B=first.isNonEmpty=CF
+    call parseComplexDelimiter ; if complex delimiter: CF=1, A=delimiter
+    jr c, parseInputBufNumberComplex
+    or a ; ZF=1 if A==0
+    ret z
+parseInputBufNumberErr:
+    ; If any other characters remaining (e.g. 'A' to 'Z'), then syntax error
+    bcall(_ErrSyntax)
+parseInputBufNumberComplex:
     ; parse the imaginary component
     ld c, a ; C=delimiter
     push bc ; stack=[delimiter,first.isNonEmpty]
@@ -567,23 +573,24 @@ setComplexDelimiterToTarget:
     scf
     ret
 
-; Description: Find the location of the complex number delimiter (LimagI,
-; Langle, or Ldegree).
-; Input: HL: pointer to floating point number C-string
+; Description: Parse the optional complex number delimiter (LimagI, Langle, or
+; Ldegree).
+; Input:
+;   - HL:(char*)=numberString
 ; Output:
-;   - CF: 1 if complex number delimiter found, 0 otherwise
+;   - CF: 1 if the next char is complex number delimiter, 0 otherwise
 ;   - A: delimiter char (LimagI, Langle, or Ldegree)
 ;   - HL: pointer to character after the delimiter
 ; Destroys: A, HL
-findComplexDelimiter:
+parseComplexDelimiter:
     ld a, (hl)
     inc hl
     call isComplexDelimiterPageOne ; if delimiter: ZF=1
-    jr z, findComplexDelimiterFound
-    call isValidScientificDigit ; if valid: CF=1
-    jr c, findComplexDelimiter
-    ret ; CF=0
-findComplexDelimiterFound:
+    jr z, parseComplexDelimiterFound
+    dec hl ; push back the non-matching char
+    or a ; CF=0
+    ret
+parseComplexDelimiterFound:
     scf ; CF=1
     ret
 
