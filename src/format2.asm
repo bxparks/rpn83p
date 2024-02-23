@@ -58,8 +58,11 @@ reverseStringPageTwoLoop:
 
 ; Description: Format integer A to a string of 1 to 3 digits, with the leading
 ; '0' suppressed, and append at the string buffer pointed by HL.
-; Input: HL:(char*)
-; Output: HL=points to char after string, no NUL termination
+; Input:
+;   - A:u8=input
+;   - HL:(char*)
+; Output:
+;   - HL=points to char after string, no NUL termination
 ; Destroys: A, B, C, HL
 ; Preserves: DE
 suppressLeadingZero equ 0 ; bit 0 of D

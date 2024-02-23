@@ -176,22 +176,41 @@ DebugOP1:
 ; Input: A
 ; Output: A printed on debug line
 ; Destroys: none
+; Note: Cannot use bcall(_dispHL) because it destroys OP1.
 DebugUnsignedA:
+    ; Save all registers
     push af
     push bc
     push de
     push hl
+    push ix
+    ; Save CurRow/CurCol
     ld hl, (CurRow)
     push hl
-
     ld hl, debugCurCol*$100+debugCurRow ; $(curCol)(curRow)
     ld (CurRow), hl
-    ld l, a
-    ld h, 0
-    bcall(_DispHL)
+    ; Create 4-byte buffer on the stack
+    push hl
+    push hl
+    ld hl, 0
+    add hl, sp ; HL:(char*)=buffer
 
+    ; Convert A into string
+    push hl
+    bcall(_FormatAToString)
+    ld (hl), 0
+    pop hl
+    call putSPageOne
+    bcall(_EraseEOL)
+
+    ; Clean up stack buffer
+    pop hl
+    pop hl
+    ; Restore CurRow/CurCol
     pop hl
     ld (CurRow), hl
+    ; Restore all registers.
+    pop ix
     pop hl
     pop de
     pop bc
@@ -204,36 +223,51 @@ DebugUnsignedA:
 ; Input: A
 ; Output: A printed on debug line
 ; Destroys: none
+; Note: Cannot use bcall(_dispHL) because it destroys OP1.
 DebugSignedA:
+    ; Save all registers
     push af
     push bc
     push de
     push hl
+    push ix
+    ; Save CurRow/CurCol
     ld hl, (CurRow)
     push hl
-
     ld hl, debugCurCol*$100+debugCurRow ; $(curCol)(curRow)
     ld (CurRow), hl
+    ; Create 4-byte buffer on the stack
+    push hl
+    push hl
+    ld hl, 0
+    add hl, sp ; HL:(char*)=buffer
+
+    ; Check for negative A
     ld b, a ; save
     bit 7, a
-    jr z, debugSignedAPositive
-debugSignedANegative:
+    jr z, debugSignedAPrint
+    ; negative
     ld a, signChar
     bcall(_PutC)
     ld a, b
     neg
-    jr debugSignedAPrint
-debugSignedAPositive:
-    ld a, ' '
-    bcall(_PutC)
-    ld a, b
 debugSignedAPrint:
-    ld l, a
-    ld h, 0
-    bcall(_DispHL)
+    ; Convert A into string
+    push hl
+    bcall(_FormatAToString)
+    ld (hl), 0
+    pop hl
+    call putSPageOne
+    bcall(_EraseEOL)
 
+    ; Clean up stack buffer
+    pop hl
+    pop hl
+    ; Restore CurRow/CurCol
     pop hl
     ld (CurRow), hl
+    ; Restore all registers.
+    pop ix
     pop hl
     pop de
     pop bc
