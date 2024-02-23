@@ -2,8 +2,9 @@
 ; MIT License
 ; Copyright (c) 2023 Brian T. Park
 ;
-; Process the SHOW mode. Currently, almost all keys go back to the normal mode.
-; The exceptions are: QUIT and OFF. This file needs to be in Flash Page 0.
+; The interactive key/button scanner for the SHOW mode. Currently, almost all
+; keys go back to the normal mode. The exceptions are: QUIT and OFF. This file
+; needs to be in Flash Page 0.
 ;------------------------------------------------------------------------------
 
 ; Description: Read loop for the SHOW mode.

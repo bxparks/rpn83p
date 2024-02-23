@@ -316,7 +316,7 @@ menuNameBuf equ menuName + 1
 menuNameBufMax equ 5
 menuNameSizeOf equ 6
 
-; Data structure revelant to the command argument parser which handles
+; Data structure revelant to the command argument scanner which handles
 ; something like "STO _ _". The C equivalent is:
 ;
 ;   struct ArgParser {
@@ -1514,11 +1514,11 @@ _DebugU32DEAsHex equ _DebugU32DEAsHexLabel-branchTableBase
 ;-----------------------------------------------------------------------------
 
 #include "main.asm"
-#include "mainparser.asm"
+#include "mainscanner.asm"
 #include "handlers.asm"
-#include "argparser.asm"
+#include "argscanner.asm"
 #include "arghandlers.asm"
-#include "showparser.asm"
+#include "showscanner.asm"
 #include "vars.asm"
 #include "input.asm"
 #include "display.asm"

@@ -2,7 +2,7 @@
 ; MIT License
 ; Copyright (c) 2023 Brian T. Park
 ;
-; The main interactive keyboard reader and parser.
+; The main interactive key/button scanner.
 ;------------------------------------------------------------------------------
 
 ; The main interactive keyboard read loop. Read button and dispatch to the

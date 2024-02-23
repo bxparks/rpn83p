@@ -2,8 +2,8 @@
 ; MIT License
 ; Copyright (c) 2023 Brian T. Park
 ;
-; Process and parse the command arguments that follows certain commands: STO,
-; RCL, FIX, SCI, ENG.
+; Interactive key/button scanner for command arguments that follows certain
+; commands: STO, RCL, FIX, SCI, ENG.
 ;------------------------------------------------------------------------------
 
 ; Description: Configure the command arg parser and display before each
