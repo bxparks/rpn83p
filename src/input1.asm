@@ -376,47 +376,60 @@ parseInputBufNumber:
     jr nz, parseBaseInteger
     ; parse a real or real component
     call parseFloat ; OP1=float; CF=0 if empty string
-    rl b ; B=first.isNonEmpty=CF
+    rl b ; B[0]=first.isNonEmpty=CF
     call parseComplexDelimiter ; if complex delimiter: CF=1, A=delimiter
-    jr c, parseInputBufNumberComplex
-    or a ; ZF=1 if A==0
-    ret z
-parseInputBufNumberErr:
-    ; If any other characters remaining (e.g. 'A' to 'Z'), then syntax error
-    bcall(_ErrSyntax)
+    ; Verify no trailing characters
+    jr nc, parseInputBufTermination ; destroys A
 parseInputBufNumberComplex:
     ; parse the imaginary component
     ld c, a ; C=delimiter
-    push bc ; stack=[delimiter,first.isNonEmpty]
+    push bc ; stack=[delimiter/first.isNonEmpty]
     push hl
     bcall(_PushRealO1) ; FPS=[first]
     pop hl
     call parseFloat ; OP1=second; CF=0 if empty string
-    ; Check if first and second were empty strings.
-    jr c, parseInputBufNonEmptyImaginary
-    pop bc ; stack=[]; B=first.isNonEmpty; C=delimiter
-    push bc
-    rr b ; CF=first.isNonEmpty
-    jr c, parseInputBufNonEmptyImaginary
+    pop bc ; stack=[]; B[0]=second.isNonEmpty; C=delimiter
+    rl b ; B[1]=first.isNonEmpty; B[0]=second.isNonEmpty=CF
+    ; Check trailing characters
+    call parseInputBufTermination ; destroys A
+    ; Now we are at the extraction stage.
+parseInputBufNumberExtraction:
+    ; Check for solitary imaginary 'i'.
+    ld a, b
+    and $3 ; B[1]=first.isNonEmpty; B[0]=second.isNonEmpty
+    ld a, c ; A=delimiter
+    jr nz, parseInputBufNonEmptyImaginary
     ; We are here if both the real and imaginary components were empty strings.
     ; Check if the complex delimiter was a 'i'. If so, set the imaginary
     ; component to 1, so that a solitary 'i' is interpreted as just '0i1'
     ; instead of '0i0'.
-    ld a, c ; A=delimiter
     cp LimagI
     jr nz, parseInputBufNonEmptyImaginary
+    push af ; stack=[delimiter]
     bcall(_OP1Set1) ; OP1=1.0
+    pop af ; stack=[]; A=dlimiter
 parseInputBufNonEmptyImaginary:
+    push af ;stack=[delimiter]
     call op1ToOp2PageOne ; OP2=second
     bcall(_PopRealO1) ; FPS=[]; OP1=first; OP2=second
-    pop bc ; stack=[]; C=delimiter
+    pop af ; stack=[]; A=delimiter
     ; convert 2 real numbers in OP1/OP2 into a complex number
-    ld a, c ; A=delimiter
     cp Langle
     jp z, PolarRadToComplex
     cp Ldegree
     jp z, PolarDegToComplex
     jp RectToComplex
+
+; Description: Verify that we have reached the end of inputBuf indicated by a
+; NUL character.
+; Input: HL:(char*)=stringPointer
+; Destroys: A
+; Throws: Err:Syntax if there are trailing characters
+parseInputBufTermination:
+    ld a, (hl)
+    or a
+    ret z
+    bcall(_ErrSyntax)
 
 ;------------------------------------------------------------------------------
 
