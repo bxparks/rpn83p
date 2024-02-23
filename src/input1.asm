@@ -412,33 +412,7 @@ parseInputBufNonEmptyImaginary:
     jp z, PolarDegToComplex
     jp RectToComplex
 
-; Description: Parse the floating point number at HL.
-; Input:
-;   - HL:(const char*)=floatingPointString
-; Output:
-;   - OP1: floating point number
-;   - HL=points to character just after the number
-;   - CF: 0 if empty string, 1 non-empty
-; Destroys: A, BC, DE, HL
-parseFloat:
-    call clearParseBuf
-    call clearFloatBuf ; OP1=0.0
-    ; Check for an emtpy string.
-    ld a, (hl)
-    call isValidScientificDigit ; CF=1 if valid
-    ret nc
-    call findDecimalPoint ; A=i8(decimalPointPos)
-    call extractMantissaExponent ; extract mantissa exponent to floatBuf
-    call extractMantissaSign ; extract mantissa sign to floatBuf
-    call parseMantissa ; parse mantissa digits from inputBuf into parseBuf
-    call extractMantissa ; convert mantissa digits in parseBuf to floatBuf
-    call extractExponent ; extract exponent from inputBuf to floatBuf
-    push hl
-    ld hl, floatBuf
-    call move9ToOp1PageOne
-    pop hl ; HL=points to char after floatPointString
-    scf ; CF=1
-    ret
+;------------------------------------------------------------------------------
 
 ; Description: Parse the integer (base 2, 8, 10, 16) at HL.
 ; Input: HL: pointer to C string of an integer
@@ -556,6 +530,36 @@ clearFloatBuf:
     ret
 
 ;------------------------------------------------------------------------------
+; Parsing a floating point numbers.
+;-----------------------------------------------------------------------------
+
+; Description: Parse the floating point number at HL.
+; Input:
+;   - HL:(const char*)=floatingPointString
+; Output:
+;   - OP1: floating point number
+;   - HL=points to character just after the number
+;   - CF: 0 if empty string, 1 non-empty
+; Destroys: A, BC, DE, HL
+parseFloat:
+    call clearParseBuf
+    call clearFloatBuf ; OP1=0.0
+    ; Check for an emtpy string.
+    ld a, (hl)
+    call isValidScientificDigit ; CF=1 if valid
+    ret nc
+    call findDecimalPoint ; A=i8(decimalPointPos)
+    call extractMantissaExponent ; extract mantissa exponent to floatBuf
+    call extractMantissaSign ; extract mantissa sign to floatBuf
+    call parseMantissa ; parse mantissa digits from inputBuf into parseBuf
+    call extractMantissa ; convert mantissa digits in parseBuf to floatBuf
+    call extractExponent ; extract exponent from inputBuf to floatBuf
+    push hl
+    ld hl, floatBuf
+    call move9ToOp1PageOne
+    pop hl ; HL=points to char after floatPointString
+    scf ; CF=1
+    ret
 
 ; Description: Parse the mantissa digits from inputBuf into parseBuf, ignoring
 ; negative sign, leading zeros, the decimal point, and the EE symbol. For
@@ -968,6 +972,8 @@ isValidDigitTrue:
     ret
 
 ;-----------------------------------------------------------------------------
+; Parsing complex numbers.
+;-----------------------------------------------------------------------------
 
 ; Description: Set the complex delimiter to the character encoded by A. There
 ; are 3 complex number delimiters: LimagI (RECT), Langle (PRAD), Ldegree
@@ -1134,6 +1140,8 @@ checkRecordDelimiterPFound:
     scf ; CF=1
     ret
 
+;-----------------------------------------------------------------------------
+; Parsing tagged Records (e.g. "D{2000,1,1}").
 ;-----------------------------------------------------------------------------
 
 ; Description: Parse the inputBuf containing a Record into OP1.
