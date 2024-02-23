@@ -283,32 +283,6 @@ argBufLen equ inputBufLen
 argBufCapacity equ inputBufCapacity
 argBufSizeMax equ 2 ; max number of digits accepted on input
 
-; Temporary buffer for parsing keyboard input into a floating point number.
-; When the app is in BASE mode, the inputBuf is parsed directly, and this
-; buffer is not used. In normal floating point mode, each mantissa digit is
-; converted into this data structure, one byte per digit, before being
-; converted into the packed floating point number format used by TI-OS.
-;
-; The decimal point will not appear explicitly here because it is implicitly
-; present just before the first digit. The inputBuf can hold more than 14
-; digits, but those extra digits will be ignored when parsed into this data
-; structure.
-;
-; TODO: I *think* this can be moved into the appBufferStart area, because I
-; don't think it needs to be saved upon app exit.
-;
-; This is a Pascal string whose equivalent C struct is:
-;
-;   struct ParseBuf {
-;       uint8_t len; // number of digits in mantissa, 0 for 0.0
-;       char man[14];  // mantissa, implicit starting decimal point
-;   }
-parseBuf equ inputBuf + inputBufSizeOf ; struct ParseBuf
-parseBufLen equ parseBuf ; len byte of the pascal string
-parseBufMan equ parseBufLen + 1
-parseBufCapacity equ 14
-parseBufSizeOf equ parseBufCapacity + 1
-
 ; Menu variables. Two variables determine the current state of the menu, the
 ; groupId and the rowIndex in the group. The C equivalent is:
 ;
@@ -316,7 +290,7 @@ parseBufSizeOf equ parseBufCapacity + 1
 ;     uint16_t groupId; // id of the current menu group
 ;     uint8_t rowIndex; // menu row, groups of 5
 ;   }
-currentMenuGroupId equ parseBuf + parseBufSizeOf ; u16
+currentMenuGroupId equ inputBuf + inputBufSizeOf ; u16
 currentMenuRowIndex equ currentMenuGroupId + 2 ; u8
 
 ; These variables remember the previous menuGroup/row pair when a shortcut was
@@ -474,9 +448,42 @@ appStateSize equ (appStateEnd - appStateBegin)
 
 appBufferStart equ appStateEnd
 
+; Temporary buffer for parsing keyboard input into a floating point number.
+; When the app is in BASE mode, the inputBuf is parsed directly, and this
+; buffer is not used. In normal floating point mode, each mantissa digit is
+; converted into this data structure, one byte per digit, before being
+; converted into the packed floating point number format used by TI-OS. This
+; essentially has the same role as the "Abstract Syntax Tree" of more
+; complicated parsers.
+;
+; The decimal point will not appear explicitly here because it is implicitly
+; present just before the first digit. The inputBuf can hold more than 14
+; digits, but those extra digits will be ignored when parsed into this data
+; structure.
+;
+; This is a Pascal string whose equivalent C struct is:
+;
+;   struct ParseBuf {
+;       uint8_t len; // number of digits in mantissa, 0 for 0.0
+;       char man[14];  // mantissa, implicit starting decimal point
+;   }
+parseBuf equ appBufferStart ; struct ParseBuf
+parseBufLen equ parseBuf ; len byte of the pascal string
+parseBufMan equ parseBufLen + 1 ; actual string
+parseBufCapacity equ 14
+parseBufSizeOf equ parseBufCapacity + 1
+
+; Internal flags updated during parsing of number string.
+parseBufFlags equ parseBuf + parseBufSizeOf ; u8
+parseBufFlagMantissaNeg equ 0 ; set if mantissa has a negative sign
+
+; Floating point number exponent value (signed integer) extracted from the
+; mantissa and the exponent digits. This value does not include the $80 offset.
+parseBufExponent equ parseBufFlags + 1 ; i8
+
 ; Various OS flags and parameters are copied to these variables upon start of
 ; the app, then restored when the app quits.
-savedTrigFlags equ appBufferStart ; u8
+savedTrigFlags equ parseBufExponent + 1 ; u8
 savedFmtFlags equ savedTrigFlags + 1 ; u8
 savedFmtDigits equ savedFmtFlags + 1 ; u8
 
@@ -1553,6 +1560,7 @@ defpage(1)
 #include "errorcode1.asm"
 #include "print1.asm"
 #include "input1.asm"
+#include "inputfloat1.asm"
 #include "inputdate1.asm"
 #include "arg1.asm"
 #include "base1.asm"
