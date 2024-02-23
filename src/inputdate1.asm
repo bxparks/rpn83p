@@ -12,10 +12,10 @@
 
 ; Description: Parse a string of the form "{yyyy,mm,dd}" into a Date{} record.
 ; Input:
-;   - HL: charPointer, C-string pointer
-;   - DE: pointer to buffer that can hold a Date{} or DateTime{}
+;   - HL:(char*)=charPointer
+;   - DE:(Date*) or (Datetime*)=dateOrDateTimePointer
 ; Output:
-;   - (DE): Date{}
+;   - (*DE):Date filled
 ;   - DE=DE+4
 ;   - HL=points to character after last '}'
 ; Throws: Err:Syntax if there is a syntax error
@@ -30,13 +30,33 @@ parseDate:
     call parseRightBrace ; '}'
     ret
 
+; Description: Parse a string of the form "{hh,mm,dd}" into a Time{} record.
+; Input:
+;   - HL:(char*)=charPointer
+;   - DE:(Time*)=timePointer
+; Output:
+;   - (*DE):Time filled
+;   - DE=DE+3
+;   - HL=points to character after last '}'
+; Throws: Err:Syntax if there is a syntax error
+; Destroys: all
+parseTime:
+    call parseLeftBrace ; '{'
+    call parseU8D2 ; hour
+    call parseComma
+    call parseU8D2 ; minute
+    call parseComma
+    call parseU8D2 ; second
+    call parseRightBrace ; '}'
+    ret
+
 ; Description: Parse a string of the form "{yyyy,MM,dd,hh,mm,dd}" into a
 ; DateTime{} record.
 ; Input:
-;   - HL: charPointer, C-string pointer
-;   - DE: pointer to buffer that can hold a DateTime{}
+;   - HL:(char*)=charPointer
+;   - DE:(DateTime*)=dateTimePointer
 ; Output:
-;   - (DE): DateTime{}
+;   - (*DE):DateTime filled
 ;   - DE=DE+7
 ;   - HL=points to character after last '}'
 ; Throws: Err:Syntax if there is a syntax error
@@ -60,9 +80,10 @@ parseDateTime:
 ; Description: Parse a data record of the form "{hh,dd}" representing an offset
 ; from UTC into an Offset{} record.
 ; Input:
-;   - HL:(*char)=charPointer to C-string
-;   - DE:(*Offset)=pointer to buffer that holds an Offset{}
+;   - HL:(*char)=charPointer
+;   - DE:(*Offset)=offsetPointer
 ; Output:
+;   - (*DE):Offset filled
 ;   - DE=DE+2
 ;   - HL=points to character after '}'
 ; Throws: Err:Syntax if there is a syntax err
@@ -78,10 +99,10 @@ parseOffset:
 ; Description: Parse a string of the form "{yyyy,MM,dd,hh,mm,dd,ohh,odd}" into
 ; an OffsetDateTime{} record.
 ; Input:
-;   - HL: charPointer, C-string pointer
-;   - DE: pointer to buffer that can hold an OffsetDateTime{}
+;   - HL:(char*)=charPointer
+;   - DE:(OffsetDateTime*)=offsetDateTimePointer
 ; Output:
-;   - (DE): OffsetDateTime{}
+;   - (*DE):OffsetDateTime filled
 ;   - DE=DE+9
 ;   - HL=points to character after last '}'
 ; Throws: Err:Syntax if there is a syntax error
@@ -104,6 +125,84 @@ parseOffsetDateTime:
     call parseComma
     call parseI8D2 ; offset minute
     call parseRightBrace ; '}'
+    ret
+
+;------------------------------------------------------------------------------
+
+recordTagTypeUnknown equ 0
+recordTagTypeDate equ 1
+recordTagTypeTime equ 2
+recordTagTypeDateTime equ 3
+recordTagTypeOffset equ 4
+recordTagTypeOffsetDateTime equ 5
+
+; Description: Parse the record tag letters before the '{' to determine the
+; RpnRecord tag. The valid tags are: D (Date), T (Time), DT (DateTime), TZ
+; (Offset), DZ (OffsetDateTime).
+; Input:
+;   - HL:(char*)=charPointer
+; Output:
+;   - A:u8=tagType
+;   - HL=points to '{'
+; Throws:
+;   - Err:Syntax if invalid
+parseRecordTag:
+    ld a, (hl)
+    inc hl
+    ; check for T, TZ
+    cp 'T'
+    jr z, parseRecordTagTimeOrOffset
+    ; check for D, DT, DZ
+    cp 'D'
+    jr z, parseRecordTagDateTimeLike
+    jr parseDateErr
+parseRecordTagDateTimeLike:
+    ld a, (hl)
+    inc hl
+    cp 'T'
+    jr z, parseRecordTagDateTime
+    cp 'Z'
+    jr z, parseRecordTagOffsetDateTime
+    cp '{'
+    jr nz, parseDateErr
+    ; Just a simple 'D'
+    dec hl
+    ld a, recordTagTypeDate
+    ret
+parseRecordTagDateTime:
+    ld a, (hl)
+    inc hl
+    cp '{'
+    jr nz, parseDateErr
+    dec hl
+    ld a, recordTagTypeDateTime
+    ret
+parseRecordTagOffsetDateTime:
+    ld a, (hl)
+    inc hl
+    cp '{'
+    jr nz, parseDateErr
+    dec hl
+    ld a, recordTagTypeOffsetDateTime
+    ret
+parseRecordTagTimeOrOffset:
+    ld a, (hl)
+    inc hl
+    cp 'Z'
+    jr z, parseRecordTagOffset
+    cp '{'
+    jr nz, parseDateErr
+    ; Just a simple 'T'
+    dec hl
+    ld a, recordTagTypeTime
+    ret
+parseRecordTagOffset:
+    ld a, (hl)
+    inc hl
+    cp '{'
+    jr nz, parseDateErr
+    dec hl
+    ld a, recordTagTypeOffset
     ret
 
 ;------------------------------------------------------------------------------
@@ -134,7 +233,7 @@ countCommasEnd:
 
 ;------------------------------------------------------------------------------
 
-parseDateErr:
+parseDateErr: ; TODO: Rename this 'parseSyntaxErr'
     bcall(_ErrSyntax)
 
 ; Description: Parse an expected '{' character,

@@ -153,19 +153,24 @@ deleteAtPosShiftLeft:
 
 ;-----------------------------------------------------------------------------
 
+#if 0
 ; Description: Return the first character in the Pascal string, or 0 if the
 ; string is empty.
-; Input: HL: Pascal string pointer
-; Output: A: firstChar (0 if empty)
-; Destroys: A, BC, HL
-; Preserves: DE
+; Input:
+;   - HL:(PascalStrign*)=pascalString
+; Output:
+;   - A:char=firstChar (0 if empty)
+; Destroys: A
+; Preserves: BC, DE, HL
 GetFirstChar:
     ld a, (hl)
     or a
     ret z
     inc hl ; skip past the len byte
     ld a, (hl)
+    dec hl
     ret
+#endif
 
 ; Description: Return the last character in the Pascal string, or 0 if the
 ; string is empty.
@@ -189,31 +194,29 @@ GetLastChar:
 
 ; Description: Find the given character in the given pascal string.
 ; Input:
-;   A: character to find
-;   HL: pointer to pascal string
+;   - A:char=searchChar
+;   - HL:(PascalString*)=pascalString
 ; Output:
-;   A: position of character A. Returns len(string) if not found. Returns
-;   0 if string is empty.
-; Destroys: A, BC, D, HL
-#if 0
-; Currently not used anywhere
+;   - CF=1 if found, 0 if not found
+;   - HL:(char*)=posOfChar (if found)
+; Destroys: BC, HL
+; Preserves: A, DE
 findChar:
-    ld c, a ; C = char (save)
-    ld b, (hl) ; B = stringSize
-    ; Return stringSize == 0
-    ld a, b
+    ld c, a ; C=searchChar
+    ld a, (hl) ; B=stringSize
+    ; check for empty string
     or a
+    ld b, a ; B=stringSize
+    ld a, c ; A=searchChar
     ret z
-    ld d, a ; D = stringSize (save)
-    inc hl
 findCharLoop:
-    ld a, (hl)
-    cp c
-    jr z, findCharLoopFound
     inc hl
+    cp (hl)
+    jr z, findCharLoopFound
     djnz findCharLoop
-findCharLoopFound:
-    ld a, d ; A = stringSize
-    sub b ; A = stringSize - B
+    ; not found
+    or a ; CF=0
     ret
-#endif
+findCharLoopFound:
+    scf
+    ret

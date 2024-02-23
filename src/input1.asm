@@ -53,6 +53,8 @@ appendInputBufContinue:
     set dirtyFlagsInput, (iy + dirtyFlags)
     jp AppendString
 
+;------------------------------------------------------------------------------
+
 ; Description: Parse the object in inputBuf into OP1. This routine assumes that
 ; the app was in edit mode when this was called, so assumes that the inputBuf
 ; is valid. If the app was not in edit mode, this routine should NOT have been
@@ -77,11 +79,12 @@ appendInputBufContinue:
 ;   - A: rpnObjectType
 ;   - inputBufFlagsClosedEmpty: set if inputBuf was an empty string when closed
 ;   - inputBuf cleared to empty string
-; Throws: ErrInvalid if Date or DateTime is invalid
+; Throws:
+;   - Err:Syntax if there is a syntax error
 ; Destroys: all, OP1, OP2, OP4
 ParseAndClearInputBuf:
     ld hl, inputBuf
-    call GetFirstChar ; A=first char, or 0 if empty
+    ld a, (hl) ; A=stringSize
     or a
     jr nz, parseAndClearInputBufNonEmpty
 parseAndClearInputBufEmpty:
@@ -90,8 +93,9 @@ parseAndClearInputBufEmpty:
     jp ClearInputBuf
 parseAndClearInputBufNonEmpty:
     res inputBufFlagsClosedEmpty, (iy + inputBufFlags)
-    cp LlBrace ; '{'
-    jr z, parseAndClearInputBufRecord
+    ld a, LlBrace ; A='{'
+    call findChar ; CF=1 if found
+    jr c, parseAndClearInputBufRecord
     call parseInputBufNumber ; OP1/OP2=real or complex
     jp ClearInputBuf
 parseAndClearInputBufRecord:
@@ -1119,15 +1123,35 @@ checkRecordDelimiterPFound:
 
 ; Description: Parse the inputBuf containing a Record into OP1.
 ; Input: inputBuf
-; Output: OP1/OP2=RpnDate, RpnDateTime, RpnOffset, RpnOffsetDateTime
+; Output: OP1/OP2=rpnObject (e.g. RpnDate, RpnDateTime, RpnOffsetDateTime)
 ; Uses: parseBuf
 ; Destroys: all
 ; Throws:
 ;   - Err:Syntax if the syntax is incorrect
-;   - Err:Invalid if validation fails
+;   - Err:Invalid if there's a programming logic error
 parseInputBufRecord:
     call initInputBufForParsing ; HL=inputBuf
     inc hl ; skip len byte
+    ; Check if we have a naked Record starting with '{'.
+    ld a, (hl)
+    cp '{'
+    jr z, parseInputBufRecordNaked
+parseInputBufRecordTagged:
+    call parseRecordTag ; A=recordTagTypeXxx, or throws Err:Syntax
+    cp recordTagTypeDate
+    jr z, parseInputBufDate
+    cp recordTagTypeTime
+    jr z, parseInputBufTime
+    cp recordTagTypeDateTime
+    jr z, parseInputBufDateTime
+    cp recordTagTypeOffset
+    jr z, parseInputBufOffset
+    cp recordTagTypeOffsetDateTime
+    jr z, parseInputBufOffsetDateTime
+    bcall(_ErrInvalid) ; should never happen
+parseInputBufRecordNaked:
+    ; Naked records cannot support Time because it has the same number of
+    ; commas as a Date.
     call countCommas ; A=numCommas, preserves HL
     cp 1
     jr z, parseInputBufOffset
@@ -1158,6 +1182,16 @@ parseInputBufDate:
     call parseDate
     pop hl ; HL=OP1+1
     bcall(_ValidateDate)
+    ret
+parseInputBufTime:
+    ld de, OP1
+    ld a, rpnObjectTypeTime
+    ld (de), a
+    inc de ; skip type byte
+    push de
+    call parseTime
+    pop hl ; HL=OP1+1
+    bcall(_ValidateTime)
     ret
 parseInputBufDateTime:
     ld de, OP1

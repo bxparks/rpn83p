@@ -157,16 +157,176 @@ handleKeyD:
 
 ; Description: Append 'E' to inputBuf.
 handleKeyE:
-    call checkAllowHex ; ZF=1 if hex allowed
+    call checkAllowHex ; ZF=1 if hex digits A-F allowed
     ret nz
     ld a, 'E'
     jp handleKeyNumber
 
 ; Description: Append 'F' to inputBuf.
 handleKeyF:
-    call checkAllowHex ; ZF=1 if hex allowed
+    call checkAllowHex ; ZF=1 if hex digits A-F allowed
     ret nz
     ld a, 'F'
+    jp handleKeyNumber
+
+; Description: Append 'G' to inputBuf.
+handleKeyG:
+    ; Do nothing in BASE mode.
+    bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
+    ret nz
+    ld a, 'G'
+    jp handleKeyNumber
+
+; Description: Append 'H' to inputBuf.
+handleKeyH:
+    ; Do nothing in BASE mode.
+    bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
+    ret nz
+    ld a, 'H'
+    jp handleKeyNumber
+
+; Description: Append 'I' to inputBuf.
+handleKeyI:
+    ; Do nothing in BASE mode.
+    bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
+    ret nz
+    ld a, 'I'
+    jp handleKeyNumber
+
+; Description: Append 'J' to inputBuf.
+handleKeyJ:
+    ; Do nothing in BASE mode.
+    bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
+    ret nz
+    ld a, 'J'
+    jp handleKeyNumber
+
+; Description: Append 'K' to inputBuf.
+handleKeyK:
+    ; Do nothing in BASE mode.
+    bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
+    ret nz
+    ld a, 'K'
+    jp handleKeyNumber
+
+; Description: Append 'L' to inputBuf.
+handleKeyL:
+    ; Do nothing in BASE mode.
+    bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
+    ret nz
+    ld a, 'L'
+    jp handleKeyNumber
+
+; Description: Append 'M' to inputBuf.
+handleKeyM:
+    ; Do nothing in BASE mode.
+    bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
+    ret nz
+    ld a, 'M'
+    jp handleKeyNumber
+
+; Description: Append 'N' to inputBuf.
+handleKeyN:
+    ; Do nothing in BASE mode.
+    bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
+    ret nz
+    ld a, 'N'
+    jp handleKeyNumber
+
+; Description: Append 'O' to inputBuf.
+handleKeyO:
+    ; Do nothing in BASE mode.
+    bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
+    ret nz
+    ld a, 'O'
+    jp handleKeyNumber
+
+; Description: Append 'P' to inputBuf.
+handleKeyP:
+    ; Do nothing in BASE mode.
+    bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
+    ret nz
+    ld a, 'P'
+    jp handleKeyNumber
+
+; Description: Append 'Q' to inputBuf.
+handleKeyQ:
+    ; Do nothing in BASE mode.
+    bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
+    ret nz
+    ld a, 'Q'
+    jp handleKeyNumber
+
+; Description: Append 'R' to inputBuf.
+handleKeyR:
+    ; Do nothing in BASE mode.
+    bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
+    ret nz
+    ld a, 'R'
+    jp handleKeyNumber
+
+; Description: Append 'S' to inputBuf.
+handleKeyS:
+    ; Do nothing in BASE mode.
+    bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
+    ret nz
+    ld a, 'S'
+    jp handleKeyNumber
+
+; Description: Append 'T' to inputBuf.
+handleKeyT:
+    ; Do nothing in BASE mode.
+    bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
+    ret nz
+    ld a, 'T'
+    jp handleKeyNumber
+
+; Description: Append 'U' to inputBuf.
+handleKeyU:
+    ; Do nothing in BASE mode.
+    bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
+    ret nz
+    ld a, 'U'
+    jp handleKeyNumber
+
+; Description: Append 'V' to inputBuf.
+handleKeyV:
+    ; Do nothing in BASE mode.
+    bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
+    ret nz
+    ld a, 'V'
+    jp handleKeyNumber
+
+; Description: Append 'W' to inputBuf.
+handleKeyW:
+    ; Do nothing in BASE mode.
+    bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
+    ret nz
+    ld a, 'W'
+    jp handleKeyNumber
+
+; Description: Append 'X' to inputBuf.
+handleKeyX:
+    ; Do nothing in BASE mode.
+    bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
+    ret nz
+    ld a, 'X'
+    jp handleKeyNumber
+
+; Description: Append 'Y' to inputBuf.
+handleKeyY:
+    ; Do nothing in BASE mode.
+    bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
+    ret nz
+    ld a, 'Y'
+    jp handleKeyNumber
+
+; Description: Append 'Z' to inputBuf.
+handleKeyZ:
+    ; Do nothing in BASE mode.
+    bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
+    ret nz
+    ld a, 'Z'
     jp handleKeyNumber
 
 ; Description: Return ZF=1 if octal digits (0-7) are allowed.
@@ -194,13 +354,12 @@ checkAllowDec:
 ; Description: Return ZF=1 if hexadecimal (A-F) are allowed.
 checkAllowHex:
     bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
-    jr z, checkAllowHexFalse ; set ZF=0 if non-BASE
+    ret z ; return ZF=1 if non-BASE, to allow alpha A-F characters
     ld a, (baseNumber)
     cp 16 ; ZF=1 if baseNumber==16
     ret
-checkAllowHexFalse:
-    or 1 ; ZF=0
-    ret
+
+;-----------------------------------------------------------------------------
 
 ; Description: Append a '.' if not already entered.
 ; Input: inputBuf
