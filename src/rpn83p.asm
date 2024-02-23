@@ -477,8 +477,8 @@ parseBufSizeOf equ parseBufCapacity + 1
 parseBufFlags equ parseBuf + parseBufSizeOf ; u8
 parseBufFlagMantissaNeg equ 0 ; set if mantissa has a negative sign
 
-; Floating point number exponent value extracted from the mantissa and the
-; exponent digits.
+; Floating point number exponent value (signed integer) extracted from the
+; mantissa and the exponent digits. This value does not include the $80 offset.
 parseBufExponent equ parseBufFlags + 1 ; i8
 
 ; Various OS flags and parameters are copied to these variables upon start of

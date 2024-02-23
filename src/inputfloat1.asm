@@ -20,7 +20,7 @@
 ; Destroys: A, BC, DE, HL
 parseFloat:
     call clearParseBuf
-    call clearFloatBuf ; OP1=0.0
+    call clearFloatBuf ; OP1=floatBuf=0.0
     ; Check for an emtpy string.
     ld a, (hl)
     call isValidScientificDigit ; CF=1 if valid
@@ -114,14 +114,10 @@ parseMantissaSignNeg:
 ;   2) extract the mantissa digits
 parseMantissaTotal: ; TODO: rename this to parseMantissa()
     ; 1) Find decimal point to get the effective mantissa exponent. The
-    ; mantissaExp = decimalPointPos - 1. But the floating exponent is shifted
-    ; by $80, so:
-    ;   mantissaExponent = decimalPointPos - 1
-    ;   floatingExponent = mantissaExponent + $80
-    ;                    = decimalPointPos + $7F
-    call findDecimalPoint ; A=i8(decimalPointPos); preserves HL
-    add a, $7F
-    ld (parseBufExponent), a ; (parseBufExponent)=A=floatingExponent
+    ; mantissaExp = decimalPointPos - 1.
+    call findDecimalPoint ; A:i8=decimalPointPos; preserves HL
+    dec a ; A=mantissaExp=decimalPointPos-1
+    ld (parseBufExponent), a ; (parseBufExponent)=mantissaExp
 
     ; 2) Parse the digits into parseBuf.
     call parseMantissa ; (parseBuf) updated; HL=char after mantissa
@@ -385,13 +381,11 @@ parseExponentErr:
 ; Input: A:i8=exponentValue
 ; Output: (parseBufExponent)+=A
 ; Destroys: A, B
-; Preserves: DE, HL
+; Preserves: BC, DE, HL
 addExponent:
     ld b, a
     ld a, (parseBufExponent)
-    sub $80
     add a, b ; 2's complement
-    add a, $80
     ld (parseBufExponent), a
     ret
 
@@ -503,10 +497,12 @@ extractMantissaEnd:
     pop hl
     ret
 
-; Description: Convert parseBufExponent to floatBuf exponent.
+; Description: Convert parseBufExponent to floatBuf exponent, by adding the $80
+; offset.
 ; Destroys: A
 ; Preserves: HL
 extractExponent:
     ld a, (parseBufExponent)
+    add a, $80
     ld (floatBufExp), a
     ret
