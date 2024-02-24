@@ -621,9 +621,9 @@ _RestoreOSState equ _RestoreOSStateLabel-branchTableBase
     .db 1
 
 ; help1.asm
-_ProcessHelpLabel:
-_ProcessHelp equ _ProcessHelpLabel-branchTableBase
-    .dw ProcessHelp
+_ProcessHelpCommandsLabel:
+_ProcessHelpCommands equ _ProcessHelpCommandsLabel-branchTableBase
+    .dw ProcessHelpCommands
     .db 1
 
 ; menu1.asm

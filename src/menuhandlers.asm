@@ -41,7 +41,7 @@ mGroupHandler:
 
 ; Description: Show Help pages.
 mHelpHandler:
-    bcall(_ProcessHelp) ; use bcall() to invoke HELP handler on Flash Page 1
+    bcall(_ProcessHelpCommands)
     ret
 
 ;-----------------------------------------------------------------------------
