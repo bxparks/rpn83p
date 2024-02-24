@@ -1562,7 +1562,7 @@ defpage(1)
 #include "print1.asm"
 #include "input1.asm"
 #include "inputfloat1.asm"
-#include "inputdate1.asm"
+#include "parsedate1.asm"
 #include "arg1.asm"
 #include "base1.asm"
 #include "cstring1.asm"
