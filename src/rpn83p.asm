@@ -710,10 +710,6 @@ _ClearInputBufLabel:
 _ClearInputBuf equ _ClearInputBufLabel-branchTableBase
     .dw ClearInputBuf
     .db 1
-_ParseAndClearInputBufLabel:
-_ParseAndClearInputBuf equ _ParseAndClearInputBufLabel-branchTableBase
-    .dw ParseAndClearInputBuf
-    .db 1
 _AppendInputBufLabel:
 _AppendInputBuf equ _AppendInputBufLabel-branchTableBase
     .dw AppendInputBuf
@@ -737,6 +733,12 @@ _CheckInputBufRecord equ _CheckInputBufRecordLabel-branchTableBase
 _SetComplexDelimiterLabel:
 _SetComplexDelimiter equ _SetComplexDelimiterLabel-branchTableBase
     .dw SetComplexDelimiter
+    .db 1
+
+; parse1.asm
+_ParseAndClearInputBufLabel:
+_ParseAndClearInputBuf equ _ParseAndClearInputBufLabel-branchTableBase
+    .dw ParseAndClearInputBuf
     .db 1
 
 ; arg1.asm
@@ -1561,6 +1563,7 @@ defpage(1)
 #include "errorcode1.asm"
 #include "print1.asm"
 #include "input1.asm"
+#include "parse1.asm"
 #include "parsefloat1.asm"
 #include "parsedate1.asm"
 #include "arg1.asm"
