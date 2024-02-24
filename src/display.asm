@@ -471,7 +471,7 @@ displayStackYZT:
 ;-----------------------------------------------------------------------------
 
 ; Description: Render the X register line. There are multiple modes:
-; 1) If rpnFlagsArgMode, print the argBuf for the ArgParser, else
+; 1) If rpnFlagsArgMode, print the argBuf for the ArgScanner, else
 ; 2) If rpnFlagsEditing, print the current inputBuf, else
 ; 3) Print the X register.
 ;

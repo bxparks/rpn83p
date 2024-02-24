@@ -284,7 +284,7 @@ mGetCarryFlagHandler:
 mSetWordSizeHandler:
     call closeInputAndRecallNone
     ld hl, msgWordSizePrompt
-    call startArgParser
+    call startArgScanner
     call processArgCommands ; CF=0 if cancelled; (argModifier), (argValue)
     ret nz ; do nothing if cancelled
     ld a, (argValue)

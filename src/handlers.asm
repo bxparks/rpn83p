@@ -1017,7 +1017,7 @@ handleKeyATan:
 handleKeySto:
     call closeInputAndRecallNone
     ld hl, msgStoPrompt
-    call startArgParser
+    call startArgScanner
     set inputBufFlagsArgAllowModifier, (iy + inputBufFlags)
     set inputBufFlagsArgAllowLetter, (iy + inputBufFlags)
     call processArgCommands ; ZF=0 if cancelled
@@ -1041,7 +1041,7 @@ handleKeySto:
 handleKeyRcl:
     call closeInputAndRecallNone
     ld hl, msgRclPrompt
-    call startArgParser
+    call startArgScanner
     set inputBufFlagsArgAllowModifier, (iy + inputBufFlags)
     set inputBufFlagsArgAllowLetter, (iy + inputBufFlags)
     call processArgCommands ; ZF=0 if cancelled
@@ -1110,7 +1110,7 @@ handleKeyQuit:
 handleKeyDraw:
     call closeInput ; preserve rpnFlagsTvmCalculate
     ld hl, msgDrawPrompt
-    call startArgParser
+    call startArgScanner
     call processArgCommands ; ZF=0 if cancelled
     ret nz ; do nothing if cancelled
     ; save (argValue)

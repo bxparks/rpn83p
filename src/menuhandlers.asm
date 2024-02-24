@@ -353,7 +353,7 @@ mRoundToGuardHandler:
 mRoundToNHandler:
     call closeInputAndRecallX ; OP1=X
     ld hl, msgRoundPrompt
-    call startArgParser
+    call startArgScanner
     bcall(_PushRealO1)
     call processArgCommands ; ZF=0 if cancelled; destroys OP1-OP6
     push af
@@ -656,7 +656,7 @@ mHrToHmsHandler:
 mFixHandler:
     call closeInputAndRecallNone
     ld hl, msgFixPrompt
-    call startArgParser
+    call startArgScanner
     call processArgCommands ; ZF=0 if cancelled
     ret nz ; do nothing if cancelled
     res fmtExponent, (iy + fmtFlags)
@@ -666,7 +666,7 @@ mFixHandler:
 mSciHandler:
     call closeInputAndRecallNone
     ld hl, msgSciPrompt
-    call startArgParser
+    call startArgScanner
     call processArgCommands ; ZF=0 if cancelled
     ret nz ; do nothing if cancelled
     set fmtExponent, (iy + fmtFlags)
@@ -676,7 +676,7 @@ mSciHandler:
 mEngHandler:
     call closeInputAndRecallNone
     ld hl, msgEngPrompt
-    call startArgParser
+    call startArgScanner
     call processArgCommands ; ZF=0 if cancelled
     ret nz ; do nothing if cancelled
     set fmtExponent, (iy + fmtFlags)

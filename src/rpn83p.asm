@@ -319,7 +319,7 @@ menuNameSizeOf equ 6
 ; Data structure revelant to the command argument scanner which handles
 ; something like "STO _ _". The C equivalent is:
 ;
-;   struct ArgParser {
+;   struct ArgScanner {
 ;       char *argPrompt; // e.g. "STO"
 ;       char argModifier; // see argModifierXxx
 ;       char argType; // argTypeXxx
