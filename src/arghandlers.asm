@@ -2,7 +2,7 @@
 ; MIT License
 ; Copyright (c) 2023 Brian T. Park
 ;
-; Key code dispatcher and handlers for the command argument parser.
+; Key code dispatcher and handlers for the command ArgScanner.
 ;-----------------------------------------------------------------------------
 
 handleArgKey0:

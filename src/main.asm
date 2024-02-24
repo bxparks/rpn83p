@@ -31,7 +31,7 @@ main:
     call initTvm
 initAlways:
     ; If RestoreAppState() suceeds, only the following are initialized.
-    bcall(_InitArgBuf) ; Start with Command Arg parser off.
+    bcall(_InitArgBuf) ; Start with command ArgScanner off.
     bcall(_SanitizeMenu) ; Sanitize currentMenuGroupId currentMenuRowIndex
     call updateNumResultMode
     call updateComplexMode

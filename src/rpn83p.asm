@@ -316,10 +316,10 @@ menuNameBuf equ menuName + 1
 menuNameBufMax equ 5
 menuNameSizeOf equ 6
 
-; Data structure revelant to the command argument parser which handles
+; Data structure revelant to the command argument scanner which handles
 ; something like "STO _ _". The C equivalent is:
 ;
-;   struct ArgParser {
+;   struct ArgScanner {
 ;       char *argPrompt; // e.g. "STO"
 ;       char argModifier; // see argModifierXxx
 ;       char argType; // argTypeXxx
@@ -620,10 +620,10 @@ _RestoreOSState equ _RestoreOSStateLabel-branchTableBase
     .dw RestoreOSState
     .db 1
 
-; help1.asm
-_ProcessHelpLabel:
-_ProcessHelp equ _ProcessHelpLabel-branchTableBase
-    .dw ProcessHelp
+; helpscanner1.asm
+_ProcessHelpCommandsLabel:
+_ProcessHelpCommands equ _ProcessHelpCommandsLabel-branchTableBase
+    .dw ProcessHelpCommands
     .db 1
 
 ; menu1.asm
@@ -1514,11 +1514,11 @@ _DebugU32DEAsHex equ _DebugU32DEAsHexLabel-branchTableBase
 ;-----------------------------------------------------------------------------
 
 #include "main.asm"
-#include "mainparser.asm"
+#include "mainscanner.asm"
 #include "handlers.asm"
-#include "argparser.asm"
+#include "argscanner.asm"
 #include "arghandlers.asm"
-#include "showparser.asm"
+#include "showscanner.asm"
 #include "vars.asm"
 #include "input.asm"
 #include "display.asm"
@@ -1554,6 +1554,7 @@ defpage(1)
 #include "appstate1.asm"
 #include "osstate1.asm"
 #include "help1.asm"
+#include "helpscanner1.asm"
 #include "menu1.asm"
 #include "menudef.asm"
 #include "crc1.asm"

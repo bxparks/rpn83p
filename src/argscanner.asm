@@ -2,16 +2,16 @@
 ; MIT License
 ; Copyright (c) 2023 Brian T. Park
 ;
-; Process and parse the command arguments that follows certain commands: STO,
-; RCL, FIX, SCI, ENG.
+; Interactive key/button scanner for command arguments that follows certain
+; commands: STO, RCL, FIX, SCI, ENG.
 ;------------------------------------------------------------------------------
 
-; Description: Configure the command arg parser and display before each
+; Description: Configure the command arg scanner and display before each
 ; invocation. Use InitArgBuf() to initialize at the start of application.
 ; Input:
 ;   - HL: pointer to command argument label
 ; Destroys: A
-startArgParser:
+startArgScanner:
     ld (argPrompt), hl
     xor a
     ld (argModifier), a
@@ -38,7 +38,7 @@ startArgParser:
 ; - 2ND OFF
 ;
 ; The calling routine should take the following steps:
-;   1) call startArgParser()
+;   1) call startArgScanner()
 ;   2) any custom configurations (inputBufFlagsArgAllowXxx)
 ;   3) call processArgCommands()
 ;   4) check if ZF=0 (was cancelled)
@@ -84,13 +84,13 @@ processArgCommands:
     ; Parse the string into an integer or letter.
     bcall(_ParseArgBuf) ; argType, argValue updated
 
-    ; Terminate argParser.
+    ; Terminate argScanner.
     res rpnFlagsArgMode, (iy + rpnFlags)
     set dirtyFlagsInput, (iy + dirtyFlags)
 
     ; Set A=argModifier, for convenience of caller.
     ld a, (argModifier)
 
-    ; Set ZF=0 if ArgParser was cancelled.
+    ; Set ZF=0 if argScanner was cancelled.
     bit inputBufFlagsArgCancel, (iy + inputBufFlags)
     ret
