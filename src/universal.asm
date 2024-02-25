@@ -110,6 +110,8 @@ universalSub:
     call checkOp1OrOp3Complex ; ZF=1 if either are complex
     jr z, universalSubComplex
     ;
+    call checkOp1Time ; ZF=1 if Time
+    jr z, universalSubTimeMinusObject
     call checkOp1Date ; ZF=1 if Date
     jr z, universalSubDateMinusObject
     call checkOp1DateTime ; ZF=1 if DateTime
@@ -117,6 +119,8 @@ universalSub:
     call checkOp1OffsetDateTime ; ZF=1 if OffsetDateTime
     jr z, universalSubOffsetDateTimeMinusObject
     ;
+    call checkOp3Time ; ZF=1 if Time
+    jr z, universalSubErr ; cannot subtract a Time
     call checkOp3Date ; ZF=1 if Date
     jr z, universalSubErr ; cannot subtract a Date
     call checkOp3DateTime ; ZF=1 if DateTime
@@ -137,6 +141,17 @@ universalSubComplex:
     call cp3ToCp1 ; OP1/OP2=OP3/OP4
     call convertOp1ToCp1
     bcall(_CSub) ; OP1/OP2 = FPS[OP1/OP2] - OP1/OP2; FPS=[]
+    ret
+;
+universalSubTimeMinusObject:
+    call checkOp3Real
+    jr z, universalSubTimeMinusDays
+    call checkOp3Time
+    jr z, universalSubTimeMinusTime
+    jr universalSubErr
+universalSubTimeMinusDays:
+universalSubTimeMinusTime:
+    bcall(_SubRpnTimeByRpnTimeOrSeconds)
     ret
 ;
 universalSubDateMinusObject:

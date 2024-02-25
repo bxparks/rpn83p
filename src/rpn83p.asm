@@ -1095,6 +1095,28 @@ _FormatOffsetDateTime equ _FormatOffsetDateTimeLabel-branchTableBase
     .dw FormatOffsetDateTime
     .db 2
 
+; datevalidation2.asm
+_ValidateDateLabel:
+_ValidateDate equ _ValidateDateLabel-branchTableBase
+    .dw ValidateDate
+    .db 2
+_ValidateTimeLabel:
+_ValidateTime equ _ValidateTimeLabel-branchTableBase
+    .dw ValidateTime
+    .db 2
+_ValidateDateTimeLabel:
+_ValidateDateTime equ _ValidateDateTimeLabel-branchTableBase
+    .dw ValidateDateTime
+    .db 2
+_ValidateOffsetLabel:
+_ValidateOffset equ _ValidateOffsetLabel-branchTableBase
+    .dw ValidateOffset
+    .db 2
+_ValidateOffsetDateTimeLabel:
+_ValidateOffsetDateTime equ _ValidateOffsetDateTimeLabel-branchTableBase
+    .dw ValidateOffsetDateTime
+    .db 2
+
 ; date2.asm
 _InitDateLabel:
 _InitDate equ _InitDateLabel-branchTableBase
@@ -1122,6 +1144,10 @@ _EpochDaysToRpnDateLabel:
 _EpochDaysToRpnDate equ _EpochDaysToRpnDateLabel-branchTableBase
     .dw EpochDaysToRpnDate
     .db 2
+_EpochSecondsToRpnDateLabel:
+_EpochSecondsToRpnDate equ _EpochSecondsToRpnDateLabel-branchTableBase
+    .dw EpochSecondsToRpnDate
+    .db 2
 _AddRpnDateByDaysLabel:
 _AddRpnDateByDays equ _AddRpnDateByDaysLabel-branchTableBase
     .dw AddRpnDateByDays
@@ -1129,33 +1155,6 @@ _AddRpnDateByDays equ _AddRpnDateByDaysLabel-branchTableBase
 _SubRpnDateByRpnDateOrDaysLabel:
 _SubRpnDateByRpnDateOrDays equ _SubRpnDateByRpnDateOrDaysLabel-branchTableBase
     .dw SubRpnDateByRpnDateOrDays
-    .db 2
-; RpnDate related and seconds functions
-_EpochSecondsToRpnDateLabel:
-_EpochSecondsToRpnDate equ _EpochSecondsToRpnDateLabel-branchTableBase
-    .dw EpochSecondsToRpnDate
-    .db 2
-
-; datevalidation2.asm
-_ValidateDateLabel:
-_ValidateDate equ _ValidateDateLabel-branchTableBase
-    .dw ValidateDate
-    .db 2
-_ValidateTimeLabel:
-_ValidateTime equ _ValidateTimeLabel-branchTableBase
-    .dw ValidateTime
-    .db 2
-_ValidateDateTimeLabel:
-_ValidateDateTime equ _ValidateDateTimeLabel-branchTableBase
-    .dw ValidateDateTime
-    .db 2
-_ValidateOffsetLabel:
-_ValidateOffset equ _ValidateOffsetLabel-branchTableBase
-    .dw ValidateOffset
-    .db 2
-_ValidateOffsetDateTimeLabel:
-_ValidateOffsetDateTime equ _ValidateOffsetDateTimeLabel-branchTableBase
-    .dw ValidateOffsetDateTime
     .db 2
 
 ; time2.asm
@@ -1170,6 +1169,10 @@ _SecondsToRpnTime equ _SecondsToRpnTimeLabel-branchTableBase
 _AddRpnTimeBySecondsLabel:
 _AddRpnTimeBySeconds equ _AddRpnTimeBySecondsLabel-branchTableBase
     .dw AddRpnTimeBySeconds
+    .db 2
+_SubRpnTimeByRpnTimeOrSecondsLabel:
+_SubRpnTimeByRpnTimeOrSeconds equ _SubRpnTimeByRpnTimeOrSecondsLabel-branchTableBase
+    .dw SubRpnTimeByRpnTimeOrSeconds
     .db 2
 
 ; datetime2.asm

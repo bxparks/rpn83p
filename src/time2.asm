@@ -148,7 +148,7 @@ secondsToTime:
 ;   - OP3:Union[RpnTime,RpnReal]=rpnTime or seconds
 ; Output:
 ;   - OP1:RpnTime=RpnTime+seconds=always positive
-; Destroys: all, OP1, OP2, OP3
+; Destroys: all, OP1-OP4
 AddRpnTimeBySeconds:
     call checkOp1TimePageTwo ; ZF=1 if CP1 is an RpnTime
     jr nz, addRpnTimeBySecondsAdd
@@ -182,3 +182,40 @@ addRpnTimeBySecondsAdd:
     ld (hl), a
     inc hl ; HL:(Time*)=newTime
     jr secondsToTime ; HL=OP1+sizeof(Time)
+
+;-----------------------------------------------------------------------------
+
+; Description: Subtract RpnTime minus RpnTime or seconds.
+; Input:
+;   - OP1:RpnTime=Y
+;   - OP3:RpnTime or seconds=X
+; Output:
+;   - OP1:RpnTime(RpnTime-seconds) or i40(RpnTime-RpnTime).
+; Destroys: all, OP1-OP4
+SubRpnTimeByRpnTimeOrSeconds:
+    call checkOp3TimePageTwo ; ZF=1 if type(OP3)==Time
+    jr z, subRpnTimeByRpnTime
+subRpnTimeBySeconds:
+    ; exchage CP1/CP3, invert the sign, then call addRpnTimeBySecondsAdd()
+    call cp1ExCp3PageTwo
+    bcall(_InvOP1S) ; OP1=-OP1
+    jr addRpnTimeBySecondsAdd
+subRpnTimeByRpnTime:
+    ; convert OP3 to seconds, on FPS stack
+    call reserveRaw9 ; make space on FPS=[X.seconds]; HL=X.seconds
+    push hl ; stack=[X.seconds]
+    ld de, OP3+1 ; DE=Time{}
+    call timeToSeconds ; HL=FPS.X.seconds updated
+    ; convert OP1 to seconds, on FPS stack
+    call reserveRaw9 ; make space, FPS=[X.seconds,Y.seconds]; HL=Y.seconds
+    push hl ; stack=[X.seconds,Y.seconds]
+    ld de, OP1+1 ; DE=Time{}
+    call timeToSeconds ; HL=FPS.Y.seconds updated
+    ; subtract Y.seconds-X.seconds
+    pop hl ; HL=Y.seconds
+    pop de ; De=X.seconds
+    call subU40U40 ; HL=Y.seconds-X.seconds
+    ; pop result into OP1
+    call popRaw9Op1 ; FPS=[X.seconds]; OP1=Y.seconds-X.seconds
+    call ConvertI40ToOP1 ; OP1=float(i40)
+    jp dropRaw9 ; FPS=[]
