@@ -34,14 +34,14 @@ mEpochDaysToDateHandler:
 ;-----------------------------------------------------------------------------
 
 mDateLikeToEpochSecondsHandler:
-    call closeInputAndRecallRpnDateRelatedX ; OP1=X=dateRelatedObject
-    call checkOp1Date ; ZF=1 if RpnDate
+    call closeInputAndRecallRpnDateRelatedX ; OP1==dateRelatedObject; A=type
+    cp rpnObjectTypeDate ; ZF=1 if RpnDate
     jr z, mDateLikeToEpochSecondsHandlerDate
-    call checkOp1DateTime ; ZF=1 if RpnDateTime
+    cp rpnObjectTypeDateTime ; ZF=1 if RpnDateTime
     jr z, mDateLikeToEpochSecondsHandlerDateTime
-    call checkOp1Offset ; ZF=1 if RpnOffset
+    cp rpnObjectTypeOffset ; ZF=1 if RpnOffset
     jr z, mDateLikeToEpochSecondsHandlerOffset
-    call checkOp1OffsetDateTime ; ZF=1 if RpnOffsetDateTime
+    cp rpnObjectTypeOffsetDateTime ; ZF=1 if RpnOffsetDateTime
     jr z, mDateLikeToEpochSecondsHandlerOffsetDateTime
     bcall(_ErrDataType)
 mDateLikeToEpochSecondsHandlerDate:

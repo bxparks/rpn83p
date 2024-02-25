@@ -157,6 +157,7 @@ closeInputAndRecallRpnDateLikeX:
 ; Close and parse the input buffer, place the value into OP1, and return
 ; successfully if the input was a date-related object: RpnDate, RpnTime,
 ; RpnDateTime, RpnOffset, RpnOffsetDateTime.
+; Output: A=rpnObjectType
 closeInputAndRecallRpnDateRelatedX:
     call closeInput
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
