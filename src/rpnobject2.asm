@@ -30,6 +30,26 @@ checkOp1ComplexPageTwo:
     ret
 
 ;-----------------------------------------------------------------------------
+; Date related objects.
+;-----------------------------------------------------------------------------
+
+; Description: Check if OP1 is an RpnTime.
+; Output: ZF=1 if RpnTime
+checkOp1TimePageTwo:
+    ld a, (OP1)
+    and $1f
+    cp rpnObjectTypeTime
+    ret
+
+; Description: Check if OP3 is an RpnTime.
+; Output: ZF=1 if RpnTime
+checkOp3TimePageTwo:
+    ld a, (OP3)
+    and $1f
+    cp rpnObjectTypeTime
+    ret
+
+;-----------------------------------------------------------------------------
 
 ; Description: Check if OP1 is a RpnDate.
 ; Output: ZF=1 if RpnDate
@@ -47,6 +67,8 @@ checkOp3DatePageTwo:
     cp rpnObjectTypeDate
     ret
 
+;-----------------------------------------------------------------------------
+
 ; Description: Check if OP1 is a RpnDateTime.
 ; Output: ZF=1 if RpnDateTime
 checkOp1DateTimePageTwo:
@@ -62,6 +84,8 @@ checkOp3DateTimePageTwo:
     and $1f
     cp rpnObjectTypeDateTime
     ret
+
+;-----------------------------------------------------------------------------
 
 ; Description: Check if OP1 is a RpnOffsetDateTime.
 ; Output: ZF=1 if RpnOffsetDateTime

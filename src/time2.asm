@@ -137,3 +137,48 @@ secondsToTime:
     pop de ; stack=[BC]; DE=seconds
     pop bc ; stack=[]; BC=restored
     ret
+
+;-----------------------------------------------------------------------------
+; RpnTime functions.
+;-----------------------------------------------------------------------------
+
+; Description: Add (RpnTime plus seconds) or (seconds plus RpnTime).
+; Input:
+;   - OP1:Union[RpnTime,RpnReal]=rpnTime or seconds
+;   - OP3:Union[RpnTime,RpnReal]=rpnTime or seconds
+; Output:
+;   - OP1:RpnTime=RpnTime+seconds=always positive
+; Destroys: all, OP1, OP2, OP3
+AddRpnTimeBySeconds:
+    call checkOp1TimePageTwo ; ZF=1 if CP1 is an RpnTime
+    jr nz, addRpnTimeBySecondsAdd
+    call cp1ExCp3PageTwo ; CP1=seconds; CP3=RpnTime
+addRpnTimeBySecondsAdd:
+    ; CP1=seconds, CP3=RpnTime
+    call ConvertOP1ToI40 ; HL=OP1=u40(seconds)
+    call pushRaw9Op1 ; FPS=[seconds]; HL=seconds
+    ; convert CP3=RpnTime to OP1=seconds
+    ld de, OP3+1 ; DE=Time
+    ld hl, OP1
+    call timeToSeconds ; HL=OP1=timeSeconds
+    ; add seconds + timeSeconds
+    call popRaw9Op2 ; FPS=[]; OP2=seconds
+    ld de, OP2
+    ld hl, OP1
+    call addU40U40 ; HL=OP1=resultSeconds=dateSeconds+seconds
+    ; Reduce the total seconds by (mod 86400).
+    ex de, hl ; DE=OP1=resultSeconds
+    ld hl, OP2
+    ld a, 1
+    ld bc, 20864 ; ABC=86400 seconds per day
+    call setU40ToABC ; HL=OP2=divisor=86400
+    ex de, hl ; DE=OP2=divisor; HL=OP1=resultSeconds
+    ld bc, OP3
+    call divI40U40 ; BC=OP3=remainder=always positive
+    ; convert seconds to OP1=RpnTime
+    ld de, OP3 ; DE=remainder
+    ld hl, OP1
+    ld a, rpnObjectTypeTime
+    ld (hl), a
+    inc hl ; HL:(Time*)=newTime
+    jr secondsToTime ; HL=OP1+sizeof(Time)

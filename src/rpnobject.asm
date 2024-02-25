@@ -89,8 +89,6 @@ checkOp3Complex:
     cp rpnObjectTypeComplex
     ret
 
-;-----------------------------------------------------------------------------
-
 ; Description: Check if OP1 is either Real or Complex.
 ; Input: OP1/OP2
 ; Output: ZF=1 if Real or Complex
@@ -101,6 +99,26 @@ checkOp1RealOrComplex:
     cp rpnObjectTypeReal
     ret z
     cp rpnObjectTypeComplex
+    ret
+
+;-----------------------------------------------------------------------------
+; Date related objects.
+;-----------------------------------------------------------------------------
+
+; Description: Check if OP1 is an RpnTime.
+; Output: ZF=1 if RpnTime
+checkOp1Time:
+    ld a, (OP1)
+    and $1f
+    cp rpnObjectTypeTime
+    ret
+
+; Description: Check if OP3 is an RpnTime.
+; Output: ZF=1 if RpnTime
+checkOp3Time:
+    ld a, (OP3)
+    and $1f
+    cp rpnObjectTypeTime
     ret
 
 ;-----------------------------------------------------------------------------

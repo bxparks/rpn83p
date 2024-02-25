@@ -1167,6 +1167,10 @@ _SecondsToRpnTimeLabel:
 _SecondsToRpnTime equ _SecondsToRpnTimeLabel-branchTableBase
     .dw SecondsToRpnTime
     .db 2
+_AddRpnTimeBySecondsLabel:
+_AddRpnTimeBySeconds equ _AddRpnTimeBySecondsLabel-branchTableBase
+    .dw AddRpnTimeBySeconds
+    .db 2
 
 ; datetime2.asm
 _RpnDateTimeToEpochSecondsLabel:

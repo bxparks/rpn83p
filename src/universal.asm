@@ -23,6 +23,11 @@ universalAdd:
     call checkOp1OrOp3Complex ; ZF=1 if complex
     jr z, universalAddComplex
     ;
+    call checkOp1Time ; ZF=1 if Time
+    jr z, universalAddTimePlusSeconds
+    call checkOp3Time ; ZF=1 if Time
+    jr z, universalAddSecondsPlusTime
+    ;
     call checkOp1Date ; ZF=1 if Date
     jr z, universalAddDatePlusDays
     call checkOp3Date ; ZF=1 if Date
@@ -50,6 +55,16 @@ universalAddComplex:
     call cp3ToCp1 ; OP1/OP2=OP3/OP4
     call convertOp1ToCp1
     bcall(_CAdd) ; OP1/OP2 += FPS[OP1/OP2]; FPS=[]
+    ret
+universalAddTimePlusSeconds:
+    call checkOp3Real
+    jr nz, universalAddErr
+    bcall(_AddRpnTimeBySeconds) ; OP1=Time(OP1)+days(OP3)
+    ret
+universalAddSecondsPlusTime:
+    call checkOp3Time
+    jr nz, universalAddErr
+    bcall(_AddRpnTimeBySeconds) ; OP1=Time(OP1)+days(OP3)
     ret
 universalAddDatePlusDays:
     call checkOp3Real
