@@ -1100,27 +1100,6 @@ _InitDateLabel:
 _InitDate equ _InitDateLabel-branchTableBase
     .dw InitDate
     .db 2
-; Validation of various records.
-_ValidateDateLabel:
-_ValidateDate equ _ValidateDateLabel-branchTableBase
-    .dw ValidateDate
-    .db 2
-_ValidateTimeLabel:
-_ValidateTime equ _ValidateTimeLabel-branchTableBase
-    .dw ValidateTime
-    .db 2
-_ValidateDateTimeLabel:
-_ValidateDateTime equ _ValidateDateTimeLabel-branchTableBase
-    .dw ValidateDateTime
-    .db 2
-_ValidateOffsetLabel:
-_ValidateOffset equ _ValidateOffsetLabel-branchTableBase
-    .dw ValidateOffset
-    .db 2
-_ValidateOffsetDateTimeLabel:
-_ValidateOffsetDateTime equ _ValidateOffsetDateTimeLabel-branchTableBase
-    .dw ValidateOffsetDateTime
-    .db 2
 ; Year functions
 _IsLeapLabel:
 _IsLeap equ _IsLeapLabel-branchTableBase
@@ -1155,6 +1134,28 @@ _SubRpnDateByRpnDateOrDays equ _SubRpnDateByRpnDateOrDaysLabel-branchTableBase
 _EpochSecondsToRpnDateLabel:
 _EpochSecondsToRpnDate equ _EpochSecondsToRpnDateLabel-branchTableBase
     .dw EpochSecondsToRpnDate
+    .db 2
+
+; datevalidation2.asm
+_ValidateDateLabel:
+_ValidateDate equ _ValidateDateLabel-branchTableBase
+    .dw ValidateDate
+    .db 2
+_ValidateTimeLabel:
+_ValidateTime equ _ValidateTimeLabel-branchTableBase
+    .dw ValidateTime
+    .db 2
+_ValidateDateTimeLabel:
+_ValidateDateTime equ _ValidateDateTimeLabel-branchTableBase
+    .dw ValidateDateTime
+    .db 2
+_ValidateOffsetLabel:
+_ValidateOffset equ _ValidateOffsetLabel-branchTableBase
+    .dw ValidateOffset
+    .db 2
+_ValidateOffsetDateTimeLabel:
+_ValidateOffsetDateTime equ _ValidateOffsetDateTimeLabel-branchTableBase
+    .dw ValidateOffsetDateTime
     .db 2
 
 ; time2.asm
@@ -1610,6 +1611,7 @@ defpage(2)
 #include "modes2.asm"
 #include "selectepoch2.asm"
 #include "epoch2.asm"
+#include "datevalidation2.asm"
 #include "date2.asm"
 #include "time2.asm"
 #include "datetime2.asm"
