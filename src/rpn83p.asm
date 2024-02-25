@@ -1208,21 +1208,22 @@ _SubRpnOffsetDateTimeByRpnOffsetDateTimeOrSecondsLabel:
 _SubRpnOffsetDateTimeByRpnOffsetDateTimeOrSeconds equ _SubRpnOffsetDateTimeByRpnOffsetDateTimeOrSecondsLabel-branchTableBase
     .dw SubRpnOffsetDateTimeByRpnOffsetDateTimeOrSeconds
     .db 2
-_ConvertRpnDateTimeToOffsetLabel:
-_ConvertRpnDateTimeToOffset equ _ConvertRpnDateTimeToOffsetLabel-branchTableBase
-    .dw ConvertRpnDateTimeToOffset
+;
+_ConvertRpnDateTimeToTimeZoneAsOffsetLabel:
+_ConvertRpnDateTimeToTimeZoneAsOffset equ _ConvertRpnDateTimeToTimeZoneAsOffsetLabel-branchTableBase
+    .dw ConvertRpnDateTimeToTimeZoneAsOffset
     .db 2
-_ConvertRpnDateTimeToRealLabel:
-_ConvertRpnDateTimeToReal equ _ConvertRpnDateTimeToRealLabel-branchTableBase
-    .dw ConvertRpnDateTimeToReal
+_ConvertRpnDateTimeToTimeZoneAsRealLabel:
+_ConvertRpnDateTimeToTimeZoneAsReal equ _ConvertRpnDateTimeToTimeZoneAsRealLabel-branchTableBase
+    .dw ConvertRpnDateTimeToTimeZoneAsReal
     .db 2
 _ConvertRpnOffsetDateTimeToOffsetLabel:
 _ConvertRpnOffsetDateTimeToOffset equ _ConvertRpnOffsetDateTimeToOffsetLabel-branchTableBase
     .dw ConvertRpnOffsetDateTimeToOffset
     .db 2
-_ConvertRpnOffsetDateTimeToRealLabel:
-_ConvertRpnOffsetDateTimeToReal equ _ConvertRpnOffsetDateTimeToRealLabel-branchTableBase
-    .dw ConvertRpnOffsetDateTimeToReal
+_ConvertRpnOffsetDateTimeToTimeZoneAsRealLabel:
+_ConvertRpnOffsetDateTimeToTimeZoneAsReal equ _ConvertRpnOffsetDateTimeToTimeZoneAsRealLabel-branchTableBase
+    .dw ConvertRpnOffsetDateTimeToTimeZoneAsReal
     .db 2
 
 ; zone2.asm

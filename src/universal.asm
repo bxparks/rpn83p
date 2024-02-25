@@ -228,10 +228,10 @@ universalMultDateTimeByTimeZone:
     jr z, universalMultDateTimeByReal
     jr universalMultErr
 universalMultDateTimeByOffset:
-    bcall(_ConvertRpnDateTimeToOffset)
+    bcall(_ConvertRpnDateTimeToTimeZoneAsOffset)
     ret
 universalMultDateTimeByReal:
-    bcall(_ConvertRpnDateTimeToReal)
+    bcall(_ConvertRpnDateTimeToTimeZoneAsReal)
     ret
 ; (Offset|Real)*DateTime
 universalMultTimeZoneByDateTime:
@@ -241,10 +241,10 @@ universalMultTimeZoneByDateTime:
     jr z, universalMultRealByDateTime
     jr universalMultErr
 universalMultOffsetByDateTime:
-    bcall(_ConvertRpnDateTimeToOffset)
+    bcall(_ConvertRpnDateTimeToTimeZoneAsOffset)
     ret
 universalMultRealByDateTime:
-    bcall(_ConvertRpnDateTimeToReal)
+    bcall(_ConvertRpnDateTimeToTimeZoneAsReal)
     ret
 ; OffsetDateTime*(Offset|Real)
 universalMultOffsetDateTimeByTimeZone:
@@ -257,7 +257,7 @@ universalMultOffsetDateTimeByOffset:
     bcall(_ConvertRpnOffsetDateTimeToOffset)
     ret
 universalMultOffsetDateTimeByReal:
-    bcall(_ConvertRpnOffsetDateTimeToReal)
+    bcall(_ConvertRpnOffsetDateTimeToTimeZoneAsReal)
     ret
 ; (Offset|Real)*OffsetDateTime
 universalMultTimeZoneByOffsetDateTime:
@@ -270,7 +270,7 @@ universalMultOffsetByOffsetDateTime:
     bcall(_ConvertRpnOffsetDateTimeToOffset)
     ret
 universalMultRealByOffsetDateTime:
-    bcall(_ConvertRpnOffsetDateTimeToReal)
+    bcall(_ConvertRpnOffsetDateTimeToTimeZoneAsReal)
     ret
 
 ; Description: Division for real and complex numbers.
