@@ -1015,6 +1015,38 @@ _InitModes equ _InitModesLabel-branchTableBase
     .dw InitModes
     .db 2
 
+; selectepoch2.asm
+; Epoch selection functions
+_SelectUnixEpochDateLabel:
+_SelectUnixEpochDate equ _SelectUnixEpochDateLabel-branchTableBase
+    .dw SelectUnixEpochDate
+    .db 2
+_SelectNtpEpochDateLabel:
+_SelectNtpEpochDate equ _SelectNtpEpochDateLabel-branchTableBase
+    .dw SelectNtpEpochDate
+    .db 2
+_SelectGpsEpochDateLabel:
+_SelectGpsEpochDate equ _SelectGpsEpochDateLabel-branchTableBase
+    .dw SelectGpsEpochDate
+    .db 2
+_SelectTiosEpochDateLabel:
+_SelectTiosEpochDate equ _SelectTiosEpochDateLabel-branchTableBase
+    .dw SelectTiosEpochDate
+    .db 2
+_SelectCustomEpochDateLabel:
+_SelectCustomEpochDate equ _SelectCustomEpochDateLabel-branchTableBase
+    .dw SelectCustomEpochDate
+    .db 2
+; Custom epoch date functions
+_SetCustomEpochDateLabel:
+_SetCustomEpochDate equ _SetCustomEpochDateLabel-branchTableBase
+    .dw SetCustomEpochDate
+    .db 2
+_GetCustomEpochDateLabel:
+_GetCustomEpochDate equ _GetCustomEpochDateLabel-branchTableBase
+    .dw GetCustomEpochDate
+    .db 2
+
 ; fps2.asm
 _PushRpnObject1Label:
 _PushRpnObject1 equ _PushRpnObject1Label-branchTableBase
@@ -1153,43 +1185,13 @@ _SubRpnDateTimeByRpnDateTimeOrSeconds equ _SubRpnDateTimeByRpnDateTimeOrSecondsL
     .dw SubRpnDateTimeByRpnDateTimeOrSeconds
     .db 2
 
-; selectepoch2.asm
-; Epoch selection functions
-_SelectUnixEpochDateLabel:
-_SelectUnixEpochDate equ _SelectUnixEpochDateLabel-branchTableBase
-    .dw SelectUnixEpochDate
-    .db 2
-_SelectNtpEpochDateLabel:
-_SelectNtpEpochDate equ _SelectNtpEpochDateLabel-branchTableBase
-    .dw SelectNtpEpochDate
-    .db 2
-_SelectGpsEpochDateLabel:
-_SelectGpsEpochDate equ _SelectGpsEpochDateLabel-branchTableBase
-    .dw SelectGpsEpochDate
-    .db 2
-_SelectTiosEpochDateLabel:
-_SelectTiosEpochDate equ _SelectTiosEpochDateLabel-branchTableBase
-    .dw SelectTiosEpochDate
-    .db 2
-_SelectCustomEpochDateLabel:
-_SelectCustomEpochDate equ _SelectCustomEpochDateLabel-branchTableBase
-    .dw SelectCustomEpochDate
-    .db 2
-; Custom epoch date functions
-_SetCustomEpochDateLabel:
-_SetCustomEpochDate equ _SetCustomEpochDateLabel-branchTableBase
-    .dw SetCustomEpochDate
-    .db 2
-_GetCustomEpochDateLabel:
-_GetCustomEpochDate equ _GetCustomEpochDateLabel-branchTableBase
-    .dw GetCustomEpochDate
-    .db 2
-
 ; offset2.asm
 _RpnOffsetToSecondsLabel:
 _RpnOffsetToSeconds equ _RpnOffsetToSecondsLabel-branchTableBase
     .dw RpnOffsetToSeconds
     .db 2
+
+; offsetdatetime2.asm
 _RpnOffsetDateTimeToEpochSecondsLabel:
 _RpnOffsetDateTimeToEpochSeconds equ _RpnOffsetDateTimeToEpochSecondsLabel-branchTableBase
     .dw RpnOffsetDateTimeToEpochSeconds
@@ -1610,6 +1612,7 @@ defpage(2)
 #include "time2.asm"
 #include "datetime2.asm"
 #include "offset2.asm"
+#include "offsetdatetime2.asm"
 #include "zone2.asm"
 #include "rtc2.asm"
 #include "formatdate2.asm"
