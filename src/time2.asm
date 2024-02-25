@@ -2,14 +2,12 @@
 ; MIT License
 ; Copyright (c) 2024 Brian T. Park
 ;
+; RpnTime functions.
+;
 ; Labels with Capital letters are intended to be exported to other flash pages
 ; and should be placed in the branch table on Flash Page 0. Labels with
 ; lowercase letters are intended to be private so do not need a branch table
 ; entry.
-;-----------------------------------------------------------------------------
-
-;-----------------------------------------------------------------------------
-; RpnTime functions.
 ;-----------------------------------------------------------------------------
 
 ; Description: Convert the RpnTime{} record in OP1 to number of seconds.

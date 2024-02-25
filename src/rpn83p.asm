@@ -1119,26 +1119,10 @@ _SubRpnDateByRpnDateOrDaysLabel:
 _SubRpnDateByRpnDateOrDays equ _SubRpnDateByRpnDateOrDaysLabel-branchTableBase
     .dw SubRpnDateByRpnDateOrDays
     .db 2
-; RpnDate like and seconds functions
-_RpnDateTimeToEpochSecondsLabel:
-_RpnDateTimeToEpochSeconds equ _RpnDateTimeToEpochSecondsLabel-branchTableBase
-    .dw RpnDateTimeToEpochSeconds
-    .db 2
-_EpochSecondsToRpnDateTimeLabel:
-_EpochSecondsToRpnDateTime equ _EpochSecondsToRpnDateTimeLabel-branchTableBase
-    .dw EpochSecondsToRpnDateTime
-    .db 2
+; RpnDate related and seconds functions
 _EpochSecondsToRpnDateLabel:
 _EpochSecondsToRpnDate equ _EpochSecondsToRpnDateLabel-branchTableBase
     .dw EpochSecondsToRpnDate
-    .db 2
-_AddRpnDateTimeBySecondsLabel:
-_AddRpnDateTimeBySeconds equ _AddRpnDateTimeBySecondsLabel-branchTableBase
-    .dw AddRpnDateTimeBySeconds
-    .db 2
-_SubRpnDateTimeByRpnDateTimeOrSecondsLabel:
-_SubRpnDateTimeByRpnDateTimeOrSeconds equ _SubRpnDateTimeByRpnDateTimeOrSecondsLabel-branchTableBase
-    .dw SubRpnDateTimeByRpnDateTimeOrSeconds
     .db 2
 
 ; time2.asm
@@ -1149,6 +1133,24 @@ _RpnTimeToSeconds equ _RpnTimeToSecondsLabel-branchTableBase
 _SecondsToRpnTimeLabel:
 _SecondsToRpnTime equ _SecondsToRpnTimeLabel-branchTableBase
     .dw SecondsToRpnTime
+    .db 2
+
+; datetime2.asm
+_RpnDateTimeToEpochSecondsLabel:
+_RpnDateTimeToEpochSeconds equ _RpnDateTimeToEpochSecondsLabel-branchTableBase
+    .dw RpnDateTimeToEpochSeconds
+    .db 2
+_EpochSecondsToRpnDateTimeLabel:
+_EpochSecondsToRpnDateTime equ _EpochSecondsToRpnDateTimeLabel-branchTableBase
+    .dw EpochSecondsToRpnDateTime
+    .db 2
+_AddRpnDateTimeBySecondsLabel:
+_AddRpnDateTimeBySeconds equ _AddRpnDateTimeBySecondsLabel-branchTableBase
+    .dw AddRpnDateTimeBySeconds
+    .db 2
+_SubRpnDateTimeByRpnDateTimeOrSecondsLabel:
+_SubRpnDateTimeByRpnDateTimeOrSeconds equ _SubRpnDateTimeByRpnDateTimeOrSecondsLabel-branchTableBase
+    .dw SubRpnDateTimeByRpnDateTimeOrSeconds
     .db 2
 
 ; selectepoch2.asm
@@ -1606,6 +1608,7 @@ defpage(2)
 #include "epoch2.asm"
 #include "date2.asm"
 #include "time2.asm"
+#include "datetime2.asm"
 #include "offset2.asm"
 #include "zone2.asm"
 #include "rtc2.asm"
