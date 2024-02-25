@@ -1141,6 +1141,12 @@ _SubRpnDateTimeByRpnDateTimeOrSeconds equ _SubRpnDateTimeByRpnDateTimeOrSecondsL
     .dw SubRpnDateTimeByRpnDateTimeOrSeconds
     .db 2
 
+; time2.asm
+_RpnTimeToSecondsLabel:
+_RpnTimeToSeconds equ _RpnTimeToSecondsLabel-branchTableBase
+    .dw RpnTimeToSeconds
+    .db 2
+
 ; selectepoch2.asm
 ; Epoch selection functions
 _SelectUnixEpochDateLabel:

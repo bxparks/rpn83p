@@ -8,6 +8,29 @@
 ; entry.
 ;-----------------------------------------------------------------------------
 
+;-----------------------------------------------------------------------------
+; RpnTime functions.
+;-----------------------------------------------------------------------------
+
+; Description: Convert the RpnTime{} record in OP1 to number of seconds.
+; Input: OP1:RpnTime=input
+; Output: OP1:real
+; Destroys: all, OP1-OP6
+RpnTimeToSeconds:
+    ; reserve 2 slots on FPS
+    call pushRaw9Op1 ; FPS=[rpnTime]; HL=rpnTime
+    ex de, hl ; DE=rpnTime
+    call reserveRaw9 ; FPS=[rpnTime,seconds]; HL=seconds
+    ; convert to seconds
+    inc de ; DE=time, skip type byte
+    call timeToSeconds ; HL=seconds
+    ; copy back to OP1
+    call popRaw9Op1 ; FPS=[rpnTime]; OP1=seconds
+    call dropRaw9 ; FPS=[]
+    jp ConvertI40ToOP1 ; OP1=float(seconds)
+
+;-----------------------------------------------------------------------------
+
 ; Description: Convert Time{hh,mm,ss} to seconds.
 ; Input:
 ;   - DE:(Time*)=time

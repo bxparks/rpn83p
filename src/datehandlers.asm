@@ -37,6 +37,8 @@ mDateRelatedToSecondsHandler:
     call closeInputAndRecallRpnDateRelatedX ; OP1==dateRelatedObject; A=type
     cp rpnObjectTypeDate ; ZF=1 if RpnDate
     jr z, mDateRelatedToSecondsHandlerDate
+    cp rpnObjectTypeTime ; ZF=1 if RpnDateTime
+    jr z, mDateRelatedToSecondsHandlerTime
     cp rpnObjectTypeDateTime ; ZF=1 if RpnDateTime
     jr z, mDateRelatedToSecondsHandlerDateTime
     cp rpnObjectTypeOffset ; ZF=1 if RpnOffset
@@ -46,6 +48,9 @@ mDateRelatedToSecondsHandler:
     bcall(_ErrDataType)
 mDateRelatedToSecondsHandlerDate:
     bcall(_RpnDateToEpochSeconds) ; OP1=epochSeconds
+    jr mDateRelatedToSecondsHandlerEnd
+mDateRelatedToSecondsHandlerTime:
+    bcall(_RpnTimeToSeconds) ; OP1=epochSeconds
     jr mDateRelatedToSecondsHandlerEnd
 mDateRelatedToSecondsHandlerDateTime:
     bcall(_RpnDateTimeToEpochSeconds) ; OP1=epochSeconds

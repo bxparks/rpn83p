@@ -164,6 +164,8 @@ closeInputAndRecallRpnDateRelatedX:
     call rclX ; A=objectType
     cp rpnObjectTypeDate
     ret z
+    cp rpnObjectTypeTime
+    ret z
     cp rpnObjectTypeDateTime
     ret z
     cp rpnObjectTypeOffset
