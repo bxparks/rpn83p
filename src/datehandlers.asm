@@ -64,6 +64,11 @@ mDateRelatedToSecondsHandlerOffsetDateTime:
 mDateRelatedToSecondsHandlerEnd:
     jp replaceX
 
+mSecondsToTimeHandler:
+    call closeInputAndRecallX ; OP1=X=seconds
+    bcall(_SecondsToRpnTime) ; OP1=Time(seconds)
+    jp replaceX
+
 mEpochSecondsToDateHandler:
     call closeInputAndRecallX ; OP1=X=epochSeconds
     bcall(_EpochSecondsToRpnDate) ; OP1=Date(epochSeconds)

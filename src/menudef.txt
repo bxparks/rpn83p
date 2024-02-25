@@ -391,7 +391,7 @@ MenuGroup root mRoot [
       ]
       MenuRow [
         MenuItem D<Scross><Sconvert>S mDateRelatedToSeconds
-        MenuItem * *
+        MenuItem S<Sconvert>T mSecondsToTime
         MenuItem S<Sconvert>D mEpochSecondstoDate
         MenuItem S<Sconvert>DT mEpochSecondstoDateTime
         MenuItem S<Sconvert>DZ mEpochSecondstoOffsetDateTime

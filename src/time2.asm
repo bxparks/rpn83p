@@ -14,8 +14,8 @@
 
 ; Description: Convert the RpnTime{} record in OP1 to number of seconds.
 ; Input: OP1:RpnTime=input
-; Output: OP1:real
-; Destroys: all, OP1-OP6
+; Output: OP1:Real=seconds
+; Destroys: all, OP1-OP2
 RpnTimeToSeconds:
     ; reserve 2 slots on FPS
     call pushRaw9Op1 ; FPS=[rpnTime]; HL=rpnTime
@@ -28,6 +28,39 @@ RpnTimeToSeconds:
     call popRaw9Op1 ; FPS=[rpnTime]; OP1=seconds
     call dropRaw9 ; FPS=[]
     jp ConvertI40ToOP1 ; OP1=float(seconds)
+
+; Description: Convert the seconds to an RpnTime{} object.
+; Input: OP1:Real=seconds
+; Output: OP1:RpnTime
+; Destroys: all, OP1-OP2
+; Throws: ErrDomain if seconds>=86400 (i.e. 24:00:00)
+SecondsToRpnTime:
+    ; get relative seconds
+    call ConvertOP1ToU40 ; HL=OP1=u40(seconds)
+    ex de, hl ; DE=seconds
+    ; check OP1<86400
+    ld hl, OP2
+    ld a, 1
+    ld bc, 20864 ; ABC=86400 seconds per day
+    call setU40ToABC ; HL=OP2=86400
+    ex de, hl ; HL=seconds; DE=86400
+    call cmpU40U40 ; CF=0 if seconds>=86400
+    jr nc, secondsToRpnTimeErr
+    ; reserve 2 slots on the FPS
+    call reserveRaw9 ; FPS=[rpnTime]; HL=rpnTime
+    ex de, hl ; DE=rpnTime
+    call pushRaw9Op1 ; FPS=[rpnTime,seconds]; HL=seconds
+    ; convert to RpnTime
+    ex de, hl ; DE=seconds; HL=rpnTime
+    ld a, rpnObjectTypeTime
+    ld (hl), a
+    inc hl ; HL=rpnTime+1=dateTime
+    call secondsToTime ; HL=HL+sizeof(Time)
+    ; clean up FPS
+    call dropRaw9
+    jp popRaw9Op1
+secondsToRpnTimeErr:
+    bcall(_ErrDomain)
 
 ;-----------------------------------------------------------------------------
 

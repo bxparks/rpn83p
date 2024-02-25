@@ -1146,6 +1146,10 @@ _RpnTimeToSecondsLabel:
 _RpnTimeToSeconds equ _RpnTimeToSecondsLabel-branchTableBase
     .dw RpnTimeToSeconds
     .db 2
+_SecondsToRpnTimeLabel:
+_SecondsToRpnTime equ _SecondsToRpnTimeLabel-branchTableBase
+    .dw SecondsToRpnTime
+    .db 2
 
 ; selectepoch2.asm
 ; Epoch selection functions
