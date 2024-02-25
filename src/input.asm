@@ -154,9 +154,10 @@ closeInputAndRecallRpnDateLikeX:
     ret z
     bcall(_ErrDataType)
 
-; Close the input buffer, parse RpnDate{}, RpnDateTime{}, RpnOffsetDateTime{},
-; or RpnOffset{} record, place it into OP1.
-closeInputAndRecallRpnDateLikeOrOffsetX:
+; Close and parse the input buffer, place the value into OP1, and return
+; successfully if the input was a date-related object: RpnDate, RpnTime,
+; RpnDateTime, RpnOffset, RpnOffsetDateTime.
+closeInputAndRecallRpnDateRelatedX:
     call closeInput
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     call rclX ; A=objectType
