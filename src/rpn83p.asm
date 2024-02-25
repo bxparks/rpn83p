@@ -1595,6 +1595,7 @@ defpage(2)
 #include "selectepoch2.asm"
 #include "epoch2.asm"
 #include "date2.asm"
+#include "time2.asm"
 #include "offset2.asm"
 #include "zone2.asm"
 #include "rtc2.asm"
