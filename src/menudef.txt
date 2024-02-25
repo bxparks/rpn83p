@@ -422,8 +422,8 @@ MenuGroup root mRoot [
         MenuGroup RTC mRtc [
           MenuRow [
             MenuItem NOW mRtcGetNow # current epochSeconds
-            MenuItem NOWD mRtcGetDate # current Date
             MenuItem NOWT mRtcGetTime # current Time
+            MenuItem NOWD mRtcGetDate # current Date
             MenuItem NWDZ mRtcGetOffsetDateTime # current OffsetDateTime
           ]
           MenuRow [
