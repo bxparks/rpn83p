@@ -2044,14 +2044,14 @@ mEpochDaysToDateId equ 216
     .dw mEpochDaysToDateHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
 ; MenuGroup DATE: children: row 1
-mDateLikeToEpochSeconds:
-mDateLikeToEpochSecondsId equ 217
-    .dw mDateLikeToEpochSecondsId ; id
+mDateRelatedToSeconds:
+mDateRelatedToSecondsId equ 217
+    .dw mDateRelatedToSecondsId ; id
     .dw mDateId ; parentId
-    .dw mDateLikeToEpochSecondsNameId ; nameId
+    .dw mDateRelatedToSecondsNameId ; nameId
     .db 0 ; numRows
     .dw 0 ; rowBeginId or altNameId
-    .dw mDateLikeToEpochSecondsHandler ; handler (to be implemented)
+    .dw mDateRelatedToSecondsHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
 mBlank218:
 mBlank218Id equ 218
@@ -2810,8 +2810,8 @@ mDateToEpochDaysNameId equ 217
     .dw mDateToEpochDaysName
 mEpochDaysToDateNameId equ 218
     .dw mEpochDaysToDateName
-mDateLikeToEpochSecondsNameId equ 219
-    .dw mDateLikeToEpochSecondsName
+mDateRelatedToSecondsNameId equ 219
+    .dw mDateRelatedToSecondsName
 mEpochSecondstoDateNameId equ 220
     .dw mEpochSecondstoDateName
 mEpochSecondstoDateTimeNameId equ 221
@@ -3306,7 +3306,7 @@ mDateToEpochDaysName:
     .db 'D', Sconvert, 'D', 'Y', 0
 mEpochDaysToDateName:
     .db 'D', 'Y', Sconvert, 'D', 0
-mDateLikeToEpochSecondsName:
+mDateRelatedToSecondsName:
     .db 'D', Scross, Sconvert, 'S', 0
 mEpochSecondstoDateName:
     .db 'S', Sconvert, 'D', 0
