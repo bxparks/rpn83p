@@ -1208,7 +1208,8 @@ _SubRpnOffsetDateTimeByRpnOffsetDateTimeOrSecondsLabel:
 _SubRpnOffsetDateTimeByRpnOffsetDateTimeOrSeconds equ _SubRpnOffsetDateTimeByRpnOffsetDateTimeOrSecondsLabel-branchTableBase
     .dw SubRpnOffsetDateTimeByRpnOffsetDateTimeOrSeconds
     .db 2
-;
+
+; zoneconversion2.asm
 _ConvertRpnDateTimeToTimeZoneAsOffsetLabel:
 _ConvertRpnDateTimeToTimeZoneAsOffset equ _ConvertRpnDateTimeToTimeZoneAsOffsetLabel-branchTableBase
     .dw ConvertRpnDateTimeToTimeZoneAsOffset
@@ -1614,6 +1615,7 @@ defpage(2)
 #include "datetime2.asm"
 #include "offset2.asm"
 #include "offsetdatetime2.asm"
+#include "zoneconversion2.asm"
 #include "zone2.asm"
 #include "rtc2.asm"
 #include "formatdate2.asm"

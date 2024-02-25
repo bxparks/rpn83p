@@ -2,6 +2,10 @@
 ; MIT License
 ; Copyright (c) 2024 Brian T. Park
 ;
+; Routines related to timezones. Timezones are implemented as fixed UTC offsets
+; although it is probably possible to support IANA TZDB in the future, with a
+; lot of work.
+;
 ; Labels with Capital letters are intended to be exported to other flash pages
 ; and should be placed in the branch table on Flash Page 0. Labels with
 ; lowercase letters are intended to be private so do not need a branch table
