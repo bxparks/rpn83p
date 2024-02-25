@@ -390,8 +390,8 @@ MenuGroup root mRoot [
         MenuItem DY<Sconvert>D mEpochDaysToDate
       ]
       MenuRow [
-        MenuItem D<Scross><Sconvert>S mDateLikeToEpochSeconds
-        MenuItem * *
+        MenuItem D<Scross><Sconvert>S mDateRelatedToSeconds
+        MenuItem S<Sconvert>T mSecondsToTime
         MenuItem S<Sconvert>D mEpochSecondstoDate
         MenuItem S<Sconvert>DT mEpochSecondstoDateTime
         MenuItem S<Sconvert>DZ mEpochSecondstoOffsetDateTime

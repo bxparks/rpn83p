@@ -2044,23 +2044,23 @@ mEpochDaysToDateId equ 216
     .dw mEpochDaysToDateHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
 ; MenuGroup DATE: children: row 1
-mDateLikeToEpochSeconds:
-mDateLikeToEpochSecondsId equ 217
-    .dw mDateLikeToEpochSecondsId ; id
+mDateRelatedToSeconds:
+mDateRelatedToSecondsId equ 217
+    .dw mDateRelatedToSecondsId ; id
     .dw mDateId ; parentId
-    .dw mDateLikeToEpochSecondsNameId ; nameId
+    .dw mDateRelatedToSecondsNameId ; nameId
     .db 0 ; numRows
     .dw 0 ; rowBeginId or altNameId
-    .dw mDateLikeToEpochSecondsHandler ; handler (to be implemented)
+    .dw mDateRelatedToSecondsHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
-mBlank218:
-mBlank218Id equ 218
-    .dw mBlank218Id ; id
+mSecondsToTime:
+mSecondsToTimeId equ 218
+    .dw mSecondsToTimeId ; id
     .dw mDateId ; parentId
-    .dw mNullNameId ; nameId
+    .dw mSecondsToTimeNameId ; nameId
     .db 0 ; numRows
     .dw 0 ; rowBeginId or altNameId
-    .dw mNullHandler ; handler (predefined)
+    .dw mSecondsToTimeHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
 mEpochSecondstoDate:
 mEpochSecondstoDateId equ 219
@@ -2370,7 +2370,7 @@ mRtcSetClockId equ 251
     .dw 0 ; nameSelector
 
 ; Table of 2-byte pointers to names in the pool of strings below.
-mMenuNameTableSize equ 247
+mMenuNameTableSize equ 248
 mMenuNameTable:
 mNullNameId equ 0
     .dw mNullName
@@ -2810,61 +2810,63 @@ mDateToEpochDaysNameId equ 217
     .dw mDateToEpochDaysName
 mEpochDaysToDateNameId equ 218
     .dw mEpochDaysToDateName
-mDateLikeToEpochSecondsNameId equ 219
-    .dw mDateLikeToEpochSecondsName
-mEpochSecondstoDateNameId equ 220
+mDateRelatedToSecondsNameId equ 219
+    .dw mDateRelatedToSecondsName
+mSecondsToTimeNameId equ 220
+    .dw mSecondsToTimeName
+mEpochSecondstoDateNameId equ 221
     .dw mEpochSecondstoDateName
-mEpochSecondstoDateTimeNameId equ 221
+mEpochSecondstoDateTimeNameId equ 222
     .dw mEpochSecondstoDateTimeName
-mEpochSecondstoOffsetDateTimeNameId equ 222
+mEpochSecondstoOffsetDateTimeNameId equ 223
     .dw mEpochSecondstoOffsetDateTimeName
-mEpochNameId equ 223
+mEpochNameId equ 224
     .dw mEpochName
-mTimeZoneNameId equ 224
+mTimeZoneNameId equ 225
     .dw mTimeZoneName
-mRtcNameId equ 225
+mRtcNameId equ 226
     .dw mRtcName
-mEpochCustomNameId equ 226
+mEpochCustomNameId equ 227
     .dw mEpochCustomName
-mEpochCustomAltNameId equ 227
+mEpochCustomAltNameId equ 228
     .dw mEpochCustomAltName
-mEpochUnixNameId equ 228
+mEpochUnixNameId equ 229
     .dw mEpochUnixName
-mEpochUnixAltNameId equ 229
+mEpochUnixAltNameId equ 230
     .dw mEpochUnixAltName
-mEpochNtpNameId equ 230
+mEpochNtpNameId equ 231
     .dw mEpochNtpName
-mEpochNtpAltNameId equ 231
+mEpochNtpAltNameId equ 232
     .dw mEpochNtpAltName
-mEpochGpsNameId equ 232
+mEpochGpsNameId equ 233
     .dw mEpochGpsName
-mEpochGpsAltNameId equ 233
+mEpochGpsAltNameId equ 234
     .dw mEpochGpsAltName
-mEpochTiosNameId equ 234
+mEpochTiosNameId equ 235
     .dw mEpochTiosName
-mEpochTiosAltNameId equ 235
+mEpochTiosAltNameId equ 236
     .dw mEpochTiosAltName
-mEpochSetCustomNameId equ 236
+mEpochSetCustomNameId equ 237
     .dw mEpochSetCustomName
-mEpochGetCustomNameId equ 237
+mEpochGetCustomNameId equ 238
     .dw mEpochGetCustomName
-mSetTimeZoneNameId equ 238
+mSetTimeZoneNameId equ 239
     .dw mSetTimeZoneName
-mGetTimeZoneNameId equ 239
+mGetTimeZoneNameId equ 240
     .dw mGetTimeZoneName
-mRtcGetNowNameId equ 240
+mRtcGetNowNameId equ 241
     .dw mRtcGetNowName
-mRtcGetDateNameId equ 241
+mRtcGetDateNameId equ 242
     .dw mRtcGetDateName
-mRtcGetTimeNameId equ 242
+mRtcGetTimeNameId equ 243
     .dw mRtcGetTimeName
-mRtcGetOffsetDateTimeNameId equ 243
+mRtcGetOffsetDateTimeNameId equ 244
     .dw mRtcGetOffsetDateTimeName
-mRtcSetTimeZoneNameId equ 244
+mRtcSetTimeZoneNameId equ 245
     .dw mRtcSetTimeZoneName
-mRtcGetTimeZoneNameId equ 245
+mRtcGetTimeZoneNameId equ 246
     .dw mRtcGetTimeZoneName
-mRtcSetClockNameId equ 246
+mRtcSetClockNameId equ 247
     .dw mRtcSetClockName
 
 ; Table of names as NUL terminated C strings.
@@ -3306,8 +3308,10 @@ mDateToEpochDaysName:
     .db 'D', Sconvert, 'D', 'Y', 0
 mEpochDaysToDateName:
     .db 'D', 'Y', Sconvert, 'D', 0
-mDateLikeToEpochSecondsName:
+mDateRelatedToSecondsName:
     .db 'D', Scross, Sconvert, 'S', 0
+mSecondsToTimeName:
+    .db 'S', Sconvert, 'T', 0
 mEpochSecondstoDateName:
     .db 'S', Sconvert, 'D', 0
 mEpochSecondstoDateTimeName:

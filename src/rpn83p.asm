@@ -1141,6 +1141,16 @@ _SubRpnDateTimeByRpnDateTimeOrSeconds equ _SubRpnDateTimeByRpnDateTimeOrSecondsL
     .dw SubRpnDateTimeByRpnDateTimeOrSeconds
     .db 2
 
+; time2.asm
+_RpnTimeToSecondsLabel:
+_RpnTimeToSeconds equ _RpnTimeToSecondsLabel-branchTableBase
+    .dw RpnTimeToSeconds
+    .db 2
+_SecondsToRpnTimeLabel:
+_SecondsToRpnTime equ _SecondsToRpnTimeLabel-branchTableBase
+    .dw SecondsToRpnTime
+    .db 2
+
 ; selectepoch2.asm
 ; Epoch selection functions
 _SelectUnixEpochDateLabel:
@@ -1595,6 +1605,7 @@ defpage(2)
 #include "selectepoch2.asm"
 #include "epoch2.asm"
 #include "date2.asm"
+#include "time2.asm"
 #include "offset2.asm"
 #include "zone2.asm"
 #include "rtc2.asm"

@@ -33,30 +33,40 @@ mEpochDaysToDateHandler:
 ; DATE > Row 2
 ;-----------------------------------------------------------------------------
 
-mDateLikeToEpochSecondsHandler:
-    call closeInputAndRecallRpnDateLikeOrOffsetX ; OP1=X=RpnDateLike or Offset
-    call checkOp1Date ; ZF=1 if RpnDate
-    jr z, mDateLikeToEpochSecondsHandlerDate
-    call checkOp1DateTime ; ZF=1 if RpnDateTime
-    jr z, mDateLikeToEpochSecondsHandlerDateTime
-    call checkOp1Offset ; ZF=1 if RpnOffset
-    jr z, mDateLikeToEpochSecondsHandlerOffset
-    call checkOp1OffsetDateTime ; ZF=1 if RpnOffsetDateTime
-    jr z, mDateLikeToEpochSecondsHandlerOffsetDateTime
+mDateRelatedToSecondsHandler:
+    call closeInputAndRecallRpnDateRelatedX ; OP1==dateRelatedObject; A=type
+    cp rpnObjectTypeDate ; ZF=1 if RpnDate
+    jr z, mDateRelatedToSecondsHandlerDate
+    cp rpnObjectTypeTime ; ZF=1 if RpnDateTime
+    jr z, mDateRelatedToSecondsHandlerTime
+    cp rpnObjectTypeDateTime ; ZF=1 if RpnDateTime
+    jr z, mDateRelatedToSecondsHandlerDateTime
+    cp rpnObjectTypeOffset ; ZF=1 if RpnOffset
+    jr z, mDateRelatedToSecondsHandlerOffset
+    cp rpnObjectTypeOffsetDateTime ; ZF=1 if RpnOffsetDateTime
+    jr z, mDateRelatedToSecondsHandlerOffsetDateTime
     bcall(_ErrDataType)
-mDateLikeToEpochSecondsHandlerDate:
+mDateRelatedToSecondsHandlerDate:
     bcall(_RpnDateToEpochSeconds) ; OP1=epochSeconds
-    jr mDateLikeToEpochSecondsHandlerEnd
-mDateLikeToEpochSecondsHandlerDateTime:
+    jr mDateRelatedToSecondsHandlerEnd
+mDateRelatedToSecondsHandlerTime:
+    bcall(_RpnTimeToSeconds) ; OP1=epochSeconds
+    jr mDateRelatedToSecondsHandlerEnd
+mDateRelatedToSecondsHandlerDateTime:
     bcall(_RpnDateTimeToEpochSeconds) ; OP1=epochSeconds
-    jr mDateLikeToEpochSecondsHandlerEnd
-mDateLikeToEpochSecondsHandlerOffset:
+    jr mDateRelatedToSecondsHandlerEnd
+mDateRelatedToSecondsHandlerOffset:
     bcall(_RpnOffsetToSeconds) ; OP1=seconds
-    jr mDateLikeToEpochSecondsHandlerEnd
-mDateLikeToEpochSecondsHandlerOffsetDateTime:
+    jr mDateRelatedToSecondsHandlerEnd
+mDateRelatedToSecondsHandlerOffsetDateTime:
     bcall(_RpnOffsetDateTimeToEpochSeconds) ; OP1=epochSeconds
     ; [[fallthrough]]
-mDateLikeToEpochSecondsHandlerEnd:
+mDateRelatedToSecondsHandlerEnd:
+    jp replaceX
+
+mSecondsToTimeHandler:
+    call closeInputAndRecallX ; OP1=X=seconds
+    bcall(_SecondsToRpnTime) ; OP1=Time(seconds)
     jp replaceX
 
 mEpochSecondsToDateHandler:
