@@ -35,9 +35,9 @@ RtcGetTime:
     call getRtcNowAsEpochSeconds ; HL=OP1=epochSeconds
     ; Convert to RpnOffsetDateTime using current offset
     call epochSecondsToRpnOffsetDateTimeAlt ; OP1=RpnOffsetDateTime
-    ; Convert to RpnTime
+    ; Transform to RpnTime
     ld hl, OP1
-    call convertToTime ; HL=(RpnTime*)=rpnTime
+    call transformToTime ; HL=(RpnTime*)=rpnTime
     ret
 
 RtcGetDate:
@@ -45,9 +45,9 @@ RtcGetDate:
     call getRtcNowAsEpochSeconds ; HL=OP1=epochSeconds
     ; Convert to RpnOffsetDateTime using current offset
     call epochSecondsToRpnOffsetDateTimeAlt ; OP1=RpnOffsetDateTime
-    ; Convert RpnOffsetDateTime to RpnDate.
+    ; Transform RpnOffsetDateTime to RpnDate.
     ld hl, OP1
-    call convertToDate ; HL=(RpnDate*)=rpnDate
+    call transformToDate ; HL=(RpnDate*)=rpnDate
     ret
 
 ; Description: Retrieve the current RTC as an OffsetDateTime using the current
