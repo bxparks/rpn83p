@@ -335,6 +335,97 @@ formatOffsetDateTimeString:
     ret
 
 ;-----------------------------------------------------------------------------
+
+; Description: Format the OffsetDateTime Record in HL to DE.
+; Input:
+;   - HL:(const RpnOffsetDateTime*)
+;   - DE:(char*)=destBuf
+; Output:
+;   - HL: incremented to next record field
+;   - DE: points to NUL char at end of string
+FormatDayOfWeek:
+    ld a, (formatRecordMode)
+    cp a, formatRecordModeString
+    jr z, formatRpnDayOfWeekString
+    ; [[fallthrough]]
+
+formatRpnDayOfWeekRaw:
+    inc hl ; skip type byte
+formatDayOfWeekRaw:
+    ; print "DW{"
+    ld a, 'D'
+    ld (de), a
+    inc de
+    ld a, 'W'
+    ld (de), a
+    inc de
+    ld a, LlBrace
+    ld (de), a
+    inc de
+    ; print the single ISO day of week number [1-7]
+    ld a, (hl)
+    ex de, hl ; HL=destBuf
+    call FormatAToString ; HL=string(A)
+    ex de, hl ; DE=destBuf
+    ; print '}'
+    ld a, LrBrace
+    ld (de), a
+    inc de
+    ; add NUL
+    xor a
+    ld (de), a
+    ret
+
+formatRpnDayOfWeekString:
+    inc hl ; skip type byte
+formatDayOfWeekString:
+    ld a, (hl) ; A=dayOfWeek
+    ; check range
+    or a
+    jr z, formatDayOfWeekStringErr
+    cp dayOfWeekStringsLen
+    jr nc, formatDayOfWeekStringErr
+formatDayOfWeekStringConvert:
+    ; convert to human readable string
+    ld hl, dayOfWeekStrings
+    push de
+    call getStringPageTwo ; HL:(const char*)=string
+    pop de
+    jp copyCStringPageTwo
+formatDayOfWeekStringErr:
+    ld a, 0
+    jr formatDayOfWeekStringConvert
+
+; ISO DayOfWeek ranges from 1-7, starting on Monday
+dayOfWeekStringsLen equ 8
+dayOfWeekStrings:
+    .dw dayOfWeekStringErr ; 0
+    .dw dayOfWeekStringMon ; 1
+    .dw dayOfWeekStringTue ; 2
+    .dw dayOfWeekStringWed ; 3
+    .dw dayOfWeekStringThu ; 4
+    .dw dayOfWeekStringFri ; 5
+    .dw dayOfWeekStringSat ; 6
+    .dw dayOfWeekStringSun ; 7
+
+dayOfWeekStringErr:
+    .db "<Err>", 0
+dayOfWeekStringMon:
+    .db "Mon", 0
+dayOfWeekStringTue:
+    .db "Tue", 0
+dayOfWeekStringWed:
+    .db "Wed", 0
+dayOfWeekStringThu:
+    .db "Thu", 0
+dayOfWeekStringFri:
+    .db "Fri", 0
+dayOfWeekStringSat:
+    .db "Sat", 0
+dayOfWeekStringSun:
+    .db "Sun", 0
+
+;-----------------------------------------------------------------------------
 ; Lower-level formatting routines.
 ;-----------------------------------------------------------------------------
 

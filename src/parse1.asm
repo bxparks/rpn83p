@@ -270,6 +270,8 @@ parseInputBufRecordTagged:
     jr z, parseInputBufOffset
     cp recordTagTypeOffsetDateTime
     jr z, parseInputBufOffsetDateTime
+    cp recordTagTypeDayOfWeek
+    jr z, parseInputBufDayOfWeek
     bcall(_ErrInvalid) ; should never happen
 parseInputBufRecordNaked:
     ; Naked records cannot support Time because it has the same number of
@@ -335,4 +337,14 @@ parseInputBufOffsetDateTime:
     pop hl ; HL=OP1+1
     bcall(_ValidateOffsetDateTime)
     call expandOp1ToOp2PageOne ; sizeof(OffsetDateTime)>9
+    ret
+parseInputBufDayOfWeek:
+    ld de, OP1
+    ld a, rpnObjectTypeDayOfWeek
+    ld (de), a
+    inc de ; skip type byte
+    push de
+    call parseDayOfWeek
+    pop hl ; HL=OP1+1
+    bcall(_ValidateDayOfWeek)
     ret

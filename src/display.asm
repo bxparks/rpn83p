@@ -948,7 +948,7 @@ clearShowAreaLoop:
 ; (but only if the floating point did not spill over to the next line).
 ; Input:
 ;   - A: objectType
-;   - B: displayFontMask
+;   - B=displayFontMask
 ;   - OP1: floating point number
 ; Destroys: A, HL, OP3-OP6
 printOP1:
@@ -975,6 +975,9 @@ printOP1:
     cp rpnObjectTypeOffsetDateTime
     jp z, printOP1OffsetDateTimeRecord
     ;
+    cp rpnObjectTypeDayOfWeek
+    jp z, printOP1DayOfWeekRecord
+    ;
     ld hl, msgRpnObjectTypeUnknown
     jp printHLString
 
@@ -985,7 +988,7 @@ printOP1:
 ; EraseEOL(), so the displayFontMask does not need to be used.
 ; Input:
 ;   - OP1: real number
-;   - B: displayFontMask
+;   - B=displayFontMask
 ; Destroys: OP3-OP6
 printOP1Real:
     call displayStackSetLargeFont
@@ -1018,7 +1021,7 @@ printOP1Real:
 ;
 ; Input:
 ;   - CP1: complex number
-;   - B: displayFontMask
+;   - B=displayFontMask
 ; Destroys: OP3-OP6
 printOP1Complex:
     call eraseEOLIfNeeded ; uses B
@@ -1076,7 +1079,7 @@ printOP1ComplexDeg:
 ; if the previous rendering was done in large font (fontMask==0).
 ; Input:
 ;   - (displayStackFontFlags)
-;   - B: displayFontMask
+;   - B=displayFontMask
 ; Destroys: A, HL
 eraseEOLIfNeeded:
     ld hl, displayStackFontFlags
@@ -1087,7 +1090,7 @@ eraseEOLIfNeeded:
     ret
 
 ; Description: Mark the stack line identified by B as using small font.
-; Input: B: displayFontMask
+; Input: B=displayFontMask
 ; Output: displayStackFontFlags |= B
 ; Destroys: A, HL
 displayStackSetSmallFont:
@@ -1098,7 +1101,7 @@ displayStackSetSmallFont:
     ret
 
 ; Description: Mark the stack line identified by B as using large font.
-; Input: B: displayFontMask
+; Input: B=displayFontMask
 ; Output: displayStackFontFlags &= (~B)
 ; Destroys: A, HL
 displayStackSetLargeFont:
@@ -1412,10 +1415,10 @@ formatBinDigitsEnd:
 ; RpnObject records.
 ;-----------------------------------------------------------------------------
 
-; Description: Print the Date Record in OP1 using small font.
+; Description: Print the RpnDate Record in OP1 using small font.
 ; Input:
 ;   - OP1:RpnDate
-;   - B: displayFontMask
+;   - B=displayFontMask
 ; Destroys: OP3-OP6
 printOP1DateRecord:
     call eraseEOLIfNeeded ; uses B
@@ -1432,10 +1435,10 @@ printOP1DateRecord:
     call vPutSmallS
     jp vEraseEOL
 
-; Description: Print the Time Record in OP1 using small font.
+; Description: Print the RpnTime Record in OP1 using small font.
 ; Input:
-;   - OP1: Time Record
-;   - B: displayFontMask
+;   - OP1:RpnTime Record
+;   - B=displayFontMask
 ; Destroys: OP3-OP6
 printOP1TimeRecord:
     call eraseEOLIfNeeded ; uses B
@@ -1452,10 +1455,10 @@ printOP1TimeRecord:
     call vPutSmallS
     jp vEraseEOL
 
-; Description: Print the DateTime Record in OP1 using small font.
+; Description: Print the RpnDateTime Record in OP1 using small font.
 ; Input:
-;   - OP1: DateTime Record
-;   - B: displayFontMask
+;   - OP1:RpnDateTime Record
+;   - B=displayFontMask
 ; Destroys: OP3-OP6
 printOP1DateTimeRecord:
     call eraseEOLIfNeeded ; uses B
@@ -1470,10 +1473,10 @@ printOP1DateTimeRecord:
     call vPutSmallS
     jp vEraseEOL
 
-; Description: Print the Offset Record in OP1 using small font.
+; Description: Print the RpnOffset Record in OP1 using small font.
 ; Input:
-;   - OP1: Offset Record
-;   - B: displayFontMask
+;   - OP1:RpnOffset Record
+;   - B=displayFontMask
 ; Destroys: all, OP3-OP6
 printOP1OffsetRecord:
     call eraseEOLIfNeeded ; uses B
@@ -1487,10 +1490,10 @@ printOP1OffsetRecord:
     call vPutSmallS
     jp vEraseEOL
 
-; Description: Print the OffsetDateTime Record in OP1 using small font.
+; Description: Print the RpnOffsetDateTime Record in OP1 using small font.
 ; Input:
-;   - OP1: OffsetDateTime Record
-;   - B: displayFontMask
+;   - OP1:RpnOffsetDateTime Record
+;   - B=displayFontMask
 ; Destroys: all, OP3-OP6
 printOP1OffsetDateTimeRecord:
     call eraseEOLIfNeeded ; uses B
@@ -1502,6 +1505,23 @@ printOP1OffsetDateTimeRecord:
     push de
     bcall(_FormatOffsetDateTime)
     call expandOp1ToOp2
+    ; print string stored in OP3
+    pop hl ; HL=OP3
+    call vPutSmallS
+    jp vEraseEOL
+
+; Description: Print the RpnDayOfWeek record in OP1 using small font.
+; Input:
+;   - OP1:RpnDayOfWeek
+;   - B=displayFontMask
+printOP1DayOfWeekRecord:
+    call eraseEOLIfNeeded ; uses B
+    call displayStackSetSmallFont
+    ; format OP1
+    ld hl, OP1
+    ld de, OP3 ; destPointer
+    push de
+    bcall(_FormatDayOfWeek)
     ; print string stored in OP3
     pop hl ; HL=OP3
     call vPutSmallS

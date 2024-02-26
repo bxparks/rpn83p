@@ -102,3 +102,21 @@ checkOp3OffsetDateTimePageTwo:
     and $1f
     cp rpnObjectTypeOffsetDateTime
     ret
+
+;-----------------------------------------------------------------------------
+
+; Description: Check if OP1 is an RpnDayOfWeek.
+; Output: ZF=1 if RpnDayOfWeek
+checkOp1DayOfWeekPageTwo:
+    ld a, (OP1)
+    and $1f
+    cp rpnObjectTypeDayOfWeek
+    ret
+
+; Description: Check if OP3 is an RpnDayOfWeek.
+; Output: ZF=1 if RpnDayOfWeek
+checkOp3DayOfWeekPageTwo:
+    ld a, (OP3)
+    and $1f
+    cp rpnObjectTypeDayOfWeek
+    ret
