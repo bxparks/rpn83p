@@ -1202,6 +1202,10 @@ _AddRpnDayOfWeekByDaysLabel:
 _AddRpnDayOfWeekByDays equ _AddRpnDayOfWeekByDaysLabel-branchTableBase
     .dw AddRpnDayOfWeekByDays
     .db 2
+_SubRpnDayOfWeekByRpnDayOfWeekOrDaysLabel:
+_SubRpnDayOfWeekByRpnDayOfWeekOrDays equ _SubRpnDayOfWeekByRpnDayOfWeekOrDaysLabel-branchTableBase
+    .dw SubRpnDayOfWeekByRpnDayOfWeekOrDays
+    .db 2
 
 ; datetime2.asm
 _RpnDateTimeToEpochSecondsLabel:

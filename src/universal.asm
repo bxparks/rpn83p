@@ -133,17 +133,9 @@ universalSub:
     jr z, universalSubDateTimeMinusObject
     call checkOp1OffsetDateTime ; ZF=1 if OffsetDateTime
     jr z, universalSubOffsetDateTimeMinusObject
-    ;
-    call checkOp3Time ; ZF=1 if Time
-    jr z, universalSubErr ; cannot subtract a Time
-    call checkOp3Date ; ZF=1 if Date
-    jr z, universalSubErr ; cannot subtract a Date
-    call checkOp3DateTime ; ZF=1 if DateTime
-    jr z, universalSubErr ; cannot subtract a DateTime
-    call checkOp3Offset ; ZF=1 if Offset
-    jr z, universalSubErr ; cannot subtract an Offset
-    call checkOp3OffsetDateTime ; ZF=1 if OffsetDateTime
-    jr z, universalSubErr ; cannot subtract an OffsetDateTime
+    call checkOp1DayOfWeek ; ZF=1 if DayOfWeek
+    jr z, universalSubDayOfWeekMinusObject
+    ; cannot support (OP1-OP3) for any other data type
 universalSubErr:
     bcall(_ErrDataType)
 universalSubReal:
@@ -200,6 +192,17 @@ universalSubOffsetDateTimeMinusObject:
 universalSubOffsetDateTimeMinusSeconds:
 universalSubOffsetDateTimeMinusOffsetDateTime:
     bcall(_SubRpnOffsetDateTimeByRpnOffsetDateTimeOrSeconds)
+    ret
+;
+universalSubDayOfWeekMinusObject:
+    call checkOp3Real
+    jr z, universalSubDayOfWeekMinusDays
+    call checkOp3DayOfWeek
+    jr z, universalSubDayOfWeekMinusDayOfWeek
+    jr universalSubErr
+universalSubDayOfWeekMinusDays:
+universalSubDayOfWeekMinusDayOfWeek:
+    bcall(_SubRpnDayOfWeekByRpnDayOfWeekOrDays)
     ret
 
 ; Description: Multiplication for real and complex numbers.

@@ -93,3 +93,31 @@ addRpnDayOfWeekByDaysAdd:
     ld a, rpnObjectTypeDayOfWeek
     ld (hl), a
     ret
+
+;-----------------------------------------------------------------------------
+
+; Description: Subtract RpnDayOfWeek minus RpnDayOfWeek or days.
+; Input:
+;   - OP1:RpnDayOfWeek=Y
+;   - OP3:RpnDayOfWeek or days=X
+; Output:
+;   - OP1:RpnDayOfWeek(RpnDayOfWeek-days) or i40(RpnDayOfWeek-RpnDayOfWeek).
+; Destroys: OP1, OP2, OP3-OP6
+SubRpnDayOfWeekByRpnDayOfWeekOrDays:
+    call checkOp3DayOfWeekPageTwo ; ZF=1 if type(OP3)==DayOfWeek
+    jr z, subRpnDayOfWeekByRpnDayOfWeek
+subRpnDayOfWeekByDays:
+    ; exchage CP1/CP3, invert the sign, then call addRpnDayOfWeekByDaysAdd()
+    call cp1ExCp3PageTwo
+    bcall(_InvOP1S) ; OP1=-OP1
+    jr addRpnDayOfWeekByDaysAdd
+subRpnDayOfWeekByRpnDayOfWeek:
+    ; convert both OP1 and OP3 to dayOfWeekNumber, then subtract
+    ld a, (OP3+1)
+    ld b, a ; B=OP3
+    ld a, (OP1+1)
+    sub a, b ; A=OP1-OP3=result
+    ; convert to i40, then to float
+    ld hl, OP1
+    call setI40ToA ; HL=OP1=i40(result)
+    jp ConvertI40ToOP1 ; OP1=float(i40)
