@@ -399,14 +399,14 @@ formatDayOfWeekStringErr:
 ; ISO DayOfWeek ranges from 1-7, starting on Monday
 dayOfWeekStringsLen equ 8
 dayOfWeekStrings:
-    .dw dayOfWeekStringErr
-    .dw dayOfWeekStringMon
-    .dw dayOfWeekStringTue
-    .dw dayOfWeekStringWed
-    .dw dayOfWeekStringThu
-    .dw dayOfWeekStringFri
-    .dw dayOfWeekStringSat
-    .dw dayOfWeekStringSun
+    .dw dayOfWeekStringErr ; 0
+    .dw dayOfWeekStringMon ; 1
+    .dw dayOfWeekStringTue ; 2
+    .dw dayOfWeekStringWed ; 3
+    .dw dayOfWeekStringThu ; 4
+    .dw dayOfWeekStringFri ; 5
+    .dw dayOfWeekStringSat ; 6
+    .dw dayOfWeekStringSun ; 7
 
 dayOfWeekStringErr:
     .db "<Err>", 0

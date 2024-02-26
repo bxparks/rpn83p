@@ -1134,6 +1134,10 @@ _ValidateOffsetDateTimeLabel:
 _ValidateOffsetDateTime equ _ValidateOffsetDateTimeLabel-branchTableBase
     .dw ValidateOffsetDateTime
     .db 2
+_ValidateDayOfWeekLabel:
+_ValidateDayOfWeek equ _ValidateDayOfWeekLabel-branchTableBase
+    .dw ValidateDayOfWeek
+    .db 2
 
 ; date2.asm
 _InitDateLabel:

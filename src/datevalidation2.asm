@@ -104,9 +104,8 @@ validateTimeErr:
 ;-----------------------------------------------------------------------------
 
 ; Description: Validate the DateTime object in HL.
-; Input: HL:(*DateTime) pointer to {y,M,d,h,m,s}
-; Output:
-;   - HL=HL+7
+; Input: HL:(DateTime*) pointer to {y,M,d,h,m,s}
+; Output: HL=HL+7
 ; Destroys: A, HL
 ; Preserves: BC, DE
 ; Throws: Err:Invalid on failure
@@ -122,9 +121,8 @@ ValidateDateTime:
 ; hour and minute match. In other words, {0,0}, {0,30}, {1,0}, {8,30} {-1,0},
 ; {-8,-30}, are allowed, but {8,-30}, {-1,30}, {1,-30} are invalid.
 ;
-; Input: HL:(*Offset) pointer to {h,m}
-; Output:
-;   - HL=HL+2
+; Input: HL:(Offset*) pointer to {h,m}
+; Output: HL=HL+2
 ; Destroys: A, HL
 ; Preserves: BC, DE
 ; Throws: Err:Invalid on failure
@@ -181,9 +179,8 @@ validateOffsetSigns:
 ;-----------------------------------------------------------------------------
 
 ; Description: Validate the OffsetDateTime object in HL.
-; Input: HL:(*OffsetDateTime) pointer to {y,M,d,h,m,s,oh,os}
-; Output:
-;   - HL=HL+9
+; Input: HL:(OffsetDateTime*) pointer to {y,M,d,h,m,s,oh,os}
+; Output: HL=HL+9
 ; Destroys: A, HL
 ; Preserves: BC, DE
 ; Throws: Err:Invalid on failure
@@ -193,3 +190,22 @@ ValidateOffsetDateTime:
     call ValidateOffset
     ret
 
+;-----------------------------------------------------------------------------
+
+; Description: Validate the DayOfWeek object in HL. ISO dayOfWeek must be in
+; the range of [1,7], starting on Monday.
+; Input: HL:(DayOfWeek*) pointer to {dayOfWeek} record
+; Output: HL=HL+1
+; Destroys: A, HL
+; Preserves: BC, DE
+; Throws: Err:Invalid on failure
+ValidateDayOfWeek:
+    ld a, (hl) ; A=dayOfWeek
+    inc hl
+    or 0
+    jr z, validateDayOfWeekErr ; if dayOfWeek==0: err
+    cp dayOfWeekStringsLen ; if dayOfWeek>7: err
+    jr nc, validateDayOfWeekErr
+    ret
+validateDayOfWeekErr:
+    bcall(_ErrInvalid)

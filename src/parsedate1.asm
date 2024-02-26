@@ -127,6 +127,23 @@ parseOffsetDateTime:
     call parseRightBrace ; '}'
     ret
 
+; Description: Parse a string of the form "{hh,mm,dd}" into a DayOfWeek{}
+; record.
+; Input:
+;   - HL:(char*)=charPointer
+;   - DE:(DayOfWeek*)=dowPointer
+; Output:
+;   - (*DE):DayOfWeek filled
+;   - DE=DE+1
+;   - HL=points to character after last '}'
+; Throws: Err:Syntax if there is a syntax error
+; Destroys: all
+parseDayOfWeek:
+    call parseLeftBrace ; '{'
+    call parseU8D2 ; dayOfWeek
+    call parseRightBrace ; '}'
+    ret
+
 ;------------------------------------------------------------------------------
 
 recordTagTypeUnknown equ 0
@@ -135,10 +152,16 @@ recordTagTypeTime equ 2
 recordTagTypeDateTime equ 3
 recordTagTypeOffset equ 4
 recordTagTypeOffsetDateTime equ 5
+recordTagTypeDayOfWeek equ 6
 
 ; Description: Parse the record tag letters before the '{' to determine the
-; RpnRecord tag. The valid tags are: D (Date), T (Time), DT (DateTime), TZ
-; (Offset), DZ (OffsetDateTime).
+; RpnRecord tag. The valid tags are:
+;   - T (Time)
+;   - TZ (Offset)
+;   - D (Date)
+;   - DT (DateTime)
+;   - DZ (OffsetDateTime).
+;   - DW (DayOfWeek)
 ; Input:
 ;   - HL:(char*)=charPointer
 ; Output:
@@ -151,25 +174,27 @@ parseRecordTag:
     inc hl
     ; check for T, TZ
     cp 'T'
-    jr z, parseRecordTagTimeOrOffset
-    ; check for D, DT, DZ
+    jr z, parseRecordTagT
+    ; check for D, DT, DZ, DW
     cp 'D'
-    jr z, parseRecordTagDateTimeLike
+    jr z, parseRecordTagD
     jr parseDateErr
-parseRecordTagDateTimeLike:
+parseRecordTagD:
     ld a, (hl)
     inc hl
     cp 'T'
-    jr z, parseRecordTagDateTime
+    jr z, parseRecordTagDT
     cp 'Z'
-    jr z, parseRecordTagOffsetDateTime
+    jr z, parseRecordTagDZ
+    cp 'W'
+    jr z, parseRecordTagDW
     cp '{'
     jr nz, parseDateErr
     ; Just a simple 'D'
     dec hl
     ld a, recordTagTypeDate
     ret
-parseRecordTagDateTime:
+parseRecordTagDT:
     ld a, (hl)
     inc hl
     cp '{'
@@ -177,7 +202,7 @@ parseRecordTagDateTime:
     dec hl
     ld a, recordTagTypeDateTime
     ret
-parseRecordTagOffsetDateTime:
+parseRecordTagDZ:
     ld a, (hl)
     inc hl
     cp '{'
@@ -185,18 +210,26 @@ parseRecordTagOffsetDateTime:
     dec hl
     ld a, recordTagTypeOffsetDateTime
     ret
-parseRecordTagTimeOrOffset:
+parseRecordTagDW:
+    ld a, (hl)
+    inc hl
+    cp '{'
+    jr nz, parseDateErr
+    dec hl
+    ld a, recordTagTypeDayOfWeek
+    ret
+parseRecordTagT:
     ld a, (hl)
     inc hl
     cp 'Z'
-    jr z, parseRecordTagOffset
+    jr z, parseRecordTagTZ
     cp '{'
     jr nz, parseDateErr
     ; Just a simple 'T'
     dec hl
     ld a, recordTagTypeTime
     ret
-parseRecordTagOffset:
+parseRecordTagTZ:
     ld a, (hl)
     inc hl
     cp '{'
