@@ -84,35 +84,6 @@ isLeapYearTrue:
     ret
 
 ;-----------------------------------------------------------------------------
-
-; Description: Return the ISO day of week (1=Monday, 7=Sunday) of the given
-; Date{} record.
-; Input: HL: Date{} record
-; Output: A: 1-7
-; Destroys: OP3-OP5
-DayOfWeekIso:
-    ex de, hl ; DE=inputDate
-    ld hl, OP3
-    call dateToInternalEpochDays ; HL=OP3=epochDays
-    ex de, hl ; DE=OP3=epochDays
-    ld a, 7
-    ld hl, OP4
-    call setU40ToA ; OP4=7
-    ex de, hl ; HL=OP3=epochDays; DE=OP4=7
-    ld bc, OP5 ; BC=OP5=remainder
-    call divU40U40 ; HL=quotient
-    ld a, (bc) ; A=remainder=0-6
-    ; 2000-01-01 is epoch 0, so returns 0, but it was a Sat, so should be a 6.
-    ; Readjust the result modulo 7 to conform to ISO weekday numbering.
-    add a, 5
-    cp 7
-    jr c, dayOfWeekIsoEnd
-    sub 7
-dayOfWeekIsoEnd:
-    inc a
-    ret
-
-;-----------------------------------------------------------------------------
 ; RpnDate functions.
 ;-----------------------------------------------------------------------------
 

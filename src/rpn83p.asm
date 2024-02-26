@@ -1128,10 +1128,6 @@ _IsLeap equ _IsLeapLabel-branchTableBase
     .dw IsLeap
     .db 2
 ; RpnDate and days functions
-_DayOfWeekIsoLabel:
-_DayOfWeekIso equ _DayOfWeekIsoLabel-branchTableBase
-    .dw DayOfWeekIso
-    .db 2
 _RpnDateToEpochDaysLabel:
 _RpnDateToEpochDays equ _RpnDateToEpochDaysLabel-branchTableBase
     .dw RpnDateToEpochDays
@@ -1173,6 +1169,12 @@ _AddRpnTimeBySeconds equ _AddRpnTimeBySecondsLabel-branchTableBase
 _SubRpnTimeByRpnTimeOrSecondsLabel:
 _SubRpnTimeByRpnTimeOrSeconds equ _SubRpnTimeByRpnTimeOrSecondsLabel-branchTableBase
     .dw SubRpnTimeByRpnTimeOrSeconds
+    .db 2
+
+; dayofweek2.asm
+_DayOfWeekIsoLabel:
+_DayOfWeekIso equ _DayOfWeekIsoLabel-branchTableBase
+    .dw DayOfWeekIso
     .db 2
 
 ; datetime2.asm
@@ -1622,6 +1624,7 @@ defpage(2)
 #include "datetransform2.asm"
 #include "date2.asm"
 #include "time2.asm"
+#include "dayofweek2.asm"
 #include "datetime2.asm"
 #include "offset2.asm"
 #include "offsetdatetime2.asm"
