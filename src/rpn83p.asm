@@ -1198,6 +1198,10 @@ _DayOfWeekLabel:
 _DayOfWeek equ _DayOfWeekLabel-branchTableBase
     .dw DayOfWeek
     .db 2
+_AddRpnDayOfWeekByDaysLabel:
+_AddRpnDayOfWeekByDays equ _AddRpnDayOfWeekByDaysLabel-branchTableBase
+    .dw AddRpnDayOfWeekByDays
+    .db 2
 
 ; datetime2.asm
 _RpnDateTimeToEpochSecondsLabel:

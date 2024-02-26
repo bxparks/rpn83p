@@ -10,6 +10,10 @@
 ; entry.
 ;------------------------------------------------------------------------------
 
+;------------------------------------------------------------------------------
+; Bookkeeping routines.
+;------------------------------------------------------------------------------
+
 ; Description: Clear the u40 pointed by HL.
 ; Input: HL:(u40*)
 ; Destroys: none
@@ -135,6 +139,8 @@ setI40ToAPos:
     ld (hl), a
     ret
 
+;------------------------------------------------------------------------------
+; Arithmetic routines.
 ;------------------------------------------------------------------------------
 
 ; Description: Add 2 u40 integers.
@@ -543,6 +549,8 @@ divU40ByDQuotientZero:
     ret
 
 ;------------------------------------------------------------------------------
+; Unary arithmetic routines.
+;------------------------------------------------------------------------------
 
 ; Description: Perform the two's complement of the u40 integer pointed by HL.
 ; Input: HL:(u40*)
@@ -587,7 +595,7 @@ isPosU40:
 ; Input: HL:(u40*)
 ; Output: (*HL)-=1
 ; Destroys: A
-; Preserves: all
+; Preserves: BC, DE, HL
 decU40:
     push bc
     push hl
@@ -605,6 +613,32 @@ decU40Loop:
     pop bc
     ret
 
+;------------------------------------------------------------------------------
+
+; Description: Increment the u40 at HL.
+; Input: HL:(u40*)
+; Output: (*HL)+=1
+; Destroys: A
+; Preserves: BC, DE, HL
+incU40:
+    push bc
+    push hl
+    ld b, 4
+    ld a, (hl)
+    add a, 1 ; cannot use inc(hl) because it does not update the CF
+    ld (hl), a
+incU40Loop:
+    inc hl
+    ld a, (hl)
+    adc a, 0
+    ld (hl), a
+    djnz incU40Loop
+    pop hl
+    pop bc
+    ret
+
+;------------------------------------------------------------------------------
+; Comparisons.
 ;------------------------------------------------------------------------------
 
 ; Description: Compare u40(HL) to u40(DE), returning CF=1 if u40(HL) < u40(DE),
@@ -664,6 +698,8 @@ testU40End:
     pop hl
     ret
 
+;------------------------------------------------------------------------------
+; Logical routines.
 ;------------------------------------------------------------------------------
 
 ; Description: Shift left logical the u40 pointed by HL.

@@ -17,7 +17,7 @@
 ; Destroys: all, OP3-OP5
 DayOfWeek:
     ld hl, OP1+1 ; skip type byte
-    call dayOfWeekIso ; A=[1,7]
+    call dateToDayOfWeekNumber ; A=[1,7]
     ; convert to RpnDayOfWeek
     ld hl, OP1+1
     ld (hl), a
@@ -26,12 +26,12 @@ DayOfWeek:
     ld (hl), a ; OP1:RpnDayOfWeek
     ret
 
-; Description: Return the ISO day of week (1=Monday, 7=Sunday) of the given
-; Date record.
-; Input: HL:Date=date
-; Output: A:u8=dow [1-7]
+; Description: Convert Date record to the ISO dayOfWeekNumber (1=Monday,
+; 7=Sunday).
+; Input: HL:DayOfWeek=dayOfWeek
+; Output: A:u8=dayOfWeekNumber [1-7]
 ; Destroys: OP3-OP5
-dayOfWeekIso:
+dateToDayOfWeekNumber:
     ex de, hl ; DE=inputDate
     ld hl, OP3
     call dateToInternalEpochDays ; HL=OP3=epochDays
@@ -47,8 +47,49 @@ dayOfWeekIso:
     ; Readjust the result modulo 7 to conform to ISO weekday numbering.
     add a, 5
     cp 7
-    jr c, dayOfWeekIsoEnd
+    jr c, dateToDayOfWeekNumberEnd
     sub 7
-dayOfWeekIsoEnd:
+dateToDayOfWeekNumberEnd:
     inc a
+    ret
+
+;-----------------------------------------------------------------------------
+
+; Description: Add (RpnDayOfWeek plus days) or (days plus RpnDayOfWeek).
+; Input:
+;   - OP1:Union[RpnDayOfWeek,RpnReal]=rpnDayOfWeek or days
+;   - OP3:Union[RpnDayOfWeek,RpnReal]=rpnDayOfWeek or days
+; Output:
+;   - OP1:RpnDayOfWeek=RpnDayOfWeek+days
+; Destroys: all, OP1-OP4
+AddRpnDayOfWeekByDays:
+    call checkOp1DayOfWeekPageTwo ; ZF=1 if CP1 is an RpnDayOfWeek
+    jr nz, addRpnDayOfWeekByDaysAdd
+    call cp1ExCp3PageTwo ; CP1=days; CP3=RpnDayOfWeek
+addRpnDayOfWeekByDaysAdd:
+    ; CP1=days, CP3=RpnDayOfWeek
+    call ConvertOP1ToI40 ; HL=OP1=u40(days)
+    ; convert CP3=RpnDayOfWeek to OP1=days
+    ld a, (OP3+1) ; A=dayOfWeekNumber
+    ld hl, OP2
+    call setU40ToA ; HL=OP2=dayOfWeekNumber
+    ; add days + dayOfWeekNumber
+    ld de, OP1
+    call addU40U40 ; HL=OP2=resultDayOfWeekNumber=dayOfWeek+days
+    ; normalize the resultDayOfWeekNumber
+    call decU40 ; HL=OP2=resultDayOfWeekNumber-=1; convert to 0-based
+    ex de, hl ; DE=OP2=resultDayOfWeekNumber
+    ld hl, OP3
+    ld a, 7
+    call setU40ToA ; HL=OP3=7
+    ex de, hl ; HL=dividend=OP2=resultDayOfWeekNumber; DE=divisor=OP3=7
+    ld bc, OP1+1 ; BC=OP1+1=remainder
+    call divI40U40 ; BC=remainder, always positive
+    ld l, c
+    ld h, b ; HL=OP1+1=remainder
+    call incU40 ; convert back to 1-based dayOfWeekNumber
+    ; Convert DayOfWeek to RpnDayOfWeek
+    dec hl ; HL=OP1=resultRpnDayOfWeek
+    ld a, rpnObjectTypeDayOfWeek
+    ld (hl), a
     ret

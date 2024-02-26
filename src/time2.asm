@@ -103,7 +103,7 @@ timeToSeconds:
 ; Output:
 ;   - HL=HL+sizeof(Time)=HL+3
 ;   - (HL):filled
-; Destroys: A, (seconds)
+; Destroys: A, (*DE)
 ; Preserves: BC, DE
 secondsToTime:
     push bc ; stack=[BC]

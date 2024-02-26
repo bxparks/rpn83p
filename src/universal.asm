@@ -42,6 +42,11 @@ universalAdd:
     jr z, universalAddOffsetDateTimePlusSeconds
     call checkOp3OffsetDateTime ; ZF=1 if OffsetDateTime
     jr z, universalAddSecondsPlusOffsetDateTime
+    ;
+    call checkOp1DayOfWeek ; ZF=1 if DayOfWeek
+    jr z, universalAddDayOfWeekPlusDays
+    call checkOp3DayOfWeek ; ZF=1 if DayOfWeek
+    jr z, universalAddDaysPlusDayOfWeek
 universalAddErr:
     ; throw Err:DataType if nothing matches
     bcall(_ErrDataType)
@@ -62,9 +67,9 @@ universalAddTimePlusSeconds:
     bcall(_AddRpnTimeBySeconds) ; OP1=Time(OP1)+days(OP3)
     ret
 universalAddSecondsPlusTime:
-    call checkOp3Time
+    call checkOp3Time ; TODO: change to checkOp1Real()
     jr nz, universalAddErr
-    bcall(_AddRpnTimeBySeconds) ; OP1=Time(OP1)+days(OP3)
+    bcall(_AddRpnTimeBySeconds) ; OP1=Time(OP3)+days(OP1)
     ret
 universalAddDatePlusDays:
     call checkOp3Real
@@ -72,9 +77,9 @@ universalAddDatePlusDays:
     bcall(_AddRpnDateByDays) ; OP1=Date(OP1)+days(OP3)
     ret
 universalAddDaysPlusDate:
-    call checkOp3Date
+    call checkOp3Date ; TODO: change to checkOp1Real()
     jr nz, universalAddErr
-    bcall(_AddRpnDateByDays) ; OP1=Date(OP1)+days(OP3)
+    bcall(_AddRpnDateByDays) ; OP1=Date(OP3)+days(OP1)
     ret
 universalAddDateTimePlusSeconds:
     call checkOp3Real
@@ -82,9 +87,9 @@ universalAddDateTimePlusSeconds:
     bcall(_AddRpnDateTimeBySeconds) ; OP1=DateTime(OP1)+seconds(OP3)
     ret
 universalAddSecondsPlusDateTime:
-    call checkOp3DateTime
+    call checkOp3DateTime ; TODO: change to checkOp1Real()
     jr nz, universalAddErr
-    bcall(_AddRpnDateTimeBySeconds) ; OP1=DateTime(OP1)+seconds(OP3)
+    bcall(_AddRpnDateTimeBySeconds) ; OP1=DateTime(OP3)+seconds(OP1)
     ret
 universalAddOffsetDateTimePlusSeconds:
     call checkOp3Real
@@ -92,9 +97,19 @@ universalAddOffsetDateTimePlusSeconds:
     bcall(_AddRpnOffsetDateTimeBySeconds) ; OP1=OffsetDateTime(OP1)+seconds(OP3)
     ret
 universalAddSecondsPlusOffsetDateTime:
-    call checkOp3OffsetDateTime
+    call checkOp3OffsetDateTime ; TODO: change to checkOp1Real()
     jr nz, universalAddErr
-    bcall(_AddRpnOffsetDateTimeBySeconds) ; OP1=OffsetDateTime(OP1)+seconds(OP3)
+    bcall(_AddRpnOffsetDateTimeBySeconds) ; OP1=OffsetDateTime(OP3)+seconds(OP1)
+    ret
+universalAddDayOfWeekPlusDays:
+    call checkOp3Real
+    jr nz, universalAddErr
+    bcall(_AddRpnDayOfWeekByDays) ; OP1=DayOfWeek(OP1)+days(OP3)
+    ret
+universalAddDaysPlusDayOfWeek:
+    call checkOp1Real
+    jr nz, universalAddErr
+    bcall(_AddRpnDayOfWeekByDays) ; OP1=DayOfWeek(OP3)+days(OP1)
     ret
 
 ; Description: Subtractions for real, complex, and Date objects.
