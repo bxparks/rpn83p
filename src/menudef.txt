@@ -413,13 +413,7 @@ MenuGroup root mRoot [
             MenuItem EPC<Squestion> mEpochGetCustom # get custom epoch
           ]
         ]
-        MenuGroup ZONE mTimeZone [
-          MenuRow [
-            MenuItem TZ mSetTimeZone
-            MenuItem TZ<Squestion> mGetTimeZone
-          ]
-        ]
-        MenuGroup RTC mRtc [
+        MenuGroup CLK mRtc [
           MenuRow [
             MenuItem NOW mRtcGetNow # current epochSeconds
             MenuItem NOWT mRtcGetTime # current Time
@@ -427,10 +421,10 @@ MenuGroup root mRoot [
             MenuItem NWDZ mRtcGetOffsetDateTime # current OffsetDateTime
           ]
           MenuRow [
+            MenuItem TZ mSetTimeZone
+            MenuItem TZ<Squestion> mGetTimeZone
             MenuItem CTZ mRtcSetTimeZone
             MenuItem CTZ<Squestion> mRtcGetTimeZone
-            MenuItem * *
-            MenuItem * *
             MenuItem SETC mRtcSetClock # set current clock
           ]
         ]
