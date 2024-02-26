@@ -120,33 +120,41 @@ rpn83pSchemaVersion equ 14
 rpnfalse equ 0
 rpntrue equ 1
 
+;-----------------------------------------------------------------------------
+
 ; RpnObect type enums. TIOS defines object types from $00 (RealObj) to
 ; $17 (GroupObj). We'll continue from there.
-;
+
 ; Real number object. Use the same constant as TIOS.
 rpnObjectTypeReal equ 0 ; same as TI-OS
+
 ; Complex number object. Use the same constant as TIOS.
 rpnObjectTypeComplex equ $0C ; same as TI-OS
+
 ; Date and RpnDate objects:
 ; - struct Date{year:u16, mon:u8, day:u8}, 4 bytes
 ; - struct RpnDate{type:u8, date:Date}, 5 bytes
 rpnObjectTypeDate equ $18 ; next unused object type
 rpnObjectTypeDateSizeOf equ 5
+
 ; Time and RpnTime objects:
 ; - struct Time{hour:u8, minute:u8, second:u8}, 3 bytes
 ; - struct RpnTime{type:u8, date:Time}, 5 bytes
 rpnObjectTypeTime equ $19 ; next unused object type
 rpnObjectTypeTimeSizeOf equ 4
+
 ; DateTime and RpnDateTime objects:
 ; - struct DateTime{date:Date, hour:u8, min:u8, sec:u8}, 7 bytes
 ; - struct RpnDateTime{type:u8, dateTime:DateTime}, 8 bytes
 rpnObjectTypeDateTime equ $1A
 rpnObjectTypeDateTimeSizeOf equ 8
+
 ; Offset and RpnOffset object:
 ; - struct Offset{hour:i8, min:i8}, 2 bytes
 ; - struct RpnOffset{type:u8, offset:Offset}, 3 bytes
 rpnObjectTypeOffset equ $1B
 rpnObjectTypeOffsetSizeOf equ 3
+
 ; OffsetDateTime and RpnOffsetDateTime objects:
 ; - struct OffsetDateTime{datetime:DateTime, offset:Offset}, 9 bytes
 ; - struct RpnOffsetDateTime{type:u8, offsetDateTime:OffsetDateTime}, 10 bytes
@@ -156,6 +164,12 @@ rpnObjectTypeOffsetSizeOf equ 3
 ; manipulating this object.
 rpnObjectTypeOffsetDateTime equ $1C
 rpnObjectTypeOffsetDateTimeSizeOf equ 10
+
+; DayOfWeek and RpnDayOfWeek object:
+; - struct DayOfWeek{dow:u8}, 1 bytes
+; - struct RpnDayOfWeek{type:u8, DowOfWeek:dow}, 2 bytes
+rpnObjectTypeDayOfWeek equ $1D
+rpnObjectTypeDayOfWeekSizeOf equ 3
 
 ; An RpnObject is a struct of a type byte and 2 RpnFloat objects so that a
 ; complex number can be stored. See the struct definitions in vars.asm. If the
@@ -1094,6 +1108,10 @@ _FormatOffsetDateTimeLabel:
 _FormatOffsetDateTime equ _FormatOffsetDateTimeLabel-branchTableBase
     .dw FormatOffsetDateTime
     .db 2
+_FormatDayOfWeekLabel:
+_FormatDayOfWeek equ _FormatDayOfWeekLabel-branchTableBase
+    .dw FormatDayOfWeek
+    .db 2
 
 ; datevalidation2.asm
 _ValidateDateLabel:
@@ -1172,9 +1190,9 @@ _SubRpnTimeByRpnTimeOrSeconds equ _SubRpnTimeByRpnTimeOrSecondsLabel-branchTable
     .db 2
 
 ; dayofweek2.asm
-_DayOfWeekIsoLabel:
-_DayOfWeekIso equ _DayOfWeekIsoLabel-branchTableBase
-    .dw DayOfWeekIso
+_DayOfWeekLabel:
+_DayOfWeek equ _DayOfWeekLabel-branchTableBase
+    .dw DayOfWeek
     .db 2
 
 ; datetime2.asm

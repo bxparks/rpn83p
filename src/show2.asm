@@ -47,7 +47,7 @@ FormShowable:
     jr z, formShowableOffsetDateTime
 formShowableUnknown:
     ; Print "{unknown}" if object not known
-    ld hl, msgRpnObjectTypeUnknown
+    ld hl, msgRpnObjectTypeUnknownPageTwo
     jp copyCStringPageTwo
 formShowableReal:
     bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
@@ -86,6 +86,10 @@ formShowableEnd:
     xor a
     ld (de), a ; terminate with NUL
     ret
+
+; Unknown RpnObjectType
+msgRpnObjectTypeUnknownPageTwo:
+    .db "{Unknown}", 0
 
 ;------------------------------------------------------------------------------
 
