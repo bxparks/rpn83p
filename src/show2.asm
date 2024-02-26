@@ -45,6 +45,9 @@ FormShowable:
     ; RpnOffsetDateTime{}
     cp rpnObjectTypeOffsetDateTime
     jr z, formShowableOffsetDateTime
+    ; RpnDayOfWeek{}
+    cp rpnObjectTypeDayOfWeek
+    jr z, formShowableDayOfWeek
 formShowableUnknown:
     ; Print "{unknown}" if object not known
     ld hl, msgRpnObjectTypeUnknownPageTwo
@@ -81,7 +84,11 @@ formShowableOffsetDateTime:
     ld hl, OP1
     call formatRpnOffsetDateTimeRaw
     call expandOp1ToOp2PageTwo
-    ; [[fallthrough]]
+    jr formShowableEnd
+formShowableDayOfWeek:
+    ld hl, OP1
+    call formatRpnDayOfWeekRaw
+    jr formShowableEnd
 formShowableEnd:
     xor a
     ld (de), a ; terminate with NUL
