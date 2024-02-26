@@ -67,9 +67,9 @@ universalAddTimePlusSeconds:
     bcall(_AddRpnTimeBySeconds) ; OP1=Time(OP1)+days(OP3)
     ret
 universalAddSecondsPlusTime:
-    call checkOp3Time ; TODO: change to checkOp1Real()
+    call checkOp1Real
     jr nz, universalAddErr
-    bcall(_AddRpnTimeBySeconds) ; OP1=Time(OP3)+days(OP1)
+    bcall(_AddRpnTimeBySeconds) ; OP1=days(OP1)+Time(OP3)
     ret
 universalAddDatePlusDays:
     call checkOp3Real
@@ -77,9 +77,9 @@ universalAddDatePlusDays:
     bcall(_AddRpnDateByDays) ; OP1=Date(OP1)+days(OP3)
     ret
 universalAddDaysPlusDate:
-    call checkOp3Date ; TODO: change to checkOp1Real()
+    call checkOp1Real
     jr nz, universalAddErr
-    bcall(_AddRpnDateByDays) ; OP1=Date(OP3)+days(OP1)
+    bcall(_AddRpnDateByDays) ; OP1=days(OP1)+Date(OP3)
     ret
 universalAddDateTimePlusSeconds:
     call checkOp3Real
@@ -87,9 +87,9 @@ universalAddDateTimePlusSeconds:
     bcall(_AddRpnDateTimeBySeconds) ; OP1=DateTime(OP1)+seconds(OP3)
     ret
 universalAddSecondsPlusDateTime:
-    call checkOp3DateTime ; TODO: change to checkOp1Real()
+    call checkOp1Real
     jr nz, universalAddErr
-    bcall(_AddRpnDateTimeBySeconds) ; OP1=DateTime(OP3)+seconds(OP1)
+    bcall(_AddRpnDateTimeBySeconds) ; OP1=seconds(OP1)+DateTime(OP3)
     ret
 universalAddOffsetDateTimePlusSeconds:
     call checkOp3Real
@@ -97,9 +97,9 @@ universalAddOffsetDateTimePlusSeconds:
     bcall(_AddRpnOffsetDateTimeBySeconds) ; OP1=OffsetDateTime(OP1)+seconds(OP3)
     ret
 universalAddSecondsPlusOffsetDateTime:
-    call checkOp3OffsetDateTime ; TODO: change to checkOp1Real()
+    call checkOp1Real
     jr nz, universalAddErr
-    bcall(_AddRpnOffsetDateTimeBySeconds) ; OP1=OffsetDateTime(OP3)+seconds(OP1)
+    bcall(_AddRpnOffsetDateTimeBySeconds) ; OP1=seconds(OP1)+OffsetDateTime(OP3)
     ret
 universalAddDayOfWeekPlusDays:
     call checkOp3Real
@@ -109,7 +109,7 @@ universalAddDayOfWeekPlusDays:
 universalAddDaysPlusDayOfWeek:
     call checkOp1Real
     jr nz, universalAddErr
-    bcall(_AddRpnDayOfWeekByDays) ; OP1=DayOfWeek(OP3)+days(OP1)
+    bcall(_AddRpnDayOfWeekByDays) ; OP1=days(OP1)+DayOfWeek(OP3)
     ret
 
 ; Description: Subtractions for real, complex, and Date objects.
