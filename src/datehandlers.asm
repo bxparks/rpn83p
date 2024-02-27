@@ -181,6 +181,8 @@ mEpochCustomNameSelectorAlt:
 mEpochSetCustomHandler:
     call closeInputAndRecallRpnDateX ; OP1=X=RpnDate{}
     bcall(_SetCustomEpochDate)
+    ld a, errorCodeEpochStored
+    ld (handlerCode), a
     ret
 
 mEpochGetCustomHandler:
