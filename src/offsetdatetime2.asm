@@ -280,3 +280,25 @@ SplitRpnOffsetDateTime:
     ld bc, rpnObjectTypeOffsetSizeOf-1
     ldir
     ret
+
+;-----------------------------------------------------------------------------
+
+; Description: Merge RpnDateTime with RpnOffset into an RpnOffsetDateTime.
+; Input:
+;   - OP1:RpnDateTime|RpnOffset
+;   - OP3:RpnDateTime|RpnOffset
+; Output:
+;   - OP1:RpnOffsetDateTime(OP1,OP3)
+; Destroys: all, OP1-OP4
+MergeRpnDateTimeWithRpnOffset:
+    call checkOp1OffsetPageTwo ; ZF=1 if OP1=RpnOffset
+    call z, cp1ExCp3PageTwo
+    ; if reached here: CP1:RpnDateTime; CP3:RpnOffset
+    ld a, rpnObjectTypeOffsetDateTime
+    ld (OP1), a
+    ld de, OP1+rpnObjectTypeDateTimeSizeOf
+    ld hl, OP3+1
+    ld bc, rpnObjectTypeOffsetSizeOf-1
+    ldir
+    call expandOp1ToOp2PageTwo
+    ret

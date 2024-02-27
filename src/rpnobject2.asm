@@ -87,6 +87,24 @@ checkOp3DateTimePageTwo:
 
 ;-----------------------------------------------------------------------------
 
+; Description: Check if OP1 is a RpnOffset.
+; Output: ZF=1 if RpnOffset
+checkOp1OffsetPageTwo:
+    ld a, (OP1)
+    and $1f
+    cp rpnObjectTypeOffset
+    ret
+
+; Description: Check if OP3 is a RpnOffset.
+; Output: ZF=1 if RpnOffset
+checkOp3OffsetPageTwo:
+    ld a, (OP3)
+    and $1f
+    cp rpnObjectTypeOffset
+    ret
+
+;-----------------------------------------------------------------------------
+
 ; Description: Check if OP1 is a RpnOffsetDateTime.
 ; Output: ZF=1 if RpnOffsetDateTime
 checkOp1OffsetDateTimePageTwo:

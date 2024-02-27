@@ -214,3 +214,25 @@ SplitRpnDateTime:
     ld bc, rpnObjectTypeTimeSizeOf-1
     ldir
     ret
+
+;-----------------------------------------------------------------------------
+
+; Description: Merge RpnDate with RpnTime.
+; Input:
+;   - OP1:RpnDate|RpnTime
+;   - OP3:RpnDate|RpnTime
+; Output:
+;   - OP1:RpnDateTime(OP1,OP3)
+; Destroys: OP1-OP4
+MergeRpnDateWithRpnTime:
+    call checkOp1TimePageTwo ; ZF=1 if OP1=RpnTime
+    call z, cp1ExCp3PageTwo
+    ; if reached here: CP1:RpnDate; CP3:RpnTime
+    ld de, OP1
+    ld a, rpnObjectTypeDateTime
+    ld (de), a
+    ld de, OP1+rpnObjectTypeDateSizeOf
+    ld hl, OP3+1
+    ld bc, rpnObjectTypeTimeSizeOf-1
+    ldir
+    ret

@@ -519,18 +519,31 @@ universalCubeRootComplex:
     bcall(_CXrootY) ; CP1=CP1^(1/3); FPS=[]
     ret
 
-; Description: Power function (Y^X) for real and complex numbers.
+;-----------------------------------------------------------------------------
+
+; Description: Power function (Y^X) for real and complex numbers. Also
+; overloaded for Date, DateTime, and Offset types to implement the
+; Merge(Y,X)->X functionality.
 ; Input:
-;   - OP1/OP2: Y
-;   - OP3/OP4: X
+;   - OP1/OP2:RpnObject=Y
+;   - OP3/OP4:RpnObject=X
 ;   - numResultMode
 ; Output:
-;   - OP1/OP2: Y^X
+;   - OP1/OP2:RpnObject=Y^X (for real or complex) or Merge(Y,X) for Date-related
 universalPow:
-    call checkOp1Real ; ZF=1 if real
+    call getOp1RpnObjectType ; A=rpnObjectType
+    cp rpnObjectTypeReal ; ZF=1 if real
     jr z, universalPowReal
-    call checkOp1Complex ; ZF=1 if complex
+    cp rpnObjectTypeComplex ; ZF=1 if complex
     jr z, universalPowComplex
+    cp rpnObjectTypeTime ; ZF=1 if RpnTime
+    jr z, universalPowTime
+    cp rpnObjectTypeDate ; ZF=1 if RpnDate
+    jr z, universalPowDate
+    cp rpnObjectTypeOffset ; ZF=1 if RpnOffset
+    jr z, universalPowOffset
+    cp rpnObjectTypeDateTime ; ZF=1 if RpnDateTime
+    jr z, universalPowDateTime
 universalPowErr:
     bcall(_ErrDataType)
 universalPowReal:
@@ -567,6 +580,27 @@ universalPowComplexComplex:
 universalPowComplexReal:
     call convertOp3ToCp3 ; CP3=complex(X)
     jr universalPowComplexComplex
+;
+universalPowTime:
+    call checkOp3Date ; ZF=1 if OP3=RpnDate
+    jr nz, universalPowErr
+    bcall(_MergeRpnDateWithRpnTime) ; OP1=rpnDateTime
+    ret
+universalPowDate:
+    call checkOp3Time ; ZF=1 if OP3=RpnTime
+    jr nz, universalPowErr
+    bcall(_MergeRpnDateWithRpnTime) ; OP1=rpnDateTime
+    ret
+universalPowOffset:
+    call checkOp3DateTime ; ZF=1 if OP3=RpnDateTime
+    jr nz, universalPowErr
+    bcall(_MergeRpnDateTimeWithRpnOffset) ; OP1=rpnOffsetDateOffset
+    ret
+universalPowDateTime:
+    call checkOp3Offset ; ZF=1 if OP3=RpnOffset
+    jr nz, universalPowErr
+    bcall(_MergeRpnDateTimeWithRpnOffset) ; OP1=rpnOffsetDateTime
+    ret
 
 ; Description: Calculate XRootY(Y)=Y^(1/X) for real and complex numbers.
 ; Input:

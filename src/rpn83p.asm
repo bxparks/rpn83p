@@ -1226,6 +1226,10 @@ _SplitRpnDateTimeLabel:
 _SplitRpnDateTime equ _SplitRpnDateTimeLabel-branchTableBase
     .dw SplitRpnDateTime
     .db 2
+_MergeRpnDateWithRpnTimeLabel:
+_MergeRpnDateWithRpnTime equ _MergeRpnDateWithRpnTimeLabel-branchTableBase
+    .dw MergeRpnDateWithRpnTime
+    .db 2
 
 ; offset2.asm
 _RpnOffsetToSecondsLabel:
@@ -1253,6 +1257,10 @@ _SubRpnOffsetDateTimeByRpnOffsetDateTimeOrSeconds equ _SubRpnOffsetDateTimeByRpn
 _SplitRpnOffsetDateTimeLabel:
 _SplitRpnOffsetDateTime equ _SplitRpnOffsetDateTimeLabel-branchTableBase
     .dw SplitRpnOffsetDateTime
+    .db 2
+_MergeRpnDateTimeWithRpnOffsetLabel:
+_MergeRpnDateTimeWithRpnOffset equ _MergeRpnDateTimeWithRpnOffsetLabel-branchTableBase
+    .dw MergeRpnDateTimeWithRpnOffset
     .db 2
 
 ; zoneconversion2.asm
