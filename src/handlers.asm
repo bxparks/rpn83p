@@ -1149,6 +1149,15 @@ handleKeyLink:
     jr z, handleKeyLinkRealsToComplex
     cp a, rpnObjectTypeComplex
     jr z, handleKeyLinkComplexToReals
+    ;
+    cp rpnObjectTypeTime ; ZF=1 if RpnTime
+    jr z, handleKeyLinkTime
+    cp rpnObjectTypeDate ; ZF=1 if RpnDate
+    jr z, handleKeyLinkDate
+    cp rpnObjectTypeOffset ; ZF=1 if RpnOffset
+    jr z, handleKeyLinkOffset
+    cp rpnObjectTypeDateTime ; ZF=1 if RpnDateTime
+    jr z, handleKeyLinkDateTime
 handleKeyLinkErrDataType:
     bcall(_ErrDataType)
 handleKeyLinkComplexToReals:
@@ -1165,3 +1174,32 @@ handleKeyLinkRealsToComplex:
     bcall(_PopRealO2) ; FPS=[]; OP2=X=Im; OP1=Y=Re
     call realsToComplex ; CP1=complex(OP1,OP2)
     jp replaceXY ; replace X, Y with CP1
+;
+handleKeyLinkTime:
+    call cp1ToCp3 ; CP3=X
+    call rclY ; CP1=Y; A=rpnObjectType
+    cp rpnObjectTypeDate ; ZF=1 if OP3=RpnDate
+    jr nz, handleKeyLinkErrDataType
+    bcall(_MergeRpnDateWithRpnTime) ; OP1=rpnDateTime
+    jp replaceXY
+handleKeyLinkDate:
+    call cp1ToCp3 ; CP3=X
+    call rclY ; CP1=Y; A=rpnObjectType
+    cp rpnObjectTypeTime ; ZF=1 if OP3=RpnTime
+    jr nz, handleKeyLinkErrDataType
+    bcall(_MergeRpnDateWithRpnTime) ; OP1=rpnDateTime
+    jp replaceXY
+handleKeyLinkOffset:
+    call cp1ToCp3 ; CP3=X
+    call rclY ; CP1=Y; A=rpnObjectType
+    cp rpnObjectTypeDateTime ; ZF=1 if OP3=RpnDateTime
+    jr nz, handleKeyLinkErrDataType
+    bcall(_MergeRpnDateTimeWithRpnOffset) ; OP1=rpnOffsetDateOffset
+    jp replaceXY
+handleKeyLinkDateTime:
+    call cp1ToCp3 ; CP3=X
+    call rclY ; CP1=Y; A=rpnObjectType
+    cp rpnObjectTypeOffset ; ZF=1 if OP3=RpnOffset
+    jr nz, handleKeyLinkErrDataType
+    bcall(_MergeRpnDateTimeWithRpnOffset) ; OP1=rpnOffsetDateTime
+    jp replaceXY

@@ -567,14 +567,6 @@ universalPow:
     jr z, universalPowReal
     cp rpnObjectTypeComplex ; ZF=1 if complex
     jr z, universalPowComplex
-    cp rpnObjectTypeTime ; ZF=1 if RpnTime
-    jr z, universalPowTime
-    cp rpnObjectTypeDate ; ZF=1 if RpnDate
-    jr z, universalPowDate
-    cp rpnObjectTypeOffset ; ZF=1 if RpnOffset
-    jr z, universalPowOffset
-    cp rpnObjectTypeDateTime ; ZF=1 if RpnDateTime
-    jr z, universalPowDateTime
 universalPowErr:
     bcall(_ErrDataType)
 universalPowReal:
@@ -611,27 +603,6 @@ universalPowComplexComplex:
 universalPowComplexReal:
     call convertOp3ToCp3 ; CP3=complex(X)
     jr universalPowComplexComplex
-;
-universalPowTime:
-    call checkOp3Date ; ZF=1 if OP3=RpnDate
-    jr nz, universalPowErr
-    bcall(_MergeRpnDateWithRpnTime) ; OP1=rpnDateTime
-    ret
-universalPowDate:
-    call checkOp3Time ; ZF=1 if OP3=RpnTime
-    jr nz, universalPowErr
-    bcall(_MergeRpnDateWithRpnTime) ; OP1=rpnDateTime
-    ret
-universalPowOffset:
-    call checkOp3DateTime ; ZF=1 if OP3=RpnDateTime
-    jr nz, universalPowErr
-    bcall(_MergeRpnDateTimeWithRpnOffset) ; OP1=rpnOffsetDateOffset
-    ret
-universalPowDateTime:
-    call checkOp3Offset ; ZF=1 if OP3=RpnOffset
-    jr nz, universalPowErr
-    bcall(_MergeRpnDateTimeWithRpnOffset) ; OP1=rpnOffsetDateTime
-    ret
 
 ; Description: Calculate XRootY(Y)=Y^(1/X) for real and complex numbers.
 ; Input:
