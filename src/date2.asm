@@ -11,9 +11,9 @@
 InitDate:
     ; select Unix epoch by default.
     call SelectUnixEpochDate
-    ; Set the default custom epochDate to 2000-01-01
+    ; Set the default customEpochDate to 2000-01-01
     ld hl, y2kEpochDate
-    call setEpochDateCustom
+    call setCustomEpochDateVar
     ; set current TimeZone to UTC initially
     ld hl, 0
     ld (timeZone), hl
@@ -87,11 +87,10 @@ isLeapYearTrue:
 ; RpnDate functions.
 ;-----------------------------------------------------------------------------
 
-; Description: Convert RpnDate{} to epochDays relative to the current
-; epochDate.
+; Description: Convert RpnDate{} to epochDays relative to the currentEpochDate.
 ; Input:
 ;   - OP1:(RpnDate*)=rpnDate
-;   - (epochDate):Date{}=reference epoch date
+;   - (currentEpochDate):Date{}=reference epoch date
 ; Output:
 ;   - OP1:(i40*)=epochDays
 ; Destroys: A, DE, BC, HL, OP4-OP6
@@ -110,8 +109,8 @@ RpnDateToEpochDays:
     call ConvertI40ToOP1 ; OP1=float(epochDays)
     ret
 
-; Description: Convert RpnDate{} to epochSeconds relative to the current
-; epochDate.
+; Description: Convert RpnDate{} to epochSeconds relative to the
+; currentEpochDate.
 ; Input:
 ;   - OP1:(RpnDate*)=rpnDate
 ;   - (epochDate):Date{}=reference epoch date
@@ -151,7 +150,7 @@ dateToEpochDays:
     ; convert reference epochDate to refEpochDays
     ; TODO: precompute the refEpochDays
     call reserveRaw9 ; FPS=[refEpochDays]; HL=refEpochDays
-    ld de, epochDate
+    ld de, currentEpochDate
     call dateToInternalEpochDays ; HL=refEpochDays
     ; convert to relative epochDays
     ex de, hl ; DE=refEpochDays
@@ -196,7 +195,7 @@ epochDaysToDate:
     push hl ; stack=[resultDate]
     push de ; stack=[resultDate,epochDays]
     ; TODO: precompute the refEpochDays
-    ld de, epochDate
+    ld de, currentEpochDate
     ld hl, OP2
     call dateToInternalEpochDays ; HL=OP2=refEpochDays
     ; convert relative epochDays to internal epochDays

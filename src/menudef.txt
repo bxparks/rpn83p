@@ -409,8 +409,8 @@ MenuGroup root mRoot [
             MenuItem * *
             MenuItem * *
             MenuItem * *
-            MenuItem EPC mEpochSetCustom # set custom epoch
-            MenuItem EPC<Squestion> mEpochGetCustom # get custom epoch
+            MenuItem EPC mEpochSetCustom # set custom epoch date
+            MenuItem EPC<Squestion> mEpochGetCustom # get custom epoch date
           ]
         ]
         MenuGroup CLK mRtc [

@@ -439,13 +439,13 @@ epochTypeTios equ 4
 epochType equ formatRecordMode + 1 ; u8
 
 ; Current value of the Epoch Date as selected by epochType.
-epochDate equ epochType + 1 ; Date{y,m,d}, 4 bytes
+currentEpochDate equ epochType + 1 ; Date{y,m,d}, 4 bytes
 
 ; Custom value of the Epoch Date if epochTypeCustom selected.
-epochDateCustom equ epochDate + 4 ; Date{y,m,d}, 4 bytes
+customEpochDate equ currentEpochDate + 4 ; Date{y,m,d}, 4 bytes
 
 ; Set default time zone
-timeZone equ epochDateCustom + 4 ; Offset{hh,mm}, 2 bytes
+timeZone equ customEpochDate + 4 ; Offset{hh,mm}, 2 bytes
 
 ; Set clock time zone
 rtcTimeZone equ timeZone + 2 ; Offset{hh,mm}, 2 bytes
@@ -1030,7 +1030,6 @@ _InitModes equ _InitModesLabel-branchTableBase
     .db 2
 
 ; selectepoch2.asm
-; Epoch selection functions
 _SelectUnixEpochDateLabel:
 _SelectUnixEpochDate equ _SelectUnixEpochDateLabel-branchTableBase
     .dw SelectUnixEpochDate

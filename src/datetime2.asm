@@ -87,7 +87,7 @@ epochSecondsToDateTime:
     push hl ; stack=[dateTime]
     push de ; stack=[dateTime,epochSeconds]
     ; TODO: Precompute the refEpochSeconds.
-    ld de, epochDate
+    ld de, currentEpochDate
     ld hl, OP2
     call dateToInternalEpochDays ; HL=OP2=refEpochDays
     call convertU40DaysToU40Seconds ; HL=OP2=refEpochSeconds

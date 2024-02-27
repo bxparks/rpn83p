@@ -14,7 +14,7 @@ SelectUnixEpochDate:
     ld (epochType), a
     set dirtyFlagsMenu, (iy + dirtyFlags)
     ld hl, unixEpochDate
-    jr setEpochDate
+    jr setCurrentEpochDateVar
 
 ; Description: Set epochType and epochDate to NTP (1900-01-01).
 SelectNtpEpochDate:
@@ -22,7 +22,7 @@ SelectNtpEpochDate:
     ld (epochType), a
     set dirtyFlagsMenu, (iy + dirtyFlags)
     ld hl, ntpEpochDate
-    jr setEpochDate
+    jr setCurrentEpochDateVar
 
 ; Description: Set epochType and epochDate to GPS (1980-01-06).
 SelectGpsEpochDate:
@@ -30,7 +30,7 @@ SelectGpsEpochDate:
     ld (epochType), a
     set dirtyFlagsMenu, (iy + dirtyFlags)
     ld hl, gpsEpochDate
-    jr setEpochDate
+    jr setCurrentEpochDateVar
 
 ; Description: Set epochType and epochDate to TIOS epoch (1997-01-01).
 SelectTiosEpochDate:
@@ -38,15 +38,15 @@ SelectTiosEpochDate:
     ld (epochType), a
     set dirtyFlagsMenu, (iy + dirtyFlags)
     ld hl, tiosEpochDate
-    jr setEpochDate
+    jr setCurrentEpochDateVar
 
-; Description: Set epochType and epochDate to the custom epochDate.
+; Description: Set epochType and epochDate to the customEpochDate.
 SelectCustomEpochDate:
     ld a, epochTypeCustom
     ld (epochType), a
     set dirtyFlagsMenu, (iy + dirtyFlags)
-    ld hl, epochDateCustom
-    jr setEpochDate
+    ld hl, customEpochDate
+    jr setCurrentEpochDateVar
 
 ;-----------------------------------------------------------------------------
 
@@ -57,8 +57,8 @@ SetCustomEpochDate:
     call checkOp1DatePageTwo ; ZF=1 if CP1 is an RpnDate
     jr nz, setCustomEpochDateErr
     ld hl, OP1+1
-    call setEpochDateCustom
-    jr SelectCustomEpochDate ; automatically select the Custom epoch date
+    call setCustomEpochDateVar
+    jr SelectCustomEpochDate ; automatically select the customEpochDate
 setCustomEpochDateErr:
     bcall(_ErrDataType)
 
@@ -70,31 +70,31 @@ GetCustomEpochDate:
     ld a, rpnObjectTypeDate
     ld (de), a
     inc de
-    ld hl, epochDateCustom
+    ld hl, customEpochDate
     ld bc, 4
     ldir
     ret
 
 ;-----------------------------------------------------------------------------
 
-; Description: Copy the Date{} pointed by HL to (epochDateCustom).
+; Description: Copy the Date{} pointed by HL to (customEpochDate).
 ; Input: HL:Date{}
 ; Output: (epochDate) updated
 ; Destroys: all
 ; Preserves: A
-setEpochDateCustom:
-    ld de, epochDateCustom
+setCustomEpochDateVar:
+    ld de, customEpochDate
     ld bc, 4
     ldir
     ret
 
-; Description: Copy the Date{} pointed by HL to (epochDate).
+; Description: Copy the Date{} pointed by HL to (currentEpochDate).
 ; Input: HL:Date{}
-; Output: (epochDate) updated
+; Output: (currentEpochDate) updated
 ; Destroys: all
 ; Preserves: A
-setEpochDate:
-    ld de, epochDate
+setCurrentEpochDateVar:
+    ld de, currentEpochDate
     ld bc, 4
     ldir
     ret

@@ -144,5 +144,5 @@ getRtcNowAsEpochSecondsLoop:
     ld de, tiosEpochDate ; DE=Date{1997,1,1}
     call convertRelativeToInternalEpochSeconds ; HL=rtcSeconds
     ; Convert to relative epochSeconds relative to current timeZone
-    ld de, epochDate ; DE=(Date*)=current epochDate
+    ld de, currentEpochDate ; DE=(Date*)=current epochDate
     jp convertInternalToRelativeEpochSeconds ; HL=rtcSeconds
