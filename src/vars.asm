@@ -578,6 +578,15 @@ rclL:
     ld c, stackLIndex
     jr rclStackNN
 
+; Description: Save X to L, directly, without mutating OP1/OP2.
+; Preserves: OP1/OP2
+saveLastX:
+    bcall(_PushRpnObject1) ; FPS=[OP1/OP2]
+    call rclX
+    call stoL
+    bcall(_PopRpnObject1) ; FPS=[]; OP1/OP2=OP1/OP2
+    ret
+
 ;-----------------------------------------------------------------------------
 ; Most routines should use these functions to set the results from OP1 and/or
 ; OP2 to the RPN stack.
@@ -589,10 +598,7 @@ rclL:
 ; Preserves: OP1, OP2
 replaceX:
     call checkValid
-    bcall(_PushRpnObject1) ; FPS=[OP1/OP2]
-    call rclX
-    call stoL
-    bcall(_PopRpnObject1) ; FPS=[]; OP1/OP2=OP1/OP2
+    call saveLastX
     call stoX
     ret
 
@@ -602,11 +608,8 @@ replaceX:
 ; Preserves: OP1, OP2
 replaceXY:
     call checkValid
-    bcall(_PushRpnObject1) ; FPS=[OP1/OP2]
-    call rclX
-    call stoL
+    call saveLastX
     call dropStack
-    bcall(_PopRpnObject1) ; FPS=[]; OP1/OP2=OP1/OP2
     call stoX
     ret
 
@@ -626,14 +629,11 @@ replaceXYWithOP1OP2:
     call checkValidReal
     call op1ExOp2
     ;
+    call saveLastX
     call stoY ; Y = OP1
-    bcall(_PushRealO1) ; FPS=[OP1]
-    call rclX
-    call stoL; LastX = X
-    ;
-    call op2ToOp1
+    call op1ExOp2
     call stoX ; X = OP2
-    bcall(_PopRealO1) ; FPS=[]; OP1=OP1
+    call op1ExOp2
     ret
 
 ; Description: Replace X with Real numbers OP1 and OP2 in that order.
@@ -646,20 +646,19 @@ replaceXYWithOP1OP2:
 replaceXWithOP1OP2:
     ; validate OP1 and OP2 before modifying X and Y
     call checkValidReal
-    bcall(_PushRealO1) ; FPS=[OP1]
-    call op2ToOp1
+    call op1ExOp2
     call checkValidReal
-    bcall(_PushRealO1) ; FPS=[OP1,OP2]
-    call exchangeFPSFPS ; FPS=[OP2,OP1]
-
-    call rclX
-    call stoL
-    bcall(_PopRealO1) ; FPS=[OP2]; OP1=OP1
+    call op1ExOp2
+    ;
+    call saveLastX
     call stoX
     call liftStack
-    bcall(_PopRealO1) ; FPS=[]; OP1=OP2
+    call op1ExOp2
     call stoX
+    call op1ExOp2
     ret
+
+;-----------------------------------------------------------------------------
 
 ; Description: Push RpnOjbect in OP1/OP2 to the X register. LastX is not
 ; updated because the previous X is not consumed, and is availabe as the Y
@@ -691,6 +690,7 @@ pushToXY:
     call op1ExOp2
     call checkValidReal
     call op1ExOp2
+    ;
     call liftStackIfNonEmpty
     call stoX
     call liftStack
@@ -698,6 +698,8 @@ pushToXY:
     call stoX
     call op1ExOp2
     ret
+
+;-----------------------------------------------------------------------------
 
 ; Description: Check that OP1/OP2 is a valid RpnObject type (real, complex,
 ; RpnDate or RpnDateTime). If real or complex, verify validity of number using
