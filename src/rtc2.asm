@@ -62,6 +62,59 @@ RtcGetOffsetDateTime:
 
 ;-----------------------------------------------------------------------------
 
+; Description: Set the RTC time zone to the Offset{} or Real given in OP1.
+; If a Real is given, it is converted into an Offset{}, then stored.
+; Input: OP1:RpnOffset{} or Real
+; Output: none
+RtcSetTimeZone:
+    ld hl, OP1
+    ld a, (hl)
+    and $1f
+    inc hl
+    cp rpnObjectTypeOffset
+    jr z, rtcSetTimeZoneForOffset
+    cp rpnObjectTypeReal
+    jr z, rtcSetTimeZoneForReal
+rtcSetTimeZoneErr:
+    bcall(_ErrDataType)
+rtcSetTimeZoneForReal:
+    ; convert OP1 to RpnOffset
+    ld hl, OP3
+    call offsetHourToOffset
+rtcSetTimeZoneForOffset:
+    ld c, (hl)
+    inc hl
+    ld b, (hl)
+    ld (rtcTimeZone), bc
+    ret
+
+; Description: Get the RTC time zone into OP1.
+; Input: OP1:RpnOffset
+; Output: none
+RtcGetTimeZone:
+    ld hl, OP1
+    ld a, rpnObjectTypeOffset
+    ld (hl), a
+    inc hl
+    ;
+    ld bc, (rtcTimeZone)
+    ld (hl), c
+    inc hl
+    ld (hl), b
+    ret
+
+;-----------------------------------------------------------------------------
+
+; Description: Set the RTC date and time. The input can be a DateTime (which is
+; always interpreted as UTC), or an OffsetDateTime (whose UTC offset is
+; included).
+; Input: OP1:RpnOffsetDateTime=inputDateTime
+; Output: real time clock set to epochSeconds defined by inputDateTime
+RtcSetClock:
+    ret
+
+;-----------------------------------------------------------------------------
+
 ; Description: Retrieve current RTC as internal epochSeconds.
 ; Input: HL:(i40*)=rtcSeconds
 ; Output: (*HL) updated
@@ -93,52 +146,3 @@ getRtcNowAsEpochSecondsLoop:
     ; Convert to relative epochSeconds relative to current timeZone
     ld de, epochDate ; DE=(Date*)=current epochDate
     jp convertInternalToRelativeEpochSeconds ; HL=rtcSeconds
-
-;-----------------------------------------------------------------------------
-
-; Description: Set the RTC time zone to the Offset{} or Real given in OP1.
-; If a Real is given, it is converted into an Offset{}, then stored.
-; Input: OP1:RpnOffset{} or Real
-; Output: none
-RtcSetTimeZone:
-    ld hl, OP1
-    ld a, (hl)
-    and $1f
-    inc hl
-    cp rpnObjectTypeOffset
-    jr z, rtcSetTimeZoneForOffset
-    cp rpnObjectTypeReal
-    jr z, rtcSetTimeZoneForReal
-rtcSetTimeZoneErr:
-    bcall(_ErrDataType)
-rtcSetTimeZoneForReal:
-    ; convert OP1 to RpnOffset
-    ld hl, OP3
-    call offsetHourToOffset
-rtcSetTimeZoneForOffset:
-    ld c, (hl)
-    inc hl
-    ld b, (hl)
-    ld (rtcTimeZone), bc
-    ret
-
-; Description: Get the RTC time zone into OP1.
-; Input: OP1:RpnOffset{}
-; Output: none
-RtcGetTimeZone:
-    ld hl, OP1
-    ld a, rpnObjectTypeOffset
-    ld (hl), a
-    inc hl
-    ;
-    ld bc, (rtcTimeZone)
-    ld (hl), c
-    inc hl
-    ld (hl), b
-    ret
-
-;-----------------------------------------------------------------------------
-
-; Description: Set the RTC date, time, and timezone.
-RtcSetClock:
-    ret

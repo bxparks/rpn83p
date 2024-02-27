@@ -189,22 +189,6 @@ mEpochGetCustomHandler:
     jp pushToX
 
 ;-----------------------------------------------------------------------------
-; DATE > ZONE > Row 1
-;-----------------------------------------------------------------------------
-
-mSetTimeZoneHandler:
-    call closeInputAndRecallRpnOffsetX ; A=rpnObjectType; OP1=X
-    bcall(_SetTimeZone)
-    ld a, errorCodeTzStored
-    ld (handlerCode), a
-    ret
-
-mGetTimeZoneHandler:
-    call closeInputAndRecallNone
-    bcall(_GetTimeZone)
-    jp pushToX
-
-;-----------------------------------------------------------------------------
 ; RTC > Row 1
 ;-----------------------------------------------------------------------------
 
@@ -233,10 +217,17 @@ mRtcGetOffsetDateTimeHandler:
 ; RTC > Row 2
 ;-----------------------------------------------------------------------------
 
-mRtcSetClockHandler:
-    call closeInputAndRecallRpnOffsetDateTimeX
-    bcall(_RtcSetClock)
+mSetTimeZoneHandler:
+    call closeInputAndRecallRpnOffsetX ; A=rpnObjectType; OP1=X
+    bcall(_SetTimeZone)
+    ld a, errorCodeTzStored
+    ld (handlerCode), a
     ret
+
+mGetTimeZoneHandler:
+    call closeInputAndRecallNone
+    bcall(_GetTimeZone)
+    jp pushToX
 
 mRtcSetTimeZoneHandler:
     call closeInputAndRecallRpnOffsetX
@@ -249,6 +240,11 @@ mRtcGetTimeZoneHandler:
     call closeInputAndRecallNone
     bcall(_RtcGetTimeZone)
     jp pushToX
+
+mRtcSetClockHandler:
+    call closeInputAndRecallRpnOffsetDateTimeX ; A=rpnObjectType; OP1=X
+    bcall(_RtcSetClock)
+    ret
 
 ;-----------------------------------------------------------------------------
 ; Other DATE functions
