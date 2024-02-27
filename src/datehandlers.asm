@@ -199,16 +199,6 @@ mRtcGetNowHandler:
     bcall(_RtcGetNow)
     jp pushToX
 
-mRtcGetDateHandler:
-    call closeInputAndRecallNone
-    bcall(_RtcGetDate)
-    jp pushToX
-
-mRtcGetTimeHandler:
-    call closeInputAndRecallNone
-    bcall(_RtcGetTime)
-    jp pushToX
-
 mRtcGetOffsetDateTimeHandler:
     call closeInputAndRecallNone
     bcall(_RtcGetOffsetDateTime)

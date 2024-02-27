@@ -383,8 +383,8 @@ MenuGroup root mRoot [
     ]
     MenuGroup DATE mDate [
       MenuRow [
-        MenuItem LEAP mLeapYear # operates on year
-        MenuItem DOW mDayOfWeek # operates on Date
+        MenuItem LEAP mLeapYear # returns 0 or 1
+        MenuItem DOW mDayOfWeek # accepts Date, DateTime, OffsetDateTime
         MenuItem * *
         MenuItem D<Sconvert>DY mDateToEpochDays
         MenuItem DY<Sconvert>D mEpochDaysToDate
@@ -397,6 +397,15 @@ MenuGroup root mRoot [
         MenuItem S<Sconvert>DZ mEpochSecondstoOffsetDateTime
       ]
       MenuRow [
+        MenuItem NOW mRtcGetNow # current epochSeconds
+        MenuItem NWDZ mRtcGetOffsetDateTime # current OffsetDateTime
+        MenuItem CTZ mRtcSetTimeZone
+        MenuItem CTZ<Squestion> mRtcGetTimeZone
+        MenuItem SETC mRtcSetClock # set current clock
+      ]
+      MenuRow [
+        MenuItem TZ mSetTimeZone
+        MenuItem TZ<Squestion> mGetTimeZone
         MenuGroup EPCH mEpoch [
           MenuRow [
             MenuItemAlt CUST CUS<Sblock> mEpochCustom # custom, defined by EPC
@@ -411,21 +420,6 @@ MenuGroup root mRoot [
             MenuItem * *
             MenuItem EPC mEpochSetCustom # set custom epoch date
             MenuItem EPC<Squestion> mEpochGetCustom # get custom epoch date
-          ]
-        ]
-        MenuGroup CLK mRtc [
-          MenuRow [
-            MenuItem NOW mRtcGetNow # current epochSeconds
-            MenuItem NOWT mRtcGetTime # current Time
-            MenuItem NOWD mRtcGetDate # current Date
-            MenuItem NWDZ mRtcGetOffsetDateTime # current OffsetDateTime
-          ]
-          MenuRow [
-            MenuItem TZ mSetTimeZone
-            MenuItem TZ<Squestion> mGetTimeZone
-            MenuItem CTZ mRtcSetTimeZone
-            MenuItem CTZ<Squestion> mRtcGetTimeZone
-            MenuItem SETC mRtcSetClock # set current clock
           ]
         ]
       ]
