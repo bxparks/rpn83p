@@ -241,7 +241,9 @@ errorCodeTzStored equ           78 ; TZ stored
     .dw errorStrTzStored
 errorCodeEpochStored equ        79 ; Epoch stored
     .dw errorStrEpochStored
-errorCodeCount equ              80 ; total number of error codes
+errorCodeClockSet equ           80 ; RTC set
+    .dw errorStrClockSet
+errorCodeCount equ              81 ; total number of error codes
 
 ; The C strings for each error code. In alphabetical order, as listed in the TI
 ; 83 Plus SDK docs.
@@ -339,3 +341,5 @@ errorStrTzStored:
     .db "TZ Stored", 0 ; Info: TZ was stored
 errorStrEpochStored:
     .db "Epoch Stored", 0 ; Info: Epoch Date was stored
+errorStrClockSet:
+    .db "Clock Set", 0 ; Info: RTC set

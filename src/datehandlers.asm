@@ -246,6 +246,8 @@ mRtcGetTimeZoneHandler:
 mRtcSetClockHandler:
     call closeInputAndRecallRpnOffsetDateTimeX ; A=rpnObjectType; OP1=X
     bcall(_RtcSetClock)
+    ld a, errorCodeClockSet
+    ld (handlerCode), a
     ret
 
 ;-----------------------------------------------------------------------------

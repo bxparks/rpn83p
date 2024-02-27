@@ -20,10 +20,10 @@ RpnOffsetDateTimeToEpochSeconds:
     ; 2-byte gap between OP1 and OP2
     call PushRpnObject1 ; FPS=[rpnOffsetDateTime]; HL=rpnOffsetDateTime
     ex de, hl ; DE=rpnOffsetDateTime
-    call reserveRaw9 ; FPS=[rpnOffsetDateTime,reserved]
+    call reserveRaw9 ; FPS=[rpnOffsetDateTime,reserved]; HL=reserved
     ; convert DateTime to dateTimeSeconds
     inc de ; DE=offsetDateTime, skip type byte
-    call offsetDateTimeToEpochSeconds ; HL=epochSeconds
+    call offsetDateTimeToEpochSeconds ; HL:(i40*)=reserved=epochSeconds
     ; copy back to OP1
     call popRaw9Op1 ; FPS=[rpnOffsetDateTime]; HL=OP1=epochSeconds
     call dropRpnObject ; FPS=[]
