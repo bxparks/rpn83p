@@ -425,14 +425,21 @@ universalRecipOffsetDateTime:
     ld a, 2
     ret
 
-; Description: Square for real and complex numbers.
-; Input: OP1/OP2: X
-; Output: OP1/OP2: X^2
+; Description: Square for real and complex numbers. Performs Extend(X)
+; operation for Date, DateTime objects, converting Date->DateTime, and
+; DateTime->OffsetDateTime.
+; Input: OP1/OP2:RpnObject=X
+; Output: OP1/OP2:RpnObject=X^2, or RpnDateTime or RpnOffsetDateTime
 universalSquare:
-    call checkOp1Real ; ZF=1 if real
+    call getOp1RpnObjectType
+    cp rpnObjectTypeReal ; ZF=1 if real
     jr z, universalSquareReal
-    call checkOp1Complex ; ZF=1 if complex
+    cp rpnObjectTypeComplex ; ZF=1 if complex
     jr z, universalSquareComplex
+    cp rpnObjectTypeDate ; ZF=1 if RpnDate
+    jr z, universalSquareRpnDate
+    cp rpnObjectTypeDateTime ; ZF=1 if RpnDateTime
+    jr z, universalSquareRpnDateTime
 universalSquareErr:
     bcall(_ErrDataType)
 universalSquareReal:
@@ -440,6 +447,12 @@ universalSquareReal:
     ret
 universalSquareComplex:
     bcall(_CSquare)
+    ret
+universalSquareRpnDate:
+    bcall(_ExtendRpnDateToDateTime)
+    ret
+universalSquareRpnDateTime:
+    bcall(_ExtendRpnDateTimeToOffsetDateTime)
     ret
 
 ; Description: Square root for real and complex numbers.

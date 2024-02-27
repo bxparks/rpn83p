@@ -236,3 +236,25 @@ MergeRpnDateWithRpnTime:
     ld bc, rpnObjectTypeTimeSizeOf-1
     ldir
     ret
+
+;-----------------------------------------------------------------------------
+
+; Description: Convert RpnDate into RpnDateTime by appending a Time field of
+; "00:00:00", i.e. T{0,0,0}.
+; Input:
+;   - OP1:RpnDate
+; Output:
+;   - OP1:RpnDateTime
+; Destroys: OP1
+ExtendRpnDateToDateTime:
+    ld a, rpnObjectTypeDateTime
+    ld (OP1), a
+    ; clear the Time fields
+    ld hl, OP1+rpnObjectTypeDateSizeOf
+    xor a
+    ld (hl), a
+    inc hl
+    ld (hl), a
+    inc hl
+    ld (hl), a
+    ret

@@ -302,3 +302,24 @@ MergeRpnDateTimeWithRpnOffset:
     ldir
     call expandOp1ToOp2PageTwo
     ret
+
+;-----------------------------------------------------------------------------
+
+; Description: Convert RpnDateTime into RpnOffsetDateTime by appending an
+; TimeZone offset of "+00:00", i.e. TZ{0,0}.
+; Input:
+;   - OP1:RpnDateTime
+; Output:
+;   - OP1:RpnOffsetDateTime
+; Destroys: OP1
+ExtendRpnDateTimeToOffsetDateTime:
+    ld a, rpnObjectTypeOffsetDateTime
+    ld (OP1), a
+    ; clear the Time fields
+    ld hl, OP1+rpnObjectTypeDateTimeSizeOf
+    xor a
+    ld (hl), a
+    inc hl
+    ld (hl), a
+    call expandOp1ToOp2PageTwo
+    ret
