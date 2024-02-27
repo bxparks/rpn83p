@@ -123,7 +123,7 @@ rpntrue equ 1
 ;-----------------------------------------------------------------------------
 
 ; RpnObect type enums. TIOS defines object types from $00 (RealObj) to
-; $17 (GroupObj). We'll continue from there.
+; $17 (GroupObj). We'll continue from $18.
 
 ; Real number object. Use the same constant as TIOS.
 rpnObjectTypeReal equ 0 ; same as TI-OS
@@ -134,13 +134,13 @@ rpnObjectTypeComplex equ $0C ; same as TI-OS
 ; Date and RpnDate objects:
 ; - struct Date{year:u16, mon:u8, day:u8}, 4 bytes
 ; - struct RpnDate{type:u8, date:Date}, 5 bytes
-rpnObjectTypeDate equ $18 ; next unused object type
+rpnObjectTypeDate equ $18
 rpnObjectTypeDateSizeOf equ 5
 
 ; Time and RpnTime objects:
 ; - struct Time{hour:u8, minute:u8, second:u8}, 3 bytes
-; - struct RpnTime{type:u8, date:Time}, 5 bytes
-rpnObjectTypeTime equ $19 ; next unused object type
+; - struct RpnTime{type:u8, date:Time}, 4 bytes
+rpnObjectTypeTime equ $19
 rpnObjectTypeTimeSizeOf equ 4
 
 ; DateTime and RpnDateTime objects:
@@ -171,10 +171,9 @@ rpnObjectTypeOffsetDateTimeSizeOf equ 10
 rpnObjectTypeDayOfWeek equ $1D
 rpnObjectTypeDayOfWeekSizeOf equ 3
 
-; An RpnObject is a struct of a type byte and 2 RpnFloat objects so that a
-; complex number can be stored. See the struct definitions in vars.asm. If the
-; rpnObjectSizeOf is changed, the rpnObjectIndexToOffset() function must be
-; updated.
+; An RpnObject is union of all possible Real, Complex, and RpnObjects. See the
+; struct definitions in vars.asm. If the rpnObjectSizeOf is changed, the
+; rpnObjectIndexToOffset() function must be updated.
 rpnRealSizeOf equ 9 ; sizeof(float)
 rpnComplexSizeOf equ 18 ; sizeof(complex)
 rpnObjectSizeOf equ rpnComplexSizeOf + 1 ; type + sizeof(complex)
@@ -1223,6 +1222,10 @@ _SubRpnDateTimeByRpnDateTimeOrSecondsLabel:
 _SubRpnDateTimeByRpnDateTimeOrSeconds equ _SubRpnDateTimeByRpnDateTimeOrSecondsLabel-branchTableBase
     .dw SubRpnDateTimeByRpnDateTimeOrSeconds
     .db 2
+_SplitRpnDateTimeLabel:
+_SplitRpnDateTime equ _SplitRpnDateTimeLabel-branchTableBase
+    .dw SplitRpnDateTime
+    .db 2
 
 ; offset2.asm
 _RpnOffsetToSecondsLabel:
@@ -1246,6 +1249,10 @@ _AddRpnOffsetDateTimeBySeconds equ _AddRpnOffsetDateTimeBySecondsLabel-branchTab
 _SubRpnOffsetDateTimeByRpnOffsetDateTimeOrSecondsLabel:
 _SubRpnOffsetDateTimeByRpnOffsetDateTimeOrSeconds equ _SubRpnOffsetDateTimeByRpnOffsetDateTimeOrSecondsLabel-branchTableBase
     .dw SubRpnOffsetDateTimeByRpnOffsetDateTimeOrSeconds
+    .db 2
+_SplitRpnOffsetDateTimeLabel:
+_SplitRpnOffsetDateTime equ _SplitRpnOffsetDateTimeLabel-branchTableBase
+    .dw SplitRpnOffsetDateTime
     .db 2
 
 ; zoneconversion2.asm

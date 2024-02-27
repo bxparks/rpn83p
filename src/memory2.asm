@@ -229,8 +229,7 @@ cp1ExCp3PageTwo:
 ; Description: Shift the 9 bytes starting at OP1+9, down 2 bytes into OP2. This
 ; is required because the OP1 is 11 bytes bytes and anything that is parsed
 ; into the last 2 bytes must be shifted into OP2 before those bytes can be
-; saved properly into the RPN registers or the storage
-; registers.
+; saved properly into the RPN registers or the storage registers.
 ; Destroys: none
 expandOp1ToOp2PageTwo:
     push bc
@@ -245,7 +244,8 @@ expandOp1ToOp2PageTwo:
     pop bc
     ret
 
-; Description: The reverse of expandOp1ToOp2().
+; Description: The reverse of expandOp1ToOp2(), so that the 2-byte gap between
+; OP1 and OP2 are removed.
 ; Destroys: none
 shrinkOp2ToOp1PageTwo:
     push bc

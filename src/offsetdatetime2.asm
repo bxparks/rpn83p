@@ -250,3 +250,33 @@ localEpochSecondsToUtcEpochSeconds:
     call subU40U40 ; HL=utcEpochSeconds=localEpochSeconds-offsetSeconds
     pop de ; stack=[]; DE=offset+2
     jp dropRaw9
+
+;-----------------------------------------------------------------------------
+
+; Description: Split an RpnOffsetDateTime into RpnDateTime and RpnOffset.
+; Input:
+;   - CP1:RpnOffsetDateTime=X
+; Output:
+;   - CP1:RpnOffset=Y
+;   - CP3:RpnDateTime=X
+; Destroys: all
+SplitRpnOffsetDateTime:
+    call shrinkOp2ToOp1PageTwo ; remove 2-byte gap between OP1 and OP2
+    ; extract the DateTime part
+    ld de, OP3 ; DE:(DateTime*)
+    ld a, rpnObjectTypeDateTime
+    ld (de), a
+    inc de
+    ld hl, OP1+1 ; HL:(const DateTime*)
+    ld bc, rpnObjectTypeDateTimeSizeOf-1
+    ldir
+    ; Extract the Offset part by shifting forward. This is allowed because
+    ; sizeof(DateTime)>sizeof(Offset), so there is no overlap.
+    ld de, OP1
+    ld a, rpnObjectTypeOffset
+    ld (de), a
+    inc de
+    ld hl, OP1+rpnObjectTypeDateTimeSizeOf ; HL:(const Offset*)
+    ld bc, rpnObjectTypeOffsetSizeOf-1
+    ldir
+    ret

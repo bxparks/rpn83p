@@ -616,7 +616,9 @@ replaceXY:
 ; Description: Replace X and Y with Real numbers OP1 and OP2, in that order.
 ; This causes X=OP2 and Y=OP1, saving the previous X to LastX, and setting
 ; dirty flag.
-; Input: OP1:Real, OP2:Real
+; Input:
+;   - OP1:Real=Y
+;   - OP2:Real=X
 ; Output:
 ;   - Y=OP1
 ;   - X=OP2
@@ -656,6 +658,30 @@ replaceXWithOP1OP2:
     call op1ExOp2
     call stoX
     call op1ExOp2
+    ret
+
+; Description: Replace X with objects in CP1 and CP3 in that order.
+; Input:
+;   - CP1:RpnObject=newY
+;   - CP3:RpnObject=newX
+; Output:
+;   - Y=CP1
+;   - X=CP3
+;   - LastX=X
+; Preserves: CP1, CP3
+replaceXWithCP1CP3:
+    ; validate CP1 and CP2 before modifying X and Y
+    call checkValid
+    call cp1ExCp3
+    call checkValid
+    call cp1ExCp3
+    ;
+    call saveLastX
+    call stoX
+    call liftStack
+    call cp1ExCp3
+    call stoX
+    call cp1ExCp3
     ret
 
 ;-----------------------------------------------------------------------------

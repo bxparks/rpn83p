@@ -388,21 +388,41 @@ universalChsComplex:
 ; Alegbraic functions.
 ;-----------------------------------------------------------------------------
 
-; Description: Reciprocal for real and complex numbers.
-; Input: OP1/OP2: X
-; Output: OP1/OP2: 1/X
+; Description: Reciprocal for real and complex numbers. For record types (e.g.
+; DateTime, OffsetDateTime), it causes splitting of the objects into smaller
+; compoments.
+; Input:
+;    - OP1/OP2:RpnObject=X
+; Output:
+;   - OP1/OP2:RpnObject=1/X or Split(X)
+;   - A:u8=numRetValues (1 for Real,Complex; 2 for DateTime,OffsetDateTime)
 universalRecip:
-    call checkOp1Real ; ZF=1 if real
+    call getOp1RpnObjectType ; A=rpnObjectType
+    cp rpnObjectTypeReal ; ZF=1 if real
     jr z, universalRecipReal
-    call checkOp1Complex ; ZF=1 if complex
+    cp rpnObjectTypeComplex ; ZF=1 if complex
     jr z, universalRecipComplex
+    cp rpnObjectTypeDateTime ; ZF=1 if RpnDateTime
+    jr z, universalRecipDateTime
+    cp rpnObjectTypeOffsetDateTime ; ZF=1 if RpnOffsetDateTime
+    jr z, universalRecipOffsetDateTime
 universalRecipErr:
     bcall(_ErrDataType)
 universalRecipReal:
     bcall(_FPRecip)
+    ld a, 1
     ret
 universalRecipComplex:
     bcall(_CRecip)
+    ld a, 1
+    ret
+universalRecipDateTime:
+    bcall(_SplitRpnDateTime) ; CP1=RpnTime; CP3=RpnDate
+    ld a, 2
+    ret
+universalRecipOffsetDateTime:
+    bcall(_SplitRpnOffsetDateTime) ; CP1=RpnOffset; CP3=RpnDateTime
+    ld a, 2
     ret
 
 ; Description: Square for real and complex numbers.

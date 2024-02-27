@@ -920,8 +920,12 @@ handleKeyExpon:
 ; Description: 1/x
 handleKeyInv:
     call closeInputAndRecallUniversalX
-    call universalRecip
-    jp replaceX
+    call universalRecip ; A=numRetValues
+    cp 1
+    jp z, replaceX
+    cp 2
+    jp z, replaceXWithCP1CP3
+    bcall(_ErrInvalid) ; should never happen
 
 ; Description: x^2
 handleKeySquare:

@@ -185,3 +185,32 @@ subRpnDateTimeByRpnDateTime:
     call popRaw9Op1 ; FPS=[X.seconds]; OP1=epochSeconds
     call ConvertI40ToOP1 ; OP1=float(epochSeconds)
     jp dropRaw9 ; FPS=[]
+
+;-----------------------------------------------------------------------------
+
+; Description: Split an RpnDateTime into RpnDate and RpnTime.
+; Input:
+;   - CP1:RpnDateTime=X
+; Output:
+;   - CP1:RpnTime=Y
+;   - CP3:RpnDate=X
+; Destroys: all
+SplitRpnDateTime:
+    ; extract the Date part
+    ld de, OP3 ; DE:(Date*)
+    ld a, rpnObjectTypeDate
+    ld (de), a
+    inc de
+    ld hl, OP1+1 ; HL:(const Date*)
+    ld bc, rpnObjectTypeDateSizeOf-1
+    ldir
+    ; Extract the Time part by shifting forward. This is allowed because
+    ; sizeof(Date)>sizeof(Time), so there is no overlap.
+    ld de, OP1
+    ld a, rpnObjectTypeTime
+    ld (de), a
+    inc de
+    ld hl, OP1+rpnObjectTypeDateSizeOf ; HL:(const Time*)
+    ld bc, rpnObjectTypeTimeSizeOf-1
+    ldir
+    ret
