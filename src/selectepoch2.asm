@@ -40,6 +40,14 @@ SelectTiosEpochDate:
     ld hl, tiosEpochDate
     jr setCurrentEpochDateVar
 
+; Description: Set epochType and epochDate to Y2K epoch (2000-01-01).
+SelectY2kEpochDate:
+    ld a, epochTypeY2k
+    ld (epochType), a
+    set dirtyFlagsMenu, (iy + dirtyFlags)
+    ld hl, y2kEpochDate
+    jr setCurrentEpochDateVar
+
 ; Description: Set epochType and epochDate to the customEpochDate.
 SelectCustomEpochDate:
     ld a, epochTypeCustom

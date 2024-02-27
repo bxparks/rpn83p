@@ -158,6 +158,24 @@ mEpochTiosNameSelectorAlt:
 
 ;-----------------------------------------------------------------------------
 
+mEpochY2kHandler:
+    bcall(_SelectY2kEpochDate)
+    ret
+
+; Description: Select menu name.
+; Output: CF=0 for normal, CF=1 or alternate
+mEpochY2kNameSelector:
+    ld a, (epochType)
+    cp epochTypeY2k
+    jr z, mEpochY2kNameSelectorAlt
+    or a ; CF=0
+    ret
+mEpochY2kNameSelectorAlt:
+    scf
+    ret
+
+;-----------------------------------------------------------------------------
+
 mEpochCustomHandler:
     bcall(_SelectCustomEpochDate)
     ret

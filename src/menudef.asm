@@ -2160,7 +2160,7 @@ mEpochId equ 229
     .dw mDateId ; parentId
     .dw mEpochNameId ; nameId
     .db 2 ; numRows
-    .dw mEpochCustomId ; rowBeginId or altNameId
+    .dw mEpochUnixId ; rowBeginId or altNameId
     .dw mGroupHandler ; handler (predefined)
     .dw 0 ; nameSelector
 mBlank230:
@@ -2183,17 +2183,8 @@ mBlank231Id equ 231
     .dw 0 ; nameSelector
 ; MenuGroup EPCH: children
 ; MenuGroup EPCH: children: row 0
-mEpochCustom:
-mEpochCustomId equ 232
-    .dw mEpochCustomId ; id
-    .dw mEpochId ; parentId
-    .dw mEpochCustomNameId ; nameId
-    .db 0 ; numRows
-    .dw mEpochCustomAltNameId ; rowBeginId or altNameId
-    .dw mEpochCustomHandler ; handler (to be implemented)
-    .dw mEpochCustomNameSelector ; nameSelector
 mEpochUnix:
-mEpochUnixId equ 233
+mEpochUnixId equ 232
     .dw mEpochUnixId ; id
     .dw mEpochId ; parentId
     .dw mEpochUnixNameId ; nameId
@@ -2202,7 +2193,7 @@ mEpochUnixId equ 233
     .dw mEpochUnixHandler ; handler (to be implemented)
     .dw mEpochUnixNameSelector ; nameSelector
 mEpochNtp:
-mEpochNtpId equ 234
+mEpochNtpId equ 233
     .dw mEpochNtpId ; id
     .dw mEpochId ; parentId
     .dw mEpochNtpNameId ; nameId
@@ -2211,7 +2202,7 @@ mEpochNtpId equ 234
     .dw mEpochNtpHandler ; handler (to be implemented)
     .dw mEpochNtpNameSelector ; nameSelector
 mEpochGps:
-mEpochGpsId equ 235
+mEpochGpsId equ 234
     .dw mEpochGpsId ; id
     .dw mEpochId ; parentId
     .dw mEpochGpsNameId ; nameId
@@ -2220,7 +2211,7 @@ mEpochGpsId equ 235
     .dw mEpochGpsHandler ; handler (to be implemented)
     .dw mEpochGpsNameSelector ; nameSelector
 mEpochTios:
-mEpochTiosId equ 236
+mEpochTiosId equ 235
     .dw mEpochTiosId ; id
     .dw mEpochId ; parentId
     .dw mEpochTiosNameId ; nameId
@@ -2228,16 +2219,25 @@ mEpochTiosId equ 236
     .dw mEpochTiosAltNameId ; rowBeginId or altNameId
     .dw mEpochTiosHandler ; handler (to be implemented)
     .dw mEpochTiosNameSelector ; nameSelector
-; MenuGroup EPCH: children: row 1
-mBlank237:
-mBlank237Id equ 237
-    .dw mBlank237Id ; id
+mEpochY2k:
+mEpochY2kId equ 236
+    .dw mEpochY2kId ; id
     .dw mEpochId ; parentId
-    .dw mNullNameId ; nameId
+    .dw mEpochY2kNameId ; nameId
     .db 0 ; numRows
-    .dw 0 ; rowBeginId or altNameId
-    .dw mNullHandler ; handler (predefined)
-    .dw 0 ; nameSelector
+    .dw mEpochY2kAltNameId ; rowBeginId or altNameId
+    .dw mEpochY2kHandler ; handler (to be implemented)
+    .dw mEpochY2kNameSelector ; nameSelector
+; MenuGroup EPCH: children: row 1
+mEpochCustom:
+mEpochCustomId equ 237
+    .dw mEpochCustomId ; id
+    .dw mEpochId ; parentId
+    .dw mEpochCustomNameId ; nameId
+    .db 0 ; numRows
+    .dw mEpochCustomAltNameId ; rowBeginId or altNameId
+    .dw mEpochCustomHandler ; handler (to be implemented)
+    .dw mEpochCustomNameSelector ; nameSelector
 mBlank238:
 mBlank238Id equ 238
     .dw mBlank238Id ; id
@@ -2276,7 +2276,7 @@ mEpochGetCustomId equ 241
     .dw 0 ; nameSelector
 
 ; Table of 2-byte pointers to names in the pool of strings below.
-mMenuNameTableSize equ 244
+mMenuNameTableSize equ 246
 mMenuNameTable:
 mNullNameId equ 0
     .dw mNullName
@@ -2742,29 +2742,33 @@ mGetTimeZoneNameId equ 230
     .dw mGetTimeZoneName
 mEpochNameId equ 231
     .dw mEpochName
-mEpochCustomNameId equ 232
-    .dw mEpochCustomName
-mEpochCustomAltNameId equ 233
-    .dw mEpochCustomAltName
-mEpochUnixNameId equ 234
+mEpochUnixNameId equ 232
     .dw mEpochUnixName
-mEpochUnixAltNameId equ 235
+mEpochUnixAltNameId equ 233
     .dw mEpochUnixAltName
-mEpochNtpNameId equ 236
+mEpochNtpNameId equ 234
     .dw mEpochNtpName
-mEpochNtpAltNameId equ 237
+mEpochNtpAltNameId equ 235
     .dw mEpochNtpAltName
-mEpochGpsNameId equ 238
+mEpochGpsNameId equ 236
     .dw mEpochGpsName
-mEpochGpsAltNameId equ 239
+mEpochGpsAltNameId equ 237
     .dw mEpochGpsAltName
-mEpochTiosNameId equ 240
+mEpochTiosNameId equ 238
     .dw mEpochTiosName
-mEpochTiosAltNameId equ 241
+mEpochTiosAltNameId equ 239
     .dw mEpochTiosAltName
-mEpochSetCustomNameId equ 242
+mEpochY2kNameId equ 240
+    .dw mEpochY2kName
+mEpochY2kAltNameId equ 241
+    .dw mEpochY2kAltName
+mEpochCustomNameId equ 242
+    .dw mEpochCustomName
+mEpochCustomAltNameId equ 243
+    .dw mEpochCustomAltName
+mEpochSetCustomNameId equ 244
     .dw mEpochSetCustomName
-mEpochGetCustomNameId equ 243
+mEpochGetCustomNameId equ 245
     .dw mEpochGetCustomName
 
 ; Table of names as NUL terminated C strings.
@@ -3232,10 +3236,6 @@ mGetTimeZoneName:
     .db 'T', 'Z', Squestion, 0
 mEpochName:
     .db "EPCH", 0
-mEpochCustomName:
-    .db "CUST", 0
-mEpochCustomAltName:
-    .db 'C', 'U', 'S', Sblock, 0
 mEpochUnixName:
     .db "UNIX", 0
 mEpochUnixAltName:
@@ -3252,6 +3252,14 @@ mEpochTiosName:
     .db "TIOS", 0
 mEpochTiosAltName:
     .db 'T', 'I', Sblock, 0
+mEpochY2kName:
+    .db "Y2K", 0
+mEpochY2kAltName:
+    .db 'Y', '2', 'K', Sblock, 0
+mEpochCustomName:
+    .db "CSEP", 0
+mEpochCustomAltName:
+    .db 'C', 'S', 'E', Sblock, 0
 mEpochSetCustomName:
     .db "EPC", 0
 mEpochGetCustomName:

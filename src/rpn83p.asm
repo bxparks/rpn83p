@@ -433,6 +433,7 @@ epochTypeUnix equ 1
 epochTypeNtp equ 2
 epochTypeGps equ 3
 epochTypeTios equ 4
+epochTypeY2k equ 5
 
 ; Store the reference Epoch.
 epochType equ formatRecordMode + 1 ; u8
@@ -1045,11 +1046,15 @@ _SelectTiosEpochDateLabel:
 _SelectTiosEpochDate equ _SelectTiosEpochDateLabel-branchTableBase
     .dw SelectTiosEpochDate
     .db 2
+_SelectY2kEpochDateLabel:
+_SelectY2kEpochDate equ _SelectY2kEpochDateLabel-branchTableBase
+    .dw SelectY2kEpochDate
+    .db 2
 _SelectCustomEpochDateLabel:
 _SelectCustomEpochDate equ _SelectCustomEpochDateLabel-branchTableBase
     .dw SelectCustomEpochDate
     .db 2
-; Custom epoch date functions
+; Set and get custom epoch date.
 _SetCustomEpochDateLabel:
 _SetCustomEpochDate equ _SetCustomEpochDateLabel-branchTableBase
     .dw SetCustomEpochDate
