@@ -258,3 +258,16 @@ ExtendRpnDateToDateTime:
     inc hl
     ld (hl), a
     ret
+
+;-----------------------------------------------------------------------------
+
+; Description: Convert RpnDateTime into RpnDate by truncating the Time field.
+; Input:
+;   - OP1:RpnDateTime
+; Output:
+;   - OP1:RpnDate
+; Destroys: OP1
+TruncateRpnDateTime:
+    ld a, rpnObjectTypeDate
+    ld (OP1), a
+    ret

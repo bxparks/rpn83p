@@ -323,3 +323,17 @@ ExtendRpnDateTimeToOffsetDateTime:
     ld (hl), a
     call expandOp1ToOp2PageTwo
     ret
+
+;-----------------------------------------------------------------------------
+
+; Description: Convert RpnOffsetDateTime into RpnDateTime by truncating the
+; TimeZone offset.
+; Input:
+;   - OP1:RpnOffsetDateTime
+; Output:
+;   - OP1:RpnDateTime
+; Destroys: OP1
+TruncateRpnOffsetDateTime:
+    ld a, rpnObjectTypeDateTime
+    ld (OP1), a
+    ret

@@ -426,10 +426,13 @@ universalRecipOffsetDateTime:
     ret
 
 ; Description: Square for real and complex numbers. Performs Extend(X)
-; operation for Date, DateTime objects, converting Date->DateTime, and
+; operation for Date and DateTime objects, converting Date->DateTime, and
 ; DateTime->OffsetDateTime.
-; Input: OP1/OP2:RpnObject=X
-; Output: OP1/OP2:RpnObject=X^2, or RpnDateTime or RpnOffsetDateTime
+; Input:
+;   - OP1/OP2:(Real|Complex|RpnDate|RpnDateTime)=X
+; Output:
+;   - OP1/OP2:(Real|Complex|RpnDateTime|RpnOffsetDateTime)=
+;       X^2|dateTime|offsetDateTime
 universalSquare:
     call getOp1RpnObjectType
     cp rpnObjectTypeReal ; ZF=1 if real
@@ -455,14 +458,23 @@ universalSquareRpnDateTime:
     bcall(_ExtendRpnDateTimeToOffsetDateTime)
     ret
 
-; Description: Square root for real and complex numbers.
-; Input: OP1/OP2: X; numResultMode
-; Output: OP1/OP2: sqrt(X)
+; Description: Square root for real and complex numbers. Perform a Truncate()
+; operation for DateTime and OffsetDateTime.
+; Input:
+;   - OP1/OP2:(Real|Complex|RpnDateTime|RpnOffsetDateTime)=X
+;   - numResultMode
+; Output:
+;   - OP1/OP2:(Real|Complex|RpnDate|RpnDateTime)=sqrt(X)|date|dateTime
 universalSqRoot:
-    call checkOp1Real ; ZF=1 if complex
+    call getOp1RpnObjectType
+    cp rpnObjectTypeReal ; ZF=1 if complex
     jr z, universalSqRootReal
-    call checkOp1Complex ; ZF=1 if complex
+    cp rpnObjectTypeComplex ; ZF=1 if complex
     jr z, universalSqRootComplex
+    cp rpnObjectTypeDateTime ; ZF=1 if RpnDateTime
+    jr z, universalSqRootDateTime
+    cp rpnObjectTypeOffsetDateTime ; ZF=1 if RpnOffsetDateTime
+    jr z, universalSqRootOffsetDateTime
 universalSqRootErr:
     bcall(_ErrDataType)
 universalSqRootReal:
@@ -481,6 +493,12 @@ universalSqRootNumResultModeReal:
     ret
 universalSqRootComplex:
     bcall(_CSqRoot)
+    ret
+universalSqRootDateTime:
+    bcall(_TruncateRpnDateTime)
+    ret
+universalSqRootOffsetDateTime:
+    bcall(_TruncateRpnOffsetDateTime)
     ret
 
 ; Description: Calculate X^3 for real and complex numbers. For some reason, the

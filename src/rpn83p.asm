@@ -1234,6 +1234,10 @@ _ExtendRpnDateToDateTimeLabel:
 _ExtendRpnDateToDateTime equ _ExtendRpnDateToDateTimeLabel-branchTableBase
     .dw ExtendRpnDateToDateTime
     .db 2
+_TruncateRpnDateTimeLabel:
+_TruncateRpnDateTime equ _TruncateRpnDateTimeLabel-branchTableBase
+    .dw TruncateRpnDateTime
+    .db 2
 
 ; offset2.asm
 _RpnOffsetToSecondsLabel:
@@ -1269,6 +1273,10 @@ _MergeRpnDateTimeWithRpnOffset equ _MergeRpnDateTimeWithRpnOffsetLabel-branchTab
 _ExtendRpnDateTimeToOffsetDateTimeLabel:
 _ExtendRpnDateTimeToOffsetDateTime equ _ExtendRpnDateTimeToOffsetDateTimeLabel-branchTableBase
     .dw ExtendRpnDateTimeToOffsetDateTime
+    .db 2
+_TruncateRpnOffsetDateTimeLabel:
+_TruncateRpnOffsetDateTime equ _TruncateRpnOffsetDateTimeLabel-branchTableBase
+    .dw TruncateRpnOffsetDateTime
     .db 2
 
 ; zoneconversion2.asm
