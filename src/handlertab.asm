@@ -297,9 +297,13 @@ keyCodeHandlerTable:
 
 ;-----------------------------------------------------------------------------
 
-    ; 2ND Link. Merge reals to complex, or split complex into reals.
+    ; 2ND LINK. Merge (link) reals to complex, or split complex into reals.
     .db kLinkIO
     .dw handleKeyLink
+
+    ; 2ND DISTR. Split (distribute) DateTime and OffsetDateTime into components.
+    .db kDist
+    .dw handleKeyDist
 
 ;-----------------------------------------------------------------------------
 

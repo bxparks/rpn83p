@@ -920,12 +920,8 @@ handleKeyExpon:
 ; Description: 1/x
 handleKeyInv:
     call closeInputAndRecallUniversalX
-    call universalRecip ; A=numRetValues
-    cp 1
-    jp z, replaceX
-    cp 2
-    jp z, replaceXWithCP1CP3
-    bcall(_ErrInvalid) ; should never happen
+    call universalRecip
+    jp replaceX
 
 ; Description: x^2
 handleKeySquare:
@@ -962,7 +958,7 @@ handleKeyAns:
 
 handleKeyLog:
     call closeInputAndRecallUniversalX
-    call universalLog
+    call universalLog ; A=numReturnValues
     jp replaceX
 
 handleKeyALog:
@@ -1135,13 +1131,17 @@ msgDrawPrompt:
     .db "DRAW", 0
 
 ;-----------------------------------------------------------------------------
-; Keys related to complex numbers.
+; Keys related to linking and unlinking.
 ;-----------------------------------------------------------------------------
 
 ; Description: Convert between 2 reals and a complex number, depending on the
 ; complexMode setting (RECT, PRAD, PDEG).
-; Input: OP1,OP2 or CP1
-; Output; OP1,OP2 or CP1
+; Input:
+;   - X:(Real|Complex|RpnDate|RpnDateTime)
+;   - Y:(Real|Complex|RpnDate|RpnDateTime)
+; Output:
+;   - X:(Real|Complex|RpnDateTime|RpnOffsetDateTime)
+;   - Y:(Real|Complex|RpnDateTime|RpnOffsetDateTime)
 handleKeyLink:
     call closeInputAndRecallNone
     call rclX ; CP1=X; A=objectType
@@ -1203,3 +1203,24 @@ handleKeyLinkDateTime:
     jr nz, handleKeyLinkErrDataType
     bcall(_MergeRpnDateTimeWithRpnOffset) ; OP1=rpnOffsetDateTime
     jp replaceXY
+
+; Description: Distribute (unlink or split) DateTime or OffsetDateTime into
+; components.
+; Input:
+;   - X:(RpnDateTime|RpnOffsetDateTime)
+; Output:
+;   - Y:(|RpnOffset|RpnTime)
+;   - X:(RpnDate|RpnDateTime)
+handleKeyDist:
+    call closeInputAndRecallUniversalX ; CP1=X; A=objectType
+    cp rpnObjectTypeDateTime ; ZF=1 if RpnDateTime
+    jr z, handleKeyDistDateTime
+    cp rpnObjectTypeOffsetDateTime ; ZF=1 if RpnOffsetDateTime
+    jr z, handleKeyDistOffsetDateTime
+    bcall(_ErrDataType)
+handleKeyDistDateTime:
+    bcall(_SplitRpnDateTime) ; CP1=RpnTime; CP3=RpnDate
+    jp replaceXWithCP1CP3
+handleKeyDistOffsetDateTime:
+    bcall(_SplitRpnOffsetDateTime) ; CP1=RpnOffset; CP3=RpnDateTime
+    jp replaceXWithCP1CP3
