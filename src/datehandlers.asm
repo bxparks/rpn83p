@@ -181,27 +181,13 @@ mEpochCustomNameSelectorAlt:
 mEpochSetCustomHandler:
     call closeInputAndRecallRpnDateX ; OP1=X=RpnDate{}
     bcall(_SetCustomEpochDate)
+    ld a, errorCodeEpochStored
+    ld (handlerCode), a
     ret
 
 mEpochGetCustomHandler:
     call closeInputAndRecallNone
     bcall(_GetCustomEpochDate)
-    jp pushToX
-
-;-----------------------------------------------------------------------------
-; DATE > ZONE > Row 1
-;-----------------------------------------------------------------------------
-
-mSetTimeZoneHandler:
-    call closeInputAndRecallRpnOffsetX ; A=rpnObjectType; OP1=X
-    bcall(_SetTimeZone)
-    ld a, errorCodeTzStored
-    ld (handlerCode), a
-    ret
-
-mGetTimeZoneHandler:
-    call closeInputAndRecallNone
-    bcall(_GetTimeZone)
     jp pushToX
 
 ;-----------------------------------------------------------------------------
@@ -233,10 +219,17 @@ mRtcGetOffsetDateTimeHandler:
 ; RTC > Row 2
 ;-----------------------------------------------------------------------------
 
-mRtcSetClockHandler:
-    call closeInputAndRecallRpnOffsetDateTimeX
-    bcall(_RtcSetClock)
+mSetTimeZoneHandler:
+    call closeInputAndRecallRpnOffsetX ; A=rpnObjectType; OP1=X
+    bcall(_SetTimeZone)
+    ld a, errorCodeTzStored
+    ld (handlerCode), a
     ret
+
+mGetTimeZoneHandler:
+    call closeInputAndRecallNone
+    bcall(_GetTimeZone)
+    jp pushToX
 
 mRtcSetTimeZoneHandler:
     call closeInputAndRecallRpnOffsetX
@@ -249,6 +242,13 @@ mRtcGetTimeZoneHandler:
     call closeInputAndRecallNone
     bcall(_RtcGetTimeZone)
     jp pushToX
+
+mRtcSetClockHandler:
+    call closeInputAndRecallRpnOffsetDateTimeX ; A=rpnObjectType; OP1=X
+    bcall(_RtcSetClock)
+    ld a, errorCodeClockSet
+    ld (handlerCode), a
+    ret
 
 ;-----------------------------------------------------------------------------
 ; Other DATE functions

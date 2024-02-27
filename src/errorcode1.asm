@@ -239,7 +239,11 @@ errorCodeClearAgain equ         77 ; next CLEAR button invokes CLST
     .dw errorStrClearAgain
 errorCodeTzStored equ           78 ; TZ stored
     .dw errorStrTzStored
-errorCodeCount equ              79 ; total number of error codes
+errorCodeEpochStored equ        79 ; Epoch stored
+    .dw errorStrEpochStored
+errorCodeClockSet equ           80 ; RTC set
+    .dw errorStrClockSet
+errorCodeCount equ              81 ; total number of error codes
 
 ; The C strings for each error code. In alphabetical order, as listed in the TI
 ; 83 Plus SDK docs.
@@ -335,3 +339,7 @@ errorStrClearAgain:
     .db "CLEAR Again to Clear Stack", 0 ; Info: Next CLEAR will invoke CLST
 errorStrTzStored:
     .db "TZ Stored", 0 ; Info: TZ was stored
+errorStrEpochStored:
+    .db "Epoch Stored", 0 ; Info: Epoch Date was stored
+errorStrClockSet:
+    .db "Clock Set", 0 ; Info: RTC set

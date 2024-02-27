@@ -62,40 +62,6 @@ RtcGetOffsetDateTime:
 
 ;-----------------------------------------------------------------------------
 
-; Description: Retrieve current RTC as internal epochSeconds.
-; Input: HL:(i40*)=rtcSeconds
-; Output: (*HL) updated
-; Destroys: A, BC, DE
-; Preserves: HL
-getRtcNowAsEpochSeconds:
-    push hl ; stack=[rtcSeconds]
-    ; Read epochSeconds (relative TIOS epoch) from 45h-48h ports to OP1.
-    ; See https://wikiti.brandonw.net/index.php?title=83Plus:Ports:45
-    ld c, 45h
-    ld b, 4
-getRtcNowAsEpochSecondsLoop:
-    ; TODO: Do I need to disable interrupts, to prevent non-atomic read of the
-    ; 4 bytes?
-    in a, (c)
-    ld (hl), a
-    inc c
-    inc hl
-    djnz getRtcNowAsEpochSecondsLoop
-    ld (hl), 0
-    pop hl ; stack=[]; HL=rtcSeconds
-    ; Convert rtcSeconds relative to the rtcTimeZone to utcSeconds by
-    ; subtracting the seconds(rtcTimeZone).
-    ld de, rtcTimeZone
-    call localEpochSecondsToUtcEpochSeconds ; HL=utcEpochSeconds
-    ; Convert rtcSeconds to internal epochSeconds
-    ld de, tiosEpochDate ; DE=Date{1997,1,1}
-    call convertRelativeToInternalEpochSeconds ; HL=rtcSeconds
-    ; Convert to relative epochSeconds relative to current timeZone
-    ld de, epochDate ; DE=(Date*)=current epochDate
-    jp convertInternalToRelativeEpochSeconds ; HL=rtcSeconds
-
-;-----------------------------------------------------------------------------
-
 ; Description: Set the RTC time zone to the Offset{} or Real given in OP1.
 ; If a Real is given, it is converted into an Offset{}, then stored.
 ; Input: OP1:RpnOffset{} or Real
@@ -123,7 +89,7 @@ rtcSetTimeZoneForOffset:
     ret
 
 ; Description: Get the RTC time zone into OP1.
-; Input: OP1:RpnOffset{}
+; Input: OP1:RpnOffset
 ; Output: none
 RtcGetTimeZone:
     ld hl, OP1
@@ -139,6 +105,91 @@ RtcGetTimeZone:
 
 ;-----------------------------------------------------------------------------
 
-; Description: Set the RTC date, time, and timezone.
+; Description: Set the RTC date and time. The input can be a DateTime (which is
+; always interpreted as UTC), or an OffsetDateTime (whose UTC offset is
+; included).
+; Input: OP1:RpnOffsetDateTime=inputDateTime
+; Output: real time clock set to epochSeconds defined by inputDateTime
 RtcSetClock:
+    ; push OP1/OP2 onto the FPS, which has the side-effect of removing the
+    ; 2-byte gap between OP1 and OP2
+    call PushRpnObject1 ; FPS=[rpnOffsetDateTime]; HL=rpnOffsetDateTime
+    ex de, hl ; DE=rpnOffsetDateTime
+    ; convert DateTime to dateTimeSeconds
+    ld hl, OP1
+    inc de ; DE=offsetDateTime, skip type byte
+    call offsetDateTimeToEpochSeconds ; HL:(i40*)=OP1=epochSeconds
+    ; set the RTC
+    call setRtcNowFromEpochSeconds
+    ; clean up
+    call dropRpnObject ; FPS=[]
+    ret
+
+;-----------------------------------------------------------------------------
+
+; Description: Retrieve current RTC date/time as relative epochSeconds.
+; Input: HL:(i40*)=rtcSeconds
+; Output: (*HL) updated
+; Destroys: A, BC, DE
+; Preserves: HL
+getRtcNowAsEpochSeconds:
+    push hl ; stack=[rtcSeconds]
+    ; Read epochSeconds (relative TIOS epoch) from 45h-48h ports to OP1.
+    ; See https://wikiti.brandonw.net/index.php?title=83Plus:Ports:45
+    ld c, 45h
+    ld b, 4
+getRtcNowAsEpochSecondsLoop:
+    ; See https://wikiti.brandonw.net/index.php?title=83Plus:Ports:45
+    ; TODO: Do I need to disable interrupts, to prevent non-atomic read of the
+    ; 4 bytes?
+    in a, (c)
+    ld (hl), a
+    inc c
+    inc hl
+    djnz getRtcNowAsEpochSecondsLoop
+    ld (hl), 0
+    pop hl ; stack=[]; HL=rtcSeconds
+    ; Convert rtcSeconds relative to the rtcTimeZone to utcSeconds by
+    ; subtracting the seconds(rtcTimeZone).
+    ld de, rtcTimeZone
+    call localEpochSecondsToUtcEpochSeconds ; HL=utcEpochSeconds
+    ; Convert rtcSeconds to internal epochSeconds
+    ld de, tiosEpochDate ; DE=Date{1997,1,1}
+    call convertRelativeToInternalEpochSeconds ; HL=rtcSeconds
+    ; Convert to relative epochSeconds relative to current timeZone
+    ld de, currentEpochDate ; DE=(Date*)=currentEpochDate
+    jp convertInternalToRelativeEpochSeconds ; HL=rtcSeconds
+
+;-----------------------------------------------------------------------------
+
+; Description: Set the current RTC date/time from the given relative
+; epochSeconds.
+; Input: HL:(i40*)=rtcSeconds
+; Output: RTC updated
+; DestroysL A, BC, DE
+setRtcNowFromEpochSeconds:
+    ; convert relative epoch seconds to the epoch seconds used by the RTC
+    ; according to its rtcTimeZone.
+    ld de, currentEpochDate ; DE=(Date*)=currentEpochDate
+    call convertRelativeToInternalEpochSeconds
+    ld de, tiosEpochDate ; DE=Date{1997,1,1}
+    call convertInternalToRelativeEpochSeconds
+    ld de, rtcTimeZone
+    call utcEpochSecondsToLocalEpochSeconds ; HL=rtcSeconds
+    ; save the rtcSeconds to ports 41h-44h, then to 45h-49h
+    ld c, 41h
+    ld b, 4
+setRtcNowFromEpochSecondsLoop:
+    ; See https://wikiti.brandonw.net/index.php?title=83Plus:Ports:40
+    ; TODO: Do I need to disable interrupts?
+    ld a, (hl)
+    out (c), a
+    inc c
+    inc hl
+    djnz setRtcNowFromEpochSecondsLoop
+    ; copy the 4-bytes in the staging area to the actual RTC registers
+    ld a, 1
+    out (40h), a ; set control bit LOW
+    ld a, 3
+    out (40h), a ; set control bit HIGH to trigger an edge
     ret
