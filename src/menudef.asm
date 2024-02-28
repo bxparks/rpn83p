@@ -2145,14 +2145,14 @@ mRtcGetNowId equ 227
     .dw 0 ; rowBeginId or altNameId
     .dw mRtcGetNowHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
-mRtcGetOffsetDateTime:
-mRtcGetOffsetDateTimeId equ 228
-    .dw mRtcGetOffsetDateTimeId ; id
+mRtcGetNowDz:
+mRtcGetNowDzId equ 228
+    .dw mRtcGetNowDzId ; id
     .dw mDateId ; parentId
-    .dw mRtcGetOffsetDateTimeNameId ; nameId
+    .dw mRtcGetNowDzNameId ; nameId
     .db 0 ; numRows
     .dw 0 ; rowBeginId or altNameId
-    .dw mRtcGetOffsetDateTimeHandler ; handler (to be implemented)
+    .dw mRtcGetNowDzHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
 mRtcSetTimeZone:
 mRtcSetTimeZoneId equ 229
@@ -2734,8 +2734,8 @@ mEpochNameId equ 226
     .dw mEpochName
 mRtcGetNowNameId equ 227
     .dw mRtcGetNowName
-mRtcGetOffsetDateTimeNameId equ 228
-    .dw mRtcGetOffsetDateTimeName
+mRtcGetNowDzNameId equ 228
+    .dw mRtcGetNowDzName
 mRtcSetTimeZoneNameId equ 229
     .dw mRtcSetTimeZoneName
 mRtcGetTimeZoneNameId equ 230
@@ -3228,7 +3228,7 @@ mEpochName:
     .db "EPCH", 0
 mRtcGetNowName:
     .db "NOW", 0
-mRtcGetOffsetDateTimeName:
+mRtcGetNowDzName:
     .db "NWDZ", 0
 mRtcSetTimeZoneName:
     .db "CTZ", 0

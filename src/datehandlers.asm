@@ -226,7 +226,7 @@ mRtcNoClockErr:
     ld (handlerCode), a
     ret
 
-mRtcGetOffsetDateTimeHandler: ; TODO: Rename to mRtcGetNowDzHandler
+mRtcGetNowDzHandler:
     ld a, (isTi83Plus)
     or a
     jr nz, mRtcNoClockErr
