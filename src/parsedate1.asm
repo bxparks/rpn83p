@@ -27,7 +27,7 @@ parseDate:
     call parseU8D2 ; month
     call parseComma
     call parseU8D2 ; day
-    call parseRightBrace ; '}'
+    call parseRightBraceOrNul ; '}'
     ret
 
 ; Description: Parse a string of the form "{hh,mm,dd}" into a Time{} record.
@@ -47,7 +47,7 @@ parseTime:
     call parseU8D2 ; minute
     call parseComma
     call parseU8D2 ; second
-    call parseRightBrace ; '}'
+    call parseRightBraceOrNul ; '}'
     ret
 
 ; Description: Parse a string of the form "{yyyy,MM,dd,hh,mm,dd}" into a
@@ -74,7 +74,7 @@ parseDateTime:
     call parseU8D2 ; minute
     call parseComma
     call parseU8D2 ; second
-    call parseRightBrace ; '}'
+    call parseRightBraceOrNul ; '}'
     ret
 
 ; Description: Parse a data record of the form "{hh,dd}" representing an offset
@@ -93,7 +93,7 @@ parseOffset:
     call parseI8D2 ; hour
     call parseComma
     call parseI8D2 ; min
-    call parseRightBrace ; '}'
+    call parseRightBraceOrNul ; '}'
     ret
 
 ; Description: Parse a string of the form "{yyyy,MM,dd,hh,mm,dd,ohh,odd}" into
@@ -124,7 +124,7 @@ parseOffsetDateTime:
     call parseI8D2 ; offset hour
     call parseComma
     call parseI8D2 ; offset minute
-    call parseRightBrace ; '}'
+    call parseRightBraceOrNul ; '}'
     ret
 
 ; Description: Parse a string of the form "{hh,mm,dd}" into a DayOfWeek{}
@@ -141,7 +141,7 @@ parseOffsetDateTime:
 parseDayOfWeek:
     call parseLeftBrace ; '{'
     call parseU8D2 ; dayOfWeek
-    call parseRightBrace ; '}'
+    call parseRightBraceOrNul ; '}'
     ret
 
 ;------------------------------------------------------------------------------
@@ -178,7 +178,7 @@ parseRecordTag:
     ; check for D, DT, DZ, DW
     cp 'D'
     jr z, parseRecordTagD
-    jr parseDateErr
+    jr parseDateSyntaxErrr
 parseRecordTagD:
     ld a, (hl)
     inc hl
@@ -189,7 +189,7 @@ parseRecordTagD:
     cp 'W'
     jr z, parseRecordTagDW
     cp '{'
-    jr nz, parseDateErr
+    jr nz, parseDateSyntaxErrr
     ; Just a simple 'D'
     dec hl
     ld a, recordTagTypeDate
@@ -198,7 +198,7 @@ parseRecordTagDT:
     ld a, (hl)
     inc hl
     cp '{'
-    jr nz, parseDateErr
+    jr nz, parseDateSyntaxErrr
     dec hl
     ld a, recordTagTypeDateTime
     ret
@@ -206,7 +206,7 @@ parseRecordTagDZ:
     ld a, (hl)
     inc hl
     cp '{'
-    jr nz, parseDateErr
+    jr nz, parseDateSyntaxErrr
     dec hl
     ld a, recordTagTypeOffsetDateTime
     ret
@@ -214,7 +214,7 @@ parseRecordTagDW:
     ld a, (hl)
     inc hl
     cp '{'
-    jr nz, parseDateErr
+    jr nz, parseDateSyntaxErrr
     dec hl
     ld a, recordTagTypeDayOfWeek
     ret
@@ -224,7 +224,7 @@ parseRecordTagT:
     cp 'Z'
     jr z, parseRecordTagTZ
     cp '{'
-    jr nz, parseDateErr
+    jr nz, parseDateSyntaxErrr
     ; Just a simple 'T'
     dec hl
     ld a, recordTagTypeTime
@@ -233,7 +233,7 @@ parseRecordTagTZ:
     ld a, (hl)
     inc hl
     cp '{'
-    jr nz, parseDateErr
+    jr nz, parseDateSyntaxErrr
     dec hl
     ld a, recordTagTypeOffset
     ret
@@ -266,24 +266,27 @@ countCommasEnd:
 
 ;------------------------------------------------------------------------------
 
-parseDateErr: ; TODO: Rename this 'parseSyntaxErr'
+parseDateSyntaxErrr:
     bcall(_ErrSyntax)
 
-; Description: Parse an expected '{' character,
+; Description: Parse an expected '{' character.
 parseLeftBrace:
     ld a, (hl)
     inc hl
     cp LlBrace
-    jr nz, parseDateErr
+    jr nz, parseDateSyntaxErrr
     ret
 
-; Description: Parse an expected '}' character,
-parseRightBrace:
+; Description: Parse an expected '}' character or the NUL terminator.
+; Output: HL points to the char after the '}', or points to the NUL terminator
+parseRightBraceOrNul:
     ld a, (hl)
+    or a
+    ret z ; HL=points to the NUL
     inc hl
     cp LrBrace
-    jr nz, parseDateErr
-    ret
+    ret z ; HL=points to the character the '}'
+    jr parseDateSyntaxErrr
 
 ; Description: Parse an expected ',' character. Otherwise, throw Err:Syntax.
 ; Input: HL
@@ -292,8 +295,10 @@ parseComma:
     ld a, (hl)
     inc hl
     cp ','
-    jr nz, parseDateErr
+    jr nz, parseDateSyntaxErrr
     ret
+
+;------------------------------------------------------------------------------
 
 ; Description: Parse up to 4 decimal digits at HL to a u16 at DE.
 ; Input:
@@ -309,7 +314,7 @@ parseU16D4:
     ; first character must be valid digit
     ld a, (hl)
     call isValidUnsignedDigit ; CF=1 is valid
-    jr nc, parseDateErr
+    jr nc, parseDateSyntaxErrr
     ;
     push bc
     push de ; stack=[destPointer]
@@ -351,7 +356,7 @@ parseU8D2:
     ; first character must be valid digit
     ld a, (hl)
     call isValidUnsignedDigit ; CF=1 is valid
-    jr nc, parseDateErr
+    jr nc, parseDateSyntaxErrr
     ;
     push bc
     push de
