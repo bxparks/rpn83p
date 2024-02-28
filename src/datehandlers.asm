@@ -209,22 +209,65 @@ mEpochGetCustomHandler:
     jp pushToX
 
 ;-----------------------------------------------------------------------------
-; RTC > Row 1
+; DATE > Row 3 (RTC related)
 ;-----------------------------------------------------------------------------
 
 mRtcGetNowHandler:
+    ld a, (isTi83Plus)
+    or a
+    jr nz, mRtcNoClockErr
+    ;
     call closeInputAndRecallNone
     bcall(_RtcGetNow)
     jp pushToX
 
-mRtcGetOffsetDateTimeHandler:
+mRtcNoClockErr:
+    ld a, errorCodeNoClock
+    ld (handlerCode), a
+    ret
+
+mRtcGetOffsetDateTimeHandler: ; TODO: Rename to mRtcGetNowDzHandler
+    ld a, (isTi83Plus)
+    or a
+    jr nz, mRtcNoClockErr
+    ;
     call closeInputAndRecallNone
     bcall(_RtcGetOffsetDateTime)
     jp pushToX
 
+mRtcSetTimeZoneHandler:
+    ld a, (isTi83Plus)
+    or a
+    jr nz, mRtcNoClockErr
+    ;
+    call closeInputAndRecallRpnOffsetX
+    bcall(_RtcSetTimeZone)
+    ld a, errorCodeTzStored
+    ld (handlerCode), a
+    ret
+
+mRtcGetTimeZoneHandler:
+    ld a, (isTi83Plus)
+    or a
+    jr nz, mRtcNoClockErr
+    ;
+    call closeInputAndRecallNone
+    bcall(_RtcGetTimeZone)
+    jp pushToX
+
+mRtcSetClockHandler:
+    ld a, (isTi83Plus)
+    or a
+    jr nz, mRtcNoClockErr
+    ;
+    call closeInputAndRecallRpnOffsetDateTimeX ; A=rpnObjectType; OP1=X
+    bcall(_RtcSetClock)
+    ld a, errorCodeClockSet
+    ld (handlerCode), a
+    ret
 
 ;-----------------------------------------------------------------------------
-; RTC > Row 2
+; DATE > EPCH > Row 4
 ;-----------------------------------------------------------------------------
 
 mSetTimeZoneHandler:
@@ -238,25 +281,6 @@ mGetTimeZoneHandler:
     call closeInputAndRecallNone
     bcall(_GetTimeZone)
     jp pushToX
-
-mRtcSetTimeZoneHandler:
-    call closeInputAndRecallRpnOffsetX
-    bcall(_RtcSetTimeZone)
-    ld a, errorCodeTzStored
-    ld (handlerCode), a
-    ret
-
-mRtcGetTimeZoneHandler:
-    call closeInputAndRecallNone
-    bcall(_RtcGetTimeZone)
-    jp pushToX
-
-mRtcSetClockHandler:
-    call closeInputAndRecallRpnOffsetDateTimeX ; A=rpnObjectType; OP1=X
-    bcall(_RtcSetClock)
-    ld a, errorCodeClockSet
-    ld (handlerCode), a
-    ret
 
 ;-----------------------------------------------------------------------------
 ; Other DATE functions

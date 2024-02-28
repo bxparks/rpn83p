@@ -243,7 +243,9 @@ errorCodeEpochStored equ        79 ; Epoch stored
     .dw errorStrEpochStored
 errorCodeClockSet equ           80 ; RTC set
     .dw errorStrClockSet
-errorCodeCount equ              81 ; total number of error codes
+errorCodeNoClock equ            81 ; No Clock on 83+
+    .dw errorStrNoClock
+errorCodeCount equ              82 ; total number of error codes
 
 ; The C strings for each error code. In alphabetical order, as listed in the TI
 ; 83 Plus SDK docs.
@@ -293,6 +295,7 @@ errorStrTolTooSmall:
     .db "Err: Tol Not Met", 0
 errorStrUndefined:
     .db "Err: Undefined", 0 ; indicates the system error "Undefined"
+
 ; Start of RPN83P custom messages, which map to a specific custom handler code.
 ; This part of the application feels clunky, but I have not figure out an
 ; elegant architecture to handle the different types of handler
@@ -301,6 +304,7 @@ errorStrUndefined:
 ; screen.
 ;
 ; The types of handler return codes are:
+;
 ; - Action: handler wants additional post-processing
 ; - Error: a TI-OS exception was thrown, the message should be displayed
 ; - Info: handler executed normally, but should display the given message
@@ -343,3 +347,5 @@ errorStrEpochStored:
     .db "Epoch Stored", 0 ; Info: Epoch Date was stored
 errorStrClockSet:
     .db "Clock Set", 0 ; Info: RTC set
+errorStrNoClock:
+    .db "Err: No Clock", 0 ; Err: RTC not available on an 83+

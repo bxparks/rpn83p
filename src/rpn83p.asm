@@ -462,6 +462,10 @@ appStateSize equ (appStateEnd - appStateBegin)
 
 appBufferStart equ appStateEnd
 
+; Set to 1 if this calculator is an TI-83 Plus. Otherwise 0. Certain features
+; (e.g. fast CPU, and Real Time Clock) are not available on the TI-83 Plus.
+isTi83Plus equ appBufferStart ; u8
+
 ; Temporary buffer for parsing keyboard input into a floating point number.
 ; When the app is in BASE mode, the inputBuf is parsed directly, and this
 ; buffer is not used. In normal floating point mode, each mantissa digit is
@@ -481,7 +485,7 @@ appBufferStart equ appStateEnd
 ;       uint8_t len; // number of digits in mantissa, 0 for 0.0
 ;       char man[14];  // mantissa, implicit starting decimal point
 ;   }
-parseBuf equ appBufferStart ; struct ParseBuf
+parseBuf equ isTi83Plus + 1 ; struct ParseBuf
 parseBufLen equ parseBuf ; len byte of the pascal string
 parseBufMan equ parseBufLen + 1 ; actual string
 parseBufCapacity equ 14
