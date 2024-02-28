@@ -442,7 +442,7 @@ formatYearMonthDay:
     inc hl
     ld b, (hl)
     inc hl
-    call formatU16BCToFixed4
+    call formatU16BCToFlex4
     ; print ','
     ld a, ','
     ld (de), a
@@ -531,7 +531,7 @@ formatU16BCToFixed4:
     ld b, 4
     ld c, 10
 formatU16BCToFixed4Loop:
-    call divHLByCPageTwo ; HL=quotient; A=remainder; preserves BC
+    call divHLByCPageTwo ; HL=quotient; A=remainder; preserves BC, DE
     call convertAToCharPageTwo ; A=digit
     ld (de), a
     inc de
@@ -540,6 +540,39 @@ formatU16BCToFixed4Loop:
     ex de, hl ; HL=newDestPointer
     ex (sp), hl ; stack=[HL,newDestPointer], HL=origDestPointer
     ld b, 4
+    call reverseStringPageTwo
+    pop de ; stack=[HL]; DE=newDestPointer
+    pop hl ; stack=[]; HL=orig HL
+    ret
+
+; Description: Format the u16 in BC using up to 4 digits in DE.
+; Input:
+;   - BC:u16
+;   - DE:(char*)=destPointer
+; Output: DE=DE+4
+; Destroys: A, BC, DE
+; Preserves: HL
+formatU16BCToFlex4:
+    push hl ; stack=[HL]
+    push de ; stack=[HL,origDestPointer]
+    ld l, c
+    ld h, b
+    ld b, 0 ; numDigits=0
+    ld c, 10
+formatU16BCToFlex4Loop:
+    call divHLByCPageTwo ; HL=quotient; A=remainder; preserves BC, DE
+    call convertAToCharPageTwo ; A=digit
+    ld (de), a
+    inc de
+    inc b ; numDigits++
+    ; check for quotient==0 at the end, to print at least one '0'
+    ld a, h
+    or l ; ZF=1 if quotient==0
+    jr nz, formatU16BCToFlex4Loop
+formatU16BCToFlex4Reverse:
+    ; reverse the digits, B=numDigits
+    ex de, hl ; HL=newDestPointer
+    ex (sp), hl ; stack=[HL,newDestPointer], HL=origDestPointer
     call reverseStringPageTwo
     pop de ; stack=[HL]; DE=newDestPointer
     pop hl ; stack=[]; HL=orig HL
