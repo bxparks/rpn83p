@@ -54,7 +54,7 @@ formatDateString:
     inc hl
     ld b, (hl)
     inc hl
-    call formatU16ToD4
+    call formatU16BCToFixed4
     ; print '-' (hyphen)
     ld a, Shyphen
     ld (de), a
@@ -62,7 +62,7 @@ formatDateString:
     ; print 'month'
     ld a, (hl)
     inc hl
-    call formatU8ToD2Fixed
+    call formatU8AToFixed2
     ; print '-' (hyphen)
     ld a, Shyphen
     ld (de), a
@@ -70,7 +70,7 @@ formatDateString:
     ; print 'day'
     ld a, (hl)
     inc hl
-    call formatU8ToD2Fixed
+    call formatU8AToFixed2
     ; add NUL
     xor a
     ld (de), a ; add NUL terminator
@@ -119,7 +119,7 @@ formatTimeString:
     ; hour
     ld a, (hl)
     inc hl
-    call formatU8ToD2Fixed
+    call formatU8AToFixed2
     ; print ':'
     ld a, ':'
     ld (de), a
@@ -127,7 +127,7 @@ formatTimeString:
     ; minute
     ld a, (hl)
     inc hl
-    call formatU8ToD2Fixed
+    call formatU8AToFixed2
     ; print ':'
     ld a, ':'
     ld (de), a
@@ -135,7 +135,7 @@ formatTimeString:
     ; second
     ld a, (hl)
     inc hl
-    call formatU8ToD2Fixed
+    call formatU8AToFixed2
     ; add NUL
     xor a
     ld (de), a
@@ -261,14 +261,14 @@ formatOffsetStringSign:
     inc de
     ; hour
     ld a, b
-    call formatU8ToD2Fixed
+    call formatU8AToFixed2
     ; print ':'
     ld a, ':'
     ld (de), a
     inc de
     ; minute
     ld a, c
-    call formatU8ToD2Fixed
+    call formatU8AToFixed2
     ; add NUL
     xor a
     ld (de), a
@@ -442,7 +442,7 @@ formatYearMonthDay:
     inc hl
     ld b, (hl)
     inc hl
-    call formatU16ToD4
+    call formatU16BCToFixed4
     ; print ','
     ld a, ','
     ld (de), a
@@ -450,7 +450,7 @@ formatYearMonthDay:
     ; print 'month'
     ld a, (hl)
     inc hl
-    call formatU8ToD2
+    call formatU8AToFlex2
     ; print ','
     ld a, ','
     ld (de), a
@@ -458,7 +458,7 @@ formatYearMonthDay:
     ; print 'day'
     ld a, (hl)
     inc hl
-    call formatU8ToD2
+    call formatU8AToFlex2
     ret
 
 ; Description: Format hour,minute,second of HL to C string in DE.
@@ -472,7 +472,7 @@ formatHourMinuteSecond:
     ; print 'hour'
     ld a, (hl)
     inc hl
-    call formatU8ToD2
+    call formatU8AToFlex2
     ; print ','
     ld a, ','
     ld (de), a
@@ -480,7 +480,7 @@ formatHourMinuteSecond:
     ; print 'minute'
     ld a, (hl)
     inc hl
-    call formatU8ToD2
+    call formatU8AToFlex2
     ; print ','
     ld a, ','
     ld (de), a
@@ -488,7 +488,7 @@ formatHourMinuteSecond:
     ; print 'second'
     ld a, (hl)
     inc hl
-    call formatU8ToD2
+    call formatU8AToFlex2
     ret
 
 ; Description: Format the (signed) hour and minute components of an Offset
@@ -503,7 +503,7 @@ formatOffsetHourMinute:
     ; print Offset.hour
     ld a, (hl)
     inc hl
-    call formatI8ToD2
+    call formatI8AToFlex2
     ; print ','
     ld a, ','
     ld (de), a
@@ -511,31 +511,31 @@ formatOffsetHourMinute:
     ; print Offset.minute
     ld a, (hl)
     inc hl
-    call formatI8ToD2
+    call formatI8AToFlex2
     ret
 
 ;-----------------------------------------------------------------------------
 
-; Description: Format the u16 in BC to 4 digits in DE.
+; Description: Format the u16 in BC into 4 fixed digits in DE.
 ; Input:
 ;   - BC:u16
 ;   - DE:(char*)=destPointer
 ; Output: DE=DE+4
 ; Destroys: A, BC, DE
 ; Preserves: HL
-formatU16ToD4:
+formatU16BCToFixed4:
     push hl ; stack=[HL]
     push de ; stack=[HL,origDestPointer]
     ld l, c
     ld h, b
     ld b, 4
     ld c, 10
-formatU16ToD4Loop:
+formatU16BCToFixed4Loop:
     call divHLByCPageTwo ; HL=quotient; A=remainder; preserves BC
     call convertAToCharPageTwo ; A=digit
     ld (de), a
     inc de
-    djnz formatU16ToD4Loop
+    djnz formatU16BCToFixed4Loop
     ; reverse the digits
     ex de, hl ; HL=newDestPointer
     ex (sp), hl ; stack=[HL,newDestPointer], HL=origDestPointer
@@ -545,7 +545,9 @@ formatU16ToD4Loop:
     pop hl ; stack=[]; HL=orig HL
     ret
 
-; Description: Format the u8 in A to 1 or 2 digits in DE. Leading zero is
+;-----------------------------------------------------------------------------
+
+; Description: Format the u8 in A using up to 2 digits in DE. Leading zero is
 ; suppressed.
 ; Input:
 ;   - A:u8
@@ -553,7 +555,7 @@ formatU16ToD4Loop:
 ; Output: DE=DE+(1 or 2)
 ; Destroys: A, BC, DE
 ; Preserves: HL
-formatU8ToD2: ; TODO: rename this to formatU8ToD2Flex().
+formatU8AToFlex2:
     push hl
     ex de, hl ; HL=destPointer
     cp 10
@@ -589,7 +591,7 @@ formatU8ToD2End:
 ; Output: DE=DE+2
 ; Destroys: A, BC, DE
 ; Preserves: HL
-formatU8ToD2Fixed:
+formatU8AToFixed2:
     push hl
     ex de, hl ; HL=destPointer
     ld d, a
@@ -610,16 +612,16 @@ formatU8ToD2Fixed:
     pop hl
     ret
 
-; Description: Format the i8 in A to 2 digits in DE.
+; Description: Format the i8 in A using up to 2 digits in DE.
 ; Input:
 ;   - A:i8
 ;   - DE:(char*)=destPointer
 ; Output: DE=DE+2,3
 ; Destroys: A, BC
 ; Preserves: HL
-formatI8ToD2:
+formatI8AToFlex2:
     bit 7, a
-    jr z, formatU8ToD2
+    jr z, formatU8AToFlex2
     ; output a '-', then negate, and print the integer.
     push af
     ld a, signChar
@@ -627,4 +629,4 @@ formatI8ToD2:
     inc de
     pop af
     neg
-    jr formatU8ToD2
+    jr formatU8AToFlex2
