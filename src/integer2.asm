@@ -10,6 +10,19 @@
 ; entry.
 ;------------------------------------------------------------------------------
 
+; Description: Negate BC.
+; Destroys: A
+negBCPageTwo:
+    ld a, c
+    neg
+    ld c, a
+    ld a, 0
+    sbc a, b
+    ld b, a
+    ret
+
+;------------------------------------------------------------------------------
+
 ; Description: Add A to HL.
 ; Input: HL, A
 ; Output: HL+=A

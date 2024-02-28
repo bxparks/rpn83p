@@ -426,6 +426,138 @@ dayOfWeekStringSun:
     .db "Sun", 0
 
 ;-----------------------------------------------------------------------------
+
+; Description: Format the RpnDuration Record in HL to DE.
+; Input:
+;   - HL:(const RpnDuration*)
+;   - DE:(char*)
+; Output:
+;   - HL: incremented to next record field
+;   - DE: points to NUL char at end of string
+; Destroys: A, BC, DE, HL
+FormatDuration:
+    ld a, (formatRecordMode)
+    cp a, formatRecordModeString
+    jr z, formatRpnDurationString
+    ; [[fallthrough]]
+
+formatRpnDurationRaw:
+    inc hl ; skip type byte
+formatDurationRaw:
+    ; 'print 'R'
+    ld a, 'R'
+    ld (de), a
+    inc de
+    ; print '{'
+    ld a, LlBrace
+    ld (de), a
+    inc de
+    ; format days
+    ld c, (hl)
+    inc hl
+    ld b, (hl)
+    inc hl
+    call formatI16BCToFlex4
+    ; print ','
+    ld a, ','
+    ld (de), a
+    inc de
+    ; format hours
+    ld a, (hl)
+    inc hl
+    call formatI8AToFlex2
+    ; print ','
+    ld a, ','
+    ld (de), a
+    inc de
+    ; format minutes
+    ld a, (hl)
+    inc hl
+    call formatI8AToFlex2
+    ; print ','
+    ld a, ','
+    ld (de), a
+    inc de
+    ; format seconds
+    ld a, (hl)
+    inc hl
+    call formatI8AToFlex2
+    ; print '}'
+    ld a, LrBrace
+    ld (de), a
+    inc de
+    ; add NUL
+    xor a
+    ld (de), a ; add NUL terminator
+    ret
+
+formatRpnDurationString:
+    inc hl ; skip type byte
+formatDurationString:
+    call isDurationNegative ; CF=1 if negative
+    jr nc, formatDurationStringPos
+    ld a, signChar
+    ld (de), a
+    inc de
+    call chsDuration
+    call formatDurationStringPos
+    call chsDuration
+    ret
+formatDurationStringPos:
+    ld c, (hl)
+    inc hl
+    ld b, (hl)
+    inc hl
+    ld a, c
+    or b
+    jr z, formatDurationStringHours ; skip '0d'
+    call formatU16BCToFlex4
+    ld a, 'd'
+    ld (de), a
+    inc de
+    set 0, b ; B[0]=nonZeroFieldWritten=true
+    ;
+formatDurationStringHours:
+    ld a, (hl) ; A=hours
+    inc hl
+    or a
+    jr z, formatDurationStringMinutes ; skip '0h'
+    call formatU8AToFlex2
+    ld a, 'h'
+    ld (de), a
+    inc de
+    set 0, b
+    ;
+formatDurationStringMinutes:
+    ld a, (hl) ; A=minutes
+    inc hl
+    or a
+    jr z, formatDurationStringSeconds ; skip '0m'
+    call formatU8AToFlex2
+    ld a, 'm'
+    ld (de), a
+    inc de
+    set 0, b
+    ;
+formatDurationStringSeconds:
+    ld a, (hl) ; A=seconds
+    inc hl
+    or a
+    jr nz, formatDurationStringSecondsFormat
+    bit 0, b
+    jr nz, formatDurationStringEnd ; if nonZeroFieldWritten: skip '0s'
+formatDurationStringSecondsFormat:
+    call formatU8AToFlex2
+    ld a, 's'
+    ld (de), a
+    inc de
+formatDurationStringEnd:
+    ; add NUL
+    xor a
+    ld (de), a
+    ret
+
+;-----------------------------------------------------------------------------
 ; Lower-level formatting routines.
 ;-----------------------------------------------------------------------------
 
@@ -578,16 +710,51 @@ formatU16BCToFlex4Reverse:
     pop hl ; stack=[]; HL=orig HL
     ret
 
+; Description: Format the i16 in BC using up to 4 digits in DE.
+; Input:
+;   - BC:u16
+;   - DE:(char*)=destPointer
+; Output: DE=DE+4
+; Destroys: A, BC, DE
+; Preserves: HL
+formatI16BCToFixed4:
+    bit 7, b ; ZF=1 if pos
+    jr z, formatU16BCToFixed4
+    ; output a '-' then negate, then print
+    ld a, signChar
+    ld (de), a
+    inc de
+    call negBCPageTwo
+    jr formatU16BCToFixed4
+
+
+; Description: Format the i16 in BC using exactly 4 digits in DE.
+; Input:
+;   - BC:u16
+;   - DE:(char*)=destPointer
+; Output: DE=DE+4
+; Destroys: A, BC, DE
+; Preserves: HL
+formatI16BCToFlex4:
+    bit 7, b ; ZF=1 if pos
+    jr z, formatU16BCToFlex4
+    ; output a '-' then negate, then print
+    ld a, signChar
+    ld (de), a
+    inc de
+    call negBCPageTwo
+    jr formatU16BCToFlex4
+
 ;-----------------------------------------------------------------------------
 
-; Description: Format the u8 in A using up to 2 digits in DE. Leading zero is
+; Description: Format the u8 in A to 1 or 2 digits in DE. Leading zero is
 ; suppressed.
 ; Input:
 ;   - A:u8
 ;   - DE:(char*)=destPointer
 ; Output: DE=DE+(1 or 2)
-; Destroys: A, BC, DE
-; Preserves: HL
+; Destroys: A, DE
+; Preserves: BC, HL
 formatU8AToFlex2:
     push hl
     ex de, hl ; HL=destPointer
@@ -622,8 +789,8 @@ formatU8ToD2End:
 ;   - A:u8
 ;   - DE:(char*)=destPointer
 ; Output: DE=DE+2
-; Destroys: A, BC, DE
-; Preserves: HL
+; Destroys: A, DE
+; Preserves: BC, HL
 formatU8AToFixed2:
     push hl
     ex de, hl ; HL=destPointer
@@ -650,8 +817,8 @@ formatU8AToFixed2:
 ;   - A:i8
 ;   - DE:(char*)=destPointer
 ; Output: DE=DE+2,3
-; Destroys: A, BC
-; Preserves: HL
+; Destroys: A, DE
+; Preserves: BC, HL
 formatI8AToFlex2:
     bit 7, a
     jr z, formatU8AToFlex2

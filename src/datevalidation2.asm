@@ -161,6 +161,14 @@ validateOffsetPosMinute:
 validateOffsetErr:
     bcall(_ErrInvalid)
 
+; Description: Validate the signs of 'hour' and 'minute' are compatible.
+; Input:
+;   - B:hour
+;   - C:minute
+; Output:
+; Destroys: A
+; Preserves: BC
+; Throws: Err:Invalid if signs are not compatible
 validateOffsetSigns:
     ; if either hour or minute is 0, then the other can be any sign
     ld a, b
@@ -209,3 +217,146 @@ ValidateDayOfWeek:
     ret
 validateDayOfWeekErr:
     bcall(_ErrInvalid)
+
+;-----------------------------------------------------------------------------
+
+; Description: Validate the Duration object in HL. Restrict the range of the
+; hours/minutes/seconds to "+/-24:59:59". Also verify that the signs of all the
+; fields match.
+;
+; Input:
+;   - HL:(Duration*) pointer to {days,hours,minutes,seconds}
+; Output:
+;   - HL=HL+sizeof(Duration)
+; Destroys: A, HL
+; Preserves: BC, DE
+; Throws: Err:Invalid on failure
+ValidateDuration:
+    push hl
+    call validateDurationSigns
+    pop hl
+    call validateDurationMagnitudes
+    ret
+
+; Description: Check that all the fields have the same sign. (There's got to be
+; an easier way to do this, but the algorithm is complicated by the fact that a
+; 0 is compatible with both positive and negative numbers. So the algorithm
+; that came to my mind is that I check all four fields, and keep 2 counters:
+;
+;   1) the number of non-zero fields.
+;   2) the number of sign bits of those non-zero fields.
+;
+; The final check for validity is that:
+;
+;   nonZeroCount==0 OR signBitCount==0 OR signBitCount==nonZeroCount
+;
+; Input:
+;   - HL:(Duration*)=duration
+; Output:
+;   - HL=HL+sizeof(Duration)
+;   - CF=1 if negative, 0 if positive or zero
+; Throws: Err:Invalid if the signs of the fields are mixed
+; Destroys: A, HL
+; Preserves: BC, DE
+validateDurationSigns:
+    push bc
+    ld bc, 0 ; B=signBitCount; C=nonZeroCount
+    ; check days
+    inc hl
+    ld a, (hl)
+    inc hl
+    or (hl)
+    jr z, validateDurationSignOfHours
+    inc c
+    bit 7, a
+    jr z, validateDurationSignOfHours
+    inc b
+validateDurationSignOfHours:
+    ld a, (hl)
+    inc hl
+    or a
+    jr z, validateDurationSignOfMinutes
+    inc c
+    bit 7, a
+    jr z, validateDurationSignOfMinutes
+    inc b
+validateDurationSignOfMinutes:
+    ld a, (hl)
+    inc hl
+    or a
+    jr z, validateDurationSignOfSeconds
+    inc c
+    bit 7, a
+    jr z, validateDurationSignOfSeconds
+    inc b
+validateDurationSignOfSeconds:
+    ld a, (hl)
+    inc hl
+    or a
+    jr z, validateDurationSignsCheck
+    inc c
+    bit 7, a
+    jr z, validateDurationSignsCheck
+    inc b
+validateDurationSignsCheck:
+    ld a, c ; A=nonZeroCount
+    or a
+    jr z, validateDurationSignsEnd ; CF=0 if all zero
+    ld a, b ; A=signBitCount
+    or a
+    jr z, validateDurationSignsEnd ; CF=0 if non-zeros are all positive
+    cp c ; ZF=1 if nonZerCount==signBitCount
+    scf ; CF=1 if negative
+    jr z, validateDurationSignsEnd ; CF=1 if non-zeros are all negative
+    jr validateDurationErr
+validateDurationSignsEnd:
+    pop bc
+    ret
+
+validateDurationErr:
+    bcall(_ErrInvalid)
+
+; Description: Validate the magnitudes of each field in the Duration object:
+;   - days:i16, any value allowed
+;   - hours:i8, abs(hours)<24
+;   - minutes:i8, abs(minutes)<60
+;   - seconds:i8, abs(seconds)<60
+;
+; Input:
+;   - HL:(Duration*) pointer to {days,hours,minutes,seconds}
+; Output:
+;   - HL=HL+sizeof(Duration)
+; Destroys: A, HL
+; Preserves: BC, DE
+; Throws: Err:Invalid on failure
+validateDurationMagnitudes:
+    inc hl
+    inc hl ; any value allowed in 'days' field
+    ;
+    ld a, (hl) ; A=hours
+    inc hl
+    bit 7, a
+    jr z, validateDurationMagnitudesPosHours
+    neg
+validateDurationMagnitudesPosHours:
+    cp 24
+    jr nc, validateDurationErr ; if hour>=24: err
+    ;
+    ld a, (hl) ; A=minutes
+    inc hl
+    bit 7, a
+    jr z, validateDurationMagnitudesPosMinutes
+    neg
+validateDurationMagnitudesPosMinutes:
+    cp 60
+    jr nc, validateDurationErr
+    ;
+    ld a, (hl)
+    inc hl
+    bit 7, a
+    jr z, validateDurationMagnitudesPosSeconds
+    neg
+validateDurationMagnitudesPosSeconds:
+    cp 60
+    jr nc, validateDurationErr
+    ret

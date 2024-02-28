@@ -171,6 +171,12 @@ rpnObjectTypeOffsetDateTimeSizeOf equ 10
 rpnObjectTypeDayOfWeek equ $1D
 rpnObjectTypeDayOfWeekSizeOf equ 3
 
+; Duration and RpnDuration object:
+; - struct Duration{days:i16, hours:i8, minutes:i8, seconds:i8}, 5 bytes
+; - struct RpnDuration{type:u8, duration:Duration}, 6 bytes
+rpnObjectTypeDuration equ $1E
+rpnObjectTypeDurationSizeOf equ 6
+
 ; An RpnObject is union of all possible Real, Complex, and RpnObjects. See the
 ; struct definitions in vars.asm. If the rpnObjectSizeOf is changed, the
 ; rpnObjectIndexToOffset() function must be updated.
@@ -1119,6 +1125,10 @@ _FormatDayOfWeekLabel:
 _FormatDayOfWeek equ _FormatDayOfWeekLabel-branchTableBase
     .dw FormatDayOfWeek
     .db 2
+_FormatDurationLabel:
+_FormatDuration equ _FormatDurationLabel-branchTableBase
+    .dw FormatDuration
+    .db 2
 
 ; datevalidation2.asm
 _ValidateDateLabel:
@@ -1144,6 +1154,10 @@ _ValidateOffsetDateTime equ _ValidateOffsetDateTimeLabel-branchTableBase
 _ValidateDayOfWeekLabel:
 _ValidateDayOfWeek equ _ValidateDayOfWeekLabel-branchTableBase
     .dw ValidateDayOfWeek
+    .db 2
+_ValidateDurationLabel:
+_ValidateDuration equ _ValidateDurationLabel-branchTableBase
+    .dw ValidateDuration
     .db 2
 
 ; date2.asm
@@ -1688,6 +1702,7 @@ defpage(2)
 #include "datetime2.asm"
 #include "offset2.asm"
 #include "offsetdatetime2.asm"
+#include "duration2.asm"
 #include "zoneconversion2.asm"
 #include "zone2.asm"
 #include "rtc2.asm"
