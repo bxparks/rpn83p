@@ -305,18 +305,18 @@ chsDuration:
 
 ; Description: Add (RpnDuration plus seconds) or (seconds plus RpnDuration).
 ; Input:
-;   - OP1:Union[RpnDuration,RpnReal]=rpnDate or seconds
-;   - OP3:Union[RpnDuration,RpnReal]=rpnDate or seconds
+;   - OP1:Union[RpnDuration,RpnReal]=rpnDuration or seconds
+;   - OP3:Union[RpnDuration,RpnReal]=rpnDuration or seconds
 ; Output:
 ;   - OP1:RpnDuration=RpnDuration+seconds
-; Destroys: all, OP1-OP3
+; Destroys: all, OP1,OP2
 AddRpnDurationBySeconds:
     call checkOp1DurationPageTwo ; ZF=1 if CP1 is an RpnDuration
     jr nz, addRpnDurationBySecondsAdd
     call cp1ExCp3PageTwo ; CP1=seconds; CP3=RpnDuration
 addRpnDurationBySecondsAdd:
     ; CP1=seconds, CP3=RpnDuration
-    call ConvertOP1ToI40 ; HL=OP1=u40(seconds)
+    call ConvertOP1ToI40 ; HL=OP1=i40(seconds)
     call pushRaw9Op1 ; FPS=[seconds]; HL=seconds
     ; convert CP3=RpnDuration to OP1=seconds
     ld de, OP3+1 ; DE=Duration
@@ -335,3 +335,34 @@ addRpnDurationBySecondsAdd:
     ld (hl), a
     inc hl ; HL:(Duration*)=newDuration
     jp secondsToDuration ; HL=OP1+sizeof(Duration)
+
+; Description: Add (RpnDuration plus RpnDuration).
+; Input:
+;   - OP1:Union[RpnDuration]=rpnDuration
+;   - OP3:Union[RpnDuration]=rpnDuration
+; Output:
+;   - OP1:RpnDuration+=RpnDuration
+; Destroys: all, OP1,OP2
+AddRpnDurationByRpnDuration:
+    call reserveRaw9 ; FPS=[seconds1]; HL=op1=seconds1
+    ld de, OP1+1 ; DE:(Duration*)
+    call durationToSeconds ; seconds1
+    push hl ; stack=[seconds1]
+    ;
+    call reserveRaw9 ; FPS=[seconds3]; HL=op3=seconds3
+    ld de, OP3+1
+    call durationToSeconds ; seconds3
+    ;
+    pop de ; stack=[]; DE=seconds1
+    call addU40U40 ; HL=resultSeconds=seconds3+seconds1
+    ;
+    ex de, hl ; DE=resultSeconds
+    ld hl, OP1
+    ld a, rpnObjectTypeDuration
+    ld (hl), a
+    inc hl ; HL:(Duration*)=newDuration
+    call secondsToDuration ; HL=OP1=resultRpnDuration
+    ; clean up
+    call dropRaw9
+    call dropRaw9
+    ret

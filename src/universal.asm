@@ -119,6 +119,8 @@ universalAddDaysPlusDayOfWeek:
     bcall(_AddRpnDayOfWeekByDays) ; OP1=days(OP1)+DayOfWeek(OP3)
     ret
 universalAddDurationPlusSeconds:
+    call checkOp3Duration
+    jr z, universalAddDurationPlusDuration
     call checkOp3Real
     jr nz, universalAddErr
     bcall(_AddRpnDurationBySeconds) ; OP1=Duration(OP1)+seconds(OP3)
@@ -127,6 +129,9 @@ universalAddSecondsPlusDuration:
     call checkOp1Real
     jp nz, universalAddErr
     bcall(_AddRpnDurationBySeconds) ; OP1=seconds(OP1)+Duration(OP3)
+    ret
+universalAddDurationPlusDuration:
+    bcall(_AddRpnDurationByRpnDuration) ; OP1+=OP3
     ret
 
 ; Description: Subtractions for real, complex, and Date objects.
