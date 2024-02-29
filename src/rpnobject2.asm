@@ -138,3 +138,21 @@ checkOp3DayOfWeekPageTwo:
     and $1f
     cp rpnObjectTypeDayOfWeek
     ret
+
+;-----------------------------------------------------------------------------
+
+; Description: Check if OP1 is an RpnDuration.
+; Output: ZF=1 if RpnDuration
+checkOp1DurationPageTwo:
+    ld a, (OP1)
+    and $1f
+    cp rpnObjectTypeDuration
+    ret
+
+; Description: Check if OP3 is an RpnDuration.
+; Output: ZF=1 if RpnDuration
+checkOp3DurationPageTwo:
+    ld a, (OP3)
+    and $1f
+    cp rpnObjectTypeDuration
+    ret

@@ -30,7 +30,7 @@ RpnDurationToSeconds:
 ; Output:
 ;   - DE=DE+sizeof(Duration)
 ;   - (*HL):i40=resultSeconds filled
-; Destroys: A, OP2
+; Destroys: A
 ; Preserves, BC, HL
 durationToSeconds:
     ex de, hl ; HL=duration
@@ -55,7 +55,7 @@ durationToSeconds:
 ; Output:
 ;   - DE=DE+sizeof(Duration)
 ;   - (*HL):i40=resultSeconds filled
-; Destroys: A, OP2
+; Destroys: A
 ; Preserves, BC, HL
 durationToSecondsPos:
     push bc
@@ -70,19 +70,22 @@ durationToSecondsPos:
     call setU40ToBC ; HL=resultSeconds=days
     ld c, e
     ld b, d ; BC=duration, DE and HL will be used to multiply/add U40 numbers
-    ld de, OP2 ; buffer for the multiplier or term
+    ; create buffer for the multiplier
+    ex de, hl ; DE=resultSeconds
+    call reserveRaw9 ; FPS=[operand]; HL=operand
+    ex de, hl ; DE=operaand; HL=resultSeconds
     ; multiply then add hours
     ld a, 24
-    ex de, hl ; DE=resultSeconds; HL=OP2
-    call setU40ToA ; HL=OP2=24
-    ex de, hl ; DE=OP2=24; HL=resultSeconds
+    ex de, hl ; DE=resultSeconds; HL=operand
+    call setU40ToA ; HL=operand=24
+    ex de, hl ; DE=operand=24; HL=resultSeconds
     call multU40U40 ; HL=resultSeconds=days*24
     ;
     ld a, (bc) ; A=hours
     inc bc
-    ex de, hl ; DE=resultSeconds; HL=OP2
-    call setU40ToA ; HL=OP2=hours
-    ex de, hl ; DE=OP2; HL=resultSeconds
+    ex de, hl ; DE=resultSeconds; HL=operand
+    call setU40ToA ; HL=operand=hours
+    ex de, hl ; DE=operand; HL=resultSeconds
     call addU40U40 ; HL=resultSeconds*24+hours
     ; multiply then add minutes
     ld a, 60
@@ -110,7 +113,8 @@ durationToSecondsPos:
     call setU40ToA
     ex de, hl
     call addU40U40 ; HL=resultSeconds=(((days*24)+hours)*60+minutes)*60)+seconds
-    ;
+    ; clean up
+    call dropRaw9 ; FPS=[]
     pop bc
     ret
 
@@ -141,7 +145,7 @@ SecondsToRpnDuration:
 ; Output:
 ;   - (*DE) destroyed
 ;   - (*HL) filled
-; Destroys: A, BC, OP2-OP3
+; Destroys: A, BC
 ; Preserves: DE, HL
 secondsToDuration:
     ; TODO: Check for overflow of i40(seconds).
@@ -163,14 +167,17 @@ secondsToDuration:
 ; Output:
 ;   - (*DE) destroyed
 ;   - (*HL) filled
-; Destroys: A, BC, IX, OP2-OP3
+; Destroys: A, BC, IX
 ; Preserves: DE, HL
 secondsToDurationPos:
     push hl
     pop ix ; IX=HL=resultDuration
+    ; reserve slots on FPS
+    call reserveRaw9 ; FPS=[remainder] ; HL=remainder
+    ld c, l
+    ld b, h ; BC=remainder
+    call reserveRaw9 ; FPS=[remainder,divisor] ; HL=divisor
     ; divide by 60 and collect remainder seconds
-    ld bc, OP3 ; BC=OP3=remainder
-    ld hl, OP2 ; HL=OP2=divisor
     ld a, 60
     call setU40ToA; HL=OP2=divsor=60
     ex de, hl ; DE=OP2=60=divisor; HL=seconds=dividend/quotient
@@ -196,7 +203,9 @@ secondsToDurationPos:
     ld a, (hl)
     ld (ix + 1), a ; duration.days=days
     dec hl ; HL=quotient=original seconds
-    ;
+    ; clean up
+    call dropRaw9 ; FPS=[remainder]
+    call dropRaw9 ; FPS=[]
     ex de, hl ; DE=original seconds
     push ix
     pop hl ; HL=IX=resultDuration
@@ -291,3 +300,38 @@ chsDuration:
     ;
     pop hl
     ret
+
+;-----------------------------------------------------------------------------
+
+; Description: Add (RpnDuration plus seconds) or (seconds plus RpnDuration).
+; Input:
+;   - OP1:Union[RpnDuration,RpnReal]=rpnDate or seconds
+;   - OP3:Union[RpnDuration,RpnReal]=rpnDate or seconds
+; Output:
+;   - OP1:RpnDuration=RpnDuration+seconds
+; Destroys: all, OP1-OP3
+AddRpnDurationBySeconds:
+    call checkOp1DurationPageTwo ; ZF=1 if CP1 is an RpnDuration
+    jr nz, addRpnDurationBySecondsAdd
+    call cp1ExCp3PageTwo ; CP1=seconds; CP3=RpnDuration
+addRpnDurationBySecondsAdd:
+    ; CP1=seconds, CP3=RpnDuration
+    call ConvertOP1ToI40 ; HL=OP1=u40(seconds)
+    call pushRaw9Op1 ; FPS=[seconds]; HL=seconds
+    ; convert CP3=RpnDuration to OP1=seconds
+    ld de, OP3+1 ; DE=Duration
+    ld hl, OP1
+    call durationToSeconds ; HL=OP1=durationSeconds
+    ; add seconds, durationSeconds
+    call popRaw9Op2 ; FPS=[]; OP2=seconds
+    ld de, OP2
+    ld hl, OP1
+    call addU40U40 ; HL=resultDays=durationSeconds+seconds
+    ; convert seconds to OP1=RpnDuration
+    call op1ToOp2PageTwo ; OP2=resultDays
+    ld de, OP2
+    ld hl, OP1
+    ld a, rpnObjectTypeDuration
+    ld (hl), a
+    inc hl ; HL:(Duration*)=newDuration
+    jp secondsToDuration ; HL=OP1+sizeof(Duration)

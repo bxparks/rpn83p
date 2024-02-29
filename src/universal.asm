@@ -33,7 +33,9 @@ universalAdd:
     call checkOp3Date ; ZF=1 if Date
     jr z, universalAddDaysPlusDate
     ;
-    call checkOp1DateTime ; ZF=1 if DateTime
+    call getOp1RpnObjectType
+    ;
+    cp rpnObjectTypeDateTime ; ZF=1 if DateTime
     jr z, universalAddDateTimePlusSeconds
     call checkOp3DateTime ; ZF=1 if DateTime
     jr z, universalAddSecondsPlusDateTime
@@ -47,6 +49,11 @@ universalAdd:
     jr z, universalAddDayOfWeekPlusDays
     call checkOp3DayOfWeek ; ZF=1 if DayOfWeek
     jr z, universalAddDaysPlusDayOfWeek
+    ;
+    call checkOp1Duration ; ZF=1 if Duration
+    jp z, universalAddDurationPlusSeconds
+    call checkOp3Duration ; ZF=1 if Duration
+    jp z, universalAddSecondsPlusDuration
 universalAddErr:
     ; throw Err:DataType if nothing matches
     bcall(_ErrDataType)
@@ -110,6 +117,16 @@ universalAddDaysPlusDayOfWeek:
     call checkOp1Real
     jr nz, universalAddErr
     bcall(_AddRpnDayOfWeekByDays) ; OP1=days(OP1)+DayOfWeek(OP3)
+    ret
+universalAddDurationPlusSeconds:
+    call checkOp3Real
+    jr nz, universalAddErr
+    bcall(_AddRpnDurationBySeconds) ; OP1=Duration(OP1)+seconds(OP3)
+    ret
+universalAddSecondsPlusDuration:
+    call checkOp1Real
+    jp nz, universalAddErr
+    bcall(_AddRpnDurationBySeconds) ; OP1=seconds(OP1)+Duration(OP3)
     ret
 
 ; Description: Subtractions for real, complex, and Date objects.

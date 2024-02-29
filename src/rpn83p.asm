@@ -1315,6 +1315,10 @@ _ChsRpnDurationLabel:
 _ChsRpnDuration equ _ChsRpnDurationLabel-branchTableBase
     .dw ChsRpnDuration
     .db 2
+_AddRpnDurationBySecondsLabel:
+_AddRpnDurationBySeconds equ _AddRpnDurationBySecondsLabel-branchTableBase
+    .dw AddRpnDurationBySeconds
+    .db 2
 
 ; zoneconversion2.asm
 _ConvertRpnDateTimeToTimeZoneAsOffsetLabel:
