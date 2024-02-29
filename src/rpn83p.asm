@@ -1302,6 +1302,12 @@ _TruncateRpnOffsetDateTime equ _TruncateRpnOffsetDateTimeLabel-branchTableBase
     .dw TruncateRpnOffsetDateTime
     .db 2
 
+; duration2.asm
+_ChsRpnDurationLabel:
+_ChsRpnDuration equ _ChsRpnDurationLabel-branchTableBase
+    .dw ChsRpnDuration
+    .db 2
+
 ; zoneconversion2.asm
 _ConvertRpnDateTimeToTimeZoneAsOffsetLabel:
 _ConvertRpnDateTimeToTimeZoneAsOffset equ _ConvertRpnDateTimeToTimeZoneAsOffsetLabel-branchTableBase

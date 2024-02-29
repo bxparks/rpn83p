@@ -48,6 +48,20 @@ isNegativeTrue:
     scf
     ret
 
+;-----------------------------------------------------------------------------
+
+; Description: Change the sign of the RpnDuration.
+; Input:
+;   - OP1:(RpnDuration*)=duration
+; Output:
+;   - (*OP1)=-(*OP1)
+; Destroys: A
+; Preserves: BC, DE, HL
+ChsRpnDuration:
+    ld hl, OP1
+    inc hl
+    ; [[fallthrough]]
+
 ; Description: Change the sign of the Duration.
 ; Input:
 ;   - HL:(Duration*)=duration

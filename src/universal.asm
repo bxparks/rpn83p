@@ -367,14 +367,17 @@ universalDivComplexReal:
 
 ; Description: Change sign for real and complex numbers.
 ; Input:
-;   - OP1/OP2: Y
+;   - CP1:(Real|Complex|RpnDuration)=X
 ; Output:
-;   - OP1/OP2: -Y
+;   - CP1:(Real|Complex|RpnDuration)=-X
 universalChs:
-    call checkOp1Real ; ZF=1 if real
+    call getOp1RpnObjectType ; A=rpnObjectType
+    cp rpnObjectTypeReal ; ZF=1 if real
     jr z, universalChsReal
-    call checkOp1Complex ; ZF=1 if complex
+    cp rpnObjectTypeComplex ; ZF=1 if complex
     jr z, universalChsComplex
+    cp rpnObjectTypeDuration ; ZF=1 if RpnDuration
+    jr z, universalChsDuration
 universalChsErr:
     bcall(_ErrDataType)
 universalChsReal:
@@ -382,6 +385,9 @@ universalChsReal:
     ret
 universalChsComplex:
     bcall(_InvOP1SC)
+    ret
+universalChsDuration:
+    bcall(_ChsRpnDuration)
     ret
 
 ;-----------------------------------------------------------------------------
