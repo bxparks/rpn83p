@@ -11,7 +11,8 @@
 ;------------------------------------------------------------------------------
 
 ; Description: Negate BC.
-; Destroys: A
+; Destroys: A, BC
+; Preserves: DE, HL
 negBCPageTwo:
     ld a, c
     neg
@@ -19,6 +20,27 @@ negBCPageTwo:
     ld a, 0
     sbc a, b
     ld b, a
+    ret
+
+; Description: Negate ABC.
+; Destroys: ABC
+; Preserves: DE, HL
+negABCPageTwo:
+    push de
+    ld d, a ; save A
+    ;
+    ld a, c
+    neg
+    ld c, a
+    ;
+    ld a, 0
+    sbc a, b
+    ld b, a
+    ;
+    ld a, 0
+    sbc a, d
+    ;
+    pop de
     ret
 
 ;------------------------------------------------------------------------------

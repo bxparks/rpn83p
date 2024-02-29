@@ -43,6 +43,8 @@ mDateRelatedToSecondsHandler:
     jr z, mDateRelatedToSecondsHandlerOffset
     cp rpnObjectTypeOffsetDateTime ; ZF=1 if RpnOffsetDateTime
     jr z, mDateRelatedToSecondsHandlerOffsetDateTime
+    cp rpnObjectTypeDuration ; ZF=1 if RpnDuration
+    jr z, mDateRelatedToSecondsHandlerDuration
     bcall(_ErrDataType)
 mDateRelatedToSecondsHandlerDate:
     bcall(_RpnDateToEpochSeconds) ; OP1=epochSeconds
@@ -58,6 +60,9 @@ mDateRelatedToSecondsHandlerOffset:
     jr mDateRelatedToSecondsHandlerEnd
 mDateRelatedToSecondsHandlerOffsetDateTime:
     bcall(_RpnOffsetDateTimeToEpochSeconds) ; OP1=epochSeconds
+    jr mDateRelatedToSecondsHandlerEnd
+mDateRelatedToSecondsHandlerDuration:
+    bcall(_RpnDurationToSeconds) ; OP1=seconds
     ; [[fallthrough]]
 mDateRelatedToSecondsHandlerEnd:
     jp replaceX

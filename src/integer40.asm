@@ -120,24 +120,47 @@ setU40ToABC:
 
 ;------------------------------------------------------------------------------
 
-; Description: Set i40 pointed by HL to signed value in A.
+; Description: Set the i40 buffer pointed by HL to signed value in A.
 ; Input:
-;   - A: i8
+;   - A:i8
 ;   - HL:(*i40)
 ; Output:
 ;   - (HL)=A
 ; Preserves: all
 setI40ToA:
-    call clearU40
     bit 7, a
-    jr z, setI40ToAPos
-    ; negative
+    jr z, setU40ToA
     neg
-    ld (hl), a
+    call setU40ToA
     jp negU40
-setI40ToAPos:
-    ld (hl), a
-    ret
+
+; Description: Set the i40 buffer pointed by HL to the signed value in BC.
+; Input:
+;   - BC:i16
+;   - HL:(*i40)
+; Output:
+;   - (*HL)=BC
+; Preserves: all
+setI40ToBC:
+    bit 7, b
+    jr z, setU40ToBC
+    call negBCPageTwo
+    call setU40ToBC
+    jp negU40
+
+; Description: Set the i40 buffer pointed by HL to the u24 value in ABC.
+; Input:
+;   - ABC:i24
+;   - HL:(u40*)
+; Output:
+;   - (*HL)=ABC
+; Preserves: all
+setI40ToABC:
+    bit 7, a
+    jr z, setU40ToABC
+    call negABCPageTwo
+    call setU40ToABC
+    jp negU40
 
 ;------------------------------------------------------------------------------
 ; Arithmetic routines.

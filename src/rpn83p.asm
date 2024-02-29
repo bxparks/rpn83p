@@ -1303,6 +1303,10 @@ _TruncateRpnOffsetDateTime equ _TruncateRpnOffsetDateTimeLabel-branchTableBase
     .db 2
 
 ; duration2.asm
+_RpnDurationToSecondsLabel:
+_RpnDurationToSeconds equ _RpnDurationToSecondsLabel-branchTableBase
+    .dw RpnDurationToSeconds
+    .db 2
 _ChsRpnDurationLabel:
 _ChsRpnDuration equ _ChsRpnDurationLabel-branchTableBase
     .dw ChsRpnDuration
