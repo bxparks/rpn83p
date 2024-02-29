@@ -397,6 +397,8 @@ MenuGroup root mRoot [
         MenuItem S<Sconvert>DZ mEpochSecondstoOffsetDateTime
       ]
       MenuRow [
+        MenuItem S<Sconvert>R mSecondsToDuration
+        MenuItem * *
         MenuItem TZ mSetTimeZone
         MenuItem TZ<Squestion> mGetTimeZone
         MenuGroup EPCH mEpoch [

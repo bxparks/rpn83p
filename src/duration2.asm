@@ -13,9 +13,9 @@
 ; Description: Convert RpnDuration to relative seconds.
 ; Input: OP1:RpnDuration
 ; Output: OP1:real
-; Destroys: all, OP1-OP4
+; Destroys: all, OP1-OP2
 RpnDurationToSeconds:
-    call pushRaw9Op1 ; FPS=[rpnOffset]; HL=rpnOffset
+    call pushRaw9Op1 ; FPS=[rpnDuration]; HL=rpnDuration
     inc hl ; skip type byte
     ex de, hl ; DE=duration
     ld hl, OP1
@@ -30,7 +30,7 @@ RpnDurationToSeconds:
 ; Output:
 ;   - DE=DE+sizeof(Duration)
 ;   - (*HL):i40=resultSeconds filled
-; Destroys: A, OP3-4
+; Destroys: A, OP2
 ; Preserves, BC, HL
 durationToSeconds:
     ex de, hl ; HL=duration
@@ -48,6 +48,15 @@ durationToSeconds:
     call negU40
     ret
 
+; Description: Convert postive duration to seconds.
+; Input:
+;   - DE:(Duration*)=duration
+;   - HL:(i40*)=resultSeconds
+; Output:
+;   - DE=DE+sizeof(Duration)
+;   - (*HL):i40=resultSeconds filled
+; Destroys: A, OP2
+; Preserves, BC, HL
 durationToSecondsPos:
     push bc
     call clearU40 ; resultSeconds=0
@@ -103,6 +112,94 @@ durationToSecondsPos:
     call addU40U40 ; HL=resultSeconds=(((days*24)+hours)*60+minutes)*60)+seconds
     ;
     pop bc
+    ret
+
+;-----------------------------------------------------------------------------
+
+; Description: Convert seconds to RpnDuration.
+; Input:
+;   - OP1:(i40*)=seconds
+; Output:
+;   - OP1:(RpnDuration*)=resultDuration
+; Destroys: all, OP1-OP4
+SecondsToRpnDuration:
+    call ConvertOP1ToI40 ; OP1:i40=seconds
+    call pushRaw9Op1 ; FPS=[seconds]; HL=seconds
+    ex de, hl ; DE=seconds
+    ld hl, OP1
+    ld a, rpnObjectTypeDuration
+    ld (hl), a
+    inc hl ; HL=(Duration*)=resultDuration
+    call secondsToDuration
+    call dropRaw9
+    ret
+
+; Description: Convert seconds to Duration.
+; Input:
+;   - DE:(i40*)=seconds
+;   - HL:(Duration*)=resultDuration
+; Output:
+;   - (*DE) destroyed
+;   - (*HL) filled
+; Destroys: A, BC, OP2-OP3
+; Preserves: DE, HL
+secondsToDuration:
+    ; TODO: Check for overflow of i40(seconds).
+    ex de, hl
+    call isPosU40 ; ZF=1 if u40 positive or zero
+    ex de, hl
+    jr z, secondsToDurationPos
+    ex de, hl ; HL=seconds
+    call negU40
+    ex de, hl ; DE=seconds; HL=resultDuration
+    call secondsToDurationPos
+    call chsDuration ; HL=-HL
+    ret
+
+; Description: Convert positive seconds to Duration.
+; Input:
+;   - DE:(u40*)=seconds
+;   - HL:(Duration*)=resultDuration
+; Output:
+;   - (*DE) destroyed
+;   - (*HL) filled
+; Destroys: A, BC, IX, OP2-OP3
+; Preserves: DE, HL
+secondsToDurationPos:
+    push hl
+    pop ix ; IX=HL=resultDuration
+    ; divide by 60 and collect remainder seconds
+    ld bc, OP3 ; BC=OP3=remainder
+    ld hl, OP2 ; HL=OP2=divisor
+    ld a, 60
+    call setU40ToA; HL=OP2=divsor=60
+    ex de, hl ; DE=OP2=60=divisor; HL=seconds=dividend/quotient
+    call divU40U40 ; DE=divisor=60; HL=minutes; BC=remainderSeconds
+    ld a, (bc) ; A=remainderSeconds
+    ld (ix + 4), a ; duration.seconds=remainderSeconds
+    ; divide by 60 to collect remainder minutes
+    call divU40U40 ; DE=divisor; HL=hours; BC=remainderMinutes
+    ld a, (bc) ; A=remainderMinutes
+    ld (ix + 3), a ; duration.minutes=remainderMinutes
+    ; divide by 24 to get remainder hours
+    ex de, hl ; DE=quotient; HL=divisor
+    ld a, 24
+    call setU40ToA ; HL=divisor=24
+    ex de, hl
+    call divU40U40 ; DE=divisor=24; HL=days; BC=remainderDays
+    ld a, (bc) ; A=remainderHours
+    ld (ix + 2), a ; duration.hours=remainderHours
+    ; extract remaining days
+    ld a, (hl)
+    ld (ix + 0), a
+    inc hl
+    ld a, (hl)
+    ld (ix + 1), a ; duration.days=days
+    dec hl ; HL=quotient=original seconds
+    ;
+    ex de, hl ; DE=original seconds
+    push ix
+    pop hl ; HL=IX=resultDuration
     ret
 
 ;-----------------------------------------------------------------------------

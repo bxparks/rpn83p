@@ -1307,6 +1307,10 @@ _RpnDurationToSecondsLabel:
 _RpnDurationToSeconds equ _RpnDurationToSecondsLabel-branchTableBase
     .dw RpnDurationToSeconds
     .db 2
+_SecondsToRpnDurationLabel:
+_SecondsToRpnDuration equ _SecondsToRpnDurationLabel-branchTableBase
+    .dw SecondsToRpnDuration
+    .db 2
 _ChsRpnDurationLabel:
 _ChsRpnDuration equ _ChsRpnDurationLabel-branchTableBase
     .dw ChsRpnDuration
