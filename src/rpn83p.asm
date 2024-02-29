@@ -1323,6 +1323,10 @@ _AddRpnDurationByRpnDurationLabel:
 _AddRpnDurationByRpnDuration equ _AddRpnDurationByRpnDurationLabel-branchTableBase
     .dw AddRpnDurationByRpnDuration
     .db 2
+_SubRpnDurationByRpnDurationOrSecondsLabel:
+_SubRpnDurationByRpnDurationOrSeconds equ _SubRpnDurationByRpnDurationOrSecondsLabel-branchTableBase
+    .dw SubRpnDurationByRpnDurationOrSeconds
+    .db 2
 
 ; zoneconversion2.asm
 _ConvertRpnDateTimeToTimeZoneAsOffsetLabel:

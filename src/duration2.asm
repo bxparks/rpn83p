@@ -366,3 +366,40 @@ AddRpnDurationByRpnDuration:
     call dropRaw9
     call dropRaw9
     ret
+
+;-----------------------------------------------------------------------------
+
+; Description: Subtract RpnDuration minus RpnDuration or seconds.
+; Input:
+;   - OP1:RpnDuration=Y
+;   - OP3:RpnDuration or seconds=X
+; Output:
+;   - OP1:RpnDuration(RpnDuration-seconds) or i40(RpnDuration-RpnDuration).
+; Destroys: OP1, OP2
+SubRpnDurationByRpnDurationOrSeconds:
+    call checkOp3DurationPageTwo ; ZF=1 if type(OP3)==Duration
+    jr z, subRpnDurationByRpnDuration
+subRpnDurationBySeconds:
+    ; exchage CP1/CP3, invert the sign, then call addRpnDurationBySecondsAdd()
+    call cp1ExCp3PageTwo
+    bcall(_InvOP1S) ; OP1=-OP1
+    jr addRpnDurationBySecondsAdd
+subRpnDurationByRpnDuration:
+    ; convert OP1 to seconds
+    call reserveRaw9 ; FPS=[seconds1]; HL=op1=seconds1
+    ld de, OP1+1 ; DE:(Duration*)
+    call durationToSeconds ; HL=seconds1
+    push hl ; stack=[seconds1]
+    ; convert OP3 to seconds
+    call reserveRaw9 ; FPS=[seconds1,seconds3]; HL=op3=seconds3
+    ld de, OP3+1
+    call durationToSeconds ; HL=seconds3
+    ; subtract
+    pop de ; stack=[]; DE=seconds1
+    ex de, hl ; HL=seconds1; DE=seconds3
+    call subU40U40 ; HL=seconds1=seconds1-seconds3
+    ;
+    call dropRaw9 ; FPS=[seconds1]
+    call popRaw9Op1 ; FPS=[]; OP1=seconds1
+    call ConvertI40ToOP1 ; OP1=float(i40)
+    ret
