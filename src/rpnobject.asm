@@ -14,6 +14,15 @@ getOp1RpnObjectType:
     and $1f
     ret
 
+; Description: Return the rpnObjectType of OP3/OP4.
+; Input: OP3
+; Output: A=rpnObjectType
+; Destroys: A
+getOp3RpnObjectType:
+    ld a, (OP3)
+    and $1f
+    ret
+
 ;-----------------------------------------------------------------------------
 
 ; Description: Check that OP1 is a Real number.

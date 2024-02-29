@@ -17,118 +17,151 @@
 ; Output:
 ;   - OP1/OP2: Y+X
 universalAdd:
-    call checkOp1AndOp3Real ; ZF=1 if real
-    jr z, universalAddReal
-    ;
-    call checkOp1OrOp3Complex ; ZF=1 if complex
-    jr z, universalAddComplex
-    ;
-    call checkOp1Time ; ZF=1 if Time
-    jr z, universalAddTimePlusSeconds
-    call checkOp3Time ; ZF=1 if Time
-    jr z, universalAddSecondsPlusTime
-    ;
-    call checkOp1Date ; ZF=1 if Date
-    jr z, universalAddDatePlusDays
-    call checkOp3Date ; ZF=1 if Date
-    jr z, universalAddDaysPlusDate
-    ;
+    ; perform double-dispatch based on type of OP1 and OP3
     call getOp1RpnObjectType
-    ;
+    ; OP1=real
+    cp rpnObjectTypeReal ; ZF=1 if Real
+    jr z, universalAddRealPlusObject
+    ; OP1=complex
+    cp rpnObjectTypeComplex ; ZF=1 if Complex
+    jr z, universalAddComplexPlusObject
+    ; OP1=Date
+    cp rpnObjectTypeDate ; ZF=1 if Date
+    jp z, universalAddDatePlusObject
+    ; OP1=Time
+    cp rpnObjectTypeTime ; ZF=1 if Time
+    jp z, universalAddTimePlusObject
+    ; OP1=DateTime
     cp rpnObjectTypeDateTime ; ZF=1 if DateTime
-    jr z, universalAddDateTimePlusSeconds
-    call checkOp3DateTime ; ZF=1 if DateTime
-    jr z, universalAddSecondsPlusDateTime
-    ;
-    call checkOp1OffsetDateTime ; ZF=1 if OffsetDateTime
-    jr z, universalAddOffsetDateTimePlusSeconds
-    call checkOp3OffsetDateTime ; ZF=1 if OffsetDateTime
-    jr z, universalAddSecondsPlusOffsetDateTime
-    ;
-    call checkOp1DayOfWeek ; ZF=1 if DayOfWeek
-    jr z, universalAddDayOfWeekPlusDays
-    call checkOp3DayOfWeek ; ZF=1 if DayOfWeek
-    jr z, universalAddDaysPlusDayOfWeek
-    ;
-    call checkOp1Duration ; ZF=1 if Duration
-    jp z, universalAddDurationPlusSeconds
-    call checkOp3Duration ; ZF=1 if Duration
-    jp z, universalAddSecondsPlusDuration
-universalAddErr:
-    ; throw Err:DataType if nothing matches
-    bcall(_ErrDataType)
-universalAddReal:
+    jp z, universalAddDateTimePlusObject
+    ; OP1=OffsetDateTime
+    cp rpnObjectTypeOffsetDateTime ; ZF=1 if OffsetDateTime
+    jp z, universalAddOffsetDateTimePlusObject
+    ; OP1=DayOfWeek
+    cp rpnObjectTypeDayOfWeek ; ZF=1 if DayOfWeek
+    jp z, universalAddDayOfWeekPlusObject
+    ; OP1=Duration
+    cp rpnObjectTypeDuration ; ZF=1 if Duration
+    jp z, universalAddDurationPlusObject
+    jr universalAddErr
+; Real+object
+universalAddRealPlusObject:
+    call getOp3RpnObjectType
+    cp rpnObjectTypeReal
+    jr z, universalAddRealPlusReal
+    cp rpnObjectTypeComplex
+    jr z, universalAddRealPlusComplex
+    cp rpnObjectTypeDate
+    jr z, universalAddRealPlusDate
+    cp rpnObjectTypeTime
+    jr z, universalAddRealPlusTime
+    cp rpnObjectTypeDateTime
+    jr z, universalAddRealPlusDateTime
+    cp rpnObjectTypeOffsetDateTime
+    jr z, universalAddRealPlusOffsetDateTime
+    cp rpnObjectTypeDayOfWeek
+    jr z, universalAddRealPlusDayOfWeek
+    cp rpnObjectTypeDuration
+    jr z, universalAddRealPlusDuration
+    jr universalAddErr
+universalAddRealPlusReal:
     call op3ToOp2
     bcall(_FPAdd) ; OP1=Y+X
     ret
-universalAddComplex:
+universalAddRealPlusComplex:
     call convertOp1ToCp1
     bcall(_PushOP1) ; FPS=[Y]
     call cp3ToCp1 ; OP1/OP2=OP3/OP4
     call convertOp1ToCp1
     bcall(_CAdd) ; OP1/OP2 += FPS[OP1/OP2]; FPS=[]
     ret
-universalAddTimePlusSeconds:
-    call checkOp3Real
-    jr nz, universalAddErr
-    bcall(_AddRpnTimeBySeconds) ; OP1=Time(OP1)+days(OP3)
-    ret
-universalAddSecondsPlusTime:
-    call checkOp1Real
-    jr nz, universalAddErr
-    bcall(_AddRpnTimeBySeconds) ; OP1=days(OP1)+Time(OP3)
-    ret
-universalAddDatePlusDays:
-    call checkOp3Real
-    jr nz, universalAddErr
-    bcall(_AddRpnDateByDays) ; OP1=Date(OP1)+days(OP3)
-    ret
-universalAddDaysPlusDate:
-    call checkOp1Real
-    jr nz, universalAddErr
+universalAddRealPlusDate:
     bcall(_AddRpnDateByDays) ; OP1=days(OP1)+Date(OP3)
     ret
-universalAddDateTimePlusSeconds:
-    call checkOp3Real
-    jr nz, universalAddErr
-    bcall(_AddRpnDateTimeBySeconds) ; OP1=DateTime(OP1)+seconds(OP3)
+universalAddRealPlusTime:
+    bcall(_AddRpnTimeBySeconds) ; OP1=days(OP1)+Time(OP3)
     ret
-universalAddSecondsPlusDateTime:
-    call checkOp1Real
-    jr nz, universalAddErr
+universalAddRealPlusDateTime:
     bcall(_AddRpnDateTimeBySeconds) ; OP1=seconds(OP1)+DateTime(OP3)
     ret
-universalAddOffsetDateTimePlusSeconds:
-    call checkOp3Real
-    jr nz, universalAddErr
-    bcall(_AddRpnOffsetDateTimeBySeconds) ; OP1=OffsetDateTime(OP1)+seconds(OP3)
-    ret
-universalAddSecondsPlusOffsetDateTime:
-    call checkOp1Real
-    jr nz, universalAddErr
+universalAddRealPlusOffsetDateTime:
     bcall(_AddRpnOffsetDateTimeBySeconds) ; OP1=seconds(OP1)+OffsetDateTime(OP3)
     ret
-universalAddDayOfWeekPlusDays:
-    call checkOp3Real
-    jr nz, universalAddErr
-    bcall(_AddRpnDayOfWeekByDays) ; OP1=DayOfWeek(OP1)+days(OP3)
-    ret
-universalAddDaysPlusDayOfWeek:
-    call checkOp1Real
-    jr nz, universalAddErr
+universalAddRealPlusDayOfWeek:
     bcall(_AddRpnDayOfWeekByDays) ; OP1=days(OP1)+DayOfWeek(OP3)
     ret
-universalAddDurationPlusSeconds:
-    call checkOp3Duration
-    jr z, universalAddDurationPlusDuration
-    call checkOp3Real
-    jr nz, universalAddErr
-    bcall(_AddRpnDurationBySeconds) ; OP1=Duration(OP1)+seconds(OP3)
-    ret
-universalAddSecondsPlusDuration:
-    call checkOp1Real
-    jp nz, universalAddErr
+universalAddRealPlusDuration:
     bcall(_AddRpnDurationBySeconds) ; OP1=seconds(OP1)+Duration(OP3)
+    ret
+; Complex + object
+universalAddComplexPlusObject:
+    call getOp3RpnObjectType
+    cp rpnObjectTypeReal
+    jr z, universalAddComplexPlusReal
+    cp rpnObjectTypeComplex
+    jr z, universalAddComplexPlusComplex
+    jr universalAddErr
+universalAddComplexPlusReal:
+universalAddComplexPlusComplex:
+    jr universalAddRealPlusComplex
+; Located in the middle to support 'jr' instructions.
+universalAddErr:
+    bcall(_ErrDataType)
+; Date + object
+universalAddDatePlusObject:
+    call getOp3RpnObjectType
+    cp rpnObjectTypeReal
+    jr z, universalAddDatePlusReal
+    jr universalAddErr
+universalAddDatePlusReal:
+    bcall(_AddRpnDateByDays) ; OP1=Date(OP1)+days(OP3)
+    ret
+; Time + object
+universalAddTimePlusObject:
+    call getOp3RpnObjectType
+    cp rpnObjectTypeReal
+    jr z, universalAddTimePlusReal
+    jr universalAddErr
+universalAddTimePlusReal:
+    bcall(_AddRpnTimeBySeconds) ; OP1=Time(OP1)+days(OP3)
+    ret
+; DateTime + object
+universalAddDateTimePlusObject:
+    call getOp3RpnObjectType
+    cp rpnObjectTypeReal
+    jr z, universalAddDateTimePlusReal
+    jr universalAddErr
+universalAddDateTimePlusReal:
+    bcall(_AddRpnDateTimeBySeconds) ; OP1=DateTime(OP1)+seconds(OP3)
+    ret
+; OffsetDateTime + object
+universalAddOffsetDateTimePlusObject:
+    call getOp3RpnObjectType
+    cp rpnObjectTypeReal
+    jr z, universalAddOffsetDateTimePlusReal
+    jr universalAddErr
+universalAddOffsetDateTimePlusReal:
+    bcall(_AddRpnOffsetDateTimeBySeconds) ; OP1=OffsetDateTime(OP1)+seconds(OP3)
+    ret
+; DayOfWeek + object
+universalAddDayOfWeekPlusObject:
+    call getOp3RpnObjectType
+    cp rpnObjectTypeReal
+    jr z, universalAddDayOfWeekPlusReal
+    jr universalAddErr
+universalAddDayOfWeekPlusReal:
+    bcall(_AddRpnDayOfWeekByDays) ; OP1=DayOfWeek(OP1)+days(OP3)
+    ret
+; Duration + object
+universalAddDurationPlusObject:
+    call getOp3RpnObjectType
+    cp rpnObjectTypeReal
+    jr z, universalAddDurationPlusReal
+    cp rpnObjectTypeDuration
+    jr z, universalAddDurationPlusDuration
+    jr universalAddErr
+universalAddDurationPlusReal:
+    bcall(_AddRpnDurationBySeconds) ; OP1=Duration(OP1)+seconds(OP3)
     ret
 universalAddDurationPlusDuration:
     bcall(_AddRpnDurationByRpnDuration) ; OP1+=OP3
