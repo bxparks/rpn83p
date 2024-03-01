@@ -246,7 +246,7 @@ ValidateOffsetDateTime:
 ValidateDayOfWeek:
     ld a, (hl) ; A=dayOfWeek
     inc hl
-    or 0 ; TODO: replace this with 'or a'
+    or a ; ZF=1 if A==0
     jr z, validateDayOfWeekErr ; if dayOfWeek==0: err
     cp dayOfWeekStringsLen ; if dayOfWeek>7: err
     jr nc, validateDayOfWeekErr
