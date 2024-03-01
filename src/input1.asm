@@ -426,12 +426,15 @@ isComplexDelimiterPageOne:
     cp Ldegree
     ret
 
-; Description: Return ZF=1 if A is a real or complex number delimiter.
+; Description: Return ZF=1 if A is a real or complex number delimiter: '{', ','
+; or '}'.
 ; Input: A: char
 ; Output: ZF=1 if delimiter
 ; Destroys: none
 isNumberDelimiterPageOne:
     cp LlBrace ; '{'
+    ret z
+    cp LrBrace ; '}'
     ret z
     cp ','
     ret
