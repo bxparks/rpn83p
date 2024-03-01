@@ -134,37 +134,17 @@ ValidateOffset:
     ld c, (hl) ; C=minute
     inc hl
     ;
-    call validateOffsetMagnitudes
     call validateOffsetSigns
+    call validateOffsetForcePositve
+    call validateOffsetMagnitudes
+    call validateOffsetQuarters
     pop bc
     ret
 
-validateOffsetMagnitudes:
-    ; validate hour
-    ld a, b
-    bit 7, a
-    jr z, validateOffsetPosHour
-    neg
-validateOffsetPosHour:
-    cp 24
-    jr nc, validateOffsetErr ; if hour>=24: err
-    ; validate minute
-    ld a, c
-    bit 7, a
-    jr z, validateOffsetPosMinute
-    neg
-validateOffsetPosMinute:
-    cp 60
-    jr nc, validateOffsetErr ; if minute>=60: err
-    ret
-
-validateOffsetErr:
-    bcall(_ErrInvalid)
-
 ; Description: Validate the signs of 'hour' and 'minute' are compatible.
 ; Input:
-;   - B:hour
-;   - C:minute
+;   - B=hour
+;   - C=minute
 ; Output:
 ; Destroys: A
 ; Preserves: BC
@@ -183,6 +163,62 @@ validateOffsetSigns:
     bit 7, a
     jr nz, validateOffsetErr ; if sign(hour) != sign(minute): err
     ret
+
+; Description: Set the 'hour' and 'minute' values to be positive for subsequent
+; validation.
+; Input:
+;   - B=hour
+;   - C=minute
+; Destroys: BC
+validateOffsetForcePositve:
+    bit 7, b
+    jr z, validateOffsetForcePositveMinute
+    ld a, b
+    neg
+    ld b, a
+validateOffsetForcePositveMinute:
+    bit 7, c
+    jr z, validateOffsetForcePositveEnd
+    ld a, c
+    neg
+    ld c, a
+validateOffsetForcePositveEnd:
+    ret
+
+; Description: Validate that the magnitudes of the 'hour' and 'minute' fields
+; are within range.
+; Input:
+;   - B=hour
+;   - C=minute
+validateOffsetMagnitudes:
+    ; validate hour
+    ld a, b
+    cp 24
+    jr nc, validateOffsetErr ; if hour>=24: err
+    ; validate minute
+    ld a, c
+    cp 60
+    jr nc, validateOffsetErr ; if minute>=60: err
+    ret
+
+; Description: Validate the the 'minute' field is a multiple of 15 minutes.
+; Input:
+;   - B=hour
+;   - C=minute
+validateOffsetQuarters:
+    ld a, c
+    cp 0
+    ret z
+    cp 15
+    ret z
+    cp 30
+    ret z
+    cp 45
+    ret z
+    ; [[fallthrough]]
+
+validateOffsetErr:
+    bcall(_ErrInvalid)
 
 ;-----------------------------------------------------------------------------
 
@@ -210,7 +246,7 @@ ValidateOffsetDateTime:
 ValidateDayOfWeek:
     ld a, (hl) ; A=dayOfWeek
     inc hl
-    or 0
+    or 0 ; TODO: replace this with 'or a'
     jr z, validateDayOfWeekErr ; if dayOfWeek==0: err
     cp dayOfWeekStringsLen ; if dayOfWeek>7: err
     jr nc, validateDayOfWeekErr
