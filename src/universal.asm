@@ -422,39 +422,49 @@ universalMultOffsetDateTimeByOffset:
 ; Output:
 ;   - OP1/OP2: Y/X
 universalDiv:
-    call checkOp1Real ; ZF=1 if real
-    jr z, universalDivReal
-    call checkOp1Complex ; ZF=1 if complex
-    jr z, universalDivComplex
-universalDivErr:
-    bcall(_ErrDataType)
-universalDivReal:
-    call checkOp3Real ; ZF=1 if real
-    jr z, universalDivRealReal
-    call checkOp3Complex ; ZF=1 if complex
-    jr nz, universalDivErr
-universalDivRealComplex:
+    ; perform double-dispatch based on type of OP1 and OP3
+    call getOp1RpnObjectType
+    cp rpnObjectTypeReal ; ZF=1 if real
+    jr z, universalDivRealByObject
+    cp rpnObjectTypeComplex ; ZF=1 if complex
+    jr z, universalDivComplexByObject
+    jr universalDivErr
+; real / object
+universalDivRealByObject:
+    call getOp3RpnObjectType
+    cp rpnObjectTypeReal ; ZF=1 if real
+    jr z, universalDivRealByReal
+    cp rpnObjectTypeComplex ; ZF=1 if complex
+    jr z, universalDivRealByComplex
+    jr universalDivErr
+universalDivRealByReal:
+    call op3ToOp2
+    bcall(_FPDiv) ; OP1=Y/X
+    ret
+universalDivRealByComplex:
     call convertOp1ToCp1
     bcall(_PushOP1)
     call cp3ToCp1
     bcall(_CDiv)
     ret
-universalDivRealReal:
-    call op3ToOp2
-    bcall(_FPDiv) ; OP1=Y/X
+; Placed in the middle to support 'jr' instead of 'jp'.
+universalDivErr:
+    bcall(_ErrDataType)
+; complex / object
+universalDivComplexByObject:
+    call getOp3RpnObjectType
+    cp rpnObjectTypeReal
+    jr z, universalDivComplexByReal
+    cp rpnObjectTypeComplex
+    jr z, universalDivComplexByComplex
+    jr universalDivErr
+universalDivComplexByReal:
+    bcall(_CDivByReal) ; CP1=CP1/OP3
     ret
-universalDivComplex:
-    call checkOp3Real
-    jr z, universalDivComplexReal
-    call checkOp3Complex
-    jr nz, universalDivErr
-universalDivComplexComplex:
+universalDivComplexByComplex:
     bcall(_PushOP1) ; FPS=[Y]
     call cp3ToCp1 ; OP1/OP2=OP3/OP4
     bcall(_CDiv) ; OP1/OP2 = FPS[OP1/OP2] / OP1/OP2; FPS=[]
-    ret
-universalDivComplexReal:
-    bcall(_CDivByReal) ; CP1=CP1/OP3
     ret
 
 ;-----------------------------------------------------------------------------
