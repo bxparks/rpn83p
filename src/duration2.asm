@@ -196,8 +196,14 @@ secondsToDurationPos:
     call divU40U40 ; DE=divisor=24; HL=days; BC=remainderDays
     ld a, (bc) ; A=remainderHours
     ld (ix + 2), a ; duration.hours=remainderHours
+    ; check for overflow, days must be < 2^15=32768
+    ex de, hl ; DE=quotient=days; HL=divisor
+    ld bc, 32768
+    call setU40ToBC ; HL=32768
+    ex de, hl ; HL=days; DE=32768
+    call cmpU40U40
+    jr nc, secondsToDurationPosOverflow
     ; extract remaining days
-    ; TODO: check for overflow, days must be < 2^15=32768
     ld a, (hl)
     ld (ix + 0), a
     inc hl
@@ -211,6 +217,8 @@ secondsToDurationPos:
     push ix
     pop hl ; HL=IX=resultDuration
     ret
+secondsToDurationPosOverflow:
+    bcall(_ErrDomain)
 
 ;-----------------------------------------------------------------------------
 

@@ -671,7 +671,7 @@ incU40Loop:
 ;   - HL:(u40*)=arg1
 ;   - DE:(u40*)=arg2
 ; Output:
-;   - CF=1 if (HL) < (DE)
+;   - CF=1 if (HL) < (DE); CF=0 if (HL) >= (DE)
 ;   - ZF=1 if (HL) == (DE)
 ; Destroys: A
 ; Preserves: BC, DE, HL
