@@ -645,57 +645,61 @@ universalCubeRootComplex:
 
 ;-----------------------------------------------------------------------------
 
-; Description: Power function (Y^X) for real and complex numbers. Also
-; overloaded for Date, DateTime, and Offset types to implement the
-; Merge(Y,X)->X functionality.
+; Description: Power function (Y^X) for real and complex numbers.
 ; Input:
 ;   - OP1/OP2:RpnObject=Y
 ;   - OP3/OP4:RpnObject=X
 ;   - numResultMode
 ; Output:
-;   - OP1/OP2:RpnObject=Y^X (for real or complex) or Merge(Y,X) for Date-related
+;   - OP1/OP2:RpnObject=Y^X (for real or complex)
 universalPow:
     call getOp1RpnObjectType ; A=rpnObjectType
     cp rpnObjectTypeReal ; ZF=1 if real
-    jr z, universalPowReal
+    jr z, universalPowRealToObject
     cp rpnObjectTypeComplex ; ZF=1 if complex
-    jr z, universalPowComplex
+    jr z, universalPowComplexToObject
 universalPowErr:
     bcall(_ErrDataType)
-universalPowReal:
-    call checkOp3Real
-    jr z, universalPowRealReal
-    call checkOp3Complex
-    jr nz, universalPowErr
-universalPowRealComplex:
-    call convertOp1ToCp1
-    jr universalPowComplexComplex
-universalPowRealReal:
+; pow(real,object)=real^object
+universalPowRealToObject:
+    call getOp3RpnObjectType
+    cp rpnObjectTypeReal
+    jr z, universalPowRealToReal
+    cp rpnObjectTypeComplex
+    jr z, universalPowRealToComplex
+    jr universalPowErr
+universalPowRealToReal:
     ; Both X and Y are real. Now check if numResultMode is Real or Complex.
     call checkNumResultModeComplex ; ZF=1 if complex
     jr nz, universalPowNumResultModeReal
     ; Both are real, but the result could be complex, so we calculate the
     ; complex result, and chop off the imaginary part if it's zero.
     call convertOp1ToCp1
-    call universalPowComplexReal
+    call universalPowComplexToReal
     jp convertCp1ToOp1
 universalPowNumResultModeReal:
     call op3ToOp2 ; OP2=X
     bcall(_YToX) ; OP1=OP1^OP2=Y^X
     ret
-universalPowComplex:
-    call checkOp3Real
-    jr z, universalPowComplexReal
-    call checkOp3Complex
-    jr nz, universalPowErr
-universalPowComplexComplex:
+universalPowRealToComplex:
+    call convertOp1ToCp1
+    jr universalPowComplexToComplex
+; pow(complex,object)=complex^object
+universalPowComplexToObject:
+    call getOp3RpnObjectType
+    cp rpnObjectTypeReal
+    jr z, universalPowComplexToReal
+    cp rpnObjectTypeComplex
+    jr z, universalPowComplexToComplex
+    jr universalPowErr
+universalPowComplexToReal:
+    call convertOp3ToCp3 ; CP3=complex(X)
+    ; [[fallthrough]]
+universalPowComplexToComplex:
     bcall(_PushOP1) ; FPS=[Y]
     call cp3ToCp1 ; CP1=OP3/OP4=X
     bcall(_CYtoX) ; CP1=(FPS)^(CP1)=Y^X; FPS=[]
     ret
-universalPowComplexReal:
-    call convertOp3ToCp3 ; CP3=complex(X)
-    jr universalPowComplexComplex
 
 ; Description: Calculate XRootY(Y)=Y^(1/X) for real and complex numbers.
 ; Input:
