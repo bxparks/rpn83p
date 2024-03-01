@@ -185,9 +185,15 @@ addRpnDateTimeByRpnDurationAdd:
 ; Output:
 ;   - OP1:(RpnDateTime-seconds) or (RpnDateTime-RpnDateTime).
 ; Destroys: OP1, OP2, OP3-OP6
-SubRpnDateTimeByRpnDateTimeOrSeconds:
-    call checkOp3DateTimePageTwo ; ZF=1 if type(OP3)==DateTime
+SubRpnDateTimeByObject:
+    call getOp3RpnObjectTypePageTwo ; A=objectType
+    cp rpnObjectTypeReal
+    jr z, subRpnDateTimeBySeconds
+    cp rpnObjectTypeDateTime
     jr z, subRpnDateTimeByRpnDateTime
+    cp rpnObjectTypeDuration
+    jr z, subRpnDateTimeByRpnDuration
+    bcall(_ErrInvalid) ; should never happen
 subRpnDateTimeBySeconds:
     ; invert the sign of OP3, then call addRpnDateTimeBySecondsAdd()
     call cp1ExCp3PageTwo
@@ -212,6 +218,32 @@ subRpnDateTimeByRpnDateTime:
     ; pop result into OP1
     call popRaw9Op1 ; FPS=[X.seconds]; OP1=epochSeconds
     call ConvertI40ToOP1 ; OP1=float(epochSeconds)
+    jp dropRaw9 ; FPS=[]
+subRpnDateTimeByRpnDuration:
+    ; convert OP3 to seconds on the FPS stack
+    call reserveRaw9 ; FPS=[X.durationSeconds]; HL=X.durationSeconds
+    push hl ; stack=[X.durationSeconds]
+    ld de, OP3+1 ; HL=DateTime{}
+    call durationToSeconds ; FPS.X.durationSeconds updated; HL=X.durationSeconds
+    ; convert OP1 to seconds on FPS stack
+    call pushRaw9Op1 ; FPS=[X.durationSeconds,Y.seconds]; HL=Y.seconds
+    push hl ; stack=[X.durationSeconds,Y.seconds]
+    ld de, OP1+1 ; HL=DateTime{}
+    call dateTimeToInternalEpochSeconds ; FPS.Y.seconds updated; HL=Y.seconds
+    ; subtract Y.seconds-X.seconds
+    pop hl ; HL=Y.seconds
+    pop de ; DE=X.seconds
+    call subU40U40 ; HL=resultSeconds=Y.seconds-X.durationSeconds
+    ; convert resultSeconds to RpnDateTime.
+    ex de, hl ; DE=resultSeconds
+    call reserveRaw9 ; FPS=[X.durationSeconds,Y.seconds,resultDateTime]
+    ld a, rpnObjectTypeDateTime
+    ld (hl), a
+    inc hl ; HL:(DateTime*)=resultDateTime
+    call internalEpochSecondsToDateTime ; HL=resultDateTime filled
+    ; pop result into OP1
+    call popRaw9Op1 ; FPS=[durationSeconds.Y.seconds]; OP1=resultDateTime
+    call dropRaw9 ; FPS=[durationSeconds]
     jp dropRaw9 ; FPS=[]
 
 ;-----------------------------------------------------------------------------

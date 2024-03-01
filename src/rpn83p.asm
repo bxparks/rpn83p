@@ -1245,9 +1245,9 @@ _AddRpnDateTimeByRpnDurationLabel:
 _AddRpnDateTimeByRpnDuration equ _AddRpnDateTimeByRpnDurationLabel-branchTableBase
     .dw AddRpnDateTimeByRpnDuration
     .db 2
-_SubRpnDateTimeByRpnDateTimeOrSecondsLabel:
-_SubRpnDateTimeByRpnDateTimeOrSeconds equ _SubRpnDateTimeByRpnDateTimeOrSecondsLabel-branchTableBase
-    .dw SubRpnDateTimeByRpnDateTimeOrSeconds
+_SubRpnDateTimeByObjectLabel:
+_SubRpnDateTimeByObject equ _SubRpnDateTimeByObjectLabel-branchTableBase
+    .dw SubRpnDateTimeByObject
     .db 2
 _SplitRpnDateTimeLabel:
 _SplitRpnDateTime equ _SplitRpnDateTimeLabel-branchTableBase
