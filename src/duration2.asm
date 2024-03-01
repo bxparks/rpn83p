@@ -197,6 +197,7 @@ secondsToDurationPos:
     ld a, (bc) ; A=remainderHours
     ld (ix + 2), a ; duration.hours=remainderHours
     ; extract remaining days
+    ; TODO: check for overflow, days must be < 2^15=32768
     ld a, (hl)
     ld (ix + 0), a
     inc hl
@@ -395,7 +396,8 @@ AddRpnDurationByRpnDuration:
 ;   - OP1:RpnDuration=Y
 ;   - OP3:RpnDuration or seconds=X
 ; Output:
-;   - OP1:RpnDuration(RpnDuration-seconds) or i40(RpnDuration-RpnDuration).
+;   - OP1:RpnDuration(RpnDuration-seconds) or
+;   RpnDuration(RpnDuration-RpnDuration).
 ; Destroys: OP1, OP2
 SubRpnDurationByRpnDurationOrSeconds:
     call getOp3RpnObjectTypePageTwo ; A=objectType
@@ -412,20 +414,12 @@ subRpnDurationBySeconds:
     jr addRpnDurationBySecondsAdd
 subRpnDurationByRpnDuration:
     ; convert OP3 to seconds
-    call reserveRaw9 ; FPS=[seconds3]; HL=op1=seconds3
-    push hl ; stack=[seconds3]
+    call reserveRaw9 ; FPS=[seconds3]; HL=seconds3
     ld de, OP3+1 ; DE:(Duration*)
     call durationToSeconds ; HL=seconds3
-    ; convert OP1 to seconds
-    call reserveRaw9 ; FPS=[seconds3,seconds1]; HL=op3=seconds1
-    push hl ; stack=[seconds3,seconds1]
-    ld de, OP1+1
-    call durationToSeconds ; HL=seconds1
-    ; subtract seconds1-seconds3
-    pop hl ; stack=[seconds3]; HL=seconds1
-    pop de ; stack=[]; DE=seconds3
-    call subU40U40 ; HL=seconds1=seconds1-seconds3
-    ; pop resultinto OP1
-    call popRaw9Op1 ; FPS=[seconds3]; OP1=seconds1-seconds3
-    call ConvertI40ToOP1 ; OP1=float(i40)
+    call negU40 ; HL=-seconds3
+    ;
+    ex de, hl ; DE=-seconds3
+    ld hl, OP1+1
+    call addDurationBySeconds ; OP1=duration1-duration3=>RpnDuration
     jp dropRaw9 ; FPS=[]
