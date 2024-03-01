@@ -16,7 +16,7 @@
 ; If a Real is given, it is converted into an Offset{}, then stored.
 ; Input: OP1:RpnOffset{} or Real
 ; Output: none
-; Destroys: BC, HL
+; Destroys: BC, HL, OP3
 SetTimeZone:
     ld hl, OP1
     ld a, (hl)

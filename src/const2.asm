@@ -14,6 +14,14 @@ op2Set24PageTwo:
 
 ;-----------------------------------------------------------------------------
 
+; Description: Set OP2 to 3600.
+; Destroys: all, HL
+op2Set3600PageTwo:
+    ld hl, const3600PageTwo
+    jp move9ToOp2PageTwo
+
+;-----------------------------------------------------------------------------
+
 ; Description: Set OP2 to 2^32.
 ; Destroys: all, HL
 op2Set2Pow32PageTwo:
@@ -47,6 +55,9 @@ op2Set1E14PageTwo:
 
 const24PageTwo: ; 24
     .db $00, $81, $24, $00, $00, $00, $00, $00, $00
+
+const3600PageTwo: ; 3600
+    .db $00, $83, $36, $00, $00, $00, $00, $00, $00
 
 const2Pow32PageTwo: ; 2^32 = 4 294 967 296
     .db $00, $89, $42, $94, $96, $72, $96, $00, $00

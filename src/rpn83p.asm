@@ -1271,6 +1271,14 @@ _RpnOffsetToSecondsLabel:
 _RpnOffsetToSeconds equ _RpnOffsetToSecondsLabel-branchTableBase
     .dw RpnOffsetToSeconds
     .db 2
+_RpnOffsetToHoursLabel:
+_RpnOffsetToHours equ _RpnOffsetToHoursLabel-branchTableBase
+    .dw RpnOffsetToHours
+    .db 2
+_HoursToRpnOffsetLabel:
+_HoursToRpnOffset equ _HoursToRpnOffsetLabel-branchTableBase
+    .dw HoursToRpnOffset
+    .db 2
 
 ; offsetdatetime2.asm
 _RpnOffsetDateTimeToEpochSecondsLabel:

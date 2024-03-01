@@ -2090,23 +2090,23 @@ mEpochSecondsToOffsetDateTimeId equ 221
     .dw mEpochSecondsToOffsetDateTimeHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
 ; MenuGroup DATE: children: row 2
-mBlank222:
-mBlank222Id equ 222
-    .dw mBlank222Id ; id
+mHoursToTimeZone:
+mHoursToTimeZoneId equ 222
+    .dw mHoursToTimeZoneId ; id
     .dw mDateId ; parentId
-    .dw mNullNameId ; nameId
+    .dw mHoursToTimeZoneNameId ; nameId
     .db 0 ; numRows
     .dw 0 ; rowBeginId or altNameId
-    .dw mNullHandler ; handler (predefined)
+    .dw mHoursToTimeZoneHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
-mBlank223:
-mBlank223Id equ 223
-    .dw mBlank223Id ; id
+mTimeZoneToHours:
+mTimeZoneToHoursId equ 223
+    .dw mTimeZoneToHoursId ; id
     .dw mDateId ; parentId
-    .dw mNullNameId ; nameId
+    .dw mTimeZoneToHoursNameId ; nameId
     .db 0 ; numRows
     .dw 0 ; rowBeginId or altNameId
-    .dw mNullHandler ; handler (predefined)
+    .dw mTimeZoneToHoursHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
 mSetTimeZone:
 mSetTimeZoneId equ 224
@@ -2276,7 +2276,7 @@ mEpochGetCustomId equ 241
     .dw 0 ; nameSelector
 
 ; Table of 2-byte pointers to names in the pool of strings below.
-mMenuNameTableSize equ 246
+mMenuNameTableSize equ 248
 mMenuNameTable:
 mNullNameId equ 0
     .dw mNullName
@@ -2726,49 +2726,53 @@ mEpochSecondsToDateTimeNameId equ 222
     .dw mEpochSecondsToDateTimeName
 mEpochSecondsToOffsetDateTimeNameId equ 223
     .dw mEpochSecondsToOffsetDateTimeName
-mSetTimeZoneNameId equ 224
+mHoursToTimeZoneNameId equ 224
+    .dw mHoursToTimeZoneName
+mTimeZoneToHoursNameId equ 225
+    .dw mTimeZoneToHoursName
+mSetTimeZoneNameId equ 226
     .dw mSetTimeZoneName
-mGetTimeZoneNameId equ 225
+mGetTimeZoneNameId equ 227
     .dw mGetTimeZoneName
-mEpochNameId equ 226
+mEpochNameId equ 228
     .dw mEpochName
-mRtcGetNowNameId equ 227
+mRtcGetNowNameId equ 229
     .dw mRtcGetNowName
-mRtcGetNowDzNameId equ 228
+mRtcGetNowDzNameId equ 230
     .dw mRtcGetNowDzName
-mRtcSetTimeZoneNameId equ 229
+mRtcSetTimeZoneNameId equ 231
     .dw mRtcSetTimeZoneName
-mRtcGetTimeZoneNameId equ 230
+mRtcGetTimeZoneNameId equ 232
     .dw mRtcGetTimeZoneName
-mRtcSetClockNameId equ 231
+mRtcSetClockNameId equ 233
     .dw mRtcSetClockName
-mEpochUnixNameId equ 232
+mEpochUnixNameId equ 234
     .dw mEpochUnixName
-mEpochUnixAltNameId equ 233
+mEpochUnixAltNameId equ 235
     .dw mEpochUnixAltName
-mEpochNtpNameId equ 234
+mEpochNtpNameId equ 236
     .dw mEpochNtpName
-mEpochNtpAltNameId equ 235
+mEpochNtpAltNameId equ 237
     .dw mEpochNtpAltName
-mEpochGpsNameId equ 236
+mEpochGpsNameId equ 238
     .dw mEpochGpsName
-mEpochGpsAltNameId equ 237
+mEpochGpsAltNameId equ 239
     .dw mEpochGpsAltName
-mEpochTiosNameId equ 238
+mEpochTiosNameId equ 240
     .dw mEpochTiosName
-mEpochTiosAltNameId equ 239
+mEpochTiosAltNameId equ 241
     .dw mEpochTiosAltName
-mEpochY2kNameId equ 240
+mEpochY2kNameId equ 242
     .dw mEpochY2kName
-mEpochY2kAltNameId equ 241
+mEpochY2kAltNameId equ 243
     .dw mEpochY2kAltName
-mEpochCustomNameId equ 242
+mEpochCustomNameId equ 244
     .dw mEpochCustomName
-mEpochCustomAltNameId equ 243
+mEpochCustomAltNameId equ 245
     .dw mEpochCustomAltName
-mEpochSetCustomNameId equ 244
+mEpochSetCustomNameId equ 246
     .dw mEpochSetCustomName
-mEpochGetCustomNameId equ 245
+mEpochGetCustomNameId equ 247
     .dw mEpochGetCustomName
 
 ; Table of names as NUL terminated C strings.
@@ -3220,6 +3224,10 @@ mEpochSecondsToDateTimeName:
     .db 'S', Sconvert, 'D', 'T', 0
 mEpochSecondsToOffsetDateTimeName:
     .db 'S', Sconvert, 'D', 'Z', 0
+mHoursToTimeZoneName:
+    .db 'H', Sconvert, 'T', 'Z', 0
+mTimeZoneToHoursName:
+    .db 'T', 'Z', Sconvert, 'H', 0
 mSetTimeZoneName:
     .db "TZ", 0
 mGetTimeZoneName:
@@ -3257,9 +3265,9 @@ mEpochY2kName:
 mEpochY2kAltName:
     .db 'Y', '2', 'K', Sblock, 0
 mEpochCustomName:
-    .db "CSEP", 0
+    .db "CEPC", 0
 mEpochCustomAltName:
-    .db 'C', 'S', 'E', Sblock, 0
+    .db 'C', 'E', 'P', Sblock, 0
 mEpochSetCustomName:
     .db "EPC", 0
 mEpochGetCustomName:

@@ -67,6 +67,11 @@ mDateRelatedToSecondsHandlerDuration:
 mDateRelatedToSecondsHandlerEnd:
     jp replaceX
 
+mSecondsToDurationHandler:
+    call closeInputAndRecallX ; OP1=X=seconds
+    bcall(_SecondsToRpnDuration) ; OP1=Duration(seconds)
+    jp replaceX
+
 mSecondsToTimeHandler:
     call closeInputAndRecallX ; OP1=X=seconds
     bcall(_SecondsToRpnTime) ; OP1=Time(seconds)
@@ -86,9 +91,14 @@ mEpochSecondsToOffsetDateTimeHandler:
 ; DATE > Row 3
 ;-----------------------------------------------------------------------------
 
-mSecondsToDurationHandler:
-    call closeInputAndRecallX ; OP1=X=seconds
-    bcall(_SecondsToRpnDuration) ; OP1=Duration(seconds)
+mHoursToTimeZoneHandler:
+    call closeInputAndRecallX ; OP1=X=hours
+    bcall(_HoursToRpnOffset) ; OP1=RpnOffset(hours)
+    jp replaceX
+
+mTimeZoneToHoursHandler:
+    call closeInputAndRecallRpnOffsetX ; A=rpnObjectType; OP1=X
+    bcall(_RpnOffsetToHours) ; OP1=hours
     jp replaceX
 
 mSetTimeZoneHandler:

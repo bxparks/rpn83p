@@ -11,8 +11,8 @@
 ;-----------------------------------------------------------------------------
 
 ; Description: Convert the RpnOffset{} record in OP1 to relative seconds.
-; Input: OP1:RpnOffset
-; Output: OP1:real
+; Input: OP1:RpnOffset=rpnOffset
+; Output: OP1:real=seconds
 ; Destroys: all, OP1-OP4
 RpnOffsetToSeconds:
     call pushRaw9Op1 ; FPS=[rpnOffset]; HL=rpnOffset
@@ -23,6 +23,31 @@ RpnOffsetToSeconds:
     call dropRaw9 ; FPS=[]
     jp ConvertI40ToOP1 ; OP1=float(OP1)
 
+; Description: Convert the RpnOffset{} record in OP1 to relative hours.
+; Input: OP1:RpnOffset=rpnOffset
+; Output: OP1:real=hours
+; Destroys: all, OP1-OP4
+RpnOffsetToHours:
+    call RpnOffsetToSeconds
+    call op2Set3600PageTwo ; OP2=3600
+    bcall(_FPDiv) ; OP1=OP1/OP2
+    ret
+
+; Description: Convert the hours (in multiples of 0.25) in OP1 to RpnOffset.
+; Input: OP1:real=hours
+; Output: OP1:RpnOffset=rpnOffset
+; Destroys: all, OP1-OP4
+HoursToRpnOffset:
+    call reserveRaw9 ; FPS=[rpnOffset]; HL=rpnOffset
+    ld a, rpnObjectTypeOffset
+    ld (hl), a
+    inc hl
+    call offsetHourToOffset ; HL=RpnOffset(OP1)
+    call popRaw9Op1 ; FPS=[]; OP1=rpnOffset
+    ret
+
+;-----------------------------------------------------------------------------
+; Lower-level routines.
 ;-----------------------------------------------------------------------------
 
 ; Description: Return ZF=1 if Offset{} is zero or positive.

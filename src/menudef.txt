@@ -397,8 +397,8 @@ MenuGroup root mRoot [
         MenuItem S<Sconvert>DZ mEpochSecondsToOffsetDateTime
       ]
       MenuRow [
-        MenuItem * *
-        MenuItem * *
+        MenuItem H<Sconvert>TZ mHoursToTimeZone
+        MenuItem TZ<Sconvert>H mTimeZoneToHours
         MenuItem TZ mSetTimeZone
         MenuItem TZ<Squestion> mGetTimeZone
         MenuGroup EPCH mEpoch [
@@ -410,7 +410,7 @@ MenuGroup root mRoot [
             MenuItemAlt Y2K Y2K<Sblock> mEpochY2k # 2000-01-01T00:00:00
           ]
           MenuRow [
-            MenuItemAlt CSEP CSE<Sblock> mEpochCustom # custom, defined by EPC
+            MenuItemAlt CEPC CEP<Sblock> mEpochCustom # custom, defined by EPC
             MenuItem * *
             MenuItem * *
             MenuItem EPC mEpochSetCustom # set custom epoch date
