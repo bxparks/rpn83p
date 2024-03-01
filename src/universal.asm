@@ -708,46 +708,53 @@ universalPowComplexToComplex:
 ;   - numResultMode
 ; Output: OP1/OP2: Y^(1/X)
 universalXRootY:
-    call checkOp1Real ; ZF=1 if real
-    jr z, universalXRootYReal
-    call checkOp1Complex ; ZF=1 if complex
-    jr z, universalXRootYComplex
+    call getOp1RpnObjectType ; A=rpnObjectType
+    cp rpnObjectTypeReal ; ZF=1 if real
+    jr z, universalXRootYRealByObject
+    cp rpnObjectTypeComplex ; ZF=1 if complex
+    jr z, universalXRootYComplexByObject
 universalXRootYErr:
     bcall(_ErrDataType)
-universalXRootYReal:
-    call checkOp3Real ; ZF=1 if real
-    jr z, universalXRootYRealReal
-    call checkOp3Complex ; ZF1=1 if complex
-    jr nz, universalXRootYErr
-universalXRootYRealComplex:
-    call convertOp1ToCp1
-    jr universalXRootYComplexComplex
-universalXRootYRealReal:
+; xrooty(real,object)=real^(1/object)
+universalXRootYRealByObject:
+    call getOp3RpnObjectType
+    cp rpnObjectTypeReal ; ZF=1 if real
+    jr z, universalXRootYRealByReal
+    cp rpnObjectTypeComplex ; ZF1=1 if complex
+    jr z, universalXRootYRealByComplex
+    jr universalXRootYErr
+universalXRootYRealByReal:
     ; Both X and Y are real. Now check if numResultMode is Real or Complex.
     call checkNumResultModeComplex ; ZF=1 if complex
     jr nz, universalXRootYNumResultModeReal
     ; Both are real, but the result could be complex, so we calculate the
     ; complex result, and chop off the imaginary part if it's zero.
     call convertOp1ToCp1
-    call universalXRootYComplexReal
+    call universalXRootYComplexByReal
     jp convertCp1ToOp1 ; chop off the imaginary part if zero
 universalXRootYNumResultModeReal:
     call op1ToOp2 ; OP2=Y
     call op3ToOp1 ; OP1=X
     bcall(_XRootY) ; OP1=OP2^(1/OP1), SDK documentation is incorrect
     ret
-universalXRootYComplex:
-    call checkOp3Real
-    jr z, universalXRootYComplexReal
-    call checkOp3Complex
-    jr nz, universalXRootYErr
-universalXRootYComplexComplex:
+universalXRootYRealByComplex:
+    call convertOp1ToCp1
+    jr universalXRootYComplexByComplex
+; xrooty(complex,object)=complex^(1/object)
+universalXRootYComplexByObject:
+    call getOp3RpnObjectType
+    cp rpnObjectTypeReal
+    jr z, universalXRootYComplexByReal
+    cp rpnObjectTypeComplex
+    jr z, universalXRootYComplexByComplex
+    jr universalXRootYErr
+universalXRootYComplexByReal:
+    call convertOp3ToCp3
+    ; [[fallthrough]]
+universalXRootYComplexByComplex:
     bcall(_PushOp3) ; FPS=[X]
     bcall(_CXrootY) ; CP1=CP1^(1/FPS)=Y^(1/X); FPS=[]
     ret
-universalXRootYComplexReal:
-    call convertOp3ToCp3
-    jr universalXRootYComplexComplex
 
 ;-----------------------------------------------------------------------------
 ; Transcendentals
