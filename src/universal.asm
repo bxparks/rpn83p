@@ -130,9 +130,14 @@ universalAddDateTimePlusObject:
     call getOp3RpnObjectType
     cp rpnObjectTypeReal
     jr z, universalAddDateTimePlusReal
+    cp rpnObjectTypeDuration
+    jr z, universalAddDateTimePlusDuration
     jr universalAddErr
 universalAddDateTimePlusReal:
     bcall(_AddRpnDateTimeBySeconds) ; OP1=DateTime(OP1)+seconds(OP3)
+    ret
+universalAddDateTimePlusDuration:
+    bcall(_AddRpnDateTimeByRpnDuration) ; OP1=DateTime(OP1)+duration(OP3)
     ret
 ; OffsetDateTime + object
 universalAddOffsetDateTimePlusObject:
@@ -159,6 +164,8 @@ universalAddDurationPlusObject:
     jr z, universalAddDurationPlusReal
     cp rpnObjectTypeDuration
     jr z, universalAddDurationPlusDuration
+    cp rpnObjectTypeDateTime
+    jr z, universalAddDurationPlusDateTime
     jr universalAddErr
 universalAddDurationPlusReal:
     bcall(_AddRpnDurationBySeconds) ; OP1=Duration(OP1)+seconds(OP3)
@@ -166,6 +173,8 @@ universalAddDurationPlusReal:
 universalAddDurationPlusDuration:
     bcall(_AddRpnDurationByRpnDuration) ; OP1+=OP3
     ret
+universalAddDurationPlusDateTime:
+    jr universalAddDateTimePlusDuration
 
 ; Description: Subtractions for real, complex, and Date objects.
 ; Input:
