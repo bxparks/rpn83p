@@ -238,7 +238,7 @@ subRpnDateTimeByRpnDuration:
     call negU40 ; HL=-durationSeconds
     ex de, hl ; DE=-durationSeconds
     ld hl, OP1+1 ; HL=dateTime
-    call addDateTimeBySeconds ; HL=OP1=dateTime-durationSeconds
+    call addDateTimeBySeconds ; HL=dateTime-durationSeconds
     ; clean up
     jp dropRaw9 ; FPS=[]
 

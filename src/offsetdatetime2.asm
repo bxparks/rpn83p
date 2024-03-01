@@ -215,9 +215,15 @@ addOffsetDateTimeBySeconds:
 ; Output:
 ;   - OP1:(RpnOffsetDateTime-seconds) or (RpnOffsetDateTime-RpnOffsetDateTime).
 ; Destroys: OP1, OP2, OP3-OP6
-SubRpnOffsetDateTimeByRpnOffsetDateTimeOrSeconds:
-    call checkOp3OffsetDateTimePageTwo ; ZF=1 if type(OP3)==OffsetDateTime
+SubRpnOffsetDateTimeByObject:
+    call getOp3RpnObjectTypePageTwo ; A=objectType
+    cp rpnObjectTypeReal
+    jr z, subRpnOffsetDateTimeBySeconds
+    cp RpnObjectTypeOffsetDateTime ; ZF=1 if RpnOffsetDateTime
     jr z, subRpnOffsetDateTimeByRpnOffsetDateTime
+    cp rpnObjectTypeDuration
+    jr z, subRpnOffsetDateTimeByRpnDuration
+    bcall(_ErrInvalid) ; should never happen
 subRpnOffsetDateTimeBySeconds:
     ; invert the sign of OP3, then call addRpnOffsetDateTimeBySecondsAdd()
     call cp1ExCp3PageTwo
@@ -250,6 +256,20 @@ subRpnOffsetDateTimeByRpnOffsetDateTime:
     call dropRaw9
     call dropRpnObject
     jp dropRpnObject
+subRpnOffsetDateTimeByRpnDuration:
+    call shrinkOp2ToOp1PageTwo ; remove 2-byte gap
+    ; convert OP3 to seconds on the FPS stack
+    call reserveRaw9 ; FPS=[durationSeconds]; HL=durationSeconds
+    ld de, OP3+1 ; DE:(DateTime*)
+    call durationToSeconds ; HL=durationSeconds
+    ; calculate odt-duration
+    call negU40 ; HL=-durationSeconds
+    ex de, hl ; DE=-durationSeconds
+    ld hl, OP1+1 ; HL=dateTime
+    call addOffsetDateTimeBySeconds ; HL=odt-durationSeconds
+    ; clean up
+    call expandOp1ToOp2PageTwo ; add back 2-byte gap
+    jp dropRaw9 ; FPS=[]
 
 ;-----------------------------------------------------------------------------
 

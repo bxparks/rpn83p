@@ -1289,9 +1289,9 @@ _AddRpnOffsetDateTimeByDurationLabel:
 _AddRpnOffsetDateTimeByDuration equ _AddRpnOffsetDateTimeByDurationLabel-branchTableBase
     .dw AddRpnOffsetDateTimeByDuration
     .db 2
-_SubRpnOffsetDateTimeByRpnOffsetDateTimeOrSecondsLabel:
-_SubRpnOffsetDateTimeByRpnOffsetDateTimeOrSeconds equ _SubRpnOffsetDateTimeByRpnOffsetDateTimeOrSecondsLabel-branchTableBase
-    .dw SubRpnOffsetDateTimeByRpnOffsetDateTimeOrSeconds
+_SubRpnOffsetDateTimeByObjectLabel:
+_SubRpnOffsetDateTimeByObject equ _SubRpnOffsetDateTimeByObjectLabel-branchTableBase
+    .dw SubRpnOffsetDateTimeByObject
     .db 2
 _SplitRpnOffsetDateTimeLabel:
 _SplitRpnOffsetDateTime equ _SplitRpnOffsetDateTimeLabel-branchTableBase

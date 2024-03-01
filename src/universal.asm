@@ -298,10 +298,13 @@ universalSubOffsetDateTimeMinusObject:
     jr z, universalSubOffsetDateTimeMinusReal
     cp rpnObjectTypeOffsetDateTime
     jr z, universalSubOffsetDateTimeMinusOffsetDateTime
+    cp rpnObjectTypeDuration
+    jr z, universalSubOffsetDateTimeMinusDuration
     jr universalSubErr
 universalSubOffsetDateTimeMinusReal:
 universalSubOffsetDateTimeMinusOffsetDateTime:
-    bcall(_SubRpnOffsetDateTimeByRpnOffsetDateTimeOrSeconds)
+universalSubOffsetDateTimeMinusDuration:
+    bcall(_SubRpnOffsetDateTimeByObject)
     ret
 ; DayOfWeek - object
 universalSubDayOfWeekMinusObject:
