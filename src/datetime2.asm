@@ -146,7 +146,7 @@ addRpnDateTimeByRpnDurationAdd:
     ; Push CP1:RpnDateTime to FPS
     call PushRpnObject1 ; FPS=[dateTime]; HL=dateTime
     push hl ; stack=[dateTime]
-    ; Convert OP3:RpnDuration to i40 on FPS
+    ; Convert OP3:RpnDuration to OP1 days
     ld de, OP3+1 ; DE:(Duration*)=duration
     ld hl, OP1 ; HL:(i40*)=durationSeconds
     call durationToSeconds ; HL=durationSeconds
@@ -193,7 +193,7 @@ addDateTimeBySeconds:
 ;   - OP1:RpnDateTime=Y
 ;   - OP3:RpnDateTime or seconds=X
 ; Output:
-;   - OP1:(RpnDateTime-seconds) or (RpnDateTime-RpnDateTime).
+;   - OP1:(RpnDateTime-seconds) or i40(RpnDateTime-RpnDateTime).
 ; Destroys: OP1, OP2, OP3-OP6
 SubRpnDateTimeByObject:
     call getOp3RpnObjectTypePageTwo ; A=objectType
