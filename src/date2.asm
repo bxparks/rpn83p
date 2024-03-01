@@ -245,8 +245,8 @@ AddRpnDateByDays:
 addRpnDateByDaysAdd:
     ; if here: CP1=rpnDate, CP3=days
     ; Push CP1:Rpndate to FPS
-    call PushRpnObject1 ; FPS=[date]; HL=date
-    push hl ; stack=[date]
+    call PushRpnObject1 ; FPS=[rpnDate]; HL=rpnDate
+    push hl ; stack=[rpnDate]
     ; convert real(seconds) to i40(seconds)
     call op3ToOp1PageTwo ; OP1:real=seconds
     call ConvertOP1ToI40 ; OP1:u40=seconds
@@ -256,7 +256,7 @@ addRpnDateByDaysAdd:
     ld de, OP1
     call addDateByDays ; HL=newDate
     ; clean up
-    call PopRpnObject1 ; FPS=[]; OP1=newDate
+    call PopRpnObject1 ; FPS=[]; OP1=newRpnDate
     ret
 
 ; Description: Add Date plus days.
@@ -297,7 +297,7 @@ addDateByDays:
 ; Destroys: OP1, OP2, OP3-OP6
 SubRpnDateByRpnDateOrDays:
     call getOp3RpnObjectTypePageTwo ; A=objectType
-    cp rpnObjectTypeReal ; ZF=1 if Date
+    cp rpnObjectTypeReal ; ZF=1 if Real
     jr z, subRpnDateByDays
     cp rpnObjectTypeDate ; ZF=1 if Date
     jr z, subRpnDateByRpnDate
@@ -320,8 +320,8 @@ subRpnDateByRpnDate:
     ld de, OP1+1 ; DE=Date{}
     call dateToInternalEpochDays ; HL=FPS.Y.days updated
     ; subtract Y.days-X.days
-    pop hl ; HL=Y.days
-    pop de ; De=X.days
+    pop hl ; stack=[X.days]; HL=Y.days
+    pop de ; stack=[]; DE=X.days
     call subU40U40 ; HL=Y.days-X.days
     ; pop result into OP1
     call popRaw9Op1 ; FPS=[X.days]; OP1=Y.days-X.days

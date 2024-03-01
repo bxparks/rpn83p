@@ -312,29 +312,50 @@ chsDuration:
 ; Destroys: all, OP1,OP2
 AddRpnDurationBySeconds:
     call checkOp1DurationPageTwo ; ZF=1 if CP1 is an RpnDuration
-    jr nz, addRpnDurationBySecondsAdd
-    call cp1ExCp3PageTwo ; CP1=seconds; CP3=RpnDuration
+    jr z, addRpnDurationBySecondsAdd
+    call cp1ExCp3PageTwo ; CP1=rpnDuration; CP3=seconds
 addRpnDurationBySecondsAdd:
-    ; CP1=seconds, CP3=RpnDuration
-    call ConvertOP1ToI40 ; HL=OP1=i40(seconds)
-    call pushRaw9Op1 ; FPS=[seconds]; HL=seconds
-    ; convert CP3=RpnDuration to OP1=seconds
-    ld de, OP3+1 ; DE=Duration
-    ld hl, OP1
-    call durationToSeconds ; HL=OP1=durationSeconds
-    ; add seconds, durationSeconds
-    call popRaw9Op2 ; FPS=[]; OP2=seconds
-    ld de, OP2
-    ld hl, OP1
-    call addU40U40 ; HL=resultDays=durationSeconds+seconds
-    ; convert seconds to OP1=RpnDuration
-    call op1ToOp2PageTwo ; OP2=resultDays
-    ld de, OP2
-    ld hl, OP1
-    ld a, rpnObjectTypeDuration
-    ld (hl), a
-    inc hl ; HL:(Duration*)=newDuration
-    jp secondsToDuration ; HL=OP1+sizeof(Duration)
+    ; if here: CP1=rpnDuration, CP3=seconds
+    call PushRpnObject1 ; FPS=[rpnDuration]; HL=rpnDuration
+    push hl ; stack=[rpnDuration]
+    ; convert real(seconds) to i40(seconds)
+    call op3ToOp1PageTwo ; OP1:real=seconds
+    call ConvertOP1ToI40 ; OP1:u40=seconds
+    ; add duration+seconds
+    pop hl ; stack=[]; HL=rpnDuration
+    inc hl ; HL=duration
+    ld de, OP1
+    call addDurationBySeconds ; HL=newDuration
+    ; clean up
+    call PopRpnObject1 ; FPS=[]; OP1=newRpnDuration
+    ret
+
+; Description: Add Duration plus seconds.
+; Input:
+;   - DE:(i40*)=seconds
+;   - HL:(Duration*)=duration
+; Output:
+;   - HL:(Duration*)=newDuration
+; Destroys: A, BC
+; Preserves: DE, HL
+addDurationBySeconds:
+    push hl ; stack=[duration]
+    push de ; stack=[duration,seconds]
+    ; convert duration to durationSeconds
+    ex de, hl ; DE=duration
+    call reserveRaw9 ; FPS=[durationSeconds]; HL=durationSeconds
+    call durationToSeconds ; HL=durationSeconds
+    ; add seconds
+    pop de ; stack=[duration]; DE=seconds
+    call addU40U40 ; HL=resultSeconds=durationSeconds+seconds
+    ; convert durationSeconds to duration
+    ex de, hl ; DE=resultSeconds; HL=seconds
+    ex (sp), hl ; stack=[seconds]; HL=duration
+    call secondsToDuration ; HL=duration filled
+    ; clean up
+    pop de ; stack=[]; DE=seconds
+    call dropRaw9 ; FPS=[]
+    ret
 
 ; Description: Add (RpnDuration plus RpnDuration).
 ; Input:
@@ -377,29 +398,34 @@ AddRpnDurationByRpnDuration:
 ;   - OP1:RpnDuration(RpnDuration-seconds) or i40(RpnDuration-RpnDuration).
 ; Destroys: OP1, OP2
 SubRpnDurationByRpnDurationOrSeconds:
-    call checkOp3DurationPageTwo ; ZF=1 if type(OP3)==Duration
+    call getOp3RpnObjectTypePageTwo ; A=objectType
+    cp rpnObjectTypeReal ; ZF=1 if Real
+    jr z, subRpnDurationBySeconds
+    cp rpnObjectTypeDuration ; ZF=1 if Duration
     jr z, subRpnDurationByRpnDuration
+    bcall(_ErrInvalid) ; should never happen
 subRpnDurationBySeconds:
     ; exchage CP1/CP3, invert the sign, then call addRpnDurationBySecondsAdd()
     call cp1ExCp3PageTwo
     bcall(_InvOP1S) ; OP1=-OP1
+    call cp1ExCp3PageTwo
     jr addRpnDurationBySecondsAdd
 subRpnDurationByRpnDuration:
-    ; convert OP1 to seconds
-    call reserveRaw9 ; FPS=[seconds1]; HL=op1=seconds1
-    ld de, OP1+1 ; DE:(Duration*)
-    call durationToSeconds ; HL=seconds1
-    push hl ; stack=[seconds1]
     ; convert OP3 to seconds
-    call reserveRaw9 ; FPS=[seconds1,seconds3]; HL=op3=seconds3
-    ld de, OP3+1
+    call reserveRaw9 ; FPS=[seconds3]; HL=op1=seconds3
+    push hl ; stack=[seconds3]
+    ld de, OP3+1 ; DE:(Duration*)
     call durationToSeconds ; HL=seconds3
-    ; subtract
-    pop de ; stack=[]; DE=seconds1
-    ex de, hl ; HL=seconds1; DE=seconds3
+    ; convert OP1 to seconds
+    call reserveRaw9 ; FPS=[seconds3,seconds1]; HL=op3=seconds1
+    push hl ; stack=[seconds3,seconds1]
+    ld de, OP1+1
+    call durationToSeconds ; HL=seconds1
+    ; subtract seconds1-seconds3
+    pop hl ; stack=[seconds3]; HL=seconds1
+    pop de ; stack=[]; DE=seconds3
     call subU40U40 ; HL=seconds1=seconds1-seconds3
-    ;
-    call dropRaw9 ; FPS=[seconds1]
-    call popRaw9Op1 ; FPS=[]; OP1=seconds1
+    ; pop resultinto OP1
+    call popRaw9Op1 ; FPS=[seconds3]; OP1=seconds1-seconds3
     call ConvertI40ToOP1 ; OP1=float(i40)
-    ret
+    jp dropRaw9 ; FPS=[]
