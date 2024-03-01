@@ -115,38 +115,29 @@ AddRpnDateTimeBySeconds:
     call cp1ExCp3PageTwo ; CP1=rpnDateTime, CP3=seconds
 addRpnDateTimeBySecondsAdd:
     ; CP1=rpnDateTime, CP3=seconds
-    ; Push rpnDateTime to FPS.
-    call PushRpnObject1 ; FPS=[rpnDateTime]
-    push hl ; stack=[rpnDateTime]
-    ; convert OP3 to i40, then push to FPS
+    ; Convert CP1 to i40 seconds on FPS
+    call reserveRaw9 ; FPS=[dateTimeSeconds]; HL=dateTimeSeconds
+    push hl ; stack=[dateTimeSeconds]
+    ld de, OP1+1 ; DE:(DateTime*)=dateTime
+    call dateTimeToInternalEpochSeconds ; HL=dateTimeSeconds
+    ; Convert OP3 to i40 on FPS
     call op3ToOp1PageTwo ; OP1:real=seconds
     call ConvertOP1ToI40 ; OP1:u40=seconds
-    call pushRaw9Op1 ; FPS=[rpnDateTime,seconds]; HL=seconds
-    ex (sp), hl ; stack=[seconds]; HL=rpnDateTime
-    ; convert rpnDateTime to i40 seconds
-    ex de, hl ; DE=rpnDateTime
-    inc de ; skip type byte
-    ld hl, OP1
-    call dateTimeToInternalEpochSeconds ; HL=OP1=dateTimeSeconds
-    ; add seconds + dateSeconds
-    ex de, hl ; DE=dateTimeSeconds
-    pop hl ; stack=[]; HL=FPS.seconds
-    call addU40U40 ; HL=FPS.resultSeconds=dateTimeSeconds+seconds
-    ; Convert resultSeconds to RpnDateTime. Technically, we don't have to
-    ; reserve an RpnObject on the FPS, we could have created the result
-    ; directly in OP1, because an RpnDateTime will fit inside an OP1. But using
-    ; it makes this routine follow the same pattern as
-    ; AddRpnOffsetDateTimeBySeconds(), which makes things easier to maintain.
+    call pushRaw9Op1 ; FPS=[dateTimeSeconds,seconds]; HL=seconds
+    ; add seconds + dateTimeSeconds
+    pop de ; stack=[]; DE=dateTimeSeconds
+    call addU40U40 ; HL=resultSeconds=dateTimeSeconds+seconds
+    ; Convert resultSeconds to RpnDateTime.
     ex de, hl ; DE=resultSeconds
-    call reserveRpnObject ; FPS=[rpnDateTime,seconds,rpnDateTime]
+    call reserveRaw9 ; FPS=[dateTimeSeconds,seconds,newDateTime]
     ld a, rpnObjectTypeDateTime
     ld (hl), a
     inc hl ; HL:(DateTime*)=resultDateTime
-    call internalEpochSecondsToDateTime ; HL=resultDateTime+sizeof(DateTime)
+    call internalEpochSecondsToDateTime ; HL=resultDateTime filled
     ; clean up stack and FPS
-    call PopRpnObject1 ; FPS=[rpnDateTime,seconds]; OP1=resultDateTime
-    call dropRaw9 ; FPS=[rpnDateTime,seconds]
-    jp dropRpnObject ; FPS=[]
+    call popRaw9Op1 ; FPS=[dateTimeSeconds,seconds]; OP1=newDateTime
+    call dropRaw9 ; FPS=[dateTimeSeconds]
+    jp dropRaw9 ; FPS=[]
 
 ;-----------------------------------------------------------------------------
 
