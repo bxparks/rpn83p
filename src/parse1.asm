@@ -276,12 +276,13 @@ parseInputBufRecordTagged:
     jp z, parseInputBufDuration
     bcall(_ErrInvalid) ; should never happen
 parseInputBufRecordNaked:
-    ; Naked records cannot support Time because it has the same number of
-    ; commas as a Date.
+    ; Naked records (i.e. without a prefix tag like "DT{...")
     call countCommas ; A=numCommas, preserves HL
+    cp 0
+    jr z, parseInputBufDayOfWeek
     cp 1
     jr z, parseInputBufOffset
-    cp 2
+    cp 2 ; could be Date or Time, I think Date is more convenient
     jr z, parseInputBufDate
     cp 3
     jr z, parseInputBufDuration
