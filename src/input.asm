@@ -174,4 +174,6 @@ closeInputAndRecallRpnDateRelatedX:
     ret z
     cp rpnObjectTypeOffsetDateTime
     ret z
+    cp rpnObjectTypeDuration
+    ret z
     bcall(_ErrDataType)

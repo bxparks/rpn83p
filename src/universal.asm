@@ -17,100 +17,173 @@
 ; Output:
 ;   - OP1/OP2: Y+X
 universalAdd:
-    call checkOp1AndOp3Real ; ZF=1 if real
-    jr z, universalAddReal
-    ;
-    call checkOp1OrOp3Complex ; ZF=1 if complex
-    jr z, universalAddComplex
-    ;
-    call checkOp1Time ; ZF=1 if Time
-    jr z, universalAddTimePlusSeconds
-    call checkOp3Time ; ZF=1 if Time
-    jr z, universalAddSecondsPlusTime
-    ;
-    call checkOp1Date ; ZF=1 if Date
-    jr z, universalAddDatePlusDays
-    call checkOp3Date ; ZF=1 if Date
-    jr z, universalAddDaysPlusDate
-    ;
-    call checkOp1DateTime ; ZF=1 if DateTime
-    jr z, universalAddDateTimePlusSeconds
-    call checkOp3DateTime ; ZF=1 if DateTime
-    jr z, universalAddSecondsPlusDateTime
-    ;
-    call checkOp1OffsetDateTime ; ZF=1 if OffsetDateTime
-    jr z, universalAddOffsetDateTimePlusSeconds
-    call checkOp3OffsetDateTime ; ZF=1 if OffsetDateTime
-    jr z, universalAddSecondsPlusOffsetDateTime
-    ;
-    call checkOp1DayOfWeek ; ZF=1 if DayOfWeek
-    jr z, universalAddDayOfWeekPlusDays
-    call checkOp3DayOfWeek ; ZF=1 if DayOfWeek
-    jr z, universalAddDaysPlusDayOfWeek
-universalAddErr:
-    ; throw Err:DataType if nothing matches
-    bcall(_ErrDataType)
-universalAddReal:
+    ; perform double-dispatch based on type of OP1 and OP3
+    call getOp1RpnObjectType
+    ; OP1=real
+    cp rpnObjectTypeReal ; ZF=1 if Real
+    jr z, universalAddRealPlusObject
+    ; OP1=complex
+    cp rpnObjectTypeComplex ; ZF=1 if Complex
+    jr z, universalAddComplexPlusObject
+    ; OP1=Date
+    cp rpnObjectTypeDate ; ZF=1 if Date
+    jp z, universalAddDatePlusObject
+    ; OP1=Time
+    cp rpnObjectTypeTime ; ZF=1 if Time
+    jp z, universalAddTimePlusObject
+    ; OP1=DateTime
+    cp rpnObjectTypeDateTime ; ZF=1 if DateTime
+    jp z, universalAddDateTimePlusObject
+    ; OP1=OffsetDateTime
+    cp rpnObjectTypeOffsetDateTime ; ZF=1 if OffsetDateTime
+    jp z, universalAddOffsetDateTimePlusObject
+    ; OP1=DayOfWeek
+    cp rpnObjectTypeDayOfWeek ; ZF=1 if DayOfWeek
+    jp z, universalAddDayOfWeekPlusObject
+    ; OP1=Duration
+    cp rpnObjectTypeDuration ; ZF=1 if Duration
+    jp z, universalAddDurationPlusObject
+    jr universalAddErr
+; Real+object
+universalAddRealPlusObject:
+    call getOp3RpnObjectType
+    cp rpnObjectTypeReal
+    jr z, universalAddRealPlusReal
+    cp rpnObjectTypeComplex
+    jr z, universalAddRealPlusComplex
+    cp rpnObjectTypeDate
+    jr z, universalAddRealPlusDate
+    cp rpnObjectTypeTime
+    jr z, universalAddRealPlusTime
+    cp rpnObjectTypeDateTime
+    jr z, universalAddRealPlusDateTime
+    cp rpnObjectTypeOffsetDateTime
+    jr z, universalAddRealPlusOffsetDateTime
+    cp rpnObjectTypeDayOfWeek
+    jr z, universalAddRealPlusDayOfWeek
+    cp rpnObjectTypeDuration
+    jr z, universalAddRealPlusDuration
+    jr universalAddErr
+universalAddRealPlusReal:
     call op3ToOp2
     bcall(_FPAdd) ; OP1=Y+X
     ret
-universalAddComplex:
+universalAddRealPlusComplex:
     call convertOp1ToCp1
     bcall(_PushOP1) ; FPS=[Y]
     call cp3ToCp1 ; OP1/OP2=OP3/OP4
     call convertOp1ToCp1
     bcall(_CAdd) ; OP1/OP2 += FPS[OP1/OP2]; FPS=[]
     ret
-universalAddTimePlusSeconds:
-    call checkOp3Real
-    jr nz, universalAddErr
-    bcall(_AddRpnTimeBySeconds) ; OP1=Time(OP1)+days(OP3)
-    ret
-universalAddSecondsPlusTime:
-    call checkOp1Real
-    jr nz, universalAddErr
-    bcall(_AddRpnTimeBySeconds) ; OP1=days(OP1)+Time(OP3)
-    ret
-universalAddDatePlusDays:
-    call checkOp3Real
-    jr nz, universalAddErr
-    bcall(_AddRpnDateByDays) ; OP1=Date(OP1)+days(OP3)
-    ret
-universalAddDaysPlusDate:
-    call checkOp1Real
-    jr nz, universalAddErr
+universalAddRealPlusDate:
     bcall(_AddRpnDateByDays) ; OP1=days(OP1)+Date(OP3)
     ret
-universalAddDateTimePlusSeconds:
-    call checkOp3Real
-    jr nz, universalAddErr
-    bcall(_AddRpnDateTimeBySeconds) ; OP1=DateTime(OP1)+seconds(OP3)
+universalAddRealPlusTime:
+    bcall(_AddRpnTimeBySeconds) ; OP1=days(OP1)+Time(OP3)
     ret
-universalAddSecondsPlusDateTime:
-    call checkOp1Real
-    jr nz, universalAddErr
+universalAddRealPlusDateTime:
     bcall(_AddRpnDateTimeBySeconds) ; OP1=seconds(OP1)+DateTime(OP3)
     ret
-universalAddOffsetDateTimePlusSeconds:
-    call checkOp3Real
-    jr nz, universalAddErr
-    bcall(_AddRpnOffsetDateTimeBySeconds) ; OP1=OffsetDateTime(OP1)+seconds(OP3)
-    ret
-universalAddSecondsPlusOffsetDateTime:
-    call checkOp1Real
-    jr nz, universalAddErr
+universalAddRealPlusOffsetDateTime:
     bcall(_AddRpnOffsetDateTimeBySeconds) ; OP1=seconds(OP1)+OffsetDateTime(OP3)
     ret
-universalAddDayOfWeekPlusDays:
-    call checkOp3Real
-    jr nz, universalAddErr
-    bcall(_AddRpnDayOfWeekByDays) ; OP1=DayOfWeek(OP1)+days(OP3)
-    ret
-universalAddDaysPlusDayOfWeek:
-    call checkOp1Real
-    jr nz, universalAddErr
+universalAddRealPlusDayOfWeek:
     bcall(_AddRpnDayOfWeekByDays) ; OP1=days(OP1)+DayOfWeek(OP3)
     ret
+universalAddRealPlusDuration:
+    bcall(_AddRpnDurationBySeconds) ; OP1=seconds(OP1)+Duration(OP3)
+    ret
+; Complex + object
+universalAddComplexPlusObject:
+    call getOp3RpnObjectType
+    cp rpnObjectTypeReal
+    jr z, universalAddComplexPlusReal
+    cp rpnObjectTypeComplex
+    jr z, universalAddComplexPlusComplex
+    jr universalAddErr
+universalAddComplexPlusReal:
+universalAddComplexPlusComplex:
+    jr universalAddRealPlusComplex
+; Located in the middle to support 'jr' instructions.
+universalAddErr:
+    bcall(_ErrDataType)
+; Date + object
+universalAddDatePlusObject:
+    call getOp3RpnObjectType
+    cp rpnObjectTypeReal
+    jr z, universalAddDatePlusReal
+    jr universalAddErr
+universalAddDatePlusReal:
+    bcall(_AddRpnDateByDays) ; OP1=Date(OP1)+days(OP3)
+    ret
+; Time + object
+universalAddTimePlusObject:
+    call getOp3RpnObjectType
+    cp rpnObjectTypeReal
+    jr z, universalAddTimePlusReal
+    jr universalAddErr
+universalAddTimePlusReal:
+    bcall(_AddRpnTimeBySeconds) ; OP1=Time(OP1)+days(OP3)
+    ret
+; DateTime + object
+universalAddDateTimePlusObject:
+    call getOp3RpnObjectType
+    cp rpnObjectTypeReal
+    jr z, universalAddDateTimePlusReal
+    cp rpnObjectTypeDuration
+    jr z, universalAddDateTimePlusDuration
+    jr universalAddErr
+universalAddDateTimePlusReal:
+    bcall(_AddRpnDateTimeBySeconds) ; OP1=DateTime(OP1)+seconds(OP3)
+    ret
+universalAddDateTimePlusDuration:
+    bcall(_AddRpnDateTimeByRpnDuration) ; OP1=DateTime(OP1)+duration(OP3)
+    ret
+; OffsetDateTime + object
+universalAddOffsetDateTimePlusObject:
+    call getOp3RpnObjectType
+    cp rpnObjectTypeReal
+    jr z, universalAddOffsetDateTimePlusReal
+    cp rpnObjectTypeDuration
+    jr z, universalAddOffsetDateTimePlusDuration
+    jr universalAddErr
+universalAddOffsetDateTimePlusReal:
+    bcall(_AddRpnOffsetDateTimeBySeconds) ; OP1=ODT(OP1)+duration(OP3)
+    ret
+universalAddOffsetDateTimePlusDuration:
+    bcall(_AddRpnOffsetDateTimeByDuration) ; OP1=ODT(OP1)+duration(OP3)
+    ret
+; DayOfWeek + object
+universalAddDayOfWeekPlusObject:
+    call getOp3RpnObjectType
+    cp rpnObjectTypeReal
+    jr z, universalAddDayOfWeekPlusReal
+    jr universalAddErr
+universalAddDayOfWeekPlusReal:
+    bcall(_AddRpnDayOfWeekByDays) ; OP1=DayOfWeek(OP1)+days(OP3)
+    ret
+; Duration + object
+universalAddDurationPlusObject:
+    call getOp3RpnObjectType
+    cp rpnObjectTypeReal
+    jr z, universalAddDurationPlusReal
+    cp rpnObjectTypeDateTime
+    jr z, universalAddDurationPlusDateTime
+    cp rpnObjectTypeOffsetDateTime
+    jr z, universalAddDurationPlusOffsetDateTime
+    cp rpnObjectTypeDuration
+    jr z, universalAddDurationPlusDuration
+    jr universalAddErr
+universalAddDurationPlusReal:
+    bcall(_AddRpnDurationBySeconds) ; OP1=Duration(OP1)+seconds(OP3)
+    ret
+universalAddDurationPlusDuration:
+    bcall(_AddRpnDurationByRpnDuration) ; OP1+=OP3
+    ret
+universalAddDurationPlusDateTime:
+    jr universalAddDateTimePlusDuration
+universalAddDurationPlusOffsetDateTime:
+    jr universalAddOffsetDateTimePlusDuration
 
 ; Description: Subtractions for real, complex, and Date objects.
 ; Input:
@@ -119,90 +192,143 @@ universalAddDaysPlusDayOfWeek:
 ; Output:
 ;   - OP1/OP2: Y-X
 universalSub:
-    call checkOp1AndOp3Real ; ZF=1 if both are Real
-    jr z, universalSubReal
-    ;
-    call checkOp1OrOp3Complex ; ZF=1 if either are complex
-    jr z, universalSubComplex
-    ;
-    call checkOp1Time ; ZF=1 if Time
-    jr z, universalSubTimeMinusObject
+    ; perform double-dispatch based on type of OP1 and OP3
+    call getOp1RpnObjectType
+    ; OP1=real
+    cp rpnObjectTypeReal ; ZF=1 if Real
+    jr z, universalSubRealMinusObject
+    ; OP1=complex
+    cp rpnObjectTypeComplex ; ZF=1 if Complex
+    jr z, universalSubComplexMinusObject
+    ; OP1=Date
     call checkOp1Date ; ZF=1 if Date
     jr z, universalSubDateMinusObject
+    ; OP1=Time
+    call checkOp1Time ; ZF=1 if Time
+    jr z, universalSubTimeMinusObject
+    ; OP1=DateTime
     call checkOp1DateTime ; ZF=1 if DateTime
     jr z, universalSubDateTimeMinusObject
+    ; OP1=OffsetDateTime
     call checkOp1OffsetDateTime ; ZF=1 if OffsetDateTime
     jr z, universalSubOffsetDateTimeMinusObject
+    ; OP1=DayOfWeek
     call checkOp1DayOfWeek ; ZF=1 if DayOfWeek
-    jr z, universalSubDayOfWeekMinusObject
-    ; cannot support (OP1-OP3) for any other data type
-universalSubErr:
-    bcall(_ErrDataType)
-universalSubReal:
+    jp z, universalSubDayOfWeekMinusObject
+    ; OP1=Duration
+    call checkOp1Duration ; ZF=1 if Duration
+    jp z, universalSubDurationMinusObject
+    jr universalSubErr
+; Real - object
+universalSubRealMinusObject:
+    call getOp3RpnObjectType
+    cp rpnObjectTypeReal
+    jr z, universalSubRealMinusReal
+    cp rpnObjectTypeComplex
+    jr z, universalSubRealMinusComplex
+    jr universalSubErr
+universalSubRealMinusReal:
     call op3ToOp2
     bcall(_FPSub) ; OP1=Y-X
     ret
-universalSubComplex:
+universalSubRealMinusComplex:
+    jr universalSubComplexMinusComplex
+; Complex - object
+universalSubComplexMinusObject:
+    call getOp3RpnObjectType
+    cp rpnObjectTypeReal
+    jr z, universalSubComplexMinusReal
+    cp rpnObjectTypeComplex
+    jr z, universalSubComplexMinusComplex
+    jr universalSubErr
+universalSubComplexMinusReal:
+universalSubComplexMinusComplex:
     call convertOp1ToCp1
     bcall(_PushOP1) ; FPS=[Y]
     call cp3ToCp1 ; OP1/OP2=OP3/OP4
     call convertOp1ToCp1
     bcall(_CSub) ; OP1/OP2 = FPS[OP1/OP2] - OP1/OP2; FPS=[]
     ret
-;
-universalSubTimeMinusObject:
-    call checkOp3Real
-    jr z, universalSubTimeMinusDays
-    call checkOp3Time
-    jr z, universalSubTimeMinusTime
-    jr universalSubErr
-universalSubTimeMinusDays:
-universalSubTimeMinusTime:
-    bcall(_SubRpnTimeByRpnTimeOrSeconds)
-    ret
-;
+; Located in the middle to support 'jr' instructions.
+universalSubErr:
+    bcall(_ErrDataType)
+; Date - object
 universalSubDateMinusObject:
-    call checkOp3Real
+    call getOp3RpnObjectType
+    cp rpnObjectTypeReal
     jr z, universalSubDateMinusDays
-    call checkOp3Date
+    cp rpnObjectTypeDate
     jr z, universalSubDateMinusDate
     jr universalSubErr
 universalSubDateMinusDays:
 universalSubDateMinusDate:
     bcall(_SubRpnDateByRpnDateOrDays)
     ret
-;
+; Time - object
+universalSubTimeMinusObject:
+    call getOp3RpnObjectType
+    cp rpnObjectTypeReal
+    jr z, universalSubTimeMinusReal
+    cp rpnObjectTypeTime
+    jr z, universalSubTimeMinusTime
+    jr universalSubErr
+universalSubTimeMinusReal:
+universalSubTimeMinusTime:
+    bcall(_SubRpnTimeByRpnTimeOrSeconds)
+    ret
+; DateTime - object
 universalSubDateTimeMinusObject:
-    call checkOp3Real
-    jr z, universalSubDateTimeMinusSeconds
-    call checkOp3DateTime
+    call getOp3RpnObjectType
+    cp rpnObjectTypeReal
+    jr z, universalSubDateTimeMinusReal
+    cp rpnObjectTypeDateTime
     jr z, universalSubDateTimeMinusDateTime
+    cp rpnObjectTypeDuration
+    jr z, universalSubDateTimeMinusDuration
     jr universalSubErr
-universalSubDateTimeMinusSeconds:
+universalSubDateTimeMinusReal:
 universalSubDateTimeMinusDateTime:
-    bcall(_SubRpnDateTimeByRpnDateTimeOrSeconds)
+universalSubDateTimeMinusDuration:
+    bcall(_SubRpnDateTimeByObject)
     ret
-;
+; OffsetDateTime - object
 universalSubOffsetDateTimeMinusObject:
-    call checkOp3Real
-    jr z, universalSubOffsetDateTimeMinusSeconds
-    call checkOp3OffsetDateTime
+    call getOp3RpnObjectType
+    cp rpnObjectTypeReal
+    jr z, universalSubOffsetDateTimeMinusReal
+    cp rpnObjectTypeOffsetDateTime
     jr z, universalSubOffsetDateTimeMinusOffsetDateTime
+    cp rpnObjectTypeDuration
+    jr z, universalSubOffsetDateTimeMinusDuration
     jr universalSubErr
-universalSubOffsetDateTimeMinusSeconds:
+universalSubOffsetDateTimeMinusReal:
 universalSubOffsetDateTimeMinusOffsetDateTime:
-    bcall(_SubRpnOffsetDateTimeByRpnOffsetDateTimeOrSeconds)
+universalSubOffsetDateTimeMinusDuration:
+    bcall(_SubRpnOffsetDateTimeByObject)
     ret
-;
+; DayOfWeek - object
 universalSubDayOfWeekMinusObject:
-    call checkOp3Real
-    jr z, universalSubDayOfWeekMinusDays
-    call checkOp3DayOfWeek
+    call getOp3RpnObjectType
+    cp rpnObjectTypeReal
+    jr z, universalSubDayOfWeekMinusReal
+    cp rpnObjectTypeDayOfWeek
     jr z, universalSubDayOfWeekMinusDayOfWeek
     jr universalSubErr
-universalSubDayOfWeekMinusDays:
+universalSubDayOfWeekMinusReal:
 universalSubDayOfWeekMinusDayOfWeek:
     bcall(_SubRpnDayOfWeekByRpnDayOfWeekOrDays)
+    ret
+; Duration - object
+universalSubDurationMinusObject:
+    call getOp3RpnObjectType
+    cp rpnObjectTypeReal
+    jr z, universalSubDurationMinusReal
+    cp rpnObjectTypeDuration
+    jr z, universalSubDurationMinusDuration
+    jr universalSubErr
+universalSubDurationMinusReal:
+universalSubDurationMinusDuration:
+    bcall(_SubRpnDurationByRpnDurationOrSeconds)
     ret
 
 ; Description: Multiplication for real and complex numbers.
@@ -212,113 +338,105 @@ universalSubDayOfWeekMinusDayOfWeek:
 ; Output:
 ;   - OP1/OP2: Y*X
 universalMult:
-    call checkOp1AndOp3Real ; ZF=1 if real
-    jr z, universalMultReal
-    ;
-    call checkOp1OrOp3Complex ; ZF=1 if complex
-    jr z, universalMultComplex
-    ;
-    call checkOp1DateTime ; ZF=1 if DateTime
-    jr z, universalMultDateTimeByTimeZone
-    ;
-    call checkOp3DateTime ; ZF=1 if DateTime
-    jr z, universalMultTimeZoneByDateTime
-    ;
-    call checkOp1OffsetDateTime ; ZF=1 if OffsetDateTime
-    jr z, universalMultOffsetDateTimeByTimeZone
-    ;
-    call checkOp3OffsetDateTime ; ZF=1 if OffsetDateTime
-    jr z, universalMultTimeZoneByOffsetDateTime
+    ; perform double-dispatch based on type of OP1 and OP3
+    call getOp1RpnObjectType
+    ; OP1=real
+    cp rpnObjectTypeReal ; ZF=1 if real
+    jr z, universalMultRealByObject
+    ; OP1=complex
+    cp rpnObjectTypeComplex ; ZF=1 if complex
+    jr z, universalMultComplexByObject
+    ; OP1=Offset
+    cp rpnObjectTypeOffset ; ZF=1 if Offset
+    jr z, universalMultOffsetByObject
+    ; OP1=DateTime
+    cp rpnObjectTypeDateTime ; ZF=1 if DateTime
+    jr z, universalMultDateTimeByObject
+    ; OP1=OffsetDateTime
+    cp rpnObjectTypeOffsetDateTime ; ZF=1 if OffsetDateTime
+    jr z, universalMultOffsetDateTimeByObject
     jr universalMultErr
-; Real*(Real|Complex)
-universalMultReal:
-    call checkOp3Real ; ZF=1 if real
-    jr z, universalMultRealReal
-    call checkOp3Complex ; ZF1 if complex
-    jr nz, universalMultErr
-    ; Real*Complex
-    call cp1ExCp3 ; CP1=complex; CP3=real
-    jr universalMultComplexReal
-universalMultRealReal:
-    ; Real*Real
+; Real * object
+universalMultRealByObject:
+    call getOp3RpnObjectType
+    cp rpnObjectTypeReal
+    jr z, universalMultRealByReal
+    cp rpnObjectTypeComplex
+    jr z, universalMultRealByComplex
+    cp rpnObjectTypeDateTime
+    jr z, universalMultRealByDateTime
+    cp rpnObjectTypeOffsetDateTime
+    jr z, universalMultRealByOffsetDateTime
+    jr universalMultErr
+universalMultRealByReal:
     call op3ToOp2
     bcall(_FPMult) ; OP1=Y*X
     ret
-; Complex*(Real|Complex)
-universalMultComplex:
-    call checkOp1Complex
-    jr z, universalMultComplexSomething
-    call cp1ExCp3 ; CP1:Complex; CP3:something
-universalMultComplexSomething:
-    call checkOp3Real
-    jr z, universalMultComplexReal
-    call checkOp3Complex
-    jr z, universalMultComplexComplex
+universalMultRealByComplex:
+    call cp1ExCp3 ; CP1=complex; CP3=real
+    jr universalMultComplexByReal
+universalMultRealByDateTime:
+    bcall(_ConvertRpnDateTimeToTimeZoneAsReal)
+    ret
+universalMultRealByOffsetDateTime:
+    bcall(_ConvertRpnOffsetDateTimeToTimeZoneAsReal)
+    ret
+; Complex * object
+universalMultComplexByObject:
+    call getOp3RpnObjectType
+    cp rpnObjectTypeReal
+    jr z, universalMultComplexByReal
+    cp rpnObjectTypeComplex
+    jr z, universalMultComplexByComplex
     jr universalMultErr
-universalMultComplexComplex:
+universalMultComplexByComplex:
     ; Complex*Complex
     bcall(_PushOP1) ; FPS=[Y]
     call cp3ToCp1 ; OP1/OP2=OP3/OP4
     bcall(_CMult) ; OP1/OP2 = FPS[OP1/OP2] * OP1/OP2; FPS=[]
     ret
-universalMultComplexReal:
-    ; Complex*Real
+universalMultComplexByReal:
     bcall(_CMltByReal) ; CP1=CP1*OP3
     ret
 ; Placed in the middle, so that 'jr' can be used instead of 'jp'.
 universalMultErr:
     bcall(_ErrDataType)
-; DateTime*(Offset|Real)
-universalMultDateTimeByTimeZone:
-    call checkOp3Offset
-    jr z, universalMultDateTimeByOffset
-    call checkOp3Real
+; DateTime * object
+universalMultDateTimeByObject:
+    call getOp3RpnObjectType
+    cp rpnObjectTypeReal
     jr z, universalMultDateTimeByReal
+    cp rpnObjectTypeOffset
+    jr z, universalMultDateTimeByOffset
     jr universalMultErr
-universalMultDateTimeByOffset:
-    bcall(_ConvertRpnDateTimeToTimeZoneAsOffset)
-    ret
 universalMultDateTimeByReal:
     bcall(_ConvertRpnDateTimeToTimeZoneAsReal)
     ret
-; (Offset|Real)*DateTime
-universalMultTimeZoneByDateTime:
-    call checkOp1Offset
+universalMultDateTimeByOffset:
+    bcall(_ConvertRpnDateTimeToTimeZoneAsOffset)
+    ret
+; Offset * object
+universalMultOffsetByObject:
+    call getOp3RpnObjectType
+    cp rpnObjectTypeOffset
     jr z, universalMultOffsetByDateTime
-    call checkOp1Real
-    jr z, universalMultRealByDateTime
     jr universalMultErr
 universalMultOffsetByDateTime:
     bcall(_ConvertRpnDateTimeToTimeZoneAsOffset)
     ret
-universalMultRealByDateTime:
-    bcall(_ConvertRpnDateTimeToTimeZoneAsReal)
-    ret
-; OffsetDateTime*(Offset|Real)
-universalMultOffsetDateTimeByTimeZone:
-    call checkOp3Offset
-    jr z, universalMultOffsetDateTimeByOffset
-    call checkOp3Real
+; OffsetDateTime * object
+universalMultOffsetDateTimeByObject:
+    call getOp3RpnObjectType
+    cp rpnObjectTypeReal
     jr z, universalMultOffsetDateTimeByReal
+    cp rpnObjectTypeOffset
+    jr z, universalMultOffsetDateTimeByOffset
     jr universalMultErr
-universalMultOffsetDateTimeByOffset:
-    bcall(_ConvertRpnOffsetDateTimeToOffset)
-    ret
 universalMultOffsetDateTimeByReal:
     bcall(_ConvertRpnOffsetDateTimeToTimeZoneAsReal)
     ret
-; (Offset|Real)*OffsetDateTime
-universalMultTimeZoneByOffsetDateTime:
-    call checkOp1Offset
-    jr z, universalMultOffsetByOffsetDateTime
-    call checkOp1Real
-    jr z, universalMultRealByOffsetDateTime
-    jr universalMultErr
-universalMultOffsetByOffsetDateTime:
+universalMultOffsetDateTimeByOffset:
     bcall(_ConvertRpnOffsetDateTimeToOffset)
-    ret
-universalMultRealByOffsetDateTime:
-    bcall(_ConvertRpnOffsetDateTimeToTimeZoneAsReal)
     ret
 
 ; Description: Division for real and complex numbers.
@@ -328,53 +446,66 @@ universalMultRealByOffsetDateTime:
 ; Output:
 ;   - OP1/OP2: Y/X
 universalDiv:
-    call checkOp1Real ; ZF=1 if real
-    jr z, universalDivReal
-    call checkOp1Complex ; ZF=1 if complex
-    jr z, universalDivComplex
-universalDivErr:
-    bcall(_ErrDataType)
-universalDivReal:
-    call checkOp3Real ; ZF=1 if real
-    jr z, universalDivRealReal
-    call checkOp3Complex ; ZF=1 if complex
-    jr nz, universalDivErr
-universalDivRealComplex:
+    ; perform double-dispatch based on type of OP1 and OP3
+    call getOp1RpnObjectType
+    cp rpnObjectTypeReal ; ZF=1 if real
+    jr z, universalDivRealByObject
+    cp rpnObjectTypeComplex ; ZF=1 if complex
+    jr z, universalDivComplexByObject
+    jr universalDivErr
+; real / object
+universalDivRealByObject:
+    call getOp3RpnObjectType
+    cp rpnObjectTypeReal ; ZF=1 if real
+    jr z, universalDivRealByReal
+    cp rpnObjectTypeComplex ; ZF=1 if complex
+    jr z, universalDivRealByComplex
+    jr universalDivErr
+universalDivRealByReal:
+    call op3ToOp2
+    bcall(_FPDiv) ; OP1=Y/X
+    ret
+universalDivRealByComplex:
     call convertOp1ToCp1
     bcall(_PushOP1)
     call cp3ToCp1
     bcall(_CDiv)
     ret
-universalDivRealReal:
-    call op3ToOp2
-    bcall(_FPDiv) ; OP1=Y/X
+; Placed in the middle to support 'jr' instead of 'jp'.
+universalDivErr:
+    bcall(_ErrDataType)
+; complex / object
+universalDivComplexByObject:
+    call getOp3RpnObjectType
+    cp rpnObjectTypeReal
+    jr z, universalDivComplexByReal
+    cp rpnObjectTypeComplex
+    jr z, universalDivComplexByComplex
+    jr universalDivErr
+universalDivComplexByReal:
+    bcall(_CDivByReal) ; CP1=CP1/OP3
     ret
-universalDivComplex:
-    call checkOp3Real
-    jr z, universalDivComplexReal
-    call checkOp3Complex
-    jr nz, universalDivErr
-universalDivComplexComplex:
+universalDivComplexByComplex:
     bcall(_PushOP1) ; FPS=[Y]
     call cp3ToCp1 ; OP1/OP2=OP3/OP4
     bcall(_CDiv) ; OP1/OP2 = FPS[OP1/OP2] / OP1/OP2; FPS=[]
-    ret
-universalDivComplexReal:
-    bcall(_CDivByReal) ; CP1=CP1/OP3
     ret
 
 ;-----------------------------------------------------------------------------
 
 ; Description: Change sign for real and complex numbers.
 ; Input:
-;   - OP1/OP2: Y
+;   - CP1:(Real|Complex|RpnDuration)=X
 ; Output:
-;   - OP1/OP2: -Y
+;   - CP1:(Real|Complex|RpnDuration)=-X
 universalChs:
-    call checkOp1Real ; ZF=1 if real
+    call getOp1RpnObjectType ; A=rpnObjectType
+    cp rpnObjectTypeReal ; ZF=1 if real
     jr z, universalChsReal
-    call checkOp1Complex ; ZF=1 if complex
+    cp rpnObjectTypeComplex ; ZF=1 if complex
     jr z, universalChsComplex
+    cp rpnObjectTypeDuration ; ZF=1 if RpnDuration
+    jr z, universalChsDuration
 universalChsErr:
     bcall(_ErrDataType)
 universalChsReal:
@@ -382,6 +513,9 @@ universalChsReal:
     ret
 universalChsComplex:
     bcall(_InvOP1SC)
+    ret
+universalChsDuration:
+    bcall(_ChsRpnDuration)
     ret
 
 ;-----------------------------------------------------------------------------
@@ -535,57 +669,61 @@ universalCubeRootComplex:
 
 ;-----------------------------------------------------------------------------
 
-; Description: Power function (Y^X) for real and complex numbers. Also
-; overloaded for Date, DateTime, and Offset types to implement the
-; Merge(Y,X)->X functionality.
+; Description: Power function (Y^X) for real and complex numbers.
 ; Input:
 ;   - OP1/OP2:RpnObject=Y
 ;   - OP3/OP4:RpnObject=X
 ;   - numResultMode
 ; Output:
-;   - OP1/OP2:RpnObject=Y^X (for real or complex) or Merge(Y,X) for Date-related
+;   - OP1/OP2:RpnObject=Y^X (for real or complex)
 universalPow:
     call getOp1RpnObjectType ; A=rpnObjectType
     cp rpnObjectTypeReal ; ZF=1 if real
-    jr z, universalPowReal
+    jr z, universalPowRealToObject
     cp rpnObjectTypeComplex ; ZF=1 if complex
-    jr z, universalPowComplex
+    jr z, universalPowComplexToObject
 universalPowErr:
     bcall(_ErrDataType)
-universalPowReal:
-    call checkOp3Real
-    jr z, universalPowRealReal
-    call checkOp3Complex
-    jr nz, universalPowErr
-universalPowRealComplex:
-    call convertOp1ToCp1
-    jr universalPowComplexComplex
-universalPowRealReal:
+; pow(real,object)=real^object
+universalPowRealToObject:
+    call getOp3RpnObjectType
+    cp rpnObjectTypeReal
+    jr z, universalPowRealToReal
+    cp rpnObjectTypeComplex
+    jr z, universalPowRealToComplex
+    jr universalPowErr
+universalPowRealToReal:
     ; Both X and Y are real. Now check if numResultMode is Real or Complex.
     call checkNumResultModeComplex ; ZF=1 if complex
     jr nz, universalPowNumResultModeReal
     ; Both are real, but the result could be complex, so we calculate the
     ; complex result, and chop off the imaginary part if it's zero.
     call convertOp1ToCp1
-    call universalPowComplexReal
+    call universalPowComplexToReal
     jp convertCp1ToOp1
 universalPowNumResultModeReal:
     call op3ToOp2 ; OP2=X
     bcall(_YToX) ; OP1=OP1^OP2=Y^X
     ret
-universalPowComplex:
-    call checkOp3Real
-    jr z, universalPowComplexReal
-    call checkOp3Complex
-    jr nz, universalPowErr
-universalPowComplexComplex:
+universalPowRealToComplex:
+    call convertOp1ToCp1
+    jr universalPowComplexToComplex
+; pow(complex,object)=complex^object
+universalPowComplexToObject:
+    call getOp3RpnObjectType
+    cp rpnObjectTypeReal
+    jr z, universalPowComplexToReal
+    cp rpnObjectTypeComplex
+    jr z, universalPowComplexToComplex
+    jr universalPowErr
+universalPowComplexToReal:
+    call convertOp3ToCp3 ; CP3=complex(X)
+    ; [[fallthrough]]
+universalPowComplexToComplex:
     bcall(_PushOP1) ; FPS=[Y]
     call cp3ToCp1 ; CP1=OP3/OP4=X
     bcall(_CYtoX) ; CP1=(FPS)^(CP1)=Y^X; FPS=[]
     ret
-universalPowComplexReal:
-    call convertOp3ToCp3 ; CP3=complex(X)
-    jr universalPowComplexComplex
 
 ; Description: Calculate XRootY(Y)=Y^(1/X) for real and complex numbers.
 ; Input:
@@ -594,46 +732,53 @@ universalPowComplexReal:
 ;   - numResultMode
 ; Output: OP1/OP2: Y^(1/X)
 universalXRootY:
-    call checkOp1Real ; ZF=1 if real
-    jr z, universalXRootYReal
-    call checkOp1Complex ; ZF=1 if complex
-    jr z, universalXRootYComplex
+    call getOp1RpnObjectType ; A=rpnObjectType
+    cp rpnObjectTypeReal ; ZF=1 if real
+    jr z, universalXRootYRealByObject
+    cp rpnObjectTypeComplex ; ZF=1 if complex
+    jr z, universalXRootYComplexByObject
 universalXRootYErr:
     bcall(_ErrDataType)
-universalXRootYReal:
-    call checkOp3Real ; ZF=1 if real
-    jr z, universalXRootYRealReal
-    call checkOp3Complex ; ZF1=1 if complex
-    jr nz, universalXRootYErr
-universalXRootYRealComplex:
-    call convertOp1ToCp1
-    jr universalXRootYComplexComplex
-universalXRootYRealReal:
+; xrooty(real,object)=real^(1/object)
+universalXRootYRealByObject:
+    call getOp3RpnObjectType
+    cp rpnObjectTypeReal ; ZF=1 if real
+    jr z, universalXRootYRealByReal
+    cp rpnObjectTypeComplex ; ZF1=1 if complex
+    jr z, universalXRootYRealByComplex
+    jr universalXRootYErr
+universalXRootYRealByReal:
     ; Both X and Y are real. Now check if numResultMode is Real or Complex.
     call checkNumResultModeComplex ; ZF=1 if complex
     jr nz, universalXRootYNumResultModeReal
     ; Both are real, but the result could be complex, so we calculate the
     ; complex result, and chop off the imaginary part if it's zero.
     call convertOp1ToCp1
-    call universalXRootYComplexReal
+    call universalXRootYComplexByReal
     jp convertCp1ToOp1 ; chop off the imaginary part if zero
 universalXRootYNumResultModeReal:
     call op1ToOp2 ; OP2=Y
     call op3ToOp1 ; OP1=X
     bcall(_XRootY) ; OP1=OP2^(1/OP1), SDK documentation is incorrect
     ret
-universalXRootYComplex:
-    call checkOp3Real
-    jr z, universalXRootYComplexReal
-    call checkOp3Complex
-    jr nz, universalXRootYErr
-universalXRootYComplexComplex:
+universalXRootYRealByComplex:
+    call convertOp1ToCp1
+    jr universalXRootYComplexByComplex
+; xrooty(complex,object)=complex^(1/object)
+universalXRootYComplexByObject:
+    call getOp3RpnObjectType
+    cp rpnObjectTypeReal
+    jr z, universalXRootYComplexByReal
+    cp rpnObjectTypeComplex
+    jr z, universalXRootYComplexByComplex
+    jr universalXRootYErr
+universalXRootYComplexByReal:
+    call convertOp3ToCp3
+    ; [[fallthrough]]
+universalXRootYComplexByComplex:
     bcall(_PushOp3) ; FPS=[X]
     bcall(_CXrootY) ; CP1=CP1^(1/FPS)=Y^(1/X); FPS=[]
     ret
-universalXRootYComplexReal:
-    call convertOp3ToCp3
-    jr universalXRootYComplexComplex
 
 ;-----------------------------------------------------------------------------
 ; Transcendentals

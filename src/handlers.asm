@@ -602,8 +602,12 @@ handleKeyClearToEmptyInput:
 ; Description: Handle (-) change sign. If in edit mode, change the sign in the
 ; inputBuf. Otherwise, change the sign of the X register. If the EE symbol
 ; exists, change the sign of the exponent instead of the mantissa.
-; Input: none
-; Output: (inputBuf), X
+; Input:
+;   - X:(Real|Complex|RpnDuration)
+;   - (inputBuf)
+; Output:
+;   - X=-X
+;   - (inputBuf) modified with '-' sign
 ; Destroys: all, OP1
 handleKeyChs:
     ; Do nothing in BASE mode. Use NEG function instead.

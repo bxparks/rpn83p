@@ -11,7 +11,7 @@
 ;-----------------------------------------------------------------------------
 
 ; Description: Convert the RpnOffset{} record in OP1 to relative seconds.
-; Input: OP1:RpnOffet
+; Input: OP1:RpnOffset
 ; Output: OP1:real
 ; Destroys: all, OP1-OP4
 RpnOffsetToSeconds:

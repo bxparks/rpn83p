@@ -104,8 +104,8 @@ epochSecondsToDateTime:
 
 ; Description: Add (RpnDateTime plus seconds) or (seconds plus RpnDateTime).
 ; Input:
-;   - OP1:Union[RpnDateTime,RpnReal]=rpnDateTime or seconds
-;   - OP3:Union[RpnDateTime,RpnReal]=rpnDateTime or seconds
+;   - OP1:(RpnDateTime|RpnReal)=rpnDateTime or seconds
+;   - OP3:(RpnDateTime|RpnReal)=rpnDateTime or seconds
 ; Output:
 ;   - OP1:RpnDateTime=RpnDateTime+seconds
 ; Destroys: all, OP1, OP2, OP3-OP6
@@ -114,39 +114,77 @@ AddRpnDateTimeBySeconds:
     jr z, addRpnDateTimeBySecondsAdd
     call cp1ExCp3PageTwo ; CP1=rpnDateTime, CP3=seconds
 addRpnDateTimeBySecondsAdd:
-    ; CP1=rpnDateTime, CP3=seconds
-    ; Push rpnDateTime to FPS.
-    call PushRpnObject1 ; FPS=[rpnDateTime]
-    push hl ; stack=[rpnDateTime]
-    ; convert OP3 to i40, then push to FPS
+    ; if here: CP1=rpnDateTime, CP3=seconds
+    ; Push CP1:RpnDateTime to FPS
+    call PushRpnObject1 ; FPS=[dateTime]; HL=dateTime
+    push hl ; stack=[dateTime]
+    ; convert real(seconds) to i40(seconds)
     call op3ToOp1PageTwo ; OP1:real=seconds
     call ConvertOP1ToI40 ; OP1:u40=seconds
-    call pushRaw9Op1 ; FPS=[rpnDateTime,seconds]; HL=seconds
-    ex (sp), hl ; stack=[seconds]; HL=rpnDateTime
-    ; convert rpnDateTime to i40 seconds
-    ex de, hl ; DE=rpnDateTime
-    inc de ; skip type byte
-    ld hl, OP1
-    call dateTimeToInternalEpochSeconds ; HL=OP1=dateTimeSeconds
-    ; add seconds + dateSeconds
-    ex de, hl ; DE=dateTimeSeconds
-    pop hl ; stack=[]; HL=FPS.seconds
-    call addU40U40 ; HL=FPS.resultSeconds=dateTimeSeconds+seconds
-    ; Convert resultSeconds to RpnDateTime. Technically, we don't have to
-    ; reserve an RpnObject on the FPS, we could have created the result
-    ; directly in OP1, because an RpnDateTime will fit inside an OP1. But using
-    ; it makes this routine follow the same pattern as
-    ; AddRpnOffsetDateTimeBySeconds(), which makes things easier to maintain.
-    ex de, hl ; DE=resultSeconds
-    call reserveRpnObject ; FPS=[rpnDateTime,seconds,rpnDateTime]
-    ld a, rpnObjectTypeDateTime
-    ld (hl), a
-    inc hl ; HL:(DateTime*)=resultDateTime
-    call internalEpochSecondsToDateTime ; HL=resultDateTime+sizeof(DateTime)
-    ; clean up stack and FPS
-    call PopRpnObject1 ; FPS=[rpnDateTime,seconds]; OP1=resultDateTime
-    call dropRaw9 ; FPS=[rpnDateTime,seconds]
-    jp dropRpnObject ; FPS=[]
+    ; add dateTime+seconds
+    pop hl ; stack=[]; HL=rpnDateTime
+    inc hl ; HL=dateTime
+    ld de, OP1
+    call addDateTimeBySeconds ; HL=newDateTime
+    ; clean up
+    call PopRpnObject1 ; FPS=[]; OP1=newRpnDateTime
+    ret
+
+; Description: Add (RpnDateTime plus duration) or (duration plus RpnDateTime).
+; Input:
+;   - OP1:(RpnDateTime|RpnDuration)=rpnDateTime or duration
+;   - OP3:(RpnDateTime|RpnDuration)=rpnDateTime or duration
+; Output:
+;   - OP1:RpnDateTime=RpnDateTime+duration
+; Destroys: all, OP1, OP2, OP3-OP6
+AddRpnDateTimeByRpnDuration:
+    call checkOp1DateTimePageTwo ; ZF=1 if CP1 is an RpnDateTime
+    jr z, addRpnDateTimeByRpnDurationAdd
+    call cp1ExCp3PageTwo ; CP1=rpnDateTime, CP3=duration
+addRpnDateTimeByRpnDurationAdd:
+    ; if here: CP1=rpnDateTime, CP3=duration
+    ; Push CP1:RpnDateTime to FPS
+    call PushRpnObject1 ; FPS=[dateTime]; HL=dateTime
+    push hl ; stack=[dateTime]
+    ; Convert OP3:RpnDuration to OP1 days
+    ld de, OP3+1 ; DE:(Duration*)=duration
+    ld hl, OP1 ; HL:(i40*)=durationSeconds
+    call durationToSeconds ; HL=durationSeconds
+    ; add dateTime+seconds
+    pop hl ; stack=[]; HL=rpnDateTime
+    inc hl ; HL=dateTime
+    ld de, OP1
+    call addDateTimeBySeconds ; HL=newDateTime
+    ; OP1=newDateTime
+    call PopRpnObject1 ; FPS=[]; OP1=newDateTime
+    ret
+
+; Description: Add DateTime plus seconds.
+; Input:
+;   - DE:(i40*)=seconds
+;   - HL:(DateTime*)=dateTime
+; Output:
+;   - HL:(DateTime*)=newDateTime
+; Destroys: A, BC
+; Preserves: DE, HL
+addDateTimeBySeconds:
+    push hl ; stack=[dateTime]
+    push de ; stack=[dateTime,seconds]
+    ; convert dateTime to dateTimeSeconds
+    ex de, hl ; DE=dateTime
+    call reserveRaw9 ; FPS=[dateTimeSeconds]; HL=dateTimeSeconds
+    call dateTimeToInternalEpochSeconds ; HL=dateTimeSeconds
+    ; add seconds
+    pop de ; stack=[dateTime]; DE=seconds
+    call addU40U40 ; HL=resultSeconds=dateTimeSeconds+seconds
+    ; convert dateTimeSeconds to dateTime
+    ex de, hl ; DE=resultSeconds; HL=seconds
+    ex (sp), hl ; stack=[seconds]; HL=dateTime
+    call internalEpochSecondsToDateTime ; HL=dateTime filled
+    ; clean up
+    pop de ; stack=[]; DE=seconds
+    call dropRaw9 ; FPS=[]
+    ret
 
 ;-----------------------------------------------------------------------------
 
@@ -155,11 +193,17 @@ addRpnDateTimeBySecondsAdd:
 ;   - OP1:RpnDateTime=Y
 ;   - OP3:RpnDateTime or seconds=X
 ; Output:
-;   - OP1:(RpnDateTime-seconds) or (RpnDateTime-RpnDateTime).
+;   - OP1:(RpnDateTime-seconds) or i40(RpnDateTime-RpnDateTime).
 ; Destroys: OP1, OP2, OP3-OP6
-SubRpnDateTimeByRpnDateTimeOrSeconds:
-    call checkOp3DateTimePageTwo ; ZF=1 if type(OP3)==DateTime
+SubRpnDateTimeByObject:
+    call getOp3RpnObjectTypePageTwo ; A=objectType
+    cp rpnObjectTypeReal
+    jr z, subRpnDateTimeBySeconds
+    cp rpnObjectTypeDateTime
     jr z, subRpnDateTimeByRpnDateTime
+    cp rpnObjectTypeDuration
+    jr z, subRpnDateTimeByRpnDuration
+    bcall(_ErrInvalid) ; should never happen
 subRpnDateTimeBySeconds:
     ; invert the sign of OP3, then call addRpnDateTimeBySecondsAdd()
     call cp1ExCp3PageTwo
@@ -170,12 +214,12 @@ subRpnDateTimeByRpnDateTime:
     ; convert OP3 to seconds on the FPS stack
     call reserveRaw9 ; FPS=[X.seconds]; HL=X.seconds
     push hl ; stack=[X.seconds]
-    ld de, OP3+1 ; HL=DateTime{}
+    ld de, OP3+1 ; DE=(DateTime*)
     call dateTimeToInternalEpochSeconds ; FPS.X.seconds updated; HL=X.seconds
     ; convert OP1 to seconds on FPS stack
     call pushRaw9Op1 ; make space on FPS=[X.seconds,Y.seconds]; HL=Y.seconds
     push hl ; stack=[X.seconds,Y.seconds]
-    ld de, OP1+1 ; HL=DateTime{}
+    ld de, OP1+1 ; DE=(DateTime*)
     call dateTimeToInternalEpochSeconds ; FPS.Y.seconds updated; HL=Y.seconds
     ; subtract Y.seconds-X.seconds
     pop hl ; HL=Y.seconds
@@ -184,6 +228,18 @@ subRpnDateTimeByRpnDateTime:
     ; pop result into OP1
     call popRaw9Op1 ; FPS=[X.seconds]; OP1=epochSeconds
     call ConvertI40ToOP1 ; OP1=float(epochSeconds)
+    jp dropRaw9 ; FPS=[]
+subRpnDateTimeByRpnDuration:
+    ; convert OP3 to seconds on the FPS stack
+    call reserveRaw9 ; FPS=[durationSeconds]; HL=durationSeconds
+    ld de, OP3+1 ; DE:(DateTime*)
+    call durationToSeconds ; HL=durationSeconds
+    ; negate the seconds
+    call negU40 ; HL=-durationSeconds
+    ex de, hl ; DE=-durationSeconds
+    ld hl, OP1+1 ; HL=dateTime
+    call addDateTimeBySeconds ; HL=dateTime-durationSeconds
+    ; clean up
     jp dropRaw9 ; FPS=[]
 
 ;-----------------------------------------------------------------------------

@@ -54,7 +54,7 @@ formatDateString:
     inc hl
     ld b, (hl)
     inc hl
-    call formatU16ToD4
+    call formatU16BCToFixed4
     ; print '-' (hyphen)
     ld a, Shyphen
     ld (de), a
@@ -62,7 +62,7 @@ formatDateString:
     ; print 'month'
     ld a, (hl)
     inc hl
-    call formatU8ToD2Fixed
+    call formatU8AToFixed2
     ; print '-' (hyphen)
     ld a, Shyphen
     ld (de), a
@@ -70,7 +70,7 @@ formatDateString:
     ; print 'day'
     ld a, (hl)
     inc hl
-    call formatU8ToD2Fixed
+    call formatU8AToFixed2
     ; add NUL
     xor a
     ld (de), a ; add NUL terminator
@@ -119,7 +119,7 @@ formatTimeString:
     ; hour
     ld a, (hl)
     inc hl
-    call formatU8ToD2Fixed
+    call formatU8AToFixed2
     ; print ':'
     ld a, ':'
     ld (de), a
@@ -127,7 +127,7 @@ formatTimeString:
     ; minute
     ld a, (hl)
     inc hl
-    call formatU8ToD2Fixed
+    call formatU8AToFixed2
     ; print ':'
     ld a, ':'
     ld (de), a
@@ -135,7 +135,7 @@ formatTimeString:
     ; second
     ld a, (hl)
     inc hl
-    call formatU8ToD2Fixed
+    call formatU8AToFixed2
     ; add NUL
     xor a
     ld (de), a
@@ -261,14 +261,14 @@ formatOffsetStringSign:
     inc de
     ; hour
     ld a, b
-    call formatU8ToD2Fixed
+    call formatU8AToFixed2
     ; print ':'
     ld a, ':'
     ld (de), a
     inc de
     ; minute
     ld a, c
-    call formatU8ToD2Fixed
+    call formatU8AToFixed2
     ; add NUL
     xor a
     ld (de), a
@@ -426,6 +426,138 @@ dayOfWeekStringSun:
     .db "Sun", 0
 
 ;-----------------------------------------------------------------------------
+
+; Description: Format the RpnDuration Record in HL to DE.
+; Input:
+;   - HL:(const RpnDuration*)
+;   - DE:(char*)
+; Output:
+;   - HL: incremented to next record field
+;   - DE: points to NUL char at end of string
+; Destroys: A, BC, DE, HL
+FormatDuration:
+    ld a, (formatRecordMode)
+    cp a, formatRecordModeString
+    jr z, formatRpnDurationString
+    ; [[fallthrough]]
+
+formatRpnDurationRaw:
+    inc hl ; skip type byte
+formatDurationRaw:
+    ; 'print 'R'
+    ld a, 'R'
+    ld (de), a
+    inc de
+    ; print '{'
+    ld a, LlBrace
+    ld (de), a
+    inc de
+    ; format days
+    ld c, (hl)
+    inc hl
+    ld b, (hl)
+    inc hl
+    call formatI16BCToFlex4
+    ; print ','
+    ld a, ','
+    ld (de), a
+    inc de
+    ; format hours
+    ld a, (hl)
+    inc hl
+    call formatI8AToFlex2
+    ; print ','
+    ld a, ','
+    ld (de), a
+    inc de
+    ; format minutes
+    ld a, (hl)
+    inc hl
+    call formatI8AToFlex2
+    ; print ','
+    ld a, ','
+    ld (de), a
+    inc de
+    ; format seconds
+    ld a, (hl)
+    inc hl
+    call formatI8AToFlex2
+    ; print '}'
+    ld a, LrBrace
+    ld (de), a
+    inc de
+    ; add NUL
+    xor a
+    ld (de), a ; add NUL terminator
+    ret
+
+formatRpnDurationString:
+    inc hl ; skip type byte
+formatDurationString:
+    call isDurationNegative ; CF=1 if negative
+    jr nc, formatDurationStringPos
+    ld a, signChar
+    ld (de), a
+    inc de
+    call chsDuration
+    call formatDurationStringPos
+    call chsDuration
+    ret
+formatDurationStringPos:
+    ld c, (hl)
+    inc hl
+    ld b, (hl)
+    inc hl
+    ld a, c
+    or b
+    jr z, formatDurationStringHours ; skip '0d'
+    call formatU16BCToFlex4
+    ld a, 'd'
+    ld (de), a
+    inc de
+    set 0, b ; B[0]=nonZeroFieldWritten=true
+    ;
+formatDurationStringHours:
+    ld a, (hl) ; A=hours
+    inc hl
+    or a
+    jr z, formatDurationStringMinutes ; skip '0h'
+    call formatU8AToFlex2
+    ld a, 'h'
+    ld (de), a
+    inc de
+    set 0, b
+    ;
+formatDurationStringMinutes:
+    ld a, (hl) ; A=minutes
+    inc hl
+    or a
+    jr z, formatDurationStringSeconds ; skip '0m'
+    call formatU8AToFlex2
+    ld a, 'm'
+    ld (de), a
+    inc de
+    set 0, b
+    ;
+formatDurationStringSeconds:
+    ld a, (hl) ; A=seconds
+    inc hl
+    or a
+    jr nz, formatDurationStringSecondsFormat
+    bit 0, b
+    jr nz, formatDurationStringEnd ; if nonZeroFieldWritten: skip '0s'
+formatDurationStringSecondsFormat:
+    call formatU8AToFlex2
+    ld a, 's'
+    ld (de), a
+    inc de
+formatDurationStringEnd:
+    ; add NUL
+    xor a
+    ld (de), a
+    ret
+
+;-----------------------------------------------------------------------------
 ; Lower-level formatting routines.
 ;-----------------------------------------------------------------------------
 
@@ -442,7 +574,7 @@ formatYearMonthDay:
     inc hl
     ld b, (hl)
     inc hl
-    call formatU16ToD4
+    call formatU16BCToFlex4
     ; print ','
     ld a, ','
     ld (de), a
@@ -450,7 +582,7 @@ formatYearMonthDay:
     ; print 'month'
     ld a, (hl)
     inc hl
-    call formatU8ToD2
+    call formatU8AToFlex2
     ; print ','
     ld a, ','
     ld (de), a
@@ -458,7 +590,7 @@ formatYearMonthDay:
     ; print 'day'
     ld a, (hl)
     inc hl
-    call formatU8ToD2
+    call formatU8AToFlex2
     ret
 
 ; Description: Format hour,minute,second of HL to C string in DE.
@@ -472,7 +604,7 @@ formatHourMinuteSecond:
     ; print 'hour'
     ld a, (hl)
     inc hl
-    call formatU8ToD2
+    call formatU8AToFlex2
     ; print ','
     ld a, ','
     ld (de), a
@@ -480,7 +612,7 @@ formatHourMinuteSecond:
     ; print 'minute'
     ld a, (hl)
     inc hl
-    call formatU8ToD2
+    call formatU8AToFlex2
     ; print ','
     ld a, ','
     ld (de), a
@@ -488,7 +620,7 @@ formatHourMinuteSecond:
     ; print 'second'
     ld a, (hl)
     inc hl
-    call formatU8ToD2
+    call formatU8AToFlex2
     ret
 
 ; Description: Format the (signed) hour and minute components of an Offset
@@ -503,7 +635,7 @@ formatOffsetHourMinute:
     ; print Offset.hour
     ld a, (hl)
     inc hl
-    call formatI8ToD2
+    call formatI8AToFlex2
     ; print ','
     ld a, ','
     ld (de), a
@@ -511,31 +643,31 @@ formatOffsetHourMinute:
     ; print Offset.minute
     ld a, (hl)
     inc hl
-    call formatI8ToD2
+    call formatI8AToFlex2
     ret
 
 ;-----------------------------------------------------------------------------
 
-; Description: Format the u16 in BC to 4 digits in DE.
+; Description: Format the u16 in BC into 4 fixed digits in DE.
 ; Input:
 ;   - BC:u16
 ;   - DE:(char*)=destPointer
 ; Output: DE=DE+4
 ; Destroys: A, BC, DE
 ; Preserves: HL
-formatU16ToD4:
+formatU16BCToFixed4:
     push hl ; stack=[HL]
     push de ; stack=[HL,origDestPointer]
     ld l, c
     ld h, b
     ld b, 4
     ld c, 10
-formatU16ToD4Loop:
-    call divHLByCPageTwo ; HL=quotient; A=remainder; preserves BC
+formatU16BCToFixed4Loop:
+    call divHLByCPageTwo ; HL=quotient; A=remainder; preserves BC, DE
     call convertAToCharPageTwo ; A=digit
     ld (de), a
     inc de
-    djnz formatU16ToD4Loop
+    djnz formatU16BCToFixed4Loop
     ; reverse the digits
     ex de, hl ; HL=newDestPointer
     ex (sp), hl ; stack=[HL,newDestPointer], HL=origDestPointer
@@ -545,15 +677,85 @@ formatU16ToD4Loop:
     pop hl ; stack=[]; HL=orig HL
     ret
 
+; Description: Format the u16 in BC using up to 4 digits in DE.
+; Input:
+;   - BC:u16
+;   - DE:(char*)=destPointer
+; Output: DE=DE+4
+; Destroys: A, BC, DE
+; Preserves: HL
+formatU16BCToFlex4:
+    push hl ; stack=[HL]
+    push de ; stack=[HL,origDestPointer]
+    ld l, c
+    ld h, b
+    ld b, 0 ; numDigits=0
+    ld c, 10
+formatU16BCToFlex4Loop:
+    call divHLByCPageTwo ; HL=quotient; A=remainder; preserves BC, DE
+    call convertAToCharPageTwo ; A=digit
+    ld (de), a
+    inc de
+    inc b ; numDigits++
+    ; check for quotient==0 at the end, to print at least one '0'
+    ld a, h
+    or l ; ZF=1 if quotient==0
+    jr nz, formatU16BCToFlex4Loop
+formatU16BCToFlex4Reverse:
+    ; reverse the digits, B=numDigits
+    ex de, hl ; HL=newDestPointer
+    ex (sp), hl ; stack=[HL,newDestPointer], HL=origDestPointer
+    call reverseStringPageTwo
+    pop de ; stack=[HL]; DE=newDestPointer
+    pop hl ; stack=[]; HL=orig HL
+    ret
+
+; Description: Format the i16 in BC using up to 4 digits in DE.
+; Input:
+;   - BC:u16
+;   - DE:(char*)=destPointer
+; Output: DE=DE+4
+; Destroys: A, BC, DE
+; Preserves: HL
+formatI16BCToFixed4:
+    bit 7, b ; ZF=1 if pos
+    jr z, formatU16BCToFixed4
+    ; output a '-' then negate, then print
+    ld a, signChar
+    ld (de), a
+    inc de
+    call negBCPageTwo
+    jr formatU16BCToFixed4
+
+
+; Description: Format the i16 in BC using exactly 4 digits in DE.
+; Input:
+;   - BC:u16
+;   - DE:(char*)=destPointer
+; Output: DE=DE+4
+; Destroys: A, BC, DE
+; Preserves: HL
+formatI16BCToFlex4:
+    bit 7, b ; ZF=1 if pos
+    jr z, formatU16BCToFlex4
+    ; output a '-' then negate, then print
+    ld a, signChar
+    ld (de), a
+    inc de
+    call negBCPageTwo
+    jr formatU16BCToFlex4
+
+;-----------------------------------------------------------------------------
+
 ; Description: Format the u8 in A to 1 or 2 digits in DE. Leading zero is
 ; suppressed.
 ; Input:
 ;   - A:u8
 ;   - DE:(char*)=destPointer
 ; Output: DE=DE+(1 or 2)
-; Destroys: A, BC, DE
-; Preserves: HL
-formatU8ToD2: ; TODO: rename this to formatU8ToD2Flex().
+; Destroys: A, DE
+; Preserves: BC, HL
+formatU8AToFlex2:
     push hl
     ex de, hl ; HL=destPointer
     cp 10
@@ -587,9 +789,9 @@ formatU8ToD2End:
 ;   - A:u8
 ;   - DE:(char*)=destPointer
 ; Output: DE=DE+2
-; Destroys: A, BC, DE
-; Preserves: HL
-formatU8ToD2Fixed:
+; Destroys: A, DE
+; Preserves: BC, HL
+formatU8AToFixed2:
     push hl
     ex de, hl ; HL=destPointer
     ld d, a
@@ -610,16 +812,16 @@ formatU8ToD2Fixed:
     pop hl
     ret
 
-; Description: Format the i8 in A to 2 digits in DE.
+; Description: Format the i8 in A using up to 2 digits in DE.
 ; Input:
 ;   - A:i8
 ;   - DE:(char*)=destPointer
 ; Output: DE=DE+2,3
-; Destroys: A, BC
-; Preserves: HL
-formatI8ToD2:
+; Destroys: A, DE
+; Preserves: BC, HL
+formatI8AToFlex2:
     bit 7, a
-    jr z, formatU8ToD2
+    jr z, formatU8AToFlex2
     ; output a '-', then negate, and print the integer.
     push af
     ld a, signChar
@@ -627,4 +829,4 @@ formatI8ToD2:
     inc de
     pop af
     neg
-    jr formatU8ToD2
+    jr formatU8AToFlex2

@@ -127,7 +127,7 @@ parseOffsetDateTime:
     call parseRightBraceOrNul ; '}'
     ret
 
-; Description: Parse a string of the form "{hh,mm,dd}" into a DayOfWeek{}
+; Description: Parse a string of the form "{dow}" into a DayOfWeek{}
 ; record.
 ; Input:
 ;   - HL:(char*)=charPointer
@@ -144,6 +144,29 @@ parseDayOfWeek:
     call parseRightBraceOrNul ; '}'
     ret
 
+; Description: Parse a string of the form "{days,hours,minutes,seconds}" into a
+; Duration{} record.
+; Input:
+;   - HL:(char*)=string
+;   - DE:(Duration*)=duration
+; Output:
+;   - (*DE):Duration filled
+;   - DE=DE+1
+;   - HL=points to character after last '}'
+; Throws: Err:Syntax if there is a syntax error
+; Destroys: all
+parseDuration:
+    call parseLeftBrace ; '{'
+    call parseI16D4 ; days
+    call parseComma
+    call parseI8D2 ; hours
+    call parseComma
+    call parseI8D2 ; minutes
+    call parseComma
+    call parseI8D2 ; seconds
+    call parseRightBraceOrNul ; '}'
+    ret
+
 ;------------------------------------------------------------------------------
 
 recordTagTypeUnknown equ 0
@@ -153,6 +176,7 @@ recordTagTypeDateTime equ 3
 recordTagTypeOffset equ 4
 recordTagTypeOffsetDateTime equ 5
 recordTagTypeDayOfWeek equ 6
+recordTagTypeDuration equ 7
 
 ; Description: Parse the record tag letters before the '{' to determine the
 ; RpnRecord tag. The valid tags are:
@@ -162,6 +186,7 @@ recordTagTypeDayOfWeek equ 6
 ;   - DT (DateTime)
 ;   - DZ (OffsetDateTime).
 ;   - DW (DayOfWeek)
+;   - R (Duration)
 ; Input:
 ;   - HL:(char*)=charPointer
 ; Output:
@@ -178,6 +203,9 @@ parseRecordTag:
     ; check for D, DT, DZ, DW
     cp 'D'
     jr z, parseRecordTagD
+    ; check for R
+    cp 'R'
+    jr z, parseRecordTagR
     jr parseDateSyntaxErrr
 parseRecordTagD:
     ld a, (hl)
@@ -236,6 +264,14 @@ parseRecordTagTZ:
     jr nz, parseDateSyntaxErrr
     dec hl
     ld a, recordTagTypeOffset
+    ret
+parseRecordTagR:
+    ld a, (hl)
+    inc hl
+    cp '{'
+    jr nz, parseDateSyntaxErrr
+    dec hl
+    ld a, recordTagTypeDuration
     ret
 
 ;------------------------------------------------------------------------------
@@ -299,16 +335,18 @@ parseComma:
     ret
 
 ;------------------------------------------------------------------------------
+; String to binary parsing routines.
+;------------------------------------------------------------------------------
 
 ; Description: Parse up to 4 decimal digits at HL to a u16 at DE.
 ; Input:
 ;   - DE:u16Pointer
 ;   - HL:charPointer
 ; Output:
-;   - (DE): u16, little endian
+;   - (*DE):u16, little endian
 ;   - DE: incremented by 2 bytes
 ;   - HL: incremented by 0-4 characters to the next char
-; Destroys: A, HL
+; Destroys: A, DE, HL
 ; Preserves: BC
 parseU16D4:
     ; first character must be valid digit
@@ -343,9 +381,58 @@ parseU16D4End:
     pop bc
     ret
 
+;------------------------------------------------------------------------------
+
+; Description: Parse optional signChar and up to 4 decimal digits at HL to an
+; i16 at DE.
+; Input:
+;   - DE:i16Pointer
+;   - HL:charPointer
+; Output:
+;   - (*DE):i16, little endian
+;   - DE: incremented by 2 bytes
+;   - HL: incremented by 0-5 characters to the next char
+; Destroys: A, DE, HL
+; Preserves: BC
+parseI16D4:
+    ; first character must be valid digit or '-'
+    ld a, (hl)
+    cp signChar
+    jr nz, parseU16D4
+    ; parse the unsigned part, then negate the result.
+    inc hl
+    call parseU16D4 ; DE:u16
+    push de
+    ex de, hl
+    dec hl
+    dec hl
+    call negI16
+    ex de, hl
+    pop de
+    ret
+
+; Description: Negate the i16 pointed by HL.
+; Input: HL:(i16*)
+; Output: (*HL)=-(*HL)
+; Destroys: A
+; Preserves: BC, DE, HL
+negI16:
+    ld a, (hl)
+    neg
+    ld (hl), a
+    inc hl
+    ;
+    ld a, 0 ; cannot use 'xor a' to preserve CF
+    sbc a, (hl)
+    ld (hl), a
+    dec hl
+    ret
+
+;------------------------------------------------------------------------------
+
 ; Description: Parse up to 2 decimal digits at HL to a u8 at DE.
 ; Input:
-;   - DE: destPoint
+;   - DE: destPointer
 ;   - HL: charPointer
 ; Output:
 ;   - (DE): u8

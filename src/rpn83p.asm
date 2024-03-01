@@ -171,6 +171,12 @@ rpnObjectTypeOffsetDateTimeSizeOf equ 10
 rpnObjectTypeDayOfWeek equ $1D
 rpnObjectTypeDayOfWeekSizeOf equ 3
 
+; Duration and RpnDuration object:
+; - struct Duration{days:i16, hours:i8, minutes:i8, seconds:i8}, 5 bytes
+; - struct RpnDuration{type:u8, duration:Duration}, 6 bytes
+rpnObjectTypeDuration equ $1E
+rpnObjectTypeDurationSizeOf equ 6
+
 ; An RpnObject is union of all possible Real, Complex, and RpnObjects. See the
 ; struct definitions in vars.asm. If the rpnObjectSizeOf is changed, the
 ; rpnObjectIndexToOffset() function must be updated.
@@ -1119,6 +1125,10 @@ _FormatDayOfWeekLabel:
 _FormatDayOfWeek equ _FormatDayOfWeekLabel-branchTableBase
     .dw FormatDayOfWeek
     .db 2
+_FormatDurationLabel:
+_FormatDuration equ _FormatDurationLabel-branchTableBase
+    .dw FormatDuration
+    .db 2
 
 ; datevalidation2.asm
 _ValidateDateLabel:
@@ -1144,6 +1154,10 @@ _ValidateOffsetDateTime equ _ValidateOffsetDateTimeLabel-branchTableBase
 _ValidateDayOfWeekLabel:
 _ValidateDayOfWeek equ _ValidateDayOfWeekLabel-branchTableBase
     .dw ValidateDayOfWeek
+    .db 2
+_ValidateDurationLabel:
+_ValidateDuration equ _ValidateDurationLabel-branchTableBase
+    .dw ValidateDuration
     .db 2
 
 ; date2.asm
@@ -1227,9 +1241,13 @@ _AddRpnDateTimeBySecondsLabel:
 _AddRpnDateTimeBySeconds equ _AddRpnDateTimeBySecondsLabel-branchTableBase
     .dw AddRpnDateTimeBySeconds
     .db 2
-_SubRpnDateTimeByRpnDateTimeOrSecondsLabel:
-_SubRpnDateTimeByRpnDateTimeOrSeconds equ _SubRpnDateTimeByRpnDateTimeOrSecondsLabel-branchTableBase
-    .dw SubRpnDateTimeByRpnDateTimeOrSeconds
+_AddRpnDateTimeByRpnDurationLabel:
+_AddRpnDateTimeByRpnDuration equ _AddRpnDateTimeByRpnDurationLabel-branchTableBase
+    .dw AddRpnDateTimeByRpnDuration
+    .db 2
+_SubRpnDateTimeByObjectLabel:
+_SubRpnDateTimeByObject equ _SubRpnDateTimeByObjectLabel-branchTableBase
+    .dw SubRpnDateTimeByObject
     .db 2
 _SplitRpnDateTimeLabel:
 _SplitRpnDateTime equ _SplitRpnDateTimeLabel-branchTableBase
@@ -1267,9 +1285,13 @@ _AddRpnOffsetDateTimeBySecondsLabel:
 _AddRpnOffsetDateTimeBySeconds equ _AddRpnOffsetDateTimeBySecondsLabel-branchTableBase
     .dw AddRpnOffsetDateTimeBySeconds
     .db 2
-_SubRpnOffsetDateTimeByRpnOffsetDateTimeOrSecondsLabel:
-_SubRpnOffsetDateTimeByRpnOffsetDateTimeOrSeconds equ _SubRpnOffsetDateTimeByRpnOffsetDateTimeOrSecondsLabel-branchTableBase
-    .dw SubRpnOffsetDateTimeByRpnOffsetDateTimeOrSeconds
+_AddRpnOffsetDateTimeByDurationLabel:
+_AddRpnOffsetDateTimeByDuration equ _AddRpnOffsetDateTimeByDurationLabel-branchTableBase
+    .dw AddRpnOffsetDateTimeByDuration
+    .db 2
+_SubRpnOffsetDateTimeByObjectLabel:
+_SubRpnOffsetDateTimeByObject equ _SubRpnOffsetDateTimeByObjectLabel-branchTableBase
+    .dw SubRpnOffsetDateTimeByObject
     .db 2
 _SplitRpnOffsetDateTimeLabel:
 _SplitRpnOffsetDateTime equ _SplitRpnOffsetDateTimeLabel-branchTableBase
@@ -1286,6 +1308,32 @@ _ExtendRpnDateTimeToOffsetDateTime equ _ExtendRpnDateTimeToOffsetDateTimeLabel-b
 _TruncateRpnOffsetDateTimeLabel:
 _TruncateRpnOffsetDateTime equ _TruncateRpnOffsetDateTimeLabel-branchTableBase
     .dw TruncateRpnOffsetDateTime
+    .db 2
+
+; duration2.asm
+_RpnDurationToSecondsLabel:
+_RpnDurationToSeconds equ _RpnDurationToSecondsLabel-branchTableBase
+    .dw RpnDurationToSeconds
+    .db 2
+_SecondsToRpnDurationLabel:
+_SecondsToRpnDuration equ _SecondsToRpnDurationLabel-branchTableBase
+    .dw SecondsToRpnDuration
+    .db 2
+_ChsRpnDurationLabel:
+_ChsRpnDuration equ _ChsRpnDurationLabel-branchTableBase
+    .dw ChsRpnDuration
+    .db 2
+_AddRpnDurationBySecondsLabel:
+_AddRpnDurationBySeconds equ _AddRpnDurationBySecondsLabel-branchTableBase
+    .dw AddRpnDurationBySeconds
+    .db 2
+_AddRpnDurationByRpnDurationLabel:
+_AddRpnDurationByRpnDuration equ _AddRpnDurationByRpnDurationLabel-branchTableBase
+    .dw AddRpnDurationByRpnDuration
+    .db 2
+_SubRpnDurationByRpnDurationOrSecondsLabel:
+_SubRpnDurationByRpnDurationOrSeconds equ _SubRpnDurationByRpnDurationOrSecondsLabel-branchTableBase
+    .dw SubRpnDurationByRpnDurationOrSeconds
     .db 2
 
 ; zoneconversion2.asm
@@ -1688,6 +1736,7 @@ defpage(2)
 #include "datetime2.asm"
 #include "offset2.asm"
 #include "offsetdatetime2.asm"
+#include "duration2.asm"
 #include "zoneconversion2.asm"
 #include "zone2.asm"
 #include "rtc2.asm"

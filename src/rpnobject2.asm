@@ -17,6 +17,15 @@ getOp1RpnObjectTypePageTwo:
     and $1f
     ret
 
+; Description: Return the rpnObjectType of OP3/OP4.
+; Input: OP3
+; Output: A=rpnObjectType
+; Destroys: A
+getOp3RpnObjectTypePageTwo:
+    ld a, (OP3)
+    and $1f
+    ret
+
 ;-----------------------------------------------------------------------------
 
 ; Description: Same as CkOP1Cplx() OS routine without the bcall() overhead.
@@ -137,4 +146,22 @@ checkOp3DayOfWeekPageTwo:
     ld a, (OP3)
     and $1f
     cp rpnObjectTypeDayOfWeek
+    ret
+
+;-----------------------------------------------------------------------------
+
+; Description: Check if OP1 is an RpnDuration.
+; Output: ZF=1 if RpnDuration
+checkOp1DurationPageTwo:
+    ld a, (OP1)
+    and $1f
+    cp rpnObjectTypeDuration
+    ret
+
+; Description: Check if OP3 is an RpnDuration.
+; Output: ZF=1 if RpnDuration
+checkOp3DurationPageTwo:
+    ld a, (OP3)
+    and $1f
+    cp rpnObjectTypeDuration
     ret

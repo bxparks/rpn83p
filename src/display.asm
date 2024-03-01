@@ -944,12 +944,13 @@ clearShowAreaLoop:
 ;-----------------------------------------------------------------------------
 
 ; Description: Print data in OP1 at the current cursor. The data could be a
-; real number, a complex number, for a Date record. Erase to the end of line
-; (but only if the floating point did not spill over to the next line).
+; real number, a complex number, or RpnObject. Erase to the end of line (but
+; only if the floating point did not spill over to the next line).
+;
 ; Input:
-;   - A: objectType
+;   - A:u8=objectType
 ;   - B=displayFontMask
-;   - OP1: floating point number
+;   - OP1:(Real|Complex|RpnObject)=value
 ; Destroys: A, HL, OP3-OP6
 printOP1:
     call getOp1RpnObjectType ; A=objectType
@@ -977,6 +978,9 @@ printOP1:
     ;
     cp rpnObjectTypeDayOfWeek
     jp z, printOP1DayOfWeekRecord
+    ;
+    cp rpnObjectTypeDuration
+    jp z, printOP1DurationRecord
     ;
     ld hl, msgRpnObjectTypeUnknown
     jp printHLString
@@ -1522,6 +1526,23 @@ printOP1DayOfWeekRecord:
     ld de, OP3 ; destPointer
     push de
     bcall(_FormatDayOfWeek)
+    ; print string stored in OP3
+    pop hl ; HL=OP3
+    call vPutSmallS
+    jp vEraseEOL
+
+; Description: Print the RpnDuration record in OP1 using small font.
+; Input:
+;   - OP1:RpnDuration
+;   - B=displayFontMask
+printOP1DurationRecord:
+    call eraseEOLIfNeeded ; uses B
+    call displayStackSetSmallFont
+    ; format OP1
+    ld hl, OP1
+    ld de, OP3 ; destPointer
+    push de
+    bcall(_FormatDuration)
     ; print string stored in OP3
     pop hl ; HL=OP3
     call vPutSmallS

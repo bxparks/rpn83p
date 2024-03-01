@@ -43,6 +43,8 @@ mDateRelatedToSecondsHandler:
     jr z, mDateRelatedToSecondsHandlerOffset
     cp rpnObjectTypeOffsetDateTime ; ZF=1 if RpnOffsetDateTime
     jr z, mDateRelatedToSecondsHandlerOffsetDateTime
+    cp rpnObjectTypeDuration ; ZF=1 if RpnDuration
+    jr z, mDateRelatedToSecondsHandlerDuration
     bcall(_ErrDataType)
 mDateRelatedToSecondsHandlerDate:
     bcall(_RpnDateToEpochSeconds) ; OP1=epochSeconds
@@ -58,6 +60,9 @@ mDateRelatedToSecondsHandlerOffset:
     jr mDateRelatedToSecondsHandlerEnd
 mDateRelatedToSecondsHandlerOffsetDateTime:
     bcall(_RpnOffsetDateTimeToEpochSeconds) ; OP1=epochSeconds
+    jr mDateRelatedToSecondsHandlerEnd
+mDateRelatedToSecondsHandlerDuration:
+    bcall(_RpnDurationToSeconds) ; OP1=seconds
     ; [[fallthrough]]
 mDateRelatedToSecondsHandlerEnd:
     jp replaceX
@@ -81,6 +86,27 @@ mEpochSecondsToOffsetDateTimeHandler:
     call closeInputAndRecallX ; OP1=X=epochSeconds
     bcall(_EpochSecondsToRpnOffsetDateTime) ; OP1=OffsetDateTime(epochSeconds)
     jp replaceX
+
+;-----------------------------------------------------------------------------
+; DATE > Row 3
+;-----------------------------------------------------------------------------
+
+mSecondsToDurationHandler:
+    call closeInputAndRecallX ; OP1=X=seconds
+    bcall(_SecondsToRpnDuration) ; OP1=Duration(seconds)
+    jp replaceX
+
+mSetTimeZoneHandler:
+    call closeInputAndRecallRpnOffsetX ; A=rpnObjectType; OP1=X
+    bcall(_SetTimeZone)
+    ld a, errorCodeTzStored
+    ld (handlerCode), a
+    ret
+
+mGetTimeZoneHandler:
+    call closeInputAndRecallNone
+    bcall(_GetTimeZone)
+    jp pushToX
 
 ;-----------------------------------------------------------------------------
 ; DATE > EPCH > Row 1
@@ -265,22 +291,6 @@ mRtcSetClockHandler:
     ld a, errorCodeClockSet
     ld (handlerCode), a
     ret
-
-;-----------------------------------------------------------------------------
-; DATE > EPCH > Row 4
-;-----------------------------------------------------------------------------
-
-mSetTimeZoneHandler:
-    call closeInputAndRecallRpnOffsetX ; A=rpnObjectType; OP1=X
-    bcall(_SetTimeZone)
-    ld a, errorCodeTzStored
-    ld (handlerCode), a
-    ret
-
-mGetTimeZoneHandler:
-    call closeInputAndRecallNone
-    bcall(_GetTimeZone)
-    jp pushToX
 
 ;-----------------------------------------------------------------------------
 ; Other DATE functions

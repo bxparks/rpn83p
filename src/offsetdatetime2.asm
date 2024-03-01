@@ -125,45 +125,86 @@ AddRpnOffsetDateTimeBySeconds:
     jr z, addRpnOffsetDateTimeBySecondsAdd
     call cp1ExCp3PageTwo ; CP1=rpnOffsetDateTime; CP3=seconds
 addRpnOffsetDateTimeBySecondsAdd:
-    ; CP1=rpnOffsetDateTime, CP3=seconds
-    ; Push rpnOffsetDateTime to FPS, which also removes the 2-byte gap between
-    ; OP1/OP2.
-    call PushRpnObject1 ; FPS=[rpnOffsetDateTime]
-    push hl ; stack=[rpnOffsetDateTime]
-    ; convert OP3 to i40, then push to FPS
-    call op3ToOp1PageTwo ; OP1:real=seconds
+    ; if here: CP1=rpnOffsetDateTime, CP3=seconds.
+    ; Save the rpnOffsetDateTime to FPS, to save the offset, and to remove
+    ; 2-byte gap.
+    call PushRpnObject1 ; FPS=[rpnOdt]; HL=rpnOdt
+    push hl ; stack=[rpnOdt]
+    ; Convert real(seconds) to i40(seconds) in OP1.
+    call op3ToOp1PageTwo
     call ConvertOP1ToI40 ; OP1:(i40*)=seconds
-    call pushRaw9Op1 ; FPS=[rpnOffsetDateTime,seconds]; HL=seconds
-    ex (sp), hl ; stack=[seconds]; HL=rpnOffsetDateTime
-    ; convert rpnOffsetDateTime to i40 seconds
-    ex de, hl ; DE=rpnOffsetDateTime
-    inc de ; skip type byte
+    ; add odtSeconds + seconds
+    pop hl ; stack=[]; HL=rpnOdt
+    inc hl ; HL=odt
+    ld de, OP1
+    call addOffsetDateTimeBySeconds ; HL=newOdt
+    ; clean up
+    call PopRpnObject1 ; FPS=[]; OP1=newRpnOdt
+    ret
+
+; Description: Add (RpnOffsetDateTime plus duration) or (seconds plus
+; RpnDateTime).
+; Input:
+;   - OP1:Union[RpnOffsetDateTime,RpnDuration]=rpnOffsetDateTime or duration
+;   - OP3:Union[RpnOffsetDateTime,RpnDuration]=rpnOffsetDateTime or duration
+; Output:
+;   - OP1:RpnOffsetDateTime=RpnOffsetDateTime+duration
+; Destroys: all, OP1, OP2, OP3-OP6
+AddRpnOffsetDateTimeByDuration:
+    call checkOp1OffsetDateTimePageTwo ; ZF=1 if CP1 is an RpnOffsetDateTime
+    jr z, addRpnOffsetDateTimeByDurationAdd
+    call cp1ExCp3PageTwo ; CP1=rpnOffsetDateTime; CP3=duration
+addRpnOffsetDateTimeByDurationAdd:
+    ; if here: CP1=rpnOffsetDateTime, CP3=duration.
+    ; Save the rpnOffsetDateTime in the FPS, to save the offset, and to remove
+    ; the 2-byte gap.
+    call PushRpnObject1 ; FPS=[rpnOdt]; HL=rpnOdt
+    push hl ; stack=[rpnOdt]
+    ; Convert OP3:RpnDuration to OP1:i40.
+    ld de, OP3+1 ; DE:(Duration*)=duration
     ld hl, OP1
-    call offsetDateTimeToEpochSeconds ; HL=OP1:(i40*)=offsetDateTimeSeconds
-    ; save (Offset*) pointer to original offset
-    ld c, e
-    ld b, d ; BC=offsetDateTime+sizeof(OffsetDateTime)
-    dec bc
-    dec bc ; BC:(Offset*)=offset
-    ; add seconds + dateSeconds
-    ex de, hl ; DE=offsetDateTimeSeconds
-    pop hl ; stack=[]; HL=FPS.seconds
-    call addU40U40 ; HL=FPS.resultSeconds=offsetDateTimeSeconds+seconds
-    ; convert resultSeconds to RpnOffsetDateTime (use FPS to avoid the 2-byte
-    ; gap)
+    call durationToSeconds ; HL=OP1=durationSeconds
+    ; add odtSeconds + duration
+    pop hl ; stack=[]; HL=rpnOdt
+    inc hl ; HL=odt
+    ld de, OP1
+    call addOffsetDateTimeBySeconds ; HL=newOdt
+    ; clean up
+    call PopRpnObject1 ; FPS=[]; OP1=newRpnOdt
+    ret
+
+; Description: Add OffsetDateTime plus seconds.
+; Input:
+;   - DE:(i40*)=seconds
+;   - HL:(OffsetDateTime*)=offsetDateTime
+; Output:
+;   - HL:(OffsetDateTime*)=newOffsetDateTime
+; Destroys: A, BC
+; Preserves: DE, HL
+addOffsetDateTimeBySeconds:
+    push hl ; stack=[odt]
+    push de ; stack=[odt,seconds]
+    ; convert odt to odtSeconds
+    ex de, hl ; DE=odt
+    call reserveRaw9 ; FPS=[odtSeconds]; HL=odtSeconds
+    call offsetDateTimeToEpochSeconds ; HL=odtSeconds
+    ; add seconds
+    pop de ; stack=[odt]; DE=seconds
+    call addU40U40 ; HL=resultSeconds=odtSeconds+seconds
+    ; convert back to odt, in-situ
     ex de, hl ; DE=resultSeconds
-    ; after the call below:
-    ;   - FPS=[rpnOffsetDateTime,resultSeconds,resultOffsetDateTime]
-    ;   - HL=resultOffsetDatetime
-    call reserveRpnObject
-    ld a, rpnObjectTypeOffsetDateTime
-    ld (hl), a
-    inc hl ; HL:(OffsetDateTime*)=newOffsetDateTime
+    pop hl ; stack=[]; HL=odt
+    ; BC=offset, converted in-situ
+    ld a, rpnObjectTypeDateTimeSizeOf-1
+    add a, l
+    ld c, a
+    ld a, 0
+    adc a, h
+    ld b, a ; BC=odt+sizeof(DateTime)=offset
     call epochSecondsToOffsetDateTime ; HL=resultOffsetDateTime+sizeof(ODT)
-    ; clean up stack and FPS
-    call PopRpnObject1 ; FPS=[rpnOffsetDateTime,resultSeconds]; OP1=result
-    call dropRaw9 ; FPS=[rpnOffsetDateTime]
-    jp dropRpnObject ; FPS=[]
+    ; clean up
+    call dropRaw9 ; FPS=[]
+    ret
 
 ;-----------------------------------------------------------------------------
 
@@ -174,15 +215,21 @@ addRpnOffsetDateTimeBySecondsAdd:
 ; Output:
 ;   - OP1:(RpnOffsetDateTime-seconds) or (RpnOffsetDateTime-RpnOffsetDateTime).
 ; Destroys: OP1, OP2, OP3-OP6
-SubRpnOffsetDateTimeByRpnOffsetDateTimeOrSeconds:
-    call checkOp3OffsetDateTimePageTwo ; ZF=1 if type(OP3)==OffsetDateTime
+SubRpnOffsetDateTimeByObject:
+    call getOp3RpnObjectTypePageTwo ; A=objectType
+    cp rpnObjectTypeReal
+    jr z, subRpnOffsetDateTimeBySeconds
+    cp RpnObjectTypeOffsetDateTime ; ZF=1 if RpnOffsetDateTime
     jr z, subRpnOffsetDateTimeByRpnOffsetDateTime
+    cp rpnObjectTypeDuration
+    jr z, subRpnOffsetDateTimeByRpnDuration
+    bcall(_ErrInvalid) ; should never happen
 subRpnOffsetDateTimeBySeconds:
     ; invert the sign of OP3, then call addRpnOffsetDateTimeBySecondsAdd()
     call cp1ExCp3PageTwo
     bcall(_InvOP1S) ; OP1=-OP1
     call cp1ExCp3PageTwo
-    jr addRpnOffsetDateTimeBySecondsAdd
+    jp addRpnOffsetDateTimeBySecondsAdd
 subRpnOffsetDateTimeByRpnOffsetDateTime:
     ; save copies of X, Y OffsetDateTime to FPS
     call PushRpnObject1 ; FPS=[Yodt]; HL=Yodt
@@ -209,6 +256,20 @@ subRpnOffsetDateTimeByRpnOffsetDateTime:
     call dropRaw9
     call dropRpnObject
     jp dropRpnObject
+subRpnOffsetDateTimeByRpnDuration:
+    call shrinkOp2ToOp1PageTwo ; remove 2-byte gap
+    ; convert OP3 to seconds on the FPS stack
+    call reserveRaw9 ; FPS=[durationSeconds]; HL=durationSeconds
+    ld de, OP3+1 ; DE:(DateTime*)
+    call durationToSeconds ; HL=durationSeconds
+    ; calculate odt-duration
+    call negU40 ; HL=-durationSeconds
+    ex de, hl ; DE=-durationSeconds
+    ld hl, OP1+1 ; HL=dateTime
+    call addOffsetDateTimeBySeconds ; HL=odt-durationSeconds
+    ; clean up
+    call expandOp1ToOp2PageTwo ; add back 2-byte gap
+    jp dropRaw9 ; FPS=[]
 
 ;-----------------------------------------------------------------------------
 

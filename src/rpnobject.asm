@@ -14,6 +14,15 @@ getOp1RpnObjectType:
     and $1f
     ret
 
+; Description: Return the rpnObjectType of OP3/OP4.
+; Input: OP3
+; Output: A=rpnObjectType
+; Destroys: A
+getOp3RpnObjectType:
+    ld a, (OP3)
+    and $1f
+    ret
+
 ;-----------------------------------------------------------------------------
 
 ; Description: Check that OP1 is a Real number.
@@ -209,4 +218,22 @@ checkOp3DayOfWeek:
     ld a, (OP3)
     and $1f
     cp rpnObjectTypeDayOfWeek
+    ret
+
+;-----------------------------------------------------------------------------
+
+; Description: Check if OP1 is an RpnDuration.
+; Output: ZF=1 if RpnDuration
+checkOp1Duration:
+    ld a, (OP1)
+    and $1f
+    cp rpnObjectTypeDuration
+    ret
+
+; Description: Check if OP3 is an RpnDuration.
+; Output: ZF=1 if RpnDuration
+checkOp3Duration:
+    ld a, (OP3)
+    and $1f
+    cp rpnObjectTypeDuration
     ret
