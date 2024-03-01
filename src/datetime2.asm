@@ -171,7 +171,7 @@ addDateTimeBySeconds:
     push hl ; stack=[dateTime]
     push de ; stack=[dateTime,seconds]
     ; convert dateTime to dateTimeSeconds
-    ex de, hl ; DE=seconds
+    ex de, hl ; DE=dateTime
     call reserveRaw9 ; FPS=[dateTimeSeconds]; HL=dateTimeSeconds
     call dateTimeToInternalEpochSeconds ; HL=dateTimeSeconds
     ; add seconds

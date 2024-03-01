@@ -125,50 +125,28 @@ AddRpnOffsetDateTimeBySeconds:
     jr z, addRpnOffsetDateTimeBySecondsAdd
     call cp1ExCp3PageTwo ; CP1=rpnOffsetDateTime; CP3=seconds
 addRpnOffsetDateTimeBySecondsAdd:
-    ; CP1=rpnOffsetDateTime, CP3=seconds.
-    ; Save the offsetDateTime in the FPS, to save the offset.
-    call PushRpnObject1 ; FPS=[odt]; HL=odt
-    push hl ; stack=[odt]
-    ; Convert CP1 to i40 seconds on FPS.
-    call reserveRaw9 ; FPS=[odt,odtSeconds]; HL=odtSeconds
-    push hl ; stack=[odt,odtSeconds]
-    call shrinkOp2ToOp1PageTwo ; remove 2-byte gap
-    ld de, OP1+1 ; DE:(DateTime*)=dateTime
-    call offsetDateTimeToEpochSeconds ; HL=odtSeconds
-    ; Convert OP3 to i40 on FPS
-    call op3ToOp1PageTwo ; OP1:real=seconds
+    ; if here: CP1=rpnOffsetDateTime, CP3=seconds.
+    ; Save the rpnOffsetDateTime to FPS, to save the offset, and to remove
+    ; 2-byte gap.
+    call PushRpnObject1 ; FPS=[rpnOdt]; HL=rpnOdt
+    push hl ; stack=[rpnOdt]
+    ; Convert real(seconds) to i40(seconds) in OP1.
+    call op3ToOp1PageTwo
     call ConvertOP1ToI40 ; OP1:(i40*)=seconds
-    call pushRaw9Op1 ; FPS=[odt,odtSeconds,seconds]; HL=seconds
     ; add odtSeconds + seconds
-    pop de ; stack=[odt]; DE=odtSeconds
-    call addU40U40 ; HL=resultSeconds=odtSeconds+seconds
-    ; Set up conversion from resultSeconds to RpnOffsetDateTimes. The target
-    ; is the FPS to avoid the 2-byte gap. The offset is retrieved from the FPS.
-    ex de, hl ; DE=resultSeconds
-    pop bc ; stack=[]; BC=odt
-    ld a, rpnObjectTypeDateTimeSizeOf
-    add a, c
-    ld c, a
-    ld a, 0
-    adc a, b
-    ld b, a ; BC+=sizeof(RpnDateTime)=offsetPointer
-    ; convert relative epoch seconds to OffsetDateTime.
-    call reserveRpnObject ; FPS=[odt,odtSeconds,seconds,newOdt]
-    ld a, rpnObjectTypeOffsetDateTime
-    ld (hl), a
-    inc hl ; HL:(OffsetDateTime*)=newOdt
-    call epochSecondsToOffsetDateTime ; HL=resultOffsetDateTime+sizeof(ODT)
-    ; clean up stack and FPS
-    call PopRpnObject1 ; FPS=[odt,odtSeconds,seconds]; OP1=newOdt
-    call dropRaw9 ; FPS=[odt,odtSeconds]
-    call dropRaw9 ; FPS=[odt]
-    jp dropRpnObject ; FPS=[]
+    pop hl ; stack=[]; HL=rpnOdt
+    inc hl ; HL=odt
+    ld de, OP1
+    call addOffsetDateTimeBySeconds ; HL=newOdt
+    ; clean up
+    call PopRpnObject1 ; FPS=[]; OP1=newRpnOdt
+    ret
 
 ; Description: Add (RpnOffsetDateTime plus duration) or (seconds plus
 ; RpnDateTime).
 ; Input:
-;   - OP1:Union[RpnOffsetDateTime,RpnReal]=rpnOffsetDateTime or duration
-;   - OP3:Union[RpnOffsetDateTime,RpnReal]=rpnOffsetDateTime or duration
+;   - OP1:Union[RpnOffsetDateTime,RpnDuration]=rpnOffsetDateTime or duration
+;   - OP3:Union[RpnOffsetDateTime,RpnDuration]=rpnOffsetDateTime or duration
 ; Output:
 ;   - OP1:RpnOffsetDateTime=RpnOffsetDateTime+duration
 ; Destroys: all, OP1, OP2, OP3-OP6
@@ -177,44 +155,56 @@ AddRpnOffsetDateTimeByDuration:
     jr z, addRpnOffsetDateTimeByDurationAdd
     call cp1ExCp3PageTwo ; CP1=rpnOffsetDateTime; CP3=duration
 addRpnOffsetDateTimeByDurationAdd:
-    ; CP1=rpnOffsetDateTime, CP3=duration.
-    ; Save the offsetDateTime in the FPS, to save the offset.
-    call PushRpnObject1 ; FPS=[odt]; HL=odt
-    push hl ; stack=[odt]
-    ; Convert CP1 to i40 duration on FPS.
-    call reserveRaw9 ; FPS=[odt,odtSeconds]; HL=odtSeconds
-    push hl ; stack=[odt,odtSeconds]
-    call shrinkOp2ToOp1PageTwo ; remove 2-byte gap
-    ld de, OP1+1 ; DE:(DateTime*)=dateTime
-    call offsetDateTimeToEpochSeconds ; HL=odtSeconds
-    ; Convert OP3:RpnDuration to i40 on FPS
-    call reserveRaw9 ; FPS=[dateTimeSeconds,durationSeconds]; HL=durationSeconds
+    ; if here: CP1=rpnOffsetDateTime, CP3=duration.
+    ; Save the rpnOffsetDateTime in the FPS, to save the offset, and to remove
+    ; the 2-byte gap.
+    call PushRpnObject1 ; FPS=[rpnOdt]; HL=rpnOdt
+    push hl ; stack=[rpnOdt]
+    ; Convert OP3:RpnDuration to OP1:i40.
     ld de, OP3+1 ; DE:(Duration*)=duration
-    call durationToSeconds ; HL=durationSeconds
+    ld hl, OP1
+    call durationToSeconds ; HL=OP1=durationSeconds
     ; add odtSeconds + duration
-    pop de ; stack=[odt]; DE=odtSeconds
-    call addU40U40 ; HL=resultSeconds=odtSeconds+duration
-    ; Set up conversion from resultSeconds to RpnOffsetDateTimes. The target
-    ; is the FPS to avoid the 2-byte gap. The offset is retrieved from the FPS.
+    pop hl ; stack=[]; HL=rpnOdt
+    inc hl ; HL=odt
+    ld de, OP1
+    call addOffsetDateTimeBySeconds ; HL=newOdt
+    ; clean up
+    call PopRpnObject1 ; FPS=[]; OP1=newRpnOdt
+    ret
+
+; Description: Add OffsetDateTime plus seconds.
+; Input:
+;   - DE:(i40*)=seconds
+;   - HL:(OffsetDateTime*)=offsetDateTime
+; Output:
+;   - HL:(OffsetDateTime*)=newOffsetDateTime
+; Destroys: A, BC
+; Preserves: DE, HL
+addOffsetDateTimeBySeconds:
+    push hl ; stack=[odt]
+    push de ; stack=[odt,seconds]
+    ; convert odt to odtSeconds
+    ex de, hl ; DE=odt
+    call reserveRaw9 ; FPS=[odtSeconds]; HL=odtSeconds
+    call offsetDateTimeToEpochSeconds ; HL=odtSeconds
+    ; add seconds
+    pop de ; stack=[odt]; DE=seconds
+    call addU40U40 ; HL=resultSeconds=odtSeconds+seconds
+    ; convert back to odt, in-situ
     ex de, hl ; DE=resultSeconds
-    pop bc ; stack=[]; BC=odt
-    ld a, rpnObjectTypeDateTimeSizeOf
-    add a, c
+    pop hl ; stack=[]; HL=odt
+    ; BC=offset, converted in-situ
+    ld a, rpnObjectTypeDateTimeSizeOf-1
+    add a, l
     ld c, a
     ld a, 0
-    adc a, b
-    ld b, a ; BC+=sizeof(RpnDateTime)=offsetPointer
-    ; convert relative epoch duration to OffsetDateTime.
-    call reserveRpnObject ; FPS=[odt,odtSeconds,duration,newOdt]
-    ld a, rpnObjectTypeOffsetDateTime
-    ld (hl), a
-    inc hl ; HL:(OffsetDateTime*)=newOdt
+    adc a, h
+    ld b, a ; BC=odt+sizeof(DateTime)=offset
     call epochSecondsToOffsetDateTime ; HL=resultOffsetDateTime+sizeof(ODT)
-    ; clean up stack and FPS
-    call PopRpnObject1 ; FPS=[odt,odtSeconds,duration]; OP1=newOdt
-    call dropRaw9 ; FPS=[odt,odtSeconds]
-    call dropRaw9 ; FPS=[odt]
-    jp dropRpnObject ; FPS=[]
+    ; clean up
+    call dropRaw9 ; FPS=[]
+    ret
 
 ;-----------------------------------------------------------------------------
 
