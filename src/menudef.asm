@@ -3217,7 +3217,7 @@ mEpochDaysToDateName:
 mDateRelatedToSecondsName:
     .db 'D', Scross, Sconvert, 'S', 0
 mSecondsToDurationName:
-    .db 'S', Sconvert, 'R', 0
+    .db 'S', Sconvert, 'D', 'R', 0
 mSecondsToTimeName:
     .db 'S', Sconvert, 'T', 0
 mEpochSecondsToDateTimeName:

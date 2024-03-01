@@ -444,7 +444,10 @@ FormatDuration:
 formatRpnDurationRaw:
     inc hl ; skip type byte
 formatDurationRaw:
-    ; 'print 'R'
+    ; print 'DR'
+    ld a, 'D'
+    ld (de), a
+    inc de
     ld a, 'R'
     ld (de), a
     inc de

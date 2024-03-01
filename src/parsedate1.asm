@@ -184,9 +184,9 @@ recordTagTypeDuration equ 7
 ;   - TZ (Offset)
 ;   - D (Date)
 ;   - DT (DateTime)
-;   - DZ (OffsetDateTime).
+;   - DZ (OffsetDateTime)
 ;   - DW (DayOfWeek)
-;   - R (Duration)
+;   - DR (Duration)
 ; Input:
 ;   - HL:(char*)=charPointer
 ; Output:
@@ -200,12 +200,9 @@ parseRecordTag:
     ; check for T, TZ
     cp 'T'
     jr z, parseRecordTagT
-    ; check for D, DT, DZ, DW
+    ; check for D, DT, DZ, DW, DR
     cp 'D'
     jr z, parseRecordTagD
-    ; check for R
-    cp 'R'
-    jr z, parseRecordTagR
     jr parseDateSyntaxErrr
 parseRecordTagD:
     ld a, (hl)
@@ -216,6 +213,8 @@ parseRecordTagD:
     jr z, parseRecordTagDZ
     cp 'W'
     jr z, parseRecordTagDW
+    cp 'R'
+    jr z, parseRecordTagDR
     cp '{'
     jr nz, parseDateSyntaxErrr
     ; Just a simple 'D'
@@ -246,6 +245,14 @@ parseRecordTagDW:
     dec hl
     ld a, recordTagTypeDayOfWeek
     ret
+parseRecordTagDR:
+    ld a, (hl)
+    inc hl
+    cp '{'
+    jr nz, parseDateSyntaxErrr
+    dec hl
+    ld a, recordTagTypeDuration
+    ret
 parseRecordTagT:
     ld a, (hl)
     inc hl
@@ -264,14 +271,6 @@ parseRecordTagTZ:
     jr nz, parseDateSyntaxErrr
     dec hl
     ld a, recordTagTypeOffset
-    ret
-parseRecordTagR:
-    ld a, (hl)
-    inc hl
-    cp '{'
-    jr nz, parseDateSyntaxErrr
-    dec hl
-    ld a, recordTagTypeDuration
     ret
 
 ;------------------------------------------------------------------------------
