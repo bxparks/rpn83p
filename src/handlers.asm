@@ -46,8 +46,8 @@ handleKeyNumberAppend:
     bcall(_AppendInputBuf)
     ret
 
-; Description: Return ZF=1 if A is a complex number delimiter. Same as
-; isComplexDelimiterPageOne().
+; Description: Return ZF=1 if A is a complex number delimiter (LimagI, Langle,
+; Ldegree). Same as isComplexDelimiterPageOne().
 ; Input: A: char
 ; Output: ZF=1 if delimiter
 ; Destroys: none

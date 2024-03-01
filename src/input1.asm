@@ -197,7 +197,8 @@ checkInputBufEEFound:
 ; Description: Check if the most recent floating number has a negative sign
 ; that can be mutated by the CHS (+/-) button, by scanning backwards from the
 ; end of the string. Return the position of the sign in B.
-; Input: inputBuf
+; Input:
+;   - inputBuf
 ; Output:
 ;   - A: inputBufChsPos, the position where a sign character can be added or
 ;   removed (i.e. after an 'E', after the complex delimiter, or at the start of
@@ -208,13 +209,14 @@ CheckInputBufChs:
     ld hl, inputBuf
     ld c, (hl) ; C=len
     ld b, 0 ; BC=len
-    inc hl ; skip past len byte
-    add hl, bc ; HL=pointer to end of string
     ; check for len==0
     ld a, c ; A=len
     or a ; if len==0: ZF=0
     ret z
-    ld b, a
+    ;
+    inc hl ; skip past len byte
+    add hl, bc ; HL=pointer to end of string
+    ld b, a ; B=len
 checkInputBufChsLoop:
     ; Loop backwards from end of string and update inputBufState flags
     dec hl
@@ -411,8 +413,8 @@ checkComplexDelimiterPFound:
     scf ; CF=1
     ret
 
-; Description: Return ZF=1 if A is a complex number delimiter. Same as
-; isComplexDelimiter().
+; Description: Return ZF=1 if A is a complex number delimiter (LimagI, Langle,
+; Ldegree). Same as isComplexDelimiter().
 ; Input: A: char
 ; Output: ZF=1 if delimiter
 ; Destroys: none
