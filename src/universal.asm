@@ -314,113 +314,105 @@ universalSubDurationMinusDuration:
 ; Output:
 ;   - OP1/OP2: Y*X
 universalMult:
-    call checkOp1AndOp3Real ; ZF=1 if real
-    jr z, universalMultReal
-    ;
-    call checkOp1OrOp3Complex ; ZF=1 if complex
-    jr z, universalMultComplex
-    ;
-    call checkOp1DateTime ; ZF=1 if DateTime
-    jr z, universalMultDateTimeByTimeZone
-    ;
-    call checkOp3DateTime ; ZF=1 if DateTime
-    jr z, universalMultTimeZoneByDateTime
-    ;
-    call checkOp1OffsetDateTime ; ZF=1 if OffsetDateTime
-    jr z, universalMultOffsetDateTimeByTimeZone
-    ;
-    call checkOp3OffsetDateTime ; ZF=1 if OffsetDateTime
-    jr z, universalMultTimeZoneByOffsetDateTime
+    ; perform double-dispatch based on type of OP1 and OP3
+    call getOp1RpnObjectType
+    ; OP1=real
+    cp rpnObjectTypeReal ; ZF=1 if real
+    jr z, universalMultRealByObject
+    ; OP1=complex
+    cp rpnObjectTypeComplex ; ZF=1 if complex
+    jr z, universalMultComplexByObject
+    ; OP1=Offset
+    cp rpnObjectTypeOffset ; ZF=1 if Offset
+    jr z, universalMultOffsetByObject
+    ; OP1=DateTime
+    cp rpnObjectTypeDateTime ; ZF=1 if DateTime
+    jr z, universalMultDateTimeByObject
+    ; OP1=OffsetDateTime
+    cp rpnObjectTypeOffsetDateTime ; ZF=1 if OffsetDateTime
+    jr z, universalMultOffsetDateTimeByObject
     jr universalMultErr
-; Real*(Real|Complex)
-universalMultReal:
-    call checkOp3Real ; ZF=1 if real
-    jr z, universalMultRealReal
-    call checkOp3Complex ; ZF1 if complex
-    jr nz, universalMultErr
-    ; Real*Complex
-    call cp1ExCp3 ; CP1=complex; CP3=real
-    jr universalMultComplexReal
-universalMultRealReal:
-    ; Real*Real
+; Real * object
+universalMultRealByObject:
+    call getOp3RpnObjectType
+    cp rpnObjectTypeReal
+    jr z, universalMultRealByReal
+    cp rpnObjectTypeComplex
+    jr z, universalMultRealByComplex
+    cp rpnObjectTypeDateTime
+    jr z, universalMultRealByDateTime
+    cp rpnObjectTypeOffsetDateTime
+    jr z, universalMultRealByOffsetDateTime
+    jr universalMultErr
+universalMultRealByReal:
     call op3ToOp2
     bcall(_FPMult) ; OP1=Y*X
     ret
-; Complex*(Real|Complex)
-universalMultComplex:
-    call checkOp1Complex
-    jr z, universalMultComplexSomething
-    call cp1ExCp3 ; CP1:Complex; CP3:something
-universalMultComplexSomething:
-    call checkOp3Real
-    jr z, universalMultComplexReal
-    call checkOp3Complex
-    jr z, universalMultComplexComplex
+universalMultRealByComplex:
+    call cp1ExCp3 ; CP1=complex; CP3=real
+    jr universalMultComplexByReal
+universalMultRealByDateTime:
+    bcall(_ConvertRpnDateTimeToTimeZoneAsReal)
+    ret
+universalMultRealByOffsetDateTime:
+    bcall(_ConvertRpnOffsetDateTimeToTimeZoneAsReal)
+    ret
+; Complex * object
+universalMultComplexByObject:
+    call getOp3RpnObjectType
+    cp rpnObjectTypeReal
+    jr z, universalMultComplexByReal
+    cp rpnObjectTypeComplex
+    jr z, universalMultComplexByComplex
     jr universalMultErr
-universalMultComplexComplex:
+universalMultComplexByComplex:
     ; Complex*Complex
     bcall(_PushOP1) ; FPS=[Y]
     call cp3ToCp1 ; OP1/OP2=OP3/OP4
     bcall(_CMult) ; OP1/OP2 = FPS[OP1/OP2] * OP1/OP2; FPS=[]
     ret
-universalMultComplexReal:
-    ; Complex*Real
+universalMultComplexByReal:
     bcall(_CMltByReal) ; CP1=CP1*OP3
     ret
 ; Placed in the middle, so that 'jr' can be used instead of 'jp'.
 universalMultErr:
     bcall(_ErrDataType)
-; DateTime*(Offset|Real)
-universalMultDateTimeByTimeZone:
-    call checkOp3Offset
-    jr z, universalMultDateTimeByOffset
-    call checkOp3Real
+; DateTime * object
+universalMultDateTimeByObject:
+    call getOp3RpnObjectType
+    cp rpnObjectTypeReal
     jr z, universalMultDateTimeByReal
+    cp rpnObjectTypeOffset
+    jr z, universalMultDateTimeByOffset
     jr universalMultErr
-universalMultDateTimeByOffset:
-    bcall(_ConvertRpnDateTimeToTimeZoneAsOffset)
-    ret
 universalMultDateTimeByReal:
     bcall(_ConvertRpnDateTimeToTimeZoneAsReal)
     ret
-; (Offset|Real)*DateTime
-universalMultTimeZoneByDateTime:
-    call checkOp1Offset
+universalMultDateTimeByOffset:
+    bcall(_ConvertRpnDateTimeToTimeZoneAsOffset)
+    ret
+; Offset * object
+universalMultOffsetByObject:
+    call getOp3RpnObjectType
+    cp rpnObjectTypeOffset
     jr z, universalMultOffsetByDateTime
-    call checkOp1Real
-    jr z, universalMultRealByDateTime
     jr universalMultErr
 universalMultOffsetByDateTime:
     bcall(_ConvertRpnDateTimeToTimeZoneAsOffset)
     ret
-universalMultRealByDateTime:
-    bcall(_ConvertRpnDateTimeToTimeZoneAsReal)
-    ret
-; OffsetDateTime*(Offset|Real)
-universalMultOffsetDateTimeByTimeZone:
-    call checkOp3Offset
-    jr z, universalMultOffsetDateTimeByOffset
-    call checkOp3Real
+; OffsetDateTime * object
+universalMultOffsetDateTimeByObject:
+    call getOp3RpnObjectType
+    cp rpnObjectTypeReal
     jr z, universalMultOffsetDateTimeByReal
+    cp rpnObjectTypeOffset
+    jr z, universalMultOffsetDateTimeByOffset
     jr universalMultErr
-universalMultOffsetDateTimeByOffset:
-    bcall(_ConvertRpnOffsetDateTimeToOffset)
-    ret
 universalMultOffsetDateTimeByReal:
     bcall(_ConvertRpnOffsetDateTimeToTimeZoneAsReal)
     ret
-; (Offset|Real)*OffsetDateTime
-universalMultTimeZoneByOffsetDateTime:
-    call checkOp1Offset
-    jr z, universalMultOffsetByOffsetDateTime
-    call checkOp1Real
-    jr z, universalMultRealByOffsetDateTime
-    jr universalMultErr
-universalMultOffsetByOffsetDateTime:
+universalMultOffsetDateTimeByOffset:
     bcall(_ConvertRpnOffsetDateTimeToOffset)
-    ret
-universalMultRealByOffsetDateTime:
-    bcall(_ConvertRpnOffsetDateTimeToTimeZoneAsReal)
     ret
 
 ; Description: Division for real and complex numbers.
