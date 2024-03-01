@@ -2053,8 +2053,17 @@ mDateRelatedToSecondsId equ 217
     .dw 0 ; rowBeginId or altNameId
     .dw mDateRelatedToSecondsHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
+mSecondsToDuration:
+mSecondsToDurationId equ 218
+    .dw mSecondsToDurationId ; id
+    .dw mDateId ; parentId
+    .dw mSecondsToDurationNameId ; nameId
+    .db 0 ; numRows
+    .dw 0 ; rowBeginId or altNameId
+    .dw mSecondsToDurationHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
 mSecondsToTime:
-mSecondsToTimeId equ 218
+mSecondsToTimeId equ 219
     .dw mSecondsToTimeId ; id
     .dw mDateId ; parentId
     .dw mSecondsToTimeNameId ; nameId
@@ -2062,42 +2071,33 @@ mSecondsToTimeId equ 218
     .dw 0 ; rowBeginId or altNameId
     .dw mSecondsToTimeHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
-mEpochSecondstoDate:
-mEpochSecondstoDateId equ 219
-    .dw mEpochSecondstoDateId ; id
+mEpochSecondsToDateTime:
+mEpochSecondsToDateTimeId equ 220
+    .dw mEpochSecondsToDateTimeId ; id
     .dw mDateId ; parentId
-    .dw mEpochSecondstoDateNameId ; nameId
+    .dw mEpochSecondsToDateTimeNameId ; nameId
     .db 0 ; numRows
     .dw 0 ; rowBeginId or altNameId
-    .dw mEpochSecondstoDateHandler ; handler (to be implemented)
+    .dw mEpochSecondsToDateTimeHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
-mEpochSecondstoDateTime:
-mEpochSecondstoDateTimeId equ 220
-    .dw mEpochSecondstoDateTimeId ; id
+mEpochSecondsToOffsetDateTime:
+mEpochSecondsToOffsetDateTimeId equ 221
+    .dw mEpochSecondsToOffsetDateTimeId ; id
     .dw mDateId ; parentId
-    .dw mEpochSecondstoDateTimeNameId ; nameId
+    .dw mEpochSecondsToOffsetDateTimeNameId ; nameId
     .db 0 ; numRows
     .dw 0 ; rowBeginId or altNameId
-    .dw mEpochSecondstoDateTimeHandler ; handler (to be implemented)
-    .dw 0 ; nameSelector
-mEpochSecondstoOffsetDateTime:
-mEpochSecondstoOffsetDateTimeId equ 221
-    .dw mEpochSecondstoOffsetDateTimeId ; id
-    .dw mDateId ; parentId
-    .dw mEpochSecondstoOffsetDateTimeNameId ; nameId
-    .db 0 ; numRows
-    .dw 0 ; rowBeginId or altNameId
-    .dw mEpochSecondstoOffsetDateTimeHandler ; handler (to be implemented)
+    .dw mEpochSecondsToOffsetDateTimeHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
 ; MenuGroup DATE: children: row 2
-mSecondsToDuration:
-mSecondsToDurationId equ 222
-    .dw mSecondsToDurationId ; id
+mBlank222:
+mBlank222Id equ 222
+    .dw mBlank222Id ; id
     .dw mDateId ; parentId
-    .dw mSecondsToDurationNameId ; nameId
+    .dw mNullNameId ; nameId
     .db 0 ; numRows
     .dw 0 ; rowBeginId or altNameId
-    .dw mSecondsToDurationHandler ; handler (to be implemented)
+    .dw mNullHandler ; handler (predefined)
     .dw 0 ; nameSelector
 mBlank223:
 mBlank223Id equ 223
@@ -2276,7 +2276,7 @@ mEpochGetCustomId equ 241
     .dw 0 ; nameSelector
 
 ; Table of 2-byte pointers to names in the pool of strings below.
-mMenuNameTableSize equ 247
+mMenuNameTableSize equ 246
 mMenuNameTable:
 mNullNameId equ 0
     .dw mNullName
@@ -2718,59 +2718,57 @@ mEpochDaysToDateNameId equ 218
     .dw mEpochDaysToDateName
 mDateRelatedToSecondsNameId equ 219
     .dw mDateRelatedToSecondsName
-mSecondsToTimeNameId equ 220
-    .dw mSecondsToTimeName
-mEpochSecondstoDateNameId equ 221
-    .dw mEpochSecondstoDateName
-mEpochSecondstoDateTimeNameId equ 222
-    .dw mEpochSecondstoDateTimeName
-mEpochSecondstoOffsetDateTimeNameId equ 223
-    .dw mEpochSecondstoOffsetDateTimeName
-mSecondsToDurationNameId equ 224
+mSecondsToDurationNameId equ 220
     .dw mSecondsToDurationName
-mSetTimeZoneNameId equ 225
+mSecondsToTimeNameId equ 221
+    .dw mSecondsToTimeName
+mEpochSecondsToDateTimeNameId equ 222
+    .dw mEpochSecondsToDateTimeName
+mEpochSecondsToOffsetDateTimeNameId equ 223
+    .dw mEpochSecondsToOffsetDateTimeName
+mSetTimeZoneNameId equ 224
     .dw mSetTimeZoneName
-mGetTimeZoneNameId equ 226
+mGetTimeZoneNameId equ 225
     .dw mGetTimeZoneName
-mEpochNameId equ 227
+mEpochNameId equ 226
     .dw mEpochName
-mRtcGetNowNameId equ 228
+mRtcGetNowNameId equ 227
     .dw mRtcGetNowName
-mRtcGetNowDzNameId equ 229
+mRtcGetNowDzNameId equ 228
     .dw mRtcGetNowDzName
-mRtcSetTimeZoneNameId equ 230
+mRtcSetTimeZoneNameId equ 229
     .dw mRtcSetTimeZoneName
-mRtcGetTimeZoneNameId equ 231
+mRtcGetTimeZoneNameId equ 230
     .dw mRtcGetTimeZoneName
-mRtcSetClockNameId equ 232
+mRtcSetClockNameId equ 231
     .dw mRtcSetClockName
-mEpochUnixNameId equ 233
+mEpochUnixNameId equ 232
     .dw mEpochUnixName
-mEpochUnixAltNameId equ 234
+mEpochUnixAltNameId equ 233
     .dw mEpochUnixAltName
-mEpochNtpNameId equ 235
+mEpochNtpNameId equ 234
     .dw mEpochNtpName
-mEpochNtpAltNameId equ 236
+mEpochNtpAltNameId equ 235
     .dw mEpochNtpAltName
-mEpochGpsNameId equ 237
+mEpochGpsNameId equ 236
     .dw mEpochGpsName
-mEpochGpsAltNameId equ 238
+mEpochGpsAltNameId equ 237
     .dw mEpochGpsAltName
-mEpochTiosNameId equ 239
+mEpochTiosNameId equ 238
     .dw mEpochTiosName
-mEpochTiosAltNameId equ 240
+mEpochTiosAltNameId equ 239
     .dw mEpochTiosAltName
-mEpochY2kNameId equ 241
+mEpochY2kNameId equ 240
     .dw mEpochY2kName
-mEpochY2kAltNameId equ 242
+mEpochY2kAltNameId equ 241
     .dw mEpochY2kAltName
-mEpochCustomNameId equ 243
+mEpochCustomNameId equ 242
     .dw mEpochCustomName
-mEpochCustomAltNameId equ 244
+mEpochCustomAltNameId equ 243
     .dw mEpochCustomAltName
-mEpochSetCustomNameId equ 245
+mEpochSetCustomNameId equ 244
     .dw mEpochSetCustomName
-mEpochGetCustomNameId equ 246
+mEpochGetCustomNameId equ 245
     .dw mEpochGetCustomName
 
 ; Table of names as NUL terminated C strings.
@@ -3214,16 +3212,14 @@ mEpochDaysToDateName:
     .db 'D', 'Y', Sconvert, 'D', 0
 mDateRelatedToSecondsName:
     .db 'D', Scross, Sconvert, 'S', 0
-mSecondsToTimeName:
-    .db 'S', Sconvert, 'T', 0
-mEpochSecondstoDateName:
-    .db 'S', Sconvert, 'D', 0
-mEpochSecondstoDateTimeName:
-    .db 'S', Sconvert, 'D', 'T', 0
-mEpochSecondstoOffsetDateTimeName:
-    .db 'S', Sconvert, 'D', 'Z', 0
 mSecondsToDurationName:
     .db 'S', Sconvert, 'R', 0
+mSecondsToTimeName:
+    .db 'S', Sconvert, 'T', 0
+mEpochSecondsToDateTimeName:
+    .db 'S', Sconvert, 'D', 'T', 0
+mEpochSecondsToOffsetDateTimeName:
+    .db 'S', Sconvert, 'D', 'Z', 0
 mSetTimeZoneName:
     .db "TZ", 0
 mGetTimeZoneName:

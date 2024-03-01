@@ -391,13 +391,13 @@ MenuGroup root mRoot [
       ]
       MenuRow [
         MenuItem D<Scross><Sconvert>S mDateRelatedToSeconds
+        MenuItem S<Sconvert>R mSecondsToDuration
         MenuItem S<Sconvert>T mSecondsToTime
-        MenuItem S<Sconvert>D mEpochSecondstoDate
-        MenuItem S<Sconvert>DT mEpochSecondstoDateTime
-        MenuItem S<Sconvert>DZ mEpochSecondstoOffsetDateTime
+        MenuItem S<Sconvert>DT mEpochSecondsToDateTime
+        MenuItem S<Sconvert>DZ mEpochSecondsToOffsetDateTime
       ]
       MenuRow [
-        MenuItem S<Sconvert>R mSecondsToDuration
+        MenuItem * *
         MenuItem * *
         MenuItem TZ mSetTimeZone
         MenuItem TZ<Squestion> mGetTimeZone

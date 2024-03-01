@@ -72,11 +72,6 @@ mSecondsToTimeHandler:
     bcall(_SecondsToRpnTime) ; OP1=Time(seconds)
     jp replaceX
 
-mEpochSecondsToDateHandler:
-    call closeInputAndRecallX ; OP1=X=epochSeconds
-    bcall(_EpochSecondsToRpnDate) ; OP1=Date(epochSeconds)
-    jp replaceX
-
 mEpochSecondsToDateTimeHandler:
     call closeInputAndRecallX ; OP1=X=epochSeconds
     bcall(_EpochSecondsToRpnDateTime) ; OP1=DateTime(epochSeconds)
