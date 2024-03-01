@@ -125,44 +125,43 @@ AddRpnOffsetDateTimeBySeconds:
     jr z, addRpnOffsetDateTimeBySecondsAdd
     call cp1ExCp3PageTwo ; CP1=rpnOffsetDateTime; CP3=seconds
 addRpnOffsetDateTimeBySecondsAdd:
-    ; CP1=rpnOffsetDateTime, CP3=seconds
-    ; Push rpnOffsetDateTime to FPS, which also removes the 2-byte gap between
-    ; OP1/OP2.
-    call PushRpnObject1 ; FPS=[rpnOffsetDateTime]
-    push hl ; stack=[rpnOffsetDateTime]
-    ; convert OP3 to i40, then push to FPS
+    ; CP1=rpnOffsetDateTime, CP3=seconds.
+    ; Save the offsetDateTime in the FPS, to save the offset.
+    call PushRpnObject1 ; FPS=[odt]; HL=odt
+    push hl ; stack=[odt]
+    ; Convert CP1 to i40 seconds on FPS.
+    call reserveRaw9 ; FPS=[odt,odtSeconds]; HL=odtSeconds
+    push hl ; stack=[odt,odtSeconds]
+    call shrinkOp2ToOp1PageTwo ; remove 2-byte gap
+    ld de, OP1+1 ; DE:(DateTime*)=dateTime
+    call offsetDateTimeToEpochSeconds ; HL=odtSeconds
+    ; Convert OP3 to i40 on FPS
     call op3ToOp1PageTwo ; OP1:real=seconds
     call ConvertOP1ToI40 ; OP1:(i40*)=seconds
-    call pushRaw9Op1 ; FPS=[rpnOffsetDateTime,seconds]; HL=seconds
-    ex (sp), hl ; stack=[seconds]; HL=rpnOffsetDateTime
-    ; convert rpnOffsetDateTime to i40 seconds
-    ex de, hl ; DE=rpnOffsetDateTime
-    inc de ; skip type byte
-    ld hl, OP1
-    call offsetDateTimeToEpochSeconds ; HL=OP1:(i40*)=offsetDateTimeSeconds
-    ; save (Offset*) pointer to original offset
-    ld c, e
-    ld b, d ; BC=offsetDateTime+sizeof(OffsetDateTime)
-    dec bc
-    dec bc ; BC:(Offset*)=offset
-    ; add seconds + dateSeconds
-    ex de, hl ; DE=offsetDateTimeSeconds
-    pop hl ; stack=[]; HL=FPS.seconds
-    call addU40U40 ; HL=FPS.resultSeconds=offsetDateTimeSeconds+seconds
-    ; convert resultSeconds to RpnOffsetDateTime (use FPS to avoid the 2-byte
-    ; gap)
+    call pushRaw9Op1 ; FPS=[odt,odtSeconds,seconds]; HL=seconds
+    ; add odtSeconds + seconds
+    pop de ; stack=[odt]; DE=odtSeconds
+    call addU40U40 ; HL=resultSeconds=odtSeconds+seconds
+    ; Set up conversion from resultSeconds to RpnOffsetDateTimes. The target
+    ; is the FPS to avoid the 2-byte gap. The offset is retrieved from the FPS.
     ex de, hl ; DE=resultSeconds
-    ; after the call below:
-    ;   - FPS=[rpnOffsetDateTime,resultSeconds,resultOffsetDateTime]
-    ;   - HL=resultOffsetDatetime
-    call reserveRpnObject
+    pop bc ; stack=[]; BC=odt
+    ld a, rpnObjectTypeDateTimeSizeOf
+    add a, c
+    ld c, a
+    ld a, 0
+    adc a, b
+    ld b, a ; BC+=sizeof(RpnDateTime)=offsetPointer
+    ; convert relative epoch seconds to OffsetDateTime.
+    call reserveRpnObject ; FPS=[odt,odtSeconds,seconds,newOdt]
     ld a, rpnObjectTypeOffsetDateTime
     ld (hl), a
-    inc hl ; HL:(OffsetDateTime*)=newOffsetDateTime
+    inc hl ; HL:(OffsetDateTime*)=newOdt
     call epochSecondsToOffsetDateTime ; HL=resultOffsetDateTime+sizeof(ODT)
     ; clean up stack and FPS
-    call PopRpnObject1 ; FPS=[rpnOffsetDateTime,resultSeconds]; OP1=result
-    call dropRaw9 ; FPS=[rpnOffsetDateTime]
+    call PopRpnObject1 ; FPS=[odt,odtSeconds,seconds]; OP1=newOdt
+    call dropRaw9 ; FPS=[odt,odtSeconds]
+    call dropRaw9 ; FPS=[odt]
     jp dropRpnObject ; FPS=[]
 
 ;-----------------------------------------------------------------------------
