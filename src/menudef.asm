@@ -2108,14 +2108,14 @@ mTimeZoneToHoursId equ 223
     .dw 0 ; rowBeginId or altNameId
     .dw mTimeZoneToHoursHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
-mEpoch:
-mEpochId equ 224
-    .dw mEpochId ; id
+mBlank224:
+mBlank224Id equ 224
+    .dw mBlank224Id ; id
     .dw mDateId ; parentId
-    .dw mEpochNameId ; nameId
-    .db 2 ; numRows
-    .dw mEpochUnixId ; rowBeginId or altNameId
-    .dw mGroupHandler ; handler (predefined)
+    .dw mNullNameId ; nameId
+    .db 0 ; numRows
+    .dw 0 ; rowBeginId or altNameId
+    .dw mNullHandler ; handler (predefined)
     .dw 0 ; nameSelector
 mBlank225:
 mBlank225Id equ 225
@@ -2126,51 +2126,51 @@ mBlank225Id equ 225
     .dw 0 ; rowBeginId or altNameId
     .dw mNullHandler ; handler (predefined)
     .dw 0 ; nameSelector
-mBlank226:
-mBlank226Id equ 226
-    .dw mBlank226Id ; id
+mEpoch:
+mEpochId equ 226
+    .dw mEpochId ; id
     .dw mDateId ; parentId
-    .dw mNullNameId ; nameId
-    .db 0 ; numRows
-    .dw 0 ; rowBeginId or altNameId
-    .dw mNullHandler ; handler (predefined)
+    .dw mEpochNameId ; nameId
+    .db 2 ; numRows
+    .dw mEpochUnixId ; rowBeginId or altNameId
+    .dw mGroupHandler ; handler (predefined)
     .dw 0 ; nameSelector
 ; MenuGroup DATE: children: row 3
-mRtcGetNow:
-mRtcGetNowId equ 227
-    .dw mRtcGetNowId ; id
+mGetNow:
+mGetNowId equ 227
+    .dw mGetNowId ; id
     .dw mDateId ; parentId
-    .dw mRtcGetNowNameId ; nameId
+    .dw mGetNowNameId ; nameId
     .db 0 ; numRows
     .dw 0 ; rowBeginId or altNameId
-    .dw mRtcGetNowHandler ; handler (to be implemented)
+    .dw mGetNowHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
-mRtcGetTime:
-mRtcGetTimeId equ 228
-    .dw mRtcGetTimeId ; id
+mGetNowTime:
+mGetNowTimeId equ 228
+    .dw mGetNowTimeId ; id
     .dw mDateId ; parentId
-    .dw mRtcGetTimeNameId ; nameId
+    .dw mGetNowTimeNameId ; nameId
     .db 0 ; numRows
     .dw 0 ; rowBeginId or altNameId
-    .dw mRtcGetTimeHandler ; handler (to be implemented)
+    .dw mGetNowTimeHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
-mRtcGetDate:
-mRtcGetDateId equ 229
-    .dw mRtcGetDateId ; id
+mGetNowDate:
+mGetNowDateId equ 229
+    .dw mGetNowDateId ; id
     .dw mDateId ; parentId
-    .dw mRtcGetDateNameId ; nameId
+    .dw mGetNowDateNameId ; nameId
     .db 0 ; numRows
     .dw 0 ; rowBeginId or altNameId
-    .dw mRtcGetDateHandler ; handler (to be implemented)
+    .dw mGetNowDateHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
-mRtcGetNowDz:
-mRtcGetNowDzId equ 230
-    .dw mRtcGetNowDzId ; id
+mGetNowDz:
+mGetNowDzId equ 230
+    .dw mGetNowDzId ; id
     .dw mDateId ; parentId
-    .dw mRtcGetNowDzNameId ; nameId
+    .dw mGetNowDzNameId ; nameId
     .db 0 ; numRows
     .dw 0 ; rowBeginId or altNameId
-    .dw mRtcGetNowDzHandler ; handler (to be implemented)
+    .dw mGetNowDzHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
 mBlank231:
 mBlank231Id equ 231
@@ -2200,32 +2200,32 @@ mGetTimeZoneId equ 233
     .dw 0 ; rowBeginId or altNameId
     .dw mGetTimeZoneHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
-mRtcSetTimeZone:
-mRtcSetTimeZoneId equ 234
-    .dw mRtcSetTimeZoneId ; id
+mSetClockTimeZone:
+mSetClockTimeZoneId equ 234
+    .dw mSetClockTimeZoneId ; id
     .dw mDateId ; parentId
-    .dw mRtcSetTimeZoneNameId ; nameId
+    .dw mSetClockTimeZoneNameId ; nameId
     .db 0 ; numRows
     .dw 0 ; rowBeginId or altNameId
-    .dw mRtcSetTimeZoneHandler ; handler (to be implemented)
+    .dw mSetClockTimeZoneHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
-mRtcGetTimeZone:
-mRtcGetTimeZoneId equ 235
-    .dw mRtcGetTimeZoneId ; id
+mGetClockTimeZone:
+mGetClockTimeZoneId equ 235
+    .dw mGetClockTimeZoneId ; id
     .dw mDateId ; parentId
-    .dw mRtcGetTimeZoneNameId ; nameId
+    .dw mGetClockTimeZoneNameId ; nameId
     .db 0 ; numRows
     .dw 0 ; rowBeginId or altNameId
-    .dw mRtcGetTimeZoneHandler ; handler (to be implemented)
+    .dw mGetClockTimeZoneHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
-mRtcSetClock:
-mRtcSetClockId equ 236
-    .dw mRtcSetClockId ; id
+mSetClock:
+mSetClockId equ 236
+    .dw mSetClockId ; id
     .dw mDateId ; parentId
-    .dw mRtcSetClockNameId ; nameId
+    .dw mSetClockNameId ; nameId
     .db 0 ; numRows
     .dw 0 ; rowBeginId or altNameId
-    .dw mRtcSetClockHandler ; handler (to be implemented)
+    .dw mSetClockHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
 ; MenuGroup EPCH: children
 ; MenuGroup EPCH: children: row 0
@@ -2778,24 +2778,24 @@ mTimeZoneToHoursNameId equ 225
     .dw mTimeZoneToHoursName
 mEpochNameId equ 226
     .dw mEpochName
-mRtcGetNowNameId equ 227
-    .dw mRtcGetNowName
-mRtcGetTimeNameId equ 228
-    .dw mRtcGetTimeName
-mRtcGetDateNameId equ 229
-    .dw mRtcGetDateName
-mRtcGetNowDzNameId equ 230
-    .dw mRtcGetNowDzName
+mGetNowNameId equ 227
+    .dw mGetNowName
+mGetNowTimeNameId equ 228
+    .dw mGetNowTimeName
+mGetNowDateNameId equ 229
+    .dw mGetNowDateName
+mGetNowDzNameId equ 230
+    .dw mGetNowDzName
 mSetTimeZoneNameId equ 231
     .dw mSetTimeZoneName
 mGetTimeZoneNameId equ 232
     .dw mGetTimeZoneName
-mRtcSetTimeZoneNameId equ 233
-    .dw mRtcSetTimeZoneName
-mRtcGetTimeZoneNameId equ 234
-    .dw mRtcGetTimeZoneName
-mRtcSetClockNameId equ 235
-    .dw mRtcSetClockName
+mSetClockTimeZoneNameId equ 233
+    .dw mSetClockTimeZoneName
+mGetClockTimeZoneNameId equ 234
+    .dw mGetClockTimeZoneName
+mSetClockNameId equ 235
+    .dw mSetClockName
 mEpochUnixNameId equ 236
     .dw mEpochUnixName
 mEpochUnixAltNameId equ 237
@@ -3280,23 +3280,23 @@ mTimeZoneToHoursName:
     .db 'T', 'Z', Sconvert, 'H', 0
 mEpochName:
     .db "EPCH", 0
-mRtcGetNowName:
+mGetNowName:
     .db "NOW", 0
-mRtcGetTimeName:
+mGetNowTimeName:
     .db "NOWT", 0
-mRtcGetDateName:
+mGetNowDateName:
     .db "NOWD", 0
-mRtcGetNowDzName:
+mGetNowDzName:
     .db "NWDZ", 0
 mSetTimeZoneName:
     .db "TZ", 0
 mGetTimeZoneName:
     .db 'T', 'Z', Squestion, 0
-mRtcSetTimeZoneName:
+mSetClockTimeZoneName:
     .db "CTZ", 0
-mRtcGetTimeZoneName:
+mGetClockTimeZoneName:
     .db 'C', 'T', 'Z', Squestion, 0
-mRtcSetClockName:
+mSetClockName:
     .db "SETC", 0
 mEpochUnixName:
     .db "UNIX", 0
