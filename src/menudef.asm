@@ -2025,23 +2025,23 @@ mBlank214Id equ 214
     .dw 0 ; rowBeginId or altNameId
     .dw mNullHandler ; handler (predefined)
     .dw 0 ; nameSelector
-mDateToEpochDays:
-mDateToEpochDaysId equ 215
-    .dw mDateToEpochDaysId ; id
-    .dw mDateId ; parentId
-    .dw mDateToEpochDaysNameId ; nameId
-    .db 0 ; numRows
-    .dw 0 ; rowBeginId or altNameId
-    .dw mDateToEpochDaysHandler ; handler (to be implemented)
-    .dw 0 ; nameSelector
 mEpochDaysToDate:
-mEpochDaysToDateId equ 216
+mEpochDaysToDateId equ 215
     .dw mEpochDaysToDateId ; id
     .dw mDateId ; parentId
     .dw mEpochDaysToDateNameId ; nameId
     .db 0 ; numRows
     .dw 0 ; rowBeginId or altNameId
     .dw mEpochDaysToDateHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
+mDateToEpochDays:
+mDateToEpochDaysId equ 216
+    .dw mDateToEpochDaysId ; id
+    .dw mDateId ; parentId
+    .dw mDateToEpochDaysNameId ; nameId
+    .db 0 ; numRows
+    .dw 0 ; rowBeginId or altNameId
+    .dw mDateToEpochDaysHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
 ; MenuGroup DATE: children: row 1
 mDateRelatedToSeconds:
@@ -2712,10 +2712,10 @@ mLeapYearNameId equ 215
     .dw mLeapYearName
 mDayOfWeekNameId equ 216
     .dw mDayOfWeekName
-mDateToEpochDaysNameId equ 217
-    .dw mDateToEpochDaysName
-mEpochDaysToDateNameId equ 218
+mEpochDaysToDateNameId equ 217
     .dw mEpochDaysToDateName
+mDateToEpochDaysNameId equ 218
+    .dw mDateToEpochDaysName
 mDateRelatedToSecondsNameId equ 219
     .dw mDateRelatedToSecondsName
 mSecondsToDurationNameId equ 220
@@ -3210,10 +3210,10 @@ mLeapYearName:
     .db "LEAP", 0
 mDayOfWeekName:
     .db "DOW", 0
-mDateToEpochDaysName:
-    .db 'D', Sconvert, 'D', 'Y', 0
 mEpochDaysToDateName:
     .db 'D', 'Y', Sconvert, 'D', 0
+mDateToEpochDaysName:
+    .db 'D', Sconvert, 'D', 'Y', 0
 mDateRelatedToSecondsName:
     .db 'D', Scross, Sconvert, 'S', 0
 mSecondsToDurationName:

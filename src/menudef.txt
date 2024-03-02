@@ -386,8 +386,8 @@ MenuGroup root mRoot [
         MenuItem LEAP mLeapYear # returns 0 or 1
         MenuItem DOW mDayOfWeek # accepts Date, DateTime, OffsetDateTime
         MenuItem * *
-        MenuItem D<Sconvert>DY mDateToEpochDays
         MenuItem DY<Sconvert>D mEpochDaysToDate
+        MenuItem D<Sconvert>DY mDateToEpochDays
       ]
       MenuRow [
         MenuItem D<Scross><Sconvert>S mDateRelatedToSeconds
