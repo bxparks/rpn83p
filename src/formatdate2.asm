@@ -503,9 +503,12 @@ formatDurationString:
     ld (de), a
     inc de
     call chsDuration
+    push hl
     call formatDurationStringPos
+    pop hl
     call chsDuration
     ret
+    ;
 formatDurationStringPos:
     ld c, (hl)
     inc hl
@@ -525,6 +528,7 @@ formatDurationStringHours:
     inc hl
     or a
     jr z, formatDurationStringMinutes ; skip '0h'
+    call formatDurationAddSpaceIfNeeded
     call formatU8AToFlex2
     ld a, 'h'
     ld (de), a
@@ -536,6 +540,7 @@ formatDurationStringMinutes:
     inc hl
     or a
     jr z, formatDurationStringSeconds ; skip '0m'
+    call formatDurationAddSpaceIfNeeded
     call formatU8AToFlex2
     ld a, 'm'
     ld (de), a
@@ -543,13 +548,16 @@ formatDurationStringMinutes:
     set 0, b
     ;
 formatDurationStringSeconds:
+    ; print a "0s" if nothing else has already been printed
     ld a, (hl) ; A=seconds
     inc hl
     or a
     jr nz, formatDurationStringSecondsFormat
-    bit 0, b
+    ; if seconds==0: print it anyway if no other components were written
+    bit 0, b ; ZF=0 if nonZeroFieldWritten==true
     jr nz, formatDurationStringEnd ; if nonZeroFieldWritten: skip '0s'
 formatDurationStringSecondsFormat:
+    call formatDurationAddSpaceIfNeeded
     call formatU8AToFlex2
     ld a, 's'
     ld (de), a
@@ -558,6 +566,16 @@ formatDurationStringEnd:
     ; add NUL
     xor a
     ld (de), a
+    ret
+;
+formatDurationAddSpaceIfNeeded:
+    bit 0, b ; B[0]==1 if nonZeroFieldWritten
+    ret z
+    push af
+    ld a, ' '
+    ld (de), a
+    inc de
+    pop af
     ret
 
 ;-----------------------------------------------------------------------------
