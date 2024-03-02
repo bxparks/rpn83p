@@ -383,8 +383,8 @@ MenuGroup root mRoot [
     ]
     MenuGroup DATE mDate [
       MenuRow [
-        MenuItem LEAP mLeapYear # returns 0 or 1
-        MenuItem DOW mDayOfWeek # accepts Date, DateTime, OffsetDateTime
+        MenuItem LEAP mLeapYear # operates on year
+        MenuItem DOW mDayOfWeek # operates on Date
         MenuItem * *
         MenuItem DY<Sconvert>D mEpochDaysToDate
         MenuItem D<Sconvert>DY mDateToEpochDays
@@ -399,8 +399,6 @@ MenuGroup root mRoot [
       MenuRow [
         MenuItem H<Sconvert>TZ mHoursToTimeZone
         MenuItem TZ<Sconvert>H mTimeZoneToHours
-        MenuItem TZ mSetTimeZone
-        MenuItem TZ<Squestion> mGetTimeZone
         MenuGroup EPCH mEpoch [
           MenuRow [
             MenuItemAlt UNIX UNI<Sblock> mEpochUnix # 1970-01-01T00:00:00
@@ -420,14 +418,18 @@ MenuGroup root mRoot [
       ]
       MenuRow [
         MenuItem NOW mRtcGetNow # current epochSeconds
+        MenuItem NOWT mRtcGetTime # current Time
+        MenuItem NOWD mRtcGetDate # current Date
         MenuItem NWDZ mRtcGetNowDz # current OffsetDateTime
+      ]
+      MenuRow [
+        MenuItem TZ mSetTimeZone
+        MenuItem TZ<Squestion> mGetTimeZone
         MenuItem CTZ mRtcSetTimeZone
         MenuItem CTZ<Squestion> mRtcGetTimeZone
         MenuItem SETC mRtcSetClock # set current clock
       ]
       # MenuRow [
-      #  MenuItem R<Sconvert>SS mDurationToSeconds
-      #  MenuItem SS<Sconvert>R mSecondsToDuration
       #   MenuGroup ISO mIso [
       #     MenuRow [
       #       MenuItem D<Sconvert>IS mDateToIsoWeekDay

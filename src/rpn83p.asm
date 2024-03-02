@@ -1381,6 +1381,14 @@ _RtcGetNowLabel:
 _RtcGetNow equ _RtcGetNowLabel-branchTableBase
     .dw RtcGetNow
     .db 2
+_RtcGetDateLabel:
+_RtcGetDate equ _RtcGetDateLabel-branchTableBase
+    .dw RtcGetDate
+    .db 2
+_RtcGetTimeLabel:
+_RtcGetTime equ _RtcGetTimeLabel-branchTableBase
+    .dw RtcGetTime
+    .db 2
 _RtcGetOffsetDateTimeLabel:
 _RtcGetOffsetDateTime equ _RtcGetOffsetDateTimeLabel-branchTableBase
     .dw RtcGetOffsetDateTime
@@ -1738,6 +1746,7 @@ defpage(2)
 #include "selectepoch2.asm"
 #include "epoch2.asm"
 #include "datevalidation2.asm"
+#include "datetransform2.asm"
 #include "date2.asm"
 #include "time2.asm"
 #include "dayofweek2.asm"
