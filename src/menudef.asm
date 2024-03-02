@@ -2163,14 +2163,14 @@ mGetNowDateId equ 229
     .dw 0 ; rowBeginId or altNameId
     .dw mGetNowDateHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
-mGetNowDz:
-mGetNowDzId equ 230
-    .dw mGetNowDzId ; id
+mGetNowOffsetDateTime:
+mGetNowOffsetDateTimeId equ 230
+    .dw mGetNowOffsetDateTimeId ; id
     .dw mDateId ; parentId
-    .dw mGetNowDzNameId ; nameId
+    .dw mGetNowOffsetDateTimeNameId ; nameId
     .db 0 ; numRows
     .dw 0 ; rowBeginId or altNameId
-    .dw mGetNowDzHandler ; handler (to be implemented)
+    .dw mGetNowOffsetDateTimeHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
 mBlank231:
 mBlank231Id equ 231
@@ -2784,8 +2784,8 @@ mGetNowTimeNameId equ 228
     .dw mGetNowTimeName
 mGetNowDateNameId equ 229
     .dw mGetNowDateName
-mGetNowDzNameId equ 230
-    .dw mGetNowDzName
+mGetNowOffsetDateTimeNameId equ 230
+    .dw mGetNowOffsetDateTimeName
 mSetTimeZoneNameId equ 231
     .dw mSetTimeZoneName
 mGetTimeZoneNameId equ 232
@@ -3286,7 +3286,7 @@ mGetNowTimeName:
     .db "NOWT", 0
 mGetNowDateName:
     .db "NOWD", 0
-mGetNowDzName:
+mGetNowOffsetDateTimeName:
     .db "NWDZ", 0
 mSetTimeZoneName:
     .db "TZ", 0

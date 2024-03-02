@@ -422,7 +422,7 @@ MenuGroup root mRoot [
         MenuItem NOW mGetNow # current epochSeconds
         MenuItem NOWT mGetNowTime # current Time
         MenuItem NOWD mGetNowDate # current Date
-        MenuItem NWDZ mGetNowDz # current OffsetDateTime
+        MenuItem NWDZ mGetNowOffsetDateTime # current OffsetDateTime
       ]
       MenuRow [
         MenuItem TZ mSetTimeZone

@@ -258,7 +258,7 @@ mGetNowDateHandler:
     bcall(_RtcGetDate)
     jp pushToX
 
-mGetNowDzHandler:
+mGetNowOffsetDateTimeHandler:
     ld a, (isTi83Plus)
     or a
     jr nz, noClockErr
