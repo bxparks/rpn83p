@@ -24,16 +24,42 @@ RtcInit:
 ; Description: Retrieve the current RTC as seconds relative to the current
 ; epochDate.
 ; Input: none
-; Output: OP1:real=seconds relative to current epochDate.
+; Output: OP1:real=epochSeconds
 RtcGetNow:
     ld hl, OP1
     call getRtcNowAsEpochSeconds ; HL=OP1=epochSeconds
     jp ConvertI40ToOP1
 
+; Description: Retrieve the current RTC as a Time object.
+; Input: none
+; Output: OP1:Time=currentTime
+RtcGetTime:
+    ld hl, OP1
+    call getRtcNowAsEpochSeconds ; HL=OP1=epochSeconds
+    ; Convert to RpnOffsetDateTime using current offset
+    call epochSecondsToRpnOffsetDateTimeAlt ; OP1=RpnOffsetDateTime
+    ; Transform to RpnTime
+    ld hl, OP1
+    call transformToTime ; HL=(RpnTime*)=rpnTime
+    ret
+
+; Description: Retrieve the current RTC as a Date object.
+; Input: none
+; Output: OP1:Date=currentDate
+RtcGetDate:
+    ld hl, OP1
+    call getRtcNowAsEpochSeconds ; HL=OP1=epochSeconds
+    ; Convert to RpnOffsetDateTime using current offset
+    call epochSecondsToRpnOffsetDateTimeAlt ; OP1=RpnOffsetDateTime
+    ; Transform RpnOffsetDateTime to RpnDate.
+    ld hl, OP1
+    call transformToDate ; HL=(RpnDate*)=rpnDate
+    ret
+
 ; Description: Retrieve the current RTC as an OffsetDateTime using the current
 ; timeZone.
 ; Input: none
-; Output: OP1:(OffsetDateTime*)=current datetime
+; Output: OP1:(OffsetDateTime*)=offsetDateTime
 RtcGetOffsetDateTime:
     ld hl, OP1
     call getRtcNowAsEpochSeconds ; HL=OP1=epochSeconds

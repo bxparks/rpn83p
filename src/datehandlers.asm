@@ -101,20 +101,8 @@ mTimeZoneToHoursHandler:
     bcall(_RpnOffsetToHours) ; OP1=hours
     jp replaceX
 
-mSetTimeZoneHandler:
-    call closeInputAndRecallRpnOffsetX ; A=rpnObjectType; OP1=X
-    bcall(_SetTimeZone)
-    ld a, errorCodeTzStored
-    ld (handlerCode), a
-    ret
-
-mGetTimeZoneHandler:
-    call closeInputAndRecallNone
-    bcall(_GetTimeZone)
-    jp pushToX
-
 ;-----------------------------------------------------------------------------
-; DATE > EPCH > Row 1
+; DATE > Row 3 > EPCH > Row 1
 ;-----------------------------------------------------------------------------
 
 mEpochUnixHandler:
@@ -224,7 +212,7 @@ mEpochCustomNameSelectorAlt:
     ret
 
 ;-----------------------------------------------------------------------------
-; DATE > EPCH > Row 2
+; DATE > Row 3 > EPCH > Row 2
 ;-----------------------------------------------------------------------------
 
 mEpochSetCustomHandler:
@@ -240,36 +228,70 @@ mEpochGetCustomHandler:
     jp pushToX
 
 ;-----------------------------------------------------------------------------
-; DATE > Row 3 (RTC related)
+; DATE > Row 4 (RTC related)
 ;-----------------------------------------------------------------------------
 
-mRtcGetNowHandler:
+mGetNowHandler:
     ld a, (isTi83Plus)
     or a
-    jr nz, mRtcNoClockErr
+    jr nz, noClockErr
     ;
     call closeInputAndRecallNone
     bcall(_RtcGetNow)
     jp pushToX
 
-mRtcNoClockErr:
-    ld a, errorCodeNoClock
-    ld (handlerCode), a
-    ret
-
-mRtcGetNowDzHandler:
+mGetNowTimeHandler:
     ld a, (isTi83Plus)
     or a
-    jr nz, mRtcNoClockErr
+    jr nz, noClockErr
+    ;
+    call closeInputAndRecallNone
+    bcall(_RtcGetTime)
+    jp pushToX
+
+mGetNowDateHandler:
+    ld a, (isTi83Plus)
+    or a
+    jr nz, noClockErr
+    ;
+    call closeInputAndRecallNone
+    bcall(_RtcGetDate)
+    jp pushToX
+
+mGetNowOffsetDateTimeHandler:
+    ld a, (isTi83Plus)
+    or a
+    jr nz, noClockErr
     ;
     call closeInputAndRecallNone
     bcall(_RtcGetOffsetDateTime)
     jp pushToX
 
-mRtcSetTimeZoneHandler:
+noClockErr:
+    ld a, errorCodeNoClock
+    ld (handlerCode), a
+    ret
+
+;-----------------------------------------------------------------------------
+; DATE > Row 5 (Various Settings)
+;-----------------------------------------------------------------------------
+
+mSetTimeZoneHandler:
+    call closeInputAndRecallRpnOffsetX ; A=rpnObjectType; OP1=X
+    bcall(_SetTimeZone)
+    ld a, errorCodeTzStored
+    ld (handlerCode), a
+    ret
+
+mGetTimeZoneHandler:
+    call closeInputAndRecallNone
+    bcall(_GetTimeZone)
+    jp pushToX
+
+mSetClockTimeZoneHandler:
     ld a, (isTi83Plus)
     or a
-    jr nz, mRtcNoClockErr
+    jr nz, noClockErr
     ;
     call closeInputAndRecallRpnOffsetX
     bcall(_RtcSetTimeZone)
@@ -277,19 +299,19 @@ mRtcSetTimeZoneHandler:
     ld (handlerCode), a
     ret
 
-mRtcGetTimeZoneHandler:
+mGetClockTimeZoneHandler:
     ld a, (isTi83Plus)
     or a
-    jr nz, mRtcNoClockErr
+    jr nz, noClockErr
     ;
     call closeInputAndRecallNone
     bcall(_RtcGetTimeZone)
     jp pushToX
 
-mRtcSetClockHandler:
+mSetClockHandler:
     ld a, (isTi83Plus)
     or a
-    jr nz, mRtcNoClockErr
+    jr nz, noClockErr
     ;
     call closeInputAndRecallRpnOffsetDateTimeX ; A=rpnObjectType; OP1=X
     bcall(_RtcSetClock)
