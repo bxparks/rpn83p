@@ -41,7 +41,7 @@ dateToDayOfWeekNumber:
     call setU40ToA ; OP4=7
     ex de, hl ; HL=OP3=epochDays; DE=OP4=7
     ld bc, OP5 ; BC=OP5=remainder
-    call divU40U40 ; HL=quotient; BC=remainder ; TODO: create modU40U40()
+    call divI40U40 ; HL=quotient; BC=remainder ; TODO: create modU40U40()
     ld a, (bc) ; A=remainder=0-6
     ; 2000-01-01 is epoch 0, so returns 0, but it was a Sat, so should be a 6.
     ; Readjust the result modulo 7 to conform to ISO weekday numbering.
