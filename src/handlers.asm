@@ -402,6 +402,17 @@ handleKeyEEAlt:
     ld a, Lexponent
     jp handleKeyNumber
 
+; Description: Handle the (ALPHA :) button which defines a number with a
+; modifier, for example "2:D" (2 days), "2:H" (2 hours), "2:M" (2 minutes),
+; "2:S" (2 seconds).
+handleKeyColon:
+    ; Do nothing in BASE mode.
+    bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
+    ret nz
+    ; Append ':'
+    ld a, ':'
+    jp handleKeyNumber
+
 ; Description: Add imaginary-i into the input buffer.
 handleKeyImagI:
     ; Do nothing in BASE mode.
@@ -635,14 +646,13 @@ handleKeyChsInputBuf:
 ; Description: Add or remove the '-' char at position A of the Pascal string at
 ; HL, with maximum length B.
 ; Input:
-;   A: signPos, the offset where the sign ought to be
-;   B: inputBufCapacity, max size of Pasal string
-;   HL: pointer to Pascal string
+;   - A:u8=signPos, the offset where the sign ought to be
+;   - B:u8=inputBufCapacity, max size of Pasal string
+;   - HL:(pstring*)=pascalStringPointer
 ; Output:
-;   (HL): updated with '-' removed or added
-;   CF:
-;       - Set if positive (including if '-' could not be added due to size)
-;       - Clear if negative
+;   - (HL): updated with '-' removed or added
+;   - CF=1 if the result is still positive (including if '-' could not be added
+;   due to size), 0 if the result has become negative
 ; Destroys:
 ;   A, BC, DE, HL
 flipInputBufSign:

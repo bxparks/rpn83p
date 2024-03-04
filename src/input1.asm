@@ -166,7 +166,7 @@ CheckInputBufEE:
     ld c, b ; C=0
     ld b, a ; B=counter
 checkInputBufEELoop:
-    ; Loop backwards from end of string and update inputBufState flags
+    ; Scan backwards from end of string to determine eeLen
     dec hl
     ld a, (hl)
     call isNumberDelimiterPageOne ; ZF=1 if delimiter
@@ -200,7 +200,7 @@ checkInputBufEEFound:
 ; Input:
 ;   - inputBuf
 ; Output:
-;   - A: inputBufChsPos, the position where a sign character can be added or
+;   - A:u8=inputBufChsPos, the position where a sign character can be added or
 ;   removed (i.e. after an 'E', after the complex delimiter, or at the start of
 ;   the buffer if empty)
 ; Destroys: BC, HL
@@ -218,10 +218,10 @@ CheckInputBufChs:
     add hl, bc ; HL=pointer to end of string
     ld b, a ; B=len
 checkInputBufChsLoop:
-    ; Loop backwards from end of string and update inputBufState flags
+    ; Scan backwards from end of string to determine inputBufChsPos
     dec hl
     ld a, (hl)
-    cp Lexponent
+    cp Lexponent ; ZF=1 if EE char detected
     jr z, checkInputBufChsEnd
     call isComplexDelimiterPageOne ; ZF=1 if complex delimiter
     jr z, checkInputBufChsEnd
@@ -252,7 +252,7 @@ CheckInputBufDecimalPoint:
     jr z, checkInputBufDecimalPointNone
     ld b, a ; B=len
 checkInputBufDecimalPointLoop:
-    ; Loop backwards from end of string and update inputBufState flags
+    ; Scan backwards from end of string to determine existence of decimal point.
     dec hl
     ld a, (hl)
     cp '.'

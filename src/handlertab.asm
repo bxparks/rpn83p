@@ -94,6 +94,8 @@ keyCodeHandlerTable:
     .dw handleKeyDecPnt
     .db kEE
     .dw handleKeyEE
+    .db kColon
+    .dw handleKeyColon
 
     ; Complex numbers
     .db kI
