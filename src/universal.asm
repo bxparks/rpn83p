@@ -280,10 +280,13 @@ universalSubTimeMinusObject:
     jr z, universalSubTimeMinusReal
     cp rpnObjectTypeTime
     jr z, universalSubTimeMinusTime
+    cp rpnObjectTypeDuration
+    jr z, universalSubTimeMinusDuration
     jr universalSubErr
 universalSubTimeMinusReal:
 universalSubTimeMinusTime:
-    bcall(_SubRpnTimeByRpnTimeOrSeconds)
+universalSubTimeMinusDuration:
+    bcall(_SubRpnTimeByObject)
     ret
 ; DateTime - object
 universalSubDateTimeMinusObject:

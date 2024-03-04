@@ -253,15 +253,21 @@ addTimeBySeconds:
 ; Output:
 ;   - OP1:(RpnTime-seconds) or (RpnTime-RpnTime)
 ; Destroys: all, OP1-OP4
-SubRpnTimeByRpnTimeOrSeconds:
-    call checkOp3TimePageTwo ; ZF=1 if type(OP3)==Time
+SubRpnTimeByObject:
+    call getOp3RpnObjectTypePageTwo ; A=objectType
+    cp rpnObjectTypeReal
+    jr z, subRpnTimeBySeconds
+    cp rpnObjectTypeTime
     jr z, subRpnTimeByRpnTime
+    cp rpnObjectTypeDuration
+    jr z, subRpnTimeByRpnDuration
+    bcall(_ErrInvalid) ; should never happen
 subRpnTimeBySeconds:
     ; invert the sign of OP3=seconds, then call addRpnTimeBySecondsAdd()
     call cp1ExCp3PageTwo
     bcall(_InvOP1S) ; OP1=-OP1
     call cp1ExCp3PageTwo
-    jr addRpnTimeBySecondsAdd
+    jp addRpnTimeBySecondsAdd
 subRpnTimeByRpnTime:
     ; convert OP3 to seconds, on FPS stack
     call reserveRaw9 ; make space on FPS=[X.seconds]; HL=X.seconds
@@ -281,3 +287,8 @@ subRpnTimeByRpnTime:
     call popRaw9Op1 ; FPS=[X.seconds]; OP1=Y.seconds-X.seconds
     call ConvertI40ToOP1 ; OP1=float(i40)
     jp dropRaw9 ; FPS=[]
+subRpnTimeByRpnDuration:
+    ; invert the sign of duration in OP3
+    ld hl, OP3+1
+    call chsDuration
+    jp addRpnTimeByDurationAdd

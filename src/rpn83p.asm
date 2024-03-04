@@ -1213,9 +1213,9 @@ _AddRpnTimeByDurationLabel:
 _AddRpnTimeByDuration equ _AddRpnTimeByDurationLabel-branchTableBase
     .dw AddRpnTimeByDuration
     .db 2
-_SubRpnTimeByRpnTimeOrSecondsLabel:
-_SubRpnTimeByRpnTimeOrSeconds equ _SubRpnTimeByRpnTimeOrSecondsLabel-branchTableBase
-    .dw SubRpnTimeByRpnTimeOrSeconds
+_SubRpnTimeByObjectLabel:
+_SubRpnTimeByObject equ _SubRpnTimeByObjectLabel-branchTableBase
+    .dw SubRpnTimeByObject
     .db 2
 
 ; dayofweek2.asm
