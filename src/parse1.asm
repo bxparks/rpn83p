@@ -52,13 +52,24 @@ parseAndClearInputBufEmpty:
     jp ClearInputBuf
 parseAndClearInputBufNonEmpty:
     res inputBufFlagsClosedEmpty, (iy + inputBufFlags)
+    ; Check for '{' which identifies a Record type
+    ld hl, inputBuf
     ld a, LlBrace ; A='{'
     call findChar ; CF=1 if found
     jr c, parseAndClearInputBufRecord
+    ; Check for ':'  which identifies a modifier.
+    ld hl, inputBuf
+    ld a, ':' ; A=':'
+    call findChar ; CF=1 if found
+    jr c, parseAndClearInputBufTaggedNumber
+    ; Everything else should be a Real or a Complex number.
     call parseInputBufNumber ; OP1/OP2=real or complex
     jp ClearInputBuf
 parseAndClearInputBufRecord:
     call parseInputBufRecord ; OP1/OP2:record
+    jp ClearInputBuf
+parseAndClearInputBufTaggedNumber:
+    call parseInputBufTaggedNumber ; OP1/OP2:real
     jp ClearInputBuf
 
 ;------------------------------------------------------------------------------
@@ -362,4 +373,143 @@ parseInputBufDuration:
     call parseDuration
     pop hl ; HL=OP1+1
     bcall(_ValidateDuration)
+    ret
+
+;-----------------------------------------------------------------------------
+; Parse integers with ':' modifiers. Accepted values are:
+;   - nn:D - Duration.days
+;   - nn:H - Duration.hours
+;   - nn:M - Duration.minutes
+;   - nn:S - Duration.seconds
+;-----------------------------------------------------------------------------
+
+; Description: Parse a tagged number of the form {nnnn:M}, where M can be one
+; of ('D', 'H', 'M', or 'S'). Currently, only Duration type is supported.
+; Output: OP1:Duration=duration
+; Destroys: all
+parseInputBufTaggedNumber:
+    ; TODO: move the following common code into intoParseAndClearInputBuf()
+    call initInputBufForParsing ; HL=inputBuf
+    inc hl ; skip len byte
+    ; First parse the tagged number into OP1, as a temp buffer. Currently,
+    ; a single signed i16 integer with a modifier suffix is supported.
+    ld de, OP1 ; DE=taggedNumber (2-bytes)
+    call parseI16D4 ; DE=DE+2
+    call parseInputBufColon
+    call parseInputBufModifier ; A=modifier
+    ; convert taggedNumber to RpnObject
+    ld de, OP1
+    ld hl, OP2
+    call convertTaggedNumberToRpnObject
+    call op2ToOp1PageOne
+    ret
+
+parseInputBufColon:
+    ld a, (hl)
+    inc hl
+    cp ':'
+    ret z
+    bcall(_ErrSyntax)
+
+parseInputBufModifier:
+    ld a, (hl)
+    inc hl
+    or a ; ZF=1 if NUL
+    ret nz
+    bcall(_ErrSyntax)
+
+; Description: Convert the tagged number in DE to an RpnObject in HL.
+; Currently, only the RpnDuration object is supported.
+; Input:
+;   - A:u8=tag
+;   - DE:(TaggedNumber*)=taggedNumber
+; Output:
+;   - HL:(RpnObject*)=rpnObject
+; Destroys: all
+convertTaggedNumberToRpnObject:
+    cp 'D'
+    jr z, convertTaggedDaysToDuration
+    cp 'H'
+    jr z, convertTaggedHoursToDuration
+    cp 'M'
+    jr z, convertTaggedMinutesToDuration
+    cp 'S'
+    jr z, convertTaggedSecondsToDuration
+    bcall(_ErrSyntax)
+convertTaggedDaysToDuration:
+    ld a, rpnObjectTypeDuration
+    ld (hl), a
+    inc hl
+    call clearDuration
+    ; copy days
+    ld a, (de)
+    inc de
+    ld (hl), a
+    inc hl
+    ;
+    ld a, (de)
+    inc de
+    ld (hl), a
+    inc hl
+    ret
+convertTaggedHoursToDuration:
+    ld a, rpnObjectTypeDuration
+    ld (hl), a
+    inc hl
+    call clearDuration
+    ; copy hours
+    inc hl
+    inc hl
+    ld a, (de)
+    inc de
+    ld (hl), a
+    inc hl
+    ret
+convertTaggedMinutesToDuration:
+    ld a, rpnObjectTypeDuration
+    ld (hl), a
+    inc hl
+    call clearDuration
+    ; copy minutes
+    inc hl
+    inc hl
+    inc hl
+    ld a, (de)
+    inc de
+    ld (hl), a
+    inc hl
+    ret
+convertTaggedSecondsToDuration:
+    ld a, rpnObjectTypeDuration
+    ld (hl), a
+    inc hl
+    call clearDuration
+    ; copy seconds
+    inc hl
+    inc hl
+    inc hl
+    inc hl
+    ld a, (de)
+    inc de
+    ld (hl), a
+    inc hl
+    ret
+
+; Description: Clear the duration pointed by HL.
+; Input: HL:(Duration*)=duration
+; Output: HL=duration=0
+; Destroys: none
+clearDuration:
+    push bc
+    push de
+    push hl
+    ld e, l
+    ld d, h
+    inc de
+    ld (hl), 0
+    ld bc, rpnObjectTypeDurationSizeOf-1
+    ldir
+    pop hl
+    pop de
+    pop bc
     ret
