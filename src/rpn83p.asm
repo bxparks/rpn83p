@@ -1289,6 +1289,10 @@ _EpochSecondsToRpnOffsetDateTimeLabel:
 _EpochSecondsToRpnOffsetDateTime equ _EpochSecondsToRpnOffsetDateTimeLabel-branchTableBase
     .dw EpochSecondsToRpnOffsetDateTime
     .db 2
+_EpochSecondsToRpnOffsetDateTimeUTCLabel:
+_EpochSecondsToRpnOffsetDateTimeUTC equ _EpochSecondsToRpnOffsetDateTimeUTCLabel-branchTableBase
+    .dw EpochSecondsToRpnOffsetDateTimeUTC
+    .db 2
 _AddRpnOffsetDateTimeBySecondsLabel:
 _AddRpnOffsetDateTimeBySeconds equ _AddRpnOffsetDateTimeBySecondsLabel-branchTableBase
     .dw AddRpnOffsetDateTimeBySeconds

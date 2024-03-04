@@ -77,15 +77,15 @@ mSecondsToTimeHandler:
     bcall(_SecondsToRpnTime) ; OP1=Time(seconds)
     jp replaceX
 
-mEpochSecondsToDateTimeHandler:
-    call closeInputAndRecallX ; OP1=X=epochSeconds
-    bcall(_EpochSecondsToRpnDateTime) ; OP1=DateTime(epochSeconds)
-    jp replaceX
-
 mEpochSecondsToAppDateTimeHandler:
     call closeInputAndRecallX ; OP1=X=epochSeconds
     ld bc, appTimeZone
     bcall(_EpochSecondsToRpnOffsetDateTime) ; OP1=OffsetDateTime(epochSeconds)
+    jp replaceX
+
+mEpochSecondsToUTCDateTimeHandler:
+    call closeInputAndRecallX ; OP1=X=epochSeconds
+    bcall(_EpochSecondsToRpnOffsetDateTimeUTC) ; OP1=UTCDateTime(epochSeconds)
     jp replaceX
 
 ;-----------------------------------------------------------------------------

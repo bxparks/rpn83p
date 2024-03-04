@@ -393,8 +393,8 @@ MenuGroup root mRoot [
         MenuItem D<Scross><Sconvert>S mDateRelatedToSeconds
         MenuItem S<Sconvert>DR mSecondsToDuration
         MenuItem S<Sconvert>T mSecondsToTime
-        MenuItem S<Sconvert>DT mEpochSecondsToDateTime
         MenuItem S<Sconvert>DZ mEpochSecondsToAppDateTime
+        MenuItem S<Sconvert>UT mEpochSecondsToUTCDateTime
       ]
       MenuRow [
         MenuItem H<Sconvert>TZ mHoursToTimeZone

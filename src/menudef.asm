@@ -2071,23 +2071,23 @@ mSecondsToTimeId equ 219
     .dw 0 ; rowBeginId or altNameId
     .dw mSecondsToTimeHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
-mEpochSecondsToDateTime:
-mEpochSecondsToDateTimeId equ 220
-    .dw mEpochSecondsToDateTimeId ; id
-    .dw mDateId ; parentId
-    .dw mEpochSecondsToDateTimeNameId ; nameId
-    .db 0 ; numRows
-    .dw 0 ; rowBeginId or altNameId
-    .dw mEpochSecondsToDateTimeHandler ; handler (to be implemented)
-    .dw 0 ; nameSelector
 mEpochSecondsToAppDateTime:
-mEpochSecondsToAppDateTimeId equ 221
+mEpochSecondsToAppDateTimeId equ 220
     .dw mEpochSecondsToAppDateTimeId ; id
     .dw mDateId ; parentId
     .dw mEpochSecondsToAppDateTimeNameId ; nameId
     .db 0 ; numRows
     .dw 0 ; rowBeginId or altNameId
     .dw mEpochSecondsToAppDateTimeHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
+mEpochSecondsToUTCDateTime:
+mEpochSecondsToUTCDateTimeId equ 221
+    .dw mEpochSecondsToUTCDateTimeId ; id
+    .dw mDateId ; parentId
+    .dw mEpochSecondsToUTCDateTimeNameId ; nameId
+    .db 0 ; numRows
+    .dw 0 ; rowBeginId or altNameId
+    .dw mEpochSecondsToUTCDateTimeHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
 ; MenuGroup DATE: children: row 2
 mHoursToTimeZone:
@@ -2768,10 +2768,10 @@ mSecondsToDurationNameId equ 220
     .dw mSecondsToDurationName
 mSecondsToTimeNameId equ 221
     .dw mSecondsToTimeName
-mEpochSecondsToDateTimeNameId equ 222
-    .dw mEpochSecondsToDateTimeName
-mEpochSecondsToAppDateTimeNameId equ 223
+mEpochSecondsToAppDateTimeNameId equ 222
     .dw mEpochSecondsToAppDateTimeName
+mEpochSecondsToUTCDateTimeNameId equ 223
+    .dw mEpochSecondsToUTCDateTimeName
 mHoursToTimeZoneNameId equ 224
     .dw mHoursToTimeZoneName
 mTimeZoneToHoursNameId equ 225
@@ -3272,10 +3272,10 @@ mSecondsToDurationName:
     .db 'S', Sconvert, 'D', 'R', 0
 mSecondsToTimeName:
     .db 'S', Sconvert, 'T', 0
-mEpochSecondsToDateTimeName:
-    .db 'S', Sconvert, 'D', 'T', 0
 mEpochSecondsToAppDateTimeName:
     .db 'S', Sconvert, 'D', 'Z', 0
+mEpochSecondsToUTCDateTimeName:
+    .db 'S', Sconvert, 'U', 'T', 0
 mHoursToTimeZoneName:
     .db 'H', Sconvert, 'T', 'Z', 0
 mTimeZoneToHoursName:
