@@ -331,7 +331,21 @@ formatRpnOffsetDateTimeString:
     inc hl ; skip type byte
 formatOffsetDateTimeString:
     call formatDateTimeString
+    call isOffsetZero ; ZF=1 if offset==00:00
+    jr z, formatOffsetDateTimeUTC
     call formatOffsetString
+    ret
+formatOffsetDateTimeUTC:
+    ; print "Z" instead of "+00:00" for readability
+    ld a, ' '
+    ld (de), a
+    inc de
+    ld a, 'Z'
+    ld (de), a
+    inc de
+    ; add NUL
+    xor a
+    ld (de), a
     ret
 
 ;-----------------------------------------------------------------------------

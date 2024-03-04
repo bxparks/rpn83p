@@ -450,11 +450,11 @@ currentEpochDate equ epochType + 1 ; Date{y,m,d}, 4 bytes
 ; Custom value of the Epoch Date if epochTypeCustom selected.
 customEpochDate equ currentEpochDate + 4 ; Date{y,m,d}, 4 bytes
 
-; Set default time zone
-timeZone equ customEpochDate + 4 ; Offset{hh,mm}, 2 bytes
+; Set default time zone.
+appTimeZone equ customEpochDate + 4 ; Offset{hh,mm}, 2 bytes
 
 ; Set clock time zone
-rtcTimeZone equ timeZone + 2 ; Offset{hh,mm}, 2 bytes
+rtcTimeZone equ appTimeZone + 2 ; Offset{hh,mm}, 2 bytes
 
 ; End application variables.
 appStateEnd equ rtcTimeZone + 2
@@ -1289,6 +1289,10 @@ _EpochSecondsToRpnOffsetDateTimeLabel:
 _EpochSecondsToRpnOffsetDateTime equ _EpochSecondsToRpnOffsetDateTimeLabel-branchTableBase
     .dw EpochSecondsToRpnOffsetDateTime
     .db 2
+_EpochSecondsToRpnOffsetDateTimeUTCLabel:
+_EpochSecondsToRpnOffsetDateTimeUTC equ _EpochSecondsToRpnOffsetDateTimeUTCLabel-branchTableBase
+    .dw EpochSecondsToRpnOffsetDateTimeUTC
+    .db 2
 _AddRpnOffsetDateTimeBySecondsLabel:
 _AddRpnOffsetDateTimeBySeconds equ _AddRpnOffsetDateTimeBySecondsLabel-branchTableBase
     .dw AddRpnOffsetDateTimeBySeconds
@@ -1363,13 +1367,13 @@ _ConvertRpnOffsetDateTimeToTimeZoneAsReal equ _ConvertRpnOffsetDateTimeToTimeZon
     .db 2
 
 ; zone2.asm
-_SetTimeZoneLabel:
-_SetTimeZone equ _SetTimeZoneLabel-branchTableBase
-    .dw SetTimeZone
+_SetAppTimeZoneLabel:
+_SetAppTimeZone equ _SetAppTimeZoneLabel-branchTableBase
+    .dw SetAppTimeZone
     .db 2
-_GetTimeZoneLabel:
-_GetTimeZone equ _GetTimeZoneLabel-branchTableBase
-    .dw GetTimeZone
+_GetAppTimeZoneLabel:
+_GetAppTimeZone equ _GetAppTimeZoneLabel-branchTableBase
+    .dw GetAppTimeZone
     .db 2
 
 ; rtc2.asm
@@ -1389,9 +1393,13 @@ _RtcGetTimeLabel:
 _RtcGetTime equ _RtcGetTimeLabel-branchTableBase
     .dw RtcGetTime
     .db 2
-_RtcGetOffsetDateTimeLabel:
-_RtcGetOffsetDateTime equ _RtcGetOffsetDateTimeLabel-branchTableBase
-    .dw RtcGetOffsetDateTime
+_RtcGetAppDateTimeLabel:
+_RtcGetAppDateTime equ _RtcGetAppDateTimeLabel-branchTableBase
+    .dw RtcGetAppDateTime
+    .db 2
+_RtcGetUTCDateTimeLabel:
+_RtcGetUTCDateTime equ _RtcGetUTCDateTimeLabel-branchTableBase
+    .dw RtcGetUTCDateTime
     .db 2
 ;
 _RtcSetClockLabel:

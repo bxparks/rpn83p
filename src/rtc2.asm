@@ -37,6 +37,7 @@ RtcGetTime:
     ld hl, OP1
     call getRtcNowAsEpochSeconds ; HL=OP1=epochSeconds
     ; Convert to RpnOffsetDateTime using current offset
+    ld bc, appTimeZone
     call epochSecondsToRpnOffsetDateTimeAlt ; OP1=RpnOffsetDateTime
     ; Transform to RpnTime
     ld hl, OP1
@@ -45,26 +46,43 @@ RtcGetTime:
 
 ; Description: Retrieve the current RTC as a Date object.
 ; Input: none
-; Output: OP1:Date=currentDate
+; Output: OP1:RpnDate=currentDate
 RtcGetDate:
     ld hl, OP1
     call getRtcNowAsEpochSeconds ; HL=OP1=epochSeconds
     ; Convert to RpnOffsetDateTime using current offset
+    ld bc, appTimeZone
     call epochSecondsToRpnOffsetDateTimeAlt ; OP1=RpnOffsetDateTime
     ; Transform RpnOffsetDateTime to RpnDate.
     ld hl, OP1
     call transformToDate ; HL=(RpnDate*)=rpnDate
     ret
 
-; Description: Retrieve the current RTC as an OffsetDateTime using the current
-; timeZone.
+; Description: Retrieve the current RTC as an OffsetDateTime using the
+; appTimeZone.
 ; Input: none
-; Output: OP1:(OffsetDateTime*)=offsetDateTime
-RtcGetOffsetDateTime:
+; Output: OP1:RpnOffsetDateTime=offsetDateTime
+RtcGetAppDateTime:
     ld hl, OP1
     call getRtcNowAsEpochSeconds ; HL=OP1=epochSeconds
-    ; Convert to RpnOffsetDateTime using current offset
+    ; Convert to RpnOffsetDateTime using current appTimeZone
+    ld bc, appTimeZone
     jp epochSecondsToRpnOffsetDateTimeAlt ; OP1=RpnOffsetDateTime
+
+; Description: Retrieve the current RTC as an OffsetDateTime using UTC
+; timezone.
+; Input: none
+; Output: OP1:OffsetDateTime=utcDateTime
+RtcGetUTCDateTime:
+    ld hl, OP1
+    call getRtcNowAsEpochSeconds ; HL=OP1=epochSeconds
+    ; Convert to RpnDateTime using UTC timezone
+    call epochSecondsToRpnDateTimeAlt ; OP1=RpnDateTime
+    ; Transform RpnDateTime to RpnOffsetDateTime w/ UTC timezone
+    ld hl, OP1
+    call transformToOffsetDateTime ; HL=(RpnOffsetDateTime*)=utcDateTime
+    call expandOp1ToOp2PageTwo ; handle 2-byte gap between OP1 and OP2
+    ret
 
 ;-----------------------------------------------------------------------------
 
@@ -132,6 +150,8 @@ RtcSetClock:
     ret
 
 ;-----------------------------------------------------------------------------
+; Read and write to the RTC ports.
+;-----------------------------------------------------------------------------
 
 ; Description: Retrieve current RTC date/time as relative epochSeconds.
 ; Input: HL:(i40*)=rtcSeconds
@@ -162,7 +182,7 @@ getRtcNowAsEpochSecondsLoop:
     ; Convert rtcSeconds to internal epochSeconds
     ld de, tiosEpochDate ; DE=Date{1997,1,1}
     call convertRelativeToInternalEpochSeconds ; HL=rtcSeconds
-    ; Convert to relative epochSeconds relative to current timeZone
+    ; Convert to relative epochSeconds relative to currentEpochDate
     ld de, currentEpochDate ; DE=(Date*)=currentEpochDate
     jp convertInternalToRelativeEpochSeconds ; HL=rtcSeconds
 

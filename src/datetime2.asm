@@ -10,7 +10,8 @@
 ; entry.
 ;-----------------------------------------------------------------------------
 
-; Description: Convert the RpnDateTime{} record in OP1 to relative epochSeconds.
+; Description: Convert the RpnDateTime{} record in OP1 to relative
+; epochSeconds, assuming UTC timezone.
 ; Input: OP1:RpnDateTime=input
 ; Output: OP1:real
 ; Destroys: all, OP1-OP6
@@ -54,13 +55,15 @@ dateTimeToEpochSeconds:
 
 ;-----------------------------------------------------------------------------
 
-; Description: Convert the relative epochSeconds to an RpnDateTime{} record.
+; Description: Convert the relative epochSeconds to an RpnDateTime{} record
+; that assumes a UTC timezone.
 ; Input: OP1:Real=epochSeconds
 ; Output: OP1:RpnDateTime
 ; Destroys: all, OP1-OP6
 EpochSecondsToRpnDateTime:
     ; get relative epochSeconds
     call ConvertOP1ToI40 ; OP1=i40(epochSeconds)
+epochSecondsToRpnDateTimeAlt:
     ; reserve 2 slots on the FPS
     call reserveRaw9 ; FPS=[rpnDateTime]; HL=rpnDateTime
     ex de, hl ; DE=rpnDateTime

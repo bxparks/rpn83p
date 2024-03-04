@@ -14,9 +14,9 @@ InitDate:
     ; Set the default customEpochDate to 2000-01-01
     ld hl, y2kEpochDate
     call setCustomEpochDateVar
-    ; set current TimeZone to UTC initially
+    ; set the appTimeZone to UTC initially
     ld hl, 0
-    ld (timeZone), hl
+    ld (appTimeZone), hl
     ret
 
 ;-----------------------------------------------------------------------------

@@ -47,15 +47,21 @@ offsetDateTimeToEpochSeconds:
 
 ;-----------------------------------------------------------------------------
 
-; Description: Convert the relative epochSeconds to an RpnOffsetDateTime{}
-; record.
-; Input: OP1:Real=epochSeconds
-; Output: OP1:RpnOffsetDateTime
+; Description: Convert the relative epochSeconds to an RpnOffsetDateTime
+; record using the targetTimeZone.
+; Input:
+;   - BC:(Offset*)=targetTimeZone
+;   - OP1:Real=epochSeconds
+; Output:
+;   - OP1:RpnOffsetDateTime
 ; Destroys: all, OP1-OP6
 EpochSecondsToRpnOffsetDateTime:
     ; get relative epochSeconds
+    push bc
     call ConvertOP1ToI40 ; OP1=i40(epochSeconds)
+    pop bc
 epochSecondsToRpnOffsetDateTimeAlt:
+    push bc ; stack=[targetTimeZone]
     ; reserve RpnObject on FPS
     call reserveRpnObject ; FPS=[rpnOffsetDateTime]; HL=rpnOffsetDateTime
     ex de, hl ; DE=rpnOffsetDateTime
@@ -66,7 +72,7 @@ epochSecondsToRpnOffsetDateTimeAlt:
     ld (hl), a
     inc hl ; HL=rpnOffsetDateTime+1=offsetDateTime
     ; select the currently selected TZ offset
-    ld bc, timeZone
+    pop bc ; stack=[]; bc=targetTimeZone
     call epochSecondsToOffsetDateTime ; HL=HL+sizeof(OffsetDateTime)
     ; clean up FPS
     call dropRaw9
@@ -79,11 +85,10 @@ epochSecondsToRpnOffsetDateTimeAlt:
 ;   - DE:(const i40*)=epochSeconds, must not be an OPx
 ;   - HL:(OffsetDateTime*)=offsetDateTime, must not be an OPx
 ; Output:
-;   - BC=offset+2
 ;   - (*HL)=offsetDateTime updated
 ;   - HL=HL+sizeof(OffsetDateTime)
 ; Destroys: all, OP1-OP6
-; Preserves: DE
+; Preserves: DE, BC
 epochSecondsToOffsetDateTime:
     push de ; stack=[epochSeconds]
     push bc ; stack=[epochSeconds,offset]
@@ -104,10 +109,25 @@ epochSecondsToOffsetDateTime:
     ld (hl), a
     inc hl
     ld a, (bc)
-    inc bc
+    dec bc
     ld (hl), a
     inc hl ; HL=HL+sizeof(OffsetDateTime)
     pop de ; stack=[]; DE=epochSeconds
+    ret
+
+; Description: Convert the relative epochSeconds to an RpnOffsetDateTime
+; using the UTC timezone.
+; Input:
+;   - OP1:Real=epochSeconds
+; Output:
+;   - OP1:RpnOffsetDateTime
+; Destroys: all, OP1-OP6
+EpochSecondsToRpnOffsetDateTimeUTC:
+    call EpochSecondsToRpnDateTime ; OP1=RpnDateTime
+    ; Transform RpnDateTime to RpnOffsetDateTime w/ UTC timezone
+    ld hl, OP1
+    call transformToOffsetDateTime ; HL=(RpnOffsetDateTime*)=utcDateTime
+    call expandOp1ToOp2PageTwo ; handle 2-byte gap between OP1 and OP2
     ret
 
 ;-----------------------------------------------------------------------------
