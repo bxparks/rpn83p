@@ -121,9 +121,14 @@ universalAddTimePlusObject:
     call getOp3RpnObjectType
     cp rpnObjectTypeReal
     jr z, universalAddTimePlusReal
+    cp rpnObjectTypeDuration
+    jr z, universalAddTimePlusDuration
     jr universalAddErr
 universalAddTimePlusReal:
-    bcall(_AddRpnTimeBySeconds) ; OP1=Time(OP1)+days(OP3)
+    bcall(_AddRpnTimeBySeconds) ; OP1=Time(OP1)+seconds(OP3)
+    ret
+universalAddTimePlusDuration:
+    bcall(_AddRpnTimeByDuration) ; OP1=Time(OP1)+Duration(OP3)
     ret
 ; DateTime + object
 universalAddDateTimePlusObject:
@@ -167,6 +172,8 @@ universalAddDurationPlusObject:
     call getOp3RpnObjectType
     cp rpnObjectTypeReal
     jr z, universalAddDurationPlusReal
+    cp rpnObjectTypeTime
+    jr z, universalAddDurationPlusTime
     cp rpnObjectTypeDateTime
     jr z, universalAddDurationPlusDateTime
     cp rpnObjectTypeOffsetDateTime
@@ -180,6 +187,8 @@ universalAddDurationPlusReal:
 universalAddDurationPlusDuration:
     bcall(_AddRpnDurationByRpnDuration) ; OP1+=OP3
     ret
+universalAddDurationPlusTime:
+    jr universalAddTimePlusDuration
 universalAddDurationPlusDateTime:
     jr universalAddDateTimePlusDuration
 universalAddDurationPlusOffsetDateTime:

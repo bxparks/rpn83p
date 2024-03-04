@@ -144,8 +144,8 @@ secondsToTime:
 
 ; Description: Add (RpnTime plus seconds) or (seconds plus RpnTime).
 ; Input:
-;   - OP1:Union[RpnTime,RpnReal]=rpnTime or seconds
-;   - OP3:Union[RpnTime,RpnReal]=rpnTime or seconds
+;   - OP1:(RpnTime,RpnReal)=rpnTime or seconds
+;   - OP3:(RpnTime,RpnReal)=rpnTime or seconds
 ; Output:
 ;   - OP1:RpnTime=rpnTime+seconds=always positive
 ; Destroys: all, OP1-OP4
@@ -167,6 +167,35 @@ addRpnTimeBySecondsAdd:
     call addTimeBySeconds
     ; clean up
     call PopRpnObject1 ; FPS=[]; OP1=newRpnTime
+    ret
+
+; Description: Add (RpnTime plus RpnDuration) or (RpnDuration plus RpnTime).
+; Input:
+;   - OP1:(RpnTime|RpnDuration)=(rpnTime or rpnDuration)
+;   - OP3:(RpnTime|RpnDuration)=(rpnTime or rpnDuration)
+; Output:
+;   - OP1:RpnTime=rpnTime+rpnDuration=always positive
+; Destroys: all, OP1-OP4
+AddRpnTimeByDuration:
+    call checkOp1TimePageTwo ; ZF=1 if CP1 is an RpnTime
+    jr z, addRpnTimeByDurationAdd
+    call cp1ExCp3PageTwo ; CP1=rpnTime; CP3=rpnDuration
+addRpnTimeByDurationAdd:
+    ; if here: CP1=rpnTime, CP3=duration
+    ; Push CP1:RpnTime to FPS
+    call PushRpnObject1 ; FPS=[time]; HL=time
+    push hl ; stack=[time]
+    ; Convert OP3:RpnDuration to OP1 days
+    ld de, OP3+1 ; DE:(Duration*)=duration
+    ld hl, OP1 ; HL:(i40*)=durationSeconds
+    call durationToSeconds ; HL=durationSeconds
+    ; add time+seconds
+    pop hl ; stack=[]; HL=rpnTime
+    inc hl ; HL=time
+    ld de, OP1 ; DE=durationSeconds
+    call addTimeBySeconds ; HL=newTime
+    ; OP1=newTime
+    call PopRpnObject1 ; FPS=[]; OP1=newTime
     ret
 
 ; Description: Add Time plus seconds.

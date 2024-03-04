@@ -1209,6 +1209,10 @@ _AddRpnTimeBySecondsLabel:
 _AddRpnTimeBySeconds equ _AddRpnTimeBySecondsLabel-branchTableBase
     .dw AddRpnTimeBySeconds
     .db 2
+_AddRpnTimeByDurationLabel:
+_AddRpnTimeByDuration equ _AddRpnTimeByDurationLabel-branchTableBase
+    .dw AddRpnTimeByDuration
+    .db 2
 _SubRpnTimeByRpnTimeOrSecondsLabel:
 _SubRpnTimeByRpnTimeOrSeconds equ _SubRpnTimeByRpnTimeOrSecondsLabel-branchTableBase
     .dw SubRpnTimeByRpnTimeOrSeconds
