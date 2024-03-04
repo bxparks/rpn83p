@@ -37,8 +37,13 @@ mDateRelatedToSecondsHandler:
     jr z, mDateRelatedToSecondsHandlerDate
     cp rpnObjectTypeTime ; ZF=1 if RpnDateTime
     jr z, mDateRelatedToSecondsHandlerTime
-    cp rpnObjectTypeDateTime ; ZF=1 if RpnDateTime
-    jr z, mDateRelatedToSecondsHandlerDateTime
+    ; Conversion from DateTime -> epochSeconds is disabled because the meaning
+    ; of a DateTime is ambiguous. It could be a appDateTime (using the
+    ; appTimeZone), or it could be the UTC dateTime (using UTC timezone). We
+    ; force the user to always convert the DateTime to an OffsetDateTime with a
+    ; timezone Offset.
+    ; cp rpnObjectTypeDateTime ; ZF=1 if RpnDateTime
+    ; jr z, mDateRelatedToSecondsHandlerDateTime
     cp rpnObjectTypeOffset ; ZF=1 if RpnOffset
     jr z, mDateRelatedToSecondsHandlerOffset
     cp rpnObjectTypeOffsetDateTime ; ZF=1 if RpnOffsetDateTime
@@ -52,9 +57,9 @@ mDateRelatedToSecondsHandlerDate:
 mDateRelatedToSecondsHandlerTime:
     bcall(_RpnTimeToSeconds) ; OP1=epochSeconds
     jr mDateRelatedToSecondsHandlerEnd
-mDateRelatedToSecondsHandlerDateTime:
-    bcall(_RpnDateTimeToEpochSeconds) ; OP1=epochSeconds
-    jr mDateRelatedToSecondsHandlerEnd
+;mDateRelatedToSecondsHandlerDateTime:
+;    bcall(_RpnDateTimeToEpochSeconds) ; OP1=epochSeconds
+;    jr mDateRelatedToSecondsHandlerEnd
 mDateRelatedToSecondsHandlerOffset:
     bcall(_RpnOffsetToSeconds) ; OP1=seconds
     jr mDateRelatedToSecondsHandlerEnd
