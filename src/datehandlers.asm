@@ -268,6 +268,15 @@ mGetNowAppDateTimeHandler:
     bcall(_RtcGetAppDateTime)
     jp pushToX
 
+mGetNowUTCDateTimeHandler:
+    ld a, (isTi83Plus)
+    or a
+    jr nz, noClockErr
+    ;
+    call closeInputAndRecallNone
+    bcall(_RtcGetUTCDateTime)
+    jp pushToX
+
 noClockErr:
     ld a, errorCodeNoClock
     ld (handlerCode), a

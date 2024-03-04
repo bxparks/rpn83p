@@ -1393,6 +1393,10 @@ _RtcGetAppDateTimeLabel:
 _RtcGetAppDateTime equ _RtcGetAppDateTimeLabel-branchTableBase
     .dw RtcGetAppDateTime
     .db 2
+_RtcGetUTCDateTimeLabel:
+_RtcGetUTCDateTime equ _RtcGetUTCDateTimeLabel-branchTableBase
+    .dw RtcGetUTCDateTime
+    .db 2
 ;
 _RtcSetClockLabel:
 _RtcSetClock equ _RtcSetClockLabel-branchTableBase

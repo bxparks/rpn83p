@@ -12,7 +12,6 @@
 ; entry.
 ;-----------------------------------------------------------------------------
 
-#if 0
 ; Description: Convert RpnDate or RpnDateTime to RpnOffsetDateTime. The
 ; conversion is done in situ.
 ; Input: HL:RpnDate or RpnDateTime
@@ -43,6 +42,8 @@ transformToOffsetDateTimeFromDateTime:
 transformToOffsetDateTimeFromDate:
     ld bc, rpnObjectTypeDateSizeOf
 transformToOffsetDateTimeClear:
+    ld a, rpnObjectTypeOffsetDateTime
+    ld (hl), a ; rpnType=OffsetDateTime
     add hl, bc ; HL=pointerToClearArea
     ex de, hl ; DE=pointerToClearArea
     ld hl, rpnObjectTypeOffsetDateTimeSizeOf
@@ -61,7 +62,6 @@ transformToOffsetDateTimeClear:
     pop de
     pop hl
     ret
-#endif
 
 ; Description: Convert RpnDateTime, RpnOffsetDateTime to RpnDate.
 ; Input: HL:(RpnDateTime*) or (RpnOffsetDateTime*)

@@ -2172,14 +2172,14 @@ mGetNowAppDateTimeId equ 230
     .dw 0 ; rowBeginId or altNameId
     .dw mGetNowAppDateTimeHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
-mBlank231:
-mBlank231Id equ 231
-    .dw mBlank231Id ; id
+mGetNowUTCDateTime:
+mGetNowUTCDateTimeId equ 231
+    .dw mGetNowUTCDateTimeId ; id
     .dw mDateId ; parentId
-    .dw mNullNameId ; nameId
+    .dw mGetNowUTCDateTimeNameId ; nameId
     .db 0 ; numRows
     .dw 0 ; rowBeginId or altNameId
-    .dw mNullHandler ; handler (predefined)
+    .dw mGetNowUTCDateTimeHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
 ; MenuGroup DATE: children: row 4
 mSetTimeZone:
@@ -2322,7 +2322,7 @@ mEpochGetCustomId equ 246
     .dw 0 ; nameSelector
 
 ; Table of 2-byte pointers to names in the pool of strings below.
-mMenuNameTableSize equ 250
+mMenuNameTableSize equ 251
 mMenuNameTable:
 mNullNameId equ 0
     .dw mNullName
@@ -2786,43 +2786,45 @@ mGetNowDateNameId equ 229
     .dw mGetNowDateName
 mGetNowAppDateTimeNameId equ 230
     .dw mGetNowAppDateTimeName
-mSetTimeZoneNameId equ 231
+mGetNowUTCDateTimeNameId equ 231
+    .dw mGetNowUTCDateTimeName
+mSetTimeZoneNameId equ 232
     .dw mSetTimeZoneName
-mGetTimeZoneNameId equ 232
+mGetTimeZoneNameId equ 233
     .dw mGetTimeZoneName
-mSetClockTimeZoneNameId equ 233
+mSetClockTimeZoneNameId equ 234
     .dw mSetClockTimeZoneName
-mGetClockTimeZoneNameId equ 234
+mGetClockTimeZoneNameId equ 235
     .dw mGetClockTimeZoneName
-mSetClockNameId equ 235
+mSetClockNameId equ 236
     .dw mSetClockName
-mEpochUnixNameId equ 236
+mEpochUnixNameId equ 237
     .dw mEpochUnixName
-mEpochUnixAltNameId equ 237
+mEpochUnixAltNameId equ 238
     .dw mEpochUnixAltName
-mEpochNtpNameId equ 238
+mEpochNtpNameId equ 239
     .dw mEpochNtpName
-mEpochNtpAltNameId equ 239
+mEpochNtpAltNameId equ 240
     .dw mEpochNtpAltName
-mEpochGpsNameId equ 240
+mEpochGpsNameId equ 241
     .dw mEpochGpsName
-mEpochGpsAltNameId equ 241
+mEpochGpsAltNameId equ 242
     .dw mEpochGpsAltName
-mEpochTiosNameId equ 242
+mEpochTiosNameId equ 243
     .dw mEpochTiosName
-mEpochTiosAltNameId equ 243
+mEpochTiosAltNameId equ 244
     .dw mEpochTiosAltName
-mEpochY2kNameId equ 244
+mEpochY2kNameId equ 245
     .dw mEpochY2kName
-mEpochY2kAltNameId equ 245
+mEpochY2kAltNameId equ 246
     .dw mEpochY2kAltName
-mEpochCustomNameId equ 246
+mEpochCustomNameId equ 247
     .dw mEpochCustomName
-mEpochCustomAltNameId equ 247
+mEpochCustomAltNameId equ 248
     .dw mEpochCustomAltName
-mEpochSetCustomNameId equ 248
+mEpochSetCustomNameId equ 249
     .dw mEpochSetCustomName
-mEpochGetCustomNameId equ 249
+mEpochGetCustomNameId equ 250
     .dw mEpochGetCustomName
 
 ; Table of names as NUL terminated C strings.
@@ -3288,6 +3290,8 @@ mGetNowDateName:
     .db "NOWD", 0
 mGetNowAppDateTimeName:
     .db "NWDZ", 0
+mGetNowUTCDateTimeName:
+    .db "NWUT", 0
 mSetTimeZoneName:
     .db "TZ", 0
 mGetTimeZoneName:

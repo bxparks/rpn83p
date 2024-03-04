@@ -419,10 +419,11 @@ MenuGroup root mRoot [
         ]
       ]
       MenuRow [
-        MenuItem NOW mGetNow # current epochSeconds
-        MenuItem NOWT mGetNowTime # current Time
-        MenuItem NOWD mGetNowDate # current Date
-        MenuItem NWDZ mGetNowAppDateTime # current DateTime using appTimeZone
+        MenuItem NOW mGetNow # RTC epochSeconds
+        MenuItem NOWT mGetNowTime # RTC Time using appTimeZone
+        MenuItem NOWD mGetNowDate # RTC Date using appTimeZone
+        MenuItem NWDZ mGetNowAppDateTime # RTC OffsetDateTime using appTimeZone
+        MenuItem NWUT mGetNowUTCDateTime # RTC OffsetDateTime using UTC
       ]
       MenuRow [
         MenuItem TZ mSetTimeZone
