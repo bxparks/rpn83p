@@ -249,11 +249,11 @@ addRpnDateByDaysAdd:
     push hl ; stack=[rpnDate]
     ; convert real(seconds) to i40(seconds)
     call op3ToOp1PageTwo ; OP1:real=seconds
-    call ConvertOP1ToI40 ; OP1:u40=seconds
+    call ConvertOP1ToI40 ; OP1:i40=seconds
     ; add date+days
     pop hl ; stack=[]; HL=rpnDate
     inc hl ; HL=date
-    ld de, OP1
+    ld de, OP1 ; DE:i40=days
     call addDateByDays ; HL=newDate
     ; clean up
     call PopRpnObject1 ; FPS=[]; OP1=newRpnDate
@@ -303,7 +303,7 @@ SubRpnDateByRpnDateOrDays:
     jr z, subRpnDateByRpnDate
     bcall(_ErrInvalid) ; should never happen
 subRpnDateByDays:
-    ; exchage CP1/CP3, invert the sign, then call addRpnDateByDaysAdd()
+    ; invert the sign of OP3=days, then call addRpnDateByDaysAdd()
     call cp1ExCp3PageTwo
     bcall(_InvOP1S) ; OP1=-OP1
     call cp1ExCp3PageTwo
