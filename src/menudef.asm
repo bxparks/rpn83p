@@ -2145,23 +2145,23 @@ mGetNowId equ 227
     .dw 0 ; rowBeginId or altNameId
     .dw mGetNowHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
-mGetNowTime:
-mGetNowTimeId equ 228
-    .dw mGetNowTimeId ; id
-    .dw mDateId ; parentId
-    .dw mGetNowTimeNameId ; nameId
-    .db 0 ; numRows
-    .dw 0 ; rowBeginId or altNameId
-    .dw mGetNowTimeHandler ; handler (to be implemented)
-    .dw 0 ; nameSelector
 mGetNowDate:
-mGetNowDateId equ 229
+mGetNowDateId equ 228
     .dw mGetNowDateId ; id
     .dw mDateId ; parentId
     .dw mGetNowDateNameId ; nameId
     .db 0 ; numRows
     .dw 0 ; rowBeginId or altNameId
     .dw mGetNowDateHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
+mGetNowTime:
+mGetNowTimeId equ 229
+    .dw mGetNowTimeId ; id
+    .dw mDateId ; parentId
+    .dw mGetNowTimeNameId ; nameId
+    .db 0 ; numRows
+    .dw 0 ; rowBeginId or altNameId
+    .dw mGetNowTimeHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
 mGetNowAppDateTime:
 mGetNowAppDateTimeId equ 230
@@ -2780,10 +2780,10 @@ mEpochNameId equ 226
     .dw mEpochName
 mGetNowNameId equ 227
     .dw mGetNowName
-mGetNowTimeNameId equ 228
-    .dw mGetNowTimeName
-mGetNowDateNameId equ 229
+mGetNowDateNameId equ 228
     .dw mGetNowDateName
+mGetNowTimeNameId equ 229
+    .dw mGetNowTimeName
 mGetNowAppDateTimeNameId equ 230
     .dw mGetNowAppDateTimeName
 mGetNowUTCDateTimeNameId equ 231
@@ -3284,10 +3284,10 @@ mEpochName:
     .db "EPCH", 0
 mGetNowName:
     .db "NOW", 0
-mGetNowTimeName:
-    .db "NOWT", 0
 mGetNowDateName:
     .db "NOWD", 0
+mGetNowTimeName:
+    .db "NOWT", 0
 mGetNowAppDateTimeName:
     .db "NWDZ", 0
 mGetNowUTCDateTimeName:
