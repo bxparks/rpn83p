@@ -51,7 +51,7 @@ HoursToRpnOffset:
 ;-----------------------------------------------------------------------------
 
 ; Description: Return ZF=1 if Offset{} is zero or positive.
-; Input: HL=(Offset*)=pointerToOffset
+; Input: HL:(Offset*)=pointerToOffset
 ; Output: ZF=1 if zero or positive
 ; Destroys: A
 ; Preserves: HL
@@ -61,6 +61,18 @@ isOffsetPos:
     or (hl)
     dec hl
     bit 7, a ; ZF=1 if both sign bits are 0
+    ret
+
+; Descripton: Return ZF=1 if offset is exactly 00:00.
+; Input: HL:(Offset*)=offset
+; Output: ZF=1 if offset==00:00
+; Destroys: A
+; Preserves: HL
+isOffsetZero:
+    ld a, (hl)
+    inc hl
+    or (hl)
+    dec hl
     ret
 
 ; Description: Return ZF=1 if (hh,mm) in BC is zero or positive.
