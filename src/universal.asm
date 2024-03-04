@@ -522,65 +522,37 @@ universalChsDuration:
 ; Alegbraic functions.
 ;-----------------------------------------------------------------------------
 
-; Description: Reciprocal for real and complex numbers. For date-like objects,
-; the 'X^-1' button is overloaded to invoke the Split(RpnOffsetDateTime) or
-; Split(RpnDateTime) function.
+; Description: Reciprocal for real and complex numbers.
 ; Input:
-;   - OP1/OP2:(Real|Complex|RpnOffsetDateTime|RpnDateTime)=X
+;   - OP1/OP2:(Real|Complex)=X
 ; Output:
-;   - A:u8=numResults=1 or 2
-;   - if numResults==1:
-;       - OP1/OP2:(Real|Complex)=1/X
-;   - else:
-;       - OP1/OP2:(RpnOffset|RpnTime)=Split(X)[0]
-;       - OP3/OP4:(RpnDateTime|RpnDate)=Split(X)[1]
+;   - OP1/OP2:(Real|Complex)=1/X
 universalRecip:
     call getOp1RpnObjectType ; A=rpnObjectType
     cp rpnObjectTypeReal ; ZF=1 if real
     jr z, universalRecipReal
     cp rpnObjectTypeComplex ; ZF=1 if complex
     jr z, universalRecipComplex
-    cp rpnObjectTypeDateTime ; ZF=1 if RpnDateTime
-    jr z, universalRecipDateTime
-    cp rpnObjectTypeOffsetDateTime ; ZF=1 if RpnOffsetDateTime
-    jr z, universalRecipOffsetDateTime
 universalRecipErr:
     bcall(_ErrDataType)
 universalRecipReal:
     bcall(_FPRecip)
-    ld a, 1
     ret
 universalRecipComplex:
     bcall(_CRecip)
-    ld a, 1
-    ret
-universalRecipDateTime:
-    bcall(_SplitRpnDateTime) ; CP1=RpnTime; CP3=RpnDate
-    ld a, 2
-    ret
-universalRecipOffsetDateTime:
-    bcall(_SplitRpnOffsetDateTime) ; CP1=RpnOffset; CP3=RpnDateTime
-    ld a, 2
     ret
 
-; Description: Square for real and complex numbers. Performs Extend(X)
-; operation for Date and DateTime objects, converting Date->DateTime, and
-; DateTime->OffsetDateTime.
+; Description: Square for real and complex numbers.
 ; Input:
-;   - OP1/OP2:(Real|Complex|RpnDate|RpnDateTime)=X
+;   - OP1/OP2:(Real|Complex)=X
 ; Output:
-;   - OP1/OP2:(Real|Complex|RpnDateTime|RpnOffsetDateTime)=
-;       X^2|dateTime|offsetDateTime
+;   - OP1/OP2:(Real|Complex)=X^2
 universalSquare:
     call getOp1RpnObjectType
     cp rpnObjectTypeReal ; ZF=1 if real
     jr z, universalSquareReal
     cp rpnObjectTypeComplex ; ZF=1 if complex
     jr z, universalSquareComplex
-    cp rpnObjectTypeDate ; ZF=1 if RpnDate
-    jr z, universalSquareRpnDate
-    cp rpnObjectTypeDateTime ; ZF=1 if RpnDateTime
-    jr z, universalSquareRpnDateTime
 universalSquareErr:
     bcall(_ErrDataType)
 universalSquareReal:
@@ -588,12 +560,6 @@ universalSquareReal:
     ret
 universalSquareComplex:
     bcall(_CSquare)
-    ret
-universalSquareRpnDate: ; TODO: delegate to mDateExtend()
-    bcall(_ExtendRpnDateToDateTime)
-    ret
-universalSquareRpnDateTime:
-    bcall(_ExtendRpnDateTimeToOffsetDateTime)
     ret
 
 ; Description: Square root for real and complex numbers. Perform a Truncate()

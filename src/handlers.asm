@@ -921,25 +921,40 @@ handleKeyExpon:
     call universalPow
     jp replaceXY
 
-; Description: 1/x. TODO: delegate to mDateCut() instead.
+; Description: Handle the 1/x button. For Real and Complex, this is the
+; reciprocal function. But for RpnDateTime and RpnOffsetDateTime, this button
+; is bound to the DCUT (aka DateCut) function using the mDateCutHandlerAlt()
+; routine.
 handleKeyInv:
-    call closeInputAndRecallUniversalX
+    call closeInputAndRecallUniversalX ; A=rpnObjectType
+    cp rpnObjectTypeDateTime
+    jp z, mDateCutHandlerAlt
+    cp rpnObjectTypeOffsetDateTime
+    jp z, mDateCutHandlerAlt
     call universalRecip
-    cp 1
-    jp z, replaceX
-    cp 2
-    jp z, replaceXWithCP1CP3
-    bcall(_ErrInvalid) ; should never happen
+    jp replaceX
 
-; Description: x^2
+; Description: Handle the x^2 button. For Real and Complex, this performs the
+; X^2 function. But for RpnDate, RpnDateTime, this invokes the DEXT
+; (DateExtend) function using the mDateExtendHandlerAlt() routine.
 handleKeySquare:
-    call closeInputAndRecallUniversalX
+    call closeInputAndRecallUniversalX ; A=rpnObjectType
+    cp rpnObjectTypeDate
+    jp z, mDateExtendHandlerAlt
+    cp rpnObjectTypeDateTime
+    jp z, mDateExtendHandlerAlt
     call universalSquare
     jp replaceX
 
-; Description: sqrt(x)
+; Description: Handle the sqrt(x) button. For Real and Complex, this performs
+; the sqrt(x) function. But for RpnDateTime and RpnOffsetDateTime, this invokes
+; the DSHK (DateShrink) function using the mDateShrinkHandlerAlt() routine.
 handleKeySqrt:
-    call closeInputAndRecallUniversalX
+    call closeInputAndRecallUniversalX ; A=rpnObjectType
+    cp rpnObjectTypeDateTime
+    jp z, mDateShrinkHandlerAlt
+    cp rpnObjectTypeOffsetDateTime
+    jp z, mDateShrinkHandlerAlt
     call universalSqRoot
     jp replaceX
 
@@ -1143,7 +1158,9 @@ msgDrawPrompt:
 ;-----------------------------------------------------------------------------
 
 ; Description: Convert between 2 reals and a complex number, depending on the
-; complexMode setting (RECT, PRAD, PDEG).
+; complexMode setting (RECT, PRAD, PDEG). For RpnDate and RpnDateTime objects,
+; this invokes the DLNK (DateLink) function using the mDateLinkHandlerAlt()
+; routine.
 ; Input:
 ;   - X:(Real|Complex|RpnDate|RpnDateTime)
 ;   - Y:(Real|Complex|RpnDate|RpnDateTime)
@@ -1159,13 +1176,13 @@ handleKeyLink:
     jr z, handleKeyLinkComplexToReals
     ;
     cp rpnObjectTypeTime ; ZF=1 if RpnTime
-    jr z, handleKeyLinkTime
+    jp z, mDateLinkHandlerAlt
     cp rpnObjectTypeDate ; ZF=1 if RpnDate
-    jr z, handleKeyLinkDate
+    jp z, mDateLinkHandlerAlt
     cp rpnObjectTypeOffset ; ZF=1 if RpnOffset
-    jr z, handleKeyLinkOffset
+    jp z, mDateLinkHandlerAlt
     cp rpnObjectTypeDateTime ; ZF=1 if RpnDateTime
-    jr z, handleKeyLinkDateTime
+    jp z, mDateLinkHandlerAlt
 handleKeyLinkErrDataType:
     bcall(_ErrDataType)
 handleKeyLinkComplexToReals:
@@ -1182,32 +1199,3 @@ handleKeyLinkRealsToComplex:
     bcall(_PopRealO2) ; FPS=[]; OP2=X=Im; OP1=Y=Re
     call realsToComplex ; CP1=complex(OP1,OP2)
     jp replaceXY ; replace X, Y with CP1
-;
-handleKeyLinkTime:
-    call cp1ToCp3 ; CP3=X
-    call rclY ; CP1=Y; A=rpnObjectType
-    cp rpnObjectTypeDate ; ZF=1 if OP3=RpnDate
-    jr nz, handleKeyLinkErrDataType
-    bcall(_MergeRpnDateWithRpnTime) ; OP1=rpnDateTime
-    jp replaceXY
-handleKeyLinkDate:
-    call cp1ToCp3 ; CP3=X
-    call rclY ; CP1=Y; A=rpnObjectType
-    cp rpnObjectTypeTime ; ZF=1 if OP3=RpnTime
-    jr nz, handleKeyLinkErrDataType
-    bcall(_MergeRpnDateWithRpnTime) ; OP1=rpnDateTime
-    jp replaceXY
-handleKeyLinkOffset:
-    call cp1ToCp3 ; CP3=X
-    call rclY ; CP1=Y; A=rpnObjectType
-    cp rpnObjectTypeDateTime ; ZF=1 if OP3=RpnDateTime
-    jr nz, handleKeyLinkErrDataType
-    bcall(_MergeRpnDateTimeWithRpnOffset) ; OP1=rpnOffsetDateOffset
-    jp replaceXY
-handleKeyLinkDateTime:
-    call cp1ToCp3 ; CP3=X
-    call rclY ; CP1=Y; A=rpnObjectType
-    cp rpnObjectTypeOffset ; ZF=1 if OP3=RpnOffset
-    jr nz, handleKeyLinkErrDataType
-    bcall(_MergeRpnDateTimeWithRpnOffset) ; OP1=rpnOffsetDateTime
-    jp replaceXY

@@ -237,27 +237,9 @@ mEpochGetCustomHandler:
 ; DATE > Row 4 (conversions)
 ;-----------------------------------------------------------------------------
 
-; Description: Convert Date->DateTime, or DateTime->OffsetDateTime.
-; Input:
-;   - OP1/OP2:(RpnDate|RpnDateTime)=X
-; Output:
-;   - OP1/OP2:(RpnDateTime|RpnOffsetDateTime)=dateTime|offsetDateTime
-mDateExtendHandler:
-    call closeInputAndRecallRpnDateLikeX ; A=rpnObjectType
-    cp rpnObjectTypeDate ; ZF=1 if RpnDate
-    jr z, dateExtendRpnDate
-    cp rpnObjectTypeDateTime ; ZF=1 if RpnDateTime
-    jr z, dateExtendRpnDateTime
-    bcall(_ErrDataType)
-dateExtendRpnDate:
-    bcall(_ExtendRpnDateToDateTime)
-    jp replaceX
-dateExtendRpnDateTime:
-    bcall(_ExtendRpnDateTimeToOffsetDateTime)
-    jp replaceX
-
 mDateShrinkHandler:
     call closeInputAndRecallRpnDateLikeX ; A=rpnObjectType
+mDateShrinkHandlerAlt:
     cp rpnObjectTypeDateTime ; ZF=1 if RpnDateTime
     jr z, dateShrinkRpnDateTime
     cp rpnObjectTypeOffsetDateTime ; ZF=1 if RpnOffsetDateTime
@@ -270,9 +252,36 @@ dateShrinkRpnOffsetDateTime:
     bcall(_TruncateRpnOffsetDateTime)
     jp replaceX
 
-; Description: Same as handleKeyInv() but accepts only date-related objects.
+; Description: Convert Date->DateTime, or DateTime->OffsetDateTime.
+; Input:
+;   - OP1/OP2:(RpnDate|RpnDateTime)=X
+; Output:
+;   - OP1/OP2:(RpnDateTime|RpnOffsetDateTime)=dateTime|offsetDateTime
+mDateExtendHandler:
+    call closeInputAndRecallRpnDateLikeX ; A=rpnObjectType
+mDateExtendHandlerAlt:
+    cp rpnObjectTypeDate ; ZF=1 if RpnDate
+    jr z, dateExtendRpnDate
+    cp rpnObjectTypeDateTime ; ZF=1 if RpnDateTime
+    jr z, dateExtendRpnDateTime
+    bcall(_ErrDataType)
+dateExtendRpnDate:
+    bcall(_ExtendRpnDateToDateTime)
+    jp replaceX
+dateExtendRpnDateTime:
+    bcall(_ExtendRpnDateTimeToOffsetDateTime)
+    jp replaceX
+
+; Description: Split/cut an RpnDateTime into a (RpnDate, RpnTime) pair, or an
+; RpnOffsetDateTime into a (RpnOffset, RpnDateTime) pair.
+; Input:
+;   - OP1/OP2:(RpnOffsetDateTime|RpnDateTime)=X
+; Output:
+;   - OP1/OP2:(RpnOffset|RpnTime)=Split(X)[0]
+;   - OP3/OP4:(RpnDateTime|RpnDate)=Split(X)[1]
 mDateCutHandler:
     call closeInputAndRecallRpnDateLikeX ; A=rpnObjectType
+mDateCutHandlerAlt:
     cp rpnObjectTypeDateTime ; ZF=1 if RpnDateTime
     jr z, dateCutRpnDateTime
     cp rpnObjectTypeOffsetDateTime ; ZF=1 if RpnOffsetDateTime
@@ -287,17 +296,53 @@ dateCutRpnOffsetDateTime:
 
 ; Description: Same as handleKeyLink (2ND LINK) but accepts only date-related
 ; objects. Complex and Real objects not allowed.
+; Input:
+;   - X:(RpnDate|RpnDateTime)
+;   - Y:(RpnDate|RpnDateTime)
+; Output:
+;   - X:(RpnDateTime|RpnOffsetDateTime)
+;   - Y:(RpnDateTime|RpnOffsetDateTime)
 mDateLinkHandler:
     call closeInputAndRecallRpnDateRelatedX ; A=rpnObjectType
+mDateLinkHandlerAlt:
     cp rpnObjectTypeTime ; ZF=1 if RpnTime
-    jp z, handleKeyLinkTime
+    jp z, dateLinkTime
     cp rpnObjectTypeDate ; ZF=1 if RpnDate
-    jp z, handleKeyLinkDate
+    jp z, dateLinkDate
     cp rpnObjectTypeOffset ; ZF=1 if RpnOffset
-    jp z, handleKeyLinkOffset
+    jp z, dateLinkOffset
     cp rpnObjectTypeDateTime ; ZF=1 if RpnDateTime
-    jp z, handleKeyLinkDateTime
+    jp z, dateLinkDateTime
+dateLinkErrDataType:
     bcall(_ErrDataType)
+dateLinkTime:
+    call cp1ToCp3 ; CP3=X
+    call rclY ; CP1=Y; A=rpnObjectType
+    cp rpnObjectTypeDate ; ZF=1 if OP3=RpnDate
+    jr nz, dateLinkErrDataType
+    bcall(_MergeRpnDateWithRpnTime) ; OP1=rpnDateTime
+    jp replaceXY
+dateLinkDate:
+    call cp1ToCp3 ; CP3=X
+    call rclY ; CP1=Y; A=rpnObjectType
+    cp rpnObjectTypeTime ; ZF=1 if OP3=RpnTime
+    jr nz, dateLinkErrDataType
+    bcall(_MergeRpnDateWithRpnTime) ; OP1=rpnDateTime
+    jp replaceXY
+dateLinkOffset:
+    call cp1ToCp3 ; CP3=X
+    call rclY ; CP1=Y; A=rpnObjectType
+    cp rpnObjectTypeDateTime ; ZF=1 if OP3=RpnDateTime
+    jr nz, dateLinkErrDataType
+    bcall(_MergeRpnDateTimeWithRpnOffset) ; OP1=rpnOffsetDateOffset
+    jp replaceXY
+dateLinkDateTime:
+    call cp1ToCp3 ; CP3=X
+    call rclY ; CP1=Y; A=rpnObjectType
+    cp rpnObjectTypeOffset ; ZF=1 if OP3=RpnOffset
+    jr nz, dateLinkErrDataType
+    bcall(_MergeRpnDateTimeWithRpnOffset) ; OP1=rpnOffsetDateTime
+    jp replaceXY
 
 ;-----------------------------------------------------------------------------
 ; DATE > Row 5 (RTC related)
