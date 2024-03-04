@@ -921,7 +921,7 @@ handleKeyExpon:
     call universalPow
     jp replaceXY
 
-; Description: 1/x
+; Description: 1/x. TODO: delegate to mDateCut() instead.
 handleKeyInv:
     call closeInputAndRecallUniversalX
     call universalRecip

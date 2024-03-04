@@ -589,7 +589,7 @@ universalSquareReal:
 universalSquareComplex:
     bcall(_CSquare)
     ret
-universalSquareRpnDate:
+universalSquareRpnDate: ; TODO: delegate to mDateExtend()
     bcall(_ExtendRpnDateToDateTime)
     ret
 universalSquareRpnDateTime:

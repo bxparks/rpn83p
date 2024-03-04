@@ -234,7 +234,73 @@ mEpochGetCustomHandler:
     jp pushToX
 
 ;-----------------------------------------------------------------------------
-; DATE > Row 4 (RTC related)
+; DATE > Row 4 (conversions)
+;-----------------------------------------------------------------------------
+
+; Description: Convert Date->DateTime, or DateTime->OffsetDateTime.
+; Input:
+;   - OP1/OP2:(RpnDate|RpnDateTime)=X
+; Output:
+;   - OP1/OP2:(RpnDateTime|RpnOffsetDateTime)=dateTime|offsetDateTime
+mDateExtendHandler:
+    call closeInputAndRecallRpnDateLikeX ; A=rpnObjectType
+    cp rpnObjectTypeDate ; ZF=1 if RpnDate
+    jr z, dateExtendRpnDate
+    cp rpnObjectTypeDateTime ; ZF=1 if RpnDateTime
+    jr z, dateExtendRpnDateTime
+    bcall(_ErrDataType)
+dateExtendRpnDate:
+    bcall(_ExtendRpnDateToDateTime)
+    jp replaceX
+dateExtendRpnDateTime:
+    bcall(_ExtendRpnDateTimeToOffsetDateTime)
+    jp replaceX
+
+mDateShrinkHandler:
+    call closeInputAndRecallRpnDateLikeX ; A=rpnObjectType
+    cp rpnObjectTypeDateTime ; ZF=1 if RpnDateTime
+    jr z, dateShrinkRpnDateTime
+    cp rpnObjectTypeOffsetDateTime ; ZF=1 if RpnOffsetDateTime
+    jr z, dateShrinkRpnOffsetDateTime
+    bcall(_ErrDataType)
+dateShrinkRpnDateTime:
+    bcall(_TruncateRpnDateTime)
+    jp replaceX
+dateShrinkRpnOffsetDateTime:
+    bcall(_TruncateRpnOffsetDateTime)
+    jp replaceX
+
+; Description: Same as handleKeyInv() but accepts only date-related objects.
+mDateCutHandler:
+    call closeInputAndRecallRpnDateLikeX ; A=rpnObjectType
+    cp rpnObjectTypeDateTime ; ZF=1 if RpnDateTime
+    jr z, dateCutRpnDateTime
+    cp rpnObjectTypeOffsetDateTime ; ZF=1 if RpnOffsetDateTime
+    jr z, dateCutRpnOffsetDateTime
+    bcall(_ErrDataType)
+dateCutRpnDateTime:
+    bcall(_SplitRpnDateTime) ; CP1=RpnTime; CP3=RpnDate
+    jp replaceXWithCP1CP3
+dateCutRpnOffsetDateTime:
+    bcall(_SplitRpnOffsetDateTime) ; CP1=RpnOffset; CP3=RpnDateTime
+    jp replaceXWithCP1CP3
+
+; Description: Same as handleKeyLink (2ND LINK) but accepts only date-related
+; objects. Complex and Real objects not allowed.
+mDateLinkHandler:
+    call closeInputAndRecallRpnDateRelatedX ; A=rpnObjectType
+    cp rpnObjectTypeTime ; ZF=1 if RpnTime
+    jp z, handleKeyLinkTime
+    cp rpnObjectTypeDate ; ZF=1 if RpnDate
+    jp z, handleKeyLinkDate
+    cp rpnObjectTypeOffset ; ZF=1 if RpnOffset
+    jp z, handleKeyLinkOffset
+    cp rpnObjectTypeDateTime ; ZF=1 if RpnDateTime
+    jp z, handleKeyLinkDateTime
+    bcall(_ErrDataType)
+
+;-----------------------------------------------------------------------------
+; DATE > Row 5 (RTC related)
 ;-----------------------------------------------------------------------------
 
 mGetNowHandler:
@@ -288,7 +354,7 @@ noClockErr:
     ret
 
 ;-----------------------------------------------------------------------------
-; DATE > Row 5 (Various Settings)
+; DATE > Row 6 (Various Settings)
 ;-----------------------------------------------------------------------------
 
 mSetTimeZoneHandler:

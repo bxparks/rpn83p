@@ -419,6 +419,13 @@ MenuGroup root mRoot [
         ]
       ]
       MenuRow [
+        MenuItem DSHK mDateShrink # shrink DZ to DT, DT to D
+        MenuItem DEXD mDateExtend # extend D to DT, DT to DZ
+        MenuItem DCUT mDateCut # cut DZ to (DT,TZ), DT to (D,T)
+        MenuItem DLNK mDateLink # link (DT,TZ) to DZ, (D,T) to DT
+        MenuItem * *
+      ]
+      MenuRow [
         MenuItem NOW mGetNow # RTC epochSeconds
         MenuItem NOWD mGetNowDate # RTC Date using appTimeZone
         MenuItem NOWT mGetNowTime # RTC Time using appTimeZone
