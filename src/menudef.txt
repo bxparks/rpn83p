@@ -394,7 +394,7 @@ MenuGroup root mRoot [
         MenuItem S<Sconvert>DR mSecondsToDuration
         MenuItem S<Sconvert>T mSecondsToTime
         MenuItem S<Sconvert>DT mEpochSecondsToDateTime
-        MenuItem S<Sconvert>DZ mEpochSecondsToOffsetDateTime
+        MenuItem S<Sconvert>DZ mEpochSecondsToAppDateTime
       ]
       MenuRow [
         MenuItem H<Sconvert>TZ mHoursToTimeZone
@@ -422,7 +422,7 @@ MenuGroup root mRoot [
         MenuItem NOW mGetNow # current epochSeconds
         MenuItem NOWT mGetNowTime # current Time
         MenuItem NOWD mGetNowDate # current Date
-        MenuItem NWDZ mGetNowOffsetDateTime # current OffsetDateTime
+        MenuItem NWDZ mGetNowAppDateTime # current DateTime using appTimeZone
       ]
       MenuRow [
         MenuItem TZ mSetTimeZone

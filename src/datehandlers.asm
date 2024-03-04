@@ -82,8 +82,9 @@ mEpochSecondsToDateTimeHandler:
     bcall(_EpochSecondsToRpnDateTime) ; OP1=DateTime(epochSeconds)
     jp replaceX
 
-mEpochSecondsToOffsetDateTimeHandler:
+mEpochSecondsToAppDateTimeHandler:
     call closeInputAndRecallX ; OP1=X=epochSeconds
+    ld bc, timeZone
     bcall(_EpochSecondsToRpnOffsetDateTime) ; OP1=OffsetDateTime(epochSeconds)
     jp replaceX
 
@@ -258,13 +259,13 @@ mGetNowDateHandler:
     bcall(_RtcGetDate)
     jp pushToX
 
-mGetNowOffsetDateTimeHandler:
+mGetNowAppDateTimeHandler:
     ld a, (isTi83Plus)
     or a
     jr nz, noClockErr
     ;
     call closeInputAndRecallNone
-    bcall(_RtcGetOffsetDateTime)
+    bcall(_RtcGetAppDateTime)
     jp pushToX
 
 noClockErr:

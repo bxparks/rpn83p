@@ -2080,14 +2080,14 @@ mEpochSecondsToDateTimeId equ 220
     .dw 0 ; rowBeginId or altNameId
     .dw mEpochSecondsToDateTimeHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
-mEpochSecondsToOffsetDateTime:
-mEpochSecondsToOffsetDateTimeId equ 221
-    .dw mEpochSecondsToOffsetDateTimeId ; id
+mEpochSecondsToAppDateTime:
+mEpochSecondsToAppDateTimeId equ 221
+    .dw mEpochSecondsToAppDateTimeId ; id
     .dw mDateId ; parentId
-    .dw mEpochSecondsToOffsetDateTimeNameId ; nameId
+    .dw mEpochSecondsToAppDateTimeNameId ; nameId
     .db 0 ; numRows
     .dw 0 ; rowBeginId or altNameId
-    .dw mEpochSecondsToOffsetDateTimeHandler ; handler (to be implemented)
+    .dw mEpochSecondsToAppDateTimeHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
 ; MenuGroup DATE: children: row 2
 mHoursToTimeZone:
@@ -2163,14 +2163,14 @@ mGetNowDateId equ 229
     .dw 0 ; rowBeginId or altNameId
     .dw mGetNowDateHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
-mGetNowOffsetDateTime:
-mGetNowOffsetDateTimeId equ 230
-    .dw mGetNowOffsetDateTimeId ; id
+mGetNowAppDateTime:
+mGetNowAppDateTimeId equ 230
+    .dw mGetNowAppDateTimeId ; id
     .dw mDateId ; parentId
-    .dw mGetNowOffsetDateTimeNameId ; nameId
+    .dw mGetNowAppDateTimeNameId ; nameId
     .db 0 ; numRows
     .dw 0 ; rowBeginId or altNameId
-    .dw mGetNowOffsetDateTimeHandler ; handler (to be implemented)
+    .dw mGetNowAppDateTimeHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
 mBlank231:
 mBlank231Id equ 231
@@ -2770,8 +2770,8 @@ mSecondsToTimeNameId equ 221
     .dw mSecondsToTimeName
 mEpochSecondsToDateTimeNameId equ 222
     .dw mEpochSecondsToDateTimeName
-mEpochSecondsToOffsetDateTimeNameId equ 223
-    .dw mEpochSecondsToOffsetDateTimeName
+mEpochSecondsToAppDateTimeNameId equ 223
+    .dw mEpochSecondsToAppDateTimeName
 mHoursToTimeZoneNameId equ 224
     .dw mHoursToTimeZoneName
 mTimeZoneToHoursNameId equ 225
@@ -2784,8 +2784,8 @@ mGetNowTimeNameId equ 228
     .dw mGetNowTimeName
 mGetNowDateNameId equ 229
     .dw mGetNowDateName
-mGetNowOffsetDateTimeNameId equ 230
-    .dw mGetNowOffsetDateTimeName
+mGetNowAppDateTimeNameId equ 230
+    .dw mGetNowAppDateTimeName
 mSetTimeZoneNameId equ 231
     .dw mSetTimeZoneName
 mGetTimeZoneNameId equ 232
@@ -3272,7 +3272,7 @@ mSecondsToTimeName:
     .db 'S', Sconvert, 'T', 0
 mEpochSecondsToDateTimeName:
     .db 'S', Sconvert, 'D', 'T', 0
-mEpochSecondsToOffsetDateTimeName:
+mEpochSecondsToAppDateTimeName:
     .db 'S', Sconvert, 'D', 'Z', 0
 mHoursToTimeZoneName:
     .db 'H', Sconvert, 'T', 'Z', 0
@@ -3286,7 +3286,7 @@ mGetNowTimeName:
     .db "NOWT", 0
 mGetNowDateName:
     .db "NOWD", 0
-mGetNowOffsetDateTimeName:
+mGetNowAppDateTimeName:
     .db "NWDZ", 0
 mSetTimeZoneName:
     .db "TZ", 0
