@@ -84,7 +84,7 @@ mEpochSecondsToDateTimeHandler:
 
 mEpochSecondsToAppDateTimeHandler:
     call closeInputAndRecallX ; OP1=X=epochSeconds
-    ld bc, timeZone
+    ld bc, appTimeZone
     bcall(_EpochSecondsToRpnOffsetDateTime) ; OP1=OffsetDateTime(epochSeconds)
     jp replaceX
 
@@ -279,14 +279,14 @@ noClockErr:
 
 mSetTimeZoneHandler:
     call closeInputAndRecallRpnOffsetX ; A=rpnObjectType; OP1=X
-    bcall(_SetTimeZone)
+    bcall(_SetAppTimeZone)
     ld a, errorCodeTzStored
     ld (handlerCode), a
     ret
 
 mGetTimeZoneHandler:
     call closeInputAndRecallNone
-    bcall(_GetTimeZone)
+    bcall(_GetAppTimeZone)
     jp pushToX
 
 mSetClockTimeZoneHandler:

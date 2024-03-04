@@ -37,7 +37,7 @@ RtcGetTime:
     ld hl, OP1
     call getRtcNowAsEpochSeconds ; HL=OP1=epochSeconds
     ; Convert to RpnOffsetDateTime using current offset
-    ld bc, timeZone
+    ld bc, appTimeZone
     call epochSecondsToRpnOffsetDateTimeAlt ; OP1=RpnOffsetDateTime
     ; Transform to RpnTime
     ld hl, OP1
@@ -51,7 +51,7 @@ RtcGetDate:
     ld hl, OP1
     call getRtcNowAsEpochSeconds ; HL=OP1=epochSeconds
     ; Convert to RpnOffsetDateTime using current offset
-    ld bc, timeZone
+    ld bc, appTimeZone
     call epochSecondsToRpnOffsetDateTimeAlt ; OP1=RpnOffsetDateTime
     ; Transform RpnOffsetDateTime to RpnDate.
     ld hl, OP1
@@ -66,7 +66,7 @@ RtcGetAppDateTime:
     ld hl, OP1
     call getRtcNowAsEpochSeconds ; HL=OP1=epochSeconds
     ; Convert to RpnOffsetDateTime using current appTimeZone
-    ld bc, timeZone
+    ld bc, appTimeZone
     jp epochSecondsToRpnOffsetDateTimeAlt ; OP1=RpnOffsetDateTime
 
 ;-----------------------------------------------------------------------------
@@ -165,7 +165,7 @@ getRtcNowAsEpochSecondsLoop:
     ; Convert rtcSeconds to internal epochSeconds
     ld de, tiosEpochDate ; DE=Date{1997,1,1}
     call convertRelativeToInternalEpochSeconds ; HL=rtcSeconds
-    ; Convert to relative epochSeconds relative to current timeZone
+    ; Convert to relative epochSeconds relative to currentEpochDate
     ld de, currentEpochDate ; DE=(Date*)=currentEpochDate
     jp convertInternalToRelativeEpochSeconds ; HL=rtcSeconds
 
