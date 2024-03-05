@@ -200,8 +200,9 @@ GetLastChar:
 ;   - CF=1 if found, 0 if not found
 ;   - HL:(char*)=posOfChar (if found)
 ; Destroys: BC, HL
-; Preserves: A, DE
+; Preserves: A, DE, HL
 findChar:
+    push hl
     ld c, a ; C=searchChar
     ld a, (hl) ; B=stringSize
     ; check for empty string
@@ -216,7 +217,9 @@ findCharLoop:
     djnz findCharLoop
     ; not found
     or a ; CF=0
+    pop hl
     ret
 findCharLoopFound:
     scf
+    pop hl
     ret

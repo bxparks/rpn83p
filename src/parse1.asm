@@ -10,14 +10,9 @@
 ; entry.
 ;------------------------------------------------------------------------------
 
-; Description: Parse the object in inputBuf into OP1. Early versions of this
-; routine assumed that the input routines (in input.asm and input1.asm)
-; rejected syntatically or semantically invalid characters in inputBuf, so this
-; routine could be somewhat lazy about checking for syntax or semantics.
-; However, with the addition of tagged Record types (e.g. Date and Time), the
-; input subsystem cannot check for all possible errors, so these parsing
-; routines must now be more stringent. Various routines will throw Err:Syntax
-; or Err:Invalid when it detects something wrong.
+; Description: Parse the string in inputBuf into an object in OP1. Various
+; subroutines will throw Err:Syntax or Err:Invalid when it detects something
+; wrong.
 ;
 ; The `inputBufFlagsClosedEmpty` flag is set if the inputBuf was an empty string
 ; before being closed. The flag is used by functions which do not consume any
@@ -31,11 +26,16 @@
 ; new value. This flag is cleared if the inputBuf was not in edit mode, with
 ; the assumption that new X or Y values should lift the stack.
 ;
+; This routine calls ClearInputBuf() before returning to the closeInput()
+; routine. It would be cleaner to move the ClearInputBuf() to closeInput() to
+; avoid the duplication in this routine. But closeInput() is on Flash Page 0,
+; and ClearInputBuf() is on Flash Page 1, so placing the ClearInputBuf() here
+; prevents an expensive bcall() overhead.
+;
 ; Input:
 ;   - inputBuf:PascalString
 ; Output:
 ;   - OP1/OP2:RpnObject
-;   - A:u8=rpnObjectType
 ;   - inputBufFlagsClosedEmpty: set if inputBuf was an empty string when closed
 ;   - inputBuf cleared to empty string if successful
 ; Throws:
@@ -52,25 +52,25 @@ parseAndClearInputBufEmpty:
     jp ClearInputBuf
 parseAndClearInputBufNonEmpty:
     res inputBufFlagsClosedEmpty, (iy + inputBufFlags)
+    ; add NUL terminator to inputBuf to simplify parsing
+    call initInputBufForParsing ; HL=inputBuf
     ; Check for '{' which identifies a Record type
-    ld hl, inputBuf
     ld a, LlBrace ; A='{'
-    call findChar ; CF=1 if found
+    call findChar ; CF=1 if found; HL preserved
     jr c, parseAndClearInputBufRecord
     ; Check for ':'  which identifies a modifier.
-    ld hl, inputBuf
     ld a, ':' ; A=':'
-    call findChar ; CF=1 if found
+    call findChar ; CF=1 if found; HL preserved
     jr c, parseAndClearInputBufTaggedNumber
     ; Everything else should be a Real or a Complex number.
     call parseInputBufNumber ; OP1/OP2=real or complex
-    jp ClearInputBuf
+    jp ClearInputBuf ; see note above
 parseAndClearInputBufRecord:
     call parseInputBufRecord ; OP1/OP2:record
-    jp ClearInputBuf
+    jp ClearInputBuf ; see note above
 parseAndClearInputBufTaggedNumber:
     call parseInputBufTaggedNumber ; OP1/OP2:real
-    jp ClearInputBuf
+    jp ClearInputBuf ; see note above
 
 ;------------------------------------------------------------------------------
 
@@ -99,12 +99,13 @@ initInputBufForParsing:
 ;------------------------------------------------------------------------------
 
 ; Description: Parse the input buffer into a real or complex number in OP1/OP2.
-; Input: inputBuf filled with keyboard characters
-; Output: OP1/OP2: real or complex number
+; Input:
+;   - HL:(PascalString*)=inputBuf
+; Output:
+;   - OP1/OP2: real or complex number
 ; Destroys: all registers, OP1-OP5 (due to SinCosRad())
 ; Throws: Err:Syntax if there is a parsing error
 parseInputBufNumber:
-    call initInputBufForParsing ; HL=inputBuf
     inc hl ; skip length byte
     bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
     jr nz, parseBaseInteger
@@ -255,15 +256,16 @@ parseNumBaseAddDigit:
 ;-----------------------------------------------------------------------------
 
 ; Description: Parse the inputBuf containing a Record into OP1.
-; Input: inputBuf
-; Output: OP1/OP2=rpnObject (e.g. RpnDate, RpnDateTime, RpnOffsetDateTime)
+; Input:
+;   - HL:(PascalString*)=inputBuf
+; Output:
+;   - OP1/OP2=rpnObject (e.g. RpnDate, RpnDateTime, RpnOffsetDateTime)
 ; Uses: parseBuf
 ; Destroys: all
 ; Throws:
 ;   - Err:Syntax if the syntax is incorrect
 ;   - Err:Invalid if there's a programming logic error
 parseInputBufRecord:
-    call initInputBufForParsing ; HL=inputBuf
     inc hl ; skip len byte
     ; Check if we have a naked Record starting with '{'.
     ld a, (hl)
@@ -385,11 +387,12 @@ parseInputBufDuration:
 
 ; Description: Parse a tagged number of the form {nnnn:M}, where M can be one
 ; of ('D', 'H', 'M', or 'S'). Currently, only Duration type is supported.
-; Output: OP1:Duration=duration
+; Input:
+;   - HL:(PascalString*)=inputBuf
+; Output:
+;   - OP1:Duration=duration
 ; Destroys: all
 parseInputBufTaggedNumber:
-    ; TODO: move the following common code into intoParseAndClearInputBuf()
-    call initInputBufForParsing ; HL=inputBuf
     inc hl ; skip len byte
     ; First parse the tagged number into OP1, as a temp buffer. Currently,
     ; a single signed i16 integer with a modifier suffix is supported.
