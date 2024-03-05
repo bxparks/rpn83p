@@ -797,7 +797,7 @@ displayMenu:
 displayMenuLoop:
     push hl ; stack=[menuId]
     call getMenuName ; HL:(const char*)=menuName
-    call printMenuAtA
+    call printMenuNameAtC
     pop hl ; stack=[]; HL=menuId
     ; increment to next menu
     inc hl ; HL=menuId+1
@@ -810,7 +810,7 @@ displayMenuLoop:
 
 ;-----------------------------------------------------------------------------
 
-; Description: Print the menu C-string in HL to the menuPenCol in A, using the
+; Description: Print the menu name in HL to the menu penCol in C, using the
 ; small and inverted font, centering the menu name in the middle of the 18 px
 ; width of a menu box.
 ; Inputs:
@@ -820,7 +820,7 @@ displayMenuLoop:
 ;   HL:(const char*)=menuName
 ; Destroys: A, HL
 ; Preserves: BC, DE
-printMenuAtA: ; TODO: Rename this to printMenuNameAtC().
+printMenuNameAtC:
     push bc ; stack=[loopCounter/penCol]
     push de ; stack=[loopCounter/penCol,menuIndex]
     ; Set (PenCol,PenRow), preserving HL
@@ -834,14 +834,14 @@ printMenuAtA: ; TODO: Rename this to printMenuNameAtC().
     call copyCToPascal ; C, DE are preserved
     ex de, hl ; HL = menuName
     call smallStringWidth ; A = B = string width
-printMenuAtANoAdjust:
+printMenuNameAtCNoAdjust:
     ; Calculate the starting pixel to center the string
     ld a, menuPenWidth
     sub b ; A = menuPenWidth - stringWidth
-    jr nc, printMenuAtAFitsInside
-printMenuAtATooWide:
+    jr nc, printMenuNameAtCFitsInside
+printMenuNameAtCTooWide:
     xor a ; if string too wide (shouldn't happen), set to 0
-printMenuAtAFitsInside:
+printMenuNameAtCFitsInside:
     ; Add 1px to the total padding so that when divided between left and right
     ; padding, the left padding gets 1px more if the total padding is an odd
     ; number. This allows a few names which are 17px wide to actually fit
@@ -870,26 +870,26 @@ printMenuAtAFitsInside:
     ; pixels directly under the letter is white. Setting this flag fixes that
     ; problem.
     set textEraseBelow, (iy + textFlags)
-printMenuAtALeftPad:
+printMenuNameAtCLeftPad:
     ld b, a ; B = leftPadWidth
     ld a, Sspace
     call printARepeatB
-printMenuAtAPrintName:
+printMenuNameAtCPrintName:
     ; Print the menu name
     ld hl, menuName
     call vPutSmallPS
-printMenuAtARightPad:
+printMenuNameAtCRightPad:
     pop bc ; B = stringWidth; C = leftPadWidth
     ld a, menuPenWidth
     sub c ; A = menuPenWidth - leftPadWidth
     sub b ; A = rightPadWidth = menuPenWidth - leftPadWidth - stringWidth
-    jr z, printMenuAtAExit ; no space left
-    jr c, printMenuAtAExit ; overflowed, shouldn't happen but be safe
+    jr z, printMenuNameAtCExit ; no space left
+    jr c, printMenuNameAtCExit ; overflowed, shouldn't happen but be safe
     ; actually print the right pad
     ld b, a ; B = rightPadWidth
     ld a, Sspace
     call printARepeatB
-printMenuAtAExit:
+printMenuNameAtCExit:
     res textInverse, (iy + textFlags)
     res textEraseBelow, (iy + textFlags)
     pop de ; stack=[loopCounter/penCol]; E=menuIndex
