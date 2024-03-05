@@ -43,17 +43,12 @@ ValidateDate:
     ld a, e ; A=month-1
     cp 12 ; CF=0 if month-1>=12
     jr nc, validateDateErr
-    ; get maxDay
-    ld a, d ; A=day-1
-    push de
-    push hl
-    ld d, 0 ; DE=month-1
-    ld hl, maxDaysPerMonth
-    add hl, de
-    cp (hl) ; CF=0 if day-1>=maxDaysPerMonth
-    pop hl
-    pop de
-    jr nc, validateDateErr
+    ; check day for given month
+    ld a, e ; A=month-1
+    call getMaxDaysForMonth ; A=maxDays
+    dec a ; A=maxDays-1
+    cp d ; if maxDays-1<day-1: CF=1
+    jr c, validateDateErr
     ; check special case for Feb
     ld a, e ; A=month-1
     cp 1 ; ZF=1 if month==Feb
@@ -68,8 +63,24 @@ ValidateDate:
 validateDateErr:
     bcall(_ErrInvalid)
 
-; Description: The maximum value of 'day' for each month.
-maxDaysPerMonth:
+; Description: Return the max number of days for given month.
+; Input: A=month-1
+; Output: A=maxDays
+; Preserves: BC, DE, HL
+getMaxDaysForMonth:
+    push hl
+    ld hl, maxDaysForMonth
+    add a, l
+    ld l, a
+    ld a, 0
+    adc a, h
+    ld h, a ; HL=HL+A
+    ld a, (hl)
+    pop hl
+    ret
+
+; Description: Table of the maximum number of days for each month.
+maxDaysForMonth:
     .db 31 ; Jan
     .db 29 ; Feb
     .db 31 ; Mar
