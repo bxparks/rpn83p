@@ -59,7 +59,10 @@ dateToInternalEpochDays:
     call yearToYearPrime ; HL=yearPrime
     ld (dateToEpochYear), hl ; dateToEpochYear=yearPrime
     ; era=yearPrime/400; yearOfEra=yearPrime%400
-    ; TODO: This formulation does not work for dates before 0001-03-01.
+    ; TODO: The following algorithm does not work for dates before 0000-03-01,
+    ; because yearPrime becomes negative for 0000-02 (Feb) and 0000-01 (Jan).
+    ; Since we restrict the year to be >= 0001 most of the time, this should be
+    ; mostly ok.
     ld bc, 400
     call divHLByBCPageTwo ; HL=era=yearPrime/400=[0,24]; DE=yearOfEra
     ld (dateToEpochEra), hl ; (dateToEpochEra)=era
