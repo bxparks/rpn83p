@@ -27,7 +27,7 @@ parseFloat:
     ret nc
     ; Parse the various components of a scientific floating number.
     call parseMantissaSign ; parseBufFlags updated; HL updated
-    call parseMantissaTotal ; parseBufExponent updated; HL updated
+    call parseMantissa ; parseBufExponent updated; HL updated
     call parseExponentSymbol ; ZF=1 if 'E' found
     jr nz, parseFloatExtract
     call parseExponent ; parseBufExponent updated; HL updated
@@ -108,19 +108,18 @@ parseMantissaSignNeg:
 
 ;-----------------------------------------------------------------------------
 
-; Description: Parse the mantissa digits from inputBuf into parseBufExponent
+; Description: Parse the mantissa part from inputBuf into parseBufExponent
 ; and parseBuf. This is a 2-pass parser:
 ;   1) look for decimal point, to extract the effective mantissa exponent
 ;   2) extract the mantissa digits
-parseMantissaTotal: ; TODO: rename this to parseMantissa()
+parseMantissa:
     ; 1) Find decimal point to get the effective mantissa exponent. The
     ; mantissaExp = decimalPointPos - 1.
     call findDecimalPoint ; A:i8=decimalPointPos; preserves HL
     dec a ; A=mantissaExp=decimalPointPos-1
     ld (parseBufExponent), a ; (parseBufExponent)=mantissaExp
-
     ; 2) Parse the digits into parseBuf.
-    call parseMantissa ; (parseBuf) updated; HL=char after mantissa
+    call parseMantissaDigits ; (parseBuf) updated; HL=char after mantissa
     ret
 
 ; Description: Parse the mantissa digits from inputBuf into parseBuf, ignoring
@@ -140,36 +139,36 @@ parseMantissaTotal: ; TODO: rename this to parseMantissa()
 ; Destroys: A, BC, DE
 parseMantissaFlagLeadingFound equ 0 ; bit to set when lead digit found
 parseMantissaFlagPeriodFound equ 1 ; bit to set when a '.' is found
-parseMantissa: ; TODO: rename this to parseMantissaDigits()
+parseMantissaDigits:
     ld c, 0
-parseMantissaLoop:
+parseMantissaDigitsLoop:
     ld a, (hl)
     inc hl
     call isValidFloatDigit ; if valid: CF=1
-    jr nc, parseMantissaEnd
+    jr nc, parseMantissaDigitsEnd
     cp signChar
-    jr z, parseMantissaErr ; sign chara should have already been consumed
+    jr z, parseMantissaDigitsErr ; sign chara should have already been consumed
     cp '.'
-    jr z, parseMantissaPeriodFound
+    jr z, parseMantissaDigitsPeriodFound
     cp '0'
-    jr nz, parseMantissaNormalDigit
+    jr nz, parseMantissaDigitsNormalDigit
     ; Ignore '0' before a leading digit.
     bit parseMantissaFlagLeadingFound, c
-    jr z, parseMantissaLoop
-parseMantissaNormalDigit:
+    jr z, parseMantissaDigitsLoop
+parseMantissaDigitsNormalDigit:
     ; A=char to append
     set parseMantissaFlagLeadingFound, c
     call appendParseBuf ; preserves BC, HL
-    jr parseMantissaLoop
-parseMantissaPeriodFound:
+    jr parseMantissaDigitsLoop
+parseMantissaDigitsPeriodFound:
     bit parseMantissaFlagPeriodFound, c
-    jr nz, parseMantissaErr ; 2 periods found
+    jr nz, parseMantissaDigitsErr ; 2 periods found
     set parseMantissaFlagPeriodFound, c
-    jr parseMantissaLoop
-parseMantissaEnd:
+    jr parseMantissaDigitsLoop
+parseMantissaDigitsEnd:
     dec hl ; push back the next character
     ret
-parseMantissaErr:
+parseMantissaDigitsErr:
     bcall(_ErrSyntax)
 
 ; Description: Append character in A to parseBuf
