@@ -1195,9 +1195,9 @@ _AddRpnDateByDurationLabel:
 _AddRpnDateByDuration equ _AddRpnDateByDurationLabel-branchTableBase
     .dw AddRpnDateByDuration
     .db 2
-_SubRpnDateByRpnDateOrDaysLabel:
-_SubRpnDateByRpnDateOrDays equ _SubRpnDateByRpnDateOrDaysLabel-branchTableBase
-    .dw SubRpnDateByRpnDateOrDays
+_SubRpnDateByObjectLabel:
+_SubRpnDateByObject equ _SubRpnDateByObjectLabel-branchTableBase
+    .dw SubRpnDateByObject
     .db 2
 
 ; time2.asm

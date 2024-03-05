@@ -229,7 +229,7 @@ universalSub:
     jr z, universalSubDateTimeMinusObject
     ; OP1=OffsetDateTime
     call checkOp1OffsetDateTime ; ZF=1 if OffsetDateTime
-    jr z, universalSubOffsetDateTimeMinusObject
+    jp z, universalSubOffsetDateTimeMinusObject
     ; OP1=DayOfWeek
     call checkOp1DayOfWeek ; ZF=1 if DayOfWeek
     jp z, universalSubDayOfWeekMinusObject
@@ -277,10 +277,13 @@ universalSubDateMinusObject:
     jr z, universalSubDateMinusDays
     cp rpnObjectTypeDate
     jr z, universalSubDateMinusDate
+    cp rpnObjectTypeDuration
+    jr z, universalSubDateMinusDuration
     jr universalSubErr
 universalSubDateMinusDays:
 universalSubDateMinusDate:
-    bcall(_SubRpnDateByRpnDateOrDays)
+universalSubDateMinusDuration:
+    bcall(_SubRpnDateByObject)
     ret
 ; Time - object
 universalSubTimeMinusObject:

@@ -327,12 +327,14 @@ addDateByDays:
 ; Output:
 ;   - OP1:RpnDate(RpnDate-days) or i40(RpnDate-RpnDate).
 ; Destroys: OP1, OP2, OP3-OP6
-SubRpnDateByRpnDateOrDays:
+SubRpnDateByObject:
     call getOp3RpnObjectTypePageTwo ; A=objectType
     cp rpnObjectTypeReal ; ZF=1 if Real
     jr z, subRpnDateByDays
     cp rpnObjectTypeDate ; ZF=1 if Date
     jr z, subRpnDateByRpnDate
+    cp rpnObjectTypeDuration ; ZF=1 if Duration
+    jr z, subRpnDateByRpnDuration
     bcall(_ErrInvalid) ; should never happen
 subRpnDateByDays:
     ; invert the sign of OP3=days, then call addRpnDateByDaysAdd()
@@ -359,3 +361,8 @@ subRpnDateByRpnDate:
     call popRaw9Op1 ; FPS=[X.days]; OP1=Y.days-X.days
     call ConvertI40ToOP1 ; OP1=float(i40)
     jp dropRaw9 ; FPS=[]
+subRpnDateByRpnDuration:
+    ; invert the sign of duration in OP3
+    ld hl, OP3+1
+    call chsDuration
+    jr addRpnDateByDurationAdd
