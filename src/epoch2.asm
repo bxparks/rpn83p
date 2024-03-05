@@ -399,13 +399,8 @@ internalEpochDaysToDate:
     ld bc, (epochToDateYearOfEra) ; BC=yearOfEra
     ld hl, epochToDateP4 ; HL=P4
     call setU40ToBC ; HL=P4=yearOfEra
-    ex de, hl ; DE=P4=yearOfEra
-    ld bc, 4
-    ld hl, epochToDateP2 ; HL=P2
-    call setU40ToBC ; HL=P2=365
-    ex de, hl ; HL=P4=yearOfEra; DE=P2=4
-    ld bc, epochToDateP6 ; BC=P6=remainder
-    call divU40U40 ; HL=P4=yearOfEra/4; TODO: replace with divU40ByD()
+    ld d, 4
+    call divU40ByD ; HL=P4=yearOfEra/4
     ;
     ex de, hl ; DE=P4=yearOfEra/4
     ld hl, epochToDateP1 ; HL=P1=dayOfYearPrime
@@ -414,13 +409,8 @@ internalEpochDaysToDate:
     ld bc, (epochToDateYearOfEra) ; BC=yearOfEra
     ld hl, epochToDateP4 ; HL=P4
     call setU40ToBC ; HL=P4=yearOfEra
-    ex de, hl ; DE=P4=yearOfEra
-    ld bc, 100
-    ld hl, epochToDateP2 ; HL=P2
-    call setU40ToBC ; HL=P2=100
-    ex de, hl ; HL=P4=yearOfEra; DE=P2=100
-    ld bc, epochToDateP6 ; BC=P6=remainder
-    call divU40U40 ; HL=P4=yearOfEra/100; TODO: replace with divU40ByD()
+    ld d, 100
+    call divU40ByD ; HL=P4=yearOfEra/100
     ;
     ex de, hl ; DE=P4=yearOfEra/100
     ld hl, epochToDateP1
