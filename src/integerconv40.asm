@@ -118,7 +118,7 @@ convertOP1ToI40Pos:
 ; Output:
 ;   - OP1: converted to a u40
 ;   - C: u40StatusCode
-; Destroys: A, B, C, DE
+; Destroys: A, B, C, DE, HL
 ; Preserves: OP2-OP6
 ConvertOP1ToU40:
     call convertOP1ToU40StatusCode ; OP3=u40(OP1); C=u40StatusCode
@@ -183,7 +183,7 @@ convertOP1ToU40StatusCodeHasFrac:
 ; Output:
 ;   - HL=OP1
 ;   - OP1: converted to a u40
-; Destroys: A, BC, DE, HL
+; Destroys: A, BC, DE
 ; Preserves: OP2-OP6
 convertOP1ToU40NoCheck:
     ; initialize the target u40

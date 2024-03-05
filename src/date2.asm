@@ -28,11 +28,7 @@ InitDate:
 ; Output: OP1:Real=1 or 0
 ; Destroys: all
 IsLeap:
-    call ConvertOP1ToU40 ; HL=u40(OP1) else Err:Domain
-    ; TODO: Add domain check for 1<=year<=9999.
-    ld c, (hl)
-    inc hl
-    ld b, (hl)
+    call convertOP1ToYear ; BC=year, [1,9999]
     call isLeapYear ; CF=1 if leap
     jr c, isLeapTrue
     bcall(_OP1Set0)
@@ -40,6 +36,31 @@ IsLeap:
 isLeapTrue:
     bcall(_OP1Set1)
     ret
+
+; Description: Convert real number in OP1 to a u16 year in BC. Throws
+; Err:Domain if year is outside the range of[1,9999].
+; Input: OP1:Real=year
+; Output: BC:u16=year in the range of [1,9999]
+; Destroys: A, BC, DE, HL
+convertOP1ToYear:
+    call ConvertOP1ToU40 ; OP1=u40(OP1) else Err:Domain
+    ld hl, OP1
+    call testU40 ; ZF=1 if zero
+    jr z, convertOP1ToYearErr
+    ex de, hl ; DE=year
+    call reserveRaw9 ; FPS=[operand]; HL=operand
+    ld bc, 10000
+    call setU40ToBC ; operand=10000
+    ex de, hl ; HL=year; DE=10000
+    call cmpU40U40 ; CF=0 if year>=10000
+    jr nc, convertOP1ToYearErr
+    ld c, (hl)
+    inc hl
+    ld b, (hl) ; BC=year
+    call dropRaw9 ; FPS=[]
+    ret
+convertOP1ToYearErr:
+    bcall(_ErrDomain)
 
 ; Description: Check if given year (BC) is a leap year. A year is leap if:
 ; ((year % 4 == 0) && (year % 100 != 0)) || (year % 400 == 0)
