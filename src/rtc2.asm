@@ -3,9 +3,12 @@
 ; Copyright (c) 2024 Brian T. Park
 ;
 ; Routines related to the real time clock (RTC), which is available only the
-; 84_ and 84+SE.
-;
-; TODO: Check for 83+ and 83+SE, and return an error message to the user.
+; 83+SE, 84+, and 84+SE. It would better if these routines could throw
+; a custom exception, but the TI-OS does not provide a mechanism to return a
+; custom error message. Instead, these routines rely on the calling routines to
+; check for the 83+, using the (isTi83Plus) flag. The calling routine is
+; expected to set the 'handlerCode' to 'errorCodeNoClock' so that the "Err: No
+; Clock" message is displayed to the user.
 ;
 ; Labels with Capital letters are intended to be exported to other flash pages
 ; and should be placed in the branch table on Flash Page 0. Labels with
