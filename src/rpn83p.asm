@@ -1191,6 +1191,10 @@ _AddRpnDateByDaysLabel:
 _AddRpnDateByDays equ _AddRpnDateByDaysLabel-branchTableBase
     .dw AddRpnDateByDays
     .db 2
+_AddRpnDateByDurationLabel:
+_AddRpnDateByDuration equ _AddRpnDateByDurationLabel-branchTableBase
+    .dw AddRpnDateByDuration
+    .db 2
 _SubRpnDateByRpnDateOrDaysLabel:
 _SubRpnDateByRpnDateOrDays equ _SubRpnDateByRpnDateOrDaysLabel-branchTableBase
     .dw SubRpnDateByRpnDateOrDays

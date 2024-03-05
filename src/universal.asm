@@ -104,18 +104,23 @@ universalAddComplexPlusObject:
 universalAddComplexPlusReal:
 universalAddComplexPlusComplex:
     jr universalAddRealPlusComplex
-; Located in the middle to support 'jr' instructions.
-universalAddErr:
-    bcall(_ErrDataType)
 ; Date + object
 universalAddDatePlusObject:
     call getOp3RpnObjectType
     cp rpnObjectTypeReal
     jr z, universalAddDatePlusReal
+    cp rpnObjectTypeDuration
+    jr z, universalAddDatePlusDuration
     jr universalAddErr
 universalAddDatePlusReal:
     bcall(_AddRpnDateByDays) ; OP1=Date(OP1)+days(OP3)
     ret
+universalAddDatePlusDuration:
+    bcall(_AddRpnDateByDuration) ; OP1=Date(OP1)+duration(OP3)
+    ret
+; Located in the middle to support 'jr' instructions.
+universalAddErr:
+    bcall(_ErrDataType)
 ; Time + object
 universalAddTimePlusObject:
     call getOp3RpnObjectType
@@ -174,6 +179,8 @@ universalAddDurationPlusObject:
     jr z, universalAddDurationPlusReal
     cp rpnObjectTypeTime
     jr z, universalAddDurationPlusTime
+    cp rpnObjectTypeDate
+    jr z, universalAddDurationPlusDate
     cp rpnObjectTypeDateTime
     jr z, universalAddDurationPlusDateTime
     cp rpnObjectTypeOffsetDateTime
@@ -189,6 +196,8 @@ universalAddDurationPlusDuration:
     ret
 universalAddDurationPlusTime:
     jr universalAddTimePlusDuration
+universalAddDurationPlusDate:
+    jr universalAddDatePlusDuration
 universalAddDurationPlusDateTime:
     jr universalAddDateTimePlusDuration
 universalAddDurationPlusOffsetDateTime:
