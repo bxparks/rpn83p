@@ -24,12 +24,12 @@ ValidateDate:
     inc hl
     ld b, (hl)
     inc hl ; BC=year
-    ld e, (hl) ; E=month
+    ld d, (hl) ; D=month
     inc hl
-    ld d, (hl) ; D=day
+    ld e, (hl) ; E=day
     inc hl
-    dec e ; E=month-1
-    dec d ; D=day-1
+    dec d ; D=month-1
+    dec e ; E=day-1
     ; check year
     ld a, b
     or c ; CF=0; ZF=1 if year==0
@@ -40,24 +40,24 @@ ValidateDate:
     pop hl
     jr c, validateDateErr
     ; check month
-    ld a, e ; A=month-1
+    ld a, d ; A=month-1
     cp 12 ; CF=0 if month-1>=12
     jr nc, validateDateErr
     ; check day for given month
-    ld a, e ; A=month-1
+    ld a, d ; A=month-1
     call getMaxDaysForMonth ; A=maxDays
     dec a ; A=maxDays-1
-    cp d ; if maxDays-1<day-1: CF=1
+    cp e ; if maxDays-1<day-1: CF=1
     jr c, validateDateErr
     ; check special case for Feb
-    ld a, e ; A=month-1
+    ld a, d ; A=month-1
     cp 1 ; ZF=1 if month==Feb
     ret nz
     ; if Feb and leap year: no additional testing needed
     call isLeapYear ; CF=1 if leap; preserves BC, DE, HL
     ret c
     ; if not leap year: check that Feb has max of 28 days
-    ld a, d ; A=day-1
+    ld a, e ; A=day-1
     cp 28 ; if day-1>=28: CF=0
     ret c
 validateDateErr:
