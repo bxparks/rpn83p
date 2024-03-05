@@ -216,7 +216,7 @@ addTimeBySeconds:
     ; add addedSeconds
     pop de ; stack=[time]; DE=addedSeconds
     call addU40U40 ; HL=resultSeconds=timeSeconds+addedSeconds
-    ; Reduce the total seconds by (mod 86400).
+    ; Reduce the total seconds by (mod 86400). TODO: replace with modU40U40().
     ex de, hl ; DE=resultSeconds
     call reserveRaw9 ; FPS=[timeSeconds,divisor]; HL=divisor
     ld a, 1
@@ -229,7 +229,7 @@ addTimeBySeconds:
     ld b, h ; BC=remainder
     pop hl ; stack=[time]; HL=divisor
     ;
-    ex de, hl ; DE=divisor=84600; HL=dividend=resultSeconds
+    ex de, hl ; DE=divisor=86400; HL=dividend=resultSeconds
     call divI40U40 ; BC=remainder=always positive
     ; convert remainderSeconds to time
     ex de, hl ; DE=resultSeconds; HL=addedSeconds
