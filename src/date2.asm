@@ -249,11 +249,43 @@ addRpnDateByDaysAdd:
     push hl ; stack=[rpnDate]
     ; convert real(seconds) to i40(seconds)
     call op3ToOp1PageTwo ; OP1:real=seconds
-    call ConvertOP1ToI40 ; OP1:u40=seconds
+    call ConvertOP1ToI40 ; OP1:i40=seconds
     ; add date+days
     pop hl ; stack=[]; HL=rpnDate
     inc hl ; HL=date
-    ld de, OP1
+    ld de, OP1 ; DE:i40=days
+    call addDateByDays ; HL=newDate
+    ; clean up
+    call PopRpnObject1 ; FPS=[]; OP1=newRpnDate
+    ret
+
+; Description: Add (RpnDate plus duration) or (duration plus RpnDate).
+; Input:
+;   - OP1:Union[RpnDate,RpnReal]=rpnDate or duration
+;   - OP3:Union[RpnDate,RpnReal]=rpnDate or duration
+; Output:
+;   - OP1:RpnDate=rpnDate+duration
+; Destroys: all, OP1, OP2, OP3-OP6
+AddRpnDateByDuration:
+    call checkOp1DatePageTwo ; ZF=1 if CP1 is an RpnDate
+    jr z, addRpnDateByDurationAdd
+    call cp1ExCp3PageTwo ; CP1=rpnDate; CP3=duration
+addRpnDateByDurationAdd:
+    ; if here: CP1=rpnDate, CP3=duration
+    ; Push CP1:rpnDate to FPS
+    call PushRpnObject1 ; FPS=[rpnDate]; HL=rpnDate
+    push hl ; stack=[rpnDate]
+    ; Convert OP3:RpnDuration to days
+    ld hl, OP3+1 ; DE:(Duration*)=duration
+    ld c, (hl)
+    inc hl
+    ld b, (hl) ; BC=duration.days
+    ld hl, OP1 ; HL:(i40*)=durationDays
+    call setI40ToBC
+    ; add date+durationDays
+    pop hl ; stack=[]; HL=rpnDate
+    inc hl ; HL=date
+    ld de, OP1 ; DE:i40=duration
     call addDateByDays ; HL=newDate
     ; clean up
     call PopRpnObject1 ; FPS=[]; OP1=newRpnDate
@@ -295,15 +327,17 @@ addDateByDays:
 ; Output:
 ;   - OP1:RpnDate(RpnDate-days) or i40(RpnDate-RpnDate).
 ; Destroys: OP1, OP2, OP3-OP6
-SubRpnDateByRpnDateOrDays:
+SubRpnDateByObject:
     call getOp3RpnObjectTypePageTwo ; A=objectType
     cp rpnObjectTypeReal ; ZF=1 if Real
     jr z, subRpnDateByDays
     cp rpnObjectTypeDate ; ZF=1 if Date
     jr z, subRpnDateByRpnDate
+    cp rpnObjectTypeDuration ; ZF=1 if Duration
+    jr z, subRpnDateByRpnDuration
     bcall(_ErrInvalid) ; should never happen
 subRpnDateByDays:
-    ; exchage CP1/CP3, invert the sign, then call addRpnDateByDaysAdd()
+    ; invert the sign of OP3=days, then call addRpnDateByDaysAdd()
     call cp1ExCp3PageTwo
     bcall(_InvOP1S) ; OP1=-OP1
     call cp1ExCp3PageTwo
@@ -327,3 +361,8 @@ subRpnDateByRpnDate:
     call popRaw9Op1 ; FPS=[X.days]; OP1=Y.days-X.days
     call ConvertI40ToOP1 ; OP1=float(i40)
     jp dropRaw9 ; FPS=[]
+subRpnDateByRpnDuration:
+    ; invert the sign of duration in OP3
+    ld hl, OP3+1
+    call chsDuration
+    jr addRpnDateByDurationAdd

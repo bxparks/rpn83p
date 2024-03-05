@@ -144,62 +144,130 @@ secondsToTime:
 
 ; Description: Add (RpnTime plus seconds) or (seconds plus RpnTime).
 ; Input:
-;   - OP1:Union[RpnTime,RpnReal]=rpnTime or seconds
-;   - OP3:Union[RpnTime,RpnReal]=rpnTime or seconds
+;   - OP1:(RpnTime,RpnReal)=rpnTime or seconds
+;   - OP3:(RpnTime,RpnReal)=rpnTime or seconds
 ; Output:
-;   - OP1:RpnTime=RpnTime+seconds=always positive
+;   - OP1:RpnTime=rpnTime+seconds=always positive
 ; Destroys: all, OP1-OP4
 AddRpnTimeBySeconds:
     call checkOp1TimePageTwo ; ZF=1 if CP1 is an RpnTime
-    jr nz, addRpnTimeBySecondsAdd
-    call cp1ExCp3PageTwo ; CP1=seconds; CP3=RpnTime
+    jr z, addRpnTimeBySecondsAdd
+    call cp1ExCp3PageTwo ; CP1=rpnTime; CP3=seconds
 addRpnTimeBySecondsAdd:
-    ; CP1=seconds, CP3=RpnTime
-    call ConvertOP1ToI40 ; HL=OP1=u40(seconds)
-    call pushRaw9Op1 ; FPS=[seconds]; HL=seconds
-    ; convert CP3=RpnTime to OP1=seconds
-    ld de, OP3+1 ; DE=Time
-    ld hl, OP1
-    call timeToSeconds ; HL=OP1=timeSeconds
-    ; add seconds + timeSeconds
-    call popRaw9Op2 ; FPS=[]; OP2=seconds
-    ld de, OP2
-    ld hl, OP1
-    call addU40U40 ; HL=OP1=resultSeconds=dateSeconds+seconds
+    ; if here: CP1=rpnTime, CP3=seconds
+    call PushRpnObject1 ; FPS=[rpnTime]; HL=rpnTime
+    push hl ; stack=[rpnTime]
+    ; convert real(seconds) toi40(seconds
+    call op3ToOp1PageTwo ; OP1:real=seconds
+    call ConvertOP1ToI40 ; OP1=i40(seconds)
+    ; add time+seconds
+    pop hl ; stack=[]; HL=rpnTime
+    inc hl ; HL=time
+    ld de, OP1 ; DE:i40=seconds
+    call addTimeBySeconds
+    ; clean up
+    call PopRpnObject1 ; FPS=[]; OP1=newRpnTime
+    ret
+
+; Description: Add (RpnTime plus RpnDuration) or (RpnDuration plus RpnTime).
+; Input:
+;   - OP1:(RpnTime|RpnDuration)=(rpnTime or rpnDuration)
+;   - OP3:(RpnTime|RpnDuration)=(rpnTime or rpnDuration)
+; Output:
+;   - OP1:RpnTime=rpnTime+rpnDuration=always positive
+; Destroys: all, OP1-OP4
+AddRpnTimeByDuration:
+    call checkOp1TimePageTwo ; ZF=1 if CP1 is an RpnTime
+    jr z, addRpnTimeByDurationAdd
+    call cp1ExCp3PageTwo ; CP1=rpnTime; CP3=rpnDuration
+addRpnTimeByDurationAdd:
+    ; if here: CP1=rpnTime, CP3=duration
+    ; Push CP1:RpnTime to FPS
+    call PushRpnObject1 ; FPS=[time]; HL=time
+    push hl ; stack=[time]
+    ; Convert OP3:RpnDuration to OP1 days
+    ld de, OP3+1 ; DE:(Duration*)=duration
+    ld hl, OP1 ; HL:(i40*)=durationSeconds
+    call durationToSeconds ; HL=durationSeconds
+    ; add time+seconds
+    pop hl ; stack=[]; HL=rpnTime
+    inc hl ; HL=time
+    ld de, OP1 ; DE=durationSeconds
+    call addTimeBySeconds ; HL=newTime
+    ; OP1=newTime
+    call PopRpnObject1 ; FPS=[]; OP1=newTime
+    ret
+
+; Description: Add Time plus seconds.
+; Input:
+;   - DE:(i40*)=addedSeconds
+;   - HL:(Time*)=time
+; Output:
+;   - HL:(Time*)=newTime
+; Destroys: A, BC
+; Preserves: DE, HL
+addTimeBySeconds:
+    push hl ; stack=[time]
+    push de ; stack=[time,addedSeconds]
+    ; convert time to timeSeconds
+    ex de, hl ; DE=time
+    call reserveRaw9 ; FPS=[timeSeconds]; HL=timeSeconds
+    call timeToSeconds ; HL=timeSeconds
+    ; add addedSeconds
+    pop de ; stack=[time]; DE=addedSeconds
+    call addU40U40 ; HL=resultSeconds=timeSeconds+addedSeconds
     ; Reduce the total seconds by (mod 86400).
-    ex de, hl ; DE=OP1=resultSeconds
-    ld hl, OP2
+    ex de, hl ; DE=resultSeconds
+    call reserveRaw9 ; FPS=[timeSeconds,divisor]; HL=divisor
     ld a, 1
     ld bc, 20864 ; ABC=86400 seconds per day
-    call setU40ToABC ; HL=OP2=divisor=86400
-    ex de, hl ; DE=OP2=divisor; HL=OP1=resultSeconds
-    ld bc, OP3
-    call divI40U40 ; BC=OP3=remainder=always positive
-    ; convert seconds to OP1=RpnTime
-    ld de, OP3 ; DE=remainder
-    ld hl, OP1
-    ld a, rpnObjectTypeTime
-    ld (hl), a
-    inc hl ; HL:(Time*)=newTime
-    jr secondsToTime ; HL=OP1+sizeof(Time)
+    call setU40ToABC ; HL=divisor=86400
+    ;
+    push hl ; stack=[time,divisor]
+    call reserveRaw9 ; FPS=[timeSeconds,divisor,remainder] ; HL=remainder
+    ld c, l
+    ld b, h ; BC=remainder
+    pop hl ; stack=[time]; HL=divisor
+    ;
+    ex de, hl ; DE=divisor=84600; HL=dividend=resultSeconds
+    call divI40U40 ; BC=remainder=always positive
+    ; convert remainderSeconds to time
+    ex de, hl ; DE=resultSeconds; HL=addedSeconds
+    ex (sp), hl ; stack=[addedSeconds]; HL=time
+    ld e, c
+    ld d, b ; DE=remainderSeconds
+    call secondsToTime ; HL=time filled
+    ; clean up
+    pop de ; stack=[]; DE=addedSeconds
+    call dropRaw9 ; FPS=[timeSeconds,divisor]
+    call dropRaw9 ; FPS=[timeSeconds]
+    call dropRaw9 ; FPS=[]
+    ret
 
 ;-----------------------------------------------------------------------------
 
 ; Description: Subtract RpnTime minus RpnTime or seconds.
 ; Input:
 ;   - OP1:RpnTime=Y
-;   - OP3:RpnTime or seconds=X
+;   - OP3:(RpnTime|Real)=X
 ; Output:
-;   - OP1:RpnTime(RpnTime-seconds) or i40(RpnTime-RpnTime).
+;   - OP1:(RpnTime-seconds) or (RpnTime-RpnTime)
 ; Destroys: all, OP1-OP4
-SubRpnTimeByRpnTimeOrSeconds:
-    call checkOp3TimePageTwo ; ZF=1 if type(OP3)==Time
+SubRpnTimeByObject:
+    call getOp3RpnObjectTypePageTwo ; A=objectType
+    cp rpnObjectTypeReal
+    jr z, subRpnTimeBySeconds
+    cp rpnObjectTypeTime
     jr z, subRpnTimeByRpnTime
+    cp rpnObjectTypeDuration
+    jr z, subRpnTimeByRpnDuration
+    bcall(_ErrInvalid) ; should never happen
 subRpnTimeBySeconds:
-    ; exchage CP1/CP3, invert the sign, then call addRpnTimeBySecondsAdd()
+    ; invert the sign of OP3=seconds, then call addRpnTimeBySecondsAdd()
     call cp1ExCp3PageTwo
     bcall(_InvOP1S) ; OP1=-OP1
-    jr addRpnTimeBySecondsAdd
+    call cp1ExCp3PageTwo
+    jp addRpnTimeBySecondsAdd
 subRpnTimeByRpnTime:
     ; convert OP3 to seconds, on FPS stack
     call reserveRaw9 ; make space on FPS=[X.seconds]; HL=X.seconds
@@ -219,3 +287,8 @@ subRpnTimeByRpnTime:
     call popRaw9Op1 ; FPS=[X.seconds]; OP1=Y.seconds-X.seconds
     call ConvertI40ToOP1 ; OP1=float(i40)
     jp dropRaw9 ; FPS=[]
+subRpnTimeByRpnDuration:
+    ; invert the sign of duration in OP3
+    ld hl, OP3+1
+    call chsDuration
+    jp addRpnTimeByDurationAdd

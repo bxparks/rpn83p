@@ -1191,9 +1191,13 @@ _AddRpnDateByDaysLabel:
 _AddRpnDateByDays equ _AddRpnDateByDaysLabel-branchTableBase
     .dw AddRpnDateByDays
     .db 2
-_SubRpnDateByRpnDateOrDaysLabel:
-_SubRpnDateByRpnDateOrDays equ _SubRpnDateByRpnDateOrDaysLabel-branchTableBase
-    .dw SubRpnDateByRpnDateOrDays
+_AddRpnDateByDurationLabel:
+_AddRpnDateByDuration equ _AddRpnDateByDurationLabel-branchTableBase
+    .dw AddRpnDateByDuration
+    .db 2
+_SubRpnDateByObjectLabel:
+_SubRpnDateByObject equ _SubRpnDateByObjectLabel-branchTableBase
+    .dw SubRpnDateByObject
     .db 2
 
 ; time2.asm
@@ -1209,9 +1213,13 @@ _AddRpnTimeBySecondsLabel:
 _AddRpnTimeBySeconds equ _AddRpnTimeBySecondsLabel-branchTableBase
     .dw AddRpnTimeBySeconds
     .db 2
-_SubRpnTimeByRpnTimeOrSecondsLabel:
-_SubRpnTimeByRpnTimeOrSeconds equ _SubRpnTimeByRpnTimeOrSecondsLabel-branchTableBase
-    .dw SubRpnTimeByRpnTimeOrSeconds
+_AddRpnTimeByDurationLabel:
+_AddRpnTimeByDuration equ _AddRpnTimeByDurationLabel-branchTableBase
+    .dw AddRpnTimeByDuration
+    .db 2
+_SubRpnTimeByObjectLabel:
+_SubRpnTimeByObject equ _SubRpnTimeByObjectLabel-branchTableBase
+    .dw SubRpnTimeByObject
     .db 2
 
 ; dayofweek2.asm
