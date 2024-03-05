@@ -13,11 +13,8 @@
 ; Description: Validate that the given Date{} is a valid Gregorian calendar
 ; date between year 0000 and 9999, inclusive.
 ;
-; TODO: Add the code to check for 0000 and 9999. Also, I think 0001 may make
-; more sense, to avoid negative Gregorian era number in
-; dateToInternalEpochDays().
-;
-; Input: HL:(*Date) pointer
+; Input:
+;   - HL:(*Date) pointer
 ; Output:
 ;   - HL=HL+4
 ; Destroys: A, BC, DE
@@ -29,10 +26,19 @@ ValidateDate:
     inc hl ; BC=year
     ld e, (hl) ; E=month
     inc hl
-    dec e ; E=month-1
     ld d, (hl) ; D=day
     inc hl
+    dec e ; E=month-1
     dec d ; D=day-1
+    ; check year
+    ld a, b
+    or c ; CF=0; ZF=1 if year==0
+    jr z, validateDateErr
+    push hl
+    ld hl, 9999
+    sbc hl, bc ; HL=9999-year; CF=1 if year>9999
+    pop hl
+    jr c, validateDateErr
     ; check month
     ld a, e ; A=month-1
     cp 12 ; CF=0 if month-1>=12
