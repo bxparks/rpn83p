@@ -10,18 +10,6 @@
 ; Convert real OP1 to u32.
 ;-----------------------------------------------------------------------------
 
-; Bit flags of the u32StatusCode.
-;   - u32StatusCodeNegative and u32StatusCodeTooBig are usually fatal errors
-;   which throw an exception.
-;   - u32StatusCodeHasFrac is sometimes a non-fatal error, because the
-;   operation will truncate to integer before continuing with the calculation.
-;   - u32StatusCodeFatalMask can be used to check only the fatal codes using a
-;   bitwise-and
-u32StatusCodeNegative equ 0
-u32StatusCodeTooBig equ 1
-u32StatusCodeHasFrac equ 7
-u32StatusCodeFatalMask equ $03
-
 ; Description: Similar to convertOP1ToU32(), but don't throw if there is a
 ; fractional part.
 ; Input:
@@ -56,8 +44,6 @@ convertOP2ToU32AllowFrac:
     ld hl, OP2
     ret
 
-;-----------------------------------------------------------------------------
-
 ; Description: Convert real OP1 to a u32, throwing an Err:Domain exception if
 ; OP1 is:
 ; - not in the range of [0, 2^32), or
@@ -80,6 +66,20 @@ convertOP1ToU32:
     or a
     ret z
     bcall(_ErrDomain) ; throw exception
+
+;-----------------------------------------------------------------------------
+
+; Bit flags of the u32StatusCode.
+;   - u32StatusCodeNegative and u32StatusCodeTooBig are usually fatal errors
+;   which throw an exception.
+;   - u32StatusCodeHasFrac is sometimes a non-fatal error, because the
+;   operation will truncate to integer before continuing with the calculation.
+;   - u32StatusCodeFatalMask can be used to check only the fatal codes using a
+;   bitwise-and
+u32StatusCodeNegative equ 0
+u32StatusCodeTooBig equ 1
+u32StatusCodeHasFrac equ 7
+u32StatusCodeFatalMask equ $03
 
 ; Description: Convert OP1 to U32 with u32StatusCode. This routine allows the
 ; calling code to handle various error conditions with more flexibility.
@@ -239,11 +239,13 @@ convertU32ToOP1Loop:
 ; Convert OP1 to uxx (u32, u24, u16, or u8) depending on (baseWordSize).
 ;-----------------------------------------------------------------------------
 
-; Description: Convert OP1 to u32.
+; Description: Convert real number in OP1 to (u8,u16,u24,u32) in OP, checking
+; for fatal errors.
 ; Input:
 ;   - OP1:real
 ; Output:
-;   - OP1=u32(OP1)
+;   - OP1:(u8|u16|u24|u32)=output
+;   - C:u8=u32StatusCode
 ;   - HL=OP1
 convertOP1ToUxx:
     call ConvertOP1ToU32StatusCode ; OP1=u32(OP1); C=u32StatusCode
@@ -252,6 +254,20 @@ convertOP1ToUxx:
     and u32StatusCodeFatalMask
     ret z
     bcall(_ErrDomain) ; throw exception
+
+; Description: Convert real number in OP1 to a u8,u16,u24,u32 integer in OP1,
+; subject to the word size (baseWordSize).
+; Input:
+;   - OP1:real=input
+; Output:
+;   - OP1:(u8|u16|u24|u32)=output
+;   - C:u8=u32StatusCode
+;   - HL=OP1
+; Destroys: A, B, C, DE, HL
+; Preserves: OP2-OP6
+ConvertOP1ToUxxNoCheck:
+    call ConvertOP1ToU32StatusCode ; OP1=U32; C=statusCode
+    jp CheckU32FitsWsize ; C=u32StatusCode
 
 ; Description: Convert OP1, OP2 to u32, u32.
 ; Input:
@@ -278,7 +294,8 @@ convertOP1OP2ToUxx:
 convertOP1OP2ToUxxErr:
     bcall(_ErrDomain) ; throw exception
 
-; Description: Convert OP1, OP2 to u32, u32.
+; Description: Convert OP1 to u32(OP1) and OP2 to u32(OP2). Additionally,
+; verify that OP2 is < (baseWordSize).
 ; Input:
 ;   - OP1, OP2
 ; Output:
@@ -287,6 +304,7 @@ convertOP1OP2ToUxxErr:
 ;   - A=u8(OP2)
 ;   - ZF=1 if A==0
 ; Destroys: A, DE, HL
+; Throws: Err:Domain if OP2 is >= (baseWordSize)
 convertOP1OP2ToUxxN:
     call convertOP1OP2ToUxx ; HL=OP1=u32(OP1); DE=OP2=u32(OP2)
     ; Furthermore, check OP2 against baseWordSize

@@ -1571,13 +1571,9 @@ _PrimeFactor equ _PrimeFactorLabel-branchTableBase
     .db 2
 
 ; integerconv32.asm
-_ConvertOP1ToU32StatusCodeLabel:
-_ConvertOP1ToU32StatusCode equ _ConvertOP1ToU32StatusCodeLabel-branchTableBase
-    .dw ConvertOP1ToU32StatusCode
-    .db 2
-_CheckU32FitsWsizeLabel:
-_CheckU32FitsWsize equ _CheckU32FitsWsizeLabel-branchTableBase
-    .dw CheckU32FitsWsize
+_ConvertOP1ToUxxNoCheckLabel:
+_ConvertOP1ToUxxNoCheck equ _ConvertOP1ToUxxNoCheckLabel-branchTableBase
+    .dw ConvertOP1ToUxxNoCheck
     .db 2
 
 ; formatinteger32.asm
