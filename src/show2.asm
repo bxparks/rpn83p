@@ -108,7 +108,7 @@ msgRpnObjectTypeUnknownPageTwo:
 ;
 ; Input:
 ;   - OP1: an integer represented as a floating point number
-;   - DE:(char*)=bufPointer
+;   - DE:(char*)=bufPointer (cannot be OPx)
 ; Output:
 ;   - (DE): contains the integer rendered as an integer string
 ;   - DE: updated
@@ -135,10 +135,9 @@ formBaseString:
 formBinString:
     push de ; stack=[bufPointer]
     ; Check if OP1 fits in the current baseWordSize.
-    ld hl, OP3
     ; TODO: Combine _ConvertOP1ToU32StatusCode() and _CheckU32FitsWsize() into
     ; a single bcall().
-    call ConvertOP1ToU32StatusCode ; HL=OP3=u32(OP1); C=u32StatusCode
+    call ConvertOP1ToU32StatusCode ; HL=OP1=u32(OP1); C=u32StatusCode
     call CheckU32FitsWsize ; C=u32StatusCode
     ; Check for too big.
     bit u32StatusCodeTooBig, c
@@ -151,8 +150,6 @@ formBinString:
     jp nz, formRealString
     ; We are here if OP1 is a positive integer < 2^WSIZ.
     push de ; stack=[bufPointer]
-    ; Move u32(OP3) to OP1, to free up OP3.
-    call move9ToOp1PageTwo
     ; Convert to a 32-digit binary string at OP4.
     ld hl, OP1
     ld de, OP4
