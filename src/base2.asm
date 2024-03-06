@@ -55,77 +55,74 @@ truncWordSizeExit:
 ; Entry points of BASE operations from basehandlers.asm. This layer knows about
 ; OP1, OP2, and baseWordSize. It calls down to integer32.asm which contains
 ; low-level routines which are independent of TI-OS related parameters.
-;
-; TODO: We should be able to move base.asm and integer32.asm together into a
-; different flash page.
 ;-----------------------------------------------------------------------------
 
 ; Description: Calculate the bitwise-and between the integers in OP1 and OP2.
 ; Input: OP1, OP2
-; Output: OP1: result as a floating number
+; Output: OP1:result
 BitwiseAnd:
-    call convertOP1OP2ToUxx ; HL=OP3=u32(OP1); DE=OP4=u32(OP2)
-    call truncToWordSize
+    call convertOP1OP2ToUxx ; HL=OP1=u32(OP1); DE=OP2=u32(OP2)
+    call truncToWordSize ; OP1=trucate(OP1)
     ex de, hl
-    call truncToWordSize
+    call truncToWordSize ; OP2=trucate(OP2)
     ex de, hl
-    call andU32U32 ; HL=OP3 AND OP4
-    call truncToWordSize
-    jp convertU32ToOP1 ; OP1=float(OP3)
+    call andU32U32 ; HL=OP1 AND OP2
+    call truncToWordSize ; OP1=trucate(OP1)
+    jp convertU32ToOP1 ; OP1=float(OP1)
 
 ; Description: Calculate the bitwise-or between the integers in OP1 and OP2.
 ; Input: OP1, OP2
 ; Output: OP1: result as a floating number
 BitwiseOr:
-    call convertOP1OP2ToUxx ; HL=OP3=u32(OP1); DE=OP4=u32(OP2)
+    call convertOP1OP2ToUxx ; HL=OP1=u32(OP1); DE=OP2=u32(OP2)
     call truncToWordSize
     ex de, hl
     call truncToWordSize
     ex de, hl
-    call orU32U32 ; HL=OP3=OP3 OR OP4
+    call orU32U32 ; HL=OP1=OP1 OR OP2
     call truncToWordSize
-    jp convertU32ToOP1 ; OP1=float(OP3)
+    jp convertU32ToOP1 ; OP1=float(OP1)
 
 ; Description: Calculate the bitwise-xor between the integers in OP1 and OP2.
 ; Input: OP1, OP2
 ; Output: OP1: result as a floating number
 BitwiseXor:
-    call convertOP1OP2ToUxx ; HL=OP3=u32(OP1); DE=OP4=u32(OP2)
+    call convertOP1OP2ToUxx ; HL=OP1=u32(OP1); DE=OP2=u32(OP2)
     call truncToWordSize
     ex de, hl
     call truncToWordSize
     ex de, hl
-    call xorU32U32 ; HL=OP3=OP3 XOR OP4
+    call xorU32U32 ; HL=OP1=OP1 XOR OP2
     call truncToWordSize
-    jp convertU32ToOP1 ; OP1=float(OP3)
+    jp convertU32ToOP1 ; OP1=float(OP1)
 
 ; Description: Calculate the bitwise-not of OP1
 ; Input: OP1
 ; Output: OP1: result as a floating number
 BitwiseNot:
-    call convertOP1ToUxx ; HL=OP3=u32(OP1)
+    call convertOP1ToUxx ; HL=OP1=u32(OP1)
     call truncToWordSize
-    call notU32 ; OP3=NOT(OP3)
+    call notU32 ; OP1=NOT(OP1)
     call truncToWordSize
-    jp convertU32ToOP1 ; OP1=float(OP3)
+    jp convertU32ToOP1 ; OP1=float(OP1)
 
 ; Description: Calculate the bitwise-neg of OP1
 ; Input: OP1
 ; Output: OP1: result as a floating number
 BitwiseNeg:
-    call convertOP1ToUxx ; HL=OP3=u32(OP1)
+    call convertOP1ToUxx ; HL=OP1=u32(OP1)
     call truncToWordSize
-    call negU32 ; OP3=NEG(OP3)
+    call negU32 ; OP1=NEG(OP1)
     call truncToWordSize
-    jp convertU32ToOP1 ; OP1=float(OP3)
+    jp convertU32ToOP1 ; OP1=float(OP1)
 
 ;-----------------------------------------------------------------------------
 
 BaseShiftLeftLogical:
-    call convertOP1ToUxx ; HL=OP3=u32(OP1)
-    call shiftLeftLogicalUxx ; OP3=shiftLeftLogical(OP3)
+    call convertOP1ToUxx ; HL=OP1=u32(OP1)
+    call shiftLeftLogicalUxx ; OP1=shiftLeftLogical(OP1)
     call storeCarryFlag
-    jp convertU32ToOP1 ; OP1=float(OP3)
+    jp convertU32ToOP1 ; OP1=float(OP1)
 
 ; Description: Call the appropriate shiftLeftLogicalLeftUXX() depending on
 ; (baseWordSize).
@@ -148,10 +145,10 @@ shiftLeftLogicalUxx:
 ;-----------------------------------------------------------------------------
 
 BaseShiftRightLogical:
-    call convertOP1ToUxx ; HL=OP3=u32(OP1)
-    call shiftRightLogicalUxx ; OP3=shiftRightLogical(OP3)
+    call convertOP1ToUxx ; HL=OP1=u32(OP1)
+    call shiftRightLogicalUxx ; OP1=shiftRightLogical(OP1)
     call storeCarryFlag
-    jp convertU32ToOP1 ; OP1=float(OP3)
+    jp convertU32ToOP1 ; OP1=float(OP1)
 
 ; Description: Call the appropriate shiftRightLogicalUXX() depending on
 ; (baseWordSize).
@@ -174,10 +171,10 @@ shiftRightLogicalUxx:
 ;-----------------------------------------------------------------------------
 
 BaseShiftRightArithmetic:
-    call convertOP1ToUxx ; HL=OP3=u32(OP1)
-    call shiftRightArithmeticUxx ; OP3=shiftRightArithmetic(OP3)
+    call convertOP1ToUxx ; HL=OP1=u32(OP1)
+    call shiftRightArithmeticUxx ; OP1=shiftRightArithmetic(OP1)
     call storeCarryFlag
-    jp convertU32ToOP1 ; OP1=float(OP3)
+    jp convertU32ToOP1 ; OP1=float(OP1)
 
 ; Description: Call the appropriate shiftRightArithmeticUXX() depending on
 ; (baseWordSize).
@@ -200,34 +197,34 @@ shiftRightArithmeticUxx:
 ;-----------------------------------------------------------------------------
 
 BaseShiftLeftLogicalN:
-    call convertOP1OP2ToUxxN ; HL=OP3=u32(OP1); A=u8(OP2); ZF=1 if A==0
+    call convertOP1OP2ToUxxN ; HL=OP1=u32(OP1); A=u8(OP2); ZF=1 if A==0
     ret z
     ld b, a
 baseShiftLeftLogicalNLoop:
-    call shiftLeftLogicalUxx; (OP3)=shiftLeftLogical(OP3)
+    call shiftLeftLogicalUxx; (OP1)=shiftLeftLogical(OP1)
     djnz baseShiftLeftLogicalNLoop
     call storeCarryFlag
-    jp convertU32ToOP1 ; OP1=float(OP3)
+    jp convertU32ToOP1 ; OP1=float(OP1)
 
 ;-----------------------------------------------------------------------------
 
 BaseShiftRightLogicalN:
-    call convertOP1OP2ToUxxN ; HL=OP3=u32(OP1); A=u8(OP2); ZF=1 if A==0
+    call convertOP1OP2ToUxxN ; HL=OP1=u32(OP1); A=u8(OP2); ZF=1 if A==0
     ret z
     ld b, a
 baseShiftRightLogicalNLoop:
-    call shiftRightLogicalUxx; (OP3)=shiftRightLogical(OP3)
+    call shiftRightLogicalUxx; (HL)=shiftRightLogical(HL)
     djnz baseShiftRightLogicalNLoop
     call storeCarryFlag
-    jp convertU32ToOP1 ; OP1=float(OP3)
+    jp convertU32ToOP1 ; OP1=float(OP1)
 
 ;-----------------------------------------------------------------------------
 
 BaseRotateLeftCircular:
-    call convertOP1ToUxx ; HL=OP3=u32(OP1)
-    call rotateLeftCircularUxx ; OP3=rotateLeftCircular(OP3)
+    call convertOP1ToUxx ; HL=OP1=u32(OP1)
+    call rotateLeftCircularUxx ; OP1=rotateLeftCircular(OP1)
     call storeCarryFlag
-    jp convertU32ToOP1 ; OP1=float(OP3)
+    jp convertU32ToOP1 ; OP1=float(OP1)
 
 ; Description: Call the appropriate rotateLeftCircularUXX() depending on
 ; (baseWordSize).
@@ -250,10 +247,10 @@ rotateLeftCircularUxx:
 ;-----------------------------------------------------------------------------
 
 BaseRotateRightCircular:
-    call convertOP1ToUxx ; HL=OP3=u32(OP1)
-    call rotateRightCircularUxx ; OP3=rotateRightCircular(OP3)
+    call convertOP1ToUxx ; HL=OP1=u32(OP1)
+    call rotateRightCircularUxx ; OP1=rotateRightCircular(OP1)
     call storeCarryFlag
-    jp convertU32ToOP1 ; OP1=float(OP3)
+    jp convertU32ToOP1 ; OP1=float(OP1)
 
 ; Description: Call the appropriate rotateRightCircularUXX() depending on
 ; (baseWordSize).
@@ -276,11 +273,11 @@ rotateRightCircularUxx:
 ;-----------------------------------------------------------------------------
 
 BaseRotateLeftCarry:
-    call convertOP1ToUxx ; HL=OP3=u32(OP1)
+    call convertOP1ToUxx ; HL=OP1=u32(OP1)
     call recallCarryFlag ; CF=(baseCarryFlag)
-    call rotateLeftCarryUxx ; OP3=rotateLeftCarry(OP3)
+    call rotateLeftCarryUxx ; OP1=rotateLeftCarry(OP1)
     call storeCarryFlag ; (baseCarryFlag)=CF
-    jp convertU32ToOP1 ; OP1=float(OP3)
+    jp convertU32ToOP1 ; OP1=float(OP1)
 
 ; Description: Call the appropriate rotateLeftCarryUXX() depending on
 ; (baseWordSize).
@@ -305,11 +302,11 @@ rotateLeftCarryUxx:
 ;-----------------------------------------------------------------------------
 
 BaseRotateRightCarry:
-    call convertOP1ToUxx ; HL=OP3=u32(OP1)
+    call convertOP1ToUxx ; HL=OP1=u32(OP1)
     call recallCarryFlag ; CF=(baseCarryFlag)
-    call rotateRightCarryUxx ; OP3=rotateRightCarry(OP3)
+    call rotateRightCarryUxx ; OP1=rotateRightCarry(OP1)
     call storeCarryFlag ; (baseCarryFlag)=CF
-    jp convertU32ToOP1 ; OP1=float(OP3)
+    jp convertU32ToOP1 ; OP1=float(OP1)
 
 ; Description: Call the appropriate rotateRightCarryUXX() depending on
 ; (baseWordSize).
@@ -334,64 +331,64 @@ rotateRightCarryUxx:
 ;-----------------------------------------------------------------------------
 
 BaseRotateLeftCircularN:
-    call convertOP1OP2ToUxxN ; HL=OP3=u32(OP1); A=u8(OP2); ZF=1 if A==0
+    call convertOP1OP2ToUxxN ; HL=OP1=u32(OP1); A=u8(OP2); ZF=1 if A==0
     ret z
     ld b, a
     call recallCarryFlag ; CF=(baseCarryFlag)
 baseRotateLeftCircularNLoop:
-    call rotateLeftCircularUxx ; OP3=rotateLeftCircular(OP3)
+    call rotateLeftCircularUxx ; OP1=rotateLeftCircular(OP1)
     djnz baseRotateLeftCircularNLoop
     call storeCarryFlag
-    jp convertU32ToOP1 ; OP1=float(OP3)
+    jp convertU32ToOP1 ; OP1=float(OP1)
 
 ;-----------------------------------------------------------------------------
 
 BaseRotateRightCircularN:
-    call convertOP1OP2ToUxxN ; HL=OP3=u32(OP1); A=u8(OP2); ZF=1 if A==0
+    call convertOP1OP2ToUxxN ; HL=OP1=u32(OP1); A=u8(OP2); ZF=1 if A==0
     ret z
     ld b, a
     call recallCarryFlag ; CF=(baseCarryFlag)
 baseRotateRightCircularNLoop:
-    call rotateRightCircularUxx ; OP3=rotateRightCircular(OP3)
+    call rotateRightCircularUxx ; OP1=rotateRightCircular(OP1)
     djnz baseRotateRightCircularNLoop
     call storeCarryFlag
-    jp convertU32ToOP1 ; OP1=float(OP3)
+    jp convertU32ToOP1 ; OP1=float(OP1)
 
 ;-----------------------------------------------------------------------------
 
 BaseRotateLeftCarryN:
-    call convertOP1OP2ToUxxN ; HL=OP3=u32(OP1); A=u8(OP2); ZF=1 if A==0
+    call convertOP1OP2ToUxxN ; HL=OP1=u32(OP1); A=u8(OP2); ZF=1 if A==0
     ret z
     ld b, a
     call recallCarryFlag ; CF=(baseCarryFlag)
 baseRotateLeftCarryNLoop:
-    call rotateLeftCarryUxx ; OP3=rotateLeftCarry(OP3)
+    call rotateLeftCarryUxx ; OP1=rotateLeftCarry(OP1)
     djnz baseRotateLeftCarryNLoop
     call storeCarryFlag
-    jp convertU32ToOP1 ; OP1=float(OP3)
+    jp convertU32ToOP1 ; OP1=float(OP1)
 
 ;-----------------------------------------------------------------------------
 
 BaseRotateRightCarryN:
-    call convertOP1OP2ToUxxN ; HL=OP3=u32(OP1); A=u8(OP2); ZF=1 if A==0
+    call convertOP1OP2ToUxxN ; HL=OP1=u32(OP1); A=u8(OP2); ZF=1 if A==0
     ret z
     ld b, a
     call recallCarryFlag ; CF=(baseCarryFlag)
 baseRotateRightCarryNLoop:
-    call rotateRightCarryUxx ; OP3=rotateRightCarry(OP3)
+    call rotateRightCarryUxx ; OP1=rotateRightCarry(OP1)
     djnz baseRotateRightCarryNLoop
     call storeCarryFlag
-    jp convertU32ToOP1 ; OP1=float(OP3)
+    jp convertU32ToOP1 ; OP1=float(OP1)
 
 ;-----------------------------------------------------------------------------
 
 BaseAdd:
-    call convertOP1OP2ToUxx ; HL=OP3=u32(OP1); DE=OP4=u32(OP2)
+    call convertOP1OP2ToUxx ; HL=OP1=u32(OP1); DE=OP2=u32(OP2)
     call truncToWordSize
-    call addUxxUxx ; OP3+=OP4
+    call addUxxUxx ; OP1+=OP2
     call storeCarryFlag
     call truncToWordSize
-    jp convertU32ToOP1 ; OP1=float(OP3)
+    jp convertU32ToOP1 ; OP1=float(OP1)
 
 ; Description: Call the appropriate addUxxUxx() depending on (baseWordSize).
 ; Input:
@@ -415,12 +412,12 @@ addUxxUxx:
 ;-----------------------------------------------------------------------------
 
 BaseSub:
-    call convertOP1OP2ToUxx ; HL=OP3=u32(OP1); DE=OP4=u32(OP2)
+    call convertOP1OP2ToUxx ; HL=OP1=u32(OP1); DE=OP2=u32(OP2)
     call truncToWordSize
-    call subUxxUxx ; OP3-=OP4
+    call subUxxUxx ; OP1-=OP2
     call storeCarryFlag
     call truncToWordSize
-    jp convertU32ToOP1 ; OP1=float(OP3)
+    jp convertU32ToOP1 ; OP1=float(OP1)
 
 ; Description: Call the appropriate subUxxUxx() dependingon (baseWordSize).
 ; Input:
@@ -444,12 +441,12 @@ subUxxUxx:
 ;-----------------------------------------------------------------------------
 
 BaseMult:
-    call convertOP1OP2ToUxx ; HL=OP3=u32(OP1); DE=OP4=u32(OP2)
+    call convertOP1OP2ToUxx ; HL=OP1=u32(OP1); DE=OP2=u32(OP2)
     call truncToWordSize
-    call multUxxUxx ; OP3*=OP4
+    call multUxxUxx ; OP1*=OP2
     call storeCarryFlag
     call truncToWordSize
-    jp convertU32ToOP1 ; OP1=float(OP3)
+    jp convertU32ToOP1 ; OP1=float(OP1)
 
 ; Description: Call the appropriate multUxxUxx() depending on (baseWordSize).
 ; Input:
@@ -475,42 +472,44 @@ multUxxUxx:
 ; Input:
 ;   - OP1=dividend
 ;   - OP2=divisor
-; Output: OP1=quotient
+; Output:
+;   - OP1=quotient
 BaseDiv:
     call baseDivCommon
-    jp convertU32ToOP1 ; OP1=quotient(OP3)
+    jp convertU32ToOP1 ; OP1=quotient(OP1)
 
 ; Input:
 ;   - OP1=dividend
 ;   - OP2=divisor
-; Output: OP1=remainder; OP2=quotient
+; Output:
+;   - OP1=remainder
+;   - OP2=quotient
 BaseDiv2:
-    call baseDivCommon ; HL=OP3=quotient; BC=OP5=remainder
-    push bc ; stack=[remainder]
-    ; convert HL=quotient into OP2
+    call baseDivCommon ; HL=OP1=quotient; BC=OP3=remainder
+    ; convert HL=quotient in OP1
     call convertU32ToOP1
-    bcall(_OP1ToOP2) ; OP2=quotient
+    call op1ToOp2PageTwo ; OP2=quotient
     ; convert BC=remainder into OP1
-    pop hl ; stack=[]; HL=remainder
+    call op3ToOp1PageTwo ; OP1=remainder
     jp convertU32ToOP1 ; OP1=remainder
 
 ; Input:
 ;   - OP1=dividend
 ;   - OP2=divisor
 ; Output:
-;   - HL=OP3=quotient
-;   - DE=OP4=divisor
-;   - BC=OP5=remainder
+;   - HL=OP1=quotient
+;   - DE=OP2=divisor
+;   - BC=OP3=remainder
 ;   - (baseCarryFlag)=0
 baseDivCommon:
-    call convertOP1OP2ToUxx ; HL=OP3=u32(OP1); DE=OP4=u32(OP2)
+    call convertOP1OP2ToUxx ; HL=OP1=u32(OP1); DE=OP2=u32(OP2)
     call truncToWordSize
-    ex de, hl ; HL=OP4
-    call testU32 ; check if X==0
-    ex de, hl
+    ex de, hl ; HL=OP2
+    call testU32 ; check if divisor==0
+    ex de, hl ; HL=OP1; DE=OP2
     jr z,  baseDivByZeroErr
-    ld bc, OP5 ; BC=remainder
-    call divU32U32 ; HL=OP3=quotient, DE=OP4=divisor, BC=OP5=remainder
+    ld bc, OP3 ; BC=remainder
+    call divU32U32 ; HL=OP1=quotient, DE=OP2=divisor, BC=OP3=remainder
     call storeCarryFlag ; CF=0 always
     jp truncToWordSize
 baseDivByZeroErr:
@@ -519,10 +518,10 @@ baseDivByZeroErr:
 ;-----------------------------------------------------------------------------
 
 BaseReverseBits:
-    call convertOP1ToUxx ; HL=OP3=u32(OP1)
+    call convertOP1ToUxx ; HL=OP1=u32(OP1)
     call truncToWordSize
     call reverseUxxBits
-    jp convertU32ToOP1 ; OP1 = float(OP3)
+    jp convertU32ToOP1 ; OP1 = float(OP1)
 
 ; Description: Call the appropriate reverseUXX() depending on the
 ; (baseWordSize).
@@ -543,32 +542,32 @@ reverseUxxBits:
 ;-----------------------------------------------------------------------------
 
 BaseCountBits:
-    call convertOP1ToUxx ; HL=OP3=u32(OP1)
+    call convertOP1ToUxx ; HL=OP1=u32(OP1)
     call truncToWordSize
-    call countU32Bits ; A=countBits(OP3)
+    call countU32Bits ; A=countBits(OP1)
     bcall(_ConvertAToOP1) ; OP1=float(A)
     ret
 
 ;-----------------------------------------------------------------------------
 
 BaseSetBit:
-    call convertOP1OP2ToUxxN ; HL=OP3=u32(OP1); A=u8(OP2); ZF=1 if A==0
+    call convertOP1OP2ToUxxN ; HL=OP1=u32(OP1); A=u8(OP2); ZF=1 if A==0
     ld c, a
-    call setU32Bit ; OP3=setBit(OP3,C)
-    jp convertU32ToOP1 ; OP1=float(OP3)
+    call setU32Bit ; OP1=setBit(OP1,C)
+    jp convertU32ToOP1 ; OP1=float(OP1)
 
 ;-----------------------------------------------------------------------------
 
 BaseClearBit:
-    call convertOP1OP2ToUxxN ; HL=OP3=u32(OP1); A=u8(OP2); ZF=1 if A==0
+    call convertOP1OP2ToUxxN ; HL=OP1=u32(OP1); A=u8(OP2); ZF=1 if A==0
     ld c, a
-    call clearU32Bit ; OP3=clearBit(OP3,C)
-    jp convertU32ToOP1 ; OP1=float(OP3)
+    call clearU32Bit ; OP1=clearBit(OP1,C)
+    jp convertU32ToOP1 ; OP1=float(OP1)
 
 ;-----------------------------------------------------------------------------
 
 BaseGetBit:
-    call convertOP1OP2ToUxxN ; HL=OP3=u32(OP1); A=u8(OP2); ZF=1 if A==0
+    call convertOP1OP2ToUxxN ; HL=OP1=u32(OP1); A=u8(OP2); ZF=1 if A==0
     ld c, a
     call getU32Bit ; A=1 or 0
     bcall(_ConvertAToOP1) ; OP1=float(A)

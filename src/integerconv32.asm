@@ -6,14 +6,8 @@
 ; to the u32 integers required by the BASE functions in integer32.asm.
 ;-----------------------------------------------------------------------------
 
-; TODO: Instead of accepting HL as the destination pointer, we should allocate
-; a temporary buffer in FPS, then perform the conversion, then copy the result
-; back into OP1. This eliminates potential memory conflicts, which allows the
-; various warnings below about "cannot be OP2" to be removed. See
-; integerconv40.asm which has been refactored along these lines.
-
 ;-----------------------------------------------------------------------------
-; Convert TI floating point number to u8 or u32.
+; Convert real OP1 to u32.
 ;-----------------------------------------------------------------------------
 
 ; Bit flags of the u32StatusCode.
@@ -31,44 +25,41 @@ u32StatusCodeFatalMask equ $03
 ; Description: Similar to convertOP1ToU32(), but don't throw if there is a
 ; fractional part.
 ; Input:
-;   - OP1: unsigned 32-bit integer as a floating point number
-;   - HL: pointer to a u32 in memory, cannot be OP2
+;   - OP1:real=input
 ; Output:
-;   - HL: OP1 converted to a u32, in little-endian format
-; Destroys: A, B, C, DE
-; Preserves: HL, OP1, OP2
+;   - OP1:u32=output
+;   - C:u8=u32StatusCode
+;   - HL=OP1
+; Destroys: A, B, C, DE, HL
+; Preserves: OP2-OP6
 convertOP1ToU32AllowFrac:
-    call ConvertOP1ToU32StatusCode ; OP3=u32(OP1); C=u32StatusCode
+    call ConvertOP1ToU32StatusCode ; OP1=u32(OP1); C=u32StatusCode
     ld a, c
     and u32StatusCodeFatalMask
-    jr nz, convertOP1ToU32Error
-    ret
-
-convertOP1ToU32Error:
+    ret z
     bcall(_ErrDomain) ; throw exception
 
 ; Description: Similar to convertOP2ToU32(), but don't throw if there is a
 ; fractional part.
 ; Input:
-;   - OP2: unsigned 32-bit integer as a floating point number
-;   - HL: pointer to a u32 in memory, cannot be OP2
+;   - OP2:real=input
 ; Output:
-;   - HL: OP2 converted to a u32, in little-endian format
-; Destroys: A, B, C, DE
-; Preserves: HL, OP1, OP2
+;   - OP2:u32=output
+;   - C:u8=u32StatusCode
+;   - HL=OP2
+; Destroys: A, B, C, DE, HL
+; Preserves: OP1, OP3-OP6
 convertOP2ToU32AllowFrac:
-    push hl
-    bcall(_OP1ExOP2)
-    pop hl
-    push hl
+    call op1ExOp2PageTwo
     call convertOP1ToU32AllowFrac
-    bcall(_OP1ExOP2)
-    pop hl
+    call op1ExOp2PageTwo
+    ld hl, OP2
     ret
 
 ;-----------------------------------------------------------------------------
 
-; Description: Convert OP1 to a U32, throwing an Err:Domain exception if OP1 is:
+; Description: Convert real OP1 to a u32, throwing an Err:Domain exception if
+; OP1 is:
 ; - not in the range of [0, 2^32), or
 ; - is negative, or
 ; - contains fractional part.
@@ -76,67 +67,71 @@ convertOP2ToU32AllowFrac:
 ; See convertOP1ToU32NoCheck() to convert to U32 without throwing.
 ;
 ; Input:
-;   - OP1: unsigned 32-bit integer as a floating point number
-;   - HL: pointer to a u32 in memory, cannot be OP2
+;   - OP1:real=input
 ; Output:
-;   - HL: OP1 converted to a u32, in little-endian format
-;   - C: u32StatusCode
-; Destroys: A, B, C, DE
-; Preserves: HL, OP1, OP2
+;   - OP1:u32=output
+;   - C:u8=u32StatusCode
+;   - HL=OP1
+; Destroys: A, B, C, DE, HL
+; Preserves: OP2-OP6
 convertOP1ToU32:
-    call ConvertOP1ToU32StatusCode ; OP3=u32(OP1); C=u32StatusCode
+    call ConvertOP1ToU32StatusCode ; OP1=u32(OP1); C=u32StatusCode
     ld a, c
     or a
-    jr nz, convertOP1ToU32Error
-    ret
+    ret z
+    bcall(_ErrDomain) ; throw exception
 
 ; Description: Convert OP1 to U32 with u32StatusCode. This routine allows the
 ; calling code to handle various error conditions with more flexibility.
 ; Input:
-;   - OP1: floating point number
-;   - HL: pointer to u32 in memory, cannot be OP2
+;   - OP1=input
 ; Output:
-;   - HL: pointer to u32
-;   - C: u32StatusCode
-; Destroys: A, B, C, DE
-; Preserves: HL, OP1, OP2
+;   - OP1:u32=result
+;   - C:u8=u32StatusCode
+;   - HL=OP1
+; Destroys: A, B, C, DE, HL
+; Preserves: OP2-OP6
 ConvertOP1ToU32StatusCode:
-    call clearU32 ; ensure u32=0 even when error conditions are detected
-    push hl ; stack=[u32]
     ld c, 0 ; u32StatusCode
-    push bc ; stack=[u32, u32StatusCode]
+    push bc ; stack=[u32StatusCode]
     bcall(_PushRealO2) ; FPS=[OP2 saved]
     ; check negative
     bcall(_CkOP1Pos) ; if OP1<0: ZF=0
-    jr z, convertOP1ToU32StatusCodeCheckTooBig
-    bcall(_PopRealO2) ; FPS=[]; OP2=OP2 saved
-    pop bc ; stack=[u32]; C=u32StatusCode
-    pop hl ; stack=[]; HL=u32
-    set u32StatusCodeNegative, c
-    ret
-convertOP1ToU32StatusCodeCheckTooBig:
+    jr nz, convertOP1ToU32StatusCodeNegative
+    ; check too big
     call op2Set2Pow32PageTwo
     bcall(_CpOP1OP2) ; if OP1 >= 2^32: CF=0
-    jr c, convertOP1ToU32StatusCodeCheckInt
-    bcall(_PopRealO2) ; FPS=[]; OP2=OP2 saved
-    pop bc ; stack=[u32]; C=u32StatusCode
-    pop hl ; stack=[]; HL=u32
-    set u32StatusCodeTooBig, c
-    ret
-convertOP1ToU32StatusCodeCheckInt:
+    jr nc, convertOP1ToU32StatusCodeTooBig
+    ; check has fraction
     bcall(_CkPosInt) ; if OP1>=0 and OP1 is int: ZF=1
-    jr z, convertOP1ToU32StatusCodeValid
-    bcall(_PopRealO2) ; FPS=[]; OP2=OP2 saved
-    pop bc ; stack=[u32]; C=u32StatusCode
-    pop hl ; stack=[]; HL=u32
-    set u32StatusCodeHasFrac, c
-    jr convertOP1ToU32StatusCodeContinue
+    jr nz, convertOP1ToU32StatusCodeHasFrac
 convertOP1ToU32StatusCodeValid:
-    bcall(_PopRealO2) ; FPS=[]; OP2=OP2 saved
+    ; valid, so convert to u32
+    bcall(_PopRealO2) ; FPS=[]; OP2=restored
+    call convertOP1ToU32NoCheck
+    pop bc ; stack=[]; C=u32StatusCode
+    ld hl, OP1
+    ret
+convertOP1ToU32StatusCodeNegative:
+    bcall(_PopRealO2) ; FPS=[]; OP2=restored
     pop bc ; stack=[u32]; C=u32StatusCode
-    pop hl ; stack=[]; HL=u32
-convertOP1ToU32StatusCodeContinue:
-    ; [[fallthrough]]
+    set u32StatusCodeNegative, c
+    ld hl, OP1
+    ret
+convertOP1ToU32StatusCodeTooBig:
+    bcall(_PopRealO2) ; FPS=[]; OP2=restored
+    pop bc ; stack=[result]; C=u32StatusCode
+    set u32StatusCodeTooBig, c
+    ld hl, OP1
+    ret
+convertOP1ToU32StatusCodeHasFrac:
+    bcall(_PopRealO2) ; FPS=[]; OP2=restored
+    pop bc ; stack=[u32]; C=u32StatusCode
+    set u32StatusCodeHasFrac, c
+    push bc
+    call convertOP1ToU32NoCheck ; HL=OP1
+    pop bc
+    ret
 
 ;-----------------------------------------------------------------------------
 
@@ -145,17 +140,18 @@ convertOP1ToU32StatusCodeContinue:
 ; ignored when converting to U32 integer. Use convertOP1ToU32() to perform a
 ; validation check that throws an exception.
 ; Input:
-;   - OP1: unsigned 32-bit integer as a floating point number
-;   - HL: pointer to a u32 in memory, cannot be OP2
+;   - OP1:real=input
 ; Output:
-;   - HL: OP1 converted to a u32, in little-endian format
-; Destroys: A, B, DE
-; Preserves: HL, C
+;   - OP1:u32=output
+;   - HL=OP1
+; Destroys: A, BC, DE, HL
+; Preserves: OP2-OP6
 convertOP1ToU32NoCheck:
     ; initialize the target u32
+    call pushRaw9Op1 ; FPS=[result]; HL=result
     call clearU32
     bcall(_CkOP1FP0) ; preserves HL
-    ret z
+    jr z, convertOP1ToU32NoCheckEnd
     ; extract number of decimal digits
     ld de, OP1+1 ; exponent byte
     ld a, (de)
@@ -177,7 +173,7 @@ convertOP1ToU32LoopEntry:
     call addU32ByA
     ; check number of mantissa digits
     dec b
-    ret z
+    jr z, convertOP1ToU32NoCheckEnd
 convertOP1ToU32SecondDigit:
     ; Process second mantissa digit
     call multU32By10
@@ -185,44 +181,48 @@ convertOP1ToU32SecondDigit:
     and $0F
     call addU32ByA
     djnz convertOP1ToU32Loop
+convertOP1ToU32NoCheckEnd:
+    call popRaw9Op1 ; FPS=[]; HL=OP1=result
     ret
 
 ; Description: Same as convertOP1ToU32() except using OP2.
 ; Input:
-;   - OP2: unsigned 32-bit integer as a floating point number
-;   - HL: pointer to a u32 in memory, cannot be OP1 or OP2
-; Destroys: A, B, C, DE
-; Preserves: HL, OP1, OP2
-convertOP2ToU32:
-    push hl
-    bcall(_OP1ExOP2)
-    pop hl
-    push hl
+;   - OP2:real=input
+; Output:
+;   - OP2:u32=output
+;   - C: u32StatusCode
+;   - HL=OP2
+; Destroys: A, BC, DE, HL
+; Preserves: OP2-OP6
+convertOP2ToU32: ; TODO: I don't think this is used anywhere.
+    call op1ExOp2PageTwo
     call convertOP1ToU32
-    bcall(_OP1ExOP2)
-    pop hl
+    call op1ExOp2PageTwo
+    ld hl, OP2
     ret
 
 ;-----------------------------------------------------------------------------
-; Convert U8 or U32 to a TI floating point number.
+; Convert u32 to OP1.
 ;-----------------------------------------------------------------------------
 
-; Description: Convert the u32 referenced by HL to a floating point number in
-; OP1.
-; Input: HL: pointer to u32 (must not be OP2)
-; Output: OP1: floating point equivalent of u32(HL)
-; Destroys: A, B, C, DE
-; Preserves: HL, OP2
+; Description: Convert the u32 in OP1 to a floating point number in OP1.
+; Input:
+;   - OP1:u32=input
+; Output:
+;   - OP1:real=output
+;   - HL=OP1
+; Destroys: A, B, C, DE, HL
+; Preserves: OP2-OP6
 convertU32ToOP1:
-    push hl
-    bcall(_PushRealO2) ; FPS=[OP2 saved]
+    call pushRaw9Op1 ; FPS=[input]; HL=input
+    push hl ; stack=[input]
+    bcall(_PushRealO2) ; FPS=[input, OP2]
     bcall(_OP1Set0)
-    pop hl
-    push hl
-    inc hl
-    inc hl
-    inc hl ; HL points to most significant byte
+    pop hl ; stack=[]; HL=input
     ; set up loop
+    inc hl
+    inc hl
+    inc hl ; HL=&input[3]=the most significant byte
     ld b, 4
 convertU32ToOP1Loop:
     ld a, (hl)
@@ -230,70 +230,75 @@ convertU32ToOP1Loop:
     bcall(_AddAToOP1) ; preserves BC, HL
     djnz convertU32ToOP1Loop
     ;
-    bcall(_PopRealO2) ; FPS=[]; OP2=OP2 saved
-    pop hl
+    bcall(_PopRealO2) ; FPS=[input]; OP2=restored
+    call dropRaw9
+    ld hl, OP1
     ret
 
 ;-----------------------------------------------------------------------------
-; Convert OP1 to Uxx (u32, u24, u16, or u8) depending on (baseWordSize).
+; Convert OP1 to uxx (u32, u24, u16, or u8) depending on (baseWordSize).
 ;-----------------------------------------------------------------------------
 
 ; Description: Convert OP1 to u32.
-; Input: OP1
+; Input:
+;   - OP1:real
 ; Output:
-;   - OP3=u32(OP1)
-;   - HL=OP3
+;   - OP1=u32(OP1)
+;   - HL=OP1
 convertOP1ToUxx:
-    ld hl, OP3
-    call ConvertOP1ToU32StatusCode ; OP3=u32(OP1); C=u32StatusCode
-    call CheckU32FitsWsize ; C=u32StatusCode
+    call ConvertOP1ToU32StatusCode ; OP1=u32(OP1); C=u32StatusCode
+    call CheckU32FitsWsize ; C=u32StatusCode; preserves HL
     ld a, c
     and u32StatusCodeFatalMask
-    jp nz, convertOP1ToU32Error
-    ret
+    ret z
+    bcall(_ErrDomain) ; throw exception
 
 ; Description: Convert OP1, OP2 to u32, u32.
-; Input: OP1, OP2
+; Input:
+;   - OP1, OP2
 ; Output:
-;   - OP3=u32(OP1); OP4=u32(OP2)
-;   - HL=OP3; DE=OP4
+;   - OP1=u32(OP1); OP2=u32(OP2)
+;   - HL=OP1; DE=OP2
 convertOP1OP2ToUxx:
-    ld hl, OP3
-    call convertOP1ToU32AllowFrac ; OP3=u32(OP1)
-    call CheckU32FitsWsize ; C=u32StatusCode
+    call convertOP1ToU32AllowFrac ; OP1=u32(OP1); HL=OP1
+    call CheckU32FitsWsize ; C=u32StatusCode; preserves HL
     ld a, c
     and u32StatusCodeFatalMask
-    jp nz, convertOP1ToU32Error
+    jr nz, convertOP1OP2ToUxxErr
     ;
-    ld hl, OP4
-    call convertOP2ToU32AllowFrac ; OP4=u32(OP2)
-    call CheckU32FitsWsize ; C=u32StatusCode
+    call convertOP2ToU32AllowFrac ; OP1=u32(OP1); HL=OP2
+    call CheckU32FitsWsize ; C=u32StatusCode; preserves HL
     ld a, c
     and u32StatusCodeFatalMask
-    jp nz, convertOP1ToU32Error
+    jr nz, convertOP1OP2ToUxxErr
     ;
-    ld hl, OP3
-    ld de, OP4
-    ret
-
-; Description: Convert OP1, OP2 to u32, u32.
-; Input: OP1, OP2
-; Output:
-;   - OP3=u32(OP1); OP4=u32(OP2)
-;   - HL=OP3; A=u8(OP4)
-;   - ZF=1 if A==0
-convertOP1OP2ToUxxN:
-    call convertOP1OP2ToUxx ; HL=OP3=u32(OP1); DE=OP4=u32(OP2)
-    ; Furthermore, check OP4 against baseWordSize
-    ex de, hl ; HL=OP4=u32(OP2)
-    ld a, (baseWordSize)
-    call cmpU32WithA
-    jr nc, convertOP1OP2ToUxxErr
-    ex de, hl ; HL=OP3=u32(OP1); DE=OP4=u32(OP2)
-    ld a, (de) ; A=u8(OP4)
-    or a ; set ZF=1 if u8(OP2)==0
+    ld hl, OP1
+    ld de, OP2
     ret
 convertOP1OP2ToUxxErr:
+    bcall(_ErrDomain) ; throw exception
+
+; Description: Convert OP1, OP2 to u32, u32.
+; Input:
+;   - OP1, OP2
+; Output:
+;   - OP1=u32(OP1); OP2=u32(OP2)
+;   - HL=OP1; DE=OP2
+;   - A=u8(OP2)
+;   - ZF=1 if A==0
+; Destroys: A, DE, HL
+convertOP1OP2ToUxxN:
+    call convertOP1OP2ToUxx ; HL=OP1=u32(OP1); DE=OP2=u32(OP2)
+    ; Furthermore, check OP2 against baseWordSize
+    ex de, hl ; HL=OP2
+    ld a, (baseWordSize)
+    call cmpU32WithA ; CF=0 if OP2>=baseWordSize
+    jr nc, convertOP1OP2ToUxxNErr
+    ld a, (hl) ; A=u8(OP2)
+    ex de, hl ; DE=OP2; HL=OP1
+    or a ; set ZF=1 if u8(OP2)==0
+    ret
+convertOP1OP2ToUxxNErr:
     bcall(_ErrDomain) ; throw exception if X >= baseWordSize
 
 ;-----------------------------------------------------------------------------
