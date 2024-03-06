@@ -31,7 +31,7 @@ RtcInit:
 RtcGetNow:
     ld hl, OP1
     call getRtcNowAsEpochSeconds ; HL=OP1=epochSeconds
-    jp ConvertI40ToOP1
+    jp convertI40ToOP1
 
 ; Description: Retrieve the current RTC as a Time object.
 ; Input: none

@@ -26,7 +26,7 @@ RpnDateTimeToEpochSeconds:
     ; copy back to OP1
     call popRaw9Op1 ; FPS=[rpnDateTime]; OP1=epochSeconds
     call dropRaw9 ; FPS=[]
-    jp ConvertI40ToOP1 ; OP1=float(epochSeconds)
+    jp convertI40ToOP1 ; OP1=float(epochSeconds)
 
 ; Description: Convert DateTime{} to relative epochSeconds.
 ; Input:
@@ -62,7 +62,7 @@ dateTimeToEpochSeconds:
 ; Destroys: all, OP1-OP6
 EpochSecondsToRpnDateTime:
     ; get relative epochSeconds
-    call ConvertOP1ToI40 ; OP1=i40(epochSeconds)
+    call convertOP1ToI40 ; OP1=i40(epochSeconds)
 epochSecondsToRpnDateTimeAlt:
     ; reserve 2 slots on the FPS
     call reserveRaw9 ; FPS=[rpnDateTime]; HL=rpnDateTime
@@ -123,7 +123,7 @@ addRpnDateTimeBySecondsAdd:
     push hl ; stack=[dateTime]
     ; convert real(seconds) to i40(seconds)
     call op3ToOp1PageTwo ; OP1:real=seconds
-    call ConvertOP1ToI40 ; OP1:u40=seconds
+    call convertOP1ToI40 ; OP1:u40=seconds
     ; add dateTime+seconds
     pop hl ; stack=[]; HL=rpnDateTime
     inc hl ; HL=dateTime
@@ -230,7 +230,7 @@ subRpnDateTimeByRpnDateTime:
     call subU40U40 ; HL=Y.seconds-X.seconds
     ; pop result into OP1
     call popRaw9Op1 ; FPS=[X.seconds]; OP1=epochSeconds
-    call ConvertI40ToOP1 ; OP1=float(epochSeconds)
+    call convertI40ToOP1 ; OP1=float(epochSeconds)
     jp dropRaw9 ; FPS=[]
 subRpnDateTimeByRpnDuration:
     ; convert OP3 to seconds on the FPS stack

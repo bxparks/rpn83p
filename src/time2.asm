@@ -25,7 +25,7 @@ RpnTimeToSeconds:
     ; copy back to OP1
     call popRaw9Op1 ; FPS=[rpnTime]; OP1=seconds
     call dropRaw9 ; FPS=[]
-    jp ConvertI40ToOP1 ; OP1=float(seconds)
+    jp convertI40ToOP1 ; OP1=float(seconds)
 
 ; Description: Convert the seconds to an RpnTime{} object.
 ; Input: OP1:Real=seconds
@@ -34,7 +34,7 @@ RpnTimeToSeconds:
 ; Throws: ErrDomain if seconds>=86400 (i.e. 24:00:00)
 SecondsToRpnTime:
     ; get relative seconds
-    call ConvertOP1ToU40 ; HL=OP1=u40(seconds)
+    call convertOP1ToU40 ; HL=OP1=u40(seconds)
     ex de, hl ; DE=seconds
     ; check OP1<86400
     ld hl, OP2
@@ -159,7 +159,7 @@ addRpnTimeBySecondsAdd:
     push hl ; stack=[rpnTime]
     ; convert real(seconds) toi40(seconds
     call op3ToOp1PageTwo ; OP1:real=seconds
-    call ConvertOP1ToI40 ; OP1=i40(seconds)
+    call convertOP1ToI40 ; OP1=i40(seconds)
     ; add time+seconds
     pop hl ; stack=[]; HL=rpnTime
     inc hl ; HL=time
@@ -285,7 +285,7 @@ subRpnTimeByRpnTime:
     call subU40U40 ; HL=Y.seconds-X.seconds
     ; pop result into OP1
     call popRaw9Op1 ; FPS=[X.seconds]; OP1=Y.seconds-X.seconds
-    call ConvertI40ToOP1 ; OP1=float(i40)
+    call convertI40ToOP1 ; OP1=float(i40)
     jp dropRaw9 ; FPS=[]
 subRpnTimeByRpnDuration:
     ; invert the sign of duration in OP3

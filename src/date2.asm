@@ -43,7 +43,7 @@ isLeapTrue:
 ; Output: BC:u16=year in the range of [1,9999]
 ; Destroys: A, BC, DE, HL
 convertOP1ToYear:
-    call ConvertOP1ToU40 ; OP1=u40(OP1) else Err:Domain
+    call convertOP1ToU40 ; OP1=u40(OP1) else Err:Domain
     ld hl, OP1
     call testU40 ; ZF=1 if zero
     jr z, convertOP1ToYearErr
@@ -127,7 +127,7 @@ RpnDateToEpochDays:
     ; copy back to OP1
     call dropRaw9 ; FPS=[epochDays]
     call popRaw9Op1 ; FPS=[]; OP1=epochDays
-    call ConvertI40ToOP1 ; OP1=float(epochDays)
+    call convertI40ToOP1 ; OP1=float(epochDays)
     ret
 
 ; Description: Convert RpnDate{} to epochSeconds relative to the
@@ -152,7 +152,7 @@ RpnDateToEpochSeconds:
     ; copy back to OP1
     call dropRaw9 ; FPS=[epochSeconds]
     call popRaw9Op1 ; FPS=[]; OP1=epochSeconds
-    call ConvertI40ToOP1 ; OP1=float(epochSeconds)
+    call convertI40ToOP1 ; OP1=float(epochSeconds)
     ret
 
 ; Description: Convert Date{} to relative epochSeconds.
@@ -189,7 +189,7 @@ dateToEpochDays:
 ; Output: OP1:RpnDate
 ; Destroys: all, OP1-OP6
 EpochDaysToRpnDate:
-    call ConvertOP1ToI40 ; OP1:i40=epochDays
+    call convertOP1ToI40 ; OP1:i40=epochDays
 epochDaysToRpnDateAlt:
     ; reserve 2 slots on the FPS
     call pushRaw9Op1 ; FPS=[epochDays]; HL=epochDays
@@ -236,7 +236,7 @@ epochDaysToDate:
 ; Destroys: all, OP1-OP6
 EpochSecondsToRpnDate:
     ; get relative epochSeconds
-    call ConvertOP1ToI40 ; HL=OP1=i40(epochSeconds)
+    call convertOP1ToI40 ; HL=OP1=i40(epochSeconds)
     ; divisor=86400
     ld hl, OP2
     ld a, 1
@@ -270,7 +270,7 @@ addRpnDateByDaysAdd:
     push hl ; stack=[rpnDate]
     ; convert real(seconds) to i40(seconds)
     call op3ToOp1PageTwo ; OP1:real=seconds
-    call ConvertOP1ToI40 ; OP1:i40=seconds
+    call convertOP1ToI40 ; OP1:i40=seconds
     ; add date+days
     pop hl ; stack=[]; HL=rpnDate
     inc hl ; HL=date
@@ -380,7 +380,7 @@ subRpnDateByRpnDate:
     call subU40U40 ; HL=Y.days-X.days
     ; pop result into OP1
     call popRaw9Op1 ; FPS=[X.days]; OP1=Y.days-X.days
-    call ConvertI40ToOP1 ; OP1=float(i40)
+    call convertI40ToOP1 ; OP1=float(i40)
     jp dropRaw9 ; FPS=[]
 subRpnDateByRpnDuration:
     ; invert the sign of duration in OP3

@@ -19,12 +19,12 @@
 ; Output: OP1: floating point equivalent of u40
 ; Destroys: all
 ; Preserves: OP2-OP6
-ConvertI40ToOP1: ; TODO: rename to lowercased convertI40ToOP1()
+convertI40ToOP1:
     ld hl, OP1
     call isPosU40 ; ZF=1 if positive or zero
-    jr z, ConvertU40ToOP1
+    jr z, convertU40ToOP1
     call negU40 ; U40=-U40
-    call ConvertU40ToOP1
+    call convertU40ToOP1
     bcall(_InvOP1S) ; invert the sign
     ret
 
@@ -34,7 +34,7 @@ ConvertI40ToOP1: ; TODO: rename to lowercased convertI40ToOP1()
 ; Output: OP1:real=output
 ; Destroys: A, B, C, DE, HL
 ; Preserves: OP2-OP6
-ConvertU40ToOP1: ; TODO: rename to lowercased convertU40ToOP1()
+convertU40ToOP1:
     call pushRaw9Op1 ; FPS=[input]; HL=output
     push hl ; stack=[input]
     bcall(_PushRealO2) ; FPS=[input, OP2]
@@ -79,7 +79,7 @@ u40StatusCodeFatalMask equ $03
 ;   - C:u8=u40StatusCode
 ; Destroys: A, B, C, DE, HL
 ; Preserves: OP2-OP6
-ConvertOP1ToI40: ; TODO: convert to lowercased convertOP1ToI40()
+convertOP1ToI40:
     ld a, (OP1)
     bit 7, a ; ZF=0 if negative
     jr z, convertOP1ToI40Pos
@@ -120,7 +120,7 @@ convertOP1ToI40Pos:
 ;   - C: u40StatusCode
 ; Destroys: A, B, C, DE, HL
 ; Preserves: OP2-OP6
-ConvertOP1ToU40: ; TODO: convert to lowercased convertOP1ToU40()
+convertOP1ToU40:
     call convertOP1ToU40StatusCode ; OP1=u40(OP1); C=u40StatusCode
     ld a, c
     or a
@@ -176,7 +176,7 @@ convertOP1ToU40StatusCodeHasFrac:
 
 ; Description: Convert floating point OP1 to a u40, in situ. This routine
 ; assume that OP1 is a floating point number between [0, 2^40). Fractional
-; digits are ignored when converting to u40 integer. Use ConvertOP1ToU40() to
+; digits are ignored when converting to u40 integer. Use convertOP1ToU40() to
 ; perform a validation check that throws an exception.
 ; Input:
 ;   - OP1: unsigned 32-bit integer as a floating point number

@@ -21,7 +21,7 @@ RpnOffsetToSeconds:
     ld hl, OP1
     call offsetToSeconds ; DE=offset+2; HL=OP1=seconds
     call dropRaw9 ; FPS=[]
-    jp ConvertI40ToOP1 ; OP1=float(OP1)
+    jp convertI40ToOP1 ; OP1=float(OP1)
 
 ; Description: Convert the RpnOffset{} record in OP1 to relative hours.
 ; Input: OP1:RpnOffset=rpnOffset
@@ -228,7 +228,7 @@ offsetHourToOffsetPos:
     jr nz, offsetHourToOffsetErr ; err if not a multiple of 15
     ; Convert offsetQuarter into (hour,minute). offsetQuarter is < 96 (24*4),
     ; so only a single byte is needed.
-    call ConvertOP1ToI40 ; OP1:u40=offsetQuarter, [
+    call convertOP1ToI40 ; OP1:u40=offsetQuarter, [
     ld bc, (OP1) ; BC=offsetQuarter
     call offsetQuarterToHourMinute ; DE=(hour,minute)
     ; Fill offset

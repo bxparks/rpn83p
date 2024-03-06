@@ -68,7 +68,7 @@ AddRpnDayOfWeekByDays:
     call cp1ExCp3PageTwo ; CP1=days; CP3=RpnDayOfWeek
 addRpnDayOfWeekByDaysAdd:
     ; CP1=days, CP3=RpnDayOfWeek
-    call ConvertOP1ToI40 ; HL=OP1=u40(days)
+    call convertOP1ToI40 ; HL=OP1=u40(days)
     ; convert CP3=RpnDayOfWeek to OP1=days
     ld a, (OP3+1) ; A=dayOfWeekNumber
     ld hl, OP2
@@ -120,4 +120,4 @@ subRpnDayOfWeekByRpnDayOfWeek:
     ; convert to i40, then to float
     ld hl, OP1
     call setI40ToA ; HL=OP1=i40(result)
-    jp ConvertI40ToOP1 ; OP1=float(i40)
+    jp convertI40ToOP1 ; OP1=float(i40)

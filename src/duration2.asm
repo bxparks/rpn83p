@@ -21,7 +21,7 @@ RpnDurationToSeconds:
     ld hl, OP1
     call durationToSeconds ; DE=duration+5; HL=OP1=seconds
     call dropRaw9 ; FPS=[]
-    jp ConvertI40ToOP1 ; OP1=float(OP1)
+    jp convertI40ToOP1 ; OP1=float(OP1)
 
 ; Description: Convert Duration to relative seconds.
 ; Input:
@@ -127,7 +127,7 @@ durationToSecondsPos:
 ;   - OP1:(RpnDuration*)=resultDuration
 ; Destroys: all, OP1-OP4
 SecondsToRpnDuration:
-    call ConvertOP1ToI40 ; OP1:i40=seconds
+    call convertOP1ToI40 ; OP1:i40=seconds
     call pushRaw9Op1 ; FPS=[seconds]; HL=seconds
     ex de, hl ; DE=seconds
     ld hl, OP1
@@ -329,7 +329,7 @@ addRpnDurationBySecondsAdd:
     push hl ; stack=[rpnDuration]
     ; convert real(seconds) to i40(seconds)
     call op3ToOp1PageTwo ; OP1:real=seconds
-    call ConvertOP1ToI40 ; OP1:u40=seconds
+    call convertOP1ToI40 ; OP1:u40=seconds
     ; add duration+seconds
     pop hl ; stack=[]; HL=rpnDuration
     inc hl ; HL=duration
