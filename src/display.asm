@@ -1158,12 +1158,11 @@ printOP1BaseNegative:
 ; Description: Print integer at OP1 at the current cursor in base 10. Erase to
 ; the end of line (but only if the digits did not spill over to the next line).
 ; Input: OP1
-; Destroys: all, OP1, OP2, OP3, OP4
+; Destroys: all, OP1-OP6
 printOP1Base10:
-    ld hl, OP3
     ; TODO: Combine _ConvertOP1ToU32StatusCode() and _CheckU32FitsWsize() into
     ; a single bcall().
-    bcall(_ConvertOP1ToU32StatusCode) ; HL=U32; C=statusCode
+    bcall(_ConvertOP1ToU32StatusCode) ; OP1=U32; C=statusCode
     bcall(_CheckU32FitsWsize) ; C=u32StatusCode
     bit u32StatusCodeTooBig, c
     jr nz, printOP1BaseInvalid
@@ -1171,7 +1170,7 @@ printOP1Base10:
     jr nz, printOP1BaseNegative
     ; Convert u32 into a base-10 string.
     ld de, OP4
-    bcall(_FormatU32ToDecString)
+    bcall(_FormatU32ToDecString) ; DE=formattedString
     ; Add '.' if OP1 has fractional component.
     call appendHasFrac ; DE=rendered string
     ex de, hl ; HL=rendered string
@@ -1203,12 +1202,11 @@ appendHasFrac:
 ; TODO: I think printOP1Base16(), printOP1Base8(), and printOP1Base2() can be
 ; combined into a single subroutine, saving memory.
 ; Input: OP1
-; Destroys: all, OP1, OP2, OP3, OP4
+; Destroys: all, OP1-OP5
 printOP1Base16:
-    ld hl, OP3
     ; TODO: Combine _ConvertOP1ToU32StatusCode() and _CheckU32FitsWsize() into
     ; a single bcall().
-    bcall(_ConvertOP1ToU32StatusCode)
+    bcall(_ConvertOP1ToU32StatusCode) ; OP1=U32; C=statusCode
     bcall(_CheckU32FitsWsize) ; C=u32StatusCode
     bit u32StatusCodeTooBig, c
     jr nz, printOP1BaseInvalid
@@ -1216,7 +1214,7 @@ printOP1Base16:
     jr nz, printOP1BaseNegative
     ; Convert u32 into a base-16 string.
     ld de, OP4
-    bcall(_FormatU32ToHexString) ; DE=rendered string
+    bcall(_FormatU32ToHexString) ; DE=formattedString
     ; Append frac indicator
     call appendHasFrac ; DE=rendered string
     ex de, hl ; HL=rendered string
@@ -1243,12 +1241,11 @@ truncateHexDigits:
 ; Description: Print ingeger at OP1 at the current cursor in base 8. Erase to
 ; the end of line (but only if the digits did not spill over to the next line).
 ; Input: OP1
-; Destroys: all, OP1, OP2, OP3, OP4, OP5
+; Destroys: all, OP1-OP5
 printOP1Base8:
-    ld hl, OP3
     ; TODO: Combine _ConvertOP1ToU32StatusCode() and _CheckU32FitsWsize() into
     ; a single bcall().
-    bcall(_ConvertOP1ToU32StatusCode)
+    bcall(_ConvertOP1ToU32StatusCode) ; OP1=U32; C=statusCode
     bcall(_CheckU32FitsWsize) ; C=u32StatusCode
     bit u32StatusCodeTooBig, c
     jr nz, printOP1BaseInvalid
@@ -1256,7 +1253,7 @@ printOP1Base8:
     jr nz, printOP1BaseNegative
     ; Convert u32 into a base-8 string.
     ld de, OP4
-    bcall(_FormatU32ToOctString)
+    bcall(_FormatU32ToOctString) ; DE=formattedString
     ; Append frac indicator
     call appendHasFrac ; DE=rendered string
     ex de, hl ; HL=rendered string
@@ -1311,29 +1308,23 @@ truncateOctString:
 ; display the additional digits.
 ;
 ; Input: OP1: non-negative floating point number < 2^14
-; Destroys: all, OP1, OP2, OP3, OP4, OP5
+; Destroys: all, OP1-OP5
 printOP1Base2:
-    ld hl, OP3
     ; TODO: Combine _ConvertOP1ToU32StatusCode() and _CheckU32FitsWsize() into
     ; a single bcall().
-    bcall(_ConvertOP1ToU32StatusCode)
+    bcall(_ConvertOP1ToU32StatusCode) ; HL=OP1=U32; C=statusCode
     bcall(_CheckU32FitsWsize) ; C=u32StatusCode
     bit u32StatusCodeTooBig, c
     jp nz, printOP1BaseInvalid
     bit u32StatusCodeNegative, c
     jp nz, printOP1BaseNegative
-    ; Move u32 to OP1 to free up OP3 for the formatted digits.
     push bc ; stack=[u32StatusCode]
-    ld de, OP1
-    ld bc, 4
-    ldir
     ; Convert u32 into a base-2 string.
-    ld hl, OP1
     ld de, OP4
-    bcall(_FormatU32ToBinString) ; DE points to a 32-character string + NUL.
+    bcall(_FormatU32ToBinString) ; DE=OP4=formattedString
     ; Truncate leading digits to fit display (12 or 8 digits)
-    ex de, hl
-    call truncateBinDigits ; HL=truncated string
+    ex de, hl ; HL=OP4=formattedString
+    call truncateBinDigits ; HL=OP4=truncatedString
     ; Group digits in groups of 4.
     ld de, OP3
     call formatBinDigits ; HL,DE preserved
@@ -1441,7 +1432,7 @@ printOP1DateRecord:
 
 ; Description: Print the RpnTime Record in OP1 using small font.
 ; Input:
-;   - OP1:RpnTime Record
+;   - OP1:RpnTime
 ;   - B=displayFontMask
 ; Destroys: OP3-OP6
 printOP1TimeRecord:
