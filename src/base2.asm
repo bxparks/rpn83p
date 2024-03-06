@@ -300,7 +300,7 @@ rotateLeftCarryUxx:
     jp z, rotateLeftCarryU16Alt
     dec a
     jp z, rotateLeftCarryU24Alt
-    call rotateLeftCarryU32Alt
+    jp rotateLeftCarryU32Alt
 
 ;-----------------------------------------------------------------------------
 
@@ -329,7 +329,7 @@ rotateRightCarryUxx:
     jp z, rotateRightCarryU16Alt
     dec a
     jp z, rotateRightCarryU24Alt
-    call rotateRightCarryU32Alt
+    jp rotateRightCarryU32Alt
 
 ;-----------------------------------------------------------------------------
 
