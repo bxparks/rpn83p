@@ -60,7 +60,7 @@ addAToOP1Check:
 ;   - OP1 >= 2^16
 ;   - OP1 < 0
 ;   - OP1 is not an integer
-; Input: OP1
+; Input: OP1:real=input
 ; Output: HL=u16(OP1)
 ; Destroys: all, OP2
 convertOP1ToHLPageOne:
@@ -75,7 +75,7 @@ convertOP1ToHLErr:
 
 ; Description: Convert OP1 to u16(HL) without any boundary checks. Adapted from
 ; convertOP1ToU32NoCheck().
-; Input: OP1
+; Input: OP1:real=input
 ; Output: HL=u16(OP1)
 ; Destroys: all
 convertOP1ToHLNoCheck:

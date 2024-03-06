@@ -11,7 +11,7 @@
 ;------------------------------------------------------------------------------
 
 ;------------------------------------------------------------------------------
-; u40 or i40 to OP1
+; Convert u40 or i40 to OP1.
 ;------------------------------------------------------------------------------
 
 ; Description: Convert the i40 in OP1 to floating point number in OP1.
@@ -19,7 +19,7 @@
 ; Output: OP1: floating point equivalent of u40
 ; Destroys: all
 ; Preserves: OP2-OP6
-ConvertI40ToOP1:
+ConvertI40ToOP1: ; TODO: rename to lowercased convertI40ToOP1()
     ld hl, OP1
     call isPosU40 ; ZF=1 if positive or zero
     jr z, ConvertU40ToOP1
@@ -30,19 +30,19 @@ ConvertI40ToOP1:
 
 ; Description: Convert the u40 in OP1 to a floating point number in OP1. This
 ; is similar to the convertU32ToOP1() function.
-; Input: OP1:u40
-; Output: OP1: floating point equivalent of u40
+; Input: OP1:u40=input
+; Output: OP1:real=output
 ; Destroys: A, B, C, DE, HL
 ; Preserves: OP2-OP6
-ConvertU40ToOP1:
-    call pushRaw9Op1 ; FPS=[raw9]; HL=raw9
-    push hl ; stack=[FPSraw9]
-    bcall(_PushRealO2) ; FPS=[raw9, OP2]
+ConvertU40ToOP1: ; TODO: rename to lowercased convertU40ToOP1()
+    call pushRaw9Op1 ; FPS=[input]; HL=output
+    push hl ; stack=[input]
+    bcall(_PushRealO2) ; FPS=[input, OP2]
     bcall(_OP1Set0)
-    pop hl ; stack=[]; HL=FPSraw9
+    pop hl ; stack=[]; HL=input
     ; set up loop
     ld de, 4
-    add hl, de ; HL points to most significant byte
+    add hl, de ; HL=&input[4]=the most significant byte
     ld b, 5
 convertU40ToOP1Loop:
     ld a, (hl)
@@ -50,12 +50,12 @@ convertU40ToOP1Loop:
     bcall(_AddAToOP1) ; preserves BC, HL
     djnz convertU40ToOP1Loop
     ;
-    bcall(_PopRealO2) ; FPS=[OP1]; OP2=OP2
+    bcall(_PopRealO2) ; FPS=[input]; OP2=restored
     call dropRaw9
     ret
 
 ;------------------------------------------------------------------------------
-; OP1 to u40 or i40
+; Convert real in OP1 to u40 or i40
 ;------------------------------------------------------------------------------
 
 ; Bit flags of the u40StatusCode.
@@ -73,13 +73,13 @@ u40StatusCodeFatalMask equ $03
 ; Description: Convert OP1 to an i40 integer, throwing an Err:Domain if OP1 is
 ; not in the range of (-2^39,+2^39).
 ; Input:
-;   - OP1: *signed* 40-bit integer as a floating point number
+;   - OP1:real=input
 ; Output:
-;   - OP1: converted to a i40
-;   - C: u40StatusCode
+;   - OP1:i40=output
+;   - C:u8=u40StatusCode
 ; Destroys: A, B, C, DE, HL
 ; Preserves: OP2-OP6
-ConvertOP1ToI40:
+ConvertOP1ToI40: ; TODO: convert to lowercased convertOP1ToI40()
     ld a, (OP1)
     bit 7, a ; ZF=0 if negative
     jr z, convertOP1ToI40Pos
@@ -114,14 +114,14 @@ convertOP1ToI40Pos:
 ; See convertOP1ToU40NoCheck() to convert to U40 without throwing.
 ;
 ; Input:
-;   - OP1: unsigned 40-bit integer as a floating point number
+;   - OP1:real=input
 ; Output:
-;   - OP1: converted to a u40
+;   - OP1:u40=output
 ;   - C: u40StatusCode
 ; Destroys: A, B, C, DE, HL
 ; Preserves: OP2-OP6
-ConvertOP1ToU40:
-    call convertOP1ToU40StatusCode ; OP3=u40(OP1); C=u40StatusCode
+ConvertOP1ToU40: ; TODO: convert to lowercased convertOP1ToU40()
+    call convertOP1ToU40StatusCode ; OP1=u40(OP1); C=u40StatusCode
     ld a, c
     or a
     ret z
@@ -130,11 +130,11 @@ convertOP1ToU40Error:
 
 ; Description: Convert OP1 to u40 with u40StatusCode.
 ; Input:
-;   - OP1: floating point number
+;   - OP1=inputFloat
 ; Output:
-;   - OP1: converted into u40
-;   - C: u40StatusCode
-; Destroys: A, B, C, DE
+;   - OP1=resultU40
+;   - C:u8=u40StatusCode
+; Destroys: A, B, C, DE, HL, OP1
 ; Preserves: OP2-OP6
 convertOP1ToU40StatusCode:
     ld c, 0 ; u40StatusCode
@@ -157,17 +157,17 @@ convertOP1ToU40StatusCodeValid:
     ret
 convertOP1ToU40StatusCodeNegative:
     bcall(_PopRealO2) ; FPS=[]; OP2=restored
-    pop bc ; stack=[u40]; C=u40StatusCode
+    pop bc ; stack=[]; C=u40StatusCode
     set u40StatusCodeNegative, c
     ret
 convertOP1ToU40StatusCodeTooBig:
     bcall(_PopRealO2) ; FPS=[]; OP2=restored
-    pop bc ; stack=[u40]; C=u40StatusCode
+    pop bc ; stack=[]; C=u40StatusCode
     set u40StatusCodeTooBig, c
     ret
 convertOP1ToU40StatusCodeHasFrac:
     bcall(_PopRealO2) ; FPS=[]; OP2=restored
-    pop bc ; stack=[u40]; C=u40StatusCode
+    pop bc ; stack=[]; C=u40StatusCode
     set u40StatusCodeHasFrac, c
     push bc
     call convertOP1ToU40NoCheck
@@ -183,11 +183,11 @@ convertOP1ToU40StatusCodeHasFrac:
 ; Output:
 ;   - HL=OP1
 ;   - OP1: converted to a u40
-; Destroys: A, BC, DE
+; Destroys: A, BC, DE, HL
 ; Preserves: OP2-OP6
 convertOP1ToU40NoCheck:
     ; initialize the target u40
-    call pushRaw9Op1 ; HL=FPSraw9
+    call pushRaw9Op1 ; FPS=[result]; HL=result
     call clearU40
     bcall(_CkOP1FP0) ; preserves HL
     jr z, convertOP1ToU40NoCheckEnd
@@ -221,5 +221,5 @@ convertOP1ToU40SecondDigit:
     call addU40ByA
     djnz convertOP1ToU40Loop
 convertOP1ToU40NoCheckEnd:
-    call popRaw9Op1 ; FPS=[]; HL=OP1=u40(OP1)
+    call popRaw9Op1 ; FPS=[]; HL=OP1=result
     ret
