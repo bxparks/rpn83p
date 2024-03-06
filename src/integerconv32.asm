@@ -185,6 +185,7 @@ convertOP1ToU32NoCheckEnd:
     call popRaw9Op1 ; FPS=[]; HL=OP1=result
     ret
 
+#if 0
 ; Description: Same as convertOP1ToU32() except using OP2.
 ; Input:
 ;   - OP2:real=input
@@ -194,12 +195,13 @@ convertOP1ToU32NoCheckEnd:
 ;   - HL=OP2
 ; Destroys: A, BC, DE, HL
 ; Preserves: OP2-OP6
-convertOP2ToU32: ; TODO: I don't think this is used anywhere.
+convertOP2ToU32:
     call op1ExOp2PageTwo
     call convertOP1ToU32
     call op1ExOp2PageTwo
     ld hl, OP2
     ret
+#endif
 
 ;-----------------------------------------------------------------------------
 ; Convert u32 to OP1.
@@ -247,6 +249,9 @@ convertU32ToOP1Loop:
 ;   - OP1:(u8|u16|u24|u32)=output
 ;   - C:u8=u32StatusCode
 ;   - HL=OP1
+; Destroys: A, B, C, DE, HL
+; Throws:
+;   - Err:Domain if the resulting integer is too large for (baseWordSize)
 convertOP1ToUxx:
     call ConvertOP1ToU32StatusCode ; OP1=u32(OP1); C=u32StatusCode
     call CheckU32FitsWsize ; C=u32StatusCode; preserves HL
@@ -255,8 +260,9 @@ convertOP1ToUxx:
     ret z
     bcall(_ErrDomain) ; throw exception
 
-; Description: Convert real number in OP1 to a u8,u16,u24,u32 integer in OP1,
-; subject to the word size (baseWordSize).
+; Description: Convert real number in OP1 to (u8,u16,u24,u32) in OP1. This
+; version checks if the resulting number fits in the integer size given by
+; (baseWordSize), but does NOT throw an exception.
 ; Input:
 ;   - OP1:real=input
 ; Output:
@@ -265,7 +271,7 @@ convertOP1ToUxx:
 ;   - HL=OP1
 ; Destroys: A, B, C, DE, HL
 ; Preserves: OP2-OP6
-ConvertOP1ToUxxNoCheck:
+ConvertOP1ToUxxNoFatal:
     call ConvertOP1ToU32StatusCode ; OP1=U32; C=statusCode
     jp CheckU32FitsWsize ; C=u32StatusCode
 
@@ -275,6 +281,8 @@ ConvertOP1ToUxxNoCheck:
 ; Output:
 ;   - OP1=u32(OP1); OP2=u32(OP2)
 ;   - HL=OP1; DE=OP2
+; Throws:
+;   - Err:Domain if the resulting integers are too large for (baseWordSize)
 convertOP1OP2ToUxx:
     call convertOP1ToU32AllowFrac ; OP1=u32(OP1); HL=OP1
     call CheckU32FitsWsize ; C=u32StatusCode; preserves HL

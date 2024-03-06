@@ -1160,7 +1160,7 @@ printOP1BaseNegative:
 ; Input: OP1
 ; Destroys: all, OP1-OP6
 printOP1Base10:
-    bcall(_ConvertOP1ToUxxNoCheck) ; HL=OP1=uxx(OP1); C=u32StatusCode
+    bcall(_ConvertOP1ToUxxNoFatal) ; HL=OP1=uxx(OP1); C=u32StatusCode
     bit u32StatusCodeTooBig, c
     jr nz, printOP1BaseInvalid
     bit u32StatusCodeNegative, c
@@ -1201,7 +1201,7 @@ appendHasFrac:
 ; Input: OP1
 ; Destroys: all, OP1-OP5
 printOP1Base16:
-    bcall(_ConvertOP1ToUxxNoCheck) ; OP1=U32; C=u32StatusCode
+    bcall(_ConvertOP1ToUxxNoFatal) ; OP1=U32; C=u32StatusCode
     bit u32StatusCodeTooBig, c
     jr nz, printOP1BaseInvalid
     bit u32StatusCodeNegative, c
@@ -1237,7 +1237,7 @@ truncateHexDigits:
 ; Input: OP1
 ; Destroys: all, OP1-OP5
 printOP1Base8:
-    bcall(_ConvertOP1ToUxxNoCheck) ; OP1=U32; C=u32StatusCode
+    bcall(_ConvertOP1ToUxxNoFatal) ; OP1=U32; C=u32StatusCode
     bit u32StatusCodeTooBig, c
     jr nz, printOP1BaseInvalid
     bit u32StatusCodeNegative, c
@@ -1301,7 +1301,7 @@ truncateOctString:
 ; Input: OP1: non-negative floating point number < 2^14
 ; Destroys: all, OP1-OP5
 printOP1Base2:
-    bcall(_ConvertOP1ToUxxNoCheck) ; HL=OP1=uxx(OP1); C=u32StatusCode
+    bcall(_ConvertOP1ToUxxNoFatal) ; HL=OP1=uxx(OP1); C=u32StatusCode
     bit u32StatusCodeTooBig, c
     jp nz, printOP1BaseInvalid
     bit u32StatusCodeNegative, c

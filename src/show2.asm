@@ -135,7 +135,7 @@ formBaseString:
 formBinString:
     push de ; stack=[bufPointer]
     ; Check if OP1 fits in the current baseWordSize.
-    call ConvertOP1ToUxxNoCheck ; HL=OP1=uxx(OP1); C=u32StatusCode
+    call ConvertOP1ToUxxNoFatal ; HL=OP1=uxx(OP1); C=u32StatusCode
     ; Check for too big.
     bit u32StatusCodeTooBig, c
     pop de ; stack=[]; DE=bufPointer

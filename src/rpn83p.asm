@@ -1571,9 +1571,9 @@ _PrimeFactor equ _PrimeFactorLabel-branchTableBase
     .db 2
 
 ; integerconv32.asm
-_ConvertOP1ToUxxNoCheckLabel:
-_ConvertOP1ToUxxNoCheck equ _ConvertOP1ToUxxNoCheckLabel-branchTableBase
-    .dw ConvertOP1ToUxxNoCheck
+_ConvertOP1ToUxxNoFatalLabel:
+_ConvertOP1ToUxxNoFatal equ _ConvertOP1ToUxxNoFatalLabel-branchTableBase
+    .dw ConvertOP1ToUxxNoFatal
     .db 2
 
 ; formatinteger32.asm
