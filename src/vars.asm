@@ -296,17 +296,21 @@ closeRpnObjectList:
     ld (hl), d
     ret
 
-; Description: Return the length (number of elements) in the given
-; rpnObjectList.
+; Description: Return the length (number of elements) in the
+; rpnObjectList identified by the appVarName in HL.
 ; Input:
-;   - HL:(char*)=name of list variable
+;   - HL:(char*)=appVarName
 ; Output:
 ;   - A:u8=length of list
-; Destroys: A, BC, DE, HL
+; Throws:
+;   - Err:Invalid if length calculation has a remainder
+;   - Err:Undefined if appVarName does not exist
+; Destroys: A, BC, DE, HL, OP1
 lenRpnObjectList:
     call move9ToOp1 ; OP1=varName
     bcall(_ChkFindSym) ; DE=dataPointer; CF=1 if not found
-    ret c ; nothing we can do if the appVar isn't found
+    jr c, lenRpnObjectNotFound
+calcLenRpnObjectList:
     ex de, hl ; HL=dataPointer
     ld e, (hl)
     inc hl
@@ -321,11 +325,128 @@ lenRpnObjectList:
     ld c, rpnObjectSizeOf
     call divHLByC ; HL=quotient; A=remainder
     or a ; validate no remainder
-    jr nz, lenRpnObjectListErr
+    jr nz, lenRpnObjectListInvalid
     ld a, l
     ret
-lenRpnObjectListErr:
+lenRpnObjectListInvalid:
+    ; sizeof(var)/sizeof(RpnObject) has a non-zero remainder
     bcall(_ErrInvalid) ; should never happen
+lenRpnObjectNotFound:
+    ; nothing we can do if the appVar isn't found
+    bcall(_ErrUndefined) ; should never happen
+
+; Description: Resize the rpnObjectList identified by appVarName in HL.
+; Input:
+;   - HL:(char*)=appVarName
+;   - A:u8=newLen, expected to be [0,99] but no validation performed
+; Output:
+;   - appVar resized
+; Destroys: A, BC, DE, HL, OP1
+; Throws:
+;   - Err:Memory if out of memory
+;   - Err:Undefined if appVarName does not exist
+resizeRpnObjectList:
+    push af ; stack=[newLen]
+    call move9ToOp1 ; OP1=varName; preserves A
+    bcall(_ChkFindSym) ; DE=dataPointer; CF=1 if not found
+    jr c, resizeRpnObjectListNotFound
+    push de ; stack=[newLen,dataPointer]
+    call calcLenRpnObjectList
+    ld b, a ; B=oldLen
+    pop de ; stack=[newLen]; DE=dataPointer
+    pop af ; stack=[]; A=newLen
+    sub b ; A=diff=newLen-oldLen
+    ret z ; ZF=1 if newLen==oldLen
+    jr c, shrinkRpnObjectList ; CF=1 if newLen<oldLen
+expandRpnObjectList:
+    ld c, a ; C=diffLen
+    push bc ; stack=[begin/diffLen]
+    ld l, a
+    ld h, 0 ; HL=expandLen
+    ; calculate expandSize
+    push de ; stack=[begin/diffLen,dataPointer]
+    call rpnObjectLenToSize ; HL=expandSize=19*expandLen
+    push hl
+    bcall(_EnoughMem) ; CF=1 if insufficient
+    jr c, resizeRpnObjectListOutOfMem
+    pop hl
+    pop de ; stack=[begin/diffLen]; DE=dataPointer
+    ; move pointer to the insertionAddress
+    push de ; stack=[begin/diffLen,dataPointer]
+    ex de, hl ; HL=dataPointer; DE=expandSize
+    ld c, (hl)
+    inc hl
+    ld b, (hl) ; BC=appVarSize
+    inc hl ; HL=datePointer+2
+    add hl, bc ; HL=insertionAddress=datePointer+2+appVarSize
+    ; perform insertion
+    ex de, hl ; DE=insertionAddress; HL=expandSize
+    push hl ; stack=[begin/diffLen,dataPointer,expandSize]
+    bcall(_InsertMem) ; preserves DE
+    pop de ; stack=[begin/diffLen,dataPointer]; DE=expandSize
+    ; update appVarSize
+    pop hl ; stack=[begin/diffLen]; HL=dataPointer
+    ld c, (hl)
+    inc hl
+    ld b, (hl) ; BC=appVarSize
+    dec hl ; HL=dataPointer
+    ex de, hl ; DE=dataPointer; HL=expandSize
+    add hl, bc ; HL=newAppVarSize=expandSize+appVarSize
+    ex de, hl ; DE=newAppVarSize; HL=dataPointer
+    ld (hl), e
+    inc hl
+    ld (hl), d ; appVarSize=newAppVarSize
+    dec hl ; HL=dataPointer
+    ; clear the expanded slots
+    ex de, hl ; DE=dataPointer
+    pop bc ; stack=[]; B=begin; C=diffLen
+    call clearRpnObjectList
+    ret
+shrinkRpnObjectList:
+    neg
+    ld l, a
+    ld h, 0 ; HL=shrinkLen
+    ; calculate shrinkSize
+    push de ; stack=[dataPointer]
+    call rpnObjectLenToSize ; HL=shrinkSize=19*shrinkLen
+    pop de ; stack=[]; DE=dataPointer
+    push de ; stack=[dataPointer]
+    ; move pointer to the deletionAddress
+    ex de, hl ; HL=dataPointer; DE=shrinkSize
+    ld c, (hl)
+    inc hl
+    ld b, (hl) ; BC=appVarSize
+    inc hl ; HL=datePointer+2
+    add hl, bc ; HL=dataPointer+2+appVarSize
+    or a ; CF=0
+    sbc hl, de ; HL=deletionAddress=dataPointer+2+appVarSize-shrinkSize
+    ; perform deletion
+    push de ; stack=[dataPointer,shrinkSize]
+    bcall(_DelMem)
+    pop de ; stack=[dataPointer]; DE=shrinkSize
+    ; update appVarSize
+    pop hl ; stack=[]; HL=dataPointer
+    ld c, (hl)
+    inc hl
+    ld b, (hl) ; BC=appVarSize
+    dec hl ; HL=dataPointer
+    push hl ; stack=[dataPointer]
+    ld l, c
+    ld h, b ; HL=appVarSize
+    or a ; CF=0
+    sbc hl, de ; HL=newAppVarSize=appVarSize-shrinkSize
+    ld c, l
+    ld b, h ; BC=newAppVarSize
+    pop hl ; stack=[]; HL=dataPointer
+    ld (hl), c
+    inc hl
+    ld (hl), b
+    ret
+resizeRpnObjectListNotFound:
+    ; nothing we can do if the appVar isn't found
+    bcall(_ErrUndefined) ; should never happen
+resizeRpnObjectListOutOfMem:
+    bcall(_ErrMemory) ; could happen
 
 ;-----------------------------------------------------------------------------
 
@@ -364,16 +485,31 @@ rpnObjectIndexToElementPointer:
 
 ; Description: Convert rpnObject index to the offset into the appVar data
 ; segment. If 'index' is the 'len', then this is the value stored by the TI-OS
-; in the appVarSize field at the beginning of the data segment: appVarSize =
-; len*rpnObjectSizeOf + 2 (crc16) + 2 (appId).
+; in the appVarSize field at the beginning of the data segment:
+;   appVarSize = len*rpnObjectSizeOf + 2 (crc16) + 2 (appId).
 ;
-; Input: C:i8=index or len
-; Output: HL:u16=offset
+; To get to the end of the appVar data segment, add this offset to the
+; dataPointer. But don't forget to add another 2 byte to skip past the 2-byte
+; appVarSize field at the location pointed by dataPointer.
+;
+; Input: C:u8=index or len
+; Output: HL:u16=offset or size
 ; Preserves: A, BC, DE
 rpnObjectIndexToOffset:
     push de
     ld l, c
     ld h, 0 ; HL=len
+    call rpnObjectLenToSize ; HL=19*HL
+    ld de, 4
+    add hl, de ; HL=sum=19*len+4
+    pop de
+    ret
+
+; Description: Convert len of RpnObject to the byte size of those RpnObjects.
+; Input: HL:u16=len
+; Output: HL:u16=size=len*sizeof(RpnObject)=len*19
+; Destroys: DE
+rpnObjectLenToSize:
     ld e, l
     ld d, h ; DE=len
     add hl, hl ; HL=sum=2*len
@@ -1027,6 +1163,12 @@ closeRegs:
 lenRegs:
     ld hl, regsName
     jp lenRpnObjectList
+
+; Description: Resize the storage registers to the new length in A.
+; Input: A:u8=newLen
+resizeRegs:
+    ld hl, regsName
+    jp resizeRpnObjectList
 
 ;-----------------------------------------------------------------------------
 

@@ -801,8 +801,10 @@ mSetRegSizeHandler:
     jr nc, setRegSizeHandlerErr
     cp regsSizeMin ; CF=1 if argValue<25
     jr c, setRegSizeHandlerErr
-    ; TODO: Implement this.
-    call mNotYetHandler
+    call resizeRegs
+    ; display 'REGS Resized' status
+    ld a, errorCodeRegsSized
+    ld (handlerCode), a
     ret
 setRegSizeHandlerErr:
     bcall(_ErrInvalid)
