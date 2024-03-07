@@ -105,7 +105,7 @@ initRpnObjectList:
     call move9ToOp1 ; OP1=varName
     bcall(_ChkFindSym) ; DE=dataPointer; CF=1 if not found
     ld a, b ; A=romPage (0 if RAM)
-    pop bc ; stack=[]; B=len
+    pop bc ; stack=[]; C=len
     jr c, initRpnObjectListCreate
     ; If archived, deleted it. TODO: Maybe try to unachive it?
     or a ; if romPage==0: ZF=1
@@ -120,57 +120,76 @@ initRpnObjectListDelete:
     push bc ; stack=[len]
     bcall(_ChkFindSym) ; DE=dataPointer; CF=1 if not found
     bcall(_DelVarArc)
-    pop bc ; stack=[]; B=len
+    pop bc ; stack=[]; C=len
 initRpnObjectListCreate:
     ; We are here if the appVar does not exist. So create.
-    ; OP1=appVarName; B=len
+    ; OP1=appVarName; C=len
     push bc ; stack=[len]
     call rpnObjectIndexToOffset ; HL=expectedSize
     bcall(_CreateAppVar) ; DE=dataPointer
-    pop bc ; stack=[]; B=len
-    ; [[fallthrough]]
-
-; Description: Clear the given data segment in the appVar.
-; Input:
-;   - C: len
-;   - DE: data pointer
-; Destroys;: all, OP1
-initRpnObjectListClear:
+    pop bc ; stack=[]; C=len
+initRpnObjectListHeader:
     push bc ; stack=[len]
-    push de ; stack=[len, dataPointer]
-    call op1Set0 ; OP1=0.0
-    pop de ; stack=[len]; DE=dataPointer
+    push de ; stack=[len,dataPointer]
     inc de
     inc de ; skip past the appVarSize field
     inc de
     inc de ; skip past the CRC field
     ; insert appId
     ld bc, rpn83pAppId
-    ex de, hl
+    ex de, hl ; HL=dataPointer+4
     ld (hl), c
     inc hl
     ld (hl), b
-    inc hl
-    ex de, hl ; DE=dataPointer
-    ;
+    inc hl ; HL=datePointer+6
+    ; clear all the elements from [begin,len)
+    pop de ; stack=[len]; DE=dataPointer
     pop bc ; stack=[]; C=len
-initRpnObjectListLoop:
+    ld b, 0 ; B=begin=0
+    call clearRpnObjectList
+    ret
+
+; Description: Clear the rpnObjectList elements over the interval
+; [begin,begin+len). No array boundary checks are performed.
+;
+; Input:
+;   - B:u8=begin
+;   - C:u8=len
+;   - DE:(u8*)=dataPointer
+; Destroys: A, DE, HL, OP1
+clearRpnObjectList:
+    push de ; stack=[dataPointer]
+    push bc ; stack=[dataPointer,begin/len]
+    call op1Set0 ; OP1=0.0
+    ; calc the begin offset into appVar
+    pop bc ; stack=[dataPointer]; B=begin; C=len
+    ld a, c ; A=len
+    ld c, b ; C=begin
+    call rpnObjectIndexToOffset ; HL=offset; preserves A,BC,DE
+    ld c, a ; C=len
+    pop de ; stack=[]; DE=dataPointer
+    inc de
+    inc de ; DE=datePointer+2; skip past appVarSize
+    add hl, de ; HL=beginAddress=dataPointer+offset+2
+    ex de, hl ; DE=beginAddress; HL=dataPointer
+clearRpnObjectListLoop:
     ; Copy OP1 into AppVar.
     ld a, rpnObjectTypeReal
     ld (de), a ; rpnObjectType
     inc de
     push bc ; stack=[len]
-    call move9FromOP1
+    call move9FromOp1 ; updates DE to the next element
     ; Set the trailing bytes of the slot to binary 0.
     xor a
     ld b, rpnObjectSizeOf-rpnRealSizeOf-1 ; 9 bytes
-initRpnObjectListLoopTrailing:
+clearRpnObjectListLoopTrailing:
     ld (de), a
     inc de
-    djnz initRpnObjectListLoopTrailing
+    djnz clearRpnObjectListLoopTrailing
+    ;
     pop bc ; stack=[]; C=len
     dec c
-    jr nz, initRpnObjectListLoop
+    jr nz, clearRpnObjectListLoop
     ret
 
 ; Description: Validate the size and CRC16 checksum of the rpnObjectList data
@@ -257,6 +276,37 @@ closeRpnObjectList:
     ld (hl), d
     ret
 
+; Description: Return the length (number of elements) in the given
+; rpnObjectList.
+; Input:
+;   - HL:(char*)=name of list variable
+; Output:
+;   - A:u8=length of list
+; Destroys: A, BC, DE, HL
+lenRpnObjectList:
+    call move9ToOp1 ; OP1=varName
+    bcall(_ChkFindSym) ; DE=dataPointer; CF=1 if not found
+    ret c ; nothing we can do if the appVar isn't found
+    ex de, hl ; HL=dataPointer
+    ld e, (hl)
+    inc hl
+    ld d, (hl) ; DE=appVarSize
+    ; remove the crc16 and appId from appVarSize
+    ex de, hl ; HL=appVarSize
+    dec hl
+    dec hl
+    dec hl
+    dec hl ; HL=appVarSize-4=rpnObjectListSize
+    ; divide rpnObjectListSize/sizeof(RpnObject)
+    ld c, rpnObjectSizeOf
+    call divHLByC ; HL=quotient; A=remainder
+    or a ; validate no remainder
+    jr nz, lenRpnObjectListErr
+    ld a, l
+    ret
+lenRpnObjectListErr:
+    bcall(_ErrInvalid) ; should never happen
+
 ;-----------------------------------------------------------------------------
 
 ; Description: Convert rpnObject index to the array element pointer, including
@@ -296,8 +346,9 @@ rpnObjectIndexToElementPointer:
 ; segment. If 'index' is the 'len', then this is the value stored by the TI-OS
 ; in the appVarSize field at the beginning of the data segment: appVarSize =
 ; len*rpnObjectSizeOf + 2 (crc16) + 2 (appId).
-; Input: C: index or len
-; Output: HL: byteSize
+;
+; Input: C:i8=index or len
+; Output: HL:u16=offset
 ; Preserves: A, BC, DE
 rpnObjectIndexToOffset:
     push de
@@ -466,13 +517,20 @@ clearStack:
     call move9ToOp1
     bcall(_ChkFindSym) ; DE=dataPointer; CF=1 if not found
     ret c
-    ld c, stackSize
-    jp initRpnObjectListClear
+    ld b, 0 ; B=begin=0
+    ld c, stackSize ; C=len=stackSize
+    jp clearRpnObjectList
 
 ; Description: Should be called just before existing the app.
 closeStack:
     ld hl, stackName
     jp closeRpnObjectList
+
+; Description: Return the length of the RPN stack variable.
+; Output: A=length of RPN stack variable
+lenStack:
+    ld hl, stackName
+    jp lenRpnObjectList
 
 ;-----------------------------------------------------------------------------
 ; Stack registers to and from OP1/OP2
@@ -936,13 +994,20 @@ clearRegs:
     call move9ToOp1
     bcall(_ChkFindSym) ; DE=dataPointer; CF=1 if not found
     ret c
-    ld c, regsSize
-    jp initRpnObjectListClear
+    ld b, 0 ; B=begin=0
+    ld c, regsSize ; C=len=regsSize
+    jp clearRpnObjectList
 
 ; Description: Should be called just before existing the app.
 closeRegs:
     ld hl, regsName
     jp closeRpnObjectList
+
+; Description: Return the length of the REGS variable.
+; Output: A=length of REGS variable
+lenRegs:
+    ld hl, regsName
+    jp lenRpnObjectList
 
 ;-----------------------------------------------------------------------------
 

@@ -809,7 +809,7 @@ setRegSizeHandlerErr:
 
 mGetRegSizeHandler:
     call closeInputAndRecallNone
-    ld a, 25 ; TODO: Implement this
+    call lenRegs
     bcall(_ConvertAToOP1) ; OP1=float(A)
     jp pushToX
 

@@ -61,8 +61,8 @@ addHLByAPageTwo:
 ;------------------------------------------------------------------------------
 
 ; Description: Divide HL by C
-; Input: HL:dividend; C=divisor
-; Output: HL:quotient; A:remainder
+; Input: HL=dividend; C=divisor
+; Output: HL=quotient; A=remainder
 ; Destroys: A, HL
 ; Preserves: BC, DE
 divHLByCPageTwo:
