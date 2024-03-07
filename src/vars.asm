@@ -7,10 +7,17 @@
 ; registers are stored in a list named 'REGS' (which is similar to the 'REGS'
 ; variable used on the HP-42S calculator).
 ;
+; There have been at least 3 implementations of the storage registers and stack
+; variables:
+;
+; 1) Single Letter Variables
+;
 ; Early versions of RPN83P mapped each stack register to a single-letter real
 ; variables in the TI-OS, in other words, X, Y, Z, T, R. They were convenient
 ; because the TI-OS seemed to provide a number of subroutines (e.g. StoX, RclX,
 ; etc), which makde it relatively easy access those single-letter variables.
+;
+; 2) ListObj Variables
 ;
 ; Later, I wanted to rename those single-letter variables to STX, STY, STZ,
 ; STT, and STL, to avoid any conflicts with other apps that may use those
@@ -56,20 +63,33 @@
 ; are set to the number of elements, 17h 00h, the number of elements in hex,
 ; with the LSB followed by the MSB."
 ;
-;    LD HL,L1Name
-;    B_CALL Mov9ToOP1; OP1 = list L1 name
-;    B_CALL FindSym ; look up list variable in OP1
-;    JR C, NotFound ; jump if it is not created
-;    EX DE,HL ; HL = pointer to data structure
-;    LD E,(HL) ; get the LSB of the number elements
-;    INC HL ; move to MSB
-;    LD D,(HL) ; DE = number elements in L1
-;L1Name:
-;    DBListObj, tVarLst, tL1, 0
+;       LD HL,L1Name
+;       B_CALL Mov9ToOP1; OP1 = list L1 name
+;       B_CALL FindSym ; look up list variable in OP1
+;       JR C, NotFound ; jump if it is not created
+;       EX DE,HL ; HL = pointer to data structure
+;       LD E,(HL) ; get the LSB of the number elements
+;       INC HL ; move to MSB
+;       LD D,(HL) ; DE = number elements in L1
+;   L1Name:
+;       DBListObj, tVarLst, tL1, 0
 ;
+;
+; 3) AppVar Variables
+;
+; Here are some notes for my future self:
+;
+;   - ChkFindSym() instead of FindSym() must be used for appVars.
+;   - ChkFindSym() returns a data pointer. The first 2 bytes is the appVarSize
+;   field.
+;   - The appVarSize does *not* include the 2 bytes consumed by the appVarSize
+;   field itself, see rpnObjectIndexToOffset().
+;   - CreateAppVar() does *not* check for duplicate variable names.
 ;-----------------------------------------------------------------------------
 
 ;-----------------------------------------------------------------------------
+; General RpnObject routines.
+;
 ; Each RpnObject is large enough to hold a Real or Complex number. If the size
 ; of RpnObject changes, then rpnObjectIndexToOffset() must be updated.
 ;
@@ -97,8 +117,8 @@
 
 ; Description: Initialize the AppVar to contain an array of RpnObjects.
 ; Input:
-;   - HL: name of list to create
-;   - C: len of list, [0,99]
+;   - HL:(char*)=appVarName
+;   - C:u8=len, [0,99]
 ; Destroys: A, BC, DE, HL, OP1
 initRpnObjectList:
     push bc ; stack=[len]
@@ -195,8 +215,8 @@ clearRpnObjectListLoopTrailing:
 ; Description: Validate the size and CRC16 checksum of the rpnObjectList data
 ; array.
 ; Input:
-;   - C=expectedLen
-;   - DE=dataPointer to appVar contents
+;   - C:u8=expectedLen
+;   - DE:(u8*)=dataPointer to appVar contents
 ;   - (appVar): 2 bytes (len), 2 bytes (crc16), 2 bytes (appId), data[]
 ; Output:
 ;   - ZF=1 if valid, 0 if not valid
@@ -250,8 +270,8 @@ validateRpnObjectListEnd:
 ; Description: Close the rpnObjectList by updating the CRC16 checksum. This is
 ; intended to be called just before the application exits.
 ; Input:
-;   - HL: name of rpnObjectList to close
-; Destroys: A, BC, DE, HL
+;   - HL:(char*)=appVarName
+; Destroys: A, BC, DE, HL, OP1
 closeRpnObjectList:
     call move9ToOp1 ; OP1=varName
     bcall(_ChkFindSym) ; DE=dataPointer; CF=1 if not found
@@ -313,11 +333,11 @@ lenRpnObjectListErr:
 ; 2 bytes for the appVarSize (managed by the OS), 2 bytes for the CRC16
 ; checksum, and 2 bytes for the appId.
 ; Input:
-;   - C=index
-;   - DE=appDataPointer to the begining of the appVar which is the 2-byte
+;   - C:u8=index
+;   - DE:(u8*)=appDataPointer to the begining of the appVar which is the 2-byte
 ;   appVarSize field provided by the OS
 ; Output:
-;   - HL=elementPointer
+;   - HL:(u8*)=elementPointer
 ;   - CF=1 if within bounds, otherwise 0
 ; Preserves: A, BC, DE
 rpnObjectIndexToElementPointer:
@@ -364,22 +384,20 @@ rpnObjectIndexToOffset:
     add hl, hl
     add hl, hl ; DE=sum=3*len; HL=16*len
     add hl, de ; HL=sum=19*len
-    ld de, 4
-    add hl, de ; HL=sum=19*len+4
-    pop de
     ret
 
 ;-----------------------------------------------------------------------------
 
 ; Description: Store the OP1/OP2 rpnObject to the given AppVar at index C.
 ; Input:
-;   - OP1, OP2: real or complex
-;   - C: index
-;   - HL: varName
+;   - OP1,OP2:RpnObject
+;   - C:u8=index
+;   - HL:(char*)=varName
 ; Output:
 ;   - none
-;   - throws ErrDimension if index out of bounds
-;   - throws ErrUndefined if appVar not found
+; Throws:
+;   - ErrDimension if index out of bounds
+;   - ErrUndefined if appVar not found
 ; Destroys: all
 stoRpnObject:
     call getOp1RpnObjectType ; A=rpnObjectType
@@ -429,14 +447,15 @@ rpnObjectUndefined:
 
 ; Description: Return the RPN object in OP1,OP2
 ; Input:
-;   - C: index
-;   - HL: name of appVar e.g. "RPN83STK", "RPN83REG"
+;   - C:u8=index
+;   - HL:(char*)=appVarName e.g. "RPN83STK", "RPN83REG"
 ; Output:
-;   - A: rpnObjectType
+;   - A:u8=rpnObjectType
 ;   - OP1/OP2: float or complex number
-;   - throws ErrDimension if index out of bounds
-;   - throws ErrUndefined if appVar not found
-; Destroys: all
+; Throws:
+;   - ErrDimension if index out of bounds
+;   - ErrUndefined if appVar not found
+; Destroys: all, OP1
 rclRpnObject:
     ; find varName
     push bc ; stack=[index]
@@ -509,7 +528,7 @@ initLastX:
 ; Description: Clear the RPN stack.
 ; Input: none
 ; Output: stack registers all set to 0.0
-; Destroys: all
+; Destroys: all, OP1
 clearStack:
     set dirtyFlagsStack, (iy + dirtyFlags) ; force redraw
     set rpnFlagsLiftEnabled, (iy + rpnFlags) ; TODO: I think this can be removed
@@ -538,7 +557,7 @@ lenStack:
 
 ; Description: Store OP1/OP2 to STK[nn], setting dirty flag.
 ; Input:
-;   - C: stack register index, 0-based
+;   - C:u8=stack register index, 0-based
 ;   - OP1/OP2: float value
 ; Output:
 ;   - STK[nn] = OP1/OP2
@@ -988,7 +1007,7 @@ initRegs:
 ; Description: Clear all REGS elements.
 ; Input: none
 ; Output: REGS elements set to 0.0
-; Destroys: all
+; Destroys: all, OP1
 clearRegs:
     ld hl, regsName
     call move9ToOp1
@@ -1011,37 +1030,36 @@ lenRegs:
 
 ;-----------------------------------------------------------------------------
 
-; Description: Store OP1/OP2 into REGS[NN]. Works for complex.
+; Description: Store OP1/OP2 into REGS[NN].
 ; Input:
-;   - C: register index, 0-based
-;   - OP1: float value
+;   - C:u8=register index, 0-based
+;   - OP1/OP2:RpnObject
 ; Output:
 ;   - REGS[NN] = OP1
 ; Destroys: all
-; Preserves: OP1
+; Preserves: OP1/OP2
 stoRegNN:
     ld hl, regsName
     jp stoRpnObject
 
-; Description: Recall REGS[NN] into OP1/OP2. Works for complex.
+; Description: Recall REGS[NN] into OP1/OP2.
 ; Input:
-;   - C: register index, 0-based
+;   - C:u8=register index, 0-based
 ;   - 'REGS' list variable
 ; Output:
-;   - OP1: float value
-;   - A: objectType
+;   - OP1/OP2:RpnObject=output
+;   - A:u8=objectType
 ; Destroys: all
-; Preserves: OP2
 rclRegNN:
     ld hl, regsName
     jp rclRpnObject ; OP1/OP2=STK[C]
 
 ; Description: Recall REGS[NN] to OP2. WARNING: Assumes real not complex.
 ; Input:
-;   - C: register index, 0-based
+;   - C:u8=register index, 0-based
 ;   - 'REGS' list variable
 ; Output:
-;   - OP2: float value
+;   - OP2:(real|complex)=float value
 ; Destroys: all
 ; Preserves: OP1
 rclRegNNToOP2:
@@ -1057,9 +1075,9 @@ rclRegNNToOP2:
 
 ; Description: Implement STO{op} NN, with {op} defined by B and NN given by C.
 ; Input:
-;   - OP1/OP2: real or complex number
-;   - B: operation index [0,4] into floatOps, MUST be same as argModifierXxx
-;   - C: register index NN, 0-based
+;   - OP1/OP2:RpnObject
+;   - B:u8=operation index [0,4] into floatOps, MUST be same as argModifierXxx
+;   - C:u8=register index NN, 0-based
 ; Output:
 ;   - REGS[NN]=(REGS[NN] {op} OP1/OP2), where {op} is defined by B, and can be
 ;   a simple assignment operator
@@ -1088,9 +1106,9 @@ stoOpRegNN:
 
 ; Description: Implement RCL{op} NN, with {op} defined by B and NN given by C.
 ; Input:
-;   - OP1/OP2: real or complex number
-;   - B: operation index [0,4] into floatOps, MUST be same as argModifierXxx
-;   - C: register index NN, 0-based
+;   - OP1/OP2:RpnObject
+;   - B:u8=operation index [0,4] into floatOps, MUST be same as argModifierXxx
+;   - C:u8=register index NN, 0-based
 ; Output:
 ;   - OP1/OP2=(OP1/OP2 {op} REGS[NN]), where {op} is defined by B, and can be a
 ;   simple assignment operator
@@ -1144,8 +1162,8 @@ floatOpDiv:
 
 ; Description: Store OP1/OP2 into the TI-OS variable named in C.
 ; Input:
-;   - C: varName
-;   - OP1/OP2: real or complex number
+;   - C:u8=varName
+;   - OP1/OP2:(real|complex)=number, only real or complex supported
 ; Output:
 ;   - OP1/OP2: value stored
 ; Destroys: all
@@ -1178,10 +1196,11 @@ stoVarSave:
     bcall(_StoOther) ; FPS=[]; (varName)=OP1/OP2; var created if necessary
     ret
 
-; Description: Recall OP1 from the TI-OS variable named in C. Throws
-; ErrUndefined if the varName does not exist.
-; Input: C: varName
-; Output: OP1/OP2: real or comple number
+; Description: Recall OP1 from the TI-OS variable named in C.
+; Input: C:u8=varName
+; Output: OP1/OP2:(real|complex), only real or complex supported
+; Throws:
+;   - ErrUndefined if the varName does not exist.
 ; Destroys: all
 rclVar:
     ld b, RealObj ; B=varType, probably ignored by RclVarSym()
@@ -1190,7 +1209,7 @@ rclVar:
     ret
 
 ; Description: Create a real variable name in OP1.
-; Input: B=varType; C=varName
+; Input: B:u8=varType; C:u8=varName
 ; Output: OP1=varName
 ; Destroys: A, HL
 ; Preserves: BC, DE
@@ -1212,9 +1231,9 @@ createVarName:
 
 ; Description: Implement STO{op} LETTER. Very similar to stoOpRegNN().
 ; Input:
-;   - OP1/OP2: real or complex number
-;   - B: operation index [0,4] into floatOps, MUST be same as argModifierXxx
-;   - C: LETTER, name of variable
+;   - OP1/OP2:(real|complex), only real or complex supported
+;   - B:u8=operation index [0,4] into floatOps, MUST be same as argModifierXxx
+;   - C:u8=LETTER, name of variable
 ; Output:
 ;   - VARS[LETTER]=(VARS[LETTER] {op} OP1/OP2), where {op} is defined by B, and
 ;   can be a simple assignment operator (argModifierNone)
@@ -1249,9 +1268,9 @@ stoOpVar:
 ; Description: Implement RCL{op} LETTER, with {op} defined by B and LETTER
 ; given by C. Very similar to rclOpRegNN().
 ; Input:
-;   - OP1/OP2: real or complex number
-;   - B: operation index [0,4] into floatOps, MUST be same as argModifierXxx
-;   - C: LETTER, name of variable
+;   - OP1/OP2:(real|complex), only real or complex support
+;   - B:u8=operation index [0,4] into floatOps, MUST be same as argModifierXxx
+;   - C:u8=LETTER, name of variable
 ; Output:
 ;   - OP1/OP2=(OP1/OP2 {op} REGS[LETTER]), where {op} is defined by B, and can
 ;   be a simple assignment operator
@@ -1318,10 +1337,10 @@ rclOpGeneric:
 ; Description: Add OP1 to storage register NN. Used by STAT functions.
 ; WARNING: Works only for real not complex.
 ; Input:
-;   OP1: float value
-;   C: register index NN, 0-based
+;   - OP1:real=float value
+;   - C:u8=register index NN, 0-based
 ; Output:
-;   REGS[NN] += OP1
+;   - REGS[NN] += OP1
 ; Destroys: all
 ; Preserves: OP1, OP2
 stoAddRegNN:
@@ -1342,10 +1361,10 @@ stoAddRegNN:
 ; Description: Subtract OP1 from storage register NN. Used by STAT functions.
 ; WARNING: Works only for real not complex.
 ; Input:
-;   OP1: float value
-;   C: register index NN, 0-based
+;   - OP1:real=float value
+;   - C:u8=register index NN, 0-based
 ; Output:
-;   REGS[NN] -= OP1
+;   - REGS[NN] -= OP1
 ; Destroys: all
 ; Preserves: OP1, OP2
 stoSubRegNN:
