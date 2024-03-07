@@ -909,6 +909,8 @@ exchangeXYStack:
 ; Storage registers.
 ;-----------------------------------------------------------------------------
 
+regsSizeMin equ 25
+regsSizeMax equ 99
 regsSize equ 25
 
 regsName:

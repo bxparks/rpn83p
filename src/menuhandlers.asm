@@ -790,6 +790,34 @@ mDegNameSelectorAlt:
 
 ;-----------------------------------------------------------------------------
 
+mSetRegSizeHandler:
+    call closeInputAndRecallNone
+    ld hl, msgRegSizePrompt
+    call startArgScanner
+    call processArgCommands ; ZF=0 if cancelled
+    ret nz ; do nothing if cancelled
+    ld a, (argValue)
+    cp regsSizeMax+1 ; CF=0 if argValue>=100
+    jr nc, setRegSizeHandlerErr
+    cp regsSizeMin ; CF=1 if argValue<25
+    jr c, setRegSizeHandlerErr
+    ; TODO: Implement this.
+    call mNotYetHandler
+    ret
+setRegSizeHandlerErr:
+    bcall(_ErrInvalid)
+
+mGetRegSizeHandler:
+    call closeInputAndRecallNone
+    ld a, 25 ; TODO: Implement this
+    bcall(_ConvertAToOP1) ; OP1=float(A)
+    jp pushToX
+
+msgRegSizePrompt:
+    .db "SIZE", 0
+
+;-----------------------------------------------------------------------------
+
 mCommaEENormalHandler:
     ld a, commaEEModeNormal
     ld (commaEEMode), a
