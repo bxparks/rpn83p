@@ -1079,14 +1079,23 @@ floatOpDiv:
 ; Input:
 ;   - C: varName
 ;   - OP1/OP2: real or complex number
-; Output: OP1/OP2: value stored
+; Output:
+;   - OP1/OP2: value stored
 ; Destroys: all
 ; Preserves: OP1/OP2
 ; Throws: Err:DataType if not Real or Complex
 stoVar:
+    ; StoOther() wants its argument in the FPS. If the argument is real, then
+    ; only a single float should be pushed. If the argument is complex, 2
+    ; floating number need to be pushed. The PushOP1() function automatically
+    ; handles both real and complex. In contrast, the PushRpnObject1() function
+    ; always pushes 2 floating numbers into the FPS, so we cannot use that
+    ; here. After the operation is performed, StoOther() cleans up the FPS
+    ; automatically.
     push bc
-    bcall(_PushRpnObject1) ; FPS=[OP1/OP2]
+    bcall(_PushOP1) ; FPS=[OP1/OP2]
     pop bc
+    ;
     call checkOp1Complex ; ZF=1 if complex
     jr z, stoVarComplex
     call checkOp1Real ; ZF=1 if real
