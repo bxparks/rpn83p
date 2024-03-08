@@ -57,13 +57,14 @@
     - Add `DATE` menu hierarchy with Date, Time, DateTime, Clock functions
         - TODO: add documentation
         - TODO: polish the user interface
-        - TODO: add appropriate data type checking across all other functions to
-          prevent unexpected behaviro
-        - TODO: fix out of flash memory, expand to 3 flash pages
-        - TODO: add alternate string display modes for DateTime types
-        - TODO: disable RTC for 83+, 83+SE, which don't have real time clocks
         - TODO: add sub-record extractors
     - Increase performance of `PRIM` (prime factor) function by about 45%.
+    - Supports resizing the number of storage registers
+        - `MODE` > `SIZE` command supports a minimum of 25 to a maximum of 100
+        - `MODE` > `SIZ?` returns the current size of storage registers
+        - size of the `RPN83REG` appVar varies:
+            - 496 bytes at SIZE=25
+            - 1921 bytes at SIZE=100
 - 0.9.0 (2024-01-06)
     - **Breaking**: Change names and internal formats of various appVars
         - `STK` list variable replaced with `RPN83STK`
