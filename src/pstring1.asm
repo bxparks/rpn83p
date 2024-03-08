@@ -223,3 +223,27 @@ findCharLoopFound:
     scf
     pop hl
     ret
+
+;-----------------------------------------------------------------------------
+
+; Description: Prepare the given pascal string in HL by appending a NUL
+; character at the end. This assumes that the capacity of the pascal string
+; buffer is one more than the length limit of the pascal string.
+; Input:
+;   - HL:(PascalString*)=string
+; Output:
+;   - NUL appended to the end
+; Destroys: A
+; Preserves: BC, DE, HL
+preparePascalStringForParsing:
+    push hl
+    push de
+    ld e, (hl)
+    xor a
+    ld d, a
+    inc hl ; skip len byte
+    add hl, de ; HL=pointerToNUL
+    ld (hl), a
+    pop de
+    pop hl
+    ret

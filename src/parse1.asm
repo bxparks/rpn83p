@@ -53,7 +53,8 @@ parseAndClearInputBufEmpty:
 parseAndClearInputBufNonEmpty:
     res inputBufFlagsClosedEmpty, (iy + inputBufFlags)
     ; add NUL terminator to inputBuf to simplify parsing
-    call initInputBufForParsing ; HL=inputBuf
+    ld hl, inputBuf
+    call preparePascalStringForParsing ; preserves HL
     ; Check for '{' which identifies a Record type
     ld a, LlBrace ; A='{'
     call findChar ; CF=1 if found; HL preserved
@@ -71,28 +72,6 @@ parseAndClearInputBufRecord:
 parseAndClearInputBufTaggedNumber:
     call parseInputBufTaggedNumber ; OP1/OP2:real
     jp ClearInputBuf ; see note above
-
-;------------------------------------------------------------------------------
-
-; Description: Initialize the inputBuf for parsing by adding a NUL terminator
-; to the Pascal string. The capacity of inputBuf is one character larger than
-; necessary to hold the extra NUL character.
-; Input: inputBuf
-; Output:
-;   - inputBuf with NUL terminator
-;   - HL=inputBuf
-; Destroys: A, DE, HL
-initInputBufForParsing:
-    ld hl, inputBuf
-    push hl
-    ld e, (hl)
-    xor a
-    ld d, a
-    inc hl ; skip len byte
-    add hl, de ; HL=pointerToNUL
-    ld (hl), a
-    pop hl
-    ret
 
 ;------------------------------------------------------------------------------
 ; Parsing real and complex numbers.
