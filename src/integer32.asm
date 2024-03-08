@@ -818,41 +818,35 @@ divU32ByDQuotientZero:
 ; factor of a u32 integer.
 ; Input:
 ;   - HL:(u32*)=dividend
-;   - DE:u16=divisor
+;   - BC:u16=divisor
 ; Output:
 ;   - (*HL):u32=0 (always set to 0)
 ;   - HL=unchanged
-;   - DE=unchanged
-;   - BC:u16=remainder
-; Destroys: A, BC
-; Preserves: DE, HL
-modU32ByDE:
-    push de
-    ld c, e
-    ld b, d ; BC=DE=divisor
-    ld de, 0
+;   - BC=unchanged
+;   - DE:u16=remainder
+; Destroys: A, DE
+; Preserves: BC, HL
+modU32ByBC:
+    ld de, 0 ; DE=remainder
     ld a, 32
-modU32ByDELoop:
+modU32ByBCLoop:
     call shiftLeftLogicalU32
     rl e
     rl d ; DE=remainder
     ex de, hl ; HL=remainder; DE=dividend
-    jr c, modU32ByDEOverflow ; remainder overflowed, so must substract
+    jr c, modU32ByBCOverflow ; remainder overflowed, so must substract
     or a ; CF=0
     sbc hl, bc ; HL(remainder) -= divisor
-    jr nc, modU32ByDENextBit
+    jr nc, modU32ByBCNextBit
     add hl, bc ; revert the subtraction
-    jr modU32ByDENextBit
-modU32ByDEOverflow:
+    jr modU32ByBCNextBit
+modU32ByBCOverflow:
     or a ; reset CF
     sbc hl, bc ; HL(remainder) -= divisor
-modU32ByDENextBit:
+modU32ByBCNextBit:
     ex de, hl ; DE=remainder; HL=dividend
     dec a
-    jr nz, modU32ByDELoop
-    ld c, e
-    ld b, d ; BC=remainder
-    pop de
+    jr nz, modU32ByBCLoop
     ret
 
 ;-----------------------------------------------------------------------------

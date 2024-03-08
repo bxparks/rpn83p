@@ -220,7 +220,7 @@ primeFactorIntCheckDiv:
 
 ;-----------------------------------------------------------------------------
 
-; Description determine if OP1 is a prime using the modU32ByDE() routine. This
+; Description determine if OP1 is a prime using the modU32ByBC() routine. This
 ; is 7X faster than primeFactorFloat(), and 2.5X faster than primeFactorInt().
 ;
 ; Benchmarks (6 MHz):
@@ -233,12 +233,12 @@ primeFactorIntCheckDiv:
 ; Benchmarks (15 MHz):
 ;   - 4001*4001: 1.0 seconds
 ;   - 10007*10007: 2.3 seconds
-;   - 19997*19997: 4 seconds
-;   - 65521*65521: 13 seconds
+;   - 19997*19997: 4.2 seconds
+;   - 65521*65521: 12.9 seconds
 ;   - About 5000 effective-candidates / second.
 ;
 ; TODO: I think we can make this even faster by writing a version of
-; modU32ByDE() that uses the IXHL pair to hold the u32 instead using 4 bytes of
+; modU32ByBC() that uses the IXHL pair to hold the u32 instead using 4 bytes of
 ; RAM.
 ;
 ; Input: OP1: an integer in the range of [2, 2^32-1].
@@ -257,8 +257,8 @@ primeFactorMod:
     call popRaw9Op1 ; FPS=[]; OP1=X
     call convertOP1ToU32 ; HL=OP1:u32=x
     ; Check equals 2
-    ld de, 2
-    ld a, e
+    ld bc, 2 ; BC=candidate=2
+    ld a, c
     ld hl, OP1
     call cmpU32WithA ; if x==2: ZF=1
     jr z, primeFactorModYes
@@ -266,8 +266,8 @@ primeFactorMod:
     call primeFactorModCheckDiv ; ZF=1 if remainder==0
     jr z, primeFactorModNo
     ; Check equals 3
-    inc de ; DE=3
-    ld a, e
+    inc bc ; BC=candidate=3
+    ld a, c
     ld hl, OP1
     call cmpU32WithA ; if x==3: ZF=1
     jr z, primeFactorModYes
@@ -275,16 +275,16 @@ primeFactorMod:
     call primeFactorModCheckDiv ; ZF=1 if remainder==0
     jr z, primeFactorModNo
 primeFactorModSetup:
-    inc de
-    inc de ; DE=5
+    inc bc
+    inc bc ; BC=candidate=5
     bcall(_RunIndicOn) ; enable run indicator
     ; OP1:u32=x
     ; OP2:u16=limit
-    ; DE:u16=candidate
+    ; BC:u16=candidate
 primeFactorModLoop:
     ld hl, (OP2) ; HL=limit
     or a ; clear CF
-    sbc hl, de ; CF=1 if x>limit
+    sbc hl, bc ; CF=1 if candidate>limit
     jr c, primeFactorModYes
     ; Check for ON/Break
     bit onInterrupt, (iy + onFlags)
@@ -293,19 +293,19 @@ primeFactorModLoop:
     call primeFactorModCheckDiv ; ZF=1 if remainder==0
     jr z, primeFactorModNo
     ; candidate+=2
-    inc de
-    inc de
+    inc bc
+    inc bc
     ; Check (6n+1)
     call primeFactorModCheckDiv ; ZF=1 if remainder==0
     jr z, primeFactorModNo
     ; candidate+=4
-    inc de
-    inc de
-    inc de
-    inc de
+    inc bc
+    inc bc
+    inc bc
+    inc bc
     jr primeFactorModLoop
 primeFactorModNo:
-    ld (OP1), de ; OP1=candidate
+    ld (OP1), bc ; OP1=candidate
     ld hl, 0
     ld (OP1+2), hl
     call convertU32ToOP1 ; OP1=real(candidate)
@@ -316,22 +316,20 @@ primeFactorModYes:
 
 ; Input:
 ;   - OP1:u32=x
-;   - DE:u16=candidate
+;   - BC:u16=candidate
 ; Output:
-;   - BC:u16=remainder
+;   - DE:u16=remainder
 ;   - ZF=1 if remainder==0
-; Destroys: A, BC, HL, OP3
-; Preserves: DE, OP1
+; Destroys: A, DE, HL, OP3
+; Preserves: BC, OP1
 primeFactorModCheckDiv:
-    push de
     ld hl, OP1
     ld de, OP3
-    call copyU32HLToDE ; OP3=x, saved
+    call copyU32HLToDE ; OP3=x; preserves BC
     ex de, hl ; HL=OP3
-    pop de ; DE=candidate
-    call modU32ByDE ; BC=remainder=16-bits; destroys (*HL)
-    ld a, b
-    or c ; if BC==0: ZF=1
+    call modU32ByBC ; DE:u16=remainder; destroys (*HL); preserves BC=candidate
+    ld a, d
+    or e ; if remainder==0: ZF=1
     ret
 
 ;-----------------------------------------------------------------------------
