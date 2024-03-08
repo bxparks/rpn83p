@@ -820,22 +820,25 @@ divU32ByDQuotientZero:
 ;   - HL:(u32*)=dividend
 ;   - DE:u16=divisor
 ; Output:
-;   - HL:(u32*)=0 (always set to 0)
+;   - (*HL):u32=0 (always set to 0)
+;   - HL=unchanged
 ;   - DE=unchanged
 ;   - BC:u16=remainder
+; Destroys: A, BC
+; Preserves: DE, HL
 modU32ByDE:
     push de
-    ld b, d
-    ld c, e ; BC=DE=divisor
+    ld c, e
+    ld b, d ; BC=DE=divisor
     ld de, 0
     ld a, 32
 modU32ByDELoop:
     call shiftLeftLogicalU32
     rl e
     rl d ; DE=remainder
-    ex de, hl ; HL=remainder
+    ex de, hl ; HL=remainder; DE=dividend
     jr c, modU32ByDEOverflow ; remainder overflowed, so must substract
-    or a ; reset CF
+    or a ; CF=0
     sbc hl, bc ; HL(remainder) -= divisor
     jr nc, modU32ByDENextBit
     add hl, bc ; revert the subtraction
@@ -844,11 +847,11 @@ modU32ByDEOverflow:
     or a ; reset CF
     sbc hl, bc ; HL(remainder) -= divisor
 modU32ByDENextBit:
-    ex de, hl ; DE=remainder
+    ex de, hl ; DE=remainder; HL=dividend
     dec a
     jr nz, modU32ByDELoop
     ld c, e
-    ld b, d
+    ld b, d ; BC=remainder
     pop de
     ret
 
