@@ -335,6 +335,9 @@ lenRpnObjectNotFound:
 ;   - A:u8=newLen, expected to be [0,99] but no validation performed
 ; Output:
 ;   - appVar resized
+;   - ZF=1 if newLen==oldLen
+;   - CF=0 if newLen>oldLen
+;   - CF=1 if newLen<oldLen
 ; Destroys: A, BC, DE, HL, OP1
 ; Throws:
 ;   - Err:Memory if out of memory
@@ -395,6 +398,7 @@ expandRpnObjectList:
     ex de, hl ; DE=dataPointer
     pop bc ; stack=[]; B=begin; C=diffLen
     call clearRpnObjectList
+    or 1 ; ZF=0; CF=0
     ret
 shrinkRpnObjectList:
     neg
@@ -435,6 +439,8 @@ shrinkRpnObjectList:
     ld (hl), c
     inc hl
     ld (hl), b
+    or a ; ZF=0
+    scf ; CF=1
     ret
 resizeRpnObjectListNotFound:
     ; nothing we can do if the appVar isn't found
@@ -1160,6 +1166,10 @@ lenRegs:
 
 ; Description: Resize the storage registers to the new length in A.
 ; Input: A:u8=newLen
+; Output:
+;   - ZF=1 if newLen==oldLen
+;   - CF=0 if newLen>oldLen
+;   - CF=1 if newLen<oldLen
 resizeRegs:
     ld hl, regsName
     jp resizeRpnObjectList

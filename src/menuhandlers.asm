@@ -801,9 +801,20 @@ mSetRegSizeHandler:
     jr nc, setRegSizeHandlerErr
     cp regsSizeMin ; CF=1 if argValue<25
     jr c, setRegSizeHandlerErr
-    call resizeRegs
-    ; display 'REGS Resized' status
-    ld a, errorCodeRegsSized
+    call resizeRegs ; test (newLen-oldLen) -> ZF,CF flags set
+    ; Determine the handler code
+    jr z, setRegSizeHandlerUnchanged
+    jr nc, setRegSizeHandlerExpanded
+setRegSizeHandlerShrunk:
+    ld a, errorCodeRegsShrunk
+    ld (handlerCode), a
+    ret
+setRegSizeHandlerExpanded:
+    ld a, errorCodeRegsExpanded
+    ld (handlerCode), a
+    ret
+setRegSizeHandlerUnchanged:
+    ld a, errorCodeRegsUnchanged
     ld (handlerCode), a
     ret
 setRegSizeHandlerErr:

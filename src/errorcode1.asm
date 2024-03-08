@@ -217,37 +217,41 @@ errorCodeNotYet equ             66 ; Handler not yet implemented
     .dw errorStrNotYet
 errorCodeRegsCleared equ        67 ; REGS cleared
     .dw errorStrRegsCleared
-errorCodeRegsSized equ          68 ; REGS sized
-    .dw errorStrRegsSized
-errorCodeStatCleared equ        69 ; STAT registers cleared
+errorCodeRegsExpanded equ       68 ; REGS expanded
+    .dw errorStrRegsExpanded
+errorCodeRegsShrunk equ         69 ; REGS shrunk
+    .dw errorStrRegsShrunk
+errorCodeRegsUnchanged equ      70 ; REGS unchanged
+    .dw errorStrRegsUnchanged
+errorCodeStatCleared equ        71 ; STAT registers cleared
     .dw errorStrStatCleared
-errorCodeTvmStored equ          70 ; TVM value was stored
+errorCodeTvmStored equ          72 ; TVM value was stored
     .dw errorStrTvmStored
-errorCodeTvmRecalled equ        71 ; TVM value was recalled
+errorCodeTvmRecalled equ        73 ; TVM value was recalled
     .dw errorStrTvmRecalled
-errorCodeTvmCalculated equ      72 ; TVM value was calculated
+errorCodeTvmCalculated equ      74 ; TVM value was calculated
     .dw errorStrTvmCalculated
-errorCodeTvmNoSolution equ      73 ; TVM value has no solution
+errorCodeTvmNoSolution equ      75 ; TVM value has no solution
     .dw errorStrTvmNoSolution
-errorCodeTvmNotFound equ        74 ; TVM value could not be found
+errorCodeTvmNotFound equ        76 ; TVM value could not be found
     .dw errorStrTvmNotFound
-errorCodeTvmIterations equ      75 ; TVM Solver exceeded max iterations
+errorCodeTvmIterations equ      77 ; TVM Solver exceeded max iterations
     .dw errorStrTvmIterations
-errorCodeTvmCleared equ         76 ; TVM vars cleared
+errorCodeTvmCleared equ         78 ; TVM vars cleared
     .dw errorStrTvmCleared
-errorCodeTvmSolverReset equ     77 ; TVM Solver params reset
+errorCodeTvmSolverReset equ     79 ; TVM Solver params reset
     .dw errorStrTvmSolverReset
-errorCodeClearAgain equ         78 ; next CLEAR button invokes CLST
+errorCodeClearAgain equ         80 ; next CLEAR button invokes CLST
     .dw errorStrClearAgain
-errorCodeTzStored equ           79 ; TZ stored
+errorCodeTzStored equ           81 ; TZ stored
     .dw errorStrTzStored
-errorCodeEpochStored equ        80 ; Epoch stored
+errorCodeEpochStored equ        82 ; Epoch stored
     .dw errorStrEpochStored
-errorCodeClockSet equ           81 ; RTC set
+errorCodeClockSet equ           83 ; RTC set
     .dw errorStrClockSet
-errorCodeNoClock equ            82 ; No Clock on 83+
+errorCodeNoClock equ            84 ; No Clock on 83+
     .dw errorStrNoClock
-errorCodeCount equ              83 ; total number of error codes
+errorCodeCount equ              85 ; total number of error codes
 
 ; The C strings for each error code. In alphabetical order, as listed in the TI
 ; 83 Plus SDK docs.
@@ -323,8 +327,12 @@ errorStrNotYet:
     .db "Err: NOT YET", 0 ; Info: handler not implemented yet
 errorStrRegsCleared:
     .db "REGS Cleared", 0 ; Info: storage registers cleared
-errorStrRegsSized:
-    .db "REGS Sized", 0 ; Info: storage registers sized
+errorStrRegsExpanded:
+    .db "REGS Expanded", 0 ; Info: storage registers expanded
+errorStrRegsShrunk:
+    .db "REGS Shrunk", 0 ; Info: storage registers shrunk
+errorStrRegsUnchanged:
+    .db "REGS Unchanged", 0 ; Info: storage registers unchanged
 errorStrStatCleared:
     .db "STAT Cleared", 0 ; Info: STAT registers cleared
 errorStrTvmStored:
