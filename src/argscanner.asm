@@ -16,6 +16,8 @@ startArgScanner:
     xor a
     ld (argModifier), a
     ld (argBufLen), a
+    ld a, argLenDefault
+    ld (argLenLimit), a ; argLenLimit=default
     res inputBufFlagsArgAllowModifier, (iy + inputBufFlags)
     res inputBufFlagsArgAllowLetter, (iy + inputBufFlags)
     res inputBufFlagsArgExit, (iy + inputBufFlags)

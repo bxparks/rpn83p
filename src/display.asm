@@ -572,25 +572,30 @@ printArgBuf:
     ld hl, argModifierStrings
     call getString
     call putS
-printArgBufNumber:
     ; Print the command argument.
     ld hl, argBuf
     call putPS
-    ; Append trailing cursor to fill 2 digits
-    ld a, (argBufLen)
-    or a
-    jr z, printArgBufTwoCursors
-    cp 1
-    jr z, printArgBufOneCursor
-    jr printArgBufZeroCursor
-printArgBufTwoCursors:
-    ld a, cursorChar
-    bcall(_PutC)
-printArgBufOneCursor:
-    ld a, cursorChar
-    bcall(_PutC)
-printArgBufZeroCursor:
+    ; Print any trailing cursors.
+    call printArgTrailing
     bcall(_EraseEOL)
+    ret
+
+; Description: Print 1 or more trailing cursor characters, i.e. "_ _ _" up to a
+; maximum of (argLenLimit).
+; Destroys: A, B
+printArgTrailing:
+    ; cursorLen=(argLenLimit)-(argBufLen)
+    ld a, (argBufLen)
+    ld b, a ; B=argBufLen
+    ld a, (argLenLimit)
+    sub b ; A=cursorLen=argLenLimit-argBufLen
+    ret z
+    ret c ; do nothing if argBufLen>argLenLimit; should never happen
+    ld b, a
+printArgTrailingLoop:
+    ld a, cursorChar
+    bcall(_PutC) ; preserves B
+    djnz printArgTrailingLoop
     ret
 
 ; Human-readable labels for each of the argModifierXxx enum.

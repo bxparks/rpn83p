@@ -340,14 +340,16 @@ menuNameSizeOf equ 6
 ;
 ;   struct ArgScanner {
 ;       char *argPrompt; // e.g. "STO"
+;       uint8_t argLenLimit; // max num char allowed for the current prompt
 ;       char argModifier; // see argModifierXxx
-;       char argType; // argTypeXxx
+;       uint8_t argType; // argTypeXxx
 ;       uint8_t argValue;
 ;   }
 ; The argModifierXxx (0-4) MUST match the corresponding operation in the
 ; 'floatOps' array in vars.asm.
 argPrompt equ menuName + menuNameSizeOf ; (char*)
-argModifier equ argPrompt + 2 ; char
+argLenLimit equ argPrompt + 2 ; u8
+argModifier equ argLenLimit + 1 ; char
 argType equ argModifier + 1 ; u8
 argValue equ argType + 1 ; u8
 ; argModifier enums
@@ -361,6 +363,8 @@ argModifierIndirect equ 5 ; '.' pressed (not yet supported)
 argTypeEmpty equ 0 ; empty string
 argTypeNumber equ 1 ; 1 or 2 digit arguments
 argTypeLetter equ 2 ; a TI-OS variable letter, 'A'-'Z', 'Theta'
+; argLenLimit defaults
+argLenDefault equ 2 ; default argLenLimit if not explicitly overridden
 
 ; STAT variables
 statAllEnabled equ argValue + 1 ; boolean, 1 if "ALLSigma" enabled
