@@ -168,13 +168,7 @@ handleArgKeyTheta:
 handleArgLetter:
     bit inputBufFlagsArgAllowLetter, (iy + inputBufFlags)
     ret z
-    ; Update argBuf
-    ld hl, argBuf
-    ld (hl), 1 ; argBufLen=1
-    inc hl
-    ld (hl), a ; argBuf[0]=A
-    ; Invoke ENTER immediately.
-    jr handleArgKeyEnterAlt
+    jp handleArgNumber
 
 ;-----------------------------------------------------------------------------
 

@@ -27,19 +27,23 @@ startArgScanner:
     set dirtyFlagsXLabel, (iy + dirtyFlags)
     ret
 
-; Description: Read loop which reads a 2-digit command argument, needed by
-; commands such as 'FIX', 'SCI', 'ENG', 'STO', and 'RCL'. Only a subset of
-; buttons are allowed:
-; - digits: 0 to 9
-; - CLEAR: exit from Command Arg mode and do nothing
-; - ON (EXIT): same as CLEAR currently
-; - DEL (Backspace): remove previous digit in the command argument
-; - ENTER: parse the argument and return
-; - *, /, -, +: Converts STO and RCL to STO+, RCL+, etc.
-; - 2ND QUIT
-; - 2ND OFF
+; Description: Read loop which reads an argument that comes after certain
+; commands: FIX, SCI, ENG, STO, RCL, WSIZ, SIZE, DRAW, RNDN.
+;
+; Only a subset of buttons are allowed:
+;
+;   - digits: 0 to 9 (always allowed)
+;   - letters: A to Z, Theta (if inputBufFlagsArgAllowLetter enabled)
+;   - *, /, -, +: (if inputBufFlagsArgAllowModifier enabled)
+;   - CLEAR: exit from Command Arg mode and do nothing
+;   - ON (EXIT): same as CLEAR currently
+;   - DEL (Backspace): remove previous digit in the command argument
+;   - ENTER: parse the argument and return
+;   - 2ND QUIT
+;   - 2ND OFF
 ;
 ; The calling routine should take the following steps:
+;
 ;   1) call startArgScanner()
 ;   2) any custom configurations (inputBufFlagsArgAllowXxx)
 ;   3) call processArgCommands()
@@ -56,6 +60,8 @@ startArgScanner:
 ;   - (argValue): parsed integer value of argBuf
 ;   - A=argModifier
 ;   - ZF=0: if arg input was cancelled (ON/EXIT or CLEAR)
+; Throws:
+;   - Err:Invalid if the argument could not be parsed
 ; Destroys: all, OP1-OP6
 processArgCommands:
     call displayAll
@@ -93,6 +99,14 @@ processArgCommands:
     ; Set A=argModifier, for convenience of caller.
     ld a, (argModifier)
 
+    ; Throw exception if argTypeInvalid
+    ld a, (argType)
+    cp argTypeInvalid
+    jr z, processArgCommandsInvalid
+
     ; Set ZF=0 if argScanner was cancelled.
     bit inputBufFlagsArgCancel, (iy + inputBufFlags)
     ret
+
+processArgCommandsInvalid:
+    bcall(_ErrInvalid)

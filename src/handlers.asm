@@ -1065,6 +1065,8 @@ handleKeySto:
     ld b, a ; B=op
     ld a, (argType) ; A=argType
     jp stoOpGeneric
+handleKeyStoInvalid:
+    bcall(_ErrInvalid)
 
 ; Description: Handle the RCL button. There are 2 cases:
 ; 1) If {op} is empty, it's a simple assignment, so we call rclGeneric() and

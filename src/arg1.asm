@@ -47,81 +47,84 @@ AppendArgBuf:
 ; Destroys: A, B, C, DE, HL
 ParseArgBuf:
     ; set argType and argValue initially to empty string
-    xor a
+    ld a, argTypeEmpty
     ld (argType), a ; argType=argTypeEmpty
+    xor a
     ld (argValue), a ; argValue=0
-    ; check for empty string
+    ; prepare argBuf for parsing
     ld hl, argBuf
-    ld a, (hl) ; A=argBufLen
-    inc hl
+    call preparePascalStringForParsing ; preserves HL
+    inc hl ; skip len byte
+    ; peek at the first character
+    ld a, (hl) ; A=firstChar, will be NUL if empty
     or a
-    ret z
-    ld b, a ; B=argBufLen
-    ; check for A-Z,Theta
-    ld a, (hl)
+    ret z ; return if NUL
+    ; parse the different argument type (numerical, varLetter)
     call isVariableLetter ; CF=1 if varLetter
-    jr nc, parseArgBufDigits
-    ; [[fallthrough]]
+    jr c, parseArgBufLetter
+    call isValidUnsignedDigit ; CF=1 if 0-9
+    jr c, parseArgBufDigits
+parseArgBufInvalid:
+    ld a, argTypeInvalid
+    ld (argType), a
+    ret
 
 ; Description: Parse the single letter in argBuf into argType and argValue.
 ; Input:
-;   - HL:(char*)=argBuf+1
-;   - B:u8=argBufLen
+;   - HL:(char*)=pointer into argBuf
 ; Output:
-;   - (argType)=argTypeLetter
-;   - (argValue)=u8(argBuf)
+;   - (argType)=argTypeLetter or argTypeInvalid
+;   - (argValue)=char(argBuf[0])
+;   - HL=points to NUL at end of argBuf
 parseArgBufLetter:
+    ld a, (hl)
+    inc hl
     ld (argValue), a ; argValue=char
     ld a, argTypeLetter
     ld (argType), a ; argType=argTypeLetter
+    ; make sure there is only a single letter
+    ld a, (hl)
+    or a
+    jr nz, parseArgBufInvalid
     ret
 
 ; Description: Parse the numerals in argBuf into argScanner.argType and
 ; argValue.
 ; Input:
-;   - HL:(char*)=argBuf+1
-;   - B:u8=argBufLen
+;   - HL:(char*)=pointer into argBuf
 ; Output:
-;   - (argType)=argTypeNumber
+;   - (argType)=argTypeNumber or argTypeInvalid
 ;   - (argValue)=u8(argBuf)
+;   - HL=points to NUL at end of argBuf
 parseArgBufDigits:
     ld c, 0 ; sum=0
-    ld a, b
+parseArgBufDigitsLoop:
+    ld a, (hl)
     or a
-    ret z
-parseArgBufMultiplyAddDigit:
-    ; C=C*10
+    jr z, parseArgBufDigitsEnd ; if NUL: end loop
+    inc hl
+    call isValidUnsignedDigit ; CF=1 if 0-9
+    jr nc, parseArgBufInvalid
+    ld b, a ; B=digit
+    ; sum=sum*10
     ld a, c
     add a, a
     add a, a
     add a, c ; A=5*C
     add a, a ; A=10*C
     ld c, a
-    ; add digit. TODO: validate that each char is a valid digit 0-9
-    call parseArgBufAddDigit ; C=sum=sum+u8(HL++); preserves B
-    djnz parseArgBufMultiplyAddDigit
+    ; add digit
+    ld a, b ; A=digit
+    sub '0'
+    add a, c
+    ld c, a ; sum+=u8(digit)
+    jr parseArgBufDigitsLoop
+parseArgBufDigitsEnd:
     ; update argValue, argType
     ld a, c
     ld (argValue), a ; argValue=sum
     ld a, argTypeNumber
     ld (argType), a ; argType=argTypeNumber
-    ret
-
-; Description: Add numerical value of char in (hl) to sum 'C'.
-; Input:
-;   - HL: pointer to char
-;   - C: sum
-; Output:
-;   - C=C+u8(HL)
-;   - HL=HL+1
-; Destroys: A
-; Preserves: B
-parseArgBufAddDigit:
-    ld a, (hl)
-    inc hl
-    sub '0'
-    add a, c
-    ld c, a ; sum+=u8(HL)
     ret
 
 ; Description: Check if the character in A is a TI-OS variable ('A'-'Z',

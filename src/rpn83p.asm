@@ -110,7 +110,7 @@ rpn83pAppId equ $1E69
 ; state is considered stale automatically. However, if the *semantics* of any
 ; variable is changed (e.g. if the meaning of a flag is changed), then we
 ; *must* increment the version number to mark the previous state as stale.
-rpn83pSchemaVersion equ 14
+rpn83pSchemaVersion equ 15
 
 ; Define true and false. Something else in spasm-ng defines the 'true' and
 ; 'false' symbols but I cannot find the definitions for them in the
@@ -360,9 +360,10 @@ argModifierMul equ 3 ; '*' pressed
 argModifierDiv equ 4 ; '/' pressed
 argModifierIndirect equ 5 ; '.' pressed (not yet supported)
 ; argType enums
-argTypeEmpty equ 0 ; empty string
-argTypeNumber equ 1 ; 1 or 2 digit arguments
-argTypeLetter equ 2 ; a TI-OS variable letter, 'A'-'Z', 'Theta'
+argTypeInvalid equ 0 ; invalid argument
+argTypeEmpty equ 1 ; empty string
+argTypeNumber equ 2 ; numerical argument
+argTypeLetter equ 3 ; a TI-OS variable letter, 'A'-'Z', 'Theta'
 ; argLenLimit defaults
 argLenDefault equ 2 ; default argLenLimit if not explicitly overridden
 
