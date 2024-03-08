@@ -1734,6 +1734,7 @@ defpage(1)
 #include "parse1.asm"
 #include "parsefloat1.asm"
 #include "parsedate1.asm"
+#include "parseclassifiers1.asm"
 #include "arg1.asm"
 #include "base1.asm"
 #include "cstring1.asm"

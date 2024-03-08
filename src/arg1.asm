@@ -37,6 +37,8 @@ AppendArgBuf:
     ld b, argBufCapacity
     jp AppendString
 
+;------------------------------------------------------------------------------
+
 ; Description: Parse the contents of the Pascal string argBuf (potentially an
 ; empty string, 1-N digits, or a letter) into (argType) and (argValue).
 ; Input:
@@ -125,18 +127,4 @@ parseArgBufDigitsEnd:
     ld (argValue), a ; argValue=sum
     ld a, argTypeNumber
     ld (argType), a ; argType=argTypeNumber
-    ret
-
-; Description: Check if the character in A is a TI-OS variable ('A'-'Z',
-; 'tTheta').
-; Input: A: char
-; Output: CF=1 if valid
-; Preserves: all
-isVariableLetter:
-    cp tA ; if A<'A': CF=1
-    jr c, isVariableLetterFalse
-    cp tTheta+1 ; if A<='Theta': CF=1
-    ret
-isVariableLetterFalse:
-    or a ; CF=0
     ret

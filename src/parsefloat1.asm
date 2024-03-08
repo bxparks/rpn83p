@@ -389,58 +389,6 @@ addExponent:
     ret
 
 ;-----------------------------------------------------------------------------
-; Character classifiers for parsing routines.
-;-----------------------------------------------------------------------------
-
-; Description: Check if the character in A is a valid floating point digit
-; which may be in scientific notation ('0' to '9', '-', '.', and 'E').
-; Input: A: character
-; Output: CF=1 if valid, 0 if not
-; Destroys: none
-isValidScientificDigit:
-    cp Lexponent
-    jr z, isValidDigitTrue
-    ; [[fallthrough]]
-
-; Description: Check if the character in A is a valid floating point digit ('0'
-; to '9', '-', '.').
-; Input: A: character
-; Output: CF=1 if valid, 0 if not
-; Destroys: none
-isValidFloatDigit:
-    cp '.'
-    jr z, isValidDigitTrue
-
-; Description: Check if the character in A is a valid signed integer ('0' to
-; '9', '-').
-; Input: A: character
-; Output: CF=1 if valid, 0 if not
-; Destroys: none
-isValidSignedDigit:
-    cp signChar ; '-'
-    jr z, isValidDigitTrue
-    ; [[fallthrough]]
-
-; Description: Check if the character in A is a valid unsigned integer ('0' to
-; '9').
-; Input: A: character
-; Output: CF=1 if valid, 0 if not
-; Destroys: none
-isValidUnsignedDigit:
-    cp '0' ; if A<'0': CF=1
-    jr c, isValidDigitFalse
-    cp ':' ; if A<='9': CF=1
-    ret c
-    ; [[fallthrough]]
-
-isValidDigitFalse:
-    or a ; CF=0
-    ret
-isValidDigitTrue:
-    scf ; CF=1
-    ret
-
-;-----------------------------------------------------------------------------
 ; Conversion from ParseBuf to Floatbuf.
 ;-----------------------------------------------------------------------------
 
