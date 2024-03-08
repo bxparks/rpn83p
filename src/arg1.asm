@@ -38,19 +38,18 @@ AppendArgBuf:
     jp AppendString
 
 ; Description: Parse the contents of the Pascal string argBuf (potentially an
-; empty string, 1-2 digits, or a letter) into (argType) and (argValue).
-; Input: argBuf
+; empty string, 1-N digits, or a letter) into (argType) and (argValue).
+; Input:
+;   - argBuf
 ; Output:
 ;   - (argType) updated
 ;   - (argValue) updated
 ; Destroys: A, B, C, DE, HL
 ParseArgBuf:
     ; set argType and argValue initially to empty string
-    ld de, argType
     xor a
-    ld (de), a ; argType=argTypeEmpty
-    inc de
-    ld (de), a ; argValue=0; DE=pointer to argValue
+    ld (argType), a ; argType=argTypeEmpty
+    ld (argValue), a ; argValue=0
     ; check for empty string
     ld hl, argBuf
     ld a, (hl) ; A=argBufLen
@@ -62,38 +61,61 @@ ParseArgBuf:
     ld a, (hl)
     call isVariableLetter ; CF=1 if varLetter
     jr nc, parseArgBufDigits
-    ; here if A is letter
-    ld (de), a ; argValue=char
-    dec de
+    ; [[fallthrough]]
+
+; Description: Parse the single letter in argBuf into argType and argValue.
+; Input:
+;   - HL:(char*)=argBuf+1
+;   - B:u8=argBufLen
+; Output:
+;   - (argType)=argTypeLetter
+;   - (argValue)=u8(argBuf)
+parseArgBufLetter:
+    ld (argValue), a ; argValue=char
     ld a, argTypeLetter
-    ld (de), a ; argType=argTypeLetter
+    ld (argType), a ; argType=argTypeLetter
     ret
+
+; Description: Parse the numerals in argBuf into argScanner.argType and
+; argValue.
+; Input:
+;   - HL:(char*)=argBuf+1
+;   - B:u8=argBufLen
+; Output:
+;   - (argType)=argTypeNumber
+;   - (argValue)=u8(argBuf)
 parseArgBufDigits:
     ld c, 0 ; sum=0
-    dec b ; B=argBufLen-1
-    jr z, parseArgBufOneDigit
-parseArgBufTwoDigits:
-    call parseArgBufAddDigit ; C=sum=sum+u8(HL++)
-    ; C=C*10=(C*5)*2
+    ld a, b
+    or a
+    ret z
+parseArgBufMultiplyAddDigit:
+    ; C=C*10
     ld a, c
     add a, a
     add a, a
-    add a, c ; A = 5 * C
-    add a, a
+    add a, c ; A=5*C
+    add a, a ; A=10*C
     ld c, a
-parseArgBufOneDigit:
-    call parseArgBufAddDigit ; C=sum=sum+u8(HL++)
+    ; add digit. TODO: validate that each char is a valid digit 0-9
+    call parseArgBufAddDigit ; C=sum=sum+u8(HL++); preserves B
+    djnz parseArgBufMultiplyAddDigit
+    ; update argValue, argType
     ld a, c
-    ld (de), a ; argValue=sum
-    dec de
+    ld (argValue), a ; argValue=sum
     ld a, argTypeNumber
-    ld (de), a ; argType=argTypeNumber
+    ld (argType), a ; argType=argTypeNumber
     ret
 
 ; Description: Add numerical value of char in (hl) to sum 'C'.
-; Input: HL: pointer to char; C: sum
-; Output: C=C+u8(HL); HL=HL+1
-; Destroys; A
+; Input:
+;   - HL: pointer to char
+;   - C: sum
+; Output:
+;   - C=C+u8(HL)
+;   - HL=HL+1
+; Destroys: A
+; Preserves: B
 parseArgBufAddDigit:
     ld a, (hl)
     inc hl

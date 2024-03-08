@@ -47,11 +47,13 @@ handleArgKey9:
 
 handleArgNumber:
     bcall(_AppendArgBuf) ; sets dirtyFlagsInput
-    ld a, (argBufLen)
-    cp a, argBufSizeMax
-    ret nz ; if only 1 digit entered, just return
-    ; On the 2nd digit, invoke auto ENTER to execute the pending command.
-    jr handleArgKeyEnterAlt
+    ld a, (argLenLimit)
+    ld b, a ; B=argLenLimit
+    ld a, (argBufLen) ; A=argBufLen
+    sub b ; A=argBufLen-argLenLimit; CF=0 if argBufLen>=argLenLimit
+    ; invoke auto ENTER if argBufLen>=argLenLimit
+    jp nc, handleArgKeyEnterAlt
+    ret; argBuf not filled, just return
 
 ;-----------------------------------------------------------------------------
 

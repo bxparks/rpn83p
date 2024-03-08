@@ -300,7 +300,7 @@ inputBufSizeOf equ inputBufCapacity + 1 + 1 ; +1(len), +1(NUL)
 argBuf equ inputBuf ; struct InputBuf
 argBufLen equ inputBufLen
 argBufCapacity equ inputBufCapacity
-argBufSizeMax equ 2 ; max number of digits accepted on input
+argBufSizeMax equ 4 ; max number of digits accepted on input
 
 ; Menu variables. Two variables determine the current state of the menu, the
 ; groupId and the rowIndex in the group. The C equivalent is:
