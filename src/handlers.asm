@@ -9,8 +9,8 @@
 ; various flags. If the inputBuf is already complex, this routine must not be
 ; called with Langle, LimagI or Ltheta.
 ; Input:
-;   A: character to be appended
-;   rpnFlagsEditing: whether we are already in Edit mode
+;   - A:char=character to be appended
+;   - rpnFlagsEditing=whether we are already in Edit mode
 ; Output:
 ;   - CF set when append fails
 ;   - rpnFlagsEditing set
