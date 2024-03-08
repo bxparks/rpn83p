@@ -230,16 +230,19 @@ primeFactorIntCheckDiv:
 ;   - 65521*65521: 33 seconds
 ;   - About 2000 effective-candidates / second.
 ;
-; Benchmarks (15 MHz):
+; Benchmarks (15 MHz, modU32ByBC):
 ;   - 4001*4001: 1.0 seconds
 ;   - 10007*10007: 2.3 seconds
 ;   - 19997*19997: 4.2 seconds
 ;   - 65521*65521: 12.9 seconds
 ;   - About 5000 effective-candidates / second.
 ;
-; TODO: I think we can make this even faster by writing a version of
-; modU32ByBC() that uses the IXHL pair to hold the u32 instead using 4 bytes of
-; RAM.
+; Benchmarks (15 MHz, modOP1ByBC):
+;   - 4001*4001: 0.85 seconds
+;   - 10007*10007: 1.6 seconds
+;   - 19997*19997: 2.9 seconds
+;   - 65521*65521: 9.0 seconds
+;   - About 7280 effective-candidates / second.
 ;
 ; Input: OP1: an integer in the range of [2, 2^32-1].
 ; Output: OP1: 1 if prime, smallest prime factor if not
@@ -323,13 +326,62 @@ primeFactorModYes:
 ; Destroys: A, DE, HL, OP3
 ; Preserves: BC, OP1
 primeFactorModCheckDiv:
+#ifdef USE_PRIME_FACTOR_U32_BY_BC
     ld hl, OP1
     ld de, OP3
     call copyU32HLToDE ; OP3=x; preserves BC
     ex de, hl ; HL=OP3
     call modU32ByBC ; DE:u16=remainder; destroys (*HL); preserves BC=candidate
+#else
+    call modOP1ByBC
+#endif
     ld a, d
     or e ; if remainder==0: ZF=1
+    ret
+
+; Decription: Highly specialized version of modU32ByBC() to get the highest
+; performance. For example, uses 'jp' instead 'jr' because 'jp' is faster. I
+; tried to use IX instead of the stack (SP), but the Z80 does not support 'add
+; ix,ix' or 'adc ix,ix' which forced the use of the stack anyway. The benchmark
+; says that this is about 45% faster than modU32ByBC().
+;
+; Input:
+;   - OP1:u32=dividend
+;   - BC:u16=divisor
+; Output:
+;   - DE:u16=dividend
+modOP1ByBC:
+    ; push the dividend (x) to a combination of HL and the stack
+    ld hl, (OP1+2) ; HL=high16
+    push hl ; stack=[high16]
+    ld hl, (OP1) ; HL=low16
+    ;
+    ld de, 0 ; DE=remainder
+    ld a, 32
+primeFactorModCheckDivLoop:
+    ; shift x by one bit to the left
+    add hl, hl
+    ex (sp), hl ; stack=[low16]; HL=high16
+    adc hl, hl
+    ex (sp), hl ; stack=[high16]; HL=low16
+    ; shift bit into remainder
+    rl e
+    rl d ; DE=remainder
+    ex de, hl ; HL=remainder; DE=dividend
+    jp c, primeFactorModCheckDivOverflow ; remainder overflowed, so substract
+    or a ; CF=0
+    sbc hl, bc ; HL(remainder) -= divisor
+    jp nc, primeFactorModCheckDivNextBit
+    add hl, bc ; revert the subtraction
+    jp primeFactorModCheckDivNextBit
+primeFactorModCheckDivOverflow:
+    or a ; reset CF
+    sbc hl, bc ; HL(remainder) -= divisor
+primeFactorModCheckDivNextBit:
+    ex de, hl ; DE=remainder; HL=dividend
+    dec a
+    jp nz, primeFactorModCheckDivLoop
+    pop hl ; stack=[]; HL=high16
     ret
 
 ;-----------------------------------------------------------------------------

@@ -63,6 +63,7 @@
         - TODO: add alternate string display modes for DateTime types
         - TODO: disable RTC for 83+, 83+SE, which don't have real time clocks
         - TODO: add sub-record extractors
+    - Increase performance of `PRIM` (prime factor) function by about 45%.
 - 0.9.0 (2024-01-06)
     - **Breaking**: Change names and internal formats of various appVars
         - `STK` list variable replaced with `RPN83STK`
