@@ -1123,7 +1123,7 @@ exchangeXYStack:
 ;-----------------------------------------------------------------------------
 
 regsSizeMin equ 25
-regsSizeMax equ 99
+regsSizeMax equ 100
 regsSizeDefault equ 25
 
 regsName:

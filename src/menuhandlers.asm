@@ -794,10 +794,13 @@ mSetRegSizeHandler:
     call closeInputAndRecallNone
     ld hl, msgRegSizePrompt
     call startArgScanner
+    ld a, 3
+    ld (argLenLimit), a ; allow 3 digits, to support SIZE=100
     call processArgCommands ; ZF=0 if cancelled
     ret nz ; do nothing if cancelled
+    ;
     ld a, (argValue)
-    cp regsSizeMax+1 ; CF=0 if argValue>=100
+    cp regsSizeMax+1 ; CF=0 if argValue>100
     jr nc, setRegSizeHandlerErr
     cp regsSizeMin ; CF=1 if argValue<25
     jr c, setRegSizeHandlerErr
