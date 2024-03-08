@@ -118,7 +118,7 @@
 ; Description: Initialize the AppVar to contain an array of RpnObjects.
 ; Input:
 ;   - HL:(char*)=appVarName
-;   - C:u8=len, [0,99]
+;   - C:u8=defaultLen if appVar needs to be created, [0,99]
 ; Destroys: A, BC, DE, HL, OP1
 initRpnObjectList:
     push bc ; stack=[len]
@@ -212,33 +212,25 @@ clearRpnObjectListLoopTrailing:
     jr nz, clearRpnObjectListLoop
     ret
 
-; Description: Validate the size and CRC16 checksum of the rpnObjectList data
-; array.
+; Description: Validate the CRC16 checksum and the appId header of the
+; rpnObjectList appVar. The size is not validated because the appVar could have
+; been changed to a different size.
+;
 ; Input:
-;   - C:u8=expectedLen
 ;   - DE:(u8*)=dataPointer to appVar contents
 ;   - (appVar): 2 bytes (len), 2 bytes (crc16), 2 bytes (appId), data[]
 ; Output:
 ;   - ZF=1 if valid, 0 if not valid
 ; Destroys: DE, HL
-; Preserves: BC (expectedLen), OP1
+; Preserves: BC, OP1
 validateRpnObjectList:
-    push bc ; stack=[expectedLen]
-    ; Validate expected size of data segment
-    call rpnObjectIndexToOffset ; HL=expectedSize
-    ex de, hl ; HL=dataPointer; DE=expectedSize
+    push bc ; stack=[BC]
+    ex de, hl ; HL=dataPointer
+    ; Extract appVarSize
     ld c, (hl)
     inc hl
-    ld b, (hl) ; BC=appVarSize
-    inc hl
-    ; Compare expected size
-    push hl ; stack=[expectedLen, dataPointer]
-    ld l, c
-    ld h, b
-    or a ; CF=0
-    sbc hl, de ; if size(appVar)==expectedSize: ZF=1
-    pop hl ; stack=[expectedLen]; HL=dataPointer
-    jr nz, validateRpnObjectListEnd
+    ld b, (hl)
+    inc hl ; BC=appVarSize
     ; Extract CRC
     ld e, (hl)
     inc hl
@@ -247,13 +239,13 @@ validateRpnObjectList:
     dec bc
     dec bc ; BC=appVarSize-2; skip the CRC field itself
     ; Compare CRC
-    push hl ; stack=[expectedLen, dataPointer]
-    push de ; stack=[expectedLen, dataPointer, expectedCRC]
+    push hl ; stack=[BC, dataPointer]
+    push de ; stack=[BC, dataPointer, expectedCRC]
     bcall(_Crc16ccitt) ; DE=CRC16(HL)
-    pop hl ; stack=[expectedLen, dataPointer]; HL=expectecCRC
+    pop hl ; stack=[BC, dataPointer]; HL=expectecCRC
     or a ; CF=0
     sbc hl, de ; if CRC matches: ZF=1
-    pop hl ; stack=[expectedLen]; HL=dataPointer
+    pop hl ; stack=[BC]; HL=dataPointer
     jr nz, validateRpnObjectListEnd
     ; Verify appId.
     ld e, (hl)
@@ -264,7 +256,7 @@ validateRpnObjectList:
     or a ; CF=0
     sbc hl, de ; if appId matches: ZF=1
 validateRpnObjectListEnd:
-    pop bc ; stack=[] C=expectedLen
+    pop bc ; stack=[]; BC=restored
     ret
 
 ; Description: Close the rpnObjectList by updating the CRC16 checksum. This is
@@ -302,6 +294,7 @@ closeRpnObjectList:
 ;   - HL:(char*)=appVarName
 ; Output:
 ;   - A:u8=length of list
+;   - DE:(u8*)=dataPointer
 ; Throws:
 ;   - Err:Invalid if length calculation has a remainder
 ;   - Err:Undefined if appVarName does not exist
@@ -315,15 +308,16 @@ calcLenRpnObjectList:
     ld e, (hl)
     inc hl
     ld d, (hl) ; DE=appVarSize
+    dec hl ; HL=dataPointer
     ; remove the crc16 and appId from appVarSize
-    ex de, hl ; HL=appVarSize
+    ex de, hl ; HL=appVarSize; DE=dataPointer
     dec hl
     dec hl
     dec hl
     dec hl ; HL=appVarSize-4=rpnObjectListSize
     ; divide rpnObjectListSize/sizeof(RpnObject)
     ld c, rpnObjectSizeOf
-    call divHLByC ; HL=quotient; A=remainder
+    call divHLByC ; HL=quotient; A=remainder; preserves DE
     or a ; validate no remainder
     jr nz, lenRpnObjectListInvalid
     ld a, l
@@ -668,12 +662,9 @@ initLastX:
 clearStack:
     set dirtyFlagsStack, (iy + dirtyFlags) ; force redraw
     set rpnFlagsLiftEnabled, (iy + rpnFlags) ; TODO: I think this can be removed
-    ld hl, stackName
-    call move9ToOp1
-    bcall(_ChkFindSym) ; DE=dataPointer; CF=1 if not found
-    ret c
+    call lenStack ; A=len; DE=dataPointer
+    ld c, a ; C=len
     ld b, 0 ; B=begin=0
-    ld c, stackSize ; C=len=stackSize
     jp clearRpnObjectList
 
 ; Description: Should be called just before existing the app.
@@ -682,7 +673,10 @@ closeStack:
     jp closeRpnObjectList
 
 ; Description: Return the length of the RPN stack variable.
-; Output: A=length of RPN stack variable
+; Output:
+;   - A=length of RPN stack variable
+;   - DE:(u8*)=dataPointer
+; Destroys: BC, HL
 lenStack:
     ld hl, stackName
     jp lenRpnObjectList
@@ -1124,7 +1118,7 @@ exchangeXYStack:
 
 regsSizeMin equ 25
 regsSizeMax equ 99
-regsSize equ 25
+regsSizeDefault equ 25
 
 regsName:
     .db AppVarObj, "RPN83REG" ; max 8 char, NUL terminated if < 8
@@ -1137,7 +1131,7 @@ regsName:
 ; Destroys: all
 initRegs:
     ld hl, regsName
-    ld c, regsSize
+    ld c, regsSizeDefault
     jp initRpnObjectList
 
 ; Description: Clear all REGS elements.
@@ -1145,12 +1139,9 @@ initRegs:
 ; Output: REGS elements set to 0.0
 ; Destroys: all, OP1
 clearRegs:
-    ld hl, regsName
-    call move9ToOp1
-    bcall(_ChkFindSym) ; DE=dataPointer; CF=1 if not found
-    ret c
+    call lenRegs ; A=len; DE=dataPointer
+    ld c, a ; C=len
     ld b, 0 ; B=begin=0
-    ld c, regsSize ; C=len=regsSize
     jp clearRpnObjectList
 
 ; Description: Should be called just before existing the app.
@@ -1159,7 +1150,10 @@ closeRegs:
     jp closeRpnObjectList
 
 ; Description: Return the length of the REGS variable.
-; Output: A=length of REGS variable
+; Output:
+;   - A=length of REGS variable
+;   - DE:(u8*)=dataPointer
+; Destroys: BC, HL
 lenRegs:
     ld hl, regsName
     jp lenRpnObjectList
