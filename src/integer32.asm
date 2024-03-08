@@ -299,7 +299,7 @@ rotateRightCarryU8:
 
 ; Description: Calculate (HL) = u32(HL) * 10.
 ; Input:
-;   - HL:(u32*)-input
+;   - HL:(u32*)=input
 ; Output:
 ;   - (*HL)*=10
 ; Destroys: A
@@ -780,13 +780,13 @@ divU32U32NextBit:
 ; https://wikiti.brandonw.net/index.php?title=Z80_Routines:Math:Division#32.2F16_division
 ;
 ; Input:
-;   - HL: pointer to u32 dividend
-;   - D: u8 divisor
+;   - HL:(u32*)=dividend
+;   - D:u8=divisor
 ; Output:
-;   - HL: pointer to u32 quotient
-;   - D: divisor, unchanged
-;   - E: u8 remainder
-;   - CF: 0 (division always clears the carry flag)
+;   - HL:(u32*)=quotient
+;   - D:u8=divisor, unchanged
+;   - E:u8=remainder
+;   - CF=0 (division always clears the carry flag)
 ; Destroys: A
 ; Preserves: BC
 divU32ByD:
@@ -817,39 +817,36 @@ divU32ByDQuotientZero:
 ; primeFactorXxx() routines which only need to know if a u16 integer is a
 ; factor of a u32 integer.
 ; Input:
-;   - HL: pointer to U32 dividend
-;   - DE: U16 divisor
+;   - HL:(u32*)=dividend
+;   - BC:u16=divisor
 ; Output:
-;   - HL: pointer to U32 of 0
-;   - DE: unchanged
-;   - BC: U16 remainder
-modU32ByDE:
-    push de
-    ld b, d
-    ld c, e ; BC=DE=divisor
-    ld de, 0
+;   - (*HL):u32=0 (always set to 0)
+;   - HL=unchanged
+;   - BC=unchanged
+;   - DE:u16=remainder
+; Destroys: A, DE
+; Preserves: BC, HL
+modU32ByBC:
+    ld de, 0 ; DE=remainder
     ld a, 32
-modU32ByDELoop:
+modU32ByBCLoop:
     call shiftLeftLogicalU32
     rl e
     rl d ; DE=remainder
-    ex de, hl ; HL=remainder
-    jr c, modU32ByDEOverflow ; remainder overflowed, so must substract
-    or a ; reset CF
+    ex de, hl ; HL=remainder; DE=dividend
+    jr c, modU32ByBCOverflow ; remainder overflowed, so must substract
+    or a ; CF=0
     sbc hl, bc ; HL(remainder) -= divisor
-    jr nc, modU32ByDENextBit
+    jr nc, modU32ByBCNextBit
     add hl, bc ; revert the subtraction
-    jr modU32ByDENextBit
-modU32ByDEOverflow:
+    jr modU32ByBCNextBit
+modU32ByBCOverflow:
     or a ; reset CF
     sbc hl, bc ; HL(remainder) -= divisor
-modU32ByDENextBit:
-    ex de, hl ; DE=remainder
+modU32ByBCNextBit:
+    ex de, hl ; DE=remainder; HL=dividend
     dec a
-    jr nz, modU32ByDELoop
-    ld c, e
-    ld b, d
-    pop de
+    jr nz, modU32ByBCLoop
     ret
 
 ;-----------------------------------------------------------------------------
@@ -860,8 +857,8 @@ modU32ByDENextBit:
 ; and ZF=1 if u32(HL) == u32(DE). The order of the parameters is the same as
 ; subU32U32().
 ; Input:
-;   - HL: pointer to u32
-;   - DE: pointer to u32
+;   - HL:(u32*)
+;   - DE:(u32*)
 ; Output:
 ;   - CF=1 if (HL) < (DE)
 ;   - ZF=1 if (HL) == (DE)
@@ -909,8 +906,8 @@ cmpU32U32End:
 
 ; Description: Compare u32(HL) with the u8 in A.
 ; Input:
-;   - HL: pointer to u32
-;   - A: u8 integer
+;   - HL:(u32*)
+;   - A:u8
 ; Output:
 ;   - CF=1 if (HL) < A
 ;   - ZF=1 if (HL) == A
@@ -945,7 +942,7 @@ cmpU32WithAGreaterEqual:
 ;-----------------------------------------------------------------------------
 
 ; Description: Test if u32 pointed by HL is zero.
-; Input: HL: pointer to u32
+; Input: HL:(u32*)
 ; Destroys: A
 testU32:
     push hl
@@ -972,7 +969,7 @@ testU32End:
     ret
 
 ; Description: Test for if u32 pointed by BC is zero.
-; Input: BC: pointer to u32
+; Input: BC:(u32*)
 ; Destroys: A
 testU32BC:
     push hl
@@ -984,9 +981,10 @@ testU32BC:
 
 ; Description: Copy the u32 integer from HL to DE.
 ; Input:
-;   - HL: pointer to source u32
-;   - DE: pointer to destination u32
+;   - HL:(u32*)=source
+;   - DE:(u32*)=dest
 ; Destroys: A
+; Preserves: BC, DE, HL
 copyU32HLToDE:
     push de
     push hl
@@ -1011,7 +1009,7 @@ copyU32HLToDE:
 ;-----------------------------------------------------------------------------
 
 ; Description: Clear the u32 pointed by HL.
-; Input: HL: pointer to u32
+; Input: HL:(u32*)
 ; Destroys: none
 clearU32:
     push hl
@@ -1027,7 +1025,7 @@ clearU32Loop:
     ret
 
 ; Description: Clear the u32 pointed by BC.
-; Input: BC: pointer to u32
+; Input: BC:(u32*)
 ; Destroys: none
 clearU32BC:
     push hl
@@ -1040,10 +1038,10 @@ clearU32BC:
 
 ; Description: Set u32 pointed by HL to value in A.
 ; Input:
-;   - A: u8
-;   - HL: pointer to u32
+;   - A:u8
+;   - HL:(u32*)
 ; Output:
-;   - (HL)=A
+;   - (*HL)=A
 ; Preserves: all
 setU32ToA:
     call clearU32
@@ -1052,10 +1050,10 @@ setU32ToA:
 
 ; Description: Set u32 pointed by HL to u16 value in BC.
 ; Input:
-;   - BC: u16
-;   - HL: pointer to u32
+;   - BC:u16
+;   - HL:(u32*)
 ; Output:
-;   - (HL)=BC
+;   - (*HL)=BC
 ; Preserves: all
 setU32ToBC:
     push af
@@ -1078,10 +1076,10 @@ setU32ToBC:
 
 ; Description: Perform binary AND operation, u32(HL) &= u32(DE).
 ; Input:
-;   - HL: pointer to u32
-;   - DE: pointer to u32
+;   - HL:(u32*)
+;   - DE:(u32*)
 ; Output:
-;   - HL: pointer to the result
+;   - (*HL)=(*HL) AND (*DE)
 ; Destroys: A
 andU32U32:
     push hl
@@ -1117,10 +1115,10 @@ andU32U32:
 
 ; Description: Perform binary OR operation, u32(HL) |= u32(DE).
 ; Input:
-;   - HL: pointer to u32
-;   - DE: pointer to u32
+;   - HL:(u32*)
+;   - DE:(u32*)
 ; Output:
-;   - HL: pointer to the result
+;   - (*HL)=(*HL) OR (*DE)
 ; Destroys: A
 orU32U32:
     push hl
@@ -1156,10 +1154,10 @@ orU32U32:
 
 ; Description: Perform binary XOR operation, u32(HL) ^= u32(DE).
 ; Input:
-;   - HL: pointer to u32
-;   - DE: pointer to u32
+;   - HL:(u32*)
+;   - DE:(u32*)
 ; Output:
-;   - HL: pointer to the result
+;   - (*HL)=(*HL) XOR (*DE)
 ; Destroys: A
 xorU32U32:
     push hl
@@ -1195,9 +1193,9 @@ xorU32U32:
 
 ; Description: Perform NOT (1's complement) operation, u32(HL) = !u32(HL).
 ; Input:
-;   - HL: pointer to u32
+;   - HL:(u32*)
 ; Output:
-;   - HL: pointer to the result
+;   - (*HL)=!(*HL)
 ; Destroys: A
 notU32:
     push hl
@@ -1229,9 +1227,9 @@ notU32:
 ; Description: Perform NEG (2's complement negative) operation, u32(HL) =
 ; -u32(HL).
 ; Input:
-;   - HL: pointer to u32
+;   - HL:(u32*)
 ; Output:
-;   - HL: pointer to the result
+;   - (*HL)=-(*HL)
 ; Destroys: A
 negU32:
     push hl
@@ -1261,6 +1259,10 @@ negU32:
 ;-----------------------------------------------------------------------------
 
 ; Description: Reverse the bits of u32(HL).
+; Input:
+;   - HL:(u32*)
+; Preserves: HL
+; Destroys: A, BC
 reverseU32Bits:
     push hl
     ; reverse the bytes
@@ -1303,6 +1305,10 @@ reverseU32Bits:
     ret
 
 ; Description: Reverse the bits of u24(HL).
+; Input:
+;   - HL:(u24*)
+; Preserves: HL
+; Destroys: A, BC
 reverseU24Bits:
     push hl
     ; reverse the bytes
@@ -1330,6 +1336,10 @@ reverseU24Bits:
     ret
 
 ; Description: Reverse the bits of u16(HL).
+; Input:
+;   - HL:(u16*)
+; Preserves: HL
+; Destroys: A, BC
 reverseU16Bits:
     ; reverse the bytes
     ld c, (hl)
@@ -1348,6 +1358,10 @@ reverseU16Bits:
     ret
 
 ; Description: Reverse the bits of u8(HL).
+; Input:
+;   - HL:(u8*)
+; Preserves: HL
+; Destroys: A, BC
 reverseU8Bits:
     ld a, (hl)
     call reverseABits
@@ -1355,7 +1369,7 @@ reverseU8Bits:
     ret
 
 ; Description: Reverse the bits of register A.
-; Input: A
+; Input: A:u8
 ; Output: A=reverse(A)
 ; Destroys: BC
 reverseABits:
@@ -1370,8 +1384,8 @@ reverseBitsLoop:
 ;-----------------------------------------------------------------------------
 
 ; Description: Count the number of bits in u32(HL).
-; Input: HL=pointer to u32
-; Output: A=number of bits in u32
+; Input: HL:(u32*)
+; Output: A:u8=number of bits in u32
 ; Destroys: A, BC
 ; Preserves, DE, HL
 countU32Bits:
@@ -1393,6 +1407,7 @@ countU32Bits:
     ret
 
 ; Description: Count the number of bits in A.
+; Input: A:u8
 ; Output: C+=numBits(A)
 ; Destroys: A, BC
 appendCountBits:
@@ -1409,10 +1424,10 @@ countBitsNext:
 
 ; Description: Set bit 'C' of u32(HL).
 ; Input:
-;   - HL=pointer to u32
-;   - C=bit number (0-31)
+;   - HL=(u32*)
+;   - C:u8=bit number (0-31)
 ; Output:
-;   - HL=pointer to u32
+;   - (*HL)=bit 'C' set
 ; Destroys: A, B, DE
 ; Preserves: HL, C
 setU32Bit:
@@ -1427,10 +1442,10 @@ setU32Bit:
 
 ; Description: Clear bit 'C' of u32(HL).
 ; Input:
-;   - HL=pointer to u32
-;   - C=bit number (0-31)
+;   - HL=(u32*)
+;   - C:u8=bit number (0-31)
 ; Output:
-;   - HL=pointer to u32
+;   - (*HL)=bit 'C' cleared
 ; Destroys: A, B, DE
 ; Preserves: HL, C
 clearU32Bit:
@@ -1446,11 +1461,10 @@ clearU32Bit:
 
 ; Description: Return the status of bit C of u32(HL).
 ; Input:
-;   - HL=pointer to u32
-;   - C=bit number (0-31)
+;   - HL=(u32*)
+;   - C:u8=bit number (0-31)
 ; Output:
-;   - HL=pointer to u32
-;   - A=1 or 0
+;   - A=1 or 0 of bit 'C'
 ; Destroys: A, B, DE
 ; Preserves: HL, C
 getU32Bit:
@@ -1467,8 +1481,8 @@ getU32BitEnd:
 
 ; Description: Calculate the offset and mask of bit C of u32(HL).
 ; Input:
-;   - HL=pointer to u32
-;   - C=bit number (0-31)
+;   - HL:(u32*)
+;   - C:u8=bit number (0-31)
 ; Output:
 ;   - HL=pointer to byte offset
 ;   - A=bit mask
