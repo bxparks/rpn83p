@@ -790,6 +790,50 @@ mDegNameSelectorAlt:
 
 ;-----------------------------------------------------------------------------
 
+mSetRegSizeHandler:
+    call closeInputAndRecallNone
+    ld hl, msgRegSizePrompt
+    call startArgScanner
+    ld a, 3
+    ld (argLenLimit), a ; allow 3 digits, to support SIZE=100
+    call processArgCommands ; ZF=0 if cancelled
+    ret nz ; do nothing if cancelled
+    ;
+    ld a, (argValue)
+    cp regsSizeMax+1 ; CF=0 if argValue>100
+    jr nc, setRegSizeHandlerErr
+    cp regsSizeMin ; CF=1 if argValue<25
+    jr c, setRegSizeHandlerErr
+    call resizeRegs ; test (newLen-oldLen) -> ZF,CF flags set
+    ; Determine the handler code
+    jr z, setRegSizeHandlerUnchanged
+    jr nc, setRegSizeHandlerExpanded
+setRegSizeHandlerShrunk:
+    ld a, errorCodeRegsShrunk
+    ld (handlerCode), a
+    ret
+setRegSizeHandlerExpanded:
+    ld a, errorCodeRegsExpanded
+    ld (handlerCode), a
+    ret
+setRegSizeHandlerUnchanged:
+    ld a, errorCodeRegsUnchanged
+    ld (handlerCode), a
+    ret
+setRegSizeHandlerErr:
+    bcall(_ErrInvalid)
+
+mGetRegSizeHandler:
+    call closeInputAndRecallNone
+    call lenRegs
+    bcall(_ConvertAToOP1) ; OP1=float(A)
+    jp pushToX
+
+msgRegSizePrompt:
+    .db "SIZE", 0
+
+;-----------------------------------------------------------------------------
+
 mCommaEENormalHandler:
     ld a, commaEEModeNormal
     ld (commaEEMode), a

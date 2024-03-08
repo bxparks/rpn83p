@@ -307,6 +307,10 @@ MenuGroup root mRoot [
         MenuItemAlt PDEG PDE<Sblock> mComplexModeDeg
       ]
       MenuRow [
+        MenuItem SIZE mSetRegSize
+        MenuItem SIZ<Squestion> mGetRegSize
+      ]
+      MenuRow [
         MenuItemAlt <Scomma>EE <Scomma>EE<Sblock> mCommaEENormal
         MenuItemAlt EE<Scomma> EE<Scomma><Sblock> mCommaEESwapped
         MenuItem * *
