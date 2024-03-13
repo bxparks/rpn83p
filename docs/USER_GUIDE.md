@@ -2225,7 +2225,7 @@ complex numbers are *always* stored in rectangular format.
 
 #### Complex Numbers and Screen Size
 
-Complex numbers are rendering using the Small Font of the TI-83 and 84
+Complex numbers are rendered using the Small Font of the TI-83 and 84
 calculators instead of the Large Font. With the Large Font, we are limited to 16
 digits on a single line (including the stack label), which are not sufficient to
 display the 2 floating point numbers of a complex number. The Small Font allows
@@ -2385,7 +2385,7 @@ distinct from other digit characters. It is also the symbol used by the HP-42S.
 **HP-35s Compatibility Note 2**: The HP-35s uses `SHIFT Theta` button to enter
 complex numbers in polar notation. The `Theta` symbol is available on a TI
 calculator as `ALPHA Theta`. However, the `ALPHA` shift key is used for no other
-functionality in the RPN83P app, and I found switching from `2ND` and `ALPHA` to
+functionality in the RPN83P app, and I found switching from `2ND` to `ALPHA` to
 invoke this function was too confusing for the muscle memory. The `2ND ANGLE`
 key, on the other hand, was previously unused in the RPN83P app, and it matches
 the Angle symbol used to display complex numbers in polar notation.
@@ -2708,7 +2708,7 @@ The RPN83P app interacts with the underlying TI-OS in the following ways.
   the RPN83P app exits. This means that the most recent `X` register from RPN83P
   is available in the TI-OS calculator using `2ND` `ANS`.
 - When the RPN83P app is started, it examines the content of the `ANS` variable.
-  If it is a Real value (i.e. not complex, not a matrix, not a string, etc),
+  If it is a Real or Complex value (i.e. not a matrix, not a string, etc),
   then it is copied into the `LastX` register of the RPN83P. Since the `LastX`
   functionality is invoked in RPN83P as `2ND` `ANS`, this means that the TI-OS
   `ANS` value becomes available in RPN83P as `2ND` `ANS`.
