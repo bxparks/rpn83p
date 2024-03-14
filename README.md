@@ -150,29 +150,34 @@ The RPN83P app starts directly into the calculator mode, like this:
 
 This app was designed for TI calculators using the Z80 processor:
 
-- TI-83 Plus (6 MHz Z80, 24 kB accessible RAM, 160 kB accessible flash)
+- TI-83 Plus (6 MHz Z80, 24 kB accessible RAM, 160 kB accessible flash, no RTC)
 - TI-83 Plus Silver Edition (6/15 MHz Z80, 24 kB accessible RAM, 1.5 MB
-  accessible flash)
-- TI-84 Plus (6/15 MHz Z80, 24 kB accessible RAM, 480 kB accessible flash)
+  accessible flash, no RTC)
+- TI-84 Plus (6/15 MHz Z80, 24 kB accessible RAM, 480 kB accessible flash, RTC)
 - TI-84 Plus Silver Edition (6/15 MHz Z80, 24 kB accessible RAM, 1.5 MB
-  accessible flash)
+  accessible flash, RTC)
 
 The app configures itself to run at 15 MHz on supported hardware, while
 remaining at 6 MHz on the TI-83+.
 
 I have tested it on the following calculators that I own:
 
-- TI-83 Plus, OS v1.19
-- TI-83 Plus Silver Edition, OS v1.19
-- TI-84 Plus Silver Edition, OS v2.55MP
+- TI-83 Plus (OS v1.19)
+- TI-83 Plus Silver Edition (OS v1.19)
+- TI-84 Plus Silver Edition (OS v2.55MP)
 
-Community members have verified that it works on the TI-84 Plus.
+Community members have verified that it works on the following variants:
 
-The following calculators are *not* supported because their internal hardware is
-too different:
+- TI-84 Plus
+- TI-84 Plus Pocket SE
+- TI-84 Pocket.fr
+
+The following calculators are *not* supported because their internal hardware
+and firmware are too different:
 
 - TI-84 Plus C Silver Edition
 - TI-84 Plus CE
+- TI-83 Premium CE (French version of the TI-84 Plus CE)
 
 ## Quick Examples
 
