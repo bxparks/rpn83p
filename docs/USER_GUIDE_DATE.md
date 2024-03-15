@@ -343,7 +343,7 @@ Gregorian calendar date. For example, the date `2024-03-14` is entered into the
 calculator as `D{2024,3,14,}`. The human-readable string of this object when the
 `".."` option is selected is `2024-03-14`.
 
-#### Date Object Validation
+#### Date Validation
 
 Upon input termination, Date components are validated to make sure that it
 represents a proper Gregorian calendar date. If the component is invalid, an
@@ -363,7 +363,7 @@ Here is an incomplete list of validation rules:
 - `day` component must be between 1 and 31, and must be valid for the given
   month
 
-#### Date Object Operations
+#### Date Operations
 
 Addition and subtraction operations are supported as shown in the following
 table:
@@ -424,7 +424,7 @@ like:
 15:36:01
 ```
 
-#### Time Object Validation
+#### Time Validation
 
 The validation rules for a `Time` record is more straightforward than a `Date`
 record:
@@ -434,7 +434,7 @@ record:
 - the `second` component must be in the interval [0, 59], leap seconds not
   supported
 
-#### Time Object Operations
+#### Time Operations
 
 Just like `Date` records, addition and subtraction operations are supported as
 summarized in the following table:
@@ -507,12 +507,12 @@ following upon `ENTER`:
 2024-03-14 15:35:01
 ```
 
-#### DateTime Object Validation
+#### DateTime Validation
 
 The validation rules of the `DateTime` is the union of the validation rules
 for the `Date` record and the rules for the `Time` record.
 
-#### DateTime Object Operations
+#### DateTime Operations
 
 The addition and subtraction operations are available on the `DateTime` object,
 just like `Date` and `Time`. The integer numbers are in unit of *second*.
@@ -556,164 +556,6 @@ S>DR
 MODE
 ".."
 (displays 285d 8h 23m 59s)
-```
-
-### Duration Object
-
-The `Duration` object has the form `DR{days:i16, hours:i8, minutes:i8,
-seconds:i8}`. It can be a positive or a negative quantity. For example, a
-positive `Duration` object would be:
-
-```
-DR{1,2,3,4}
-```
-
-This is displayed as the following if the string display mode `".."` is
-selected:
-
-```
-1d 2h 3m 4s
-```
-
-A negative duration would be:
-
-```
-DR{-4,0,-2,0}
-```
-
-which would be displayed as
-
-```
--4d 2m
-```
-
-Notice that for negative durations, all the components must be negative (or
-zero). Also notice that when a Duration component is exactly 0, that component
-is omitted from the human-readable string format (in the case above, the `0h`
-and `0s` components).
-
-The `days` component is restricted to 4 digits, so the largest magnitude is
-9999. Therefore, the largest duration that can be represented by the `Duration`
-object is `9999d 23h 59m 59s` or about 24.3 years.
-
-#### Duration Record Shorthand Entry
-
-Often, we want to enter a single component without having to enter a `0` for the
-other components. For example, to enter just "2 minutes", we would have to enter
-`DR{0,0,2,0}`, and for "12 hours", we would need to enter `DR{0,12,0,0}`. The
-RPN83P has an alternative shorthand entry format, using the `ALPHA :` character.
-The following suffixes are recognized by the input system:
-
-- `ss:S` - shorthand for `DR{0,0,0,ss}`, i.e. "ss seconds"
-- `mm:M` - shorthand for `DR{0,0,mm,0}`, i.e. "mm minutes"
-- `hh:H` - shorthand for `DR{0,hh,0,0}`, i.e. "hh hours"
-- `dddd:D` - shorthand for `DR{dddd,0,0,0}`, i.e. "dddd days"
-
-For example, to enter 2 minutes, we can type:
-
-```
-2:M
-```
-
-Hitting `ENTER` shows;
-
-```
-DR{0,0,2,0} (in MODE {..})
-2m (in MODE "..")
-```
-
-To enter 12 hours, we can type:
-
-```
-12:H
-```
-
-Hitting `ENTER` shows:
-
-```
-DR{0,12,0,0} (in MODE {..})
-12h (in MODE "..")
-```
-
-#### Duration Record Validation
-
-The components of the Duration object has the following validation rules:
-
-- the `days` component is currently limited to 4 digits [-9999,9999] (it could
-  be extended to +/- 32767 with a little bit of coding)
-- `hours` must be in the interval [-23,23]
-- `minutes` must be in the interval [-59,59]
-- `seconds` must be in the interval [-59,59]
-- all components must have the same sign (or zero)
-
-For example, if the signs are not consistent, an `Err:Invalid` will be shown:
-
-```
-DR{1, -2, 0, 1} ENTER
-Err:Invalid
-```
-
-### Duration Record Operations
-
-The Duration object is a convenient object because the addition and subtraction
-operations are defined on the Duration object as well as the Date, Time, and
-DateTime objects:
-
-```
-+---------------------------+---------------+
-| Operation                 | Result        |
-+---------------------------+---------------+
-| {Duration} + {integer}    | {Duration}    |
-| {integer} + {Duration}    | {Duration}    |
-| {Duration} + {Duration}   | {Duration}    |
-+---------------------------+---------------+
-| {Duration} - {integer}    | {Duration}    |
-| {Duration} - {Duration}   | {Duration}[*] |
-+---------------------------+---------------+
-| {integer} - {Duration}    | INVALID       |
-+===========================+===============+
-| {Date} + {Duration}       | {Date}        |
-| {Duration} + {Date}       | {Date}        |
-+---------------------------+---------------+
-| {Date} - {Duration}       | {Date}        |
-| {Duration} - {Date}       | INVALID       |
-+===========================+===============+
-| {Time} + {Duration}       | {Time}        |
-| {Duration} + {Time}       | {Time}        |
-+---------------------------+---------------+
-| {Time} - {Duration}       | {Time}        |
-| {Duration} - {Time}       | INVALID       |
-+===========================+===============+
-| {DateTime} + {Duration}   | {DateTime}    |
-| {Duration} + {DateTime}   | {DateTime}    |
-+---------------------------+---------------+
-| {DateTime} - {Duration}   | {DateTime}    |
-| {Duration} - {DateTime}   | INVALID       |
-+---------------------------+---------------+
-
-[*] For other record types, subtracting 2 objects of the same type produces an
-integer. For Duration objects, it seemed more convenient to return a Duration
-instead.
-```
-
-A good rule of thumb is that anywhere an integer can be used in a binary
-operator involving a Date, Time, or DateTime object, a Duration object can be
-used instead.
-
-For example, let's add 2h 33m to the Time `12:58:32`:
-
-```
-T{12:58:32} ENTER
-DR{0,2,33,0} +
-(displays T{15,31,32})
-```
-
-For example, let's add 30d to the DateTime `2024-03-14 12:58:32`:
-
-```
-DT{2024,3,14,12,58,32} ENTER
-30:D +
-(displays DT{2024,4,13,12,58,32})
 ```
 
 ### TimeZone Object
@@ -809,12 +651,12 @@ will be displayed like this:
 
 which is exactly how it would be written by human beings.
 
-#### ZonedDateTime Object Validation
+#### ZonedDateTime Validation
 
 The validation rules of the `ZonedDateTime` is the union of the validation rules
 for the `Date`, `Time`, and `TimeZone` objects.
 
-#### ZonedDateTime Object Operations
+#### ZonedDateTime Operations
 
 The addition and subtraction operations are available on the `ZonedDateTime`
 object, just like the `DateTime` object. The integer numbers are in unit of
@@ -875,6 +717,7 @@ If we change to the `".."` mode, we get:
 The ZonedDateTime overloads the multiplication operator `*` to act as the
 "timezone converter" function.
 
+```
 +-----------------------------------+-------------------+
 | Operation                         | Result            |
 +-----------------------------------+-------------------+
@@ -883,6 +726,7 @@ The ZonedDateTime overloads the multiplication operator `*` to act as the
 | {integer} * {ZonedDateTime}       | {ZonedDateTime}   |
 | {TimeZone} * {ZonedDateTime}      | {ZonedDateTime}   |
 +-----------------------------------+-------------------+
+```
 
 For example, let's convert the timestamp 2024-03-14 15:36:01
 in America/Los_Angeles (which is UTC-07:00) in the summer time to
@@ -935,7 +779,7 @@ If we set the display `MODE` to `".."` string mode, the display will show:
 Thu
 ```
 
-#### DayOfWeek Object Validation
+#### DayOfWeek Validation
 
 Upon input termination, the `dow` component is validated and if the component is
 invalid, an `Err:Invalid` error message is displayed. For example, if we try to
@@ -946,7 +790,7 @@ DW{0} ENTER
 (displays Err:Invalid)
 ```
 
-#### DayOfWeek Object Operations
+#### DayOfWeek Operations
 
 Although it is unlikely to be needed often, addition and subtraction operations
 have been implemented for the DayOfWeek object, mostly for consistency. To add 6
@@ -968,7 +812,169 @@ DW{4} -
 
 There are -1 days from Thursday to Wednesday.
 
-## Timezone Conversion
+### Duration Object
+
+The `Duration` object has the form `DR{days:i16, hours:i8, minutes:i8,
+seconds:i8}`. It can be a positive or a negative quantity. For example, a
+positive `Duration` object would be:
+
+```
+DR{1,2,3,4}
+```
+
+This is displayed as the following if the string display mode `".."` is
+selected:
+
+```
+1d 2h 3m 4s
+```
+
+A negative duration would be:
+
+```
+DR{-4,0,-2,0}
+```
+
+which would be displayed as
+
+```
+-4d 2m
+```
+
+Notice that for negative durations, all the components must be negative (or
+zero). Also notice that when a Duration component is exactly 0, that component
+is omitted from the human-readable string format (in the case above, the `0h`
+and `0s` components).
+
+The `days` component is restricted to 4 digits, so the largest magnitude is
+9999. Therefore, the largest duration that can be represented by the `Duration`
+object is `9999d 23h 59m 59s` or about 24.3 years.
+
+#### Duration Shorthand Entry
+
+Often, we want to enter a single component without having to enter a `0` for the
+other components. For example, to enter just "2 minutes", we would have to enter
+`DR{0,0,2,0}`, and for "12 hours", we would need to enter `DR{0,12,0,0}`. The
+RPN83P has an alternative shorthand entry format, using the `ALPHA :` character.
+The following suffixes are recognized by the input system:
+
+- `ss:S` - shorthand for `DR{0,0,0,ss}`, i.e. "ss seconds"
+- `mm:M` - shorthand for `DR{0,0,mm,0}`, i.e. "mm minutes"
+- `hh:H` - shorthand for `DR{0,hh,0,0}`, i.e. "hh hours"
+- `dddd:D` - shorthand for `DR{dddd,0,0,0}`, i.e. "dddd days"
+
+For example, to enter 2 minutes, we can type:
+
+```
+2:M
+```
+
+Hitting `ENTER` shows;
+
+```
+DR{0,0,2,0} (in MODE {..})
+2m (in MODE "..")
+```
+
+To enter 12 hours, we can type:
+
+```
+12:H
+```
+
+Hitting `ENTER` shows:
+
+```
+DR{0,12,0,0} (in MODE {..})
+12h (in MODE "..")
+```
+
+#### Duration Validation
+
+The components of the Duration object has the following validation rules:
+
+- the `days` component is currently limited to 4 digits [-9999,9999] (it could
+  be extended to +/- 32767 with a little bit of coding)
+- `hours` must be in the interval [-23,23]
+- `minutes` must be in the interval [-59,59]
+- `seconds` must be in the interval [-59,59]
+- all components must have the same sign (or zero)
+
+For example, if the signs are not consistent, an `Err:Invalid` will be shown:
+
+```
+DR{1, -2, 0, 1} ENTER
+Err:Invalid
+```
+
+#### Duration Operations
+
+The Duration object is a convenient object because the addition and subtraction
+operations are defined on the Duration object as well as the Date, Time, and
+DateTime objects:
+
+```
++-------------------------------+-------------------+
+| Operation                     | Result            |
++-------------------------------+-------------------+
+| {Duration} + {integer}        | {Duration}        |
+| {integer} + {Duration}        | {Duration}        |
+| {Duration} + {Duration}       | {Duration}        |
++-------------------------------+-------------------+
+| {Duration} - {integer}        | {Duration}        |
+| {Duration} - {Duration}       | {Duration} [*]    |
++-------------------------------+-------------------+
+| {integer} - {Duration}        | INVALID           |
++===============================+===================+
+| {Date} + {Duration}           | {Date}            |
+| {Duration} + {Date}           | {Date}            |
++-------------------------------+-------------------+
+| {Date} - {Duration}           | {Date}            |
+| {Duration} - {Date}           | INVALID           |
++===============================+===================+
+| {Time} + {Duration}           | {Time}            |
+| {Duration} + {Time}           | {Time}            |
++-------------------------------+-------------------+
+| {Time} - {Duration}           | {Time}            |
+| {Duration} - {Time}           | INVALID           |
++===============================+===================+
+| {DateTime} + {Duration}       | {DateTime}        |
+| {Duration} + {DateTime}       | {DateTime}        |
++-------------------------------+-------------------+
+| {DateTime} - {Duration}       | {DateTime}        |
+| {Duration} - {DateTime}       | INVALID           |
++===============================+===================+
+| {ZonedDateTime} + {Duration}  | {ZonedDateTime}   |
+| {Duration} + {ZonedDateTime}  | {ZonedDateTime}   |
++-------------------------------+-------------------+
+| {ZonedDateTime} - {Duration}  | {ZonedDateTime}   |
+| {Duration} - {ZonedDateTime}  | INVALID           |
++-------------------------------+-------------------+
+
+[*] For other record types, subtracting 2 objects of the same type produces an
+integer. For Duration objects, it seemed more convenient to return a Duration
+instead.
+```
+
+A good rule of thumb is that anywhere an integer can be used in a binary
+operator involving a Date, Time, or DateTime object, a Duration object can be
+used instead.
+
+For example, let's add 2h 33m to the Time `12:58:32`:
+
+```
+T{12:58:32} ENTER
+DR{0,2,33,0} +
+(displays T{15,31,32})
+```
+
+For example, let's add 30d to the DateTime `2024-03-14 12:58:32`:
+
+```
+DT{2024,3,14,12,58,32} ENTER
+30:D +
+(displays DT{2024,4,13,12,58,32})
+```
 
 ## Epoch Date
 
