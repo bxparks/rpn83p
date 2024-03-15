@@ -1341,7 +1341,7 @@ passed into a logical, bitwise, or arithmetic function. This includes the `DEC`
 (base 10) mode.
 
 The maximum value that can be represented when in `BASE` mode is `2^WSIZ-1`,
-which is (255, 16383, 16777215, 4294967295) for (8, 16, 24, 32) bit integers
+which is (255, 65535, 16777215, 4294967295) for (8, 16, 24, 32) bit integers
 respectively.
 
 #### Base Modes
