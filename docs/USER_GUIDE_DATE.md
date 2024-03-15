@@ -377,7 +377,7 @@ table:
 | {Date} - {integer}        | {Date}    |
 | {Date} - {Date}           | {integer} |
 +---------------------------+-----------+
-| {integer} - {Date}        | invalid   |
+| {integer} - {Date}        | INVALID   |
 +---------------------------+-----------+
 ```
 
@@ -448,7 +448,7 @@ summarized in the following table:
 | {Time} - {integer}        | {Time}    |
 | {Time} - {Time}           | {integer} |
 +---------------------------+-----------+
-| {integer} - {Time}        | invalid   |
+| {integer} - {Time}        | INVALID   |
 +---------------------------+-----------+
 ```
 
@@ -526,7 +526,7 @@ just like `Date` and `Time`. The unit of integer numbers are *seconds*.
 | {DateTime} - {integer}    | {DateTime}    |
 | {DateTime} - {DateTime}   | {integer}     |
 +---------------------------+---------------+
-| {integer} - {DateTime}    | invalid       |
+| {integer} - {DateTime}    | INVALID       |
 +---------------------------+---------------+
 ```
 
@@ -587,13 +587,56 @@ which would be displayed as
 ```
 
 Notice that for negative durations, all the components must be negative (or
-zero).
+zero). Also notice that when a Duration component is exactly 0, that component
+is omitted from the human-readable string format (in the case above, the `0h`
+and `0s` components).
 
 The `days` component is restricted to 4 digits, so the largest magnitude is
 9999. Therefore, the largest duration that can be represented by the `Duration`
 object is `9999d 23h 59m 59s` or about 24.3 years.
 
+#### Duration Record Shorthand Entry
+
+Often, we want to enter a single component without having to enter a `0` for the
+other components. For example, to enter just "2 minutes", we would have to enter
+`DR{0,0,2,0}`, and for "12 hours", we would need to enter `DR{0,12,0,0}`. The
+RPN83P has an alternative "short modifier" entry format, using the `ALPHA :`
+character. The following suffixes are recognized by the input system:
+
+- `ss:S` - shorthand for `DR{0,0,0,ss}`, i.e. "ss seconds"
+- `mm:M` - shorthand for `DR{0,0,mm,0}`, i.e. "mm minutes"
+- `hh:H` - shorthand for `DR{0,hh,0,0}`, i.e. "hh hours"
+- `dddd:D` - shorthand for `DR{dddd,0,0,0}`, i.e. "dddd days"
+
+For example, to enter 2 minutes, we can type:
+
+```
+2:M
+```
+
+Hitting `ENTER` shows;
+
+```
+DR{0,0,2,0} (in MODE {..})
+2m (in MODE "..")
+```
+
+To enter 12 hours, we can type:
+
+```
+12:H
+```
+
+Hitting `ENTER` shows:
+
+```
+DR{0,12,0,0} (in MODE {..})
+12h (in MODE "..")
+```
+
 #### Duration Record Validation
+
+The components of the Duration record has the following validation rules:
 
 - the `days` component is currently limited to 4 digits [-9999,9999] (it could
   be extended to +/- 32767 with a little bit of coding)
@@ -602,9 +645,75 @@ object is `9999d 23h 59m 59s` or about 24.3 years.
 - `seconds` must be in the interval [-59,59]
 - all components must have the same sign (or zero)
 
+For example, if the signs are not consistent, an `Err:Invalid` will be shown:
+
+```
+DR{1, -2, 0, 1} ENTER
+Err:Invalid
+```
+
 ### Duration Record Operations
 
+The Duration object is a convenient object because the addition and subtraction
+operations are defined on the Duration object as well as the Date, Time, and
+DateTime objects:
 
+```
++---------------------------+---------------+
+| Operation                 | Result        |
++---------------------------+---------------+
+| {Duration} + {integer}    | {Duration}    |
+| {integer} + {Duration}    | {Duration}    |
+| {Duration} + {Duration}   | {Duration}    |
++---------------------------+---------------+
+| {Duration} - {integer}    | {Duration}    |
+| {Duration} - {Duration}   | {Duration}[*] |
++---------------------------+---------------+
+| {integer} - {Duration}    | INVALID       |
++===========================+===============+
+| {Date} + {Duration}       | {Date}        |
+| {Duration} + {Date}       | {Date}        |
++---------------------------+---------------+
+| {Date} - {Duration}       | {Date}        |
+| {Duration} - {Date}       | INVALID       |
++===========================+===============+
+| {Time} + {Duration}       | {Time}        |
+| {Duration} + {Time}       | {Time}        |
++---------------------------+---------------+
+| {Time} - {Duration}       | {Time}        |
+| {Duration} - {Time}       | INVALID       |
++===========================+===============+
+| {DateTime} + {Duration}   | {DateTime}    |
+| {Duration} + {DateTime}   | {DateTime}    |
++---------------------------+---------------+
+| {DateTime} - {Duration}   | {DateTime}    |
+| {Duration} - {DateTime}   | INVALID       |
++---------------------------+---------------+
+
+[*] For other record types, subtracting 2 objects of the same type produces an
+integer. For Duration objects, it seemed more convenient to return a Duration
+instead.
+```
+
+A good rule of thumb is that anywhere an integer can be used in a binary
+operator involving a Date, Time, or DateTime object, a Duration object can be
+used instead.
+
+For example, let's add 2h 33m to the Time `12:58:32`:
+
+```
+T{12:58:32} ENTER
+DR{0,2,33,0} +
+(displays T{15,31,32})
+```
+
+For example, let's add 30d to the DateTime `2024-03-14 12:58:32`:
+
+```
+DT{2024,3,14,12:58:32} ENTER
+30:D +
+(displays DT{2024,4,13,12,58,32})
+```
 
 ### TimeZone Record
 
