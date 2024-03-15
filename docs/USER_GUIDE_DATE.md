@@ -601,8 +601,8 @@ object is `9999d 23h 59m 59s` or about 24.3 years.
 Often, we want to enter a single component without having to enter a `0` for the
 other components. For example, to enter just "2 minutes", we would have to enter
 `DR{0,0,2,0}`, and for "12 hours", we would need to enter `DR{0,12,0,0}`. The
-RPN83P has an alternative "short modifier" entry format, using the `ALPHA :`
-character. The following suffixes are recognized by the input system:
+RPN83P has an alternative shorthand entry format, using the `ALPHA :` character.
+The following suffixes are recognized by the input system:
 
 - `ss:S` - shorthand for `DR{0,0,0,ss}`, i.e. "ss seconds"
 - `mm:M` - shorthand for `DR{0,0,mm,0}`, i.e. "mm minutes"
@@ -717,6 +717,60 @@ DT{2024,3,14,12,58,32} ENTER
 ```
 
 ### TimeZone Object
+
+The TimeZone object has the form `TZ{hour:i8, minute:i8}`. It represents a fixed
+offset from UTC. As previously stated, the RPN83P does not current support
+timezones with automatic DST transitions, such as those defined by the IANA TZ
+database. Daylight saving time changes must be handled manually. For example,
+the standard offset for `America/Los_Angeles` is UTC-08:00 during the winter
+months, and changes to UTC-07:00 during the summer months.
+
+The UTC-08:00 timezone is entered like this:
+
+```
+TZ{-8,0}
+```
+
+When the `".."` MODE is selected, this is rendered as:
+
+```
+-08:00
+```
+
+#### TimeZone Validation
+
+The validation rules for a TimeZone object are:
+
+- timezones must be a multiple of 0:15 minutes
+- timezone can span from [-23:45,+23:45]
+- the sign of the `hour` and `minute` components must match
+
+#### TimeZone Operations
+
+No binary operations (addition, subtractions) are defined on TimeZone objects,
+because they did not seem useful for real-life calculations.
+
+The TimeZone object can be converted to and from a floating point number
+representing the number of hours shifted from UTC. These are exposed using the
+`H>TZ` and `TZ>H` menu items:
+
+- [TODO: screenshot of `H>TZ` and `TZ>H` menus]
+
+To convert `TZ{-8,0}` to hours:
+
+```
+TZ{-8,0}
+TZ>H
+(displays -8)
+```
+
+To convert -4.5 hours shifted from UTC to TimeZone:
+
+```
+-4.5
+H>TZ
+(displays TZ{-4,-30})
+```
 
 ### ZonedDateTime Object
 
