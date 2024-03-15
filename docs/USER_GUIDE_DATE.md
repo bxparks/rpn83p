@@ -534,7 +534,7 @@ just like `Date` and `Time`. The integer numbers are in unit of *second*.
 For example, let's subtract 100_000 seconds from `2024-03-14 15:39:55`:
 
 ```
-DT{2024,3,14,15,39,55 ENTER
+DT{2024,3,14,15,39,55} ENTER
 100000 -
 (displays DT{2024,3,13,11,53,15})
 ```
@@ -741,9 +741,11 @@ When the `".."` MODE is selected, this is rendered as:
 
 The validation rules for a TimeZone object are:
 
-- timezones must be a multiple of 0:15 minutes
-- timezone can span from [-23:45,+23:45]
-- the sign of the `hour` and `minute` components must match
+- a timezone must be a multiple of 0:15 minutes
+- a timezone can span from [-23:45,+23:45]. This is sufficient to capture all
+  timezones currently in use around the world, which fall within the range of
+  UTC-12:00 to UTC+14:00.
+- the signs of the `hour` and `minute` components must match each other
 
 #### TimeZone Operations
 
@@ -773,6 +775,147 @@ H>TZ
 ```
 
 ### ZonedDateTime Object
+
+The ZonedDateTime is a combination of Date, Time, and TimeZone. It has the form
+`DZ{year:u16, month:u8, day:u8, hour:u8, minute:u8, second:u8, tzhour:i8,
+tzminute:i8}`. It describes the local time of a specific place that uses a
+specific UTC offset. For example, the date-time of `2024-03-14 15:36:01-07:00`
+which occurred in `America/Los_Angeles` timezone after the DST shift on March
+10, 2024 would be entered like this:
+
+```
+DZ{2024,3,14,15,36,1,-7,0}
+```
+
+When the `".."` display mode is selected, this object is displayed like this
+upon `ENTER`:
+
+```
+2024-03-14 15:36:01-07:00
+```
+
+ZonedDateTime objects which have +00:00 UTC offset are somewhat special,
+and it is useful to indicate these dates. The following date:
+
+```
+DZ{2024,3,14,22,36,1,0,0}
+```
+
+will be displayed like this:
+
+```
+2024-03-14 22:36:01 Z
+```
+
+which is exactly how it would be written by human beings.
+
+#### ZonedDateTime Object Validation
+
+The validation rules of the `ZonedDateTime` is the union of the validation rules
+for the `Date`, `Time`, and `TimeZone` objects.
+
+#### ZonedDateTime Object Operations
+
+The addition and subtraction operations are available on the `ZonedDateTime`
+object, just like the `DateTime` object. The integer numbers are in unit of
+*second*.
+
+```
++-----------------------------------+-------------------+
+| Operation                         | Result            |
++-----------------------------------+-------------------+
+| {ZonedDateTime} + {integer}       | {ZonedDateTime}   |
+| {integer} + {ZonedDateTime}       | {ZonedDateTime}   |
++-----------------------------------+-------------------+
+| {ZonedDateTime} - {integer}       | {ZonedDateTime}   |
+| {ZonedDateTime} - {ZonedDateTime} | {integer}         |
++-----------------------------------+-------------------+
+| {integer} - {ZonedDateTime}       | INVALID           |
++-----------------------------------+-------------------+
+```
+
+The resulting ZonedDateTime will have the same TimeZone offset as the input
+ZonedDateTime.
+
+For example, let's subtract 100_000 seconds from `2024-03-14 15:39:55-08:00`:
+
+```
+DZ{2024,3,14,15,39,55,-8,0} ENTER
+100000 -
+(displays DZ{2024,3,13,11,53,15,-8,0})
+```
+
+We can subtract 2 `ZonedDateTime` objects. Their TimeZone components does not
+have to be same. Let's determine the number of seconds to Dec 25, 2024, at
+UTC+00:00:
+
+```
+DT{2024,12,25,0,0,0,0,0} ENTER
+DT{2024,3,14,15,36,1,-7,0} -
+(displays 24629039)
+```
+
+We can convert the numbers of seconds to a Duration object using the `S>DR`
+menu:
+
+```
+24629039
+S>DR
+(displays DR{285,1,23,59})
+```
+
+If we change to the `".."` mode, we get:
+
+```
+285d 1h 23m 59s
+```
+
+#### ZonedDateTime Conversion of TimeZones
+
+The ZonedDateTime overloads the multiplication operator `*` to act as the
+"timezone converter" function.
+
++-----------------------------------+-------------------+
+| Operation                         | Result            |
++-----------------------------------+-------------------+
+| {ZonedDateTime} * {integer}       | {ZonedDateTime}   |
+| {ZonedDateTime} * {TimeZone}      | {ZonedDateTime}   |
+| {integer} * {ZonedDateTime}       | {ZonedDateTime}   |
+| {TimeZone} * {ZonedDateTime}      | {ZonedDateTime}   |
++-----------------------------------+-------------------+
+
+For example, let's convert the timestamp 2024-03-14 15:36:01
+in America/Los_Angeles (which is UTC-07:00) in the summer time to
+Pacific/Auckland (which is currently UTC+13:00):
+
+```
+DZ{2024,3,14,15,35,1,-7,0} ENTER
+TZ{13,0} *
+(displays DZ{2024,3,15,11,35,1,13,...})
+(select MODE "..")
+(displays 2024-03-15 11;35:01+13:00)
+```
+
+Let's convert the same time to the time in India which is at UTC+05:30:
+
+```
+5.5 *
+(displays 2024-03-15 04:05:41+05:30)
+```
+
+Let's convert this to Newfoundland, Canda time, which is at UTC-02:30:
+
+```
+-2.5 *
+(displays 2024-03-14 20:05:01-02:30)
+```
+
+Finally, let's convert this to UTC:
+
+```
+0 *
+(displays 2024-03-14 22:35:01 Z)
+```
 
 ### DayOfWeek Object
 
