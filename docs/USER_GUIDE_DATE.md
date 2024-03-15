@@ -364,8 +364,25 @@ Here is an incomplete list of validation rules:
 
 #### Date Record Operations
 
-Addition and subtraction operations are supported. For example, let's add 20
-days to the date of 2024-03-14:
+Addition and subtraction operations are supported as shown in the following
+table:
+
+```
++---------------------------+-----------+
+| Operation                 | Result    |
++---------------------------+-----------+
+| {Date} + {integer}        | {Date}    |
+| {integer} + {Date}        | {Date}    |
++---------------------------+-----------+
+| {Date} - {integer}        | {Date}    |
+| {Date} - {Date}           | {integer} |
++---------------------------+-----------+
+| {integer} - {Date}        | invalid   |
++---------------------------+-----------+
+```
+
+When operating on `Date` objects, integer values are assumed to be in units of
+`days`. For example, let's add 20 days to the date of 2024-03-14:
 
 ```
 D{2024,3,14} ENTER
@@ -418,11 +435,26 @@ record:
 
 #### Time Record Operations
 
-Just like Date records, addition and subtraction operations are supported. There
-2 important differences:
+Just like `Date` records, addition and subtraction operations are supported as
+summarized in the following table:
 
-1. The integer added to or subtracted from a `Time` record is in units of
-*seconds*, not *days*, and
+```
++---------------------------+-----------+
+| Operation                 | Result    |
++---------------------------+-----------+
+| {Time} + {integer}        | {Time}    |
+| {integer} + {Time}        | {Time}    |
++---------------------------+-----------+
+| {Time} - {integer}        | {Time}    |
+| {Time} - {Time}           | {integer} |
++---------------------------+-----------+
+| {integer} - {Time}        | invalid   |
++---------------------------+-----------+
+```
+
+There 2 important differences:
+
+1. The integers are in units of *seconds*, not *days*, and
 2. If the resulting `Time` is less than `00:00:00` or greater than `24:00:00`,
 the resulting time is renormalized so that it becomes within those bounds. In
 other words, addition and subtraction operations are performed modulo 86400
@@ -483,6 +515,20 @@ for the `Date` record and the rules for the `Time` record.
 
 The addition and subtraction operations are available on the `DateTime` object,
 just like `Date` and `Time`. The unit of integer numbers are *seconds*.
+
+```
++---------------------------+---------------+
+| Operation                 | Result        |
++---------------------------+---------------+
+| {DateTime} + {integer}    | {DateTime}    |
+| {integer} + {DateTime}    | {DateTime}    |
++---------------------------+---------------+
+| {DateTime} - {integer}    | {DateTime}    |
+| {DateTime} - {DateTime}   | {integer}     |
++---------------------------+---------------+
+| {integer} - {DateTime}    | invalid       |
++---------------------------+---------------+
+```
 
 For example, let's subtract 100_000 seconds from `2024-03-14 15:39:55`:
 
