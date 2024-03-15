@@ -32,20 +32,21 @@ features:
     - [POSIX time](#posix-time)
     - [Timezones](#timezones)
     - [Date and Time Formats](#date-and-time-formats)
-- [Date Menus](#)
-- [Date Buttons](#)
-- [Date Objects](#)
-    - [Data Entry](#)
-    - [Display Formats](#)
-    - [Date Record](#)
-    - [Time Record](#)
-    - [Duration Record](#)
-    - [TimeZone Record](#)
-    - [ZonedDateTime Record](#)
-    - [DayOfWeek Record](#)
-- [Timezone Conversion](#)
-- [Epoch Date](#)
-- [Real Time Clock](#)
+- [Date Menus](#date-menus)
+- [Date Buttons](#date-buttons)
+- [Date-related Objects](#date-related-objects)
+    - [Data Entry](#data-entry)
+    - [Display Format Modes](#display-format-modes)
+    - [Date Object](#date-object)
+    - [Time Object](#time-object)
+    - [Duration Object](#duration-object)
+    - [TimeZone Object](#timezone-object)
+    - [ZonedDateTime Object](#zoneddatetime-object)
+    - [DayOfWeek Object](#dayofweek-object)
+- [Timezone Conversion](#timezone-conversion)
+- [Epoch Date](#epoch-date)
+- [Real Time Clock](#real-time-clock)
+- [Record Component Manipulations](#record-component-manipulations)
 
 ## Calendar, Time, and Timezones
 
@@ -273,9 +274,9 @@ following keys have been activated:
 
 Prior to v0.10, both the `,` and `2ND EE` keystrokes were mapped to the `EE`
 function to allow numbers in scientific notation to be entered easily. However
-the entry of the Date Record objects requires the use of the comma `,` key, so
-the app now contains an option to control the behavior of this button under the
-`MODE` menu:
+the entry of the Date objects requires the use of the comma `,` key, so the app
+now contains an option to control the behavior of this button under the `MODE`
+menu:
 
 - [TODO: screenshot of [,EE EE, {..}, ".."]]
 
@@ -306,7 +307,7 @@ ALPHA D
 For brevity and readability, this long sequence of keystrokes will be shortened
 to something like `D{2024,3,14}` in the subsequent sections.
 
-### Display Format
+### Display Format Modes
 
 In the `MODE` menu, there are 2 settings that affect how date record objects are
 displayed:
@@ -335,14 +336,14 @@ Back" feature is enabled, so that when the `ON/EXIT` button is pressed, the menu
 jumps back to the prior menu location. This makes it easier to quickly change
 the `{..}` or `".."` display modes.
 
-### Date Record
+### Date Object
 
-The `Date` record has the form `D{year:u16, month:u8, day:u8}` and represents a
+The `Date` object has the form `D{year:u16, month:u8, day:u8}` and represents a
 Gregorian calendar date. For example, the date `2024-03-14` is entered into the
 calculator as `D{2024,3,14,}`. The human-readable string of this object when the
 `".."` option is selected is `2024-03-14`.
 
-#### Date Record Validation
+#### Date Object Validation
 
 Upon input termination, Date components are validated to make sure that it
 represents a proper Gregorian calendar date. If the component is invalid, an
@@ -362,7 +363,7 @@ Here is an incomplete list of validation rules:
 - `day` component must be between 1 and 31, and must be valid for the given
   month
 
-#### Date Record Operations
+#### Date Object Operations
 
 Addition and subtraction operations are supported as shown in the following
 table:
@@ -407,9 +408,9 @@ D{2024,3,14} -
 
 There are 286 days from March 14 to Dec 25, 2024.
 
-### Time Record
+### Time Object
 
-The `Time` record has the form `T{hour:u8, minute:u8, second:u8}`. For example,
+The `Time` object has the form `T{hour:u8, minute:u8, second:u8}`. For example,
 the time `15:36:01` is entered into the calculator like this:
 
 ```
@@ -423,7 +424,7 @@ like:
 15:36:01
 ```
 
-#### Time Record Validation
+#### Time Object Validation
 
 The validation rules for a `Time` record is more straightforward than a `Date`
 record:
@@ -433,7 +434,7 @@ record:
 - the `second` component must be in the interval [0, 59], leap seconds not
   supported
 
-#### Time Record Operations
+#### Time Object Operations
 
 Just like `Date` records, addition and subtraction operations are supported as
 summarized in the following table:
@@ -488,7 +489,7 @@ T{17,0,0} ENTER
 
 There are 5039 seconds between `15:36:01` and `17:00:00`.
 
-### DateTime Record
+### DateTime Object
 
 A DateTime record is a concatenation of the Date record and a Time record. It
 has the format `DateTime `DT{year:u16, month:u8, day:u8, hour:u8, minute:u8,
@@ -506,15 +507,15 @@ following upon `ENTER`:
 2024-03-14 15:35:01
 ```
 
-#### DateTime Record Validation
+#### DateTime Object Validation
 
 The validation rules of the `DateTime` is the union of the validation rules
 for the `Date` record and the rules for the `Time` record.
 
-#### DateTime Record Operations
+#### DateTime Object Operations
 
 The addition and subtraction operations are available on the `DateTime` object,
-just like `Date` and `Time`. The unit of integer numbers are *seconds*.
+just like `Date` and `Time`. The integer numbers are in unit of *second*.
 
 ```
 +---------------------------+---------------+
@@ -557,7 +558,7 @@ MODE
 (displays 285d 8h 23m 59s)
 ```
 
-### Duration Record
+### Duration Object
 
 The `Duration` object has the form `DR{days:i16, hours:i8, minutes:i8,
 seconds:i8}`. It can be a positive or a negative quantity. For example, a
@@ -636,7 +637,7 @@ DR{0,12,0,0} (in MODE {..})
 
 #### Duration Record Validation
 
-The components of the Duration record has the following validation rules:
+The components of the Duration object has the following validation rules:
 
 - the `days` component is currently limited to 4 digits [-9999,9999] (it could
   be extended to +/- 32767 with a little bit of coding)
@@ -710,18 +711,18 @@ DR{0,2,33,0} +
 For example, let's add 30d to the DateTime `2024-03-14 12:58:32`:
 
 ```
-DT{2024,3,14,12:58:32} ENTER
+DT{2024,3,14,12,58,32} ENTER
 30:D +
 (displays DT{2024,4,13,12,58,32})
 ```
 
-### TimeZone Record
+### TimeZone Object
 
-### ZonedDateTime Record
+### ZonedDateTime Object
 
-### DayOfWeek Record
+### DayOfWeek Object
 
-The `DayOfWeek` record has the form `DW{dow:u8}`, where the `dow` field is a
+The `DayOfWeek` object has the form `DW{dow:u8}`, where the `dow` field is a
 single integer containing the [ISO Weekday
 number](https://en.wikipedia.org/wiki/ISO_8601), where Monday is represented by
 1 and Sunday is represented by 7. For example, Thursday has an ISO weekday value
@@ -737,19 +738,18 @@ If we set the display `MODE` to `".."` string mode, the display will show:
 Thu
 ```
 
-#### DayOfWeek Record Validation
+#### DayOfWeek Object Validation
 
 Upon input termination, the `dow` component is validated and if the component is
 invalid, an `Err:Invalid` error message is displayed. For example, if we try to
 enter the invalid DayOfWeek value of `DW{0}`, an error is shown:
 
 ```
-DW{0}
-ENTER
+DW{0} ENTER
 (displays Err:Invalid)
 ```
 
-#### DayOfWeek Record Operations
+#### DayOfWeek Object Operations
 
 Although it is unlikely to be needed often, addition and subtraction operations
 have been implemented for the DayOfWeek object, mostly for consistency. To add 6
@@ -761,8 +761,7 @@ DW{4} ENTER
 (displays DW{3})
 ```
 
-You can subtract 2 DayOfWeek objects, to get the number of days between them,
-modulo 7:
+You can subtract 2 DayOfWeek objects, to get the number of days between them:
 
 ```
 DW{3} ENTER
@@ -778,7 +777,7 @@ There are -1 days from Thursday to Wednesday.
 
 ## Real Time Clock
 
-## Date and Time Record Manipulations
+## Record Component Manipulations
 
 ### DCUT - Cut
 
