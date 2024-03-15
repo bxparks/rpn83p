@@ -122,8 +122,17 @@ closeInputAndRecallRpnDateX:
     ret z
     bcall(_ErrDataType)
 
-; Close the input buffer, validate RpnOffset{} or Real, and place it into OP1.
+; Close the input buffer, validate RpnOffset{}, and place it into OP1.
 closeInputAndRecallRpnOffsetX:
+    call closeInput
+    res rpnFlagsTvmCalculate, (iy + rpnFlags)
+    call rclX ; A=objectType
+    cp rpnObjectTypeOffset
+    ret z
+    bcall(_ErrDataType)
+
+; Close the input buffer, validate RpnOffset{} or Real, and place it into OP1.
+closeInputAndRecallRpnOffsetOrRealX:
     call closeInput
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     call rclX ; A=objectType

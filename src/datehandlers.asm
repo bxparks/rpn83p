@@ -403,7 +403,7 @@ noClockErr:
 ;-----------------------------------------------------------------------------
 
 mSetTimeZoneHandler:
-    call closeInputAndRecallRpnOffsetX ; A=rpnObjectType; OP1=X
+    call closeInputAndRecallRpnOffsetOrRealX ; A=rpnObjectType; OP1=X
     bcall(_SetAppTimeZone)
     ld a, errorCodeTzStored
     ld (handlerCode), a
@@ -419,7 +419,7 @@ mSetClockTimeZoneHandler:
     or a
     jr nz, noClockErr
     ;
-    call closeInputAndRecallRpnOffsetX
+    call closeInputAndRecallRpnOffsetOrRealX
     bcall(_RtcSetTimeZone)
     ld a, errorCodeTzStored
     ld (handlerCode), a
