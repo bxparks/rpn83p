@@ -339,12 +339,12 @@ parseComma:
 
 ; Description: Parse up to 4 decimal digits at HL to a u16 at DE.
 ; Input:
-;   - DE:u16Pointer
-;   - HL:charPointer
+;   - DE:(u16*)=u16Pointer
+;   - HL:(char*)=charPointer
 ; Output:
 ;   - (*DE):u16, little endian
-;   - DE: incremented by 2 bytes
-;   - HL: incremented by 0-4 characters to the next char
+;   - DE=incremented by 2 bytes
+;   - HL=incremented by 0-4 characters to the next char
 ; Destroys: A, DE, HL
 ; Preserves: BC
 parseU16D4:
@@ -385,12 +385,12 @@ parseU16D4End:
 ; Description: Parse optional signChar and up to 4 decimal digits at HL to an
 ; i16 at DE.
 ; Input:
-;   - DE:i16Pointer
-;   - HL:charPointer
+;   - DE:(i16*)=i16Pointer
+;   - HL:(char*)=charPointer
 ; Output:
 ;   - (*DE):i16, little endian
-;   - DE: incremented by 2 bytes
-;   - HL: incremented by 0-5 characters to the next char
+;   - DE=incremented by 2 bytes
+;   - HL=incremented by 0-5 characters to the next char
 ; Destroys: A, DE, HL
 ; Preserves: BC
 parseI16D4:
@@ -431,12 +431,12 @@ negI16:
 
 ; Description: Parse up to 2 decimal digits at HL to a u8 at DE.
 ; Input:
-;   - DE: destPointer
-;   - HL: charPointer
+;   - DE:(u8*)=destPointer
+;   - HL:(char*)=charPointer
 ; Output:
-;   - (DE): u8
-;   - DE: incremented by 1 byte
-;   - HL: incremented by 0-2 characters to the next char
+;   - (DE):u8
+;   - DE=incremented by 1 byte
+;   - HL=incremented by 0-2 characters to the next char
 ; Destroys: A
 parseU8D2:
     ; first character must be valid digit
@@ -472,12 +472,12 @@ parseU8D2End:
 ; Description: Parse optional negative sign and up to 2 decimal digits at HL to
 ; an i8 at DE.
 ; Input:
-;   - DE: destPoint
-;   - HL: charPointer
+;   - DE:(i8*)=destPoint
+;   - HL:(char*)=charPointer
 ; Output:
-;   - (DE): i8
-;   - DE: incremented by 1 byte
-;   - HL: incremented by 0-3 characters to the next char
+;   - (DE):i8
+;   - DE=incremented by 1 byte
+;   - HL=incremented by 0-3 characters to the next char
 ; Destroys: A
 parseI8D2:
     ; first character must be valid digit or '-'
