@@ -39,12 +39,12 @@ features:
     - [Display Format Modes](#display-format-modes)
     - [Date Object](#date-object)
     - [Time Object](#time-object)
-    - [Duration Object](#duration-object)
     - [TimeZone Object](#timezone-object)
     - [ZonedDateTime Object](#zoneddatetime-object)
     - [DayOfWeek Object](#dayofweek-object)
-- [Timezone Conversion](#timezone-conversion)
-- [Epoch Date and Conversions](#epoch-date-and-conversions)
+    - [Duration Object](#duration-object)
+- [Timezone Conversions](#timezone-conversions)
+- [Epoch Date Conversions](#epoch-date-conversions)
 - [Real Time Clock](#real-time-clock)
 - [Record Components](#record-components)
 
@@ -712,55 +712,6 @@ If we change to the `".."` mode, we get:
 285d 1h 23m 59s
 ```
 
-#### ZonedDateTime Conversion of TimeZones
-
-The ZonedDateTime overloads the multiplication operator `*` to act as the
-"timezone converter" function.
-
-```
-+-----------------------------------+-------------------+
-| Operation                         | Result            |
-+-----------------------------------+-------------------+
-| {ZonedDateTime} * {integer}       | {ZonedDateTime}   |
-| {ZonedDateTime} * {TimeZone}      | {ZonedDateTime}   |
-| {integer} * {ZonedDateTime}       | {ZonedDateTime}   |
-| {TimeZone} * {ZonedDateTime}      | {ZonedDateTime}   |
-+-----------------------------------+-------------------+
-```
-
-For example, let's convert the timestamp 2024-03-14 15:36:01
-in America/Los_Angeles (which is UTC-07:00) in the summer time to
-Pacific/Auckland (which is currently UTC+13:00):
-
-```
-DZ{2024,3,14,15,35,1,-7,0} ENTER
-TZ{13,0} *
-(displays DZ{2024,3,15,11,35,1,13,...})
-(select MODE "..")
-(displays 2024-03-15 11;35:01+13:00)
-```
-
-Let's convert the same time to the time in India which is at UTC+05:30:
-
-```
-5.5 *
-(displays 2024-03-15 04:05:41+05:30)
-```
-
-Let's convert this to Newfoundland, Canada time, which is at UTC-02:30:
-
-```
--2.5 *
-(displays 2024-03-14 20:05:01-02:30)
-```
-
-Finally, let's convert this to UTC:
-
-```
-0 *
-(displays 2024-03-14 22:35:01 Z)
-```
-
 ### DayOfWeek Object
 
 The `DayOfWeek` object has the form `DW{dow:u8}`, where the `dow` field is a
@@ -976,12 +927,74 @@ DT{2024,3,14,12,58,32} ENTER
 (displays DT{2024,4,13,12,58,32})
 ```
 
-## Epoch Date and Conversions
+## Timezone Conversions
+
+A ZonedDateTime with a specific timezone (e.g. UTC-07:00) can be converted to
+another ZonedDatetime with a different timezone (e.g. UTC+13:00). The RPN83P
+provides a mechanism to perform timezone conversions quickly by overloading the
+multiplication operator `*` in the following way:
+
+```
++-----------------------------------+-------------------+
+| Operation                         | Result            |
++-----------------------------------+-------------------+
+| {ZonedDateTime} * {integer}       | {ZonedDateTime}   |
+| {ZonedDateTime} * {TimeZone}      | {ZonedDateTime}   |
+| {integer} * {ZonedDateTime}       | {ZonedDateTime}   |
+| {TimeZone} * {ZonedDateTime}      | {ZonedDateTime}   |
++-----------------------------------+-------------------+
+```
+
+The `*` operator takes 2 arguments. The source timezone is contained in the
+ZoneDateTime object. The target timezone can be represented by a TimeZone object
+or by a shortform floating point number that represents the number of hours
+offset from UTC. For example, `UTC-08:00` can be encoded by just `-8`.
+
+For example, let's convert the timestamp 2024-03-14 15:36:01
+in America/Los_Angeles (which is UTC-07:00) in the summer time to
+Pacific/Auckland (which is currently UTC+13:00):
+
+```
+DZ{2024,3,14,15,35,1,-7,0} ENTER
+TZ{13,0} *
+(displays DZ{2024,3,15,11,35,1,13,...})
+(select MODE "..")
+(displays 2024-03-15 11;35:01+13:00)
+```
+
+Let's convert the same time to the time in India which is at UTC+05:30. We can
+represent the target time zone using the floating point number `5.5`:
+
+```
+5.5 *
+(displays 2024-03-15 04:05:41+05:30)
+```
+
+Let's convert this to the timezone in Newfoundland, Canada which is at
+UTC-02:30:
+
+```
+-2.5 *
+(displays 2024-03-14 20:05:01-02:30)
+```
+
+Finally, let's convert this to UTC:
+
+```
+0 *
+(displays 2024-03-14 22:35:01 Z)
+```
+
+## Epoch Date Conversions
 
 Many computer systems keep track of time by counting the number of sections from
 a specific date, called the
 [epoch](https://en.wikipedia.org/wiki/Epoch_%28computing%29)  RPN83P supports
-the following epoch dates:
+the following epoch dates under the `EPCH` menu:
+
+[TODO: screenshot of EPCH menu row]
+
+The following predefined epoch dates can be selected:
 
 - `UNIX`: 1970-01-01 00:00:00 UTC (default)
     - [Unix epoch](https://en.wikipedia.org/wiki/Unix_time)
@@ -994,6 +1007,9 @@ the following epoch dates:
 - `Y2K`: 2000-01-01 00:00:00 UTC
     - An epoch date used by some 32-bit systems to avoid the
     [Year 2038 problem](https://en.wikipedia.org/wiki/Year_2038_problem)
+
+The `CEPC` menu items allow custom epoch dates:
+
 - `CEPC`: user-defined custom epoch
 
 [TODO: screenshot of [CPEC] option selected]
