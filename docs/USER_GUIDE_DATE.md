@@ -44,9 +44,9 @@ features:
     - [ZonedDateTime Object](#zoneddatetime-object)
     - [DayOfWeek Object](#dayofweek-object)
 - [Timezone Conversion](#timezone-conversion)
-- [Epoch Date](#epoch-date)
+- [Epoch Date and Conversions](#epoch-date-and-conversions)
 - [Real Time Clock](#real-time-clock)
-- [Record Component Manipulations](#record-component-manipulations)
+- [Record Components](#record-components)
 
 ## Calendar, Time, and Timezones
 
@@ -561,7 +561,7 @@ MODE
 ### TimeZone Object
 
 The TimeZone object has the form `TZ{hour:i8, minute:i8}`. It represents a fixed
-offset from UTC. As previously stated, the RPN83P does not current support
+offset from UTC. As noted earlier , the RPN83P does not currently support
 timezones with automatic DST transitions, such as those defined by the IANA TZ
 database. Daylight saving time changes must be handled manually. For example,
 the standard offset for `America/Los_Angeles` is UTC-08:00 during the winter
@@ -747,7 +747,7 @@ Let's convert the same time to the time in India which is at UTC+05:30:
 (displays 2024-03-15 04:05:41+05:30)
 ```
 
-Let's convert this to Newfoundland, Canda time, which is at UTC-02:30:
+Let's convert this to Newfoundland, Canada time, which is at UTC-02:30:
 
 ```
 -2.5 *
@@ -976,11 +976,90 @@ DT{2024,3,14,12,58,32} ENTER
 (displays DT{2024,4,13,12,58,32})
 ```
 
-## Epoch Date
+## Epoch Date and Conversions
+
+Many computer systems keep track of time by counting the number of sections from
+a specific date, called the
+[epoch](https://en.wikipedia.org/wiki/Epoch_%28computing%29)  RPN83P supports
+the following epoch dates:
+
+- `UNIX`: 1970-01-01 00:00:00 UTC (default)
+    - [Unix epoch](https://en.wikipedia.org/wiki/Unix_time)
+- `NTP`: 1900-01-01 00:00:00 UTC
+    - [NTP epoch](https://en.wikipedia.org/wiki/Network_Time_Protocol)
+- `GPS`: 1980-01-06 00:00:00 UTC
+    - [GPS epoch](https://en.wikipedia.org/wiki/Global_Positioning_System)
+- `TIOS`: 1997-01-01 00:00:00 UTC
+    - [TIOS epoch](https://wikiti.brandonw.net/index.php?title=83Plus:Ports:45)
+- `Y2K`: 2000-01-01 00:00:00 UTC
+    - An epoch date used by some 32-bit systems to avoid the
+    [Year 2038 problem](https://en.wikipedia.org/wiki/Year_2038_problem)
+- `CEPC`: user-defined custom epoch
+
+[TODO: screenshot of [CPEC] option selected]
+
+### Custom Epoch Date
+
+The custom Epoch date is selected using the `CEPC` menu item. The actual value
+of the custom epoch date is set using the `EPC` (set epoch). The `EPC?` (get
+epoch) command allows the user to retrieve the currently defined custom epoch
+date.
+
+For example, to set the custom epoch date to `2050-01-01`, type:
+
+```
+D{2050,1,1}
+EPC
+```
+
+Pressing the `EPC?` retrieves the current epoch date:
+```
+EPC?
+(displays D{2050,1,1})
+```
+
+### EpochSecond Conversions
+
+There are 4 menu functions which convert between date-time objects and epoch
+seconds or epoch days:
+
+[TODO: screenshot of [DY>D] [D>DY]]
+[TODO: screenshot of [S>DZ] [S>UT]]
+
+- `Dx>S`
+    - calculates the `seconds` representation of the input object. If the input
+      is a ZonedDateTime, then the output is the number of seconds from the
+      current Epoch date.
+- `S>DZ`
+    - converts the number of epochseconds to the `ZonedDateTime` (using the
+      currently select TimeZone)
+- `S>UT`
+    - same as `S>DZ` except that the timezone of the resulting ZonedDateTime is
+      always UTC+00:00.
+- `D>DY`
+    - converts the current Date object into the number of whole days from the
+      current epoch date.
+- `DY>D`
+    - converts the number of epoch days to a Date object
+
+### Range of Epoch Seconds
+
+Internally, all date/time calculations are performed using 40-bit signed
+integers whose range is `[-549_755_813_888, +549_755_813_887]` seconds. This is
+approximately `[-17421,+17421]` years which is more than enough to handle the
+entire range of years `[1,9999]` supported by this framework. The use of 40-bit
+signed integers allows RPN83P to avoid the [Year
+2038](https://en.wikipedia.org/wiki/Year_2038_problem) problem which affects
+many older Unix systems which uses a 32-bit signed integer to hold the
+epochseconds quantity.
 
 ## Real Time Clock
 
-## Record Component Manipulations
+### RTC Timezone
+
+### Application TimeZone
+
+## Record Components
 
 ### DCUT - Cut
 
