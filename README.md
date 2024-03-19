@@ -425,13 +425,13 @@ best-effort basis. Remember that this software comes with no warranties and no
 guarantees of support.
 
 For feature requests, I recommend scanning through the [Future
-Enhancements](docs/USER_GUIDE.md#future-enhancements) section in the User Guide
-and verify that your feature is not already there. I use the User Guide document
-to manage the sprawling collection of features because it's faster and easier
-for me compared to dealing with the overhead of the GitHub web UI, especially
-for small features that can be described in a few sentences. Usually only the
-larger and more complicated features will get their own GitHub tickets. But I
-understand that Users will find it easier to submit a ticket to GitHub Issues.
+Enhancements](docs/FUTURE.md) section in the User Guide and verify that your
+feature is not already there. I use the User Guide document to manage the
+sprawling collection of features because it's faster and easier for me compared
+to dealing with the overhead of the GitHub web UI, especially for small features
+that can be described in a few sentences. Usually only the larger and more
+complicated features will get their own GitHub tickets. But I understand that
+Users will find it easier to submit a ticket to GitHub Issues.
 
 Please refrain from emailing me directly unless the content is sensitive. The
 problem with email is that I cannot reference the email conversation when other
