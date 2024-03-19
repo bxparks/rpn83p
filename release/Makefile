@@ -31,7 +31,12 @@ rpn83p-example2.gif \
 rpn83p-example3.gif \
 rpn83p-example4.gif
 
-PANDOC_FLAGS := -V geometry:margin=1in -V fontsize=12pt -V colorlinks=true -f gfm -s
+PANDOC_FLAGS := \
+--variable geometry:margin=1in \
+--variable fontsize=12pt \
+--variable colorlinks=true \
+--from gfm \
+--standalone
 
 # Create a zip file suitable for third party archives, like cemetech.net and
 # ticalc.org.
