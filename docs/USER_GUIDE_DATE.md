@@ -8,7 +8,7 @@ row. [TODO: Insert screenshot of menu row]. Here is a quick summary of the
 features:
 
 - determine if a given year is a leap year
-- calculate day of week (Monday-Sunday) from date
+- calculate day of week (Monday-Sunday) from Date
 - add or subtract duration from Date
 - calculate duration difference between 2 Dates
 - add or subtract duration from Time
@@ -19,7 +19,7 @@ features:
 - convert between DateTime to epoch seconds from a fixed Epoch date
 - support multiple Epoch dates (Unix, NTP, GPS, custom, etc)
 - set and retrieve the current date and time from the real time clock (RTC) of
-  83+SE, 84+, and 84+SE (not supported on the 83+)
+  83+SE, 84+, and 84+SE (83+ does not have an RTC so is not supported)
 
 **Version**: 0.10.0 (2024-03-14)
 
@@ -316,32 +316,28 @@ displayed:
     - [TODO: insert [,EE EE, {..} ".."]]
 
 If the `{..}` option is selected (factory default), the records will be
-displayed in their entry form using the curly braces. For example, the
-`Date` record will be displayed as
+displayed in their entry form using the curly braces. If the `".."` option is
+selected, the records will be displayed as a human-readable string. In the
+following sections, the displayed string in both modes will be shown.
 
-```
-D{2024,3,14}
-```
-
-If the `".."` option is selected, the records will be displayed as a
-human-readable string. For example, the `D{2024,3,14}` record will be displayed
-as
-
-```
-2024-03-14
-```
-
-Recall that when the `MODE` menu is activated using the `MODE` button, the "Jump
-Back" feature is enabled, so that when the `ON/EXIT` button is pressed, the menu
-jumps back to the prior menu location. This makes it easier to quickly change
-the `{..}` or `".."` display modes.
+**Pro Tip**: If the `MODE` menu is activated using the `MODE` **button**, the
+"Jump Back" feature is enabled so that the `ON/EXIT` button returns to the prior
+menu location. This makes it easier to quickly change the `{..}` or `".."`
+display modes.
 
 ### Date Object
 
 The `Date` object has the form `D{year:u16, month:u8, day:u8}` and represents a
 Gregorian calendar date. For example, the date `2024-03-14` is entered into the
-calculator as `D{2024,3,14,}`. The human-readable string of this object when the
-`".."` option is selected is `2024-03-14`.
+calculator as follows, and is displayed in 2 different ways depending on the
+MODE setting of `{..}` or `".."`:
+
+| **Keys**                  | **MODE `{..}`**       | **MODE `".."`**   |
+| ------------------------- | --------------------- | ----------------- |
+| `D{2024,3,14}`            | `X:D{2024,3,14}_`     | `X:D{2024,3,14}_` |
+|                           |                       |                   |
+|                           | `Y:D{2024,3,14}`      | `Y:2024-03-14`    |
+| `ENTER`                   | `X:D{2024,3,14}`      | `X:2024-03-14`    |
 
 #### Date Validation
 
@@ -350,11 +346,16 @@ represents a proper Gregorian calendar date. If the component is invalid, an
 `Err:Invalid` error message is displayed. For example, if we try to enter the
 invalid date `2024-02-30`, we get:
 
-```
-D{2024,2,30}
-ENTER
-(displays Err:Invalid)
-```
+| **Keys**                  | **MODE `{..}`**       | **MODE `".."`**   |
+| ------------------------- | --------------------- | ----------------- |
+| `D{2024,2,30}`            | `X:D{2024,2,30}_`     | `X:D{2024,2,30}_` |
+|                           |                       |                   |
+|                           | `Err:Invalid`         | `Err:Invalid`     |
+| `ENTER`                   | `X:D{2024,2,30}_`     | `X:D{2024,2,30}_` |
+
+Notice that for input validation errors like this, the input is not terminated
+and the prompt continues to be shown. You can pressed the `DEL` to delete the
+input characters and fix the error.
 
 Here is an incomplete list of validation rules:
 
@@ -368,43 +369,51 @@ Here is an incomplete list of validation rules:
 Addition and subtraction operations are supported as shown in the following
 table:
 
-```
-+---------------------------+-----------+
-| Operation                 | Result    |
-+---------------------------+-----------+
+| **Operation**             | **Result**|
+| ------------------------- | ----------|
 | {Date} + {integer}        | {Date}    |
 | {integer} + {Date}        | {Date}    |
-+---------------------------+-----------+
+|                           |           |
 | {Date} - {integer}        | {Date}    |
 | {Date} - {Date}           | {integer} |
-+---------------------------+-----------+
+|                           |           |
 | {integer} - {Date}        | INVALID   |
-+---------------------------+-----------+
-```
 
 When operating on `Date` objects, integer values are assumed to be in units of
-`days`. For example, let's add 20 days to the date of 2024-03-14:
+`days`. For example, let's add 20 days to the date of 2024-03-14, then
+subtract 30 days from that result:
 
-```
-D{2024,3,14} ENTER
-20 +
-(displays D{2024,4,3})
-```
-
-Let's subtract 30 days from that result, by typing
-```
-30 -
-(displays D{2024,3,4})
-```
+| **Keys**                  | **MODE `{..}`**       | **MODE `".."`**   |
+| ------------------------- | --------------------- | ----------------- |
+| `D{2024,3,14}`            | `X:D{2024,3,14}_`     | `X:D{2024,3,14}_` |
+|                           |                       |                   |
+|                           | `Y:D{2024,3,14}`      | `Y:2024-03-14`    |
+| `ENTER`                   | `X:D{2024,3,14}`      | `X:2024-03-14`    |
+|                           |                       |                   |
+|                           | `Y:D{2024,3,14}`      | `Y:2024-03-14`    |
+| `20`                      | `X:20_`               | `X:20_`           |
+|                           |                       |                   |
+| `+`                       | `X:D{2024,4,3}`       | `X:2024-04-03`    |
+|                           |                       |                   |
+|                           | `Y:D{2024,4,3}`       | `Y:2024-04-03`    |
+| `30`                      | `X:30_`               | `X:30_`           |
+|                           |                       |                   |
+| `-`                       | `X:D{2024,3,4}`       | `X:2024-03-04`    |
 
 We can subtract 2 Date records to obtain the number of whole days between the 2
 dates:
 
-```
-D{2024,12,25} ENTER
-D{2024,3,14} -
-(displays 286)
-```
+| **Keys**                  | **MODE `{..}`**       | **MODE `".."`**   |
+| ------------------------- | --------------------- | ----------------- |
+| `D{2024,12,25}`           | `X:D{2024,12,25}_`    | `X:D{2024,12,25}_`|
+|                           |                       |                   |
+|                           | `Y:D{2024,12,25}`     | `Y:2024-12-25`    |
+| `ENTER`                   | `X:D{2024,12,25}`     | `X:2024-12-25`    |
+|                           |                       |                   |
+|                           | `Y:D{2024,12,25}`     | `Y:2024-12-25`    |
+| `D{2024,3,14}`            | `X:D{2024,3,14}_`     | `X:D{2024,3,14}_` |
+|                           |                       |                   |
+| `-`                       | `X:286`               | `X:286`           |
 
 There are 286 days from March 14 to Dec 25, 2024.
 
@@ -413,16 +422,12 @@ There are 286 days from March 14 to Dec 25, 2024.
 The `Time` object has the form `T{hour:u8, minute:u8, second:u8}`. For example,
 the time `15:36:01` is entered into the calculator like this:
 
-```
-T{15,36,1}
-```
-
-If we switch the `MODE` setting from `{..}` to `".."`, the display will look
-like:
-
-```
-15:36:01
-```
+| **Keys**                  | **MODE `{..}`**       | **MODE `".."`**   |
+| ------------------------- | --------------------- | ----------------- |
+| `T{15,36,1}`              | `X:T{15,36,1}_`       | `X:T{15,36,1}_`   |
+|                           |                       |                   |
+|                           | `Y:T{15,36,1}`        | `Y:15:36:01`      |
+| `ENTER`                   | `X:T{15,36,1}`        | `X:15:36:01`      |
 
 #### Time Validation
 
@@ -439,21 +444,17 @@ record:
 Just like `Date` records, addition and subtraction operations are supported as
 summarized in the following table:
 
-```
-+---------------------------+-----------+
-| Operation                 | Result    |
-+---------------------------+-----------+
+| **Operation**             | **Result**|
+| ------------------------- | --------- |
 | {Time} + {integer}        | {Time}    |
 | {integer} + {Time}        | {Time}    |
-+---------------------------+-----------+
+|                           |           |
 | {Time} - {integer}        | {Time}    |
 | {Time} - {Time}           | {integer} |
-+---------------------------+-----------+
+|                           |           |
 | {integer} - {Time}        | INVALID   |
-+---------------------------+-----------+
-```
 
-There 2 important differences:
+There are 2 important differences:
 
 1. The integers are in units of *seconds*, not *days*, and
 2. If the resulting `Time` is less than `00:00:00` or greater than `24:00:00`,
@@ -461,31 +462,42 @@ the resulting time is renormalized so that it becomes within those bounds. In
 other words, addition and subtraction operations are performed modulo 86400
 seconds.
 
-Let's add 234 seconds to `15:36:01`:
+Let's perform some arithmetic operations on the Time value, for example, add 234
+seconds, then subtract 100,000 seconds:
 
-```
-T{15,36,1} ENTER
-234 +
-(displays T{15,39,55})
-```
+| **Keys**                  | **MODE `{..}`**       | **MODE `".."`**   |
+| ------------------------- | --------------------- | ----------------- |
+| `T{15,36,1}`              | `X:T{15,36,1}_`       | `X:T{15,36,1}_`   |
+|                           |                       |                   |
+|                           | `Y:T{15,36,1}`        | `Y:15:36:01`      |
+| `ENTER`                   | `X:T{15,36,1}`        | `X:15:36:01`      |
+|                           |                       |                   |
+|                           | `Y:T{15,36,1}`        | `Y:15:36:01`      |
+| `234`                     | `X:234_`              | `X:234_`          |
+|                           |                       |                   |
+| `+`                       | `X:T{15,39,55}`       | `X:15:39:55`      |
+|                           |                       |                   |
+|                           | `Y:T{11,53,15}`       | `Y:11:53:15`      |
+| `100000`                  | `X:100000_`           | `X:100000_`       |
+|                           |                       |                   |
+| `-`                       | `X:T{11,53,15}`       | `X:11:53:15`      |
 
-Let's subtract 100_000 seconds (over a day) from `15:39:55`, which causes
-wrapping around to the previous day:
+Since 100,000 seconds is more than 1 day, the Time object wraps around.
 
-```
-100000 -
-(displays T{11,53,15})
-```
+Just like the Date object, we can subtract 2 Time objects to obtain the number
+of seconds between the 2 objects:
 
-We can subtract 2 Time records to obtain the number of seconds between the 2
-times:
-
-```
-T{15,36,1} ENTER
-T{17,0,0} ENTER
--
-(displays -5039)
-```
+| **Keys**                  | **MODE `{..}`**       | **MODE `".."`**   |
+| ------------------------- | --------------------- | ----------------- |
+| `T{15,36,1}`              | `X:T{15,36,1}_`       | `X:T{15,36,1}_`   |
+|                           |                       |                   |
+|                           | `Y:T{15,36,1}`        | `Y:15:36:01`      |
+| `ENTER`                   | `X:T{15,36,1}`        | `X:15:36:01`      |
+|                           |                       |                   |
+|                           | `Y:T{15,36,1}`        | `Y:15:36:01`      |
+| `T{17,0,0}`               | `X:T{17,0,0}_`        | `X:T{17,0,0}_`    |
+|                           |                       |                   |
+| `-`                       | `X:-5039`             | `X:-5039`         |
 
 There are 5039 seconds between `15:36:01` and `17:00:00`.
 
@@ -493,19 +505,17 @@ There are 5039 seconds between `15:36:01` and `17:00:00`.
 
 A DateTime record is a concatenation of the Date record and a Time record. It
 has the format `DateTime `DT{year:u16, month:u8, day:u8, hour:u8, minute:u8,
-second:u8}`. For example, the date `2024-03-14 15:36:01` would be entered like
+second:u8}`.
+
+For example, the date `2024-03-14 15:36:01` would be entered like
 this:
 
-```
-DT{2024,3,14,15,36,1}
-```
-
-When the `".."` display mode is selected, this object is displayed as the
-following upon `ENTER`:
-
-```
-2024-03-14 15:35:01
-```
+| **Keys**                  | **MODE `{..}`**               | **MODE `".."`**               |
+| ------------------------- | ---------------------         | -----------------             |
+| `DT{2024,3,14,15,36,1}`   | `X:DT{2024,3,14,15,36,1}_`    | `X:DT{2024,3,14,15,35,1}_`    |
+|                           |                               |                               |
+|                           | `Y:DT{2024,3,14,15,36,1}`     | `Y:2024-03-14 15:36:01`       |
+| `ENTER`                   | `X:DT{2024,3,14,15,36,1}`     | `X:2024-03-14 15:36:01`       |
 
 #### DateTime Validation
 
@@ -517,46 +527,54 @@ for the `Date` record and the rules for the `Time` record.
 The addition and subtraction operations are available on the `DateTime` object,
 just like `Date` and `Time`. The integer numbers are in unit of *second*.
 
-```
-+---------------------------+---------------+
-| Operation                 | Result        |
-+---------------------------+---------------+
+| **Operation**             | **Result**    |
+| --------------------------| ------------- |
 | {DateTime} + {integer}    | {DateTime}    |
 | {integer} + {DateTime}    | {DateTime}    |
-+---------------------------+---------------+
+|                           |               |
 | {DateTime} - {integer}    | {DateTime}    |
 | {DateTime} - {DateTime}   | {integer}     |
-+---------------------------+---------------+
+|                           |               |
 | {integer} - {DateTime}    | INVALID       |
-+---------------------------+---------------+
-```
 
-For example, let's subtract 100_000 seconds from `2024-03-14 15:39:55`:
+For example, let's subtract 100,000 seconds from `2024-03-14 15:39:55`:
 
-```
-DT{2024,3,14,15,39,55} ENTER
-100000 -
-(displays DT{2024,3,13,11,53,15})
-```
+| **Keys**                  | **MODE `{..}`**               | **MODE `".."`**               |
+| ------------------------- | ---------------------         | -----------------             |
+| `DT{2024,3,14,15,36,1}`   | `X:DT{2024,3,14,15,36,1}_`    | `X:DT{2024,3,14,15,35,1}_`    |
+|                           |                               |                               |
+|                           | `Y:DT{2024,3,14,15,36,1}`     | `Y:2024-03-14 15:36:01`       |
+| `ENTER`                   | `X:DT{2024,3,14,15,36,1}`     | `X:2024-03-14 15:36:01`       |
+|                           |                               |                               |
+|                           | `Y:DT{2024,3,14,15,36,1}`     | `Y:2024-03-14 15:36:01`       |
+| `100000`                  | `X:100000_`                   | `X:100000_`                   |
+|                           |                               |                               |
+| `-`                       | `X:DT{2024,3,13,11,53,15}`    | `X:2024-03-13 11:53:15`       |
 
 We can subtract 2 `DateTime` objects:
 
-```
-DT{2024,12,25,0,0,0} ENTER
-DT{2024,3,14,15,36,1} -
-(displays 24654239)
-```
+|  **Keys**                 |  **MODE `{..}`**              |  **MODE `".."`**              |
+| ------------------------- | ---------------------         | -----------------             |
+| `DT{2024,12,25,0,0,0}`    | `X:DT{2025,12,25,0,0,0}_`     | `X:DT{2025,12,25,0,0,0}_`     |
+|                           |                               |                               |
+|                           | `Y:DT{2024,12,25,0,0,0}`      | `Y:2024-12-25 00:00:00`       |
+| `ENTER`                   | `X:DT{2024,12,25,0,0,0}`      | `X:2024-12-25 00:00:00`       |
+|                           |                               |                               |
+|                           | `Y:DT{2024,12,25,0,0,0}`      | `Y:2024-12-25 00:00:00`       |
+| `DT{2024,3,14,15,36,1}`   | `X:DT{2024,3,14,15,36,1}_`    | `X:DT{2024,3,14,15,36,1}_`    |
+|                           |                               |                               |
+| `-`                       | `X:24654239`                  | `X:24654239`                  |
 
-There are 24654239 seconds until Christmas Dec 25, 2024. We can convert this
-into a `Duration` object (see below) by clicking on the `S>DR` menu item:
+There are 24654239 seconds until Christmas Dec 25, 2024.
 
-```
-S>DR
-(displays DR{285,8,23,59})
-MODE
-".."
-(displays 285d 8h 23m 59s)
-```
+Let's convert this into a `Duration` object (see below) by clicking on the
+`S>DR` menu item:
+
+|  **Keys**                 |  **MODE `{..}`**              |  **MODE `".."`**        |
+| ------------------------- | ---------------------         | -----------------       |
+|                           | `X:24654239`                  | `X:24654239`            |
+|                           |                               |                         |
+| `S>DR`                    | `X:DR{285,8,23,29}`           | `X:285d 8h 23m 59s`     |
 
 ### TimeZone Object
 
@@ -567,17 +585,12 @@ database. Daylight saving time changes must be handled manually. For example,
 the standard offset for `America/Los_Angeles` is UTC-08:00 during the winter
 months, and changes to UTC-07:00 during the summer months.
 
-The UTC-08:00 timezone is entered like this:
-
-```
-TZ{-8,0}
-```
-
-When the `".."` MODE is selected, this is rendered as:
-
-```
--08:00
-```
+| **Keys**                  | **MODE `{..}`**       | **MODE `".."`**   |
+| ------------------------- | --------------------- | ----------------- |
+| `TZ{-8,0}`                | `X:TZ{-8,0}_`         | `X:TZ{-8,0}_`     |
+|                           |                       |                   |
+|                           | `Y:TZ{-8,0}`          | `Y:-08:00`        |
+| `ENTER`                   | `X:TZ{-8,0}`          | `X:-08:00`        |
 
 #### TimeZone Validation
 
@@ -591,8 +604,8 @@ The validation rules for a TimeZone object are:
 
 #### TimeZone Operations
 
-No binary operations (addition, subtractions) are defined on TimeZone objects,
-because they did not seem useful for real-life calculations.
+No arithmetic operations (addition, subtraction) are defined on TimeZone
+objects, because they did not seem useful for real-life calculations.
 
 The TimeZone object can be converted to and from a floating point number
 representing the number of hours shifted from UTC. These are exposed using the
@@ -600,56 +613,45 @@ representing the number of hours shifted from UTC. These are exposed using the
 
 - [TODO: screenshot of `H>TZ` and `TZ>H` menus]
 
-To convert `TZ{-8,0}` to hours:
+To convert `TZ{-8,0}` to hours then back to a TimeZone object:
 
-```
-TZ{-8,0}
-TZ>H
-(displays -8)
-```
-
-To convert -4.5 hours shifted from UTC to TimeZone:
-
-```
--4.5
-H>TZ
-(displays TZ{-4,-30})
-```
+| **Keys**                  | **MODE `{..}`**       | **MODE `".."`**   |
+| ------------------------- | --------------------- | ----------------- |
+| `TZ{-8,0}`                | `X:TZ{-8,0}_`         | `X:TZ{-8,0}_`     |
+|                           |                       |                   |
+| `TZ>H`                    | `X:-8`                | `X:-8`            |
+|                           |                       |                   |
+| `H>TZ`                    | `X:TZ{-8,0}`          | `X:-08:00`        |
 
 ### ZonedDateTime Object
 
 The ZonedDateTime is a combination of Date, Time, and TimeZone. It has the form
 `DZ{year:u16, month:u8, day:u8, hour:u8, minute:u8, second:u8, tzhour:i8,
 tzminute:i8}`. It describes the local time of a specific place that uses a
-specific UTC offset. For example, the date-time of `2024-03-14 15:36:01-07:00`
+specific UTC offset. Here is how to enter `2024-03-14 15:36:01-07:00`
 which occurred in `America/Los_Angeles` timezone after the DST shift on March
-10, 2024 would be entered like this:
+10, 2024:
 
-```
-DZ{2024,3,14,15,36,1,-7,0}
-```
+| **Keys**                  | **MODE `{..}`**                   | **MODE `".."`**                   |
+| ------------------------- | ---------------------             | -----------------                 |
+| `DZ{2024,3,14,`           | `X:DZ{2024,3,14,15,36,1,-7,0}_`   | `X:DT{2024,3,14,15,35,1,-7,0}_`   |
+| `15,36,1,-7,0}`           |                                   |                                   |
+|                           |                                   |                                   |
+|                           | `Y:DZ{2024,3,14,15,36,1,-7,0}`    | `Y:2024-03-14 15:36:01-07:00`     |
+| `ENTER`                   | `X:DZ{2024,3,14,15,36,1,-7,0}`    | `X:2024-03-14 15:36:01-07:00`     |
 
-When the `".."` display mode is selected, this object is displayed like this
-upon `ENTER`:
-
-```
-2024-03-14 15:36:01-07:00
-```
 
 ZonedDateTime objects which have +00:00 UTC offset are somewhat special,
 and it is useful to indicate these dates. The following date:
 
-```
-DZ{2024,3,14,22,36,1,0,0}
-```
+| **Keys**                  | **MODE `{..}`**                   | **MODE `".."`**                   |
+| ------------------------- | ---------------------             | -----------------                 |
+| `DZ{2024,3,14,`           | `X:DZ{2024,3,14,15,36,1,0,0}_`    | `X:DT{2024,3,14,15,35,1,0,0}_`    |
+| `22,36,1,0,0}`            |                                   |                                   |
+|                           |                                   |                                   |
+|                           | `Y:DZ{2024,3,14,22,36,1,0,0}`     | `Y:2024-03-14 22:36:01 Z`         |
+| `ENTER`                   | `X:DZ{2024,3,14,22,36,1,0,0}`     | `X:2024-03-14 22:36:01 Z`         |
 
-will be displayed like this:
-
-```
-2024-03-14 22:36:01 Z
-```
-
-which is exactly how it would be written by human beings.
 
 #### ZonedDateTime Validation
 
@@ -662,19 +664,15 @@ The addition and subtraction operations are available on the `ZonedDateTime`
 object, just like the `DateTime` object. The integer numbers are in unit of
 *second*.
 
-```
-+-----------------------------------+-------------------+
-| Operation                         | Result            |
-+-----------------------------------+-------------------+
+| **Operation**                     | **Result**        |
+|-----------------------------------|-------------------|
 | {ZonedDateTime} + {integer}       | {ZonedDateTime}   |
 | {integer} + {ZonedDateTime}       | {ZonedDateTime}   |
-+-----------------------------------+-------------------+
+|                                   |                   |
 | {ZonedDateTime} - {integer}       | {ZonedDateTime}   |
 | {ZonedDateTime} - {ZonedDateTime} | {integer}         |
-+-----------------------------------+-------------------+
+|                                   |                   |
 | {integer} - {ZonedDateTime}       | INVALID           |
-+-----------------------------------+-------------------+
-```
 
 The resulting ZonedDateTime will have the same TimeZone offset as the input
 ZonedDateTime.
@@ -866,7 +864,7 @@ DateTime objects:
 
 ```
 +-------------------------------+-------------------+
-| Operation                     | Result            |
+| **Operation**                 | **Result**        |
 +-------------------------------+-------------------+
 | {Duration} + {integer}        | {Duration}        |
 | {integer} + {Duration}        | {Duration}        |
@@ -936,7 +934,7 @@ multiplication operator `*` in the following way:
 
 ```
 +-----------------------------------+-------------------+
-| Operation                         | Result            |
+| **Operation**                     | **Result**        |
 +-----------------------------------+-------------------+
 | {ZonedDateTime} * {integer}       | {ZonedDateTime}   |
 | {ZonedDateTime} * {TimeZone}      | {ZonedDateTime}   |
