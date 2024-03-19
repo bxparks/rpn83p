@@ -77,10 +77,10 @@ current date and time from the RTC into different timezones.
 ### Gregorian Calendar
 
 Most of the world currently uses the [Gregorian
-Calendar](https://en.wikipedia.org/wiki/Gregorian_calendar) system. The calendar
-has a 400-year cycle, with each cycle containing 146097 days. Since 146097 is
-divisible by 7, the day of the week (Monday to Sunday) associated with a given
-date repeats itself every 400 years as well.
+Calendar](https://en.wikipedia.org/wiki/Gregorian_calendar) system. The
+calendar has a 400-year cycle, with each cycle containing 146097 days. Since
+146097 is divisible by 7 only once, the day of the week (Monday to Sunday)
+associated with a given date repeats itself every 400 years as well.
 
 The Gregorian calendar was first introduced on October 15, 1582, but different
 countries adopted the calendar at different times over the course of the
@@ -100,15 +100,15 @@ the motion of the earth around the sun.
 Roughly speaking, the solar day is defined to be 86400 seconds (or more
 accurately, the second was originally defined to be 1/86400 of a mean solar
 day). The solar year is slightly variable, but the mean is [365.2422 mean solar
-days](https://en.wikipedia.org/wiki/Tropical_year). The complex leap year rules
-of the Gregorian calendar arises from the fact that the solar year is not a
-simple integral multiple of the solar day. Since humans find it convenient for
-the calendar year to synchronize with the solar year, the Gregorian calendar
-inserts leap days into various years occasionally so that the solar year and the
-calendar year align. In the Gregorian system, the year is 146097/400 =
-365.2425 days averaged over its 400-year cycle. This is close enough to the mean
-solar year of 365.2422 days until about the year 3200 when the Gregorian
-calendar year will be about [a day behind the actual solar
+days](https://en.wikipedia.org/wiki/Tropical_year). The complex rules with
+regards to leap years in the Gregorian calendar is consequence of the fact that
+the solar year is not a simple integral multiple of the solar day. Since humans
+find it convenient for the calendar year to synchronize with the solar year,
+the Gregorian calendar inserts leap days into various years occasionally so
+that the solar year and the calendar year align. In the Gregorian system, the
+year is 146097/400 = 365.2425 days averaged over its 400-year cycle. This is
+close enough to the mean solar year of 365.2422 days until about the year 3200
+when the Gregorian calendar year will be about [a day behind the actual solar
 year](https://en.wikipedia.org/wiki/Tropical_year).
 
 For practical reasons, the RPN83P limits the year range from 0001 to 9999. The
@@ -129,53 +129,53 @@ Universal Time (UTC)](https://en.wikipedia.org/wiki/Coordinated_Universal_Time)
 system uses the SI *second* unit to track the solar day of the earth in terms of
 the SI *seconds*.
 
-Since earth's rotation speed is irregular and slows down by [a few milliseconds
+The Earth's rotational speed is irregular and slows down by [a few milliseconds
 per century](https://en.wikipedia.org/wiki/Earth's_rotation). The UTC time
 system resynchronizes the solar day with the day composed of 86400 *SI seconds*
 by inserting a [leap second](https://en.wikipedia.org/wiki/Leap_second) every
 few years, so that the difference between a UTC day and a solar day is no more
 than 0.9s. During a leap second, which happens at the very last second of the
-day, so that the final minute has 61 seconds instead of 60 seconds. A conforming
-UTC clock goes from `23:59:59` to `23:59:60`, then rolls over to `00:00:00` to
-start the next day. In theory, a negative leap second is possible, in which case
-the clock would skip from `23:59:58` to `00:00:00` over a single second.
+day, the final minute has 61 seconds instead of 60 seconds. A conforming UTC
+clock goes from `23:59:59` to `23:59:60`, then rolls over to `00:00:00` to
+start the next day. In theory, a negative leap second is possible, in which
+case the clock would skip from `23:59:58` to `00:00:00` over a single second.
 
 A [UNIX time](https://en.wikipedia.org/wiki/Unix_time) (aka POSIX time), is a
 time measuring system originally implemented on UNIX systems, where the leap
 second is ignored for simplicity. More precisely, POSIX time is a time system
-where a *POSIX second* is a variable size. During a positive leap second, a
-POSIX second equals 2 *SI seconds*, and a POSIX clock goes from `23:59:58` to
+where a *POSIX second* is variable in duration. During a positive leap second,
+a POSIX second equals 2 *SI seconds*, and a POSIX clock goes from `23:59:58` to
 `23:59:59`, which is held for 2 seconds, before rolling over to `00:00:00`.
 During a negative leap second, the POSIX second becomes reduced to 0 *SI
 seconds*, so that a POSIX clock goes from `23:59:58` to `00:00:00` one second
 later, skipping `23:59:59` instantly because the duration of `23:59:59` is
-0-seconds long.
+0 seconds long.
 
 For simplicity, like many software libraries, the RPN83P calculator implements
-POSIX time not UTC time. Leap seconds are *not* considered in any calculations.
-If two datetimes are subtracted to calculate the duration between them, the
-resulting number of seconds is calculated in terms POSIX seconds, not SI
-seconds. To obtain the *actual* number of seconds between those 2 datetimes, we
-would need to consult a table of leap seconds, and add the number of leap
-seconds that were added between those 2 datetimes.
+POSIX time, not UTC time. Leap seconds are *not* considered in any
+calculations. If two datetimes are subtracted to calculate the duration between
+them, the resulting number of seconds is calculated in terms POSIX seconds, not
+SI seconds. To obtain the *actual* number of SI seconds between those 2
+datetimes, we would need to consult a table of leap seconds and add the number
+of leap seconds that occurred between those 2 datetimes.
 
 ### Timezones
 
 To maintain the convenience of having the location of the Sun near its highest
 point in the sky when the local time is 12:00 noon, the world is divided into
-[time zones](https://en.wikipedia.org/wiki/Time_zone). The local time is shifted
-from the UTC time, usually in integral multiples of one hour, but locations
-which are shifted by a multiple of 30 minutes or 15 minutes exist in the world.
+[time zones](https://en.wikipedia.org/wiki/Time_zone). The local time is
+shifted from the UTC time, usually in integral multiples of one hour, but there
+exist locations which are shifted by a multiple of 30 minutes or 15 minutes.
 
 Further complicating the calculation of the local time, many places observe
-[daylight saving time](https://en.wikipedia.org/wiki/Daylight_saving_time) (DST)
-during the summer months. The rules for when those DST transitions occur and the
-size of the DST shift are determined by each country or jurisdiction. The most
-complete database of all such rules is the [IANA TZ
-database](https://en.wikipedia.org/wiki/Tz_database), incorporating between 350
-to 600 timezones around the world (depending on how a "timezone" is defined).
-The RPN83P does not currently support the IANA TZ database. It supports only
-fixed UTC offsets.
+[daylight saving time](https://en.wikipedia.org/wiki/Daylight_saving_time)
+(DST) during the summer months. The rules for when those DST transitions occur
+and the size of the DST shift (it is not always 1 hour) are determined by each
+country or jurisdiction. The most complete database of all such rules is the
+[IANA TZ database](https://en.wikipedia.org/wiki/Tz_database), incorporating
+between 350 to 600 timezones around the world (depending on how a "timezone" is
+defined). The RPN83P does not currently support the IANA TZ database. It
+supports only fixed UTC offsets.
 
 ### Date and Time Formats
 
