@@ -34,6 +34,10 @@ time and energy are limited.
       RPL or the NSTK mode of Free42) is *not* a feature that is appealing to me
 - add a `ROOT > CLR > CLAL` (Clear All) menu function
     - becomes useful as more features and configuration options are added
+- allow CPLX functions to operate on Real numbers
+    - see [Issue#16](https://github.com/bxparks/rpn83p/issues/16)
+- allow numbers in any base to be entered regardless of the BASE mode
+    - see [Issue#17](https://github.com/bxparks/rpn83p/issues/17)
 
 ## Medium Future
 
@@ -104,6 +108,17 @@ time and energy are limited.
       input string using the LEFT and RIGHT arrow keys
     - the DEL key would probably continue to delete to the left
     - any other input would probably insert at the cursor position
+- auto-insert an implied `1` when `EE` is pressed in certain conditions
+    - if the `E` is pressed on the HP-42S, a `1` or `1.` or `-1` or `-1.` is
+      auto inserted into the input buffer under certain conditions
+    - this feature inserts extra characters into the input buffer instead of
+      changing the behavior of the input *parser*
+    - therefore, this so is more difficult to implement in RPN83P versus the
+      HP-42S, because the RPN83P has far more data types (e.g. complex numbers,
+      Record types) so the input buffer code needs to understand the format of
+      those data types to do the right thing
+    - not sure if the amount of time and effort of this feature is worth the
+      saving of a single keystroke
 - `GCD` and `LCM` functions are slow
     - Could be made significantly faster using integer operations, instead of
       floating point operations.
@@ -116,6 +131,8 @@ time and energy are limited.
     - For example, single-letter variables `A` to `Z` and `Theta` are now
       (v0.10.0) available through `STO` and `RCL`.
     - Other types may be useful: List, Matrix, and String types.
+- add UI marker for menu items which are folders/groups
+    - see [Issue#20](https://github.com/bxparks/rpn83p/issues/20)
 
 ## Far Future
 
@@ -143,6 +160,7 @@ time and energy are limited.
     - Similar to indirect `STO` and `RCL` operators, I think these are mainly
       useful for keystroke programming, so let's implement keystroke programming
       before this.
+    - see also [Issue#19](https://github.com/bxparks/rpn83p/issues/19)
 - local RPN stack and local storage registers
     - After keystroke programming is added, it may be useful to support local
       RPN and storage registers, on a per-program basis.
