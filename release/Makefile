@@ -10,6 +10,7 @@
 #	- https://stackoverflow.com/questions/29240290 (pdflatex not found)
 #	- https://stackoverflow.com/questions/13515893 (margin size)
 #	- https://stackoverflow.com/questions/23811002 (fontsize)
+#	- https://superuser.com/questions/1732392 (colored hyperlinks)
 #
 # I use '-f gfm' instead of '-f markdown' to handle embedded images better.
 # The `-f mardown` option separates out the images into separate Figures which
@@ -30,6 +31,8 @@ rpn83p-example2.gif \
 rpn83p-example3.gif \
 rpn83p-example4.gif
 
+PANDOC_FLAGS := -V geometry:margin=1in -V fontsize=12pt -V colorlinks=true -f gfm -s
+
 # Create a zip file suitable for third party archives, like cemetech.net and
 # ticalc.org.
 rpn83p.zip: $(TARGETS)
@@ -39,19 +42,25 @@ rpn83p.zip: $(TARGETS)
 # Convert markdown to PDF.
 README.pdf: ../README.md Makefile
 	(cd ..; \
-	pandoc -V geometry:margin=1in -V fontsize=12pt -f gfm -s -o $@ README.md; \
+	pandoc $(PANDOC_FLAGS) -o $@ README.md; \
 	mv -f $@ release)
 
 # Convert markdown to PDF.
 USER_GUIDE.pdf: ../docs/USER_GUIDE.md Makefile
 	(cd ../docs; \
-	pandoc -V geometry:margin=1in -V fontsize=12pt -f gfm -s -o $@ USER_GUIDE.md; \
+	pandoc $(PANDOC_FLAGS) -o $@ USER_GUIDE.md; \
+	mv -f $@ ../release)
+
+# Convert markdown to PDF.
+USER_GUIDE_DATE.pdf: ../docs/USER_GUIDE_DATE.md Makefile
+	(cd ../docs; \
+	pandoc $(PANDOC_FLAGS) -o $@ USER_GUIDE_DATE.md; \
 	mv -f $@ ../release)
 
 # Convert markdown to PDF.
 TVM.pdf: ../docs/TVM.md Makefile
 	(cd ../docs; \
-	pandoc -V geometry:margin=1in -V fontsize=12pt -f gfm -s -o $@ TVM.md; \
+	pandoc $(PANDOC_FLAGS) -o $@ TVM.md; \
 	mv -f $@ ../release)
 
 # Copy the CHANGELOG.md as is, without conversion to PDF. It's just a text
