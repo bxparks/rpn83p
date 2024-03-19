@@ -418,14 +418,20 @@ Here are the tools and resources that I used for development on Ubuntu Linux
 
 ## Feedback and Support
 
-If you have any questions, comments, or feature requests for this library,
-please use the [GitHub
-Discussions](https://github.com/bxparks/rpn83p/discussions) for this project.
-If you have bug reports, please file a ticket in [GitHub
-Issues](https://github.com/bxparks/rpn83p/issues). Feature requests should go
-into Discussions first because they often have alternative solutions which are
-useful to remain visible, instead of disappearing from the default view of the
-Issue tracker after the ticket is closed.
+If you have any questions, comments, bugs, or feature requests for this
+application, you can file a ticket in the [GitHub
+Issues](https://github.com/bxparks/rpn83p/issues). They will be handled on a
+best-effort basis. Remember that this software comes with no warranties and no
+guarantees of support.
+
+For feature requests, I recommend scanning through the [Future
+Enhancements](docs/USER_GUIDE.md#future-enhancements) section in the User Guide
+and verify that your feature is not already there. I use the User Guide document
+to manage the sprawling collection of features because it's faster and easier
+for me compared to dealing with the overhead of the GitHub web UI, especially
+for small features that can be described in a few sentences. Usually only the
+larger and more complicated features will get their own GitHub tickets. But I
+understand that Users will find it easier to submit a ticket to GitHub Issues.
 
 Please refrain from emailing me directly unless the content is sensitive. The
 problem with email is that I cannot reference the email conversation when other
