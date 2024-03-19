@@ -4,6 +4,12 @@ There seems to be almost an endless number of features that could go into a
 calculator app. I have grouped them into the following subsections, since my
 time and energy are limited.
 
+**Version**: 0.9.0 (2024-01-06)
+
+**Project Home**: https://github.com/bxparks/rpn83p
+
+## Table of Contents
+
 - [Near Future](#near-future)
 - [Medium Future](#medium-future)
 - [Far Future](#far-future)
