@@ -430,13 +430,12 @@ Calculators](https://www.hpmuseum.org/). That's another option for feedback and
 support.
 
 For feature requests, I recommend scanning through the [Future
-Enhancements](docs/FUTURE.md) section in the User Guide and verify that your
-feature is not already there. I use the User Guide document to manage the
-sprawling collection of features because it's faster and easier for me compared
-to dealing with the overhead of the GitHub Issues UI, especially for small
-features that can be described in a few sentences. Usually only the larger and
-more complicated features will get their own GitHub tickets. But I understand
-that Users will find it easier to submit a ticket to GitHub Issues.
+Enhancements](docs/FUTURE.md) document and verifying that your feature is not
+already there. I use the FUTURE.md document to manage the sprawling collection
+of features because it's faster and easier compared with the overhead of the web
+UI of GitHub Issues, especially for small features that can be described in a
+few sentences. Usually only the larger and more complicated features will get
+their own GitHub tickets.
 
 Please refrain from emailing me directly unless the content is sensitive. The
 problem with email is that I cannot reference the email conversation when other
