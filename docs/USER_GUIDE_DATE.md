@@ -332,12 +332,10 @@ Gregorian calendar date. For example, the date `2024-03-14` is entered into the
 calculator as follows, and is displayed in 2 different ways depending on the
 MODE setting of `{..}` or `".."`:
 
-| **Keys**                  | **MODE `{..}`**       | **MODE `".."`**   |
-| ------------------------- | --------------------- | ----------------- |
-| `D{2024,3,14}`            | `X:D{2024,3,14}_`     | `X:D{2024,3,14}_` |
-|                           |                       |                   |
-|                           | `Y:D{2024,3,14}`      | `Y:2024-03-14`    |
-| `ENTER`                   | `X:D{2024,3,14}`      | `X:2024-03-14`    |
+| **Keys**          | **MODE `{..}`**                 | **MODE `".."`** |
+| ----------------  | ---------------------           | --------------- |
+| `D{2024,3,14}`    | ![](images/date/date-raw-1.png) | ![](images/date/date-form-1.png) |
+| `ENTER`           | ![](images/date/date-raw-2.png) | ![](images/date/date-form-2.png) |
 
 #### Date Validation
 
