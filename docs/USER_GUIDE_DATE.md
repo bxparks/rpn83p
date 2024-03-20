@@ -389,17 +389,12 @@ subtract 30 days from that result:
 We can subtract 2 Date records to obtain the number of whole days between the 2
 dates:
 
-| **Keys**                  | **MODE `{..}`**       | **MODE `".."`**   |
-| ------------------------- | --------------------- | ----------------- |
-| `D{2024,12,25}`           | `X:D{2024,12,25}_`    | `X:D{2024,12,25}_`|
-|                           |                       |                   |
-|                           | `Y:D{2024,12,25}`     | `Y:2024-12-25`    |
-| `ENTER`                   | `X:D{2024,12,25}`     | `X:2024-12-25`    |
-|                           |                       |                   |
-|                           | `Y:D{2024,12,25}`     | `Y:2024-12-25`    |
-| `D{2024,3,14}`            | `X:D{2024,3,14}_`     | `X:D{2024,3,14}_` |
-|                           |                       |                   |
-| `-`                       | `X:286`               | `X:286`           |
+| **Keys**          | **MODE `{..}`**                       | **MODE `".."`**   |
+| ------------------| ---------------------                 | ----------------- |
+| `D{2024,12,25}`   | ![](images/date/date-sub-raw-1.png)   | ![](images/date/date-sub-form-1.png) |
+| `ENTER`           | ![](images/date/date-sub-raw-2.png)   | ![](images/date/date-sub-form-2.png) |
+| `D{2024,3,14}`    | ![](images/date/date-sub-raw-3.png)   | ![](images/date/date-sub-form-3.png) |
+| `-`               | ![](images/date/date-sub-raw-4.png)   | ![](images/date/date-sub-form-4.png) |
 
 There are 286 days from March 14 to Dec 25, 2024.
 
