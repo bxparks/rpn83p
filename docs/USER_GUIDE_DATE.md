@@ -458,17 +458,12 @@ Since 100,000 seconds is more than 1 day, the Time object wraps around.
 Just like the Date object, we can subtract 2 Time objects to obtain the number
 of seconds between the 2 objects:
 
-| **Keys**                  | **MODE `{..}`**       | **MODE `".."`**   |
-| ------------------------- | --------------------- | ----------------- |
-| `T{15,36,1}`              | `X:T{15,36,1}_`       | `X:T{15,36,1}_`   |
-|                           |                       |                   |
-|                           | `Y:T{15,36,1}`        | `Y:15:36:01`      |
-| `ENTER`                   | `X:T{15,36,1}`        | `X:15:36:01`      |
-|                           |                       |                   |
-|                           | `Y:T{15,36,1}`        | `Y:15:36:01`      |
-| `T{17,0,0}`               | `X:T{17,0,0}_`        | `X:T{17,0,0}_`    |
-|                           |                       |                   |
-| `-`                       | `X:-5039`             | `X:-5039`         |
+| **Keys**          | **MODE `{..}`**       | **MODE `".."`**   |
+| ------------------| --------------------- | ----------------- |
+| `T{15,36,1}`      | ![](images/date/time-sub-raw-1.png)   | ![](images/date/time-sub-form-1.png) |
+| `ENTER`           | ![](images/date/time-sub-raw-2.png)   | ![](images/date/time-sub-form-2.png) |
+| `T{17,0,0}`       | ![](images/date/time-sub-raw-3.png)   | ![](images/date/time-sub-form-3.png) |
+| `-`               | ![](images/date/time-sub-raw-4.png)   | ![](images/date/time-sub-form-4.png) |
 
 There are 5039 seconds between `15:36:01` and `17:00:00`.
 
