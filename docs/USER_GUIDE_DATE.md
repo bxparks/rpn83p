@@ -444,22 +444,14 @@ seconds.
 Let's perform some arithmetic operations on the Time value, for example, add 234
 seconds, then subtract 100,000 seconds:
 
-| **Keys**                  | **MODE `{..}`**       | **MODE `".."`**   |
-| ------------------------- | --------------------- | ----------------- |
-| `T{15,36,1}`              | `X:T{15,36,1}_`       | `X:T{15,36,1}_`   |
-|                           |                       |                   |
-|                           | `Y:T{15,36,1}`        | `Y:15:36:01`      |
-| `ENTER`                   | `X:T{15,36,1}`        | `X:15:36:01`      |
-|                           |                       |                   |
-|                           | `Y:T{15,36,1}`        | `Y:15:36:01`      |
-| `234`                     | `X:234_`              | `X:234_`          |
-|                           |                       |                   |
-| `+`                       | `X:T{15,39,55}`       | `X:15:39:55`      |
-|                           |                       |                   |
-|                           | `Y:T{11,53,15}`       | `Y:11:53:15`      |
-| `100000`                  | `X:100000_`           | `X:100000_`       |
-|                           |                       |                   |
-| `-`                       | `X:T{11,53,15}`       | `X:11:53:15`      |
+| **Keys**          | **MODE `{..}`**                       | **MODE `".."`**   |
+| ------------------| ---------------------                 | ----------------- |
+| `T{15,36,1}`      | ![](images/date/time-add-raw-1.png)   | ![](images/date/time-add-form-1.png) |
+| `ENTER`           | ![](images/date/time-add-raw-2.png)   | ![](images/date/time-add-form-2.png) |
+| `234`             | ![](images/date/time-add-raw-3.png)   | ![](images/date/time-add-form-3.png) |
+| `+`               | ![](images/date/time-add-raw-4.png)   | ![](images/date/time-add-form-4.png) |
+| `100000`          | ![](images/date/time-add-raw-5.png)   | ![](images/date/time-add-form-5.png) |
+| `-`               | ![](images/date/time-add-raw-6.png)   | ![](images/date/time-add-form-6.png) |
 
 Since 100,000 seconds is more than 1 day, the Time object wraps around.
 
