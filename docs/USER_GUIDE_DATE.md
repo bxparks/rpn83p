@@ -232,7 +232,7 @@ The following menus items are located under the `DATE` menu:
 Here is a screenshot of the calculator with various buttons that are assigned to
 `DATE` related functions:
 
-[TODO: screenshot of calculator]
+![DATE buttons](images/fullshot-date-buttons.jpg)
 
 ## Date-related Objects
 
