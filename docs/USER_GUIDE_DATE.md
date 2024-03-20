@@ -312,8 +312,8 @@ to something like `D{2024,3,14}` in the subsequent sections.
 In the `MODE` menu, there are 2 settings that affect how date record objects are
 displayed:
 
-- [TODO: insert `MODE` menu]
-    - [TODO: insert [,EE EE, {..} ".."]]
+- ![ROOT > MODE](images/date/rpn83p-menu-root-mode.png)
+    - ![ROOT > MODE > Object Format](images/date/rpn83p-menu-root-mode-object-format.png)
 
 If the `{..}` option is selected (factory default), the records will be
 displayed in their entry form using the curly braces. If the `".."` option is
