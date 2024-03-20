@@ -344,12 +344,10 @@ represents a proper Gregorian calendar date. If the component is invalid, an
 `Err:Invalid` error message is displayed. For example, if we try to enter the
 invalid date `2024-02-30`, we get:
 
-| **Keys**                  | **MODE `{..}`**       | **MODE `".."`**   |
-| ------------------------- | --------------------- | ----------------- |
-| `D{2024,2,30}`            | `X:D{2024,2,30}_`     | `X:D{2024,2,30}_` |
-|                           |                       |                   |
-|                           | `Err:Invalid`         | `Err:Invalid`     |
-| `ENTER`                   | `X:D{2024,2,30}_`     | `X:D{2024,2,30}_` |
+| **Keys**          | **MODE `{..}`**                   | **MODE `".."`**   |
+| ------------------| ---------------------             | ----------------- |
+| `D{2024,2,30}`    | ![](images/date/invalid-raw-1.png)| ![](images/date/invalid-form-1.png) |
+| `ENTER`           | ![](images/date/invalid-raw-2.png)| ![](images/date/invalid-form-2.png) |
 
 Notice that for input validation errors like this, the input is not terminated
 and the prompt continues to be shown. You can pressed the `DEL` to delete the
