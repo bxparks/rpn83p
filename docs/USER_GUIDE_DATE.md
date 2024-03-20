@@ -369,32 +369,22 @@ table:
 | ------------------------- | ----------|
 | {Date} + {integer}        | {Date}    |
 | {integer} + {Date}        | {Date}    |
-|                           |           |
 | {Date} - {integer}        | {Date}    |
 | {Date} - {Date}           | {integer} |
-|                           |           |
 | {integer} - {Date}        | INVALID   |
 
 When operating on `Date` objects, integer values are assumed to be in units of
 `days`. For example, let's add 20 days to the date of 2024-03-14, then
 subtract 30 days from that result:
 
-| **Keys**                  | **MODE `{..}`**       | **MODE `".."`**   |
-| ------------------------- | --------------------- | ----------------- |
-| `D{2024,3,14}`            | `X:D{2024,3,14}_`     | `X:D{2024,3,14}_` |
-|                           |                       |                   |
-|                           | `Y:D{2024,3,14}`      | `Y:2024-03-14`    |
-| `ENTER`                   | `X:D{2024,3,14}`      | `X:2024-03-14`    |
-|                           |                       |                   |
-|                           | `Y:D{2024,3,14}`      | `Y:2024-03-14`    |
-| `20`                      | `X:20_`               | `X:20_`           |
-|                           |                       |                   |
-| `+`                       | `X:D{2024,4,3}`       | `X:2024-04-03`    |
-|                           |                       |                   |
-|                           | `Y:D{2024,4,3}`       | `Y:2024-04-03`    |
-| `30`                      | `X:30_`               | `X:30_`           |
-|                           |                       |                   |
-| `-`                       | `X:D{2024,3,4}`       | `X:2024-03-04`    |
+| **Keys**          | **MODE `{..}`**                       | **MODE `".."`**   |
+| ------------------| ---------------------                 | ----------------- |
+| `D{2024,3,14}`    | ![](images/date/date-add-raw-1.png)   | ![](images/date/date-add-form-1.png) |
+| `ENTER`           | ![](images/date/date-add-raw-2.png)   | ![](images/date/date-add-form-2.png) |
+| `20`              | ![](images/date/date-add-raw-3.png)   | ![](images/date/date-add-form-3.png) |
+| `+`               | ![](images/date/date-add-raw-4.png)   | ![](images/date/date-add-form-4.png) |
+| `30`              | ![](images/date/date-add-raw-5.png)   | ![](images/date/date-add-form-5.png) |
+| `-`               | ![](images/date/date-add-raw-6.png)   | ![](images/date/date-add-form-6.png) |
 
 We can subtract 2 Date records to obtain the number of whole days between the 2
 dates:
