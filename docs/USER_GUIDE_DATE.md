@@ -521,14 +521,20 @@ We can subtract 2 `DateTime` objects:
 There are 24654239 seconds from March 13, 2024 15:39:55 to Christmas Dec 25,
 2024 00:00:00.
 
-The `Duration` object is described in more detail in a subsequent subsection
-below, but let's quickly convert this into a more human-readable for by using
-the `S>DR` menu item to convert this into a `Duration` object:
+We can convert the 24654239 seconds quantity into something that is easier to
+understand for humans by converting it into a `Duration` object. (The
+`Duration` object is described in more detail in the [Duration
+Object](#duration-object) below.) Scroll down the `DATE` menu rows until the
+`S>DR` menu item appears, as shown in the table below. Press that menu item to
+convert 24654239 seconds into a `Duration` object:
 
-|  **Keys**                 |  **MODE `{..}`**              |  **MODE `".."`**        |
-| ------------------------- | ---------------------         | -----------------       |
-|                           | `X:24654239`                  | `X:24654239`            |
-| `S>DR`                    | `X:DR{285,8,23,29}`           | `X:285d 8h 23m 59s`     |
+|  **Keys** |  **MODE `{..}`**                                  |  **MODE `".."`**        |
+| ----------| ---------------------                             | -----------------       |
+|           | ![](images/date/datetime-sub-duration-raw-1.png)  | ![](images/date/datetime-sub-duration-form-1.png) |
+| `S>DR`    | ![](images/date/datetime-sub-duration-raw-2.png)  | ![](images/date/datetime-sub-duration-form-2.png) |
+
+We can now see that there are 285 days, 8 hours, 23 minutes, and 59 seconds
+between March 13, 2024 15:39:55 to Christmas Dec 25, 2024 00:00:00.
 
 ### TimeZone Object
 
