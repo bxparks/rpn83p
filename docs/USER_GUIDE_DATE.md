@@ -428,10 +428,8 @@ summarized in the following table:
 | ------------------------- | --------- |
 | {Time} + {integer}        | {Time}    |
 | {integer} + {Time}        | {Time}    |
-|                           |           |
 | {Time} - {integer}        | {Time}    |
 | {Time} - {Time}           | {integer} |
-|                           |           |
 | {integer} - {Time}        | INVALID   |
 
 There are 2 important differences:
@@ -494,10 +492,8 @@ just like `Date` and `Time`. The integer numbers are in unit of *second*.
 | --------------------------| ------------- |
 | {DateTime} + {integer}    | {DateTime}    |
 | {integer} + {DateTime}    | {DateTime}    |
-|                           |               |
 | {DateTime} - {integer}    | {DateTime}    |
 | {DateTime} - {DateTime}   | {integer}     |
-|                           |               |
 | {integer} - {DateTime}    | INVALID       |
 
 For example, let's subtract 100,000 seconds from `2024-03-14 15:39:55`:
@@ -628,22 +624,21 @@ object, just like the `DateTime` object. The integer numbers are in unit of
 |-----------------------------------|-------------------|
 | {ZonedDateTime} + {integer}       | {ZonedDateTime}   |
 | {integer} + {ZonedDateTime}       | {ZonedDateTime}   |
-|                                   |                   |
 | {ZonedDateTime} - {integer}       | {ZonedDateTime}   |
 | {ZonedDateTime} - {ZonedDateTime} | {integer}         |
-|                                   |                   |
 | {integer} - {ZonedDateTime}       | INVALID           |
 
 The resulting ZonedDateTime will have the same TimeZone offset as the input
 ZonedDateTime.
 
-For example, let's subtract 100_000 seconds from `2024-03-14 15:39:55-08:00`:
+For example, let's add 100_000 seconds to `2024-03-14 15:36:01-07:00`:
 
-```
-DZ{2024,3,14,15,39,55,-8,0} ENTER
-100000 -
-(displays DZ{2024,3,13,11,53,15,-8,0})
-```
+| **Keys**                      | **MODE `{..}`**                   | **MODE `".."`**                   |
+| -------------------------     | ---------------------             | -----------------                 |
+| `DZ{2024,3,14,15,36,1,-7,0}`  | ![](images/date/zoneddatetime-add-raw-1.png)  | ![](images/date/zoneddatetime-add-form-1.png) |
+| `ENTER`                       | ![](images/date/zoneddatetime-add-raw-2.png)  | ![](images/date/zoneddatetime-add-form-2.png) |
+| `100000`                      | ![](images/date/zoneddatetime-add-raw-3.png)  | ![](images/date/zoneddatetime-add-form-3.png) |
+| `+`                           | ![](images/date/zoneddatetime-add-raw-4.png)  | ![](images/date/zoneddatetime-add-form-4.png) |
 
 We can subtract 2 `ZonedDateTime` objects. Their TimeZone components does not
 have to be same. Let's determine the number of seconds to Dec 25, 2024, at
