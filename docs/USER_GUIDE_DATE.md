@@ -539,18 +539,16 @@ between March 13, 2024 15:39:55 to Christmas Dec 25, 2024 00:00:00.
 ### TimeZone Object
 
 The TimeZone object has the form `TZ{hour:i8, minute:i8}`. It represents a fixed
-offset from UTC. As noted earlier , the RPN83P does not currently support
+offset from UTC. As noted earlier, the RPN83P does not currently support
 timezones with automatic DST transitions, such as those defined by the IANA TZ
 database. Daylight saving time changes must be handled manually. For example,
 the standard offset for `America/Los_Angeles` is UTC-08:00 during the winter
 months, and changes to UTC-07:00 during the summer months.
 
-| **Keys**                  | **MODE `{..}`**       | **MODE `".."`**   |
-| ------------------------- | --------------------- | ----------------- |
-| `TZ{-8,0}`                | `X:TZ{-8,0}_`         | `X:TZ{-8,0}_`     |
-|                           |                       |                   |
-|                           | `Y:TZ{-8,0}`          | `Y:-08:00`        |
-| `ENTER`                   | `X:TZ{-8,0}`          | `X:-08:00`        |
+| **Keys**   | **MODE `{..}`**                     | **MODE `".."`**   |
+| -----------| ---------------------               | ----------------- |
+| `TZ{-8,0}` | ![](images/date/timezone-raw-1.png) | ![](images/date/timezone-form-1.png) |
+| `ENTER`    | ![](images/date/timezone-raw-2.png) | ![](images/date/timezone-form-2.png) |
 
 #### TimeZone Validation
 
