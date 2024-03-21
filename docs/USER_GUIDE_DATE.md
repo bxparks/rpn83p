@@ -762,74 +762,71 @@ and 4 seconds) using the colon-shortcut notation:
 
 The components of the Duration object has the following validation rules:
 
-- the `days` component is currently limited to 4 digits [-9999,9999] (it could
-  be extended to +/- 32767 with a little bit of coding)
+- `days` is currently limited to 4 digits [-9999,9999]
 - `hours` must be in the interval [-23,23]
 - `minutes` must be in the interval [-59,59]
 - `seconds` must be in the interval [-59,59]
 - all components must have the same sign (or zero)
 
-For example, if the signs are not consistent, an `Err:Invalid` will be shown:
-
-```
-DR{1, -2, 0, 1} ENTER
-Err:Invalid
-```
-
 #### Duration Operations
 
-The Duration object is a convenient object because the addition and subtraction
-operations are defined on the Duration object as well as the Date, Time, and
-DateTime objects:
+Basic addition and subtraction operations are defined on Duration objects:
 
-```
-+-------------------------------+-------------------+
 | **Operation**                 | **Result**        |
-+-------------------------------+-------------------+
+|-------------------------------|-------------------|
 | {Duration} + {integer}        | {Duration}        |
 | {integer} + {Duration}        | {Duration}        |
 | {Duration} + {Duration}       | {Duration}        |
-+-------------------------------+-------------------+
 | {Duration} - {integer}        | {Duration}        |
-| {Duration} - {Duration}       | {Duration} [*]    |
-+-------------------------------+-------------------+
+| {Duration} - {Duration}       | {Duration} `[*]`  |
 | {integer} - {Duration}        | INVALID           |
-+===============================+===================+
+
+`[*]` Subtracting 2 Duration objects results in another Duration object. This is
+different from other date-time objects where subtracting 2 objects of the same
+type produces an integer.
+
+| **Keys**          | **MODE `{..}`**                     | **MODE `".."`**   |
+| -----------       | ---------------------               | ----------------- |
+| `DR{-4,0,-2,0}`   | ![](images/date/duration-add-raw-1.png) | ![](images/date/duration-add-form-1.png) |
+| `ENTER`           | ![](images/date/duration-add-raw-2.png) | ![](images/date/duration-add-form-2.png) |
+| `DR{1,2,0,1`}     | ![](images/date/duration-add-raw-3.png) | ![](images/date/duration-add-form-3.png) |
+| `+`               | ![](images/date/duration-add-raw-4.png) | ![](images/date/duration-add-form-4.png) |
+| `60` (seconds)    | ![](images/date/duration-add-raw-5.png) | ![](images/date/duration-add-form-5.png) |
+| `-`               | ![](images/date/duration-add-raw-6.png) | ![](images/date/duration-add-form-6.png) |
+| `DR{0,0,0,1`}     | ![](images/date/duration-add-raw-7.png) | ![](images/date/duration-add-form-7.png) |
+| `-`               | ![](images/date/duration-add-raw-8.png) | ![](images/date/duration-add-form-8.png) |
+| `+/-` (-)         | ![](images/date/duration-add-raw-9.png) | ![](images/date/duration-add-form-9.png) |
+
+Furthermore, the Duration object is quite useful because it can operate upon
+other date-time objects (Date, Time, DateTime, ZonedDateTime):
+
+| **Operation**                 | **Result**        |
+|-------------------------------|-------------------|
 | {Date} + {Duration}           | {Date}            |
 | {Duration} + {Date}           | {Date}            |
-+-------------------------------+-------------------+
 | {Date} - {Duration}           | {Date}            |
 | {Duration} - {Date}           | INVALID           |
-+===============================+===================+
+|                               |                   |
 | {Time} + {Duration}           | {Time}            |
 | {Duration} + {Time}           | {Time}            |
-+-------------------------------+-------------------+
 | {Time} - {Duration}           | {Time}            |
 | {Duration} - {Time}           | INVALID           |
-+===============================+===================+
+|                               |                   |
 | {DateTime} + {Duration}       | {DateTime}        |
 | {Duration} + {DateTime}       | {DateTime}        |
-+-------------------------------+-------------------+
 | {DateTime} - {Duration}       | {DateTime}        |
 | {Duration} - {DateTime}       | INVALID           |
-+===============================+===================+
+|                               |                   |
 | {ZonedDateTime} + {Duration}  | {ZonedDateTime}   |
 | {Duration} + {ZonedDateTime}  | {ZonedDateTime}   |
-+-------------------------------+-------------------+
 | {ZonedDateTime} - {Duration}  | {ZonedDateTime}   |
 | {Duration} - {ZonedDateTime}  | INVALID           |
-+-------------------------------+-------------------+
-
-[*] For other record types, subtracting 2 objects of the same type produces an
-integer. For Duration objects, it seemed more convenient to return a Duration
-instead.
-```
 
 A good rule of thumb is that anywhere an integer can be used in a binary
-operator involving a Date, Time, or DateTime object, a Duration object can be
-used instead.
+operator involving a Date, Time, DateTime, or ZonedDateTime object, a Duration
+object can be used instead.
 
-For example, let's add 2h 33m to the Time `12:58:32`:
+For example, let's add the Duration `2h 33m` to the Time `12:58:32`:
 
 ```
 T{12:58:32} ENTER
