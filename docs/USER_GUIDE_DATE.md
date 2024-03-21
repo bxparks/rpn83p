@@ -560,6 +560,13 @@ The validation rules for a TimeZone object are:
   UTC-12:00 to UTC+14:00.
 - the signs of the `hour` and `minute` components must match each other
 
+Here is an example of an invalid timezone whose `hour` and `minute` have the opposite sign:
+
+| **Keys**    | **MODE `{..}`**                             | **MODE `".."`**   |
+| ----------- | ---------------------                       | ----------------- |
+| `TZ{-4,30}` | ![](images/date/timezone-invalid-raw-1.png) | ![](images/date/timezone-invalid-form-1.png) |
+| `ENTER`     | ![](images/date/timezone-invalid-raw-2.png) | ![](images/date/timezone-invalid-form-2.png) |
+
 #### TimeZone Operations
 
 No arithmetic operations (addition, subtraction) are defined on TimeZone
@@ -573,11 +580,11 @@ representing the number of hours shifted from UTC. These are exposed using the
 
 To convert `TZ{-4,~30}` to hours then back to a TimeZone object:
 
-| **Keys**     | **MODE `{..}`**       | **MODE `".."`**   |
-| -------------| --------------------- | ----------------- |
-| `TZ{-4,~30}` | ![](images/date/timezone-convert-raw-1.png) | ![](images/date/timezone-convert-form-1.png) |
-| `TZ>H`       | ![](images/date/timezone-convert-raw-2.png) | ![](images/date/timezone-convert-form-2.png) |
-| `H>TZ`       | ![](images/date/timezone-convert-raw-3.png) | ![](images/date/timezone-convert-form-3.png) |
+| **Keys**     | **MODE `{..}`**                                | **MODE `".."`**   |
+| -------------| ---------------------                          | ----------------- |
+| `TZ{-4,-30}` | ![](images/date/timezone-convert-raw-1.png)    | ![](images/date/timezone-convert-form-1.png) |
+| `TZ>H`       | ![](images/date/timezone-convert-raw-2.png)    | ![](images/date/timezone-convert-form-2.png) |
+| `H>TZ`       | ![](images/date/timezone-convert-raw-3.png)    | ![](images/date/timezone-convert-form-3.png) |
 
 ### ZonedDateTime Object
 
