@@ -705,31 +705,21 @@ You can subtract 2 DayOfWeek objects to get the number of days between them:
 ### Duration Object
 
 The `Duration` object has the form `DR{days:i16, hours:i8, minutes:i8,
-seconds:i8}`. It can be a positive or a negative quantity. For example, a
-positive `Duration` object would be:
+seconds:i8}`. It can be a positive or a negative quantity.
 
-```
-DR{1,2,3,4}
-```
+For example, a positive `Duration` object would be:
 
-This is displayed as the following if the string display mode `".."` is
-selected:
-
-```
-1d 2h 3m 4s
-```
+| **Keys**      | **MODE `{..}`**                     | **MODE `".."`**   |
+| -----------   | ---------------------               | ----------------- |
+| `DR{1,2,3,4}` | ![](images/date/duration-pos-raw-1.png) | ![](images/date/duration-pos-form-1.png) |
+| `ENTER`       | ![](images/date/duration-pos-raw-2.png) | ![](images/date/duration-pos-form-2.png) |
 
 A negative duration would be:
 
-```
-DR{-4,0,-2,0}
-```
-
-which would be displayed as
-
-```
--4d 2m
-```
+| **Keys**          | **MODE `{..}`**                     | **MODE `".."`**   |
+| -----------       | ---------------------               | ----------------- |
+| `DR{-4,0,-2,0}`   | ![](images/date/duration-neg-raw-1.png) | ![](images/date/duration-neg-form-1.png) |
+| `ENTER`           | ![](images/date/duration-neg-raw-2.png) | ![](images/date/duration-neg-form-2.png) |
 
 Notice that for negative durations, all the components must be negative (or
 zero). Also notice that when a Duration component is exactly 0, that component
@@ -737,8 +727,8 @@ is omitted from the human-readable string format (in the case above, the `0h`
 and `0s` components).
 
 The `days` component is restricted to 4 digits, so the largest magnitude is
-9999. Therefore, the largest duration that can be represented by the `Duration`
-object is `9999d 23h 59m 59s` or about 24.3 years.
+`9999`. Therefore, the largest duration that can be represented by the
+Duration object is `9999d 23h 59m 59s` or about 24.3 years.
 
 #### Duration Shorthand Entry
 
