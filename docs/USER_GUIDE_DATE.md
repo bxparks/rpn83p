@@ -569,17 +569,15 @@ The TimeZone object can be converted to and from a floating point number
 representing the number of hours shifted from UTC. These are exposed using the
 `H>TZ` and `TZ>H` menu items:
 
-- [TODO: screenshot of `H>TZ` and `TZ>H` menus]
+![](images/date/rpn83p-menu-root-date-3.png)
 
-To convert `TZ{-8,0}` to hours then back to a TimeZone object:
+To convert `TZ{-4,~30}` to hours then back to a TimeZone object:
 
-| **Keys**                  | **MODE `{..}`**       | **MODE `".."`**   |
-| ------------------------- | --------------------- | ----------------- |
-| `TZ{-8,0}`                | `X:TZ{-8,0}_`         | `X:TZ{-8,0}_`     |
-|                           |                       |                   |
-| `TZ>H`                    | `X:-8`                | `X:-8`            |
-|                           |                       |                   |
-| `H>TZ`                    | `X:TZ{-8,0}`          | `X:-08:00`        |
+| **Keys**     | **MODE `{..}`**       | **MODE `".."`**   |
+| -------------| --------------------- | ----------------- |
+| `TZ{-4,~30}` | ![](images/date/timezone-convert-raw-1.png) | ![](images/date/timezone-convert-form-1.png) |
+| `TZ>H`       | ![](images/date/timezone-convert-raw-2.png) | ![](images/date/timezone-convert-form-2.png) |
+| `H>TZ`       | ![](images/date/timezone-convert-raw-3.png) | ![](images/date/timezone-convert-form-3.png) |
 
 ### ZonedDateTime Object
 
