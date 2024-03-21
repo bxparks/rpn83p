@@ -675,10 +675,10 @@ Upon input termination, the `dow` component is validated and if the component is
 invalid, an `Err:Invalid` error message is displayed. For example, if we try to
 enter the invalid DayOfWeek value of `DW{0}`, an error is shown:
 
-```
-DW{0} ENTER
-(displays Err:Invalid)
-```
+| **Keys**   | **MODE `{..}`**                              | **MODE `".."`**   |
+| -----------| ---------------------                        | ----------------- |
+| `DW{0}`    | ![](images/date/dayofweek-invalid-raw-1.png) | ![](images/date/dayofweek-invalid-form-1.png) |
+| `ENTER`    | ![](images/date/dayofweek-invalid-raw-2.png) | ![](images/date/dayofweek-invalid-form-2.png) |
 
 #### DayOfWeek Operations
 
