@@ -682,15 +682,16 @@ enter the invalid DayOfWeek value of `DW{0}`, an error is shown:
 
 #### DayOfWeek Operations
 
-Although it is unlikely to be needed often, addition and subtraction operations
+Although it is unlikely to be used often, addition and subtraction operations
 have been implemented for the DayOfWeek object, mostly for consistency. To add 6
 days to Thursday, we can enter:
 
-```
-DW{4} ENTER
-6 +
-(displays DW{3})
-```
+| **Keys**   | **MODE `{..}`**                          | **MODE `".."`**   |
+| -----------| ---------------------                    | ----------------- |
+| `DW{4}`    | ![](images/date/dayofweek-add-raw-1.png) | ![](images/date/dayofweek-add-form-1.png) |
+| `ENTER`    | ![](images/date/dayofweek-add-raw-2.png) | ![](images/date/dayofweek-add-form-2.png) |
+| `6`        | ![](images/date/dayofweek-add-raw-3.png) | ![](images/date/dayofweek-add-form-3.png) |
+| `+`        | ![](images/date/dayofweek-add-raw-4.png) | ![](images/date/dayofweek-add-form-4.png) |
 
 You can subtract 2 DayOfWeek objects, to get the number of days between them:
 
