@@ -39,6 +39,7 @@ features:
     - [Display Format Modes](#display-format-modes)
     - [Date Object](#date-object)
     - [Time Object](#time-object)
+    - [DateTime Object](#datetime-object)
     - [TimeZone Object](#timezone-object)
     - [ZonedDateTime Object](#zoneddatetime-object)
     - [DayOfWeek Object](#dayofweek-object)
@@ -501,17 +502,12 @@ just like `Date` and `Time`. The integer numbers are in unit of *second*.
 
 For example, let's subtract 100,000 seconds from `2024-03-14 15:39:55`:
 
-| **Keys**                  | **MODE `{..}`**               | **MODE `".."`**               |
-| ------------------------- | ---------------------         | -----------------             |
-| `DT{2024,3,14,15,36,1}`   | `X:DT{2024,3,14,15,36,1}_`    | `X:DT{2024,3,14,15,35,1}_`    |
-|                           |                               |                               |
-|                           | `Y:DT{2024,3,14,15,36,1}`     | `Y:2024-03-14 15:36:01`       |
-| `ENTER`                   | `X:DT{2024,3,14,15,36,1}`     | `X:2024-03-14 15:36:01`       |
-|                           |                               |                               |
-|                           | `Y:DT{2024,3,14,15,36,1}`     | `Y:2024-03-14 15:36:01`       |
-| `100000`                  | `X:100000_`                   | `X:100000_`                   |
-|                           |                               |                               |
-| `-`                       | `X:DT{2024,3,13,11,53,15}`    | `X:2024-03-13 11:53:15`       |
+| **Keys**                  | **MODE `{..}`**                           | **MODE `".."`**               |
+| ------------------------- | ---------------------                     | -----------------             |
+| `DT{2024,3,14,15,36,1}`   | ![](images/date/datetime-add-raw-1.png)   | ![](images/date/datetime-add-form-1.png) |
+| `ENTER`                   | ![](images/date/datetime-add-raw-2.png)   | ![](images/date/datetime-add-form-2.png) |
+| `100000`                  | ![](images/date/datetime-add-raw-3.png)   | ![](images/date/datetime-add-form-3.png) |
+| `-`                       | ![](images/date/datetime-add-raw-4.png)   | ![](images/date/datetime-add-form-4.png) |
 
 We can subtract 2 `DateTime` objects:
 
