@@ -732,42 +732,31 @@ Duration object is `9999d 23h 59m 59s` or about 24.3 years.
 
 #### Duration Shorthand Entry
 
-Often, we want to enter a single component without having to enter a `0` for the
-other components. For example, to enter just "2 minutes", we would have to enter
-`DR{0,0,2,0}`, and for "12 hours", we would need to enter `DR{0,12,0,0}`. The
-RPN83P has an alternative shorthand entry format, using the `ALPHA :` character.
-The following suffixes are recognized by the input system:
+We sometimes want to quickly enter a single component of a Duration object
+without having to enter the `0` values for the other components. For example, to
+enter "2 minutes", we would have to enter `DR{0,0,2,0}`, and for "12 hours", we
+would need to enter `DR{0,12,0,0}`. The RPN83P app provides a shortcut for
+entering these simple Durations using the colon character `:` and a letter (`S`,
+`M`, `H`, `D`):
 
-- `ss:S` - shorthand for `DR{0,0,0,ss}`, i.e. "ss seconds"
-- `mm:M` - shorthand for `DR{0,0,mm,0}`, i.e. "mm minutes"
-- `hh:H` - shorthand for `DR{0,hh,0,0}`, i.e. "hh hours"
-- `dddd:D` - shorthand for `DR{dddd,0,0,0}`, i.e. "dddd days"
+- `dddd:D` - shortcut for `DR{dddd,0,0,0}`, i.e. "dddd days"
+- `hh:H` - shortcut for `DR{0,hh,0,0}`, i.e. "hh hours"
+- `mm:M` - shortcut for `DR{0,0,mm,0}`, i.e. "mm minutes"
+- `ss:S` - shortcut for `DR{0,0,0,ss}`, i.e. "ss seconds"
 
-For example, to enter 2 minutes, we can type:
+For example, here is how to enter 4 Duration objects (1 day, 2 hours, 3 minutes,
+and 4 seconds) using the colon-shortcut notation:
 
-```
-2:M
-```
-
-Hitting `ENTER` shows;
-
-```
-DR{0,0,2,0} (in MODE {..})
-2m (in MODE "..")
-```
-
-To enter 12 hours, we can type:
-
-```
-12:H
-```
-
-Hitting `ENTER` shows:
-
-```
-DR{0,12,0,0} (in MODE {..})
-12h (in MODE "..")
-```
+| **Keys**  | **MODE `{..}`**                               | **MODE `".."`**   |
+| --------- | ---------------------                         | ----------------- |
+| `1:D`     | ![](images/date/duration-day-raw-1.png)       | ![](images/date/duration-day-form-1.png) |
+| `ENTER`   | ![](images/date/duration-day-raw-2.png)       | ![](images/date/duration-day-form-2.png) |
+| `2:H`     | ![](images/date/duration-hour-raw-1.png)      | ![](images/date/duration-hour-form-1.png) |
+| `ENTER`   | ![](images/date/duration-hour-raw-2.png)      | ![](images/date/duration-hour-form-2.png) |
+| `3:M`     | ![](images/date/duration-minute-raw-1.png)    | ![](images/date/duration-minute-form-1.png) |
+| `ENTER`   | ![](images/date/duration-minute-raw-2.png)    | ![](images/date/duration-minute-form-2.png) |
+| `4:S`     | ![](images/date/duration-second-raw-1.png)    | ![](images/date/duration-second-form-1.png) |
+| `ENTER`   | ![](images/date/duration-second-raw-2.png)    | ![](images/date/duration-second-form-2.png) |
 
 #### Duration Validation
 
