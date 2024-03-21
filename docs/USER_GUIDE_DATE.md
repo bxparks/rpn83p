@@ -511,27 +511,23 @@ For example, let's subtract 100,000 seconds from `2024-03-14 15:39:55`:
 
 We can subtract 2 `DateTime` objects:
 
-|  **Keys**                 |  **MODE `{..}`**              |  **MODE `".."`**              |
-| ------------------------- | ---------------------         | -----------------             |
-| `DT{2024,12,25,0,0,0}`    | `X:DT{2025,12,25,0,0,0}_`     | `X:DT{2025,12,25,0,0,0}_`     |
-|                           |                               |                               |
-|                           | `Y:DT{2024,12,25,0,0,0}`      | `Y:2024-12-25 00:00:00`       |
-| `ENTER`                   | `X:DT{2024,12,25,0,0,0}`      | `X:2024-12-25 00:00:00`       |
-|                           |                               |                               |
-|                           | `Y:DT{2024,12,25,0,0,0}`      | `Y:2024-12-25 00:00:00`       |
-| `DT{2024,3,14,15,36,1}`   | `X:DT{2024,3,14,15,36,1}_`    | `X:DT{2024,3,14,15,36,1}_`    |
-|                           |                               |                               |
-| `-`                       | `X:24654239`                  | `X:24654239`                  |
+|  **Keys**                 |  **MODE `{..}`**                          |  **MODE `".."`**              |
+| ------------------------- | ---------------------                     | -----------------             |
+| `DT{2024,12,25,0,0,0}`    | ![](images/date/datetime-sub-raw-1.png)   | ![](images/date/datetime-sub-form-1.png) |
+| `ENTER`                   | ![](images/date/datetime-sub-raw-2.png)   | ![](images/date/datetime-sub-form-2.png) |
+| `DT{2024,3,14,15,36,1}`   | ![](images/date/datetime-sub-raw-3.png)   | ![](images/date/datetime-sub-form-3.png) |
+| `-`                       | ![](images/date/datetime-sub-raw-4.png)   | ![](images/date/datetime-sub-form-4.png) |
 
-There are 24654239 seconds until Christmas Dec 25, 2024.
+There are 24654239 seconds from March 13, 2024 15:39:55 to Christmas Dec 25,
+2024 00:00:00.
 
-Let's convert this into a `Duration` object (see below) by clicking on the
-`S>DR` menu item:
+The `Duration` object is described in more detail in a subsequent subsection
+below, but let's quickly convert this into a more human-readable for by using
+the `S>DR` menu item to convert this into a `Duration` object:
 
 |  **Keys**                 |  **MODE `{..}`**              |  **MODE `".."`**        |
 | ------------------------- | ---------------------         | -----------------       |
 |                           | `X:24654239`                  | `X:24654239`            |
-|                           |                               |                         |
 | `S>DR`                    | `X:DR{285,8,23,29}`           | `X:285d 8h 23m 59s`     |
 
 ### TimeZone Object
