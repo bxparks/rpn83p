@@ -664,15 +664,10 @@ number](https://en.wikipedia.org/wiki/ISO_8601), where Monday is represented by
 1 and Sunday is represented by 7. For example, Thursday has an ISO weekday value
 of 4 and can be entered as:
 
-```
-DW{4}
-```
-
-If we set the display `MODE` to `".."` string mode, the display will show:
-
-```
-Thu
-```
+| **Keys**   | **MODE `{..}`**                      | **MODE `".."`**   |
+| -----------| ---------------------                | ----------------- |
+| `DW{4}`    | ![](images/date/dayofweek-raw-1.png) | ![](images/date/dayofweek-form-1.png) |
+| `ENTER`    | ![](images/date/dayofweek-raw-2.png) | ![](images/date/dayofweek-form-2.png) |
 
 #### DayOfWeek Validation
 
