@@ -693,15 +693,14 @@ days to Thursday, we can enter:
 | `6`        | ![](images/date/dayofweek-add-raw-3.png) | ![](images/date/dayofweek-add-form-3.png) |
 | `+`        | ![](images/date/dayofweek-add-raw-4.png) | ![](images/date/dayofweek-add-form-4.png) |
 
-You can subtract 2 DayOfWeek objects, to get the number of days between them:
+You can subtract 2 DayOfWeek objects to get the number of days between them:
 
-```
-DW{3} ENTER
-DW{4} -
-(displays -1)
-```
-
-There are -1 days from Thursday to Wednesday.
+| **Keys**   | **MODE `{..}`**                          | **MODE `".."`**   |
+| -----------| ---------------------                    | ----------------- |
+| `DW{4}`    | ![](images/date/dayofweek-sub-raw-1.png) | ![](images/date/dayofweek-sub-form-1.png) |
+| `ENTER`    | ![](images/date/dayofweek-sub-raw-2.png) | ![](images/date/dayofweek-sub-form-2.png) |
+| `DW{5}`    | ![](images/date/dayofweek-sub-raw-3.png) | ![](images/date/dayofweek-sub-form-3.png) |
+| `-`        | ![](images/date/dayofweek-sub-raw-4.png) | ![](images/date/dayofweek-sub-form-4.png) |
 
 ### Duration Object
 
