@@ -23,7 +23,8 @@
 ; See TI-83 Plus System Routine SDK docs for VPutS() for a reference
 ; implementation of this function.
 ;
-; Input: HL: pointer to string using small font
+; Input:
+;   - HL:(char*)=cstring
 ; Ouptut:
 ;    - unlike VPutS(), the CF does *not* show if all of string was rendered
 ; Destroys: all
@@ -77,7 +78,7 @@ eVPutSEnter:
 ; in flash memory. For Flash Page 1. Identical to putPS() but located in Flash
 ; Page 1.
 ;
-; Input: HL: pointer to Pascal string
+; Input: HL:(PascalString*)=pstring
 ; Destroys: A, B, C, HL
 ; Preserves: DE
 putPSPageOne:
@@ -103,7 +104,8 @@ putPSPageOneLoop:
 
 ; Description: Inlined version of bcall(_PutS), identical to putS().
 ;
-; Input: HL: pointer to C-string
+; Input:
+;   HL:(char*)=cstring
 ; Output:
 ;   - CF=1 if the entire string was displayed, CF=0 if not
 ;   - curRow and curCol updated to the position after the last character
@@ -147,9 +149,10 @@ putSPageOneEnter:
 ; See also eVPutS() for an extended version of this that supported embedded
 ; font control characters.
 ;
-; Input: HL: pointer to string using small font
+; Input:
+;   - HL:(char*)=cstring
 ; Ouptut:
-;    - unlike VPutS(), the CF does *not* show if all of string was rendered
+;   - unlike VPutS(), CF does *not* show if all of string was rendered
 ; Destroys: all
 vPutSPageOne:
     ; assume using small font
