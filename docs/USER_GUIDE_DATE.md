@@ -633,37 +633,28 @@ ZonedDateTime.
 
 For example, let's add 100_000 seconds to `2024-03-14 15:36:01-07:00`:
 
-| **Keys**                      | **MODE `{..}`**                   | **MODE `".."`**                   |
-| -------------------------     | ---------------------             | -----------------                 |
+| **Keys**                      | **MODE `{..}`**                               | **MODE `".."`**                   |
+| -------------------------     | ---------------------                         | -----------------                 |
 | `DZ{2024,3,14,15,36,1,-7,0}`  | ![](images/date/zoneddatetime-add-raw-1.png)  | ![](images/date/zoneddatetime-add-form-1.png) |
 | `ENTER`                       | ![](images/date/zoneddatetime-add-raw-2.png)  | ![](images/date/zoneddatetime-add-form-2.png) |
 | `100000`                      | ![](images/date/zoneddatetime-add-raw-3.png)  | ![](images/date/zoneddatetime-add-form-3.png) |
 | `+`                           | ![](images/date/zoneddatetime-add-raw-4.png)  | ![](images/date/zoneddatetime-add-form-4.png) |
 
-We can subtract 2 `ZonedDateTime` objects. Their TimeZone components does not
-have to be same. Let's determine the number of seconds to Dec 25, 2024, at
-UTC+00:00:
+We can subtract 2 `ZonedDateTime` objects to obtain the number of seconds
+between them. Their TimeZone components are not required to be same. For
+example, let's determine the number of seconds from March 14, 2024 UTC-07:00 to
+December 25, 2024 UTC:
 
-```
-DT{2024,12,25,0,0,0,0,0} ENTER
-DT{2024,3,14,15,36,1,-7,0} -
-(displays 24629039)
-```
+| **Keys**                      | **MODE `{..}`**                               | **MODE `".."`**                   |
+| -------------------------     | ---------------------                         | -----------------                 |
+| `DZ{2024,12,25,0,0,0,0,0}`    | ![](images/date/zoneddatetime-sub-raw-1.png)  | ![](images/date/zoneddatetime-sub-form-1.png) |
+| `ENTER`                       | ![](images/date/zoneddatetime-sub-raw-2.png)  | ![](images/date/zoneddatetime-sub-form-2.png) |
+| `DZ{2024,3,14,15,36,1,-7,0}`  | ![](images/date/zoneddatetime-sub-raw-3.png)  | ![](images/date/zoneddatetime-sub-form-3.png) |
+| `-`                           | ![](images/date/zoneddatetime-sub-raw-4.png)  | ![](images/date/zoneddatetime-sub-form-4.png) |
+| `S>DR`                        | ![](images/date/zoneddatetime-sub-raw-5.png)  | ![](images/date/zoneddatetime-sub-form-5.png) |
 
-We can convert the numbers of seconds to a Duration object using the `S>DR`
-menu:
-
-```
-24629039
-S>DR
-(displays DR{285,1,23,59})
-```
-
-If we change to the `".."` mode, we get:
-
-```
-285d 1h 23m 59s
-```
+As before, we have used the `S>DR` menu function to convert `seconds` to
+a `Duration` object which can be more useful in some situations.
 
 ### DayOfWeek Object
 
