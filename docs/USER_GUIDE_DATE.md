@@ -470,18 +470,14 @@ There are 5039 seconds between `15:36:01` and `17:00:00`.
 ### DateTime Object
 
 A DateTime record is a concatenation of the Date record and a Time record. It
-has the format `DateTime `DT{year:u16, month:u8, day:u8, hour:u8, minute:u8,
-second:u8}`.
+has the format `DT{year:u16, month:u8, day:u8, hour:u8, minute:u8, second:u8}`.
 
-For example, the date `2024-03-14 15:36:01` would be entered like
-this:
+For example, the date `2024-03-14 15:36:01` would be entered like this:
 
-| **Keys**                  | **MODE `{..}`**               | **MODE `".."`**               |
-| ------------------------- | ---------------------         | -----------------             |
-| `DT{2024,3,14,15,36,1}`   | `X:DT{2024,3,14,15,36,1}_`    | `X:DT{2024,3,14,15,35,1}_`    |
-|                           |                               |                               |
-|                           | `Y:DT{2024,3,14,15,36,1}`     | `Y:2024-03-14 15:36:01`       |
-| `ENTER`                   | `X:DT{2024,3,14,15,36,1}`     | `X:2024-03-14 15:36:01`       |
+| **Keys**                  | **MODE `{..}`**                       | **MODE `".."`**               |
+| ------------------------- | ---------------------                 | -----------------             |
+| `DT{2024,3,14,15,36,1}`   | ![](images/date/datetime-raw-1.png)   | ![](images/date/datetime-form-1.png) |
+| `ENTER`                   | ![](images/date/datetime-raw-2.png)   | ![](images/date/datetime-form-2.png) |
 
 #### DateTime Validation
 
