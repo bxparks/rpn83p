@@ -591,30 +591,25 @@ To convert `TZ{-4,~30}` to hours then back to a TimeZone object:
 The ZonedDateTime is a combination of Date, Time, and TimeZone. It has the form
 `DZ{year:u16, month:u8, day:u8, hour:u8, minute:u8, second:u8, tzhour:i8,
 tzminute:i8}`. It describes the local time of a specific place that uses a
-specific UTC offset. Here is how to enter `2024-03-14 15:36:01-07:00`
-which occurred in `America/Los_Angeles` timezone after the DST shift on March
-10, 2024:
+specific UTC offset.
 
-| **Keys**                  | **MODE `{..}`**                   | **MODE `".."`**                   |
-| ------------------------- | ---------------------             | -----------------                 |
-| `DZ{2024,3,14,`           | `X:DZ{2024,3,14,15,36,1,-7,0}_`   | `X:DT{2024,3,14,15,35,1,-7,0}_`   |
-| `15,36,1,-7,0}`           |                                   |                                   |
-|                           |                                   |                                   |
-|                           | `Y:DZ{2024,3,14,15,36,1,-7,0}`    | `Y:2024-03-14 15:36:01-07:00`     |
-| `ENTER`                   | `X:DZ{2024,3,14,15,36,1,-7,0}`    | `X:2024-03-14 15:36:01-07:00`     |
+Here is an example of entering the date `2024-03-14 15:36:01-07:00` which
+occurred in `America/Los_Angeles` timezone after the DST shift on March 10,
+2024:
 
+| **Keys**                      | **MODE `{..}`**                           | **MODE `".."`**                   |
+| -------------------------     | ---------------------                     | -----------------                 |
+| `DZ{2024,3,14,15,36,1,-7,0}`  | ![](images/date/zoneddatetime-raw-1.png)  | ![](images/date/zoneddatetime-form-1.png) |
+| `ENTER`                       | ![](images/date/zoneddatetime-raw-2.png)  | ![](images/date/zoneddatetime-form-2.png) |
 
-ZonedDateTime objects which have +00:00 UTC offset are somewhat special,
-and it is useful to indicate these dates. The following date:
+ZonedDateTime objects which have an offset of +00:00 UTC are special, and it is
+useful to display them slightly differently. Here is how the date 2024-03-14
+22:36:00 UTC is entered and displayed:
 
-| **Keys**                  | **MODE `{..}`**                   | **MODE `".."`**                   |
-| ------------------------- | ---------------------             | -----------------                 |
-| `DZ{2024,3,14,`           | `X:DZ{2024,3,14,15,36,1,0,0}_`    | `X:DT{2024,3,14,15,35,1,0,0}_`    |
-| `22,36,1,0,0}`            |                                   |                                   |
-|                           |                                   |                                   |
-|                           | `Y:DZ{2024,3,14,22,36,1,0,0}`     | `Y:2024-03-14 22:36:01 Z`         |
-| `ENTER`                   | `X:DZ{2024,3,14,22,36,1,0,0}`     | `X:2024-03-14 22:36:01 Z`         |
-
+| **Keys**                      | **MODE `{..}`**                   | **MODE `".."`**                   |
+| -------------------------     | ---------------------             | -----------------                 |
+| `DZ{2024,3,14,22,36,1,0,0}`   | `X:DZ{2024,3,14,15,36,1,0,0}_`    | `X:DT{2024,3,14,15,35,1,0,0}_`    |
+| `ENTER`                       | `X:DZ{2024,3,14,22,36,1,0,0}`     | `X:2024-03-14 22:36:01 Z`         |
 
 #### ZonedDateTime Validation
 
