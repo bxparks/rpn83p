@@ -602,14 +602,14 @@ occurred in `America/Los_Angeles` timezone after the DST shift on March 10,
 | `DZ{2024,3,14,15,36,1,-7,0}`  | ![](images/date/zoneddatetime-raw-1.png)  | ![](images/date/zoneddatetime-form-1.png) |
 | `ENTER`                       | ![](images/date/zoneddatetime-raw-2.png)  | ![](images/date/zoneddatetime-form-2.png) |
 
-ZonedDateTime objects which have an offset of +00:00 UTC are special, and it is
-useful to display them slightly differently. Here is how the date 2024-03-14
-22:36:00 UTC is entered and displayed:
+ZonedDateTime objects with a UTC offset of +00:00 are special, and it is useful
+to display them slightly differently. Here is how the date 2024-03-14 22:36:00
+UTC is entered and displayed:
 
 | **Keys**                      | **MODE `{..}`**                   | **MODE `".."`**                   |
 | -------------------------     | ---------------------             | -----------------                 |
-| `DZ{2024,3,14,22,36,1,0,0}`   | `X:DZ{2024,3,14,15,36,1,0,0}_`    | `X:DT{2024,3,14,15,35,1,0,0}_`    |
-| `ENTER`                       | `X:DZ{2024,3,14,22,36,1,0,0}`     | `X:2024-03-14 22:36:01 Z`         |
+| `DZ{2024,3,14,22,36,1,0,0}`   | ![](images/date/zoneddatetime-utc-raw-1.png)  | ![](images/date/zoneddatetime-utc-form-1.png) |
+| `ENTER`                       | ![](images/date/zoneddatetime-utc-raw-2.png)  | ![](images/date/zoneddatetime-utc-form-2.png) |
 
 #### ZonedDateTime Validation
 
