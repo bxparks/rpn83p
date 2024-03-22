@@ -279,9 +279,11 @@ additional data types.
 To allow these Record types to be entered using the calculator buttons, the
 following keys have been activated:
 
-- `2ND {` and `2ND }`
+- `2ND {` (left brace)
+- `2ND }` (right brace)
 - `ALPHA A` to `ALPHA Z`
-- `,`
+- `,` (comma)
+- `:` (colon)
 
 Prior to v0.10, both the `,` and `2ND EE` keystrokes were mapped to the `EE`
 function to allow numbers in scientific notation to be entered easily. However
@@ -289,7 +291,7 @@ the entry of the Date objects requires the use of the comma `,` key, so the app
 now contains an option to control the behavior of this button under the `MODE`
 menu:
 
-- [EE, or ,EE menu](images/date/menu-root-mode-object-format.png)
+- ![EE, or ,EE menu](images/date/menu-root-mode-object-format.png)
 
 If the `,EE` option is selected, the button behaves as labeled on the keyboard:
 - hitting `,` invokes the `,` function, and
@@ -898,7 +900,7 @@ following timezones:
 | `0`                           | ![](images/date/timezone-convert-raw-09.png)  | ![](images/date/timezone-convert-form-09.png) |
 | `*`                           | ![](images/date/timezone-convert-raw-10.png)  | ![](images/date/timezone-convert-form-10.png) |
 
-## Epoch Date Conversions
+## Epoch Date
 
 Many computer systems keep track of time by counting the number of sections from
 a specific date, called the
@@ -941,29 +943,61 @@ date, then set it to `2100-01-01`:
 | `EPC`             | ![](images/date/customepoch-raw-3.png)    | ![](images/date/customepoch-form-3.png) |
 | `EPC?`            | ![](images/date/customepoch-raw-4.png)    | ![](images/date/customepoch-form-4.png) |
 
-### EpochSecond Conversions
+### Epoch Days and Seconds Conversions
 
-There are 4 menu functions which convert between date-time objects and epoch
-seconds or epoch days:
+Once an Epoch date has been defined, it is often convenient to convert Gregorian
+date and datetimes to a number that counts the number of days or number of
+seconds offset from the Epoch date. For example, Unix systems keep track of time
+using an `epochSeconds` number which counts the number of seconds from the Unix
+Epoch of 1970-01-01 UTC.
 
-[TODO: screenshot of [DY>D] [D>DY]]
-[TODO: screenshot of [S>DZ] [S>UT]]
+There are 5 menu functions which support conversions from calendar dates and
+datetimes to epoch days and epoch seconds:
 
-- `Dx>S`
-    - calculates the `seconds` representation of the input object. If the input
-      is a ZonedDateTime, then the output is the number of seconds from the
-      current Epoch date.
-- `S>DZ`
-    - converts the number of epochseconds to the `ZonedDateTime` (using the
-      currently select TimeZone)
-- `S>UT`
-    - same as `S>DZ` except that the timezone of the resulting ZonedDateTime is
-      always UTC+00:00.
+- ![Epoch Days menu](images/date/menu-root-date-2.png)
+- ![Epoch Seconds menu](images/date/menu-root-date-2.png)
+
+The first 2 operate on epoch days:
+
 - `D>DY`
     - converts the current Date object into the number of whole days from the
       current epoch date.
 - `DY>D`
     - converts the number of epoch days to a Date object
+
+For example, let's calculate the epoch days of 2024-03-14 using the Unix epoch
+of 1970-01-01:
+
+| **Keys**          | **MODE `{..}`**                       | **MODE `".."`**   |
+| -----------       | ---------------------                 | ----------------- |
+| `UNIX`            | ![](images/date/epochdays-raw-1.png)  | ![](images/date/epochdays-form-1.png) |
+| `D{2024,3,14}`    | ![](images/date/epochdays-raw-2.png)  | ![](images/date/epochdays-form-2.png) |
+| `D>DY`            | ![](images/date/epochdays-raw-3.png)  | ![](images/date/epochdays-form-3.png) |
+| `DY>D`            | ![](images/date/epochdays-raw-4.png)  | ![](images/date/epochdays-form-4.png) |
+
+The next 3 operate on epoch seconds:
+
+- `Dx>S`
+    - calculates the `epochseconds` representation of the input object. If the
+      input is a ZonedDateTime, then the output is the number of seconds from
+      the current Epoch date.
+- `S>DZ`
+    - converts the number of epochseconds to the `ZonedDateTime` using the
+      currently selected App TimeZone (see `TZ` and `TZ?` below)
+- `S>UT`
+    - same as `S>DZ` except that the timezone of the resulting ZonedDateTime is
+      always UTC+00:00.
+
+For example, let's calculate the epoch seconds of `2024-03-14 15:36:01-07:00`
+using the Unix epoch date of 1970-01-01 UTC:
+
+| **Keys**                      | **MODE `{..}`**                       | **MODE `".."`**   |
+| -----------                   | ---------------------                 | ----------------- |
+| `UNIX`                        | ![](images/date/epochdays-raw-1.png)  | ![](images/date/epochdays-form-1.png) |
+| `DZ{2024,3,14,15,36,1,-7,0}`  | ![](images/date/epochdays-raw-2.png)  | ![](images/date/epochdays-form-2.png) |
+| `D*>S`                        | ![](images/date/epochdays-raw-3.png)  | ![](images/date/epochdays-form-3.png) |
+| `S>UT`                        | ![](images/date/epochdays-raw-4.png)  | ![](images/date/epochdays-form-4.png) |
+| `S>DZ`                        | ![](images/date/epochdays-raw-5.png)  | ![](images/date/epochdays-form-5.png) |
 
 ### Range of Epoch Seconds
 
