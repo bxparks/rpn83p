@@ -244,11 +244,11 @@ types, composed of fields of more primitive integer types.
 - Date `D{year:u16, month:u8, day:u8}`
 - Time `T{hour:u8, minute:u8, second:u8}`
 - DateTime `DT{year:u16, month:u8, day:u8, hour:u8, minute:u8, second:u8}`
-- Duration `DR{days:i16, hours:i8, minutes:i8, seconds:i8}`
 - TimeZone `TZ{hour:i8, minute:i8}`
 - ZonedDateTime `DZ{year:u16, month:u8, day:u8, hour:u8, minute:u8, second:u8,
   tzhour:i8, tzminute:i8}`
 - DayOfWeek `DW{dow:u8}`
+- Duration `DR{days:i16, hours:i8, minutes:i8, seconds:i8}`
 
 If you are familiar with the C++ language, you may think of these Record
 specifications as class constructors using brace-initialization, with the class
@@ -803,8 +803,9 @@ objects:
 | `+`               | ![](images/date/duration-add-raw-8.png)   | ![](images/date/duration-add-form-8.png) |
 | `+/-` (-)         | ![](images/date/duration-add-raw-9.png)   | ![](images/date/duration-add-form-9.png) |
 
-Furthermore, the Duration object is quite useful because it can operate upon
-other date-time objects (Date, Time, DateTime, ZonedDateTime):
+The Duration object is even more useful when it is used with other date-time
+objects like Date, Time, DateTime, and ZonedDateTime. As a rule of thumb, it can
+be used where an integer would normally be used:
 
 | **Operation**                 | **Result**        |
 |-------------------------------|-------------------|
@@ -828,17 +829,14 @@ other date-time objects (Date, Time, DateTime, ZonedDateTime):
 | {ZonedDateTime} - {Duration}  | {ZonedDateTime}   |
 | {Duration} - {ZonedDateTime}  | INVALID           |
 
-The rule of thumb is that anywhere an integer can be used in a binary operator
-involving a Date, Time, DateTime, or ZonedDateTime object, a Duration object can
-be used instead.
-
 For example, let's add the Duration `2h 33m` to the Time `12:58:32`:
 
-```
-T{12:58:32} ENTER
-DR{0,2,33,0} +
-(displays T{15,31,32})
-```
+| **Keys**          | **MODE `{..}`**                               | **MODE `".."`**   |
+| -----------       | ---------------------                         | ----------------- |
+| `T{12,58,32}`     | ![](images/date/duration-add-time-raw-1.png)  | ![](images/date/duration-add-time-form-1.png) |
+| `ENTER`           | ![](images/date/duration-add-time-raw-2.png)  | ![](images/date/duration-add-time-form-2.png) |
+| `DR{0,2,33,0}`    | ![](images/date/duration-add-time-raw-3.png)  | ![](images/date/duration-add-time-form-3.png) |
+| `+`               | ![](images/date/duration-add-time-raw-4.png)  | ![](images/date/duration-add-time-form-4.png) |
 
 For example, let's add 30d to the DateTime `2024-03-14 12:58:32`:
 
