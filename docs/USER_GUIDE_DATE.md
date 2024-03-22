@@ -323,8 +323,8 @@ to something like `D{2024,3,14}` in the subsequent sections.
 In the `MODE` menu, there are 2 settings that affect how date record objects are
 displayed:
 
-- ![ROOT > MODE](images/date/rpn83p-menu-root-mode.png)
-    - ![ROOT > MODE > Object Format](images/date/rpn83p-menu-root-mode-object-format.png)
+- ![ROOT > MODE](images/date/menu-root-3.png)
+    - ![ROOT > MODE > Object Format](images/date/menu-root-mode-object-format.png)
 
 If the `{..}` option is selected (factory default), the records will be
 displayed in their entry form using the curly braces. If the `".."` option is
@@ -582,7 +582,7 @@ The TimeZone object can be converted to and from a floating point number
 representing the number of hours shifted from UTC. These are exposed using the
 `H>TZ` and `TZ>H` menu items:
 
-![](images/date/rpn83p-menu-root-date-3.png)
+![](images/date/menu-root-date-3.png)
 
 To convert `TZ{-4,~30}` to hours then back to a TimeZone object:
 
