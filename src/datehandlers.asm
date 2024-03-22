@@ -349,45 +349,45 @@ dateLinkDateTime:
 ;-----------------------------------------------------------------------------
 
 mGetNowHandler:
-    ld a, (isTi83Plus)
+    ld a, (isRtcAvailable)
     or a
-    jr nz, noClockErr
+    jr z, noClockErr
     ;
     call closeInputAndRecallNone
     bcall(_RtcGetNow)
     jp pushToX
 
 mGetNowTimeHandler:
-    ld a, (isTi83Plus)
+    ld a, (isRtcAvailable)
     or a
-    jr nz, noClockErr
+    jr z, noClockErr
     ;
     call closeInputAndRecallNone
     bcall(_RtcGetTime)
     jp pushToX
 
 mGetNowDateHandler:
-    ld a, (isTi83Plus)
+    ld a, (isRtcAvailable)
     or a
-    jr nz, noClockErr
+    jr z, noClockErr
     ;
     call closeInputAndRecallNone
     bcall(_RtcGetDate)
     jp pushToX
 
 mGetNowAppDateTimeHandler:
-    ld a, (isTi83Plus)
+    ld a, (isRtcAvailable)
     or a
-    jr nz, noClockErr
+    jr z, noClockErr
     ;
     call closeInputAndRecallNone
     bcall(_RtcGetAppDateTime)
     jp pushToX
 
 mGetNowUTCDateTimeHandler:
-    ld a, (isTi83Plus)
+    ld a, (isRtcAvailable)
     or a
-    jr nz, noClockErr
+    jr z, noClockErr
     ;
     call closeInputAndRecallNone
     bcall(_RtcGetUTCDateTime)
@@ -415,9 +415,9 @@ mGetTimeZoneHandler:
     jp pushToX
 
 mSetClockTimeZoneHandler:
-    ld a, (isTi83Plus)
+    ld a, (isRtcAvailable)
     or a
-    jr nz, noClockErr
+    jr z, noClockErr
     ;
     call closeInputAndRecallRpnOffsetOrRealX
     bcall(_RtcSetTimeZone)
@@ -426,18 +426,18 @@ mSetClockTimeZoneHandler:
     ret
 
 mGetClockTimeZoneHandler:
-    ld a, (isTi83Plus)
+    ld a, (isRtcAvailable)
     or a
-    jr nz, noClockErr
+    jr z, noClockErr
     ;
     call closeInputAndRecallNone
     bcall(_RtcGetTimeZone)
     jp pushToX
 
 mSetClockHandler:
-    ld a, (isTi83Plus)
+    ld a, (isRtcAvailable)
     or a
-    jr nz, noClockErr
+    jr z, noClockErr
     ;
     call closeInputAndRecallRpnOffsetDateTimeX ; A=rpnObjectType; OP1=X
     bcall(_RtcSetClock)
