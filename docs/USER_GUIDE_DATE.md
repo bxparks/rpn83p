@@ -778,14 +778,14 @@ Basic addition and subtraction operations are defined on Duration objects:
 | {integer} + {Duration}        | {Duration}        |
 | {Duration} + {Duration}       | {Duration}        |
 | {Duration} - {integer}        | {Duration}        |
-| {Duration} - {Duration}       | {Duration} `[1]`  |
-| {integer} - {Duration}        | {Duration} `[2]`  |
+| {Duration} - {Duration}       | {Duration} [1]    |
+| {integer} - {Duration}        | {Duration} [2]    |
 
-`[1]` Subtracting 2 Duration objects results in another Duration object. This is
+[1] Subtracting 2 Duration objects results in another Duration object. This is
 different from other date-time objects where subtracting 2 objects of the same
 type produces an integer.
 
-`[2]` A Duration can be subtracted from an integer and the result is another
+[2] A Duration can be subtracted from an integer and the result is another
 Duration. This is an INVALID operation for all other date-time types.
 
 Here are some examples of addition and subtraction operations involving Duration
