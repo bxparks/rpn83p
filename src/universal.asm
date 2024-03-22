@@ -244,6 +244,8 @@ universalSubRealMinusObject:
     jr z, universalSubRealMinusReal
     cp rpnObjectTypeComplex
     jr z, universalSubRealMinusComplex
+    cp rpnObjectTypeDuration
+    jr z, universalSubRealMinusDuration
     jr universalSubErr
 universalSubRealMinusReal:
     call op3ToOp2
@@ -251,6 +253,9 @@ universalSubRealMinusReal:
     ret
 universalSubRealMinusComplex:
     jr universalSubComplexMinusComplex
+universalSubRealMinusDuration:
+    bcall(_SubSecondsByRpnDuration)
+    ret
 ; Complex - object
 universalSubComplexMinusObject:
     call getOp3RpnObjectType

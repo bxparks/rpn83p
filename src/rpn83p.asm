@@ -1360,6 +1360,10 @@ _SubRpnDurationByRpnDurationOrSecondsLabel:
 _SubRpnDurationByRpnDurationOrSeconds equ _SubRpnDurationByRpnDurationOrSecondsLabel-branchTableBase
     .dw SubRpnDurationByRpnDurationOrSeconds
     .db 2
+_SubSecondsByRpnDurationLabel:
+_SubSecondsByRpnDuration equ _SubSecondsByRpnDurationLabel-branchTableBase
+    .dw SubSecondsByRpnDuration
+    .db 2
 
 ; zoneconversion2.asm
 _ConvertRpnDateTimeToTimeZoneAsOffsetLabel:

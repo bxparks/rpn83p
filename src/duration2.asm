@@ -431,3 +431,9 @@ subRpnDurationByRpnDuration:
     ld hl, OP1+1
     call addDurationBySeconds ; OP1=duration1-duration3=>RpnDuration
     jp dropRaw9 ; FPS=[]
+
+SubSecondsByRpnDuration:
+    call cp1ExCp3PageTwo
+    call SubRpnDurationByRpnDurationOrSeconds
+    call ChsRpnDuration
+    ret
