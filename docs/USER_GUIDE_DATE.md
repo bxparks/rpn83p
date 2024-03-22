@@ -1020,10 +1020,39 @@ approximately `[-17421,+17421]` years which is more than enough to handle the
 entire range of years `[1,9999]` supported by this framework. The use of 40-bit
 signed integers allows RPN83P to avoid the [Year
 2038](https://en.wikipedia.org/wiki/Year_2038_problem) problem which affects
-many older Unix systems which uses a 32-bit signed integer to hold the
+many older Unix systems which use a 32-bit signed integer to hold the
 epochseconds quantity.
 
 ## Real Time Clock
+
+The TI-84+ and TI-84+SE models include a real time clock (RTC) chip, unlike the
+earlier 83+ and 83+SE models. This allows the 84+ models to set and display the
+current date and time.
+
+The menu items which related to the RTC are the last 2 rows of the `DATE` menu
+hierarchy:
+
+- ![](images/date/menu-root-date-5.png)
+- ![](images/date/menu-root-date-6.png)
+
+Here is a quick summary of these functions:
+
+- `NOW`: return the current date-time as epochseconds from the current Epoch
+  date
+- `NOWD`: return the current date-time as a `Date` object
+- `NOWT`: return the current date-time as a `Time` object
+- `NWDZ`: return the current date-time as a `ZonedDateTime` object using the
+  Application Timezone
+- `NWUT`: return the current date-time as a `ZonedDateTime` object using the UTC
+  timezone
+
+A real time clock must be set with the correct time to be useful. This is done
+with the `SETC` (set clock) function. The input is a ZonedDateTime, like this:
+
+| **Keys**                      | **MODE `{..}`**                       | **MODE `".."`**   |
+| -----------                   | ---------------------                 | ----------------- |
+| `DZ{2024,3,14,15,36,1,-7,0}`  | ![](images/date/setclock-raw-1.png)   | ![](images/date/setclock-form-1.png) |
+| `SETC`                        | ![](images/date/setclock-raw-2.png)   | ![](images/date/setclock-form-2.png) |
 
 ### RTC Timezone
 
