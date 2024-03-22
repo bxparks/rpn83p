@@ -219,22 +219,22 @@ universalSub:
     cp rpnObjectTypeComplex ; ZF=1 if Complex
     jr z, universalSubComplexMinusObject
     ; OP1=Date
-    call checkOp1Date ; ZF=1 if Date
+    cp rpnObjectTypeDate; ZF=1 if Date
     jr z, universalSubDateMinusObject
     ; OP1=Time
-    call checkOp1Time ; ZF=1 if Time
+    cp rpnObjectTypeTime ; ZF=1 if Time
     jr z, universalSubTimeMinusObject
     ; OP1=DateTime
-    call checkOp1DateTime ; ZF=1 if DateTime
+    cp rpnObjectTypeDateTime ; ZF=1 if DateTime
     jr z, universalSubDateTimeMinusObject
     ; OP1=OffsetDateTime
-    call checkOp1OffsetDateTime ; ZF=1 if OffsetDateTime
+    cp rpnObjectTypeOffsetDateTime ; ZF=1 if OffsetDateTime
     jp z, universalSubOffsetDateTimeMinusObject
     ; OP1=DayOfWeek
-    call checkOp1DayOfWeek ; ZF=1 if DayOfWeek
+    cp rpnObjectTypeDayOfWeek ; ZF=1 if DayOfWeek
     jp z, universalSubDayOfWeekMinusObject
     ; OP1=Duration
-    call checkOp1Duration ; ZF=1 if Duration
+    cp rpnObjectTypeDuration ; ZF=1 if Duration
     jp z, universalSubDurationMinusObject
     jr universalSubErr
 ; Real - object
