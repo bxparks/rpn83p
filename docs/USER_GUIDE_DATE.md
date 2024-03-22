@@ -778,24 +778,30 @@ Basic addition and subtraction operations are defined on Duration objects:
 | {integer} + {Duration}        | {Duration}        |
 | {Duration} + {Duration}       | {Duration}        |
 | {Duration} - {integer}        | {Duration}        |
-| {Duration} - {Duration}       | {Duration} `[*]`  |
-| {integer} - {Duration}        | INVALID           |
+| {Duration} - {Duration}       | {Duration} `[1]`  |
+| {integer} - {Duration}        | {Duration} `[2]`  |
 
-`[*]` Subtracting 2 Duration objects results in another Duration object. This is
+`[1]` Subtracting 2 Duration objects results in another Duration object. This is
 different from other date-time objects where subtracting 2 objects of the same
 type produces an integer.
 
-| **Keys**          | **MODE `{..}`**                     | **MODE `".."`**   |
-| -----------       | ---------------------               | ----------------- |
-| `DR{-4,0,-2,0}`   | ![](images/date/duration-add-raw-1.png) | ![](images/date/duration-add-form-1.png) |
-| `ENTER`           | ![](images/date/duration-add-raw-2.png) | ![](images/date/duration-add-form-2.png) |
-| `DR{1,2,0,1`}     | ![](images/date/duration-add-raw-3.png) | ![](images/date/duration-add-form-3.png) |
-| `+`               | ![](images/date/duration-add-raw-4.png) | ![](images/date/duration-add-form-4.png) |
-| `60` (seconds)    | ![](images/date/duration-add-raw-5.png) | ![](images/date/duration-add-form-5.png) |
-| `-`               | ![](images/date/duration-add-raw-6.png) | ![](images/date/duration-add-form-6.png) |
-| `DR{0,0,0,1`}     | ![](images/date/duration-add-raw-7.png) | ![](images/date/duration-add-form-7.png) |
-| `-`               | ![](images/date/duration-add-raw-8.png) | ![](images/date/duration-add-form-8.png) |
-| `+/-` (-)         | ![](images/date/duration-add-raw-9.png) | ![](images/date/duration-add-form-9.png) |
+`[2]` A Duration can be subtracted from an integer and the result is another
+Duration. This is an INVALID operation for all other date-time types.
+
+Here are some examples of addition and subtraction operations involving Duration
+objects:
+
+| **Keys**          | **MODE `{..}`**                           | **MODE `".."`**   |
+| -----------       | ---------------------                     | ----------------- |
+| `DR{1,2,0,1}`     | ![](images/date/duration-add-raw-1.png)   | ![](images/date/duration-add-form-1.png) |
+| `ENTER`           | ![](images/date/duration-add-raw-2.png)   | ![](images/date/duration-add-form-2.png) |
+| `60` (seconds)    | ![](images/date/duration-add-raw-3.png)   | ![](images/date/duration-add-form-3.png) |
+| `+`               | ![](images/date/duration-add-raw-4.png)   | ![](images/date/duration-add-form-4.png) |
+| `DR{-4,0,-2,0}`   | ![](images/date/duration-add-raw-5.png)   | ![](images/date/duration-add-form-5.png) |
+| `-`               | ![](images/date/duration-add-raw-6.png)   | ![](images/date/duration-add-form-6.png) |
+| `-2:H`            | ![](images/date/duration-add-raw-7.png)   | ![](images/date/duration-add-form-7.png) |
+| `+`               | ![](images/date/duration-add-raw-8.png)   | ![](images/date/duration-add-form-8.png) |
+| `+/-` (-)         | ![](images/date/duration-add-raw-9.png)   | ![](images/date/duration-add-form-9.png) |
 
 Furthermore, the Duration object is quite useful because it can operate upon
 other date-time objects (Date, Time, DateTime, ZonedDateTime):
@@ -822,9 +828,9 @@ other date-time objects (Date, Time, DateTime, ZonedDateTime):
 | {ZonedDateTime} - {Duration}  | {ZonedDateTime}   |
 | {Duration} - {ZonedDateTime}  | INVALID           |
 
-A good rule of thumb is that anywhere an integer can be used in a binary
-operator involving a Date, Time, DateTime, or ZonedDateTime object, a Duration
-object can be used instead.
+The rule of thumb is that anywhere an integer can be used in a binary operator
+involving a Date, Time, DateTime, or ZonedDateTime object, a Duration object can
+be used instead.
 
 For example, let's add the Duration `2h 33m` to the Time `12:58:32`:
 
