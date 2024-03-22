@@ -11,8 +11,8 @@
 InitDate:
     ; select Unix epoch by default.
     call SelectUnixEpochDate
-    ; Set the default customEpochDate to 2000-01-01
-    ld hl, y2kEpochDate
+    ; Set the default customEpochDate to 2050-01-01
+    ld hl, defaultCustomEpochDate
     call setCustomEpochDateVar
     ; set the appTimeZone to UTC initially
     ld hl, 0

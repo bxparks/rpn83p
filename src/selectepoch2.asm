@@ -129,3 +129,10 @@ y2kEpochDate:
     .dw 2000
     .db 1
     .db 1
+; The custom epoch date can be modified by the user. But it has to have *some*
+; factory default value. I select 2050-01-01 because that's the value used in
+; my timezone libraries.
+defaultCustomEpochDate:
+    .dw 2050
+    .db 1
+    .db 1
