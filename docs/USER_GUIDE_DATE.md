@@ -955,20 +955,20 @@ using an `epochSeconds` number which counts the number of seconds from the Unix
 Epoch of 1970-01-01 UTC.
 
 There are 5 menu functions which support conversions from calendar dates and
-datetimes to epoch days and epoch seconds:
+datetimes to epoch days and seconds:
 
-- ![Epoch Days menu](images/date/menu-root-date-2.png)
-- ![Epoch Seconds menu](images/date/menu-root-date-3.png)
+- ![Epoch Days menu](images/date/menu-root-date-1.png)
+- ![Epoch Seconds menu](images/date/menu-root-date-2.png)
 
-The first 2 operate on epoch days:
+The first 2 operate on Epoch days:
 
 - `D>DY`
     - converts the current Date object into the number of whole days from the
-      current epoch date.
+      current Epoch date.
 - `DY>D`
-    - converts the number of epoch days to a Date object
+    - converts the number of Epoch days to a Date object
 
-For example, let's calculate the epoch days of 2024-03-14 using the Unix epoch
+For example, let's calculate the Epoch days of 2024-03-14 using the Unix Epoch
 of 1970-01-01:
 
 | **Keys**          | **MODE `{..}`**                       | **MODE `".."`**   |
@@ -979,14 +979,14 @@ of 1970-01-01:
 | `D>DY`            | ![](images/date/epochdays-raw-4.png)  | ![](images/date/epochdays-form-4.png) |
 | `DY>D`            | ![](images/date/epochdays-raw-5.png)  | ![](images/date/epochdays-form-5.png) |
 
-The next 3 operate on epoch seconds:
+The next 3 operate on Epoch seconds:
 
 - `Dx>S`
     - calculates the `epochseconds` representation of the input object. If the
       input is a ZonedDateTime, then the output is the number of seconds from
       the current Epoch date.
 - `S>DZ`
-    - converts the number of epochseconds to the ZonedDateTime using the
+    - converts the number of `epochseconds` to the ZonedDateTime using the
       currently selected App TimeZone (see `TZ` and `TZ?` below)
 - `S>UT`
     - same as `S>DZ` except that the timezone of the resulting ZonedDateTime is
@@ -995,13 +995,22 @@ The next 3 operate on epoch seconds:
 For example, let's calculate the epoch seconds of `2024-03-14 15:36:01-07:00`
 using the Unix epoch date of 1970-01-01 UTC:
 
-| **Keys**                      | **MODE `{..}`**                       | **MODE `".."`**   |
-| -----------                   | ---------------------                 | ----------------- |
-| `UNIX`                        | ![](images/date/epochseconds-raw-1.png)  | ![](images/date/epochseconds-form-1.png) |
-| `DZ{2024,3,14,15,36,1,-7,0}`  | ![](images/date/epochseconds-raw-2.png)  | ![](images/date/epochseconds-form-2.png) |
-| `D*>S`                        | ![](images/date/epochseconds-raw-3.png)  | ![](images/date/epochseconds-form-3.png) |
-| `S>UT`                        | ![](images/date/epochseconds-raw-4.png)  | ![](images/date/epochseconds-form-4.png) |
-| `S>DZ`                        | ![](images/date/epochseconds-raw-5.png)  | ![](images/date/epochseconds-form-5.png) |
+| **Keys**                      | **MODE `{..}`**                           | **MODE `".."`**   |
+| -----------                   | ---------------------                     | ----------------- |
+| `UNIX`                        | ![](images/date/epochseconds-raw-1.png)   | ![](images/date/epochseconds-form-1.png) |
+| `ON` `UP`                     | ![](images/date/epochseconds-raw-2.png)   | ![](images/date/epochseconds-form-2.png) |
+| `DZ{2024,3,14,15,36,1,-7,0}`  | ![](images/date/epochseconds-raw-3.png)   | ![](images/date/epochseconds-form-3.png) |
+| `D*>S`                        | ![](images/date/epochseconds-raw-4.png)   | ![](images/date/epochseconds-form-4.png) |
+| `S>UT`                        | ![](images/date/epochseconds-raw-5.png)   | ![](images/date/epochseconds-form-5.png) |
+| `D*>S`                        | ![](images/date/epochseconds-raw-6.png)   | ![](images/date/epochseconds-form-6.png) |
+| `S>DZ`                        | ![](images/date/epochseconds-raw-7.png)   | ![](images/date/epochseconds-form-7.png) |
+
+The last result from the `S>DZ` function requires some explanation. That
+function converts the `epochseconds` into a ZonedDateTime using the
+*application* timezone. How is the *application* timezone defined? It is set by
+the `TZ` menu command explained in [Application Timezone](#application-timezone)
+below. In this example, the *application* timezone (retrieved by `TZ?`) was set
+to UTC-07:00.
 
 ### Epoch Seconds Range
 
@@ -1018,7 +1027,7 @@ epochseconds quantity.
 
 ### RTC Timezone
 
-### Application TimeZone
+### Application Timezone
 
 ## Record Components
 
