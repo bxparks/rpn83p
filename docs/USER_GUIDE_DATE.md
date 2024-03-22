@@ -241,7 +241,7 @@ Here is a screenshot of the calculator with various buttons that are assigned to
 These buttons do *not* require the menu system to be in the `DATE` menu
 hierarchy to be active. For example, the arithmetic buttons `+`, `-`, and `*`
 act normally for Real and Complex numbers, but invoke slightly different
-functions when operating on Date-related object. Similarly, the `1/x`, `SQRT`
+functions when operating on Date-related objects. Similarly, the `1/x`, `SQRT`
 and `x^2` buttons act normally on Real and Complex objects but are bound to the
 `DCUT`, `DSHK`, and `DEXD` functions when they operate on Date-related objects.
 
@@ -289,7 +289,7 @@ the entry of the Date objects requires the use of the comma `,` key, so the app
 now contains an option to control the behavior of this button under the `MODE`
 menu:
 
-- [TODO: screenshot of [,EE EE, {..}, ".."]]
+- [EE, or ,EE menu](images/date/menu-root-mode-object-format.png)
 
 If the `,EE` option is selected, the button behaves as labeled on the keyboard:
 - hitting `,` invokes the `,` function, and
@@ -905,7 +905,9 @@ a specific date, called the
 [epoch](https://en.wikipedia.org/wiki/Epoch_%28computing%29)  RPN83P supports
 the following epoch dates under the `EPCH` menu:
 
-[TODO: screenshot of EPCH menu row]
+- ![EPCH menu](images/date/menu-root-date-3.png)
+    - ![EPCH row 1](images/date/menu-root-date-epch-1.png)
+    - ![EPCH row 2](images/date/menu-root-date-epch-2.png)
 
 The following predefined epoch dates can be selected:
 
@@ -917,35 +919,27 @@ The following predefined epoch dates can be selected:
     - [GPS epoch](https://en.wikipedia.org/wiki/Global_Positioning_System)
 - `TIOS`: 1997-01-01 00:00:00 UTC
     - [TIOS epoch](https://wikiti.brandonw.net/index.php?title=83Plus:Ports:45)
+      used by the TI calculators
 - `Y2K`: 2000-01-01 00:00:00 UTC
     - An epoch date used by some 32-bit systems to avoid the
     [Year 2038 problem](https://en.wikipedia.org/wiki/Year_2038_problem)
-
-The `CEPC` menu items allow custom epoch dates:
-
-- `CEPC`: user-defined custom epoch
-
-[TODO: screenshot of [CPEC] option selected]
+- `CEPC`: custom epoch date
+    - user-defined custom epoch date can be set using the `EPC` menu
+    - the factory default is `2050-01-01` because that's the date
+      used in my datetime libraries
 
 ### Custom Epoch Date
 
-The custom Epoch date is selected using the `CEPC` menu item. The actual value
-of the custom epoch date is set using the `EPC` (set epoch). The `EPC?` (get
-epoch) command allows the user to retrieve the currently defined custom epoch
-date.
+The custom Epoch date can be set using the `EPC` (set epoch) menu. It can be
+retrieved using the `EPC?` menu. For example, to view the current custom epoch
+date, then set it to `2100-01-01`:
 
-For example, to set the custom epoch date to `2050-01-01`, type:
-
-```
-D{2050,1,1}
-EPC
-```
-
-Pressing the `EPC?` retrieves the current epoch date:
-```
-EPC?
-(displays D{2050,1,1})
-```
+| **Keys**          | **MODE `{..}`**                           | **MODE `".."`**   |
+| -----------       | ---------------------                     | ----------------- |
+| `EPC?`            | ![](images/date/customepoch-raw-1.png)    | ![](images/date/customepoch-form-1.png) |
+| `D{2100,1,1}`     | ![](images/date/customepoch-raw-2.png)    | ![](images/date/customepoch-form-2.png) |
+| `EPC`             | ![](images/date/customepoch-raw-3.png)    | ![](images/date/customepoch-form-3.png) |
+| `EPC?`            | ![](images/date/customepoch-raw-4.png)    | ![](images/date/customepoch-form-4.png) |
 
 ### EpochSecond Conversions
 
