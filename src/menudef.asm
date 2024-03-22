@@ -2071,23 +2071,23 @@ mBlank219Id equ 219
     .dw 0 ; rowBeginId or altNameId
     .dw mNullHandler ; handler (predefined)
     .dw 0 ; nameSelector
-mEpochDaysToDate:
-mEpochDaysToDateId equ 220
-    .dw mEpochDaysToDateId ; id
-    .dw mDateId ; parentId
-    .dw mEpochDaysToDateNameId ; nameId
-    .db 0 ; numRows
-    .dw 0 ; rowBeginId or altNameId
-    .dw mEpochDaysToDateHandler ; handler (to be implemented)
-    .dw 0 ; nameSelector
 mDateToEpochDays:
-mDateToEpochDaysId equ 221
+mDateToEpochDaysId equ 220
     .dw mDateToEpochDaysId ; id
     .dw mDateId ; parentId
     .dw mDateToEpochDaysNameId ; nameId
     .db 0 ; numRows
     .dw 0 ; rowBeginId or altNameId
     .dw mDateToEpochDaysHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
+mEpochDaysToDate:
+mEpochDaysToDateId equ 221
+    .dw mEpochDaysToDateId ; id
+    .dw mDateId ; parentId
+    .dw mEpochDaysToDateNameId ; nameId
+    .db 0 ; numRows
+    .dw 0 ; rowBeginId or altNameId
+    .dw mEpochDaysToDateHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
 ; MenuGroup DATE: children: row 1
 mDateRelatedToSeconds:
@@ -2136,23 +2136,23 @@ mEpochSecondsToUTCDateTimeId equ 226
     .dw mEpochSecondsToUTCDateTimeHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
 ; MenuGroup DATE: children: row 2
-mHoursToTimeZone:
-mHoursToTimeZoneId equ 227
-    .dw mHoursToTimeZoneId ; id
-    .dw mDateId ; parentId
-    .dw mHoursToTimeZoneNameId ; nameId
-    .db 0 ; numRows
-    .dw 0 ; rowBeginId or altNameId
-    .dw mHoursToTimeZoneHandler ; handler (to be implemented)
-    .dw 0 ; nameSelector
 mTimeZoneToHours:
-mTimeZoneToHoursId equ 228
+mTimeZoneToHoursId equ 227
     .dw mTimeZoneToHoursId ; id
     .dw mDateId ; parentId
     .dw mTimeZoneToHoursNameId ; nameId
     .db 0 ; numRows
     .dw 0 ; rowBeginId or altNameId
     .dw mTimeZoneToHoursHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
+mHoursToTimeZone:
+mHoursToTimeZoneId equ 228
+    .dw mHoursToTimeZoneId ; id
+    .dw mDateId ; parentId
+    .dw mHoursToTimeZoneNameId ; nameId
+    .db 0 ; numRows
+    .dw 0 ; rowBeginId or altNameId
+    .dw mHoursToTimeZoneHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
 mBlank229:
 mBlank229Id equ 229
@@ -2854,10 +2854,10 @@ mLeapYearNameId equ 217
     .dw mLeapYearName
 mDayOfWeekNameId equ 218
     .dw mDayOfWeekName
-mEpochDaysToDateNameId equ 219
-    .dw mEpochDaysToDateName
-mDateToEpochDaysNameId equ 220
+mDateToEpochDaysNameId equ 219
     .dw mDateToEpochDaysName
+mEpochDaysToDateNameId equ 220
+    .dw mEpochDaysToDateName
 mDateRelatedToSecondsNameId equ 221
     .dw mDateRelatedToSecondsName
 mSecondsToDurationNameId equ 222
@@ -2868,10 +2868,10 @@ mEpochSecondsToAppDateTimeNameId equ 224
     .dw mEpochSecondsToAppDateTimeName
 mEpochSecondsToUTCDateTimeNameId equ 225
     .dw mEpochSecondsToUTCDateTimeName
-mHoursToTimeZoneNameId equ 226
-    .dw mHoursToTimeZoneName
-mTimeZoneToHoursNameId equ 227
+mTimeZoneToHoursNameId equ 226
     .dw mTimeZoneToHoursName
+mHoursToTimeZoneNameId equ 227
+    .dw mHoursToTimeZoneName
 mEpochNameId equ 228
     .dw mEpochName
 mDateShrinkNameId equ 229
@@ -3370,10 +3370,10 @@ mLeapYearName:
     .db "LEAP", 0
 mDayOfWeekName:
     .db "DOW", 0
-mEpochDaysToDateName:
-    .db 'D', 'Y', Sconvert, 'D', 0
 mDateToEpochDaysName:
     .db 'D', Sconvert, 'D', 'Y', 0
+mEpochDaysToDateName:
+    .db 'D', 'Y', Sconvert, 'D', 0
 mDateRelatedToSecondsName:
     .db 'D', Scross, Sconvert, 'S', 0
 mSecondsToDurationName:
@@ -3384,10 +3384,10 @@ mEpochSecondsToAppDateTimeName:
     .db 'S', Sconvert, 'D', 'Z', 0
 mEpochSecondsToUTCDateTimeName:
     .db 'S', Sconvert, 'U', 'T', 0
-mHoursToTimeZoneName:
-    .db 'H', Sconvert, 'T', 'Z', 0
 mTimeZoneToHoursName:
     .db 'T', 'Z', Sconvert, 'H', 0
+mHoursToTimeZoneName:
+    .db 'H', Sconvert, 'T', 'Z', 0
 mEpochName:
     .db "EPCH", 0
 mDateShrinkName:

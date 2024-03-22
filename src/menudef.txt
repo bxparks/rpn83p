@@ -390,8 +390,8 @@ MenuGroup root mRoot [
         MenuItem LEAP mLeapYear # operates on year
         MenuItem DOW mDayOfWeek # operates on Date
         MenuItem * *
-        MenuItem DY<Sconvert>D mEpochDaysToDate
         MenuItem D<Sconvert>DY mDateToEpochDays
+        MenuItem DY<Sconvert>D mEpochDaysToDate
       ]
       MenuRow [
         MenuItem D<Scross><Sconvert>S mDateRelatedToSeconds
@@ -401,8 +401,8 @@ MenuGroup root mRoot [
         MenuItem S<Sconvert>UT mEpochSecondsToUTCDateTime
       ]
       MenuRow [
-        MenuItem H<Sconvert>TZ mHoursToTimeZone
         MenuItem TZ<Sconvert>H mTimeZoneToHours
+        MenuItem H<Sconvert>TZ mHoursToTimeZone
         MenuItem * *
         MenuItem * *
         MenuGroup EPCH mEpoch [
