@@ -957,8 +957,8 @@ Epoch of 1970-01-01 UTC.
 There are 5 menu functions which support conversions from calendar dates and
 datetimes to epoch days and seconds:
 
-- ![Epoch Days menu](images/date/menu-root-date-1.png)
-- ![Epoch Seconds menu](images/date/menu-root-date-2.png)
+- ![Epoch Days menu](images/date/menu-epochdays.png)
+- ![Epoch Seconds menu](images/date/menu-epochseconds.png)
 
 The first 2 operate on Epoch days:
 
