@@ -45,7 +45,10 @@ features:
     - [DayOfWeek Object](#dayofweek-object)
     - [Duration Object](#duration-object)
 - [Timezone Conversions](#timezone-conversions)
-- [Epoch Date Conversions](#epoch-date-conversions)
+- [Epoch Date](#epoch-date)
+    - [Custom Epoch Date](#custom-epoch-date)
+    - [Epoch Conversions](#epoch-conversions)
+    - [Epoch Seconds Range](#epoch-seconds-range)
 - [Real Time Clock](#real-time-clock)
 - [Record Components](#record-components)
 - [Storage Registers](#storage-registers)
@@ -943,7 +946,7 @@ date, then set it to `2100-01-01`:
 | `EPC`             | ![](images/date/customepoch-raw-3.png)    | ![](images/date/customepoch-form-3.png) |
 | `EPC?`            | ![](images/date/customepoch-raw-4.png)    | ![](images/date/customepoch-form-4.png) |
 
-### Epoch Days and Seconds Conversions
+### Epoch Conversions
 
 Once an Epoch date has been defined, it is often convenient to convert Gregorian
 date and datetimes to a number that counts the number of days or number of
@@ -1000,7 +1003,7 @@ using the Unix epoch date of 1970-01-01 UTC:
 | `S>UT`                        | ![](images/date/epochseconds-raw-4.png)  | ![](images/date/epochseconds-form-4.png) |
 | `S>DZ`                        | ![](images/date/epochseconds-raw-5.png)  | ![](images/date/epochseconds-form-5.png) |
 
-### Range of Epoch Seconds
+### Epoch Seconds Range
 
 Internally, all date/time calculations are performed using 40-bit signed
 integers whose range is `[-549_755_813_888, +549_755_813_887]` seconds. This is
