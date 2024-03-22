@@ -578,9 +578,9 @@ To convert `TZ{-4,~30}` to hours then back to a TimeZone object:
 
 | **Keys**     | **MODE `{..}`**                                | **MODE `".."`**   |
 | -------------| ---------------------                          | ----------------- |
-| `TZ{-4,-30}` | ![](images/date/timezone-convert-raw-1.png)    | ![](images/date/timezone-convert-form-1.png) |
-| `TZ>H`       | ![](images/date/timezone-convert-raw-2.png)    | ![](images/date/timezone-convert-form-2.png) |
-| `H>TZ`       | ![](images/date/timezone-convert-raw-3.png)    | ![](images/date/timezone-convert-form-3.png) |
+| `TZ{-4,-30}` | ![](images/date/timezone-hour-raw-1.png)    | ![](images/date/timezone-hour-form-1.png) |
+| `TZ>H`       | ![](images/date/timezone-hour-raw-2.png)    | ![](images/date/timezone-hour-form-2.png) |
+| `H>TZ`       | ![](images/date/timezone-hour-raw-3.png)    | ![](images/date/timezone-hour-form-3.png) |
 
 ### ZonedDateTime Object
 
