@@ -201,9 +201,11 @@ are some examples:
 Other conventions, such as the examples given in [List of date formats by
 country](https://en.wikipedia.org/wiki/List_of_date_formats_by_country), are not
 supported because they cause too many ambiguities for a calculator app whose
-main purpose is to perform calculations on those quantities, instead of
-displaying a date and time to the user. Here is a sample of date formats which
-are *not* supported in the `DATE` functions of RPN83P:
+main purpose is to perform calculations on those quantities. (In other words, it
+is not the goal of RPN83P to be a *clock* to the user, even though some
+real-time clock functions are available on the 84+ and 84+SE which contain a
+real-time clock chip.) Here is a sample of date formats which are *not*
+supported in the `DATE` functions of RPN83P:
 
 - US dates `mm/dd/yyyy`, not supported
 - Canadian dates `dd/mm/yyyy`, not supported
@@ -219,15 +221,15 @@ are *not* supported in the `DATE` functions of RPN83P:
 
 The following menus items are located under the `DATE` menu:
 
-- [TODO: screenshot of [DATE] menu]
-    - [TODO: screenshot of [LEAP DOW DY>D D>DY]]
-    - [TODO: screenshot of [Dx>S S>DR S>T S>DZ S>UT]]
-    - [TODO: screenshot of [H>TZ TZ>H EPCH]]
-        - [TODO: screenshot of [UNIX NTP GPS TIOS Y2K]]
-        - [TODO: screenshot of [CEPC EPC EPC?]]
-    - [TODO: screenshot of [DSHK DEXD DCUT DLNK]]
-    - [TODO: screenshot of [NOW NOWD NOWT NWDZ NWUT]]
-    - [TODO: screenshot of [TZ TZ? CTZ CTZ? SETC]]
+- ![](images/date/menu-root-3.png)
+    - ![](images/date/menu-root-date-1.png)
+    - ![](images/date/menu-root-date-2.png)
+    - ![](images/date/menu-root-date-3.png)
+        - ![](images/date/menu-root-date-epch-1.png)
+        - ![](images/date/menu-root-date-epch-2.png)
+    - ![](images/date/menu-root-date-4.png)
+    - ![](images/date/menu-root-date-5.png)
+    - ![](images/date/menu-root-date-6.png)
 
 ## DATE Buttons
 
@@ -235,6 +237,13 @@ Here is a screenshot of the calculator with various buttons that are assigned to
 `DATE` related functions:
 
 ![DATE buttons](images/fullshot-date-buttons.jpg)
+
+These buttons do *not* require the menu system to be in the `DATE` menu
+hierarchy to be active. For example, the arithmetic buttons `+`, `-`, and `*`
+act normally for Real and Complex numbers, but invoke slightly different
+functions when operating on Date-related object. Similarly, the `1/x`, `SQRT`
+and `x^2` buttons act normally on Real and Complex objects but are bound to the
+`DCUT`, `DSHK`, and `DEXD` functions when they operate on Date-related objects.
 
 ## Date-related Objects
 
