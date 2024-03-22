@@ -48,6 +48,7 @@ features:
 - [Epoch Date Conversions](#epoch-date-conversions)
 - [Real Time Clock](#real-time-clock)
 - [Record Components](#record-components)
+- [Storage Registers](#storage-registers)
 
 ## Calendar, Time, and Timezones
 
@@ -850,60 +851,43 @@ Another example, let's add 30 days to the DateTime `2024-03-14 12:58:32`:
 ## Timezone Conversions
 
 A ZonedDateTime with a specific timezone (e.g. UTC-07:00) can be converted to
-another ZonedDatetime with a different timezone (e.g. UTC+13:00). The RPN83P
-provides a mechanism to perform timezone conversions quickly by overloading the
-multiplication operator `*` in the following way:
+another ZonedDateTime with a different timezone (e.g. UTC+13:00). To allow this
+conversion to be performed quickly, the RPN83P app uses the multiplication
+button `*` to perform the conversion:
 
-```
-+-----------------------------------+-------------------+
-| **Operation**                     | **Result**        |
-+-----------------------------------+-------------------+
-| {ZonedDateTime} * {integer}       | {ZonedDateTime}   |
-| {ZonedDateTime} * {TimeZone}      | {ZonedDateTime}   |
-| {integer} * {ZonedDateTime}       | {ZonedDateTime}   |
-| {TimeZone} * {ZonedDateTime}      | {ZonedDateTime}   |
-+-----------------------------------+-------------------+
-```
+| **Operation**                 | **Result**        |
+|-------------------------------|-------------------|
+| {ZonedDateTime} * {integer}   | {ZonedDateTime}   |
+| {ZonedDateTime} * {TimeZone}  | {ZonedDateTime}   |
+| {integer} * {ZonedDateTime}   | {ZonedDateTime}   |
+| {TimeZone} * {ZonedDateTime}  | {ZonedDateTime}   |
 
-The `*` operator takes 2 arguments. The source timezone is contained in the
-ZoneDateTime object. The target timezone can be represented by a TimeZone object
-or by a shortform floating point number that represents the number of hours
-offset from UTC. For example, `UTC-08:00` can be encoded by just `-8`.
+The `*` operator takes 2 arguments and extracts the timezones as follows:
 
-For example, let's convert the timestamp 2024-03-14 15:36:01
-in America/Los_Angeles (which is UTC-07:00) in the summer time to
-Pacific/Auckland (which is currently UTC+13:00):
+- the *source* timezone is contained in the ZoneDateTime object
+- the *target* timezone is given as a TimeZone object or a floating point
+  equivalent of the timezone (e.g. `UTC-02:30` can be given as `-2.5`)
 
-```
-DZ{2024,3,14,15,35,1,-7,0} ENTER
-TZ{13,0} *
-(displays DZ{2024,3,15,11,35,1,13,...})
-(select MODE "..")
-(displays 2024-03-15 11;35:01+13:00)
-```
+Let's convert the datetime 2024-03-14 15:36:01-07:00 (Pacific Time, USA) to the
+following timezones:
 
-Let's convert the same time to the time in India which is at UTC+05:30. We can
-represent the target time zone using the floating point number `5.5`:
+- UTC+13:00 (Auckland, New Zealand)
+- UTC+05:30 (India)
+- UTC-02:30 (Newfoundland, Canada)
+- UTC-00:00 (UTC)
 
-```
-5.5 *
-(displays 2024-03-15 04:05:41+05:30)
-```
-
-Let's convert this to the timezone in Newfoundland, Canada which is at
-UTC-02:30:
-
-```
--2.5 *
-(displays 2024-03-14 20:05:01-02:30)
-```
-
-Finally, let's convert this to UTC:
-
-```
-0 *
-(displays 2024-03-14 22:35:01 Z)
-```
+| **Keys**                      | **MODE `{..}`**                               | **MODE `".."`**                   |
+| -------------------------     | ---------------------                         | -----------------                 |
+| `DZ{2024,3,14,15,36,1,-7,0}`  | ![](images/date/timezone-convert-raw-01.png)  | ![](images/date/timezone-convert-form-01.png) |
+| `ENTER`                       | ![](images/date/timezone-convert-raw-02.png)  | ![](images/date/timezone-convert-form-02.png) |
+| `13`                          | ![](images/date/timezone-convert-raw-03.png)  | ![](images/date/timezone-convert-form-03.png) |
+| `*`                           | ![](images/date/timezone-convert-raw-04.png)  | ![](images/date/timezone-convert-form-04.png) |
+| `TZ{5,30}`                    | ![](images/date/timezone-convert-raw-05.png)  | ![](images/date/timezone-convert-form-05.png) |
+| `*`                           | ![](images/date/timezone-convert-raw-06.png)  | ![](images/date/timezone-convert-form-06.png) |
+| `-2.5`                        | ![](images/date/timezone-convert-raw-07.png)  | ![](images/date/timezone-convert-form-07.png) |
+| `*`                           | ![](images/date/timezone-convert-raw-08.png)  | ![](images/date/timezone-convert-form-08.png) |
+| `0`                           | ![](images/date/timezone-convert-raw-09.png)  | ![](images/date/timezone-convert-form-09.png) |
+| `*`                           | ![](images/date/timezone-convert-raw-10.png)  | ![](images/date/timezone-convert-form-10.png) |
 
 ## Epoch Date Conversions
 
@@ -1004,3 +988,5 @@ epochseconds quantity.
 ### DEXD - Extend
 
 ### DSHK - Shrink
+
+## Storage Registers
