@@ -838,13 +838,14 @@ For example, let's add the Duration `2h 33m` to the Time `12:58:32`:
 | `DR{0,2,33,0}`    | ![](images/date/duration-add-time-raw-3.png)  | ![](images/date/duration-add-time-form-3.png) |
 | `+`               | ![](images/date/duration-add-time-raw-4.png)  | ![](images/date/duration-add-time-form-4.png) |
 
-For example, let's add 30d to the DateTime `2024-03-14 12:58:32`:
+Another example, let's add 30 days to the DateTime `2024-03-14 12:58:32`:
 
-```
-DT{2024,3,14,12,58,32} ENTER
-30:D +
-(displays DT{2024,4,13,12,58,32})
-```
+| **Keys**                  | **MODE `{..}`**                                   | **MODE `".."`**   |
+| -----------               | ---------------------                             | ----------------- |
+| `DT{2024,3,14,12,58,32}`  | ![](images/date/duration-add-datetime-raw-1.png)  | ![](images/date/duration-add-datetime-form-1.png) |
+| `ENTER`                   | ![](images/date/duration-add-datetime-raw-2.png)  | ![](images/date/duration-add-datetime-form-2.png) |
+| `30:D`                    | ![](images/date/duration-add-datetime-raw-3.png)  | ![](images/date/duration-add-datetime-form-3.png) |
+| `+`                       | ![](images/date/duration-add-datetime-raw-4.png)  | ![](images/date/duration-add-datetime-form-4.png) |
 
 ## Timezone Conversions
 
