@@ -955,7 +955,7 @@ There are 5 menu functions which support conversions from calendar dates and
 datetimes to epoch days and epoch seconds:
 
 - ![Epoch Days menu](images/date/menu-root-date-2.png)
-- ![Epoch Seconds menu](images/date/menu-root-date-2.png)
+- ![Epoch Seconds menu](images/date/menu-root-date-3.png)
 
 The first 2 operate on epoch days:
 
@@ -971,9 +971,10 @@ of 1970-01-01:
 | **Keys**          | **MODE `{..}`**                       | **MODE `".."`**   |
 | -----------       | ---------------------                 | ----------------- |
 | `UNIX`            | ![](images/date/epochdays-raw-1.png)  | ![](images/date/epochdays-form-1.png) |
-| `D{2024,3,14}`    | ![](images/date/epochdays-raw-2.png)  | ![](images/date/epochdays-form-2.png) |
-| `D>DY`            | ![](images/date/epochdays-raw-3.png)  | ![](images/date/epochdays-form-3.png) |
-| `DY>D`            | ![](images/date/epochdays-raw-4.png)  | ![](images/date/epochdays-form-4.png) |
+| `ON` `UP` `UP`    | ![](images/date/epochdays-raw-2.png)  | ![](images/date/epochdays-form-2.png) |
+| `D{2024,3,14}`    | ![](images/date/epochdays-raw-3.png)  | ![](images/date/epochdays-form-3.png) |
+| `D>DY`            | ![](images/date/epochdays-raw-4.png)  | ![](images/date/epochdays-form-4.png) |
+| `DY>D`            | ![](images/date/epochdays-raw-5.png)  | ![](images/date/epochdays-form-5.png) |
 
 The next 3 operate on epoch seconds:
 
@@ -982,7 +983,7 @@ The next 3 operate on epoch seconds:
       input is a ZonedDateTime, then the output is the number of seconds from
       the current Epoch date.
 - `S>DZ`
-    - converts the number of epochseconds to the `ZonedDateTime` using the
+    - converts the number of epochseconds to the ZonedDateTime using the
       currently selected App TimeZone (see `TZ` and `TZ?` below)
 - `S>UT`
     - same as `S>DZ` except that the timezone of the resulting ZonedDateTime is
@@ -993,11 +994,11 @@ using the Unix epoch date of 1970-01-01 UTC:
 
 | **Keys**                      | **MODE `{..}`**                       | **MODE `".."`**   |
 | -----------                   | ---------------------                 | ----------------- |
-| `UNIX`                        | ![](images/date/epochdays-raw-1.png)  | ![](images/date/epochdays-form-1.png) |
-| `DZ{2024,3,14,15,36,1,-7,0}`  | ![](images/date/epochdays-raw-2.png)  | ![](images/date/epochdays-form-2.png) |
-| `D*>S`                        | ![](images/date/epochdays-raw-3.png)  | ![](images/date/epochdays-form-3.png) |
-| `S>UT`                        | ![](images/date/epochdays-raw-4.png)  | ![](images/date/epochdays-form-4.png) |
-| `S>DZ`                        | ![](images/date/epochdays-raw-5.png)  | ![](images/date/epochdays-form-5.png) |
+| `UNIX`                        | ![](images/date/epochseconds-raw-1.png)  | ![](images/date/epochseconds-form-1.png) |
+| `DZ{2024,3,14,15,36,1,-7,0}`  | ![](images/date/epochseconds-raw-2.png)  | ![](images/date/epochseconds-form-2.png) |
+| `D*>S`                        | ![](images/date/epochseconds-raw-3.png)  | ![](images/date/epochseconds-form-3.png) |
+| `S>UT`                        | ![](images/date/epochseconds-raw-4.png)  | ![](images/date/epochseconds-form-4.png) |
+| `S>DZ`                        | ![](images/date/epochseconds-raw-5.png)  | ![](images/date/epochseconds-form-5.png) |
 
 ### Range of Epoch Seconds
 
