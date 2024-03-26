@@ -1146,12 +1146,82 @@ here will be in `UTC-07:00`.
 
 ## Record Components
 
-### DCUT - Cut
+Sometimes we want to combined the Date and Time and TimeZone objects into bigger
+objects, or take apart bigger objects into smaller components. Row 4 of the
+`DATE` menu (![](images/date/menu-root-date-4.png)) contains menu items
+which allow those operations to be performed.
 
-### DLNK - Link
+### DSHK - Shrink
+
+The `DSHK` (Date Shrink) command converts a ZonedDateTime into a DateTime by
+truncating the Timezone component. When it is applied again to the DateTime object,
+it is converts into a Date object by truncating the Time component.
+
+For example, let's apply the `DCUT` command on the following ZonedDateTime to
+convert it to a DateTime, then a Date object, by pressing `DCUT` twice:
+
+| **Keys**                      | **MODE `{..}`**                   | **MODE `".."`**   |
+| ----------                    | ---------------------             | ----------------- |
+| `DZ{2024,3,14,15,36,1,-7,0}`  | ![](images/date/dshk-raw-1.png)   | ![](images/date/dshk-form-1.png) |
+| `ENTER`                       | ![](images/date/dshk-raw-2.png)   | ![](images/date/dshk-form-2.png) |
+| `DSHK`                        | ![](images/date/dshk-raw-3.png)   | ![](images/date/dshk-form-3.png) |
+| `DSHK`                        | ![](images/date/dshk-raw-4.png)   | ![](images/date/dshk-form-4.png) |
+
+The `ENTER` was used to show the original object on the RPN stack. It was not
+necessary to press it before the first `DSHK` command.
 
 ### DEXD - Extend
 
-### DSHK - Shrink
+The `DEXD` (Date Extend) command perform the reverse of the `DSHK` command by
+appending the Time component and the TimeZone component successively. For
+example, let's start with a Date object and press the `DEXD` command twice:
+
+| **Keys**                      | **MODE `{..}`**                   | **MODE `".."`**   |
+| ----------                    | ---------------------             | ----------------- |
+| `D{2024,3,14}`                | ![](images/date/dexd-raw-1.png)   | ![](images/date/dexd-form-1.png) |
+| `ENTER`                       | ![](images/date/dexd-raw-2.png)   | ![](images/date/dexd-form-2.png) |
+| `DSHK`                        | ![](images/date/dexd-raw-3.png)   | ![](images/date/dexd-form-3.png) |
+| `DSHK`                        | ![](images/date/dexd-raw-4.png)   | ![](images/date/dexd-form-4.png) |
+
+As before, the `ENTER` was used only for the purpose of displaying the original
+Date object. It was not necessary to press it before the first `DEXD` command.
+
+### DCUT - Cut
+
+The `DCUT` (Date Cut) command breaks apart big object on the `X` register into 2
+smaller ones on the `X` and `Y` registers.
+
+- ZoneDateTime (`X`) becomes DateTime (`X`) and TimeZone (`Y`)
+- DateTime (`X`) becomes Date (`X`) and Time (`Y`)
+
+For example, let's apply the `DCUT` command on the following ZonedDateTime:
+
+| **Keys**  | **MODE `{..}`**                                       | **MODE `".."`**   |
+| ----------| ---------------------                                 | ----------------- |
+| `DZ{2024,3,14,15,36,1,-7,0}`  | ![](images/date/dcut-raw-1.png)   | ![](images/date/dcut-form-1.png) |
+| `ENTER`                       | ![](images/date/dcut-raw-2.png)   | ![](images/date/dcut-form-2.png) |
+| `DCUT`                        | ![](images/date/dcut-raw-3.png)   | ![](images/date/dcut-form-3.png) |
+| `DCUT`                        | ![](images/date/dcut-raw-4.png)   | ![](images/date/dcut-form-4.png) |
+
+### DLNK - Link
+
+The `DLNK` (Date Link) command performs the reverse of the `DCUT` command by
+combining the `X` and `Y` stack registers into a single object in `X`.
+
+- DateTime (`X`) and TimeZone (`Y`) becomes a ZoneDateTime (`X`)
+- Date (`X`) and Time (`Y`) becomes a DateTime (`X`)
+
+
+For example, let's incrementally build a ZonedDateTime from a Date, Time and
+TimeZone object:
+
+| **Keys**  | **MODE `{..}`**                                       | **MODE `".."`**   |
+| ----------| ---------------------                                 | ----------------- |
+| `D{2024,3,14}`                | ![](images/date/dcut-raw-1.png)   | ![](images/date/dcut-form-1.png) |
+| `ENTER`                       | ![](images/date/dcut-raw-2.png)   | ![](images/date/dcut-form-2.png) |
+| `T{15,36,1}`                  | ![](images/date/dcut-raw-3.png)   | ![](images/date/dcut-form-3.png) |
+| `DLNK`                        | ![](images/date/dcut-raw-4.png)   | ![](images/date/dcut-form-4.png) |
+| `TZ{-7,0}`                    | ![](images/date/dcut-raw-5.png)   | ![](images/date/dcut-form-5.png) |
+| `DLNK`                        | ![](images/date/dcut-raw-6.png)   | ![](images/date/dcut-form-6.png) |
 
 ## Storage Registers
