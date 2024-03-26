@@ -1033,30 +1033,110 @@ The menu items which related to the RTC are the last 2 rows of the `DATE` menu
 hierarchy:
 
 - ![](images/date/menu-root-date-5.png)
+    - `NOW`: return the current date-time as epochseconds from the current Epoch
+    date
+    - `NOWD`: return the current date-time as a `Date` object
+    - `NOWT`: return the current date-time as a `Time` object
+    - `NWDZ`: return the current date-time as a `ZonedDateTime` object using the
+    Application Timezone
+    - `NWUT`: return the current date-time as a `ZonedDateTime` object using the UTC
+    timezone
 - ![](images/date/menu-root-date-6.png)
+    - `TZ`: set the App Timezone
+    - `TZ?`: retrieve the App Timezone
+    - `CTZ`: set the Clock Timezone
+    - `CTZ?`: retrieve the Clock Timezone
+    - `SETC`: set the date and time of the Clock
 
-Here is a quick summary of these functions:
+Before we can use retrieve the current date and time from the hardware
+clock (RTC) using the various `NOW` and `NWxx` menu commands, we must configure
+the hardware clock using the `CTZ` and `SETC` commands, and we must configure
+the Application Timezone using the `TZ` command.
 
-- `NOW`: return the current date-time as epochseconds from the current Epoch
-  date
-- `NOWD`: return the current date-time as a `Date` object
-- `NOWT`: return the current date-time as a `Time` object
-- `NWDZ`: return the current date-time as a `ZonedDateTime` object using the
-  Application Timezone
-- `NWUT`: return the current date-time as a `ZonedDateTime` object using the UTC
-  timezone
+### Setting the Clock Timezone
 
-A real time clock must be set with the correct time to be useful. This is done
-with the `SETC` (set clock) function. The input is a ZonedDateTime, like this:
+The hardware clock timezone must be set using the `CTZ` menu command before
+setting the hardware clock's datetime. There are 2 options which seem most
+likely:
 
-| **Keys**                      | **MODE `{..}`**                       | **MODE `".."`**   |
-| -----------                   | ---------------------                 | ----------------- |
-| `DZ{2024,3,14,15,36,1,-7,0}`  | ![](images/date/setclock-raw-1.png)   | ![](images/date/setclock-form-1.png) |
-| `SETC`                        | ![](images/date/setclock-raw-2.png)   | ![](images/date/setclock-form-2.png) |
+**Option 1**: Set the hardware clock timezone to UTC so that it can be
+translated to any timezone, without having to worry about DST transitions. Here
+is how to set the hardware clock timezone to UTC:
 
-### RTC Timezone
+| **Keys**   | **MODE `{..}`**                                      | **MODE `".."`**   |
+| -----------| ---------------------                                | ----------------- |
+| `0`        | ![](images/date/set-clock-timezone-utc-raw-1.png)    | ![](images/date/set-clock-timezone-utc-form-1.png) |
+| `CTZ`      | ![](images/date/set-clock-timezone-utc-raw-2.png)    | ![](images/date/set-clock-timezone-utc-form-2.png) |
+| `CTZ?`     | ![](images/date/set-clock-timezone-utc-raw-3.png)    | ![](images/date/set-clock-timezone-utc-form-3.png) |
 
-### Application Timezone
+**Option 2**: Set the hardware clock timezone to the local timezone (e.g.
+UTC-08:00 or UTC-07:00, Pacific Time in the US):
+
+| **Keys**   | **MODE `{..}`**                                      | **MODE `".."`**   |
+| -----------| ---------------------                                | ----------------- |
+| `TZ{-7,0}` | ![](images/date/set-clock-timezone-pdt-raw-1.png)    | ![](images/date/set-clock-timezone-pdt-form-1.png) |
+| `CTZ`      | ![](images/date/set-clock-timezone-pdt-raw-2.png)    | ![](images/date/set-clock-timezone-pdt-form-2.png) |
+| `CTZ?`     | ![](images/date/set-clock-timezone-pdt-raw-3.png)    | ![](images/date/set-clock-timezone-pdt-form-3.png) |
+
+The recommended solution is **Option 1**, which sets the hardware clock timezone
+to UTC. Option 2, which sets the hardware clock to the local timezone has the
+problem that the hardware clock is no longer the local time for parts of the
+year when the DST rules are in effect. For locations without DST transitions,
+Option 2 can be a viable option, although for consistency, UTC is still the
+preferred timezone for the hardware clock.
+
+### Setting the Clock DateTime
+
+Once the timezone of the hardware clock is set, the actual date-time of the
+clock can be configured using the `SETC` (set clock) command. That command takes
+a ZonedDateTime value as the argument, like this:
+
+| **Keys**                      | **MODE `{..}`**                               | **MODE `".."`**   |
+| -----------                   | ---------------------                         | ----------------- |
+| `DZ{2024,3,14,15,36,1,-7,0}`  | ![](images/date/set-clock-datetime-raw-1.png) | ![](images/date/set-clock-datetime-form-1.png) |
+| `SETC`                        | ![](images/date/set-clock-datetime-raw-2.png) | ![](images/date/set-clock-datetime-form-2.png) |
+
+Internally, the TI-84+/84+SE hardware clock keeps track of time as a 32-bit
+integer counting the number of seconds from the TI-OS epoch date, which is
+1997-01-01 00:00:00 UTC. The ZonedDateTime given to the `SETC` command is
+converted into an epochseconds before being handed over to the hardware clock.
+
+### Setting the Application Timezone
+
+In addition to the timezone of the RTC, RPN83P also allows the *Application
+Timezone* to be set using the `TZ` and `TZ?` commands. This timezone is
+*independent* of the hardware clock timezone. The *Application Timezone* is the
+default timezone inserted into a ZonedDateTime object when a particular function
+returns a ZonedDateTime (e.g. `NWDZ`, `S>DZ`).
+
+To set the App Timezone to UTC-07:00 for example, use the following:
+
+| **Keys**  | **MODE `{..}`**                                  | **MODE `".."`**   |
+| ----------| ---------------------                            | ----------------- |
+| `TZ{-7,0}`| ![](images/date/set-app-timezone-pdt-raw-1.png) | ![](images/date/set-app-timezone-pdt-form-1.png) |
+| `TZ`      | ![](images/date/set-app-timezone-pdt-raw-2.png) | ![](images/date/set-app-timezone-pdt-form-2.png) |
+| `TZ?`     | ![](images/date/set-app-timezone-pdt-raw-3.png) | ![](images/date/set-app-timezone-pdt-form-3.png) |
+
+### Get Now
+
+Now that we have configured the hardware clock, we can use the various `NOW` and
+`NWxx` commands to retrieve the current date and time from the RTC:
+
+
+
+### Clock Through the TI-OS
+
+The same hardware clock can be accessed and configured using the normal TI-OS
+through the `MODE` screen on the first or second page (depending on the OS
+version), like this:
+
+![TIOS Mode Set Clock](images/date/tios-mode-setclock.png)
+
+The TI-OS does *not* know about the time zone. The date-time displayed here will
+be in the timezone configured by the `CTZ` command in RPN83P. For example, if
+`CTZ` is set to `UTC+00:00`, then the date-time displayed here will be in UTC
+timezone. If the `CTZ` timezone was configured to be `UTC-07:00`, the date-time
+here will be in `UTC-07:00`.
 
 ## Record Components
 
