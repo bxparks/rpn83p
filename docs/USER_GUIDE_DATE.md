@@ -1078,12 +1078,11 @@ UTC-08:00 or UTC-07:00, Pacific Time in the US):
 | `CTZ`      | ![](images/date/set-clock-timezone-pdt-raw-2.png)    | ![](images/date/set-clock-timezone-pdt-form-2.png) |
 | `CTZ?`     | ![](images/date/set-clock-timezone-pdt-raw-3.png)    | ![](images/date/set-clock-timezone-pdt-form-3.png) |
 
-The recommended solution is **Option 1**, which sets the hardware clock timezone
-to UTC. Option 2, which sets the hardware clock to the local timezone has the
-problem that the hardware clock is no longer the local time for parts of the
-year when the DST rules are in effect. For locations without DST transitions,
-Option 2 can be a viable option, although for consistency, UTC is still the
-preferred timezone for the hardware clock.
+My recommendation is to use **Option 1** which sets the hardware clock timezone
+to UTC. The problem with Option 2 which sets the clock to the local timezone is
+that for regions which has DST rules during parts of the year, the hardware
+clock's time will be incorrect during the months when the DST rules are in
+effect.
 
 ### Setting the Clock DateTime
 
