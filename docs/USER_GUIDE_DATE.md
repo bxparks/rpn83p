@@ -1102,9 +1102,9 @@ converted into an epochseconds before being handed over to the hardware clock.
 
 ### Setting the Application Timezone
 
-In addition to the timezone of the RTC, RPN83P also allows the *Application
-Timezone* to be set using the `TZ` and `TZ?` commands. This timezone is
-*independent* of the hardware clock timezone. The *Application Timezone* is the
+In addition to the timezone of the RTC, RPN83P also allows the **Application**
+Timezone to be set using the `TZ` and `TZ?` commands. This timezone is
+*independent* of the hardware clock timezone. The Application Timezone is the
 default timezone inserted into a ZonedDateTime object when a particular function
 returns a ZonedDateTime (e.g. `NWDZ`, `S>DZ`).
 
@@ -1122,6 +1122,13 @@ Now that we have configured the hardware clock, we can use the various `NOW` and
 `NWxx` commands to retrieve the current date and time from the RTC:
 
 
+| **Keys**  | **MODE `{..}`**                   | **MODE `".."`**   |
+| ----------| ---------------------             | ----------------- |
+| `NOW`     | ![](images/date/get-now-raw.png)  | ![](images/date/get-now-form.png) |
+| `NOWD`    | ![](images/date/get-nowd-raw.png) | ![](images/date/get-nowd-form.png) |
+| `NOWT`    | ![](images/date/get-nowt-raw.png) | ![](images/date/get-nowt-form.png) |
+| `NWDZ`    | ![](images/date/get-nwdz-raw.png) | ![](images/date/get-nwdz-form.png) |
+| `NWUT`    | ![](images/date/get-nwut-raw.png) | ![](images/date/get-nwut-form.png) |
 
 ### Clock Through the TI-OS
 
