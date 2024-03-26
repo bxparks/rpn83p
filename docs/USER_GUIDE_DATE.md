@@ -1007,10 +1007,10 @@ using the Unix epoch date of 1970-01-01 UTC:
 
 The last result from the `S>DZ` function requires some explanation. That
 function converts the `epochseconds` into a ZonedDateTime using the
-*application* timezone. How is the *application* timezone defined? It is set by
-the `TZ` menu command explained in [Application Timezone](#application-timezone)
-below. In this example, the *application* timezone (retrieved by `TZ?`) was set
-to UTC-07:00.
+**Application** Timezone. How is the Application Timezone defined? It is set by
+the `TZ` menu command explained in [Setting the Application
+Timezone](#setting-the-application-timezone) below. In this example, the
+Application Timezone (retrieved by `TZ?`) was set to UTC-07:00.
 
 ### Epoch Seconds Range
 
