@@ -36,7 +36,7 @@ features:
 - [Date Buttons](#date-buttons)
 - [Date-related Objects](#date-related-objects)
     - [Data Entry](#data-entry)
-    - [Display Format Modes](#display-format-modes)
+    - [Formatting Modes](#formatting-modes)
     - [Date Object](#date-object)
     - [Time Object](#time-object)
     - [DateTime Object](#datetime-object)
@@ -332,23 +332,37 @@ ALPHA D
 For brevity and readability, this long sequence of keystrokes will be shortened
 to something like `D{2024,3,14}` in the subsequent sections.
 
-### Display Format Modes
+### Formatting Modes
 
-In the `MODE` menu, there are 2 settings that affect how date record objects are
+In the `MODE` menu, there are 2 settings that affect how date objects are
 displayed:
 
 - ![ROOT > MODE](images/date/menu-root-3.png)
-    - ![ROOT > MODE > Object Format](images/date/menu-root-mode-object-format.png)
+    - ![ROOT > MODE > Object Formatting](images/date/menu-root-mode-object-formatting.png)
 
-If the `{..}` option is selected (factory default), the records will be
-displayed in their entry form using the curly braces. If the `".."` option is
-selected, the records will be displayed as a human-readable string. In the
-following sections, the displayed string in both modes will be shown.
+If the `{..}` (Raw Formatting) option is selected (factory default), the date
+objects will be displayed in their raw form using curly braces.
+
+If the `".."` (String Formatting) option is selected, the date objects will be
+displayed as human-readable strings using the RFC 3339 specification for the
+most part.
+
+The Raw Formatting (`{..}`) option is better at showing the internal structure
+of the date object, but for more complex objects, like ZonedDateTime, the
+formatted string can overflow the length of a single line. When this happens,
+the [SHOW Mode](USER_GUIDE.md#show-mode) (using `2ND ENTRY` keystroke) can be
+used to show the entire raw formatting without truncation. The String Formatting
+mode (`".."`) is more compact and will always be adjusted to fit entirely into a
+single line. Most users will probably switch to String Formatting after an
+initial learning period.
+
+In the following sections, the screenshots for both Raw and String formatting
+modes will be shown.
 
 **Pro Tip**: If the `MODE` menu is activated using the `MODE` **button**, the
 "Jump Back" feature is enabled so that the `ON/EXIT` button returns to the prior
-menu location. This makes it easier to quickly change the `{..}` or `".."`
-display modes.
+menu location. This makes it easy to quickly change the `{..}` or `".."`
+formatting modes.
 
 ### Date Object
 
@@ -357,10 +371,10 @@ Gregorian calendar date. For example, the date `2024-03-14` is entered into the
 calculator as follows, and is displayed in 2 different ways depending on the
 MODE setting of `{..}` or `".."`:
 
-| **Keys**          | **MODE `{..}`**                 | **MODE `".."`** |
-| ----------------  | ---------------------           | --------------- |
-| `D{2024,3,14}`    | ![](images/date/date-raw-1.png) | ![](images/date/date-str-1.png) |
-| `ENTER`           | ![](images/date/date-raw-2.png) | ![](images/date/date-str-2.png) |
+| **Keys**          | **MODE `{..}`**                       | **MODE `".."`** |
+| ----------------  | ---------------------                 | --------------- |
+| `D{2024,3,14}`    | ![](images/date/date-raw-1.png)       | ![](images/date/date-str-1.png) |
+| `ENTER`           | ![](images/date/date-raw-2.png)       | ![](images/date/date-str-2.png) |
 
 #### Date Validation
 
@@ -369,10 +383,10 @@ represents a proper Gregorian calendar date. If the component is invalid, an
 `Err:Invalid` error message is displayed. For example, if we try to enter the
 invalid date `2024-02-30`, we get:
 
-| **Keys**          | **MODE `{..}`**                   | **MODE `".."`**   |
-| ------------------| ---------------------             | ----------------- |
-| `D{2024,2,30}`    | ![](images/date/invalid-raw-1.png)| ![](images/date/invalid-str-1.png) |
-| `ENTER`           | ![](images/date/invalid-raw-2.png)| ![](images/date/invalid-str-2.png) |
+| **Keys**          | **MODE `{..}`**                       | **MODE `".."`**   |
+| ------------------| ---------------------                 | ----------------- |
+| `D{2024,2,30}`    | ![](images/date/invalid-raw-1.png)    | ![](images/date/invalid-str-1.png) |
+| `ENTER`           | ![](images/date/invalid-raw-2.png)    | ![](images/date/invalid-str-2.png) |
 
 Notice that for input validation errors like this, the input is not terminated
 and the prompt continues to be shown. You can pressed the `DEL` to delete the
