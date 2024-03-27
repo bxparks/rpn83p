@@ -575,10 +575,10 @@ Object](#duration-object) below.) Scroll down the `DATE` menu rows until the
 `S>DR` menu item appears, as shown in the table below. Press that menu item to
 convert 24654239 seconds into a `Duration` object:
 
-|  **Keys** |  **MODE `{..}`**                                  |  **MODE `".."`**        |
-| ----------| ---------------------                             | -----------------       |
-|           | ![](images/date/datetime-sub-duration-raw-1.png)  | ![](images/date/datetime-sub-duration-str-1.png) |
-| `S>DR`    | ![](images/date/datetime-sub-duration-raw-2.png)  | ![](images/date/datetime-sub-duration-str-2.png) |
+|  **Keys**     |  **MODE `{..}`**                                  |  **MODE `".."`**        |
+| ----------    | ---------------------                             | -----------------       |
+| (from above)  | ![](images/date/datetime-sub-raw-4.png)           | ![](images/date/datetime-sub-str-4.png) |
+| `S>DR`        | ![](images/date/datetime-sub-duration-raw-1.png)  | ![](images/date/datetime-sub-duration-str-1.png) |
 
 We can now see that there are 285 days, 8 hours, 23 minutes, and 59 seconds
 between March 13, 2024 15:39:55 to Christmas Dec 25, 2024 00:00:00.
