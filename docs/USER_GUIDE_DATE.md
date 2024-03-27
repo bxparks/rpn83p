@@ -6,7 +6,7 @@ been extracted from [RPN83P User Guide](USER_GUIDE.md) due to its length.
 The `DATE` features are available under the `ROOT > DATE` menu item in the 3rd
 row:
 
-![ROOT > DATE menu](images/date/menu-root-3.png)
+![ROOT > DATE menu](images/date/menu-root-date.png)
 
 Here is a quick summary of the features:
 
@@ -236,7 +236,7 @@ supported in the `DATE` functions of RPN83P:
 
 The following menus items are located under the `DATE` menu:
 
-- ![](images/date/menu-root-3.png)
+- ![](images/date/menu-root-date.png)
     - ![](images/date/menu-root-date-1.png)
     - ![](images/date/menu-root-date-2.png)
     - ![](images/date/menu-root-date-3.png)
@@ -306,7 +306,7 @@ the entry of the Date objects requires the use of the comma `,` key, so the app
 now contains an option to control the behavior of this button under the `MODE`
 menu:
 
-- ![ROOT > MODE](images/date/menu-root-3.png)
+- ![ROOT > MODE](images/date/menu-root-mode.png)
     - ![Comma or EE menu](images/date/menu-root-mode-comma-ee.png)
 
 If the `,EE` option is selected (factory default), the button behaves as labeled
@@ -346,7 +346,7 @@ to something like `D{2024,3,14}` in the subsequent sections.
 In the `MODE` menu, there are 2 settings that affect how date objects are
 displayed:
 
-- ![ROOT > MODE](images/date/menu-root-3.png)
+- ![ROOT > MODE](images/date/menu-root-mode.png)
     - ![ROOT > MODE > Object Formatting](images/date/menu-root-mode-object-formatting.png)
 
 If the `{..}` (Raw Formatting) option is selected (factory default), the date
