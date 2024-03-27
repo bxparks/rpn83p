@@ -453,10 +453,11 @@ There are 286 days from March 14 to Dec 25, 2024.
 The `Time` object has the form `T{hour:u8, minute:u8, second:u8}`. For example,
 the time `15:36:01` is entered into the calculator like this:
 
-| **Keys**          | **MODE `{..}`**                   | **MODE `".."`**   |
-| ------------------| ---------------------             | ----------------- |
-| `T{15,36,1}`      | ![](images/date/time-raw-1.png)   | ![](images/date/time-str-1.png) |
-| `ENTER`           | ![](images/date/time-raw-2.png)   | ![](images/date/time-str-2.png) |
+| **Keys**              | **MODE `{..}`**                   | **MODE `".."`**   |
+| ------------------    | ---------------------             | ----------------- |
+| `T{15,36,1}`          | ![](images/date/time-raw-1.png)   | ![](images/date/time-str-1.png) |
+| `ENTER`               | ![](images/date/time-raw-2.png)   | ![](images/date/time-str-2.png) |
+| `2ND ENTER` (`SHOW`)  | ![](images/date/time-show.png)    | ![](images/date/time-show.png) |
 
 #### Time Validation
 
