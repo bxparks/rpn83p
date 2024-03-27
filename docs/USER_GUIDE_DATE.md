@@ -1274,7 +1274,7 @@ defined on a date object, then the corresponding `STO+`, `STO-`, `STO*`, `RCL+`,
 
 Here are some selected examples:
 
-**Register Add or Subtract**
+**Add or Subtract Register**
 
 | **Keys**                      | **MODE `{..}`**                           | **MODE `".."`**   |
 | ----------                    | ---------------------                     | ----------------- |
@@ -1287,7 +1287,7 @@ Here are some selected examples:
 | `2ND RCL 01`                  | ![](images/date/regs-addsub-raw-7.png)    | ![](images/date/regs-addsub-str-7.png) |
 | `2ND RCL- 00`                 | ![](images/date/regs-addsub-raw-8.png)    | ![](images/date/regs-addsub-str-8.png) |
 
-**Register Multiply (Timezone Conversion)**
+**Multiply Register (Timezone Conversion)**
 
 | **Keys**                      | **MODE `{..}`**                           | **MODE `".."`**   |
 | ----------                    | ---------------------                     | ----------------- |
@@ -1295,6 +1295,6 @@ Here are some selected examples:
 | `STO 00`                      | ![](images/date/regs-mult-raw-2.png)      | ![](images/date/regs-mult-str-2.png) |
 | `TZ{5,30}` (India)            | ![](images/date/regs-mult-raw-3.png)      | ![](images/date/regs-mult-str-3.png) |
 | `STO 01`                      | ![](images/date/regs-mult-raw-4.png)      | ![](images/date/regs-mult-str-4.png) |
-| `D{2024,3,14,15,36,1,-7,0}`   | ![](images/date/regs-mult-raw-5.png)      | ![](images/date/regs-mult-str-5.png) |
+| `DZ{2024,3,14,15,36,1,-7,0}`  | ![](images/date/regs-mult-raw-5.png)      | ![](images/date/regs-mult-str-5.png) |
 | `2ND RCL* 00`                 | ![](images/date/regs-mult-raw-6.png)      | ![](images/date/regs-mult-str-6.png) |
 | `2ND RCL* 01`                 | ![](images/date/regs-mult-raw-7.png)      | ![](images/date/regs-mult-str-7.png) |
