@@ -1180,8 +1180,8 @@ example, let's start with a Date object and press the `DEXD` command twice:
 | ----------                    | ---------------------             | ----------------- |
 | `D{2024,3,14}`                | ![](images/date/dexd-raw-1.png)   | ![](images/date/dexd-form-1.png) |
 | `ENTER`                       | ![](images/date/dexd-raw-2.png)   | ![](images/date/dexd-form-2.png) |
-| `DSHK`                        | ![](images/date/dexd-raw-3.png)   | ![](images/date/dexd-form-3.png) |
-| `DSHK`                        | ![](images/date/dexd-raw-4.png)   | ![](images/date/dexd-form-4.png) |
+| `DEXD`                        | ![](images/date/dexd-raw-3.png)   | ![](images/date/dexd-form-3.png) |
+| `DEXD`                        | ![](images/date/dexd-raw-4.png)   | ![](images/date/dexd-form-4.png) |
 
 As before, the `ENTER` was used only for the purpose of displaying the original
 Date object. It was not necessary to press it before the first `DEXD` command.
