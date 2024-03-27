@@ -359,8 +359,8 @@ MODE setting of `{..}` or `".."`:
 
 | **Keys**          | **MODE `{..}`**                 | **MODE `".."`** |
 | ----------------  | ---------------------           | --------------- |
-| `D{2024,3,14}`    | ![](images/date/date-raw-1.png) | ![](images/date/date-form-1.png) |
-| `ENTER`           | ![](images/date/date-raw-2.png) | ![](images/date/date-form-2.png) |
+| `D{2024,3,14}`    | ![](images/date/date-raw-1.png) | ![](images/date/date-str-1.png) |
+| `ENTER`           | ![](images/date/date-raw-2.png) | ![](images/date/date-str-2.png) |
 
 #### Date Validation
 
@@ -371,8 +371,8 @@ invalid date `2024-02-30`, we get:
 
 | **Keys**          | **MODE `{..}`**                   | **MODE `".."`**   |
 | ------------------| ---------------------             | ----------------- |
-| `D{2024,2,30}`    | ![](images/date/invalid-raw-1.png)| ![](images/date/invalid-form-1.png) |
-| `ENTER`           | ![](images/date/invalid-raw-2.png)| ![](images/date/invalid-form-2.png) |
+| `D{2024,2,30}`    | ![](images/date/invalid-raw-1.png)| ![](images/date/invalid-str-1.png) |
+| `ENTER`           | ![](images/date/invalid-raw-2.png)| ![](images/date/invalid-str-2.png) |
 
 Notice that for input validation errors like this, the input is not terminated
 and the prompt continues to be shown. You can pressed the `DEL` to delete the
@@ -404,22 +404,22 @@ subtract 30 days from that result:
 
 | **Keys**          | **MODE `{..}`**                       | **MODE `".."`**   |
 | ------------------| ---------------------                 | ----------------- |
-| `D{2024,3,14}`    | ![](images/date/date-add-raw-1.png)   | ![](images/date/date-add-form-1.png) |
-| `ENTER`           | ![](images/date/date-add-raw-2.png)   | ![](images/date/date-add-form-2.png) |
-| `20`              | ![](images/date/date-add-raw-3.png)   | ![](images/date/date-add-form-3.png) |
-| `+`               | ![](images/date/date-add-raw-4.png)   | ![](images/date/date-add-form-4.png) |
-| `30`              | ![](images/date/date-add-raw-5.png)   | ![](images/date/date-add-form-5.png) |
-| `-`               | ![](images/date/date-add-raw-6.png)   | ![](images/date/date-add-form-6.png) |
+| `D{2024,3,14}`    | ![](images/date/date-add-raw-1.png)   | ![](images/date/date-add-str-1.png) |
+| `ENTER`           | ![](images/date/date-add-raw-2.png)   | ![](images/date/date-add-str-2.png) |
+| `20`              | ![](images/date/date-add-raw-3.png)   | ![](images/date/date-add-str-3.png) |
+| `+`               | ![](images/date/date-add-raw-4.png)   | ![](images/date/date-add-str-4.png) |
+| `30`              | ![](images/date/date-add-raw-5.png)   | ![](images/date/date-add-str-5.png) |
+| `-`               | ![](images/date/date-add-raw-6.png)   | ![](images/date/date-add-str-6.png) |
 
 We can subtract 2 Date records to obtain the number of whole days between the 2
 dates:
 
 | **Keys**          | **MODE `{..}`**                       | **MODE `".."`**   |
 | ------------------| ---------------------                 | ----------------- |
-| `D{2024,12,25}`   | ![](images/date/date-sub-raw-1.png)   | ![](images/date/date-sub-form-1.png) |
-| `ENTER`           | ![](images/date/date-sub-raw-2.png)   | ![](images/date/date-sub-form-2.png) |
-| `D{2024,3,14}`    | ![](images/date/date-sub-raw-3.png)   | ![](images/date/date-sub-form-3.png) |
-| `-`               | ![](images/date/date-sub-raw-4.png)   | ![](images/date/date-sub-form-4.png) |
+| `D{2024,12,25}`   | ![](images/date/date-sub-raw-1.png)   | ![](images/date/date-sub-str-1.png) |
+| `ENTER`           | ![](images/date/date-sub-raw-2.png)   | ![](images/date/date-sub-str-2.png) |
+| `D{2024,3,14}`    | ![](images/date/date-sub-raw-3.png)   | ![](images/date/date-sub-str-3.png) |
+| `-`               | ![](images/date/date-sub-raw-4.png)   | ![](images/date/date-sub-str-4.png) |
 
 There are 286 days from March 14 to Dec 25, 2024.
 
@@ -430,8 +430,8 @@ the time `15:36:01` is entered into the calculator like this:
 
 | **Keys**          | **MODE `{..}`**                   | **MODE `".."`**   |
 | ------------------| ---------------------             | ----------------- |
-| `T{15,36,1}`      | ![](images/date/time-raw-1.png)   | ![](images/date/time-form-1.png) |
-| `ENTER`           | ![](images/date/time-raw-2.png)   | ![](images/date/time-form-2.png) |
+| `T{15,36,1}`      | ![](images/date/time-raw-1.png)   | ![](images/date/time-str-1.png) |
+| `ENTER`           | ![](images/date/time-raw-2.png)   | ![](images/date/time-str-2.png) |
 
 #### Time Validation
 
@@ -469,12 +469,12 @@ seconds, then subtract 100,000 seconds:
 
 | **Keys**          | **MODE `{..}`**                       | **MODE `".."`**   |
 | ------------------| ---------------------                 | ----------------- |
-| `T{15,36,1}`      | ![](images/date/time-add-raw-1.png)   | ![](images/date/time-add-form-1.png) |
-| `ENTER`           | ![](images/date/time-add-raw-2.png)   | ![](images/date/time-add-form-2.png) |
-| `234`             | ![](images/date/time-add-raw-3.png)   | ![](images/date/time-add-form-3.png) |
-| `+`               | ![](images/date/time-add-raw-4.png)   | ![](images/date/time-add-form-4.png) |
-| `100000`          | ![](images/date/time-add-raw-5.png)   | ![](images/date/time-add-form-5.png) |
-| `-`               | ![](images/date/time-add-raw-6.png)   | ![](images/date/time-add-form-6.png) |
+| `T{15,36,1}`      | ![](images/date/time-add-raw-1.png)   | ![](images/date/time-add-str-1.png) |
+| `ENTER`           | ![](images/date/time-add-raw-2.png)   | ![](images/date/time-add-str-2.png) |
+| `234`             | ![](images/date/time-add-raw-3.png)   | ![](images/date/time-add-str-3.png) |
+| `+`               | ![](images/date/time-add-raw-4.png)   | ![](images/date/time-add-str-4.png) |
+| `100000`          | ![](images/date/time-add-raw-5.png)   | ![](images/date/time-add-str-5.png) |
+| `-`               | ![](images/date/time-add-raw-6.png)   | ![](images/date/time-add-str-6.png) |
 
 Since 100,000 seconds is more than 1 day, the Time object wraps around.
 
@@ -483,10 +483,10 @@ of seconds between the 2 objects:
 
 | **Keys**          | **MODE `{..}`**       | **MODE `".."`**   |
 | ------------------| --------------------- | ----------------- |
-| `T{15,36,1}`      | ![](images/date/time-sub-raw-1.png)   | ![](images/date/time-sub-form-1.png) |
-| `ENTER`           | ![](images/date/time-sub-raw-2.png)   | ![](images/date/time-sub-form-2.png) |
-| `T{17,0,0}`       | ![](images/date/time-sub-raw-3.png)   | ![](images/date/time-sub-form-3.png) |
-| `-`               | ![](images/date/time-sub-raw-4.png)   | ![](images/date/time-sub-form-4.png) |
+| `T{15,36,1}`      | ![](images/date/time-sub-raw-1.png)   | ![](images/date/time-sub-str-1.png) |
+| `ENTER`           | ![](images/date/time-sub-raw-2.png)   | ![](images/date/time-sub-str-2.png) |
+| `T{17,0,0}`       | ![](images/date/time-sub-raw-3.png)   | ![](images/date/time-sub-str-3.png) |
+| `-`               | ![](images/date/time-sub-raw-4.png)   | ![](images/date/time-sub-str-4.png) |
 
 There are 5039 seconds between `15:36:01` and `17:00:00`.
 
@@ -499,8 +499,8 @@ For example, the date `2024-03-14 15:36:01` would be entered like this:
 
 | **Keys**                  | **MODE `{..}`**                       | **MODE `".."`**               |
 | ------------------------- | ---------------------                 | -----------------             |
-| `DT{2024,3,14,15,36,1}`   | ![](images/date/datetime-raw-1.png)   | ![](images/date/datetime-form-1.png) |
-| `ENTER`                   | ![](images/date/datetime-raw-2.png)   | ![](images/date/datetime-form-2.png) |
+| `DT{2024,3,14,15,36,1}`   | ![](images/date/datetime-raw-1.png)   | ![](images/date/datetime-str-1.png) |
+| `ENTER`                   | ![](images/date/datetime-raw-2.png)   | ![](images/date/datetime-str-2.png) |
 
 #### DateTime Validation
 
@@ -524,19 +524,19 @@ For example, let's subtract 100,000 seconds from `2024-03-14 15:39:55`:
 
 | **Keys**                  | **MODE `{..}`**                           | **MODE `".."`**               |
 | ------------------------- | ---------------------                     | -----------------             |
-| `DT{2024,3,14,15,36,1}`   | ![](images/date/datetime-add-raw-1.png)   | ![](images/date/datetime-add-form-1.png) |
-| `ENTER`                   | ![](images/date/datetime-add-raw-2.png)   | ![](images/date/datetime-add-form-2.png) |
-| `100000`                  | ![](images/date/datetime-add-raw-3.png)   | ![](images/date/datetime-add-form-3.png) |
-| `-`                       | ![](images/date/datetime-add-raw-4.png)   | ![](images/date/datetime-add-form-4.png) |
+| `DT{2024,3,14,15,36,1}`   | ![](images/date/datetime-add-raw-1.png)   | ![](images/date/datetime-add-str-1.png) |
+| `ENTER`                   | ![](images/date/datetime-add-raw-2.png)   | ![](images/date/datetime-add-str-2.png) |
+| `100000`                  | ![](images/date/datetime-add-raw-3.png)   | ![](images/date/datetime-add-str-3.png) |
+| `-`                       | ![](images/date/datetime-add-raw-4.png)   | ![](images/date/datetime-add-str-4.png) |
 
 We can subtract 2 `DateTime` objects:
 
 |  **Keys**                 |  **MODE `{..}`**                          |  **MODE `".."`**              |
 | ------------------------- | ---------------------                     | -----------------             |
-| `DT{2024,12,25,0,0,0}`    | ![](images/date/datetime-sub-raw-1.png)   | ![](images/date/datetime-sub-form-1.png) |
-| `ENTER`                   | ![](images/date/datetime-sub-raw-2.png)   | ![](images/date/datetime-sub-form-2.png) |
-| `DT{2024,3,14,15,36,1}`   | ![](images/date/datetime-sub-raw-3.png)   | ![](images/date/datetime-sub-form-3.png) |
-| `-`                       | ![](images/date/datetime-sub-raw-4.png)   | ![](images/date/datetime-sub-form-4.png) |
+| `DT{2024,12,25,0,0,0}`    | ![](images/date/datetime-sub-raw-1.png)   | ![](images/date/datetime-sub-str-1.png) |
+| `ENTER`                   | ![](images/date/datetime-sub-raw-2.png)   | ![](images/date/datetime-sub-str-2.png) |
+| `DT{2024,3,14,15,36,1}`   | ![](images/date/datetime-sub-raw-3.png)   | ![](images/date/datetime-sub-str-3.png) |
+| `-`                       | ![](images/date/datetime-sub-raw-4.png)   | ![](images/date/datetime-sub-str-4.png) |
 
 There are 24654239 seconds from March 13, 2024 15:39:55 to Christmas Dec 25,
 2024 00:00:00.
@@ -550,8 +550,8 @@ convert 24654239 seconds into a `Duration` object:
 
 |  **Keys** |  **MODE `{..}`**                                  |  **MODE `".."`**        |
 | ----------| ---------------------                             | -----------------       |
-|           | ![](images/date/datetime-sub-duration-raw-1.png)  | ![](images/date/datetime-sub-duration-form-1.png) |
-| `S>DR`    | ![](images/date/datetime-sub-duration-raw-2.png)  | ![](images/date/datetime-sub-duration-form-2.png) |
+|           | ![](images/date/datetime-sub-duration-raw-1.png)  | ![](images/date/datetime-sub-duration-str-1.png) |
+| `S>DR`    | ![](images/date/datetime-sub-duration-raw-2.png)  | ![](images/date/datetime-sub-duration-str-2.png) |
 
 We can now see that there are 285 days, 8 hours, 23 minutes, and 59 seconds
 between March 13, 2024 15:39:55 to Christmas Dec 25, 2024 00:00:00.
@@ -567,8 +567,8 @@ months, and changes to UTC-07:00 during the summer months.
 
 | **Keys**   | **MODE `{..}`**                     | **MODE `".."`**   |
 | -----------| ---------------------               | ----------------- |
-| `TZ{-8,0}` | ![](images/date/timezone-raw-1.png) | ![](images/date/timezone-form-1.png) |
-| `ENTER`    | ![](images/date/timezone-raw-2.png) | ![](images/date/timezone-form-2.png) |
+| `TZ{-8,0}` | ![](images/date/timezone-raw-1.png) | ![](images/date/timezone-str-1.png) |
+| `ENTER`    | ![](images/date/timezone-raw-2.png) | ![](images/date/timezone-str-2.png) |
 
 #### TimeZone Validation
 
@@ -584,8 +584,8 @@ Here is an example of an invalid timezone whose `hour` and `minute` have the opp
 
 | **Keys**    | **MODE `{..}`**                             | **MODE `".."`**   |
 | ----------- | ---------------------                       | ----------------- |
-| `TZ{-4,30}` | ![](images/date/timezone-invalid-raw-1.png) | ![](images/date/timezone-invalid-form-1.png) |
-| `ENTER`     | ![](images/date/timezone-invalid-raw-2.png) | ![](images/date/timezone-invalid-form-2.png) |
+| `TZ{-4,30}` | ![](images/date/timezone-invalid-raw-1.png) | ![](images/date/timezone-invalid-str-1.png) |
+| `ENTER`     | ![](images/date/timezone-invalid-raw-2.png) | ![](images/date/timezone-invalid-str-2.png) |
 
 #### TimeZone Operations
 
@@ -602,9 +602,9 @@ To convert `TZ{-4,~30}` to hours then back to a TimeZone object:
 
 | **Keys**     | **MODE `{..}`**                                | **MODE `".."`**   |
 | -------------| ---------------------                          | ----------------- |
-| `TZ{-4,-30}` | ![](images/date/timezone-hour-raw-1.png)    | ![](images/date/timezone-hour-form-1.png) |
-| `TZ>H`       | ![](images/date/timezone-hour-raw-2.png)    | ![](images/date/timezone-hour-form-2.png) |
-| `H>TZ`       | ![](images/date/timezone-hour-raw-3.png)    | ![](images/date/timezone-hour-form-3.png) |
+| `TZ{-4,-30}` | ![](images/date/timezone-hour-raw-1.png)    | ![](images/date/timezone-hour-str-1.png) |
+| `TZ>H`       | ![](images/date/timezone-hour-raw-2.png)    | ![](images/date/timezone-hour-str-2.png) |
+| `H>TZ`       | ![](images/date/timezone-hour-raw-3.png)    | ![](images/date/timezone-hour-str-3.png) |
 
 ### ZonedDateTime Object
 
@@ -619,9 +619,9 @@ occurred in `America/Los_Angeles` timezone after the DST shift on March 10,
 
 | **Keys**                      | **MODE `{..}`**                           | **MODE `".."`**                   |
 | -------------------------     | ---------------------                     | -----------------                 |
-| `DZ{2024,3,14,15,36,1,-7,0}`  | ![](images/date/zoneddatetime-raw-1.png)  | ![](images/date/zoneddatetime-form-1.png) |
-| `ENTER`                       | ![](images/date/zoneddatetime-raw-2.png)  | ![](images/date/zoneddatetime-form-2.png) |
-| `2ND ENTER` (`SHOW`)          | ![](images/date/zoneddatetime-raw-3.png)  | ![](images/date/zoneddatetime-form-3.png) |
+| `DZ{2024,3,14,15,36,1,-7,0}`  | ![](images/date/zoneddatetime-raw-1.png)  | ![](images/date/zoneddatetime-str-1.png) |
+| `ENTER`                       | ![](images/date/zoneddatetime-raw-2.png)  | ![](images/date/zoneddatetime-str-2.png) |
+| `2ND ENTER` (`SHOW`)          | ![](images/date/zoneddatetime-raw-3.png)  | ![](images/date/zoneddatetime-str-3.png) |
 
 ZonedDateTime objects with a UTC offset of +00:00 are special, and it is useful
 to display them slightly differently. Here is how the date 2024-03-14 22:36:00
@@ -629,9 +629,9 @@ UTC is entered and displayed:
 
 | **Keys**                      | **MODE `{..}`**                               | **MODE `".."`**                   |
 | -------------------------     | ---------------------                         | -----------------                 |
-| `DZ{2024,3,14,22,36,1,0,0}`   | ![](images/date/zoneddatetime-utc-raw-1.png)  | ![](images/date/zoneddatetime-utc-form-1.png) |
-| `ENTER`                       | ![](images/date/zoneddatetime-utc-raw-2.png)  | ![](images/date/zoneddatetime-utc-form-2.png) |
-| `2ND ENTER` (`SHOW`)          | ![](images/date/zoneddatetime-utc-raw-3.png)  | ![](images/date/zoneddatetime-utc-form-3.png) |
+| `DZ{2024,3,14,22,36,1,0,0}`   | ![](images/date/zoneddatetime-utc-raw-1.png)  | ![](images/date/zoneddatetime-utc-str-1.png) |
+| `ENTER`                       | ![](images/date/zoneddatetime-utc-raw-2.png)  | ![](images/date/zoneddatetime-utc-str-2.png) |
+| `2ND ENTER` (`SHOW`)          | ![](images/date/zoneddatetime-utc-raw-3.png)  | ![](images/date/zoneddatetime-utc-str-3.png) |
 
 #### ZonedDateTime Validation
 
@@ -659,10 +659,10 @@ For example, let's add 100_000 seconds to `2024-03-14 15:36:01-07:00`:
 
 | **Keys**                      | **MODE `{..}`**                               | **MODE `".."`**                   |
 | -------------------------     | ---------------------                         | -----------------                 |
-| `DZ{2024,3,14,15,36,1,-7,0}`  | ![](images/date/zoneddatetime-add-raw-1.png)  | ![](images/date/zoneddatetime-add-form-1.png) |
-| `ENTER`                       | ![](images/date/zoneddatetime-add-raw-2.png)  | ![](images/date/zoneddatetime-add-form-2.png) |
-| `100000`                      | ![](images/date/zoneddatetime-add-raw-3.png)  | ![](images/date/zoneddatetime-add-form-3.png) |
-| `+`                           | ![](images/date/zoneddatetime-add-raw-4.png)  | ![](images/date/zoneddatetime-add-form-4.png) |
+| `DZ{2024,3,14,15,36,1,-7,0}`  | ![](images/date/zoneddatetime-add-raw-1.png)  | ![](images/date/zoneddatetime-add-str-1.png) |
+| `ENTER`                       | ![](images/date/zoneddatetime-add-raw-2.png)  | ![](images/date/zoneddatetime-add-str-2.png) |
+| `100000`                      | ![](images/date/zoneddatetime-add-raw-3.png)  | ![](images/date/zoneddatetime-add-str-3.png) |
+| `+`                           | ![](images/date/zoneddatetime-add-raw-4.png)  | ![](images/date/zoneddatetime-add-str-4.png) |
 
 We can subtract 2 `ZonedDateTime` objects to obtain the number of seconds
 between them. Their TimeZone components are not required to be same. For
@@ -671,11 +671,11 @@ December 25, 2024 UTC:
 
 | **Keys**                      | **MODE `{..}`**                               | **MODE `".."`**                   |
 | -------------------------     | ---------------------                         | -----------------                 |
-| `DZ{2024,12,25,0,0,0,0,0}`    | ![](images/date/zoneddatetime-sub-raw-1.png)  | ![](images/date/zoneddatetime-sub-form-1.png) |
-| `ENTER`                       | ![](images/date/zoneddatetime-sub-raw-2.png)  | ![](images/date/zoneddatetime-sub-form-2.png) |
-| `DZ{2024,3,14,15,36,1,-7,0}`  | ![](images/date/zoneddatetime-sub-raw-3.png)  | ![](images/date/zoneddatetime-sub-form-3.png) |
-| `-`                           | ![](images/date/zoneddatetime-sub-raw-4.png)  | ![](images/date/zoneddatetime-sub-form-4.png) |
-| `S>DR`                        | ![](images/date/zoneddatetime-sub-raw-5.png)  | ![](images/date/zoneddatetime-sub-form-5.png) |
+| `DZ{2024,12,25,0,0,0,0,0}`    | ![](images/date/zoneddatetime-sub-raw-1.png)  | ![](images/date/zoneddatetime-sub-str-1.png) |
+| `ENTER`                       | ![](images/date/zoneddatetime-sub-raw-2.png)  | ![](images/date/zoneddatetime-sub-str-2.png) |
+| `DZ{2024,3,14,15,36,1,-7,0}`  | ![](images/date/zoneddatetime-sub-raw-3.png)  | ![](images/date/zoneddatetime-sub-str-3.png) |
+| `-`                           | ![](images/date/zoneddatetime-sub-raw-4.png)  | ![](images/date/zoneddatetime-sub-str-4.png) |
+| `S>DR`                        | ![](images/date/zoneddatetime-sub-raw-5.png)  | ![](images/date/zoneddatetime-sub-str-5.png) |
 
 As before, we have used the `S>DR` menu function to convert `seconds` to
 a `Duration` object which can be more useful in some situations.
@@ -690,8 +690,8 @@ of 4 and can be entered as:
 
 | **Keys**   | **MODE `{..}`**                      | **MODE `".."`**   |
 | -----------| ---------------------                | ----------------- |
-| `DW{4}`    | ![](images/date/dayofweek-raw-1.png) | ![](images/date/dayofweek-form-1.png) |
-| `ENTER`    | ![](images/date/dayofweek-raw-2.png) | ![](images/date/dayofweek-form-2.png) |
+| `DW{4}`    | ![](images/date/dayofweek-raw-1.png) | ![](images/date/dayofweek-str-1.png) |
+| `ENTER`    | ![](images/date/dayofweek-raw-2.png) | ![](images/date/dayofweek-str-2.png) |
 
 #### DayOfWeek Validation
 
@@ -701,8 +701,8 @@ enter the invalid DayOfWeek value of `DW{0}`, an error is shown:
 
 | **Keys**   | **MODE `{..}`**                              | **MODE `".."`**   |
 | -----------| ---------------------                        | ----------------- |
-| `DW{0}`    | ![](images/date/dayofweek-invalid-raw-1.png) | ![](images/date/dayofweek-invalid-form-1.png) |
-| `ENTER`    | ![](images/date/dayofweek-invalid-raw-2.png) | ![](images/date/dayofweek-invalid-form-2.png) |
+| `DW{0}`    | ![](images/date/dayofweek-invalid-raw-1.png) | ![](images/date/dayofweek-invalid-str-1.png) |
+| `ENTER`    | ![](images/date/dayofweek-invalid-raw-2.png) | ![](images/date/dayofweek-invalid-str-2.png) |
 
 #### DayOfWeek Operations
 
@@ -712,19 +712,19 @@ days to Thursday, we can enter:
 
 | **Keys**   | **MODE `{..}`**                          | **MODE `".."`**   |
 | -----------| ---------------------                    | ----------------- |
-| `DW{4}`    | ![](images/date/dayofweek-add-raw-1.png) | ![](images/date/dayofweek-add-form-1.png) |
-| `ENTER`    | ![](images/date/dayofweek-add-raw-2.png) | ![](images/date/dayofweek-add-form-2.png) |
-| `6`        | ![](images/date/dayofweek-add-raw-3.png) | ![](images/date/dayofweek-add-form-3.png) |
-| `+`        | ![](images/date/dayofweek-add-raw-4.png) | ![](images/date/dayofweek-add-form-4.png) |
+| `DW{4}`    | ![](images/date/dayofweek-add-raw-1.png) | ![](images/date/dayofweek-add-str-1.png) |
+| `ENTER`    | ![](images/date/dayofweek-add-raw-2.png) | ![](images/date/dayofweek-add-str-2.png) |
+| `6`        | ![](images/date/dayofweek-add-raw-3.png) | ![](images/date/dayofweek-add-str-3.png) |
+| `+`        | ![](images/date/dayofweek-add-raw-4.png) | ![](images/date/dayofweek-add-str-4.png) |
 
 You can subtract 2 DayOfWeek objects to get the number of days between them:
 
 | **Keys**   | **MODE `{..}`**                          | **MODE `".."`**   |
 | -----------| ---------------------                    | ----------------- |
-| `DW{4}`    | ![](images/date/dayofweek-sub-raw-1.png) | ![](images/date/dayofweek-sub-form-1.png) |
-| `ENTER`    | ![](images/date/dayofweek-sub-raw-2.png) | ![](images/date/dayofweek-sub-form-2.png) |
-| `DW{5}`    | ![](images/date/dayofweek-sub-raw-3.png) | ![](images/date/dayofweek-sub-form-3.png) |
-| `-`        | ![](images/date/dayofweek-sub-raw-4.png) | ![](images/date/dayofweek-sub-form-4.png) |
+| `DW{4}`    | ![](images/date/dayofweek-sub-raw-1.png) | ![](images/date/dayofweek-sub-str-1.png) |
+| `ENTER`    | ![](images/date/dayofweek-sub-raw-2.png) | ![](images/date/dayofweek-sub-str-2.png) |
+| `DW{5}`    | ![](images/date/dayofweek-sub-raw-3.png) | ![](images/date/dayofweek-sub-str-3.png) |
+| `-`        | ![](images/date/dayofweek-sub-raw-4.png) | ![](images/date/dayofweek-sub-str-4.png) |
 
 ### Duration Object
 
@@ -735,15 +735,15 @@ For example, a positive `Duration` object would be:
 
 | **Keys**      | **MODE `{..}`**                     | **MODE `".."`**   |
 | -----------   | ---------------------               | ----------------- |
-| `DR{1,2,3,4}` | ![](images/date/duration-pos-raw-1.png) | ![](images/date/duration-pos-form-1.png) |
-| `ENTER`       | ![](images/date/duration-pos-raw-2.png) | ![](images/date/duration-pos-form-2.png) |
+| `DR{1,2,3,4}` | ![](images/date/duration-pos-raw-1.png) | ![](images/date/duration-pos-str-1.png) |
+| `ENTER`       | ![](images/date/duration-pos-raw-2.png) | ![](images/date/duration-pos-str-2.png) |
 
 A negative duration would be:
 
 | **Keys**          | **MODE `{..}`**                     | **MODE `".."`**   |
 | -----------       | ---------------------               | ----------------- |
-| `DR{-4,0,-2,0}`   | ![](images/date/duration-neg-raw-1.png) | ![](images/date/duration-neg-form-1.png) |
-| `ENTER`           | ![](images/date/duration-neg-raw-2.png) | ![](images/date/duration-neg-form-2.png) |
+| `DR{-4,0,-2,0}`   | ![](images/date/duration-neg-raw-1.png) | ![](images/date/duration-neg-str-1.png) |
+| `ENTER`           | ![](images/date/duration-neg-raw-2.png) | ![](images/date/duration-neg-str-2.png) |
 
 Notice that for negative durations, all the components must be negative (or
 zero). Also notice that when a Duration component is exactly 0, that component
@@ -773,14 +773,14 @@ and 4 seconds) using the colon-shortcut notation:
 
 | **Keys**  | **MODE `{..}`**                               | **MODE `".."`**   |
 | --------- | ---------------------                         | ----------------- |
-| `1:D`     | ![](images/date/duration-day-raw-1.png)       | ![](images/date/duration-day-form-1.png) |
-| `ENTER`   | ![](images/date/duration-day-raw-2.png)       | ![](images/date/duration-day-form-2.png) |
-| `2:H`     | ![](images/date/duration-hour-raw-1.png)      | ![](images/date/duration-hour-form-1.png) |
-| `ENTER`   | ![](images/date/duration-hour-raw-2.png)      | ![](images/date/duration-hour-form-2.png) |
-| `3:M`     | ![](images/date/duration-minute-raw-1.png)    | ![](images/date/duration-minute-form-1.png) |
-| `ENTER`   | ![](images/date/duration-minute-raw-2.png)    | ![](images/date/duration-minute-form-2.png) |
-| `4:S`     | ![](images/date/duration-second-raw-1.png)    | ![](images/date/duration-second-form-1.png) |
-| `ENTER`   | ![](images/date/duration-second-raw-2.png)    | ![](images/date/duration-second-form-2.png) |
+| `1:D`     | ![](images/date/duration-day-raw-1.png)       | ![](images/date/duration-day-str-1.png) |
+| `ENTER`   | ![](images/date/duration-day-raw-2.png)       | ![](images/date/duration-day-str-2.png) |
+| `2:H`     | ![](images/date/duration-hour-raw-1.png)      | ![](images/date/duration-hour-str-1.png) |
+| `ENTER`   | ![](images/date/duration-hour-raw-2.png)      | ![](images/date/duration-hour-str-2.png) |
+| `3:M`     | ![](images/date/duration-minute-raw-1.png)    | ![](images/date/duration-minute-str-1.png) |
+| `ENTER`   | ![](images/date/duration-minute-raw-2.png)    | ![](images/date/duration-minute-str-2.png) |
+| `4:S`     | ![](images/date/duration-second-raw-1.png)    | ![](images/date/duration-second-str-1.png) |
+| `ENTER`   | ![](images/date/duration-second-raw-2.png)    | ![](images/date/duration-second-str-2.png) |
 
 #### Duration Validation
 
@@ -817,15 +817,15 @@ objects:
 
 | **Keys**          | **MODE `{..}`**                           | **MODE `".."`**   |
 | -----------       | ---------------------                     | ----------------- |
-| `DR{1,2,0,1}`     | ![](images/date/duration-add-raw-1.png)   | ![](images/date/duration-add-form-1.png) |
-| `ENTER`           | ![](images/date/duration-add-raw-2.png)   | ![](images/date/duration-add-form-2.png) |
-| `60` (seconds)    | ![](images/date/duration-add-raw-3.png)   | ![](images/date/duration-add-form-3.png) |
-| `+`               | ![](images/date/duration-add-raw-4.png)   | ![](images/date/duration-add-form-4.png) |
-| `DR{-4,0,-2,0}`   | ![](images/date/duration-add-raw-5.png)   | ![](images/date/duration-add-form-5.png) |
-| `-`               | ![](images/date/duration-add-raw-6.png)   | ![](images/date/duration-add-form-6.png) |
-| `-2:H`            | ![](images/date/duration-add-raw-7.png)   | ![](images/date/duration-add-form-7.png) |
-| `+`               | ![](images/date/duration-add-raw-8.png)   | ![](images/date/duration-add-form-8.png) |
-| `+/-` (-)         | ![](images/date/duration-add-raw-9.png)   | ![](images/date/duration-add-form-9.png) |
+| `DR{1,2,0,1}`     | ![](images/date/duration-add-raw-1.png)   | ![](images/date/duration-add-str-1.png) |
+| `ENTER`           | ![](images/date/duration-add-raw-2.png)   | ![](images/date/duration-add-str-2.png) |
+| `60` (seconds)    | ![](images/date/duration-add-raw-3.png)   | ![](images/date/duration-add-str-3.png) |
+| `+`               | ![](images/date/duration-add-raw-4.png)   | ![](images/date/duration-add-str-4.png) |
+| `DR{-4,0,-2,0}`   | ![](images/date/duration-add-raw-5.png)   | ![](images/date/duration-add-str-5.png) |
+| `-`               | ![](images/date/duration-add-raw-6.png)   | ![](images/date/duration-add-str-6.png) |
+| `-2:H`            | ![](images/date/duration-add-raw-7.png)   | ![](images/date/duration-add-str-7.png) |
+| `+`               | ![](images/date/duration-add-raw-8.png)   | ![](images/date/duration-add-str-8.png) |
+| `+/-` (-)         | ![](images/date/duration-add-raw-9.png)   | ![](images/date/duration-add-str-9.png) |
 
 The Duration object is even more useful when it is used with other date-time
 objects like Date, Time, DateTime, and ZonedDateTime. As a rule of thumb, it can
@@ -857,19 +857,19 @@ For example, let's add the Duration `2h 33m` to the Time `12:58:32`:
 
 | **Keys**          | **MODE `{..}`**                               | **MODE `".."`**   |
 | -----------       | ---------------------                         | ----------------- |
-| `T{12,58,32}`     | ![](images/date/duration-add-time-raw-1.png)  | ![](images/date/duration-add-time-form-1.png) |
-| `ENTER`           | ![](images/date/duration-add-time-raw-2.png)  | ![](images/date/duration-add-time-form-2.png) |
-| `DR{0,2,33,0}`    | ![](images/date/duration-add-time-raw-3.png)  | ![](images/date/duration-add-time-form-3.png) |
-| `+`               | ![](images/date/duration-add-time-raw-4.png)  | ![](images/date/duration-add-time-form-4.png) |
+| `T{12,58,32}`     | ![](images/date/duration-add-time-raw-1.png)  | ![](images/date/duration-add-time-str-1.png) |
+| `ENTER`           | ![](images/date/duration-add-time-raw-2.png)  | ![](images/date/duration-add-time-str-2.png) |
+| `DR{0,2,33,0}`    | ![](images/date/duration-add-time-raw-3.png)  | ![](images/date/duration-add-time-str-3.png) |
+| `+`               | ![](images/date/duration-add-time-raw-4.png)  | ![](images/date/duration-add-time-str-4.png) |
 
 Another example, let's add 30 days to the DateTime `2024-03-14 12:58:32`:
 
 | **Keys**                  | **MODE `{..}`**                                   | **MODE `".."`**   |
 | -----------               | ---------------------                             | ----------------- |
-| `DT{2024,3,14,12,58,32}`  | ![](images/date/duration-add-datetime-raw-1.png)  | ![](images/date/duration-add-datetime-form-1.png) |
-| `ENTER`                   | ![](images/date/duration-add-datetime-raw-2.png)  | ![](images/date/duration-add-datetime-form-2.png) |
-| `30:D`                    | ![](images/date/duration-add-datetime-raw-3.png)  | ![](images/date/duration-add-datetime-form-3.png) |
-| `+`                       | ![](images/date/duration-add-datetime-raw-4.png)  | ![](images/date/duration-add-datetime-form-4.png) |
+| `DT{2024,3,14,12,58,32}`  | ![](images/date/duration-add-datetime-raw-1.png)  | ![](images/date/duration-add-datetime-str-1.png) |
+| `ENTER`                   | ![](images/date/duration-add-datetime-raw-2.png)  | ![](images/date/duration-add-datetime-str-2.png) |
+| `30:D`                    | ![](images/date/duration-add-datetime-raw-3.png)  | ![](images/date/duration-add-datetime-str-3.png) |
+| `+`                       | ![](images/date/duration-add-datetime-raw-4.png)  | ![](images/date/duration-add-datetime-str-4.png) |
 
 ## Timezone Conversions
 
@@ -901,16 +901,16 @@ following timezones:
 
 | **Keys**                      | **MODE `{..}`**                               | **MODE `".."`**                   |
 | -------------------------     | ---------------------                         | -----------------                 |
-| `DZ{2024,3,14,15,36,1,-7,0}`  | ![](images/date/timezone-convert-raw-01.png)  | ![](images/date/timezone-convert-form-01.png) |
-| `ENTER`                       | ![](images/date/timezone-convert-raw-02.png)  | ![](images/date/timezone-convert-form-02.png) |
-| `13`                          | ![](images/date/timezone-convert-raw-03.png)  | ![](images/date/timezone-convert-form-03.png) |
-| `*`                           | ![](images/date/timezone-convert-raw-04.png)  | ![](images/date/timezone-convert-form-04.png) |
-| `TZ{5,30}`                    | ![](images/date/timezone-convert-raw-05.png)  | ![](images/date/timezone-convert-form-05.png) |
-| `*`                           | ![](images/date/timezone-convert-raw-06.png)  | ![](images/date/timezone-convert-form-06.png) |
-| `-2.5`                        | ![](images/date/timezone-convert-raw-07.png)  | ![](images/date/timezone-convert-form-07.png) |
-| `*`                           | ![](images/date/timezone-convert-raw-08.png)  | ![](images/date/timezone-convert-form-08.png) |
-| `0`                           | ![](images/date/timezone-convert-raw-09.png)  | ![](images/date/timezone-convert-form-09.png) |
-| `*`                           | ![](images/date/timezone-convert-raw-10.png)  | ![](images/date/timezone-convert-form-10.png) |
+| `DZ{2024,3,14,15,36,1,-7,0}`  | ![](images/date/timezone-convert-raw-01.png)  | ![](images/date/timezone-convert-str-01.png) |
+| `ENTER`                       | ![](images/date/timezone-convert-raw-02.png)  | ![](images/date/timezone-convert-str-02.png) |
+| `13`                          | ![](images/date/timezone-convert-raw-03.png)  | ![](images/date/timezone-convert-str-03.png) |
+| `*`                           | ![](images/date/timezone-convert-raw-04.png)  | ![](images/date/timezone-convert-str-04.png) |
+| `TZ{5,30}`                    | ![](images/date/timezone-convert-raw-05.png)  | ![](images/date/timezone-convert-str-05.png) |
+| `*`                           | ![](images/date/timezone-convert-raw-06.png)  | ![](images/date/timezone-convert-str-06.png) |
+| `-2.5`                        | ![](images/date/timezone-convert-raw-07.png)  | ![](images/date/timezone-convert-str-07.png) |
+| `*`                           | ![](images/date/timezone-convert-raw-08.png)  | ![](images/date/timezone-convert-str-08.png) |
+| `0`                           | ![](images/date/timezone-convert-raw-09.png)  | ![](images/date/timezone-convert-str-09.png) |
+| `*`                           | ![](images/date/timezone-convert-raw-10.png)  | ![](images/date/timezone-convert-str-10.png) |
 
 ## Epoch Date
 
@@ -950,10 +950,10 @@ date, then set it to `2100-01-01`:
 
 | **Keys**          | **MODE `{..}`**                           | **MODE `".."`**   |
 | -----------       | ---------------------                     | ----------------- |
-| `EPC?`            | ![](images/date/customepoch-raw-1.png)    | ![](images/date/customepoch-form-1.png) |
-| `D{2100,1,1}`     | ![](images/date/customepoch-raw-2.png)    | ![](images/date/customepoch-form-2.png) |
-| `EPC`             | ![](images/date/customepoch-raw-3.png)    | ![](images/date/customepoch-form-3.png) |
-| `EPC?`            | ![](images/date/customepoch-raw-4.png)    | ![](images/date/customepoch-form-4.png) |
+| `EPC?`            | ![](images/date/customepoch-raw-1.png)    | ![](images/date/customepoch-str-1.png) |
+| `D{2100,1,1}`     | ![](images/date/customepoch-raw-2.png)    | ![](images/date/customepoch-str-2.png) |
+| `EPC`             | ![](images/date/customepoch-raw-3.png)    | ![](images/date/customepoch-str-3.png) |
+| `EPC?`            | ![](images/date/customepoch-raw-4.png)    | ![](images/date/customepoch-str-4.png) |
 
 ### Epoch Conversions
 
@@ -982,11 +982,11 @@ of 1970-01-01:
 
 | **Keys**          | **MODE `{..}`**                       | **MODE `".."`**   |
 | -----------       | ---------------------                 | ----------------- |
-| `UNIX`            | ![](images/date/epochdays-raw-1.png)  | ![](images/date/epochdays-form-1.png) |
-| `ON` `UP` `UP`    | ![](images/date/epochdays-raw-2.png)  | ![](images/date/epochdays-form-2.png) |
-| `D{2024,3,14}`    | ![](images/date/epochdays-raw-3.png)  | ![](images/date/epochdays-form-3.png) |
-| `D>DY`            | ![](images/date/epochdays-raw-4.png)  | ![](images/date/epochdays-form-4.png) |
-| `DY>D`            | ![](images/date/epochdays-raw-5.png)  | ![](images/date/epochdays-form-5.png) |
+| `UNIX`            | ![](images/date/epochdays-raw-1.png)  | ![](images/date/epochdays-str-1.png) |
+| `ON` `UP` `UP`    | ![](images/date/epochdays-raw-2.png)  | ![](images/date/epochdays-str-2.png) |
+| `D{2024,3,14}`    | ![](images/date/epochdays-raw-3.png)  | ![](images/date/epochdays-str-3.png) |
+| `D>DY`            | ![](images/date/epochdays-raw-4.png)  | ![](images/date/epochdays-str-4.png) |
+| `DY>D`            | ![](images/date/epochdays-raw-5.png)  | ![](images/date/epochdays-str-5.png) |
 
 The next 3 operate on Epoch seconds:
 
@@ -1006,13 +1006,13 @@ using the Unix epoch date of 1970-01-01 UTC:
 
 | **Keys**                      | **MODE `{..}`**                           | **MODE `".."`**   |
 | -----------                   | ---------------------                     | ----------------- |
-| `UNIX`                        | ![](images/date/epochseconds-raw-1.png)   | ![](images/date/epochseconds-form-1.png) |
-| `ON` `UP`                     | ![](images/date/epochseconds-raw-2.png)   | ![](images/date/epochseconds-form-2.png) |
-| `DZ{2024,3,14,15,36,1,-7,0}`  | ![](images/date/epochseconds-raw-3.png)   | ![](images/date/epochseconds-form-3.png) |
-| `D*>S`                        | ![](images/date/epochseconds-raw-4.png)   | ![](images/date/epochseconds-form-4.png) |
-| `S>UT`                        | ![](images/date/epochseconds-raw-5.png)   | ![](images/date/epochseconds-form-5.png) |
-| `D*>S`                        | ![](images/date/epochseconds-raw-6.png)   | ![](images/date/epochseconds-form-6.png) |
-| `S>DZ`                        | ![](images/date/epochseconds-raw-7.png)   | ![](images/date/epochseconds-form-7.png) |
+| `UNIX`                        | ![](images/date/epochseconds-raw-1.png)   | ![](images/date/epochseconds-str-1.png) |
+| `ON` `UP`                     | ![](images/date/epochseconds-raw-2.png)   | ![](images/date/epochseconds-str-2.png) |
+| `DZ{2024,3,14,15,36,1,-7,0}`  | ![](images/date/epochseconds-raw-3.png)   | ![](images/date/epochseconds-str-3.png) |
+| `D*>S`                        | ![](images/date/epochseconds-raw-4.png)   | ![](images/date/epochseconds-str-4.png) |
+| `S>UT`                        | ![](images/date/epochseconds-raw-5.png)   | ![](images/date/epochseconds-str-5.png) |
+| `D*>S`                        | ![](images/date/epochseconds-raw-6.png)   | ![](images/date/epochseconds-str-6.png) |
+| `S>DZ`                        | ![](images/date/epochseconds-raw-7.png)   | ![](images/date/epochseconds-str-7.png) |
 
 The last result from the `S>DZ` function requires some explanation. That
 function converts the `epochseconds` into a ZonedDateTime using the
@@ -1074,18 +1074,18 @@ is how to set the hardware clock timezone to UTC:
 
 | **Keys**   | **MODE `{..}`**                                      | **MODE `".."`**   |
 | -----------| ---------------------                                | ----------------- |
-| `0`        | ![](images/date/set-clock-timezone-utc-raw-1.png)    | ![](images/date/set-clock-timezone-utc-form-1.png) |
-| `CTZ`      | ![](images/date/set-clock-timezone-utc-raw-2.png)    | ![](images/date/set-clock-timezone-utc-form-2.png) |
-| `CTZ?`     | ![](images/date/set-clock-timezone-utc-raw-3.png)    | ![](images/date/set-clock-timezone-utc-form-3.png) |
+| `0`        | ![](images/date/set-clock-timezone-utc-raw-1.png)    | ![](images/date/set-clock-timezone-utc-str-1.png) |
+| `CTZ`      | ![](images/date/set-clock-timezone-utc-raw-2.png)    | ![](images/date/set-clock-timezone-utc-str-2.png) |
+| `CTZ?`     | ![](images/date/set-clock-timezone-utc-raw-3.png)    | ![](images/date/set-clock-timezone-utc-str-3.png) |
 
 **Option 2**: Set the hardware clock timezone to the local timezone (e.g.
 UTC-08:00 or UTC-07:00, Pacific Time in the US):
 
 | **Keys**   | **MODE `{..}`**                                      | **MODE `".."`**   |
 | -----------| ---------------------                                | ----------------- |
-| `TZ{-7,0}` | ![](images/date/set-clock-timezone-pdt-raw-1.png)    | ![](images/date/set-clock-timezone-pdt-form-1.png) |
-| `CTZ`      | ![](images/date/set-clock-timezone-pdt-raw-2.png)    | ![](images/date/set-clock-timezone-pdt-form-2.png) |
-| `CTZ?`     | ![](images/date/set-clock-timezone-pdt-raw-3.png)    | ![](images/date/set-clock-timezone-pdt-form-3.png) |
+| `TZ{-7,0}` | ![](images/date/set-clock-timezone-pdt-raw-1.png)    | ![](images/date/set-clock-timezone-pdt-str-1.png) |
+| `CTZ`      | ![](images/date/set-clock-timezone-pdt-raw-2.png)    | ![](images/date/set-clock-timezone-pdt-str-2.png) |
+| `CTZ?`     | ![](images/date/set-clock-timezone-pdt-raw-3.png)    | ![](images/date/set-clock-timezone-pdt-str-3.png) |
 
 My recommendation is to use **Option 1** which sets the hardware clock timezone
 to UTC. The problem with Option 2 which sets the clock to the local timezone is
@@ -1101,8 +1101,8 @@ a ZonedDateTime value as the argument, like this:
 
 | **Keys**                      | **MODE `{..}`**                               | **MODE `".."`**   |
 | -----------                   | ---------------------                         | ----------------- |
-| `DZ{2024,3,14,15,36,1,-7,0}`  | ![](images/date/set-clock-datetime-raw-1.png) | ![](images/date/set-clock-datetime-form-1.png) |
-| `SETC`                        | ![](images/date/set-clock-datetime-raw-2.png) | ![](images/date/set-clock-datetime-form-2.png) |
+| `DZ{2024,3,14,15,36,1,-7,0}`  | ![](images/date/set-clock-datetime-raw-1.png) | ![](images/date/set-clock-datetime-str-1.png) |
+| `SETC`                        | ![](images/date/set-clock-datetime-raw-2.png) | ![](images/date/set-clock-datetime-str-2.png) |
 
 Internally, the TI-84+/84+SE hardware clock keeps track of time as a 32-bit
 integer counting the number of seconds from the TI-OS epoch date, which is
@@ -1121,9 +1121,9 @@ To set the App Timezone to UTC-07:00 for example, use the following:
 
 | **Keys**  | **MODE `{..}`**                                  | **MODE `".."`**   |
 | ----------| ---------------------                            | ----------------- |
-| `TZ{-7,0}`| ![](images/date/set-app-timezone-pdt-raw-1.png) | ![](images/date/set-app-timezone-pdt-form-1.png) |
-| `TZ`      | ![](images/date/set-app-timezone-pdt-raw-2.png) | ![](images/date/set-app-timezone-pdt-form-2.png) |
-| `TZ?`     | ![](images/date/set-app-timezone-pdt-raw-3.png) | ![](images/date/set-app-timezone-pdt-form-3.png) |
+| `TZ{-7,0}`| ![](images/date/set-app-timezone-pdt-raw-1.png) | ![](images/date/set-app-timezone-pdt-str-1.png) |
+| `TZ`      | ![](images/date/set-app-timezone-pdt-raw-2.png) | ![](images/date/set-app-timezone-pdt-str-2.png) |
+| `TZ?`     | ![](images/date/set-app-timezone-pdt-raw-3.png) | ![](images/date/set-app-timezone-pdt-str-3.png) |
 
 ### Get Current DateTime Now
 
@@ -1171,10 +1171,10 @@ convert it to a DateTime, then a Date object, by pressing `DCUT` twice:
 
 | **Keys**                      | **MODE `{..}`**                   | **MODE `".."`**   |
 | ----------                    | ---------------------             | ----------------- |
-| `DZ{2024,3,14,15,36,1,-7,0}`  | ![](images/date/dshk-raw-1.png)   | ![](images/date/dshk-form-1.png) |
-| `ENTER`                       | ![](images/date/dshk-raw-2.png)   | ![](images/date/dshk-form-2.png) |
-| `DSHK`                        | ![](images/date/dshk-raw-3.png)   | ![](images/date/dshk-form-3.png) |
-| `DSHK`                        | ![](images/date/dshk-raw-4.png)   | ![](images/date/dshk-form-4.png) |
+| `DZ{2024,3,14,15,36,1,-7,0}`  | ![](images/date/dshk-raw-1.png)   | ![](images/date/dshk-str-1.png) |
+| `ENTER`                       | ![](images/date/dshk-raw-2.png)   | ![](images/date/dshk-str-2.png) |
+| `DSHK`                        | ![](images/date/dshk-raw-3.png)   | ![](images/date/dshk-str-3.png) |
+| `DSHK`                        | ![](images/date/dshk-raw-4.png)   | ![](images/date/dshk-str-4.png) |
 
 The `ENTER` was used to show the original object on the RPN stack. It was not
 necessary to press it before the first `DSHK` command.
@@ -1187,10 +1187,10 @@ example, let's start with a Date object and press the `DEXD` command twice:
 
 | **Keys**                      | **MODE `{..}`**                   | **MODE `".."`**   |
 | ----------                    | ---------------------             | ----------------- |
-| `D{2024,3,14}`                | ![](images/date/dexd-raw-1.png)   | ![](images/date/dexd-form-1.png) |
-| `ENTER`                       | ![](images/date/dexd-raw-2.png)   | ![](images/date/dexd-form-2.png) |
-| `DEXD`                        | ![](images/date/dexd-raw-3.png)   | ![](images/date/dexd-form-3.png) |
-| `DEXD`                        | ![](images/date/dexd-raw-4.png)   | ![](images/date/dexd-form-4.png) |
+| `D{2024,3,14}`                | ![](images/date/dexd-raw-1.png)   | ![](images/date/dexd-str-1.png) |
+| `ENTER`                       | ![](images/date/dexd-raw-2.png)   | ![](images/date/dexd-str-2.png) |
+| `DEXD`                        | ![](images/date/dexd-raw-3.png)   | ![](images/date/dexd-str-3.png) |
+| `DEXD`                        | ![](images/date/dexd-raw-4.png)   | ![](images/date/dexd-str-4.png) |
 
 As before, the `ENTER` was used only for the purpose of displaying the original
 Date object. It was not necessary to press it before the first `DEXD` command.
@@ -1207,10 +1207,10 @@ For example, let's apply the `DCUT` command on the following ZonedDateTime:
 
 | **Keys**                      | **MODE `{..}`**                   | **MODE `".."`**   |
 | ----------                    | ---------------------             | ----------------- |
-| `DZ{2024,3,14,15,36,1,-7,0}`  | ![](images/date/dcut-raw-1.png)   | ![](images/date/dcut-form-1.png) |
-| `ENTER`                       | ![](images/date/dcut-raw-2.png)   | ![](images/date/dcut-form-2.png) |
-| `DCUT`                        | ![](images/date/dcut-raw-3.png)   | ![](images/date/dcut-form-3.png) |
-| `DCUT`                        | ![](images/date/dcut-raw-4.png)   | ![](images/date/dcut-form-4.png) |
+| `DZ{2024,3,14,15,36,1,-7,0}`  | ![](images/date/dcut-raw-1.png)   | ![](images/date/dcut-str-1.png) |
+| `ENTER`                       | ![](images/date/dcut-raw-2.png)   | ![](images/date/dcut-str-2.png) |
+| `DCUT`                        | ![](images/date/dcut-raw-3.png)   | ![](images/date/dcut-str-3.png) |
+| `DCUT`                        | ![](images/date/dcut-raw-4.png)   | ![](images/date/dcut-str-4.png) |
 
 ### DLNK - Link
 
@@ -1226,11 +1226,11 @@ TimeZone object:
 
 | **Keys**                      | **MODE `{..}`**                   | **MODE `".."`**   |
 | ----------                    | ---------------------             | ----------------- |
-| `D{2024,3,14}`                | ![](images/date/dlnk-raw-1.png)   | ![](images/date/dlnk-form-1.png) |
-| `ENTER`                       | ![](images/date/dlnk-raw-2.png)   | ![](images/date/dlnk-form-2.png) |
-| `T{15,36,1}`                  | ![](images/date/dlnk-raw-3.png)   | ![](images/date/dlnk-form-3.png) |
-| `DLNK`                        | ![](images/date/dlnk-raw-4.png)   | ![](images/date/dlnk-form-4.png) |
-| `TZ{-7,0}`                    | ![](images/date/dlnk-raw-5.png)   | ![](images/date/dlnk-form-5.png) |
-| `DLNK`                        | ![](images/date/dlnk-raw-6.png)   | ![](images/date/dlnk-form-6.png) |
+| `D{2024,3,14}`                | ![](images/date/dlnk-raw-1.png)   | ![](images/date/dlnk-str-1.png) |
+| `ENTER`                       | ![](images/date/dlnk-raw-2.png)   | ![](images/date/dlnk-str-2.png) |
+| `T{15,36,1}`                  | ![](images/date/dlnk-raw-3.png)   | ![](images/date/dlnk-str-3.png) |
+| `DLNK`                        | ![](images/date/dlnk-raw-4.png)   | ![](images/date/dlnk-str-4.png) |
+| `TZ{-7,0}`                    | ![](images/date/dlnk-raw-5.png)   | ![](images/date/dlnk-str-5.png) |
+| `DLNK`                        | ![](images/date/dlnk-raw-6.png)   | ![](images/date/dlnk-str-6.png) |
 
 ## Storage Registers
