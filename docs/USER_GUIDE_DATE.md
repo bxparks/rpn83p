@@ -950,7 +950,7 @@ a specific date, called the
 [epoch](https://en.wikipedia.org/wiki/Epoch_%28computing%29)  RPN83P supports
 the following epoch dates under the `EPCH` menu:
 
-- ![EPCH menu](images/date/menu-root-date-3.png)
+- ![ROOT > DATE > EPCH group](images/date/menu-root-date-epch.png)
     - ![EPCH row 1](images/date/menu-root-date-epch-1.png)
     - ![EPCH row 2](images/date/menu-root-date-epch-2.png)
 
