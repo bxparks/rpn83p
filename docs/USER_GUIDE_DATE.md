@@ -385,7 +385,7 @@ MODE setting of `{..}` or `".."`:
 | ----------------      | ---------------------             | --------------- |
 | `D{2024,3,14}`        | ![](images/date/date-raw-1.png)   | ![](images/date/date-str-1.png) |
 | `ENTER`               | ![](images/date/date-raw-2.png)   | ![](images/date/date-str-2.png) |
-| `2ND ENTER` (`SHOW`)  | ![](images/date/date-show.png)    | ![](images/date/date-show.png) |
+| `2ND ENTER` (SHOW)    | ![](images/date/date-show.png)    | ![](images/date/date-show.png) |
 
 #### Date Validation
 
@@ -457,7 +457,7 @@ the time `15:36:01` is entered into the calculator like this:
 | ------------------    | ---------------------             | ----------------- |
 | `T{15,36,1}`          | ![](images/date/time-raw-1.png)   | ![](images/date/time-str-1.png) |
 | `ENTER`               | ![](images/date/time-raw-2.png)   | ![](images/date/time-str-2.png) |
-| `2ND ENTER` (`SHOW`)  | ![](images/date/time-show.png)    | ![](images/date/time-show.png) |
+| `2ND ENTER` (SHOW)    | ![](images/date/time-show.png)    | ![](images/date/time-show.png) |
 
 #### Time Validation
 
@@ -527,6 +527,7 @@ For example, the date `2024-03-14 15:36:01` would be entered like this:
 | ------------------------- | ---------------------                 | -----------------             |
 | `DT{2024,3,14,15,36,1}`   | ![](images/date/datetime-raw-1.png)   | ![](images/date/datetime-str-1.png) |
 | `ENTER`                   | ![](images/date/datetime-raw-2.png)   | ![](images/date/datetime-str-2.png) |
+| `2ND ENTER` (SHOW)        | ![](images/date/datetime-show.png)    | ![](images/date/datetime-show.png) |
 
 #### DateTime Validation
 
@@ -647,7 +648,7 @@ occurred in `America/Los_Angeles` timezone after the DST shift on March 10,
 | -------------------------     | ---------------------                     | -----------------                 |
 | `DZ{2024,3,14,15,36,1,-7,0}`  | ![](images/date/zoneddatetime-raw-1.png)  | ![](images/date/zoneddatetime-str-1.png) |
 | `ENTER`                       | ![](images/date/zoneddatetime-raw-2.png)  | ![](images/date/zoneddatetime-str-2.png) |
-| `2ND ENTER` (`SHOW`)          | ![](images/date/zoneddatetime-raw-3.png)  | ![](images/date/zoneddatetime-str-3.png) |
+| `2ND ENTER` (SHOW)            | ![](images/date/zoneddatetime-raw-3.png)  | ![](images/date/zoneddatetime-str-3.png) |
 
 ZonedDateTime objects with a UTC offset of +00:00 are special, and it is useful
 to display them slightly differently. Here is how the date 2024-03-14 22:36:00
@@ -657,7 +658,7 @@ UTC is entered and displayed:
 | -------------------------     | ---------------------                         | -----------------                 |
 | `DZ{2024,3,14,22,36,1,0,0}`   | ![](images/date/zoneddatetime-utc-raw-1.png)  | ![](images/date/zoneddatetime-utc-str-1.png) |
 | `ENTER`                       | ![](images/date/zoneddatetime-utc-raw-2.png)  | ![](images/date/zoneddatetime-utc-str-2.png) |
-| `2ND ENTER` (`SHOW`)          | ![](images/date/zoneddatetime-utc-raw-3.png)  | ![](images/date/zoneddatetime-utc-str-3.png) |
+| `2ND ENTER` (SHOW)            | ![](images/date/zoneddatetime-utc-raw-3.png)  | ![](images/date/zoneddatetime-utc-str-3.png) |
 
 #### ZonedDateTime Validation
 
