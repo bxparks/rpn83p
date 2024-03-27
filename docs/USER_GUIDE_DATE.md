@@ -774,7 +774,7 @@ A negative duration would be:
 | -----------           | ---------------------                     | ----------------- |
 | `DR{-4,0,-2,0}`       | ![](images/date/duration-neg-raw-1.png)   | ![](images/date/duration-neg-str-1.png) |
 | `ENTER`               | ![](images/date/duration-neg-raw-2.png)   | ![](images/date/duration-neg-str-2.png) |
-| `2ND ENTER` (SHOW)    | ![](images/date/duration-neg-show.png)     | ![](images/date/duration-neg-show.png) |
+| `2ND ENTER` (SHOW)    | ![](images/date/duration-neg-show.png)    | ![](images/date/duration-neg-show.png) |
 
 Notice that for negative durations, all the components must be negative (or
 zero). Also notice that when a Duration component is exactly 0, that component
@@ -1265,3 +1265,36 @@ TimeZone object:
 | `DLNK`                        | ![](images/date/dlnk-raw-6.png)   | ![](images/date/dlnk-str-6.png) |
 
 ## Storage Registers
+
+Storage registers (R00 to R24) can now hold any date object types. In addition,
+storage register arithmetic operations work as expected. In other words, if the
+`+` (addition), `-` (subtraction), and `*` (multiplication) operations are
+defined on a date object, then the corresponding `STO+`, `STO-`, `STO*`, `RCL+`,
+`RCL-`, and `RCL*` operations will also work.
+
+Here are some selected examples:
+
+**Register Add or Subtract**
+
+| **Keys**                      | **MODE `{..}`**                           | **MODE `".."`**   |
+| ----------                    | ---------------------                     | ----------------- |
+| `D{2024,12,25}`               | ![](images/date/regs-addsub-raw-1.png)    | ![](images/date/regs-addsub-str-1.png) |
+| `STO 00`                      | ![](images/date/regs-addsub-raw-2.png)    | ![](images/date/regs-addsub-str-2.png) |
+| `D{2024,3,14}`                | ![](images/date/regs-addsub-raw-3.png)    | ![](images/date/regs-addsub-str-3.png) |
+| `STO 01`                      | ![](images/date/regs-addsub-raw-4.png)    | ![](images/date/regs-addsub-str-4.png) |
+| `42`                          | ![](images/date/regs-addsub-raw-5.png)    | ![](images/date/regs-addsub-str-5.png) |
+| `STO+ 01`                     | ![](images/date/regs-addsub-raw-6.png)    | ![](images/date/regs-addsub-str-6.png) |
+| `2ND RCL 01`                  | ![](images/date/regs-addsub-raw-7.png)    | ![](images/date/regs-addsub-str-7.png) |
+| `2ND RCL- 00`                 | ![](images/date/regs-addsub-raw-8.png)    | ![](images/date/regs-addsub-str-8.png) |
+
+**Register Multiply (Timezone Conversion)**
+
+| **Keys**                      | **MODE `{..}`**                           | **MODE `".."`**   |
+| ----------                    | ---------------------                     | ----------------- |
+| `TZ{-4,0}` (EDT)              | ![](images/date/regs-mult-raw-1.png)      | ![](images/date/regs-mult-str-1.png) |
+| `STO 00`                      | ![](images/date/regs-mult-raw-2.png)      | ![](images/date/regs-mult-str-2.png) |
+| `TZ{5,30}` (India)            | ![](images/date/regs-mult-raw-3.png)      | ![](images/date/regs-mult-str-3.png) |
+| `STO 01`                      | ![](images/date/regs-mult-raw-4.png)      | ![](images/date/regs-mult-str-4.png) |
+| `D{2024,3,14,15,36,1,-7,0}`   | ![](images/date/regs-mult-raw-5.png)      | ![](images/date/regs-mult-str-5.png) |
+| `2ND RCL* 00`                 | ![](images/date/regs-mult-raw-6.png)      | ![](images/date/regs-mult-str-6.png) |
+| `2ND RCL* 01`                 | ![](images/date/regs-mult-raw-7.png)      | ![](images/date/regs-mult-str-7.png) |
