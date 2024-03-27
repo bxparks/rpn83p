@@ -592,10 +592,11 @@ database. Daylight saving time changes must be handled manually. For example,
 the standard offset for `America/Los_Angeles` is UTC-08:00 during the winter
 months, and changes to UTC-07:00 during the summer months.
 
-| **Keys**   | **MODE `{..}`**                     | **MODE `".."`**   |
-| -----------| ---------------------               | ----------------- |
-| `TZ{-8,0}` | ![](images/date/timezone-raw-1.png) | ![](images/date/timezone-str-1.png) |
-| `ENTER`    | ![](images/date/timezone-raw-2.png) | ![](images/date/timezone-str-2.png) |
+| **Keys**              | **MODE `{..}`**                       | **MODE `".."`**   |
+| -----------           | ---------------------                 | ----------------- |
+| `TZ{-8,0}`            | ![](images/date/timezone-raw-1.png)   | ![](images/date/timezone-str-1.png) |
+| `ENTER`               | ![](images/date/timezone-raw-2.png)   | ![](images/date/timezone-str-2.png) |
+| `2ND ENTER` (SHOW)    | ![](images/date/timezone-show.png)    | ![](images/date/timezone-show.png) |
 
 #### TimeZone Validation
 
