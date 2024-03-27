@@ -30,24 +30,27 @@ FormShowable:
     ; complex
     cp rpnObjectTypeComplex
     jr z, formShowableComplex
-    ; RpnDate{}
+    ; RpnDate
     cp rpnObjectTypeDate
     jr z, formShowableDate
-    ; RpnTime{}
+    ; RpnTime
     cp rpnObjectTypeTime
     jr z, formShowableTime
-    ; RpnDateTime{}
+    ; RpnDateTime
     cp rpnObjectTypeDateTime
     jr z, formShowableDateTime
-    ; RpnOffset{}
+    ; RpnOffset
     cp rpnObjectTypeOffset
     jr z, formShowableOffset
-    ; RpnOffsetDateTime{}
+    ; RpnOffsetDateTime
     cp rpnObjectTypeOffsetDateTime
     jr z, formShowableOffsetDateTime
-    ; RpnDayOfWeek{}
+    ; RpnDayOfWeek
     cp rpnObjectTypeDayOfWeek
     jr z, formShowableDayOfWeek
+    ; RpnDuration
+    cp rpnObjectTypeDuration
+    jr z, formShowableDuration
 formShowableUnknown:
     ; Print "{unknown}" if object not known
     ld hl, msgRpnObjectTypeUnknownPageTwo
@@ -88,6 +91,10 @@ formShowableOffsetDateTime:
 formShowableDayOfWeek:
     ld hl, OP1
     call formatRpnDayOfWeekRaw
+    jr formShowableEnd
+formShowableDuration:
+    ld hl, OP1
+    call formatRpnDurationRaw
     jr formShowableEnd
 formShowableEnd:
     xor a
