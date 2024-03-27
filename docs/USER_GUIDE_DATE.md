@@ -1196,8 +1196,8 @@ smaller ones on the `X` and `Y` registers.
 
 For example, let's apply the `DCUT` command on the following ZonedDateTime:
 
-| **Keys**  | **MODE `{..}`**                                       | **MODE `".."`**   |
-| ----------| ---------------------                                 | ----------------- |
+| **Keys**                      | **MODE `{..}`**                   | **MODE `".."`**   |
+| ----------                    | ---------------------             | ----------------- |
 | `DZ{2024,3,14,15,36,1,-7,0}`  | ![](images/date/dcut-raw-1.png)   | ![](images/date/dcut-form-1.png) |
 | `ENTER`                       | ![](images/date/dcut-raw-2.png)   | ![](images/date/dcut-form-2.png) |
 | `DCUT`                        | ![](images/date/dcut-raw-3.png)   | ![](images/date/dcut-form-3.png) |
@@ -1215,13 +1215,13 @@ combining the `X` and `Y` stack registers into a single object in `X`.
 For example, let's incrementally build a ZonedDateTime from a Date, Time and
 TimeZone object:
 
-| **Keys**  | **MODE `{..}`**                                       | **MODE `".."`**   |
-| ----------| ---------------------                                 | ----------------- |
-| `D{2024,3,14}`                | ![](images/date/dcut-raw-1.png)   | ![](images/date/dcut-form-1.png) |
-| `ENTER`                       | ![](images/date/dcut-raw-2.png)   | ![](images/date/dcut-form-2.png) |
-| `T{15,36,1}`                  | ![](images/date/dcut-raw-3.png)   | ![](images/date/dcut-form-3.png) |
-| `DLNK`                        | ![](images/date/dcut-raw-4.png)   | ![](images/date/dcut-form-4.png) |
-| `TZ{-7,0}`                    | ![](images/date/dcut-raw-5.png)   | ![](images/date/dcut-form-5.png) |
-| `DLNK`                        | ![](images/date/dcut-raw-6.png)   | ![](images/date/dcut-form-6.png) |
+| **Keys**                      | **MODE `{..}`**                   | **MODE `".."`**   |
+| ----------                    | ---------------------             | ----------------- |
+| `D{2024,3,14}`                | ![](images/date/dlnk-raw-1.png)   | ![](images/date/dlnk-form-1.png) |
+| `ENTER`                       | ![](images/date/dlnk-raw-2.png)   | ![](images/date/dlnk-form-2.png) |
+| `T{15,36,1}`                  | ![](images/date/dlnk-raw-3.png)   | ![](images/date/dlnk-form-3.png) |
+| `DLNK`                        | ![](images/date/dlnk-raw-4.png)   | ![](images/date/dlnk-form-4.png) |
+| `TZ{-7,0}`                    | ![](images/date/dlnk-raw-5.png)   | ![](images/date/dlnk-form-5.png) |
+| `DLNK`                        | ![](images/date/dlnk-raw-6.png)   | ![](images/date/dlnk-form-6.png) |
 
 ## Storage Registers
