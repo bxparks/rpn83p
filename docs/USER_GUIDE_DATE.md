@@ -762,17 +762,19 @@ seconds:i8}`. It can be a positive or a negative quantity.
 
 For example, a positive `Duration` object would be:
 
-| **Keys**      | **MODE `{..}`**                     | **MODE `".."`**   |
-| -----------   | ---------------------               | ----------------- |
-| `DR{1,2,3,4}` | ![](images/date/duration-pos-raw-1.png) | ![](images/date/duration-pos-str-1.png) |
-| `ENTER`       | ![](images/date/duration-pos-raw-2.png) | ![](images/date/duration-pos-str-2.png) |
+| **Keys**              | **MODE `{..}`**                           | **MODE `".."`**   |
+| -----------           | ---------------------                     | ----------------- |
+| `DR{1,2,3,4}`         | ![](images/date/duration-pos-raw-1.png)   | ![](images/date/duration-pos-str-1.png) |
+| `ENTER`               | ![](images/date/duration-pos-raw-2.png)   | ![](images/date/duration-pos-str-2.png) |
+| `2ND ENTER` (SHOW)    | ![](images/date/duration-pos-show.png)    | ![](images/date/duration-pos-show.png) |
 
 A negative duration would be:
 
-| **Keys**          | **MODE `{..}`**                     | **MODE `".."`**   |
-| -----------       | ---------------------               | ----------------- |
-| `DR{-4,0,-2,0}`   | ![](images/date/duration-neg-raw-1.png) | ![](images/date/duration-neg-str-1.png) |
-| `ENTER`           | ![](images/date/duration-neg-raw-2.png) | ![](images/date/duration-neg-str-2.png) |
+| **Keys**              | **MODE `{..}`**                           | **MODE `".."`**   |
+| -----------           | ---------------------                     | ----------------- |
+| `DR{-4,0,-2,0}`       | ![](images/date/duration-neg-raw-1.png)   | ![](images/date/duration-neg-str-1.png) |
+| `ENTER`               | ![](images/date/duration-neg-raw-2.png)   | ![](images/date/duration-neg-str-2.png) |
+| `2ND ENTER` (SHOW)    | ![](images/date/duration-neg-show.png)     | ![](images/date/duration-neg-show.png) |
 
 Notice that for negative durations, all the components must be negative (or
 zero). Also notice that when a Duration component is exactly 0, that component
