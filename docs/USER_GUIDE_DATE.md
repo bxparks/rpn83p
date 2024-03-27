@@ -50,7 +50,16 @@ features:
     - [Epoch Conversions](#epoch-conversions)
     - [Epoch Seconds Range](#epoch-seconds-range)
 - [Real Time Clock](#real-time-clock)
-- [Record Components](#record-components)
+    - [Setting the Clock Timezone](#setting-the-clock-timezone)
+    - [Setting the Clock DateTime](#setting-the-clock-datetime)
+    - [Setting the Application Timezone](#setting-the-application-timezone)
+    - [Get Current DateTime Now](#get-current-datetime-now)
+    - [Clock Through TI-OS](#clock-through-ti-os)
+- [Date Type Conversions](#date-type-conversions)
+    - [DSHK - Shrink](#dshk---shrink)
+    - [DEXD - Extend](#dexd---extend)
+    - [DCUT - Cut](#dcut---cut)
+    - [DLNK - Link](#dlnk---link)
 - [Storage Registers](#storage-registers)
 
 ## Calendar, Time, and Timezones
@@ -1116,7 +1125,7 @@ To set the App Timezone to UTC-07:00 for example, use the following:
 | `TZ`      | ![](images/date/set-app-timezone-pdt-raw-2.png) | ![](images/date/set-app-timezone-pdt-form-2.png) |
 | `TZ?`     | ![](images/date/set-app-timezone-pdt-raw-3.png) | ![](images/date/set-app-timezone-pdt-form-3.png) |
 
-### Get Now
+### Get Current DateTime Now
 
 Now that we have configured the hardware clock, we can use the various `NOW` and
 `NWxx` commands to retrieve the current date and time from the RTC:
@@ -1144,7 +1153,7 @@ be in the timezone configured by the `CTZ` command in RPN83P. For example, if
 timezone. If the `CTZ` timezone was configured to be `UTC-07:00`, the date-time
 here will be in `UTC-07:00`.
 
-## Record Components
+## Date Type Conversions
 
 Sometimes we want to combined the Date and Time and TimeZone objects into bigger
 objects, or take apart bigger objects into smaller components. Row 4 of the
