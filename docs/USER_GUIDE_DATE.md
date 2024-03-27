@@ -303,20 +303,26 @@ the entry of the Date objects requires the use of the comma `,` key, so the app
 now contains an option to control the behavior of this button under the `MODE`
 menu:
 
-- ![EE, or ,EE menu](images/date/menu-root-mode-object-format.png)
+- ![ROOT > MODE](images/date/menu-root-3.png)
+    - ![Comma or EE menu](images/date/menu-root-mode-comma-ee.png)
 
-If the `,EE` option is selected, the button behaves as labeled on the keyboard:
-- hitting `,` invokes the `,` function, and
-- hitting `2ND EE` invokes the `EE` function.
+If the `,EE` option is selected (factory default), the button behaves as labeled
+on the keyboard: the `,` button invokes the comma function, and `2ND EE` invokes
+the exponent function. This option is useful to have fast access to the comma
+button which is essential for entering the components of the date objects.
 
-If the `EE,` option is selected, the button actions are reversed:
-- hitting `,` invokes the `EE` function, and
-- hitting `2ND EE` invokes the `,` function.
+If the `EE,` option is selected, the button behavior is reversed: the `,` button
+invokes the exponent function, and `2ND EE` button invokes the comma function.
+This is option is useful for people who will rarely (or never) use the `DATE`
+functions, and want to enter scientific notation numbers easily without going
+through an extra `2ND` keystroke.
 
-The date record types are entered using the `ALPHA` key to enter the record
-name, and the left brace `{` and right brace `}` keys to delimit the components
-of the records. For example, to enter the Date value `D{2024,3,14}`, the
-following keystrokes would be used:
+The date objects are entered using the `ALPHA` key to enter the object name tag,
+the left brace `{` and right brace `}` keys to delimit the components of the
+objects, and the comma key `,` between each component. For example, to enter the
+date `March 14, 2024`, we would mentally translate that into the RFC 3339 format
+`2024-03-14`, which corresponds to the Date object `D{2024,3,14}`, which would
+be entered using the following keystrokes:
 
 ```
 ALPHA D
@@ -341,22 +347,23 @@ displayed:
     - ![ROOT > MODE > Object Formatting](images/date/menu-root-mode-object-formatting.png)
 
 If the `{..}` (Raw Formatting) option is selected (factory default), the date
-objects will be displayed in their raw form using curly braces.
+objects will be displayed in their raw form using curly braces. This will be
+identical to the format used to *enter* these objects.
 
 If the `".."` (String Formatting) option is selected, the date objects will be
-displayed as human-readable strings using the RFC 3339 specification for the
-most part.
+displayed as human-readable strings using the RFC 3339 specification as much as
+practical.
 
-The Raw Formatting (`{..}`) option is better at showing the internal structure
-of the date object, but for more complex objects, like ZonedDateTime, the
-formatted string can overflow the length of a single line. When this happens,
-the [SHOW Mode](USER_GUIDE.md#show-mode) (using `2ND ENTRY` keystroke) can be
-used to show the entire raw formatting without truncation. The String Formatting
-mode (`".."`) is more compact and will always be adjusted to fit entirely into a
-single line. Most users will probably switch to String Formatting after an
-initial learning period.
+The Raw Formatting (`{..}`) option is the format used to enter the objects, and
+is better at showing their internal structure. But it has the disadvantage that
+complex objects like ZonedDateTime can overflow the length of a single line.
+When this happens, the [SHOW Mode](USER_GUIDE.md#show-mode) (using `2ND ENTRY`
+keystroke) can be used to show the entire raw formatting without truncation. The
+String Formatting mode (`".."`) is more compact and will always be adjusted to
+fit entirely into a single line. Most users will probably switch to String
+Formatting after an initial learning period.
 
-In the following sections, the screenshots for both Raw and String formatting
+In the following sections, the screenshots for both Raw and String Formatting
 modes will be shown.
 
 **Pro Tip**: If the `MODE` menu is activated using the `MODE` **button**, the
