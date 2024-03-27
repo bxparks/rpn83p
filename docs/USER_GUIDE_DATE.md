@@ -381,10 +381,11 @@ Gregorian calendar date. For example, the date `2024-03-14` is entered into the
 calculator as follows, and is displayed in 2 different ways depending on the
 MODE setting of `{..}` or `".."`:
 
-| **Keys**          | **MODE `{..}`**                       | **MODE `".."`** |
-| ----------------  | ---------------------                 | --------------- |
-| `D{2024,3,14}`    | ![](images/date/date-raw-1.png)       | ![](images/date/date-str-1.png) |
-| `ENTER`           | ![](images/date/date-raw-2.png)       | ![](images/date/date-str-2.png) |
+| **Keys**              | **MODE `{..}`**                   | **MODE `".."`** |
+| ----------------      | ---------------------             | --------------- |
+| `D{2024,3,14}`        | ![](images/date/date-raw-1.png)   | ![](images/date/date-str-1.png) |
+| `ENTER`               | ![](images/date/date-raw-2.png)   | ![](images/date/date-str-2.png) |
+| `2ND ENTER` (`SHOW`)  | ![](images/date/date-show.png)    | ![](images/date/date-show.png) |
 
 #### Date Validation
 
