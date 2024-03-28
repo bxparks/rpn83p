@@ -1099,19 +1099,25 @@ the Application Timezone using the `TZ` command.
 
 ### Setting the Clock Timezone
 
-The hardware clock timezone must be set using the `CTZ` menu command before
-setting the hardware clock's datetime. There are 2 options which seem most
-likely:
+Before we can set the hardware clock's datetime with the `SETC` command,
+we must set its timezone using the `CTZ` menu command. The `CTZ?` command
+retrieves the current timezone:
 
-**Option 1**: Set the hardware clock timezone to UTC so that it can be
-translated to any timezone, without having to worry about DST transitions. Here
-is how to set the hardware clock timezone to UTC:
+![](images/date/menu-root-date-ctz.png)
+
+There are 2 options which seem useful:
+
+**Option 1** (recommended): Set the hardware clock timezone to UTC so that it
+can be translated to any timezone, without having to worry about DST
+transitions:
 
 | **Keys**   | **MODE `{..}`**                                      | **MODE `".."`**   |
 | -----------| ---------------------                                | ----------------- |
 | `0`        | ![](images/date/set-clock-timezone-utc-raw-1.png)    | ![](images/date/set-clock-timezone-utc-str-1.png) |
 | `CTZ`      | ![](images/date/set-clock-timezone-utc-raw-2.png)    | ![](images/date/set-clock-timezone-utc-str-2.png) |
 | `CTZ?`     | ![](images/date/set-clock-timezone-utc-raw-3.png)    | ![](images/date/set-clock-timezone-utc-str-3.png) |
+
+(We could have used `TZ{0,0}` instead of just `0` here).
 
 **Option 2**: Set the hardware clock timezone to the local timezone (e.g.
 UTC-08:00 or UTC-07:00, Pacific Time in the US):
@@ -1122,11 +1128,21 @@ UTC-08:00 or UTC-07:00, Pacific Time in the US):
 | `CTZ`      | ![](images/date/set-clock-timezone-pdt-raw-2.png)    | ![](images/date/set-clock-timezone-pdt-str-2.png) |
 | `CTZ?`     | ![](images/date/set-clock-timezone-pdt-raw-3.png)    | ![](images/date/set-clock-timezone-pdt-str-3.png) |
 
+(We could have used just `-7` instead of `TZ{-7,0}` here).
+
 My recommendation is to use **Option 1** which sets the hardware clock timezone
 to UTC. The problem with Option 2 which sets the clock to the local timezone is
 that for regions which has DST rules during parts of the year, the hardware
 clock's time will be incorrect during the months when the DST rules are in
 effect.
+
+**Side Note**: This issue with configuring the timezone of the hardware clock is
+the same problem encountered if you configure your computer to dual-boot both
+Microsoft Windows and Linux. Windows sets the hardware clock to the local
+timezone, but Linux sets the hardware clock to the UTC timezone. Here, the
+RPN83P application is the equivalent of Linux, and the underlying TI-OS is the
+equivalent of Windows. The difference is that RPN83P has the ability to act like
+TI-OS (i.e. Windows) through the `CTZ` configuration.
 
 ### Setting the Clock DateTime
 
