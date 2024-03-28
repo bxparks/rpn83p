@@ -1147,8 +1147,12 @@ TI-OS (i.e. Windows) through the `CTZ` configuration.
 ### Setting the Clock DateTime
 
 Once the timezone of the hardware clock is set, the actual date-time of the
-clock can be configured using the `SETC` (set clock) command. That command takes
-a ZonedDateTime value as the argument, like this:
+clock can be configured using the `SETC` (set clock) command:
+
+![](images/date/menu-root-date-setc.png)
+
+The `SETC` command takes a ZonedDateTime value as the argument, like this:
+
 
 | **Keys**                      | **MODE `{..}`**                               | **MODE `".."`**   |
 | -----------                   | ---------------------                         | ----------------- |
@@ -1170,11 +1174,11 @@ returns a ZonedDateTime (e.g. `NWDZ`, `S>DZ`).
 
 To set the App Timezone to UTC-07:00 for example, use the following:
 
-| **Keys**  | **MODE `{..}`**                                  | **MODE `".."`**   |
-| ----------| ---------------------                            | ----------------- |
-| `TZ{-7,0}`| ![](images/date/set-app-timezone-pdt-raw-1.png) | ![](images/date/set-app-timezone-pdt-str-1.png) |
-| `TZ`      | ![](images/date/set-app-timezone-pdt-raw-2.png) | ![](images/date/set-app-timezone-pdt-str-2.png) |
-| `TZ?`     | ![](images/date/set-app-timezone-pdt-raw-3.png) | ![](images/date/set-app-timezone-pdt-str-3.png) |
+| **Keys**  | **MODE `{..}`**                                   | **MODE `".."`**   |
+| ----------| ---------------------                             | ----------------- |
+| `TZ{-7,0}`| ![](images/date/set-app-timezone-pdt-raw-1.png)   | ![](images/date/set-app-timezone-pdt-str-1.png) |
+| `TZ`      | ![](images/date/set-app-timezone-pdt-raw-2.png)   | ![](images/date/set-app-timezone-pdt-str-2.png) |
+| `TZ?`     | ![](images/date/set-app-timezone-pdt-raw-3.png)   | ![](images/date/set-app-timezone-pdt-str-3.png) |
 
 ### Get Current DateTime Now
 
