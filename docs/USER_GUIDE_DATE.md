@@ -956,22 +956,26 @@ the following epoch dates under the `EPCH` menu:
 
 The following predefined epoch dates can be selected:
 
-- `UNIX`: 1970-01-01 00:00:00 UTC (default)
+- `UNIX`: ![EPCH UNIX](images/date/menu-root-date-epch-unix.png)
+    - 1970-01-01 00:00:00 UTC (default)
     - [Unix epoch](https://en.wikipedia.org/wiki/Unix_time)
-- `NTP`: 1900-01-01 00:00:00 UTC
+- `NTP`:![EPCH NTP](images/date/menu-root-date-epch-ntp.png)
+    - 1900-01-01 00:00:00 UTC
     - [NTP epoch](https://en.wikipedia.org/wiki/Network_Time_Protocol)
-- `GPS`: 1980-01-06 00:00:00 UTC
+- `GPS`:![EPCH GPS](images/date/menu-root-date-epch-gps.png)
+    - 1980-01-06 00:00:00 UTC
     - [GPS epoch](https://en.wikipedia.org/wiki/Global_Positioning_System)
-- `TIOS`: 1997-01-01 00:00:00 UTC
+- `TIOS`:![EPCH TIOS](images/date/menu-root-date-epch-tios.png)
+    - 1997-01-01 00:00:00 UTC
     - [TIOS epoch](https://wikiti.brandonw.net/index.php?title=83Plus:Ports:45)
       used by the TI calculators
-- `Y2K`: 2000-01-01 00:00:00 UTC
+- `Y2K`:![EPCH Y2K](images/date/menu-root-date-epch-y2k.png)
+    - 2000-01-01 00:00:00 UTC
     - An epoch date used by some 32-bit systems to avoid the
     [Year 2038 problem](https://en.wikipedia.org/wiki/Year_2038_problem)
-- `CEPC`: custom epoch date
-    - user-defined custom epoch date can be set using the `EPC` menu
-    - the factory default is `2050-01-01` because that's the date
-      used in my datetime libraries
+- `CEPC`:![EPCH CEPC](images/date/menu-root-date-epch-cepc.png)
+    - user-configurable custom epoch date, set using the `EPC` menu
+    - the factory default is `2050-01-01`
 
 ### Custom Epoch Date
 
