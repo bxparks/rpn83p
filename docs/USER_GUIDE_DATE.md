@@ -998,6 +998,10 @@ seconds offset from the Epoch date. For example, Unix systems keep track of time
 using an `epochSeconds` number which counts the number of seconds from the Unix
 Epoch of 1970-01-01 UTC.
 
+In the following examples, the `UNIX` epoch has been selected:
+
+![EPCH UNIX](images/date/menu-root-date-epch-unix.png)
+
 There are 5 menu functions which support conversions from calendar dates and
 datetimes to epoch days and seconds:
 
@@ -1017,11 +1021,9 @@ of 1970-01-01:
 
 | **Keys**          | **MODE `{..}`**                       | **MODE `".."`**   |
 | -----------       | ---------------------                 | ----------------- |
-| `UNIX`            | ![](images/date/epochdays-raw-1.png)  | ![](images/date/epochdays-str-1.png) |
-| `ON` `UP` `UP`    | ![](images/date/epochdays-raw-2.png)  | ![](images/date/epochdays-str-2.png) |
-| `D{2024,3,14}`    | ![](images/date/epochdays-raw-3.png)  | ![](images/date/epochdays-str-3.png) |
-| `D>DY`            | ![](images/date/epochdays-raw-4.png)  | ![](images/date/epochdays-str-4.png) |
-| `DY>D`            | ![](images/date/epochdays-raw-5.png)  | ![](images/date/epochdays-str-5.png) |
+| `D{2024,3,14}`    | ![](images/date/epochdays-raw-1.png)  | ![](images/date/epochdays-str-1.png) |
+| `D>DY`            | ![](images/date/epochdays-raw-2.png)  | ![](images/date/epochdays-str-2.png) |
+| `DY>D`            | ![](images/date/epochdays-raw-3.png)  | ![](images/date/epochdays-str-3.png) |
 
 The next 3 operate on Epoch seconds:
 
