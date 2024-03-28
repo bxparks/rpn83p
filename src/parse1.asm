@@ -268,10 +268,19 @@ parseInputBufRecordTagged:
     jp z, parseInputBufDuration
     bcall(_ErrInvalid) ; should never happen
 parseInputBufRecordNaked:
-    ; Naked records (i.e. without a prefix tag like "DT{...")
+    ; Implement type inference for naked records (i.e. without a prefix tag
+    ; like `{2024,3,14}`, `{2,30}`) to one of the date object types, by mapping
+    ; the number of arguments within the curly braces to a specific object
+    ; type. For example, if there are 2 arugments, we infer the type to be a
+    ; TimeZone object. If there are 3 arguments, we infer the type to be a Date
+    ; object.
+    ;
+    ; A naked record with a single argument could be inferred to be a DayOfWeek
+    ; object. But a DayOfWeek is almost always an *output* object, returned by
+    ; the DOW menu command. It is unlikely that a user will need to *input* a
+    ; DayOfWeek object. So we do *not* support a single-argument naked record
+    ; for now. It may be used in the future to map to another object type.
     call countCommas ; A=numCommas, preserves HL
-    cp 0
-    jr z, parseInputBufDayOfWeek
     cp 1
     jr z, parseInputBufOffset
     cp 2 ; could be Date or Time, I think Date is more convenient
