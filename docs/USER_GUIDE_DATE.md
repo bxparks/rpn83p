@@ -1043,13 +1043,11 @@ using the Unix epoch date of 1970-01-01 UTC:
 
 | **Keys**                      | **MODE `{..}`**                           | **MODE `".."`**   |
 | -----------                   | ---------------------                     | ----------------- |
-| `UNIX`                        | ![](images/date/epochseconds-raw-1.png)   | ![](images/date/epochseconds-str-1.png) |
-| `ON` `UP`                     | ![](images/date/epochseconds-raw-2.png)   | ![](images/date/epochseconds-str-2.png) |
-| `DZ{2024,3,14,15,36,1,-7,0}`  | ![](images/date/epochseconds-raw-3.png)   | ![](images/date/epochseconds-str-3.png) |
+| `DZ{2024,3,14,15,36,1,-7,0}`  | ![](images/date/epochseconds-raw-1.png)   | ![](images/date/epochseconds-str-1.png) |
+| `D*>S`                        | ![](images/date/epochseconds-raw-2.png)   | ![](images/date/epochseconds-str-2.png) |
+| `S>UT`                        | ![](images/date/epochseconds-raw-3.png)   | ![](images/date/epochseconds-str-3.png) |
 | `D*>S`                        | ![](images/date/epochseconds-raw-4.png)   | ![](images/date/epochseconds-str-4.png) |
-| `S>UT`                        | ![](images/date/epochseconds-raw-5.png)   | ![](images/date/epochseconds-str-5.png) |
-| `D*>S`                        | ![](images/date/epochseconds-raw-6.png)   | ![](images/date/epochseconds-str-6.png) |
-| `S>DZ`                        | ![](images/date/epochseconds-raw-7.png)   | ![](images/date/epochseconds-str-7.png) |
+| `S>DZ`                        | ![](images/date/epochseconds-raw-5.png)   | ![](images/date/epochseconds-str-5.png) |
 
 The last result from the `S>DZ` function requires some explanation. That
 function converts the `epochseconds` into a ZonedDateTime using the
