@@ -22,9 +22,18 @@ Here is a quick summary of the features:
 - convert between DateTime to epoch seconds from a fixed Epoch date
 - support multiple Epoch dates (Unix, NTP, GPS, custom, etc)
 - set and retrieve the current date and time from the real time clock (RTC) of
-  83+SE, 84+, and 84+SE (83+ does not have an RTC so is not supported)
+  83+SE, 84+, and 84+SE (but not the 83+ which does not have an RTC)
 
-**Version**: 0.10.0 (2024-03-14)
+These features are inspired by various time, and timezone libraries on
+desktop-class machines:
+
+- Java JDK 11
+  [java.time](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/time/package-summary.html) package
+- C# [Noda Time](https://nodatime.org) library
+- Python [datetime](https://docs.python.org/3/library/datetime.html) library
+- Go lang [time](https://pkg.go.dev/time) package
+
+**Version**: 0.10.0 (2024-03-27)
 
 **Project Home**: https://github.com/bxparks/rpn83p
 
@@ -57,7 +66,7 @@ Here is a quick summary of the features:
     - [Setting the Clock DateTime](#setting-the-clock-datetime)
     - [Setting the Application Timezone](#setting-the-application-timezone)
     - [Get Current DateTime Now](#get-current-datetime-now)
-    - [Clock Through TI-OS](#clock-through-ti-os)
+    - [TI-OS Clock](#ti-os-clock)
 - [Date Type Conversions](#date-type-conversions)
     - [DSHK - Shrink](#dshk---shrink)
     - [DEXD - Extend](#dexd---extend)
@@ -1200,17 +1209,17 @@ Now that we have configured the hardware clock, we can use the various `NOW` and
 | `NWDZ`    | ![](images/date/get-nwdz-raw.png) | ![](images/date/get-nwdz-form.png) |
 | `NWUT`    | ![](images/date/get-nwut-raw.png) | ![](images/date/get-nwut-form.png) |
 
-### Clock Through the TI-OS
+### TI-OS Clock
 
-The same hardware clock can be accessed and configured using the normal TI-OS
-through the `MODE` screen on the first or second page (depending on the OS
-version), like this:
+The same hardware clock can be accessed and configured in the TI-OS using the
+`MODE` screen on the first or second page (depending on the OS version), like
+this:
 
 ![TIOS Mode Set Clock](images/date/tios-mode-setclock.png)
 
-The TI-OS does *not* know about the time zone. The date-time displayed here will
-be in the timezone configured by the `CTZ` command in RPN83P. For example, if
-`CTZ` is set to `UTC+00:00`, then the date-time displayed here will be in UTC
+The TI-OS does *not* know about timezones. The date-time displayed here will be
+in the timezone configured by the `CTZ` command in RPN83P. For example, if `CTZ`
+is set to `UTC+00:00`, then the date-time displayed here will be in UTC
 timezone. If the `CTZ` timezone was configured to be `UTC-07:00`, the date-time
 here will be in `UTC-07:00`.
 
