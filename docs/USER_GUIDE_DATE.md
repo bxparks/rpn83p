@@ -1033,7 +1033,7 @@ The next 3 operate on Epoch seconds:
       the current Epoch date.
 - `S>DZ`
     - converts the number of `epochseconds` to the ZonedDateTime using the
-      currently selected App TimeZone (see `TZ` and `TZ?` below)
+      currently selected Application TimeZone (see `TZ` and `TZ?` below)
 - `S>UT`
     - same as `S>DZ` except that the timezone of the resulting ZonedDateTime is
       always UTC+00:00.
@@ -1086,8 +1086,8 @@ hierarchy:
     - `NWUT`: return the current date-time as a `ZonedDateTime` object using the UTC
     timezone
 - ![](images/date/menu-root-date-6.png)
-    - `TZ`: set the App Timezone
-    - `TZ?`: retrieve the App Timezone
+    - `TZ`: set the Application Timezone
+    - `TZ?`: retrieve the Application Timezone
     - `CTZ`: set the Clock Timezone
     - `CTZ?`: retrieve the Clock Timezone
     - `SETC`: set the date and time of the Clock
@@ -1167,12 +1167,18 @@ converted into an epochseconds before being handed over to the hardware clock.
 ### Setting the Application Timezone
 
 In addition to the timezone of the RTC, RPN83P also allows the **Application**
-Timezone to be set using the `TZ` and `TZ?` commands. This timezone is
-*independent* of the hardware clock timezone. The Application Timezone is the
-default timezone inserted into a ZonedDateTime object when a particular function
-returns a ZonedDateTime (e.g. `NWDZ`, `S>DZ`).
+Timezone to be set using the `TZ` and `TZ?` commands:
 
-To set the App Timezone to UTC-07:00 for example, use the following:
+![](images/date/menu-root-date-tz.png)
+
+The Application Timezone is the timezone inserted into a ZonedDateTime object
+when a particular function returns a ZonedDateTime. Currently, the 2 commands
+which are affected are:
+
+- `NWDZ` (Get NOW as ZonedDateTime) and
+- `S>DZ` (EpochSeconds to ZonedDatetime)
+
+To set the Application Timezone to UTC-07:00 for example, use the following:
 
 | **Keys**  | **MODE `{..}`**                                   | **MODE `".."`**   |
 | ----------| ---------------------                             | ----------------- |
