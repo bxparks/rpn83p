@@ -39,6 +39,7 @@
 
 TARGETS := README.pdf \
 USER_GUIDE.pdf \
+USER_GUIDE_DATE.pdf \
 TVM.pdf \
 CHANGELOG.md \
 rpn83p.8xk \
@@ -50,7 +51,8 @@ rpn83p-example4.gif
 ORIG_IMAGES := \
 $(wildcard ../docs/images/*.png) \
 $(wildcard ../docs/images/*.jpg) \
-$(wildcard ../docs/images/*.gif)
+$(wildcard ../docs/images/*.gif) \
+$(wildcard ../docs/images/date/*.png)
 
 # Resized images are used for PDF files.
 RESIZED_IMAGES := \
@@ -101,22 +103,27 @@ TVM.pdf: ../docs/TVM.md Makefile
 		| (cd ../docs; pandoc $(PANDOC_FLAGS) -o $@)
 	mv -f ../docs/$@ .
 
-# Resize the PNG files to 75% before embedding into PDF. Otherwise, they are
-# too large even though they are fine when rendered as HTML on GitHub.
+# Resize the PNG files under images/ to 75% before embedding into PDF.
 ../docs/resized/%.png: ../docs/images/%.png
 	@mkdir -p ../docs/resized
 	$(MAGICK) $< -adaptive-resize 75% $@
 
-# Resize the GIF files to 75% before embedding into PDF. Otherwise, they are
-# too large even though they are fine when rendered as HTML on GitHub.
-../docs/resized/%.gif: ../docs/images/%.gif
-	@mkdir -p ../docs/resized
+# Resize the PNG files under images/date/ to 75% before embedding into PDF.
+../docs/resized/date/%.png: ../docs/images/date/%.png
+	@mkdir -p ../docs/resized/date
 	$(MAGICK) $< -adaptive-resize 75% $@
 
-# Just copy the JPG files, no resizing.
-../docs/resized/%.jpg: ../docs/images/%.jpg
+# Just copy the GIF files, no resizing. They take too much CPU time to resize.
+# They are only used in the README.md, with only one per line, so even if they
+# are 33% too large, it's ok.
+../docs/resized/%.gif: ../docs/images/%.gif
 	@mkdir -p ../docs/resized
 	cp -f $< $@
+
+# Resize the JPG files under images/ to 75% before embedding into PDF.
+../docs/resized/%.jpg: ../docs/images/%.jpg
+	@mkdir -p ../docs/resized
+	$(MAGICK) $< -adaptive-resize 75% $@
 
 # Copy the CHANGELOG.md as is, without conversion to PDF. It's just a text
 # file without any embedded images.
