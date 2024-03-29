@@ -682,6 +682,8 @@ Here is an example of an invalid timezone whose `hour` and `minute` have the opp
 No arithmetic operations (addition, subtraction) are defined on TimeZone
 objects, because they did not seem useful for real-life calculations.
 
+#### TimeZone to Hours Conversion
+
 The TimeZone object can be converted to and from a floating point number
 representing the number of hours shifted from UTC. These are exposed using the
 `H>TZ` and `TZ>H` menu items:
