@@ -3,7 +3,6 @@
 - Unreleased
     - **Bug Fix** Fix broken `CLRG`
         - broke when 'REGS' was replaced by 'RPN83REG'
-    - **Bug Fix** Disallow `A-F` in non-BASE mode
     - **Bug Fix** Parse floating numbers equivalent to 0.0 more correctly.
         - The canonical internal representation of 0.0 in TI-OS has an exponent
           value of `$80` (i.e. 0), with all mantissa digits set to `0`.
@@ -55,9 +54,7 @@
     - Update menu compiler and menu routines to support more than 255 items.
         - Move most menu routines into Flash Page 1.
     - Add `DATE` menu hierarchy with Date, Time, DateTime, Clock functions
-        - TODO: add documentation
-        - TODO: polish the user interface
-        - TODO: add sub-record extractors
+        - See [RPN83P User Guide: DATE](docs/USER_GUIDE_DATE.md)
     - Increase performance of `PRIM` (prime factor) function by about 45%.
     - Supports resizing the number of storage registers
         - `MODE` > `SIZE` command supports a minimum of 25 to a maximum of 100
