@@ -539,7 +539,7 @@ The `D*>S` and `S>T` menu functions convert between a Time object and the
 integer number of seconds since midnight `00:00:00`, which will always be a
 non-negative number:
 
-![ROOT > DATE > TimeToSeconds](images/date/menu-root-date-dss.png)
+![ROOT > DATE > TimeToSeconds](images/date/menu-root-date-timeseconds.png)
 
 For example, let's convert `15:35:01` to an integer, then back to a Time object:
 
