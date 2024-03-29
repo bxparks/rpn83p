@@ -763,7 +763,8 @@ but it can be changed using the `EPCH` menu items described in the [Epoch
 Date](#epoch-date) section below. The menu functions for conversion are the
 `D*>S`, `S>DZ`, and `S>UT` functions:
 
-![ROOT > DATE > ZonedDateTimeSecondConversion](images/date/menu-root-date-sdz.png)
+![ROOT > DATE >
+ZonedDateTimeSecondConversion](images/date/menu-root-date-epochseconds.png)
 
 - `D*>S`: convert ZonedDateTime to epochseconds
 - `S>UT`: convert the epochseconds to the ZonedDateTime using UTC timezone
@@ -1121,7 +1122,7 @@ There are 5 menu functions which support conversions from calendar dates and
 datetimes to epoch days and seconds:
 
 - ![Epoch Days menu](images/date/menu-epochdays.png)
-- ![Epoch Seconds menu](images/date/menu-epochseconds.png)
+- ![Epoch Seconds menu](images/date/menu-root-date-epochseconds.png)
 
 The first 2 operate on Epoch days:
 
