@@ -533,13 +533,13 @@ of seconds between the 2 objects:
 
 There are 5039 seconds between `15:36:01` and `17:00:00`.
 
-#### Time Object to Seconds
+#### Time to Seconds Conversion
 
 The `D*>S` and `S>T` menu functions convert between a Time object and the
 integer number of seconds since midnight `00:00:00`, which will always be a
 non-negative number:
 
-![ROOT > DATE > TimeSecondConversions](images/date/menu-root-date-dss.png)
+![ROOT > DATE > TimeToSeconds](images/date/menu-root-date-dss.png)
 
 For example, let's convert `15:35:01` to an integer, then back to a Time object:
 
@@ -615,6 +615,20 @@ convert 24654239 seconds into a `Duration` object:
 
 We can now see that there are 285 days, 8 hours, 23 minutes, and 59 seconds
 between March 13, 2024 15:39:55 to Christmas Dec 25, 2024 00:00:00.
+
+#### DateTime to Seconds Conversion
+
+A DateTime object can represent 2 slightly things depending on the context:
+
+- a local date-time, using an implicit timezone (i.e. offset from UTC)
+- a UTC date-time, with a timezone offset of UTC+00:00
+
+The conversion of a DateTime to seconds will depend on which of the 2 concepts
+is represented by the DateTime, and unfortunately, there is no provision in the
+RPN83P app to specify the representation. Therefore, the conversion to seconds
+through `D*>S` is **not** supported for a DateTime object. A DateTime *must* be
+converted into a ZonedDateTime object before it can be converted into an integer
+number of seconds.
 
 ### TimeZone Object
 
@@ -740,6 +754,40 @@ December 25, 2024 UTC:
 
 As before, we have used the `S>DR` menu function to convert `seconds` to
 a `Duration` object which can be more useful in some situations.
+
+#### ZonedDateTime to Seconds Conversion
+
+A ZonedDateTime object can be converted into an integer that represents the
+number of seconds from the Epoch date. By default, the Epoch date is 1970-01-01
+but it can be changed using the `EPCH` menu items described in the [Epoch
+Date](#epoch-date) section below. The menu functions for conversion are the
+`D*>S`, `S>DZ`, and `S>UT` functions:
+
+![ROOT > DATE > ZonedDateTimeSecondConversion](images/date/menu-root-date-sdz.png)
+
+- `D*>S`: convert ZonedDateTime to epochseconds
+- `S>UT`: convert the epochseconds to the ZonedDateTime using UTC timezone
+- `S>DZ`: convert the epochseconds to the ZonedDateTime using the current
+  Application Timezone. The result of this function depends on 2 configurable
+  context variables:
+    - the [Application Timezone](#settings-the-application-timezone), defined by
+      the `TZ` menu function
+    - the [Epoch Date](#epoch-date), defined by the `EPCH` menu group
+
+For example, let's `2024-03-14 15:36:01-07:00` to epochseconds, then back to
+ZonedDateTime, then to UTC DateTime:
+
+| **Keys**                      | **MODE `{..}`**                                       | **MODE `".."`**                   |
+| -------------------------     | ---------------------                                 | -----------------                 |
+| `DZ{2024,3,14,15,36,1,-7,0}`  | ![](images/date/zoneddatetime-to-seconds-raw-1.png)   | ![](images/date/zoneddatetime-to-seconds-str-1.png) |
+| `D*>S`                        | ![](images/date/zoneddatetime-to-seconds-raw-2.png)   | ![](images/date/zoneddatetime-to-seconds-str-2.png) |
+| `S>UT`                        | ![](images/date/zoneddatetime-to-seconds-raw-3.png)   | ![](images/date/zoneddatetime-to-seconds-str-3.png) |
+| `D*>S`                        | ![](images/date/zoneddatetime-to-seconds-raw-4.png)   | ![](images/date/zoneddatetime-to-seconds-str-4.png) |
+| `S>DZ`                        | ![](images/date/zoneddatetime-to-seconds-raw-5.png)   | ![](images/date/zoneddatetime-to-seconds-str-5.png) |
+
+The final conversion from epochseconds to ZonedDateTime returns the original
+`2024-03-14 15:36:01-07:00` because I had set my Application Timezone to
+`UTC-07:00`.
 
 ### DayOfWeek Object
 
