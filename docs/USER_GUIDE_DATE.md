@@ -468,7 +468,11 @@ There are 286 days from March 14 to Dec 25, 2024.
 #### Date to Days Conversion
 
 The `D>DY` menu function converts the Date object to the number days since the
-and the `DY>D` menu function performs the reverse operation. The Epoch Date is
+and the `DY>D` menu function performs the reverse operation.
+
+![ROOT > DATE > DateToDays](images/date/menu-root-date-epochdays.png)
+
+The Epoch Date is
 configurable as explain in the [Epoch Date](#epoch-date) section below but by
 default, it is set to `UNIX` which is `1970-01-01`.
 
@@ -1137,8 +1141,8 @@ In the following examples, the `UNIX` epoch has been selected:
 There are 5 menu functions which support conversions from calendar dates and
 datetimes to epoch days and seconds:
 
-- ![Epoch Days menu](images/date/menu-epochdays.png)
-- ![Epoch Seconds menu](images/date/menu-root-date-epochseconds.png)
+- ![ROOT > DATE > EpochDays](images/date/menu-root-date-epochdays.png)
+- ![ROOT > DATE > EpochSeconds](images/date/menu-root-date-epochseconds.png)
 
 The first 2 operate on Epoch days:
 
@@ -1226,7 +1230,7 @@ Before we can set the hardware clock's datetime with the `SETC` command,
 we must set its timezone using the `CTZ` menu command. The `CTZ?` command
 retrieves the current timezone:
 
-![](images/date/menu-root-date-ctz.png)
+![ROOT > DATE > CTZ](images/date/menu-root-date-ctz.png)
 
 There are 2 options which seem useful:
 
@@ -1272,7 +1276,7 @@ TI-OS (i.e. Windows) through the `CTZ` configuration.
 Once the timezone of the hardware clock is set, the actual date-time of the
 clock can be configured using the `SETC` (set clock) command:
 
-![](images/date/menu-root-date-setc.png)
+![ROOT > DATE > SETC](images/date/menu-root-date-setc.png)
 
 The `SETC` command takes a ZonedDateTime value as the argument, like this:
 
@@ -1292,7 +1296,7 @@ converted into an epochseconds before being handed over to the hardware clock.
 In addition to the timezone of the RTC, RPN83P also allows the **Application**
 Timezone to be set using the `TZ` and `TZ?` commands:
 
-![](images/date/menu-root-date-tz.png)
+![ROOT > DATE > TZ](images/date/menu-root-date-tz.png)
 
 The Application Timezone is the timezone inserted into a ZonedDateTime object
 when a particular function returns a ZonedDateTime. Currently, the 2 commands
