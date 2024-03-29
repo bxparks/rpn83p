@@ -1545,7 +1545,7 @@ Here are examples for each supported data type:
 | DateTime          | `DT{2024,3,14,15,36,1}`   | `{2024,3,14,15,36,1`      |
 | ZonedDateTime     | `DT{2024,3,14,15,36,1}`   | `{2024,3,14,15,36,1`      |
 
-Don't forget that there is an additional shortcut entry format for `Duration`
-objects using the colon `:` modifier. For example, "2 hours" would be entered as
-`DR{0,2,0,0}` in the full record form, but can be entered as `2:H` using the
-colon modifier.
+In addition to these shortcuts, don't forget that the [Duration Shorthand
+Entry](#duration-shorthand-entry) allows Duration objects to be entered using
+the colon `:` modifier. For example, "2 hours" would be entered as `DR{0,2,0,0}`
+in the full record form, but can be entered as `2:H` using the colon modifier.
