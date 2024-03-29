@@ -533,6 +533,22 @@ of seconds between the 2 objects:
 
 There are 5039 seconds between `15:36:01` and `17:00:00`.
 
+#### Time to Seconds Conversion
+
+The `D*>S` and `S>T` menu functions convert between a Time object and the
+integer number of seconds since midnight `00:00:00`, which will always be a
+non-negative number:
+
+![ROOT > DATE > TimeSecondConversions](images/date/menu-root-date-dss.png)
+
+For example, let's convert `15:35:01` to an integer, then back to a Time object:
+
+| **Keys**          | **MODE `{..}`**                           | **MODE `".."`**   |
+| ------------------| ---------------------                     | ----------------- |
+| `T{15,36,1}`      | ![](images/date/time-seconds-raw-1.png)   | ![](images/date/time-seconds-str-1.png) |
+| `D*>S`            | ![](images/date/time-seconds-raw-1.png)   | ![](images/date/time-seconds-str-2.png) |
+| `S>T`             | ![](images/date/time-seconds-raw-1.png)   | ![](images/date/time-seconds-str-3.png) |
+
 ### DateTime Object
 
 A DateTime record is a concatenation of the Date record and a Time record. It
