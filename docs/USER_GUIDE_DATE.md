@@ -105,10 +105,10 @@ current date and time from the RTC into different timezones.
 ### Gregorian Calendar
 
 Most of the world currently uses the [Gregorian
-Calendar](https://en.wikipedia.org/wiki/Gregorian_calendar) system. The
-calendar has a 400-year cycle, with each cycle containing 146097 days. Since
-146097 is divisible by 7 only once, the day of the week (Monday to Sunday)
-associated with a given date repeats itself every 400 years as well.
+Calendar](https://en.wikipedia.org/wiki/Gregorian_calendar) system. The calendar
+has a 400-year cycle, with each cycle containing 146097 days. Since 146097 is
+divisible by 7, the day of the week (Monday to Sunday) associated with a given
+date repeats itself every 400 years as well.
 
 The Gregorian calendar was first introduced on October 15, 1582, but different
 countries adopted the calendar at different times over the course of the
