@@ -751,9 +751,9 @@ enter the invalid DayOfWeek value of `DW{0}`, an error is shown:
 
 #### DayOfWeek Operations
 
-Although it is unlikely to be used often, addition and subtraction operations
-have been implemented for the DayOfWeek object, mostly for consistency. To add 6
-days to Thursday, we can enter:
+Although addition and subtraction operations are not likely to be used often,
+they have been implemented for the DayOfWeek object for consistency. For
+example, to add 6 days to Thursday, we can enter:
 
 | **Keys**   | **MODE `{..}`**                          | **MODE `".."`**   |
 | -----------| ---------------------                    | ----------------- |
@@ -762,7 +762,7 @@ days to Thursday, we can enter:
 | `6`        | ![](images/date/dayofweek-add-raw-3.png) | ![](images/date/dayofweek-add-str-3.png) |
 | `+`        | ![](images/date/dayofweek-add-raw-4.png) | ![](images/date/dayofweek-add-str-4.png) |
 
-You can subtract 2 DayOfWeek objects to get the number of days between them:
+We can also subtract 2 DayOfWeek objects to get the number of days between them:
 
 | **Keys**   | **MODE `{..}`**                          | **MODE `".."`**   |
 | -----------| ---------------------                    | ----------------- |
@@ -770,6 +770,22 @@ You can subtract 2 DayOfWeek objects to get the number of days between them:
 | `ENTER`    | ![](images/date/dayofweek-sub-raw-2.png) | ![](images/date/dayofweek-sub-str-2.png) |
 | `DW{5}`    | ![](images/date/dayofweek-sub-raw-3.png) | ![](images/date/dayofweek-sub-str-3.png) |
 | `-`        | ![](images/date/dayofweek-sub-raw-4.png) | ![](images/date/dayofweek-sub-str-4.png) |
+
+#### DayOfWeek from Dates
+
+The `DOW` menu function returns the DayOfWeek of a given Date, DateTime, or
+ZonedDateTime:
+
+![](images/date/menu-root-date-dow.png)
+
+| **Keys**                      | **MODE `{..}`**                           | **MODE `".."`**               |
+| -------------------------     | ---------------------                     | -----------------             |
+| `D{2024,3,14}`                | ![](images/date/dayofweek-dow-raw-1.png)  | ![](images/date/dayofweek-dow-str-1.png) |
+| `DOW`                         | ![](images/date/dayofweek-dow-raw-2.png)  | ![](images/date/dayofweek-dow-str-2.png) |
+| `DT{2024,3,14,15,36,1}`       | ![](images/date/dayofweek-dow-raw-3.png)  | ![](images/date/dayofweek-dow-str-3.png) |
+| `DOW`                         | ![](images/date/dayofweek-dow-raw-4.png)  | ![](images/date/dayofweek-dow-str-4.png) |
+| `DZ{2024,3,14,15,36,1,-7,0}`  | ![](images/date/dayofweek-dow-raw-5.png)  | ![](images/date/dayofweek-dow-str-5.png) |
+| `DOW`                         | ![](images/date/dayofweek-dow-raw-6.png)  | ![](images/date/dayofweek-dow-str-6.png) |
 
 ### Duration Object
 
