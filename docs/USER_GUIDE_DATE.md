@@ -1024,6 +1024,27 @@ Another example, let's add 30 days to the DateTime `2024-03-14 12:58:32`:
 | `30:D`                    | ![](images/date/duration-add-datetime-raw-3.png)  | ![](images/date/duration-add-datetime-str-3.png) |
 | `+`                       | ![](images/date/duration-add-datetime-raw-4.png)  | ![](images/date/duration-add-datetime-str-4.png) |
 
+#### Duration to Seconds Conversion
+
+A Duration object can be converted to its equivalent integer in unit of seconds.
+The menu functions are `D*>S` and `S>DR`:
+
+![ROOT > DATE > DurationToSeconds](images/date/menu-root-date-durationseconds.png)
+
+Here are some examples:
+
+| **Keys**          | **MODE `{..}`**                                   | **MODE `".."`**   |
+| -----------       | ---------------------                             | ----------------- |
+| `DR{1,2,3,4}`     | ![](images/date/duration-to-seconds-raw-1.png)    | ![](images/date/duration-to-seconds-str-1.png) |
+| `D*>S`            | ![](images/date/duration-to-seconds-raw-2.png)    | ![](images/date/duration-to-seconds-str-2.png) |
+| `S>DR`            | ![](images/date/duration-to-seconds-raw-3.png)    | ![](images/date/duration-to-seconds-str-3.png) |
+| `DR{-4,0,-2,0}`   | ![](images/date/duration-to-seconds-raw-4.png)    | ![](images/date/duration-to-seconds-str-4.png) |
+| `D*>S`            | ![](images/date/duration-to-seconds-raw-5.png)    | ![](images/date/duration-to-seconds-str-5.png) |
+| `S>DR`            | ![](images/date/duration-to-seconds-raw-6.png)    | ![](images/date/duration-to-seconds-str-6.png) |
+| `2:H`             | ![](images/date/duration-to-seconds-raw-7.png)    | ![](images/date/duration-to-seconds-str-7.png) |
+| `D*>S`            | ![](images/date/duration-to-seconds-raw-8.png)    | ![](images/date/duration-to-seconds-str-8.png) |
+| `S>DR`            | ![](images/date/duration-to-seconds-raw-9.png)    | ![](images/date/duration-to-seconds-str-9.png) |
+
 ## Timezone Conversions
 
 A ZonedDateTime with a specific timezone (e.g. UTC-07:00) can be converted to
