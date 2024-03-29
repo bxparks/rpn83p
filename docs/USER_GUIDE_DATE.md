@@ -907,14 +907,14 @@ The `days` component is restricted to 4 digits, so the largest magnitude is
 `9999`. Therefore, the largest duration that can be represented by the
 Duration object is `9999d 23h 59m 59s` or about 24.3 years.
 
-#### Duration Shorthand Entry
+#### Duration Colon Modifier Entry
 
 We sometimes want to quickly enter a single component of a Duration object
 without having to enter the `0` values for the other components. For example, to
 enter "2 minutes", we would have to enter `DR{0,0,2,0}`, and for "12 hours", we
-would need to enter `DR{0,12,0,0}`. The RPN83P app provides a shortcut for
-entering these simple Durations using the colon character `:` and a letter (`S`,
-`M`, `H`, `D`):
+would need to enter `DR{0,12,0,0}`. The RPN83P app provides a shortcut to make
+entering these simple Durations easier. The Duration object can be entered using
+the colon character `:` and a letter (`S`, `M`, `H`, `D`) in the following way:
 
 - `dddd:D` - shortcut for `DR{dddd,0,0,0}`, i.e. "dddd days"
 - `hh:H` - shortcut for `DR{0,hh,0,0}`, i.e. "hh hours"
@@ -934,6 +934,12 @@ and 4 seconds) using the colon-shortcut notation:
 | `ENTER`   | ![](images/date/duration-minute-raw-2.png)    | ![](images/date/duration-minute-str-2.png) |
 | `4:S`     | ![](images/date/duration-second-raw-1.png)    | ![](images/date/duration-second-str-1.png) |
 | `ENTER`   | ![](images/date/duration-second-raw-2.png)    | ![](images/date/duration-second-str-2.png) |
+
+**Note**: Only a single colon-modifier can be entered on a single line. Multiple
+colon-modifiers separated by spaces (e.g. `2:H 4:M`) are not supported. This
+feature may be implemented in the future. As a workaround, one can enter colon
+modifiers separately, then add them together using the `+` button, e.g. `2:H
+ENTER 4:M +`.
 
 #### Duration Validation
 
@@ -1545,7 +1551,8 @@ Here are examples for each supported data type:
 | DateTime          | `DT{2024,3,14,15,36,1}`   | `{2024,3,14,15,36,1`      |
 | ZonedDateTime     | `DT{2024,3,14,15,36,1}`   | `{2024,3,14,15,36,1`      |
 
-In addition to these shortcuts, don't forget that the [Duration Shorthand
-Entry](#duration-shorthand-entry) allows Duration objects to be entered using
-the colon `:` modifier. For example, "2 hours" would be entered as `DR{0,2,0,0}`
-in the full record form, but can be entered as `2:H` using the colon modifier.
+In addition to these shortcuts, don't forget that the [Duration Colon Modifier
+Entry](#duration-colon-modifier-entry) allows Duration objects to be entered
+using the colon `:` modifier. For example, "2 hours" would be entered as
+`DR{0,2,0,0}` in the full record form, but can be entered as `2:H` using the
+colon modifier.
