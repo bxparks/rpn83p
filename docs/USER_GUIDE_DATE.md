@@ -465,6 +465,21 @@ dates:
 
 There are 286 days from March 14 to Dec 25, 2024.
 
+#### Date to Days Conversion
+
+The `D>DY` menu function converts the Date object to the number days since the
+and the `DY>D` menu function performs the reverse operation. The Epoch Date is
+configurable as explain in the [Epoch Date](#epoch-date) section below but by
+default, it is set to `UNIX` which is `1970-01-01`.
+
+For example, let's calculate the Epoch days of 2024-03-14:
+
+| **Keys**          | **MODE `{..}`**                           | **MODE `".."`**   |
+| -----------       | ---------------------                     | ----------------- |
+| `D{2024,3,14}`    | ![](images/date/date-to-days-raw-1.png)   | ![](images/date/date-to-days-str-1.png) |
+| `D>DY`            | ![](images/date/date-to-days-raw-2.png)   | ![](images/date/date-to-days-str-2.png) |
+| `DY>D`            | ![](images/date/date-to-days-raw-3.png)   | ![](images/date/date-to-days-str-3.png) |
+
 ### Time Object
 
 The `Time` object has the form `T{hour:u8, minute:u8, second:u8}`. For example,
@@ -1131,15 +1146,6 @@ The first 2 operate on Epoch days:
       current Epoch date.
 - `DY>D`
     - converts the number of Epoch days to a Date object
-
-For example, let's calculate the Epoch days of 2024-03-14 using the Unix Epoch
-of 1970-01-01:
-
-| **Keys**          | **MODE `{..}`**                       | **MODE `".."`**   |
-| -----------       | ---------------------                 | ----------------- |
-| `D{2024,3,14}`    | ![](images/date/epochdays-raw-1.png)  | ![](images/date/epochdays-str-1.png) |
-| `D>DY`            | ![](images/date/epochdays-raw-2.png)  | ![](images/date/epochdays-str-2.png) |
-| `DY>D`            | ![](images/date/epochdays-raw-3.png)  | ![](images/date/epochdays-str-3.png) |
 
 The next 3 operate on Epoch seconds:
 
