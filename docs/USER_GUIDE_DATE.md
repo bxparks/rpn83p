@@ -1363,7 +1363,14 @@ here will be in `UTC-07:00`.
 Sometimes we want to combined the Date and Time and TimeZone objects into bigger
 objects, or take apart bigger objects into smaller components. Row 4 of the
 `DATE` menu (![](images/date/menu-root-date-4.png)) contains menu items
-which allow those operations to be performed.
+which allow those operations to be performed. For ease of use, these menu
+functions are also available on the keyboard, by overloading some button
+functions:
+
+- `DSHK` (keyboard: `2ND SQRT`)
+- `DEXD` (keyboard: `X^2`
+- `DCUT` (keyboard: `1/X`)
+- `DLNK` (keyboard: `2ND LINK`)
 
 ### DSHK - Shrink
 
@@ -1372,14 +1379,16 @@ truncating the Timezone component. When it is applied again to the DateTime obje
 it is converts into a Date object by truncating the Time component.
 
 For example, let's apply the `DCUT` command on the following ZonedDateTime to
-convert it to a DateTime, then a Date object, by pressing `DCUT` twice:
+convert it to a DateTime, then a Date object, by applying `DCUT` twice, first
+using the menu function `DSHK`, then second through the `2ND SQRT` keyboard
+button:
 
 | **Keys**                      | **MODE `{..}`**                   | **MODE `".."`**   |
 | ----------                    | ---------------------             | ----------------- |
 | `DZ{2024,3,14,15,36,1,-7,0}`  | ![](images/date/dshk-raw-1.png)   | ![](images/date/dshk-str-1.png) |
 | `ENTER`                       | ![](images/date/dshk-raw-2.png)   | ![](images/date/dshk-str-2.png) |
 | `DSHK`                        | ![](images/date/dshk-raw-3.png)   | ![](images/date/dshk-str-3.png) |
-| `DSHK`                        | ![](images/date/dshk-raw-4.png)   | ![](images/date/dshk-str-4.png) |
+| `2ND SQRT`                    | ![](images/date/dshk-raw-4.png)   | ![](images/date/dshk-str-4.png) |
 
 The `ENTER` was used to show the original object on the RPN stack. It was not
 necessary to press it before the first `DSHK` command.
@@ -1387,15 +1396,17 @@ necessary to press it before the first `DSHK` command.
 ### DEXD - Extend
 
 The `DEXD` (Date Extend) command perform the reverse of the `DSHK` command by
-appending the Time component and the TimeZone component successively. For
-example, let's start with a Date object and press the `DEXD` command twice:
+appending a `00:00:00` Time component and the `UTC+00:00` TimeZone component
+successively. For example, let's start with a Date object and apply the `DEXD`
+command twice, first using the menu function `DEXD`, then second through the
+`X^2` keyboard button:
 
 | **Keys**                      | **MODE `{..}`**                   | **MODE `".."`**   |
 | ----------                    | ---------------------             | ----------------- |
 | `D{2024,3,14}`                | ![](images/date/dexd-raw-1.png)   | ![](images/date/dexd-str-1.png) |
 | `ENTER`                       | ![](images/date/dexd-raw-2.png)   | ![](images/date/dexd-str-2.png) |
 | `DEXD`                        | ![](images/date/dexd-raw-3.png)   | ![](images/date/dexd-str-3.png) |
-| `DEXD`                        | ![](images/date/dexd-raw-4.png)   | ![](images/date/dexd-str-4.png) |
+| `X^2`                         | ![](images/date/dexd-raw-4.png)   | ![](images/date/dexd-str-4.png) |
 
 As before, the `ENTER` was used only for the purpose of displaying the original
 Date object. It was not necessary to press it before the first `DEXD` command.
@@ -1408,14 +1419,16 @@ smaller ones on the `X` and `Y` registers.
 - ZoneDateTime (`X`) becomes DateTime (`X`) and TimeZone (`Y`)
 - DateTime (`X`) becomes Date (`X`) and Time (`Y`)
 
-For example, let's apply the `DCUT` command on the following ZonedDateTime:
+For example, let's apply the `DCUT` command on a ZonedDateTime object twice,
+first using the `DCUT` menu function, then second using the `1/X` keyboard
+button:
 
 | **Keys**                      | **MODE `{..}`**                   | **MODE `".."`**   |
 | ----------                    | ---------------------             | ----------------- |
 | `DZ{2024,3,14,15,36,1,-7,0}`  | ![](images/date/dcut-raw-1.png)   | ![](images/date/dcut-str-1.png) |
 | `ENTER`                       | ![](images/date/dcut-raw-2.png)   | ![](images/date/dcut-str-2.png) |
 | `DCUT`                        | ![](images/date/dcut-raw-3.png)   | ![](images/date/dcut-str-3.png) |
-| `DCUT`                        | ![](images/date/dcut-raw-4.png)   | ![](images/date/dcut-str-4.png) |
+| `1/X`                         | ![](images/date/dcut-raw-4.png)   | ![](images/date/dcut-str-4.png) |
 
 ### DLNK - Link
 
@@ -1425,9 +1438,9 @@ combining the `X` and `Y` stack registers into a single object in `X`.
 - DateTime (`X`) and TimeZone (`Y`) becomes a ZoneDateTime (`X`)
 - Date (`X`) and Time (`Y`) becomes a DateTime (`X`)
 
-
 For example, let's incrementally build a ZonedDateTime from a Date, Time and
-TimeZone object:
+TimeZone object, first using the `DLNK` menu function, then second using the
+`2ND LINK` keyboard button:
 
 | **Keys**                      | **MODE `{..}`**                   | **MODE `".."`**   |
 | ----------                    | ---------------------             | ----------------- |
@@ -1436,7 +1449,7 @@ TimeZone object:
 | `T{15,36,1}`                  | ![](images/date/dlnk-raw-3.png)   | ![](images/date/dlnk-str-3.png) |
 | `DLNK`                        | ![](images/date/dlnk-raw-4.png)   | ![](images/date/dlnk-str-4.png) |
 | `TZ{-7,0}`                    | ![](images/date/dlnk-raw-5.png)   | ![](images/date/dlnk-str-5.png) |
-| `DLNK`                        | ![](images/date/dlnk-raw-6.png)   | ![](images/date/dlnk-str-6.png) |
+| `2ND LINK`                    | ![](images/date/dlnk-raw-6.png)   | ![](images/date/dlnk-str-6.png) |
 
 ## Storage Registers
 
