@@ -468,15 +468,13 @@ There are 286 days from March 14 to Dec 25, 2024.
 #### Date to Days Conversion
 
 The `D>DY` menu function converts the Date object to the number days since the
-and the `DY>D` menu function performs the reverse operation.
+Epoch Date, and the `DY>D` menu function performs the reverse operation. The
+Epoch date is configurable as explained in the [Epoch Date](#epoch-date) section
+below but by default, it is set to `UNIX` which is `1970-01-01`.
 
 ![ROOT > DATE > DateToDays](images/date/menu-root-date-epochdays.png)
 
-The Epoch Date is
-configurable as explain in the [Epoch Date](#epoch-date) section below but by
-default, it is set to `UNIX` which is `1970-01-01`.
-
-For example, let's calculate the Epoch days of 2024-03-14:
+For example, let's calculate the epochdays of 2024-03-14:
 
 | **Keys**          | **MODE `{..}`**                           | **MODE `".."`**   |
 | -----------       | ---------------------                     | ----------------- |
@@ -555,7 +553,7 @@ There are 5039 seconds between `15:36:01` and `17:00:00`.
 #### Time to Seconds Conversion
 
 The `D*>S` and `S>T` menu functions convert between a Time object and the
-integer number of seconds since midnight `00:00:00`, which will always be a
+integer number of seconds since midnight `00:00:00`. This will will always be a
 non-negative number:
 
 ![ROOT > DATE > TimeToSeconds](images/date/menu-root-date-timeseconds.png)
@@ -637,17 +635,18 @@ between March 13, 2024 15:39:55 to Christmas Dec 25, 2024 00:00:00.
 
 #### DateTime to Seconds Conversion
 
-A DateTime object can represent 2 slightly things depending on the context:
+A DateTime object can represent 2 slightly different things depending on the
+context:
 
 - a local date-time, using an implicit timezone (i.e. offset from UTC)
 - a UTC date-time, with a timezone offset of UTC+00:00
 
 The conversion of a DateTime to seconds will depend on which of the 2 concepts
-is represented by the DateTime, and unfortunately, there is no provision in the
-RPN83P app to specify the representation. Therefore, the conversion to seconds
-through `D*>S` is **not** supported for a DateTime object. A DateTime *must* be
-converted into a ZonedDateTime object before it can be converted into an integer
-number of seconds.
+is represented by the DateTime. Unfortunately, there is no provision in the
+RPN83P app to specify the representation, so the conversion to seconds through
+`D*>S` is deliberately **not** supported for a DateTime object. A DateTime
+object *must* be converted into a ZonedDateTime object before it can be
+converted into an integer number of seconds.
 
 ### TimeZone Object
 
@@ -690,17 +689,22 @@ objects, because they did not seem useful for real-life calculations.
 
 The TimeZone object can be converted to and from a floating point number
 representing the number of hours shifted from UTC. These are exposed using the
-`H>TZ` and `TZ>H` menu items:
+`TZ>H` and `H>TZ` menu items:
 
 ![ROOT > DATE > TimeZoneToHours](images/date/menu-root-date-timezonehours.png)
 
-To convert `TZ{-4,~30}` to hours then back to a TimeZone object:
+To convert `TZ{-4,-30}` to hours then back to a TimeZone object:
 
 | **Keys**     | **MODE `{..}`**                                | **MODE `".."`**   |
 | -------------| ---------------------                          | ----------------- |
 | `TZ{-4,-30}` | ![](images/date/timezone-to-hours-raw-1.png)   | ![](images/date/timezone-to-hours-str-1.png) |
 | `TZ>H`       | ![](images/date/timezone-to-hours-raw-2.png)   | ![](images/date/timezone-to-hours-str-2.png) |
 | `H>TZ`       | ![](images/date/timezone-to-hours-raw-3.png)   | ![](images/date/timezone-to-hours-str-3.png) |
+
+All current timezones in the world are at multiples of 0:15 minutes. So the
+`H>TZ` function will accept only floating values which are multiples of 0.25.
+For example, `8.75` for `TZ{8,45}`, and `-2.5` for `TZ{-2,-30}`. Otherwise, an
+`Err:Domain` will be shown.
 
 ### ZonedDateTime Object
 
@@ -791,7 +795,7 @@ Date](#epoch-date) section below. The menu functions for conversion are the
 - `S>DZ`: convert the epochseconds to the ZonedDateTime using the current
   Application Timezone. The result of this function depends on 2 configurable
   context variables:
-    - the [Application Timezone](#settings-the-application-timezone), defined by
+    - the [Application Timezone](#setting-the-application-timezone), defined by
       the `TZ` menu function
     - the [Epoch Date](#epoch-date), defined by the `EPCH` menu group
 
@@ -1083,8 +1087,8 @@ It is a simple function that determines if the given year is a leap year
 
 Many computer systems keep track of time by counting the number of sections from
 a specific date, called the
-[epoch](https://en.wikipedia.org/wiki/Epoch_%28computing%29)  RPN83P supports
-the following epoch dates under the `EPCH` menu:
+[epoch](https://en.wikipedia.org/wiki/Epoch_%28computing%29). RPN83P supports
+different Epoch dates under the `EPCH` menu:
 
 - ![ROOT > DATE > EPCH group](images/date/menu-root-date-epch.png)
     - ![EPCH row 1](images/date/menu-root-date-epch-1.png)
@@ -1110,14 +1114,16 @@ The following predefined epoch dates can be selected:
     - An epoch date used by some 32-bit systems to avoid the
     [Year 2038 problem](https://en.wikipedia.org/wiki/Year_2038_problem)
 - `CEPC`:![EPCH CEPC](images/date/menu-root-date-epch-cepc.png)
-    - user-configurable custom epoch date, set using the `EPC` menu
+    - user-configurable custom epoch date, set using the `EPC` menu (see below
+      for instructions on how to configurable this)
     - the factory default is `2050-01-01`
 
 ### Custom Epoch Date
 
-The custom Epoch date can be set using the `EPC` (set epoch) menu. It can be
-retrieved using the `EPC?` menu. For example, to view the current custom epoch
-date, then set it to `2100-01-01`:
+The custom Epoch date can be set using the `EPC` (set epoch) menu function. The
+current custom Epoch date value can be retrieved using the `EPC?` menu function.
+For example, let's view the current custom Epoch date, then set it to
+`2100-01-01`:
 
 | **Keys**          | **MODE `{..}`**                           | **MODE `".."`**   |
 | -----------       | ---------------------                     | ----------------- |
@@ -1128,67 +1134,57 @@ date, then set it to `2100-01-01`:
 
 ### Epoch Conversions
 
-Once an Epoch date has been defined, it is often convenient to convert Gregorian
-date and datetimes to a number that counts the number of days or number of
-seconds offset from the Epoch date. For example, Unix systems keep track of time
-using an `epochSeconds` number which counts the number of seconds from the Unix
-Epoch of 1970-01-01 UTC.
-
-In the following examples, the `UNIX` epoch has been selected:
-
-![EPCH UNIX](images/date/menu-root-date-epch-unix.png)
-
-There are 5 menu functions which support conversions from calendar dates and
-datetimes to epoch days and seconds:
+The Epoch date affects the following menu fuctions:
 
 - ![ROOT > DATE > EpochDays](images/date/menu-root-date-epochdays.png)
 - ![ROOT > DATE > EpochSeconds](images/date/menu-root-date-epochseconds.png)
 
-The first 2 operate on Epoch days:
+The first 2 involve Epoch days:
 
 - `D>DY`
-    - converts the current Date object into the number of whole days from the
-      current Epoch date.
+    - calculates the `epochdays` representation of a Date object
 - `DY>D`
-    - converts the number of Epoch days to a Date object
+    - converts the `epochdays` to a Date object
 
-The next 3 operate on Epoch seconds:
+The next 3 involve Epoch seconds:
 
 - `Dx>S`
-    - calculates the `epochseconds` representation of the input object. If the
-      input is a ZonedDateTime, then the output is the number of seconds from
-      the current Epoch date.
+    - calculates the `epochseconds` representation of a ZonedDateTime
 - `S>DZ`
-    - converts the number of `epochseconds` to the ZonedDateTime using the
+    - converts the `epochseconds` to the ZonedDateTime using the
       currently selected Application TimeZone (see `TZ` and `TZ?` below)
 - `S>UT`
     - same as `S>DZ` except that the timezone of the resulting ZonedDateTime is
       always UTC+00:00.
 
 For example, let's calculate the epoch seconds of `2024-03-14 15:36:01-07:00`
-using the Unix epoch date of 1970-01-01 UTC:
+using 2 different Epochs:
 
-| **Keys**                      | **MODE `{..}`**                           | **MODE `".."`**   |
-| -----------                   | ---------------------                     | ----------------- |
-| `DZ{2024,3,14,15,36,1,-7,0}`  | ![](images/date/epochseconds-raw-1.png)   | ![](images/date/epochseconds-str-1.png) |
-| `D*>S`                        | ![](images/date/epochseconds-raw-2.png)   | ![](images/date/epochseconds-str-2.png) |
-| `S>UT`                        | ![](images/date/epochseconds-raw-3.png)   | ![](images/date/epochseconds-str-3.png) |
-| `D*>S`                        | ![](images/date/epochseconds-raw-4.png)   | ![](images/date/epochseconds-str-4.png) |
-| `S>DZ`                        | ![](images/date/epochseconds-raw-5.png)   | ![](images/date/epochseconds-str-5.png) |
+- the Unix epoch date of 1970-01-01 UTC, and
+- the NTP epoch date of 1900-01-01 UTC
 
-The last result from the `S>DZ` function requires some explanation. That
-function converts the `epochseconds` into a ZonedDateTime using the
-**Application** Timezone. How is the Application Timezone defined? It is set by
-the `TZ` menu command explained in [Setting the Application
-Timezone](#setting-the-application-timezone) below. In this example, the
-Application Timezone (retrieved by `TZ?`) was set to UTC-07:00.
+The example begins with the `MATH` (Home) button to start at a known menu
+location, but if you are already within the DATE menu folder, then you can skip
+that step:
+
+| **Keys**                          | **MODE `{..}`**                           | **MODE `".."`**   |
+| -----------                       | ---------------------                     | ----------------- |
+| `MATH` `UP` `DATE` `DOWN` `DOWN`  | ![](images/date/epochseconds-raw-1.png)   | ![](images/date/epochseconds-str-1.png) |
+| `EPCH` `UNIX`                     | ![](images/date/epochseconds-raw-2.png)   | ![](images/date/epochseconds-str-2.png) |
+| `ON/EXIT` `UP`                    | ![](images/date/epochseconds-raw-3.png)   | ![](images/date/epochseconds-str-3.png) |
+| `DZ{2024,3,14,15,36,1,-7,0}`      | ![](images/date/epochseconds-raw-4.png)   | ![](images/date/epochseconds-str-4.png) |
+| `D*>S`                            | ![](images/date/epochseconds-raw-5.png)   | ![](images/date/epochseconds-str-5.png) |
+| `DOWN` `EPCH` `NTP`               | ![](images/date/epochseconds-raw-6.png)   | ![](images/date/epochseconds-str-6.png) |
+| `ON/EXIT` `UP`                    | ![](images/date/epochseconds-raw-7.png)   | ![](images/date/epochseconds-str-7.png) |
+| `2ND ANS` (LastX)                 | ![](images/date/epochseconds-raw-8.png)   | ![](images/date/epochseconds-str-8.png) |
+| `D*>S`                            | ![](images/date/epochseconds-raw-9.png)   | ![](images/date/epochseconds-str-9.png) |
 
 ### Epoch Seconds Range
 
 Internally, all date/time calculations are performed using 40-bit signed
 integers whose range is `[-549_755_813_888, +549_755_813_887]` seconds. This is
 approximately `[-17421,+17421]` years which is more than enough to handle the
-entire range of years `[1,9999]` supported by this framework. The use of 40-bit
+entire range of years `[1,9999]` supported by the RPN83P app. The use of 40-bit
 signed integers allows RPN83P to avoid the [Year
 2038](https://en.wikipedia.org/wiki/Year_2038_problem) problem which affects
 many older Unix systems which use a 32-bit signed integer to hold the
@@ -1203,16 +1199,16 @@ current date and time.
 The menu items which related to the RTC are the last 2 rows of the `DATE` menu
 hierarchy:
 
-- ![](images/date/menu-root-date-5.png)
+- ![ROOT > DATE > Row 5](images/date/menu-root-date-5.png)
     - `NOW`: return the current date-time as epochseconds from the current Epoch
-    date
+      date
     - `NOWD`: return the current date-time as a `Date` object
     - `NOWT`: return the current date-time as a `Time` object
     - `NWDZ`: return the current date-time as a `ZonedDateTime` object using the
-    Application Timezone
-    - `NWUT`: return the current date-time as a `ZonedDateTime` object using the UTC
-    timezone
-- ![](images/date/menu-root-date-6.png)
+      Application Timezone
+    - `NWUT`: return the current date-time as a `ZonedDateTime` object using the
+      UTC timezone
+- ![ROOT > DATE > Row 6](images/date/menu-root-date-6.png)
     - `TZ`: set the Application Timezone
     - `TZ?`: retrieve the Application Timezone
     - `CTZ`: set the Clock Timezone
@@ -1264,12 +1260,12 @@ clock's time will be incorrect during the months when the DST rules are in
 effect.
 
 **Side Note**: This issue with configuring the timezone of the hardware clock is
-the same problem encountered if you configure your computer to dual-boot both
-Microsoft Windows and Linux. Windows sets the hardware clock to the local
-timezone, but Linux sets the hardware clock to the UTC timezone. Here, the
-RPN83P application is the equivalent of Linux, and the underlying TI-OS is the
-equivalent of Windows. The difference is that RPN83P has the ability to act like
-TI-OS (i.e. Windows) through the `CTZ` configuration.
+basically the same problem encountered if you configure your computer to
+dual-boot both Microsoft Windows and Linux. Windows sets the hardware clock to
+the local timezone, but Linux sets the hardware clock to the UTC timezone. Here,
+the RPN83P application is the equivalent of Linux, and the underlying TI-OS is
+the equivalent of Windows. The difference is that RPN83P has the ability to act
+like TI-OS (i.e. Windows) through the `CTZ` configuration.
 
 ### Setting the Clock DateTime
 
