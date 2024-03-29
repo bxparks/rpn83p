@@ -73,6 +73,7 @@ desktop-class machines:
     - [DCUT - Cut](#dcut---cut)
     - [DLNK - Link](#dlnk---link)
 - [Storage Registers](#storage-registers)
+- [Data Entry for Experts](#data-entry-for-experts)
 
 ## Calendar, Time, and Timezones
 
@@ -1337,3 +1338,67 @@ Here are some selected examples:
 | `DZ{2024,3,14,15,36,1,-7,0}`  | ![](images/date/regs-mult-raw-5.png)      | ![](images/date/regs-mult-str-5.png) |
 | `2ND RCL* 00`                 | ![](images/date/regs-mult-raw-6.png)      | ![](images/date/regs-mult-str-6.png) |
 | `2ND RCL* 01`                 | ![](images/date/regs-mult-raw-7.png)      | ![](images/date/regs-mult-str-7.png) |
+
+## Data Entry for Experts
+
+If the RPN83P is executed in a TI-83/84 emulator on a desktop or laptop computer
+with a full-sized keyboard, it is easy to enter date-related objects because the
+alpha letter (A-Z), digit (0-9), and comma keys are easily accessible.
+
+On an actual TI-83/84 calculator, the letter tags (e.g. `D`, `TZ`) require the
+use of the `ALPHA` key. The button corresponding to a specific letter can be
+difficult to located quickly because they are not organized in the familiar
+QWERTY layout. Furthermore, the left and right curly braces require the use of
+the `2ND` key instead of the `ALPHA` key, which can cause confusion in the
+fingers. Entering something like the timezone `UTC+05:30`, which is entered as
+`TZ{5,30}`, can take a surprising number of keystrokes:
+
+```
+ALPHA T
+ALPHZ Z
+2ND {
+5
+,
+30
+2ND }
+```
+
+To make data entry of date objects easier, the RPN83P supports **type
+inference** using the **arity** of **naked records** whose right-curly-brace
+terminator is **optional**. Let's unpack that:
+
+- **naked record**: A record object with just curly braces `{` and `}` without a
+  type tag (e.g. `D` or `DT`).
+- **[arity](https://en.wikipedia.org/wiki/Arity)**: A fancy word for "the number
+  of arguments in a function".
+- **type inference**: The program infers the type of the object using the number
+  of arguments in the record:
+    - 2 arguments: TimeZone `T{..}`
+    - 3 arguments: Date `D{..}`
+    - 4 arguments: Duration `DR{..}`
+    - 6 arguments: DateTime `DT{..}`
+    - 8 arguments: ZonedDateTime `DT{..}`
+    - DayOfWeek: not supported, arity of 1 is reserved for future use
+    - Time: not supported because arity of 3 conflicts with Date which has the
+      same arity
+- **optional right brace**: The right curly brace `}` always appears at the end
+  of a record so we can make it optional. An `ENTER` key, a function key (e.g.
+  `+`, `-`), or a menu function can be pressed without the terminating curly
+  brace.
+
+Here are examples for each supported data type:
+
+| **Type**          | **Full Record Entry**     | **Naked Record Entry**    |
+| ---------------   | ----------                | ----------                |
+| DayOfWeek         | `DW{1}`                   | (not supported, reserved) |
+| TimeZone          | `TZ{5,30}`                | `{5,30`                   |
+| Date              | `D{2024,3,14}`            | `{2024,3,14`              |
+| Time              | `T{15,36,1}`              | (conflicts with Date)     |
+| Duration          | `DR{1,2,3,4}`             | `{1,2,3,4`                |
+| DateTime          | `DT{2024,3,14,15,36,1}`   | `{2024,3,14,15,36,1`      |
+| ZonedDateTime     | `DT{2024,3,14,15,36,1}`   | `{2024,3,14,15,36,1`      |
+
+Don't forget that there is an additional shortcut entry format for `Duration`
+objects using the colon `:` modifier. For example, "2 hours" would be entered as
+`DR{0,2,0,0}` in the full record form, but can be entered as `2:H` using the
+colon modifier.
