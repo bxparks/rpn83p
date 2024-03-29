@@ -688,15 +688,15 @@ The TimeZone object can be converted to and from a floating point number
 representing the number of hours shifted from UTC. These are exposed using the
 `H>TZ` and `TZ>H` menu items:
 
-![ROOT > DATE > Row 3](images/date/menu-root-date-3.png)
+![ROOT > DATE > TimeZoneToHours](images/date/menu-root-date-timezonehours.png)
 
 To convert `TZ{-4,~30}` to hours then back to a TimeZone object:
 
 | **Keys**     | **MODE `{..}`**                                | **MODE `".."`**   |
 | -------------| ---------------------                          | ----------------- |
-| `TZ{-4,-30}` | ![](images/date/timezone-hour-raw-1.png)    | ![](images/date/timezone-hour-str-1.png) |
-| `TZ>H`       | ![](images/date/timezone-hour-raw-2.png)    | ![](images/date/timezone-hour-str-2.png) |
-| `H>TZ`       | ![](images/date/timezone-hour-raw-3.png)    | ![](images/date/timezone-hour-str-3.png) |
+| `TZ{-4,-30}` | ![](images/date/timezone-to-hours-raw-1.png)   | ![](images/date/timezone-to-hours-str-1.png) |
+| `TZ>H`       | ![](images/date/timezone-to-hours-raw-2.png)   | ![](images/date/timezone-to-hours-str-2.png) |
+| `H>TZ`       | ![](images/date/timezone-to-hours-raw-3.png)   | ![](images/date/timezone-to-hours-str-3.png) |
 
 ### ZonedDateTime Object
 
@@ -780,8 +780,7 @@ but it can be changed using the `EPCH` menu items described in the [Epoch
 Date](#epoch-date) section below. The menu functions for conversion are the
 `D*>S`, `S>DZ`, and `S>UT` functions:
 
-![ROOT > DATE >
-ZonedDateTimeSecondConversion](images/date/menu-root-date-epochseconds.png)
+![ROOT > DATE > ZonedDateTimeToSeconds](images/date/menu-root-date-epochseconds.png)
 
 - `D*>S`: convert ZonedDateTime to epochseconds
 - `S>UT`: convert the epochseconds to the ZonedDateTime using UTC timezone
