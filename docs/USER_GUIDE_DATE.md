@@ -207,15 +207,21 @@ supports only fixed UTC offsets.
 ### Date and Time Formats
 
 The 2 commonly used conventions for representing dates and times on a computer
-system is [RFC 3339](https://www.rfc-wiki.org/wiki/RFC3339) and [ISO
-8601](https://en.wikipedia.org/wiki/ISO_8601). The ISO 8601 document, like all
-ISO documents, is paywalled so most software developers have never seen the
-actual document. There is a significant amount of overlap between the 2
-standards, as shown in this [RFC 3339 vs ISO 8601 Venn
+system is the [RFC 3339](https://www.rfc-wiki.org/wiki/RFC3339) standard and the
+[ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) standard. The ISO 8601
+document, like all ISO documents, is paywalled so most software developers have
+never seen the actual document. There is a significant amount of overlap between
+the 2 standards, as shown in this [RFC 3339 vs ISO 8601 Venn
 diagram](https://ijmacd.github.io/rfc3339-iso8601/).
 
-The RPN83P follows the RFC 3339 conventions more closely than the ISO 8601. Here
-are some examples:
+The RPN83P follows the RFC 3339 conventions more closely than the ISO 8601. We
+use a *space* separator between the date fields and the time fields, instead of
+the letter `T`, because the space character is more readable, and because the
+letter `T` is slightly wider than the space character. That causes a fully
+formatted ZonedDateTime object to overflow the width of a line on the TI-83/84
+calculators.
+
+Here are some examples:
 
 - Date: `2024-03-14` (Mar 14, 2024)
 - Time: `21:10:11` (9:10:11 pm)
