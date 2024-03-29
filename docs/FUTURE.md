@@ -4,7 +4,13 @@ There seems to be almost an endless number of features that could go into a
 calculator app. I have grouped them into the following subsections, since my
 time and energy are limited.
 
-**Version**: 0.9.0 (2024-01-06)
+This document is a superset of the entries in the [GitHub
+Issues](https://github.com/bxparks/rpn83p/issues) tab. I use this document
+because it is faster and easier compared with the overhead of the web UI,
+especially for small features that can be described in a few sentences. Usually
+only the larger and more complicated features will get their own GitHub tickets.
+
+**Version**: 0.10.0 (2024-03-29)
 
 **Project Home**: https://github.com/bxparks/rpn83p
 
@@ -18,8 +24,6 @@ time and energy are limited.
 
 ## Near Future
 
-- datetime conversions
-    - date/time components to and from epoch seconds
 - allow resize of storage registers using `SIZE` command
     - The current default is fixed at 25.
     - It should be relatively straightforward to allow this to be
@@ -178,9 +182,7 @@ time and energy are limited.
 
 ## Highly Unlikely
 
-These are useful features which are estimated to take too much time and effort,
-especially using low-level Z80 assembly language, so they will likely never get
-added to RPN83P.
+These are features which are unlikely to be implemented for various reasons:
 
 - user-defined alphanumeric variables
     - TI-OS supports only single-letter variables for real or complex types.
@@ -196,8 +198,7 @@ added to RPN83P.
 - root finder (i.e. SOLVE)
     - one of the hallmarks of advanced HP calculators
     - requires keystroke programming
-    - the TI-OS already provides a solver (`Solver`), maybe that is
-      sufficient?
+    - the TI-OS already provides a solver (`Solver`), maybe that is sufficient?
 - numerical integration
     - another feature of advanced HP calculators
     - depends on keystroke programming
@@ -211,6 +212,10 @@ added to RPN83P.
       computer and application (e.g. MATLAB, Octave, Mathematica).
     - The TI-OS also provides substantial number of matrix features and
       functions.
+- shortcut key bindings for command arguments for `STO`, `RCL`, `FIX`
+    - the HP-41C has a hidden feature where the top 2 rows of buttons are bound
+      to 0-9 or 1-10 for certain commands that expect a command argument
+    - see [Issue#18](https://github.com/bxparks/rpn83p/issues/18) for details
 
 ### Not Planned
 
