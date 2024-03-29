@@ -57,6 +57,7 @@ desktop-class machines:
     - [DayOfWeek Object](#dayofweek-object)
     - [Duration Object](#duration-object)
 - [Timezone Conversions](#timezone-conversions)
+- [Leap Year Determination](#leap-year-determination)
 - [Epoch Date](#epoch-date)
     - [Custom Epoch Date](#custom-epoch-date)
     - [Epoch Conversions](#epoch-conversions)
@@ -640,7 +641,7 @@ The TimeZone object can be converted to and from a floating point number
 representing the number of hours shifted from UTC. These are exposed using the
 `H>TZ` and `TZ>H` menu items:
 
-![](images/date/menu-root-date-3.png)
+![ROOT > DATE > Row 3](images/date/menu-root-date-3.png)
 
 To convert `TZ{-4,~30}` to hours then back to a TimeZone object:
 
@@ -776,7 +777,7 @@ We can also subtract 2 DayOfWeek objects to get the number of days between them:
 The `DOW` menu function returns the DayOfWeek of a given Date, DateTime, or
 ZonedDateTime:
 
-![](images/date/menu-root-date-dow.png)
+![ROOT > DATE > DOW](images/date/menu-root-date-dow.png)
 
 | **Keys**                      | **MODE `{..}`**                           | **MODE `".."`**               |
 | -------------------------     | ---------------------                     | -----------------             |
@@ -974,6 +975,24 @@ following timezones:
 | `*`                           | ![](images/date/timezone-convert-raw-08.png)  | ![](images/date/timezone-convert-str-08.png) |
 | `0`                           | ![](images/date/timezone-convert-raw-09.png)  | ![](images/date/timezone-convert-str-09.png) |
 | `*`                           | ![](images/date/timezone-convert-raw-10.png)  | ![](images/date/timezone-convert-str-10.png) |
+
+## Leap Year Determination
+
+The `LEAP` menu function does not quite fit into any of the above categories:
+
+![ROOT > DATE > LEAP](images/date/menu-root-date-leap.png)
+
+It is a simple function that determines if the given year is a leap year
+(returning a `1`) or not (returning a `0`). For example:
+
+| **Keys**          | **Display**                    |
+| -----------       | ---------------------          |
+| `2024` `LEAP`     | ![](images/date/leap-1.png)    |
+| `2025` `LEAP`     | ![](images/date/leap-2.png)    |
+| `2100` `LEAP`     | ![](images/date/leap-3.png)    |
+| `2200` `LEAP`     | ![](images/date/leap-4.png)    |
+| `2300` `LEAP`     | ![](images/date/leap-5.png)    |
+| `2400` `LEAP`     | ![](images/date/leap-6.png)    |
 
 ## Epoch Date
 
