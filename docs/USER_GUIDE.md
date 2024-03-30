@@ -2451,9 +2451,9 @@ that complex numbers can be displayed. The complex display modes are: `RECT`,
 `ROOT > MODE`, but the fastest way to reach this menu row is to use the `MODE`
 button shortcut on keyboard:
 
-- ![RPN83P Complex Mode Menu 1](images/complex-mode-menu-1.png)
-    - ![RPN83P Complex Mode Menu 2](images/complex-mode-menu-2.png)
-    - ![RPN83P Complex Mode Menu 3](images/complex-mode-menu-3.png)
+- ![ROOT > MODE](images/menu-root-mode.png)
+    - ![ROOT > MODE > Row1](images/menu-root-mode-1.png)
+    - ![ROOT > MODE > ComplexDisplayModes](images/menu-root-mode-complexdisplaymodes.png)
 
 Pressing the `RECT`, `PRAD`, and `PDEG` menu buttons will change the display
 into the following:
@@ -2681,9 +2681,9 @@ to the functions are real:
 These are available on row 2 of the `MODE` menu group, under `ROOT > MODE`, but
 the fastest way to reach this menu row is to use the `MODE` button shortcut:
 
-- ![RPN83P Complex Mode Menu 1](images/complex-mode-menu-1.png)
-    - ![RPN83P Complex Mode Menu 2](images/complex-mode-menu-2.png)
-    - ![RPN83P Complex Mode Menu 4](images/complex-mode-menu-4.png)
+- ![ROOT > MODE](images/menu-root-mode.png)
+    - ![ROOT > MODE > Row1](images/menu-root-mode-1.png)
+    - ![ROOT > MODE > ComplexResultModes](images/menu-root-mode-complexresultmodes.png)
 
 Note that these settings do not affect how functions evaluate *complex*
 arguments. If the argument is complex, all functions that support complex
@@ -2727,7 +2727,7 @@ TrigModes](images/menu-root-mode-trigmodes.png)
 The complex display modes (`RECT`, `PRAD`, `PDEG`) control how complex numbers
 are rendered on the screen. These modes do not affect the behavior of any
 complex functions (with the sole exception of `2ND LINK`, see above): ![ROOT >
-MODE > ComplexModes](images/menu-root-mode-complexmodes.png)
+MODE > ComplexDisplayModes](images/menu-root-mode-complexdisplaymodes.png)
 
 #### Complex Numbers in Storage Registers
 
