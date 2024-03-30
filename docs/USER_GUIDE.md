@@ -1886,7 +1886,7 @@ Let's see if a different curve fit model does better.
 - Press `BEST` button to request the app to automatically determine the
   best curve model. You should see `X:.2963586116` and the menu should have
   changed to select `PWRF`, like this:
-  ![CFIT BEST](images/rpn83p-cfit-best.png)
+  ![CFIT BEST](images/stat-cfit-best.png)
 
 **HP-42S Compatibility Note**: Unlike the HP-42S, `BEST` menu on the RPN83P
 returns the `CORR` value of the best curve fit model. It seemed like a useful
