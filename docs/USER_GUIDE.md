@@ -1066,8 +1066,8 @@ For example, if the number "123456.78901234" is entered, the input buffer look
 normal after 14 characters (see left), then when the 15th character is entered,
 some digits scroll off to the left (see right):
 
-![Long Number Entry 1](images/rpn83p-long-number-entry-1.png)
-![Long Number Entry 2](images/rpn83p-long-number-entry-2.png)
+![Long Number Entry 1](images/long-number-entry-1.png)
+![Long Number Entry 2](images/long-number-entry-2.png)
 
 In normal mode, the input system is configured to accept up to 20 digits because
 a TI-OS floating point number in scientific notation requires 20 digits to enter
