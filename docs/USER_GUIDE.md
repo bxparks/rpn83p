@@ -1038,9 +1038,9 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
     - ![DATE MenuRow 1](images/date/menu-root-date-1.png)
     - ![DATE MenuRow 2](images/date/menu-root-date-2.png)
     - ![DATE MenuRow 3](images/date/menu-root-date-3.png)
-    - ![DATE MenuRow 4](images/date/menu-root-date-4.png)
         - ![EPCH MenuRow 1](images/date/menu-root-date-epch-1.png)
         - ![EPCH MenuRow 1](images/date/menu-root-date-epch-2.png)
+    - ![DATE MenuRow 4](images/date/menu-root-date-4.png)
     - ![DATE MenuRow 5](images/date/menu-root-date-5.png)
     - ![DATE MenuRow 6](images/date/menu-root-date-6.png)
     - `LEAP`: determine if given year is a leap year
