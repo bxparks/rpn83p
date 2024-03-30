@@ -2564,8 +2564,8 @@ the underlying TI-OS functions do not support them.
 Additional functions specific to complex numbers are under the `ROOT > CPLX`
 menu:
 
-- ![RPN83P Complex CPLX Menu 1](images/complex-cplx-menu-1.png)
-    - ![RPN83P Complex CPLX Menu 2](images/complex-cplx-menu-2.png)
+- ![ROOT > CPLX](images/menu-root-cplx.png)
+    - ![ROOT > CPLX > Row1](images/menu-root-cplx-1.png)
 
 They are:
 
