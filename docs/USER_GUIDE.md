@@ -599,44 +599,44 @@ rooted* menu hierarchy with the menu bar always starting from the implicit
 There are 3 menu arrows at the top-left corner of the LCD screen. The
 `downarrow` indicates that additional menu rows are available:
 
-![Menu Arrows 1](images/rpn83p-menu-arrows-1.png)
+![Menu Arrows 1](images/menu-arrows-1.png)
 
 When the `DOWN` button is pressed, the menu changes to the next set of 5 menu
 items in the next menu row, and the menu arrows show both an `uparrow` and a
 `downarrow` to indicate that there are more menu items above and below the
 current menu bar:
 
-![Menu Arrows 2](images/rpn83p-menu-arrows-2.png)
+![Menu Arrows 2](images/menu-arrows-2.png)
 
 Pressing `DOWN` goes to the last set of 5 menu items, and the menu arrows show
 only the `uparrow` to indicate that this is the last of the series:
 
-![Menu Arrows 3](images/rpn83p-menu-arrows-3.png)
+![Menu Arrows 3](images/menu-arrows-3.png)
 
 You can press `UP` twice goes back to the first menu row, or you can press
 `DOWN` from the last menu row to wrap around to the beginning:
 
-![Menu Arrows 1](images/rpn83p-menu-arrows-1.png)
+![Menu Arrows 1](images/menu-arrows-1.png)
 
 Pressing the `F2/WINDOW` button from here invokes the `NUM` menu item. This menu
 item is actually a `MenuGroup`, so the menu system descends into this folder,
 and displays the 5 menu items in the first menu row:
 
-![Menu Arrows NUM 1](images/rpn83p-menu-arrows-num-1.png)
+![Menu Arrows NUM 1](images/menu-arrows-num-1.png)
 
 Pressing the `DOWN` arrow button shows the next menu row:
 
-![Menu Arrows NUM 2](images/rpn83p-menu-arrows-num-2.png)
+![Menu Arrows NUM 2](images/menu-arrows-num-2.png)
 
 Pressing the `DOWN` arrow button goes to the final menu row:
 
-![Menu Arrows NUM 3](images/rpn83p-menu-arrows-num-3.png)
+![Menu Arrows NUM 3](images/menu-arrows-num-3.png)
 
 Notice that inside the `NUM` menu group, the menu arrows show a `back` arrow.
 This means that the `ON` button (which implements the "BACK", "EXIT", or "ESC"
 functionality) can be used to go back to the parent menu group:
 
-![Menu Arrows 1](images/rpn83p-menu-arrows-1.png)
+![Menu Arrows 1](images/menu-arrows-1.png)
 
 #### Menu Shortcuts
 
