@@ -67,7 +67,7 @@ RPN calculator app for the TI-83 Plus and TI-84 Plus inspired by the HP-42S.
         - [Complex SHOW](#complex-show)
         - [Complex FIX, SCI, ENG](#complex-fix-sci-eng)
         - [Complex Functions](#complex-functions)
-        - [Complex Computation Modes](#complex-computation-modes)
+        - [Complex Result Modes](#complex-result-modes)
         - [Complex Numbers and Trigonometric
           Modes](#complex-numbers-and-trigonometric-modes)
         - [Complex Numbers in Storage
@@ -148,7 +148,7 @@ Summary of features:
 - complex numbers, inspired by HP-42S and HP-35s
     - stored in RPN stack registers (`X`, `Y`, `Z`, `T`, `LastX`) and storage
       registers `R00-R24`
-    - computation modes: `RRES` (real results), `CRES` (complex results)
+    - result modes: `RRES` (real results), `CRES` (complex results)
     - display modes: `RECT`, `PRAD` (polar radians), `PDEG` (polar degrees)
     - linking/unlinking: `2ND LINK` (convert 2 reals to 1 complex, same as
       `COMPLEX` on HP-42S)
@@ -163,8 +163,8 @@ Summary of features:
 - various modes (`MODE`)
     - floating display: `FIX`, `SCI`, `ENG`
     - trigonometric: `RAD`, `DEG`
-    - complex computation: `RRES`, `CRES`
-    - complex display: `RECT`, `PRAD`, `PDEG`
+    - complex result modes: `RRES`, `CRES`
+    - complex display modes: `RECT`, `PRAD`, `PDEG`
     - `SHOW` (`2ND ENTRY`): display all 14 internal digits
 
 Missing features (partial list):
@@ -2668,11 +2668,11 @@ If you want the angle value as shown on the screen, use the `2ND LINK` function
 to unlink the 2 components of the complex number. The value in the `X` register
 will be the angle value shown on the screen.
 
-#### Complex Computation Modes
+#### Complex Result Modes
 
-There are 2 computation mode settings under the `MODE` menu group which affect
-whether some functions return complex values or real values when the arguments
-to the functions are real:
+There are 2 result modes under the `MODE` menu group which affect whether some
+functions return complex values or real values when the arguments to the
+functions are real:
 
 - `RRES` (real results): return only real results for real arguments
 - `CRES` (complex results): allow complex results for real arguments
@@ -2706,7 +2706,7 @@ printed like this:
 
 ![RPN83P Complex SQRT RRES](images/complex-sqrt-rres.png)
 
-But if we change the computation mode to `CRES`, we get a complex result:
+But if we change the complex result mode to `CRES`, we get a complex result:
 
 ![RPN83P Complex SQRT CRES](images/complex-sqrt-cres.png)
 
