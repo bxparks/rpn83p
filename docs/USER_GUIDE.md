@@ -1176,14 +1176,14 @@ format of the `X` register in scientific notation. For example, `sqrt(2)` is
 normally displayed with 10 significant digits as `1.414213562`, but in Show mode
 it looks like this:
 
-![RPN83P SHOW Floating](images/rpn83p-show-mode-floating.png)
+![RPN83P SHOW Floating](images/show-mode-floating.png)
 
 If the `X` value is an exact integer internally, then the value is printed in
 integer form instead of scientific notation. For example `2^46` is an exact
 integer that will normally appear as `7.036874418E13`, but in Show mode looks
 like this:
 
-![RPN83P SHOW Integer](images/rpn83p-show-mode-integer.png)
+![RPN83P SHOW Integer](images/show-mode-integer.png)
 
 The Show mode has a slight variation in `BASE` mode. For `DEC`, `HEX`, and `OCT`
 modes, the `SHOW` function behaves as before, showing the internal floating
@@ -1195,7 +1195,7 @@ mode looks like `...011 1011 0111` because only 12 digits can be displayed on a
 single line. But in Show mode, all 32 digits (assuming `WSIZ` was 32) will be
 displayed like this:
 
-![RPN83P SHOW Binary 32](images/rpn83p-show-mode-bin32.png)
+![RPN83P SHOW Binary 32](images/show-mode-bin32.png)
 
 ### Trigonometric Modes
 
