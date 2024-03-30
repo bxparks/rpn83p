@@ -2050,7 +2050,7 @@ values by entering a value and pressing the appropriate menu button. A small dot
 will be appended to the menu name to indicate that the default value has been
 overridden:
 
-![TVM Solver Overridden](images/rpn83p-tvm-control-overridden.png)
+![TVM Solver Overridden](images/menu-root-tvm-solver.png)
 
 We might choose to override `IYR1` and `IYR2` when 2 solutions are known to
 exist, but the TVM Solver is unable to find either of them due to the default
