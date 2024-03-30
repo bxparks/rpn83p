@@ -2668,13 +2668,13 @@ and I hope that this is not too confusing.
 The trigonometric modes (`RAD`, `DEG`) affect the computation of trigonometric
 functions. They determine the unit of the angles consumed or returned by
 trigonometric functions. Complex functions (with the sole exception of `CANG`,
-see above) are not affected by the trigonometric modes: ![RPN83P MODE Menu
-1](images/rpn83p-mode-menu-1.png)
+see above) are not affected by the trigonometric modes: ![ROOT > MODE >
+TrigModes](images/menu-root-mode-trigmodes.png)
 
 The complex display modes (`RECT`, `PRAD`, `PDEG`) control how complex numbers
 are rendered on the screen. These modes do not affect the behavior of any
-complex functions (with the sole exception of `2ND LINK`, see above): ![RPN83P
-MODE Menu 2](images/rpn83p-mode-menu-2.png)
+complex functions (with the sole exception of `2ND LINK`, see above): ![ROOT >
+MODE > ComplexModes](images/menu-root-mode-complexmodes.png)
 
 #### Complex Numbers in Storage Registers
 
