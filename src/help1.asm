@@ -33,7 +33,7 @@ helpPageCount equ (helpPagesEnd-helpPages)/2
 
 msgHelpPage1:
     .db escapeLargeFont, "RPN83P", Lenter
-    .db escapeSmallFont, "v0.10.0-dev (2024", Shyphen, "03", Shyphen, "29)", Senter
+    .db escapeSmallFont, "v0.10.0-dev (2024", Shyphen, "03", Shyphen, "30)", Senter
     .db "(c) 2023", Shyphen, "2024 Brian T. Park", Senter
     .db Senter
     .db "An RPN calculator for the", Senter
@@ -208,7 +208,7 @@ msgHelpPage15:
     .db Senter
     .db Senter
     .db Senter
-    .db SlBrack, "15/18", SrBrack, " Any key to return.", Senter
+    .db SlBrack, "15/18", SrBrack, " Any key to continue...", Senter
     .db 0
 
 msgHelpPage16:
@@ -220,7 +220,7 @@ msgHelpPage16:
     .db "DZ{D,T,TZ}: ZonedDateTime", Senter
     .db "DW{dw}: DayOfWeek (Mon=1)", Senter
     .db "DR{d,h,m,s}: Duration", Senter
-    .db SlBrack, "16/18", SrBrack, " Any key to return.", Senter
+    .db SlBrack, "16/18", SrBrack, " Any key to continue...", Senter
     .db 0
 
 msgHelpPage17:
@@ -232,7 +232,7 @@ msgHelpPage17:
     .db "DEXD: Extend (X", Ssquare, ")", Senter
     .db "DCUT: Cut (X", Sinverse, ")", Senter
     .db "DLNK: Link (2ND LINK)", Senter
-    .db SlBrack, "17/18", SrBrack, " Any key to return.", Senter
+    .db SlBrack, "17/18", SrBrack, " Any key to continue...", Senter
     .db 0
 
 msgHelpPage18:
