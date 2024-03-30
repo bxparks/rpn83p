@@ -329,7 +329,7 @@ now contains an option to control the behavior of this button under the `MODE`
 menu:
 
 - ![ROOT > MODE](images/date/menu-root-mode.png)
-    - ![ROOT > MODE > CommaEE](images/date/menu-root-mode-comma-ee.png)
+    - ![ROOT > MODE > CommaEE](images/date/menu-root-mode-commaee.png)
 
 If the `,EE` option is selected (factory default), the button behaves as labeled
 on the keyboard: the `,` button invokes the comma function, and `2ND EE` invokes
