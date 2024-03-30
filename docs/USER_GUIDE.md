@@ -682,7 +682,7 @@ bar was, and unlikely to want to go back there using the `ON/EXIT/ESC` key.
 
 Pressing the `HELP` menu button at the root menu activates the Help pages:
 
-![ROOT MenuRow 1](images/menu-root-1.png)
+![ROOT > Row1](images/menu-root-1.png)
 
 The contents of these pages are updated frequently so the screenshots below may
 not be identical to the current version:
@@ -780,12 +780,12 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
 `MATH` (HOME) keys to navigate the menu hierarchy.
 
 - `ROOT` (implicit)
-    - ![ROOT MenuRow 1](images/menu-root-1.png)
-    - ![ROOT MenuRow 2](images/menu-root-2.png)
-    - ![ROOT MenuRow 3](images/menu-root-3.png)
-- ![ROOT > MATH](images/menu-root-math.png) (`ROOT` > `MATH`)
-    - ![MATH MenuRow 1](images/menu-root-math-1.png)
-    - ![MATH MenuRow 2](images/menu-root-math-2.png)
+    - ![ROOT > Row1](images/menu-root-1.png)
+    - ![ROOT > Row2](images/menu-root-2.png)
+    - ![ROOT > Row3](images/menu-root-3.png)
+- ![ROOT > MATH](images/menu-root-math.png) (`ROOT > MATH`)
+    - ![ROOT > MATH > Row1](images/menu-root-math-1.png)
+    - ![ROOT > MATH > Row2](images/menu-root-math-2.png)
     - `X^3`: cube of `X`
     - `3RootX`: cube root of `X`
     - `XRootY`: `X` root of `Y`
@@ -798,10 +798,10 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
     - `LOGB`: log base `X` of `Y`
     - `E^X-`: `e^x-1` accurate for small `x`
     - `LN1+`: `log(1+x)` accurate for small `x`
-- ![ROOT > NUM](images/menu-root-num.png) (`ROOT` > `NUM`)
-    - ![NUM MenuRow 1](images/menu-root-num-1.png)
-    - ![NUM MenuRow 2](images/menu-root-num-2.png)
-    - ![NUM MenuRow 3](images/menu-root-num-3.png)
+- ![ROOT > NUM](images/menu-root-num.png) (`ROOT > NUM`)
+    - ![ROOT > NUM > Row1](images/menu-root-num-1.png)
+    - ![ROOT > NUM > Row2](images/menu-root-num-2.png)
+    - ![ROOT > NUM > Row3](images/menu-root-num-3.png)
     - `%`: `X` percent of `Y`, leaving `Y` unchanged
     - `%CH`: percent change from `Y` to `X`, leaving `Y` unchanged
     - `GCD`: greatest common divisor of `X` and `Y`
@@ -821,32 +821,32 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
     - `MOD`: `Y` mod `X` (remainder of `Y` after dividing by `X`)
     - `MIN`: minimum of `X` and `Y`
     - `MAX`: maximum of `X` and `Y`
-- ![ROOT > PROB](images/menu-root-prob.png) (`ROOT` > `PROB`)
-    - ![PROB MenuRow 1](images/menu-root-prob-1.png)
+- ![ROOT > PROB](images/menu-root-prob.png) (`ROOT > PROB`)
+    - ![ROOT > PROB > Row1](images/menu-root-prob-1.png)
     - `COMB`: combination `C(n,r)` = `C(Y, X)`
     - `PERM`: permutation `P(n,r)` = `P(Y, X)`
     - `N!`: factorial of `X`
     - `RAND`: random number in the range `[0,1)`
     - `SEED`: set the random number generator seed to `X`
-- ![ROOT > CPLX](images/menu-root-cplx.png) (`ROOT` > `CPLX`)
-    - ![CPLX MenuRow 1](images/menu-root-cplx-1.png)
+- ![ROOT > CPLX](images/menu-root-cplx.png) (`ROOT > CPLX`)
+    - ![ROOT > CPLX > Row1](images/menu-root-cplx-1.png)
     - `REAL`: extract the real component of the complex number
     - `IMAG`: extract the imaginary component of the complex number
     - `CONJ`: calculate the complex conjugate
     - `CABS`: calculate the magnitude of the complex number
     - `CANG`: calculate the angle (i.e. argument) of the complex number
-- ![ROOT > HELP](images/menu-root-help.png) (`ROOT` > `HELP`)
+- ![ROOT > HELP](images/menu-root-help.png) (`ROOT > HELP`)
     - display the Help pages
     - use arrow keys to view each Help page
-- ![ROOT > BASE](images/menu-root-base.png) (`ROOT` > `BASE`)
-    - ![BASE MenuRow 1](images/menu-root-base-1.png)
-    - ![BASE MenuRow 2](images/menu-root-base-2.png)
-    - ![BASE MenuRow 3](images/menu-root-base-3.png)
-    - ![BASE MenuRow 4](images/menu-root-base-4.png)
-    - ![BASE MenuRow 5](images/menu-root-base-5.png)
-    - ![BASE MenuRow 6](images/menu-root-base-6.png)
-    - ![BASE MenuRow 7](images/menu-root-base-7.png)
-    - ![BASE MenuRow 8](images/menu-root-base-8.png)
+- ![ROOT > BASE](images/menu-root-base.png) (`ROOT > BASE`)
+    - ![ROOT > BASE > Row1](images/menu-root-base-1.png)
+    - ![ROOT > BASE > Row2](images/menu-root-base-2.png)
+    - ![ROOT > BASE > Row3](images/menu-root-base-3.png)
+    - ![ROOT > BASE > Row4](images/menu-root-base-4.png)
+    - ![ROOT > BASE > Row5](images/menu-root-base-5.png)
+    - ![ROOT > BASE > Row6](images/menu-root-base-6.png)
+    - ![ROOT > BASE > Row7](images/menu-root-base-7.png)
+    - ![ROOT > BASE > Row8](images/menu-root-base-8.png)
     - `DEC`: use decimal base 10
     - `HEX`: use hexadecimal base 16
         - display register values as 32-bit unsigned integer
@@ -888,20 +888,20 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
     - `CF?`: return carry flag state as 0 or 1
     - `WSIZ`: set integer word size (supported values: 8, 16, 24, 32)
     - `WSZ?`: return current integer word size (default: 32)
-- ![ROOT > HYP](images/menu-root-hyp.png) (`ROOT` > `HYP`)
-    - ![HYP MenuRow 1](images/menu-root-hyp-1.png)
-    - ![HYP MenuRow 2](images/menu-root-hyp-2.png)
+- ![ROOT > HYP](images/menu-root-hyp.png) (`ROOT > HYP`)
+    - ![ROOT > HYP > Row1](images/menu-root-hyp-1.png)
+    - ![ROOT > HYP > Row2](images/menu-root-hyp-2.png)
     - `SINH`: hyperbolic `sin()`
     - `COSH`: hyperbolic `cos()`
     - `TANH`: hyperbolic `tan()`
     - `ASNH`: hyperbolic `asin()`
     - `ACSH`: hyperbolic `acos()`
     - `ATNH`: hyperbolic `atan()`
-- ![ROOT > STAT](images/menu-root-stat.png) (`ROOT` > `STAT`)
+- ![ROOT > STAT](images/menu-root-stat.png) (`ROOT > STAT`)
     - See Chapter 15 of the _HP-42S User's Manual_
-    - ![STAT MenuRow 1](images/menu-root-stat-1.png)
-    - ![STAT MenuRow 2](images/menu-root-stat-2.png)
-    - ![STAT MenuRow 3](images/menu-root-stat-3.png)
+    - ![ROOT > STAT > Row1](images/menu-root-stat-1.png)
+    - ![ROOT > STAT > Row2](images/menu-root-stat-2.png)
+    - ![ROOT > STAT > Row3](images/menu-root-stat-3.png)
     - `Sigma+`: add `Y` and `X` data point to STAT registers
     - `Sigma-`: remove `Y` and `X` data point from STAT registers
     - `ALLSigma`: collect statistical sums for all curve fit models
@@ -925,11 +925,11 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
         - `pdev(Y) = <Y^2> - <Y>^2`
     - `PCOV`: population covariance
         - `pcov(X,Y) = <XY> - <X><Y>`
-    - ![ROOT > STAT > CFIT](images/menu-root-stat-cfit.png) (`ROOT` > `STAT` >
+    - ![ROOT > STAT > CFIT](images/menu-root-stat-cfit.png) (`ROOT > STAT` >
       `CFIT`)
         - See Chapter 15 of the _HP-42S User's Manual_
-        - ![CFIT MenuRow 1](images/menu-root-stat-cfit-1.png)
-        - ![CFIT MenuRow 2](images/menu-root-stat-cfit-2.png)
+        - ![CFIT > Row1](images/menu-root-stat-cfit-1.png)
+        - ![CFIT > Row2](images/menu-root-stat-cfit-2.png)
         - `Y>X`: forecast X from Y
         - `X>Y`: forecast Y from X
         - `SLOP`: slope of curve fit model, i.e. `m` parameter
@@ -942,9 +942,9 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
         - `BEST`: automatically select the best model, i.e. the one with the
           largest absolute value of the correlation coefficient. The `CORR`
           value is returned in the `X` register for reference.
-- ![ROOT > CONV](images/menu-root-conv.png) (`ROOT` > `CONV`)
-    - ![CONV MenuRow 1](images/menu-root-conv-1.png)
-    - ![CONV MenuRow 2](images/menu-root-conv-2.png)
+- ![ROOT > CONV](images/menu-root-conv.png) (`ROOT > CONV`)
+    - ![ROOT > CONV > Row1](images/menu-root-conv-1.png)
+    - ![ROOT > CONV > Row2](images/menu-root-conv-2.png)
     - `>DEG`: convert radians to degrees
     - `>RAD`: convert degrees to radians
     - `>REC`: polar to rectangular
@@ -957,10 +957,10 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
         - (consistent with HP-42S)
     - `>HR`: convert `HH.MMSSssss` to `HH.hhhh`
     - `>HMS`: convert `HH.hhhh` to `HH.MMSSssss`
-- ![ROOT > TVM](images/menu-root-tvm.png) (`ROOT` > `TVM`)
-    - ![TVM MenuRow 1](images/menu-root-tvm-1.png)
-    - ![TVM MenuRow 2](images/menu-root-tvm-2.png)
-    - ![TVM MenuRow 3](images/menu-root-tvm-3.png)
+- ![ROOT > TVM](images/menu-root-tvm.png) (`ROOT > TVM`)
+    - ![ROOT > TVM > Row1](images/menu-root-tvm-1.png)
+    - ![ROOT > TVM > Row2](images/menu-root-tvm-2.png)
+    - ![ROOT > TVM > Row3](images/menu-root-tvm-3.png)
     - `N`: set or calculate Number of payment periods
     - `I%YR`: set or calculate Interest Percent per Year
     - `PV`: set or calculate Present Value
@@ -974,16 +974,16 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
     - `IYR2`: set `I%YR` guess 2 for TVM Solver
     - `TMAX`: set iteration max for TVM Solver
     - `RSTV`: reset TVM Solver parameters to factory defaults
-- ![ROOT > CLR](images/menu-root-clr.png) (`ROOT` > `CLR`)
-    - ![CLR MenuRow 1](images/menu-root-clr-1.png)
+- ![ROOT > CLR](images/menu-root-clr.png) (`ROOT > CLR`)
+    - ![ROOT > CLR > Row1](images/menu-root-clr-1.png)
     - `CLX`: clear `X` stack register (stack lift disabled)
     - `CLST`: clear all RPN stack registers
     - `CLRG`: clear all storage registers `R00` to `R24`
     - `CLSigma`: clear STAT storage registers [`R11`, `R16`] or [`R11`, `R23`]
     - `CLTV`: clear TVM variables and parameters
-- ![ROOT > MODE](images/menu-root-mode.png) (`ROOT` > `MODE`)
-    - ![MODE MenuRow 1](images/menu-root-mode-1.png)
-    - ![MODE MenuRow 2](images/menu-root-mode-2.png)
+- ![ROOT > MODE](images/menu-root-mode.png) (`ROOT > MODE`)
+    - ![ROOT > MODE > Row1](images/menu-root-mode-1.png)
+    - ![ROOT > MODE > Row2](images/menu-root-mode-2.png)
     - `FIX`: fixed mode with `N` digits after the decimal point
         - set `N` to `99` for floating number of digits
         - status line indicator is `FIX(N)`
@@ -1000,18 +1000,18 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
     - `RECT`: display complex number in rectangular form
     - `PRAD`: display complex number in polar radian form
     - `PDEG`: display complex number in polar degree form
-- ![ROOT > STK](images/menu-root-stk.png) (`ROOT` > `STK`)
-    - ![STK MenuRow 1](images/menu-root-stk-1.png)
+- ![ROOT > STK](images/menu-root-stk.png) (`ROOT > STK`)
+    - ![ROOT > STK > Row1](images/menu-root-stk-1.png)
     - `R(up)`: roll stack up
     - `R(down)`: roll stack down, also bound to `(` button
     - `X<>Y`: exchange `X` and `Y`, also bound to `)` button
-- ![ROOT > UNIT](images/menu-root-unit.png) (`ROOT` > `UNIT`)
-    - ![UNIT MenuRow 1](images/menu-root-unit-1.png)
-    - ![UNIT MenuRow 2](images/menu-root-unit-2.png)
-    - ![UNIT MenuRow 3](images/menu-root-unit-3.png)
-    - ![UNIT MenuRow 4](images/menu-root-unit-4.png)
-    - ![UNIT MenuRow 5](images/menu-root-unit-5.png)
-    - ![UNIT MenuRow 6](images/menu-root-unit-6.png)
+- ![ROOT > UNIT](images/menu-root-unit.png) (`ROOT > UNIT`)
+    - ![ROOT > UNIT > Row1](images/menu-root-unit-1.png)
+    - ![ROOT > UNIT > Row2](images/menu-root-unit-2.png)
+    - ![ROOT > UNIT > Row3](images/menu-root-unit-3.png)
+    - ![ROOT > UNIT > Row4](images/menu-root-unit-4.png)
+    - ![ROOT > UNIT > Row5](images/menu-root-unit-5.png)
+    - ![ROOT > UNIT > Row6](images/menu-root-unit-6.png)
     - `>C`: Fahrenheit to Celsius
     - `>F`: Celsius to Fahrenheit
     - `>hPa`: hectopascals (i.e. millibars) to inches of mercury (Hg)
@@ -1036,15 +1036,15 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
     - `>cal`: kilo Joules to kilo calories
     - `>kW`: horsepowers (mechanical) to kilo Watts
     - `>hp`: kilo Watts to horsepowers (mechanical)
-- ![ROOT > DATE](images/menu-root-date.png) (`ROOT` > `DATE`)
-    - ![DATE MenuRow 1](images/date/menu-root-date-1.png)
-    - ![DATE MenuRow 2](images/date/menu-root-date-2.png)
-    - ![DATE MenuRow 3](images/date/menu-root-date-3.png)
-        - ![EPCH MenuRow 1](images/date/menu-root-date-epch-1.png)
-        - ![EPCH MenuRow 2](images/date/menu-root-date-epch-2.png)
-    - ![DATE MenuRow 4](images/date/menu-root-date-4.png)
-    - ![DATE MenuRow 5](images/date/menu-root-date-5.png)
-    - ![DATE MenuRow 6](images/date/menu-root-date-6.png)
+- ![ROOT > DATE](images/menu-root-date.png) (`ROOT > DATE`)
+    - ![ROOT > DATE > Row1](images/date/menu-root-date-1.png)
+    - ![ROOT > DATE > Row2](images/date/menu-root-date-2.png)
+    - ![ROOT > DATE > Row3](images/date/menu-root-date-3.png)
+        - ![ROOT > DATE > EPCH > Row1](images/date/menu-root-date-epch-1.png)
+        - ![ROOT > DATE > EPCH > Row2](images/date/menu-root-date-epch-2.png)
+    - ![ROOT > DATE > Row4](images/date/menu-root-date-4.png)
+    - ![ROOT > DATE > Row5](images/date/menu-root-date-5.png)
+    - ![ROOT > DATE > Row6](images/date/menu-root-date-6.png)
     - `LEAP`: determine if given year is a leap year
     - `DOW`: calculate the DayOfWeek of given Date, DateTime, ZonedDateTime
     - `D>DY`: convert Date to Epoch days
@@ -1058,7 +1058,7 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
     - `TZ>H`: convert TimeZone to floating point hours
     - `H>TZ`: convert hours to TimeZone
     - ![ROOT > DATE > EPCH](images/menu-root-date-epch.png)
-      (`ROOT` > `DATE` > `EPCH`)
+      (`ROOT > DATE > EPCH`)
         - `UNIX`: select Unix Epoch date of 1970-01-01
         - `NTP`: select NTP Epoch date of 1900-01-01
         - `GPS`: select GPS Epoch date of 1980-01-06
@@ -1292,9 +1292,9 @@ To recall register `R00`, press:
 To clear the all storage registers, use the arrow keys for the menu system to
 get to:
 
-- ![ROOT MenuRow 3](images/menu-root-3.png)
+- ![ROOT > Row3](images/menu-root-3.png)
 - Press `CLR` to get
-  ![CLR MenuRow 1](images/menu-root-clr-1.png)
+  ![CLR > Row1](images/menu-root-clr-1.png)
 - Press `CLRG`
 
 The message `REGS cleared` will be displayed on the screen.
@@ -1363,17 +1363,17 @@ will be active. You can press `ON` key to break from the `PRIM` loop with an
 
 ### BASE Functions
 
-The `BASE` functions are available through the `ROOT` > `BASE` hierarchy:
+The `BASE` functions are available through the `ROOT > BASE` hierarchy:
 
 - ![ROOT > BASE](images/menu-root-base.png)
-    - ![BASE MenuRow 1](images/menu-root-base-1.png)
-    - ![BASE MenuRow 2](images/menu-root-base-2.png)
-    - ![BASE MenuRow 3](images/menu-root-base-3.png)
-    - ![BASE MenuRow 4](images/menu-root-base-4.png)
-    - ![BASE MenuRow 5](images/menu-root-base-5.png)
-    - ![BASE MenuRow 6](images/menu-root-base-6.png)
-    - ![BASE MenuRow 7](images/menu-root-base-7.png)
-    - ![BASE MenuRow 8](images/menu-root-base-8.png)
+    - ![BASE > Row1](images/menu-root-base-1.png)
+    - ![BASE > Row2](images/menu-root-base-2.png)
+    - ![BASE > Row3](images/menu-root-base-3.png)
+    - ![BASE > Row4](images/menu-root-base-4.png)
+    - ![BASE > Row5](images/menu-root-base-5.png)
+    - ![BASE > Row6](images/menu-root-base-6.png)
+    - ![BASE > Row7](images/menu-root-base-7.png)
+    - ![BASE > Row8](images/menu-root-base-8.png)
 
 These functions allow conversion of integers into different bases (10, 16, 8,
 2), as well as performing bitwise functions on those integers (bit-and, bit-or,
@@ -1884,8 +1884,7 @@ Mar     11.70   0.43
 
 We would enter these data points like this:
 
-- Press `STAT` to see
-  ![STAT MenuRow 1](images/menu-root-stat-1.png)
+- Press `STAT` to see ![STAT > Row1](images/menu-root-stat-1.png)
 - Press `ALLSigma` (select all curve fit models)
 - Press `CLSigma` to clear the summation registers. You should see a status
   message `STAT cleared`.
@@ -1904,13 +1903,13 @@ similar to the `ENTER` key. So the `N` values will be replaced by the next
 Let's calculate the basic statistics measures:
 
 - Press `DOWN` arrow key to see
-  ![STAT MenuRow 2](images/menu-root-stat-2.png)
+  ![STAT > Row2](images/menu-root-stat-2.png)
 - Press `SUM` to get `Y:84.89` and `X:5.19`
 - Press `MEAN` to get `Y:14.14833333` and `X:.865`
 - Press `WMN` to get `Y:14.72643545` and `X:.9003439746`
 - Press `N` to get `X:6`
 - Press `DOWN` arrow key to see
-  ![STAT MenuRow 3](images/menu-root-stat-3.png)
+  ![STAT > Row3](images/menu-root-stat-3.png)
 - Press `SDEV` to get `Y:3.032500069` and `X:1.015613115`
 - Press `SCOV` to get `X:.60007`
 - Press `PDEV` to get `Y:2.768281155` and `X:.9271236883`
@@ -1921,9 +1920,9 @@ for a given month is correlated with the minimum rainfall for the same month. We
 can use the CFIT routines to figure this out:
 
 - Press `CFIT` to see
-  ![CFIT MenuRow 1](images/menu-root-stat-cfit-1.png)
+  ![CFIT > Row1](images/menu-root-stat-cfit-1.png)
 - Press the `DOWN` arrow to see
-  ![CFIT MenuRow 2](images/menu-root-stat-cfit-2.png)
+  ![CFIT > Row2](images/menu-root-stat-cfit-2.png)
 - Verify that the `LINF` (linear fit) is selected
 - Press the `UP` arrow to get back to the main `CFIT` row.
 - Press `SLOP` to get `X:.5817619514`. This is the slope variable `m`.
@@ -1935,7 +1934,7 @@ can use the CFIT routines to figure this out:
 Let's see if a different curve fit model does better.
 
 - Press `DOWN` arrow to get to
-  ![CFIT MenuRow 2](images/menu-root-stat-cfit-2.png)
+  ![CFIT > Row2](images/menu-root-stat-cfit-2.png)
 - Press `BEST` button to request the app to automatically determine the
   best curve model. You should see `X:.2963586116` and the menu should have
   changed to select `PWRF`, like this:
@@ -1967,7 +1966,7 @@ an `X=752.098` (a minimum rainfall of 752) which is not reasonable.
 
 The Time Value of Money (TVM) functionality is inspired by RPN financial
 calculators such as the HP-12C, HP-17B, and the HP-30b. They are available
-through the `ROOT` > `TVM` menu:
+through the `ROOT > TVM` menu:
 
 - ![ROOT > TVM](images/menu-root-tvm.png)
     - ![ROOT > TVM > Row1](images/menu-root-tvm-1.png)
