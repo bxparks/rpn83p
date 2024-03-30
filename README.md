@@ -221,33 +221,33 @@ view the final result as a decimal number:
 
 - Press `MATH` to reset the menu to the home row.
 - Navigate the menu with the DOWN arrow to get to
-  ![ROOT MenuRow 2](docs/images/rpn83p-menu-root-2.png)
+  ![ROOT MenuRow 2](docs/images/menu-root-2.png)
 - Press `BASE` menu to get to
-  ![BASE Menu DEC](docs/images/rpn83p-menu-base-dec.png)
+  ![BASE Menu DEC](docs/images/menu-root-base-dec.png)
 - Press `HEX` menu to get to
-  ![BASE Menu HEX](docs/images/rpn83p-menu-base-hex.png)
+  ![BASE Menu HEX](docs/images/menu-root-base-hex.png)
 - Press `ALPHA` `B` buttons
 - Press `6` button
 - Press `ENTER` button
 - Press `6` button
 - Press `5` button
 - Press DOWN arrow to get to the menu row with the `AND` menu item
-  ![BASE MenuRow AND](docs/images/rpn83p-menu-root-base-2.png)
+  ![BASE MenuRow AND](docs/images/menu-root-base-2.png)
 - Press `AND` menu, the `X` register should show `00000024`
 - Press UP arrow to go back to
-  ![BASE Menu HEX](docs/images/rpn83p-menu-base-hex.png)
+  ![BASE Menu HEX](docs/images/menu-root-base-hex.png)
 - Press `OCT` menu, the `X` register should show `00000000044` with the menu
-  showing ![BASE Menu OCT](docs/images/rpn83p-menu-base-oct.png)
+  showing ![BASE Menu OCT](docs/images/menu-root-base-oct.png)
 - Press `BIN` menu, the `X` register should show `00000000100100` with the menu
-  showing ![BASE Menu BIN](docs/images/rpn83p-menu-base-bin.png)
+  showing ![BASE Menu BIN](docs/images/menu-root-base-bin.png)
 - Press DOWN DOWN (twice) to the menu row with the shift right `SR` item
-  ![BASE MenuRow SR](docs/images/rpn83p-menu-root-base-3.png)
+  ![BASE MenuRow SR](docs/images/menu-root-base-3.png)
 - Press `SR` `SR` `SR` (three times) to show `00000000000100` and the Carry Flag
   `C` set
 - Press UP UP (twice) to reach the base conversion menu row
-  ![BASE Menu BIN](docs/images/rpn83p-menu-base-bin.png)
+  ![BASE Menu BIN](docs/images/menu-root-base-bin.png)
 - Press `DEC` menu, the `X` register should show `4` with the menu showing
-  ![BASE Menu DEC](docs/images/rpn83p-menu-base-dec.png)
+  ![BASE Menu DEC](docs/images/menu-root-base-dec.png)
 
 Here is the animated GIF that shows this calculation:
 
@@ -269,14 +269,14 @@ Here are the steps:
 
 - Press `MATH` to reset the menu to the home row.
 - Navigate the menu with the DOWN arrow to get to
-  ![ROOT MenuRow 2](docs/images/rpn83p-menu-root-2.png)
+  ![ROOT MenuRow 2](docs/images/menu-root-2.png)
 - Press the `TVM` menu to get to
-  ![TVM MenuRow 1](docs/images/rpn83p-menu-root-tvm-1.png)
+  ![TVM MenuRow 1](docs/images/menu-root-tvm-1.png)
 - Press the DOWN arrow to get to
-  ![TVM MenuRow 2](docs/images/rpn83p-menu-root-tvm-2.png)
+  ![TVM MenuRow 2](docs/images/menu-root-tvm-2.png)
 - Press the `CLTV` button to clear the TVM variables.
 - Press the UP arrow to get back to
-  ![TVM MenuRow 1](docs/images/rpn83p-menu-root-tvm-1.png)
+  ![TVM MenuRow 1](docs/images/menu-root-tvm-1.png)
 - Press `360` `N` (30 years * 12 months = 360 payments)
 - Press `8` `I%YR` (interest percent per year)
 - Press `500000` `PV` (present value)
@@ -310,7 +310,7 @@ The keystrokes are:
 
 - (optional) Press `CLEAR CLEAR CLEAR` to clear the RPN stack.
 - Press `MODE` `downarrow` `RECT`:
-  ![MODE MenuRow 2](docs/images/rpn83p-menu-root-mode-2.png)
+  ![MODE MenuRow 2](docs/images/menu-root-mode-2.png)
 - Press `100` `ENTER`
 - Press `2` `PI` `*` `60` `*` `1 EE 5` `(-)` `*` `1/X` `(-)` (-265.26)
 - Press `2ND LINK` (100-265.26i)
@@ -321,7 +321,7 @@ The keystrokes are:
 - Press `PRAD` (174.30 e^(i 0.07)
 - Press `PDEG` (174.30 e^(i 4.04deg))
 - Press `MATH` `CPLX`:
-  ![CPLX MenuRow 1](docs/images/rpn83p-menu-root-cplx-1.png)
+  ![CPLX MenuRow 1](docs/images/menu-root-cplx-1.png)
 - Press `CABS` (174.30)
 
 ![RPN83P Example 4 GIF](docs/images/rpn83p-example4.gif)
@@ -333,7 +333,7 @@ Press:
 - `ON` button (`ESC/EXIT`) multiple times to back to the home menu, or
 - `MATH` button (`HOME`) to go back directly.
 
-![ROOT MenuRow 1](docs/images/rpn83p-menu-root-1.png)
+![ROOT MenuRow 1](docs/images/menu-root-1.png)
 
 ## Documentation
 
