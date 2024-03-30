@@ -987,6 +987,7 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
 - ![ROOT > MODE](images/menu-root-mode.png) (`ROOT > MODE`)
     - ![ROOT > MODE > Row1](images/menu-root-mode-1.png)
     - ![ROOT > MODE > Row2](images/menu-root-mode-2.png)
+    - ![ROOT > MODE > Row3](images/menu-root-mode-3.png)
     - `FIX`: fixed mode with `N` digits after the decimal point
         - set `N` to `99` for floating number of digits
         - status line indicator is `FIX(N)`
@@ -1003,6 +1004,12 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
     - `RECT`: display complex number in rectangular form
     - `PRAD`: display complex number in polar radian form
     - `PDEG`: display complex number in polar degree form
+    - `,EE`: set Comma-EE button to normal mode
+    - `EE,`: set Comma-EE button to inverted mode
+    - `{..}`: display record objects in raw format
+      (see [USER_GUIDE_DATE.md](USER_GUIDE_DATE.md))
+    - `".."`: display record objects in string format
+      (see [USER_GUIDE_DATE.md](USER_GUIDE_DATE.md))
 - ![ROOT > STK](images/menu-root-stk.png) (`ROOT > STK`)
     - ![ROOT > STK > Row1](images/menu-root-stk-1.png)
     - `R(up)`: roll stack up
@@ -2454,7 +2461,6 @@ that complex numbers can be displayed. The complex display modes are: `RECT`,
 button shortcut on keyboard:
 
 - ![ROOT > MODE](images/menu-root-mode.png)
-    - ![ROOT > MODE > Row1](images/menu-root-mode-1.png)
     - ![ROOT > MODE > ComplexDisplayModes](images/menu-root-mode-complexdisplaymodes.png)
 
 Pressing the `RECT`, `PRAD`, and `PDEG` menu buttons will change the display
@@ -2684,7 +2690,6 @@ These are available on row 2 of the `MODE` menu group, under `ROOT > MODE`, but
 the fastest way to reach this menu row is to use the `MODE` button shortcut:
 
 - ![ROOT > MODE](images/menu-root-mode.png)
-    - ![ROOT > MODE > Row1](images/menu-root-mode-1.png)
     - ![ROOT > MODE > ComplexResultModes](images/menu-root-mode-complexresultmodes.png)
 
 Note that these settings do not affect how functions evaluate *complex*
