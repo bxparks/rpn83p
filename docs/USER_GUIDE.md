@@ -1557,8 +1557,8 @@ The Carry Flag is supported by the HP-16C but not by the HP-42S. When the flag
 is off, a dash `-` is shown (left). When the Carry Flag is set, a small `C`
 letter appears (right):
 
-![Carry Flag Off](images/rpn83p-carry-flag-off.png)
-![Carry Flag On](images/rpn83p-carry-flag-on.png)
+![Carry Flag Off](images/carry-flag-off.png)
+![Carry Flag On](images/carry-flag-on.png)
 
 The Carry Flag can be explicitly cleared, set, and retrieved using the following
 menu items:
