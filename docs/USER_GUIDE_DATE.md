@@ -36,7 +36,7 @@ machines:
 - Python [datetime](https://docs.python.org/3/library/datetime.html) library
 - Go lang [time](https://pkg.go.dev/time) package
 
-**Version**: 0.10.0 (2024-03-27)
+**Version**: 0.10.0-dev (2024-03-30)
 
 **Project Home**: https://github.com/bxparks/rpn83p
 

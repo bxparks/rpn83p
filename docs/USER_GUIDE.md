@@ -2,7 +2,7 @@
 
 RPN calculator app for the TI-83 Plus and TI-84 Plus inspired by the HP-42S.
 
-**Version**: 0.9.0 (2024-01-06)
+**Version**: 0.10.0-dev (2024-03-30)
 
 **Project Home**: https://github.com/bxparks/rpn83p
 
@@ -72,6 +72,7 @@ RPN calculator app for the TI-83 Plus and TI-84 Plus inspired by the HP-42S.
           Modes](#complex-numbers-and-trigonometric-modes)
         - [Complex Numbers in Storage
           Registers](#complex-numbers-in-storage-registers)
+    - [DATE Functions](#date-functions)
 - [TI-OS Interaction](#ti-os-interaction)
 - [Future Enhancements](#future-enhancements)
 
@@ -2696,6 +2697,18 @@ Answer: 3 i 5
 ```
 
 ![RPN83P Complex Storage Registers](images/complex-storage-registers.png)
+
+## DATE Functions
+
+The functions under the `DATE` menu allow arithmetic and conversion operations
+on various objects (Date, Time, DateTime, TimeZone, ZonedDateTime, DayOfWeek,
+Duration) that represent the Gregorian Calendar dates and UTC times. Timezones
+are implemented as fixed offsets from UTC, and datetimes can be converted into
+different timezones easily. In addition, the DATE functions can access the
+hardware real-time clock (RTC) incorporated into some calculators (TI-84+,
+TI-84+SE, TI-Nspire).
+
+See [USER_GUIDE_DATE.md](USER_GUIDE_DATE.md) for more details.
 
 ## TI-OS Interaction
 
