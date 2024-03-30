@@ -733,13 +733,13 @@ a few of them as described below:
 These are shown in the Error Code line on the screen. For example, if we try to
 divide `1 / 0`, a division by 0 error is shown:
 
-![Err: Division By 0](images/rpn83p-errorcode-division-by-0.png)
+![Err: Division By 0](images/errorcode-division-by-0.png)
 
 If a TI-OS function returns an internal error code outside of the ones
 documented in the SDK, RPN83P will print an error message in the form of `Err:
 UNKNOWN (##)` like this:
 
-![Err: UNKNOWN](images/rpn83p-errorcode-unknown.png)
+![Err: UNKNOWN](images/errorcode-unknown.png)
 
 The number in parenthesis is the internal numerical value of the error code. If
 the error is reproducible, please file a [bug
