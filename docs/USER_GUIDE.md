@@ -1365,7 +1365,7 @@ will be active. You can press `ON` key to break from the `PRIM` loop with an
 
 The `BASE` functions are available through the `ROOT` > `BASE` hierarchy:
 
-- ![ROOT MenuRow 2](images/menu-root-2.png)
+- ![ROOT > BASE](images/menu-root-base.png)
     - ![BASE MenuRow 1](images/menu-root-base-1.png)
     - ![BASE MenuRow 2](images/menu-root-base-2.png)
     - ![BASE MenuRow 3](images/menu-root-base-3.png)
@@ -1969,10 +1969,10 @@ The Time Value of Money (TVM) functionality is inspired by RPN financial
 calculators such as the HP-12C, HP-17B, and the HP-30b. They are available
 through the `ROOT` > `TVM` menu:
 
-- ![ROOT MenuRow 2](images/menu-root-2.png)
-    - ![TVM MenuRow 1](images/menu-root-tvm-1.png)
-    - ![TVM MenuRow 2](images/menu-root-tvm-2.png)
-    - ![TVM MenuRow 3](images/menu-root-tvm-3.png)
+- ![ROOT > TVM](images/menu-root-tvm.png)
+    - ![ROOT > TVM > Row1](images/menu-root-tvm-1.png)
+    - ![ROOT > TVM > Row2](images/menu-root-tvm-2.png)
+    - ![ROOT > TVM > Row3](images/menu-root-tvm-3.png)
 
 This User Guide assumes that you are already know the theory of the Time Value
 of Money, and that you are familiar with TVM functions of RPN financial
