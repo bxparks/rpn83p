@@ -1034,6 +1034,52 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
     - `>cal`: kilo Joules to kilo calories
     - `>kW`: horsepowers (mechanical) to kilo Watts
     - `>hp`: kilo Watts to horsepowers (mechanical)
+- `ROOT` > `DATE`
+    - ![DATE MenuRow 1](images/date/menu-root-date-1.png)
+    - ![DATE MenuRow 2](images/date/menu-root-date-2.png)
+    - ![DATE MenuRow 3](images/date/menu-root-date-3.png)
+    - ![DATE MenuRow 4](images/date/menu-root-date-4.png)
+        - ![EPCH MenuRow 1](images/date/menu-root-date-epch-1.png)
+        - ![EPCH MenuRow 1](images/date/menu-root-date-epch-2.png)
+    - ![DATE MenuRow 5](images/date/menu-root-date-5.png)
+    - ![DATE MenuRow 6](images/date/menu-root-date-6.png)
+    - `LEAP`: determine if given year is a leap year
+    - `DOW`: calculate the DayOfWeek of given Date, DateTime, ZonedDateTime
+    - `D>DY`: convert Date to Epoch days
+    - `DY>D`: convert Epoch days to Date
+    - `D*>S`: convert Date-related object to seconds
+    - `S>DR`: convert seconds to Duration
+    - `S>T`: convert seconds to Time
+    - `S>DZ`: convert Epoch seconds to ZonedDateTime using the Application
+      timezone
+    - `S>UT`: convert Epoch seconds to ZonedDateTime using UTC timezone
+    - `TZ>H`: convert TimeZone to floating point hours
+    - `H>TZ`: convert hours to TimeZone
+    - `ROOT` > `DATE` > `EPCH`
+        - `UNIX`: select Unix Epoch date of 1970-01-01
+        - `NTP`: select NTP Epoch date of 1900-01-01
+        - `GPS`: select GPS Epoch date of 1980-01-06
+        - `TIOS`: select TI-OS Epoch date of 1997-01-01
+        - `Y2K`: select Epoch date of 2000-01-01
+        - `CEPC`: select custom Epoch date
+        - `EPC`: set custom Epoch date
+        - `EPC?`: get current custom Epoch date
+    - `DSHK`: shrink a ZonedDateTime or DateTime by truncating
+    - `DEXD`: extend Date or DateTime into DateTime or ZonedDateTime
+    - `DCUT`: cut (split) a ZonedDateTime or DateTime into smaller objects
+    - `DLNK`: link (merge) smaller objects into DateTime or ZonedDateTime
+    - `NOW`: get the current hardware clock as Epoch seconds
+    - `NOWD`: get the current hardware clock as a Date
+    - `NOWT`: get the current hardware clock as a Time
+    - `NWDZ`: get the current hardware clock as a ZonedDateTime using the
+      Application timezone
+    - `NWUT`: get the current hardware clock as a ZonedDateTime using UTC
+      timezone
+    - `TZ`: set the Application timezone
+    - `TZ?`: get the current Application timezone
+    - `CTZ`: set the hardware clock timezone
+    - `CTZ?`: get the hardware clock timezone
+    - `SETC`: set the datetime of the hardware clock
 
 ## Advanced Usage
 

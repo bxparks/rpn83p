@@ -256,15 +256,15 @@ supported in the `DATE` functions of RPN83P:
 
 The following menus items are located under the `DATE` menu:
 
-- ![](images/date/menu-root-date.png)
-    - ![](images/date/menu-root-date-1.png)
-    - ![](images/date/menu-root-date-2.png)
-    - ![](images/date/menu-root-date-3.png)
-        - ![](images/date/menu-root-date-epch-1.png)
-        - ![](images/date/menu-root-date-epch-2.png)
-    - ![](images/date/menu-root-date-4.png)
-    - ![](images/date/menu-root-date-5.png)
-    - ![](images/date/menu-root-date-6.png)
+- ![ROOT MenuRow 3](images/date/menu-root-date.png)
+    - ![DATE MenuRow 1](images/date/menu-root-date-1.png)
+    - ![DATE MenuRow 2](images/date/menu-root-date-2.png)
+    - ![DATE MenuRow 3](images/date/menu-root-date-3.png)
+        - ![EPCH MenuRow 1](images/date/menu-root-date-epch-1.png)
+        - ![EPCH MenuRow 1](images/date/menu-root-date-epch-2.png)
+    - ![DATE MenuRow 4](images/date/menu-root-date-4.png)
+    - ![DATE MenuRow 5](images/date/menu-root-date-5.png)
+    - ![DATE MenuRow 6](images/date/menu-root-date-6.png)
 
 ## DATE Buttons
 
