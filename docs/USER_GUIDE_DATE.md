@@ -10,22 +10,25 @@ row:
 
 Here is a quick summary of the features:
 
+- support 7 new objects types (Date, Time, DateTime, TimeZone, ZonedDateTime,
+  DayOfWeek, Duration)
 - determine if a given year is a leap year
-- calculate day of week (Monday-Sunday) from Date
-- add or subtract duration from Date
-- calculate duration difference between 2 Dates
-- add or subtract duration from Time
+- calculate day of week (Monday-Sunday) from date
+- add or subtract duration from date
+- calculate duration difference between 2 dates
+- add or subtract duration from time
 - calculate duration difference between 2 Times
-- add or subtract duration from DateTime
-- calculate duration difference between 2 DateTimes
-- convert DateTime to different (fixed) timezones
-- convert between DateTime to epoch seconds from a fixed Epoch date
+- add or subtract duration from datetime
+- calculate duration difference between 2 datetimes
+- convert datetime to different (fixed) timezones
+- convert between datetime to Epoch seconds from a fixed Epoch date
 - support multiple Epoch dates (Unix, NTP, GPS, custom, etc)
-- set and retrieve the current date and time from the real time clock (RTC) of
-  83+SE, 84+, and 84+SE (but not the 83+ which does not have an RTC)
+- set and retrieve the date and time from the hardware clock on the calculator
+    - supported by 84+ and 84+SE
+    - not supported by 83+ and 83+SE
 
-These features are inspired by various time, and timezone libraries on
-desktop-class machines:
+These features are inspired by various datetime libraries on desktop-class
+machines:
 
 - Java JDK 11
   [java.time](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/time/package-summary.html) package
@@ -364,7 +367,7 @@ In the `MODE` menu, there are 2 settings that affect how date objects are
 displayed:
 
 - ![ROOT > MODE](images/date/menu-root-mode.png)
-    - ![ROOT > MODE > Object Formatting](images/date/menu-root-mode-object-formatting.png)
+    - ![ROOT > MODE > ObjectFormatting](images/date/menu-root-mode-object-formatting.png)
 
 If the `{..}` (Raw Formatting) option is selected (factory default), the date
 objects will be displayed in their raw form using curly braces. This will be
