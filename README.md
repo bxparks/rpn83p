@@ -173,14 +173,17 @@ Community members have verified that it works on the following variants:
 
 - TI-84 Plus
 - TI-84 Plus Pocket SE
-- TI-84 Pocket.fr
+- TI-84 Pocket.fr (French version of the Pocket SE?)
 
 The following calculators are *not* supported because their internal hardware
 and firmware are too different:
 
+- TI-83 (without Plus)
 - TI-84 Plus C Silver Edition
 - TI-84 Plus CE
 - TI-83 Premium CE (French version of the TI-84 Plus CE)
+- TI-Nspire CAS, CX, CX CAS, CX II, CX II CAS
+- TI-89, 89 Titanium, 92, 92 Plus, Voyage 200
 
 ## Quick Examples
 
