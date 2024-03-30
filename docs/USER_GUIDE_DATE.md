@@ -329,14 +329,14 @@ now contains an option to control the behavior of this button under the `MODE`
 menu:
 
 - ![ROOT > MODE](images/date/menu-root-mode.png)
-    - ![Comma or EE menu](images/date/menu-root-mode-comma-ee.png)
+    - ![ROOT > MODE > CommaEE](images/date/menu-root-mode-comma-ee.png)
 
 If the `,EE` option is selected (factory default), the button behaves as labeled
 on the keyboard: the `,` button invokes the comma function, and `2ND EE` invokes
 the exponent function. This option is useful to have fast access to the comma
 button which is essential for entering the components of the date objects.
 
-If the `EE,` option is selected, the button behavior is reversed: the `,` button
+If the `EE,` option is selected, the button behavior is inverted: the `,` button
 invokes the exponent function, and `2ND EE` button invokes the comma function.
 This is option is useful for people who will rarely (or never) use the `DATE`
 functions, and want to enter scientific notation numbers easily without going

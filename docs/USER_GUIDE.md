@@ -39,6 +39,7 @@ RPN calculator app for the TI-83 Plus and TI-84 Plus inspired by the HP-42S.
     - [Floating Point Display Modes](#floating-point-display-modes)
     - [SHOW Mode](#show-mode)
     - [Trigonometric Modes](#trigonometric-modes)
+    - [Comma-EE Button Mode](#comma-ee-button-mode)
     - [Storage Registers](#storage-registers)
     - [Prime Factors](#prime-factors)
     - [BASE Functions](#base-functions)
@@ -1286,6 +1287,28 @@ underlying TI-OS does not support the gradian mode directly. It is probably
 possible to add this feature by intercepting the trig functions and performing
 some pre and post unit conversions. But I'm not sure if it's worth the effort
 since gradian trig mode is not commonly used.
+
+### Comma-EE Button Mode
+
+The `,EE` and `EE,` menu selectors under the `ROOT > MODE` menu group configures
+the behavior `Comma-EE` button:
+
+- ![ROOT > MODE](images/menu-root-mode.png) (`ROOT > MODE`)
+    - ![ROOT > MODE > CommaEE](images/date/menu-root-mode-comma-ee.png)
+    - `,EE`: the `Comma-EE` button behaves as labeled on the keyboard (factory
+      default)
+    - `EE,`: the `Comma-EE` button is inverted
+
+Prior to v0.10, the `Comma-EE` button was configured so that the `EE` function
+was invoked for *both* comma `,` and `2ND EE`. This allowed scientific notation
+numbers to be entered easily, without having to press the `2ND` button.
+
+However, in v0.10 when record objects were added to support DATE functions (see
+[USER_GUIDE_MODE.md](USER_GUIDE_DATE.md), the **comma** key was required as a
+separator between the components of those objects. But this meant that numbers
+in scientific notation would require the `2ND` key again. For users who rarely
+or never use the DATE functions, the `EE,` option can be used to invert key
+bindings of the `Comma-EE` to allow easy entry of scientific notation.
 
 ### Storage Registers
 
