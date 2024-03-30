@@ -2235,8 +2235,8 @@ digits for each component of a complex number.
 Here is what the screen looks like with just Large Font (left), and a mix of
 Small and Large Fonts (right):
 
-![RPN83P Complex Font 1](images/rpn83p-complex-font-1.png)
-![RPN83P Complex Font 2](images/rpn83p-complex-font-2.png)
+![RPN83P Complex Font 1](images/complex-font-1.png)
+![RPN83P Complex Font 2](images/complex-font-2.png)
 
 Readability suffers a bit using the small font, but it seems reasonable.
 
@@ -2276,8 +2276,8 @@ ENTER
 
 The display before and after the `2ND LINK` looks like this:
 
-![RPN83P Complex Linking 1](images/rpn83p-complex-linking-1.png)
-![RPN83P Complex Linking 2](images/rpn83p-complex-linking-2.png)
+![RPN83P Complex Linking 1](images/complex-linking-1.png)
+![RPN83P Complex Linking 2](images/complex-linking-2.png)
 
 Notice that the RPN83P follows the convention used by the HP-35s in rendering
 the complex number with an imaginary `i` delimiter between the two components.
@@ -2307,8 +2307,8 @@ ENTER
 
 The display before and after the `ENTER` looks like this:
 
-![RPN83P Complex Inlining RECT 1](images/rpn83p-complex-inlining-rect-1.png)
-![RPN83P Complex Inlining RECT 2](images/rpn83p-complex-inlining-rect-2.png)
+![RPN83P Complex Inlining RECT 1](images/complex-inlining-rect-1.png)
+![RPN83P Complex Inlining RECT 2](images/complex-inlining-rect-2.png)
 
 To enter `2 e^(i 60deg)` in polar-degree mode, we would type:
 
@@ -2321,8 +2321,8 @@ ENTER
 
 The display before and after the `ENTER` looks like this:
 
-![RPN83P Complex Inlining PDEG 1](images/rpn83p-complex-inlining-pdeg-1.png)
-![RPN83P Complex Inlining PDEG 2](images/rpn83p-complex-inlining-pdeg-2.png)
+![RPN83P Complex Inlining PDEG 1](images/complex-inlining-pdeg-1.png)
+![RPN83P Complex Inlining PDEG 2](images/complex-inlining-pdeg-2.png)
 
 Notice that the complex number separator is the combination of an Angle symbol
 and a Degree symbol, which indicates that the input is expecting the angle to be
@@ -2348,8 +2348,8 @@ ENTER
 The display before the `ENTER` looks like this, where the Angle symbol appears
 without the Degree symbol:
 
-![RPN83P Complex Inlining PRAD 1](images/rpn83p-complex-inlining-prad-1.png)
-![RPN83P Complex Inlining PRAD 2](images/rpn83p-complex-inlining-prad-2.png)
+![RPN83P Complex Inlining PRAD 1](images/complex-inlining-prad-1.png)
+![RPN83P Complex Inlining PRAD 2](images/complex-inlining-prad-2.png)
 
 The polar-degree mode was chosen to be the default, and the polar-radian mode
 available with an extra keystroke, because it seemed like the degree mode would
@@ -2369,8 +2369,8 @@ an exception for a solitary `2ND i` so that it is parsed as `0 i 1` instead.
 This makes it easier to enter the pure imaginary number `i`. Here are
 screenshots after a solitary `2ND i` and an `ENTER`:
 
-![RPN83P Complex Solitary i 1](images/rpn83p-complex-solitary-i-1.png)
-![RPN83P Complex Solitary i 2](images/rpn83p-complex-solitary-i-2.png)
+![RPN83P Complex Solitary i 1](images/complex-solitary-i-1.png)
+![RPN83P Complex Solitary i 2](images/complex-solitary-i-2.png)
 
 This special rule is triggered only by a solitary `2ND i`. If there is any digit
 before or after the `2ND i`, regular parsing rules are used. For example, `1 2ND
@@ -2398,16 +2398,16 @@ that complex numbers can be displayed. The complex display modes are: `RECT`,
 `ROOT > MODE`, but the fastest way to reach this menu row is to use the `MODE`
 button shortcut on keyboard:
 
-- ![RPN83P Complex Mode Menu 1](images/rpn83p-complex-mode-menu-1.png)
-    - ![RPN83P Complex Mode Menu 2](images/rpn83p-complex-mode-menu-2.png)
-    - ![RPN83P Complex Mode Menu 3](images/rpn83p-complex-mode-menu-3.png)
+- ![RPN83P Complex Mode Menu 1](images/complex-mode-menu-1.png)
+    - ![RPN83P Complex Mode Menu 2](images/complex-mode-menu-2.png)
+    - ![RPN83P Complex Mode Menu 3](images/complex-mode-menu-3.png)
 
 Pressing the `RECT`, `PRAD`, and `PDEG` menu buttons will change the display
 into the following:
 
-![RPN83P Complex Mode RECT](images/rpn83p-complex-mode-rect.png)
-![RPN83P Complex Mode PRAD](images/rpn83p-complex-mode-prad.png)
-![RPN83P Complex Mode PDEG](images/rpn83p-complex-mode-pdeg.png)
+![RPN83P Complex Mode RECT](images/complex-mode-rect.png)
+![RPN83P Complex Mode PRAD](images/complex-mode-prad.png)
+![RPN83P Complex Mode PDEG](images/complex-mode-pdeg.png)
 
 Note that unlike most calculators with complex number support, the trigonometric
 modes (`DEG`, `RAD`) do *not* affect the rendering of complex numbers. The
@@ -2439,15 +2439,15 @@ ENTER
 
 The display before and after the `2ND LINK` looks like this:
 
-![RPN83P Complex Linking PDEG 1](images/rpn83p-complex-linking-pdeg-1.png)
-![RPN83P Complex Linking PDEG 1](images/rpn83p-complex-linking-pdeg-2.png)
+![RPN83P Complex Linking PDEG 1](images/complex-linking-pdeg-1.png)
+![RPN83P Complex Linking PDEG 1](images/complex-linking-pdeg-2.png)
 
 The *unlinking* process is also affected by the complex display mode. Let's
 change the display mode to `RECT`, then hit `2ND LINK` to perform the unlinking.
 The display before and after the `2ND LINK` looks like this:
 
-![RPN83P Complex Unlinking RECT 1](images/rpn83p-complex-unlinking-rect-1.png)
-![RPN83P Complex Unlinking RECT 2](images/rpn83p-complex-unlinking-rect-2.png)
+![RPN83P Complex Unlinking RECT 1](images/complex-unlinking-rect-1.png)
+![RPN83P Complex Unlinking RECT 2](images/complex-unlinking-rect-2.png)
 
 #### Complex Polar Mode Overflow
 
@@ -2463,14 +2463,14 @@ The number `1.2728e100` would normally generate an overflow error, but through a
 quirk in the underlying TI-OS, the `PRAD` and `PDEG` display modes will display
 these polar forms correctly, like this:
 
-![RPN83P Complex Overflow PRAD](images/rpn83p-complex-overflow-prad.png)
-![RPN83P Complex Overflow PDEG](images/rpn83p-complex-overflow-pdeg.png)
+![RPN83P Complex Overflow PRAD](images/complex-overflow-prad.png)
+![RPN83P Complex Overflow PDEG](images/complex-overflow-pdeg.png)
 
 However, if we try to unlink the 2 components using the `2ND LINK` function, an
 `Err: Overflow` code will be generated, because the magnitude `1.2728e100` is
 too large to be stored in the RPN register:
 
-![RPN83P Complex Overflow Unlink](images/rpn83p-complex-overflow-unlink.png)
+![RPN83P Complex Overflow Unlink](images/complex-overflow-unlink.png)
 
 #### Complex SHOW
 
@@ -2480,9 +2480,9 @@ the current display mode (`RECT`, `PRAD`, `PDEG`).
 
 Here is the number `1+i` in 3 different modes using the SHOW function:
 
-![RPN83P Complex Show RECT](images/rpn83p-complex-show-rect.png)
-![RPN83P Complex Show PRAD](images/rpn83p-complex-show-prad.png)
-![RPN83P Complex Show PDEG](images/rpn83p-complex-show-pdeg.png)
+![RPN83P Complex Show RECT](images/complex-show-rect.png)
+![RPN83P Complex Show PRAD](images/complex-show-prad.png)
+![RPN83P Complex Show PDEG](images/complex-show-pdeg.png)
 
 #### Complex FIX, SCI, ENG
 
@@ -2490,9 +2490,9 @@ The floating point formatting modes `FIX`, `SCI`, and `ENG` can be applied to
 complex numbers. Here are screenshots of a complex number using `FIX(4)`,
 `SCI(4)`, and `ENG(4)`:
 
-![RPN83P Complex FIX 4](images/rpn83p-complex-fmt-fix-4.png)
-![RPN83P Complex SCI 4](images/rpn83p-complex-fmt-sci-4.png)
-![RPN83P Complex ENG 4](images/rpn83p-complex-fmt-eng-4.png)
+![RPN83P Complex FIX 4](images/complex-fmt-fix-4.png)
+![RPN83P Complex SCI 4](images/complex-fmt-sci-4.png)
+![RPN83P Complex ENG 4](images/complex-fmt-eng-4.png)
 
 #### Complex Functions
 
@@ -2511,8 +2511,8 @@ the underlying TI-OS functions do not support them.
 Additional functions specific to complex numbers are under the `ROOT > CPLX`
 menu:
 
-- ![RPN83P Complex CPLX Menu 1](images/rpn83p-complex-cplx-menu-1.png)
-    - ![RPN83P Complex CPLX Menu 2](images/rpn83p-complex-cplx-menu-2.png)
+- ![RPN83P Complex CPLX Menu 1](images/complex-cplx-menu-1.png)
+    - ![RPN83P Complex CPLX Menu 2](images/complex-cplx-menu-2.png)
 
 They are:
 
@@ -2544,7 +2544,7 @@ Here is an example of adding the 3 complex numbers as described in p. 9-6 of the
 [HP-35s User's Guide](https://literature.hpcalc.org/items/171), shown in the
 following diagram:
 
-![RPN83P Complex Example1 Diagram](images/rpn83p-complex-example1-diagram.png)
+![RPN83P Complex Example1 Diagram](images/complex-example1-diagram.png)
 
 We can add them like this:
 
@@ -2561,9 +2561,9 @@ PDEG # shows 178.937161 AngleDeg 111.148894
 The result can be viewed in the 3 complex display formats by clicking on the
 `RECT`, `PRAD`, and `PDEG` menu buttons:
 
-![RPN83P Complex Example1 RECT](images/rpn83p-complex-example1-rect.png)
-![RPN83P Complex Example1 PRAD](images/rpn83p-complex-example1-prad.png)
-![RPN83P Complex Example1 PDEG](images/rpn83p-complex-example1-pdeg.png)
+![RPN83P Complex Example1 RECT](images/complex-example1-rect.png)
+![RPN83P Complex Example1 PRAD](images/complex-example1-prad.png)
+![RPN83P Complex Example1 PDEG](images/complex-example1-pdeg.png)
 
 **Example 2: Y^X, SQRT**
 
@@ -2575,7 +2575,7 @@ representations of complex numbers:
 \[ \sqrt{(1+i)^{(3 \angle 45^{\circ})} + (1 \angle 2)} \]
 ```
 
-![RPN83P Complex Example2 Equation](images/rpn83p-complex-example2-equation.png)
+![RPN83P Complex Example2 Equation](images/complex-example2-equation.png)
 
 The keystrokes can be:
 ```
@@ -2628,9 +2628,9 @@ to the functions are real:
 These are available on row 2 of the `MODE` menu group, under `ROOT > MODE`, but
 the fastest way to reach this menu row is to use the `MODE` button shortcut:
 
-- ![RPN83P Complex Mode Menu 1](images/rpn83p-complex-mode-menu-1.png)
-    - ![RPN83P Complex Mode Menu 2](images/rpn83p-complex-mode-menu-2.png)
-    - ![RPN83P Complex Mode Menu 4](images/rpn83p-complex-mode-menu-4.png)
+- ![RPN83P Complex Mode Menu 1](images/complex-mode-menu-1.png)
+    - ![RPN83P Complex Mode Menu 2](images/complex-mode-menu-2.png)
+    - ![RPN83P Complex Mode Menu 4](images/complex-mode-menu-4.png)
 
 Note that these settings do not affect how functions evaluate *complex*
 arguments. If the argument is complex, all functions that support complex
@@ -2652,11 +2652,11 @@ message. If `CRES` is selected, these functions will return a complex value.
 For example, if we try to take the sqrt(-1), in `RRES` mode, an error will be
 printed like this:
 
-![RPN83P Complex SQRT RRES](images/rpn83p-complex-sqrt-rres.png)
+![RPN83P Complex SQRT RRES](images/complex-sqrt-rres.png)
 
 But if we change the computation mode to `CRES`, we get a complex result:
 
-![RPN83P Complex SQRT CRES](images/rpn83p-complex-sqrt-cres.png)
+![RPN83P Complex SQRT CRES](images/complex-sqrt-cres.png)
 
 #### Complex Numbers and Trigonometric Modes
 
@@ -2692,7 +2692,7 @@ RCL 00
 Answer: 3 i 5
 ```
 
-![RPN83P Complex Storage Registers](images/rpn83p-complex-storage-registers.png)
+![RPN83P Complex Storage Registers](images/complex-storage-registers.png)
 
 ## TI-OS Interaction
 
