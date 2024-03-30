@@ -21,9 +21,9 @@ Here is a quick summary of the features:
 - add or subtract duration from datetime
 - calculate duration difference between 2 datetimes
 - convert datetime to different (fixed) timezones
-- convert between datetime to Epoch seconds from a fixed Epoch date
-- support multiple Epoch dates (Unix, NTP, GPS, custom, etc)
-- set and retrieve the date and time from the hardware clock on the calculator
+- convert between datetime to Epoch seconds relative to an Epoch date
+- support multiple Epoch dates (Unix, NTP, GPS, TIOS, Y2K, custom)
+- set and retrieve datetime from the hardware clock
     - supported by 84+ and 84+SE
     - not supported by 83+ and 83+SE
 
@@ -37,6 +37,8 @@ machines:
 - Go lang [time](https://pkg.go.dev/time) package
 
 **Version**: 0.10.0-dev (2024-03-30)
+
+**Parent Document**: [USER_GUIDE.md](USER_GUIDE.md)
 
 **Project Home**: https://github.com/bxparks/rpn83p
 
