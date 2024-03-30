@@ -683,9 +683,9 @@ Pressing the `HELP` menu button at the root menu activates the Help pages:
 The contents of these pages are updated frequently so the screenshots below may
 not be identical to the current version:
 
-![Help Page 1](images/rpn83p-help-page-1.png)
-![Help Page 2](images/rpn83p-help-page-2.png)
-![Help Page Last](images/rpn83p-help-page-last.png)
+![Help Page 1](images/help-page-1.png)
+![Help Page 2](images/help-page-2.png)
+![Help Page Last](images/help-page-last.png)
 
 The Help pages are intended to capture some of the more obscure tidbits about
 the RPN83P app which may be hard to remember. Hopefully it reduces the number of
