@@ -105,8 +105,8 @@ MenuGroup root mRoot [
       ]
       MenuRow [
         MenuItem RNDF mRoundToFix # round to FIX (ENG, SCI)
-        MenuItem RNDG mRoundToGuard # round to 10 digits, removing guard digits
         MenuItem RNDN mRoundToN # round to specified N digits
+        MenuItem RNDG mRoundToGuard # round to 10 digits, removing guard digits
       ]
     ]
     MenuGroup PROB mProb [

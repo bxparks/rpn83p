@@ -430,23 +430,23 @@ mRoundToFixId equ 42
     .dw 0 ; rowBeginId or altNameId
     .dw mRoundToFixHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
-mRoundToGuard:
-mRoundToGuardId equ 43
-    .dw mRoundToGuardId ; id
-    .dw mNumId ; parentId
-    .dw mRoundToGuardNameId ; nameId
-    .db 0 ; numRows
-    .dw 0 ; rowBeginId or altNameId
-    .dw mRoundToGuardHandler ; handler (to be implemented)
-    .dw 0 ; nameSelector
 mRoundToN:
-mRoundToNId equ 44
+mRoundToNId equ 43
     .dw mRoundToNId ; id
     .dw mNumId ; parentId
     .dw mRoundToNNameId ; nameId
     .db 0 ; numRows
     .dw 0 ; rowBeginId or altNameId
     .dw mRoundToNHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
+mRoundToGuard:
+mRoundToGuardId equ 44
+    .dw mRoundToGuardId ; id
+    .dw mNumId ; parentId
+    .dw mRoundToGuardNameId ; nameId
+    .db 0 ; numRows
+    .dw 0 ; rowBeginId or altNameId
+    .dw mRoundToGuardHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
 mBlank045:
 mBlank045Id equ 45
@@ -2454,10 +2454,10 @@ mMaxNameId equ 40
     .dw mMaxName
 mRoundToFixNameId equ 41
     .dw mRoundToFixName
-mRoundToGuardNameId equ 42
-    .dw mRoundToGuardName
-mRoundToNNameId equ 43
+mRoundToNNameId equ 42
     .dw mRoundToNName
+mRoundToGuardNameId equ 43
+    .dw mRoundToGuardName
 mCombNameId equ 44
     .dw mCombName
 mPermNameId equ 45
@@ -2966,10 +2966,10 @@ mMaxName:
     .db "MAX", 0
 mRoundToFixName:
     .db "RNDF", 0
-mRoundToGuardName:
-    .db "RNDG", 0
 mRoundToNName:
     .db "RNDN", 0
+mRoundToGuardName:
+    .db "RNDG", 0
 mCombName:
     .db "COMB", 0
 mPermName:
