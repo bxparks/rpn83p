@@ -2738,21 +2738,23 @@ This can be calculated using the following keystrokes:
 
 In this example, we calculate the magnitude and angle of the complex number
 `1+i`. We want the angle in degrees, so we have to first set the trigonometric
-mode to `DEG` (using `MODE DEG`), just like trigonometric functions. Enter the
-complex number in rectangular format, it does not matter what the complex
-display mode (`RECT`, `PRAD`, `PDEG`) is:
+mode to `DEG` (using `MODE DEG`), just like trigonometric functions. The complex
+display mode (`RECT`, `PRAD`, `PDEG`) does *not* affect the value returned by
+`CANG`.
 
-```
-MODE DEG # trig mode to DEG
-MATH CPLX # CPLX menu
-1 2ND i 1 # (1+i)
-CANG # shows 45, determined by DEG mode
-2ND ANS # LastX
-CABS # shows 1.414213562
-```
+Enter the complex number in rectangular format. We will set complex display mode
+to `RECT` to match the input format, but the complex display mode will not
+affect these calculations:
 
-The complex display mode (`RECT`, `PRAD`, `PDEG`) does *not* affect the value
-returned by `CANG`.
+| **Keys**                  | **Display** |
+| ----------------          | --------------------- |
+| `MODE` `DEG`              | ![](images/complex-example3-01.png) |
+| `DOWN` `RECT`             | ![](images/complex-example3-02.png) |
+| `1` `2ND i` `1`           | ![](images/complex-example3-03.png) |
+| `MATH` `CPLX`             | ![](images/complex-example3-04.png) |
+| `CANG`                    | ![](images/complex-example3-05.png) |
+| `2ND ANS`                 | ![](images/complex-example3-06.png) |
+| `CABS`                    | ![](images/complex-example3-07.png) |
 
 If you want the angle value as shown on the screen, use the `2ND LINK` function
 to unlink the 2 components of the complex number. The value in the `X` register
