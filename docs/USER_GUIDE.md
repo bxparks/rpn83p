@@ -2827,17 +2827,14 @@ Both the RPN stack registers and the storage registers have been upgraded to
 accept real or complex numbers transparently. For example, we can store `1+2i`
 into `R00`, then add `2+3i` into it, to get `3+5i`:
 
-```
-1 2ND i 2
-STO 00
-2 2ND i 3
-STO+ 00
-RCL 00
 
-Answer: 3 i 5
-```
-
-![RPN83P Complex Storage Registers](images/complex-storage-registers.png)
+| **Keys**                  | **Display** |
+| ----------------          | --------------------- |
+| `1` `2ND i` `2`           | ![](images/complex-storage-register-01.png) |
+| `STO 00`                  | ![](images/complex-storage-register-02.png) |
+| `2` `2ND i` `3`           | ![](images/complex-storage-register-03.png) |
+| `STO` `+` `00`            | ![](images/complex-storage-register-04.png) |
+| `2ND RCL` `00`            | ![](images/complex-storage-register-05.png) |
 
 ## DATE Functions
 
