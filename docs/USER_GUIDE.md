@@ -2573,17 +2573,15 @@ In other words:
 
 For example, let's set the display mode to `PDEG`, and enter the following:
 
-```
-1
-ENTER
-60
-2ND LINK
-```
 
-The display before and after the `2ND LINK` looks like this:
-
-![RPN83P Complex Linking PDEG 1](images/complex-linking-pdeg-1.png)
-![RPN83P Complex Linking PDEG 1](images/complex-linking-pdeg-2.png)
+| **Keys**              | **Display** |
+| ----------------      | --------------------- |
+| `MODE` `DOWN` `PDEG`  | ![](images/complex-linking-pdeg-1.png) |
+| `ON/EXIT`             | ![](images/complex-linking-pdeg-2.png) |
+| `1`                   | ![](images/complex-linking-pdeg-3.png) |
+| `ENTER`               | ![](images/complex-linking-pdeg-4.png) |
+| `60`                  | ![](images/complex-linking-pdeg-5.png) |
+| `2ND LINK`            | ![](images/complex-linking-pdeg-6.png) |
 
 The *unlinking* process is also affected by the complex display mode. Let's
 change the display mode to `RECT`, then hit `2ND LINK` to perform the unlinking.
