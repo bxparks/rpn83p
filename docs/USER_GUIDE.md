@@ -2693,22 +2693,18 @@ following diagram:
 
 We can add them like this:
 
-```
-185 2ND ANGLE 62 ENTER
-170 2ND ANGLE 143 +
-100 2ND ANGLE 261 +
-
-RECT # shows -64.559244 i 166.885025
-PRAD # shows 178.937161 Angle 1.93991416
-PDEG # shows 178.937161 AngleDeg 111.148894
-```
-
-The result can be viewed in the 3 complex display formats by clicking on the
-`RECT`, `PRAD`, and `PDEG` menu buttons:
-
-![RPN83P Complex Example1 RECT](images/complex-example1-rect.png)
-![RPN83P Complex Example1 PRAD](images/complex-example1-prad.png)
-![RPN83P Complex Example1 PDEG](images/complex-example1-pdeg.png)
+| **Keys**                  | **Display** |
+| ----------------          | --------------------- |
+| `MODE` `DOWN` `RECT`      | ![](images/complex-example1-01.png) |
+| `ON/EXIT`                 | ![](images/complex-example1-02.png) |
+| `185` `2ND ANGLE` `62`    | ![](images/complex-example1-03.png) |
+| `ENTER`                   | ![](images/complex-example1-04.png) |
+| `170` `2ND ANGLE` `143`   | ![](images/complex-example1-05.png) |
+| `+`                       | ![](images/complex-example1-06.png) |
+| `100` `2ND ANGLE` `261`   | ![](images/complex-example1-07.png) |
+| `+`                       | ![](images/complex-example1-08.png) |
+| `MODE` `DOWN` `PRAD`      | ![](images/complex-example1-09.png) |
+| `PDEG`                    | ![](images/complex-example1-10.png) |
 
 **Example 2: Y^X, SQRT**
 
