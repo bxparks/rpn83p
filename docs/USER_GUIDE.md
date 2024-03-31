@@ -2487,19 +2487,12 @@ set to `RECT`, which is independent of how the complex number is entered.
 We can enter complex numbers using angles in radians by typing `2ND ANGLE`
 twice. For example, to enter `2 Angle 1.047`, use the following keystrokes:
 
-```
-2
-2ND ANGLE
-2ND ANGLE
-1.047
-ENTER
-```
-
-The display before the `ENTER` looks like this, where the Angle symbol appears
-without the Degree symbol:
-
-![RPN83P Complex Inlining PRAD 1](images/complex-inlining-prad-1.png)
-![RPN83P Complex Inlining PRAD 2](images/complex-inlining-prad-2.png)
+| **Keys**                  | **Display** |
+| ----------------          | --------------------- |
+| `2`                       | ![](images/complex-inlining-prad-1.png) |
+| `2ND ANGLE` `2ND ANGLE`   | ![](images/complex-inlining-prad-2.png) |
+| `1.047`                   | ![](images/complex-inlining-prad-3.png) |
+| `ENTER`                   | ![](images/complex-inlining-prad-4.png) |
 
 The polar-degree mode was chosen to be the default, and the polar-radian mode
 available with an extra keystroke, because it seemed like the degree mode would
