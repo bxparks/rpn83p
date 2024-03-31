@@ -1290,8 +1290,8 @@ since gradian trig mode is not commonly used.
 
 ### Comma-EE Button Mode
 
-The `,EE` and `EE,` menu selectors under the `ROOT > MODE` menu group configures
-the behavior `Comma-EE` button:
+The `,EE` and `EE,` selectors under `ROOT > MODE` configure the behavior of the
+`Comma-EE` button:
 
 - ![ROOT > MODE](images/menu-root-mode.png) (`ROOT > MODE`)
     - ![ROOT > MODE > CommaEE](images/date/menu-root-mode-commaee.png)
@@ -1299,16 +1299,17 @@ the behavior `Comma-EE` button:
       default)
     - `EE,`: the `Comma-EE` button is inverted
 
-Prior to v0.10, the `Comma-EE` button was configured so that the `EE` function
-was invoked for *both* comma `,` and `2ND EE`. This allowed scientific notation
-numbers to be entered easily, without having to press the `2ND` button.
+Prior to v0.10, the `Comma-EE` button invoked the `EE` function for *both* comma
+`,` and `2ND EE`. This allowed scientific notation numbers to be entered easily,
+without having to press the `2ND` button.
 
 However, in v0.10 when record objects were added to support DATE functions (see
-[USER_GUIDE_MODE.md](USER_GUIDE_DATE.md), the **comma** key was required as a
-separator between the components of those objects. But this meant that numbers
-in scientific notation would require the `2ND` key again. For users who rarely
-or never use the DATE functions, the `EE,` option can be used to invert key
-bindings of the `Comma-EE` to allow easy entry of scientific notation.
+[USER_GUIDE_MODE.md](USER_GUIDE_DATE.md)), the comma symbol was selected to be
+the separator between the components of those objects. But that meant that
+entering numbers in scientific notation would require the `2ND` key again. For
+users who rarely or never use the DATE functions, the `EE,` option can be used
+to invert key bindings of the `Comma-EE` button to allow easier entry of
+scientific notation.
 
 ### Storage Registers
 
