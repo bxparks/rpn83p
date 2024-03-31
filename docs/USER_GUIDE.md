@@ -829,9 +829,8 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
     - `MIN`: minimum of `X` and `Y`
     - `MAX`: maximum of `X` and `Y`
     - `RNDF`: round to `FIX/SCI/ENG` digits after the decimal point
-    - `RNDG`: round to guard digits (10 mantissa digits) regardless of the
-      decimal point
     - `RNDN`: round to user-specified `n` digits (0-9) after the decimal point
+    - `RNDG`: round to remove guard digits, leaving 10 mantissa digits
 - ![ROOT > PROB](images/menu-root-prob.png) (`ROOT > PROB`)
     - ![ROOT > PROB > Row1](images/menu-root-prob-1.png)
     - `COMB`: combination `C(n,r)` = `C(Y, X)`
@@ -1276,23 +1275,26 @@ rounding functions:
 - ![ROOT > NUM](images/menu-root-num.png)
     - ![ROOT > NUM > RoundingFunctions](images/menu-root-num-4.png)
 
-They round the fractional part of a floating point number after the
-decimal point using different procedures:
+They round the floating point number in different ways:
 
 - `RNDF`
     - rounds to the number of digits after the decimal point specified by the
       current `FIX/SCI/ENG` mode
     - for example, `FIX(4)` is rounded to 4 digits after the decimal point
     - for `FIX(-)`, no rounding is performed
-- `RNDG`
-    - rounds to the number of "guard digits", i.e. 10 mantissa digits
-    - the location of the decimal point has no effect
 - `RNDN`
     - rounds to the user-specified `n` digits (0-9) after the decimal point
     - `n` is given in the argument of the `RNDN` command
+- `RNDG`
+    - rounds to remove the guard digits which leaves 10 mantissa digits
+    - the location of the decimal point has no effect
 
-Here are some examples to illustrate the difference among these rounding
-functions.  Let's round the value of `1000*PI = 3141.5926535898`:
+The `RNDG` function is useful for a number which looks like an integer but is
+internally a floating point number with rounding errors hidden in the guard
+digits. By applying the `RNDG` function, we can force the floating point number
+to become an integer.
+
+Here are some examples of rounding the value of `1000*PI = 3141.5926535898`:
 
 | **Keys**              | **Display** |
 | ----------------      | --------------------- |
@@ -1300,15 +1302,15 @@ functions.  Let's round the value of `1000*PI = 3141.5926535898`:
 | `MATH` `NUM` `UP`     | ![](images/rounding-02.png) |
 | `PI` `1000` `*`       | ![](images/rounding-03.png) |
 | `2ND ENTRY` (SHOW)    | ![](images/rounding-04.png) |
-| `RNDG`                | ![](images/rounding-05.png) |
-| `2ND ENTRY` (SHOW)    | ![](images/rounding-06.png) |
-| `2ND ANS` (LastX)     | ![](images/rounding-07.png) |
-| `RNDN 9`              | ![](images/rounding-08.png) |
-| `2ND ENTRY` (SHOW)    | ![](images/rounding-09.png) |
-| `2ND ANS` (LastX)     | ![](images/rounding-10.png) |
-| `MODE` `FIX 04`       | ![](images/rounding-11.png) |
-| `ON/EXIT`             | ![](images/rounding-12.png) |
-| `RNDF`                | ![](images/rounding-13.png) |
+| `MODE` `FIX 04`       | ![](images/rounding-05.png) |
+| `ON/EXIT`             | ![](images/rounding-06.png) |
+| `RNDF`                | ![](images/rounding-07.png) |
+| `2ND ENTRY` (SHOW)    | ![](images/rounding-08.png) |
+| `2ND ANS` (LastX)     | ![](images/rounding-09.png) |
+| `RNDN 2`              | ![](images/rounding-10.png) |
+| `2ND ENTRY` (SHOW)    | ![](images/rounding-11.png) |
+| `2ND ANS` (LastX)     | ![](images/rounding-12.png) |
+| `RNDG`                | ![](images/rounding-13.png) |
 | `2ND ENTRY` (SHOW)    | ![](images/rounding-14.png) |
 | `MODE` `FIX 99`       | ![](images/rounding-15.png) |
 
