@@ -38,6 +38,7 @@ RPN calculator app for the TI-83 Plus and TI-84 Plus inspired by the HP-42S.
     - [Input Limits and Long Numbers](#input-limits-and-long-numbers)
     - [Floating Point Display Modes](#floating-point-display-modes)
     - [SHOW Mode](#show-mode)
+    - [Floating Point Rounding](#floating-point-rounding)
     - [Trigonometric Modes](#trigonometric-modes)
     - [Comma-EE Button Mode](#comma-ee-button-mode)
     - [Storage Registers](#storage-registers)
@@ -807,6 +808,7 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
     - ![ROOT > NUM > Row1](images/menu-root-num-1.png)
     - ![ROOT > NUM > Row2](images/menu-root-num-2.png)
     - ![ROOT > NUM > Row3](images/menu-root-num-3.png)
+    - ![ROOT > NUM > Row4](images/menu-root-num-4.png)
     - `%`: `X` percent of `Y`, leaving `Y` unchanged
     - `%CH`: percent change from `Y` to `X`, leaving `Y` unchanged
     - `GCD`: greatest common divisor of `X` and `Y`
@@ -826,6 +828,10 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
     - `MOD`: `Y` mod `X` (remainder of `Y` after dividing by `X`)
     - `MIN`: minimum of `X` and `Y`
     - `MAX`: maximum of `X` and `Y`
+    - `RNDF`: round to `FIX/SCI/ENG` digits after the decimal point
+    - `RNDG`: round to guard digits (10 mantissa digits) regardless of the
+      decimal point
+    - `RNDN`: round to user-specified `n` digits (0-9) after the decimal point
 - ![ROOT > PROB](images/menu-root-prob.png) (`ROOT > PROB`)
     - ![ROOT > PROB > Row1](images/menu-root-prob-1.png)
     - `COMB`: combination `C(n,r)` = `C(Y, X)`
@@ -1261,6 +1267,50 @@ single line. But in Show mode, all 32 digits (assuming `WSIZ` was 32) will be
 displayed like this:
 
 ![RPN83P SHOW Binary 32](images/show-mode-bin32.png)
+
+### Floating Point Rounding
+
+There are 3 menu functions under the `ROOT > NUM` menu group that provide
+rounding functions:
+
+- ![ROOT > NUM](images/menu-root-num.png)
+    - ![ROOT > NUM > RoundingFunctions](images/menu-root-num-4.png)
+
+They round the fractional part of a floating point number after the
+decimal point using different procedures:
+
+- `RNDF`
+    - rounds to the number of digits after the decimal point specified by the
+      current `FIX/SCI/ENG` mode
+    - for example, `FIX(4)` is rounded to 4 digits after the decimal point
+    - for `FIX(-)`, no rounding is performed
+- `RNDG`
+    - rounds to the number of "guard digits", i.e. 10 mantissa digits
+    - the location of the decimal point has no effect
+- `RNDN`
+    - rounds to the user-specified `n` digits (0-9) after the decimal point
+    - `n` is given in the argument of the `RNDN` command
+
+Here are some examples to illustrate the difference among these rounding
+functions.  Let's round the value of `1000*PI = 3141.5926535898`:
+
+| **Keys**              | **Display** |
+| ----------------      | --------------------- |
+| `MODE` `FIX 99`       | ![](images/rounding-01.png) |
+| `MATH` `NUM` `UP`     | ![](images/rounding-02.png) |
+| `PI` `1000` `*`       | ![](images/rounding-03.png) |
+| `2ND ENTRY` (SHOW)    | ![](images/rounding-04.png) |
+| `RNDG`                | ![](images/rounding-05.png) |
+| `2ND ENTRY` (SHOW)    | ![](images/rounding-06.png) |
+| `2ND ANS` (LastX)     | ![](images/rounding-07.png) |
+| `RNDN 9`              | ![](images/rounding-08.png) |
+| `2ND ENTRY` (SHOW)    | ![](images/rounding-09.png) |
+| `2ND ANS` (LastX)     | ![](images/rounding-10.png) |
+| `MODE` `FIX 04`       | ![](images/rounding-11.png) |
+| `ON/EXIT`             | ![](images/rounding-12.png) |
+| `RNDF`                | ![](images/rounding-13.png) |
+| `2ND ENTRY` (SHOW)    | ![](images/rounding-14.png) |
+| `MODE` `FIX 99`       | ![](images/rounding-15.png) |
 
 ### Trigonometric Modes
 
@@ -2854,7 +2904,7 @@ different timezones easily. In addition, the DATE functions can access the
 hardware real-time clock (RTC) incorporated into some calculators (TI-84+,
 TI-84+SE, TI-Nspire).
 
-See [USER_GUIDE_DATE.md](USER_GUIDE_DATE.md) for more details.
+See [USER_GUIDE_DATE.md](USER_GUIDE_DATE.md) for full details.
 
 ## TI-OS Interaction
 
