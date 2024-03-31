@@ -189,38 +189,59 @@ realsToComplexRect:
 ; "universal" routines which operate on both types.
 ;-----------------------------------------------------------------------------
 
-; Description: Extract the real part of complex(OP1/OP2).
+; Description: Extract the real part of complex(OP1/OP2). If OP1/OP2 is already
+; real, then the result is the original input.
+; Input: OP1/OP2:(Complex|Real)
 ; Output: OP1=Re(OP1/OP2)
 ComplexReal:
-    call checkOp1ComplexPageOne ; ZF=1 if complex
+    call getOp1RpnObjectTypePageOne ; A=rpnObjectType
+    cp rpnObjectTypeReal
+    ret z
+    cp rpnObjectTypeComplex
     jr nz, complexDataTypeErr
     bcall(_ComplexToRect) ; OP1=Re(Z); OP2=Im(Z)
     ret
 
-; Description: Extract the imaginary part of complex(OP1/OP2).
+; Description: Extract the imaginary part of complex(OP1/OP2). If OP1/OP2 is
+; already real, then the result is 0.
+; Input: OP1/OP2:(Complex|Real)
 ; Output: OP1=Im(OP1/OP2)
 ComplexImag:
-    call checkOp1ComplexPageOne ; ZF=1 if complex
+    call getOp1RpnObjectTypePageOne ; A=rpnObjectType
+    cp rpnObjectTypeReal
+    jp z, op1Set0PageOne
+    cp rpnObjectTypeComplex
     jr nz, complexDataTypeErr
     bcall(_ComplexToRect) ; OP1=Re(Z); OP2=Im(Z)
     jp op2ToOp1PageOne ; OP1=Im(Z)
 
-; Description: Calculate the ComplexConjugate of(OP1/OP2).
+; Description: Calculate the ComplexConjugate of(OP1/OP2). If OP1/OP2 is
+; already real, then the result is the original input.
+; Input: OP1/OP2:(Complex|Real)
 ; Output: OP1/OP2=conj(OP1/OP2)
 ComplexConj:
-    call checkOp1ComplexPageOne ; ZF=1 if complex
+    call getOp1RpnObjectTypePageOne ; A=rpnObjectType
+    cp rpnObjectTypeReal
+    ret z
+    cp rpnObjectTypeComplex
     jr nz, complexDataTypeErr
     bcall(_Conj) ; X=conj(X)
     ret
 
 ; Description: Return the magnitude or absolute value 'r' of the complex
-; number.
-; Input: CP1: complex number
+; number. If OP1/OP2 is already real, the result is simply abs(OP1).
+; Input: OP1/OP2:(Complex|Real)
 ; Output: OP1: abs(Z) or abs(X)
 ComplexAbs:
-    call checkOp1ComplexPageOne ; ZF=1 if complex
+    call getOp1RpnObjectTypePageOne ; A=rpnObjectType
+    cp rpnObjectTypeReal
+    jr z, complexAbsForReal
+    cp rpnObjectTypeComplex
     jr nz, complexDataTypeErr
     bcall(_CAbs); OP1=Cabs(CP1)
+    ret
+complexAbsForReal:
+    bcall(_ClrOP1S)
     ret
 
 ; Description: Return the angle (argument) of the complex number. This function
@@ -242,11 +263,16 @@ ComplexAbs:
 ; return radians. And that seemed more confusing than letting CANG depend on
 ; the trigonometric mode.
 ;
+; If OP1/OP2 is already real, return 0.
+;
 ; Input:
-;   - CP1: complex number
-;   - (trigFlags): RAD, DEG
+;   - OP1/OP2:(Complex|Real)
+;   - (trigFlags)=RAD or DEG
 ComplexAngle:
-    call checkOp1ComplexPageOne ; ZF=1 if complex
+    call getOp1RpnObjectTypePageOne ; A=rpnObjectType
+    cp rpnObjectTypeReal
+    jp z, op1Set0PageOne
+    cp rpnObjectTypeComplex
     jr nz, complexDataTypeErr
     ; calculate angle in radians
     call op1ExOp2PageOne ; OP1=Im(Z)=y; OP2=Re(Z)=x

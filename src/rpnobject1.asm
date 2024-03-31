@@ -10,12 +10,11 @@
 ; entry.
 ;-----------------------------------------------------------------------------
 
-; Description: Same as CkOP1Cplx() OS routine without the bcall() overhead.
+; Description: Return the rpnObjectType of OP1/OP2.
 ; Input: OP1
-; Output: ZF=1 if complex
+; Output: A=rpnObjectType
 ; Destroys: A
-checkOp1ComplexPageOne:
+getOp1RpnObjectTypePageOne:
     ld a, (OP1)
     and $1f
-    cp rpnObjectTypeComplex
     ret
