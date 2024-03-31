@@ -8,8 +8,23 @@
 
 ; Description: Configure the command arg scanner and display before each
 ; invocation. Use InitArgBuf() to initialize at the start of application.
+;
+; The following parameters are set to default values. After startArgScanner()
+; returns, the calling routine can clobber the default values, before calling
+; processArgCommands():
+;
+;   - inputBufFlagsArgAllowModifier: set if +,-,*,/,. are allowed
+;   - inputBufFlagsArgAllowLetter: set if A-Z,Theta are allowed
+;   - argLenLimit:u8
+;
 ; Input:
 ;   - HL: pointer to command argument label
+; Output:
+;   - inputBufFlagsArgAllowModifier=0
+;   - inputBufFlagsArgAllowLetter=0
+;   - (argLenLimit)=2
+;   - (argPrompt)=HL
+;   - (argModifier)=0
 ; Destroys: A
 startArgScanner:
     ld (argPrompt), hl
@@ -53,6 +68,7 @@ startArgScanner:
 ; Input:
 ;   - inputBufFlagsArgAllowModifier: set if +,-,*,/,. are allowed
 ;   - inputBufFlagsArgAllowLetter: set if A-Z,Theta are allowed
+;   - argLenLimit:u8
 ; Output:
 ;   - (argBuf): contains characters typed in by user
 ;   - (argModifier): modifier enum if a modifier key (+ - * / .) was selected

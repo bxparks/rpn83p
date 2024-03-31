@@ -353,6 +353,8 @@ mRoundToNHandler:
     call closeInputAndRecallX ; OP1=X
     ld hl, msgRoundPrompt
     call startArgScanner
+    ld a, 1
+    ld (argLenLimit), a ; accept only a single digit
     bcall(_PushRealO1)
     call processArgCommands ; ZF=0 if cancelled; destroys OP1-OP6
     push af
@@ -361,9 +363,9 @@ mRoundToNHandler:
     ret nz ; do nothing if cancelled
     ld a, (argValue)
     cp 10
-    ret nc ; return if argValue>=10
+    ret nc ; return if argValue>=10 (should never happen with argLenLimit==1)
     ld d, a
-    bcall(_Round) ; round to D digits
+    bcall(_Round) ; round to D digits, allowed values: 0-9
     jp replaceX
 
 msgRoundPrompt:
