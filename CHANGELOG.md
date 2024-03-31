@@ -1,6 +1,13 @@
 # Changelog
 
 - Unreleased
+    - Supports resizing the number of storage registers
+        - `MODE` > `SIZE` command supports a minimum of 25 to a maximum of 100
+        - `MODE` > `SIZ?` returns the current size of storage registers
+        - size of the `RPN83REG` appVar varies:
+            - 496 bytes at SIZE=25
+            - 1921 bytes at SIZE=100
+- 0.10.0 (2024-03-31)
     - **Bug Fix** Fix broken `CLRG`
         - broke when 'REGS' was replaced by 'RPN83REG'
     - **Bug Fix** Parse floating numbers equivalent to 0.0 more correctly.
@@ -28,6 +35,9 @@
     - **Bug Fix** Validate data type when storing to `ANS` upon app exit
         - allow only Real or Complex numbers to stored to `ANS`
     - Verify compatibility with TI-Nspire with TI-84 Plus keyboard
+        - the TI-Nspire with the TI-84 keyboard emulates the Z80 processor and
+          the TI-83/84 firmware
+        - RPN83P seems to run prefectly fine on it
     - Store and recall TI-OS single-letter variables
         - TI-OS supports 27 single-letter variables (A-Z, Theta) for real and
           complex numbers
@@ -43,26 +53,21 @@
           shown
         - change the message from `Err:Domain` to `Err:DataType`
     - Add `MODE` option to invert the behavior of `,` and `2ND EE` button
-        - Previously, both the `,` button and `2ND EE` button were mapped to
+        - previously, both the `,` button and `2ND EE` button were mapped to
           `EE`, to make entry of floating point numbers with exponents easier.
         - But the new Date/Time records require the `,` button for entry.
-        - Add 2 selectors into `MODE` menu:
+        - add 2 selectors into `MODE` menu:
             - `,EE` causes the button to behave as labeled (default)
             - `EE,` inverts the mapping, so that `,` invokes the `EE` function,
               and `2ND EE` invokes the `,` function
-        - This allows the end user to select the most convenient behavior.
-        - The selected option is saved and restored upon restart of the app.
+        - allows the end user to select the most convenient behavior.
     - Update menu compiler and menu routines to support more than 255 items.
-        - Move most menu routines into Flash Page 1.
-    - Add `DATE` menu hierarchy with Date, Time, DateTime, Clock functions
-        - See [RPN83P User Guide: DATE](docs/USER_GUIDE_DATE.md)
-    - Increase performance of `PRIM` (prime factor) function by about 45%.
-    - Supports resizing the number of storage registers
-        - `MODE` > `SIZE` command supports a minimum of 25 to a maximum of 100
-        - `MODE` > `SIZ?` returns the current size of storage registers
-        - size of the `RPN83REG` appVar varies:
-            - 496 bytes at SIZE=25
-            - 1921 bytes at SIZE=100
+        - move most menu routines into Flash Page 1.
+    - support Date, Time, DateTime, TimeZone, and real-time Clock functions
+        - see [RPN83P User Guide: DATE](docs/USER_GUIDE_DATE.md)
+    - increase performance of `PRIM` (prime factor) function by 40-50%.
+        - see [RPN83P User Guide: Prime
+          Factors](docs/USER_GUIDE.md#prime-factors)
 - 0.9.0 (2024-01-06)
     - **Breaking**: Change names and internal formats of various appVars
         - `STK` list variable replaced with `RPN83STK`
