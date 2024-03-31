@@ -2467,17 +2467,12 @@ To enter `1-2i` in rectangular mode, we would type:
 
 To enter `2 e^(i 60deg)` in polar-degree mode, we would type:
 
-```
-2
-2ND ANGLE
-60
-ENTER
-```
-
-The display before and after the `ENTER` looks like this:
-
-![RPN83P Complex Inlining PDEG 1](images/complex-inlining-pdeg-1.png)
-![RPN83P Complex Inlining PDEG 2](images/complex-inlining-pdeg-2.png)
+| **Keys**          | **Display** |
+| ----------------  | --------------------- |
+| `2`               | ![](images/complex-inlining-pdeg-1.png) |
+| `2ND ANGLE`       | ![](images/complex-inlining-pdeg-2.png) |
+| `60`              | ![](images/complex-inlining-pdeg-3.png) |
+| `ENTER`           | ![](images/complex-inlining-pdeg-4.png) |
 
 Notice that the complex number separator is the combination of an Angle symbol
 and a Degree symbol, which indicates that the input is expecting the angle to be
