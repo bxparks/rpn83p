@@ -34,9 +34,8 @@ machines:
   [java.time](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/time/package-summary.html) package
 - C# [Noda Time](https://nodatime.org) library
 - Python [datetime](https://docs.python.org/3/library/datetime.html) library
-- Go lang [time](https://pkg.go.dev/time) package
 
-**Version**: 0.10.0-dev (2024-03-30)
+**Version**: 0.10.0-dev (2024-03-31)
 
 **Parent Document**: [USER_GUIDE.md](USER_GUIDE.md)
 
