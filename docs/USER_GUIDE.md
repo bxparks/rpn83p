@@ -2796,12 +2796,12 @@ For example, let's compute the `sqrt(-1)` in `RRES` and `CRES` modes:
 
 | **Keys**                  | **Display** |
 | ----------------          | --------------------- |
-| `MODE` `DOWN` `RECT`      | ![](images/complex-sqrt-01.png) |
-| `RRES`                    | ![](images/complex-sqrt-02.png) |
-| `1` `(-)`                 | ![](images/complex-sqrt-03.png) |
-| `2ND SQRT`                | ![](images/complex-sqrt-04.png) |
-| `CRES`                    | ![](images/complex-sqrt-05.png) |
-| `2ND SQRT`                | ![](images/complex-sqrt-06.png) |
+| `MODE` `DOWN` `RECT`      | ![](images/complex-result-mode-01.png) |
+| `RRES`                    | ![](images/complex-result-mode-02.png) |
+| `1` `(-)`                 | ![](images/complex-result-mode-03.png) |
+| `2ND SQRT`                | ![](images/complex-result-mode-04.png) |
+| `CRES`                    | ![](images/complex-result-mode-05.png) |
+| `2ND SQRT`                | ![](images/complex-result-mode-06.png) |
 
 #### Complex Numbers and Trigonometric Modes
 
