@@ -2792,14 +2792,16 @@ There are currently only a few functions which are affected by these settings:
 If `RRES` is selected, then these functions will return an `Err: Domain` error
 message. If `CRES` is selected, these functions will return a complex value.
 
-For example, if we try to take the sqrt(-1), in `RRES` mode, an error will be
-printed like this:
+For example, let's compute the `sqrt(-1)` in `RRES` and `CRES` modes:
 
-![RPN83P Complex SQRT RRES](images/complex-sqrt-rres.png)
-
-But if we change the complex result mode to `CRES`, we get a complex result:
-
-![RPN83P Complex SQRT CRES](images/complex-sqrt-cres.png)
+| **Keys**                  | **Display** |
+| ----------------          | --------------------- |
+| `MODE` `DOWN` `RECT`      | ![](images/complex-sqrt-01.png) |
+| `RRES`                    | ![](images/complex-sqrt-02.png) |
+| `1` `(-)`                 | ![](images/complex-sqrt-03.png) |
+| `2ND SQRT`                | ![](images/complex-sqrt-04.png) |
+| `CRES`                    | ![](images/complex-sqrt-05.png) |
+| `2ND SQRT`                | ![](images/complex-sqrt-06.png) |
 
 #### Complex Numbers and Trigonometric Modes
 
