@@ -2718,20 +2718,21 @@ representations of complex numbers:
 
 ![RPN83P Complex Example2 Equation](images/complex-example2-equation.png)
 
-The keystrokes can be:
-```
-1 2ND i 1
-ENTER
-3 2ND ANGLE 45
-^
-1 2ND ANGLE 2ND ANGLE 2
-+
-2ND SQRT
+This can be calculated using the following keystrokes:
 
-RECT # shows .576363737 i 1.01949228
-PRAD # shows 1.17113606 Angle 1.05624914
-PDEG # shows 1.17113606 AngleDeg 60.518618
-```
+| **Keys**                          | **Display** |
+| ----------------                  | --------------------- |
+| `MODE` `DOWN` `RECT`              | ![](images/complex-example2-01.png) |
+| `ON/EXIT`                         | ![](images/complex-example2-02.png) |
+| `1` `2ND i` `1`                   | ![](images/complex-example2-03.png) |
+| `ENTER`                           | ![](images/complex-example2-04.png) |
+| `3` `2ND ANGLE` `45`              | ![](images/complex-example2-05.png) |
+| `^`                               | ![](images/complex-example2-06.png) |
+| `1` `2ND ANGLE` `2ND ANGLE` `2`   | ![](images/complex-example2-07.png) |
+| `+`                               | ![](images/complex-example2-08.png) |
+| `2ND SQRT`                        | ![](images/complex-example2-09.png) |
+| `MODE` `DOWN` `PRAD`              | ![](images/complex-example2-10.png) |
+| `PDEG`                            | ![](images/complex-example2-11.png) |
 
 **Example 3: CANG, CABS**
 
