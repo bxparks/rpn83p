@@ -1021,6 +1021,14 @@ _ComplexToPolarDegLabel:
 _ComplexToPolarDeg equ _ComplexToPolarDegLabel-branchTableBase
     .dw ComplexToPolarDeg
     .db 1
+_ComplexToRealsLabel:
+_ComplexToReals equ _ComplexToRealsLabel-branchTableBase
+    .dw ComplexToReals
+    .db 1
+_RealsToComplexLabel:
+_RealsToComplex equ _RealsToComplexLabel-branchTableBase
+    .dw RealsToComplex
+    .db 1
 
 ; formatcomplex1.asm
 _FormatComplexRectLabel:

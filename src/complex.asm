@@ -108,50 +108,6 @@ initComplexMode:
     ret
 
 ;-----------------------------------------------------------------------------
-; Conversion bewteen complex and reals, to handle the '2ND LINK' function.
-;-----------------------------------------------------------------------------
-
-; Description: Convert the complex number in CP1 to either (a,b) or (r,theta)
-; in OP1/OP2, depending on the complexMode.
-; Input: CP1=complex
-; Output: OP1,OP2=(a,b) or (r,theta)
-; Destroys: all
-complexToReals:
-    ld a, (complexMode)
-    cp a, complexModeRad
-    jr nz, complexToRealsCheckDeg
-    bcall(_ComplexToPolarRad)
-    ret
-complexToRealsCheckDeg:
-    cp a, complexModeDeg
-    jr nz, complexToRealsRect
-    bcall(_ComplexToPolarDeg)
-    ret
-complexToRealsRect:
-    bcall(_ComplexToRect)
-    ret
-
-; Description: Convert the (a,b) or (r,theta) (depending on complexMode) to a
-; complex number in CP1.
-; Input: OP1,OP2=(a,b) or (r,theta)
-; Output: CP1=complex
-; Destroys: all
-realsToComplex:
-    ld a, (complexMode)
-    cp a, complexModeRad
-    jr nz, realsToComplexCheckDeg
-    bcall(_PolarRadToComplex)
-    ret
-realsToComplexCheckDeg:
-    cp a, complexModeDeg
-    jr nz, realsToComplexRect
-    bcall(_PolarDegToComplex)
-    ret
-realsToComplexRect:
-    bcall(_RectToComplex)
-    ret
-
-;-----------------------------------------------------------------------------
 ; Complex misc operations. To avoid confusing the user, these throw an
 ; Err:DataType if the argument is not complex. In other words, these are not
 ; "universal" routines which operate on both types.

@@ -138,3 +138,47 @@ ComplexToPolarDeg:
     call op1ToOp2PageOne ; OP2=degree(Z)
     bcall(_PopRealO1) ; FPS=[]; OP1=abs(Z)
     ret
+
+;-----------------------------------------------------------------------------
+; Conversion bewteen complex and reals, to handle the '2ND LINK' function.
+;-----------------------------------------------------------------------------
+
+; Description: Convert the complex number in CP1 to either (a,b) or (r,theta)
+; in OP1/OP2, depending on the complexMode.
+; Input: CP1=complex
+; Output: OP1,OP2=(a,b) or (r,theta)
+; Destroys: all
+ComplexToReals:
+    ld a, (complexMode)
+    cp a, complexModeRad
+    jr nz, complexToRealsCheckDeg
+    call ComplexToPolarRad
+    ret
+complexToRealsCheckDeg:
+    cp a, complexModeDeg
+    jr nz, complexToRealsRect
+    call ComplexToPolarDeg
+    ret
+complexToRealsRect:
+    call ComplexToRect
+    ret
+
+; Description: Convert the (a,b) or (r,theta) (depending on complexMode) to a
+; complex number in CP1.
+; Input: OP1,OP2=(a,b) or (r,theta)
+; Output: CP1=complex
+; Destroys: all
+RealsToComplex:
+    ld a, (complexMode)
+    cp a, complexModeRad
+    jr nz, realsToComplexCheckDeg
+    call PolarRadToComplex
+    ret
+realsToComplexCheckDeg:
+    cp a, complexModeDeg
+    jr nz, realsToComplexRect
+    call PolarDegToComplex
+    ret
+realsToComplexRect:
+    call RectToComplex
+    ret
