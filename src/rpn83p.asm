@@ -1021,6 +1021,35 @@ _ComplexToPolarDegLabel:
 _ComplexToPolarDeg equ _ComplexToPolarDegLabel-branchTableBase
     .dw ComplexToPolarDeg
     .db 1
+;
+_ComplexToRealsLabel:
+_ComplexToReals equ _ComplexToRealsLabel-branchTableBase
+    .dw ComplexToReals
+    .db 1
+_RealsToComplexLabel:
+_RealsToComplex equ _RealsToComplexLabel-branchTableBase
+    .dw RealsToComplex
+    .db 1
+_ComplexRealLabel:
+_ComplexReal equ _ComplexRealLabel-branchTableBase
+    .dw ComplexReal
+    .db 1
+_ComplexImagLabel:
+_ComplexImag equ _ComplexImagLabel-branchTableBase
+    .dw ComplexImag
+    .db 1
+_ComplexConjLabel:
+_ComplexConj equ _ComplexConjLabel-branchTableBase
+    .dw ComplexConj
+    .db 1
+_ComplexAbsLabel:
+_ComplexAbs equ _ComplexAbsLabel-branchTableBase
+    .dw ComplexAbs
+    .db 1
+_ComplexAngleLabel:
+_ComplexAngle equ _ComplexAngleLabel-branchTableBase
+    .dw ComplexAngle
+    .db 1
 
 ; formatcomplex1.asm
 _FormatComplexRectLabel:
@@ -1745,6 +1774,7 @@ defpage(1)
 #include "pstring1.asm"
 #include "memory1.asm"
 #include "integer1.asm"
+#include "rpnobject1.asm"
 #include "float1.asm"
 #include "integerconv1.asm"
 #include "const1.asm"

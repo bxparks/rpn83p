@@ -238,7 +238,6 @@ mPrimeHandler:
     call closeInputAndRecallX
     bcall(_PrimeFactor)
     bcall(_RunIndicOff) ; disable run indicator
-
     ; Instead of replacing the original X, push the prime factor into the RPN
     ; stack. This allows the user to press '/' to get the next candidate prime
     ; factor, which can be processed through 'PRIM` again. Running through this

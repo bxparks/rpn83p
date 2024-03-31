@@ -138,3 +138,147 @@ ComplexToPolarDeg:
     call op1ToOp2PageOne ; OP2=degree(Z)
     bcall(_PopRealO1) ; FPS=[]; OP1=abs(Z)
     ret
+
+;-----------------------------------------------------------------------------
+; Conversion bewteen complex and reals, to handle the '2ND LINK' function.
+;-----------------------------------------------------------------------------
+
+; Description: Convert the complex number in CP1 to either (a,b) or (r,theta)
+; in OP1/OP2, depending on the complexMode.
+; Input: CP1=complex
+; Output: OP1,OP2=(a,b) or (r,theta)
+; Destroys: all
+ComplexToReals:
+    ld a, (complexMode)
+    cp a, complexModeRad
+    jr nz, complexToRealsCheckDeg
+    call ComplexToPolarRad
+    ret
+complexToRealsCheckDeg:
+    cp a, complexModeDeg
+    jr nz, complexToRealsRect
+    call ComplexToPolarDeg
+    ret
+complexToRealsRect:
+    call ComplexToRect
+    ret
+
+; Description: Convert the (a,b) or (r,theta) (depending on complexMode) to a
+; complex number in CP1.
+; Input: OP1,OP2=(a,b) or (r,theta)
+; Output: CP1=complex
+; Destroys: all
+RealsToComplex:
+    ld a, (complexMode)
+    cp a, complexModeRad
+    jr nz, realsToComplexCheckDeg
+    call PolarRadToComplex
+    ret
+realsToComplexCheckDeg:
+    cp a, complexModeDeg
+    jr nz, realsToComplexRect
+    call PolarDegToComplex
+    ret
+realsToComplexRect:
+    call RectToComplex
+    ret
+
+;-----------------------------------------------------------------------------
+; Complex misc operations. To avoid confusing the user, these throw an
+; Err:DataType if the argument is not complex. In other words, these are not
+; "universal" routines which operate on both types.
+;-----------------------------------------------------------------------------
+
+; Description: Extract the real part of complex(OP1/OP2). If OP1/OP2 is already
+; real, then the result is the original input.
+; Input: OP1/OP2:(Complex|Real)
+; Output: OP1=Re(OP1/OP2)
+ComplexReal:
+    call getOp1RpnObjectTypePageOne ; A=rpnObjectType
+    cp rpnObjectTypeReal
+    ret z
+    cp rpnObjectTypeComplex
+    jr nz, complexDataTypeErr
+    bcall(_ComplexToRect) ; OP1=Re(Z); OP2=Im(Z)
+    ret
+
+; Description: Extract the imaginary part of complex(OP1/OP2). If OP1/OP2 is
+; already real, then the result is 0.
+; Input: OP1/OP2:(Complex|Real)
+; Output: OP1=Im(OP1/OP2)
+ComplexImag:
+    call getOp1RpnObjectTypePageOne ; A=rpnObjectType
+    cp rpnObjectTypeReal
+    jp z, op1Set0PageOne
+    cp rpnObjectTypeComplex
+    jr nz, complexDataTypeErr
+    bcall(_ComplexToRect) ; OP1=Re(Z); OP2=Im(Z)
+    jp op2ToOp1PageOne ; OP1=Im(Z)
+
+; Description: Calculate the ComplexConjugate of(OP1/OP2). If OP1/OP2 is
+; already real, then the result is the original input.
+; Input: OP1/OP2:(Complex|Real)
+; Output: OP1/OP2=conj(OP1/OP2)
+ComplexConj:
+    call getOp1RpnObjectTypePageOne ; A=rpnObjectType
+    cp rpnObjectTypeReal
+    ret z
+    cp rpnObjectTypeComplex
+    jr nz, complexDataTypeErr
+    bcall(_Conj) ; X=conj(X)
+    ret
+
+; Description: Return the magnitude or absolute value 'r' of the complex
+; number. If OP1/OP2 is already real, the result is simply abs(OP1).
+; Input: OP1/OP2:(Complex|Real)
+; Output: OP1: abs(Z) or abs(X)
+ComplexAbs:
+    call getOp1RpnObjectTypePageOne ; A=rpnObjectType
+    cp rpnObjectTypeReal
+    jr z, complexAbsForReal
+    cp rpnObjectTypeComplex
+    jr nz, complexDataTypeErr
+    bcall(_CAbs); OP1=Cabs(CP1)
+    ret
+complexAbsForReal:
+    bcall(_ClrOP1S)
+    ret
+
+; Description: Return the angle (argument) of the complex number. This function
+; returns the angle in the unit specified by the trigonometric mode (RAD, DEG).
+; This makes CANG the *only* complex function to depend on the trigonometric
+; mode. This seemed to make sense because the CARG function is so similar to
+; the ATN2 function.
+;
+; Another alternative was to use the complex display mode, and return radians in
+; PRAD mode, and degrees in PDEG mode. But for RECT, the only thing that made
+; sense was to return radians which seemed confusing. Also, the CANG function
+; becomes the only complex function that depends on how complex numbers are
+; rendered. This seemed likely to cause even more problems if keystroke
+; programming is added later, because the behavior of the program now depends
+; on how something is *displayed* on the screen.
+;
+; A second alternatve was to always return radians for CANG. But that meant
+; that the screen would show DEG to indicate degree mode, but CANG always
+; return radians. And that seemed more confusing than letting CANG depend on
+; the trigonometric mode.
+;
+; If OP1/OP2 is already real, return 0.
+;
+; Input:
+;   - OP1/OP2:(Complex|Real)
+;   - (trigFlags)=RAD or DEG
+ComplexAngle:
+    call getOp1RpnObjectTypePageOne ; A=rpnObjectType
+    cp rpnObjectTypeReal
+    jp z, op1Set0PageOne
+    cp rpnObjectTypeComplex
+    jr nz, complexDataTypeErr
+    ; calculate angle in radians
+    call op1ExOp2PageOne ; OP1=Im(Z)=y; OP2=Re(Z)=x
+    ld d, 0 ; set undocumented parameter for ATan2()
+    bcall(_ATan2) ; OP1=radian(Z), destroys OP1-OP5
+    ret
+
+complexDataTypeErr:
+    bcall(_ErrDataType)

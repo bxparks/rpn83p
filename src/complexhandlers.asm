@@ -5,29 +5,29 @@
 ; Handlers for the CPLX (complex) menu items.
 ;-----------------------------------------------------------------------------
 
-mComplexConjHandler:
-    call closeInputAndRecallUniversalX ; OP1/OP2=X
-    call complexConj
-    jp replaceX
-
 mComplexRealHandler:
     call closeInputAndRecallUniversalX
-    call complexReal
+    bcall(_ComplexReal)
     jp replaceX ; X=Re(X)
 
 mComplexImagHandler:
     call closeInputAndRecallUniversalX
-    call complexImag
+    bcall(_ComplexImag)
     jp replaceX ; X=Im(X)
+
+mComplexConjHandler:
+    call closeInputAndRecallUniversalX ; OP1/OP2=X
+    bcall(_ComplexConj)
+    jp replaceX
 
 mComplexAbsHandler:
     call closeInputAndRecallUniversalX
-    call complexAbs
+    bcall(_ComplexAbs)
     jp replaceX ; X=cabs(X) or abs(X)
 
 mComplexAngleHandler:
     call closeInputAndRecallUniversalX
-    call complexAngle
+    bcall(_ComplexAngle)
     jp replaceX ; X=Cangle(X)
 
 ;-----------------------------------------------------------------------------

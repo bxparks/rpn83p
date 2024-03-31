@@ -34,6 +34,9 @@
         - allow only Real numbers for `X` and `Y`
     - **Bug Fix** Validate data type when storing to `ANS` upon app exit
         - allow only Real or Complex numbers to stored to `ANS`
+    - **Bug Fix** Support real arguments for `CPLX` menu functions (`REAL`,
+      `IMAG`, `CONJ`, `CABS`, `CANG`)
+        - fixes [Issue#16](https://github.com/bxparks/rpn83p/issues/16)
     - Verify compatibility with TI-Nspire with TI-84 Plus keyboard
         - the TI-Nspire with the TI-84 keyboard emulates the Z80 processor and
           the TI-83/84 firmware
