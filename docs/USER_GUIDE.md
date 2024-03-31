@@ -1462,12 +1462,20 @@ Any number outside of this range produces an `Err: Domain` message. (The number
 `1` is not considered a prime number.)
 
 If the input number is a very large prime, the calculation may take a long time.
-However, testing has verified that the `PRIM` algorithm will always finish in
-less than about 33 seconds on a TI-83+ (running at 6 MHz) or 13 seconds on a
-TI-83+SE, TI-84+, or TI-84+SE (running at 15 MHz), no matter how large the input
-number. During the calculation, the "run indicator" on the upper-right corner
-will be active. You can press `ON` key to break from the `PRIM` loop with an
-`Err: Break` message.
+The number that takes the longest time is `65521*65521` = `4_293_001_441`,
+because 65521 is the largest prime less than `2^16=65536`. Here are the running
+times of the `PRIM` function for this number for various TI models that I own:
+
+| **Model**                     | **PRIM Running Time** |
+| ---                           | ---                   |
+| TI-83+ (6 MHz)                | 20 s                  |
+| TI-83+SE (15 MHz)             | 7.7 s                 |
+| TI-84+SE (15 MHz)             | 9.5 s                 |
+| TI-Nspire w/ TI-84+ keyboard  | 8.2 s                 |
+
+During the calculation, the "run indicator" on the upper-right corner will be
+active. You can press `ON` key to break from the `PRIM` loop with an `Err:
+Break` message.
 
 ### BASE Functions
 
