@@ -2509,11 +2509,12 @@ A solitary `2ND i` should be interpreted as `0 i 0` (0+0i) if the parsing rules
 were strictly followed, because the empty string on both sides of the `2ND i`
 delimiter should be interpreted as a `0`. However it seemed convenient to make
 an exception for a solitary `2ND i` so that it is parsed as `0 i 1` instead.
-This makes it easier to enter the pure imaginary number `i`. Here are
-screenshots after a solitary `2ND i` and an `ENTER`:
+This makes it easier to enter the pure imaginary number `i`.
 
-![RPN83P Complex Solitary i 1](images/complex-solitary-i-1.png)
-![RPN83P Complex Solitary i 2](images/complex-solitary-i-2.png)
+| **Keys**      | **Display** |
+| --------------| --------------------- |
+| `2ND i`       | ![](images/complex-solitary-i-1.png) |
+| `ENTER`       | ![](images/complex-solitary-i-2.png) |
 
 This special rule is triggered only by a solitary `2ND i`. If there is any digit
 before or after the `2ND i`, regular parsing rules are used. For example, `1 2ND
