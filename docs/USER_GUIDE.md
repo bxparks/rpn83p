@@ -1353,6 +1353,72 @@ Similarly:
 Indirect storage registers, the `STO` `IND` `nn` and `RCL` `IND` `nn`
 functionality from the HP-42S, are not supported (as of v0.9.0).
 
+### Storage Variables
+
+The HP-42S supports variables with alphanumeric names of up to 7 characters
+long. For example, pressing `STO ABC` stores the `X` value into a variable named
+`ABC`. The underlying TI-OS supports only single letter variables:
+
+- `A`-`Z`, and
+- `Theta` (Greek letter above the `3` button)
+
+Those single letters are accessible from the TI-83/84 keyboard using the `ALPHA`
+key (which acts like the `2ND` key). To store a number into `A`, press:
+
+- `STO` `ALPHA` `A` `ENTER`
+
+To recall from variable `A`, press:
+
+- `2ND` `RCL` `ALPHA` `A` `ENTER`
+
+| **Keys**          | **Display** |
+| ----------------  | --------------------- |
+| `42`              | ![](images/storage-variable-1.png) |
+| `STO ALPHA A`     | ![](images/storage-variable-2.png) |
+| `ENTER`           | ![](images/storage-variable-3.png) |
+| `2ND RCL ALPHA A` | ![](images/storage-variable-4.png) |
+| `ENTER`           | ![](images/storage-variable-5.png) |
+
+The `ENTER` key is required because both `STO` and `RCL` expect 2 character
+arguments (corresponding to the 2-digit storage registers). The TI-OS supports
+only a single letter, so the `ENTER` is required to terminate the entry of the
+argument.
+
+(I actually implemented a version of RPN83P which auto-invoked the `ENTER` after
+a single letter. But I found it too easy to enter the wrong letter with the
+`ALPHA` key, and the automatic `ENTER` allowed no opportunity to correct the
+typing error. By always requiring 2 characters, we can double-check that correct
+letter was entered before hitting the `ENTER` key.)
+
+Storage arithmetic operations (`STO+`, `RLC+`, etc) are supported as expected:
+
+- `STO` `+` `B`: add `X` to `B`
+- `STO` `-` `B`: subtract `X` from `B`
+- `STO` `*` `B`: multiply `X` to `B`
+- `STO` `/` `B`: divide `X` into `B`
+
+Similarly:
+
+- `RCL` `+` `B`: add `B` to `X`
+- `RCL` `-` `B`: subtract `B` from `X`
+- `RCL` `*` `B`: multiply `B` to `X`
+- `RCL` `/` `B`: divide `B` into `X`
+
+| **Keys**              | **Display** |
+| ----------------      | --------------------- |
+| `2`                   | ![](images/storage-variable-arith-01.png) |
+| `STO ALPHA A`         | ![](images/storage-variable-arith-02.png) |
+| `ENTER`               | ![](images/storage-variable-arith-03.png) |
+| `6`                   | ![](images/storage-variable-arith-04.png) |
+| `STO ALPHA B`         | ![](images/storage-variable-arith-05.png) |
+| `ENTER`               | ![](images/storage-variable-arith-06.png) |
+| `2ND RCL / ALPHA A`   | ![](images/storage-variable-arith-07.png) |
+| `ENTER`               | ![](images/storage-variable-arith-08.png) |
+| `STO + ALPHA B`       | ![](images/storage-variable-arith-09.png) |
+| `ENTER`               | ![](images/storage-variable-arith-10.png) |
+| `2ND RCL ALPHA B`     | ![](images/storage-variable-arith-11.png) |
+| `ENTER`               | ![](images/storage-variable-arith-12.png) |
+
 ### Prime Factors
 
 The `PRIM` function calculates the lowest prime factor of the number in `X`. The
