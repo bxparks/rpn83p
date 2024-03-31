@@ -2457,18 +2457,13 @@ to delimit the 2 components of a complex number.
 
 To enter `1-2i` in rectangular mode, we would type:
 
-```
-1
-2ND i
-2
-(-)
-ENTER
-```
-
-The display before and after the `ENTER` looks like this:
-
-![RPN83P Complex Inlining RECT 1](images/complex-inlining-rect-1.png)
-![RPN83P Complex Inlining RECT 2](images/complex-inlining-rect-2.png)
+| **Keys**          | **Display** |
+| ----------------  | --------------------- |
+| `1`               | ![](images/complex-inlining-rect-1.png) |
+| `2ND i`           | ![](images/complex-inlining-rect-2.png) |
+| `2`               | ![](images/complex-inlining-rect-3.png) |
+| `(-)`             | ![](images/complex-inlining-rect-4.png) |
+| `ENTER`           | ![](images/complex-inlining-rect-5.png) |
 
 To enter `2 e^(i 60deg)` in polar-degree mode, we would type:
 
