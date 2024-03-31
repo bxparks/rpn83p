@@ -41,6 +41,7 @@ RPN calculator app for the TI-83 Plus and TI-84 Plus inspired by the HP-42S.
     - [Trigonometric Modes](#trigonometric-modes)
     - [Comma-EE Button Mode](#comma-ee-button-mode)
     - [Storage Registers](#storage-registers)
+    - [Storage Variables](#storage-variables)
     - [Prime Factors](#prime-factors)
     - [BASE Functions](#base-functions)
         - [Base Modes](#base-modes)
@@ -1363,7 +1364,9 @@ long. For example, pressing `STO ABC` stores the `X` value into a variable named
 - `Theta` (Greek letter above the `3` button)
 
 Those single letters are accessible from the TI-83/84 keyboard using the `ALPHA`
-key (which acts like the `2ND` key). To store a number into `A`, press:
+key (which acts like the `2ND` key).
+
+To store a number into `A`, press:
 
 - `STO` `ALPHA` `A` `ENTER`
 
@@ -1384,40 +1387,43 @@ arguments (corresponding to the 2-digit storage registers). The TI-OS supports
 only a single letter, so the `ENTER` is required to terminate the entry of the
 argument.
 
-(I actually implemented a version of RPN83P which auto-invoked the `ENTER` after
-a single letter. But I found it too easy to enter the wrong letter with the
-`ALPHA` key, and the automatic `ENTER` allowed no opportunity to correct the
-typing error. By always requiring 2 characters, we can double-check that correct
-letter was entered before hitting the `ENTER` key.)
+(I actually tried implementing an automatic `ENTER` after a single letter. But I
+found it too easy to enter the wrong letter with the `ALPHA` key with no
+opportunity to fix the typing error. By always requiring 2 characters, we can
+double-check the letter before hitting the `ENTER` key.)
 
 Storage arithmetic operations (`STO+`, `RLC+`, etc) are supported as expected:
 
-- `STO` `+` `B`: add `X` to `B`
-- `STO` `-` `B`: subtract `X` from `B`
-- `STO` `*` `B`: multiply `X` to `B`
-- `STO` `/` `B`: divide `X` into `B`
+- `STO` `+` `A`: add `X` to `A`
+- `STO` `-` `A`: subtract `X` from `A`
+- `STO` `*` `A`: multiply `X` to `A`
+- `STO` `/` `A`: divide `X` into `A`
 
 Similarly:
 
-- `RCL` `+` `B`: add `B` to `X`
-- `RCL` `-` `B`: subtract `B` from `X`
-- `RCL` `*` `B`: multiply `B` to `X`
-- `RCL` `/` `B`: divide `B` into `X`
+- `RCL` `+` `A`: add `A` to `X`
+- `RCL` `-` `A`: subtract `A` from `X`
+- `RCL` `*` `A`: multiply `A` to `X`
+- `RCL` `/` `A`: divide `A` into `X`
 
-| **Keys**              | **Display** |
-| ----------------      | --------------------- |
-| `2`                   | ![](images/storage-variable-arith-01.png) |
-| `STO ALPHA A`         | ![](images/storage-variable-arith-02.png) |
-| `ENTER`               | ![](images/storage-variable-arith-03.png) |
-| `6`                   | ![](images/storage-variable-arith-04.png) |
-| `STO ALPHA B`         | ![](images/storage-variable-arith-05.png) |
-| `ENTER`               | ![](images/storage-variable-arith-06.png) |
-| `2ND RCL / ALPHA A`   | ![](images/storage-variable-arith-07.png) |
-| `ENTER`               | ![](images/storage-variable-arith-08.png) |
-| `STO + ALPHA B`       | ![](images/storage-variable-arith-09.png) |
-| `ENTER`               | ![](images/storage-variable-arith-10.png) |
-| `2ND RCL ALPHA B`     | ![](images/storage-variable-arith-11.png) |
-| `ENTER`               | ![](images/storage-variable-arith-12.png) |
+| **Keys**                  | **Display** |
+| ----------------          | --------------------- |
+| `3`                       | ![](images/storage-variable-arith-1.png) |
+| `STO ALPHA A`             | ![](images/storage-variable-arith-2.png) |
+| `ENTER`                   | ![](images/storage-variable-arith-3.png) |
+| `2`                       | ![](images/storage-variable-arith-4.png) |
+| `2ND RCL * ALPHA A`       | ![](images/storage-variable-arith-5.png) |
+| `ENTER`                   | ![](images/storage-variable-arith-6.png) |
+| `STO + ALPHA A`           | ![](images/storage-variable-arith-7.png) |
+| `ENTER`                   | ![](images/storage-variable-arith-8.png) |
+| `2ND RCL ALPHA A ENTER`   | ![](images/storage-variable-arith-9.png) |
+
+Storage variables are implemented through the underlying TI-OS. These variables
+are preserved and accessible to TI-BASIC programs after quitting the RPN83P
+application. Storage variables can hold either Real or Complex numbers, but
+unlike the numerical registers (R00-R24), they *cannot* hold the more advanced
+record objects (e.g. Date, Time, DateTime) defined in
+[USER_GUIDE_DATE.md](USER_GUIDE_DATE.md).
 
 ### Prime Factors
 
