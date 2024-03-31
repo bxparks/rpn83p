@@ -6,9 +6,9 @@ time and energy are limited.
 
 This document is a superset of the entries in the [GitHub
 Issues](https://github.com/bxparks/rpn83p/issues) tab. I use this document
-because it is faster and easier compared with the overhead of the web UI,
-especially for small features that can be described in a few sentences. Usually
-only the larger and more complicated features will get their own GitHub tickets.
+because it is faster and easier to use compared to a web app, especially for
+small features that can be described in a few sentences. Usually only the larger
+and more complicated features will get their own GitHub tickets.
 
 **Version**: 0.10.0 (2024-03-29)
 
@@ -44,8 +44,6 @@ only the larger and more complicated features will get their own GitHub tickets.
       RPL or the NSTK mode of Free42) is *not* a feature that is appealing to me
 - add a `ROOT > CLR > CLAL` (Clear All) menu function
     - becomes useful as more features and configuration options are added
-- allow CPLX functions to operate on Real numbers
-    - see [Issue#16](https://github.com/bxparks/rpn83p/issues/16)
 - allow numbers in any base to be entered regardless of the BASE mode
     - see [Issue#17](https://github.com/bxparks/rpn83p/issues/17)
 
@@ -92,11 +90,18 @@ only the larger and more complicated features will get their own GitHub tickets.
       should be relatively straightforward... Except that they need complex
       number support. And we need to work around numerical cancellation or
       roundoff errors.
-- `UNIT` conversions for imperial (not just US) units
-    - several places assume US customary units (e.g. US gallons) instead of
-      British or Canadian imperial units
-    - it'd be nice to support both types, if we can make the menu labels
-      self-documenting and distinctive
+- `UNIT` conversions
+    - support imperial (not just US) units
+        - several places assume US customary units (e.g. US gallons) instead of
+          British or Canadian imperial units
+        - it'd be nice to support both types, if we can make the menu labels
+          self-documenting and distinctive
+    - more flexible workflow
+        - something like the one used by HP-19BII and the TI-85 seems appealing
+          (enter number, press *from unit*, then press *to unit* to get the
+          result)
+        - see [this discussion fragment on the
+          MoHPC](https://www.hpmuseum.org/forum/thread-20867-post-184997.html#pid184997)
 - `TVM` (time value of money)
     - Improve TVM Solver for `I%YR`.
     - The current default initial guess is 0% and 100% so that positive interest
@@ -133,16 +138,14 @@ only the larger and more complicated features will get their own GitHub tickets.
     - Could be made significantly faster using integer operations, instead of
       floating point operations.
     - But not a high priority.
-- interoperability with TI-BASIC
-    - If a TI-BASIC can be called from RPN83P, and a stable data conduit (i.e.
-      an API) can be defined between RPN83P and TI-BASIC, then it may be
-      possible to offload some advanced features to the TI-OS and TI-BASIC
-      programs instead (see `Solver` and `fnInt` below)
-    - For example, single-letter variables `A` to `Z` and `Theta` are now
-      (v0.10.0) available through `STO` and `RCL`.
-    - Other types may be useful: List, Matrix, and String types.
 - add UI marker for menu items which are folders/groups
     - see [Issue#20](https://github.com/bxparks/rpn83p/issues/20)
+- support rule-based DST transitions
+    - the current `DATE` functions support timezones with fixed offsets from UTC
+    - it would be very cool to support something like the
+      [IANA Timezone Database](https://www.iana.org/time-zones)
+    - I think I can implement this with only about 32-48 kB of additional flash
+      memory (i.e. 2-3 flash pages)
 
 ## Far Future
 
@@ -158,6 +161,14 @@ only the larger and more complicated features will get their own GitHub tickets.
         - integration testing through keystroke programming within the RPN83P
           app itself
         - I'm not sure which solution would be easier and more maintainable
+- interoperability with TI-BASIC
+    - If a TI-BASIC can be called from RPN83P, and a stable data conduit (i.e.
+      an API) can be defined between RPN83P and TI-BASIC, then it may be
+      possible to offload some advanced features to the TI-OS and TI-BASIC
+      programs instead (see `Solver` and `fnInt` below)
+    - For example, single-letter variables `A` to `Z` and `Theta` are now
+      (v0.10.0) available through `STO` and `RCL`.
+    - Other types may be useful: List, Matrix, and String types.
 - indirect `STO` and `RCL` operators
     - `STO IND nn`, `STO+ IND nn`, `STO- IND nn`, `STO* IND nn`, `STO/ IND nn`
     - `RCL IND nn`, `RCL+ IND nn`, `RCL- IND nn`, `RCL* IND nn`, `RCL/ IND nn`
@@ -171,6 +182,11 @@ only the larger and more complicated features will get their own GitHub tickets.
       useful for keystroke programming, so let's implement keystroke programming
       before this.
     - see also [Issue#19](https://github.com/bxparks/rpn83p/issues/19)
+- generalized `X` exchange function (`X<>`)
+    - for programming, it is useful to be able to exchange `X` with numeric
+      storage registers, storage variables, and potentially other stack
+      registers
+    - for non-programming use, I don't think this function is essential
 - local RPN stack and local storage registers
     - After keystroke programming is added, it may be useful to support local
       RPN and storage registers, on a per-program basis.
