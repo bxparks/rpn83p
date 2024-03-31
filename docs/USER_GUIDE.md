@@ -1358,7 +1358,9 @@ functionality from the HP-42S, are not supported (as of v0.9.0).
 
 The HP-42S supports variables with alphanumeric names of up to 7 characters
 long. For example, pressing `STO ABC` stores the `X` value into a variable named
-`ABC`. The underlying TI-OS supports only single letter variables:
+`ABC`. The RPN83P supports only single-letter variables because the
+underlying TI-OS supports only a single-letter. There are 27 variables
+available:
 
 - `A`-`Z`, and
 - `Theta` (Greek letter above the `3` button)
