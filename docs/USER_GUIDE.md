@@ -2426,18 +2426,13 @@ unused in RPN83P.
 
 For example, the number `1-2i` would be entered like this:
 
-```
-1
-ENTER
-2
-(-)
-2ND LINK
-```
-
-The display before and after the `2ND LINK` looks like this:
-
-![RPN83P Complex Linking 1](images/complex-linking-1.png)
-![RPN83P Complex Linking 2](images/complex-linking-2.png)
+| **Keys**          | **Display** |
+| ----------------  | --------------------- |
+| `1`               | ![](images/complex-linking-1.png) |
+| `ENTER`           | ![](images/complex-linking-2.png) |
+| `2`               | ![](images/complex-linking-3.png) |
+| `(-)`             | ![](images/complex-linking-4.png) |
+| `2ND LINK`        | ![](images/complex-linking-5.png) |
 
 Notice that the RPN83P follows the convention used by the HP-35s in rendering
 the complex number with an imaginary `i` delimiter between the two components.
@@ -2447,6 +2442,11 @@ not a multiplier of the number `-2`.
 Pressing `2ND LINK` on a complex number performs the *reverse* operation. The
 complex number is broken up into its real components, with the real part going
 into `Y` and the imaginary part going into `X`.
+
+| **Keys**          | **Display** |
+| ----------------  | --------------------- |
+| (from above)      | ![](images/complex-linking-5.png) |
+| `2ND LINK`        | ![](images/complex-linking-6.png) |
 
 **Inlining (2ND i, 2ND ANGLE)**
 
