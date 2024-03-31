@@ -2587,8 +2587,12 @@ The *unlinking* process is also affected by the complex display mode. Let's
 change the display mode to `RECT`, then hit `2ND LINK` to perform the unlinking.
 The display before and after the `2ND LINK` looks like this:
 
-![RPN83P Complex Unlinking RECT 1](images/complex-unlinking-rect-1.png)
-![RPN83P Complex Unlinking RECT 2](images/complex-unlinking-rect-2.png)
+| **Keys**              | **Display** |
+| ----------------      | --------------------- |
+| (from above)          | ![](images/complex-linking-pdeg-6.png) |
+| `MODE` `DOWN` `RECT`  | ![](images/complex-unlinking-rect-1.png) |
+| `ON/EXIT`             | ![](images/complex-unlinking-rect-2.png) |
+| `2ND LINK`            | ![](images/complex-unlinking-rect-3.png) |
 
 #### Complex Polar Mode Overflow
 
