@@ -77,6 +77,9 @@
     - increase performance of `PRIM` (prime factor) function by 40-50%.
         - see [RPN83P User Guide: Prime
           Factors](docs/USER_GUIDE.md#prime-factors)
+    - update pandoc scripts that convert GitHub flavored Markdown to PDF
+        - pandoc was generating images which were 33% too large
+        - fixed by using ImageMagick to prescale the images to 75%
 - 0.9.0 (2024-01-06)
     - **Breaking**: Change names and internal formats of various appVars
         - `STK` list variable replaced with `RPN83STK`
