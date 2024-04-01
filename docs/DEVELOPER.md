@@ -135,10 +135,11 @@ Here are some notes about how the `PRIM` algorithm works:
   implement a custom `mod(u32, u16)` function which is about 25% faster than the
   full `div(u32, u16)` function.
 
-I think there are additional micro-optimizations left on the table that could
-make the `PRIM` function maybe 1.5X to 2X faster, without resorting to a
-completely different algorithm. But I suspect that the resulting code would be
-difficult to understand and maintain. So I decided to stop here.
+RPN83P v0.10.0 implemented an optimization in the `div(u32,u16)` routine that
+produced a 40-50% speed increase compared to v0.9.0. I can think of one
+additional optimization that *may* give us a 10-20% speed increase, but it would
+come at the cost of code that would be significantly harder to maintain, so I
+don't think it's worth it.
 
 ### Prime Factor Improvements
 
