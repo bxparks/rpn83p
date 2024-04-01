@@ -88,14 +88,14 @@ contrast to the SI *second* used by UTC, and POSIX time does not support [leap
 seconds](https://en.wikipedia.org/wiki/Leap_second). Time zones are supported as
 fixed offsets from UTC. Therefore, [daylight saving
 time](https://en.wikipedia.org/wiki/Daylight_saving_time) transitions are *not*
-supported. When date and time objects are displayed to the user, the RPN83P uses
-the [RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339) standard which is
-a standard that is readily accessible, unlike the similar [ISO
-8601](https://en.wikipedia.org/wiki/ISO_8601) standard which is paywalled and
-more difficult to access. The RPN83P also provides access to the real time clock
-(RTC) included in several of the TI calculators that it is compatible with
-(83+SE, 84+, 84+SE, but not the 83+). The RPN83P supports quickly converting the
-current date and time from the RTC into different timezones.
+supported. When date and time objects are displayed to the user, the RPN83P has
+the option of using the [RFC
+3339](https://datatracker.ietf.org/doc/html/rfc3339) standard (very similar to
+the [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) standard). The RPN83P
+also provides access to the real time clock (RTC) if it exists on the calculator
+(84+, 84+SE, Nspire with TI-84 keyboard, but not the 83+ or 83+SE). The RPN83P
+supports converting the current date and time from the RTC into different
+timezones.
 
 ### Gregorian Calendar
 
@@ -246,7 +246,9 @@ supported in the `DATE` functions of RPN83P:
 
 ## DATE Menus
 
-The following menus items are located under the `DATE` menu:
+The following menus items are located under the `DATE` menu. A short synopsis of
+each menu function is listed here. More detailed descriptions are given in later
+subsections below.
 
 - ![ROOT MenuRow 3](images/date/menu-root-date.png)
     - ![DATE MenuRow 1](images/date/menu-root-date-1.png)
@@ -257,6 +259,44 @@ The following menus items are located under the `DATE` menu:
     - ![DATE MenuRow 4](images/date/menu-root-date-4.png)
     - ![DATE MenuRow 5](images/date/menu-root-date-5.png)
     - ![DATE MenuRow 6](images/date/menu-root-date-6.png)
+    - `LEAP`: determine if given year is a leap year
+    - `DOW`: calculate the DayOfWeek of given Date, DateTime, ZonedDateTime
+    - `D>DY`: convert Date to Epoch days
+    - `DY>D`: convert Epoch days to Date
+    - `D*>S`: convert Date-related object to seconds
+    - `S>DR`: convert seconds to Duration
+    - `S>T`: convert seconds to Time
+    - `S>DZ`: convert Epoch seconds to ZonedDateTime using the Application
+      timezone
+    - `S>UT`: convert Epoch seconds to ZonedDateTime using UTC timezone
+    - `TZ>H`: convert TimeZone to floating point hours
+    - `H>TZ`: convert hours to TimeZone
+    - ![ROOT > DATE > EPCH](images/menu-root-date-epch.png)
+      (`ROOT > DATE > EPCH`)
+        - `UNIX`: select Unix Epoch date of 1970-01-01
+        - `NTP`: select NTP Epoch date of 1900-01-01
+        - `GPS`: select GPS Epoch date of 1980-01-06
+        - `TIOS`: select TI-OS Epoch date of 1997-01-01
+        - `Y2K`: select Epoch date of 2000-01-01
+        - `CEPC`: select custom Epoch date
+        - `EPC`: set custom Epoch date
+        - `EPC?`: get current custom Epoch date
+    - `DSHK`: shrink a ZonedDateTime or DateTime by truncating
+    - `DEXD`: extend Date or DateTime into DateTime or ZonedDateTime
+    - `DCUT`: cut (split) a ZonedDateTime or DateTime into smaller objects
+    - `DLNK`: link (merge) smaller objects into DateTime or ZonedDateTime
+    - `NOW`: get the current hardware clock as Epoch seconds
+    - `NOWD`: get the current hardware clock as a Date
+    - `NOWT`: get the current hardware clock as a Time
+    - `NWDZ`: get the current hardware clock as a ZonedDateTime using the
+      Application timezone
+    - `NWUT`: get the current hardware clock as a ZonedDateTime using UTC
+      timezone
+    - `TZ`: set the Application timezone
+    - `TZ?`: get the current Application timezone
+    - `CTZ`: set the hardware clock timezone
+    - `CTZ?`: get the hardware clock timezone
+    - `SETC`: set the datetime of the hardware clock
 
 ## DATE Buttons
 
