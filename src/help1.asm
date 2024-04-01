@@ -33,7 +33,7 @@ helpPageCount equ (helpPagesEnd-helpPages)/2
 
 msgHelpPage1:
     .db escapeLargeFont, "RPN83P", Lenter
-    .db escapeSmallFont, "v0.10.0-dev (2024", Shyphen, "03", Shyphen, "31)", Senter
+    .db escapeSmallFont, "v0.10.0 (2024", Shyphen, "03", Shyphen, "31)", Senter
     .db "(c) 2023", Shyphen, "2024 Brian T. Park", Senter
     .db Senter
     .db "An RPN calculator for the", Senter
@@ -134,8 +134,8 @@ msgHelpPage9:
     .db "PRIM: smallest prime factor", Senter
     .db Senter
     .db "RNDF: Round to FIX/SCI/ENG", Senter
-    .db "RNDG: Round to guard digits", Senter
     .db "RNDN: Round to N digits", Senter
+    .db "RNDG: Round to guard digits", Senter
     .db SlBrack, "9/18", SrBrack, " Any key to continue...", Senter
     .db 0
 
