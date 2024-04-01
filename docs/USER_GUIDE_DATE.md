@@ -412,11 +412,11 @@ practical.
 The Raw Formatting (`{..}`) option is the format used to enter the objects, and
 is better at showing their internal structure. But it has the disadvantage that
 complex objects like ZonedDateTime can overflow the length of a single line.
-When this happens, the [SHOW Mode](USER_GUIDE.md#show-mode) (using `2ND ENTRY`
-keystroke) can be used to show the entire raw formatting without truncation. The
-String Formatting mode (`".."`) is more compact and will always be adjusted to
-fit entirely into a single line. Most users will probably switch to String
-Formatting after an initial learning period.
+When this happens, the SHOW Mode (using `2ND ENTRY` keystroke) can be used to
+show the entire raw formatting without truncation. The String Formatting mode
+(`".."`) is more compact and will always be adjusted to fit entirely into a
+single line. Most users will probably switch to String Formatting after an
+initial learning period.
 
 In the following sections, the screenshots for both Raw and String Formatting
 modes will be shown.
