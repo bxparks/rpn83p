@@ -1,34 +1,25 @@
 # RPN83P User Guide: DATE
 
 This document describes the `DATE` features of the RPN83P application. It has
-been extracted from [RPN83P User Guide](USER_GUIDE.md) due to its length.
-
-The `DATE` features are available under the `ROOT > DATE` menu item in the 3rd
-row:
+been extracted from [USER_GUIDE.md](USER_GUIDE.md) due to its length. The `DATE`
+features are available under the `ROOT > DATE` menu item in the 3rd row:
 
 ![ROOT > DATE menu](images/date/menu-root-date.png)
 
 Here is a quick summary of the features:
 
-- support 7 new objects types (Date, Time, DateTime, TimeZone, ZonedDateTime,
-  DayOfWeek, Duration)
+- 7 new objects types (Date, Time, DateTime, TimeZone, ZonedDateTime, DayOfWeek,
+  Duration)
 - determine if a given year is a leap year
-- calculate day of week (Monday-Sunday) from date
-- add or subtract duration from date
-- calculate duration difference between 2 dates
-- add or subtract duration from time
-- calculate duration difference between 2 Times
-- add or subtract duration from datetime
-- calculate duration difference between 2 datetimes
-- convert datetime to different (fixed) timezones
-- convert between datetime to Epoch seconds relative to an Epoch date
-- support multiple Epoch dates (Unix, NTP, GPS, TIOS, Y2K, custom)
-- set and retrieve datetime from the hardware clock
-    - supported by 84+ and 84+SE
-    - not supported by 83+ and 83+SE
+- calculate day of week (Monday-Sunday) from Date-like objects
+- add or subtract Dates, Times, DateTimes, ZonedDateTimes
+- convert ZonedDateTime to different (fixed) timezones
+- convert between ZonedDateTime to Epoch seconds relative to an Epoch date
+- support alternative Epoch dates (Unix, NTP, GPS, TIOS, Y2K, custom)
+- set and retrieve datetime from the hardware clock (84+/84+SE only)
+- display time and date objects in RFC 3339 (ISO 8601) format
 
-These features are inspired by various datetime libraries on desktop-class
-machines:
+These features were inspired by various datetime libraries:
 
 - Java JDK 11
   [java.time](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/time/package-summary.html) package

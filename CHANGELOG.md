@@ -38,19 +38,18 @@
       `IMAG`, `CONJ`, `CABS`, `CANG`)
         - fixes [Issue#16](https://github.com/bxparks/rpn83p/issues/16)
     - Verify compatibility with TI-Nspire with TI-84 Plus keyboard
-        - the TI-Nspire with the TI-84 keyboard emulates the Z80 processor and
-          the TI-83/84 firmware
-        - RPN83P seems to run prefectly fine on it
+        - works with TI-Nspire with the TI-84 keyboard emulates the Z80
+          processor
     - Store and recall TI-OS single-letter variables
         - TI-OS supports 27 single-letter variables (A-Z, Theta) for real and
           complex numbers
         - extend `STO`, `RCL`, `STO{op}`, and `RCL{op}` to accept a
           single-letter in addition to digits (e.g. `STO ALPHA A`, `RCL+
           ALPHA B`)
-    - Add `RNDF`, `RNDG`, `RNDN` rounding functions
+    - Add `RNDF`, `RNDN`, `RNDG` rounding functions
         - `RNDF`: round to current FIX/SCI/ENG digits
-        - `RNDG`: round to 10 digits, removing guard digits
         - `RNDN`: round to user-specified `N` digits (0-9)
+        - `RNDG`: round to 10 digits, removing guard digits
     - Change complex number type error to `Err:DataType`
         - when a function does not accept a complex number, an error message is
           shown
@@ -66,7 +65,14 @@
         - allows the end user to select the most convenient behavior.
     - Update menu compiler and menu routines to support more than 255 items.
         - move most menu routines into Flash Page 1.
-    - support Date, Time, DateTime, TimeZone, and real-time Clock functions
+    - add date functions
+        - date, time, datetime, timezone, and hardware clock
+        - add or subtract dates, times, datetimes
+        - convert datetime to different timezones
+        - convert between datetime and epochseconds
+        - support alternate Epoch dates (Unix, NTP, GPS, TIOS, Y2K, custom)
+        - set and retrieve datetime from the hardware clock (84+/84+SE only)
+        - display time and date objects in RFC 3339 (ISO 8601) format
         - see [RPN83P User Guide: DATE](docs/USER_GUIDE_DATE.md)
     - increase performance of `PRIM` (prime factor) function by 40-50%.
         - see [RPN83P User Guide: Prime

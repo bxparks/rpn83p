@@ -25,11 +25,12 @@ Summary of features:
 - 8-line display showing all stack registers
 - hierarchical menu system similar to HP-42S
 - quick reference `HELP` menu
-- storage registers
+- storage registers and variables
     - store and recall:`STO nn`, `RCL nn`
     - storage arithmetics: `STO+ nn`, `STO- nn`, `STO* nn`, `STO/ nn`, `RCL+
       nn`, `RCL- nn`, `RCL* nn`, `RCL/ nn`
     - 25 storage registers: `nn = 00..24`
+    - 27 single-letter variables (`nn = A..Z,Theta`)
 - all math functions with dedicated buttons on the TI-83 Plus and TI-84 Plus
     - arithmetic: `/`, `*`, `-`, `+`
     - algebraic: `1/X`, `X^2`, `SQRT`, `^` (i.e. `Y^X`)
@@ -73,7 +74,7 @@ Summary of features:
 - complex numbers, inspired by HP-42S and HP-35s
     - stored in RPN stack registers (`X`, `Y`, `Z`, `T`, `LastX`) and storage
       registers `R00-R24`
-    - computation modes: `RRES` (real results), `CRES` (complex results)
+    - result modes: `RRES` (real results), `CRES` (complex results)
     - display modes: `RECT`, `PRAD` (polar radians), `PDEG` (polar degrees)
     - linking/unlinking: `2ND LINK` (convert 2 reals to 1 complex, same as
       `COMPLEX` on HP-42S)
@@ -85,11 +86,19 @@ Summary of features:
     - complex specific functions: `REAL`, `IMAG`, `CONJ`, `CABS`, `CANG`
     - unsupported: trigonometric and hyperbolic functions (not supported by
       TI-OS)
+- date functions
+    - date, time, datetime, timezone, and hardware clock
+    - add or subtract dates, times, datetimes
+    - convert datetime to different timezones
+    - convert between datetime and epochseconds
+    - support alternative Epoch dates (Unix, NTP, GPS, TIOS, Y2K, custom)
+    - set and retrieve datetime from the hardware clock (84+/84+SE only)
+    - display time and date objects in RFC 3339 (ISO 8601) format
 - various modes (`MODE`)
     - floating display: `FIX`, `SCI`, `ENG`
     - trigonometric: `RAD`, `DEG`
-    - complex computation: `RRES`, `CRES`
-    - complex display: `RECT`, `PRAD`, `PDEG`
+    - complex result modes: `RRES`, `CRES`
+    - complex display modes: `RECT`, `PRAD`, `PDEG`
     - `SHOW` (`2ND ENTRY`): display all 14 internal digits
 
 Missing features (partial list):
