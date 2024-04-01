@@ -1284,7 +1284,8 @@ They round the floating point number in different ways:
     - for `FIX(-)`, no rounding is performed
 - `RNDN`
     - rounds to the user-specified `n` digits (0-9) after the decimal point
-    - `n` is given in the argument of the `RNDN` command
+    - `n` is given in the argument of the `RNDN` command which displays a `ROUND
+      _` prompt
 - `RNDG`
     - rounds to remove the guard digits which leaves 10 mantissa digits
     - the location of the decimal point has no effect
