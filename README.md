@@ -159,14 +159,15 @@ The RPN83P app starts directly into the calculator mode, like this:
 
 This app was designed for TI calculators using the Z80 processor:
 
-- TI-83 Plus (6 MHz Z80, 24 kB accessible RAM, 160 kB accessible flash, no RTC)
+- TI-83 Plus (6 MHz Z80, 24 kB accessible RAM, 160 kB accessible flash)
 - TI-83 Plus Silver Edition (6/15 MHz Z80, 24 kB accessible RAM, 1.5 MB
-  accessible flash, no RTC)
-- TI-84 Plus (6/15 MHz Z80, 24 kB accessible RAM, 480 kB accessible flash, RTC)
+  accessible flash)
+- TI-84 Plus (6/15 MHz Z80, 24 kB accessible RAM, 480 kB accessible flash,
+  hardware clock)
 - TI-84 Plus Silver Edition (6/15 MHz Z80, 24 kB accessible RAM, 1.5 MB
-  accessible flash, RTC)
+  accessible flash, hardware clock)
 - TI-Nspire with TI-84 Plus Keyboard (32-bit ARM processor emulating a Z80, 24
-  kB accessible RAM, 1.5 MB accessible flash, RTC)
+  kB accessible RAM, 1.5 MB accessible flash, hardware clock)
 
 The app configures itself to run at 15 MHz on supported hardware, while
 remaining at 6 MHz on the TI-83+.
