@@ -10,7 +10,9 @@ because it is faster and easier to use compared to a web app, especially for
 small features that can be described in a few sentences. Usually only the larger
 and more complicated features will get their own GitHub tickets.
 
-**Version**: 0.10.0 (2024-03-29)
+**Version**: 0.10.0 (2024-03-31)
+
+**Parent Document**: [USER_GUIDE.md](USER_GUIDE.md)
 
 **Project Home**: https://github.com/bxparks/rpn83p
 

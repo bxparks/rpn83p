@@ -97,7 +97,7 @@ Missing features (partial list):
 - vectors and matrices
 - keystroke programming
 
-**Version**: 0.10.0-dev (2024-03-30)
+**Version**: 0.10.0 (2024-03-31)
 
 **Changelog**: [CHANGELOG.md](CHANGELOG.md)
 
