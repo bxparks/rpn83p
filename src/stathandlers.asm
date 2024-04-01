@@ -40,18 +40,18 @@ initStat:
 ;-----------------------------------------------------------------------------
 
 mStatPlusHandler:
-    call closeInputAndRecallNone
+    call closeInputAndRecallXY ; validates X,Y are Real, OP1,OP2 not used
     call statSigmaPlus
-    ld a, statRegN
+    ld c, statRegN
     call rclRegNN ; OP1=R[sigmaN]
     call replaceX
     res rpnFlagsLiftEnabled, (iy + rpnFlags)
     ret
 
 mStatMinusHandler:
-    call closeInputAndRecallNone
+    call closeInputAndRecallXY ; validates X is Real, OP1 not used
     call statSigmaMinus
-    ld a, statRegN
+    ld c, statRegN
     call rclRegNN ; OP1=R[sigmaN]
     call replaceX
     res rpnFlagsLiftEnabled, (iy + rpnFlags)
@@ -71,28 +71,22 @@ mStatLinearModeHandler:
     set dirtyFlagsMenu, (iy + dirtyFlags)
     ret
 
-; Description: Select the display name of 'ALL<Sigma>'.
-; Input:
-;   - A,B: nameId
-;   - C: altNameId
+; Description: Select menu name.
+; Output: CF=0 for normal, CF=1 or alternate
 mStatAllModeNameSelector:
     ld a, (statAllEnabled)
-    or a
-    ld a, b
+    or a ; CF=0; if A==0: ZF=1
     ret z
-    ld a, c
+    scf
     ret
 
-; Description: Select the display name of 'LIN<Sigma>'.
-; Input:
-;   - A,B: nameId
-;   - C: altNameId
+; Description: Select menu name.
+; Output: CF=0 for normal, CF=1 or alternate
 mStatLinearModeNameSelector:
     ld a, (statAllEnabled)
-    or a
-    ld a, b
+    or a ; CF=0; if A==0: ZF=1
     ret nz
-    ld a, c
+    scf
     ret
 
 mStatClearHandler:
@@ -107,18 +101,18 @@ mStatClearHandler:
 ; Description: Calculate the Sum of X and Y into X and Y registers.
 mStatSumHandler:
     call closeInputAndRecallNone
-    ld a, statRegY
+    ld c, statRegY
     call rclRegNN ; OP1=Ysum
-    ld a, statRegX
+    ld c, statRegX
     call rclRegNNToOP2 ; OP2=Xsum
-    jp pushXY
+    jp pushToXY
 
 ; Description: Calculate the average of X and Y into X and Y registers.
 mStatMeanHandler:
     call closeInputAndRecallNone
     ld ix, cfitModelLinear ; use linear model for simple statistics
     call statMean
-    jp pushXY
+    jp pushToXY
 
 ; Description: Calculate the weighted mean of X and Y.
 ; Output:
@@ -128,14 +122,14 @@ mStatWeightedMeanHandler:
     call closeInputAndRecallNone
     ld ix, cfitModelLinear ; use linear model for simple statistics
     call statWeightedMean ; OP1=WeightedY, OP2=WeightedX
-    jp pushXY
+    jp pushToXY
 
 ; Description: Return the number of items entered. Mostly for convenience.
 mStatNHandler:
     call closeInputAndRecallNone
-    ld a, statRegN
+    ld c, statRegN
     call rclRegNN
-    jp pushX
+    jp pushToX
 
 ;-----------------------------------------------------------------------------
 
@@ -148,7 +142,7 @@ mStatPopSdevHandler:
     call closeInputAndRecallNone
     ld ix, cfitModelLinear ; use linear model for simple statistics
     call statStdDev
-    jp pushXY
+    jp pushToXY
 
 ; Description: Calculate the sample standard deviation.
 ; Output:
@@ -170,7 +164,7 @@ mStatSampleSdevHandler:
     bcall(_PopRealO2) ; FPS=[]; OP2=SVAR(Y)
     bcall(_OP1ExOP2) ; OP1=SVAR(Y), OP2=SVAR(X)
     call statStdDevAltEntry
-    jp pushXY
+    jp pushToXY
 
 ; Description: Calculate the population covariance. PCOV<X,Y> = <XY> - <X><Y>.
 ; See https://en.wikipedia.org/wiki/Sample_mean_and_covariance
@@ -181,7 +175,7 @@ mStatPopCovHandler:
     call closeInputAndRecallNone
     ld ix, cfitModelLinear ; use linear model for simple statistics
     call statCovariance
-    jp pushX
+    jp pushToX
 
 ; Description: Calculate the sample covariance. SCOV<X,Y> = (N/(N-1)) PCOV(X,Y).
 ; See https://en.wikipedia.org/wiki/Sample_mean_and_covariance
@@ -194,7 +188,7 @@ mStatSampleCovHandler:
     call statCovariance ; OP1=PCOV(X,Y)
     call statFactorPopToSampleOP2 ; OP2=N/(N-1)
     bcall(_FPMult); OP1=SCOV(X,Y)
-    jp pushX
+    jp pushToX
 
 ;-----------------------------------------------------------------------------
 ; Low-level stats routines.
@@ -209,32 +203,32 @@ mStatSampleCovHandler:
 statSigmaPlus:
     call rclX
     bcall(_PushRealO1) ; FPS=[X]
-    ld a, statRegX
+    ld c, statRegX
     call stoAddRegNN
 
     bcall(_FPSquare) ; OP1=X^2
-    ld a, statRegX2
+    ld c, statRegX2
     call stoAddRegNN
 
     call rclY
     bcall(_PushRealO1) ; FPS=[X,Y]
-    ld a, statRegY
+    ld c, statRegY
     call stoAddRegNN
 
     bcall(_FPSquare) ; OP1=Y^2
-    ld a, statRegY2
+    ld c, statRegY2
     call stoAddRegNN
 
     bcall(_PopRealO2) ; FPS=[X]; OP2=Y
     bcall(_PopRealO1) ; FPS=[]; OP1=X
     bcall(_FPMult)
-    ld a, statRegXY
+    ld c, statRegXY
     call stoAddRegNN
 
-    ld a, statRegN
+    ld c, statRegN
     call rclRegNN
     bcall(_Plus1)
-    ld a, statRegN
+    ld c, statRegN
     call stoRegNN
 
     ; Check if we need to update the extended STAT registers.
@@ -257,11 +251,11 @@ statSigmaPlusLogXNormal:
     bcall(_LnX) ; OP1=lnX
 statSigmaPlusLogXContinue:
     bcall(_PushRealO1) ; FPS=[X,lnX]
-    ld a, statRegLnX
+    ld c, statRegLnX
     call stoAddRegNN
     ;
     bcall(_FPSquare) ; OP1=(lnX)^2
-    ld a, statRegLnX2
+    ld c, statRegLnX2
     call stoAddRegNN
 
 statSigmaPlusLogY:
@@ -279,11 +273,11 @@ statSigmaPlusLogYNormal:
     bcall(_LnX) ; OP1=lnY
 statSigmaPlusLogYContinue:
     bcall(_PushRealO1) ; FPS=[X,lnX,Y,lnY]
-    ld a, statRegLnY
+    ld c, statRegLnY
     call stoAddRegNN
     ;
     bcall(_FPSquare) ; OP1=(lnY)^2
-    ld a, statRegLnY2
+    ld c, statRegLnY2
     call stoAddRegNN
 
     ; Update XlnY, YlnY, lnXlnY
@@ -291,18 +285,18 @@ statSigmaPlusLogYContinue:
     bcall(_PopRealO1) ; FPS=[X,lnX]; OP1=Y
     bcall(_PopRealO2) ; FPS=[X]; OP2=lnX
     bcall(_FPMult) ; OP1=YlnX
-    ld a, statRegYLnX
+    ld c, statRegYLnX
     call stoAddRegNN
     ;
     bcall(_PopRealO1) ; FPS=[]; OP1=X
     bcall(_OP2ExOP4) ; OP2=lnY, OP4=lnX
     bcall(_FPMult) ; OP1=XlnY
-    ld a, statRegXLnY
+    ld c, statRegXLnY
     call stoAddRegNN
     ;
     bcall(_OP4ToOP1) ; OP1=lnX, OP2=lnY
     bcall(_FPMult) ; OP1=lnXlnY
-    ld a, statRegLnXLnY
+    ld c, statRegLnXLnY
     call stoAddRegNN
     ret
 
@@ -317,32 +311,32 @@ statSigmaPlusLogYContinue:
 statSigmaMinus:
     call rclX
     bcall(_PushRealO1) ; FPS=[X]
-    ld a, statRegX
+    ld c, statRegX
     call stoSubRegNN
 
     bcall(_FPSquare) ; OP1=X^2
-    ld a, statRegX2
+    ld c, statRegX2
     call stoSubRegNN
 
     call rclY
     bcall(_PushRealO1) ; FPS=[X,Y]
-    ld a, statRegY
+    ld c, statRegY
     call stoSubRegNN
 
     bcall(_FPSquare) ; OP1=Y^2
-    ld a, statRegY2
+    ld c, statRegY2
     call stoSubRegNN
 
     bcall(_PopRealO2) ; FPS=[X]; OP2=Y
     bcall(_PopRealO1) ; FPS=[]; OP1=X
     bcall(_FPMult)
-    ld a, statRegXY
+    ld c, statRegXY
     call stoSubRegNN
 
-    ld a, statRegN
+    ld c, statRegN
     call rclRegNN
     bcall(_Minus1)
-    ld a, statRegN
+    ld c, statRegN
     call stoRegNN
 
     ; Check if we need to update the extended STAT registers.
@@ -365,11 +359,11 @@ statSigmaMinusLogXNormal:
     bcall(_LnX) ; OP1=lnX
 statSigmaMinusLogXContinue:
     bcall(_PushRealO1) ; FPS=[X,lnX]
-    ld a, statRegLnX
+    ld c, statRegLnX
     call stoSubRegNN
     ;
     bcall(_FPSquare) ; OP1=(lnX)^2
-    ld a, statRegLnX2
+    ld c, statRegLnX2
     call stoSubRegNN
 
 statSigmaMinusLogY:
@@ -387,11 +381,11 @@ statSigmaMinusLogYNormal:
     bcall(_LnX) ; OP1=lnY
 statSigmaMinusLogYContinue:
     bcall(_PushRealO1) ; FPS=[X,lnX,Y,lnY]
-    ld a, statRegLnY
+    ld c, statRegLnY
     call stoSubRegNN
     ;
     bcall(_FPSquare) ; OP1=(lnY)^2
-    ld a, statRegLnY2
+    ld c, statRegLnY2
     call stoSubRegNN
 
     ; Update XlnY, YlnY, lnXlnY
@@ -399,18 +393,18 @@ statSigmaMinusLogYContinue:
     bcall(_PopRealO1) ; FPS=[X,lnX]; OP1=Y
     bcall(_PopRealO2) ; FPS=[X]; OP2=lnX
     bcall(_FPMult) ; OP1=YlnX
-    ld a, statRegYLnX
+    ld c, statRegYLnX
     call stoSubRegNN
     ;
     bcall(_PopRealO1) ; FPS=[]; OP1=X
     bcall(_OP2ExOP4) ; OP2=lnY, OP4=lnX
     bcall(_FPMult) ; OP1=XlnY
-    ld a, statRegXLnY
+    ld c, statRegXLnY
     call stoSubRegNN
     ;
     bcall(_OP4ToOP1) ; OP1=lnX, OP2=lnY
     bcall(_FPMult) ; OP1=lnXlnY
-    ld a, statRegLnXLnY
+    ld c, statRegLnXLnY
     call stoSubRegNN
     ret
 
@@ -423,14 +417,14 @@ statSigmaMinusLogYContinue:
 ;   OP1=<Y>
 ;   OP2=<X>
 statMean:
-    ld a, (ix + modelIndX)
+    ld c, (ix + modelIndX)
     call rclRegNN
-    ld a, (ix + modelIndN)
+    ld c, (ix + modelIndN)
     call rclRegNNToOP2
     bcall(_FPDiv) ; OP1=<X>
     bcall(_PushRealO1) ; FPS=[<X>]
     ;
-    ld a, (ix + modelIndY)
+    ld c, (ix + modelIndY)
     call rclRegNN
     bcall(_FPDiv) ; OP1=<Y>
     bcall(_PopRealO2) ; FPS=[]; OP2=<X>
@@ -450,9 +444,9 @@ statMean:
 ;   9.9999999999999E99 to indicate an error condition
 ;   - If both Sum(X) and Sum(Y) are 0, then an 'Err: Stat' exception is thrown
 statWeightedMean:
-    ld a, (ix + modelIndX)
+    ld c, (ix + modelIndX)
     call rclRegNN
-    ld a, (ix + modelIndY)
+    ld c, (ix + modelIndY)
     call rclRegNNToOP2
     bcall(_CkOP1FP0)
     jr nz, statWeightedMeanWeightedX
@@ -463,7 +457,7 @@ statWeightedMeanBothZero:
 statWeightedMeanWeightedX:
     ; OP1=SumX, OP2=SumY
     bcall(_PushRealO1) ; FPS=[SumX]
-    ld a, (ix + modelIndXY)
+    ld c, (ix + modelIndXY)
     call rclRegNN ; OP1=SumXY, OP2=SumY
     bcall(_PushRealO1) ; FPS=[SumX, SumXY]
     bcall(_CkOP2FP0)
@@ -493,7 +487,7 @@ statWeightedMeanFinish:
 ; Preserves: OP1
 statFactorPopToSampleOP2:
     bcall(_PushRealO1) ; FPS=[OP1 saved]
-    ld a, statRegN
+    ld c, statRegN
     call rclRegNN ; OP1=N
     bcall(_PushRealO1) ; FPS=[OP1,N]
     bcall(_Minus1)
@@ -532,34 +526,34 @@ statStdDevAltEntry:
 ; TODO: The algorithms for VAR<X> and VAR<Y> are identical. We should be able
 ; to extract that into a common routine to save memory.
 statVariance:
-    ld a, (ix + modelIndX)
+    ld c, (ix + modelIndX)
     call rclRegNN
-    ld a, (ix + modelIndN)
+    ld c, (ix + modelIndN)
     call rclRegNNToOP2
     bcall(_FPDiv)
     bcall(_FPSquare) ; OP1=<X>^2
     bcall(_PushRealO1) ; FPS=[<X>^2]
     ;
-    ld a, (ix + modelIndX2)
+    ld c, (ix + modelIndX2)
     call rclRegNN
-    ld a, (ix + modelIndN)
+    ld c, (ix + modelIndN)
     call rclRegNNToOP2
     bcall(_FPDiv) ; OP1=<X^2>
     bcall(_PopRealO2) ; FPS=[]; OP2=<X>^2
     bcall(_FPSub)
     bcall(_PushRealO1) ; FPS=[VAR<X>]
     ;
-    ld a, (ix + modelIndY)
+    ld c, (ix + modelIndY)
     call rclRegNN
-    ld a, (ix + modelIndN)
+    ld c, (ix + modelIndN)
     call rclRegNNToOP2
     bcall(_FPDiv)
     bcall(_FPSquare) ; OP1=<Y>^2
     bcall(_PushRealO1) ; FPS=[VAR<X>,<Y>^2]
     ;
-    ld a, (ix + modelIndY2)
+    ld c, (ix + modelIndY2)
     call rclRegNN
-    ld a, (ix + modelIndN)
+    ld c, (ix + modelIndN)
     call rclRegNNToOP2
     bcall(_FPDiv) ; OP1=<Y^2>
     bcall(_PopRealO2) ; FPS=[VAR<X>]; OP2=<Y>^2
@@ -578,22 +572,22 @@ statVariance:
 ; Destroys: A, OP2, OP3, OP4
 statCovariance:
     ; Extract N
-    ld a, (ix + modelIndN)
+    ld c, (ix + modelIndN)
     call rclRegNNToOP2
     bcall(_OP2ToOP4) ; OP4=N
     ; Calculate <XY>
-    ld a, (ix + modelIndXY)
+    ld c, (ix + modelIndXY)
     call rclRegNN
     bcall(_FPDiv) ; OP1=<XY>, uses OP3
     bcall(_PushRealO1) ; FPS=[<XY>]
     ; Calculate <X>
-    ld a, (ix + modelIndX)
+    ld c, (ix + modelIndX)
     call rclRegNN
     bcall(_OP4ToOP2) ; OP2=N
     bcall(_FPDiv) ; OP1=<X>
     bcall(_PushRealO1) ; FPS=[<XY>,<X>]
     ; Calculate <Y>
-    ld a, (ix + modelIndY)
+    ld c, (ix + modelIndY)
     call rclRegNN
     bcall(_OP4ToOP2) ; OP2=N
     bcall(_FPDiv) ; OP1=<Y>

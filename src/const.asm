@@ -2,7 +2,7 @@
 ; MIT License
 ; Copyright (c) 2023 Brian T. Park
 ;
-; Constants, usually floating point.
+; Floating point constants for routines in Flash Page 0.
 ;-----------------------------------------------------------------------------
 
 ; Description: Set OP1 to -1.0, avoiding the overhead of bcall.
@@ -68,21 +68,6 @@ op2Set100:
 ; Destroys: all, HL
 op2Set1EM8:
     ld hl, const1EM8
-    jp move9ToOp2
-
-;-----------------------------------------------------------------------------
-
-; Description: Set OP2 to 2^32.
-; Destroys: all, HL
-op2Set2Pow32:
-    ld hl, const2Pow32
-    jp move9ToOp2
-
-;-----------------------------------------------------------------------------
-
-; Description: Set OP2 to 1E14.
-op2Set1E14:
-    ld hl, const1E14
     jp move9ToOp2
 
 ;-----------------------------------------------------------------------------
@@ -228,12 +213,6 @@ const10: ; 10
 
 const100: ; 100
     .db $00, $82, $10, $00, $00, $00, $00, $00, $00
-
-const2Pow32: ; 2^32 = 4 294 967 296
-    .db $00, $89, $42, $94, $96, $72, $96, $00, $00
-
-const1E14: ; 10^14, EXP=$80+14=$8E
-    .db $00, $8E, $10, $00, $00, $00, $00, $00, $00
 
 const1EM8: ; 10^-8
     .db $00, $78, $10, $00, $00, $00, $00, $00, $00

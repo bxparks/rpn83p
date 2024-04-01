@@ -6,8 +6,6 @@
 ; argument dialog box (e.g. "FIX _ _").
 ;------------------------------------------------------------------------------
 
-argKeyCodeTableSize equ 19
-
 argKeyCodeHandlerTable:
     ; number entry
     .db k0
@@ -30,6 +28,62 @@ argKeyCodeHandlerTable:
     .dw handleArgKey8
     .db k9
     .dw handleArgKey9
+
+    ; letter entry (A-Z, Theta)
+    .db kCapA
+    .dw handleArgKeyA
+    .db kCapB
+    .dw handleArgKeyB
+    .db kCapC
+    .dw handleArgKeyC
+    .db kCapD
+    .dw handleArgKeyD
+    .db kCapE
+    .dw handleArgKeyE
+    .db kCapF
+    .dw handleArgKeyF
+    .db kCapG
+    .dw handleArgKeyG
+    .db kCapH
+    .dw handleArgKeyH
+    .db kCapI
+    .dw handleArgKeyI
+    .db kCapJ
+    .dw handleArgKeyJ
+    .db kCapK
+    .dw handleArgKeyK
+    .db kCapL
+    .dw handleArgKeyL
+    .db kCapM
+    .dw handleArgKeyM
+    .db kCapN
+    .dw handleArgKeyN
+    .db kCapO
+    .dw handleArgKeyO
+    .db kCapP
+    .dw handleArgKeyP
+    .db kCapQ
+    .dw handleArgKeyQ
+    .db kCapR
+    .dw handleArgKeyR
+    .db kCapS
+    .dw handleArgKeyS
+    .db kCapT
+    .dw handleArgKeyT
+    .db kCapU
+    .dw handleArgKeyU
+    .db kCapV
+    .dw handleArgKeyV
+    .db kCapW
+    .dw handleArgKeyW
+    .db kCapX
+    .dw handleArgKeyX
+    .db kCapY
+    .dw handleArgKeyY
+    .db kCapZ
+    .dw handleArgKeyZ
+    .db kTheta
+    .dw handleArgKeyTheta
 
     ; editing
     .db kDel
@@ -54,3 +108,10 @@ argKeyCodeHandlerTable:
     .dw handleArgKeyMul
     .db kDiv
     .dw handleArgKeyDiv
+
+;-----------------------------------------------------------------------------
+
+; Auto-calculate the number of entries in the table.
+argKeyCodeHandlerTableEnd:
+argKeyCodeTableSize equ (argKeyCodeHandlerTableEnd-argKeyCodeHandlerTable)/3
+

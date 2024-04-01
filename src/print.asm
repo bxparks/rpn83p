@@ -62,8 +62,8 @@ vPutPNEnd:
 
 ; Description: Convenience wrapper around SStringLength() that works for
 ; zero-length strings.
-; Input: HL: Pascal string, in RAM
-; Output: A = B = number of pixels
+; Input: HL:(PascalString*)=pstring in RAM
+; Output: A=B=number of pixels
 ; Destroys: all but HL
 smallStringWidth:
     ld a, (hl)
@@ -78,6 +78,15 @@ smallStringWidth:
 ; Description: Erase to end of line using small font. Same as bcall(_EraseEOL).
 ; Prints a quad space (4 pixels side) as many times as necessary to overwrite
 ; the remainder of the line.
+;
+; There are 2 loops below, one printing quad-column spaces, and one printing
+; single-column spaces. There seems to be a bug with VPutMap() where the very
+; last pixel column does not seem get erased properly with an SFourSpaces
+; character. If the character on the last column is a '}' for example, a single
+; dot from the point of the '}' remains on the screen. If we switch to printing
+; single-column wide Sspace for the last 4 pixels, the problem seems to go
+; away.
+;
 ; Destroys: A, B
 vEraseEOL:
     ld a, (penCol)
@@ -87,23 +96,84 @@ vEraseEOL:
     add a, 3 ; A=numPixelsToEnd+3
     srl a
     srl a ; A=numSpacesToPrint=(numPixelsToEnd+3)/4
+    dec a
+    jr z, vEraseEOLSingles ; switch to print single-spaces for the last 4
+vEraseEOLQuads:
     ld b, a
 vEraseEOLLoop:
     ld a, SFourSpaces
     bcall(_VPutMap)
     djnz vEraseEOLLoop
+vEraseEOLSingles:
+    ld b, 4
+vEraseEOLLoop2:
+    ld a, Sspace
+    bcall(_VPutMap)
+    djnz vEraseEOLLoop2
     ret
 
 ;-----------------------------------------------------------------------------
 
-; Description: Print the HL string using VPutMap(), using small font.
-; Input: HL: pointer to C-string
+; Description: Print the HL string using VPutMap(), using small font. If the
+; string is too long to fit into the current line, we print 2 dots (4 pixels
+; wide) are printed at the end to indicate truncation.
+;
+; I would have thought that checking for PenCol>=92 would have been sufficient,
+; since the display is 96 pixels wide, and a dot is only 2 pixels wide. But it
+; turns out that VPutMap() function has some strange, undocumented behavior, so
+; PenCol>=89 seems to work a lot better.
+;
+; It has been hard to characterize the exact behavior of VPutMap() at the end
+; of the line. Even if there are 4 pixels available at the end of the line, it
+; does not want to write a 4-pixel wide character. Furthermore, if the
+; character does not fit, it is simply ignored, PenCol is not updated, and a
+; subsequent call to VPutMap() with a narrow enough character will print that
+; narrow character into that space. So sometimes, some random character at the
+; end seems to have been lost.
+;
+; Input:
+;   - HL:(char*)=cstring
 ; Output:
 ;    - unlike VPutS(), the CF does *not* show if all of string was rendered
 ; Destroys: all
 vPutSmallS:
     res fracDrawLFont, (iy + fontFlags) ; use small font
-    ; [[fallthrough]]
+vPutSmallSLoop:
+    ld a, (hl) ; A = current char
+    inc hl
+    or a ; Check for NUL
+    ret z
+    ; Check if the string is too long. Check for overflow into the last 8
+    ; pixels instead of the last 6 pixels because this is a variable-sized
+    ; font, and the the previous character could have been a 4 pixel-wide
+    ; character that could bled into the last 6 pixels. Also, there's some
+    ; funny business with vPutMap() that I cannot quite characterize. With 8
+    ; spaces, we get more flexibility.
+    ld b, a ; B=saved A
+    ld a, (PenCol)
+    cp 88
+    jr nc, vPutSmallSMaybeTruncate
+    ld a, b ; A=restored A
+    bcall(_VPutMap) ; preserves BC, HL
+    jr vPutSmallSLoop
+vPutSmallSMaybeTruncate:
+    ; Check if the current chara is actually the very last character. If so,
+    ; there ought be enough space on the display for it, so just print that.
+    ; Otgherwise, print 3 dots (ellipsis) to indicate truncation.
+    ld a, (hl)
+    or a
+    jr z, vPutSmallSLastChar
+    ld a, '.'
+    bcall(_VPutMap)
+    ld a, '.'
+    bcall(_VPutMap)
+    ld a, '.'
+    bcall(_VPutMap)
+    ret
+vPutSmallSLastChar:
+    ld a, b ; A=lastChar
+    bcall(_VPutMap)
+    ret
 
 ; Description: Inlined version of bcall(_VPutS) so that it works for strings in
 ; flash (VPutS only works with strings in RAM). See TI-83 Plus System Routine
@@ -111,9 +181,10 @@ vPutSmallS:
 ; also eVPutS() for an extended version of this that supported embedded font
 ; control characters.
 ;
-; Input: HL: pointer to string
+; Input:
+;   - HL:(char*)=cstring
 ; Ouptut:
-;    - unlike VPutS(), the CF does *not* show if all of string was rendered
+;    - unlike VPutS(), CF does *not* show if all of string was rendered
 ; Destroys: all
 vPutS:
 vPutSLoop:
@@ -133,7 +204,8 @@ vPutSLoop:
 ; seems to add a ':' on the next line (as a continuation marker?), which we do
 ; NOT want. So we handle the Lenter ourselves.
 ;
-; Input: HL: pointer to C-string
+; Input:
+;   - HL:(char*)=cstring
 ; Output:
 ;   - CF=1 if the entire string was displayed, CF=0 if not
 ;   - curRow and curCol updated to the position after the last character
@@ -177,7 +249,8 @@ putSEnter:
 ; Description: Inlined version of bcall(_PutPS) which works for Pascal strings
 ; in flash memory.
 ;
-; Input: HL: pointer to Pascal string
+; Input:
+;   - HL:(PascalString*)=pstring
 ; Destroys: A, B, C, HL
 ; Preserves: DE
 putPS:
@@ -197,18 +270,4 @@ putPSLoop:
     cp c ; if currow == buttomRow: ZF=1
     ret z
     djnz putPSLoop
-    ret
-
-;-----------------------------------------------------------------------------
-
-; Description: Convert A into an Ascii Char ('0'-'9','A'-'F').
-; Destroys: A
-convertAToChar:
-    cp 10
-    jr c, convertAToCharDecimal
-    sub 10
-    add a, 'A'
-    ret
-convertAToCharDecimal:
-    add a, '0'
     ret

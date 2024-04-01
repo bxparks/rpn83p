@@ -153,33 +153,97 @@ deleteAtPosShiftLeft:
 
 ;-----------------------------------------------------------------------------
 
-; Description: Find the given character in the given pascal string.
-; Input:
-;   A: character to find
-;   HL: pointer to pascal string
-; Output:
-;   A: position of character A. Returns len(string) if not found. Returns
-;   0 if string is empty.
-; Destroys: A, BC, D, HL
 #if 0
-; Currently not used anywhere
-findChar:
-    ld c, a ; C = char (save)
-    ld b, (hl) ; B = stringSize
-    ; Return stringSize == 0
-    ld a, b
+; Description: Return the first character in the Pascal string, or 0 if the
+; string is empty.
+; Input:
+;   - HL:(PascalStrign*)=pascalString
+; Output:
+;   - A:char=firstChar (0 if empty)
+; Destroys: A
+; Preserves: BC, DE, HL
+GetFirstChar:
+    ld a, (hl)
     or a
     ret z
-    ld d, a ; D = stringSize (save)
-    inc hl
-findCharLoop:
+    inc hl ; skip past the len byte
     ld a, (hl)
-    cp c
-    jr z, findCharLoopFound
-    inc hl
-    djnz findCharLoop
-findCharLoopFound:
-    ld a, d ; A = stringSize
-    sub b ; A = stringSize - B
+    dec hl
     ret
 #endif
+
+; Description: Return the last character in the Pascal string, or 0 if the
+; string is empty.
+; Input: HL: Pascal string pointer
+; Output: A: lastChar (0 if empty)
+; Destroys: A, BC, HL
+; Preserves: DE
+GetLastChar:
+    ld a, (hl)
+    or a
+    ret z
+    ; No need to 'inc hl' to skip past the size byte, since we'd have to do a
+    ; 'dec hl' anyway.
+    ld c, a
+    ld b, 0
+    add hl, bc
+    ld a, (hl)
+    ret
+
+;-----------------------------------------------------------------------------
+
+; Description: Find the given character in the given pascal string.
+; Input:
+;   - A:char=searchChar
+;   - HL:(PascalString*)=pascalString
+; Output:
+;   - CF=1 if found, 0 if not found
+;   - HL:(char*)=posOfChar (if found)
+; Destroys: BC, HL
+; Preserves: A, DE, HL
+findChar:
+    push hl
+    ld c, a ; C=searchChar
+    ld a, (hl) ; B=stringSize
+    ; check for empty string
+    or a
+    ld b, a ; B=stringSize
+    ld a, c ; A=searchChar
+    ret z
+findCharLoop:
+    inc hl
+    cp (hl)
+    jr z, findCharLoopFound
+    djnz findCharLoop
+    ; not found
+    or a ; CF=0
+    pop hl
+    ret
+findCharLoopFound:
+    scf
+    pop hl
+    ret
+
+;-----------------------------------------------------------------------------
+
+; Description: Prepare the given pascal string in HL by appending a NUL
+; character at the end. This assumes that the capacity of the pascal string
+; buffer is one more than the length limit of the pascal string.
+; Input:
+;   - HL:(PascalString*)=string
+; Output:
+;   - NUL appended to the end
+; Destroys: A
+; Preserves: BC, DE, HL
+preparePascalStringForParsing:
+    push hl
+    push de
+    ld e, (hl)
+    xor a
+    ld d, a
+    inc hl ; skip len byte
+    add hl, de ; HL=pointerToNUL
+    ld (hl), a
+    pop de
+    pop hl
+    ret

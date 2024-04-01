@@ -118,6 +118,14 @@ MENU_TYPE_ITEM = 0
 MENU_TYPE_GROUP = 1
 MENU_TYPE_ITEM_ALT = 2  # MenuItem with alternate display name
 
+# Upper limit (exclusive) of menu ids. Menu ids are now stored as 16 bit
+# integers, so in theory could be as large as 65535. But currently, all menu
+# nodes must fit into a single flash page which is 16 kiB. The sizeof(MenuNode)
+# is 13, so the number of menu nodes is limited to 1260. With the overhead of
+# other code that must fit into that flash page, the actual limit will be lower
+# than 1260. Let's set the limit to 512 as an early warning.
+MENU_ID_LIMIT = 512
+
 MenuRow = List["MenuNode"]
 
 
@@ -439,8 +447,8 @@ class Validator:
                 row.append(blank)
 
             row_index += 1
-            if row_index >= 256:
-                raise ValueError("Overflow: row_index incremented to 256")
+            if row_index >= MENU_ID_LIMIT:
+                raise ValueError(f"Overflow: row_index >= {MENU_ID_LIMIT}")
 
     def validate_label(self, node: MenuNode) -> None:
         """Validate that the 'label' does not begin with reserved labels
@@ -642,8 +650,8 @@ class SymbolGenerator:
         node["parent_id"] = parent_id
         self.id_map[id] = node
         self.id_counter += 1
-        if self.id_counter >= 256:
-            raise ValueError("Overflow: id_counter incremented to 256")
+        if self.id_counter >= MENU_ID_LIMIT:
+            raise ValueError(f"Overflow: id_counter >= {MENU_ID_LIMIT}")
 
         # Set label='mBlankXXX' for blank menus
         if name == "*":
@@ -725,11 +733,11 @@ mMenuTableSize equ {self.menu_table_size}
 mMenuTable:
 mNull:
 mNullId equ 0
-    .db mNullId ; id
-    .db mNullId ; parentId
-    .db mNullNameId ; nameId
+    .dw mNullId ; id
+    .dw mNullId ; parentId
+    .dw mNullNameId ; nameId
     .db 0 ; numRows
-    .db 0 ; rowBeginId
+    .dw 0 ; rowBeginId
     .dw mNullHandler
     .dw 0
 """, file=self.output, end='')
@@ -793,11 +801,11 @@ mNullId equ 0
         print(f"""\
 {label}:
 {label}Id equ {id}
-    .db {node_id} ; id
-    .db {parent_node_label}Id ; parentId
-    .db {name_id} ; nameId
+    .dw {node_id} ; id
+    .dw {parent_node_label}Id ; parentId
+    .dw {name_id} ; nameId
     .db {num_rows} ; numRows
-    .db {row_begin_id} ; rowBeginId or altNameId
+    .dw {row_begin_id} ; rowBeginId or altNameId
     .dw {handler} ; handler ({handler_comment})
     .dw {name_selector} ; nameSelector
 """, file=self.output, end='')
@@ -855,8 +863,8 @@ mNullNameId equ 0
     .dw {label}Name
 """, file=self.output, end='')
             name_index += 1
-            if name_index >= 256:
-                raise ValueError("Overflow: name_index incremented to 256")
+            if name_index >= MENU_ID_LIMIT:
+                raise ValueError(f"Overflow: name_index >= {MENU_ID_LIMIT}")
 
             # altname
             if node.get("altname"):
@@ -865,8 +873,8 @@ mNullNameId equ 0
     .dw {label}AltName
 """, file=self.output, end='')
                 name_index += 1
-                if name_index >= 256:
-                    raise ValueError("Overflow: name_index incremented to 256")
+                if name_index >= MENU_ID_LIMIT:
+                    raise ValueError(f"Overflow: name_index > {MENU_ID_LIMIT}")
 
         print(file=self.output)
 

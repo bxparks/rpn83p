@@ -9,8 +9,8 @@
 ; various flags. If the inputBuf is already complex, this routine must not be
 ; called with Langle, LimagI or Ltheta.
 ; Input:
-;   A: character to be appended
-;   rpnFlagsEditing: whether we are already in Edit mode
+;   - A:char=character to be appended
+;   - rpnFlagsEditing=whether we are already in Edit mode
 ; Output:
 ;   - CF set when append fails
 ;   - rpnFlagsEditing set
@@ -33,23 +33,21 @@ handleKeyNumberFirstDigit:
 handleKeyNumberCheckAppend:
     call isComplexDelimiter ; ZF=1 if complex delimiter
     jr z, handleKeyNumberAppend
-    bcall(_GetInputBufState) ; C=inputBufState; D=inputBufEEPos; E=inputBufEELen
-    bit inputBufStateEE, c
-    jr z, handleKeyNumberAppend
-handleKeyNumberAppendExponent:
-    ; Append A to exponent, if len(exponent)<2.
-    ld b, a ; save A
-    ld a, e ; A=inputBufEELen
+    ; Check if EE exists and check num digits in EE.
+    ld d, a ; D=saved A
+    bcall(_CheckInputBufEE) ; CF=1 if E exists; A=eeLen
+    jr nc, handleKeyNumberRestoreAppend
+    ; Check if eeLen<2.
     cp inputBufEEMaxLen
-    ld a, b ; restore A
     ret nc ; prevent more than 2 exponent digits
+handleKeyNumberRestoreAppend:
+    ld a, d ; A=restored
 handleKeyNumberAppend:
-    ; Try to append character
     bcall(_AppendInputBuf)
     ret
 
-; Description: Return ZF=1 if A is a complex number delimiter. Same as
-; isComplexDelimiterPageOne().
+; Description: Return ZF=1 if A is a complex number delimiter (LimagI, Langle,
+; Ldegree). Same as isComplexDelimiterPageOne().
 ; Input: A: char
 ; Output: ZF=1 if delimiter
 ; Destroys: none
@@ -75,131 +73,293 @@ handleKey1:
 
 ; Description: Append '2' to inputBuf.
 handleKey2:
-    call checkBase8Or10Or16
+    call checkAllowOct ; ZF=1 if oct digits 0-7 allowed
     ret nz
     ld a, '2'
     jr handleKeyNumber
 
 ; Description: Append '3' to inputBuf.
 handleKey3:
-    call checkBase8Or10Or16
+    call checkAllowOct ; ZF=1 if oct digits 0-7 allowed
     ret nz
     ld a, '3'
     jr handleKeyNumber
 
 ; Description: Append '4' to inputBuf.
 handleKey4:
-    call checkBase8Or10Or16
+    call checkAllowOct ; ZF=1 if oct digits 0-7 allowed
     ret nz
     ld a, '4'
     jr handleKeyNumber
 
 ; Description: Append '5' to inputBuf.
 handleKey5:
-    call checkBase8Or10Or16
+    call checkAllowOct ; ZF=1 if oct digits 0-7 allowed
     ret nz
     ld a, '5'
     jr handleKeyNumber
 
 ; Description: Append '6' to inputBuf.
 handleKey6:
-    call checkBase8Or10Or16
+    call checkAllowOct ; ZF=1 if oct digits 0-7 allowed
     ret nz
     ld a, '6'
     jr handleKeyNumber
 
 ; Description: Append '7' to inputBuf.
 handleKey7:
-    call checkBase8Or10Or16
+    call checkAllowOct ; ZF=1 if oct digits 0-7 allowed
     ret nz
     ld a, '7'
     jr handleKeyNumber
 
 ; Description: Append '8' to inputBuf.
 handleKey8:
-    call checkBase10Or16
+    call checkAllowDec ; ZF=1 if decimal digits 0-9 allowed.
     ret nz
     ld a, '8'
     jr handleKeyNumber
 
 ; Description: Append '9' to inputBuf.
 handleKey9:
-    call checkBase10Or16
+    call checkAllowDec ; ZF=1 if decimal digits 0-9 allowed.
     ret nz
     ld a, '9'
     jp handleKeyNumber
 
 ; Description: Append 'A' to inputBuf.
 handleKeyA:
-    call checkBase16
+    call checkAllowHex ; ZF=1 if hex digits A-F allowed
     ret nz
     ld a, 'A'
     jp handleKeyNumber
 
 ; Description: Append 'B' to inputBuf.
 handleKeyB:
-    call checkBase16
+    call checkAllowHex ; ZF=1 if hex digits A-F allowed
     ret nz
     ld a, 'B'
     jp handleKeyNumber
 
 ; Description: Append 'C' to inputBuf.
 handleKeyC:
-    call checkBase16
+    call checkAllowHex ; ZF=1 if hex digits A-F allowed
     ret nz
     ld a, 'C'
     jp handleKeyNumber
 
 ; Description: Append 'D' to inputBuf.
 handleKeyD:
-    call checkBase16
+    call checkAllowHex ; ZF=1 if hex digits A-F allowed
     ret nz
     ld a, 'D'
     jp handleKeyNumber
 
 ; Description: Append 'E' to inputBuf.
 handleKeyE:
-    call checkBase16
+    call checkAllowHex ; ZF=1 if hex digits A-F allowed
     ret nz
     ld a, 'E'
     jp handleKeyNumber
 
 ; Description: Append 'F' to inputBuf.
 handleKeyF:
-    call checkBase16
+    call checkAllowHex ; ZF=1 if hex digits A-F allowed
     ret nz
     ld a, 'F'
     jp handleKeyNumber
 
-; Description: Return ZF=1 if baseNumber is float, 8, 10, or 16.
-checkBase8Or10Or16:
+; Description: Append 'G' to inputBuf.
+handleKeyG:
+    ; Do nothing in BASE mode.
+    bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
+    ret nz
+    ld a, 'G'
+    jp handleKeyNumber
+
+; Description: Append 'H' to inputBuf.
+handleKeyH:
+    ; Do nothing in BASE mode.
+    bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
+    ret nz
+    ld a, 'H'
+    jp handleKeyNumber
+
+; Description: Append 'I' to inputBuf.
+handleKeyI:
+    ; Do nothing in BASE mode.
+    bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
+    ret nz
+    ld a, 'I'
+    jp handleKeyNumber
+
+; Description: Append 'J' to inputBuf.
+handleKeyJ:
+    ; Do nothing in BASE mode.
+    bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
+    ret nz
+    ld a, 'J'
+    jp handleKeyNumber
+
+; Description: Append 'K' to inputBuf.
+handleKeyK:
+    ; Do nothing in BASE mode.
+    bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
+    ret nz
+    ld a, 'K'
+    jp handleKeyNumber
+
+; Description: Append 'L' to inputBuf.
+handleKeyL:
+    ; Do nothing in BASE mode.
+    bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
+    ret nz
+    ld a, 'L'
+    jp handleKeyNumber
+
+; Description: Append 'M' to inputBuf.
+handleKeyM:
+    ; Do nothing in BASE mode.
+    bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
+    ret nz
+    ld a, 'M'
+    jp handleKeyNumber
+
+; Description: Append 'N' to inputBuf.
+handleKeyN:
+    ; Do nothing in BASE mode.
+    bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
+    ret nz
+    ld a, 'N'
+    jp handleKeyNumber
+
+; Description: Append 'O' to inputBuf.
+handleKeyO:
+    ; Do nothing in BASE mode.
+    bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
+    ret nz
+    ld a, 'O'
+    jp handleKeyNumber
+
+; Description: Append 'P' to inputBuf.
+handleKeyP:
+    ; Do nothing in BASE mode.
+    bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
+    ret nz
+    ld a, 'P'
+    jp handleKeyNumber
+
+; Description: Append 'Q' to inputBuf.
+handleKeyQ:
+    ; Do nothing in BASE mode.
+    bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
+    ret nz
+    ld a, 'Q'
+    jp handleKeyNumber
+
+; Description: Append 'R' to inputBuf.
+handleKeyR:
+    ; Do nothing in BASE mode.
+    bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
+    ret nz
+    ld a, 'R'
+    jp handleKeyNumber
+
+; Description: Append 'S' to inputBuf.
+handleKeyS:
+    ; Do nothing in BASE mode.
+    bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
+    ret nz
+    ld a, 'S'
+    jp handleKeyNumber
+
+; Description: Append 'T' to inputBuf.
+handleKeyT:
+    ; Do nothing in BASE mode.
+    bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
+    ret nz
+    ld a, 'T'
+    jp handleKeyNumber
+
+; Description: Append 'U' to inputBuf.
+handleKeyU:
+    ; Do nothing in BASE mode.
+    bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
+    ret nz
+    ld a, 'U'
+    jp handleKeyNumber
+
+; Description: Append 'V' to inputBuf.
+handleKeyV:
+    ; Do nothing in BASE mode.
+    bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
+    ret nz
+    ld a, 'V'
+    jp handleKeyNumber
+
+; Description: Append 'W' to inputBuf.
+handleKeyW:
+    ; Do nothing in BASE mode.
+    bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
+    ret nz
+    ld a, 'W'
+    jp handleKeyNumber
+
+; Description: Append 'X' to inputBuf.
+handleKeyX:
+    ; Do nothing in BASE mode.
+    bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
+    ret nz
+    ld a, 'X'
+    jp handleKeyNumber
+
+; Description: Append 'Y' to inputBuf.
+handleKeyY:
+    ; Do nothing in BASE mode.
+    bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
+    ret nz
+    ld a, 'Y'
+    jp handleKeyNumber
+
+; Description: Append 'Z' to inputBuf.
+handleKeyZ:
+    ; Do nothing in BASE mode.
+    bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
+    ret nz
+    ld a, 'Z'
+    jp handleKeyNumber
+
+; Description: Return ZF=1 if octal digits (0-7) are allowed.
+checkAllowOct:
+    bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
+    ret z ; ZF=1 if non-BASE
     ld a, (baseNumber)
     cp 8
     ret z
     cp 10
     ret z
-    bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
-    ret z
     cp 16
     ret
 
-; Description: Return ZF=1 if baseNumber is float, 10, or 16.
-checkBase10Or16:
+; Description: Return ZF=1 if decimal digits (0-9) are allowed.
+checkAllowDec:
+    bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
+    ret z ; ZF=1 if non-BASE mode
     ld a, (baseNumber)
     cp 10
     ret z
-    bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
-    ret z
     cp 16
     ret
 
-; Description: Return ZF=1 if baseNumber is (not float and base 16).
-checkBase16:
+; Description: Return ZF=1 if hexadecimal (A-F) are allowed.
+checkAllowHex:
     bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
-    ret z
+    ret z ; return ZF=1 if non-BASE, to allow alpha A-F characters
     ld a, (baseNumber)
-    cp 16
+    cp 16 ; ZF=1 if baseNumber==16
     ret
+
+;-----------------------------------------------------------------------------
 
 ; Description: Append a '.' if not already entered.
 ; Input: inputBuf
@@ -209,14 +369,12 @@ handleKeyDecPnt:
     ; Do nothing in BASE mode.
     bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
     ret nz
-    ; Check prior characters in the inputBuf.
-    bcall(_GetInputBufState) ; C=inputBufState; D=inputBufEEPos; E=inputBufEELen
-    ; Do nothing if a decimal point already exists.
-    bit inputBufStateDecimalPoint, c
-    ret nz
-    ; Also do nothing if 'E' exists. Exponents cannot have a decimal point.
-    bit inputBufStateEE, c
-    ret nz
+    ; Do nothing if decimal point already exists in the last number.
+    bcall(_CheckInputBufDecimalPoint) ; CF=1 if decimal exists
+    ret c
+    ; Do nothing if 'E' exists. Exponents cannot have a decimal point.
+    bcall(_CheckInputBufEE) ; CF=1 if E exists; A=eeLen
+    ret c
     ; try insert '.'
     ld a, '.'
     call handleKeyNumber
@@ -232,13 +390,27 @@ handleKeyEE:
     ; Do nothing in BASE mode.
     bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
     ret nz
+    ; Check if Comma and EE are swapped.
+    ld a, (commaEEMode)
+    cp commaEEModeSwapped
+    jr z, handleKeyCommaAlt
+handleKeyEEAlt:
     ; Check prior characters in the inputBuf.
-    bcall(_GetInputBufState) ; C=inputBufState; D=inputBufEEPos; E=inputBufEELen
-    ; Do nothing if EE already exists
-    bit inputBufStateEE, c
-    ret nz
-    ; try insert 'E'
+    bcall(_CheckInputBufEE) ; CF=1 if E exists; A=eeLen
+    ret c
+    ; Append 'E'
     ld a, Lexponent
+    jp handleKeyNumber
+
+; Description: Handle the (ALPHA :) button which defines a number with a
+; modifier, for example "2:D" (2 days), "2:H" (2 hours), "2:M" (2 minutes),
+; "2:S" (2 seconds).
+handleKeyColon:
+    ; Do nothing in BASE mode.
+    bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
+    ret nz
+    ; Append ':'
+    ld a, ':'
     jp handleKeyNumber
 
 ; Description: Add imaginary-i into the input buffer.
@@ -270,6 +442,62 @@ handleKeyAngle:
     ld a, Ldegree
     call handleKeyNumber
     ret
+
+;-----------------------------------------------------------------------------
+
+handleKeyLBrace:
+    ; Do nothing in BASE mode.
+    bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
+    ret nz
+    bcall(_CheckInputBufRecord) ; CF=1 if inputBuf is a data record
+    ret c ; return if already in data structure mode.
+    ld a, LlBrace
+    jp handleKeyNumber
+
+handleKeyRBrace:
+    ; Do nothing in BASE mode.
+    bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
+    ret nz
+    ; Check if in data record mode.
+    bcall(_CheckInputBufRecord) ; CF=1 if inputBuf is a data record
+    ret nc ; return if *not* in data structure mode.
+    ; Check braceLevel
+    or a
+    ret z ; return if braceLevel<=0
+    ; RBrace allowed.
+    ld a, LrBrace
+    jp handleKeyNumber
+
+; Description: Handle the Comma button.
+; Input: (commaEEMode)
+; Output: (inputBuf) updated
+; Destroys: all
+handleKeyComma:
+    ; Do nothing in BASE mode.
+    bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
+    ret nz
+    ; Check if Comma and EE are swapped.
+    ld a, (commaEEMode)
+    cp commaEEModeSwapped
+    jr z, handleKeyEEAlt
+handleKeyCommaAlt:
+    ; Check if in data record mode.
+    bcall(_CheckInputBufRecord) ; CF=1 if inputBuf is a data record
+    ret nc ; return if not in data structure mode
+    or a
+    ret z ; return if braceLevel==0
+    ; Prevent double-comma or comma after opening left brace.
+    ld hl, inputBuf
+    bcall(_GetLastChar) ; A=lastChar
+    or a
+    ret z ; return if empty
+    cp ','
+    ret z ; return if comma
+    cp LlBrace
+    ret z ; return if '{'
+    ; Append the comma
+    ld a, ','
+    jp handleKeyNumber
 
 ;-----------------------------------------------------------------------------
 
@@ -385,8 +613,12 @@ handleKeyClearToEmptyInput:
 ; Description: Handle (-) change sign. If in edit mode, change the sign in the
 ; inputBuf. Otherwise, change the sign of the X register. If the EE symbol
 ; exists, change the sign of the exponent instead of the mantissa.
-; Input: none
-; Output: (inputBuf), X
+; Input:
+;   - X:(Real|Complex|RpnDuration)
+;   - (inputBuf)
+; Output:
+;   - X=-X
+;   - (inputBuf) modified with '-' sign
 ; Destroys: all, OP1
 handleKeyChs:
     ; Do nothing in BASE mode. Use NEG function instead.
@@ -406,8 +638,7 @@ handleKeyChsX:
 handleKeyChsInputBuf:
     ; In edit mode, so change sign of Mantissa or Exponent.
     set dirtyFlagsInput, (iy + dirtyFlags)
-    bcall(_GetInputBufState) ; C=inputBufState; D=inputBufEEPos; E=inputBufEELen
-    ld a, d ; A=inputBufEEPos or 0 if no 'E'
+    bcall(_CheckInputBufChs) ; A=chsPos
     ld hl, inputBuf
     ld b, inputBufCapacity
     ; [[fallthrough]]
@@ -415,14 +646,13 @@ handleKeyChsInputBuf:
 ; Description: Add or remove the '-' char at position A of the Pascal string at
 ; HL, with maximum length B.
 ; Input:
-;   A: signPos, the offset where the sign ought to be
-;   B: inputBufCapacity, max size of Pasal string
-;   HL: pointer to Pascal string
+;   - A:u8=signPos, the offset where the sign ought to be
+;   - B:u8=inputBufCapacity, max size of Pasal string
+;   - HL:(pstring*)=pascalStringPointer
 ; Output:
-;   (HL): updated with '-' removed or added
-;   CF:
-;       - Set if positive (including if '-' could not be added due to size)
-;       - Clear if negative
+;   - (HL): updated with '-' removed or added
+;   - CF=1 if the result is still positive (including if '-' could not be added
+;   due to size), 0 if the result has become negative
 ; Destroys:
 ;   A, BC, DE, HL
 flipInputBufSign:
@@ -476,32 +706,22 @@ handleKeyEnter:
 
 ; Description: Go to the previous menu row, with rowIndex decreasing upwards.
 ; Input: none
-; Output: (menuRowIndex) decremented, or wrapped around
+; Output: (currentMenuRowIndex) decremented, or wrapped around
 ; Destroys: all
 handleKeyUp:
-    ld hl, menuGroupId
-    ld a, (hl) ; A = menuGroupId
-    inc hl
-    ld b, (hl) ; B = menuRowIndex
-    call getMenuNode ; HL = pointer to MenuNode
-    inc hl
-    inc hl
-    inc hl
-    ; if numRows==1: return TODO: Check for 0, but that should never happen.
-    ld c, (hl) ; C = numRows
-    ld a, c
-    cp 1
-    ret z
-
-    ; (menuRowIndex-1) mod numRows
-    ld a, (menuRowIndex)
+    bcall(_GetCurrentMenuGroupNumRows) ; A=numRows
+    ; if numRows==1: return
+    cp 2 ; CF=1 if numRows<=1
+    ret c
+    ; currentMenuRowIndex=(currentMenuRowIndex-1) mod numRows
+    ld c, a ; C=numRows
+    ld a, (currentMenuRowIndex)
     or a
     jr nz, handleKeyUpContinue
     ld a, c ; A = numRows
 handleKeyUpContinue:
     dec a
-    ld (menuRowIndex), a
-
+    ld (currentMenuRowIndex), a
     set dirtyFlagsMenu, (iy + dirtyFlags)
     ret
 
@@ -509,32 +729,22 @@ handleKeyUpContinue:
 
 ; Description: Go to the next menu row, with rowIndex increasing downwards.
 ; Input: none
-; Output: (menuRowIndex) incremented mod numRows
+; Output: (currentMenuRowIndex) incremented mod numRows
 ; Destroys: all
 handleKeyDown:
-    ld hl, menuGroupId
-    ld a, (hl)
-    inc hl
-    ld b, (hl) ; menuRowIndex
-    call getMenuNode
-    inc hl
-    inc hl
-    inc hl
-    ; if numRows==1: returt TODO: Check for 0, but that should never happen.
-    ld c, (hl) ; numRows
-    ld a, c
-    cp 1
-    ret z
-
-    ; (menuRowIndex+1) mod numRows
-    ld a, (menuRowIndex)
+    bcall(_GetCurrentMenuGroupNumRows) ; A=numRows
+    ; if numRows==1: return
+    cp 2
+    ret c
+    ; currentMenuRowIndex=(currentMenuRowIndex+1) mod numRows
+    ld c, a
+    ld a, (currentMenuRowIndex)
     inc a
     cp c
     jr c, handleKeyDownContinue
     xor a
 handleKeyDownContinue:
-    ld (menuRowIndex), a
-
+    ld (currentMenuRowIndex), a
     set dirtyFlagsMenu, (iy + dirtyFlags)
     ret
 
@@ -544,10 +754,11 @@ handleKeyDownContinue:
 ; already at the rootMenu, and the rowIndex is not 0, then reset the
 ; rowIndex to 0 so that we return to the default, top-level view of the menu
 ; hierarchy.
-; Input: (menuGroupId), the current (child) menu group
+; Input:
+;   - (currentMenuGroupId), the current (child) menu group
 ; Output:
-;   - (menuGroupId) at parentId
-;   - (menuRowIndex) of the input (child) menu group
+;   - (currentMenuGroupId) at parentId
+;   - (currentMenuRowIndex) of the input (child) menu group
 ; Destroys: all
 handleKeyExit:
     jp exitMenuGroup
@@ -632,9 +843,7 @@ handleKeyMenuSecond5:
 handleKeyMenuA:
     res rpnFlagsSecondKey, (iy + rpnFlags)
 handleKeyMenuAltEntry:
-    ld c, a ; save A (menu button index 0-4)
-    call getCurrentMenuRowBeginId ; A=row begin id
-    add a, c ; menu node ids are sequential starting with beginId
+    bcall(_GetMenuIdOfButton) ; HL=menuId of button
     jp dispatchMenuNode
 
 ; Description: Same as handleKeyMenuA() except that the menu key was invoked
@@ -705,12 +914,12 @@ handleKeyDiv:
 handleKeyPi:
     call closeInputAndRecallNone
     call op1SetPi
-    jp pushX
+    jp pushToX
 
 handleKeyEuler:
     call closeInputAndRecallNone
     call op1SetEuler
-    jp pushX
+    jp pushToX
 
 ;-----------------------------------------------------------------------------
 ; Alegbraic functions.
@@ -722,21 +931,40 @@ handleKeyExpon:
     call universalPow
     jp replaceXY
 
-; Description: 1/x
+; Description: Handle the 1/x button. For Real and Complex, this is the
+; reciprocal function. But for RpnDateTime and RpnOffsetDateTime, this button
+; is bound to the DCUT (aka DateCut) function using the mDateCutHandlerAlt()
+; routine.
 handleKeyInv:
-    call closeInputAndRecallUniversalX
+    call closeInputAndRecallUniversalX ; A=rpnObjectType
+    cp rpnObjectTypeDateTime
+    jp z, mDateCutHandlerAlt
+    cp rpnObjectTypeOffsetDateTime
+    jp z, mDateCutHandlerAlt
     call universalRecip
     jp replaceX
 
-; Description: x^2
+; Description: Handle the x^2 button. For Real and Complex, this performs the
+; X^2 function. But for RpnDate, RpnDateTime, this invokes the DEXT
+; (DateExtend) function using the mDateExtendHandlerAlt() routine.
 handleKeySquare:
-    call closeInputAndRecallUniversalX
+    call closeInputAndRecallUniversalX ; A=rpnObjectType
+    cp rpnObjectTypeDate
+    jp z, mDateExtendHandlerAlt
+    cp rpnObjectTypeDateTime
+    jp z, mDateExtendHandlerAlt
     call universalSquare
     jp replaceX
 
-; Description: sqrt(x)
+; Description: Handle the sqrt(x) button. For Real and Complex, this performs
+; the sqrt(x) function. But for RpnDateTime and RpnOffsetDateTime, this invokes
+; the DSHK (DateShrink) function using the mDateShrinkHandlerAlt() routine.
 handleKeySqrt:
-    call closeInputAndRecallUniversalX
+    call closeInputAndRecallUniversalX ; A=rpnObjectType
+    cp rpnObjectTypeDateTime
+    jp z, mDateShrinkHandlerAlt
+    cp rpnObjectTypeOffsetDateTime
+    jp z, mDateShrinkHandlerAlt
     call universalSqRoot
     jp replaceX
 
@@ -755,7 +983,7 @@ handleKeyExchangeXY:
 handleKeyAns:
     call closeInputAndRecallNone
     call rclL
-    jp pushX
+    jp pushToX
 
 ;-----------------------------------------------------------------------------
 ; Transcendentals
@@ -763,7 +991,7 @@ handleKeyAns:
 
 handleKeyLog:
     call closeInputAndRecallUniversalX
-    call universalLog
+    call universalLog ; A=numReturnValues
     jp replaceX
 
 handleKeyALog:
@@ -822,64 +1050,58 @@ handleKeyATan:
 handleKeySto:
     call closeInputAndRecallNone
     ld hl, msgStoPrompt
-    call startArgParser
+    call startArgScanner
     set inputBufFlagsArgAllowModifier, (iy + inputBufFlags)
-    call processArgCommands
-    ret nc ; do nothing if canceled
+    set inputBufFlagsArgAllowLetter, (iy + inputBufFlags)
+    call processArgCommands ; ZF=0 if cancelled
+    ret nz ; do nothing if cancelled
     cp argModifierIndirect
     ret nc ; TODO: implement this
-    call rclX
-    ; Implement STO{op}NN
-    ld a, (argValue)
-    cp regsSize ; check if command argument too large
-    jp nc, handleKeyStoError
-    ld c, a ; C=NN
+    call rclX ; OP1/OP2=X
+    ; Set up Sto parameters
+    ld a, (argValue) ; A=indexOrLetter
+    ld c, a ; C=index or letter
     ld a, (argModifier)
     ld b, a ; B=op
-    jp stoOpRegNN
-handleKeyStoError:
-    ld a, errorCodeDimension
-    ld (handlerCode), a
-    ret
+    ld a, (argType) ; A=argType
+    jp stoOpGeneric
+handleKeyStoInvalid:
+    bcall(_ErrInvalid)
 
+; Description: Handle the RCL button. There are 2 cases:
+; 1) If {op} is empty, it's a simple assignment, so we call rclGeneric() and
+; push the value on to the RPN stack.
+; 2) If the {op} is not empty, it is an arithmetic operator, we call
+; rclOpGeneric() and *replace* the current X with the new X.
 handleKeyRcl:
     call closeInputAndRecallNone
     ld hl, msgRclPrompt
-    call startArgParser
+    call startArgScanner
     set inputBufFlagsArgAllowModifier, (iy + inputBufFlags)
-    call processArgCommands
-    ret nc ; do nothing if canceled
+    set inputBufFlagsArgAllowLetter, (iy + inputBufFlags)
+    call processArgCommands ; ZF=0 if cancelled
+    ret nz ; do nothing if cancelled
     cp argModifierIndirect
     ret nc ; TODO: implement this
-    ; Implement rclOpRegNN. There are 2 cases:
-    ; 1) If the {op} is a simple assignment, we call rclRegNN() and push the
-    ; value on to the RPN stack.
-    ; 2) If the {op} is an arithmetic operator, we call rclOpRegNN() and
-    ; *replace* the current X with the new X.
-    ld a, (argValue)
-    cp regsSize ; check if command argument too large
-    jr nc, handleKeyRclError
-    ld c, a
+    ld a, (argValue) ; A=varLetter
+    ld c, a ; C=indexOrLetter
     ld a, (argModifier)
+    ld b, a ; B=modifier
     or a
-    jr nz, handleKeyRclOpNN
-handleKeyRclNN:
-    ; Call rclRegNN() and *push* RegNN onto the RPN stack.
-    ld a, c
-    call rclRegNN
-    jp pushX
-handleKeyRclOpNN:
-    ; Call rclOpRegNN() and *replace* the X register with (OP1 {op} RegNN).
-    ld b, a
-    push bc
+    jr nz, handleKeyRclOp
+    ; No modifier, so call rclGeneric() and *push* value onto the RPN stack.
+    ld a, (argType) ; A=argType
+    call rclGeneric
+    jp pushToX
+handleKeyRclOp:
+    ; Modifier provided, so call rclOpGeneric() and *replace* the X register
+    ; with (OP1 {op} registerOrVariable).
+    push bc ; stack=[BC saved]
     call rclX ; OP1=X
-    pop bc
-    call rclOpRegNN
+    pop bc ; BC=restored
+    ld a, (argType) ; A=argType
+    call rclOpGeneric
     jp replaceX ; updates LastX
-handleKeyRclError:
-    ld a, errorCodeDimension
-    ld (handlerCode), a
-    ret
 
 msgStoPrompt:
     .db "STO", 0
@@ -893,19 +1115,19 @@ msgRclPrompt:
 ; Description: Handle the MATH key as the "HOME" key, going up to the top of
 ; the menu hierarchy.
 handleKeyMath:
-    ld a, mRootId
+    ld hl, mRootId
     jp dispatchMenuNode
 
 ; Description: Handle the MODE key as a shortcut to `ROOT > MODE`, except this
 ; saves the current MenuGroup as the jumpBack menu, and the ON/EXIT
 handleKeyMode:
-    ld a, mModeId
+    ld hl, mModeId
     jp dispatchMenuNodeWithJumpBack
 
 ; Description: Handle the STAT key as a shortcut to `ROOT > STAT`, but unlike
 ; `MODE`, this does *not* save the current MenuGroup in the jumpBack variables.
 handleKeyStat:
-    ld a, mStatId
+    ld hl, mStatId
     jp dispatchMenuNode
 
 ;-----------------------------------------------------------------------------
@@ -923,9 +1145,9 @@ handleKeyQuit:
 handleKeyDraw:
     call closeInput ; preserve rpnFlagsTvmCalculate
     ld hl, msgDrawPrompt
-    call startArgParser
-    call processArgCommands
-    ret nc ; do nothing if canceled
+    call startArgScanner
+    call processArgCommands ; ZF=0 if cancelled
+    ret nz ; do nothing if cancelled
     ; save (argValue)
     ld a, (argValue)
     ld (drawMode), a
@@ -944,34 +1166,48 @@ msgDrawPrompt:
     .db "DRAW", 0
 
 ;-----------------------------------------------------------------------------
-; Keys related to complex numbers.
+; Keys related to linking and unlinking.
 ;-----------------------------------------------------------------------------
 
 ; Description: Convert between 2 reals and a complex number, depending on the
-; complexMode setting (RECT, PRAD, PDEG).
-; Input: OP1,OP2 or CP1
-; Output; OP1,OP2 or CP1
+; complexMode setting (RECT, PRAD, PDEG). For RpnDate and RpnDateTime objects,
+; this invokes the DLNK (DateLink) function using the mDateLinkHandlerAlt()
+; routine.
+; Input:
+;   - X:(Real|Complex|RpnDate|RpnDateTime)
+;   - Y:(Real|Complex|RpnDate|RpnDateTime)
+; Output:
+;   - X:(Real|Complex|RpnDateTime|RpnOffsetDateTime)
+;   - Y:(Real|Complex|RpnDateTime|RpnOffsetDateTime)
 handleKeyLink:
     call closeInputAndRecallNone
     call rclX ; CP1=X; A=objectType
+    cp a, rpnObjectTypeReal
+    jr z, handleKeyLinkRealsToComplex
     cp a, rpnObjectTypeComplex
-    jr nz, handleKeyLinkRealsToComplex
+    jr z, handleKeyLinkComplexToReals
+    ;
+    cp rpnObjectTypeTime ; ZF=1 if RpnTime
+    jp z, mDateLinkHandlerAlt
+    cp rpnObjectTypeDate ; ZF=1 if RpnDate
+    jp z, mDateLinkHandlerAlt
+    cp rpnObjectTypeOffset ; ZF=1 if RpnOffset
+    jp z, mDateLinkHandlerAlt
+    cp rpnObjectTypeDateTime ; ZF=1 if RpnDateTime
+    jp z, mDateLinkHandlerAlt
+handleKeyLinkErrDataType:
+    bcall(_ErrDataType)
+handleKeyLinkComplexToReals:
     ; Convert complex into 2 reals
-    call complexToReals ; OP1=Re(X), OP2=Im(X)
-    jp nc, replaceXWithOP1OP2 ; replace X with OP1,OP2
-    bcall(_ErrDomain)
+    bcall(_ComplexToReals) ; OP1=Re(X), OP2=Im(X)
+    jp replaceXWithOP1OP2 ; replace X with OP1,OP2
 handleKeyLinkRealsToComplex:
     bcall(_PushRealO1) ; FPS=[Im]
     ; Verify that Y is also real.
     call rclY ; CP1=Y; A=objectType
-    cp a, rpnObjectTypeComplex
-    jr nz, handleKeyLinkRealsToComplexOk
-    ; Y is complex, so throw an error
-    bcall(_ErrArgument)
-handleKeyLinkRealsToComplexOk:
+    cp a, rpnObjectTypeReal
+    jr nz, handleKeyLinkErrDataType
     ; Convert 2 reals to complex
     bcall(_PopRealO2) ; FPS=[]; OP2=X=Im; OP1=Y=Re
-    call realsToComplex ; CP1=complex(OP1,OP2)
-    jp nc, replaceXY ; replace X, Y with CP1
-    ; Handle error
-    bcall(_ErrDomain)
+    bcall(_RealsToComplex) ; CP1=complex(OP1,OP2)
+    jp replaceXY ; replace X, Y with CP1

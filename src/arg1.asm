@@ -37,35 +37,94 @@ AppendArgBuf:
     ld b, argBufCapacity
     jp AppendString
 
-; Description: Convert (0 to 2 digit) argBuf into a binary number.
-; Input: argBuf
-; Output: A: value of argBuf
-; Destroys: A, B, C, HL
+;------------------------------------------------------------------------------
+
+; Description: Parse the contents of the Pascal string argBuf (potentially an
+; empty string, 1-N digits, or a letter) into (argType) and (argValue).
+; Input:
+;   - argBuf
+; Output:
+;   - (argType) updated
+;   - (argValue) updated
+; Destroys: A, B, C, DE, HL
 ParseArgBuf:
-    ld hl, argBuf
-    ld b, (hl) ; B = argBufLen
-    inc hl
-    ; check for 0 digit
-    ld a, b
-    or a
-    ret z
-    ; A = current sum
+    ; set argType and argValue initially to empty string
+    ld a, argTypeEmpty
+    ld (argType), a ; argType=argTypeEmpty
     xor a
-    ; check for 1 digit
-    dec b
-    jr z, parseArgBufOneDigit
-parseArgBufTwoDigits:
-    call parseArgBufOneDigit
-    ; C = C * 10 = C * (2 * 5)
-    ld c, a
-    add a, a
-    add a, a
-    add a, c ; A = 5 * C
-    add a, a
-parseArgBufOneDigit:
-    ld c, a
+    ld (argValue), a ; argValue=0
+    ; prepare argBuf for parsing
+    ld hl, argBuf
+    call preparePascalStringForParsing ; preserves HL
+    inc hl ; skip len byte
+    ; peek at the first character
+    ld a, (hl) ; A=firstChar, will be NUL if empty
+    or a
+    ret z ; return if NUL
+    ; parse the different argument type (numerical, varLetter)
+    call isVariableLetter ; CF=1 if varLetter
+    jr c, parseArgBufLetter
+    call isValidUnsignedDigit ; CF=1 if 0-9
+    jr c, parseArgBufDigits
+parseArgBufInvalid:
+    ld a, argTypeInvalid
+    ld (argType), a
+    ret
+
+; Description: Parse the single letter in argBuf into argType and argValue.
+; Input:
+;   - HL:(char*)=pointer into argBuf
+; Output:
+;   - (argType)=argTypeLetter or argTypeInvalid
+;   - (argValue)=char(argBuf[0])
+;   - HL=points to NUL at end of argBuf
+parseArgBufLetter:
     ld a, (hl)
     inc hl
+    ld (argValue), a ; argValue=char
+    ld a, argTypeLetter
+    ld (argType), a ; argType=argTypeLetter
+    ; make sure there is only a single letter
+    ld a, (hl)
+    or a
+    jr nz, parseArgBufInvalid
+    ret
+
+; Description: Parse the numerals in argBuf into argScanner.argType and
+; argValue.
+; Input:
+;   - HL:(char*)=pointer into argBuf
+; Output:
+;   - (argType)=argTypeNumber or argTypeInvalid
+;   - (argValue)=u8(argBuf)
+;   - HL=points to NUL at end of argBuf
+parseArgBufDigits:
+    ld c, 0 ; sum=0
+parseArgBufDigitsLoop:
+    ld a, (hl)
+    or a
+    jr z, parseArgBufDigitsEnd ; if NUL: end loop
+    inc hl
+    call isValidUnsignedDigit ; CF=1 if 0-9
+    jr nc, parseArgBufInvalid
+    ld b, a ; B=digit
+    ; sum=sum*10
+    ld a, c
+    add a, a
+    add a, a
+    add a, c ; A=5*C
+    add a, a ; A=10*C
+    ld c, a
+    ; add digit
+    ld a, b ; A=digit
     sub '0'
     add a, c
-    ret ; A = current sum
+    ld c, a ; sum+=u8(digit)
+    jr parseArgBufDigitsLoop
+parseArgBufDigitsEnd:
+    ; update argValue, argType
+    ld a, c
+    ld (argValue), a ; argValue=sum
+    ld a, argTypeNumber
+    ld (argType), a ; argType=argTypeNumber
+    ret

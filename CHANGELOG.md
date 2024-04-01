@@ -1,5 +1,86 @@
 # Changelog
 
+- Unreleased
+    - Supports resizing the number of storage registers
+        - `MODE` > `SIZE` command supports a minimum of 25 to a maximum of 100
+        - `MODE` > `SIZ?` returns the current size of storage registers
+        - size of the `RPN83REG` appVar varies:
+            - 496 bytes at SIZE=25
+            - 1921 bytes at SIZE=100
+- 0.10.0 (2024-03-31)
+    - **Bug Fix** Fix broken `CLRG`
+        - broke when 'REGS' was replaced by 'RPN83REG'
+    - **Bug Fix** Parse floating numbers equivalent to 0.0 more correctly.
+        - The canonical internal representation of 0.0 in TI-OS has an exponent
+          value of `$80` (i.e. 0), with all mantissa digits set to `0`.
+        - The previous code set the mantissa digits correctly, but incorrectly
+          set the exponent to `$7F` or some other value depending on the
+          position of the decimal point relative to the `0` digits.
+        - It made almost no difference because various floating point routines
+          seem to canonicalize the exponent to the correct `$80` before
+          continuing.
+        - However, in an upcoming feature, the validation `CkPosInt()` is called
+          before canonicalization can take place, the `CkPosInt()` returns an
+          incorrect result.
+        - The fix correctly detects all variations of a 0.0 (e.g. an empty
+          string "", "0.0", "000.0", "-000.000E1", "00.00E0") and correctly
+          returns the canonical representation of 0.0 which works with
+          `CkPosInt()`.
+    - **Bug Fix** Validate data type for `STAT` functions
+        - allow only Real numbers for `Sigma+` and `Sigma-`
+    - **Bug Fix** Validate data type for `TVM` functions
+        - allow only Real numbers for TVM functions
+    - **Bug Fix** Validate data type for `%` function
+        - allow only Real numbers for `X` and `Y`
+    - **Bug Fix** Validate data type when storing to `ANS` upon app exit
+        - allow only Real or Complex numbers to stored to `ANS`
+    - **Bug Fix** Support real arguments for `CPLX` menu functions (`REAL`,
+      `IMAG`, `CONJ`, `CABS`, `CANG`)
+        - fixes [Issue#16](https://github.com/bxparks/rpn83p/issues/16)
+    - RPN83P now consumes 3 flash pages (48 kiB)
+    - Verify compatibility with TI-Nspire with TI-84 Plus keyboard
+        - works with TI-Nspire with the TI-84 keyboard emulates the Z80
+          processor
+    - Store and recall TI-OS single-letter variables
+        - TI-OS supports 27 single-letter variables (A-Z, Theta) for real and
+          complex numbers
+        - extend `STO`, `RCL`, `STO{op}`, and `RCL{op}` to accept a
+          single-letter in addition to digits (e.g. `STO ALPHA A`, `RCL+
+          ALPHA B`)
+    - Add `RNDF`, `RNDN`, `RNDG` rounding functions
+        - `RNDF`: round to current FIX/SCI/ENG digits
+        - `RNDN`: round to user-specified `N` digits (0-9)
+        - `RNDG`: round to 10 digits, removing guard digits
+    - Change complex number type error to `Err:DataType`
+        - when a function does not accept a complex number, an error message is
+          shown
+        - change the message from `Err:Domain` to `Err:DataType`
+    - Add `MODE` option to invert the behavior of `,` and `2ND EE` button
+        - previously, both the `,` button and `2ND EE` button were mapped to
+          `EE`, to make entry of floating point numbers with exponents easier.
+        - But the new Date/Time records require the `,` button for entry.
+        - add 2 selectors into `MODE` menu:
+            - `,EE` causes the button to behave as labeled (default)
+            - `EE,` inverts the mapping, so that `,` invokes the `EE` function,
+              and `2ND EE` invokes the `,` function
+        - allows the end user to select the most convenient behavior.
+    - Update menu compiler and menu routines to support more than 255 items.
+        - move most menu routines into Flash Page 1.
+    - add date functions
+        - date, time, datetime, timezone, and hardware clock
+        - add or subtract dates, times, datetimes
+        - convert datetime to different timezones
+        - convert between datetime and epochseconds
+        - support alternate Epoch dates (Unix, NTP, GPS, TIOS, Y2K, custom)
+        - set and retrieve datetime from the hardware clock (84+/84+SE only)
+        - display time and date objects in RFC 3339 (ISO 8601) format
+        - see [RPN83P User Guide: DATE](docs/USER_GUIDE_DATE.md)
+    - increase performance of `PRIM` (prime factor) function by 40-50%.
+        - see [RPN83P User Guide: Prime
+          Factors](docs/USER_GUIDE.md#prime-factors)
+    - update pandoc scripts that convert GitHub flavored Markdown to PDF
+        - pandoc was generating images which were 33% too large
+        - fixed by using ImageMagick to prescale the images to 75%
 - 0.9.0 (2024-01-06)
     - **Breaking**: Change names and internal formats of various appVars
         - `STK` list variable replaced with `RPN83STK`

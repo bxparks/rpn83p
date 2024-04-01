@@ -1,0 +1,468 @@
+;-----------------------------------------------------------------------------
+; MIT License
+; Copyright (c) 2023 Brian T. Park
+;
+; Routines for the SHOW function, which shows all 14 digits of a TI-OS floating
+; point number. If the number is an integer, it is shown as a 14-digit integer.
+; If the number is floating point, then it is shown in scientific notation with
+; 14 significant digits.
+;
+; Labels with Capital letters are intended to be exported to other flash pages
+; and should be placed in the branch table on Flash Page 0. Labels with
+; lowercase letters are intended to be private so do not need a branch table
+; entry.
+;------------------------------------------------------------------------------
+
+; Description: Format the number in OP1 to a NUL terminated string that shows
+; all significant digits, suitable for a SHOW function.
+; Input:
+;   - OP1/OP2: real, complex, or record (e.g. RpnDate{}, RpnDateTime{})
+;   - DE:(char*)=output string buffer
+; Output:
+;   - (DE): string buffer updated and NUL terminated
+;   - DE: points to NUL at the end of string, to allow chaining
+; Destroys: all, OP1-OP6
+FormShowable:
+    call getOp1RpnObjectTypePageTwo
+    ; real
+    cp rpnObjectTypeReal
+    jr z, formShowableReal
+    ; complex
+    cp rpnObjectTypeComplex
+    jr z, formShowableComplex
+    ; RpnDate
+    cp rpnObjectTypeDate
+    jr z, formShowableDate
+    ; RpnTime
+    cp rpnObjectTypeTime
+    jr z, formShowableTime
+    ; RpnDateTime
+    cp rpnObjectTypeDateTime
+    jr z, formShowableDateTime
+    ; RpnOffset
+    cp rpnObjectTypeOffset
+    jr z, formShowableOffset
+    ; RpnOffsetDateTime
+    cp rpnObjectTypeOffsetDateTime
+    jr z, formShowableOffsetDateTime
+    ; RpnDayOfWeek
+    cp rpnObjectTypeDayOfWeek
+    jr z, formShowableDayOfWeek
+    ; RpnDuration
+    cp rpnObjectTypeDuration
+    jr z, formShowableDuration
+formShowableUnknown:
+    ; Print "{unknown}" if object not known
+    ld hl, msgRpnObjectTypeUnknownPageTwo
+    jp copyCStringPageTwo
+formShowableReal:
+    bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
+    jr nz, formShowableBase
+    call formRealString
+    jr formShowableEnd
+formShowableBase:
+    call formBaseString
+    jr formShowableEnd
+formShowableComplex:
+    call formComplexString
+    jr formShowableEnd
+formShowableDate:
+    ld hl, OP1
+    call formatRpnDateRaw
+    jr formShowableEnd
+formShowableTime:
+    ld hl, OP1
+    call formatRpnTimeRaw
+    jr formShowableEnd
+formShowableDateTime:
+    ld hl, OP1
+    call formatRpnDateTimeRaw
+    jr formShowableEnd
+formShowableOffset:
+    ld hl, OP1
+    call formatRpnOffsetRaw
+    jr formShowableEnd
+formShowableOffsetDateTime:
+    call shrinkOp2ToOp1PageTwo
+    ld hl, OP1
+    call formatRpnOffsetDateTimeRaw
+    call expandOp1ToOp2PageTwo
+    jr formShowableEnd
+formShowableDayOfWeek:
+    ld hl, OP1
+    call formatRpnDayOfWeekRaw
+    jr formShowableEnd
+formShowableDuration:
+    ld hl, OP1
+    call formatRpnDurationRaw
+    jr formShowableEnd
+formShowableEnd:
+    xor a
+    ld (de), a ; terminate with NUL
+    ret
+
+; Unknown RpnObjectType
+msgRpnObjectTypeUnknownPageTwo:
+    .db "{Unknown}", 0
+
+;------------------------------------------------------------------------------
+
+; Description: Format the number in OP1 in BASE mode. Currently, only BIN mode
+; has special formatting. The others (DEC, HEX, OCT) format the integer as a
+; decimal integer, which is consistent with the HP-42S. The longest string
+; produced by this routine is 32 characters when the BASE mode is BIN and WSIZ
+; is 32.
+;
+; Input:
+;   - OP1: an integer represented as a floating point number
+;   - DE:(char*)=bufPointer (cannot be OPx)
+; Output:
+;   - (DE): contains the integer rendered as an integer string
+;   - DE: updated
+; Destroys: A, B, C, DE, HL, OP2-OP6
+formBaseString:
+    ; Check for complex number, and use Complex formatting.
+    call checkOp1ComplexPageTwo
+    jr z, formComplexString
+    ; Check for negative number, and use Real formatting.
+    push de
+    bcall(_CkOP1Pos) ; if OP1>=0: ZF=1
+    pop de
+    jp nz, formRealString
+    ; Check for DEC, HEX, OCT and use Real formatting.
+    ld a, (baseNumber)
+    cp 10
+    jp z, formRealString
+    cp 16
+    jp z, formRealString
+    cp 8
+    jp z, formRealString
+    ; [[fallthrough]]
+
+formBinString:
+    push de ; stack=[bufPointer]
+    ; Check if OP1 fits in the current baseWordSize.
+    call ConvertOP1ToUxxNoFatal ; HL=OP1=uxx(OP1); C=u32StatusCode
+    ; Check for too big.
+    bit u32StatusCodeTooBig, c
+    pop de ; stack=[]; DE=bufPointer
+    jp nz, formRealString
+    ; Check for negative. This shouldn't happen because it should have been
+    ; caught earlier, so I guess this is just defensive programming against
+    ; future refatoring.
+    bit u32StatusCodeNegative, c
+    jp nz, formRealString
+    ; We are here if OP1 is a positive integer < 2^WSIZ.
+    push de ; stack=[bufPointer]
+    ; Convert to a 32-digit binary string at OP4.
+    ld hl, OP1
+    ld de, OP4
+    call FormatU32ToBinString ; DE points to a 32-character string + NUL.
+    ; Find the beginning of the binary string, depending on baseWordSize.
+    ld a, 32
+    ld hl, baseWordSize
+    sub (hl)
+    ld e, a
+    ld d, 0 ; DE=32-baseWordSize
+    ld hl, OP4
+    add hl, de ; HL=pointer to beginning of binary string
+    pop de ; stack=[]; DE=bufPointer
+    call ReformatBaseTwoString
+    ret
+
+;------------------------------------------------------------------------------
+
+; Format the complex number in OP1/OP2 into the C string buffer pointed by DE.
+; Input:
+;   - OP1/OP2=Z, complex number
+;   - DE:(char*)=cstringPointer
+; Output:
+;   - (DE): C string buffer updated, *not* NUL terminated
+;   - DE: points to the next character
+; Destroys: all, OP1-OP6
+formComplexString:
+    ; Determine the complex display mode.
+    ld a, (complexMode)
+    cp a, complexModeRect
+    jr z, formComplexRectString
+    cp a, complexModeRad
+    jr z, formComplexRadString
+    cp a, complexModeDeg
+    jr z, formComplexDegString
+    ; [[falltrhough]]
+
+; Description: Format the complex number in rectangular form.
+; Input: DE:(char*)=cstringPointer
+; Output: DE: updated
+formComplexRectString:
+    bcall(_ComplexToRect) ; OP1=Re(Z); OP2=Im(Z)
+    ; Format real part
+    push de
+    bcall(_PushRealO2) ; FPS=[Im(Z)]
+    pop de
+    call formRealString ; DE updated
+    ; Add " i "
+    ld hl, msgShowComplexRectSpacer
+    bcall(_StrCopy)
+    ; Format imaginary part
+    push de
+    bcall(_PopRealO1) ; FPS=[]; OP1=Im(Z)
+    pop de
+    jr formRealString
+
+msgShowComplexRectSpacer:
+    .db " ", LimagI, " ", 0
+
+; Description: Format the complex number in polar radian form.
+; Input: DE:(char*)=cstringPointer
+; Output: DE: updated
+formComplexRadString:
+    push de
+    bcall(_ComplexToPolarRad) ; OP1=r; OP2=radians
+    pop de
+    ; Format the magnitude
+    push de
+    bcall(_PushRealO2) ; FPS=[theta]
+    pop de
+    call formRealString
+    ; Add angle symbol
+    ld hl, msgShowComplexRadSpacer
+    bcall(_StrCopy)
+    ; Format angle
+    push de
+    bcall(_PopRealO1) ; FPS=[]; OP1=theta
+    pop de
+    jr formRealString
+
+msgShowComplexRadSpacer:
+    .db " ", Langle, " ", 0
+
+; Description: Format the complex number in polar degree form.
+; Input: DE:(char*)=cstringPointer
+; Output: DE: updated
+formComplexDegString:
+    push de
+    bcall(_ComplexToPolarDeg) ; OP1=r; OP2=degrees
+    pop de
+    ; Format the magnitude
+    push de
+    bcall(_PushRealO2) ; FPS=[theta]
+    pop de
+    call formRealString
+    ; Add angle symbol
+    ld hl, msgShowComplexDegSpacer
+    bcall(_StrCopy)
+    ; Format angle
+    push de
+    bcall(_PopRealO1) ; FPS=[]; OP1=theta
+    pop de
+    jr formRealString
+
+msgShowComplexDegSpacer:
+    .db " ", Langle, Ltemp, " ", 0
+
+;------------------------------------------------------------------------------
+
+; Format the real floating value in OP1 into the string buffer pointed by DE.
+; The string is *not* terminated with NUL, allowing additional characters to be
+; rendered into the buffer. Calls various helper routines:
+;   - formFloatString()
+;   - formIntString()
+; Input:
+;   - OP1: floating point number
+;   - DE: pointer to output string buffer
+; Output:
+;   - DE: string buffer updated, points to the next character
+; Destroys: OP1, OP2
+formRealString:
+    push de
+    bcall(_CkOp1FP0) ; if OP1==0: ZF=1
+    pop de
+    jr nz, formRealStringNonZero
+    ; Generate just a "0" if zero.
+    ld a, '0'
+    ld (de), a
+    inc de
+    ret
+formRealStringNonZero:
+    push de ; stack=[bufPointer]
+    bcall(_PushRealO1) ; FPS=[OP1]
+    bcall(_ClrOP1S) ; clear sign bit of OP1
+    call op2Set1E14PageTwo ; OP2=1E14
+    bcall(_CpOP1OP2) ; if OP1 >= OP2: CF=0
+    jr nc, formRealStringFloat
+    ; Check for integer
+    bcall(_CkPosInt) ; if OP1 int >= 0: ZF=1
+    jr z, formRealStringInt
+formRealStringFloat:
+    bcall(_PopRealO1) ; FPS=[]
+    pop de ; stack=[]; DE=bufPointer
+    jr formSciString
+formRealStringInt:
+    bcall(_PopRealO1) ; FPS=[]
+    pop de ; stack=[]; DE=bufPointer
+    jr formIntString
+
+;------------------------------------------------------------------------------
+
+; Description: Format the floating point number in OP1 to a string using
+; scientific notation. Prints all 14 digits in the mantissa, excluding trailing
+; zeros which are not relevant. The longest string produced by this routine is:
+; 14 significant digits, decimal point, mantissa minus sign, 'E', exponent
+; minus sign, 2 exponent digits = 20 characters. (I am not actually sure what
+; this routine produces if OP1==0.0).
+;
+; Input:
+;   - OP1: floating point number
+;   - DE:(char*)=bufPointer
+; Output:
+;   - (DE): floating point rendered in scientific notation, *not* NUL terminated
+;   - DE: updated
+; Destroys: A, B, C, DE, HL
+formSciString:
+    ld hl, OP1
+    ld b, 14 ; 14 digit mantissa in BCD format
+    ld a, (hl)
+    inc hl
+    rla ; CF=bit7 of floating point object type T
+    jr nc, formSciStringDigits
+    ld a, '-'
+    ld (de), a
+    inc de
+formSciStringDigits:
+    ; Save the exponent
+    ld a, (hl) ; A=EXP
+    inc hl
+    push af ; stack=[EXP]
+    ; Always print the very first digit of mantissa.
+    ld a, (hl)
+    inc hl
+    ld c, a ; C=BCD digit saved
+    ; Extract first digit and print
+    srl a
+    srl a
+    srl a
+    srl a
+    call convertAToCharPageTwo
+    ; Push the position of the last non-zero trailing digit in the mantissa.
+    ; I need an extra copy of DE, but I'm out of registers, so use the stack.
+    ; If I try to use IX, transferring from DE to IX requires the stack anyway,
+    ; so might as well just use the stack.
+    push de ; stack=[EXP, lastNonZeroDE]
+    ld (de), a
+    inc de
+    ld a, '.'
+    ; Continue with the second digits and onwards
+    jr formSciStringLoopAltEntry
+formSciStringLoop:
+    ld a, (hl)
+    inc hl
+    ld c, a ; C=BCD digit saved
+    ; print the first digit
+    srl a
+    srl a
+    srl a
+    srl a
+    jr z, formSciStringMaintainLastDE1
+    ; non-zero digit, so update the last known non-zero DE on the stack
+    ex (sp), hl
+    ld h, d
+    ld l, e
+    ex (sp), hl ; stack=[EXP, new lastNonZeroDE]; HL preserved
+formSciStringMaintainLastDE1:
+    call convertAToCharPageTwo
+formSciStringLoopAltEntry:
+    ld (de), a
+    inc de
+    dec b
+    jr z, formSciStringExp
+    ; print the second digit
+    ld a, c ; A=BCD digit
+    and $0F
+    jr z, formSciStringMaintainLastDE2
+    ; non-zero digit, so update the last known non-zero DE on the stack
+    ex (sp), hl
+    ld h, d
+    ld l, e
+    ex (sp), hl ; stack=[EXP, lastNonZeroDE]
+formSciStringMaintainLastDE2:
+    call convertAToCharPageTwo
+    ld (de), a
+    inc de
+    djnz formSciStringLoop
+formSciStringExp:
+    pop de ; stack=[EXP]; DE=lastNonZeroDE
+    inc de ; move past the last non-zero trailing digit
+    ; print the Exponent in scientific notation
+    ld a, Lexponent
+    ld (de), a
+    inc de
+    pop af ; stack=[]; A=EXP
+    sub 128 ; A=exp=EXP-128
+    jr nc, formSciStringPosExp
+    ; Exponent is negative, so print a '-', then print (-EXP)
+    ld c, a
+    ld a, '-'
+    ld (de), a
+    inc de
+    ld a, c
+    neg ; A=-EXP
+formSciStringPosExp:
+    ex de, hl
+    call FormatAToString ; HL string updated, no NUL
+    ex de, hl
+    ret
+
+;------------------------------------------------------------------------------
+
+; Description: Format the integer in OP1 to an integer string. The longest
+; string produced by this routine is 14 characters.
+;
+; This routine assumes that:
+; - OP1 is not zero (but can be negative)
+; - abs(OP1) is an integer < 10^14 (i.e. 14 digits or less)
+; No validation of the EXP parameter is performed.
+;
+; Input:
+;   - OP1: an integer represented as a floating point number
+;   - DE:(char*)=bufPointer
+; Output:
+;   - (DE): floating point rendered in scientific notation, no NUL terminator
+;   - DE: updated
+; Destroys: A, B, C, DE, HL
+formIntString:
+    ld hl, OP1
+    ld a, (hl) ; A=signByte
+    inc hl
+    rla ; CF=bit7 of floating point object type T
+    jr nc, formIntStringDigits
+    ld a, '-'
+    ld (de), a
+    inc de
+formIntStringDigits:
+    ld a, (hl) ; A=EXP
+    inc hl
+    sub a, 127
+    ld b, a ; B=EXP-127=number of integer digits to print
+formIntStringLoop:
+    ld a, (hl)
+    inc hl
+    ld c, a ; C=BCD digit saved
+    ; print the first digit
+    srl a
+    srl a
+    srl a
+    srl a
+    call convertAToCharPageTwo
+    ld (de), a
+    inc de
+    dec b
+    ret z
+    ; print the second digit
+    ld a, c ; A=BCD digit
+    and $0F
+    call convertAToCharPageTwo
+    ld (de), a
+    inc de
+    djnz formIntStringLoop
+    ret

@@ -13,8 +13,8 @@
 ; Description: Invoke a function according to the index in A. You can invoke
 ; this using 'jp' or 'call'.
 ; Input:
-;   - A: index
-;   - HL: pointer to a list of pointers to subroutines
+;   - A=index
+;   - HL:(const void* const*)=pointer to a list of pointers to subroutines
 ; Output: depends on the routine called
 ; Destroys: DE, HL, and others depending on the routine called
 jumpAofHL:
@@ -33,30 +33,6 @@ jumpHL:
 ; Call this using `call jumpDE` or `call cc, jumpDE`.
 jumpDE:
     push de
-    ret
-
-;-----------------------------------------------------------------------------
-; String common routines. See also 'pstring.asm'.
-; TODO: Maybe combine them into a 'string.asm'?
-;-----------------------------------------------------------------------------
-
-; Description: Get the string pointer at index A given an array of pointers at
-; base pointer HL. Out-of-bounds is NOT checked.
-; Input:
-;   A: index
-;   HL: pointer to an array of pointers
-; Output: HL: pointer to a string
-; Destroys: DE, HL
-; Preserves: A
-getString:
-    ld e, a
-    ld d, 0
-    add hl, de ; HL += A * 2
-    add hl, de
-    ld e, (hl)
-    inc hl
-    ld d, (hl)
-    ex de, hl
     ret
 
 ;-----------------------------------------------------------------------------
@@ -90,30 +66,4 @@ copyCToPascalLoopEnd:
     sub a, b ; A = actual size of Pascal string
     pop de ; DE = pointer to Pascal string size byte
     ld (de), a ; save actual Pascal string size
-    ret
-
-;-----------------------------------------------------------------------------
-
-; Description: Append character A to the C-string at HL. Assumes that HL points
-; to a buffer big enough to hold one more character.
-; Input:
-;   - HL: pointer to C-string
-;   - A: character to add
-; Destroys: none
-appendCString:
-    push hl
-    push af
-    jr appendCStringLoopEntry
-appendCStringLoop:
-    inc hl
-appendCStringLoopEntry:
-    ld a, (hl)
-    or a
-    jr nz, appendCStringLoop
-appendCStringAtEnd:
-    pop af
-    ld (hl), a
-    inc hl
-    ld (hl), 0
-    pop hl
     ret

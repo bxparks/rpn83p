@@ -50,6 +50,7 @@ mTvmNHandler:
     jr nz, mTvmNCalculate
     ; save the inputBuf value
     call rclX
+    call validateOp1Real
     bcall(_StoTvmN)
     set rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld a, errorCodeTvmStored
@@ -57,7 +58,7 @@ mTvmNHandler:
     ret
 mTvmNGet:
     bcall(_RclTvmN)
-    call pushX
+    call pushToX
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld a, errorCodeTvmRecalled
     ld (handlerCode), a
@@ -65,7 +66,7 @@ mTvmNGet:
 mTvmNCalculate:
     bcall(_TvmCalculateN)
     bcall(_StoTvmN)
-    call pushX
+    call pushToX
     ld a, errorCodeTvmCalculated
     ld (handlerCode), a
     ret
@@ -100,13 +101,12 @@ mTvmIYRHandler:
     jr nz, mTvmIYRCalculate
     ; save the inputBuf value
     call rclX
+    call validateOp1Real
     bcall(_TvmCalcIPPFromIYR)
     call op1ToOp2 ; OP2=IYR/N=i
     call op1SetM1 ; OP1=-1
     bcall(_CpOP1OP2) ; if -1<i: CF=1 (valid)
-    jr c, mTvmIYRSet
-    bcall(_ErrDomain)
-mTvmIYRSet:
+    jr nc, mTvmIYRErr
     call rclX
     bcall(_StoTvmIYR)
     set rpnFlagsTvmCalculate, (iy + rpnFlags)
@@ -115,7 +115,7 @@ mTvmIYRSet:
     ret
 mTvmIYRGet:
     bcall(_RclTvmIYR)
-    call pushX
+    call pushToX
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld a, errorCodeTvmRecalled
     ld (handlerCode), a
@@ -127,8 +127,10 @@ mTvmIYRCalculate:
     cp errorCodeTvmCalculated
     ret nz
     bcall(_StoTvmIYR)
-    call pushX
+    call pushToX
     ret
+mTvmIYRErr:
+    bcall(_ErrDomain)
 
 ; Description: Call the tvmSolver() as often as necessary (e.g. during
 ; debugging single step) to arrive a solution, or determine that there is no
@@ -211,6 +213,7 @@ mTvmPVHandler:
     jr nz, mTvmPVCalculate
     ; save the inputBuf value
     call rclX
+    call validateOp1Real
     bcall(_StoTvmPV)
     set rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld a, errorCodeTvmStored
@@ -218,7 +221,7 @@ mTvmPVHandler:
     ret
 mTvmPVGet:
     bcall(_RclTvmPV)
-    call pushX
+    call pushToX
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld a, errorCodeTvmRecalled
     ld (handlerCode), a
@@ -226,7 +229,7 @@ mTvmPVGet:
 mTvmPVCalculate:
     bcall(_TvmCalculatePV)
     bcall(_StoTvmPV)
-    call pushX
+    call pushToX
     ld a, errorCodeTvmCalculated
     ld (handlerCode), a
     ret
@@ -243,6 +246,7 @@ mTvmPMTHandler:
     jr nz, mTvmPMTCalculate
     ; save the inputBuf value
     call rclX
+    call validateOp1Real
     bcall(_StoTvmPMT)
     set rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld a, errorCodeTvmStored
@@ -250,7 +254,7 @@ mTvmPMTHandler:
     ret
 mTvmPMTGet:
     bcall(_RclTvmPMT)
-    call pushX
+    call pushToX
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld a, errorCodeTvmRecalled
     ld (handlerCode), a
@@ -258,7 +262,7 @@ mTvmPMTGet:
 mTvmPMTCalculate:
     bcall(_TvmCalculatePMT)
     bcall(_StoTvmPMT)
-    call pushX
+    call pushToX
     ld a, errorCodeTvmCalculated
     ld (handlerCode), a
     ret
@@ -275,6 +279,7 @@ mTvmFVHandler:
     jr nz, mTvmFVCalculate
     ; save the inputBuf value
     call rclX
+    call validateOp1Real
     bcall(_StoTvmFV)
     set rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld a, errorCodeTvmStored
@@ -282,7 +287,7 @@ mTvmFVHandler:
     ret
 mTvmFVGet:
     bcall(_RclTvmFV)
-    call pushX
+    call pushToX
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld a, errorCodeTvmRecalled
     ld (handlerCode), a
@@ -290,7 +295,7 @@ mTvmFVGet:
 mTvmFVCalculate:
     bcall(_TvmCalculateFV)
     bcall(_StoTvmFV)
-    call pushX
+    call pushToX
     ld a, errorCodeTvmCalculated
     ld (handlerCode), a
     ret
@@ -306,6 +311,7 @@ mTvmPYRHandler:
     ; save the inputBuf value in OP1
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     call rclX
+    call validateOp1Real
     bcall(_PosNo0Int) ; if posnonzeroint(x): ZF=1
     jr z, mTvmPYRHandlerSet
     bcall(_ErrDomain)
@@ -317,7 +323,7 @@ mTvmPYRHandlerSet:
     ret
 mTvmPYRGet:
     bcall(_RclTvmPYR)
-    call pushX
+    call pushToX
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld a, errorCodeTvmRecalled
     ld (handlerCode), a
@@ -333,17 +339,13 @@ mTvmBeginHandler:
     set dirtyFlagsMenu, (iy + dirtyFlags)
     ret
 
-; Description: Return B if tvmIsBegin is false, C otherwise.
-; Input: A, B: normal nameId; C: alt nameId
-; Output: A
+; Description: Select menu name.
+; Output: CF=0 for normal, CF=1 or alternate
 mTvmBeginNameSelector:
     ld a, (tvmIsBegin)
-    or a
-    jr nz, mTvmBeginNameSelectorC
-    ld a, b
-    ret
-mTvmBeginNameSelectorC:
-    ld a, c
+    or a ; CF=0; ZF=1 if tvmIsBegin==0
+    ret z
+    scf
     ret
 
 ;-----------------------------------------------------------------------------
@@ -356,19 +358,13 @@ mTvmEndHandler:
     set dirtyFlagsMenu, (iy + dirtyFlags)
     ret
 
-; Description: Return C if tvmIsBegin is false, B otherwise.
-; Input:
-;   - A, B: normal nameId
-;   - C: alt nameId
-; Output: A
+; Description: Select menu name.
+; Output: CF=0 for normal, CF=1 or alternate
 mTvmEndNameSelector:
     ld a, (tvmIsBegin)
-    or a
-    jr z, mTvmEndNameSelectorC
-    ld a, b
-    ret
-mTvmEndNameSelectorC:
-    ld a, c
+    or a ; CF=0; ZF=1 if tvmIsBegin==0
+    ret nz
+    scf
     ret
 
 ;-----------------------------------------------------------------------------
@@ -380,6 +376,7 @@ mTvmIYR0Handler:
     jr nz, mTvmIYR0Get
     ; save the inputBuf value in OP1
     call rclX
+    call validateOp1Real
     bcall(_StoTvmIYR0)
     call tvmSolverSetOverrideFlagIYR0
     set rpnFlagsTvmCalculate, (iy + rpnFlags)
@@ -388,22 +385,21 @@ mTvmIYR0Handler:
     ret
 mTvmIYR0Get:
     bcall(_RclTvmIYR0)
-    call pushX
+    call pushToX
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld a, errorCodeTvmRecalled
     ld (handlerCode), a
     ret
 
-; Description: Return B if tvmIsBegin is false, C otherwise.
-; Input: A, B: normal nameId; C: alt nameId
-; Output: A
+; Description: Select menu name.
+; Output: CF=0 for normal, CF=1 or alternate
 mTvmIYR0NameSelector:
     call tvmSolverBitOverrideFlagIYR0
-    jr nz, mTvmIYR0NameSelectorC
-    ld a, b
+    jr nz, mTvmIYR0NameSelectorAlt
+    or a ; CF=0
     ret
-mTvmIYR0NameSelectorC:
-    ld a, c
+mTvmIYR0NameSelectorAlt:
+    scf
     ret
 
 ;-----------------------------------------------------------------------------
@@ -415,6 +411,7 @@ mTvmIYR1Handler:
     jr nz, mTvmIYR1Get
     ; save the inputBuf value in OP1
     call rclX
+    call validateOp1Real
     bcall(_StoTvmIYR1)
     call tvmSolverSetOverrideFlagIYR1
     set rpnFlagsTvmCalculate, (iy + rpnFlags)
@@ -423,22 +420,21 @@ mTvmIYR1Handler:
     ret
 mTvmIYR1Get:
     bcall(_RclTvmIYR1)
-    call pushX
+    call pushToX
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld a, errorCodeTvmRecalled
     ld (handlerCode), a
     ret
 
-; Description: Return B if tvmIsBegin is false, C otherwise.
-; Input: A, B: nameId; C: altNameId
-; Output: A
+; Description: Select menu name.
+; Output: CF=0 for normal, CF=1 or alternate
 mTvmIYR1NameSelector:
     call tvmSolverBitOverrideFlagIYR1
     jr nz, mTvmIYR1NameSelectorC
-    ld a, b
+    or a ; CF=0
     ret
 mTvmIYR1NameSelectorC:
-    ld a, c
+    scf
     ret
 
 ;-----------------------------------------------------------------------------
@@ -450,6 +446,7 @@ mTvmIterMaxHandler:
     jr nz, mTvmIterMaxGet
     ; save the inputBuf value in OP1
     call rclX
+    call validateOp1Real
     bcall(_StoTvmIterMax)
     call tvmSolverSetOverrideFlagIterMax
     set rpnFlagsTvmCalculate, (iy + rpnFlags)
@@ -458,22 +455,21 @@ mTvmIterMaxHandler:
     ret
 mTvmIterMaxGet:
     bcall(_RclTvmIterMax)
-    call pushX
+    call pushToX
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld a, errorCodeTvmRecalled
     ld (handlerCode), a
     ret
 
-; Description: Return B if tvmIsBegin is false, C otherwise.
-; Input: A, B: normal nameId; C: alt nameId
-; Output: A
+; Description: Select menu name.
+; Output: CF=0 for normal, CF=1 or alternate
 mTvmIterMaxNameSelector:
     call tvmSolverBitOverrideFlagIterMax
-    jr nz, mTvmIterMaxNameSelectorC
-    ld a, b
+    jr nz, mTvmIterMaxNameSelectorAlt
+    or a ; CF=0
     ret
-mTvmIterMaxNameSelectorC:
-    ld a, c
+mTvmIterMaxNameSelectorAlt:
+    scf
     ret
 
 ;-----------------------------------------------------------------------------

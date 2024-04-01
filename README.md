@@ -14,7 +14,7 @@ features from the
 
 
 The RPN83P is a flash application written in Z80 assembly language that consumes
-2 pages (32 kiB) of flash memory. Since it is stored in flash, it is preserved
+3 pages (48 kiB) of flash memory. Since it is stored in flash, it is preserved
 if the RAM is cleared. It consumes about 735 bytes of TI-OS RAM through 3
 AppVars: `RPN83REG` (496 bytes), `RPN83STK` (116 bytes), and `RPN83SAV` (123
 bytes).
@@ -25,11 +25,12 @@ Summary of features:
 - 8-line display showing all stack registers
 - hierarchical menu system similar to HP-42S
 - quick reference `HELP` menu
-- storage registers
+- storage registers and variables
     - store and recall:`STO nn`, `RCL nn`
     - storage arithmetics: `STO+ nn`, `STO- nn`, `STO* nn`, `STO/ nn`, `RCL+
       nn`, `RCL- nn`, `RCL* nn`, `RCL/ nn`
     - 25 storage registers: `nn = 00..24`
+    - 27 single-letter variables (`nn = A..Z,Theta`)
 - all math functions with dedicated buttons on the TI-83 Plus and TI-84 Plus
     - arithmetic: `/`, `*`, `-`, `+`
     - algebraic: `1/X`, `X^2`, `SQRT`, `^` (i.e. `Y^X`)
@@ -73,7 +74,7 @@ Summary of features:
 - complex numbers, inspired by HP-42S and HP-35s
     - stored in RPN stack registers (`X`, `Y`, `Z`, `T`, `LastX`) and storage
       registers `R00-R24`
-    - computation modes: `RRES` (real results), `CRES` (complex results)
+    - result modes: `RRES` (real results), `CRES` (complex results)
     - display modes: `RECT`, `PRAD` (polar radians), `PDEG` (polar degrees)
     - linking/unlinking: `2ND LINK` (convert 2 reals to 1 complex, same as
       `COMPLEX` on HP-42S)
@@ -85,20 +86,27 @@ Summary of features:
     - complex specific functions: `REAL`, `IMAG`, `CONJ`, `CABS`, `CANG`
     - unsupported: trigonometric and hyperbolic functions (not supported by
       TI-OS)
+- date functions
+    - date, time, datetime, timezone, and hardware clock
+    - add or subtract dates, times, datetimes
+    - convert datetime to different timezones
+    - convert between datetime and epochseconds
+    - support alternative Epoch dates (Unix, NTP, GPS, TIOS, Y2K, custom)
+    - set and retrieve datetime from the hardware clock (84+/84+SE only)
+    - display time and date objects in RFC 3339 (ISO 8601) format
 - various modes (`MODE`)
     - floating display: `FIX`, `SCI`, `ENG`
     - trigonometric: `RAD`, `DEG`
-    - complex computation: `RRES`, `CRES`
-    - complex display: `RECT`, `PRAD`, `PDEG`
+    - complex result modes: `RRES`, `CRES`
+    - complex display modes: `RECT`, `PRAD`, `PDEG`
     - `SHOW` (`2ND ENTRY`): display all 14 internal digits
 
 Missing features (partial list):
 
 - vectors and matrices
-- complex numbers
 - keystroke programming
 
-**Version**: 0.9.0 (2024-01-06)
+**Version**: 0.10.0 (2024-03-31)
 
 **Changelog**: [CHANGELOG.md](CHANGELOG.md)
 
@@ -132,7 +140,7 @@ Guide](docs/USER_GUIDE.md), but here is the quick version:
   [releases page](https://github.com/bxparks/rpn83p/releases).
 - Upload the file to the TI-83 Plus or TI-84 Plus calculator. Use one of
   following link programs:
-    - Windows: [TI Connect](https://education.ti.com/en/products/computer-software/ti-connect-sw)
+    - Windows or MacOS: [TI Connect](https://education.ti.com/en/products/computer-software/ti-connect-sw)
     - Linux: [tilp](https://github.com/debrouxl/tilp_and_gfm) (`$ apt install
       tilp2`)
 - Run the program using the `APPS`:
@@ -145,7 +153,7 @@ Guide](docs/USER_GUIDE.md), but here is the quick version:
 
 The RPN83P app starts directly into the calculator mode, like this:
 
-![RPN83P Hello 1](docs/images/rpn83p-initial.png)
+![RPN83P Initial Start Screen](docs/images/rpn83p-initial.png)
 
 ### Supported Hardware
 
@@ -154,26 +162,38 @@ This app was designed for TI calculators using the Z80 processor:
 - TI-83 Plus (6 MHz Z80, 24 kB accessible RAM, 160 kB accessible flash)
 - TI-83 Plus Silver Edition (6/15 MHz Z80, 24 kB accessible RAM, 1.5 MB
   accessible flash)
-- TI-84 Plus (6/15 MHz Z80, 24 kB accessible RAM, 480 kB accessible flash)
+- TI-84 Plus (6/15 MHz Z80, 24 kB accessible RAM, 480 kB accessible flash,
+  hardware clock)
 - TI-84 Plus Silver Edition (6/15 MHz Z80, 24 kB accessible RAM, 1.5 MB
-  accessible flash)
+  accessible flash, hardware clock)
+- TI-Nspire with TI-84 Plus Keyboard (32-bit ARM processor emulating a Z80, 24
+  kB accessible RAM, 1.5 MB accessible flash, hardware clock)
 
 The app configures itself to run at 15 MHz on supported hardware, while
 remaining at 6 MHz on the TI-83+.
 
 I have tested it on the following calculators that I own:
 
-- TI-83 Plus, OS v1.19
-- TI-83 Plus Silver Edition, OS v1.19
-- TI-84 Plus Silver Edition, OS v2.55MP
+- TI-83 Plus (OS v1.19)
+- TI-83 Plus Silver Edition (OS v1.19)
+- TI-84 Plus Silver Edition (OS v2.55MP)
+- TI-Nspire with TI-84 Plus Keyboard (OS v2.46)
 
-It *should* work on the TI-84 Plus, but I have not actually tested it.
+Community members have verified that it works on the following variants:
 
-The following calculators are *not* supported because their internal hardware is
-too different:
+- TI-84 Plus
+- TI-84 Plus Pocket SE
+- TI-84 Pocket.fr (French version of the Pocket SE?)
 
+The following calculators are *not* supported because their internal hardware
+and firmware are too different:
+
+- TI-83 (without Plus)
 - TI-84 Plus C Silver Edition
 - TI-84 Plus CE
+- TI-83 Premium CE (French version of the TI-84 Plus CE)
+- TI-Nspire CAS, CX, CX CAS, CX II, CX II CAS
+- TI-89, 89 Titanium, 92, 92 Plus, Voyage 200
 
 ## Quick Examples
 
@@ -217,33 +237,33 @@ view the final result as a decimal number:
 
 - Press `MATH` to reset the menu to the home row.
 - Navigate the menu with the DOWN arrow to get to
-  ![ROOT MenuRow 2](docs/images/rpn83p-menu-root-2.png)
+  ![ROOT MenuRow 2](docs/images/menu-root-2.png)
 - Press `BASE` menu to get to
-  ![BASE Menu DEC](docs/images/rpn83p-menu-base-dec.png)
+  ![BASE Menu DEC](docs/images/menu-root-base-dec.png)
 - Press `HEX` menu to get to
-  ![BASE Menu HEX](docs/images/rpn83p-menu-base-hex.png)
+  ![BASE Menu HEX](docs/images/menu-root-base-hex.png)
 - Press `ALPHA` `B` buttons
 - Press `6` button
 - Press `ENTER` button
 - Press `6` button
 - Press `5` button
 - Press DOWN arrow to get to the menu row with the `AND` menu item
-  ![BASE MenuRow AND](docs/images/rpn83p-menu-root-base-2.png)
+  ![BASE MenuRow AND](docs/images/menu-root-base-2.png)
 - Press `AND` menu, the `X` register should show `00000024`
 - Press UP arrow to go back to
-  ![BASE Menu HEX](docs/images/rpn83p-menu-base-hex.png)
+  ![BASE Menu HEX](docs/images/menu-root-base-hex.png)
 - Press `OCT` menu, the `X` register should show `00000000044` with the menu
-  showing ![BASE Menu OCT](docs/images/rpn83p-menu-base-oct.png)
+  showing ![BASE Menu OCT](docs/images/menu-root-base-oct.png)
 - Press `BIN` menu, the `X` register should show `00000000100100` with the menu
-  showing ![BASE Menu BIN](docs/images/rpn83p-menu-base-bin.png)
+  showing ![BASE Menu BIN](docs/images/menu-root-base-bin.png)
 - Press DOWN DOWN (twice) to the menu row with the shift right `SR` item
-  ![BASE MenuRow SR](docs/images/rpn83p-menu-root-base-3.png)
+  ![BASE MenuRow SR](docs/images/menu-root-base-3.png)
 - Press `SR` `SR` `SR` (three times) to show `00000000000100` and the Carry Flag
   `C` set
 - Press UP UP (twice) to reach the base conversion menu row
-  ![BASE Menu BIN](docs/images/rpn83p-menu-base-bin.png)
+  ![BASE Menu BIN](docs/images/menu-root-base-bin.png)
 - Press `DEC` menu, the `X` register should show `4` with the menu showing
-  ![BASE Menu DEC](docs/images/rpn83p-menu-base-dec.png)
+  ![BASE Menu DEC](docs/images/menu-root-base-dec.png)
 
 Here is the animated GIF that shows this calculation:
 
@@ -265,14 +285,14 @@ Here are the steps:
 
 - Press `MATH` to reset the menu to the home row.
 - Navigate the menu with the DOWN arrow to get to
-  ![ROOT MenuRow 2](docs/images/rpn83p-menu-root-2.png)
+  ![ROOT MenuRow 2](docs/images/menu-root-2.png)
 - Press the `TVM` menu to get to
-  ![TVM MenuRow 1](docs/images/rpn83p-menu-root-tvm-1.png)
+  ![TVM MenuRow 1](docs/images/menu-root-tvm-1.png)
 - Press the DOWN arrow to get to
-  ![TVM MenuRow 2](docs/images/rpn83p-menu-root-tvm-2.png)
+  ![TVM MenuRow 2](docs/images/menu-root-tvm-2.png)
 - Press the `CLTV` button to clear the TVM variables.
 - Press the UP arrow to get back to
-  ![TVM MenuRow 1](docs/images/rpn83p-menu-root-tvm-1.png)
+  ![TVM MenuRow 1](docs/images/menu-root-tvm-1.png)
 - Press `360` `N` (30 years * 12 months = 360 payments)
 - Press `8` `I%YR` (interest percent per year)
 - Press `500000` `PV` (present value)
@@ -306,7 +326,7 @@ The keystrokes are:
 
 - (optional) Press `CLEAR CLEAR CLEAR` to clear the RPN stack.
 - Press `MODE` `downarrow` `RECT`:
-  ![MODE MenuRow 2](docs/images/rpn83p-menu-root-mode-2.png)
+  ![MODE MenuRow 2](docs/images/menu-root-mode-2.png)
 - Press `100` `ENTER`
 - Press `2` `PI` `*` `60` `*` `1 EE 5` `(-)` `*` `1/X` `(-)` (-265.26)
 - Press `2ND LINK` (100-265.26i)
@@ -315,9 +335,9 @@ The keystrokes are:
 - Press `300` `2ND ANGLE` `2ND ANGLE` `0.1` `+` (695.46+49.42i)
 - Press `4` `/` (173.89+12.35i)
 - Press `PRAD` (174.30 e^(i 0.07)
-- Press `PDEG` (174.30 e^(4.04 deg))
+- Press `PDEG` (174.30 e^(i 4.04deg))
 - Press `MATH` `CPLX`:
-  ![CPLX MenuRow 1](docs/images/rpn83p-menu-root-cplx-1.png)
+  ![CPLX MenuRow 1](docs/images/menu-root-cplx-1.png)
 - Press `CABS` (174.30)
 
 ![RPN83P Example 4 GIF](docs/images/rpn83p-example4.gif)
@@ -329,7 +349,7 @@ Press:
 - `ON` button (`ESC/EXIT`) multiple times to back to the home menu, or
 - `MATH` button (`HOME`) to go back directly.
 
-![ROOT MenuRow 1](docs/images/rpn83p-menu-root-1.png)
+![ROOT MenuRow 1](docs/images/menu-root-1.png)
 
 ## Documentation
 
@@ -414,14 +434,20 @@ Here are the tools and resources that I used for development on Ubuntu Linux
 
 ## Feedback and Support
 
-If you have any questions, comments, or feature requests for this library,
-please use the [GitHub
-Discussions](https://github.com/bxparks/rpn83p/discussions) for this project.
-If you have bug reports, please file a ticket in [GitHub
-Issues](https://github.com/bxparks/rpn83p/issues). Feature requests should go
-into Discussions first because they often have alternative solutions which are
-useful to remain visible, instead of disappearing from the default view of the
-Issue tracker after the ticket is closed.
+If you have any questions, comments, bugs, or feature requests for this
+application, you can file a ticket in the [GitHub
+Issues](https://github.com/bxparks/rpn83p/issues). They will be handled on a
+best-effort basis. Remember that this software comes with no warranties and no
+guarantees of support.
+
+Most of the discussions on the internet are occurring in the [RPN83P
+thread](https://www.hpmuseum.org/forum/thread-20867.html) on the [Museum of HP
+Calculators](https://www.hpmuseum.org/). That's another option for feedback and
+support.
+
+For feature requests, I recommend scanning through the [Future
+Enhancements](docs/FUTURE.md) document and verifying that your feature is not
+already there.
 
 Please refrain from emailing me directly unless the content is sensitive. The
 problem with email is that I cannot reference the email conversation when other

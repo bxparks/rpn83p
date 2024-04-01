@@ -41,7 +41,7 @@ mGroupHandler:
 
 ; Description: Show Help pages.
 mHelpHandler:
-    bcall(_ProcessHelp) ; use bcall() to invoke HELP handler on Flash Page 1
+    bcall(_ProcessHelpCommands)
     ret
 
 ;-----------------------------------------------------------------------------
@@ -127,12 +127,10 @@ mLnOnePlusHandler:
 ; mPercentHandler(Y, X) -> (Y, Y*(X/100))
 ; Description: Calculate the X percent of Y.
 mPercentHandler:
-    call closeInputAndRecallX
+    call closeInputAndRecallXY ; OP1=Y; OP2=X
+    bcall(_FPMult) ; OP1=OP1*OP2=X*Y
     call op2Set100
-    bcall(_FPDiv)
-    bcall(_OP1ToOP2)
-    call rclY
-    bcall(_FPMult)
+    bcall(_FPDiv) ; OP1=X*Y/100
     jp replaceX
 
 ; mPercentChangeHandler(Y, X) -> (Y, 100*(X-Y)/Y)
@@ -238,73 +236,14 @@ lcdOp1Op2:
 ;   - "Err: Domain" if X is not an integer in the range of [2, 2^32).
 mPrimeHandler:
     call closeInputAndRecallX
-    ; Check 0
-    bcall(_CkOP1FP0)
-    jp z, mPrimeHandlerError
-    ; Check 1
-    bcall(_OP2Set1) ; OP2 = 1
-    bcall(_CpOP1OP2) ; if OP1==1: ZF=1
-    jp z, mPrimeHandlerError
-    bcall(_OP1ToOP4) ; save OP4 = X
-    ; Check integer >= 0
-    bcall(_CkPosInt) ; if OP1 >= 0: ZF=1
-    jp nz, mPrimeHandlerError
-    ; Check unsigned 32-bit integer, i.e. < 2^32.
-    call op2Set2Pow32 ; if OP1 >= 2^32: CF=0
-    bcall(_CpOP1OP2)
-    jp nc, mPrimeHandlerError
-
-    ; Choose one of the various primeFactorXXX() routines.
-    ; OP1=1 if prime, or its smallest prime factor (>1) otherwise
-#ifdef USE_PRIME_FACTOR_FLOAT
-    call primeFactorFloat
-#else
-    #ifdef USE_PRIME_FACTOR_INT
-        call primeFactorInt
-    #else
-        call primeFactorMod
-    #endif
-#endif
+    bcall(_PrimeFactor)
     bcall(_RunIndicOff) ; disable run indicator
-
     ; Instead of replacing the original X, push the prime factor into the RPN
     ; stack. This allows the user to press '/' to get the next candidate prime
     ; factor, which can be processed through 'PRIM` again. Running through this
     ; multiple times until a '1' is returns allows all prime factors to be
     ; discovered.
-    jp pushX
-
-mPrimeHandlerError:
-    bcall(_ErrDomain) ; throw exception
-
-;-----------------------------------------------------------------------------
-
-#ifdef ENABLE_PRIME_MOD
-; Description: Test modU32ByDE().
-; Uses:
-;   - OP1=Y
-;   - OP2=X
-;   - OP3=u32(Y)
-;   - OP4=u32(X)
-mPrimeModHandler:
-    call closeInputAndRecallXY ; OP2 = X; OP1 = Y
-    ld hl, OP3
-    call convertOP1ToU32 ; OP3=u32(Y)
-    bcall(_OP2ToOP1)
-    ld hl, OP4
-    call convertOP1ToU32 ; OP4=u32(X)
-    ;
-    ld e, (hl)
-    inc hl
-    ld d, (hl) ; DE=u16(X)
-    ;
-    ld hl, OP3
-    call modU32ByDE ; BC=remainder=Y mod X
-    ld hl, OP3
-    call setU32ToBC ; u32(OP3)=BC
-    call convertU32ToOP1 ; OP1=float(OP3)
-    jp replaceXY
-#endif
+    jp pushToX
 
 ;-----------------------------------------------------------------------------
 
@@ -399,6 +338,40 @@ mNearHandler:
     jp replaceX
 
 ;-----------------------------------------------------------------------------
+
+mRoundToFixHandler:
+    call closeInputAndRecallX ; OP1=X
+    bcall(_RnFx) ; round to FIX/SCI/ENG digits, do nothing if digits==floating
+    jp replaceX
+
+mRoundToGuardHandler:
+    call closeInputAndRecallX ; OP1=X
+    bcall(_RndGuard) ; round to 10 digits, removing guard digits
+    jp replaceX
+
+mRoundToNHandler:
+    call closeInputAndRecallX ; OP1=X
+    ld hl, msgRoundPrompt
+    call startArgScanner
+    ld a, 1
+    ld (argLenLimit), a ; accept only a single digit
+    bcall(_PushRealO1)
+    call processArgCommands ; ZF=0 if cancelled; destroys OP1-OP6
+    push af
+    bcall(_PopRealO1)
+    pop af
+    ret nz ; do nothing if cancelled
+    ld a, (argValue)
+    cp 10
+    ret nc ; return if argValue>=10 (should never happen with argLenLimit==1)
+    ld d, a
+    bcall(_Round) ; round to D digits, allowed values: 0-9
+    jp replaceX
+
+msgRoundPrompt:
+    .db "ROUND", 0
+
+;-----------------------------------------------------------------------------
 ; Children nodes of PROB menu.
 ;-----------------------------------------------------------------------------
 
@@ -434,7 +407,7 @@ mFactorialHandler:
 mRandomHandler:
     call closeInputAndRecallNone
     bcall(_Random)
-    jp pushX
+    jp pushToX
 
 ;-----------------------------------------------------------------------------
 
@@ -684,9 +657,9 @@ mHrToHmsHandler:
 mFixHandler:
     call closeInputAndRecallNone
     ld hl, msgFixPrompt
-    call startArgParser
-    call processArgCommands
-    ret nc ; do nothing if canceled
+    call startArgScanner
+    call processArgCommands ; ZF=0 if cancelled
+    ret nz ; do nothing if cancelled
     res fmtExponent, (iy + fmtFlags)
     res fmtEng, (iy + fmtFlags)
     jr saveFormatDigits
@@ -694,9 +667,9 @@ mFixHandler:
 mSciHandler:
     call closeInputAndRecallNone
     ld hl, msgSciPrompt
-    call startArgParser
-    call processArgCommands
-    ret nc ; do nothing if canceled
+    call startArgScanner
+    call processArgCommands ; ZF=0 if cancelled
+    ret nz ; do nothing if cancelled
     set fmtExponent, (iy + fmtFlags)
     res fmtEng, (iy + fmtFlags)
     jr saveFormatDigits
@@ -704,9 +677,9 @@ mSciHandler:
 mEngHandler:
     call closeInputAndRecallNone
     ld hl, msgEngPrompt
-    call startArgParser
-    call processArgCommands
-    ret nc ; do nothing if canceled
+    call startArgScanner
+    call processArgCommands ; ZF=0 if cancelled
+    ret nz ; do nothing if cancelled
     set fmtExponent, (iy + fmtFlags)
     set fmtEng, (iy + fmtFlags)
     jr saveFormatDigits
@@ -719,6 +692,7 @@ msgEngPrompt:
     .db "ENG", 0
 
 ; Description: Save the (argValue) to (fmtDigits).
+; Input: (argValue)
 ; Output:
 ;   - dirtyFlagsStack set
 ;   - dirtyFlagsFloatMode set
@@ -738,49 +712,45 @@ saveFormatDigitsContinue:
 
 ;-----------------------------------------------------------------------------
 
-; Description: Select the display name of 'FIX' menu.
-; Input:
-;   - A,B: nameId
-;   - C: altNameId
-;   - HL: pointer to MenuNode
-; Output:
-;   - A: either A or C
+; Description: Select menu name.
+; Output: CF=0 for normal, CF=1 or alternate
 mFixNameSelector:
     bit fmtExponent, (iy + fmtFlags)
-    ret nz
-    ld a, c
+    jr z, mFixNameSelectorAlt
+    or a ; CF=0
+    ret
+mFixNameSelectorAlt:
+    scf
     ret
 
-; Description: Select the display name of 'SCI' menu.
-; Input:
-;   - A,B: nameId
-;   - C: altNameId
-;   - HL: pointer to MenuNode
-; Output:
-;   - A: either A or C
+; Description: Select menu name.
+; Output: CF=0 for normal, CF=1 or alternate
 mSciNameSelector:
     bit fmtExponent, (iy + fmtFlags)
-    ret z
+    jr z, mSciNameSelectorNormal
 mSciNameSelectorMaybeOn:
     bit fmtEng, (iy + fmtFlags)
-    ret nz
-    ld a, c
+    jr z, mSciNameSelectorAlt
+mSciNameSelectorNormal:
+    or a ; CF=0
+    ret
+mSciNameSelectorAlt:
+    scf
     ret
 
-; Description: Select the display name of 'ENG' menu.
-; Input:
-;   - A,B: nameId
-;   - C: altNameId
-;   - HL: pointer to MenuNode
-; Output:
-;   - A: either A or C
+; Description: Select menu name.
+; Output: CF=0 for normal, CF=1 or alternate
 mEngNameSelector:
     bit fmtExponent, (iy + fmtFlags)
-    ret z
+    jr z, mEngNameSelectorNormal
 mEngNameSelectorMaybeOn:
     bit fmtEng, (iy + fmtFlags)
     ret z
-    ld a, c
+mEngNameSelectorNormal:
+    or a ; CF=0
+    ret
+mEngNameSelectorAlt:
+    scf
     ret
 
 ;-----------------------------------------------------------------------------
@@ -797,30 +767,148 @@ mDegHandler:
     set dirtyFlagsMenu, (iy + dirtyFlags)
     ret
 
-; Description: Select the display name of 'RAD' menu.
-; Input:
-;   - A,B: nameId
-;   - C: altNameId
-;   - HL: pointer to MenuNode
-; Output:
-;   - A: either A or C
+; Description: Select menu name.
+; Output: CF=0 for normal, CF=1 or alternate
 mRadNameSelector:
     bit trigDeg, (iy + trigFlags)
-    ret nz
-    ld a, c
+    jr z, mEngNameSelectorAlt
+    or a ; CF=0
+    ret
+mRadNameSelectorAlt:
+    scf
     ret
 
-; Description: Select the display name of 'DEG' menu.
-; Input:
-;   - A,B: nameId
-;   - C: altNameId
-;   - HL: pointer to MenuNode
-; Output:
-;   - A: either A or C
+; Description: Select menu name.
+; Output: CF=0 for normal, CF=1 or alternate
 mDegNameSelector:
     bit trigDeg, (iy + trigFlags)
-    ret z
-    ld a, c
+    jr nz, mDegNameSelectorAlt
+    or a ; CF=0
+    ret
+mDegNameSelectorAlt:
+    scf
+    ret
+
+;-----------------------------------------------------------------------------
+
+mSetRegSizeHandler:
+    call closeInputAndRecallNone
+    ld hl, msgRegSizePrompt
+    call startArgScanner
+    ld a, 3
+    ld (argLenLimit), a ; allow 3 digits, to support SIZE=100
+    call processArgCommands ; ZF=0 if cancelled
+    ret nz ; do nothing if cancelled
+    ;
+    ld a, (argValue)
+    cp regsSizeMax+1 ; CF=0 if argValue>100
+    jr nc, setRegSizeHandlerErr
+    cp regsSizeMin ; CF=1 if argValue<25
+    jr c, setRegSizeHandlerErr
+    call resizeRegs ; test (newLen-oldLen) -> ZF,CF flags set
+    ; Determine the handler code
+    jr z, setRegSizeHandlerUnchanged
+    jr nc, setRegSizeHandlerExpanded
+setRegSizeHandlerShrunk:
+    ld a, errorCodeRegsShrunk
+    ld (handlerCode), a
+    ret
+setRegSizeHandlerExpanded:
+    ld a, errorCodeRegsExpanded
+    ld (handlerCode), a
+    ret
+setRegSizeHandlerUnchanged:
+    ld a, errorCodeRegsUnchanged
+    ld (handlerCode), a
+    ret
+setRegSizeHandlerErr:
+    bcall(_ErrInvalid)
+
+mGetRegSizeHandler:
+    call closeInputAndRecallNone
+    call lenRegs
+    bcall(_ConvertAToOP1) ; OP1=float(A)
+    jp pushToX
+
+msgRegSizePrompt:
+    .db "SIZE", 0
+
+;-----------------------------------------------------------------------------
+
+mCommaEENormalHandler:
+    ld a, commaEEModeNormal
+    ld (commaEEMode), a
+    set dirtyFlagsMenu, (iy + dirtyFlags)
+    ret
+
+; Description: Select menu name.
+; Output: CF=0 for normal, CF=1 or alternate
+mCommaEENormalNameSelector:
+    ld a, (commaEEMode)
+    cp commaEEModeNormal
+    jr z, mCommaEENormalNameSelectorAlt
+    or a ; CF=0
+    ret
+mCommaEENormalNameSelectorAlt:
+    scf
+    ret
+
+mCommaEESwappedHandler:
+    ld a, commaEEModeSwapped
+    ld (commaEEMode), a
+    set dirtyFlagsMenu, (iy + dirtyFlags)
+    ret
+
+; Description: Select menu name.
+; Output: CF=0 for normal, CF=1 or alternate
+mCommaEESwappedNameSelector:
+    ld a, (commaEEMode)
+    cp commaEEModeSwapped
+    jr z, mCommaEESwappedNameSelectorAlt
+    or a ; CF=0
+    ret
+mCommaEESwappedNameSelectorAlt:
+    scf
+    ret
+
+;-----------------------------------------------------------------------------
+
+mFormatRecordRawHandler:
+    ld a, formatRecordModeRaw
+    ld (formatRecordMode), a
+    set dirtyFlagsMenu, (iy + dirtyFlags)
+    set dirtyFlagsStack, (iy + dirtyFlags)
+    ret
+
+; Description: Select menu name.
+; Output: CF=0 for normal, CF=1 or alternate
+mFormatRecordRawNameSelector:
+    ld a, (formatRecordMode)
+    cp formatRecordModeRaw
+    jr z, mFormatRecordRawNameSelectorAlt
+    or a ; CF=0
+    ret
+mFormatRecordRawNameSelectorAlt:
+    scf
+    ret
+
+mFormatRecordStringHandler:
+    ld a, formatRecordModeString
+    ld (formatRecordMode), a
+    set dirtyFlagsMenu, (iy + dirtyFlags)
+    set dirtyFlagsStack, (iy + dirtyFlags)
+    ret
+
+; Description: Select menu name.
+; Output: CF=0 for normal, CF=1 or alternate
+mFormatRecordStringNameSelector:
+    ld a, (formatRecordMode)
+    cp formatRecordModeString
+    jr z, mFormatRecordStringNameSelectorAlt
+    or a ; CF=0
+    ret
+mFormatRecordStringNameSelectorAlt:
+    scf
     ret
 
 ;-----------------------------------------------------------------------------

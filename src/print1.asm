@@ -2,112 +2,10 @@
 ; MIT License
 ; Copyright (c) 2023 Brian T. Park
 ;
-; Print routines similar to print.asm and common.asm but located in Flash Page
-; 1 so that they can be used by code in this flash page.
+; Print routines similar to print.asm but located in Flash Page 1.
 ;
 ; Capitalized labels are intended to be exported to the branch table on flash
 ; page 0. Lowercased labels are intended to be local to the current flash page.
-;-----------------------------------------------------------------------------
-
-; Description: Get the string pointer at index A given an array of pointers at
-; base pointer HL. Out-of-bounds is NOT checked. Duplicate of getString() but
-; located in Flash Page 1.
-;
-; Input:
-;   A: index
-;   HL: pointer to an array of pointers
-; Output: HL: pointer to a string
-; Destroys: DE, HL
-; Preserves: A
-getStringPageOne:
-    ld e, a
-    ld d, 0
-    add hl, de ; HL += A * 2
-    add hl, de
-    ld e, (hl)
-    inc hl
-    ld d, (hl)
-    ex de, hl
-    ret
-
-;------------------------------------------------------------------------------
-
-; Description: Convert A to a string of 1 to 3 digits, with the leading '0'
-; suppressed, and append at the string buffer pointed by HL. NUL terminated.
-; Input: HL: pointer to string buffer
-; Output: HL: pointer to NUL terminator at end of string
-; Destroys: A, B, C, HL
-; Preserves: DE
-suppressLeadingZero equ 0 ; bit 0 of D
-ConvertAToString:
-    push de
-    set suppressLeadingZero, d
-    ; Divide by 100
-    ld b, 100
-    call divideAByB
-    or a
-    jr z, convertAToStringTen ; skip hundred's leading zero
-    ; print non-zero hundred's digit
-    call convertAToCharPageOne
-    ld (hl), a
-    inc hl
-    res suppressLeadingZero, d
-convertAToStringTen:
-    ; Divide by 10
-    ld a, b
-    ld b, 10
-    call divideAByB
-    or a
-    jr nz, convertAToStringTenPrint
-    ; Check if ten's zero should be suppressed before printing.
-    bit suppressLeadingZero, d ; if suppressLeadingZero: ZF=0
-    jr nz, convertAToStringOne
-convertAToStringTenPrint:
-    call convertAToCharPageOne
-    ld (hl), a
-    inc hl
-convertAToStringOne:
-    ; Extract the 1
-    ld a, b
-    call convertAToCharPageOne
-    ; always print the last digit regardless of suppressLeadingZero
-    ld (hl), a
-    inc hl
-    ; ld (hl), 0 ; NUL terminated
-    pop de
-    ret
-
-; Description: Return A / B using repeated substraction.
-; Input:
-;   - A: numerator
-;   - B: denominator
-; Output: A = A/B (quotient); B=A%B (remainder)
-; Destroys: C
-divideAByB:
-    ld c, 0
-divideAByBLoop:
-    sub b
-    jr c, divideAByBLoopEnd
-    inc c
-    jr divideAByBLoop
-divideAByBLoopEnd:
-    add a, b ; undo the last subtraction
-    ld b, a
-    ld a, c
-    ret
-
-; Description: Convert A into an Ascii Char ('0'-'9','A'-'F').
-; Destroys: A
-convertAToCharPageOne:
-    cp 10
-    jr c, convertAToCharPageOneDecimal
-    sub 10
-    add a, 'A'
-    ret
-convertAToCharPageOneDecimal:
-    add a, '0'
-    ret
-
 ;-----------------------------------------------------------------------------
 
 ; Description: Inlined and extended version of bcall(_VPutS) with additional
@@ -125,7 +23,8 @@ convertAToCharPageOneDecimal:
 ; See TI-83 Plus System Routine SDK docs for VPutS() for a reference
 ; implementation of this function.
 ;
-; Input: HL: pointer to string using small font
+; Input:
+;   - HL:(char*)=cstring
 ; Ouptut:
 ;    - unlike VPutS(), the CF does *not* show if all of string was rendered
 ; Destroys: all
@@ -179,7 +78,7 @@ eVPutSEnter:
 ; in flash memory. For Flash Page 1. Identical to putPS() but located in Flash
 ; Page 1.
 ;
-; Input: HL: pointer to Pascal string
+; Input: HL:(PascalString*)=pstring
 ; Destroys: A, B, C, HL
 ; Preserves: DE
 putPSPageOne:
@@ -203,10 +102,10 @@ putPSPageOneLoop:
 
 ;------------------------------------------------------------------------------
 
-; Description: Inlined version of bcall(_PutS), identical to putS(), but
-; located in Flash Page 1.
+; Description: Inlined version of bcall(_PutS), identical to putS().
 ;
-; Input: HL: pointer to C-string
+; Input:
+;   HL:(char*)=cstring
 ; Output:
 ;   - CF=1 if the entire string was displayed, CF=0 if not
 ;   - curRow and curCol updated to the position after the last character
@@ -250,9 +149,10 @@ putSPageOneEnter:
 ; See also eVPutS() for an extended version of this that supported embedded
 ; font control characters.
 ;
-; Input: HL: pointer to string using small font
+; Input:
+;   - HL:(char*)=cstring
 ; Ouptut:
-;    - unlike VPutS(), the CF does *not* show if all of string was rendered
+;   - unlike VPutS(), CF does *not* show if all of string was rendered
 ; Destroys: all
 vPutSPageOne:
     ; assume using small font

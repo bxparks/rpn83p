@@ -167,39 +167,30 @@ displayStatus:
     call displayStatusComplexMode
     ret
 
+;-----------------------------------------------------------------------------
+
 ; Description: Display the up and down arrows that indicate whether there are
-; additional menus above or below the current set of 5 menu buttons.
+; additional menus above or below the current set of 5 menu buttons. Each of
+; the Sleft, SdownArrow, and SupArrow characters nominally take 4 pixel
+; columns. However, when the SdownArrow and SupArrow are printed next to each
+; other, one pixel-column seems to be removed (some sort of kerning?). So we
+; have to insert an extra one-pixel-column space between the two.
 displayStatusArrow:
     bit dirtyFlagsMenu, (iy + dirtyFlags)
     ret z
-
-    ; TODO: maybe cache the numRows of the current node to make this
-    ; calculation a little shorter and easier.
-
-    ; Determine if multiple menu rows exist.
-    ld hl, menuGroupId
-    ld a, (hl) ; A=menuGroupId
-    inc hl
-    ld b, (hl) ; B=menuRowIndex
-    call getMenuNode ; HL = pointer to MenuNode
-    inc hl
-    ld d, (hl) ; D = parentId
-    inc hl
-    inc hl
-    ld c, (hl) ; C=numRows
-
     ld hl, statusPenRow*$100 + statusMenuPenCol; $(penRow)(penCol)
     ld (PenCol), hl
+    ; check arrow status
+    bcall(_GetCurrentMenuArrowStatus) ; B=menuArrowStatus
+    call displayStatusArrowLeft
+    call displayStatusArrowDown
+    call displayStatusArrowUp
+    ret
 
-    ; If numRows==0: don't do anything. This should never happen if there
-    ; are no bugs in the program.
-    ld a, c ; A = numRows
-    or a
-    jr z, displayStatusArrowClear
-
+; Description: Show left arrow if a parent node exists.
+; Input: B=menuArrowStatus
 displayStatusArrowLeft:
-    ld a, d
-    or a ; if parentId==0: ZF=1
+    bit menuArrowFlagLeft, b
     jr z, displayStatusArrowLeftNone
     ; display left arrow
     ld a, Sleft
@@ -207,30 +198,31 @@ displayStatusArrowLeft:
 displayStatusArrowLeftNone:
     ld a, SFourSpaces
 displayStatusArrowLeftDisplay:
-    bcall(_VPutMap)
+    bcall(_VPutMap) ; destroys IX
+    ret
 
+; Description: If show Down arrow if additional rows exist.
+; Input: B=menuArrowStatus
 displayStatusArrowDown:
-    ; If rowIndex < (numRows - 1): show Down arrow
-    ld a, b ; A = rowIndex
-    dec c ; C = numRows - 1
-    cp c
-    jr nc, displayStatusArrowDownNone
-    ld a, SdownArrow
-    bcall(_VPutMap)
-    ; Add an extra space after the downArrow because when an upArrow is
+    bit menuArrowFlagDown, b
+    jr z, displayStatusArrowDownNone
+    ; Print a Down arrow with an extra space because when an upArrow is
     ; displayed immediately after, the 1px of space on the right side of the
     ; downArrow character seems to ellided so the downArrow occupies only 3px.
+    ld a, SdownArrow
+    bcall(_VPutMap) ; destroys IX
     ld a, Sspace
     jr displayStatusArrowDownDisplay
 displayStatusArrowDownNone:
     ld a, SFourSpaces
 displayStatusArrowDownDisplay:
-    bcall(_VPutMap)
+    bcall(_VPutMap) ; destroys IX
+    ret
 
+; Description: If show Up arrow if previous rows exist.
+; Input: B=menuArrowStatus
 displayStatusArrowUp:
-    ; If rowIndex > 0: show Up arrow
-    ld a, b
-    or a
+    bit menuArrowFlagUp, b
     jr z, displayStatusArrowUpNone
     ld a, SupArrow
     jr displayStatusArrowUpDisplay
@@ -239,11 +231,6 @@ displayStatusArrowUpNone:
 displayStatusArrowUpDisplay:
     bcall(_VPutMap)
     ret
-
-    ; clear 8 px
-displayStatusArrowClear:
-    call displayStatusArrowUpNone
-    jr displayStatusArrowUpNone
 
 ;-----------------------------------------------------------------------------
 
@@ -396,7 +383,7 @@ displayErrorCodeEnd:
 
 ; Description: Display the main area, depending on the drawMode. It will
 ; usually the RPN stack, but can be something else for debugging.
-; Destroys: A
+; Destroys: A, OP3-OP6
 displayMain:
     bit rpnFlagsShowModeEnabled, (iy + rpnFlags)
     jp nz, displayShow
@@ -424,20 +411,21 @@ displayTvmMaybe:
 ; Description: Display the RPN stack variables
 ; Input: none
 ; Output: (dirtyFlagsMenu) reset
-; Destroys: A, HL
+; Destroys: A, HL, OP1-OP6
 displayStack:
     ; display YZT if stack is dirty
     bit dirtyFlagsStack, (iy + dirtyFlags)
     call nz, displayStackYZT
     ; display X if stack or inputBuf are dirty
     bit dirtyFlagsStack, (iy + dirtyFlags)
-    jp nz, displayStackX
+    jr nz, displayStackX
     bit dirtyFlagsInput, (iy + dirtyFlags)
-    jp nz, displayStackX
+    jr nz, displayStackX
     ret
 
 ;-----------------------------------------------------------------------------
 
+; Destroys: A, HL, OP1-OP6
 displayStackYZT:
     ; print T label
     ld hl, stTPenRow*$100 ; $(penRow)(penCol)
@@ -483,13 +471,14 @@ displayStackYZT:
 ;-----------------------------------------------------------------------------
 
 ; Description: Render the X register line. There are multiple modes:
-; 1) If rpnFlagsArgMode, print the argBuf for the ArgParser, else
+; 1) If rpnFlagsArgMode, print the argBuf for the ArgScanner, else
 ; 2) If rpnFlagsEditing, print the current inputBuf, else
 ; 3) Print the X register.
 ;
 ; Well... unless drawMode==drawModeInputBuf, in which case the inputBuf is
 ; displayed separately on the debug line, and the X register is always printed
 ; on the X line.
+; Destroys: OP1-OP6
 displayStackX:
     bit rpnFlagsArgMode, (iy + rpnFlags)
     jr nz, displayStackXArg
@@ -578,32 +567,35 @@ printArgBuf:
     ; Print prompt and contents of argBuf
     ld hl, (argPrompt)
     call putS
-    ; Print the argModifier if needed.
+    ; Print the argModifier
     ld a, (argModifier)
-    cp argModifierCanceled
-    jr nc, printArgBufNumber
     ld hl, argModifierStrings
     call getString
     call putS
-printArgBufNumber:
     ; Print the command argument.
     ld hl, argBuf
     call putPS
-    ; Append trailing cursor to fill 2 digits
-    ld a, (argBufLen)
-    or a
-    jr z, printArgBufTwoCursors
-    cp 1
-    jr z, printArgBufOneCursor
-    jr printArgBufZeroCursor
-printArgBufTwoCursors:
-    ld a, cursorChar
-    bcall(_PutC)
-printArgBufOneCursor:
-    ld a, cursorChar
-    bcall(_PutC)
-printArgBufZeroCursor:
+    ; Print any trailing cursors.
+    call printArgTrailing
     bcall(_EraseEOL)
+    ret
+
+; Description: Print 1 or more trailing cursor characters, i.e. "_ _ _" up to a
+; maximum of (argLenLimit).
+; Destroys: A, B
+printArgTrailing:
+    ; cursorLen=(argLenLimit)-(argBufLen)
+    ld a, (argBufLen)
+    ld b, a ; B=argBufLen
+    ld a, (argLenLimit)
+    sub b ; A=cursorLen=argLenLimit-argBufLen
+    ret z
+    ret c ; do nothing if argBufLen>argLenLimit; should never happen
+    ld b, a
+printArgTrailingLoop:
+    ld a, cursorChar
+    bcall(_PutC) ; preserves B
+    djnz printArgTrailingLoop
     ret
 
 ; Human-readable labels for each of the argModifierXxx enum.
@@ -728,6 +720,7 @@ truncateInputDisplay:
 
 ; Description: Display the intermediate state of the TVM Solver. This routine
 ; will be invoked only if drawMode==1 or 2.
+; Destroys: OP3-OP6
 displayTvm:
     ; print TVM n label
     ld hl, tvmNPenRow*$100 ; $(penRow)(penCol)
@@ -799,70 +792,61 @@ displayTvm1:
 displayMenu:
     bit dirtyFlagsMenu, (iy + dirtyFlags)
     ret z
-
-    res fracDrawLFont, (iy + fontFlags) ; use small font
     ; get starting menuId
-    call getCurrentMenuRowBeginId ; A=rowBeginId
+    res fracDrawLFont, (iy + fontFlags) ; use small font
+    bcall(_GetCurrentMenuRowBeginId) ; HL=rowMenuId
     ; set up loop over 5 consecutive menu buttons
-    ld d, a ; D = menuId
     ld e, 0 ; E = menuIndex [0,4]
     ld c, menuPenCol0 ; C = penCol
     ld b, 5 ; B = loop 5 times
 displayMenuLoop:
-    ld a, d ; A = menuId
-    call getMenuName ; HL = menu name of menuId in A
-
-    ld a, c ; A = penCol
-    call printMenuAtA
-
-    inc d ; D = menuId + 1
-    inc e ; E =  menuIndex + 1
-
+    push hl ; stack=[menuId]
+    call getMenuName ; HL:(const char*)=menuName
+    call printMenuNameAtC
+    pop hl ; stack=[]; HL=menuId
+    ; increment to next menu
+    inc hl ; HL=menuId+1
+    inc e ; E=menuIndex+1
     ld a, c ; A = penCol
     add a, menuPenWidth + 1 ; A += menuWidth + 1 (1px spacing)
     ld c, a ; C += menuPenWidth + 1
-
     djnz displayMenuLoop
     ret
 
 ;-----------------------------------------------------------------------------
 
-; Description: Print the menu C-string in HL to the menuPenCol in A, using the
+; Description: Print the menu name in HL to the menu penCol in C, using the
 ; small and inverted font, centering the menu name in the middle of the 18 px
 ; width of a menu box.
 ; Inputs:
-;   A: penCol
-;   B: loop counter (must be preserved)
-;   C: penCol (must be preserved)
-;   D: menuId (ignored but must be preserved, useful for debugging)
-;   E: menuIndex [0-4] (ignored but must be preserved, useful for debugging)
-;   HL: C string
+;   B=loopCounter (must be preserved)
+;   C=penCol (must be preserved)
+;   E=menuIndex [0-4] (ignored but must be preserved, useful for debugging)
+;   HL:(const char*)=menuName
 ; Destroys: A, HL
 ; Preserves: BC, DE
-printMenuAtA:
-    push bc ; B = loop counter
-    push de ; D = menuId; E = menuIndex
-
+printMenuNameAtC:
+    push bc ; stack=[loopCounter/penCol]
+    push de ; stack=[loopCounter/penCol,menuIndex]
     ; Set (PenCol,PenRow), preserving HL
+    ld a, c ; A=penCol
     ld (PenCol), a
     ld a, menuPenRow
     ld (PenRow), a
-
     ; Predict the width of menu name.
     ld de, menuName
     ld c, menuNameBufMax
     call copyCToPascal ; C, DE are preserved
     ex de, hl ; HL = menuName
     call smallStringWidth ; A = B = string width
-
-printMenuAtANoAdjust:
+printMenuNameAtCNoAdjust:
     ; Calculate the starting pixel to center the string
     ld a, menuPenWidth
     sub b ; A = menuPenWidth - stringWidth
-    jr nc, printMenuAtAFitsInside
-printMenuAtATooWide:
+    jr nc, printMenuNameAtCFitsInside
+printMenuNameAtCTooWide:
     xor a ; if string too wide (shouldn't happen), set to 0
-printMenuAtAFitsInside:
+printMenuNameAtCFitsInside:
     ; Add 1px to the total padding so that when divided between left and right
     ; padding, the left padding gets 1px more if the total padding is an odd
     ; number. This allows a few names which are 17px wide to actually fit
@@ -873,9 +857,9 @@ printMenuAtAFitsInside:
     ; padding on both sides.
     inc a
     rra ; CF=0, divide by 2 for centering; A = padWidth
-
+    ;
     ld c, a ; C = A = leftPadWidth
-    push bc ; B = stringWidth; C = leftPadWidth
+    push bc ; B=stringWidth; C=leftPadWidth
     set textInverse, (iy + textFlags)
     ; The code below sets the textEraseBelow flag to fix a font rendering
     ; problem on the very last row of pixels on the LCD display, where the menu
@@ -891,31 +875,30 @@ printMenuAtAFitsInside:
     ; pixels directly under the letter is white. Setting this flag fixes that
     ; problem.
     set textEraseBelow, (iy + textFlags)
-printMenuAtALeftPad:
+printMenuNameAtCLeftPad:
     ld b, a ; B = leftPadWidth
     ld a, Sspace
     call printARepeatB
-printMenuAtAPrintName:
+printMenuNameAtCPrintName:
     ; Print the menu name
     ld hl, menuName
     call vPutSmallPS
-printMenuAtARightPad:
+printMenuNameAtCRightPad:
     pop bc ; B = stringWidth; C = leftPadWidth
     ld a, menuPenWidth
     sub c ; A = menuPenWidth - leftPadWidth
     sub b ; A = rightPadWidth = menuPenWidth - leftPadWidth - stringWidth
-    jr z, printMenuAtAExit ; no space left
-    jr c, printMenuAtAExit ; overflowed, shouldn't happen but be safe
+    jr z, printMenuNameAtCExit ; no space left
+    jr c, printMenuNameAtCExit ; overflowed, shouldn't happen but be safe
     ; actually print the right pad
     ld b, a ; B = rightPadWidth
     ld a, Sspace
     call printARepeatB
-
-printMenuAtAExit:
+printMenuNameAtCExit:
     res textInverse, (iy + textFlags)
     res textEraseBelow, (iy + textFlags)
-    pop de ; D = menuId; E = menuIndex
-    pop bc ; B = loop counter
+    pop de ; stack=[loopCounter/penCol]; E=menuIndex
+    pop bc ; stack=[]; BC=loopCounter/penCol
     ret
 
 ;-----------------------------------------------------------------------------
@@ -941,7 +924,7 @@ displayShow:
     ; fmtString is a buffer of 65 bytes used by FormDCplx(). There should be no
     ; problems using it as our string buffer.
     ld de, fmtString
-    call formShowable
+    bcall(_FormShowable)
     ld hl, fmtString
     call putS
     ret
@@ -965,25 +948,57 @@ clearShowAreaLoop:
 ; Low-level helper routines.
 ;-----------------------------------------------------------------------------
 
-; Description: Print floating point number at OP1 at the current cursor. Erase
-; to the end of line (but only if the floating point did not spill over to the
-; next line).
+; Description: Print data in OP1 at the current cursor. The data could be a
+; real number, a complex number, or RpnObject. Erase to the end of line (but
+; only if the floating point did not spill over to the next line).
+;
 ; Input:
-;   - A: objectType
-;   - B: displayFontMask
-;   - OP1: floating point number
-; Destroys: A, HL, OP3
+;   - A:u8=objectType
+;   - B=displayFontMask
+;   - OP1:(Real|Complex|RpnObject)=value
+; Destroys: A, HL, OP3-OP6
 printOP1:
+    call getOp1RpnObjectType ; A=objectType
+    ; The rpnObjecTypes are tested in order of decreasing frequency.
+    cp rpnObjectTypeReal
+    jr z, printOP1Real
+    ;
     cp rpnObjectTypeComplex
     jr z, printOP1Complex
-    ; [[fallthrough]]
+    ;
+    cp rpnObjectTypeDate
+    jp z, printOP1DateRecord
+    ;
+    cp rpnObjectTypeTime
+    jp z, printOP1TimeRecord
+    ;
+    cp rpnObjectTypeDateTime
+    jp z, printOP1DateTimeRecord
+    ;
+    cp rpnObjectTypeOffset
+    jp z, printOP1OffsetRecord
+    ;
+    cp rpnObjectTypeOffsetDateTime
+    jp z, printOP1OffsetDateTimeRecord
+    ;
+    cp rpnObjectTypeDayOfWeek
+    jp z, printOP1DayOfWeekRecord
+    ;
+    cp rpnObjectTypeDuration
+    jp z, printOP1DurationRecord
+    ;
+    ld hl, msgRpnObjectTypeUnknown
+    jp printHLString
+
+;-----------------------------------------------------------------------------
 
 ; Description: Print the real number in OP1, taking into account the BASE mode.
 ; This routine always uses large font, so it never needs to clear the line with
 ; EraseEOL(), so the displayFontMask does not need to be used.
 ; Input:
 ;   - OP1: real number
-;   - B: displayFontMask
+;   - B=displayFontMask
+; Destroys: OP3-OP6
 printOP1Real:
     call displayStackSetLargeFont
     bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
@@ -1015,9 +1030,10 @@ printOP1Real:
 ;
 ; Input:
 ;   - CP1: complex number
-;   - B: displayFontMask
+;   - B=displayFontMask
+; Destroys: OP3-OP6
 printOP1Complex:
-    call eraseEOLIfNeeded
+    call eraseEOLIfNeeded ; uses B
     call displayStackSetSmallFont
     ld a, (complexMode)
     cp a, complexModeRect
@@ -1030,29 +1046,13 @@ printOP1Complex:
 
 ; Description: Print the complex numberin CP1 in rectangular form.
 ; Input: CP1: complex number
+; Destroys: OP3-OP6
 printOP1ComplexRect:
-    call splitCp1ToOp1Op2
-    ; Print Re(X)
-    ld a, 10 ; width of output
-    bcall(_FormReal)
-    ld hl, OP3
+    ld de, fmtString
+    bcall(_FormatComplexRect)
+    ld hl, fmtString
     call vPutSmallS
-    ;
-    ; Print the complex-i
-    ld hl, msgComplexRectSpacer
-    call vPutSmallS
-    ; Print Im(X)
-    call op2ToOp1
-    ld a, 10 ; width of output
-    bcall(_FormReal)
-    ld hl, OP3
-    call vPutSmallS
-    ;
-    call vEraseEOL
-    ret
-
-msgComplexRectSpacer:
-    .db "  ", SimagI, " ", 0
+    jp vEraseEOL
 
 ; Description: Print the complex numberin CP1 in polar form using radians.
 ; Note: An r value >= 1e100 or <= 1e-100 can be returned by complexRToPRad()
@@ -1060,32 +1060,13 @@ msgComplexRectSpacer:
 ; can display the entire domain of the rectangular complex numbers, even when
 ; the 'r' value goes beyond 1e100 or 1e-100.
 ; Input: CP1: complex number
+; Destroys: OP3-OP6
 printOP1ComplexRad:
-    call complexToPolarRad ; OP1=r; OP2=theta(rad)
-    jr nc, printOP1ComplexRadOk
-    ld hl, msgPrintComplexError
+    ld de, fmtString
+    bcall(_FormatComplexPolarRad)
+    ld hl, fmtString
     call vPutSmallS
     jp vEraseEOL
-printOP1ComplexRadOk:
-    ; Print 'r'
-    ld a, 10 ; width of output
-    bcall(_FormReal)
-    ld hl, OP3
-    call vPutSmallS
-    ; Print the angle symbol
-    ld hl, msgComplexPRadSpacer
-    call vPutSmallS
-    ; Print theta(rad)
-    call op2ToOp1
-    ld a, 10 ; width of output
-    bcall(_FormReal)
-    ld hl, OP3
-    call vPutSmallS
-    call vEraseEOL
-    ret
-
-msgComplexPRadSpacer:
-    .db "  ", Sangle, " ", 0
 
 ; Description: Print the complex numberin CP1 in polar form using degrees.
 ; Note: An r value >= 1e100 or <= 1e-100 can be returned by complexRToPRad()
@@ -1093,38 +1074,13 @@ msgComplexPRadSpacer:
 ; can display the entire domain of the rectangular complex numbers, even when
 ; the 'r' value goes beyond 1e100 or 1e-100.
 ; Input: CP1: complex number
+; Destroys: A, HL, OP3-OP6
 printOP1ComplexDeg:
-    call complexToPolarDeg ; OP1=r; OP2=theta(deg)
-    jr nc, printOP1ComplexDegOk
-    ld hl, msgPrintComplexError
+    ld de, fmtString
+    bcall(_FormatComplexPolarDeg)
+    ld hl, fmtString
     call vPutSmallS
     jp vEraseEOL
-printOP1ComplexDegOk:
-    ; Print 'r'
-    ld a, 10 ; width of output
-    bcall(_FormReal)
-    ld hl, OP3
-    call vPutSmallS
-    ; Print the angle-degree symbols
-    ld hl, msgComplexPDegSpacer
-    call vPutSmallS
-    ; Print theta(deg)
-    call op2ToOp1
-    ld a, 10 ; width of output
-    bcall(_FormReal)
-    ld hl, OP3
-    call vPutSmallS
-    ; Add a deg symbol
-    ; ld a, Stemp ; deg symbol
-    ; bcall(_VPutMap)
-    call vEraseEOL
-    ret
-
-msgComplexPDegSpacer:
-    .db "  ", Sangle, Stemp, " ", 0
-
-msgPrintComplexError:
-    .db "<overflow>", 0
 
 ;-----------------------------------------------------------------------------
 
@@ -1132,7 +1088,7 @@ msgPrintComplexError:
 ; if the previous rendering was done in large font (fontMask==0).
 ; Input:
 ;   - (displayStackFontFlags)
-;   - B: displayFontMask
+;   - B=displayFontMask
 ; Destroys: A, HL
 eraseEOLIfNeeded:
     ld hl, displayStackFontFlags
@@ -1143,7 +1099,7 @@ eraseEOLIfNeeded:
     ret
 
 ; Description: Mark the stack line identified by B as using small font.
-; Input: B: displayFontMask
+; Input: B=displayFontMask
 ; Output: displayStackFontFlags |= B
 ; Destroys: A, HL
 displayStackSetSmallFont:
@@ -1154,7 +1110,7 @@ displayStackSetSmallFont:
     ret
 
 ; Description: Mark the stack line identified by B as using large font.
-; Input: B: displayFontMask
+; Input: B=displayFontMask
 ; Output: displayStackFontFlags &= (~B)
 ; Destroys: A, HL
 displayStackSetLargeFont:
@@ -1207,18 +1163,16 @@ printOP1BaseNegative:
 ; Description: Print integer at OP1 at the current cursor in base 10. Erase to
 ; the end of line (but only if the digits did not spill over to the next line).
 ; Input: OP1
-; Destroys: all, OP1, OP2, OP3, OP4
+; Destroys: all, OP1-OP6
 printOP1Base10:
-    ld hl, OP3
-    call convertOP1ToU32StatusCode ; HL=U32; C=statusCode
-    call checkU32FitsWsize ; C=u32StatusCode
+    bcall(_ConvertOP1ToUxxNoFatal) ; HL=OP1=uxx(OP1); C=u32StatusCode
     bit u32StatusCodeTooBig, c
     jr nz, printOP1BaseInvalid
     bit u32StatusCodeNegative, c
     jr nz, printOP1BaseNegative
     ; Convert u32 into a base-10 string.
     ld de, OP4
-    call convertU32ToDecString
+    bcall(_FormatU32ToDecString) ; DE=formattedString
     ; Add '.' if OP1 has fractional component.
     call appendHasFrac ; DE=rendered string
     ex de, hl ; HL=rendered string
@@ -1250,18 +1204,16 @@ appendHasFrac:
 ; TODO: I think printOP1Base16(), printOP1Base8(), and printOP1Base2() can be
 ; combined into a single subroutine, saving memory.
 ; Input: OP1
-; Destroys: all, OP1, OP2, OP3, OP4
+; Destroys: all, OP1-OP5
 printOP1Base16:
-    ld hl, OP3
-    call convertOP1ToU32StatusCode
-    call checkU32FitsWsize ; C=u32StatusCode
+    bcall(_ConvertOP1ToUxxNoFatal) ; OP1=U32; C=u32StatusCode
     bit u32StatusCodeTooBig, c
     jr nz, printOP1BaseInvalid
     bit u32StatusCodeNegative, c
     jr nz, printOP1BaseNegative
     ; Convert u32 into a base-16 string.
     ld de, OP4
-    call convertU32ToHexString ; DE=rendered string
+    bcall(_FormatU32ToHexString) ; DE=formattedString
     ; Append frac indicator
     call appendHasFrac ; DE=rendered string
     ex de, hl ; HL=rendered string
@@ -1288,18 +1240,16 @@ truncateHexDigits:
 ; Description: Print ingeger at OP1 at the current cursor in base 8. Erase to
 ; the end of line (but only if the digits did not spill over to the next line).
 ; Input: OP1
-; Destroys: all, OP1, OP2, OP3, OP4, OP5
+; Destroys: all, OP1-OP5
 printOP1Base8:
-    ld hl, OP3
-    call convertOP1ToU32StatusCode
-    call checkU32FitsWsize ; C=u32StatusCode
+    bcall(_ConvertOP1ToUxxNoFatal) ; OP1=U32; C=u32StatusCode
     bit u32StatusCodeTooBig, c
     jr nz, printOP1BaseInvalid
     bit u32StatusCodeNegative, c
     jr nz, printOP1BaseNegative
     ; Convert u32 into a base-8 string.
     ld de, OP4
-    call convertU32ToOctString
+    bcall(_FormatU32ToOctString) ; DE=formattedString
     ; Append frac indicator
     call appendHasFrac ; DE=rendered string
     ex de, hl ; HL=rendered string
@@ -1354,27 +1304,20 @@ truncateOctString:
 ; display the additional digits.
 ;
 ; Input: OP1: non-negative floating point number < 2^14
-; Destroys: all, OP1, OP2, OP3, OP4, OP5
+; Destroys: all, OP1-OP5
 printOP1Base2:
-    ld hl, OP3
-    call convertOP1ToU32StatusCode
-    call checkU32FitsWsize ; C=u32StatusCode
+    bcall(_ConvertOP1ToUxxNoFatal) ; HL=OP1=uxx(OP1); C=u32StatusCode
     bit u32StatusCodeTooBig, c
     jp nz, printOP1BaseInvalid
     bit u32StatusCodeNegative, c
     jp nz, printOP1BaseNegative
-    ; Move u32 to OP1 to free up OP3 for the formatted digits.
     push bc ; stack=[u32StatusCode]
-    ld de, OP1
-    ld bc, 4
-    ldir
     ; Convert u32 into a base-2 string.
-    ld hl, OP1
     ld de, OP4
-    call convertU32ToBinString ; DE points to a 32-character string + NUL.
+    bcall(_FormatU32ToBinString) ; DE=OP4=formattedString
     ; Truncate leading digits to fit display (12 or 8 digits)
-    ex de, hl
-    call truncateBinDigits ; HL=truncated string
+    ex de, hl ; HL=OP4=formattedString
+    call truncateBinDigits ; HL=OP4=truncatedString
     ; Group digits in groups of 4.
     ld de, OP3
     call formatBinDigits ; HL,DE preserved
@@ -1433,6 +1376,7 @@ truncateBinDigitsNoOverflow:
 ;   - DE: string reformatted in groups of 4
 ; Destroys: A, BC
 ; Preserves: DE, HL
+; TODO: Move to formatinteger32.asm.
 formatBinDigits:
     push de
     push hl
@@ -1455,6 +1399,141 @@ formatBinDigitsEnd:
     pop de
     ret
 
+;-----------------------------------------------------------------------------
+; RpnObject records.
+;-----------------------------------------------------------------------------
+
+; Description: Print the RpnDate Record in OP1 using small font.
+; Input:
+;   - OP1:RpnDate
+;   - B=displayFontMask
+; Destroys: OP3-OP6
+printOP1DateRecord:
+    call eraseEOLIfNeeded ; uses B
+    call displayStackSetSmallFont
+    ; format OP1
+    ld hl, OP1
+    ld de, OP3 ; destPointer
+    push de
+    bcall(_FormatDate)
+    xor a
+    ld (de), a ; add NUL terminator
+    ; print string stored in OP3
+    pop hl ; HL=OP3
+    call vPutSmallS
+    jp vEraseEOL
+
+; Description: Print the RpnTime Record in OP1 using small font.
+; Input:
+;   - OP1:RpnTime
+;   - B=displayFontMask
+; Destroys: OP3-OP6
+printOP1TimeRecord:
+    call eraseEOLIfNeeded ; uses B
+    call displayStackSetSmallFont
+    ; format OP1
+    ld hl, OP1
+    ld de, OP3 ; destPointer
+    push de
+    bcall(_FormatTime)
+    xor a
+    ld (de), a ; add NUL terminator
+    ; print string stored in OP3
+    pop hl ; HL=OP3
+    call vPutSmallS
+    jp vEraseEOL
+
+; Description: Print the RpnDateTime Record in OP1 using small font.
+; Input:
+;   - OP1:RpnDateTime Record
+;   - B=displayFontMask
+; Destroys: OP3-OP6
+printOP1DateTimeRecord:
+    call eraseEOLIfNeeded ; uses B
+    call displayStackSetSmallFont
+    ; format OP1
+    ld hl, OP1
+    ld de, OP3 ; destPointer
+    push de
+    bcall(_FormatDateTime)
+    ; print string stored in OP3
+    pop hl ; HL=OP3
+    call vPutSmallS
+    jp vEraseEOL
+
+; Description: Print the RpnOffset Record in OP1 using small font.
+; Input:
+;   - OP1:RpnOffset Record
+;   - B=displayFontMask
+; Destroys: all, OP3-OP6
+printOP1OffsetRecord:
+    call eraseEOLIfNeeded ; uses B
+    call displayStackSetSmallFont
+    ld hl, OP1
+    ld de, OP3 ; destPointer
+    push de
+    bcall(_FormatOffset)
+    ; print string stored in OP3
+    pop hl ; HL=OP3
+    call vPutSmallS
+    jp vEraseEOL
+
+; Description: Print the RpnOffsetDateTime Record in OP1 using small font.
+; Input:
+;   - OP1:RpnOffsetDateTime Record
+;   - B=displayFontMask
+; Destroys: all, OP3-OP6
+printOP1OffsetDateTimeRecord:
+    call eraseEOLIfNeeded ; uses B
+    call displayStackSetSmallFont
+    ; format OP1
+    call shrinkOp2ToOp1
+    ld hl, OP1
+    ld de, OP3 ; destPointer
+    push de
+    bcall(_FormatOffsetDateTime)
+    call expandOp1ToOp2
+    ; print string stored in OP3
+    pop hl ; HL=OP3
+    call vPutSmallS
+    jp vEraseEOL
+
+; Description: Print the RpnDayOfWeek record in OP1 using small font.
+; Input:
+;   - OP1:RpnDayOfWeek
+;   - B=displayFontMask
+printOP1DayOfWeekRecord:
+    call eraseEOLIfNeeded ; uses B
+    call displayStackSetSmallFont
+    ; format OP1
+    ld hl, OP1
+    ld de, OP3 ; destPointer
+    push de
+    bcall(_FormatDayOfWeek)
+    ; print string stored in OP3
+    pop hl ; HL=OP3
+    call vPutSmallS
+    jp vEraseEOL
+
+; Description: Print the RpnDuration record in OP1 using small font.
+; Input:
+;   - OP1:RpnDuration
+;   - B=displayFontMask
+printOP1DurationRecord:
+    call eraseEOLIfNeeded ; uses B
+    call displayStackSetSmallFont
+    ; format OP1
+    ld hl, OP1
+    ld de, OP3 ; destPointer
+    push de
+    bcall(_FormatDuration)
+    ; print string stored in OP3
+    pop hl ; HL=OP3
+    call vPutSmallS
+    jp vEraseEOL
+
+;-----------------------------------------------------------------------------
+; String constants.
 ;-----------------------------------------------------------------------------
 
 ; Indicates number has overflowed the current Base mode.
@@ -1506,3 +1585,7 @@ msgComplexModeRadLabel:
     .db "r", Sangle, Stheta, 0
 msgComplexModeDegLabel:
     .db "r", Sangle, Stemp, 0
+
+; Unknown RpnObjectType
+msgRpnObjectTypeUnknown:
+    .db "{Unknown}", 0

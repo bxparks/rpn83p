@@ -2,7 +2,7 @@
 ; MIT License
 ; Copyright (c) 2023 Brian T. Park
 ;
-; Key code dispatcher and handlers for the command argument parser.
+; Key code dispatcher and handlers for the command ArgScanner.
 ;-----------------------------------------------------------------------------
 
 handleArgKey0:
@@ -47,29 +47,138 @@ handleArgKey9:
 
 handleArgNumber:
     bcall(_AppendArgBuf) ; sets dirtyFlagsInput
-    ld a, (argBuf) ; A = length of argBuf string
-    cp a, argBufSizeMax
-    ret nz ; if only 1 digit entered, just return
-    ; On the 2nd digit, invoke auto ENTER to execute the pending command. But
-    ; before we do that, we refresh display to allow the user to see the 2nd
-    ; digit briefly. On a real HP-42S, the calculator seems to update the
-    ; display on the *press* of the digit, then trigger the command on the
-    ; *release* of the button, which allows the calculator to show the 2nd
-    ; digit to the user. The TI-OS GetKey() function used by this app does not
-    ; give us that level of control over the press and release events of a
-    ; button. Hence the need for this hack.
-    set dirtyFlagsInput, (iy + dirtyFlags)
-    call displayStack
-    ; [[fallthrough]]
+    ld a, (argLenLimit)
+    ld b, a ; B=argLenLimit
+    ld a, (argBufLen) ; A=argBufLen
+    sub b ; A=argBufLen-argLenLimit; CF=0 if argBufLen>=argLenLimit
+    ; invoke auto ENTER if argBufLen>=argLenLimit
+    jp nc, handleArgKeyEnterAlt
+    ret; argBuf not filled, just return
+
+;-----------------------------------------------------------------------------
+
+handleArgKeyA:
+    ld a, tA
+    jr handleArgLetter
+
+handleArgKeyB:
+    ld a, tB
+    jr handleArgLetter
+
+handleArgKeyC:
+    ld a, tC
+    jr handleArgLetter
+
+handleArgKeyD:
+    ld a, tD
+    jr handleArgLetter
+
+handleArgKeyE:
+    ld a, tE
+    jr handleArgLetter
+
+handleArgKeyF:
+    ld a, tF
+    jr handleArgLetter
+
+handleArgKeyG:
+    ld a, tG
+    jr handleArgLetter
+
+handleArgKeyH:
+    ld a, tH
+    jr handleArgLetter
+
+handleArgKeyI:
+    ld a, tI
+    jr handleArgLetter
+
+handleArgKeyJ:
+    ld a, tJ
+    jr handleArgLetter
+
+handleArgKeyK:
+    ld a, tK
+    jr handleArgLetter
+
+handleArgKeyL:
+    ld a, tL
+    jr handleArgLetter
+
+handleArgKeyM:
+    ld a, tM
+    jr handleArgLetter
+
+handleArgKeyN:
+    ld a, tN
+    jr handleArgLetter
+
+handleArgKeyO:
+    ld a, tO
+    jr handleArgLetter
+
+handleArgKeyP:
+    ld a, tP
+    jr handleArgLetter
+
+handleArgKeyQ:
+    ld a, tQ
+    jr handleArgLetter
+
+handleArgKeyR:
+    ld a, tR
+    jr handleArgLetter
+
+handleArgKeyS:
+    ld a, tS
+    jr handleArgLetter
+
+handleArgKeyT:
+    ld a, tT
+    jr handleArgLetter
+
+handleArgKeyU:
+    ld a, tU
+    jr handleArgLetter
+
+handleArgKeyV:
+    ld a, tV
+    jr handleArgLetter
+
+handleArgKeyW:
+    ld a, tW
+    jr handleArgLetter
+
+handleArgKeyX:
+    ld a, tX
+    jr handleArgLetter
+
+handleArgKeyY:
+    ld a, tY
+    jr handleArgLetter
+
+handleArgKeyZ:
+    ld a, tZ
+    jr handleArgLetter
+
+handleArgKeyTheta:
+    ld a, tTheta
+    jr handleArgLetter
+
+handleArgLetter:
+    bit inputBufFlagsArgAllowLetter, (iy + inputBufFlags)
+    ret z
+    jp handleArgNumber
+
+;-----------------------------------------------------------------------------
 
 handleArgKeyEnter:
     ; If no argument digits entered, then do nothing.
     ld a, (argBufLen)
     or a
     ret z
+handleArgKeyEnterAlt:
     ; Parse the argument digits into (argValue).
-    bcall(_ParseArgBuf)
-    ld (argValue), a
     set inputBufFlagsArgExit, (iy + inputBufFlags)
     ret
 
@@ -85,11 +194,10 @@ handleArgKeyDel:
 handleArgKeyClear:
 handleArgKeyExit:
     bcall(_ClearArgBuf)
-    ld a, argModifierCanceled
-    ld (argModifier), a
     res rpnFlagsEditing, (iy + rpnFlags)
     set dirtyFlagsStack, (iy + dirtyFlags)
     set inputBufFlagsArgExit, (iy + inputBufFlags)
+    set inputBufFlagsArgCancel, (iy + inputBufFlags)
     ret
 
 handleArgKeyQuit:

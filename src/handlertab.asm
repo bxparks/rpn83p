@@ -8,13 +8,12 @@
 ; search can be used instead of a linear search.
 ;-----------------------------------------------------------------------------
 
-keyCodeHandlerTableSize equ 70
 kOnExit equ 0 ; ON key generates 00 as the key code
 
 keyCodeHandlerTable:
 ;-----------------------------------------------------------------------------
 
-    ; number entry
+    ; digits
     .db k0
     .dw handleKey0
     .db k1
@@ -35,6 +34,8 @@ keyCodeHandlerTable:
     .dw handleKey8
     .db k9
     .dw handleKey9
+
+    ; letters, HEX numbers and Record tags, e.g. D{2000,1,1,}
     .db kCapA
     .dw handleKeyA
     .db kCapB
@@ -47,19 +48,68 @@ keyCodeHandlerTable:
     .dw handleKeyE
     .db kCapF
     .dw handleKeyF
+    .db kCapG
+    .dw handleKeyG
+    .db kCapH
+    .dw handleKeyH
+    .db kCapI
+    .dw handleKeyI
+    .db kCapJ
+    .dw handleKeyJ
+    .db kCapK
+    .dw handleKeyK
+    .db kCapL
+    .dw handleKeyL
+    .db kCapM
+    .dw handleKeyM
+    .db kCapN
+    .dw handleKeyN
+    .db kCapO
+    .dw handleKeyO
+    .db kCapP
+    .dw handleKeyP
+    .db kCapQ
+    .dw handleKeyQ
+    .db kCapR
+    .dw handleKeyR
+    .db kCapS
+    .dw handleKeyS
+    .db kCapT
+    .dw handleKeyT
+    .db kCapU
+    .dw handleKeyU
+    .db kCapV
+    .dw handleKeyV
+    .db kCapW
+    .dw handleKeyW
+    .db kCapX
+    .dw handleKeyX
+    .db kCapY
+    .dw handleKeyY
+    .db kCapZ
+    .dw handleKeyZ
+
+    ; number modifiers
     .db kDecPnt
     .dw handleKeyDecPnt
-    ; For convenience, both EE (2ND-COMMA) and COMMA are mapped to handleKeyEE.
     .db kEE
     .dw handleKeyEE
-    .db kComma
-    .dw handleKeyEE
+    .db kColon
+    .dw handleKeyColon
 
     ; Complex numbers
     .db kI
     .dw handleKeyImagI
     .db kAngle
     .dw handleKeyAngle
+
+    ; Data records usng '{', '}', ','
+    .db kLBrace
+    .dw handleKeyLBrace
+    .db kRBrace
+    .dw handleKeyRBrace
+    .db kComma
+    .dw handleKeyComma
 
     ; editing
     .db kDel
@@ -249,6 +299,14 @@ keyCodeHandlerTable:
 
 ;-----------------------------------------------------------------------------
 
-    ; 2ND Link. Merge reals to complex, or split complex into reals.
+    ; 2ND LINK. Merge (link) reals to complex, or split complex into reals. When
+    ; date-like objects are given, perform Merge(RpnOffset,RpnDateTime) or
+    ; Merge(RpnTime, RpnDate).
     .db kLinkIO
     .dw handleKeyLink
+
+;-----------------------------------------------------------------------------
+
+; Auto-calculate the number of entries in the table.
+keyCodeHandlerTableEnd:
+keyCodeHandlerTableSize equ (keyCodeHandlerTableEnd-keyCodeHandlerTable)/3

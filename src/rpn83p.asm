@@ -89,16 +89,11 @@ rpnFlagsTvmCalculate equ 6 ; set if the next TVM function should calculate
 
 ; Flags for the inputBuf. Offset from IY register.
 inputBufFlags equ asm_Flag3
-;inputBufFlagsDecPnt equ 0 ; set if decimal point exists
-;inputBufFlagsEE equ 1 ; set if EE symbol exists
-inputBufFlagsClosedEmpty equ 2 ; inputBuf empty when closeInput() called
+inputBufFlagsClosedEmpty equ 0 ; inputBuf empty when closeInput() called
+inputBufFlagsArgAllowModifier equ 1 ; allow */-+ modifier in CommandArg mode
+inputBufFlagsArgAllowLetter equ 2 ; allow A-Z,Theta in CommandArg mode
 inputBufFlagsArgExit equ 3 ; set to exit CommandArg mode
-inputBufFlagsArgAllowModifier equ 4 ; allow */-+ modifier in CommandArg mode
-
-; Bit flags for the result of GetInputBufState().
-inputBufStateDecimalPoint equ 0 ; set if decimal point exists
-inputBufStateEE equ 1 ; set if 'E' exists
-inputBufStateComplex equ 2 ; set if input is a complex number
+inputBufFlagsArgCancel equ 4 ; set if exit was caused by CLEAR or ON/EXIT
 
 ;-----------------------------------------------------------------------------
 ; RPN83P application variables and buffers.
@@ -115,7 +110,7 @@ rpn83pAppId equ $1E69
 ; state is considered stale automatically. However, if the *semantics* of any
 ; variable is changed (e.g. if the meaning of a flag is changed), then we
 ; *must* increment the version number to mark the previous state as stale.
-rpn83pSchemaVersion equ 10
+rpn83pSchemaVersion equ 15
 
 ; Define true and false. Something else in spasm-ng defines the 'true' and
 ; 'false' symbols but I cannot find the definitions for them in the
@@ -125,16 +120,66 @@ rpn83pSchemaVersion equ 10
 rpnfalse equ 0
 rpntrue equ 1
 
-; RpnObect type enums.
-rpnObjectTypeReal equ 0
-rpnObjectTypeComplex equ $C ; same as TI-OS
-rpnObjectTypeComplexDeg equ $2C ; uses bit 5 and 6
-rpnObjectTypeComplexRad equ $4C ; uses bit 5 and 6
-rpnObjectTypeMask equ $1F ; TI-OS type uses only bits 0-4
-; An PpnObject is a struct of a type byte and 2 RpnFloats so that a complex
-; number can be stored. See the struct definitions in vars.asm. If the
-; rpnObjectSizeOf is changed, the rpnObjectIndexToSize() function must be
-; updated.
+;-----------------------------------------------------------------------------
+
+; RpnObect type enums. TIOS defines object types from $00 (RealObj) to
+; $17 (GroupObj). We'll continue from $18.
+
+; Real number object. Use the same constant as TIOS.
+rpnObjectTypeReal equ 0 ; same as TI-OS
+
+; Complex number object. Use the same constant as TIOS.
+rpnObjectTypeComplex equ $0C ; same as TI-OS
+
+; Date and RpnDate objects:
+; - struct Date{year:u16, mon:u8, day:u8}, 4 bytes
+; - struct RpnDate{type:u8, date:Date}, 5 bytes
+rpnObjectTypeDate equ $18
+rpnObjectTypeDateSizeOf equ 5
+
+; Time and RpnTime objects:
+; - struct Time{hour:u8, minute:u8, second:u8}, 3 bytes
+; - struct RpnTime{type:u8, date:Time}, 4 bytes
+rpnObjectTypeTime equ $19
+rpnObjectTypeTimeSizeOf equ 4
+
+; DateTime and RpnDateTime objects:
+; - struct DateTime{date:Date, hour:u8, min:u8, sec:u8}, 7 bytes
+; - struct RpnDateTime{type:u8, dateTime:DateTime}, 8 bytes
+rpnObjectTypeDateTime equ $1A
+rpnObjectTypeDateTimeSizeOf equ 8
+
+; Offset and RpnOffset object:
+; - struct Offset{hour:i8, min:i8}, 2 bytes
+; - struct RpnOffset{type:u8, offset:Offset}, 3 bytes
+rpnObjectTypeOffset equ $1B
+rpnObjectTypeOffsetSizeOf equ 3
+
+; OffsetDateTime and RpnOffsetDateTime objects:
+; - struct OffsetDateTime{datetime:DateTime, offset:Offset}, 9 bytes
+; - struct RpnOffsetDateTime{type:u8, offsetDateTime:OffsetDateTime}, 10 bytes
+; The sizeof(RpnOffsetDateTime) is 10, which is greater than the 9 bytes of a
+; TI-OS floating point number. But OPx registers are 11 bytes long. We have
+; to careful and use expandOp1ToOp2() and shrinkOp2ToOp1() when parsing or
+; manipulating this object.
+rpnObjectTypeOffsetDateTime equ $1C
+rpnObjectTypeOffsetDateTimeSizeOf equ 10
+
+; DayOfWeek and RpnDayOfWeek object:
+; - struct DayOfWeek{dow:u8}, 1 bytes
+; - struct RpnDayOfWeek{type:u8, DowOfWeek:dow}, 2 bytes
+rpnObjectTypeDayOfWeek equ $1D
+rpnObjectTypeDayOfWeekSizeOf equ 3
+
+; Duration and RpnDuration object:
+; - struct Duration{days:i16, hours:i8, minutes:i8, seconds:i8}, 5 bytes
+; - struct RpnDuration{type:u8, duration:Duration}, 6 bytes
+rpnObjectTypeDuration equ $1E
+rpnObjectTypeDurationSizeOf equ 6
+
+; An RpnObject is union of all possible Real, Complex, and RpnObjects. See the
+; struct definitions in vars.asm. If the rpnObjectSizeOf is changed, the
+; rpnObjectIndexToOffset() function must be updated.
 rpnRealSizeOf equ 9 ; sizeof(float)
 rpnComplexSizeOf equ 18 ; sizeof(complex)
 rpnObjectSizeOf equ rpnComplexSizeOf + 1 ; type + sizeof(complex)
@@ -215,18 +260,24 @@ baseWordSize equ baseCarryFlag + 1 ; u8
 ; characters. We need one more, to allow a complex delimiter to be entered.
 inputBufFloatMaxLen equ 20+1
 
-; A complex number requires 2 floating point numbers, plus a delimiter.
+; A complex number requires 2 floating point numbers, plus the
+; LimagI/Langle/Ldegree delimiter.
 inputBufComplexMaxLen equ 20+20+1
+
+; The longest record is currently OffsetDateTime{} which may be entered as
+; "{yyyy,MM,dd,hh,mm,ss,ohh,omm}", so 29 characters max.
+inputBufRecordMaxLen equ 29
 
 ; Max number of digits allowed for exponent.
 inputBufEEMaxLen equ 2
 
-; String buffer for keyboard entry. Three types of numbers can be entered, each
-; type with different maxlen limits:
+; String buffer for keyboard entry. Different types of objects can be entered
+; with different maxlen limits:
 ;
 ; 1) floating point real numbers: 20 characters (inputBufFloatMaxLen)
 ; 2) complex numbers: 20 * 2 = 40 characters (inputBufComplexMaxLen)
-; 3) base-2 numberrs: max of 32 digits (various, see getInputMaxLenBaseMode())
+; 3) base-2 numbers: max of 32 digits (various, see getInputMaxLenBaseMode())
+; 4) data records: max of 29 characters (various, see getInputMaxLenBaseMode())
 ;
 ; The inputBuf must be the maximum of all of the above.
 ;
@@ -249,43 +300,17 @@ inputBufSizeOf equ inputBufCapacity + 1 + 1 ; +1(len), +1(NUL)
 argBuf equ inputBuf ; struct InputBuf
 argBufLen equ inputBufLen
 argBufCapacity equ inputBufCapacity
-argBufSizeMax equ 2 ; max number of digits accepted on input
-
-; Temporary buffer for parsing keyboard input into a floating point number.
-; When the app is in BASE mode, the inputBuf is parsed directly, and this
-; buffer is not used. In normal floating point mode, each mantissa digit is
-; converted into this data structure, one byte per digit, before being
-; converted into the packed floating point number format used by TI-OS.
-;
-; The decimal point will not appear explicitly here because it is implicitly
-; present just before the first digit. The inputBuf can hold more than 14
-; digits, but those extra digits will be ignored when parsed into this data
-; structure.
-;
-; TODO: I *think* this can be moved into the appBufferStart area, because I
-; don't think it needs to be saved upon app exit.
-;
-; This is a Pascal string whose equivalent C struct is:
-;
-;   struct ParseBuf {
-;       uint8_t len; // number of digits in mantissa, 0 for 0.0
-;       char man[14];  // mantissa, implicit starting decimal point
-;   }
-parseBuf equ inputBuf + inputBufSizeOf ; struct ParseBuf
-parseBufLen equ parseBuf ; len byte of the pascal string
-parseBufMan equ parseBufLen + 1
-parseBufCapacity equ 14
-parseBufSizeOf equ parseBufCapacity + 1
+argBufSizeMax equ 4 ; max number of digits accepted on input
 
 ; Menu variables. Two variables determine the current state of the menu, the
 ; groupId and the rowIndex in the group. The C equivalent is:
 ;
 ;   struct Menu {
-;     uint8_t groupId; // id of the current menu group
+;     uint16_t groupId; // id of the current menu group
 ;     uint8_t rowIndex; // menu row, groups of 5
 ;   }
-menuGroupId equ parseBuf + parseBufSizeOf ; u8
-menuRowIndex equ menuGroupId + 1 ; u8
+currentMenuGroupId equ inputBuf + inputBufSizeOf ; u16
+currentMenuRowIndex equ currentMenuGroupId + 2 ; u8
 
 ; These variables remember the previous menuGroup/row pair when a shortcut was
 ; pressed to another menuGroup. On the ON/EXIT button is pressed, we can then
@@ -295,8 +320,8 @@ menuRowIndex equ menuGroupId + 1 ; u8
 ; candidate. If jumpBackMenuGroupId is 0, then the memory feature is not
 ; active. If it is not 0, then the ON/EXIT button should go back to the menu
 ; defined by this pair.
-jumpBackMenuGroupId equ menuRowIndex + 1 ; u8
-jumpBackMenuRowIndex equ jumpBackMenuGroupId + 1 ; u8
+jumpBackMenuGroupId equ currentMenuRowIndex + 1 ; u16
+jumpBackMenuRowIndex equ jumpBackMenuGroupId + 2 ; u8
 
 ; Menu name, copied here as a Pascal string.
 ;
@@ -310,26 +335,37 @@ menuNameBuf equ menuName + 1
 menuNameBufMax equ 5
 menuNameSizeOf equ 6
 
-; Data structure revelant to the command argument parser which handles
+; Data structure revelant to the command argument scanner which handles
 ; something like "STO _ _". The C equivalent is:
 ;
-;   struct ArgParser {
+;   struct ArgScanner {
 ;       char *argPrompt; // e.g. "STO"
+;       uint8_t argLenLimit; // max num char allowed for the current prompt
 ;       char argModifier; // see argModifierXxx
+;       uint8_t argType; // argTypeXxx
 ;       uint8_t argValue;
 ;   }
 ; The argModifierXxx (0-4) MUST match the corresponding operation in the
 ; 'floatOps' array in vars.asm.
 argPrompt equ menuName + menuNameSizeOf ; (char*)
-argModifier equ argPrompt + 2 ; char
-argValue equ argModifier + 1 ; u8
+argLenLimit equ argPrompt + 2 ; u8
+argModifier equ argLenLimit + 1 ; char
+argType equ argModifier + 1 ; u8
+argValue equ argType + 1 ; u8
+; argModifier enums
 argModifierNone equ 0
 argModifierAdd equ 1 ; '+' pressed
 argModifierSub equ 2 ; '-' pressed
 argModifierMul equ 3 ; '*' pressed
 argModifierDiv equ 4 ; '/' pressed
 argModifierIndirect equ 5 ; '.' pressed (not yet supported)
-argModifierCanceled equ 6 ; CLEAR or EXIT pressed
+; argType enums
+argTypeInvalid equ 0 ; invalid argument
+argTypeEmpty equ 1 ; empty string
+argTypeNumber equ 2 ; numerical argument
+argTypeLetter equ 3 ; a TI-OS variable letter, 'A'-'Z', 'Theta'
+; argLenLimit defaults
+argLenDefault equ 2 ; default argLenLimit if not explicitly overridden
 
 ; STAT variables
 statAllEnabled equ argValue + 1 ; boolean, 1 if "ALLSigma" enabled
@@ -388,8 +424,45 @@ complexModeRad equ 1
 complexModeDeg equ 2
 complexMode equ numResultMode + 1 ; u8
 
+; CommaEE button mode. In "Normal" mode, the CommaEE buton behaves according to
+; the factory label. In "Swapped" mode, the CommaEE button does exactly the
+; opposite.
+commaEEMode equ complexMode+1 ; u8
+commaEEModeNormal equ 0
+commaEEModeSwapped equ 1
+
+; FormatRecord button mode. In "Raw" mode, Record objects are formatted using
+; {} notation. In "String" mode, Record objects are formatted using their
+; human-readable string format.
+formatRecordMode equ commaEEMode+1 ; u8
+formatRecordModeRaw equ 0
+formatRecordModeString equ 1
+
+; Epoch type.
+epochTypeCustom equ 0
+epochTypeUnix equ 1
+epochTypeNtp equ 2
+epochTypeGps equ 3
+epochTypeTios equ 4
+epochTypeY2k equ 5
+
+; Store the reference Epoch.
+epochType equ formatRecordMode + 1 ; u8
+
+; Current value of the Epoch Date as selected by epochType.
+currentEpochDate equ epochType + 1 ; Date{y,m,d}, 4 bytes
+
+; Custom value of the Epoch Date if epochTypeCustom selected.
+customEpochDate equ currentEpochDate + 4 ; Date{y,m,d}, 4 bytes
+
+; Set default time zone.
+appTimeZone equ customEpochDate + 4 ; Offset{hh,mm}, 2 bytes
+
+; Set clock time zone
+rtcTimeZone equ appTimeZone + 2 ; Offset{hh,mm}, 2 bytes
+
 ; End application variables.
-appStateEnd equ complexMode + 1
+appStateEnd equ rtcTimeZone + 2
 
 ; Total size of appState vars.
 appStateSize equ (appStateEnd - appStateBegin)
@@ -400,27 +473,53 @@ appStateSize equ (appStateEnd - appStateBegin)
 
 appBufferStart equ appStateEnd
 
+; Set to 1 if this calculator has an RTC chip, otherwise 0. Filled in
+; setIsRtcAvaiable().
+isRtcAvailable equ appBufferStart ; u8
+
+; Temporary buffer for parsing keyboard input into a floating point number.
+; When the app is in BASE mode, the inputBuf is parsed directly, and this
+; buffer is not used. In normal floating point mode, each mantissa digit is
+; converted into this data structure, one byte per digit, before being
+; converted into the packed floating point number format used by TI-OS. This
+; essentially has the same role as the "Abstract Syntax Tree" of more
+; complicated parsers.
+;
+; The decimal point will not appear explicitly here because it is implicitly
+; present just before the first digit. The inputBuf can hold more than 14
+; digits, but those extra digits will be ignored when parsed into this data
+; structure.
+;
+; This is a Pascal string whose equivalent C struct is:
+;
+;   struct ParseBuf {
+;       uint8_t len; // number of digits in mantissa, 0 for 0.0
+;       char man[14];  // mantissa, implicit starting decimal point
+;   }
+parseBuf equ isRtcAvailable + 1 ; struct ParseBuf
+parseBufLen equ parseBuf ; len byte of the pascal string
+parseBufMan equ parseBufLen + 1 ; actual string
+parseBufCapacity equ 14
+parseBufSizeOf equ parseBufCapacity + 1
+
+; Internal flags updated during parsing of number string.
+parseBufFlags equ parseBuf + parseBufSizeOf ; u8
+parseBufFlagMantissaNeg equ 0 ; set if mantissa has a negative sign
+
+; Floating point number exponent value (signed integer) extracted from the
+; mantissa and the exponent digits. This value does not include the $80 offset.
+parseBufExponent equ parseBufFlags + 1 ; i8
+
 ; Various OS flags and parameters are copied to these variables upon start of
 ; the app, then restored when the app quits.
-savedTrigFlags equ appBufferStart ; u8
+savedTrigFlags equ parseBufExponent + 1 ; u8
 savedFmtFlags equ savedTrigFlags + 1 ; u8
 savedFmtDigits equ savedFmtFlags + 1 ; u8
-
-; FindMenuNode() copies the matching menuNode from menudef.asm (in flash page 1)
-; to here so that routines in flash page 0 can access the information.
-menuNodeBuf equ savedFmtDigits + 1 ; 9 bytes, defined by menuNodeSizeOf
-
-; FindMenuString() copies the name of the menu from flash page 1 to here so that
-; routines in flash page 0 can access it. This is named 'menuStringBuf' to
-; avoid conflicting with the existing 'menuNameBuf' which is a Pascal-string
-; version of 'menuStringBuf'.
-menuStringBuf equ menuNodeBuf + 9 ; char[6]
-menuStringBufSizeOf equ 6
 
 ; TVM Solver needs a bunch of workspace variables: interest rate, i0 and i1,
 ; plus the next interest rate i2, and the value of the NPMT() function at each
 ; of those points. Transient, so no need to persist them.
-tvmI0 equ menuStringBuf + menuStringBufSizeOf ; float
+tvmI0 equ savedFmtDigits + 1 ; float
 tvmI1 equ tvmI0 + 9 ; float
 tvmNPMT0 equ tvmI1 + 9 ; float
 tvmNPMT1 equ tvmNPMT0 + 9 ; float
@@ -530,7 +629,7 @@ defpage(0, "RPN83P")
 ; statements, so we have to define the bcall() label *after* the XxxLabel
 ; label.
 branchTableBase equ $4000
-; appstate.asm
+; appstate1.asm
 _StoreAppStateLabel:
 _StoreAppState equ _StoreAppStateLabel-branchTableBase
     .dw StoreAppState
@@ -539,7 +638,8 @@ _RestoreAppStateLabel:
 _RestoreAppState equ _RestoreAppStateLabel-branchTableBase
     .dw RestoreAppState
     .db 1
-; osstate.asm
+
+; osstate1.asm
 _SaveOSStateLabel:
 _SaveOSState equ _SaveOSStateLabel-branchTableBase
     .dw SaveOSState
@@ -548,26 +648,71 @@ _RestoreOSStateLabel:
 _RestoreOSState equ _RestoreOSStateLabel-branchTableBase
     .dw RestoreOSState
     .db 1
-; help.asm
-_ProcessHelpLabel:
-_ProcessHelp equ _ProcessHelpLabel-branchTableBase
-    .dw ProcessHelp
+
+; helpscanner1.asm
+_ProcessHelpCommandsLabel:
+_ProcessHelpCommands equ _ProcessHelpCommandsLabel-branchTableBase
+    .dw ProcessHelpCommands
     .db 1
-; menulookup.asm
-_FindMenuNodeLabel:
-_FindMenuNode equ _FindMenuNodeLabel-branchTableBase
-    .dw FindMenuNode
+
+; menu1.asm
+_InitMenuLabel:
+_InitMenu equ _InitMenuLabel-branchTableBase
+    .dw InitMenu
     .db 1
-_FindMenuStringLabel:
-_FindMenuString equ _FindMenuStringLabel-branchTableBase
-    .dw FindMenuString
+_SanitizeMenuLabel:
+_SanitizeMenu equ _SanitizeMenuLabel-branchTableBase
+    .dw SanitizeMenu
     .db 1
-; crc.asm
+_ClearJumpBackLabel:
+_ClearJumpBack equ _ClearJumpBackLabel-branchTableBase
+    .dw ClearJumpBack
+    .db 1
+_SaveJumpBackLabel:
+_SaveJumpBack equ _SaveJumpBackLabel-branchTableBase
+    .dw SaveJumpBack
+    .db 1
+_GetCurrentMenuArrowStatusLabel:
+_GetCurrentMenuArrowStatus equ _GetCurrentMenuArrowStatusLabel-branchTableBase
+    .dw GetCurrentMenuArrowStatus
+    .db 1
+_GetMenuIdOfButtonLabel:
+_GetMenuIdOfButton equ _GetMenuIdOfButtonLabel-branchTableBase
+    .dw GetMenuIdOfButton
+    .db 1
+_GetCurrentMenuRowBeginIdLabel:
+_GetCurrentMenuRowBeginId equ _GetCurrentMenuRowBeginIdLabel-branchTableBase
+    .dw GetCurrentMenuRowBeginId
+    .db 1
+_GetCurrentMenuGroupNumRowsLabel:
+_GetCurrentMenuGroupNumRows equ _GetCurrentMenuGroupNumRowsLabel-branchTableBase
+    .dw GetCurrentMenuGroupNumRows
+    .db 1
+;
+_ExtractMenuNamesLabel:
+_ExtractMenuNames equ _ExtractMenuNamesLabel-branchTableBase
+    .dw ExtractMenuNames
+    .db 1
+_GetMenuNodeHandlerLabel:
+_GetMenuNodeHandler equ _GetMenuNodeHandlerLabel-branchTableBase
+    .dw GetMenuNodeHandler
+    .db 1
+_GetMenuNodeParentLabel:
+_GetMenuNodeParent equ _GetMenuNodeParentLabel-branchTableBase
+    .dw GetMenuNodeParent
+    .db 1
+_GetMenuNodeRowBeginIdLabel:
+_GetMenuNodeRowBeginId equ _GetMenuNodeRowBeginIdLabel-branchTableBase
+    .dw GetMenuNodeRowBeginId
+    .db 1
+
+; crc1.asm
 _Crc16ccittLabel:
 _Crc16ccitt equ _Crc16ccittLabel-branchTableBase
     .dw Crc16ccitt
     .db 1
-; errorcode.asm
+
+; errorcode1.asm
 _InitErrorCodeLabel:
 _InitErrorCode equ _InitErrorCodeLabel-branchTableBase
     .dw InitErrorCode
@@ -584,11 +729,7 @@ _SetHandlerCodeFromSystemCodeLabel:
 _SetHandlerCodeFromSystemCode equ _SetHandlerCodeFromSystemCodeLabel-branchTableBase
     .dw SetHandlerCodeFromSystemCode
     .db 1
-; print1.asm
-_ConvertAToStringLabel:
-_ConvertAToString equ _ConvertAToStringLabel-branchTableBase
-    .dw ConvertAToString
-    .db 1
+
 ; input1.asm
 _InitInputBufLabel:
 _InitInputBuf equ _InitInputBufLabel-branchTableBase
@@ -598,22 +739,37 @@ _ClearInputBufLabel:
 _ClearInputBuf equ _ClearInputBufLabel-branchTableBase
     .dw ClearInputBuf
     .db 1
-_CloseInputBufLabel:
-_CloseInputBuf equ _CloseInputBufLabel-branchTableBase
-    .dw CloseInputBuf
-    .db 1
 _AppendInputBufLabel:
 _AppendInputBuf equ _AppendInputBufLabel-branchTableBase
     .dw AppendInputBuf
     .db 1
-_GetInputBufStateLabel:
-_GetInputBufState equ _GetInputBufStateLabel-branchTableBase
-    .dw GetInputBufState
+_CheckInputBufEELabel:
+_CheckInputBufEE equ _CheckInputBufEELabel-branchTableBase
+    .dw CheckInputBufEE
+    .db 1
+_CheckInputBufChsLabel:
+_CheckInputBufChs equ _CheckInputBufChsLabel-branchTableBase
+    .dw CheckInputBufChs
+    .db 1
+_CheckInputBufDecimalPointLabel:
+_CheckInputBufDecimalPoint equ _CheckInputBufDecimalPointLabel-branchTableBase
+    .dw CheckInputBufDecimalPoint
+    .db 1
+_CheckInputBufRecordLabel:
+_CheckInputBufRecord equ _CheckInputBufRecordLabel-branchTableBase
+    .dw CheckInputBufRecord
     .db 1
 _SetComplexDelimiterLabel:
 _SetComplexDelimiter equ _SetComplexDelimiterLabel-branchTableBase
     .dw SetComplexDelimiter
     .db 1
+
+; parse1.asm
+_ParseAndClearInputBufLabel:
+_ParseAndClearInputBuf equ _ParseAndClearInputBufLabel-branchTableBase
+    .dw ParseAndClearInputBuf
+    .db 1
+
 ; arg1.asm
 _ClearArgBufLabel:
 _ClearArgBuf equ _ClearArgBufLabel-branchTableBase
@@ -631,6 +787,7 @@ _ParseArgBufLabel:
 _ParseArgBuf equ _ParseArgBufLabel-branchTableBase
     .dw ParseArgBuf
     .db 1
+
 ; pstring1.asm
 _AppendStringLabel:
 _AppendString equ _AppendStringLabel-branchTableBase
@@ -644,12 +801,22 @@ _DeleteAtPosLabel:
 _DeleteAtPos equ _DeleteAtPosLabel-branchTableBase
     .dw DeleteAtPos
     .db 1
-; integer1.asm
-_ConvertAToOP1PageOneLabel:
-_ConvertAToOP1PageOne equ _ConvertAToOP1PageOneLabel-branchTableBase
-    .dw ConvertAToOP1PageOne
+_GetLastCharLabel:
+_GetLastChar equ _GetLastCharLabel-branchTableBase
+    .dw GetLastChar
     .db 1
-; tvm.asm
+
+; integerconv1.asm
+_ConvertAToOP1Label:
+_ConvertAToOP1 equ _ConvertAToOP1Label-branchTableBase
+    .dw ConvertAToOP1
+    .db 1
+_AddAToOP1Label:
+_AddAToOP1 equ _AddAToOP1Label-branchTableBase
+    .dw AddAToOP1
+    .db 1
+
+; tvm1.asm
 _TvmCalculateNLabel:
 _TvmCalculateN equ _TvmCalculateNLabel-branchTableBase
     .dw TvmCalculateN
@@ -790,6 +957,7 @@ _RclTvmSolverCountLabel:
 _RclTvmSolverCount equ _RclTvmSolverCountLabel-branchTableBase
     .dw RclTvmSolverCount
     .db 1
+
 ; float1.asm
 _LnOnePlusLabel:
 _LnOnePlus equ _LnOnePlusLabel-branchTableBase
@@ -799,7 +967,8 @@ _ExpMinusOneLabel:
 _ExpMinusOne equ _ExpMinusOneLabel-branchTableBase
     .dw ExpMinusOne
     .db 1
-; hms.asm
+
+; hms1.asm
 _HmsToHrLabel:
 _HmsToHr equ _HmsToHrLabel-branchTableBase
     .dw HmsToHr
@@ -808,7 +977,8 @@ _HmsFromHrLabel:
 _HmsFromHr equ _HmsFromHrLabel-branchTableBase
     .dw HmsFromHr
     .db 1
-; prob.asm
+
+; prob1.asm
 _ProbPermLabel:
 _ProbPerm equ _ProbPermLabel-branchTableBase
     .dw ProbPerm
@@ -818,8 +988,670 @@ _ProbComb equ _ProbCombLabel-branchTableBase
     .dw ProbComb
     .db 1
 
+; complex1.asm
+_RectToComplexLabel:
+_RectToComplex equ _RectToComplexLabel-branchTableBase
+    .dw RectToComplex
+    .db 1
+_Rect3ToComplex3Label:
+_Rect3ToComplex3 equ _Rect3ToComplex3Label-branchTableBase
+    .dw Rect3ToComplex3
+    .db 1
+_PolarRadToComplexLabel:
+_PolarRadToComplex equ _PolarRadToComplexLabel-branchTableBase
+    .dw PolarRadToComplex
+    .db 1
+_PolarDegToComplexLabel:
+_PolarDegToComplex equ _PolarDegToComplexLabel-branchTableBase
+    .dw PolarDegToComplex
+    .db 1
+_ComplexToRectLabel:
+_ComplexToRect equ _ComplexToRectLabel-branchTableBase
+    .dw ComplexToRect
+    .db 1
+_Complex3ToRect3Label:
+_Complex3ToRect3 equ _Complex3ToRect3Label-branchTableBase
+    .dw Complex3ToRect3
+    .db 1
+_ComplexToPolarRadLabel:
+_ComplexToPolarRad equ _ComplexToPolarRadLabel-branchTableBase
+    .dw ComplexToPolarRad
+    .db 1
+_ComplexToPolarDegLabel:
+_ComplexToPolarDeg equ _ComplexToPolarDegLabel-branchTableBase
+    .dw ComplexToPolarDeg
+    .db 1
+;
+_ComplexToRealsLabel:
+_ComplexToReals equ _ComplexToRealsLabel-branchTableBase
+    .dw ComplexToReals
+    .db 1
+_RealsToComplexLabel:
+_RealsToComplex equ _RealsToComplexLabel-branchTableBase
+    .dw RealsToComplex
+    .db 1
+_ComplexRealLabel:
+_ComplexReal equ _ComplexRealLabel-branchTableBase
+    .dw ComplexReal
+    .db 1
+_ComplexImagLabel:
+_ComplexImag equ _ComplexImagLabel-branchTableBase
+    .dw ComplexImag
+    .db 1
+_ComplexConjLabel:
+_ComplexConj equ _ComplexConjLabel-branchTableBase
+    .dw ComplexConj
+    .db 1
+_ComplexAbsLabel:
+_ComplexAbs equ _ComplexAbsLabel-branchTableBase
+    .dw ComplexAbs
+    .db 1
+_ComplexAngleLabel:
+_ComplexAngle equ _ComplexAngleLabel-branchTableBase
+    .dw ComplexAngle
+    .db 1
+
+; formatcomplex1.asm
+_FormatComplexRectLabel:
+_FormatComplexRect equ _FormatComplexRectLabel-branchTableBase
+    .dw FormatComplexRect
+    .db 1
+_FormatComplexPolarRadLabel:
+_FormatComplexPolarRad equ _FormatComplexPolarRadLabel-branchTableBase
+    .dw FormatComplexPolarRad
+    .db 1
+_FormatComplexPolarDegLabel:
+_FormatComplexPolarDeg equ _FormatComplexPolarDegLabel-branchTableBase
+    .dw FormatComplexPolarDeg
+    .db 1
+
+;-----------------------------------------------------------------------------
+
+; modes2.asm
+_InitModesLabel:
+_InitModes equ _InitModesLabel-branchTableBase
+    .dw InitModes
+    .db 2
+
+; selectepoch2.asm
+_SelectUnixEpochDateLabel:
+_SelectUnixEpochDate equ _SelectUnixEpochDateLabel-branchTableBase
+    .dw SelectUnixEpochDate
+    .db 2
+_SelectNtpEpochDateLabel:
+_SelectNtpEpochDate equ _SelectNtpEpochDateLabel-branchTableBase
+    .dw SelectNtpEpochDate
+    .db 2
+_SelectGpsEpochDateLabel:
+_SelectGpsEpochDate equ _SelectGpsEpochDateLabel-branchTableBase
+    .dw SelectGpsEpochDate
+    .db 2
+_SelectTiosEpochDateLabel:
+_SelectTiosEpochDate equ _SelectTiosEpochDateLabel-branchTableBase
+    .dw SelectTiosEpochDate
+    .db 2
+_SelectY2kEpochDateLabel:
+_SelectY2kEpochDate equ _SelectY2kEpochDateLabel-branchTableBase
+    .dw SelectY2kEpochDate
+    .db 2
+_SelectCustomEpochDateLabel:
+_SelectCustomEpochDate equ _SelectCustomEpochDateLabel-branchTableBase
+    .dw SelectCustomEpochDate
+    .db 2
+; Set and get custom epoch date.
+_SetCustomEpochDateLabel:
+_SetCustomEpochDate equ _SetCustomEpochDateLabel-branchTableBase
+    .dw SetCustomEpochDate
+    .db 2
+_GetCustomEpochDateLabel:
+_GetCustomEpochDate equ _GetCustomEpochDateLabel-branchTableBase
+    .dw GetCustomEpochDate
+    .db 2
+
+; fps2.asm
+_PushRpnObject1Label:
+_PushRpnObject1 equ _PushRpnObject1Label-branchTableBase
+    .dw PushRpnObject1
+    .db 2
+_PopRpnObject1Label:
+_PopRpnObject1 equ _PopRpnObject1Label-branchTableBase
+    .dw PopRpnObject1
+    .db 2
+_PushRpnObject3Label:
+_PushRpnObject3 equ _PushRpnObject3Label-branchTableBase
+    .dw PushRpnObject3
+    .db 2
+_PopRpnObject3Label:
+_PopRpnObject3 equ _PopRpnObject3Label-branchTableBase
+    .dw PopRpnObject3
+    .db 2
+_PushRpnObject5Label:
+_PushRpnObject5 equ _PushRpnObject5Label-branchTableBase
+    .dw PushRpnObject5
+    .db 2
+_PopRpnObject5Label:
+_PopRpnObject5 equ _PopRpnObject5Label-branchTableBase
+    .dw PopRpnObject5
+    .db 2
+
+; formatdate2.asm
+_FormatDateLabel:
+_FormatDate equ _FormatDateLabel-branchTableBase
+    .dw FormatDate
+    .db 2
+_FormatTimeLabel:
+_FormatTime equ _FormatTimeLabel-branchTableBase
+    .dw FormatTime
+    .db 2
+_FormatDateTimeLabel:
+_FormatDateTime equ _FormatDateTimeLabel-branchTableBase
+    .dw FormatDateTime
+    .db 2
+_FormatOffsetLabel:
+_FormatOffset equ _FormatOffsetLabel-branchTableBase
+    .dw FormatOffset
+    .db 2
+_FormatOffsetDateTimeLabel:
+_FormatOffsetDateTime equ _FormatOffsetDateTimeLabel-branchTableBase
+    .dw FormatOffsetDateTime
+    .db 2
+_FormatDayOfWeekLabel:
+_FormatDayOfWeek equ _FormatDayOfWeekLabel-branchTableBase
+    .dw FormatDayOfWeek
+    .db 2
+_FormatDurationLabel:
+_FormatDuration equ _FormatDurationLabel-branchTableBase
+    .dw FormatDuration
+    .db 2
+
+; datevalidation2.asm
+_ValidateDateLabel:
+_ValidateDate equ _ValidateDateLabel-branchTableBase
+    .dw ValidateDate
+    .db 2
+_ValidateTimeLabel:
+_ValidateTime equ _ValidateTimeLabel-branchTableBase
+    .dw ValidateTime
+    .db 2
+_ValidateDateTimeLabel:
+_ValidateDateTime equ _ValidateDateTimeLabel-branchTableBase
+    .dw ValidateDateTime
+    .db 2
+_ValidateOffsetLabel:
+_ValidateOffset equ _ValidateOffsetLabel-branchTableBase
+    .dw ValidateOffset
+    .db 2
+_ValidateOffsetDateTimeLabel:
+_ValidateOffsetDateTime equ _ValidateOffsetDateTimeLabel-branchTableBase
+    .dw ValidateOffsetDateTime
+    .db 2
+_ValidateDayOfWeekLabel:
+_ValidateDayOfWeek equ _ValidateDayOfWeekLabel-branchTableBase
+    .dw ValidateDayOfWeek
+    .db 2
+_ValidateDurationLabel:
+_ValidateDuration equ _ValidateDurationLabel-branchTableBase
+    .dw ValidateDuration
+    .db 2
+
+; date2.asm
+_InitDateLabel:
+_InitDate equ _InitDateLabel-branchTableBase
+    .dw InitDate
+    .db 2
+; Year functions
+_IsLeapLabel:
+_IsLeap equ _IsLeapLabel-branchTableBase
+    .dw IsLeap
+    .db 2
+; RpnDate and days functions
+_RpnDateToEpochDaysLabel:
+_RpnDateToEpochDays equ _RpnDateToEpochDaysLabel-branchTableBase
+    .dw RpnDateToEpochDays
+    .db 2
+_RpnDateToEpochSecondsLabel:
+_RpnDateToEpochSeconds equ _RpnDateToEpochSecondsLabel-branchTableBase
+    .dw RpnDateToEpochSeconds
+    .db 2
+_EpochDaysToRpnDateLabel:
+_EpochDaysToRpnDate equ _EpochDaysToRpnDateLabel-branchTableBase
+    .dw EpochDaysToRpnDate
+    .db 2
+_EpochSecondsToRpnDateLabel:
+_EpochSecondsToRpnDate equ _EpochSecondsToRpnDateLabel-branchTableBase
+    .dw EpochSecondsToRpnDate
+    .db 2
+_AddRpnDateByDaysLabel:
+_AddRpnDateByDays equ _AddRpnDateByDaysLabel-branchTableBase
+    .dw AddRpnDateByDays
+    .db 2
+_AddRpnDateByDurationLabel:
+_AddRpnDateByDuration equ _AddRpnDateByDurationLabel-branchTableBase
+    .dw AddRpnDateByDuration
+    .db 2
+_SubRpnDateByObjectLabel:
+_SubRpnDateByObject equ _SubRpnDateByObjectLabel-branchTableBase
+    .dw SubRpnDateByObject
+    .db 2
+
+; time2.asm
+_RpnTimeToSecondsLabel:
+_RpnTimeToSeconds equ _RpnTimeToSecondsLabel-branchTableBase
+    .dw RpnTimeToSeconds
+    .db 2
+_SecondsToRpnTimeLabel:
+_SecondsToRpnTime equ _SecondsToRpnTimeLabel-branchTableBase
+    .dw SecondsToRpnTime
+    .db 2
+_AddRpnTimeBySecondsLabel:
+_AddRpnTimeBySeconds equ _AddRpnTimeBySecondsLabel-branchTableBase
+    .dw AddRpnTimeBySeconds
+    .db 2
+_AddRpnTimeByDurationLabel:
+_AddRpnTimeByDuration equ _AddRpnTimeByDurationLabel-branchTableBase
+    .dw AddRpnTimeByDuration
+    .db 2
+_SubRpnTimeByObjectLabel:
+_SubRpnTimeByObject equ _SubRpnTimeByObjectLabel-branchTableBase
+    .dw SubRpnTimeByObject
+    .db 2
+
+; dayofweek2.asm
+_DayOfWeekLabel:
+_DayOfWeek equ _DayOfWeekLabel-branchTableBase
+    .dw DayOfWeek
+    .db 2
+_AddRpnDayOfWeekByDaysLabel:
+_AddRpnDayOfWeekByDays equ _AddRpnDayOfWeekByDaysLabel-branchTableBase
+    .dw AddRpnDayOfWeekByDays
+    .db 2
+_SubRpnDayOfWeekByRpnDayOfWeekOrDaysLabel:
+_SubRpnDayOfWeekByRpnDayOfWeekOrDays equ _SubRpnDayOfWeekByRpnDayOfWeekOrDaysLabel-branchTableBase
+    .dw SubRpnDayOfWeekByRpnDayOfWeekOrDays
+    .db 2
+
+; datetime2.asm
+_RpnDateTimeToEpochSecondsLabel:
+_RpnDateTimeToEpochSeconds equ _RpnDateTimeToEpochSecondsLabel-branchTableBase
+    .dw RpnDateTimeToEpochSeconds
+    .db 2
+_EpochSecondsToRpnDateTimeLabel:
+_EpochSecondsToRpnDateTime equ _EpochSecondsToRpnDateTimeLabel-branchTableBase
+    .dw EpochSecondsToRpnDateTime
+    .db 2
+_AddRpnDateTimeBySecondsLabel:
+_AddRpnDateTimeBySeconds equ _AddRpnDateTimeBySecondsLabel-branchTableBase
+    .dw AddRpnDateTimeBySeconds
+    .db 2
+_AddRpnDateTimeByRpnDurationLabel:
+_AddRpnDateTimeByRpnDuration equ _AddRpnDateTimeByRpnDurationLabel-branchTableBase
+    .dw AddRpnDateTimeByRpnDuration
+    .db 2
+_SubRpnDateTimeByObjectLabel:
+_SubRpnDateTimeByObject equ _SubRpnDateTimeByObjectLabel-branchTableBase
+    .dw SubRpnDateTimeByObject
+    .db 2
+_SplitRpnDateTimeLabel:
+_SplitRpnDateTime equ _SplitRpnDateTimeLabel-branchTableBase
+    .dw SplitRpnDateTime
+    .db 2
+_MergeRpnDateWithRpnTimeLabel:
+_MergeRpnDateWithRpnTime equ _MergeRpnDateWithRpnTimeLabel-branchTableBase
+    .dw MergeRpnDateWithRpnTime
+    .db 2
+_ExtendRpnDateToDateTimeLabel:
+_ExtendRpnDateToDateTime equ _ExtendRpnDateToDateTimeLabel-branchTableBase
+    .dw ExtendRpnDateToDateTime
+    .db 2
+_TruncateRpnDateTimeLabel:
+_TruncateRpnDateTime equ _TruncateRpnDateTimeLabel-branchTableBase
+    .dw TruncateRpnDateTime
+    .db 2
+
+; offset2.asm
+_RpnOffsetToSecondsLabel:
+_RpnOffsetToSeconds equ _RpnOffsetToSecondsLabel-branchTableBase
+    .dw RpnOffsetToSeconds
+    .db 2
+_RpnOffsetToHoursLabel:
+_RpnOffsetToHours equ _RpnOffsetToHoursLabel-branchTableBase
+    .dw RpnOffsetToHours
+    .db 2
+_HoursToRpnOffsetLabel:
+_HoursToRpnOffset equ _HoursToRpnOffsetLabel-branchTableBase
+    .dw HoursToRpnOffset
+    .db 2
+
+; offsetdatetime2.asm
+_RpnOffsetDateTimeToEpochSecondsLabel:
+_RpnOffsetDateTimeToEpochSeconds equ _RpnOffsetDateTimeToEpochSecondsLabel-branchTableBase
+    .dw RpnOffsetDateTimeToEpochSeconds
+    .db 2
+_EpochSecondsToRpnOffsetDateTimeLabel:
+_EpochSecondsToRpnOffsetDateTime equ _EpochSecondsToRpnOffsetDateTimeLabel-branchTableBase
+    .dw EpochSecondsToRpnOffsetDateTime
+    .db 2
+_EpochSecondsToRpnOffsetDateTimeUTCLabel:
+_EpochSecondsToRpnOffsetDateTimeUTC equ _EpochSecondsToRpnOffsetDateTimeUTCLabel-branchTableBase
+    .dw EpochSecondsToRpnOffsetDateTimeUTC
+    .db 2
+_AddRpnOffsetDateTimeBySecondsLabel:
+_AddRpnOffsetDateTimeBySeconds equ _AddRpnOffsetDateTimeBySecondsLabel-branchTableBase
+    .dw AddRpnOffsetDateTimeBySeconds
+    .db 2
+_AddRpnOffsetDateTimeByDurationLabel:
+_AddRpnOffsetDateTimeByDuration equ _AddRpnOffsetDateTimeByDurationLabel-branchTableBase
+    .dw AddRpnOffsetDateTimeByDuration
+    .db 2
+_SubRpnOffsetDateTimeByObjectLabel:
+_SubRpnOffsetDateTimeByObject equ _SubRpnOffsetDateTimeByObjectLabel-branchTableBase
+    .dw SubRpnOffsetDateTimeByObject
+    .db 2
+_SplitRpnOffsetDateTimeLabel:
+_SplitRpnOffsetDateTime equ _SplitRpnOffsetDateTimeLabel-branchTableBase
+    .dw SplitRpnOffsetDateTime
+    .db 2
+_MergeRpnDateTimeWithRpnOffsetLabel:
+_MergeRpnDateTimeWithRpnOffset equ _MergeRpnDateTimeWithRpnOffsetLabel-branchTableBase
+    .dw MergeRpnDateTimeWithRpnOffset
+    .db 2
+_ExtendRpnDateTimeToOffsetDateTimeLabel:
+_ExtendRpnDateTimeToOffsetDateTime equ _ExtendRpnDateTimeToOffsetDateTimeLabel-branchTableBase
+    .dw ExtendRpnDateTimeToOffsetDateTime
+    .db 2
+_TruncateRpnOffsetDateTimeLabel:
+_TruncateRpnOffsetDateTime equ _TruncateRpnOffsetDateTimeLabel-branchTableBase
+    .dw TruncateRpnOffsetDateTime
+    .db 2
+
+; duration2.asm
+_RpnDurationToSecondsLabel:
+_RpnDurationToSeconds equ _RpnDurationToSecondsLabel-branchTableBase
+    .dw RpnDurationToSeconds
+    .db 2
+_SecondsToRpnDurationLabel:
+_SecondsToRpnDuration equ _SecondsToRpnDurationLabel-branchTableBase
+    .dw SecondsToRpnDuration
+    .db 2
+_ChsRpnDurationLabel:
+_ChsRpnDuration equ _ChsRpnDurationLabel-branchTableBase
+    .dw ChsRpnDuration
+    .db 2
+_AddRpnDurationBySecondsLabel:
+_AddRpnDurationBySeconds equ _AddRpnDurationBySecondsLabel-branchTableBase
+    .dw AddRpnDurationBySeconds
+    .db 2
+_AddRpnDurationByRpnDurationLabel:
+_AddRpnDurationByRpnDuration equ _AddRpnDurationByRpnDurationLabel-branchTableBase
+    .dw AddRpnDurationByRpnDuration
+    .db 2
+_SubRpnDurationByRpnDurationOrSecondsLabel:
+_SubRpnDurationByRpnDurationOrSeconds equ _SubRpnDurationByRpnDurationOrSecondsLabel-branchTableBase
+    .dw SubRpnDurationByRpnDurationOrSeconds
+    .db 2
+_SubSecondsByRpnDurationLabel:
+_SubSecondsByRpnDuration equ _SubSecondsByRpnDurationLabel-branchTableBase
+    .dw SubSecondsByRpnDuration
+    .db 2
+
+; zoneconversion2.asm
+_ConvertRpnDateTimeToTimeZoneAsOffsetLabel:
+_ConvertRpnDateTimeToTimeZoneAsOffset equ _ConvertRpnDateTimeToTimeZoneAsOffsetLabel-branchTableBase
+    .dw ConvertRpnDateTimeToTimeZoneAsOffset
+    .db 2
+_ConvertRpnDateTimeToTimeZoneAsRealLabel:
+_ConvertRpnDateTimeToTimeZoneAsReal equ _ConvertRpnDateTimeToTimeZoneAsRealLabel-branchTableBase
+    .dw ConvertRpnDateTimeToTimeZoneAsReal
+    .db 2
+_ConvertRpnOffsetDateTimeToOffsetLabel:
+_ConvertRpnOffsetDateTimeToOffset equ _ConvertRpnOffsetDateTimeToOffsetLabel-branchTableBase
+    .dw ConvertRpnOffsetDateTimeToOffset
+    .db 2
+_ConvertRpnOffsetDateTimeToTimeZoneAsRealLabel:
+_ConvertRpnOffsetDateTimeToTimeZoneAsReal equ _ConvertRpnOffsetDateTimeToTimeZoneAsRealLabel-branchTableBase
+    .dw ConvertRpnOffsetDateTimeToTimeZoneAsReal
+    .db 2
+
+; zone2.asm
+_SetAppTimeZoneLabel:
+_SetAppTimeZone equ _SetAppTimeZoneLabel-branchTableBase
+    .dw SetAppTimeZone
+    .db 2
+_GetAppTimeZoneLabel:
+_GetAppTimeZone equ _GetAppTimeZoneLabel-branchTableBase
+    .dw GetAppTimeZone
+    .db 2
+
+; rtc2.asm
+_RtcInitLabel:
+_RtcInit equ _RtcInitLabel-branchTableBase
+    .dw RtcInit
+    .db 2
+_RtcGetNowLabel:
+_RtcGetNow equ _RtcGetNowLabel-branchTableBase
+    .dw RtcGetNow
+    .db 2
+_RtcGetDateLabel:
+_RtcGetDate equ _RtcGetDateLabel-branchTableBase
+    .dw RtcGetDate
+    .db 2
+_RtcGetTimeLabel:
+_RtcGetTime equ _RtcGetTimeLabel-branchTableBase
+    .dw RtcGetTime
+    .db 2
+_RtcGetAppDateTimeLabel:
+_RtcGetAppDateTime equ _RtcGetAppDateTimeLabel-branchTableBase
+    .dw RtcGetAppDateTime
+    .db 2
+_RtcGetUTCDateTimeLabel:
+_RtcGetUTCDateTime equ _RtcGetUTCDateTimeLabel-branchTableBase
+    .dw RtcGetUTCDateTime
+    .db 2
+;
+_RtcSetClockLabel:
+_RtcSetClock equ _RtcSetClockLabel-branchTableBase
+    .dw RtcSetClock
+    .db 2
+_RtcSetTimeZoneLabel:
+_RtcSetTimeZone equ _RtcSetTimeZoneLabel-branchTableBase
+    .dw RtcSetTimeZone
+    .db 2
+_RtcGetTimeZoneLabel:
+_RtcGetTimeZone equ _RtcGetTimeZoneLabel-branchTableBase
+    .dw RtcGetTimeZone
+    .db 2
+
+; base2.asm
+_InitBaseLabel:
+_InitBase equ _InitBaseLabel-branchTableBase
+    .dw InitBase
+    .db 2
+_BitwiseAndLabel:
+_BitwiseAnd equ _BitwiseAndLabel-branchTableBase
+    .dw BitwiseAnd
+    .db 2
+_BitwiseOrLabel:
+_BitwiseOr equ _BitwiseOrLabel-branchTableBase
+    .dw BitwiseOr
+    .db 2
+_BitwiseXorLabel:
+_BitwiseXor equ _BitwiseXorLabel-branchTableBase
+    .dw BitwiseXor
+    .db 2
+_BitwiseNotLabel:
+_BitwiseNot equ _BitwiseNotLabel-branchTableBase
+    .dw BitwiseNot
+    .db 2
+_BitwiseNegLabel:
+_BitwiseNeg equ _BitwiseNegLabel-branchTableBase
+    .dw BitwiseNeg
+    .db 2
+;
+_BaseShiftLeftLogicalLabel:
+_BaseShiftLeftLogical equ _BaseShiftLeftLogicalLabel-branchTableBase
+    .dw BaseShiftLeftLogical
+    .db 2
+_BaseShiftRightLogicalLabel:
+_BaseShiftRightLogical equ _BaseShiftRightLogicalLabel-branchTableBase
+    .dw BaseShiftRightLogical
+    .db 2
+_BaseShiftRightArithmeticLabel:
+_BaseShiftRightArithmetic equ _BaseShiftRightArithmeticLabel-branchTableBase
+    .dw BaseShiftRightArithmetic
+    .db 2
+_BaseShiftLeftLogicalNLabel:
+_BaseShiftLeftLogicalN equ _BaseShiftLeftLogicalNLabel-branchTableBase
+    .dw BaseShiftLeftLogicalN
+    .db 2
+_BaseShiftRightLogicalNLabel:
+_BaseShiftRightLogicalN equ _BaseShiftRightLogicalNLabel-branchTableBase
+    .dw BaseShiftRightLogicalN
+    .db 2
+;
+_BaseRotateLeftCircularLabel:
+_BaseRotateLeftCircular equ _BaseRotateLeftCircularLabel-branchTableBase
+    .dw BaseRotateLeftCircular
+    .db 2
+_BaseRotateRightCircularLabel:
+_BaseRotateRightCircular equ _BaseRotateRightCircularLabel-branchTableBase
+    .dw BaseRotateRightCircular
+    .db 2
+_BaseRotateLeftCarryLabel:
+_BaseRotateLeftCarry equ _BaseRotateLeftCarryLabel-branchTableBase
+    .dw BaseRotateLeftCarry
+    .db 2
+_BaseRotateRightCarryLabel:
+_BaseRotateRightCarry equ _BaseRotateRightCarryLabel-branchTableBase
+    .dw BaseRotateRightCarry
+    .db 2
+;
+_BaseRotateLeftCircularNLabel:
+_BaseRotateLeftCircularN equ _BaseRotateLeftCircularNLabel-branchTableBase
+    .dw BaseRotateLeftCircularN
+    .db 2
+_BaseRotateRightCircularNLabel:
+_BaseRotateRightCircularN equ _BaseRotateRightCircularNLabel-branchTableBase
+    .dw BaseRotateRightCircularN
+    .db 2
+_BaseRotateLeftCarryNLabel:
+_BaseRotateLeftCarryN equ _BaseRotateLeftCarryNLabel-branchTableBase
+    .dw BaseRotateLeftCarryN
+    .db 2
+_BaseRotateRightCarryNLabel:
+_BaseRotateRightCarryN equ _BaseRotateRightCarryNLabel-branchTableBase
+    .dw BaseRotateRightCarryN
+    .db 2
+;
+_BaseAddLabel:
+_BaseAdd equ _BaseAddLabel-branchTableBase
+    .dw BaseAdd
+    .db 2
+_BaseSubLabel:
+_BaseSub equ _BaseSubLabel-branchTableBase
+    .dw BaseSub
+    .db 2
+_BaseMultLabel:
+_BaseMult equ _BaseMultLabel-branchTableBase
+    .dw BaseMult
+    .db 2
+_BaseDivLabel:
+_BaseDiv equ _BaseDivLabel-branchTableBase
+    .dw BaseDiv
+    .db 2
+_BaseDiv2Label:
+_BaseDiv2 equ _BaseDiv2Label-branchTableBase
+    .dw BaseDiv2
+    .db 2
+;
+_BaseReverseBitsLabel:
+_BaseReverseBits equ _BaseReverseBitsLabel-branchTableBase
+    .dw BaseReverseBits
+    .db 2
+_BaseCountBitsLabel:
+_BaseCountBits equ _BaseCountBitsLabel-branchTableBase
+    .dw BaseCountBits
+    .db 2
+_BaseSetBitLabel:
+_BaseSetBit equ _BaseSetBitLabel-branchTableBase
+    .dw BaseSetBit
+    .db 2
+_BaseClearBitLabel:
+_BaseClearBit equ _BaseClearBitLabel-branchTableBase
+    .dw BaseClearBit
+    .db 2
+_BaseGetBitLabel:
+_BaseGetBit equ _BaseGetBitLabel-branchTableBase
+    .dw BaseGetBit
+    .db 2
+;
+_BaseStoreCarryFlagLabel:
+_BaseStoreCarryFlag equ _BaseStoreCarryFlagLabel-branchTableBase
+    .dw BaseStoreCarryFlag
+    .db 2
+_BaseGetCarryFlagLabel:
+_BaseGetCarryFlag equ _BaseGetCarryFlagLabel-branchTableBase
+    .dw BaseGetCarryFlag
+    .db 2
+;
+_BaseSetWordSizeLabel:
+_BaseSetWordSize equ _BaseSetWordSizeLabel-branchTableBase
+    .dw BaseSetWordSize
+    .db 2
+_BaseGetWordSizeLabel:
+_BaseGetWordSize equ _BaseGetWordSizeLabel-branchTableBase
+    .dw BaseGetWordSize
+    .db 2
+
+; prime2.asm
+_PrimeFactorLabel:
+_PrimeFactor equ _PrimeFactorLabel-branchTableBase
+    .dw PrimeFactor
+    .db 2
+
+; integerconv32.asm
+_ConvertOP1ToUxxNoFatalLabel:
+_ConvertOP1ToUxxNoFatal equ _ConvertOP1ToUxxNoFatalLabel-branchTableBase
+    .dw ConvertOP1ToUxxNoFatal
+    .db 2
+
+; formatinteger32.asm
+_ReformatBaseTwoStringLabel:
+_ReformatBaseTwoString equ _ReformatBaseTwoStringLabel-branchTableBase
+    .dw ReformatBaseTwoString
+    .db 2
+_FormatU32ToHexStringLabel:
+_FormatU32ToHexString equ _FormatU32ToHexStringLabel-branchTableBase
+    .dw FormatU32ToHexString
+    .db 2
+_FormatU32ToOctStringLabel:
+_FormatU32ToOctString equ _FormatU32ToOctStringLabel-branchTableBase
+    .dw FormatU32ToOctString
+    .db 2
+_FormatU32ToBinStringLabel:
+_FormatU32ToBinString equ _FormatU32ToBinStringLabel-branchTableBase
+    .dw FormatU32ToBinString
+    .db 2
+_FormatU32ToDecStringLabel:
+_FormatU32ToDecString equ _FormatU32ToDecStringLabel-branchTableBase
+    .dw FormatU32ToDecString
+    .db 2
+
+; format2.asm
+_FormatAToStringLabel:
+_FormatAToString equ _FormatAToStringLabel-branchTableBase
+    .dw FormatAToString
+    .db 2
+
+; show2.asm
+_FormShowableLabel:
+_FormShowable equ _FormShowableLabel-branchTableBase
+    .dw FormShowable
+    .db 2
+
+;-----------------------------------------------------------------------------
+
 #ifdef DEBUG
-; debug.asm
+; debug1.asm
 _DebugInputBufLabel:
 _DebugInputBuf equ _DebugInputBufLabel-branchTableBase
     .dw DebugInputBuf
@@ -860,6 +1692,10 @@ _DebugU32AsHexLabel:
 _DebugU32AsHex equ _DebugU32AsHexLabel-branchTableBase
     .dw DebugU32AsHex
     .db 1
+_DebugU40AsHexLabel:
+_DebugU40AsHex equ _DebugU40AsHexLabel-branchTableBase
+    .dw DebugU40AsHex
+    .db 1
 _DebugHLLabel:
 _DebugHL equ _DebugHLLabel-branchTableBase
     .dw DebugHL
@@ -878,35 +1714,39 @@ _DebugU32DEAsHex equ _DebugU32DEAsHexLabel-branchTableBase
     .db 1
 #endif
 
+;-----------------------------------------------------------------------------
+
 #include "main.asm"
-#include "mainparser.asm"
+#include "mainscanner.asm"
 #include "handlers.asm"
-#include "argparser.asm"
+#include "argscanner.asm"
 #include "arghandlers.asm"
-#include "showparser.asm"
+#include "showscanner.asm"
 #include "vars.asm"
 #include "input.asm"
 #include "display.asm"
-#include "show.asm"
-#include "base.asm"
 #include "basehandlers.asm"
-#include "baseops.asm"
 #include "menu.asm"
 #include "menuhandlers.asm"
 #include "stathandlers.asm"
 #include "cfithandlers.asm"
 #include "tvmhandlers.asm"
 #include "complexhandlers.asm"
-#include "prime.asm"
+#include "datehandlers.asm"
 #include "common.asm"
 #include "memory.asm"
+#include "cstring.asm"
+#include "integer.asm"
 #include "float.asm"
 #include "complex.asm"
+#include "universal.asm"
+#include "rpnobject.asm"
 #include "conv.asm"
 #include "print.asm"
 #include "const.asm"
 #include "handlertab.asm"
 #include "arghandlertab.asm"
+#include "format.asm"
 
 ;-----------------------------------------------------------------------------
 ; Flash Page 1
@@ -914,29 +1754,78 @@ _DebugU32DEAsHex equ _DebugU32DEAsHexLabel-branchTableBase
 
 defpage(1)
 
-#include "appstate.asm"
-#include "osstate.asm"
-#include "help.asm"
-#include "menulookup.asm"
+#include "appstate1.asm"
+#include "osstate1.asm"
+#include "help1.asm"
+#include "helpscanner1.asm"
+#include "menu1.asm"
 #include "menudef.asm"
-#include "crc.asm"
-#include "errorcode.asm"
+#include "crc1.asm"
+#include "errorcode1.asm"
 #include "print1.asm"
 #include "input1.asm"
+#include "parse1.asm"
+#include "parsefloat1.asm"
+#include "parsedate1.asm"
+#include "parseclassifiers1.asm"
 #include "arg1.asm"
 #include "base1.asm"
+#include "cstring1.asm"
 #include "pstring1.asm"
 #include "memory1.asm"
-#include "float1.asm"
 #include "integer1.asm"
+#include "rpnobject1.asm"
+#include "float1.asm"
+#include "integerconv1.asm"
 #include "const1.asm"
 #include "complex1.asm"
-#include "tvm.asm"
-#include "hms.asm"
-#include "prob.asm"
+#include "formatcomplex1.asm"
+#include "tvm1.asm"
+#include "hms1.asm"
+#include "prob1.asm"
+#include "format1.asm"
 #ifdef DEBUG
-#include "debug.asm"
+#include "debug1.asm"
 #endif
+
+;-----------------------------------------------------------------------------
+; Flash Page 2
+;-----------------------------------------------------------------------------
+
+defpage(2)
+
+#include "modes2.asm"
+#include "selectepoch2.asm"
+#include "epoch2.asm"
+#include "datevalidation2.asm"
+#include "datetransform2.asm"
+#include "date2.asm"
+#include "time2.asm"
+#include "dayofweek2.asm"
+#include "datetime2.asm"
+#include "offset2.asm"
+#include "offsetdatetime2.asm"
+#include "duration2.asm"
+#include "zoneconversion2.asm"
+#include "zone2.asm"
+#include "rtc2.asm"
+#include "formatdate2.asm"
+#include "integer40.asm"
+#include "integerconv40.asm"
+#include "fps2.asm"
+#include "format2.asm"
+#include "show2.asm"
+#include "memory2.asm"
+#include "const2.asm"
+#include "integer2.asm"
+#include "rpnobject2.asm"
+#include "cstring2.asm"
+;
+#include "prime2.asm"
+#include "base2.asm"
+#include "integerconv32.asm"
+#include "formatinteger32.asm"
+#include "integer32.asm"
 
 .end
 

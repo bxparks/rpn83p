@@ -103,6 +103,11 @@ MenuGroup root mRoot [
         MenuItem MIN mMin
         MenuItem MAX mMax
       ]
+      MenuRow [
+        MenuItem RNDF mRoundToFix # round to FIX (ENG, SCI)
+        MenuItem RNDN mRoundToN # round to specified N digits
+        MenuItem RNDG mRoundToGuard # round to 10 digits, removing guard digits
+      ]
     ]
     MenuGroup PROB mProb [
       MenuRow [
@@ -301,6 +306,18 @@ MenuGroup root mRoot [
         MenuItemAlt PRAD PRA<Sblock> mComplexModeRad
         MenuItemAlt PDEG PDE<Sblock> mComplexModeDeg
       ]
+      # Disabled until after v0.10 is released.
+      #MenuRow [
+      #  MenuItem SIZE mSetRegSize
+      #  MenuItem SIZ<Squestion> mGetRegSize
+      #]
+      MenuRow [
+        MenuItemAlt <Scomma>EE <Scomma>EE<Sblock> mCommaEENormal
+        MenuItemAlt EE<Scomma> EE<Scomma><Sblock> mCommaEESwapped
+        MenuItem * *
+        MenuItemAlt <SlBrace><SPeriod><SPeriod><SrBrace> <SlBrace><SPeriod><SPeriod><SrBrace><Sblock> mFormatRecordRaw
+        MenuItemAlt <Squote><SPeriod><SPeriod><Squote> <Squote><SPeriod><SPeriod><Squote><Sblock> mFormatRecordString
+      ]
     ]
     MenuGroup STK mStack [
       MenuRow [
@@ -367,6 +384,82 @@ MenuGroup root mRoot [
       #   MenuItem * *
       #   MenuItem * *
       #   MenuItem * *
+      # ]
+    ]
+    MenuGroup DATE mDate [
+      MenuRow [
+        MenuItem LEAP mLeapYear # operates on year
+        MenuItem DOW mDayOfWeek # operates on Date
+        MenuItem * *
+        MenuItem D<Sconvert>DY mDateToEpochDays
+        MenuItem DY<Sconvert>D mEpochDaysToDate
+      ]
+      MenuRow [
+        MenuItem D<Scross><Sconvert>S mDateRelatedToSeconds
+        MenuItem S<Sconvert>DR mSecondsToDuration
+        MenuItem S<Sconvert>T mSecondsToTime
+        MenuItem S<Sconvert>DZ mEpochSecondsToAppDateTime
+        MenuItem S<Sconvert>UT mEpochSecondsToUTCDateTime
+      ]
+      MenuRow [
+        MenuItem TZ<Sconvert>H mTimeZoneToHours
+        MenuItem H<Sconvert>TZ mHoursToTimeZone
+        MenuItem * *
+        MenuItem * *
+        MenuGroup EPCH mEpoch [
+          MenuRow [
+            MenuItemAlt UNIX UNI<Sblock> mEpochUnix # 1970-01-01T00:00:00
+            MenuItemAlt NTP NTP<Sblock> mEpochNtp # 1900-01-01T00:00:00
+            MenuItemAlt GPS GPS<Sblock> mEpochGps # 1980-01-06T00:00:00
+            MenuItemAlt TIOS TI<Sblock> mEpochTios # 1997-01-00T00:00:00
+            MenuItemAlt Y2K Y2K<Sblock> mEpochY2k # 2000-01-01T00:00:00
+          ]
+          MenuRow [
+            MenuItemAlt CEPC CEP<Sblock> mEpochCustom # custom, defined by EPC
+            MenuItem * *
+            MenuItem * *
+            MenuItem EPC mEpochSetCustom # set custom epoch date
+            MenuItem EPC<Squestion> mEpochGetCustom # get custom epoch date
+          ]
+        ]
+      ]
+      MenuRow [
+        MenuItem DSHK mDateShrink # shrink DZ to DT, DT to D
+        MenuItem DEXD mDateExtend # extend D to DT, DT to DZ
+        MenuItem DCUT mDateCut # cut DZ to (DT,TZ), DT to (D,T)
+        MenuItem DLNK mDateLink # link (DT,TZ) to DZ, (D,T) to DT
+        MenuItem * *
+      ]
+      MenuRow [
+        MenuItem NOW mGetNow # RTC epochSeconds
+        MenuItem NOWD mGetNowDate # RTC Date using appTimeZone
+        MenuItem NOWT mGetNowTime # RTC Time using appTimeZone
+        MenuItem NWDZ mGetNowAppDateTime # RTC OffsetDateTime using appTimeZone
+        MenuItem NWUT mGetNowUTCDateTime # RTC OffsetDateTime using UTC
+      ]
+      MenuRow [
+        MenuItem TZ mSetTimeZone
+        MenuItem TZ<Squestion> mGetTimeZone
+        MenuItem CTZ mSetClockTimeZone
+        MenuItem CTZ<Squestion> mGetClockTimeZone
+        MenuItem SETC mSetClock # set current clock
+      ]
+      # MenuRow [
+      #   MenuGroup ISO mIso [
+      #     MenuRow [
+      #       MenuItem D<Sconvert>IS mDateToIsoWeekDay
+      #       MenuItem IS<Sconvert>D mIsoWeekDayToDate
+      #     ]
+      #   ]
+      #   MenuGroup JUL mJulian [
+      #     MenuRow [
+      #       MenuItem D<Sconvert>JU mDateTimeToJulian
+      #       MenuItem JU<Sconvert>D mJulianToDateTime
+      #       MenuItem * *
+      #       MenuItem D<Sconvert>MJ mDateTimeToModifiedJulian
+      #       MenuItem MJ<Sconvert>D mModifiedJulianToDateTime
+      #     ]
+      #   ]
       # ]
     ]
   ]

@@ -172,30 +172,30 @@ mCfitForcastXHandler:
 
 ; Description: Calculate the least square fit slope into X register.
 mCfitSlopeHandler:
-    call closeInputAndRecallX
+    call closeInputAndRecallNone
     ld a, (curveFitModel)
     call selectCfitModel
     call fitLeastSquare ; OP1=intercept,OP2=slope
     bcall(_OP1ExOP2)
     call convertMPrimeToM
-    jp pushX
+    jp pushToX
 
 ; Description: Calculate the least square fit intercept into X register.
 mCfitInterceptHandler:
-    call closeInputAndRecallX
+    call closeInputAndRecallNone
     ld a, (curveFitModel)
     call selectCfitModel
     call fitLeastSquare ; OP1=intercept,OP2=slope
     call convertBPrimeToB
-    jp pushX
+    jp pushToX
 
 ; Description: Calculate the correlation coefficient into X register.
 mCfitCorrelationHandler:
-    call closeInputAndRecallX
+    call closeInputAndRecallNone
     ld a, (curveFitModel)
     call selectCfitModel
     call statCorrelation
-    jp pushX
+    jp pushToX
 
 ;-----------------------------------------------------------------------------
 
@@ -205,13 +205,16 @@ mCfitLinearHandler:
     set dirtyFlagsMenu, (iy + dirtyFlags)
     ret
 
+; Description: Select menu name.
+; Output: CF=0 for normal, CF=1 or alternate
 mCfitLinearNameSelector:
-    ld b, a
     ld a, (curveFitModel)
     cp curveFitModelLinear
-    ld a, b
-    ret nz
-    ld a, c
+    jr z, mCfitLinearNameSelectorAlt
+    or a ; CF=0
+    ret
+mCfitLinearNameSelectorAlt:
+    scf
     ret
 
 ;-----------------------------------------------------------------------------
@@ -222,13 +225,16 @@ mCfitLogHandler:
     set dirtyFlagsMenu, (iy + dirtyFlags)
     ret
 
+; Description: Select menu name.
+; Output: CF=0 for normal, CF=1 or alternate
 mCfitLogNameSelector:
-    ld b, a
     ld a, (curveFitModel)
     cp curveFitModelLog
-    ld a, b
-    ret nz
-    ld a, c
+    jr z, mCfitLogNameSelectorAlt
+    or a ; CF=0
+    ret
+mCfitLogNameSelectorAlt:
+    scf
     ret
 
 ;-----------------------------------------------------------------------------
@@ -239,13 +245,16 @@ mCfitExpHandler:
     set dirtyFlagsMenu, (iy + dirtyFlags)
     ret
 
+; Description: Select menu name.
+; Output: CF=0 for normal, CF=1 or alternate
 mCfitExpNameSelector:
-    ld b, a
     ld a, (curveFitModel)
     cp curveFitModelExp
-    ld a, b
-    ret nz
-    ld a, c
+    jr z, mCfitExpNameSelectorAlt
+    or a ; CF=0
+    ret
+mCfitExpNameSelectorAlt:
+    scf
     ret
 
 ;-----------------------------------------------------------------------------
@@ -256,13 +265,16 @@ mCfitPowerHandler:
     set dirtyFlagsMenu, (iy + dirtyFlags)
     ret
 
+; Description: Select menu name.
+; Output: CF=0 for normal, CF=1 or alternate
 mCfitPowerNameSelector:
-    ld b, a
     ld a, (curveFitModel)
     cp curveFitModelPower
-    ld a, b
-    ret nz
-    ld a, c
+    jr z, mCfitPowerNameSelectorAlt
+    or a ; CF=0
+    ret
+mCfitPowerNameSelectorAlt:
+    scf
     ret
 
 ;-----------------------------------------------------------------------------
@@ -274,7 +286,7 @@ mCfitPowerNameSelector:
 ;   X=abs(corr(best))
 ; Destroys: OP1, OP2, OP3, (maybe OP4?), OP5, OP6
 mCfitBestHandler:
-    call closeInputAndRecallX
+    call closeInputAndRecallNone
     ; check Linear fit
     ld a, curveFitModelLinear
     call selectCfitModel
@@ -328,7 +340,7 @@ mCfitBestSelect:
     ld (curveFitModel), a
     set dirtyFlagsMenu, (iy + dirtyFlags)
     bcall(_OP5ToOP1) ; OP1=abs(corr(best))
-    jp pushX ; push the |corr| to the stack to notify the user
+    jp pushToX ; push the |corr| to the stack to notify the user
 
 ;-----------------------------------------------------------------------------
 
