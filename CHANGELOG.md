@@ -37,6 +37,7 @@
     - **Bug Fix** Support real arguments for `CPLX` menu functions (`REAL`,
       `IMAG`, `CONJ`, `CABS`, `CANG`)
         - fixes [Issue#16](https://github.com/bxparks/rpn83p/issues/16)
+    - RPN83P now consumes 3 flash pages (48 kiB)
     - Verify compatibility with TI-Nspire with TI-84 Plus keyboard
         - works with TI-Nspire with the TI-84 keyboard emulates the Z80
           processor
