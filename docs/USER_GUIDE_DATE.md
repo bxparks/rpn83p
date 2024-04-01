@@ -1416,13 +1416,13 @@ functions:
 ### DSHK - Shrink
 
 The `DSHK` (Date Shrink) command converts a ZonedDateTime into a DateTime by
-truncating the Timezone component. When it is applied again to the DateTime object,
-it is converts into a Date object by truncating the Time component.
+truncating the TimeZone component. When it is applied again to the DateTime
+object, it is converts into a Date object by truncating the Time component.
 
-For example, let's apply the `DCUT` command on the following ZonedDateTime to
-convert it to a DateTime, then a Date object, by applying `DCUT` twice, first
-using the menu function `DSHK`, then second through the `2ND SQRT` keyboard
-button:
+For example, let's apply the `DSHK` command on the following ZonedDateTime to
+convert it to a DateTime, then to a Date object. For illustration purposes, the
+first `DSHK` uses the menu function, and the second `DSHK` uses the `2ND SQRT`
+keyboard button:
 
 | **Keys**                      | **MODE `{..}`**                   | **MODE `".."`**   |
 | ----------                    | ---------------------             | ----------------- |
@@ -1437,10 +1437,11 @@ necessary to press it before the first `DSHK` command.
 ### DEXD - Extend
 
 The `DEXD` (Date Extend) command perform the reverse of the `DSHK` command by
-appending a `00:00:00` Time component and the `UTC+00:00` TimeZone component
-successively. For example, let's start with a Date object and apply the `DEXD`
-command twice, first using the menu function `DEXD`, then second through the
-`X^2` keyboard button:
+appending a `00:00:00` Time component to a Date object, and the `UTC+00:00`
+TimeZone component to a DateTime object. For example, let's start with a Date
+object and apply the `DEXD` command twice. For illustration purposes, the first
+`DEXD` uses the menu function, and the seoncd `DEXD` uses the `X^2` keyboard
+button:
 
 | **Keys**                      | **MODE `{..}`**                   | **MODE `".."`**   |
 | ----------                    | ---------------------             | ----------------- |
@@ -1460,9 +1461,9 @@ smaller ones on the `X` and `Y` registers.
 - ZoneDateTime (`X`) becomes DateTime (`X`) and TimeZone (`Y`)
 - DateTime (`X`) becomes Date (`X`) and Time (`Y`)
 
-For example, let's apply the `DCUT` command on a ZonedDateTime object twice,
-first using the `DCUT` menu function, then second using the `1/X` keyboard
-button:
+For example, let's apply the `DCUT` command on a ZonedDateTime object twice. For
+illustration purposes, the first `DCUT` uses the menu function, and the second
+`DCUT` uses the `1/X` keyboard button:
 
 | **Keys**                      | **MODE `{..}`**                   | **MODE `".."`**   |
 | ----------                    | ---------------------             | ----------------- |
@@ -1480,8 +1481,8 @@ combining the `X` and `Y` stack registers into a single object in `X`.
 - Date (`X`) and Time (`Y`) becomes a DateTime (`X`)
 
 For example, let's incrementally build a ZonedDateTime from a Date, Time and
-TimeZone object, first using the `DLNK` menu function, then second using the
-`2ND LINK` keyboard button:
+TimeZone object. For illustration purposes, the first `DLNK` uses the menu
+function, and the second `DLNK` uses the `2ND LINK` keyboard button:
 
 | **Keys**                      | **MODE `{..}`**                   | **MODE `".."`**   |
 | ----------                    | ---------------------             | ----------------- |
