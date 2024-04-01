@@ -1528,6 +1528,10 @@ Here are some selected examples:
 | `2ND RCL* 00`                 | ![](images/date/regs-mult-raw-6.png)      | ![](images/date/regs-mult-str-6.png) |
 | `2ND RCL* 01`                 | ![](images/date/regs-mult-raw-7.png)      | ![](images/date/regs-mult-str-7.png) |
 
+**WARNING**: Date objects *cannot* be stored in storage variables (A-Z,Theta)
+because storage variables can hold only native TI-OS objects. Date objects are
+extensions of the RPN83P application which cannot escape the RPN83P environment.
+
 ## Data Entry for Experts
 
 If the RPN83P is executed in a TI-83/84 emulator on a desktop or laptop computer
