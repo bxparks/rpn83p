@@ -128,9 +128,9 @@ and more complicated features will get their own GitHub tickets.
 - auto-insert an implied `1` when `EE` is pressed in certain conditions
     - if the `E` is pressed on the HP-42S, a `1` or `1.` or `-1` or `-1.` is
       auto inserted into the input buffer under certain conditions
-    - this feature inserts extra characters into the input buffer instead of
-      changing the behavior of the input *parser*
-    - therefore, this so is more difficult to implement in RPN83P versus the
+    - this feature requires inserting extra characters into the input buffer
+      instead of changing the behavior of the input *parser*
+    - therefore, this is more difficult to implement in RPN83P versus the
       HP-42S, because the RPN83P has far more data types (e.g. complex numbers,
       Record types) so the input buffer code needs to understand the format of
       those data types to do the right thing
@@ -142,12 +142,15 @@ and more complicated features will get their own GitHub tickets.
     - But not a high priority.
 - add UI marker for menu items which are folders/groups
     - see [Issue#20](https://github.com/bxparks/rpn83p/issues/20)
-- support rule-based DST transitions
-    - the current `DATE` functions support timezones with fixed offsets from UTC
-    - it would be very cool to support something like the
-      [IANA Timezone Database](https://www.iana.org/time-zones)
-    - I think I can implement this with only about 32-48 kB of additional flash
-      memory (i.e. 2-3 flash pages)
+- additional DATE functions
+    - support [ISO weekdate](https://en.wikipedia.org/wiki/ISO_week_date)
+    - support at least one of the
+      [Julian dates](https://en.wikipedia.org/wiki/Julian_day)
+    - support rule-based DST transitions
+        - current only timezones with fixed offsets are supported UTC
+        - it may be possible to support the [IANA Timezone
+          Database](https://www.iana.org/time-zones) with only about 32-48 kB of
+          additional flash memory (i.e. 2-3 flash pages)
 
 ## Far Future
 
