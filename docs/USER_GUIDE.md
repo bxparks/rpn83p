@@ -2003,7 +2003,7 @@ differences:
   only 5 menu buttons instead of 6 on the HP-42S. I also did not like the
   complexity of the HP-42S menus for the `STAT` functions; it is nested
   unnecessarily deeply. I have simplified the menu hierarchy for the RPN83P to
-  just 2-levels instead of 3.
+  just 2 levels instead of 3.
 - The HP-42S `WMN` (weighted mean) returns only the weighted mean of `X`. If you
   wanted the weighted mean of `Y` instead, you are forced to re-enter the data
   points by swapping the `X` and `Y` values, or manually calculate it from the
