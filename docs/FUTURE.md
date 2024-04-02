@@ -59,14 +59,10 @@ and more complicated features will get their own GitHub tickets.
     - among the currently unassigned keys, here are some notes on which may or
       may not be be available:
         - reserved for probable future use: `2ND INS`, `2ND LIST`, `2ND TEST`,
-          `2ND MATRIX` `2ND CATALOG`, `2ND MEM`, `APPS`, `PRGM`, `VARS`
-        - reserved for potential future use: `2ND DISTR`, `2ND {`, `2ND }`, `2ND
-          [`, `2ND ]`
-        - potentially available: all `ALPHA` keys, except maybe `A`-`F`, ` `
-          (space), `"` (double quote), `:` (colon)
-        - probably available: `2ND u`, `2ND v`, `2ND w`, `XTTn`
-        - definitely available:`2ND L1` to `2ND L6` (no obvious purpose in
-          RPN83P)
+          `2ND CATALOG`, `2ND MEM`, `APPS`, `PRGM`, `VARS`, `"` (double quote)
+        - reserved for potential future use: `XTTn`, `2ND DISTR`, `2ND MATRIX`,
+          `2ND [`, `2ND ]`, `ALPHA space`, `ALPHA ?`
+        - probably available: `2ND u`, `2ND v`, `2ND w`,  L1` to `2ND L6`
 - custom menu items
     - The HP-42S supports up to 18 (3 rows of 6 menus) to be customized through
       the `ASSIGN` and `CUSTOM` menus.
@@ -87,6 +83,8 @@ and more complicated features will get their own GitHub tickets.
         - input and output functions within programs
         - flow control operators and functions (e.g. `LBL`, `GOTO`, `CALL`,
           maybe structured statement, like `IF`, `WHILE`, `FOR`, etc.)
+    - I estimate that this feature will take about 1000-2000 hours of
+      programming.
 - polynomial solvers
     - Quadratic, cubic, and quartic equations have analytical solutions so
       should be relatively straightforward... Except that they need complex
