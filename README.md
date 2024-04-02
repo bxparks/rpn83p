@@ -166,7 +166,7 @@ This app was designed for TI calculators using the Z80 processor:
   hardware clock)
 - TI-84 Plus Silver Edition (6/15 MHz Z80, 24 kB accessible RAM, 1.5 MB
   accessible flash, hardware clock)
-- TI-Nspire with TI-84 Plus Keyboard (32-bit ARM processor emulating a Z80, 24
+- TI-Nspire with TI-84 Plus Keypad (32-bit ARM processor emulating a Z80, 24
   kB accessible RAM, 1.5 MB accessible flash, hardware clock)
 
 The app configures itself to run at 15 MHz on supported hardware, while
@@ -177,7 +177,7 @@ I have tested it on the following calculators that I own:
 - TI-83 Plus (OS v1.19)
 - TI-83 Plus Silver Edition (OS v1.19)
 - TI-84 Plus Silver Edition (OS v2.55MP)
-- TI-Nspire with TI-84 Plus Keyboard (OS v2.46)
+- TI-Nspire with TI-84 Plus Keypad (OS v2.46)
 
 Community members have verified that it works on the following variants:
 
