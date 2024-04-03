@@ -38,9 +38,9 @@
       `IMAG`, `CONJ`, `CABS`, `CANG`)
         - fixes [Issue#16](https://github.com/bxparks/rpn83p/issues/16)
     - RPN83P now consumes 3 flash pages (48 kiB)
-    - Verify compatibility with TI-Nspire with TI-84 Plus keyboard
-        - works with TI-Nspire with the TI-84 keyboard emulates the Z80
-          processor
+    - Verify compatibility with TI-Nspire with TI-84 Plus Keypad
+        - the TI-84 Plus Keypad causes the ARM processor to emulate a Z80
+          processor and the whole calculator essentially becomes a TI-84+SE
     - Store and recall TI-OS single-letter variables
         - TI-OS supports 27 single-letter variables (A-Z, Theta) for real and
           complex numbers
