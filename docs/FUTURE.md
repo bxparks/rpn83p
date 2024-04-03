@@ -1,8 +1,12 @@
 # Future Enhancements
 
 There seems to be almost an endless number of features that could go into a
-calculator app. I have grouped them into the following subsections, since my
-time and energy are limited.
+calculator app. I have grouped them into the following subsections, assuming
+that I am the only person working on these features. If you are a software
+developer with knowledge of Z80 assembly language and the TI-83 Plus SDK, and
+are interested in implementing any of these features, please drop me a note. I
+estimate that there are at least 5-10 man-years (10,000 to 20,000 man-hours) of
+work on this page, more than enough work for everyone.
 
 This document is a superset of the entries in the [GitHub
 Issues](https://github.com/bxparks/rpn83p/issues) tab. I use this document
