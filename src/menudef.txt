@@ -306,11 +306,10 @@ MenuGroup root mRoot [
         MenuItemAlt PRAD PRA<Sblock> mComplexModeRad
         MenuItemAlt PDEG PDE<Sblock> mComplexModeDeg
       ]
-      # Disabled until after v0.10 is released.
-      #MenuRow [
-      #  MenuItem SIZE mSetRegSize
-      #  MenuItem SIZ<Squestion> mGetRegSize
-      #]
+      MenuRow [
+        MenuItem RSIZ mSetRegSize
+        MenuItem RSZ<Squestion> mGetRegSize
+      ]
       MenuRow [
         MenuItemAlt <Scomma>EE <Scomma>EE<Sblock> mCommaEENormal
         MenuItemAlt EE<Scomma> EE<Scomma><Sblock> mCommaEESwapped

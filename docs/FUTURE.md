@@ -30,10 +30,6 @@ and more complicated features will get their own GitHub tickets.
 
 ## Near Future
 
-- allow resize of storage registers using `SIZE` command
-    - The current default is fixed at 25.
-    - It should be relatively straightforward to allow this to be
-      user-definable, up to a `SIZE` of 100.
 - decouple STAT registers from regular storage registers
     - STAT registers use R11-R23 storage registers, following the convention
       used by the HP-42S

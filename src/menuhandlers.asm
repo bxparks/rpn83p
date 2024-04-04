@@ -831,7 +831,7 @@ mGetRegSizeHandler:
     jp pushToX
 
 msgRegSizePrompt:
-    .db "SIZE", 0
+    .db "RSIZ", 0
 
 ;-----------------------------------------------------------------------------
 
