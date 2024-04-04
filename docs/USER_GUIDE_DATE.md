@@ -1118,6 +1118,11 @@ following timezones:
 - UTC-02:30 (Newfoundland, Canada)
 - UTC-00:00 (UTC)
 
+For illustration purposes, I use both the floating point number format and the
+`TZ` record format to specify the target timezones below. In practice, I usually
+use floating point numbers when doing this calculation because they are easier
+to enter on a calculator keypad:
+
 | **Keys**                      | **MODE `{..}`**                               | **MODE `".."`**                   |
 | -------------------------     | ---------------------                         | -----------------                 |
 | `DZ{2024,3,14,15,36,1,-7,0}`  | ![](images/date/timezone-convert-raw-01.png)  | ![](images/date/timezone-convert-str-01.png) |
