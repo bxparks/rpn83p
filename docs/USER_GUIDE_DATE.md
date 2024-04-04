@@ -1099,9 +1099,9 @@ button `*` to perform the conversion:
 
 | **Operation**                 | **Result**        |
 |-------------------------------|-------------------|
-| {ZonedDateTime} * {integer}   | {ZonedDateTime}   |
+| {ZonedDateTime} * {float}     | {ZonedDateTime}   |
 | {ZonedDateTime} * {TimeZone}  | {ZonedDateTime}   |
-| {integer} * {ZonedDateTime}   | {ZonedDateTime}   |
+| {float} * {ZonedDateTime}     | {ZonedDateTime}   |
 | {TimeZone} * {ZonedDateTime}  | {ZonedDateTime}   |
 
 The `*` operator takes 2 arguments and extracts the timezones as follows:
@@ -1604,4 +1604,5 @@ earlier sections:
   entered as `2:H` using the colon modifier.
 - Functions which require a TimeZone object will usually accept a floating point
   number as an alternative, representing the number of offset hours from UTC, in
-  increments of 0.25 hours (15 minutes).
+  increments of 0.25 hours (15 minutes). This is particularly useful when
+  performing [Timezone Conversions](#timezone-conversions).
