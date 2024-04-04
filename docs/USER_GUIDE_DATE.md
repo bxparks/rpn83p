@@ -393,6 +393,10 @@ ALPHA D
 For brevity and readability, this long sequence of keystrokes will be shortened
 to something like `D{2024,3,14}` in the subsequent sections.
 
+**Pro Tip**: After learning how to enter Date objects using their canonical
+forms, you can learn about various shortcuts in the [Data Entry for
+Experts](#data-entry-for-experts) section at the end of this document.
+
 ### Formatting Modes
 
 In the `MODE` menu, there are 2 settings that affect how date objects are
