@@ -1585,18 +1585,23 @@ terminator is **optional**. Let's unpack that:
 
 Here are examples for each supported data type:
 
-| **Type**          | **Full Record Entry**     | **Naked Record Entry**    |
-| ---------------   | ----------                | ----------                |
-| DayOfWeek         | `DW{1}`                   | (not supported, reserved) |
-| TimeZone          | `TZ{5,30}`                | `{5,30`                   |
-| Date              | `D{2024,3,14}`            | `{2024,3,14`              |
-| Time              | `T{15,36,1}`              | (conflicts with Date)     |
-| Duration          | `DR{1,2,3,4}`             | `{1,2,3,4`                |
-| DateTime          | `DT{2024,3,14,15,36,1}`   | `{2024,3,14,15,36,1`      |
-| ZonedDateTime     | `DT{2024,3,14,15,36,1}`   | `{2024,3,14,15,36,1`      |
+| **Type**      | **Full Record Entry**         | **Naked Record Entry**    |
+| --------------| ----------                    | ----------                |
+| DayOfWeek     | `DW{1}`                       | (not supported, reserved) |
+| TimeZone      | `TZ{5,30}`                    | `{5,30`                   |
+| Date          | `D{2024,3,14}`                | `{2024,3,14`              |
+| Time          | `T{15,36,1}`                  | (conflicts with Date)     |
+| Duration      | `DR{1,2,3,4}`                 | `{1,2,3,4`                |
+| DateTime      | `DT{2024,3,14,15,36,1}`       | `{2024,3,14,15,36,1`      |
+| ZonedDateTime | `DT{2024,3,14,15,36,1,-7,0}`  | `{2024,3,14,15,36,1,-7,0` |
 
-In addition to these shortcuts, don't forget that the [Duration Colon Modifier
-Entry](#duration-colon-modifier-entry) allows Duration objects to be entered
-using the colon `:` modifier. For example, "2 hours" would be entered as
-`DR{0,2,0,0}` in the full record form, but can be entered as `2:H` using the
-colon modifier.
+In addition to these shortcuts, there are 2 additional shortcuts described in
+earlier sections:
+
+- [Duration Colon Modifier Entry](#duration-colon-modifier-entry) allows
+  Duration objects to be entered using the colon `:` modifier. For example, "2
+  hours" would be entered as `DR{0,2,0,0}` in the full record form, but can be
+  entered as `2:H` using the colon modifier.
+- Functions which require a TimeZone object will usually accept a floating point
+  number as an alternative, representing the number of offset hours from UTC, in
+  increments of 0.25 hours (15 minutes).
