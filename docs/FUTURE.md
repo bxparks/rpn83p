@@ -166,12 +166,12 @@ and more complicated features will get their own GitHub tickets.
         - I'm not sure which solution would be easier and more maintainable
 - interoperability with TI-BASIC
     - If a TI-BASIC can be called from RPN83P, and a stable data conduit (i.e.
-      an API) can be defined between RPN83P and TI-BASIC, then it may be
-      possible to offload some advanced features to the TI-OS and TI-BASIC
-      programs instead (see `Solver` and `fnInt` below)
-    - For example, single-letter variables `A` to `Z` and `Theta` are now
-      (v0.10.0) available through `STO` and `RCL`.
+      an API) can be defined between RPN83P and TI-BASIC, then some of the need
+      for keystroke programming within RPN83P may be satisfied.
+    - Single-letter variables `A` to `Z` and `Theta` are now (v0.10.0) available
+      through `STO` and `RCL`, so be conduits between RPN83P and TI-BASIC.
     - Other types may be useful: List, Matrix, and String types.
+    - See [Issue #22](https://github.com/bxparks/rpn83p/issues/22)
 - indirect `STO` and `RCL` operators
     - `STO IND nn`, `STO+ IND nn`, `STO- IND nn`, `STO* IND nn`, `STO/ IND nn`
     - `RCL IND nn`, `RCL+ IND nn`, `RCL- IND nn`, `RCL* IND nn`, `RCL/ IND nn`
@@ -198,6 +198,16 @@ and more complicated features will get their own GitHub tickets.
     - That allows us to add basic vector functions like dot products and cross
       products.
     - Arbitrary-sized vectors may not be worth the effort.
+- root finder (i.e. SOLVE)
+    - one of the hallmarks of advanced HP calculators
+    - requires keystroke programming
+    - the TI-OS already provides a solver (`Solver`), maybe that is sufficient?
+    - See [Issue #22](https://github.com/bxparks/rpn83p/issues/22)
+- numerical integration
+    - another feature of advanced HP calculators
+    - depends on keystroke programming
+    - the TI-OS already provides an integrator (`fnInt`), is that enough?
+    - See [Issue #22](https://github.com/bxparks/rpn83p/issues/22)
 
 ## Highly Unlikely
 
@@ -214,14 +224,6 @@ These are features which are unlikely to be implemented for various reasons:
     - We would also require substantial refactoring of the current menu system
       code.
     - Overall, it doesn't seem worth the effort.
-- root finder (i.e. SOLVE)
-    - one of the hallmarks of advanced HP calculators
-    - requires keystroke programming
-    - the TI-OS already provides a solver (`Solver`), maybe that is sufficient?
-- numerical integration
-    - another feature of advanced HP calculators
-    - depends on keystroke programming
-    - the TI-OS already provides an integrator (`fnInt`), is that enough?
 - matrices
     - I don't know how much matrix functionality is provided by TI-OS SDK.
     - Creating a reasonable user-interface in the RPN83P could be a challenge.
