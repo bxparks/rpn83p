@@ -58,11 +58,11 @@ msgHelpPage2:
 msgHelpPage3:
     .db escapeLargeFont, "Input Editing", Lenter
     .db escapeSmallFont, "+/-:  (-)", Senter
-    .db "EE:  2ND EE or ,", Senter
+    .db "EE:  2ND EE", Senter
+    .db ",:  ,", Senter
     .db "<-:  DEL", Senter
     .db "CLX:  CLEAR", Senter
     .db "CLST:  CLEAR CLEAR CLEAR", Senter
-    .db Senter
     .db Senter
     .db SlBrack, "3/18", SrBrack, " Any key to continue...", Senter
     .db 0
