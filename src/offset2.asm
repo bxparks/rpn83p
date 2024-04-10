@@ -191,15 +191,7 @@ offsetHourToOffsetNeg:
     ; sign of the ouput.
     bcall(_InvOP1S) ; OP1=-OP1
     call offsetHourToOffsetPos ; Preserves HL=offset
-    ; invert the signs of offset{hh,mm}
-    ld a, (hl)
-    neg
-    ld (hl), a
-    inc hl
-    ld a, (hl)
-    neg
-    ld (hl), a
-    dec hl ; preserve HL
+    call chsOffset ; invert the signs of offset{hh,mm}
     ret
 
 ; Description: Convert offsetHour (offset represented as a real number, in
