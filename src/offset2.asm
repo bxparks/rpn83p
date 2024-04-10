@@ -202,8 +202,8 @@ offsetHourToOffsetNeg:
     dec hl ; preserve HL
     ret
 
-; Convert offsetHour (offset represented as a real number, in multiples of
-; 0.25) to Offset{} object.
+; Description: Convert offsetHour (offset represented as a real number, in
+; multiples of 0.25, and assumed to be positive) to Offset{} object.
 ; Input:
 ;   - OP1:real=offsetHour
 ;   - HL:(Offset*)=offset
@@ -215,21 +215,7 @@ offsetHourToOffsetNeg:
 offsetHourToOffsetPos:
     ; reserve space for Offset object
     push hl ; stack=[offset]
-    ; extract whole hh
-    bcall(_RndGuard) ; eliminating invisible rounding errors
-    ; check within +/-24:00
-    call op2Set24PageTwo ; OP2=24
-    bcall(_CpOP1OP2) ; CF=1 if OP1<OP2
-    jr nc, offsetHourToOffsetErr
-    ; check offsetHour is a multiple of 15 minutes
-    bcall(_Times2) ; OP1*=2
-    bcall(_Times2) ; OP1=offsetQuarter=offsetHour*4
-    bcall(_CkPosInt) ; ZF=1 if OP1 is an integer >= 0
-    jr nz, offsetHourToOffsetErr ; err if not a multiple of 15
-    ; Convert offsetQuarter into (hour,minute). offsetQuarter is < 96 (24*4),
-    ; so only a single byte is needed.
-    call convertOP1ToI40 ; OP1:u40=offsetQuarter, [
-    ld bc, (OP1) ; BC=offsetQuarter
+    call offsetHourToOffsetQuarter ; BC=offsetHour
     call offsetQuarterToHourMinute ; DE=(hour,minute)
     ; Fill offset
     pop hl ; stack=[]; HL=offset
@@ -238,7 +224,35 @@ offsetHourToOffsetPos:
     ld (hl), e ; offset.mm=minute
     dec hl ; HL=offset
     ret
-offsetHourToOffsetErr:
+
+; Description: Convert offsetHours to offsetQuarters (multiples of 15 minutes).
+; The offsetHours must be within the range of [-23:45,+23:45] which means
+; that the offsetQuarters will be within [-95,+95].
+; Input:
+;   - OP1:real=offsetHour
+; Output:
+;   - BC:i16=offsetQuarter
+; Destroys: all
+; Throws: Err:Domain if offsetHour is outside of [-23.75,23.75] or if
+; offsetHour is not a multiple of 0.25 (i.e. 15 minutes)
+offsetHourToOffsetQuarter:
+    ; extract whole hh
+    bcall(_RndGuard) ; eliminating invisible rounding errors
+    ; check within +/-24:00
+    call op2Set24PageTwo ; OP2=24
+    bcall(_CpOP1OP2) ; CF=1 if OP1<OP2
+    jr nc, offsetHourToOffsetQuarterErr
+    ; check offsetHour is a multiple of 15 minutes
+    bcall(_Times2) ; OP1*=2
+    bcall(_Times2) ; OP1=offsetQuarter=offsetHour*4
+    bcall(_CkPosInt) ; ZF=1 if OP1 is an integer >= 0
+    jr nz, offsetHourToOffsetQuarterErr ; err if not a multiple of 15
+    ; Convert offsetQuarter into (hour,minute). offsetQuarter is < 96 (24*4),
+    ; so only a single byte is needed.
+    call convertOP1ToI40 ; OP1:u40=offsetQuarter
+    ld bc, (OP1) ; BC=offsetQuarter
+    ret
+offsetHourToOffsetQuarterErr:
     bcall(_ErrDomain)
 
 ; Description: Convert offsetQuarter (multiple of 15 minutes) into
