@@ -405,9 +405,10 @@ The following buttons are used to enter and edit a number in the input buffer:
 - `DEL`: Backspace (same as `<-` on many HP calculators)
 - `CLEAR`: Clear `X` register, same as `CLX`; *or* clear the input buffer
 - `CLEAR CLEAR CLEAR`: Clear the stack, same as `CLST`
-- `2ND` `EE`: adds an `E` to allow entry of scientific notation exponent (same
-  as `E` or `EEX` on HP calculators)
-- `,`: same as `2ND` `EE`, allowing the `2ND` to be omitted for convenience
+- `2ND EE`: adds an `E` to allow entry of scientific notation exponent (same as
+  `E` or `EEX` on HP calculators)
+- `,`: component separator for record types (see
+  [USER_GUIDE_DATE.md](USER_GUIDE_DATE.md))
 
 The following keys are related to complex numbers and are explained in more
 detail in the [Complex Numbers](#complex-numbers) section below:
@@ -450,10 +451,11 @@ TI-OS does not support `2ND CLEAR`, it returns the same code as `CLEAR`.)
 An empty string will be interpreted as a `0` if the `ENTER` key or a function
 key is pressed.
 
-The comma `,` button is not used in the RPN system, so it has been mapped to
-behave exactly like the `2ND` `EE` button. This allows scientific notation
-numbers to be entered quickly without having to press the `2ND` button
-repeatedly.
+The comma `,` button is used for record types (see
+[USER_GUIDE_DATE.md](USER_GUIDE.md)) so the `E` symbol for scientific notation
+numbers must be entered using the `2ND EE` key. However, it is possible to flip
+the behavior of the comma and the `2ND EE` buttons using a `MODE` setting. See
+[Comma-EE Button Mode](#comma-ee-button-mode) below.
 
 Emulating the input system of the HP-42S was surprisingly complex and subtle,
 and some features and idiosyncrasies of the HP-42S could not be carried over due
