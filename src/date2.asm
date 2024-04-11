@@ -282,8 +282,8 @@ addRpnDateByDaysAdd:
 
 ; Description: Add (RpnDate plus duration) or (duration plus RpnDate).
 ; Input:
-;   - OP1:Union[RpnDate,RpnReal]=rpnDate or duration
-;   - OP3:Union[RpnDate,RpnReal]=rpnDate or duration
+;   - OP1:Union[RpnDate,RpnDuration]=rpnDate or duration
+;   - OP3:Union[RpnDate,RpnDuration]=rpnDate or duration
 ; Output:
 ;   - OP1:RpnDate=rpnDate+duration
 ; Destroys: all, OP1, OP2, OP3-OP6
