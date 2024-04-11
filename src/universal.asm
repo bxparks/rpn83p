@@ -249,6 +249,9 @@ universalSub:
     ; OP1=DateTime
     cp rpnObjectTypeDateTime ; ZF=1 if DateTime
     jr z, universalSubDateTimeMinusObject
+    ; OP1=Offset
+    cp rpnObjectTypeOffset ; ZF=1 if Offset
+    jp z, universalSubOffsetMinusObject
     ; OP1=OffsetDateTime
     cp rpnObjectTypeOffsetDateTime ; ZF=1 if OffsetDateTime
     jp z, universalSubOffsetDateTimeMinusObject
@@ -294,9 +297,6 @@ universalSubComplexMinusComplex:
     call convertOp1ToCp1
     bcall(_CSub) ; OP1/OP2 = FPS[OP1/OP2] - OP1/OP2; FPS=[]
     ret
-; Located in the middle to support 'jr' instructions.
-universalSubErr:
-    bcall(_ErrDataType)
 ; Date - object
 universalSubDateMinusObject:
     call getOp3RpnObjectType
@@ -312,6 +312,9 @@ universalSubDateMinusDate:
 universalSubDateMinusDuration:
     bcall(_SubRpnDateByObject)
     ret
+; Located in the middle to support 'jr' instructions.
+universalSubErr:
+    bcall(_ErrDataType)
 ; Time - object
 universalSubTimeMinusObject:
     call getOp3RpnObjectType
@@ -341,6 +344,21 @@ universalSubDateTimeMinusReal:
 universalSubDateTimeMinusDateTime:
 universalSubDateTimeMinusDuration:
     bcall(_SubRpnDateTimeByObject)
+    ret
+; Offset - object
+universalSubOffsetMinusObject:
+    call getOp3RpnObjectType
+    cp rpnObjectTypeReal
+    jr z, universalSubOffsetMinusReal
+    cp rpnObjectTypeOffset
+    jr z, universalSubOffsetMinusOffset
+    cp rpnObjectTypeDuration
+    jr z, universalSubOffsetMinusDuration
+    jr universalSubErr
+universalSubOffsetMinusReal:
+universalSubOffsetMinusOffset:
+universalSubOffsetMinusDuration:
+    bcall(_SubRpnOffsetByObject)
     ret
 ; OffsetDateTime - object
 universalSubOffsetDateTimeMinusObject:

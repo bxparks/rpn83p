@@ -1329,6 +1329,10 @@ _AddRpnOffsetByDurationLabel:
 _AddRpnOffsetByDuration equ _AddRpnOffsetByDurationLabel-branchTableBase
     .dw AddRpnOffsetByDuration
     .db 2
+_SubRpnOffsetByObjectLabel:
+_SubRpnOffsetByObject equ _SubRpnOffsetByObjectLabel-branchTableBase
+    .dw SubRpnOffsetByObject
+    .db 2
 
 ; offsetdatetime2.asm
 _RpnOffsetDateTimeToEpochSecondsLabel:

@@ -78,17 +78,6 @@ addRpnOffsetByHoursAdd:
     call PopRpnObject1 ; FPS=[]; OP1=newRpnOffset
     ret
 
-; Description: Add (RpnOffset plus duration) or (duration plus RpnOffset).
-; Input:
-;   - OP1:Union[RpnOffset,RpnReal]=rpnOffset or duration
-;   - OP3:Union[RpnOffset,RpnReal]=rpnOffset or duration
-; Output:
-;   - OP1:RpnOffset=rpnOffset+duration
-; Destroys: all, OP1, OP2, OP3-OP6
-AddRpnOffsetByDuration:
-    ; TODO: Fill in
-    ret
-
 ; Description: Add Offset + Offset.
 ; Input:
 ;   - HL:Offset=offset1
@@ -118,6 +107,72 @@ addOffsetByOffset:
     ; restore stack
     pop de ; stack=[]; DE=offset2
     ret
+
+;-----------------------------------------------------------------------------
+
+; Description: Add (RpnOffset plus duration) or (duration plus RpnOffset).
+; Input:
+;   - OP1:Union[RpnOffset,RpnReal]=rpnOffset or duration
+;   - OP3:Union[RpnOffset,RpnReal]=rpnOffset or duration
+; Output:
+;   - OP1:RpnOffset=rpnOffset+duration
+; Destroys: all, OP1, OP2, OP3-OP6
+AddRpnOffsetByDuration:
+    call checkOp1OffsetPageTwo ; ZF=1 if CP1 is an RpnDate
+    jr z, addRpnOffsetByDurationAdd
+    call cp1ExCp3PageTwo ; CP1=rpnDate; CP3=duration
+addRpnOffsetByDurationAdd:
+    ; TODO: Fill in
+    ret
+
+;-----------------------------------------------------------------------------
+
+SubRpnOffsetByObject:
+    call getOp3RpnObjectTypePageTwo ; A=objectType
+    cp rpnObjectTypeReal ; ZF=1 if Real
+    jr z, subRpnOffsetByHours
+    cp rpnObjectTypeOffset ; ZF=1 if Offset
+    jr z, subRpnOffsetByRpnOffset
+    cp rpnObjectTypeDuration ; ZF=1 if Duration
+    jr z, subRpnOffsetByRpnDuration
+    bcall(_ErrInvalid) ; should never happen
+subRpnOffsetByHours:
+    ; invert the sign of OP3=hours, then call addRpnOffsetByHoursAdd()
+    call cp1ExCp3PageTwo
+    bcall(_InvOP1S) ; OP1=-OP1
+    call cp1ExCp3PageTwo
+    jr addRpnOffsetByHoursAdd
+subRpnOffsetByRpnOffset:
+    ; convert OP3 to seconds, on FPS stack
+    ; TODO: This would be more efficient using offsetToOffsetQuarter() to
+    ; convert to u16(quarters) instead of u40(seconds). But the shape of this
+    ; code was already available in SubRpnDateByObject(), and it was easier to
+    ; just copy and modify it.
+    call reserveRaw9 ; make space on FPS=[X.seconds]; HL=X.seconds
+    push hl ; stack=[X.seconds]
+    ld de, OP3+1 ; DE=Offset{}
+    call offsetToSeconds ; HL=FPS.X.seconds updated
+    ; convert OP1 to seconds, on FPS stack
+    call reserveRaw9 ; make space, FPS=[X.seconds,Y.seconds]; HL=Y.seconds
+    push hl ; stack=[X.seconds,Y.seconds]
+    ld de, OP1+1 ; DE=Offset{}
+    call offsetToSeconds ; HL=FPS.Y.seconds updated
+    ; subtract Y.seconds-X.seconds
+    pop hl ; stack=[X.seconds]; HL=Y.seconds
+    pop de ; stack=[]; DE=X.seconds
+    call subU40U40 ; HL=Y.seconds-X.seconds
+    ; pop result into OP1
+    call popRaw9Op1 ; FPS=[X.seconds]; OP1=Y.seconds-X.seconds
+    call convertI40ToOP1 ; OP1=float(i40)
+    ; convert seconds to hours
+    call op2Set3600PageTwo
+    bcall(_FPDiv) ; OP1=OP1/3600
+    jp dropRaw9 ; FPS=[]
+subRpnOffsetByRpnDuration:
+    ; invert the sign of duration in OP3
+    ld hl, OP3+1
+    call chsDuration
+    jr addRpnOffsetByDurationAdd
 
 ;-----------------------------------------------------------------------------
 ; Lower-level routines.
