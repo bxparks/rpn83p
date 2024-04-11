@@ -112,18 +112,49 @@ addOffsetByOffset:
 
 ; Description: Add (RpnOffset plus duration) or (duration plus RpnOffset).
 ; Input:
-;   - OP1:Union[RpnOffset,RpnReal]=rpnOffset or duration
-;   - OP3:Union[RpnOffset,RpnReal]=rpnOffset or duration
+;   - OP1:Union[RpnOffset,RpnDuration]=rpnOffset or duration
+;   - OP3:Union[RpnOffset,RpnDuration]=rpnOffset or duration
 ; Output:
 ;   - OP1:RpnOffset=rpnOffset+duration
-; Destroys: all, OP1, OP2, OP3-OP6
+; Destroys: all, OP1-OP4
 AddRpnOffsetByDuration:
     call checkOp1OffsetPageTwo ; ZF=1 if CP1 is an RpnDate
     jr z, addRpnOffsetByDurationAdd
     call cp1ExCp3PageTwo ; CP1=rpnDate; CP3=duration
 addRpnOffsetByDurationAdd:
-    ; TODO: Fill in
+    ; if here: CP1=rpnOffset, CP3=duration
+    ld hl, OP3+1 ; HE=duration
+    call checkDurationToOffset ; throws Err:Domain if Duration is invalid
+    ex de, hl ; DE=duration
+    inc de
+    inc de ; DE=offset=duration+2
+    ld hl, OP1+1 ; HL=offset1
+    call addOffsetByOffset ; (*HL)+=(*DE)
     ret
+
+; Description: Check if a Duration can be converted to an Offset object.
+; Input:
+;   - HL:(Duration*)=duration
+; Output:
+;   - none
+; Preserves: HL
+; Throws: Err:Domain if Duration has a non-zero 'day' or 'seconds' component.
+checkDurationToOffset:
+    push hl
+    ld a, (hl)
+    inc hl
+    or a, (hl) ; ZF=1 if days==0
+    jr nz, durationToOffsetErr
+    inc hl
+    inc hl
+    inc hl
+    ld a, (hl) ; A=seconds
+    or a
+    jr nz, durationToOffsetErr
+    pop hl
+    ret
+durationToOffsetErr:
+    bcall(_ErrDomain)
 
 ;-----------------------------------------------------------------------------
 

@@ -205,6 +205,8 @@ universalAddDurationPlusObject:
     jr z, universalAddDurationPlusDate
     cp rpnObjectTypeDateTime
     jr z, universalAddDurationPlusDateTime
+    cp rpnObjectTypeOffset
+    jr z, universalAddDurationPlusOffset
     cp rpnObjectTypeOffsetDateTime
     jr z, universalAddDurationPlusOffsetDateTime
     cp rpnObjectTypeDuration
@@ -222,6 +224,8 @@ universalAddDurationPlusDate:
     jp universalAddDatePlusDuration
 universalAddDurationPlusDateTime:
     jr universalAddDateTimePlusDuration
+universalAddDurationPlusOffset:
+    jr universalAddOffsetPlusDuration
 universalAddDurationPlusOffsetDateTime:
     jr universalAddOffsetDateTimePlusDuration
 
