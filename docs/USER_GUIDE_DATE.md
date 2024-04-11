@@ -1142,8 +1142,9 @@ The `LEAP` menu function does not quite fit into any of the above categories:
 
 ![ROOT > DATE > LEAP](images/date/menu-root-date-leap.png)
 
-It is a simple function that determines if the given year is a leap year
-(returning a `1`) or not (returning a `0`). For example:
+It determines if the given year is a [leap
+year](https://simple.wikipedia.org/wiki/Leap_year), returning a `1` if true or
+`0` if false. For example:
 
 | **Keys**          | **Display**                    |
 | -----------       | ---------------------          |
@@ -1153,6 +1154,12 @@ It is a simple function that determines if the given year is a leap year
 | `2200` `LEAP`     | ![](images/date/leap-4.png)    |
 | `2300` `LEAP`     | ![](images/date/leap-5.png)    |
 | `2400` `LEAP`     | ![](images/date/leap-6.png)    |
+
+The boolean expression for this function in the `C` language is:
+
+```
+(year%4 == 0) && (year%100 != 0 || year%400 == 0)
+```
 
 ## Epoch Date
 
