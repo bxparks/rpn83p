@@ -47,6 +47,79 @@ HoursToRpnOffset:
     ret
 
 ;-----------------------------------------------------------------------------
+
+; Description: Add RpnOffset by real(hours).
+; Input:
+;   - OP1:Union[RpnOffset,RpnReal]=rpnOffset or hours
+;   - OP3:Union[RpnOffset,RpnReal]=rpnOffset or hours
+; Output:
+;   - OP1:RpnOffset=RpnOffset+hours
+; Destroys: all, OP1-OP4
+; Throws: Err:Domain if hours is invalid (|hours|>24h or not multiple of 15 min)
+AddRpnOffsetByHours:
+    call checkOp1OffsetPageTwo ; ZF=1 if CP1 is an RpnOffset
+    jr z, addRpnOffsetByHoursAdd
+    call cp1ExCp3PageTwo ; CP1=rpnOffset; CP3=hours
+addRpnOffsetByHoursAdd:
+    ; if here: CP1=rpnOffset, CP3=hours
+    ; Push CP1:RpnOffset to FPS
+    call PushRpnObject1 ; FPS=[rpnOffset]; HL=rpnOffset
+    push hl ; stack=[rpnOffset]
+    ; convert real(hours) to offset
+    call op3ToOp1PageTwo ; OP1:real=hours
+    ld hl, OP3
+    call offsetHourToOffset ; OP3:Offset=offsethours
+    ; add offset+offsethours
+    ex de, hl ; DE=OP3=offsethours
+    pop hl ; stack=[]; HL=rpnOffset
+    inc hl ; HL=offset
+    call addOffsetByOffset ; HL=newOffset
+    ; clean up
+    call PopRpnObject1 ; FPS=[]; OP1=newRpnOffset
+    ret
+
+; Description: Add (RpnOffset plus duration) or (duration plus RpnOffset).
+; Input:
+;   - OP1:Union[RpnOffset,RpnReal]=rpnOffset or duration
+;   - OP3:Union[RpnOffset,RpnReal]=rpnOffset or duration
+; Output:
+;   - OP1:RpnOffset=rpnOffset+duration
+; Destroys: all, OP1, OP2, OP3-OP6
+AddRpnOffsetByDuration:
+    ; TODO: Fill in
+    ret
+
+; Description: Add Offset + Offset.
+; Input:
+;   - HL:Offset=offset1
+;   - DE:Offset=offset2
+; Output:
+;   - (*HL)=(*HL)+(*DE)
+; Destroys: A
+; Preserves: DE, HL
+addOffsetByOffset:
+    push de
+    push hl ; stack=[offset2, offset1]
+    ;
+    push de ; stack=[offset2, offset1, offset2]
+    call offsetToOffsetQuarter ; BC=offsetQuarter1
+    ld l, c
+    ld h, b
+    ex (sp), hl ; stack=[offset2, offset1, offsetQuarter1]; HL=offset2
+    call offsetToOffsetQuarter ; BC=offsetQuarter2
+    ;
+    pop hl ; stack=[offset2, offset1]; HL=offsetQuarter1
+    add hl, bc ; HL=offsetQuarter1+offsetQuarter2
+    ld c, l
+    ld b, h ; BC=resultQuarter
+    ;
+    pop hl ; stack=[offset2]; HL=offset1
+    call offsetQuarterToOffset ; HL=updated
+    ; restore stack
+    pop de ; stack=[]; DE=offset2
+    ret
+
+;-----------------------------------------------------------------------------
 ; Lower-level routines.
 ;-----------------------------------------------------------------------------
 
@@ -79,9 +152,19 @@ isOffsetZero:
 ; Input: BC=(hh,mm)
 ; Output: ZF=1 if zero or positive
 ; Destroys: A
-isHmComponentsPos:
+isHmComponentsPos: ; TODO: Rename this to isHourMinuteBCPos().
     ld a, b
     or c
+    bit 7, a
+    ret
+
+; Description: Return ZF=1 if (hh,mm) in DE is zero or positive.
+; Input: DE=(hh,mm)
+; Output: ZF=1 if zero or positive
+; Destroys: A
+isHourMinuteDEPos:
+    ld a, d
+    or e
     bit 7, a
     ret
 
@@ -107,13 +190,26 @@ chsOffset:
 ; Input: B, C
 ; Output: B=-B, C=-C
 ; Destroys: A
-chsHmComponents:
+chsHmComponents: ; TODO: Rename to chsHourMinuteBC().
     ld a, b
     neg
     ld b, a
     ld a, c
     neg
     ld c, a
+    ret
+
+; Description: Negate the (hh,mm) Offset components in DE.
+; Input: D, E
+; Output: D=-D, E=-E
+; Destroys: A
+chsHourMinuteDE:
+    ld a, d
+    neg
+    ld d, a
+    ld a, e
+    neg
+    ld e, a
     ret
 
 ;-----------------------------------------------------------------------------
@@ -152,7 +248,7 @@ offsetToSecondsPos:
 ; Input: BC=(hh,mm)
 ; Output: HL:(u40*)=offsetSeconds
 ; Preserves: DE, HL
-hmComponentsToSeconds:
+hmComponentsToSeconds: ; TODO: Rename to hourMinuteToSeconds()
     ; set hour
     ld a, b
     call setU40ToA ; u40(*HL)=A
@@ -190,7 +286,7 @@ offsetHourToOffsetNeg:
     ; If negative, invert the sign of input, convert to Offset, then invert the
     ; sign of the ouput.
     bcall(_InvOP1S) ; OP1=-OP1
-    call offsetHourToOffsetPos ; Preserves HL=offset
+    call offsetHourToOffsetPos ; (*HL)=offset
     call chsOffset ; invert the signs of offset{hh,mm}
     ret
 
@@ -207,8 +303,8 @@ offsetHourToOffsetNeg:
 offsetHourToOffsetPos:
     ; reserve space for Offset object
     push hl ; stack=[offset]
-    call offsetHourToOffsetQuarter ; BC=offsetHour
-    call offsetQuarterToHourMinute ; DE=(hour,minute)
+    call offsetHourToOffsetQuarterPos ; BC=offsetHour
+    call offsetQuarterToHourMinutePos ; DE=(hour,minute)
     ; Fill offset
     pop hl ; stack=[]; HL=offset
     ld (hl), d ; offset.hh=hour
@@ -217,20 +313,20 @@ offsetHourToOffsetPos:
     dec hl ; HL=offset
     ret
 
-; Description: Convert offsetHours to offsetQuarters (multiples of 15 minutes).
-; The offsetHours must be within the range of [-23:45,+23:45] which means
-; that the offsetQuarters will be within [-95,+95].
+; Description: Convert positive offsetHours to positive offsetQuarters
+; (multiples of 15 minutes). The offsetHours must be within the range of
+; [-23:45,+23:45] which means that the offsetQuarters will be within [-95,+95].
 ; Input:
 ;   - OP1:real=offsetHour
 ; Output:
-;   - BC:i16=offsetQuarter
+;   - BC:u16=offsetQuarter
 ; Destroys: all
 ; Throws: Err:Domain if offsetHour is outside of [-23.75,23.75] or if
 ; offsetHour is not a multiple of 0.25 (i.e. 15 minutes)
-offsetHourToOffsetQuarter:
+offsetHourToOffsetQuarterPos:
     ; extract whole hh
     bcall(_RndGuard) ; eliminating invisible rounding errors
-    ; check within +/-24:00
+    ; check < 24:00
     call op2Set24PageTwo ; OP2=24
     bcall(_CpOP1OP2) ; CF=1 if OP1<OP2
     jr nc, offsetHourToOffsetQuarterErr
@@ -241,14 +337,63 @@ offsetHourToOffsetQuarter:
     jr nz, offsetHourToOffsetQuarterErr ; err if not a multiple of 15
     ; Convert offsetQuarter into (hour,minute). offsetQuarter is < 96 (24*4),
     ; so only a single byte is needed.
-    call convertOP1ToI40 ; OP1:u40=offsetQuarter
+    call convertOP1ToU40 ; OP1:u40=offsetQuarter
     ld bc, (OP1) ; BC=offsetQuarter
     ret
 offsetHourToOffsetQuarterErr:
     bcall(_ErrDomain)
 
-; Description: Convert offsetQuarter (multiple of 15 minutes) into
-; (hour,minute).
+;-----------------------------------------------------------------------------
+
+; Description: Convert Offset object to offsetQuarter:i16.
+; Input:
+;   - HL:(Offset*)=offset
+; Output:
+;   - BC:i16=offsetQuarter
+; Destroys: A, DE
+; Preserves: HL
+offsetToOffsetQuarter:
+    ld d, (hl)
+    inc hl
+    ld e, (hl)
+    dec hl
+    call isHourMinuteDEPos ; ZF=1 if zero or positive
+    jr z, hourMinuteToOffsetQuarterPos
+    ; negative
+    call chsHourMinuteDE
+    call hourMinuteToOffsetQuarterPos
+    call negBCPageTwo
+    ret
+
+; Description: Convert offsetQuarter:i16 to result offset.
+; Input:
+;   - BC:i16=offsetQuarter
+;   - HL:(Offset*)=result
+; Output:
+;   - (*HL) updated
+; Destroys: A, BC
+; Preserves: HL
+offsetQuarterToOffset:
+    bit 7, b ; ZF=1 if zero or positive
+    jr z, offsetQuarterToOffsetPos
+    ; negative
+    call negBCPageTwo
+    call offsetQuarterToHourMinutePos ; DE=(hour,minute)
+    call chsHourMinuteDE ; DE=-(hour,minute)
+    jr offsetQuarterToOffsetSave
+offsetQuarterToOffsetPos:
+    call offsetQuarterToHourMinutePos
+offsetQuarterToOffsetSave:
+    ld (hl), d
+    inc hl
+    ld (hl), e
+    dec hl
+    ret
+
+;-----------------------------------------------------------------------------
+
+; Description: Convert positive offsetQuarter (multiple of 15 minutes) into
+; positive (hour,minute).
 ; Input:
 ;   - BC:u16=offsetQuarter
 ; Output:
@@ -256,7 +401,10 @@ offsetHourToOffsetQuarterErr:
 ;   - E:u8=minute
 ; Destroys: A, BC
 ; Preserves: HL
-offsetQuarterToHourMinute:
+; Throws: Err:Domain if invalid
+offsetQuarterToHourMinutePos:
+    call checkValidOffsetQuarter
+    ;
     ld a, c
     and $03 ; A=remainderQuarter=offsetQuarter%4
     ld e, a ; E=remainderQuarter
@@ -273,3 +421,80 @@ offsetQuarterToHourMinute:
     rr c ; BC/=2
     ld d, c ; D=hour=offsetQuarter/4
     ret
+
+; Description: Check that the offsetQuarter in BC is within [-23:45,23:45], in
+; othe words |BC| < 96.
+; Input:
+;   - BC:u16=offsetQuarter
+; Output:
+;   - none
+; Destroys: A
+; Preserves: BC, DE, HL
+; Throws: Err:Domain if invalid
+checkValidOffsetQuarter:
+    ld a, b
+    or a
+    jr nz, checkValidOffsetQuarterErr
+    ld a, c
+    cp 96
+    jr nc, checkValidOffsetQuarterErr
+    ret
+checkValidOffsetQuarterErr:
+    bcall(_ErrDomain)
+
+; Description: Convert positive (hour, minute) to positive offsetQuarter
+; (integer in unit of 15 minutes).
+; Input:
+;   - D:u8=hour
+;   - E:u8=minute
+; Output:
+;   - BC:u16=offsetQuarter=4*hour+minute/15
+; Destroys: A, BC
+; Preserves: HL, DE
+; Throws: Err:Domain if invalid
+hourMinuteToOffsetQuarterPos:
+    call checkValidOffsetHourMinute
+    ;
+    ld b, 0
+    ld c, d
+    sla c
+    sla c ; C=hour*4
+    ;
+    ld a, e
+    sub 15
+    ret c
+    inc c
+    sub 15
+    ret c
+    inc c
+    sub 15
+    ret c
+    inc c
+    ret
+
+; Description: Check that the offset (hour, minute) in DE is within
+; [-23:45,23:45].
+; Input:
+;   - D:u8=hour
+;   - E:u8=minute
+; Output:
+;    - none
+; Destroys: A
+; Preserves: BC, DE, HL
+; Throws: Err:Domain if invalid
+checkValidOffsetHourMinute:
+    ld a, d
+    cp 24
+    jr nc, checkValidOffsetHourMinuteErr
+    ld a, e
+    cp 0
+    ret z
+    cp 15
+    ret z
+    cp 30
+    ret z
+    cp 45
+    ret z
+    ; [[fallthrough]]
+checkValidOffsetHourMinuteErr:
+    bcall(_ErrDomain)
