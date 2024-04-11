@@ -152,7 +152,7 @@ isOffsetZero:
 ; Input: BC=(hh,mm)
 ; Output: ZF=1 if zero or positive
 ; Destroys: A
-isHmComponentsPos: ; TODO: Rename this to isHourMinuteBCPos().
+isHourMinuteBCPos:
     ld a, b
     or c
     bit 7, a
@@ -190,7 +190,7 @@ chsOffset:
 ; Input: B, C
 ; Output: B=-B, C=-C
 ; Destroys: A
-chsHmComponents: ; TODO: Rename to chsHourMinuteBC().
+chsHourMinuteBC:
     ld a, b
     neg
     ld b, a
@@ -231,16 +231,16 @@ offsetToSeconds:
     ld c, (hl)
     inc hl
     ex de, hl ; DE=offset; HL=seconds
-    call isHmComponentsPos ; ZF=1 if zero or positive
+    call isHourMinuteBCPos ; ZF=1 if zero or positive
     jr z, offsetToSecondsPos
 offsetToSecondsNeg:
-    call chsHmComponents
-    call hmComponentsToSeconds
+    call chsHourMinuteBC
+    call hourMinuteToSeconds ; (*HL) updated
     call negU40
     pop bc ; stack=[]; BC=restored
     ret
 offsetToSecondsPos:
-    call hmComponentsToSeconds
+    call hourMinuteToSeconds ; (*HL) updated
     pop bc ; stack=[]; BC=restored
     ret
 
@@ -248,7 +248,7 @@ offsetToSecondsPos:
 ; Input: BC=(hh,mm)
 ; Output: HL:(u40*)=offsetSeconds
 ; Preserves: DE, HL
-hmComponentsToSeconds: ; TODO: Rename to hourMinuteToSeconds()
+hourMinuteToSeconds:
     ; set hour
     ld a, b
     call setU40ToA ; u40(*HL)=A
@@ -297,6 +297,7 @@ offsetHourToOffsetNeg:
 ;   - HL:(Offset*)=offset
 ; Output:
 ;   - HL=offset updated
+; Destroys: A, BC, DE
 ; Preserves: HL
 ; Throws: Err:Domain if offsetHour is outside of [-23.75,23.75] or if
 ; offsetHour is not a multiple of 0.25 (i.e. 15 minutes)
@@ -371,7 +372,7 @@ offsetToOffsetQuarter:
 ;   - HL:(Offset*)=result
 ; Output:
 ;   - (*HL) updated
-; Destroys: A, BC
+; Destroys: A, BC, DE
 ; Preserves: HL
 offsetQuarterToOffset:
     bit 7, b ; ZF=1 if zero or positive

@@ -248,10 +248,10 @@ formatOffsetString:
     inc hl
     ld c, (hl) ; C=minute
     inc hl
-    call isHmComponentsPos ; ZF=1 if zero or positive
+    call isHourMinuteBCPos ; ZF=1 if zero or positive
     jr z, formatOffsetStringPos
     ; negative Offset
-    call chsHmComponents
+    call chsHourMinuteBC
     ld a, Sdash
     jr formatOffsetStringSign
 formatOffsetStringPos:
