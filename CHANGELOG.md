@@ -2,11 +2,18 @@
 
 - Unreleased
     - Supports resizing the number of storage registers
-        - `MODE` > `SIZE` command supports a minimum of 25 to a maximum of 100
-        - `MODE` > `SIZ?` returns the current size of storage registers
+        - `MODE > RSIZ` command supports a minimum of 25 to a maximum of 100
+        - `MODE > RSZ?` returns the current size of storage registers
         - size of the `RPN83REG` appVar varies:
-            - 496 bytes at SIZE=25
-            - 1921 bytes at SIZE=100
+            - 496 bytes at RSIZ=25
+            - 1921 bytes at RSIZ=100
+    - Support arithmetic operations on Offset
+        - {Offset} + {hours}, {hours} + {Offset}
+        - {Offset} - {hours}
+        - {Offset} - {Offset} => {hours}
+        - plus the same operations with {hours} replaced with an appropriate
+          {Duration} (in multiples of 15 minutes)
+        - TODO: Update USER_GUIDE_DATE.md
 - 0.10.0 (2024-03-31)
     - **Bug Fix** Fix broken `CLRG`
         - broke when 'REGS' was replaced by 'RPN83REG'
