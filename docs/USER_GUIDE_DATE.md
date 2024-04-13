@@ -77,7 +77,7 @@ The following is a quick summary of the fundamental date and time concepts
 used by the `DATE` functions in RPN83P. If you already know most of this,
 you can skip this section and continue with the [DATE Menus](#date-menus).
 
-The `DATE` functions of the RPN83P uses the [Proleptic Gregorian
+The `DATE` functions of the RPN83P use the [Proleptic Gregorian
 calendar](https://en.wikipedia.org/wiki/Proleptic_Gregorian_calendar) with the
 year restricted to `[1,9999]`. The [UNIX
 time](https://en.wikipedia.org/wiki/Unix_time) (aka POSIX time) system is used
@@ -86,14 +86,14 @@ time](https://en.wikipedia.org/wiki/Coordinated_Universal_Time). The major
 difference is that the duration of a POSIX *second* is not a constant, in
 contrast to the SI *second* used by UTC, and POSIX time does not support [leap
 seconds](https://en.wikipedia.org/wiki/Leap_second). Time zones are supported as
-fixed offsets from UTC. Therefore, [daylight saving
+fixed offsets from UTC. Therefore, automatic [daylight saving
 time](https://en.wikipedia.org/wiki/Daylight_saving_time) transitions are *not*
 supported. When date and time objects are displayed to the user, the RPN83P has
 the option of using the [RFC
 3339](https://datatracker.ietf.org/doc/html/rfc3339) standard (very similar to
 the [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) standard). The RPN83P
 also provides access to the real time clock (RTC) if it exists on the calculator
-(84+, 84+SE, Nspire with TI-84 keyboard, but not the 83+ or 83+SE). The RPN83P
+(84+, 84+SE, Nspire with TI-84+ keypad, but not the 83+ or 83+SE). The RPN83P
 supports converting the current date and time from the RTC into different
 timezones.
 
@@ -1456,7 +1456,7 @@ The `DEXD` (Date Extend) command perform the reverse of the `DSHK` command by
 appending a `00:00:00` Time component to a Date object, and the `UTC+00:00`
 TimeZone component to a DateTime object. For example, let's start with a Date
 object and apply the `DEXD` command twice. For illustration purposes, the first
-`DEXD` uses the menu function, and the seoncd `DEXD` uses the `X^2` keyboard
+`DEXD` uses the menu function, and the second `DEXD` uses the `X^2` keyboard
 button:
 
 | **Keys**                      | **MODE `{..}`**                   | **MODE `".."`**   |
