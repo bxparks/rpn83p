@@ -168,6 +168,10 @@ This app was designed for TI calculators using the Z80 processor:
   accessible flash, hardware clock)
 - TI-Nspire with TI-84 Plus Keypad (32-bit ARM processor emulating a Z80, 24
   kB accessible RAM, 1.5 MB accessible flash, hardware clock)
+    - **Note**: When uploading the `rpn83p.8xk` file from the PC to the Nspire,
+      you need to select "TI-84 Plus" as the calculator model on the PC instead
+      of "TI-Nspire". That's because the Nspire is emulating a TI-84+ and the PC
+      cannot tell the difference.
 
 The app configures itself to run at 15 MHz on supported hardware, while
 remaining at 6 MHz on the TI-83+.
