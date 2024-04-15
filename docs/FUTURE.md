@@ -62,7 +62,7 @@ and more complicated features will get their own GitHub tickets.
           `2ND CATALOG`, `2ND MEM`, `APPS`, `PRGM`, `VARS`, `"` (double quote)
         - reserved for potential future use: `XTTn`, `2ND DISTR`, `2ND MATRIX`,
           `2ND [`, `2ND ]`, `ALPHA space`, `ALPHA ?`
-        - probably available: `2ND u`, `2ND v`, `2ND w`,  L1` to `2ND L6`
+        - probably available: `2ND u`, `2ND v`, `2ND w`, `2ND L1` to `2ND L6`
 - custom menu items
     - The HP-42S supports up to 18 (3 rows of 6 menus) to be customized through
       the `ASSIGN` and `CUSTOM` menus.
