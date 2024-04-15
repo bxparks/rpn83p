@@ -608,7 +608,7 @@ functionality is already provided by the menu system.
 menu group named `MATH`, which may help to remember this button mapping.
 
 **HP-42S Compatibility Note**: As far I can tell, the menu system of the HP-42S
-is *multiply rooted* and pressing a given menu button (e.g. `BASE`) activates
+is *multiplely rooted* and pressing a given menu button (e.g. `BASE`) activates
 the menu hierarchy of that particular button. I think this works because the
 menu bar on the HP-42S is not displayed by default, so there is no single ROOT
 node of its menu system. Some of the HP-42S menu bars can stack on top of each
