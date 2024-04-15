@@ -418,6 +418,7 @@ parseInputBufModifier:
 ;   - HL:(RpnObject*)=rpnObject
 ; Destroys: all
 convertTaggedNumberToRpnObject:
+    push hl ; stack=[rpnObject]
     cp 'D'
     jr z, convertTaggedDaysToDuration
     cp 'H'
@@ -441,8 +442,7 @@ convertTaggedDaysToDuration:
     ld a, (de)
     inc de
     ld (hl), a
-    inc hl
-    ret
+    jr convertTaggedValidation
 convertTaggedHoursToDuration:
     ld a, rpnObjectTypeDuration
     ld (hl), a
@@ -454,8 +454,7 @@ convertTaggedHoursToDuration:
     ld a, (de)
     inc de
     ld (hl), a
-    inc hl
-    ret
+    jr convertTaggedValidation
 convertTaggedMinutesToDuration:
     ld a, rpnObjectTypeDuration
     ld (hl), a
@@ -468,8 +467,7 @@ convertTaggedMinutesToDuration:
     ld a, (de)
     inc de
     ld (hl), a
-    inc hl
-    ret
+    jr convertTaggedValidation
 convertTaggedSecondsToDuration:
     ld a, rpnObjectTypeDuration
     ld (hl), a
@@ -483,7 +481,11 @@ convertTaggedSecondsToDuration:
     ld a, (de)
     inc de
     ld (hl), a
-    inc hl
+    ; [[fallthrough]]
+convertTaggedValidation:
+    pop hl ; stack=[]; HL=rpnObject
+    inc hl ; HL=(Duration*)
+    bcall(_ValidateDuration)
     ret
 
 ; Description: Clear the duration pointed by HL.
