@@ -61,8 +61,13 @@ and more complicated features will get their own GitHub tickets.
         - reserved for probable future use: `2ND INS`, `2ND LIST`, `2ND TEST`,
           `2ND CATALOG`, `2ND MEM`, `APPS`, `PRGM`, `VARS`, `"` (double quote)
         - reserved for potential future use: `XTTn`, `2ND DISTR`, `2ND MATRIX`,
-          `2ND [`, `2ND ]`, `ALPHA space`, `ALPHA ?`
+          `2ND [`, `2ND ]`, `ALPHA space`, `ALPHA ?`, `2ND LEFT`, `2ND RIGHT`
+          (`2ND UP` and `2ND DOWN` are used by the TI-OS to control the LCD
+          contrast)
         - probably available: `2ND u`, `2ND v`, `2ND w`, `2ND L1` to `2ND L6`
+        - inaccessible (labeled on the calculator keypad, but the SDK does not
+          provide access to them): `ALPHA F1` to `ALPHA F5`, `ALPHA UP`, `ALPHA
+          DOWN`, `ALPHA SOLVE`
 - custom menu items
     - The HP-42S supports up to 18 (3 rows of 6 menus) to be customized through
       the `ASSIGN` and `CUSTOM` menus.
