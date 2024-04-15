@@ -14,7 +14,7 @@ stackZIndex equ 2 ; Z
 stackTIndex equ 3 ; T
 stackLIndex equ 4 ; LastX
 
-stackName:
+stackVarName:
     .db AppVarObj, "RPN83STK" ; max 8 char, NUL terminated if < 8
 
 ;-----------------------------------------------------------------------------
@@ -26,7 +26,7 @@ stackName:
 ; Destroys: all
 initStack:
     set rpnFlagsLiftEnabled, (iy + rpnFlags)
-    ld hl, stackName
+    ld hl, stackVarName
     ld c, stackSize
     jp initRpnObjectList
 
@@ -56,7 +56,7 @@ clearStack:
 
 ; Description: Should be called just before existing the app.
 closeStack:
-    ld hl, stackName
+    ld hl, stackVarName
     jp closeRpnObjectList
 
 ; Description: Return the length of the RPN stack variable.
@@ -65,7 +65,7 @@ closeStack:
 ;   - DE:(u8*)=dataPointer
 ; Destroys: BC, HL
 lenStack:
-    ld hl, stackName
+    ld hl, stackVarName
     jp lenRpnObjectList
 
 ;-----------------------------------------------------------------------------
@@ -82,7 +82,7 @@ lenStack:
 ; Preserves: OP1, OP2
 stoStackNN:
     set dirtyFlagsStack, (iy + dirtyFlags)
-    ld hl, stackName
+    ld hl, stackVarName
     jp stoRpnObject
 
 ; Description: Copy STK[nn] to OP1/OP2.
@@ -94,7 +94,7 @@ stoStackNN:
 ;   - A: rpnObjectType
 ; Destroys: all
 rclStackNN:
-    ld hl, stackName
+    ld hl, stackVarName
     jp rclRpnObject ; OP1/OP2=STK[A]
 
 ;-----------------------------------------------------------------------------

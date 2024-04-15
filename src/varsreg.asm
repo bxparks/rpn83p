@@ -9,7 +9,7 @@ regsSizeMin equ 25
 regsSizeMax equ 100
 regsSizeDefault equ 25
 
-regsName:
+regsVarName:
     .db AppVarObj, "RPN83REG" ; max 8 char, NUL terminated if < 8
 
 ;-----------------------------------------------------------------------------
@@ -21,7 +21,7 @@ regsName:
 ;   - REGS created if it doesn't exist
 ; Destroys: all
 initRegs:
-    ld hl, regsName
+    ld hl, regsVarName
     ld c, regsSizeDefault
     jp initRpnObjectList
 
@@ -37,7 +37,7 @@ clearRegs:
 
 ; Description: Should be called just before existing the app.
 closeRegs:
-    ld hl, regsName
+    ld hl, regsVarName
     jp closeRpnObjectList
 
 ; Description: Return the length of the REGS variable.
@@ -46,7 +46,7 @@ closeRegs:
 ;   - DE:(u8*)=dataPointer
 ; Destroys: BC, HL
 lenRegs:
-    ld hl, regsName
+    ld hl, regsVarName
     jp lenRpnObjectList
 
 ; Description: Resize the storage registers to the new length in A.
@@ -56,7 +56,7 @@ lenRegs:
 ;   - CF=0 if newLen>oldLen
 ;   - CF=1 if newLen<oldLen
 resizeRegs:
-    ld hl, regsName
+    ld hl, regsVarName
     jp resizeRpnObjectList
 
 ;-----------------------------------------------------------------------------
@@ -70,7 +70,7 @@ resizeRegs:
 ; Destroys: all
 ; Preserves: OP1/OP2
 stoRegNN:
-    ld hl, regsName
+    ld hl, regsVarName
     jp stoRpnObject
 
 ; Description: Recall REGS[NN] into OP1/OP2.
@@ -82,7 +82,7 @@ stoRegNN:
 ;   - A:u8=objectType
 ; Destroys: all
 rclRegNN:
-    ld hl, regsName
+    ld hl, regsVarName
     jp rclRpnObject ; OP1/OP2=STK[C]
 
 ; Description: Recall REGS[NN] to OP2. WARNING: Assumes real not complex.
