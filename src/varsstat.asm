@@ -115,7 +115,7 @@ rclStatRegNNToOP2:
 ;   - RPN83STA[NN] += OP1
 ; Destroys: all
 ; Preserves: OP1, OP2
-stoAddRegNN: ; TODO: Rename this to stoAddStatRegNN()
+stoAddStatRegNN:
     push bc ; stack=[NN]
     bcall(_PushRealO1) ; FPS=[OP1]
     bcall(_PushRealO2) ; FPS=[OP1,OP2]
@@ -139,7 +139,7 @@ stoAddRegNN: ; TODO: Rename this to stoAddStatRegNN()
 ;   - RPN83STA[NN] -= OP1
 ; Destroys: all
 ; Preserves: OP1, OP2
-stoSubRegNN: ; TODO: Rename this to stoSubStatRegNN()
+stoSubStatRegNN:
     push bc ; stack=[NN]
     bcall(_PushRealO1) ; FPS=[OP1]
     bcall(_PushRealO2) ; FPS=[OP1,OP2]

@@ -187,26 +187,26 @@ statSigmaPlus:
     call rclX
     bcall(_PushRealO1) ; FPS=[X]
     ld c, statRegX
-    call stoAddRegNN
+    call stoAddStatRegNN
 
     bcall(_FPSquare) ; OP1=X^2
     ld c, statRegX2
-    call stoAddRegNN
+    call stoAddStatRegNN
 
     call rclY
     bcall(_PushRealO1) ; FPS=[X,Y]
     ld c, statRegY
-    call stoAddRegNN
+    call stoAddStatRegNN
 
     bcall(_FPSquare) ; OP1=Y^2
     ld c, statRegY2
-    call stoAddRegNN
+    call stoAddStatRegNN
 
     bcall(_PopRealO2) ; FPS=[X]; OP2=Y
     bcall(_PopRealO1) ; FPS=[]; OP1=X
     bcall(_FPMult)
     ld c, statRegXY
-    call stoAddRegNN
+    call stoAddStatRegNN
 
     ld c, statRegN
     call rclStatRegNN
@@ -235,11 +235,11 @@ statSigmaPlusLogXNormal:
 statSigmaPlusLogXContinue:
     bcall(_PushRealO1) ; FPS=[X,lnX]
     ld c, statRegLnX
-    call stoAddRegNN
+    call stoAddStatRegNN
     ;
     bcall(_FPSquare) ; OP1=(lnX)^2
     ld c, statRegLnX2
-    call stoAddRegNN
+    call stoAddStatRegNN
 
 statSigmaPlusLogY:
     ; Update lnY registers
@@ -257,11 +257,11 @@ statSigmaPlusLogYNormal:
 statSigmaPlusLogYContinue:
     bcall(_PushRealO1) ; FPS=[X,lnX,Y,lnY]
     ld c, statRegLnY
-    call stoAddRegNN
+    call stoAddStatRegNN
     ;
     bcall(_FPSquare) ; OP1=(lnY)^2
     ld c, statRegLnY2
-    call stoAddRegNN
+    call stoAddStatRegNN
 
     ; Update XlnY, YlnY, lnXlnY
     bcall(_PopRealO4) ; FPS=[X,lnX,Y]; OP4=lnY
@@ -269,18 +269,18 @@ statSigmaPlusLogYContinue:
     bcall(_PopRealO2) ; FPS=[X]; OP2=lnX
     bcall(_FPMult) ; OP1=YlnX
     ld c, statRegYLnX
-    call stoAddRegNN
+    call stoAddStatRegNN
     ;
     bcall(_PopRealO1) ; FPS=[]; OP1=X
     bcall(_OP2ExOP4) ; OP2=lnY, OP4=lnX
     bcall(_FPMult) ; OP1=XlnY
     ld c, statRegXLnY
-    call stoAddRegNN
+    call stoAddStatRegNN
     ;
     bcall(_OP4ToOP1) ; OP1=lnX, OP2=lnY
     bcall(_FPMult) ; OP1=lnXlnY
     ld c, statRegLnXLnY
-    call stoAddRegNN
+    call stoAddStatRegNN
     ret
 
 ;-----------------------------------------------------------------------------
@@ -295,26 +295,26 @@ statSigmaMinus:
     call rclX
     bcall(_PushRealO1) ; FPS=[X]
     ld c, statRegX
-    call stoSubRegNN
+    call stoSubStatRegNN
 
     bcall(_FPSquare) ; OP1=X^2
     ld c, statRegX2
-    call stoSubRegNN
+    call stoSubStatRegNN
 
     call rclY
     bcall(_PushRealO1) ; FPS=[X,Y]
     ld c, statRegY
-    call stoSubRegNN
+    call stoSubStatRegNN
 
     bcall(_FPSquare) ; OP1=Y^2
     ld c, statRegY2
-    call stoSubRegNN
+    call stoSubStatRegNN
 
     bcall(_PopRealO2) ; FPS=[X]; OP2=Y
     bcall(_PopRealO1) ; FPS=[]; OP1=X
     bcall(_FPMult)
     ld c, statRegXY
-    call stoSubRegNN
+    call stoSubStatRegNN
 
     ld c, statRegN
     call rclStatRegNN
@@ -343,11 +343,11 @@ statSigmaMinusLogXNormal:
 statSigmaMinusLogXContinue:
     bcall(_PushRealO1) ; FPS=[X,lnX]
     ld c, statRegLnX
-    call stoSubRegNN
+    call stoSubStatRegNN
     ;
     bcall(_FPSquare) ; OP1=(lnX)^2
     ld c, statRegLnX2
-    call stoSubRegNN
+    call stoSubStatRegNN
 
 statSigmaMinusLogY:
     ; Update lnY registers
@@ -365,11 +365,11 @@ statSigmaMinusLogYNormal:
 statSigmaMinusLogYContinue:
     bcall(_PushRealO1) ; FPS=[X,lnX,Y,lnY]
     ld c, statRegLnY
-    call stoSubRegNN
+    call stoSubStatRegNN
     ;
     bcall(_FPSquare) ; OP1=(lnY)^2
     ld c, statRegLnY2
-    call stoSubRegNN
+    call stoSubStatRegNN
 
     ; Update XlnY, YlnY, lnXlnY
     bcall(_PopRealO4) ; FPS=[X,lnX,Y]; OP4=lnY
@@ -377,18 +377,18 @@ statSigmaMinusLogYContinue:
     bcall(_PopRealO2) ; FPS=[X]; OP2=lnX
     bcall(_FPMult) ; OP1=YlnX
     ld c, statRegYLnX
-    call stoSubRegNN
+    call stoSubStatRegNN
     ;
     bcall(_PopRealO1) ; FPS=[]; OP1=X
     bcall(_OP2ExOP4) ; OP2=lnY, OP4=lnX
     bcall(_FPMult) ; OP1=XlnY
     ld c, statRegXLnY
-    call stoSubRegNN
+    call stoSubStatRegNN
     ;
     bcall(_OP4ToOP1) ; OP1=lnX, OP2=lnY
     bcall(_FPMult) ; OP1=lnXlnY
     ld c, statRegLnXLnY
-    call stoSubRegNN
+    call stoSubStatRegNN
     ret
 
 ;-----------------------------------------------------------------------------
