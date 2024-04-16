@@ -215,6 +215,27 @@ MenuGroup root mRoot [
         MenuItem MEAN mStatMean
         MenuItem WMN mStatWeightedMean
         MenuItem N mStatN
+        MenuGroup <ScapSigma> mStatRegs [
+          MenuRow [
+            MenuItem <ScapSigma>X mStatRegX
+            MenuItem <ScapSigma>X2 mStatRegX2
+            MenuItem <ScapSigma>Y mStatRegY
+            MenuItem <ScapSigma>Y2 mStatRegY2
+            MenuItem <ScapSigma>XY mStatRegXY
+          ]
+          MenuRow [
+            MenuItem <ScapSigma>N mStatRegN
+            MenuItem <ScapSigma>LX mStatRegLnX
+            MenuItem <ScapSigma>LX2 mStatRegLnX2
+            MenuItem <ScapSigma>LY mStatRegLnY
+            MenuItem <ScapSigma>LY2 mStatRegLnY2
+          ]
+          MenuRow [
+            MenuItem <ScapSigma>LXL mStatRegLnXLnY
+            MenuItem <ScapSigma>XLY mStatRegXLnY
+            MenuItem <ScapSigma>YLX mStatRegYLnX
+          ]
+        ]
       ]
       MenuRow [
         MenuItem SDEV mStatSampleSdev

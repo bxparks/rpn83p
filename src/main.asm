@@ -38,6 +38,7 @@ initAlways:
     call updateComplexMode
     call initStack
     call initRegs
+    call initStatRegs
     call initLastX ; Always copy TI-OS 'ANS' to 'X'
     call initDisplay ; Always initialize the display.
     call initTvmSolver ; Always init TVM solver
@@ -57,10 +58,11 @@ initAlways:
 ;   - Called by TI-OS application monitor upon 2ND OFF.
 ; See the TI-83 Plus SDK reference for PutAway().
 mainExit:
-    ; Save appState and close the stack and storage registers.
+    ; Save appState and close various appVars.
     call storeAns
     call closeStack
     call closeRegs
+    call closeStatRegs
     bcall(_StoreAppState)
 
     ; Clean up the screen.
