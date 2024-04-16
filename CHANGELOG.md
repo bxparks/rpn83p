@@ -14,6 +14,9 @@
         - plus the same operations with {hours} replaced with an appropriate
           {Duration} (in multiples of 15 minutes)
         - TODO: Update USER_GUIDE_DATE.md
+    - **Bug Fix** Validate Duration objects entered through colon-modifier
+      syntax
+        - prevents entry of things like `61s` or `25h`
 - 0.10.0 (2024-03-31)
     - **Bug Fix** Fix broken `CLRG`
         - broke when 'REGS' was replaced by 'RPN83REG'
