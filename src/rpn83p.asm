@@ -1661,6 +1661,10 @@ _FormShowable equ _FormShowableLabel-branchTableBase
     .db 2
 
 ; display2.asm
+_PrintMenuNameAtCLabel:
+_PrintMenuNameAtC equ _PrintMenuNameAtCLabel-branchTableBase
+    .dw PrintMenuNameAtC
+    .db 2
 _DisplayMenuFolderLabel:
 _DisplayMenuFolder equ _DisplayMenuFolderLabel-branchTableBase
     .dw DisplayMenuFolder
@@ -1837,11 +1841,13 @@ defpage(2)
 #include "format2.asm"
 #include "show2.asm"
 #include "display2.asm"
+#include "print2.asm"
 #include "memory2.asm"
 #include "const2.asm"
 #include "integer2.asm"
 #include "rpnobject2.asm"
 #include "cstring2.asm"
+#include "common2.asm"
 ;
 #include "prime2.asm"
 #include "base2.asm"
