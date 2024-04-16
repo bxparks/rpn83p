@@ -1660,6 +1660,12 @@ _FormShowable equ _FormShowableLabel-branchTableBase
     .dw FormShowable
     .db 2
 
+; display2.asm
+_DisplayMenuFolderLabel:
+_DisplayMenuFolder equ _DisplayMenuFolderLabel-branchTableBase
+    .dw DisplayMenuFolder
+    .db 2
+
 ;-----------------------------------------------------------------------------
 
 #ifdef DEBUG
@@ -1830,6 +1836,7 @@ defpage(2)
 #include "fps2.asm"
 #include "format2.asm"
 #include "show2.asm"
+#include "display2.asm"
 #include "memory2.asm"
 #include "const2.asm"
 #include "integer2.asm"
