@@ -16,7 +16,7 @@
 
 ; Description: Initialize the STAT modes.
 initStat:
-    jp mStatAllModeHandler ; default AllSigma mode
+    jr mStatAllModeHandler ; default AllSigma mode
 
 ;-----------------------------------------------------------------------------
 ; STAT Menu handlers.
@@ -109,8 +109,82 @@ mStatWeightedMeanHandler:
 
 ; Description: Return the number of items entered. Mostly for convenience.
 mStatNHandler:
-    call closeInputAndRecallNone
+    jr mStatRegNHandler
+
+;-----------------------------------------------------------------------------
+
+; Description: Return the value of statRegX register.
+mStatRegXHandler:
+    ld c, statRegX
+    jr recallStatReg
+
+; Description: Return the value of statRegX2 register.
+mStatRegX2Handler:
+    ld c, statRegX2
+    jr recallStatReg
+
+; Description: Return the value of statRegY register.
+mStatRegYHandler:
+    ld c, statRegY
+    jr recallStatReg
+
+; Description: Return the value of statRegY2 register.
+mStatRegY2Handler:
+    ld c, statRegY2
+    jr recallStatReg
+
+; Description: Return the value of statRegXY register.
+mStatRegXYHandler:
+    ld c, statRegXY
+    jr recallStatReg
+
+; Description: Return the value of statRegN register.
+mStatRegNHandler:
     ld c, statRegN
+    jr recallStatReg
+
+; Description: Return the value of statRegLnX register.
+mStatRegLnXHandler:
+    ld c, statRegLnX
+    jr recallStatReg
+
+; Description: Return the value of statRegLnX2 register.
+mStatRegLnX2Handler:
+    ld c, statRegLnX2
+    jr recallStatReg
+
+; Description: Return the value of statRegLnY register.
+mStatRegLnYHandler:
+    ld c, statRegLnY
+    jr recallStatReg
+
+; Description: Return the value of statRegLnY2 register.
+mStatRegLnY2Handler:
+    ld c, statRegLnY2
+    jr recallStatReg
+
+; Description: Return the value of statRegLnXLnY register.
+mStatRegLnXLnYHandler:
+    ld c, statRegLnXLnY
+    jr recallStatReg
+
+; Description: Return the value of statRegXLnY register.
+mStatRegXLnYHandler:
+    ld c, statRegXLnY
+    jr recallStatReg
+
+; Description: Return the value of statRegYLnX register.
+mStatRegYLnXHandler:
+    ld c, statRegYLnX
+    ; [fallthrough]]
+
+; Description: Recall the statReg specified by the C register.
+; Input: C:u8=registerIndex
+; Output: OP1=registerValue
+recallStatReg:
+    push bc ; statck=[registerIndex]
+    call closeInputAndRecallNone
+    pop bc ; stack=[]; C=registerIndex
     call rclStatRegNN
     jp pushToX
 
@@ -180,8 +254,8 @@ mStatSampleCovHandler:
 ; Description: Add the X and Y data point to the stat registers.
 ; TODO: Use OP1 and OP2 as input parameters, instead of rclX and rclY. This
 ; would decouple this routine from the RPN stack, which allows easier migration
-; to Flash Page 1 if necessary. But we would still have a dependency to storage
-; registers through stoStatRegNN() and rclStatRegNN().
+; to Flash Page 1 if necessary. But we would still have a dependency to the
+; stat registers through stoStatRegNN() and rclStatRegNN().
 ; Destroys: OP1, OP2, OP4
 statSigmaPlus:
     call rclX
@@ -288,8 +362,8 @@ statSigmaPlusLogYContinue:
 ; Description: Subtract the X and Y data point from the stat registers.
 ; TODO: Use OP1 and OP2 as input parameters, instead of rclX and rclY. This
 ; would decouple this routine from the RPN stack, which allows easier migration
-; to Flash Page 1 if necessary. But we would still have a dependency to storage
-; registers through stoStatRegNN() and rclStatRegNN().
+; to Flash Page 1 if necessary. But we would still have a dependency to the
+; stat registers through stoStatRegNN() and rclStatRegNN().
 ; Destroys: OP1, OP2, OP4
 statSigmaMinus:
     call rclX
