@@ -41,8 +41,6 @@ and more complicated features will get their own GitHub tickets.
     - becomes useful as more features and configuration options are added
 - allow numbers in any base to be entered regardless of the BASE mode
     - see [Issue#17](https://github.com/bxparks/rpn83p/issues/17)
-- add UI marker for menu items which are folders/groups
-    - see [Issue#20](https://github.com/bxparks/rpn83p/issues/20)
 
 ## Medium Future
 

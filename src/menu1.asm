@@ -318,11 +318,12 @@ calcMenuNodeOffset:
 ; before returning from this function. It is also allowed to modify HL since it
 ; gets clobbered with string pointer before returning from this function.
 ;
-; Input: HL:u16=menuId
+; Input:
 ;   - BC:(char*)=altName (e.g. OP4)
 ;   - DE:(char*)=normalName (e.g. OP3)
 ;   - HL:u16=menuId
 ; Output:
+;   - A:u8=numRows (>0 if menuFolder)
 ;   - (*BC) filled with altName
 ;   - (*DE) filled with normalName
 ;   - HL=nameSelector
@@ -347,6 +348,8 @@ ExtractMenuNames:
     ; nameSelector
     ld l, (ix + menuNodeFieldNameSelector)
     ld h, (ix + menuNodeFieldNameSelector + 1) ; HL=nameSelector
+    ; numRows
+    ld a, (ix + menuNodeFieldNumRows) ; A=numRows
     ;
     pop bc ; stack=[]; BC=altname
     ret

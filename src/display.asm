@@ -92,7 +92,7 @@ argCurRow equ 6
 argCurCol equ 0
 argPenRow equ argCurRow*8
 
-; Menu pixel columns:
+; Menu box Pen Coordinates: (0,0) is top-left.
 ;   - 96 px wide, 5 menus
 ;   - 18 px/menu = 90 px, 6 leftover
 ;   - 1 px between 5 menus, plus 1 px on far left and right = 6 px
@@ -114,6 +114,11 @@ menuPenCol2     equ 39 ; left edge of menu2
 menuPenCol3     equ 58 ; left edge of menu3
 menuPenCol4     equ 77 ; left edge of menu4
 menuPenColEnd   equ 96
+
+; A menu folder icon is created using a small (4 pixel) line above the menu box.
+; The bcall(_ILine) function uses Pixel Coordinates: (0,0) is the bottom-left,
+; and (95,63) is the top-right.
+menuFolderIconLineRow equ 7 ; pixel row of the menu folder icon line
 
 ;-----------------------------------------------------------------------------
 
@@ -801,8 +806,9 @@ displayMenu:
     ld b, 5 ; B = loop 5 times
 displayMenuLoop:
     push hl ; stack=[menuId]
-    call getMenuName ; HL:(const char*)=menuName
-    call printMenuNameAtC
+    call getMenuName ; HL:(const char*)=menuName; A=numRows
+    call printMenuNameAtC ; preserves AF, BC, DE
+    call displayMenuFolder ; preserves AF, BC, DE
     pop hl ; stack=[]; HL=menuId
     ; increment to next menu
     inc hl ; HL=menuId+1
@@ -819,15 +825,17 @@ displayMenuLoop:
 ; small and inverted font, centering the menu name in the middle of the 18 px
 ; width of a menu box.
 ; Inputs:
-;   B=loopCounter (must be preserved)
-;   C=penCol (must be preserved)
-;   E=menuIndex [0-4] (ignored but must be preserved, useful for debugging)
-;   HL:(const char*)=menuName
-; Destroys: A, HL
-; Preserves: BC, DE
+;   - A:u8=numRows (ignored but must be preserved)
+;   - B:u8=loopCounter (must be preserved)
+;   - C:u8=penCol (must be preserved)
+;   - E:u8=menuIndex [0-4] (ignored but must be preserved, useful for debugging)
+;   - HL:(const char*)=menuName
+; Destroys: HL
+; Preserves: AF, BC, DE
 printMenuNameAtC:
-    push bc ; stack=[loopCounter/penCol]
-    push de ; stack=[loopCounter/penCol,menuIndex]
+    push af ; stack=[numRows]
+    push bc ; stack=[numRows, loopCounter/penCol]
+    push de ; stack=[numRows, loopCounter/penCol,menuIndex]
     ; Set (PenCol,PenRow), preserving HL
     ld a, c ; A=penCol
     ld (PenCol), a
@@ -897,8 +905,47 @@ printMenuNameAtCRightPad:
 printMenuNameAtCExit:
     res textInverse, (iy + textFlags)
     res textEraseBelow, (iy + textFlags)
-    pop de ; stack=[loopCounter/penCol]; E=menuIndex
-    pop bc ; stack=[]; BC=loopCounter/penCol
+    pop de ; stack=[numRows,loopCounter/penCol]; E=menuIndex
+    pop bc ; stack=[numRows]; BC=loopCounter/penCol
+    pop af ; stack=[]; A=numRows
+    ret
+
+;-----------------------------------------------------------------------------
+
+; Description: Print a small line above the menu box to convert the box into a
+; file folder icon.
+; Input:
+;   - A:u8=numRows (>1 if menuFolder)
+;   - B=loopCounter (must be preserved)
+;   - C=penCol (must be preserved)
+;   - E=menuIndex [0-4] (ignored but must be preserved, useful for debugging)
+; Preserves: AF, BC, DE
+; Destroys: HL
+displayMenuFolder:
+    push bc
+    push de
+    ; calculate the start coordinate of the folder icon line. bcall(_ILine)
+    ; uses Pixel Coordinates, (0,0) is bottom left.
+    ld b, c
+    inc b ; B=start.x
+    ld c, menuFolderIconLineRow ; C=start.y
+    ; calculate the end coordinate of the folder icon line (inclusive)
+    ld d, b
+    inc d
+    inc d
+    inc d ; D=end.x (4 pixels wide)
+    ld e, c ; E=end.y
+    ; determine if menuFolder or menuItem
+    or a ; ZF=0 if menuItem
+    jr z, displayMenuFolderLight
+    ld h, 1 ; H=typeOfLine=1=dark
+    jr displayMenuFolderDraw
+displayMenuFolderLight:
+    ld h, a ; H=typeOfLine=0=light
+displayMenuFolderDraw:
+    bcall(_ILine) ; preserves all registers according to the SDK docs
+    pop de
+    pop bc
     ret
 
 ;-----------------------------------------------------------------------------

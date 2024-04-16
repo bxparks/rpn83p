@@ -20,6 +20,11 @@
         - add `Sigma` menu folder containing various `SigmaXXX` menu items to
           recall the 13 stat registers (essentially the same as the Plus42 app)
         - TODO: Update USER_GUIDE.md
+    - show MenuFolders using a file folder icon
+        - draw a small 4px line above the menu box if the menu is a folder
+        - inspired by the menus on the HP-48 series calculators
+        - fixes [Issue#20](https://github.com/bxparks/rpn83p/issues/20)
+        - TODO: update screenshots, maybe about 700 of them
     - **Bug Fix** Validate Duration objects entered through colon-modifier
       syntax
         - prevents entry of things like `61s` or `25h`

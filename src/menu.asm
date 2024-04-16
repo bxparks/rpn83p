@@ -66,16 +66,20 @@ menuNodeFieldNameSelector equ 11
 ; before returning from this function. It is also allowed to modify HL since it
 ; gets clobbered with string pointer before returning from this function.
 ;
-; Input: HL:u16=menuId
-; Output: HL:(const char*)=menuName
+; Input:
+;   - HL:u16=menuId
+; Output:
+;   - A:u8=numRows (>1 if menuFolder)
+;   - HL:(const char*)=menuName
 ; Destroys: A, HL, OP3, OP4
 ; Preserves: BC, DE
 getMenuName:
-    push bc
-    push de
+    push bc ; stack=[BC]
+    push de ; stack=[BC,DE]
     ld bc, OP3
     ld de, OP4
-    bcall(_ExtractMenuNames) ; BC=altName; DE=normalName; HL=selector
+    bcall(_ExtractMenuNames) ; A=numRows; BC=altName; DE=normalName; HL=selector
+    push af ; stack=[BC,DE,numRows]
     ; if nameSelector!=NULL: call nameSelector()
     ld a, l
     or h ; if HL==0: ZF=1
@@ -90,8 +94,9 @@ getMenuNameSelectAlt:
     ld l, c
     ld h, b ; HL=altName
 getMenuNameFind:
-    pop de
-    pop bc
+    pop af ; stack=[BC,DE]; A=numRows
+    pop de ; stack=[BC]
+    pop bc ; stack=[]
     ret
 
 ;-----------------------------------------------------------------------------
