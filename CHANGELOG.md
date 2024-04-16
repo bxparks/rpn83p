@@ -14,6 +14,12 @@
         - plus the same operations with {hours} replaced with an appropriate
           {Duration} (in multiples of 15 minutes)
         - TODO: Update USER_GUIDE_DATE.md
+    - STAT
+        - extract the 13 STAT registers (R11-R23) from regular storage registers
+          (appVar `RPN83REG`) into its own registers (appVar `RPN83STA`)
+        - add `Sigma` menu folder containing various `SigmaXXX` menu items to
+          recall the 13 stat registers (essentially the same as the Plus42 app)
+        - TODO: Update USER_GUIDE.md
     - **Bug Fix** Validate Duration objects entered through colon-modifier
       syntax
         - prevents entry of things like `61s` or `25h`

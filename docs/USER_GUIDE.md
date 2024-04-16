@@ -547,7 +547,7 @@ longer sequence of calculations.
 #### Menu Hierarchy
 
 The menu system of the RPN83P was directly inspired by the HP-42S calculator.
-There are over 150 functions supported by the RPN83P menu system, so it is
+There are over 250 functions supported by the RPN83P menu system, so it is
 convenient to arrange them into a nested folder structure. There are 5 buttons
 directly under the LCD screen so it makes sense to present the menu items as
 sets of 5 items corresponding to those buttons.

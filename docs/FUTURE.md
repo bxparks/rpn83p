@@ -30,13 +30,6 @@ and more complicated features will get their own GitHub tickets.
 
 ## Near Future
 
-- decouple STAT registers from regular storage registers
-    - STAT registers use R11-R23 storage registers, following the convention
-      used by the HP-42S
-    - there is no technical reason why RPN83P needs to follow this
-    - a better solution is to create a separate set of registers (e.g. an
-      `RPN83STA` appVar) just for STAT so that they don't interfere with normal
-      storage registers
 - bigger RPN stack
     - linking and unlinking a complex number to and from its 2 components
       effectively reduces the stack size by 1
@@ -48,6 +41,8 @@ and more complicated features will get their own GitHub tickets.
     - becomes useful as more features and configuration options are added
 - allow numbers in any base to be entered regardless of the BASE mode
     - see [Issue#17](https://github.com/bxparks/rpn83p/issues/17)
+- add UI marker for menu items which are folders/groups
+    - see [Issue#20](https://github.com/bxparks/rpn83p/issues/20)
 
 ## Medium Future
 
@@ -143,8 +138,6 @@ and more complicated features will get their own GitHub tickets.
     - Could be made significantly faster using integer operations, instead of
       floating point operations.
     - But not a high priority.
-- add UI marker for menu items which are folders/groups
-    - see [Issue#20](https://github.com/bxparks/rpn83p/issues/20)
 - additional DATE functions
     - support [ISO weekdate](https://en.wikipedia.org/wiki/ISO_week_date)
     - support at least one of the
