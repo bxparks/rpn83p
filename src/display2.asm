@@ -115,11 +115,9 @@ DisplayMenuFolder:
     push de
     ; Determine the type of line, depending on type of menu node: MenuItem,
     ; MenuFolder, or MenuLink (not implemented yet).
-    ; - if A<0: MenuLink, jump to dotted
     ; - if A==0: MenuItem, set A=0 to draw light line
     ; - if A>0: MenuFolder, set A=1 to draw dark line
-    bit 7, a
-    jr nz, displayMenuFolderDotted
+    ; - if A<0: MenuLink, draw dotted line
     or a
     ld h, a ; H=typeOfLine
     jr z, displayMenuFolderLightOrDark
@@ -139,35 +137,18 @@ displayMenuFolderLightOrDark:
     ld e, c ; E=end.y
 displayMenuFolderDraw:
     bcall(_ILine) ; preserves all registers according to the SDK docs
-    pop de
-    pop bc
-    ret
-displayMenuFolderDotted:
-    ; draw dotted line 5 px wide
-    ld b, c
+#ifdef ENABLE_MENU_LINK
+    bit 7, a ; ZF=0 if menulink
+    jr z, displayMenuFolderEnd
+    ; convert solid line into dotted line by removing 2 interior pixels
     inc b ; B=start.x
-    ld c, menuFolderIconLineRow ; C=start.y
-    ;
-    ld d, 1
-    bcall(_IPoint)
-    inc b
-    ;
     ld d, 0
     bcall(_IPoint)
     inc b
-    ;
-    ld d, 1
-    bcall(_IPoint)
     inc b
-    ;
-    ld d, 0
     bcall(_IPoint)
-    inc b
-    ;
-    ld d, 1
-    bcall(_IPoint)
-    inc b
-    ;
+displayMenuFolderEnd:
+#endif
     pop de
     pop bc
     ret
