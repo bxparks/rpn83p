@@ -721,8 +721,47 @@ Here is an example of an invalid timezone whose `hour` and `minute` have the opp
 
 #### TimeZone Operations
 
-No arithmetic operations (addition, subtraction) are defined on TimeZone
-objects, because they did not seem useful for real-life calculations.
+Arithmetic operations (addition, subtraction) on TimeZone objects are defined
+mostly for consistency, and are not expected to be used often. They can be used
+to change from normal UTC offset to DST offset manually, for example, to go from
+UTC-08:00 for Pacific Standard Time in the US, to UTC-07:00 for Pacific Daylight
+Time during the summer months.
+
+Addition and subtraction operations are supported as shown in the following
+table:
+
+| **Operation**             | **Result** |
+| ------------------------- | ---------- |
+| {TimeZone} + {float}      | {TimeZone} |
+| {float} + {TimeZone}      | {TimeZone} |
+| {TimeZone} - {float}      | {TimeZone} |
+| {TimeZone} - {TimeZone}   | {float}    |
+| {float} - {TimeZone}      | INVALID    |
+
+When operating on `TimeZone` objects, float values are in units of `hours` and
+must be in multiples of 0.25 hours because UTC offsets must be in multiples of
+15 minutes.
+
+For example, let's add 1 hour to UTC-08:00 to get to UTC-07:00:
+
+| **Keys**          | **MODE `{..}`**                       | **MODE `".."`**   |
+| ------------------| ---------------------                 | ----------------- |
+| `TZ{-8,0}`        | ![](images/date/timezone-add-raw-1.png)   | ![](images/date/timezone-add-str-1.png) |
+| `ENTER`           | ![](images/date/timezone-add-raw-2.png)   | ![](images/date/timezone-add-str-2.png) |
+| `1`               | ![](images/date/timezone-add-raw-3.png)   | ![](images/date/timezone-add-str-3.png) |
+| `+`               | ![](images/date/timezone-add-raw-4.png)   | ![](images/date/timezone-add-str-4.png) |
+
+We can subtract 2 TimeZone objects to obtain the number of hours between the 2
+timezones:
+
+| **Keys**          | **MODE `{..}`**                       | **MODE `".."`**   |
+| ------------------| ---------------------                 | ----------------- |
+| `TZ{1,0}`         | ![](images/date/timezone-sub-raw-1.png)   | ![](images/date/timezone-sub-str-1.png) |
+| `ENTER`           | ![](images/date/timezone-sub-raw-2.png)   | ![](images/date/timezone-sub-str-2.png) |
+| `TZ{-8,0}`        | ![](images/date/timezone-sub-raw-3.png)   | ![](images/date/timezone-sub-str-3.png) |
+| `-`               | ![](images/date/timezone-sub-raw-4.png)   | ![](images/date/timezone-sub-str-4.png) |
+
+There is a 9-hour difference from UTC+01:00 and UTC-08:00.
 
 #### TimeZone to Hours Conversion
 
