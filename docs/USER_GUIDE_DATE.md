@@ -1085,6 +1085,11 @@ be used where an integer would normally be used:
 | {DateTime} - {Duration}       | {DateTime}        |
 | {Duration} - {DateTime}       | INVALID           |
 |                               |                   |
+| {TimeZone} + {Duration}       | {TimeZone}        |
+| {Duration} + {TimeZone}       | {TimeZone}        |
+| {TimeZone} - {Duration}       | {TimeZone}        |
+| {Duration} - {TimeZone}       | INVALID           |
+|                               |                   |
 | {ZonedDateTime} + {Duration}  | {ZonedDateTime}   |
 | {Duration} + {ZonedDateTime}  | {ZonedDateTime}   |
 | {ZonedDateTime} - {Duration}  | {ZonedDateTime}   |
