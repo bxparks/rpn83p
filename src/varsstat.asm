@@ -3,8 +3,6 @@
 ; Copyright (c) 2023 Brian T. Park
 ;
 ; STAT register functions.
-; TODO: Move stat registers to a separate "RPN83STA" appVar so that we don't
-; overlap with [R11,R23].
 ;-----------------------------------------------------------------------------
 
 ; STAT registers using a separate appVar from the storage registers.

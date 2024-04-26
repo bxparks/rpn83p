@@ -191,7 +191,7 @@ saveLastX:
 ; Input: CP1=OP1/OP2:RpnObject
 ; Preserves: OP1, OP2
 replaceX:
-    call checkValid
+    call checkValidRpnObjectCP1
     call saveLastX
     call stoX
     ret
@@ -201,7 +201,7 @@ replaceX:
 ; Input: CP1=OP1/OP2:RpnObject
 ; Preserves: OP1, OP2
 replaceXY:
-    call checkValid
+    call checkValidRpnObjectCP1
     call saveLastX
     call dropStack
     call stoX
@@ -220,9 +220,9 @@ replaceXY:
 ; Preserves: OP1, OP2
 replaceXYWithOP1OP2:
     ; validate OP1 and OP2 before modifying X and Y
-    call checkValidReal
+    call checkValidRealOP1
     call op1ExOp2
-    call checkValidReal
+    call checkValidRealOP1
     call op1ExOp2
     ;
     call saveLastX
@@ -241,9 +241,9 @@ replaceXYWithOP1OP2:
 ; Preserves: OP1, OP2
 replaceXWithOP1OP2:
     ; validate OP1 and OP2 before modifying X and Y
-    call checkValidReal
+    call checkValidRealOP1
     call op1ExOp2
-    call checkValidReal
+    call checkValidRealOP1
     call op1ExOp2
     ;
     call saveLastX
@@ -265,9 +265,9 @@ replaceXWithOP1OP2:
 ; Preserves: CP1, CP3
 replaceXWithCP1CP3:
     ; validate CP1 and CP2 before modifying X and Y
-    call checkValid
+    call checkValidRpnObjectCP1
     call cp1ExCp3
-    call checkValid
+    call checkValidRpnObjectCP1
     call cp1ExCp3
     ;
     call saveLastX
@@ -290,7 +290,7 @@ replaceXWithCP1CP3:
 ; Destroys: all
 ; Preserves: OP1, OP2, LastX
 pushToX:
-    call checkValid
+    call checkValidRpnObjectCP1
     call liftStackIfNonEmpty
     call stoX
     ret
@@ -306,9 +306,9 @@ pushToX:
 ; Destroys: all
 ; Preserves: OP1, OP2, LastX
 pushToXY:
-    call checkValidReal
+    call checkValidRealOP1
     call op1ExOp2
-    call checkValidReal
+    call checkValidRealOP1
     call op1ExOp2
     ;
     call liftStackIfNonEmpty
@@ -321,12 +321,12 @@ pushToXY:
 
 ;-----------------------------------------------------------------------------
 
-; Description: Check that OP1/OP2 is a valid RpnObject type (real, complex,
-; RpnDate or RpnDateTime). If real or complex, verify validity of number using
-; CkValidNum().
+; Description: Check that OP1/OP2 is a valid RpnObject type (e.g. Real,
+; Complex, Date-related objects). If real or complex, verify validity of number
+; using CkValidNum().
 ; Input: OP1/OP2:RpnObject
 ; Destroys: A, HL
-checkValid: ; TODO: Rename this checkValidObjectCP1()
+checkValidRpnObjectCP1:
     ld a, (OP1)
     and $1f
     cp rpnObjectTypeReal
@@ -339,10 +339,15 @@ checkValid: ; TODO: Rename this checkValidObjectCP1()
     ret z
     cp rpnObjectTypeDateTime
     ret z
-    cp rpnObjectTypeOffsetDateTime
-    ret z
     cp rpnObjectTypeOffset
     ret z
+    cp rpnObjectTypeOffsetDateTime
+    ret z
+    cp rpnObjectTypeDayOfWeek
+    ret z
+    cp rpnObjectTypeDuration
+    ret z
+    bcall(_ErrDataType)
 checkValidNumber:
     bcall(_CkValidNum) ; destroys AF, HL
     ret
@@ -350,7 +355,7 @@ checkValidNumber:
 ; Description: Check that OP1 is real. Throws Err:NonReal if not real.
 ; Input: OP1/OP2:RpnObject
 ; Destroys: A, HL
-checkValidReal: ; TODO: Rename this checkValidRealOP1()
+checkValidRealOP1:
     ld a, (OP1)
     and $1f
     cp rpnObjectTypeReal
