@@ -302,17 +302,17 @@ argBufLen equ inputBufLen
 argBufCapacity equ inputBufCapacity
 argBufSizeMax equ 4 ; max number of digits accepted on input
 
-; Menu variables. Two variables determine the current state of the menu, the
-; groupId and the rowIndex in the group. The C equivalent is:
+; Menu variables. Two variables determine the location in the menu hierarchy,
+; the groupId and the rowIndex in the group. The C equivalent is:
 ;
-;   struct Menu {
+;   struct MenuLocation {
 ;     uint16_t groupId; // id of the current menu group
 ;     uint8_t rowIndex; // menu row, groups of 5
 ;   }
 currentMenuGroupId equ inputBuf + inputBufSizeOf ; u16
 currentMenuRowIndex equ currentMenuGroupId + 2 ; u8
 
-; These variables remember the previous menuGroup/row pair when a shortcut was
+; The MenuLocation of the previous menuGroup/row pair when a shortcut was
 ; pressed to another menuGroup. On the ON/EXIT button is pressed, we can then
 ; go back to the previous menu, instead of going up to the parent of the menu
 ; invoked by the shortcut button. Not all shortcuts will choose to use this
