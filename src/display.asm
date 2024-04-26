@@ -506,6 +506,9 @@ displayStackXBoth:
 
 displayStackXNormal:
     call displayStackXLabel
+    ; Disable blinking cursor
+    res curAble, (iy + curFlags)
+    res curOn, (iy + curFlags)
     ; print the X register
     ld hl, stXCurCol*$100 + stXCurRow ; $(curCol)(curRow)
     ld (CurRow), hl
@@ -515,6 +518,9 @@ displayStackXNormal:
 
 displayStackXInput:
     call displayStackXLabel
+    ; Enable blinking cursor
+    set curAble, (iy + curFlags)
+    set curOn, (iy + curFlags)
     ; print the inputBuf
     ld hl, inputCurCol*$100 + inputCurRow ; $(curCol)(curRow)
     ld (CurRow), hl
@@ -552,6 +558,10 @@ displayStackXLabelContinue:
 ; Input: (argBuf)
 ; Output: (CurCol) updated
 displayStackXArg:
+    ; Disable blinking cursor
+    res curAble, (iy + curFlags)
+    res curOn, (iy + curFlags)
+    ; Set commandArg cursor position.
     ld hl, argCurCol*$100 + argCurRow ; $(curCol)(curRow)
     ld (CurRow), hl
     ld b, displayStackFontFlagsX
@@ -559,6 +569,7 @@ displayStackXArg:
 
 ; Description: Print the arg buffer at the (CurRow) and (CurCol).
 ; Input:
+;   - B=displayFontMask
 ;   - argBuf (same as inputBuf)
 ;   - argPrompt
 ;   - argModifier
@@ -639,9 +650,10 @@ printInputBuf:
     call truncateInputDisplay
     ld hl, inputDisplay
     call putPS
-    ; Append trailing '_' cursor.
-    ld a, cursorChar
-    bcall(_PutC)
+    ; Append trailing cursor. (Currently commented out because we are using the
+    ; native TIOS cursor which can be set to blink.)
+    ; ld a, cursorChar
+    ; bcall(_PutC)
     ; Skip EraseEOL() if the PutC() above wrapped to next line
     ld a, (CurCol)
     or a
@@ -657,7 +669,7 @@ printInputBuf:
 ;   - inputDisplay updated
 ;   - HL=inputDisplay
 ; Destroys: all registers
-formatInputBuf:
+formatInputBuf: ; TODO: Move to display2.asm
     ld hl, inputBuf
     ld de, inputDisplay
     ld b, (hl) ; B=len(inputBuf)
@@ -696,7 +708,7 @@ formatInputBufCopy:
 ; Input: inputDisplay
 ; Output: inputDisplay truncated if necessary
 ; Destroys: all registers
-truncateInputDisplay:
+truncateInputDisplay: ; TODO: Move to display2.asm
     ld hl, inputDisplay
     ld a, (hl) ; A=len
     inc hl ; skip past len byte
@@ -797,6 +809,15 @@ displayTvm1:
 displayMenu:
     bit dirtyFlagsMenu, (iy + dirtyFlags)
     ret z
+    ; Hack around TIOS Bug: Save the curFlags so that we can turn off blinking
+    ; on cursor during the rendering of the menus. If the blinking is enabled,
+    ; there seems to be a race-condition in the blinking code: If the menus are
+    ; redrawn at just at the right time, just before the blinking cursor is
+    ; drawn, the cursor is redrawn with an 8-pixel high, 1-pixel wide, black
+    ; line on the left-most edge of the cursor block.
+    ld a, (iy + curFlags)
+    push af
+    res curAble, (iy + curFlags)
     ; get starting menuId
     res fracDrawLFont, (iy + fontFlags) ; use small font
     bcall(_GetCurrentMenuRowBeginId) ; HL=rowMenuId
@@ -817,6 +838,9 @@ displayMenuLoop:
     add a, menuPenWidth + 1 ; A += menuWidth + 1 (1px spacing)
     ld c, a ; C += menuPenWidth + 1
     djnz displayMenuLoop
+    ; Restore the curFlags.
+    pop af
+    ld (iy + curFlags), a
     ret
 
 ;-----------------------------------------------------------------------------
@@ -830,6 +854,10 @@ msgShowLabel:
 ; digits.
 ; Destroys; A, HL, OP1, OP3-OP6
 displayShow:
+    ; Disable blinking cursor
+    res curAble, (iy + curFlags)
+    res curOn, (iy + curFlags)
+    ; Print 'SHOW' label on Error Code line
     ld hl, errorPenRow*$100 ; $(penRow)(penCol)
     ld (PenCol), hl
     ld hl, msgShowLabel
