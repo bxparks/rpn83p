@@ -275,7 +275,7 @@ inputBufEEMaxLen equ 2
 ; with different maxlen limits:
 ;
 ; 1) floating point real numbers: 20 characters (inputBufFloatMaxLen)
-; 2) complex numbers: 20 * 2 = 40 characters (inputBufComplexMaxLen)
+; 2) complex numbers: 20*2+1 = 41 characters (inputBufComplexMaxLen)
 ; 3) base-2 numbers: max of 32 digits (various, see getInputMaxLenBaseMode())
 ; 4) data records: max of 29 characters (various, see getInputMaxLenBaseMode())
 ;
