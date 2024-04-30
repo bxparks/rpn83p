@@ -30,6 +30,14 @@ and more complicated features will get their own GitHub tickets.
 
 ## Near Future
 
+- differentiate menu folders from regular menu items using a different UI
+    - see [Issue#20](https://github.com/bxparks/rpn83p/issues/20)
+- support insertion cursor using LEFT and RIGHT arrow keys
+    - currently the cursor always appears at the end of the input buffer
+    - it may be useful to support moving the cursor into the interior of the
+      input string using the LEFT and RIGHT arrow keys
+    - the DEL key would probably continue to delete to the left
+    - any other input would probably insert at the cursor position
 - bigger RPN stack
     - linking and unlinking a complex number to and from its 2 components
       effectively reduces the stack size by 1
@@ -115,12 +123,6 @@ and more complicated features will get their own GitHub tickets.
     - The terminating tolerance could be selectable or more intelligent.
     - Maybe change the root solving algorithm from Secant method to Newton's
       method for faster convergence.
-- support insertion cursor using LEFT and RIGHT arrow keys
-    - currently the cursor always appears at the end of the input buffer
-    - it may be useful to support moving the cursor into the interior of the
-      input string using the LEFT and RIGHT arrow keys
-    - the DEL key would probably continue to delete to the left
-    - any other input would probably insert at the cursor position
 - auto-insert an implied `1` when `EE` is pressed in certain conditions
     - if the `E` is pressed on the HP-42S, a `1` or `1.` or `-1` or `-1.` is
       auto inserted into the input buffer under certain conditions
