@@ -104,6 +104,16 @@ static void delete_left_char()
   cursor_input_pos--;
 }
 
+static void insert_char(char c)
+{
+  for (uint8_t i = input_buf_len; i > cursor_input_pos; i--) {
+    input_buf[i] = input_buf[i-1];
+  }
+  input_buf[cursor_input_pos] = c;
+  input_buf_len++;
+  cursor_input_pos++;
+}
+
 static void update_window()
 {
   uint8_t cursor_render_pos = index_map[cursor_input_pos];
@@ -163,12 +173,22 @@ static void print_render_window()
   putchar('\n');
 }
 
-/** REPL loop. */
+/**
+ * REPL loop. Use vi/vim cursor movement keys (h, l, 0, $). Support deletion of
+ * previous character using 'X' (like vi/vim). Support insertion of character at
+ * cursor using 'i{char}', where {char} is the character to be inserted.
+ *
+ * An ENTER character must be entered to send the imnput commands to the
+ * program.
+ */
 static void read_and_print()
 {
   while (true) {
+    // getchar() is a buffered call, so the user must hit ENTER before the input
+    // characters are retrieved by this program. That's a terrible UI, but for
+    // the purposes of prototyping and testing, it's more than good enough.
     char c = getchar();
-    // Use vi/vim cursor movement keys (h, l, 0, $)
+
     if (c == 'h') {
       move_cursor_left();
       update_window();
@@ -183,6 +203,17 @@ static void read_and_print()
       update_window();
     } else if (c == 'X') {
       delete_left_char();
+      render_input();
+      update_window();
+    } else if (c == 'i') {
+      // Insert the character right after the 'i' command. If there is
+      // no {char} after the 'i', do nothing.
+      char d = getchar();
+      if (d == '\n') {
+        ungetc(d, stdin);
+        continue;
+      }
+      insert_char(d);
       render_input();
       update_window();
     } else if (c == '\n') {
