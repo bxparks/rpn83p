@@ -94,6 +94,16 @@ static void move_cursor_end()
   cursor_input_pos = input_buf_len;
 }
 
+static void delete_left_char()
+{
+  if (cursor_input_pos == 0) return;
+  for (uint8_t i = cursor_input_pos; i < input_buf_len; i++) {
+    input_buf[i-1] = input_buf[i];
+  }
+  input_buf_len--;
+  cursor_input_pos--;
+}
+
 static void update_window()
 {
   uint8_t cursor_render_pos = index_map[cursor_input_pos];
@@ -170,6 +180,10 @@ static void read_and_print()
       update_window();
     } else if (c == '$') {
       move_cursor_end();
+      update_window();
+    } else if (c == 'X') {
+      delete_left_char();
+      render_input();
       update_window();
     } else if (c == '\n') {
       render_input();
