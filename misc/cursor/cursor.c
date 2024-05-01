@@ -35,11 +35,16 @@ static uint8_t window_end; // window=[start,end)
 // converted into render_buf coordinates using the index_map[] array.
 static uint8_t cursor_input_pos;
 
+// Location of the blinking cursor on the screen.
+static uint8_t cursor_screen_pos;
+
 //-----------------------------------------------------------------------------
 
 static void print_debugging()
 {
-  printf("DEBUG: cursor_input_pos=%d\n", cursor_input_pos);
+  printf("DEBUG: cursor_input_pos=%d; cursor_screen_pos=%d\n",
+      cursor_input_pos,
+      cursor_screen_pos);
   printf("DEBUG: window_start=%d; window_end=%d\n",
       window_start,
       window_end);
@@ -136,6 +141,9 @@ static void update_window()
   } else {
     // do nothing
   }
+
+  // Calc the location of the cursor in screen coordinates.
+  cursor_screen_pos = cursor_render_pos - window_start;
 
   print_debugging();
 }
