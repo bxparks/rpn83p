@@ -225,7 +225,6 @@ static void read_and_print()
       render_input();
       update_window();
     } else if (c == '\n') {
-      render_input();
       print_render_buf();
       print_render_window();
     } else {
