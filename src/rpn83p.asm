@@ -731,9 +731,9 @@ _SetHandlerCodeFromSystemCode equ _SetHandlerCodeFromSystemCodeLabel-branchTable
     .db 1
 
 ; input1.asm
-_InitInputBufLabel:
-_InitInputBuf equ _InitInputBufLabel-branchTableBase
-    .dw InitInputBuf
+_ColdInitInputBufLabel:
+_ColdInitInputBuf equ _ColdInitInputBufLabel-branchTableBase
+    .dw ColdInitInputBuf
     .db 1
 _ClearInputBufLabel:
 _ClearInputBuf equ _ClearInputBufLabel-branchTableBase

@@ -19,7 +19,7 @@ main:
     jr nc, initAlways
     ; Initialize everything if RestoreAppState() fails.
     bcall(_ColdInitErrorCode)
-    bcall(_InitInputBuf)
+    bcall(_ColdInitInputBuf)
     bcall(_InitDate)
     bcall(_RtcInit)
     bcall(_InitMenu)

@@ -15,7 +15,7 @@
 ;   - inputBuf set to empty
 ;   - rpnFlagsEditing reset
 ; Destroys: A
-InitInputBuf:
+ColdInitInputBuf:
     res rpnFlagsEditing, (iy + rpnFlags)
     ; [[fallthrough]]
 
