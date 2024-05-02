@@ -18,24 +18,28 @@
 #include <string.h> // strcmp()
 
 #define INPUT_BUF_SIZE 41
-#define SCREEN_SIZE_MAX 14
 #define WINDOW_SIZE_DEFAULT 5
 
+// Characters entered by the user. (Persistent)
 static char input_buf[INPUT_BUF_SIZE + 1]; // +1 trailing cursor, +1 NUL
 static uint8_t input_buf_len;
+
+// Characters rendered on the screen. (Temporary)
 static char render_buf[INPUT_BUF_SIZE*2 + 1 + 1]; // +1 trailing cursor, +1 NUL
 static uint8_t render_buf_len;
 static uint8_t index_map[INPUT_BUF_SIZE + 1];
 
+// Window over renderBuf to be rendered on the screen. (Persistent)
 static uint8_t window_size = WINDOW_SIZE_DEFAULT;
 static uint8_t window_start;
 static uint8_t window_end; // window=[start,end)
 
 // The edit cursor is tracked using the input_buf coordinates, which can be
 // converted into render_buf coordinates using the index_map[] array.
+// (Persistent)
 static uint8_t cursor_input_pos;
 
-// Location of the blinking cursor on the screen.
+// Location of the blinking cursor on the screen. (Temporary)
 static uint8_t cursor_screen_pos;
 
 //-----------------------------------------------------------------------------
