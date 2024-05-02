@@ -656,9 +656,9 @@ _ProcessHelpCommands equ _ProcessHelpCommandsLabel-branchTableBase
     .db 1
 
 ; menu1.asm
-_InitMenuLabel:
-_InitMenu equ _InitMenuLabel-branchTableBase
-    .dw InitMenu
+_ColdInitMenuLabel:
+_ColdInitMenu equ _ColdInitMenuLabel-branchTableBase
+    .dw ColdInitMenu
     .db 1
 _SanitizeMenuLabel:
 _SanitizeMenu equ _SanitizeMenuLabel-branchTableBase
@@ -713,9 +713,9 @@ _Crc16ccitt equ _Crc16ccittLabel-branchTableBase
     .db 1
 
 ; errorcode1.asm
-_InitErrorCodeLabel:
-_InitErrorCode equ _InitErrorCodeLabel-branchTableBase
-    .dw InitErrorCode
+_ColdInitErrorCodeLabel:
+_ColdInitErrorCode equ _ColdInitErrorCodeLabel-branchTableBase
+    .dw ColdInitErrorCode
     .db 1
 _PrintErrorStringLabel:
 _PrintErrorString equ _PrintErrorStringLabel-branchTableBase
@@ -731,9 +731,9 @@ _SetHandlerCodeFromSystemCode equ _SetHandlerCodeFromSystemCodeLabel-branchTable
     .db 1
 
 ; input1.asm
-_InitInputBufLabel:
-_InitInputBuf equ _InitInputBufLabel-branchTableBase
-    .dw InitInputBuf
+_ColdInitInputBufLabel:
+_ColdInitInputBuf equ _ColdInitInputBufLabel-branchTableBase
+    .dw ColdInitInputBuf
     .db 1
 _ClearInputBufLabel:
 _ClearInputBuf equ _ClearInputBufLabel-branchTableBase
@@ -989,6 +989,10 @@ _ProbComb equ _ProbCombLabel-branchTableBase
     .db 1
 
 ; complex1.asm
+_ColdInitComplexLabel:
+_ColdInitComplex equ _ColdInitComplexLabel-branchTableBase
+    .dw ColdInitComplex
+    .db 1
 _RectToComplexLabel:
 _RectToComplex equ _RectToComplexLabel-branchTableBase
     .dw RectToComplex
@@ -1068,9 +1072,9 @@ _FormatComplexPolarDeg equ _FormatComplexPolarDegLabel-branchTableBase
 ;-----------------------------------------------------------------------------
 
 ; modes2.asm
-_InitModesLabel:
-_InitModes equ _InitModesLabel-branchTableBase
-    .dw InitModes
+_ColdInitModesLabel:
+_ColdInitModes equ _ColdInitModesLabel-branchTableBase
+    .dw ColdInitModes
     .db 2
 
 ; selectepoch2.asm
@@ -1195,9 +1199,9 @@ _ValidateDuration equ _ValidateDurationLabel-branchTableBase
     .db 2
 
 ; date2.asm
-_InitDateLabel:
-_InitDate equ _InitDateLabel-branchTableBase
-    .dw InitDate
+_ColdInitDateLabel:
+_ColdInitDate equ _ColdInitDateLabel-branchTableBase
+    .dw ColdInitDate
     .db 2
 ; Year functions
 _IsLeapLabel:
@@ -1435,9 +1439,9 @@ _GetAppTimeZone equ _GetAppTimeZoneLabel-branchTableBase
     .db 2
 
 ; rtc2.asm
-_RtcInitLabel:
-_RtcInit equ _RtcInitLabel-branchTableBase
-    .dw RtcInit
+_ColdInitRtcLabel:
+_ColdInitRtc equ _ColdInitRtcLabel-branchTableBase
+    .dw ColdInitRtc
     .db 2
 _RtcGetNowLabel:
 _RtcGetNow equ _RtcGetNowLabel-branchTableBase
@@ -1474,9 +1478,9 @@ _RtcGetTimeZone equ _RtcGetTimeZoneLabel-branchTableBase
     .db 2
 
 ; base2.asm
-_InitBaseLabel:
-_InitBase equ _InitBaseLabel-branchTableBase
-    .dw InitBase
+_ColdInitBaseLabel:
+_ColdInitBase equ _ColdInitBaseLabel-branchTableBase
+    .dw ColdInitBase
     .db 2
 _BitwiseAndLabel:
 _BitwiseAnd equ _BitwiseAndLabel-branchTableBase

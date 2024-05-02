@@ -11,7 +11,7 @@
 ;-----------------------------------------------------------------------------
 
 ; Description: Initialize errorCode and handlerCode to 0.
-InitErrorCode:
+ColdInitErrorCode:
     xor a
     ld (errorCode), a
     ld (handlerCode), a

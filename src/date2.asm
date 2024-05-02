@@ -8,7 +8,7 @@
 ; entry.
 ;-----------------------------------------------------------------------------
 
-InitDate:
+ColdInitDate:
     ; select Unix epoch by default.
     call SelectUnixEpochDate
     ; Set the default customEpochDate to 2050-01-01

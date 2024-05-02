@@ -15,7 +15,7 @@
 ;-----------------------------------------------------------------------------
 
 ; Description: Initialize the STAT modes.
-initStat:
+coldInitStat:
     jr mStatAllModeHandler ; default AllSigma mode
 
 ;-----------------------------------------------------------------------------
