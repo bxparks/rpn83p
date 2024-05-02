@@ -9,7 +9,8 @@
 ; page 0. Lowercased labels are intended to be local to the current flash page.
 ;-----------------------------------------------------------------------------
 
-InitBase:
+; Description: Cold initialize the BASE configurations.
+ColdInitBase:
     res rpnFlagsBaseModeEnabled, (iy + rpnFlags)
     ld a, 10
     ld (baseNumber), a

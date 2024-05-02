@@ -1474,9 +1474,9 @@ _RtcGetTimeZone equ _RtcGetTimeZoneLabel-branchTableBase
     .db 2
 
 ; base2.asm
-_InitBaseLabel:
-_InitBase equ _InitBaseLabel-branchTableBase
-    .dw InitBase
+_ColdInitBaseLabel:
+_ColdInitBase equ _ColdInitBaseLabel-branchTableBase
+    .dw ColdInitBase
     .db 2
 _BitwiseAndLabel:
 _BitwiseAnd equ _BitwiseAndLabel-branchTableBase
