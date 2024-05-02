@@ -6,6 +6,7 @@
 ;------------------------------------------------------------------------------
 
 main:
+    ; Initialize TI-OS states and parameters.
     call setIsRtcAvailable
     call setFastSpeed
     bcall(_SaveOSState)
@@ -15,9 +16,9 @@ main:
     res lwrCaseActive, (iy + appLwrCaseFlag) ; disable ALPHA-ALPHA lowercase
     bcall(_ClrLCDFull)
 
-    bcall(_RestoreAppState)
-    jr nc, initAlways
-    ; Initialize everything if RestoreAppState() fails.
+    bcall(_RestoreAppState) ; CF=1 if RPN83SAV var is invalid
+    jr nc, warmInit
+    ; Cold initialize if RestoreAppState() fails.
     bcall(_ColdInitErrorCode)
     bcall(_ColdInitInputBuf)
     bcall(_ColdInitDate)
@@ -29,10 +30,10 @@ main:
     call coldInitStat
     call coldInitCfit
     call coldInitTvm
-initAlways:
-    ; If RestoreAppState() suceeds, only the following are initialized.
-    bcall(_InitArgBuf) ; Start with command ArgScanner off.
+warmInit:
+    ; If RestoreAppState() succeeds, perform only warm initialization.
     bcall(_SanitizeMenu) ; Sanitize currentMenuGroupId currentMenuRowIndex
+    bcall(_InitArgBuf) ; Start with command ArgScanner off.
     call updateNumResultMode
     call updateComplexMode
     call initStack
