@@ -10,6 +10,17 @@
 ; entry.
 ;------------------------------------------------------------------------------
 
+; Description: Cold initialize the complex result mode and the complex display
+; mode.
+ColdInitComplex:
+    ld a, numResultModeReal
+    ld (numResultMode), a
+    ld a, complexModeRect
+    ld (complexMode), a
+    ret
+
+;------------------------------------------------------------------------------
+
 ; Description: Convert OP1/OP2 (re,im) into complex number in CP1.
 ; Input: OP1/OP2=(re,im)
 RectToComplex:

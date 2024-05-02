@@ -57,12 +57,6 @@ convertErr:
 ; Complex result modes.
 ;-----------------------------------------------------------------------------
 
-; Description: Initialize the number result modes to "real results only".
-initNumResultMode:
-    ld a, numResultModeReal
-    ld (numResultMode), a
-    ret
-
 ; Description: Update the TI-OS 'fmtFlags' from the 'numResult' variable in
 ; RPN83P.
 updateNumResultMode:
@@ -99,10 +93,7 @@ updateComplexMode:
     ret z
     cp a, complexModeDeg
     ret z
-    ; [[fallthrough]]
-
-; Description: Initialize the complex display mode.
-initComplexMode:
+    ; Should not happen, but default RECT mode if it does.
     ld a, complexModeRect
     ld (complexMode), a
     ret

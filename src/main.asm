@@ -24,9 +24,8 @@ main:
     bcall(_ColdInitRtc)
     bcall(_ColdInitMenu)
     bcall(_ColdInitBase)
+    bcall(_ColdInitComplex)
     bcall(_InitModes)
-    call initNumResultMode
-    call initComplexMode
     call initStat
     call initCfit
     call initTvm

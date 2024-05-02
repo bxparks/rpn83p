@@ -989,6 +989,10 @@ _ProbComb equ _ProbCombLabel-branchTableBase
     .db 1
 
 ; complex1.asm
+_ColdInitComplexLabel:
+_ColdInitComplex equ _ColdInitComplexLabel-branchTableBase
+    .dw ColdInitComplex
+    .db 1
 _RectToComplexLabel:
 _RectToComplex equ _RectToComplexLabel-branchTableBase
     .dw RectToComplex
