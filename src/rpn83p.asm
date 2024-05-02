@@ -713,9 +713,9 @@ _Crc16ccitt equ _Crc16ccittLabel-branchTableBase
     .db 1
 
 ; errorcode1.asm
-_InitErrorCodeLabel:
-_InitErrorCode equ _InitErrorCodeLabel-branchTableBase
-    .dw InitErrorCode
+_ColdInitErrorCodeLabel:
+_ColdInitErrorCode equ _ColdInitErrorCodeLabel-branchTableBase
+    .dw ColdInitErrorCode
     .db 1
 _PrintErrorStringLabel:
 _PrintErrorString equ _PrintErrorStringLabel-branchTableBase
