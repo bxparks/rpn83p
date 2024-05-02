@@ -16,7 +16,7 @@
 ;   - (jumpBackMenuGroupId) = 0
 ;   - (jumpBackMenuRowIndex) = 0
 ; Destroys: A, HL
-InitMenu:
+ColdInitMenu:
     ld hl, mRootId
     ld (currentMenuGroupId), hl
     xor a

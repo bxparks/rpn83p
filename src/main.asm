@@ -22,7 +22,7 @@ main:
     bcall(_ColdInitInputBuf)
     bcall(_ColdInitDate)
     bcall(_ColdInitRtc)
-    bcall(_InitMenu)
+    bcall(_ColdInitMenu)
     bcall(_InitBase)
     bcall(_InitModes)
     call initNumResultMode
