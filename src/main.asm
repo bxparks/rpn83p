@@ -27,7 +27,7 @@ main:
     bcall(_ColdInitComplex)
     bcall(_ColdInitModes)
     call coldInitStat
-    call initCfit
+    call coldInitCfit
     call initTvm
 initAlways:
     ; If RestoreAppState() suceeds, only the following are initialized.
