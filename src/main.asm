@@ -28,7 +28,7 @@ main:
     bcall(_ColdInitModes)
     call coldInitStat
     call coldInitCfit
-    call initTvm
+    call coldInitTvm
 initAlways:
     ; If RestoreAppState() suceeds, only the following are initialized.
     bcall(_InitArgBuf) ; Start with command ArgScanner off.

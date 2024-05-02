@@ -23,9 +23,8 @@
 ; another Calculate.
 ;-----------------------------------------------------------------------------
 
-; Description: Reset all of the TVM variables. This is performed only when
-; RestoreAppState() fails.
-initTvm:
+; Description: Cold initialize all of the TVM variables.
+coldInitTvm:
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     bcall(_TvmClear)
     ; [[fallthrough]]
