@@ -6,8 +6,8 @@
 ;------------------------------------------------------------------------------
 
 ; Description: Initialize miscellaneous settings under the MODES menu.
-InitModes:
-    ld a, commaEEModeNormal ; factory default setting is "Normal"
+ColdInitModes:
+    ld a, commaEEModeNormal ; set ',EE' button to act as labeled on keypad
     ld (commaEEMode), a
     ;
     ld a, formatRecordModeRaw

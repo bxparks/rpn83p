@@ -25,7 +25,7 @@ main:
     bcall(_ColdInitMenu)
     bcall(_ColdInitBase)
     bcall(_ColdInitComplex)
-    bcall(_InitModes)
+    bcall(_ColdInitModes)
     call initStat
     call initCfit
     call initTvm

@@ -1072,9 +1072,9 @@ _FormatComplexPolarDeg equ _FormatComplexPolarDegLabel-branchTableBase
 ;-----------------------------------------------------------------------------
 
 ; modes2.asm
-_InitModesLabel:
-_InitModes equ _InitModesLabel-branchTableBase
-    .dw InitModes
+_ColdInitModesLabel:
+_ColdInitModes equ _ColdInitModesLabel-branchTableBase
+    .dw ColdInitModes
     .db 2
 
 ; selectepoch2.asm
