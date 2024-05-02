@@ -21,7 +21,7 @@ main:
     bcall(_ColdInitErrorCode)
     bcall(_ColdInitInputBuf)
     bcall(_ColdInitDate)
-    bcall(_RtcInit)
+    bcall(_ColdInitRtc)
     bcall(_InitMenu)
     bcall(_InitBase)
     bcall(_InitModes)

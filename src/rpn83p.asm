@@ -1435,9 +1435,9 @@ _GetAppTimeZone equ _GetAppTimeZoneLabel-branchTableBase
     .db 2
 
 ; rtc2.asm
-_RtcInitLabel:
-_RtcInit equ _RtcInitLabel-branchTableBase
-    .dw RtcInit
+_ColdInitRtcLabel:
+_ColdInitRtc equ _ColdInitRtcLabel-branchTableBase
+    .dw ColdInitRtc
     .db 2
 _RtcGetNowLabel:
 _RtcGetNow equ _RtcGetNowLabel-branchTableBase

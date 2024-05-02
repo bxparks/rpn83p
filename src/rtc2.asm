@@ -16,7 +16,7 @@
 ; entry.
 ;-----------------------------------------------------------------------------
 
-RtcInit:
+ColdInitRtc:
     ; set RTC timezone to UTC initially
     ld hl, 0
     ld (rtcTimeZone), hl
