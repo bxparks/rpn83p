@@ -702,9 +702,9 @@ renderInputBufCopy:
     ld (hl), c ; len(renderBuf)=targetLen
     ret
 
-; Description: Truncate renderBuf to a maximum of 14 characters. If more
-; than 14 characters, add an ellipsis character on the left most character and
-; copy the last 13 characters.
+; Description: Truncate renderBuf to the renderWindowsize (currently 14). If
+; more than 14 characters, add an ellipsis character on the left most character
+; and copy the last 13 characters.
 ; Input: renderBuf
 ; Output: renderBuf truncated if necessary
 ; Destroys: all registers
@@ -712,22 +712,22 @@ truncateRenderBuf: ; TODO: Move to display2.asm
     ld hl, renderBuf
     ld a, (hl) ; A=len
     inc hl ; skip past len byte
-    cp renderBufMaxLen+1 ; if len<15: CF=1
+    cp renderWindowSize+1 ; if len<15: CF=1
     ret c
     ; We are here if len>=15. Extract the last 13 characters, with an ellipsis
     ; on the left most character.
-    sub renderBufMaxLen-1 ; A=len-13
+    sub renderWindowSize-1 ; A=len-13
     ld e, a
     ld d, 0
     add hl, de ; HL=pointer to last 13 characters
-    ld a, renderBufMaxLen
+    ld a, renderWindowSize
     ld de, renderBuf
     ld (de), a ; len=14
     inc de; skip past len byte
     ld a, Lellipsis
     ld (de), a
     inc de
-    ld bc, renderBufMaxLen-1
+    ld bc, renderWindowSize-1
     ldir ; shift the last 13 characters to the beginning of renderBuf
     ret
 

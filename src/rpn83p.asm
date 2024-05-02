@@ -547,9 +547,9 @@ renderBufSizeOf equ renderBufCapacity + 1 ; total size of data structure
 
 ; Maximum number of characters that can be displayed during input/editing mode.
 ; The LCD line can display 16 characters using the large font. We need 1 char
-; for the "X:" label, and 1 char for the trailing prompt "_", which leaves us
-; with 14 characters.
-renderBufMaxLen equ 14
+; for the "X:" label, and 1 char for the trailing cursor, which leaves us with
+; 14 characters.
+renderWindowSize equ 14
 
 ; Set of bit-flags that remember whether an RPN stack display line was rendered
 ; in large or small font. We can optimize the drawing algorithm by performing a
