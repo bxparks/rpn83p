@@ -530,26 +530,26 @@ tvmSolverCount equ tvmSolverIsRunning + 1 ; u8; iteration count
 ; A Pascal-string that contains the rendered version of inputBuf, truncated and
 ; formatted as needed, which can be printed on the screen. It is slightly
 ; longer than inputBuf because sometimes a single character in inputBuf gets
-; expanded to multiple characters in inputDisplay (e.g. 'Ldegree' delimiter for
+; expanded to multiple characters in renderBuf (e.g. 'Ldegree' delimiter for
 ; complex numbers gets expanded to 'Langle,Ltemp' pair).
 ;
 ; The C structure is:
 ;
-; struct InputDisplay {
+; struct RenderBuf {
 ;   uint8_t len;
-;   char buf[inputDisplayCapacity];
+;   char buf[renderBufCapacity];
 ; };
-inputDisplay equ tvmSolverCount + 1 ; struct InputDisplay; Pascal-string
-inputDisplayLen equ inputDisplay ; len byte of the string
-inputDisplayBuf equ inputDisplay + 1 ; start of actual buffer
-inputDisplayCapacity equ inputBufCapacity + 1 ; Ldegree -> Langle Ltemp
-inputDisplaySizeOf equ inputDisplayCapacity + 1 ; total size of data structure
+renderBuf equ tvmSolverCount + 1 ; struct RenderBuf; Pascal-string
+renderBufLen equ renderBuf ; len byte of the string
+renderBufBuf equ renderBuf + 1 ; start of actual buffer
+renderBufCapacity equ inputBufCapacity + 1 ; Ldegree -> Langle Ltemp
+renderBufSizeOf equ renderBufCapacity + 1 ; total size of data structure
 
 ; Maximum number of characters that can be displayed during input/editing mode.
 ; The LCD line can display 16 characters using the large font. We need 1 char
 ; for the "X:" label, and 1 char for the trailing prompt "_", which leaves us
 ; with 14 characters.
-inputDisplayMaxLen equ 14
+renderBufMaxLen equ 14
 
 ; Set of bit-flags that remember whether an RPN stack display line was rendered
 ; in large or small font. We can optimize the drawing algorithm by performing a
@@ -561,7 +561,7 @@ displayStackFontFlagsX equ 1
 displayStackFontFlagsY equ 2
 displayStackFontFlagsZ equ 4
 displayStackFontFlagsT equ 8
-displayStackFontFlags equ inputDisplay + inputDisplaySizeOf ; u8
+displayStackFontFlags equ renderBuf + renderBufSizeOf ; u8
 
 appBufferEnd equ displayStackFontFlags + 1
 

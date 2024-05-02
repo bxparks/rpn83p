@@ -646,9 +646,9 @@ msgArgModifierIndirect:
 ;   - (CurCol) is updated
 ; Destroys: A, HL; BC destroyed by PutPS()
 printInputBuf:
-    call formatInputBuf
-    call truncateInputDisplay
-    ld hl, inputDisplay
+    call renderInputBuf
+    call truncateRenderBuf
+    ld hl, renderBuf
     call putPS
     ; Append trailing cursor. (Currently commented out because we are using the
     ; native TIOS cursor which can be set to blink.)
@@ -661,17 +661,17 @@ printInputBuf:
     bcall(_EraseEOL)
     ret
 
-; Description: Convert the inputBuf into inputDisplay suitable for rendering on
+; Description: Convert the inputBuf into renderBuf suitable for rendering on
 ; the screen. If Ldegree character used for complex polar degree mode exists,
 ; it is replaced by (Langle, Ltemp) pair.
 ; Input: inputBuf
 ; Output:
-;   - inputDisplay updated
-;   - HL=inputDisplay
+;   - renderBuf updated
+;   - HL=renderBuf
 ; Destroys: all registers
-formatInputBuf: ; TODO: Move to display2.asm
+renderInputBuf: ; TODO: Move to display2.asm
     ld hl, inputBuf
-    ld de, inputDisplay
+    ld de, renderBuf
     ld b, (hl) ; B=len(inputBuf)
     ; check for zero string
     ld a, b
@@ -682,53 +682,53 @@ formatInputBuf: ; TODO: Move to display2.asm
     inc hl ; skip past len byte
     inc de ; skip past len byte
     ld c, 0 ; C=targetLength
-formatInputBufLoop:
+renderInputBufLoop:
     ld a, (hl)
     inc hl
     cp Ldegree
-    jr nz, formatInputBufCopy
+    jr nz, renderInputBufCopy
     ; Expand Ldegree into (Langle, Ltemp).
     ld a, Langle
     ld (de), a
     inc de
     inc c
     ld a, Ltemp
-formatInputBufCopy:
+renderInputBufCopy:
     ld (de), a
     inc de
     inc c
-    djnz formatInputBufLoop
-    ld hl, inputDisplay
-    ld (hl), c ; len(inputDisplay)=targetLen
+    djnz renderInputBufLoop
+    ld hl, renderBuf
+    ld (hl), c ; len(renderBuf)=targetLen
     ret
 
-; Description: Truncate inputDisplay to a maximum of 14 characters. If more
+; Description: Truncate renderBuf to a maximum of 14 characters. If more
 ; than 14 characters, add an ellipsis character on the left most character and
 ; copy the last 13 characters.
-; Input: inputDisplay
-; Output: inputDisplay truncated if necessary
+; Input: renderBuf
+; Output: renderBuf truncated if necessary
 ; Destroys: all registers
-truncateInputDisplay: ; TODO: Move to display2.asm
-    ld hl, inputDisplay
+truncateRenderBuf: ; TODO: Move to display2.asm
+    ld hl, renderBuf
     ld a, (hl) ; A=len
     inc hl ; skip past len byte
-    cp inputDisplayMaxLen+1 ; if len<15: CF=1
+    cp renderBufMaxLen+1 ; if len<15: CF=1
     ret c
     ; We are here if len>=15. Extract the last 13 characters, with an ellipsis
     ; on the left most character.
-    sub inputDisplayMaxLen-1 ; A=len-13
+    sub renderBufMaxLen-1 ; A=len-13
     ld e, a
     ld d, 0
     add hl, de ; HL=pointer to last 13 characters
-    ld a, inputDisplayMaxLen
-    ld de, inputDisplay
+    ld a, renderBufMaxLen
+    ld de, renderBuf
     ld (de), a ; len=14
     inc de; skip past len byte
     ld a, Lellipsis
     ld (de), a
     inc de
-    ld bc, inputDisplayMaxLen-1
-    ldir ; shift the last 13 characters to the beginning of inputDisplay
+    ld bc, renderBufMaxLen-1
+    ldir ; shift the last 13 characters to the beginning of renderBuf
     ret
 
 ;-----------------------------------------------------------------------------
