@@ -20,7 +20,7 @@ main:
     ; Initialize everything if RestoreAppState() fails.
     bcall(_ColdInitErrorCode)
     bcall(_ColdInitInputBuf)
-    bcall(_InitDate)
+    bcall(_ColdInitDate)
     bcall(_RtcInit)
     bcall(_InitMenu)
     bcall(_InitBase)

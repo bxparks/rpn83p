@@ -1195,9 +1195,9 @@ _ValidateDuration equ _ValidateDurationLabel-branchTableBase
     .db 2
 
 ; date2.asm
-_InitDateLabel:
-_InitDate equ _InitDateLabel-branchTableBase
-    .dw InitDate
+_ColdInitDateLabel:
+_ColdInitDate equ _ColdInitDateLabel-branchTableBase
+    .dw ColdInitDate
     .db 2
 ; Year functions
 _IsLeapLabel:
