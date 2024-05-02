@@ -31,17 +31,17 @@ main:
     call coldInitCfit
     call coldInitTvm
 warmInit:
-    ; If RestoreAppState() succeeds, perform only warm initialization.
-    bcall(_SanitizeMenu) ; Sanitize currentMenuGroupId currentMenuRowIndex
+    ; Always perform only warm initialization.
+    bcall(_SanitizeMenu) ; Sanitize currentMenuGroupId and currentMenuRowIndex
     bcall(_InitArgBuf) ; Start with command ArgScanner off.
     call updateNumResultMode
     call updateComplexMode
     call initStack
     call initRegs
     call initStatRegs
-    call initLastX ; Always copy TI-OS 'ANS' to 'X'
-    call initDisplay ; Always initialize the display.
-    call initTvmSolver ; Always init TVM solver
+    call initLastX
+    call initDisplay
+    call initTvmSolver
 
     ; Initialize the App monitor so that we can intercept the Put Away (2ND
     ; OFF) signal.
