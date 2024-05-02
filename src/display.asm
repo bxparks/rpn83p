@@ -140,14 +140,33 @@ initDisplay:
 
 ; Description: Update the display, including the title, RPN stack variables,
 ; and the menu.
+;
+; We must turn off the cursor at the very beginning of the drawing code, then
+; reenable it at the end (if needed). Otherwise, there seems to be a
+; race-condition in the blinking code of TIOS where the cursor is shown
+; (probably through an interrupt handler), then the cursor position is changed
+; by our code, but the blinking code does not remember the prior location where
+; the cursor was enabled, so does not unblink the cursor properly, leaving an
+; artifact of the cursor in the wrong location.
+;
 ; Input: none
 ; Output:
 ; Destroys: all
 displayAll:
+    ; Disable blinking cursor
+    res curAble, (iy + curFlags)
+    res curOn, (iy + curFlags)
+    ;
     call displayStatus
     call displayErrorCode
     call displayMain
     call displayMenu
+    ; Enable blinking cursor if in edit mode.
+    bit rpnFlagsEditing, (iy + rpnFlags)
+    jr z, displayAllNoEdit
+    set curAble, (iy + curFlags)
+    set curOn, (iy + curFlags)
+displayAllNoEdit:
     ; Reset all dirty flags
     xor a
     ld (iy + dirtyFlags), a
@@ -506,9 +525,6 @@ displayStackXBoth:
 
 displayStackXNormal:
     call displayStackXLabel
-    ; Disable blinking cursor
-    res curAble, (iy + curFlags)
-    res curOn, (iy + curFlags)
     ; print the X register
     ld hl, stXCurCol*$100 + stXCurRow ; $(curCol)(curRow)
     ld (CurRow), hl
@@ -518,9 +534,6 @@ displayStackXNormal:
 
 displayStackXInput:
     call displayStackXLabel
-    ; Enable blinking cursor
-    set curAble, (iy + curFlags)
-    set curOn, (iy + curFlags)
     ; print the inputBuf
     ld hl, inputCurCol*$100 + inputCurRow ; $(curCol)(curRow)
     ld (CurRow), hl
@@ -558,9 +571,6 @@ displayStackXLabelContinue:
 ; Input: (argBuf)
 ; Output: (CurCol) updated
 displayStackXArg:
-    ; Disable blinking cursor
-    res curAble, (iy + curFlags)
-    res curOn, (iy + curFlags)
     ; Set commandArg cursor position.
     ld hl, argCurCol*$100 + argCurRow ; $(curCol)(curRow)
     ld (CurRow), hl
@@ -809,15 +819,6 @@ displayTvm1:
 displayMenu:
     bit dirtyFlagsMenu, (iy + dirtyFlags)
     ret z
-    ; Hack around TIOS Bug: Save the curFlags so that we can turn off blinking
-    ; on cursor during the rendering of the menus. If the blinking is enabled,
-    ; there seems to be a race-condition in the blinking code: If the menus are
-    ; redrawn at just at the right time, just before the blinking cursor is
-    ; drawn, the cursor is redrawn with an 8-pixel high, 1-pixel wide, black
-    ; line on the left-most edge of the cursor block.
-    ld a, (iy + curFlags)
-    push af
-    res curAble, (iy + curFlags)
     ; get starting menuId
     res fracDrawLFont, (iy + fontFlags) ; use small font
     bcall(_GetCurrentMenuRowBeginId) ; HL=rowMenuId
@@ -838,9 +839,6 @@ displayMenuLoop:
     add a, menuPenWidth + 1 ; A += menuWidth + 1 (1px spacing)
     ld c, a ; C += menuPenWidth + 1
     djnz displayMenuLoop
-    ; Restore the curFlags.
-    pop af
-    ld (iy + curFlags), a
     ret
 
 ;-----------------------------------------------------------------------------
@@ -854,9 +852,6 @@ msgShowLabel:
 ; digits.
 ; Destroys; A, HL, OP1, OP3-OP6
 displayShow:
-    ; Disable blinking cursor
-    res curAble, (iy + curFlags)
-    res curOn, (iy + curFlags)
     ; Print 'SHOW' label on Error Code line
     ld hl, errorPenRow*$100 ; $(penRow)(penCol)
     ld (PenCol), hl
