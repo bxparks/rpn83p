@@ -736,29 +736,45 @@ renderInputBufExit:
 ;   - cursorInputPos
 ;   - renderIndexes:(const u8*)
 ; Output:
+;   - cursorRenderPos updated
 ;   - renderWindowStart updated
 ;   - renderWindowEnd updated
-;   - cursorRenderPos updated
 ; Destroys: A, BC, HL
 updateRenderWindow:
     call updateCursorRenderPos ; A=cursorRenderPos
     ld bc, (renderWindowEnd) ; B=start; C=end
-    ; if cursorRenderPos<=start:
-    ; if cursorRenderPos<start+1:
+    ; if cursorRenderPos>=renderBufLen: cursor is at end of renderBuf
+    ld hl, renderBufLen
+    cp (hl) ; CF=0 if cursorRenderPos>=renderBufLen
+    jr nc, updateRenderWindowAppending
+    ; else if cursorRenderPos<=start: cursor is on left side of renderBuf
+    ; (same as `if cursorRenderPos<start+1`)
     inc b
     cp b ; CF=1 if above true
     dec b ; does not affect CF
     jr c, updateRenderWindowShiftLeft
-    ; else if end-1<=cursorRenderPos:
-    ; else if cursorRenderPos>=end-1:
+    ; else if end-1<=cursorRenderPos: cursor is on right side of renderBuf
+    ; (same as `if cursorRenderPos>=end-1`)
     dec c ; end-1
     cp c ; CF=0 if above true
     inc c
     jr nc, updateRenderWindowShiftRight
+    ret ; do nothing by default
+updateRenderWindowAppending:
+    ld a, (hl) ; A=renderBufLen
+    cp renderWindowSize ; CF=1 if renderBufLen < renderWindowSize
+    jr nc, updateRenderWindowAppendingPegRight
+    ; peg left
+    ld b, 0
+    ld c, renderWindowSize
     jr updateRenderWindowUpdate
-    ;
+updateRenderWindowAppendingPegRight:
+    inc a
+    ld c, a ; C=renderWindowEnd=renderBufLen+1
+    sub renderWindowSize
+    ld b, a ; B=renderWindowBegin=renderWindowEnd-renderWindowSize
+    jr updateRenderWindowUpdate
 updateRenderWindowShiftRight:
-    ld hl, renderBufLen
     cp (hl) ; ZF=1 if cursorRenderPos == renderBufLen
     jr z, updateRenderWindowShiftRightContinue
     inc a ; A++
