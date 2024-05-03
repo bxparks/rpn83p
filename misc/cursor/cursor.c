@@ -34,10 +34,11 @@ static uint8_t window_size = WINDOW_SIZE_DEFAULT;
 static uint8_t window_start;
 static uint8_t window_end; // window=[start,end)
 
-// The edit cursor is tracked using the input_buf coordinates, which can be
-// converted into render_buf coordinates using the index_map[] array.
-// (Persistent)
+// The position of the cursor using input_buf[] coordinates. (Persistent)
 static uint8_t cursor_input_pos;
+
+// The position of the cursor using render_buf[] coordinates. (Temporary)
+static uint8_t cursor_render_pos;
 
 // Location of the blinking cursor on the screen. (Temporary)
 static uint8_t cursor_screen_pos;
@@ -125,7 +126,7 @@ static void insert_char(char c)
 
 static void update_window()
 {
-  uint8_t cursor_render_pos = index_map[cursor_input_pos];
+  cursor_render_pos = index_map[cursor_input_pos];
   if (cursor_render_pos <= window_start) {
     if (cursor_render_pos == 0 ) {
       window_start = 0;
@@ -163,7 +164,6 @@ static void print_render_buf()
 static void print_render_window()
 {
   uint8_t screen_pos = 0;
-  uint8_t cursor_render_pos = index_map[cursor_input_pos];
   for (uint8_t i = window_start; i < window_end; i++) {
     if (cursor_render_pos == i) {
       putchar('_');
