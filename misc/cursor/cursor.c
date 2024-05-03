@@ -127,7 +127,18 @@ static void insert_char(char c)
 static void update_window()
 {
   cursor_render_pos = index_map[cursor_input_pos];
-  if (cursor_render_pos <= window_start) {
+  if (cursor_render_pos >= render_buf_len) {
+    // cursor at the end, so set the render window to show as much of the
+    // render_buf as possible
+    if (render_buf_len < window_size) {
+      window_start = 0;
+      window_end = window_size;
+    } else {
+      window_end = render_buf_len + 1;
+      window_start = window_end - window_size;
+    }
+  } else if (cursor_render_pos <= window_start) {
+    // shift window left
     if (cursor_render_pos == 0 ) {
       window_start = 0;
     } else {
@@ -136,6 +147,7 @@ static void update_window()
     window_end = window_start + window_size;
     // TODO: check for overflow?
   } else if (window_end - 1 <= cursor_render_pos) {
+    // shift window right
     if (cursor_render_pos == render_buf_len) {
       window_end = cursor_render_pos + 1;
     } else {
