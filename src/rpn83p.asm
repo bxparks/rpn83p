@@ -581,7 +581,7 @@ cursorRenderPos equ renderIndexes + renderIndexesSize ; u8
 ; Cursor position on the LCD screen in the range of [0,renderWindowSize). This
 ; is the *logical* screen position. The actual physical screen column index is
 ; `cursorScreenPos+1` because the `X:` label occupies one slot.
-; TODO: Currently used only in setInputCursor(). Remnove?
+; TODO: Currently used only in setInputCursor(). Remove?
 cursorScreenPos equ cursorRenderPos + 1 ; u8
 
 ; Set of bit-flags that remember whether an RPN stack display line was rendered
@@ -1709,6 +1709,10 @@ _PrintMenuNameAtC equ _PrintMenuNameAtCLabel-branchTableBase
 _DisplayMenuFolderLabel:
 _DisplayMenuFolder equ _DisplayMenuFolderLabel-branchTableBase
     .dw DisplayMenuFolder
+    .db 2
+_PrintInputBufLabel:
+_PrintInputBuf equ _PrintInputBufLabel-branchTableBase
+    .dw PrintInputBuf
     .db 2
 
 ;-----------------------------------------------------------------------------
