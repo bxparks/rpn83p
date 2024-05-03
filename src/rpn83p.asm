@@ -302,6 +302,26 @@ argBufLen equ inputBufLen
 argBufCapacity equ inputBufCapacity
 argBufSizeMax equ 4 ; max number of digits accepted on input
 
+; Maximum number of characters that can be displayed during input/editing mode.
+; The LCD line can display 16 characters using the large font. We need 1 char
+; for the "X:" label, and 1 char for the trailing cursor, which leaves us with
+; 14 characters.
+renderWindowSize equ 15
+
+; Define the [start,end) of the renderWindow over the renderBuf[].
+; These *must* be defined contiguously because we will read both variables at
+; the same time using a `ld rr, (nn)` instruction. That's more convenient than
+; the `ld a, (nn)` instruction which only supports the A register. We use
+; little-endian order (end defined first) so that the high registers (B, D, H)
+; are `start`, and the low registers (C, E, L) are `end`.
+renderWindowEnd equ inputBuf + inputBufSizeOf ; u8
+renderWindowStart equ renderWindowEnd + 1; u8
+
+; Cursor position inside inputBuf[]. Valid values are from [0, inputBufLen]
+; inclusive, which allows the cursor to be just to the right of the last
+; character in inputBuf[].
+cursorInputPos equ renderWindowStart + 1 ; u8
+
 ; Menu variables. Two variables determine the location in the menu hierarchy,
 ; the groupId and the rowIndex in the group. The C equivalent is:
 ;
@@ -309,7 +329,7 @@ argBufSizeMax equ 4 ; max number of digits accepted on input
 ;     uint16_t groupId; // id of the current menu group
 ;     uint8_t rowIndex; // menu row, groups of 5
 ;   }
-currentMenuGroupId equ inputBuf + inputBufSizeOf ; u16
+currentMenuGroupId equ cursorInputPos + 1 ; u16
 currentMenuRowIndex equ currentMenuGroupId + 2 ; u8
 
 ; The MenuLocation of the previous menuGroup/row pair when a shortcut was
@@ -545,11 +565,24 @@ renderBufBuf equ renderBuf + 1 ; start of actual buffer
 renderBufCapacity equ inputBufCapacity + 1 ; Ldegree -> Langle Ltemp
 renderBufSizeOf equ renderBufCapacity + 1 ; total size of data structure
 
-; Maximum number of characters that can be displayed during input/editing mode.
-; The LCD line can display 16 characters using the large font. We need 1 char
-; for the "X:" label, and 1 char for the trailing cursor, which leaves us with
-; 14 characters.
-renderWindowSize equ 14
+; Lookup table that converts inputBuf[] coordinates to renderBuf[] coordinates.
+; The C date type is:
+;   uint8_t renderIndexes[inputBufCapacity + 1];
+;
+; The size of this array is inputBufCapacity+1 because the cursor can be placed
+; one position past the last character in inputBuf[].
+renderIndexes equ renderBuf + renderBufSizeOf ; u8*renderIndexesSize
+renderIndexesSize equ inputBufCapacity + 1
+
+; Cursor position inside renderBuf[]. Derived from the value of
+; renderIndexes[cursorInputPos].
+cursorRenderPos equ renderIndexes + renderIndexesSize ; u8
+
+; Cursor position on the LCD screen in the range of [0,renderWindowSize). This
+; is the *logical* screen position. The actual physical screen column index is
+; `cursorScreenPos+1` because the `X:` label occupies one slot.
+; TODO: Currently used only in setInputCursor(). Remnove?
+cursorScreenPos equ cursorRenderPos + 1 ; u8
 
 ; Set of bit-flags that remember whether an RPN stack display line was rendered
 ; in large or small font. We can optimize the drawing algorithm by performing a
@@ -561,7 +594,7 @@ displayStackFontFlagsX equ 1
 displayStackFontFlagsY equ 2
 displayStackFontFlagsZ equ 4
 displayStackFontFlagsT equ 8
-displayStackFontFlags equ renderBuf + renderBufSizeOf ; u8
+displayStackFontFlags equ cursorScreenPos + 1 ; u8
 
 appBufferEnd equ displayStackFontFlags + 1
 
@@ -742,6 +775,10 @@ _ClearInputBuf equ _ClearInputBufLabel-branchTableBase
 _AppendInputBufLabel:
 _AppendInputBuf equ _AppendInputBufLabel-branchTableBase
     .dw AppendInputBuf
+    .db 1
+_DeleteCharInputBufLabel:
+_DeleteCharInputBuf equ _DeleteCharInputBufLabel-branchTableBase
+    .dw DeleteCharInputBuf
     .db 1
 _CheckInputBufEELabel:
 _CheckInputBufEE equ _CheckInputBufEELabel-branchTableBase

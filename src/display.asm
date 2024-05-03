@@ -122,9 +122,16 @@ menuFolderIconLineRow equ 7 ; pixel row of the menu folder icon line
 
 ;-----------------------------------------------------------------------------
 
+; Description: Initialize display variables upon cold start.
+coldInitDisplay:
+    xor a
+    ld (cursorInputPos), a
+    ld hl, 00*256 + renderWindowSize ; H=start=0; L=end=renderWindowSize
+    ld (renderWindowEnd), hl
+    ret
+
 ; Description: Configure flags and variables related to rendering to a sane
-; state. This is always called, regardless of whether RestoreAppState()
-; succeeded in restoring the saved state.
+; state.
 initDisplay:
     ; always set drawMode to drawModeNormal
     xor a
@@ -647,51 +654,53 @@ msgArgModifierIndirect:
     .db " IND ", 0
 
 ;-----------------------------------------------------------------------------
+; Print the inputBuf[] along with the TIOS blinking cursor.
+; TODO: I think this entire section can be moved to Flash Page 2.
+;-----------------------------------------------------------------------------
 
 ; Description: Print the input buffer.
 ; Input:
 ;   - inputBuf
-;   - (CurCol) cursor position
+;   - (CurRow) cursor row
+;   - (CurCol) cursor column
 ; Output:
 ;   - (CurCol) is updated
-; Destroys: A, HL; BC destroyed by PutPS()
+; Destroys: A, BC, DE, HL, IX
 printInputBuf:
     call renderInputBuf
-    call truncateRenderBuf
-    ld hl, renderBuf
-    call putPS
-    ; Append trailing cursor. (Currently commented out because we are using the
-    ; native TIOS cursor which can be set to blink.)
-    ; ld a, cursorChar
-    ; bcall(_PutC)
-    ; Skip EraseEOL() if the PutC() above wrapped to next line
-    ld a, (CurCol)
-    or a
-    ret z
-    bcall(_EraseEOL)
+    call updateRenderWindow
+    call printRenderWindow
+    call clearEndOfRenderLine
+    call setInputCursor
     ret
 
-; Description: Convert the inputBuf into renderBuf suitable for rendering on
-; the screen. If Ldegree character used for complex polar degree mode exists,
-; it is replaced by (Langle, Ltemp) pair.
-; Input: inputBuf
+; Description: Convert inputBuf[] into renderBuf[] suitable for rendering on
+; the screen. An Ldegree character for complex polar degree mode is two
+; characters (Langle, Ltemp).
+;
+; This is a translation of the render_input() function in
+; ../misc/cursor/cursor.c.
+;
+; Input:
+;   - inputBuf:(const char*)
 ; Output:
 ;   - renderBuf updated
+;   - indexes updated
 ;   - HL=renderBuf
-; Destroys: all registers
+; Destroys: A, BC, DE, HL, IX
 renderInputBuf: ; TODO: Move to display2.asm
     ld hl, inputBuf
     ld de, renderBuf
+    ld ix, renderIndexes
+    ld c, 0 ; C=renderIndex
     ld b, (hl) ; B=len(inputBuf)
-    ; check for zero string
+    ; check for len(inputBuf) == 0
     ld a, b
-    ld (de), a ; len(displayBuf)=len(inputBuf) initially
     or a
-    ret z
+    jr z, renderInputBufExit
     ; set up loop variables
     inc hl ; skip past len byte
     inc de ; skip past len byte
-    ld c, 0 ; C=targetLength
 renderInputBufLoop:
     ld a, (hl)
     inc hl
@@ -706,39 +715,202 @@ renderInputBufLoop:
 renderInputBufCopy:
     ld (de), a
     inc de
+    ld (ix), c
+    inc ix
     inc c
     djnz renderInputBufLoop
+renderInputBufExit:
     ld hl, renderBuf
-    ld (hl), c ; len(renderBuf)=targetLen
+    ld (hl), c ; len(renderBuf)=renderLen
+    ld (ix), c ; indexes[inputLen]=renderLen
     ret
 
-; Description: Truncate renderBuf to the renderWindowsize (currently 14). If
-; more than 14 characters, add an ellipsis character on the left most character
-; and copy the last 13 characters.
+; Description: Update the renderWindow{Start,End} variables given the
+; renderBuf[] and the cursorInputPos.
+;
+; This is a translation of the update_window() function in
+; ../misc/cursor/cursor.c.
+;
+; Input:
+;   - renderBuf:(const char*)
+;   - cursorInputPos
+;   - renderIndexes:(const u8*)
+; Output:
+;   - renderWindowStart updated
+;   - renderWindowEnd updated
+;   - cursorRenderPos updated
+; Destroys: A, BC, HL
+updateRenderWindow:
+    call updateCursorRenderPos ; A=cursorRenderPos
+    ld bc, (renderWindowEnd) ; B=start; C=end
+    ; if cursorRenderPos<=start:
+    ; if cursorRenderPos<start+1:
+    inc b
+    cp b ; CF=1 if above true
+    dec b ; does not affect CF
+    jr c, updateRenderWindowShiftLeft
+    ; else if end-1<=cursorRenderPos:
+    ; else if cursorRenderPos>=end-1:
+    dec c ; end-1
+    cp c ; CF=0 if above true
+    inc c
+    jr nc, updateRenderWindowShiftRight
+    jr updateRenderWindowUpdate
+    ;
+updateRenderWindowShiftRight:
+    ld hl, renderBufLen
+    cp (hl) ; ZF=1 if cursorRenderPos == renderBufLen
+    jr z, updateRenderWindowShiftRightContinue
+    inc a ; A++
+updateRenderWindowShiftRightContinue:
+    inc a ; A++
+    ld c, a ; C=end
+    sub renderWindowSize ; A=start
+    ld b, a
+    jr updateRenderWindowUpdate
+    ;
+updateRenderWindowShiftLeft:
+    ld b, a ; renderWindowStart=cursorRenderPos
+    or a
+    jr z, updateRenderWindowShiftLeftContinue
+    dec b ; renderWindowStart=cursorRenderPos-1
+    ld a, b
+updateRenderWindowShiftLeftContinue:
+    add a, renderWindowSize
+    ld c, a ; renderWindowEnd=renderWindowStart+renderWindowSize
+    ;
+updateRenderWindowUpdate:
+    ld (renderWindowEnd), bc
+    ret
+
+; Description: Calculator the cursorRenderPos from cursorInputPos. This is one
+; line of code in C: `uint8_t cursor_render_pos = index_map[cursor_input_pos]`.
+; But in Z80 assembly, it's annoying enough that it's easier to create a
+; subroutine for it.
+; Input:
+;   - cursorInputPos
+; Output:
+;   - cursorRenderPos updated
+;   - A=cursorRenderPos
+; Destroys: A, DE, HL
+updateCursorRenderPos:
+    ld hl, renderIndexes
+    ld a, (cursorInputPos)
+    ld e, a
+    ld d, 0
+    add hl, de ; HL=renderIndexes+cursorInputPos
+    ld a, (hl) ; A=renderIndexes[cursorInputPos]
+    ld (cursorRenderPos), a ; A=cursorRenderPos
+    ret
+
+#ifdef DEBUG
+; Description: Print the entire renderBuf[] without the renderWindow mask. For
+; debugging.
+printRenderBuf:
+    ld hl, renderBuf
+    ld b, (hl)
+    inc hl
+    ld a, b
+    or a
+    ret z
+printRenderBufLoop:
+    ld a, (hl)
+    inc hl
+    bcall(_PutC)
+    djnz printRenderBufLoop
+    ret
+#endif
+
+; Description: Print the renderBuf within the renderWindowStart and
+; renderWindowEnd. If the left part or right parts are truncated, print an
+; ellipsis character to indicate truncation.
+;
+; This is a translation of the print_render_window() function in
+; ../misc/cursor/cursor.c.
+;
 ; Input: renderBuf
 ; Output: renderBuf truncated if necessary
 ; Destroys: all registers
-truncateRenderBuf: ; TODO: Move to display2.asm
+printRenderWindow:
+    ; numPrintableChar=min(renderBufLen-renderWindowStart, renderWindowSize)
+    ld a, (renderWindowStart)
+    ld b, a ; B=renderWindowStart
     ld hl, renderBuf
-    ld a, (hl) ; A=len
+    ld a, (hl) ; A=renderBufLen
     inc hl ; skip past len byte
-    cp renderWindowSize+1 ; if len<15: CF=1
-    ret c
-    ; We are here if len>=15. Extract the last 13 characters, with an ellipsis
-    ; on the left most character.
-    sub renderWindowSize-1 ; A=len-13
-    ld e, a
-    ld d, 0
-    add hl, de ; HL=pointer to last 13 characters
+    sub b ; A=renderBufLen-renderWindowStart
+    cp renderWindowSize ; CF=1 if renderBufLen<renderWindowSize
+    jr c, printRenderWindowSetupLoop
     ld a, renderWindowSize
-    ld de, renderBuf
-    ld (de), a ; len=14
-    inc de; skip past len byte
+printRenderWindowSetupLoop:
+    ; check for 0 len
+    or a
+    ret z
+    ld b, a ; B=numPrintableChar
+    ; setup pointer to renderBufBuf[renderWindowStart]
+    ld a, (renderWindowStart)
+    ld d, a ; D=windowIndex=start
+    add a, l
+    ld l, a
+    ld a, h
+    adc a, 0
+    ld h, a ; HL=renderBuf+start
+    ; loop from windowStart until windowEnd
+    ld e, 0 ; E=screenPos=0
+printRenderWindowLoop:
+    ; check if screenPos==0 && windowIndex!=0
+    ld a, d ; A=windowIndex
+    or a
+    jr z, printRenderWindowCheckRightEllipsis
+    ld a, e ; A=E=screenPos
+    or a
+    jr z, printRenderWindowEllipsis
+printRenderWindowCheckRightEllipsis:
+    ; check if windowIndex!=renderBufLen-1 && screenPos==windowSize-1
+    ld a, d ; A=windowIndex
+    inc a
+    cp c ; CF=0 if windowIndex+1>=renderBufLen
+    jr c, printRenderWindowNormal
+    ld a, e ; A=screenPos
+    cp renderWindowSize-1
+    jr nz, printRenderWindowNormal
+printRenderWindowEllipsis:
     ld a, Lellipsis
-    ld (de), a
-    inc de
-    ld bc, renderWindowSize-1
-    ldir ; shift the last 13 characters to the beginning of renderBuf
+    jr printRenderWindowPutC
+printRenderWindowNormal:
+    ld a, (hl)
+printRenderWindowPutC:
+    inc hl
+    bcall(_PutC)
+    inc e ; screenPos++
+    djnz printRenderWindowLoop
+    ret
+
+; Description: Clear to the end of line of the inputBuf render line.
+; Skip EraseEOL() if the PutC() above wrapped to next line.
+; Destroys: A
+clearEndOfRenderLine:
+    ld a, (CurCol)
+    or a
+    ret z
+    bcall(_EraseEOL)
+    ret
+
+; Description: Set the native TIOS cursor position to cursorScreenPos+1. The
+; addition of `+1` is because the 'X:' label occupies one slot.
+; Input:
+;   - cursorRenderPos
+; Output:
+;   - cursorScreenPos updated
+;   - CurCo updated
+setInputCursor:
+    ld a, (renderWindowStart)
+    ld b, a
+    ld a, (cursorRenderPos)
+    sub b ; A=cursorScreenPos=cursorRenderPos-renderWindowStart
+    ld (cursorScreenPos), a
+    inc a
+    ld (CurCol), a
     ret
 
 ;-----------------------------------------------------------------------------

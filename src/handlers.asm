@@ -12,9 +12,10 @@
 ;   - A:char=character to be appended
 ;   - rpnFlagsEditing=whether we are already in Edit mode
 ; Output:
-;   - CF set when append fails
+;   - CF=0 if successful
 ;   - rpnFlagsEditing set
 ;   - dirtyFlagsInput set
+;   - (cursorInputPos) updated if successful
 ; Destroys: all
 handleKeyNumber:
     ; Any digit entry should cause TVM menus to go into input mode.
@@ -43,7 +44,7 @@ handleKeyNumberCheckAppend:
 handleKeyNumberRestoreAppend:
     ld a, d ; A=restored
 handleKeyNumberAppend:
-    bcall(_AppendInputBuf)
+    bcall(_AppendInputBuf) ; CF=0 if successful
     ret
 
 ; Description: Return ZF=1 if A is a complex number delimiter (LimagI, Langle,
@@ -520,21 +521,14 @@ handleKeyDel:
     ret nz
     ; If not in edit mode, go into edit mode, clear the inputBuf, and just
     ; return because there is nothing to do with an empty inputBuf.
-    ld hl, inputBuf
     bit rpnFlagsEditing, (iy + rpnFlags)
     jr nz, handleKeyDelInEditMode
     set rpnFlagsEditing, (iy + rpnFlags)
-    ld (hl), 0 ; clear the inputBuf
-    set dirtyFlagsInput, (iy + dirtyFlags)
+    bcall(_ClearInputBuf)
     ret
 handleKeyDelInEditMode:
     ; DEL pressed in edit mode.
-    set dirtyFlagsInput, (iy + dirtyFlags)
-    ld a, (hl) ; A = inputBufLen
-    or a
-    ret z ; do nothing if buffer empty
-    ; shorten string by one
-    dec (hl)
+    bcall(_DeleteCharInputBuf)
     ret
 
 ;-----------------------------------------------------------------------------

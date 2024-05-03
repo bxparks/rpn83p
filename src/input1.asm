@@ -11,6 +11,7 @@
 ;------------------------------------------------------------------------------
 
 ; Description: Initialize variables and flags related to the input buffer.
+; Input: none
 ; Output:
 ;   - inputBuf set to empty
 ;   - rpnFlagsEditing reset
@@ -20,27 +21,30 @@ ColdInitInputBuf:
     ; [[fallthrough]]
 
 ; Description: Clear the inputBuf.
-; Input: inputBuf
+; Input: none
 ; Output:
 ;   - inputBuf cleared
+;   - cursorInputPos=0
 ;   - dirtyFlagsInput set
 ; Destroys: none
 ClearInputBuf:
     push af
     xor a
     ld (inputBuf), a
+    ld (cursorInputPos), a
     set dirtyFlagsInput, (iy + dirtyFlags)
     pop af
     ret
 
 ; Description: Append character to inputBuf.
 ; Input:
-;   A: character to be appended
+;   - A:char=character to be appended
 ; Output:
-;   - CF set when append fails
-;   - dirtyFlagsInput set
+;   - dirtyFlagsInput always set
+;   - CF=0 if successful
+;   - (cursorInputPos)+=1 if successful
 ; Destroys: all
-AppendInputBuf:
+AppendInputBuf: ; TODO: Rename to AppendCharInputBuf()
     ld c, a ; C=char
     call getInputMaxLen ; A=inputMaxLen
     cp inputBufCapacity ; if inputMaxLen>=inputBufCapacity: CF=0
@@ -51,7 +55,32 @@ appendInputBufContinue:
     ld a, c ; A=char
     ld hl, inputBuf
     set dirtyFlagsInput, (iy + dirtyFlags)
-    jp AppendString
+    call AppendString ; CF=0 if successful
+    ret c
+    ; increment the cursor position on success
+    ld hl, cursorInputPos
+    inc (hl)
+    ret
+
+; Description: Delete one character from inputBuf if possible. If already
+; empty, do nothing.
+; Input: none
+; Output:
+;   - inputBuf shortened by one character
+;   - cursorInputPos-=1
+; Destroys: A, HL
+DeleteCharInputBuf:
+    ld hl, inputBuf
+    ld a, (hl) ; A = inputBufLen
+    or a
+    ret z ; do nothing if buffer empty
+    ; shorten string by one
+    set dirtyFlagsInput, (iy + dirtyFlags)
+    dec (hl)
+    ; update cursor as well
+    ld hl, cursorInputPos
+    dec (hl)
+    ret
 
 ;------------------------------------------------------------------------------
 
