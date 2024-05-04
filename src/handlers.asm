@@ -44,7 +44,7 @@ handleKeyNumberCheckAppend:
 handleKeyNumberRestoreAppend:
     ld a, d ; A=restored
 handleKeyNumberAppend:
-    bcall(_AppendInputBuf) ; CF=0 if successful
+    bcall(_InsertCharInputBuf) ; CF=0 if successful
     ret
 
 ; Description: Return ZF=1 if A is a complex number delimiter (LimagI, Langle,

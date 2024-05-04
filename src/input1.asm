@@ -36,28 +36,33 @@ ClearInputBuf:
     pop af
     ret
 
-; Description: Append character to inputBuf.
+; Description: Insert character at cursorInputPos into inputBuf.
 ; Input:
-;   - A:char=character to be appended
+;   - A:char=insertChar
+;   - cursorInputPos:u8=insertPosition
 ; Output:
 ;   - dirtyFlagsInput always set
 ;   - CF=0 if successful
 ;   - (cursorInputPos)+=1 if successful
 ; Destroys: all
-AppendInputBuf: ; TODO: Rename to AppendCharInputBuf()
-    ld c, a ; C=char
+InsertCharInputBuf:
+    ld c, a ; C=insertChar
     call getInputMaxLen ; A=inputMaxLen
     cp inputBufCapacity ; if inputMaxLen>=inputBufCapacity: CF=0
-    jr c, appendInputBufContinue
+    jr c, insertCharInputBufContinue
     ld a, inputBufCapacity ; A=min(inputMaxLen,inputBufCapacity)
-appendInputBufContinue:
+insertCharInputBufContinue:
     ld b, a ; B=inputMaxLen
-    ld a, c ; A=char
+    push bc ; stack=[insertChar]
+    ld a, (cursorInputPos) ; A=insertPosition
     ld hl, inputBuf
     set dirtyFlagsInput, (iy + dirtyFlags)
-    call AppendString ; CF=0 if successful
+    call InsertAtPos ; CF=0 if successful
+    pop bc ; stack=[]; C=insertChar
     ret c
-    ; increment the cursor position on success
+    ; actually insert the character
+    ld (hl), c
+    ; always increment the cursor
     ld hl, cursorInputPos
     inc (hl)
     ret

@@ -42,12 +42,12 @@ appendStringNotFull:
 ; Description: Prepare to insert a character at position 'A' from a
 ; pascal-string, shifting characters to the right.
 ; Input:
-;   A: insertPos, range of [0, stringSize]
-;   HL: pascal string pointer
-;   B: sizeMax of pascal string
+;   - A:u8=insertPos, range of [0, stringSize]
+;   - B:u8=pascalStringSizeMax
+;   - HL:(PascalString*)
 ; Output:
-;   CF: set if buffer string too long to insert
-;   HL: pointer to position at A (if CF==0)
+;   - CF=1 if insert failed due to string too long
+;   - HL:(const char*)=pointer to position at A (if CF==0)
 ; Destroys: all
 InsertAtPos:
     ld e, a ; E = insertPos (save)
