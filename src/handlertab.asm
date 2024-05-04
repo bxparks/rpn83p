@@ -123,6 +123,18 @@ keyCodeHandlerTable:
 
 ;-----------------------------------------------------------------------------
 
+    ; cursor navigation
+    .db kLeft
+    .dw handleKeyLeft
+    .db kRight
+    .dw handleKeyRight
+    .db kBOL ; 2ND Left
+    .dw handleKeyBOL
+    .db kEOL ; 2ND Right
+    .dw handleKeyEOL
+
+;-----------------------------------------------------------------------------
+
     ; menu navigation
     .db kUp
     .dw handleKeyUp

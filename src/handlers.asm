@@ -695,6 +695,39 @@ handleKeyEnter:
     ret
 
 ;-----------------------------------------------------------------------------
+; Cursor navigation
+;-----------------------------------------------------------------------------
+
+handleKeyLeft:
+    ld a, (cursorInputPos)
+    or a
+    ret z
+    dec a
+    jr saveCursorInputPos
+
+handleKeyRight:
+    ld a, (inputBuf) ; A=inputBufLen
+    ld b, a
+    ld a, (cursorInputPos)
+    cp b
+    ret nc
+    inc a
+    jr saveCursorInputPos
+
+handleKeyBOL:
+    xor a
+    jr saveCursorInputPos
+
+handleKeyEOL:
+    ld a, (inputBuf) ; A=inputBufLen
+    ; [[fallthrough]]
+
+saveCursorInputPos:
+    ld (cursorInputPos), a
+    set dirtyFlagsInput, (iy + dirtyFlags)
+    ret
+
+;-----------------------------------------------------------------------------
 ; Menu key handlers.
 ;-----------------------------------------------------------------------------
 

@@ -62,24 +62,39 @@ appendInputBufContinue:
     inc (hl)
     ret
 
-; Description: Delete one character from inputBuf if possible. If already
-; empty, do nothing.
-; Input: none
+; Description: Delete one character to the left of cursorInputPos from inputBuf
+; if possible. If already empty, do nothing.
+; Input:
+;   - cursorInputPos
 ; Output:
 ;   - inputBuf shortened by one character
 ;   - cursorInputPos-=1
-; Destroys: A, HL
+; Destroys: A, BC, DE, HL
 DeleteCharInputBuf:
+    ld a, (cursorInputPos)
+    or a
+    ret z ; do nothing if cursor at start of inputBuf
+    ld c, a ; BC=cursorInputPos
+    ld b, 0
     ld hl, inputBuf
-    ld a, (hl) ; A = inputBufLen
+    ld a, (hl) ; A=inputBufLen
     or a
     ret z ; do nothing if buffer empty
     ; shorten string by one
-    set dirtyFlagsInput, (iy + dirtyFlags)
-    dec (hl)
+    dec (hl) ; inputBufLen-=1
+    add hl, bc ; HL=inputBuf+cursorInputPos-1
+    ld e, l
+    ld d, h ; DE=inputBuf+cursorInputPos-1
+    inc hl ; HL=inputBuf+cursorInputPos
+    sub c ; A=len-pos; ZF=1 if no bytes need to be moved
+    jr z, deleteCharInputBufUpdate
+    ld c, a ; C=numByte
+    ldir
+deleteCharInputBufUpdate:
     ; update cursor as well
     ld hl, cursorInputPos
-    dec (hl)
+    dec (hl) ; cursorInputPos-=1
+    set dirtyFlagsInput, (iy + dirtyFlags)
     ret
 
 ;------------------------------------------------------------------------------

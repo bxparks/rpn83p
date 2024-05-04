@@ -192,18 +192,17 @@ PrintInputBuf:
 ;   - HL=renderBuf
 ; Destroys: A, BC, DE, HL, IX
 renderInputBuf: ; TODO: Move to display2.asm
-    ld hl, inputBuf
-    ld de, renderBuf
     ld ix, renderIndexes
-    ld c, 0 ; C=renderIndex
+    ld de, renderBuf
+    inc de ; skip past len byte
+    ld hl, inputBuf
+    ld c, 0 ; renderIndex=0
     ld b, (hl) ; B=len(inputBuf)
+    inc hl ; skip past len byte
     ; check for len(inputBuf) == 0
     ld a, b
     or a
     jr z, renderInputBufExit
-    ; set up loop variables
-    inc hl ; skip past len byte
-    inc de ; skip past len byte
 renderInputBufLoop:
     ld a, (hl)
     inc hl
@@ -217,12 +216,15 @@ renderInputBufLoop:
     ld a, Ltemp
 renderInputBufCopy:
     ld (de), a
-    inc de
-    ld (ix), c
-    inc ix
-    inc c
+    inc de ; renderBuf
+    ld (ix), c ; add entry to renderIndexes[]
+    inc ix ; renderIndexes
+    inc c ; renderIndex+=1
     djnz renderInputBufLoop
 renderInputBufExit:
+    ; extra trailing space for trailing cursor
+    ld a, Lspace
+    ld (de), a
     ld hl, renderBuf
     ld (hl), c ; len(renderBuf)=renderLen
     ld (ix), c ; indexes[inputLen]=renderLen
@@ -399,9 +401,10 @@ printRenderWindowEllipsis:
 printRenderWindowNormal:
     ld a, (hl)
 printRenderWindowPutC:
-    inc hl
+    inc hl ; renderBuf++
     bcall(_PutC)
     inc e ; screenPos++
+    inc d ; windowIndex++
     djnz printRenderWindowLoop
     ret
 
@@ -421,13 +424,27 @@ clearEndOfRenderLine:
 ;   - cursorRenderPos
 ; Output:
 ;   - cursorScreenPos updated
-;   - CurCo updated
+;   - CurCol updated
+;   - CurRow updated
 setInputCursor:
+    ; update cursor screen logical position
     ld a, (renderWindowStart)
     ld b, a
     ld a, (cursorRenderPos)
+    ld c, a ; C=cursorRenderPos
     sub b ; A=cursorScreenPos=cursorRenderPos-renderWindowStart
     ld (cursorScreenPos), a
-    inc a
+    ; update cursor physical col, and also row, because it could have wrapped
+    ; to the next row
+    inc a ; skip past the 'X:' label
     ld (CurCol), a
+    ld a, stXCurRow
+    ld (CurRow), a
+    ; update cursor-under character
+    ld hl, renderBuf
+    inc hl
+    ld b, 0 ; BC=cursorRenderPos
+    add hl, bc
+    ld a, (hl) ; A=cursorUnder character
+    ld (curUnder), a
     ret

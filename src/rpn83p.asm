@@ -547,11 +547,16 @@ tvmNPMT1 equ tvmNPMT0 + 9 ; float
 tvmSolverIsRunning equ tvmNPMT1 + 9 ; boolean; true if active
 tvmSolverCount equ tvmSolverIsRunning + 1 ; u8; iteration count
 
-; A Pascal-string that contains the rendered version of inputBuf, truncated and
-; formatted as needed, which can be printed on the screen. It is slightly
-; longer than inputBuf because sometimes a single character in inputBuf gets
-; expanded to multiple characters in renderBuf (e.g. 'Ldegree' delimiter for
-; complex numbers gets expanded to 'Langle,Ltemp' pair).
+; A Pascal-string that contains the rendered version of inputBuf[] which can be
+; printed on the screen. It is slightly longer than inputBuf for 2 reasons:
+;
+;   1) The 'Ldegree' delimiter for complex numbers is expanded to 2 characters
+;   ('Langle' and 'Ltemp').
+;
+;   2) A sentinel 'space' character is added at the very end representing the
+;   character that is behind the cursor when it is placed just after the end of
+;   the string in inputBuf[]. It is convenient to define this sentinel in
+;   renderBuf[] instead of adding special logic during the printing routine.
 ;
 ; The C structure is:
 ;
@@ -562,11 +567,12 @@ tvmSolverCount equ tvmSolverIsRunning + 1 ; u8; iteration count
 renderBuf equ tvmSolverCount + 1 ; struct RenderBuf; Pascal-string
 renderBufLen equ renderBuf ; len byte of the string
 renderBufBuf equ renderBuf + 1 ; start of actual buffer
-renderBufCapacity equ inputBufCapacity + 1 ; Ldegree -> Langle Ltemp
+renderBufCapacity equ inputBufCapacity + 2
 renderBufSizeOf equ renderBufCapacity + 1 ; total size of data structure
 
 ; Lookup table that converts inputBuf[] coordinates to renderBuf[] coordinates.
 ; The C date type is:
+;
 ;   uint8_t renderIndexes[inputBufCapacity + 1];
 ;
 ; The size of this array is inputBufCapacity+1 because the cursor can be placed
