@@ -206,19 +206,19 @@ renderInputBuf: ; TODO: Move to display2.asm
 renderInputBufLoop:
     ld a, (hl)
     inc hl
+    ld (ix), c ; add entry to renderIndexes[]
+    inc ix ; renderIndexes
     cp Ldegree
     jr nz, renderInputBufCopy
     ; Expand Ldegree into (Langle, Ltemp).
     ld a, Langle
     ld (de), a
-    inc de
-    inc c
+    inc de ; renderBuf
+    inc c ; renderIndex+=1
     ld a, Ltemp
 renderInputBufCopy:
     ld (de), a
     inc de ; renderBuf
-    ld (ix), c ; add entry to renderIndexes[]
-    inc ix ; renderIndexes
     inc c ; renderIndex+=1
     djnz renderInputBufLoop
 renderInputBufExit:
