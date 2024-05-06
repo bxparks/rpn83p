@@ -782,9 +782,21 @@ _InsertCharInputBufLabel:
 _InsertCharInputBuf equ _InsertCharInputBufLabel-branchTableBase
     .dw InsertCharInputBuf
     .db 1
+_InsertCharAtInputBufLabel:
+_InsertCharAtInputBuf equ _InsertCharAtInputBufLabel-branchTableBase
+    .dw InsertCharAtInputBuf
+    .db 1
 _DeleteCharInputBufLabel:
 _DeleteCharInputBuf equ _DeleteCharInputBufLabel-branchTableBase
     .dw DeleteCharInputBuf
+    .db 1
+_DeleteCharAtInputBufLabel:
+_DeleteCharAtInputBuf equ _DeleteCharAtInputBufLabel-branchTableBase
+    .dw DeleteCharAtInputBuf
+    .db 1
+_FlipInputBufSignLabel:
+_FlipInputBufSign equ _FlipInputBufSignLabel-branchTableBase
+    .dw FlipInputBufSign
     .db 1
 _CheckInputBufEELabel:
 _CheckInputBufEE equ _CheckInputBufEELabel-branchTableBase

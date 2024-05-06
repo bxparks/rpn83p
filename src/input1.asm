@@ -46,24 +46,45 @@ ClearInputBuf:
 ;   - (cursorInputPos)+=1 if successful
 ; Destroys: all
 InsertCharInputBuf:
-    ld c, a ; C=insertChar
-    call getInputMaxLen ; A=inputMaxLen
+    ld hl, cursorInputPos
+    ld c, (hl)
+    ; [[fallthrough]]
+
+; Description: Insert character 'A' into position 'C' of inputBuf, updating
+; 'cursorInputPos' as necessary.
+; Input:
+;   - A:char=insertChar
+;   - C:u8=insertPos
+; Output:
+;   - dirtyFlagsInput always set
+;   - CF=0 if successful
+;   - (cursorInputPos) updated as necessary
+; Destroys: all
+InsertCharAtInputBuf:
+    ld d, a ; B=insertChar
+    ; calc min(inputMaxLen, inputBufCapacity)
+    call getInputMaxLen ; A=inputMaxLen; BC,DE,HL preserved
     cp inputBufCapacity ; if inputMaxLen>=inputBufCapacity: CF=0
-    jr c, insertCharInputBufContinue
+    jr c, insertCharAtInputBufContinue
     ld a, inputBufCapacity ; A=min(inputMaxLen,inputBufCapacity)
-insertCharInputBufContinue:
+insertCharAtInputBufContinue:
     ld b, a ; B=inputMaxLen
-    push bc ; stack=[insertChar]
-    ld a, (cursorInputPos) ; A=insertPosition
+    ld a, c ; A=insertPos
+    push bc ; stack=[insertPos]
+    ld c, d ; C=insertChar
     ld hl, inputBuf
     set dirtyFlagsInput, (iy + dirtyFlags)
     call InsertAtPos ; CF=0 if successful
-    pop bc ; stack=[]; C=insertChar
+    pop bc ; stack=[]; C=insertPos
     ret c
-    ; actually insert the character
-    ld (hl), c
-    ; always increment the cursor
+    ; update cursorInputPos if necessary
     ld hl, cursorInputPos
+    ld a, (hl)
+    cp c ; CF=0 if cursorInputPos>=insertPos
+    jr nc, insertCharAtInputBufUpdateCursor
+    or a ; CF=0
+    ret
+insertCharAtInputBufUpdateCursor:
     inc (hl)
     ret
 
@@ -72,34 +93,86 @@ insertCharInputBufContinue:
 ; Input:
 ;   - cursorInputPos
 ; Output:
-;   - inputBuf shortened by one character
-;   - cursorInputPos-=1
+;   - inputBuf shortened by one character if possible
+;   - cursorInputPos updated if necessary
 ; Destroys: A, BC, DE, HL
 DeleteCharInputBuf:
     ld a, (cursorInputPos)
+    ; [[fallthrough]]
+
+; Description: Delete one character to the left of inputPos from inputBuf if
+; possible. If inputPos at 0, then nothing can be deleted, so do nothing.
+; Input:
+;   - A:u8=inputPos
+; Output:
+;   - inputBuf shortened by one character if possible
+;   - cursorInputPos updated as necessary
+; Destroys: A, BC, DE, HL
+DeleteCharAtInputBuf:
     or a
-    ret z ; do nothing if cursor at start of inputBuf
-    ld c, a ; BC=cursorInputPos
-    ld b, 0
+    ret z ; do nothing if inputPos at start of inputBuf
+    ld c, a ; C=inputPos
+    ld b, 0 ; BC=inputPos
     ld hl, inputBuf
     ld a, (hl) ; A=inputBufLen
     or a
     ret z ; do nothing if buffer empty
-    ; shorten string by one
+    ; shorten string by shifting characters at or after inputPos to the left
     dec (hl) ; inputBufLen-=1
-    add hl, bc ; HL=inputBuf+cursorInputPos-1
+    add hl, bc ; HL=inputBuf+inputPos-1
     ld e, l
-    ld d, h ; DE=inputBuf+cursorInputPos-1
-    inc hl ; HL=inputBuf+cursorInputPos
-    sub c ; A=len-pos; ZF=1 if no bytes need to be moved
+    ld d, h ; DE=inputBuf+inputPos-1
+    inc hl ; HL=inputBuf+inputPos
+    sub c ; A=len-inputPos; ZF=1 if no bytes need to be moved
     jr z, deleteCharInputBufUpdate
+    push bc ; stack=[C=inputPos]
     ld c, a ; C=numByte
     ldir
+    pop bc ; stack=[]; C=inputPos
 deleteCharInputBufUpdate:
-    ; update cursor as well
-    ld hl, cursorInputPos
-    dec (hl) ; cursorInputPos-=1
     set dirtyFlagsInput, (iy + dirtyFlags)
+    ; update cursor if cursorInputPos>=inputPos
+    ld hl, cursorInputPos
+    ld a, (hl)
+    cp c ; CF=0 if cursorInputPos>=insertPos
+    ret c
+    dec (hl) ; cursorInputPos-=1
+    ret
+
+; Description: Add or remove the '-' char in the right-most number component in
+; inputBuf.
+; Input: (none)
+; Output:
+;   - inputBuf updated with '-' removed or added
+;   - cursorInputPos updated as necessary
+; Destroys:
+;   A, BC, DE, HL
+FlipInputBufSign:
+    set dirtyFlagsInput, (iy + dirtyFlags)
+    call CheckInputBufChs ; A=chsPos
+    ld hl, inputBuf
+    ld c, (hl) ; C=inputBufLen
+    cp c ; CF=0 if signPos>=inputBufLen
+    jr nc, flipInputBufSignAdd
+    ; Check for the '-' and flip it.
+    inc hl ; skip size byte
+    ld e, a
+    ld d, 0 ; DE=signPos
+    add hl, de
+    ld a, (hl) ; A=char at signPos
+    cp signChar
+    ld c, e ; C=signPos
+    jr nz, flipInputBufSignAdd
+flipInputBufSignRemove:
+    ; Remove existing '-' sign
+    ld a, e ; A=signPos
+    inc a ; A=inputPos
+    call DeleteCharAtInputBuf
+    ret
+flipInputBufSignAdd:
+    ; Add '-' sign.
+    ld a, signChar
+    call InsertCharAtInputBuf
     ret
 
 ;------------------------------------------------------------------------------
