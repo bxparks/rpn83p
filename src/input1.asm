@@ -149,7 +149,7 @@ deleteCharInputBufUpdate:
 ;   A, BC, DE, HL
 FlipInputBufSign:
     set dirtyFlagsInput, (iy + dirtyFlags)
-    bcall(_CheckInputBufChs) ; A=chsPos
+    call CheckInputBufChs ; A=chsPos
     ld hl, inputBuf
     ld c, (hl) ; C=inputBufLen
     cp c ; CF=0 if signPos>=inputBufLen
@@ -167,12 +167,12 @@ flipInputBufSignRemove:
     ; Remove existing '-' sign
     ld a, e ; A=signPos
     inc a ; A=inputPos
-    bcall(_DeleteCharAtInputBuf)
+    call DeleteCharAtInputBuf
     ret
 flipInputBufSignAdd:
     ; Add '-' sign.
     ld a, signChar
-    bcall(_InsertCharAtInputBuf)
+    call InsertCharAtInputBuf
     ret
 
 ;------------------------------------------------------------------------------
