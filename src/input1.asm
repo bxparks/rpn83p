@@ -93,34 +93,50 @@ insertCharAtInputBufUpdateCursor:
 ; Input:
 ;   - cursorInputPos
 ; Output:
-;   - inputBuf shortened by one character
-;   - cursorInputPos-=1
+;   - inputBuf shortened by one character if possible
+;   - cursorInputPos updated if necessary
 ; Destroys: A, BC, DE, HL
 DeleteCharInputBuf:
     ld a, (cursorInputPos)
+    ; [[fallthrough]]
+
+; Description: Delete one character to the left of inputPos from inputBuf if
+; possible. If inputPos at 0, then nothing can be deleted, so do nothing.
+; Input:
+;   - A:u8=inputPos
+; Output:
+;   - inputBuf shortened by one character if possible
+;   - cursorInputPos updated as necessary
+; Destroys: A, BC, DE, HL
+DeleteCharAtInputBuf:
     or a
-    ret z ; do nothing if cursor at start of inputBuf
-    ld c, a ; BC=cursorInputPos
-    ld b, 0
+    ret z ; do nothing if inputPos at start of inputBuf
+    ld c, a ; C=inputPos
+    ld b, 0 ; BC=inputPos
     ld hl, inputBuf
     ld a, (hl) ; A=inputBufLen
     or a
     ret z ; do nothing if buffer empty
-    ; shorten string by one
+    ; shorten string by shifting characters at or after inputPos to the left
     dec (hl) ; inputBufLen-=1
-    add hl, bc ; HL=inputBuf+cursorInputPos-1
+    add hl, bc ; HL=inputBuf+inputPos-1
     ld e, l
-    ld d, h ; DE=inputBuf+cursorInputPos-1
-    inc hl ; HL=inputBuf+cursorInputPos
-    sub c ; A=len-pos; ZF=1 if no bytes need to be moved
+    ld d, h ; DE=inputBuf+inputPos-1
+    inc hl ; HL=inputBuf+inputPos
+    sub c ; A=len-inputPos; ZF=1 if no bytes need to be moved
     jr z, deleteCharInputBufUpdate
+    push bc ; stack=[C=inputPos]
     ld c, a ; C=numByte
     ldir
+    pop bc ; stack=[]; C=inputPos
 deleteCharInputBufUpdate:
-    ; update cursor as well
-    ld hl, cursorInputPos
-    dec (hl) ; cursorInputPos-=1
     set dirtyFlagsInput, (iy + dirtyFlags)
+    ; update cursor if cursorInputPos>=inputPos
+    ld hl, cursorInputPos
+    ld a, (hl)
+    cp c ; CF=0 if cursorInputPos>=insertPos
+    ret c
+    dec (hl) ; cursorInputPos-=1
     ret
 
 ;------------------------------------------------------------------------------
