@@ -604,14 +604,27 @@ handleKeyClearToEmptyInput:
 
 ;-----------------------------------------------------------------------------
 
-; Description: Handle (-) change sign. If in edit mode, change the sign in the
-; inputBuf. Otherwise, change the sign of the X register. If the EE symbol
-; exists, change the sign of the exponent instead of the mantissa.
+; Description: Handle (-) change sign key. There are 2 major types of behavior:
+;
+; 1) If in edit mode, change the sign of the right-most component in the
+; inputBuf:
+;   a) If the number is a simple real number, change the sign of the number.
+;   b) If the number is a real number in scientific notation (containing the
+;   `E` symbol), change the sign of the exponent instead of the mantissa.
+;   c) If the number is a complex number, change the sign of the right most
+;   component (either real or imaginary), subject to the rules (a) and (b)
+;   above.
+;   d) If the entry is a Record object (e.g. Date or Time), then change the
+;   sign of the last component in the list of comma-separated numbers.
+; 2) If not in edit mode, change the sign of the entire X register if it
+; makes sense. An error code will be displayed if the CHS operation is not
+; allowed.
+;
 ; Input:
-;   - X:(Real|Complex|RpnDuration)
+;   - X:(Real|Complex|RpnObject)
 ;   - (inputBuf)
 ; Output:
-;   - X=-X
+;   - X=-X, or
 ;   - (inputBuf) modified with '-' sign
 ; Destroys: all, OP1
 handleKeyChs:
@@ -642,18 +655,16 @@ handleKeyChsInputBuf:
 ; Input:
 ;   - A:u8=signPos, the offset where the sign ought to be
 ;   - B:u8=inputBufCapacity, max size of Pasal string
-;   - HL:(pstring*)=pascalStringPointer
+;   - HL:(PascalString*)
 ; Output:
 ;   - (HL): updated with '-' removed or added
-;   - CF=1 if the result is still positive (including if '-' could not be added
-;   due to size), 0 if the result has become negative
 ; Destroys:
 ;   A, BC, DE, HL
 flipInputBufSign:
     ld c, (hl) ; size of string
     cp c
     jr c, flipInputBufSignInside ; If A < inputBufLen: interior position
-    ld a, c ; set A = inputBufLen, just in case
+    ld a, c ; A=inputBufLen, location of insertion
     jr flipInputBufSignAdd
 flipInputBufSignInside:
     ; Check for the '-' and flip it.
@@ -670,16 +681,14 @@ flipInputBufSignInside:
 flipInputBufSignRemove:
     ; Remove existing '-' sign
     bcall(_DeleteAtPos)
-    scf ; set CF to indicate positive
     ret
 flipInputBufSignAdd:
     ; Add '-' sign.
-    bcall(_InsertAtPos)
-    ret c ; Return if CF is set, indicating insert '-' failed
+    bcall(_InsertAtPos) ; CF=1 if insertion failed
+    ret c
     ; Set newly created empty slot to '-'
     ld a, signChar
     ld (hl), a
-    or a ; clear CF to indicate negative
     ret
 
 ;-----------------------------------------------------------------------------
