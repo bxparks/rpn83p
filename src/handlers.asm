@@ -644,6 +644,7 @@ handleKeyChsX:
     ret
 handleKeyChsInputBuf:
     ; In edit mode, so change sign of Mantissa or Exponent.
+    ; TODO: Move to input1.asm.
     set dirtyFlagsInput, (iy + dirtyFlags)
     bcall(_CheckInputBufChs) ; A=chsPos
     ld hl, inputBuf
@@ -661,31 +662,31 @@ handleKeyChsInputBuf:
 ; Destroys:
 ;   A, BC, DE, HL
 flipInputBufSign:
-    ld c, (hl) ; size of string
-    cp c
-    jr c, flipInputBufSignInside ; If A < inputBufLen: interior position
-    ld a, c ; A=inputBufLen, location of insertion
-    jr flipInputBufSignAdd
+    ld c, (hl) ; C=inputBufLen
+    cp c ; CF=0 if signPos>=inputBufLen
+    jr nc, flipInputBufSignAdd
 flipInputBufSignInside:
     ; Check for the '-' and flip it.
-    push hl
+    push hl ; stack=[inputBuf]
     inc hl ; skip size byte
     ld e, a
     ld d, 0 ; DE=signPos
     add hl, de
     ld a, (hl) ; A=char at signPos
     cp signChar
-    pop hl
-    ld a, e ; A=signPos
+    pop hl ; stack=[]; HL=inputBuf
+    ld c, e ; C=signPos
     jr nz, flipInputBufSignAdd
 flipInputBufSignRemove:
     ; Remove existing '-' sign
-    bcall(_DeleteAtPos)
+    ld a, e ; A=signPos
+    inc a ; A=inputPos
+    bcall(_DeleteCharAtInputBuf)
     ret
 flipInputBufSignAdd:
     ; Add '-' sign.
-    ld c, signChar
-    bcall(_InsertAtPos)
+    ld a, signChar
+    bcall(_InsertCharAtInputBuf)
     ret
 
 ;-----------------------------------------------------------------------------
