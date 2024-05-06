@@ -644,49 +644,7 @@ handleKeyChsX:
     ret
 handleKeyChsInputBuf:
     ; In edit mode, so change sign of Mantissa or Exponent.
-    ; TODO: Move to input1.asm.
-    set dirtyFlagsInput, (iy + dirtyFlags)
-    bcall(_CheckInputBufChs) ; A=chsPos
-    ld hl, inputBuf
-    ld b, inputBufCapacity
-    ; [[fallthrough]]
-
-; Description: Add or remove the '-' char at position A of the Pascal string at
-; HL, with maximum length B.
-; Input:
-;   - A:u8=signPos, the offset where the sign ought to be
-;   - B:u8=inputBufCapacity, max size of Pasal string
-;   - HL:(PascalString*)
-; Output:
-;   - (HL): updated with '-' removed or added
-; Destroys:
-;   A, BC, DE, HL
-flipInputBufSign:
-    ld c, (hl) ; C=inputBufLen
-    cp c ; CF=0 if signPos>=inputBufLen
-    jr nc, flipInputBufSignAdd
-flipInputBufSignInside:
-    ; Check for the '-' and flip it.
-    push hl ; stack=[inputBuf]
-    inc hl ; skip size byte
-    ld e, a
-    ld d, 0 ; DE=signPos
-    add hl, de
-    ld a, (hl) ; A=char at signPos
-    cp signChar
-    pop hl ; stack=[]; HL=inputBuf
-    ld c, e ; C=signPos
-    jr nz, flipInputBufSignAdd
-flipInputBufSignRemove:
-    ; Remove existing '-' sign
-    ld a, e ; A=signPos
-    inc a ; A=inputPos
-    bcall(_DeleteCharAtInputBuf)
-    ret
-flipInputBufSignAdd:
-    ; Add '-' sign.
-    ld a, signChar
-    bcall(_InsertCharAtInputBuf)
+    bcall(_FlipInputBufSign)
     ret
 
 ;-----------------------------------------------------------------------------

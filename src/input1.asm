@@ -139,6 +139,42 @@ deleteCharInputBufUpdate:
     dec (hl) ; cursorInputPos-=1
     ret
 
+; Description: Add or remove the '-' char in the right-most number component in
+; inputBuf.
+; Input: (none)
+; Output:
+;   - inputBuf updated with '-' removed or added
+;   - cursorInputPos updated as necessary
+; Destroys:
+;   A, BC, DE, HL
+FlipInputBufSign:
+    set dirtyFlagsInput, (iy + dirtyFlags)
+    bcall(_CheckInputBufChs) ; A=chsPos
+    ld hl, inputBuf
+    ld c, (hl) ; C=inputBufLen
+    cp c ; CF=0 if signPos>=inputBufLen
+    jr nc, flipInputBufSignAdd
+    ; Check for the '-' and flip it.
+    inc hl ; skip size byte
+    ld e, a
+    ld d, 0 ; DE=signPos
+    add hl, de
+    ld a, (hl) ; A=char at signPos
+    cp signChar
+    ld c, e ; C=signPos
+    jr nz, flipInputBufSignAdd
+flipInputBufSignRemove:
+    ; Remove existing '-' sign
+    ld a, e ; A=signPos
+    inc a ; A=inputPos
+    bcall(_DeleteCharAtInputBuf)
+    ret
+flipInputBufSignAdd:
+    ; Add '-' sign.
+    ld a, signChar
+    bcall(_InsertCharAtInputBuf)
+    ret
+
 ;------------------------------------------------------------------------------
 
 ; Description: Return the number of digits which are accepted or displayed for

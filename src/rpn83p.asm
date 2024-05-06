@@ -794,6 +794,10 @@ _DeleteCharAtInputBufLabel:
 _DeleteCharAtInputBuf equ _DeleteCharAtInputBufLabel-branchTableBase
     .dw DeleteCharAtInputBuf
     .db 1
+_FlipInputBufSignLabel:
+_FlipInputBufSign equ _FlipInputBufSignLabel-branchTableBase
+    .dw FlipInputBufSign
+    .db 1
 _CheckInputBufEELabel:
 _CheckInputBufEE equ _CheckInputBufEELabel-branchTableBase
     .dw CheckInputBufEE
