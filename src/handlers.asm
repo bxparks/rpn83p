@@ -684,11 +684,8 @@ flipInputBufSignRemove:
     ret
 flipInputBufSignAdd:
     ; Add '-' sign.
-    bcall(_InsertAtPos) ; CF=1 if insertion failed
-    ret c
-    ; Set newly created empty slot to '-'
-    ld a, signChar
-    ld (hl), a
+    ld c, signChar
+    bcall(_InsertAtPos)
     ret
 
 ;-----------------------------------------------------------------------------

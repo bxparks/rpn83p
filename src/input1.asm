@@ -53,15 +53,11 @@ InsertCharInputBuf:
     ld a, inputBufCapacity ; A=min(inputMaxLen,inputBufCapacity)
 insertCharInputBufContinue:
     ld b, a ; B=inputMaxLen
-    push bc ; stack=[insertChar]
     ld a, (cursorInputPos) ; A=insertPosition
     ld hl, inputBuf
     set dirtyFlagsInput, (iy + dirtyFlags)
     call InsertAtPos ; CF=0 if successful
-    pop bc ; stack=[]; C=insertChar
     ret c
-    ; actually insert the character
-    ld (hl), c
     ; always increment the cursor
     ld hl, cursorInputPos
     inc (hl)
