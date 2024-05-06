@@ -36,7 +36,7 @@ handleKeyNumberCheckAppend:
     jr z, handleKeyNumberAppend
     ; Check if EE exists and check num digits in EE.
     ld d, a ; D=saved A
-    bcall(_CheckInputBufEE) ; CF=1 if E exists; A=eeLen
+    bcall(_CheckInputBufEE) ; (if 'E' exists: CF=1; A=eeLen); DE preserved
     jr nc, handleKeyNumberRestoreAppend
     ; Check if eeLen<2.
     cp inputBufEEMaxLen

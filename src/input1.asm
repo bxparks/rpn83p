@@ -46,20 +46,45 @@ ClearInputBuf:
 ;   - (cursorInputPos)+=1 if successful
 ; Destroys: all
 InsertCharInputBuf:
-    ld c, a ; C=insertChar
-    call getInputMaxLen ; A=inputMaxLen
+    ld hl, cursorInputPos
+    ld c, (hl)
+    ; [[fallthrough]]
+
+; Description: Insert character 'A' into position 'C' of inputBuf, updating
+; 'cursorInputPos' as necessary.
+; Input:
+;   - A:char=insertChar
+;   - C:u8=insertPos
+; Output:
+;   - dirtyFlagsInput always set
+;   - CF=0 if successful
+;   - (cursorInputPos) updated as necessary
+; Destroys: all
+InsertCharAtInputBuf:
+    ld d, a ; B=insertChar
+    ; calc min(inputMaxLen, inputBufCapacity)
+    call getInputMaxLen ; A=inputMaxLen; BC,DE,HL preserved
     cp inputBufCapacity ; if inputMaxLen>=inputBufCapacity: CF=0
-    jr c, insertCharInputBufContinue
+    jr c, insertCharAtInputBufContinue
     ld a, inputBufCapacity ; A=min(inputMaxLen,inputBufCapacity)
-insertCharInputBufContinue:
+insertCharAtInputBufContinue:
     ld b, a ; B=inputMaxLen
-    ld a, (cursorInputPos) ; A=insertPosition
+    ld a, c ; A=insertPos
+    push bc ; stack=[insertPos]
+    ld c, d ; C=insertChar
     ld hl, inputBuf
     set dirtyFlagsInput, (iy + dirtyFlags)
     call InsertAtPos ; CF=0 if successful
+    pop bc ; stack=[]; C=insertPos
     ret c
-    ; always increment the cursor
+    ; update cursorInputPos if necessary
     ld hl, cursorInputPos
+    ld a, (hl)
+    cp c ; CF=0 if cursorInputPos>=insertPos
+    jr nc, insertCharAtInputBufUpdateCursor
+    or a ; CF=0
+    ret
+insertCharAtInputBufUpdateCursor:
     inc (hl)
     ret
 
