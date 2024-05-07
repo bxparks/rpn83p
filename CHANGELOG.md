@@ -21,10 +21,22 @@
           recall the 13 stat registers (essentially the same as the Plus42 app)
         - TODO: Update USER_GUIDE.md
     - show MenuFolders using a file folder icon
-        - draw a small 4px line above the menu box if the menu is a folder
+        - see [Issue#20](https://github.com/bxparks/rpn83p/issues/20)
+        - draw a small 5px wide line above the menu box if the menu is a folder
         - inspired by the menus on the HP-48 series calculators
         - fixes [Issue#20](https://github.com/bxparks/rpn83p/issues/20)
+        - change cursor to be rectangular block, instead of an underline, to
+          avoid visual conflict with the short dash line of menu folders just
+          below the editing line
         - TODO: update screenshots, maybe about 700 of them
+    - support insertion cursor using `LEFT` and `RIGHT` arrow keys
+        - support `2ND LEFT` (beginning of line) and `2ND RIGHT` (end of line)
+          key bindings
+        - update CHS (`-`) to change the sign of the interior number component
+          identified by the cursor instead of the right most component in the
+          inputBuf
+        - this allows easier correction of typos during long input
+        - TODO: update docs and screenshots
     - **Bug Fix** Validate Duration objects entered through colon-modifier
       syntax
         - prevents entry of things like `61s` or `25h`
