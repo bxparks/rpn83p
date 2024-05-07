@@ -643,8 +643,8 @@ handleKeyChsX:
     call stoX
     ret
 handleKeyChsInputBuf:
-    ; In edit mode, so change sign of Mantissa or Exponent.
-    bcall(_FlipInputBufSign)
+    ; In edit mode, so change sign of the component identified by the cursor
+    bcall(_ChangeSignInputBuf)
     ret
 
 ;-----------------------------------------------------------------------------

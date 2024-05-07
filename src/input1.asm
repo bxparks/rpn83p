@@ -139,21 +139,31 @@ deleteCharInputBufUpdate:
     dec (hl) ; cursorInputPos-=1
     ret
 
-; Description: Add or remove the '-' char in the right-most number component in
-; inputBuf.
-; Input: (none)
+; Description: Handle the CHS (+/-) request for the inputBuf in editMode. The
+; sign of the component on or immediately to the left of the cursor is flipped,
+; adding a `-` if it does not already exist, or removing the existing `-`
+; character. The component can be one of the following:
+;   a) the mantissa,
+;   b) the exponent,
+;   c) the mantissa of the imaginary component of a complex number,
+;   d) the exponent of the imaginary component of a complex number,
+;   e) the component of a Record type (e.g. Date, Time, DateTime
+;
+; Input:
+;   - inputBuf
+;   - cursorInputPos
 ; Output:
 ;   - inputBuf updated with '-' removed or added
 ;   - cursorInputPos updated as necessary
 ; Destroys:
 ;   A, BC, DE, HL
-FlipInputBufSign:
+ChangeSignInputBuf:
     set dirtyFlagsInput, (iy + dirtyFlags)
-    call findInputBufChs ; A=chsPos
+    call findInputBufChs ; A=signPos
     ld hl, inputBuf
     ld c, (hl) ; C=inputBufLen
     cp c ; CF=0 if signPos>=inputBufLen
-    jr nc, flipInputBufSignAdd
+    jr nc, changeSignInputBufAdd
     ; Check for the '-' and flip it.
     inc hl ; skip size byte
     ld e, a
@@ -162,14 +172,14 @@ FlipInputBufSign:
     ld a, (hl) ; A=char at signPos
     cp signChar
     ld c, e ; C=signPos
-    jr nz, flipInputBufSignAdd
-flipInputBufSignRemove:
+    jr nz, changeSignInputBufAdd
+changeSignInputBufRemove:
     ; Remove existing '-' sign
     ld a, e ; A=signPos
     inc a ; A=inputPos
     call DeleteCharAtInputBuf
     ret
-flipInputBufSignAdd:
+changeSignInputBufAdd:
     ; Add '-' sign.
     ld a, signChar
     call InsertCharAtInputBuf
@@ -316,31 +326,34 @@ checkInputBufEEFound:
 
 ;------------------------------------------------------------------------------
 
-; Description: Find the position in inputBuf where a negative sign can be
-; inserted or removed by the CHS (+/-) button. This can be after an 'E', after
-; the complex delimiter, after a comma, after an open '{', or at the start of
-; the buffer if empty. The code works by scanning backwards from the end of the
-; string. Returns the position of the sign in A.
+; Description: Find the position in the component identified by the current
+; cursor where a negative sign can be inserted or removed by the CHS (+/-)
+; button. This can be after an 'E', after the complex delimiter, after a comma,
+; after an open '{', or at the start of the inputBuf. The code works by
+; scanning backwards from the current cursor position. Returns the position of
+; the sign in A.
+;
 ; Input:
 ;   - inputBuf
+;   - cursorInputPos
 ; Output:
-;   - A:u8=inputBufChsPos
+;   - A:u8=signPos
 ; Destroys: BC, HL
 ; Preserves: DE
 findInputBufChs:
-    ld hl, inputBuf
-    ld c, (hl) ; C=len
-    ld b, 0 ; BC=len
-    ; check for len==0
-    ld a, c ; A=len
-    or a ; if len==0: ZF=0
+    ; check if the cursor is already at the beginning of the inputBuf
+    ld a, (cursorInputPos)
+    or a ; if cursorInputPos==0: ZF=0
     ret z
-    ;
+    ; prepare to scan backwards from the cursor
+    ld hl, inputBuf
+    ld c, a
+    ld b, 0
     inc hl ; skip past len byte
     add hl, bc ; HL=pointer to end of string
-    ld b, a ; B=len
+    ld b, a ; B=signPos=cursorInputPos
 findInputBufChsLoop:
-    ; Scan backwards from end of string to determine inputBufChsPos
+    ; Scan backwards until we hit one of the delimiters
     dec hl
     ld a, (hl)
     cp Lexponent ; ZF=1 if EE char detected
@@ -351,7 +364,7 @@ findInputBufChsLoop:
     jr z, findInputBufChsEnd
     djnz findInputBufChsLoop
 findInputBufChsEnd:
-    ld a, b
+    ld a, b ; A=signPos
     ret
 
 ;------------------------------------------------------------------------------
