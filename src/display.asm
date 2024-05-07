@@ -168,15 +168,25 @@ displayAll:
     call displayErrorCode
     call displayMain
     call displayMenu
-    ; Enable blinking cursor if in edit mode.
-    bit rpnFlagsEditing, (iy + rpnFlags)
-    jr z, displayAllNoEdit
-    set curAble, (iy + curFlags)
-    set curOn, (iy + curFlags)
-displayAllNoEdit:
+    call setCursorState
     ; Reset all dirty flags
     xor a
     ld (iy + dirtyFlags), a
+    ret
+
+; Description: Set the cursor properties. Enable cursor only in edit mode.
+;
+; NOTE: There are 2 variables that control the cursor (curOn and curAble), so
+; it seemed possible to adjust the cursor so that it is non-blinking when
+; placed at the end of the inputBuf, and blinking in the interior of the
+; inputBuf. However setting `curOn=true` and `curAble=false` seems to just
+; disable the cursor instead of showing a non-blinking cursor.
+setCursorState:
+    bit rpnFlagsEditing, (iy + rpnFlags)
+    ret z
+    ; enable a blinking cursor
+    set curOn, (iy + curFlags)
+    set curAble, (iy + curFlags)
     ret
 
 ;-----------------------------------------------------------------------------
