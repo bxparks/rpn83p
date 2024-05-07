@@ -2,12 +2,30 @@
 // MIT License
 // Copyright (c) 2024 Brian T. Park
 //
-// Prototype of the LEFT and RIGHT editing cursor using the C language so that I
-// can make some sense of the required algorithm, before translating it to Z80
-// assembly language.
+// Prototype of the LEFT and RIGHT navigation cursor using the C language so
+// that I can make some sense of the required algorithm, before translating it
+// to Z80 assembly language.
 //
 // Some characters in the input_buf[] are transformed into multiple characters
 // in the render_buf[], before printed on the LCD screen.
+//
+// Cursor navigation is invoked using commands similar to vi/vim commands:
+//
+//  - h: left
+//  - l: right
+//  - 0: go to first character
+//  - $: go to slot after last character
+//  - X: delete character to the left of cursor
+//  - i{c}: insert character {c} at current cursor
+//  - \n (newline): prints the current buffer, simulating updating of display
+//
+// Example:
+//
+//  $ ./cursornav.out '0123456789' 5
+//  DEBUG: cursor_input_pos=10; cursor_screen_pos=4
+//  DEBUG: window_start=6; window_end=11
+//  0123456789
+//  .789_
 //-----------------------------------------------------------------------------
 
 #include <stdint.h> // uint8_t
@@ -254,7 +272,7 @@ static void read_and_print()
 /** Print usage and exit with status code. (0 means success). */
 static void usage_and_exit(int status) {
   fprintf(stderr,
-    "Usage: cursor.out string window_size\n"
+    "Usage: ./cursornav.out string window_size\n"
   );
   exit(status);
 }

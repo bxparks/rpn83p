@@ -1,6 +1,6 @@
-TARGET := cursor.out
+TARGET := cursornav.out
 
-cursor.out: cursor.o
+cursornav.out: cursornav.o
 	$(CC) -o $@ $<
 
 clean:
