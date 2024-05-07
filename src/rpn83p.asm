@@ -302,6 +302,26 @@ argBufLen equ inputBufLen
 argBufCapacity equ inputBufCapacity
 argBufSizeMax equ 4 ; max number of digits accepted on input
 
+; Maximum number of characters that can be displayed during input/editing mode.
+; The LCD line can display 16 characters using the large font. We need 1 char
+; for the "X:" label, and 1 char for the trailing cursor, which leaves us with
+; 14 characters.
+renderWindowSize equ 15
+
+; Define the [start,end) of the renderWindow over the renderBuf[].
+; These *must* be defined contiguously because we will read both variables at
+; the same time using a `ld rr, (nn)` instruction. That's more convenient than
+; the `ld a, (nn)` instruction which only supports the A register. We use
+; little-endian order (end defined first) so that the high registers (B, D, H)
+; are `start`, and the low registers (C, E, L) are `end`.
+renderWindowEnd equ inputBuf + inputBufSizeOf ; u8
+renderWindowStart equ renderWindowEnd + 1; u8
+
+; Cursor position inside inputBuf[]. Valid values are from [0, inputBufLen]
+; inclusive, which allows the cursor to be just to the right of the last
+; character in inputBuf[].
+cursorInputPos equ renderWindowStart + 1 ; u8
+
 ; Menu variables. Two variables determine the location in the menu hierarchy,
 ; the groupId and the rowIndex in the group. The C equivalent is:
 ;
@@ -309,7 +329,7 @@ argBufSizeMax equ 4 ; max number of digits accepted on input
 ;     uint16_t groupId; // id of the current menu group
 ;     uint8_t rowIndex; // menu row, groups of 5
 ;   }
-currentMenuGroupId equ inputBuf + inputBufSizeOf ; u16
+currentMenuGroupId equ cursorInputPos + 1 ; u16
 currentMenuRowIndex equ currentMenuGroupId + 2 ; u8
 
 ; The MenuLocation of the previous menuGroup/row pair when a shortcut was
@@ -527,29 +547,48 @@ tvmNPMT1 equ tvmNPMT0 + 9 ; float
 tvmSolverIsRunning equ tvmNPMT1 + 9 ; boolean; true if active
 tvmSolverCount equ tvmSolverIsRunning + 1 ; u8; iteration count
 
-; A Pascal-string that contains the rendered version of inputBuf, truncated and
-; formatted as needed, which can be printed on the screen. It is slightly
-; longer than inputBuf because sometimes a single character in inputBuf gets
-; expanded to multiple characters in inputDisplay (e.g. 'Ldegree' delimiter for
-; complex numbers gets expanded to 'Langle,Ltemp' pair).
+; A Pascal-string that contains the rendered version of inputBuf[] which can be
+; printed on the screen. It is slightly longer than inputBuf for 2 reasons:
+;
+;   1) The 'Ldegree' delimiter for complex numbers is expanded to 2 characters
+;   ('Langle' and 'Ltemp').
+;
+;   2) A sentinel 'space' character is added at the very end representing the
+;   character that is behind the cursor when it is placed just after the end of
+;   the string in inputBuf[]. It is convenient to define this sentinel in
+;   renderBuf[] instead of adding special logic during the printing routine.
 ;
 ; The C structure is:
 ;
-; struct InputDisplay {
+; struct RenderBuf {
 ;   uint8_t len;
-;   char buf[inputDisplayCapacity];
+;   char buf[renderBufCapacity];
 ; };
-inputDisplay equ tvmSolverCount + 1 ; struct InputDisplay; Pascal-string
-inputDisplayLen equ inputDisplay ; len byte of the string
-inputDisplayBuf equ inputDisplay + 1 ; start of actual buffer
-inputDisplayCapacity equ inputBufCapacity + 1 ; Ldegree -> Langle Ltemp
-inputDisplaySizeOf equ inputDisplayCapacity + 1 ; total size of data structure
+renderBuf equ tvmSolverCount + 1 ; struct RenderBuf; Pascal-string
+renderBufLen equ renderBuf ; len byte of the string
+renderBufBuf equ renderBuf + 1 ; start of actual buffer
+renderBufCapacity equ inputBufCapacity + 2
+renderBufSizeOf equ renderBufCapacity + 1 ; total size of data structure
 
-; Maximum number of characters that can be displayed during input/editing mode.
-; The LCD line can display 16 characters using the large font. We need 1 char
-; for the "X:" label, and 1 char for the trailing prompt "_", which leaves us
-; with 14 characters.
-inputDisplayMaxLen equ 14
+; Lookup table that converts inputBuf[] coordinates to renderBuf[] coordinates.
+; The C date type is:
+;
+;   uint8_t renderIndexes[inputBufCapacity + 1];
+;
+; The size of this array is inputBufCapacity+1 because the cursor can be placed
+; one position past the last character in inputBuf[].
+renderIndexes equ renderBuf + renderBufSizeOf ; u8*renderIndexesSize
+renderIndexesSize equ inputBufCapacity + 1
+
+; Cursor position inside renderBuf[]. Derived from the value of
+; renderIndexes[cursorInputPos].
+cursorRenderPos equ renderIndexes + renderIndexesSize ; u8
+
+; Cursor position on the LCD screen in the range of [0,renderWindowSize). This
+; is the *logical* screen position. The actual physical screen column index is
+; `cursorScreenPos+1` because the `X:` label occupies one slot.
+; TODO: Currently used only in setInputCursor(). Remove?
+cursorScreenPos equ cursorRenderPos + 1 ; u8
 
 ; Set of bit-flags that remember whether an RPN stack display line was rendered
 ; in large or small font. We can optimize the drawing algorithm by performing a
@@ -561,7 +600,7 @@ displayStackFontFlagsX equ 1
 displayStackFontFlagsY equ 2
 displayStackFontFlagsZ equ 4
 displayStackFontFlagsT equ 8
-displayStackFontFlags equ inputDisplay + inputDisplaySizeOf ; u8
+displayStackFontFlags equ cursorScreenPos + 1 ; u8
 
 appBufferEnd equ displayStackFontFlags + 1
 
@@ -739,17 +778,29 @@ _ClearInputBufLabel:
 _ClearInputBuf equ _ClearInputBufLabel-branchTableBase
     .dw ClearInputBuf
     .db 1
-_AppendInputBufLabel:
-_AppendInputBuf equ _AppendInputBufLabel-branchTableBase
-    .dw AppendInputBuf
+_InsertCharInputBufLabel:
+_InsertCharInputBuf equ _InsertCharInputBufLabel-branchTableBase
+    .dw InsertCharInputBuf
+    .db 1
+_InsertCharAtInputBufLabel:
+_InsertCharAtInputBuf equ _InsertCharAtInputBufLabel-branchTableBase
+    .dw InsertCharAtInputBuf
+    .db 1
+_DeleteCharInputBufLabel:
+_DeleteCharInputBuf equ _DeleteCharInputBufLabel-branchTableBase
+    .dw DeleteCharInputBuf
+    .db 1
+_DeleteCharAtInputBufLabel:
+_DeleteCharAtInputBuf equ _DeleteCharAtInputBufLabel-branchTableBase
+    .dw DeleteCharAtInputBuf
+    .db 1
+_ChangeSignInputBufLabel:
+_ChangeSignInputBuf equ _ChangeSignInputBufLabel-branchTableBase
+    .dw ChangeSignInputBuf
     .db 1
 _CheckInputBufEELabel:
 _CheckInputBufEE equ _CheckInputBufEELabel-branchTableBase
     .dw CheckInputBufEE
-    .db 1
-_CheckInputBufChsLabel:
-_CheckInputBufChs equ _CheckInputBufChsLabel-branchTableBase
-    .dw CheckInputBufChs
     .db 1
 _CheckInputBufDecimalPointLabel:
 _CheckInputBufDecimalPoint equ _CheckInputBufDecimalPointLabel-branchTableBase
@@ -1672,6 +1723,10 @@ _PrintMenuNameAtC equ _PrintMenuNameAtCLabel-branchTableBase
 _DisplayMenuFolderLabel:
 _DisplayMenuFolder equ _DisplayMenuFolderLabel-branchTableBase
     .dw DisplayMenuFolder
+    .db 2
+_PrintInputBufLabel:
+_PrintInputBuf equ _PrintInputBufLabel-branchTableBase
+    .dw PrintInputBuf
     .db 2
 
 ;-----------------------------------------------------------------------------

@@ -11,6 +11,7 @@
 ;------------------------------------------------------------------------------
 
 ; Description: Initialize variables and flags related to the input buffer.
+; Input: none
 ; Output:
 ;   - inputBuf set to empty
 ;   - rpnFlagsEditing reset
@@ -20,38 +21,169 @@ ColdInitInputBuf:
     ; [[fallthrough]]
 
 ; Description: Clear the inputBuf.
-; Input: inputBuf
+; Input: none
 ; Output:
 ;   - inputBuf cleared
+;   - cursorInputPos=0
 ;   - dirtyFlagsInput set
 ; Destroys: none
 ClearInputBuf:
     push af
     xor a
     ld (inputBuf), a
+    ld (cursorInputPos), a
     set dirtyFlagsInput, (iy + dirtyFlags)
     pop af
     ret
 
-; Description: Append character to inputBuf.
+; Description: Insert character at cursorInputPos into inputBuf.
 ; Input:
-;   A: character to be appended
+;   - A:char=insertChar
+;   - cursorInputPos:u8=insertPosition
 ; Output:
-;   - CF set when append fails
-;   - dirtyFlagsInput set
+;   - dirtyFlagsInput always set
+;   - CF=0 if successful
+;   - (cursorInputPos)+=1 if successful
 ; Destroys: all
-AppendInputBuf:
-    ld c, a ; C=char
-    call getInputMaxLen ; A=inputMaxLen
+InsertCharInputBuf:
+    ld hl, cursorInputPos
+    ld c, (hl)
+    ; [[fallthrough]]
+
+; Description: Insert character 'A' into position 'C' of inputBuf, updating
+; 'cursorInputPos' as necessary.
+; Input:
+;   - A:char=insertChar
+;   - C:u8=insertPos
+; Output:
+;   - dirtyFlagsInput always set
+;   - CF=0 if successful
+;   - (cursorInputPos) updated as necessary
+; Destroys: all
+InsertCharAtInputBuf:
+    ld d, a ; B=insertChar
+    ; calc min(inputMaxLen, inputBufCapacity)
+    call getInputMaxLen ; A=inputMaxLen; BC,DE,HL preserved
     cp inputBufCapacity ; if inputMaxLen>=inputBufCapacity: CF=0
-    jr c, appendInputBufContinue
+    jr c, insertCharAtInputBufContinue
     ld a, inputBufCapacity ; A=min(inputMaxLen,inputBufCapacity)
-appendInputBufContinue:
+insertCharAtInputBufContinue:
     ld b, a ; B=inputMaxLen
-    ld a, c ; A=char
+    ld a, c ; A=insertPos
+    push bc ; stack=[insertPos]
+    ld c, d ; C=insertChar
     ld hl, inputBuf
     set dirtyFlagsInput, (iy + dirtyFlags)
-    jp AppendString
+    call InsertAtPos ; CF=0 if successful
+    pop bc ; stack=[]; C=insertPos
+    ret c
+    ; update cursorInputPos if necessary
+    ld hl, cursorInputPos
+    ld a, (hl)
+    cp c ; CF=0 if cursorInputPos>=insertPos
+    jr nc, insertCharAtInputBufUpdateCursor
+    or a ; CF=0
+    ret
+insertCharAtInputBufUpdateCursor:
+    inc (hl)
+    ret
+
+; Description: Delete one character to the left of cursorInputPos from inputBuf
+; if possible. If already empty, do nothing.
+; Input:
+;   - cursorInputPos
+; Output:
+;   - inputBuf shortened by one character if possible
+;   - cursorInputPos updated if necessary
+; Destroys: A, BC, DE, HL
+DeleteCharInputBuf:
+    ld a, (cursorInputPos)
+    ; [[fallthrough]]
+
+; Description: Delete one character to the left of inputPos from inputBuf if
+; possible. If inputPos at 0, then nothing can be deleted, so do nothing.
+; Input:
+;   - A:u8=inputPos
+; Output:
+;   - inputBuf shortened by one character if possible
+;   - cursorInputPos updated as necessary
+; Destroys: A, BC, DE, HL
+DeleteCharAtInputBuf:
+    or a
+    ret z ; do nothing if inputPos at start of inputBuf
+    ld c, a ; C=inputPos
+    ld b, 0 ; BC=inputPos
+    ld hl, inputBuf
+    ld a, (hl) ; A=inputBufLen
+    or a
+    ret z ; do nothing if buffer empty
+    ; shorten string by shifting characters at or after inputPos to the left
+    dec (hl) ; inputBufLen-=1
+    add hl, bc ; HL=inputBuf+inputPos-1
+    ld e, l
+    ld d, h ; DE=inputBuf+inputPos-1
+    inc hl ; HL=inputBuf+inputPos
+    sub c ; A=len-inputPos; ZF=1 if no bytes need to be moved
+    jr z, deleteCharInputBufUpdate
+    push bc ; stack=[C=inputPos]
+    ld c, a ; C=numByte
+    ldir
+    pop bc ; stack=[]; C=inputPos
+deleteCharInputBufUpdate:
+    set dirtyFlagsInput, (iy + dirtyFlags)
+    ; update cursor if cursorInputPos>=inputPos
+    ld hl, cursorInputPos
+    ld a, (hl)
+    cp c ; CF=0 if cursorInputPos>=insertPos
+    ret c
+    dec (hl) ; cursorInputPos-=1
+    ret
+
+; Description: Handle the CHS (+/-) request for the inputBuf in editMode. The
+; sign of the component on or immediately to the left of the cursor is flipped,
+; adding a `-` if it does not already exist, or removing the existing `-`
+; character. The component can be one of the following:
+;   a) the mantissa,
+;   b) the exponent,
+;   c) the mantissa of the imaginary component of a complex number,
+;   d) the exponent of the imaginary component of a complex number,
+;   e) the component of a Record type (e.g. Date, Time, DateTime
+;
+; Input:
+;   - inputBuf
+;   - cursorInputPos
+; Output:
+;   - inputBuf updated with '-' removed or added
+;   - cursorInputPos updated as necessary
+; Destroys:
+;   A, BC, DE, HL
+ChangeSignInputBuf:
+    set dirtyFlagsInput, (iy + dirtyFlags)
+    call findInputBufChs ; A=signPos
+    ld hl, inputBuf
+    ld c, (hl) ; C=inputBufLen
+    cp c ; CF=0 if signPos>=inputBufLen
+    jr nc, changeSignInputBufAdd
+    ; Check for the '-' and flip it.
+    inc hl ; skip size byte
+    ld e, a
+    ld d, 0 ; DE=signPos
+    add hl, de
+    ld a, (hl) ; A=char at signPos
+    cp signChar
+    ld c, e ; C=signPos
+    jr nz, changeSignInputBufAdd
+changeSignInputBufRemove:
+    ; Remove existing '-' sign
+    ld a, e ; A=signPos
+    inc a ; A=inputPos
+    call DeleteCharAtInputBuf
+    ret
+changeSignInputBufAdd:
+    ; Add '-' sign.
+    ld a, signChar
+    call InsertCharAtInputBuf
+    ret
 
 ;------------------------------------------------------------------------------
 
@@ -194,42 +326,45 @@ checkInputBufEEFound:
 
 ;------------------------------------------------------------------------------
 
-; Description: Check if the most recent floating number has a negative sign
-; that can be mutated by the CHS (+/-) button, by scanning backwards from the
-; end of the string. Return the position of the sign in B.
+; Description: Find the position in the component identified by the current
+; cursor where a negative sign can be inserted or removed by the CHS (+/-)
+; button. This can be after an 'E', after the complex delimiter, after a comma,
+; after an open '{', or at the start of the inputBuf. The code works by
+; scanning backwards from the current cursor position. Returns the position of
+; the sign in A.
+;
 ; Input:
 ;   - inputBuf
+;   - cursorInputPos
 ; Output:
-;   - A:u8=inputBufChsPos, the position where a sign character can be added or
-;   removed (i.e. after an 'E', after the complex delimiter, or at the start of
-;   the buffer if empty)
+;   - A:u8=signPos
 ; Destroys: BC, HL
 ; Preserves: DE
-CheckInputBufChs:
-    ld hl, inputBuf
-    ld c, (hl) ; C=len
-    ld b, 0 ; BC=len
-    ; check for len==0
-    ld a, c ; A=len
-    or a ; if len==0: ZF=0
+findInputBufChs:
+    ; check if the cursor is already at the beginning of the inputBuf
+    ld a, (cursorInputPos)
+    or a ; if cursorInputPos==0: ZF=0
     ret z
-    ;
+    ; prepare to scan backwards from the cursor
+    ld hl, inputBuf
+    ld c, a
+    ld b, 0
     inc hl ; skip past len byte
     add hl, bc ; HL=pointer to end of string
-    ld b, a ; B=len
-checkInputBufChsLoop:
-    ; Scan backwards from end of string to determine inputBufChsPos
+    ld b, a ; B=signPos=cursorInputPos
+findInputBufChsLoop:
+    ; Scan backwards until we hit one of the delimiters
     dec hl
     ld a, (hl)
     cp Lexponent ; ZF=1 if EE char detected
-    jr z, checkInputBufChsEnd
+    jr z, findInputBufChsEnd
     call isComplexDelimiterPageOne ; ZF=1 if complex delimiter
-    jr z, checkInputBufChsEnd
+    jr z, findInputBufChsEnd
     call isNumberDelimiterPageOne ; ZF=1 if number delimiter
-    jr z, checkInputBufChsEnd
-    djnz checkInputBufChsLoop
-checkInputBufChsEnd:
-    ld a, b
+    jr z, findInputBufChsEnd
+    djnz findInputBufChsLoop
+findInputBufChsEnd:
+    ld a, b ; A=signPos
     ret
 
 ;------------------------------------------------------------------------------

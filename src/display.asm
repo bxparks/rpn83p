@@ -122,9 +122,16 @@ menuFolderIconLineRow equ 7 ; pixel row of the menu folder icon line
 
 ;-----------------------------------------------------------------------------
 
+; Description: Initialize display variables upon cold start.
+coldInitDisplay:
+    xor a
+    ld (cursorInputPos), a
+    ld hl, 00*256 + renderWindowSize ; H=start=0; L=end=renderWindowSize
+    ld (renderWindowEnd), hl
+    ret
+
 ; Description: Configure flags and variables related to rendering to a sane
-; state. This is always called, regardless of whether RestoreAppState()
-; succeeded in restoring the saved state.
+; state.
 initDisplay:
     ; always set drawMode to drawModeNormal
     xor a
@@ -140,17 +147,46 @@ initDisplay:
 
 ; Description: Update the display, including the title, RPN stack variables,
 ; and the menu.
+;
+; We must turn off the cursor at the very beginning of the drawing code, then
+; reenable it at the end (if needed). Otherwise, there seems to be a
+; race-condition in the blinking code of TIOS where the cursor is shown
+; (probably through an interrupt handler), then the cursor position is changed
+; by our code, but the blinking code does not remember the prior location where
+; the cursor was enabled, so does not unblink the cursor properly, leaving an
+; artifact of the cursor in the wrong location.
+;
 ; Input: none
 ; Output:
 ; Destroys: all
 displayAll:
+    ; Disable blinking cursor
+    res curAble, (iy + curFlags)
+    res curOn, (iy + curFlags)
+    ;
     call displayStatus
     call displayErrorCode
     call displayMain
     call displayMenu
+    call setCursorState
     ; Reset all dirty flags
     xor a
     ld (iy + dirtyFlags), a
+    ret
+
+; Description: Set the cursor properties. Enable cursor only in edit mode.
+;
+; NOTE: There are 2 variables that control the cursor (curOn and curAble), so
+; it seemed possible to adjust the cursor so that it is non-blinking when
+; placed at the end of the inputBuf, and blinking in the interior of the
+; inputBuf. However setting `curOn=true` and `curAble=false` seems to just
+; disable the cursor instead of showing a non-blinking cursor.
+setCursorState:
+    bit rpnFlagsEditing, (iy + rpnFlags)
+    ret z
+    ; enable a blinking cursor
+    set curOn, (iy + curFlags)
+    set curAble, (iy + curFlags)
     ret
 
 ;-----------------------------------------------------------------------------
@@ -520,13 +556,15 @@ displayStackXInput:
     ld (CurRow), hl
     ld b, displayStackFontFlagsX
     call displayStackSetLargeFont
-    jp printInputBuf
+    bcall(_PrintInputBuf)
+    ret
 
 ; Display the inputBuf in the debug line. Used for DRAW mode 3.
 displayStackXInputAtDebug:
     ld hl, debugCurCol*$100+debugCurRow ; $(curCol)(curRow)
     ld (CurRow), hl
-    jp printInputBuf
+    bcall(_PrintInputBuf)
+    ret
 
 displayStackXLabel:
     ; If the "X:" label was corrupted by the command arg mode label, then
@@ -552,6 +590,7 @@ displayStackXLabelContinue:
 ; Input: (argBuf)
 ; Output: (CurCol) updated
 displayStackXArg:
+    ; Set commandArg cursor position.
     ld hl, argCurCol*$100 + argCurRow ; $(curCol)(curRow)
     ld (CurRow), hl
     ld b, displayStackFontFlagsX
@@ -559,6 +598,7 @@ displayStackXArg:
 
 ; Description: Print the arg buffer at the (CurRow) and (CurCol).
 ; Input:
+;   - B=displayFontMask
 ;   - argBuf (same as inputBuf)
 ;   - argPrompt
 ;   - argModifier
@@ -624,100 +664,6 @@ msgArgModifierDiv:
     .db "/ ", 0
 msgArgModifierIndirect:
     .db " IND ", 0
-
-;-----------------------------------------------------------------------------
-
-; Description: Print the input buffer.
-; Input:
-;   - inputBuf
-;   - (CurCol) cursor position
-; Output:
-;   - (CurCol) is updated
-; Destroys: A, HL; BC destroyed by PutPS()
-printInputBuf:
-    call formatInputBuf
-    call truncateInputDisplay
-    ld hl, inputDisplay
-    call putPS
-    ; Append trailing '_' cursor.
-    ld a, cursorChar
-    bcall(_PutC)
-    ; Skip EraseEOL() if the PutC() above wrapped to next line
-    ld a, (CurCol)
-    or a
-    ret z
-    bcall(_EraseEOL)
-    ret
-
-; Description: Convert the inputBuf into inputDisplay suitable for rendering on
-; the screen. If Ldegree character used for complex polar degree mode exists,
-; it is replaced by (Langle, Ltemp) pair.
-; Input: inputBuf
-; Output:
-;   - inputDisplay updated
-;   - HL=inputDisplay
-; Destroys: all registers
-formatInputBuf:
-    ld hl, inputBuf
-    ld de, inputDisplay
-    ld b, (hl) ; B=len(inputBuf)
-    ; check for zero string
-    ld a, b
-    ld (de), a ; len(displayBuf)=len(inputBuf) initially
-    or a
-    ret z
-    ; set up loop variables
-    inc hl ; skip past len byte
-    inc de ; skip past len byte
-    ld c, 0 ; C=targetLength
-formatInputBufLoop:
-    ld a, (hl)
-    inc hl
-    cp Ldegree
-    jr nz, formatInputBufCopy
-    ; Expand Ldegree into (Langle, Ltemp).
-    ld a, Langle
-    ld (de), a
-    inc de
-    inc c
-    ld a, Ltemp
-formatInputBufCopy:
-    ld (de), a
-    inc de
-    inc c
-    djnz formatInputBufLoop
-    ld hl, inputDisplay
-    ld (hl), c ; len(inputDisplay)=targetLen
-    ret
-
-; Description: Truncate inputDisplay to a maximum of 14 characters. If more
-; than 14 characters, add an ellipsis character on the left most character and
-; copy the last 13 characters.
-; Input: inputDisplay
-; Output: inputDisplay truncated if necessary
-; Destroys: all registers
-truncateInputDisplay:
-    ld hl, inputDisplay
-    ld a, (hl) ; A=len
-    inc hl ; skip past len byte
-    cp inputDisplayMaxLen+1 ; if len<15: CF=1
-    ret c
-    ; We are here if len>=15. Extract the last 13 characters, with an ellipsis
-    ; on the left most character.
-    sub inputDisplayMaxLen-1 ; A=len-13
-    ld e, a
-    ld d, 0
-    add hl, de ; HL=pointer to last 13 characters
-    ld a, inputDisplayMaxLen
-    ld de, inputDisplay
-    ld (de), a ; len=14
-    inc de; skip past len byte
-    ld a, Lellipsis
-    ld (de), a
-    inc de
-    ld bc, inputDisplayMaxLen-1
-    ldir ; shift the last 13 characters to the beginning of inputDisplay
-    ret
 
 ;-----------------------------------------------------------------------------
 ; Routines to display the progress of the TVM solver (for debugging).
@@ -830,6 +776,7 @@ msgShowLabel:
 ; digits.
 ; Destroys; A, HL, OP1, OP3-OP6
 displayShow:
+    ; Print 'SHOW' label on Error Code line
     ld hl, errorPenRow*$100 ; $(penRow)(penCol)
     ld (PenCol), hl
     ld hl, msgShowLabel

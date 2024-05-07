@@ -30,8 +30,9 @@ main:
     call coldInitStat
     call coldInitCfit
     call coldInitTvm
+    call coldInitDisplay
 warmInit:
-    ; Always perform only warm initialization.
+    ; Alway perform warm initialization.
     bcall(_SanitizeMenu) ; Sanitize currentMenuGroupId and currentMenuRowIndex
     bcall(_InitArgBuf) ; Start with command ArgScanner off.
     call updateNumResultMode

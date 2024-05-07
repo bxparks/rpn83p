@@ -39,15 +39,18 @@ appendStringNotFull:
 
 ;-----------------------------------------------------------------------------
 
-; Description: Prepare to insert a character at position 'A' from a
-; pascal-string, shifting characters to the right.
+; Description: Insert the character in register 'C' at position 'A' inside a
+; PascalString defined by 'HL', shifting characters to the right as necessary.
+; If the position 'A' is at the end of the string, the character is simply
+; appended.
 ; Input:
-;   A: insertPos, range of [0, stringSize]
-;   HL: pascal string pointer
-;   B: sizeMax of pascal string
+;   - A:u8=insertPos, range of [0, stringSize]
+;   - B:u8=pascalStringSizeMax
+;   - C:char=insertChar, char to be inserted
+;   - HL:(PascalString*)
 ; Output:
-;   CF: set if buffer string too long to insert
-;   HL: pointer to position at A (if CF==0)
+;   - CF=1 if insert failed due to string too long
+;   - HL:(const char*)=pointer to position at A (if CF==0)
 ; Destroys: all
 InsertAtPos:
     ld e, a ; E = insertPos (save)
@@ -67,6 +70,7 @@ insertAtPosAppendOrShiftRight:
     ld d, 0 ; No need to set E, it's already E = insertPos
     add hl, de
     inc hl
+    ld (hl), c ; append insertChar at end of string
     or a ; clear CF
     ret
 insertAtPosShiftRight:
@@ -76,17 +80,18 @@ insertAtPosShiftRight:
     ;   BC = stringSize - insertPos
     ;
     inc (hl) ; stringSize++
-    ; BC = A = stringSize - insertPos
+    push bc ; stack=[insertChar]
+    ; BC=stringSize - insertPos
     ld d, a ; save stringSize
-    sub e ; A = stringSize - insertPos
+    sub e ; A=stringSize-insertPos
     ld c, a
     ld b, 0
-    ; DE = stringSize
+    ; DE=stringSize
     ld e, d
     ld d, 0
-    ; HL = stringPointer + stringSize = last character
+    ; HL=stringPointer+stringSize=last character
     add hl, de
-    ; DE = HL + 1
+    ; DE=HL+1
     ld d, h
     ld e, l
     inc de
@@ -95,6 +100,8 @@ insertAtPosShiftRight:
     ; HL = insertion address
     ld h, d
     ld l, e
+    pop bc ; stack=[]; c=insrtChar
+    ld (hl), c
     or a ; clear CF
     ret
 
