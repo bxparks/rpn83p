@@ -802,10 +802,6 @@ _CheckInputBufEELabel:
 _CheckInputBufEE equ _CheckInputBufEELabel-branchTableBase
     .dw CheckInputBufEE
     .db 1
-_CheckInputBufChsLabel:
-_CheckInputBufChs equ _CheckInputBufChsLabel-branchTableBase
-    .dw CheckInputBufChs
-    .db 1
 _CheckInputBufDecimalPointLabel:
 _CheckInputBufDecimalPoint equ _CheckInputBufDecimalPointLabel-branchTableBase
     .dw CheckInputBufDecimalPoint

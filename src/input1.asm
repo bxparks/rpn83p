@@ -149,7 +149,7 @@ deleteCharInputBufUpdate:
 ;   A, BC, DE, HL
 FlipInputBufSign:
     set dirtyFlagsInput, (iy + dirtyFlags)
-    call CheckInputBufChs ; A=chsPos
+    call findInputBufChs ; A=chsPos
     ld hl, inputBuf
     ld c, (hl) ; C=inputBufLen
     cp c ; CF=0 if signPos>=inputBufLen
@@ -316,18 +316,18 @@ checkInputBufEEFound:
 
 ;------------------------------------------------------------------------------
 
-; Description: Check if the most recent floating number has a negative sign
-; that can be mutated by the CHS (+/-) button, by scanning backwards from the
-; end of the string. Return the position of the sign in B.
+; Description: Find the position in inputBuf where a negative sign can be
+; inserted or removed by the CHS (+/-) button. This can be after an 'E', after
+; the complex delimiter, after a comma, after an open '{', or at the start of
+; the buffer if empty. The code works by scanning backwards from the end of the
+; string. Returns the position of the sign in A.
 ; Input:
 ;   - inputBuf
 ; Output:
-;   - A:u8=inputBufChsPos, the position where a sign character can be added or
-;   removed (i.e. after an 'E', after the complex delimiter, or at the start of
-;   the buffer if empty)
+;   - A:u8=inputBufChsPos
 ; Destroys: BC, HL
 ; Preserves: DE
-CheckInputBufChs:
+findInputBufChs:
     ld hl, inputBuf
     ld c, (hl) ; C=len
     ld b, 0 ; BC=len
@@ -339,18 +339,18 @@ CheckInputBufChs:
     inc hl ; skip past len byte
     add hl, bc ; HL=pointer to end of string
     ld b, a ; B=len
-checkInputBufChsLoop:
+findInputBufChsLoop:
     ; Scan backwards from end of string to determine inputBufChsPos
     dec hl
     ld a, (hl)
     cp Lexponent ; ZF=1 if EE char detected
-    jr z, checkInputBufChsEnd
+    jr z, findInputBufChsEnd
     call isComplexDelimiterPageOne ; ZF=1 if complex delimiter
-    jr z, checkInputBufChsEnd
+    jr z, findInputBufChsEnd
     call isNumberDelimiterPageOne ; ZF=1 if number delimiter
-    jr z, checkInputBufChsEnd
-    djnz checkInputBufChsLoop
-checkInputBufChsEnd:
+    jr z, findInputBufChsEnd
+    djnz findInputBufChsLoop
+findInputBufChsEnd:
     ld a, b
     ret
 
