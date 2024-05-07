@@ -43,6 +43,8 @@ and more complicated features will get their own GitHub tickets.
     - becomes useful as more features and configuration options are added
 - allow numbers in any base to be entered regardless of the BASE mode
     - see [Issue#17](https://github.com/bxparks/rpn83p/issues/17)
+- implement a simple "undo" functionality after a `CLX` function
+    - we can probably use `2ND INS`, currently unused
 
 ## Medium Future
 
