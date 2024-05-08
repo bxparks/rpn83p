@@ -182,7 +182,7 @@ PrintInputBuf:
 ; characters (Langle, Ltemp).
 ;
 ; This is a translation of the render_input() function in
-; ../misc/cursor/cursor.c.
+; ../misc/cursornav/cursornav.c.
 ;
 ; Input:
 ;   - inputBuf:(const char*)
@@ -234,7 +234,7 @@ renderInputBufExit:
 ; renderBuf[] and the cursorInputPos.
 ;
 ; This is a translation of the update_window() function in
-; ../misc/cursor/cursor.c.
+; ../misc/cursornav/cursornav.c.
 ;
 ; Input:
 ;   - renderBuf:(const char*)
@@ -347,7 +347,7 @@ printRenderBufLoop:
 ; ellipsis character to indicate truncation.
 ;
 ; This is a translation of the print_render_window() function in
-; ../misc/cursor/cursor.c.
+; ../misc/cursornav/cursornav.c.
 ;
 ; Input: renderBuf
 ; Output: renderBuf truncated if necessary
