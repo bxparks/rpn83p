@@ -351,6 +351,7 @@ findInputBufChs:
     ld b, 0
     inc hl ; skip past len byte
     add hl, bc ; HL=pointer to end of string
+    ; prepare the loop counter
     ld b, a ; B=signPos=cursorInputPos
 findInputBufChsLoop:
     ; Scan backwards until we hit one of the delimiters
@@ -369,25 +370,38 @@ findInputBufChsEnd:
 
 ;------------------------------------------------------------------------------
 
-; Description: Check if the right most floating point number already has a
-; decimal point.
-; Input: inputBuf
-; Output: CF=1 if the last floating point number has a decimal point
+; Description: Check if the number component to the left of the cursor contains
+; a decimal point. This will be used to prevent a second decimal point in most
+; cases.
+
+; This algorithm scans only to the left of the cursor. It will fail if the
+; cursor is moved manually over an existing decimal point. A more robust
+; algorithm would need to scan forward to the next delimiter and check if the
+; *entire* component has a decimal point. But that's more work than I have
+; energy right now, so I will defer that to the future.
+;
+; Input:
+;   - inputBuf
+;   - cursorInputPos
+; Output:
+;   - CF=1 if the component has a decimal point
 ; Destroys: A, BC, HL
 ; Preserves: DE
 CheckInputBufDecimalPoint:
+    ; check if the cursor is already at the beginning of the inputBuf
+    ld a, (cursorInputPos)
+    or a ; if cursorInputPos==0: ZF=0
+    ret z ; CF=0
+    ; prepare to scan backwards
     ld hl, inputBuf
-    ld c, (hl) ; C=len
-    ld b, 0 ; BC=len
+    ld c, a
+    ld b, 0 ; BC=cursorInputPos
     inc hl ; skip past len byte
-    add hl, bc ; HL=pointer to end of string
-    ; check for len==0
-    ld a, c ; A=len
-    or a ; if len==0: ZF=0
-    jr z, checkInputBufDecimalPointNone
-    ld b, a ; B=len
+    add hl, bc ; HL=pointer to cursor
+    ; prepare loop
+    ld b, a ; B=loopCounter
 checkInputBufDecimalPointLoop:
-    ; Scan backwards from end of string to determine existence of decimal point.
+    ; Scan backwards to determine existence of decimal point.
     dec hl
     ld a, (hl)
     cp '.'
