@@ -276,29 +276,34 @@ wordSizeDigitsArray:
 
 ;------------------------------------------------------------------------------
 
-; Description: Check if the 'E' character exists in the last floating point
-; number in the inputBuf by scanning backwards from the end of the string. If
-; the EE character exists, then return the number of digits in the exponent.
-; Input: inputBuf
+; Description: Check if the 'E' character exists in the number to the left of
+; the input cursor. If the EE character exists, then also return the number of
+; digits in the exponent.
+;
+; Input:
+;   - inputBuf
+;   - cursorInputPos
 ; Output:
 ;   - CF=1 if exponent exists
-;   - A: eeLen, number of EE digits if exponent exists
+;   - A:u8=eeLen, number of EE digits if exponent exists
 ; Destroys: BC, HL
 ; Preserves: DE
 CheckInputBufEE:
+    ; check if the cursor is already at the beginning of the inputBuf
+    ld a, (cursorInputPos)
+    or a ; if cursorInputPos==0: ZF=0
+    ret z ; CF=0
+    ; prepare to scan backwards
     ld hl, inputBuf
-    ld c, (hl) ; C=len
-    ld b, 0 ; BC=len
+    ld c, a
+    ld b, 0 ; BC=cursorInputPos
     inc hl ; skip past len byte
-    add hl, bc ; HL=pointer to end of string
-    ; check for len==0
-    ld a, c ; A=len
-    or a ; if len==0: ZF=0
-    ret z
-    ld c, b ; C=0
-    ld b, a ; B=counter
+    add hl, bc ; HL=pointer to cursor
+    ; prepare loop
+    ld c, 0 ; C=eeLen
+    ld b, a ; B=loopCounter
 checkInputBufEELoop:
-    ; Scan backwards from end of string to determine eeLen
+    ; Scan backwards to determine eeLen
     dec hl
     ld a, (hl)
     call isNumberDelimiterPageOne ; ZF=1 if delimiter
