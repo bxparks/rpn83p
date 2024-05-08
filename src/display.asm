@@ -122,29 +122,6 @@ menuFolderIconLineRow equ 7 ; pixel row of the menu folder icon line
 
 ;-----------------------------------------------------------------------------
 
-; Description: Initialize display variables upon cold start.
-coldInitDisplay:
-    xor a
-    ld (cursorInputPos), a
-    ld hl, 00*256 + renderWindowSize ; H=start=0; L=end=renderWindowSize
-    ld (renderWindowEnd), hl
-    ret
-
-; Description: Configure flags and variables related to rendering to a sane
-; state.
-initDisplay:
-    ; always set drawMode to drawModeNormal
-    xor a
-    ld (drawMode), a
-    ; clear the displayFontMasks
-    ld (displayStackFontFlags), a
-    ; always disable SHOW mode
-    res rpnFlagsShowModeEnabled, (iy + rpnFlags)
-    ; set all dirty flags so that everything on the display is re-rendered
-    ld a, $FF
-    ld (iy + dirtyFlags), a
-    ret
-
 ; Description: Update the display, including the title, RPN stack variables,
 ; and the menu.
 ;

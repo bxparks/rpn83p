@@ -10,6 +10,33 @@
 ; entry.
 ;-----------------------------------------------------------------------------
 
+; Description: Initialize display variables upon cold start.
+ColdInitDisplay:
+    xor a
+    ld (cursorInputPos), a
+    ld hl, 00*256 + renderWindowSize ; H=start=0; L=end=renderWindowSize
+    ld (renderWindowEnd), hl
+    ret
+
+; Description: Configure flags and variables related to rendering to a sane
+; state.
+InitDisplay:
+    ; always set drawMode to drawModeNormal
+    xor a
+    ld (drawMode), a
+    ; clear the displayFontMasks
+    ld (displayStackFontFlags), a
+    ; always disable SHOW mode
+    res rpnFlagsShowModeEnabled, (iy + rpnFlags)
+    ; set all dirty flags so that everything on the display is re-rendered
+    ld a, $ff
+    ld (iy + dirtyFlags), a
+    ret
+
+;-----------------------------------------------------------------------------
+; Soft menu labels.
+;-----------------------------------------------------------------------------
+
 ; Description: Print the menu name in HL to the menu penCol in C, using the
 ; small and inverted font, centering the menu name in the middle of the 18 px
 ; width of a menu box.

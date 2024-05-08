@@ -1716,6 +1716,14 @@ _FormShowable equ _FormShowableLabel-branchTableBase
     .db 2
 
 ; display2.asm
+_ColdInitDisplayLabel:
+_ColdInitDisplay equ _ColdInitDisplayLabel-branchTableBase
+    .dw ColdInitDisplay
+    .db 2
+_InitDisplayLabel:
+_InitDisplay equ _InitDisplayLabel-branchTableBase
+    .dw InitDisplay
+    .db 2
 _PrintMenuNameAtCLabel:
 _PrintMenuNameAtC equ _PrintMenuNameAtCLabel-branchTableBase
     .dw PrintMenuNameAtC
