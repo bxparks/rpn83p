@@ -12,8 +12,6 @@
 
 ; Description: Initialize display variables upon cold start.
 ColdInitDisplay:
-    xor a
-    ld (cursorInputPos), a
     ld hl, 00*256 + renderWindowSize ; H=start=0; L=end=renderWindowSize
     ld (renderWindowEnd), hl
     ret

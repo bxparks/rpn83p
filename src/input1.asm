@@ -14,6 +14,7 @@
 ; Input: none
 ; Output:
 ;   - inputBuf set to empty
+;   - cursorInputPos=0
 ;   - rpnFlagsEditing reset
 ; Destroys: A
 ColdInitInputBuf:
