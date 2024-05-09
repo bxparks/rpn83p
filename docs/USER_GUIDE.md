@@ -2,7 +2,7 @@
 
 RPN calculator app for the TI-83 Plus and TI-84 Plus inspired by the HP-42S.
 
-**Version**: 0.10.0 (2024-03-31)
+**Version**: 0.11.0-dev (2024-05-08)
 
 **Project Home**: https://github.com/bxparks/rpn83p
 
@@ -93,9 +93,9 @@ features from the
 
 The RPN83P is a flash application written in Z80 assembly language that consumes
 3 pages (48 kiB) of flash memory. Since it is stored in flash, it is preserved
-if the RAM is cleared. It consumes about 735 bytes of TI-OS RAM through 3
-AppVars: `RPN83REG` (496 bytes), `RPN83STK` (116 bytes), and `RPN83SAV` (123
-bytes).
+if the RAM is cleared. It consumes about 1025 bytes of TI-OS RAM through 4
+AppVars: `RPN83REG` (498 bytes), `RPN83SAV` (139), `RPN83STA` (270 bytes), and
+`RPN83STK` (118 bytes).
 
 Summary of features:
 
