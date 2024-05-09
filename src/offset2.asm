@@ -159,7 +159,7 @@ durationToOffsetErr:
 ;-----------------------------------------------------------------------------
 
 SubRpnOffsetByObject:
-    call getOp3RpnObjectTypePageTwo ; A=objectType
+    call getOp3RpnObjectTypePageTwo ; A=type; HL=OP3
     cp rpnObjectTypeReal ; ZF=1 if Real
     jr z, subRpnOffsetByHours
     cp rpnObjectTypeOffset ; ZF=1 if Offset

@@ -349,7 +349,7 @@ addDateByDays:
 ;   - OP1:RpnDate(RpnDate-days) or i40(RpnDate-RpnDate).
 ; Destroys: OP1, OP2, OP3-OP6
 SubRpnDateByObject:
-    call getOp3RpnObjectTypePageTwo ; A=objectType
+    call getOp3RpnObjectTypePageTwo ; A=type; HL=OP3
     cp rpnObjectTypeReal ; ZF=1 if Real
     jr z, subRpnDateByDays
     cp rpnObjectTypeDate ; ZF=1 if Date

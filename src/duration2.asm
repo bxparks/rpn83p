@@ -408,7 +408,7 @@ AddRpnDurationByRpnDuration:
 ;   RpnDuration(RpnDuration-RpnDuration).
 ; Destroys: OP1, OP2
 SubRpnDurationByRpnDurationOrSeconds:
-    call getOp3RpnObjectTypePageTwo ; A=objectType
+    call getOp3RpnObjectTypePageTwo ; A=type; HL=OP3
     cp rpnObjectTypeReal ; ZF=1 if Real
     jr z, subRpnDurationBySeconds
     cp rpnObjectTypeDuration ; ZF=1 if Duration

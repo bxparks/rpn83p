@@ -7,19 +7,27 @@
 
 ; Description: Return the rpnObjectType of OP1/OP2.
 ; Input: OP1
-; Output: A=rpnObjectType
-; Destroys: A
+; Output: A=rpnObjectType; HL=OP1
+; Destroys: A, HL
 getOp1RpnObjectType:
-    ld a, (OP1)
-    and rpnObjectTypeMask
-    ret
+    ld hl, OP1
+    jr getHLRpnObjectType
 
 ; Description: Return the rpnObjectType of OP3/OP4.
 ; Input: OP3
+; Output: A=rpnObjectType; HL=OP3
+; Destroys: A, HL
+getOp3RpnObjectType:
+    ld hl, OP3
+    ; [[fallthrough]
+
+; Description: Return the rpnObjectType of HL.
+; Input: HL:(RpnObject*)
 ; Output: A=rpnObjectType
 ; Destroys: A
-getOp3RpnObjectType:
-    ld a, (OP3)
+; Preserves: HL
+getHLRpnObjectType:
+    ld a, (hl)
     and rpnObjectTypeMask
     ret
 

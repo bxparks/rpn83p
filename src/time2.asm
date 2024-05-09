@@ -254,7 +254,7 @@ addTimeBySeconds:
 ;   - OP1:(RpnTime-seconds) or (RpnTime-RpnTime)
 ; Destroys: all, OP1-OP4
 SubRpnTimeByObject:
-    call getOp3RpnObjectTypePageTwo ; A=objectType
+    call getOp3RpnObjectTypePageTwo ; A=type; HL=OP3
     cp rpnObjectTypeReal
     jr z, subRpnTimeBySeconds
     cp rpnObjectTypeTime

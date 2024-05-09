@@ -236,7 +236,7 @@ addOffsetDateTimeBySeconds:
 ;   - OP1:(RpnOffsetDateTime-seconds) or (RpnOffsetDateTime-RpnOffsetDateTime).
 ; Destroys: OP1, OP2, OP3-OP6
 SubRpnOffsetDateTimeByObject:
-    call getOp3RpnObjectTypePageTwo ; A=objectType
+    call getOp3RpnObjectTypePageTwo ; A=type; HL=OP3
     cp rpnObjectTypeReal
     jr z, subRpnOffsetDateTimeBySeconds
     cp RpnObjectTypeOffsetDateTime ; ZF=1 if RpnOffsetDateTime

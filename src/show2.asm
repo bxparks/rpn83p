@@ -23,7 +23,7 @@
 ;   - DE: points to NUL at the end of string, to allow chaining
 ; Destroys: all, OP1-OP6
 FormShowable:
-    call getOp1RpnObjectTypePageTwo
+    call getOp1RpnObjectTypePageTwo ; A=type; HL=OP1
     ; real
     cp rpnObjectTypeReal
     jr z, formShowableReal

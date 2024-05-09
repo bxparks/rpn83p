@@ -581,13 +581,17 @@ rpnObjectLenToSize:
 ;   - ErrUndefined if appVar not found
 ; Destroys: all
 stoRpnObject:
-    call getOp1RpnObjectType ; A=rpnObjectType
+    ; get objectType of OP1/OP2, this is one of the few (perhaps only) case
+    ; where HL must be saved before calling getOp1RpnObjectType().
+    push hl ; stack=[varName]
+    call getOp1RpnObjectType ; A=type; HL=OP1
+    pop hl ; stack=[]; HL=varName
     ld b, a ; B=rpnObjectType
     push bc ; stack=[index/objectType]
     ; save OP1/OP2 to FPS
     push hl ; stack=[index/objectType, varName]
     bcall(_PushRpnObject1) ; FPS=[OP1/OP2]
-    pop hl ; stack=[index, objectType]; HL=varName
+    pop hl ; stack=[index/objectType]; HL=varName
     ; find varName
     call move9ToOp1 ; OP1=varName
     bcall(_ChkFindSym) ; DE=dataPointer; CF=1 if not found
@@ -602,7 +606,7 @@ stoRpnObject:
     bcall(_PopRpnObject1) ; FPS=[]; OP1/OP2
     pop bc
     pop hl ; stack=[]; HL=elementPointer
-    ; copy from OP1/OP2 into AppVar element
+    ; copy RpnObject from OP1/OP2 into AppVar element
     ld (hl), b ; (hl)=objectType
     inc hl
     ld a, b
@@ -611,7 +615,7 @@ stoRpnObject:
     ; copy first 9 bytes
     ld bc, rpnRealSizeOf
     ldir
-    ; return early if Real
+    ; return early if Real, TODO: Is the early return necessary?
     cp rpnObjectTypeReal
     ret z
     ; copy next 9 bytes for everything else

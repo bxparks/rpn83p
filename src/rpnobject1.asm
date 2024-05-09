@@ -15,6 +15,15 @@
 ; Output: A=rpnObjectType
 ; Destroys: A
 getOp1RpnObjectTypePageOne:
-    ld a, (OP1)
+    ld hl, OP1
+    ; [[fallthrough]]
+
+; Description: Return the rpnObjectType of HL.
+; Input: HL:(RpnObject*)
+; Output: A=rpnObjectType
+; Destroys: A
+; Preserves: HL
+getHLRpnObjectTypePageOne:
+    ld a, (hl)
     and rpnObjectTypeMask
     ret

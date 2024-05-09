@@ -199,7 +199,7 @@ addDateTimeBySeconds:
 ;   - OP1:(RpnDateTime-seconds) or i40(RpnDateTime-RpnDateTime).
 ; Destroys: OP1, OP2, OP3-OP6
 SubRpnDateTimeByObject:
-    call getOp3RpnObjectTypePageTwo ; A=objectType
+    call getOp3RpnObjectTypePageTwo ; A=type; HL=OP3
     cp rpnObjectTypeReal
     jr z, subRpnDateTimeBySeconds
     cp rpnObjectTypeDateTime
