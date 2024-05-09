@@ -112,6 +112,11 @@ rpn83pAppId equ $1E69
 ; *must* increment the version number to mark the previous state as stale.
 rpn83pSchemaVersion equ 15
 
+; Similar to rpn83pSchemaVersion, this version number determines the schema of
+; the appVars (e.g. RPN83STK, RPN83REG, RPN83STA) that hold the list of
+; RpnObjects.
+rpnObjectListSchemaVersion equ 1
+
 ; Define true and false. Something else in spasm-ng defines the 'true' and
 ; 'false' symbols but I cannot find the definitions for them in the
 ; "ti83plus.inc" file. So maybe they are defined by the assembler itself?

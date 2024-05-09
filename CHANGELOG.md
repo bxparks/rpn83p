@@ -37,6 +37,7 @@
           inputBuf
         - this allows easier correction of typos during long input
         - TODO: update docs and screenshots
+    - **Bug Fix** Add `schemaVersion` validation for RpnObjectList appVars.
     - **Bug Fix** Validate Duration objects entered through colon-modifier
       syntax
         - prevents entry of things like `61s` or `25h`

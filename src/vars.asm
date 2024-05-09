@@ -106,13 +106,32 @@
 ;   };
 ; };
 ;
-; // This is the data that is serialized into the AppVar. The first 2 bytes of
-; the AppVar data section is reserved and filled in by the OS.
+; An array of RpnObjects is stored in appVars (e.g. RPN83STK, RPN83REG,
+; RPN83STA). The data section of the appVar can be described by the following C
+; structure:
+;
 ; struct RpnObjectList {
-;   uint16_t crc16; // CRC16 checksum
+;   uint16_t size ; // maintained by the TIOS (*not* including 'size' field)
+;   uint16_t crc16; // CRC16 checksum of all following bytes
+;   uint16_t schemaVersion; // schema version in v0.11 (appId in < v0.11)
 ;   uint16_t appId; // appId
 ;   RpnObject objects[size/sizeof(RpnObject)];
 ; };
+;
+; The `schemaVersion` field was inadvertantly left out prior to v0.11. For
+; v0.11, it is deliberately placed into the same slot as the `appId` field in
+; the previous version, to allow the app to detect a schema change in both
+; directions, during an upgrade from (v0.1-v0.10) to v0.11, or during a
+; downgrade from v0.11 to (v0.1-v0.10):
+;
+; 1) (v0.1-v0.10) to v0.11: The `schemaVersion` field will change from
+; `rpn83pAppId` to `rpnObjectListSchemaVersion`.
+; 2) v0.11 to (v0.1-v0.10): The `appId` field will change from
+; `rpnObjectListSchemaVersion` to `rpn83pAppId`.
+;
+; The only time this will fail is if the user upgrades/downgrades between a
+; schema version of 1 (rpnObjectListSchemaVersion) and $1E69 (rpn83pAppId),
+; which is likely to never happen.
 ;-----------------------------------------------------------------------------
 
 ; Description: Initialize the AppVar to contain an array of RpnObjects.
@@ -155,13 +174,19 @@ initRpnObjectListHeader:
     inc de ; skip past the appVarSize field
     inc de
     inc de ; skip past the CRC field
-    ; insert appId
-    ld bc, rpn83pAppId
     ex de, hl ; HL=dataPointer+4
+    ; insert schemaVersion
+    ld bc, rpnObjectListSchemaVersion
     ld (hl), c
     inc hl
     ld (hl), b
-    inc hl ; HL=datePointer+6
+    inc hl ; HL=dataPointer+6
+    ; insert appId
+    ld bc, rpn83pAppId
+    ld (hl), c
+    inc hl
+    ld (hl), b
+    inc hl ; HL=dataPointer+8
     ; clear all the elements from [begin,len)
     pop de ; stack=[len]; DE=dataPointer
     pop bc ; stack=[]; C=len
@@ -189,7 +214,7 @@ clearRpnObjectList:
     ld c, a ; C=len
     pop de ; stack=[]; DE=dataPointer
     inc de
-    inc de ; DE=datePointer+2; skip past appVarSize
+    inc de ; DE=dataPointer+2; skip past appVarSize
     add hl, de ; HL=beginAddress=dataPointer+offset+2
     ex de, hl ; DE=beginAddress; HL=dataPointer
 clearRpnObjectListLoop:
@@ -212,13 +237,13 @@ clearRpnObjectListLoopTrailing:
     jr nz, clearRpnObjectListLoop
     ret
 
-; Description: Validate the CRC16 checksum and the appId header of the
-; rpnObjectList appVar. The size is not validated because the appVar could have
-; been changed to a different size.
+; Description: Validate the `crc16` checksum, the `schemaVersion`, and the
+; `appId` fields of the rpnObjectList appVar. The `size` field is not validated
+; because the appVar could have been changed to a different size.
 ;
 ; Input:
 ;   - DE:(u8*)=dataPointer to appVar contents
-;   - (appVar): 2 bytes (len), 2 bytes (crc16), 2 bytes (appId), data[]
+;   - (appVar):(struct RpnObjectList*)
 ; Output:
 ;   - ZF=1 if valid, 0 if not valid
 ; Destroys: DE, HL
@@ -247,14 +272,27 @@ validateRpnObjectList:
     sbc hl, de ; if CRC matches: ZF=1
     pop hl ; stack=[BC]; HL=dataPointer
     jr nz, validateRpnObjectListEnd
+    ; Verify schemaVersion.
+    ld e, (hl)
+    inc hl
+    ld d, (hl)
+    inc hl ; DE=schemaVersion
+    ex de, hl ; DE=dataPointer; HL=schemaVersion
+    ld bc, rpnObjectListSchemaVersion
+    or a ; CF=0
+    sbc hl, bc ; if schemaVersion matches: ZF=1
+    ex de, hl ; HL=dataPointer
+    jr nz, validateRpnObjectListEnd
     ; Verify appId.
     ld e, (hl)
     inc hl
     ld d, (hl)
     inc hl ; DE=appId
-    ld hl, rpn83pAppId
+    ex de, hl ; DE=dataPointer; HL=appId
+    ld bc, rpn83pAppId
     or a ; CF=0
-    sbc hl, de ; if appId matches: ZF=1
+    sbc hl, bc ; if appId matches: ZF=1
+    ex de, hl ; HL=dataPointer
 validateRpnObjectListEnd:
     pop bc ; stack=[]; BC=restored
     ret
@@ -309,12 +347,14 @@ calcLenRpnObjectList:
     inc hl
     ld d, (hl) ; DE=appVarSize
     dec hl ; HL=dataPointer
-    ; remove the crc16 and appId from appVarSize
+    ; remove the crc16, schemaVersion, and appId fields from appVarSize
     ex de, hl ; HL=appVarSize; DE=dataPointer
     dec hl
     dec hl
     dec hl
-    dec hl ; HL=appVarSize-4=rpnObjectListSize
+    dec hl
+    dec hl
+    dec hl ; HL=appVarSize-6=rpnObjectListSize
     ; divide rpnObjectListSize/sizeof(RpnObject)
     ld c, rpnObjectSizeOf
     call divHLByC ; HL=quotient; A=remainder; preserves DE
@@ -374,8 +414,8 @@ expandRpnObjectList:
     ld c, (hl)
     inc hl
     ld b, (hl) ; BC=appVarSize
-    inc hl ; HL=datePointer+2
-    add hl, bc ; HL=insertionAddress=datePointer+2+appVarSize
+    inc hl ; HL=dataPointer+2
+    add hl, bc ; HL=insertionAddress=dataPointer+2+appVarSize
     ; perform insertion
     ex de, hl ; DE=insertionAddress; HL=expandSize
     push hl ; stack=[begin/diffLen,dataPointer,expandSize]
@@ -414,7 +454,7 @@ shrinkRpnObjectList:
     ld c, (hl)
     inc hl
     ld b, (hl) ; BC=appVarSize
-    inc hl ; HL=datePointer+2
+    inc hl ; HL=dataPointer+2
     add hl, bc ; HL=dataPointer+2+appVarSize
     or a ; CF=0
     sbc hl, de ; HL=deletionAddress=dataPointer+2+appVarSize-shrinkSize
@@ -486,7 +526,10 @@ rpnObjectIndexToElementPointer:
 ; Description: Convert rpnObject index to the offset into the appVar data
 ; segment. If 'index' is the 'len', then this is the value stored by the TI-OS
 ; in the appVarSize field at the beginning of the data segment:
-;   appVarSize = len*rpnObjectSizeOf + 2 (crc16) + 2 (appId).
+;
+;   appVarSize = len*rpnObjectSizeOf
+;                + 2 (crc16) + 2 (schemaVersion) + 2 (appId)
+;              = len*rpnObjectSizeOf + 6
 ;
 ; To get to the end of the appVar data segment, add this offset to the
 ; dataPointer. But don't forget to add another 2 byte to skip past the 2-byte
@@ -500,12 +543,14 @@ rpnObjectIndexToOffset:
     ld l, c
     ld h, 0 ; HL=len
     call rpnObjectLenToSize ; HL=19*HL
-    ld de, 4
-    add hl, de ; HL=sum=19*len+4
+    ld de, 6
+    add hl, de ; HL=sum=19*len+6
     pop de
     ret
 
 ; Description: Convert len of RpnObject to the byte size of those RpnObjects.
+; This *must* be updated if sizeof(RpnObject) changes.
+;
 ; Input: HL:u16=len
 ; Output: HL:u16=size=len*sizeof(RpnObject)=len*19
 ; Destroys: DE
