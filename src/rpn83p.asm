@@ -130,6 +130,10 @@ rpntrue equ 1
 ; RpnObect type enums. TIOS defines object types from $00 (RealObj) to
 ; $17 (GroupObj). We'll continue from $18.
 
+; The bit mask needed to extract the TIOS object type. Only the bottom 5 bits
+; of the type byte are used.
+rpnObjectTypeMask equ $1f
+
 ; Real number object. Use the same constant as TIOS.
 rpnObjectTypeReal equ 0 ; same as TI-OS
 

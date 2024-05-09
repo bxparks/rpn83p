@@ -328,7 +328,7 @@ pushToXY:
 ; Destroys: A, HL
 checkValidRpnObjectCP1:
     ld a, (OP1)
-    and $1f
+    and rpnObjectTypeMask
     cp rpnObjectTypeReal
     jr z, checkValidNumber
     cp rpnObjectTypeComplex
@@ -357,7 +357,7 @@ checkValidNumber:
 ; Destroys: A, HL
 checkValidRealOP1:
     ld a, (OP1)
-    and $1f
+    and rpnObjectTypeMask
     cp rpnObjectTypeReal
     jr nz, checkValidRealErr
     bcall(_CkValidNum) ; dstroys AF, HL

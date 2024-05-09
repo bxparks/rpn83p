@@ -22,7 +22,7 @@
 transformToOffsetDateTime:
     ; check if already RpnOffsetDateTime
     ld a, (hl) ; A=rpnType
-    and $1f
+    and rpnObjectTypeMask
     cp rpnObjectTypeOffsetDateTime
     ret z
     ;
@@ -71,7 +71,7 @@ transformToOffsetDateTimeClear:
 ; Throws: Err:DateType if input is the wrong type
 transformToDate:
     ld a, (hl) ; A=rpnType
-    and $1f
+    and rpnObjectTypeMask
     cp rpnObjectTypeTime
     ret z
     cp rpnObjectTypeDateTime
@@ -92,7 +92,7 @@ transformToDateConvert:
 ; Throws: Err:DateType if input is the wrong type
 transformToTime:
     ld a, (hl) ; A=rpnType
-    and $1f
+    and rpnObjectTypeMask
     cp rpnObjectTypeTime
     ret z
     cp rpnObjectTypeDateTime

@@ -16,5 +16,5 @@
 ; Destroys: A
 getOp1RpnObjectTypePageOne:
     ld a, (OP1)
-    and $1f
+    and rpnObjectTypeMask
     ret

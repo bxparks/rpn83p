@@ -651,7 +651,7 @@ rclRpnObject:
     ld de, OP1
     ld a, (hl) ; A=objectType
     inc hl
-    and $1f
+    and rpnObjectTypeMask
     ; copy first 9 bytes
     ld bc, rpnRealSizeOf
     ldir

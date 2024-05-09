@@ -16,7 +16,7 @@
 ; Destroys: A
 getOp1RpnObjectTypePageTwo:
     ld a, (OP1)
-    and $1f
+    and rpnObjectTypeMask
     ret
 
 ; Description: Return the rpnObjectType of OP3/OP4.
@@ -25,7 +25,7 @@ getOp1RpnObjectTypePageTwo:
 ; Destroys: A
 getOp3RpnObjectTypePageTwo:
     ld a, (OP3)
-    and $1f
+    and rpnObjectTypeMask
     ret
 
 ;-----------------------------------------------------------------------------
@@ -36,7 +36,7 @@ getOp3RpnObjectTypePageTwo:
 ; Destroys: A
 checkOp1ComplexPageTwo:
     ld a, (OP1)
-    and $1f
+    and rpnObjectTypeMask
     cp rpnObjectTypeComplex
     ret
 
@@ -48,7 +48,7 @@ checkOp1ComplexPageTwo:
 ; Output: ZF=1 if RpnTime
 checkOp1TimePageTwo:
     ld a, (OP1)
-    and $1f
+    and rpnObjectTypeMask
     cp rpnObjectTypeTime
     ret
 
@@ -56,7 +56,7 @@ checkOp1TimePageTwo:
 ; Output: ZF=1 if RpnTime
 checkOp3TimePageTwo:
     ld a, (OP3)
-    and $1f
+    and rpnObjectTypeMask
     cp rpnObjectTypeTime
     ret
 
@@ -66,7 +66,7 @@ checkOp3TimePageTwo:
 ; Output: ZF=1 if RpnDate
 checkOp1DatePageTwo:
     ld a, (OP1)
-    and $1f
+    and rpnObjectTypeMask
     cp rpnObjectTypeDate
     ret
 
@@ -74,7 +74,7 @@ checkOp1DatePageTwo:
 ; Output: ZF=1 if RpnDate
 checkOp3DatePageTwo:
     ld a, (OP3)
-    and $1f
+    and rpnObjectTypeMask
     cp rpnObjectTypeDate
     ret
 
@@ -84,7 +84,7 @@ checkOp3DatePageTwo:
 ; Output: ZF=1 if RpnDateTime
 checkOp1DateTimePageTwo:
     ld a, (OP1)
-    and $1f
+    and rpnObjectTypeMask
     cp rpnObjectTypeDateTime
     ret
 
@@ -92,7 +92,7 @@ checkOp1DateTimePageTwo:
 ; Output: ZF=1 if RpnDateTime
 checkOp3DateTimePageTwo:
     ld a, (OP3)
-    and $1f
+    and rpnObjectTypeMask
     cp rpnObjectTypeDateTime
     ret
 
@@ -102,7 +102,7 @@ checkOp3DateTimePageTwo:
 ; Output: ZF=1 if RpnOffset
 checkOp1OffsetPageTwo:
     ld a, (OP1)
-    and $1f
+    and rpnObjectTypeMask
     cp rpnObjectTypeOffset
     ret
 
@@ -110,7 +110,7 @@ checkOp1OffsetPageTwo:
 ; Output: ZF=1 if RpnOffset
 checkOp3OffsetPageTwo:
     ld a, (OP3)
-    and $1f
+    and rpnObjectTypeMask
     cp rpnObjectTypeOffset
     ret
 
@@ -120,7 +120,7 @@ checkOp3OffsetPageTwo:
 ; Output: ZF=1 if RpnOffsetDateTime
 checkOp1OffsetDateTimePageTwo:
     ld a, (OP1)
-    and $1f
+    and rpnObjectTypeMask
     cp rpnObjectTypeOffsetDateTime
     ret
 
@@ -128,7 +128,7 @@ checkOp1OffsetDateTimePageTwo:
 ; Output: ZF=1 if RpnOffsetDateTime
 checkOp3OffsetDateTimePageTwo:
     ld a, (OP3)
-    and $1f
+    and rpnObjectTypeMask
     cp rpnObjectTypeOffsetDateTime
     ret
 
@@ -138,7 +138,7 @@ checkOp3OffsetDateTimePageTwo:
 ; Output: ZF=1 if RpnDayOfWeek
 checkOp1DayOfWeekPageTwo:
     ld a, (OP1)
-    and $1f
+    and rpnObjectTypeMask
     cp rpnObjectTypeDayOfWeek
     ret
 
@@ -146,7 +146,7 @@ checkOp1DayOfWeekPageTwo:
 ; Output: ZF=1 if RpnDayOfWeek
 checkOp3DayOfWeekPageTwo:
     ld a, (OP3)
-    and $1f
+    and rpnObjectTypeMask
     cp rpnObjectTypeDayOfWeek
     ret
 
@@ -156,7 +156,7 @@ checkOp3DayOfWeekPageTwo:
 ; Output: ZF=1 if RpnDuration
 checkOp1DurationPageTwo:
     ld a, (OP1)
-    and $1f
+    and rpnObjectTypeMask
     cp rpnObjectTypeDuration
     ret
 
@@ -164,6 +164,6 @@ checkOp1DurationPageTwo:
 ; Output: ZF=1 if RpnDuration
 checkOp3DurationPageTwo:
     ld a, (OP3)
-    and $1f
+    and rpnObjectTypeMask
     cp rpnObjectTypeDuration
     ret

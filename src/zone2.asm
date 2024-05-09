@@ -20,7 +20,7 @@
 SetAppTimeZone:
     ld hl, OP1
     ld a, (hl)
-    and $1f
+    and rpnObjectTypeMask
     inc hl
     cp rpnObjectTypeOffset
     jr z, setAppTimeZoneForOffset
