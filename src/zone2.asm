@@ -18,9 +18,7 @@
 ; Output: (appTimeZone) updated
 ; Destroys: BC, HL, OP3
 SetAppTimeZone:
-    ld hl, OP1
-    ld a, (hl)
-    and rpnObjectTypeMask
+    call getOp1RpnObjectTypePageTwo ; A=type; HL=OP1
     inc hl
     cp rpnObjectTypeOffset
     jr z, setAppTimeZoneForOffset

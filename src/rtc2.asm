@@ -94,9 +94,7 @@ RtcGetUTCDateTime:
 ; Input: OP1:RpnOffset{} or Real
 ; Output: none
 RtcSetTimeZone:
-    ld hl, OP1
-    ld a, (hl)
-    and rpnObjectTypeMask
+    call getOp1RpnObjectTypePageTwo ; A=type; HL=OP1
     inc hl
     cp rpnObjectTypeOffset
     jr z, rtcSetTimeZoneForOffset
