@@ -21,8 +21,7 @@
 ; Throws: Err:DateType if input is the wrong type
 transformToOffsetDateTime:
     ; check if already RpnOffsetDateTime
-    ld a, (hl) ; A=rpnType
-    and rpnObjectTypeMask
+    call getHLRpnObjectTypePageTwo ; A=type
     cp rpnObjectTypeOffsetDateTime
     ret z
     ;
@@ -70,8 +69,7 @@ transformToOffsetDateTimeClear:
 ; Preserves: BC, DE, HL
 ; Throws: Err:DateType if input is the wrong type
 transformToDate:
-    ld a, (hl) ; A=rpnType
-    and rpnObjectTypeMask
+    call getHLRpnObjectTypePageTwo ; A=type
     cp rpnObjectTypeTime
     ret z
     cp rpnObjectTypeDateTime
@@ -91,8 +89,7 @@ transformToDateConvert:
 ; Preserves: BC, DE, HL
 ; Throws: Err:DateType if input is the wrong type
 transformToTime:
-    ld a, (hl) ; A=rpnType
-    and rpnObjectTypeMask
+    call getHLRpnObjectTypePageTwo ; A=type
     cp rpnObjectTypeTime
     ret z
     cp rpnObjectTypeDateTime
