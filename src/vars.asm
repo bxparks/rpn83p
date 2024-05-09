@@ -652,14 +652,12 @@ rclRpnObject:
     call rpnObjectIndexToElementPointer ; HL=elementPointer
     jr nc, rpnObjectOutOfBounds
     ; copy from AppVar to OP1/OP2
-    ld de, OP1
-    ld a, (hl) ; A=objectType
+    call getHLRpnObjectType ; A=type
     inc hl
-    and rpnObjectTypeMask
-    ; copy first 9 bytes
-    ld bc, rpnRealSizeOf
+    ld de, OP1
+    ld bc, rpnRealSizeOf ; copy first 9 bytes
     ldir
-    ; return early if Real
+    ; return early if Real; TODO: Is this early return necessary?
     cp rpnObjectTypeReal
     ret z
     ; copy next 9 bytes for everything else
