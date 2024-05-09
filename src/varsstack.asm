@@ -327,8 +327,7 @@ pushToXY:
 ; Input: OP1/OP2:RpnObject
 ; Destroys: A, HL
 checkValidRpnObjectCP1:
-    ld a, (OP1)
-    and rpnObjectTypeMask
+    call getOp1RpnObjectType ; A=type; HL=OP1
     cp rpnObjectTypeReal
     jr z, checkValidNumber
     cp rpnObjectTypeComplex
@@ -356,8 +355,7 @@ checkValidNumber:
 ; Input: OP1/OP2:RpnObject
 ; Destroys: A, HL
 checkValidRealOP1:
-    ld a, (OP1)
-    and rpnObjectTypeMask
+    call getOp1RpnObjectType ; A=type; HL=OP1
     cp rpnObjectTypeReal
     jr nz, checkValidRealErr
     bcall(_CkValidNum) ; dstroys AF, HL
