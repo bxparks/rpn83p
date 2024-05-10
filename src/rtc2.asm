@@ -190,7 +190,7 @@ getRtcNowAsEpochSecondsLoop:
 ; epochSeconds.
 ; Input: HL:(i40*)=rtcSeconds
 ; Output: RTC updated
-; DestroysL A, BC, DE
+; Destroys: A, BC, DE
 setRtcNowFromEpochSeconds:
     ; convert relative epoch seconds to the epoch seconds used by the RTC
     ; according to its rtcTimeZone.
