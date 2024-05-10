@@ -76,8 +76,10 @@ transformToDate:
     jr z, transformToDateConvert
     bcall(_ErrDataType)
 transformToDateConvert:
+    push hl
     ld a, rpnObjectTypeDate
-    ld (hl), a
+    call setHLRpnObjectTypePageTwo ; HL+=rpnObjectTypeSizeOf
+    pop hl
     ret
 
 ; Description: Convert RpnDateTime, RpnOffsetDateTime to RpnTime.
@@ -100,18 +102,15 @@ transformToTimeConvert:
     push de ; stack=[BC,DE]
     push hl ; stack=[BC,DE,rpnTime]
     ld a, rpnObjectTypeTime
-    ld (hl), a
-    ; move pointers to last Time field
-    ld de, rpnObjectTypeDateTimeSizeOf-1
-    add hl, de ; HL=last byte of old Time object
-    ld e, l
-    ld d, h
-    dec de
-    dec de
-    dec de
-    dec de ; DE=last byte of new Time object
-    ld bc, 3
-    lddr ; shift Time fields by 4 bytes to the left
+    call setHLRpnObjectTypePageTwo ; HL+=rpnObjectTypeSizeOf
+    ; Move Time field into the beginning of the RpnObject. We can use the LDIR
+    ; instruction because the sizeof(Date) > sizeof(Time), so no overlap
+    ; occurs.
+    ex de, hl ; DE=destPointer
+    ld hl, rpnObjectTypeDateSizeOf-rpnObjectTypeSizeOf
+    add hl, de ; HL=srcPointer=timePointer
+    ld bc, rpnObjectTypeTimeSizeOf-rpnObjectTypeSizeOf
+    ldir ; shift Time fields
     ; clean up stack
     pop hl ; stack=[BC,DE]; HL=rpnTime
     pop de ; stack=[BC]; DE=restored
