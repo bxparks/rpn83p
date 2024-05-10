@@ -40,9 +40,8 @@ RpnOffsetToHours:
 HoursToRpnOffset:
     call reserveRaw9 ; FPS=[rpnOffset]; HL=rpnOffset
     ld a, rpnObjectTypeOffset
-    ld (hl), a
-    inc hl
-    call offsetHourToOffset ; HL=RpnOffset(OP1)
+    call setHLRpnObjectTypePageTwo ; HL+=sizeof(type)
+    call offsetHourToOffset ; (HL)=Offset(OP1)
     call popRaw9Op1 ; FPS=[]; OP1=rpnOffset
     ret
 
