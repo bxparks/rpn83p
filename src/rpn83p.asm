@@ -138,6 +138,12 @@ rpnObjectTypeMask equ $1f
 ; rpnObjectTypePrefix is implemented.
 rpnObjectTypeSizeOf equ 1
 
+; Macros to skip the type header bytes of an RpnObject. Currently the type
+; header is 1 byte, but it will increase to 2 bytes when rpnObjectTypePrefix is
+; implemented.
+#define skipRpnObjectTypeHL inc hl
+#define skipRpnObjectTypeDE inc de
+
 ; Real number object. Use the same constant as TIOS.
 rpnObjectTypeReal equ 0 ; same as TI-OS
 
