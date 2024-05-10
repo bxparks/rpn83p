@@ -51,9 +51,8 @@ SecondsToRpnTime:
     ; convert to RpnTime
     ex de, hl ; DE=seconds; HL=rpnTime
     ld a, rpnObjectTypeTime
-    ld (hl), a
-    inc hl ; HL=rpnTime+1=dateTime
-    call secondsToTime ; HL=HL+sizeof(Time)
+    call setHLRpnObjectTypePageTwo ; HL+=rpnObjectTypeSizeOf
+    call secondsToTime ; HL+=sizeof(Time)
     ; clean up FPS
     call dropRaw9
     jp popRaw9Op1
