@@ -130,11 +130,9 @@ SecondsToRpnDuration:
     call convertOP1ToI40 ; OP1:i40=seconds
     call pushRaw9Op1 ; FPS=[seconds]; HL=seconds
     ex de, hl ; DE=seconds
-    ld hl, OP1
     ld a, rpnObjectTypeDuration
-    ld (hl), a
-    inc hl ; HL=(Duration*)=resultDuration
-    call secondsToDuration
+    call setOp1RpnObjectTypePageTwo ; HL=OP1+sizeof(type)
+    call secondsToDuration ; HL=resultDuration
     call dropRaw9
     ret
 
@@ -387,11 +385,9 @@ AddRpnDurationByRpnDuration:
     call addU40U40 ; HL=resultSeconds=seconds3+seconds1
     ;
     ex de, hl ; DE=resultSeconds
-    ld hl, OP1
     ld a, rpnObjectTypeDuration
-    ld (hl), a
-    inc hl ; HL:(Duration*)=newDuration
-    call secondsToDuration ; HL=OP1=resultRpnDuration
+    call setOp1RpnObjectTypePageTwo ; HL=OP1+sizeof(type)
+    call secondsToDuration ; (HL)=resultRpnDuration
     ; clean up
     call dropRaw9
     call dropRaw9
