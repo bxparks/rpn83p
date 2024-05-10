@@ -69,8 +69,7 @@ epochSecondsToRpnOffsetDateTimeAlt:
     ; convert to RpnOffsetDateTime
     ex de, hl ; DE=epochSeconds; HL=rpnOffsetDateTime
     ld a, rpnObjectTypeOffsetDateTime
-    ld (hl), a
-    inc hl ; HL=rpnOffsetDateTime+1=offsetDateTime
+    call setHLRpnObjectTypePageTwo ; HL+=rpnObjectTypeSizeOf
     ; select the currently selected TZ offset
     pop bc ; stack=[]; bc=targetTimeZone
     call epochSecondsToOffsetDateTime ; HL=HL+sizeof(OffsetDateTime)
@@ -215,7 +214,7 @@ addOffsetDateTimeBySeconds:
     ex de, hl ; DE=resultSeconds
     pop hl ; stack=[]; HL=odt
     ; BC=offset, converted in-situ
-    ld a, rpnObjectTypeDateTimeSizeOf-1
+    ld a, rpnObjectTypeDateTimeSizeOf-rpnObjectTypeSizeOf
     add a, l
     ld c, a
     ld a, 0
@@ -344,21 +343,19 @@ localEpochSecondsToUtcEpochSeconds:
 SplitRpnOffsetDateTime:
     call shrinkOp2ToOp1PageTwo ; remove 2-byte gap between OP1 and OP2
     ; extract the DateTime part
-    ld de, OP3 ; DE:(DateTime*)
     ld a, rpnObjectTypeDateTime
-    ld (de), a
-    inc de
-    ld hl, OP1+1 ; HL:(const DateTime*)
-    ld bc, rpnObjectTypeDateTimeSizeOf-1
+    call setOp3RpnObjectTypePageTwo ; HL=OP3+rpnObjectTypeSizeOf
+    ex de, hl ; DE=(DateTime*)
+    ld hl, OP1+rpnObjectTypeSizeOf ; HL:(const DateTime*)
+    ld bc, rpnObjectTypeDateTimeSizeOf-rpnObjectTypeSizeOf
     ldir
     ; Extract the Offset part by shifting forward. This is allowed because
     ; sizeof(DateTime)>sizeof(Offset), so there is no overlap.
-    ld de, OP1
     ld a, rpnObjectTypeOffset
-    ld (de), a
-    inc de
+    call setOp1RpnObjectTypePageTwo ; HL=OP1+rpnObjectTypeSizeOf
+    ex de, hl ; DE=(Offset*)
     ld hl, OP1+rpnObjectTypeDateTimeSizeOf ; HL:(const Offset*)
-    ld bc, rpnObjectTypeOffsetSizeOf-1
+    ld bc, rpnObjectTypeOffsetSizeOf-rpnObjectTypeSizeOf
     ldir
     ret
 
@@ -376,10 +373,10 @@ MergeRpnDateTimeWithRpnOffset:
     call z, cp1ExCp3PageTwo
     ; if reached here: CP1:RpnDateTime; CP3:RpnOffset
     ld a, rpnObjectTypeOffsetDateTime
-    ld (OP1), a
+    call setOp1RpnObjectTypePageTwo ; HL=OP1+rpnObjectTypeSizeOf
     ld de, OP1+rpnObjectTypeDateTimeSizeOf
-    ld hl, OP3+1
-    ld bc, rpnObjectTypeOffsetSizeOf-1
+    ld hl, OP3+rpnObjectTypeSizeOf
+    ld bc, rpnObjectTypeOffsetSizeOf-rpnObjectTypeSizeOf
     ldir
     call expandOp1ToOp2PageTwo
     ret
@@ -392,12 +389,13 @@ MergeRpnDateTimeWithRpnOffset:
 ;   - OP1:RpnDateTime
 ; Output:
 ;   - OP1:RpnOffsetDateTime
-; Destroys: OP1
+; Destroys: A, DE, HL, OP1
 ExtendRpnDateTimeToOffsetDateTime:
     ld a, rpnObjectTypeOffsetDateTime
-    ld (OP1), a
-    ; clear the Time fields
-    ld hl, OP1+rpnObjectTypeDateTimeSizeOf
+    call setOp1RpnObjectTypePageTwo ; HL=OP1+rpnObjectTypeSizeOf
+    ; clear the Offset fields
+    ld de, rpnObjectTypeDateTimeSizeOf-rpnObjectTypeSizeOf
+    add hl, de ; HL=offsetPointer
     xor a
     ld (hl), a
     inc hl
@@ -416,5 +414,5 @@ ExtendRpnDateTimeToOffsetDateTime:
 ; Destroys: OP1
 TruncateRpnOffsetDateTime:
     ld a, rpnObjectTypeDateTime
-    ld (OP1), a
+    call setOp1RpnObjectTypePageTwo
     ret
