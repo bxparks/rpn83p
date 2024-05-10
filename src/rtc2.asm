@@ -117,11 +117,8 @@ rtcSetTimeZoneForOffset:
 ; Input: OP1:RpnOffset
 ; Output: none
 RtcGetTimeZone:
-    ld hl, OP1
     ld a, rpnObjectTypeOffset
-    ld (hl), a
-    inc hl
-    ;
+    call setOp1RpnObjectTypePageTwo ; HL=OP1+sizeof(type)
     ld bc, (rtcTimeZone)
     ld (hl), c
     inc hl

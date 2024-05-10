@@ -42,11 +42,8 @@ setAppTimeZoneForOffset:
 ; Output: OP1:RpnOffset{}
 ; Destroys: BC, HL
 GetAppTimeZone:
-    ld hl, OP1
     ld a, rpnObjectTypeOffset
-    ld (hl), a
-    inc hl
-    ;
+    call setOp1RpnObjectTypePageTwo ; HL=OP1+sizeof(type)
     ld bc, (appTimeZone)
     ld (hl), c
     inc hl
