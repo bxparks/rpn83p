@@ -10,12 +10,24 @@
 ; entry.
 ;-----------------------------------------------------------------------------
 
+;-----------------------------------------------------------------------------
+; Get rpnObjectType.
+;-----------------------------------------------------------------------------
+
 ; Description: Return the rpnObjectType of OP1/OP2.
 ; Input: OP1
-; Output: A=rpnObjectType
-; Destroys: A
+; Output: A=rpnObjectType; HL=OP1
+; Destroys: A, HL
 getOp1RpnObjectTypePageOne:
     ld hl, OP1
+    jr getHLRpnObjectTypePageOne
+
+; Description: Return the rpnObjectType of OP1/OP2.
+; Input: OP1
+; Output: A=rpnObjectType; HL=OP3
+; Destroys: A, HL
+getOp3RpnObjectTypePageOne:
+    ld hl, OP3
     ; [[fallthrough]]
 
 ; Description: Return the rpnObjectType of HL.
@@ -26,4 +38,36 @@ getOp1RpnObjectTypePageOne:
 getHLRpnObjectTypePageOne:
     ld a, (hl)
     and rpnObjectTypeMask
+    ret
+
+;-----------------------------------------------------------------------------
+; Set rpnObjectType.
+;-----------------------------------------------------------------------------
+
+; Description: Set the rpnObjectType of OP1/OP2 to A.
+; Input: A=rpnObjectType
+; Output: HL=OP1+1
+; Destroys: HL
+; Preserves: A, BC, DE
+setOp1RpnObjectTypePageOne:
+    ld hl, OP1
+    jr setHLRpnObjectTypePageOne
+
+; Description: Return the rpnObjectType of OP3/OP4.
+; Input: A=rpnObjectType
+; Output: HL=OP3+1
+; Destroys: HL
+; Preserves: A, BC, DE
+setOp3RpnObjectTypePageOne:
+    ld hl, OP3
+    ; [[fallthrough]]
+
+; Description: Set the rpnObjectType of HL to A.
+; Input: A=rpnObjectType
+; Output: HL+=1
+; Destroys: HL
+; Preserves: A, BC, DE
+setHLRpnObjectTypePageOne:
+    ld (hl), a
+    inc hl
     ret

@@ -5,6 +5,10 @@
 ; RPN object types.
 ;-----------------------------------------------------------------------------
 
+;-----------------------------------------------------------------------------
+; Get rpnObjectType.
+;-----------------------------------------------------------------------------
+
 ; Description: Return the rpnObjectType of OP1/OP2.
 ; Input: OP1
 ; Output: A=rpnObjectType; HL=OP1
@@ -31,6 +35,40 @@ getHLRpnObjectType:
     and rpnObjectTypeMask
     ret
 
+;-----------------------------------------------------------------------------
+; Set rpnObjectType.
+;-----------------------------------------------------------------------------
+
+; Description: Set the rpnObjectType of OP1/OP2 to A.
+; Input: A=rpnObjectType
+; Output: HL=OP1+1
+; Destroys: HL
+; Preserves: A, BC, DE
+setOp1RpnObjectType:
+    ld hl, OP1
+    jr setHLRpnObjectType
+
+; Description: Return the rpnObjectType of OP3/OP4.
+; Input: A=rpnObjectType
+; Output: HL=OP3+1
+; Destroys: HL
+; Preserves: A, BC, DE
+setOp3RpnObjectType:
+    ld hl, OP3
+    ; [[fallthrough]]
+
+; Description: Set the rpnObjectType of HL to A.
+; Input: A=rpnObjectType
+; Output: HL+=1
+; Destroys: HL
+; Preserves: A, BC, DE
+setHLRpnObjectType:
+    ld (hl), a
+    inc hl
+    ret
+
+;-----------------------------------------------------------------------------
+; Real numbers.
 ;-----------------------------------------------------------------------------
 
 ; Description: Check that OP1 is a Real number.
@@ -75,6 +113,8 @@ validateOp1Real:
     ret z
     bcall(_ErrDataType)
 
+;-----------------------------------------------------------------------------
+; Complex numbers.
 ;-----------------------------------------------------------------------------
 
 ; Description: Same as CkOP1Cplx() OS routine without the bcall() overhead.

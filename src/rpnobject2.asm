@@ -10,18 +10,22 @@
 ; entry.
 ;-----------------------------------------------------------------------------
 
+;-----------------------------------------------------------------------------
+; Get rpnObjectType.
+;-----------------------------------------------------------------------------
+
 ; Description: Return the rpnObjectType of OP1/OP2.
 ; Input: OP1
-; Output: A=rpnObjectType
-; Destroys: A
+; Output: A=rpnObjectType; HL=OP1
+; Destroys: A, HL
 getOp1RpnObjectTypePageTwo:
     ld hl, OP1
     jr getHLRpnObjectTypePageTwo
 
 ; Description: Return the rpnObjectType of OP3/OP4.
 ; Input: OP3
-; Output: A=rpnObjectType
-; Destroys: A
+; Output: A=rpnObjectType; HL=OP3
+; Destroys: A, HL
 getOp3RpnObjectTypePageTwo:
     ld hl, OP3
     ; [[fallthrough]]
@@ -36,6 +40,40 @@ getHLRpnObjectTypePageTwo:
     and rpnObjectTypeMask
     ret
 
+;-----------------------------------------------------------------------------
+; Set rpnObjectType.
+;-----------------------------------------------------------------------------
+
+; Description: Set the rpnObjectType of OP1/OP2 to A.
+; Input: A=rpnObjectType
+; Output: HL=OP1+1
+; Destroys: HL
+; Preserves: A, BC, DE
+setOp1RpnObjectTypePageTwo:
+    ld hl, OP1
+    jr setHLRpnObjectTypePageTwo
+
+; Description: Return the rpnObjectType of OP3/OP4.
+; Input: A=rpnObjectType
+; Output: HL=OP3+1
+; Destroys: HL
+; Preserves: A, BC, DE
+setOp3RpnObjectTypePageTwo:
+    ld hl, OP3
+    ; [[fallthrough]]
+
+; Description: Set the rpnObjectType of HL to A.
+; Input: A=rpnObjectType
+; Output: HL+=1
+; Destroys: HL
+; Preserves: A, BC, DE
+setHLRpnObjectTypePageTwo:
+    ld (hl), a
+    inc hl
+    ret
+
+;-----------------------------------------------------------------------------
+; Complex numbers.
 ;-----------------------------------------------------------------------------
 
 ; Description: Same as CkOP1Cplx() OS routine without the bcall() overhead.
