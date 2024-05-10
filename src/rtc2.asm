@@ -92,7 +92,8 @@ RtcGetUTCDateTime:
 ; Description: Set the RTC time zone to the Offset{} or Real given in OP1.
 ; If a Real is given, it is converted into an Offset{}, then stored.
 ; Input: OP1:RpnOffset{} or Real
-; Output: none
+; Output: (rtcTimeZone) updated
+; Destroys: BC, HL, OP3
 RtcSetTimeZone:
     call getOp1RpnObjectTypePageTwo ; A=type; HL=OP1
     skipRpnObjectTypeHL
@@ -103,9 +104,9 @@ RtcSetTimeZone:
 rtcSetTimeZoneErr:
     bcall(_ErrDataType)
 rtcSetTimeZoneForReal:
-    ; convert OP1 to RpnOffset
+    ; convert OP1 to Offset in OP3
     ld hl, OP3
-    call offsetHourToOffset
+    call offsetHourToOffset ; HL:(Offset*)=OP3
 rtcSetTimeZoneForOffset:
     ld c, (hl)
     inc hl

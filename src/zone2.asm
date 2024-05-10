@@ -27,9 +27,9 @@ SetAppTimeZone:
 setAppTimeZoneErr:
     bcall(_ErrDataType)
 setAppTimeZoneForReal:
-    ; convert OP1 to RpnOffset
+    ; convert OP1 to Offset in OP3
     ld hl, OP3
-    call offsetHourToOffset
+    call offsetHourToOffset ; HL:(Offset*)=OP3
 setAppTimeZoneForOffset:
     ld c, (hl)
     inc hl
