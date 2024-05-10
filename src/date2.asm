@@ -197,9 +197,8 @@ epochDaysToRpnDateAlt:
     call reserveRaw9 ; FPS=[epochDays,rpnDate]; HL=rpnDate
     ; convert to RpnDate
     ld a, rpnObjectTypeDate
-    ld (hl), a
-    inc hl ; HL=RpnDate+1=Date
-    call epochDaysToDate
+    call setHLRpnObjectTypePageTwo ; HL+=sizeof(type)
+    call epochDaysToDate ; (HL)=date
     ; clean up FPS
     call popRaw9Op1
     jp dropRaw9
