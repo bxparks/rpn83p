@@ -71,8 +71,7 @@ epochSecondsToRpnDateTimeAlt:
     ; convert to RpnDateTime
     ex de, hl ; DE=epochSeconds; HL=rpnDateTime
     ld a, rpnObjectTypeDateTime
-    ld (hl), a
-    inc hl ; HL=rpnDateTime+1=dateTime
+    call setHLRpnObjectTypePageTwo ; HL+=rpnObjectTypeSizeOf
     call epochSecondsToDateTime ; HL=HL+sizeof(DateTime)
     ; clean up FPS
     call dropRaw9
@@ -256,27 +255,25 @@ subRpnDateTimeByRpnDuration:
 ; Destroys: all
 SplitRpnDateTime:
     ; extract the Date part
-    ld de, OP3 ; DE:(Date*)
     ld a, rpnObjectTypeDate
-    ld (de), a
-    inc de
-    ld hl, OP1+1 ; HL:(const Date*)
-    ld bc, rpnObjectTypeDateSizeOf-1
+    call setOp3RpnObjectTypePageTwo ; HL=OP3+rpnObjectTypeSizeOf
+    ex de, hl ; DE=(Date*)
+    ld hl, OP1+rpnObjectTypeSizeOf ; HL:(const Date*)
+    ld bc, rpnObjectTypeDateSizeOf-rpnObjectTypeSizeOf
     ldir
     ; Extract the Time part by shifting forward. This is allowed because
     ; sizeof(Date)>sizeof(Time), so there is no overlap.
-    ld de, OP1
     ld a, rpnObjectTypeTime
-    ld (de), a
-    inc de
+    call setOp1RpnObjectTypePageTwo ; HL=OP1+rpnObjectTypeSizeOf
+    ex de, hl ; DE=(Time*)
     ld hl, OP1+rpnObjectTypeDateSizeOf ; HL:(const Time*)
-    ld bc, rpnObjectTypeTimeSizeOf-1
+    ld bc, rpnObjectTypeTimeSizeOf-rpnObjectTypeSizeOf
     ldir
     ret
 
 ;-----------------------------------------------------------------------------
 
-; Description: Merge RpnDate with RpnTime.
+; Description: Merge RpnDate with RpnTime into an RpnDateTime.
 ; Input:
 ;   - OP1:RpnDate|RpnTime
 ;   - OP3:RpnDate|RpnTime
@@ -287,12 +284,11 @@ MergeRpnDateWithRpnTime:
     call checkOp1TimePageTwo ; ZF=1 if OP1=RpnTime
     call z, cp1ExCp3PageTwo
     ; if reached here: CP1:RpnDate; CP3:RpnTime
-    ld de, OP1
     ld a, rpnObjectTypeDateTime
-    ld (de), a
+    call setOp1RpnObjectTypePageTwo ; HL=OP1+rpnObjectTypeSizeOf
     ld de, OP1+rpnObjectTypeDateSizeOf
-    ld hl, OP3+1
-    ld bc, rpnObjectTypeTimeSizeOf-1
+    ld hl, OP3+rpnObjectTypeSizeOf
+    ld bc, rpnObjectTypeTimeSizeOf-rpnObjectTypeSizeOf
     ldir
     ret
 
@@ -307,9 +303,10 @@ MergeRpnDateWithRpnTime:
 ; Destroys: OP1
 ExtendRpnDateToDateTime:
     ld a, rpnObjectTypeDateTime
-    ld (OP1), a
+    call setOp1RpnObjectTypePageTwo ; HL=OP1+rpnObjectTypeSizeOf
     ; clear the Time fields
-    ld hl, OP1+rpnObjectTypeDateSizeOf
+    ld de, rpnObjectTypeDateSizeOf-rpnObjectTypeSizeOf
+    add hl, de ; HL=timePointer
     xor a
     ld (hl), a
     inc hl
@@ -328,5 +325,5 @@ ExtendRpnDateToDateTime:
 ; Destroys: OP1
 TruncateRpnDateTime:
     ld a, rpnObjectTypeDate
-    ld (OP1), a
+    call setOp1RpnObjectTypePageTwo
     ret
