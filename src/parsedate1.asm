@@ -134,7 +134,7 @@ parseOffsetDateTime:
 ;   - DE:(DayOfWeek*)=dowPointer
 ; Output:
 ;   - (*DE):DayOfWeek filled
-;   - DE=DE+1
+;   - DE=DE+sizeof(DayOfWeek)
 ;   - HL=points to character after last '}'
 ; Throws: Err:Syntax if there is a syntax error
 ; Destroys: all
@@ -151,7 +151,7 @@ parseDayOfWeek:
 ;   - DE:(Duration*)=duration
 ; Output:
 ;   - (*DE):Duration filled
-;   - DE=DE+1
+;   - DE=DE+sizeof(Duration)
 ;   - HL=points to character after last '}'
 ; Throws: Err:Syntax if there is a syntax error
 ; Destroys: all

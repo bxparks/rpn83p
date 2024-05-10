@@ -256,7 +256,7 @@ ValidateOffsetDateTime:
 ; Description: Validate the DayOfWeek object in HL. ISO dayOfWeek must be in
 ; the range of [1,7], starting on Monday.
 ; Input: HL:(DayOfWeek*) pointer to {dayOfWeek} record
-; Output: HL=HL+1
+; Output: HL=HL+sizeof(DateOfWeek)
 ; Destroys: A, HL
 ; Preserves: BC, DE
 ; Throws: Err:Invalid on failure

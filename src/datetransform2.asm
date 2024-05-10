@@ -50,7 +50,7 @@ transformToOffsetDateTimeClear:
     add hl, de ; HL=pointerToClearArea
     ld e, l
     ld d, h ; DE=HL=pointerToClearArea
-    inc de ; DE=HL+1
+    inc de ; DE=next byte (purposely overlapping during LDIR)
     ld (hl), 0 ; clear the first byte
     dec bc ; first byte already cleared
     ldir ; clear the rest
