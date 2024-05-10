@@ -16,7 +16,7 @@
 ; Destroys: all, OP1-OP2
 RpnDurationToSeconds:
     call pushRaw9Op1 ; FPS=[rpnDuration]; HL=rpnDuration
-    inc hl ; skip type byte
+    skipRpnObjectTypeHL
     ex de, hl ; DE=duration
     ld hl, OP1
     call durationToSeconds ; DE=duration+5; HL=OP1=seconds
@@ -269,7 +269,7 @@ isNegativeTrue:
 ; Preserves: BC, DE, HL
 ChsRpnDuration:
     ld hl, OP1
-    inc hl
+    skipRpnObjectTypeHL
     ; [[fallthrough]]
 
 ; Description: Change the sign of the Duration.
@@ -330,7 +330,7 @@ addRpnDurationBySecondsAdd:
     call convertOP1ToI40 ; OP1:u40=seconds
     ; add duration+seconds
     pop hl ; stack=[]; HL=rpnDuration
-    inc hl ; HL=duration
+    skipRpnObjectTypeHL ; HL=duration
     ld de, OP1
     call addDurationBySeconds ; HL=newDuration
     ; clean up

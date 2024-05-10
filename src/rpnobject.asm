@@ -41,7 +41,7 @@ getHLRpnObjectType:
 
 ; Description: Set the rpnObjectType of OP1/OP2 to A.
 ; Input: A=rpnObjectType
-; Output: HL=OP1+1
+; Output: HL=OP1+rpnObjectTypeSizeOf
 ; Destroys: HL
 ; Preserves: A, BC, DE
 setOp1RpnObjectType:
@@ -64,7 +64,7 @@ setOp3RpnObjectType:
 ; Preserves: A, BC, DE
 setHLRpnObjectType:
     ld (hl), a
-    inc hl
+    skipRpnObjectTypeHL
     ret
 
 ;-----------------------------------------------------------------------------

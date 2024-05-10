@@ -16,7 +16,7 @@
 ; Destroys: all, OP1-OP4
 RpnOffsetToSeconds:
     call pushRaw9Op1 ; FPS=[rpnOffset]; HL=rpnOffset
-    inc hl ; HL=offset
+    skipRpnObjectTypeHL ; HL=offset
     ex de, hl ; DE=offset
     ld hl, OP1
     call offsetToSeconds ; DE=offset+2; HL=OP1=seconds
@@ -71,7 +71,7 @@ addRpnOffsetByHoursAdd:
     ; add offset+offsethours
     ex de, hl ; DE=OP3=offsethours
     pop hl ; stack=[]; HL=rpnOffset
-    inc hl ; HL=offset
+    skipRpnObjectTypeHL ; HL=offset
     call addOffsetByOffset ; HL=newOffset
     ; clean up
     call PopRpnObject1 ; FPS=[]; OP1=newRpnOffset
@@ -111,23 +111,23 @@ addOffsetByOffset:
 
 ; Description: Add (RpnOffset plus duration) or (duration plus RpnOffset).
 ; Input:
-;   - OP1:Union[RpnOffset,RpnDuration]=rpnOffset or duration
-;   - OP3:Union[RpnOffset,RpnDuration]=rpnOffset or duration
+;   - OP1:Union[RpnOffset,RpnDuration]=rpnOffset or rpnDuration
+;   - OP3:Union[RpnOffset,RpnDuration]=rpnOffset or rpnDuration
 ; Output:
-;   - OP1:RpnOffset=rpnOffset+duration
+;   - OP1:RpnOffset=rpnOffset+rpnDuration
 ; Destroys: all, OP1-OP4
 AddRpnOffsetByDuration:
     call checkOp1OffsetPageTwo ; ZF=1 if CP1 is an RpnDate
     jr z, addRpnOffsetByDurationAdd
-    call cp1ExCp3PageTwo ; CP1=rpnDate; CP3=duration
+    call cp1ExCp3PageTwo ; CP1=rpnDate; CP3=rpnDuration
 addRpnOffsetByDurationAdd:
-    ; if here: CP1=rpnOffset, CP3=duration
-    ld hl, OP3+1 ; HE=duration
+    ; if here: CP1=rpnOffset, CP3=rpnDuration
+    ld hl, OP3+rpnObjectTypeSizeOf ; HE=duration
     call checkDurationToOffset ; throws Err:Domain if Duration is invalid
     ex de, hl ; DE=duration
     inc de
-    inc de ; DE=offset=duration+2
-    ld hl, OP1+1 ; HL=offset1
+    inc de ; DE=offset=duration+2 (skip over the 'days' field)
+    ld hl, OP1+rpnObjectTypeSizeOf ; HL=resultOffset
     call addOffsetByOffset ; (*HL)+=(*DE)
     ret
 

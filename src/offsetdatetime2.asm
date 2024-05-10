@@ -22,7 +22,7 @@ RpnOffsetDateTimeToEpochSeconds:
     ex de, hl ; DE=rpnOffsetDateTime
     call reserveRaw9 ; FPS=[rpnOffsetDateTime,reserved]; HL=reserved
     ; convert DateTime to dateTimeSeconds
-    inc de ; DE=offsetDateTime, skip type byte
+    skipRpnObjectTypeDE ; DE=offsetDateTime, skip type byte
     call offsetDateTimeToEpochSeconds ; HL:(i40*)=reserved=epochSeconds
     ; copy back to OP1
     call popRaw9Op1 ; FPS=[rpnOffsetDateTime]; HL=OP1=epochSeconds
@@ -154,7 +154,7 @@ addRpnOffsetDateTimeBySecondsAdd:
     call convertOP1ToI40 ; OP1:(i40*)=seconds
     ; add odtSeconds + seconds
     pop hl ; stack=[]; HL=rpnOdt
-    inc hl ; HL=odt
+    skipRpnObjectTypeHL ; HL=odt
     ld de, OP1
     call addOffsetDateTimeBySeconds ; HL=newOdt
     ; clean up
@@ -185,7 +185,7 @@ addRpnOffsetDateTimeByDurationAdd:
     call durationToSeconds ; HL=OP1=durationSeconds
     ; add odtSeconds + duration
     pop hl ; stack=[]; HL=rpnOdt
-    inc hl ; HL=odt
+    skipRpnObjectTypeHL ; HL=odt
     ld de, OP1
     call addOffsetDateTimeBySeconds ; HL=newOdt
     ; clean up
@@ -256,13 +256,13 @@ subRpnOffsetDateTimeByRpnOffsetDateTime:
     call PushRpnObject3 ; FPS=[Yodt,Xodt]; HL=Xodt
     ; calculate X epochSeconds
     ex de, hl ; DE=Xodt
-    inc de ; skip type byte
+    skipRpnObjectTypeDE ; skip type byte
     call reserveRaw9 ; FPS=[Yodt,Xodt,Xeps]; HL=Xeps
     call offsetDateTimeToEpochSeconds ; HL=Xeps filled
     ; calculate Y epochSeconds
     ex (sp), hl ; stack=[Xeps]; HL=Yodt
     ex de, hl ; DE=Yodt
-    inc de ; skip type byte
+    skipRpnObjectTypeDE ; skip type byte
     call reserveRaw9 ; FPS=[Yodt,Xodt,Xeps,Yeps]; HL=Yeps
     call offsetDateTimeToEpochSeconds ; HL=Yeps filled
     ; subtract Yeps-Xeps

@@ -95,7 +95,7 @@ RtcGetUTCDateTime:
 ; Output: none
 RtcSetTimeZone:
     call getOp1RpnObjectTypePageTwo ; A=type; HL=OP1
-    inc hl
+    skipRpnObjectTypeHL
     cp rpnObjectTypeOffset
     jr z, rtcSetTimeZoneForOffset
     cp rpnObjectTypeReal
@@ -139,7 +139,7 @@ RtcSetClock:
     ex de, hl ; DE=rpnOffsetDateTime
     ; convert DateTime to dateTimeSeconds
     ld hl, OP1
-    inc de ; DE=offsetDateTime, skip type byte
+    skipRpnObjectTypeDE ; DE=offsetDateTime, skip type byte
     call offsetDateTimeToEpochSeconds ; HL:(i40*)=OP1=epochSeconds
     ; set the RTC
     call setRtcNowFromEpochSeconds

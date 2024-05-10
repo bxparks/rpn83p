@@ -19,7 +19,7 @@
 ; Destroys: BC, HL, OP3
 SetAppTimeZone:
     call getOp1RpnObjectTypePageTwo ; A=type; HL=OP1
-    inc hl
+    skipRpnObjectTypeHL
     cp rpnObjectTypeOffset
     jr z, setAppTimeZoneForOffset
     cp rpnObjectTypeReal

@@ -25,11 +25,11 @@ ConvertRpnDateTimeToTimeZoneAsOffset:
 convertRpnDateTimeToTimeZoneAsOffsetConvert:
     ; CP1=rpnDateTime; CP3=rpnOffset
     call PushRpnObject1 ; FPS=[rpnDateTime]; HL=rpnDateTime
-    inc hl ; HL=dateTime
+    skipRpnObjectTypeHL ; HL=dateTime
     ex de, hl ; DE=dateTime
     ;
     call pushRaw9Op3 ; FPS=[rpnDateTime,rpnOffset]; HL=rpnOffset
-    inc hl ; HL=offset
+    skipRpnObjectTypeHL ; HL=offset
     push hl ; stack=[offset]
     ; convert DateTime to epochSeconds
     call reserveRaw9 ; FPS=[rpnDateTime,rpnOffset,epochSeconds]
@@ -86,11 +86,11 @@ ConvertRpnOffsetDateTimeToOffset:
 convertRpnOffsetDateTimeToOffsetConvert:
     ; CP1=rpnOffsetDateTime; CP3=rpnOffset
     call PushRpnObject1 ; FPS=[rpnOffsetDateTime]; HL=rpnOffsetDateTime
-    inc hl ; HL=offsetDateTime
+    skipRpnObjectTypeHL ; HL=offsetDateTime
     ex de, hl ; DE=offsetDateTime
     ;
     call pushRaw9Op3 ; FPS=[rpnOffsetDateTime,rpnOffset]; HL=rpnOffset
-    inc hl ; HL=offset
+    skipRpnObjectTypeHL ; HL=offset
     push hl ; stack=[offset]
     ; convert OffsetDateTime to epochSeconds
     call reserveRaw9 ; FPS=[rpnOffsetDateTime,rpnOffset,epochSeconds]

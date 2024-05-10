@@ -221,7 +221,7 @@ clearRpnObjectListLoop:
     ; Copy OP1 into AppVar.
     ld a, rpnObjectTypeReal
     ld (de), a ; rpnObjectType
-    inc de
+    inc de ; single type byte in RpnObjectList
     push bc ; stack=[len]
     call move9FromOp1 ; updates DE to the next element
     ; Set the trailing bytes of the slot to binary 0.
@@ -662,7 +662,7 @@ rclRpnObject:
     ret z
     ; copy next 9 bytes for everything else
     inc de
-    inc de ; OPx registers are 11 bytes, not 9 bytes
+    inc de ; OPx registers are 11 bytes, not 9 bytes, so skip 2 bytes
     ld bc, rpnRealSizeOf
     ldir
     ret

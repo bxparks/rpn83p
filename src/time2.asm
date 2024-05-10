@@ -20,7 +20,7 @@ RpnTimeToSeconds:
     ex de, hl ; DE=rpnTime
     call reserveRaw9 ; FPS=[rpnTime,seconds]; HL=seconds
     ; convert to seconds
-    inc de ; DE=time, skip type byte
+    skipRpnObjectTypeDE ; DE=time, skip type byte
     call timeToSeconds ; HL=seconds
     ; copy back to OP1
     call popRaw9Op1 ; FPS=[rpnTime]; OP1=seconds
@@ -161,7 +161,7 @@ addRpnTimeBySecondsAdd:
     call convertOP1ToI40 ; OP1=i40(seconds)
     ; add time+seconds
     pop hl ; stack=[]; HL=rpnTime
-    inc hl ; HL=time
+    skipRpnObjectTypeHL ; HL=time
     ld de, OP1 ; DE:i40=seconds
     call addTimeBySeconds
     ; clean up
@@ -190,7 +190,7 @@ addRpnTimeByDurationAdd:
     call durationToSeconds ; HL=durationSeconds
     ; add time+seconds
     pop hl ; stack=[]; HL=rpnTime
-    inc hl ; HL=time
+    skipRpnObjectTypeHL ; HL=time
     ld de, OP1 ; DE=durationSeconds
     call addTimeBySeconds ; HL=newTime
     ; OP1=newTime

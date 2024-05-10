@@ -480,7 +480,7 @@ convertTaggedSecondsToDuration:
     ; [[fallthrough]]
 convertTaggedValidation:
     pop hl ; stack=[]; HL=rpnObject
-    inc hl ; HL=(Duration*)
+    skipRpnObjectTypeHL ; HL=(Duration*)
     bcall(_ValidateDuration)
     ret
 

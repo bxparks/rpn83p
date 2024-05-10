@@ -120,7 +120,7 @@ RpnDateToEpochDays:
     call pushRaw9Op2 ; FPS=[epochDays]; HL=epochDays
     ex de, hl ; DE=epochDays
     call pushRaw9Op1 ; FPS=[epochDays,rpnDate]; HL=i40*=rpnDate
-    inc hl ; HL=Date
+    skipRpnObjectTypeHL ; HL=Date
     ; do conversion
     ex de, hl ; DE=rpnDate; HL=epochDays
     call dateToEpochDays ; HL=epochDays
@@ -143,7 +143,7 @@ RpnDateToEpochSeconds:
     call pushRaw9Op2 ; FPS=[epochDays]; HL=epochDays
     ex de, hl ; DE=epochDays
     call pushRaw9Op1 ; FPS=[epochDays,RpnDate]; HL=rpnDate
-    inc hl ; HL=Date
+    skipRpnObjectTypeHL ; HL=Date
     ; convert to days
     ex de, hl ; DE=rpnDate; HL=epochDays
     call dateToEpochDays ; HL=(i40*)=epochDays
@@ -272,7 +272,7 @@ addRpnDateByDaysAdd:
     call convertOP1ToI40 ; OP1:i40=seconds
     ; add date+days
     pop hl ; stack=[]; HL=rpnDate
-    inc hl ; HL=date
+    skipRpnObjectTypeHL ; HL=date
     ld de, OP1 ; DE:i40=days
     call addDateByDays ; HL=newDate
     ; clean up
@@ -296,7 +296,7 @@ addRpnDateByDurationAdd:
     call PushRpnObject1 ; FPS=[rpnDate]; HL=rpnDate
     push hl ; stack=[rpnDate]
     ; Convert OP3:RpnDuration to days
-    ld hl, OP3+1 ; DE:(Duration*)=duration
+    ld hl, OP3+rpnObjectTypeSizeOf ; DE:(Duration*)=duration
     ld c, (hl)
     inc hl
     ld b, (hl) ; BC=duration.days
@@ -304,7 +304,7 @@ addRpnDateByDurationAdd:
     call setI40ToBC
     ; add date+durationDays
     pop hl ; stack=[]; HL=rpnDate
-    inc hl ; HL=date
+    skipRpnObjectTypeHL ; HL=date
     ld de, OP1 ; DE:i40=duration
     call addDateByDays ; HL=newDate
     ; clean up

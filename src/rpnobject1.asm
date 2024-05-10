@@ -69,5 +69,5 @@ setOp3RpnObjectTypePageOne:
 ; Preserves: A, BC, DE
 setHLRpnObjectTypePageOne:
     ld (hl), a
-    inc hl
+    skipRpnObjectTypeHL
     ret

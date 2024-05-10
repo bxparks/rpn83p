@@ -21,7 +21,7 @@ RpnDateTimeToEpochSeconds:
     ex de, hl ; DE=rpnDateTime
     call reserveRaw9 ; FPS=[rpnDateTime,epochSeconds]; HL=epochSeconds
     ; convert to epochSeconds
-    inc de ; DE=dateTime, skip type byte
+    skipRpnObjectTypeDE ; DE=dateTime, skip type byte
     call dateTimeToEpochSeconds ; HL=epochSeconds
     ; copy back to OP1
     call popRaw9Op1 ; FPS=[rpnDateTime]; OP1=epochSeconds
@@ -125,7 +125,7 @@ addRpnDateTimeBySecondsAdd:
     call convertOP1ToI40 ; OP1:u40=seconds
     ; add dateTime+seconds
     pop hl ; stack=[]; HL=rpnDateTime
-    inc hl ; HL=dateTime
+    skipRpnObjectTypeHL ; HL=dateTime
     ld de, OP1
     call addDateTimeBySeconds ; HL=newDateTime
     ; clean up
@@ -154,7 +154,7 @@ addRpnDateTimeByRpnDurationAdd:
     call durationToSeconds ; HL=durationSeconds
     ; add dateTime+seconds
     pop hl ; stack=[]; HL=rpnDateTime
-    inc hl ; HL=dateTime
+    skipRpnObjectTypeHL ; HL=dateTime
     ld de, OP1
     call addDateTimeBySeconds ; HL=newDateTime
     ; OP1=newDateTime
