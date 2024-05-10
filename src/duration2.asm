@@ -373,12 +373,12 @@ addDurationBySeconds:
 ; Destroys: all, OP1,OP2
 AddRpnDurationByRpnDuration:
     call reserveRaw9 ; FPS=[seconds1]; HL=op1=seconds1
-    ld de, OP1+1 ; DE:(Duration*)
+    ld de, OP1+rpnObjectTypeSizeOf ; DE:(Duration*)
     call durationToSeconds ; seconds1
     push hl ; stack=[seconds1]
     ;
     call reserveRaw9 ; FPS=[seconds3]; HL=op3=seconds3
-    ld de, OP3+1
+    ld de, OP3+rpnObjectTypeSizeOf
     call durationToSeconds ; seconds3
     ;
     pop de ; stack=[]; DE=seconds1
@@ -419,12 +419,12 @@ subRpnDurationBySeconds:
 subRpnDurationByRpnDuration:
     ; convert OP3 to seconds
     call reserveRaw9 ; FPS=[seconds3]; HL=seconds3
-    ld de, OP3+1 ; DE:(Duration*)
+    ld de, OP3+rpnObjectTypeSizeOf ; DE:(Duration*)
     call durationToSeconds ; HL=seconds3
     call negU40 ; HL=-seconds3
     ;
     ex de, hl ; DE=-seconds3
-    ld hl, OP1+1
+    ld hl, OP1+rpnObjectTypeSizeOf
     call addDurationBySeconds ; OP1=duration1-duration3=>RpnDuration
     jp dropRaw9 ; FPS=[]
 

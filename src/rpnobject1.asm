@@ -46,7 +46,7 @@ getHLRpnObjectTypePageOne:
 
 ; Description: Set the rpnObjectType of OP1/OP2 to A.
 ; Input: A=rpnObjectType
-; Output: HL=OP1+1
+; Output: HL=OP1+rpnObjectTypeSizeOf
 ; Destroys: HL
 ; Preserves: A, BC, DE
 setOp1RpnObjectTypePageOne:
@@ -55,7 +55,7 @@ setOp1RpnObjectTypePageOne:
 
 ; Description: Return the rpnObjectType of OP3/OP4.
 ; Input: A=rpnObjectType
-; Output: HL=OP3+1
+; Output: HL=OP3+rpnObjectTypeSizeOf
 ; Destroys: HL
 ; Preserves: A, BC, DE
 setOp3RpnObjectTypePageOne:

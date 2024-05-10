@@ -69,7 +69,7 @@ addRpnDayOfWeekByDaysAdd:
     ; CP1=days, CP3=RpnDayOfWeek
     call convertOP1ToI40 ; HL=OP1=u40(days)
     ; convert CP3=RpnDayOfWeek to OP1=days
-    ld a, (OP3+1) ; A=dayOfWeekNumber
+    ld a, (OP3+rpnObjectTypeSizeOf) ; A=dayOfWeekNumber
     ld hl, OP2
     call setU40ToA ; HL=OP2=dayOfWeekNumber
     ; add days + dayOfWeekNumber
@@ -82,15 +82,14 @@ addRpnDayOfWeekByDaysAdd:
     ld a, 7
     call setU40ToA ; HL=OP3=7
     ex de, hl ; HL=dividend=OP2=resultDayOfWeekNumber; DE=divisor=OP3=7
-    ld bc, OP1+1 ; BC=OP1+1=remainder
+    ld bc, OP1+rpnObjectTypeSizeOf ; BC=remainder
     call divI40U40 ; BC=remainder, always positive
     ld l, c
-    ld h, b ; HL=OP1+1=remainder
+    ld h, b ; HL=remainder
     call incU40 ; convert back to 1-based dayOfWeekNumber
     ; Convert DayOfWeek to RpnDayOfWeek
-    dec hl ; HL=OP1=resultRpnDayOfWeek
     ld a, rpnObjectTypeDayOfWeek
-    call setHLRpnObjectTypePageTwo ; HL+=sizeof(type)
+    call setOp1RpnObjectTypePageTwo ; HL=OP1+rpnObjectTypeSizeOf
     ret
 
 ;-----------------------------------------------------------------------------
@@ -112,9 +111,9 @@ subRpnDayOfWeekByDays:
     jr addRpnDayOfWeekByDaysAdd
 subRpnDayOfWeekByRpnDayOfWeek:
     ; convert both OP1 and OP3 to dayOfWeekNumber, then subtract
-    ld a, (OP3+1)
+    ld a, (OP3+rpnObjectTypeSizeOf)
     ld b, a ; B=OP3
-    ld a, (OP1+1)
+    ld a, (OP1+rpnObjectTypeSizeOf)
     sub a, b ; A=OP1-OP3=result
     ; convert to i40, then to float
     ld hl, OP1

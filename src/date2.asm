@@ -366,12 +366,12 @@ subRpnDateByRpnDate:
     ; convert OP3 to days, on FPS stack
     call reserveRaw9 ; make space on FPS=[X.days]; HL=X.days
     push hl ; stack=[X.days]
-    ld de, OP3+1 ; DE=Date{}
+    ld de, OP3+rpnObjectTypeSizeOf ; DE=Date{}
     call dateToInternalEpochDays ; HL=FPS.X.days updated
     ; convert OP1 to days, on FPS stack
     call reserveRaw9 ; make space, FPS=[X.days,Y.days]; HL=Y.days
     push hl ; stack=[X.days,Y.days]
-    ld de, OP1+1 ; DE=Date{}
+    ld de, OP1+rpnObjectTypeSizeOf ; DE=Date{}
     call dateToInternalEpochDays ; HL=FPS.Y.days updated
     ; subtract Y.days-X.days
     pop hl ; stack=[X.days]; HL=Y.days
@@ -383,6 +383,6 @@ subRpnDateByRpnDate:
     jp dropRaw9 ; FPS=[]
 subRpnDateByRpnDuration:
     ; invert the sign of duration in OP3
-    ld hl, OP3+1
+    ld hl, OP3+rpnObjectTypeSizeOf
     call chsDuration
     jr addRpnDateByDurationAdd

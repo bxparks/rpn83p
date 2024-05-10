@@ -180,12 +180,12 @@ subRpnOffsetByRpnOffset:
     ; just copy and modify it.
     call reserveRaw9 ; make space on FPS=[X.seconds]; HL=X.seconds
     push hl ; stack=[X.seconds]
-    ld de, OP3+1 ; DE=Offset{}
+    ld de, OP3+rpnObjectTypeSizeOf ; DE=Offset{}
     call offsetToSeconds ; HL=FPS.X.seconds updated
     ; convert OP1 to seconds, on FPS stack
     call reserveRaw9 ; make space, FPS=[X.seconds,Y.seconds]; HL=Y.seconds
     push hl ; stack=[X.seconds,Y.seconds]
-    ld de, OP1+1 ; DE=Offset{}
+    ld de, OP1+rpnObjectTypeSizeOf ; DE=Offset{}
     call offsetToSeconds ; HL=FPS.Y.seconds updated
     ; subtract Y.seconds-X.seconds
     pop hl ; stack=[X.seconds]; HL=Y.seconds
@@ -200,7 +200,7 @@ subRpnOffsetByRpnOffset:
     jp dropRaw9 ; FPS=[]
 subRpnOffsetByRpnDuration:
     ; invert the sign of duration in OP3
-    ld hl, OP3+1
+    ld hl, OP3+rpnObjectTypeSizeOf
     call chsDuration
     jr addRpnOffsetByDurationAdd
 

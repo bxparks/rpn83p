@@ -180,7 +180,7 @@ addRpnOffsetDateTimeByDurationAdd:
     call PushRpnObject1 ; FPS=[rpnOdt]; HL=rpnOdt
     push hl ; stack=[rpnOdt]
     ; Convert OP3:RpnDuration to OP1:i40.
-    ld de, OP3+1 ; DE:(Duration*)=duration
+    ld de, OP3+rpnObjectTypeSizeOf ; DE:(Duration*)=duration
     ld hl, OP1
     call durationToSeconds ; HL=OP1=durationSeconds
     ; add odtSeconds + duration
@@ -279,12 +279,12 @@ subRpnOffsetDateTimeByRpnDuration:
     call shrinkOp2ToOp1PageTwo ; remove 2-byte gap
     ; convert OP3 to seconds on the FPS stack
     call reserveRaw9 ; FPS=[durationSeconds]; HL=durationSeconds
-    ld de, OP3+1 ; DE:(DateTime*)
+    ld de, OP3+rpnObjectTypeSizeOf ; DE:(DateTime*)
     call durationToSeconds ; HL=durationSeconds
     ; calculate odt-duration
     call negU40 ; HL=-durationSeconds
     ex de, hl ; DE=-durationSeconds
-    ld hl, OP1+1 ; HL=dateTime
+    ld hl, OP1+rpnObjectTypeSizeOf ; HL=dateTime
     call addOffsetDateTimeBySeconds ; HL=odt-durationSeconds
     ; clean up
     call expandOp1ToOp2PageTwo ; add back 2-byte gap

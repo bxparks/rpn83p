@@ -50,7 +50,7 @@ setOp1RpnObjectType:
 
 ; Description: Return the rpnObjectType of OP3/OP4.
 ; Input: A=rpnObjectType
-; Output: HL=OP3+1
+; Output: HL=OP3+rpnObjectTypeSizeOf
 ; Destroys: HL
 ; Preserves: A, BC, DE
 setOp3RpnObjectType:

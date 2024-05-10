@@ -185,7 +185,7 @@ addRpnTimeByDurationAdd:
     call PushRpnObject1 ; FPS=[time]; HL=time
     push hl ; stack=[time]
     ; Convert OP3:RpnDuration to OP1 days
-    ld de, OP3+1 ; DE:(Duration*)=duration
+    ld de, OP3+rpnObjectTypeSizeOf ; DE:(Duration*)=duration
     ld hl, OP1 ; HL:(i40*)=durationSeconds
     call durationToSeconds ; HL=durationSeconds
     ; add time+seconds
@@ -271,12 +271,12 @@ subRpnTimeByRpnTime:
     ; convert OP3 to seconds, on FPS stack
     call reserveRaw9 ; make space on FPS=[X.seconds]; HL=X.seconds
     push hl ; stack=[X.seconds]
-    ld de, OP3+1 ; DE=Time{}
+    ld de, OP3+rpnObjectTypeSizeOf ; DE=Time{}
     call timeToSeconds ; HL=FPS.X.seconds updated
     ; convert OP1 to seconds, on FPS stack
     call reserveRaw9 ; make space, FPS=[X.seconds,Y.seconds]; HL=Y.seconds
     push hl ; stack=[X.seconds,Y.seconds]
-    ld de, OP1+1 ; DE=Time{}
+    ld de, OP1+rpnObjectTypeSizeOf ; DE=Time{}
     call timeToSeconds ; HL=FPS.Y.seconds updated
     ; subtract Y.seconds-X.seconds
     pop hl ; HL=Y.seconds
@@ -288,6 +288,6 @@ subRpnTimeByRpnTime:
     jp dropRaw9 ; FPS=[]
 subRpnTimeByRpnDuration:
     ; invert the sign of duration in OP3
-    ld hl, OP3+1
+    ld hl, OP3+rpnObjectTypeSizeOf
     call chsDuration
     jp addRpnTimeByDurationAdd
