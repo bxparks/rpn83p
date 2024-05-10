@@ -1325,9 +1325,9 @@ _SubRpnTimeByObject equ _SubRpnTimeByObjectLabel-branchTableBase
     .db 2
 
 ; dayofweek2.asm
-_DayOfWeekLabel:
-_DayOfWeek equ _DayOfWeekLabel-branchTableBase
-    .dw DayOfWeek
+_RpnDateToDayOfWeekLabel:
+_RpnDateToDayOfWeek equ _RpnDateToDayOfWeekLabel-branchTableBase
+    .dw RpnDateToDayOfWeek
     .db 2
 _AddRpnDayOfWeekByDaysLabel:
 _AddRpnDayOfWeekByDays equ _AddRpnDayOfWeekByDaysLabel-branchTableBase

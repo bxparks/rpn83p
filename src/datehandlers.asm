@@ -14,7 +14,7 @@ mLeapYearHandler:
 
 mDayOfWeekHandler:
     call closeInputAndRecallRpnDateLikeX ; OP1=X=RpnDateLike{}
-    bcall(_DayOfWeek) ; OP1:RpnDayOfWeek
+    bcall(_RpnDateToDayOfWeek) ; OP1:RpnDayOfWeek
     jp replaceX
 
 mDateToEpochDaysHandler:

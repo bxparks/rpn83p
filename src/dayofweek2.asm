@@ -15,15 +15,14 @@
 ; Input: OP1:RpnDate=date
 ; Output: OP1:RpnDayOfWeek=dow
 ; Destroys: all, OP3-OP5
-DayOfWeek:
-    ld hl, OP1+1 ; skip type byte
+RpnDateToDayOfWeek:
+    ld hl, OP1+rpnObjectTypeSizeOf ; skip type byte
     call dateToDayOfWeekNumber ; A=[1,7]
+    ld b, a ; B=dayOfWeek
     ; convert to RpnDayOfWeek
-    ld hl, OP1+1
-    ld (hl), a
-    dec hl
     ld a, rpnObjectTypeDayOfWeek
-    ld (hl), a ; OP1:RpnDayOfWeek
+    call setOp1RpnObjectTypePageTwo ; HL=OP1+sizeof(type)
+    ld (hl), b ; (HL)=dayOfWeek
     ret
 
 ; Description: Convert Date record to the ISO dayOfWeekNumber (1=Monday,
@@ -91,7 +90,7 @@ addRpnDayOfWeekByDaysAdd:
     ; Convert DayOfWeek to RpnDayOfWeek
     dec hl ; HL=OP1=resultRpnDayOfWeek
     ld a, rpnObjectTypeDayOfWeek
-    ld (hl), a
+    call setHLRpnObjectTypePageTwo ; HL+=sizeof(type)
     ret
 
 ;-----------------------------------------------------------------------------
