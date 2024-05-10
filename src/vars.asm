@@ -94,17 +94,37 @@
 ; of RpnObject changes, then rpnObjectIndexToOffset() must be updated.
 ;
 ; struct RpnFloat { // sizeof(RpnFloat)==9
-;   uint8_t float_type;
+;   uint8_t floatType;
 ;   uint8_t data[8];
 ; };
 ;
-; struct RpnObject { // sizeof(RpnObject)==19
-;   uint8_t object_type;
+; struct RpnComplex { // sizeof(RpnComplex)==18
+;   RpnFloat real;
+;   RpnFloat imag;
+; };
+;
+; struct RpnObject { // sizeof(RpnObject)==18
 ;   union {
-;       RpnFloat floats[2];
-;       uint8_t data[18];
+;     RpnFloat float;
+;     RpnComplex complex;
+;     RpnDate date;
+;     RpnTime time;
+;     RpnDateTime dateTime;
+;     RpnOffset offset;
+;     RpnOffsetDateTime offsetDateTime;
+;     RpnDayOfWeek dayOfWeek;
+;     RpnDuration duration;
 ;   };
 ; };
+;
+; struct RpnElement {
+;   uint8_t elementType;
+;   RpnObject object;
+; }
+;
+; The 'elementType' is the same as the object type, without the encoding prefix.
+; This allow quick searches inside the appVar for a specific type of object,
+; without having to decode the type prefix of a 2-byte encoding.
 ;
 ; An array of RpnObjects is stored in appVars (e.g. RPN83STK, RPN83REG,
 ; RPN83STA). The data section of the appVar can be described by the following C
@@ -115,8 +135,10 @@
 ;   uint16_t crc16; // CRC16 checksum of all following bytes
 ;   uint16_t schemaVersion; // schema version in v0.11 (appId in < v0.11)
 ;   uint16_t appId; // appId
-;   RpnObject objects[size/sizeof(RpnObject)];
+;   RpnElements elements[numElements];
 ; };
+;
+; numElements = (size - 2 - 2 - 2) / sizeof(RpnElement))
 ;
 ; The `schemaVersion` field was inadvertantly left out prior to v0.11. For
 ; v0.11, it is deliberately placed into the same slot as the `appId` field in
@@ -608,9 +630,9 @@ stoRpnObject:
     pop hl ; stack=[]; HL=elementPointer
     ; copy RpnObject from OP1/OP2 into AppVar element
     ld (hl), b ; (hl)=objectType
-    inc hl
-    ld a, b
-    ex de, hl ; DE=elementPointer+1
+    inc hl ; HL+=sizeof(RpnElementType)
+    ld a, b ; A=objectType (not affected by LDIR)
+    ex de, hl ; DE=elementPointer+sizeof(RpnElementType)
     ld hl, OP1
     ; copy first 9 bytes
     ld bc, rpnRealSizeOf
@@ -653,7 +675,7 @@ rclRpnObject:
     jr nc, rpnObjectOutOfBounds
     ; copy from AppVar to OP1/OP2
     call getHLRpnObjectType ; A=type
-    inc hl
+    inc hl ; HL+=sizeof(RpnElementType)
     ld de, OP1
     ld bc, rpnRealSizeOf ; copy first 9 bytes
     ldir
