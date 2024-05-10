@@ -37,11 +37,9 @@ convertRpnDateTimeToTimeZoneAsOffsetConvert:
     ; convert to OffsetDateTime
     ex de, hl ; DE=epochSeconds
     pop bc ; stack=[]; BC=offset
-    ld hl, OP1
     ld a, rpnObjectTypeOffsetDateTime
-    ld (hl), a
-    inc hl
-    call epochSecondsToOffsetDateTime ; HL=OP1=offsetDateTime
+    call setOp1RpnObjectTypePageTwo ; HL=OP1+sizeof(type)
+    call epochSecondsToOffsetDateTime ; (HL)=offsetDateTime
     call expandOp1ToOp2PageTwo
     ; clean up FPS
     call dropRaw9 ; FPS=[rpnDateTime,rpnOffset]
@@ -64,11 +62,9 @@ convertRpnDateTimeToTimeZoneAsRealConvert:
     call PushRpnObject1 ; FPS=[rpnDateTime]; HL=rpnDateTime
     call op3ToOp1PageTwo ; OP1=offsetHour
     ; convert offsetHour to RpnOffset
-    ld hl, OP3
     ld a, rpnObjectTypeOffset
-    ld (hl), a
-    inc hl
-    call offsetHourToOffset ; HL=OP3+1=offset
+    call setOp3RpnObjectTypePageTwo ; HL=OP3+sizeof(type)
+    call offsetHourToOffset ; (HL)=offset
     ; clean up FPS
     call PopRpnObject1 ; FPS=[]; OP1=rpnDateTime
     jr convertRpnDateTimeToTimeZoneAsOffsetConvert
@@ -102,11 +98,9 @@ convertRpnOffsetDateTimeToOffsetConvert:
     ; convert to OffsetDateTime
     ex de, hl ; DE=epochSeconds
     pop bc ; stack=[]; BC=offset
-    ld hl, OP1
     ld a, rpnObjectTypeOffsetDateTime
-    ld (hl), a
-    inc hl
-    call epochSecondsToOffsetDateTime ; HL=OP1=offsetDateTime
+    call setOp1RpnObjectTypePageTwo ; HL=OP1+sizeof(type)
+    call epochSecondsToOffsetDateTime ; (HL)=offsetDateTime
     call expandOp1ToOp2PageTwo
     ; clean up FPS
     call dropRaw9 ; FPS=[rpnOffsetDateTime,rpnOffset]
@@ -129,11 +123,9 @@ convertRpnOffsetDateTimeToTimeZoneAsRealConvert:
     call PushRpnObject1 ; FPS=[rpnOffsetDateTime]; HL=rpnOffsetDateTime
     call op3ToOp1PageTwo ; OP1=offsetHour
     ; convert offsetHour to RpnOffset
-    ld hl, OP3
     ld a, rpnObjectTypeOffset
-    ld (hl), a
-    inc hl
-    call offsetHourToOffset ; HL=OP3+1=offset
+    call setOp3RpnObjectTypePageTwo ; HL=OP3+sizeof(type)
+    call offsetHourToOffset ; (HL)=offset
     ; clean up FPS
     call PopRpnObject1 ; FPS=[]; OP1=rpnOffsetDateTime
     jr convertRpnOffsetDateTimeToOffsetConvert
