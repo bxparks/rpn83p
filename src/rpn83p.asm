@@ -134,6 +134,10 @@ rpntrue equ 1
 ; of the type byte are used.
 rpnObjectTypeMask equ $1f
 
+; Number of bytes used by the 'type' field. This will increase to 2 when
+; rpnObjectTypePrefix is implemented.
+rpnObjectTypeSizeOf equ 1
+
 ; Real number object. Use the same constant as TIOS.
 rpnObjectTypeReal equ 0 ; same as TI-OS
 
@@ -178,7 +182,7 @@ rpnObjectTypeOffsetDateTimeSizeOf equ 10
 ; - struct DayOfWeek{dow:u8}, 1 bytes
 ; - struct RpnDayOfWeek{type:u8, DowOfWeek:dow}, 2 bytes
 rpnObjectTypeDayOfWeek equ $1D
-rpnObjectTypeDayOfWeekSizeOf equ 3
+rpnObjectTypeDayOfWeekSizeOf equ 2
 
 ; Duration and RpnDuration object:
 ; - struct Duration{days:i16, hours:i8, minutes:i8, seconds:i8}, 5 bytes

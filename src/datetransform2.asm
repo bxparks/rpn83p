@@ -36,25 +36,23 @@ transformToOffsetDateTime:
     jr z, transformToOffsetDateTimeFromDate
     bcall(_ErrDataType)
 transformToOffsetDateTimeFromDateTime:
-    ld bc, rpnObjectTypeDateTimeSizeOf
+    ; BC=numBytesToClear; DE=offsetToBytesToClear
+    ld bc, rpnObjectTypeOffsetDateTimeSizeOf-rpnObjectTypeDateTimeSizeOf
+    ld de, rpnObjectTypeDateTimeSizeOf-rpnObjectTypeSizeOf
     jr transformToOffsetDateTimeClear
 transformToOffsetDateTimeFromDate:
-    ld bc, rpnObjectTypeDateSizeOf
+    ; BC=numBytesToClear; DE=offsetToBytesToClear
+    ld bc, rpnObjectTypeOffsetDateTimeSizeOf-rpnObjectTypeDateSizeOf
+    ld de, rpnObjectTypeDateSizeOf-rpnObjectTypeSizeOf
 transformToOffsetDateTimeClear:
     ld a, rpnObjectTypeOffsetDateTime
-    ld (hl), a ; rpnType=OffsetDateTime
-    add hl, bc ; HL=pointerToClearArea
-    ex de, hl ; DE=pointerToClearArea
-    ld hl, rpnObjectTypeOffsetDateTimeSizeOf
-    scf; CF=1
-    sbc hl, bc ; HL=numBytesToClear=rpnObjectTypeOffsetDateTimeSizeOf-sizeOf-1
-    ;
-    ld c, l
-    ld b, h ; BC=numBytesToClear
-    ld l, e
-    ld h, d ; HL=pointerToClearArea
+    call setHLRpnObjectTypePageTwo ; HL+=sizeof(type)
+    add hl, de ; HL=pointerToClearArea
+    ld e, l
+    ld d, h ; DE=HL=pointerToClearArea
     inc de ; DE=HL+1
     ld (hl), 0 ; clear the first byte
+    dec bc ; first byte already cleared
     ldir ; clear the rest
     ;
     pop bc
