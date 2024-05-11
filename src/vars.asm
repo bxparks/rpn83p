@@ -248,7 +248,7 @@ clearRpnObjectListLoop:
     call move9FromOp1 ; updates DE to the next element
     ; Set the trailing bytes of the slot to binary 0.
     xor a
-    ld b, rpnObjectSizeOf-rpnRealSizeOf-1 ; 9 bytes
+    ld b, rpnElementSizeOf-rpnRealSizeOf-1 ; 9 bytes
 clearRpnObjectListLoopTrailing:
     ld (de), a
     inc de
@@ -377,8 +377,8 @@ calcLenRpnObjectList:
     dec hl
     dec hl
     dec hl ; HL=appVarSize-6=rpnObjectListSize
-    ; divide rpnObjectListSize/sizeof(RpnObject)
-    ld c, rpnObjectSizeOf
+    ; divide rpnObjectListSize/sizeof(RpnElement)
+    ld c, rpnElementSizeOf
     call divHLByC ; HL=quotient; A=remainder; preserves DE
     or a ; validate no remainder
     jr nz, lenRpnObjectListInvalid
@@ -549,9 +549,9 @@ rpnObjectIndexToElementPointer:
 ; segment. If 'index' is the 'len', then this is the value stored by the TI-OS
 ; in the appVarSize field at the beginning of the data segment:
 ;
-;   appVarSize = len*rpnObjectSizeOf
+;   appVarSize = len*rpnElementSizeOf
 ;                + 2 (crc16) + 2 (schemaVersion) + 2 (appId)
-;              = len*rpnObjectSizeOf + 6
+;              = len*rpnElementSizeOf + 6
 ;
 ; To get to the end of the appVar data segment, add this offset to the
 ; dataPointer. But don't forget to add another 2 byte to skip past the 2-byte
@@ -629,7 +629,7 @@ stoRpnObject:
     pop bc
     pop hl ; stack=[]; HL=elementPointer
     ; copy RpnObject from OP1/OP2 into AppVar element
-    ld (hl), b ; (hl)=objectType
+    ld (hl), b ; (hl)=elementType
     inc hl ; HL+=sizeof(RpnElementType)
     ld a, b ; A=objectType (not affected by LDIR)
     ex de, hl ; DE=elementPointer+sizeof(RpnElementType)

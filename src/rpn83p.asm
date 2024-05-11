@@ -146,9 +146,11 @@ rpnObjectTypeSizeOf equ 1
 
 ; Real number object. Use the same constant as TIOS.
 rpnObjectTypeReal equ 0 ; same as TI-OS
+rpnRealSizeOf equ 9 ; sizeof(float)
 
 ; Complex number object. Use the same constant as TIOS.
 rpnObjectTypeComplex equ $0C ; same as TI-OS
+rpnComplexSizeOf equ 18 ; sizeof(complex)
 
 ; Date and RpnDate objects:
 ; - struct Date{year:u16, mon:u8, day:u8}, 4 bytes
@@ -196,12 +198,17 @@ rpnObjectTypeDayOfWeekSizeOf equ 2
 rpnObjectTypeDuration equ $1E
 rpnObjectTypeDurationSizeOf equ 6
 
-; An RpnObject is union of all possible Real, Complex, and RpnObjects. See the
-; struct definitions in vars.asm. If the rpnObjectSizeOf is changed, the
-; rpnObjectIndexToOffset() function must be updated.
-rpnRealSizeOf equ 9 ; sizeof(float)
-rpnComplexSizeOf equ 18 ; sizeof(complex)
-rpnObjectSizeOf equ rpnComplexSizeOf + 1 ; type + sizeof(complex)
+; An RpnObject is the union of all Rpn objects: RpnReal, RpnComplex, and so on.
+; See the definition of 'struct RpnObject' in vars.asm. Its size is the
+; max(Rpn*, ...).
+rpnObjectSizeOf equ rpnComplexSizeOf ; type + sizeof(complex)
+
+; An RpnElement is a single element in the RpnObjectList appVar that holds a
+; single RpnObject. It has an extra type byte in front of the RpnObject, so
+; that we can extract its type without having to parse inside the RpnObject. If
+; the rpnObjectSizeOf is changed, the rpnObjectIndexToOffset() function must be
+; updated.
+rpnElementSizeOf equ rpnObjectSizeOf+1
 
 ;-----------------------------------------------------------------------------
 
