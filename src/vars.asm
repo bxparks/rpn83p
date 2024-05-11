@@ -117,7 +117,7 @@
 ;   };
 ; };
 ;
-; struct RpnElement {
+; struct RpnElement { // sizeof(RpnElement)==19
 ;   uint8_t elementType;
 ;   RpnObject object;
 ; }
@@ -571,7 +571,7 @@ rpnObjectIndexToOffset:
     ret
 
 ; Description: Convert len of RpnObject to the byte size of those RpnObjects.
-; This *must* be updated if sizeof(RpnObject) changes.
+; This *must* be updated if sizeof(RpnElement) changes.
 ;
 ; Input: HL:u16=len
 ; Output: HL:u16=size=len*sizeof(RpnObject)=len*19
@@ -674,7 +674,7 @@ rclRpnObject:
     call rpnObjectIndexToElementPointer ; HL=elementPointer
     jr nc, rpnObjectOutOfBounds
     ; copy from AppVar to OP1/OP2
-    call getHLRpnObjectType ; A=type
+    ld a, (hl) ; A=elementType
     inc hl ; HL+=sizeof(RpnElementType)
     ld de, OP1
     ld bc, rpnRealSizeOf ; copy first 9 bytes
