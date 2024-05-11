@@ -33,6 +33,11 @@ getOp3RpnObjectType:
 getHLRpnObjectType:
     ld a, (hl)
     and rpnObjectTypeMask
+    cp rpnObjectTypePrefix
+    ret nz
+    inc hl
+    ld a, (hl)
+    dec hl
     ret
 
 ;-----------------------------------------------------------------------------
@@ -59,12 +64,17 @@ setOp3RpnObjectType:
 
 ; Description: Set the rpnObjectType of HL to A.
 ; Input: A=rpnObjectType
-; Output: HL+=1
+; Output: HL+=rpnObjectTypeSizeOf
 ; Destroys: HL
 ; Preserves: A, BC, DE
 setHLRpnObjectType:
+    push af
+    ld a, rpnObjectTypePrefix
     ld (hl), a
-    skipRpnObjectTypeHL
+    inc hl
+    pop af
+    ld (hl), a
+    inc hl
     ret
 
 ;-----------------------------------------------------------------------------
