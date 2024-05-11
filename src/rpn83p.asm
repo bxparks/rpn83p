@@ -115,7 +115,28 @@ rpn83pSchemaVersion equ 15
 ; Similar to rpn83pSchemaVersion, this version number determines the schema of
 ; the appVars (e.g. RPN83STK, RPN83REG, RPN83STA) that hold the list of
 ; RpnObjects.
-rpnObjectListSchemaVersion equ 1
+;
+; Version 1 uses a single byte to encode the RpnObjectType, using the extended
+; range of $18 to $1e inclusive. The problem is that if additional RpnObjects
+; are added, the type would be forced to use $20, which is not allowed
+; according to the 83 Plus SDK documents since only the bottom 5-bits are
+; supposed to be used in the first type byte.
+;
+; Version 2 uses 2 bytes to encode the RpnObjectType. If the first byte is
+; rpnObjectTypePrefix ($18), then the second byte is the actual type of the
+; RpnObject. This extends the range of the RpnObjectType to $ff, which should
+; be more than enough for the foreseeable future.
+;
+; In the unlikely chance that the type range to $ff is insufficient, there are
+; 2 ways to extend the encoding further:
+;   1) Additional prefix values can be used, for example, the values from $19
+;   to $1f are currently unused and reserved.
+;   2) The new types can be encoded using 3 bytes instead of just 2.
+;
+; Extending the type range beyond $ff will require other additional work. There
+; a number of places in the code which assumes that the RpnObject type can be
+; held in a single 8-bit register.
+rpnElementListSchemaVersion equ 2
 
 ; Define true and false. Something else in spasm-ng defines the 'true' and
 ; 'false' symbols but I cannot find the definitions for them in the
@@ -130,64 +151,87 @@ rpntrue equ 1
 ; RpnObect type enums. TIOS defines object types from $00 (RealObj) to
 ; $17 (GroupObj). We'll continue from $18.
 
+; The bit mask needed to extract the TIOS object type. Only the bottom 5 bits
+; of the type byte are used.
+rpnObjectTypeMask equ $1f
+
+; Number of bytes used by the 'type' field in the RpnObject. Currently, the
+; type field is a `u8[2]`, so takes 2 bytes.
+rpnObjectTypeSizeOf equ 2
+
+; Macros to skip the type header bytes of an RpnObject.
+#define skipRpnObjectTypeHL inc hl \ inc hl
+#define skipRpnObjectTypeDE inc de \ inc de
+
 ; Real number object. Use the same constant as TIOS.
 rpnObjectTypeReal equ 0 ; same as TI-OS
+rpnRealSizeOf equ 9 ; sizeof(float)
 
 ; Complex number object. Use the same constant as TIOS.
 rpnObjectTypeComplex equ $0C ; same as TI-OS
+rpnComplexSizeOf equ 18 ; sizeof(complex)
+
+; Type prefix for RPN83P objects. The next byte is the actual rpnObjectType.
+rpnObjectTypePrefix equ $18
 
 ; Date and RpnDate objects:
 ; - struct Date{year:u16, mon:u8, day:u8}, 4 bytes
-; - struct RpnDate{type:u8, date:Date}, 5 bytes
-rpnObjectTypeDate equ $18
-rpnObjectTypeDateSizeOf equ 5
+; - struct RpnDate{type:u8[2], date:Date}, 6 bytes
+rpnObjectTypeDate equ $20 ; start at $20 to support additional prefixes
+rpnObjectTypeDateSizeOf equ 6
 
 ; Time and RpnTime objects:
 ; - struct Time{hour:u8, minute:u8, second:u8}, 3 bytes
-; - struct RpnTime{type:u8, date:Time}, 4 bytes
-rpnObjectTypeTime equ $19
-rpnObjectTypeTimeSizeOf equ 4
+; - struct RpnTime{type:u8[2], date:Time}, 5 bytes
+rpnObjectTypeTime equ $21
+rpnObjectTypeTimeSizeOf equ 5
 
 ; DateTime and RpnDateTime objects:
 ; - struct DateTime{date:Date, hour:u8, min:u8, sec:u8}, 7 bytes
-; - struct RpnDateTime{type:u8, dateTime:DateTime}, 8 bytes
-rpnObjectTypeDateTime equ $1A
-rpnObjectTypeDateTimeSizeOf equ 8
+; - struct RpnDateTime{type:u8[2], dateTime:DateTime}, 9 bytes
+rpnObjectTypeDateTime equ $22
+rpnObjectTypeDateTimeSizeOf equ 9
 
 ; Offset and RpnOffset object:
 ; - struct Offset{hour:i8, min:i8}, 2 bytes
-; - struct RpnOffset{type:u8, offset:Offset}, 3 bytes
-rpnObjectTypeOffset equ $1B
-rpnObjectTypeOffsetSizeOf equ 3
+; - struct RpnOffset{type:u8[2], offset:Offset}, 4 bytes
+rpnObjectTypeOffset equ $23
+rpnObjectTypeOffsetSizeOf equ 4
 
 ; OffsetDateTime and RpnOffsetDateTime objects:
 ; - struct OffsetDateTime{datetime:DateTime, offset:Offset}, 9 bytes
-; - struct RpnOffsetDateTime{type:u8, offsetDateTime:OffsetDateTime}, 10 bytes
+; - struct RpnOffsetDateTime{type:u8[2], offsetDateTime:OffsetDateTime},
+;   11 bytes
 ; The sizeof(RpnOffsetDateTime) is 10, which is greater than the 9 bytes of a
 ; TI-OS floating point number. But OPx registers are 11 bytes long. We have
 ; to careful and use expandOp1ToOp2() and shrinkOp2ToOp1() when parsing or
 ; manipulating this object.
-rpnObjectTypeOffsetDateTime equ $1C
-rpnObjectTypeOffsetDateTimeSizeOf equ 10
+rpnObjectTypeOffsetDateTime equ $24
+rpnObjectTypeOffsetDateTimeSizeOf equ 11
 
 ; DayOfWeek and RpnDayOfWeek object:
 ; - struct DayOfWeek{dow:u8}, 1 bytes
-; - struct RpnDayOfWeek{type:u8, DowOfWeek:dow}, 2 bytes
-rpnObjectTypeDayOfWeek equ $1D
+; - struct RpnDayOfWeek{type:u8[2], DowOfWeek:dow}, 3 bytes
+rpnObjectTypeDayOfWeek equ $25
 rpnObjectTypeDayOfWeekSizeOf equ 3
 
 ; Duration and RpnDuration object:
 ; - struct Duration{days:i16, hours:i8, minutes:i8, seconds:i8}, 5 bytes
-; - struct RpnDuration{type:u8, duration:Duration}, 6 bytes
-rpnObjectTypeDuration equ $1E
-rpnObjectTypeDurationSizeOf equ 6
+; - struct RpnDuration{type:u8[2], duration:Duration}, 7 bytes
+rpnObjectTypeDuration equ $26
+rpnObjectTypeDurationSizeOf equ 7
 
-; An RpnObject is union of all possible Real, Complex, and RpnObjects. See the
-; struct definitions in vars.asm. If the rpnObjectSizeOf is changed, the
-; rpnObjectIndexToOffset() function must be updated.
-rpnRealSizeOf equ 9 ; sizeof(float)
-rpnComplexSizeOf equ 18 ; sizeof(complex)
-rpnObjectSizeOf equ rpnComplexSizeOf + 1 ; type + sizeof(complex)
+; An RpnObject is the union of all Rpn objects: RpnReal, RpnComplex, and so on.
+; See the definition of 'struct RpnObject' in vars.asm. Its size is the
+; max(sizeof(RpnReal), sizeof(RpnComplex), sizeof(RpnDate), ...).
+rpnObjectSizeOf equ rpnComplexSizeOf ; type + sizeof(complex)
+
+; An RpnElement is a single element in the RpnElementList appVar that holds a
+; single RpnObject. It has an extra type byte in front of the RpnObject, to
+; allow us to extract its type without having to parse inside the RpnObject. If
+; the rpnElementSizeOf is changed, the rpnObjectIndexToOffset() function must
+; be updated.
+rpnElementSizeOf equ rpnObjectSizeOf+1
 
 ;-----------------------------------------------------------------------------
 
@@ -1317,9 +1361,9 @@ _SubRpnTimeByObject equ _SubRpnTimeByObjectLabel-branchTableBase
     .db 2
 
 ; dayofweek2.asm
-_DayOfWeekLabel:
-_DayOfWeek equ _DayOfWeekLabel-branchTableBase
-    .dw DayOfWeek
+_RpnDateToDayOfWeekLabel:
+_RpnDateToDayOfWeek equ _RpnDateToDayOfWeekLabel-branchTableBase
+    .dw RpnDateToDayOfWeek
     .db 2
 _AddRpnDayOfWeekByDaysLabel:
 _AddRpnDayOfWeekByDays equ _AddRpnDayOfWeekByDaysLabel-branchTableBase

@@ -22,7 +22,7 @@ RpnOffsetDateTimeToEpochSeconds:
     ex de, hl ; DE=rpnOffsetDateTime
     call reserveRaw9 ; FPS=[rpnOffsetDateTime,reserved]; HL=reserved
     ; convert DateTime to dateTimeSeconds
-    inc de ; DE=offsetDateTime, skip type byte
+    skipRpnObjectTypeDE ; DE=offsetDateTime, skip type byte
     call offsetDateTimeToEpochSeconds ; HL:(i40*)=reserved=epochSeconds
     ; copy back to OP1
     call popRaw9Op1 ; FPS=[rpnOffsetDateTime]; HL=OP1=epochSeconds
@@ -69,8 +69,7 @@ epochSecondsToRpnOffsetDateTimeAlt:
     ; convert to RpnOffsetDateTime
     ex de, hl ; DE=epochSeconds; HL=rpnOffsetDateTime
     ld a, rpnObjectTypeOffsetDateTime
-    ld (hl), a
-    inc hl ; HL=rpnOffsetDateTime+1=offsetDateTime
+    call setHLRpnObjectTypePageTwo ; HL+=rpnObjectTypeSizeOf
     ; select the currently selected TZ offset
     pop bc ; stack=[]; bc=targetTimeZone
     call epochSecondsToOffsetDateTime ; HL=HL+sizeof(OffsetDateTime)
@@ -155,7 +154,7 @@ addRpnOffsetDateTimeBySecondsAdd:
     call convertOP1ToI40 ; OP1:(i40*)=seconds
     ; add odtSeconds + seconds
     pop hl ; stack=[]; HL=rpnOdt
-    inc hl ; HL=odt
+    skipRpnObjectTypeHL ; HL=odt
     ld de, OP1
     call addOffsetDateTimeBySeconds ; HL=newOdt
     ; clean up
@@ -181,12 +180,12 @@ addRpnOffsetDateTimeByDurationAdd:
     call PushRpnObject1 ; FPS=[rpnOdt]; HL=rpnOdt
     push hl ; stack=[rpnOdt]
     ; Convert OP3:RpnDuration to OP1:i40.
-    ld de, OP3+1 ; DE:(Duration*)=duration
+    ld de, OP3+rpnObjectTypeSizeOf ; DE:(Duration*)=duration
     ld hl, OP1
     call durationToSeconds ; HL=OP1=durationSeconds
     ; add odtSeconds + duration
     pop hl ; stack=[]; HL=rpnOdt
-    inc hl ; HL=odt
+    skipRpnObjectTypeHL ; HL=odt
     ld de, OP1
     call addOffsetDateTimeBySeconds ; HL=newOdt
     ; clean up
@@ -215,7 +214,7 @@ addOffsetDateTimeBySeconds:
     ex de, hl ; DE=resultSeconds
     pop hl ; stack=[]; HL=odt
     ; BC=offset, converted in-situ
-    ld a, rpnObjectTypeDateTimeSizeOf-1
+    ld a, rpnObjectTypeDateTimeSizeOf-rpnObjectTypeSizeOf
     add a, l
     ld c, a
     ld a, 0
@@ -236,7 +235,7 @@ addOffsetDateTimeBySeconds:
 ;   - OP1:(RpnOffsetDateTime-seconds) or (RpnOffsetDateTime-RpnOffsetDateTime).
 ; Destroys: OP1, OP2, OP3-OP6
 SubRpnOffsetDateTimeByObject:
-    call getOp3RpnObjectTypePageTwo ; A=objectType
+    call getOp3RpnObjectTypePageTwo ; A=type; HL=OP3
     cp rpnObjectTypeReal
     jr z, subRpnOffsetDateTimeBySeconds
     cp RpnObjectTypeOffsetDateTime ; ZF=1 if RpnOffsetDateTime
@@ -257,13 +256,13 @@ subRpnOffsetDateTimeByRpnOffsetDateTime:
     call PushRpnObject3 ; FPS=[Yodt,Xodt]; HL=Xodt
     ; calculate X epochSeconds
     ex de, hl ; DE=Xodt
-    inc de ; skip type byte
+    skipRpnObjectTypeDE ; skip type byte
     call reserveRaw9 ; FPS=[Yodt,Xodt,Xeps]; HL=Xeps
     call offsetDateTimeToEpochSeconds ; HL=Xeps filled
     ; calculate Y epochSeconds
     ex (sp), hl ; stack=[Xeps]; HL=Yodt
     ex de, hl ; DE=Yodt
-    inc de ; skip type byte
+    skipRpnObjectTypeDE ; skip type byte
     call reserveRaw9 ; FPS=[Yodt,Xodt,Xeps,Yeps]; HL=Yeps
     call offsetDateTimeToEpochSeconds ; HL=Yeps filled
     ; subtract Yeps-Xeps
@@ -280,12 +279,12 @@ subRpnOffsetDateTimeByRpnDuration:
     call shrinkOp2ToOp1PageTwo ; remove 2-byte gap
     ; convert OP3 to seconds on the FPS stack
     call reserveRaw9 ; FPS=[durationSeconds]; HL=durationSeconds
-    ld de, OP3+1 ; DE:(DateTime*)
+    ld de, OP3+rpnObjectTypeSizeOf ; DE:(DateTime*)
     call durationToSeconds ; HL=durationSeconds
     ; calculate odt-duration
     call negU40 ; HL=-durationSeconds
     ex de, hl ; DE=-durationSeconds
-    ld hl, OP1+1 ; HL=dateTime
+    ld hl, OP1+rpnObjectTypeSizeOf ; HL=dateTime
     call addOffsetDateTimeBySeconds ; HL=odt-durationSeconds
     ; clean up
     call expandOp1ToOp2PageTwo ; add back 2-byte gap
@@ -344,21 +343,19 @@ localEpochSecondsToUtcEpochSeconds:
 SplitRpnOffsetDateTime:
     call shrinkOp2ToOp1PageTwo ; remove 2-byte gap between OP1 and OP2
     ; extract the DateTime part
-    ld de, OP3 ; DE:(DateTime*)
     ld a, rpnObjectTypeDateTime
-    ld (de), a
-    inc de
-    ld hl, OP1+1 ; HL:(const DateTime*)
-    ld bc, rpnObjectTypeDateTimeSizeOf-1
+    call setOp3RpnObjectTypePageTwo ; HL=OP3+rpnObjectTypeSizeOf
+    ex de, hl ; DE=(DateTime*)
+    ld hl, OP1+rpnObjectTypeSizeOf ; HL:(const DateTime*)
+    ld bc, rpnObjectTypeDateTimeSizeOf-rpnObjectTypeSizeOf
     ldir
     ; Extract the Offset part by shifting forward. This is allowed because
     ; sizeof(DateTime)>sizeof(Offset), so there is no overlap.
-    ld de, OP1
     ld a, rpnObjectTypeOffset
-    ld (de), a
-    inc de
+    call setOp1RpnObjectTypePageTwo ; HL=OP1+rpnObjectTypeSizeOf
+    ex de, hl ; DE=(Offset*)
     ld hl, OP1+rpnObjectTypeDateTimeSizeOf ; HL:(const Offset*)
-    ld bc, rpnObjectTypeOffsetSizeOf-1
+    ld bc, rpnObjectTypeOffsetSizeOf-rpnObjectTypeSizeOf
     ldir
     ret
 
@@ -376,10 +373,10 @@ MergeRpnDateTimeWithRpnOffset:
     call z, cp1ExCp3PageTwo
     ; if reached here: CP1:RpnDateTime; CP3:RpnOffset
     ld a, rpnObjectTypeOffsetDateTime
-    ld (OP1), a
+    call setOp1RpnObjectTypePageTwo ; HL=OP1+rpnObjectTypeSizeOf
     ld de, OP1+rpnObjectTypeDateTimeSizeOf
-    ld hl, OP3+1
-    ld bc, rpnObjectTypeOffsetSizeOf-1
+    ld hl, OP3+rpnObjectTypeSizeOf
+    ld bc, rpnObjectTypeOffsetSizeOf-rpnObjectTypeSizeOf
     ldir
     call expandOp1ToOp2PageTwo
     ret
@@ -392,12 +389,13 @@ MergeRpnDateTimeWithRpnOffset:
 ;   - OP1:RpnDateTime
 ; Output:
 ;   - OP1:RpnOffsetDateTime
-; Destroys: OP1
+; Destroys: A, DE, HL, OP1
 ExtendRpnDateTimeToOffsetDateTime:
     ld a, rpnObjectTypeOffsetDateTime
-    ld (OP1), a
-    ; clear the Time fields
-    ld hl, OP1+rpnObjectTypeDateTimeSizeOf
+    call setOp1RpnObjectTypePageTwo ; HL=OP1+rpnObjectTypeSizeOf
+    ; clear the Offset fields
+    ld de, rpnObjectTypeDateTimeSizeOf-rpnObjectTypeSizeOf
+    add hl, de ; HL=offsetPointer
     xor a
     ld (hl), a
     inc hl
@@ -416,5 +414,5 @@ ExtendRpnDateTimeToOffsetDateTime:
 ; Destroys: OP1
 TruncateRpnOffsetDateTime:
     ld a, rpnObjectTypeDateTime
-    ld (OP1), a
+    call setOp1RpnObjectTypePageTwo
     ret

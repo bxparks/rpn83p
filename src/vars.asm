@@ -94,29 +94,51 @@
 ; of RpnObject changes, then rpnObjectIndexToOffset() must be updated.
 ;
 ; struct RpnFloat { // sizeof(RpnFloat)==9
-;   uint8_t float_type;
+;   uint8_t floatType;
 ;   uint8_t data[8];
 ; };
 ;
-; struct RpnObject { // sizeof(RpnObject)==19
-;   uint8_t object_type;
+; struct RpnComplex { // sizeof(RpnComplex)==18
+;   RpnFloat real;
+;   RpnFloat imag;
+; };
+;
+; struct RpnObject { // sizeof(RpnObject)==18
 ;   union {
-;       RpnFloat floats[2];
-;       uint8_t data[18];
+;     RpnFloat float;
+;     RpnComplex complex;
+;     RpnDate date;
+;     RpnTime time;
+;     RpnDateTime dateTime;
+;     RpnOffset offset;
+;     RpnOffsetDateTime offsetDateTime;
+;     RpnDayOfWeek dayOfWeek;
+;     RpnDuration duration;
 ;   };
 ; };
+;
+; struct RpnElement { // sizeof(RpnElement)==19
+;   uint8_t elementType;
+;   RpnObject object;
+; }
+;
+; The 'elementType' is the same as the object type, without the encoding prefix.
+; This allow quick searches inside the appVar for a specific type of object,
+; without having to decode the type prefix of a 2-byte encoding.
 ;
 ; An array of RpnObjects is stored in appVars (e.g. RPN83STK, RPN83REG,
 ; RPN83STA). The data section of the appVar can be described by the following C
 ; structure:
 ;
-; struct RpnObjectList {
+; struct RpnElementList {
 ;   uint16_t size ; // maintained by the TIOS (*not* including 'size' field)
 ;   uint16_t crc16; // CRC16 checksum of all following bytes
 ;   uint16_t schemaVersion; // schema version in v0.11 (appId in < v0.11)
 ;   uint16_t appId; // appId
-;   RpnObject objects[size/sizeof(RpnObject)];
+;   RpnElements elements[numElements];
 ; };
+;
+; numElements = (size - 2 - 2 - 2) / sizeof(RpnElement))
 ;
 ; The `schemaVersion` field was inadvertantly left out prior to v0.11. For
 ; v0.11, it is deliberately placed into the same slot as the `appId` field in
@@ -125,12 +147,12 @@
 ; downgrade from v0.11 to (v0.1-v0.10):
 ;
 ; 1) (v0.1-v0.10) to v0.11: The `schemaVersion` field will change from
-; `rpn83pAppId` to `rpnObjectListSchemaVersion`.
+; `rpn83pAppId` to `rpnElementListSchemaVersion`.
 ; 2) v0.11 to (v0.1-v0.10): The `appId` field will change from
-; `rpnObjectListSchemaVersion` to `rpn83pAppId`.
+; `rpnElementListSchemaVersion` to `rpn83pAppId`.
 ;
 ; The only time this will fail is if the user upgrades/downgrades between a
-; schema version of 1 (rpnObjectListSchemaVersion) and $1E69 (rpn83pAppId),
+; schema version of 1 (rpnElementListSchemaVersion) and $1E69 (rpn83pAppId),
 ; which is likely to never happen.
 ;-----------------------------------------------------------------------------
 
@@ -139,20 +161,20 @@
 ;   - HL:(char*)=appVarName
 ;   - C:u8=defaultLen if appVar needs to be created, [0,99]
 ; Destroys: A, BC, DE, HL, OP1
-initRpnObjectList:
+initRpnElementList:
     push bc ; stack=[len]
     call move9ToOp1 ; OP1=varName
     bcall(_ChkFindSym) ; DE=dataPointer; CF=1 if not found
     ld a, b ; A=romPage (0 if RAM)
     pop bc ; stack=[]; C=len
-    jr c, initRpnObjectListCreate
+    jr c, initRpnElementListCreate
     ; If archived, deleted it. TODO: Maybe try to unachive it?
     or a ; if romPage==0: ZF=1
-    jr nz, initRpnObjectListDelete
+    jr nz, initRpnElementListDelete
     ; Exists in RAM, so validate.
-    call validateRpnObjectList ; if valid: ZF=1 ; preserves BC
+    call validateRpnElementList ; if valid: ZF=1 ; preserves BC
     ret z
-initRpnObjectListDelete:
+initRpnElementListDelete:
     ; Delete the existing (non-validating) appVar. We call ChkFindSym again to
     ; re-populate the various registers needed by DelVarArc, but but this code
     ; path should rarely happen, so I think it's ok to call it twice.
@@ -160,14 +182,14 @@ initRpnObjectListDelete:
     bcall(_ChkFindSym) ; DE=dataPointer; CF=1 if not found
     bcall(_DelVarArc)
     pop bc ; stack=[]; C=len
-initRpnObjectListCreate:
+initRpnElementListCreate:
     ; We are here if the appVar does not exist. So create.
     ; OP1=appVarName; C=len
     push bc ; stack=[len]
     call rpnObjectIndexToOffset ; HL=expectedSize
     bcall(_CreateAppVar) ; DE=dataPointer
     pop bc ; stack=[]; C=len
-initRpnObjectListHeader:
+initRpnElementListHeader:
     push bc ; stack=[len]
     push de ; stack=[len,dataPointer]
     inc de
@@ -176,7 +198,7 @@ initRpnObjectListHeader:
     inc de ; skip past the CRC field
     ex de, hl ; HL=dataPointer+4
     ; insert schemaVersion
-    ld bc, rpnObjectListSchemaVersion
+    ld bc, rpnElementListSchemaVersion
     ld (hl), c
     inc hl
     ld (hl), b
@@ -191,10 +213,10 @@ initRpnObjectListHeader:
     pop de ; stack=[len]; DE=dataPointer
     pop bc ; stack=[]; C=len
     ld b, 0 ; B=begin=0
-    call clearRpnObjectList
+    call clearRpnElementList
     ret
 
-; Description: Clear the rpnObjectList elements over the interval
+; Description: Clear the rpnElementList elements over the interval
 ; [begin,begin+len). No array boundary checks are performed.
 ;
 ; Input:
@@ -202,7 +224,7 @@ initRpnObjectListHeader:
 ;   - C:u8=len
 ;   - DE:(u8*)=dataPointer
 ; Destroys: A, DE, HL, OP1
-clearRpnObjectList:
+clearRpnElementList:
     push de ; stack=[dataPointer]
     push bc ; stack=[dataPointer,begin/len]
     call op1Set0 ; OP1=0.0
@@ -217,38 +239,38 @@ clearRpnObjectList:
     inc de ; DE=dataPointer+2; skip past appVarSize
     add hl, de ; HL=beginAddress=dataPointer+offset+2
     ex de, hl ; DE=beginAddress; HL=dataPointer
-clearRpnObjectListLoop:
+clearRpnElementListLoop:
     ; Copy OP1 into AppVar.
     ld a, rpnObjectTypeReal
     ld (de), a ; rpnObjectType
-    inc de
+    inc de ; single type byte in RpnElementList
     push bc ; stack=[len]
     call move9FromOp1 ; updates DE to the next element
     ; Set the trailing bytes of the slot to binary 0.
     xor a
-    ld b, rpnObjectSizeOf-rpnRealSizeOf-1 ; 9 bytes
-clearRpnObjectListLoopTrailing:
+    ld b, rpnElementSizeOf-rpnRealSizeOf-1 ; 9 bytes
+clearRpnElementListLoopTrailing:
     ld (de), a
     inc de
-    djnz clearRpnObjectListLoopTrailing
+    djnz clearRpnElementListLoopTrailing
     ;
     pop bc ; stack=[]; C=len
     dec c
-    jr nz, clearRpnObjectListLoop
+    jr nz, clearRpnElementListLoop
     ret
 
 ; Description: Validate the `crc16` checksum, the `schemaVersion`, and the
-; `appId` fields of the rpnObjectList appVar. The `size` field is not validated
+; `appId` fields of the rpnElementList appVar. The `size` field is not validated
 ; because the appVar could have been changed to a different size.
 ;
 ; Input:
 ;   - DE:(u8*)=dataPointer to appVar contents
-;   - (appVar):(struct RpnObjectList*)
+;   - (appVar):(struct RpnElementList*)
 ; Output:
 ;   - ZF=1 if valid, 0 if not valid
 ; Destroys: DE, HL
 ; Preserves: BC, OP1
-validateRpnObjectList:
+validateRpnElementList:
     push bc ; stack=[BC]
     ex de, hl ; HL=dataPointer
     ; Extract appVarSize
@@ -271,18 +293,18 @@ validateRpnObjectList:
     or a ; CF=0
     sbc hl, de ; if CRC matches: ZF=1
     pop hl ; stack=[BC]; HL=dataPointer
-    jr nz, validateRpnObjectListEnd
+    jr nz, validateRpnElementListEnd
     ; Verify schemaVersion.
     ld e, (hl)
     inc hl
     ld d, (hl)
     inc hl ; DE=schemaVersion
     ex de, hl ; DE=dataPointer; HL=schemaVersion
-    ld bc, rpnObjectListSchemaVersion
+    ld bc, rpnElementListSchemaVersion
     or a ; CF=0
     sbc hl, bc ; if schemaVersion matches: ZF=1
     ex de, hl ; HL=dataPointer
-    jr nz, validateRpnObjectListEnd
+    jr nz, validateRpnElementListEnd
     ; Verify appId.
     ld e, (hl)
     inc hl
@@ -293,16 +315,16 @@ validateRpnObjectList:
     or a ; CF=0
     sbc hl, bc ; if appId matches: ZF=1
     ex de, hl ; HL=dataPointer
-validateRpnObjectListEnd:
+validateRpnElementListEnd:
     pop bc ; stack=[]; BC=restored
     ret
 
-; Description: Close the rpnObjectList by updating the CRC16 checksum. This is
+; Description: Close the rpnElementList by updating the CRC16 checksum. This is
 ; intended to be called just before the application exits.
 ; Input:
 ;   - HL:(char*)=appVarName
 ; Destroys: A, BC, DE, HL, OP1
-closeRpnObjectList:
+closeRpnElementList:
     call move9ToOp1 ; OP1=varName
     bcall(_ChkFindSym) ; DE=dataPointer; CF=1 if not found
     ret c ; nothing we can do if the appVar isn't found
@@ -327,7 +349,7 @@ closeRpnObjectList:
     ret
 
 ; Description: Return the length (number of elements) in the
-; rpnObjectList identified by the appVarName in HL.
+; rpnElementList identified by the appVarName in HL.
 ; Input:
 ;   - HL:(char*)=appVarName
 ; Output:
@@ -337,11 +359,11 @@ closeRpnObjectList:
 ;   - Err:Invalid if length calculation has a remainder
 ;   - Err:Undefined if appVarName does not exist
 ; Destroys: A, BC, DE, HL, OP1
-lenRpnObjectList:
+lenRpnElementList:
     call move9ToOp1 ; OP1=varName
     bcall(_ChkFindSym) ; DE=dataPointer; CF=1 if not found
     jr c, lenRpnObjectNotFound
-calcLenRpnObjectList:
+calcLenRpnElementList:
     ex de, hl ; HL=dataPointer
     ld e, (hl)
     inc hl
@@ -354,22 +376,22 @@ calcLenRpnObjectList:
     dec hl
     dec hl
     dec hl
-    dec hl ; HL=appVarSize-6=rpnObjectListSize
-    ; divide rpnObjectListSize/sizeof(RpnObject)
-    ld c, rpnObjectSizeOf
+    dec hl ; HL=appVarSize-6=rpnElementListSize
+    ; divide rpnElementListSize/sizeof(RpnElement)
+    ld c, rpnElementSizeOf
     call divHLByC ; HL=quotient; A=remainder; preserves DE
     or a ; validate no remainder
-    jr nz, lenRpnObjectListInvalid
+    jr nz, lenRpnElementListInvalid
     ld a, l
     ret
-lenRpnObjectListInvalid:
+lenRpnElementListInvalid:
     ; sizeof(var)/sizeof(RpnObject) has a non-zero remainder
     bcall(_ErrInvalid) ; should never happen
 lenRpnObjectNotFound:
     ; nothing we can do if the appVar isn't found
     bcall(_ErrUndefined) ; should never happen
 
-; Description: Resize the rpnObjectList identified by appVarName in HL.
+; Description: Resize the rpnElementList identified by appVarName in HL.
 ; Input:
 ;   - HL:(char*)=appVarName
 ;   - A:u8=newLen, expected to be [0,99] but no validation performed
@@ -382,20 +404,20 @@ lenRpnObjectNotFound:
 ; Throws:
 ;   - Err:Memory if out of memory
 ;   - Err:Undefined if appVarName does not exist
-resizeRpnObjectList:
+resizeRpnElementList:
     push af ; stack=[newLen]
     call move9ToOp1 ; OP1=varName; preserves A
     bcall(_ChkFindSym) ; DE=dataPointer; CF=1 if not found
-    jr c, resizeRpnObjectListNotFound
+    jr c, resizeRpnElementListNotFound
     push de ; stack=[newLen,dataPointer]
-    call calcLenRpnObjectList
+    call calcLenRpnElementList
     ld b, a ; B=oldLen
     pop de ; stack=[newLen]; DE=dataPointer
     pop af ; stack=[]; A=newLen
     sub b ; A=diff=newLen-oldLen
     ret z ; ZF=1 if newLen==oldLen
-    jr c, shrinkRpnObjectList ; CF=1 if newLen<oldLen
-expandRpnObjectList:
+    jr c, shrinkRpnElementList ; CF=1 if newLen<oldLen
+expandRpnElementList:
     ld c, a ; C=diffLen
     push bc ; stack=[begin/diffLen]
     ld l, a
@@ -405,7 +427,7 @@ expandRpnObjectList:
     call rpnObjectLenToSize ; HL=expandSize=19*expandLen
     push hl
     bcall(_EnoughMem) ; CF=1 if insufficient
-    jr c, resizeRpnObjectListOutOfMem
+    jr c, resizeRpnElementListOutOfMem
     pop hl
     pop de ; stack=[begin/diffLen]; DE=dataPointer
     ; move pointer to the insertionAddress
@@ -437,10 +459,10 @@ expandRpnObjectList:
     ; clear the expanded slots
     ex de, hl ; DE=dataPointer
     pop bc ; stack=[]; B=begin; C=diffLen
-    call clearRpnObjectList
+    call clearRpnElementList
     or 1 ; ZF=0; CF=0
     ret
-shrinkRpnObjectList:
+shrinkRpnElementList:
     neg
     ld l, a
     ld h, 0 ; HL=shrinkLen
@@ -482,10 +504,10 @@ shrinkRpnObjectList:
     or a ; ZF=0
     scf ; CF=1
     ret
-resizeRpnObjectListNotFound:
+resizeRpnElementListNotFound:
     ; nothing we can do if the appVar isn't found
     bcall(_ErrUndefined) ; should never happen
-resizeRpnObjectListOutOfMem:
+resizeRpnElementListOutOfMem:
     bcall(_ErrMemory) ; could happen
 
 ;-----------------------------------------------------------------------------
@@ -527,9 +549,9 @@ rpnObjectIndexToElementPointer:
 ; segment. If 'index' is the 'len', then this is the value stored by the TI-OS
 ; in the appVarSize field at the beginning of the data segment:
 ;
-;   appVarSize = len*rpnObjectSizeOf
+;   appVarSize = len*rpnElementSizeOf
 ;                + 2 (crc16) + 2 (schemaVersion) + 2 (appId)
-;              = len*rpnObjectSizeOf + 6
+;              = len*rpnElementSizeOf + 6
 ;
 ; To get to the end of the appVar data segment, add this offset to the
 ; dataPointer. But don't forget to add another 2 byte to skip past the 2-byte
@@ -549,7 +571,7 @@ rpnObjectIndexToOffset:
     ret
 
 ; Description: Convert len of RpnObject to the byte size of those RpnObjects.
-; This *must* be updated if sizeof(RpnObject) changes.
+; This *must* be updated if sizeof(RpnElement) changes.
 ;
 ; Input: HL:u16=len
 ; Output: HL:u16=size=len*sizeof(RpnObject)=len*19
@@ -581,13 +603,17 @@ rpnObjectLenToSize:
 ;   - ErrUndefined if appVar not found
 ; Destroys: all
 stoRpnObject:
-    call getOp1RpnObjectType ; A=rpnObjectType
+    ; get objectType of OP1/OP2, this is one of the few (perhaps only) case
+    ; where HL must be saved before calling getOp1RpnObjectType().
+    push hl ; stack=[varName]
+    call getOp1RpnObjectType ; A=type; HL=OP1
+    pop hl ; stack=[]; HL=varName
     ld b, a ; B=rpnObjectType
     push bc ; stack=[index/objectType]
     ; save OP1/OP2 to FPS
     push hl ; stack=[index/objectType, varName]
     bcall(_PushRpnObject1) ; FPS=[OP1/OP2]
-    pop hl ; stack=[index, objectType]; HL=varName
+    pop hl ; stack=[index/objectType]; HL=varName
     ; find varName
     call move9ToOp1 ; OP1=varName
     bcall(_ChkFindSym) ; DE=dataPointer; CF=1 if not found
@@ -602,16 +628,16 @@ stoRpnObject:
     bcall(_PopRpnObject1) ; FPS=[]; OP1/OP2
     pop bc
     pop hl ; stack=[]; HL=elementPointer
-    ; copy from OP1/OP2 into AppVar element
-    ld (hl), b ; (hl)=objectType
-    inc hl
-    ld a, b
-    ex de, hl ; DE=elementPointer+1
+    ; copy RpnObject from OP1/OP2 into AppVar element
+    ld (hl), b ; (hl)=elementType
+    inc hl ; HL+=sizeof(RpnElementType)
+    ld a, b ; A=objectType (not affected by LDIR)
+    ex de, hl ; DE=elementPointer+sizeof(RpnElementType)
     ld hl, OP1
     ; copy first 9 bytes
     ld bc, rpnRealSizeOf
     ldir
-    ; return early if Real
+    ; return early if Real, TODO: Is the early return necessary?
     cp rpnObjectTypeReal
     ret z
     ; copy next 9 bytes for everything else
@@ -648,19 +674,17 @@ rclRpnObject:
     call rpnObjectIndexToElementPointer ; HL=elementPointer
     jr nc, rpnObjectOutOfBounds
     ; copy from AppVar to OP1/OP2
+    ld a, (hl) ; A=elementType
+    inc hl ; HL+=sizeof(RpnElementType)
     ld de, OP1
-    ld a, (hl) ; A=objectType
-    inc hl
-    and $1f
-    ; copy first 9 bytes
-    ld bc, rpnRealSizeOf
+    ld bc, rpnRealSizeOf ; copy first 9 bytes
     ldir
-    ; return early if Real
+    ; return early if Real; TODO: Is this early return necessary?
     cp rpnObjectTypeReal
     ret z
     ; copy next 9 bytes for everything else
     inc de
-    inc de ; OPx registers are 11 bytes, not 9 bytes
+    inc de ; OPx registers are 11 bytes, not 9 bytes, so skip 2 bytes
     ld bc, rpnRealSizeOf
     ldir
     ret

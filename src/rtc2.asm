@@ -92,12 +92,11 @@ RtcGetUTCDateTime:
 ; Description: Set the RTC time zone to the Offset{} or Real given in OP1.
 ; If a Real is given, it is converted into an Offset{}, then stored.
 ; Input: OP1:RpnOffset{} or Real
-; Output: none
+; Output: (rtcTimeZone) updated
+; Destroys: BC, HL, OP3
 RtcSetTimeZone:
-    ld hl, OP1
-    ld a, (hl)
-    and $1f
-    inc hl
+    call getOp1RpnObjectTypePageTwo ; A=type; HL=OP1
+    skipRpnObjectTypeHL
     cp rpnObjectTypeOffset
     jr z, rtcSetTimeZoneForOffset
     cp rpnObjectTypeReal
@@ -105,9 +104,9 @@ RtcSetTimeZone:
 rtcSetTimeZoneErr:
     bcall(_ErrDataType)
 rtcSetTimeZoneForReal:
-    ; convert OP1 to RpnOffset
+    ; convert OP1 to Offset in OP3
     ld hl, OP3
-    call offsetHourToOffset
+    call offsetHourToOffset ; HL:(Offset*)=OP3
 rtcSetTimeZoneForOffset:
     ld c, (hl)
     inc hl
@@ -119,11 +118,8 @@ rtcSetTimeZoneForOffset:
 ; Input: OP1:RpnOffset
 ; Output: none
 RtcGetTimeZone:
-    ld hl, OP1
     ld a, rpnObjectTypeOffset
-    ld (hl), a
-    inc hl
-    ;
+    call setOp1RpnObjectTypePageTwo ; HL=OP1+sizeof(type)
     ld bc, (rtcTimeZone)
     ld (hl), c
     inc hl
@@ -144,7 +140,7 @@ RtcSetClock:
     ex de, hl ; DE=rpnOffsetDateTime
     ; convert DateTime to dateTimeSeconds
     ld hl, OP1
-    inc de ; DE=offsetDateTime, skip type byte
+    skipRpnObjectTypeDE ; DE=offsetDateTime, skip type byte
     call offsetDateTimeToEpochSeconds ; HL:(i40*)=OP1=epochSeconds
     ; set the RTC
     call setRtcNowFromEpochSeconds
@@ -195,7 +191,7 @@ getRtcNowAsEpochSecondsLoop:
 ; epochSeconds.
 ; Input: HL:(i40*)=rtcSeconds
 ; Output: RTC updated
-; DestroysL A, BC, DE
+; Destroys: A, BC, DE
 setRtcNowFromEpochSeconds:
     ; convert relative epoch seconds to the epoch seconds used by the RTC
     ; according to its rtcTimeZone.

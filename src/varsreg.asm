@@ -23,7 +23,7 @@ regsVarName:
 initRegs:
     ld hl, regsVarName
     ld c, regsSizeDefault
-    jp initRpnObjectList
+    jp initRpnElementList
 
 ; Description: Clear all REGS elements.
 ; Input: none
@@ -33,12 +33,12 @@ clearRegs:
     call lenRegs ; A=len; DE=dataPointer
     ld c, a ; C=len
     ld b, 0 ; B=begin=0
-    jp clearRpnObjectList
+    jp clearRpnElementList
 
 ; Description: Should be called just before existing the app.
 closeRegs:
     ld hl, regsVarName
-    jp closeRpnObjectList
+    jp closeRpnElementList
 
 ; Description: Return the length of the REGS variable.
 ; Output:
@@ -47,7 +47,7 @@ closeRegs:
 ; Destroys: BC, HL
 lenRegs:
     ld hl, regsVarName
-    jp lenRpnObjectList
+    jp lenRpnElementList
 
 ; Description: Resize the storage registers to the new length in A.
 ; Input: A:u8=newLen
@@ -57,7 +57,7 @@ lenRegs:
 ;   - CF=1 if newLen<oldLen
 resizeRegs:
     ld hl, regsVarName
-    jp resizeRpnObjectList
+    jp resizeRpnElementList
 
 ;-----------------------------------------------------------------------------
 

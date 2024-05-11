@@ -5,7 +5,7 @@
 ; STAT register functions.
 ;-----------------------------------------------------------------------------
 
-; STAT registers using a separate appVar from the storage registers.
+; STAT registers using an RpnElementList separate from the storage registers.
 statRegSize equ 13
 statRegX equ 0
 statRegX2 equ 1
@@ -33,7 +33,7 @@ statVarName:
 initStatRegs:
     ld hl, statVarName
     ld c, statRegSize
-    jp initRpnObjectList
+    jp initRpnElementList
 
 ; Description: Clear all RPN83STA elements.
 ; Input: none
@@ -43,12 +43,12 @@ clearStatRegs:
     call lenStatRegs ; A=len; DE=dataPointer
     ld c, a ; C=len
     ld b, 0 ; B=begin=0
-    jp clearRpnObjectList
+    jp clearRpnElementList
 
 ; Description: Should be called just before existing the app.
 closeStatRegs:
     ld hl, statVarName
-    jp closeRpnObjectList
+    jp closeRpnElementList
 
 ; Description: Return the length of the RPN83STA variable.
 ; Output:
@@ -57,7 +57,7 @@ closeStatRegs:
 ; Destroys: BC, HL
 lenStatRegs:
     ld hl, statVarName
-    jp lenRpnObjectList
+    jp lenRpnElementList
 
 ;-----------------------------------------------------------------------------
 

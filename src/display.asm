@@ -800,7 +800,7 @@ clearShowAreaLoop:
 ;   - OP1:(Real|Complex|RpnObject)=value
 ; Destroys: A, HL, OP3-OP6
 printOP1:
-    call getOp1RpnObjectType ; A=objectType
+    call getOp1RpnObjectType ; A=type; HL=OP1
     ; The rpnObjecTypes are tested in order of decreasing frequency.
     cp rpnObjectTypeReal
     jr z, printOP1Real

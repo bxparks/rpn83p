@@ -5,7 +5,7 @@
 ; RPN Stack implemented using an appVar named RPN83STK.
 ;-----------------------------------------------------------------------------
 
-; RPN stack using an ObjectList which has the following structure:
+; RPN stack using an RpnElementList which has the following structure:
 ; X, Y, Z, T, LastX.
 stackSize equ 5
 stackXIndex equ 0 ; X
@@ -28,7 +28,7 @@ initStack:
     set rpnFlagsLiftEnabled, (iy + rpnFlags)
     ld hl, stackVarName
     ld c, stackSize
-    jp initRpnObjectList
+    jp initRpnElementList
 
 ; Description: Initialize LastX with the contents of 'ANS' variable from TI-OS
 ; if ANS is real or complex. Otherwise, do nothing.
@@ -52,12 +52,12 @@ clearStack:
     call lenStack ; A=len; DE=dataPointer
     ld c, a ; C=len
     ld b, 0 ; B=begin=0
-    jp clearRpnObjectList
+    jp clearRpnElementList
 
 ; Description: Should be called just before existing the app.
 closeStack:
     ld hl, stackVarName
-    jp closeRpnObjectList
+    jp closeRpnElementList
 
 ; Description: Return the length of the RPN stack variable.
 ; Output:
@@ -66,7 +66,7 @@ closeStack:
 ; Destroys: BC, HL
 lenStack:
     ld hl, stackVarName
-    jp lenRpnObjectList
+    jp lenRpnElementList
 
 ;-----------------------------------------------------------------------------
 ; Stack registers to and from OP1/OP2
@@ -327,8 +327,7 @@ pushToXY:
 ; Input: OP1/OP2:RpnObject
 ; Destroys: A, HL
 checkValidRpnObjectCP1:
-    ld a, (OP1)
-    and $1f
+    call getOp1RpnObjectType ; A=type; HL=OP1
     cp rpnObjectTypeReal
     jr z, checkValidNumber
     cp rpnObjectTypeComplex
@@ -356,8 +355,7 @@ checkValidNumber:
 ; Input: OP1/OP2:RpnObject
 ; Destroys: A, HL
 checkValidRealOP1:
-    ld a, (OP1)
-    and $1f
+    call getOp1RpnObjectType ; A=type; HL=OP1
     cp rpnObjectTypeReal
     jr nz, checkValidRealErr
     bcall(_CkValidNum) ; dstroys AF, HL

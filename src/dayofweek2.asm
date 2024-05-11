@@ -15,15 +15,14 @@
 ; Input: OP1:RpnDate=date
 ; Output: OP1:RpnDayOfWeek=dow
 ; Destroys: all, OP3-OP5
-DayOfWeek:
-    ld hl, OP1+1 ; skip type byte
+RpnDateToDayOfWeek:
+    ld hl, OP1+rpnObjectTypeSizeOf ; skip type byte
     call dateToDayOfWeekNumber ; A=[1,7]
+    ld b, a ; B=dayOfWeek
     ; convert to RpnDayOfWeek
-    ld hl, OP1+1
-    ld (hl), a
-    dec hl
     ld a, rpnObjectTypeDayOfWeek
-    ld (hl), a ; OP1:RpnDayOfWeek
+    call setOp1RpnObjectTypePageTwo ; HL=OP1+sizeof(type)
+    ld (hl), b ; (HL)=dayOfWeek
     ret
 
 ; Description: Convert Date record to the ISO dayOfWeekNumber (1=Monday,
@@ -70,7 +69,7 @@ addRpnDayOfWeekByDaysAdd:
     ; CP1=days, CP3=RpnDayOfWeek
     call convertOP1ToI40 ; HL=OP1=u40(days)
     ; convert CP3=RpnDayOfWeek to OP1=days
-    ld a, (OP3+1) ; A=dayOfWeekNumber
+    ld a, (OP3+rpnObjectTypeSizeOf) ; A=dayOfWeekNumber
     ld hl, OP2
     call setU40ToA ; HL=OP2=dayOfWeekNumber
     ; add days + dayOfWeekNumber
@@ -83,15 +82,14 @@ addRpnDayOfWeekByDaysAdd:
     ld a, 7
     call setU40ToA ; HL=OP3=7
     ex de, hl ; HL=dividend=OP2=resultDayOfWeekNumber; DE=divisor=OP3=7
-    ld bc, OP1+1 ; BC=OP1+1=remainder
+    ld bc, OP1+rpnObjectTypeSizeOf ; BC=remainder
     call divI40U40 ; BC=remainder, always positive
     ld l, c
-    ld h, b ; HL=OP1+1=remainder
+    ld h, b ; HL=remainder
     call incU40 ; convert back to 1-based dayOfWeekNumber
     ; Convert DayOfWeek to RpnDayOfWeek
-    dec hl ; HL=OP1=resultRpnDayOfWeek
     ld a, rpnObjectTypeDayOfWeek
-    ld (hl), a
+    call setOp1RpnObjectTypePageTwo ; HL=OP1+rpnObjectTypeSizeOf
     ret
 
 ;-----------------------------------------------------------------------------
@@ -113,9 +111,9 @@ subRpnDayOfWeekByDays:
     jr addRpnDayOfWeekByDaysAdd
 subRpnDayOfWeekByRpnDayOfWeek:
     ; convert both OP1 and OP3 to dayOfWeekNumber, then subtract
-    ld a, (OP3+1)
+    ld a, (OP3+rpnObjectTypeSizeOf)
     ld b, a ; B=OP3
-    ld a, (OP1+1)
+    ld a, (OP1+rpnObjectTypeSizeOf)
     sub a, b ; A=OP1-OP3=result
     ; convert to i40, then to float
     ld hl, OP1

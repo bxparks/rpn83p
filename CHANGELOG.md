@@ -37,6 +37,11 @@
           inputBuf
         - this allows easier correction of typos during long input
         - TODO: update docs and screenshots
+    - Encode RpnObject type field using 2 bytes instead of 1 byte.
+        - Allows additional RpnObjects in the future without violating the 83
+          Plus SDK documentation.
+        - **Warning**: Previously saved RPN stack and registers are incompatible
+          and are lost when upgrading to this version.
     - **Bug Fix** Add `schemaVersion` validation for RpnObjectList appVars.
     - **Bug Fix** Validate Duration objects entered through colon-modifier
       syntax

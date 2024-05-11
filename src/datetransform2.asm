@@ -21,8 +21,7 @@
 ; Throws: Err:DateType if input is the wrong type
 transformToOffsetDateTime:
     ; check if already RpnOffsetDateTime
-    ld a, (hl) ; A=rpnType
-    and $1f
+    call getHLRpnObjectTypePageTwo ; A=type
     cp rpnObjectTypeOffsetDateTime
     ret z
     ;
@@ -37,25 +36,23 @@ transformToOffsetDateTime:
     jr z, transformToOffsetDateTimeFromDate
     bcall(_ErrDataType)
 transformToOffsetDateTimeFromDateTime:
-    ld bc, rpnObjectTypeDateTimeSizeOf
+    ; BC=numBytesToClear; DE=offsetToBytesToClear
+    ld bc, rpnObjectTypeOffsetDateTimeSizeOf-rpnObjectTypeDateTimeSizeOf
+    ld de, rpnObjectTypeDateTimeSizeOf-rpnObjectTypeSizeOf
     jr transformToOffsetDateTimeClear
 transformToOffsetDateTimeFromDate:
-    ld bc, rpnObjectTypeDateSizeOf
+    ; BC=numBytesToClear; DE=offsetToBytesToClear
+    ld bc, rpnObjectTypeOffsetDateTimeSizeOf-rpnObjectTypeDateSizeOf
+    ld de, rpnObjectTypeDateSizeOf-rpnObjectTypeSizeOf
 transformToOffsetDateTimeClear:
     ld a, rpnObjectTypeOffsetDateTime
-    ld (hl), a ; rpnType=OffsetDateTime
-    add hl, bc ; HL=pointerToClearArea
-    ex de, hl ; DE=pointerToClearArea
-    ld hl, rpnObjectTypeOffsetDateTimeSizeOf
-    scf; CF=1
-    sbc hl, bc ; HL=numBytesToClear=rpnObjectTypeOffsetDateTimeSizeOf-sizeOf-1
-    ;
-    ld c, l
-    ld b, h ; BC=numBytesToClear
-    ld l, e
-    ld h, d ; HL=pointerToClearArea
-    inc de ; DE=HL+1
+    call setHLRpnObjectTypePageTwo ; HL+=sizeof(type)
+    add hl, de ; HL=pointerToClearArea
+    ld e, l
+    ld d, h ; DE=HL=pointerToClearArea
+    inc de ; DE=next byte (purposely overlapping during LDIR)
     ld (hl), 0 ; clear the first byte
+    dec bc ; first byte already cleared
     ldir ; clear the rest
     ;
     pop bc
@@ -70,8 +67,7 @@ transformToOffsetDateTimeClear:
 ; Preserves: BC, DE, HL
 ; Throws: Err:DateType if input is the wrong type
 transformToDate:
-    ld a, (hl) ; A=rpnType
-    and $1f
+    call getHLRpnObjectTypePageTwo ; A=type
     cp rpnObjectTypeTime
     ret z
     cp rpnObjectTypeDateTime
@@ -80,8 +76,10 @@ transformToDate:
     jr z, transformToDateConvert
     bcall(_ErrDataType)
 transformToDateConvert:
+    push hl
     ld a, rpnObjectTypeDate
-    ld (hl), a
+    call setHLRpnObjectTypePageTwo ; HL+=rpnObjectTypeSizeOf
+    pop hl
     ret
 
 ; Description: Convert RpnDateTime, RpnOffsetDateTime to RpnTime.
@@ -91,8 +89,7 @@ transformToDateConvert:
 ; Preserves: BC, DE, HL
 ; Throws: Err:DateType if input is the wrong type
 transformToTime:
-    ld a, (hl) ; A=rpnType
-    and $1f
+    call getHLRpnObjectTypePageTwo ; A=type
     cp rpnObjectTypeTime
     ret z
     cp rpnObjectTypeDateTime
@@ -105,18 +102,15 @@ transformToTimeConvert:
     push de ; stack=[BC,DE]
     push hl ; stack=[BC,DE,rpnTime]
     ld a, rpnObjectTypeTime
-    ld (hl), a
-    ; move pointers to last Time field
-    ld de, rpnObjectTypeDateTimeSizeOf-1
-    add hl, de ; HL=last byte of old Time object
-    ld e, l
-    ld d, h
-    dec de
-    dec de
-    dec de
-    dec de ; DE=last byte of new Time object
-    ld bc, 3
-    lddr ; shift Time fields by 4 bytes to the left
+    call setHLRpnObjectTypePageTwo ; HL+=rpnObjectTypeSizeOf
+    ; Move Time field into the beginning of the RpnObject. We can use the LDIR
+    ; instruction because the sizeof(Date) > sizeof(Time), so no overlap
+    ; occurs.
+    ex de, hl ; DE=destPointer
+    ld hl, rpnObjectTypeDateSizeOf-rpnObjectTypeSizeOf
+    add hl, de ; HL=srcPointer=timePointer
+    ld bc, rpnObjectTypeTimeSizeOf-rpnObjectTypeSizeOf
+    ldir ; shift Time fields
     ; clean up stack
     pop hl ; stack=[BC,DE]; HL=rpnTime
     pop de ; stack=[BC]; DE=restored
