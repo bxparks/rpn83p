@@ -136,7 +136,7 @@ rpn83pSchemaVersion equ 15
 ; Extending the type range beyond $ff will require other additional work. There
 ; a number of places in the code which assumes that the RpnObject type can be
 ; held in a single 8-bit register.
-rpnObjectListSchemaVersion equ 2
+rpnElementListSchemaVersion equ 2
 
 ; Define true and false. Something else in spasm-ng defines the 'true' and
 ; 'false' symbols but I cannot find the definitions for them in the
@@ -226,7 +226,7 @@ rpnObjectTypeDurationSizeOf equ 7
 ; max(sizeof(RpnReal), sizeof(RpnComplex), sizeof(RpnDate), ...).
 rpnObjectSizeOf equ rpnComplexSizeOf ; type + sizeof(complex)
 
-; An RpnElement is a single element in the RpnObjectList appVar that holds a
+; An RpnElement is a single element in the RpnElementList appVar that holds a
 ; single RpnObject. It has an extra type byte in front of the RpnObject, to
 ; allow us to extract its type without having to parse inside the RpnObject. If
 ; the rpnElementSizeOf is changed, the rpnObjectIndexToOffset() function must
