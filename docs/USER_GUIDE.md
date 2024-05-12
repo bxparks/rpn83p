@@ -82,12 +82,11 @@ RPN calculator app for the TI-83 Plus and TI-84 Plus inspired by the HP-42S.
 ## Introduction
 
 RPN83P is an [RPN](https://en.wikipedia.org/wiki/Reverse_Polish_notation)
-calculator app for the [TI-83 Plus](https://en.wikipedia.org/wiki/TI-83_series)
-(including the Silver Edition) and the [TI-84
-Plus](https://en.wikipedia.org/wiki/TI-84_Plus_series) (including the Silver
-Edition). The app is inspired mostly by the
-[HP-42S](https://en.wikipedia.org/wiki/HP-42S) calculator, with some significant
-features from the
+calculator app for the [TI-83 Plus
+series](https://en.wikipedia.org/wiki/TI-83_series) and the [TI-84 Plus
+series](https://en.wikipedia.org/wiki/TI-84_Plus_series) calculators. The app is
+inspired mostly by the [HP-42S](https://en.wikipedia.org/wiki/HP-42S)
+calculator, with some significant features from the
 [HP-12C](https://en.wikipedia.org/wiki/HP-12C) and the
 [HP-16C](https://en.wikipedia.org/wiki/HP-16C).
 
