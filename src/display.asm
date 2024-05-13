@@ -6,9 +6,9 @@
 ; of the 96(w)x64(h) LCD display, using a mixture of small and large fonts.
 ; The format looks roughly like this:
 ;
-; 0: Status: (left,up,down) (Deg|Rad) (Fix|Sci|Eng) ...
+; 0: Status: (left,up,down) (Fix|Sci|Eng) (Deg|Rad) ...
 ; 1: Debug: Debugging output, not used in app
-; 2: Error code
+; 2: Error or warning message
 ; 3: T: tttt
 ; 4: Z: zzzz
 ; 5: Y: yyyy
@@ -16,17 +16,20 @@
 ; 7: Menu: [menu1][menu2][menu3][menu4][menu5]
 ;-----------------------------------------------------------------------------
 
-; Display coordinates of the top status line
+; Display coordinates of the top status line. Use a 2px space between each
+; annunciator. The last 6px should not be used because the TIOS uses that space
+; for the 2ND and ALPHA modifier keys when the cursor is not shown. In other
+; words, statusEndPenCol should not be greater than 90 (96-6).
 statusCurRow equ 0
 statusCurCol equ 0
 statusPenRow equ statusCurRow*8
-statusMenuPenCol equ 0 ; "left, up, down" + 4px = 3*4+4 = 16px
-statusFloatModePenCol equ 16 ; "(FIX|SCI|ENG), N" + 4px = 4*4+4 = 20px
-statusTrigPenCol equ 36 ; "(DEG|RAD)" + 4px = 3*4+4 = 16px
-statusBasePenCol equ 52 ; (C|-) + 4px = 8px
-statusComplexModePenCol equ 60 ; "(aib|rLt|rLo)" + 4px = 3x4+4= 16px
-statusStackModePenCol equ 76 ; "xSTK" + 4px= 4x4+4 = 20px
-statusEndPenCol equ 96
+statusMenuPenCol equ 0 ; "left, up, down" + space = 3*4+2 = 14px
+statusFloatModePenCol equ 14 ; "(FIX|SCI|ENG{n}" + space = 4*4+2 = 18px
+statusTrigPenCol equ 32 ; "(DEG|RAD)" + space = 3*4+2 = 14px
+statusBasePenCol equ 46 ; (C|-) + space = 6px
+statusComplexModePenCol equ 52 ; "(aib|rLt|rLo)" + space = 3x4+2= 14px
+statusStackModePenCol equ 66 ; "{n}STK" + space = 4x4+2 = 18px
+statusEndPenCol equ 84
 
 ; Display coordinates of the debug line
 debugCurRow equ 1
