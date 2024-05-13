@@ -8,11 +8,11 @@
 ; RPN stack using an RpnElementList which has the following structure:
 ; X, Y, Z, T, LastX.
 stackSize equ 5
-stackXIndex equ 0 ; X
-stackYIndex equ 1 ; Y
-stackZIndex equ 2 ; Z
-stackTIndex equ 3 ; T
-stackLIndex equ 4 ; LastX
+stackLIndex equ 0 ; LastX
+stackXIndex equ 1 ; X
+stackYIndex equ 2 ; Y
+stackZIndex equ 3 ; Z
+stackTIndex equ 4 ; T
 
 stackVarName:
     .db AppVarObj, "RPN83STK" ; max 8 char, NUL terminated if < 8
@@ -390,21 +390,21 @@ liftStackIfEnabled:
 ; Output: T=Z; Z=Y; Y=X; X=X; OP1 preserved
 ; Destroys: all
 ; Preserves: OP1, OP2
-; TODO: Make this more efficient by taking advantage of the fact that stack
-; registers are contiguous.
 liftStack:
     bcall(_PushRpnObject1) ; FPS=[OP1/OP2]
-    ; T = Z
-    call rclZ
-    call stoT
-    ; Z = Y
-    call rclY
-    call stoZ
-    ; Y = X
-    call rclX
-    call stoY
-    ; X = X
+    ld b, stackTIndex
+    ld c, stackZIndex
+    ld hl, stackVarName
+    call rpnObjectIndexesToPointers ; DE=pointerT; HL=pointerZ
+    ld bc, rpnElementSizeOf-1
+    add hl, bc
+    ex de, hl
+    add hl, bc
+    ex de, hl ; DE, HL=pointer to last byte of RpnElement
+    ld bc, rpnElementSizeOf*3
+    lddr
     bcall(_PopRpnObject1) ; FPS=[]; OP1/OP2=OP1/OP2
+    set dirtyFlagsStack, (iy + dirtyFlags)
     ret
 
 ;-----------------------------------------------------------------------------
@@ -414,75 +414,97 @@ liftStack:
 ; Output: X=Y; Y=Z; Z=T; T=T; OP1 preserved
 ; Destroys: all
 ; Preserves: OP1, OP2
-; TODO: Make this more efficient by taking advantage of the fact that stack
-; registers are contiguous.
 dropStack:
     bcall(_PushRpnObject1) ; FPS=[OP1/OP2]
-    ; X = Y
-    call rclY
-    call stoX
-    ; Y = Z
-    call rclZ
-    call stoY
-    ; Z = T
-    call rclT
-    call stoZ
-    ; T = T
+    ld b, stackXIndex
+    ld c, stackYIndex
+    ld hl, stackVarName
+    call rpnObjectIndexesToPointers ; DE=pointerX; HL=pointerY
+    ld bc, rpnElementSizeOf*3
+    ldir
     bcall(_PopRpnObject1) ; FPS=[]; OP1/OP2=OP1/OP2
+    set dirtyFlagsStack, (iy + dirtyFlags)
     ret
 
 ;-----------------------------------------------------------------------------
 
-; Description: Roll the RPN stack *down*.
+; Description: Roll the RPN stack *down*, rotating X into T.
 ; Input: none
 ; Output: X=Y; Y=Z; Z=T; T=X
 ; Destroys: all, OP1, OP2
 ; Preserves: none
-; TODO: Make this more efficient by taking advantage of the fact that stack
-; registers are contiguous.
 rollDownStack:
-    ; save X in FPS
-    call rclX
-    bcall(_PushRpnObject1) ; FPS=[OP1/OP2]
-    ; X = Y
-    call rclY
-    call stoX
-    ; Y = Z
-    call rclZ
-    call stoY
-    ; Z = T
-    call rclT
-    call stoZ
-    ; T = X
-    bcall(_PopRpnObject1) ; FPS=[]; OP1/OP2=OP1/OP2
-    call stoT
+    ld b, stackXIndex
+    ld c, stackYIndex
+    ld hl, stackVarName
+    call rpnObjectIndexesToPointers ; DE=pointerX; HL=pointerY
+    ; save X to OP1
+    push hl ; stack=[pointerY]
+    push de ; stack=[pointerY,pointerX]
+    ex de, hl ; HL=pointerX
+    call moveRpnElementToOp1
+    pop de
+    pop hl
+    ; drop stack
+    ld bc, rpnElementSizeOf*3
+    ldir ; DE=pointerT
+    ; move OP1 to T
+    call moveRpnElementFromOp1
+    set dirtyFlagsStack, (iy + dirtyFlags)
     ret
 
 ;-----------------------------------------------------------------------------
 
-; Description: Roll the RPN stack *up*.
+; Description: Roll the RPN stack *up*, rotating T into X.
 ; Input: none
 ; Output: T=Z; Z=Y; Y=X; X=T
 ; Destroys: all, OP1, OP2
 ; Preserves: none
-; TODO: Make this more efficient by taking advantage of the fact that stack
-; registers are contiguous.
 rollUpStack:
-    ; save T in FPS
-    call rclT
-    bcall(_PushRpnObject1) ; FPS=[OP1/OP2]
-    ; T = Z
-    call rclZ
-    call stoT
-    ; Z = Y
-    call rclY
-    call stoZ
-    ; Y = X
-    call rclX
-    call stoY
-    ; X = T
-    bcall(_PopRpnObject1) ; FPS=[]; OP1/OP2=OP1/OP2
-    call stoX
+    ld b, stackTIndex
+    ld c, stackZIndex
+    ld hl, stackVarName
+    call rpnObjectIndexesToPointers ; DE=pointerT; HL=pointerZ
+    ; save T to OP1
+    push hl ; stack=[pointerZ]
+    push de ; stack=[pointerZ,pointerT]
+    ex de, hl ; HL=pointerT
+    call moveRpnElementToOp1
+    pop de
+    pop hl
+    ; lift stack
+    ld bc, rpnElementSizeOf-1
+    add hl, bc
+    ex de, hl
+    add hl, bc
+    ex de, hl ; DE, HL=pointer to last byte of RpnElement
+    ld bc, rpnElementSizeOf*3
+    lddr ; HL=pointerX-1
+    ; move OP1 to X
+    ex de, hl ; DE=pointerX-1
+    inc de ; DE=pointerX
+    call moveRpnElementFromOp1
+    set dirtyFlagsStack, (iy + dirtyFlags)
+    ret
+
+;-----------------------------------------------------------------------------
+
+; Description: Move RpnElement from HL to OP1. Assumes rpnElementSizeOf<=22.
+; Destroys: BC, DE, HL
+; Preserves: A
+moveRpnElementToOp1:
+    ld de, OP1
+    ld bc, rpnElementSizeOf
+    ldir
+    ret
+
+; Description: Move RpnElement from OP1 to DE. Assumes rpnElementSizeOf<=22.
+; Destroys: BC, DE, HL
+; Preserves: A
+moveRpnElementFromOp1:
+    ld hl, OP1
+    ld bc, rpnElementSizeOf
+    ldir
     ret
 
 ;-----------------------------------------------------------------------------
@@ -492,12 +514,11 @@ rollUpStack:
 ; Output: X=Y; Y=X
 ; Destroys: all, OP1, OP2
 exchangeXYStack:
-    ; TODO: Make this a lot faster by directly swapping the memory allocated to
-    ; X and Y within the appVar.
-    call rclX
-    bcall(_PushRpnObject1) ; FPS=[OP1/OP2]
-    call rclY
-    call stoX
-    bcall(_PopRpnObject1) ; FPS=[]; OP1/OP2=OP1/OP2
-    call stoY
+    ld b, stackXIndex
+    ld c, stackYIndex
+    ld hl, stackVarName
+    call rpnObjectIndexesToPointers ; DE=pointerX; HL=pointerY
+    ld b, rpnElementSizeOf
+    call exchangeLoop
+    set dirtyFlagsStack, (iy + dirtyFlags)
     ret

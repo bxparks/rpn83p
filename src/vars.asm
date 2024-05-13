@@ -590,6 +590,38 @@ rpnElementLenToSize:
 
 ;-----------------------------------------------------------------------------
 
+; Description: Given 2 indexes into a RpnElementList appVar, return the
+; RpnElement pointers.
+; Input:
+;   - B:u8=index1
+;   - C:u8=index2
+;   - HL:(const char*)=appVarName
+; Output:
+;   - DE:(void*)=elementPointer1
+;   - HL:(void*)=elementPointer2
+; Destroys: all, OP1
+rpnObjectIndexesToPointers:
+    ; find varName
+    push bc ; stack=[BC]
+    call move9ToOp1 ; OP1=varName
+    bcall(_ChkFindSym) ; DE=dataPointer; CF=1 if not found
+    jr c, rpnElementListUndefined ; Not found, this should never happen.
+    ; translate index2 into elementPointer
+    pop bc ; stack=[]; B=index1; C=index2
+    call rpnElementIndexToElementPointer ; HL=pointer2
+    jr nc, rpnElementListOutOfBounds
+    push hl ; stack=[pointer2]
+    ; translate index1 into elementPointer
+    ld c, b ; C=index1
+    call rpnElementIndexToElementPointer ; HL=pointer1
+    jr nc, rpnElementListOutOfBounds
+    ;
+    ex de, hl ; DE=pointer1
+    pop hl ; stack=[]; HL=pointer2
+    ret
+
+;-----------------------------------------------------------------------------
+
 ; Description: Store the OP1/OP2 rpnObject to the given AppVar at index C.
 ; Input:
 ;   - OP1,OP2:RpnObject
