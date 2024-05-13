@@ -25,7 +25,8 @@ statusFloatModePenCol equ 16 ; "(FIX|SCI|ENG), N" + 4px = 4*4+4 = 20px
 statusTrigPenCol equ 36 ; "(DEG|RAD)" + 4px = 3*4+4 = 16px
 statusBasePenCol equ 52 ; (C|-) + 4px = 8px
 statusComplexModePenCol equ 60 ; "(aib|rLt|rLo)" + 4px = 3x4+4= 16px
-statusEndPenCol equ 76
+statusStackModePenCol equ 76 ; "xSTK" + 4px= 4x4+4 = 20px
+statusEndPenCol equ 96
 
 ; Display coordinates of the debug line
 debugCurRow equ 1
@@ -183,6 +184,7 @@ displayStatus:
     call displayStatusTrig
     call displayStatusBase
     call displayStatusComplexMode
+    call displayStatusStackMode
     ret
 
 ;-----------------------------------------------------------------------------
@@ -361,6 +363,23 @@ displayStatusComplexModeRect:
     ; complexModeRect
     ld hl, msgComplexModeRectLabel
 displayStatusComplexModePutS:
+    call vPutS
+    ret
+
+;-----------------------------------------------------------------------------
+
+; Description: Display the RPN Stack mode.
+displayStatusStackMode:
+    bit dirtyFlagsStatus, (iy + dirtyFlags)
+    ret z
+    ld hl, statusPenRow*$100 + statusStackModePenCol; $(penRow)(penCol)
+    ld (PenCol), hl
+    ; print the stackSize variable first
+    ld a, (stackSize)
+    add a, '0'
+    bcall(_VPutMap)
+    ; then the label
+    ld hl, msgStkLabel
     call vPutS
     ret
 
@@ -1407,6 +1426,10 @@ msgDegLabel:
     .db "DEG", 0
 msgRadLabel:
     .db "RAD", 0
+
+; RPN stack mode indicators.
+msgStkLabel:
+    .db "STK", 0
 
 ; TVM debug labels
 msgTvmNLabel:

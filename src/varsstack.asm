@@ -6,8 +6,7 @@
 ;-----------------------------------------------------------------------------
 
 ; RPN stack using an RpnElementList which has the following structure:
-; X, Y, Z, T, LastX.
-stackListSize equ 5
+; LastX, X, Y, Z, T.
 stackLIndex equ 0 ; LastX
 stackXIndex equ 1 ; X
 stackYIndex equ 2 ; Y
@@ -23,12 +22,18 @@ stackVarName:
 ; Output:
 ;   - STK created and cleared if it doesn't exist
 ;   - stack lift enabled
+;   - (stackSize)=len(RPN83PSTK)-1
 ; Destroys: all
 initStack:
     set rpnFlagsLiftEnabled, (iy + rpnFlags)
     ld hl, stackVarName
-    ld c, stackListSize
-    jp initRpnElementList
+    ld c, stackSizeDefault+1 ; add 1 for LastX register
+    call initRpnElementList
+    ; cache the stack size
+    call lenStack ; A=stackLen
+    dec a ; ignore LastX register in element 0
+    ld (stackSize), a
+    ret
 
 ; Description: Initialize LastX with the contents of 'ANS' variable from TI-OS
 ; if ANS is real or complex. Otherwise, do nothing.
