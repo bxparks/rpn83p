@@ -7,7 +7,7 @@
 
 ; RPN stack using an RpnElementList which has the following structure:
 ; X, Y, Z, T, LastX.
-stackSize equ 5
+stackListSize equ 5
 stackLIndex equ 0 ; LastX
 stackXIndex equ 1 ; X
 stackYIndex equ 2 ; Y
@@ -27,7 +27,7 @@ stackVarName:
 initStack:
     set rpnFlagsLiftEnabled, (iy + rpnFlags)
     ld hl, stackVarName
-    ld c, stackSize
+    ld c, stackListSize
     jp initRpnElementList
 
 ; Description: Initialize LastX with the contents of 'ANS' variable from TI-OS

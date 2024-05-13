@@ -6,7 +6,7 @@
 ; of the 96(w)x64(h) LCD display, using a mixture of small and large fonts.
 ; The format looks roughly like this:
 ;
-; 0: Status: (left,up,down) (Deg|Rad) (Fix|Sci|Eng) (Dec|Hex|Oct|Bin)
+; 0: Status: (left,up,down) (Deg|Rad) (Fix|Sci|Eng) ...
 ; 1: Debug: Debugging output, not used in app
 ; 2: Error code
 ; 3: T: tttt
@@ -20,12 +20,12 @@
 statusCurRow equ 0
 statusCurCol equ 0
 statusPenRow equ statusCurRow*8
-statusMenuPenCol equ 0 ; left, up, down, 2px = 3*4 + 2 = 14px
-statusFloatModePenCol equ 14 ; (FIX|SCI|ENG), (, N, ), 4px = 5*4+2*3 = 26px
-statusTrigPenCol equ 40 ; (DEG|RAD), 4px = 4*4 = 16px
-statusBasePenCol equ 56 ; (C|-), 4px + 4px
-statusComplexModePenCol equ 64 ; (aib|rLt|rLo), 4x4px = 16px
-statusEndPenCol equ 80
+statusMenuPenCol equ 0 ; "left, up, down" + 4px = 3*4+4 = 16px
+statusFloatModePenCol equ 16 ; "(FIX|SCI|ENG), N" + 4px = 4*4+4 = 20px
+statusTrigPenCol equ 36 ; "(DEG|RAD)" + 4px = 3*4+4 = 16px
+statusBasePenCol equ 52 ; (C|-) + 4px = 8px
+statusComplexModePenCol equ 60 ; "(aib|rLt|rLo)" + 4px = 3x4+4= 16px
+statusEndPenCol equ 76
 
 ; Display coordinates of the debug line
 debugCurRow equ 1
@@ -277,8 +277,6 @@ displayStatusFloatModeEng:
 displayStatusFloatModeBracketDigit:
     ; Print the number of digit
     call vPutS
-    ld a, SlParen
-    bcall(_VPutMap)
     ld a, (fmtDigits)
     cp 10
     jr nc, displayStatusFloatModeFloating
@@ -287,8 +285,6 @@ displayStatusFloatModeBracketDigit:
 displayStatusFloatModeFloating:
     ld a, '-'
 displayStatusFloatModeDigit:
-    bcall(_VPutMap)
-    ld a, SrParen
     bcall(_VPutMap)
     ret
 
