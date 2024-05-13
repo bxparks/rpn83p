@@ -229,7 +229,7 @@ rpnObjectSizeOf equ rpnComplexSizeOf ; type + sizeof(complex)
 ; An RpnElement is a single element in the RpnElementList appVar that holds a
 ; single RpnObject. It has an extra type byte in front of the RpnObject, to
 ; allow us to extract its type without having to parse inside the RpnObject. If
-; the rpnElementSizeOf is changed, the rpnObjectIndexToOffset() function must
+; the rpnElementSizeOf is changed, the rpnElementIndexToOffset() function must
 ; be updated.
 rpnElementSizeOf equ rpnObjectSizeOf+1
 

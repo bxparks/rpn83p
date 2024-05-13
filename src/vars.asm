@@ -83,15 +83,14 @@
 ;   - ChkFindSym() returns a data pointer. The first 2 bytes is the appVarSize
 ;   field.
 ;   - The appVarSize does *not* include the 2 bytes consumed by the appVarSize
-;   field itself, see rpnObjectIndexToOffset().
+;   field itself, see rpnElementIndexToOffset().
 ;   - CreateAppVar() does *not* check for duplicate variable names.
 ;-----------------------------------------------------------------------------
 
 ;-----------------------------------------------------------------------------
 ; General RpnObject routines.
 ;
-; Each RpnObject is large enough to hold a Real or Complex number. If the size
-; of RpnObject changes, then rpnObjectIndexToOffset() must be updated.
+; Each RpnObject is large enough to hold a Real or Complex number.
 ;
 ; struct RpnFloat { // sizeof(RpnFloat)==9
 ;   uint8_t floatType;
@@ -186,7 +185,7 @@ initRpnElementListCreate:
     ; We are here if the appVar does not exist. So create.
     ; OP1=appVarName; C=len
     push bc ; stack=[len]
-    call rpnObjectIndexToOffset ; HL=expectedSize
+    call rpnElementIndexToOffset ; HL=expectedSize
     bcall(_CreateAppVar) ; DE=dataPointer
     pop bc ; stack=[]; C=len
 initRpnElementListHeader:
@@ -232,7 +231,7 @@ clearRpnElementList:
     pop bc ; stack=[dataPointer]; B=begin; C=len
     ld a, c ; A=len
     ld c, b ; C=begin
-    call rpnObjectIndexToOffset ; HL=offset; preserves A,BC,DE
+    call rpnElementIndexToOffset ; HL=offset; preserves A,BC,DE
     ld c, a ; C=len
     pop de ; stack=[]; DE=dataPointer
     inc de
@@ -362,7 +361,7 @@ closeRpnElementList:
 lenRpnElementList:
     call move9ToOp1 ; OP1=varName
     bcall(_ChkFindSym) ; DE=dataPointer; CF=1 if not found
-    jr c, lenRpnObjectNotFound
+    jr c, lenRpnElementListNotFound
 calcLenRpnElementList:
     ex de, hl ; HL=dataPointer
     ld e, (hl)
@@ -385,9 +384,9 @@ calcLenRpnElementList:
     ld a, l
     ret
 lenRpnElementListInvalid:
-    ; sizeof(var)/sizeof(RpnObject) has a non-zero remainder
+    ; sizeof(var)/sizeof(RpnElement) has a non-zero remainder
     bcall(_ErrInvalid) ; should never happen
-lenRpnObjectNotFound:
+lenRpnElementListNotFound:
     ; nothing we can do if the appVar isn't found
     bcall(_ErrUndefined) ; should never happen
 
@@ -424,7 +423,7 @@ expandRpnElementList:
     ld h, 0 ; HL=expandLen
     ; calculate expandSize
     push de ; stack=[begin/diffLen,dataPointer]
-    call rpnObjectLenToSize ; HL=expandSize=19*expandLen
+    call rpnElementLenToSize ; HL=expandSize=19*expandLen
     push hl
     bcall(_EnoughMem) ; CF=1 if insufficient
     jr c, resizeRpnElementListOutOfMem
@@ -468,7 +467,7 @@ shrinkRpnElementList:
     ld h, 0 ; HL=shrinkLen
     ; calculate shrinkSize
     push de ; stack=[dataPointer]
-    call rpnObjectLenToSize ; HL=shrinkSize=19*shrinkLen
+    call rpnElementLenToSize ; HL=shrinkSize=19*shrinkLen
     pop de ; stack=[]; DE=dataPointer
     push de ; stack=[dataPointer]
     ; move pointer to the deletionAddress
@@ -512,7 +511,7 @@ resizeRpnElementListOutOfMem:
 
 ;-----------------------------------------------------------------------------
 
-; Description: Convert rpnObject index to the array element pointer, including
+; Description: Convert rpnElement index to the array element pointer, including
 ; 2 bytes for the appVarSize (managed by the OS), 2 bytes for the CRC16
 ; checksum, and 2 bytes for the appId.
 ; Input:
@@ -523,8 +522,8 @@ resizeRpnElementListOutOfMem:
 ;   - HL:(u8*)=elementPointer
 ;   - CF=1 if within bounds, otherwise 0
 ; Preserves: A, BC, DE
-rpnObjectIndexToElementPointer:
-    call rpnObjectIndexToOffset ; HL=dataOffset
+rpnElementIndexToElementPointer:
+    call rpnElementIndexToOffset ; HL=dataOffset
     push bc ; stack=[BC]
     push de ; stack=[BC,DE]
     ; check pointer out of bounds
@@ -560,23 +559,23 @@ rpnObjectIndexToElementPointer:
 ; Input: C:u8=index or len
 ; Output: HL:u16=offset or size
 ; Preserves: A, BC, DE
-rpnObjectIndexToOffset:
+rpnElementIndexToOffset:
     push de
     ld l, c
     ld h, 0 ; HL=len
-    call rpnObjectLenToSize ; HL=19*HL
+    call rpnElementLenToSize ; HL=19*HL
     ld de, 6
     add hl, de ; HL=sum=19*len+6
     pop de
     ret
 
-; Description: Convert len of RpnObject to the byte size of those RpnObjects.
-; This *must* be updated if sizeof(RpnElement) changes.
+; Description: Convert len of RpnElement to the byte size of those
+; RpnRpnElements. This *must* be updated if sizeof(RpnElement) changes.
 ;
 ; Input: HL:u16=len
-; Output: HL:u16=size=len*sizeof(RpnObject)=len*19
+; Output: HL:u16=size=len*sizeof(RpnElement)=len*19
 ; Destroys: DE
-rpnObjectLenToSize:
+rpnElementLenToSize:
     ld e, l
     ld d, h ; DE=len
     add hl, hl ; HL=sum=2*len
@@ -617,11 +616,11 @@ stoRpnObject:
     ; find varName
     call move9ToOp1 ; OP1=varName
     bcall(_ChkFindSym) ; DE=dataPointer; CF=1 if not found
-    jr c, rpnObjectUndefined ; Not found, this should never happen.
+    jr c, rpnElementListUndefined ; Not found, this should never happen.
     ; find elementPointer of index
     pop bc ; stack=[]; B=objectType; C=index
-    call rpnObjectIndexToElementPointer ; HL=elementPointer
-    jr nc, rpnObjectOutOfBounds
+    call rpnElementIndexToElementPointer ; HL=elementPointer
+    jr nc, rpnElementListOutOfBounds
     ; retrieve OP1/OP2 from FPS
     push hl ; stack=[elementPointer]
     push bc
@@ -647,9 +646,9 @@ stoRpnObject:
     ldir
     ret
 
-rpnObjectOutOfBounds:
+rpnElementListOutOfBounds:
     bcall(_ErrDimension)
-rpnObjectUndefined:
+rpnElementListUndefined:
     bcall(_ErrUndefined)
 
 ; Description: Return the RPN object in OP1,OP2
@@ -669,10 +668,10 @@ rclRpnObject:
     call move9ToOp1 ; OP1=varName
     bcall(_ChkFindSym) ; DE=dataPointer; CF=1 if not found
     pop bc ; C=[index]
-    jr c, rpnObjectUndefined
+    jr c, rpnElementListUndefined
     ; find elementPointer of index
-    call rpnObjectIndexToElementPointer ; HL=elementPointer
-    jr nc, rpnObjectOutOfBounds
+    call rpnElementIndexToElementPointer ; HL=elementPointer
+    jr nc, rpnElementListOutOfBounds
     ; copy from AppVar to OP1/OP2
     ld a, (hl) ; A=elementType
     inc hl ; HL+=sizeof(RpnElementType)
