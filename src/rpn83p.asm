@@ -292,9 +292,17 @@ handlerCode equ appStateFmtDigits + 1 ; u8
 ; non-zero.
 errorCode equ handlerCode + 1 ; u8
 
+; Size of RPN stack. This is a cache of the stack size for display purposes.
+; The source of truth is the size of the RPN83PSTK appVar. This stackSize
+; variable will be updated whenever the appVar is resized.
+stackSize equ errorCode + 1 ; u8, [4,8] allowed
+stackSizeDefault equ 4 ; factory default stack size
+stackSizeMin equ 4
+stackSizeMax equ 8
+
 ; Current base mode number. Allowed values are: 2, 8, 10, 16. Anything else is
 ; interpreted as 10.
-baseNumber equ errorCode + 1 ; u8
+baseNumber equ stackSize + 1 ; u8
 
 ; Base mode carry flag. Bit 0.
 baseCarryFlag equ baseNumber + 1 ; boolean

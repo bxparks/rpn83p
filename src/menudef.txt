@@ -330,6 +330,9 @@ MenuGroup root mRoot [
       MenuRow [
         MenuItem RSIZ mSetRegSize
         MenuItem RSZ<Squestion> mGetRegSize
+        MenuItem * *
+        MenuItem SSIZ mSetStackSize
+        MenuItem SSZ<Squestion> mGetStackSize
       ]
       MenuRow [
         MenuItemAlt <Scomma>EE <Scomma>EE<Sblock> mCommaEENormal

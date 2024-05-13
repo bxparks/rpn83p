@@ -5,8 +5,15 @@
         - `MODE > RSIZ` command supports a minimum of 25 to a maximum of 100
         - `MODE > RSZ?` returns the current size of storage registers
         - size of the `RPN83REG` appVar varies:
-            - 496 bytes at RSIZ=25
-            - 1921 bytes at RSIZ=100
+            - 498 bytes at RSIZ=25
+            - 1923 bytes at RSIZ=100
+    - Supports resizing the RPN stack size
+        - `MODE > SSIZ` command supports a minimum of 4 to a maximum of 8
+        - `MODE > SSZ?` returns the current size of stack
+        - size of the `RPN83STK` appVar varies:
+            - 118 bytes at SSIZ=4
+            - 194 bytes at SSIZ=8
+        - TODO: Update USER_GUIDE.md
     - Support arithmetic operations on Offset
         - {Offset} + {hours}, {hours} + {Offset}
         - {Offset} - {hours}

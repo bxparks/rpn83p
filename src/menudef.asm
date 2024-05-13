@@ -1793,23 +1793,23 @@ mBlank189Id equ 189
     .dw 0 ; rowBeginId or altNameId
     .dw mNullHandler ; handler (predefined)
     .dw 0 ; nameSelector
-mBlank190:
-mBlank190Id equ 190
-    .dw mBlank190Id ; id
+mSetStackSize:
+mSetStackSizeId equ 190
+    .dw mSetStackSizeId ; id
     .dw mModeId ; parentId
-    .dw mNullNameId ; nameId
+    .dw mSetStackSizeNameId ; nameId
     .db 0 ; numRows
     .dw 0 ; rowBeginId or altNameId
-    .dw mNullHandler ; handler (predefined)
+    .dw mSetStackSizeHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
-mBlank191:
-mBlank191Id equ 191
-    .dw mBlank191Id ; id
+mGetStackSize:
+mGetStackSizeId equ 191
+    .dw mGetStackSizeId ; id
     .dw mModeId ; parentId
-    .dw mNullNameId ; nameId
+    .dw mGetStackSizeNameId ; nameId
     .db 0 ; numRows
     .dw 0 ; rowBeginId or altNameId
-    .dw mNullHandler ; handler (predefined)
+    .dw mGetStackSizeHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
 ; MenuGroup MODE: children: row 3
 mCommaEENormal:
@@ -2553,7 +2553,7 @@ mEpochGetCustomId equ 271
     .dw 0 ; nameSelector
 
 ; Table of 2-byte pointers to names in the pool of strings below.
-mMenuNameTableSize equ 271
+mMenuNameTableSize equ 273
 mMenuNameTable:
 mNullNameId equ 0
     .dw mNullName
@@ -2947,155 +2947,159 @@ mSetRegSizeNameId equ 194
     .dw mSetRegSizeName
 mGetRegSizeNameId equ 195
     .dw mGetRegSizeName
-mCommaEENormalNameId equ 196
+mSetStackSizeNameId equ 196
+    .dw mSetStackSizeName
+mGetStackSizeNameId equ 197
+    .dw mGetStackSizeName
+mCommaEENormalNameId equ 198
     .dw mCommaEENormalName
-mCommaEENormalAltNameId equ 197
+mCommaEENormalAltNameId equ 199
     .dw mCommaEENormalAltName
-mCommaEESwappedNameId equ 198
+mCommaEESwappedNameId equ 200
     .dw mCommaEESwappedName
-mCommaEESwappedAltNameId equ 199
+mCommaEESwappedAltNameId equ 201
     .dw mCommaEESwappedAltName
-mFormatRecordRawNameId equ 200
+mFormatRecordRawNameId equ 202
     .dw mFormatRecordRawName
-mFormatRecordRawAltNameId equ 201
+mFormatRecordRawAltNameId equ 203
     .dw mFormatRecordRawAltName
-mFormatRecordStringNameId equ 202
+mFormatRecordStringNameId equ 204
     .dw mFormatRecordStringName
-mFormatRecordStringAltNameId equ 203
+mFormatRecordStringAltNameId equ 205
     .dw mFormatRecordStringAltName
-mStackRollUpNameId equ 204
+mStackRollUpNameId equ 206
     .dw mStackRollUpName
-mStackRollDownNameId equ 205
+mStackRollDownNameId equ 207
     .dw mStackRollDownName
-mStackExchangeXYNameId equ 206
+mStackExchangeXYNameId equ 208
     .dw mStackExchangeXYName
-mFToCNameId equ 207
+mFToCNameId equ 209
     .dw mFToCName
-mCToFNameId equ 208
+mCToFNameId equ 210
     .dw mCToFName
-mInhgToHpaNameId equ 209
+mInhgToHpaNameId equ 211
     .dw mInhgToHpaName
-mHpaToInhgNameId equ 210
+mHpaToInhgNameId equ 212
     .dw mHpaToInhgName
-mMiToKmNameId equ 211
+mMiToKmNameId equ 213
     .dw mMiToKmName
-mKmToMiNameId equ 212
+mKmToMiNameId equ 214
     .dw mKmToMiName
-mFtToMNameId equ 213
+mFtToMNameId equ 215
     .dw mFtToMName
-mMToFtNameId equ 214
+mMToFtNameId equ 216
     .dw mMToFtName
-mInToCmNameId equ 215
+mInToCmNameId equ 217
     .dw mInToCmName
-mCmToInNameId equ 216
+mCmToInNameId equ 218
     .dw mCmToInName
-mMilToMicronNameId equ 217
+mMilToMicronNameId equ 219
     .dw mMilToMicronName
-mMicronToMilNameId equ 218
+mMicronToMilNameId equ 220
     .dw mMicronToMilName
-mLbsToKgNameId equ 219
+mLbsToKgNameId equ 221
     .dw mLbsToKgName
-mKgToLbsNameId equ 220
+mKgToLbsNameId equ 222
     .dw mKgToLbsName
-mOzToGNameId equ 221
+mOzToGNameId equ 223
     .dw mOzToGName
-mGToOzNameId equ 222
+mGToOzNameId equ 224
     .dw mGToOzName
-mGalToLNameId equ 223
+mGalToLNameId equ 225
     .dw mGalToLName
-mLToGalNameId equ 224
+mLToGalNameId equ 226
     .dw mLToGalName
-mFlozToMlNameId equ 225
+mFlozToMlNameId equ 227
     .dw mFlozToMlName
-mMlToFlozNameId equ 226
+mMlToFlozNameId equ 228
     .dw mMlToFlozName
-mCalToKjNameId equ 227
+mCalToKjNameId equ 229
     .dw mCalToKjName
-mKjToCalNameId equ 228
+mKjToCalNameId equ 230
     .dw mKjToCalName
-mHpToKwNameId equ 229
+mHpToKwNameId equ 231
     .dw mHpToKwName
-mKwToHpNameId equ 230
+mKwToHpNameId equ 232
     .dw mKwToHpName
-mLeapYearNameId equ 231
+mLeapYearNameId equ 233
     .dw mLeapYearName
-mDayOfWeekNameId equ 232
+mDayOfWeekNameId equ 234
     .dw mDayOfWeekName
-mDateToEpochDaysNameId equ 233
+mDateToEpochDaysNameId equ 235
     .dw mDateToEpochDaysName
-mEpochDaysToDateNameId equ 234
+mEpochDaysToDateNameId equ 236
     .dw mEpochDaysToDateName
-mDateRelatedToSecondsNameId equ 235
+mDateRelatedToSecondsNameId equ 237
     .dw mDateRelatedToSecondsName
-mSecondsToDurationNameId equ 236
+mSecondsToDurationNameId equ 238
     .dw mSecondsToDurationName
-mSecondsToTimeNameId equ 237
+mSecondsToTimeNameId equ 239
     .dw mSecondsToTimeName
-mEpochSecondsToAppDateTimeNameId equ 238
+mEpochSecondsToAppDateTimeNameId equ 240
     .dw mEpochSecondsToAppDateTimeName
-mEpochSecondsToUTCDateTimeNameId equ 239
+mEpochSecondsToUTCDateTimeNameId equ 241
     .dw mEpochSecondsToUTCDateTimeName
-mTimeZoneToHoursNameId equ 240
+mTimeZoneToHoursNameId equ 242
     .dw mTimeZoneToHoursName
-mHoursToTimeZoneNameId equ 241
+mHoursToTimeZoneNameId equ 243
     .dw mHoursToTimeZoneName
-mEpochNameId equ 242
+mEpochNameId equ 244
     .dw mEpochName
-mDateShrinkNameId equ 243
+mDateShrinkNameId equ 245
     .dw mDateShrinkName
-mDateExtendNameId equ 244
+mDateExtendNameId equ 246
     .dw mDateExtendName
-mDateCutNameId equ 245
+mDateCutNameId equ 247
     .dw mDateCutName
-mDateLinkNameId equ 246
+mDateLinkNameId equ 248
     .dw mDateLinkName
-mGetNowNameId equ 247
+mGetNowNameId equ 249
     .dw mGetNowName
-mGetNowDateNameId equ 248
+mGetNowDateNameId equ 250
     .dw mGetNowDateName
-mGetNowTimeNameId equ 249
+mGetNowTimeNameId equ 251
     .dw mGetNowTimeName
-mGetNowAppDateTimeNameId equ 250
+mGetNowAppDateTimeNameId equ 252
     .dw mGetNowAppDateTimeName
-mGetNowUTCDateTimeNameId equ 251
+mGetNowUTCDateTimeNameId equ 253
     .dw mGetNowUTCDateTimeName
-mSetTimeZoneNameId equ 252
+mSetTimeZoneNameId equ 254
     .dw mSetTimeZoneName
-mGetTimeZoneNameId equ 253
+mGetTimeZoneNameId equ 255
     .dw mGetTimeZoneName
-mSetClockTimeZoneNameId equ 254
+mSetClockTimeZoneNameId equ 256
     .dw mSetClockTimeZoneName
-mGetClockTimeZoneNameId equ 255
+mGetClockTimeZoneNameId equ 257
     .dw mGetClockTimeZoneName
-mSetClockNameId equ 256
+mSetClockNameId equ 258
     .dw mSetClockName
-mEpochUnixNameId equ 257
+mEpochUnixNameId equ 259
     .dw mEpochUnixName
-mEpochUnixAltNameId equ 258
+mEpochUnixAltNameId equ 260
     .dw mEpochUnixAltName
-mEpochNtpNameId equ 259
+mEpochNtpNameId equ 261
     .dw mEpochNtpName
-mEpochNtpAltNameId equ 260
+mEpochNtpAltNameId equ 262
     .dw mEpochNtpAltName
-mEpochGpsNameId equ 261
+mEpochGpsNameId equ 263
     .dw mEpochGpsName
-mEpochGpsAltNameId equ 262
+mEpochGpsAltNameId equ 264
     .dw mEpochGpsAltName
-mEpochTiosNameId equ 263
+mEpochTiosNameId equ 265
     .dw mEpochTiosName
-mEpochTiosAltNameId equ 264
+mEpochTiosAltNameId equ 266
     .dw mEpochTiosAltName
-mEpochY2kNameId equ 265
+mEpochY2kNameId equ 267
     .dw mEpochY2kName
-mEpochY2kAltNameId equ 266
+mEpochY2kAltNameId equ 268
     .dw mEpochY2kAltName
-mEpochCustomNameId equ 267
+mEpochCustomNameId equ 269
     .dw mEpochCustomName
-mEpochCustomAltNameId equ 268
+mEpochCustomAltNameId equ 270
     .dw mEpochCustomAltName
-mEpochSetCustomNameId equ 269
+mEpochSetCustomNameId equ 271
     .dw mEpochSetCustomName
-mEpochGetCustomNameId equ 270
+mEpochGetCustomNameId equ 272
     .dw mEpochGetCustomName
 
 ; Table of names as NUL terminated C strings.
@@ -3491,6 +3495,10 @@ mSetRegSizeName:
     .db "RSIZ", 0
 mGetRegSizeName:
     .db 'R', 'S', 'Z', Squestion, 0
+mSetStackSizeName:
+    .db "SSIZ", 0
+mGetStackSizeName:
+    .db 'S', 'S', 'Z', Squestion, 0
 mCommaEENormalName:
     .db Scomma, 'E', 'E', 0
 mCommaEENormalAltName:

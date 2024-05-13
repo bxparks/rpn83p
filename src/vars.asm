@@ -575,6 +575,7 @@ rpnElementIndexToOffset:
 ; Input: HL:u16=len
 ; Output: HL:u16=size=len*sizeof(RpnElement)=len*19
 ; Destroys: DE
+; Preserves: A, BC
 rpnElementLenToSize:
     ld e, l
     ld d, h ; DE=len

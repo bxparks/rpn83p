@@ -6,9 +6,9 @@
 ; of the 96(w)x64(h) LCD display, using a mixture of small and large fonts.
 ; The format looks roughly like this:
 ;
-; 0: Status: (left,up,down) (Deg|Rad) (Fix|Sci|Eng) (Dec|Hex|Oct|Bin)
+; 0: Status: (left,up,down) (Fix|Sci|Eng) (Deg|Rad) ...
 ; 1: Debug: Debugging output, not used in app
-; 2: Error code
+; 2: Error or warning message
 ; 3: T: tttt
 ; 4: Z: zzzz
 ; 5: Y: yyyy
@@ -16,16 +16,20 @@
 ; 7: Menu: [menu1][menu2][menu3][menu4][menu5]
 ;-----------------------------------------------------------------------------
 
-; Display coordinates of the top status line
+; Display coordinates of the top status line. Use a 2px space between each
+; annunciator. The last 6px should not be used because the TIOS uses that space
+; for the 2ND and ALPHA modifier keys when the cursor is not shown. In other
+; words, statusEndPenCol should not be greater than 90 (96-6).
 statusCurRow equ 0
 statusCurCol equ 0
 statusPenRow equ statusCurRow*8
-statusMenuPenCol equ 0 ; left, up, down, 2px = 3*4 + 2 = 14px
-statusFloatModePenCol equ 14 ; (FIX|SCI|ENG), (, N, ), 4px = 5*4+2*3 = 26px
-statusTrigPenCol equ 40 ; (DEG|RAD), 4px = 4*4 = 16px
-statusBasePenCol equ 56 ; (C|-), 4px + 4px
-statusComplexModePenCol equ 64 ; (aib|rLt|rLo), 4x4px = 16px
-statusEndPenCol equ 80
+statusMenuPenCol equ 0 ; "left, up, down" + space = 3*4+2 = 14px
+statusFloatModePenCol equ 14 ; "(FIX|SCI|ENG{n}" + space = 4*4+2 = 18px
+statusTrigPenCol equ 32 ; "(DEG|RAD)" + space = 3*4+2 = 14px
+statusBasePenCol equ 46 ; (C|-) + space = 6px
+statusComplexModePenCol equ 52 ; "(aib|rLt|rLo)" + space = 3x4+2= 14px
+statusStackModePenCol equ 66 ; "{n}STK" + space = 4x4+2 = 18px
+statusEndPenCol equ 84
 
 ; Display coordinates of the debug line
 debugCurRow equ 1
@@ -183,6 +187,7 @@ displayStatus:
     call displayStatusTrig
     call displayStatusBase
     call displayStatusComplexMode
+    call displayStatusStackMode
     ret
 
 ;-----------------------------------------------------------------------------
@@ -247,6 +252,44 @@ displayStatusArrowUp:
 displayStatusArrowUpNone:
     ld a, SFourSpaces
 displayStatusArrowUpDisplay:
+    bcall(_VPutMap)
+    ret
+
+;-----------------------------------------------------------------------------
+
+; Description: Display the floating point format: FIX, SCI, ENG
+; Destroys: A, HL
+displayStatusFloatMode:
+    bit dirtyFlagsStatus, (iy + dirtyFlags)
+    ret z
+    ld hl, statusPenRow*$100 + statusFloatModePenCol; $(penRow)(penCol)
+    ld (PenCol), hl
+    ; check float mode
+    bit fmtExponent, (iy + fmtFlags)
+    jr nz, displayStatusFloatModeSciOrEng
+displayStatusFloatModeFix:
+    ld hl, msgFixLabel
+    jr displayStatusFloatModeBracketDigit
+displayStatusFloatModeSciOrEng:
+    bit fmtEng, (iy + fmtFlags)
+    jr nz, displayStatusFloatModeEng
+displayStatusFloatModeSci:
+    ld hl, msgSciLabel
+    jr displayStatusFloatModeBracketDigit
+displayStatusFloatModeEng:
+    ld hl, msgEngLabel
+    ; [[fallthrough]]
+displayStatusFloatModeBracketDigit:
+    ; Print the number of digit
+    call vPutS
+    ld a, (fmtDigits)
+    cp 10
+    jr nc, displayStatusFloatModeFloating
+    add a, '0'
+    jr displayStatusFloatModeDigit
+displayStatusFloatModeFloating:
+    ld a, '-'
+displayStatusFloatModeDigit:
     bcall(_VPutMap)
     ret
 
@@ -328,44 +371,19 @@ displayStatusComplexModePutS:
 
 ;-----------------------------------------------------------------------------
 
-; Description: Display the floating point format: FIX, SCI, ENG
-; Destroys: A, HL
-displayStatusFloatMode:
+; Description: Display the RPN Stack mode.
+displayStatusStackMode:
     bit dirtyFlagsStatus, (iy + dirtyFlags)
     ret z
-    ld hl, statusPenRow*$100 + statusFloatModePenCol; $(penRow)(penCol)
+    ld hl, statusPenRow*$100 + statusStackModePenCol; $(penRow)(penCol)
     ld (PenCol), hl
-    ; check float mode
-    bit fmtExponent, (iy + fmtFlags)
-    jr nz, displayStatusFloatModeSciOrEng
-displayStatusFloatModeFix:
-    ld hl, msgFixLabel
-    jr displayStatusFloatModeBracketDigit
-displayStatusFloatModeSciOrEng:
-    bit fmtEng, (iy + fmtFlags)
-    jr nz, displayStatusFloatModeEng
-displayStatusFloatModeSci:
-    ld hl, msgSciLabel
-    jr displayStatusFloatModeBracketDigit
-displayStatusFloatModeEng:
-    ld hl, msgEngLabel
-    ; [[fallthrough]]
-displayStatusFloatModeBracketDigit:
-    ; Print the number of digit
-    call vPutS
-    ld a, SlParen
-    bcall(_VPutMap)
-    ld a, (fmtDigits)
-    cp 10
-    jr nc, displayStatusFloatModeFloating
+    ; print the stackSize variable first
+    ld a, (stackSize)
     add a, '0'
-    jr displayStatusFloatModeDigit
-displayStatusFloatModeFloating:
-    ld a, '-'
-displayStatusFloatModeDigit:
     bcall(_VPutMap)
-    ld a, SrParen
-    bcall(_VPutMap)
+    ; then the label
+    ld hl, msgStkLabel
+    call vPutS
     ret
 
 ;-----------------------------------------------------------------------------
@@ -1411,6 +1429,10 @@ msgDegLabel:
     .db "DEG", 0
 msgRadLabel:
     .db "RAD", 0
+
+; RPN stack mode indicators.
+msgStkLabel:
+    .db "STK", 0
 
 ; TVM debug labels
 msgTvmNLabel:
