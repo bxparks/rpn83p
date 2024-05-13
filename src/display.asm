@@ -252,6 +252,48 @@ displayStatusArrowUpDisplay:
 
 ;-----------------------------------------------------------------------------
 
+; Description: Display the floating point format: FIX, SCI, ENG
+; Destroys: A, HL
+displayStatusFloatMode:
+    bit dirtyFlagsStatus, (iy + dirtyFlags)
+    ret z
+    ld hl, statusPenRow*$100 + statusFloatModePenCol; $(penRow)(penCol)
+    ld (PenCol), hl
+    ; check float mode
+    bit fmtExponent, (iy + fmtFlags)
+    jr nz, displayStatusFloatModeSciOrEng
+displayStatusFloatModeFix:
+    ld hl, msgFixLabel
+    jr displayStatusFloatModeBracketDigit
+displayStatusFloatModeSciOrEng:
+    bit fmtEng, (iy + fmtFlags)
+    jr nz, displayStatusFloatModeEng
+displayStatusFloatModeSci:
+    ld hl, msgSciLabel
+    jr displayStatusFloatModeBracketDigit
+displayStatusFloatModeEng:
+    ld hl, msgEngLabel
+    ; [[fallthrough]]
+displayStatusFloatModeBracketDigit:
+    ; Print the number of digit
+    call vPutS
+    ld a, SlParen
+    bcall(_VPutMap)
+    ld a, (fmtDigits)
+    cp 10
+    jr nc, displayStatusFloatModeFloating
+    add a, '0'
+    jr displayStatusFloatModeDigit
+displayStatusFloatModeFloating:
+    ld a, '-'
+displayStatusFloatModeDigit:
+    bcall(_VPutMap)
+    ld a, SrParen
+    bcall(_VPutMap)
+    ret
+
+;-----------------------------------------------------------------------------
+
 ; Description: Display the Degree or Radian trig mode.
 displayStatusTrig:
     bit dirtyFlagsStatus, (iy + dirtyFlags)
@@ -324,48 +366,6 @@ displayStatusComplexModeRect:
     ld hl, msgComplexModeRectLabel
 displayStatusComplexModePutS:
     call vPutS
-    ret
-
-;-----------------------------------------------------------------------------
-
-; Description: Display the floating point format: FIX, SCI, ENG
-; Destroys: A, HL
-displayStatusFloatMode:
-    bit dirtyFlagsStatus, (iy + dirtyFlags)
-    ret z
-    ld hl, statusPenRow*$100 + statusFloatModePenCol; $(penRow)(penCol)
-    ld (PenCol), hl
-    ; check float mode
-    bit fmtExponent, (iy + fmtFlags)
-    jr nz, displayStatusFloatModeSciOrEng
-displayStatusFloatModeFix:
-    ld hl, msgFixLabel
-    jr displayStatusFloatModeBracketDigit
-displayStatusFloatModeSciOrEng:
-    bit fmtEng, (iy + fmtFlags)
-    jr nz, displayStatusFloatModeEng
-displayStatusFloatModeSci:
-    ld hl, msgSciLabel
-    jr displayStatusFloatModeBracketDigit
-displayStatusFloatModeEng:
-    ld hl, msgEngLabel
-    ; [[fallthrough]]
-displayStatusFloatModeBracketDigit:
-    ; Print the number of digit
-    call vPutS
-    ld a, SlParen
-    bcall(_VPutMap)
-    ld a, (fmtDigits)
-    cp 10
-    jr nc, displayStatusFloatModeFloating
-    add a, '0'
-    jr displayStatusFloatModeDigit
-displayStatusFloatModeFloating:
-    ld a, '-'
-displayStatusFloatModeDigit:
-    bcall(_VPutMap)
-    ld a, SrParen
-    bcall(_VPutMap)
     ret
 
 ;-----------------------------------------------------------------------------
