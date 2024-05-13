@@ -997,6 +997,10 @@ mAtanhHandler:
 ; Children nodes of STK menu group (stack functions).
 ;-----------------------------------------------------------------------------
 
+mStackDupHandler:
+    call closeInputAndRecallNone
+    jp liftStack
+
 mStackRollUpHandler:
     call closeInputAndRecallNone
     jp rollUpStack
@@ -1006,6 +1010,10 @@ mStackRollDownHandler:
 
 mStackExchangeXYHandler:
     jp handleKeyExchangeXY
+
+mStackDropHandler:
+    call closeInputAndRecallNone
+    jp dropStack
 
 ;-----------------------------------------------------------------------------
 ; Children nodes of CLR menu group (clear functions).

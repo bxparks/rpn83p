@@ -344,11 +344,11 @@ MenuGroup root mRoot [
     ]
     MenuGroup STK mStack [
       MenuRow [
-        MenuItem * *
+        MenuItem DUP mStackDup
         MenuItem R<SupArrow> mStackRollUp
         MenuItem R<SdownArrow> mStackRollDown
+        MenuItem DROP mStackDrop
         MenuItem X<Sleft><Sconvert>Y mStackExchangeXY
-        MenuItem * *
       ]
     ]
     MenuGroup UNIT mUnit [
