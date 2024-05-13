@@ -297,6 +297,8 @@ errorCode equ handlerCode + 1 ; u8
 ; variable will be updated whenever the appVar is resized.
 stackSize equ errorCode + 1 ; u8, [4,8] allowed
 stackSizeDefault equ 4 ; factory default stack size
+stackSizeMin equ 4
+stackSizeMax equ 8
 
 ; Current base mode number. Allowed values are: 2, 8, 10, 16. Anything else is
 ; interpreted as 10.

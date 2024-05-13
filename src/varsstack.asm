@@ -12,6 +12,10 @@ stackXIndex equ 1 ; X
 stackYIndex equ 2 ; Y
 stackZIndex equ 3 ; Z
 stackTIndex equ 4 ; T
+stackAIndex equ 5 ; A
+stackBIndex equ 6 ; B
+stackCIndex equ 7 ; C
+stackDIndex equ 8 ; D
 
 stackVarName:
     .db AppVarObj, "RPN83STK" ; max 8 char, NUL terminated if < 8
@@ -72,6 +76,22 @@ closeStack:
 lenStack:
     ld hl, stackVarName
     jp lenRpnElementList
+
+; Description: Resize the stack to the new length in A.
+; Input: A:u8=newLen
+; Output:
+;   - ZF=1 if newLen==oldLen
+;   - CF=0 if newLen>oldLen
+;   - CF=1 if newLen<oldLen
+resizeStack:
+    ld hl, stackVarName
+    call resizeRpnElementList
+    push af
+    call lenStack
+    dec a ; ignore LastX register
+    ld (stackSize), a
+    pop af
+    ret
 
 ;-----------------------------------------------------------------------------
 ; Stack registers to and from OP1/OP2
@@ -392,42 +412,114 @@ liftStackIfEnabled:
 
 ; Description: Lift the RPN stack unconditionally, copying X to Y.
 ; Input: none
-; Output: T=Z; Z=Y; Y=X; X=X; OP1 preserved
+; Output: stack lifted
 ; Destroys: all
 ; Preserves: OP1, OP2
 liftStack:
     bcall(_PushRpnObject1) ; FPS=[OP1/OP2]
-    ld b, stackTIndex
-    ld c, stackZIndex
+    call liftStackIntoOp1 ; OP1=lastElement, thrown away
+    bcall(_PopRpnObject1) ; FPS=[]; OP1/OP2=OP1/OP2
+    ret
+
+; Description: Lift the RPN stack with last element pushed into OP1.
+; Input: none
+; Output:
+;   - stack lifted
+;   - last element shifted into OP1
+;   - DE=pointer to first element (to which OP1 can be copied to)
+; Destroys: all, OP1
+liftStackIntoOp1:
+    ; Calculate moveSize=(numElements-2)*rpnElementSizeOf
+    call lenStack ; A=stackLen
+    ld l, a
+    dec l
+    dec l
+    ld h, 0 ; HL=numElements-2
+    call rpnElementLenToSize ; HL=moveSize; preserves A
+    push hl ; stack=[moveSize]
+    ; calculate source and dest indexes
+    dec a ; index to last element
+    ld b, a
+    dec a
+    ld c, a ; index to 2nd last element
     ld hl, stackVarName
-    call rpnObjectIndexesToPointers ; DE=pointerT; HL=pointerZ
+    call rpnObjectIndexesToPointers ; DE=end-1; HL=end-2; destroys OP1
+    ; copy the last element to OP1
+    push hl
+    push de
+    ex de, hl ; HL=end-1
+    call moveRpnElementToOp1
+    pop de
+    pop hl
+    ; shift pointers to the end of the element, in prep for LDDR
     ld bc, rpnElementSizeOf-1
     add hl, bc
     ex de, hl
     add hl, bc
     ex de, hl ; DE, HL=pointer to last byte of RpnElement
-    ld bc, rpnElementSizeOf*3
-    lddr
-    bcall(_PopRpnObject1) ; FPS=[]; OP1/OP2=OP1/OP2
+    ;
+    pop bc ; stack=[]; BC=moveSize
+    lddr ; HL=pointer to one byte before the X element
+    ;
+    ex de, hl
+    inc de ; pointer to first element
     set dirtyFlagsStack, (iy + dirtyFlags)
     ret
 
 ;-----------------------------------------------------------------------------
 
-; Description: Drop the RPN stack, copying T to Z.
+; Description: Roll the RPN stack up, rotating last element into X.
 ; Input: none
-; Output: X=Y; Y=Z; Z=T; T=T; OP1 preserved
+; Output: stack rolled up
+; Destroys: all, OP1, OP2
+; Preserves: none
+rollUpStack:
+    call liftStackIntoOp1 ; OP1=lastElement; DE=pointer to first element
+    call moveRpnElementFromOp1 ; X=lastElement
+    ret
+
+;-----------------------------------------------------------------------------
+
+; Description: Drop the RPN stack, duplicating the top-most element.
+; Input: none
+; Output: stack dropped; OP1 preserved
 ; Destroys: all
 ; Preserves: OP1, OP2
 dropStack:
     bcall(_PushRpnObject1) ; FPS=[OP1/OP2]
+    call dropStackIntoOp1 ; OP1=X, thrown away
+    bcall(_PopRpnObject1) ; FPS=[]; OP1/OP2=OP1/OP2
+    ret
+
+; Description: Drop the RPN stack, shifting the X register into OP1.
+; Output:
+;   - stack dropped (shifted left)
+;   - OP1=X
+;   - DE=pointer to last element (to which OP1 can be copied to)
+dropStackIntoOp1:
+    ; Calculate moveSize=(numElements-2)*rpnElementSizeOf
+    call lenStack ; A=stackLen
+    ld l, a
+    dec l
+    dec l
+    ld h, 0
+    call rpnElementLenToSize ; HL=moveSize; preserves A
+    push hl ; stack=[moveSize]
+    ; calculate source and dest indexes
     ld b, stackXIndex
     ld c, stackYIndex
     ld hl, stackVarName
-    call rpnObjectIndexesToPointers ; DE=pointerX; HL=pointerY
-    ld bc, rpnElementSizeOf*3
-    ldir
-    bcall(_PopRpnObject1) ; FPS=[]; OP1/OP2=OP1/OP2
+    call rpnObjectIndexesToPointers ; DE=pointerX; HL=pointerY; destroys OP1
+    ; copy the first element to OP1
+    push hl
+    push de
+    ex de, hl ; HL=X element
+    call moveRpnElementToOp1
+    pop de
+    pop hl
+    ;
+    pop bc ; stack=[]; BC=moveSize
+    ldir ; DE=pointer to last element
     set dirtyFlagsStack, (iy + dirtyFlags)
     ret
 
@@ -439,57 +531,8 @@ dropStack:
 ; Destroys: all, OP1, OP2
 ; Preserves: none
 rollDownStack:
-    ld b, stackXIndex
-    ld c, stackYIndex
-    ld hl, stackVarName
-    call rpnObjectIndexesToPointers ; DE=pointerX; HL=pointerY
-    ; save X to OP1
-    push hl ; stack=[pointerY]
-    push de ; stack=[pointerY,pointerX]
-    ex de, hl ; HL=pointerX
-    call moveRpnElementToOp1
-    pop de
-    pop hl
-    ; drop stack
-    ld bc, rpnElementSizeOf*3
-    ldir ; DE=pointerT
-    ; move OP1 to T
-    call moveRpnElementFromOp1
-    set dirtyFlagsStack, (iy + dirtyFlags)
-    ret
-
-;-----------------------------------------------------------------------------
-
-; Description: Roll the RPN stack *up*, rotating T into X.
-; Input: none
-; Output: T=Z; Z=Y; Y=X; X=T
-; Destroys: all, OP1, OP2
-; Preserves: none
-rollUpStack:
-    ld b, stackTIndex
-    ld c, stackZIndex
-    ld hl, stackVarName
-    call rpnObjectIndexesToPointers ; DE=pointerT; HL=pointerZ
-    ; save T to OP1
-    push hl ; stack=[pointerZ]
-    push de ; stack=[pointerZ,pointerT]
-    ex de, hl ; HL=pointerT
-    call moveRpnElementToOp1
-    pop de
-    pop hl
-    ; lift stack
-    ld bc, rpnElementSizeOf-1
-    add hl, bc
-    ex de, hl
-    add hl, bc
-    ex de, hl ; DE, HL=pointer to last byte of RpnElement
-    ld bc, rpnElementSizeOf*3
-    lddr ; HL=pointerX-1
-    ; move OP1 to X
-    ex de, hl ; DE=pointerX-1
-    inc de ; DE=pointerX
-    call moveRpnElementFromOp1
-    set dirtyFlagsStack, (iy + dirtyFlags)
+    call dropStackIntoOp1 ; DE=pointer to last element; OP1=X
+    call moveRpnElementFromOp1 ; lastElement=X
     ret
 
 ;-----------------------------------------------------------------------------
@@ -522,7 +565,7 @@ exchangeXYStack:
     ld b, stackXIndex
     ld c, stackYIndex
     ld hl, stackVarName
-    call rpnObjectIndexesToPointers ; DE=pointerX; HL=pointerY
+    call rpnObjectIndexesToPointers ; DE=pointerX; HL=pointerY; destroys OP1
     ld b, rpnElementSizeOf
     call exchangeLoop
     set dirtyFlagsStack, (iy + dirtyFlags)

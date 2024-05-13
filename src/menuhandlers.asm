@@ -835,6 +835,54 @@ msgRegSizePrompt:
 
 ;-----------------------------------------------------------------------------
 
+mSetStackSizeHandler:
+    call closeInputAndRecallNone
+    ld hl, msgStackSizePrompt
+    call startArgScanner
+    ld a, 1
+    ld (argLenLimit), a ; accept only a single digit
+    call processArgCommands ; ZF=0 if cancelled
+    ret nz ; do nothing if cancelled
+    ; validate input
+    ld a, (argValue)
+    cp stackSizeMax+1 ; CF=0 if argValue>8
+    jr nc, setStackSizeHandlerErr
+    cp stackSizeMin ; CF=1 if argValue<4
+    jr c, setStackSizeHandlerErr
+    ; perform the resize
+    inc a ; add LastX register
+    call resizeStack ; test (newLen-oldLen) -> ZF,CF flags set
+    set dirtyFlagsStatus, (iy + dirtyFlags)
+    ; Determine the handler code
+    jr z, setStackSizeHandlerUnchanged
+    jr nc, setStackSizeHandlerExpanded
+setStackSizeHandlerShrunk:
+    ld a, errorCodeStackShrunk
+    ld (handlerCode), a
+    ret
+setStackSizeHandlerExpanded:
+    ld a, errorCodeStackExpanded
+    ld (handlerCode), a
+    ret
+setStackSizeHandlerUnchanged:
+    ld a, errorCodeStackUnchanged
+    ld (handlerCode), a
+    ret
+setStackSizeHandlerErr:
+    bcall(_ErrInvalid)
+
+mGetStackSizeHandler:
+    call closeInputAndRecallNone
+    call lenStack
+    dec a ; remove LastX register
+    bcall(_ConvertAToOP1) ; OP1=float(A)
+    jp pushToX
+
+msgStackSizePrompt:
+    .db "SSIZ", 0
+
+;-----------------------------------------------------------------------------
+
 mCommaEENormalHandler:
     ld a, commaEEModeNormal
     ld (commaEEMode), a
