@@ -214,6 +214,34 @@ keyCodeHandlerTable:
 
 ;-----------------------------------------------------------------------------
 
+    ; Stack operations. These key bindings were borrowed from the HP30b
+    ; and other HP calculators which support both ALG and RPN modes. The
+    ; convention seems to be:
+    ;   - `(` (left parens): RollDown
+    ;   - `)` (right parens): x<->y (swap)
+    .db kLParen ; (
+    .dw handleKeyRollDown
+    .db kRParen ; )
+    .dw handleKeyExchangeXY
+
+    ; The RollUp command is available through the menu system using the
+    ; ROOT>STK>Rup soft menu button. But it is more convenient to bind a key to
+    ; this function. The `2ND {` button (above the left-parens `(`) would have
+    ; been a good candidate, but it is used to input Record objects (e.g. Date
+    ; such as `{2024,5,13}`). No other button above the `(` button seemed
+    ; appropriate. The best alternative seemed to be the `2ND u` button.
+    ; 1) It is to the left of the `(`, which is similar to the location of the
+    ; `Rollup` soft menu key in the `STK` menufolder.
+    ; 2) The `u` can be a mnemonic for the "Rollup" name of the command.
+    .db kunA
+    .dw handleKeyRollup
+
+    ; bind ANS to lastX.
+    .db kAns ; ANS
+    .dw handleKeyAns
+
+;-----------------------------------------------------------------------------
+
     ; arithmetic
     .db kAdd
     .dw handleKeyAdd
@@ -239,17 +267,6 @@ keyCodeHandlerTable:
     .dw handleKeySquare
     .db kSqrt
     .dw handleKeySqrt
-
-    ; stack operations. These key bindings were borrowed from the HP30b
-    ; calculator which supports both ALG and RPN modes, and places the R-down
-    ; on the (, and x<->y on the ).
-    .db kLParen ; (
-    .dw handleKeyRollDown
-    .db kRParen ; )
-    .dw handleKeyExchangeXY
-    ; bind ANS to lastX.
-    .db kAns ; ANS
-    .dw handleKeyAns
 
     ; transcendentals
     .db kLog ; LOG

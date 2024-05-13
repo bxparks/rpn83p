@@ -964,6 +964,10 @@ handleKeySqrt:
 ; Stack operations
 ;-----------------------------------------------------------------------------
 
+handleKeyRollUp:
+    call closeInputAndRecallNone
+    jp rollUpStack
+
 handleKeyRollDown:
     call closeInputAndRecallNone
     jp rollDownStack
