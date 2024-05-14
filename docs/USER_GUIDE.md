@@ -949,6 +949,28 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
         - `pdev(Y) = <Y^2> - <Y>^2`
     - `PCOV`: population covariance
         - `pcov(X,Y) = <XY> - <X><Y>`
+    - ![ROOT > STAT > SIGMA](images/menu-root-stat-sigma.png) (`ROOT > STAT` >
+      `SIGMA`)
+        - ![ROOT > STAT > SIGMA > Row1](images/menu-root-stat-sigma-1.png)
+        - ![ROOT > STAT > SIGMA > Row2](images/menu-root-stat-sigma-2.png)
+        - ![ROOT > STAT > SIGMA > Row3](images/menu-root-stat-sigma-3.png)
+        - Recall the given STAT register stored (follows the same convention as
+          the Plus42 app)
+        - `SigmaX` - sum of `X`
+        - `SigmaX2` - sum of `X^2`
+        - `SigmaY` - sum of `Y`
+        - `SigmaY2` - sum of `Y^2`
+        - `SigmaXY` - sum of `XY`
+        - `SigmaN` - `N` total number of data points
+            - this should be labeled `Sigma 1` to be mathematically correct, but
+              it looks awkward in the UI
+        - `SigmaLX` - sum of `Ln(X)`
+        - `SigmaLX2` - sum of `Ln(X)^2`
+        - `SigmaLY` - sum of `Ln(Y)`
+        - `SigmaLY2` - sum of `Ln(Y)^2`
+        - `SigmaLXL` - sum of `Ln(X) Ln(Y)`
+        - `SigmaXLY` - sum of `X Ln(Y)`
+        - `SigmaYLX` - sum of `Y Ln(X)`
     - ![ROOT > STAT > CFIT](images/menu-root-stat-cfit.png) (`ROOT > STAT` >
       `CFIT`)
         - See Chapter 15 of the _HP-42S User's Manual_
