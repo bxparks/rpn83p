@@ -1031,6 +1031,7 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
     - ![ROOT > MODE > Row1](images/menu-root-mode-1.png)
     - ![ROOT > MODE > Row2](images/menu-root-mode-2.png)
     - ![ROOT > MODE > Row3](images/menu-root-mode-3.png)
+    - ![ROOT > MODE > Row4](images/menu-root-mode-4.png)
     - `FIX`: fixed mode with `N` digits after the decimal point
         - set `N` to `99` for floating number of digits
         - status line indicator is `FIX(N)`
@@ -1047,6 +1048,10 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
     - `RECT`: display complex number in rectangular form
     - `PRAD`: display complex number in polar radian form
     - `PDEG`: display complex number in polar degree form
+    - `RSIZ`: set register size `[25,100]`
+    - `RSZ?`: get register size
+    - `SSIZ`: set stack size `[4,8]`
+    - `SSZ?`: get stack size
     - `,EE`: set Comma-EE button to normal mode
     - `EE,`: set Comma-EE button to inverted mode
     - `{..}`: display record objects in raw format
