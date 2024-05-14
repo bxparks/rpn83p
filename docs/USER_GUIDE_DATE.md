@@ -271,7 +271,7 @@ subsections below.
     - `S>UT`: convert Epoch seconds to ZonedDateTime using UTC timezone
     - `TZ>H`: convert TimeZone to floating point hours
     - `H>TZ`: convert hours to TimeZone
-    - ![ROOT > DATE > EPCH](images/menu-root-date-epch.png)
+    - ![ROOT > DATE > EPCH](images/date/menu-root-date-epch.png)
       (`ROOT > DATE > EPCH`)
         - `UNIX`: select Unix Epoch date of 1970-01-01
         - `NTP`: select NTP Epoch date of 1900-01-01
