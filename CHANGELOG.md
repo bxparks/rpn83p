@@ -14,6 +14,20 @@
             - 118 bytes at SSIZ=4
             - 194 bytes at SSIZ=8
         - TODO: Update USER_GUIDE.md
+    - Add additional stack operators
+        - soft menu `DROP`
+            - drops the stack by one, duplicating the top register
+            - already implemented in the code, just exposing the functionality
+              to the user
+        - soft menu `DUP`
+            - lifts the stack by one, duplicating X (similar to `ENTER` without
+              disabling the stack-lift)
+            - already implemented in the code, just exposing the functionality
+              to the user
+        - button `2ND u`
+            - bound to the `RollUp` functionality, same as the existing `RollUp`
+              soft menu item
+            - becomes useful when the stack size `SSIZ` is greater than 4
     - Support arithmetic operations on Offset
         - {Offset} + {hours}, {hours} + {Offset}
         - {Offset} - {hours}
