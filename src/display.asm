@@ -1195,7 +1195,7 @@ printOP1Base2:
     ; Convert HL=u32 into a base-2 string.
     ld de, fmtString
     bcall(_FormatU32ToBinString) ; DE=fmtString=formattedString
-    ; Truncate leading digits to fit display (12 or 8 digits)
+    ; Truncate leading digits to fit display
     ex de, hl ; HL=formattedString
     bcall(_TruncateBinDigits) ; HL=truncatedString; A=strLen
     ; Group digits in groups of 4.
@@ -1204,9 +1204,12 @@ printOP1Base2:
     ; Append frac indicator
     pop bc ; stack=[]; C=u32StatusCode
     call appendHasFrac ; DE=formattedString
-    ;
+    ; Always use small font for base 2.
     ex de, hl ; HL=formattedString
-    jr printBase2StringSmallOrLarge
+    call eraseEOLIfNeeded ; uses B
+    call displayStackSetSmallFont
+    bcall(_ConvertBinDigitsToSmallFont)
+    jp printSmallHLString
     ;
 printOP1Base2TooBig:
     call displayStackSetLargeFont
@@ -1214,21 +1217,6 @@ printOP1Base2TooBig:
 printOP1Base2Negative:
     call displayStackSetLargeFont
     jp printOP1BaseNegative
-
-; Description: Print the string in HL in large font size for WSIZ=8, and small
-; font for WSIZ=16,24,32.
-; Destroys: A, HL
-printBase2StringSmallOrLarge:
-    ld a, (baseWordSize)
-    cp 16 ; CF=0 if baseWordSize >= 16
-    jr nc, printBase2StringSmall
-    call displayStackSetLargeFont
-    jp printHLString
-printBase2StringSmall:
-    call eraseEOLIfNeeded ; uses B
-    call displayStackSetSmallFont
-    bcall(_ConvertBinDigitsToSmallFont)
-    jp printSmallHLString
 
 ;-----------------------------------------------------------------------------
 ; RpnObject records.
