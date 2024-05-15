@@ -1177,7 +1177,7 @@ printOP1Base2:
     bcall(_FormatU32ToBinString) ; DE=OP4=formattedString
     ; Truncate leading digits to fit display (12 or 8 digits)
     ex de, hl ; HL=OP4=formattedString
-    call truncateBinDigits ; HL=OP4=truncatedString
+    bcall(_TruncateBinDigits) ; HL=OP4=truncatedString
     ; Group digits in groups of 4.
     ld de, OP3
     call formatBinDigits ; HL,DE preserved
@@ -1186,46 +1186,6 @@ printOP1Base2:
     call appendHasFrac ; DE=rendered string
     ex de, hl ; HL=rendered string
     jp printHLString
-
-; Description: Truncate upper digits depending on baseWordSize. The effective
-; number of digits that can be displayed is `strLen = min(baseWordSize, 12)`.
-; Then scan all digits above strLen and look for a '1'. If a '1' exists at
-; digit >= strLen, replace the left most digit of the truncated string with an
-; Lellipsis character.
-;
-; Input:
-;   - HL: pointer to rendered string
-; Output:
-;   - HL: pointer to truncated string
-;   - A: strLen
-; Destroys: A, BC
-maxBinDisplayDigits equ 12
-truncateBinDigits:
-    ld a, (baseWordSize)
-    cp maxBinDisplayDigits + 1 ; if baseWordSize < maxBinDisplayDigits: CF=1
-    jr c, truncateBinDigitsContinue
-    ld a, maxBinDisplayDigits ; strLen=min(baseWordSize, maxBinDisplayDigits)
-truncateBinDigitsContinue:
-    push af ; stack=[strLen]
-    sub 32
-    neg ; A=num leading digits=32-strLen, either 20 or 24
-    ; Check leading digits to determine if truncation causes overflow
-    ld b, a
-    ld c, 0 ; C=foundOneDigit:boolean
-truncateBinDigitsCheckOverflow:
-    ld a, (hl)
-    inc hl ; HL=left most digit of the truncated string.
-    sub '0'
-    or c ; check for a '1' digit
-    ld c, a
-    djnz truncateBinDigitsCheckOverflow
-    jr z, truncateBinDigitsNoOverflow ; if C=0: ZF=1, indicating no overflow
-    ; Replace left most digit with ellipsis symbol to indicate overflow.
-    ld a, Lellipsis
-    ld (hl), a
-truncateBinDigitsNoOverflow:
-    pop af ; stack=[]; A=strLen
-    ret
 
 ; Description: Format the binary string into groups of 4 digits.
 ; Input:

@@ -151,6 +151,48 @@ formatU32ToBinStringLoop:
 
 ;------------------------------------------------------------------------------
 
+; Description: Truncate upper digits depending on baseWordSize. The effective
+; number of digits that can be displayed is `strLen = min(baseWordSize, 12)`.
+; Then scan all digits above strLen and look for a '1'. If a '1' exists at
+; digit >= strLen, replace the left most digit of the truncated string with an
+; Lellipsis character.
+;
+; Input:
+;   - HL:(char*)=inputString
+; Output:
+;   - HL:(char*)=truncatedString
+;   - A:u8=strLen
+; Destroys: A, BC
+maxBinDisplayDigits equ 12
+TruncateBinDigits:
+    ld a, (baseWordSize)
+    cp maxBinDisplayDigits + 1 ; if baseWordSize < maxBinDisplayDigits: CF=1
+    jr c, truncateBinDigitsContinue
+    ld a, maxBinDisplayDigits ; strLen=min(baseWordSize, maxBinDisplayDigits)
+truncateBinDigitsContinue:
+    push af ; stack=[strLen]
+    sub 32
+    neg ; A=num leading digits=32-strLen, either 20 or 24
+    ; Check leading digits to determine if truncation causes overflow
+    ld b, a
+    ld c, 0 ; C=foundOneDigit:boolean
+truncateBinDigitsCheckOverflow:
+    ld a, (hl)
+    inc hl ; HL=left most digit of the truncated string.
+    sub '0'
+    or c ; check for a '1' digit
+    ld c, a
+    djnz truncateBinDigitsCheckOverflow
+    jr z, truncateBinDigitsNoOverflow ; if C=0: ZF=1, indicating no overflow
+    ; Replace left most digit with ellipsis symbol to indicate overflow.
+    ld a, Lellipsis
+    ld (hl), a
+truncateBinDigitsNoOverflow:
+    pop af ; stack=[]; A=strLen
+    ret
+
+;------------------------------------------------------------------------------
+
 ; Description: Reformat the base-2 string in groups of 4, 2 groups per line.
 ; The source string is probably at OP4. The destination string is probably OP3,
 ; which is 11 bytes before OP4. The original string is a maximum of 32
