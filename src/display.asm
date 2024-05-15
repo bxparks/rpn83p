@@ -775,8 +775,7 @@ displayShow:
     ld hl, errorPenRow*$100 ; $(penRow)(penCol)
     ld (PenCol), hl
     ld hl, msgShowLabel
-    call vPutSmallS
-    call vEraseEOL
+    call printSmallHLString
     ; Call special FormShowable() function to show all digits of OP1.
     ld hl, showCurCol*$100 + showCurRow ; $(curCol)(curRow)
     ld (CurRow), hl
@@ -860,7 +859,6 @@ printOP1:
 ;   - B=displayFontMask
 ; Destroys: OP3-OP6
 printOP1Real:
-    call displayStackSetLargeFont
     bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
     jp z, printOP1AsFloat
     ld a, (baseNumber)
@@ -911,8 +909,7 @@ printOP1ComplexRect:
     ld de, fmtString
     bcall(_FormatComplexRect)
     ld hl, fmtString
-    call vPutSmallS
-    jp vEraseEOL
+    jp printSmallHLString
 
 ; Description: Print the complex numberin CP1 in polar form using radians.
 ; Note: An r value >= 1e100 or <= 1e-100 can be returned by complexRToPRad()
@@ -925,8 +922,7 @@ printOP1ComplexRad:
     ld de, fmtString
     bcall(_FormatComplexPolarRad)
     ld hl, fmtString
-    call vPutSmallS
-    jp vEraseEOL
+    jp printSmallHLString
 
 ; Description: Print the complex numberin CP1 in polar form using degrees.
 ; Note: An r value >= 1e100 or <= 1e-100 can be returned by complexRToPRad()
@@ -939,8 +935,7 @@ printOP1ComplexDeg:
     ld de, fmtString
     bcall(_FormatComplexPolarDeg)
     ld hl, fmtString
-    call vPutSmallS
-    jp vEraseEOL
+    jp printSmallHLString
 
 ;-----------------------------------------------------------------------------
 
@@ -949,10 +944,9 @@ printOP1ComplexDeg:
 ; Input:
 ;   - (displayStackFontFlags)
 ;   - B=displayFontMask
-; Destroys: A, HL
+; Destroys: A
 eraseEOLIfNeeded:
-    ld hl, displayStackFontFlags
-    ld a, (hl)
+    ld a, (displayStackFontFlags)
     and b ; if previous==smallFont: ZF=0
     ret nz ; if previous==smallFont: ret
     bcall(_EraseEOL) ; all registered saved
@@ -961,24 +955,23 @@ eraseEOLIfNeeded:
 ; Description: Mark the stack line identified by B as using small font.
 ; Input: B=displayFontMask
 ; Output: displayStackFontFlags |= B
-; Destroys: A, HL
+; Destroys: A
 displayStackSetSmallFont:
-    ld a, b
-    ld hl, displayStackFontFlags
-    or (hl) ; A=displayFontMask OR (displayStackFontFlags)
-    ld (hl), a
+    ld a, (displayStackFontFlags)
+    or b ; A=displayFontMask OR (displayStackFontFlags)
+    ld (displayStackFontFlags), a
     ret
 
 ; Description: Mark the stack line identified by B as using large font.
 ; Input: B=displayFontMask
 ; Output: displayStackFontFlags &= (~B)
-; Destroys: A, HL
+; Destroys: A
 displayStackSetLargeFont:
-    ld a, b
+    ld a, (displayStackFontFlags)
     cpl ; A=~displayFontMask
-    ld hl, displayStackFontFlags
-    and (hl)
-    ld (hl), a
+    or b ; A=(~displayFontMask|B)
+    cpl ; A=(displayFontMask & ~B)
+    ld (displayStackFontFlags), a
     ret
 
 ;-----------------------------------------------------------------------------
@@ -987,6 +980,7 @@ displayStackSetLargeFont:
 ; Input: OP1: floating point number
 ; Destroys: A, HL, OP3
 printOP1AsFloat:
+    call displayStackSetLargeFont
     ld a, 15 ; width of output
     bcall(_FormReal)
     ld hl, OP3
@@ -995,7 +989,7 @@ printOP1AsFloat:
 ; Description: Print the C-string referenced by HL, and erase to the end of
 ; line, taking care that the cursor did not move to the next line
 ; automatically.
-; Input: HL: pointer to C-string
+; Input: HL:(const char*)
 ; Output:
 ; Destroys: A, HL
 printHLString:
@@ -1018,13 +1012,25 @@ printOP1BaseNegative:
     ld hl, msgBaseNegative
     jr printHLString
 
+; Description: Print the string in HL using small font, and erase to end of
+; line. Unlike printHLString(), this routine assumes that the string never
+; wraps to the next line.
+; Input: HL:(const char*)
+; Destroys: A, HL
+printSmallHLString:
+    call vPutSmallS
+    jp vEraseEOL
+
 ;-----------------------------------------------------------------------------
 
 ; Description: Print integer at OP1 at the current cursor in base 10. Erase to
 ; the end of line (but only if the digits did not spill over to the next line).
-; Input: OP1
+; Input:
+;   - OP1
+;   - B=displayFontMask
 ; Destroys: all, OP1-OP6
 printOP1Base10:
+    call displayStackSetLargeFont
     bcall(_ConvertOP1ToUxxNoFatal) ; HL=OP1=uxx(OP1); C=u32StatusCode
     bit u32StatusCodeTooBig, c
     jr nz, printOP1BaseInvalid
@@ -1063,9 +1069,12 @@ appendHasFrac:
 ; the end of line (but only if the digits did not spill over to the next line).
 ; TODO: I think printOP1Base16(), printOP1Base8(), and printOP1Base2() can be
 ; combined into a single subroutine, saving memory.
-; Input: OP1
+; Input:
+;   - OP1
+;   - B=displayFontMask
 ; Destroys: all, OP1-OP5
 printOP1Base16:
+    call displayStackSetLargeFont
     bcall(_ConvertOP1ToUxxNoFatal) ; OP1=U32; C=u32StatusCode
     bit u32StatusCodeTooBig, c
     jr nz, printOP1BaseInvalid
@@ -1099,9 +1108,12 @@ truncateHexDigits:
 
 ; Description: Print ingeger at OP1 at the current cursor in base 8. Erase to
 ; the end of line (but only if the digits did not spill over to the next line).
-; Input: OP1
+; Input:
+;   - OP1
+;   - B=displayFontMask
 ; Destroys: all, OP1-OP5
 printOP1Base8:
+    call displayStackSetLargeFont
     bcall(_ConvertOP1ToUxxNoFatal) ; OP1=U32; C=u32StatusCode
     bit u32StatusCodeTooBig, c
     jr nz, printOP1BaseInvalid
@@ -1163,101 +1175,48 @@ truncateOctString:
 ; ellipsis character to indicate hidden digits. The SHOW command can be used to
 ; display the additional digits.
 ;
-; Input: OP1: non-negative floating point number < 2^14
+; Input:
+;   - OP1
+;   - B=displayFontMask
 ; Destroys: all, OP1-OP5
 printOP1Base2:
+    ; Convert OP1 into Uxx first, so that we can determine whether to display
+    ; the results using small font or large font.
+    push bc ; stack=[displayFontMask]
     bcall(_ConvertOP1ToUxxNoFatal) ; HL=OP1=uxx(OP1); C=u32StatusCode
+    pop de ; D=displayFontMask
+    ld b, d ; B=displayFontMask
+    ; Check for errors
     bit u32StatusCodeTooBig, c
-    jp nz, printOP1BaseInvalid
+    jr nz, printOP1Base2TooBig
     bit u32StatusCodeNegative, c
-    jp nz, printOP1BaseNegative
+    jr nz, printOP1Base2Negative
     push bc ; stack=[u32StatusCode]
-    ; Convert u32 into a base-2 string.
-    ld de, OP4
-    bcall(_FormatU32ToBinString) ; DE=OP4=formattedString
-    ; Truncate leading digits to fit display (12 or 8 digits)
-    ex de, hl ; HL=OP4=formattedString
-    call truncateBinDigits ; HL=OP4=truncatedString
+    ; Convert HL=u32 into a base-2 string.
+    ld de, fmtString
+    bcall(_FormatU32ToBinString) ; DE=fmtString=formattedString
+    ; Truncate leading digits to fit display
+    ex de, hl ; HL=formattedString
+    bcall(_TruncateBinDigits) ; HL=truncatedString; A=strLen
     ; Group digits in groups of 4.
     ld de, OP3
-    call formatBinDigits ; HL,DE preserved
+    bcall(_FormatBinDigits) ; DE=formattedString=OP3
     ; Append frac indicator
     pop bc ; stack=[]; C=u32StatusCode
-    call appendHasFrac ; DE=rendered string
-    ex de, hl ; HL=rendered string
-    jp printHLString
-
-; Description: Truncate upper digits depending on baseWordSize. The effective
-; number of digits that can be displayed is `strLen = min(baseWordSize, 12)`.
-; Then scan all digits above strLen and look for a '1'. If a '1' exists at
-; digit >= strLen, replace the left most digit of the truncated string with an
-; Lellipsis character.
-;
-; Input:
-;   - HL: pointer to rendered string
-; Output:
-;   - HL: pointer to truncated string
-;   - A: strLen
-; Destroys: A, BC
-maxBinDisplayDigits equ 12
-truncateBinDigits:
-    ld a, (baseWordSize)
-    cp maxBinDisplayDigits + 1 ; if baseWordSize < maxBinDisplayDigits: CF=1
-    jr c, truncateBinDigitsContinue
-    ld a, maxBinDisplayDigits ; strLen=min(baseWordSize, maxBinDisplayDigits)
-truncateBinDigitsContinue:
-    push af ; stack=[strLen]
-    sub 32
-    neg ; A=num leading digits=32-strLen, either 20 or 24
-    ; Check leading digits to determine if truncation causes overflow
-    ld b, a
-    ld c, 0 ; C=foundOneDigit:boolean
-truncateBinDigitsCheckOverflow:
-    ld a, (hl)
-    inc hl ; HL=left most digit of the truncated string.
-    sub '0'
-    or c ; check for a '1' digit
-    ld c, a
-    djnz truncateBinDigitsCheckOverflow
-    jr z, truncateBinDigitsNoOverflow ; if C=0: ZF=1, indicating no overflow
-    ; Replace left most digit with ellipsis symbol to indicate overflow.
-    ld a, Lellipsis
-    ld (hl), a
-truncateBinDigitsNoOverflow:
-    pop af ; stack=[]; A=strLen
-    ret
-
-; Description: Format the binary string into groups of 4 digits.
-; Input:
-;   - HL: pointer to NUL terminated string, <= 12 digits.
-;   - A: strLen
-;   - DE: destination string of at least 15 bytes
-; Output:
-;   - DE: string reformatted in groups of 4
-; Destroys: A, BC
-; Preserves: DE, HL
-; TODO: Move to formatinteger32.asm.
-formatBinDigits:
-    push de
-    push hl
-    ld b, 0
-    ld c, a
-formatBinDigitsLoop:
-    ldi
-    jp po, formatBinDigitsEnd ; if BC==0: PV=0=po (odd)
-    ld a, c
-    and $03 ; every group of 4 digits (right justified), add a space
-    jr nz, formatBinDigitsLoop
-    ld a, ' '
-    ld (de), a
-    inc de
-    jr formatBinDigitsLoop
-formatBinDigitsEnd:
-    xor a
-    ld (de), a
-    pop hl
-    pop de
-    ret
+    call appendHasFrac ; DE=formattedString
+    ; Always use small font for base 2.
+    ex de, hl ; HL=formattedString
+    call eraseEOLIfNeeded ; uses B
+    call displayStackSetSmallFont
+    bcall(_ConvertBinDigitsToSmallFont)
+    jp printSmallHLString
+    ;
+printOP1Base2TooBig:
+    call displayStackSetLargeFont
+    jp printOP1BaseInvalid
+printOP1Base2Negative:
+    call displayStackSetLargeFont
+    jp printOP1BaseNegative
 
 ;-----------------------------------------------------------------------------
 ; RpnObject records.
@@ -1280,8 +1239,7 @@ printOP1DateRecord:
     ld (de), a ; add NUL terminator
     ; print string stored in OP3
     pop hl ; HL=OP3
-    call vPutSmallS
-    jp vEraseEOL
+    jp printSmallHLString
 
 ; Description: Print the RpnTime Record in OP1 using small font.
 ; Input:
@@ -1300,8 +1258,7 @@ printOP1TimeRecord:
     ld (de), a ; add NUL terminator
     ; print string stored in OP3
     pop hl ; HL=OP3
-    call vPutSmallS
-    jp vEraseEOL
+    jp printSmallHLString
 
 ; Description: Print the RpnDateTime Record in OP1 using small font.
 ; Input:
@@ -1318,8 +1275,7 @@ printOP1DateTimeRecord:
     bcall(_FormatDateTime)
     ; print string stored in OP3
     pop hl ; HL=OP3
-    call vPutSmallS
-    jp vEraseEOL
+    jp printSmallHLString
 
 ; Description: Print the RpnOffset Record in OP1 using small font.
 ; Input:
@@ -1335,8 +1291,7 @@ printOP1OffsetRecord:
     bcall(_FormatOffset)
     ; print string stored in OP3
     pop hl ; HL=OP3
-    call vPutSmallS
-    jp vEraseEOL
+    jp printSmallHLString
 
 ; Description: Print the RpnOffsetDateTime Record in OP1 using small font.
 ; Input:
@@ -1355,8 +1310,7 @@ printOP1OffsetDateTimeRecord:
     call expandOp1ToOp2
     ; print string stored in OP3
     pop hl ; HL=OP3
-    call vPutSmallS
-    jp vEraseEOL
+    jp printSmallHLString
 
 ; Description: Print the RpnDayOfWeek record in OP1 using small font.
 ; Input:
@@ -1372,8 +1326,7 @@ printOP1DayOfWeekRecord:
     bcall(_FormatDayOfWeek)
     ; print string stored in OP3
     pop hl ; HL=OP3
-    call vPutSmallS
-    jp vEraseEOL
+    jp printSmallHLString
 
 ; Description: Print the RpnDuration record in OP1 using small font.
 ; Input:
@@ -1389,8 +1342,7 @@ printOP1DurationRecord:
     bcall(_FormatDuration)
     ; print string stored in OP3
     pop hl ; HL=OP3
-    call vPutSmallS
-    jp vEraseEOL
+    jp printSmallHLString
 
 ;-----------------------------------------------------------------------------
 ; String constants.

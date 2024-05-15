@@ -151,6 +151,116 @@ formatU32ToBinStringLoop:
 
 ;------------------------------------------------------------------------------
 
+; Description: Truncate upper digits depending on baseWordSize. The effective
+; number of digits that can be displayed is `strLen = min(baseWordSize, 12)`.
+; Then scan all digits above strLen and look for a '1'. If a '1' exists at
+; digit >= strLen, replace the left most digit of the truncated string with an
+; Lellipsis character.
+;
+; Input:
+;   - HL:(char*)=inputString=u32 as string (32 characters)
+; Output:
+;   - HL:(char*)=truncatedString
+;   - A:u8=displayLen=8 or 16
+; Destroys: A, BC
+maxBinDisplayDigits equ 16
+TruncateBinDigits:
+    ld a, (baseWordSize)
+    cp maxBinDisplayDigits ; if baseWordSize < maxBinDisplayDigits: CF=1
+    jr c, truncateBinDigitsContinue
+    ld a, maxBinDisplayDigits ; displayLen=min(baseWordSize,maxBinDisplayDigits)
+truncateBinDigitsContinue:
+    ; A=displayLen=8 or 16
+    push af ; stack=[displayLen]
+    sub 32
+    neg ; A=numLeadingdigits=32-strLen=16 or 24
+    ; Check leading digits to determine if truncation causes overflow
+    ld b, a
+    ld c, 0 ; C=foundOneDigit:boolean
+truncateBinDigitsCheckOverflow:
+    ld a, (hl)
+    inc hl ; HL=left most digit of the truncated string.
+    sub '0'
+    or c ; check for a '1' digit
+    ld c, a
+    djnz truncateBinDigitsCheckOverflow
+    jr z, truncateBinDigitsNoOverflow ; if C=0: ZF=1, indicating no overflow
+    ; Replace left most digit with ellipsis symbol to indicate overflow.
+    ld a, Lellipsis
+    ld (hl), a
+truncateBinDigitsNoOverflow:
+    pop af ; stack=[]; A=displayLen
+    ret
+
+;------------------------------------------------------------------------------
+
+; Description: Format the binary string into groups of 4 digits.
+; Input:
+;   - HL:(char*), <= 16 digits.
+;   - A:u8=strLen
+;   - DE:(char*)=string buffer of >= 20 bytes (including NUL string). Must not
+;   overlap with HL.
+; Output:
+;   - DE:(char*)=formattedString
+; Destroys: A, BC
+; Preserves: DE, HL
+FormatBinDigits: ; TODO: Rename to ReformatBinDigits().
+    push de
+    push hl
+    ld b, 0
+    ld c, a
+formatBinDigitsLoop:
+    ldi
+    jp po, formatBinDigitsEnd ; if BC==0: PV=0=po (odd)
+    ld a, c
+    and $03 ; every group of 4 digits (right justified), add a space
+    jr nz, formatBinDigitsLoop
+    ld a, ' '
+    ld (de), a
+    inc de
+    jr formatBinDigitsLoop
+formatBinDigitsEnd:
+    xor a
+    ld (de), a ; terminating NUL
+    pop hl
+    pop de
+    ret
+
+; Description: Convert large font characters to small font characters which
+; look better in small font:
+;   - Lellipsis -> Sleft
+;   - Lspace -> SFourSpaces
+;
+; Input: HL:(char*)
+; Output: (HL)=convertedString
+; Destroys: A
+ConvertBinDigitsToSmallFont:
+    push hl
+    jr convertBinDigitsToSmallFontLoopEntry
+convertBinDigitsToSmallFontLoop:
+    inc hl
+convertBinDigitsToSmallFontLoopEntry:
+    ld a, (hl)
+    or a
+    jr z, convertBinDigitsToSmallFontEnd
+    ;
+    cp Lellipsis
+    jr nz, convertBinDigitsToSmallFontCheckSpace
+    ld a, Sleft
+    ld (hl), a
+    jr convertBinDigitsToSmallFontLoop
+convertBinDigitsToSmallFontCheckSpace:
+    cp Lspace
+    jr nz, convertBinDigitsToSmallFontLoop
+    ld a, SFourSpaces
+    ld (hl), a
+    jr convertBinDigitsToSmallFontLoop
+convertBinDigitsToSmallFontEnd:
+    pop hl
+    ret
+
+;------------------------------------------------------------------------------
+
 ; Description: Reformat the base-2 string in groups of 4, 2 groups per line.
 ; The source string is probably at OP4. The destination string is probably OP3,
 ; which is 11 bytes before OP4. The original string is a maximum of 32
