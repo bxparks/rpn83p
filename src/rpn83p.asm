@@ -1751,6 +1751,10 @@ _FormatBinDigitsLabel:
 _FormatBinDigits equ _FormatBinDigitsLabel-branchTableBase
     .dw FormatBinDigits
     .db 2
+_ConvertBinDigitsToSmallFontLabel:
+_ConvertBinDigitsToSmallFont equ _ConvertBinDigitsToSmallFontLabel-branchTableBase
+    .dw ConvertBinDigitsToSmallFont
+    .db 2
 _FormatU32ToHexStringLabel:
 _FormatU32ToHexString equ _FormatU32ToHexStringLabel-branchTableBase
     .dw FormatU32ToHexString

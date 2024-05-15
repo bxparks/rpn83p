@@ -860,7 +860,6 @@ printOP1:
 ;   - B=displayFontMask
 ; Destroys: OP3-OP6
 printOP1Real:
-    call displayStackSetLargeFont
     bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
     jp z, printOP1AsFloat
     ld a, (baseNumber)
@@ -949,10 +948,9 @@ printOP1ComplexDeg:
 ; Input:
 ;   - (displayStackFontFlags)
 ;   - B=displayFontMask
-; Destroys: A, HL
+; Destroys: A
 eraseEOLIfNeeded:
-    ld hl, displayStackFontFlags
-    ld a, (hl)
+    ld a, (displayStackFontFlags)
     and b ; if previous==smallFont: ZF=0
     ret nz ; if previous==smallFont: ret
     bcall(_EraseEOL) ; all registered saved
@@ -961,24 +959,23 @@ eraseEOLIfNeeded:
 ; Description: Mark the stack line identified by B as using small font.
 ; Input: B=displayFontMask
 ; Output: displayStackFontFlags |= B
-; Destroys: A, HL
+; Destroys: A
 displayStackSetSmallFont:
-    ld a, b
-    ld hl, displayStackFontFlags
-    or (hl) ; A=displayFontMask OR (displayStackFontFlags)
-    ld (hl), a
+    ld a, (displayStackFontFlags)
+    or b ; A=displayFontMask OR (displayStackFontFlags)
+    ld (displayStackFontFlags), a
     ret
 
 ; Description: Mark the stack line identified by B as using large font.
 ; Input: B=displayFontMask
 ; Output: displayStackFontFlags &= (~B)
-; Destroys: A, HL
+; Destroys: A
 displayStackSetLargeFont:
-    ld a, b
+    ld a, (displayStackFontFlags)
     cpl ; A=~displayFontMask
-    ld hl, displayStackFontFlags
-    and (hl)
-    ld (hl), a
+    or b ; A=(~displayFontMask|B)
+    cpl ; A=(displayFontMask & ~B)
+    ld (displayStackFontFlags), a
     ret
 
 ;-----------------------------------------------------------------------------
@@ -987,6 +984,7 @@ displayStackSetLargeFont:
 ; Input: OP1: floating point number
 ; Destroys: A, HL, OP3
 printOP1AsFloat:
+    call displayStackSetLargeFont
     ld a, 15 ; width of output
     bcall(_FormReal)
     ld hl, OP3
@@ -995,7 +993,7 @@ printOP1AsFloat:
 ; Description: Print the C-string referenced by HL, and erase to the end of
 ; line, taking care that the cursor did not move to the next line
 ; automatically.
-; Input: HL: pointer to C-string
+; Input: HL:(const char*)
 ; Output:
 ; Destroys: A, HL
 printHLString:
@@ -1022,9 +1020,12 @@ printOP1BaseNegative:
 
 ; Description: Print integer at OP1 at the current cursor in base 10. Erase to
 ; the end of line (but only if the digits did not spill over to the next line).
-; Input: OP1
+; Input:
+;   - OP1
+;   - B=displayFontMask
 ; Destroys: all, OP1-OP6
 printOP1Base10:
+    call displayStackSetLargeFont
     bcall(_ConvertOP1ToUxxNoFatal) ; HL=OP1=uxx(OP1); C=u32StatusCode
     bit u32StatusCodeTooBig, c
     jr nz, printOP1BaseInvalid
@@ -1063,9 +1064,12 @@ appendHasFrac:
 ; the end of line (but only if the digits did not spill over to the next line).
 ; TODO: I think printOP1Base16(), printOP1Base8(), and printOP1Base2() can be
 ; combined into a single subroutine, saving memory.
-; Input: OP1
+; Input:
+;   - OP1
+;   - B=displayFontMask
 ; Destroys: all, OP1-OP5
 printOP1Base16:
+    call displayStackSetLargeFont
     bcall(_ConvertOP1ToUxxNoFatal) ; OP1=U32; C=u32StatusCode
     bit u32StatusCodeTooBig, c
     jr nz, printOP1BaseInvalid
@@ -1099,9 +1103,12 @@ truncateHexDigits:
 
 ; Description: Print ingeger at OP1 at the current cursor in base 8. Erase to
 ; the end of line (but only if the digits did not spill over to the next line).
-; Input: OP1
+; Input:
+;   - OP1
+;   - B=displayFontMask
 ; Destroys: all, OP1-OP5
 printOP1Base8:
+    call displayStackSetLargeFont
     bcall(_ConvertOP1ToUxxNoFatal) ; OP1=U32; C=u32StatusCode
     bit u32StatusCodeTooBig, c
     jr nz, printOP1BaseInvalid
@@ -1163,29 +1170,61 @@ truncateOctString:
 ; ellipsis character to indicate hidden digits. The SHOW command can be used to
 ; display the additional digits.
 ;
-; Input: OP1: non-negative floating point number < 2^14
+; Input:
+;   - OP1
+;   - B=displayFontMask
 ; Destroys: all, OP1-OP5
 printOP1Base2:
+    ; Convert OP1 into Uxx first, so that we can determine whether to display
+    ; the results using small font or large font.
+    push bc ; stack=[displayFontMask]
     bcall(_ConvertOP1ToUxxNoFatal) ; HL=OP1=uxx(OP1); C=u32StatusCode
+    pop de ; D=displayFontMask
+    ld b, d ; B=displayFontMask
+    ; Check for errors
     bit u32StatusCodeTooBig, c
-    jp nz, printOP1BaseInvalid
+    jr nz, printOP1Base2TooBig
     bit u32StatusCodeNegative, c
-    jp nz, printOP1BaseNegative
+    jr nz, printOP1Base2Negative
     push bc ; stack=[u32StatusCode]
-    ; Convert u32 into a base-2 string.
-    ld de, OP4
-    bcall(_FormatU32ToBinString) ; DE=OP4=formattedString
+    ; Convert HL=u32 into a base-2 string.
+    ld de, fmtString
+    bcall(_FormatU32ToBinString) ; DE=fmtString=formattedString
     ; Truncate leading digits to fit display (12 or 8 digits)
-    ex de, hl ; HL=OP4=formattedString
-    bcall(_TruncateBinDigits) ; HL=OP4=truncatedString
+    ex de, hl ; HL=formattedString
+    bcall(_TruncateBinDigits) ; HL=truncatedString; A=strLen
     ; Group digits in groups of 4.
     ld de, OP3
-    bcall(_FormatBinDigits) ; HL,DE preserved
+    bcall(_FormatBinDigits) ; DE=formattedString=OP3
     ; Append frac indicator
     pop bc ; stack=[]; C=u32StatusCode
-    call appendHasFrac ; DE=rendered string
-    ex de, hl ; HL=rendered string
+    call appendHasFrac ; DE=formattedString
+    ;
+    ex de, hl ; HL=formattedString
+    jr printBase2StringSmallOrLarge
+    ;
+printOP1Base2TooBig:
+    call displayStackSetLargeFont
+    jp printOP1BaseInvalid
+printOP1Base2Negative:
+    call displayStackSetLargeFont
+    jp printOP1BaseNegative
+
+; Description: Print the string in HL in large font size for WSIZ=8, and small
+; font for WSIZ=16,24,32.
+; Destroys: A, HL
+printBase2StringSmallOrLarge:
+    ld a, (baseWordSize)
+    cp 16 ; CF=0 if baseWordSize >= 16
+    jr nc, printBase2StringSmall
+    call displayStackSetLargeFont
     jp printHLString
+printBase2StringSmall:
+    call eraseEOLIfNeeded ; uses B
+    call displayStackSetSmallFont
+    bcall(_ConvertBinDigitsToSmallFont)
+    call vPutSmallS ; TODO: create a printHLStringSmall() routine.
+    jp vEraseEOL
 
 ;-----------------------------------------------------------------------------
 ; RpnObject records.

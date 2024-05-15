@@ -158,21 +158,22 @@ formatU32ToBinStringLoop:
 ; Lellipsis character.
 ;
 ; Input:
-;   - HL:(char*)=inputString
+;   - HL:(char*)=inputString=u32 as string (32 characters)
 ; Output:
 ;   - HL:(char*)=truncatedString
-;   - A:u8=strLen
+;   - A:u8=displayLen=8 or 16
 ; Destroys: A, BC
-maxBinDisplayDigits equ 12
+maxBinDisplayDigits equ 16
 TruncateBinDigits:
     ld a, (baseWordSize)
-    cp maxBinDisplayDigits + 1 ; if baseWordSize < maxBinDisplayDigits: CF=1
+    cp maxBinDisplayDigits ; if baseWordSize < maxBinDisplayDigits: CF=1
     jr c, truncateBinDigitsContinue
-    ld a, maxBinDisplayDigits ; strLen=min(baseWordSize, maxBinDisplayDigits)
+    ld a, maxBinDisplayDigits ; displayLen=min(baseWordSize,maxBinDisplayDigits)
 truncateBinDigitsContinue:
-    push af ; stack=[strLen]
+    ; A=displayLen=8 or 16
+    push af ; stack=[displayLen]
     sub 32
-    neg ; A=num leading digits=32-strLen, either 20 or 24
+    neg ; A=numLeadingdigits=32-strLen=16 or 24
     ; Check leading digits to determine if truncation causes overflow
     ld b, a
     ld c, 0 ; C=foundOneDigit:boolean
@@ -188,21 +189,22 @@ truncateBinDigitsCheckOverflow:
     ld a, Lellipsis
     ld (hl), a
 truncateBinDigitsNoOverflow:
-    pop af ; stack=[]; A=strLen
+    pop af ; stack=[]; A=displayLen
     ret
 
 ;------------------------------------------------------------------------------
 
 ; Description: Format the binary string into groups of 4 digits.
 ; Input:
-;   - HL:(char*), <= 12 digits.
+;   - HL:(char*), <= 16 digits.
 ;   - A:u8=strLen
-;   - DE:(char*)=string buffer of >=16 bytes (including NUL string)
+;   - DE:(char*)=string buffer of >= 20 bytes (including NUL string). Must not
+;   overlap with HL.
 ; Output:
-;   - DE: string reformatted in groups of 4
+;   - DE:(char*)=formattedString
 ; Destroys: A, BC
 ; Preserves: DE, HL
-FormatBinDigits:
+FormatBinDigits: ; TODO: Rename to ReformatBinDigits().
     push de
     push hl
     ld b, 0
@@ -222,6 +224,39 @@ formatBinDigitsEnd:
     ld (de), a ; terminating NUL
     pop hl
     pop de
+    ret
+
+; Description: Convert large font characters to small font characters which
+; look better in small font:
+;   - Lellipsis -> Sleft
+;   - Lspace -> SFourSpaces
+;
+; Input: HL:(char*)
+; Output: (HL)=convertedString
+; Destroys: A
+ConvertBinDigitsToSmallFont:
+    push hl
+    jr convertBinDigitsToSmallFontLoopEntry
+convertBinDigitsToSmallFontLoop:
+    inc hl
+convertBinDigitsToSmallFontLoopEntry:
+    ld a, (hl)
+    or a
+    jr z, convertBinDigitsToSmallFontEnd
+    ;
+    cp Lellipsis
+    jr nz, convertBinDigitsToSmallFontCheckSpace
+    ld a, Sleft
+    ld (hl), a
+    jr convertBinDigitsToSmallFontLoop
+convertBinDigitsToSmallFontCheckSpace:
+    cp Lspace
+    jr nz, convertBinDigitsToSmallFontLoop
+    ld a, SFourSpaces
+    ld (hl), a
+    jr convertBinDigitsToSmallFontLoop
+convertBinDigitsToSmallFontEnd:
+    pop hl
     ret
 
 ;------------------------------------------------------------------------------
