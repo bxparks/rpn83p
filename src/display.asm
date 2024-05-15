@@ -1180,44 +1180,12 @@ printOP1Base2:
     bcall(_TruncateBinDigits) ; HL=OP4=truncatedString
     ; Group digits in groups of 4.
     ld de, OP3
-    call formatBinDigits ; HL,DE preserved
+    bcall(_FormatBinDigits) ; HL,DE preserved
     ; Append frac indicator
     pop bc ; stack=[]; C=u32StatusCode
     call appendHasFrac ; DE=rendered string
     ex de, hl ; HL=rendered string
     jp printHLString
-
-; Description: Format the binary string into groups of 4 digits.
-; Input:
-;   - HL: pointer to NUL terminated string, <= 12 digits.
-;   - A: strLen
-;   - DE: destination string of at least 15 bytes
-; Output:
-;   - DE: string reformatted in groups of 4
-; Destroys: A, BC
-; Preserves: DE, HL
-; TODO: Move to formatinteger32.asm.
-formatBinDigits:
-    push de
-    push hl
-    ld b, 0
-    ld c, a
-formatBinDigitsLoop:
-    ldi
-    jp po, formatBinDigitsEnd ; if BC==0: PV=0=po (odd)
-    ld a, c
-    and $03 ; every group of 4 digits (right justified), add a space
-    jr nz, formatBinDigitsLoop
-    ld a, ' '
-    ld (de), a
-    inc de
-    jr formatBinDigitsLoop
-formatBinDigitsEnd:
-    xor a
-    ld (de), a
-    pop hl
-    pop de
-    ret
 
 ;-----------------------------------------------------------------------------
 ; RpnObject records.

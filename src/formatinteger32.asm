@@ -193,6 +193,39 @@ truncateBinDigitsNoOverflow:
 
 ;------------------------------------------------------------------------------
 
+; Description: Format the binary string into groups of 4 digits.
+; Input:
+;   - HL:(char*), <= 12 digits.
+;   - A:u8=strLen
+;   - DE:(char*)=string buffer of >=16 bytes (including NUL string)
+; Output:
+;   - DE: string reformatted in groups of 4
+; Destroys: A, BC
+; Preserves: DE, HL
+FormatBinDigits:
+    push de
+    push hl
+    ld b, 0
+    ld c, a
+formatBinDigitsLoop:
+    ldi
+    jp po, formatBinDigitsEnd ; if BC==0: PV=0=po (odd)
+    ld a, c
+    and $03 ; every group of 4 digits (right justified), add a space
+    jr nz, formatBinDigitsLoop
+    ld a, ' '
+    ld (de), a
+    inc de
+    jr formatBinDigitsLoop
+formatBinDigitsEnd:
+    xor a
+    ld (de), a ; terminating NUL
+    pop hl
+    pop de
+    ret
+
+;------------------------------------------------------------------------------
+
 ; Description: Reformat the base-2 string in groups of 4, 2 groups per line.
 ; The source string is probably at OP4. The destination string is probably OP3,
 ; which is 11 bytes before OP4. The original string is a maximum of 32

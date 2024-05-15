@@ -1747,6 +1747,10 @@ _TruncateBinDigitsLabel:
 _TruncateBinDigits equ _TruncateBinDigitsLabel-branchTableBase
     .dw TruncateBinDigits
     .db 2
+_FormatBinDigitsLabel:
+_FormatBinDigits equ _FormatBinDigitsLabel-branchTableBase
+    .dw FormatBinDigits
+    .db 2
 _FormatU32ToHexStringLabel:
 _FormatU32ToHexString equ _FormatU32ToHexStringLabel-branchTableBase
     .dw FormatU32ToHexString
