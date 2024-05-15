@@ -775,8 +775,7 @@ displayShow:
     ld hl, errorPenRow*$100 ; $(penRow)(penCol)
     ld (PenCol), hl
     ld hl, msgShowLabel
-    call vPutSmallS
-    call vEraseEOL
+    call printSmallHLString
     ; Call special FormShowable() function to show all digits of OP1.
     ld hl, showCurCol*$100 + showCurRow ; $(curCol)(curRow)
     ld (CurRow), hl
@@ -910,8 +909,7 @@ printOP1ComplexRect:
     ld de, fmtString
     bcall(_FormatComplexRect)
     ld hl, fmtString
-    call vPutSmallS
-    jp vEraseEOL
+    jp printSmallHLString
 
 ; Description: Print the complex numberin CP1 in polar form using radians.
 ; Note: An r value >= 1e100 or <= 1e-100 can be returned by complexRToPRad()
@@ -924,8 +922,7 @@ printOP1ComplexRad:
     ld de, fmtString
     bcall(_FormatComplexPolarRad)
     ld hl, fmtString
-    call vPutSmallS
-    jp vEraseEOL
+    jp printSmallHLString
 
 ; Description: Print the complex numberin CP1 in polar form using degrees.
 ; Note: An r value >= 1e100 or <= 1e-100 can be returned by complexRToPRad()
@@ -938,8 +935,7 @@ printOP1ComplexDeg:
     ld de, fmtString
     bcall(_FormatComplexPolarDeg)
     ld hl, fmtString
-    call vPutSmallS
-    jp vEraseEOL
+    jp printSmallHLString
 
 ;-----------------------------------------------------------------------------
 
@@ -1015,6 +1011,15 @@ printOP1BaseInvalid:
 printOP1BaseNegative:
     ld hl, msgBaseNegative
     jr printHLString
+
+; Description: Print the string in HL using small font, and erase to end of
+; line. Unlike printHLString(), this routine assumes that the string never
+; wraps to the next line.
+; Input: HL:(const char*)
+; Destroys: A, HL
+printSmallHLString:
+    call vPutSmallS
+    jp vEraseEOL
 
 ;-----------------------------------------------------------------------------
 
@@ -1223,8 +1228,7 @@ printBase2StringSmall:
     call eraseEOLIfNeeded ; uses B
     call displayStackSetSmallFont
     bcall(_ConvertBinDigitsToSmallFont)
-    call vPutSmallS ; TODO: create a printHLStringSmall() routine.
-    jp vEraseEOL
+    jp printSmallHLString
 
 ;-----------------------------------------------------------------------------
 ; RpnObject records.
@@ -1247,8 +1251,7 @@ printOP1DateRecord:
     ld (de), a ; add NUL terminator
     ; print string stored in OP3
     pop hl ; HL=OP3
-    call vPutSmallS
-    jp vEraseEOL
+    jp printSmallHLString
 
 ; Description: Print the RpnTime Record in OP1 using small font.
 ; Input:
@@ -1267,8 +1270,7 @@ printOP1TimeRecord:
     ld (de), a ; add NUL terminator
     ; print string stored in OP3
     pop hl ; HL=OP3
-    call vPutSmallS
-    jp vEraseEOL
+    jp printSmallHLString
 
 ; Description: Print the RpnDateTime Record in OP1 using small font.
 ; Input:
@@ -1285,8 +1287,7 @@ printOP1DateTimeRecord:
     bcall(_FormatDateTime)
     ; print string stored in OP3
     pop hl ; HL=OP3
-    call vPutSmallS
-    jp vEraseEOL
+    jp printSmallHLString
 
 ; Description: Print the RpnOffset Record in OP1 using small font.
 ; Input:
@@ -1302,8 +1303,7 @@ printOP1OffsetRecord:
     bcall(_FormatOffset)
     ; print string stored in OP3
     pop hl ; HL=OP3
-    call vPutSmallS
-    jp vEraseEOL
+    jp printSmallHLString
 
 ; Description: Print the RpnOffsetDateTime Record in OP1 using small font.
 ; Input:
@@ -1322,8 +1322,7 @@ printOP1OffsetDateTimeRecord:
     call expandOp1ToOp2
     ; print string stored in OP3
     pop hl ; HL=OP3
-    call vPutSmallS
-    jp vEraseEOL
+    jp printSmallHLString
 
 ; Description: Print the RpnDayOfWeek record in OP1 using small font.
 ; Input:
@@ -1339,8 +1338,7 @@ printOP1DayOfWeekRecord:
     bcall(_FormatDayOfWeek)
     ; print string stored in OP3
     pop hl ; HL=OP3
-    call vPutSmallS
-    jp vEraseEOL
+    jp printSmallHLString
 
 ; Description: Print the RpnDuration record in OP1 using small font.
 ; Input:
@@ -1356,8 +1354,7 @@ printOP1DurationRecord:
     bcall(_FormatDuration)
     ; print string stored in OP3
     pop hl ; HL=OP3
-    call vPutSmallS
-    jp vEraseEOL
+    jp printSmallHLString
 
 ;-----------------------------------------------------------------------------
 ; String constants.
