@@ -13,22 +13,27 @@ calculator, with some significant features from the
 
 The RPN83P is a flash application written in Z80 assembly language that consumes
 3 pages (48 kiB) of flash memory. Since it is stored in flash, it is preserved
-if the RAM is cleared. It consumes about 1025 bytes of TI-OS RAM through 4
-AppVars: `RPN83REG` (498 bytes), `RPN83SAV` (139), `RPN83STA` (270 bytes), and
-`RPN83STK` (118 bytes).
+if the RAM is cleared. It consumes about 1025 to 2535 bytes of TI-OS RAM through
+4 AppVars, depending on the number of storage registers: `RPN83REG` (500 to 1925
+bytes), `RPN83SAV` (142 byte), `RPN83STA` (272 bytes), and `RPN83STK` (120 to
+196 bytes).
 
 Summary of features:
 
-- traditional 4-level RPN stack (`X`, `Y`, `Z`, `T`), with `LastX` register
-- 8-line display showing all stack registers
+- traditional RPN stack (`X`, `Y`, `Z`, `T`), with `LastX` register
+    - configurable stack levels between 4 and 8: `SSIZ`, `SIZ?`
+- input edit line with scrollable cursor using arrow keys
+    - `LEFT`, `RIGHT`, `2ND LEFT`, `2ND RIGHT`
+- 8-line display showing 4 stack registers
 - hierarchical menu system similar to HP-42S
 - quick reference `HELP` menu
 - storage registers and variables
     - store and recall:`STO nn`, `RCL nn`
     - storage arithmetics: `STO+ nn`, `STO- nn`, `STO* nn`, `STO/ nn`, `RCL+
       nn`, `RCL- nn`, `RCL* nn`, `RCL/ nn`
-    - 25 storage registers: `nn = 00..24`
+    - up to 100 numerical storage registers (`nn = 00..99`, default 25)
     - 27 single-letter variables (`nn = A..Z,Theta`)
+    - configurable number of storage registers: `RSIZ`, `RSZ?`
 - all math functions with dedicated buttons on the TI-83 Plus and TI-84 Plus
     - arithmetic: `/`, `*`, `-`, `+`
     - algebraic: `1/X`, `X^2`, `SQRT`, `^` (i.e. `Y^X`)
@@ -39,6 +44,7 @@ Summary of features:
     - arithmetic: `%`, `%CH`, `GCD`, `LCM`, `PRIM` (prime factor), `IP` (integer
       part), `FP` (fractional part), `FLR` (floor), `CEIL` (ceiling), `NEAR`
       (nearest integer), `ABS`, `SIGN`, `MOD`, `MIN`, `MAX`
+    - rounding: `RNDF`, `RNDN`, `RNDG`
     - algebraic: `X^3`, `3RootX`
     - transcendental: `XRootY`,`2^X`, `LOG2`, `LOGB`, `E^X-` (e^x-1), `LN1+`
       (log(1+x))
