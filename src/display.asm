@@ -1191,7 +1191,7 @@ printOP1Base2:
     jr nz, printOP1Base2TooBig
     bit u32StatusCodeNegative, c
     jr nz, printOP1Base2Negative
-    push bc ; stack=[u32StatusCode]
+    push bc ; stack=[B=displayFontMask,C=u32StatusCode]
     ; Convert HL=u32 into a base-2 string.
     ld de, fmtString
     bcall(_FormatU32ToBinString) ; DE=fmtString=formattedString
@@ -1200,9 +1200,9 @@ printOP1Base2:
     bcall(_TruncateBinDigits) ; HL=truncatedString; A=strLen
     ; Group digits in groups of 4.
     ld de, OP3
-    bcall(_FormatBinDigits) ; DE=formattedString=OP3
+    bcall(_ReformatBinDigits) ; DE=formattedString=OP3
     ; Append frac indicator
-    pop bc ; stack=[]; C=u32StatusCode
+    pop bc ; stack=[]; B=displayFontMask; C=u32StatusCode
     call appendHasFrac ; DE=formattedString
     ; Always use small font for base 2.
     ex de, hl ; HL=formattedString

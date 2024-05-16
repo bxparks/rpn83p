@@ -194,7 +194,7 @@ truncateBinDigitsNoOverflow:
 
 ;------------------------------------------------------------------------------
 
-; Description: Format the binary string into groups of 4 digits.
+; Description: Reformat the binary string into groups of 4 digits.
 ; Input:
 ;   - HL:(char*), <= 16 digits.
 ;   - A:u8=strLen
@@ -204,22 +204,22 @@ truncateBinDigitsNoOverflow:
 ;   - DE:(char*)=formattedString
 ; Destroys: A, BC
 ; Preserves: DE, HL
-FormatBinDigits: ; TODO: Rename to ReformatBinDigits().
+ReformatBinDigits:
     push de
     push hl
     ld b, 0
     ld c, a
-formatBinDigitsLoop:
+reformatBinDigitsLoop:
     ldi
-    jp po, formatBinDigitsEnd ; if BC==0: PV=0=po (odd)
+    jp po, reformatBinDigitsEnd ; if BC==0: PV=0=po (odd)
     ld a, c
     and $03 ; every group of 4 digits (right justified), add a space
-    jr nz, formatBinDigitsLoop
+    jr nz, reformatBinDigitsLoop
     ld a, ' '
     ld (de), a
     inc de
-    jr formatBinDigitsLoop
-formatBinDigitsEnd:
+    jr reformatBinDigitsLoop
+reformatBinDigitsEnd:
     xor a
     ld (de), a ; terminating NUL
     pop hl

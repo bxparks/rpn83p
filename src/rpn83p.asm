@@ -1747,9 +1747,9 @@ _TruncateBinDigitsLabel:
 _TruncateBinDigits equ _TruncateBinDigitsLabel-branchTableBase
     .dw TruncateBinDigits
     .db 2
-_FormatBinDigitsLabel:
-_FormatBinDigits equ _FormatBinDigitsLabel-branchTableBase
-    .dw FormatBinDigits
+_ReformatBinDigitsLabel:
+_ReformatBinDigits equ _ReformatBinDigitsLabel-branchTableBase
+    .dw ReformatBinDigits
     .db 2
 _ConvertBinDigitsToSmallFontLabel:
 _ConvertBinDigitsToSmallFont equ _ConvertBinDigitsToSmallFontLabel-branchTableBase
