@@ -143,6 +143,13 @@ and more complicated features will get their own GitHub tickets.
         - it may be possible to support the [IANA Timezone
           Database](https://www.iana.org/time-zones) with only about 32-48 kB of
           additional flash memory (i.e. 2-3 flash pages)
+- save and restore state files
+    - save the entire state of the app to a single appVar (archived to
+      flash memory to save RAM and to be resilient across crashes and power
+      cycles)
+    - display a menu of state files to user
+    - allow user to select a state file
+    - restore the entire state of the app from the state file
 
 ## Far Future
 
