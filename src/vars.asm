@@ -131,28 +131,21 @@
 ;
 ; struct RpnElementList {
 ;   uint16_t size ; // maintained by the TIOS (*not* including 'size' field)
-;   uint16_t crc16; // CRC16 checksum of all following bytes
-;   uint16_t schemaVersion; // schema version in v0.11 (appId in < v0.11)
-;   uint16_t appId; // appId
+;   struct RpnVarHeader {
+;     uint16_t crc16; // CRC16 checksum of all following bytes
+;     uint16_t appId; // appId
+;     uint16_t varType; // varType
+;     uint16_t schemaVersion; // schema version of payload
+;   } header;
 ;   RpnElements elements[numElements];
 ; };
 ;
-; numElements = (size - 2 - 2 - 2) / sizeof(RpnElement))
+; numElements = (size - rpnVarHeaderSize) / sizeof(RpnElement))
 ;
-; The `schemaVersion` field was inadvertantly left out prior to v0.11. For
-; v0.11, it is deliberately placed into the same slot as the `appId` field in
-; the previous version, to allow the app to detect a schema change in both
-; directions, during an upgrade from (v0.1-v0.10) to v0.11, or during a
-; downgrade from v0.11 to (v0.1-v0.10):
-;
-; 1) (v0.1-v0.10) to v0.11: The `schemaVersion` field will change from
-; `rpn83pAppId` to `rpnElementListSchemaVersion`.
-; 2) v0.11 to (v0.1-v0.10): The `appId` field will change from
-; `rpnElementListSchemaVersion` to `rpn83pAppId`.
-;
-; The only time this will fail is if the user upgrades/downgrades between a
-; schema version of 1 (rpnElementListSchemaVersion) and $1E69 (rpn83pAppId),
-; which is likely to never happen.
+; The `schemaVersion` and `varType` fields were added in v0.11.0. To detect the
+; version change to v0.11.0, the persistence code must verify that the
+; sizeof(elements) is an integral multiple of sizeof(RpnElements). If not, the
+; appVar should be cleared and reinitialized.
 ;-----------------------------------------------------------------------------
 
 ; Description: Initialize the AppVar to contain an array of RpnObjects.
@@ -196,18 +189,24 @@ initRpnElementListHeader:
     inc de
     inc de ; skip past the CRC field
     ex de, hl ; HL=dataPointer+4
-    ; insert schemaVersion
-    ld bc, rpnElementListSchemaVersion
-    ld (hl), c
-    inc hl
-    ld (hl), b
-    inc hl ; HL=dataPointer+6
     ; insert appId
     ld bc, rpn83pAppId
     ld (hl), c
     inc hl
     ld (hl), b
+    inc hl ; HL=dataPointer+6
+    ; insert varType
+    ld bc, rpnVarTypeElementList
+    ld (hl), c
+    inc hl
+    ld (hl), b
     inc hl ; HL=dataPointer+8
+    ; insert schemaVersion
+    ld bc, rpnElementListSchemaVersion
+    ld (hl), c
+    inc hl
+    ld (hl), b
+    inc hl ; HL=dataPointer+10
     ; clear all the elements from [begin,len)
     pop de ; stack=[len]; DE=dataPointer
     pop bc ; stack=[]; C=len
@@ -215,13 +214,15 @@ initRpnElementListHeader:
     call clearRpnElementList
     ret
 
+;-----------------------------------------------------------------------------
+
 ; Description: Clear the rpnElementList elements over the interval
 ; [begin,begin+len). No array boundary checks are performed.
 ;
 ; Input:
 ;   - B:u8=begin
 ;   - C:u8=len
-;   - DE:(u8*)=dataPointer
+;   - DE:(u8*)=dataPointer of appVar just after the size field
 ; Destroys: A, DE, HL, OP1
 clearRpnElementList:
     push de ; stack=[dataPointer]
@@ -237,7 +238,7 @@ clearRpnElementList:
     inc de
     inc de ; DE=dataPointer+2; skip past appVarSize
     add hl, de ; HL=beginAddress=dataPointer+offset+2
-    ex de, hl ; DE=beginAddress; HL=dataPointer
+    ex de, hl ; DE=beginAddress; HL=dataPointer+2
 clearRpnElementListLoop:
     ; Copy OP1 into AppVar.
     ld a, rpnObjectTypeReal
@@ -258,6 +259,8 @@ clearRpnElementListLoopTrailing:
     jr nz, clearRpnElementListLoop
     ret
 
+;-----------------------------------------------------------------------------
+
 ; Description: Validate the `crc16` checksum, the `schemaVersion`, and the
 ; `appId` fields of the rpnElementList appVar. The `size` field is not validated
 ; because the appVar could have been changed to a different size.
@@ -271,52 +274,67 @@ clearRpnElementListLoopTrailing:
 ; Preserves: BC, OP1
 validateRpnElementList:
     push bc ; stack=[BC]
+    ; Validate appVarSize
+    call calcLenRpnElementList ; DE=preserved; ZF=1 if valid
+    jr nz, validateRpnElementListEnd
+    ; Extract appVarSize for CRC
     ex de, hl ; HL=dataPointer
-    ; Extract appVarSize
     ld c, (hl)
     inc hl
     ld b, (hl)
     inc hl ; BC=appVarSize
-    ; Extract CRC
-    ld e, (hl)
+    ; Calculate CRC of data after the crc16 field.
     inc hl
-    ld d, (hl) ; DE=CRC16
-    inc hl
+    inc hl ; HL=dataPointer+4
     dec bc
     dec bc ; BC=appVarSize-2; skip the CRC field itself
-    ; Compare CRC
-    push hl ; stack=[BC, dataPointer]
-    push de ; stack=[BC, dataPointer, expectedCRC]
+    push hl ; stack=[BC, dataPointer+4]
     bcall(_Crc16ccitt) ; DE=CRC16(HL)
-    pop hl ; stack=[BC, dataPointer]; HL=expectecCRC
-    or a ; CF=0
-    sbc hl, de ; if CRC matches: ZF=1
-    pop hl ; stack=[BC]; HL=dataPointer
-    jr nz, validateRpnElementListEnd
-    ; Verify schemaVersion.
-    ld e, (hl)
-    inc hl
-    ld d, (hl)
-    inc hl ; DE=schemaVersion
-    ex de, hl ; DE=dataPointer; HL=schemaVersion
-    ld bc, rpnElementListSchemaVersion
-    or a ; CF=0
-    sbc hl, bc ; if schemaVersion matches: ZF=1
-    ex de, hl ; HL=dataPointer
+    pop hl ; stack=[BC]; HL=dataPointer+4
+    dec hl
+    dec hl ; HL=pointerToCrc16
+    ; Compare CRC
+    ld c, e
+    ld b, d ; BC=CRC16
+    call validateHLField
     jr nz, validateRpnElementListEnd
     ; Verify appId.
-    ld e, (hl)
-    inc hl
-    ld d, (hl)
-    inc hl ; DE=appId
-    ex de, hl ; DE=dataPointer; HL=appId
     ld bc, rpn83pAppId
-    or a ; CF=0
-    sbc hl, bc ; if appId matches: ZF=1
-    ex de, hl ; HL=dataPointer
+    call validateHLField
+    jr nz, validateRpnElementListEnd
+    ; Verify varType.
+    ld bc, rpnVarTypeElementList
+    call validateHLField
+    jr nz, validateRpnElementListEnd
+    ; Verify schemaVersion.
+    ld bc, rpnElementListSchemaVersion
+    call validateHLField
+    ; [[fallthrough]]
 validateRpnElementListEnd:
     pop bc ; stack=[]; BC=restored
     ret
+
+; Description: Verify that the u16 pointed by HL is equal to the value given in
+; BC.
+; Input:
+;   - HL:(u16*)=source
+;   - BC:u16=validValue
+; Output:
+;   - ZF=1 if same, 0 if different
+;   - HL+=2
+; Destroys: DE
+validateHLField:
+    ld e, (hl)
+    inc hl
+    ld d, (hl)
+    inc hl ; DE=value
+    ex de, hl
+    or a ; CF=0
+    sbc hl, bc ; if schemaVersion matches: ZF=1
+    ex de, hl ; HL=dataPointer
+    ret
+
+;-----------------------------------------------------------------------------
 
 ; Description: Close the rpnElementList by updating the CRC16 checksum. This is
 ; intended to be called just before the application exits.
@@ -347,6 +365,8 @@ closeRpnElementList:
     ld (hl), d
     ret
 
+;-----------------------------------------------------------------------------
+
 ; Description: Return the length (number of elements) in the
 ; rpnElementList identified by the appVarName in HL.
 ; Input:
@@ -362,33 +382,42 @@ lenRpnElementList:
     call move9ToOp1 ; OP1=varName
     bcall(_ChkFindSym) ; DE=dataPointer; CF=1 if not found
     jr c, lenRpnElementListNotFound
-calcLenRpnElementList:
-    ex de, hl ; HL=dataPointer
-    ld e, (hl)
-    inc hl
-    ld d, (hl) ; DE=appVarSize
-    dec hl ; HL=dataPointer
-    ; remove the crc16, schemaVersion, and appId fields from appVarSize
-    ex de, hl ; HL=appVarSize; DE=dataPointer
-    dec hl
-    dec hl
-    dec hl
-    dec hl
-    dec hl
-    dec hl ; HL=appVarSize-6=rpnElementListSize
-    ; divide rpnElementListSize/sizeof(RpnElement)
-    ld c, rpnElementSizeOf
-    call divHLByC ; HL=quotient; A=remainder; preserves DE
-    or a ; validate no remainder
-    jr nz, lenRpnElementListInvalid
-    ld a, l
-    ret
+    call calcLenRpnElementList ; ZF=1 if valid
+    ret z
 lenRpnElementListInvalid:
     ; sizeof(var)/sizeof(RpnElement) has a non-zero remainder
     bcall(_ErrInvalid) ; should never happen
 lenRpnElementListNotFound:
     ; nothing we can do if the appVar isn't found
     bcall(_ErrUndefined) ; should never happen
+
+; Description: Calculate the number of RpnElement objects in the appVar.
+; Input:
+;   - DE:(u8*)=appVarDataPointer
+; Output:
+;   - A:u8=numElements
+;   - ZF=1 if valid; 0 if size is invalid
+; Destroys: A, BC, HL
+; Preserves: DE
+calcLenRpnElementList:
+    ex de, hl ; HL=appVarDataPointer
+    ld e, (hl)
+    inc hl
+    ld d, (hl) ; DE=appVarSize
+    dec hl ; HL=appVarDataPointer
+    ex de, hl ; HL=appVarSize; DE=appVarDataPointer
+    ; remove the appVarHeader fields from appVarSize
+    ld bc, rpnVarHeaderSize
+    or a ; CF=0
+    sbc hl, bc ; HL=appVarSize-rpnVarHeaderSize
+    ; divide rpnElementListSize/sizeof(RpnElement)
+    ld c, rpnElementSizeOf
+    call divHLByC ; HL=quotient; A=remainder; preserves DE
+    or a ; ZF=1 if no remainder (i.e valid)
+    ld a, l ; A=numElements
+    ret
+
+;-----------------------------------------------------------------------------
 
 ; Description: Resize the rpnElementList identified by appVarName in HL.
 ; Input:
@@ -405,13 +434,8 @@ lenRpnElementListNotFound:
 ;   - Err:Undefined if appVarName does not exist
 resizeRpnElementList:
     push af ; stack=[newLen]
-    call move9ToOp1 ; OP1=varName; preserves A
-    bcall(_ChkFindSym) ; DE=dataPointer; CF=1 if not found
-    jr c, resizeRpnElementListNotFound
-    push de ; stack=[newLen,dataPointer]
-    call calcLenRpnElementList
+    call lenRpnElementList ; DE=dataPointer; A=existingLen
     ld b, a ; B=oldLen
-    pop de ; stack=[newLen]; DE=dataPointer
     pop af ; stack=[]; A=newLen
     sub b ; A=diff=newLen-oldLen
     ret z ; ZF=1 if newLen==oldLen
@@ -548,9 +572,7 @@ rpnElementIndexToElementPointer:
 ; segment. If 'index' is the 'len', then this is the value stored by the TI-OS
 ; in the appVarSize field at the beginning of the data segment:
 ;
-;   appVarSize = len*rpnElementSizeOf
-;                + 2 (crc16) + 2 (schemaVersion) + 2 (appId)
-;              = len*rpnElementSizeOf + 6
+;   appVarSize = len*rpnElementSizeOf + rpnVarHeaderSize
 ;
 ; To get to the end of the appVar data segment, add this offset to the
 ; dataPointer. But don't forget to add another 2 byte to skip past the 2-byte
@@ -564,7 +586,7 @@ rpnElementIndexToOffset:
     ld l, c
     ld h, 0 ; HL=len
     call rpnElementLenToSize ; HL=19*HL
-    ld de, 6
+    ld de, rpnVarHeaderSize
     add hl, de ; HL=sum=19*len+6
     pop de
     ret

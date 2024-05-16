@@ -102,6 +102,32 @@ inputBufFlagsArgCancel equ 4 ; set if exit was caused by CLEAR or ON/EXIT
 ; A random 16-bit integer that identifies the RPN83P app.
 rpn83pAppId equ $1E69
 
+; List of appVar types used by RPN83P. The header fields of all RPN83P appVars
+; will be the same, described by th following C struct:
+;
+; struct RpnVar {
+;   uint16_t size; // maintained by the TIOS (*not* including 'size' field)
+;   struct RpnVarHeader {
+;     uint16_t crc16; // CRC16 checksum of all following bytes
+;     uint16_t appId; // appId
+;     uint16_t varType; // varType
+;     uint16_t schemaVersion; // schema version of the payload
+;   } header;
+;   uint8_t payload[] // data payload
+;  }
+;
+; Validating the CRC16 is a relatively expensive process. For UI efficiency, it
+; is allowed that the (appId, varType, schemaVersion) fields may be read and
+; processed for UI purposes (e.g. to display a menu of matching appVars to the
+; user). But the CRC must be validated before actually using the information
+; containined in the payload.
+rpnVarTypeAppState equ 0 ; app state, excluding RpnElements
+rpnVarTypeElementList equ 1 ; RpnElements, stack or storage registers
+rpnVarTypeFullState equ 2 ; all state including RpnElements (not implemented)
+
+; Size of the common appVar header: crc16 + appId + varType + schemaVersion = 8
+rpnVarHeaderSize equ 8
+
 ; Increment the schema version if the previously saved app variable 'RPN83SAV'
 ; should be marked as stale during validation. This will cause the app to
 ; initialize to the factory defaults. When an variable is added or deleted, the
@@ -129,13 +155,14 @@ rpn83pSchemaVersion equ 15
 ;
 ; In the unlikely chance that the type range to $ff is insufficient, there are
 ; 2 ways to extend the encoding further:
-;   1) Additional prefix values can be used, for example, the values from $19
-;   to $1f are currently unused and reserved.
-;   2) The new types can be encoded using 3 bytes instead of just 2.
+;   1) Other prefix values are available. The values from $19 to $1f are
+;   currently unused.
+;   2) A second prefix value can be defined in the 2nd byte, encoding new types
+;   using 3 bytes instead of just 2.
 ;
-; Extending the type range beyond $ff will require other additional work. There
-; a number of places in the code which assumes that the RpnObject type can be
-; held in a single 8-bit register.
+; Beware that extending the type range beyond $ff will require other additional
+; work. There a number of places in the code which assumes that the RpnObject
+; type can be held in a single 8-bit register.
 rpnElementListSchemaVersion equ 2
 
 ; Define true and false. Something else in spasm-ng defines the 'true' and
@@ -240,7 +267,10 @@ rpnElementSizeOf equ rpnObjectSizeOf+1
 ; Flash ROM loading. If this area is used, avoid archiving variables."
 appStateBegin equ tempSwapArea
 
-; CRC16CCITT of the appState data block, not including the CRC itself. 2 bytes.
+; The following 4 variables must match the fields in the RpnVarHeader struct
+; defined above.
+
+; CRC16CCITT of the appState data block, not including the CRC itself.
 ; This is used only in StoreAppState() and RestoreAppState(), so in theory, we
 ; could remove it from here and save it only in the RPN83SAV AppVar. The
 ; advantage of duplicating the CRC here is that the content of the AppVar
@@ -250,10 +280,13 @@ appStateBegin equ tempSwapArea
 ; here.
 appStateCrc16 equ appStateBegin ; u16
 
-; A somewhat unique id to distinguish this app from other apps. 2 bytes.
+; A somewhat unique id to distinguish this app from other apps.
 ; Similar to the 'appStateCrc16' field, this does not need to be in the
 ; appState data block. But this simplifies the serialization code.
 appStateAppId equ appStateCrc16 + 2 ; u16
+
+; Type of RpnVar, one of the rpnVarTypeXxx enums.
+appStateVarType equ appStateAppId + 2 ; u16
 
 ; Schema version. 2 bytes. If we overflow the 16-bits, it's probably ok because
 ; schema version 0 was probably created so far in the past the likelihood of a
@@ -261,7 +294,7 @@ appStateAppId equ appStateCrc16 + 2 ; u16
 ; an escape hatch: we can create a new appStateAppId upon overflow. Similar to
 ; AppStateAppId and appStateCrc16, this field does not need to be here, but
 ; having it here simplifies the serialization code.
-appStateSchemaVersion equ appStateAppId + 2 ; u16
+appStateSchemaVersion equ appStateVarType + 2 ; u16
 
 ; Copy of the 3 asm_FlagN flags. These will be serialized into RPN83SAV by
 ; StoreAppState(), and deserialized into asm_FlagN by RestoreAppState().
