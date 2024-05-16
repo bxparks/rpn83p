@@ -3,20 +3,20 @@
 - Unreleased
     - **Warning**: Previously saved RPN stack and registers are incompatible and
       are lost when upgrading to this version.
-    - Support resizing the number of storage registers
+    - support resizing the number of storage registers
         - `MODE > RSIZ` command supports a minimum of 25 to a maximum of 100
         - `MODE > RSZ?` returns the current size of storage registers
         - size of the `RPN83REG` appVar varies:
-            - 498 bytes at RSIZ=25
-            - 1923 bytes at RSIZ=100
-    - Support resizing the RPN stack size
+            - 500 bytes at RSIZ=25
+            - 1925 bytes at RSIZ=100
+    - support resizing the RPN stack size
         - `MODE > SSIZ` command supports a minimum of 4 to a maximum of 8
         - `MODE > SSZ?` returns the current size of stack
         - size of the `RPN83STK` appVar varies:
-            - 118 bytes at SSIZ=4
-            - 194 bytes at SSIZ=8
+            - 120 bytes at SSIZ=4
+            - 196 bytes at SSIZ=8
         - TODO: Update USER_GUIDE.md
-    - Add additional stack operators
+    - add additional stack operators
         - soft menu `DROP`
             - drops the stack by one, duplicating the top register
             - already implemented in the code, just exposing the functionality
@@ -30,7 +30,8 @@
             - bound to the `RollUp` functionality, same as the existing `RollUp`
               soft menu item
             - becomes useful when the stack size `SSIZ` is greater than 4
-    - Support arithmetic operations on Offset
+        - TODO: Update USER_GUIDE_DATE.md
+    - support arithmetic operations on Offset
         - {Offset} + {hours}, {hours} + {Offset}
         - {Offset} - {hours}
         - {Offset} - {Offset} => {hours}
@@ -46,8 +47,9 @@
     - BASE
         - format HEX numbers in groups of 2 digits for readability
         - format OCT numbers in groups of 3 digits for readability
-        - format BIN numbers in groups of 4 digits using small font
-        - no grouping for DEC numbers (no change)
+        - format BIN numbers in groups of 4 digits using small font,
+            allowing 16 digits to be displayed on a single line
+        - no digit grouping for DEC numbers (no change)
         - move formatting routines to Flash Page 2
     - show MenuFolders using a file folder icon
         - see [Issue#20](https://github.com/bxparks/rpn83p/issues/20)
@@ -72,7 +74,10 @@
     - update storage format of the TIOS appVars (RPN83SAV, RPN83STA, RPN83STK,
       RPN83REG)
         - makes adding additional appVar types in the future easier
-    - **Bug Fix** Add `schemaVersion` validation for RpnObjectList appVars.
+    - **Bug Fix** More robust data validation for appVars
+        - add `schemaVersion` field for RpnElementList
+        - add `rpnVarType` field, to allow future appVar types
+        - validate size of RpnElementList appVar has no extraneous bytes
     - **Bug Fix** Validate Duration objects entered through colon-modifier
       syntax
         - prevents entry of things like `61s` or `25h`
