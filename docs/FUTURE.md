@@ -208,7 +208,19 @@ and more complicated features will get their own GitHub tickets.
     - another feature of advanced HP calculators
     - depends on keystroke programming
     - the TI-OS already provides an integrator (`fnInt`), is that enough?
-    - See [Issue #22](https://github.com/bxparks/rpn83p/issues/22)
+    - See [Issue #022](https://github.com/bxparks/rpn83p/issues/22)
+- extend BASE functions to larger integer sizes and signed integers
+    - signed integers: 1's complement, 2's complement
+    - larger integers: 48-bit, 64-bit; maybe all sizes between 1 and 64
+      in increments of one?
+    - requires new integer type(s)
+    - requires rewriting almost all bitwise and integer routines
+    - BASE functions can no longer use TIOS floating point numbers, at least not
+      for WSIZ > 46 bits
+    - handle context switch between BASE mode and non-BASE mode properly when
+      new integer types are on the RPN stack
+    - if SHOW uses small font for base-2 numbers, it can display 64 digits using
+      the 4 lines that are available
 
 ## Highly Unlikely
 
