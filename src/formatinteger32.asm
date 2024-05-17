@@ -120,6 +120,7 @@ truncateHexStringToWordSize:
 ;   - HL:(char*)=string
 ; Output:
 ;   - (HL) string shifted to left by truncLen, terminated with NUL
+; Preserves: BC, HL
 truncateStringToDisplayLen:
     push hl ; stack=[hexString]
     push bc ; stack=[hexString,displayLen]
@@ -145,7 +146,7 @@ truncateStringToDisplayLen:
 ;   - BC:u8=strLen, must be multiple of 2
 ; Output:
 ;   - (HL) grouped in 2 digits
-; Destroys: BC, DE
+; Destroys: A, BC, DE
 ; Preserves: HL
 groupHexDigits:
     ld a, c
@@ -210,8 +211,9 @@ FormatCodedU32ToOctString:
     call FormatU32ToOctString ; preseves DE=destString
     ex de, hl ; HL=destString
     ; truncate to baseWordSize
-    call truncateOctStringToWordSize
-    ; TODO: group in 3's
+    call truncateOctStringToWordSize ; HL=destString; BC=strLen
+    ; Reformat digits in groups of 3
+    call groupOctDigits ; HL=destString; preserves HL
     ; Append frac indicator
     pop bc ; stack=[destString,inputNumber]; C=u32StatusCode
     call appendHasFracPageTwo ; preserves BC, DE, HL
@@ -311,6 +313,74 @@ displayableOctDigits32:
     ret
 
 ;-----------------------------------------------------------------------------
+
+; Description: Group the oct string into groups of 3 digits starting from
+; the least significant digits on the right. This is done in-situ, so the
+; buffer must be at least 15 bytes long (11 digits + 3 spaces + 1 NUL).
+; Input:
+;   - HL:(char*)=inputString
+;   - BC:u8=strLen, 3, 6, 8, 11
+; Output:
+;   - (HL) grouped in 3 digits
+; Destroys: A, BC, DE
+; Preserves: HL
+groupOctDigits:
+    ld a, c
+    call calcOctExtraSpace ; A=numExtraSpaces
+    or a
+    ret z
+    ; move pointers to end of digits
+    push hl ; stack=[inputString]
+    add hl, bc
+    ld e, l
+    ld d, h
+    ; move dest pointer DE by number of expected spaces
+    add a, e
+    ld e, a
+    ld a, d
+    adc a, 0
+    ld d, a
+    ; add NUL terminator, since we are looping backwards
+    xor a
+    ld (de), a
+    dec de
+    dec hl
+    ld a, 3 ; every 3 digits
+groupOctDigitsLoop:
+    ldd
+    jp po, groupOctDigitsEnd ; if BC==0: PV=0=po (odd)
+    dec a ; ZF=1 every 3 digits
+    jr nz, groupOctDigitsLoop
+    ; add a space
+    ld a, ' '
+    ld (de), a
+    dec de
+    ld a, 3
+    jr groupOctDigitsLoop
+groupOctDigitsEnd:
+    pop hl ; stack=[]; HL=inputString
+    ret
+
+; Description: Return the number of extra spaces needed to group octal digits
+; in groups of 3: The equation proper equation is int((strLen-1)/3). The strLen
+; can only be {3, 6, 8, 11}, which should produce {0, 1, 2, 3} respectively. It
+; looks like we can simply use int(strLen/4) to get pretty close to the
+; results, except for strLen==11.
+;
+; Input: A:strLen
+; Output: A:numExtraSpaces
+; Preserves: BC, DE, HL
+calcOctExtraSpace:
+    cp a, 11
+    jr z, calcOctExtraSpace11
+    srl a
+    srl a ; A=A/4
+    ret
+calcOctExtraSpace11:
+    ld a, 3
+    ret
+
+;-----------------------------------------------------------------------------
 ; Routines related to Binary strings.
 ;-----------------------------------------------------------------------------
 
@@ -338,7 +408,7 @@ FormatCodedU32ToBinString:
     ex de, hl ; HL=destString
     ; Truncate leading digits to fit display
     call truncateBinDigits ; HL=destString; A=strLen
-    ; Reformat digits in groups of 4.
+    ; Reformat digits in groups of 4
     call groupBinDigits ; HL=destString; preserves HL
     ; Append frac indicator
     pop bc ; stack=[destString,inputNumber]; C=u32StatusCode
