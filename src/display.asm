@@ -1180,18 +1180,17 @@ truncateOctString:
 ;   - B=displayFontMask
 ; Destroys: all, OP1-OP5
 printOP1Base2:
-    ; Convert OP1 into Uxx first, so that we can determine whether to display
-    ; the results using small font or large font.
-    push bc ; stack=[displayFontMask]
+    ; Always use small font for base 2.
+    call eraseEOLIfNeeded ; uses B
+    call displayStackSetSmallFont
+    ; Convert OP1 into Uxx.
     bcall(_ConvertOP1ToUxxNoFatal) ; HL=OP1=uxx(OP1); C=u32StatusCode
-    pop de ; D=displayFontMask
-    ld b, d ; B=displayFontMask
     ; Check for errors
     bit u32StatusCodeTooBig, c
-    jr nz, printOP1Base2TooBig
+    jp nz, printOP1BaseInvalid
     bit u32StatusCodeNegative, c
-    jr nz, printOP1Base2Negative
-    push bc ; stack=[B=displayFontMask,C=u32StatusCode]
+    jp nz, printOP1BaseNegative
+    push bc ; stack=[C=u32StatusCode]
     ; Convert HL=u32 into a base-2 string.
     ld de, fmtString
     bcall(_FormatU32ToBinString) ; DE=fmtString=formattedString
@@ -1202,21 +1201,11 @@ printOP1Base2:
     ld de, OP3
     bcall(_ReformatBinDigits) ; DE=formattedString=OP3
     ; Append frac indicator
-    pop bc ; stack=[]; B=displayFontMask; C=u32StatusCode
+    pop bc ; stack=[]; C=u32StatusCode
     call appendHasFrac ; DE=formattedString
-    ; Always use small font for base 2.
     ex de, hl ; HL=formattedString
-    call eraseEOLIfNeeded ; uses B
-    call displayStackSetSmallFont
     bcall(_ConvertBinDigitsToSmallFont)
     jp printSmallHLString
-    ;
-printOP1Base2TooBig:
-    call displayStackSetLargeFont
-    jp printOP1BaseInvalid
-printOP1Base2Negative:
-    call displayStackSetLargeFont
-    jp printOP1BaseNegative
 
 ;-----------------------------------------------------------------------------
 ; RpnObject records.
