@@ -1033,37 +1033,14 @@ printSmallHLString:
 ; Destroys: all, OP1-OP6
 printOP1Base10:
     call displayStackSetLargeFont
+    ; convert OP1 to u32
     bcall(_ConvertOP1ToUxxNoFatal) ; HL=OP1=uxx(OP1); C=u32StatusCode
-    bit u32StatusCodeTooBig, c
-    jr nz, printOP1BaseInvalid
-    bit u32StatusCodeNegative, c
-    jr nz, printOP1BaseNegative
     ; Convert u32 into a base-10 string.
-    ld de, OP4
-    bcall(_FormatU32ToDecString) ; DE=formattedString
-    ; Add '.' if OP1 has fractional component.
-    call appendHasFrac ; DE=rendered string
+    ld de, fmtString
+    bcall(_FormatCodedU32ToDecString) ; DE=formattedString
+    ; print string
     ex de, hl ; HL=rendered string
     jr printHLString
-
-; Description: Append a '.' at the end of the string if u32StatusCode contains
-; u32StatusCodeHasFrac.
-; Input:
-;   - C: u32StatusCode
-;   - DE: pointer to ascii string
-; Output:
-;   - DE: pointer to ascii string with '.' appended if u32StatusCodehasFrac is
-;   enabled
-; Destroys: A
-; Preserves, BC, DE, HL
-appendHasFrac:
-    bit u32StatusCodeHasFrac, c
-    ret z
-    ld a, '.'
-    ex de, hl
-    call appendCString
-    ex de, hl
-    ret
 
 ;-----------------------------------------------------------------------------
 
@@ -1101,7 +1078,7 @@ printOP1Base8:
     bcall(_FormatCodedU32ToOctString) ; preserves DE
     ; print string
     ex de, hl ; HL=fmtString
-    jp printHLString
+    jr printHLString
 
 ;-----------------------------------------------------------------------------
 
@@ -1136,7 +1113,7 @@ printOP1Base2:
     bcall(_FormatCodedU32ToBinString) ; preserves DE
     ; print string
     ex de, hl ; HL=fmtString
-    jp printSmallHLString
+    jr printSmallHLString
 
 ;-----------------------------------------------------------------------------
 ; RpnObject records.

@@ -427,6 +427,35 @@ convertBinDigitsToSmallFontEnd:
 ; Routines related to Dec strings (as integers).
 ;-----------------------------------------------------------------------------
 
+; Description: Format the U32 with its status code to a DEC string suitable for
+; displaying on the screen using a maximum of 10 digits.
+; Input:
+;   - HL:(u32*)=inputNumber
+;   - DE:(char*)=destString, buffer of at least 11 bytes (10 dec digits + NUL)
+;   - C:u8=statusCode
+; Output:
+;   - (DE) C-string representation of u32, truncated as necessary
+; Destroys: A, BC, HL
+; Preserves: DE
+FormatCodedU32ToDecString:
+    ; Check for errors
+    bit u32StatusCodeTooBig, c
+    jp nz, copyInvalidMessage
+    bit u32StatusCodeNegative, c
+    jp nz, copyNegativeMessage
+    ;
+    push bc ; stack=[C=u32StatusCode]
+    ; Convert u32 into a hex string.
+    call FormatU32ToDecString ; preseves DE=destString
+    ex de, hl ; HL=destString
+    ; Append frac indicator
+    pop bc ; stack=[destString,inputNumber]; C=u32StatusCode
+    call appendHasFracPageTwo ; preserves BC, DE, HL
+    ex de, hl ; DE=destString
+    ret
+
+;-----------------------------------------------------------------------------
+
 decNumberWidth equ 10 ; 2^32 needs 10 digits
 
 ; Description: Converts 32-bit unsigned integer referenced by HL to a hex
@@ -458,7 +487,6 @@ formatU32ToDecStringLoop:
     djnz formatU32ToDecStringLoop
     xor a
     ld (de), a ; NUL termination
-
     ; truncate trailing '0' digits, and reverse the string
     pop hl ; HL = destination string pointer
     push hl
