@@ -31,11 +31,43 @@ FormatCodedU32ToHexString:
     ; Convert u32 into a hex string.
     call FormatU32ToHexString ; preseves DE=destString
     ex de, hl ; HL=destString
+    ; Truncate to baseWordSize
+    call truncateHexStringToWordSize
     ; TODO: group in 2's
     ; Append frac indicator
     pop bc ; stack=[destString,inputNumber]; C=u32StatusCode
     call appendHasFracPageTwo ; preserves BC, DE, HL
     ex de, hl ; DE=destString
+    ret
+
+; Description: Truncate the hex string on the left, leaving the correct number
+; of digits on the right that should be displayed given the current
+; baseWordSize.
+; Input:
+;   - HL:(char*)=hexString
+; Output:
+;   - (HL) updated
+; Destroys: A, BC, DE
+; Preserves: HL
+truncateHexStringToWordSize:
+    ld a, (baseWordSize)
+    srl a
+    srl a ; A=displayLen=baseWordSize/4=8,6,4,2
+    ld c, a
+    ld b, 0 ; BC=displayLen
+    sub 8
+    neg ; A=truncLen=8-displayLen
+    ret z
+    push hl ; stack=[hexString]
+    ex de, hl ; DE=hexString
+    ld l, a
+    ld h, 0
+    add hl, de ; HL=hexString+truncLen
+    ldir
+    ; NUL terminate
+    xor a
+    ld (de), a
+    pop hl ; stack=[]; HL=hexString
     ret
 
 ;-----------------------------------------------------------------------------
