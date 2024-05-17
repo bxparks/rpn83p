@@ -40,7 +40,7 @@ FormatCodedU32ToHexString:
     ex de, hl ; DE=destString
     ret
 
-; Description: Truncate the hex string on the left, leaving the correct number
+; Description: Truncate the HEX string on the left, leaving the correct number
 ; of digits on the right that should be displayed given the current
 ; baseWordSize.
 ; Input:
@@ -53,11 +53,22 @@ truncateHexStringToWordSize:
     ld a, (baseWordSize)
     srl a
     srl a ; A=displayLen=baseWordSize/4=8,6,4,2
+    ;
     ld c, a
     ld b, 0 ; BC=displayLen
     sub 8
     neg ; A=truncLen=8-displayLen
     ret z
+    ; [[fallthrough]]
+
+; Description: Truncate string to the left.
+; Input:
+;   - A:u8=truncLen
+;   - BC:displayLen
+;   - HL:(char*)=string
+; Output:
+;   - (HL) string shifted to left by truncLen, terminated with NUL
+truncateStringToDisplayLen:
     push hl ; stack=[hexString]
     ex de, hl ; DE=hexString
     ld l, a
@@ -144,6 +155,8 @@ FormatCodedU32ToOctString:
     ; Convert u32 into a hex string.
     call FormatU32ToOctString ; preseves DE=destString
     ex de, hl ; HL=destString
+    ; truncate to baseWordSize
+    call truncateOctStringToWordSize
     ; TODO: group in 3's
     ; Append frac indicator
     pop bc ; stack=[destString,inputNumber]; C=u32StatusCode
@@ -151,11 +164,30 @@ FormatCodedU32ToOctString:
     ex de, hl ; DE=destString
     ret
 
+; Description: Truncate the OCT string on the left, leaving the correct number
+; of digits on the right that should be displayed given the current
+; baseWordSize.
+; Input:
+;   - HL:(char*)=octString
+; Output:
+;   - (HL) updated
+; Destroys: A, BC, DE
+; Preserves: HL
+truncateOctStringToWordSize:
+    call displayableOctDigits ; A=displayLen
+    ld c, a
+    ld b, 0 ; BC=displayLen
+    sub 11
+    neg ; A=truncLen=11-displayLen
+    ret z
+    jr truncateStringToDisplayLen
+
 ; Description: Get the number of displayable OCT digits for the current
 ; baseWordSize: {8: 3, 16: 6, 24: 8, 32: 11}
 ; Output: A:u8=displayLen
 ; Destroys: A
 displayableOctDigits:
+    ld a, (baseWordSize)
     cp 8
     jr z, displayableOctDigits8
     cp 16
