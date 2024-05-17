@@ -32,8 +32,9 @@ FormatCodedU32ToHexString:
     call FormatU32ToHexString ; preseves DE=destString
     ex de, hl ; HL=destString
     ; Truncate to baseWordSize
-    call truncateHexStringToWordSize
-    ; TODO: group in 2's
+    call truncateHexStringToWordSize ; preserves HL; BC=strLen
+    ; Group digits in two's
+    call groupHexDigits ; preserves HL
     ; Append frac indicator
     pop bc ; stack=[destString,inputNumber]; C=u32StatusCode
     call appendHasFracPageTwo ; preserves BC, DE, HL
@@ -97,6 +98,7 @@ formatU32ToHexStringLoop:
 ;   - HL:(char*)=hexString
 ; Output:
 ;   - (HL) updated
+;   - BC:u16=displayLen
 ; Destroys: A, BC, DE
 ; Preserves: HL
 truncateHexStringToWordSize:
@@ -120,6 +122,7 @@ truncateHexStringToWordSize:
 ;   - (HL) string shifted to left by truncLen, terminated with NUL
 truncateStringToDisplayLen:
     push hl ; stack=[hexString]
+    push bc ; stack=[hexString,displayLen]
     ex de, hl ; DE=hexString
     ld l, a
     ld h, 0
@@ -128,7 +131,56 @@ truncateStringToDisplayLen:
     ; NUL terminate
     xor a
     ld (de), a
+    pop bc ; stack=[hexString]; BC=displayLen
     pop hl ; stack=[]; HL=hexString
+    ret
+
+;-----------------------------------------------------------------------------
+
+; Description: Group the hex string into groups of 2 digits starting from
+; the least significant digits on the right. This is done in-situ, so the
+; buffer must be at least 12 bytes long (8 digits + 3 spaces + 1 NUL).
+; Input:
+;   - HL:(char*)=inputString
+;   - BC:u8=strLen, must be multiple of 2
+; Output:
+;   - (HL) grouped in 2 digits
+; Destroys: BC, DE
+; Preserves: HL
+groupHexDigits:
+    ld a, c
+    dec a
+    srl a ; A=numExtraSpaces=(strLen-1)/2
+    ret z
+    ; move pointers to end of digits
+    push hl ; stack=[inputString]
+    add hl, bc
+    ld e, l
+    ld d, h
+    ; move dest pointer DE by number of expected spaces
+    add a, e
+    ld e, a
+    ld a, d
+    adc a, 0
+    ld d, a
+    ; add NUL terminator, since we are looping backwards
+    xor a
+    ld (de), a
+    dec de
+    dec hl
+groupHexDigitsLoop:
+    ldd
+    jp po, groupHexDigitsEnd ; if BC==0: PV=0=po (odd)
+    ld a, c
+    and $01 ; ZF=1 every 2 digits
+    jr nz, groupHexDigitsLoop
+    ; add a space
+    ld a, ' '
+    ld (de), a
+    dec de
+    jr groupHexDigitsLoop
+groupHexDigitsEnd:
+    pop hl ; stack=[]; HL=inputString
     ret
 
 ;-----------------------------------------------------------------------------
@@ -220,6 +272,7 @@ formatU32ToOctStringLoop:
 ;   - HL:(char*)=octString
 ; Output:
 ;   - (HL) updated
+;   - BC:u16=displayLen
 ; Destroys: A, BC, DE
 ; Preserves: HL
 truncateOctStringToWordSize:
