@@ -1094,49 +1094,14 @@ printOP1Base16:
 ; Destroys: all, OP1-OP5
 printOP1Base8:
     call displayStackSetLargeFont
+    ; convert OP1 to u32
     bcall(_ConvertOP1ToUxxNoFatal) ; OP1=U32; C=u32StatusCode
-    bit u32StatusCodeTooBig, c
-    jr nz, printOP1BaseInvalid
-    bit u32StatusCodeNegative, c
-    jr nz, printOP1BaseNegative
-    ; Convert u32 into a base-8 string.
-    ld de, OP4
-    bcall(_FormatU32ToOctString) ; DE=formattedString
-    ; Append frac indicator
-    call appendHasFrac ; DE=rendered string
-    ex de, hl ; HL=rendered string
-    call truncateOctDigits
+    ; convert to string
+    ld de, fmtString
+    bcall(_FormatCodedU32ToOctString) ; preserves DE
+    ; print string
+    ex de, hl ; HL=fmtString
     jp printHLString
-
-; Truncate upper digits depending on baseWordSize. For base-8, the u32 integer
-; was converted to 11 digits (33 bits). The number of digits to retain for each
-; baseWordSize is: {8: 3, 16: 6, 24: 8, 32: 11}, so the number of digits to
-; truncate is: {8: 8, 16: 5, 24: 3, 32: 0}.
-; Input: HL: pointer to rendered string
-; Output: HL: pointer to truncated string
-; Destroys: A, DE
-truncateOctDigits:
-    ld a, (baseWordSize)
-    cp 8
-    jr nz, truncateOctDigits16
-    ld e, a
-    jr truncateOctString
-truncateOctDigits16:
-    cp 16
-    jr nz, truncateOctDigits24
-    ld e, 5
-    jr truncateOctString
-truncateOctDigits24:
-    cp 24
-    jr nz, truncateOctDigits32
-    ld e, 3
-    jr truncateOctString
-truncateOctDigits32:
-    ld e, 0
-truncateOctString:
-    ld d, 0
-    add hl, de
-    ret
 
 ;-----------------------------------------------------------------------------
 

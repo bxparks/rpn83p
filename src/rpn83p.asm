@@ -1776,6 +1776,10 @@ _FormatCodedU32ToHexStringLabel:
 _FormatCodedU32ToHexString equ _FormatCodedU32ToHexStringLabel-branchTableBase
     .dw FormatCodedU32ToHexString
     .db 2
+_FormatCodedU32ToOctStringLabel:
+_FormatCodedU32ToOctString equ _FormatCodedU32ToOctStringLabel-branchTableBase
+    .dw FormatCodedU32ToOctString
+    .db 2
 _FormatCodedU32ToBinStringLabel:
 _FormatCodedU32ToBinString equ _FormatCodedU32ToBinStringLabel-branchTableBase
     .dw FormatCodedU32ToBinString

@@ -31,61 +31,11 @@ FormatCodedU32ToHexString:
     ; Convert u32 into a hex string.
     call FormatU32ToHexString ; preseves DE=destString
     ex de, hl ; HL=destString
-    ; Truncate leading digits to fit display
-    call truncateHexDigits ; HL=truncatedString; A=strLen
     ; TODO: group in 2's
     ; Append frac indicator
     pop bc ; stack=[destString,inputNumber]; C=u32StatusCode
     call appendHasFracPageTwo ; preserves BC, DE, HL
     ex de, hl ; DE=destString
-    ret
-
-;-----------------------------------------------------------------------------
-
-; Description: Truncate in situ the upper digits depending on baseWordSize.
-; Input: HL:(char*)=inputString of 8 digits
-; Output: HL:(char*)=inputString of baseWordDigits
-; Destroys: A, BC, DE
-; Preserves: HL
-truncateHexDigits:
-    ; compute truncLen
-    ld a, (baseWordSize)
-    srl a
-    srl a ; A=displayLen=2,4,6,8
-    push af ; stack=[displayLen]
-    sub 8
-    neg ; A=truncLen=6,4,2,0
-    jr z, truncateHexDigitsNoShift ; do nothing if truncLen==0
-    ; check truncated digits for non-zero
-    ld b, a
-    ld c, 0
-    push hl ; stack=[displayLen, inputString]
-truncateHexDigitsCheckOverflow:
-    ld a, (hl)
-    inc hl ; HL=left most digit of the truncated string.
-    sub '0'
-    or c ; check for a '1' digit
-    ld c, a
-    djnz truncateHexDigitsCheckOverflow
-    ; If a non-zero digit found, replace left most displayed with ellipsis
-    jr z, truncateHexDigitsShiftLeft ; if C=0: ZF=1, indicating no overflow
-    ld a, Lellipsis
-    ld (hl), a
-truncateHexDigitsShiftLeft:
-    ; shift displayable chars to left
-    pop de ; stack=[displayLen]; DE=inputString
-    pop af ; A=displayLen
-    push de ; stack=[inputString]
-    ld c, a
-    ld b, 0 ; BC=displayLen
-    ldir ; shift
-    ex de, hl
-    ld (hl), b ; NUL terminate the new string
-    ex de, hl
-    pop hl ; stack=[]; HL=inputString
-    ret
-truncateHexDigitsNoShift:
-    pop af
     ret
 
 ;-----------------------------------------------------------------------------
@@ -138,6 +88,62 @@ formatU32ToHexStringLoop:
 
 ;-----------------------------------------------------------------------------
 ; Routines related to Octal strings.
+;-----------------------------------------------------------------------------
+
+; Description: Format the U32 with its status code to a HEX string suitable for
+; displaying on the screen using a maximum of 16 digits.
+; Input:
+;   - HL:(u32*)=inputNumber
+;   - DE:(char*)=destString, buffer of at least 12 bytes (8 hex digits + 3
+;   spaces + NUL)
+;   - C:u8=statusCode
+; Output:
+;   - (DE) C-string representation of u32, truncated as necessary
+; Destroys: A, BC, HL
+; Preserves: DE
+FormatCodedU32ToOctString:
+    ; Check for errors
+    bit u32StatusCodeTooBig, c
+    jp nz, copyInvalidMessage
+    bit u32StatusCodeNegative, c
+    jp nz, copyNegativeMessage
+    ;
+    push bc ; stack=[C=u32StatusCode]
+    ; Convert u32 into a hex string.
+    call FormatU32ToOctString ; preseves DE=destString
+    ex de, hl ; HL=destString
+    ; TODO: group in 3's
+    ; Append frac indicator
+    pop bc ; stack=[destString,inputNumber]; C=u32StatusCode
+    call appendHasFracPageTwo ; preserves BC, DE, HL
+    ex de, hl ; DE=destString
+    ret
+
+; Description: Get the number of displayable OCT digits for the current
+; baseWordSize: {8: 3, 16: 6, 24: 8, 32: 11}
+; Output: A:u8=displayLen
+; Destroys: A
+displayableOctDigits:
+    cp 8
+    jr z, displayableOctDigits8
+    cp 16
+    jr z, displayableOctDigits16
+    cp 24
+    jr z, displayableOctDigits24
+    jr displayableOctDigits32
+displayableOctDigits8:
+    ld a, 3
+    ret
+displayableOctDigits16:
+    ld a, 6
+    ret
+displayableOctDigits24:
+    ld a, 8
+    ret
+displayableOctDigits32:
+    ld a, 11
+    ret
+
 ;-----------------------------------------------------------------------------
 
 octNumberWidth equ 11 ; 3 bits * 11 = 33 bits
@@ -293,7 +299,7 @@ truncateBinDigits:
 truncateBinDigitsCalcTruncationLen:
     ; A=displayLen=8 or 16
     push af ; stack=[displayLen]
-    sub 32
+    sub 32 ; max number of digits
     neg ; A=truncationLen=(32-displayLen)=16 or 24
     ; Check leading digits to determine if truncation causes overflow
     ld b, a
@@ -303,10 +309,10 @@ truncateBinDigitsCheckOverflow:
     ld a, (hl)
     inc hl ; HL=left most digit of the truncated string.
     sub '0'
-    or c ; check for a '1' digit
+    or c ; check for a non-zero digit
     ld c, a
     djnz truncateBinDigitsCheckOverflow
-    ; If a '1' digit found, replace left most displayed char with ellipsis
+    ; If a 'non-zerodigit found, replace left most displayed char with ellipsis
     jr z, truncateBinDigitsShiftLeft ; if C=0: ZF=1, indicating no overflow
     ld a, Lellipsis
     ld (hl), a
