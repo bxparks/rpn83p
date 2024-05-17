@@ -37,18 +37,19 @@
 #
 # 6) Zip-up all the files into an `rpn83p.zip` file.
 
-TARGETS := README.pdf \
+TARGETS := \
+CHANGELOG.md \
+README.pdf \
+TVM.pdf \
 USER_GUIDE.pdf \
 USER_GUIDE_BASE.pdf \
 USER_GUIDE_COMPLEX.pdf \
 USER_GUIDE_DATE.pdf \
-TVM.pdf \
-CHANGELOG.md \
-rpn83p.8xk \
 rpn83p-example1.gif \
 rpn83p-example2.gif \
 rpn83p-example3.gif \
-rpn83p-example4.gif
+rpn83p-example4.gif \
+rpn83p.8xk
 
 ORIG_IMAGES := \
 $(wildcard ../docs/images/*.png) \
