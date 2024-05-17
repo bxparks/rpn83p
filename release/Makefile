@@ -45,6 +45,7 @@ USER_GUIDE.pdf \
 USER_GUIDE_BASE.pdf \
 USER_GUIDE_COMPLEX.pdf \
 USER_GUIDE_DATE.pdf \
+USER_GUIDE_TVM.pdf \
 rpn83p-example1.gif \
 rpn83p-example2.gif \
 rpn83p-example3.gif \
@@ -108,6 +109,12 @@ USER_GUIDE_COMPLEX.pdf: ../docs/USER_GUIDE_COMPLEX.md Makefile $(RESIZED_IMAGES)
 
 # Convert markdown to PDF.
 USER_GUIDE_DATE.pdf: ../docs/USER_GUIDE_DATE.md Makefile $(RESIZED_IMAGES)
+	sed -e 's:(images/:(resized/:g' < $< \
+		| (cd ../docs; pandoc $(PANDOC_FLAGS) -o $@)
+	mv -f ../docs/$@ .
+
+# Convert markdown to PDF.
+USER_GUIDE_TVM.pdf: ../docs/USER_GUIDE_TVM.md Makefile $(RESIZED_IMAGES)
 	sed -e 's:(images/:(resized/:g' < $< \
 		| (cd ../docs; pandoc $(PANDOC_FLAGS) -o $@)
 	mv -f ../docs/$@ .
