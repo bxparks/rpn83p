@@ -1069,42 +1069,20 @@ appendHasFrac:
 
 ; Description: Print ingeger at OP1 at the current cursor in base 16. Erase to
 ; the end of line (but only if the digits did not spill over to the next line).
-; TODO: I think printOP1Base16(), printOP1Base8(), and printOP1Base2() can be
-; combined into a single subroutine, saving memory.
 ; Input:
 ;   - OP1
 ;   - B=displayFontMask
 ; Destroys: all, OP1-OP5
 printOP1Base16:
     call displayStackSetLargeFont
+    ; convert OP1 to u32
     bcall(_ConvertOP1ToUxxNoFatal) ; OP1=U32; C=u32StatusCode
-    bit u32StatusCodeTooBig, c
-    jr nz, printOP1BaseInvalid
-    bit u32StatusCodeNegative, c
-    jr nz, printOP1BaseNegative
-    ; Convert u32 into a base-16 string.
-    ld de, OP4
-    bcall(_FormatU32ToHexString) ; DE=formattedString
-    ; Append frac indicator
-    call appendHasFrac ; DE=rendered string
-    ex de, hl ; HL=rendered string
-    call truncateHexDigits
+    ; convert to string
+    ld de, fmtString
+    bcall(_FormatCodedU32ToHexString) ; preserves DE
+    ; print string
+    ex de, hl ; HL=fmtString
     jr printHLString
-
-; Description: Truncate upper digits depending on baseWordSize.
-; Input: HL: pointer to rendered string
-; Output: HL: pointer to truncated string
-; Destroys: A, DE
-truncateHexDigits:
-    ld a, (baseWordSize)
-    srl a
-    srl a ; A=2,4,6,8
-    sub 8
-    neg ; A=6,4,2,0
-    ld e, a
-    ld d, 0
-    add hl, de
-    ret
 
 ;-----------------------------------------------------------------------------
 
@@ -1191,6 +1169,7 @@ printOP1Base2:
     ; convert to string
     ld de, fmtString
     bcall(_FormatCodedU32ToBinString) ; preserves DE
+    ; print string
     ex de, hl ; HL=fmtString
     jp printSmallHLString
 

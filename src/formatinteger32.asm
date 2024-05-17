@@ -9,12 +9,90 @@
 ; Routines related to Hex strings.
 ;-----------------------------------------------------------------------------
 
+
+; Description: Format the U32 with its status code to a HEX string suitable for
+; displaying on the screen using a maximum of 16 digits.
+; Input:
+;   - HL:(u32*)=inputNumber
+;   - DE:(char*)=destString, buffer of at least 12 bytes (8 hex digits + 3
+;   spaces + NUL)
+;   - C:u8=statusCode
+; Output:
+;   - (DE) C-string representation of u32, truncated as necessary
+; Destroys: A, BC, HL
+; Preserves: DE
+FormatCodedU32ToHexString:
+    ; Check for errors
+    bit u32StatusCodeTooBig, c
+    jp nz, copyInvalidMessage
+    bit u32StatusCodeNegative, c
+    jp nz, copyNegativeMessage
+    ;
+    push bc ; stack=[C=u32StatusCode]
+    ; Convert u32 into a hex string.
+    call FormatU32ToHexString ; preseves DE=destString
+    ex de, hl ; HL=destString
+    ; Truncate leading digits to fit display
+    call truncateHexDigits ; HL=truncatedString; A=strLen
+    ; TODO: group in 2's
+    ; Append frac indicator
+    pop bc ; stack=[destString,inputNumber]; C=u32StatusCode
+    call appendHasFracPageTwo ; preserves BC, DE, HL
+    ex de, hl ; DE=destString
+    ret
+
+; Description: Truncate in situ the upper digits depending on baseWordSize.
+; Input: HL:(char*)=inputString of 8 digits
+; Output: HL:(char*)=inputString of baseWordDigits
+; Destroys: A, BC, DE
+; Preserves: HL
+truncateHexDigits:
+    ; compute truncLen
+    ld a, (baseWordSize)
+    srl a
+    srl a ; A=displayLen=2,4,6,8
+    push af ; stack=[displayLen]
+    sub 8
+    neg ; A=truncLen=6,4,2,0
+    jr z, truncateHexDigitsNoShift ; do nothing if truncLen==0
+    ; check truncated digits for non-zero
+    ld b, a
+    ld c, 0
+    push hl ; stack=[displayLen, inputString]
+truncateHexDigitsCheckOverflow:
+    ld a, (hl)
+    inc hl ; HL=left most digit of the truncated string.
+    sub '0'
+    or c ; check for a '1' digit
+    ld c, a
+    djnz truncateHexDigitsCheckOverflow
+    ; If a non-zero digit found, replace left most displayed with ellipsis
+    jr z, truncateHexDigitsShiftLeft ; if C=0: ZF=1, indicating no overflow
+    ld a, Lellipsis
+    ld (hl), a
+truncateHexDigitsShiftLeft:
+    ; shift displayable chars to left
+    pop de ; stack=[displayLen]; DE=inputString
+    pop af ; A=displayLen
+    push de ; stack=[inputString]
+    ld c, a
+    ld b, 0 ; BC=displayLen
+    ldir ; shift
+    ex de, hl
+    ld (hl), b ; NUL terminate the new string
+    ex de, hl
+    pop hl ; stack=[]; HL=inputString
+    ret
+truncateHexDigitsNoShift:
+    pop af
+    ret
+
+;-----------------------------------------------------------------------------
+
 hexNumberWidth equ 8 ; 4 bits * 8 = 32 bits
 
 ; Description: Converts 32-bit unsigned integer referenced by HL to a hex
 ; string in buffer referenced by DE.
-; TODO: It might be possible to combine FormatU32ToHexString(),
-; FormatU32ToOctString(), and FormatU32ToBinString() into a single routine.
 ;
 ; Input:
 ;   - HL: pointer to 32-bit unsigned integer
@@ -108,7 +186,7 @@ formatU32ToOctStringLoop:
 ; Routines related to Binary strings.
 ;-----------------------------------------------------------------------------
 
-; Description: Format the U32 with its status code to a string suitable for
+; Description: Format the U32 with its status code to a BIN string suitable for
 ; displaying on the screen using a maximum of 16 digits.
 ; Input:
 ;   - HL:(u32*)=inputNumber
@@ -116,7 +194,7 @@ formatU32ToOctStringLoop:
 ;   NUL)
 ;   - C:u8=statusCode
 ; Output:
-;   - (DE): C-string representation of u32, truncated as necessary
+;   - (DE) C-string representation of u32, truncated as necessary
 ; Destroys: A, BC, HL
 ; Preserves: DE
 FormatCodedU32ToBinString:
@@ -202,8 +280,8 @@ formatU32ToBinStringLoop:
 
 maxBinDisplayDigits equ 16
 
-; Description: Truncate upper digits of the formatted base-2 string depending
-; on baseWordSize.
+; Description: Truncate in situ the upper digits of the formatted base-2 string
+; depending on baseWordSize .
 ;
 ; 1) Calculate the effective number of digits that can be displayed is
 ; `strLen = min(baseWordSize, maxBinDisplayDigits)`.
@@ -212,8 +290,6 @@ maxBinDisplayDigits equ 16
 ; 3) Shift all lower digits to the left, truncating the upper digits.
 ; 4) If non-zero digits were truncatedthen replace the left most character with
 ; an Lellipsis character to indicate truncation.
-;
-; All of this is done in-situ so that no extra memory is required.
 ;
 ; Input:
 ;   - HL:(char*)=inputString=u32 as string (32 characters)
@@ -245,7 +321,7 @@ truncateBinDigitsCheckOverflow:
     or c ; check for a '1' digit
     ld c, a
     djnz truncateBinDigitsCheckOverflow
-    ; If a '1' digit found, replace last char with ellipsis
+    ; If a '1' digit found, replace left most displayed char with ellipsis
     jr z, truncateBinDigitsShiftLeft ; if C=0: ZF=1, indicating no overflow
     ld a, Lellipsis
     ld (hl), a

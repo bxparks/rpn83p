@@ -1772,6 +1772,10 @@ _ConvertOP1ToUxxNoFatal equ _ConvertOP1ToUxxNoFatalLabel-branchTableBase
     .db 2
 
 ; formatinteger32.asm
+_FormatCodedU32ToHexStringLabel:
+_FormatCodedU32ToHexString equ _FormatCodedU32ToHexStringLabel-branchTableBase
+    .dw FormatCodedU32ToHexString
+    .db 2
 _FormatCodedU32ToBinStringLabel:
 _FormatCodedU32ToBinString equ _FormatCodedU32ToBinStringLabel-branchTableBase
     .dw FormatCodedU32ToBinString
