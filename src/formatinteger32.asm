@@ -9,12 +9,44 @@
 ; Routines related to Hex strings.
 ;-----------------------------------------------------------------------------
 
+; Description: Format the U32 with its status code to a HEX string suitable for
+; displaying on the screen using a maximum of 16 digits.
+; Input:
+;   - HL:(u32*)=inputNumber
+;   - DE:(char*)=destString, buffer of at least 12 bytes (8 hex digits + 3
+;   spaces + NUL)
+;   - C:u8=statusCode
+; Output:
+;   - (DE) C-string representation of u32, truncated as necessary
+; Destroys: A, BC, HL
+; Preserves: DE
+FormatCodedU32ToHexString:
+    ; Check for errors
+    bit u32StatusCodeTooBig, c
+    jp nz, copyInvalidMessage
+    bit u32StatusCodeNegative, c
+    jp nz, copyNegativeMessage
+    ;
+    push bc ; stack=[C=u32StatusCode]
+    ; Convert u32 into a hex string.
+    call FormatU32ToHexString ; preseves DE=destString
+    ex de, hl ; HL=destString
+    ; Truncate to baseWordSize
+    call truncateHexStringToWordSize ; preserves HL; BC=strLen
+    ; Reformat digits in groups of 2.
+    call groupHexDigits ; preserves HL
+    ; Append frac indicator
+    pop bc ; stack=[destString,inputNumber]; C=u32StatusCode
+    call appendHasFracPageTwo ; preserves BC, DE, HL
+    ex de, hl ; DE=destString
+    ret
+
+;-----------------------------------------------------------------------------
+
 hexNumberWidth equ 8 ; 4 bits * 8 = 32 bits
 
 ; Description: Converts 32-bit unsigned integer referenced by HL to a hex
 ; string in buffer referenced by DE.
-; TODO: It might be possible to combine FormatU32ToHexString(),
-; FormatU32ToOctString(), and FormatU32ToBinString() into a single routine.
 ;
 ; Input:
 ;   - HL: pointer to 32-bit unsigned integer
@@ -58,7 +90,136 @@ formatU32ToHexStringLoop:
     ret
 
 ;-----------------------------------------------------------------------------
+
+; Description: Truncate the HEX string on the left, leaving the correct number
+; of digits on the right that should be displayed given the current
+; baseWordSize.
+; Input:
+;   - HL:(char*)=hexString
+; Output:
+;   - (HL) updated
+;   - BC:u16=displayLen
+; Destroys: A, BC, DE
+; Preserves: HL
+truncateHexStringToWordSize:
+    ld a, (baseWordSize)
+    srl a
+    srl a ; A=displayLen=baseWordSize/4=8,6,4,2
+    ;
+    ld c, a
+    ld b, 0 ; BC=displayLen
+    sub 8
+    neg ; A=truncLen=8-displayLen
+    ret z
+    ; [[fallthrough]]
+
+; Description: Truncate string to the left.
+; Input:
+;   - A:u8=truncLen
+;   - BC:displayLen
+;   - HL:(char*)=string
+; Output:
+;   - (HL) string shifted to left by truncLen, terminated with NUL
+; Preserves: BC, HL
+truncateStringToDisplayLen:
+    push hl ; stack=[hexString]
+    push bc ; stack=[hexString,displayLen]
+    ex de, hl ; DE=hexString
+    ld l, a
+    ld h, 0
+    add hl, de ; HL=hexString+truncLen
+    ldir
+    ; NUL terminate
+    xor a
+    ld (de), a
+    pop bc ; stack=[hexString]; BC=displayLen
+    pop hl ; stack=[]; HL=hexString
+    ret
+
+;-----------------------------------------------------------------------------
+
+; Description: Group the hex string into groups of 2 digits starting from
+; the least significant digits on the right. This is done in-situ, so the
+; buffer must be at least 12 bytes long (8 digits + 3 spaces + 1 NUL).
+; Input:
+;   - HL:(char*)=inputString
+;   - BC:u8=strLen, must be multiple of 2
+; Output:
+;   - (HL) grouped in 2 digits
+; Destroys: A, BC, DE
+; Preserves: HL
+groupHexDigits:
+    ld a, c
+    dec a
+    srl a ; A=numExtraSpaces=(strLen-1)/2
+    ret z
+    ; move pointers to end of digits
+    push hl ; stack=[inputString]
+    add hl, bc
+    ld e, l
+    ld d, h
+    ; move dest pointer DE by number of expected spaces
+    add a, e
+    ld e, a
+    ld a, d
+    adc a, 0
+    ld d, a
+    ; add NUL terminator, since we are looping backwards
+    xor a
+    ld (de), a
+    dec de
+    dec hl
+groupHexDigitsLoop:
+    ldd
+    jp po, groupHexDigitsEnd ; if BC==0: PV=0=po (odd)
+    ld a, c
+    and $01 ; ZF=1 every 2 digits
+    jr nz, groupHexDigitsLoop
+    ; add a space
+    ld a, ' '
+    ld (de), a
+    dec de
+    jr groupHexDigitsLoop
+groupHexDigitsEnd:
+    pop hl ; stack=[]; HL=inputString
+    ret
+
+;-----------------------------------------------------------------------------
 ; Routines related to Octal strings.
+;-----------------------------------------------------------------------------
+
+; Description: Format the U32 with its status code to a HEX string suitable for
+; displaying on the screen using a maximum of 16 digits.
+; Input:
+;   - HL:(u32*)=inputNumber
+;   - DE:(char*)=destString, buffer of at least 12 bytes (8 hex digits + 3
+;   spaces + NUL)
+;   - C:u8=statusCode
+; Output:
+;   - (DE) C-string representation of u32, truncated as necessary
+; Destroys: A, BC, HL
+; Preserves: DE
+FormatCodedU32ToOctString:
+    ; Check for errors
+    bit u32StatusCodeTooBig, c
+    jp nz, copyInvalidMessage
+    bit u32StatusCodeNegative, c
+    jp nz, copyNegativeMessage
+    ;
+    push bc ; stack=[C=u32StatusCode]
+    ; Convert u32 into a hex string.
+    call FormatU32ToOctString ; preseves DE=destString
+    ex de, hl ; HL=destString
+    ; truncate to baseWordSize
+    call truncateOctStringToWordSize ; HL=destString; BC=strLen
+    ; Reformat digits in groups of 3
+    call groupOctDigits ; HL=destString; preserves HL
+    ; Append frac indicator
+    pop bc ; stack=[destString,inputNumber]; C=u32StatusCode
+    call appendHasFracPageTwo ; preserves BC, DE, HL
+    ex de, hl ; DE=destString
+    ret
+
 ;-----------------------------------------------------------------------------
 
 octNumberWidth equ 11 ; 3 bits * 11 = 33 bits
@@ -105,7 +266,158 @@ formatU32ToOctStringLoop:
     ret
 
 ;-----------------------------------------------------------------------------
+
+; Description: Truncate the OCT string on the left, leaving the correct number
+; of digits on the right that should be displayed given the current
+; baseWordSize.
+; Input:
+;   - HL:(char*)=octString
+; Output:
+;   - (HL) updated
+;   - BC:u16=displayLen
+; Destroys: A, BC, DE
+; Preserves: HL
+truncateOctStringToWordSize:
+    call displayableOctDigits ; A=displayLen
+    ld c, a
+    ld b, 0 ; BC=displayLen
+    sub 11
+    neg ; A=truncLen=11-displayLen
+    ret z
+    jr truncateStringToDisplayLen
+
+; Description: Get the number of displayable OCT digits for the current
+; baseWordSize: {8: 3, 16: 6, 24: 8, 32: 11}
+; Output: A:u8=displayLen
+; Destroys: A
+displayableOctDigits:
+    ld a, (baseWordSize)
+    cp 8
+    jr z, displayableOctDigits8
+    cp 16
+    jr z, displayableOctDigits16
+    cp 24
+    jr z, displayableOctDigits24
+    jr displayableOctDigits32
+displayableOctDigits8:
+    ld a, 3
+    ret
+displayableOctDigits16:
+    ld a, 6
+    ret
+displayableOctDigits24:
+    ld a, 8
+    ret
+displayableOctDigits32:
+    ld a, 11
+    ret
+
+;-----------------------------------------------------------------------------
+
+; Description: Group the oct string into groups of 3 digits starting from
+; the least significant digits on the right. This is done in-situ, so the
+; buffer must be at least 15 bytes long (11 digits + 3 spaces + 1 NUL).
+; Input:
+;   - HL:(char*)=inputString
+;   - BC:u8=strLen, 3, 6, 8, 11
+; Output:
+;   - (HL) grouped in 3 digits
+; Destroys: A, BC, DE
+; Preserves: HL
+groupOctDigits:
+    ld a, c
+    call calcOctExtraSpace ; A=numExtraSpaces
+    or a
+    ret z
+    ; move pointers to end of digits
+    push hl ; stack=[inputString]
+    add hl, bc
+    ld e, l
+    ld d, h
+    ; move dest pointer DE by number of expected spaces
+    add a, e
+    ld e, a
+    ld a, d
+    adc a, 0
+    ld d, a
+    ; add NUL terminator, since we are looping backwards
+    xor a
+    ld (de), a
+    dec de
+    dec hl
+    ld a, 3 ; every 3 digits
+groupOctDigitsLoop:
+    ldd
+    jp po, groupOctDigitsEnd ; if BC==0: PV=0=po (odd)
+    dec a ; ZF=1 every 3 digits
+    jr nz, groupOctDigitsLoop
+    ; add a space
+    ld a, ' '
+    ld (de), a
+    dec de
+    ld a, 3
+    jr groupOctDigitsLoop
+groupOctDigitsEnd:
+    pop hl ; stack=[]; HL=inputString
+    ret
+
+; Description: Return the number of extra spaces needed to group octal digits
+; in groups of 3: The equation proper equation is int((strLen-1)/3). The strLen
+; can only be {3, 6, 8, 11}, which should produce {0, 1, 2, 3} respectively. It
+; looks like we can simply use int(strLen/4) to get pretty close to the
+; results, except for strLen==11.
+;
+; Input: A:strLen
+; Output: A:numExtraSpaces
+; Preserves: BC, DE, HL
+calcOctExtraSpace:
+    cp a, 11
+    jr z, calcOctExtraSpace11
+    srl a
+    srl a ; A=A/4
+    ret
+calcOctExtraSpace11:
+    ld a, 3
+    ret
+
+;-----------------------------------------------------------------------------
 ; Routines related to Binary strings.
+;-----------------------------------------------------------------------------
+
+; Description: Format the U32 with its status code to a BIN string suitable for
+; displaying on the screen using a maximum of 16 digits.
+; Input:
+;   - HL:(u32*)=inputNumber
+;   - DE:(char*)=destString, buffer of at least 33 bytes (32 binary digits plus
+;   NUL)
+;   - C:u8=statusCode
+; Output:
+;   - (DE) C-string representation of u32, truncated as necessary
+; Destroys: A, BC, HL
+; Preserves: DE
+FormatCodedU32ToBinString:
+    ; Check for errors
+    bit u32StatusCodeTooBig, c
+    jp nz, copyInvalidMessage
+    bit u32StatusCodeNegative, c
+    jp nz, copyNegativeMessage
+    ;
+    push bc ; stack=[C=u32StatusCode]
+    ; Convert HL=u32 into a base-2 string.
+    call FormatU32ToBinString ; DE=destString
+    ex de, hl ; HL=destString
+    ; Truncate leading digits to fit display
+    call truncateBinDigits ; HL=destString; A=strLen
+    ; Reformat digits in groups of 4
+    call groupBinDigits ; HL=destString; preserves HL
+    ; Append frac indicator
+    pop bc ; stack=[destString,inputNumber]; C=u32StatusCode
+    call appendHasFracPageTwo ; preserves BC, DE, HL
+    ; Convert to small font equivalents.
+    call convertBinDigitsToSmallFont ; preserves AF, HL
+    ex de, hl ; DE=destString
+    ret
+
 ;-----------------------------------------------------------------------------
 
 binNumberWidth equ 32
@@ -113,20 +425,18 @@ binNumberWidth equ 32
 ; Description: Converts 32-bit unsigned integer referenced by HL to a binary
 ; string in buffer referenced by DE.
 ; Input:
-;   - HL: pointer to 32-bit unsigned integer
-;   - DE: pointer to a C-string buffer of at least 33 bytes (32 binary digits
-;   plus NUL terminator). This will usually be 3 consecutive OPx registers,
-;   each 11 bytes long, for a total of 33 bytes.
+;   - HL:(u32*)
+;   - DE:(char*)=stringPointer, at least 33 bytes (32 binary digits plus NUL)
 ; Output:
-;   - (DE): C-string representation of u32 as binary digits
+;   - (DE) formatted 32-digit string, NUL terminated
 ; Destroys: A
 ; Preserves: BC, DE, HL
 FormatU32ToBinString:
     push bc
     push hl
     push de
-
-    ld b, binNumberWidth ; 14 bits maximum
+    ; prepare loop
+    ld b, binNumberWidth
 formatU32ToBinStringLoop:
     ld a, (hl)
     and $01 ; last bit
@@ -137,13 +447,12 @@ formatU32ToBinStringLoop:
     djnz formatU32ToBinStringLoop
     xor a
     ld (de), a ; NUL terminator
-
     ; reverse the binary digits
     pop hl ; HL = destination string pointer
     push hl
     ld b, binNumberWidth
     call reverseStringPageTwo
-
+    ;
     pop de
     pop hl
     pop bc
@@ -151,90 +460,133 @@ formatU32ToBinStringLoop:
 
 ;------------------------------------------------------------------------------
 
-; Description: Truncate upper digits depending on baseWordSize. The effective
-; number of digits that can be displayed is `strLen = min(baseWordSize, 12)`.
-; Then scan all digits above strLen and look for a '1'. If a '1' exists at
-; digit >= strLen, replace the left most digit of the truncated string with an
-; Lellipsis character.
+maxBinDisplayDigits equ 16
+
+; Description: Truncate in situ the upper digits of the formatted base-2 string
+; depending on baseWordSize .
+;
+; 1) Calculate the effective number of digits that can be displayed is
+; `strLen = min(baseWordSize, maxBinDisplayDigits)`.
+; 2) Scan all digits above strLen and look for a '1'. If a '1' exists at digit
+; >= strLen, remember this situation.
+; 3) Shift all lower digits to the left, truncating the upper digits.
+; 4) If non-zero digits were truncatedthen replace the left most character with
+; an Lellipsis character to indicate truncation.
 ;
 ; Input:
 ;   - HL:(char*)=inputString=u32 as string (32 characters)
 ; Output:
-;   - HL:(char*)=truncatedString
+;   - HL:(char*)=inputString
+;   - (HL) truncated (shifted left)
 ;   - A:u8=displayLen=8 or 16
-; Destroys: A, BC
-maxBinDisplayDigits equ 16
-TruncateBinDigits:
+; Destroys: A, BC, DE
+; Preserves: HL
+truncateBinDigits:
+    ; compute displayLen
     ld a, (baseWordSize)
     cp maxBinDisplayDigits ; if baseWordSize < maxBinDisplayDigits: CF=1
-    jr c, truncateBinDigitsContinue
+    jr c, truncateBinDigitsCalcTruncationLen
     ld a, maxBinDisplayDigits ; displayLen=min(baseWordSize,maxBinDisplayDigits)
-truncateBinDigitsContinue:
+truncateBinDigitsCalcTruncationLen:
     ; A=displayLen=8 or 16
     push af ; stack=[displayLen]
-    sub 32
-    neg ; A=numLeadingdigits=32-strLen=16 or 24
+    sub 32 ; max number of digits
+    neg ; A=truncationLen=(32-displayLen)=16 or 24
     ; Check leading digits to determine if truncation causes overflow
     ld b, a
     ld c, 0 ; C=foundOneDigit:boolean
+    push hl ; stack=[displayLen, inputString]
 truncateBinDigitsCheckOverflow:
     ld a, (hl)
     inc hl ; HL=left most digit of the truncated string.
     sub '0'
-    or c ; check for a '1' digit
+    or c ; check for a non-zero digit
     ld c, a
     djnz truncateBinDigitsCheckOverflow
-    jr z, truncateBinDigitsNoOverflow ; if C=0: ZF=1, indicating no overflow
-    ; Replace left most digit with ellipsis symbol to indicate overflow.
+    ; If a 'non-zerodigit found, replace left most displayed char with ellipsis
+    jr z, truncateBinDigitsShiftLeft ; if C=0: ZF=1, indicating no overflow
     ld a, Lellipsis
     ld (hl), a
-truncateBinDigitsNoOverflow:
-    pop af ; stack=[]; A=displayLen
+truncateBinDigitsShiftLeft:
+    ; Shift displayable chars to left
+    pop de ; stack=[displayLen]; DE=inputString
+    pop af ; A=displayLen
+    push de ; stack=[inputString]
+    ld c, a
+    ld b, 0 ; BC=displayLen
+    ldir ; shift
+    ex de, hl
+    ld (hl), b ; NUL terminate the new string
+    ex de, hl
+    pop hl ; stack=[]; HL=inputString
     ret
 
 ;------------------------------------------------------------------------------
 
-; Description: Reformat the binary string into groups of 4 digits.
+; Description: Group the binary string into groups of 4 digits starting from
+; the least significant digits on the right. This is done in-situ, so the
+; buffer must be at least 40 bytes long (32 digits + 7 spaces + 1 NUL).
 ; Input:
-;   - HL:(char*), <= 16 digits.
-;   - A:u8=strLen
-;   - DE:(char*)=string buffer of >= 20 bytes (including NUL string). Must not
-;   overlap with HL.
+;   - A:u8=strLen, must be multiple of 4
+;   - HL:(char*)=inputString
 ; Output:
-;   - DE:(char*)=formattedString
-; Destroys: A, BC
-; Preserves: DE, HL
-ReformatBinDigits:
-    push de
+;   - (HL)=groupedString
+; Destroys: AF, BC, DE
+; Preserves: HL
+groupBinDigits:
+    or a
+    ret z ; ret if strLen==0
     push hl
     ld b, 0
-    ld c, a
-reformatBinDigitsLoop:
-    ldi
-    jp po, reformatBinDigitsEnd ; if BC==0: PV=0=po (odd)
+    ld c, a ; BC=strLen=numCharToShift
+    ; move pointer to the end of string
+    add hl, bc
+    ld e, l
+    ld d, h
+    ; numSpaces=(strLen-1)/4
+    dec a
+    srl a
+    srl a
+    ; move dest pointer DE by number of expected spaces
+    add a, e
+    ld e, a
+    ld a, d
+    adc a, 0
+    ld d, a
+    ; nul terminate the destString, since we are looping backwards
+    xor a
+    ld (de), a
+    dec de
+    dec hl
+groupBinDigitsLoop:
+    ldd
+    jp po, groupBinDigitsEnd ; if BC==0: PV=0=po (odd)
     ld a, c
-    and $03 ; every group of 4 digits (right justified), add a space
-    jr nz, reformatBinDigitsLoop
+    and $03 ; ZF=1 every 4 digits
+    jr nz, groupBinDigitsLoop
+    ; add a space
     ld a, ' '
     ld (de), a
-    inc de
-    jr reformatBinDigitsLoop
-reformatBinDigitsEnd:
-    xor a
-    ld (de), a ; terminating NUL
+    dec de
+    jr groupBinDigitsLoop
+groupBinDigitsEnd:
     pop hl
-    pop de
     ret
+
+;------------------------------------------------------------------------------
 
 ; Description: Convert large font characters to small font characters which
 ; look better in small font:
+;
 ;   - Lellipsis -> Sleft
 ;   - Lspace -> SFourSpaces
 ;
 ; Input: HL:(char*)
 ; Output: (HL)=convertedString
-; Destroys: A
-ConvertBinDigitsToSmallFont:
+; Destroys: none
+; Preserves: AF, BC, DE, HL
+convertBinDigitsToSmallFont:
+    push af
     push hl
     jr convertBinDigitsToSmallFontLoopEntry
 convertBinDigitsToSmallFontLoop:
@@ -257,52 +609,40 @@ convertBinDigitsToSmallFontCheckSpace:
     jr convertBinDigitsToSmallFontLoop
 convertBinDigitsToSmallFontEnd:
     pop hl
-    ret
-
-;------------------------------------------------------------------------------
-
-; Description: Reformat the base-2 string in groups of 4, 2 groups per line.
-; The source string is probably at OP4. The destination string is probably OP3,
-; which is 11 bytes before OP4. The original string is a maximum of 32
-; characters long. The formatted string adds 2 characters per line, for a
-; maximum of 8 characters, which is less than the 11 bytes that OP3 is before
-; OP4. Therefore the formatting can be done in-situ because at every point in
-; the iteration, the resulting string does not affect the upcoming digits.
-;
-; The maximum length of the final string is 4 lines * 10 bytes = 40 bytes,
-; which is smaller than the 44 bytes available using OP3-OP6.
-;
-; Input:
-;   - HL:(char*)=source base-2 string (probably OP4)
-;   - DE:(char*)=destination string buffer (sometimes OP3)
-; Output:
-;   - (DE): base-2 string formatted in lines of 8 digits, in 2 groups of 4
-;   digits
-;   - DE updated
-ReformatBaseTwoString:
-    call getWordSizeIndex
-    inc a ; A=baseWordSize/8=number of bytes
-    ld b, a
-reformatBaseTwoStringLoop:
-    push bc
-    ld bc, 4
-    ldir
-    ld a, ' '
-    ld (de), a
-    inc de
-    ;
-    ld bc, 4
-    ldir
-    ld a, Lenter
-    ld (de), a
-    inc de
-    ;
-    pop bc
-    djnz reformatBaseTwoStringLoop
+    pop af
     ret
 
 ;-----------------------------------------------------------------------------
 ; Routines related to Dec strings (as integers).
+;-----------------------------------------------------------------------------
+
+; Description: Format the U32 with its status code to a DEC string suitable for
+; displaying on the screen using a maximum of 10 digits.
+; Input:
+;   - HL:(u32*)=inputNumber
+;   - DE:(char*)=destString, buffer of at least 11 bytes (10 dec digits + NUL)
+;   - C:u8=statusCode
+; Output:
+;   - (DE) C-string representation of u32, truncated as necessary
+; Destroys: A, BC, HL
+; Preserves: DE
+FormatCodedU32ToDecString:
+    ; Check for errors
+    bit u32StatusCodeTooBig, c
+    jp nz, copyInvalidMessage
+    bit u32StatusCodeNegative, c
+    jp nz, copyNegativeMessage
+    ;
+    push bc ; stack=[C=u32StatusCode]
+    ; Convert u32 into a hex string.
+    call FormatU32ToDecString ; preseves DE=destString
+    ex de, hl ; HL=destString
+    ; Append frac indicator
+    pop bc ; stack=[destString,inputNumber]; C=u32StatusCode
+    call appendHasFracPageTwo ; preserves BC, DE, HL
+    ex de, hl ; DE=destString
+    ret
+
 ;-----------------------------------------------------------------------------
 
 decNumberWidth equ 10 ; 2^32 needs 10 digits
@@ -336,7 +676,6 @@ formatU32ToDecStringLoop:
     djnz formatU32ToDecStringLoop
     xor a
     ld (de), a ; NUL termination
-
     ; truncate trailing '0' digits, and reverse the string
     pop hl ; HL = destination string pointer
     push hl
@@ -387,3 +726,61 @@ truncateTrailingZerosEnd:
     pop de
     pop hl
     ret
+
+;-----------------------------------------------------------------------------
+; Common helper routines.
+;-----------------------------------------------------------------------------
+
+; Description: Append a '.' at the end of the string if u32StatusCode contains
+; u32StatusCodeHasFrac.
+; Input:
+;   - C:u8=u32StatusCode
+;   - HL:(char*)
+; Output:
+;   - (HL)='.' appended if u32StatusCodehasFrac is enabled
+; Destroys: A
+; Preserves, BC, DE, HL
+appendHasFracPageTwo:
+    bit u32StatusCodeHasFrac, c
+    ret z
+    ld a, '.'
+    call appendCStringPageTwo
+    ret
+
+;-----------------------------------------------------------------------------
+
+; Description: Append the invalid integer message to the destination buffer.
+; Input:
+;   - DE:(char*)=dest
+; Output:
+;   - DE with the "invalid" message
+; Destroys: A, BC, HL
+; Preserves: DE
+copyInvalidMessage:
+    push de
+    ld hl, msgBaseInvalidPageTwo
+    call copyCStringPageTwo
+    pop de
+    ret
+
+; Indicates number has overflowed the current Base mode.
+msgBaseInvalidPageTwo:
+    .db "...", 0
+
+; Description: Append the negative integer message to the destination buffer.
+; Input:
+;   - DE:(char*)=dest
+; Output:
+;   - DE with the "invalid" message
+; Destroys: A, BC, HL
+; Preserves: DE
+copyNegativeMessage:
+    push de
+    ld hl, msgBaseNegativePageTwo
+    call copyCStringPageTwo
+    pop de
+    ret
+
+; Indicates number is negative so cannot be rendered in Base mode.
+msgBaseNegativePageTwo:
+    .db "-", 0

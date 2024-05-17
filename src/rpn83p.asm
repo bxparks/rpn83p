@@ -1772,21 +1772,21 @@ _ConvertOP1ToUxxNoFatal equ _ConvertOP1ToUxxNoFatalLabel-branchTableBase
     .db 2
 
 ; formatinteger32.asm
-_ReformatBaseTwoStringLabel:
-_ReformatBaseTwoString equ _ReformatBaseTwoStringLabel-branchTableBase
-    .dw ReformatBaseTwoString
+_FormatCodedU32ToHexStringLabel:
+_FormatCodedU32ToHexString equ _FormatCodedU32ToHexStringLabel-branchTableBase
+    .dw FormatCodedU32ToHexString
     .db 2
-_TruncateBinDigitsLabel:
-_TruncateBinDigits equ _TruncateBinDigitsLabel-branchTableBase
-    .dw TruncateBinDigits
+_FormatCodedU32ToOctStringLabel:
+_FormatCodedU32ToOctString equ _FormatCodedU32ToOctStringLabel-branchTableBase
+    .dw FormatCodedU32ToOctString
     .db 2
-_ReformatBinDigitsLabel:
-_ReformatBinDigits equ _ReformatBinDigitsLabel-branchTableBase
-    .dw ReformatBinDigits
+_FormatCodedU32ToBinStringLabel:
+_FormatCodedU32ToBinString equ _FormatCodedU32ToBinStringLabel-branchTableBase
+    .dw FormatCodedU32ToBinString
     .db 2
-_ConvertBinDigitsToSmallFontLabel:
-_ConvertBinDigitsToSmallFont equ _ConvertBinDigitsToSmallFontLabel-branchTableBase
-    .dw ConvertBinDigitsToSmallFont
+_FormatCodedU32ToDecStringLabel:
+_FormatCodedU32ToDecString equ _FormatCodedU32ToDecStringLabel-branchTableBase
+    .dw FormatCodedU32ToDecString
     .db 2
 _FormatU32ToHexStringLabel:
 _FormatU32ToHexString equ _FormatU32ToHexStringLabel-branchTableBase

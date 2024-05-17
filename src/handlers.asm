@@ -570,6 +570,9 @@ handleKeyClear:
     or a
     ret nz ; not sure if inputBuf can ever be non-empty, but just ret if so
     res rpnFlagsEditing, (iy + rpnFlags)
+#ifdef DEBUG
+    bcall(_DebugClear)
+#endif
     jp clearStack
 handleKeyClearNormal:
     ; We are here if CLEAR was pressed when there are no other error conditions

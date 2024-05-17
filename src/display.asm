@@ -1000,18 +1000,6 @@ printHLString:
     bcall(_EraseEOL)
     ret
 
-; Description: Print an indicator ("...") that the OP1 number cannot be
-; rendered in the current base mode (hex, oct, or bin).
-printOP1BaseInvalid:
-    ld hl, msgBaseInvalid
-    jr printHLString
-
-; Description: Print just a negative sign for OP1 number that is negative.
-; Negative numbers cannot be displayed in base HEX, OCT or BIN modes.
-printOP1BaseNegative:
-    ld hl, msgBaseNegative
-    jr printHLString
-
 ; Description: Print the string in HL using small font, and erase to end of
 ; line. Unlike printHLString(), this routine assumes that the string never
 ; wraps to the next line.
@@ -1022,87 +1010,38 @@ printSmallHLString:
     jp vEraseEOL
 
 ;-----------------------------------------------------------------------------
+; Print number in BASE mode.
+;-----------------------------------------------------------------------------
 
 ; Description: Print integer at OP1 at the current cursor in base 10. Erase to
 ; the end of line (but only if the digits did not spill over to the next line).
 ; Input:
 ;   - OP1
 ;   - B=displayFontMask
-; Destroys: all, OP1-OP6
+; Destroys: all, OP1-OP5, fmtString
 printOP1Base10:
     call displayStackSetLargeFont
     bcall(_ConvertOP1ToUxxNoFatal) ; HL=OP1=uxx(OP1); C=u32StatusCode
-    bit u32StatusCodeTooBig, c
-    jr nz, printOP1BaseInvalid
-    bit u32StatusCodeNegative, c
-    jr nz, printOP1BaseNegative
-    ; Convert u32 into a base-10 string.
-    ld de, OP4
-    bcall(_FormatU32ToDecString) ; DE=formattedString
-    ; Add '.' if OP1 has fractional component.
-    call appendHasFrac ; DE=rendered string
+    ld de, fmtString
+    bcall(_FormatCodedU32ToDecString) ; DE=formattedString
     ex de, hl ; HL=rendered string
     jr printHLString
-
-; Description: Append a '.' at the end of the string if u32StatusCode contains
-; u32StatusCodeHasFrac.
-; Input:
-;   - C: u32StatusCode
-;   - DE: pointer to ascii string
-; Output:
-;   - DE: pointer to ascii string with '.' appended if u32StatusCodehasFrac is
-;   enabled
-; Destroys: A
-; Preserves, BC, DE, HL
-appendHasFrac:
-    bit u32StatusCodeHasFrac, c
-    ret z
-    ld a, '.'
-    ex de, hl
-    call appendCString
-    ex de, hl
-    ret
 
 ;-----------------------------------------------------------------------------
 
 ; Description: Print ingeger at OP1 at the current cursor in base 16. Erase to
 ; the end of line (but only if the digits did not spill over to the next line).
-; TODO: I think printOP1Base16(), printOP1Base8(), and printOP1Base2() can be
-; combined into a single subroutine, saving memory.
 ; Input:
 ;   - OP1
 ;   - B=displayFontMask
-; Destroys: all, OP1-OP5
+; Destroys: all, OP1-OP5, fmtString
 printOP1Base16:
     call displayStackSetLargeFont
     bcall(_ConvertOP1ToUxxNoFatal) ; OP1=U32; C=u32StatusCode
-    bit u32StatusCodeTooBig, c
-    jr nz, printOP1BaseInvalid
-    bit u32StatusCodeNegative, c
-    jr nz, printOP1BaseNegative
-    ; Convert u32 into a base-16 string.
-    ld de, OP4
-    bcall(_FormatU32ToHexString) ; DE=formattedString
-    ; Append frac indicator
-    call appendHasFrac ; DE=rendered string
-    ex de, hl ; HL=rendered string
-    call truncateHexDigits
+    ld de, fmtString
+    bcall(_FormatCodedU32ToHexString) ; preserves DE
+    ex de, hl ; HL=fmtString
     jr printHLString
-
-; Description: Truncate upper digits depending on baseWordSize.
-; Input: HL: pointer to rendered string
-; Output: HL: pointer to truncated string
-; Destroys: A, DE
-truncateHexDigits:
-    ld a, (baseWordSize)
-    srl a
-    srl a ; A=2,4,6,8
-    sub 8
-    neg ; A=6,4,2,0
-    ld e, a
-    ld d, 0
-    add hl, de
-    ret
 
 ;-----------------------------------------------------------------------------
 
@@ -1111,112 +1050,46 @@ truncateHexDigits:
 ; Input:
 ;   - OP1
 ;   - B=displayFontMask
-; Destroys: all, OP1-OP5
+; Destroys: all, OP1-OP5, fmtString
 printOP1Base8:
     call displayStackSetLargeFont
     bcall(_ConvertOP1ToUxxNoFatal) ; OP1=U32; C=u32StatusCode
-    bit u32StatusCodeTooBig, c
-    jr nz, printOP1BaseInvalid
-    bit u32StatusCodeNegative, c
-    jr nz, printOP1BaseNegative
-    ; Convert u32 into a base-8 string.
-    ld de, OP4
-    bcall(_FormatU32ToOctString) ; DE=formattedString
-    ; Append frac indicator
-    call appendHasFrac ; DE=rendered string
-    ex de, hl ; HL=rendered string
-    call truncateOctDigits
-    jp printHLString
-
-; Truncate upper digits depending on baseWordSize. For base-8, the u32 integer
-; was converted to 11 digits (33 bits). The number of digits to retain for each
-; baseWordSize is: {8: 3, 16: 6, 24: 8, 32: 11}, so the number of digits to
-; truncate is: {8: 8, 16: 5, 24: 3, 32: 0}.
-; Input: HL: pointer to rendered string
-; Output: HL: pointer to truncated string
-; Destroys: A, DE
-truncateOctDigits:
-    ld a, (baseWordSize)
-    cp 8
-    jr nz, truncateOctDigits16
-    ld e, a
-    jr truncateOctString
-truncateOctDigits16:
-    cp 16
-    jr nz, truncateOctDigits24
-    ld e, 5
-    jr truncateOctString
-truncateOctDigits24:
-    cp 24
-    jr nz, truncateOctDigits32
-    ld e, 3
-    jr truncateOctString
-truncateOctDigits32:
-    ld e, 0
-truncateOctString:
-    ld d, 0
-    add hl, de
-    ret
+    ld de, fmtString
+    bcall(_FormatCodedU32ToOctString) ; preserves DE
+    ex de, hl ; HL=fmtString
+    jr printHLString
 
 ;-----------------------------------------------------------------------------
 
-; Description: Print integer at OP1 at the current cursor in base 2. Erase to
-; the end of line (but only if the floating point did not spill over to the
-; next line).
+; Description: Print integer at OP1 at the current cursor in base 2.
 ;
-; The display can handle a maximum of 15 digits (1 character for
-; the "X:" label). We need one space for a trailing "." so that's 14 digits. We
-; also want to display the binary digits in group of 4, separated by a space
-; between groups, for readability, With 3 groups of 4 digits plus 2 spaces in
-; between, that's exactly 14 characters.
+; Base 2 numbers are rendered using small font to allow 16 digits to fit on one
+; line. That means WSIZ 8 and 16 can be shown in full. Digits are separated
+; into groups of 4 digits for readability. If WSIZ is greater than 16, then the
+; upper digits are truncated.
 ;
-; If there are non-zero digits after the left most digit (digit 13 from the
-; right, zero-based), then digit 13 should be replaced with a one-character
-; ellipsis character to indicate hidden digits. The SHOW command can be used to
-; display the additional digits.
+; If there exist non-zero digits in the truncated digits, the left most
+; character in the displayed digits will be replaced with a "left arrow"
+; character to indicate the presence of hidden digits.
+;
+; If the floating point number is not an integer, a decimal point will be
+; appended to the binary digits, to indicate the presence of fractional digits.
+;
+; The SHOW command can be used to display all digits.
 ;
 ; Input:
-;   - OP1
+;   - OP1:float
 ;   - B=displayFontMask
-; Destroys: all, OP1-OP5
+; Destroys: all, OP1-OP5, fmtString
 printOP1Base2:
-    ; Convert OP1 into Uxx first, so that we can determine whether to display
-    ; the results using small font or large font.
-    push bc ; stack=[displayFontMask]
-    bcall(_ConvertOP1ToUxxNoFatal) ; HL=OP1=uxx(OP1); C=u32StatusCode
-    pop de ; D=displayFontMask
-    ld b, d ; B=displayFontMask
-    ; Check for errors
-    bit u32StatusCodeTooBig, c
-    jr nz, printOP1Base2TooBig
-    bit u32StatusCodeNegative, c
-    jr nz, printOP1Base2Negative
-    push bc ; stack=[B=displayFontMask,C=u32StatusCode]
-    ; Convert HL=u32 into a base-2 string.
-    ld de, fmtString
-    bcall(_FormatU32ToBinString) ; DE=fmtString=formattedString
-    ; Truncate leading digits to fit display
-    ex de, hl ; HL=formattedString
-    bcall(_TruncateBinDigits) ; HL=truncatedString; A=strLen
-    ; Group digits in groups of 4.
-    ld de, OP3
-    bcall(_ReformatBinDigits) ; DE=formattedString=OP3
-    ; Append frac indicator
-    pop bc ; stack=[]; B=displayFontMask; C=u32StatusCode
-    call appendHasFrac ; DE=formattedString
-    ; Always use small font for base 2.
-    ex de, hl ; HL=formattedString
+    ; always use small font for base 2
     call eraseEOLIfNeeded ; uses B
     call displayStackSetSmallFont
-    bcall(_ConvertBinDigitsToSmallFont)
-    jp printSmallHLString
-    ;
-printOP1Base2TooBig:
-    call displayStackSetLargeFont
-    jp printOP1BaseInvalid
-printOP1Base2Negative:
-    call displayStackSetLargeFont
-    jp printOP1BaseNegative
+    bcall(_ConvertOP1ToUxxNoFatal) ; HL=OP1=uxx(OP1); C=u32StatusCode
+    ld de, fmtString
+    bcall(_FormatCodedU32ToBinString) ; preserves DE
+    ex de, hl ; HL=fmtString
+    jr printSmallHLString
 
 ;-----------------------------------------------------------------------------
 ; RpnObject records.
@@ -1347,14 +1220,6 @@ printOP1DurationRecord:
 ;-----------------------------------------------------------------------------
 ; String constants.
 ;-----------------------------------------------------------------------------
-
-; Indicates number has overflowed the current Base mode.
-msgBaseInvalid:
-    .db "...", 0
-
-; Indicates number is negative so cannot be rendered in Base mode.
-msgBaseNegative:
-    .db "-", 0
 
 ; RPN stack variable labels
 msgTLabel:
