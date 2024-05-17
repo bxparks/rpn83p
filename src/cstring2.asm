@@ -33,8 +33,9 @@ appendCStringPageTwoAtEnd:
 
 ; Description: Copy the C string in HL to DE.
 ; Input: HL, DE:(char*)
-; Output: DE: points to terminating NUL
-; Destroys: A
+; Output: DE points to terminating NUL
+; Destroys: A, DE, HL
+; Preserves: BC
 copyCStringPageTwo:
     ld a, (hl)
     ld (de), a
