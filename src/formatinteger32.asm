@@ -40,47 +40,6 @@ FormatCodedU32ToHexString:
     ex de, hl ; DE=destString
     ret
 
-; Description: Truncate the HEX string on the left, leaving the correct number
-; of digits on the right that should be displayed given the current
-; baseWordSize.
-; Input:
-;   - HL:(char*)=hexString
-; Output:
-;   - (HL) updated
-; Destroys: A, BC, DE
-; Preserves: HL
-truncateHexStringToWordSize:
-    ld a, (baseWordSize)
-    srl a
-    srl a ; A=displayLen=baseWordSize/4=8,6,4,2
-    ;
-    ld c, a
-    ld b, 0 ; BC=displayLen
-    sub 8
-    neg ; A=truncLen=8-displayLen
-    ret z
-    ; [[fallthrough]]
-
-; Description: Truncate string to the left.
-; Input:
-;   - A:u8=truncLen
-;   - BC:displayLen
-;   - HL:(char*)=string
-; Output:
-;   - (HL) string shifted to left by truncLen, terminated with NUL
-truncateStringToDisplayLen:
-    push hl ; stack=[hexString]
-    ex de, hl ; DE=hexString
-    ld l, a
-    ld h, 0
-    add hl, de ; HL=hexString+truncLen
-    ldir
-    ; NUL terminate
-    xor a
-    ld (de), a
-    pop hl ; stack=[]; HL=hexString
-    ret
-
 ;-----------------------------------------------------------------------------
 
 hexNumberWidth equ 8 ; 4 bits * 8 = 32 bits
@@ -130,6 +89,49 @@ formatU32ToHexStringLoop:
     ret
 
 ;-----------------------------------------------------------------------------
+
+; Description: Truncate the HEX string on the left, leaving the correct number
+; of digits on the right that should be displayed given the current
+; baseWordSize.
+; Input:
+;   - HL:(char*)=hexString
+; Output:
+;   - (HL) updated
+; Destroys: A, BC, DE
+; Preserves: HL
+truncateHexStringToWordSize:
+    ld a, (baseWordSize)
+    srl a
+    srl a ; A=displayLen=baseWordSize/4=8,6,4,2
+    ;
+    ld c, a
+    ld b, 0 ; BC=displayLen
+    sub 8
+    neg ; A=truncLen=8-displayLen
+    ret z
+    ; [[fallthrough]]
+
+; Description: Truncate string to the left.
+; Input:
+;   - A:u8=truncLen
+;   - BC:displayLen
+;   - HL:(char*)=string
+; Output:
+;   - (HL) string shifted to left by truncLen, terminated with NUL
+truncateStringToDisplayLen:
+    push hl ; stack=[hexString]
+    ex de, hl ; DE=hexString
+    ld l, a
+    ld h, 0
+    add hl, de ; HL=hexString+truncLen
+    ldir
+    ; NUL terminate
+    xor a
+    ld (de), a
+    pop hl ; stack=[]; HL=hexString
+    ret
+
+;-----------------------------------------------------------------------------
 ; Routines related to Octal strings.
 ;-----------------------------------------------------------------------------
 
@@ -162,50 +164,6 @@ FormatCodedU32ToOctString:
     pop bc ; stack=[destString,inputNumber]; C=u32StatusCode
     call appendHasFracPageTwo ; preserves BC, DE, HL
     ex de, hl ; DE=destString
-    ret
-
-; Description: Truncate the OCT string on the left, leaving the correct number
-; of digits on the right that should be displayed given the current
-; baseWordSize.
-; Input:
-;   - HL:(char*)=octString
-; Output:
-;   - (HL) updated
-; Destroys: A, BC, DE
-; Preserves: HL
-truncateOctStringToWordSize:
-    call displayableOctDigits ; A=displayLen
-    ld c, a
-    ld b, 0 ; BC=displayLen
-    sub 11
-    neg ; A=truncLen=11-displayLen
-    ret z
-    jr truncateStringToDisplayLen
-
-; Description: Get the number of displayable OCT digits for the current
-; baseWordSize: {8: 3, 16: 6, 24: 8, 32: 11}
-; Output: A:u8=displayLen
-; Destroys: A
-displayableOctDigits:
-    ld a, (baseWordSize)
-    cp 8
-    jr z, displayableOctDigits8
-    cp 16
-    jr z, displayableOctDigits16
-    cp 24
-    jr z, displayableOctDigits24
-    jr displayableOctDigits32
-displayableOctDigits8:
-    ld a, 3
-    ret
-displayableOctDigits16:
-    ld a, 6
-    ret
-displayableOctDigits24:
-    ld a, 8
-    ret
-displayableOctDigits32:
-    ld a, 11
     ret
 
 ;-----------------------------------------------------------------------------
@@ -251,6 +209,52 @@ formatU32ToOctStringLoop:
     pop de
     pop hl
     pop bc
+    ret
+
+;-----------------------------------------------------------------------------
+
+; Description: Truncate the OCT string on the left, leaving the correct number
+; of digits on the right that should be displayed given the current
+; baseWordSize.
+; Input:
+;   - HL:(char*)=octString
+; Output:
+;   - (HL) updated
+; Destroys: A, BC, DE
+; Preserves: HL
+truncateOctStringToWordSize:
+    call displayableOctDigits ; A=displayLen
+    ld c, a
+    ld b, 0 ; BC=displayLen
+    sub 11
+    neg ; A=truncLen=11-displayLen
+    ret z
+    jr truncateStringToDisplayLen
+
+; Description: Get the number of displayable OCT digits for the current
+; baseWordSize: {8: 3, 16: 6, 24: 8, 32: 11}
+; Output: A:u8=displayLen
+; Destroys: A
+displayableOctDigits:
+    ld a, (baseWordSize)
+    cp 8
+    jr z, displayableOctDigits8
+    cp 16
+    jr z, displayableOctDigits16
+    cp 24
+    jr z, displayableOctDigits24
+    jr displayableOctDigits32
+displayableOctDigits8:
+    ld a, 3
+    ret
+displayableOctDigits16:
+    ld a, 6
+    ret
+displayableOctDigits24:
+    ld a, 8
+    ret
+displayableOctDigits32:
+    ld a, 11
     ret
 
 ;-----------------------------------------------------------------------------
