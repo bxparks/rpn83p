@@ -20,6 +20,11 @@ solves the Time Value of Money equation. It has been extracted from
 - [TVM Clear](#tvm-clear)
 - [TVM Variable Recall](#tvm-variable-recall)
 - [TVM Examples](#tvm-examples)
+    - [Example 1](#example-1)
+    - [Example 2](#example-2)
+    - [Example 3](#example-3)
+    - [Example 4](#example-4)
+    - [Example 5](#example-5)
 
 ## TVM Functions
 
@@ -242,8 +247,9 @@ functionality.
 
 ## TVM Examples
 
-**Example 1**: Calculate the monthly payment on a 30-year, $500,000 mortgage at
-7.5%
+### Example 1
+
+Calculate the monthly payment on a 30-year, $500,000 mortgage at 7.5%
 
 - Press `CLTV`
 - Press 360 `N` (30 years * 12 payments/year)
@@ -256,16 +262,20 @@ functionality.
 The sign convention of the TVM equation is such that +'ve represents inflow of
 cash, and -'ve represents outflow of cash.
 
-**Example 2**: Assuming Example 1, calculate the amount that can be borrowed
-if the payment is $3000/month instead of $3496/month
+### Example 2
+
+Assuming Example 1, calculate the amount that can be borrowed if the payment is
+$3000/month instead of $3496/month
 
 - (Building on Example 1)
 - Press -3000 `PMT` (should see `TVM Stored`)
 - Press `PV` (should see `TVM Caculated`)
 - Answer: $429052.882
 
-**Example 3**: Assuming Examples 1 and 2, calculate the interest rate required
-to get a $500,000 mortgage with a $3000/month payment
+### Example 3
+
+Assuming Examples 1 and 2, calculate the interest rate required to get a
+$500,000 mortgage with a $3000/month payment
 
 - (Building on Examples 1 and 2)
 - Press 500000 `PV` (should see `TVM Stored` message). This resets the current
@@ -273,8 +283,10 @@ to get a $500,000 mortgage with a $3000/month payment
 - Press `I%YR` (should see `TVM Calculated`)
 - Answer: 6.00699%
 
-**Example 4**: If Susan got paid $0.01 per second, compounded every second, at a
-10% per annum rate, what is her bank balance after 365 days?
+### Example 4
+
+If Susan got paid $0.01 per second, compounded every second, at a 10% per annum
+rate, what is her bank balance after 365 days?
 
 - Press `CLTV`
 - Press 3600 `ENTER` 24 `*` 365 `*` (should see 31536000)
@@ -297,11 +309,11 @@ Source:
 - [Looking for TVM formulas](https://www.hpmuseum.org/forum/thread-1012.html)
   (2014)
 
-**Example 5**: Multiple Solutions
+### Example 5
 
-The following contrived example has 2 solutions for `I%YR` 14.44% and 53.17%.
-We can persuade the TVM module to give us 2 solutions using the `IYR1` and
-`IYR2` menu buttons:
+The following contrived example has 2 solutions for `I%YR` 14.44% and 53.17%. We
+can persuade the TVM module to give us 2 solutions using the `IYR1` and `IYR2`
+menu buttons:
 
 - Press `CLTV`
 - Press 10 `N`
