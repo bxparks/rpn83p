@@ -1776,17 +1776,9 @@ _ReformatBaseTwoStringLabel:
 _ReformatBaseTwoString equ _ReformatBaseTwoStringLabel-branchTableBase
     .dw ReformatBaseTwoString
     .db 2
-_TruncateBinDigitsLabel:
-_TruncateBinDigits equ _TruncateBinDigitsLabel-branchTableBase
-    .dw TruncateBinDigits
-    .db 2
-_ReformatBinDigitsLabel:
-_ReformatBinDigits equ _ReformatBinDigitsLabel-branchTableBase
-    .dw ReformatBinDigits
-    .db 2
-_ConvertBinDigitsToSmallFontLabel:
-_ConvertBinDigitsToSmallFont equ _ConvertBinDigitsToSmallFontLabel-branchTableBase
-    .dw ConvertBinDigitsToSmallFont
+_FormatCodedU32ToBinStringLabel:
+_FormatCodedU32ToBinString equ _FormatCodedU32ToBinStringLabel-branchTableBase
+    .dw FormatCodedU32ToBinString
     .db 2
 _FormatU32ToHexStringLabel:
 _FormatU32ToHexString equ _FormatU32ToHexStringLabel-branchTableBase

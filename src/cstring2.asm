@@ -5,8 +5,34 @@
 ; Low-level routines for manipulating C strings (NUL terminated).
 ;-----------------------------------------------------------------------------
 
+; Description: Append character A to the end of the C-string at HL. Assumes
+; that HL points to a buffer big enough to hold one more character.
+; Input:
+;   - HL:(char*)
+;   - A:char=charToAdd
+; Destroys: none
+appendCStringPageTwo:
+    push hl
+    push af
+    jr appendCStringPageTwoLoopEntry
+appendCStringPageTwoLoop:
+    inc hl
+appendCStringPageTwoLoopEntry:
+    ld a, (hl)
+    or a
+    jr nz, appendCStringPageTwoLoop
+appendCStringPageTwoAtEnd:
+    pop af
+    ld (hl), a
+    inc hl
+    ld (hl), 0
+    pop hl
+    ret
+
+;-----------------------------------------------------------------------------
+
 ; Description: Copy the C string in HL to DE.
-; Input: HL, DE: C string
+; Input: HL, DE:(char*)
 ; Output: DE: points to terminating NUL
 ; Destroys: A
 copyCStringPageTwo:

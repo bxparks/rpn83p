@@ -1002,12 +1002,14 @@ printHLString:
 
 ; Description: Print an indicator ("...") that the OP1 number cannot be
 ; rendered in the current base mode (hex, oct, or bin).
+; Destroys: A, HL
 printOP1BaseInvalid:
     ld hl, msgBaseInvalid
     jr printHLString
 
 ; Description: Print just a negative sign for OP1 number that is negative.
 ; Negative numbers cannot be displayed in base HEX, OCT or BIN modes.
+; Destroys: A, HL
 printOP1BaseNegative:
     ld hl, msgBaseNegative
     jr printHLString
@@ -1160,51 +1162,36 @@ truncateOctString:
 
 ;-----------------------------------------------------------------------------
 
-; Description: Print integer at OP1 at the current cursor in base 2. Erase to
-; the end of line (but only if the floating point did not spill over to the
-; next line).
+; Description: Print integer at OP1 at the current cursor in base 2.
 ;
-; The display can handle a maximum of 15 digits (1 character for
-; the "X:" label). We need one space for a trailing "." so that's 14 digits. We
-; also want to display the binary digits in group of 4, separated by a space
-; between groups, for readability, With 3 groups of 4 digits plus 2 spaces in
-; between, that's exactly 14 characters.
+; Base 2 numbers are rendered using small font to allow 16 digits to fit on one
+; line. That means WSIZ 8 and 16 can be shown in full. Digits are separated
+; into groups of 4 digits for readability. If WSIZ is greater than 16, then the
+; upper digits are truncated.
 ;
-; If there are non-zero digits after the left most digit (digit 13 from the
-; right, zero-based), then digit 13 should be replaced with a one-character
-; ellipsis character to indicate hidden digits. The SHOW command can be used to
-; display the additional digits.
+; If there exist non-zero digits in the truncated digits, the left most
+; character in the displayed digits will be replaced with a "left arrow"
+; character to indicate the presence of hidden digits.
+;
+; If the floating point number is not an integer, a decimal point will be
+; appended to the binary digits, to indicate the presence of fractional digits.
+;
+; The SHOW command can be used to display all digits.
 ;
 ; Input:
-;   - OP1
+;   - OP1:float
 ;   - B=displayFontMask
-; Destroys: all, OP1-OP5
+; Destroys: all, OP1-OP5, fmtString
 printOP1Base2:
-    ; Always use small font for base 2.
+    ; always use small font for base 2
     call eraseEOLIfNeeded ; uses B
     call displayStackSetSmallFont
-    ; Convert OP1 into Uxx.
+    ; convert OP1 to u32
     bcall(_ConvertOP1ToUxxNoFatal) ; HL=OP1=uxx(OP1); C=u32StatusCode
-    ; Check for errors
-    bit u32StatusCodeTooBig, c
-    jp nz, printOP1BaseInvalid
-    bit u32StatusCodeNegative, c
-    jp nz, printOP1BaseNegative
-    push bc ; stack=[C=u32StatusCode]
-    ; Convert HL=u32 into a base-2 string.
+    ; convert to string
     ld de, fmtString
-    bcall(_FormatU32ToBinString) ; DE=fmtString=formattedString
-    ; Truncate leading digits to fit display
-    ex de, hl ; HL=formattedString
-    bcall(_TruncateBinDigits) ; HL=truncatedString; A=strLen
-    ; Group digits in groups of 4.
-    ld de, OP3
-    bcall(_ReformatBinDigits) ; DE=formattedString=OP3
-    ; Append frac indicator
-    pop bc ; stack=[]; C=u32StatusCode
-    call appendHasFrac ; DE=formattedString
-    ex de, hl ; HL=formattedString
-    bcall(_ConvertBinDigitsToSmallFont)
+    bcall(_FormatCodedU32ToBinString)
+    ex de, hl ; HL=fmtString
     jp printSmallHLString
 
 ;-----------------------------------------------------------------------------
