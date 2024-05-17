@@ -1018,7 +1018,7 @@ printSmallHLString:
 ; Input:
 ;   - OP1
 ;   - B=displayFontMask
-; Destroys: all, OP1-OP6
+; Destroys: all, OP1-OP5, fmtString
 printOP1Base10:
     call displayStackSetLargeFont
     bcall(_ConvertOP1ToUxxNoFatal) ; HL=OP1=uxx(OP1); C=u32StatusCode
@@ -1034,7 +1034,7 @@ printOP1Base10:
 ; Input:
 ;   - OP1
 ;   - B=displayFontMask
-; Destroys: all, OP1-OP5
+; Destroys: all, OP1-OP5, fmtString
 printOP1Base16:
     call displayStackSetLargeFont
     bcall(_ConvertOP1ToUxxNoFatal) ; OP1=U32; C=u32StatusCode
@@ -1050,7 +1050,7 @@ printOP1Base16:
 ; Input:
 ;   - OP1
 ;   - B=displayFontMask
-; Destroys: all, OP1-OP5
+; Destroys: all, OP1-OP5, fmtString
 printOP1Base8:
     call displayStackSetLargeFont
     bcall(_ConvertOP1ToUxxNoFatal) ; OP1=U32; C=u32StatusCode
