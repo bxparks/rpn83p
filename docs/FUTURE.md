@@ -166,9 +166,9 @@ and more complicated features will get their own GitHub tickets.
           app itself
         - I'm not sure which solution would be easier and more maintainable
 - interoperability with TI-BASIC
-    - If a TI-BASIC can be called from RPN83P, and a stable data conduit (i.e.
-      an API) can be defined between RPN83P and TI-BASIC, then some of the need
-      for keystroke programming within RPN83P may be satisfied.
+    - If a TI-BASIC program can be called from RPN83P, and a stable data conduit
+      (i.e. an API) can be defined between RPN83P and TI-BASIC, then some of the
+      need for keystroke programming within RPN83P may be satisfied.
     - Single-letter variables `A` to `Z` and `Theta` are now (v0.10.0) available
       through `STO` and `RCL`, so be conduits between RPN83P and TI-BASIC.
     - Other types may be useful: List, Matrix, and String types.
