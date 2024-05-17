@@ -19,6 +19,7 @@ cannot remember how the code works.
     - [Complex Number Font](#complex-number-font)
     - [Complex Number Rendering](#complex-number-rendering)
     - [Complex Delimiters](#complex-delimiters)
+- [BASE Menu](#base-menu)
 - [Design Guidelines](#design-guidelines)
     - [No Keyboard Overlay](#no-keyboard-overlay)
     - [Utilize TI-OS](#utilize-ti-os)
@@ -256,6 +257,34 @@ shown on the screen (see `formatInputBuf()`):
 - `LimagI`: `LimagI`
 - `Ldegree`: `Langle` `Ltemp` (`Ltemp` looks better than `Ldegree`)
 - `Langle`: `Langle`
+
+## BASE Menu
+
+Here are some notes about why I implemented the `BASE` menu in the way it is,
+(captured from [my post on
+MoHPC](https://www.hpmuseum.org/forum/thread-20867-post-187258.html#pid187258):
+
+- There are no dedicated keys on the 83+/84+ related to BASE functions, so I
+  have to place all of them under the BASE soft menu.
+- The BASE menu folder has too many functions, 8 rows, which can be hard to
+  navigate.
+    - But a flat hierarchy seemed preferable to nested subfolders which can be
+      even more annoying to navigate.
+- The A-F digits for HEX numbers require the use of the ALPHA shift key, because
+  there isn't any way to expose them through unshifted keys.
+    - The 83+/84+ has only 5 buttons across for the soft menu, so it didn't make
+      sense to expose only 5 out of 6 HEX digits through the soft menu buttons
+      either.
+- The integer word size (WSIZ) can only be 8, 16, 24, 32 bits, instead of an
+  arbitrary integer between 1 and 64 bits like the 16C.
+    - It's probably technically possible to extend RPN83P to support 64 bits,
+      but that would require a substantial amount of work.
+- There is no support for *signed* integer types in the BASE functions of
+  RPN83P.
+    - This would not be difficult to add with regards to complexity, but it
+      would require a lot of grunt work: All of those extended bitwise and
+      integer arithmetic routines would need to be written by hand, since the
+      Z80 does not have hardware support for most of them beyond 8 or 16 bits.
 
 ## Design Guidelines
 
