@@ -9,7 +9,6 @@
 ; Routines related to Hex strings.
 ;-----------------------------------------------------------------------------
 
-
 ; Description: Format the U32 with its status code to a HEX string suitable for
 ; displaying on the screen using a maximum of 16 digits.
 ; Input:
@@ -40,6 +39,8 @@ FormatCodedU32ToHexString:
     call appendHasFracPageTwo ; preserves BC, DE, HL
     ex de, hl ; DE=destString
     ret
+
+;-----------------------------------------------------------------------------
 
 ; Description: Truncate in situ the upper digits depending on baseWordSize.
 ; Input: HL:(char*)=inputString of 8 digits
@@ -218,22 +219,6 @@ FormatCodedU32ToBinString:
     ; Convert to small font equivalents.
     call convertBinDigitsToSmallFont ; preserves AF, HL
     ex de, hl ; DE=destString
-    ret
-
-; Description: Append a '.' at the end of the string if u32StatusCode contains
-; u32StatusCodeHasFrac.
-; Input:
-;   - C:u8=u32StatusCode
-;   - HL:(char*)
-; Output:
-;   - (HL)='.' appended if u32StatusCodehasFrac is enabled
-; Destroys: A
-; Preserves, BC, DE, HL
-appendHasFracPageTwo:
-    bit u32StatusCodeHasFrac, c
-    ret z
-    ld a, '.'
-    call appendCStringPageTwo
     ret
 
 ;-----------------------------------------------------------------------------
@@ -521,6 +506,24 @@ truncateTrailingZerosEnd:
 
 ;-----------------------------------------------------------------------------
 ; Common helper routines.
+;-----------------------------------------------------------------------------
+
+; Description: Append a '.' at the end of the string if u32StatusCode contains
+; u32StatusCodeHasFrac.
+; Input:
+;   - C:u8=u32StatusCode
+;   - HL:(char*)
+; Output:
+;   - (HL)='.' appended if u32StatusCodehasFrac is enabled
+; Destroys: A
+; Preserves, BC, DE, HL
+appendHasFracPageTwo:
+    bit u32StatusCodeHasFrac, c
+    ret z
+    ld a, '.'
+    call appendCStringPageTwo
+    ret
+
 ;-----------------------------------------------------------------------------
 
 ; Description: Append the invalid integer message to the destination buffer.
