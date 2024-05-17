@@ -41,6 +41,12 @@
         - add `Sigma` menu folder containing various `SigmaXXX` menu items to
           recall the 13 stat registers (essentially the same as the Plus42 app)
         - TODO: Update USER_GUIDE.md
+    - BASE
+        - format HEX numbers in groups of 2 digits for readability
+        - format OCT numbers in groups of 3 digits for readability
+        - format BIN numbers in groups of 4 digits using small font
+        - no grouping for DEC numbers (no change)
+        - move formatting routines to Flash Page 2
     - show MenuFolders using a file folder icon
         - see [Issue#20](https://github.com/bxparks/rpn83p/issues/20)
         - draw a small 5px wide line above the menu box if the menu is a folder
