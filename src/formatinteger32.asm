@@ -33,7 +33,7 @@ FormatCodedU32ToHexString:
     ex de, hl ; HL=destString
     ; Truncate to baseWordSize
     call truncateHexStringToWordSize ; preserves HL; BC=strLen
-    ; Group digits in two's
+    ; Reformat digits in groups of 2.
     call groupHexDigits ; preserves HL
     ; Append frac indicator
     pop bc ; stack=[destString,inputNumber]; C=u32StatusCode
@@ -338,8 +338,8 @@ FormatCodedU32ToBinString:
     ex de, hl ; HL=destString
     ; Truncate leading digits to fit display
     call truncateBinDigits ; HL=destString; A=strLen
-    ; Group digits in 4's.
-    call groupBinDigits ; HL=destString; preserves AF, HL
+    ; Reformat digits in groups of 4.
+    call groupBinDigits ; HL=destString; preserves HL
     ; Append frac indicator
     pop bc ; stack=[destString,inputNumber]; C=u32StatusCode
     call appendHasFracPageTwo ; preserves BC, DE, HL
@@ -461,12 +461,11 @@ truncateBinDigitsShiftLeft:
 ;   - HL:(char*)=inputString
 ; Output:
 ;   - (HL)=groupedString
-; Destroys: BC, DE
-; Preserves: AF, HL
+; Destroys: AF, BC, DE
+; Preserves: HL
 groupBinDigits:
     or a
     ret z ; ret if strLen==0
-    push af
     push hl
     ld b, 0
     ld c, a ; BC=strLen=numCharToShift
@@ -502,7 +501,6 @@ groupBinDigitsLoop:
     jr groupBinDigitsLoop
 groupBinDigitsEnd:
     pop hl
-    pop af
     ret
 
 ;------------------------------------------------------------------------------
