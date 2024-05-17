@@ -117,8 +117,8 @@ formatU32ToOctStringLoop:
 ;   - C:u8=statusCode
 ; Output:
 ;   - (DE): C-string representation of u32, truncated as necessary
-; Destroys: A
-; Preserves: BC, DE, HL
+; Destroys: A, BC, HL
+; Preserves: DE
 FormatCodedU32ToBinString:
     ; Check for errors
     bit u32StatusCodeTooBig, c
@@ -126,23 +126,20 @@ FormatCodedU32ToBinString:
     bit u32StatusCodeNegative, c
     jp nz, copyNegativeMessage
     ;
-    push de ; stack=[destString]
-    push hl ; stack=[destString,inputNumber]
-    push bc ; stack=[destString,inputNumber,C=u32StatusCode]
+    push bc ; stack=[C=u32StatusCode]
     ; Convert HL=u32 into a base-2 string.
     call FormatU32ToBinString ; DE=destString
     ex de, hl ; HL=destString
     ; Truncate leading digits to fit display
-    call truncateBinDigits ; HL=truncatedString; A=strLen
+    call truncateBinDigits ; HL=destString; A=strLen
     ; Group digits in 4's.
-    call groupBinDigits ; HL=groupedString; preserves AF, HL
+    call groupBinDigits ; HL=destString; preserves AF, HL
     ; Append frac indicator
     pop bc ; stack=[destString,inputNumber]; C=u32StatusCode
     call appendHasFracPageTwo ; preserves BC, DE, HL
     ; Convert to small font equivalents.
     call convertBinDigitsToSmallFont ; preserves AF, HL
-    pop hl ; stack=[destString]; HL=inputNumber
-    pop de ; stack=[]; DE=destString
+    ex de, hl ; DE=destString
     ret
 
 ; Description: Append a '.' at the end of the string if u32StatusCode contains
@@ -455,7 +452,7 @@ truncateTrailingZerosEnd:
 ;   - DE:(char*)=dest
 ; Output:
 ;   - DE with the "invalid" message
-; Destroys: A, HL
+; Destroys: A, BC, HL
 ; Preserves: DE
 copyInvalidMessage:
     push de
@@ -473,7 +470,7 @@ msgBaseInvalidPageTwo:
 ;   - DE:(char*)=dest
 ; Output:
 ;   - DE with the "invalid" message
-; Destroys: A, HL
+; Destroys: A, BC, HL
 ; Preserves: DE
 copyNegativeMessage:
     push de

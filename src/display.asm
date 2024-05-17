@@ -1190,7 +1190,7 @@ printOP1Base2:
     bcall(_ConvertOP1ToUxxNoFatal) ; HL=OP1=uxx(OP1); C=u32StatusCode
     ; convert to string
     ld de, fmtString
-    bcall(_FormatCodedU32ToBinString)
+    bcall(_FormatCodedU32ToBinString) ; preserves DE
     ex de, hl ; HL=fmtString
     jp printSmallHLString
 
