@@ -1000,20 +1000,6 @@ printHLString:
     bcall(_EraseEOL)
     ret
 
-; Description: Print an indicator ("...") that the OP1 number cannot be
-; rendered in the current base mode (hex, oct, or bin).
-; Destroys: A, HL
-printOP1BaseInvalid:
-    ld hl, msgBaseInvalid
-    jr printHLString
-
-; Description: Print just a negative sign for OP1 number that is negative.
-; Negative numbers cannot be displayed in base HEX, OCT or BIN modes.
-; Destroys: A, HL
-printOP1BaseNegative:
-    ld hl, msgBaseNegative
-    jr printHLString
-
 ; Description: Print the string in HL using small font, and erase to end of
 ; line. Unlike printHLString(), this routine assumes that the string never
 ; wraps to the next line.
@@ -1024,6 +1010,8 @@ printSmallHLString:
     jp vEraseEOL
 
 ;-----------------------------------------------------------------------------
+; Print number in BASE mode.
+;-----------------------------------------------------------------------------
 
 ; Description: Print integer at OP1 at the current cursor in base 10. Erase to
 ; the end of line (but only if the digits did not spill over to the next line).
@@ -1033,12 +1021,9 @@ printSmallHLString:
 ; Destroys: all, OP1-OP6
 printOP1Base10:
     call displayStackSetLargeFont
-    ; convert OP1 to u32
     bcall(_ConvertOP1ToUxxNoFatal) ; HL=OP1=uxx(OP1); C=u32StatusCode
-    ; Convert u32 into a base-10 string.
     ld de, fmtString
     bcall(_FormatCodedU32ToDecString) ; DE=formattedString
-    ; print string
     ex de, hl ; HL=rendered string
     jr printHLString
 
@@ -1052,12 +1037,9 @@ printOP1Base10:
 ; Destroys: all, OP1-OP5
 printOP1Base16:
     call displayStackSetLargeFont
-    ; convert OP1 to u32
     bcall(_ConvertOP1ToUxxNoFatal) ; OP1=U32; C=u32StatusCode
-    ; convert to string
     ld de, fmtString
     bcall(_FormatCodedU32ToHexString) ; preserves DE
-    ; print string
     ex de, hl ; HL=fmtString
     jr printHLString
 
@@ -1071,12 +1053,9 @@ printOP1Base16:
 ; Destroys: all, OP1-OP5
 printOP1Base8:
     call displayStackSetLargeFont
-    ; convert OP1 to u32
     bcall(_ConvertOP1ToUxxNoFatal) ; OP1=U32; C=u32StatusCode
-    ; convert to string
     ld de, fmtString
     bcall(_FormatCodedU32ToOctString) ; preserves DE
-    ; print string
     ex de, hl ; HL=fmtString
     jr printHLString
 
@@ -1106,12 +1085,9 @@ printOP1Base2:
     ; always use small font for base 2
     call eraseEOLIfNeeded ; uses B
     call displayStackSetSmallFont
-    ; convert OP1 to u32
     bcall(_ConvertOP1ToUxxNoFatal) ; HL=OP1=uxx(OP1); C=u32StatusCode
-    ; convert to string
     ld de, fmtString
     bcall(_FormatCodedU32ToBinString) ; preserves DE
-    ; print string
     ex de, hl ; HL=fmtString
     jr printSmallHLString
 
@@ -1244,14 +1220,6 @@ printOP1DurationRecord:
 ;-----------------------------------------------------------------------------
 ; String constants.
 ;-----------------------------------------------------------------------------
-
-; Indicates number has overflowed the current Base mode.
-msgBaseInvalid:
-    .db "...", 0
-
-; Indicates number is negative so cannot be rendered in Base mode.
-msgBaseNegative:
-    .db "-", 0
 
 ; RPN stack variable labels
 msgTLabel:
