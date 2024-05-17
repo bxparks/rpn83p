@@ -39,6 +39,7 @@
 
 TARGETS := README.pdf \
 USER_GUIDE.pdf \
+USER_GUIDE_BASE.pdf \
 USER_GUIDE_COMPLEX.pdf \
 USER_GUIDE_DATE.pdf \
 TVM.pdf \
@@ -88,6 +89,12 @@ README.pdf: ../README.md Makefile $(RESIZED_IMAGES)
 
 # Convert markdown to PDF.
 USER_GUIDE.pdf: ../docs/USER_GUIDE.md Makefile $(RESIZED_IMAGES)
+	sed -e 's:(images/:(resized/:g' < $< \
+		| (cd ../docs; pandoc $(PANDOC_FLAGS) -o $@)
+	mv -f ../docs/$@ .
+
+# Convert markdown to PDF.
+USER_GUIDE_BASE.pdf: ../docs/USER_GUIDE_BASE.md Makefile $(RESIZED_IMAGES)
 	sed -e 's:(images/:(resized/:g' < $< \
 		| (cd ../docs; pandoc $(PANDOC_FLAGS) -o $@)
 	mv -f ../docs/$@ .
