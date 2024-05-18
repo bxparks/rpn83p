@@ -1,13 +1,15 @@
 # Changelog
 
 - Unreleased
-    - Supports resizing the number of storage registers
+    - **Warning**: Previously saved RPN stack and registers are incompatible and
+      are lost when upgrading to this version.
+    - Support resizing the number of storage registers
         - `MODE > RSIZ` command supports a minimum of 25 to a maximum of 100
         - `MODE > RSZ?` returns the current size of storage registers
         - size of the `RPN83REG` appVar varies:
             - 498 bytes at RSIZ=25
             - 1923 bytes at RSIZ=100
-    - Supports resizing the RPN stack size
+    - Support resizing the RPN stack size
         - `MODE > SSIZ` command supports a minimum of 4 to a maximum of 8
         - `MODE > SSZ?` returns the current size of stack
         - size of the `RPN83STK` appVar varies:
@@ -64,11 +66,12 @@
           inputBuf
         - this allows easier correction of typos during long input
         - TODO: update docs and screenshots
-    - Encode RpnObject type field using 2 bytes instead of 1 byte.
-        - Allows additional RpnObjects in the future without violating the 83
-          Plus SDK documentation.
-        - **Warning**: Previously saved RPN stack and registers are incompatible
-          and are lost when upgrading to this version.
+    - encode RpnObject type field using 2 bytes instead of 1 byte
+        - allows additional RpnObjects in the future without violating the 83
+          Plus SDK documentation
+    - update storage format of the TIOS appVars (RPN83SAV, RPN83STA, RPN83STK,
+      RPN83REG)
+        - makes adding additional appVar types in the future easier
     - **Bug Fix** Add `schemaVersion` validation for RpnObjectList appVars.
     - **Bug Fix** Validate Duration objects entered through colon-modifier
       syntax
