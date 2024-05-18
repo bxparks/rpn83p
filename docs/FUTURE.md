@@ -105,20 +105,25 @@ and more complicated features will get their own GitHub tickets.
         - see [this discussion fragment on the
           MoHPC](https://www.hpmuseum.org/forum/thread-20867-post-184997.html#pid184997)
 - `TVM` (time value of money)
-    - Improve TVM Solver for `I%YR`.
-    - The current default initial guess is 0% and 100% so that positive interest
-      rates are required (because a sign change over the initial guesses are
-      required). If there is a rounding error, the actual numerical solution
-      could be slighlty negative, which would cause an `TVM Not Fount` error
-      message because a sign-change is currently required over the 2 initial
-      guesses.
-    - One solution could be use something like `-1%` for the lower guess, and
-      then check for a sign change over 2 sub-intervals: `[-1%,0%]` and
-      `[0%,100%]`. We also have to careful to detect cases where expected
-      solution is exactly `0%`.
-    - The terminating tolerance could be selectable or more intelligent.
-    - Maybe change the root solving algorithm from Secant method to Newton's
-      method for faster convergence.
+    - improve TVM Solver for `I%YR`
+        - The current default initial guess is 0% and 100% so that positive
+          interest rates are required (because a sign change over the initial
+          guesses are required). If there is a rounding error, the actual
+          numerical solution could be slighlty negative, which would cause an
+          `TVM Not Fount` error message because a sign-change is currently
+          required over the 2 initial guesses.
+        - One solution could be use something like `-1%` for the lower guess,
+          and then check for a sign change over 2 sub-intervals: `[-1%,0%]` and
+          `[0%,100%]`. We also have to careful to detect cases where expected
+          solution is exactly `0%`.
+        - The terminating tolerance could be selectable or more intelligent.
+        - Maybe change the root solving algorithm from Secant method to Newton's
+          method for faster convergence.
+    - support `C/YR` (compounding periods per year) as a separate parameter
+        - currently `C/YR` is set to be the same as `P/YR` (payments per year)
+          for ease of implementation
+        - there are apparently jurisdictions (Canada, UK) where it is common for
+          `C/YR` to be different from `P/YR`
 - auto-insert an implied `1` when `EE` is pressed in certain conditions
     - if the `E` is pressed on the HP-42S, a `1` or `1.` or `-1` or `-1.` is
       auto inserted into the input buffer under certain conditions
