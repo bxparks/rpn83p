@@ -135,12 +135,26 @@ Here are some notes about how the `PRIM` algorithm works:
   function. We don't need the quotient, we need only the remainder. So we
   implement a custom `mod(u32, u16)` function which is about 25% faster than the
   full `div(u32, u16)` function.
+- In v0.10, the inner loop of the `mod(u32,u16)` function was made 40-50% faster
+  using the following observations:
+    - The Z80 has only 16-bit registers, so the `u32` type must typically be
+      stored in 4 bytes of RAM, and the `u32` operations must work against the 4
+      bytes of RAM.
+    - If the `mod(u32, u16)` function could be written to use only the CPU
+      registers, it could be lot faster. But my attempts to rewrite the function
+      were unsuccessful because the Z80 do not have enough registers. (Attempts
+      to use the `IX` register were not successful because of some peculiar lack
+      of certain instructions involving the `IX` register in the Z80 instruction
+      set.)
+    - However I discovered that I could get half of what I wanted: storing half
+      of the `u32` in a register, and the other half in the stack, and using the
+      `ex (sp), hl` instruction of the Z80 to swap the 2 halves back and forth.
+      This made the `mod(u32,u16)` function about 40-50% faster compared to
+      v0.9.0.
 
-RPN83P v0.10.0 implemented an optimization in the `div(u32,u16)` routine that
-produced a 40-50% speed increase compared to v0.9.0. I can think of one
-additional optimization that *may* give us a 10-20% speed increase, but it would
-come at the cost of code that would be significantly harder to maintain, so I
-don't think it's worth it.
+I can think of one additional optimization that *may* give us a 10-20% speed
+increase, but it would come at the cost of code that would be significantly
+harder to maintain, so I don't think it's worth it.
 
 ### Prime Factor Improvements
 
