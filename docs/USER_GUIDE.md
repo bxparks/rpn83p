@@ -1003,7 +1003,7 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
     - ![ROOT > CLR > Row1](images/menu-root-clr-1.png)
     - `CLX`: clear `X` stack register (stack lift disabled)
     - `CLST`: clear all RPN stack registers
-    - `CLRG`: clear all storage registers `R00` to `R24`
+    - `CLRG`: clear all storage registers `R00` to `R99`
     - `CLSigma`: clear STAT storage registers [`R11`, `R16`] or [`R11`, `R23`]
     - `CLTV`: clear TVM variables and parameters
 - ![ROOT > MODE](images/menu-root-mode.png) (`ROOT > MODE`)
@@ -1389,9 +1389,9 @@ scientific notation.
 
 ### Storage Registers
 
-Similar to the HP-42S, the RPN83P provides **25** storage registers labeled
-`R00` to `R24`. They are accessed using the `STO` and `2ND` `RCL` keys. To store
-a number into register `R00`, press:
+Similar to the HP-42S, the RPN83P provides up to **100** storage registers
+labeled `R00` to `R99`. The default is 25. They are accessed using the `STO` and
+`2ND` `RCL` keys. To store a number into register `R00`, press:
 
 - `STO` `00`
 
@@ -1399,13 +1399,11 @@ To recall register `R00`, press:
 
 - `2ND` `RCL` `00`
 
-To clear the all storage registers, use the arrow keys for the menu system to
-get to:
+To clear the all storage registers, use the `CLRG` soft menu function under the
+`CLR` menu folder:
 
-- ![ROOT > Row3](images/menu-root-3.png)
-- Press `CLR` to get
-  ![CLR > Row1](images/menu-root-clr-1.png)
-- Press `CLRG`
+- ![ROOT > CLR](images/menu-root-clr.png)
+    - ![ROOT > CLR > Row1](images/menu-root-clr-1.png)
 
 The message `REGS cleared` will be displayed on the screen.
 
