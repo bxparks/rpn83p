@@ -129,7 +129,7 @@ Summary of features:
     - `N`, `I%YR`, `PV`, `PMT`, `FV`, `P/YR`, `BEG`, `END`, `CLTV` (clear TVM)
 - complex numbers, inspired by HP-42S and HP-35s
     - stored in RPN stack registers (`X`, `Y`, `Z`, `T`, `LastX`) and storage
-      registers `R00-R24`
+      registers `R00-R99`
     - result modes: `RRES` (real results), `CRES` (complex results)
     - display modes: `RECT`, `PRAD` (polar radians), `PDEG` (polar degrees)
     - linking/unlinking: `2ND LINK` (convert 2 reals to 1 complex, same as
@@ -1390,8 +1390,8 @@ scientific notation.
 ### Storage Registers
 
 Similar to the HP-42S, the RPN83P provides up to **100** storage registers
-labeled `R00` to `R99`. The default is 25. They are accessed using the `STO` and
-`2ND` `RCL` keys. To store a number into register `R00`, press:
+labeled `R00` to `R99`. The default is **25**. They are accessed using the `STO`
+and `2ND` `RCL` keys. To store a number into register `R00`, press:
 
 - `STO` `00`
 
@@ -1403,9 +1403,11 @@ To clear the all storage registers, use the `CLRG` soft menu function under the
 `CLR` menu folder:
 
 - ![ROOT > CLR](images/menu-root-clr.png)
-    - ![ROOT > CLR > Row1](images/menu-root-clr-1.png)
+    - ![ROOT > CLR > CLRG](images/menu-root-clr-clrg.png)
 
 The message `REGS cleared` will be displayed on the screen.
+
+#### Storage Register Arithmetics
 
 Similar to the HP-42S and the HP-15C, storage register arithmetic operations are
 supported using the `STO` and `RCL` buttons followed by an arithmetic button.
@@ -1426,6 +1428,34 @@ Similarly:
 
 Indirect storage registers, the `STO` `IND` `nn` and `RCL` `IND` `nn`
 functionality from the HP-42S, are not supported (as of v0.9.0).
+
+#### Storage Register Size
+
+The default number of registers is 25. The total number of registers can be
+changed up to a maximum of 100 using the `RSIZ` menu function under `MODE` menu
+folder (quickly accessed using the `MODE` button):
+
+- ![ROOT > MODE](images/menu-root-mode.png)
+    - ![ROOT > MODE > RSIZ](images/menu-root-mode-rsiz.png)
+
+The `RSIZ` command is named `SIZE` on the HP-42S. On RPN83P, there are 3 "size"
+commands (`WSIZ`, `RSIZ`, `SSIZ`) and it seemed too confusing to use `SIZE` for
+this command so I named it `RSIZ` instead.
+
+Here is an example of using `RSIZ` to change the number of registers to 50:
+
+| **Keys**              | **Display** |
+| ----------------      | --------------------- |
+| `MODE` `DOWN` `DOWN`  | ![](images/rsiz-1.png) |
+| `RSIZ` `50`           | ![](images/rsiz-2.png) |
+| `ENTER`               | ![](images/rsiz-3.png) |
+
+One of the following messages will be displayed, depending on how the number of
+storage registers changed:
+
+- `REGS Expanded`
+- `REGS Shrunk`
+- `REGS Unchanged`
 
 ### Storage Variables
 
@@ -1496,7 +1526,7 @@ Similarly:
 Storage variables are implemented through the underlying TI-OS. These variables
 are preserved and accessible to TI-BASIC programs after quitting the RPN83P
 application. Storage variables can hold either Real or Complex numbers, but
-unlike the numerical registers (R00-R24), they *cannot* hold the more advanced
+unlike the numerical registers (R00-R99), they *cannot* hold the more advanced
 record objects (e.g. Date, Time, DateTime) defined in
 [USER_GUIDE_DATE.md](USER_GUIDE_DATE.md).
 
@@ -1748,7 +1778,7 @@ The RPN83P app interacts with the underlying TI-OS in the following ways.
 
 - The `RPN83STK` appVar holds the RPN stack registers (`X`, `Y`, `Z`, `T`,
   `LastX`).
-- The `RPN83REG` appVar holds the 25 storage registers (`R00` to `R24`).
+- The `RPN83REG` appVar holds the 25 storage registers (`R00` to `R99`).
 - The `RPN83SAV` appVar preserves the internal state of the app upon exiting.
   When the app is restarted, the appVar is read back in, so that it can continue
   exactly where it had left off.
