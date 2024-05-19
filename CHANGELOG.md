@@ -81,6 +81,13 @@
     - **Bug Fix** Validate Duration objects entered through colon-modifier
       syntax
         - prevents entry of things like `61s` or `25h`
+    - **Bug Fix** Display error for negative numbers correctly for BASE mode
+      when WSIZ < 32
+        - If the floating point number is negative, the validation for
+          determining if the WSIZ is exceeded was incorrectly handled. Which
+          caused negative numbers to be displayed with `...` instead of `-`, but
+          the bug occurred only for WSIZ < 32.
+        - Fixed so that `-` is correctly displayed for all WSIZ.
 - 0.10.0 (2024-03-31)
     - **Bug Fix** Fix broken `CLRG`
         - broke when 'REGS' was replaced by 'RPN83REG'
