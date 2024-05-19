@@ -125,16 +125,25 @@ and more complicated features will get their own GitHub tickets.
         - there are apparently jurisdictions (Canada, UK) where it is common for
           `C/YR` to be different from `P/YR`
 - auto-insert an implied `1` when `EE` is pressed in certain conditions
-    - if the `E` is pressed on the HP-42S, a `1` or `1.` or `-1` or `-1.` is
-      auto inserted into the input buffer under certain conditions
-    - this feature requires inserting extra characters into the input buffer
-      instead of changing the behavior of the input *parser*
-    - therefore, this is more difficult to implement in RPN83P versus the
-      HP-42S, because the RPN83P has far more data types (e.g. complex numbers,
-      Record types) so the input buffer code needs to understand the format of
-      those data types to do the right thing
-    - not sure if the amount of time and effort of this feature is worth the
-      saving of a single keystroke
+    - on the HP-42S, if the `E` is pressed when the input buffer contains
+      digits that can semantically parsed to a `0`, a `1` or `1.` or `-1` or
+      `-1.` is auto inserted into the input buffer
+        - the actual behavior seems a bit complicated to discern, depending on
+          whether `0` or `0.0` or `-0` or `-0.0` or other variations are in the
+          input buffer
+    - on the HP-50g, the behavior of the `EEX` button is similar, but not quite
+      the same
+        - it seems to invoke this feature only if the input buffer is empty
+        - if it contains a `0` or `-0`, the 50g does not appear to do anything
+          special with the `EEX` button
+    - the input buffer of RPN83P contains features from both the 42S and the
+      50g, so it becomes more difficult define the reasonable behavior of this
+      feature
+        - RPN83P supports more types than the 42S (complex numbers, Record
+          types)
+        - PRN83P supports scrollable input buffer like the 50g (where the LEFT
+          and RIGHT arrow keys can place the cursor in the middle of the input
+          buffer string)
 - `GCD` and `LCM` functions are slow
     - Could be made significantly faster using integer operations, instead of
       floating point operations.
