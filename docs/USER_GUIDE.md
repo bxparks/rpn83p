@@ -476,12 +476,14 @@ These are the buttons which manipulate the RPN stack:
 
 - `(`: rolls RPN stack down (known as `R(downarrow)` on HP calculators)
 - `)`: exchanges `X` and `Y` registers
+- `2ND u`: rolls RPN stack up (known as `R(uparrow)` on HP calculators)
 - `ENTER`: saves the input buffer to the `X` register
 - `2ND` `ANS`: recalls the last `X`
 
-This mapping of the `(` and `)` to these stack functions is identical to the
-mapping used by the [HP-30b](https://en.wikipedia.org/wiki/HP_30b) when it is in
-RPN mode. (The HP-30b supports both algebraic and RPN entry modes.)
+This mapping of the `(` and `)` to these stack functions is identical to mapping
+used by other HP calculators that support both Algebraic and RPN modes (e.g. the
+[HP-17BII and 17bII+](https://en.wikipedia.org/wiki/HP-17B) and the
+[HP-30b](https://en.wikipedia.org/wiki/HP_30b)).
 
 When a new number is entered (using the `0`-`9` digit keys), the press of the
 first digit causes the stack to **lift**, and the calculator enters into the
@@ -511,6 +513,11 @@ have been repurposed for stack manipulation:
   just a single `(downarrow)` on the HP calculators.
 - `)` key performs an exchange of the `X` and `Y` registers. That functionality
   is usually marked as `X<>Y` on HP calculators.
+
+The `2ND u` is bound to the `R(up)` command. You can think of the `u` as a
+mnemonic for "up". This command is marginally useful when the RPN stack size is
+only 4, but becomes more important when the RPN stack size is increased beyond
+4.
 
 The `2ND` `ANS` functionality of the TI-OS algebraic mode is unnecessary in the
 RPN system because the `X` register is always the most recent result that would
