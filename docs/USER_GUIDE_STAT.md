@@ -12,6 +12,7 @@ supports all statistical and curve fitting functionality of the HP-42S.
 ## Table of Content
 
 - [STAT Overview](#stat-overview)
+- [STAT Registers](#stat-registers)
 - [Curve Fitting](#curve-fitting)
 - [Curve Fitting Example](#curve-fitting-example)
 
@@ -69,6 +70,49 @@ differences:
     - The ratio of `SCOV(X,Y)/PCOV(X,Y)` is `N/(N-1)`.
 
 ## STAT Registers
+
+In addition to the visual differences in the STAT menu organization, the
+implementation of the STAT registers is significantly different from the
+HP-42S.
+
+On the HP-42S, the STAT registers are implemented using the storage registers
+from R11 to R23. This means that if the STAT functions are used, then the user
+must remember to avoid using these registers for other purposes.
+
+On RPN83P, the STAT registers are separated from regular storage registers by
+using a different TI-OS appVar named `RPN83STA`. It is rarely necessary to
+access the STAT registers, but if needed, access to them are provided through
+the menu functions the `Σ` menu folder instead of through the `RCL` function as
+implemented on the HP-42S. These menu labels are identical to the ones used by
+the [Plus42](https://thomasokken.com/plus42/) app:
+
+- ![ROOT > STAT > SIGMA](images/menu-root-stat-sigma.png)
+    - ![ROOT > STAT > SIGMA > Row1](images/menu-root-stat-sigma-1.png)
+    - ![ROOT > STAT > SIGMA > Row2](images/menu-root-stat-sigma-2.png)
+    - ![ROOT > STAT > SIGMA > Row3](images/menu-root-stat-sigma-3.png)
+
+Here is a table that maps a STAT register menu item on the RPN83P to the
+corresponding storage register on the HP-42S:
+
+| **RPN83P Menu**   | **HP-42S Register**   | **Content**   |
+| ---               | ---                   | ---           |
+| `ΣX`              | R11                   | `Σ X`         |
+| `ΣX2`             | R12                   | `Σ X^2`       |
+| `ΣY`              | R13                   | `Σ Y`         |
+| `ΣY2`             | R14                   | `Σ Y^2`       |
+| `ΣXY`             | R15                   | `Σ X*Y`       |
+| `ΣN`              | R16                   | `N`           |
+| `ΣLX`             | R17                   | `Σ ln(X)`     |
+| `ΣLX2`            | R18                   | `Σ ln(X)^2`   |
+| `ΣLY`             | R19                   | `Σ ln(Y)`     |
+| `ΣLY2`            | R20                   | `Σ ln(Y)^2`   |
+| `ΣLXL`            | R21                   | `Σ ln(X)*ln(Y)`   |
+| `ΣXLY`            | R22                   | `Σ X*ln(Y)`       |
+| `ΣYLX`            | R23                   | `Σ Y*ln(X)`       |
+
+Since the STAT registers on RPN83P do not use the normal storage registers, the
+`ΣREG` and the `ΣRG?` commands of the HP-42S are not necessary and do not exist
+on the RPN83P.
 
 ## Curve Fitting
 
