@@ -688,7 +688,7 @@ bar was, and unlikely to want to go back there using the `ON/EXIT/ESC` key.
 
 Pressing the `HELP` menu button at the root menu activates the Help pages:
 
-![ROOT > Row1](images/menu-root-1.png)
+![ROOT > HELP](images/menu-root-help.png)
 
 The contents of these pages are updated frequently so the screenshots below may
 not be identical to the current version:
