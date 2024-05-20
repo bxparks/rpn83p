@@ -1567,22 +1567,22 @@ calculate the next prime factor. Since the `PRIM` preserves the original number
 in the `Y` register, this process can be repeated multiple times to calculate
 all prime factors of the original number.
 
-For example, let's find the prime factors of `119886 = 2 * 3 * 13 * 29 * 53`:
+For example, let's find the prime factors of `2_122_438_477 = 53 * 4001 *
+10009`:
 
-- Press `119886`
-- Press `PRIM` to get `2`
-- Press `/` to divide down to `59943`
-- Press `PRIM` to get `3`
-- Press `/` to divide down to `19981`
-- Press `PRIM` to get `13`
-- Press `/` to divide down to `1537`
-- Press `PRIM` to get `29`
-- Press `/` to divide down to `53`
-- Press `PRIM` to get `1`, which makes `53` the last prime factor.
+| **Keys**              | **Display** |
+| ----------------      | --------------------- |
+| `NUM`                 | ![](images/prime-1.png) |
+| `2122438477`          | ![](images/prime-2.png) |
+|  `PRIM`               | ![](images/prime-3.png) |
+| `/`                   | ![](images/prime-4.png) |
+| `PRIM`                | ![](images/prime-5.png) |
+| `/`                   | ![](images/prime-6.png) |
+| `PRIM`                | ![](images/prime-7.png) |
 
 For computational efficiency, `PRIM` supports only integers between `2` and
 `2^32-1` (4 294 967 295). This allows `PRIM` to use integer arithmetic, making
-it about 7X faster than the equivalent algorithm using floating point routines.
+it about 10X faster than the equivalent algorithm using floating point routines.
 Any number outside of this range produces an `Err: Domain` message. (The number
 `1` is not considered a prime number.)
 
