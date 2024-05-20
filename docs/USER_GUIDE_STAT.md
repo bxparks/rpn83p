@@ -170,18 +170,18 @@ the `ENTER` key. So the `N` values will be replaced by the next `Ymax` value.)
 
 Let's calculate the basic statistics measures:
 
-- Press `DOWN` arrow key to see
-  ![STAT > Row2](images/menu-root-stat-2.png)
-- Press `SUM` to get `Y:84.89` and `X:5.19`
-- Press `MEAN` to get `Y:14.14833333` and `X:.865`
-- Press `WMN` to get `Y:14.72643545` and `X:.9003439746`
-- Press `N` to get `X:6`
-- Press `DOWN` arrow key to see
-  ![STAT > Row3](images/menu-root-stat-3.png)
-- Press `SDEV` to get `Y:3.032500069` and `X:1.015613115`
-- Press `SCOV` to get `X:.60007`
-- Press `PDEV` to get `Y:2.768281155` and `X:.9271236883`
-- Press `PCOV` to get `X:.5000583333`
+| **Keys**                      | **Display** |
+| ----------------              | --------------------- |
+| `STAT` `DOWN`                 | ![](images/stat/cfit-stats-01.png) |
+| `SUM`                         | ![](images/stat/cfit-stats-02.png) |
+| `MEAN`                        | ![](images/stat/cfit-stats-03.png) |
+| `WMN`                         | ![](images/stat/cfit-stats-04.png) |
+| `N`                           | ![](images/stat/cfit-stats-05.png) |
+| `DOWN`                        | ![](images/stat/cfit-stats-06.png) |
+| `SDEV`                        | ![](images/stat/cfit-stats-07.png) |
+| `SCOV`                        | ![](images/stat/cfit-stats-08.png) |
+| `PDEV`                        | ![](images/stat/cfit-stats-09.png) |
+| `PCOV`                        | ![](images/stat/cfit-stats-10.png) |
 
 Let's perform some curve fits. It is not obvious that the maximum rainfall
 for a given month is correlated with the minimum rainfall for the same month. We
