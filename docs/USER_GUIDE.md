@@ -1445,9 +1445,9 @@ folder (quickly accessed using the `MODE` button):
 - ![ROOT > MODE](images/menu-root-mode.png)
     - ![ROOT > MODE > RSIZ](images/menu-root-mode-rsiz.png)
 
-The `RSIZ` command is named `SIZE` on the HP-42S. On RPN83P, there are 3 "size"
-commands (`WSIZ`, `RSIZ`, `SSIZ`) and it seemed too confusing to use `SIZE` for
-this command so I named it `RSIZ` instead.
+**HP-42S Compatibility Note**: The `RSIZ` command is named `SIZE` on the HP-42S.
+On RPN83P, there are 3 "size" commands (`RSIZ`, `SSIZ`, `WSIZ`) and it seemed
+too confusing to use just `SIZE` so I named it `RSIZ` instead.
 
 Here is an example of using `RSIZ` to change the number of registers to 50:
 
