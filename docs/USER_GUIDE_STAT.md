@@ -124,16 +124,12 @@ folder:
     - ![ROOT > STAT > CFIT > Row2](images/menu-root-stat-cfit-2.png)
 
 The supported curve fit models are identical to the HP-42S. The linear curve fit
-`LINF` is available with either `LINSigma` or `ALLSigma` selected. The other
-models (`LOGF`, `EXPF`, `PWRF`) are available only when the `ALLSigma` option is
-selected, because they require additional summation registers to be active and
-updated.
+`LINF` is available with either `LINΣ` or `ALLΣ` selected. The other models
+(`LOGF`, `EXPF`, `PWRF`) are available only when the `ALLΣ` option is selected.
 
-On the HP-42S, the clear menu item `CLSigma` is available only under the `CLEAR`
-menu hierarchy. On the RPN83P, the `CLSigma` menu appears in 2 places for
-convenience, under the `CLR` hierarchy *and* under the `STAT` hierarchy. The
-number of storage registers that are cleared depends on whether `LINSigma` or
-`ALLSigma` are selected, just like the HP-42S.
+On the HP-42S, the menu item `CLΣ` is available only under the `CLEAR` menu
+hierarchy. On the RPN83P, the `CLΣ` menu item appears in 2 places for
+convenience, under the `CLR` menu folder *and* under the `STAT` menu folder.
 
 RPN83P does not (yet) support vectors and matrices, so it is not possible to
 enter the data into a matrix first, then perform the `STAT` functions over the
@@ -159,20 +155,19 @@ Mar     11.70   0.43
 We would enter these data points like this:
 
 - Press `STAT` to see ![STAT > Row1](images/menu-root-stat-1.png)
-- Press `ALLSigma` (select all curve fit models)
-- Press `CLSigma` to clear the summation registers. You should see a status
+- Press `ALLΣ` (select all curve fit models)
+- Press `CLΣ` to clear the summation registers. You should see a status
   message `STAT cleared`.
 - Enter the data points in pairs, with the `Y` value first, then `X`:
-    - `9.70` `ENTER` `0.10` `Sigma+`. You should see a `1`.
-    - `18.28` `ENTER` `0.22` `Sigma+`. You should see a `2`.
-    - `14.47` `ENTER` `2.33` `Sigma+`. You should see a `3`.
-    - `15.51` `ENTER` `1.99` `Sigma+`. You should see a `4`.
-    - `15.23` `ENTER` `0.12` `Sigma+`. You should see a `5`.
-    - `11.70` `ENTER` `0.43` `Sigma+`. You should see a `6`.
+    - `9.70` `ENTER` `0.10` `Σ+`. You should see a `1`.
+    - `18.28` `ENTER` `0.22` `Σ+`. You should see a `2`.
+    - `14.47` `ENTER` `2.33` `Σ+`. You should see a `3`.
+    - `15.51` `ENTER` `1.99` `Σ+`. You should see a `4`.
+    - `15.23` `ENTER` `0.12` `Σ+`. You should see a `5`.
+    - `11.70` `ENTER` `0.43` `Σ+`. You should see a `6`.
 
-(Note that the "stack lift" is disabled by the `Sigma+` and `Sigma-` buttons,
-similar to the `ENTER` key. So the `N` values will be replaced by the next
-`Ymax` value.)
+(Note that the "stack lift" is disabled by the `Σ+` and `Σ-` buttons, similar to
+the `ENTER` key. So the `N` values will be replaced by the next `Ymax` value.)
 
 Let's calculate the basic statistics measures:
 
