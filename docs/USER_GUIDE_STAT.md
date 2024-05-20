@@ -223,12 +223,14 @@ returns the `CORR` value of the best curve fit model. It seemed like a useful
 bit of information to see, and it provides visual feedback that the `BEST`
 function has finished.
 
-You can perform forecasting with the `Y>X` and `X>Y` menus:
+We can perform forecasting with the `Y>X` and `X>Y` menus. Let's try to predict
+the maximum rainfall when the minimum rainfall is 1.5. Then let's go in the
+opposite direction and predict the minimum rainfall when the max is 12:
 
-- Enter `1.5` (min rainfall) then press `X>Y`. It predicts a maximum rainfall of
-  `14.75`.
-- Enter `12` (max  rainfall) then press `Y>X`. It predicts a minimum rainfall of
-  `0.02188`.
+| **Keys**                      | **Display** |
+| ----------------              | --------------------- |
+| `1.5` `X>Y`                   | ![](images/stat/cfit-forecast-1.png) |
+| `12` `Y>X`                    | ![](images/stat/cfit-forecast-2.png) |
 
 These predictions should be regarded with suspicion because the correlation
 coefficient of `r=.29635` is quite low, and the power fit may not be a good
