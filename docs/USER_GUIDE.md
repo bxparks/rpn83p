@@ -1262,36 +1262,50 @@ this is labeled `SHOW`. On the HP-12C and HP-15C, the button is labeled
 The RPN83P app implements the `SHOW` functionality using the `2ND` `ENTRY` key
 sequence (just above the `ENTER` button). This key was selected because `ENTRY`
 is unused in our RPN system, and because it is located close to the `ENTER` key.
-The Show mode reverts back to the normal display mode when *any* key is pressed
+The SHOW mode reverts back to the normal display mode when *any* key is pressed
 (exception `OFF` and `QUIT`). Unlike the HP-42S which automatically reverts back
 to the normal mode after a 2-3 second delay, the TI calculator must wait for a
 keyboard event from the user.
 
-Normally, the Show mode displays all 14 digits of the internal floating point
-format of the `X` register in scientific notation. For example, `sqrt(2)` is
-normally displayed with 10 significant digits as `1.414213562`, but in Show mode
-it looks like this:
+Floating point numbers are normally shown with 10 significant digits, but
+internally the TI-OS stores floating point numbers using 14 digits. The SHOW
+mode displays all 14 digits of the `X` register in scientific notation. For
+example, `sqrt(2)` is normally displayed as `1.414213562`, but in SHOW mode it
+looks like this:
 
-![RPN83P SHOW Floating](images/show-mode-floating.png)
+| **Keys**              | **Display** |
+| ----------------      | --------------------- |
+| `2` `2ND SQRT`        | ![](images/show-mode-floating-1.png) |
+| `2ND ENTRY` (SHOW)    | ![](images/show-mode-floating-2.png) |
 
 If the `X` value is an exact integer internally, then the value is printed in
 integer form instead of scientific notation. For example `2^46` is an exact
-integer that will normally appear as `7.036874418E13`, but in Show mode looks
+integer that will normally appear as `7.036874418E13`, but in SHOW mode looks
 like this:
 
-![RPN83P SHOW Integer](images/show-mode-integer.png)
+| **Keys**              | **Display** |
+| ----------------      | --------------------- |
+| `2` `46` `^`          | ![](images/show-mode-integer-1.png) |
+| `2ND ENTRY` (SHOW)    | ![](images/show-mode-integer-2.png) |
 
-The Show mode has a slight variation in `BASE` mode. For `DEC`, `HEX`, and `OCT`
+The SHOW mode has a slight variation in `BASE` mode. For `DEC`, `HEX`, and `OCT`
 modes, the `SHOW` function behaves as before, showing the internal floating
 point number in scientific or integer notation. However, in `BIN` mode, the
 `SHOW` function displays the `X` value in *binary* notation, allowing all digits
 of the binary number to be shown. This behavior is consistent with the `SHOW`
 function on the HP-42S. For example, the hex number `01D62BB7` in normal `BIN`
-mode looks like `...011 1011 0111` because only 12 digits can be displayed on a
-single line. But in Show mode, all 32 digits (assuming `WSIZ` was 32) will be
+mode looks like `<010 1011 1011 0111` because only 16 digits can be displayed on
+a single line. But in SHOW mode, all 32 digits (assuming `WSIZ` was 32) will be
 displayed like this:
 
-![RPN83P SHOW Binary 32](images/show-mode-bin32.png)
+| **Keys**              | **Display** |
+| ----------------      | --------------------- |
+| `MATH` `DOWN` `BASE`  | ![](images/show-mode-base-1.png) |
+| `HEX`                 | ![](images/show-mode-base-2.png) |
+| `01D62BB7`            | ![](images/show-mode-base-3.png) |
+| `2ND ENTRY` (SHOW)    | ![](images/show-mode-base-4.png) |
+| `BIN`                 | ![](images/show-mode-base-5.png) |
+| `2ND ENTRY` (SHOW)    | ![](images/show-mode-base-6.png) |
 
 ### Floating Point Rounding
 
