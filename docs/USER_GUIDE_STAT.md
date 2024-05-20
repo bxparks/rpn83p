@@ -61,13 +61,16 @@ differences:
   *population* standard deviation `PDEV`.
     - The HP-42S calculates only the sample standard deviation `SDEV`.
     - The ratio of `SDEV/PDEV` is `sqrt(N/(N-1))`.
-- The RPN83P supports the calculation of the
+- RPN83P supports the calculation of the
   [covariance](https://en.wikipedia.org/wiki/Covariance_and_correlation).
     - There are 2 forms, the *sample* covariance `SCOV` and *population*
       covariance `PCOV`.
     - They are needed internally for the curve fitting functions, so it seemed
       appropriate to expose them to the user through the menu buttons.
     - The ratio of `SCOV(X,Y)/PCOV(X,Y)` is `N/(N-1)`.
+- RPN83P does not (yet) support vectors and matrices, so it is not possible to
+  enter the data into a matrix first, then perform the `STAT` functions over the
+  matrix.
 
 ## STAT Registers
 
@@ -123,7 +126,7 @@ registers R11 to R23 are completely unaffected.
 On the HP-42S, the `CLΣ` command appears only under the `CLEAR` menu hierarchy.
 On the RPN83P, it is far more difficult to reach the `CLR` menu hierarchy, so
 the `CLΣ` commands appears in 2 places for convenience: under the `CLR` menu
-folder and under the `STAT` menu folder.
+folder, and under the `STAT` menu folder.
 
 ## Curve Fitting
 
@@ -138,9 +141,18 @@ The supported curve fit models are identical to the HP-42S. The linear curve fit
 `LINF` is available with either `LINΣ` or `ALLΣ` selected. The other models
 (`LOGF`, `EXPF`, `PWRF`) are available only when the `ALLΣ` option is selected.
 
-RPN83P does not (yet) support vectors and matrices, so it is not possible to
-enter the data into a matrix first, then perform the `STAT` functions over the
-matrix.
+For completeness, here are the parameters of the curve fitting equation for each
+type as given in the HP-42S manual:
+
+- `LINF`: `y = b + m x` (linear)
+- `LOGF`: `y = b + m ln x` (logarithmic)
+- `EXPF`: `y = b + e^(m x)` (exponential)
+- `PWRF`: `y = b + x^m` (power)
+
+where
+
+- `b` is the y-intercept calculated by the `YINT` menu function,
+- `m` is the slope calculated by the `SLOP` menu function.
 
 ## Curve Fitting Example
 
@@ -223,7 +235,8 @@ fit the parameters are:
 - `b` = `YINT` = 13.64510925
 - `r` = .2963586116 (correlation coefficient)
 
-It is still a weak correlation, but better than the linear model.
+With `r` being only about `0.3`, this is still a weak correlation, but better
+than the linear model.
 
 **HP-42S Compatibility Note**: Unlike the HP-42S, `BEST` command on the RPN83P
 returns the `CORR` value of the best curve fit model. It seemed like a useful
