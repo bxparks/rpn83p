@@ -154,17 +154,16 @@ Mar     11.70   0.43
 
 We would enter these data points like this:
 
-- Press `STAT` to see ![STAT > Row1](images/menu-root-stat-1.png)
-- Press `ALLΣ` (select all curve fit models)
-- Press `CLΣ` to clear the summation registers. You should see a status
-  message `STAT cleared`.
-- Enter the data points in pairs, with the `Y` value first, then `X`:
-    - `9.70` `ENTER` `0.10` `Σ+`. You should see a `1`.
-    - `18.28` `ENTER` `0.22` `Σ+`. You should see a `2`.
-    - `14.47` `ENTER` `2.33` `Σ+`. You should see a `3`.
-    - `15.51` `ENTER` `1.99` `Σ+`. You should see a `4`.
-    - `15.23` `ENTER` `0.12` `Σ+`. You should see a `5`.
-    - `11.70` `ENTER` `0.43` `Σ+`. You should see a `6`.
+| **Keys**                      | **Display** |
+| ----------------              | --------------------- |
+| `STAT` `ALLΣ`                 | ![](images/stat/cfit-entry-1.png) |
+| `CLΣ`                         | ![](images/stat/cfit-entry-2.png) |
+| `9.70` `ENTER` `0.10` `Σ+`    | ![](images/stat/cfit-entry-3.png) |
+| `18.28` `ENTER` `0.22` `Σ+`   | ![](images/stat/cfit-entry-4.png) |
+| `14.47` `ENTER` `2.33` `Σ+`   | ![](images/stat/cfit-entry-5.png) |
+| `15.51` `ENTER` `1.99` `Σ+`   | ![](images/stat/cfit-entry-6.png) |
+| `15.23` `ENTER` `0.12` `Σ+`   | ![](images/stat/cfit-entry-7.png) |
+| `11.70` `ENTER` `0.43` `Σ+`   | ![](images/stat/cfit-entry-8.png) |
 
 (Note that the "stack lift" is disabled by the `Σ+` and `Σ-` buttons, similar to
 the `ENTER` key. So the `N` values will be replaced by the next `Ymax` value.)
