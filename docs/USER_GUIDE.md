@@ -941,7 +941,7 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
         - ![ROOT > STAT > SIGMA > Row2](images/menu-root-stat-sigma-2.png)
         - ![ROOT > STAT > SIGMA > Row3](images/menu-root-stat-sigma-3.png)
         - Recall the given STAT register stored (follows the same convention as
-          the Plus42 app)
+          the [Plus42](https://thomasokken.com/plus42/) app)
         - `SigmaX` - sum of `X`
         - `SigmaX2` - sum of `X^2`
         - `SigmaY` - sum of `Y`
