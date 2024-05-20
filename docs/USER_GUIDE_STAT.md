@@ -183,40 +183,45 @@ Let's calculate the basic statistics measures:
 | `PDEV`                        | ![](images/stat/cfit-stats-09.png) |
 | `PCOV`                        | ![](images/stat/cfit-stats-10.png) |
 
-Let's perform some curve fits. It is not obvious that the maximum rainfall
-for a given month is correlated with the minimum rainfall for the same month. We
-can use the CFIT routines to figure this out:
+It is not obvious that the maximum rainfall for a given month is correlated with
+the minimum rainfall for the same month. So let's perform some curve fits. First
+let's try a linear fit using the `LINF` model:
 
-- Press `CFIT` to see
-  ![CFIT > Row1](images/menu-root-stat-cfit-1.png)
-- Press the `DOWN` arrow to see
-  ![CFIT > Row2](images/menu-root-stat-cfit-2.png)
-- Verify that the `LINF` (linear fit) is selected
-- Press the `UP` arrow to get back to the main `CFIT` row.
-- Press `SLOP` to get `X:.5817619514`. This is the slope variable `m`.
-- Press `YINT` to get `X:13.64510925`. This is the y-intercept variable `b`.
-- Press `CORR` to get `X:.1948376107`. This is the correlation coefficient `r`.
-  A value of `0.19` means that the correlation between min and max rainfall is
-  fairly weak. A high correlation would be close to 1.0.
+| **Keys**                      | **Display** |
+| ----------------              | --------------------- |
+| `CFIT`                        | ![](images/stat/cfit-linf-1.png) |
+| `DOWN` `LINF`                 | ![](images/stat/cfit-linf-2.png) |
+| `UP` `SLOP`                   | ![](images/stat/cfit-linf-3.png) |
+| `YINT`                        | ![](images/stat/cfit-linf-4.png) |
+| `CORR`                        | ![](images/stat/cfit-linf-5.png) |
 
-Let's see if a different curve fit model does better.
+The correlation coefficient of 0.1948376107 is not great. Perhaps there is
+another model that fits the data better. We can use the `BEST` function to
+calculate the correlation coefficients for all 4 models (`LINF`, `LOGF`, `EXPF`,
+`PWRF`) and automatically select the best fitting model:
 
-- Press `DOWN` arrow to get to
-  ![CFIT > Row2](images/menu-root-stat-cfit-2.png)
-- Press `BEST` button to request the app to automatically determine the
-  best curve model. You should see `X:.2963586116` and the menu should have
-  changed to select `PWRF`, like this:
-  ![CFIT BEST](images/stat-cfit-best.png)
+| **Keys**                      | **Display** |
+| ----------------              | --------------------- |
+| `DOWN`                        | ![](images/stat/cfit-best-1.png) |
+| `BEST`                        | ![](images/stat/cfit-best-2.png) |
+| `UP` `SLOP`                   | ![](images/stat/cfit-best-3.png) |
+| `YINT`                        | ![](images/stat/cfit-best-4.png) |
+| `CORR`                        | ![](images/stat/cfit-best-5.png) |
 
-**HP-42S Compatibility Note**: Unlike the HP-42S, `BEST` menu on the RPN83P
+For this data set, the `BEST` command selected the `PWRF` model as the best fit.
+The `PWRF` model has the form `y = b x^m`, and the calculator tells us that best
+fit the parameters are:
+
+- `m` = `SLOP` = 0.0489070475
+- `b` = `YINT` = 13.64510925
+- `r` = .2963586116 (correlation coefficient)
+
+It is still a weak correlation, but better than the linear model.
+
+**HP-42S Compatibility Note**: Unlike the HP-42S, `BEST` command on the RPN83P
 returns the `CORR` value of the best curve fit model. It seemed like a useful
 bit of information to see, and it provides visual feedback that the `BEST`
-function has finished, since the RPN83P seems significantly slower than the
-HP-42S, at least on the emulators.
-
-The RPN83P app has determined that the best curve fit model for the data is the
-power curve `y = b x^m`, with a correlation coefficient `r = .2963586116`. It is
-still a weak correlation, but better than the linear model.
+function has finished.
 
 You can perform forecasting with the `Y>X` and `X>Y` menus:
 
