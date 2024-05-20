@@ -114,6 +114,17 @@ Since the STAT registers on RPN83P do not use the normal storage registers, the
 `ΣREG` and the `ΣRG?` commands of the HP-42S are not necessary and do not exist
 on the RPN83P.
 
+The `CLΣ` menu item clears the STAT registers. On the HP-42S, this command
+clears registers R11 to R16 in when `LINΣ` is select, and clears the entire R11
+to R23 when `ALLΣ` is selected. On RPN83P, the `CLΣ` command clears the
+equivalent sets of STAT registers with the difference that the regular storage
+registers R11 to R23 are completely unaffected.
+
+On the HP-42S, the `CLΣ` command appears only under the `CLEAR` menu hierarchy.
+On the RPN83P, it is far more difficult to reach the `CLR` menu hierarchy, so
+the `CLΣ` commands appears in 2 places for convenience: under the `CLR` menu
+folder and under the `STAT` menu folder.
+
 ## Curve Fitting
 
 The curve fitting functions are available under the `ROOT > STAT > CFIT` menu
@@ -126,10 +137,6 @@ folder:
 The supported curve fit models are identical to the HP-42S. The linear curve fit
 `LINF` is available with either `LINΣ` or `ALLΣ` selected. The other models
 (`LOGF`, `EXPF`, `PWRF`) are available only when the `ALLΣ` option is selected.
-
-On the HP-42S, the menu item `CLΣ` is available only under the `CLEAR` menu
-hierarchy. On the RPN83P, the `CLΣ` menu item appears in 2 places for
-convenience, under the `CLR` menu folder *and* under the `STAT` menu folder.
 
 RPN83P does not (yet) support vectors and matrices, so it is not possible to
 enter the data into a matrix first, then perform the `STAT` functions over the
