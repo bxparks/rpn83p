@@ -1486,8 +1486,9 @@ storage registers changed:
 The HP-42S supports variables with alphanumeric names of up to 7 characters
 long. For example, pressing `STO ABC` stores the `X` value into a variable named
 `ABC`. The RPN83P supports only single-letter variables because the
-underlying TI-OS supports only a single-letter. There are 27 variables
-available:
+underlying TI-OS supports only a single-letter.
+
+There are 27 variables available:
 
 - `A`-`Z`, and
 - `Theta` (Greek letter above the `3` button)
@@ -1535,17 +1536,14 @@ Similarly:
 - `RCL` `*` `A`: multiply `A` to `X`
 - `RCL` `/` `A`: divide `A` into `X`
 
-| **Keys**                  | **Display** |
-| ----------------          | --------------------- |
-| `3`                       | ![](images/storage-variable-arith-1.png) |
-| `STO ALPHA A`             | ![](images/storage-variable-arith-2.png) |
-| `ENTER`                   | ![](images/storage-variable-arith-3.png) |
-| `2`                       | ![](images/storage-variable-arith-4.png) |
-| `2ND RCL * ALPHA A`       | ![](images/storage-variable-arith-5.png) |
-| `ENTER`                   | ![](images/storage-variable-arith-6.png) |
-| `STO + ALPHA A`           | ![](images/storage-variable-arith-7.png) |
-| `ENTER`                   | ![](images/storage-variable-arith-8.png) |
-| `2ND RCL ALPHA A ENTER`   | ![](images/storage-variable-arith-9.png) |
+| **Keys**                      | **Display** |
+| ----------------              | --------------------- |
+| `3`                           | ![](images/storage-variable-arith-1.png) |
+| `STO ALPHA A` `ENTER`         | ![](images/storage-variable-arith-2.png) |
+| `2`                           | ![](images/storage-variable-arith-3.png) |
+| `2ND RCL * ALPHA A` `ENTER`   | ![](images/storage-variable-arith-4.png) |
+| `STO + ALPHA A` `ENTER`       | ![](images/storage-variable-arith-5.png) |
+| `2ND RCL ALPHA A` `ENTER`     | ![](images/storage-variable-arith-6.png) |
 
 Storage variables are implemented through the underlying TI-OS. These variables
 are preserved and accessible to TI-BASIC programs after quitting the RPN83P
