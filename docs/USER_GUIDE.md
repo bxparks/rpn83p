@@ -1208,47 +1208,44 @@ Suppose the RPN stack has the following numbers:
 
 ![RPN83P Display Modes](images/display-mode-start.png)
 
-Pressing the `FIX` menu item shows a `FIX _ _` prompt for the number of digits
-after the decimal point, like this:
+Here are the numbers rendered in `FIX` mode:
 
-![RPN83P FIX Prompt](images/display-mode-fix.png)
+| **Keys**              | **Display** |
+| ----------------      | --------------------- |
+| `MODE` `FIX`          | ![](images/display-mode-fix-1.png) |
+| `4`                   | ![](images/display-mode-fix-2.png) |
+| `ENTER`               | ![](images/display-mode-fix-3.png) |
+| `FIX` `99`            | ![](images/display-mode-fix-4.png) |
 
-Type `4` then `ENTER`. The display changes to this:
+Setting `FIX 99` goes back to the default floating number of fractional digits
+(i.e. the equivalent of `FLOAT` option in the TI-OS `MODE` menu). Any number
+greater than `9` would work (e.g. `11`) but I usually use `99`.
 
-![RPN83P FIX 4](images/display-mode-fix-4.png)
+Here are the numbers rendered in `SCI` mode:
 
-(You can also press `FIX` `04` which will automatically invoke the `ENTER` to
-apply the change.)
+| **Keys**              | **Display** |
+| ----------------      | --------------------- |
+| `MODE` `SCI`          | ![](images/display-mode-sci-1.png) |
+| `4`                   | ![](images/display-mode-sci-2.png) |
+| `ENTER`               | ![](images/display-mode-sci-3.png) |
+| `SCI` `99`            | ![](images/display-mode-sci-4.png) |
 
-Notice that the floating point mode indicator at the top of the screen now shows
-`FIX(4)`.
+Setting `99` as the number of digits in `SCI` mode makes the number of digits
+after the decimal point to be dynamic (i.e. the equivalent of `FLOAT` option in
+the TI-OS `MODE` menu), but retains the `SCI` notation.
 
-Try changing to scientific notation mode, by pressing: `SCI` `04` to get this:
+Here are the numbers rendered in `ENG` mode:
 
-![RPN83P SCI 4](images/display-mode-sci-4.png)
+| **Keys**              | **Display** |
+| ----------------      | --------------------- |
+| `MODE` `ENG`          | ![](images/display-mode-eng-1.png) |
+| `4`                   | ![](images/display-mode-eng-2.png) |
+| `ENTER`               | ![](images/display-mode-eng-3.png) |
+| `ENG` `99`            | ![](images/display-mode-eng-4.png) |
 
-The top-line indicator shows `SCI(4)`.
-
-You can change to engineering notation mode, by pressing: `ENG` `04`, to
-get this:
-
-![RPN83P ENG 4](images/display-mode-eng-4.png)
-
-The top-line indicator shows `ENG(4)`.
-
-To set the number of digits after the decimal point to be dynamic (i.e. the
-equivalent of `FLOAT` option in the TI-OS `MODE` menu), type in a number greater
-than 9 when prompted for `FIX _ _`, `SCI _ _`, or `ENG _ _`. I usually use
-`99`, but `11` would also work. For example, to use scientific notation mode
-with a variable number of fractional digits, press `SCI` `99` to get this:
-
-![RPN83P SCI 99](images/display-mode-sci-99.png)
-
-Notice that the top-line floating point indicator now shows `SCI(-)`.
-
-Finally, type `FIX` `99` to go back to the default floating point mode.
-
-![RPN83P FIX 99](images/display-mode-fix-99.png)
+Setting `99` as the number of digits in `ENG` mode makes the number of digits
+after the decimal point to be dynamic (i.e. the equivalent of `FLOAT` option in
+the TI-OS `MODE` menu), but retains the `ENG` notation.
 
 **HP-42S Compatibility Note**: The RPN83P uses the underlying TI-OS floating
 point display modes, so it cannot emulate the HP-42S exactly. In particular, the
