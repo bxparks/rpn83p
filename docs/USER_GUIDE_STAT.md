@@ -28,17 +28,13 @@ Manual_. Additional reference material can be found at:
 The STAT functions are available through the `ROOT > STAT` menu folder, which is
 also accessible through the `STAT` button on the keypad:
 
-- ![ROOT > STAT](images/menu-root-stat.png) (`ROOT > STAT`)
+- ![ROOT > STAT](images/menu-root-stat.png)
     - ![ROOT > STAT > Row1](images/menu-root-stat-1.png)
-    - ![ROOT > STAT > Row2](images/menu-root-stat-2.png)
-    - ![ROOT > STAT > Row3](images/menu-root-stat-3.png)
-    - ![ROOT > STAT > SIGMA](images/menu-root-stat-sigma.png) (`ROOT > STAT` >
-      `SIGMA`)
+    - ![ROOT > STAT > SIGMA](images/menu-root-stat-sigma.png)
         - ![ROOT > STAT > SIGMA > Row1](images/menu-root-stat-sigma-1.png)
         - ![ROOT > STAT > SIGMA > Row2](images/menu-root-stat-sigma-2.png)
         - ![ROOT > STAT > SIGMA > Row3](images/menu-root-stat-sigma-3.png)
-    - ![ROOT > STAT > CFIT](images/menu-root-stat-cfit.png) (`ROOT > STAT` >
-      `CFIT`)
+    - ![ROOT > STAT > CFIT](images/menu-root-stat-cfit.png)
         - ![ROOT > STAT > CFIT > Row1](images/menu-root-stat-cfit-1.png)
         - ![ROOT > STAT > CFIT > Row2](images/menu-root-stat-cfit-2.png)
 
@@ -72,11 +68,18 @@ differences:
 
 ## Curve Fitting
 
-The curve fit models under the `CFIT` menu group are identical to the HP-42S.
-The linear curve fit `LINF` is available with either `LINSigma` or `ALLSigma`
-selected. The other models (`LOGF`, `EXPF`, `PWRF`) are available only when the
-`ALLSigma` option is selected, because they require additional summation
-registers to be active and updated.
+The curve fitting functions are available under the `ROOT > STAT > CFIT` menu
+folder:
+
+- ![ROOT > STAT > CFIT](images/menu-root-stat-cfit.png)
+    - ![ROOT > STAT > CFIT > Row1](images/menu-root-stat-cfit-1.png)
+    - ![ROOT > STAT > CFIT > Row2](images/menu-root-stat-cfit-2.png)
+
+The supported curve fit models are identical to the HP-42S. The linear curve fit
+`LINF` is available with either `LINSigma` or `ALLSigma` selected. The other
+models (`LOGF`, `EXPF`, `PWRF`) are available only when the `ALLSigma` option is
+selected, because they require additional summation registers to be active and
+updated.
 
 On the HP-42S, the clear menu item `CLSigma` is available only under the `CLEAR`
 menu hierarchy. On the RPN83P, the `CLSigma` menu appears in 2 places for
@@ -84,13 +87,9 @@ convenience, under the `CLR` hierarchy *and* under the `STAT` hierarchy. The
 number of storage registers that are cleared depends on whether `LINSigma` or
 `ALLSigma` are selected, just like the HP-42S.
 
-There are a few STAT features which are _not_ implemented on the RPN83P:
-
-- The storage registers allocated to the `STAT` functions are hardcoded to be
-  `R11-R23`. On the HP-42S, the register allocation can be changed.
-- RPN83P does not (yet) support vectors and matrices, so it is not possible to
-  enter the data into a matrix first, then perform the `STAT` functions over the
-  matrix.
+RPN83P does not (yet) support vectors and matrices, so it is not possible to
+enter the data into a matrix first, then perform the `STAT` functions over the
+matrix.
 
 ## Curve Fitting Example
 
