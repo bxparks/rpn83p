@@ -392,17 +392,28 @@ The following buttons are used to enter and edit a number in the input buffer:
 - `,`: component separator for record types (see
   [USER_GUIDE_DATE.md](USER_GUIDE_DATE.md))
 
-The following keys are related to complex numbers and are explained in more
-detail in the [Complex Numbers](#complex-numbers) section below:
-
-- `2ND LINK`: convert `X` and `Y` into a complex number in `X`, or the reverse
-- `2ND ANGLE`: enter a complex number in polar degree form
-- `2ND ANGLE` `2ND ANGLE`: enter a complex number polar radian form
-- `2ND i`: enter a complex number in rectangular form
-
 The `(-)` button acts like the `+/-` or `CHS` button on HP calculators. It
 toggles the negative sign, adding it if it does not exist, and removing it if it
 does.
+
+**Cursor**
+
+The cursor of RPN83P is a blink block character, which was selected because this
+is supported natively by the underlying TI-OS, and because it is visually
+distinctive from the small dashes that represent the folder tab of menu folders.
+This is different from the HP-42S which uses an underscore character.
+
+The `LEFT` and `RIGHT` arrow keys will move the cursor over the input buffer.
+This is similar to the HP-48/49/50 series of calculators.
+
+| **Keys**              | **Display**|
+| --------------------- | ---------- |
+| `1.234`               | ![Input Cursor](images/input-cursor-1.png) |
+| `LEFT`                | ![Input Cursor Left](images/input-cursor-2.png) |
+| `LEFT`                | ![Input Cursor Left](images/input-cursor-3.png) |
+| `RIGHT`               | ![Input Cursor Right](images/input-cursor-4.png) |
+
+**DEL**
 
 The `DEL` key acts like the *backspace* key on HP calculators (usually marked
 with a `LEFTARROW` symbol. This is different from the TI-OS where the `DEL` key
@@ -410,6 +421,8 @@ removes the character under the cursor. In RPN83P, the cursor is *always* at the
 end of the input buffer, so `DEL` is programmed to delete the right-most digit.
 If the `X` line is *not* in edit mode (i.e. the cursor is not shown), then the
 `DEL` key acts like the `CLEAR` key (see below).
+
+**CLEAR**
 
 The `CLEAR` key performs slightly different actions depending on the context:
 - If the `X` register is normally displayed, `CLEAR` goes into edit mode with an
@@ -433,11 +446,25 @@ TI-OS does not support `2ND CLEAR`, it returns the same code as `CLEAR`.)
 An empty string will be interpreted as a `0` if the `ENTER` key or a function
 key is pressed.
 
+**Records**
+
 The comma `,` button is used for record types (see
 [USER_GUIDE_DATE.md](USER_GUIDE.md)) so the `E` symbol for scientific notation
 numbers must be entered using the `2ND EE` key. However, it is possible to flip
 the behavior of the comma and the `2ND EE` buttons using a `MODE` setting. See
 [Comma-EE Button Mode](#comma-ee-button-mode) below.
+
+**Complex Numbers**
+
+The following keys are related to complex numbers and are explained in more
+detail in the [Complex Numbers](#complex-numbers) section below:
+
+- `2ND LINK`: convert `X` and `Y` into a complex number in `X`, or the reverse
+- `2ND ANGLE`: enter a complex number in polar degree form
+- `2ND ANGLE` `2ND ANGLE`: enter a complex number polar radian form
+- `2ND i`: enter a complex number in rectangular form
+
+**HP-42S and HP-48/49/50 Compatibility**
 
 Emulating the input system of the HP-42S was surprisingly complex and subtle,
 and some features and idiosyncrasies of the HP-42S could not be carried over due
