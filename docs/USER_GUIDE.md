@@ -431,6 +431,18 @@ This is similar to the HP-48/49/50 series of calculators.
 | `LEFT`                | ![Input Cursor Left](images/input-cursor-3.png) |
 | `RIGHT`               | ![Input Cursor Right](images/input-cursor-4.png) |
 
+When the number of digits exceeds the display limit, the left most or right most
+character is replaced with an ellipsis character (three dots) to indicate that
+additional digits have been cropped. The `2ND LEFT` and `2ND RIGHT` arrow keys
+will move the cursor to the beginning or end of the input buffer respectively.
+
+| **Keys**              | **Display**|
+| --------------------- | ---------- |
+| `1.2345678901234E-12` | ![Input Cursor](images/input-cursor-long-1.png) |
+| `2ND LEFT`            | ![Input Cursor](images/input-cursor-long-2.png) |
+| `RIGHT` (10 times)    | ![Input Cursor](images/input-cursor-long-3.png) |
+| `2ND RIGHT`           | ![Input Cursor](images/input-cursor-long-4.png) |
+
 **DEL**
 
 The `DEL` key acts like the *backspace* key on HP calculators (usually marked
