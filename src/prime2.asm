@@ -223,7 +223,7 @@ primeFactorIntCheckDiv:
 ; Description determine if OP1 is a prime using the modU32ByBC() routine. This
 ; is 7X faster than primeFactorFloat(), and 2.5X faster than primeFactorInt().
 ;
-; Benchmarks (6 MHz):
+; Benchmarks (6 MHz, modU32ByBC):
 ;   - 4001*4001: 2.4 seconds
 ;   - 10007*10007: 5.5 seconds
 ;   - 19997*19997: 10.5 seconds
