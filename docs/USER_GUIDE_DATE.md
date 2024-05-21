@@ -1637,7 +1637,7 @@ terminator is **optional**. Let's unpack that:
     - 3 arguments: Date `D{..}`
     - 4 arguments: Duration `DR{..}`
     - 6 arguments: DateTime `DT{..}`
-    - 8 arguments: ZonedDateTime `DT{..}`
+    - 8 arguments: ZonedDateTime `DZ{..}`
     - DayOfWeek: not supported, arity of 1 is reserved for future use
     - Time: not supported because arity of 3 conflicts with Date which has the
       same arity
