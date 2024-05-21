@@ -31,12 +31,17 @@
               soft menu item
             - becomes useful when the stack size `SSIZ` is greater than 4
         - TODO: Update USER_GUIDE_DATE.md
-    - support arithmetic operations on Offset
-        - {Offset} + {hours}, {hours} + {Offset}
-        - {Offset} - {hours}
-        - {Offset} - {Offset} => {hours}
-        - plus the same operations with {hours} replaced with an appropriate
-          {Duration} (in multiples of 15 minutes)
+    - DATE
+        - simplify DATE menu hierarchy
+            - move RTC (hardware clock) menus and TZ config menus under new CLK
+            menu folder
+            - move DSHK, DEXD, DCUT, DLNK menu items under new DOPS menu folder
+        - support arithmetic operations on Offset
+            - {Offset} + {hours}, {hours} + {Offset}
+            - {Offset} - {hours}
+            - {Offset} - {Offset} => {hours}
+            - plus the same operations with {hours} replaced with an appropriate
+            {Duration} (in multiples of 15 minutes)
         - TODO: Update USER_GUIDE_DATE.md
     - STAT
         - extract the 13 STAT registers (R11-R23) from regular storage registers
