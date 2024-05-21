@@ -566,7 +566,7 @@ The `2ND i`, `2ND ANGLE`, and `2ND LINK` buttons are used for entering complex
 numbers. They are explained in more detail in
 [USER_GUIDE_COMPLEX.md](USER_GUIDE_COMPLEX.md).
 
-**HP-42S and HP-48/49/50 Compatibility**
+**Other Differences from HP-42S and HP-48/49/50**
 
 Emulating the input system of the HP-42S was surprisingly complex and subtle,
 and some features and idiosyncrasies of the HP-42S could not be carried over due
@@ -583,11 +583,6 @@ Lift is disabled, and entering another number will replace the `0.0000` in the
 Edit mode with an empty input buffer, and the cursor will *always* be shown with
 an empty string. The presence of the cursor indicates that the Edit Mode is in
 effect and that the Stack Lift is disabled.
-
-I'm not sure that documenting all the corner cases would be useful in this
-document because it would probably be tedious to read. I hope that the input
-system is intuitive and self-consistent enough that you can just play around
-with it and learn how it works.
 
 ### RPN Stack
 
