@@ -184,7 +184,7 @@ mDateId equ 16
     .dw mDateId ; id
     .dw mRootId ; parentId
     .dw mDateNameId ; nameId
-    .db 6 ; numRows
+    .db 4 ; numRows
     .dw mLeapYearId ; rowBeginId or altNameId
     .dw mGroupHandler ; handler (predefined)
     .dw 0 ; nameSelector
@@ -2302,22 +2302,22 @@ mBlank244Id equ 244
     .dw 0 ; rowBeginId or altNameId
     .dw mNullHandler ; handler (predefined)
     .dw 0 ; nameSelector
-mBlank245:
-mBlank245Id equ 245
-    .dw mBlank245Id ; id
-    .dw mDateId ; parentId
-    .dw mNullNameId ; nameId
-    .db 0 ; numRows
-    .dw 0 ; rowBeginId or altNameId
-    .dw mNullHandler ; handler (predefined)
-    .dw 0 ; nameSelector
 mEpoch:
-mEpochId equ 246
+mEpochId equ 245
     .dw mEpochId ; id
     .dw mDateId ; parentId
     .dw mEpochNameId ; nameId
     .db 2 ; numRows
     .dw mEpochUnixId ; rowBeginId or altNameId
+    .dw mGroupHandler ; handler (predefined)
+    .dw 0 ; nameSelector
+mClk:
+mClkId equ 246
+    .dw mClkId ; id
+    .dw mDateId ; parentId
+    .dw mClkNameId ; nameId
+    .db 2 ; numRows
+    .dw mGetNowId ; rowBeginId or altNameId
     .dw mGroupHandler ; handler (predefined)
     .dw 0 ; nameSelector
 ; MenuGroup DATE: children: row 3
@@ -2366,102 +2366,10 @@ mBlank251Id equ 251
     .dw 0 ; rowBeginId or altNameId
     .dw mNullHandler ; handler (predefined)
     .dw 0 ; nameSelector
-; MenuGroup DATE: children: row 4
-mGetNow:
-mGetNowId equ 252
-    .dw mGetNowId ; id
-    .dw mDateId ; parentId
-    .dw mGetNowNameId ; nameId
-    .db 0 ; numRows
-    .dw 0 ; rowBeginId or altNameId
-    .dw mGetNowHandler ; handler (to be implemented)
-    .dw 0 ; nameSelector
-mGetNowDate:
-mGetNowDateId equ 253
-    .dw mGetNowDateId ; id
-    .dw mDateId ; parentId
-    .dw mGetNowDateNameId ; nameId
-    .db 0 ; numRows
-    .dw 0 ; rowBeginId or altNameId
-    .dw mGetNowDateHandler ; handler (to be implemented)
-    .dw 0 ; nameSelector
-mGetNowTime:
-mGetNowTimeId equ 254
-    .dw mGetNowTimeId ; id
-    .dw mDateId ; parentId
-    .dw mGetNowTimeNameId ; nameId
-    .db 0 ; numRows
-    .dw 0 ; rowBeginId or altNameId
-    .dw mGetNowTimeHandler ; handler (to be implemented)
-    .dw 0 ; nameSelector
-mGetNowAppDateTime:
-mGetNowAppDateTimeId equ 255
-    .dw mGetNowAppDateTimeId ; id
-    .dw mDateId ; parentId
-    .dw mGetNowAppDateTimeNameId ; nameId
-    .db 0 ; numRows
-    .dw 0 ; rowBeginId or altNameId
-    .dw mGetNowAppDateTimeHandler ; handler (to be implemented)
-    .dw 0 ; nameSelector
-mGetNowUTCDateTime:
-mGetNowUTCDateTimeId equ 256
-    .dw mGetNowUTCDateTimeId ; id
-    .dw mDateId ; parentId
-    .dw mGetNowUTCDateTimeNameId ; nameId
-    .db 0 ; numRows
-    .dw 0 ; rowBeginId or altNameId
-    .dw mGetNowUTCDateTimeHandler ; handler (to be implemented)
-    .dw 0 ; nameSelector
-; MenuGroup DATE: children: row 5
-mSetTimeZone:
-mSetTimeZoneId equ 257
-    .dw mSetTimeZoneId ; id
-    .dw mDateId ; parentId
-    .dw mSetTimeZoneNameId ; nameId
-    .db 0 ; numRows
-    .dw 0 ; rowBeginId or altNameId
-    .dw mSetTimeZoneHandler ; handler (to be implemented)
-    .dw 0 ; nameSelector
-mGetTimeZone:
-mGetTimeZoneId equ 258
-    .dw mGetTimeZoneId ; id
-    .dw mDateId ; parentId
-    .dw mGetTimeZoneNameId ; nameId
-    .db 0 ; numRows
-    .dw 0 ; rowBeginId or altNameId
-    .dw mGetTimeZoneHandler ; handler (to be implemented)
-    .dw 0 ; nameSelector
-mSetClockTimeZone:
-mSetClockTimeZoneId equ 259
-    .dw mSetClockTimeZoneId ; id
-    .dw mDateId ; parentId
-    .dw mSetClockTimeZoneNameId ; nameId
-    .db 0 ; numRows
-    .dw 0 ; rowBeginId or altNameId
-    .dw mSetClockTimeZoneHandler ; handler (to be implemented)
-    .dw 0 ; nameSelector
-mGetClockTimeZone:
-mGetClockTimeZoneId equ 260
-    .dw mGetClockTimeZoneId ; id
-    .dw mDateId ; parentId
-    .dw mGetClockTimeZoneNameId ; nameId
-    .db 0 ; numRows
-    .dw 0 ; rowBeginId or altNameId
-    .dw mGetClockTimeZoneHandler ; handler (to be implemented)
-    .dw 0 ; nameSelector
-mSetClock:
-mSetClockId equ 261
-    .dw mSetClockId ; id
-    .dw mDateId ; parentId
-    .dw mSetClockNameId ; nameId
-    .db 0 ; numRows
-    .dw 0 ; rowBeginId or altNameId
-    .dw mSetClockHandler ; handler (to be implemented)
-    .dw 0 ; nameSelector
 ; MenuGroup EPCH: children
 ; MenuGroup EPCH: children: row 0
 mEpochUnix:
-mEpochUnixId equ 262
+mEpochUnixId equ 252
     .dw mEpochUnixId ; id
     .dw mEpochId ; parentId
     .dw mEpochUnixNameId ; nameId
@@ -2470,7 +2378,7 @@ mEpochUnixId equ 262
     .dw mEpochUnixHandler ; handler (to be implemented)
     .dw mEpochUnixNameSelector ; nameSelector
 mEpochNtp:
-mEpochNtpId equ 263
+mEpochNtpId equ 253
     .dw mEpochNtpId ; id
     .dw mEpochId ; parentId
     .dw mEpochNtpNameId ; nameId
@@ -2479,7 +2387,7 @@ mEpochNtpId equ 263
     .dw mEpochNtpHandler ; handler (to be implemented)
     .dw mEpochNtpNameSelector ; nameSelector
 mEpochGps:
-mEpochGpsId equ 264
+mEpochGpsId equ 254
     .dw mEpochGpsId ; id
     .dw mEpochId ; parentId
     .dw mEpochGpsNameId ; nameId
@@ -2488,7 +2396,7 @@ mEpochGpsId equ 264
     .dw mEpochGpsHandler ; handler (to be implemented)
     .dw mEpochGpsNameSelector ; nameSelector
 mEpochTios:
-mEpochTiosId equ 265
+mEpochTiosId equ 255
     .dw mEpochTiosId ; id
     .dw mEpochId ; parentId
     .dw mEpochTiosNameId ; nameId
@@ -2497,7 +2405,7 @@ mEpochTiosId equ 265
     .dw mEpochTiosHandler ; handler (to be implemented)
     .dw mEpochTiosNameSelector ; nameSelector
 mEpochY2k:
-mEpochY2kId equ 266
+mEpochY2kId equ 256
     .dw mEpochY2kId ; id
     .dw mEpochId ; parentId
     .dw mEpochY2kNameId ; nameId
@@ -2507,7 +2415,7 @@ mEpochY2kId equ 266
     .dw mEpochY2kNameSelector ; nameSelector
 ; MenuGroup EPCH: children: row 1
 mEpochCustom:
-mEpochCustomId equ 267
+mEpochCustomId equ 257
     .dw mEpochCustomId ; id
     .dw mEpochId ; parentId
     .dw mEpochCustomNameId ; nameId
@@ -2515,18 +2423,18 @@ mEpochCustomId equ 267
     .dw mEpochCustomAltNameId ; rowBeginId or altNameId
     .dw mEpochCustomHandler ; handler (to be implemented)
     .dw mEpochCustomNameSelector ; nameSelector
-mBlank268:
-mBlank268Id equ 268
-    .dw mBlank268Id ; id
+mBlank258:
+mBlank258Id equ 258
+    .dw mBlank258Id ; id
     .dw mEpochId ; parentId
     .dw mNullNameId ; nameId
     .db 0 ; numRows
     .dw 0 ; rowBeginId or altNameId
     .dw mNullHandler ; handler (predefined)
     .dw 0 ; nameSelector
-mBlank269:
-mBlank269Id equ 269
-    .dw mBlank269Id ; id
+mBlank259:
+mBlank259Id equ 259
+    .dw mBlank259Id ; id
     .dw mEpochId ; parentId
     .dw mNullNameId ; nameId
     .db 0 ; numRows
@@ -2534,7 +2442,7 @@ mBlank269Id equ 269
     .dw mNullHandler ; handler (predefined)
     .dw 0 ; nameSelector
 mEpochSetCustom:
-mEpochSetCustomId equ 270
+mEpochSetCustomId equ 260
     .dw mEpochSetCustomId ; id
     .dw mEpochId ; parentId
     .dw mEpochSetCustomNameId ; nameId
@@ -2543,7 +2451,7 @@ mEpochSetCustomId equ 270
     .dw mEpochSetCustomHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
 mEpochGetCustom:
-mEpochGetCustomId equ 271
+mEpochGetCustomId equ 261
     .dw mEpochGetCustomId ; id
     .dw mEpochId ; parentId
     .dw mEpochGetCustomNameId ; nameId
@@ -2551,9 +2459,102 @@ mEpochGetCustomId equ 271
     .dw 0 ; rowBeginId or altNameId
     .dw mEpochGetCustomHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
+; MenuGroup CLK: children
+; MenuGroup CLK: children: row 0
+mGetNow:
+mGetNowId equ 262
+    .dw mGetNowId ; id
+    .dw mClkId ; parentId
+    .dw mGetNowNameId ; nameId
+    .db 0 ; numRows
+    .dw 0 ; rowBeginId or altNameId
+    .dw mGetNowHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
+mGetNowDate:
+mGetNowDateId equ 263
+    .dw mGetNowDateId ; id
+    .dw mClkId ; parentId
+    .dw mGetNowDateNameId ; nameId
+    .db 0 ; numRows
+    .dw 0 ; rowBeginId or altNameId
+    .dw mGetNowDateHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
+mGetNowTime:
+mGetNowTimeId equ 264
+    .dw mGetNowTimeId ; id
+    .dw mClkId ; parentId
+    .dw mGetNowTimeNameId ; nameId
+    .db 0 ; numRows
+    .dw 0 ; rowBeginId or altNameId
+    .dw mGetNowTimeHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
+mGetNowAppDateTime:
+mGetNowAppDateTimeId equ 265
+    .dw mGetNowAppDateTimeId ; id
+    .dw mClkId ; parentId
+    .dw mGetNowAppDateTimeNameId ; nameId
+    .db 0 ; numRows
+    .dw 0 ; rowBeginId or altNameId
+    .dw mGetNowAppDateTimeHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
+mGetNowUTCDateTime:
+mGetNowUTCDateTimeId equ 266
+    .dw mGetNowUTCDateTimeId ; id
+    .dw mClkId ; parentId
+    .dw mGetNowUTCDateTimeNameId ; nameId
+    .db 0 ; numRows
+    .dw 0 ; rowBeginId or altNameId
+    .dw mGetNowUTCDateTimeHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
+; MenuGroup CLK: children: row 1
+mSetTimeZone:
+mSetTimeZoneId equ 267
+    .dw mSetTimeZoneId ; id
+    .dw mClkId ; parentId
+    .dw mSetTimeZoneNameId ; nameId
+    .db 0 ; numRows
+    .dw 0 ; rowBeginId or altNameId
+    .dw mSetTimeZoneHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
+mGetTimeZone:
+mGetTimeZoneId equ 268
+    .dw mGetTimeZoneId ; id
+    .dw mClkId ; parentId
+    .dw mGetTimeZoneNameId ; nameId
+    .db 0 ; numRows
+    .dw 0 ; rowBeginId or altNameId
+    .dw mGetTimeZoneHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
+mSetClockTimeZone:
+mSetClockTimeZoneId equ 269
+    .dw mSetClockTimeZoneId ; id
+    .dw mClkId ; parentId
+    .dw mSetClockTimeZoneNameId ; nameId
+    .db 0 ; numRows
+    .dw 0 ; rowBeginId or altNameId
+    .dw mSetClockTimeZoneHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
+mGetClockTimeZone:
+mGetClockTimeZoneId equ 270
+    .dw mGetClockTimeZoneId ; id
+    .dw mClkId ; parentId
+    .dw mGetClockTimeZoneNameId ; nameId
+    .db 0 ; numRows
+    .dw 0 ; rowBeginId or altNameId
+    .dw mGetClockTimeZoneHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
+mSetClock:
+mSetClockId equ 271
+    .dw mSetClockId ; id
+    .dw mClkId ; parentId
+    .dw mSetClockNameId ; nameId
+    .db 0 ; numRows
+    .dw 0 ; rowBeginId or altNameId
+    .dw mSetClockHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
 
 ; Table of 2-byte pointers to names in the pool of strings below.
-mMenuNameTableSize equ 275
+mMenuNameTableSize equ 276
 mMenuNameTable:
 mNullNameId equ 0
     .dw mNullName
@@ -3049,62 +3050,64 @@ mHoursToTimeZoneNameId equ 245
     .dw mHoursToTimeZoneName
 mEpochNameId equ 246
     .dw mEpochName
-mDateShrinkNameId equ 247
+mClkNameId equ 247
+    .dw mClkName
+mDateShrinkNameId equ 248
     .dw mDateShrinkName
-mDateExtendNameId equ 248
+mDateExtendNameId equ 249
     .dw mDateExtendName
-mDateCutNameId equ 249
+mDateCutNameId equ 250
     .dw mDateCutName
-mDateLinkNameId equ 250
+mDateLinkNameId equ 251
     .dw mDateLinkName
-mGetNowNameId equ 251
-    .dw mGetNowName
-mGetNowDateNameId equ 252
-    .dw mGetNowDateName
-mGetNowTimeNameId equ 253
-    .dw mGetNowTimeName
-mGetNowAppDateTimeNameId equ 254
-    .dw mGetNowAppDateTimeName
-mGetNowUTCDateTimeNameId equ 255
-    .dw mGetNowUTCDateTimeName
-mSetTimeZoneNameId equ 256
-    .dw mSetTimeZoneName
-mGetTimeZoneNameId equ 257
-    .dw mGetTimeZoneName
-mSetClockTimeZoneNameId equ 258
-    .dw mSetClockTimeZoneName
-mGetClockTimeZoneNameId equ 259
-    .dw mGetClockTimeZoneName
-mSetClockNameId equ 260
-    .dw mSetClockName
-mEpochUnixNameId equ 261
+mEpochUnixNameId equ 252
     .dw mEpochUnixName
-mEpochUnixAltNameId equ 262
+mEpochUnixAltNameId equ 253
     .dw mEpochUnixAltName
-mEpochNtpNameId equ 263
+mEpochNtpNameId equ 254
     .dw mEpochNtpName
-mEpochNtpAltNameId equ 264
+mEpochNtpAltNameId equ 255
     .dw mEpochNtpAltName
-mEpochGpsNameId equ 265
+mEpochGpsNameId equ 256
     .dw mEpochGpsName
-mEpochGpsAltNameId equ 266
+mEpochGpsAltNameId equ 257
     .dw mEpochGpsAltName
-mEpochTiosNameId equ 267
+mEpochTiosNameId equ 258
     .dw mEpochTiosName
-mEpochTiosAltNameId equ 268
+mEpochTiosAltNameId equ 259
     .dw mEpochTiosAltName
-mEpochY2kNameId equ 269
+mEpochY2kNameId equ 260
     .dw mEpochY2kName
-mEpochY2kAltNameId equ 270
+mEpochY2kAltNameId equ 261
     .dw mEpochY2kAltName
-mEpochCustomNameId equ 271
+mEpochCustomNameId equ 262
     .dw mEpochCustomName
-mEpochCustomAltNameId equ 272
+mEpochCustomAltNameId equ 263
     .dw mEpochCustomAltName
-mEpochSetCustomNameId equ 273
+mEpochSetCustomNameId equ 264
     .dw mEpochSetCustomName
-mEpochGetCustomNameId equ 274
+mEpochGetCustomNameId equ 265
     .dw mEpochGetCustomName
+mGetNowNameId equ 266
+    .dw mGetNowName
+mGetNowDateNameId equ 267
+    .dw mGetNowDateName
+mGetNowTimeNameId equ 268
+    .dw mGetNowTimeName
+mGetNowAppDateTimeNameId equ 269
+    .dw mGetNowAppDateTimeName
+mGetNowUTCDateTimeNameId equ 270
+    .dw mGetNowUTCDateTimeName
+mSetTimeZoneNameId equ 271
+    .dw mSetTimeZoneName
+mGetTimeZoneNameId equ 272
+    .dw mGetTimeZoneName
+mSetClockTimeZoneNameId equ 273
+    .dw mSetClockTimeZoneName
+mGetClockTimeZoneNameId equ 274
+    .dw mGetClockTimeZoneName
+mSetClockNameId equ 275
+    .dw mSetClockName
 
 ; Table of names as NUL terminated C strings.
 mNullName:
@@ -3601,6 +3604,8 @@ mHoursToTimeZoneName:
     .db 'H', Sconvert, 'T', 'Z', 0
 mEpochName:
     .db "EPCH", 0
+mClkName:
+    .db "CLK", 0
 mDateShrinkName:
     .db "DSHK", 0
 mDateExtendName:
@@ -3609,26 +3614,6 @@ mDateCutName:
     .db "DCUT", 0
 mDateLinkName:
     .db "DLNK", 0
-mGetNowName:
-    .db "NOW", 0
-mGetNowDateName:
-    .db "NOWD", 0
-mGetNowTimeName:
-    .db "NOWT", 0
-mGetNowAppDateTimeName:
-    .db "NWDZ", 0
-mGetNowUTCDateTimeName:
-    .db "NWUT", 0
-mSetTimeZoneName:
-    .db "TZ", 0
-mGetTimeZoneName:
-    .db 'T', 'Z', Squestion, 0
-mSetClockTimeZoneName:
-    .db "CTZ", 0
-mGetClockTimeZoneName:
-    .db 'C', 'T', 'Z', Squestion, 0
-mSetClockName:
-    .db "SETC", 0
 mEpochUnixName:
     .db "UNIX", 0
 mEpochUnixAltName:
@@ -3657,3 +3642,23 @@ mEpochSetCustomName:
     .db "EPC", 0
 mEpochGetCustomName:
     .db 'E', 'P', 'C', Squestion, 0
+mGetNowName:
+    .db "NOW", 0
+mGetNowDateName:
+    .db "NOWD", 0
+mGetNowTimeName:
+    .db "NOWT", 0
+mGetNowAppDateTimeName:
+    .db "NWDZ", 0
+mGetNowUTCDateTimeName:
+    .db "NWUT", 0
+mSetTimeZoneName:
+    .db "TZ", 0
+mGetTimeZoneName:
+    .db 'T', 'Z', Squestion, 0
+mSetClockTimeZoneName:
+    .db "CTZ", 0
+mGetClockTimeZoneName:
+    .db 'C', 'T', 'Z', Squestion, 0
+mSetClockName:
+    .db "SETC", 0

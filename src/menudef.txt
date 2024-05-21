@@ -428,7 +428,6 @@ MenuGroup root mRoot [
         MenuItem TZ<Sconvert>H mTimeZoneToHours
         MenuItem H<Sconvert>TZ mHoursToTimeZone
         MenuItem * *
-        MenuItem * *
         MenuGroup EPCH mEpoch [
           MenuRow [
             MenuItemAlt UNIX UNI<Sblock> mEpochUnix # 1970-01-01T00:00:00
@@ -445,6 +444,22 @@ MenuGroup root mRoot [
             MenuItem EPC<Squestion> mEpochGetCustom # get custom epoch date
           ]
         ]
+        MenuGroup CLK mClk [
+          MenuRow [
+            MenuItem NOW mGetNow # RTC epochSeconds
+            MenuItem NOWD mGetNowDate # RTC Date using appTimeZone
+            MenuItem NOWT mGetNowTime # RTC Time using appTimeZone
+            MenuItem NWDZ mGetNowAppDateTime # RTC OffsetDateTime using appTimeZone
+            MenuItem NWUT mGetNowUTCDateTime # RTC OffsetDateTime using UTC
+          ]
+          MenuRow [
+            MenuItem TZ mSetTimeZone
+            MenuItem TZ<Squestion> mGetTimeZone
+            MenuItem CTZ mSetClockTimeZone
+            MenuItem CTZ<Squestion> mGetClockTimeZone
+            MenuItem SETC mSetClock # set current clock
+          ]
+        ]
       ]
       MenuRow [
         MenuItem DSHK mDateShrink # shrink DZ to DT, DT to D
@@ -452,20 +467,6 @@ MenuGroup root mRoot [
         MenuItem DCUT mDateCut # cut DZ to (DT,TZ), DT to (D,T)
         MenuItem DLNK mDateLink # link (DT,TZ) to DZ, (D,T) to DT
         MenuItem * *
-      ]
-      MenuRow [
-        MenuItem NOW mGetNow # RTC epochSeconds
-        MenuItem NOWD mGetNowDate # RTC Date using appTimeZone
-        MenuItem NOWT mGetNowTime # RTC Time using appTimeZone
-        MenuItem NWDZ mGetNowAppDateTime # RTC OffsetDateTime using appTimeZone
-        MenuItem NWUT mGetNowUTCDateTime # RTC OffsetDateTime using UTC
-      ]
-      MenuRow [
-        MenuItem TZ mSetTimeZone
-        MenuItem TZ<Squestion> mGetTimeZone
-        MenuItem CTZ mSetClockTimeZone
-        MenuItem CTZ<Squestion> mGetClockTimeZone
-        MenuItem SETC mSetClock # set current clock
       ]
       # MenuRow [
       #   MenuGroup ISO mIso [
