@@ -376,11 +376,16 @@ the fixed display mode.
 
 ### Input and Editing
 
-The input system of RPN83P initially behaved like the HP-42S, but with the
-addition of the scrollable cursor using the LEFT and RIGHT arrow keys, it now
-acts closer to the HP-48/49/50 series. The input system is intended to be mostly
-self-explanatory and predictable. Hopefully most users will not need to read
-much of this section, except to consult about some edge cases.
+The input system of RPN83P initially behaved like the HP-42S, using an
+underscore cursor that always remained at the end of the input string. With the
+addition of the scrollable cursor using the LEFT and RIGHT arrow keys, it is
+actually closer to the HP-48/49/50 series now. However, it should be emphasized
+that only the input system is similar to the 48/49/50. The computation system of
+RPN83P is still RPN, not RPL.
+
+The input system is intended to be mostly self-explanatory and predictable.
+Hopefully most users will not need to read much of this section, except to
+consult about some edge cases.
 
 **Buttons**
 
@@ -511,9 +516,10 @@ insert an `E` symbol. Similar to the decimal point, the system tries to be a
 little bit smart about the insertion:
 
 - no `E` is inserted if one has already been entered to the left of the cursor.
-  (This is different from the HP-48/49/50 series whose behavior I have not fully
-  figured out.)
 - no `E` is inserted inside a Record object defined by curly braces `{` and `}`
+
+The behavior of the `EE` button on RPN83P is simpler and different from the
+HP-48/49/50 series whose behavior I have not figured out.
 
 **(-) Change Sign**
 
