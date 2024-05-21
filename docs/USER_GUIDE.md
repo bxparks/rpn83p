@@ -557,14 +557,35 @@ of the record:
 
 | **Keys**              | **Display**|
 | --------------------- | ---------- |
-| `DT{2024,5,21,`       | ![Input DateTime](images/input-cursor-dt-1.png) |
-| `LEFT` `LEFT` `LEFT`  | ![Input DateTime](images/input-cursor-dt-2.png) |
+| `DT{2024,5,21,`       | ![Input Record](images/input-cursor-dt-1.png) |
+| `LEFT` `LEFT` `LEFT`  | ![Input Record](images/input-cursor-dt-2.png) |
 
 **Complex Numbers**
 
 The `2ND i`, `2ND ANGLE`, and `2ND LINK` buttons are used for entering complex
 numbers. They are explained in more detail in
-[USER_GUIDE_COMPLEX.md](USER_GUIDE_COMPLEX.md).
+[USER_GUIDE_COMPLEX.md](USER_GUIDE_COMPLEX.md). The complex delimiter keys, `2ND
+i` and`2ND ANGLE`, try to be slightly smart about their behavior as well:
+
+- `2ND i`
+    - inserts an `i` delimiter if no complex delimiter already exists
+    - converts any existing complex delimiter into an `i`
+- `2ND ANGLE`
+    - inserts an `Angle Degree` delimiter if no complex delimiter already exists
+    - converts an existing `i` delimiter into an `Angle Degree` delimiter
+    - converts an existing `Angle Degree` into just an `Angle` (toggles)
+    - converts an existing `Angle` into an `Angle Degree` (toggles)
+
+Here is an example of how the delimiters override or toggle each other:
+
+| **Keys**              | **Display**|
+| --------------------- | ---------- |
+| `1.23E2`              | ![Input Complex](images/input-complex-1.png) |
+| `2ND i`               | ![Input Complex](images/input-complex-2.png) |
+| `98.7` `(-)`          | ![Input Complex](images/input-complex-3.png) |
+| `2ND ANGLE`           | ![Input Complex](images/input-complex-4.png) |
+| `2ND ANGLE`           | ![Input Complex](images/input-complex-5.png) |
+| `2ND i`               | ![Input Complex](images/input-complex-6.png) |
 
 **Other Differences from HP-42S and HP-48/49/50**
 
