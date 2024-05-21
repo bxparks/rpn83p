@@ -8,7 +8,7 @@ features are available under the `ROOT > DATE` menu item in the 3rd row:
 
 Here is a quick summary of the features:
 
-- 7 new objects types (Date, Time, DateTime, TimeZone, ZonedDateTime, DayOfWeek,
+- 7 new data types (Date, Time, DateTime, TimeZone, ZonedDateTime, DayOfWeek,
   Duration)
 - determine if a given year is a leap year
 - calculate day of week (Monday-Sunday) from Date-like objects
