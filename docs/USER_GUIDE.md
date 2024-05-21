@@ -557,8 +557,8 @@ of the record:
 
 | **Keys**              | **Display**|
 | --------------------- | ---------- |
-| `DT{2024,5,21,`       | ![Input Record](images/input-cursor-dt-1.png) |
-| `LEFT` `LEFT` `LEFT`  | ![Input Record](images/input-cursor-dt-2.png) |
+| `DT{2024,5,21,`       | ![Input Record](images/input-record-1.png) |
+| `LEFT` `LEFT` `LEFT`  | ![Input Record](images/input-record-2.png) |
 
 **Complex Numbers**
 
