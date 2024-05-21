@@ -250,15 +250,18 @@ The following menus items are located under the `DATE` menu. A short synopsis of
 each menu function is listed here. More detailed descriptions are given in later
 subsections below.
 
-- ![ROOT MenuRow 3](images/date/menu-root-date.png)
-    - ![DATE MenuRow 1](images/date/menu-root-date-1.png)
-    - ![DATE MenuRow 2](images/date/menu-root-date-2.png)
-    - ![DATE MenuRow 3](images/date/menu-root-date-3.png)
-        - ![EPCH MenuRow 1](images/date/menu-root-date-epch-1.png)
-        - ![EPCH MenuRow 1](images/date/menu-root-date-epch-2.png)
-    - ![DATE MenuRow 4](images/date/menu-root-date-4.png)
-    - ![DATE MenuRow 5](images/date/menu-root-date-5.png)
-    - ![DATE MenuRow 6](images/date/menu-root-date-6.png)
+- ![ROOT > DATE](images/date/menu-root-date.png)
+    - ![ROOT > DATE > Row1](images/date/menu-root-date-1.png)
+    - ![ROOT > DATE > Row2](images/date/menu-root-date-2.png)
+    - ![ROOT > DATE > Row3](images/date/menu-root-date-3.png)
+        - `DOPS`
+            - ![ROOT > DATE > DOPS > Row1](images/date/menu-root-date-dops-1.png)
+        - `EPCH`
+            - ![ROOT > DATE > EPCH > Row1](images/date/menu-root-date-epch-1.png)
+            - ![ROOT > DATE > EPCH > Row2](images/date/menu-root-date-epch-2.png)
+        - `CLK`
+            - ![ROOT > DATE > CLK > Row1](images/date/menu-root-date-clk-1.png)
+            - ![ROOT > DATE > CLK > Row2](images/date/menu-root-date-clk-2.png)
     - `LEAP`: determine if given year is a leap year
     - `DOW`: calculate the DayOfWeek of given Date, DateTime, ZonedDateTime
     - `D>DY`: convert Date to Epoch days
@@ -271,6 +274,12 @@ subsections below.
     - `S>UT`: convert Epoch seconds to ZonedDateTime using UTC timezone
     - `TZ>H`: convert TimeZone to floating point hours
     - `H>TZ`: convert hours to TimeZone
+    - ![ROOT > DATE > DOPS](images/date/menu-root-date-dops.png)
+      (`ROOT > DATE > DOPS`)
+        - `DSHK`: shrink a ZonedDateTime or DateTime by truncating
+        - `DEXD`: extend Date or DateTime into DateTime or ZonedDateTime
+        - `DCUT`: cut (split) a ZonedDateTime or DateTime into smaller objects
+        - `DLNK`: link (merge) smaller objects into DateTime or ZonedDateTime
     - ![ROOT > DATE > EPCH](images/date/menu-root-date-epch.png)
       (`ROOT > DATE > EPCH`)
         - `UNIX`: select Unix Epoch date of 1970-01-01
@@ -281,22 +290,20 @@ subsections below.
         - `CEPC`: select custom Epoch date
         - `EPC`: set custom Epoch date
         - `EPC?`: get current custom Epoch date
-    - `DSHK`: shrink a ZonedDateTime or DateTime by truncating
-    - `DEXD`: extend Date or DateTime into DateTime or ZonedDateTime
-    - `DCUT`: cut (split) a ZonedDateTime or DateTime into smaller objects
-    - `DLNK`: link (merge) smaller objects into DateTime or ZonedDateTime
-    - `NOW`: get the current hardware clock as Epoch seconds
-    - `NOWD`: get the current hardware clock as a Date
-    - `NOWT`: get the current hardware clock as a Time
-    - `NWDZ`: get the current hardware clock as a ZonedDateTime using the
-      Application timezone
-    - `NWUT`: get the current hardware clock as a ZonedDateTime using UTC
-      timezone
-    - `TZ`: set the Application timezone
-    - `TZ?`: get the current Application timezone
-    - `CTZ`: set the hardware clock timezone
-    - `CTZ?`: get the hardware clock timezone
-    - `SETC`: set the datetime of the hardware clock
+    - ![ROOT > DATE > CLK](images/date/menu-root-date-clk.png)
+      (`ROOT > DATE > CLK`)
+        - `NOW`: get the current hardware clock as Epoch seconds
+        - `NOWD`: get the current hardware clock as a Date
+        - `NOWT`: get the current hardware clock as a Time
+        - `NWDZ`: get the current hardware clock as a ZonedDateTime using the
+        Application timezone
+        - `NWUT`: get the current hardware clock as a ZonedDateTime using UTC
+        timezone
+        - `TZ`: set the Application timezone
+        - `TZ?`: get the current Application timezone
+        - `CTZ`: set the hardware clock timezone
+        - `CTZ?`: get the hardware clock timezone
+        - `SETC`: set the datetime of the hardware clock
 
 ## DATE Buttons
 
@@ -1318,24 +1325,24 @@ The TI-84+ and TI-84+SE models include a real time clock (RTC) chip, unlike the
 earlier 83+ and 83+SE models. This allows the 84+ models to set and display the
 current date and time.
 
-The menu items which related to the RTC are the last 2 rows of the `DATE` menu
-hierarchy:
+The menu items which related to the RTC are under the `CLK` menu folder:
 
-- ![ROOT > DATE > Row 5](images/date/menu-root-date-5.png)
-    - `NOW`: return the current date-time as epochseconds from the current Epoch
-      date
-    - `NOWD`: return the current date-time as a `Date` object
-    - `NOWT`: return the current date-time as a `Time` object
-    - `NWDZ`: return the current date-time as a `ZonedDateTime` object using the
-      Application Timezone
-    - `NWUT`: return the current date-time as a `ZonedDateTime` object using the
-      UTC timezone
-- ![ROOT > DATE > Row 6](images/date/menu-root-date-6.png)
-    - `TZ`: set the Application Timezone
-    - `TZ?`: retrieve the Application Timezone
-    - `CTZ`: set the Clock Timezone
-    - `CTZ?`: retrieve the Clock Timezone
-    - `SETC`: set the date and time of the Clock
+- ![ROOT > DATE > CLK](images/date/menu-root-date-clk.png)
+    - ![ROOT > DATE > CLK > Row1](images/date/menu-root-date-clk-1.png)
+        - `NOW`: return the current date-time as epochseconds from the current
+          Epoch date
+        - `NOWD`: return the current date-time as a `Date` object
+        - `NOWT`: return the current date-time as a `Time` object
+        - `NWDZ`: return the current date-time as a `ZonedDateTime` object using
+          the Application Timezone
+        - `NWUT`: return the current date-time as a `ZonedDateTime` object using
+          the UTC timezone
+    - ![ROOT > DATE > CLK > Row2](images/date/menu-root-date-clk-1.png)
+        - `TZ`: set the Application Timezone
+        - `TZ?`: retrieve the Application Timezone
+        - `CTZ`: set the Clock Timezone
+        - `CTZ?`: retrieve the Clock Timezone
+        - `SETC`: set the date and time of the Clock
 
 Before we can use retrieve the current date and time from the hardware
 clock (RTC) using the various `NOW` and `NWxx` menu commands, we must configure
@@ -1348,7 +1355,7 @@ Before we can set the hardware clock's datetime with the `SETC` command,
 we must set its timezone using the `CTZ` menu command. The `CTZ?` command
 retrieves the current timezone:
 
-![ROOT > DATE > CTZ](images/date/menu-root-date-ctz.png)
+![ROOT > DATE > CLK > CTZ](images/date/menu-root-date-ctz.png)
 
 There are 2 options which seem useful:
 
@@ -1394,7 +1401,7 @@ like TI-OS (i.e. Windows) through the `CTZ` configuration.
 Once the timezone of the hardware clock is set, the actual date-time of the
 clock can be configured using the `SETC` (set clock) command:
 
-![ROOT > DATE > SETC](images/date/menu-root-date-setc.png)
+![ROOT > DATE > CLK > SETC](images/date/menu-root-date-clk-setc.png)
 
 The `SETC` command takes a ZonedDateTime value as the argument, like this:
 
@@ -1414,7 +1421,7 @@ converted into an epochseconds before being handed over to the hardware clock.
 In addition to the timezone of the RTC, RPN83P also allows the **Application**
 Timezone to be set using the `TZ` and `TZ?` commands:
 
-![ROOT > DATE > TZ](images/date/menu-root-date-tz.png)
+![ROOT > DATE > CLK > TZ](images/date/menu-root-date-clk-tz.png)
 
 The Application Timezone is the timezone inserted into a ZonedDateTime object
 when a particular function returns a ZonedDateTime. Currently, the 2 commands
@@ -1462,8 +1469,8 @@ here will be in `UTC-07:00`.
 ## Date Type Conversions
 
 Sometimes we want to combined the Date and Time and TimeZone objects into bigger
-objects, or take apart bigger objects into smaller components. Row 4 of the
-`DATE` menu (![](images/date/menu-root-date-4.png)) contains menu items
+objects, or take apart bigger objects into smaller components. The menus under
+the `DOPS` menu (![](images/date/menu-root-date-dops.png)) contains menu items
 which allow those operations to be performed. For ease of use, these menu
 functions are also available on the keyboard, by overloading some button
 functions:
