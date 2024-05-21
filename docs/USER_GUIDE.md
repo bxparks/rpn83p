@@ -480,10 +480,10 @@ stack first, then hit `CLEAR` a few times:
 
 | **Keys**                                  | **Display**|
 | ---------------------                     | ---------- |
-| `1` `ENTER` `2` `ENTER` `3` `ENTER` `4`   | ![Input Clear](images/input-cursor-clear-1.png) |
-| `CLEAR`                                   | ![Input Clear](images/input-cursor-clear-2.png) |
-| `CLEAR`                                   | ![Input Clear](images/input-cursor-clear-3.png) |
-| `CLEAR`                                   | ![Input Clear](images/input-cursor-clear-4.png) |
+| `1` `ENTER` `2` `ENTER` `3` `ENTER` `4`   | ![Input Clear](images/input-clear-1.png) |
+| `CLEAR`                                   | ![Input Clear](images/input-clear-2.png) |
+| `CLEAR`                                   | ![Input Clear](images/input-clear-3.png) |
+| `CLEAR`                                   | ![Input Clear](images/input-clear-4.png) |
 
 Hitting `CLEAR` 3 times is a convenient alternative to navigating the menu
 system to the `CLST` menu function nested under the `ROOT > CLR` menu folder.
