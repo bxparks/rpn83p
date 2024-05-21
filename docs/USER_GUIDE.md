@@ -1400,7 +1400,7 @@ The `,EE` and `EE,` selectors under `ROOT > MODE` configure the behavior of the
 `Comma-EE` button:
 
 - ![ROOT > MODE](images/menu-root-mode.png) (`ROOT > MODE`)
-    - ![ROOT > MODE > CommaEE](images/date/menu-root-mode-commaee.png)
+    - ![ROOT > MODE > CommaEE](images/menu-root-mode-commaee.png)
     - `,EE`: the `Comma-EE` button behaves as labeled on the keyboard (factory
       default)
     - `EE,`: the `Comma-EE` button is inverted
