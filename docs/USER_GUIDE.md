@@ -380,21 +380,39 @@ The following buttons are used to enter and edit a number in the input buffer:
 
 ![Input and Edit Buttons](images/fullshot-inputedit-buttons.jpg)
 
-- `0`-`9`: digits
-- `.`: decimal point
-- `(-)`: enters a negative sign, or changes the sign (same as `+/-` or `CHS` on
-  HP calculators)
-- `DEL`: Backspace (same as `<-` on many HP calculators)
-- `CLEAR`: Clear `X` register, same as `CLX`; *or* clear the input buffer
-- `CLEAR CLEAR CLEAR`: Clear the stack, same as `CLST`
-- `2ND EE`: adds an `E` to allow entry of scientific notation exponent (same as
-  `E` or `EEX` on HP calculators)
-- `,`: component separator for record types (see
-  [USER_GUIDE_DATE.md](USER_GUIDE_DATE.md))
-
-The `(-)` button acts like the `+/-` or `CHS` button on HP calculators. It
-toggles the negative sign, adding it if it does not exist, and removing it if it
-does.
+- number entry
+    - `0`-`9`: inserts the digit
+    - `.`: inserts decimal point
+    - `2ND EE`: adds an `E` to mark the exponent of scientific notation
+        - usually labeled as `E` or `EEX` on HP calculators
+- number mutation
+    - `(-)`: toggles the sign of the current number component
+        - usually labeled as `+/-` or `CHS` on HP calculators
+- deleting digits
+    - `DEL`: delete char to the left of cursor
+        - usually labeled as `<-` on most HP calculators
+    - `CLEAR`: clear the input buffer
+    - `CLEAR CLEAR CLEAR`: Clear the stack, same as `CLST`
+- record types
+    - `{`: inserts the starting delimiter for record types
+    - `}`: inserts the terminating delimiter for record types
+    - `,`: inserts the component separator for record types
+    - see [USER_GUIDE_DATE.md](USER_GUIDE_DATE.md)
+- complex numbers
+    - `2ND LINK`: converts `X` and `Y` into a complex number in `X`, or the
+      reverse
+    - `2ND i`:
+        - inserts an `i` character to form a complex number in rectangular form,
+          or
+        - converts an existing complex delimiter to an `i`
+    - `2ND ANGLE`:
+        - inserts an `angle` character to form a complex number in polar degree
+          form, or
+        - converts an existing complex delimiter to an `angle` character
+    - `2ND ANGLE` `2ND ANGLE`:
+        - inserts an `angle` and a `degrees` symbol to form a complex number
+          polar radian form, or
+        - converts and existing complex delimiter to an `angle`-`degrees` pair
 
 **Cursor**
 
@@ -456,13 +474,8 @@ the behavior of the comma and the `2ND EE` buttons using a `MODE` setting. See
 
 **Complex Numbers**
 
-The following keys are related to complex numbers and are explained in more
+The entry and rendering of complex numbers are explained in more
 detail in the [Complex Numbers](#complex-numbers) section below:
-
-- `2ND LINK`: convert `X` and `Y` into a complex number in `X`, or the reverse
-- `2ND ANGLE`: enter a complex number in polar degree form
-- `2ND ANGLE` `2ND ANGLE`: enter a complex number polar radian form
-- `2ND i`: enter a complex number in rectangular form
 
 **HP-42S and HP-48/49/50 Compatibility**
 
