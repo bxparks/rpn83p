@@ -1355,7 +1355,7 @@ Before we can set the hardware clock's datetime with the `SETC` command,
 we must set its timezone using the `CTZ` menu command. The `CTZ?` command
 retrieves the current timezone:
 
-![ROOT > DATE > CLK > CTZ](images/date/menu-root-date-ctz.png)
+![ROOT > DATE > CLK > CTZ](images/date/menu-root-date-clk-ctz.png)
 
 There are 2 options which seem useful:
 
@@ -1469,11 +1469,14 @@ here will be in `UTC-07:00`.
 ## Date Type Conversions
 
 Sometimes we want to combined the Date and Time and TimeZone objects into bigger
-objects, or take apart bigger objects into smaller components. The menus under
-the `DOPS` menu (![](images/date/menu-root-date-dops.png)) contains menu items
-which allow those operations to be performed. For ease of use, these menu
-functions are also available on the keyboard, by overloading some button
-functions:
+objects, or take apart bigger objects into smaller components. The `DOPS` menu
+folder contains menu items to support those operations:
+
+- ![ROOT > DATE > DOPS](images/date/menu-root-date-dops.png)
+    - ![ROOT > DATE > DOPS > Row1](images/date/menu-root-date-dops-1.png)
+
+For ease of use, these menu functions are also available on the keyboard, by
+overloading some button functions:
 
 - `DSHK` (keyboard: `2ND SQRT`)
 - `DEXD` (keyboard: `X^2`
