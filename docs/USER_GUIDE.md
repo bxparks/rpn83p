@@ -467,25 +467,23 @@ If the `X` line is *not* in edit mode (i.e. the cursor is not shown), then the
 
 **CLEAR**
 
-The `CLEAR` key performs slightly different actions depending on the context:
+The `CLEAR` key either clears the `X` register or clears the current input line.
+If `CLEAR` is pressed when the input buffer is already empty , then it performs
+the `CLST` (Clear Stack) operation. This condition will always happen if CLEAR
+is pressed 3 times consecutively. Here is an example where we fill up the RPN
+stack first, then hit `CLEAR` a few times:
 
-- If the `X` register is normally displayed, `CLEAR` goes into edit mode with an
-  empty input buffer.
-- If the `X` register is already in edit mode, `CLEAR` clears input buffer.
-- If the `X` register is in edit mode and the input buffer is already empty,
-  then `CLEAR` shows a message to the user: `CLEAR Again to Clear Stack`.
-- If the `CLEAR` button is pressed immediately again, the RPN stack is cleared.
-  This is the same functionality as the `ROOT > CLR > CLST` menu button.
+| **Keys**                                  | **Display**|
+| ---------------------                     | ---------- |
+| `1` `ENTER` `2` `ENTER` `3` `ENTER` `4`   | ![Input Clear](images/input-cursor-clear-1.png) |
+| `CLEAR`                                   | ![Input Clear](images/input-cursor-clear-2.png) |
+| `CLEAR`                                   | ![Input Clear](images/input-cursor-clear-3.png) |
+| `CLEAR`                                   | ![Input Clear](images/input-cursor-clear-4.png) |
 
-In an RPN system, it is generally not necessary to clear the RPN stack before
-any calculations. However, many users want to see a clean slate on the display
-to reflect their mental state when starting a new calculation. The `CLST` menu
-function provides this feature, but is nested under the `ROOT > CLR > CLST` menu
-hierarchy. If you are deeply nested under another part of the menu hierarchy, it
-can be cumbersome to navigate back up to the `ROOT`, invoke the `CLST` button,
-then make your way back to the original menu location. To solve this problem,
-the RPN83P app will invoke `CLST` function when `CLEAR` is hit 3 times. (The
-TI-OS does not support `2ND CLEAR`, it returns the same code as `CLEAR`.)
+Hitting `CLEAR` 3 times is a convenient alternative to navigating the menu
+system to the `CLST` menu function nested under the `ROOT > CLR` menu folder.
+(Another alternative could have been `2ND CLEAR` but the TI-OS does not support
+that keystroke because it returns the same key code as `CLEAR`.)
 
 An empty string will be interpreted as a `0` if the `ENTER` key or a function
 key is pressed.
