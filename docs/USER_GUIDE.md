@@ -376,11 +376,19 @@ the fixed display mode.
 
 ### Input and Editing
 
+The input system of RPN83P initially behaved like the HP-42S, but with the
+addition of the scrollable cursor using the LEFT and RIGHT arrow keys, it now
+acts closer to the HP-48/49/50 series. The input system is intended to be mostly
+self-explanatory and predictable. Hopefully most users will not need to read
+much of this section, except to consult about some edge cases.
+
+**Buttons**
+
 The following buttons are used to enter and edit a number in the input buffer:
 
 ![Input and Edit Buttons](images/fullshot-inputedit-buttons.jpg)
 
-- number entry
+- digit entry
     - `0`-`9`: inserts the digit
     - `.`: inserts decimal point
     - `2ND EE`: adds an `E` to mark the exponent of scientific notation
@@ -389,10 +397,10 @@ The following buttons are used to enter and edit a number in the input buffer:
     - `(-)`: toggles the sign of the current number component
         - usually labeled as `+/-` or `CHS` on HP calculators
 - deleting digits
-    - `DEL`: delete char to the left of cursor
+    - `DEL`: deletes the char to the left of cursor
         - usually labeled as `<-` on most HP calculators
     - `CLEAR`: clear the input buffer
-    - `CLEAR CLEAR CLEAR`: Clear the stack, same as `CLST`
+    - `CLEAR CLEAR CLEAR`: clear the stack, same as `CLST`
 - record types
     - `{`: inserts the starting delimiter for record types
     - `}`: inserts the terminating delimiter for record types
@@ -416,10 +424,10 @@ The following buttons are used to enter and edit a number in the input buffer:
 
 **Cursor**
 
-The cursor of RPN83P is a blink block character, which was selected because this
-is supported natively by the underlying TI-OS, and because it is visually
-distinctive from the small dashes that represent the folder tab of menu folders.
-This is different from the HP-42S which uses an underscore character.
+The cursor of RPN83P is a blink block character. This is different from the
+HP-42S which uses an underscore character. The block character was selected
+because this style is supported natively by the underlying TI-OS, and because it
+is visually distinctive from the small dashes contained in the menu folder icon.
 
 The `LEFT` and `RIGHT` arrow keys will move the cursor over the input buffer.
 This is similar to the HP-48/49/50 series of calculators.
@@ -431,10 +439,13 @@ This is similar to the HP-48/49/50 series of calculators.
 | `LEFT`                | ![Input Cursor Left](images/input-cursor-3.png) |
 | `RIGHT`               | ![Input Cursor Right](images/input-cursor-4.png) |
 
-When the number of digits exceeds the display limit, the left most or right most
+When the number of digits exceeds the display limit, the left-most or right-most
 character is replaced with an ellipsis character (three dots) to indicate that
-additional digits have been cropped. The `2ND LEFT` and `2ND RIGHT` arrow keys
-will move the cursor to the beginning or end of the input buffer respectively.
+additional digits have been cropped.
+
+The `2ND LEFT` and `2ND RIGHT` arrow keys will move the cursor to the beginning
+or end of the input buffer respectively, allowing rapid movement of the cursor
+over a long sequence of input characters.
 
 | **Keys**              | **Display**|
 | --------------------- | ---------- |
@@ -446,15 +457,18 @@ will move the cursor to the beginning or end of the input buffer respectively.
 **DEL**
 
 The `DEL` key acts like the *backspace* key on HP calculators (usually marked
-with a `LEFTARROW` symbol. This is different from the TI-OS where the `DEL` key
-removes the character under the cursor. In RPN83P, the cursor is *always* at the
-end of the input buffer, so `DEL` is programmed to delete the right-most digit.
+with a `LEFTARROW` symbol). This is different from the TI-OS where the `DEL` key
+removes the character directly under the cursor. On RPN83P, the input system is
+always in *insert* mode, in contrast to the TI-OS where the input system is in
+*overwrite* mode by default.
+
 If the `X` line is *not* in edit mode (i.e. the cursor is not shown), then the
 `DEL` key acts like the `CLEAR` key (see below).
 
 **CLEAR**
 
 The `CLEAR` key performs slightly different actions depending on the context:
+
 - If the `X` register is normally displayed, `CLEAR` goes into edit mode with an
   empty input buffer.
 - If the `X` register is already in edit mode, `CLEAR` clears input buffer.
@@ -476,35 +490,95 @@ TI-OS does not support `2ND CLEAR`, it returns the same code as `CLEAR`.)
 An empty string will be interpreted as a `0` if the `ENTER` key or a function
 key is pressed.
 
+**Decimal Point**
+
+The decimal point `.` button inserts a decimal point at the cursor location. But
+the system tries to be a bit smart about it using the following rules:
+
+- no decimal point is inserted into the mantissa if one has already been entered
+  to the left of the cursor
+- no decimal point is inserted in the exponent after the `E` character
+- no decimal point is inserted inside a Record object defined by curly braces
+  `{` and `}`
+
+**EE Enter Exponent**
+
+The `E` symbol for scientific notation numbers must be entered using the `2ND
+EE` key, because the comma `,` key is used for other purposes. However, it is
+possible to flip the behavior of the comma and the `2ND EE` buttons using a
+`MODE` setting. See [Comma-EE Button Mode](#comma-ee-button-mode) below.
+
+If the `2ND EE` button is pressed in the middle of a string, it will simply
+insert an `E` symbol. Similar to the decimal point, the system tries to be a
+little bit smart about the insertion:
+
+- no `E` is inserted if one has already been entered to the left of the cursor.
+  (This is different from the HP-48/49/50 series whose behavior I have not fully
+  figured out.)
+- no `E` is inserted inside a Record object defined by curly braces `{` and `}`
+
+**(-) Change Sign**
+
+Unlike most of the other input-related buttons, the `(-)` CHS button does not
+simply insert a negative sign `-` into the string. The behavior of the `(-)`is
+fairly complex: it inverts the sign of the number identified by the cursor by
+inserting or removing the negative `-` character at the appropriate position of
+the number.
+
+- if the RPN stack is *not* in edit mode, `(-)` toggles the sign of the value in
+  the `X` register
+- in input mode, the `(-)` inverts the sign of the number component currently
+  identified by the cursor:
+    - if on the mantissa, it inverts the sign of the mantissa
+    - if on the exponent, it inverts the sign of the exponent
+    - it performs the same actions on the second part of a complex number
+    - if on a component of a Record object, it inverts the sign of the component
+- if the cursor position contains no number, then a negative sign is inserted
+
 **Records**
 
-The comma `,` button is used for record types (see
-[USER_GUIDE_DATE.md](USER_GUIDE.md)) so the `E` symbol for scientific notation
-numbers must be entered using the `2ND EE` key. However, it is possible to flip
-the behavior of the comma and the `2ND EE` buttons using a `MODE` setting. See
-[Comma-EE Button Mode](#comma-ee-button-mode) below.
+The left-brace `{`, the right-brace `}`, and the comma `,` buttons are used for
+record types. They generally act to simply insert their respective characters
+into the input buffer, but a handful of reasonable rules have been implemented:
+
+- a comma cannot be added directly after another
+- a right-brace cannot be entered directly after another
+- a left-brace cannot be entered directly after another
+- a left-brace `{` must exist first, before a right-brace `}` can be inserted
+
+See [USER_GUIDE_DATE.md](USER_GUIDE_DATE.md) for more details.
+
+For illustrative purposes, here is a Record type with the cursor in the middle
+of the record:
+
+| **Keys**              | **Display**|
+| --------------------- | ---------- |
+| `DT{2024,5,21,`       | ![Input DateTime](images/input-cursor-dt-1.png) |
+| `LEFT` `LEFT` `LEFT`  | ![Input DateTime](images/input-cursor-dt-2.png) |
 
 **Complex Numbers**
 
-The entry and rendering of complex numbers are explained in more
-detail in the [Complex Numbers](#complex-numbers) section below:
+The `2ND i`, `2ND ANGLE`, and `2ND LINK` buttons are used for entering complex
+numbers. They are explained in more detail in
+[USER_GUIDE_COMPLEX.md](USER_GUIDE_COMPLEX.md).
 
 **HP-42S and HP-48/49/50 Compatibility**
 
 Emulating the input system of the HP-42S was surprisingly complex and subtle,
 and some features and idiosyncrasies of the HP-42S could not be carried over due
 to incompatibilities with the underlying TI-OS. But some features were
-deliberately implemented differently. For example, on the HP-42S, when the input
-buffer becomes empty after pressing the `<-` backspace button multiple times, or
-pressing the `CLEAR > CLX` menu button, the cursor disappears and the `X`
-register is shown as `0.0000`. But internally, the HP-42S is in a slightly
-different state than normal: the Stack Lift is disabled, and entering another
-number will replace the `0.0000` in the `X` register instead of lifting it up to
-the `Y` register. In RPN83P, when the `DEL` key or the `CLEAR` key is pressed,
-the `X` register always enters into Edit mode with an empty input buffer, and
-the cursor will *always* be shown with an empty string. The presence of the
-cursor indicates that the Edit Mode is in effect and that the Stack Lift is
-disabled.
+deliberately implemented differently.
+
+For example, on the HP-42S, when the input buffer becomes empty after pressing
+the `<-` backspace button multiple times, or pressing the `CLEAR > CLX` menu
+button, the cursor disappears and the `X` register is shown as `0.0000`. But
+internally, the HP-42S is in a slightly different state than normal: the Stack
+Lift is disabled, and entering another number will replace the `0.0000` in the
+`X` register instead of lifting it up to the `Y` register. In RPN83P, when the
+`DEL` key or the `CLEAR` key is pressed, the `X` register always enters into
+Edit mode with an empty input buffer, and the cursor will *always* be shown with
+an empty string. The presence of the cursor indicates that the Edit Mode is in
+effect and that the Stack Lift is disabled.
 
 I'm not sure that documenting all the corner cases would be useful in this
 document because it would probably be tedious to read. I hope that the input
