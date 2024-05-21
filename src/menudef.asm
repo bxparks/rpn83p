@@ -184,7 +184,7 @@ mDateId equ 16
     .dw mDateId ; id
     .dw mRootId ; parentId
     .dw mDateNameId ; nameId
-    .db 4 ; numRows
+    .db 3 ; numRows
     .dw mLeapYearId ; rowBeginId or altNameId
     .dw mGroupHandler ; handler (predefined)
     .dw 0 ; nameSelector
@@ -2293,14 +2293,14 @@ mHoursToTimeZoneId equ 243
     .dw 0 ; rowBeginId or altNameId
     .dw mHoursToTimeZoneHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
-mBlank244:
-mBlank244Id equ 244
-    .dw mBlank244Id ; id
+mDops:
+mDopsId equ 244
+    .dw mDopsId ; id
     .dw mDateId ; parentId
-    .dw mNullNameId ; nameId
-    .db 0 ; numRows
-    .dw 0 ; rowBeginId or altNameId
-    .dw mNullHandler ; handler (predefined)
+    .dw mDopsNameId ; nameId
+    .db 1 ; numRows
+    .dw mDateShrinkId ; rowBeginId or altNameId
+    .dw mGroupHandler ; handler (predefined)
     .dw 0 ; nameSelector
 mEpoch:
 mEpochId equ 245
@@ -2320,11 +2320,12 @@ mClkId equ 246
     .dw mGetNowId ; rowBeginId or altNameId
     .dw mGroupHandler ; handler (predefined)
     .dw 0 ; nameSelector
-; MenuGroup DATE: children: row 3
+; MenuGroup DOPS: children
+; MenuGroup DOPS: children: row 0
 mDateShrink:
 mDateShrinkId equ 247
     .dw mDateShrinkId ; id
-    .dw mDateId ; parentId
+    .dw mDopsId ; parentId
     .dw mDateShrinkNameId ; nameId
     .db 0 ; numRows
     .dw 0 ; rowBeginId or altNameId
@@ -2333,7 +2334,7 @@ mDateShrinkId equ 247
 mDateExtend:
 mDateExtendId equ 248
     .dw mDateExtendId ; id
-    .dw mDateId ; parentId
+    .dw mDopsId ; parentId
     .dw mDateExtendNameId ; nameId
     .db 0 ; numRows
     .dw 0 ; rowBeginId or altNameId
@@ -2342,7 +2343,7 @@ mDateExtendId equ 248
 mDateCut:
 mDateCutId equ 249
     .dw mDateCutId ; id
-    .dw mDateId ; parentId
+    .dw mDopsId ; parentId
     .dw mDateCutNameId ; nameId
     .db 0 ; numRows
     .dw 0 ; rowBeginId or altNameId
@@ -2351,7 +2352,7 @@ mDateCutId equ 249
 mDateLink:
 mDateLinkId equ 250
     .dw mDateLinkId ; id
-    .dw mDateId ; parentId
+    .dw mDopsId ; parentId
     .dw mDateLinkNameId ; nameId
     .db 0 ; numRows
     .dw 0 ; rowBeginId or altNameId
@@ -2360,7 +2361,7 @@ mDateLinkId equ 250
 mBlank251:
 mBlank251Id equ 251
     .dw mBlank251Id ; id
-    .dw mDateId ; parentId
+    .dw mDopsId ; parentId
     .dw mNullNameId ; nameId
     .db 0 ; numRows
     .dw 0 ; rowBeginId or altNameId
@@ -2554,7 +2555,7 @@ mSetClockId equ 271
     .dw 0 ; nameSelector
 
 ; Table of 2-byte pointers to names in the pool of strings below.
-mMenuNameTableSize equ 276
+mMenuNameTableSize equ 277
 mMenuNameTable:
 mNullNameId equ 0
     .dw mNullName
@@ -3048,65 +3049,67 @@ mTimeZoneToHoursNameId equ 244
     .dw mTimeZoneToHoursName
 mHoursToTimeZoneNameId equ 245
     .dw mHoursToTimeZoneName
-mEpochNameId equ 246
+mDopsNameId equ 246
+    .dw mDopsName
+mEpochNameId equ 247
     .dw mEpochName
-mClkNameId equ 247
+mClkNameId equ 248
     .dw mClkName
-mDateShrinkNameId equ 248
+mDateShrinkNameId equ 249
     .dw mDateShrinkName
-mDateExtendNameId equ 249
+mDateExtendNameId equ 250
     .dw mDateExtendName
-mDateCutNameId equ 250
+mDateCutNameId equ 251
     .dw mDateCutName
-mDateLinkNameId equ 251
+mDateLinkNameId equ 252
     .dw mDateLinkName
-mEpochUnixNameId equ 252
+mEpochUnixNameId equ 253
     .dw mEpochUnixName
-mEpochUnixAltNameId equ 253
+mEpochUnixAltNameId equ 254
     .dw mEpochUnixAltName
-mEpochNtpNameId equ 254
+mEpochNtpNameId equ 255
     .dw mEpochNtpName
-mEpochNtpAltNameId equ 255
+mEpochNtpAltNameId equ 256
     .dw mEpochNtpAltName
-mEpochGpsNameId equ 256
+mEpochGpsNameId equ 257
     .dw mEpochGpsName
-mEpochGpsAltNameId equ 257
+mEpochGpsAltNameId equ 258
     .dw mEpochGpsAltName
-mEpochTiosNameId equ 258
+mEpochTiosNameId equ 259
     .dw mEpochTiosName
-mEpochTiosAltNameId equ 259
+mEpochTiosAltNameId equ 260
     .dw mEpochTiosAltName
-mEpochY2kNameId equ 260
+mEpochY2kNameId equ 261
     .dw mEpochY2kName
-mEpochY2kAltNameId equ 261
+mEpochY2kAltNameId equ 262
     .dw mEpochY2kAltName
-mEpochCustomNameId equ 262
+mEpochCustomNameId equ 263
     .dw mEpochCustomName
-mEpochCustomAltNameId equ 263
+mEpochCustomAltNameId equ 264
     .dw mEpochCustomAltName
-mEpochSetCustomNameId equ 264
+mEpochSetCustomNameId equ 265
     .dw mEpochSetCustomName
-mEpochGetCustomNameId equ 265
+mEpochGetCustomNameId equ 266
     .dw mEpochGetCustomName
-mGetNowNameId equ 266
+mGetNowNameId equ 267
     .dw mGetNowName
-mGetNowDateNameId equ 267
+mGetNowDateNameId equ 268
     .dw mGetNowDateName
-mGetNowTimeNameId equ 268
+mGetNowTimeNameId equ 269
     .dw mGetNowTimeName
-mGetNowAppDateTimeNameId equ 269
+mGetNowAppDateTimeNameId equ 270
     .dw mGetNowAppDateTimeName
-mGetNowUTCDateTimeNameId equ 270
+mGetNowUTCDateTimeNameId equ 271
     .dw mGetNowUTCDateTimeName
-mSetTimeZoneNameId equ 271
+mSetTimeZoneNameId equ 272
     .dw mSetTimeZoneName
-mGetTimeZoneNameId equ 272
+mGetTimeZoneNameId equ 273
     .dw mGetTimeZoneName
-mSetClockTimeZoneNameId equ 273
+mSetClockTimeZoneNameId equ 274
     .dw mSetClockTimeZoneName
-mGetClockTimeZoneNameId equ 274
+mGetClockTimeZoneNameId equ 275
     .dw mGetClockTimeZoneName
-mSetClockNameId equ 275
+mSetClockNameId equ 276
     .dw mSetClockName
 
 ; Table of names as NUL terminated C strings.
@@ -3602,6 +3605,8 @@ mTimeZoneToHoursName:
     .db 'T', 'Z', Sconvert, 'H', 0
 mHoursToTimeZoneName:
     .db 'H', Sconvert, 'T', 'Z', 0
+mDopsName:
+    .db "DOPS", 0
 mEpochName:
     .db "EPCH", 0
 mClkName:
