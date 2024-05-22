@@ -147,7 +147,7 @@ Guide](docs/USER_GUIDE.md), but here is the quick version:
     - Windows or MacOS: [TI Connect](https://education.ti.com/en/products/computer-software/ti-connect-sw)
     - Linux: [tilp](https://github.com/debrouxl/tilp_and_gfm) (`$ apt install
       tilp2`)
-- Run the program using the `APPS`:
+- Run the program using the `APPS` button:
     - Press `APPS`
     - Scroll down to the `RPN83P` entry
     - Press `ENTER`
