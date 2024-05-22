@@ -715,41 +715,31 @@ saveFormatDigitsContinue:
 ; Description: Select menu name.
 ; Output: CF=0 for normal, CF=1 or alternate
 mFixNameSelector:
-    bit fmtExponent, (iy + fmtFlags)
-    jr z, mFixNameSelectorAlt
     or a ; CF=0
-    ret
-mFixNameSelectorAlt:
+    bit fmtExponent, (iy + fmtFlags)
+    ret nz
     scf
     ret
 
 ; Description: Select menu name.
 ; Output: CF=0 for normal, CF=1 or alternate
 mSciNameSelector:
-    bit fmtExponent, (iy + fmtFlags)
-    jr z, mSciNameSelectorNormal
-mSciNameSelectorMaybeOn:
-    bit fmtEng, (iy + fmtFlags)
-    jr z, mSciNameSelectorAlt
-mSciNameSelectorNormal:
     or a ; CF=0
-    ret
-mSciNameSelectorAlt:
+    bit fmtExponent, (iy + fmtFlags)
+    ret z
+    bit fmtEng, (iy + fmtFlags)
+    ret nz
     scf
     ret
 
 ; Description: Select menu name.
 ; Output: CF=0 for normal, CF=1 or alternate
 mEngNameSelector:
+    or a ; CF=0
     bit fmtExponent, (iy + fmtFlags)
-    jr z, mEngNameSelectorNormal
-mEngNameSelectorMaybeOn:
+    ret z
     bit fmtEng, (iy + fmtFlags)
     ret z
-mEngNameSelectorNormal:
-    or a ; CF=0
-    ret
-mEngNameSelectorAlt:
     scf
     ret
 
@@ -770,22 +760,18 @@ mDegHandler:
 ; Description: Select menu name.
 ; Output: CF=0 for normal, CF=1 or alternate
 mRadNameSelector:
-    bit trigDeg, (iy + trigFlags)
-    jr z, mEngNameSelectorAlt
     or a ; CF=0
-    ret
-mRadNameSelectorAlt:
+    bit trigDeg, (iy + trigFlags)
+    ret nz
     scf
     ret
 
 ; Description: Select menu name.
 ; Output: CF=0 for normal, CF=1 or alternate
 mDegNameSelector:
-    bit trigDeg, (iy + trigFlags)
-    jr nz, mDegNameSelectorAlt
     or a ; CF=0
-    ret
-mDegNameSelectorAlt:
+    bit trigDeg, (iy + trigFlags)
+    ret z
     scf
     ret
 
