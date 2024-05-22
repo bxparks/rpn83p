@@ -1368,10 +1368,9 @@ Here are the numbers rendered in `FIX` mode:
 
 | **Keys**              | **Display** |
 | ----------------      | --------------------- |
-| `MODE` `FIX`          | ![](images/display-mode-fix-1.png) |
-| `4`                   | ![](images/display-mode-fix-2.png) |
-| `ENTER`               | ![](images/display-mode-fix-3.png) |
-| `FIX` `99`            | ![](images/display-mode-fix-4.png) |
+| `MODE` `FIX` `4`      | ![](images/display-mode-fix-1.png) |
+| `ENTER`               | ![](images/display-mode-fix-2.png) |
+| `FIX` `99`            | ![](images/display-mode-fix-3.png) |
 
 Setting `FIX 99` goes back to the default floating number of fractional digits
 (i.e. the equivalent of `FLOAT` option in the TI-OS `MODE` menu). Any number
@@ -1383,10 +1382,9 @@ Here are the numbers rendered in `SCI` mode:
 
 | **Keys**              | **Display** |
 | ----------------      | --------------------- |
-| `MODE` `SCI`          | ![](images/display-mode-sci-1.png) |
-| `4`                   | ![](images/display-mode-sci-2.png) |
-| `ENTER`               | ![](images/display-mode-sci-3.png) |
-| `SCI` `99`            | ![](images/display-mode-sci-4.png) |
+| `MODE` `SCI` `4`      | ![](images/display-mode-sci-1.png) |
+| `ENTER`               | ![](images/display-mode-sci-2.png) |
+| `SCI` `99`            | ![](images/display-mode-sci-3.png) |
 
 Setting `99` as the number of digits in `SCI` mode makes the number of digits
 after the decimal point to be dynamic (i.e. the equivalent of `FLOAT` option in
@@ -1398,10 +1396,9 @@ Here are the numbers rendered in `ENG` mode:
 
 | **Keys**              | **Display** |
 | ----------------      | --------------------- |
-| `MODE` `ENG`          | ![](images/display-mode-eng-1.png) |
-| `4`                   | ![](images/display-mode-eng-2.png) |
-| `ENTER`               | ![](images/display-mode-eng-3.png) |
-| `ENG` `99`            | ![](images/display-mode-eng-4.png) |
+| `MODE` `ENG` `4`      | ![](images/display-mode-eng-1.png) |
+| `ENTER`               | ![](images/display-mode-eng-2.png) |
+| `ENG` `99`            | ![](images/display-mode-eng-3.png) |
 
 Setting `99` as the number of digits in `ENG` mode makes the number of digits
 after the decimal point to be dynamic (i.e. the equivalent of `FLOAT` option in
