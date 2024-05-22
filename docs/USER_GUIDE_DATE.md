@@ -310,7 +310,7 @@ subsections below.
 Here is a screenshot of the calculator with various buttons that are assigned to
 `DATE` related functions:
 
-![DATE buttons](images/fullshot-date-buttons.jpg)
+![DATE buttons](images/fullshot-date-buttons.png)
 
 These buttons do *not* require the menu system to be in the `DATE` menu
 hierarchy to be active. For example, the arithmetic buttons `+`, `-`, and `*`

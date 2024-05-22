@@ -391,7 +391,7 @@ consult about some edge cases.
 
 The following buttons are used to enter and edit a number in the input buffer:
 
-![Input and Edit Buttons](images/fullshot-inputedit-buttons.jpg)
+![Input and Edit Buttons](images/fullshot-inputedit-buttons.png)
 
 - digit entry
     - `0`-`9`: inserts the digit
@@ -637,7 +637,7 @@ shown.)
 
 These are the buttons which manipulate the RPN stack:
 
-![Input and Edit Buttons](images/fullshot-rpn-buttons.jpg)
+![Input and Edit Buttons](images/fullshot-rpn-buttons.png)
 
 - `(`: rolls RPN stack down (known as `R(downarrow)` on HP calculators)
 - `)`: exchanges `X` and `Y` registers
@@ -722,7 +722,7 @@ There are 4 components:
 The LCD screen always shows a `MenuRow` of 5 `MenuItems`. Here are the buttons
 which are used to navigate the menu hierarchy:
 
-![Menu Buttons](images/fullshot-menu-buttons.jpg)
+![Menu Buttons](images/fullshot-menu-buttons.png)
 
 - `F1`- `F5`: invokes the function shown by the respective menu
 - `UP_ARROW`: goes to previous `MenuRow` of 5 `MenuItems`, within the current
