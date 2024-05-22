@@ -1360,6 +1360,10 @@ Suppose the RPN stack has the following numbers:
 
 ![RPN83P Display Modes](images/display-mode-start.png)
 
+Let's see how these numbers are displayed in the various floating point modes.
+
+**FIX Mode**
+
 Here are the numbers rendered in `FIX` mode:
 
 | **Keys**              | **Display** |
@@ -1373,6 +1377,8 @@ Setting `FIX 99` goes back to the default floating number of fractional digits
 (i.e. the equivalent of `FLOAT` option in the TI-OS `MODE` menu). Any number
 greater than `9` would work (e.g. `11`) but I usually use `99`.
 
+**SCI Mode**
+
 Here are the numbers rendered in `SCI` mode:
 
 | **Keys**              | **Display** |
@@ -1385,6 +1391,8 @@ Here are the numbers rendered in `SCI` mode:
 Setting `99` as the number of digits in `SCI` mode makes the number of digits
 after the decimal point to be dynamic (i.e. the equivalent of `FLOAT` option in
 the TI-OS `MODE` menu), but retains the `SCI` notation.
+
+**ENG Mode**
 
 Here are the numbers rendered in `ENG` mode:
 
