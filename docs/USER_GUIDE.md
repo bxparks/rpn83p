@@ -1348,10 +1348,10 @@ base number (`DEC`, `HEX`, `OCT`, `BIN`). As shown in [Base Input Digit
 Limit](#base-input-digit-limit), the input system will accept as many as 32
 digits for a `BIN` binary number.
 
-When the input system detects a [complex number in inlined entry
-mode](#complex-number-entry), through the presence of a `2ND i` or `2ND ANGLE`
-delimiter, the maximum number of characters is increased to 41 to allow 2
-floating point numbers to be entered with full precision.
+When the input system detects a complex number in inlined entry mode, through
+the presence of a `2ND i` or `2ND ANGLE` delimiter, the maximum number of
+characters is increased to 41 to allow 2 floating point numbers to be entered
+with full precision.
 
 ### Floating Point Display Modes
 
