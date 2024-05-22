@@ -54,7 +54,6 @@ rpn83p.8xk
 
 ORIG_IMAGES := \
 $(wildcard ../docs/images/*.png) \
-$(wildcard ../docs/images/*.jpg) \
 $(wildcard ../docs/images/*.gif) \
 $(wildcard ../docs/images/date/*.png)
 
@@ -141,11 +140,6 @@ TVM.pdf: ../docs/TVM.md Makefile
 ../docs/resized/%.gif: ../docs/images/%.gif
 	@mkdir -p ../docs/resized
 	cp -f $< $@
-
-# Resize the JPG files under images/ to 75% before embedding into PDF.
-../docs/resized/%.jpg: ../docs/images/%.jpg
-	@mkdir -p ../docs/resized
-	$(MAGICK) $< -adaptive-resize 75% $@
 
 # Copy the CHANGELOG.md as is, without conversion to PDF. It's just a text
 # file without any embedded images.
