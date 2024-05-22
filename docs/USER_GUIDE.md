@@ -414,6 +414,7 @@ The following buttons are used to enter and edit a number in the input buffer:
 - complex numbers
     - `2ND LINK`: converts `X` and `Y` into a complex number in `X`, or the
       reverse
+        - labeled `COMPLEX` on the HP-42S
     - `2ND i`:
         - inserts an `i` character to form a complex number in rectangular form,
           or
