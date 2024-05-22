@@ -606,6 +606,24 @@ Edit mode with an empty input buffer, and the cursor will *always* be shown with
 an empty string. The presence of the cursor indicates that the Edit Mode is in
 effect and that the Stack Lift is disabled.
 
+**Limitations**
+
+There are many ways that the RPN83P input system could be improved. Many of them
+arise from a design decision that I made to save some time and effort: the
+cursor only looks at its *past* (the characters to the left of the cursor) not
+its future (the characters to the right of the cursor). For example, when the
+decimal point `.` button is pressed, the input system does not allow a second
+decimal point to be insert into a single number component because that would
+result in an invalid syntax for the number. However, if the LEFT arrow key is
+used to move the cursor to the left of the first decimal point, then the input
+system will allow a second (and invalid) decimal point to be inserted into the
+number.
+
+It may be possible for update the input system to look to the right of the
+cursor when applying various rules about valid versus invalid characters. But
+without actually implementing the code, it is hard to estimate how much time and
+effort it would take to make those improvements.
+
 ### RPN Stack
 
 The RPN83P tries to implement the traditional 4-level stack used by many HP
