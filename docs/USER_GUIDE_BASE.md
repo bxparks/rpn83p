@@ -82,12 +82,14 @@ the values given above, the display now looks like this:
 
 ![Numbers in DEC Mode](images/base/mode-dec.png)
 
-If the value on the RPN stack is negative, a single `-` sign is shown.
-If the value is greater than or equal to `2^WSIZ`, then 3 dots `...` are shown
-to indicate that the number is too large.
-If the floating point value is within the range of `[0, 2^WSIZ)` but has
-non-zero fractional value, a decimal point is shown after the integer part of
-the unsigned integer.
+The rendering of a DEC number has the following properties:
+
+- If the value on the RPN stack is negative, a single `-` sign is shown.
+- If the value is greater than the maximum allowed by the current BASE word size
+  `WSIZ`, then 3 dots `...` are shown to indicate that the number is too large.
+- If the floating point value is within the range of the current word size
+  `WSIZ`, but has non-zero fractional value, a decimal point is shown after the
+  integer part of the unsigned integer.
 
 ### HEX hexadecimal
 
@@ -97,12 +99,17 @@ converted to an unsigned integer.
 
 ![Numbers in HEX Mode](images/base/mode-hex.png)
 
-If the value on the RPN stack is negative, a single `-` sign is shown.
-If the value is greater than or equal to `2^WSIZ`, then 3 dots `...` are shown
-to indicate that the number is too large.
-If the floating point value is within the range of `[0, 2^WSIZ)` but has
-non-zero fractional value, a decimal point is shown after the integer part of
-the unsigned integer.
+The rendering of a HEX number has the following properties:
+
+- The digits are grouped in two's for readability. Each group of 2 digits is 8
+  bits long.
+- If the value on the RPN stack is negative, a single `-` sign is shown.
+- If the underlying value is greater than the maximum allowed by the current
+  BASE word size `WSIZ` then 3 dots `...` are shown to indicate that the number
+  is too large.
+- If the floating point value is within the range of the current word size
+  `WSIZ`, but has non-zero fractional value, a decimal point is shown after the
+  integer part of the unsigned integer.
 
 On the keyboard, the hexadecimal digits `A` through `F` are entered using
 `ALPHA` `A`, through `ALPHA` `F`. You can lock the `ALPHA` mode using `2ND`
@@ -118,12 +125,17 @@ unsigned integer.
 
 ![Numbers in OCT Mode](images/base/mode-oct.png)
 
-If the value on the RPN stack is negative, a single `-` sign is shown.
-If the value is greater than or equal to `2^WSIZ`, then 3 dots `...` are shown
-to indicate that the number is too large.
-If the floating point value is within the range of `[0, 2^WSIZ)` but has
-non-zero fractional value, a decimal point is shown after the integer part of
-the unsigned integer.
+The rendering of an OCT number has the following properties:
+
+- The digits are grouped in three's for readability. Each group of 3 digits is 9
+  bits long.
+- If the value on the stack is negative, a single `-` sign is shown.
+- If the value on the stack is greater than the maximum allowed by the current
+  BASE word size `WSIZ`, then 3 dots `...` are shown to indicate that the number
+  is too large.
+- If the floating point value is within the range of the current word size
+  `WSIZ`, but has non-zero fractional value, a decimal point is shown after the
+  integer part of the unsigned integer.
 
 On the keyboard, the button digits `0` through `7` are entered normally. The
 button digits `8` and `9` are disabled in octal mode.
@@ -136,18 +148,19 @@ unsigned integer.
 
 ![Numbers in BIN Mode](images/base/mode-bin.png)
 
-If the value on the RPN stack is negative, a single `-` sign is shown.
-If the value is greater than or equal to `2^WSIZ`, then 3 dots `...` are shown
-to indicate that the number is too large.
-If the floating point value is within the range of `[0, 2^WSIZ)` but has
-non-zero fractional value, a decimal point is shown after the integer part of
-the unsigned integer.
+The rendering of a BIN number has the following properties:
 
-Binary numbers are displayed in groups of 4 digits to help readability. That
-means that maximum number of digits that can be displayed is 12 digits. If
-`WSIZ` is 16, 24 or 32, then a number may have non-zero digits which are cutoff
-after the 12 digits. When that happens, a small ellipsis character will be shown
-on the left most digit to indicate truncation, as shown above.
+- The digits are grouped in four's for readability. Each group of 4 digits is 4
+  bits long.
+- If the value on the stack is negative, a single `-` sign is shown.
+- If the value is greater than the maximum allowed by the current BASE word size
+  `WSIZ`, then 3 dots `...` are shown to indicate that the number is too large.
+- If the floating point value is within the range of the current word size
+  `WSIZ`, but has non-zero fractional value, a decimal point is shown after the
+  integer part of the unsigned integer.
+- If `WSIZ` is 24 or 32, then a number may have non-zero digits which are
+  truncated after 16 digits. A small left arrow character will be shown on the
+  left most digit to indicate truncation.
 
 The `SHOW` function (bound to `2ND ENTRY` on the TI calculators) can be used to
 reveal all digits of the binary number, in groups of 4, using as many 4 lines of
