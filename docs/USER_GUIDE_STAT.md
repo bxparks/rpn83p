@@ -118,8 +118,8 @@ Since the STAT registers on RPN83P do not use the normal storage registers, the
 on the RPN83P.
 
 The `CLΣ` menu item clears the STAT registers. On the HP-42S, this command
-clears registers R11 to R16 in when `LINΣ` is select, and clears the entire R11
-to R23 when `ALLΣ` is selected. On RPN83P, the `CLΣ` command clears the
+clears registers R11 to R16 in when `LINΣ` is selected, and clears the entire
+R11 to R23 when `ALLΣ` is selected. On RPN83P, the `CLΣ` command clears the
 equivalent sets of STAT registers with the difference that the regular storage
 registers R11 to R23 are completely unaffected.
 
@@ -233,15 +233,16 @@ fit the parameters are:
 
 - `m` = `SLOP` = 0.0489070475
 - `b` = `YINT` = 13.64510925
-- `r` = .2963586116 (correlation coefficient)
+- `r` = `CORR` = .2963586116 (correlation coefficient, identical to the value
+  returned by `BEST`)
 
 With `r` being only about `0.3`, this is still a weak correlation, but better
 than the linear model.
 
-**HP-42S Compatibility Note**: Unlike the HP-42S, `BEST` command on the RPN83P
-returns the `CORR` value of the best curve fit model. It seemed like a useful
-bit of information to see, and it provides visual feedback that the `BEST`
-function has finished.
+**HP-42S Compatibility Note**: Unlike the HP-42S, the `BEST` command on the
+RPN83P returns the `CORR` value of the best curve fitting model. This seemed
+like a useful bit of information to show to the user, and it provides visual
+feedback that the `BEST` function has finished.
 
 We can perform forecasting with the `Y>X` and `X>Y` menus. Let's try to predict
 the maximum rainfall when the minimum rainfall is 1.5. Then let's go in the
