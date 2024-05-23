@@ -20,7 +20,7 @@ RPN calculator app for the TI-83 Plus and TI-84 Plus inspired by the HP-42S.
     - [Supported Hardware](#supported-hardware)
 - [Basic Usage](#basic-usage)
     - [Screen Areas](#screen-areas)
-    - [Input and Editing](#input-and-editing)
+    - [Input System](#input-system)
     - [RPN Stack](#rpn-stack)
     - [Menu System](#menu-system)
         - [Menu Hierarchy](#menu-hierarchy)
@@ -374,7 +374,7 @@ The X register line is also used as the input line when entering new numbers. It
 is also used to prompt for command line argument, for example `FIX _ _` to set
 the fixed display mode.
 
-### Input and Editing
+### Input System
 
 The input system of RPN83P initially behaved like the HP-42S, using an
 underscore cursor that always remained at the end of the input string. With the
