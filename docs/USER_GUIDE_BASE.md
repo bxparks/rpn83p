@@ -67,7 +67,7 @@ they are intended to be treated as unsigned integers.
 Let's start with the RPN stack containing the following numbers: -1, 17.1, 9E9,
 and 1234567, like this:
 
-![Numbers in Normal Mode](images/base/normal.png)
+![Numbers in Normal Mode](images/base/mode-normal.png)
 
 **DEC** (decimal)
 
@@ -76,7 +76,7 @@ numbers on the RPN stack are displayed as an integer, *as if* they were
 converted to an unsigned integer, but the RPN stack values are not modified. For
 the values given above, the display now looks like this:
 
-![Numbers in DEC Mode](images/base/dec.png)
+![Numbers in DEC Mode](images/base/mode-dec.png)
 
 If the value on the RPN stack is negative, a single `-` sign is shown.
 If the value is greater than or equal to `2^WSIZ`, then 3 dots `...` are shown
@@ -91,7 +91,7 @@ The `HEX` (hexadecimal) mode displays all numbers on the RPN stack using base
 16. Only the integer part is rendered as if the RPN stack values were
 converted to an unsigned integer.
 
-![Numbers in HEX Mode](images/base/hex.png)
+![Numbers in HEX Mode](images/base/mode-hex.png)
 
 If the value on the RPN stack is negative, a single `-` sign is shown.
 If the value is greater than or equal to `2^WSIZ`, then 3 dots `...` are shown
@@ -112,7 +112,7 @@ The `OCT` (octal) mode displays all numbers on the RPN stack using base 8. Only
 the integer part is rendered as if the RPN stack values were converted to an
 unsigned integer.
 
-![Numbers in OCT Mode](images/base/oct.png)
+![Numbers in OCT Mode](images/base/mode-oct.png)
 
 If the value on the RPN stack is negative, a single `-` sign is shown.
 If the value is greater than or equal to `2^WSIZ`, then 3 dots `...` are shown
@@ -130,7 +130,7 @@ The `BIN` (binary) mode displays all numbers on the RPN stack using base 2. Only
 the integer part is rendered as if the RPN stack values were converted to an
 unsigned integer.
 
-![Numbers in BIN Mode](images/base/bin.png)
+![Numbers in BIN Mode](images/base/mode-bin.png)
 
 If the value on the RPN stack is negative, a single `-` sign is shown.
 If the value is greater than or equal to `2^WSIZ`, then 3 dots `...` are shown
@@ -149,7 +149,7 @@ The `SHOW` function (bound to `2ND ENTRY` on the TI calculators) can be used to
 reveal all digits of the binary number, in groups of 4, using as many 4 lines of
 text like this:
 
-![Numbers in BIN Mode with SHOW](images/base/bin-show.png)
+![Numbers in BIN Mode with SHOW](images/base/mode-bin-show.png)
 
 We can now see that the number `1234567` in Base 2 is `0000 0000 0001 0010 1101
 0110 1000 0111`.
