@@ -41,8 +41,8 @@ digits for each component of a complex number.
 Here is what the screen looks like with just Large Font (left), and a mix of
 Small and Large Fonts (right):
 
-![RPN83P Complex Font 1](images/complex-font-1.png)
-![RPN83P Complex Font 2](images/complex-font-2.png)
+![RPN83P Complex Font 1](images/complex/font-1.png)
+![RPN83P Complex Font 2](images/complex/font-2.png)
 
 Readability suffers a bit using the small font, but it seems reasonable.
 
@@ -74,11 +74,11 @@ For example, the number `1-2i` would be entered like this:
 
 | **Keys**          | **Display** |
 | ----------------  | --------------------- |
-| `1`               | ![](images/complex-linking-1.png) |
-| `ENTER`           | ![](images/complex-linking-2.png) |
-| `2`               | ![](images/complex-linking-3.png) |
-| `(-)`             | ![](images/complex-linking-4.png) |
-| `2ND LINK`        | ![](images/complex-linking-5.png) |
+| `1`               | ![](images/complex/linking-1.png) |
+| `ENTER`           | ![](images/complex/linking-2.png) |
+| `2`               | ![](images/complex/linking-3.png) |
+| `(-)`             | ![](images/complex/linking-4.png) |
+| `2ND LINK`        | ![](images/complex/linking-5.png) |
 
 Notice that the RPN83P follows the convention used by the HP-35s in rendering
 the complex number with an imaginary `i` delimiter between the two components.
@@ -91,8 +91,8 @@ into `Y` and the imaginary part going into `X`.
 
 | **Keys**          | **Display** |
 | ----------------  | --------------------- |
-| (from above)      | ![](images/complex-linking-5.png) |
-| `2ND LINK`        | ![](images/complex-linking-6.png) |
+| (from above)      | ![](images/complex/linking-5.png) |
+| `2ND LINK`        | ![](images/complex/linking-6.png) |
 
 **Inlining (2ND i, 2ND ANGLE)**
 
@@ -105,20 +105,20 @@ To enter `1-2i` in rectangular mode, we would type:
 
 | **Keys**          | **Display** |
 | ----------------  | --------------------- |
-| `1`               | ![](images/complex-inlining-rect-1.png) |
-| `2ND i`           | ![](images/complex-inlining-rect-2.png) |
-| `2`               | ![](images/complex-inlining-rect-3.png) |
-| `(-)`             | ![](images/complex-inlining-rect-4.png) |
-| `ENTER`           | ![](images/complex-inlining-rect-5.png) |
+| `1`               | ![](images/complex/inlining-rect-1.png) |
+| `2ND i`           | ![](images/complex/inlining-rect-2.png) |
+| `2`               | ![](images/complex/inlining-rect-3.png) |
+| `(-)`             | ![](images/complex/inlining-rect-4.png) |
+| `ENTER`           | ![](images/complex/inlining-rect-5.png) |
 
 To enter `2 e^(i 60deg)` in polar-degree mode, we would type:
 
 | **Keys**          | **Display** |
 | ----------------  | --------------------- |
-| `2`               | ![](images/complex-inlining-pdeg-1.png) |
-| `2ND ANGLE`       | ![](images/complex-inlining-pdeg-2.png) |
-| `60`              | ![](images/complex-inlining-pdeg-3.png) |
-| `ENTER`           | ![](images/complex-inlining-pdeg-4.png) |
+| `2`               | ![](images/complex/inlining-pdeg-1.png) |
+| `2ND ANGLE`       | ![](images/complex/inlining-pdeg-2.png) |
+| `60`              | ![](images/complex/inlining-pdeg-3.png) |
+| `ENTER`           | ![](images/complex/inlining-pdeg-4.png) |
 
 Notice that the complex number separator is the combination of an Angle symbol
 and a Degree symbol, which indicates that the input is expecting the angle to be
@@ -135,10 +135,10 @@ twice. For example, to enter `2 Angle 1.047`, use the following keystrokes:
 
 | **Keys**                  | **Display** |
 | ----------------          | --------------------- |
-| `2`                       | ![](images/complex-inlining-prad-1.png) |
-| `2ND ANGLE` `2ND ANGLE`   | ![](images/complex-inlining-prad-2.png) |
-| `1.047`                   | ![](images/complex-inlining-prad-3.png) |
-| `ENTER`                   | ![](images/complex-inlining-prad-4.png) |
+| `2`                       | ![](images/complex/inlining-prad-1.png) |
+| `2ND ANGLE` `2ND ANGLE`   | ![](images/complex/inlining-prad-2.png) |
+| `1.047`                   | ![](images/complex/inlining-prad-3.png) |
+| `ENTER`                   | ![](images/complex/inlining-prad-4.png) |
 
 The polar-degree mode was chosen to be the default, and the polar-radian mode
 available with an extra keystroke, because it seemed like the degree mode would
@@ -159,8 +159,8 @@ This makes it easier to enter the pure imaginary number `i`.
 
 | **Keys**      | **Display** |
 | --------------| --------------------- |
-| `2ND i`       | ![](images/complex-solitary-i-1.png) |
-| `ENTER`       | ![](images/complex-solitary-i-2.png) |
+| `2ND i`       | ![](images/complex/solitary-i-1.png) |
+| `ENTER`       | ![](images/complex/solitary-i-2.png) |
 
 This special rule is triggered only by a solitary `2ND i`. If there is any digit
 before or after the `2ND i`, regular parsing rules are used. For example, `1 2ND
@@ -194,9 +194,9 @@ button shortcut on keyboard:
 Pressing the `RECT`, `PRAD`, and `PDEG` menu buttons will change the display
 into the following:
 
-![RPN83P Complex Mode RECT](images/complex-mode-rect.png)
-![RPN83P Complex Mode PRAD](images/complex-mode-prad.png)
-![RPN83P Complex Mode PDEG](images/complex-mode-pdeg.png)
+![RPN83P Complex Mode RECT](images/complex/mode-rect.png)
+![RPN83P Complex Mode PRAD](images/complex/mode-prad.png)
+![RPN83P Complex Mode PDEG](images/complex/mode-pdeg.png)
 
 Note that unlike most calculators with complex number support, the trigonometric
 modes (`DEG`, `RAD`) do *not* affect the rendering of complex numbers. The
@@ -222,12 +222,12 @@ For example, let's set the display mode to `PDEG`, and enter the following:
 
 | **Keys**              | **Display** |
 | ----------------      | --------------------- |
-| `MODE` `DOWN` `PDEG`  | ![](images/complex-linking-pdeg-1.png) |
-| `ON/EXIT`             | ![](images/complex-linking-pdeg-2.png) |
-| `1`                   | ![](images/complex-linking-pdeg-3.png) |
-| `ENTER`               | ![](images/complex-linking-pdeg-4.png) |
-| `60`                  | ![](images/complex-linking-pdeg-5.png) |
-| `2ND LINK`            | ![](images/complex-linking-pdeg-6.png) |
+| `MODE` `DOWN` `PDEG`  | ![](images/complex/linking-pdeg-1.png) |
+| `ON/EXIT`             | ![](images/complex/linking-pdeg-2.png) |
+| `1`                   | ![](images/complex/linking-pdeg-3.png) |
+| `ENTER`               | ![](images/complex/linking-pdeg-4.png) |
+| `60`                  | ![](images/complex/linking-pdeg-5.png) |
+| `2ND LINK`            | ![](images/complex/linking-pdeg-6.png) |
 
 The *unlinking* process is also affected by the complex display mode. Let's
 change the display mode to `RECT`, then hit `2ND LINK` to perform the unlinking.
@@ -235,10 +235,10 @@ The display before and after the `2ND LINK` looks like this:
 
 | **Keys**              | **Display** |
 | ----------------      | --------------------- |
-| (from above)          | ![](images/complex-linking-pdeg-6.png) |
-| `MODE` `DOWN` `RECT`  | ![](images/complex-unlinking-rect-1.png) |
-| `ON/EXIT`             | ![](images/complex-unlinking-rect-2.png) |
-| `2ND LINK`            | ![](images/complex-unlinking-rect-3.png) |
+| (from above)          | ![](images/complex/linking-pdeg-6.png) |
+| `MODE` `DOWN` `RECT`  | ![](images/complex/unlinking-rect-1.png) |
+| `ON/EXIT`             | ![](images/complex/unlinking-rect-2.png) |
+| `2ND LINK`            | ![](images/complex/unlinking-rect-3.png) |
 
 ## Complex Polar Mode Overflow
 
@@ -254,14 +254,14 @@ The number `1.2728e100` would normally generate an overflow error, but through a
 quirk in the underlying TI-OS, the `PRAD` and `PDEG` display modes will display
 these polar forms correctly, like this:
 
-![RPN83P Complex Overflow PRAD](images/complex-overflow-prad.png)
-![RPN83P Complex Overflow PDEG](images/complex-overflow-pdeg.png)
+![RPN83P Complex Overflow PRAD](images/complex/overflow-prad.png)
+![RPN83P Complex Overflow PDEG](images/complex/overflow-pdeg.png)
 
 However, if we try to unlink the 2 components using the `2ND LINK` function, an
 `Err: Overflow` code will be generated, because the magnitude `1.2728e100` is
 too large to be stored in the RPN register:
 
-![RPN83P Complex Overflow Unlink](images/complex-overflow-unlink.png)
+![RPN83P Complex Overflow Unlink](images/complex/overflow-unlink.png)
 
 ## Complex SHOW
 
@@ -271,9 +271,9 @@ the current display mode (`RECT`, `PRAD`, `PDEG`).
 
 Here is the number `1+i` in 3 different modes using the SHOW function:
 
-![RPN83P Complex Show RECT](images/complex-show-rect.png)
-![RPN83P Complex Show PRAD](images/complex-show-prad.png)
-![RPN83P Complex Show PDEG](images/complex-show-pdeg.png)
+![RPN83P Complex Show RECT](images/complex/show-rect.png)
+![RPN83P Complex Show PRAD](images/complex/show-prad.png)
+![RPN83P Complex Show PDEG](images/complex/show-pdeg.png)
 
 ## Complex FIX, SCI, ENG
 
@@ -281,9 +281,9 @@ The floating point formatting modes `FIX`, `SCI`, and `ENG` can be applied to
 complex numbers. Here are screenshots of a complex number using `FIX(4)`,
 `SCI(4)`, and `ENG(4)`:
 
-![RPN83P Complex FIX 4](images/complex-fmt-fix-4.png)
-![RPN83P Complex SCI 4](images/complex-fmt-sci-4.png)
-![RPN83P Complex ENG 4](images/complex-fmt-eng-4.png)
+![RPN83P Complex FIX 4](images/complex/fmt-fix-4.png)
+![RPN83P Complex SCI 4](images/complex/fmt-sci-4.png)
+![RPN83P Complex ENG 4](images/complex/fmt-eng-4.png)
 
 ## Complex Functions
 
@@ -335,22 +335,22 @@ Here is an example of adding the 3 complex numbers as described in p. 9-6 of the
 [HP-35s User's Guide](https://literature.hpcalc.org/items/171), shown in the
 following diagram:
 
-![RPN83P Complex Example1 Diagram](images/complex-example1-diagram.png)
+![RPN83P Complex Example1 Diagram](images/complex/example1-diagram.png)
 
 We can add them like this:
 
 | **Keys**                  | **Display** |
 | ----------------          | --------------------- |
-| `MODE` `DOWN` `RECT`      | ![](images/complex-example1-01.png) |
-| `ON/EXIT`                 | ![](images/complex-example1-02.png) |
-| `185` `2ND ANGLE` `62`    | ![](images/complex-example1-03.png) |
-| `ENTER`                   | ![](images/complex-example1-04.png) |
-| `170` `2ND ANGLE` `143`   | ![](images/complex-example1-05.png) |
-| `+`                       | ![](images/complex-example1-06.png) |
-| `100` `2ND ANGLE` `261`   | ![](images/complex-example1-07.png) |
-| `+`                       | ![](images/complex-example1-08.png) |
-| `MODE` `DOWN` `PRAD`      | ![](images/complex-example1-09.png) |
-| `PDEG`                    | ![](images/complex-example1-10.png) |
+| `MODE` `DOWN` `RECT`      | ![](images/complex/example1-01.png) |
+| `ON/EXIT`                 | ![](images/complex/example1-02.png) |
+| `185` `2ND ANGLE` `62`    | ![](images/complex/example1-03.png) |
+| `ENTER`                   | ![](images/complex/example1-04.png) |
+| `170` `2ND ANGLE` `143`   | ![](images/complex/example1-05.png) |
+| `+`                       | ![](images/complex/example1-06.png) |
+| `100` `2ND ANGLE` `261`   | ![](images/complex/example1-07.png) |
+| `+`                       | ![](images/complex/example1-08.png) |
+| `MODE` `DOWN` `PRAD`      | ![](images/complex/example1-09.png) |
+| `PDEG`                    | ![](images/complex/example1-10.png) |
 
 **Example 2: Y^X, SQRT**
 
@@ -362,23 +362,23 @@ representations of complex numbers:
 \[ \sqrt{(1+i)^{(3 \angle 45^{\circ})} + (1 \angle 2)} \]
 ```
 
-![RPN83P Complex Example2 Equation](images/complex-example2-equation.png)
+![RPN83P Complex Example2 Equation](images/complex/example2-equation.png)
 
 This can be calculated using the following keystrokes:
 
 | **Keys**                          | **Display** |
 | ----------------                  | --------------------- |
-| `MODE` `DOWN` `RECT`              | ![](images/complex-example2-01.png) |
-| `ON/EXIT`                         | ![](images/complex-example2-02.png) |
-| `1` `2ND i` `1`                   | ![](images/complex-example2-03.png) |
-| `ENTER`                           | ![](images/complex-example2-04.png) |
-| `3` `2ND ANGLE` `45`              | ![](images/complex-example2-05.png) |
-| `^`                               | ![](images/complex-example2-06.png) |
-| `1` `2ND ANGLE` `2ND ANGLE` `2`   | ![](images/complex-example2-07.png) |
-| `+`                               | ![](images/complex-example2-08.png) |
-| `2ND SQRT`                        | ![](images/complex-example2-09.png) |
-| `MODE` `DOWN` `PRAD`              | ![](images/complex-example2-10.png) |
-| `PDEG`                            | ![](images/complex-example2-11.png) |
+| `MODE` `DOWN` `RECT`              | ![](images/complex/example2-01.png) |
+| `ON/EXIT`                         | ![](images/complex/example2-02.png) |
+| `1` `2ND i` `1`                   | ![](images/complex/example2-03.png) |
+| `ENTER`                           | ![](images/complex/example2-04.png) |
+| `3` `2ND ANGLE` `45`              | ![](images/complex/example2-05.png) |
+| `^`                               | ![](images/complex/example2-06.png) |
+| `1` `2ND ANGLE` `2ND ANGLE` `2`   | ![](images/complex/example2-07.png) |
+| `+`                               | ![](images/complex/example2-08.png) |
+| `2ND SQRT`                        | ![](images/complex/example2-09.png) |
+| `MODE` `DOWN` `PRAD`              | ![](images/complex/example2-10.png) |
+| `PDEG`                            | ![](images/complex/example2-11.png) |
 
 **Example 3: CANG, CABS**
 
@@ -394,13 +394,13 @@ affect these calculations:
 
 | **Keys**                  | **Display** |
 | ----------------          | --------------------- |
-| `MODE` `DEG`              | ![](images/complex-example3-01.png) |
-| `DOWN` `RECT`             | ![](images/complex-example3-02.png) |
-| `1` `2ND i` `1`           | ![](images/complex-example3-03.png) |
-| `MATH` `CPLX`             | ![](images/complex-example3-04.png) |
-| `CANG`                    | ![](images/complex-example3-05.png) |
-| `2ND ANS`                 | ![](images/complex-example3-06.png) |
-| `CABS`                    | ![](images/complex-example3-07.png) |
+| `MODE` `DEG`              | ![](images/complex/example3-01.png) |
+| `DOWN` `RECT`             | ![](images/complex/example3-02.png) |
+| `1` `2ND i` `1`           | ![](images/complex/example3-03.png) |
+| `MATH` `CPLX`             | ![](images/complex/example3-04.png) |
+| `CANG`                    | ![](images/complex/example3-05.png) |
+| `2ND ANS`                 | ![](images/complex/example3-06.png) |
+| `CABS`                    | ![](images/complex/example3-07.png) |
 
 If you want the angle value as shown on the screen, use the `2ND LINK` function
 to unlink the 2 components of the complex number. The value in the `X` register
@@ -442,12 +442,12 @@ For example, let's compute the `sqrt(-1)` in `RRES` and `CRES` modes:
 
 | **Keys**                  | **Display** |
 | ----------------          | --------------------- |
-| `MODE` `DOWN` `RECT`      | ![](images/complex-result-mode-01.png) |
-| `RRES`                    | ![](images/complex-result-mode-02.png) |
-| `1` `(-)`                 | ![](images/complex-result-mode-03.png) |
-| `2ND SQRT`                | ![](images/complex-result-mode-04.png) |
-| `CRES`                    | ![](images/complex-result-mode-05.png) |
-| `2ND SQRT`                | ![](images/complex-result-mode-06.png) |
+| `MODE` `DOWN` `RECT`      | ![](images/complex/result-mode-01.png) |
+| `RRES`                    | ![](images/complex/result-mode-02.png) |
+| `1` `(-)`                 | ![](images/complex/result-mode-03.png) |
+| `2ND SQRT`                | ![](images/complex/result-mode-04.png) |
+| `CRES`                    | ![](images/complex/result-mode-05.png) |
+| `2ND SQRT`                | ![](images/complex/result-mode-06.png) |
 
 ## Complex Numbers and Trigonometric Modes
 
@@ -476,8 +476,8 @@ into `R00`, then add `2+3i` into it, to get `3+5i`:
 
 | **Keys**                  | **Display** |
 | ----------------          | --------------------- |
-| `1` `2ND i` `2`           | ![](images/complex-storage-register-01.png) |
-| `STO 00`                  | ![](images/complex-storage-register-02.png) |
-| `2` `2ND i` `3`           | ![](images/complex-storage-register-03.png) |
-| `STO` `+` `00`            | ![](images/complex-storage-register-04.png) |
-| `2ND RCL` `00`            | ![](images/complex-storage-register-05.png) |
+| `1` `2ND i` `2`           | ![](images/complex/storage-register-01.png) |
+| `STO 00`                  | ![](images/complex/storage-register-02.png) |
+| `2` `2ND i` `3`           | ![](images/complex/storage-register-03.png) |
+| `STO` `+` `00`            | ![](images/complex/storage-register-04.png) |
+| `2ND RCL` `00`            | ![](images/complex/storage-register-05.png) |
