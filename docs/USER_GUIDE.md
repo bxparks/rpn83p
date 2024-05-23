@@ -35,7 +35,6 @@ RPN calculator app for the TI-83 Plus and TI-84 Plus inspired by the HP-42S.
     - [Menu Functions](#menu-functions)
 - [Advanced Usage](#advanced-usage)
     - [Auto-start](#auto-start)
-    - [Input Limits and Long Numbers](#input-limits-and-long-numbers)
     - [Floating Point Display Modes](#floating-point-display-modes)
     - [SHOW Mode](#show-mode)
     - [Floating Point Rounding](#floating-point-rounding)
@@ -459,6 +458,21 @@ over a long sequence of input characters.
 | `2ND LEFT`            | ![Input Cursor](images/input-cursor-long-2.png) |
 | `RIGHT` (10 times)    | ![Input Cursor](images/input-cursor-long-3.png) |
 | `2ND RIGHT`           | ![Input Cursor](images/input-cursor-long-4.png) |
+
+**Input Limits**
+
+In normal mode, the input system is configured to accept up to 20 digits because
+a TI-OS floating point number in scientific notation requires 20 digits to enter
+in full precision (14 significant digits plus 6 digits of notation overhead).
+
+In `BASE` mode, the digit limit is a variable that depends on the `WSIZ` and the
+base number (`DEC`, `HEX`, `OCT`, `BIN`). In the worst case, the input system
+will allow as many as 32 digits for a `BIN` binary number with `WSIZ` of 32.
+
+When the input system detects a complex number through the presence of a `2ND i`
+or `2ND ANGLE` delimiter, the maximum number of characters is increased to 41 to
+allow 2 floating point numbers to be entered with full precision along with its
+delimiter.
 
 **DEL**
 
@@ -1323,35 +1337,6 @@ The LCD screen should look like this before hitting `FINISH`:
 
 Turn off the calculator and turn it back on. It should directly go into the
 RPN83P application.
-
-### Input Limits and Long Numbers
-
-The input buffer is rendered using the Large Font which means that only 14
-characters can be displayed on a single line. Entering numbers longer than 14
-characters is now (v0.9) supported by scrolling excess characters off the screen
-to the left. When a leading digit scrolls off, an ellipsis character appears on
-the left to indicate that some digits are hidden.
-
-For example, if the number "123456.78901234" is entered, the input buffer look
-normal after 14 characters (see left), then when the 15th character is entered,
-some digits scroll off to the left (see right):
-
-![Long Number Entry 1](images/long-number-entry-1.png)
-![Long Number Entry 2](images/long-number-entry-2.png)
-
-In normal mode, the input system is configured to accept up to 20 digits because
-a TI-OS floating point number in scientific notation requires 20 digits to enter
-in full precision (14 significant digits plus 6 digits of notation overhead).
-
-In `BASE` mode, the digit limit is a variable that depends on the `WSIZ` and the
-base number (`DEC`, `HEX`, `OCT`, `BIN`). As shown in [Base Input Digit
-Limit](#base-input-digit-limit), the input system will accept as many as 32
-digits for a `BIN` binary number.
-
-When the input system detects a complex number in inlined entry mode, through
-the presence of a `2ND i` or `2ND ANGLE` delimiter, the maximum number of
-characters is increased to 41 to allow 2 floating point numbers to be entered
-with full precision.
 
 ### Floating Point Display Modes
 
