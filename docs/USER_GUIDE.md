@@ -1785,7 +1785,7 @@ The Time Value of Money (TVM) functionality is inspired by RPN financial
 calculators such as the HP-12C, HP-17B, and the HP-30b. They are available
 through the `ROOT > TVM` menu.
 
-See [USER_GUIDE_TMV.md](USER_GUIDE_TMV.md) for full details.
+See [USER_GUIDE_TVM.md](USER_GUIDE_TVM.md) for full details.
 
 ## Complex Numbers
 
