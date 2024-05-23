@@ -797,47 +797,35 @@ rooted* menu hierarchy with the menu bar always starting from the implicit
 
 #### Menu Indicator Arrows
 
-There are 3 menu arrows at the top-left corner of the LCD screen. The
-`downarrow` indicates that additional menu rows are available:
+There are 3 menu arrows at the top-left corner of the LCD screen:
 
-![Menu Arrows 1](images/menu-arrows-1.png)
+- `leftarrow` indicates additional menus in the parent folder,
+- `downarrow` indicates additional menu rows below the current row,
+- `uparrow` indicates additional menu rows above the current row.
 
-When the `DOWN` button is pressed, the menu changes to the next set of 5 menu
-items in the next menu row, and the menu arrows show both an `uparrow` and a
-`downarrow` to indicate that there are more menu items above and below the
-current menu bar:
+The `DOWN` and `UP` arrows move from one menu row to another, like this:
 
-![Menu Arrows 2](images/menu-arrows-2.png)
+| **Keys**          | **Display**|
+| ----------------- | ---------- |
+| `HOME`            | ![Menu Arrows 1](images/menu-arrows-1.png) |
+| `DOWN`            | ![Menu Arrows 2](images/menu-arrows-2.png) |
+| `DOWN`            | ![Menu Arrows 3](images/menu-arrows-3.png) |
+| `UP` `UP`         | ![Menu Arrows 1](images/menu-arrows-1.png) |
 
-Pressing `DOWN` goes to the last set of 5 menu items, and the menu arrows show
-only the `uparrow` to indicate that this is the last of the series:
+Instead of pressing `UP` twice, you can press `DOWN` from the last menu row to
+wrap around to the first menu row.
 
-![Menu Arrows 3](images/menu-arrows-3.png)
+The soft menu keys `F1-F5` are used to enter a menu folder, In the example
+below, it goes into the `NUM` menu folder. Since the `leftarrow` indicator is
+shown, the `ON/EXIT` key can be used to go back to the parent folder:
 
-You can press `UP` twice goes back to the first menu row, or you can press
-`DOWN` from the last menu row to wrap around to the beginning:
-
-![Menu Arrows 1](images/menu-arrows-1.png)
-
-Pressing the `F2/WINDOW` button from here invokes the `NUM` menu item. This menu
-item is actually a `MenuGroup`, so the menu system descends into this folder,
-and displays the 5 menu items in the first menu row:
-
-![Menu Arrows NUM 1](images/menu-arrows-num-1.png)
-
-Pressing the `DOWN` arrow button shows the next menu row:
-
-![Menu Arrows NUM 2](images/menu-arrows-num-2.png)
-
-Pressing the `DOWN` arrow button goes to the final menu row:
-
-![Menu Arrows NUM 3](images/menu-arrows-num-3.png)
-
-Notice that inside the `NUM` menu group, the menu arrows show a `back` arrow.
-This means that the `ON` button (which implements the "BACK", "EXIT", or "ESC"
-functionality) can be used to go back to the parent menu group:
-
-![Menu Arrows 1](images/menu-arrows-1.png)
+| **Keys**          | **Display**|
+| ----------------- | ---------- |
+| `HOME`            | ![Menu Arrows 1](images/menu-arrows-1.png) |
+| `F2/WINDOW`       | ![Menu Arrows NUM 1](images/menu-arrows-num-1.png) |
+| `DOWN`            | ![Menu Arrows NUM 2](images/menu-arrows-num-2.png) |
+| `DOWN` `DOWN`     | ![Menu Arrows NUM 3](images/menu-arrows-num-3.png) |
+| `ON/EXIT`         | ![Menu Arrows 1](images/menu-arrows-1.png) |
 
 #### Menu Shortcuts
 
