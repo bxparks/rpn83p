@@ -21,6 +21,18 @@ RPN calculator app for the TI-83 Plus and TI-84 Plus inspired by the HP-42S.
 - [Basic Usage](#basic-usage)
     - [Screen Areas](#screen-areas)
     - [Input System](#input-system)
+        - [Input Buttons](#input-buttons)
+        - [Cursor](#cursor)
+        - [Length Limits](#length-limits)
+        - [DEL Key](#del-key)
+        - [CLEAR Key](#clear-key)
+        - [Decimal Point](#decimal-point)
+        - [EE Key](#ee-key)
+        - [Change Sign Key](#change-sign-key)
+        - [Record Input](#record-input)
+        - [Complex Number Input](#complex-number-input)
+        - [Other Differences](#other-differences)
+        - [Input Limitation](#input-limitations)
     - [RPN Stack](#rpn-stack)
     - [Menu System](#menu-system)
         - [Menu Hierarchy](#menu-hierarchy)
@@ -386,7 +398,7 @@ The input system is intended to be mostly self-explanatory and predictable.
 Hopefully most users will not need to read much of this section, except to
 consult about some edge cases.
 
-**Buttons**
+#### Input Buttons
 
 The following buttons are used to enter and edit a number in the input buffer:
 
@@ -427,7 +439,7 @@ The following buttons are used to enter and edit a number in the input buffer:
           polar radian form, or
         - converts and existing complex delimiter to an `angle`-`degrees` pair
 
-**Cursor**
+#### Cursor
 
 The cursor of RPN83P is a blink block character. This is different from the
 HP-42S which uses an underscore character. The block character was selected
@@ -459,7 +471,7 @@ over a long sequence of input characters.
 | `RIGHT` (10 times)    | ![Input Cursor](images/input-cursor-long-3.png) |
 | `2ND RIGHT`           | ![Input Cursor](images/input-cursor-long-4.png) |
 
-**Input Limits**
+#### Length Limits
 
 In normal mode, the input system is configured to accept up to 20 digits because
 a TI-OS floating point number in scientific notation requires 20 digits to enter
@@ -474,7 +486,7 @@ or `2ND ANGLE` delimiter, the maximum number of characters is increased to 41 to
 allow 2 floating point numbers to be entered with full precision along with its
 delimiter.
 
-**DEL**
+#### DEL Key
 
 The `DEL` key acts like the *backspace* key on HP calculators (usually marked
 with a `LEFTARROW` symbol). This is different from the TI-OS where the `DEL` key
@@ -485,7 +497,7 @@ always in *insert* mode, in contrast to the TI-OS where the input system is in
 If the `X` line is *not* in edit mode (i.e. the cursor is not shown), then the
 `DEL` key acts like the `CLEAR` key (see below).
 
-**CLEAR**
+#### CLEAR Key
 
 The `CLEAR` key either clears the `X` register or clears the current input line.
 If `CLEAR` is pressed when the input buffer is already empty , then it performs
@@ -508,7 +520,7 @@ that keystroke because it returns the same key code as `CLEAR`.)
 An empty string will be interpreted as a `0` if the `ENTER` key or a function
 key is pressed.
 
-**Decimal Point**
+#### Decimal Point
 
 The decimal point `.` button inserts a decimal point at the cursor location. But
 the system tries to be a bit smart about it using the following rules:
@@ -519,7 +531,7 @@ the system tries to be a bit smart about it using the following rules:
 - no decimal point is inserted inside a Record object defined by curly braces
   `{` and `}`
 
-**EE Enter Exponent**
+#### EE Key
 
 The `E` symbol for scientific notation numbers must be entered using the `2ND
 EE` key, because the comma `,` key is used for other purposes. However, it is
@@ -536,7 +548,7 @@ little bit smart about the insertion:
 The behavior of the `EE` button on RPN83P is simpler and different from the
 HP-48/49/50 series whose behavior I have not figured out.
 
-**(-) Change Sign**
+#### Change Sign Key
 
 Unlike most of the other input-related buttons, the `(-)` CHS button does not
 simply insert a negative sign `-` into the string. The behavior of the `(-)`is
@@ -554,7 +566,7 @@ the number.
     - if on a component of a Record object, it inverts the sign of the component
 - if the cursor position contains no number, then a negative sign is inserted
 
-**Records**
+#### Record Input
 
 The left-brace `{`, the right-brace `}`, and the comma `,` buttons are used for
 record types. They generally act to simply insert their respective characters
@@ -575,7 +587,7 @@ of the record:
 | `DT{2024,5,21,`       | ![Input Record](images/input-record-1.png) |
 | `LEFT` `LEFT` `LEFT`  | ![Input Record](images/input-record-2.png) |
 
-**Complex Numbers**
+#### Complex Number Input
 
 The `2ND i`, `2ND ANGLE`, and `2ND LINK` buttons are used for entering complex
 numbers. They are explained in more detail in
@@ -602,7 +614,7 @@ Here is an example of how the delimiters override or toggle each other:
 | `2ND ANGLE`           | ![Input Complex](images/input-complex-5.png) |
 | `2ND i`               | ![Input Complex](images/input-complex-6.png) |
 
-**Other Differences from HP-42S and HP-48/49/50**
+#### Other Differences
 
 Emulating the input system of the HP-42S was surprisingly complex and subtle,
 and some features and idiosyncrasies of the HP-42S could not be carried over due
@@ -620,7 +632,7 @@ Edit mode with an empty input buffer, and the cursor will *always* be shown with
 an empty string. The presence of the cursor indicates that the Edit Mode is in
 effect and that the Stack Lift is disabled.
 
-**Limitations**
+#### Input Limitations
 
 There are many ways that the RPN83P input system could be improved. Many of them
 arise from a design decision that I made to save some time and effort: the
