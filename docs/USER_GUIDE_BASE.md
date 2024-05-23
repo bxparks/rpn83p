@@ -235,7 +235,7 @@ to the meaning that I would have expected.
 
 ## Base Arithmetic
 
-Similar to the HP-42S, activating the `BASE` hierarchy of menus changes the
+Similar to the HP-42S, activating the `BASE` menu folder changes the
 behavior of keyboard arithmetic functions. Specifically, the buttons `+`, `-`,
 `*`, `/` are re-bound to their integer counterparts `B+`, `B-`, `B*`, `B/` which
 perform 32-bit unsigned arithmetic operations instead of floating point
@@ -258,29 +258,20 @@ point results when performing an arithmetic operation such as `/`. The RPN83P
 follows the lead of the HP-42S so that the arithmetic keyboard buttons trigger
 the integer operations instead of floating point operations.
 
-For example, suppose the following numbers are in the RPN stack *before*
-entering the `BASE` menu:
+For example, let's start with the following numbers in the RPN stack *before*
+entering the `BASE` menu, and then perform an arithmetic `+` operation:
 
-![Base Arithmetic Part 1](images/base/arithmetic-1-float.png)
+| **Keys**  | **Display**|
+| --------- | ---------- |
+|           | ![Base Arithmetic Part 1](images/base/arithmetic-1-float.png) |
+| `BASE`    | ![Base Arithmetic Part 2](images/base/arithmetic-2-dec.png)   |
+| `HEX`     | ![Base Arithmetic Part 3](images/base/arithmetic-3-hex.png)   |
+| `+`       | ![Base Arithmetic Part 4](images/base/arithmetic-4-plus.png)  |
+| `DEC`     | ![Base Arithmetic Part 5](images/base/arithmetic-5-dec.png)   |
 
-Entering the `BASE` menu shows this (assuming that the default base number was
-`DEC`):
-
-![Base Arithmetic Part 2](images/base/arithmetic-2-dec.png)
-
-Changing to `HEX` mode shows this:
-
-![Base Arithmetic Part 3](images/base/arithmetic-3-hex.png)
-
-Pressing the `+` button adds the `X` and `Y` registers, converting the
-values to 32-bit unsigned integers before the addition:
-
-![Base Arithmetic Part 4](images/base/arithmetic-4-plus.png)
-
-Changing back to `DEC` mode shows that the numbers were added using integer
-functions, and the fractional digits were truncated:
-
-![Base Arithmetic Part 5](images/base/arithmetic-5-dec.png)
+We can see that the `+` key activated the `B+` function in `BASE` mode, which
+truncated the fraction part of the operands, performed an unsigned integer
+addition, then produced an integer result.
 
 ## Carry Flag
 
