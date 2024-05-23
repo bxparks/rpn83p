@@ -15,6 +15,10 @@ has been extracted from [USER_GUIDE.md](USER_GUIDE.md) due to its length.
 
 - [Base Overview](#base-overview)
 - [Base Modes](#base-modes)
+    - [DEC decimal](#dec-decimal)
+    - [HEX hexadecimal](#hex-hexadecimal)
+    - [OCT octal](#oct-octal)
+    - [BIN binary](#bin-binary)
 - [Shift and Rotate](#shift-and-rotate)
 - [Base Arithmetic](#base-arithmetic)
 - [Carry Flag](#carry-flag)
@@ -69,7 +73,7 @@ and 1234567, like this:
 
 ![Numbers in Normal Mode](images/base/mode-normal.png)
 
-**DEC** (decimal)
+### DEC decimal
 
 The `DEC` (decimal) mode is the default when the `BASE` menu is selected. All
 numbers on the RPN stack are displayed as an integer, *as if* they were
@@ -85,7 +89,7 @@ If the floating point value is within the range of `[0, 2^WSIZ)` but has
 non-zero fractional value, a decimal point is shown after the integer part of
 the unsigned integer.
 
-**HEX** (hexadecimal)
+### HEX hexadecimal
 
 The `HEX` (hexadecimal) mode displays all numbers on the RPN stack using base
 16. Only the integer part is rendered as if the RPN stack values were
@@ -106,7 +110,7 @@ On the keyboard, the hexadecimal digits `A` through `F` are entered using
 which prevents those digits to be entered, so it is not clear that the Alpha
 Lock mode is actually useful in this context.
 
-**OCT** (octal)
+### OCT octal
 
 The `OCT` (octal) mode displays all numbers on the RPN stack using base 8. Only
 the integer part is rendered as if the RPN stack values were converted to an
@@ -124,7 +128,7 @@ the unsigned integer.
 On the keyboard, the button digits `0` through `7` are entered normally. The
 button digits `8` and `9` are disabled in octal mode.
 
-**BIN** (binary)
+### BIN binary
 
 The `BIN` (binary) mode displays all numbers on the RPN stack using base 2. Only
 the integer part is rendered as if the RPN stack values were converted to an
