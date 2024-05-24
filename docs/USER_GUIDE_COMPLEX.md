@@ -209,10 +209,12 @@ trigonometric modes affect only the *computation* of trigonometric functions.
 The complex display modes (`RECT`, `PRAD`, `PDEG`) are independent of the
 trigonometric modes.
 
+### Display Mode Affects Linking
+
 This is also a good place to note that the `2ND LINK` function is the only
 complex functionality that is affected by the display mode. The `2ND LINK`
-function merges 2 real numbers from `Y` and `X` registers using the display mode
-that is *currently* in effect. (It did not make sense for it to do anything
+function merges 2 real numbers from `Y` and `X` registers using the *display
+mode* that is currently in effect. (It did not make sense for it to do anything
 else.)
 
 In other words:
@@ -228,11 +230,10 @@ For example, let's set the display mode to `PDEG`, and enter the following:
 | **Keys**              | **Display** |
 | ----------------      | --------------------- |
 | `MODE` `DOWN` `PDEG`  | ![](images/complex/linking-pdeg-1.png) |
-| `ON/EXIT`             | ![](images/complex/linking-pdeg-2.png) |
-| `1`                   | ![](images/complex/linking-pdeg-3.png) |
-| `ENTER`               | ![](images/complex/linking-pdeg-4.png) |
-| `60`                  | ![](images/complex/linking-pdeg-5.png) |
-| `2ND LINK`            | ![](images/complex/linking-pdeg-6.png) |
+| `1`                   | ![](images/complex/linking-pdeg-2.png) |
+| `ENTER`               | ![](images/complex/linking-pdeg-3.png) |
+| `60`                  | ![](images/complex/linking-pdeg-4.png) |
+| `2ND LINK`            | ![](images/complex/linking-pdeg-5.png) |
 
 The *unlinking* process is also affected by the complex display mode. Let's
 change the display mode to `RECT`, then hit `2ND LINK` to perform the unlinking.
@@ -240,10 +241,9 @@ The display before and after the `2ND LINK` looks like this:
 
 | **Keys**              | **Display** |
 | ----------------      | --------------------- |
-| (from above)          | ![](images/complex/linking-pdeg-6.png) |
-| `MODE` `DOWN` `RECT`  | ![](images/complex/unlinking-rect-1.png) |
-| `ON/EXIT`             | ![](images/complex/unlinking-rect-2.png) |
-| `2ND LINK`            | ![](images/complex/unlinking-rect-3.png) |
+| (from above)          | ![](images/complex/linking-pdeg-5.png) |
+| `RECT`                | ![](images/complex/unlinking-rect-1.png) |
+| `2ND LINK`            | ![](images/complex/unlinking-rect-2.png) |
 
 ## Complex Polar Mode Overflow
 
