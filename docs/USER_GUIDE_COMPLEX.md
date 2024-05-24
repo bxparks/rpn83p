@@ -194,8 +194,8 @@ button shortcut on keyboard:
     - ![ROOT > MODE > ComplexDisplayModes](images/menu-root-mode-complexdisplaymodes.png)
 
 When a complex number is on the stack, the `RECT`, `PRAD`, and `PDEG` menu
-buttons will display number in different forms, and the status line indicator
-changes accordingly:
+buttons will display the number in different forms, and the status line
+indicator will change accordingly:
 
 | **Keys**  | **Display** |
 | --------- | --------------------- |
@@ -211,11 +211,10 @@ trigonometric modes.
 
 ### Display Mode Affects Linking
 
-This is also a good place to note that the `2ND LINK` function is the only
-complex functionality that is affected by the display mode. The `2ND LINK`
-function merges 2 real numbers from `Y` and `X` registers using the *display
-mode* that is currently in effect. (It did not make sense for it to do anything
-else.)
+The `2ND LINK` function is the only complex functionality that is affected by
+the complex display mode. The `2ND LINK` function merges 2 real numbers from `Y`
+and `X` registers and it uses the *display mode* that is currently in effect to
+perform that merge. (It did not make sense for it to do anything else.)
 
 In other words:
 
@@ -224,7 +223,8 @@ In other words:
 - if `PDEG`: the resulting number is `Y e^(i * X*pi/180)`, where `X` has been
   converted from degrees to radians
 
-For example, let's set the display mode to `PDEG`, and enter the following:
+For example, let's set the display mode to `PDEG`, and link the numbers `1` and
+`60` into a complex number in `PDEG` mode:
 
 
 | **Keys**              | **Display** |
