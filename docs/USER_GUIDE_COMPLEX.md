@@ -29,6 +29,9 @@ complex numbers are *always* stored in rectangular format.
 - [Complex SHOW](#complex-show)
 - [Complex FIX, SCI, ENG](#complex-fix-sci-eng)
 - [Complex Functions](#complex-functions)
+    - [Complex Functions Example 1](#complex-functions-example-1)
+    - [Complex Functions Example 2](#complex-functions-example-2)
+    - [Complex Functions Example 3](#complex-functions-example-3)
 - [Complex Result Modes](#complex-result-modes)
 - [Complex Numbers and Trigonometric Modes](#complex-numbers-and-trigonometric-modes)
 - [Complex Numbers in Storage Registers](#complex-numbers-in-storage-registers)
@@ -335,7 +338,7 @@ in `RECT` format, there is no obvious reason why it should pick `RAD` over
 indicate one unit (e.g. `DEG`) but the `CANG` function could return another unit
 (e.g. radians).
 
-**Example 1: Arithmetic**
+### Complex Functions Example 1
 
 Here is an example of adding the 3 complex numbers as described in p. 9-6 of the
 [HP-35s User's Guide](https://literature.hpcalc.org/items/171), shown in the
@@ -358,7 +361,7 @@ We can add them like this:
 | `MODE` `DOWN` `PRAD`      | ![](images/complex/example1-09.png) |
 | `PDEG`                    | ![](images/complex/example1-10.png) |
 
-**Example 2: Y^X, SQRT**
+### Complex Functions Example 2
 
 In this contrived example, we compute an expression involving all three
 representations of complex numbers:
@@ -386,7 +389,7 @@ This can be calculated using the following keystrokes:
 | `MODE` `DOWN` `PRAD`              | ![](images/complex/example2-10.png) |
 | `PDEG`                            | ![](images/complex/example2-11.png) |
 
-**Example 3: CANG, CABS**
+### Complex Functions Example 3
 
 In this example, we calculate the magnitude and angle of the complex number
 `1+i`. We want the angle in degrees, so we have to first set the trigonometric
