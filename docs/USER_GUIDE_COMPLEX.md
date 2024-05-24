@@ -377,16 +377,15 @@ This can be calculated using the following keystrokes:
 | **Keys**                          | **Display** |
 | ----------------                  | --------------------- |
 | `MODE` `DOWN` `RECT`              | ![](images/complex/example2-01.png) |
-| `ON/EXIT`                         | ![](images/complex/example2-02.png) |
-| `1` `2ND i` `1`                   | ![](images/complex/example2-03.png) |
-| `ENTER`                           | ![](images/complex/example2-04.png) |
-| `3` `2ND ANGLE` `45`              | ![](images/complex/example2-05.png) |
-| `^`                               | ![](images/complex/example2-06.png) |
-| `1` `2ND ANGLE` `2ND ANGLE` `2`   | ![](images/complex/example2-07.png) |
-| `+`                               | ![](images/complex/example2-08.png) |
-| `2ND SQRT`                        | ![](images/complex/example2-09.png) |
-| `MODE` `DOWN` `PRAD`              | ![](images/complex/example2-10.png) |
-| `PDEG`                            | ![](images/complex/example2-11.png) |
+| `1` `2ND i` `1`                   | ![](images/complex/example2-02.png) |
+| `ENTER`                           | ![](images/complex/example2-03.png) |
+| `3` `2ND ANGLE` `45`              | ![](images/complex/example2-04.png) |
+| `^`                               | ![](images/complex/example2-05.png) |
+| `1` `2ND ANGLE` `2ND ANGLE` `2`   | ![](images/complex/example2-06.png) |
+| `+`                               | ![](images/complex/example2-07.png) |
+| `2ND SQRT`                        | ![](images/complex/example2-08.png) |
+| `MODE` `DOWN` `PRAD`              | ![](images/complex/example2-09.png) |
+| `PDEG`                            | ![](images/complex/example2-10.png) |
 
 ### Complex Functions Example 3
 
