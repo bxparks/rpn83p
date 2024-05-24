@@ -1011,14 +1011,14 @@ and 4 seconds) using the colon-shortcut notation:
 
 | **Keys**  | **MODE `{..}`**                               | **MODE `".."`**   |
 | --------- | ---------------------                         | ----------------- |
-| `1:D`     | ![](images/date/duration-day-raw-1.png)       | ![](images/date/duration-day-str-1.png) |
-| `ENTER`   | ![](images/date/duration-day-raw-2.png)       | ![](images/date/duration-day-str-2.png) |
-| `2:H`     | ![](images/date/duration-hour-raw-1.png)      | ![](images/date/duration-hour-str-1.png) |
-| `ENTER`   | ![](images/date/duration-hour-raw-2.png)      | ![](images/date/duration-hour-str-2.png) |
-| `3:M`     | ![](images/date/duration-minute-raw-1.png)    | ![](images/date/duration-minute-str-1.png) |
-| `ENTER`   | ![](images/date/duration-minute-raw-2.png)    | ![](images/date/duration-minute-str-2.png) |
-| `4:S`     | ![](images/date/duration-second-raw-1.png)    | ![](images/date/duration-second-str-1.png) |
-| `ENTER`   | ![](images/date/duration-second-raw-2.png)    | ![](images/date/duration-second-str-2.png) |
+| `1:D`     | ![](images/date/duration-colon-day-raw-1.png)       | ![](images/date/duration-colon-day-str-1.png) |
+| `ENTER`   | ![](images/date/duration-colon-day-raw-2.png)       | ![](images/date/duration-colon-day-str-2.png) |
+| `2:H`     | ![](images/date/duration-colon-hour-raw-1.png)      | ![](images/date/duration-colon-hour-str-1.png) |
+| `ENTER`   | ![](images/date/duration-colon-hour-raw-2.png)      | ![](images/date/duration-colon-hour-str-2.png) |
+| `3:M`     | ![](images/date/duration-colon-minute-raw-1.png)    | ![](images/date/duration-colon-minute-str-1.png) |
+| `ENTER`   | ![](images/date/duration-colon-minute-raw-2.png)    | ![](images/date/duration-colon-minute-str-2.png) |
+| `4:S`     | ![](images/date/duration-colon-second-raw-1.png)    | ![](images/date/duration-colon-second-str-1.png) |
+| `ENTER`   | ![](images/date/duration-colon-second-raw-2.png)    | ![](images/date/duration-colon-second-str-2.png) |
 
 **Note**: Only a single colon-modifier can be entered on a single line. Multiple
 colon-modifiers separated by spaces (e.g. `2:H 4:M`) are not supported. This
