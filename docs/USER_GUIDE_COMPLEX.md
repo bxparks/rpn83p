@@ -24,7 +24,8 @@ complex numbers are *always* stored in rectangular format.
     - [Inlining Using 2ND i and 2ND ANGLE](#inlining-using-2nd-i-and-2nd-angle)
     - [Solitary 2ND i](#solitary-2nd-i)
 - [Complex Display Modes](#complex-display-modes)
-- [Complex Polar Mode Overflow](#complex-polar-mode-overflow)
+    - [Display Mode Affects Linking](#display-mode-affects-linking)
+    - [Polar Mode Overflow](#polar-mode-overflow)
 - [Complex SHOW](#complex-show)
 - [Complex FIX, SCI, ENG](#complex-fix-sci-eng)
 - [Complex Functions](#complex-functions)
@@ -245,11 +246,11 @@ The display before and after the `2ND LINK` looks like this:
 | `RECT`                | ![](images/complex/unlinking-rect-1.png) |
 | `2ND LINK`            | ![](images/complex/unlinking-rect-2.png) |
 
-## Complex Polar Mode Overflow
+### Polar Mode Overflow
 
 When a large complex number is converted to polar form, the magnitude value in
-the polar form, i.e. the `r` term, may overflow the usual floating point limit
-of the calculator. That's because `r=sqrt(a^2+b^2)`. For example,
+the polar form (the `r` term) may overflow the usual floating point limit of the
+calculator (`9.999999999E99`). That's because `r=sqrt(a^2+b^2)`. For example,
 
 ```
 (9e99 + 9e99i) = 1.2728e100 e^(i 0.785398163)
@@ -257,16 +258,16 @@ of the calculator. That's because `r=sqrt(a^2+b^2)`. For example,
 
 The number `1.2728e100` would normally generate an overflow error, but through a
 quirk in the underlying TI-OS, the `PRAD` and `PDEG` display modes will display
-these polar forms correctly, like this:
+these polar forms correctly. However, if we try to unlink the 2 components using
+the `2ND LINK` function, an `Err: Overflow` code will be generated, because the
+magnitude `1.2728e100` is too large to be stored in the RPN register:
 
-![RPN83P Complex Overflow PRAD](images/complex/overflow-prad.png)
-![RPN83P Complex Overflow PDEG](images/complex/overflow-pdeg.png)
-
-However, if we try to unlink the 2 components using the `2ND LINK` function, an
-`Err: Overflow` code will be generated, because the magnitude `1.2728e100` is
-too large to be stored in the RPN register:
-
-![RPN83P Complex Overflow Unlink](images/complex/overflow-unlink.png)
+| **Keys**              | **Display** |
+| ----------------      | --------------------- |
+| `9E99` `2ND i` `9E99` | ![RPN83P Complex Overflow RECT](images/complex/overflow-1.png) |
+| `PRAD`                | ![RPN83P Complex Overflow PRAD](images/complex/overflow-2.png) |
+| `PDEG`                | ![RPN83P Complex Overflow PDEG](images/complex/overflow-3.png) |
+| `2ND` `LINK`          | ![RPN83P Complex Overflow Unlink](images/complex/overflow-4.png) |
 
 ## Complex SHOW
 
