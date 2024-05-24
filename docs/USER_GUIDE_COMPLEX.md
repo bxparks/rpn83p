@@ -351,15 +351,14 @@ We can add them like this:
 | **Keys**                  | **Display** |
 | ----------------          | --------------------- |
 | `MODE` `DOWN` `RECT`      | ![](images/complex/example1-01.png) |
-| `ON/EXIT`                 | ![](images/complex/example1-02.png) |
-| `185` `2ND ANGLE` `62`    | ![](images/complex/example1-03.png) |
-| `ENTER`                   | ![](images/complex/example1-04.png) |
-| `170` `2ND ANGLE` `143`   | ![](images/complex/example1-05.png) |
-| `+`                       | ![](images/complex/example1-06.png) |
-| `100` `2ND ANGLE` `261`   | ![](images/complex/example1-07.png) |
-| `+`                       | ![](images/complex/example1-08.png) |
-| `MODE` `DOWN` `PRAD`      | ![](images/complex/example1-09.png) |
-| `PDEG`                    | ![](images/complex/example1-10.png) |
+| `185` `2ND ANGLE` `62`    | ![](images/complex/example1-02.png) |
+| `ENTER`                   | ![](images/complex/example1-03.png) |
+| `170` `2ND ANGLE` `143`   | ![](images/complex/example1-04.png) |
+| `+`                       | ![](images/complex/example1-05.png) |
+| `100` `2ND ANGLE` `261`   | ![](images/complex/example1-06.png) |
+| `+`                       | ![](images/complex/example1-07.png) |
+| `MODE` `DOWN` `PRAD`      | ![](images/complex/example1-08.png) |
+| `PDEG`                    | ![](images/complex/example1-09.png) |
 
 ### Complex Functions Example 2
 
