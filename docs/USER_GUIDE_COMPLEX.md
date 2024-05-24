@@ -476,10 +476,9 @@ MODE > ComplexDisplayModes](images/menu-root-mode-complexdisplaymodes.png)
 
 ## Complex Numbers in Storage Registers
 
-Both the RPN stack registers and the storage registers have been upgraded to
-accept real or complex numbers transparently. For example, we can store `1+2i`
-into `R00`, then add `2+3i` into it, to get `3+5i`:
-
+The RPN stack registers, the storage registers (R00-R99), and the storage
+variables (A-Z,Theta) can accept real or complex numbers transparently. For
+example, we can store `1+2i` into `R00`, then add `2+3i` into it, to get `3+5i`:
 
 | **Keys**                  | **Display** |
 | ----------------          | --------------------- |
