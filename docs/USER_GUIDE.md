@@ -34,6 +34,9 @@ RPN calculator app for the TI-83 Plus and TI-84 Plus inspired by the HP-42S.
         - [Other Differences](#other-differences)
         - [Input Limitation](#input-limitations)
     - [RPN Stack](#rpn-stack)
+        - [RPN Stack Structure](#rpn-stack-structure)
+        - [RPN Stack Operations](#rpn-stack-operations)
+        - [RPN Stack Size](#rpn-stack-size)
     - [Menu System](#menu-system)
         - [Menu Hierarchy](#menu-hierarchy)
         - [Menu Buttons](#menu-buttons)
@@ -652,6 +655,8 @@ effort it would take to make those improvements.
 
 ### RPN Stack
 
+#### RPN Stack Structure
+
 The RPN83P tries to implement the traditional 4-level stack used by many HP
 calculators as closely as possible, including some features which some people
 may find idiosyncratic. There are 4 slots in the RPN stack named `X`, `Y`, `Z`,
@@ -660,6 +665,8 @@ registers can be shown at all times. (For comparison, the HP-12C and HP-15C have
 only a single line display. The HP-42S has a 2-line display, with the bottom
 line often commandeered by the menu line so that only the `X` register is
 shown.)
+
+#### RPN Stack Operations
 
 These are the buttons which manipulate the RPN stack:
 
@@ -717,6 +724,30 @@ to be the `LastX` functionality of HP calculators. The `LastX` is the value of
 the `X` register just before the most recent operation. It can be used to bring
 back a number that was accidentally consumed, or it can be used as part of a
 longer sequence of calculations.
+
+#### RPN Stack Size
+
+The default size of the RPN stack is 4 for compatibility with traditional HP RPN
+calculators. However, RPN83P allows the RPN stack size to changed between 4 and
+8, using the `SSIZ` command under the `MODE` menu:
+
+- ![ROOT > MODE](images/menu-root-mode.png)
+    - ![ROOT > MODE > SSIZ](images/menu-root-mode-ssiz.png)
+
+The current stack size can be recalled using the `SSZ?` command. It is also
+shown in the top status line using the annunciators `4STK`, `5STK`, `6STK`,
+`7STK`, and `8STK`.
+
+Here is an example where we start with a stack size of 4, increase it to 8, then
+decrease it to 5:
+
+| **Keys**              | **Display** |
+| ----------------      | --------------------- |
+| `MODE` `DOWN` `DOWN`  | ![SSIZ](images/ssiz-1.png) |
+| `SSIZ` `4`            | ![SSIZ](images/ssiz-2.png) |
+| `SSIZ` `8`            | ![SSIZ](images/ssiz-3.png) |
+| `SSIZ` `5`            | ![SSIZ](images/ssiz-4.png) |
+| `SSZ?`                | ![SSIZ](images/ssiz-5.png) |
 
 ### Menu System
 
