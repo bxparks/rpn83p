@@ -609,8 +609,8 @@ For example, let's convert `15:35:01` to an integer, then back to a Time object:
 | **Keys**          | **MODE `{..}`**                           | **MODE `".."`**   |
 | ------------------| ---------------------                     | ----------------- |
 | `T{15,36,1}`      | ![](images/date/time-to-seconds-raw-1.png)   | ![](images/date/time-to-seconds-str-1.png) |
-| `D*>S`            | ![](images/date/time-to-seconds-raw-1.png)   | ![](images/date/time-to-seconds-str-2.png) |
-| `S>T`             | ![](images/date/time-to-seconds-raw-1.png)   | ![](images/date/time-to-seconds-str-3.png) |
+| `D*>S`            | ![](images/date/time-to-seconds-raw-2.png)   | ![](images/date/time-to-seconds-str-2.png) |
+| `S>T`             | ![](images/date/time-to-seconds-raw-3.png)   | ![](images/date/time-to-seconds-str-3.png) |
 
 ### DateTime Object
 
