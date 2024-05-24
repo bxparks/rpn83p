@@ -1243,16 +1243,15 @@ The following predefined epoch dates can be selected:
     - An epoch date used by some 32-bit systems to avoid the
     [Year 2038 problem](https://en.wikipedia.org/wiki/Year_2038_problem)
 - `CEPC`:![EPCH CEPC](images/date/menu-root-date-epch-cepc.png)
-    - user-configurable custom epoch date, set using the `EPC` menu (see below
-      for instructions on how to configurable this)
-    - the factory default is `2050-01-01`
+    - select the custom epoch date (factory default: `2050-01-01`)
+    - the custom epoch date can be changed using the `EPC` menu item (see below)
 
 ### Custom Epoch Date
 
-The custom Epoch date can be set using the `EPC` (set epoch) menu function. The
-current custom Epoch date value can be retrieved using the `EPC?` menu function.
-For example, let's view the current custom Epoch date, then set it to
-`2100-01-01`:
+The custom Epoch date can be changed using the `EPC` (set epoch date) menu
+function. The current custom Epoch date value can be retrieved using the `EPC?`
+(get epoch date) menu function. For example, let's view the current custom Epoch
+date, then set it to `2100-01-01`:
 
 | **Keys**          | **MODE `{..}`**                           | **MODE `".."`**   |
 | -----------       | ---------------------                     | ----------------- |
@@ -1260,6 +1259,10 @@ For example, let's view the current custom Epoch date, then set it to
 | `D{2100,1,1}`     | ![](images/date/customepoch-raw-2.png)    | ![](images/date/customepoch-str-2.png) |
 | `EPC`             | ![](images/date/customepoch-raw-3.png)    | ![](images/date/customepoch-str-3.png) |
 | `EPC?`            | ![](images/date/customepoch-raw-4.png)    | ![](images/date/customepoch-str-4.png) |
+
+Notice that when the `EPC` (set epoch date) command is invoked, the epoch
+selection automatically changes to `CEPC` (custom epoch date) and the dot next
+to the `CEPC` menu appears.
 
 ### Epoch Conversions
 
