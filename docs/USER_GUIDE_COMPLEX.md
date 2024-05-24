@@ -193,12 +193,15 @@ button shortcut on keyboard:
 - ![ROOT > MODE](images/menu-root-mode.png)
     - ![ROOT > MODE > ComplexDisplayModes](images/menu-root-mode-complexdisplaymodes.png)
 
-Pressing the `RECT`, `PRAD`, and `PDEG` menu buttons will change the display
-into the following:
+When a complex number is on the stack, the `RECT`, `PRAD`, and `PDEG` menu
+buttons will display number in different forms, and the status line indicator
+changes accordingly:
 
-![RPN83P Complex Mode RECT](images/complex/mode-rect.png)
-![RPN83P Complex Mode PRAD](images/complex/mode-prad.png)
-![RPN83P Complex Mode PDEG](images/complex/mode-pdeg.png)
+| **Keys**  | **Display** |
+| --------- | --------------------- |
+| `RECT`    | ![RPN83P Complex Mode RECT](images/complex/mode-rect.png) |
+| `PRAD`    | ![RPN83P Complex Mode PRAD](images/complex/mode-prad.png) |
+| `PDEG`    | ![RPN83P Complex Mode PDEG](images/complex/mode-pdeg.png) |
 
 Note that unlike most calculators with complex number support, the trigonometric
 modes (`DEG`, `RAD`) do *not* affect the rendering of complex numbers. The
