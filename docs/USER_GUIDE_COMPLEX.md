@@ -284,8 +284,8 @@ Here is the number `1+i` in 3 different modes using the SHOW function:
 ## Complex FIX, SCI, ENG
 
 The floating point formatting modes `FIX`, `SCI`, and `ENG` can be applied to
-complex numbers. Here are screenshots of a complex number using `FIX(4)`,
-`SCI(4)`, and `ENG(4)`:
+complex numbers. Here are screenshots of a complex number using `FIX4`,
+`SCI4`, and `ENG4`:
 
 ![RPN83P Complex FIX 4](images/complex/fmt-fix-4.png)
 ![RPN83P Complex SCI 4](images/complex/fmt-sci-4.png)
