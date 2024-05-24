@@ -20,6 +20,9 @@ complex numbers are *always* stored in rectangular format.
 
 - [Complex Numbers and Screen Size](#complex-numbers-and-screen-size)
 - [Complex Number Entry](#complex-number-entry)
+    - [Linking Using 2ND LINK](#linking-using-2nd-link)
+    - [Inlining Using 2ND i and 2ND ANGLE](#inlining-using-2nd-i-and-2nd-angle)
+    - [Solitary 2ND i](#solitary-2nd-i)
 - [Complex Display Modes](#complex-display-modes)
 - [Complex Polar Mode Overflow](#complex-polar-mode-overflow)
 - [Complex SHOW](#complex-show)
@@ -54,7 +57,7 @@ There are 2 ways to enter complex numbers on the RPN83P app:
   number
 - *inlining* both components on a single line into the `X` register
 
-**Linking (2ND LINK)**
+### Linking Using 2ND LINK
 
 The linking method borrows from the HP-42S which provides a `COMPLEX` key. It
 takes the `Y` and `X` registers and combines them into a complex number `Y +
@@ -94,7 +97,7 @@ into `Y` and the imaginary part going into `X`.
 | (from above)      | ![](images/complex/linking-5.png) |
 | `2ND LINK`        | ![](images/complex/linking-6.png) |
 
-**Inlining (2ND i, 2ND ANGLE)**
+### Inlining Using 2ND i and 2ND ANGLE
 
 The inlined entry method borrows from the HP-35s which allows a complex number
 to be entered in its entirety on a single line. The `2ND i` button (above the
@@ -149,7 +152,7 @@ same angle in radians would involve a factor of `Pi` (120 deg = 2pi/3 =
 2.094395102 radians) so would be easier to enter using the `2ND LINK`
 functionality.
 
-**Special Case for Solitary 2ND i**
+### Solitary 2ND i
 
 A solitary `2ND i` should be interpreted as `0 i 0` (0+0i) if the parsing rules
 were strictly followed, because the empty string on both sides of the `2ND i`
@@ -174,11 +177,10 @@ distinct from other digit characters. It is also the symbol used by the HP-42S.
 
 **HP-35s Compatibility Note 2**: The HP-35s uses `SHIFT Theta` button to enter
 complex numbers in polar notation. The `Theta` symbol is available on a TI
-calculator as `ALPHA Theta`. However, the `ALPHA` shift key is used for no other
-functionality in the RPN83P app, and I found switching from `2ND` to `ALPHA` to
-invoke this function was too confusing for the muscle memory. The `2ND ANGLE`
-key, on the other hand, was previously unused in the RPN83P app, and it matches
-the Angle symbol used to display complex numbers in polar notation.
+calculator as `ALPHA Theta`. However, I found switching from `2ND i` to `ALPHA
+Theta` to invoke this delimiter was too confusing for the muscle memory. The
+`2ND ANGLE` key, on the other hand, was previously unused in the RPN83P app, and
+it matches the Angle symbol used to display complex numbers in polar notation.
 
 ## Complex Display Modes
 
