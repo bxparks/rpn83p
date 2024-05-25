@@ -657,14 +657,23 @@ effort it would take to make those improvements.
 
 #### RPN Stack Structure
 
-The RPN83P tries to implement the traditional 4-level stack used by many HP
+RPN83P tries to implement the traditional 4-level RPN stack used by many HP
 calculators as closely as possible, including some features which some people
-may find idiosyncratic. There are 4 slots in the RPN stack named `X`, `Y`, `Z`,
-and `T`. The LCD screen on the TI calculators is big enough that all 4 RPN
-registers can be shown at all times. (For comparison, the HP-12C and HP-15C have
-only a single line display. The HP-42S has a 2-line display, with the bottom
-line often commandeered by the menu line so that only the `X` register is
-shown.)
+may find idiosyncratic. In addition, RPN83P supports larger RPN stack sizes
+through the `SSIZ` command. The minimum stack size is 4, but it can be increased
+to be as large as 8.
+
+![RPN Stack Diagram](images/rpn-stack-diagram.png)
+
+The bottom 4 slots in the RPN stack are named `X`, `Y`, `Z`, and `T` following
+the convention used by modern HP RPN calculators. As the stack size increases
+towards 8, additional stack registers become available: `A`, `B`, `C`, and `D`.
+
+The LCD screen on the TI calculators is big enough that the bottom 4 registers
+(`X`, `Y`, `Z`, `T`) can be shown at all times. (For comparison, the HP-12C and
+HP-15C have only a single line display. The HP-42S has a 2-line display, with
+the bottom line often commandeered by the menu line so that only the `X`
+register is shown.)
 
 #### RPN Stack Operations
 
@@ -729,7 +738,8 @@ longer sequence of calculations.
 
 The default size of the RPN stack is 4 for compatibility with traditional HP RPN
 calculators. However, RPN83P allows the RPN stack size to changed between 4 and
-8, using the `SSIZ` command under the `MODE` menu:
+8, using the `SSIZ` command under the `MODE` menu (which can be quickly accessed
+through the `MODE` button):
 
 - ![ROOT > MODE](images/menu-root-mode.png)
     - ![ROOT > MODE > SSIZ](images/menu-root-mode-ssiz.png)
@@ -1605,9 +1615,14 @@ scientific notation.
 
 ### Storage Registers
 
-Similar to the HP-42S, the RPN83P provides up to **100** storage registers
-labeled `R00` to `R99`. The default is **25**. They are accessed using the `STO`
-and `2ND` `RCL` keys. To store a number into register `R00`, press:
+Similar to the HP-42S, the RPN83P initially provides **25** storage registers,
+but can be increased to up to **100** registers using the `RSIZ` command. The
+registers are labeled `R00` to `R99`.
+
+![Storage Registers Diagram](images/storage-registers-diagram.png)
+
+The registers are accessed using the `STO` and `2ND` `RCL` keys. To store a
+number into register `R00`, press:
 
 - `STO` `00`
 
@@ -1647,16 +1662,16 @@ functionality from the HP-42S, are not supported (as of v0.9.0).
 
 #### Storage Register Size
 
-The default number of registers is 25. The total number of registers can be
-changed up to a maximum of 100 using the `RSIZ` menu function under `MODE` menu
-folder (quickly accessed using the `MODE` button):
+The total number of registers is 25 by default (the minimum allowed), but can be
+increased up to a maximum of 100 using the `RSIZ` menu function under `MODE`
+menu folder (which can be accessed quickly using the `MODE` button):
 
 - ![ROOT > MODE](images/menu-root-mode.png)
     - ![ROOT > MODE > RSIZ](images/menu-root-mode-rsiz.png)
 
 **HP-42S Compatibility Note**: The `RSIZ` command is named `SIZE` on the HP-42S.
-On RPN83P, there are 3 "size" commands (`RSIZ`, `SSIZ`, `WSIZ`) and it seemed
-too confusing to use just `SIZE` so I named it `RSIZ` instead.
+On RPN83P, there are 3 different "size" commands (`RSIZ`, `SSIZ`, `WSIZ`) and it
+seemed too confusing to use just `SIZE` so I named it `RSIZ` instead.
 
 Here is an example of using `RSIZ` to change the number of registers to 50:
 
