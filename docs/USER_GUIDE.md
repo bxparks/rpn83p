@@ -22,7 +22,7 @@ RPN calculator app for the TI-83 Plus and TI-84 Plus inspired by the HP-42S.
     - [Screen Areas](#screen-areas)
     - [Input System](#input-system)
         - [Input Buttons](#input-buttons)
-        - [Cursor](#cursor)
+        - [Input Cursor](#input-cursor)
         - [Length Limits](#length-limits)
         - [DEL Key](#del-key)
         - [CLEAR Key](#clear-key)
@@ -392,10 +392,10 @@ the fixed display mode.
 
 The input system of RPN83P initially behaved like the HP-42S, using an
 underscore cursor that always remained at the end of the input string. With the
-addition of the scrollable cursor using the LEFT and RIGHT arrow keys, it is
-actually closer to the HP-48/49/50 series now. However, it should be emphasized
-that only the input system is similar to the 48/49/50. The computation system of
-RPN83P is still RPN, not RPL.
+implementation of the scrollable cursor using the LEFT and RIGHT arrow keys, it
+is actually closer to the HP-48/49/50 series now. However, it should be
+emphasized that only the input system is similar to the 48/49/50. The
+computation system of RPN83P is still RPN, not RPL.
 
 The input system is intended to be mostly self-explanatory and predictable.
 Hopefully most users will not need to read much of this section, except to
@@ -442,7 +442,7 @@ The following buttons are used to enter and edit a number in the input buffer:
           polar radian form, or
         - converts and existing complex delimiter to an `angle`-`degrees` pair
 
-#### Cursor
+#### Input Cursor
 
 The cursor of RPN83P is a blink block character. This is different from the
 HP-42S which uses an underscore character. The block character was selected
@@ -685,7 +685,7 @@ used by other HP calculators that support both Algebraic and RPN modes (e.g. the
 
 When a new number is entered (using the `0`-`9` digit keys), the press of the
 first digit causes the stack to **lift**, and the calculator enters into the
-**edit** mode. This mode is indicated by the appearance of an underscore `_`
+**edit** mode. This mode is indicated by the appearance of the blinking block
 cursor.
 
 A stack **lift** causes the previous `X` value to shift into the `Y` register,
