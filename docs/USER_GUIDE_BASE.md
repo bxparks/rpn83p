@@ -11,7 +11,7 @@ has been extracted from [USER_GUIDE.md](USER_GUIDE.md) due to its length.
 
 **Project Home**: https://github.com/bxparks/rpn83p
 
-## Table of Content
+## Table of Contents
 
 - [Base Overview](#base-overview)
 - [Base Modes](#base-modes)

@@ -16,7 +16,7 @@ complex numbers are *always* stored in rectangular format.
 
 **Project Home**: https://github.com/bxparks/rpn83p
 
-## Table of Content
+## Table of Contents
 
 - [Complex Numbers and Screen Size](#complex-numbers-and-screen-size)
 - [Complex Number Entry](#complex-number-entry)

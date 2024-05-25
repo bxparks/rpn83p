@@ -32,7 +32,7 @@ These features were inspired by various datetime libraries:
 
 **Project Home**: https://github.com/bxparks/rpn83p
 
-## Table of Content
+## Table of Contents
 
 - [Calendar, Time, and Timezones](#calendar-time-and-timezones)
     - [Gregorian Calendar](#gregorian-calendar)

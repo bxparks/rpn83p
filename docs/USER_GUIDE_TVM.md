@@ -10,7 +10,7 @@ solves the Time Value of Money equation. It has been extracted from
 
 **Project Home**: https://github.com/bxparks/rpn83p
 
-## Table of Content
+## Table of Contents
 
 - [TVM Functions](#tvm-functions)
 - [TVM Menu Buttons](#tvm-menu-buttons)

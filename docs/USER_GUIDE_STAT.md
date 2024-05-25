@@ -9,7 +9,7 @@ supports all statistical and curve fitting functionality of the HP-42S.
 
 **Project Home**: https://github.com/bxparks/rpn83p
 
-## Table of Content
+## Table of Contents
 
 - [STAT Overview](#stat-overview)
 - [STAT Registers](#stat-registers)
