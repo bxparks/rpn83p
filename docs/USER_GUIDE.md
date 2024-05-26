@@ -1890,42 +1890,47 @@ See [USER_GUIDE_DATE.md](USER_GUIDE_DATE.md) for full details.
 
 The RPN83P app interacts with the underlying TI-OS in the following ways.
 
-- The `RPN83STK` appVar holds the RPN stack registers (`X`, `Y`, `Z`, `T`,
-  `LastX`).
-- The `RPN83REG` appVar holds the 25 storage registers (`R00` to `R99`).
-- The `RPN83SAV` appVar preserves the internal state of the app upon exiting.
-  When the app is restarted, the appVar is read back in, so that it can continue
-  exactly where it had left off.
-- The `X` register of RPN83P is copied to the `ANS` variable in the TI-OS when
-  the RPN83P app exits. This means that the most recent `X` register from RPN83P
-  is available in the TI-OS calculator using `2ND` `ANS`.
-- When the RPN83P app is started, it examines the content of the `ANS` variable.
-  If it is a Real or Complex value (i.e. not a matrix, not a string, etc), then
-  it is copied into the `LastX` register of the RPN83P. Since the `LastX`
-  functionality is invoked in RPN83P as `2ND` `ANS`, this means that the TI-OS
-  `ANS` value becomes available in RPN83P as `2ND` `ANS`.
-- The 27 single-letter variables (A-Z,Theta) accessible to TI-BASIC are also
-  available in RPN83P through the `STO {letter}` and `RCL {letter}` commands.
-
-The RPN83P app uses some of the same flags and global variables for its `MODE`
-configuration as the TI-OS version of `MODE`. Starting with v0.9, these
-configurations are now decoupled and kept independent. Changing the `MODE`
-settings in one app will not cause changes to the other. Some of these `MODE`
-settings include:
-
-- trigonometric mode: `RAD` or `DEG`
-- floating point number settings: `FIX` (named `NORMAL` in TI-OS), `SCI`, `ENG`
-
-The TVM module in the RPN83P uses some of the same TI-OS floating point
-variables used by the `Finance` app (automatically provided by the TI-OS on the
-TI-84 Plus). Specifically, any values stored in the `N`, `I%YR`, `PV`, `PMT`,
-`FV`, and `P/YR` variables will reappear in the Finance app with slightly
-different names (`N`, `I%`, `PV`, `PMT`, `FV`, and `P/Y` respectively). The two
-variables that I could not synchronize between the 2 apps are:
-
-- `BEG`/`END` flag because I could not figure out where the Finance app stores
-  this, and
-- `C/Y` (compoundings per year) is always set equal to `P/YR` in the RPN83P app
+- AppVar (application variables)
+    - `RPN83REG` holds the storage registers (`R00` to `R99`).
+    - `RPN83SAV` preserves the internal state of the app upon exiting.
+    - `RPN83STA` holds the STAT registers (`ΣX` to `ΣYLX`).
+    - `RPN83STK` holds the RPN stack registers (`X`, `Y`, `Z`, `T`, `LastX`,
+      etc).
+    - When the app is restarted, the appVars are read back in, so that RPN83P
+      can continue exactly where it had left off.
+- ANS variable
+    - On RPN83P start:
+        - If `ANS` is a Real or Complex value (i.e. not a matrix, not a string,
+          etc.), then it is copied into the `LastX` register of the RPN83P.
+        - The `2ND ANS` key in RPN83P invokes the `LASTX` functionality which
+          then retrieves the TI-OS `ANS` value.
+    - On RPN83P exit:
+        - The `X` register of RPN83P is copied to the `ANS` variable in TI-OS.
+        - The `2ND ANS` key in TI-OS retrieves the `X` register from RPN83P.
+- 27 single-letter TI-OS variables (A-Z,Theta)
+    - Accessible through the `STO {letter}` and `RCL {letter}` commands.
+    - These variables provide another conduit for transferring numbers between
+      RPN83P and TI-OS (in addition to the `ANS` variable).
+- MODE configurations
+    - RPN83P `MODE` menu uses some of the same flags and global variables as the
+      TI-OS `MODE` command
+        - trigonometric mode: `RAD` or `DEG`
+        - floating point number settings: `FIX` (named `NORMAL` in TI-OS),
+          `SCI`, `ENG`
+    - These configurations are saved upon entering RPN83P then restored upon
+      exiting. Changing the `MODE` settings in one app will not cause changes to
+      the other.
+- TVM variables
+    - RPN83P uses some of the same TI-OS floating point variables used by the
+      `Finance` app (automatically provided by the TI-OS on the TI-84 Plus).
+        - `N`, `I%YR`, `PV`, `PMT`, `FV`, and `P/YR`
+    - These variables appear in the Finance app with slightly different names:
+        - `N`, `I%`, `PV`, `PMT`, `FV`, and `P/Y`
+    - Two variables not synchronized between the 2 apps are:
+        - `BEG`/`END` flag
+            - could not figure out where the Finance app stores this
+        - `C/Y` (compoundings per year)
+            - always set equal to `P/YR` in the RPN83P app
 
 ## Future Enhancements
 
