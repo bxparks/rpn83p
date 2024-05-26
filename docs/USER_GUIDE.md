@@ -23,15 +23,15 @@ RPN calculator app for the TI-83 Plus and TI-84 Plus inspired by the HP-42S.
     - [Input System](#input-system)
         - [Input Buttons](#input-buttons)
         - [Input Cursor](#input-cursor)
-        - [Length Limits](#length-limits)
+        - [Input Length Limits](#input-length-limits)
         - [DEL Key](#del-key)
         - [CLEAR Key](#clear-key)
         - [Decimal Point](#decimal-point)
         - [EE Key](#ee-key)
         - [Change Sign Key](#change-sign-key)
-        - [Record Input](#record-input)
+        - [Record Object Input](#record-object-input)
         - [Complex Number Input](#complex-number-input)
-        - [Other Differences](#other-differences)
+        - [Other Edge Cases](#other-edge-cases)
         - [Input Limitation](#input-limitations)
     - [RPN Stack](#rpn-stack)
         - [RPN Stack Structure](#rpn-stack-structure)
@@ -474,7 +474,7 @@ over a long sequence of input characters.
 | `RIGHT` (10 times)    | ![Input Cursor](images/input-cursor-long-3.png) |
 | `2ND RIGHT`           | ![Input Cursor](images/input-cursor-long-4.png) |
 
-#### Length Limits
+#### Input Length Limits
 
 In normal mode, the input system is configured to accept up to 20 digits because
 a TI-OS floating point number in scientific notation requires 20 digits to enter
@@ -569,7 +569,7 @@ the number.
     - if on a component of a Record object, it inverts the sign of the component
 - if the cursor position contains no number, then a negative sign is inserted
 
-#### Record Input
+#### Record Object Input
 
 The left-brace `{`, the right-brace `}`, and the comma `,` buttons are used for
 record types. They generally act to simply insert their respective characters
@@ -617,23 +617,55 @@ Here is an example of how the delimiters override or toggle each other:
 | `2ND ANGLE`           | ![Input Complex](images/input-complex-5.png) |
 | `2ND i`               | ![Input Complex](images/input-complex-6.png) |
 
-#### Other Differences
+#### Other Edge Cases
 
-Emulating the input system of the HP-42S was surprisingly complex and subtle,
-and some features and idiosyncrasies of the HP-42S could not be carried over due
-to incompatibilities with the underlying TI-OS. But some features were
-deliberately implemented differently.
+The input system of the HP-42S has idiosyncrasies which are sometimes
+surprisingly complex and subtle. Some were faithfully emulated on RPN83P, but
+others were not.
 
-For example, on the HP-42S, when the input buffer becomes empty after pressing
-the `<-` backspace button multiple times, or pressing the `CLEAR > CLX` menu
-button, the cursor disappears and the `X` register is shown as `0.0000`. But
-internally, the HP-42S is in a slightly different state than normal: the Stack
-Lift is disabled, and entering another number will replace the `0.0000` in the
-`X` register instead of lifting it up to the `Y` register. In RPN83P, when the
-`DEL` key or the `CLEAR` key is pressed, the `X` register always enters into
-Edit mode with an empty input buffer, and the cursor will *always* be shown with
-an empty string. The presence of the cursor indicates that the Edit Mode is in
-effect and that the Stack Lift is disabled.
+- On the HP-42S, when the input buffer becomes empty (e.g. after pressing the
+  `<-` backspace button multiple times, or pressing the `CLEAR > CLX` menu), the
+  cursor disappears and the `X` register shows something like `0.0000`. But
+  internally, the HP-42S is in a slightly different state than normal: the Stack
+  Lift is disabled, and entering another number will replace the `0.0000` in the
+  `X` register instead of lifting it up to the `Y` register.
+    - In RPN83P, when the `DEL` key or the `CLEAR` key is pressed, the `X`
+      register always enters into Edit mode with an empty input buffer, and the
+      cursor will *always* be shown with an empty string.
+    - The presence of the cursor indicates that the Edit Mode is in effect and
+      that the Stack Lift is disabled.
+- Functions which take no arguments and return 1 or more values were
+  surprisingly tricky to implement correctly. The canonical example of these
+  functions is the `2ND PI` key. RPN83P implements these functions in the same
+  way as the HP-42S:
+    - If Stack Lift is disabled (e.g. after an `ENTER`), then `2ND PI`
+      *replaces* the previous value in the `X` stack register.
+    - If the input system is in edit mode (displaying the blinking cursor),
+      *and* the input buffer is completely empty, then `2ND PI` *replaces* the
+      empty string.
+    - But if the input system is in edit mode and the input buffer is *not*
+      empty, then `2ND PI` causes the current input buffer to be terminated,
+      pushing the input buffer value into the `Y` register, and the `PI` value
+      is pushed into the `X` register.
+    - This is the one case where an empty string in the input buffer is not the
+      same as a `0`.
+- On the HP-42S, the `ON/EXIT` button always terminates the input and places the
+  input value into the `X` register. This seems to be a side-effect of the
+  `ON/EXIT` causing the exit of the current menu bar.
+    - On RPN83P, I decided that menu navigation should *not* cause input
+      termination whenever possible. This allows the user to start entering a
+      number, then navigate to a different menu folder, then continue entering
+      the number.
+    - Since the `ON/EXIT` button is used to navigate the menu hierarchy, it
+      cannot cause input termination, unlike the HP-42S.
+    - The only exceptions are menus which changes the rendering of the values on
+      the RPN stack, for example:
+        - `BASE` menu folder, which interprets the values on the RPN stack as
+          integers not floating point numbers
+        - `FIX`, `SCI`, `ENG`, which render floating point numbers with
+          different number of significant digits
+        - `RECT`, `PRAD`, `PDEG`, which render complex numbers in different
+          formats
 
 #### Input Limitations
 
