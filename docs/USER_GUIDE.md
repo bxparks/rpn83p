@@ -122,7 +122,7 @@ Summary of features:
       `>cm`, `>in`, `>um`, `>mil`, `>kg`, `>lbs`, `>g`, `>oz`, `>L`, `>gal`,
       `>mL`, `>floz`, `>kJ`, `>cal`, `>kW`, `>hp`
 - statistics and curve fitting, inspired by HP-42S
-    - statistics: `Sigma+`, `Sigma-`, `SUM`, `MEAN`, `WMN` (weighted mean),
+    - statistics: `Σ+`, `Σ-`, `SUM`, `MEAN`, `WMN` (weighted mean),
       `SDEV` (sample standard deviation), `SCOV` (sample covariance),
       `PDEV` (population standard deviation), `PCOV` (population covariance)
     - curve fitting: `Y>X`, `X>Y`, `SLOP` (slope), `YINT` (y intercept), `CORR`
@@ -1131,12 +1131,12 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
     - ![ROOT > STAT > Row1](images/menu-root-stat-1.png)
     - ![ROOT > STAT > Row2](images/menu-root-stat-2.png)
     - ![ROOT > STAT > Row3](images/menu-root-stat-3.png)
-    - `Sigma+`: add `Y` and `X` data point to STAT registers
-    - `Sigma-`: remove `Y` and `X` data point from STAT registers
-    - `ALLSigma`: collect statistical sums for all curve fit models
-    - `LINSigma`: collect statistical sums for the linear curve fit model
-    - `CLSigma`: clear STAT registers `[R11,R16]` (if LINSigma selected) or
-      `[R11,R23]` (if AllSigma selected)
+    - `Σ+`: add `Y` and `X` data point to STAT registers
+    - `Σ-`: remove `Y` and `X` data point from STAT registers
+    - `ALLΣ`: collect statistical sums for all curve fit models
+    - `LINΣ`: collect statistical sums for the linear curve fit model
+    - `CLΣ`: clear STAT registers `[R11,R16]` (if `LINΣ` selected) or
+      `[R11,R23]` (if `ALLΣ` selected)
     - `SUM`: return Sum of `Y` and Sum of `X` in the `Y` and `X` registers
     - `MEAN`: return average `<Y>` and `<X>` in the `Y` and `X` registers
     - `WMN`: return the weighted mean of `Y` and weighted mean of `X` in the `Y`
@@ -1161,21 +1161,20 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
         - ![ROOT > STAT > SIGMA > Row3](images/menu-root-stat-sigma-3.png)
         - Recall the given STAT register stored (follows the same convention as
           the [Plus42](https://thomasokken.com/plus42/) app)
-        - `SigmaX` - sum of `X`
-        - `SigmaX2` - sum of `X^2`
-        - `SigmaY` - sum of `Y`
-        - `SigmaY2` - sum of `Y^2`
-        - `SigmaXY` - sum of `XY`
-        - `SigmaN` - `N` total number of data points
-            - this should be labeled `Sigma 1` to be mathematically correct, but
-              it looks awkward in the UI
-        - `SigmaLX` - sum of `Ln(X)`
-        - `SigmaLX2` - sum of `Ln(X)^2`
-        - `SigmaLY` - sum of `Ln(Y)`
-        - `SigmaLY2` - sum of `Ln(Y)^2`
-        - `SigmaLXL` - sum of `Ln(X) Ln(Y)`
-        - `SigmaXLY` - sum of `X Ln(Y)`
-        - `SigmaYLX` - sum of `Y Ln(X)`
+        - `ΣX` - sum of `X`
+        - `ΣX2` - sum of `X^2`
+        - `ΣY` - sum of `Y`
+        - `ΣY2` - sum of `Y^2`
+        - `ΣXY` - sum of `XY`
+        - `ΣN` - `N` total number of data points (`Σ1` is more mathematically
+          correct, but that looks awkward in the UI)
+        - `ΣLX` - sum of `Ln(X)`
+        - `ΣLX2` - sum of `Ln(X)^2`
+        - `ΣLY` - sum of `Ln(Y)`
+        - `ΣLY2` - sum of `Ln(Y)^2`
+        - `ΣLXL` - sum of `Ln(X) Ln(Y)`
+        - `ΣXLY` - sum of `X Ln(Y)`
+        - `ΣYLX` - sum of `Y Ln(X)`
     - ![ROOT > STAT > CFIT](images/menu-root-stat-cfit.png) (`ROOT > STAT` >
       `CFIT`)
         - See Chapter 15 of the _HP-42S User's Manual_
@@ -1230,7 +1229,7 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
     - `CLX`: clear `X` stack register (stack lift disabled)
     - `CLST`: clear all RPN stack registers
     - `CLRG`: clear all storage registers `R00` to `R99`
-    - `CLSigma`: clear STAT storage registers [`R11`, `R16`] or [`R11`, `R23`]
+    - `CLΣ`: clear STAT storage registers [`R11`, `R16`] or [`R11`, `R23`]
     - `CLTV`: clear TVM variables and parameters
 - ![ROOT > MODE](images/menu-root-mode.png) (`ROOT > MODE`)
     - ![ROOT > MODE > Row1](images/menu-root-mode-1.png)
