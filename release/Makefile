@@ -25,6 +25,9 @@
 #	- https://stackoverflow.com/questions/13515893 (margin size)
 #	- https://stackoverflow.com/questions/23811002 (fontsize)
 #	- https://superuser.com/questions/1732392 (colored hyperlinks)
+#	- https://stackoverflow.com/questions/18178084 (Greek letters)
+#	- https://linuxconfig.org/how-to-install-latex-on-ubuntu-22-04-jammy-jellyfish-linux
+#	(installing xelatex on Ubuntu, $ sudo apt install texlive-xetex)
 #
 # I use `--from gfm` instead of `--from markdown` to handle embedded images
 # better. The `--from markdown` option separates out the images into separate
@@ -45,6 +48,7 @@ USER_GUIDE.pdf \
 USER_GUIDE_BASE.pdf \
 USER_GUIDE_COMPLEX.pdf \
 USER_GUIDE_DATE.pdf \
+USER_GUIDE_STAT.pdf \
 USER_GUIDE_TVM.pdf \
 rpn83p-example1.gif \
 rpn83p-example2.gif \
@@ -55,13 +59,17 @@ rpn83p.8xk
 ORIG_IMAGES := \
 $(wildcard ../docs/images/*.png) \
 $(wildcard ../docs/images/*.gif) \
-$(wildcard ../docs/images/date/*.png)
+$(wildcard ../docs/images/base/*.png) \
+$(wildcard ../docs/images/complex/*.png) \
+$(wildcard ../docs/images/date/*.png) \
+$(wildcard ../docs/images/stat/*.png)
 
 # Resized images are used for PDF files.
 RESIZED_IMAGES := \
 $(subst images/,resized/,$(ORIG_IMAGES))
 
 PANDOC_FLAGS := \
+--pdf-engine=xelatex \
 --variable geometry:margin=1in \
 --variable fontsize=12pt \
 --variable colorlinks=true \
@@ -81,6 +89,8 @@ MAGICK := convert
 rpn83p.zip: $(TARGETS)
 	rm -f $@
 	zip -r $@ $^
+
+#-----------------------------------------------------------------------------
 
 # Convert markdown to PDF.
 README.pdf: ../README.md Makefile $(RESIZED_IMAGES)
@@ -113,16 +123,29 @@ USER_GUIDE_DATE.pdf: ../docs/USER_GUIDE_DATE.md Makefile $(RESIZED_IMAGES)
 	mv -f ../docs/$@ .
 
 # Convert markdown to PDF.
+USER_GUIDE_STAT.pdf: ../docs/USER_GUIDE_STAT.md Makefile $(RESIZED_IMAGES)
+	sed -e 's:(images/:(resized/:g' < $< \
+		| (cd ../docs; pandoc $(PANDOC_FLAGS) -o $@)
+	mv -f ../docs/$@ .
+
+# Convert markdown to PDF.
 USER_GUIDE_TVM.pdf: ../docs/USER_GUIDE_TVM.md Makefile $(RESIZED_IMAGES)
 	sed -e 's:(images/:(resized/:g' < $< \
 		| (cd ../docs; pandoc $(PANDOC_FLAGS) -o $@)
 	mv -f ../docs/$@ .
 
 # Convert markdown to PDF.
-TVM.pdf: ../docs/TVM.md Makefile
+TVM.pdf: ../docs/TVM.md Makefile $(RESIZED_IMAGES)
 	sed -e 's:(images:(resized/:g' < $< \
 		| (cd ../docs; pandoc $(PANDOC_FLAGS) -o $@)
 	mv -f ../docs/$@ .
+
+# Copy the CHANGELOG.md as is, without conversion to PDF. It's just a text
+# file without any embedded images.
+CHANGELOG.md: ../CHANGELOG.md Makefile
+	cp -f $< $@
+
+#-----------------------------------------------------------------------------
 
 # Resize the PNG files under images/ to 75% before embedding into PDF.
 ../docs/resized/%.png: ../docs/images/%.png
@@ -130,8 +153,23 @@ TVM.pdf: ../docs/TVM.md Makefile
 	$(MAGICK) $< -adaptive-resize 75% $@
 
 # Resize the PNG files under images/date/ to 75% before embedding into PDF.
+../docs/resized/base/%.png: ../docs/images/base/%.png
+	@mkdir -p ../docs/resized/base
+	$(MAGICK) $< -adaptive-resize 75% $@
+
+# Resize the PNG files under images/complex/ to 75% before embedding into PDF.
+../docs/resized/complex/%.png: ../docs/images/complex/%.png
+	@mkdir -p ../docs/resized/complex
+	$(MAGICK) $< -adaptive-resize 75% $@
+
+# Resize the PNG files under images/date/ to 75% before embedding into PDF.
 ../docs/resized/date/%.png: ../docs/images/date/%.png
 	@mkdir -p ../docs/resized/date
+	$(MAGICK) $< -adaptive-resize 75% $@
+
+# Resize the PNG files under images/stat/ to 75% before embedding into PDF.
+../docs/resized/stat/%.png: ../docs/images/stat/%.png
+	@mkdir -p ../docs/resized/stat
 	$(MAGICK) $< -adaptive-resize 75% $@
 
 # Just copy the GIF files, no resizing. They take too much CPU time to resize.
@@ -141,10 +179,7 @@ TVM.pdf: ../docs/TVM.md Makefile
 	@mkdir -p ../docs/resized
 	cp -f $< $@
 
-# Copy the CHANGELOG.md as is, without conversion to PDF. It's just a text
-# file without any embedded images.
-CHANGELOG.md: ../CHANGELOG.md Makefile
-	cp -f $< $@
+#-----------------------------------------------------------------------------
 
 # Copy to local directory to place it at top level in the zip file.
 rpn83p.8xk: ../src/rpn83p.8xk
