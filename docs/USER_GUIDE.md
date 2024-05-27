@@ -191,7 +191,7 @@ a full-featured scientific RPN calculator. HP no longer makes scientific RPN
 calculators (the reissued HP-15C Collector's Edition may be a limited release).
 The prices for used HP calculators are unreasonably high. The only other
 alternatives are the offerings from SwissMicros which are in the $250-$300
-range. RPN83P offers access to a scientific RPN calculator on readily obtainable
+range. RPN83P offers access to a scientific RPN app on readily obtainable
 TI-83+/84+ calculators in the $20-$50 range. I hope RPN83P can be the gateway
 application that introduces new users to fun world of RPN calculators.
 
@@ -202,8 +202,8 @@ There are many facets to the "Why?" question. I will try to answer some of them.
 **Why HP-42S?**
 
 The HP-42S is the RPN calculator that I know best. I used it extensively in grad
-school. After graduating, I sold the calculator, which I have regretted later.
-Some people consider the HP-42S close to ["peak of perfection for the classic HP
+school. After graduating, I sold the calculator, which I regretted later. Some
+people consider the HP-42S close to ["peak of perfection for the classic HP
 calcs"](https://www.hpmuseum.org/cgi-sys/cgiwrap/hpmuseum/archv017.cgi?read=118462).
 
 It also has the advantage of having the
@@ -227,13 +227,12 @@ The RPN83P app is not a clone of the HP-42S for several reasons:
   TI-OS compared to the HP-42S (e.g. trigonometric functions on complex
   numbers). The HP-42S supports exponents up to +/-499, but the TI-OS supports
   exponents only to +/-99.
-- We can add additional useful features to RPN83P which were not originally
+- I have add additional useful features to RPN83P which were not originally
   included in the HP-42S (e.g. BASE operations from the HP-16C, and TVM
   functions from the HP-12C)
-- We can take advantage of the far large LCD screen of the TI-83+/84+, showing
-  show all 4 registers of the RPN stack, instead of just the 2 shown on the
-  HP-42S. We also have enough room to show the hierarchical menu bar at all
-  times.
+- The larger LCD screen of the TI-83+/84+ allows 4 registers of the RPN stack to
+  be shown, instead of just the 2 shown on the HP-42S. There is also enough room
+  to show the hierarchical menu bar at all times.
 
 **Why TI-83+/84+?**
 
@@ -270,15 +269,15 @@ Unfortunately in 2020, Texas Instruments decided to [disable assembly language
 programming](https://www.cemetech.net/news/2020/5/950/_/ti-83-premium-ceti-84-plus-ce-asmc-removal-updates)
 for the CE models with the release of OS 5.3.1 That forced the community to
 create a jailbreak for the CE models named
-(arTIfiCE)[https://www.cemetech.net/news/2020/9/959/_/artifice-restores-ce-native-code-for-now]
+[arTIfiCE](https://www.cemetech.net/news/2020/9/959/_/artifice-restores-ce-native-code-for-now)
 in 2020. The third party development community continues to reverse engineer and
-create tools for the CE model, but to me, the friction created by Texas
-Instruments did not make it worthwhile to create something like the RPN83P for
+create tools for the CE model. But to me, the friction created by Texas
+Instruments did not make it worthwhile to work on something like the RPN83P for
 the CE calculators.
 
 The final nail in the coffin, personally, is that the TI-84 Plus CE series uses
 a rechargeable Li-Polymer battery instead of the standard AAA batteries used by
-earlier models. These Li-Poly batteries have a finite lifetime of 3-5 years, and
+earlier models. These Li-Poly batteries have a finite lifetime, 3-5 years, and
 there are many reports of defective batteries on brand new units. In the future,
 these batteries will become difficult find, and may cost more than the
 calculator itself is worth. I did not want to invest in a calculator platform
@@ -287,10 +286,11 @@ that has a high chance of becoming useless e-waste in the future.
 **Why Not TI-89, 92+, Voyage 200?**
 
 The TI-89, 89 Titanium, 92 Plus, and Voyage 200 series of calculators use the
-Motorola 68000 microprocessor instead of the Z80 processor. An RPN program would
-be written in C. But when I researched the state of third party development
-tools for these calculators, I found that the development community was no
-longer active.
+Motorola 68000 microprocessor instead of the Z80 processor. Although they can be
+programmed in assembly language, a C compiler (or two?) is available for these
+calculators. But when I researched the state of third party development tools
+for these calculators, I found that the development community was no longer
+active.
 
 I could not find a set of understandable documentation that would tell me how to
 create a "hello world" application to get started for these calculators. In
@@ -299,8 +299,8 @@ find.
 
 **Why Not Casio?**
 
-A port or reimplementation of RPN83P may be created in the future on some models
-of Casio calculators which support third-party programming.
+A port or a reimplementation of RPN83P may be created in the future on some
+models of Casio calculators which support third-party programming.
 
 **Why Not A Smartphone?**
 
@@ -326,12 +326,12 @@ Hewlett-Packard is no longer in the business of making calculators. It sold off
 its calculator division to a company named Moravia in Europe. Moravia continues
 to make the HP-12C, the HP Prime, and a few other generic calculators using its
 HP license. Moravia reissued the HP-15C Collector's Edition a year ago, although
-that seems to be a limited rum production.
+that seems to be a limited run production.
 
 The used market for old HP calculators can seem out of control. The HP-42S in
-good working condition continues to get rare, and now sells for $200-$400 on
-eBay, which is a sum of money that I cannot justify spending. The HP-35s model
-is even worse, going for $300-$600.
+good working condition continues becomes more rare with each passing year, and
+now sells for $200-$400 on eBay, which is a sum of money that I cannot justify
+spending. The HP-35s model is even worse, going for $300-$600.
 
 There is a small company named SwissMicros which designs and sells a handful of
 RPN calculators based on some classic HP calculators (e.g. HP-41C, HP-12C,
@@ -339,10 +339,10 @@ HP-15C, HP-42S, HP-32Sii). They range from $150-$300 in price, which can be hard
 to justify for non-professional use.
 
 There are no affordable, entry-level, scientific RPN calculators made in the
-world today. This means that students on limited budget are not likely to be
-exposed to an RPN calculator. Without a fresh influx of new RPN calculator
-users, RPN calculators will slowly disappear as the previous RPN users slowly
-drift into old age.
+world today. This means that students on limited budget are unlikely to be
+exposed to an RPN calculator. Without an influx of new RPN calculator users, RPN
+calculators will slowly disappear as the previous RPN users slowly drift into
+old age.
 
 RPN83P hopes to be the easiest and cheapest gateway into the world of RPN
 calculators for the next generation of users.
@@ -350,12 +350,12 @@ calculators for the next generation of users.
 **Why Not RPL?**
 
 The easiest answer is that I do not know RPL. I have recently tried to learn RPL
-using the HP-50g calculator (now discontinued), but I have not been successful
-so far with my limited time. Even if I could learn RPL, I think it would be
-extremely difficult to implement RPL using Z80 assembly language, which I find
-to be far less productive compared to a high level language like C or C++. I
-also think that the number of potential users of RPL would be far smaller than
-RPN, so that makes me less motivated.
+using the HP-50g calculator (discontinued), but I have not been successful so
+far with my limited time. Even if I did learn RPL, I think it would be extremely
+difficult to implement RPL using Z80 assembly language. Assembly language is far
+less productive compared to a high level language like C or C++. I also think
+that the number of potential users of RPL would be far smaller than RPN, which
+makes me less motivated.
 
 There are other projects trying to keep RPL alive:
 
@@ -364,7 +364,7 @@ There are other projects trying to keep RPL alive:
 - [DB48x](http://joewing.calc.org): RPL implementation on the SwissMicros DM42
   and DM32 calculators
 
-I don't feel that it would be useful for me to duplicate those efforts.
+I don't think that it would be useful for me to duplicate those efforts.
 
 **Why Are Some Features Included and Others Missing?**
 
