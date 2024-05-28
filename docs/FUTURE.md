@@ -53,15 +53,15 @@ and more complicated features will get their own GitHub tickets.
       by RPN83P
     - it would be useful to allow the user to customize some of those buttons
       for quick access
-    - among the currently unassigned keys, here are some notes on which may or
-      may not be be available:
+    - among the currently unassigned keys, here are some notes on the ones that
+      may be available:
         - reserved for probable future use: `2ND INS`, `2ND LIST`, `2ND TEST`,
           `2ND CATALOG`, `2ND MEM`, `APPS`, `PRGM`, `VARS`, `"` (double quote)
         - reserved for potential future use: `XTTn`, `2ND DISTR`, `2ND MATRIX`,
-          `2ND [`, `2ND ]`, `ALPHA space`, `ALPHA ?`, `2ND LEFT`, `2ND RIGHT`
-          (`2ND UP` and `2ND DOWN` are used by the TI-OS to control the LCD
-          contrast)
-        - probably available: `2ND u`, `2ND v`, `2ND w`, `2ND L1` to `2ND L6`
+          `2ND [`, `2ND ]`, `ALPHA space`, `ALPHA ?` (`2ND UP` and `2ND DOWN`
+          are used by the TI-OS to control the LCD contrast)
+        - probably available: `2ND v`, `2ND w`, `2ND L1` to `2ND L6` (`2ND u`
+          now taken by the RollUp command)
         - inaccessible (labeled on the calculator keypad, but the SDK does not
           provide access to them): `ALPHA F1` to `ALPHA F5`, `ALPHA UP`, `ALPHA
           DOWN`, `ALPHA SOLVE`
@@ -105,31 +105,45 @@ and more complicated features will get their own GitHub tickets.
         - see [this discussion fragment on the
           MoHPC](https://www.hpmuseum.org/forum/thread-20867-post-184997.html#pid184997)
 - `TVM` (time value of money)
-    - Improve TVM Solver for `I%YR`.
-    - The current default initial guess is 0% and 100% so that positive interest
-      rates are required (because a sign change over the initial guesses are
-      required). If there is a rounding error, the actual numerical solution
-      could be slighlty negative, which would cause an `TVM Not Fount` error
-      message because a sign-change is currently required over the 2 initial
-      guesses.
-    - One solution could be use something like `-1%` for the lower guess, and
-      then check for a sign change over 2 sub-intervals: `[-1%,0%]` and
-      `[0%,100%]`. We also have to careful to detect cases where expected
-      solution is exactly `0%`.
-    - The terminating tolerance could be selectable or more intelligent.
-    - Maybe change the root solving algorithm from Secant method to Newton's
-      method for faster convergence.
+    - improve TVM Solver for `I%YR`
+        - The current default initial guess is 0% and 100% so that positive
+          interest rates are required (because a sign change over the initial
+          guesses are required). If there is a rounding error, the actual
+          numerical solution could be slighlty negative, which would cause an
+          `TVM Not Fount` error message because a sign-change is currently
+          required over the 2 initial guesses.
+        - One solution could be use something like `-1%` for the lower guess,
+          and then check for a sign change over 2 sub-intervals: `[-1%,0%]` and
+          `[0%,100%]`. We also have to careful to detect cases where expected
+          solution is exactly `0%`.
+        - The terminating tolerance could be selectable or more intelligent.
+        - Maybe change the root solving algorithm from Secant method to Newton's
+          method for faster convergence.
+    - support `C/YR` (compounding periods per year) as a separate parameter
+        - currently `C/YR` is set to be the same as `P/YR` (payments per year)
+          for ease of implementation
+        - there are apparently jurisdictions (Canada, UK) where it is common for
+          `C/YR` to be different from `P/YR`
 - auto-insert an implied `1` when `EE` is pressed in certain conditions
-    - if the `E` is pressed on the HP-42S, a `1` or `1.` or `-1` or `-1.` is
-      auto inserted into the input buffer under certain conditions
-    - this feature requires inserting extra characters into the input buffer
-      instead of changing the behavior of the input *parser*
-    - therefore, this is more difficult to implement in RPN83P versus the
-      HP-42S, because the RPN83P has far more data types (e.g. complex numbers,
-      Record types) so the input buffer code needs to understand the format of
-      those data types to do the right thing
-    - not sure if the amount of time and effort of this feature is worth the
-      saving of a single keystroke
+    - on the HP-42S, if the `E` is pressed when the input buffer contains
+      digits that can semantically parsed to a `0`, a `1` or `1.` or `-1` or
+      `-1.` is auto inserted into the input buffer
+        - the actual behavior seems a bit complicated to discern, depending on
+          whether `0` or `0.0` or `-0` or `-0.0` or other variations are in the
+          input buffer
+    - on the HP-50g, the behavior of the `EEX` button is similar, but not quite
+      the same
+        - it seems to invoke this feature only if the input buffer is empty
+        - if it contains a `0` or `-0`, the 50g does not appear to do anything
+          special with the `EEX` button
+    - the input buffer of RPN83P contains features from both the 42S and the
+      50g, so it becomes more difficult define the reasonable behavior of this
+      feature
+        - RPN83P supports more types than the 42S (complex numbers, Record
+          types)
+        - PRN83P supports scrollable input buffer like the 50g (where the LEFT
+          and RIGHT arrow keys can place the cursor in the middle of the input
+          buffer string)
 - `GCD` and `LCM` functions are slow
     - Could be made significantly faster using integer operations, instead of
       floating point operations.
@@ -208,7 +222,19 @@ and more complicated features will get their own GitHub tickets.
     - another feature of advanced HP calculators
     - depends on keystroke programming
     - the TI-OS already provides an integrator (`fnInt`), is that enough?
-    - See [Issue #22](https://github.com/bxparks/rpn83p/issues/22)
+    - See [Issue #022](https://github.com/bxparks/rpn83p/issues/22)
+- extend BASE functions to larger integer sizes and signed integers
+    - signed integers: 1's complement, 2's complement
+    - larger integers: 48-bit, 64-bit; maybe all sizes between 1 and 64
+      in increments of one?
+    - requires new integer type(s)
+    - requires rewriting almost all bitwise and integer routines
+    - BASE functions can no longer use TIOS floating point numbers, at least not
+      for WSIZ > 46 bits
+    - handle context switch between BASE mode and non-BASE mode properly when
+      new integer types are on the RPN stack
+    - if SHOW uses small font for base-2 numbers, it can display 64 digits using
+      the 4 lines that are available
 
 ## Highly Unlikely
 

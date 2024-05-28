@@ -8,7 +8,7 @@ features are available under the `ROOT > DATE` menu item in the 3rd row:
 
 Here is a quick summary of the features:
 
-- 7 new objects types (Date, Time, DateTime, TimeZone, ZonedDateTime, DayOfWeek,
+- 7 new data types (Date, Time, DateTime, TimeZone, ZonedDateTime, DayOfWeek,
   Duration)
 - determine if a given year is a leap year
 - calculate day of week (Monday-Sunday) from Date-like objects
@@ -32,7 +32,7 @@ These features were inspired by various datetime libraries:
 
 **Project Home**: https://github.com/bxparks/rpn83p
 
-## Table of Content
+## Table of Contents
 
 - [Calendar, Time, and Timezones](#calendar-time-and-timezones)
     - [Gregorian Calendar](#gregorian-calendar)
@@ -250,15 +250,18 @@ The following menus items are located under the `DATE` menu. A short synopsis of
 each menu function is listed here. More detailed descriptions are given in later
 subsections below.
 
-- ![ROOT MenuRow 3](images/date/menu-root-date.png)
-    - ![DATE MenuRow 1](images/date/menu-root-date-1.png)
-    - ![DATE MenuRow 2](images/date/menu-root-date-2.png)
-    - ![DATE MenuRow 3](images/date/menu-root-date-3.png)
-        - ![EPCH MenuRow 1](images/date/menu-root-date-epch-1.png)
-        - ![EPCH MenuRow 1](images/date/menu-root-date-epch-2.png)
-    - ![DATE MenuRow 4](images/date/menu-root-date-4.png)
-    - ![DATE MenuRow 5](images/date/menu-root-date-5.png)
-    - ![DATE MenuRow 6](images/date/menu-root-date-6.png)
+- ![ROOT > DATE](images/date/menu-root-date.png)
+    - ![ROOT > DATE > Row1](images/date/menu-root-date-1.png)
+    - ![ROOT > DATE > Row2](images/date/menu-root-date-2.png)
+    - ![ROOT > DATE > Row3](images/date/menu-root-date-3.png)
+        - `DOPS`
+            - ![ROOT > DATE > DOPS > Row1](images/date/menu-root-date-dops-1.png)
+        - `EPCH`
+            - ![ROOT > DATE > EPCH > Row1](images/date/menu-root-date-epch-1.png)
+            - ![ROOT > DATE > EPCH > Row2](images/date/menu-root-date-epch-2.png)
+        - `CLK`
+            - ![ROOT > DATE > CLK > Row1](images/date/menu-root-date-clk-1.png)
+            - ![ROOT > DATE > CLK > Row2](images/date/menu-root-date-clk-2.png)
     - `LEAP`: determine if given year is a leap year
     - `DOW`: calculate the DayOfWeek of given Date, DateTime, ZonedDateTime
     - `D>DY`: convert Date to Epoch days
@@ -271,7 +274,13 @@ subsections below.
     - `S>UT`: convert Epoch seconds to ZonedDateTime using UTC timezone
     - `TZ>H`: convert TimeZone to floating point hours
     - `H>TZ`: convert hours to TimeZone
-    - ![ROOT > DATE > EPCH](images/menu-root-date-epch.png)
+    - ![ROOT > DATE > DOPS](images/date/menu-root-date-dops.png)
+      (`ROOT > DATE > DOPS`)
+        - `DSHK`: shrink a ZonedDateTime or DateTime by truncating
+        - `DEXD`: extend Date or DateTime into DateTime or ZonedDateTime
+        - `DCUT`: cut (split) a ZonedDateTime or DateTime into smaller objects
+        - `DLNK`: link (merge) smaller objects into DateTime or ZonedDateTime
+    - ![ROOT > DATE > EPCH](images/date/menu-root-date-epch.png)
       (`ROOT > DATE > EPCH`)
         - `UNIX`: select Unix Epoch date of 1970-01-01
         - `NTP`: select NTP Epoch date of 1900-01-01
@@ -281,29 +290,27 @@ subsections below.
         - `CEPC`: select custom Epoch date
         - `EPC`: set custom Epoch date
         - `EPC?`: get current custom Epoch date
-    - `DSHK`: shrink a ZonedDateTime or DateTime by truncating
-    - `DEXD`: extend Date or DateTime into DateTime or ZonedDateTime
-    - `DCUT`: cut (split) a ZonedDateTime or DateTime into smaller objects
-    - `DLNK`: link (merge) smaller objects into DateTime or ZonedDateTime
-    - `NOW`: get the current hardware clock as Epoch seconds
-    - `NOWD`: get the current hardware clock as a Date
-    - `NOWT`: get the current hardware clock as a Time
-    - `NWDZ`: get the current hardware clock as a ZonedDateTime using the
-      Application timezone
-    - `NWUT`: get the current hardware clock as a ZonedDateTime using UTC
-      timezone
-    - `TZ`: set the Application timezone
-    - `TZ?`: get the current Application timezone
-    - `CTZ`: set the hardware clock timezone
-    - `CTZ?`: get the hardware clock timezone
-    - `SETC`: set the datetime of the hardware clock
+    - ![ROOT > DATE > CLK](images/date/menu-root-date-clk.png)
+      (`ROOT > DATE > CLK`)
+        - `NOW`: get the current hardware clock as Epoch seconds
+        - `NOWD`: get the current hardware clock as a Date
+        - `NOWT`: get the current hardware clock as a Time
+        - `NWDZ`: get the current hardware clock as a ZonedDateTime using the
+        Application timezone
+        - `NWUT`: get the current hardware clock as a ZonedDateTime using UTC
+        timezone
+        - `TZ`: set the Application timezone
+        - `TZ?`: get the current Application timezone
+        - `CTZ`: set the hardware clock timezone
+        - `CTZ?`: get the hardware clock timezone
+        - `SETC`: set the datetime of the hardware clock
 
 ## DATE Buttons
 
 Here is a screenshot of the calculator with various buttons that are assigned to
 `DATE` related functions:
 
-![DATE buttons](images/fullshot-date-buttons.jpg)
+![DATE buttons](images/fullshot-date-buttons.png)
 
 These buttons do *not* require the menu system to be in the `DATE` menu
 hierarchy to be active. For example, the arithmetic buttons `+`, `-`, and `*`
@@ -358,8 +365,8 @@ the entry of the Date objects requires the use of the comma `,` key, so the app
 now contains an option to control the behavior of this button under the `MODE`
 menu:
 
-- ![ROOT > MODE](images/date/menu-root-mode.png)
-    - ![ROOT > MODE > CommaEE](images/date/menu-root-mode-commaee.png)
+- ![ROOT > MODE](images/menu-root-mode.png)
+    - ![ROOT > MODE > CommaEE](images/menu-root-mode-commaee.png)
 
 If the `,EE` option is selected (factory default), the button behaves as labeled
 on the keyboard: the `,` button invokes the comma function, and `2ND EE` invokes
@@ -402,8 +409,8 @@ Experts](#data-entry-for-experts) section at the end of this document.
 In the `MODE` menu, there are 2 settings that affect how date objects are
 displayed:
 
-- ![ROOT > MODE](images/date/menu-root-mode.png)
-    - ![ROOT > MODE > ObjectFormatting](images/date/menu-root-mode-object-formatting.png)
+- ![ROOT > MODE](images/menu-root-mode.png)
+    - ![ROOT > MODE > ObjectFormatting](images/menu-root-mode-object-formatting.png)
 
 If the `{..}` (Raw Formatting) option is selected (factory default), the date
 objects will be displayed in their raw form using curly braces. This will be
@@ -602,8 +609,8 @@ For example, let's convert `15:35:01` to an integer, then back to a Time object:
 | **Keys**          | **MODE `{..}`**                           | **MODE `".."`**   |
 | ------------------| ---------------------                     | ----------------- |
 | `T{15,36,1}`      | ![](images/date/time-to-seconds-raw-1.png)   | ![](images/date/time-to-seconds-str-1.png) |
-| `D*>S`            | ![](images/date/time-to-seconds-raw-1.png)   | ![](images/date/time-to-seconds-str-2.png) |
-| `S>T`             | ![](images/date/time-to-seconds-raw-1.png)   | ![](images/date/time-to-seconds-str-3.png) |
+| `D*>S`            | ![](images/date/time-to-seconds-raw-2.png)   | ![](images/date/time-to-seconds-str-2.png) |
+| `S>T`             | ![](images/date/time-to-seconds-raw-3.png)   | ![](images/date/time-to-seconds-str-3.png) |
 
 ### DateTime Object
 
@@ -721,8 +728,47 @@ Here is an example of an invalid timezone whose `hour` and `minute` have the opp
 
 #### TimeZone Operations
 
-No arithmetic operations (addition, subtraction) are defined on TimeZone
-objects, because they did not seem useful for real-life calculations.
+Arithmetic operations (addition, subtraction) on TimeZone objects are defined
+mostly for consistency, and are not expected to be used often. They can be used
+to change from normal UTC offset to DST offset manually, for example, to go from
+UTC-08:00 for Pacific Standard Time in the US, to UTC-07:00 for Pacific Daylight
+Time during the summer months.
+
+Addition and subtraction operations are supported as shown in the following
+table:
+
+| **Operation**             | **Result** |
+| ------------------------- | ---------- |
+| {TimeZone} + {float}      | {TimeZone} |
+| {float} + {TimeZone}      | {TimeZone} |
+| {TimeZone} - {float}      | {TimeZone} |
+| {TimeZone} - {TimeZone}   | {float}    |
+| {float} - {TimeZone}      | INVALID    |
+
+When operating on `TimeZone` objects, float values are in units of `hours` and
+must be in multiples of 0.25 hours because UTC offsets must be in multiples of
+15 minutes.
+
+For example, let's add 1 hour to UTC-08:00 to get to UTC-07:00:
+
+| **Keys**          | **MODE `{..}`**                       | **MODE `".."`**   |
+| ------------------| ---------------------                 | ----------------- |
+| `TZ{-8,0}`        | ![](images/date/timezone-add-raw-1.png)   | ![](images/date/timezone-add-str-1.png) |
+| `ENTER`           | ![](images/date/timezone-add-raw-2.png)   | ![](images/date/timezone-add-str-2.png) |
+| `1`               | ![](images/date/timezone-add-raw-3.png)   | ![](images/date/timezone-add-str-3.png) |
+| `+`               | ![](images/date/timezone-add-raw-4.png)   | ![](images/date/timezone-add-str-4.png) |
+
+We can subtract 2 TimeZone objects to obtain the number of hours between the 2
+timezones:
+
+| **Keys**          | **MODE `{..}`**                       | **MODE `".."`**   |
+| ------------------| ---------------------                 | ----------------- |
+| `TZ{1,0}`         | ![](images/date/timezone-sub-raw-1.png)   | ![](images/date/timezone-sub-str-1.png) |
+| `ENTER`           | ![](images/date/timezone-sub-raw-2.png)   | ![](images/date/timezone-sub-str-2.png) |
+| `TZ{-8,0}`        | ![](images/date/timezone-sub-raw-3.png)   | ![](images/date/timezone-sub-str-3.png) |
+| `-`               | ![](images/date/timezone-sub-raw-4.png)   | ![](images/date/timezone-sub-str-4.png) |
+
+There is a 9-hour difference from UTC+01:00 and UTC-08:00.
 
 #### TimeZone to Hours Conversion
 
@@ -965,14 +1011,14 @@ and 4 seconds) using the colon-shortcut notation:
 
 | **Keys**  | **MODE `{..}`**                               | **MODE `".."`**   |
 | --------- | ---------------------                         | ----------------- |
-| `1:D`     | ![](images/date/duration-day-raw-1.png)       | ![](images/date/duration-day-str-1.png) |
-| `ENTER`   | ![](images/date/duration-day-raw-2.png)       | ![](images/date/duration-day-str-2.png) |
-| `2:H`     | ![](images/date/duration-hour-raw-1.png)      | ![](images/date/duration-hour-str-1.png) |
-| `ENTER`   | ![](images/date/duration-hour-raw-2.png)      | ![](images/date/duration-hour-str-2.png) |
-| `3:M`     | ![](images/date/duration-minute-raw-1.png)    | ![](images/date/duration-minute-str-1.png) |
-| `ENTER`   | ![](images/date/duration-minute-raw-2.png)    | ![](images/date/duration-minute-str-2.png) |
-| `4:S`     | ![](images/date/duration-second-raw-1.png)    | ![](images/date/duration-second-str-1.png) |
-| `ENTER`   | ![](images/date/duration-second-raw-2.png)    | ![](images/date/duration-second-str-2.png) |
+| `1:D`     | ![](images/date/duration-colon-day-raw-1.png)       | ![](images/date/duration-colon-day-str-1.png) |
+| `ENTER`   | ![](images/date/duration-colon-day-raw-2.png)       | ![](images/date/duration-colon-day-str-2.png) |
+| `2:H`     | ![](images/date/duration-colon-hour-raw-1.png)      | ![](images/date/duration-colon-hour-str-1.png) |
+| `ENTER`   | ![](images/date/duration-colon-hour-raw-2.png)      | ![](images/date/duration-colon-hour-str-2.png) |
+| `3:M`     | ![](images/date/duration-colon-minute-raw-1.png)    | ![](images/date/duration-colon-minute-str-1.png) |
+| `ENTER`   | ![](images/date/duration-colon-minute-raw-2.png)    | ![](images/date/duration-colon-minute-str-2.png) |
+| `4:S`     | ![](images/date/duration-colon-second-raw-1.png)    | ![](images/date/duration-colon-second-str-1.png) |
+| `ENTER`   | ![](images/date/duration-colon-second-raw-2.png)    | ![](images/date/duration-colon-second-str-2.png) |
 
 **Note**: Only a single colon-modifier can be entered on a single line. Multiple
 colon-modifiers separated by spaces (e.g. `2:H 4:M`) are not supported. This
@@ -1045,6 +1091,11 @@ be used where an integer would normally be used:
 | {Duration} + {DateTime}       | {DateTime}        |
 | {DateTime} - {Duration}       | {DateTime}        |
 | {Duration} - {DateTime}       | INVALID           |
+|                               |                   |
+| {TimeZone} + {Duration}       | {TimeZone}        |
+| {Duration} + {TimeZone}       | {TimeZone}        |
+| {TimeZone} - {Duration}       | {TimeZone}        |
+| {Duration} - {TimeZone}       | INVALID           |
 |                               |                   |
 | {ZonedDateTime} + {Duration}  | {ZonedDateTime}   |
 | {Duration} + {ZonedDateTime}  | {ZonedDateTime}   |
@@ -1192,16 +1243,15 @@ The following predefined epoch dates can be selected:
     - An epoch date used by some 32-bit systems to avoid the
     [Year 2038 problem](https://en.wikipedia.org/wiki/Year_2038_problem)
 - `CEPC`:![EPCH CEPC](images/date/menu-root-date-epch-cepc.png)
-    - user-configurable custom epoch date, set using the `EPC` menu (see below
-      for instructions on how to configurable this)
-    - the factory default is `2050-01-01`
+    - select the custom epoch date (factory default: `2050-01-01`)
+    - the custom epoch date can be changed using the `EPC` menu item (see below)
 
 ### Custom Epoch Date
 
-The custom Epoch date can be set using the `EPC` (set epoch) menu function. The
-current custom Epoch date value can be retrieved using the `EPC?` menu function.
-For example, let's view the current custom Epoch date, then set it to
-`2100-01-01`:
+The custom Epoch date can be changed using the `EPC` (set epoch date) menu
+function. The current custom Epoch date value can be retrieved using the `EPC?`
+(get epoch date) menu function. For example, let's view the current custom Epoch
+date, then set it to `2100-01-01`:
 
 | **Keys**          | **MODE `{..}`**                           | **MODE `".."`**   |
 | -----------       | ---------------------                     | ----------------- |
@@ -1209,6 +1259,10 @@ For example, let's view the current custom Epoch date, then set it to
 | `D{2100,1,1}`     | ![](images/date/customepoch-raw-2.png)    | ![](images/date/customepoch-str-2.png) |
 | `EPC`             | ![](images/date/customepoch-raw-3.png)    | ![](images/date/customepoch-str-3.png) |
 | `EPC?`            | ![](images/date/customepoch-raw-4.png)    | ![](images/date/customepoch-str-4.png) |
+
+Notice that when the `EPC` (set epoch date) command is invoked, the epoch
+selection automatically changes to `CEPC` (custom epoch date) and the dot next
+to the `CEPC` menu appears.
 
 ### Epoch Conversions
 
@@ -1254,7 +1308,7 @@ that step:
 | `D*>S`                            | ![](images/date/epochseconds-raw-5.png)   | ![](images/date/epochseconds-str-5.png) |
 | `DOWN` `EPCH` `NTP`               | ![](images/date/epochseconds-raw-6.png)   | ![](images/date/epochseconds-str-6.png) |
 | `ON/EXIT` `UP`                    | ![](images/date/epochseconds-raw-7.png)   | ![](images/date/epochseconds-str-7.png) |
-| `2ND ANS` (LastX)                 | ![](images/date/epochseconds-raw-8.png)   | ![](images/date/epochseconds-str-8.png) |
+| `2ND ANS` (LASTX)                 | ![](images/date/epochseconds-raw-8.png)   | ![](images/date/epochseconds-str-8.png) |
 | `D*>S`                            | ![](images/date/epochseconds-raw-9.png)   | ![](images/date/epochseconds-str-9.png) |
 
 ### Epoch Seconds Range
@@ -1274,24 +1328,24 @@ The TI-84+ and TI-84+SE models include a real time clock (RTC) chip, unlike the
 earlier 83+ and 83+SE models. This allows the 84+ models to set and display the
 current date and time.
 
-The menu items which related to the RTC are the last 2 rows of the `DATE` menu
-hierarchy:
+The menu items which related to the RTC are under the `CLK` menu folder:
 
-- ![ROOT > DATE > Row 5](images/date/menu-root-date-5.png)
-    - `NOW`: return the current date-time as epochseconds from the current Epoch
-      date
-    - `NOWD`: return the current date-time as a `Date` object
-    - `NOWT`: return the current date-time as a `Time` object
-    - `NWDZ`: return the current date-time as a `ZonedDateTime` object using the
-      Application Timezone
-    - `NWUT`: return the current date-time as a `ZonedDateTime` object using the
-      UTC timezone
-- ![ROOT > DATE > Row 6](images/date/menu-root-date-6.png)
-    - `TZ`: set the Application Timezone
-    - `TZ?`: retrieve the Application Timezone
-    - `CTZ`: set the Clock Timezone
-    - `CTZ?`: retrieve the Clock Timezone
-    - `SETC`: set the date and time of the Clock
+- ![ROOT > DATE > CLK](images/date/menu-root-date-clk.png)
+    - ![ROOT > DATE > CLK > Row1](images/date/menu-root-date-clk-1.png)
+        - `NOW`: return the current date-time as epochseconds from the current
+          Epoch date
+        - `NOWD`: return the current date-time as a `Date` object
+        - `NOWT`: return the current date-time as a `Time` object
+        - `NWDZ`: return the current date-time as a `ZonedDateTime` object using
+          the Application Timezone
+        - `NWUT`: return the current date-time as a `ZonedDateTime` object using
+          the UTC timezone
+    - ![ROOT > DATE > CLK > Row2](images/date/menu-root-date-clk-1.png)
+        - `TZ`: set the Application Timezone
+        - `TZ?`: retrieve the Application Timezone
+        - `CTZ`: set the Clock Timezone
+        - `CTZ?`: retrieve the Clock Timezone
+        - `SETC`: set the date and time of the Clock
 
 Before we can use retrieve the current date and time from the hardware
 clock (RTC) using the various `NOW` and `NWxx` menu commands, we must configure
@@ -1304,7 +1358,7 @@ Before we can set the hardware clock's datetime with the `SETC` command,
 we must set its timezone using the `CTZ` menu command. The `CTZ?` command
 retrieves the current timezone:
 
-![ROOT > DATE > CTZ](images/date/menu-root-date-ctz.png)
+![ROOT > DATE > CLK > CTZ](images/date/menu-root-date-clk-ctz.png)
 
 There are 2 options which seem useful:
 
@@ -1350,7 +1404,7 @@ like TI-OS (i.e. Windows) through the `CTZ` configuration.
 Once the timezone of the hardware clock is set, the actual date-time of the
 clock can be configured using the `SETC` (set clock) command:
 
-![ROOT > DATE > SETC](images/date/menu-root-date-setc.png)
+![ROOT > DATE > CLK > SETC](images/date/menu-root-date-clk-setc.png)
 
 The `SETC` command takes a ZonedDateTime value as the argument, like this:
 
@@ -1370,7 +1424,7 @@ converted into an epochseconds before being handed over to the hardware clock.
 In addition to the timezone of the RTC, RPN83P also allows the **Application**
 Timezone to be set using the `TZ` and `TZ?` commands:
 
-![ROOT > DATE > TZ](images/date/menu-root-date-tz.png)
+![ROOT > DATE > CLK > TZ](images/date/menu-root-date-clk-tz.png)
 
 The Application Timezone is the timezone inserted into a ZonedDateTime object
 when a particular function returns a ZonedDateTime. Currently, the 2 commands
@@ -1418,11 +1472,14 @@ here will be in `UTC-07:00`.
 ## Date Type Conversions
 
 Sometimes we want to combined the Date and Time and TimeZone objects into bigger
-objects, or take apart bigger objects into smaller components. Row 4 of the
-`DATE` menu (![](images/date/menu-root-date-4.png)) contains menu items
-which allow those operations to be performed. For ease of use, these menu
-functions are also available on the keyboard, by overloading some button
-functions:
+objects, or take apart bigger objects into smaller components. The `DOPS` menu
+folder contains menu items to support those operations:
+
+- ![ROOT > DATE > DOPS](images/date/menu-root-date-dops.png)
+    - ![ROOT > DATE > DOPS > Row1](images/date/menu-root-date-dops-1.png)
+
+For ease of use, these menu functions are also available on the keyboard, by
+overloading some button functions:
 
 - `DSHK` (keyboard: `2ND SQRT`)
 - `DEXD` (keyboard: `X^2`
@@ -1586,7 +1643,7 @@ terminator is **optional**. Let's unpack that:
     - 3 arguments: Date `D{..}`
     - 4 arguments: Duration `DR{..}`
     - 6 arguments: DateTime `DT{..}`
-    - 8 arguments: ZonedDateTime `DT{..}`
+    - 8 arguments: ZonedDateTime `DZ{..}`
     - DayOfWeek: not supported, arity of 1 is reserved for future use
     - Time: not supported because arity of 3 conflicts with Date which has the
       same arity
