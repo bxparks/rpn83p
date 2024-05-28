@@ -1940,9 +1940,8 @@ record objects (e.g. Date, Time, DateTime) defined in
 
 ### NUM Functions
 
-The functions under the `NUM` menu folder are functions, operating on
-floating point or integer numbers, which don't quite fit into one of the other
-major categories:
+The functions under the `NUM` menu folder are functions which don't quite fit
+into one of the other major categories:
 
 - ![ROOT > NUM](images/menu-root-num.png) (`ROOT > NUM`)
     - ![ROOT > NUM > Row1](images/menu-root-num-1.png)
@@ -1955,8 +1954,7 @@ convention used by the HP-42S or other HP calculators, and their placement in
 the `NUM` menu folder follows the organization of the TI-OS on the TI-83+/84+
 themselves where many of these are placed under the `NUM` menu.
 
-Below are some expanded comments on a couple of the features under the `NUM`
-menu folder.
+Below are some expanded comments on a few features under the `NUM` menu folder.
 
 #### Prime Factors
 
