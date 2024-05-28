@@ -111,7 +111,7 @@ Summary of features:
 - all math functions with dedicated buttons on the TI-83 Plus and TI-84 Plus
     - arithmetic: `/`, `*`, `-`, `+`
     - algebraic: `1/X`, `X^2`, `SQRT`, `^` (i.e. `Y^X`)
-    - transcendental: `LOG`, `10^X`, `LN`, `e^X`
+    - transcendental: `LOG`, `10^X`, `LN`, `E^X`
     - trigonometric: `SIN`, `COS`, `TAN`, `ASIN`, `ACOS`, `ATAN`
     - constants: `PI` and `E`
 - additional menu functions
@@ -1189,7 +1189,7 @@ supported by the RPN83P app.
     - `SIN`, `COS`, `TAN`
     - `2ND` `SIN^-1`, `2ND` `COS^-1`, `2ND` `TAN^-1`
 - transcendental
-    - `LOG`, `10^X`, `LN`, `e^X`
+    - `LOG`, `10^X`, `LN`, `E^X`
 - constants
     - `PI`, `E`
 

@@ -303,7 +303,7 @@ RPN83P functions have been extended to support complex numbers:
 
 - arithmetic: `+`, `-`, `*`, `/`
 - algebraic: `1/X`, `X^2`, `SQRT`, `X^3`, `3ROOTX`, `Y^X`, `XROOTY`
-- transcendental: `LOG`, `10^X`, `LN`, `e^X`, `LOG2`, `2^X`, `LOGB`
+- transcendental: `LOG`, `10^X`, `LN`, `E^X`, `LOG2`, `2^X`, `LOGB`
 
 Trigonometric and hyperbolic functions do *not* support complex numbers because
 the underlying TI-OS functions do not support them.
