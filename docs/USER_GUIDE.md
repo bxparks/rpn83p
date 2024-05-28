@@ -84,8 +84,8 @@ inspired mostly by the [HP-42S](https://en.wikipedia.org/wiki/HP-42S)
 calculator, with some significant features from the
 [HP-12C](https://en.wikipedia.org/wiki/HP-12C) and the
 [HP-16C](https://en.wikipedia.org/wiki/HP-16C). RPN83P also hopes to be the
-easiest and cheapest gateway app that introduces a new generation of users to
-the beauty and power of RPN calculators.
+easiest and cheapest gateway app that introduces new users to the beauty and
+power of RPN calculators.
 
 RPN83P is a flash application written in Z80 assembly language that consumes 3
 pages (48 kiB) of flash memory. Since it is stored in flash, it is preserved if
