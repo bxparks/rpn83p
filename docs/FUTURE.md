@@ -14,7 +14,7 @@ because it is faster and easier to use compared to a web app, especially for
 small features that can be described in a few sentences. Usually only the larger
 and more complicated features will get their own GitHub tickets.
 
-**Version**: 0.10.0 (2024-03-31)
+**Version**: 0.11.0 (2024-05-28)
 
 **Parent Document**: [USER_GUIDE.md](USER_GUIDE.md)
 
@@ -30,15 +30,26 @@ and more complicated features will get their own GitHub tickets.
 
 ## Near Future
 
-- differentiate menu folders from regular menu items using a different UI
-    - see [Issue#20](https://github.com/bxparks/rpn83p/issues/20)
-- bigger RPN stack
-    - linking and unlinking a complex number to and from its 2 components
-      effectively reduces the stack size by 1
-    - an option to increase the size to 5 or maybe 8 seems worthwhile
-    - should the stack size be user-configurable, say between 4 and 8?
-    - regardless of whether it should be 5 or 8 levels, an infinite stack (like
-      RPL or the NSTK mode of Free42) is *not* a feature that is appealing to me
+- `TVM` (time value of money)
+    - improve TVM Solver for `I%YR`
+        - The current default initial guess is 0% and 100% so that positive
+          interest rates are required (because a sign change over the initial
+          guesses are required). If there is a rounding error, the actual
+          numerical solution could be slighlty negative, which would cause an
+          `TVM Not Fount` error message because a sign-change is currently
+          required over the 2 initial guesses.
+        - One solution could be use something like `-1%` for the lower guess,
+          and then check for a sign change over 2 sub-intervals: `[-1%,0%]` and
+          `[0%,100%]`. We also have to careful to detect cases where expected
+          solution is exactly `0%`.
+        - The terminating tolerance could be selectable or more intelligent.
+        - Maybe change the root solving algorithm from Secant method to Newton's
+          method for faster convergence.
+    - support `C/YR` (compounding periods per year) as a separate parameter
+        - currently `C/YR` is set to be the same as `P/YR` (payments per year)
+          for ease of implementation
+        - there are apparently jurisdictions (Canada, UK) where it is common for
+          `C/YR` to be different from `P/YR`
 - add a `ROOT > CLR > CLAL` (Clear All) menu function
     - becomes useful as more features and configuration options are added
 - allow numbers in any base to be entered regardless of the BASE mode
@@ -104,26 +115,6 @@ and more complicated features will get their own GitHub tickets.
           result)
         - see [this discussion fragment on the
           MoHPC](https://www.hpmuseum.org/forum/thread-20867-post-184997.html#pid184997)
-- `TVM` (time value of money)
-    - improve TVM Solver for `I%YR`
-        - The current default initial guess is 0% and 100% so that positive
-          interest rates are required (because a sign change over the initial
-          guesses are required). If there is a rounding error, the actual
-          numerical solution could be slighlty negative, which would cause an
-          `TVM Not Fount` error message because a sign-change is currently
-          required over the 2 initial guesses.
-        - One solution could be use something like `-1%` for the lower guess,
-          and then check for a sign change over 2 sub-intervals: `[-1%,0%]` and
-          `[0%,100%]`. We also have to careful to detect cases where expected
-          solution is exactly `0%`.
-        - The terminating tolerance could be selectable or more intelligent.
-        - Maybe change the root solving algorithm from Secant method to Newton's
-          method for faster convergence.
-    - support `C/YR` (compounding periods per year) as a separate parameter
-        - currently `C/YR` is set to be the same as `P/YR` (payments per year)
-          for ease of implementation
-        - there are apparently jurisdictions (Canada, UK) where it is common for
-          `C/YR` to be different from `P/YR`
 - auto-insert an implied `1` when `EE` is pressed in certain conditions
     - on the HP-42S, if the `E` is pressed when the input buffer contains
       digits that can semantically parsed to a `0`, a `1` or `1.` or `-1` or
