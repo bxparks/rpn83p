@@ -83,12 +83,14 @@ series](https://en.wikipedia.org/wiki/TI-84_Plus_series) calculators. The app is
 inspired mostly by the [HP-42S](https://en.wikipedia.org/wiki/HP-42S)
 calculator, with some significant features from the
 [HP-12C](https://en.wikipedia.org/wiki/HP-12C) and the
-[HP-16C](https://en.wikipedia.org/wiki/HP-16C).
+[HP-16C](https://en.wikipedia.org/wiki/HP-16C). RPN83P also hopes to be the
+easiest and cheapest gateway app that introduces a new generation of users to
+the beauty and power of RPN calculators.
 
-The RPN83P is a flash application written in Z80 assembly language that consumes
-3 pages (48 kiB) of flash memory. Since it is stored in flash, it is preserved
-if the RAM is cleared. It consumes about 1025 to 2535 bytes of TI-OS RAM through
-4 AppVars, depending on the number of storage registers: `RPN83REG` (500 to 1925
+RPN83P is a flash application written in Z80 assembly language that consumes 3
+pages (48 kiB) of flash memory. Since it is stored in flash, it is preserved if
+the RAM is cleared. It consumes about 1025 to 2535 bytes of TI-OS RAM through 4
+AppVars, depending on the number of storage registers: `RPN83REG` (500 to 1925
 bytes), `RPN83SAV` (142 byte), `RPN83STA` (272 bytes), and `RPN83STK` (120 to
 196 bytes).
 
@@ -202,8 +204,8 @@ The prices for used HP calculators are unreasonably high. The only other
 alternatives are the offerings from SwissMicros which are in the $150-$300
 range. RPN83P offers access to a scientific RPN app on readily obtainable
 TI-83+/84+ calculators in the $20-$50 range. I hope RPN83P can be the gateway
-application that introduces a new generation of users to the beauty and power of
-RPN calculators.
+application that introduces a new generation of users to the usefulness of RPN
+calculators.
 
 ### Long Answer
 
@@ -375,7 +377,7 @@ At the other end of the spectrum, there are no affordable, entry-level,
 scientific RPN calculators made in the world today. This means that students on
 limited budget are unlikely to be exposed to an RPN calculator. Without an
 influx of new RPN users, RPN calculators will slowly disappear as the previous
-generation of RPN users slowly drift into old age.
+generation of RPN users slowly drifts into old age.
 
 RPN83P hopes to be the easiest and cheapest gateway into the world of RPN
 calculators for the next generation of users.
