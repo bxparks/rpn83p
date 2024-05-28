@@ -5,7 +5,7 @@ allow numbers to be converted between 4 different bases (DEC, HEX, OCT, and BIN)
 and support various arithmetic and bitwise operations similar to the HP-16C. It
 has been extracted from [USER_GUIDE.md](USER_GUIDE.md) due to its length.
 
-**Version**: 0.11.0-dev (2024-05-16)
+**Version**: 0.11.0 (2024-05-28)
 
 **Parent Document**: [USER_GUIDE.md](USER_GUIDE.md)
 

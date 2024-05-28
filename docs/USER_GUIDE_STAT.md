@@ -3,7 +3,7 @@
 This document describes the `STAT` functions of the RPN83P application which
 supports all statistical and curve fitting functionality of the HP-42S.
 
-**Version**: 0.11.0-dev (2024-05-16)
+**Version**: 0.11.0 (2024-05-28)
 
 **Parent Document**: [USER_GUIDE.md](USER_GUIDE.md)
 

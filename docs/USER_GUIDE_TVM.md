@@ -4,7 +4,7 @@ This document describes the `TVM` functions of the RPN83P application which
 solves the Time Value of Money equation. It has been extracted from
 [USER_GUIDE.md](USER_GUIDE.md) due to its length.
 
-**Version**: 0.11.0-dev (2024-05-16)
+**Version**: 0.11.0 (2024-05-28)
 
 **Parent Document**: [USER_GUIDE.md](USER_GUIDE.md)
 
