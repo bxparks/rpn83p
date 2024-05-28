@@ -1950,6 +1950,14 @@ major categories:
     - ![ROOT > NUM > Row3](images/menu-root-num-3.png)
     - ![ROOT > NUM > Row4](images/menu-root-num-4.png)
 
+I hope that most of these are self-explanatory. The names roughly follow the
+convention used by the HP-42S or other HP calculators, and their placement in
+the `NUM` menu folder follows the organization of the TI-OS on the TI-83+/84+
+themselves where many of these are placed under the `NUM` menu.
+
+Below are some expanded comments on a couple of the features under the `NUM`
+menu folder.
+
 #### Prime Factors
 
 The `PRIM` function calculates the lowest prime factor of the number in `X`. The
@@ -2003,12 +2011,8 @@ Break` message.
 #### Floating Point Rounding
 
 There are 3 menu functions under the `ROOT > NUM` menu group that provide
-rounding functions:
-
-- ![ROOT > NUM](images/menu-root-num.png)
-    - ![ROOT > NUM > RoundingFunctions](images/menu-root-num-4.png)
-
-They round the floating point number in different ways:
+rounding functions: `RNDF`, `RNDN`, and `RNDG`. They round the floating point
+number in different ways:
 
 - `RNDF`
     - rounds to the number of digits after the decimal point specified by the
@@ -2060,9 +2064,9 @@ using the various functions.
 ## Advanced Modules
 
 Each module below is a collection of related functions that are related to each
-other in some self-consistent way. The modules can interact with other parts of
-the RPN83P application through the RPN stack or storage registers. But for the
-most part, they are self-contained. Each module is large enough that its
+other in some consistent way. The modules can interact with other parts of the
+RPN83P application through the RPN stack or storage registers. But for the most
+part, they are self-contained. Each module is large enough that its
 documentation was extracted into a separate document for ease of maintenance.
 
 ### BASE Functions
