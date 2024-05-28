@@ -302,7 +302,7 @@ are transparently invoked by using a complex number argument. The following
 RPN83P functions have been extended to support complex numbers:
 
 - arithmetic: `+`, `-`, `*`, `/`
-- algebraic: `1/X`, `X^2`, `SQRT`, `X^3`, `3RootX`, `Y^X`, `XRootY`
+- algebraic: `1/X`, `X^2`, `SQRT`, `X^3`, `3ROOTX`, `Y^X`, `XROOTY`
 - transcendental: `LOG`, `10^X`, `LN`, `e^X`, `LOG2`, `2^X`, `LOGB`
 
 Trigonometric and hyperbolic functions do *not* support complex numbers because
@@ -440,7 +440,7 @@ There are currently only a few functions which are affected by these settings:
 - `LOG2`, for arguments < 0
 - `LOGB`, for arguments < 0
 - `Y^X`, for `Y<0` and non-integer values of `X`
-- `XRootY`, for `Y<0` and non-integer values of `X`
+- `XROOTY`, for `Y<0` and non-integer values of `X`
 
 If `RRES` is selected, then these functions will return an `Err: Domain` error
 message. If `CRES` is selected, these functions will return a complex value.

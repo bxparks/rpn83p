@@ -45,7 +45,7 @@ Summary of features:
       part), `FP` (fractional part), `FLR` (floor), `CEIL` (ceiling), `NEAR`
       (nearest integer), `ABS`, `SIGN`, `MOD`, `MIN`, `MAX`
     - rounding: `RNDF`, `RNDN`, `RNDG`
-    - algebraic: `X^3`, `3RootX`
+    - algebraic: `X^3`, `3ROOTX`
     - transcendental: `XROOTY`,`2^X`, `LOG2`, `LOGB`, `E^X-` (e^x-1), `LN1+`
       (log(1+x))
     - trigonometric: `ATN2`
