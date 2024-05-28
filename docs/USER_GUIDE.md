@@ -181,22 +181,22 @@ Missing features (partial list):
 
 ### Short Answer
 
-The initial motivation for this project was to relearn Z80 assembly language
-programming by creating a useful RPN calculator in the spirit of the HP-42S
-which is the calculator that I like the best. After doing far more Z80
-programming than I had intended, I am continuing to use this project to learn
-about low-level assembly language programming, mathematical concepts, and
-numerical algorithms.
+The initial motivation for this project was for me to relearn Z80 assembly
+language programming through the process of creating a useful RPN calculator in
+the spirit of the HP-42S. Now that I have done more Z80 programming than I had
+intended, I continue to work on this project to explore various programming
+ideas, numerical algorithms, and mathematical concepts.
 
-But I have added another goal for RPN83P. I want RPN83P to be one of the most
-affordable ways for new users to learn and use a full-featured scientific RPN
-calculator. HP no longer makes scientific RPN calculators (the reissued HP-15C
-Collector's Edition may be a limited release). The prices for used HP
-calculators are unreasonably high. The only other alternatives are the offerings
-from SwissMicros which are in the $250-$300 range. RPN83P offers access to a
-scientific RPN app on readily obtainable TI-83+/84+ calculators in the $20-$50
-range. I hope RPN83P can be the gateway application that introduces new users to
-the beauty and power of RPN calculators.
+In addition, I have added another goal for RPN83P. I want RPN83P to be one of
+the most affordable ways for new users to learn and use a full-featured
+scientific RPN calculator. HP no longer makes scientific RPN calculators (except
+perhaps the reissued HP-15C Collector's Edition which may be a limited release).
+The prices for used HP calculators are unreasonably high. The only other
+alternatives are the offerings from SwissMicros which are in the $150-$300
+range. RPN83P offers access to a scientific RPN app on readily obtainable
+TI-83+/84+ calculators in the $20-$50 range. I hope RPN83P can be the gateway
+application that introduces new generation of users to the beauty and power of
+RPN calculators.
 
 ### Long Answer
 
@@ -208,9 +208,9 @@ RPN83P is inspired by the HP-42S because it is the RPN calculator that I know
 best. I used it extensively in grad school. After graduating, I sold the
 calculator, which I regretted later. Some people consider the HP-42S close to
 ["peak of perfection for the classic HP
-calcs"](https://www.hpmuseum.org/cgi-sys/cgiwrap/hpmuseum/archv017.cgi?read=118462).
+calcs"](https://www.hpmuseum.org/cgi-sys/cgiwrap/hpmuseum/archv017.cgi?read=118462) and I am probably in general agreement with that sentiment.
 
-It also has the advantage of having the
+The HP-42S also has the advantage of having the
 [Free42](https://thomasokken.com/free42/) app (Android, iOS, Windows, MacOS,
 Linux) which faithfully reproduces every feature of the HP-42S. This is
 essential because I don't own an actual HP-42S anymore to verify obscure edge
@@ -233,24 +233,22 @@ The RPN83P app is not a clone of the HP-42S for several reasons:
   exponents only to +/-99.
 - I have added additional features to RPN83P which were not originally included
   in the HP-42S (e.g. BASE operations from the HP-16C, and TVM functions from
-  the HP-12C)
+  the HP-12C).
 - The larger LCD screen of the TI-83+/84+ allows 4 registers of the RPN stack to
   be shown, instead of just the `X` and `Y` registers on the HP-42S. There is
   also enough room to show the hierarchical menu bar at all times.
 
 **Why TI-83+/84+?**
 
-The TI-83+/84+ series of calculators has been in production since 1999. The
-TI-84 Plus model is still in production in 2024. They are ubiquitous and
-extremely affordable on the used market ($20-$50 range on ebay.com, sometimes
-cheaper in the local market). They are programmable in Z80 assembly language and
-Texas Instruments published a [TI-83 Plus
+The TI-83+ and 84+ series of calculators have been in production since 1999. I
+believe the TI-84 Plus model is the last model still in production in 2024. They
+are ubiquitous and extremely affordable on the used market ($20-$50 range on
+ebay.com, sometimes cheaper when purchased locally). They are programmable in
+Z80 assembly language and Texas Instruments published a [TI-83 Plus
 SDK](https://archive.org/details/83psdk/83psysroutines/) which is still
-available on [Internet Archive](https://archive.org). The existence of the SDK
-and its documentation was probably the primary reason that I selected the
-83+/84+ series.
+available on [Internet Archive](https://archive.org).
 
-The TI-83+/84+ calculators have an active third party software development
+The TI-83+/84+ calculators also have an active third party software development
 community around them. People have written many essential tools and resources:
 Z80 assemblers, ROM extraction tools, desktop emulators, file transfer and
 linking tools, and additional online documentation containing information beyond
@@ -276,18 +274,22 @@ programming](https://www.cemetech.net/news/2020/5/950/_/ti-83-premium-ceti-84-pl
 for the 84+CE model with the release of OS 5.3.1 That forced the community to
 create a jailbreak for the 84+CE model named
 [arTIfiCE](https://www.cemetech.net/news/2020/9/959/_/artifice-restores-ce-native-code-for-now)
-in 2020. The third party development community continues to reverse engineer and
-create tools for the CE model. But to me, the friction created by Texas
-Instruments did not make it worthwhile to work on something like the RPN83P for
-the CE calculators.
+in 2020. Furthermore, Texas Instruments does not provide the signing keys
+necessary for third party developers to create flash applications which reside
+in flash memory. That means that third party software are restricted to assembly
+language programs that must live in volatile RAM. Texas Instruments clearly does
+not want to support third party software development, and went out of its way to
+add friction to the process.
 
-The final nail in the coffin, personally, is that the 84+CE series uses a
+An additional disadvantage of the 84+CE, for me personally, is that it uses a
 rechargeable Li-Polymer battery instead of the standard AAA batteries used by
 earlier models. These Li-Poly batteries have a finite lifetime, 3-5 years, and
 there are many reports of defective batteries on brand new units. In the future,
 these batteries will become difficult find, and may cost more than the
-calculator itself is worth. I did not want to invest in a calculator platform
-that has a high chance of becoming useless e-waste in the future.
+calculator itself is worth.
+
+Considering all of the above, I felt that there are better uses of my time than
+investing in the 84+CE platform.
 
 **Why Not TI-89, 92+, Voyage 200?**
 
@@ -299,7 +301,7 @@ for these calculators, I found that the development community was no longer
 active.
 
 I could not find a set of understandable documentation that would tell me how to
-create a "hello world" application to get started for these calculators. In
+create a "hello world" application to get started on these calculators. In
 contrast, the documentation for the 83+/84+ calculators were relatively easy to
 find.
 
@@ -322,12 +324,28 @@ a calculator on a smartphone has some drawbacks:
 - the battery life of a smartphone is relatively short compared to a calculator
   which is measured in weeks or months.
 
+**Why Z80 Assembly Language?**
+
+Normally a higher level language like C would be far more productive than Z80
+assembly. However, C compilers for the Z80 processor are apparently quite
+inefficient because the Z80 processor is not a good match for the language. It
+does not have enough general purpose registers and its instruction set lacks
+certain stack-relative addressing modes which are crucial to generating
+efficient code using the C ABI.
+
+In addition, the TI-83 Plus SDK is written in Z80 assembly language. All of the
+TI-OS system calls assume that the calling code is written in assembly language.
+Almost all third party documentation available on the internet is written in Z80
+assembly language. Documentation for how to write a C program for the 83+/84+
+calculators is almost non-existent (I think I came across a single forum post
+about it.) Writing RPN83P in assembly seemed like the most reasonable choice.
+
 **Why RPN?**
 
-The first calculators that I used in middle school were algebraic calculators.
-Once I got my first HP calculator (the HP-42S) in grad school, there was no
-going back. RPN is the fastest and easiest way to do certain types of
-calculation on a hand-held device.
+The first calculators that I used starting in middle school were algebraic
+calculators. Once I got my first HP calculator (the HP-42S) in grad school,
+there was no going back. RPN is the fastest and easiest way to do certain types
+of calculation on a hand-held device.
 
 There are currently almost no manufacturers of RPN calculators anymore.
 Hewlett-Packard is no longer in the business of making calculators. It sold off
@@ -340,15 +358,17 @@ The used market for old HP calculators can seem out of control. The HP-42S in
 good working condition becomes more rare with each passing year, and now sells
 for $200-$400 on eBay. The HP-35s model is even worse, going for $300-$600.
 
-There is a small company named SwissMicros which designs and sells a handful of
-RPN calculators based on some classic HP calculators (e.g. HP-41C, HP-12C,
-HP-15C, HP-42S, HP-32Sii). They range from $150-$300 in price.
+The SwissMicros company designs and sells a handful of RPN calculators based on
+a number of classic HP calculators (e.g. HP-12C, HP-15C, HP-41C, HP-42S,
+HP-32SII). They range from $150-$300 in price. The reviews of the SwissMicros
+calculators are generally excellent and these are probably the best RPN
+calculators that you can buy right now, if money is no object.
 
-There are no affordable, entry-level, scientific RPN calculators made in the
-world today. This means that students on limited budget are unlikely to be
-exposed to an RPN calculator. Without an influx of new RPN calculator users, RPN
-calculators will slowly disappear as the previous generation of RPN users slowly
-drift into old age.
+At the other end of the spectrum, there are no affordable, entry-level,
+scientific RPN calculators made in the world today. This means that students on
+limited budget are unlikely to be exposed to an RPN calculator. Without an
+influx of new RPN users, RPN calculators will slowly disappear as the previous
+generation of RPN users slowly drift into old age.
 
 RPN83P hopes to be the easiest and cheapest gateway into the world of RPN
 calculators for the next generation of users.
@@ -366,9 +386,9 @@ smaller than RPN, which makes me less motivated.
 There are other projects trying to keep RPL alive:
 
 - [newRPL](https://hpgcc3.org/projects/newrpl): reimplementation of HP 48/49/50
-  series on HP-50g (and related) hardware
-- [DB48x](http://joewing.calc.org): RPL implementation on the SwissMicros DM42
-  and DM32 calculators
+  series on the HP-50g (and related) hardware
+- [DB48x](https://github.com/c3d/db48x): an RPL implementation on the
+  SwissMicros DM42 and DM32 calculators
 
 I don't think that it would be useful for me to duplicate those efforts.
 
