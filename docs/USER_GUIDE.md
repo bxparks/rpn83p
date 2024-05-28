@@ -2011,7 +2011,7 @@ through the `ROOT > TVM` menu.
 
 See [USER_GUIDE_TVM.md](USER_GUIDE_TVM.md) for full details.
 
-## Complex Numbers
+### Complex Numbers
 
 The RPN83P has extensive support for complex numbers. They can be entered in
 rectangular form `a+bi`, polar radian form `r e^(i theta)`, or polar degree form
@@ -2021,7 +2021,7 @@ functions are able to operate on complex numbers.
 
 See [USER_GUIDE_COMPLEX.md](USER_GUIDE_COMPLEX.md) for full details.
 
-## DATE Functions
+### DATE Functions
 
 The functions under the `DATE` menu allow arithmetic and conversion operations
 on various objects (Date, Time, DateTime, TimeZone, ZonedDateTime, DayOfWeek,
