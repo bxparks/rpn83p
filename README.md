@@ -243,7 +243,7 @@ and `65`, then see the result as an octal number (base-8), a binary number
 (base-2), then right shift the result 3 bits which sets the Carry Flag, then
 view the final result as a decimal number:
 
-- Press `MATH` to reset the menu to the home row.
+- Press the `MATH` button to reset the menu to the home row.
 - Navigate the menu with the DOWN arrow to get to
   ![ROOT MenuRow 2](docs/images/menu-root-2.png)
 - Press `BASE` menu to get to
@@ -252,22 +252,22 @@ view the final result as a decimal number:
   ![BASE Menu HEX](docs/images/menu-root-base-hex.png)
 - Press `ALPHA` `B` buttons
 - Press `6` button
-- Press `ENTER` button
+- Press `ENTER` button (`X` shows `00 00 00 B6`)
 - Press `6` button
 - Press `5` button
 - Press DOWN arrow to get to the menu row with the `AND` menu item
   ![BASE MenuRow AND](docs/images/menu-root-base-2.png)
-- Press `AND` menu, the `X` register should show `00000024`
+- Press `AND` menu, the `X` register should show `00 00 00 24`
 - Press UP arrow to go back to
   ![BASE Menu HEX](docs/images/menu-root-base-hex.png)
-- Press `OCT` menu, the `X` register should show `00000000044` with the menu
+- Press `OCT` menu, the `X` register should show `00 000 000 044` with the menu
   showing ![BASE Menu OCT](docs/images/menu-root-base-oct.png)
-- Press `BIN` menu, the `X` register should show `00000000100100` with the menu
-  showing ![BASE Menu BIN](docs/images/menu-root-base-bin.png)
+- Press `BIN` menu, the `X` register should show `0000 0000 0010 0100` with the
+  menu showing ![BASE Menu BIN](docs/images/menu-root-base-bin.png)
 - Press DOWN DOWN (twice) to the menu row with the shift right `SR` item
   ![BASE MenuRow SR](docs/images/menu-root-base-3.png)
-- Press `SR` `SR` `SR` (three times) to show `00000000000100` and the Carry Flag
-  `C` set
+- Press `SR` `SR` `SR` (three times) to show `0000 0000 0000 0100` and the Carry
+  Flag `C` set
 - Press UP UP (twice) to reach the base conversion menu row
   ![BASE Menu BIN](docs/images/menu-root-base-bin.png)
 - Press `DEC` menu, the `X` register should show `4` with the menu showing
@@ -291,7 +291,7 @@ In this example:
 
 Here are the steps:
 
-- Press `MATH` to reset the menu to the home row.
+- Press the `MATH` button to reset the menu to the home row.
 - Navigate the menu with the DOWN arrow to get to
   ![ROOT MenuRow 2](docs/images/menu-root-2.png)
 - Press the `TVM` menu to get to
@@ -312,7 +312,7 @@ Here are the steps:
     - You should see `-3326.512476` ($3326.51)
 - Press `-3000` `PMT`
 - Press `I%YR`
-    - After a couple of seconds, you should see 6.006990008 (6%).
+    - After a slight delay, you should see 6.006990008 (6%).
 
 Here is the animated GIF that shows this calculation:
 
@@ -333,7 +333,7 @@ the 4 ways that complex numbers can be entered into RPN83P:
 The keystrokes are:
 
 - (optional) Press `CLEAR CLEAR CLEAR` to clear the RPN stack.
-- Press `MODE` `downarrow` `RECT`:
+- Press `MODE` button, `downarrow`,  `RECT`:
   ![MODE MenuRow 2](docs/images/menu-root-mode-2.png)
 - Press `100` `ENTER`
 - Press `2` `PI` `*` `60` `*` `1 EE 5` `(-)` `*` `1/X` `(-)` (-265.26)
@@ -344,7 +344,7 @@ The keystrokes are:
 - Press `4` `/` (173.89+12.35i)
 - Press `PRAD` (174.30 e^(i 0.07)
 - Press `PDEG` (174.30 e^(i 4.04deg))
-- Press `MATH` `CPLX`:
+- Press `MATH` button `CPLX`:
   ![CPLX MenuRow 1](docs/images/menu-root-cplx-1.png)
 - Press `CABS` (174.30)
 
