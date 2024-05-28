@@ -85,6 +85,10 @@ processHelpCommandsQuitApp:
 ; Input: A: pageNumber
 ; Destroys: none
 displayHelpPage:
+    ; Disable blinking cursor
+    res curAble, (iy + curFlags)
+    res curOn, (iy + curFlags)
+
     push af
     push bc
     push de

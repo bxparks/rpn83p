@@ -7,9 +7,10 @@
 ;-----------------------------------------------------------------------------
 
 ; Description: Copy the C string in HL to DE.
-; Input: HL, DE: C string
-; Output: DE: points to terminating NUL
-; Destroys: A
+; Input: HL, DE:(char*)
+; Output: DE points to terminating NUL
+; Destroys: A, DE, HL
+; Preserves: BC
 copyCStringPageOne:
     ld a, (hl)
     ld (de), a

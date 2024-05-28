@@ -1,12 +1,95 @@
 # Changelog
 
 - Unreleased
-    - Supports resizing the number of storage registers
-        - `MODE` > `SIZE` command supports a minimum of 25 to a maximum of 100
-        - `MODE` > `SIZ?` returns the current size of storage registers
+- 0.11.0 (2024-05-28)
+    - **Warning**: Previously saved RPN stack and storage registers are
+      incompatible and are lost when upgrading to this version.
+    - support resizing the number of storage registers
+        - `MODE > RSIZ` command supports a minimum of 25 to a maximum of 100
+        - `MODE > RSZ?` returns the current size of storage registers
         - size of the `RPN83REG` appVar varies:
-            - 496 bytes at SIZE=25
-            - 1921 bytes at SIZE=100
+            - 500 bytes at RSIZ=25
+            - 1925 bytes at RSIZ=100
+    - support resizing the RPN stack size
+        - `MODE > SSIZ` command supports a minimum of 4 to a maximum of 8
+        - `MODE > SSZ?` returns the current size of stack
+        - size of the `RPN83STK` appVar varies:
+            - 120 bytes at SSIZ=4
+            - 196 bytes at SSIZ=8
+    - add additional stack operators
+        - soft menu `DROP`
+            - drops the stack by one, duplicating the top register
+            - already implemented in the code, just exposing the functionality
+              to the user
+        - soft menu `DUP`
+            - lifts the stack by one, duplicating X (similar to `ENTER` without
+              disabling the stack-lift)
+            - already implemented in the code, just exposing the functionality
+              to the user
+        - button `2ND u`
+            - bound to the `RollUp` functionality, same as the existing `RollUp`
+              soft menu item
+            - becomes useful when the stack size `SSIZ` is greater than 4
+    - DATE
+        - simplify DATE menu hierarchy
+            - move RTC (hardware clock) menus and TZ config menus under new CLK
+            menu folder
+            - move DSHK, DEXD, DCUT, DLNK menu items under new DOPS menu folder
+        - support arithmetic operations on Offset
+            - {Offset} + {hours}, {hours} + {Offset}
+            - {Offset} - {hours}
+            - {Offset} - {Offset} => {hours}
+            - plus the same operations with {hours} replaced with an appropriate
+            {Duration} (in multiples of 15 minutes)
+    - STAT
+        - extract the 13 STAT registers (R11-R23) from regular storage registers
+          (appVar `RPN83REG`) into its own registers (appVar `RPN83STA`)
+        - add `Σ` (Sigma) menu folder containing various `ΣXXX` menu items to
+          recall the 13 stat registers (essentially the same as the Plus42 app)
+        - See [USER_GUIDE_STAT.md](docs/USER_GUIDE_STAT.md)
+    - BASE
+        - format HEX numbers in groups of 2 digits for readability
+        - format OCT numbers in groups of 3 digits for readability
+        - format BIN numbers in groups of 4 digits using small font,
+            allowing 16 digits to be displayed on a single line
+        - no digit grouping for DEC numbers (no change)
+        - move formatting routines to Flash Page 2
+        - See [USER_GUIDE_BASE.md](docs/USER_GUIDE_BASE.md)
+    - show MenuFolders using a file folder icon
+        - fixes [Issue#20](https://github.com/bxparks/rpn83p/issues/20)
+        - draw a small 5px wide line above the menu box if the menu is a folder
+        - inspired by the menus on the HP-48 series calculators
+        - change cursor to be rectangular block, instead of an underline, to
+          avoid visual conflict with the short dash line of menu folders just
+          below the editing line
+    - support insertion cursor using `LEFT` and `RIGHT` arrow keys
+        - support `2ND LEFT` (beginning of line) and `2ND RIGHT` (end of line)
+          key bindings
+        - update CHS `(-)` to change the sign of the interior number component
+          identified by the cursor instead of the right most component in the
+          inputBuf
+        - this allows easier correction of typos during long input
+    - storage formats
+        - encode RpnObject type field using 2 bytes instead of 1 byte
+            - allows additional RpnObjects in the future without violating the
+              83 Plus SDK documentation
+        - update storage format of the TIOS appVars (RPN83SAV, RPN83STA,
+          RPN83STK, RPN83REG)
+            - makes adding additional appVar types in the future easier
+    - **Bug Fix** More robust data validation for appVars
+        - add `schemaVersion` field for RpnElementList
+        - add `rpnVarType` field, to allow future appVar types
+        - validate size of RpnElementList appVar has no extraneous bytes
+    - **Bug Fix** Validate Duration objects entered through colon-modifier
+      syntax
+        - prevents entry of things like `61:S` or `25:H`
+    - **Bug Fix** Display error for negative numbers correctly for BASE mode
+      when WSIZ < 32
+        - If the floating point number is negative, the validation for
+          determining if the WSIZ is exceeded was incorrectly handled. Which
+          caused negative numbers to be displayed with `...` instead of `-`, but
+          the bug occurred only for WSIZ < 32.
+        - Fixed so that `-` is correctly displayed for all WSIZ.
 - 0.10.0 (2024-03-31)
     - **Bug Fix** Fix broken `CLRG`
         - broke when 'REGS' was replaced by 'RPN83REG'
@@ -38,9 +121,9 @@
       `IMAG`, `CONJ`, `CABS`, `CANG`)
         - fixes [Issue#16](https://github.com/bxparks/rpn83p/issues/16)
     - RPN83P now consumes 3 flash pages (48 kiB)
-    - Verify compatibility with TI-Nspire with TI-84 Plus keyboard
-        - works with TI-Nspire with the TI-84 keyboard emulates the Z80
-          processor
+    - Verify compatibility with TI-Nspire with TI-84 Plus Keypad
+        - the TI-84 Plus Keypad causes the ARM processor to emulate a Z80
+          processor and the whole calculator essentially becomes a TI-84+SE
     - Store and recall TI-OS single-letter variables
         - TI-OS supports 27 single-letter variables (A-Z, Theta) for real and
           complex numbers

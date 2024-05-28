@@ -20,7 +20,7 @@ RpnTimeToSeconds:
     ex de, hl ; DE=rpnTime
     call reserveRaw9 ; FPS=[rpnTime,seconds]; HL=seconds
     ; convert to seconds
-    inc de ; DE=time, skip type byte
+    skipRpnObjectTypeDE ; DE=time, skip type byte
     call timeToSeconds ; HL=seconds
     ; copy back to OP1
     call popRaw9Op1 ; FPS=[rpnTime]; OP1=seconds
@@ -51,9 +51,8 @@ SecondsToRpnTime:
     ; convert to RpnTime
     ex de, hl ; DE=seconds; HL=rpnTime
     ld a, rpnObjectTypeTime
-    ld (hl), a
-    inc hl ; HL=rpnTime+1=dateTime
-    call secondsToTime ; HL=HL+sizeof(Time)
+    call setHLRpnObjectTypePageTwo ; HL+=rpnObjectTypeSizeOf
+    call secondsToTime ; HL+=sizeof(Time)
     ; clean up FPS
     call dropRaw9
     jp popRaw9Op1
@@ -162,7 +161,7 @@ addRpnTimeBySecondsAdd:
     call convertOP1ToI40 ; OP1=i40(seconds)
     ; add time+seconds
     pop hl ; stack=[]; HL=rpnTime
-    inc hl ; HL=time
+    skipRpnObjectTypeHL ; HL=time
     ld de, OP1 ; DE:i40=seconds
     call addTimeBySeconds
     ; clean up
@@ -186,12 +185,12 @@ addRpnTimeByDurationAdd:
     call PushRpnObject1 ; FPS=[time]; HL=time
     push hl ; stack=[time]
     ; Convert OP3:RpnDuration to OP1 days
-    ld de, OP3+1 ; DE:(Duration*)=duration
+    ld de, OP3+rpnObjectTypeSizeOf ; DE:(Duration*)=duration
     ld hl, OP1 ; HL:(i40*)=durationSeconds
     call durationToSeconds ; HL=durationSeconds
     ; add time+seconds
     pop hl ; stack=[]; HL=rpnTime
-    inc hl ; HL=time
+    skipRpnObjectTypeHL ; HL=time
     ld de, OP1 ; DE=durationSeconds
     call addTimeBySeconds ; HL=newTime
     ; OP1=newTime
@@ -254,7 +253,7 @@ addTimeBySeconds:
 ;   - OP1:(RpnTime-seconds) or (RpnTime-RpnTime)
 ; Destroys: all, OP1-OP4
 SubRpnTimeByObject:
-    call getOp3RpnObjectTypePageTwo ; A=objectType
+    call getOp3RpnObjectTypePageTwo ; A=type; HL=OP3
     cp rpnObjectTypeReal
     jr z, subRpnTimeBySeconds
     cp rpnObjectTypeTime
@@ -272,12 +271,12 @@ subRpnTimeByRpnTime:
     ; convert OP3 to seconds, on FPS stack
     call reserveRaw9 ; make space on FPS=[X.seconds]; HL=X.seconds
     push hl ; stack=[X.seconds]
-    ld de, OP3+1 ; DE=Time{}
+    ld de, OP3+rpnObjectTypeSizeOf ; DE=Time{}
     call timeToSeconds ; HL=FPS.X.seconds updated
     ; convert OP1 to seconds, on FPS stack
     call reserveRaw9 ; make space, FPS=[X.seconds,Y.seconds]; HL=Y.seconds
     push hl ; stack=[X.seconds,Y.seconds]
-    ld de, OP1+1 ; DE=Time{}
+    ld de, OP1+rpnObjectTypeSizeOf ; DE=Time{}
     call timeToSeconds ; HL=FPS.Y.seconds updated
     ; subtract Y.seconds-X.seconds
     pop hl ; HL=Y.seconds
@@ -289,6 +288,6 @@ subRpnTimeByRpnTime:
     jp dropRaw9 ; FPS=[]
 subRpnTimeByRpnDuration:
     ; invert the sign of duration in OP3
-    ld hl, OP3+1
+    ld hl, OP3+rpnObjectTypeSizeOf
     call chsDuration
     jp addRpnTimeByDurationAdd

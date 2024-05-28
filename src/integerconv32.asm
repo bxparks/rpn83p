@@ -273,6 +273,11 @@ convertOP1ToUxx:
 ; Preserves: OP2-OP6
 ConvertOP1ToUxxNoFatal:
     call ConvertOP1ToU32StatusCode ; OP1=U32; C=statusCode
+    ; check if fatal error already exists
+    ld a, c
+    and u32StatusCodeFatalMask
+    ret nz ; return if fatal error
+    ; if not fatal, check for Wsize
     jp CheckU32FitsWsize ; C=u32StatusCode
 
 ; Description: Convert OP1, OP2 to u32, u32.

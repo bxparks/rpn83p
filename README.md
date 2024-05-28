@@ -3,46 +3,52 @@
 RPN calculator app for the TI-83 Plus and TI-84 Plus inspired by the HP-42S.
 
 RPN83P is an [RPN](https://en.wikipedia.org/wiki/Reverse_Polish_notation)
-calculator app for the [TI-83 Plus](https://en.wikipedia.org/wiki/TI-83_series)
-(including the Silver Edition) and the [TI-84
-Plus](https://en.wikipedia.org/wiki/TI-84_Plus_series) (including the Silver
-Edition). The app is inspired mostly by the
-[HP-42S](https://en.wikipedia.org/wiki/HP-42S) calculator, with some significant
-features from the
+calculator app for the [TI-83 Plus
+series](https://en.wikipedia.org/wiki/TI-83_series) and the [TI-84 Plus
+series](https://en.wikipedia.org/wiki/TI-84_Plus_series) calculators. The app is
+inspired mostly by the [HP-42S](https://en.wikipedia.org/wiki/HP-42S)
+calculator, with some significant features from the
 [HP-12C](https://en.wikipedia.org/wiki/HP-12C) and the
-[HP-16C](https://en.wikipedia.org/wiki/HP-16C).
+[HP-16C](https://en.wikipedia.org/wiki/HP-16C). RPN83P also hopes to be the
+easiest and cheapest gateway app that introduces new users to the beauty and
+power of RPN calculators.
 
-
-The RPN83P is a flash application written in Z80 assembly language that consumes
-3 pages (48 kiB) of flash memory. Since it is stored in flash, it is preserved
-if the RAM is cleared. It consumes about 735 bytes of TI-OS RAM through 3
-AppVars: `RPN83REG` (496 bytes), `RPN83STK` (116 bytes), and `RPN83SAV` (123
-bytes).
+RPN83P is a flash application written in Z80 assembly language that consumes 3
+pages (48 kiB) of flash memory. Since it is stored in flash, it is preserved if
+the RAM is cleared. It consumes about 1025 to 2535 bytes of TI-OS RAM through 4
+AppVars, depending on the number of storage registers: `RPN83REG` (500 to 1925
+bytes), `RPN83SAV` (142 byte), `RPN83STA` (272 bytes), and `RPN83STK` (120 to
+196 bytes).
 
 Summary of features:
 
-- traditional 4-level RPN stack (`X`, `Y`, `Z`, `T`), with `LastX` register
-- 8-line display showing all stack registers
+- traditional RPN stack (`X`, `Y`, `Z`, `T`), with `LASTX` register
+    - configurable stack levels between 4 and 8: `SSIZ`, `SIZ?`
+- input edit line with scrollable cursor using arrow keys
+    - `LEFT`, `RIGHT`, `2ND LEFT`, `2ND RIGHT`
+- 8-line display showing 4 stack registers
 - hierarchical menu system similar to HP-42S
 - quick reference `HELP` menu
 - storage registers and variables
     - store and recall:`STO nn`, `RCL nn`
     - storage arithmetics: `STO+ nn`, `STO- nn`, `STO* nn`, `STO/ nn`, `RCL+
       nn`, `RCL- nn`, `RCL* nn`, `RCL/ nn`
-    - 25 storage registers: `nn = 00..24`
+    - up to 100 numerical storage registers (`nn = 00..99`, default 25)
     - 27 single-letter variables (`nn = A..Z,Theta`)
+    - configurable number of storage registers: `RSIZ`, `RSZ?`
 - all math functions with dedicated buttons on the TI-83 Plus and TI-84 Plus
     - arithmetic: `/`, `*`, `-`, `+`
     - algebraic: `1/X`, `X^2`, `SQRT`, `^` (i.e. `Y^X`)
     - transcendental: `LOG`, `10^X`, `LN`, `e^X`
     - trigonometric: `SIN`, `COS`, `TAN`, `ASIN`, `ACOS`, `ATAN`
-    - constants: `pi` and `e`
+    - constants: `PI` and `E`
 - additional menu functions
     - arithmetic: `%`, `%CH`, `GCD`, `LCM`, `PRIM` (prime factor), `IP` (integer
       part), `FP` (fractional part), `FLR` (floor), `CEIL` (ceiling), `NEAR`
       (nearest integer), `ABS`, `SIGN`, `MOD`, `MIN`, `MAX`
-    - algebraic: `X^3`, `3RootX`
-    - transcendental: `XRootY`,`2^X`, `LOG2`, `LOGB`, `E^X-` (e^x-1), `LN1+`
+    - rounding: `RNDF`, `RNDN`, `RNDG`
+    - algebraic: `X^3`, `3ROOTX`
+    - transcendental: `XROOTY`,`2^X`, `LOG2`, `LOGB`, `E^X-` (e^x-1), `LN1+`
       (log(1+x))
     - trigonometric: `ATN2`
     - hyperbolic: `SINH`, `COSH`, `TANH`, `ASNH`, `ACSH`, `ATNH`
@@ -72,7 +78,7 @@ Summary of features:
 - time value of money (TVM), inspired by HP-12C, HP-17B, and HP-30b
     - `N`, `I%YR`, `PV`, `PMT`, `FV`, `P/YR`, `BEG`, `END`, `CLTV` (clear TVM)
 - complex numbers, inspired by HP-42S and HP-35s
-    - stored in RPN stack registers (`X`, `Y`, `Z`, `T`, `LastX`) and storage
+    - stored in RPN stack registers (`X`, `Y`, `Z`, `T`, `LASTX`) and storage
       registers `R00-R24`
     - result modes: `RRES` (real results), `CRES` (complex results)
     - display modes: `RECT`, `PRAD` (polar radians), `PDEG` (polar degrees)
@@ -80,8 +86,8 @@ Summary of features:
       `COMPLEX` on HP-42S)
     - number entry: `2ND i` (rectangular), `2ND ANGLE` (polar degrees), `2ND
       ANGLE 2ND ANGLE` (polar radians)
-    - extended regular functions: `+`, `-`, `*`, `/`, `1/x`, `x^2`, `SQRT`,
-      `Y^X`, `X^3`, `3RootY`, `XRootY`, `LOG`, `LN`, `10^x`, `e^x`, `2^x`,
+    - extended regular functions: `+`, `-`, `*`, `/`, `1/X`, `X^2`, `SQRT`,
+      `Y^X`, `X^3`, `3ROOTY`, `XROOTY`, `LOG`, `LN`, `10^X`, `E^X`, `2^X`,
       `LOG2`, `LOGB`
     - complex specific functions: `REAL`, `IMAG`, `CONJ`, `CABS`, `CANG`
     - unsupported: trigonometric and hyperbolic functions (not supported by
@@ -106,7 +112,7 @@ Missing features (partial list):
 - vectors and matrices
 - keystroke programming
 
-**Version**: 0.10.0 (2024-03-31)
+**Version**: 0.11.0 (2024-05-28)
 
 **Changelog**: [CHANGELOG.md](CHANGELOG.md)
 
@@ -143,7 +149,7 @@ Guide](docs/USER_GUIDE.md), but here is the quick version:
     - Windows or MacOS: [TI Connect](https://education.ti.com/en/products/computer-software/ti-connect-sw)
     - Linux: [tilp](https://github.com/debrouxl/tilp_and_gfm) (`$ apt install
       tilp2`)
-- Run the program using the `APPS`:
+- Run the program using the `APPS` button:
     - Press `APPS`
     - Scroll down to the `RPN83P` entry
     - Press `ENTER`
@@ -166,8 +172,12 @@ This app was designed for TI calculators using the Z80 processor:
   hardware clock)
 - TI-84 Plus Silver Edition (6/15 MHz Z80, 24 kB accessible RAM, 1.5 MB
   accessible flash, hardware clock)
-- TI-Nspire with TI-84 Plus Keyboard (32-bit ARM processor emulating a Z80, 24
+- TI-Nspire with TI-84 Plus Keypad (32-bit ARM processor emulating a Z80, 24
   kB accessible RAM, 1.5 MB accessible flash, hardware clock)
+    - **Note**: When uploading the `rpn83p.8xk` file from the PC to the Nspire,
+      you need to select "TI-84 Plus" as the calculator model on the PC instead
+      of "TI-Nspire". That's because the Nspire is emulating a TI-84+ and the PC
+      cannot tell the difference.
 
 The app configures itself to run at 15 MHz on supported hardware, while
 remaining at 6 MHz on the TI-83+.
@@ -177,7 +187,7 @@ I have tested it on the following calculators that I own:
 - TI-83 Plus (OS v1.19)
 - TI-83 Plus Silver Edition (OS v1.19)
 - TI-84 Plus Silver Edition (OS v2.55MP)
-- TI-Nspire with TI-84 Plus Keyboard (OS v2.46)
+- TI-Nspire with TI-84 Plus Keypad (OS v2.46)
 
 Community members have verified that it works on the following variants:
 
@@ -207,8 +217,8 @@ outwards. Enter the following keystrokes:
 - Press `2` button
 - Press `.` button
 - Press `1` button
-- Press `x^2` button
-- Press `2ND` `ANS` button (invokes the `LastX` functionality)
+- Press `X^2` button
+- Press `2ND` `ANS` button (invokes the `LASTX` functionality)
 - Press `*` button (`r^3` is now in the `X` register)
 - Press `2ND` `PI` button (above the `^` button)
 - Press `*` button (`pi r^3`)
@@ -223,7 +233,7 @@ Here is an animated GIF that shows this calculation:
 ![RPN83P Example 1 GIF](docs/images/rpn83p-example1.gif)
 
 (Note that the RPN83P provides a `X^3` menu function that could have been used
-for this formula, but I used the `LastX` feature to demonstrate its use.)
+for this formula, but I used the `LASTX` feature to demonstrate its use.)
 
 ### Example 2
 
@@ -235,7 +245,7 @@ and `65`, then see the result as an octal number (base-8), a binary number
 (base-2), then right shift the result 3 bits which sets the Carry Flag, then
 view the final result as a decimal number:
 
-- Press `MATH` to reset the menu to the home row.
+- Press the `MATH` button to reset the menu to the home row.
 - Navigate the menu with the DOWN arrow to get to
   ![ROOT MenuRow 2](docs/images/menu-root-2.png)
 - Press `BASE` menu to get to
@@ -244,22 +254,22 @@ view the final result as a decimal number:
   ![BASE Menu HEX](docs/images/menu-root-base-hex.png)
 - Press `ALPHA` `B` buttons
 - Press `6` button
-- Press `ENTER` button
+- Press `ENTER` button (`X` shows `00 00 00 B6`)
 - Press `6` button
 - Press `5` button
 - Press DOWN arrow to get to the menu row with the `AND` menu item
   ![BASE MenuRow AND](docs/images/menu-root-base-2.png)
-- Press `AND` menu, the `X` register should show `00000024`
+- Press `AND` menu, the `X` register should show `00 00 00 24`
 - Press UP arrow to go back to
   ![BASE Menu HEX](docs/images/menu-root-base-hex.png)
-- Press `OCT` menu, the `X` register should show `00000000044` with the menu
+- Press `OCT` menu, the `X` register should show `00 000 000 044` with the menu
   showing ![BASE Menu OCT](docs/images/menu-root-base-oct.png)
-- Press `BIN` menu, the `X` register should show `00000000100100` with the menu
-  showing ![BASE Menu BIN](docs/images/menu-root-base-bin.png)
+- Press `BIN` menu, the `X` register should show `0000 0000 0010 0100` with the
+  menu showing ![BASE Menu BIN](docs/images/menu-root-base-bin.png)
 - Press DOWN DOWN (twice) to the menu row with the shift right `SR` item
   ![BASE MenuRow SR](docs/images/menu-root-base-3.png)
-- Press `SR` `SR` `SR` (three times) to show `00000000000100` and the Carry Flag
-  `C` set
+- Press `SR` `SR` `SR` (three times) to show `0000 0000 0000 0100` and the Carry
+  Flag `C` set
 - Press UP UP (twice) to reach the base conversion menu row
   ![BASE Menu BIN](docs/images/menu-root-base-bin.png)
 - Press `DEC` menu, the `X` register should show `4` with the menu showing
@@ -283,7 +293,7 @@ In this example:
 
 Here are the steps:
 
-- Press `MATH` to reset the menu to the home row.
+- Press the `MATH` button to reset the menu to the home row.
 - Navigate the menu with the DOWN arrow to get to
   ![ROOT MenuRow 2](docs/images/menu-root-2.png)
 - Press the `TVM` menu to get to
@@ -304,7 +314,7 @@ Here are the steps:
     - You should see `-3326.512476` ($3326.51)
 - Press `-3000` `PMT`
 - Press `I%YR`
-    - After a couple of seconds, you should see 6.006990008 (6%).
+    - After a slight delay, you should see 6.006990008 (6%).
 
 Here is the animated GIF that shows this calculation:
 
@@ -325,7 +335,7 @@ the 4 ways that complex numbers can be entered into RPN83P:
 The keystrokes are:
 
 - (optional) Press `CLEAR CLEAR CLEAR` to clear the RPN stack.
-- Press `MODE` `downarrow` `RECT`:
+- Press `MODE` button, `downarrow`,  `RECT`:
   ![MODE MenuRow 2](docs/images/menu-root-mode-2.png)
 - Press `100` `ENTER`
 - Press `2` `PI` `*` `60` `*` `1 EE 5` `(-)` `*` `1/X` `(-)` (-265.26)
@@ -336,7 +346,7 @@ The keystrokes are:
 - Press `4` `/` (173.89+12.35i)
 - Press `PRAD` (174.30 e^(i 0.07)
 - Press `PDEG` (174.30 e^(i 4.04deg))
-- Press `MATH` `CPLX`:
+- Press `MATH` button `CPLX`:
   ![CPLX MenuRow 1](docs/images/menu-root-cplx-1.png)
 - Press `CABS` (174.30)
 

@@ -9,11 +9,11 @@
 ; Angle(). The TI-OS RToP() suffers from overflow and underflow bugs when
 ; 'r=cabs(a,b)' overflows 1e100.
 ;
-; This routine uses essentially the same algorithm used by complexToPolarRad()
-; routine in complex.asm, except that it uses `bcall(_Angle)` so that the
-; 'trigFlags' flag is incorporated in the output.
+; This routine uses essentially the same algorithm used by ComplexToPolarRad()
+; in complex1.asm, except that it uses `bcall(_Angle)` so that the 'trigFlags'
+; flag is incorporated in the output.
 ;
-; It looks like Cabs() does *not* throw an Err:Overflow exception when the
+; It looks like CAbs() does *not* throw an Err:Overflow exception when the
 ; exponent becomes >=100. But when the OP1 is saved into the Stack X register
 ; through replaceXY(), the bcall(_CkValidNum) will be called, and it will
 ; detect an overflow and throw an Err:Overflow exception.

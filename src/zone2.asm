@@ -18,10 +18,8 @@
 ; Output: (appTimeZone) updated
 ; Destroys: BC, HL, OP3
 SetAppTimeZone:
-    ld hl, OP1
-    ld a, (hl)
-    and $1f
-    inc hl
+    call getOp1RpnObjectTypePageTwo ; A=type; HL=OP1
+    skipRpnObjectTypeHL
     cp rpnObjectTypeOffset
     jr z, setAppTimeZoneForOffset
     cp rpnObjectTypeReal
@@ -29,9 +27,9 @@ SetAppTimeZone:
 setAppTimeZoneErr:
     bcall(_ErrDataType)
 setAppTimeZoneForReal:
-    ; convert OP1 to RpnOffset
+    ; convert OP1 to Offset in OP3
     ld hl, OP3
-    call offsetHourToOffset
+    call offsetHourToOffset ; HL:(Offset*)=OP3
 setAppTimeZoneForOffset:
     ld c, (hl)
     inc hl
@@ -44,11 +42,8 @@ setAppTimeZoneForOffset:
 ; Output: OP1:RpnOffset{}
 ; Destroys: BC, HL
 GetAppTimeZone:
-    ld hl, OP1
     ld a, rpnObjectTypeOffset
-    ld (hl), a
-    inc hl
-    ;
+    call setOp1RpnObjectTypePageTwo ; HL=OP1+sizeof(type)
     ld bc, (appTimeZone)
     ld (hl), c
     inc hl

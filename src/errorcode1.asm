@@ -11,7 +11,7 @@
 ;-----------------------------------------------------------------------------
 
 ; Description: Initialize errorCode and handlerCode to 0.
-InitErrorCode:
+ColdInitErrorCode:
     xor a
     ld (errorCode), a
     ld (handlerCode), a
@@ -215,43 +215,51 @@ errorCodeClearScreen equ        65 ; Handler wants to clear screen
     .dw errorStrClearScreen
 errorCodeNotYet equ             66 ; Handler not yet implemented
     .dw errorStrNotYet
-errorCodeRegsCleared equ        67 ; REGS cleared
-    .dw errorStrRegsCleared
-errorCodeRegsExpanded equ       68 ; REGS expanded
-    .dw errorStrRegsExpanded
-errorCodeRegsShrunk equ         69 ; REGS shrunk
-    .dw errorStrRegsShrunk
-errorCodeRegsUnchanged equ      70 ; REGS unchanged
-    .dw errorStrRegsUnchanged
-errorCodeStatCleared equ        71 ; STAT registers cleared
-    .dw errorStrStatCleared
-errorCodeTvmStored equ          72 ; TVM value was stored
-    .dw errorStrTvmStored
-errorCodeTvmRecalled equ        73 ; TVM value was recalled
-    .dw errorStrTvmRecalled
-errorCodeTvmCalculated equ      74 ; TVM value was calculated
-    .dw errorStrTvmCalculated
-errorCodeTvmNoSolution equ      75 ; TVM value has no solution
-    .dw errorStrTvmNoSolution
-errorCodeTvmNotFound equ        76 ; TVM value could not be found
-    .dw errorStrTvmNotFound
-errorCodeTvmIterations equ      77 ; TVM Solver exceeded max iterations
-    .dw errorStrTvmIterations
-errorCodeTvmCleared equ         78 ; TVM vars cleared
-    .dw errorStrTvmCleared
-errorCodeTvmSolverReset equ     79 ; TVM Solver params reset
-    .dw errorStrTvmSolverReset
-errorCodeClearAgain equ         80 ; next CLEAR button invokes CLST
+errorCodeClearAgain equ         67 ; next CLEAR button invokes CLST
     .dw errorStrClearAgain
-errorCodeTzStored equ           81 ; TZ stored
+errorCodeRegsCleared equ        68 ; REGS cleared
+    .dw errorStrRegsCleared
+errorCodeRegsExpanded equ       69 ; REGS expanded
+    .dw errorStrRegsExpanded
+errorCodeRegsShrunk equ         70 ; REGS shrunk
+    .dw errorStrRegsShrunk
+errorCodeRegsUnchanged equ      71 ; REGS unchanged
+    .dw errorStrRegsUnchanged
+errorCodeStackCleared equ       72 ; Stack cleared
+    .dw errorStrStackCleared
+errorCodeStackExpanded equ      73 ; Stack expanded
+    .dw errorStrStackExpanded
+errorCodeStackShrunk equ        74 ; Stack shrunk
+    .dw errorStrStackShrunk
+errorCodeStackUnchanged equ     75 ; Stack unchanged
+    .dw errorStrStackUnchanged
+errorCodeStatCleared equ        76 ; STAT registers cleared
+    .dw errorStrStatCleared
+errorCodeTvmStored equ          77 ; TVM value was stored
+    .dw errorStrTvmStored
+errorCodeTvmRecalled equ        78 ; TVM value was recalled
+    .dw errorStrTvmRecalled
+errorCodeTvmCalculated equ      79 ; TVM value was calculated
+    .dw errorStrTvmCalculated
+errorCodeTvmNoSolution equ      80 ; TVM value has no solution
+    .dw errorStrTvmNoSolution
+errorCodeTvmNotFound equ        81 ; TVM value could not be found
+    .dw errorStrTvmNotFound
+errorCodeTvmIterations equ      82 ; TVM Solver exceeded max iterations
+    .dw errorStrTvmIterations
+errorCodeTvmCleared equ         83 ; TVM vars cleared
+    .dw errorStrTvmCleared
+errorCodeTvmSolverReset equ     84 ; TVM Solver params reset
+    .dw errorStrTvmSolverReset
+errorCodeTzStored equ           85 ; TZ stored
     .dw errorStrTzStored
-errorCodeEpochStored equ        82 ; Epoch stored
+errorCodeEpochStored equ        86 ; Epoch stored
     .dw errorStrEpochStored
-errorCodeClockSet equ           83 ; RTC set
+errorCodeClockSet equ           87 ; RTC set
     .dw errorStrClockSet
-errorCodeNoClock equ            84 ; No Clock on 83+
+errorCodeNoClock equ            88 ; No Clock on 83+
     .dw errorStrNoClock
-errorCodeCount equ              85 ; total number of error codes
+errorCodeCount equ              89 ; total number of error codes
 
 ; The C strings for each error code. In alphabetical order, as listed in the TI
 ; 83 Plus SDK docs.
@@ -325,6 +333,8 @@ errorStrUnknown:
     .db "Err: UNKNOWN", 0 ; Error: error string of error code is not known
 errorStrNotYet:
     .db "Err: NOT YET", 0 ; Info: handler not implemented yet
+errorStrClearAgain:
+    .db "CLEAR Again to Clear Stack", 0 ; Info: Next CLEAR will invoke CLST
 errorStrRegsCleared:
     .db "REGS Cleared", 0 ; Info: storage registers cleared
 errorStrRegsExpanded:
@@ -333,6 +343,14 @@ errorStrRegsShrunk:
     .db "REGS Shrunk", 0 ; Info: storage registers shrunk
 errorStrRegsUnchanged:
     .db "REGS Unchanged", 0 ; Info: storage registers unchanged
+errorStrStackCleared:
+    .db "Stack Cleared", 0 ; Info: RPN stack cleared
+errorStrStackExpanded:
+    .db "Stack Expanded", 0 ; Info: RPN stack expanded
+errorStrStackShrunk:
+    .db "Stack Shrunk", 0 ; Info: RPN stack shrunk
+errorStrStackUnchanged:
+    .db "Stack Unchanged", 0 ; Info: RPN stack unchanged
 errorStrStatCleared:
     .db "STAT Cleared", 0 ; Info: STAT registers cleared
 errorStrTvmStored:
@@ -351,8 +369,6 @@ errorStrTvmCleared:
     .db "TVM Cleared", 0 ; Info: TVM all parameter cleared, including TVM Solver
 errorStrTvmSolverReset:
     .db "TVM Solver Reset", 0 ; Info: TVM Solver parameters reset to defaults
-errorStrClearAgain:
-    .db "CLEAR Again to Clear Stack", 0 ; Info: Next CLEAR will invoke CLST
 errorStrTzStored:
     .db "TZ Stored", 0 ; Info: TZ was stored
 errorStrEpochStored:

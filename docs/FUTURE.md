@@ -1,8 +1,12 @@
 # Future Enhancements
 
 There seems to be almost an endless number of features that could go into a
-calculator app. I have grouped them into the following subsections, since my
-time and energy are limited.
+calculator app. I have grouped them into the following subsections, assuming
+that I am the only person working on these features. If you are a software
+developer with knowledge of Z80 assembly language and the TI-83 Plus SDK, and
+are interested in implementing any of these features, please drop me a note. I
+estimate that there are at least 5-10 man-years (10,000 to 20,000 man-hours) of
+work on this page, more than enough work for everyone.
 
 This document is a superset of the entries in the [GitHub
 Issues](https://github.com/bxparks/rpn83p/issues) tab. I use this document
@@ -10,7 +14,7 @@ because it is faster and easier to use compared to a web app, especially for
 small features that can be described in a few sentences. Usually only the larger
 and more complicated features will get their own GitHub tickets.
 
-**Version**: 0.10.0 (2024-03-31)
+**Version**: 0.11.0 (2024-05-28)
 
 **Parent Document**: [USER_GUIDE.md](USER_GUIDE.md)
 
@@ -26,28 +30,32 @@ and more complicated features will get their own GitHub tickets.
 
 ## Near Future
 
-- allow resize of storage registers using `SIZE` command
-    - The current default is fixed at 25.
-    - It should be relatively straightforward to allow this to be
-      user-definable, up to a `SIZE` of 100.
-- decouple STAT registers from regular storage registers
-    - STAT registers use R11-R23 storage registers, following the convention
-      used by the HP-42S
-    - there is no technical reason why RPN83P needs to follow this
-    - a better solution is to create a separate set of registers (e.g. an
-      `RPN83STA` appVar) just for STAT so that they don't interfere with normal
-      storage registers
-- bigger RPN stack
-    - linking and unlinking a complex number to and from its 2 components
-      effectively reduces the stack size by 1
-    - an option to increase the size to 5 or maybe 8 seems worthwhile
-    - should the stack size be user-configurable, say between 4 and 8?
-    - regardless of whether it should be 5 or 8 levels, an infinite stack (like
-      RPL or the NSTK mode of Free42) is *not* a feature that is appealing to me
+- `TVM` (time value of money)
+    - improve TVM Solver for `I%YR`
+        - The current default initial guess is 0% and 100% so that positive
+          interest rates are required (because a sign change over the initial
+          guesses are required). If there is a rounding error, the actual
+          numerical solution could be slighlty negative, which would cause an
+          `TVM Not Fount` error message because a sign-change is currently
+          required over the 2 initial guesses.
+        - One solution could be use something like `-1%` for the lower guess,
+          and then check for a sign change over 2 sub-intervals: `[-1%,0%]` and
+          `[0%,100%]`. We also have to careful to detect cases where expected
+          solution is exactly `0%`.
+        - The terminating tolerance could be selectable or more intelligent.
+        - Maybe change the root solving algorithm from Secant method to Newton's
+          method for faster convergence.
+    - support `C/YR` (compounding periods per year) as a separate parameter
+        - currently `C/YR` is set to be the same as `P/YR` (payments per year)
+          for ease of implementation
+        - there are apparently jurisdictions (Canada, UK) where it is common for
+          `C/YR` to be different from `P/YR`
 - add a `ROOT > CLR > CLAL` (Clear All) menu function
     - becomes useful as more features and configuration options are added
 - allow numbers in any base to be entered regardless of the BASE mode
     - see [Issue#17](https://github.com/bxparks/rpn83p/issues/17)
+- implement a simple "undo" functionality after a `CLX` function
+    - we can probably use `2ND INS`, currently unused
 
 ## Medium Future
 
@@ -56,17 +64,18 @@ and more complicated features will get their own GitHub tickets.
       by RPN83P
     - it would be useful to allow the user to customize some of those buttons
       for quick access
-    - among the currently unassigned keys, here are some notes on which may or
-      may not be be available:
+    - among the currently unassigned keys, here are some notes on the ones that
+      may be available:
         - reserved for probable future use: `2ND INS`, `2ND LIST`, `2ND TEST`,
-          `2ND MATRIX` `2ND CATALOG`, `2ND MEM`, `APPS`, `PRGM`, `VARS`
-        - reserved for potential future use: `2ND DISTR`, `2ND {`, `2ND }`, `2ND
-          [`, `2ND ]`
-        - potentially available: all `ALPHA` keys, except maybe `A`-`F`, ` `
-          (space), `"` (double quote), `:` (colon)
-        - probably available: `2ND u`, `2ND v`, `2ND w`, `XTTn`
-        - definitely available:`2ND L1` to `2ND L6` (no obvious purpose in
-          RPN83P)
+          `2ND CATALOG`, `2ND MEM`, `APPS`, `PRGM`, `VARS`, `"` (double quote)
+        - reserved for potential future use: `XTTn`, `2ND DISTR`, `2ND MATRIX`,
+          `2ND [`, `2ND ]`, `ALPHA space`, `ALPHA ?` (`2ND UP` and `2ND DOWN`
+          are used by the TI-OS to control the LCD contrast)
+        - probably available: `2ND v`, `2ND w`, `2ND L1` to `2ND L6` (`2ND u`
+          now taken by the RollUp command)
+        - inaccessible (labeled on the calculator keypad, but the SDK does not
+          provide access to them): `ALPHA F1` to `ALPHA F5`, `ALPHA UP`, `ALPHA
+          DOWN`, `ALPHA SOLVE`
 - custom menu items
     - The HP-42S supports up to 18 (3 rows of 6 menus) to be customized through
       the `ASSIGN` and `CUSTOM` menus.
@@ -87,6 +96,8 @@ and more complicated features will get their own GitHub tickets.
         - input and output functions within programs
         - flow control operators and functions (e.g. `LBL`, `GOTO`, `CALL`,
           maybe structured statement, like `IF`, `WHILE`, `FOR`, etc.)
+    - I estimate that this feature will take about 1000-2000 hours of
+      programming.
 - polynomial solvers
     - Quadratic, cubic, and quartic equations have analytical solutions so
       should be relatively straightforward... Except that they need complex
@@ -104,50 +115,46 @@ and more complicated features will get their own GitHub tickets.
           result)
         - see [this discussion fragment on the
           MoHPC](https://www.hpmuseum.org/forum/thread-20867-post-184997.html#pid184997)
-- `TVM` (time value of money)
-    - Improve TVM Solver for `I%YR`.
-    - The current default initial guess is 0% and 100% so that positive interest
-      rates are required (because a sign change over the initial guesses are
-      required). If there is a rounding error, the actual numerical solution
-      could be slighlty negative, which would cause an `TVM Not Fount` error
-      message because a sign-change is currently required over the 2 initial
-      guesses.
-    - One solution could be use something like `-1%` for the lower guess, and
-      then check for a sign change over 2 sub-intervals: `[-1%,0%]` and
-      `[0%,100%]`. We also have to careful to detect cases where expected
-      solution is exactly `0%`.
-    - The terminating tolerance could be selectable or more intelligent.
-    - Maybe change the root solving algorithm from Secant method to Newton's
-      method for faster convergence.
-- support insertion cursor using LEFT and RIGHT arrow keys
-    - currently the cursor always appears at the end of the input buffer
-    - it may be useful to support moving the cursor into the interior of the
-      input string using the LEFT and RIGHT arrow keys
-    - the DEL key would probably continue to delete to the left
-    - any other input would probably insert at the cursor position
 - auto-insert an implied `1` when `EE` is pressed in certain conditions
-    - if the `E` is pressed on the HP-42S, a `1` or `1.` or `-1` or `-1.` is
-      auto inserted into the input buffer under certain conditions
-    - this feature inserts extra characters into the input buffer instead of
-      changing the behavior of the input *parser*
-    - therefore, this so is more difficult to implement in RPN83P versus the
-      HP-42S, because the RPN83P has far more data types (e.g. complex numbers,
-      Record types) so the input buffer code needs to understand the format of
-      those data types to do the right thing
-    - not sure if the amount of time and effort of this feature is worth the
-      saving of a single keystroke
+    - on the HP-42S, if the `E` is pressed when the input buffer contains
+      digits that can semantically parsed to a `0`, a `1` or `1.` or `-1` or
+      `-1.` is auto inserted into the input buffer
+        - the actual behavior seems a bit complicated to discern, depending on
+          whether `0` or `0.0` or `-0` or `-0.0` or other variations are in the
+          input buffer
+    - on the HP-50g, the behavior of the `EEX` button is similar, but not quite
+      the same
+        - it seems to invoke this feature only if the input buffer is empty
+        - if it contains a `0` or `-0`, the 50g does not appear to do anything
+          special with the `EEX` button
+    - the input buffer of RPN83P contains features from both the 42S and the
+      50g, so it becomes more difficult define the reasonable behavior of this
+      feature
+        - RPN83P supports more types than the 42S (complex numbers, Record
+          types)
+        - PRN83P supports scrollable input buffer like the 50g (where the LEFT
+          and RIGHT arrow keys can place the cursor in the middle of the input
+          buffer string)
 - `GCD` and `LCM` functions are slow
     - Could be made significantly faster using integer operations, instead of
       floating point operations.
     - But not a high priority.
-- add UI marker for menu items which are folders/groups
-    - see [Issue#20](https://github.com/bxparks/rpn83p/issues/20)
-- support rule-based DST transitions
-    - the current `DATE` functions support timezones with fixed offsets from UTC
-    - it would be very cool to support something like the
-      [IANA Timezone Database](https://www.iana.org/time-zones)
-    - I think I can implement this with only about 32-48 kB of additional flash
-      memory (i.e. 2-3 flash pages)
+- additional DATE functions
+    - support [ISO weekdate](https://en.wikipedia.org/wiki/ISO_week_date)
+    - support at least one of the
+      [Julian dates](https://en.wikipedia.org/wiki/Julian_day)
+    - support rule-based DST transitions
+        - current only timezones with fixed offsets are supported UTC
+        - it may be possible to support the [IANA Timezone
+          Database](https://www.iana.org/time-zones) with only about 32-48 kB of
+          additional flash memory (i.e. 2-3 flash pages)
+- save and restore state files
+    - save the entire state of the app to a single appVar (archived to
+      flash memory to save RAM and to be resilient across crashes and power
+      cycles)
+    - display a menu of state files to user
+    - allow user to select a state file
+    - restore the entire state of the app from the state file
 
 ## Far Future
 
@@ -164,13 +171,13 @@ and more complicated features will get their own GitHub tickets.
           app itself
         - I'm not sure which solution would be easier and more maintainable
 - interoperability with TI-BASIC
-    - If a TI-BASIC can be called from RPN83P, and a stable data conduit (i.e.
-      an API) can be defined between RPN83P and TI-BASIC, then it may be
-      possible to offload some advanced features to the TI-OS and TI-BASIC
-      programs instead (see `Solver` and `fnInt` below)
-    - For example, single-letter variables `A` to `Z` and `Theta` are now
-      (v0.10.0) available through `STO` and `RCL`.
+    - If a TI-BASIC program can be called from RPN83P, and a stable data conduit
+      (i.e. an API) can be defined between RPN83P and TI-BASIC, then some of the
+      need for keystroke programming within RPN83P may be satisfied.
+    - Single-letter variables `A` to `Z` and `Theta` are now (v0.10.0) available
+      through `STO` and `RCL`, so be conduits between RPN83P and TI-BASIC.
     - Other types may be useful: List, Matrix, and String types.
+    - See [Issue #22](https://github.com/bxparks/rpn83p/issues/22)
 - indirect `STO` and `RCL` operators
     - `STO IND nn`, `STO+ IND nn`, `STO- IND nn`, `STO* IND nn`, `STO/ IND nn`
     - `RCL IND nn`, `RCL+ IND nn`, `RCL- IND nn`, `RCL* IND nn`, `RCL/ IND nn`
@@ -197,6 +204,28 @@ and more complicated features will get their own GitHub tickets.
     - That allows us to add basic vector functions like dot products and cross
       products.
     - Arbitrary-sized vectors may not be worth the effort.
+- root finder (i.e. SOLVE)
+    - one of the hallmarks of advanced HP calculators
+    - requires keystroke programming
+    - the TI-OS already provides a solver (`Solver`), maybe that is sufficient?
+    - See [Issue #22](https://github.com/bxparks/rpn83p/issues/22)
+- numerical integration
+    - another feature of advanced HP calculators
+    - depends on keystroke programming
+    - the TI-OS already provides an integrator (`fnInt`), is that enough?
+    - See [Issue #022](https://github.com/bxparks/rpn83p/issues/22)
+- extend BASE functions to larger integer sizes and signed integers
+    - signed integers: 1's complement, 2's complement
+    - larger integers: 48-bit, 64-bit; maybe all sizes between 1 and 64
+      in increments of one?
+    - requires new integer type(s)
+    - requires rewriting almost all bitwise and integer routines
+    - BASE functions can no longer use TIOS floating point numbers, at least not
+      for WSIZ > 46 bits
+    - handle context switch between BASE mode and non-BASE mode properly when
+      new integer types are on the RPN stack
+    - if SHOW uses small font for base-2 numbers, it can display 64 digits using
+      the 4 lines that are available
 
 ## Highly Unlikely
 
@@ -213,14 +242,6 @@ These are features which are unlikely to be implemented for various reasons:
     - We would also require substantial refactoring of the current menu system
       code.
     - Overall, it doesn't seem worth the effort.
-- root finder (i.e. SOLVE)
-    - one of the hallmarks of advanced HP calculators
-    - requires keystroke programming
-    - the TI-OS already provides a solver (`Solver`), maybe that is sufficient?
-- numerical integration
-    - another feature of advanced HP calculators
-    - depends on keystroke programming
-    - the TI-OS already provides an integrator (`fnInt`), is that enough?
 - matrices
     - I don't know how much matrix functionality is provided by TI-OS SDK.
     - Creating a reasonable user-interface in the RPN83P could be a challenge.

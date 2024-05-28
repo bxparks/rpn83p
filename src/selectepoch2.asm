@@ -59,12 +59,12 @@ SelectCustomEpochDate:
 ;-----------------------------------------------------------------------------
 
 ; Description: Set the reference epoch to the date given in OP1.
-; Input: OP1: RpnDate{}
+; Input: OP1:(RpnDate*)
 ; Output: (epochDate) updated
 SetCustomEpochDate:
     call checkOp1DatePageTwo ; ZF=1 if CP1 is an RpnDate
     jr nz, setCustomEpochDateErr
-    ld hl, OP1+1
+    ld hl, OP1+rpnObjectTypeSizeOf
     call setCustomEpochDateVar
     jr SelectCustomEpochDate ; automatically select the customEpochDate
 setCustomEpochDateErr:
@@ -74,10 +74,9 @@ setCustomEpochDateErr:
 ; Input: none
 ; Output: OP1=epochDate
 GetCustomEpochDate:
-    ld de, OP1
     ld a, rpnObjectTypeDate
-    ld (de), a
-    inc de
+    call setOp1RpnObjectTypePageTwo ; HL+=sizeof(type)
+    ex de, hl ; DE=OP1+rpnObjectTypeSizeOf=epochDatePointer
     ld hl, customEpochDate
     ld bc, 4
     ldir
@@ -86,7 +85,7 @@ GetCustomEpochDate:
 ;-----------------------------------------------------------------------------
 
 ; Description: Copy the Date{} pointed by HL to (customEpochDate).
-; Input: HL:Date{}
+; Input: HL:(Date*)
 ; Output: (epochDate) updated
 ; Destroys: all
 ; Preserves: A
@@ -97,7 +96,7 @@ setCustomEpochDateVar:
     ret
 
 ; Description: Copy the Date{} pointed by HL to (currentEpochDate).
-; Input: HL:Date{}
+; Input: HL:(Date*)
 ; Output: (currentEpochDate) updated
 ; Destroys: all
 ; Preserves: A

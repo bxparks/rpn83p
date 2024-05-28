@@ -10,24 +10,80 @@
 ; entry.
 ;-----------------------------------------------------------------------------
 
+;-----------------------------------------------------------------------------
+; Get rpnObjectType.
+;-----------------------------------------------------------------------------
+
 ; Description: Return the rpnObjectType of OP1/OP2.
 ; Input: OP1
-; Output: A=rpnObjectType
-; Destroys: A
+; Output: A=rpnObjectType; HL=OP1
+; Destroys: A, HL
 getOp1RpnObjectTypePageTwo:
-    ld a, (OP1)
-    and $1f
-    ret
+    ld hl, OP1
+    jr getHLRpnObjectTypePageTwo
 
 ; Description: Return the rpnObjectType of OP3/OP4.
 ; Input: OP3
+; Output: A=rpnObjectType; HL=OP3
+; Destroys: A, HL
+getOp3RpnObjectTypePageTwo:
+    ld hl, OP3
+    ; [[fallthrough]]
+
+; Description: Return the rpnObjectType of HL.
+; Input: HL:(RpnObject*)
 ; Output: A=rpnObjectType
 ; Destroys: A
-getOp3RpnObjectTypePageTwo:
-    ld a, (OP3)
-    and $1f
+; Preserves: HL
+getHLRpnObjectTypePageTwo:
+    ld a, (hl)
+    and rpnObjectTypeMask
+    cp rpnObjectTypePrefix
+    ret nz
+    inc hl
+    ld a, (hl)
+    dec hl
     ret
 
+;-----------------------------------------------------------------------------
+; Set rpnObjectType.
+;-----------------------------------------------------------------------------
+
+; Description: Set the rpnObjectType of OP1/OP2 to A.
+; Input: A=rpnObjectType
+; Output: HL=OP1+rpnObjectTypeSizeOf
+; Destroys: HL
+; Preserves: A, BC, DE
+setOp1RpnObjectTypePageTwo:
+    ld hl, OP1
+    jr setHLRpnObjectTypePageTwo
+
+; Description: Return the rpnObjectType of OP3/OP4.
+; Input: A=rpnObjectType
+; Output: HL=OP3+rpnObjectTypeSizeOf
+; Destroys: HL
+; Preserves: A, BC, DE
+setOp3RpnObjectTypePageTwo:
+    ld hl, OP3
+    ; [[fallthrough]]
+
+; Description: Set the rpnObjectType of HL to A.
+; Input: A=rpnObjectType
+; Output: HL+=rpnObjectTypeSizeOf
+; Destroys: HL
+; Preserves: A, BC, DE
+setHLRpnObjectTypePageTwo:
+    push af
+    ld a, rpnObjectTypePrefix
+    ld (hl), a
+    inc hl
+    pop af
+    ld (hl), a
+    inc hl
+    ret
+
+;-----------------------------------------------------------------------------
+; Complex numbers.
 ;-----------------------------------------------------------------------------
 
 ; Description: Same as CkOP1Cplx() OS routine without the bcall() overhead.
@@ -35,8 +91,7 @@ getOp3RpnObjectTypePageTwo:
 ; Output: ZF=1 if complex
 ; Destroys: A
 checkOp1ComplexPageTwo:
-    ld a, (OP1)
-    and $1f
+    call getOp1RpnObjectTypePageTwo
     cp rpnObjectTypeComplex
     ret
 
@@ -47,16 +102,14 @@ checkOp1ComplexPageTwo:
 ; Description: Check if OP1 is an RpnTime.
 ; Output: ZF=1 if RpnTime
 checkOp1TimePageTwo:
-    ld a, (OP1)
-    and $1f
+    call getOp1RpnObjectTypePageTwo
     cp rpnObjectTypeTime
     ret
 
 ; Description: Check if OP3 is an RpnTime.
 ; Output: ZF=1 if RpnTime
 checkOp3TimePageTwo:
-    ld a, (OP3)
-    and $1f
+    call getOp3RpnObjectTypePageTwo
     cp rpnObjectTypeTime
     ret
 
@@ -65,16 +118,14 @@ checkOp3TimePageTwo:
 ; Description: Check if OP1 is a RpnDate.
 ; Output: ZF=1 if RpnDate
 checkOp1DatePageTwo:
-    ld a, (OP1)
-    and $1f
+    call getOp1RpnObjectTypePageTwo
     cp rpnObjectTypeDate
     ret
 
 ; Description: Check if OP3 is a RpnDate.
 ; Output: ZF=1 if RpnDate
 checkOp3DatePageTwo:
-    ld a, (OP3)
-    and $1f
+    call getOp3RpnObjectTypePageTwo
     cp rpnObjectTypeDate
     ret
 
@@ -83,16 +134,14 @@ checkOp3DatePageTwo:
 ; Description: Check if OP1 is a RpnDateTime.
 ; Output: ZF=1 if RpnDateTime
 checkOp1DateTimePageTwo:
-    ld a, (OP1)
-    and $1f
+    call getOp1RpnObjectTypePageTwo
     cp rpnObjectTypeDateTime
     ret
 
 ; Description: Check if OP3 is a RpnDateTime.
 ; Output: ZF=1 if RpnDateTime
 checkOp3DateTimePageTwo:
-    ld a, (OP3)
-    and $1f
+    call getOp3RpnObjectTypePageTwo
     cp rpnObjectTypeDateTime
     ret
 
@@ -101,16 +150,14 @@ checkOp3DateTimePageTwo:
 ; Description: Check if OP1 is a RpnOffset.
 ; Output: ZF=1 if RpnOffset
 checkOp1OffsetPageTwo:
-    ld a, (OP1)
-    and $1f
+    call getOp1RpnObjectTypePageTwo
     cp rpnObjectTypeOffset
     ret
 
 ; Description: Check if OP3 is a RpnOffset.
 ; Output: ZF=1 if RpnOffset
 checkOp3OffsetPageTwo:
-    ld a, (OP3)
-    and $1f
+    call getOp3RpnObjectTypePageTwo
     cp rpnObjectTypeOffset
     ret
 
@@ -119,16 +166,14 @@ checkOp3OffsetPageTwo:
 ; Description: Check if OP1 is a RpnOffsetDateTime.
 ; Output: ZF=1 if RpnOffsetDateTime
 checkOp1OffsetDateTimePageTwo:
-    ld a, (OP1)
-    and $1f
+    call getOp1RpnObjectTypePageTwo
     cp rpnObjectTypeOffsetDateTime
     ret
 
 ; Description: Check if OP3 is a RpnOffsetDateTime.
 ; Output: ZF=1 if RpnOffsetDateTime
 checkOp3OffsetDateTimePageTwo:
-    ld a, (OP3)
-    and $1f
+    call getOp3RpnObjectTypePageTwo
     cp rpnObjectTypeOffsetDateTime
     ret
 
@@ -137,16 +182,14 @@ checkOp3OffsetDateTimePageTwo:
 ; Description: Check if OP1 is an RpnDayOfWeek.
 ; Output: ZF=1 if RpnDayOfWeek
 checkOp1DayOfWeekPageTwo:
-    ld a, (OP1)
-    and $1f
+    call getOp1RpnObjectTypePageTwo
     cp rpnObjectTypeDayOfWeek
     ret
 
 ; Description: Check if OP3 is an RpnDayOfWeek.
 ; Output: ZF=1 if RpnDayOfWeek
 checkOp3DayOfWeekPageTwo:
-    ld a, (OP3)
-    and $1f
+    call getOp3RpnObjectTypePageTwo
     cp rpnObjectTypeDayOfWeek
     ret
 
@@ -155,15 +198,13 @@ checkOp3DayOfWeekPageTwo:
 ; Description: Check if OP1 is an RpnDuration.
 ; Output: ZF=1 if RpnDuration
 checkOp1DurationPageTwo:
-    ld a, (OP1)
-    and $1f
+    call getOp1RpnObjectTypePageTwo
     cp rpnObjectTypeDuration
     ret
 
 ; Description: Check if OP3 is an RpnDuration.
 ; Output: ZF=1 if RpnDuration
 checkOp3DurationPageTwo:
-    ld a, (OP3)
-    and $1f
+    call getOp3RpnObjectTypePageTwo
     cp rpnObjectTypeDuration
     ret

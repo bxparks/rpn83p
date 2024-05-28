@@ -25,7 +25,7 @@ FormatDate:
     ; [[fallthrough]]
 
 formatRpnDateRaw:
-    inc hl ; skip type byte
+    skipRpnObjectTypeHL ; skip type byte
 formatDateRaw:
     ; 'print 'D'
     ld a, 'D'
@@ -47,7 +47,7 @@ formatDateRaw:
     ret
 
 formatRpnDateString:
-    inc hl ; skip type byte
+    skipRpnObjectTypeHL ; skip type byte
 formatDateString:
     ; print 'year'
     ld c, (hl)
@@ -92,7 +92,7 @@ FormatTime:
     ; [[fallthrough]]
 
 formatRpnTimeRaw:
-    inc hl ; skip type byte
+    skipRpnObjectTypeHL ; skip type byte
 formatTimeRaw:
     ; 'print 'T'
     ld a, 'T'
@@ -114,7 +114,7 @@ formatTimeRaw:
     ret
 
 formatRpnTimeString:
-    inc hl ; skip type byte
+    skipRpnObjectTypeHL ; skip type byte
 formatTimeString:
     ; hour
     ld a, (hl)
@@ -157,7 +157,7 @@ FormatDateTime:
     ; [[fallthrough]]
 
 formatRpnDateTimeRaw:
-    inc hl
+    skipRpnObjectTypeHL
 formatDateTimeRaw:
     ; 'print 'DT'
     ld a, 'D'
@@ -188,7 +188,7 @@ formatDateTimeRaw:
     ret
 
 formatRpnDateTimeString:
-    inc hl ; skip type byte
+    skipRpnObjectTypeHL
 formatDateTimeString:
     call formatDateString
     ; print a space
@@ -217,7 +217,7 @@ FormatOffset:
     ; [[fallthrough]]
 
 formatRpnOffsetRaw:
-    inc hl ; skip type byte
+    skipRpnObjectTypeHL
 formatOffsetRaw:
     ; 'print 'TZ'
     ld a, 'T'
@@ -242,16 +242,16 @@ formatOffsetRaw:
     ret
 
 formatRpnOffsetString:
-    inc hl ; skip type byte
+    skipRpnObjectTypeHL
 formatOffsetString:
     ld b, (hl) ; B=hour
     inc hl
     ld c, (hl) ; C=minute
     inc hl
-    call isHmComponentsPos ; ZF=1 if zero or positive
+    call isHourMinuteBCPos ; ZF=1 if zero or positive
     jr z, formatOffsetStringPos
     ; negative Offset
-    call chsHmComponents
+    call chsHourMinuteBC
     ld a, Sdash
     jr formatOffsetStringSign
 formatOffsetStringPos:
@@ -290,7 +290,7 @@ FormatOffsetDateTime:
     ; [[fallthrough]]
 
 formatRpnOffsetDateTimeRaw:
-    inc hl ; skip type byte
+    skipRpnObjectTypeHL
 formatOffsetDateTimeRaw:
     ; 'print 'DZ'. Eventually, this might become a ZonedDateTime but for now,
     ; we will use the OffsetDateTime and print it as 'DZ'.
@@ -328,7 +328,7 @@ formatOffsetDateTimeRaw:
     ret
 
 formatRpnOffsetDateTimeString:
-    inc hl ; skip type byte
+    skipRpnObjectTypeHL
 formatOffsetDateTimeString:
     call formatDateTimeString
     call isOffsetZero ; ZF=1 if offset==00:00
@@ -364,7 +364,7 @@ FormatDayOfWeek:
     ; [[fallthrough]]
 
 formatRpnDayOfWeekRaw:
-    inc hl ; skip type byte
+    skipRpnObjectTypeHL
 formatDayOfWeekRaw:
     ; print "DW{"
     ld a, 'D'
@@ -391,7 +391,7 @@ formatDayOfWeekRaw:
     ret
 
 formatRpnDayOfWeekString:
-    inc hl ; skip type byte
+    skipRpnObjectTypeHL
 formatDayOfWeekString:
     ld a, (hl) ; A=dayOfWeek
     ; check range
@@ -456,7 +456,7 @@ FormatDuration:
     ; [[fallthrough]]
 
 formatRpnDurationRaw:
-    inc hl ; skip type byte
+    skipRpnObjectTypeHL
 formatDurationRaw:
     ; print 'DR'
     ld a, 'D'
@@ -509,7 +509,7 @@ formatDurationRaw:
     ret
 
 formatRpnDurationString:
-    inc hl ; skip type byte
+    skipRpnObjectTypeHL
 formatDurationString:
     call isDurationNegative ; CF=1 if negative
     jr nc, formatDurationStringPos

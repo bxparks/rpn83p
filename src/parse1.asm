@@ -294,74 +294,74 @@ parseInputBufRecordNaked:
 parseInputBufRecordErr:
     bcall(_ErrSyntax)
 parseInputBufOffset:
-    ld de, OP1
+    ex de, hl ; DE=inputBuf
     ld a, rpnObjectTypeOffset
-    ld (de), a
-    inc de
-    push de
+    call setOp1RpnObjectTypePageOne ; HL=OP1+sizeof(type)
+    push hl ; stack=[offsetPointer]
+    ex de, hl ; DE=offsetPointer; HL=inputBuf
     call parseOffset
-    pop hl ; HL=OP1+1
+    pop hl ; stack=[]; HL=offsetPointer
     bcall(_ValidateOffset)
     ret
 parseInputBufDate:
-    ld de, OP1
+    ex de, hl ; DE=inputBuf
     ld a, rpnObjectTypeDate
-    ld (de), a
-    inc de ; skip type byte
-    push de
+    call setOp1RpnObjectTypePageOne ; HL=OP1+sizeof(type)
+    push hl ; stack=[datePointer]
+    ex de, hl ; DE=datePointer; HL=inputBuf
     call parseDate
-    pop hl ; HL=OP1+1
+    pop hl ; stack=[]; HL=datePointer
     bcall(_ValidateDate)
     ret
 parseInputBufTime:
-    ld de, OP1
+    ex de, hl ; DE=inputBuf
     ld a, rpnObjectTypeTime
-    ld (de), a
-    inc de ; skip type byte
-    push de
+    call setOp1RpnObjectTypePageOne ; HL=OP1+sizeof(type)
+    push hl ; stack=[timePointer]
+    ex de, hl ; DE=timePointer; HL=inputBuf
     call parseTime
-    pop hl ; HL=OP1+1
+    pop hl ; stack=[]; HL=timePointer
     bcall(_ValidateTime)
     ret
 parseInputBufDateTime:
-    ld de, OP1
+    ex de, hl ; DE=inputBuf
     ld a, rpnObjectTypeDateTime
-    ld (de), a
-    inc de ; skip type byte
-    push de
+    call setOp1RpnObjectTypePageOne ; HL=OP1+sizeof(type)
+    push hl ; stack=[dateTimePointer]
+    ex de, hl ; DE=dateTimePointer; HL=inputBuf
     call parseDateTime
-    pop hl ; HL=OP1+1
+    pop hl ; stack=[]; HL=dateTimePointer
     bcall(_ValidateDateTime)
     ret
 parseInputBufOffsetDateTime:
-    ld de, OP1
+    ex de, hl ; DE=inputBuf
     ld a, rpnObjectTypeOffsetDateTime
-    ld (de), a
-    inc de ; skip type byte
-    push de
+    call setOp1RpnObjectTypePageOne ; HL=OP1+sizeof(type)
+    push hl ; stack=[offsetDateTimePointer]
+    ex de, hl ; DE=offsetDateTimePointer; HL=inputBuf
     call parseOffsetDateTime
-    pop hl ; HL=OP1+1
+    pop hl ; stack=[]; HL=offsetDateTimePointer
     bcall(_ValidateOffsetDateTime)
     call expandOp1ToOp2PageOne ; sizeof(OffsetDateTime)>9
     ret
 parseInputBufDayOfWeek:
-    ld de, OP1
+    ex de, hl ; DE=inputBuf
     ld a, rpnObjectTypeDayOfWeek
-    ld (de), a
-    inc de ; skip type byte
-    push de
+    call setOp1RpnObjectTypePageOne ; HL=OP1+sizeof(type)
+    push hl ; stack=[dayOfWeekPointer]
+    ex de, hl ; DE=offsetDateTimePointer; HL=inputBuf
     call parseDayOfWeek
-    pop hl ; HL=OP1+1
+    pop hl ; stack=[]; HL=dayOfWeekPointer
     bcall(_ValidateDayOfWeek)
     ret
 parseInputBufDuration:
-    ld de, OP1
+    ex de, hl ; DE=inputBuf
     ld a, rpnObjectTypeDuration
-    ld (de), a
-    inc de ; skip type byte
-    push de
+    call setOp1RpnObjectTypePageOne ; HL=OP1+sizeof(type)
+    push hl ; stack=[durationPointer]
+    ex de, hl ; DE=durationPointer; HL=inputBuf
     call parseDuration
-    pop hl ; HL=OP1+1
+    pop hl ; stack=[]; HL=durationPointer
     bcall(_ValidateDuration)
     ret
 
@@ -418,6 +418,7 @@ parseInputBufModifier:
 ;   - HL:(RpnObject*)=rpnObject
 ; Destroys: all
 convertTaggedNumberToRpnObject:
+    push hl ; stack=[rpnObject]
     cp 'D'
     jr z, convertTaggedDaysToDuration
     cp 'H'
@@ -429,8 +430,7 @@ convertTaggedNumberToRpnObject:
     bcall(_ErrSyntax)
 convertTaggedDaysToDuration:
     ld a, rpnObjectTypeDuration
-    ld (hl), a
-    inc hl
+    call setHLRpnObjectTypePageOne ; HL+=sizeof(type)
     call clearDuration
     ; copy days
     ld a, (de)
@@ -441,12 +441,10 @@ convertTaggedDaysToDuration:
     ld a, (de)
     inc de
     ld (hl), a
-    inc hl
-    ret
+    jr convertTaggedValidation
 convertTaggedHoursToDuration:
     ld a, rpnObjectTypeDuration
-    ld (hl), a
-    inc hl
+    call setHLRpnObjectTypePageOne ; HL+=sizeof(type)
     call clearDuration
     ; copy hours
     inc hl
@@ -454,12 +452,10 @@ convertTaggedHoursToDuration:
     ld a, (de)
     inc de
     ld (hl), a
-    inc hl
-    ret
+    jr convertTaggedValidation
 convertTaggedMinutesToDuration:
     ld a, rpnObjectTypeDuration
-    ld (hl), a
-    inc hl
+    call setHLRpnObjectTypePageOne ; HL+=sizeof(type)
     call clearDuration
     ; copy minutes
     inc hl
@@ -468,12 +464,10 @@ convertTaggedMinutesToDuration:
     ld a, (de)
     inc de
     ld (hl), a
-    inc hl
-    ret
+    jr convertTaggedValidation
 convertTaggedSecondsToDuration:
     ld a, rpnObjectTypeDuration
-    ld (hl), a
-    inc hl
+    call setHLRpnObjectTypePageOne ; HL+=sizeof(type)
     call clearDuration
     ; copy seconds
     inc hl
@@ -483,7 +477,11 @@ convertTaggedSecondsToDuration:
     ld a, (de)
     inc de
     ld (hl), a
-    inc hl
+    ; [[fallthrough]]
+convertTaggedValidation:
+    pop hl ; stack=[]; HL=rpnObject
+    skipRpnObjectTypeHL ; HL=(Duration*)
+    bcall(_ValidateDuration)
     ret
 
 ; Description: Clear the duration pointed by HL.

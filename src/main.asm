@@ -6,6 +6,7 @@
 ;------------------------------------------------------------------------------
 
 main:
+    ; Initialize TI-OS states and parameters.
     call setIsRtcAvailable
     call setFastSpeed
     bcall(_SaveOSState)
@@ -15,32 +16,33 @@ main:
     res lwrCaseActive, (iy + appLwrCaseFlag) ; disable ALPHA-ALPHA lowercase
     bcall(_ClrLCDFull)
 
-    bcall(_RestoreAppState)
-    jr nc, initAlways
-    ; Initialize everything if RestoreAppState() fails.
-    bcall(_InitErrorCode)
-    bcall(_InitInputBuf)
-    bcall(_InitDate)
-    bcall(_RtcInit)
-    bcall(_InitMenu)
-    bcall(_InitBase)
-    bcall(_InitModes)
-    call initNumResultMode
-    call initComplexMode
-    call initStat
-    call initCfit
-    call initTvm
-initAlways:
-    ; If RestoreAppState() suceeds, only the following are initialized.
+    bcall(_RestoreAppState) ; CF=1 if RPN83SAV var is invalid
+    jr nc, warmInit
+    ; Cold initialize if RestoreAppState() fails.
+    bcall(_ColdInitErrorCode)
+    bcall(_ColdInitInputBuf)
+    bcall(_ColdInitDate)
+    bcall(_ColdInitRtc)
+    bcall(_ColdInitMenu)
+    bcall(_ColdInitBase)
+    bcall(_ColdInitComplex)
+    bcall(_ColdInitModes)
+    bcall(_ColdInitDisplay)
+    call coldInitStat
+    call coldInitCfit
+    call coldInitTvm
+warmInit:
+    ; Alway perform warm initialization.
+    bcall(_SanitizeMenu) ; Sanitize currentMenuGroupId and currentMenuRowIndex
     bcall(_InitArgBuf) ; Start with command ArgScanner off.
-    bcall(_SanitizeMenu) ; Sanitize currentMenuGroupId currentMenuRowIndex
+    bcall(_InitDisplay)
     call updateNumResultMode
     call updateComplexMode
     call initStack
     call initRegs
-    call initLastX ; Always copy TI-OS 'ANS' to 'X'
-    call initDisplay ; Always initialize the display.
-    call initTvmSolver ; Always init TVM solver
+    call initStatRegs
+    call initLastX
+    call initTvmSolver
 
     ; Initialize the App monitor so that we can intercept the Put Away (2ND
     ; OFF) signal.
@@ -57,10 +59,11 @@ initAlways:
 ;   - Called by TI-OS application monitor upon 2ND OFF.
 ; See the TI-83 Plus SDK reference for PutAway().
 mainExit:
-    ; Save appState and close the stack and storage registers.
+    ; Save appState and close various appVars.
     call storeAns
     call closeStack
     call closeRegs
+    call closeStatRegs
     bcall(_StoreAppState)
 
     ; Clean up the screen.

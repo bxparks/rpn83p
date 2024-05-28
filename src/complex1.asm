@@ -10,6 +10,17 @@
 ; entry.
 ;------------------------------------------------------------------------------
 
+; Description: Cold initialize the complex result mode and the complex display
+; mode.
+ColdInitComplex:
+    ld a, numResultModeReal
+    ld (numResultMode), a
+    ld a, complexModeRect
+    ld (complexMode), a
+    ret
+
+;------------------------------------------------------------------------------
+
 ; Description: Convert OP1/OP2 (re,im) into complex number in CP1.
 ; Input: OP1/OP2=(re,im)
 RectToComplex:
@@ -194,7 +205,7 @@ realsToComplexRect:
 ; Input: OP1/OP2:(Complex|Real)
 ; Output: OP1=Re(OP1/OP2)
 ComplexReal:
-    call getOp1RpnObjectTypePageOne ; A=rpnObjectType
+    call getOp1RpnObjectTypePageOne ; A=type; HL=OP1
     cp rpnObjectTypeReal
     ret z
     cp rpnObjectTypeComplex
@@ -207,7 +218,7 @@ ComplexReal:
 ; Input: OP1/OP2:(Complex|Real)
 ; Output: OP1=Im(OP1/OP2)
 ComplexImag:
-    call getOp1RpnObjectTypePageOne ; A=rpnObjectType
+    call getOp1RpnObjectTypePageOne ; A=type; HL=OP1
     cp rpnObjectTypeReal
     jp z, op1Set0PageOne
     cp rpnObjectTypeComplex
@@ -220,7 +231,7 @@ ComplexImag:
 ; Input: OP1/OP2:(Complex|Real)
 ; Output: OP1/OP2=conj(OP1/OP2)
 ComplexConj:
-    call getOp1RpnObjectTypePageOne ; A=rpnObjectType
+    call getOp1RpnObjectTypePageOne ; A=type; HL=OP1
     cp rpnObjectTypeReal
     ret z
     cp rpnObjectTypeComplex
@@ -233,7 +244,7 @@ ComplexConj:
 ; Input: OP1/OP2:(Complex|Real)
 ; Output: OP1: abs(Z) or abs(X)
 ComplexAbs:
-    call getOp1RpnObjectTypePageOne ; A=rpnObjectType
+    call getOp1RpnObjectTypePageOne ; A=type; HL=OP1
     cp rpnObjectTypeReal
     jr z, complexAbsForReal
     cp rpnObjectTypeComplex
@@ -269,7 +280,7 @@ complexAbsForReal:
 ;   - OP1/OP2:(Complex|Real)
 ;   - (trigFlags)=RAD or DEG
 ComplexAngle:
-    call getOp1RpnObjectTypePageOne ; A=rpnObjectType
+    call getOp1RpnObjectTypePageOne ; A=type; HL=OP1
     cp rpnObjectTypeReal
     jp z, op1Set0PageOne
     cp rpnObjectTypeComplex

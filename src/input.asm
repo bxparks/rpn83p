@@ -52,6 +52,7 @@ closeInputEditing:
 ; Close the input buffer, and don't set OP1 to anything.
 ; Output:
 ;   - rpnFlagsTvmCalculate: cleared
+; Destroys: all, OP1, OP2, OP3, OP4, OP5
 closeInputAndRecallNone:
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     jr closeInput
@@ -60,7 +61,7 @@ closeInputAndRecallNone:
 ; Output:
 ;   - OP1=X
 ;   - rpnFlagsTvmCalculate: cleared
-; Destroys: OP1-OP2
+; Destroys: all, OP1, OP2, OP3, OP4, OP5
 closeInputAndRecallX:
     call closeInput
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
@@ -74,7 +75,7 @@ closeInputAndRecallX:
 ;   - OP1=Y
 ;   - OP2=X
 ;   - rpnFlagsTvmCalculate: cleared
-; Destroys: OP1-OP4
+; Destroys: all, OP1, OP2, OP3, OP4, OP5
 closeInputAndRecallXY:
     call closeInput
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
@@ -93,6 +94,7 @@ closeInputAndRecallXYErr:
 ; Output:
 ;   - OP1=X
 ;   - rpnFlagsTvmCalculate: cleared
+; Destroys: all, OP1, OP2, OP3, OP4, OP5
 closeInputAndRecallUniversalX:
     call closeInput
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
@@ -104,6 +106,7 @@ closeInputAndRecallUniversalX:
 ;   - OP1/OP2=Y
 ;   - OP3/OP4=X
 ;   - rpnFlagsTvmCalculate: cleared
+; Destroys: all, OP1, OP2, OP3, OP4, OP5
 closeInputAndRecallUniversalXY:
     call closeInput
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
@@ -114,6 +117,7 @@ closeInputAndRecallUniversalXY:
 ;-----------------------------------------------------------------------------
 
 ; Close the input buffer, parse RpnDate{} record, place it into OP1.
+; Destroys: all, OP1, OP2, OP3, OP4, OP5
 closeInputAndRecallRpnDateX:
     call closeInput
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
@@ -123,6 +127,7 @@ closeInputAndRecallRpnDateX:
     bcall(_ErrDataType)
 
 ; Close the input buffer, validate RpnOffset{}, and place it into OP1.
+; Destroys: all, OP1, OP2, OP3, OP4, OP5
 closeInputAndRecallRpnOffsetX:
     call closeInput
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
@@ -132,6 +137,7 @@ closeInputAndRecallRpnOffsetX:
     bcall(_ErrDataType)
 
 ; Close the input buffer, validate RpnOffset{} or Real, and place it into OP1.
+; Destroys: all, OP1, OP2, OP3, OP4, OP5
 closeInputAndRecallRpnOffsetOrRealX:
     call closeInput
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
@@ -143,6 +149,7 @@ closeInputAndRecallRpnOffsetOrRealX:
     bcall(_ErrDataType)
 
 ; Close the input buffer, parse RpnOffsetDatetime{} record, place it into OP1.
+; Destroys: all, OP1, OP2, OP3, OP4, OP5
 closeInputAndRecallRpnOffsetDateTimeX:
     call closeInput
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
@@ -153,6 +160,7 @@ closeInputAndRecallRpnOffsetDateTimeX:
 
 ; Close the input buffer, parse a date-like object (RpnDate, RpnDateTime, or
 ; RpnOffsetDateTime), place it into OP1.
+; Destroys: all, OP1, OP2, OP3, OP4, OP5
 closeInputAndRecallRpnDateLikeX:
     call closeInput
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
@@ -169,6 +177,7 @@ closeInputAndRecallRpnDateLikeX:
 ; successfully if the input was a date-related object: RpnDate, RpnTime,
 ; RpnDateTime, RpnOffset, RpnOffsetDateTime.
 ; Output: A=rpnObjectType
+; Destroys: all, OP1, OP2, OP3, OP4, OP5
 closeInputAndRecallRpnDateRelatedX:
     call closeInput
     res rpnFlagsTvmCalculate, (iy + rpnFlags)

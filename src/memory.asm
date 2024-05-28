@@ -44,7 +44,13 @@ exchangeFPSHL:
 ; Destroys: all registers
 exchangeFloat:
     ld b, 9
-exchangeFloatLoop:
+    ; [[fallthrough]]
+
+; Description: Exchange the B number of bytes at DE and HL.
+; Input: DE, HL: pointers; B=numBytes
+; Output: contents of DE, HL exchanged
+; Destroys: all registers
+exchangeLoop:
     ld a, (de)
     ld c, (hl)
     ld (hl), a
@@ -52,7 +58,7 @@ exchangeFloatLoop:
     ld (de), a
     inc de
     inc hl
-    djnz exchangeFloatLoop
+    djnz exchangeLoop
     ret
 
 ; Description: Exchange the top 2 floating point numbers on the FPS.
@@ -370,7 +376,7 @@ cp1ExCp3:
 ; Destroys: all registers
 exchangeComplex:
     ld b, 22
-    jp exchangeFloatLoop
+    jp exchangeLoop
 
 ;-----------------------------------------------------------------------------
 

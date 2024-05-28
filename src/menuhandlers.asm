@@ -715,41 +715,31 @@ saveFormatDigitsContinue:
 ; Description: Select menu name.
 ; Output: CF=0 for normal, CF=1 or alternate
 mFixNameSelector:
-    bit fmtExponent, (iy + fmtFlags)
-    jr z, mFixNameSelectorAlt
     or a ; CF=0
-    ret
-mFixNameSelectorAlt:
+    bit fmtExponent, (iy + fmtFlags)
+    ret nz
     scf
     ret
 
 ; Description: Select menu name.
 ; Output: CF=0 for normal, CF=1 or alternate
 mSciNameSelector:
-    bit fmtExponent, (iy + fmtFlags)
-    jr z, mSciNameSelectorNormal
-mSciNameSelectorMaybeOn:
-    bit fmtEng, (iy + fmtFlags)
-    jr z, mSciNameSelectorAlt
-mSciNameSelectorNormal:
     or a ; CF=0
-    ret
-mSciNameSelectorAlt:
+    bit fmtExponent, (iy + fmtFlags)
+    ret z
+    bit fmtEng, (iy + fmtFlags)
+    ret nz
     scf
     ret
 
 ; Description: Select menu name.
 ; Output: CF=0 for normal, CF=1 or alternate
 mEngNameSelector:
+    or a ; CF=0
     bit fmtExponent, (iy + fmtFlags)
-    jr z, mEngNameSelectorNormal
-mEngNameSelectorMaybeOn:
+    ret z
     bit fmtEng, (iy + fmtFlags)
     ret z
-mEngNameSelectorNormal:
-    or a ; CF=0
-    ret
-mEngNameSelectorAlt:
     scf
     ret
 
@@ -770,22 +760,18 @@ mDegHandler:
 ; Description: Select menu name.
 ; Output: CF=0 for normal, CF=1 or alternate
 mRadNameSelector:
-    bit trigDeg, (iy + trigFlags)
-    jr z, mEngNameSelectorAlt
     or a ; CF=0
-    ret
-mRadNameSelectorAlt:
+    bit trigDeg, (iy + trigFlags)
+    ret nz
     scf
     ret
 
 ; Description: Select menu name.
 ; Output: CF=0 for normal, CF=1 or alternate
 mDegNameSelector:
-    bit trigDeg, (iy + trigFlags)
-    jr nz, mDegNameSelectorAlt
     or a ; CF=0
-    ret
-mDegNameSelectorAlt:
+    bit trigDeg, (iy + trigFlags)
+    ret z
     scf
     ret
 
@@ -831,7 +817,55 @@ mGetRegSizeHandler:
     jp pushToX
 
 msgRegSizePrompt:
-    .db "SIZE", 0
+    .db "RSIZ", 0
+
+;-----------------------------------------------------------------------------
+
+mSetStackSizeHandler:
+    call closeInputAndRecallNone
+    ld hl, msgStackSizePrompt
+    call startArgScanner
+    ld a, 1
+    ld (argLenLimit), a ; accept only a single digit
+    call processArgCommands ; ZF=0 if cancelled
+    ret nz ; do nothing if cancelled
+    ; validate input
+    ld a, (argValue)
+    cp stackSizeMax+1 ; CF=0 if argValue>8
+    jr nc, setStackSizeHandlerErr
+    cp stackSizeMin ; CF=1 if argValue<4
+    jr c, setStackSizeHandlerErr
+    ; perform the resize
+    inc a ; add LastX register
+    call resizeStack ; test (newLen-oldLen) -> ZF,CF flags set
+    set dirtyFlagsStatus, (iy + dirtyFlags)
+    ; Determine the handler code
+    jr z, setStackSizeHandlerUnchanged
+    jr nc, setStackSizeHandlerExpanded
+setStackSizeHandlerShrunk:
+    ld a, errorCodeStackShrunk
+    ld (handlerCode), a
+    ret
+setStackSizeHandlerExpanded:
+    ld a, errorCodeStackExpanded
+    ld (handlerCode), a
+    ret
+setStackSizeHandlerUnchanged:
+    ld a, errorCodeStackUnchanged
+    ld (handlerCode), a
+    ret
+setStackSizeHandlerErr:
+    bcall(_ErrInvalid)
+
+mGetStackSizeHandler:
+    call closeInputAndRecallNone
+    call lenStack
+    dec a ; remove LastX register
+    bcall(_ConvertAToOP1) ; OP1=float(A)
+    jp pushToX
+
+msgStackSizePrompt:
+    .db "SSIZ", 0
 
 ;-----------------------------------------------------------------------------
 
@@ -949,6 +983,10 @@ mAtanhHandler:
 ; Children nodes of STK menu group (stack functions).
 ;-----------------------------------------------------------------------------
 
+mStackDupHandler:
+    call closeInputAndRecallNone
+    jp liftStack
+
 mStackRollUpHandler:
     call closeInputAndRecallNone
     jp rollUpStack
@@ -958,6 +996,10 @@ mStackRollDownHandler:
 
 mStackExchangeXYHandler:
     jp handleKeyExchangeXY
+
+mStackDropHandler:
+    call closeInputAndRecallNone
+    jp dropStack
 
 ;-----------------------------------------------------------------------------
 ; Children nodes of CLR menu group (clear functions).

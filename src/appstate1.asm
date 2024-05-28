@@ -25,9 +25,11 @@ storeAppStateDelete:
     ; alway delete the app var if found
     bcall(_DelVarArc)
 storeAppStateCreate:
-    ; Fill in the appId and schemaVersion fields.
+    ; Fill in the appVar header fields (appId, varType, schemaVersion).
     ld hl, rpn83pAppId
     ld (appStateAppId), hl
+    ld hl, rpnVarTypeAppState
+    ld (appStateVarType), hl
     ld hl, rpn83pSchemaVersion
     ld (appStateSchemaVersion), hl
     ; Copy various OS parameters into the appState fields.
@@ -98,6 +100,12 @@ restoreAppStateValidate:
     ; Validate the appStateAppId
     ld hl, (appStateAppId)
     ld de, rpn83pAppId
+    or a ; CF=0
+    sbc hl, de
+    jr nz, restoreAppStateFailed
+    ; Validate the appStateVarType
+    ld hl, (appStateVarType)
+    ld de, rpnVarTypeAppState
     or a ; CF=0
     sbc hl, de
     jr nz, restoreAppStateFailed

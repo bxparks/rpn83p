@@ -102,6 +102,32 @@ inputBufFlagsArgCancel equ 4 ; set if exit was caused by CLEAR or ON/EXIT
 ; A random 16-bit integer that identifies the RPN83P app.
 rpn83pAppId equ $1E69
 
+; List of appVar types used by RPN83P. The header fields of all RPN83P appVars
+; will be the same, described by th following C struct:
+;
+; struct RpnVar {
+;   uint16_t size; // maintained by the TIOS (*not* including 'size' field)
+;   struct RpnVarHeader {
+;     uint16_t crc16; // CRC16 checksum of all following bytes
+;     uint16_t appId; // appId
+;     uint16_t varType; // varType
+;     uint16_t schemaVersion; // schema version of the payload
+;   } header;
+;   uint8_t payload[] // data payload
+;  }
+;
+; Validating the CRC16 is a relatively expensive process. For UI efficiency, it
+; is allowed that the (appId, varType, schemaVersion) fields may be read and
+; processed for UI purposes (e.g. to display a menu of matching appVars to the
+; user). But the CRC must be validated before actually using the information
+; containined in the payload.
+rpnVarTypeAppState equ 0 ; app state, excluding RpnElements
+rpnVarTypeElementList equ 1 ; RpnElements, stack or storage registers
+rpnVarTypeFullState equ 2 ; all state including RpnElements (not implemented)
+
+; Size of the common appVar header: crc16 + appId + varType + schemaVersion = 8
+rpnVarHeaderSize equ 8
+
 ; Increment the schema version if the previously saved app variable 'RPN83SAV'
 ; should be marked as stale during validation. This will cause the app to
 ; initialize to the factory defaults. When an variable is added or deleted, the
@@ -111,6 +137,33 @@ rpn83pAppId equ $1E69
 ; variable is changed (e.g. if the meaning of a flag is changed), then we
 ; *must* increment the version number to mark the previous state as stale.
 rpn83pSchemaVersion equ 15
+
+; Similar to rpn83pSchemaVersion, this version number determines the schema of
+; the appVars (e.g. RPN83STK, RPN83REG, RPN83STA) that hold the list of
+; RpnObjects.
+;
+; Version 1 uses a single byte to encode the RpnObjectType, using the extended
+; range of $18 to $1e inclusive. The problem is that if additional RpnObjects
+; are added, the type would be forced to use $20, which is not allowed
+; according to the 83 Plus SDK documents since only the bottom 5-bits are
+; supposed to be used in the first type byte.
+;
+; Version 2 uses 2 bytes to encode the RpnObjectType. If the first byte is
+; rpnObjectTypePrefix ($18), then the second byte is the actual type of the
+; RpnObject. This extends the range of the RpnObjectType to $ff, which should
+; be more than enough for the foreseeable future.
+;
+; In the unlikely chance that the type range to $ff is insufficient, there are
+; 2 ways to extend the encoding further:
+;   1) Other prefix values are available. The values from $19 to $1f are
+;   currently unused.
+;   2) A second prefix value can be defined in the 2nd byte, encoding new types
+;   using 3 bytes instead of just 2.
+;
+; Beware that extending the type range beyond $ff will require other additional
+; work. There a number of places in the code which assumes that the RpnObject
+; type can be held in a single 8-bit register.
+rpnElementListSchemaVersion equ 2
 
 ; Define true and false. Something else in spasm-ng defines the 'true' and
 ; 'false' symbols but I cannot find the definitions for them in the
@@ -125,64 +178,87 @@ rpntrue equ 1
 ; RpnObect type enums. TIOS defines object types from $00 (RealObj) to
 ; $17 (GroupObj). We'll continue from $18.
 
+; The bit mask needed to extract the TIOS object type. Only the bottom 5 bits
+; of the type byte are used.
+rpnObjectTypeMask equ $1f
+
+; Number of bytes used by the 'type' field in the RpnObject. Currently, the
+; type field is a `u8[2]`, so takes 2 bytes.
+rpnObjectTypeSizeOf equ 2
+
+; Macros to skip the type header bytes of an RpnObject.
+#define skipRpnObjectTypeHL inc hl \ inc hl
+#define skipRpnObjectTypeDE inc de \ inc de
+
 ; Real number object. Use the same constant as TIOS.
 rpnObjectTypeReal equ 0 ; same as TI-OS
+rpnRealSizeOf equ 9 ; sizeof(float)
 
 ; Complex number object. Use the same constant as TIOS.
 rpnObjectTypeComplex equ $0C ; same as TI-OS
+rpnComplexSizeOf equ 18 ; sizeof(complex)
+
+; Type prefix for RPN83P objects. The next byte is the actual rpnObjectType.
+rpnObjectTypePrefix equ $18
 
 ; Date and RpnDate objects:
 ; - struct Date{year:u16, mon:u8, day:u8}, 4 bytes
-; - struct RpnDate{type:u8, date:Date}, 5 bytes
-rpnObjectTypeDate equ $18
-rpnObjectTypeDateSizeOf equ 5
+; - struct RpnDate{type:u8[2], date:Date}, 6 bytes
+rpnObjectTypeDate equ $20 ; start at $20 to support additional prefixes
+rpnObjectTypeDateSizeOf equ 6
 
 ; Time and RpnTime objects:
 ; - struct Time{hour:u8, minute:u8, second:u8}, 3 bytes
-; - struct RpnTime{type:u8, date:Time}, 4 bytes
-rpnObjectTypeTime equ $19
-rpnObjectTypeTimeSizeOf equ 4
+; - struct RpnTime{type:u8[2], date:Time}, 5 bytes
+rpnObjectTypeTime equ $21
+rpnObjectTypeTimeSizeOf equ 5
 
 ; DateTime and RpnDateTime objects:
 ; - struct DateTime{date:Date, hour:u8, min:u8, sec:u8}, 7 bytes
-; - struct RpnDateTime{type:u8, dateTime:DateTime}, 8 bytes
-rpnObjectTypeDateTime equ $1A
-rpnObjectTypeDateTimeSizeOf equ 8
+; - struct RpnDateTime{type:u8[2], dateTime:DateTime}, 9 bytes
+rpnObjectTypeDateTime equ $22
+rpnObjectTypeDateTimeSizeOf equ 9
 
 ; Offset and RpnOffset object:
 ; - struct Offset{hour:i8, min:i8}, 2 bytes
-; - struct RpnOffset{type:u8, offset:Offset}, 3 bytes
-rpnObjectTypeOffset equ $1B
-rpnObjectTypeOffsetSizeOf equ 3
+; - struct RpnOffset{type:u8[2], offset:Offset}, 4 bytes
+rpnObjectTypeOffset equ $23
+rpnObjectTypeOffsetSizeOf equ 4
 
 ; OffsetDateTime and RpnOffsetDateTime objects:
 ; - struct OffsetDateTime{datetime:DateTime, offset:Offset}, 9 bytes
-; - struct RpnOffsetDateTime{type:u8, offsetDateTime:OffsetDateTime}, 10 bytes
+; - struct RpnOffsetDateTime{type:u8[2], offsetDateTime:OffsetDateTime},
+;   11 bytes
 ; The sizeof(RpnOffsetDateTime) is 10, which is greater than the 9 bytes of a
 ; TI-OS floating point number. But OPx registers are 11 bytes long. We have
 ; to careful and use expandOp1ToOp2() and shrinkOp2ToOp1() when parsing or
 ; manipulating this object.
-rpnObjectTypeOffsetDateTime equ $1C
-rpnObjectTypeOffsetDateTimeSizeOf equ 10
+rpnObjectTypeOffsetDateTime equ $24
+rpnObjectTypeOffsetDateTimeSizeOf equ 11
 
 ; DayOfWeek and RpnDayOfWeek object:
 ; - struct DayOfWeek{dow:u8}, 1 bytes
-; - struct RpnDayOfWeek{type:u8, DowOfWeek:dow}, 2 bytes
-rpnObjectTypeDayOfWeek equ $1D
+; - struct RpnDayOfWeek{type:u8[2], DowOfWeek:dow}, 3 bytes
+rpnObjectTypeDayOfWeek equ $25
 rpnObjectTypeDayOfWeekSizeOf equ 3
 
 ; Duration and RpnDuration object:
 ; - struct Duration{days:i16, hours:i8, minutes:i8, seconds:i8}, 5 bytes
-; - struct RpnDuration{type:u8, duration:Duration}, 6 bytes
-rpnObjectTypeDuration equ $1E
-rpnObjectTypeDurationSizeOf equ 6
+; - struct RpnDuration{type:u8[2], duration:Duration}, 7 bytes
+rpnObjectTypeDuration equ $26
+rpnObjectTypeDurationSizeOf equ 7
 
-; An RpnObject is union of all possible Real, Complex, and RpnObjects. See the
-; struct definitions in vars.asm. If the rpnObjectSizeOf is changed, the
-; rpnObjectIndexToOffset() function must be updated.
-rpnRealSizeOf equ 9 ; sizeof(float)
-rpnComplexSizeOf equ 18 ; sizeof(complex)
-rpnObjectSizeOf equ rpnComplexSizeOf + 1 ; type + sizeof(complex)
+; An RpnObject is the union of all Rpn objects: RpnReal, RpnComplex, and so on.
+; See the definition of 'struct RpnObject' in vars.asm. Its size is the
+; max(sizeof(RpnReal), sizeof(RpnComplex), sizeof(RpnDate), ...).
+rpnObjectSizeOf equ rpnComplexSizeOf ; type + sizeof(complex)
+
+; An RpnElement is a single element in the RpnElementList appVar that holds a
+; single RpnObject. It has an extra type byte in front of the RpnObject, to
+; allow us to extract its type without having to parse inside the RpnObject. If
+; the rpnElementSizeOf is changed, the rpnElementIndexToOffset() function must
+; be updated.
+rpnElementSizeOf equ rpnObjectSizeOf+1
 
 ;-----------------------------------------------------------------------------
 
@@ -191,7 +267,10 @@ rpnObjectSizeOf equ rpnComplexSizeOf + 1 ; type + sizeof(complex)
 ; Flash ROM loading. If this area is used, avoid archiving variables."
 appStateBegin equ tempSwapArea
 
-; CRC16CCITT of the appState data block, not including the CRC itself. 2 bytes.
+; The following 4 variables must match the fields in the RpnVarHeader struct
+; defined above.
+
+; CRC16CCITT of the appState data block, not including the CRC itself.
 ; This is used only in StoreAppState() and RestoreAppState(), so in theory, we
 ; could remove it from here and save it only in the RPN83SAV AppVar. The
 ; advantage of duplicating the CRC here is that the content of the AppVar
@@ -201,10 +280,13 @@ appStateBegin equ tempSwapArea
 ; here.
 appStateCrc16 equ appStateBegin ; u16
 
-; A somewhat unique id to distinguish this app from other apps. 2 bytes.
+; A somewhat unique id to distinguish this app from other apps.
 ; Similar to the 'appStateCrc16' field, this does not need to be in the
 ; appState data block. But this simplifies the serialization code.
 appStateAppId equ appStateCrc16 + 2 ; u16
+
+; Type of RpnVar, one of the rpnVarTypeXxx enums.
+appStateVarType equ appStateAppId + 2 ; u16
 
 ; Schema version. 2 bytes. If we overflow the 16-bits, it's probably ok because
 ; schema version 0 was probably created so far in the past the likelihood of a
@@ -212,7 +294,7 @@ appStateAppId equ appStateCrc16 + 2 ; u16
 ; an escape hatch: we can create a new appStateAppId upon overflow. Similar to
 ; AppStateAppId and appStateCrc16, this field does not need to be here, but
 ; having it here simplifies the serialization code.
-appStateSchemaVersion equ appStateAppId + 2 ; u16
+appStateSchemaVersion equ appStateVarType + 2 ; u16
 
 ; Copy of the 3 asm_FlagN flags. These will be serialized into RPN83SAV by
 ; StoreAppState(), and deserialized into asm_FlagN by RestoreAppState().
@@ -243,9 +325,17 @@ handlerCode equ appStateFmtDigits + 1 ; u8
 ; non-zero.
 errorCode equ handlerCode + 1 ; u8
 
+; Size of RPN stack. This is a cache of the stack size for display purposes.
+; The source of truth is the size of the RPN83PSTK appVar. This stackSize
+; variable will be updated whenever the appVar is resized.
+stackSize equ errorCode + 1 ; u8, [4,8] allowed
+stackSizeDefault equ 4 ; factory default stack size
+stackSizeMin equ 4
+stackSizeMax equ 8
+
 ; Current base mode number. Allowed values are: 2, 8, 10, 16. Anything else is
 ; interpreted as 10.
-baseNumber equ errorCode + 1 ; u8
+baseNumber equ stackSize + 1 ; u8
 
 ; Base mode carry flag. Bit 0.
 baseCarryFlag equ baseNumber + 1 ; boolean
@@ -275,7 +365,7 @@ inputBufEEMaxLen equ 2
 ; with different maxlen limits:
 ;
 ; 1) floating point real numbers: 20 characters (inputBufFloatMaxLen)
-; 2) complex numbers: 20 * 2 = 40 characters (inputBufComplexMaxLen)
+; 2) complex numbers: 20*2+1 = 41 characters (inputBufComplexMaxLen)
 ; 3) base-2 numbers: max of 32 digits (various, see getInputMaxLenBaseMode())
 ; 4) data records: max of 29 characters (various, see getInputMaxLenBaseMode())
 ;
@@ -302,17 +392,37 @@ argBufLen equ inputBufLen
 argBufCapacity equ inputBufCapacity
 argBufSizeMax equ 4 ; max number of digits accepted on input
 
-; Menu variables. Two variables determine the current state of the menu, the
-; groupId and the rowIndex in the group. The C equivalent is:
+; Maximum number of characters that can be displayed during input/editing mode.
+; The LCD line can display 16 characters using the large font. We need 1 char
+; for the "X:" label, and 1 char for the trailing cursor, which leaves us with
+; 14 characters.
+renderWindowSize equ 15
+
+; Define the [start,end) of the renderWindow over the renderBuf[].
+; These *must* be defined contiguously because we will read both variables at
+; the same time using a `ld rr, (nn)` instruction. That's more convenient than
+; the `ld a, (nn)` instruction which only supports the A register. We use
+; little-endian order (end defined first) so that the high registers (B, D, H)
+; are `start`, and the low registers (C, E, L) are `end`.
+renderWindowEnd equ inputBuf + inputBufSizeOf ; u8
+renderWindowStart equ renderWindowEnd + 1; u8
+
+; Cursor position inside inputBuf[]. Valid values are from [0, inputBufLen]
+; inclusive, which allows the cursor to be just to the right of the last
+; character in inputBuf[].
+cursorInputPos equ renderWindowStart + 1 ; u8
+
+; Menu variables. Two variables determine the location in the menu hierarchy,
+; the groupId and the rowIndex in the group. The C equivalent is:
 ;
-;   struct Menu {
+;   struct MenuLocation {
 ;     uint16_t groupId; // id of the current menu group
 ;     uint8_t rowIndex; // menu row, groups of 5
 ;   }
-currentMenuGroupId equ inputBuf + inputBufSizeOf ; u16
+currentMenuGroupId equ cursorInputPos + 1 ; u16
 currentMenuRowIndex equ currentMenuGroupId + 2 ; u8
 
-; These variables remember the previous menuGroup/row pair when a shortcut was
+; The MenuLocation of the previous menuGroup/row pair when a shortcut was
 ; pressed to another menuGroup. On the ON/EXIT button is pressed, we can then
 ; go back to the previous menu, instead of going up to the parent of the menu
 ; invoked by the shortcut button. Not all shortcuts will choose to use this
@@ -527,29 +637,48 @@ tvmNPMT1 equ tvmNPMT0 + 9 ; float
 tvmSolverIsRunning equ tvmNPMT1 + 9 ; boolean; true if active
 tvmSolverCount equ tvmSolverIsRunning + 1 ; u8; iteration count
 
-; A Pascal-string that contains the rendered version of inputBuf, truncated and
-; formatted as needed, which can be printed on the screen. It is slightly
-; longer than inputBuf because sometimes a single character in inputBuf gets
-; expanded to multiple characters in inputDisplay (e.g. 'Ldegree' delimiter for
-; complex numbers gets expanded to 'Langle,Ltemp' pair).
+; A Pascal-string that contains the rendered version of inputBuf[] which can be
+; printed on the screen. It is slightly longer than inputBuf for 2 reasons:
+;
+;   1) The 'Ldegree' delimiter for complex numbers is expanded to 2 characters
+;   ('Langle' and 'Ltemp').
+;
+;   2) A sentinel 'space' character is added at the very end representing the
+;   character that is behind the cursor when it is placed just after the end of
+;   the string in inputBuf[]. It is convenient to define this sentinel in
+;   renderBuf[] instead of adding special logic during the printing routine.
 ;
 ; The C structure is:
 ;
-; struct InputDisplay {
+; struct RenderBuf {
 ;   uint8_t len;
-;   char buf[inputDisplayCapacity];
+;   char buf[renderBufCapacity];
 ; };
-inputDisplay equ tvmSolverCount + 1 ; struct InputDisplay; Pascal-string
-inputDisplayLen equ inputDisplay ; len byte of the string
-inputDisplayBuf equ inputDisplay + 1 ; start of actual buffer
-inputDisplayCapacity equ inputBufCapacity + 1 ; Ldegree -> Langle Ltemp
-inputDisplaySizeOf equ inputDisplayCapacity + 1 ; total size of data structure
+renderBuf equ tvmSolverCount + 1 ; struct RenderBuf; Pascal-string
+renderBufLen equ renderBuf ; len byte of the string
+renderBufBuf equ renderBuf + 1 ; start of actual buffer
+renderBufCapacity equ inputBufCapacity + 2
+renderBufSizeOf equ renderBufCapacity + 1 ; total size of data structure
 
-; Maximum number of characters that can be displayed during input/editing mode.
-; The LCD line can display 16 characters using the large font. We need 1 char
-; for the "X:" label, and 1 char for the trailing prompt "_", which leaves us
-; with 14 characters.
-inputDisplayMaxLen equ 14
+; Lookup table that converts inputBuf[] coordinates to renderBuf[] coordinates.
+; The C date type is:
+;
+;   uint8_t renderIndexes[inputBufCapacity + 1];
+;
+; The size of this array is inputBufCapacity+1 because the cursor can be placed
+; one position past the last character in inputBuf[].
+renderIndexes equ renderBuf + renderBufSizeOf ; u8*renderIndexesSize
+renderIndexesSize equ inputBufCapacity + 1
+
+; Cursor position inside renderBuf[]. Derived from the value of
+; renderIndexes[cursorInputPos].
+cursorRenderPos equ renderIndexes + renderIndexesSize ; u8
+
+; Cursor position on the LCD screen in the range of [0,renderWindowSize). This
+; is the *logical* screen position. The actual physical screen column index is
+; `cursorScreenPos+1` because the `X:` label occupies one slot.
+; TODO: Currently used only in setInputCursor(). Remove?
+cursorScreenPos equ cursorRenderPos + 1 ; u8
 
 ; Set of bit-flags that remember whether an RPN stack display line was rendered
 ; in large or small font. We can optimize the drawing algorithm by performing a
@@ -561,7 +690,7 @@ displayStackFontFlagsX equ 1
 displayStackFontFlagsY equ 2
 displayStackFontFlagsZ equ 4
 displayStackFontFlagsT equ 8
-displayStackFontFlags equ inputDisplay + inputDisplaySizeOf ; u8
+displayStackFontFlags equ cursorScreenPos + 1 ; u8
 
 appBufferEnd equ displayStackFontFlags + 1
 
@@ -656,9 +785,9 @@ _ProcessHelpCommands equ _ProcessHelpCommandsLabel-branchTableBase
     .db 1
 
 ; menu1.asm
-_InitMenuLabel:
-_InitMenu equ _InitMenuLabel-branchTableBase
-    .dw InitMenu
+_ColdInitMenuLabel:
+_ColdInitMenu equ _ColdInitMenuLabel-branchTableBase
+    .dw ColdInitMenu
     .db 1
 _SanitizeMenuLabel:
 _SanitizeMenu equ _SanitizeMenuLabel-branchTableBase
@@ -713,9 +842,9 @@ _Crc16ccitt equ _Crc16ccittLabel-branchTableBase
     .db 1
 
 ; errorcode1.asm
-_InitErrorCodeLabel:
-_InitErrorCode equ _InitErrorCodeLabel-branchTableBase
-    .dw InitErrorCode
+_ColdInitErrorCodeLabel:
+_ColdInitErrorCode equ _ColdInitErrorCodeLabel-branchTableBase
+    .dw ColdInitErrorCode
     .db 1
 _PrintErrorStringLabel:
 _PrintErrorString equ _PrintErrorStringLabel-branchTableBase
@@ -731,25 +860,37 @@ _SetHandlerCodeFromSystemCode equ _SetHandlerCodeFromSystemCodeLabel-branchTable
     .db 1
 
 ; input1.asm
-_InitInputBufLabel:
-_InitInputBuf equ _InitInputBufLabel-branchTableBase
-    .dw InitInputBuf
+_ColdInitInputBufLabel:
+_ColdInitInputBuf equ _ColdInitInputBufLabel-branchTableBase
+    .dw ColdInitInputBuf
     .db 1
 _ClearInputBufLabel:
 _ClearInputBuf equ _ClearInputBufLabel-branchTableBase
     .dw ClearInputBuf
     .db 1
-_AppendInputBufLabel:
-_AppendInputBuf equ _AppendInputBufLabel-branchTableBase
-    .dw AppendInputBuf
+_InsertCharInputBufLabel:
+_InsertCharInputBuf equ _InsertCharInputBufLabel-branchTableBase
+    .dw InsertCharInputBuf
+    .db 1
+_InsertCharAtInputBufLabel:
+_InsertCharAtInputBuf equ _InsertCharAtInputBufLabel-branchTableBase
+    .dw InsertCharAtInputBuf
+    .db 1
+_DeleteCharInputBufLabel:
+_DeleteCharInputBuf equ _DeleteCharInputBufLabel-branchTableBase
+    .dw DeleteCharInputBuf
+    .db 1
+_DeleteCharAtInputBufLabel:
+_DeleteCharAtInputBuf equ _DeleteCharAtInputBufLabel-branchTableBase
+    .dw DeleteCharAtInputBuf
+    .db 1
+_ChangeSignInputBufLabel:
+_ChangeSignInputBuf equ _ChangeSignInputBufLabel-branchTableBase
+    .dw ChangeSignInputBuf
     .db 1
 _CheckInputBufEELabel:
 _CheckInputBufEE equ _CheckInputBufEELabel-branchTableBase
     .dw CheckInputBufEE
-    .db 1
-_CheckInputBufChsLabel:
-_CheckInputBufChs equ _CheckInputBufChsLabel-branchTableBase
-    .dw CheckInputBufChs
     .db 1
 _CheckInputBufDecimalPointLabel:
 _CheckInputBufDecimalPoint equ _CheckInputBufDecimalPointLabel-branchTableBase
@@ -989,6 +1130,10 @@ _ProbComb equ _ProbCombLabel-branchTableBase
     .db 1
 
 ; complex1.asm
+_ColdInitComplexLabel:
+_ColdInitComplex equ _ColdInitComplexLabel-branchTableBase
+    .dw ColdInitComplex
+    .db 1
 _RectToComplexLabel:
 _RectToComplex equ _RectToComplexLabel-branchTableBase
     .dw RectToComplex
@@ -1068,9 +1213,9 @@ _FormatComplexPolarDeg equ _FormatComplexPolarDegLabel-branchTableBase
 ;-----------------------------------------------------------------------------
 
 ; modes2.asm
-_InitModesLabel:
-_InitModes equ _InitModesLabel-branchTableBase
-    .dw InitModes
+_ColdInitModesLabel:
+_ColdInitModes equ _ColdInitModesLabel-branchTableBase
+    .dw ColdInitModes
     .db 2
 
 ; selectepoch2.asm
@@ -1195,9 +1340,9 @@ _ValidateDuration equ _ValidateDurationLabel-branchTableBase
     .db 2
 
 ; date2.asm
-_InitDateLabel:
-_InitDate equ _InitDateLabel-branchTableBase
-    .dw InitDate
+_ColdInitDateLabel:
+_ColdInitDate equ _ColdInitDateLabel-branchTableBase
+    .dw ColdInitDate
     .db 2
 ; Year functions
 _IsLeapLabel:
@@ -1257,9 +1402,9 @@ _SubRpnTimeByObject equ _SubRpnTimeByObjectLabel-branchTableBase
     .db 2
 
 ; dayofweek2.asm
-_DayOfWeekLabel:
-_DayOfWeek equ _DayOfWeekLabel-branchTableBase
-    .dw DayOfWeek
+_RpnDateToDayOfWeekLabel:
+_RpnDateToDayOfWeek equ _RpnDateToDayOfWeekLabel-branchTableBase
+    .dw RpnDateToDayOfWeek
     .db 2
 _AddRpnDayOfWeekByDaysLabel:
 _AddRpnDayOfWeekByDays equ _AddRpnDayOfWeekByDaysLabel-branchTableBase
@@ -1320,6 +1465,18 @@ _RpnOffsetToHours equ _RpnOffsetToHoursLabel-branchTableBase
 _HoursToRpnOffsetLabel:
 _HoursToRpnOffset equ _HoursToRpnOffsetLabel-branchTableBase
     .dw HoursToRpnOffset
+    .db 2
+_AddRpnOffsetByHoursLabel:
+_AddRpnOffsetByHours equ _AddRpnOffsetByHoursLabel-branchTableBase
+    .dw AddRpnOffsetByHours
+    .db 2
+_AddRpnOffsetByDurationLabel:
+_AddRpnOffsetByDuration equ _AddRpnOffsetByDurationLabel-branchTableBase
+    .dw AddRpnOffsetByDuration
+    .db 2
+_SubRpnOffsetByObjectLabel:
+_SubRpnOffsetByObject equ _SubRpnOffsetByObjectLabel-branchTableBase
+    .dw SubRpnOffsetByObject
     .db 2
 
 ; offsetdatetime2.asm
@@ -1423,9 +1580,9 @@ _GetAppTimeZone equ _GetAppTimeZoneLabel-branchTableBase
     .db 2
 
 ; rtc2.asm
-_RtcInitLabel:
-_RtcInit equ _RtcInitLabel-branchTableBase
-    .dw RtcInit
+_ColdInitRtcLabel:
+_ColdInitRtc equ _ColdInitRtcLabel-branchTableBase
+    .dw ColdInitRtc
     .db 2
 _RtcGetNowLabel:
 _RtcGetNow equ _RtcGetNowLabel-branchTableBase
@@ -1462,9 +1619,9 @@ _RtcGetTimeZone equ _RtcGetTimeZoneLabel-branchTableBase
     .db 2
 
 ; base2.asm
-_InitBaseLabel:
-_InitBase equ _InitBaseLabel-branchTableBase
-    .dw InitBase
+_ColdInitBaseLabel:
+_ColdInitBase equ _ColdInitBaseLabel-branchTableBase
+    .dw ColdInitBase
     .db 2
 _BitwiseAndLabel:
 _BitwiseAnd equ _BitwiseAndLabel-branchTableBase
@@ -1615,9 +1772,21 @@ _ConvertOP1ToUxxNoFatal equ _ConvertOP1ToUxxNoFatalLabel-branchTableBase
     .db 2
 
 ; formatinteger32.asm
-_ReformatBaseTwoStringLabel:
-_ReformatBaseTwoString equ _ReformatBaseTwoStringLabel-branchTableBase
-    .dw ReformatBaseTwoString
+_FormatCodedU32ToHexStringLabel:
+_FormatCodedU32ToHexString equ _FormatCodedU32ToHexStringLabel-branchTableBase
+    .dw FormatCodedU32ToHexString
+    .db 2
+_FormatCodedU32ToOctStringLabel:
+_FormatCodedU32ToOctString equ _FormatCodedU32ToOctStringLabel-branchTableBase
+    .dw FormatCodedU32ToOctString
+    .db 2
+_FormatCodedU32ToBinStringLabel:
+_FormatCodedU32ToBinString equ _FormatCodedU32ToBinStringLabel-branchTableBase
+    .dw FormatCodedU32ToBinString
+    .db 2
+_FormatCodedU32ToDecStringLabel:
+_FormatCodedU32ToDecString equ _FormatCodedU32ToDecStringLabel-branchTableBase
+    .dw FormatCodedU32ToDecString
     .db 2
 _FormatU32ToHexStringLabel:
 _FormatU32ToHexString equ _FormatU32ToHexStringLabel-branchTableBase
@@ -1646,6 +1815,28 @@ _FormatAToString equ _FormatAToStringLabel-branchTableBase
 _FormShowableLabel:
 _FormShowable equ _FormShowableLabel-branchTableBase
     .dw FormShowable
+    .db 2
+
+; display2.asm
+_ColdInitDisplayLabel:
+_ColdInitDisplay equ _ColdInitDisplayLabel-branchTableBase
+    .dw ColdInitDisplay
+    .db 2
+_InitDisplayLabel:
+_InitDisplay equ _InitDisplayLabel-branchTableBase
+    .dw InitDisplay
+    .db 2
+_PrintMenuNameAtCLabel:
+_PrintMenuNameAtC equ _PrintMenuNameAtCLabel-branchTableBase
+    .dw PrintMenuNameAtC
+    .db 2
+_DisplayMenuFolderLabel:
+_DisplayMenuFolder equ _DisplayMenuFolderLabel-branchTableBase
+    .dw DisplayMenuFolder
+    .db 2
+_PrintInputBufLabel:
+_PrintInputBuf equ _PrintInputBufLabel-branchTableBase
+    .dw PrintInputBuf
     .db 2
 
 ;-----------------------------------------------------------------------------
@@ -1723,6 +1914,9 @@ _DebugU32DEAsHex equ _DebugU32DEAsHexLabel-branchTableBase
 #include "arghandlers.asm"
 #include "showscanner.asm"
 #include "vars.asm"
+#include "varsreg.asm"
+#include "varsstack.asm"
+#include "varsstat.asm"
 #include "input.asm"
 #include "display.asm"
 #include "basehandlers.asm"
@@ -1815,11 +2009,14 @@ defpage(2)
 #include "fps2.asm"
 #include "format2.asm"
 #include "show2.asm"
+#include "display2.asm"
+#include "print2.asm"
 #include "memory2.asm"
 #include "const2.asm"
 #include "integer2.asm"
 #include "rpnobject2.asm"
 #include "cstring2.asm"
+#include "common2.asm"
 ;
 #include "prime2.asm"
 #include "base2.asm"

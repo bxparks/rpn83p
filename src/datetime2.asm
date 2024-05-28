@@ -21,7 +21,7 @@ RpnDateTimeToEpochSeconds:
     ex de, hl ; DE=rpnDateTime
     call reserveRaw9 ; FPS=[rpnDateTime,epochSeconds]; HL=epochSeconds
     ; convert to epochSeconds
-    inc de ; DE=dateTime, skip type byte
+    skipRpnObjectTypeDE ; DE=dateTime, skip type byte
     call dateTimeToEpochSeconds ; HL=epochSeconds
     ; copy back to OP1
     call popRaw9Op1 ; FPS=[rpnDateTime]; OP1=epochSeconds
@@ -71,8 +71,7 @@ epochSecondsToRpnDateTimeAlt:
     ; convert to RpnDateTime
     ex de, hl ; DE=epochSeconds; HL=rpnDateTime
     ld a, rpnObjectTypeDateTime
-    ld (hl), a
-    inc hl ; HL=rpnDateTime+1=dateTime
+    call setHLRpnObjectTypePageTwo ; HL+=rpnObjectTypeSizeOf
     call epochSecondsToDateTime ; HL=HL+sizeof(DateTime)
     ; clean up FPS
     call dropRaw9
@@ -126,7 +125,7 @@ addRpnDateTimeBySecondsAdd:
     call convertOP1ToI40 ; OP1:u40=seconds
     ; add dateTime+seconds
     pop hl ; stack=[]; HL=rpnDateTime
-    inc hl ; HL=dateTime
+    skipRpnObjectTypeHL ; HL=dateTime
     ld de, OP1
     call addDateTimeBySeconds ; HL=newDateTime
     ; clean up
@@ -150,12 +149,12 @@ addRpnDateTimeByRpnDurationAdd:
     call PushRpnObject1 ; FPS=[dateTime]; HL=dateTime
     push hl ; stack=[dateTime]
     ; Convert OP3:RpnDuration to OP1 days
-    ld de, OP3+1 ; DE:(Duration*)=duration
+    ld de, OP3+rpnObjectTypeSizeOf ; DE:(Duration*)=duration
     ld hl, OP1 ; HL:(i40*)=durationSeconds
     call durationToSeconds ; HL=durationSeconds
     ; add dateTime+seconds
     pop hl ; stack=[]; HL=rpnDateTime
-    inc hl ; HL=dateTime
+    skipRpnObjectTypeHL ; HL=dateTime
     ld de, OP1
     call addDateTimeBySeconds ; HL=newDateTime
     ; OP1=newDateTime
@@ -199,7 +198,7 @@ addDateTimeBySeconds:
 ;   - OP1:(RpnDateTime-seconds) or i40(RpnDateTime-RpnDateTime).
 ; Destroys: OP1, OP2, OP3-OP6
 SubRpnDateTimeByObject:
-    call getOp3RpnObjectTypePageTwo ; A=objectType
+    call getOp3RpnObjectTypePageTwo ; A=type; HL=OP3
     cp rpnObjectTypeReal
     jr z, subRpnDateTimeBySeconds
     cp rpnObjectTypeDateTime
@@ -217,12 +216,12 @@ subRpnDateTimeByRpnDateTime:
     ; convert OP3 to seconds on the FPS stack
     call reserveRaw9 ; FPS=[X.seconds]; HL=X.seconds
     push hl ; stack=[X.seconds]
-    ld de, OP3+1 ; DE=(DateTime*)
+    ld de, OP3+rpnObjectTypeSizeOf ; DE=(DateTime*)
     call dateTimeToInternalEpochSeconds ; FPS.X.seconds updated; HL=X.seconds
     ; convert OP1 to seconds on FPS stack
     call pushRaw9Op1 ; make space on FPS=[X.seconds,Y.seconds]; HL=Y.seconds
     push hl ; stack=[X.seconds,Y.seconds]
-    ld de, OP1+1 ; DE=(DateTime*)
+    ld de, OP1+rpnObjectTypeSizeOf ; DE=(DateTime*)
     call dateTimeToInternalEpochSeconds ; FPS.Y.seconds updated; HL=Y.seconds
     ; subtract Y.seconds-X.seconds
     pop hl ; HL=Y.seconds
@@ -235,12 +234,12 @@ subRpnDateTimeByRpnDateTime:
 subRpnDateTimeByRpnDuration:
     ; convert OP3 to seconds on the FPS stack
     call reserveRaw9 ; FPS=[durationSeconds]; HL=durationSeconds
-    ld de, OP3+1 ; DE:(DateTime*)
+    ld de, OP3+rpnObjectTypeSizeOf ; DE:(DateTime*)
     call durationToSeconds ; HL=durationSeconds
     ; negate the seconds
     call negU40 ; HL=-durationSeconds
     ex de, hl ; DE=-durationSeconds
-    ld hl, OP1+1 ; HL=dateTime
+    ld hl, OP1+rpnObjectTypeSizeOf ; HL=dateTime
     call addDateTimeBySeconds ; HL=dateTime-durationSeconds
     ; clean up
     jp dropRaw9 ; FPS=[]
@@ -256,27 +255,25 @@ subRpnDateTimeByRpnDuration:
 ; Destroys: all
 SplitRpnDateTime:
     ; extract the Date part
-    ld de, OP3 ; DE:(Date*)
     ld a, rpnObjectTypeDate
-    ld (de), a
-    inc de
-    ld hl, OP1+1 ; HL:(const Date*)
-    ld bc, rpnObjectTypeDateSizeOf-1
+    call setOp3RpnObjectTypePageTwo ; HL=OP3+rpnObjectTypeSizeOf
+    ex de, hl ; DE=(Date*)
+    ld hl, OP1+rpnObjectTypeSizeOf ; HL:(const Date*)
+    ld bc, rpnObjectTypeDateSizeOf-rpnObjectTypeSizeOf
     ldir
     ; Extract the Time part by shifting forward. This is allowed because
     ; sizeof(Date)>sizeof(Time), so there is no overlap.
-    ld de, OP1
     ld a, rpnObjectTypeTime
-    ld (de), a
-    inc de
+    call setOp1RpnObjectTypePageTwo ; HL=OP1+rpnObjectTypeSizeOf
+    ex de, hl ; DE=(Time*)
     ld hl, OP1+rpnObjectTypeDateSizeOf ; HL:(const Time*)
-    ld bc, rpnObjectTypeTimeSizeOf-1
+    ld bc, rpnObjectTypeTimeSizeOf-rpnObjectTypeSizeOf
     ldir
     ret
 
 ;-----------------------------------------------------------------------------
 
-; Description: Merge RpnDate with RpnTime.
+; Description: Merge RpnDate with RpnTime into an RpnDateTime.
 ; Input:
 ;   - OP1:RpnDate|RpnTime
 ;   - OP3:RpnDate|RpnTime
@@ -287,12 +284,11 @@ MergeRpnDateWithRpnTime:
     call checkOp1TimePageTwo ; ZF=1 if OP1=RpnTime
     call z, cp1ExCp3PageTwo
     ; if reached here: CP1:RpnDate; CP3:RpnTime
-    ld de, OP1
     ld a, rpnObjectTypeDateTime
-    ld (de), a
+    call setOp1RpnObjectTypePageTwo ; HL=OP1+rpnObjectTypeSizeOf
     ld de, OP1+rpnObjectTypeDateSizeOf
-    ld hl, OP3+1
-    ld bc, rpnObjectTypeTimeSizeOf-1
+    ld hl, OP3+rpnObjectTypeSizeOf
+    ld bc, rpnObjectTypeTimeSizeOf-rpnObjectTypeSizeOf
     ldir
     ret
 
@@ -307,9 +303,10 @@ MergeRpnDateWithRpnTime:
 ; Destroys: OP1
 ExtendRpnDateToDateTime:
     ld a, rpnObjectTypeDateTime
-    ld (OP1), a
+    call setOp1RpnObjectTypePageTwo ; HL=OP1+rpnObjectTypeSizeOf
     ; clear the Time fields
-    ld hl, OP1+rpnObjectTypeDateSizeOf
+    ld de, rpnObjectTypeDateSizeOf-rpnObjectTypeSizeOf
+    add hl, de ; HL=timePointer
     xor a
     ld (hl), a
     inc hl
@@ -328,5 +325,5 @@ ExtendRpnDateToDateTime:
 ; Destroys: OP1
 TruncateRpnDateTime:
     ld a, rpnObjectTypeDate
-    ld (OP1), a
+    call setOp1RpnObjectTypePageTwo
     ret

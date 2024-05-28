@@ -215,6 +215,27 @@ MenuGroup root mRoot [
         MenuItem MEAN mStatMean
         MenuItem WMN mStatWeightedMean
         MenuItem N mStatN
+        MenuGroup <ScapSigma> mStatRegs [
+          MenuRow [
+            MenuItem <ScapSigma>X mStatRegX
+            MenuItem <ScapSigma>X2 mStatRegX2
+            MenuItem <ScapSigma>Y mStatRegY
+            MenuItem <ScapSigma>Y2 mStatRegY2
+            MenuItem <ScapSigma>XY mStatRegXY
+          ]
+          MenuRow [
+            MenuItem <ScapSigma>N mStatRegN
+            MenuItem <ScapSigma>LX mStatRegLnX
+            MenuItem <ScapSigma>LX2 mStatRegLnX2
+            MenuItem <ScapSigma>LY mStatRegLnY
+            MenuItem <ScapSigma>LY2 mStatRegLnY2
+          ]
+          MenuRow [
+            MenuItem <ScapSigma>LXL mStatRegLnXLnY
+            MenuItem <ScapSigma>XLY mStatRegXLnY
+            MenuItem <ScapSigma>YLX mStatRegYLnX
+          ]
+        ]
       ]
       MenuRow [
         MenuItem SDEV mStatSampleSdev
@@ -306,11 +327,13 @@ MenuGroup root mRoot [
         MenuItemAlt PRAD PRA<Sblock> mComplexModeRad
         MenuItemAlt PDEG PDE<Sblock> mComplexModeDeg
       ]
-      # Disabled until after v0.10 is released.
-      #MenuRow [
-      #  MenuItem SIZE mSetRegSize
-      #  MenuItem SIZ<Squestion> mGetRegSize
-      #]
+      MenuRow [
+        MenuItem RSIZ mSetRegSize
+        MenuItem RSZ<Squestion> mGetRegSize
+        MenuItem * *
+        MenuItem SSIZ mSetStackSize
+        MenuItem SSZ<Squestion> mGetStackSize
+      ]
       MenuRow [
         MenuItemAlt <Scomma>EE <Scomma>EE<Sblock> mCommaEENormal
         MenuItemAlt EE<Scomma> EE<Scomma><Sblock> mCommaEESwapped
@@ -321,11 +344,11 @@ MenuGroup root mRoot [
     ]
     MenuGroup STK mStack [
       MenuRow [
-        MenuItem * *
+        MenuItem DUP mStackDup
         MenuItem R<SupArrow> mStackRollUp
         MenuItem R<SdownArrow> mStackRollDown
+        MenuItem DROP mStackDrop
         MenuItem X<Sleft><Sconvert>Y mStackExchangeXY
-        MenuItem * *
       ]
     ]
     MenuGroup UNIT mUnit [
@@ -404,8 +427,15 @@ MenuGroup root mRoot [
       MenuRow [
         MenuItem TZ<Sconvert>H mTimeZoneToHours
         MenuItem H<Sconvert>TZ mHoursToTimeZone
-        MenuItem * *
-        MenuItem * *
+        MenuGroup DOPS mDops [
+          MenuRow [
+            MenuItem DSHK mDateShrink # shrink DZ to DT, DT to D
+            MenuItem DEXD mDateExtend # extend D to DT, DT to DZ
+            MenuItem DCUT mDateCut # cut DZ to (DT,TZ), DT to (D,T)
+            MenuItem DLNK mDateLink # link (DT,TZ) to DZ, (D,T) to DT
+            MenuItem * *
+          ]
+        ]
         MenuGroup EPCH mEpoch [
           MenuRow [
             MenuItemAlt UNIX UNI<Sblock> mEpochUnix # 1970-01-01T00:00:00
@@ -422,27 +452,22 @@ MenuGroup root mRoot [
             MenuItem EPC<Squestion> mEpochGetCustom # get custom epoch date
           ]
         ]
-      ]
-      MenuRow [
-        MenuItem DSHK mDateShrink # shrink DZ to DT, DT to D
-        MenuItem DEXD mDateExtend # extend D to DT, DT to DZ
-        MenuItem DCUT mDateCut # cut DZ to (DT,TZ), DT to (D,T)
-        MenuItem DLNK mDateLink # link (DT,TZ) to DZ, (D,T) to DT
-        MenuItem * *
-      ]
-      MenuRow [
-        MenuItem NOW mGetNow # RTC epochSeconds
-        MenuItem NOWD mGetNowDate # RTC Date using appTimeZone
-        MenuItem NOWT mGetNowTime # RTC Time using appTimeZone
-        MenuItem NWDZ mGetNowAppDateTime # RTC OffsetDateTime using appTimeZone
-        MenuItem NWUT mGetNowUTCDateTime # RTC OffsetDateTime using UTC
-      ]
-      MenuRow [
-        MenuItem TZ mSetTimeZone
-        MenuItem TZ<Squestion> mGetTimeZone
-        MenuItem CTZ mSetClockTimeZone
-        MenuItem CTZ<Squestion> mGetClockTimeZone
-        MenuItem SETC mSetClock # set current clock
+        MenuGroup CLK mClk [
+          MenuRow [
+            MenuItem NOW mGetNow # RTC epochSeconds
+            MenuItem NOWD mGetNowDate # RTC Date using appTimeZone
+            MenuItem NOWT mGetNowTime # RTC Time using appTimeZone
+            MenuItem NWDZ mGetNowAppDateTime # RTC OffsetDateTime using appTimeZone
+            MenuItem NWUT mGetNowUTCDateTime # RTC OffsetDateTime using UTC
+          ]
+          MenuRow [
+            MenuItem TZ mSetTimeZone
+            MenuItem TZ<Squestion> mGetTimeZone
+            MenuItem CTZ mSetClockTimeZone
+            MenuItem CTZ<Squestion> mGetClockTimeZone
+            MenuItem SETC mSetClock # set current clock
+          ]
+        ]
       ]
       # MenuRow [
       #   MenuGroup ISO mIso [

@@ -6,9 +6,9 @@
 ; of the 96(w)x64(h) LCD display, using a mixture of small and large fonts.
 ; The format looks roughly like this:
 ;
-; 0: Status: (left,up,down) (Deg|Rad) (Fix|Sci|Eng) (Dec|Hex|Oct|Bin)
+; 0: Status: (left,up,down) (Fix|Sci|Eng) (Deg|Rad) ...
 ; 1: Debug: Debugging output, not used in app
-; 2: Error code
+; 2: Error or warning message
 ; 3: T: tttt
 ; 4: Z: zzzz
 ; 5: Y: yyyy
@@ -16,16 +16,20 @@
 ; 7: Menu: [menu1][menu2][menu3][menu4][menu5]
 ;-----------------------------------------------------------------------------
 
-; Display coordinates of the top status line
+; Display coordinates of the top status line. Use a 2px space between each
+; annunciator. The last 6px should not be used because the TIOS uses that space
+; for the 2ND and ALPHA modifier keys when the cursor is not shown. In other
+; words, statusEndPenCol should not be greater than 90 (96-6).
 statusCurRow equ 0
 statusCurCol equ 0
 statusPenRow equ statusCurRow*8
-statusMenuPenCol equ 0 ; left, up, down, 2px = 3*4 + 2 = 14px
-statusFloatModePenCol equ 14 ; (FIX|SCI|ENG), (, N, ), 4px = 5*4+2*3 = 26px
-statusTrigPenCol equ 40 ; (DEG|RAD), 4px = 4*4 = 16px
-statusBasePenCol equ 56 ; (C|-), 4px + 4px
-statusComplexModePenCol equ 64 ; (aib|rLt|rLo), 4x4px = 16px
-statusEndPenCol equ 80
+statusMenuPenCol equ 0 ; "left, up, down" + space = 3*4+2 = 14px
+statusFloatModePenCol equ 14 ; "(FIX|SCI|ENG{n}" + space = 4*4+2 = 18px
+statusTrigPenCol equ 32 ; "(DEG|RAD)" + space = 3*4+2 = 14px
+statusBasePenCol equ 46 ; (C|-) + space = 6px
+statusComplexModePenCol equ 52 ; "(aib|rLt|rLo)" + space = 3x4+2= 14px
+statusStackModePenCol equ 66 ; "{n}STK" + space = 4x4+2 = 18px
+statusEndPenCol equ 84
 
 ; Display coordinates of the debug line
 debugCurRow equ 1
@@ -92,7 +96,7 @@ argCurRow equ 6
 argCurCol equ 0
 argPenRow equ argCurRow*8
 
-; Menu pixel columns:
+; Menu box Pen Coordinates: (0,0) is top-left.
 ;   - 96 px wide, 5 menus
 ;   - 18 px/menu = 90 px, 6 leftover
 ;   - 1 px between 5 menus, plus 1 px on far left and right = 6 px
@@ -115,37 +119,55 @@ menuPenCol3     equ 58 ; left edge of menu3
 menuPenCol4     equ 77 ; left edge of menu4
 menuPenColEnd   equ 96
 
-;-----------------------------------------------------------------------------
+; A menu folder icon is created using a small (5 pixel) line above the menu box.
+; The bcall(_ILine) function uses Pixel Coordinates: (0,0) is the bottom-left,
+; and (95,63) is the top-right.
+menuFolderIconLineRow equ 7 ; pixel row of the menu folder icon line
 
-; Description: Configure flags and variables related to rendering to a sane
-; state. This is always called, regardless of whether RestoreAppState()
-; succeeded in restoring the saved state.
-initDisplay:
-    ; always set drawMode to drawModeNormal
-    xor a
-    ld (drawMode), a
-    ; clear the displayFontMasks
-    ld (displayStackFontFlags), a
-    ; always disable SHOW mode
-    res rpnFlagsShowModeEnabled, (iy + rpnFlags)
-    ; set all dirty flags so that everything on the display is re-rendered
-    ld a, $FF
-    ld (iy + dirtyFlags), a
-    ret
+;-----------------------------------------------------------------------------
 
 ; Description: Update the display, including the title, RPN stack variables,
 ; and the menu.
+;
+; We must turn off the cursor at the very beginning of the drawing code, then
+; reenable it at the end (if needed). Otherwise, there seems to be a
+; race-condition in the blinking code of TIOS where the cursor is shown
+; (probably through an interrupt handler), then the cursor position is changed
+; by our code, but the blinking code does not remember the prior location where
+; the cursor was enabled, so does not unblink the cursor properly, leaving an
+; artifact of the cursor in the wrong location.
+;
 ; Input: none
 ; Output:
 ; Destroys: all
 displayAll:
+    ; Disable blinking cursor
+    res curAble, (iy + curFlags)
+    res curOn, (iy + curFlags)
+    ;
     call displayStatus
     call displayErrorCode
     call displayMain
     call displayMenu
+    call setCursorState
     ; Reset all dirty flags
     xor a
     ld (iy + dirtyFlags), a
+    ret
+
+; Description: Set the cursor properties. Enable cursor only in edit mode.
+;
+; NOTE: There are 2 variables that control the cursor (curOn and curAble), so
+; it seemed possible to adjust the cursor so that it is non-blinking when
+; placed at the end of the inputBuf, and blinking in the interior of the
+; inputBuf. However setting `curOn=true` and `curAble=false` seems to just
+; disable the cursor instead of showing a non-blinking cursor.
+setCursorState:
+    bit rpnFlagsEditing, (iy + rpnFlags)
+    ret z
+    ; enable a blinking cursor
+    set curOn, (iy + curFlags)
+    set curAble, (iy + curFlags)
     ret
 
 ;-----------------------------------------------------------------------------
@@ -165,6 +187,7 @@ displayStatus:
     call displayStatusTrig
     call displayStatusBase
     call displayStatusComplexMode
+    call displayStatusStackMode
     ret
 
 ;-----------------------------------------------------------------------------
@@ -229,6 +252,44 @@ displayStatusArrowUp:
 displayStatusArrowUpNone:
     ld a, SFourSpaces
 displayStatusArrowUpDisplay:
+    bcall(_VPutMap)
+    ret
+
+;-----------------------------------------------------------------------------
+
+; Description: Display the floating point format: FIX, SCI, ENG
+; Destroys: A, HL
+displayStatusFloatMode:
+    bit dirtyFlagsStatus, (iy + dirtyFlags)
+    ret z
+    ld hl, statusPenRow*$100 + statusFloatModePenCol; $(penRow)(penCol)
+    ld (PenCol), hl
+    ; check float mode
+    bit fmtExponent, (iy + fmtFlags)
+    jr nz, displayStatusFloatModeSciOrEng
+displayStatusFloatModeFix:
+    ld hl, msgFixLabel
+    jr displayStatusFloatModeBracketDigit
+displayStatusFloatModeSciOrEng:
+    bit fmtEng, (iy + fmtFlags)
+    jr nz, displayStatusFloatModeEng
+displayStatusFloatModeSci:
+    ld hl, msgSciLabel
+    jr displayStatusFloatModeBracketDigit
+displayStatusFloatModeEng:
+    ld hl, msgEngLabel
+    ; [[fallthrough]]
+displayStatusFloatModeBracketDigit:
+    ; Print the number of digit
+    call vPutS
+    ld a, (fmtDigits)
+    cp 10
+    jr nc, displayStatusFloatModeFloating
+    add a, '0'
+    jr displayStatusFloatModeDigit
+displayStatusFloatModeFloating:
+    ld a, '-'
+displayStatusFloatModeDigit:
     bcall(_VPutMap)
     ret
 
@@ -310,44 +371,19 @@ displayStatusComplexModePutS:
 
 ;-----------------------------------------------------------------------------
 
-; Description: Display the floating point format: FIX, SCI, ENG
-; Destroys: A, HL
-displayStatusFloatMode:
+; Description: Display the RPN Stack mode.
+displayStatusStackMode:
     bit dirtyFlagsStatus, (iy + dirtyFlags)
     ret z
-    ld hl, statusPenRow*$100 + statusFloatModePenCol; $(penRow)(penCol)
+    ld hl, statusPenRow*$100 + statusStackModePenCol; $(penRow)(penCol)
     ld (PenCol), hl
-    ; check float mode
-    bit fmtExponent, (iy + fmtFlags)
-    jr nz, displayStatusFloatModeSciOrEng
-displayStatusFloatModeFix:
-    ld hl, msgFixLabel
-    jr displayStatusFloatModeBracketDigit
-displayStatusFloatModeSciOrEng:
-    bit fmtEng, (iy + fmtFlags)
-    jr nz, displayStatusFloatModeEng
-displayStatusFloatModeSci:
-    ld hl, msgSciLabel
-    jr displayStatusFloatModeBracketDigit
-displayStatusFloatModeEng:
-    ld hl, msgEngLabel
-    ; [[fallthrough]]
-displayStatusFloatModeBracketDigit:
-    ; Print the number of digit
-    call vPutS
-    ld a, SlParen
-    bcall(_VPutMap)
-    ld a, (fmtDigits)
-    cp 10
-    jr nc, displayStatusFloatModeFloating
+    ; print the stackSize variable first
+    ld a, (stackSize)
     add a, '0'
-    jr displayStatusFloatModeDigit
-displayStatusFloatModeFloating:
-    ld a, '-'
-displayStatusFloatModeDigit:
     bcall(_VPutMap)
-    ld a, SrParen
-    bcall(_VPutMap)
+    ; then the label
+    ld hl, msgStkLabel
+    call vPutS
     ret
 
 ;-----------------------------------------------------------------------------
@@ -515,13 +551,15 @@ displayStackXInput:
     ld (CurRow), hl
     ld b, displayStackFontFlagsX
     call displayStackSetLargeFont
-    jp printInputBuf
+    bcall(_PrintInputBuf)
+    ret
 
 ; Display the inputBuf in the debug line. Used for DRAW mode 3.
 displayStackXInputAtDebug:
     ld hl, debugCurCol*$100+debugCurRow ; $(curCol)(curRow)
     ld (CurRow), hl
-    jp printInputBuf
+    bcall(_PrintInputBuf)
+    ret
 
 displayStackXLabel:
     ; If the "X:" label was corrupted by the command arg mode label, then
@@ -547,6 +585,7 @@ displayStackXLabelContinue:
 ; Input: (argBuf)
 ; Output: (CurCol) updated
 displayStackXArg:
+    ; Set commandArg cursor position.
     ld hl, argCurCol*$100 + argCurRow ; $(curCol)(curRow)
     ld (CurRow), hl
     ld b, displayStackFontFlagsX
@@ -554,6 +593,7 @@ displayStackXArg:
 
 ; Description: Print the arg buffer at the (CurRow) and (CurCol).
 ; Input:
+;   - B=displayFontMask
 ;   - argBuf (same as inputBuf)
 ;   - argPrompt
 ;   - argModifier
@@ -619,100 +659,6 @@ msgArgModifierDiv:
     .db "/ ", 0
 msgArgModifierIndirect:
     .db " IND ", 0
-
-;-----------------------------------------------------------------------------
-
-; Description: Print the input buffer.
-; Input:
-;   - inputBuf
-;   - (CurCol) cursor position
-; Output:
-;   - (CurCol) is updated
-; Destroys: A, HL; BC destroyed by PutPS()
-printInputBuf:
-    call formatInputBuf
-    call truncateInputDisplay
-    ld hl, inputDisplay
-    call putPS
-    ; Append trailing '_' cursor.
-    ld a, cursorChar
-    bcall(_PutC)
-    ; Skip EraseEOL() if the PutC() above wrapped to next line
-    ld a, (CurCol)
-    or a
-    ret z
-    bcall(_EraseEOL)
-    ret
-
-; Description: Convert the inputBuf into inputDisplay suitable for rendering on
-; the screen. If Ldegree character used for complex polar degree mode exists,
-; it is replaced by (Langle, Ltemp) pair.
-; Input: inputBuf
-; Output:
-;   - inputDisplay updated
-;   - HL=inputDisplay
-; Destroys: all registers
-formatInputBuf:
-    ld hl, inputBuf
-    ld de, inputDisplay
-    ld b, (hl) ; B=len(inputBuf)
-    ; check for zero string
-    ld a, b
-    ld (de), a ; len(displayBuf)=len(inputBuf) initially
-    or a
-    ret z
-    ; set up loop variables
-    inc hl ; skip past len byte
-    inc de ; skip past len byte
-    ld c, 0 ; C=targetLength
-formatInputBufLoop:
-    ld a, (hl)
-    inc hl
-    cp Ldegree
-    jr nz, formatInputBufCopy
-    ; Expand Ldegree into (Langle, Ltemp).
-    ld a, Langle
-    ld (de), a
-    inc de
-    inc c
-    ld a, Ltemp
-formatInputBufCopy:
-    ld (de), a
-    inc de
-    inc c
-    djnz formatInputBufLoop
-    ld hl, inputDisplay
-    ld (hl), c ; len(inputDisplay)=targetLen
-    ret
-
-; Description: Truncate inputDisplay to a maximum of 14 characters. If more
-; than 14 characters, add an ellipsis character on the left most character and
-; copy the last 13 characters.
-; Input: inputDisplay
-; Output: inputDisplay truncated if necessary
-; Destroys: all registers
-truncateInputDisplay:
-    ld hl, inputDisplay
-    ld a, (hl) ; A=len
-    inc hl ; skip past len byte
-    cp inputDisplayMaxLen+1 ; if len<15: CF=1
-    ret c
-    ; We are here if len>=15. Extract the last 13 characters, with an ellipsis
-    ; on the left most character.
-    sub inputDisplayMaxLen-1 ; A=len-13
-    ld e, a
-    ld d, 0
-    add hl, de ; HL=pointer to last 13 characters
-    ld a, inputDisplayMaxLen
-    ld de, inputDisplay
-    ld (de), a ; len=14
-    inc de; skip past len byte
-    ld a, Lellipsis
-    ld (de), a
-    inc de
-    ld bc, inputDisplayMaxLen-1
-    ldir ; shift the last 13 characters to the beginning of inputDisplay
-    ret
 
 ;-----------------------------------------------------------------------------
 ; Routines to display the progress of the TVM solver (for debugging).
@@ -801,8 +747,9 @@ displayMenu:
     ld b, 5 ; B = loop 5 times
 displayMenuLoop:
     push hl ; stack=[menuId]
-    call getMenuName ; HL:(const char*)=menuName
-    call printMenuNameAtC
+    call getMenuName ; HL:(const char*)=menuName; A=numRows
+    bcall(_PrintMenuNameAtC) ; preserves A, BC, DE
+    bcall(_DisplayMenuFolder) ; preserves A, BC, DE
     pop hl ; stack=[]; HL=menuId
     ; increment to next menu
     inc hl ; HL=menuId+1
@@ -811,94 +758,6 @@ displayMenuLoop:
     add a, menuPenWidth + 1 ; A += menuWidth + 1 (1px spacing)
     ld c, a ; C += menuPenWidth + 1
     djnz displayMenuLoop
-    ret
-
-;-----------------------------------------------------------------------------
-
-; Description: Print the menu name in HL to the menu penCol in C, using the
-; small and inverted font, centering the menu name in the middle of the 18 px
-; width of a menu box.
-; Inputs:
-;   B=loopCounter (must be preserved)
-;   C=penCol (must be preserved)
-;   E=menuIndex [0-4] (ignored but must be preserved, useful for debugging)
-;   HL:(const char*)=menuName
-; Destroys: A, HL
-; Preserves: BC, DE
-printMenuNameAtC:
-    push bc ; stack=[loopCounter/penCol]
-    push de ; stack=[loopCounter/penCol,menuIndex]
-    ; Set (PenCol,PenRow), preserving HL
-    ld a, c ; A=penCol
-    ld (PenCol), a
-    ld a, menuPenRow
-    ld (PenRow), a
-    ; Predict the width of menu name.
-    ld de, menuName
-    ld c, menuNameBufMax
-    call copyCToPascal ; C, DE are preserved
-    ex de, hl ; HL = menuName
-    call smallStringWidth ; A = B = string width
-printMenuNameAtCNoAdjust:
-    ; Calculate the starting pixel to center the string
-    ld a, menuPenWidth
-    sub b ; A = menuPenWidth - stringWidth
-    jr nc, printMenuNameAtCFitsInside
-printMenuNameAtCTooWide:
-    xor a ; if string too wide (shouldn't happen), set to 0
-printMenuNameAtCFitsInside:
-    ; Add 1px to the total padding so that when divided between left and right
-    ; padding, the left padding gets 1px more if the total padding is an odd
-    ; number. This allows a few names which are 17px wide to actually fit
-    ; nicely within the 18px box (with 1px padding on each side), because each
-    ; small font character actually has an embedded 1px padding on the right,
-    ; so effectively it is only 16px wide. This tweak allows short names (whose
-    ; widths are an odd number of px) to be centered perfectly with equal
-    ; padding on both sides.
-    inc a
-    rra ; CF=0, divide by 2 for centering; A = padWidth
-    ;
-    ld c, a ; C = A = leftPadWidth
-    push bc ; B=stringWidth; C=leftPadWidth
-    set textInverse, (iy + textFlags)
-    ; The code below sets the textEraseBelow flag to fix a font rendering
-    ; problem on the very last row of pixels on the LCD display, where the menu
-    ; names are printed.
-    ;
-    ; The menu names are printed using the small font, which are 4px (w) by 7px
-    ; (h) for capital letters, including a one px padding on the right and
-    ; bottom of each letter. Each menu name is drawn on the last 7 piexel rows
-    ; of the LCD screen, in other words, at penRow of 7*8+1 = 57. When the
-    ; characters are printed using `textInverse`, the last line of pixels just
-    ; below each menu name should be black (inverted), and on the assembly
-    ; version of this program, it is. But in the flash app version, the line of
-    ; pixels directly under the letter is white. Setting this flag fixes that
-    ; problem.
-    set textEraseBelow, (iy + textFlags)
-printMenuNameAtCLeftPad:
-    ld b, a ; B = leftPadWidth
-    ld a, Sspace
-    call printARepeatB
-printMenuNameAtCPrintName:
-    ; Print the menu name
-    ld hl, menuName
-    call vPutSmallPS
-printMenuNameAtCRightPad:
-    pop bc ; B = stringWidth; C = leftPadWidth
-    ld a, menuPenWidth
-    sub c ; A = menuPenWidth - leftPadWidth
-    sub b ; A = rightPadWidth = menuPenWidth - leftPadWidth - stringWidth
-    jr z, printMenuNameAtCExit ; no space left
-    jr c, printMenuNameAtCExit ; overflowed, shouldn't happen but be safe
-    ; actually print the right pad
-    ld b, a ; B = rightPadWidth
-    ld a, Sspace
-    call printARepeatB
-printMenuNameAtCExit:
-    res textInverse, (iy + textFlags)
-    res textEraseBelow, (iy + textFlags)
-    pop de ; stack=[loopCounter/penCol]; E=menuIndex
-    pop bc ; stack=[]; BC=loopCounter/penCol
     ret
 
 ;-----------------------------------------------------------------------------
@@ -912,11 +771,11 @@ msgShowLabel:
 ; digits.
 ; Destroys; A, HL, OP1, OP3-OP6
 displayShow:
+    ; Print 'SHOW' label on Error Code line
     ld hl, errorPenRow*$100 ; $(penRow)(penCol)
     ld (PenCol), hl
     ld hl, msgShowLabel
-    call vPutSmallS
-    call vEraseEOL
+    call printSmallHLString
     ; Call special FormShowable() function to show all digits of OP1.
     ld hl, showCurCol*$100 + showCurRow ; $(curCol)(curRow)
     ld (CurRow), hl
@@ -958,7 +817,7 @@ clearShowAreaLoop:
 ;   - OP1:(Real|Complex|RpnObject)=value
 ; Destroys: A, HL, OP3-OP6
 printOP1:
-    call getOp1RpnObjectType ; A=objectType
+    call getOp1RpnObjectType ; A=type; HL=OP1
     ; The rpnObjecTypes are tested in order of decreasing frequency.
     cp rpnObjectTypeReal
     jr z, printOP1Real
@@ -1000,7 +859,6 @@ printOP1:
 ;   - B=displayFontMask
 ; Destroys: OP3-OP6
 printOP1Real:
-    call displayStackSetLargeFont
     bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
     jp z, printOP1AsFloat
     ld a, (baseNumber)
@@ -1051,8 +909,7 @@ printOP1ComplexRect:
     ld de, fmtString
     bcall(_FormatComplexRect)
     ld hl, fmtString
-    call vPutSmallS
-    jp vEraseEOL
+    jp printSmallHLString
 
 ; Description: Print the complex numberin CP1 in polar form using radians.
 ; Note: An r value >= 1e100 or <= 1e-100 can be returned by complexRToPRad()
@@ -1065,8 +922,7 @@ printOP1ComplexRad:
     ld de, fmtString
     bcall(_FormatComplexPolarRad)
     ld hl, fmtString
-    call vPutSmallS
-    jp vEraseEOL
+    jp printSmallHLString
 
 ; Description: Print the complex numberin CP1 in polar form using degrees.
 ; Note: An r value >= 1e100 or <= 1e-100 can be returned by complexRToPRad()
@@ -1079,8 +935,7 @@ printOP1ComplexDeg:
     ld de, fmtString
     bcall(_FormatComplexPolarDeg)
     ld hl, fmtString
-    call vPutSmallS
-    jp vEraseEOL
+    jp printSmallHLString
 
 ;-----------------------------------------------------------------------------
 
@@ -1089,10 +944,9 @@ printOP1ComplexDeg:
 ; Input:
 ;   - (displayStackFontFlags)
 ;   - B=displayFontMask
-; Destroys: A, HL
+; Destroys: A
 eraseEOLIfNeeded:
-    ld hl, displayStackFontFlags
-    ld a, (hl)
+    ld a, (displayStackFontFlags)
     and b ; if previous==smallFont: ZF=0
     ret nz ; if previous==smallFont: ret
     bcall(_EraseEOL) ; all registered saved
@@ -1101,24 +955,23 @@ eraseEOLIfNeeded:
 ; Description: Mark the stack line identified by B as using small font.
 ; Input: B=displayFontMask
 ; Output: displayStackFontFlags |= B
-; Destroys: A, HL
+; Destroys: A
 displayStackSetSmallFont:
-    ld a, b
-    ld hl, displayStackFontFlags
-    or (hl) ; A=displayFontMask OR (displayStackFontFlags)
-    ld (hl), a
+    ld a, (displayStackFontFlags)
+    or b ; A=displayFontMask OR (displayStackFontFlags)
+    ld (displayStackFontFlags), a
     ret
 
 ; Description: Mark the stack line identified by B as using large font.
 ; Input: B=displayFontMask
 ; Output: displayStackFontFlags &= (~B)
-; Destroys: A, HL
+; Destroys: A
 displayStackSetLargeFont:
-    ld a, b
+    ld a, (displayStackFontFlags)
     cpl ; A=~displayFontMask
-    ld hl, displayStackFontFlags
-    and (hl)
-    ld (hl), a
+    or b ; A=(~displayFontMask|B)
+    cpl ; A=(displayFontMask & ~B)
+    ld (displayStackFontFlags), a
     ret
 
 ;-----------------------------------------------------------------------------
@@ -1127,6 +980,7 @@ displayStackSetLargeFont:
 ; Input: OP1: floating point number
 ; Destroys: A, HL, OP3
 printOP1AsFloat:
+    call displayStackSetLargeFont
     ld a, 15 ; width of output
     bcall(_FormReal)
     ld hl, OP3
@@ -1135,7 +989,7 @@ printOP1AsFloat:
 ; Description: Print the C-string referenced by HL, and erase to the end of
 ; line, taking care that the cursor did not move to the next line
 ; automatically.
-; Input: HL: pointer to C-string
+; Input: HL:(const char*)
 ; Output:
 ; Destroys: A, HL
 printHLString:
@@ -1146,258 +1000,96 @@ printHLString:
     bcall(_EraseEOL)
     ret
 
-; Description: Print an indicator ("...") that the OP1 number cannot be
-; rendered in the current base mode (hex, oct, or bin).
-printOP1BaseInvalid:
-    ld hl, msgBaseInvalid
-    jr printHLString
+; Description: Print the string in HL using small font, and erase to end of
+; line. Unlike printHLString(), this routine assumes that the string never
+; wraps to the next line.
+; Input: HL:(const char*)
+; Destroys: A, HL
+printSmallHLString:
+    call vPutSmallS
+    jp vEraseEOL
 
-; Description: Print just a negative sign for OP1 number that is negative.
-; Negative numbers cannot be displayed in base HEX, OCT or BIN modes.
-printOP1BaseNegative:
-    ld hl, msgBaseNegative
-    jr printHLString
-
+;-----------------------------------------------------------------------------
+; Print number in BASE mode.
 ;-----------------------------------------------------------------------------
 
 ; Description: Print integer at OP1 at the current cursor in base 10. Erase to
 ; the end of line (but only if the digits did not spill over to the next line).
-; Input: OP1
-; Destroys: all, OP1-OP6
+; Input:
+;   - OP1
+;   - B=displayFontMask
+; Destroys: all, OP1-OP5, fmtString
 printOP1Base10:
+    call displayStackSetLargeFont
     bcall(_ConvertOP1ToUxxNoFatal) ; HL=OP1=uxx(OP1); C=u32StatusCode
-    bit u32StatusCodeTooBig, c
-    jr nz, printOP1BaseInvalid
-    bit u32StatusCodeNegative, c
-    jr nz, printOP1BaseNegative
-    ; Convert u32 into a base-10 string.
-    ld de, OP4
-    bcall(_FormatU32ToDecString) ; DE=formattedString
-    ; Add '.' if OP1 has fractional component.
-    call appendHasFrac ; DE=rendered string
+    ld de, fmtString
+    bcall(_FormatCodedU32ToDecString) ; DE=formattedString
     ex de, hl ; HL=rendered string
     jr printHLString
-
-; Description: Append a '.' at the end of the string if u32StatusCode contains
-; u32StatusCodeHasFrac.
-; Input:
-;   - C: u32StatusCode
-;   - DE: pointer to ascii string
-; Output:
-;   - DE: pointer to ascii string with '.' appended if u32StatusCodehasFrac is
-;   enabled
-; Destroys: A
-; Preserves, BC, DE, HL
-appendHasFrac:
-    bit u32StatusCodeHasFrac, c
-    ret z
-    ld a, '.'
-    ex de, hl
-    call appendCString
-    ex de, hl
-    ret
 
 ;-----------------------------------------------------------------------------
 
 ; Description: Print ingeger at OP1 at the current cursor in base 16. Erase to
 ; the end of line (but only if the digits did not spill over to the next line).
-; TODO: I think printOP1Base16(), printOP1Base8(), and printOP1Base2() can be
-; combined into a single subroutine, saving memory.
-; Input: OP1
-; Destroys: all, OP1-OP5
+; Input:
+;   - OP1
+;   - B=displayFontMask
+; Destroys: all, OP1-OP5, fmtString
 printOP1Base16:
+    call displayStackSetLargeFont
     bcall(_ConvertOP1ToUxxNoFatal) ; OP1=U32; C=u32StatusCode
-    bit u32StatusCodeTooBig, c
-    jr nz, printOP1BaseInvalid
-    bit u32StatusCodeNegative, c
-    jr nz, printOP1BaseNegative
-    ; Convert u32 into a base-16 string.
-    ld de, OP4
-    bcall(_FormatU32ToHexString) ; DE=formattedString
-    ; Append frac indicator
-    call appendHasFrac ; DE=rendered string
-    ex de, hl ; HL=rendered string
-    call truncateHexDigits
+    ld de, fmtString
+    bcall(_FormatCodedU32ToHexString) ; preserves DE
+    ex de, hl ; HL=fmtString
     jr printHLString
-
-; Description: Truncate upper digits depending on baseWordSize.
-; Input: HL: pointer to rendered string
-; Output: HL: pointer to truncated string
-; Destroys: A, DE
-truncateHexDigits:
-    ld a, (baseWordSize)
-    srl a
-    srl a ; A=2,4,6,8
-    sub 8
-    neg ; A=6,4,2,0
-    ld e, a
-    ld d, 0
-    add hl, de
-    ret
 
 ;-----------------------------------------------------------------------------
 
 ; Description: Print ingeger at OP1 at the current cursor in base 8. Erase to
 ; the end of line (but only if the digits did not spill over to the next line).
-; Input: OP1
-; Destroys: all, OP1-OP5
+; Input:
+;   - OP1
+;   - B=displayFontMask
+; Destroys: all, OP1-OP5, fmtString
 printOP1Base8:
+    call displayStackSetLargeFont
     bcall(_ConvertOP1ToUxxNoFatal) ; OP1=U32; C=u32StatusCode
-    bit u32StatusCodeTooBig, c
-    jr nz, printOP1BaseInvalid
-    bit u32StatusCodeNegative, c
-    jr nz, printOP1BaseNegative
-    ; Convert u32 into a base-8 string.
-    ld de, OP4
-    bcall(_FormatU32ToOctString) ; DE=formattedString
-    ; Append frac indicator
-    call appendHasFrac ; DE=rendered string
-    ex de, hl ; HL=rendered string
-    call truncateOctDigits
-    jp printHLString
-
-; Truncate upper digits depending on baseWordSize. For base-8, the u32 integer
-; was converted to 11 digits (33 bits). The number of digits to retain for each
-; baseWordSize is: {8: 3, 16: 6, 24: 8, 32: 11}, so the number of digits to
-; truncate is: {8: 8, 16: 5, 24: 3, 32: 0}.
-; Input: HL: pointer to rendered string
-; Output: HL: pointer to truncated string
-; Destroys: A, DE
-truncateOctDigits:
-    ld a, (baseWordSize)
-    cp 8
-    jr nz, truncateOctDigits16
-    ld e, a
-    jr truncateOctString
-truncateOctDigits16:
-    cp 16
-    jr nz, truncateOctDigits24
-    ld e, 5
-    jr truncateOctString
-truncateOctDigits24:
-    cp 24
-    jr nz, truncateOctDigits32
-    ld e, 3
-    jr truncateOctString
-truncateOctDigits32:
-    ld e, 0
-truncateOctString:
-    ld d, 0
-    add hl, de
-    ret
+    ld de, fmtString
+    bcall(_FormatCodedU32ToOctString) ; preserves DE
+    ex de, hl ; HL=fmtString
+    jr printHLString
 
 ;-----------------------------------------------------------------------------
 
-; Description: Print integer at OP1 at the current cursor in base 2. Erase to
-; the end of line (but only if the floating point did not spill over to the
-; next line).
+; Description: Print integer at OP1 at the current cursor in base 2.
 ;
-; The display can handle a maximum of 15 digits (1 character for
-; the "X:" label). We need one space for a trailing "." so that's 14 digits. We
-; also want to display the binary digits in group of 4, separated by a space
-; between groups, for readability, With 3 groups of 4 digits plus 2 spaces in
-; between, that's exactly 14 characters.
+; Base 2 numbers are rendered using small font to allow 16 digits to fit on one
+; line. That means WSIZ 8 and 16 can be shown in full. Digits are separated
+; into groups of 4 digits for readability. If WSIZ is greater than 16, then the
+; upper digits are truncated.
 ;
-; If there are non-zero digits after the left most digit (digit 13 from the
-; right, zero-based), then digit 13 should be replaced with a one-character
-; ellipsis character to indicate hidden digits. The SHOW command can be used to
-; display the additional digits.
+; If there exist non-zero digits in the truncated digits, the left most
+; character in the displayed digits will be replaced with a "left arrow"
+; character to indicate the presence of hidden digits.
 ;
-; Input: OP1: non-negative floating point number < 2^14
-; Destroys: all, OP1-OP5
+; If the floating point number is not an integer, a decimal point will be
+; appended to the binary digits, to indicate the presence of fractional digits.
+;
+; The SHOW command can be used to display all digits.
+;
+; Input:
+;   - OP1:float
+;   - B=displayFontMask
+; Destroys: all, OP1-OP5, fmtString
 printOP1Base2:
+    ; always use small font for base 2
+    call eraseEOLIfNeeded ; uses B
+    call displayStackSetSmallFont
     bcall(_ConvertOP1ToUxxNoFatal) ; HL=OP1=uxx(OP1); C=u32StatusCode
-    bit u32StatusCodeTooBig, c
-    jp nz, printOP1BaseInvalid
-    bit u32StatusCodeNegative, c
-    jp nz, printOP1BaseNegative
-    push bc ; stack=[u32StatusCode]
-    ; Convert u32 into a base-2 string.
-    ld de, OP4
-    bcall(_FormatU32ToBinString) ; DE=OP4=formattedString
-    ; Truncate leading digits to fit display (12 or 8 digits)
-    ex de, hl ; HL=OP4=formattedString
-    call truncateBinDigits ; HL=OP4=truncatedString
-    ; Group digits in groups of 4.
-    ld de, OP3
-    call formatBinDigits ; HL,DE preserved
-    ; Append frac indicator
-    pop bc ; stack=[]; C=u32StatusCode
-    call appendHasFrac ; DE=rendered string
-    ex de, hl ; HL=rendered string
-    jp printHLString
-
-; Description: Truncate upper digits depending on baseWordSize. The effective
-; number of digits that can be displayed is `strLen = min(baseWordSize, 12)`.
-; Then scan all digits above strLen and look for a '1'. If a '1' exists at
-; digit >= strLen, replace the left most digit of the truncated string with an
-; Lellipsis character.
-;
-; Input:
-;   - HL: pointer to rendered string
-; Output:
-;   - HL: pointer to truncated string
-;   - A: strLen
-; Destroys: A, BC
-maxBinDisplayDigits equ 12
-truncateBinDigits:
-    ld a, (baseWordSize)
-    cp maxBinDisplayDigits + 1 ; if baseWordSize < maxBinDisplayDigits: CF=1
-    jr c, truncateBinDigitsContinue
-    ld a, maxBinDisplayDigits ; strLen=min(baseWordSize, maxBinDisplayDigits)
-truncateBinDigitsContinue:
-    push af ; stack=[strLen]
-    sub 32
-    neg ; A=num leading digits=32-strLen, either 20 or 24
-    ; Check leading digits to determine if truncation causes overflow
-    ld b, a
-    ld c, 0 ; C=foundOneDigit:boolean
-truncateBinDigitsCheckOverflow:
-    ld a, (hl)
-    inc hl ; HL=left most digit of the truncated string.
-    sub '0'
-    or c ; check for a '1' digit
-    ld c, a
-    djnz truncateBinDigitsCheckOverflow
-    jr z, truncateBinDigitsNoOverflow ; if C=0: ZF=1, indicating no overflow
-    ; Replace left most digit with ellipsis symbol to indicate overflow.
-    ld a, Lellipsis
-    ld (hl), a
-truncateBinDigitsNoOverflow:
-    pop af ; stack=[]; A=strLen
-    ret
-
-; Description: Format the binary string into groups of 4 digits.
-; Input:
-;   - HL: pointer to NUL terminated string, <= 12 digits.
-;   - A: strLen
-;   - DE: destination string of at least 15 bytes
-; Output:
-;   - DE: string reformatted in groups of 4
-; Destroys: A, BC
-; Preserves: DE, HL
-; TODO: Move to formatinteger32.asm.
-formatBinDigits:
-    push de
-    push hl
-    ld b, 0
-    ld c, a
-formatBinDigitsLoop:
-    ldi
-    jp po, formatBinDigitsEnd ; if BC==0: PV=0=po (odd)
-    ld a, c
-    and $03 ; every group of 4 digits (right justified), add a space
-    jr nz, formatBinDigitsLoop
-    ld a, ' '
-    ld (de), a
-    inc de
-    jr formatBinDigitsLoop
-formatBinDigitsEnd:
-    xor a
-    ld (de), a
-    pop hl
-    pop de
-    ret
+    ld de, fmtString
+    bcall(_FormatCodedU32ToBinString) ; preserves DE
+    ex de, hl ; HL=fmtString
+    jr printSmallHLString
 
 ;-----------------------------------------------------------------------------
 ; RpnObject records.
@@ -1420,8 +1112,7 @@ printOP1DateRecord:
     ld (de), a ; add NUL terminator
     ; print string stored in OP3
     pop hl ; HL=OP3
-    call vPutSmallS
-    jp vEraseEOL
+    jp printSmallHLString
 
 ; Description: Print the RpnTime Record in OP1 using small font.
 ; Input:
@@ -1440,8 +1131,7 @@ printOP1TimeRecord:
     ld (de), a ; add NUL terminator
     ; print string stored in OP3
     pop hl ; HL=OP3
-    call vPutSmallS
-    jp vEraseEOL
+    jp printSmallHLString
 
 ; Description: Print the RpnDateTime Record in OP1 using small font.
 ; Input:
@@ -1458,8 +1148,7 @@ printOP1DateTimeRecord:
     bcall(_FormatDateTime)
     ; print string stored in OP3
     pop hl ; HL=OP3
-    call vPutSmallS
-    jp vEraseEOL
+    jp printSmallHLString
 
 ; Description: Print the RpnOffset Record in OP1 using small font.
 ; Input:
@@ -1475,8 +1164,7 @@ printOP1OffsetRecord:
     bcall(_FormatOffset)
     ; print string stored in OP3
     pop hl ; HL=OP3
-    call vPutSmallS
-    jp vEraseEOL
+    jp printSmallHLString
 
 ; Description: Print the RpnOffsetDateTime Record in OP1 using small font.
 ; Input:
@@ -1495,8 +1183,7 @@ printOP1OffsetDateTimeRecord:
     call expandOp1ToOp2
     ; print string stored in OP3
     pop hl ; HL=OP3
-    call vPutSmallS
-    jp vEraseEOL
+    jp printSmallHLString
 
 ; Description: Print the RpnDayOfWeek record in OP1 using small font.
 ; Input:
@@ -1512,8 +1199,7 @@ printOP1DayOfWeekRecord:
     bcall(_FormatDayOfWeek)
     ; print string stored in OP3
     pop hl ; HL=OP3
-    call vPutSmallS
-    jp vEraseEOL
+    jp printSmallHLString
 
 ; Description: Print the RpnDuration record in OP1 using small font.
 ; Input:
@@ -1529,20 +1215,11 @@ printOP1DurationRecord:
     bcall(_FormatDuration)
     ; print string stored in OP3
     pop hl ; HL=OP3
-    call vPutSmallS
-    jp vEraseEOL
+    jp printSmallHLString
 
 ;-----------------------------------------------------------------------------
 ; String constants.
 ;-----------------------------------------------------------------------------
-
-; Indicates number has overflowed the current Base mode.
-msgBaseInvalid:
-    .db "...", 0
-
-; Indicates number is negative so cannot be rendered in Base mode.
-msgBaseNegative:
-    .db "-", 0
 
 ; RPN stack variable labels
 msgTLabel:
@@ -1569,6 +1246,10 @@ msgDegLabel:
     .db "DEG", 0
 msgRadLabel:
     .db "RAD", 0
+
+; RPN stack mode indicators.
+msgStkLabel:
+    .db "STK", 0
 
 ; TVM debug labels
 msgTvmNLabel:

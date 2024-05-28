@@ -137,7 +137,7 @@ cfitModelList:
     .dw cfitModelPower
 
 ;-----------------------------------------------------------------------------
-initCfit:
+coldInitCfit:
     jp mCfitLinearHandler ; default Linear curve fit
 
 ; Description: Forecast Y from X.

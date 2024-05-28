@@ -8,7 +8,7 @@
 ; entry.
 ;-----------------------------------------------------------------------------
 
-InitDate:
+ColdInitDate:
     ; select Unix epoch by default.
     call SelectUnixEpochDate
     ; Set the default customEpochDate to 2050-01-01
@@ -120,7 +120,7 @@ RpnDateToEpochDays:
     call pushRaw9Op2 ; FPS=[epochDays]; HL=epochDays
     ex de, hl ; DE=epochDays
     call pushRaw9Op1 ; FPS=[epochDays,rpnDate]; HL=i40*=rpnDate
-    inc hl ; HL=Date
+    skipRpnObjectTypeHL ; HL=Date
     ; do conversion
     ex de, hl ; DE=rpnDate; HL=epochDays
     call dateToEpochDays ; HL=epochDays
@@ -143,7 +143,7 @@ RpnDateToEpochSeconds:
     call pushRaw9Op2 ; FPS=[epochDays]; HL=epochDays
     ex de, hl ; DE=epochDays
     call pushRaw9Op1 ; FPS=[epochDays,RpnDate]; HL=rpnDate
-    inc hl ; HL=Date
+    skipRpnObjectTypeHL ; HL=Date
     ; convert to days
     ex de, hl ; DE=rpnDate; HL=epochDays
     call dateToEpochDays ; HL=(i40*)=epochDays
@@ -197,9 +197,8 @@ epochDaysToRpnDateAlt:
     call reserveRaw9 ; FPS=[epochDays,rpnDate]; HL=rpnDate
     ; convert to RpnDate
     ld a, rpnObjectTypeDate
-    ld (hl), a
-    inc hl ; HL=RpnDate+1=Date
-    call epochDaysToDate
+    call setHLRpnObjectTypePageTwo ; HL+=sizeof(type)
+    call epochDaysToDate ; (HL)=date
     ; clean up FPS
     call popRaw9Op1
     jp dropRaw9
@@ -273,7 +272,7 @@ addRpnDateByDaysAdd:
     call convertOP1ToI40 ; OP1:i40=seconds
     ; add date+days
     pop hl ; stack=[]; HL=rpnDate
-    inc hl ; HL=date
+    skipRpnObjectTypeHL ; HL=date
     ld de, OP1 ; DE:i40=days
     call addDateByDays ; HL=newDate
     ; clean up
@@ -282,8 +281,8 @@ addRpnDateByDaysAdd:
 
 ; Description: Add (RpnDate plus duration) or (duration plus RpnDate).
 ; Input:
-;   - OP1:Union[RpnDate,RpnReal]=rpnDate or duration
-;   - OP3:Union[RpnDate,RpnReal]=rpnDate or duration
+;   - OP1:Union[RpnDate,RpnDuration]=rpnDate or duration
+;   - OP3:Union[RpnDate,RpnDuration]=rpnDate or duration
 ; Output:
 ;   - OP1:RpnDate=rpnDate+duration
 ; Destroys: all, OP1, OP2, OP3-OP6
@@ -297,7 +296,7 @@ addRpnDateByDurationAdd:
     call PushRpnObject1 ; FPS=[rpnDate]; HL=rpnDate
     push hl ; stack=[rpnDate]
     ; Convert OP3:RpnDuration to days
-    ld hl, OP3+1 ; DE:(Duration*)=duration
+    ld hl, OP3+rpnObjectTypeSizeOf ; DE:(Duration*)=duration
     ld c, (hl)
     inc hl
     ld b, (hl) ; BC=duration.days
@@ -305,7 +304,7 @@ addRpnDateByDurationAdd:
     call setI40ToBC
     ; add date+durationDays
     pop hl ; stack=[]; HL=rpnDate
-    inc hl ; HL=date
+    skipRpnObjectTypeHL ; HL=date
     ld de, OP1 ; DE:i40=duration
     call addDateByDays ; HL=newDate
     ; clean up
@@ -349,7 +348,7 @@ addDateByDays:
 ;   - OP1:RpnDate(RpnDate-days) or i40(RpnDate-RpnDate).
 ; Destroys: OP1, OP2, OP3-OP6
 SubRpnDateByObject:
-    call getOp3RpnObjectTypePageTwo ; A=objectType
+    call getOp3RpnObjectTypePageTwo ; A=type; HL=OP3
     cp rpnObjectTypeReal ; ZF=1 if Real
     jr z, subRpnDateByDays
     cp rpnObjectTypeDate ; ZF=1 if Date
@@ -367,12 +366,12 @@ subRpnDateByRpnDate:
     ; convert OP3 to days, on FPS stack
     call reserveRaw9 ; make space on FPS=[X.days]; HL=X.days
     push hl ; stack=[X.days]
-    ld de, OP3+1 ; DE=Date{}
+    ld de, OP3+rpnObjectTypeSizeOf ; DE=Date{}
     call dateToInternalEpochDays ; HL=FPS.X.days updated
     ; convert OP1 to days, on FPS stack
     call reserveRaw9 ; make space, FPS=[X.days,Y.days]; HL=Y.days
     push hl ; stack=[X.days,Y.days]
-    ld de, OP1+1 ; DE=Date{}
+    ld de, OP1+rpnObjectTypeSizeOf ; DE=Date{}
     call dateToInternalEpochDays ; HL=FPS.Y.days updated
     ; subtract Y.days-X.days
     pop hl ; stack=[X.days]; HL=Y.days
@@ -384,6 +383,6 @@ subRpnDateByRpnDate:
     jp dropRaw9 ; FPS=[]
 subRpnDateByRpnDuration:
     ; invert the sign of duration in OP3
-    ld hl, OP3+1
+    ld hl, OP3+rpnObjectTypeSizeOf
     call chsDuration
     jr addRpnDateByDurationAdd
