@@ -796,7 +796,7 @@ others were not.
       cursor will *always* be shown with an empty string.
     - The presence of the cursor indicates that the Edit Mode is in effect and
       that the Stack Lift is disabled.
-- Functions which take no arguments and return 1 or more values were
+- Functions which take no arguments and return one or more values were
   surprisingly tricky to implement correctly. The canonical example of these
   functions is the `2ND PI` key. RPN83P implements these functions in the same
   way as the HP-42S:
