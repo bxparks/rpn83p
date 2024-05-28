@@ -202,7 +202,7 @@ The prices for used HP calculators are unreasonably high. The only other
 alternatives are the offerings from SwissMicros which are in the $150-$300
 range. RPN83P offers access to a scientific RPN app on readily obtainable
 TI-83+/84+ calculators in the $20-$50 range. I hope RPN83P can be the gateway
-application that introduces new generation of users to the beauty and power of
+application that introduces a new generation of users to the beauty and power of
 RPN calculators.
 
 ### Long Answer
