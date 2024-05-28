@@ -1,6 +1,7 @@
 # Changelog
 
 - Unreleased
+- 0.11.0 (2024-05-28)
     - **Warning**: Previously saved RPN stack and registers are incompatible and
       are lost when upgrading to this version.
     - support resizing the number of storage registers
@@ -15,7 +16,6 @@
         - size of the `RPN83STK` appVar varies:
             - 120 bytes at SSIZ=4
             - 196 bytes at SSIZ=8
-        - TODO: Update USER_GUIDE.md
     - add additional stack operators
         - soft menu `DROP`
             - drops the stack by one, duplicating the top register
@@ -30,7 +30,6 @@
             - bound to the `RollUp` functionality, same as the existing `RollUp`
               soft menu item
             - becomes useful when the stack size `SSIZ` is greater than 4
-        - TODO: Update USER_GUIDE_DATE.md
     - DATE
         - simplify DATE menu hierarchy
             - move RTC (hardware clock) menus and TZ config menus under new CLK
@@ -42,13 +41,12 @@
             - {Offset} - {Offset} => {hours}
             - plus the same operations with {hours} replaced with an appropriate
             {Duration} (in multiples of 15 minutes)
-        - TODO: Update USER_GUIDE_DATE.md
     - STAT
         - extract the 13 STAT registers (R11-R23) from regular storage registers
           (appVar `RPN83REG`) into its own registers (appVar `RPN83STA`)
-        - add `Sigma` menu folder containing various `SigmaXXX` menu items to
+        - add `Σ` (Sigma) menu folder containing various `ΣXXX` menu items to
           recall the 13 stat registers (essentially the same as the Plus42 app)
-        - TODO: Update USER_GUIDE.md
+        - See [USER_GUIDE_STAT.md](docs/USER_GUIDE_STAT.md)
     - BASE
         - format HEX numbers in groups of 2 digits for readability
         - format OCT numbers in groups of 3 digits for readability
@@ -56,36 +54,35 @@
             allowing 16 digits to be displayed on a single line
         - no digit grouping for DEC numbers (no change)
         - move formatting routines to Flash Page 2
+        - See [USER_GUIDE_BASE.md](docs/USER_GUIDE_BASE.md)
     - show MenuFolders using a file folder icon
-        - see [Issue#20](https://github.com/bxparks/rpn83p/issues/20)
+        - fixes [Issue#20](https://github.com/bxparks/rpn83p/issues/20)
         - draw a small 5px wide line above the menu box if the menu is a folder
         - inspired by the menus on the HP-48 series calculators
-        - fixes [Issue#20](https://github.com/bxparks/rpn83p/issues/20)
         - change cursor to be rectangular block, instead of an underline, to
           avoid visual conflict with the short dash line of menu folders just
           below the editing line
-        - TODO: update screenshots, maybe about 700 of them
     - support insertion cursor using `LEFT` and `RIGHT` arrow keys
         - support `2ND LEFT` (beginning of line) and `2ND RIGHT` (end of line)
           key bindings
-        - update CHS (`-`) to change the sign of the interior number component
+        - update CHS `(-)` to change the sign of the interior number component
           identified by the cursor instead of the right most component in the
           inputBuf
         - this allows easier correction of typos during long input
-        - TODO: update docs and screenshots
-    - encode RpnObject type field using 2 bytes instead of 1 byte
-        - allows additional RpnObjects in the future without violating the 83
-          Plus SDK documentation
-    - update storage format of the TIOS appVars (RPN83SAV, RPN83STA, RPN83STK,
-      RPN83REG)
-        - makes adding additional appVar types in the future easier
+    - storage formats
+        - encode RpnObject type field using 2 bytes instead of 1 byte
+            - allows additional RpnObjects in the future without violating the
+              83 Plus SDK documentation
+        - update storage format of the TIOS appVars (RPN83SAV, RPN83STA,
+          RPN83STK, RPN83REG)
+            - makes adding additional appVar types in the future easier
     - **Bug Fix** More robust data validation for appVars
         - add `schemaVersion` field for RpnElementList
         - add `rpnVarType` field, to allow future appVar types
         - validate size of RpnElementList appVar has no extraneous bytes
     - **Bug Fix** Validate Duration objects entered through colon-modifier
       syntax
-        - prevents entry of things like `61s` or `25h`
+        - prevents entry of things like `61:S` or `25:H`
     - **Bug Fix** Display error for negative numbers correctly for BASE mode
       when WSIZ < 32
         - If the floating point number is negative, the validation for
