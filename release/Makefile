@@ -42,6 +42,7 @@
 
 TARGETS := \
 CHANGELOG.md \
+FUTURE.pdf \
 README.pdf \
 TVM.pdf \
 USER_GUIDE.pdf \
@@ -136,6 +137,12 @@ USER_GUIDE_TVM.pdf: ../docs/USER_GUIDE_TVM.md Makefile $(RESIZED_IMAGES)
 
 # Convert markdown to PDF.
 TVM.pdf: ../docs/TVM.md Makefile $(RESIZED_IMAGES)
+	sed -e 's:(images:(resized/:g' < $< \
+		| (cd ../docs; pandoc $(PANDOC_FLAGS) -o $@)
+	mv -f ../docs/$@ .
+
+# Convert markdown to PDF.
+FUTURE.pdf: ../docs/FUTURE.md Makefile $(RESIZED_IMAGES)
 	sed -e 's:(images:(resized/:g' < $< \
 		| (cd ../docs; pandoc $(PANDOC_FLAGS) -o $@)
 	mv -f ../docs/$@ .
