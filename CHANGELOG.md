@@ -2,8 +2,8 @@
 
 - Unreleased
 - 0.11.0 (2024-05-28)
-    - **Warning**: Previously saved RPN stack and registers are incompatible and
-      are lost when upgrading to this version.
+    - **Warning**: Previously saved RPN stack and storage registers are
+      incompatible and are lost when upgrading to this version.
     - support resizing the number of storage registers
         - `MODE > RSIZ` command supports a minimum of 25 to a maximum of 100
         - `MODE > RSZ?` returns the current size of storage registers
