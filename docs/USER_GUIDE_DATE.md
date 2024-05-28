@@ -1308,7 +1308,7 @@ that step:
 | `D*>S`                            | ![](images/date/epochseconds-raw-5.png)   | ![](images/date/epochseconds-str-5.png) |
 | `DOWN` `EPCH` `NTP`               | ![](images/date/epochseconds-raw-6.png)   | ![](images/date/epochseconds-str-6.png) |
 | `ON/EXIT` `UP`                    | ![](images/date/epochseconds-raw-7.png)   | ![](images/date/epochseconds-str-7.png) |
-| `2ND ANS` (LastX)                 | ![](images/date/epochseconds-raw-8.png)   | ![](images/date/epochseconds-str-8.png) |
+| `2ND ANS` (LASTX)                 | ![](images/date/epochseconds-raw-8.png)   | ![](images/date/epochseconds-str-8.png) |
 | `D*>S`                            | ![](images/date/epochseconds-raw-9.png)   | ![](images/date/epochseconds-str-9.png) |
 
 ### Epoch Seconds Range

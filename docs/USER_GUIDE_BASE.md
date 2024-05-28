@@ -245,7 +245,7 @@ unsigned integers before the integer subroutines are called.
 The `BDIV` menu function performs the same integer division operation as `B/`
 but returns both the quotient (in `X`) and the remainder (in `Y`). With the
 quotient in `X`, it becomes easy to recover the original `X` value by using the
-`LastX` function (`2ND` `ANS`), then pressing the `*` button, then the `+`
+`LASTX` function (`2ND` `ANS`), then pressing the `*` button, then the `+`
 button to add back the remainder.
 
 **HP-42S Compatibility Note**: The HP-42S calls these integer functions `BASE+`,

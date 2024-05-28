@@ -87,7 +87,7 @@ bytes), `RPN83SAV` (142 byte), `RPN83STA` (272 bytes), and `RPN83STK` (120 to
 
 Summary of features:
 
-- traditional RPN stack (`X`, `Y`, `Z`, `T`), with `LastX` register
+- traditional RPN stack (`X`, `Y`, `Z`, `T`), with `LASTX` register
     - configurable stack levels between 4 and 8: `SSIZ`, `SSZ?`
 - input edit line with scrollable cursor using arrow keys
     - `LEFT`, `RIGHT`, `2ND LEFT`, `2ND RIGHT`
@@ -106,14 +106,14 @@ Summary of features:
     - algebraic: `1/X`, `X^2`, `SQRT`, `^` (i.e. `Y^X`)
     - transcendental: `LOG`, `10^X`, `LN`, `e^X`
     - trigonometric: `SIN`, `COS`, `TAN`, `ASIN`, `ACOS`, `ATAN`
-    - constants: `pi` and `e`
+    - constants: `PI` and `E`
 - additional menu functions
     - arithmetic: `%`, `%CH`, `GCD`, `LCM`, `PRIM` (prime factor), `IP` (integer
       part), `FP` (fractional part), `FLR` (floor), `CEIL` (ceiling), `NEAR`
       (nearest integer), `ABS`, `SIGN`, `MOD`, `MIN`, `MAX`
     - rounding: `RNDF`, `RNDN`, `RNDG`
     - algebraic: `X^3`, `3RootX`
-    - transcendental: `XRootY`,`2^X`, `LOG2`, `LOGB`, `E^X-` (e^x-1), `LN1+`
+    - transcendental: `XROOTY`,`2^X`, `LOG2`, `LOGB`, `E^X-` (e^x-1), `LN1+`
       (log(1+x))
     - trigonometric: `ATN2`
     - hyperbolic: `SINH`, `COSH`, `TANH`, `ASNH`, `ACSH`, `ATNH`
@@ -143,7 +143,7 @@ Summary of features:
 - time value of money (TVM), inspired by HP-12C, HP-17B, and HP-30b
     - `N`, `I%YR`, `PV`, `PMT`, `FV`, `P/YR`, `BEG`, `END`, `CLTV` (clear TVM)
 - complex numbers, inspired by HP-42S and HP-35s
-    - stored in RPN stack registers (`X`, `Y`, `Z`, `T`, `LastX`) and storage
+    - stored in RPN stack registers (`X`, `Y`, `Z`, `T`, `LASTX`) and storage
       registers `R00-R99`
     - result modes: `RRES` (real results), `CRES` (complex results)
     - display modes: `RECT`, `PRAD` (polar radians), `PDEG` (polar degrees)
@@ -151,8 +151,8 @@ Summary of features:
       `COMPLEX` on HP-42S)
     - number entry: `2ND i` (rectangular), `2ND ANGLE` (polar degrees), `2ND
       ANGLE 2ND ANGLE` (polar radians)
-    - extended regular functions: `+`, `-`, `*`, `/`, `1/x`, `x^2`, `SQRT`,
-      `Y^X`, `X^3`, `3RootY`, `XRootY`, `LOG`, `LN`, `10^x`, `e^x`, `2^x`,
+    - extended regular functions: `+`, `-`, `*`, `/`, `1/X`, `X^2`, `SQRT`,
+      `Y^X`, `X^3`, `3ROOTY`, `XROOTY`, `LOG`, `LN`, `10^X`, `E^X`, `2^X`,
       `LOG2`, `LOGB`
     - complex specific functions: `REAL`, `IMAG`, `CONJ`, `CABS`, `CANG`
     - unsupported: trigonometric and hyperbolic functions (not supported by
@@ -916,7 +916,7 @@ only 4, but becomes more important when the RPN stack size is increased beyond
 The `2ND` `ANS` functionality of the TI-OS algebraic mode is unnecessary in the
 RPN system because the `X` register is always the most recent result that would
 have been stored in `2ND` `ANS`. Therefore, the `2ND` `ANS` has been repurposed
-to be the `LastX` functionality of HP calculators. The `LastX` is the value of
+to be the `LASTX` functionality of HP calculators. The `LASTX` is the value of
 the `X` register just before the most recent operation. It can be used to bring
 back a number that was accidentally consumed, or it can be used as part of a
 longer sequence of calculations.
@@ -1184,7 +1184,7 @@ supported by the RPN83P app.
 - transcendental
     - `LOG`, `10^X`, `LN`, `e^X`
 - constants
-    - `pi`, `e`
+    - `PI`, `E`
 
 ### Menu Functions
 
@@ -1200,8 +1200,8 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
     - ![ROOT > MATH > Row1](images/menu-root-math-1.png)
     - ![ROOT > MATH > Row2](images/menu-root-math-2.png)
     - `X^3`: cube of `X`
-    - `3RootX`: cube root of `X`
-    - `XRootY`: `X` root of `Y`
+    - `3ROOTX`: cube root of `X`
+    - `XROOTY`: `X` root of `Y`
     - `ATN2`: `atan2(X, Y)` in degrees or radians, depending on current mode
         - `Y`: y-component, entered first
         - `X`: x-component, entered second
@@ -2061,14 +2061,14 @@ The RPN83P app interacts with the underlying TI-OS in the following ways.
     - `RPN83REG` holds the storage registers (`R00` to `R99`).
     - `RPN83SAV` preserves the internal state of the app upon exiting.
     - `RPN83STA` holds the STAT registers (`ΣX` to `ΣYLX`).
-    - `RPN83STK` holds the RPN stack registers (`X`, `Y`, `Z`, `T`, `LastX`,
+    - `RPN83STK` holds the RPN stack registers (`X`, `Y`, `Z`, `T`, `LASTX`,
       etc).
     - When the app is restarted, the appVars are read back in, so that RPN83P
       can continue exactly where it had left off.
 - ANS variable
     - On RPN83P start:
         - If `ANS` is a Real or Complex value (i.e. not a matrix, not a string,
-          etc.), then it is copied into the `LastX` register of the RPN83P.
+          etc.), then it is copied into the `LASTX` register of the RPN83P.
         - The `2ND ANS` key in RPN83P invokes the `LASTX` functionality which
           then retrieves the TI-OS `ANS` value.
     - On RPN83P exit:
