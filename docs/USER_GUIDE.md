@@ -50,15 +50,22 @@ RPN calculator app for the TI-83 Plus and TI-84 Plus inspired by the HP-42S.
     - [Menu Functions](#menu-functions)
 - [Advanced Usage](#advanced-usage)
     - [Auto-start](#auto-start)
-    - [Floating Point Display Modes](#floating-point-display-modes)
-    - [SHOW Mode](#show-mode)
-    - [Trigonometric Modes](#trigonometric-modes)
-    - [Comma-EE Button Mode](#comma-ee-button-mode)
+    - [Modes](#modes)
+        - [Floating Point Display Modes](#floating-point-display-modes)
+        - [Trigonometric Modes](#trigonometric-modes)
+        - [Complex Result and Display Modes](#complex-result-and-display-modes)
+        - [Register and Stack Sizes](#register-and-stack-sizes)
+        - [Comma-EE Button Mode](#comma-ee-button-mode)
+        - [Raw Versus String Format](#raw-versus-string-format)
+        - [SHOW Mode](#show-mode)
     - [Storage Registers](#storage-registers)
+        - [Storage Register Arithmetics](#storage-register-arithmetics)
+        - [Storage Register Size](#storage-register-size)
     - [Storage Variables](#storage-variables)
     - [NUM Functions](#num-functions)
         - [Prime Factors](#prime-factors)
         - [Floating Point Rounding](#floating-point-rounding)
+- [Advanced Modules](#advanced-modules)
     - [BASE Functions](#base-functions)
     - [STAT Functions](#stat-functions)
     - [TVM Functions](#tvm-functions)
@@ -1565,7 +1572,24 @@ The LCD screen should look like this before hitting `FINISH`:
 Turn off the calculator and turn it back on. It should directly go into the
 RPN83P application.
 
-### Floating Point Display Modes
+### Modes
+
+The `MODE` menu folder contains a number of menu items which control the
+operating modes or the display modes of the calculator.
+
+- ![ROOT > MODE](images/menu-root-mode.png)
+    - ![ROOT > MODE > Row1](images/menu-root-mode-1.png)
+    - ![ROOT > MODE > Row2](images/menu-root-mode-2.png)
+    - ![ROOT > MODE > Row3](images/menu-root-mode-3.png)
+    - ![ROOT > MODE > Row4](images/menu-root-mode-4.png)
+
+The quickest way to reach this menu folder is to use the `MODE` button on the
+keypad, instead of navigating the menu hierarchy. Using the `MODE` button allows
+the [Menu Shortcut Jump Back](#menu-shortcut-jump-back) feature to work, so that
+pressing `ON/EXIT` takes you right back to the menu before the `MODE` button was
+pressed.
+
+#### Floating Point Display Modes
 
 The RPN83P app provides access to the same floating point display modes as the
 original TI-OS. For reference, here are the options available in the TI-OS when
@@ -1640,20 +1664,92 @@ point display modes, so it cannot emulate the HP-42S exactly. In particular, the
 `ALL` display mode of the HP-42S is not directly available, but it is basically
 equivalent to `FIX 99` on the RPN83P.
 
-### SHOW Mode
+#### Trigonometric Modes
+
+Just like the TI-OS, the RPN83P supports two angle modes, `RAD` (radians) and
+`DEG` (degrees), when calculating trigonometric functions. These are selected
+using the options under the `MODE` menu folder, and the current trig mode is
+shown on the top status line.
+
+| **Keys**              | **Display** |
+| ----------------      | --------------------- |
+| `MODE` `RAD`          | ![](images/trig-mode-1.png) |
+| `PI` `6` `/` `SIN`    | ![](images/trig-mode-2.png) |
+| `MODE` `DEG`          | ![](images/trig-mode-3.png) |
+| `30` `SIN`            | ![](images/trig-mode-4.png) |
+
+**Warning**: The polar to rectangular conversion functions (`>REC` and `>POL`)
+are also affected by the current Trig Mode setting.
+
+**HP-42S Compatibility Note**: The RPN83P does not offer the
+[gradian](https://en.wikipedia.org/wiki/Gradian) mode `GRAD` because the
+underlying TI-OS does not support the gradian mode directly. It is probably
+possible to add this feature by intercepting the trig functions and performing
+some pre and post unit conversions. But I'm not sure if it's worth the effort
+since gradian trig mode is not commonly used.
+
+#### Complex Result and Display Modes
+
+The `RRES` and `CRES` menu items control how complex numbers are calculated. The
+`RECT`, `PRAD`, and `PDEG` modes control how complex numbers are displayed. All
+of these are explained in the [USER_GUIDE_COMPLEX.md](USER_GUIDE_COMPLEX.md)
+document.
+
+#### Register and Stack Sizes
+
+The `RSIZ` and `RSZ?` menu items control the storage register size. Those are
+explained below in [Storage Register Size](#storage-register-size).
+
+The `SSIZ` and `SSZ?` menu items control the RPN stack size. Those were
+explained above in [RPN Stack Size](#rpn-stack-size).
+
+#### Comma-EE Button Mode
+
+The `,EE` and `EE,` selectors under `ROOT > MODE` configure the behavior of the
+`Comma-EE` button:
+
+- ![ROOT > MODE](images/menu-root-mode.png) (`ROOT > MODE`)
+    - ![ROOT > MODE > CommaEE](images/menu-root-mode-commaee.png)
+    - `,EE`: the `Comma-EE` button behaves as labeled on the keyboard (factory
+      default)
+    - `EE,`: the `Comma-EE` button is inverted
+
+Prior to v0.10, the `Comma-EE` button invoked the `EE` function for *both* comma
+`,` and `2ND EE`. This allowed scientific notation numbers to be entered easily,
+without having to press the `2ND` button.
+
+However, in v0.10 when record objects were added to support DATE functions (see
+[USER_GUIDE_MODE.md](USER_GUIDE_DATE.md)), the comma symbol was selected to be
+the separator between the components of those objects. But that meant that
+entering numbers in scientific notation would require the `2ND` key again. For
+users who rarely or never use the DATE functions, the `EE,` option can be used
+to invert key bindings of the `Comma-EE` button to allow easier entry of
+scientific notation.
+
+#### Raw Versus String Format
+
+The `{..}` (raw) and `".."` (string) modes control how Record objects (e.g.
+Date, Time, DateTime) are displayed. These are explained in the
+[USER_GUIDE_DATE.md](USER_GUIDE_DATE.md) document.
+
+#### SHOW Mode
+
+This is invoked by the `2ND ENTRY` keystroke, otherwise known as `SHOW`. It is
+not invoked through the `MODE` menu, but I could not find a better place for
+this section in this document.
 
 Many HP RPN calculators have a display mode that shows all significant digits
 that are stored internally. On the HP-42S and HP-16C, the button that activates
 this is labeled `SHOW`. On the HP-12C and HP-15C, the button is labeled
 `Prefix`.
 
-The RPN83P app implements the `SHOW` functionality using the `2ND` `ENTRY` key
-sequence (just above the `ENTER` button). This key was selected because `ENTRY`
-is unused in our RPN system, and because it is located close to the `ENTER` key.
-The SHOW mode reverts back to the normal display mode when *any* key is pressed
-(exception `OFF` and `QUIT`). Unlike the HP-42S which automatically reverts back
-to the normal mode after a 2-3 second delay, the TI calculator must wait for a
-keyboard event from the user.
+The RPN83P app uses the `2ND` `ENTRY` key sequence (just above the `ENTER`
+button). This key was selected because `ENTRY` is unused in our RPN system, and
+because it is located close to the `ENTER` key. The SHOW mode reverts back to
+the normal display mode when *any* key is pressed (exception `OFF` and `QUIT`).
+Unlike the HP-42S which automatically reverts back to the normal mode after a
+2-3 second delay, the TI calculator must wait for a keyboard event from the
+user.
 
 Floating point numbers are normally shown with 10 significant digits, but
 internally the TI-OS stores floating point numbers using 14 digits. The SHOW
@@ -1694,53 +1790,6 @@ displayed like this:
 | `2ND ENTRY` (SHOW)    | ![](images/show-mode-base-4.png) |
 | `BIN`                 | ![](images/show-mode-base-5.png) |
 | `2ND ENTRY` (SHOW)    | ![](images/show-mode-base-6.png) |
-
-### Trigonometric Modes
-
-Just like the TI-OS, the RPN83P supports two angle modes, `RAD` (radians) and
-`DEG` (degrees), when calculating trigonometric functions. These are selected
-using the options under the `MODE` menu folder, and the current trig mode is
-shown on the top status line.
-
-| **Keys**              | **Display** |
-| ----------------      | --------------------- |
-| `MODE` `RAD`          | ![](images/trig-mode-1.png) |
-| `PI` `6` `/` `SIN`    | ![](images/trig-mode-2.png) |
-| `MODE` `DEG`          | ![](images/trig-mode-3.png) |
-| `30` `SIN`            | ![](images/trig-mode-4.png) |
-
-**Warning**: The polar to rectangular conversion functions (`>REC` and `>POL`)
-are also affected by the current Trig Mode setting.
-
-**HP-42S Compatibility Note**: The RPN83P does not offer the
-[gradian](https://en.wikipedia.org/wiki/Gradian) mode `GRAD` because the
-underlying TI-OS does not support the gradian mode directly. It is probably
-possible to add this feature by intercepting the trig functions and performing
-some pre and post unit conversions. But I'm not sure if it's worth the effort
-since gradian trig mode is not commonly used.
-
-### Comma-EE Button Mode
-
-The `,EE` and `EE,` selectors under `ROOT > MODE` configure the behavior of the
-`Comma-EE` button:
-
-- ![ROOT > MODE](images/menu-root-mode.png) (`ROOT > MODE`)
-    - ![ROOT > MODE > CommaEE](images/menu-root-mode-commaee.png)
-    - `,EE`: the `Comma-EE` button behaves as labeled on the keyboard (factory
-      default)
-    - `EE,`: the `Comma-EE` button is inverted
-
-Prior to v0.10, the `Comma-EE` button invoked the `EE` function for *both* comma
-`,` and `2ND EE`. This allowed scientific notation numbers to be entered easily,
-without having to press the `2ND` button.
-
-However, in v0.10 when record objects were added to support DATE functions (see
-[USER_GUIDE_MODE.md](USER_GUIDE_DATE.md)), the comma symbol was selected to be
-the separator between the components of those objects. But that meant that
-entering numbers in scientific notation would require the `2ND` key again. For
-users who rarely or never use the DATE functions, the `EE,` option can be used
-to invert key bindings of the `Comma-EE` button to allow easier entry of
-scientific notation.
 
 ### Storage Registers
 
@@ -1819,12 +1868,13 @@ storage registers changed:
 
 ### Storage Variables
 
-The HP-42S supports variables with alphanumeric names of up to 7 characters
-long. For example, pressing `STO ABC` stores the `X` value into a variable named
-`ABC`. The RPN83P supports only single-letter variables because the
-underlying TI-OS supports only a single-letter.
+In the terminology of the HP-42S calculator, *registers* are numerical and
+*variables* are alphanumerical (starting with a letter). The HP-42S supports
+variables with alphanumeric names of up to 7 characters long. For example,
+pressing `STO ABC` stores the `X` value into a variable named `ABC`.
 
-There are 27 variables available:
+The RPN83P supports only single-letter variables because the underlying TI-OS
+supports only a single-letter. There are 27 variables available:
 
 - `A`-`Z`, and
 - `Theta` (Greek letter above the `3` button)
@@ -2006,6 +2056,14 @@ using the various functions.
 | `MODE` `FIX 04`       | ![](images/rounding-10.png) |
 | `MATH` `NUM` `RNDG`   | ![](images/rounding-11.png) |
 | `2ND ENTRY` (SHOW)    | ![](images/rounding-12.png) |
+
+## Advanced Modules
+
+Each module below is a collection of related functions that are related to each
+other in some self-consistent way. The modules can interact with other parts of
+the RPN83P application through the RPN stack or storage registers. But for the
+most part, they are self-contained. Each module is large enough that its
+documentation was extracted into a separate document for ease of maintenance.
 
 ### BASE Functions
 
