@@ -933,9 +933,9 @@ longer sequence of calculations.
 #### RPN Stack Size
 
 The default size of the RPN stack is 4 for compatibility with traditional HP RPN
-calculators. However, RPN83P allows the RPN stack size to changed between 4 and
-8, using the `SSIZ` command under the `MODE` menu (which can be quickly accessed
-through the `MODE` button):
+calculators. However, RPN83P allows the RPN stack size to be changed between 4
+and 8, using the `SSIZ` command under the `MODE` menu (which can be quickly
+accessed through the `MODE` button):
 
 - ![ROOT > MODE](images/menu-root-mode.png)
     - ![ROOT > MODE > SSIZ](images/menu-root-mode-ssiz.png)
