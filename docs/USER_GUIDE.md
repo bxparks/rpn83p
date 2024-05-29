@@ -32,7 +32,7 @@ RPN calculator app for the TI-83 Plus and TI-84 Plus inspired by the HP-42S.
         - [Record Object Input](#record-object-input)
         - [Complex Number Input](#complex-number-input)
         - [Other Edge Cases](#other-edge-cases)
-        - [Input Limitation](#input-limitations)
+        - [Input Limitations](#input-limitations)
     - [RPN Stack](#rpn-stack)
         - [RPN Stack Structure](#rpn-stack-structure)
         - [RPN Stack Operations](#rpn-stack-operations)
