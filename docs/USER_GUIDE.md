@@ -799,10 +799,9 @@ others were not.
       cursor will *always* be shown with an empty string.
     - The presence of the cursor indicates that the Edit Mode is in effect and
       that the Stack Lift is disabled.
-- Functions which take no arguments and return one or more values were
-  surprisingly tricky to implement correctly. The canonical example of these
-  functions is the `2ND PI` key. RPN83P implements these functions in the same
-  way as the HP-42S:
+- Functions which take no arguments and return one or more values were tricky to
+  implement correctly. The canonical example of these functions is the `2ND PI`
+  key. RPN83P implements these functions in the same way as the HP-42S:
     - If Stack Lift is disabled (e.g. after an `ENTER`), then `2ND PI`
       *replaces* the previous value in the `X` stack register.
     - If the input system is in edit mode (displaying the blinking cursor),
