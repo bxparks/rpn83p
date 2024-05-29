@@ -588,7 +588,7 @@ The following buttons are used to enter and edit a number in the input buffer:
     - `{`: inserts the starting delimiter for record types
     - `}`: inserts the terminating delimiter for record types
     - `,`: inserts the component separator for record types
-    - see [USER_GUIDE_DATE.md](USER_GUIDE_DATE.md)
+    - see [USER_GUIDE_DATE.md](USER_GUIDE_DATE.md) for more info
 - complex numbers
     - `2ND LINK`: converts `X` and `Y` into a complex number in `X`, or the
       reverse
@@ -605,6 +605,7 @@ The following buttons are used to enter and edit a number in the input buffer:
         - inserts an `angle` and a `degrees` symbol to form a complex number
           polar radian form, or
         - converts and existing complex delimiter to an `angle`-`degrees` pair
+    - see [USER_GUIDE_COMPLEX.md](USER_GUIDE_COMPLEX.md) for more info
 
 #### Input Cursor
 
@@ -1945,7 +1946,7 @@ record objects (e.g. Date, Time, DateTime) defined in
 The functions under the `NUM` menu folder are functions which don't quite fit
 into one of the other major categories:
 
-- ![ROOT > NUM](images/menu-root-num.png) (`ROOT > NUM`)
+- ![ROOT > NUM](images/menu-root-num.png)
     - ![ROOT > NUM > Row1](images/menu-root-num-1.png)
     - ![ROOT > NUM > Row2](images/menu-root-num-2.png)
     - ![ROOT > NUM > Row3](images/menu-root-num-3.png)
