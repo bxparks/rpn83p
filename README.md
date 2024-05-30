@@ -79,7 +79,7 @@ Summary of features:
     - `N`, `I%YR`, `PV`, `PMT`, `FV`, `P/YR`, `BEG`, `END`, `CLTV` (clear TVM)
 - complex numbers, inspired by HP-42S and HP-35s
     - stored in RPN stack registers (`X`, `Y`, `Z`, `T`, `LASTX`) and storage
-      registers `R00-R24`
+      registers `R00-R99`
     - result modes: `RRES` (real results), `CRES` (complex results)
     - display modes: `RECT`, `PRAD` (polar radians), `PDEG` (polar degrees)
     - linking/unlinking: `2ND LINK` (convert 2 reals to 1 complex, same as

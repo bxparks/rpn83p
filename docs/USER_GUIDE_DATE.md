@@ -1568,7 +1568,7 @@ function, and the second `DLNK` uses the `2ND LINK` keyboard button:
 
 ## Storage Registers
 
-Storage registers (R00 to R24) can now hold any date object types. In addition,
+Storage registers (R00 to R99) can now hold any date object types. In addition,
 storage register arithmetic operations work as expected. In other words, if the
 `+` (addition), `-` (subtraction), and `*` (multiplication) operations are
 defined on a date object, then the corresponding `STO+`, `STO-`, `STO*`, `RCL+`,
