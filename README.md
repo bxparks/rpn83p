@@ -198,6 +198,7 @@ Community members have verified that it works on the following variants:
 The following calculators are *not* supported because their internal hardware
 and firmware are too different:
 
+- TI-73, 80, 81, 82, 85, 86
 - TI-83 (without Plus)
 - TI-84 Plus C Silver Edition
 - TI-84 Plus CE
