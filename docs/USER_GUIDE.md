@@ -235,6 +235,9 @@ The RPN83P app is not a clone of the HP-42S for several reasons:
 - The keyboard layout and labels of the TI-83 and TI-84 calculators are
   different. As an obvious example, the TI calculators have 5 menu buttons below
   the LCD screen, but the HP-42S has 6 menu buttons.
+- The LCD screen width allows each menu to contain only 4 letters instead of the
+  5 supported by the HP-42S. I cannot even use the same menu names as the
+  HP-42S.
 - The RPN83P app does not implement its own floating point routines, but uses
   the ones provided by the underlying TI-OS. There are functions missing from
   the TI-OS compared to the HP-42S (e.g. trigonometric functions on complex
