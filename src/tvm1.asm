@@ -672,6 +672,46 @@ tvmSolveInitGuesses:
     call StoTvmI1
     ret
 
+; Description: Check if the current tvmI0 and tvmI1 straddle a zero crossing.
+; Input: tvmI0, tvmI1
+; Output:
+;   - ZF=1 if either i0 or i1 evals to 0
+;   - A=0 or 1 to indicates which i0 or i1 is the zero (if ZF=1)
+;   - CF=1 if there is a zero crossing
+;   - CF=0 if no zero crossing
+tvmSolveZeroCrossing:
+    ; evaluate i0
+    call RclTvmI0 ; i0=0.0
+    call nominalPMT ; OP1=NPMT(i0)
+    call StoTvmNPMT0 ; tvmNPMT0=NPMT(i0)
+    bcall(_CkOP1FP0) ; if OP1==0: ZF=set
+    jr z, tvmSolveZeroCrossingI0EvalsToZero
+    ; Set up the i1 guess
+    call RclTvmI1 ; i1=100%/PYR/100
+    call nominalPMT ; OP1=NPMT(i1)
+    call StoTvmNPMT1 ; tvmNPMT1=NPMT(N,i1)
+    bcall(_CkOP1FP0) ; if OP1==0: ZF=set
+    jr z, tvmSolveZeroCrossingI1EvalsToZero
+    ; Check for different sign bit of NPMT(i)
+    call RclTvmNPMT0
+    call op1ToOp2PageOne
+    call RclTvmNPMT1
+    call compareSignOP1OP2PageOne
+    jr nz, tvmSolveZeroCrossingTrue
+tvmSolveZeroCrossingFalse:
+    or 1 ; ZF=0, CF=0
+    ret
+tvmSolveZeroCrossingI0EvalsToZero:
+    ld a, 0
+    ret
+tvmSolveZeroCrossingI1EvalsToZero:
+    ld a, 1
+    ret
+tvmSolveZeroCrossingTrue:
+    scf
+    ret
+
+
 ; Description: Calculate the interest rate by solving the root of the NPMT
 ; equation using the Newton-Secant method. Uses 2 initial interest rate guesses
 ; in i0 and i1. Usually, they will be i0=0 i1=(100/(PYR)/100) (100%/year). These
@@ -694,7 +734,7 @@ tvmSolveInitGuesses:
 ;   - all registers, OP1-OP5
 TvmSolve:
     cp tvmSolverResultSingleStep
-    jr z, tvmSolveLoop
+    jr z, tvmSolveLoopSingleStepContinue
     ; We are here when starting from scratch. First check if we know
     ; definitively that there are no solutions.
     call tvmCheckNoSolution ; CF=0 if no solution
@@ -709,51 +749,38 @@ tvmSolveMayExist:
     ld (tvmSolverCount), a
     ; Initialize i0 and i1 from IYR0 and IYR1
     call tvmSolveInitGuesses
-    ; Set up the i0 guess
-    call RclTvmI0 ; i0=0.0
-    call nominalPMT ; OP1=NPMT(i0)
-    call StoTvmNPMT0 ; tvmNPMT0=NPMT(i0)
-    bcall(_CkOP1FP0) ; if OP1==0: ZF=set
-    jr z, tvmSolveI0EvalsToZero
-    ; Set up the i1 guess
-    call RclTvmI1 ; i1=100%/PYR/100
-    call nominalPMT ; OP1=NPMT(i1)
-    call StoTvmNPMT1 ; tvmNPMT1=NPMT(N,i1)
-    bcall(_CkOP1FP0) ; if OP1==0: ZF=set
-    jr z, tvmSolveI1EvalsToZero
-    ; Check for different sign bit of NPMT(i)
-    call RclTvmNPMT0
-    call op1ToOp2PageOne
-    call RclTvmNPMT1
-    call compareSignOP1OP2PageOne
-    jr nz, tvmSolveLoopEntry
-    ld a, tvmSolverResultNotFound
-    ret
+    call tvmSolveZeroCrossing ; ZF=1 if endpoints zero; CF=1 if zero crossing
+    jr z, tvmSolveEndPointsEvalsToZero
+    jr nc, tvmSolveNotFound
 tvmSolveLoop:
+    call tvmSolveCheckTermination ; A=tvmSolverResultXxx
+    or a ; if A==0: keep looping
+    jr nz, tvmSolveTerminate
+tvmSolveLoopSingleStepContinue:
     ; Use Secant method to estimate the next interest rate
     call calculateNextSecantInterest ; OP1=i2
     ;call tvmSolveCheckBounds ; CF=1 if out of bounds
     ; Secant failed. Use bisection.
     ;call c, call calculateNextBisectInterest
     call tvmSolveUpdateGuesses ; update tvmI0,tmvI1
-tvmSolveLoopEntry:
-    call tvmSolveCheckTermination ; A=tvmSolverResultXxx
-    or a ; if A==0: keep looping
-    jr z, tvmSolveLoop
+    jr tvmSolveLoop
 tvmSolveTerminate:
     cp tvmSolverResultFound
     ret nz ; not found
     ; Found, set OP1 to the result.
+tvmSolveSelectI1:
     call RclTvmI1
-    jr tvmSolveFound
-tvmSolveI0EvalsToZero:
-    bcall(_OP1Set0) ; OP1=0.0
-    jr tvmSolveFound
-tvmSolveI1EvalsToZero:
-    call op1Set100PageOne ; OP1=100.0%
-tvmSolveFound:
+tvmSolveSelectOP1:
     call calcTvmIYRFromIPP ; convert i (per period) to IYR
     ld a, tvmSolverResultFound
+    ret
+tvmSolveEndPointsEvalsToZero:
+    or a ; ZF=1 if A==0
+    jr nz, tvmSolveSelectI1
+    call RclTvmI0
+    jr tvmSolveSelectOP1
+tvmSolveNotFound:
+    ld a, tvmSolverResultNotFound
     ret
 
 ;-----------------------------------------------------------------------------
