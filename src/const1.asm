@@ -29,10 +29,10 @@ op2Set100PageOne:
 
 ;-----------------------------------------------------------------------------
 
-; Description: Set OP2 to 1e-8.
+; Description: Set OP2 to 1e-10.
 ; Destroys: all, HL
-op2Set1EM8PageOne:
-    ld hl, const1EM8PageOne
+op2Set1EM10PageOne:
+    ld hl, const1EM10PageOne
     jp move9ToOp2PageOne
 
 ;-----------------------------------------------------------------------------
@@ -59,8 +59,8 @@ const0PageOne: ; 0.0
 const100PageOne: ; 100
     .db $00, $82, $10, $00, $00, $00, $00, $00, $00
 
-const1EM8PageOne: ; 10^-8
-    .db $00, $78, $10, $00, $00, $00, $00, $00, $00
+const1EM10PageOne: ; 10^-10
+    .db $00, $76, $10, $00, $00, $00, $00, $00, $00
 
 const10000PageOne: ; 10000
     .db $00, $84, $10, $00, $00, $00, $00, $00, $00

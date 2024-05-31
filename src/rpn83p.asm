@@ -966,6 +966,10 @@ _TvmSolveLabel:
 _TvmSolve equ _TvmSolveLabel-branchTableBase
     .dw TvmSolve
     .db 1
+_TvmSolveCheckDebugEnabledLabel:
+_TvmSolveCheckDebugEnabled equ _TvmSolveCheckDebugEnabledLabel-branchTableBase
+    .dw TvmSolveCheckDebugEnabled
+    .db 1
 _TvmCalculatePVLabel:
 _TvmCalculatePV equ _TvmCalculatePVLabel-branchTableBase
     .dw TvmCalculatePV

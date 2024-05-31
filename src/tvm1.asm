@@ -465,7 +465,7 @@ inverseCompoundingFactor:
     bcall(_FPMult) ; OP1=N*ln(1+i)
     call ExpMinusOne ; OP1=exp(N*ln(1+i))-1
     call op1ToOp2PageOne ; OP2=exp(N*ln(1+i))-1
-    bcall(_PopRealO1) ; FPS=[]; OP2=Ni
+    bcall(_PopRealO1) ; FPS=[]; OP1=Ni
     bcall(_FPDiv) ; OP1=Ni/[exp(N*ln(1+i)-1]
     ret
 inverseCompoundingFactorZero:
@@ -583,7 +583,7 @@ tvmSolveUpdateGuesses:
 ; Output:
 ;   - CF: 1 if TVM solver debug enabled; 0 if disabled
 ; Destroys: A
-tvmSolveCheckDebugEnabled:
+TvmSolveCheckDebugEnabled:
     ld a, (tvmSolverIsRunning)
     or a
     ret z ; CF==0 if TVM Solver not running
@@ -607,29 +607,27 @@ tvmSolveDebugEnabled:
 tvmSolveCheckTermination:
     ; Check for ON/Break
     bit onInterrupt, (iy + onFlags)
-    jr z, tvmSolveCheckTolerance
-    res onInterrupt, (iy + onFlags)
-    ld a, tvmSolverResultBreak
-    ret
-tvmSolveCheckTolerance:
-    ; Check if i0 and i1 are within tolerance. If i1!=0.0, then use relative
-    ; error |i0-i1|/|i1| < tol. Otherwise use absolute error |i0-i1| < tol.
+    jr nz, tvmSolveCheckTerminationInterrupted
+    ;
+    ; Check if i0 and i1 are within tolerance, where the relative error =
+    ; |i0-i1| < (|i0|+|i1|) * tol. This expression handles the case where the
+    ; solution is very close to 0 causing i0 and i1 to straddle zero.
     call RclTvmI0
-    call op1ToOp2PageOne
-    call RclTvmI1
-    bcall(_PushRealO1) ; FPS=[i1]
+    call op1ToOp2PageOne ; OP2=i0
+    call RclTvmI1 ; OP1=i1
+    bcall(_AbsO1PAbsO2) ; OP1=|i0|+|i1|
+    call op2Set1EM10PageOne ; OP2=tol
+    bcall(_FPMult) ; OP1=tol*(|i0|+|i1|)
+    call op1ToOp3PageOne ; OP3=tol*(|i0|+|i1|)
+    call RclTvmI0
+    call op1ToOp2PageOne ; OP2=i0
+    call RclTvmI1 ; OP1=i1
     bcall(_FPSub) ; OP1=(i1-i0)
-    bcall(_PopRealO2) ; FPS=[]; OP2=i1
-    bcall(_CkOP2FP0) ; if OP2==0: ZF=1
-    jr z, tvmSolveCheckNoRelativeError
-    bcall(_FPDiv) ; OP1=(i1-i0)/i1
-tvmSolveCheckNoRelativeError:
-    call op2Set1EM8PageOne ; OP2=1e-8
-    bcall(_AbsO1O2Cp) ; if |OP1| < |OP2|: CF=1
-    jr nc, tvmSolveCheckCount
-    ld a, tvmSolverResultFound ; Found!
-    ret
-tvmSolveCheckCount:
+    call op3ToOp2PageOne ; OP2=tol*(|i0|+|i1|)
+    bcall(_AbsO1O2Cp) ; if |OP1| <= |OP2|: CF=1 or ZF=1
+    jr c, tvmSolveCheckTerminationFound
+    jr z, tvmSolveCheckTerminationFound
+    ;
     ; Check iteration counter against tvmIterMax
     ld hl, tvmSolverCount
     ld a, (hl)
@@ -638,19 +636,29 @@ tvmSolveCheckCount:
     ld b, a
     ld a, (tvmIterMax)
     cp b
-    jr nz, tvmSolveCheckSingleStep
-    ld a, tvmSolverResultIterMaxed
-    ret
-tvmSolveCheckSingleStep:
+    jr z, tvmSolveCheckTerminationIterMaxed
+    ;
     ; Check if single-step debug mode enabled. This *must* be the last
     ; condition to check, so that when tvmSolve() is called again, it does not
     ; terminate immediately if single-step debugging is enabled.
-    call tvmSolveCheckDebugEnabled ; CF=1 if enabled
-    jr nc, tvmSolveCheckContinue
-    ld a, tvmSolverResultSingleStep
-    ret
-tvmSolveCheckContinue:
+    call TvmSolveCheckDebugEnabled ; CF=1 if enabled
+    jr c, tvmSolveCheckTerminationSingleStep
+    ;
+    ; Return normal result to indicate the loop should continue.
     ld a, tvmSolverResultContinue
+    ret
+tvmSolveCheckTerminationInterrupted:
+    res onInterrupt, (iy + onFlags)
+    ld a, tvmSolverResultBreak
+    ret
+tvmSolveCheckTerminationFound:
+    ld a, tvmSolverResultFound ; Found!
+    ret
+tvmSolveCheckTerminationIterMaxed:
+    ld a, tvmSolverResultIterMaxed
+    ret
+tvmSolveCheckTerminationSingleStep:
+    ld a, tvmSolverResultSingleStep
     ret
 
 ; Description: Initialize i0 and i1 from IYR0 and IYR1 respectively.
@@ -666,9 +674,8 @@ tvmSolveInitGuesses:
 
 ; Description: Calculate the interest rate by solving the root of the NPMT
 ; equation using the Newton-Secant method. Uses 2 initial interest rate guesses
-; in i0 and i1. Usually, they will be i0=0 i1=100 (100%/year). But if multiple
-; values are entered repeatedly using the I%YR menu key, the last 2 values will
-; be used as the initial guess.
+; in i0 and i1. Usually, they will be i0=0 i1=(100/(PYR)/100) (100%/year). These
+; can be overridden using the IYR1 and IYR2 menu items.
 ;
 ; The tricky part of this subroutine is that it supports a "single-step"
 ; debugging mode where it returns to the after each iteration. Then the caller
@@ -678,10 +685,8 @@ tvmSolveInitGuesses:
 ;
 ; Input:
 ;   - A: tvmSolverResultXxx. If tvmSolverResultSingleStep, the subroutine
-;   - i0, i1: initial guesses, usually 0% and 100%, but can be overridden by
-;   entering 2 values using '2ND I%YR' menu button twice
-;   continues from previous iteration. Otherwise it initializes the various
-;   parameters for a fresh calculation.
+;   - i0, i1: initial guesses, usually 0% and (100%/PYR/100), but can be
+;   overridden by using the IYR1 and IYR2 menu items.
 ; Output:
 ;   - A: tvmSolverResultXxx, will never be zero when it returns
 ;   - OP1: the calculated I%YR if A==tvmSolverResultFound
@@ -709,13 +714,13 @@ tvmSolveMayExist:
     call nominalPMT ; OP1=NPMT(i0)
     call StoTvmNPMT0 ; tvmNPMT0=NPMT(i0)
     bcall(_CkOP1FP0) ; if OP1==0: ZF=set
-    jr z, tvmSolveI0Zero
+    jr z, tvmSolveI0EvalsToZero
     ; Set up the i1 guess
     call RclTvmI1 ; i1=100%/PYR/100
     call nominalPMT ; OP1=NPMT(i1)
     call StoTvmNPMT1 ; tvmNPMT1=NPMT(N,i1)
     bcall(_CkOP1FP0) ; if OP1==0: ZF=set
-    jr z, tvmSolveI1Zero
+    jr z, tvmSolveI1EvalsToZero
     ; Check for different sign bit of NPMT(i)
     call RclTvmNPMT0
     call op1ToOp2PageOne
@@ -741,10 +746,10 @@ tvmSolveTerminate:
     ; Found, set OP1 to the result.
     call RclTvmI1
     jr tvmSolveFound
-tvmSolveI0Zero:
+tvmSolveI0EvalsToZero:
     bcall(_OP1Set0) ; OP1=0.0
     jr tvmSolveFound
-tvmSolveI1Zero:
+tvmSolveI1EvalsToZero:
     call op1Set100PageOne ; OP1=100.0%
 tvmSolveFound:
     call calcTvmIYRFromIPP ; convert i (per period) to IYR

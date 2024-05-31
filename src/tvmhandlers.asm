@@ -181,22 +181,31 @@ tvmIYRCalculateCheckBreak:
 tvmIYRCalculateCheckSingleStep:
     cp tvmSolverResultSingleStep
     jr nz, tvmIYRCalculateStatusUnknown
+    call tvmIYRCalculateShowSingleStep
+    jr tvmIYRCalculateSolveLoop
+tvmIYRCalculateStatusUnknown:
+    ld a, errorCodeTvmNotFound
+tvmIYRCalculateEnd:
+    ; final single step if debug enabled
+    push af
+    bcall(_RunIndicOff)
+    bcall(_TvmSolveCheckDebugEnabled) ; CF=1 if TVM debug enabled
+    call c, tvmIYRCalculateShowSingleStep
+    xor a
+    ld (tvmSolverIsRunning), a ; clear 'isRunning' flag
+    pop af
+    ret
+
+tvmIYRCalculateShowSingleStep:
     ; single-step debugging mode: render display and wait for key
     push af ; preserve A==tvmSolverResultSingleStep
+    bcall(_PushRealO1)
     set dirtyFlagsStack, (iy + dirtyFlags)
     call displayAll
     ; Pause and wait for button press.
     ; If QUIT or OFF then TvmSolver will be reset upon app start.
     bcall(_GetKey)
-    pop af
-    jr tvmIYRCalculateSolveLoop
-tvmIYRCalculateStatusUnknown:
-    ld a, errorCodeTvmNotFound
-tvmIYRCalculateEnd:
-    push af
-    xor a
-    ld (tvmSolverIsRunning), a ; clear 'isRunning' flag
-    bcall(_RunIndicOff)
+    bcall(_PopRealO1)
     pop af
     ret
 
