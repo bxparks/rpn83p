@@ -613,7 +613,7 @@ The following buttons are used to enter and edit a number in the input buffer:
 
 #### Input Cursor
 
-The cursor of RPN83P is a blink block character. This is different from the
+The cursor of RPN83P is a blinking block character. This is different from the
 HP-42S which uses an underscore character. The block character was selected
 because this style is supported natively by the underlying TI-OS, and because it
 is visually distinctive from the small dashes contained in the menu folder icon.
