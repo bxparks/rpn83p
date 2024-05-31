@@ -1946,8 +1946,8 @@ record objects (e.g. Date, Time, DateTime) defined in
 
 ### NUM Functions
 
-The functions under the `NUM` menu folder are functions which don't quite fit
-into one of the other major categories:
+The functions under the `NUM` menu folder are arithmetic functions which don't
+quite fit into one of the other major categories:
 
 - ![ROOT > NUM](images/menu-root-num.png)
     - ![ROOT > NUM > Row1](images/menu-root-num-1.png)
