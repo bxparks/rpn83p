@@ -47,15 +47,22 @@ processMainCommandsSetErrorCode:
     bcall(_SetErrorCode) ; (errorCode)=A
     jr processMainCommands
 
-; Handle system exception. A contains the system error code.
+; Handle system exception by cleaning up a bunch of stuff.
+; Input:
+;   - A contains the system error code.
 processMainCommandsHandleException:
-    ; The exception may have been thrown inside a routine that enabled the run
-    ; indicator (e.g. TVM Solver when calculating I%YR). Disable the indicator
-    ; just in case.
     push af
+    ; The exception may have been thrown inside a routine that enabled the run
+    ; indicator (e.g. TvmSolve(), PrimeFactor()). Disable the indicator just in
+    ; case.
     bcall(_RunIndicOff) ; destroys A (contrary to SDK docs)
-    pop af
+    ; The exception may have been thrown inside the TvmSolve().
+    xor a
+    ld (tvmSolverIsRunning), a ; clear 'isRunning' flag
+    ; Redraw the stack (maybe redraw everything?)
+    set dirtyFlagsStack, (iy + dirtyFlags)
     ; Convert system code to handler code
+    pop af
     bcall(_SetHandlerCodeFromSystemCode) ; A=systemCode
     jr processMainCommandsSetErrorCode
 
