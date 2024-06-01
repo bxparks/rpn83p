@@ -711,7 +711,6 @@ tvmSolveZeroCrossingTrue:
     scf
     ret
 
-
 ; Description: Calculate the interest rate by solving the root of the NPMT
 ; equation using the Newton-Secant method. Uses 2 initial interest rate guesses
 ; in i0 and i1. Usually, they will be i0=0 i1=(100/(PYR)/100) (100%/year). These
@@ -724,12 +723,13 @@ tvmSolveZeroCrossingTrue:
 ; iteration at the correct point.
 ;
 ; Input:
-;   - A: tvmSolverResultXxx. If tvmSolverResultSingleStep, the subroutine
-;   - i0, i1: initial guesses, usually 0% and (100%/PYR/100), but can be
-;   overridden by using the IYR1 and IYR2 menu items.
+;   - A:u8=tvmSolverResultXxx. If tvmSolverResultSingleStep, the subroutine
+;   - i0:float=initial guess 1, usually 0%
+;   - i1:float=initial guess 0, usually (100%/PYR/100)
+;   - both i0 and i1 can be overridden by using the IYR1 and IYR2 menu items
 ; Output:
-;   - A: tvmSolverResultXxx, will never be zero when it returns
-;   - OP1: the calculated I%YR if A==tvmSolverResultFound
+;   - A:u8=tvmSolverResultXxx, will never be zero when it returns
+;   - OP1:float=the calculated I%YR if A==tvmSolverResultFound
 ; Destroys:
 ;   - all registers, OP1-OP5
 TvmSolve:
