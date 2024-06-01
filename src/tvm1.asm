@@ -673,12 +673,14 @@ tvmSolveInitGuesses:
     ret
 
 ; Description: Check if the current tvmI0 and tvmI1 straddle a zero crossing.
+; If one of the end points evalutes to zero eactly, then i1 is replaced with
+; endoint value that evaluted to zero.
 ; Input: tvmI0, tvmI1
 ; Output:
-;   - ZF=1 if either i0 or i1 evals to 0
-;   - A=0 or 1 to indicates which i0 or i1 is the zero (if ZF=1)
+;   - ZF=1 if either i0 or i1 evals to 0; zero solution stored in i1
 ;   - CF=1 if there is a zero crossing
 ;   - CF=0 if no zero crossing
+; Destroys: A
 tvmSolveZeroCrossing:
     ; evaluate i0
     call RclTvmI0 ; i0=0.0
@@ -701,15 +703,18 @@ tvmSolveZeroCrossing:
 tvmSolveZeroCrossingFalse:
     or 1 ; ZF=0, CF=0
     ret
-tvmSolveZeroCrossingI0EvalsToZero:
-    ld a, 0
-    ret
-tvmSolveZeroCrossingI1EvalsToZero:
-    ld a, 1
-    ret
 tvmSolveZeroCrossingTrue:
     scf
     ret
+tvmSolveZeroCrossingI0EvalsToZero:
+    call RclTvmI0
+    call StoTvmI1
+    call RclTvmNPMT0
+    call StoTvmNPMT1
+tvmSolveZeroCrossingI1EvalsToZero:
+    ret
+
+
 
 ; Description: Calculate the interest rate by solving the root of the NPMT
 ; equation using the Newton-Secant method. Uses 2 initial interest rate guesses
@@ -734,7 +739,7 @@ tvmSolveZeroCrossingTrue:
 ;   - all registers, OP1-OP5
 TvmSolve:
     cp tvmSolverResultSingleStep
-    jr z, tvmSolveLoopSingleStepContinue
+    jr z, tvmSolveSingleStepContinue
     ; We are here when starting from scratch. First check if we know
     ; definitively that there are no solutions.
     call tvmCheckNoSolution ; CF=0 if no solution
@@ -750,13 +755,13 @@ tvmSolveMayExist:
     ; Initialize i0 and i1 from IYR0 and IYR1
     call tvmSolveInitGuesses
     call tvmSolveZeroCrossing ; ZF=1 if endpoints zero; CF=1 if zero crossing
-    jr z, tvmSolveEndPointsEvalsToZero
+    jr z, tvmSolveSelectI1
     jr nc, tvmSolveNotFound
 tvmSolveLoop:
     call tvmSolveCheckTermination ; A=tvmSolverResultXxx
     or a ; if A==0: keep looping
     jr nz, tvmSolveTerminate
-tvmSolveLoopSingleStepContinue:
+tvmSolveSingleStepContinue:
     ; Use Secant method to estimate the next interest rate
     call calculateNextSecantInterest ; OP1=i2
     ;call tvmSolveCheckBounds ; CF=1 if out of bounds
@@ -770,15 +775,9 @@ tvmSolveTerminate:
     ; Found, set OP1 to the result.
 tvmSolveSelectI1:
     call RclTvmI1
-tvmSolveSelectOP1:
     call calcTvmIYRFromIPP ; convert i (per period) to IYR
     ld a, tvmSolverResultFound
     ret
-tvmSolveEndPointsEvalsToZero:
-    or a ; ZF=1 if A==0
-    jr nz, tvmSolveSelectI1
-    call RclTvmI0
-    jr tvmSolveSelectOP1
 tvmSolveNotFound:
     ld a, tvmSolverResultNotFound
     ret
