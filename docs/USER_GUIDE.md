@@ -2067,11 +2067,11 @@ using the various functions.
 
 ## Advanced Modules
 
-Each module below is a collection of related functions that are related to each
-other in some consistent way. The modules can interact with other parts of the
-RPN83P application through the RPN stack or storage registers. But for the most
-part, they are self-contained. Each module is large enough that its
-documentation was extracted into a separate document for ease of maintenance.
+Each module below is a collection of functions and features that are related in
+some consistent way. The modules can interact with other parts of the RPN83P
+application through the RPN stack or storage registers. But for the most part,
+they are self-contained. Each module is large enough that its documentation was
+extracted into a separate document for ease of maintenance.
 
 ### BASE Functions
 
