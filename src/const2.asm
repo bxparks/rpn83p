@@ -5,11 +5,35 @@
 ; Floating point constants for routines in Flash Page 2.
 ;-----------------------------------------------------------------------------
 
+; Description: Set OP2 to 1e-10.
+; Destroys: all, HL
+op2Set1EM10PageTwo:
+    ld hl, const1EM10PageTwo
+    jp move9ToOp2PageTwo
+
+;-----------------------------------------------------------------------------
+
 ; Description: Set OP2 to 24. The TI-OS Provides OP2Set60() but not
 ; OP2Set24().
 ; Destroys: all, HL
 op2Set24PageTwo:
     ld hl, const24PageTwo
+    jp move9ToOp2PageTwo
+
+;-----------------------------------------------------------------------------
+
+; Description: Set OP1 to 100. The TI-OS Provides OP2Set60() but not
+; OP2Set100().
+; Destroys: all, HL
+op1Set100PageTwo:
+    ld hl, const100PageTwo
+    jp move9ToOp1PageTwo
+
+; Description: Set OP2 to 100. The TI-OS Provides OP2Set60() but not
+; OP2Set100().
+; Destroys: all, HL
+op2Set100PageTwo:
+    ld hl, const100PageTwo
     jp move9ToOp2PageTwo
 
 ;-----------------------------------------------------------------------------
@@ -53,8 +77,14 @@ op2Set1E14PageTwo:
 
 ;-----------------------------------------------------------------------------
 
+const1EM10PageTwo: ; 10^-10
+    .db $00, $76, $10, $00, $00, $00, $00, $00, $00
+
 const24PageTwo: ; 24
     .db $00, $81, $24, $00, $00, $00, $00, $00, $00
+
+const100PageTwo: ; 100
+    .db $00, $82, $10, $00, $00, $00, $00, $00, $00
 
 const3600PageTwo: ; 3600
     .db $00, $83, $36, $00, $00, $00, $00, $00, $00

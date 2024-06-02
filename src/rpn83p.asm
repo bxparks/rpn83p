@@ -957,162 +957,6 @@ _AddAToOP1 equ _AddAToOP1Label-branchTableBase
     .dw AddAToOP1
     .db 1
 
-; tvm1.asm
-_TvmCalculateNLabel:
-_TvmCalculateN equ _TvmCalculateNLabel-branchTableBase
-    .dw TvmCalculateN
-    .db 1
-_TvmSolveLabel:
-_TvmSolve equ _TvmSolveLabel-branchTableBase
-    .dw TvmSolve
-    .db 1
-_TvmSolveCheckDebugEnabledLabel:
-_TvmSolveCheckDebugEnabled equ _TvmSolveCheckDebugEnabledLabel-branchTableBase
-    .dw TvmSolveCheckDebugEnabled
-    .db 1
-_TvmCalculatePVLabel:
-_TvmCalculatePV equ _TvmCalculatePVLabel-branchTableBase
-    .dw TvmCalculatePV
-    .db 1
-_TvmCalculatePMTLabel:
-_TvmCalculatePMT equ _TvmCalculatePMTLabel-branchTableBase
-    .dw TvmCalculatePMT
-    .db 1
-_TvmCalculateFVLabel:
-_TvmCalculateFV equ _TvmCalculateFVLabel-branchTableBase
-    .dw TvmCalculateFV
-    .db 1
-_TvmCalcIPPFromIYRLabel:
-_TvmCalcIPPFromIYR equ _TvmCalcIPPFromIYRLabel-branchTableBase
-    .dw TvmCalcIPPFromIYR
-    .db 1
-_TvmClearLabel:
-_TvmClear equ _TvmClearLabel-branchTableBase
-    .dw TvmClear
-    .db 1
-_TvmSolverResetLabel:
-_TvmSolverReset equ _TvmSolverResetLabel-branchTableBase
-    .dw TvmSolverReset
-    .db 1
-_RclTvmNLabel:
-_RclTvmN equ _RclTvmNLabel-branchTableBase
-    .dw RclTvmN
-    .db 1
-_StoTvmNLabel:
-_StoTvmN equ _StoTvmNLabel-branchTableBase
-    .dw StoTvmN
-    .db 1
-_RclTvmIYRLabel:
-_RclTvmIYR equ _RclTvmIYRLabel-branchTableBase
-    .dw RclTvmIYR
-    .db 1
-_StoTvmIYRLabel:
-_StoTvmIYR equ _StoTvmIYRLabel-branchTableBase
-    .dw StoTvmIYR
-    .db 1
-_RclTvmPVLabel:
-_RclTvmPV equ _RclTvmPVLabel-branchTableBase
-    .dw RclTvmPV
-    .db 1
-_StoTvmPVLabel:
-_StoTvmPV equ _StoTvmPVLabel-branchTableBase
-    .dw StoTvmPV
-    .db 1
-_RclTvmPMTLabel:
-_RclTvmPMT equ _RclTvmPMTLabel-branchTableBase
-    .dw RclTvmPMT
-    .db 1
-_StoTvmPMTLabel:
-_StoTvmPMT equ _StoTvmPMTLabel-branchTableBase
-    .dw StoTvmPMT
-    .db 1
-_RclTvmFVLabel:
-_RclTvmFV equ _RclTvmFVLabel-branchTableBase
-    .dw RclTvmFV
-    .db 1
-_StoTvmFVLabel:
-_StoTvmFV equ _StoTvmFVLabel-branchTableBase
-    .dw StoTvmFV
-    .db 1
-_RclTvmPYRLabel:
-_RclTvmPYR equ _RclTvmPYRLabel-branchTableBase
-    .dw RclTvmPYR
-    .db 1
-_StoTvmPYRLabel:
-_StoTvmPYR equ _StoTvmPYRLabel-branchTableBase
-    .dw StoTvmPYR
-    .db 1
-_RclTvmIYR0Label:
-_RclTvmIYR0 equ _RclTvmIYR0Label-branchTableBase
-    .dw RclTvmIYR0
-    .db 1
-_StoTvmIYR0Label:
-_StoTvmIYR0 equ _StoTvmIYR0Label-branchTableBase
-    .dw StoTvmIYR0
-    .db 1
-_RclTvmIYR1Label:
-_RclTvmIYR1 equ _RclTvmIYR1Label-branchTableBase
-    .dw RclTvmIYR1
-    .db 1
-_StoTvmIYR1Label:
-_StoTvmIYR1 equ _StoTvmIYR1Label-branchTableBase
-    .dw StoTvmIYR1
-    .db 1
-_RclTvmIterMaxLabel:
-_RclTvmIterMax equ _RclTvmIterMaxLabel-branchTableBase
-    .dw RclTvmIterMax
-    .db 1
-_StoTvmIterMaxLabel:
-_StoTvmIterMax equ _StoTvmIterMaxLabel-branchTableBase
-    .dw StoTvmIterMax
-    .db 1
-_RclTvmI0Label:
-_RclTvmI0 equ _RclTvmI0Label-branchTableBase
-    .dw RclTvmI0
-    .db 1
-_StoTvmI0Label:
-_StoTvmI0 equ _StoTvmI0Label-branchTableBase
-    .dw StoTvmI0
-    .db 1
-_RclTvmI1Label:
-_RclTvmI1 equ _RclTvmI1Label-branchTableBase
-    .dw RclTvmI1
-    .db 1
-_StoTvmI1Label:
-_StoTvmI1 equ _StoTvmI1Label-branchTableBase
-    .dw StoTvmI1
-    .db 1
-_RclTvmNPMT0Label:
-_RclTvmNPMT0 equ _RclTvmNPMT0Label-branchTableBase
-    .dw RclTvmNPMT0
-    .db 1
-_StoTvmNPMT0Label:
-_StoTvmNPMT0 equ _StoTvmNPMT0Label-branchTableBase
-    .dw StoTvmNPMT0
-    .db 1
-_RclTvmNPMT1Label:
-_RclTvmNPMT1 equ _RclTvmNPMT1Label-branchTableBase
-    .dw RclTvmNPMT1
-    .db 1
-_StoTvmNPMT1Label:
-_StoTvmNPMT1 equ _StoTvmNPMT1Label-branchTableBase
-    .dw StoTvmNPMT1
-    .db 1
-_RclTvmSolverCountLabel:
-_RclTvmSolverCount equ _RclTvmSolverCountLabel-branchTableBase
-    .dw RclTvmSolverCount
-    .db 1
-
-; float1.asm
-_LnOnePlusLabel:
-_LnOnePlus equ _LnOnePlusLabel-branchTableBase
-    .dw LnOnePlus
-    .db 1
-_ExpMinusOneLabel:
-_ExpMinusOne equ _ExpMinusOneLabel-branchTableBase
-    .dw ExpMinusOne
-    .db 1
-
 ; hms1.asm
 _HmsToHrLabel:
 _HmsToHr equ _HmsToHrLabel-branchTableBase
@@ -1220,6 +1064,162 @@ _FormatComplexPolarDeg equ _FormatComplexPolarDegLabel-branchTableBase
 _ColdInitModesLabel:
 _ColdInitModes equ _ColdInitModesLabel-branchTableBase
     .dw ColdInitModes
+    .db 2
+
+; tvm2.asm
+_TvmCalculateNLabel:
+_TvmCalculateN equ _TvmCalculateNLabel-branchTableBase
+    .dw TvmCalculateN
+    .db 2
+_TvmSolveLabel:
+_TvmSolve equ _TvmSolveLabel-branchTableBase
+    .dw TvmSolve
+    .db 2
+_TvmSolveCheckDebugEnabledLabel:
+_TvmSolveCheckDebugEnabled equ _TvmSolveCheckDebugEnabledLabel-branchTableBase
+    .dw TvmSolveCheckDebugEnabled
+    .db 2
+_TvmCalculatePVLabel:
+_TvmCalculatePV equ _TvmCalculatePVLabel-branchTableBase
+    .dw TvmCalculatePV
+    .db 2
+_TvmCalculatePMTLabel:
+_TvmCalculatePMT equ _TvmCalculatePMTLabel-branchTableBase
+    .dw TvmCalculatePMT
+    .db 2
+_TvmCalculateFVLabel:
+_TvmCalculateFV equ _TvmCalculateFVLabel-branchTableBase
+    .dw TvmCalculateFV
+    .db 2
+_TvmCalcIPPFromIYRLabel:
+_TvmCalcIPPFromIYR equ _TvmCalcIPPFromIYRLabel-branchTableBase
+    .dw TvmCalcIPPFromIYR
+    .db 2
+_TvmClearLabel:
+_TvmClear equ _TvmClearLabel-branchTableBase
+    .dw TvmClear
+    .db 2
+_TvmSolverResetLabel:
+_TvmSolverReset equ _TvmSolverResetLabel-branchTableBase
+    .dw TvmSolverReset
+    .db 2
+_RclTvmNLabel:
+_RclTvmN equ _RclTvmNLabel-branchTableBase
+    .dw RclTvmN
+    .db 2
+_StoTvmNLabel:
+_StoTvmN equ _StoTvmNLabel-branchTableBase
+    .dw StoTvmN
+    .db 2
+_RclTvmIYRLabel:
+_RclTvmIYR equ _RclTvmIYRLabel-branchTableBase
+    .dw RclTvmIYR
+    .db 2
+_StoTvmIYRLabel:
+_StoTvmIYR equ _StoTvmIYRLabel-branchTableBase
+    .dw StoTvmIYR
+    .db 2
+_RclTvmPVLabel:
+_RclTvmPV equ _RclTvmPVLabel-branchTableBase
+    .dw RclTvmPV
+    .db 2
+_StoTvmPVLabel:
+_StoTvmPV equ _StoTvmPVLabel-branchTableBase
+    .dw StoTvmPV
+    .db 2
+_RclTvmPMTLabel:
+_RclTvmPMT equ _RclTvmPMTLabel-branchTableBase
+    .dw RclTvmPMT
+    .db 2
+_StoTvmPMTLabel:
+_StoTvmPMT equ _StoTvmPMTLabel-branchTableBase
+    .dw StoTvmPMT
+    .db 2
+_RclTvmFVLabel:
+_RclTvmFV equ _RclTvmFVLabel-branchTableBase
+    .dw RclTvmFV
+    .db 2
+_StoTvmFVLabel:
+_StoTvmFV equ _StoTvmFVLabel-branchTableBase
+    .dw StoTvmFV
+    .db 2
+_RclTvmPYRLabel:
+_RclTvmPYR equ _RclTvmPYRLabel-branchTableBase
+    .dw RclTvmPYR
+    .db 2
+_StoTvmPYRLabel:
+_StoTvmPYR equ _StoTvmPYRLabel-branchTableBase
+    .dw StoTvmPYR
+    .db 2
+_RclTvmIYR0Label:
+_RclTvmIYR0 equ _RclTvmIYR0Label-branchTableBase
+    .dw RclTvmIYR0
+    .db 2
+_StoTvmIYR0Label:
+_StoTvmIYR0 equ _StoTvmIYR0Label-branchTableBase
+    .dw StoTvmIYR0
+    .db 2
+_RclTvmIYR1Label:
+_RclTvmIYR1 equ _RclTvmIYR1Label-branchTableBase
+    .dw RclTvmIYR1
+    .db 2
+_StoTvmIYR1Label:
+_StoTvmIYR1 equ _StoTvmIYR1Label-branchTableBase
+    .dw StoTvmIYR1
+    .db 2
+_RclTvmIterMaxLabel:
+_RclTvmIterMax equ _RclTvmIterMaxLabel-branchTableBase
+    .dw RclTvmIterMax
+    .db 2
+_StoTvmIterMaxLabel:
+_StoTvmIterMax equ _StoTvmIterMaxLabel-branchTableBase
+    .dw StoTvmIterMax
+    .db 2
+_RclTvmI0Label:
+_RclTvmI0 equ _RclTvmI0Label-branchTableBase
+    .dw RclTvmI0
+    .db 2
+_StoTvmI0Label:
+_StoTvmI0 equ _StoTvmI0Label-branchTableBase
+    .dw StoTvmI0
+    .db 2
+_RclTvmI1Label:
+_RclTvmI1 equ _RclTvmI1Label-branchTableBase
+    .dw RclTvmI1
+    .db 2
+_StoTvmI1Label:
+_StoTvmI1 equ _StoTvmI1Label-branchTableBase
+    .dw StoTvmI1
+    .db 2
+_RclTvmNPMT0Label:
+_RclTvmNPMT0 equ _RclTvmNPMT0Label-branchTableBase
+    .dw RclTvmNPMT0
+    .db 2
+_StoTvmNPMT0Label:
+_StoTvmNPMT0 equ _StoTvmNPMT0Label-branchTableBase
+    .dw StoTvmNPMT0
+    .db 2
+_RclTvmNPMT1Label:
+_RclTvmNPMT1 equ _RclTvmNPMT1Label-branchTableBase
+    .dw RclTvmNPMT1
+    .db 2
+_StoTvmNPMT1Label:
+_StoTvmNPMT1 equ _StoTvmNPMT1Label-branchTableBase
+    .dw StoTvmNPMT1
+    .db 2
+_RclTvmSolverCountLabel:
+_RclTvmSolverCount equ _RclTvmSolverCountLabel-branchTableBase
+    .dw RclTvmSolverCount
+    .db 2
+
+; float2.asm
+_LnOnePlusLabel:
+_LnOnePlus equ _LnOnePlusLabel-branchTableBase
+    .dw LnOnePlus
+    .db 2
+_ExpMinusOneLabel:
+_ExpMinusOne equ _ExpMinusOneLabel-branchTableBase
+    .dw ExpMinusOne
     .db 2
 
 ; selectepoch2.asm
@@ -1973,12 +1973,10 @@ defpage(1)
 #include "memory1.asm"
 #include "integer1.asm"
 #include "rpnobject1.asm"
-#include "float1.asm"
 #include "integerconv1.asm"
 #include "const1.asm"
 #include "complex1.asm"
 #include "formatcomplex1.asm"
-#include "tvm1.asm"
 #include "hms1.asm"
 #include "prob1.asm"
 #include "format1.asm"
@@ -1993,6 +1991,8 @@ defpage(1)
 defpage(2)
 
 #include "modes2.asm"
+#include "tvm2.asm"
+#include "float2.asm"
 #include "selectepoch2.asm"
 #include "epoch2.asm"
 #include "datevalidation2.asm"

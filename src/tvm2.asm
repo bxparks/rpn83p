@@ -12,75 +12,75 @@
 
 ;-----------------------------------------------------------------------------
 ; Store and recall the TVM variables. Most of the time, they are needed in this
-; module, in Flash Page 1. But they are also needed in tvmhandlers.asm in Flash
-; Page 0, so they are exported through the bcall(). Fortunately, all of the
-; calls from tvmhandlers.asm are *not* performance critical, so they can pay
-; for the overhead of the bcall() without problems.
+; module. But they are also needed in tvmhandlers.asm in Flash Page 0, so they
+; are exported through the bcall(). Fortunately, all of the calls from
+; tvmhandlers.asm are *not* performance critical, so they can pay for the
+; overhead of the bcall() without problems.
 ;-----------------------------------------------------------------------------
 
 ; Description: Recall fin_N to OP1.
 RclTvmN:
     ld hl, fin_N
-    jp move9ToOp1PageOne
+    jp move9ToOp1PageTwo
 
 ; Description: Store OP1 to fin_N.
 StoTvmN:
     ld de, fin_N
-    jp move9FromOp1PageOne
+    jp move9FromOp1PageTwo
 
 ; Description: Recall fin_I to OP1.
 RclTvmIYR:
     ld hl, fin_I
-    jp move9ToOp1PageOne
+    jp move9ToOp1PageTwo
 
 ; Description: Store OP1 to fin_I.
 StoTvmIYR:
     ld de, fin_I
-    jp move9FromOp1PageOne
+    jp move9FromOp1PageTwo
 
 ; Description: Recall fin_PV to OP1.
 RclTvmPV:
     ld hl, fin_PV
-    jp move9ToOp1PageOne
+    jp move9ToOp1PageTwo
 
 ; Description: Store OP1 to fin_PV.
 StoTvmPV:
     ld de, fin_PV
-    jp move9FromOp1PageOne
+    jp move9FromOp1PageTwo
 
 ; Description: Recall fin_PMT to OP1.
 RclTvmPMT:
     ld hl, fin_PMT
-    jp move9ToOp1PageOne
+    jp move9ToOp1PageTwo
 
 ; Description: Store OP1 to fin_PMT.
 StoTvmPMT:
     ld de, fin_PMT
-    jp move9FromOp1PageOne
+    jp move9FromOp1PageTwo
 
 ; Description: Recall fin_N to OP1.
 RclTvmFV:
     ld hl, fin_FV
-    jp move9ToOp1PageOne
+    jp move9ToOp1PageTwo
 
 ; Description: Store OP1 to fin_FV.
 StoTvmFV:
     ld de, fin_FV
-    jp move9FromOp1PageOne
+    jp move9FromOp1PageTwo
 
 ; Description: Recall fin_PY to OP1.
 RclTvmPYR:
     ld hl, fin_PY
-    jp move9ToOp1PageOne
+    jp move9ToOp1PageTwo
 
 ; Description: Store OP1 to fin_PY. Store the same value in fin_CY so that if
 ; we go back to the TI-OS and use the built-in "Financial" app, the same
 ; compounding frequency will appear there under "C/Y".
 StoTvmPYR:
     ld de, fin_PY
-    call move9FromOp1PageOne
+    call move9FromOp1PageTwo
     ld de, fin_CY
-    call move9FromOp1PageOne
+    call move9FromOp1PageTwo
     ret
 
 ;-----------------------------------------------------------------------------
@@ -90,27 +90,27 @@ StoTvmPYR:
 ; Description: Recall tvmIYR0 to OP1.
 RclTvmIYR0:
     ld hl, tvmIYR0
-    jp move9ToOp1PageOne
+    jp move9ToOp1PageTwo
 
 ; Description: Store OP1 to tvmIYR0 variable.
 StoTvmIYR0:
     ld de, tvmIYR0
-    jp move9FromOp1PageOne
+    jp move9FromOp1PageTwo
 
 ; Description: Recall tvmIYR1 to OP1.
 RclTvmIYR1:
     ld hl, tvmIYR1
-    jp move9ToOp1PageOne
+    jp move9ToOp1PageTwo
 
 ; Description: Store OP1 to tvmIYR1 variable.
 StoTvmIYR1:
     ld de, tvmIYR1
-    jp move9FromOp1PageOne
+    jp move9FromOp1PageTwo
 
 ; Description: Recall tvmIterMax to OP1.
 RclTvmIterMax:
     ld a, (tvmIterMax)
-    call ConvertAToOP1
+    bcall(_ConvertAToOP1)
     ret
 
 ; Description: Store OP1 to tvmIterMax variable.
@@ -133,47 +133,47 @@ stoTvmIterMaxErr:
 ; Description: Recall tvmI0 to OP1.
 RclTvmI0:
     ld hl, tvmI0
-    jp move9ToOp1PageOne
+    jp move9ToOp1PageTwo
 
 ; Description: Store OP1 to tvmI0 variable.
 StoTvmI0:
     ld de, tvmI0
-    jp move9FromOp1PageOne
+    jp move9FromOp1PageTwo
 
 ; Description: Recall tvmI1 to OP1.
 RclTvmI1:
     ld hl, tvmI1
-    jp move9ToOp1PageOne
+    jp move9ToOp1PageTwo
 
 ; Description: Store OP1 to tvmI1 variable.
 StoTvmI1:
     ld de, tvmI1
-    jp move9FromOp1PageOne
+    jp move9FromOp1PageTwo
 
 ; Description: Recall tvmNPMT0 to OP1.
 RclTvmNPMT0:
     ld hl, tvmNPMT0
-    jp move9ToOp1PageOne
+    jp move9ToOp1PageTwo
 
 ; Description: Store OP1 to tvmNPMT0 variable.
 StoTvmNPMT0:
     ld de, tvmNPMT0
-    jp move9FromOp1PageOne
+    jp move9FromOp1PageTwo
 
 ; Description: Recall tvmNPMT1 to OP1.
 RclTvmNPMT1:
     ld hl, tvmNPMT1
-    jp move9ToOp1PageOne
+    jp move9ToOp1PageTwo
 
 ; Description: Store OP1 to tvmNPMT1 variable.
 StoTvmNPMT1:
     ld de, tvmNPMT1
-    jp move9FromOp1PageOne
+    jp move9FromOp1PageTwo
 
 ; Description: Recall the TVM solver iteration counter as a float in OP1.
 RclTvmSolverCount:
     ld a, (tvmSolverCount)
-    call ConvertAToOP1 ; OP1=float(A)
+    bcall(_ConvertAToOP1) ; OP1=float(A)
     ret
 
 ;-----------------------------------------------------------------------------
@@ -199,11 +199,11 @@ getTvmIPP:
 ; Preserves: OP2
 TvmCalcIPPFromIYR:
     bcall(_PushRealO2) ; FPS=[OP2]
-    call op1ToOp2PageOne
+    call op1ToOp2PageTwo
     call RclTvmPYR
-    call op1ExOp2PageOne
+    call op1ExOp2PageTwo
     bcall(_FPDiv) ; OP1=I/PYR
-    call op2Set100PageOne
+    call op2Set100PageTwo
     bcall(_FPDiv) ; OP1=I/PYR/100
     bcall(_PopRealO2) ; FPS=[]
     ret
@@ -214,10 +214,10 @@ TvmCalcIPPFromIYR:
 ; Preserves: OP2
 calcTvmIYRFromIPP:
     bcall(_PushRealO2) ; FPS=[OP2]
-    call op1ToOp2PageOne
+    call op1ToOp2PageTwo
     call RclTvmPYR
     bcall(_FPMult)
-    call op2Set100PageOne
+    call op2Set100PageTwo
     bcall(_FPMult)
     bcall(_PopRealO2) ; FPS=[]
     ret
@@ -260,22 +260,22 @@ compoundingFactors:
     bcall(_PushRealO1) ; FPS=[i]
     bcall(_PushRealO1) ; FPS=[i,i]
     call RclTvmN ; OP1=N
-    call exchangeFPSOP1PageOne ; FPS=[i,N]; OP1=i
+    call exchangeFPSOP1PageTwo ; FPS=[i,N]; OP1=i
     bcall(_PushRealO1) ; FPS=[i,N,i]
     call beginEndFactor ; OP1=(1+ip)
-    call exchangeFPSOP1PageOne ; FPS=[i,N,1+ip]; OP1=i
+    call exchangeFPSOP1PageTwo ; FPS=[i,N,1+ip]; OP1=i
     bcall(_Plus1) ; OP1=1+i (destroys OP2)
-    call exchangeFPSFPSPageOne ; FPS=[i,1+ip,N]
+    call exchangeFPSFPSPageTwo ; FPS=[i,1+ip,N]
     bcall(_PopRealO2) ; FPS=[i,1+ip] OP2=N
     bcall(_YToX) ; OP1=(1+i)^N
     bcall(_OP1ToOP4) ; OP4=(1+i)^N (save)
     bcall(_Minus1) ; OP1=(1+i)^N-1
-    call exchangeFPSFPSPageOne ; FPS=[1+ip,i]
+    call exchangeFPSFPSPageTwo ; FPS=[1+ip,i]
     bcall(_PopRealO2) ; FPS=[1+ip]; OP2=i
     bcall(_FPDiv) ; OP1=[(1+i)^N-1]/i (destroys OP3)
     bcall(_PopRealO2) ; FPS=[]; OP2=1+ip
     bcall(_FPMult) ; OP1=(1+ip)[(1+i)^N-1]/i
-    call op1ToOp2PageOne ; OP2=(1+ip)[(1+i)^N-1]/i
+    call op1ToOp2PageTwo ; OP2=(1+ip)[(1+i)^N-1]/i
     bcall(_OP4ToOP1) ; OP1=(1+i)^N
     ret
 #else
@@ -288,13 +288,13 @@ compoundingFactors:
     jr z, compoundingFactorsZero
     bcall(_PushRealO1) ; FPS=[i]
     call LnOnePlus ; OP1=ln(1+i)
-    call op1ToOp2PageOne
+    call op1ToOp2PageTwo
     call RclTvmN ; OP1=N
     bcall(_FPMult) ; OP1=N*ln(1+i)
     bcall(_PushRealO1) ; FPS=[i,N*ln(1+i)]
-    call exchangeFPSFPSPageOne ; FPS=[N*ln(1+i),i]
+    call exchangeFPSFPSPageTwo ; FPS=[N*ln(1+i),i]
     call ExpMinusOne ; OP1=exp(N*ln(1+i))-1
-    call exchangeFPSOP1PageOne ; FPS=[N*ln(1+i),exp(N*ln(1+i))-1]; OP1=i
+    call exchangeFPSOP1PageTwo ; FPS=[N*ln(1+i),exp(N*ln(1+i))-1]; OP1=i
     bcall(_PushRealO1) ; FPS=[N*ln(1+i),exp(N*ln(1+i))-1,i]; OP1=i
     call beginEndFactor ; OP1=(1+ip)
     bcall(_OP1ToOP4) ; OP4=(1+ip) (save)
@@ -303,14 +303,14 @@ compoundingFactors:
     bcall(_FPDiv) ; OP1=[exp(N*ln(1+i))-1]/i
     bcall(_OP4ToOP2) ; OP2=(1+ip)
     bcall(_FPMult) ; OP1=CF3=(1+ip)[exp(N*ln(1+i))-1]/i
-    call exchangeFPSOP1PageOne ; FPS=[CF3]; OP1=N*ln(1+i)
+    call exchangeFPSOP1PageTwo ; FPS=[CF3]; OP1=N*ln(1+i)
     bcall(_EToX) ; OP1=exp(N*ln(1+i))
     bcall(_PopRealO2) ; FPS=[]; OP2=CF3
     ret
 compoundingFactorsZero:
     ; If i==0, then CF1=1 and CF3=N
     call RclTvmN
-    call op1ToOp2PageOne ; OP2=CF3=N
+    call op1ToOp2PageTwo ; OP2=CF3=N
     bcall(_OP1Set1) ; OP1=CF1=1
     ret
 #endif
@@ -397,7 +397,7 @@ tvmCheckUpdateSums:
     jr z, tvmCheckUpdateSumSign
     inc b ; numNonZero++
 tvmCheckUpdateSumSign:
-    call signOfOp1PageOne ; A=signbit(OP1)
+    call signOfOp1PageTwo ; A=signbit(OP1)
     add a, c
     ld c, a ; sumSign+=signbit(OP1)
     ret
@@ -410,7 +410,7 @@ tvmCheckPVPMT:
     ld a, (tvmIsBegin)
     or a
     jr z, tvmCheckPVPMTRet ; return if p=begin=0
-    call op1ToOp2PageOne
+    call op1ToOp2PageTwo
     call RclTvmPMT
     bcall(_FPAdd)
 tvmCheckPVPMTRet:
@@ -425,7 +425,7 @@ tvmCheckPMTFV:
     ld a, (tvmIsBegin)
     or a
     jr nz, tvmCheckPMTFVRet ; return if p=begin=1
-    call op1ToOp2PageOne
+    call op1ToOp2PageTwo
     call RclTvmPMT
     bcall(_FPAdd)
 tvmCheckPMTFVRet:
@@ -458,13 +458,13 @@ inverseCompoundingFactor:
     bcall(_PushRealO1) ; FPS=[N]
     bcall(_PushRealO2) ; FPS=[N,i]
     bcall(_FPMult) ; OP1=N*i
-    call exchangeFPSOP1PageOne ; FPS=[N,N*i]; OP1=i
+    call exchangeFPSOP1PageTwo ; FPS=[N,N*i]; OP1=i
     call LnOnePlus ; OP1=ln(1+i)
-    call exchangeFPSFPSPageOne ; FPS=[N*i,N]
+    call exchangeFPSFPSPageTwo ; FPS=[N*i,N]
     bcall(_PopRealO2) ; FPS=[Ni]; OP2=N
     bcall(_FPMult) ; OP1=N*ln(1+i)
     call ExpMinusOne ; OP1=exp(N*ln(1+i))-1
-    call op1ToOp2PageOne ; OP2=exp(N*ln(1+i))-1
+    call op1ToOp2PageTwo ; OP2=exp(N*ln(1+i))-1
     bcall(_PopRealO1) ; FPS=[]; OP1=Ni
     bcall(_FPDiv) ; OP1=Ni/[exp(N*ln(1+i)-1]
     ret
@@ -489,29 +489,29 @@ inverseCompoundingFactorZero:
 nominalPMT:
     bcall(_PushRealO1) ; FPS=[i]
     ; Calculate FV*ICFN(N,i)
-    call op1ToOp2PageOne ; OP2=i
+    call op1ToOp2PageTwo ; OP2=i
     call RclTvmN ; OP1=N
     call inverseCompoundingFactor ; OP1=ICFN(N,i)
-    call op1ToOp2PageOne ; OP2=ICFN(N,i)
+    call op1ToOp2PageTwo ; OP2=ICFN(N,i)
     call RclTvmFV ; OP1=FV
     bcall(_FPMult) ; OP1=FV*ICFN(N,i)
-    call exchangeFPSOP1PageOne ; FPS=[FV*ICFN()]; OP1=i
+    call exchangeFPSOP1PageTwo ; FPS=[FV*ICFN()]; OP1=i
     ; Calcuate PV*ICFN(-N,i)
     bcall(_PushRealO1) ; FPS=[FV*ICFN(),i]; OP1=i
-    call op1ToOp2PageOne ; OP2=i
+    call op1ToOp2PageTwo ; OP2=i
     call RclTvmN ; OP1=N
     bcall(_InvOP1S) ; OP1=-N
     call inverseCompoundingFactor ; OP1=ICFN(-N,i)
-    call op1ToOp2PageOne ; OP2=ICFN(-N,i)
+    call op1ToOp2PageTwo ; OP2=ICFN(-N,i)
     call RclTvmPV ; OP1=PV
     bcall(_FPMult) ; OP1=PV*ICFN(-N,i)
-    call exchangeFPSOP1PageOne ; FPS=[FV*ICFN(N,i),PV*ICFN(-N,i)]; OP1=i
+    call exchangeFPSOP1PageTwo ; FPS=[FV*ICFN(N,i),PV*ICFN(-N,i)]; OP1=i
     ; Calculate (1+ip)PMT*N
     call beginEndFactor ; OP1=(1+ip)
-    call op1ToOp2PageOne ; OP2=(1+ip)
+    call op1ToOp2PageTwo ; OP2=(1+ip)
     call RclTvmPMT ; OP1=PMT
     bcall(_FPMult) ; OP1=(1+ip)*PMT
-    call op1ToOp2PageOne ; OP2=(1+ip)
+    call op1ToOp2PageTwo ; OP2=(1+ip)
     call RclTvmN ; OP1=N
     bcall(_FPMult) ; OP1=(1+ip)*PMT*N
     ; Sum up the 3 terms
@@ -529,25 +529,25 @@ nominalPMT:
 ; Output: OP1: i2 the next estimate
 calculateNextSecantInterest:
     call RclTvmI0
-    call op1ToOp2PageOne
+    call op1ToOp2PageTwo
     call RclTvmNPMT1
     bcall(_PushRealO1) ; FPS=[npmt1]
     bcall(_FPMult) ; OP1=i0*npmt1
     bcall(_PushRealO1) ; FPS=[npmt1,i0*npmt1]
     call RclTvmI1
-    call op1ToOp2PageOne
+    call op1ToOp2PageTwo
     call RclTvmNPMT0
     bcall(_PushRealO1) ; FPS=[npmt1,i0*npmt1,npmt0]
     bcall(_FPMult) ; OP1=i1*npmt0
-    call exchangeFPSFPSPageOne ; FPS=[npmt1,npmt0,i0*npmt1]
+    call exchangeFPSFPSPageTwo ; FPS=[npmt1,npmt0,i0*npmt1]
     bcall(_PopRealO2) ; FPS=[npmt1,npmt0]; OP2=i0*npmt1
     bcall(_InvSub) ; OP1=i0*npmt1-i1*npmt0
-    call exchangeFPSOP1PageOne ; FPS=[npmt1,i0*npmt1-i1*npmt0]; OP1=npmt0
-    call op1ToOp2PageOne ; OP2=npmt0
-    call exchangeFPSFPSPageOne ; FPS=[i0*npmt1-i1*npmt0,npmt1]; OP2=npmt0
+    call exchangeFPSOP1PageTwo ; FPS=[npmt1,i0*npmt1-i1*npmt0]; OP1=npmt0
+    call op1ToOp2PageTwo ; OP2=npmt0
+    call exchangeFPSFPSPageTwo ; FPS=[i0*npmt1-i1*npmt0,npmt1]; OP2=npmt0
     bcall(_PopRealO1) ; FPS=[i0*npmt1-i1*npmt0]; OP1=npmt1; OP2=npmt0
     bcall(_FPSub)  ; OP1=npmt1-npmt0
-    call op1ToOp2PageOne ; OP2=npmt1-npmt0
+    call op1ToOp2PageTwo ; OP2=npmt1-npmt0
     bcall(_PopRealO1) ; FPS=[]; OP1=i0*npmt1-i1*npmt0
     bcall(_FPDiv) ; OP1=i0*npmt1-i1*npmt0)/(npmt1-npmt0)
     ret
@@ -613,17 +613,17 @@ tvmSolveCheckTermination:
     ; |i0-i1| < (|i0|+|i1|) * tol. This expression handles the case where the
     ; solution is very close to 0 causing i0 and i1 to straddle zero.
     call RclTvmI0
-    call op1ToOp2PageOne ; OP2=i0
+    call op1ToOp2PageTwo ; OP2=i0
     call RclTvmI1 ; OP1=i1
     bcall(_AbsO1PAbsO2) ; OP1=|i0|+|i1|
-    call op2Set1EM10PageOne ; OP2=tol
+    call op2Set1EM10PageTwo ; OP2=tol
     bcall(_FPMult) ; OP1=tol*(|i0|+|i1|)
-    call op1ToOp3PageOne ; OP3=tol*(|i0|+|i1|)
+    call op1ToOp3PageTwo ; OP3=tol*(|i0|+|i1|)
     call RclTvmI0
-    call op1ToOp2PageOne ; OP2=i0
+    call op1ToOp2PageTwo ; OP2=i0
     call RclTvmI1 ; OP1=i1
     bcall(_FPSub) ; OP1=(i1-i0)
-    call op3ToOp2PageOne ; OP2=tol*(|i0|+|i1|)
+    call op3ToOp2PageTwo ; OP2=tol*(|i0|+|i1|)
     bcall(_AbsO1O2Cp) ; if |OP1| <= |OP2|: CF=1 or ZF=1
     jr c, tvmSolveCheckTerminationFound
     jr z, tvmSolveCheckTerminationFound
@@ -696,9 +696,9 @@ tvmSolveZeroCrossing:
     jr z, tvmSolveZeroCrossingI1EvalsToZero
     ; Check for different sign bit of NPMT(i)
     call RclTvmNPMT0
-    call op1ToOp2PageOne
+    call op1ToOp2PageTwo
     call RclTvmNPMT1
-    call compareSignOP1OP2PageOne
+    call compareSignOP1OP2PageTwo
     jr nz, tvmSolveZeroCrossingTrue
 tvmSolveZeroCrossingFalse:
     or 1 ; ZF=0, CF=0
@@ -801,7 +801,7 @@ TvmCalculateN:
     jr z, tvmCalculateNZero
     bcall(_PushRealO1) ; FPS=[i]
     call beginEndFactor ; OP1=1+ip
-    call op1ToOp2PageOne ; OP2=1+ip
+    call op1ToOp2PageTwo ; OP2=1+ip
     call RclTvmPMT ; OP1=PMT
     bcall(_FPMult) ; OP1=PMT*(1+ip)
     bcall(_OP1ToOP4) ; OP4=PMT*(1+ip) (save)
@@ -814,7 +814,7 @@ TvmCalculateN:
     bcall(_FPAdd) ; OP1=PMT*(1+ip)+i*PV
     bcall(_PushRealO1) ; FPS[i,i,PMT*(1+ip)+i*PV]
     call RclTvmPV ; OP1=PV
-    call op1ToOp2PageOne ; OP2=PV
+    call op1ToOp2PageTwo ; OP2=PV
     call RclTvmFV ; OP1=FV
     bcall(_FPAdd) ; OP1=PV+FV
     bcall(_PopRealO2) ; FPS=[i,i]; OP2=PMT*(1+ip)+i*PV
@@ -823,22 +823,22 @@ TvmCalculateN:
     bcall(_FPMult) ; OP1=N0=i*(FV+PV)/(PMT*(1+ip)+i*PV)
     bcall(_InvOP1S) ; OP1=N0=-i*(FV+PV)/(PMT*(1+ip)+i*PV)
     call LnOnePlus ; OP1=ln(1+N0); throws exception if 1+N0<=0
-    call exchangeFPSOP1PageOne ; FPS=[ln(1+N0)]; OP1=i
+    call exchangeFPSOP1PageTwo ; FPS=[ln(1+N0)]; OP1=i
     call LnOnePlus ; OP1=ln(1+i); throws exception if 1+i<=0
-    call op1ToOp2PageOne ; OP2=ln(1+i)
+    call op1ToOp2PageTwo ; OP2=ln(1+i)
     bcall(_PopRealO1) ; FPS=[]; OP1=ln(1+N0)
     bcall(_FPDiv) ; OP1=ln(1+N0)/ln(1+i)
     ret
 tvmCalculateNZero:
     ; if i==0: N = (-FV-PV)/PMT
     call RclTvmFV
-    call op1ToOp2PageOne
+    call op1ToOp2PageTwo
     call RclTvmPV
     bcall(_FPAdd)
     bcall(_InvOP1S)
-    call op1ToOp2PageOne
+    call op1ToOp2PageTwo
     call RclTvmPMT
-    call op1ExOp2PageOne
+    call op1ExOp2PageTwo
     bcall(_FPDiv)
     ret
 
@@ -853,7 +853,7 @@ TvmCalculatePV:
     bcall(_PushRealO1) ; FPS=[CF1]
     call RclTvmPMT ; OP1=PMT
     bcall(_FPMult) ; OP1=PMT*CF3
-    call op1ToOp2PageOne ; OP2=PMT*CF3
+    call op1ToOp2PageTwo ; OP2=PMT*CF3
     call RclTvmFV ; OP1=FV
     bcall(_FPAdd) ; OP1=FV+PMT*CF3
     bcall(_InvOP1S) ; OP1=-OP1
@@ -870,10 +870,10 @@ TvmCalculatePV:
 TvmCalculatePMT:
     call compoundingFactors ; OP1=CF1; OP2=CF3
     bcall(_PushRealO2) ; FPS=[CF3]
-    call op1ToOp2PageOne ; OP2=CF1
+    call op1ToOp2PageTwo ; OP2=CF1
     call RclTvmPV ; OP1=PV
     bcall(_FPMult) ; OP1=PV*CF1
-    call op1ToOp2PageOne ; OP2=PV*CF1
+    call op1ToOp2PageTwo ; OP2=PV*CF1
     call RclTvmFV ; OP1=FV
     bcall(_FPAdd) ; OP1=FV+PV*CF1
     bcall(_InvOP1S) ; OP1=-OP1
@@ -892,8 +892,8 @@ TvmCalculateFV:
     bcall(_PushRealO1) ; FPS=[CF1]
     call RclTvmPMT ; OP1=PMT
     bcall(_FPMult) ; OP1=PMT*CF3
-    call exchangeFPSOP1PageOne ; FPS=[PMT*CF3]; OP1=CF1
-    call op1ToOp2PageOne ; OP2=CF1
+    call exchangeFPSOP1PageTwo ; FPS=[PMT*CF3]; OP1=CF1
+    call op1ToOp2PageTwo ; OP2=CF1
     call RclTvmPV ; OP1=PV
     bcall(_FPMult) ; OP1=PV*CF1
     bcall(_PopRealO2) ; FPS=[]; OP2=PMT*CF3
@@ -913,21 +913,21 @@ TvmClear:
     ld a, 12
     bcall(_SetXXOP1)
     ld de, fin_PY
-    call move9FromOp1PageOne
+    call move9FromOp1PageTwo
     ld de, fin_CY
-    call move9FromOp1PageOne
+    call move9FromOp1PageTwo
     ; Clear the 5 TVM equation variables to 0.
     bcall(_OP1Set0)
     ld de, fin_N
-    call move9FromOp1PageOne
+    call move9FromOp1PageTwo
     ld de, fin_I
-    call move9FromOp1PageOne
+    call move9FromOp1PageTwo
     ld de, fin_PV
-    call move9FromOp1PageOne
+    call move9FromOp1PageTwo
     ld de, fin_PMT
-    call move9FromOp1PageOne
+    call move9FromOp1PageTwo
     ld de, fin_FV
-    call move9FromOp1PageOne
+    call move9FromOp1PageTwo
     ; [[fallthrough]]
 
 ; Description: Reset the TVM Solver parameters to their factory defaults and
@@ -936,7 +936,7 @@ TvmSolverReset:
     ; Set factory defaults
     bcall(_OP1Set0) ; 0%/year
     call StoTvmIYR0
-    call op1Set100PageOne ; 100%/year
+    call op1Set100PageTwo ; 100%/year
     call StoTvmIYR1
     ld a, tvmSolverDefaultIterMax
     call stoTvmIterMaxA
