@@ -628,6 +628,8 @@ tvmSolveUpdateGuesses:
     call tvmMoveIN1ToIN0
     jp tvmEvalAndStore1
 
+;-----------------------------------------------------------------------------
+
 ; Description: Determine if TVM Solver debugging is enabled, which is activated
 ; when drawMode for TVM Solver is enabled and the TVM Solver is in effect. In
 ; other words, (drawMode==drawModeTvmSolverI || drawMode==drawModeTvmSolverF)
@@ -651,8 +653,16 @@ tvmSolveDebugEnabled:
     scf ; CF=1
     ret
 
-; Description: Check if the root finding iteration should stop.
-; Input: i0, i1
+;-----------------------------------------------------------------------------
+
+; Description: Check if the root finding iteration should stop due to one of
+; the following conditions:
+;   - ON/EXIT was pressed
+;   - npmt1==0 (no need to check npmt0, was checked in the prev iteration)
+;   - |i0-i1|<=tol*(|i0|+|i1|) (handles case where i0,i1 are very close to 0)
+;   - tvmSolverCount > tvmIterMax
+;   - TVM Single Step debugging is enabled
+; Input: i0, i1, npmt0, npmt1
 ; Output:
 ;   - A=tvmSolverResultXxx, non-zero means terminate loop.
 ; Destroys: A, B, OP1, OP2
@@ -660,10 +670,11 @@ tvmSolveCheckTermination:
     ; Check for ON/Break
     bit onInterrupt, (iy + onFlags)
     jr nz, tvmSolveCheckTerminationInterrupted
-    ;
-    ; Check if i0 and i1 are within tolerance, where the relative error =
-    ; |i0-i1| < (|i0|+|i1|) * tol. This expression handles the case where the
-    ; solution is very close to 0 causing i0 and i1 to straddle zero.
+    ; Check if npmt1==0
+    call RclTvmNPMT1
+    bcall(_CkOP1FP0)
+    jr z, tvmSolveCheckTerminationFound
+    ; Check if i0 and i1 are within tolerance.
     call RclTvmI0
     call op1ToOp2PageTwo ; OP2=i0
     call RclTvmI1 ; OP1=i1
@@ -713,6 +724,8 @@ tvmSolveCheckTerminationSingleStep:
     ld a, tvmSolverResultSingleStep
     ret
 
+;-----------------------------------------------------------------------------
+
 ; Description: Initialize i0 and i1 from IYR0 and IYR1 respectively.
 tvmSolveInitGuesses:
     call RclTvmIYR0
@@ -743,6 +756,8 @@ tvmEvalAndStore2:
     call nominalPMT ; OP1=NPMT(i2)
     call StoTvmNPMT2 ; tvmNPMT1=NPMT(i2)
     ret
+
+;-----------------------------------------------------------------------------
 
 ; Description: Check if the current tvmI0 and tvmI1 straddle a zero crossing.
 ; If one of the end points evalutes to zero eactly, then i1 is replaced with
