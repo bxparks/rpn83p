@@ -630,9 +630,9 @@ savedFmtDigits equ savedFmtFlags + 1 ; u8
 ; plus the next interest rate i2, and the value of the NPMT() function at each
 ; of those points. Transient, so no need to persist them.
 tvmI0 equ savedFmtDigits + 1 ; float
-tvmI1 equ tvmI0 + 9 ; float
-tvmNPMT0 equ tvmI1 + 9 ; float
-tvmNPMT1 equ tvmNPMT0 + 9 ; float
+tvmNPMT0 equ tvmI0 + 9 ; float
+tvmI1 equ tvmNPMT0 + 9 ; float
+tvmNPMT1 equ tvmI1 + 9 ; float
 ; TVM Solver status and result code. Transient, no need to persist them.
 tvmSolverIsRunning equ tvmNPMT1 + 9 ; boolean; true if active
 tvmSolverCount equ tvmSolverIsRunning + 1 ; u8; iteration count

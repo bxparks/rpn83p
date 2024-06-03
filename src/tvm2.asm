@@ -140,16 +140,6 @@ StoTvmI0:
     ld de, tvmI0
     jp move9FromOp1PageTwo
 
-; Description: Recall tvmI1 to OP1.
-RclTvmI1:
-    ld hl, tvmI1
-    jp move9ToOp1PageTwo
-
-; Description: Store OP1 to tvmI1 variable.
-StoTvmI1:
-    ld de, tvmI1
-    jp move9FromOp1PageTwo
-
 ; Description: Recall tvmNPMT0 to OP1.
 RclTvmNPMT0:
     ld hl, tvmNPMT0
@@ -158,6 +148,18 @@ RclTvmNPMT0:
 ; Description: Store OP1 to tvmNPMT0 variable.
 StoTvmNPMT0:
     ld de, tvmNPMT0
+    jp move9FromOp1PageTwo
+
+;-----------------------------------------------------------------------------
+
+; Description: Recall tvmI1 to OP1.
+RclTvmI1:
+    ld hl, tvmI1
+    jp move9ToOp1PageTwo
+
+; Description: Store OP1 to tvmI1 variable.
+StoTvmI1:
+    ld de, tvmI1
     jp move9FromOp1PageTwo
 
 ; Description: Recall tvmNPMT1 to OP1.
@@ -169,6 +171,30 @@ RclTvmNPMT1:
 StoTvmNPMT1:
     ld de, tvmNPMT1
     jp move9FromOp1PageTwo
+
+;-----------------------------------------------------------------------------
+
+; Description: Move (i0, npmt0) to (i1, npmt1).
+; Destroys: BC, DE, HL
+; Preserves: A
+tvmMoveIN0ToIN1:
+    ld hl, tvmI0
+    ld de, tvmI1
+    ld bc, 18
+    ldir
+    ret
+
+; Description: Move (i1, npmt1) to (i0, npmt0).
+; Destroys: BC, DE, HL
+; Preserves: A
+tvmMoveIN1ToIN0:
+    ld hl, tvmI1
+    ld de, tvmI0
+    ld bc, 18
+    ldir
+    ret
+
+;-----------------------------------------------------------------------------
 
 ; Description: Recall the TVM solver iteration counter as a float in OP1.
 RclTvmSolverCount:
@@ -561,20 +587,8 @@ calculateNextSecantInterest:
 ;   - OP1: i2, the next interest rate
 ; Output: i0, i1, npmt0, npmpt1 updated
 tvmSolveUpdateGuesses:
-    bcall(_PushRealO1) ; FPS=[i2]
-    call nominalPMT ; OP1=npmt2
-    bcall(_PushRealO1) ; FPS=[i2,npmt2]
-    ;
-    call RclTvmI1 ; OP1=i1
-    call StoTvmI0 ; i1=i0
-    call RclTvmNPMT1 ; OP1=npmt1
-    call StoTvmNPMT0 ; npmt0=npmt1
-    ;
-    bcall(_PopRealO1) ; FPS=[i2]; OP1=npmt2
-    call StoTvmNPMT1 ; npmt1=npmt2
-    bcall(_PopRealO1) ; FPS=[]; OP1=i2
-    call StoTvmI1 ; i1=i2
-    ret
+    call tvmMoveIN1ToIN0
+    jp tvmEvalAndStore1
 
 ; Description: Determine if TVM Solver debugging is enabled, which is activated
 ; when drawMode for TVM Solver is enabled and the TVM Solver is in effect. In
@@ -665,11 +679,25 @@ tvmSolveCheckTerminationSingleStep:
 tvmSolveInitGuesses:
     call RclTvmIYR0
     call TvmCalcIPPFromIYR
-    call StoTvmI0
+    call tvmEvalAndStore0
     ;
     call RclTvmIYR1
     call TvmCalcIPPFromIYR
-    call StoTvmI1
+    call tvmEvalAndStore1
+    ret
+
+; Description: Evalute the NPMT(OP1), and save its x and y values to I0 and
+; NPMT0.
+tvmEvalAndStore0:
+    call StoTvmI0 ; i0=OP1
+    call nominalPMT ; OP1=NPMT(i0)
+    call StoTvmNPMT0 ; tvmNPMT0=NPMT(i0)
+    ret
+
+tvmEvalAndStore1:
+    call StoTvmI1 ; i1=OP1
+    call nominalPMT ; OP1=NPMT(i1)
+    call StoTvmNPMT1 ; tvmNPMT1=NPMT(i1)
     ret
 
 ; Description: Check if the current tvmI0 and tvmI1 straddle a zero crossing.
@@ -682,16 +710,12 @@ tvmSolveInitGuesses:
 ;   - CF=0 if no zero crossing
 ; Destroys: A
 tvmSolveZeroCrossing:
-    ; evaluate i0
-    call RclTvmI0 ; i0=0.0
-    call nominalPMT ; OP1=NPMT(i0)
-    call StoTvmNPMT0 ; tvmNPMT0=NPMT(i0)
+    ; check i0
+    call RclTvmNPMT0
     bcall(_CkOP1FP0) ; if OP1==0: ZF=set
     jr z, tvmSolveZeroCrossingI0EvalsToZero
-    ; Set up the i1 guess
-    call RclTvmI1 ; i1=100%/PYR/100
-    call nominalPMT ; OP1=NPMT(i1)
-    call StoTvmNPMT1 ; tvmNPMT1=NPMT(N,i1)
+    ; check i1
+    call RclTvmNPMT1
     bcall(_CkOP1FP0) ; if OP1==0: ZF=set
     jr z, tvmSolveZeroCrossingI1EvalsToZero
     ; Check for different sign bit of NPMT(i)
@@ -707,14 +731,9 @@ tvmSolveZeroCrossingTrue:
     scf
     ret
 tvmSolveZeroCrossingI0EvalsToZero:
-    call RclTvmI0
-    call StoTvmI1
-    call RclTvmNPMT0
-    call StoTvmNPMT1
+    call tvmMoveIN0ToIN1
 tvmSolveZeroCrossingI1EvalsToZero:
     ret
-
-
 
 ; Description: Calculate the interest rate by solving the root of the NPMT
 ; equation using the Newton-Secant method. Uses 2 initial interest rate guesses
@@ -754,7 +773,7 @@ tvmSolveMayExist:
     ld (tvmSolverCount), a
     ; Initialize i0 and i1 from IYR0 and IYR1
     call tvmSolveInitGuesses
-    call tvmSolveZeroCrossing ; ZF=1 if endpoints zero; CF=1 if zero crossing
+    call tvmSolveZeroCrossing ; ZF=1 if zero; CF=1 if zero crossing
     jr z, tvmSolveSelectI1
     jr nc, tvmSolveNotFound
 tvmSolveLoop:
