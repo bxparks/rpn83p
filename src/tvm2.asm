@@ -174,6 +174,44 @@ StoTvmNPMT1:
 
 ;-----------------------------------------------------------------------------
 
+; Description: Recall tvmI2 to OP1.
+RclTvmI2:
+    ld hl, tvmI2
+    jp move9ToOp1PageTwo
+
+; Description: Store OP1 to tvmI2 variable.
+StoTvmI2:
+    ld de, tvmI2
+    jp move9FromOp1PageTwo
+
+; Description: Recall tvmNPMT2 to OP1.
+RclTvmNPMT2:
+    ld hl, tvmNPMT2
+    jp move9ToOp1PageTwo
+
+; Description: Store OP1 to tvmNPMT2 variable.
+StoTvmNPMT2:
+    ld de, tvmNPMT2
+    jp move9FromOp1PageTwo
+
+;-----------------------------------------------------------------------------
+
+; Description: Exchange I0 with I2, NPMT0 with NPMT2.
+; Destroys: all
+tvmExIN0IN2:
+    ld de, tvmI0
+    ld hl, tvmI2
+    jp exchange18PageTwo
+
+; Description: Exchange I1 with I2, NPMT1 with NPMT2.
+; Destroys: all
+tvmExIN1IN2:
+    ld de, tvmI1
+    ld hl, tvmI2
+    jp exchange18PageTwo
+
+;-----------------------------------------------------------------------------
+
 ; Description: Move (i0, npmt0) to (i1, npmt1).
 ; Destroys: BC, DE, HL
 ; Preserves: A
@@ -700,6 +738,12 @@ tvmEvalAndStore1:
     call StoTvmNPMT1 ; tvmNPMT1=NPMT(i1)
     ret
 
+tvmEvalAndStore2:
+    call StoTvmI2 ; i2=OP1
+    call nominalPMT ; OP1=NPMT(i2)
+    call StoTvmNPMT2 ; tvmNPMT1=NPMT(i2)
+    ret
+
 ; Description: Check if the current tvmI0 and tvmI1 straddle a zero crossing.
 ; If one of the end points evalutes to zero eactly, then i1 is replaced with
 ; endoint value that evaluted to zero.
@@ -734,6 +778,60 @@ tvmSolveZeroCrossingI0EvalsToZero:
     call tvmMoveIN0ToIN1
 tvmSolveZeroCrossingI1EvalsToZero:
     ret
+
+; Description: Check for zero crossing, but if the initial guesses straddle
+; 0.0, perform the check using 2 intervals.
+; Input: i0, i1
+tvmSolveStraddledZeroCrossing:
+    ; check if i0 and i1 have different signs
+    call RclTvmI1
+    call op1ToOp2PageTwo
+    call RclTvmI0
+    call compareSignOP1OP2PageTwo ; ZF=1 if same sign
+    ; check if i1==0.0
+    jr z, tvmSolveZeroCrossing
+    bcall(_CkOP2FP0)
+    jr z, tvmSolveZeroCrossing
+    ; here if i0<0 and i1>0
+    call op1Set0PageTwo
+    call tvmEvalAndStore2
+    ; a) Check [0, i1]
+    call tvmExIN0IN2
+    call tvmSolveZeroCrossing
+    ret z
+    ret c
+    ; b) Check [i0, 0]
+    call tvmExIN0IN2
+    call tvmExIN1IN2
+    call tvmSolveZeroCrossing
+    ret z
+    ret c
+    ; c) No zeros in either intervals. Split [0,i1] into [0,imid] + [imid,i1].
+    call tvmExIN1IN2 ; i1=originalI1
+    call tvmExIN0IN2 ; i0=0
+    call tvmCalcMidI0I1 ; OP1=imid=(i1+i2)/2
+    call tvmEvalAndStore2 ; i2=imid, npmt2=npmtmid
+    ; d) Check [0,imid]
+    call tvmExIN1IN2
+    call tvmSolveZeroCrossing
+    ret z
+    ret c
+    ; e) Check [imid,i1]
+    call tvmExIN1IN2
+    call tvmExIN0IN2
+    jp tvmSolveZeroCrossing
+
+; Description: Calculate the middle of i0 and i1.
+; Output: OP1=(i0+i1)/2
+tvmCalcMidI0I1:
+    call RclTvmI0
+    call op1ToOp2PageTwo
+    call RclTvmI1
+    bcall(_FPAdd)
+    bcall(_TimesPt5)
+    ret
+
+;-----------------------------------------------------------------------------
 
 ; Description: Calculate the interest rate by solving the root of the NPMT
 ; equation using the Newton-Secant method. Uses 2 initial interest rate guesses
@@ -773,7 +871,7 @@ tvmSolveMayExist:
     ld (tvmSolverCount), a
     ; Initialize i0 and i1 from IYR0 and IYR1
     call tvmSolveInitGuesses
-    call tvmSolveZeroCrossing ; ZF=1 if zero; CF=1 if zero crossing
+    call tvmSolveStraddledZeroCrossing ; ZF=1 if zero; CF=1 if zero crossing
     jr z, tvmSolveSelectI1
     jr nc, tvmSolveNotFound
 tvmSolveLoop:

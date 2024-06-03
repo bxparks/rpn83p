@@ -5,6 +5,14 @@
 ; Floating point constants for routines in Flash Page 2.
 ;-----------------------------------------------------------------------------
 
+; Description: Set OP1 to 0.0. Faster version of bcall(_OP1Set0).
+; Destroys: all, HL
+op1Set0PageTwo:
+    ld hl, const0PageTwo
+    jp move9ToOp1PageTwo
+
+;-----------------------------------------------------------------------------
+
 ; Description: Set OP2 to 1e-10.
 ; Destroys: all, HL
 op2Set1EM10PageTwo:
@@ -76,6 +84,9 @@ op2Set1E14PageTwo:
     jp move9ToOp2PageTwo
 
 ;-----------------------------------------------------------------------------
+
+const0PageTwo: ; 0.0
+    .db $00, $80, $00, $00, $00, $00, $00, $00, $00
 
 const1EM10PageTwo: ; 10^-10
     .db $00, $76, $10, $00, $00, $00, $00, $00, $00

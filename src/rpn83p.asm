@@ -633,8 +633,10 @@ tvmI0 equ savedFmtDigits + 1 ; float
 tvmNPMT0 equ tvmI0 + 9 ; float
 tvmI1 equ tvmNPMT0 + 9 ; float
 tvmNPMT1 equ tvmI1 + 9 ; float
+tvmI2 equ tvmNPMT1 + 9 ; float
+tvmNPMT2 equ tvmI2 + 9 ; float
 ; TVM Solver status and result code. Transient, no need to persist them.
-tvmSolverIsRunning equ tvmNPMT1 + 9 ; boolean; true if active
+tvmSolverIsRunning equ tvmNPMT2 + 9 ; boolean; true if active
 tvmSolverCount equ tvmSolverIsRunning + 1 ; u8; iteration count
 
 ; A Pascal-string that contains the rendered version of inputBuf[] which can be
