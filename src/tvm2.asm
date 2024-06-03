@@ -1051,7 +1051,7 @@ TvmClear:
 ; clear the override flags to remove the menu dots.
 TvmSolverReset:
     ; Set factory defaults
-    bcall(_OP1Set0) ; 0%/year
+    call op1SetM50PageTwo ; -50%/year
     call StoTvmIYR0
     call op1Set100PageTwo ; 100%/year
     call StoTvmIYR1
