@@ -326,6 +326,7 @@ mTvmPYRHandler:
 mTvmPYRHandlerSet:
     bcall(_StoTvmPYR)
     set rpnFlagsTvmCalculate, (iy + rpnFlags)
+    set dirtyFlagsMenu, (iy + dirtyFlags)
     ld a, errorCodeTvmStored
     ld (handlerCode), a
     ret
@@ -335,6 +336,25 @@ mTvmPYRGet:
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld a, errorCodeTvmRecalled
     ld (handlerCode), a
+    ret
+
+; Description: Select menu name. Display a dot if the PYR is different than 12,
+; which is almost always the default.
+; Output: CF=0 for normal, CF=1 or alternate
+; Preserves: BC, DE
+mTvmPYRNameSelector:
+    push bc
+    push de
+    bcall(_RclTvmPYR)
+    call op2Set12
+    bcall(_CpOP1OP2) ; ZF=1 if OP1==OP2
+    pop de
+    pop bc
+    jr z, mTvmPYRNameSelectorDefault
+    scf
+    ret
+mTvmPYRNameSelectorDefault:
+    or a ; CF=0
     ret
 
 ;-----------------------------------------------------------------------------
