@@ -283,9 +283,9 @@ MenuGroup root mRoot [
       ]
       MenuRow [
         MenuItemAlt P<Sslash>YR P<Sslash>Y<Sblock> mTvmPYR
+        MenuItemAlt C<Sslash>YR C<Sslash>Y<Sblock> mTvmCYR
         MenuItemAlt BEG BEG<Sblock> mTvmBegin
         MenuItemAlt END END<Sblock> mTvmEnd
-        MenuItem * *
         MenuItem CLTV mTvmClear
       ]
       MenuRow [

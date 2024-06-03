@@ -311,6 +311,9 @@ mTvmFVCalculate:
 ;-----------------------------------------------------------------------------
 
 ; Description: Set or get P/YR to X.
+; If the PYR is updated, then CYR also set to the same value because that's the
+; most common case. Users can go back and change the CYR if needed. This is
+; also how the "Financial..." app on the TI-OS works.
 mTvmPYRHandler:
     call closeInput
     ; Check if '2ND PYR' pressed.
@@ -325,6 +328,7 @@ mTvmPYRHandler:
     bcall(_ErrDomain)
 mTvmPYRHandlerSet:
     bcall(_StoTvmPYR)
+    bcall(_StoTvmCYR) ; set CYR=PYR if PYR is changed
     set rpnFlagsTvmCalculate, (iy + rpnFlags)
     set dirtyFlagsMenu, (iy + dirtyFlags)
     ld a, errorCodeTvmStored
@@ -354,6 +358,55 @@ mTvmPYRNameSelector:
     scf
     ret
 mTvmPYRNameSelectorDefault:
+    or a ; CF=0
+    ret
+
+;-----------------------------------------------------------------------------
+
+; Description: Set or get C/YR to X.
+mTvmCYRHandler:
+    call closeInput
+    ; Check if '2ND CYR' pressed.
+    bit rpnFlagsSecondKey, (iy + rpnFlags)
+    jr nz, mTvmCYRGet
+    ; save the inputBuf value in OP1
+    res rpnFlagsTvmCalculate, (iy + rpnFlags)
+    call rclX
+    call validateOp1Real
+    bcall(_PosNo0Int) ; if posnonzeroint(x): ZF=1
+    jr z, mTvmCYRHandlerSet
+    bcall(_ErrDomain)
+mTvmCYRHandlerSet:
+    bcall(_StoTvmCYR)
+    set rpnFlagsTvmCalculate, (iy + rpnFlags)
+    set dirtyFlagsMenu, (iy + dirtyFlags)
+    ld a, errorCodeTvmStored
+    ld (handlerCode), a
+    ret
+mTvmCYRGet:
+    bcall(_RclTvmCYR)
+    call pushToX
+    res rpnFlagsTvmCalculate, (iy + rpnFlags)
+    ld a, errorCodeTvmRecalled
+    ld (handlerCode), a
+    ret
+
+; Description: Select menu name. Display a dot if the CYR is different than 12,
+; which is almost always the default.
+; Output: CF=0 for normal, CF=1 or alternate
+; Preserves: BC, DE
+mTvmCYRNameSelector:
+    push bc
+    push de
+    bcall(_RclTvmCYR)
+    call op2Set12
+    bcall(_CpOP1OP2) ; ZF=1 if OP1==OP2
+    pop de
+    pop bc
+    jr z, mTvmCYRNameSelectorDefault
+    scf
+    ret
+mTvmCYRNameSelectorDefault:
     or a ; CF=0
     ret
 

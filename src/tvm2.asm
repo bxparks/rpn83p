@@ -73,15 +73,20 @@ RclTvmPYR:
     ld hl, fin_PY
     jp move9ToOp1PageTwo
 
-; Description: Store OP1 to fin_PY. Store the same value in fin_CY so that if
-; we go back to the TI-OS and use the built-in "Financial" app, the same
-; compounding frequency will appear there under "C/Y".
+; Description: Store OP1 to fin_PY.
 StoTvmPYR:
     ld de, fin_PY
-    call move9FromOp1PageTwo
+    jp move9FromOp1PageTwo
+
+; Description: Recall fin_CY to OP1.
+RclTvmCYR:
+    ld hl, fin_CY
+    jp move9ToOp1PageTwo
+
+; Description: Store OP1 to fin_CY.
+StoTvmCYR:
     ld de, fin_CY
-    call move9FromOp1PageTwo
-    ret
+    jp move9FromOp1PageTwo
 
 ;-----------------------------------------------------------------------------
 ; Workspace variables used by the TVM Solver.

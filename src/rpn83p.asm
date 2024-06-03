@@ -1153,6 +1153,14 @@ _StoTvmPYRLabel:
 _StoTvmPYR equ _StoTvmPYRLabel-branchTableBase
     .dw StoTvmPYR
     .db 2
+_RclTvmCYRLabel:
+_RclTvmCYR equ _RclTvmCYRLabel-branchTableBase
+    .dw RclTvmCYR
+    .db 2
+_StoTvmCYRLabel:
+_StoTvmCYR equ _StoTvmCYRLabel-branchTableBase
+    .dw StoTvmCYR
+    .db 2
 _RclTvmIYR0Label:
 _RclTvmIYR0 equ _RclTvmIYR0Label-branchTableBase
     .dw RclTvmIYR0
