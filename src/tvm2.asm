@@ -263,31 +263,53 @@ getTvmIPP:
 
 ; Description: Compute the interest rate per period (IPP) for the given
 ; interest percent yearly rate (IYR) in OP1.
-; Input: OP1=IYR=interest percent yearly rate
-; Output: OP1=IYR/PYR/100
+; Input: OP1=IYR=interest percent per year
+; Output: OP1=IPP=effective fractional interest rate per period
 ; Preserves: OP2
 TvmCalcIPPFromIYR:
     bcall(_PushRealO2) ; FPS=[OP2]
-    call op1ToOp2PageTwo
-    call RclTvmPYR
-    call op1ExOp2PageTwo
-    bcall(_FPDiv) ; OP1=I/PYR
+    ;
     call op2Set100PageTwo
-    bcall(_FPDiv) ; OP1=I/PYR/100
+    bcall(_FPDiv) ; OP1=IYR/100
+    call op1ToOp2PageTwo ; OP2=IYR/100
+    call RclTvmCYR ; OP1=CYR
+    call op1ExOp2PageTwo ; OP1=IYR/100, OP2=CYR
+    bcall(_FPDiv) ; OP1=IYR/100/CYR
+    call LnOnePlus ; OP1=ln1p(IYR/100/CYR)
+    call op1ToOp2PageTwo ; OP2=ln1p(...)
+    call RclTvmCYR ; OP1=CYR
+    bcall(_FPMult) ; OP1=ln1p(...) * CYR
+    call op1ToOp2PageTwo ; OP2=ln1p(...) * CYR
+    call RclTvmPYR ; OP1=PYR
+    call op1ExOp2PageTwo
+    bcall(_FPDiv) ; OP1=ln1p(...)*CYR/PYR
+    call ExpMinusOne ; OP1=i=expm1[(CYR/PYR) ln1p(IYR/100/CYR)]
+    ;
     bcall(_PopRealO2) ; FPS=[]
     ret
 
 ; Description: Compute the I%/YR from the fractional interest per period.
-; Input: OP1=i=fractional interest per period
-; Output: OP1=IYR=percent per year=i*PYR*100
+; Input: OP1=IPP=fractional interest per period
+; Output: OP1=IYR=interest percent per year
 ; Preserves: OP2
 calcTvmIYRFromIPP:
     bcall(_PushRealO2) ; FPS=[OP2]
+    ;
+    call LnOnePlus ; OP1=ln1p(i)
     call op1ToOp2PageTwo
     call RclTvmPYR
-    bcall(_FPMult)
+    bcall(_FPMult) ; OP1=PYR * ln1p(i)
+    call op1ToOp2PageTwo
+    call RclTvmCYR
+    call op1ExOp2PageTwo
+    bcall(_FPDiv) ; OP1=(PYR/CYR)*ln1p(i)
+    call ExpMinusOne ; OP1=expm1[(PYR/CYR)*ln1p(i)]
+    call op1ToOp2PageTwo
+    call RclTvmCYR
+    bcall(_FPMult) ; OP1=CYR*expm1[(PYR/CYR) ln1p(i)]
     call op2Set100PageTwo
-    bcall(_FPMult)
+    bcall(_FPMult) ; OP1=100*CYR*expm1[...]
+    ;
     bcall(_PopRealO2) ; FPS=[]
     ret
 
