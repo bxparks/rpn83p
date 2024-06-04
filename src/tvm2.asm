@@ -616,30 +616,32 @@ nominalPMT:
 ; Secant method.
 ;   x(n) = x(n-1) - f(n-1)[x(n-1)-x(n-2)]/[f(n-1)-f(n-2))
 ;        = [x(n-2)f(n-1) - x(n-1)f(n-2)] / [f(n-1)-f(n-2))
+;        = (i0 npmt1 - i1 npmt0) / (npmt1 - npmt0)
 ; Input: tvmI0, tvmI1, tvmNPMT0, tvmNPMT1
 ; Output: OP1: i2 the next estimate
 calculateNextSecantInterest:
+    ; calculate denominator first, to detect division by zero
+    call RclTvmNPMT0
+    call op1ToOp2PageTwo
+    call RclTvmNPMT1
+    bcall(_FPSub) ; OP1=npmt1-npmt0
+    call pushRaw9Op1 ; FPS=[npmt1-npmt0]
+    ;
     call RclTvmI0
     call op1ToOp2PageTwo
     call RclTvmNPMT1
-    bcall(_PushRealO1) ; FPS=[npmt1]
     bcall(_FPMult) ; OP1=i0*npmt1
-    bcall(_PushRealO1) ; FPS=[npmt1,i0*npmt1]
+    call pushRaw9Op1 ; FPS=[npmt1-npmt0, i0*npmt1]
+    ;
     call RclTvmI1
     call op1ToOp2PageTwo
     call RclTvmNPMT0
-    bcall(_PushRealO1) ; FPS=[npmt1,i0*npmt1,npmt0]
     bcall(_FPMult) ; OP1=i1*npmt0
-    call exchangeFPSFPSPageTwo ; FPS=[npmt1,npmt0,i0*npmt1]
-    bcall(_PopRealO2) ; FPS=[npmt1,npmt0]; OP2=i0*npmt1
+    ;
+    call popRaw9Op2 ; FPS=[npmt1-npmt0]; OP2=i0*npmt1
     bcall(_InvSub) ; OP1=i0*npmt1-i1*npmt0
-    call exchangeFPSOP1PageTwo ; FPS=[npmt1,i0*npmt1-i1*npmt0]; OP1=npmt0
-    call op1ToOp2PageTwo ; OP2=npmt0
-    call exchangeFPSFPSPageTwo ; FPS=[i0*npmt1-i1*npmt0,npmt1]; OP2=npmt0
-    bcall(_PopRealO1) ; FPS=[i0*npmt1-i1*npmt0]; OP1=npmt1; OP2=npmt0
-    bcall(_FPSub)  ; OP1=npmt1-npmt0
-    call op1ToOp2PageTwo ; OP2=npmt1-npmt0
-    bcall(_PopRealO1) ; FPS=[]; OP1=i0*npmt1-i1*npmt0
+    ;
+    call popRaw9Op2 ; FPS=[]; OP2=npmt1-npmt0
     bcall(_FPDiv) ; OP1=i0*npmt1-i1*npmt0)/(npmt1-npmt0)
     ret
 
