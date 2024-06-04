@@ -144,49 +144,56 @@ tvmIYRCalculate:
     ld (tvmSolverIsRunning), a ; set 'isRunning' flag
     bcall(_RunIndicOn)
     xor a ; A=0=tvmSolverResultContinue
-tvmIYRCalculateSolveLoop:
-    ; tvmSolve() can be called with 2 values of A:
+tvmIYRCalculateSingleStepLoop:
+    ; TvmSolve() can be called with 2 values of A:
     ; - A=tvmSolverResultSingleStep to restart from the last loop, or
-    ; - A=anything else to start the root solver from the beginning,
+    ; - A=anything else to start the root solver from the beginning.
     bcall(_TvmSolve) ; A=tvmSolverResultXxx, guaranteed non-zero
+    ; If Single Step is active, TvmSolve() yields for each iteration. It is
+    ; called it again to continue its iteration until an appropriate status
+    ; codes is returned.
+    cp tvmSolverResultSingleStep
+    jr z, tvmIYRCalculateSingleStep
+    ;
     cp tvmSolverResultFound
-    jr nz, tvmIYRCalculateCheckNoSolution
-    ; Found!
+    jr z, tvmIYRCalculateFound
+    cp tvmSolverResultNotFound
+    jr z, tvmIYRCalculateNotFound
+    cp tvmSolverResultNoSolution
+    jr z, tvmIYRCalculateNoSolution
+    cp tvmSolverResultIterMaxed
+    jr z, tvmIYRCalculateIterMaxed
+    cp tvmSolverResultBreak
+    jr z, tvmIYRCalculateBreak
+    ; anything else is a programming error
+    jr tvmIYRCalculateStatusUnknown
+    ;
+tvmIYRCalculateSingleStep:
+    call tvmIYRCalculateShowSingleStep
+    jr tvmIYRCalculateSingleStepLoop
+tvmIYRCalculateFound:
     ld a, errorCodeTvmCalculated
     jr tvmIYRCalculateEnd
-tvmIYRCalculateCheckNoSolution:
-    cp tvmSolverResultNoSolution
-    jr nz, tvmIYRCalculateCheckNotFound
-    ; Cannot have a solution
+tvmIYRCalculateNotFound:
+    ld a, errorCodeTvmNotFound
+    jr tvmIYRCalculateEnd
+tvmIYRCalculateNoSolution:
     ld a, errorCodeTvmNoSolution
     jr tvmIYRCalculateEnd
-tvmIYRCalculateCheckNotFound:
-    cp tvmSolverResultNotFound
-    jr nz, tvmIYRCalculateCheckIterMax
-    ; root not found
-    ld a, errorCodeTvmNotFound
-    jr tvmIYRCalculateEnd
-tvmIYRCalculateCheckIterMax:
-    cp tvmSolverResultIterMaxed
-    jr nz, tvmIYRCalculateCheckBreak
-    ; root not found after max iterations
+tvmIYRCalculateIterMaxed:
     ld a, errorCodeTvmIterations
     jr tvmIYRCalculateEnd
-tvmIYRCalculateCheckBreak:
-    cp tvmSolverResultBreak
-    jr nz, tvmIYRCalculateCheckSingleStep
-    ; user hit ON/EXIT
+tvmIYRCalculateBreak:
     ld a, errorCodeBreak
     jr tvmIYRCalculateEnd
-tvmIYRCalculateCheckSingleStep:
-    cp tvmSolverResultSingleStep
-    jr nz, tvmIYRCalculateStatusUnknown
-    call tvmIYRCalculateShowSingleStep
-    jr tvmIYRCalculateSolveLoop
-tvmIYRCalculateStatusUnknown:
-    ld a, errorCodeTvmNotFound
+tvmIYRCalculateStatusUnknown: ; should never happen, so return Invalid
+    ld a, errorCodeInvalid
 tvmIYRCalculateEnd:
-    ; final single step if debug enabled
+    ; Do final single step if debug is enabled. Clean up various flags.
+    ; If there is an exception, the exception handler needs to perform the
+    ; clean up too! See mainscanner.asm/processMainCommandsHandleException().
+    ; TODO: I think we can install a nested exception handler and perform that
+    ; clean up here.
     push af
     bcall(_RunIndicOff)
     bcall(_TvmSolveCheckDebugEnabled) ; CF=1 if TVM debug enabled
