@@ -776,13 +776,26 @@ tvmSolveCheckTerminationNpmtEqual:
 
 ;-----------------------------------------------------------------------------
 
-; Description: Initialize i0 and i1 from IYR0 and IYR1 respectively.
+; Description: Initialize i0 and i1 from IYR0 and IYR1. The values of IYR0 and
+; IYR1 are compared so that i0 <= i1
+; Input: IYR0, IYR1 initial guesses as %/YR
+; Output:
+;   - i0, i1, npmt0, npmt1 filled
+;   - i0 <= i1
 tvmSolveInitGuesses:
-    call RclTvmIYR0
+    ; Flip IYR0 and IYR1 if out of order.
+    call RclTvmIYR1
+    call op1ToOp2PageTwo ; OP2=IYR1
+    call RclTvmIYR0 ; OP1=IYR0
+    bcall(_CpOP1OP2) ; CF=1 if IYR0<IYR1
+    jr c, tvmSolveInitGuessesEvalAndStore
+    call op1ExOp2PageTwo ; OP1=IYR1 (smaller); OP2=IYR0 (bigger)
+tvmSolveInitGuessesEvalAndStore:
+    ; When we get here, we have OP1 <= OP2.
+    call pushRaw9Op2 ; FPS=[bigger]
     call TvmCalcIPPFromIYR
     call tvmEvalAndStore0
-    ;
-    call RclTvmIYR1
+    call popRaw9Op1 ; FPS=[]; OP1=bigger
     call TvmCalcIPPFromIYR
     call tvmEvalAndStore1
     ret
