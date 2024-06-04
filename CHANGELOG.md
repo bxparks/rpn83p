@@ -1,6 +1,22 @@
 # Changelog
 
 - Unreleased
+    - TVM
+        - add `C/YR` menu (number of compoundings per year)
+            - uses the same variable as the `C/Y` variable of the "Finance" app
+              in TI-OS
+            - supports `2ND C/YR` to retrieve its value, just like `2ND P/YR`
+            - setting `P/YR` also sets `C/YR` (consistent with the behavior of
+              the "Finance" app in TI-OS
+            - setting `C/YR` does *not* change `P/YR` (same as "Finance" app)
+        - add a dot to `P/YR` and `C/YR` if they differ from their default value
+          of 12, allows users to quickly see if those values are different from
+          the default
+        - make TVM Solver more robust under certain edge cases, especially near
+          `I/YR ~ 0%`
+        - change initial guess of `IYR1` to `-50%` to support negative interest
+          rates by default
+            - keep default value of `IYR2` at `100%`
 - 0.11.0 (2024-05-28)
     - **Warning**: Previously saved RPN stack and storage registers are
       incompatible and are lost when upgrading to this version.
