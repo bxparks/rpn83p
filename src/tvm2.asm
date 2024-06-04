@@ -625,24 +625,34 @@ calculateNextSecantInterest:
     call op1ToOp2PageTwo
     call RclTvmNPMT1
     bcall(_FPSub) ; OP1=npmt1-npmt0
+    bcall(_CkOp1FP0) ; ZF=1 if OP1==0
+    jr z, calculateNextSecantInterestDenomZero
     call pushRaw9Op1 ; FPS=[npmt1-npmt0]
-    ;
+    ; calculate i0*npmt1
     call RclTvmI0
     call op1ToOp2PageTwo
     call RclTvmNPMT1
     bcall(_FPMult) ; OP1=i0*npmt1
     call pushRaw9Op1 ; FPS=[npmt1-npmt0, i0*npmt1]
-    ;
+    ; calculate i1*npmt0
     call RclTvmI1
     call op1ToOp2PageTwo
     call RclTvmNPMT0
     bcall(_FPMult) ; OP1=i1*npmt0
-    ;
+    ; subtract 2 terms
     call popRaw9Op2 ; FPS=[npmt1-npmt0]; OP2=i0*npmt1
     bcall(_InvSub) ; OP1=i0*npmt1-i1*npmt0
-    ;
+    ; divide by denominator, already checked for zero
     call popRaw9Op2 ; FPS=[]; OP2=npmt1-npmt0
     bcall(_FPDiv) ; OP1=i0*npmt1-i1*npmt0)/(npmt1-npmt0)
+    ret
+calculateNextSecantInterestDenomZero:
+    ; If the denominator (npmt1-npmt0) is zero, return the middle point.
+    call RclTvmI0
+    call op1ToOp2PageTwo
+    call RclTvmI1
+    bcall(_FPAdd)
+    bcall(_TimesPt5)
     ret
 
 ; Description: Update i0 and i1 using the new i2 guess by moving i1 to i0, then
@@ -689,6 +699,7 @@ tvmSolveDebugEnabled:
 ;   - ON/EXIT was pressed
 ;   - npmt1==0 (no need to check npmt0, was checked in the prev iteration)
 ;   - |i0-i1|<=tol*(|i0|+|i1|) (handles case where i0,i1 are very close to 0)
+;   - npmt0==npmt1 && tvmSolverCount >= 3
 ;   - tvmSolverCount > tvmIterMax
 ;   - TVM Single Step debugging is enabled
 ; Input: i0, i1, npmt0, npmt1
@@ -703,6 +714,11 @@ tvmSolveCheckTermination:
     call RclTvmNPMT1
     bcall(_CkOP1FP0)
     jr z, tvmSolveCheckTerminationFound
+    ; Check if npmt1==npmt0
+    call op1ToOp2PageTwo
+    call RclTvmNPMT0
+    bcall(_CpOP1OP2) ; ZF=1 if equal
+    jr z, tvmSolveCheckTerminationNpmtEqual
     ; Check if i0 and i1 are within tolerance.
     call RclTvmI0
     call op1ToOp2PageTwo ; OP2=i0
@@ -735,7 +751,7 @@ tvmSolveCheckTermination:
     ; terminate immediately if single-step debugging is enabled.
     call TvmSolveCheckDebugEnabled ; CF=1 if enabled
     jr c, tvmSolveCheckTerminationSingleStep
-    ;
+tvmSolveCheckTerminationContinue:
     ; Return normal result to indicate the loop should continue.
     ld a, tvmSolverResultContinue
     ret
@@ -752,6 +768,11 @@ tvmSolveCheckTerminationIterMaxed:
 tvmSolveCheckTerminationSingleStep:
     ld a, tvmSolverResultSingleStep
     ret
+tvmSolveCheckTerminationNpmtEqual:
+    ld a, (tvmSolverCount)
+    cp 3
+    jr c, tvmSolveCheckTerminationContinue
+    jr tvmSolveCheckTerminationFound
 
 ;-----------------------------------------------------------------------------
 
