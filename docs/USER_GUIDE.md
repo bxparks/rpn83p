@@ -602,13 +602,12 @@ The following buttons are used to enter and edit a number in the input buffer:
           or
         - converts an existing complex delimiter to an `i`
     - `2ND ANGLE`:
-        - inserts an `angle` character to form a complex number in polar degree
+        - inserts `∠°` (angle degrees) to form a complex number in polar degree
           form, or
-        - converts an existing complex delimiter to an `angle` character
+        - converts an existing complex delimiter to an `∠°`
     - `2ND ANGLE` `2ND ANGLE`:
-        - inserts an `angle` and a `degrees` symbol to form a complex number
-          polar radian form, or
-        - converts and existing complex delimiter to an `angle`-`degrees` pair
+        - inserts `∠` (angle) to form a complex number in polar radian form, or
+        - converts an existing complex delimiter to an `∠`
     - see [USER_GUIDE_COMPLEX.md](USER_GUIDE_COMPLEX.md) for more info
 
 #### Input Cursor
