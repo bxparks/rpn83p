@@ -602,7 +602,7 @@ The following buttons are used to enter and edit a number in the input buffer:
           or
         - converts an existing complex delimiter to an `i`
     - `2ND ANGLE`:
-        - inserts `∠°` (angle degrees) to form a complex number in polar degree
+        - inserts `∠°` (angle degree) to form a complex number in polar degree
           form, or
         - converts an existing complex delimiter to an `∠°`
     - `2ND ANGLE` `2ND ANGLE`:
@@ -769,10 +769,13 @@ i` and`2ND ANGLE`, try to be slightly smart about their behavior as well:
     - inserts an `i` delimiter if no complex delimiter already exists
     - converts any existing complex delimiter into an `i`
 - `2ND ANGLE`
-    - inserts an `Angle Degree` delimiter if no complex delimiter already exists
-    - converts an existing `i` delimiter into an `Angle Degree` delimiter
-    - converts an existing `Angle Degree` into just an `Angle` (toggles)
-    - converts an existing `Angle` into an `Angle Degree` (toggles)
+    - inserts a `∠°` (angle degree) delimiter if no complex delimiter already
+      exists
+    - converts an existing `i` delimiter into an `∠°` (angle degree) delimiter
+    - converts an existing `∠°` (angle degree) delimiter into just an `∠`
+      (angle) delimiter (i.e. toggles)
+    - converts an existing `∠` (angle) delimiter into an `∠°` (angle degree)
+      delimiter (i.e. toggles)
 
 Here is an example of how the delimiters override or toggle each other:
 

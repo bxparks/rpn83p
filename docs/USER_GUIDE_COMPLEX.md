@@ -127,10 +127,10 @@ To enter `2 e^(i 60deg)` in polar-degree mode, we would type:
 | `60`              | ![](images/complex/inlining-pdeg-3.png) |
 | `ENTER`           | ![](images/complex/inlining-pdeg-4.png) |
 
-Notice that the complex number separator is the combination of an Angle symbol
-and a Degree symbol, which indicates that the input is expecting the angle to be
-entered in degrees. After the `ENTER`, the input buffer is parsed and a complex
-number is pushed into the `X` register of the RPN stack.
+Notice that the complex number separator is `∠°` (angle degree) which indicates
+that the input is expecting the angle to be entered in degrees. After the
+`ENTER`, the input buffer is parsed and a complex number is pushed into the `X`
+register of the RPN stack.
 
 Note also that the number was *entered* in polar form, but the number is
 *displayed* in rectangular form. That is because the rendering of complex number
@@ -138,7 +138,7 @@ is controlled by the [Complex Display Mode](#complex-display-modes), currently
 set to `RECT`, which is independent of how the complex number is entered.
 
 We can enter complex numbers using angles in radians by typing `2ND ANGLE`
-twice. For example, to enter `2 Angle 1.047`, use the following keystrokes:
+twice. For example, to enter `2 ∠ 1.047`, use the following keystrokes:
 
 | **Keys**                  | **Display** |
 | ----------------          | --------------------- |
