@@ -223,9 +223,9 @@ perform that merge. (It did not make sense for it to do anything else.)
 In other words:
 
 - if `RECT`: the resulting number is `Y+Xi`
-- if `PRAD`: the resulting number is `Y e^(i X)`
-- if `PDEG`: the resulting number is `Y e^(i * X*pi/180)`, where `X` has been
-  converted from degrees to radians
+- if `PRAD`: the resulting number is `Y e^(i X)` which is rendered as `Y ∠ X`
+- if `PDEG`: the resulting number is `Y e^(i * X*pi/180)` which is rendered as
+  `Y ∠° X` (where `X` is interpreted to be in degrees instead of radians)
 
 For example, let's set the display mode to `PDEG`, and link the numbers `1` and
 `60` into a complex number in `PDEG` mode:
