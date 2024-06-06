@@ -459,11 +459,12 @@ setInputCursor:
     ld c, a ; C=cursorRenderPos
     sub b ; A=cursorScreenPos=cursorRenderPos-renderWindowStart
     ld (cursorScreenPos), a
-    ; update cursor physical col, and also row, because it could have wrapped
-    ; to the next row
-    inc a ; skip past the 'X:' label
+    ; Update cursor physical column, skipping past any labels or prompts at the
+    ; beginning of th line. Also update physical row, because the TI-OS cursor
+    ; could have wrapped to the next row
+    add a, inputCurCol
     ld (CurCol), a
-    ld a, stXCurRow
+    ld a, inputCurRow
     ld (CurRow), a
     ; update cursor-under character
     ld hl, renderBuf
