@@ -394,8 +394,10 @@ argBufSizeMax equ 4 ; max number of digits accepted on input
 
 ; Maximum number of characters that can be displayed during input/editing mode.
 ; The LCD line can display 16 characters using the large font. We need 1 char
-; for the "X:" label, and 1 char for the trailing cursor, which leaves us with
-; 14 characters.
+; for the "X:" label which makes the window size of the inputBuf 15 characters.
+; An extra space for the cursor is needed only when it is at the end of the
+; inputBuf, and the rendering algorithm incorporates that extra space in this
+; window size.
 renderWindowSize equ 15
 
 ; Define the [start,end) of the renderWindow over the renderBuf[].
