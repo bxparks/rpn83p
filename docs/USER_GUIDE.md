@@ -168,7 +168,7 @@ Summary of features:
       TI-OS)
 - date functions
     - date, time, datetime, timezone, and hardware clock
-    - proleptic Gregorian calendar from year 0000 to 9999
+    - proleptic Gregorian calendar from year 0001 to 9999
     - add or subtract dates, times, datetimes
     - convert datetime to different timezones
     - convert between datetime and epochseconds
