@@ -58,7 +58,7 @@ Summary of features:
       `>cm`, `>in`, `>um`, `>mil`, `>kg`, `>lbs`, `>g`, `>oz`, `>L`, `>gal`,
       `>mL`, `>floz`, `>kJ`, `>cal`, `>kW`, `>hp`
 - statistics and curve fitting, inspired by HP-42S
-    - statistics: `Sigma+`, `Sigma-`, `SUM`, `MEAN`, `WMN` (weighted mean),
+    - statistics: `Σ+`, `Σ-`, `SUM`, `MEAN`, `WMN` (weighted mean),
       `SDEV` (sample standard deviation), `SCOV` (sample covariance),
       `PDEV` (population standard deviation), `PCOV` (population covariance)
     - curve fitting: `Y>X`, `X>Y`, `SLOP` (slope), `YINT` (y intercept), `CORR`
@@ -87,13 +87,14 @@ Summary of features:
     - number entry: `2ND i` (rectangular), `2ND ANGLE` (polar degrees), `2ND
       ANGLE 2ND ANGLE` (polar radians)
     - extended regular functions: `+`, `-`, `*`, `/`, `1/X`, `X^2`, `SQRT`,
-      `Y^X`, `X^3`, `3ROOTY`, `XROOTY`, `LOG`, `LN`, `10^X`, `E^X`, `2^X`,
+      `Y^X`, `X^3`, `3ROOTX`, `XROOTY`, `LOG`, `LN`, `10^X`, `E^X`, `2^X`,
       `LOG2`, `LOGB`
     - complex specific functions: `REAL`, `IMAG`, `CONJ`, `CABS`, `CANG`
     - unsupported: trigonometric and hyperbolic functions (not supported by
       TI-OS)
 - date functions
     - date, time, datetime, timezone, and hardware clock
+    - proleptic Gregorian calendar from year 0000 to 9999
     - add or subtract dates, times, datetimes
     - convert datetime to different timezones
     - convert between datetime and epochseconds

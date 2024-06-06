@@ -161,13 +161,14 @@ Summary of features:
     - number entry: `2ND i` (rectangular), `2ND ANGLE` (polar degrees), `2ND
       ANGLE 2ND ANGLE` (polar radians)
     - extended regular functions: `+`, `-`, `*`, `/`, `1/X`, `X^2`, `SQRT`,
-      `Y^X`, `X^3`, `3ROOTY`, `XROOTY`, `LOG`, `LN`, `10^X`, `E^X`, `2^X`,
+      `Y^X`, `X^3`, `3ROOTX`, `XROOTY`, `LOG`, `LN`, `10^X`, `E^X`, `2^X`,
       `LOG2`, `LOGB`
     - complex specific functions: `REAL`, `IMAG`, `CONJ`, `CABS`, `CANG`
     - unsupported: trigonometric and hyperbolic functions (not supported by
       TI-OS)
 - date functions
-    - support date, time, datetime, timezone, and hardware clock
+    - date, time, datetime, timezone, and hardware clock
+    - proleptic Gregorian calendar from year 0000 to 9999
     - add or subtract dates, times, datetimes
     - convert datetime to different timezones
     - convert between datetime and epochseconds
