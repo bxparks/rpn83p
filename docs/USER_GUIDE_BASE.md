@@ -352,10 +352,11 @@ The RPN83P deviates from the HP-42S by using *unsigned* integers internally, and
 rendering the various HEX, OCT, and BIN numbers using the same number of digits
 regardless of the value. The word size of the integer can be changed using the
 `WSIZ` menu item (see below). The following word sizes are supported: 8, 16, 24,
-and 32 bits. This means that `HEX` mode with a word size of 32 always displays 8
-digits, `OCT` mode always displays 11 digits, and `BIN` mode always displays 12
-digits (due to size limitation of the LCD screen). I find this less confusing
-when doing bitwise operations (e.g. bit-and, bit-or, bit-xor).
+and 32 bits. This means that `HEX` mode with `WSIZ` of 32 always displays 8
+digits, `OCT` mode always displays 11 digits, and `BIN` mode always displays the
+least significant 16 digits (due to size limitation of the LCD screen). I find
+this less confusing when doing bitwise operations (e.g. bit-and, bit-or,
+bit-xor).
 
 Since the internal integer representation is *unsigned*, the `(-)` (change sign)
 button is disabled. Instead, the menu system provides a `NEG` function which
