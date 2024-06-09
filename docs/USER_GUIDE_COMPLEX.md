@@ -156,6 +156,19 @@ same angle in radians would involve a factor of `Pi` (120 deg = 2pi/3 =
 2.094395102 radians) so would be easier to enter using the `2ND LINK`
 functionality.
 
+**HP-35s Compatibility Note 1**: The HP-35s uses a Theta symbol to display
+complex numbers in polar notation. The problem with the Theta symbol is that in
+the Small Font of the TI calculators, it looks too similar to the digit `0`. The
+Angle symbol seemed like a better choice as a delimiter because it is visually
+distinct from other digit characters. It is also the symbol used by the HP-42S.
+
+**HP-35s Compatibility Note 2**: The HP-35s uses `SHIFT Theta` button to enter
+complex numbers in polar notation. The `Theta` symbol is available on a TI
+calculator as `ALPHA Theta`. However, I found switching from `2ND i` to `ALPHA
+Theta` to invoke this delimiter was too confusing for the muscle memory. The
+`2ND ANGLE` key, on the other hand, was previously unused in the RPN83P app, and
+it matches the Angle symbol used to display complex numbers in polar notation.
+
 ### Solitary 2ND i
 
 A solitary `2ND i` should be interpreted as `0 i 0` (0+0i) if the parsing rules
@@ -172,19 +185,6 @@ This makes it easier to enter the pure imaginary number `i`.
 This special rule is triggered only by a solitary `2ND i`. If there is any digit
 before or after the `2ND i`, regular parsing rules are used. For example, `1 2ND
 i` is interpreted to be `1+0i` not `1+1i`.
-
-**HP-35s Compatibility Note 1**: The HP-35s uses a Theta symbol to display
-complex numbers in polar notation. The problem with the Theta symbol is that in
-the Small Font of the TI calculators, it looks too similar to the digit `0`. The
-Angle symbol seemed like a better choice as a delimiter because it is visually
-distinct from other digit characters. It is also the symbol used by the HP-42S.
-
-**HP-35s Compatibility Note 2**: The HP-35s uses `SHIFT Theta` button to enter
-complex numbers in polar notation. The `Theta` symbol is available on a TI
-calculator as `ALPHA Theta`. However, I found switching from `2ND i` to `ALPHA
-Theta` to invoke this delimiter was too confusing for the muscle memory. The
-`2ND ANGLE` key, on the other hand, was previously unused in the RPN83P app, and
-it matches the Angle symbol used to display complex numbers in polar notation.
 
 ## Complex Display Modes
 
