@@ -322,8 +322,8 @@ calcTvmIYRFromIPP:
 ; Destroys: all, OP1
 ; Preserves: OP2
 beginEndFactor:
-    ld a, (tvmIsBegin)
-    or a
+    ld a, (tvmFlags)
+    bit tvmFlagsBegin, a
     jr nz, beginFactor
 endFactor:
     bcall(_OP1Set1) ; OP1=1.0
@@ -498,8 +498,8 @@ tvmCheckUpdateSumSign:
 tvmCheckPVPMT:
     push bc
     call RclTvmPV
-    ld a, (tvmIsBegin)
-    or a
+    ld a, (tvmFlags)
+    bit tvmFlagsBegin, a
     jr z, tvmCheckPVPMTRet ; return if p=begin=0
     call op1ToOp2PageTwo
     call RclTvmPMT
@@ -513,8 +513,8 @@ tvmCheckPVPMTRet:
 tvmCheckPMTFV:
     push bc
     call RclTvmFV
-    ld a, (tvmIsBegin)
-    or a
+    ld a, (tvmFlags)
+    bit tvmFlagsBegin, a
     jr nz, tvmCheckPMTFVRet ; return if p=begin=1
     call op1ToOp2PageTwo
     call RclTvmPMT
@@ -1102,9 +1102,9 @@ TvmCalculateFV:
 
 ; Description: Clear the 5 NPV or NFV variables.
 TvmClear:
-    ; Reset the PYR, BEGIN parameters to their defaults.
-    xor a
-    ld (tvmIsBegin), a
+    ; Reset the PYR, CYR, and BEGIN parameters to their defaults.
+    ld hl, tvmFlags
+    res tvmFlagsBegin, (hl)
     ld a, 12
     bcall(_SetXXOP1)
     ld de, fin_PY

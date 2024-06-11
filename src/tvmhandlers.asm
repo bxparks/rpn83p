@@ -11,7 +11,7 @@
 ;
 ; - If any TVM variable or parameter is Stored, then set the
 ; rpnFlagsTvmCalculate flag, causing the next TVM button to Calculate. This
-; includes the BEG and END which set or clear the tvmIsBegin flag.
+; includes the BEG and END menu buttons.
 ;
 ; - If a `2ND` menu button is invoked, causing a recall of the specified TVM
 ; variable, then clear the rpnFlagsTvmCalculate flag, causing the next TVM
@@ -422,16 +422,18 @@ mTvmCYRNameSelectorDefault:
 mTvmBeginHandler:
     call closeInput
     set rpnFlagsTvmCalculate, (iy + rpnFlags)
-    ld a, rpntrue
-    ld (tvmIsBegin), a
+    ld hl, tvmFlags
+    set tvmFlagsBegin, (hl)
     set dirtyFlagsMenu, (iy + dirtyFlags)
     ret
 
 ; Description: Select menu name.
 ; Output: CF=0 for normal, CF=1 or alternate
+; Preserves: BC, DE (must be preserved)
 mTvmBeginNameSelector:
-    ld a, (tvmIsBegin)
-    or a ; CF=0; ZF=1 if tvmIsBegin==0
+    or a ; CF=0
+    ld a, (tvmFlags)
+    bit tvmFlagsBegin, a
     ret z
     scf
     ret
@@ -441,16 +443,18 @@ mTvmBeginNameSelector:
 mTvmEndHandler:
     call closeInput
     set rpnFlagsTvmCalculate, (iy + rpnFlags)
-    xor a
-    ld (tvmIsBegin), a
+    ld hl, tvmFlags
+    res tvmFlagsBegin, (hl)
     set dirtyFlagsMenu, (iy + dirtyFlags)
     ret
 
 ; Description: Select menu name.
 ; Output: CF=0 for normal, CF=1 or alternate
+; Preserves: BC, DE (must be preserved)
 mTvmEndNameSelector:
-    ld a, (tvmIsBegin)
-    or a ; CF=0; ZF=1 if tvmIsBegin==0
+    or a ; CF=0
+    ld a, (tvmFlags)
+    bit tvmFlagsBegin, a
     ret nz
     scf
     ret

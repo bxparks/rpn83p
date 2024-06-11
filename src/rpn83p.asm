@@ -44,6 +44,16 @@ keyMenuSecond5 equ kTable
 smallFontHeight equ 7
 largeFontHeight equ 8
 
+; The TVM BEGIN/END flag of the "Finance" app appears to be stored at bit 3
+; (i.e. $08) of memory location $8a08. If BEGIN is selected, bit 3 is on. If
+; END is selected, bit 3 is off. This is not documented anywhere. I discovered
+; it by creating a monitor app and manually searching for a bit flip when the
+; BEGIN and END states were changed in the "Finance" app. This information
+; seems be valid for all calculators that I was able to test (TI-83+, TI-83+SE,
+; TI-84+, TI-84+SE, and TI-Nspire+84Keypad)
+tvmFlags equ $8a08
+tvmFlagsBegin equ 3
+
 ;-----------------------------------------------------------------------------
 ; RPN83P flags, using asm_Flag1, asm_Flag2, and asm_Flag3
 ;-----------------------------------------------------------------------------
@@ -503,12 +513,10 @@ tvmSolverOverrideFlagIYR0 equ 0
 tvmSolverOverrideFlagIYR1 equ 1
 tvmSolverOverrideFlagIterMax equ 2
 
-; TVM variables for root-solving the NPMT(i)=0 equation.
-tvmIsBegin equ curveFitModel + 1 ; boolean; true if payment is at BEGIN
 ; The tvmSolverOverrideFlags is a collection of bit flags. Each flag determines
 ; whether a particular parameter that controls the TVM Solver execution has its
 ; default value overridden by a manual value from the user.
-tvmSolverOverrideFlags equ tvmIsBegin + 1 ; u8 flag
+tvmSolverOverrideFlags equ curveFitModel + 1 ; u8 flag
 ; TVM Solver configuration parameters. These are normally defined automatically
 ; but can be overridden using the 'IYR0', 'IYR1', and 'TMAX' menu buttons.
 tvmIYR0 equ tvmSolverOverrideFlags + 1 ; float
