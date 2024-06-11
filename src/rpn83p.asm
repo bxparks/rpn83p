@@ -96,7 +96,7 @@ inputBufFlagsArgExit equ 3 ; set to exit CommandArg mode
 inputBufFlagsArgCancel equ 4 ; set if exit was caused by CLEAR or ON/EXIT
 
 ;-----------------------------------------------------------------------------
-; RPN83P application variables and buffers.
+; RPN83P application constants and parameters.
 ;-----------------------------------------------------------------------------
 
 ; A random 16-bit integer that identifies the RPN83P app.
@@ -260,6 +260,8 @@ rpnObjectSizeOf equ rpnComplexSizeOf ; type + sizeof(complex)
 ; be updated.
 rpnElementSizeOf equ rpnObjectSizeOf+1
 
+;-----------------------------------------------------------------------------
+; RPN83P application variables and buffers.
 ;-----------------------------------------------------------------------------
 
 ; Begin application variables at tempSwapArea. According to the TI-83 Plus SDK

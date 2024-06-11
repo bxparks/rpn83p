@@ -16,6 +16,7 @@ main:
     res lwrCaseActive, (iy + appLwrCaseFlag) ; disable ALPHA-ALPHA lowercase
     bcall(_ClrLCDFull)
 
+    ; Initialize the App.
     bcall(_RestoreAppState) ; CF=1 if RPN83SAV var is invalid
     jr nc, warmInit
     ; Cold initialize if RestoreAppState() fails.
@@ -72,9 +73,11 @@ mainExit:
     bcall(_ClrLCDFull)
     bcall(_HomeUp)
 
-    ; Restore various OS states, and terminate the app.
+    ; Restore various OS states.
     bcall(_RestoreOSState)
     bcall(_ReloadAppEntryVecs) ; App Loader in control of monitor
+
+    ; Terminate the app.
     bit monAbandon, (iy + monFlags) ; if turning off: ZF=1
     jr nz, appTurningOff
     ; If not turning off, then force control back to the home screen.
