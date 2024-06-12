@@ -126,7 +126,11 @@ mTvmIYRCalculate:
     call tvmIYRCalculate ; A=handlerCode; OP1=result
     ld (handlerCode), a
     cp errorCodeTvmCalculated
-    ret nz
+    jr z, mTvmIYRCalculateFound
+    cp errorCodeTvmCalculatedMultiple
+    jr z, mTvmIYRCalculateFound
+    ret
+mTvmIYRCalculateFound:
     bcall(_StoTvmIYR)
     call pushToX
     ret
@@ -174,7 +178,15 @@ tvmIYRCalculateSingleStep:
     call tvmIYRCalculateShowSingleStep
     jr tvmIYRCalculateSingleStepLoop
 tvmIYRCalculateFound:
+    ; Return a slightly different error code if only one of the 2 solutions
+    ; was found.
+    ld a, (tvmSolverSolutions) ; A=numSignChanges
+    cp 2
+    jr z, tvmIYRCalculateFoundMultiple
     ld a, errorCodeTvmCalculated
+    jr tvmIYRCalculateEnd
+tvmIYRCalculateFoundMultiple:
+    ld a, errorCodeTvmCalculatedMultiple
     jr tvmIYRCalculateEnd
 tvmIYRCalculateNotFound:
     ld a, errorCodeTvmNotFound
