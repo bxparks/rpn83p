@@ -410,10 +410,10 @@ compoundingFactorsZero:
 ; TVM Solver routines to calculate IYR using TvmSolve().
 ;-----------------------------------------------------------------------------
 
-; Description: Determine if the TVM equation has NO solutions. This algorithm
-; detects a *sufficient* condition for an equation to have no solutions. In
-; other words, there may be TVM equations with zero solutions which are not
-; detected by this function.
+; Description: Determine the number of solution that the TVM equation should
+; have. This algorithm detects a *sufficient* condition for an equation to have
+; no solutions. In other words, there may be TVM equations with zero solutions
+; which are not detected by this function.
 ;
 ; From https://github.com/thomasokken/plus42desktop/issues/2, use Descartes
 ; Rules of Signs (https://en.wikipedia.org/wiki/Descartes%27_rule_of_signs).
@@ -426,71 +426,51 @@ compoundingFactorsZero:
 ;
 ; where p=BEGIN is 0 for payment at END, and 1 for payment at BEG.
 ;
-; If they all have the same sign, then there are no solutions. If there is only
-; a single sign change, then one positive solution. If there are 2 sign
+; If they all have the same sign, then there are no positive roots. If there is
+; only a single sign change, then one positive solution. If there are 2 sign
 ; changes, then there are 0 or 2 positive solutions.
-;
-; This routine figures out whether all the coefficients have the same sign. It
-; is somewhat tricky because we have to ignore coefficients which are exactly
-; zero, and we need to consider both negative and positive signs. There are
-; probably multiple ways to solve this, but the solution that I created was to
-; use 2 counters/accumulators:
-;
-; 1) numNonZero: the number of non-zero coefficients from the above 3, and
-; 2) sumSign: the sum of the sign bit of each non-zero coefficient (where the
-; sign bit of a floating point number is 1 if negative, 0 if positive).
-;
-; If numNonZero==0, then we have a degenerate situation where all the terms of
-; the NPV() polynomial are 0, so any I%YR will actually fit the solution.
-; Return NO SOLUTION.
-;
-; If sumSign==numNonZero OR sumSign==0, then we know that all non-zero
-; coefficients have the same sign. Return NO SOLUTION.
-;
-; For all other situations, we have either 0, 1, or 2 solutions, so return that
-; a solution *may* exist.
 ;
 ; Input: tvmPV, tvmFV, tvmPMT
 ; Output:
-;   - CF=0 if no solution exists
-;   - CF=1 if solution *may* exist
+;   - A=0 if no solution exists
+;   - A=1 if exactly one solution
+;   - A=2 if 0 or 2 solutions
 ; Destroys: A, BC, DE, HL, OP1, OP2
-tvmCheckNoSolution:
-    ld bc, 0 ; B=numNonZero, C=sumSign
+tvmCheckSolutions:
+    ; Set the initial values of:
+    ; - B=prevSign
+    ; - C=numSignChange
+    ; We use the sentinel values $ff for both, so that the first polynomical
+    ; coefficient will always be considered to be a sign change, and the
+    ; initial numSignChange goes to 0.
+    ld bc, $ffff
     ; Consider each polynomial coefficient and update the sums.
-    call tvmCheckPVPMT
+    call tvmCheckPVPMT ; OP1=PV+p*PMT
     call tvmCheckUpdateSums
-    call tvmCheckPMT
+    call tvmCheckPMT ; OP1=PMT
     call tvmCheckUpdateSums
-    call tvmCheckPMTFV
+    call tvmCheckPMTFV ; OP1=(1-p)*PMT+FV
     call tvmCheckUpdateSums
-    ; Check degenerate condition of numNonZero==0
-    ld a, b ; A=numNonZero
-    or a ; CF=0
-    ret z ; all coefficients are zero
-    ; Check if sumSign==0.
-    ld a, c ; A=sumSign
-    or a ; CF=0
-    ret z ; all non-zero coef are positive
-    ; Check if sumSign==numNonZero
-    ld a, b ; A=numNonZero
-    cp c ; will always set CF=0 because numNonZero>=sumSign
-    ret z; all non-zero coef are negative
-    scf ; sumSign!=numNonZero, so set CF
+    ; Check degenerate condition of all coefficients equal to 0.
+    ld a, c ; A=numSignChange
+    cp $ff
+    ret nz
+    ; If all coefficient are 0, return "no solution".
+    xor a
     ret
 
-; Description: Update the numNonZero (B) and sumSign (C).
+; Description: Update the B=prevSign and C=numSignChange.
 ; Input: BC, OP1
 ; Output: BC
 ; Destroys: A
 tvmCheckUpdateSums:
     bcall(_CkOP1FP0) ; preserves BC
-    jr z, tvmCheckUpdateSumSign
-    inc b ; numNonZero++
-tvmCheckUpdateSumSign:
+    ret z
     call signOfOp1PageTwo ; A=signbit(OP1)
-    add a, c
-    ld c, a ; sumSign+=signbit(OP1)
+    cp b
+    ld b, a ; prevSign=A
+    ret z
+    inc c ; numSignChange+=1
     ret
 
 ; Description: Return (PV+PMT*p), where p=0 (end) or 1 (begin).
@@ -937,8 +917,10 @@ TvmSolve:
     jr z, tvmSolveSingleStepContinue
     ; We are here when starting from scratch. First check if we know
     ; definitively that there are no solutions.
-    call tvmCheckNoSolution ; CF=0 if no solution
-    jr c, tvmSolveMayExist
+    call tvmCheckSolutions ; A=numSignChanges=0,1,2
+    ld (tvmSolverSolutions), a
+    or a
+    jr nz, tvmSolveMayExist
     ld a, tvmSolverResultNoSolution
     ret
 tvmSolveMayExist:

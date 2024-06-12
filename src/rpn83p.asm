@@ -649,7 +649,8 @@ tvmI2 equ tvmNPMT1 + 9 ; float
 tvmNPMT2 equ tvmI2 + 9 ; float
 ; TVM Solver status and result code. Transient, no need to persist them.
 tvmSolverIsRunning equ tvmNPMT2 + 9 ; boolean; true if active
-tvmSolverCount equ tvmSolverIsRunning + 1 ; u8; iteration count
+tvmSolverCount equ tvmSolverIsRunning + 1 ; u8, iteration count
+tvmSolverSolutions equ tvmSolverCount + 1 ; u8, numPotentialSolutions [0,1,2]
 
 ; A Pascal-string that contains the rendered version of inputBuf[] which can be
 ; printed on the screen. It is slightly longer than inputBuf for 2 reasons:
@@ -668,7 +669,7 @@ tvmSolverCount equ tvmSolverIsRunning + 1 ; u8; iteration count
 ;   uint8_t len;
 ;   char buf[renderBufCapacity];
 ; };
-renderBuf equ tvmSolverCount + 1 ; struct RenderBuf; Pascal-string
+renderBuf equ tvmSolverSolutions + 1 ; struct RenderBuf; Pascal-string
 renderBufLen equ renderBuf ; len byte of the string
 renderBufBuf equ renderBuf + 1 ; start of actual buffer
 renderBufCapacity equ inputBufCapacity + 2

@@ -23,13 +23,15 @@
 ; another Calculate.
 ;-----------------------------------------------------------------------------
 
-; Description: Cold initialize all of the TVM variables.
+; Description: Cold initialize all of the TVM variables. TODO: Move to
+; tvm2.asm.
 coldInitTvm:
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     bcall(_TvmClear)
     ; [[fallthrough]]
 
 ; Description: Reset the TVM Solver status. This is always done at App start.
+; TODO: Move to tvm2.asm.
 initTvmSolver:
     xor a
     ld (tvmSolverIsRunning), a
