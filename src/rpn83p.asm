@@ -1082,6 +1082,14 @@ _ColdInitModes equ _ColdInitModesLabel-branchTableBase
     .db 2
 
 ; tvm2.asm
+_ColdInitTvmLabel:
+_ColdInitTvm equ _ColdInitTvmLabel-branchTableBase
+    .dw ColdInitTvm
+    .db 2
+_InitTvmSolverLabel:
+_InitTvmSolver equ _InitTvmSolverLabel-branchTableBase
+    .dw InitTvmSolver
+    .db 2
 _TvmCalculateNLabel:
 _TvmCalculateN equ _TvmCalculateNLabel-branchTableBase
     .dw TvmCalculateN

@@ -23,20 +23,6 @@
 ; another Calculate.
 ;-----------------------------------------------------------------------------
 
-; Description: Cold initialize all of the TVM variables. TODO: Move to
-; tvm2.asm.
-coldInitTvm:
-    res rpnFlagsTvmCalculate, (iy + rpnFlags)
-    bcall(_TvmClear)
-    ; [[fallthrough]]
-
-; Description: Reset the TVM Solver status. This is always done at App start.
-; TODO: Move to tvm2.asm.
-initTvmSolver:
-    xor a
-    ld (tvmSolverIsRunning), a
-    ret
-
 ;-----------------------------------------------------------------------------
 ; TVM handlers are invoked by the menu buttons.
 ;-----------------------------------------------------------------------------
@@ -599,8 +585,8 @@ mTvmSolverResetHandler:
 ;-----------------------------------------------------------------------------
 ; More low-level helper routines, placed at the bottom to avoid clutter in the
 ; main parts of the file. TODO: Many (all?) of these may be suitable to move to
-; tvm.asm in Flash Page 1, because I don't any of these are in performance
-; critical paths.
+; tvm2.asm on Flash Page 2, because I don't think any of these are in
+; performance critical paths.
 ;-----------------------------------------------------------------------------
 
 ; Description: Set tvmSolverOverrideFlagIYR0.

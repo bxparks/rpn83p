@@ -29,21 +29,21 @@ main:
     bcall(_ColdInitComplex)
     bcall(_ColdInitModes)
     bcall(_ColdInitDisplay)
+    bcall(_ColdInitTvm)
     call coldInitStat
     call coldInitCfit
-    call coldInitTvm
 warmInit:
     ; Alway perform warm initialization.
     bcall(_SanitizeMenu) ; Sanitize currentMenuGroupId and currentMenuRowIndex
     bcall(_InitArgBuf) ; Start with command ArgScanner off.
     bcall(_InitDisplay)
+    bcall(_InitTvmSolver)
     call updateNumResultMode
     call updateComplexMode
     call initStack
     call initRegs
     call initStatRegs
     call initLastX
-    call initTvmSolver
 
     ; Initialize the App monitor so that we can intercept the Put Away (2ND
     ; OFF) signal.

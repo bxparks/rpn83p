@@ -10,6 +10,18 @@
 ; entry.
 ;-----------------------------------------------------------------------------
 
+; Description: Cold initialize all of the TVM variables.
+ColdInitTvm:
+    res rpnFlagsTvmCalculate, (iy + rpnFlags)
+    call TvmClear
+    ; [[fallthrough]]
+
+; Description: Reset the TVM Solver status. This is always done at App start.
+InitTvmSolver:
+    xor a
+    ld (tvmSolverIsRunning), a
+    ret
+
 ;-----------------------------------------------------------------------------
 ; Store and recall the TVM variables. Most of the time, they are needed in this
 ; module. But they are also needed in tvmhandlers.asm in Flash Page 0, so they
