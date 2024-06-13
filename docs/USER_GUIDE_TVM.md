@@ -4,7 +4,7 @@ This document describes the `TVM` functions of the RPN83P application which
 solves the Time Value of Money equation. It has been extracted from
 [USER_GUIDE.md](USER_GUIDE.md) due to its length.
 
-**Version**: 0.11.0 (2024-05-28)
+**Version**: 0.12.0 (2024-06-13)
 
 **Parent Document**: [USER_GUIDE.md](USER_GUIDE.md)
 
@@ -120,8 +120,8 @@ using analytical equations. However, there is no closed-form solution for the
 `I%YR` quantity, so it must be solved using iterative methods. The TVM Solver is
 the submodule that implements the iterative method to solve for `I%YR`.
 
-It can be mathematically deduced that the root-solving equation for `I%YR` can
-fall into 3 categories:
+It can be mathematically deduced (see [TVM.md](TVM.md)) that the root-solving
+equation for `I%YR` can fall into 3 categories:
 
 - 0 solution, or
 - 1 unique solution, or
@@ -131,30 +131,34 @@ The TVM Solver tries to handle the various cases as follows:
 
 - If the TVM Solver can determine immediately that the equation has 0 solution,
   it will return a `TVM No Solution` error message.
-- The TVM Solver can fail to find a solution, even though the math says that a
-  solution must exist. The TVM Solver will return a `TVM Not Found` error
-  message.
-- If the equation has 2 solutions, but the TVM Solver finds only one of the 2
-  solutions, the solver currently (v0.9.0) does not notify the user that another
-  solution may exist. A normal `TVM Calculated` will be returned.
-- If there are 2 solutions, but the solver finds neither solution, a `TVM Not
-  Found` message will be returned.
+- If the equation is known to have 1 unique solution, but the TVM Solver fails
+  to find a solution, the Solver will return a `TVM Not Found` status code.
+- If the equation is known to have 1 unique solution and the TVM Solver is able
+  to find it, it returns a `TVM Calculated` status code.
+- If the equation is known to have 0 or 2 solutions, and the TVM Solver is able
+  to find one of the solutions, it knows immediately that another must exist
+  somewhere. The Solver returns `TVM Calculated (Multiple)` status code to
+  indicate that another solution exists.
+- If the equation is known to have 0 or 2 solutions, but the TVM Solver finds
+  neither solution numerically, the solver has no additional information. It
+  cannot know whether there are 0 solutions or 2 solutions. So the status code
+  will be `TVM Not Found`.
 - To prevent excessive execution time, the number of iterations performed by the
   TVM Solver has a maximum limit. The default is 15 iterations. If exceeded, the
   message `TVM Iterations` is displayed.
 
 Due to the complexity of the numerical algorithm and the number of iterations
 required, calculating the `I%YR` will take noticeably longer than the other
-variables. Somewhere between 1-3 seconds on the TI-84 Plus model has been
+variables. Somewhere between 1-2 seconds on the TI-84 Plus model have been
 observed.
 
-The RPN83P currently (v0.9.0) uses the [Newton-Secant
-method](https://en.wikipedia.org/wiki/Secant_method) to solve for `I%YR`. For
-the purpose of debugging and to allow extra control for advanced users, three
-parameters that affect the progression and termination of the algorithm are
-exposed:
+The RPN83P uses the [Newton-Secant
+method](https://en.wikipedia.org/wiki/Secant_method) to solve for `I%YR` (see
+[TVM.md](TVM.md) for details). For the purpose of debugging and to allow extra
+control for advanced users, three parameters that affect the progression and
+termination of the algorithm are exposed:
 
-- `IYR1`: first guess percent per year (default: 0%; allowed: `IYR1 >
+- `IYR1`: first guess percent per year (default: -50%; allowed: `IYR1 >
   -PYR*100`)
 - `IYR2`: second guess percent per year (default: 100%; allowed: `IYR2 >
   -PYR*100`)
@@ -241,7 +245,7 @@ original menu with the addition of a question mark (e.g. `WSIZ` and `WSZ?`).
 This helps with discovery because each function is directly shown through the
 menu system, with no hidden features. But there are so many TVM variables and
 parameters, that adding the `?` variant of all those menu buttons would have
-made the menu rows too cluttered and hard to navigate. Currently (v0.9.0), the
+made the menu rows too cluttered and hard to navigate. Currently (v0.12.0), the
 TVM submenu is the only place where the `2ND` button is used for hidden menu
 functionality.
 
