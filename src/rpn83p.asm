@@ -525,9 +525,8 @@ tvmIterMax equ tvmIYR1 + 9 ; u8
 
 ; Draw mode constants
 drawModeNormal equ 0
-drawModeTvmSolverI equ 1 ; show i0, i1
-drawModeTvmSolverF equ 2 ; show npmt0, npmt1
-drawModeInputBuf equ 3 ; show inputBuf in debug line
+drawModeInputBuf equ 1 ; show inputBuf in debug line
+drawModeTvmSolver equ 2 ; show TVM n, i0, i1, npmt0, npmt1
 
 ; Draw/Debug mode, u8 integer. Activated by secret '2ND DRAW' button.
 drawMode equ tvmIterMax + 1 ; u8
@@ -705,6 +704,7 @@ displayStackFontFlagsX equ 1
 displayStackFontFlagsY equ 2
 displayStackFontFlagsZ equ 4
 displayStackFontFlagsT equ 8
+displayStackFontFlagsA equ 16
 displayStackFontFlags equ cursorScreenPos + 1 ; u8
 
 appBufferEnd equ displayStackFontFlags + 1

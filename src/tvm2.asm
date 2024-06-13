@@ -663,8 +663,7 @@ tvmSolveUpdateGuesses:
 
 ; Description: Determine if TVM Solver debugging is enabled, which is activated
 ; when drawMode for TVM Solver is enabled and the TVM Solver is in effect. In
-; other words, (drawMode==drawModeTvmSolverI || drawMode==drawModeTvmSolverF)
-; && tvmSolverIsRunning.
+; other words, (drawMode==drawModeTvmSolver) && tvmSolverIsRunning.
 ; Output:
 ;   - CF: 1 if TVM solver debug enabled; 0 if disabled
 ; Destroys: A
