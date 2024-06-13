@@ -2,7 +2,7 @@
 
 RPN calculator app for the TI-83 Plus and TI-84 Plus inspired by the HP-42S.
 
-**Version**: 0.11.0 (2024-05-28)
+**Version**: 0.12.0 (2024-06-13)
 
 **Project Home**: https://github.com/bxparks/rpn83p
 
@@ -150,7 +150,8 @@ Summary of features:
     - carry flag and bit masks: `CCF`, `SCF`, `CF?`, `CB`, `SB`, `B?`
     - word sizes: `WSIZ`, `WSZ?`: 8, 16, 24, 32 bits
 - time value of money (TVM), inspired by HP-12C, HP-17B, and HP-30b
-    - `N`, `I%YR`, `PV`, `PMT`, `FV`, `P/YR`, `BEG`, `END`, `CLTV` (clear TVM)
+    - `N`, `I%YR`, `PV`, `PMT`, `FV`
+    - `P/YR`, `C/YR`, `BEG`, `END`, `CLTV` (clear TVM)
 - complex numbers, inspired by HP-42S and HP-35s
     - stored in RPN stack registers (`X`, `Y`, `Z`, `T`, `LASTX`) and storage
       registers `R00-R99`
@@ -2164,16 +2165,17 @@ The RPN83P app interacts with the underlying TI-OS in the following ways.
       exiting. Changing the `MODE` settings in one app will not cause changes to
       the other.
 - TVM variables
-    - RPN83P uses some of the same TI-OS floating point variables used by the
-      `Finance` app (automatically provided by the TI-OS on the TI-84 Plus).
-        - `N`, `I%YR`, `PV`, `PMT`, `FV`, and `P/YR`
-    - These variables appear in the Finance app with slightly different names:
-        - `N`, `I%`, `PV`, `PMT`, `FV`, and `P/Y`
-    - Two variables not synchronized between the 2 apps are:
-        - `BEG`/`END` flag
-            - could not figure out where the Finance app stores this
-        - `C/Y` (compoundings per year)
-            - always set equal to `P/YR` in the RPN83P app
+    - RPN83P uses the exact same TI-OS floating point variables and flags used
+      by the `Finance` app (automatically provided by the TI-OS on the TI-84
+      Plus). When these variables are changed in RPN83P, they automatically
+      appear in the `Finance` app, and vise versa:
+    - RPN83P variable names:
+        - `N`, `I%YR`, `PV`, `PMT`, `FV`, `P/YR`, `C/YR`, `BEG`, `END`
+    - TI-OS Finance app variable names:
+        - `N`, `I%`, `PV`, `PMT`, `FV`, `P/Y`, `C/Y`, `BEGIN`, `END`
+    - An interesting consequence of sharing these variables with the TI-OS
+      Finance app is that these are the only RPN83P variables which are *not*
+      saved in the `RPN83SAV` appVar.
 
 ## Future Enhancements
 
