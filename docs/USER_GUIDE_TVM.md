@@ -354,7 +354,7 @@ rate, what is her bank balance after 365 days?
     - Press `P/YR` (set payments per year to the same 31536000)
     - Press UP to return to the TVM menu row
 - Press 10 `I%YR`
-- Press 0 PV (bank balance starts at 0)
+- Press 0 `PV` (bank balance starts at 0)
 - Press -0.01 `PMT` (negative to indicate outward cash flow to bank)
 - Press `FV` (should see `TVM Calculated`)
 - Answer: $331667.0067
