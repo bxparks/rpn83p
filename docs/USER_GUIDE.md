@@ -1420,6 +1420,7 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
     - `PMT`: set or calculate Payment per period
     - `FV`: set or calculate Future Value
     - `P/YR`: set number of payments per year
+    - `C/YR`: set number of compoundings per year
     - `BEG`: payment occurs at the Beginning of each period
     - `END`: payment occurs at the End of each period
     - `CLTV`: clear TVM variables and parameters
