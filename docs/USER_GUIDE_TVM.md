@@ -161,6 +161,11 @@ payments are made at the end of the payment term. A little dot on the menu
 button indicates the currently selected option. Both of these are input-only
 buttons. The default value is `END`.
 
+| **Keys**          | **Display** |
+| ----------------  | --------------------- |
+| `BEG`             | ![](images/tvm/beg-end-1.png) |
+| `END`             | ![](images/tvm/beg-end-2.png) |
+
 ## TVM Solver Control
 
 It is well-known that the `N`, `PV`, `PMT`, and `FV` variables can be solved
