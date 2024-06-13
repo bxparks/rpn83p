@@ -14,7 +14,9 @@ solves the Time Value of Money equation. It has been extracted from
 
 - [TVM Functions](#tvm-functions)
 - [TVM Menu Buttons](#tvm-menu-buttons)
+- [TVM Interest Rate](#tvm-interest-rate)
 - [TVM Payments Per Year](#tvm-payments-per-year)
+- [TVM Compoundings Per Year](#tvm-compoundings-per-year)
 - [TVM BEG and END](#tvm-beg-and-end)
 - [TVM Solver Control](#tvm-solver-control)
 - [TVM Clear](#tvm-clear)
@@ -80,29 +82,75 @@ after a TVM menu button has completed. The message will read:
 - `TVM Calculated` if the menu button **calculated** the given TVM variable
   from the other 4 variables.
 
-## TVM Payments Per Year
+## TVM Interest Rate
 
 On the HP-12C, the interest rate button is labeled with an `i` and represents
-the interest percentage for each *payment period*. On the HP-30b and most modern
-financial calculators, the `i` button has been replaced with `I%YR` (or `I/YR`)
-which accepts the interest rate as a nominal *annual* percentage rate. The
-RPN83P app follows the modern convention and the interest rate menu button is
-named `I%YR`.
+the interest percentage for each *payment period*. On most modern financial
+calculators (e.g. HP-10B, HP-10bii, HP-17B, HP-17bii, HP-20b, HP-30b), the `i`
+label has been replaced with `I%YR` (or `I/YR`) which accepts the interest rate
+as a nominal *annual* percentage rate. The RPN83P app follows the modern
+convention and the interest rate menu button is named `I%YR`.
 
-The relationship between the `i` button (as implemented on the HP-12C) and the
-`I%YR` button as implemented on the RPN83P is:
+The relationship between the `i` button (implemented on the HP-12C) and the
+`I%YR` button (implemented on modern financial calculators) is:
 
-> `i = IYR / PYR`
+```
+i% = I%YR / PYR
+```
 
-where `PYR` is the number of payments per year. In math equations and inside
-computer programs, the quantity `i` is usually represented as a fractional rate
-instead of a percentage, so there is an addition division by 100.
+where `PYR` is the number of payments per year (see below). In math equations
+and inside computer programs, the quantity `i` usually represents the fractional
+rate instead of a percentage, so `i = i% / 100`.
+
+## TVM Payments Per Year
 
 The RPN83P app allows the `PYR` quantity to be modified using the `P/YR` menu
 button. `PYR` is an input-only parameter, not an output parameter, so the `P/YR`
-is not a dual-action button. It performs only a *store* function. By default,
-the `P/YR` value is set to 12, which makes it easy to calculate monthly mortgage
-payments whose rates are given as yearly percentages.
+is not a dual-action button. It performs only a *store* function.
+
+By default, the `P/YR` value is set to 12, which makes it easy to calculate
+monthly mortgage payments whose rates are given as yearly percentages.
+
+Here is an example of setting the `P/YR` to a different value, then back to the
+default 12:
+
+| **Keys**          | **Display** |
+| ---------------   | --------------------- |
+| `2` `P/YR`        | ![](images/tvm/pyr-1.png) |
+| `12` `P/YR`       | ![](images/tvm/pyr-2.png) |
+
+When the `P/YR` is different from the default value of `12`, a small dot appears
+in the menu label which notifies the user that the default value has changed.
+
+Notice also that when the `P/YR` value is changed, the same value is written
+to the `C/YR` parameter (compoundings per year, see below). The default behavior
+is to make the `C/YR` value the same as the `P/YR`.
+
+## TVM Compoundings Per Year
+
+In the United States, the number of compoundings per year (`C/YR`) is usually
+the same as the number of payments per year (`P/YR`). Therefore, when the `P/YR`
+is changed, the same change is applied to `C/YR`.
+
+There are jurisdictions (e.g. Canada, UK) where the compoundings per year is
+often different from the payments per year. RPN83P handles this by allowing the
+`C/YR` value to be overridden, separately from `P/YR`.
+
+In the following example, the `P/YR` is set to 12, then the `C/YR` is set to 2
+(which apparently is common in Canada), then the `C/YR` is set back to 12:
+
+| **Keys**          | **Display** |
+| ----------------  | --------------------- |
+| `12` `P/YR`       | ![](images/tvm/cyr-1.png) |
+| `2` `C/YR`        | ![](images/tvm/cyr-2.png) |
+| `12` `C/YR`       | ![](images/tvm/cyr-3.png) |
+
+Similar to `P/YR`, when the value of `C/YR` is different from the default of 12,
+a small dot appears in the menu label to warn the user that its value has
+changed.
+
+The exact mathematical relationship among `P/YR`, `C/YR`, `I%YR`, and the
+internal interest rate per period `i` is given in [TVM.md](TVM.md).
 
 ## TVM BEG and END
 
