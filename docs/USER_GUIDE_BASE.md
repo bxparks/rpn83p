@@ -1,4 +1,4 @@
-# RPN83P User Guide: BASE Operations
+# RPN83P User Guide: BASE Functions
 
 This document describes the `BASE` functions of the RPN83P application which
 allow numbers to be converted between 4 different bases (DEC, HEX, OCT, and BIN)

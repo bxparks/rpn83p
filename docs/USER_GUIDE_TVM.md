@@ -1,4 +1,4 @@
-# RPN83P User Guide: BASE Operations
+# RPN83P User Guide: TVM Functions
 
 This document describes the `TVM` functions of the RPN83P application which
 solves the Time Value of Money equation. It has been extracted from

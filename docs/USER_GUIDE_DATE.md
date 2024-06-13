@@ -1,4 +1,4 @@
-# RPN83P User Guide: DATE
+# RPN83P User Guide: DATE Functions
 
 This document describes the `DATE` features of the RPN83P application. It has
 been extracted from [USER_GUIDE.md](USER_GUIDE.md) due to its length. The `DATE`
