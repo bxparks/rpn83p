@@ -232,7 +232,7 @@ override the initial guesses to be closer to the solution of interest. This will
 help the TVM Solver converge to that solution.
 
 (TODO: Maybe add a menu item to control the convergence error tolerance?
-Currently, it is set to 1e-8. Some HP calculators use the number of digits in
+Currently, it is set to 1e-10. Some HP calculators use the number of digits in
 the `FIX`, `SCI` or `ENG` display modes to determine the value of the error
 tolerance. TI calculators are usually kept in "floating" (aka "display all
 digits") mode `FIX(-)`, so I'm not sure it would be useful to use the display
@@ -252,7 +252,7 @@ There are 2 reset or clear menu buttons under the TVM menu hierarchy:
 The `RSTV` clears *only* the 3 parameters related to the TVM Solver which
 calculates the interest rate. The factory default values are:
 
-- `IYR1`: 0%
+- `IYR1`: -50%
 - `IYR2`: 100%
 - `TMAX`: 15
 
@@ -262,7 +262,8 @@ factory values:
 
 - `N`, `I%YR`, `PV`, `PMT`, `FV`: 0
 - `P/YR`: 12
-- `BEG`, `END`: `END`
+- `C/YR`: 12
+- `BEG`/`END`: set to `END`
 
 ## TVM Variable Recall
 
@@ -271,10 +272,10 @@ Remember that most of TVM menu buttons are dual-action:
 - `number + button`: sets the TVM variable to `X` value, and
 - `button`: calculates the TVM variable from the other 4 variables.
 
-Other TVM menu buttons (i.e. `P/YR`, `IYR1`, `IYR2`, `TMAX`) are single-action
-buttons and support only the storing of their values. There is no ability to
-calculate those parameters from other parameters. This convention used by most
-(all?) HP financial calculators.
+Other TVM menu buttons (i.e. `P/YR`, `C/YR`, `IYR1`, `IYR2`, `TMAX`) are
+single-action buttons and support only the storing of their values. There is no
+ability to calculate those parameters from other parameters. This convention
+used by most (all?) HP financial calculators.
 
 The RPN83P app provides a mechanism to retrieve a TVM variable *without*
 performing a calculation. This was useful for debugging during development, but
@@ -287,6 +288,7 @@ recall functionality is available through the `2ND` key:
 - `2ND PMT`: recall the `PMT` variable
 - `2ND FV`: recall the `FV` variable
 - `2ND P/YR`: recall the `P/YR` variable
+- `2ND C/YR`: recall the `C/YR` variable
 - `2ND IYR1`: recall the `IYR1` variable
 - `2ND IYR2`: recall the `IYR2` variable
 - `2ND TMAX`: recall the `TMAX` variable
