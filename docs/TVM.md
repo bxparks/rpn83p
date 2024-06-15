@@ -393,6 +393,12 @@ equation are *unchanged*. Let's define a new term `CFN(i,N)`:
 
 ```
 CFN(i,N) = CF2(i)/N = [(1+i)^N-1]/Ni
+
+             expm1(N log1p(i)) / Ni     (i!=0)
+           /
+         =
+           \
+             1                          (i==0)
 ```
 
 (Note that this is slightly different than the `C(i,N)` function defined by
@@ -406,8 +412,9 @@ called `NPMT(i)`:
 
 ```
 NPMT(i) = NFV(i) / CFN(i,N)
-        = PV (1+i)^N Ni / [(1+i)^N-1] + (1+ip)N*PMT + FV / CFN(i,N)
-        = PV (-N)i / [(1+i)^(-N)-1] + (1+ip)N*PMT + FV / CFN(i,N)
+        = PV (1+i)^N Ni / [(1+i)^N-1] + (1+ip)N*PMT + FV Ni / [(1+i)^N-1]
+        = PV (1+i)^N Ni / [(1+i)^N-1] + (1+ip)N*PMT + FV Ni / [(1+i)^N-1]
+        = PV (-N)i / [(1+i)^(-N)-1] + (1+ip)N*PMT + FV Ni / [(1+i)^N-1]
         = PV / CFN(i,-N) + (1+ip)N*PMT + FV / CFN(i,N)
 ```
 
@@ -464,11 +471,18 @@ beginning or end of the cash flow. The `NPMT(i)` function essentially averages
 all 3 terms over the entire duration of the `N` payment periods, instead of
 pulling everything to the present or pushing everything to the future.
 
-**Implementation Note**: The `inverseCompoundingFactor()` routine calculates the
-reciprocal of `CFN(i,N)`. In other words, it calculates `ICFN(i,N) = 1/CFN(i,N)
-= Ni/((1+i)^N-1)` for a slight gain in efficiency by avoiding a division or two.
-This makes `ICFN(i,N)` similar to the `C(n)` function given by Albert Chan in
-[TVM formula error in programming
+**Implementation Note**:
+
+The `inverseCompoundingFactor()` routine calculates the reciprocal of
+`CFN(i,N)`. In other words, it calculates
+
+```
+ICFN(i,N) = 1/CFN(i,N) = Ni/((1+i)^N-1)
+```
+
+for a slight gain in efficiency by avoiding a division or two. This makes
+`ICFN(i,N)` similar to the `C(n)` function given by Albert Chan in [TVM formula
+error in programming
 manual?](https://www.hpmuseum.org/forum/thread-20739-post-179371.html#pid179371)
 (2023), within a factor of `(1+i)^N`, or equivalently, a substitution of `-N`
 for `N`.
