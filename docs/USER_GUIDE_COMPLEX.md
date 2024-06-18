@@ -10,7 +10,7 @@ independent of each other. For example, a complex number can be entered in
 rectangular form, even if the current display mode is polar form. Internally,
 complex numbers are *always* stored in rectangular format.
 
-**Version**: 0.11.0 (2024-05-28)
+**Version**: 0.12.0-rc1 (2024-06-18)
 
 **Parent Document**: [USER_GUIDE.md](USER_GUIDE.md)
 

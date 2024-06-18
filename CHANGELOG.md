@@ -1,6 +1,7 @@
 # Changelog
 
 - Unreleased
+- 0.12.0-rc1 (2024-06-18)
     - TVM
         - add `C/YR` menu (number of compoundings per year)
             - uses the same variable as the `C/Y` variable of the "Finance" app
