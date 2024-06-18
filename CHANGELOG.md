@@ -19,6 +19,8 @@
             - keep default value of `IYR2` at `100%`
         - synchronize the `BEG`/`END` flag of RPN83P with the `BEGIN`/`END`
           flag of the "Finance" app provided by TI-OS
+        - display status message 'TVM Calculated (Multiple)' if the TVM equation
+          has 2 solutions, but only one of them was found
 - 0.11.0 (2024-05-28)
     - **Warning**: Previously saved RPN stack and storage registers are
       incompatible and are lost when upgrading to this version.
