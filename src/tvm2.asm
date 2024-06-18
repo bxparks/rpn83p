@@ -529,7 +529,6 @@ tvmCheckPMT:
 ; N*i/((expm1(N*log1p(i)) which is the reciprocal of the compounding factor,
 ; with a special case of ICFN(N,0)=1 to remove a singularity at i=0.
 ; Input:
-;   - fin_PV, fin_PMT, fin_FV, fin_PY
 ;   - OP1: N
 ;   - OP2: i (fractional interest per period)
 ; Output: OP1: ICFN(N,i)
@@ -538,17 +537,17 @@ inverseCompoundingFactor:
     bcall(_CkOP2FP0) ; check if i==0.0
     ; ICFN(N,i) has a removable singularity at i=0
     jr z, inverseCompoundingFactorZero
-    bcall(_PushRealO1) ; FPS=[N]
-    bcall(_PushRealO2) ; FPS=[N,i]
+    bcall(_PushRealO1) ; FPS=[N]; TODO: change to 'pushRaw9Op1()'
+    bcall(_PushRealO2) ; FPS=[N,i]; TODO: change to 'pushRaw9Op2()'
     bcall(_FPMult) ; OP1=N*i
     call exchangeFPSOP1PageTwo ; FPS=[N,N*i]; OP1=i
     call LnOnePlus ; OP1=ln(1+i)
     call exchangeFPSFPSPageTwo ; FPS=[N*i,N]
-    bcall(_PopRealO2) ; FPS=[Ni]; OP2=N
+    bcall(_PopRealO2) ; FPS=[Ni]; OP2=N ; TODO: change to popRaw9Op2()
     bcall(_FPMult) ; OP1=N*ln(1+i)
     call ExpMinusOne ; OP1=exp(N*ln(1+i))-1
     call op1ToOp2PageTwo ; OP2=exp(N*ln(1+i))-1
-    bcall(_PopRealO1) ; FPS=[]; OP1=Ni
+    bcall(_PopRealO1) ; FPS=[]; OP1=Ni ; TODO: change to popRaw9Op1()
     bcall(_FPDiv) ; OP1=Ni/[exp(N*ln(1+i)-1]
     ret
 inverseCompoundingFactorZero:
@@ -570,7 +569,22 @@ inverseCompoundingFactorZero:
 ; Output: OP1=NPMT(i)
 ; Destroys: OP1-OP5
 nominalPMT:
-    bcall(_PushRealO1) ; FPS=[i]
+    ; Check if N*i <~ tol; tol=1e-10
+    call op1ToOp2PageTwo ; OP2=i
+    call RclTvmN ; OP1=N
+    bcall(_FPMult) ; OP1=i*N; OP2=i
+    call pushRaw9Op2 ; FPS=[i]
+    call op2Set1EM10PageTwo ; OP2=1e-10
+    bcall(_AbsO1O2Cp) ; CF=1 if OP1<OP2
+    push af ; stack=[CF]
+    call popRaw9Op1  ; FPS=[]; OP1=i
+    pop af ; stack=[]; CF=comp(OP1,OP2)
+    jr c, nominalPMTSmall
+    ; [[fallthrough]]
+
+; Description: Calculate NPMT using normal expm1() and log1p() functions.
+nominalPMTNormal:
+    bcall(_PushRealO1) ; FPS=[i] ; TODO: use pushRaw9Xxx()
     ; Calculate FV*ICFN(N,i)
     call op1ToOp2PageTwo ; OP2=i
     call RclTvmN ; OP1=N
@@ -580,7 +594,7 @@ nominalPMT:
     bcall(_FPMult) ; OP1=FV*ICFN(N,i)
     call exchangeFPSOP1PageTwo ; FPS=[FV*ICFN()]; OP1=i
     ; Calcuate PV*ICFN(-N,i)
-    bcall(_PushRealO1) ; FPS=[FV*ICFN(),i]; OP1=i
+    bcall(_PushRealO1) ; FPS=[FV*ICFN(),i]; OP1=i ; TODO: use pushRaw9Xxx()
     call op1ToOp2PageTwo ; OP2=i
     call RclTvmN ; OP1=N
     bcall(_InvOP1S) ; OP1=-N
@@ -598,10 +612,85 @@ nominalPMT:
     call RclTvmN ; OP1=N
     bcall(_FPMult) ; OP1=(1+ip)*PMT*N
     ; Sum up the 3 terms
-    bcall(_PopRealO2) ; FPS=[FV*ICFN(N,i)]; OP2=PV*ICFN(-N,i)
+    bcall(_PopRealO2) ; FPS=[FV*ICFN(N,i)]; OP2=PV*ICFN(-N,i) ; TODO: popRaw9
     bcall(_FPAdd) ; OP1=PV*ICFN(-N,i)+(1+ip)*PMT*N
-    bcall(_PopRealO2) ; FPS=[]; OP2=FV*ICFN(N,i)
+    bcall(_PopRealO2) ; FPS=[]; OP2=FV*ICFN(N,i) TODO: popRaw9
     bcall(_FPAdd) ; OP1=PV*ICFN(-N,i)+(1+ip)*PMT*N+FV*ICFN(N,i)
+    ret
+
+; Description: Calculate NPMT using small 'i' taylor series approximation
+; expanded to O(i^2).
+; Input: OP1: i (interest per period)
+; Output: OP1=NPMT(i)
+nominalPMTSmall:
+    call pushRaw9Op1 ; FPS=[i]
+    call pushRaw9Op1 ; FPS=[i,i]
+    ;
+    call RclTvmN ; OP1=N
+    bcall(_FPSquare) ; OP1=N^2
+    bcall(_Minus1) ; OP1=N^2-1
+    call op2Set12PageTwo ; OP2=12
+    bcall(_FPDiv) ; OP1=(N^2-1)/12
+    call op1ToOp3PageTwo ; OP3=(N^2-1)/12
+    call RclTvmPV ; OP1=PV
+    call op1ToOp2PageTwo ; OP2=PV
+    call RclTvmFV ; OP1=FV
+    bcall(_FPAdd) ; OP1=PV+FV
+    call op3ToOp2PageTwo ; OP2=(N^2-1)/12
+    bcall(_FPMult) ; OP1=(PV+FV)(N^2-1)/12
+    call popRaw9Op2 ; FPS=[i]; OP2=i
+    bcall(_FPMult) ; OP1=i(PV+FV)(N^2-1)/12
+    call pushRaw9Op1 ; FPS=[i,i*(PV+FV)(N^2-1)/12]
+    ;
+    call RclTvmN ; OP1=N
+    bcall(_Plus1) ; OP1=N+1
+    bcall(_TimesPt5) ; OP1=(N+1)/2
+    call op1ToOp2PageTwo ; OP2=(N+1)/2
+    call RclTvmPV ; OP1=PV
+    bcall(_FPMult) ; OP1=PV*(N+1)/2
+    call pushRaw9Op1 ; FPS=[[i,i*(PV+FV)(N^2-1)/12,PV*(N+1)/2]
+    ;
+    call RclTvmN ; OP1=N
+    bcall(_Minus1) ; OP1=N-1
+    bcall(_TimesPt5) ; OP1=(N-1)/2
+    call op1ToOp2PageTwo ; OP2=(N-1)/2
+    call RclTvmFV ; OP1=FV
+    bcall(_FPMult) ; OP1=FV*(N-1)/2
+    ;
+    call popRaw9Op2 ; FPS=[i,i(PV+FV)(N^2-1)/12]; OP2=PV*(N+1)/2
+    bcall(_InvSub) ; OP1=PV*(N+1)/2-FV*(N-1)/2
+    ;
+    ld a, (tvmFlags)
+    bit tvmFlagsBegin, a
+    jr z, nominalPMTSmallPaymentsAtEnd ; ZF=1 if p=BEGIN=0
+    call pushRaw9Op1 ; FPS=[i,i*(PV+FV)(N^2-1)/12,PV*(N+1)/2-FV*(N-1)/2]
+    call RclTvmN
+    call op1ToOp2PageTwo
+    call RclTvmPMT
+    bcall(_FPMult) ; OP1=N*PMT
+    call popRaw9Op2 ; FPS=[i,i*(PV+FV)(N^2-1)/12]; OP2=PV*(N+1)/2-FV*(N-1)/2
+    bcall(_FPAdd); OP1=PV*(N+1)/2-FV*(N-1)/2+p*N*PMT
+nominalPMTSmallPaymentsAtEnd:
+    call popRaw9Op2 ; FPS=[i]; OP2=i*(PV+FV)(N^2-1)/12
+    bcall(_FPAdd); OP1=i*(PV+FV)(N^2-1)/12+PV*(N+1)/2-FV*(N-1)/2+p*N*PMT
+    ;
+    call popRaw9Op2 ; FPS=[]; OP2=i
+    bcall(_FPMult) ; OP1=i*[i*(PV+FV)(N^2-1)/12+PV*(N+1)/2-FV*(N-1)/2+p*N*PMT]
+    call pushRaw9Op1 ;FPS=[#1]
+    ;
+    call RclTvmN
+    call op1ToOp2PageTwo
+    call RclTvmPMT
+    bcall(_FPMult) ; OP1=N*PMT
+    call op1ToOp2PageTwo
+    call RclTvmPV
+    bcall(_FPAdd) ; OP1=PV+N*PMT
+    call op1ToOp2PageTwo
+    call RclTvmFV
+    bcall(_FPAdd) ; OP1=PV+N*PMT+FV
+    ;
+    call popRaw9Op2 ; FPS=[]; OP2=[#1]
+    bcall(_FPAdd) ; OP1=NPMT(N,i)
     ret
 
 ; Description: Calculate the interest rate of the next interation using the
