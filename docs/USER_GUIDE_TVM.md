@@ -31,8 +31,8 @@ solves the Time Value of Money equation. It has been extracted from
 ## TVM Functions
 
 The Time Value of Money (TVM) functionality is inspired by RPN financial
-calculators such as the HP-12C, HP-17B, and the HP-30b. They are available
-through the `ROOT > TVM` menu:
+calculators such as the HP-12C, HP-17B, HP-17bii+, and the HP-30b. They are
+available through the `ROOT > TVM` menu:
 
 - ![ROOT > TVM](images/menu-root-tvm.png)
     - ![ROOT > TVM > Row1](images/menu-root-tvm-1.png)
@@ -46,6 +46,7 @@ calculators:
 
 - [HP-12C User's Guide](https://literature.hpcalc.org/items/47): Section 3:
   Basic Financial Functions
+- [HP-17bii+ Owner's Manual](https://literature.hpcalc.org/items/87): Chapter 5: Time Value of Money
 - [HP-30b User's Guide](https://literature.hpcalc.org/items/130): Chapter 3:
   Time Value of Money
 
@@ -86,7 +87,7 @@ after a TVM menu button has completed. The message will read:
 
 On the HP-12C, the interest rate button is labeled with an `i` and represents
 the interest percentage for each *payment period*. On most modern financial
-calculators (e.g. HP-10B, HP-10bii, HP-17B, HP-17bii, HP-20b, HP-30b), the `i`
+calculators (e.g. HP-10B, HP-10bii, HP-17B, HP-17bii+, HP-20b, HP-30b), the `i`
 label has been replaced with `I%YR` (or `I/YR`) which accepts the interest rate
 as a nominal *annual* percentage rate. The RPN83P app follows the modern
 convention and the interest rate menu button is named `I%YR`.
