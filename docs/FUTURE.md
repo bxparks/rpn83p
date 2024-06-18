@@ -14,7 +14,7 @@ because it is faster and easier to use compared to a web app, especially for
 small features that can be described in a few sentences. Usually only the larger
 and more complicated features will get their own GitHub tickets.
 
-**Version**: 0.11.0 (2024-05-28)
+**Version**: 0.12.0-rc1 (2024-06-18)
 
 **Parent Document**: [USER_GUIDE.md](USER_GUIDE.md)
 
@@ -30,26 +30,6 @@ and more complicated features will get their own GitHub tickets.
 
 ## Near Future
 
-- `TVM` (time value of money)
-    - improve TVM Solver for `I%YR`
-        - The current default initial guess is 0% and 100% so that positive
-          interest rates are required (because a sign change over the initial
-          guesses are required). If there is a rounding error, the actual
-          numerical solution could be slighlty negative, which would cause an
-          `TVM Not Fount` error message because a sign-change is currently
-          required over the 2 initial guesses.
-        - One solution could be use something like `-1%` for the lower guess,
-          and then check for a sign change over 2 sub-intervals: `[-1%,0%]` and
-          `[0%,100%]`. We also have to careful to detect cases where expected
-          solution is exactly `0%`.
-        - The terminating tolerance could be selectable or more intelligent.
-        - Maybe change the root solving algorithm from Secant method to Newton's
-          method for faster convergence.
-    - support `C/YR` (compounding periods per year) as a separate parameter
-        - currently `C/YR` is set to be the same as `P/YR` (payments per year)
-          for ease of implementation
-        - there are apparently jurisdictions (Canada, UK) where it is common for
-          `C/YR` to be different from `P/YR`
 - add a `ROOT > CLR > CLAL` (Clear All) menu function
     - becomes useful as more features and configuration options are added
 - allow numbers in any base to be entered regardless of the BASE mode

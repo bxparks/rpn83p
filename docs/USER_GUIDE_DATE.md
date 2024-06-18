@@ -1,4 +1,4 @@
-# RPN83P User Guide: DATE
+# RPN83P User Guide: DATE Functions
 
 This document describes the `DATE` features of the RPN83P application. It has
 been extracted from [USER_GUIDE.md](USER_GUIDE.md) due to its length. The `DATE`
@@ -27,7 +27,7 @@ These features were inspired by various datetime libraries:
 - C# [Noda Time](https://nodatime.org) library
 - Python [datetime](https://docs.python.org/3/library/datetime.html) library
 
-**Version**: 0.11.0 (2024-05-28)
+**Version**: 0.12.0-rc1 (2024-06-18)
 
 **Parent Document**: [USER_GUIDE.md](USER_GUIDE.md)
 

@@ -1,10 +1,10 @@
-# RPN83P User Guide: BASE Operations
+# RPN83P User Guide: TVM Functions
 
 This document describes the `TVM` functions of the RPN83P application which
 solves the Time Value of Money equation. It has been extracted from
 [USER_GUIDE.md](USER_GUIDE.md) due to its length.
 
-**Version**: 0.11.0 (2024-05-28)
+**Version**: 0.12.0-rc1 (2024-06-18)
 
 **Parent Document**: [USER_GUIDE.md](USER_GUIDE.md)
 
@@ -14,7 +14,9 @@ solves the Time Value of Money equation. It has been extracted from
 
 - [TVM Functions](#tvm-functions)
 - [TVM Menu Buttons](#tvm-menu-buttons)
+- [TVM Interest Rate](#tvm-interest-rate)
 - [TVM Payments Per Year](#tvm-payments-per-year)
+- [TVM Compoundings Per Year](#tvm-compoundings-per-year)
 - [TVM BEG and END](#tvm-beg-and-end)
 - [TVM Solver Control](#tvm-solver-control)
 - [TVM Clear](#tvm-clear)
@@ -29,8 +31,8 @@ solves the Time Value of Money equation. It has been extracted from
 ## TVM Functions
 
 The Time Value of Money (TVM) functionality is inspired by RPN financial
-calculators such as the HP-12C, HP-17B, and the HP-30b. They are available
-through the `ROOT > TVM` menu:
+calculators such as the HP-12C, HP-17B, HP-17bii+, and the HP-30b. They are
+available through the `ROOT > TVM` menu:
 
 - ![ROOT > TVM](images/menu-root-tvm.png)
     - ![ROOT > TVM > Row1](images/menu-root-tvm-1.png)
@@ -44,6 +46,7 @@ calculators:
 
 - [HP-12C User's Guide](https://literature.hpcalc.org/items/47): Section 3:
   Basic Financial Functions
+- [HP-17bii+ Owner's Manual](https://literature.hpcalc.org/items/87): Chapter 5: Time Value of Money
 - [HP-30b User's Guide](https://literature.hpcalc.org/items/130): Chapter 3:
   Time Value of Money
 
@@ -80,29 +83,75 @@ after a TVM menu button has completed. The message will read:
 - `TVM Calculated` if the menu button **calculated** the given TVM variable
   from the other 4 variables.
 
-## TVM Payments Per Year
+## TVM Interest Rate
 
 On the HP-12C, the interest rate button is labeled with an `i` and represents
-the interest percentage for each *payment period*. On the HP-30b and most modern
-financial calculators, the `i` button has been replaced with `I%YR` (or `I/YR`)
-which accepts the interest rate as a nominal *annual* percentage rate. The
-RPN83P app follows the modern convention and the interest rate menu button is
-named `I%YR`.
+the interest percentage for each *payment period*. On most modern financial
+calculators (e.g. HP-10B, HP-10bii, HP-17B, HP-17bii+, HP-20b, HP-30b), the `i`
+label has been replaced with `I%YR` (or `I/YR`) which accepts the interest rate
+as a nominal *annual* percentage rate. The RPN83P app follows the modern
+convention and the interest rate menu button is named `I%YR`.
 
-The relationship between the `i` button (as implemented on the HP-12C) and the
-`I%YR` button as implemented on the RPN83P is:
+The relationship between the `i` button (implemented on the HP-12C) and the
+`I%YR` button (implemented on modern financial calculators) is:
 
-> `i = IYR / PYR`
+```
+i% = I%YR / PYR
+```
 
-where `PYR` is the number of payments per year. In math equations and inside
-computer programs, the quantity `i` is usually represented as a fractional rate
-instead of a percentage, so there is an addition division by 100.
+where `PYR` is the number of payments per year (see below). In math equations
+and inside computer programs, the quantity `i` usually represents the fractional
+rate instead of a percentage, so `i = i% / 100`.
+
+## TVM Payments Per Year
 
 The RPN83P app allows the `PYR` quantity to be modified using the `P/YR` menu
 button. `PYR` is an input-only parameter, not an output parameter, so the `P/YR`
-is not a dual-action button. It performs only a *store* function. By default,
-the `P/YR` value is set to 12, which makes it easy to calculate monthly mortgage
-payments whose rates are given as yearly percentages.
+is not a dual-action button. It performs only a *store* function.
+
+By default, the `P/YR` value is set to 12, which makes it easy to calculate
+monthly mortgage payments whose rates are given as yearly percentages.
+
+Here is an example of setting the `P/YR` to a different value, then back to the
+default 12:
+
+| **Keys**          | **Display** |
+| ---------------   | --------------------- |
+| `2` `P/YR`        | ![](images/tvm/pyr-1.png) |
+| `12` `P/YR`       | ![](images/tvm/pyr-2.png) |
+
+When the `P/YR` is different from the default value of `12`, a small dot appears
+in the menu label which notifies the user that the default value has changed.
+
+Notice also that when the `P/YR` value is changed, the same value is written
+to the `C/YR` parameter (compoundings per year, see below). The default behavior
+is to make the `C/YR` value the same as the `P/YR`.
+
+## TVM Compoundings Per Year
+
+In the United States, the number of compoundings per year (`C/YR`) is usually
+the same as the number of payments per year (`P/YR`). Therefore, when the `P/YR`
+is changed, the same change is applied to `C/YR`.
+
+There are jurisdictions (e.g. Canada, UK) where the compoundings per year is
+often different from the payments per year. RPN83P handles this by allowing the
+`C/YR` value to be overridden, separately from `P/YR`.
+
+In the following example, the `P/YR` is set to 12, then the `C/YR` is set to 2
+(which apparently is common in Canada), then the `C/YR` is set back to 12:
+
+| **Keys**          | **Display** |
+| ----------------  | --------------------- |
+| `12` `P/YR`       | ![](images/tvm/cyr-1.png) |
+| `2` `C/YR`        | ![](images/tvm/cyr-2.png) |
+| `12` `C/YR`       | ![](images/tvm/cyr-3.png) |
+
+Similar to `P/YR`, when the value of `C/YR` is different from the default of 12,
+a small dot appears in the menu label to warn the user that its value has
+changed.
+
+The exact mathematical relationship among `P/YR`, `C/YR`, `I%YR`, and the
+internal interest rate per period `i` is given in [TVM.md](TVM.md).
 
 ## TVM BEG and END
 
@@ -113,6 +162,11 @@ payments are made at the end of the payment term. A little dot on the menu
 button indicates the currently selected option. Both of these are input-only
 buttons. The default value is `END`.
 
+| **Keys**          | **Display** |
+| ----------------  | --------------------- |
+| `BEG`             | ![](images/tvm/beg-end-1.png) |
+| `END`             | ![](images/tvm/beg-end-2.png) |
+
 ## TVM Solver Control
 
 It is well-known that the `N`, `PV`, `PMT`, and `FV` variables can be solved
@@ -120,8 +174,8 @@ using analytical equations. However, there is no closed-form solution for the
 `I%YR` quantity, so it must be solved using iterative methods. The TVM Solver is
 the submodule that implements the iterative method to solve for `I%YR`.
 
-It can be mathematically deduced that the root-solving equation for `I%YR` can
-fall into 3 categories:
+It can be mathematically deduced (see [TVM.md](TVM.md)) that the root-solving
+equation for `I%YR` can fall into 3 categories:
 
 - 0 solution, or
 - 1 unique solution, or
@@ -131,30 +185,34 @@ The TVM Solver tries to handle the various cases as follows:
 
 - If the TVM Solver can determine immediately that the equation has 0 solution,
   it will return a `TVM No Solution` error message.
-- The TVM Solver can fail to find a solution, even though the math says that a
-  solution must exist. The TVM Solver will return a `TVM Not Found` error
-  message.
-- If the equation has 2 solutions, but the TVM Solver finds only one of the 2
-  solutions, the solver currently (v0.9.0) does not notify the user that another
-  solution may exist. A normal `TVM Calculated` will be returned.
-- If there are 2 solutions, but the solver finds neither solution, a `TVM Not
-  Found` message will be returned.
+- If the equation is known to have 1 unique solution, but the TVM Solver fails
+  to find a solution, the Solver will return a `TVM Not Found` status code.
+- If the equation is known to have 1 unique solution and the TVM Solver is able
+  to find it, it returns a `TVM Calculated` status code.
+- If the equation is known to have 0 or 2 solutions, and the TVM Solver is able
+  to find one of the solutions, it knows immediately that another must exist
+  somewhere. The Solver returns `TVM Calculated (Multiple)` status code to
+  indicate that another solution exists.
+- If the equation is known to have 0 or 2 solutions, but the TVM Solver finds
+  neither solution numerically, the solver has no additional information. It
+  cannot know whether there are 0 solutions or 2 solutions. So the status code
+  will be `TVM Not Found`.
 - To prevent excessive execution time, the number of iterations performed by the
   TVM Solver has a maximum limit. The default is 15 iterations. If exceeded, the
   message `TVM Iterations` is displayed.
 
 Due to the complexity of the numerical algorithm and the number of iterations
 required, calculating the `I%YR` will take noticeably longer than the other
-variables. Somewhere between 1-3 seconds on the TI-84 Plus model has been
+variables. Somewhere between 1-2 seconds on the TI-84 Plus model have been
 observed.
 
-The RPN83P currently (v0.9.0) uses the [Newton-Secant
-method](https://en.wikipedia.org/wiki/Secant_method) to solve for `I%YR`. For
-the purpose of debugging and to allow extra control for advanced users, three
-parameters that affect the progression and termination of the algorithm are
-exposed:
+The RPN83P uses the [Newton-Secant
+method](https://en.wikipedia.org/wiki/Secant_method) to solve for `I%YR` (see
+[TVM.md](TVM.md) for details). For the purpose of debugging and to allow extra
+control for advanced users, three parameters that affect the progression and
+termination of the algorithm are exposed:
 
-- `IYR1`: first guess percent per year (default: 0%; allowed: `IYR1 >
+- `IYR1`: first guess percent per year (default: -50%; allowed: `IYR1 >
   -PYR*100`)
 - `IYR2`: second guess percent per year (default: 100%; allowed: `IYR2 >
   -PYR*100`)
@@ -175,7 +233,7 @@ override the initial guesses to be closer to the solution of interest. This will
 help the TVM Solver converge to that solution.
 
 (TODO: Maybe add a menu item to control the convergence error tolerance?
-Currently, it is set to 1e-8. Some HP calculators use the number of digits in
+Currently, it is set to 1e-10. Some HP calculators use the number of digits in
 the `FIX`, `SCI` or `ENG` display modes to determine the value of the error
 tolerance. TI calculators are usually kept in "floating" (aka "display all
 digits") mode `FIX(-)`, so I'm not sure it would be useful to use the display
@@ -195,7 +253,7 @@ There are 2 reset or clear menu buttons under the TVM menu hierarchy:
 The `RSTV` clears *only* the 3 parameters related to the TVM Solver which
 calculates the interest rate. The factory default values are:
 
-- `IYR1`: 0%
+- `IYR1`: -50%
 - `IYR2`: 100%
 - `TMAX`: 15
 
@@ -205,7 +263,8 @@ factory values:
 
 - `N`, `I%YR`, `PV`, `PMT`, `FV`: 0
 - `P/YR`: 12
-- `BEG`, `END`: `END`
+- `C/YR`: 12
+- `BEG`/`END`: set to `END`
 
 ## TVM Variable Recall
 
@@ -214,10 +273,10 @@ Remember that most of TVM menu buttons are dual-action:
 - `number + button`: sets the TVM variable to `X` value, and
 - `button`: calculates the TVM variable from the other 4 variables.
 
-Other TVM menu buttons (i.e. `P/YR`, `IYR1`, `IYR2`, `TMAX`) are single-action
-buttons and support only the storing of their values. There is no ability to
-calculate those parameters from other parameters. This convention used by most
-(all?) HP financial calculators.
+Other TVM menu buttons (i.e. `P/YR`, `C/YR`, `IYR1`, `IYR2`, `TMAX`) are
+single-action buttons and support only the storing of their values. There is no
+ability to calculate those parameters from other parameters. This convention
+used by most (all?) HP financial calculators.
 
 The RPN83P app provides a mechanism to retrieve a TVM variable *without*
 performing a calculation. This was useful for debugging during development, but
@@ -230,6 +289,7 @@ recall functionality is available through the `2ND` key:
 - `2ND PMT`: recall the `PMT` variable
 - `2ND FV`: recall the `FV` variable
 - `2ND P/YR`: recall the `P/YR` variable
+- `2ND C/YR`: recall the `C/YR` variable
 - `2ND IYR1`: recall the `IYR1` variable
 - `2ND IYR2`: recall the `IYR2` variable
 - `2ND TMAX`: recall the `TMAX` variable
@@ -241,7 +301,7 @@ original menu with the addition of a question mark (e.g. `WSIZ` and `WSZ?`).
 This helps with discovery because each function is directly shown through the
 menu system, with no hidden features. But there are so many TVM variables and
 parameters, that adding the `?` variant of all those menu buttons would have
-made the menu rows too cluttered and hard to navigate. Currently (v0.9.0), the
+made the menu rows too cluttered and hard to navigate. Currently (v0.12.0), the
 TVM submenu is the only place where the `2ND` button is used for hidden menu
 functionality.
 
@@ -295,7 +355,7 @@ rate, what is her bank balance after 365 days?
     - Press `P/YR` (set payments per year to the same 31536000)
     - Press UP to return to the TVM menu row
 - Press 10 `I%YR`
-- Press 0 PV (bank balance starts at 0)
+- Press 0 `PV` (bank balance starts at 0)
 - Press -0.01 `PMT` (negative to indicate outward cash flow to bank)
 - Press `FV` (should see `TVM Calculated`)
 - Answer: $331667.0067

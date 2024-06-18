@@ -1,6 +1,7 @@
 # Changelog
 
 - Unreleased
+- 0.12.0-rc1 (2024-06-18)
     - TVM
         - add `C/YR` menu (number of compoundings per year)
             - uses the same variable as the `C/Y` variable of the "Finance" app
@@ -21,6 +22,10 @@
           flag of the "Finance" app provided by TI-OS
         - display status message 'TVM Calculated (Multiple)' if the TVM equation
           has 2 solutions, but only one of them was found
+    - docs
+        - simplify pandoc processing pipeline
+        - change PDF font to FreeSerif and FreeMono to render the U+2220 (angle)
+          symbol properly
 - 0.11.0 (2024-05-28)
     - **Warning**: Previously saved RPN stack and storage registers are
       incompatible and are lost when upgrading to this version.
