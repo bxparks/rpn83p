@@ -63,7 +63,8 @@ $(wildcard ../docs/images/*.gif) \
 $(wildcard ../docs/images/base/*.png) \
 $(wildcard ../docs/images/complex/*.png) \
 $(wildcard ../docs/images/date/*.png) \
-$(wildcard ../docs/images/stat/*.png)
+$(wildcard ../docs/images/stat/*.png) \
+$(wildcard ../docs/images/tvm/*.png)
 
 # Resized images are used for PDF files.
 RESIZED_IMAGES := \
@@ -177,6 +178,11 @@ CHANGELOG.md: ../CHANGELOG.md Makefile
 # Resize the PNG files under images/stat/ to 75% before embedding into PDF.
 ../docs/resized/stat/%.png: ../docs/images/stat/%.png
 	@mkdir -p ../docs/resized/stat
+	$(MAGICK) $< -adaptive-resize 75% $@
+
+# Resize the PNG files under images/tvm/ to 75% before embedding into PDF.
+../docs/resized/tvm/%.png: ../docs/images/tvm/%.png
+	@mkdir -p ../docs/resized/tvm
 	$(MAGICK) $< -adaptive-resize 75% $@
 
 # Just copy the GIF files, no resizing. They take too much CPU time to resize.
