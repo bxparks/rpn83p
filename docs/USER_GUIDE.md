@@ -2012,14 +2012,14 @@ times of the `PRIM` function for this number for various TI models that I own:
 | TI-Nspire w/ TI-84+ keypad    | 8.2 s                 |
 
 During the calculation, the "run indicator" on the upper-right corner will be
-active. You can press `ON` key to break from the `PRIM` loop with an `Err:
+active. You can press the `ON` key to break from the `PRIM` loop with an `Err:
 Break` message.
 
 #### Floating Point Rounding
 
-There are 3 menu functions under the `ROOT > NUM` menu group that provide
-rounding functions: `RNDF`, `RNDN`, and `RNDG`. They round the floating point
-number in different ways:
+There are 3 rounding functions under the `ROOT > NUM` menu folder that provide
+access to the corresponding rounding functions implemented by the underlying
+TI-OS:
 
 - `RNDF`
     - rounds to the number of digits after the decimal point specified by the
@@ -2043,6 +2043,8 @@ using the various functions.
 
 **RNDF**
 
+Round to the number of digits specified by the current `FIX/SCI/ENG` mode:
+
 | **Keys**              | **Display** |
 | ----------------      | --------------------- |
 | `PI` `1000` `*`       | ![](images/rounding-01.png) |
@@ -2052,6 +2054,8 @@ using the various functions.
 
 **RNDN**
 
+Round to the number of digits specified by the user:
+
 | **Keys**              | **Display** |
 | ----------------      | --------------------- |
 | `PI` `1000` `*`       | ![](images/rounding-05.png) |
@@ -2060,6 +2064,8 @@ using the various functions.
 | `2ND ENTRY` (SHOW)    | ![](images/rounding-08.png) |
 
 **RNDG**
+
+Round to remove the hidden guard digits:
 
 | **Keys**              | **Display** |
 | ----------------      | --------------------- |
