@@ -279,7 +279,7 @@ getTvmIPP:
 ; Output: OP1=IPP=effective fractional interest rate per period
 ; Preserves: OP2
 TvmCalcIPPFromIYR:
-    bcall(_PushRealO2) ; FPS=[OP2]
+    call pushRaw9Op2 ; FPS=[OP2]
     ;
     call op2Set100PageTwo
     bcall(_FPDiv) ; OP1=IYR/100
@@ -297,7 +297,7 @@ TvmCalcIPPFromIYR:
     bcall(_FPDiv) ; OP1=ln1p(...)*CYR/PYR
     call ExpMinusOne ; OP1=i=expm1[(CYR/PYR) ln1p(IYR/100/CYR)]
     ;
-    bcall(_PopRealO2) ; FPS=[]
+    call popRaw9Op2 ; FPS=[]
     ret
 
 ; Description: Compute the I%/YR from the fractional interest per period.
@@ -305,7 +305,7 @@ TvmCalcIPPFromIYR:
 ; Output: OP1=IYR=interest percent per year
 ; Preserves: OP2
 calcTvmIYRFromIPP:
-    bcall(_PushRealO2) ; FPS=[OP2]
+    call pushRaw9Op2 ; FPS=[OP2]
     ;
     call LnOnePlus ; OP1=ln1p(i)
     call op1ToOp2PageTwo
@@ -322,7 +322,7 @@ calcTvmIYRFromIPP:
     call op2Set100PageTwo
     bcall(_FPMult) ; OP1=100*CYR*expm1[...]
     ;
-    bcall(_PopRealO2) ; FPS=[]
+    call popRaw9Op2 ; FPS=[]
     ret
 
 ;-----------------------------------------------------------------------------
@@ -341,9 +341,9 @@ endFactor:
     bcall(_OP1Set1) ; OP1=1.0
     ret
 beginFactor:
-    bcall(_PushRealO2) ; FPS=[OP2 saved]
+    call pushRaw9Op2 ; FPS=[OP2 saved]
     bcall(_Plus1) ; OP1=1+i
-    bcall(_PopRealO2) ; FPS=[]; OP2=OP2 saved
+    call popRaw9Op2 ; FPS=[]; OP2=OP2 saved
     ret
 
 ; Description: Calculate the compounding factor defined by: [(1+i)^N-1]/i.
@@ -360,23 +360,23 @@ compoundingFactors:
     ; Use the TVM formulas directly, which can suffer from cancellation errors
     ; for small i.
     call getTvmIPP ; OP1=i
-    bcall(_PushRealO1) ; FPS=[i]
-    bcall(_PushRealO1) ; FPS=[i,i]
+    call pushRaw9Op1 ; FPS=[i]
+    call pushRaw9Op1 ; FPS=[i,i]
     call RclTvmN ; OP1=N
     call exchangeFPSOP1PageTwo ; FPS=[i,N]; OP1=i
-    bcall(_PushRealO1) ; FPS=[i,N,i]
+    call pushRaw9Op1 ; FPS=[i,N,i]
     call beginEndFactor ; OP1=(1+ip)
     call exchangeFPSOP1PageTwo ; FPS=[i,N,1+ip]; OP1=i
     bcall(_Plus1) ; OP1=1+i (destroys OP2)
     call exchangeFPSFPSPageTwo ; FPS=[i,1+ip,N]
-    bcall(_PopRealO2) ; FPS=[i,1+ip] OP2=N
+    call popRaw9Op2 ; FPS=[i,1+ip] OP2=N
     bcall(_YToX) ; OP1=(1+i)^N
     bcall(_OP1ToOP4) ; OP4=(1+i)^N (save)
     bcall(_Minus1) ; OP1=(1+i)^N-1
     call exchangeFPSFPSPageTwo ; FPS=[1+ip,i]
-    bcall(_PopRealO2) ; FPS=[1+ip]; OP2=i
+    call popRaw9Op2 ; FPS=[1+ip]; OP2=i
     bcall(_FPDiv) ; OP1=[(1+i)^N-1]/i (destroys OP3)
-    bcall(_PopRealO2) ; FPS=[]; OP2=1+ip
+    call popRaw9Op2 ; FPS=[]; OP2=1+ip
     bcall(_FPMult) ; OP1=(1+ip)[(1+i)^N-1]/i
     call op1ToOp2PageTwo ; OP2=(1+ip)[(1+i)^N-1]/i
     bcall(_OP4ToOP1) ; OP1=(1+i)^N
@@ -389,26 +389,26 @@ compoundingFactors:
     bcall(_CkOP1FP0) ; check if i==0.0
     ; CF3(i) has a removable singularity at i=0, so we use a different formula.
     jr z, compoundingFactorsZero
-    bcall(_PushRealO1) ; FPS=[i]
+    call pushRaw9Op1 ; FPS=[i]
     call LnOnePlus ; OP1=ln(1+i)
     call op1ToOp2PageTwo
     call RclTvmN ; OP1=N
     bcall(_FPMult) ; OP1=N*ln(1+i)
-    bcall(_PushRealO1) ; FPS=[i,N*ln(1+i)]
+    call pushRaw9Op1 ; FPS=[i,N*ln(1+i)]
     call exchangeFPSFPSPageTwo ; FPS=[N*ln(1+i),i]
     call ExpMinusOne ; OP1=exp(N*ln(1+i))-1
     call exchangeFPSOP1PageTwo ; FPS=[N*ln(1+i),exp(N*ln(1+i))-1]; OP1=i
-    bcall(_PushRealO1) ; FPS=[N*ln(1+i),exp(N*ln(1+i))-1,i]; OP1=i
+    call pushRaw9Op1 ; FPS=[N*ln(1+i),exp(N*ln(1+i))-1,i]; OP1=i
     call beginEndFactor ; OP1=(1+ip)
     bcall(_OP1ToOP4) ; OP4=(1+ip) (save)
-    bcall(_PopRealO2) ; FPS=[N*ln(1+i),exp(N*ln(1+i))-1]; OP2=i
-    bcall(_PopRealO1) ; FPS=[N*ln(1+i)]; OP1=exp(N*ln(1+i))-1
+    call popRaw9Op2 ; FPS=[N*ln(1+i),exp(N*ln(1+i))-1]; OP2=i
+    call popRaw9Op1 ; FPS=[N*ln(1+i)]; OP1=exp(N*ln(1+i))-1
     bcall(_FPDiv) ; OP1=[exp(N*ln(1+i))-1]/i
     bcall(_OP4ToOP2) ; OP2=(1+ip)
     bcall(_FPMult) ; OP1=CF3=(1+ip)[exp(N*ln(1+i))-1]/i
     call exchangeFPSOP1PageTwo ; FPS=[CF3]; OP1=N*ln(1+i)
     bcall(_EToX) ; OP1=exp(N*ln(1+i))
-    bcall(_PopRealO2) ; FPS=[]; OP2=CF3
+    call popRaw9Op2 ; FPS=[]; OP2=CF3
     ret
 compoundingFactorsZero:
     ; If i==0, then CF1=1 and CF3=N
@@ -537,17 +537,17 @@ inverseCompoundingFactor:
     bcall(_CkOP2FP0) ; check if i==0.0
     ; ICFN(N,i) has a removable singularity at i=0
     jr z, inverseCompoundingFactorZero
-    bcall(_PushRealO1) ; FPS=[N]; TODO: change to 'pushRaw9Op1()'
-    bcall(_PushRealO2) ; FPS=[N,i]; TODO: change to 'pushRaw9Op2()'
+    call pushRaw9Op1 ; FPS=[N]
+    call pushRaw9Op2 ; FPS=[N,i]
     bcall(_FPMult) ; OP1=N*i
     call exchangeFPSOP1PageTwo ; FPS=[N,N*i]; OP1=i
     call LnOnePlus ; OP1=ln(1+i)
     call exchangeFPSFPSPageTwo ; FPS=[N*i,N]
-    bcall(_PopRealO2) ; FPS=[Ni]; OP2=N ; TODO: change to popRaw9Op2()
+    call popRaw9Op2 ; FPS=[Ni]; OP2=N
     bcall(_FPMult) ; OP1=N*ln(1+i)
     call ExpMinusOne ; OP1=exp(N*ln(1+i))-1
     call op1ToOp2PageTwo ; OP2=exp(N*ln(1+i))-1
-    bcall(_PopRealO1) ; FPS=[]; OP1=Ni ; TODO: change to popRaw9Op1()
+    call popRaw9Op1 ; FPS=[]; OP1=Ni
     bcall(_FPDiv) ; OP1=Ni/[exp(N*ln(1+i)-1]
     ret
 inverseCompoundingFactorZero:
@@ -584,7 +584,7 @@ nominalPMT:
 
 ; Description: Calculate NPMT using normal expm1() and log1p() functions.
 nominalPMTNormal:
-    bcall(_PushRealO1) ; FPS=[i] ; TODO: use pushRaw9Xxx()
+    call pushRaw9Op1 ; FPS=[i]
     ; Calculate FV*ICFN(N,i)
     call op1ToOp2PageTwo ; OP2=i
     call RclTvmN ; OP1=N
@@ -594,7 +594,7 @@ nominalPMTNormal:
     bcall(_FPMult) ; OP1=FV*ICFN(N,i)
     call exchangeFPSOP1PageTwo ; FPS=[FV*ICFN()]; OP1=i
     ; Calcuate PV*ICFN(-N,i)
-    bcall(_PushRealO1) ; FPS=[FV*ICFN(),i]; OP1=i ; TODO: use pushRaw9Xxx()
+    call pushRaw9Op1 ; FPS=[FV*ICFN(),i]; OP1=i
     call op1ToOp2PageTwo ; OP2=i
     call RclTvmN ; OP1=N
     bcall(_InvOP1S) ; OP1=-N
@@ -612,9 +612,9 @@ nominalPMTNormal:
     call RclTvmN ; OP1=N
     bcall(_FPMult) ; OP1=(1+ip)*PMT*N
     ; Sum up the 3 terms
-    bcall(_PopRealO2) ; FPS=[FV*ICFN(N,i)]; OP2=PV*ICFN(-N,i) ; TODO: popRaw9
+    call popRaw9Op2 ; FPS=[FV*ICFN(N,i)]; OP2=PV*ICFN(-N,i)
     bcall(_FPAdd) ; OP1=PV*ICFN(-N,i)+(1+ip)*PMT*N
-    bcall(_PopRealO2) ; FPS=[]; OP2=FV*ICFN(N,i) TODO: popRaw9
+    call popRaw9Op2 ; FPS=[]; OP2=FV*ICFN(N,i)
     bcall(_FPAdd) ; OP1=PV*ICFN(-N,i)+(1+ip)*PMT*N+FV*ICFN(N,i)
     ret
 
@@ -1076,34 +1076,34 @@ TvmCalculateN:
     call getTvmIPP ; OP1=i
     bcall(_CkOP1FP0) ; check for i==0
     jr z, tvmCalculateNZero
-    bcall(_PushRealO1) ; FPS=[i]
+    call pushRaw9Op1 ; FPS=[i]
     call beginEndFactor ; OP1=1+ip
     call op1ToOp2PageTwo ; OP2=1+ip
     call RclTvmPMT ; OP1=PMT
     bcall(_FPMult) ; OP1=PMT*(1+ip)
     bcall(_OP1ToOP4) ; OP4=PMT*(1+ip) (save)
-    bcall(_PopRealO2) ; FPS=[]; OP2=i
-    bcall(_PushRealO2) ; FPS=[i]
-    bcall(_PushRealO2) ; FPS=[i,i]
+    call popRaw9Op2 ; FPS=[]; OP2=i
+    call pushRaw9Op2 ; FPS=[i]
+    call pushRaw9Op2 ; FPS=[i,i]
     call RclTvmPV ; OP1=PV
     bcall(_FPMult) ; OP1=PV*i
     bcall(_OP4ToOP2) ; OP2=PMT*(1+ip)
     bcall(_FPAdd) ; OP1=PMT*(1+ip)+i*PV
-    bcall(_PushRealO1) ; FPS[i,i,PMT*(1+ip)+i*PV]
+    call pushRaw9Op1 ; FPS[i,i,PMT*(1+ip)+i*PV]
     call RclTvmPV ; OP1=PV
     call op1ToOp2PageTwo ; OP2=PV
     call RclTvmFV ; OP1=FV
     bcall(_FPAdd) ; OP1=PV+FV
-    bcall(_PopRealO2) ; FPS=[i,i]; OP2=PMT*(1+ip)+i*PV
+    call popRaw9Op2 ; FPS=[i,i]; OP2=PMT*(1+ip)+i*PV
     bcall(_FPDiv) ; OP1=(FV+PV)/(PMT*(1+ip)+i*PV)
-    bcall(_PopRealO2) ; FPS=[i]; OP2=i
+    call popRaw9Op2 ; FPS=[i]; OP2=i
     bcall(_FPMult) ; OP1=N0=i*(FV+PV)/(PMT*(1+ip)+i*PV)
     bcall(_InvOP1S) ; OP1=N0=-i*(FV+PV)/(PMT*(1+ip)+i*PV)
     call LnOnePlus ; OP1=ln(1+N0); throws exception if 1+N0<=0
     call exchangeFPSOP1PageTwo ; FPS=[ln(1+N0)]; OP1=i
     call LnOnePlus ; OP1=ln(1+i); throws exception if 1+i<=0
     call op1ToOp2PageTwo ; OP2=ln(1+i)
-    bcall(_PopRealO1) ; FPS=[]; OP1=ln(1+N0)
+    call popRaw9Op1 ; FPS=[]; OP1=ln(1+N0)
     bcall(_FPDiv) ; OP1=ln(1+N0)/ln(1+i)
     ret
 tvmCalculateNZero:
@@ -1127,14 +1127,14 @@ tvmCalculateNZero:
 ; Output: OP1: PV
 TvmCalculatePV:
     call compoundingFactors ; OP1=CF1; OP2=CF3
-    bcall(_PushRealO1) ; FPS=[CF1]
+    call pushRaw9Op1 ; FPS=[CF1]
     call RclTvmPMT ; OP1=PMT
     bcall(_FPMult) ; OP1=PMT*CF3
     call op1ToOp2PageTwo ; OP2=PMT*CF3
     call RclTvmFV ; OP1=FV
     bcall(_FPAdd) ; OP1=FV+PMT*CF3
     bcall(_InvOP1S) ; OP1=-OP1
-    bcall(_PopRealO2) ; FPS=[]; OP2=CF1
+    call popRaw9Op2 ; FPS=[]; OP2=CF1
     bcall(_FPDiv) ; OP1=(-FV-PMT*CF3)/CF1
     ret
 
@@ -1146,7 +1146,7 @@ TvmCalculatePV:
 ; Output: OP1: PMT
 TvmCalculatePMT:
     call compoundingFactors ; OP1=CF1; OP2=CF3
-    bcall(_PushRealO2) ; FPS=[CF3]
+    call pushRaw9Op2 ; FPS=[CF3]
     call op1ToOp2PageTwo ; OP2=CF1
     call RclTvmPV ; OP1=PV
     bcall(_FPMult) ; OP1=PV*CF1
@@ -1154,7 +1154,7 @@ TvmCalculatePMT:
     call RclTvmFV ; OP1=FV
     bcall(_FPAdd) ; OP1=FV+PV*CF1
     bcall(_InvOP1S) ; OP1=-OP1
-    bcall(_PopRealO2) ; FPS=[]; OP2=CF3
+    call popRaw9Op2 ; FPS=[]; OP2=CF3
     bcall(_FPDiv) ; OP1=(-PV*CF1-FV)/CF3
     ret
 
@@ -1166,14 +1166,14 @@ TvmCalculatePMT:
 ; Output: OP1: FV
 TvmCalculateFV:
     call compoundingFactors ; OP1=CF1; OP2=CF3
-    bcall(_PushRealO1) ; FPS=[CF1]
+    call pushRaw9Op1 ; FPS=[CF1]
     call RclTvmPMT ; OP1=PMT
     bcall(_FPMult) ; OP1=PMT*CF3
     call exchangeFPSOP1PageTwo ; FPS=[PMT*CF3]; OP1=CF1
     call op1ToOp2PageTwo ; OP2=CF1
     call RclTvmPV ; OP1=PV
     bcall(_FPMult) ; OP1=PV*CF1
-    bcall(_PopRealO2) ; FPS=[]; OP2=PMT*CF3
+    call popRaw9Op2 ; FPS=[]; OP2=PMT*CF3
     bcall(_FPAdd) ; OP1=PMT*CF3+PV*CF1
     bcall(_InvOP1S) ; OP1=-OP1
     ret
