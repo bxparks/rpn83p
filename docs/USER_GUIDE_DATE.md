@@ -27,7 +27,7 @@ These features were inspired by various datetime libraries:
 - C# [Noda Time](https://nodatime.org) library
 - Python [datetime](https://docs.python.org/3/library/datetime.html) library
 
-**Version**: 0.12.0-rc1 (2024-06-18)
+**Version**: 0.12.0-rc2 (2024-06-19)
 
 **Parent Document**: [USER_GUIDE.md](USER_GUIDE.md)
 

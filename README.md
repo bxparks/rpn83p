@@ -17,7 +17,7 @@ RPN83P is a flash application written in Z80 assembly language that consumes 3
 pages (48 kiB) of flash memory. Since it is stored in flash, it is preserved if
 the RAM is cleared. It consumes about 1025 to 2535 bytes of TI-OS RAM through 4
 AppVars, depending on the number of storage registers: `RPN83REG` (500 to 1925
-bytes), `RPN83SAV` (142 byte), `RPN83STA` (272 bytes), and `RPN83STK` (120 to
+bytes), `RPN83SAV` (140 byte), `RPN83STA` (272 bytes), and `RPN83STK` (120 to
 196 bytes).
 
 Summary of features:
@@ -113,7 +113,7 @@ Missing features (partial list):
 - vectors and matrices
 - keystroke programming
 
-**Version**: 0.12.0-rc1 (2024-06-18)
+**Version**: 0.12.0-rc2 (2024-06-19)
 
 **Changelog**: [CHANGELOG.md](CHANGELOG.md)
 
