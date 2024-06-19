@@ -216,7 +216,7 @@ termination of the algorithm are exposed:
   -PYR*100`)
 - `IYR2`: second guess percent per year (default: 100%; allowed: `IYR2 >
   -PYR*100`)
-- `TMAX`: iteration maximum (default: 15; allowed: 0-255)
+- `TMAX`: iteration maximum (default: 15; allowed: 1-255)
 
 For most TVM problems representing real-life situations, the default values
 should be sufficient to find a solution. You can override the defaults of these
@@ -294,7 +294,7 @@ recall functionality is available through the `2ND` key:
 - `2ND IYR2`: recall the `IYR2` variable
 - `2ND TMAX`: recall the `TMAX` variable
 
-As a rule of thumb, the RPN83P does not use the `2ND` button for its menu
+(As a rule of thumb, the RPN83P does not use the `2ND` button for its menu
 buttons. Usually if a menu button sets an internal variable, the equivalent read
 functionality is implemented by another menu button with a name similar to the
 original menu with the addition of a question mark (e.g. `WSIZ` and `WSZ?`).
@@ -303,7 +303,7 @@ menu system, with no hidden features. But there are so many TVM variables and
 parameters, that adding the `?` variant of all those menu buttons would have
 made the menu rows too cluttered and hard to navigate. Currently (v0.12.0), the
 TVM submenu is the only place where the `2ND` button is used for hidden menu
-functionality.
+functionality.)
 
 ## TVM Examples
 
@@ -381,17 +381,19 @@ menu buttons:
 - Press -30 `PMT`
 - Press 400 `FV`
 - Press 1 `P/YR`
-- Press `I%YR` (should see `TVM Not Found`)
-- Modify the TVM Solver initial guesses to get the first solution
+- Press `I%YR` (should see `TVM Calculated (Multiple)`)
+- Answer: 53.17221327%
+- Modify the TVM Solver initial guesses to find the second solution
     - Press 10 `IYR1`
     - Press 20 `IYR2`
-- Press `I%YR` (should see `TVM Calculated`)
+- Press `I%YR` (should see `TVM Calculated (Multiple)`)
 - Answer: 14.43587133%
-- Modify the TVM Solver initial guesses to get the second solution
-    - Press 40 `IYR1`
-    - Press 60 `IYR2`
-- Press `I%YR` (should see `TVM Calculated`)
-- Answer: 53.17221327%
+
+When the calculator knows that there are multiple solutions, and it can find
+only one of them, the status message will be "TVM Calculated (Multiple)". After
+the first solution is found, the `IYR1` and `IYR2` guesses can be adjusted to
+search for the other solution. Unfortunately the calculator cannot give hints
+about where the other solution may be found.
 
 Source:
 - [Solving the TVM equation for the interest

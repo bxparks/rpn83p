@@ -1,6 +1,9 @@
 # Changelog
 
 - Unreleased
+    - TVM
+        - improve logic for appending the "overridden" dot after the `IYR1`,
+          `IYR2`, and `TMAX` menu items
 - 0.12.0-rc1 (2024-06-18)
     - TVM
         - add `C/YR` menu (number of compoundings per year)
