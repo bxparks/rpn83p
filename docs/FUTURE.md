@@ -81,10 +81,12 @@ and more complicated features will get their own GitHub tickets.
     - I estimate that this feature will take about 1000-2000 hours of
       programming.
 - polynomial solvers
-    - Quadratic, cubic, and quartic equations have analytical solutions so
-      should be relatively straightforward... Except that they need complex
-      number support. And we need to work around numerical cancellation or
-      roundoff errors.
+    - Quadratic has an relatively easy, well-understood analytical solutions.
+    - Cubic and quartic have analytic solutions but they are quite complex
+      (particularly the quartic) and their numerical stability behaviors
+      are not straightforward. It may be easier to use iterative methods for
+      cubic and quartic equations.
+    - Anything higher than 4th degree requires numerical solutions.
 - `UNIT` conversions
     - support imperial (not just US) units
         - several places assume US customary units (e.g. US gallons) instead of
