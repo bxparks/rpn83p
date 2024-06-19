@@ -330,38 +330,30 @@ there are only 3 possibilities for the number of sign changes: 0, 1, or 2.
 According to the rule of signs, these are the number of possible solutions:
 
 ```
-0: no solution
-1: exactly one solution
-2: no solution or 2 solutions
+0 sign change: no solution
+1 sign change: exactly one solution
+2 sign changes: no solution or 2 solutions
 ```
 
 If the TVM Solver finds that the number of sign changes is 0, then it knows
-immediately that there are no solutions to the polynomial equation, and it can
-let the user know immediately.
+immediately that there are no solutions to the polynomial equation and
+a `TVM No Solution` message is displayed immediately.
 
-The RPN83P code uses the following algorithm to determine if there are no sign
-changes:
-
-- initialize 2 counters:
-    - `numNonZero`: number of non-zero coefficients
-    - `sumSign`: sum of the `sign(coef)`, where `sign(coef)` is:
-        - 0 for positive, and
-        - 1 for negative
-        - the `sign(coef)` corresponds directly to the sign bit of a TI-OS
-          floating point number
-- loop through the coefficients, and update the 2 counters
-    - only 3 different coefficients need to be considered because the `PMT`
-      coefficients are all identical
-- if `sumSign == numNonZero` OR `sumSign == 0`, then there were *no* sign
-  changes
-- if `numNonZero == 0`, then the TVM variables were ill-defined and an error
-  should be shown to the user
-
-The TVM Solver does not check for 1 sign-change or 2 sign-changes, because I am
-not sure that there is an easy way to distinguish between "no solution" and "two
-solutions". And it does not seem useful to know if there is exactly one solution
-or 2 solutions, because we would have to perform the numerical iteration to the
-find the root in either case.
+If the number of sign changes is 1 or 2, the TVM Solver attempts to find a
+solution numerically (see [Secant Method](#secant-method) below). Here are the
+possible outcomes:
+- If a solution is found, and:
+    - the number of sign changes is 1, then we know that we have found the only
+      possible solution and the status message is `TVM Calculated`.
+    - the number of sign changes is 2, then we know that there are actually 2
+      solutions and we have found only one, so the status message is `TVM
+      Calculated (Multiple)` to let the user know that only one of the two
+      solutions was found.
+- If a solution is *not* found, and:
+    - the number of sign changes is 1, we display `TVM Not Found`.
+    - the number of sign changes is 2, we don't know if there are actually no
+      solutions, or if there are 2 solutions that we could not find numerically.
+      So the message is also `TVM Not Found` in this case.
 
 ### Taming Overflows
 
