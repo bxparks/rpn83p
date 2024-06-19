@@ -361,11 +361,11 @@ mTvmPYRNameSelector:
     bcall(_CpOP1OP2) ; ZF=1 if OP1==OP2
     pop de
     pop bc
-    jr z, mTvmPYRNameSelectorDefault ; TODO: change to 'jr nz' for consistency
-    scf
-    ret
-mTvmPYRNameSelectorDefault:
+    jr nz, mTvmPYRNameSelectorAlt
     or a ; CF=0
+    ret
+mTvmPYRNameSelectorAlt:
+    scf
     ret
 
 ;-----------------------------------------------------------------------------
@@ -410,11 +410,11 @@ mTvmCYRNameSelector:
     bcall(_CpOP1OP2) ; ZF=1 if OP1==OP2
     pop de
     pop bc
-    jr z, mTvmCYRNameSelectorDefault ; TODO: change to 'jr nz' for consistency
-    scf
-    ret
-mTvmCYRNameSelectorDefault:
+    jr nz, mTvmCYRNameSelectorAlt
     or a ; CF=0
+    ret
+mTvmCYRNameSelectorAlt:
+    scf
     ret
 
 ;-----------------------------------------------------------------------------
