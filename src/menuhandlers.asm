@@ -159,13 +159,6 @@ mPercentChangeHandler:
 ;        b := a mod b
 ;        a := t
 ;    return a
-;
-; TODO: To reduce code size and programming time, this uses the TI-OS floating
-; point operations to calculate (a mod b). It would probably be a LOT faster to
-; use native Z-80 assembly to implement the (a mod b). However, that requires
-; writing an integer division routine that takes a 32-bit and a 16-bit
-; arguments, producing a 32-bit result. It's probably available somewhere on
-; the internet, but I'm going to punt on that for now.
 mGcdHandler:
     call closeInputAndRecallXY
     call validatePosIntGcdLcm
@@ -189,6 +182,16 @@ validatePosIntGcdLcmError:
     bcall(_ErrDomain) ; throw exception
 
 ; Description: Calculate the Great Common Divisor.
+;
+; TODO: To reduce code size and programming time, this uses the TI-OS floating
+; point operations to calculate (a mod b). It would probably be a LOT faster to
+; use native Z-80 assembly to implement the (a mod b). At the time that I wrote
+; this, the integer32.asm or the integer40.asm routines had not been written
+; yet. I could probably use those integer routines to make this a LOT faster.
+; However, the GCD algorithm is very efficient and does not take too many
+; iterations. So I'm not sure it's worth changing this over to the integer
+; routines.
+;
 ; Input: OP1, OP2
 ; Output: OP1 = GCD(OP1, OP2)
 ; Destroys: OP1, OP2, OP3
