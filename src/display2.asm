@@ -180,7 +180,7 @@ displayMenuFolderEnd:
 
 ;-----------------------------------------------------------------------------
 ; Print the inputBuf[] along with the TIOS blinking cursor.
-; TODO: PrintInputBuf() needs polishing for DRAW mode 3.
+; TODO: PrintInputBuf() needs polishing for drawModeInputBuf.
 ;-----------------------------------------------------------------------------
 
 ; Description: Print the input buffer.
