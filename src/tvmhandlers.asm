@@ -352,7 +352,7 @@ mTvmPYRGet:
 ; Description: Select menu name. Display a dot if the PYR is different than 12,
 ; which is almost always the default.
 ; Output: CF=0 for normal, CF=1 or alternate
-; Preserves: BC, DE
+; Preserves: BC, DE (must be preserved)
 mTvmPYRNameSelector:
     push bc
     push de
@@ -361,7 +361,7 @@ mTvmPYRNameSelector:
     bcall(_CpOP1OP2) ; ZF=1 if OP1==OP2
     pop de
     pop bc
-    jr z, mTvmPYRNameSelectorDefault
+    jr z, mTvmPYRNameSelectorDefault ; TODO: change to 'jr nz' for consistency
     scf
     ret
 mTvmPYRNameSelectorDefault:
@@ -401,7 +401,7 @@ mTvmCYRGet:
 ; Description: Select menu name. Display a dot if the CYR is different than 12,
 ; which is almost always the default.
 ; Output: CF=0 for normal, CF=1 or alternate
-; Preserves: BC, DE
+; Preserves: BC, DE (must be preserved)
 mTvmCYRNameSelector:
     push bc
     push de
@@ -410,7 +410,7 @@ mTvmCYRNameSelector:
     bcall(_CpOP1OP2) ; ZF=1 if OP1==OP2
     pop de
     pop bc
-    jr z, mTvmCYRNameSelectorDefault
+    jr z, mTvmCYRNameSelectorDefault ; TODO: change to 'jr nz' for consistency
     scf
     ret
 mTvmCYRNameSelectorDefault:
@@ -470,8 +470,8 @@ mTvmIYR0Handler:
     call rclX
     call validateOp1Real
     bcall(_StoTvmIYR0)
-    call tvmSolverSetOverrideFlagIYR0
     set rpnFlagsTvmCalculate, (iy + rpnFlags)
+    set dirtyFlagsMenu, (iy + dirtyFlags)
     ld a, errorCodeTvmStored
     ld (handlerCode), a
     ret
@@ -485,8 +485,16 @@ mTvmIYR0Get:
 
 ; Description: Select menu name.
 ; Output: CF=0 for normal, CF=1 or alternate
+; Preserves: BC, DE (must be preserved)
 mTvmIYR0NameSelector:
-    call tvmSolverBitOverrideFlagIYR0
+    push bc
+    push de
+    bcall(_RclTvmIYR0Default)
+    bcall(_OP1ToOP2)
+    bcall(_RclTvmIYR0)
+    bcall(_CpOP1OP2) ; ZF=1 if OP1==OP2
+    pop de
+    pop bc
     jr nz, mTvmIYR0NameSelectorAlt
     or a ; CF=0
     ret
@@ -505,8 +513,8 @@ mTvmIYR1Handler:
     call rclX
     call validateOp1Real
     bcall(_StoTvmIYR1)
-    call tvmSolverSetOverrideFlagIYR1
     set rpnFlagsTvmCalculate, (iy + rpnFlags)
+    set dirtyFlagsMenu, (iy + dirtyFlags)
     ld a, errorCodeTvmStored
     ld (handlerCode), a
     ret
@@ -520,12 +528,20 @@ mTvmIYR1Get:
 
 ; Description: Select menu name.
 ; Output: CF=0 for normal, CF=1 or alternate
+; Preserves: BC, DE (must be preserved)
 mTvmIYR1NameSelector:
-    call tvmSolverBitOverrideFlagIYR1
-    jr nz, mTvmIYR1NameSelectorC
+    push bc
+    push de
+    bcall(_RclTvmIYR1Default)
+    bcall(_OP1ToOP2)
+    bcall(_RclTvmIYR1)
+    bcall(_CpOP1OP2) ; ZF=1 if OP1==OP2
+    pop de
+    pop bc
+    jr nz, mTvmIYR1NameSelectorAlt
     or a ; CF=0
     ret
-mTvmIYR1NameSelectorC:
+mTvmIYR1NameSelectorAlt:
     scf
     ret
 
@@ -540,8 +556,8 @@ mTvmIterMaxHandler:
     call rclX
     call validateOp1Real
     bcall(_StoTvmIterMax)
-    call tvmSolverSetOverrideFlagIterMax
     set rpnFlagsTvmCalculate, (iy + rpnFlags)
+    set dirtyFlagsMenu, (iy + dirtyFlags)
     ld a, errorCodeTvmStored
     ld (handlerCode), a
     ret
@@ -555,8 +571,14 @@ mTvmIterMaxGet:
 
 ; Description: Select menu name.
 ; Output: CF=0 for normal, CF=1 or alternate
+; Preserves: BC, DE (must be preserved)
 mTvmIterMaxNameSelector:
-    call tvmSolverBitOverrideFlagIterMax
+    push bc
+    push de
+    ld a, (tvmIterMax)
+    cp tvmSolverDefaultIterMax ; ZF=1 if tmvIterMax==default
+    pop de
+    pop bc
     jr nz, mTvmIterMaxNameSelectorAlt
     or a ; CF=0
     ret
@@ -580,80 +602,4 @@ mTvmSolverResetHandler:
     bcall(_TvmSolverReset)
     ld a, errorCodeTvmSolverReset
     ld (handlerCode), a
-    ret
-
-;-----------------------------------------------------------------------------
-; More low-level helper routines, placed at the bottom to avoid clutter in the
-; main parts of the file. TODO: Many (all?) of these may be suitable to move to
-; tvm2.asm on Flash Page 2, because I don't think any of these are in
-; performance critical paths.
-;-----------------------------------------------------------------------------
-
-; Description: Set tvmSolverOverrideFlagIYR0.
-; Destroys: HL
-tvmSolverSetOverrideFlagIYR0:
-    ld hl, tvmSolverOverrideFlags
-    set tvmSolverOverrideFlagIYR0, (hl)
-    set dirtyFlagsMenu, (iy + dirtyFlags)
-    ret
-
-; Description: Reset tvmSolverOverrideFlagIYR0.
-; Destroys: HL
-tvmSolverResOverrideFlagIYR0:
-    ld hl, tvmSolverOverrideFlags
-    res tvmSolverOverrideFlagIYR0, (hl)
-    set dirtyFlagsMenu, (iy + dirtyFlags)
-    ret
-
-; Description: Test bit tvmSolverOverrideFlagIYR0.
-; Destroys: HL
-tvmSolverBitOverrideFlagIYR0:
-    ld hl, tvmSolverOverrideFlags
-    bit tvmSolverOverrideFlagIYR0, (hl)
-    ret
-
-; Description: Set tvmSolverOverrideFlagIYR1.
-; Destroys: HL
-tvmSolverSetOverrideFlagIYR1:
-    ld hl, tvmSolverOverrideFlags
-    set tvmSolverOverrideFlagIYR1, (hl)
-    set dirtyFlagsMenu, (iy + dirtyFlags)
-    ret
-
-; Description: Reset tvmSolverOverrideFlagIYR1.
-; Destroys: HL
-tvmSolverResOverrideFlagIYR1:
-    ld hl, tvmSolverOverrideFlags
-    res tvmSolverOverrideFlagIYR1, (hl)
-    set dirtyFlagsMenu, (iy + dirtyFlags)
-    ret
-
-; Description: Test bit tvmSolverOverrideFlagIYR1.
-; Destroys: HL
-tvmSolverBitOverrideFlagIYR1:
-    ld hl, tvmSolverOverrideFlags
-    bit tvmSolverOverrideFlagIYR1, (hl)
-    ret
-
-; Description: Set tvmSolverOverrideFlagIterMax.
-; Destroys: HL
-tvmSolverSetOverrideFlagIterMax:
-    ld hl, tvmSolverOverrideFlags
-    set tvmSolverOverrideFlagIterMax, (hl)
-    set dirtyFlagsMenu, (iy + dirtyFlags)
-    ret
-
-; Description: Reset tvmSolverOverrideFlagIterMax.
-; Destroys: HL
-tvmSolverResOverrideFlagIterMax:
-    ld hl, tvmSolverOverrideFlags
-    res tvmSolverOverrideFlagIterMax, (hl)
-    set dirtyFlagsMenu, (iy + dirtyFlags)
-    ret
-
-; Description: Test bit tvmSolverOverrideFlagIterMax.
-; Destroys: HL
-tvmSolverBitOverrideFlagIterMax:
-    ld hl, tvmSolverOverrideFlags
-    bit tvmSolverOverrideFlagIterMax, (hl)
     ret

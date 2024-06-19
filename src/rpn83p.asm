@@ -498,7 +498,7 @@ curveFitModel equ statAllEnabled + 1 ; u8
 
 ; Constants used by the TVM Solver.
 tvmSolverDefaultIterMax equ 15
-; tvmSolverResult enums indicate if the solver should stop or continue the
+; TVM Solver enums indicate if the solver should stop or continue the
 ; iterations
 tvmSolverResultContinue equ 0 ; loop should continue
 tvmSolverResultFound equ 1
@@ -507,19 +507,10 @@ tvmSolverResultNotFound equ 3
 tvmSolverResultIterMaxed equ 4
 tvmSolverResultBreak equ 5
 tvmSolverResultSingleStep equ 6 ; return after each iteration
-; Bit position in tvmSolverOverrideFlags that determine if a specific parameter
-; has been overridden.
-tvmSolverOverrideFlagIYR0 equ 0
-tvmSolverOverrideFlagIYR1 equ 1
-tvmSolverOverrideFlagIterMax equ 2
 
-; The tvmSolverOverrideFlags is a collection of bit flags. Each flag determines
-; whether a particular parameter that controls the TVM Solver execution has its
-; default value overridden by a manual value from the user.
-tvmSolverOverrideFlags equ curveFitModel + 1 ; u8 flag
 ; TVM Solver configuration parameters. These are normally defined automatically
 ; but can be overridden using the 'IYR0', 'IYR1', and 'TMAX' menu buttons.
-tvmIYR0 equ tvmSolverOverrideFlags + 1 ; float
+tvmIYR0 equ curveFitModel + 1 ; float
 tvmIYR1 equ tvmIYR0 + 9 ; float
 tvmIterMax equ tvmIYR1 + 9 ; u8
 
@@ -1182,6 +1173,7 @@ _StoTvmCYRLabel:
 _StoTvmCYR equ _StoTvmCYRLabel-branchTableBase
     .dw StoTvmCYR
     .db 2
+;
 _RclTvmIYR0Label:
 _RclTvmIYR0 equ _RclTvmIYR0Label-branchTableBase
     .dw RclTvmIYR0
@@ -1241,6 +1233,15 @@ _StoTvmNPMT1 equ _StoTvmNPMT1Label-branchTableBase
 _RclTvmSolverCountLabel:
 _RclTvmSolverCount equ _RclTvmSolverCountLabel-branchTableBase
     .dw RclTvmSolverCount
+    .db 2
+;
+_RclTvmIYR0DefaultLabel:
+_RclTvmIYR0Default equ _RclTvmIYR0DefaultLabel-branchTableBase
+    .dw RclTvmIYR0Default
+    .db 2
+_RclTvmIYR1DefaultLabel:
+_RclTvmIYR1Default equ _RclTvmIYR1DefaultLabel-branchTableBase
+    .dw RclTvmIYR1Default
     .db 2
 
 ; float2.asm

@@ -145,6 +145,18 @@ stoTvmIterMaxA: ; alt version that stores A
 stoTvmIterMaxErr:
     bcall(_ErrDomain)
 
+; Description: Recall the default IYR0 guess (exposed as "IYR1" to the user).
+RclTvmIYR0Default:
+    jp op1SetM50PageTwo
+
+; Description: Recall the default IYR1 guess (exposed as "IYR2" to the user).
+RclTvmIYR1Default:
+    jp op1Set100PageTwo
+
+; Description: Recall the default IterMax (exposed as "TMAX" to the user).
+RclTvmItermaxDefault:
+    jp op1Set100PageTwo
+
 ;-----------------------------------------------------------------------------
 
 ; Description: Recall tvmI0 to OP1.
@@ -1211,14 +1223,11 @@ TvmClear:
 ; clear the override flags to remove the menu dots.
 TvmSolverReset:
     ; Set factory defaults
-    call op1SetM50PageTwo ; -50%/year
+    call RclTvmIYR0Default ; -50%/year
     call StoTvmIYR0
-    call op1Set100PageTwo ; 100%/year
+    call RclTvmIYR1Default ; 100%/year
     call StoTvmIYR1
     ld a, tvmSolverDefaultIterMax
     call stoTvmIterMaxA
-    ; Clear flags
-    xor a
-    ld (tvmSolverOverrideFlags), a
     set dirtyFlagsMenu, (iy + dirtyFlags)
     ret
