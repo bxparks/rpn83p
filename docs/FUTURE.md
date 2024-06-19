@@ -39,6 +39,8 @@ and more complicated features will get their own GitHub tickets.
 
 ## Medium Future
 
+- bulk view registers and variables
+    - see [Issue#24](https://github.com/bxparks/rpn83p/issues/24)
 - custom button bindings
     - a significant number of buttons on the TI-83/TI-84 keyboard are not used
       by RPN83P
