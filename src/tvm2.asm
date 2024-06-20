@@ -292,13 +292,20 @@ getTvmIPP:
 ; Preserves: OP2
 TvmCalcIPPFromIYR:
     call pushRaw9Op2 ; FPS=[OP2]
-    ;
+    call pushRaw9Op1 ; FPS=[OP2,IYR]
+    ; Check if PYR==CYR, if so, bypass the expm1() and log1p() functions. They
+    ; can produce very small roundoff errors such that the identity
+    ; expm1(ln1p(x)) == x does not hold.
+    call RclTvmCYR ; OP1=CYR
+    call op1ToOp2PageTwo ; OP2=CYR
+    call RclTvmPYR ; OP1=PYR
+    bcall(_CpOP1OP2) ; ZF=1 if equal
+    jr z, tvmCalcIPPFromIYRCYREqualsPYR
+    ; i=expm1[(CYR/PYR) log1p(IYR/CYR/100)]
+    call popRaw9Op1 ; FPS=[OP2]; OP1=IYR
+    bcall(_FPDiv) ; OP1=IYR/CYR
     call op2Set100PageTwo
     bcall(_FPDiv) ; OP1=IYR/100
-    call op1ToOp2PageTwo ; OP2=IYR/100
-    call RclTvmCYR ; OP1=CYR
-    call op1ExOp2PageTwo ; OP1=IYR/100, OP2=CYR
-    bcall(_FPDiv) ; OP1=IYR/100/CYR
     call LnOnePlus ; OP1=ln1p(IYR/100/CYR)
     call op1ToOp2PageTwo ; OP2=ln1p(...)
     call RclTvmCYR ; OP1=CYR
@@ -311,6 +318,14 @@ TvmCalcIPPFromIYR:
     ;
     call popRaw9Op2 ; FPS=[]
     ret
+tvmCalcIPPFromIYRCYREqualsPYR:
+    ; i=IYR/CYR/100
+    call popRaw9Op1 ; FPS=[OP2]; OP1=IYR
+    bcall(_FPDiv) ; OP1=IYR/CYR
+    call op2Set100PageTwo
+    bcall(_FPDiv) ; OP1=IYR/100
+    call popRaw9Op2 ; FPS=[]; OP2=restored
+    ret
 
 ; Description: Compute the I%/YR from the fractional interest per period.
 ; Input: OP1=IPP=fractional interest per period
@@ -318,7 +333,17 @@ TvmCalcIPPFromIYR:
 ; Preserves: OP2
 calcTvmIYRFromIPP:
     call pushRaw9Op2 ; FPS=[OP2]
-    ;
+    call pushRaw9Op1 ; FPS=[OP2,IPP]
+    ; Check if PYR==CYR, if so, bypass the expm1() and log1p() functions. They
+    ; can produce very small roundoff errors such that the identity
+    ; expm1(ln1p(x)) == x does not hold.
+    call RclTvmCYR ; OP1=CYR
+    call op1ToOp2PageTwo ; OP2=CYR
+    call RclTvmPYR ; OP1=PYR
+    bcall(_CpOP1OP2) ; ZF=1 if equal
+    jr z, calcTvmIYRFromIPPCYREqualsPYR
+    ; IYR=100*CYR*expm1[(PYR/CYR)*log1p(i)]
+    call popRaw9Op1 ; FPS=[OP2]; OP1=IPP
     call LnOnePlus ; OP1=ln1p(i)
     call op1ToOp2PageTwo
     call RclTvmPYR
@@ -328,14 +353,19 @@ calcTvmIYRFromIPP:
     call op1ExOp2PageTwo
     bcall(_FPDiv) ; OP1=(PYR/CYR)*ln1p(i)
     call ExpMinusOne ; OP1=expm1[(PYR/CYR)*ln1p(i)]
+calcTvmIYRFromIPPCommon:
     call op1ToOp2PageTwo
     call RclTvmCYR
     bcall(_FPMult) ; OP1=CYR*expm1[(PYR/CYR) ln1p(i)]
     call op2Set100PageTwo
     bcall(_FPMult) ; OP1=100*CYR*expm1[...]
     ;
-    call popRaw9Op2 ; FPS=[]
+    call popRaw9Op2 ; FPS=[]; OP2=restored
     ret
+calcTvmIYRFromIPPCYREqualsPYR:
+    ; IYR=100*CYR*i
+    call popRaw9Op1 ; FPS=[OP2]; OP1=IPP
+    jr calcTvmIYRFromIPPCommon
 
 ;-----------------------------------------------------------------------------
 
