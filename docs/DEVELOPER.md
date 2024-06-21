@@ -3,7 +3,7 @@
 Notes for the developers of the RPN83P app, likely myself in 6 months when I
 cannot remember how the code works.
 
-**Version**: 0.12.0-rc2 (2024-06-19)
+**Version**: 0.12.0-rc3 (2024-06-21)
 
 **Project Home**: https://github.com/bxparks/rpn83p
 

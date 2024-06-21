@@ -14,7 +14,7 @@ because it is faster and easier to use compared to a web app, especially for
 small features that can be described in a few sentences. Usually only the larger
 and more complicated features will get their own GitHub tickets.
 
-**Version**: 0.12.0-rc2 (2024-06-19)
+**Version**: 0.12.0-rc3 (2024-06-21)
 
 **Parent Document**: [USER_GUIDE.md](USER_GUIDE.md)
 
