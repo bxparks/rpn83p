@@ -536,7 +536,8 @@ our various terms and equations (`ICFN(i,N)`, `NPMT(i)`) have been defined to
 remove their singularity at `i=0`. Those functions are now continuous (and
 probably infinitely differentiable) at `i=0`.
 
-The following posts by Albert Chan suggest that there are better initial guess:
+The following posts by Albert Chan suggest that there are better initial
+guesses:
 
 - [TVM solve for interest rate,
   revisited](https://www.hpmuseum.org/forum/thread-18359.html) (2022)
