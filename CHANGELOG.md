@@ -1,6 +1,21 @@
 # Changelog
 
 - Unreleased
+- 0.12.0-rc3 (2024-06-21)
+    - TVM
+        - reduce rounding errors when `PYR==CYR`, the most common case in the US
+          at least
+    - **Bug Fix**: update logic that determines when the comma `,` character can
+      be inserted into the input buffer
+        - some internal routines were still looking at the last character in the
+          input buffer, instead of the character to the left of the current
+          cursor
+            - prevented comma insertion when the cursor was scrolled into the
+              middle of the input buffer
+            - updated to look at the char to the left of cursor
+        - update logic that handles left and right braces `{ }`
+            - comma now allowed only inside an open left-brace `{`
+            - comma no longer allowed after the last closing right-brace `}`
 - 0.12.0-rc2 (2024-06-19)
     - TVM
         - improve logic for appending the "overridden" dot after the `IYR1`,
