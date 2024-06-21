@@ -464,9 +464,11 @@ handleKeyRBrace:
     ; Check if in data record mode.
     bcall(_CheckInputBufRecord) ; CF=1 if inputBuf is a data record
     ret nc ; return if *not* in data structure mode.
-    ; Check braceLevel
+    ; Check braceLevel:i8
     or a
-    ret z ; return if braceLevel<=0
+    ret z ; return if braceLevel==0
+    bit 7, a
+    ret nz ; return if braceLevel<0
     ; RBrace allowed.
     ld a, LrBrace
     jp handleKeyNumber
@@ -489,6 +491,8 @@ handleKeyCommaAlt:
     ret nc ; return if not in data structure mode
     or a ; A=braceLevel
     ret z ; return if braceLevel==0
+    bit 7, a
+    ret nz ; return if braceLevel<0
     ; Prevent double-comma or comma after opening left brace.
     bcall(_CheckInputBufComma) ; CF=1 if a comma can be inserted
     ret nc
