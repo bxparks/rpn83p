@@ -906,6 +906,10 @@ _CheckInputBufRecordLabel:
 _CheckInputBufRecord equ _CheckInputBufRecordLabel-branchTableBase
     .dw CheckInputBufRecord
     .db 1
+_CheckInputBufCommaLabel:
+_CheckInputBufComma equ _CheckInputBufCommaLabel-branchTableBase
+    .dw CheckInputBufComma
+    .db 1
 _SetComplexDelimiterLabel:
 _SetComplexDelimiter equ _SetComplexDelimiterLabel-branchTableBase
     .dw SetComplexDelimiter
@@ -935,7 +939,8 @@ _ParseArgBuf equ _ParseArgBufLabel-branchTableBase
     .dw ParseArgBuf
     .db 1
 
-; pstring1.asm
+; pstring1.asm. TODO: I think these can be removed because they are always
+; called from flash page 1, so we don't need the branch table entries.
 _AppendStringLabel:
 _AppendString equ _AppendStringLabel-branchTableBase
     .dw AppendString
@@ -947,10 +952,6 @@ _InsertAtPos equ _InsertAtPosLabel-branchTableBase
 _DeleteAtPosLabel:
 _DeleteAtPos equ _DeleteAtPosLabel-branchTableBase
     .dw DeleteAtPos
-    .db 1
-_GetLastCharLabel:
-_GetLastChar equ _GetLastCharLabel-branchTableBase
-    .dw GetLastChar
     .db 1
 
 ; integerconv1.asm

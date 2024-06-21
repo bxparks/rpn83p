@@ -5,11 +5,13 @@
 ; Main input key code handlers.
 ;-----------------------------------------------------------------------------
 
-; Description: Append a number character to inputBuf or argBuf, updating
-; various flags. If the inputBuf is already complex, this routine must not be
-; called with Langle, LimagI or Ltheta.
+; Description: Insert the character in `A` into `inputBuf` (or argBuf), at
+; position `cursorInputPos`, updating various flags. If `cursorInputPos` is at
+; the end of the `inputBuf`, then the character is appended. If the inputBuf is
+; already complex, this routine must not be called with a complex delimiter
+; (defined by isComplexDelimiter(), i.e. LimagI, Langle, Ldegree).
 ; Input:
-;   - A:char=character to be appended
+;   - A:char=character to be inserted
 ;   - rpnFlagsEditing=whether we are already in Edit mode
 ; Output:
 ;   - CF=0 if successful
@@ -25,7 +27,7 @@ handleKeyNumber:
     jr nz, handleKeyNumberCheckAppend
 handleKeyNumberFirstDigit:
     ; Lift the stack, unless disabled.
-    push af ; preserve A=char to append
+    push af ; preserve A=char to insert
     call liftStackIfEnabled
     pop af
     ; Go into editing mode.
@@ -483,19 +485,13 @@ handleKeyComma:
     jr z, handleKeyEEAlt
 handleKeyCommaAlt:
     ; Check if in data record mode.
-    bcall(_CheckInputBufRecord) ; CF=1 if inputBuf is a data record
+    bcall(_CheckInputBufRecord) ; CF=1 if inputBuf is a Record
     ret nc ; return if not in data structure mode
-    or a
+    or a ; A=braceLevel
     ret z ; return if braceLevel==0
     ; Prevent double-comma or comma after opening left brace.
-    ld hl, inputBuf
-    bcall(_GetLastChar) ; A=lastChar
-    or a
-    ret z ; return if empty
-    cp ','
-    ret z ; return if comma
-    cp LlBrace
-    ret z ; return if '{'
+    bcall(_CheckInputBufComma) ; CF=1 if a comma can be inserted
+    ret nc
     ; Append the comma
     ld a, ','
     jp handleKeyNumber

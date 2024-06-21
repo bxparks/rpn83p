@@ -164,7 +164,7 @@ deleteAtPosShiftLeft:
 ; Description: Return the first character in the Pascal string, or 0 if the
 ; string is empty.
 ; Input:
-;   - HL:(PascalStrign*)=pascalString
+;   - HL:(PascalString*)=pascalString
 ; Output:
 ;   - A:char=firstChar (0 if empty)
 ; Destroys: A
@@ -177,7 +177,6 @@ GetFirstChar:
     ld a, (hl)
     dec hl
     ret
-#endif
 
 ; Description: Return the last character in the Pascal string, or 0 if the
 ; string is empty.
@@ -195,6 +194,31 @@ GetLastChar:
     ld b, 0
     add hl, bc
     ld a, (hl)
+    ret
+#endif
+
+; Description: Return the character at position `A` in the Pascal string, or 0
+; if the position is beyond the end of the string.
+; Input:
+;   - HL:(PascalString*)=pascalString
+;   - A:u8=pos in the range of [0,len]
+; Output:
+;   - ZF=0 and A:char=char at pos
+;   - ZF=1 and A==NUL if pos is beyond the string
+; Destroys: A, BC, HL
+; Preserves: DE
+getCharAt:
+    cp (hl) ; CF=0 if pos>=len
+    jr nc, getCharAtEndOfString
+    inc hl
+    ld c, a
+    ld b, 0
+    add hl, bc
+    ld a, (hl)
+    or a ; ZF=0 (assumes that NUL will never be in the string)
+    ret
+getCharAtEndOfString:
+    xor a ; ZF=1
     ret
 
 ;-----------------------------------------------------------------------------

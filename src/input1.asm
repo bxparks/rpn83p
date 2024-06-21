@@ -470,6 +470,32 @@ checkInputBufRecordNone:
     or a ; CF=0
     ret
 
+;------------------------------------------------------------------------------
+
+; Description: Check if a comma can be inserted into the inputBuf at the
+; current cursorInputPos.
+; Input:
+;   - inputBuf
+;   - cursorInputPos
+; Output:
+;   - CF=1 if a comma can be inserted
+; Destroys: A, DE, BC, HL
+CheckInputBufComma:
+    ld hl, inputBuf
+    ld a, (cursorInputPos)
+    or a
+    jr z, checkInputBufCommaAllowed
+    dec a
+    call getCharAt ; A=char; ZF=1 if beyond end of string
+    jr z, checkInputBufCommaAllowed
+    cp ','
+    ret z ; return with CF=0 if comma
+    cp LlBrace
+    ret z ; return with CF=0 if '{'
+checkInputBufCommaAllowed:
+    scf
+    ret
+
 ;-----------------------------------------------------------------------------
 ; Entering complex numbers into the inputBuf.
 ;-----------------------------------------------------------------------------
