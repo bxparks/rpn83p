@@ -1,10 +1,7 @@
 # Changelog
 
 - Unreleased
-- 0.12.0-rc3 (2024-06-21)
-    - TVM
-        - reduce rounding errors when `PYR==CYR`, the most common case in the US
-          at least
+- 0.12.0 (2024-06-24)
     - **Bug Fix**: update logic that determines when the comma `,` character can
       be inserted into the input buffer
         - some internal routines were still looking at the last character in the
@@ -16,12 +13,11 @@
         - update logic that handles left and right braces `{ }`
             - comma now allowed only inside an open left-brace `{`
             - comma no longer allowed after the last closing right-brace `}`
-- 0.12.0-rc2 (2024-06-19)
     - TVM
+        - reduce rounding errors when `PYR==CYR`, the most common case in the US
+          at least
         - improve logic for appending the "overridden" dot after the `IYR1`,
           `IYR2`, and `TMAX` menu items
-- 0.12.0-rc1 (2024-06-18)
-    - TVM
         - add `C/YR` menu (number of compoundings per year)
             - uses the same variable as the `C/Y` variable of the "Finance" app
               in TI-OS
@@ -33,7 +29,7 @@
           of 12, allows users to quickly see if those values are different from
           the default
         - make TVM Solver more robust under certain edge cases, especially near
-          `I/YR ~ 0%`
+          `I%YR ~ 0%`
         - change initial guess of `IYR1` to `-50%` to support negative interest
           rates by default
             - keep default value of `IYR2` at `100%`
