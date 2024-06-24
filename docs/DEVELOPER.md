@@ -3,7 +3,7 @@
 Notes for the developers of the RPN83P app, likely myself in 6 months when I
 cannot remember how the code works.
 
-**Version**: 0.12.0-rc3 (2024-06-21)
+**Version**: 0.12.0 (2024-06-24)
 
 **Project Home**: https://github.com/bxparks/rpn83p
 
@@ -170,8 +170,7 @@ factoring algorithm:
    returned *all* prime factors of a number `N` . It could be more efficient
    by restarting the loop at the previous prime factor. However, this new
    function would need support for vectors or arrays so that it can return
-   multiple numbers as the result. Vectors or arrays are not currently (v0.9.0)
-   supported.
+   multiple numbers as the result. Vectors or arrays are not supported.
 1. The [Prime Number
    Theorem](https://en.wikipedia.org/wiki/Prime_number_theorem) tells us that
    the number of prime numbers less than `n` is roughly `n/ln(n)`. Since we
@@ -192,10 +191,11 @@ factoring algorithm:
    the app flash memory size by at least 13084 bytes (most likely another flash
    page, so 16 kiB).
 
-   I'm not sure if the increase in flash size is worth it, but the `PRIM`
-   function could be made blindingly fast, finishing the toughest prime factor
-   problem (of less than `2^32`) in about 4 seconds (13.0/3.3) on a TI-84+
-   calculator.
+   As far as I know, using a precalculated table of prime numbers would be the
+   fastest algorithm, and no further improvements can be made. That means that
+   the toughest prime factor problem (factorizing `65521*65521`) could be done
+   in about 2.9s (9.5/3.3) on a TI-84+ calculator. However, I don't think the
+   difference between 9.5s and 2.9s is worth the extra 16kiB of flash memory.
 
 ## TVM Algorithms
 
