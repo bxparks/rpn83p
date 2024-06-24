@@ -34,8 +34,8 @@ helpPageCount equ (helpPagesEnd-helpPages)/2
 
 msgHelpPage1:
     .db escapeLargeFont, "RPN83P", Lenter
-    .db escapeSmallFont, "v0.12.0", Shyphen, "rc3 (2024", Shyphen, "06", Shyphen, "21)", Senter
-    ; .db escapeSmallFont, "v0.11.0 (2024", Shyphen, "05", Shyphen, "28)", Senter
+    ; .db escapeSmallFont, "v0.12.0", Shyphen, "rc3 (2024", Shyphen, "06", Shyphen, "21)", Senter
+    .db escapeSmallFont, "v0.12.0 (2024", Shyphen, "06", Shyphen, "24)", Senter
     .db "(c) 2023", Shyphen, "2024 Brian T. Park", Senter
     .db Senter
     .db "An RPN calculator for the", Senter
@@ -205,8 +205,8 @@ msgHelpPage15:
     .db escapeLargeFont, "TVM", Lenter
     .db escapeSmallFont, "Outflow: -", Senter
     .db "Inflow: +", Senter
-    .db "P/YR: Payments per year", Senter
-    .db "C/YR: Compoundings per year", Senter
+    .db "P/YR: Payments/year", Senter
+    .db "C/YR: Compoundings/year", Senter
     .db "BEG: Payments at begin", Senter
     .db "END: Payments at end", Senter
     .db "CLTV: Clear TVM",  Senter
