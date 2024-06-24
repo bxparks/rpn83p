@@ -1,4 +1,4 @@
-# RPN83P User Guide: DATE
+# RPN83P User Guide: DATE Functions
 
 This document describes the `DATE` features of the RPN83P application. It has
 been extracted from [USER_GUIDE.md](USER_GUIDE.md) due to its length. The `DATE`
@@ -8,6 +8,7 @@ features are available under the `ROOT > DATE` menu item in the 3rd row:
 
 Here is a quick summary of the features:
 
+- supports the proleptic Gregorian calendar from year 0001 to 9999
 - 7 new data types (Date, Time, DateTime, TimeZone, ZonedDateTime, DayOfWeek,
   Duration)
 - determine if a given year is a leap year
@@ -26,7 +27,7 @@ These features were inspired by various datetime libraries:
 - C# [Noda Time](https://nodatime.org) library
 - Python [datetime](https://docs.python.org/3/library/datetime.html) library
 
-**Version**: 0.10.0 (2024-03-31)
+**Version**: 0.12.0 (2024-06-24)
 
 **Parent Document**: [USER_GUIDE.md](USER_GUIDE.md)
 
@@ -1340,7 +1341,7 @@ The menu items which related to the RTC are under the `CLK` menu folder:
           the Application Timezone
         - `NWUT`: return the current date-time as a `ZonedDateTime` object using
           the UTC timezone
-    - ![ROOT > DATE > CLK > Row2](images/date/menu-root-date-clk-1.png)
+    - ![ROOT > DATE > CLK > Row2](images/date/menu-root-date-clk-2.png)
         - `TZ`: set the Application Timezone
         - `TZ?`: retrieve the Application Timezone
         - `CTZ`: set the Clock Timezone
@@ -1568,7 +1569,7 @@ function, and the second `DLNK` uses the `2ND LINK` keyboard button:
 
 ## Storage Registers
 
-Storage registers (R00 to R24) can now hold any date object types. In addition,
+Storage registers (R00 to R99) can now hold any date object types. In addition,
 storage register arithmetic operations work as expected. In other words, if the
 `+` (addition), `-` (subtraction), and `*` (multiplication) operations are
 defined on a date object, then the corresponding `STO+`, `STO-`, `STO*`, `RCL+`,

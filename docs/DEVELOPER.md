@@ -3,7 +3,7 @@
 Notes for the developers of the RPN83P app, likely myself in 6 months when I
 cannot remember how the code works.
 
-**Version**: 0.9.0 (2024-01-06)
+**Version**: 0.12.0 (2024-06-24)
 
 **Project Home**: https://github.com/bxparks/rpn83p
 
@@ -81,22 +81,20 @@ the application code to change.
 ## DRAW Mode
 
 The secret `DRAW` modes are activated by the `2ND DRAW` command. It prompts the
-user for a number, like the `FIX` or `STO` command. Currently 4 modes defined:
+user for a number, like the `FIX` or `STO` command. Currently 3 modes defined:
 
 - 0 (drawModeNormal): Normal rendering, this is the default.
-- 1 (drawModeTvmSolverI): Single step through the `I%YR` TVM Solver
-  calculations, and show the iteration counter (`tvmSolverCount`), and the
-  internal interest rate variables (`tvmI0`, `tvmI1`) in place of the RPN stack
-  variables (T,Z,Y,X). The program waits for a key before executing the next
-  iteration.
-- 2 (drawModeTvmSolverF): Same as (1), except show the values of the function
-  whose roots we are trying to solve at `tvmI0` and `tvmI1`, in other words,
-  show the variables `tvmNPMT0` and `tvmNPMT1`.
-- 3 (drawModeInputBuf): Show the `inputBuf` (the edit buffer when entering
+- 1 (drawModeInputBuf): Show the `inputBuf` (the edit buffer when entering
   digits) in the Debug line just below the Status line. The `X` register is now
   always shown, instead of being overwritten by the `inputBuf` in Edit mode.
   This helps debugging the complex interaction between the input buffer and the
   X register.
+- 2 (drawModeTvmSolver): Single step through the `I%YR` TVM Solver calculations,
+  waiting for a key before executing the next iteration. Show the following
+  parameters:
+    - iteration counter (`tvmSolverCount`)
+    - internal interest rate variables `tvmI0` and `tvmI1`
+    - the `NPMT(i, N)` function evaluated at `tvmI0` and `tvmI1`
 
 Any other value is treated to be the same as 0 (drawModeNormal).
 
@@ -172,8 +170,7 @@ factoring algorithm:
    returned *all* prime factors of a number `N` . It could be more efficient
    by restarting the loop at the previous prime factor. However, this new
    function would need support for vectors or arrays so that it can return
-   multiple numbers as the result. Vectors or arrays are not currently (v0.9.0)
-   supported.
+   multiple numbers as the result. Vectors or arrays are not supported.
 1. The [Prime Number
    Theorem](https://en.wikipedia.org/wiki/Prime_number_theorem) tells us that
    the number of prime numbers less than `n` is roughly `n/ln(n)`. Since we
@@ -194,10 +191,11 @@ factoring algorithm:
    the app flash memory size by at least 13084 bytes (most likely another flash
    page, so 16 kiB).
 
-   I'm not sure if the increase in flash size is worth it, but the `PRIM`
-   function could be made blindingly fast, finishing the toughest prime factor
-   problem (of less than `2^32`) in about 4 seconds (13.0/3.3) on a TI-84+
-   calculator.
+   As far as I know, using a precalculated table of prime numbers would be the
+   fastest algorithm, and no further improvements can be made. That means that
+   the toughest prime factor problem (factorizing `65521*65521`) could be done
+   in about 2.9s (9.5/3.3) on a TI-84+ calculator. However, I don't think the
+   difference between 9.5s and 2.9s is worth the extra 16kiB of flash memory.
 
 ## TVM Algorithms
 

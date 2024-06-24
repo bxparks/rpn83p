@@ -426,22 +426,27 @@ checkInputBufDecimalPointFound:
 
 ;------------------------------------------------------------------------------
 
-; Description: Check if the inputBuf is a data structure, i.e. contains a left
-; or right curly brace '{', and count the nesting level. Positive for open left
-; curly, negative for close right curly.
-; Input: inputBuf
+; Description: Check if the inputBuf to the left of the cursor is a data
+; structure (i.e. contains a left or right curly brace '{'). If so also return
+; the nesting level: positive for open left curly, negative for close right
+; curly. Limitation: Assumes that the brace nesting level is always <=127 which
+; will be true as long as `sizeof(inputBuf)<=127`.
+; Input:
+;   - inputBuf
+;   - cursorInputPos
 ; Output:
 ;   - CF=1 if the inputBuf contains a data structure
 ;   - A:i8=braceLevel if CF=1
 ; Destroys: A, DE, BC, HL
 CheckInputBufRecord:
+    ; check if the cursor is already at the beginning of the inputBuf
+    ld a, (cursorInputPos)
+    or a ; if cursorInputPos==0: ZF=0
+    ret z ; CF=0
+    ;
     ld hl, inputBuf
-    ld b, (hl) ; C=len
+    ld b, a ; B=cursorInputPos (>0)
     inc hl ; skip past len byte
-    ; check for len==0
-    ld a, b ; A=len
-    or a ; if len==0: ZF=0
-    jr z, checkInputBufRecordNone
     ld c, 0 ; C=braceLevel
     ld d, rpnfalse ; D=isBrace
 checkInputBufRecordLoop:
@@ -463,11 +468,37 @@ checkInputBufRecordFound:
     ld a, d ; A=isBrace
     or a
     ret z
-    ld a, c
+    ld a, c ; A=braceCount
     scf
     ret
 checkInputBufRecordNone:
     or a ; CF=0
+    ret
+
+;------------------------------------------------------------------------------
+
+; Description: Check if a comma can be inserted into the inputBuf at the
+; current cursorInputPos.
+; Input:
+;   - inputBuf
+;   - cursorInputPos
+; Output:
+;   - CF=1 if a comma can be inserted
+; Destroys: A, DE, BC, HL
+CheckInputBufComma:
+    ld hl, inputBuf
+    ld a, (cursorInputPos)
+    or a
+    jr z, checkInputBufCommaAllowed
+    dec a
+    call getCharAt ; A=char; ZF=1 if beyond end of string
+    jr z, checkInputBufCommaAllowed
+    cp ','
+    ret z ; return with CF=0 if comma
+    cp LlBrace
+    ret z ; return with CF=0 if '{'
+checkInputBufCommaAllowed:
+    scf
     ret
 
 ;-----------------------------------------------------------------------------

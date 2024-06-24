@@ -14,7 +14,7 @@ because it is faster and easier to use compared to a web app, especially for
 small features that can be described in a few sentences. Usually only the larger
 and more complicated features will get their own GitHub tickets.
 
-**Version**: 0.11.0 (2024-05-28)
+**Version**: 0.12.0 (2024-06-24)
 
 **Parent Document**: [USER_GUIDE.md](USER_GUIDE.md)
 
@@ -30,26 +30,6 @@ and more complicated features will get their own GitHub tickets.
 
 ## Near Future
 
-- `TVM` (time value of money)
-    - improve TVM Solver for `I%YR`
-        - The current default initial guess is 0% and 100% so that positive
-          interest rates are required (because a sign change over the initial
-          guesses are required). If there is a rounding error, the actual
-          numerical solution could be slighlty negative, which would cause an
-          `TVM Not Fount` error message because a sign-change is currently
-          required over the 2 initial guesses.
-        - One solution could be use something like `-1%` for the lower guess,
-          and then check for a sign change over 2 sub-intervals: `[-1%,0%]` and
-          `[0%,100%]`. We also have to careful to detect cases where expected
-          solution is exactly `0%`.
-        - The terminating tolerance could be selectable or more intelligent.
-        - Maybe change the root solving algorithm from Secant method to Newton's
-          method for faster convergence.
-    - support `C/YR` (compounding periods per year) as a separate parameter
-        - currently `C/YR` is set to be the same as `P/YR` (payments per year)
-          for ease of implementation
-        - there are apparently jurisdictions (Canada, UK) where it is common for
-          `C/YR` to be different from `P/YR`
 - add a `ROOT > CLR > CLAL` (Clear All) menu function
     - becomes useful as more features and configuration options are added
 - allow numbers in any base to be entered regardless of the BASE mode
@@ -59,6 +39,8 @@ and more complicated features will get their own GitHub tickets.
 
 ## Medium Future
 
+- bulk view registers and variables
+    - see [Issue#24](https://github.com/bxparks/rpn83p/issues/24)
 - custom button bindings
     - a significant number of buttons on the TI-83/TI-84 keyboard are not used
       by RPN83P
@@ -99,10 +81,12 @@ and more complicated features will get their own GitHub tickets.
     - I estimate that this feature will take about 1000-2000 hours of
       programming.
 - polynomial solvers
-    - Quadratic, cubic, and quartic equations have analytical solutions so
-      should be relatively straightforward... Except that they need complex
-      number support. And we need to work around numerical cancellation or
-      roundoff errors.
+    - Quadratic has an relatively easy, well-understood analytical solutions.
+    - Cubic and quartic have analytic solutions but they are quite complex
+      (particularly the quartic) and their numerical stability behaviors
+      are not straightforward. It may be easier to use iterative methods for
+      cubic and quartic equations.
+    - Anything higher than 4th degree requires numerical solutions.
 - `UNIT` conversions
     - support imperial (not just US) units
         - several places assume US customary units (e.g. US gallons) instead of
@@ -174,8 +158,8 @@ and more complicated features will get their own GitHub tickets.
     - If a TI-BASIC program can be called from RPN83P, and a stable data conduit
       (i.e. an API) can be defined between RPN83P and TI-BASIC, then some of the
       need for keystroke programming within RPN83P may be satisfied.
-    - Single-letter variables `A` to `Z` and `Theta` are now (v0.10.0) available
-      through `STO` and `RCL`, so be conduits between RPN83P and TI-BASIC.
+    - Single-letter variables `A` to `Z` and `Theta` are available through `STO`
+      and `RCL`, so be conduits between RPN83P and TI-BASIC.
     - Other types may be useful: List, Matrix, and String types.
     - See [Issue #22](https://github.com/bxparks/rpn83p/issues/22)
 - indirect `STO` and `RCL` operators
@@ -232,15 +216,16 @@ and more complicated features will get their own GitHub tickets.
 These are features which are unlikely to be implemented for various reasons:
 
 - user-defined alphanumeric variables
-    - TI-OS supports only single-letter variables for real or complex types.
-      Access to these are provided in v0.10.0. Multi-letter user-defined names
-      are available only for real or complex Lists.
-    - The HP-42S allows multi-letter user-defined variables which are accessible
-      through the menu system.
-    - We would have to write our own symbol management and garage collection
-      subsystem to handle user-defined variables, which does not seem worth it.
-    - We would also require substantial refactoring of the current menu system
-      code.
+    - The TI-OS supports only single-letter variables for real or complex types
+      and access to these from RPN83P are provided through the `STO` and `RCL`
+      commands. The TI-OS supports multi-letter user-defined names only for real
+      or complex Lists, which are not currently (v0.12.0) supported in RPN83P.
+    - On the other hand, the HP-42S allows multi-letter user-defined variables
+      for all types, and they which are accessible through the menu system.
+    - To support multi-letter variables in RPN83P, we would have to write our
+      own symbol management and garage collection subsystems to handle these
+      user-defined variables. We would also require substantial refactoring of
+      the current menu system code.
     - Overall, it doesn't seem worth the effort.
 - matrices
     - I don't know how much matrix functionality is provided by TI-OS SDK.

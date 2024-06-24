@@ -1,11 +1,11 @@
-# RPN83P User Guide: BASE Operations
+# RPN83P User Guide: BASE Functions
 
 This document describes the `BASE` functions of the RPN83P application which
 allow numbers to be converted between 4 different bases (DEC, HEX, OCT, and BIN)
 and support various arithmetic and bitwise operations similar to the HP-16C. It
 has been extracted from [USER_GUIDE.md](USER_GUIDE.md) due to its length.
 
-**Version**: 0.11.0 (2024-05-28)
+**Version**: 0.12.0 (2024-06-24)
 
 **Parent Document**: [USER_GUIDE.md](USER_GUIDE.md)
 
@@ -55,8 +55,8 @@ passed into a logical, bitwise, or arithmetic function. This includes the `DEC`
 (base 10) mode.
 
 The maximum value that can be represented when in `BASE` mode is `2^WSIZ-1`,
-which is (255, 65535, 16777215, 4294967295) for (8, 16, 24, 32) bit integers
-respectively.
+which is (255, 65535, 16777215, 4294967295) for the `WSIZ` (word size) of (8,
+16, 24, 32) bit integers respectively.
 
 ## Base Modes
 
@@ -66,9 +66,10 @@ activated: `DEC`, `HEX`, `OCT`, `BIN`. Normally the default is `DEC`, but the
 
 The numbers on the RPN stack are not modified internally when the `BASE` menu is
 selected, but they are displayed on the screen differently to emphasize that
-they are intended to be treated as unsigned integers.
+they are intended to be treated as unsigned integers. This behavior is similar
+to the HP-42S.
 
-Let's start with the RPN stack containing the following numbers: -1, 17.1, 9E9,
+Let's start with the RPN stack containing the following numbers: -1, 9E9, 17.1,
 and 1234567, like this:
 
 ![Numbers in Normal Mode](images/base/mode-normal.png)
@@ -225,7 +226,7 @@ the conventions of the Z80 processor:
 For all `XXn` operations, if the `n` value (i.e. `X` register) is 0, the
 operation does not change the value of `Y`, but the RPN stack collapses by one
 position so the `X` value disappears. If the `n` value is `>=` to the `BASE`
-word size (`WSZ?`), normally 32, an error message will be displayed.
+word size (`WSZ`), normally 32, an error message will be displayed.
 
 **Note**: The Z80 apparently has an undocumented instruction named [shift left
 logical](https://worldofspectrum.org/z88forever/dn327/z80undoc.htm) which is
@@ -352,10 +353,11 @@ The RPN83P deviates from the HP-42S by using *unsigned* integers internally, and
 rendering the various HEX, OCT, and BIN numbers using the same number of digits
 regardless of the value. The word size of the integer can be changed using the
 `WSIZ` menu item (see below). The following word sizes are supported: 8, 16, 24,
-and 32 bits. This means that `HEX` mode with a word size of 32 always displays 8
-digits, `OCT` mode always displays 11 digits, and `BIN` mode always displays 12
-digits (due to size limitation of the LCD screen). I find this less confusing
-when doing bitwise operations (e.g. bit-and, bit-or, bit-xor).
+and 32 bits. This means that `HEX` mode with `WSIZ` of 32 always displays 8
+digits, `OCT` mode always displays 11 digits, and `BIN` mode always displays the
+least significant 16 digits (due to size limitation of the LCD screen). I find
+this less confusing when doing bitwise operations (e.g. bit-and, bit-or,
+bit-xor).
 
 Since the internal integer representation is *unsigned*, the `(-)` (change sign)
 button is disabled. Instead, the menu system provides a `NEG` function which

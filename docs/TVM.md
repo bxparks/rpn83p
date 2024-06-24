@@ -3,7 +3,7 @@
 Equations, algorithms, and other tricks used to calculate the Time Value of
 Money (TVM) variables in the RPN83P calculator app.
 
-**Version**: 0.9.0 (2024-01-06)
+**Version**: 0.12.0 (2024-06-24)
 
 **Project Home**: https://github.com/bxparks/rpn83p
 
@@ -20,7 +20,7 @@ Money (TVM) variables in the RPN83P calculator app.
     - [Taming Overflows](#taming-overflows)
     - [Secant Method](#secant-method)
     - [Initial Guesses](#initial-guesses)
-    - [Tolerance](#tolerance)
+    - [Terminating Conditions](#terminating-conditions)
     - [Maximum Iterations](#maximum-iterations)
     - [Convergence](#convergence)
 - [References](#references)
@@ -69,23 +69,55 @@ NPV = NFV * (1+i)^N
 
 ## Interest Rate Conversions
 
-The variable `i` in the `NPV` and `NFV` equations defines the interest rate per
-payment period. For most real-life problems, it is more convenient to express
-the interest rate per year. The relationship between these quantities are:
+Most real-life problems express the nominal annual interest rate `I%YR` as a
+percentage instead of a dimensionless fraction `IYR` which is more useful in
+computation. So let's define:
+
+```
+IYR = I%YR / 100
+```
+
+The variable `i` in the `NPV` and `NFV` equations is the interest rate per
+payment period, which is defined from the nominal interest rate `IYR` by:
 
 ```
 i = IYR/PYR
 ```
 
-where:
+where `PYR` is the number of payments per year
+
+However, this is true only if `PYR` is equal to `CYR`, the number of
+compoundings per year. It seems that in some countries (e.g. Canada and the UK),
+lenders are required to calculate the `CYR` differently from the `PYR`.
+
+When the 2 quantities are different, the total effective annual interest rate
+that results from compounding for each payment period at interest rate `i` must
+equal the total effective annual interest rate when compounded using the `CYR`
+compounds per year. In other words, the following defines the meaning of `CYR`:
+
 ```
-IYR = nominal interest rate per year (without compounding)
-PYR = number of payments per year
+(1 + i) ^ PYR = (1 + IYR/CYR) ^ CYR
 ```
 
-In addition, most real-life problems express the annual interest rate as a
-percentage instead of a dimensionless fraction. So `IYR = I%YR / 100`, where
-`I%YR` is the nominal interest percentage per year.
+We can rearrange the equation to solve the payment-period interest rate `i`
+which is used on the TVM equations:
+
+```
+i = (1 + IYR/CYR) ^ (CYR/PYR) - 1
+  = expm1[ (CYR/PYR) log1p(IYR/CYR) ]
+```
+
+where we have used the `expm1()` and `log1p()` functions that we defined below.
+
+Since the `expm1()` and `log1p()` functions are inverses of each other, we can
+easily get the formula for calculating `IYR` from `i`:
+
+```
+IYR = CYR expm1[ (PYR/CYR) log1p(i) ]
+```
+
+From `IYR`, we can calculate the nominal percent interest rate `I%YR` as
+`100*IYR`.
 
 ## TVM Formulas
 
@@ -240,9 +272,9 @@ also becomes infinitely differentiable at `i=0`.).
 
 **Note**: It is possible to enter values of `PV`, `PMT`, `FV` and `i` such that
 a negative value of `N` is calculated according to the `N(i)` equation. The
-RPN83P currently (v0.9.0) does not flag this condition, and returns the negative
-value. Maybe it should test for a negative value and return `TVM No Solution`
-error message instead?
+RPN83P currently does not flag this condition, and returns the negative value.
+Maybe it should test for a negative value and return `TVM No Solution` error
+message instead?
 
 ## TVM Solver
 
@@ -298,38 +330,30 @@ there are only 3 possibilities for the number of sign changes: 0, 1, or 2.
 According to the rule of signs, these are the number of possible solutions:
 
 ```
-0: no solution
-1: exactly one solution
-2: no solution or 2 solutions
+0 sign change: no solution
+1 sign change: exactly one solution
+2 sign changes: no solution or 2 solutions
 ```
 
 If the TVM Solver finds that the number of sign changes is 0, then it knows
-immediately that there are no solutions to the polynomial equation, and it can
-let the user know immediately.
+immediately that there are no solutions to the polynomial equation and
+a `TVM No Solution` message is displayed immediately.
 
-The RPN83P code uses the following algorithm to determine if there are no sign
-changes:
-
-- initialize 2 counters:
-    - `numNonZero`: number of non-zero coefficients
-    - `sumSign`: sum of the `sign(coef)`, where `sign(coef)` is:
-        - 0 for positive, and
-        - 1 for negative
-        - the `sign(coef)` corresponds directly to the sign bit of a TI-OS
-          floating point number
-- loop through the coefficients, and update the 2 counters
-    - only 3 different coefficients need to be considered because the `PMT`
-      coefficients are all identical
-- if `sumSign == numNonZero` OR `sumSign == 0`, then there were *no* sign
-  changes
-- if `numNonZero == 0`, then the TVM variables were ill-defined and an error
-  should be shown to the user
-
-The TVM Solver does not check for 1 sign-change or 2 sign-changes, because I am
-not sure that there is an easy way to distinguish between "no solution" and "two
-solutions". And it does not seem useful to know if there is exactly one solution
-or 2 solutions, because we would have to perform the numerical iteration to the
-find the root in either case.
+If the number of sign changes is 1 or 2, the TVM Solver attempts to find a
+solution numerically (see [Secant Method](#secant-method) below). Here are the
+possible outcomes:
+- If a solution is found, and:
+    - the number of sign changes is 1, then we know that we have found the only
+      possible solution and the status message is `TVM Calculated`.
+    - the number of sign changes is 2, then we know that there are actually 2
+      solutions and we have found only one, so the status message is `TVM
+      Calculated (Multiple)` to let the user know that only one of the two
+      solutions was found.
+- If a solution is *not* found, and:
+    - the number of sign changes is 1, we display `TVM Not Found`.
+    - the number of sign changes is 2, we don't know if there are actually no
+      solutions, or if there are 2 solutions that we could not find numerically.
+      So the message is also `TVM Not Found` in this case.
 
 ### Taming Overflows
 
@@ -361,6 +385,12 @@ equation are *unchanged*. Let's define a new term `CFN(i,N)`:
 
 ```
 CFN(i,N) = CF2(i)/N = [(1+i)^N-1]/Ni
+
+             expm1(N log1p(i)) / Ni     (i!=0)
+           /
+         =
+           \
+             1                          (i==0)
 ```
 
 (Note that this is slightly different than the `C(i,N)` function defined by
@@ -374,8 +404,9 @@ called `NPMT(i)`:
 
 ```
 NPMT(i) = NFV(i) / CFN(i,N)
-        = PV (1+i)^N Ni / [(1+i)^N-1] + (1+ip)N*PMT + FV / CFN(i,N)
-        = PV (-N)i / [(1+i)^(-N)-1] + (1+ip)N*PMT + FV / CFN(i,N)
+        = PV (1+i)^N Ni / [(1+i)^N-1] + (1+ip)N*PMT + FV Ni / [(1+i)^N-1]
+        = PV (1+i)^N Ni / [(1+i)^N-1] + (1+ip)N*PMT + FV Ni / [(1+i)^N-1]
+        = PV (-N)i / [(1+i)^(-N)-1] + (1+ip)N*PMT + FV Ni / [(1+i)^N-1]
         = PV / CFN(i,-N) + (1+ip)N*PMT + FV / CFN(i,N)
 ```
 
@@ -432,11 +463,18 @@ beginning or end of the cash flow. The `NPMT(i)` function essentially averages
 all 3 terms over the entire duration of the `N` payment periods, instead of
 pulling everything to the present or pushing everything to the future.
 
-**Implementation Note**: The `inverseCompoundingFactor()` routine calculates the
-reciprocal of `CFN(i,N)`. In other words, it calculates `ICFN(i,N) = 1/CFN(i,N)
-= Ni/((1+i)^N-1)` for a slight gain in efficiency by avoiding a division or two.
-This makes `ICFN(i,N)` similar to the `C(n)` function given by Albert Chan in
-[TVM formula error in programming
+**Implementation Note**:
+
+The `inverseCompoundingFactor()` routine calculates the reciprocal of
+`CFN(i,N)`. In other words, it calculates
+
+```
+ICFN(i,N) = 1/CFN(i,N) = Ni/((1+i)^N-1)
+```
+
+for a slight gain in efficiency by avoiding a division or two. This makes
+`ICFN(i,N)` similar to the `C(n)` function given by Albert Chan in [TVM formula
+error in programming
 manual?](https://www.hpmuseum.org/forum/thread-20739-post-179371.html#pid179371)
 (2023), within a factor of `(1+i)^N`, or equivalently, a substitution of `-N`
 for `N`.
@@ -453,8 +491,8 @@ that can be used to solve for `NPMT(i) = 0`. Some of these are:
 - [Newton's method](https://en.wikipedia.org/wiki/Newton%27s_method)
 - [Halley's method](https://en.wikipedia.org/wiki/Halley%27s_method)
 
-The TVM Solver in RPN83P currently (v0.9.0) uses the *Secant Method*, because it
-seems to be a good compromise between simplicity of code and a relatively fast
+The TVM Solver in RPN83P currently uses the *Secant Method*, because it seems to
+be a good compromise between simplicity of code and a relatively fast
 convergence rate:
 
 1. It has a faster order of convergence (~1.6) than the Bisection method
@@ -472,22 +510,34 @@ of about 1e-8 within 7-8 iterations.
 ### Initial Guesses
 
 The Secant method (as well as other root finding methods) requires 2 initial
-guesses to be provided. The TVM Solver currently (v0.9.0) uses the following
-defaults:
+guesses to be provided. The TVM Solver uses the following defaults:
 
-- `i0` = 0
-- `i1` = 1/PYR, where PYR is the number of payments per year.
+- `IYR1` = -50%
+- `IYR2` = 100%
 
-The value of `i0` can be set to `0` because all of our various terms and
-equations (`ICFN(i,N)`, `NPMT(i)`) have been defined to remove their singularity
-at `i=0`. Those functions are now continuous (and probably infinitely
-differentiable) at `i=0`.
+We calculate the internal payment-period initial guesses `i1` and `i2` using the
+formula `i=expm1[(CYR/PYR) log1p(IYR/CYR)]` as given above. From these starting
+points `i1` and `i2`, the TVM Solver makes a few more heuristic guesses:
 
-The value of `i1` is actually specified as `IYR1` of 100%, a nominal yearly rate
-of 100%. Most real-life problems will never need to search for an interest rate
-higher than 100%/year. The `i1` variable is `IYR/PYR` or `100%/PYR` or `1/PYR`.
+- If the interval `[i1, i2]` overlaps the 0% point, the intervals are split into
+  two on either side of the `0`:
+    - `[i1,0]` and `[0,i2]`
+    - the positive interest interval `[0,i2]` is checked first, and if no sign
+      change is detected, then,
+    - the negative interest interval is checked
+- If no sign change is detected in either `[i1,0]` and `[0,i2]`, then we take
+  the positive interval `[0,i2]` and decompose that into 2 intervals again:
+    - check the lower interval `[0,(i1+i2)/2]` first, and if no sign change
+      is found, then
+    - check the upper interval `[(i1+i2)/2, i2]`
 
-The following posts by Albert Chan suggest that there are better initial guess:
+The value of `i=0` is allowed in the various candidate intervals because all of
+our various terms and equations (`ICFN(i,N)`, `NPMT(i)`) have been defined to
+remove their singularity at `i=0`. Those functions are now continuous (and
+probably infinitely differentiable) at `i=0`.
+
+The following posts by Albert Chan suggest that there are better initial
+guesses:
 
 - [TVM solve for interest rate,
   revisited](https://www.hpmuseum.org/forum/thread-18359.html) (2022)
@@ -502,38 +552,46 @@ checks if the very first guesses bracket a root with a change in sign of the
 `NPMT(i)` function. If no sign change is detected, a `TVM No Solution` error
 message is returned.
 
-### Tolerance
+### Terminating Conditions
 
-Currently (v0.9.0), the TVM Solver iterates until the relative tolerance between
-two successive iterations is less than 1e-8. The value of 1e-8 is hardcoded.
+TVM Solver iterates until the relative tolerance between two successive
+iterations is less than some amount. The root finding iteration stops when one
+of the following conditions are met:
 
-To avoid division by zero, the tolerance is calculated as:
+- `f0==0`
+- `f1==0`
+- `f1==f0` and `iterationCount>=3`
+- `|i1-i0|<=tol*max(|i1|,|i0|)`, `tol=1e-10`
 
-```
-      |i1 - i0| / |i1|, if |i1|!=0
-     /
-tol =
-     \
-      |i1 - i0|, if i1==0
+The values `f0` and `f1` are defined to be `f0=NPMT(i0)` and `f1=NPMT(i1)` and
+the conditions `f0==0` and `f1==0` detect the situation where an iteration lands
+directly on the root of the equation.
 
-```
+The `f1==f0` condition happens when the 2 successive iteration produces no
+change in the value of `NPMT(i)`. The `iterationCount>=3` comes from avoiding
+the situation where the very early guesses just happened to evaluate to a secant
+line with zero slope, which results in a division-by-zero error when evaluating
+the next iteration.
 
-I am sure this is not optimal, but I needed a quick way to avoid a division by
-zero if `i1` was equal to zero.
+The complicated equation involving the `tol` parameter detects the convergence
+of successive iterations of `i0` and `i1`. The equation was selected to deal
+with situations where the solution converges to a value that is equal or very
+close to `0`.
 
-Maybe the tolerance limit (1e-8) should be exposed to the user and be
-configurable? I believe the HP calculators use the number of significant digits
-in its `FIX` mode to determine the tolerance limit. But TI calculator users tend
-not to use `FIX` modes, leaving the calculator with the maximum number of
-significant digits (i.e. the `FIX(-)` mode). I'm not sure that using the number
-of digits from the `FIX` mode is a reasonable mechanism for the RPN83P app.
+The tolerance limit (`tol=1e-10`) is hard coded and not configurable by the
+user. (I'm not sure if it's useful to make that configurable). I believe the HP
+calculators use the number of significant digits in its `FIX` mode to determine
+the tolerance limit. But TI calculator users tend not to use `FIX` modes,
+leaving the calculator with the maximum number of significant digits (i.e. the
+`FIX(-)` mode). I'm not sure that using the number of digits from the `FIX` mode
+is a reasonable mechanism for the RPN83P app.
 
 ### Maximum Iterations
 
 To avoid an infinite loop, the maximum iterations used by the TVM Solver is
 limited to `TMAX`. By default, `TMAX` is set to 15, but can be configured by the
 user. Empirically, the TVM Solver (using the Secant method) seems to converge to
-the tolerance of 1e-8 within about 7-8 iterations. So I set the default `TMAX`
+the tolerance of 1e-10 within about 7-8 iterations. So I set the default `TMAX`
 to be about double that, which is where the 15 came from.
 
 ### Convergence

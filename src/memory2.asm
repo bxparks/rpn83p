@@ -61,6 +61,10 @@ exchangePageTwoLoop:
     djnz exchangePageTwoLoop
     ret
 
+exchange18PageTwo:
+    ld b, 18
+    jp exchangePageTwoLoop
+
 ; Description: Exchange the top 2 floating point numbers on the FPS.
 ; Destroys: all
 ; Preserves: OP1, OP2

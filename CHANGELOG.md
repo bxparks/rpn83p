@@ -1,6 +1,46 @@
 # Changelog
 
 - Unreleased
+- 0.12.0 (2024-06-24)
+    - **Bug Fix**: update logic that determines when the comma `,` character can
+      be inserted into the input buffer
+        - some internal routines were still looking at the last character in the
+          input buffer, instead of the character to the left of the current
+          cursor
+            - prevented comma insertion when the cursor was scrolled into the
+              middle of the input buffer
+            - updated to look at the char to the left of cursor
+        - update logic that handles left and right braces `{ }`
+            - comma now allowed only inside an open left-brace `{`
+            - comma no longer allowed after the last closing right-brace `}`
+    - TVM
+        - reduce rounding errors when `PYR==CYR`, the most common case in the US
+          at least
+        - improve logic for appending the "overridden" dot after the `IYR1`,
+          `IYR2`, and `TMAX` menu items
+        - add `C/YR` menu (number of compoundings per year)
+            - uses the same variable as the `C/Y` variable of the "Finance" app
+              in TI-OS
+            - supports `2ND C/YR` to retrieve its value, just like `2ND P/YR`
+            - setting `P/YR` also sets `C/YR` (consistent with the behavior of
+              the "Finance" app in TI-OS
+            - setting `C/YR` does *not* change `P/YR` (same as "Finance" app)
+        - add a dot to `P/YR` and `C/YR` if they differ from their default value
+          of 12, allows users to quickly see if those values are different from
+          the default
+        - make TVM Solver more robust under certain edge cases, especially near
+          `I%YR ~ 0%`
+        - change initial guess of `IYR1` to `-50%` to support negative interest
+          rates by default
+            - keep default value of `IYR2` at `100%`
+        - synchronize the `BEG`/`END` flag of RPN83P with the `BEGIN`/`END`
+          flag of the "Finance" app provided by TI-OS
+        - display status message 'TVM Calculated (Multiple)' if the TVM equation
+          has 2 solutions, but only one of them was found
+    - docs
+        - simplify pandoc processing pipeline
+        - change PDF font to FreeSerif and FreeMono to render the U+2220 (angle)
+          symbol properly
 - 0.11.0 (2024-05-28)
     - **Warning**: Previously saved RPN stack and storage registers are
       incompatible and are lost when upgrading to this version.

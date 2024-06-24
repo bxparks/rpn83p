@@ -44,6 +44,16 @@ keyMenuSecond5 equ kTable
 smallFontHeight equ 7
 largeFontHeight equ 8
 
+; The TVM BEGIN/END flag of the "Finance" app appears to be stored at bit 3
+; (i.e. $08) of memory location $8a08. If BEGIN is selected, bit 3 is on. If
+; END is selected, bit 3 is off. This is not documented anywhere. I discovered
+; it by creating a monitor app and manually searching for a bit flip when the
+; BEGIN and END states were changed in the "Finance" app. This information
+; seems be valid for all calculators that I was able to test (TI-83+, TI-83+SE,
+; TI-84+, TI-84+SE, and TI-Nspire+84Keypad)
+tvmFlags equ $8a08
+tvmFlagsBegin equ 3
+
 ;-----------------------------------------------------------------------------
 ; RPN83P flags, using asm_Flag1, asm_Flag2, and asm_Flag3
 ;-----------------------------------------------------------------------------
@@ -96,7 +106,7 @@ inputBufFlagsArgExit equ 3 ; set to exit CommandArg mode
 inputBufFlagsArgCancel equ 4 ; set if exit was caused by CLEAR or ON/EXIT
 
 ;-----------------------------------------------------------------------------
-; RPN83P application variables and buffers.
+; RPN83P application constants and parameters.
 ;-----------------------------------------------------------------------------
 
 ; A random 16-bit integer that identifies the RPN83P app.
@@ -261,6 +271,8 @@ rpnObjectSizeOf equ rpnComplexSizeOf ; type + sizeof(complex)
 rpnElementSizeOf equ rpnObjectSizeOf+1
 
 ;-----------------------------------------------------------------------------
+; RPN83P application variables and buffers.
+;-----------------------------------------------------------------------------
 
 ; Begin application variables at tempSwapArea. According to the TI-83 Plus SDK
 ; docs: "tempSwapArea (82A5h) This is the start of 323 bytes used only during
@@ -394,8 +406,10 @@ argBufSizeMax equ 4 ; max number of digits accepted on input
 
 ; Maximum number of characters that can be displayed during input/editing mode.
 ; The LCD line can display 16 characters using the large font. We need 1 char
-; for the "X:" label, and 1 char for the trailing cursor, which leaves us with
-; 14 characters.
+; for the "X:" label which makes the window size of the inputBuf 15 characters.
+; An extra space for the cursor is needed only when it is at the end of the
+; inputBuf, and the rendering algorithm incorporates that extra space in this
+; window size.
 renderWindowSize equ 15
 
 ; Define the [start,end) of the renderWindow over the renderBuf[].
@@ -484,7 +498,7 @@ curveFitModel equ statAllEnabled + 1 ; u8
 
 ; Constants used by the TVM Solver.
 tvmSolverDefaultIterMax equ 15
-; tvmSolverResult enums indicate if the solver should stop or continue the
+; TVM Solver enums indicate if the solver should stop or continue the
 ; iterations
 tvmSolverResultContinue equ 0 ; loop should continue
 tvmSolverResultFound equ 1
@@ -493,29 +507,17 @@ tvmSolverResultNotFound equ 3
 tvmSolverResultIterMaxed equ 4
 tvmSolverResultBreak equ 5
 tvmSolverResultSingleStep equ 6 ; return after each iteration
-; Bit position in tvmSolverOverrideFlags that determine if a specific parameter
-; has been overridden.
-tvmSolverOverrideFlagIYR0 equ 0
-tvmSolverOverrideFlagIYR1 equ 1
-tvmSolverOverrideFlagIterMax equ 2
 
-; TVM variables for root-solving the NPMT(i)=0 equation.
-tvmIsBegin equ curveFitModel + 1 ; boolean; true if payment is at BEGIN
-; The tvmSolverOverrideFlags is a collection of bit flags. Each flag determines
-; whether a particular parameter that controls the TVM Solver execution has its
-; default value overridden by a manual value from the user.
-tvmSolverOverrideFlags equ tvmIsBegin + 1 ; u8 flag
 ; TVM Solver configuration parameters. These are normally defined automatically
 ; but can be overridden using the 'IYR0', 'IYR1', and 'TMAX' menu buttons.
-tvmIYR0 equ tvmSolverOverrideFlags + 1 ; float
+tvmIYR0 equ curveFitModel + 1 ; float
 tvmIYR1 equ tvmIYR0 + 9 ; float
 tvmIterMax equ tvmIYR1 + 9 ; u8
 
 ; Draw mode constants
 drawModeNormal equ 0
-drawModeTvmSolverI equ 1 ; show i0, i1
-drawModeTvmSolverF equ 2 ; show npmt0, npmt1
-drawModeInputBuf equ 3 ; show inputBuf in debug line
+drawModeInputBuf equ 1 ; show inputBuf in debug line
+drawModeTvmSolver equ 2 ; show TVM n, i0, i1, npmt0, npmt1
 
 ; Draw/Debug mode, u8 integer. Activated by secret '2ND DRAW' button.
 drawMode equ tvmIterMax + 1 ; u8
@@ -630,12 +632,15 @@ savedFmtDigits equ savedFmtFlags + 1 ; u8
 ; plus the next interest rate i2, and the value of the NPMT() function at each
 ; of those points. Transient, so no need to persist them.
 tvmI0 equ savedFmtDigits + 1 ; float
-tvmI1 equ tvmI0 + 9 ; float
-tvmNPMT0 equ tvmI1 + 9 ; float
-tvmNPMT1 equ tvmNPMT0 + 9 ; float
+tvmNPMT0 equ tvmI0 + 9 ; float
+tvmI1 equ tvmNPMT0 + 9 ; float
+tvmNPMT1 equ tvmI1 + 9 ; float
+tvmI2 equ tvmNPMT1 + 9 ; float
+tvmNPMT2 equ tvmI2 + 9 ; float
 ; TVM Solver status and result code. Transient, no need to persist them.
-tvmSolverIsRunning equ tvmNPMT1 + 9 ; boolean; true if active
-tvmSolverCount equ tvmSolverIsRunning + 1 ; u8; iteration count
+tvmSolverIsRunning equ tvmNPMT2 + 9 ; boolean; true if active
+tvmSolverCount equ tvmSolverIsRunning + 1 ; u8, iteration count
+tvmSolverSolutions equ tvmSolverCount + 1 ; u8, numPotentialSolutions [0,1,2]
 
 ; A Pascal-string that contains the rendered version of inputBuf[] which can be
 ; printed on the screen. It is slightly longer than inputBuf for 2 reasons:
@@ -654,7 +659,7 @@ tvmSolverCount equ tvmSolverIsRunning + 1 ; u8; iteration count
 ;   uint8_t len;
 ;   char buf[renderBufCapacity];
 ; };
-renderBuf equ tvmSolverCount + 1 ; struct RenderBuf; Pascal-string
+renderBuf equ tvmSolverSolutions + 1 ; struct RenderBuf; Pascal-string
 renderBufLen equ renderBuf ; len byte of the string
 renderBufBuf equ renderBuf + 1 ; start of actual buffer
 renderBufCapacity equ inputBufCapacity + 2
@@ -690,6 +695,7 @@ displayStackFontFlagsX equ 1
 displayStackFontFlagsY equ 2
 displayStackFontFlagsZ equ 4
 displayStackFontFlagsT equ 8
+displayStackFontFlagsA equ 16
 displayStackFontFlags equ cursorScreenPos + 1 ; u8
 
 appBufferEnd equ displayStackFontFlags + 1
@@ -900,6 +906,10 @@ _CheckInputBufRecordLabel:
 _CheckInputBufRecord equ _CheckInputBufRecordLabel-branchTableBase
     .dw CheckInputBufRecord
     .db 1
+_CheckInputBufCommaLabel:
+_CheckInputBufComma equ _CheckInputBufCommaLabel-branchTableBase
+    .dw CheckInputBufComma
+    .db 1
 _SetComplexDelimiterLabel:
 _SetComplexDelimiter equ _SetComplexDelimiterLabel-branchTableBase
     .dw SetComplexDelimiter
@@ -929,7 +939,8 @@ _ParseArgBuf equ _ParseArgBufLabel-branchTableBase
     .dw ParseArgBuf
     .db 1
 
-; pstring1.asm
+; pstring1.asm. TODO: I think these can be removed because they are always
+; called from flash page 1, so we don't need the branch table entries.
 _AppendStringLabel:
 _AppendString equ _AppendStringLabel-branchTableBase
     .dw AppendString
@@ -942,10 +953,6 @@ _DeleteAtPosLabel:
 _DeleteAtPos equ _DeleteAtPosLabel-branchTableBase
     .dw DeleteAtPos
     .db 1
-_GetLastCharLabel:
-_GetLastChar equ _GetLastCharLabel-branchTableBase
-    .dw GetLastChar
-    .db 1
 
 ; integerconv1.asm
 _ConvertAToOP1Label:
@@ -955,158 +962,6 @@ _ConvertAToOP1 equ _ConvertAToOP1Label-branchTableBase
 _AddAToOP1Label:
 _AddAToOP1 equ _AddAToOP1Label-branchTableBase
     .dw AddAToOP1
-    .db 1
-
-; tvm1.asm
-_TvmCalculateNLabel:
-_TvmCalculateN equ _TvmCalculateNLabel-branchTableBase
-    .dw TvmCalculateN
-    .db 1
-_TvmSolveLabel:
-_TvmSolve equ _TvmSolveLabel-branchTableBase
-    .dw TvmSolve
-    .db 1
-_TvmCalculatePVLabel:
-_TvmCalculatePV equ _TvmCalculatePVLabel-branchTableBase
-    .dw TvmCalculatePV
-    .db 1
-_TvmCalculatePMTLabel:
-_TvmCalculatePMT equ _TvmCalculatePMTLabel-branchTableBase
-    .dw TvmCalculatePMT
-    .db 1
-_TvmCalculateFVLabel:
-_TvmCalculateFV equ _TvmCalculateFVLabel-branchTableBase
-    .dw TvmCalculateFV
-    .db 1
-_TvmCalcIPPFromIYRLabel:
-_TvmCalcIPPFromIYR equ _TvmCalcIPPFromIYRLabel-branchTableBase
-    .dw TvmCalcIPPFromIYR
-    .db 1
-_TvmClearLabel:
-_TvmClear equ _TvmClearLabel-branchTableBase
-    .dw TvmClear
-    .db 1
-_TvmSolverResetLabel:
-_TvmSolverReset equ _TvmSolverResetLabel-branchTableBase
-    .dw TvmSolverReset
-    .db 1
-_RclTvmNLabel:
-_RclTvmN equ _RclTvmNLabel-branchTableBase
-    .dw RclTvmN
-    .db 1
-_StoTvmNLabel:
-_StoTvmN equ _StoTvmNLabel-branchTableBase
-    .dw StoTvmN
-    .db 1
-_RclTvmIYRLabel:
-_RclTvmIYR equ _RclTvmIYRLabel-branchTableBase
-    .dw RclTvmIYR
-    .db 1
-_StoTvmIYRLabel:
-_StoTvmIYR equ _StoTvmIYRLabel-branchTableBase
-    .dw StoTvmIYR
-    .db 1
-_RclTvmPVLabel:
-_RclTvmPV equ _RclTvmPVLabel-branchTableBase
-    .dw RclTvmPV
-    .db 1
-_StoTvmPVLabel:
-_StoTvmPV equ _StoTvmPVLabel-branchTableBase
-    .dw StoTvmPV
-    .db 1
-_RclTvmPMTLabel:
-_RclTvmPMT equ _RclTvmPMTLabel-branchTableBase
-    .dw RclTvmPMT
-    .db 1
-_StoTvmPMTLabel:
-_StoTvmPMT equ _StoTvmPMTLabel-branchTableBase
-    .dw StoTvmPMT
-    .db 1
-_RclTvmFVLabel:
-_RclTvmFV equ _RclTvmFVLabel-branchTableBase
-    .dw RclTvmFV
-    .db 1
-_StoTvmFVLabel:
-_StoTvmFV equ _StoTvmFVLabel-branchTableBase
-    .dw StoTvmFV
-    .db 1
-_RclTvmPYRLabel:
-_RclTvmPYR equ _RclTvmPYRLabel-branchTableBase
-    .dw RclTvmPYR
-    .db 1
-_StoTvmPYRLabel:
-_StoTvmPYR equ _StoTvmPYRLabel-branchTableBase
-    .dw StoTvmPYR
-    .db 1
-_RclTvmIYR0Label:
-_RclTvmIYR0 equ _RclTvmIYR0Label-branchTableBase
-    .dw RclTvmIYR0
-    .db 1
-_StoTvmIYR0Label:
-_StoTvmIYR0 equ _StoTvmIYR0Label-branchTableBase
-    .dw StoTvmIYR0
-    .db 1
-_RclTvmIYR1Label:
-_RclTvmIYR1 equ _RclTvmIYR1Label-branchTableBase
-    .dw RclTvmIYR1
-    .db 1
-_StoTvmIYR1Label:
-_StoTvmIYR1 equ _StoTvmIYR1Label-branchTableBase
-    .dw StoTvmIYR1
-    .db 1
-_RclTvmIterMaxLabel:
-_RclTvmIterMax equ _RclTvmIterMaxLabel-branchTableBase
-    .dw RclTvmIterMax
-    .db 1
-_StoTvmIterMaxLabel:
-_StoTvmIterMax equ _StoTvmIterMaxLabel-branchTableBase
-    .dw StoTvmIterMax
-    .db 1
-_RclTvmI0Label:
-_RclTvmI0 equ _RclTvmI0Label-branchTableBase
-    .dw RclTvmI0
-    .db 1
-_StoTvmI0Label:
-_StoTvmI0 equ _StoTvmI0Label-branchTableBase
-    .dw StoTvmI0
-    .db 1
-_RclTvmI1Label:
-_RclTvmI1 equ _RclTvmI1Label-branchTableBase
-    .dw RclTvmI1
-    .db 1
-_StoTvmI1Label:
-_StoTvmI1 equ _StoTvmI1Label-branchTableBase
-    .dw StoTvmI1
-    .db 1
-_RclTvmNPMT0Label:
-_RclTvmNPMT0 equ _RclTvmNPMT0Label-branchTableBase
-    .dw RclTvmNPMT0
-    .db 1
-_StoTvmNPMT0Label:
-_StoTvmNPMT0 equ _StoTvmNPMT0Label-branchTableBase
-    .dw StoTvmNPMT0
-    .db 1
-_RclTvmNPMT1Label:
-_RclTvmNPMT1 equ _RclTvmNPMT1Label-branchTableBase
-    .dw RclTvmNPMT1
-    .db 1
-_StoTvmNPMT1Label:
-_StoTvmNPMT1 equ _StoTvmNPMT1Label-branchTableBase
-    .dw StoTvmNPMT1
-    .db 1
-_RclTvmSolverCountLabel:
-_RclTvmSolverCount equ _RclTvmSolverCountLabel-branchTableBase
-    .dw RclTvmSolverCount
-    .db 1
-
-; float1.asm
-_LnOnePlusLabel:
-_LnOnePlus equ _LnOnePlusLabel-branchTableBase
-    .dw LnOnePlus
-    .db 1
-_ExpMinusOneLabel:
-_ExpMinusOne equ _ExpMinusOneLabel-branchTableBase
-    .dw ExpMinusOne
     .db 1
 
 ; hms1.asm
@@ -1216,6 +1071,188 @@ _FormatComplexPolarDeg equ _FormatComplexPolarDegLabel-branchTableBase
 _ColdInitModesLabel:
 _ColdInitModes equ _ColdInitModesLabel-branchTableBase
     .dw ColdInitModes
+    .db 2
+
+; tvm2.asm
+_ColdInitTvmLabel:
+_ColdInitTvm equ _ColdInitTvmLabel-branchTableBase
+    .dw ColdInitTvm
+    .db 2
+_InitTvmSolverLabel:
+_InitTvmSolver equ _InitTvmSolverLabel-branchTableBase
+    .dw InitTvmSolver
+    .db 2
+_TvmCalculateNLabel:
+_TvmCalculateN equ _TvmCalculateNLabel-branchTableBase
+    .dw TvmCalculateN
+    .db 2
+_TvmSolveLabel:
+_TvmSolve equ _TvmSolveLabel-branchTableBase
+    .dw TvmSolve
+    .db 2
+_TvmSolveCheckDebugEnabledLabel:
+_TvmSolveCheckDebugEnabled equ _TvmSolveCheckDebugEnabledLabel-branchTableBase
+    .dw TvmSolveCheckDebugEnabled
+    .db 2
+_TvmCalculatePVLabel:
+_TvmCalculatePV equ _TvmCalculatePVLabel-branchTableBase
+    .dw TvmCalculatePV
+    .db 2
+_TvmCalculatePMTLabel:
+_TvmCalculatePMT equ _TvmCalculatePMTLabel-branchTableBase
+    .dw TvmCalculatePMT
+    .db 2
+_TvmCalculateFVLabel:
+_TvmCalculateFV equ _TvmCalculateFVLabel-branchTableBase
+    .dw TvmCalculateFV
+    .db 2
+_TvmCalcIPPFromIYRLabel:
+_TvmCalcIPPFromIYR equ _TvmCalcIPPFromIYRLabel-branchTableBase
+    .dw TvmCalcIPPFromIYR
+    .db 2
+_TvmClearLabel:
+_TvmClear equ _TvmClearLabel-branchTableBase
+    .dw TvmClear
+    .db 2
+_TvmSolverResetLabel:
+_TvmSolverReset equ _TvmSolverResetLabel-branchTableBase
+    .dw TvmSolverReset
+    .db 2
+_RclTvmNLabel:
+_RclTvmN equ _RclTvmNLabel-branchTableBase
+    .dw RclTvmN
+    .db 2
+_StoTvmNLabel:
+_StoTvmN equ _StoTvmNLabel-branchTableBase
+    .dw StoTvmN
+    .db 2
+_RclTvmIYRLabel:
+_RclTvmIYR equ _RclTvmIYRLabel-branchTableBase
+    .dw RclTvmIYR
+    .db 2
+_StoTvmIYRLabel:
+_StoTvmIYR equ _StoTvmIYRLabel-branchTableBase
+    .dw StoTvmIYR
+    .db 2
+_RclTvmPVLabel:
+_RclTvmPV equ _RclTvmPVLabel-branchTableBase
+    .dw RclTvmPV
+    .db 2
+_StoTvmPVLabel:
+_StoTvmPV equ _StoTvmPVLabel-branchTableBase
+    .dw StoTvmPV
+    .db 2
+_RclTvmPMTLabel:
+_RclTvmPMT equ _RclTvmPMTLabel-branchTableBase
+    .dw RclTvmPMT
+    .db 2
+_StoTvmPMTLabel:
+_StoTvmPMT equ _StoTvmPMTLabel-branchTableBase
+    .dw StoTvmPMT
+    .db 2
+_RclTvmFVLabel:
+_RclTvmFV equ _RclTvmFVLabel-branchTableBase
+    .dw RclTvmFV
+    .db 2
+_StoTvmFVLabel:
+_StoTvmFV equ _StoTvmFVLabel-branchTableBase
+    .dw StoTvmFV
+    .db 2
+_RclTvmPYRLabel:
+_RclTvmPYR equ _RclTvmPYRLabel-branchTableBase
+    .dw RclTvmPYR
+    .db 2
+_StoTvmPYRLabel:
+_StoTvmPYR equ _StoTvmPYRLabel-branchTableBase
+    .dw StoTvmPYR
+    .db 2
+_RclTvmCYRLabel:
+_RclTvmCYR equ _RclTvmCYRLabel-branchTableBase
+    .dw RclTvmCYR
+    .db 2
+_StoTvmCYRLabel:
+_StoTvmCYR equ _StoTvmCYRLabel-branchTableBase
+    .dw StoTvmCYR
+    .db 2
+;
+_RclTvmIYR0Label:
+_RclTvmIYR0 equ _RclTvmIYR0Label-branchTableBase
+    .dw RclTvmIYR0
+    .db 2
+_StoTvmIYR0Label:
+_StoTvmIYR0 equ _StoTvmIYR0Label-branchTableBase
+    .dw StoTvmIYR0
+    .db 2
+_RclTvmIYR1Label:
+_RclTvmIYR1 equ _RclTvmIYR1Label-branchTableBase
+    .dw RclTvmIYR1
+    .db 2
+_StoTvmIYR1Label:
+_StoTvmIYR1 equ _StoTvmIYR1Label-branchTableBase
+    .dw StoTvmIYR1
+    .db 2
+_RclTvmIterMaxLabel:
+_RclTvmIterMax equ _RclTvmIterMaxLabel-branchTableBase
+    .dw RclTvmIterMax
+    .db 2
+_StoTvmIterMaxLabel:
+_StoTvmIterMax equ _StoTvmIterMaxLabel-branchTableBase
+    .dw StoTvmIterMax
+    .db 2
+_RclTvmI0Label:
+_RclTvmI0 equ _RclTvmI0Label-branchTableBase
+    .dw RclTvmI0
+    .db 2
+_StoTvmI0Label:
+_StoTvmI0 equ _StoTvmI0Label-branchTableBase
+    .dw StoTvmI0
+    .db 2
+_RclTvmI1Label:
+_RclTvmI1 equ _RclTvmI1Label-branchTableBase
+    .dw RclTvmI1
+    .db 2
+_StoTvmI1Label:
+_StoTvmI1 equ _StoTvmI1Label-branchTableBase
+    .dw StoTvmI1
+    .db 2
+_RclTvmNPMT0Label:
+_RclTvmNPMT0 equ _RclTvmNPMT0Label-branchTableBase
+    .dw RclTvmNPMT0
+    .db 2
+_StoTvmNPMT0Label:
+_StoTvmNPMT0 equ _StoTvmNPMT0Label-branchTableBase
+    .dw StoTvmNPMT0
+    .db 2
+_RclTvmNPMT1Label:
+_RclTvmNPMT1 equ _RclTvmNPMT1Label-branchTableBase
+    .dw RclTvmNPMT1
+    .db 2
+_StoTvmNPMT1Label:
+_StoTvmNPMT1 equ _StoTvmNPMT1Label-branchTableBase
+    .dw StoTvmNPMT1
+    .db 2
+_RclTvmSolverCountLabel:
+_RclTvmSolverCount equ _RclTvmSolverCountLabel-branchTableBase
+    .dw RclTvmSolverCount
+    .db 2
+;
+_RclTvmIYR0DefaultLabel:
+_RclTvmIYR0Default equ _RclTvmIYR0DefaultLabel-branchTableBase
+    .dw RclTvmIYR0Default
+    .db 2
+_RclTvmIYR1DefaultLabel:
+_RclTvmIYR1Default equ _RclTvmIYR1DefaultLabel-branchTableBase
+    .dw RclTvmIYR1Default
+    .db 2
+
+; float2.asm
+_LnOnePlusLabel:
+_LnOnePlus equ _LnOnePlusLabel-branchTableBase
+    .dw LnOnePlus
+    .db 2
+_ExpMinusOneLabel:
+_ExpMinusOne equ _ExpMinusOneLabel-branchTableBase
+    .dw ExpMinusOne
     .db 2
 
 ; selectepoch2.asm
@@ -1969,12 +2006,10 @@ defpage(1)
 #include "memory1.asm"
 #include "integer1.asm"
 #include "rpnobject1.asm"
-#include "float1.asm"
 #include "integerconv1.asm"
 #include "const1.asm"
 #include "complex1.asm"
 #include "formatcomplex1.asm"
-#include "tvm1.asm"
 #include "hms1.asm"
 #include "prob1.asm"
 #include "format1.asm"
@@ -1989,6 +2024,8 @@ defpage(1)
 defpage(2)
 
 #include "modes2.asm"
+#include "tvm2.asm"
+#include "float2.asm"
 #include "selectepoch2.asm"
 #include "epoch2.asm"
 #include "datevalidation2.asm"

@@ -16,6 +16,7 @@ main:
     res lwrCaseActive, (iy + appLwrCaseFlag) ; disable ALPHA-ALPHA lowercase
     bcall(_ClrLCDFull)
 
+    ; Initialize the App.
     bcall(_RestoreAppState) ; CF=1 if RPN83SAV var is invalid
     jr nc, warmInit
     ; Cold initialize if RestoreAppState() fails.
@@ -28,21 +29,21 @@ main:
     bcall(_ColdInitComplex)
     bcall(_ColdInitModes)
     bcall(_ColdInitDisplay)
+    bcall(_ColdInitTvm)
     call coldInitStat
     call coldInitCfit
-    call coldInitTvm
 warmInit:
     ; Alway perform warm initialization.
     bcall(_SanitizeMenu) ; Sanitize currentMenuGroupId and currentMenuRowIndex
     bcall(_InitArgBuf) ; Start with command ArgScanner off.
     bcall(_InitDisplay)
+    bcall(_InitTvmSolver)
     call updateNumResultMode
     call updateComplexMode
     call initStack
     call initRegs
     call initStatRegs
     call initLastX
-    call initTvmSolver
 
     ; Initialize the App monitor so that we can intercept the Put Away (2ND
     ; OFF) signal.
@@ -72,9 +73,11 @@ mainExit:
     bcall(_ClrLCDFull)
     bcall(_HomeUp)
 
-    ; Restore various OS states, and terminate the app.
+    ; Restore various OS states.
     bcall(_RestoreOSState)
     bcall(_ReloadAppEntryVecs) ; App Loader in control of monitor
+
+    ; Terminate the app.
     bit monAbandon, (iy + monFlags) ; if turning off: ZF=1
     jr nz, appTurningOff
     ; If not turning off, then force control back to the home screen.

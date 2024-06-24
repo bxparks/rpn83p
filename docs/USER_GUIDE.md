@@ -2,7 +2,7 @@
 
 RPN calculator app for the TI-83 Plus and TI-84 Plus inspired by the HP-42S.
 
-**Version**: 0.11.0 (2024-05-28)
+**Version**: 0.12.0 (2024-06-24)
 
 **Project Home**: https://github.com/bxparks/rpn83p
 
@@ -32,7 +32,7 @@ RPN calculator app for the TI-83 Plus and TI-84 Plus inspired by the HP-42S.
         - [Record Object Input](#record-object-input)
         - [Complex Number Input](#complex-number-input)
         - [Other Edge Cases](#other-edge-cases)
-        - [Input Limitation](#input-limitations)
+        - [Input Limitations](#input-limitations)
     - [RPN Stack](#rpn-stack)
         - [RPN Stack Structure](#rpn-stack-structure)
         - [RPN Stack Operations](#rpn-stack-operations)
@@ -91,7 +91,7 @@ RPN83P is a flash application written in Z80 assembly language that consumes 3
 pages (48 kiB) of flash memory. Since it is stored in flash, it is preserved if
 the RAM is cleared. It consumes about 1025 to 2535 bytes of TI-OS RAM through 4
 AppVars, depending on the number of storage registers: `RPN83REG` (500 to 1925
-bytes), `RPN83SAV` (142 byte), `RPN83STA` (272 bytes), and `RPN83STK` (120 to
+bytes), `RPN83SAV` (140 byte), `RPN83STA` (272 bytes), and `RPN83STK` (120 to
 196 bytes).
 
 Summary of features:
@@ -150,7 +150,8 @@ Summary of features:
     - carry flag and bit masks: `CCF`, `SCF`, `CF?`, `CB`, `SB`, `B?`
     - word sizes: `WSIZ`, `WSZ?`: 8, 16, 24, 32 bits
 - time value of money (TVM), inspired by HP-12C, HP-17B, and HP-30b
-    - `N`, `I%YR`, `PV`, `PMT`, `FV`, `P/YR`, `BEG`, `END`, `CLTV` (clear TVM)
+    - `N`, `I%YR`, `PV`, `PMT`, `FV`
+    - `P/YR`, `C/YR`, `BEG`, `END`, `CLTV` (clear TVM)
 - complex numbers, inspired by HP-42S and HP-35s
     - stored in RPN stack registers (`X`, `Y`, `Z`, `T`, `LASTX`) and storage
       registers `R00-R99`
@@ -161,13 +162,14 @@ Summary of features:
     - number entry: `2ND i` (rectangular), `2ND ANGLE` (polar degrees), `2ND
       ANGLE 2ND ANGLE` (polar radians)
     - extended regular functions: `+`, `-`, `*`, `/`, `1/X`, `X^2`, `SQRT`,
-      `Y^X`, `X^3`, `3ROOTY`, `XROOTY`, `LOG`, `LN`, `10^X`, `E^X`, `2^X`,
+      `Y^X`, `X^3`, `3ROOTX`, `XROOTY`, `LOG`, `LN`, `10^X`, `E^X`, `2^X`,
       `LOG2`, `LOGB`
     - complex specific functions: `REAL`, `IMAG`, `CONJ`, `CABS`, `CANG`
     - unsupported: trigonometric and hyperbolic functions (not supported by
       TI-OS)
 - date functions
-    - support date, time, datetime, timezone, and hardware clock
+    - date, time, datetime, timezone, and hardware clock
+    - proleptic Gregorian calendar from year 0001 to 9999
     - add or subtract dates, times, datetimes
     - convert datetime to different timezones
     - convert between datetime and epochseconds
@@ -235,6 +237,9 @@ The RPN83P app is not a clone of the HP-42S for several reasons:
 - The keyboard layout and labels of the TI-83 and TI-84 calculators are
   different. As an obvious example, the TI calculators have 5 menu buttons below
   the LCD screen, but the HP-42S has 6 menu buttons.
+- The LCD screen width allows each menu to contain only 4 letters instead of the
+  5 supported by the HP-42S. I cannot even use the same menu names as the
+  HP-42S.
 - The RPN83P app does not implement its own floating point routines, but uses
   the ones provided by the underlying TI-OS. There are functions missing from
   the TI-OS compared to the HP-42S (e.g. trigonometric functions on complex
@@ -509,6 +514,7 @@ Community members have verified that it works on the following variants:
 The following calculators are *not* supported because their internal hardware
 and firmware are too different:
 
+- TI-73, 80, 81, 82, 85, 86
 - TI-83 (without Plus)
 - TI-84 Plus C Silver Edition
 - TI-84 Plus CE
@@ -588,7 +594,7 @@ The following buttons are used to enter and edit a number in the input buffer:
     - `{`: inserts the starting delimiter for record types
     - `}`: inserts the terminating delimiter for record types
     - `,`: inserts the component separator for record types
-    - see [USER_GUIDE_DATE.md](USER_GUIDE_DATE.md)
+    - see [USER_GUIDE_DATE.md](USER_GUIDE_DATE.md) for more info
 - complex numbers
     - `2ND LINK`: converts `X` and `Y` into a complex number in `X`, or the
       reverse
@@ -598,17 +604,17 @@ The following buttons are used to enter and edit a number in the input buffer:
           or
         - converts an existing complex delimiter to an `i`
     - `2ND ANGLE`:
-        - inserts an `angle` character to form a complex number in polar degree
+        - inserts `∠°` (angle degree) to form a complex number in polar degree
           form, or
-        - converts an existing complex delimiter to an `angle` character
+        - converts an existing complex delimiter to an `∠°`
     - `2ND ANGLE` `2ND ANGLE`:
-        - inserts an `angle` and a `degrees` symbol to form a complex number
-          polar radian form, or
-        - converts and existing complex delimiter to an `angle`-`degrees` pair
+        - inserts `∠` (angle) to form a complex number in polar radian form, or
+        - converts an existing complex delimiter to an `∠`
+    - see [USER_GUIDE_COMPLEX.md](USER_GUIDE_COMPLEX.md) for more info
 
 #### Input Cursor
 
-The cursor of RPN83P is a blink block character. This is different from the
+The cursor of RPN83P is a blinking block character. This is different from the
 HP-42S which uses an underscore character. The block character was selected
 because this style is supported natively by the underlying TI-OS, and because it
 is visually distinctive from the small dashes contained in the menu folder icon.
@@ -765,10 +771,13 @@ i` and`2ND ANGLE`, try to be slightly smart about their behavior as well:
     - inserts an `i` delimiter if no complex delimiter already exists
     - converts any existing complex delimiter into an `i`
 - `2ND ANGLE`
-    - inserts an `Angle Degree` delimiter if no complex delimiter already exists
-    - converts an existing `i` delimiter into an `Angle Degree` delimiter
-    - converts an existing `Angle Degree` into just an `Angle` (toggles)
-    - converts an existing `Angle` into an `Angle Degree` (toggles)
+    - inserts a `∠°` (angle degree) delimiter if no complex delimiter already
+      exists
+    - converts an existing `i` delimiter into an `∠°` (angle degree) delimiter
+    - converts an existing `∠°` (angle degree) delimiter into just an `∠`
+      (angle) delimiter (i.e. toggles)
+    - converts an existing `∠` (angle) delimiter into an `∠°` (angle degree)
+      delimiter (i.e. toggles)
 
 Here is an example of how the delimiters override or toggle each other:
 
@@ -798,10 +807,9 @@ others were not.
       cursor will *always* be shown with an empty string.
     - The presence of the cursor indicates that the Edit Mode is in effect and
       that the Stack Lift is disabled.
-- Functions which take no arguments and return one or more values were
-  surprisingly tricky to implement correctly. The canonical example of these
-  functions is the `2ND PI` key. RPN83P implements these functions in the same
-  way as the HP-42S:
+- Functions which take no arguments and return one or more values were tricky to
+  implement correctly. The canonical example of these functions is the `2ND PI`
+  key. RPN83P implements these functions in the same way as the HP-42S:
     - If Stack Lift is disabled (e.g. after an `ENTER`), then `2ND PI`
       *replaces* the previous value in the `X` stack register.
     - If the input system is in edit mode (displaying the blinking cursor),
@@ -933,9 +941,9 @@ longer sequence of calculations.
 #### RPN Stack Size
 
 The default size of the RPN stack is 4 for compatibility with traditional HP RPN
-calculators. However, RPN83P allows the RPN stack size to changed between 4 and
-8, using the `SSIZ` command under the `MODE` menu (which can be quickly accessed
-through the `MODE` button):
+calculators. However, RPN83P allows the RPN stack size to be changed between 4
+and 8, using the `SSIZ` command under the `MODE` menu (which can be quickly
+accessed through the `MODE` button):
 
 - ![ROOT > MODE](images/menu-root-mode.png)
     - ![ROOT > MODE > SSIZ](images/menu-root-mode-ssiz.png)
@@ -1413,6 +1421,7 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
     - `PMT`: set or calculate Payment per period
     - `FV`: set or calculate Future Value
     - `P/YR`: set number of payments per year
+    - `C/YR`: set number of compoundings per year
     - `BEG`: payment occurs at the Beginning of each period
     - `END`: payment occurs at the End of each period
     - `CLTV`: clear TVM variables and parameters
@@ -1942,10 +1951,10 @@ record objects (e.g. Date, Time, DateTime) defined in
 
 ### NUM Functions
 
-The functions under the `NUM` menu folder are functions which don't quite fit
-into one of the other major categories:
+The functions under the `NUM` menu folder are arithmetic functions which don't
+quite fit into one of the other major categories:
 
-- ![ROOT > NUM](images/menu-root-num.png) (`ROOT > NUM`)
+- ![ROOT > NUM](images/menu-root-num.png)
     - ![ROOT > NUM > Row1](images/menu-root-num-1.png)
     - ![ROOT > NUM > Row2](images/menu-root-num-2.png)
     - ![ROOT > NUM > Row3](images/menu-root-num-3.png)
@@ -2005,14 +2014,14 @@ times of the `PRIM` function for this number for various TI models that I own:
 | TI-Nspire w/ TI-84+ keypad    | 8.2 s                 |
 
 During the calculation, the "run indicator" on the upper-right corner will be
-active. You can press `ON` key to break from the `PRIM` loop with an `Err:
+active. You can press the `ON` key to break from the `PRIM` loop with an `Err:
 Break` message.
 
 #### Floating Point Rounding
 
-There are 3 menu functions under the `ROOT > NUM` menu group that provide
-rounding functions: `RNDF`, `RNDN`, and `RNDG`. They round the floating point
-number in different ways:
+There are 3 rounding functions under the `ROOT > NUM` menu folder that provide
+access to the corresponding rounding functions implemented by the underlying
+TI-OS:
 
 - `RNDF`
     - rounds to the number of digits after the decimal point specified by the
@@ -2036,6 +2045,8 @@ using the various functions.
 
 **RNDF**
 
+Round to the number of digits specified by the current `FIX/SCI/ENG` mode:
+
 | **Keys**              | **Display** |
 | ----------------      | --------------------- |
 | `PI` `1000` `*`       | ![](images/rounding-01.png) |
@@ -2044,6 +2055,8 @@ using the various functions.
 | `2ND ENTRY` (SHOW)    | ![](images/rounding-04.png) |
 
 **RNDN**
+
+Round to the number of digits specified by the user:
 
 | **Keys**              | **Display** |
 | ----------------      | --------------------- |
@@ -2054,6 +2067,8 @@ using the various functions.
 
 **RNDG**
 
+Round to remove the hidden guard digits:
+
 | **Keys**              | **Display** |
 | ----------------      | --------------------- |
 | `PI` `1000` `*`       | ![](images/rounding-09.png) |
@@ -2063,11 +2078,11 @@ using the various functions.
 
 ## Advanced Modules
 
-Each module below is a collection of related functions that are related to each
-other in some consistent way. The modules can interact with other parts of the
-RPN83P application through the RPN stack or storage registers. But for the most
-part, they are self-contained. Each module is large enough that its
-documentation was extracted into a separate document for ease of maintenance.
+Each module below is a collection of functions and features that are related in
+some consistent way. The modules can interact with other parts of the RPN83P
+application through the RPN stack or storage registers. But for the most part,
+they are self-contained. Each module is large enough that its documentation was
+extracted into a separate document for ease of maintenance.
 
 ### BASE Functions
 
@@ -2150,16 +2165,17 @@ The RPN83P app interacts with the underlying TI-OS in the following ways.
       exiting. Changing the `MODE` settings in one app will not cause changes to
       the other.
 - TVM variables
-    - RPN83P uses some of the same TI-OS floating point variables used by the
-      `Finance` app (automatically provided by the TI-OS on the TI-84 Plus).
-        - `N`, `I%YR`, `PV`, `PMT`, `FV`, and `P/YR`
-    - These variables appear in the Finance app with slightly different names:
-        - `N`, `I%`, `PV`, `PMT`, `FV`, and `P/Y`
-    - Two variables not synchronized between the 2 apps are:
-        - `BEG`/`END` flag
-            - could not figure out where the Finance app stores this
-        - `C/Y` (compoundings per year)
-            - always set equal to `P/YR` in the RPN83P app
+    - RPN83P uses the exact same TI-OS floating point variables and flags used
+      by the `Finance` app (automatically provided by the TI-OS on the TI-84
+      Plus). When these variables are changed in RPN83P, they automatically
+      appear in the `Finance` app, and vise versa:
+    - RPN83P variable names:
+        - `N`, `I%YR`, `PV`, `PMT`, `FV`, `P/YR`, `C/YR`, `BEG`, `END`
+    - TI-OS Finance app variable names:
+        - `N`, `I%`, `PV`, `PMT`, `FV`, `P/Y`, `C/Y`, `BEGIN`, `END`
+    - An interesting consequence of sharing these variables with the TI-OS
+      Finance app is that these are the only RPN83P variables which are *not*
+      saved in the `RPN83SAV` appVar.
 
 ## Future Enhancements
 

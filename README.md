@@ -17,7 +17,7 @@ RPN83P is a flash application written in Z80 assembly language that consumes 3
 pages (48 kiB) of flash memory. Since it is stored in flash, it is preserved if
 the RAM is cleared. It consumes about 1025 to 2535 bytes of TI-OS RAM through 4
 AppVars, depending on the number of storage registers: `RPN83REG` (500 to 1925
-bytes), `RPN83SAV` (142 byte), `RPN83STA` (272 bytes), and `RPN83STK` (120 to
+bytes), `RPN83SAV` (140 byte), `RPN83STA` (272 bytes), and `RPN83STK` (120 to
 196 bytes).
 
 Summary of features:
@@ -58,7 +58,7 @@ Summary of features:
       `>cm`, `>in`, `>um`, `>mil`, `>kg`, `>lbs`, `>g`, `>oz`, `>L`, `>gal`,
       `>mL`, `>floz`, `>kJ`, `>cal`, `>kW`, `>hp`
 - statistics and curve fitting, inspired by HP-42S
-    - statistics: `Sigma+`, `Sigma-`, `SUM`, `MEAN`, `WMN` (weighted mean),
+    - statistics: `Σ+`, `Σ-`, `SUM`, `MEAN`, `WMN` (weighted mean),
       `SDEV` (sample standard deviation), `SCOV` (sample covariance),
       `PDEV` (population standard deviation), `PCOV` (population covariance)
     - curve fitting: `Y>X`, `X>Y`, `SLOP` (slope), `YINT` (y intercept), `CORR`
@@ -79,7 +79,7 @@ Summary of features:
     - `N`, `I%YR`, `PV`, `PMT`, `FV`, `P/YR`, `BEG`, `END`, `CLTV` (clear TVM)
 - complex numbers, inspired by HP-42S and HP-35s
     - stored in RPN stack registers (`X`, `Y`, `Z`, `T`, `LASTX`) and storage
-      registers `R00-R24`
+      registers `R00-R99`
     - result modes: `RRES` (real results), `CRES` (complex results)
     - display modes: `RECT`, `PRAD` (polar radians), `PDEG` (polar degrees)
     - linking/unlinking: `2ND LINK` (convert 2 reals to 1 complex, same as
@@ -87,13 +87,14 @@ Summary of features:
     - number entry: `2ND i` (rectangular), `2ND ANGLE` (polar degrees), `2ND
       ANGLE 2ND ANGLE` (polar radians)
     - extended regular functions: `+`, `-`, `*`, `/`, `1/X`, `X^2`, `SQRT`,
-      `Y^X`, `X^3`, `3ROOTY`, `XROOTY`, `LOG`, `LN`, `10^X`, `E^X`, `2^X`,
+      `Y^X`, `X^3`, `3ROOTX`, `XROOTY`, `LOG`, `LN`, `10^X`, `E^X`, `2^X`,
       `LOG2`, `LOGB`
     - complex specific functions: `REAL`, `IMAG`, `CONJ`, `CABS`, `CANG`
     - unsupported: trigonometric and hyperbolic functions (not supported by
       TI-OS)
 - date functions
     - date, time, datetime, timezone, and hardware clock
+    - proleptic Gregorian calendar from year 0001 to 9999
     - add or subtract dates, times, datetimes
     - convert datetime to different timezones
     - convert between datetime and epochseconds
@@ -112,7 +113,7 @@ Missing features (partial list):
 - vectors and matrices
 - keystroke programming
 
-**Version**: 0.11.0 (2024-05-28)
+**Version**: 0.12.0 (2024-06-24)
 
 **Changelog**: [CHANGELOG.md](CHANGELOG.md)
 
@@ -198,6 +199,7 @@ Community members have verified that it works on the following variants:
 The following calculators are *not* supported because their internal hardware
 and firmware are too different:
 
+- TI-73, 80, 81, 82, 85, 86
 - TI-83 (without Plus)
 - TI-84 Plus C Silver Edition
 - TI-84 Plus CE

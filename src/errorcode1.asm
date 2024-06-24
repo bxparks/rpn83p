@@ -241,25 +241,27 @@ errorCodeTvmRecalled equ        78 ; TVM value was recalled
     .dw errorStrTvmRecalled
 errorCodeTvmCalculated equ      79 ; TVM value was calculated
     .dw errorStrTvmCalculated
-errorCodeTvmNoSolution equ      80 ; TVM value has no solution
+errorCodeTvmCalculatedMultiple equ  80 ; TVM value was calculated
+    .dw errorStrTvmCalculatedMultiple
+errorCodeTvmNoSolution equ      81 ; TVM value has no solution
     .dw errorStrTvmNoSolution
-errorCodeTvmNotFound equ        81 ; TVM value could not be found
+errorCodeTvmNotFound equ        82 ; TVM value could not be found
     .dw errorStrTvmNotFound
-errorCodeTvmIterations equ      82 ; TVM Solver exceeded max iterations
+errorCodeTvmIterations equ      83 ; TVM Solver exceeded max iterations
     .dw errorStrTvmIterations
-errorCodeTvmCleared equ         83 ; TVM vars cleared
+errorCodeTvmCleared equ         84 ; TVM vars cleared
     .dw errorStrTvmCleared
-errorCodeTvmSolverReset equ     84 ; TVM Solver params reset
+errorCodeTvmSolverReset equ     85 ; TVM Solver params reset
     .dw errorStrTvmSolverReset
-errorCodeTzStored equ           85 ; TZ stored
+errorCodeTzStored equ           86 ; TZ stored
     .dw errorStrTzStored
-errorCodeEpochStored equ        86 ; Epoch stored
+errorCodeEpochStored equ        87 ; Epoch stored
     .dw errorStrEpochStored
-errorCodeClockSet equ           87 ; RTC set
+errorCodeClockSet equ           88 ; RTC set
     .dw errorStrClockSet
-errorCodeNoClock equ            88 ; No Clock on 83+
+errorCodeNoClock equ            89 ; No Clock on 83+
     .dw errorStrNoClock
-errorCodeCount equ              89 ; total number of error codes
+errorCodeCount equ              90 ; total number of error codes
 
 ; The C strings for each error code. In alphabetical order, as listed in the TI
 ; 83 Plus SDK docs.
@@ -359,6 +361,8 @@ errorStrTvmRecalled:
     .db "TVM Recalled", 0 ; Info: TVM parameter was recalled, w/o recalculation
 errorStrTvmCalculated:
     .db "TVM Calculated", 0 ; Info: TVM parameter was calculated
+errorStrTvmCalculatedMultiple:
+    .db "TVM Calculated (Multiple)", 0 ; Info: one of 2 TVM I%YR calculated
 errorStrTvmNoSolution:
     .db "TVM No Solution", 0 ; Info: TVM Solver determines no solution exists
 errorStrTvmNotFound:

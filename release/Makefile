@@ -28,11 +28,17 @@
 #	- https://stackoverflow.com/questions/18178084 (Greek letters)
 #	- https://linuxconfig.org/how-to-install-latex-on-ubuntu-22-04-jammy-jellyfish-linux
 #	(installing xelatex on Ubuntu, $ sudo apt install texlive-xetex)
+#	- https://stackoverflow.com/questions/18178084 (fc-list command)
+#	- https://tex.stackexchange.com/questions/234786 (change font family)
+#	- https://superuser.com/questions/1517900 (--monofont flag)
 #
 # I use `--from gfm` instead of `--from markdown` to handle embedded images
 # better. The `--from markdown` option separates out the images into separate
 # "Figures" which are out-of-context from the text. The `--from gfm` option
 # embeds the images directly into the flow of the text.
+#
+# Use `$fc-list | grep -v pfb` to do a first cut filtering of fonts which don't
+# seem to be supported by xelatex.
 #
 # 4) Copy the animated gif screenshot files from ../docs to here.
 #
@@ -63,18 +69,49 @@ $(wildcard ../docs/images/*.gif) \
 $(wildcard ../docs/images/base/*.png) \
 $(wildcard ../docs/images/complex/*.png) \
 $(wildcard ../docs/images/date/*.png) \
-$(wildcard ../docs/images/stat/*.png)
+$(wildcard ../docs/images/stat/*.png) \
+$(wildcard ../docs/images/tvm/*.png)
 
 # Resized images are used for PDF files.
 RESIZED_IMAGES := \
 $(subst images/,resized/,$(ORIG_IMAGES))
 
+# The default font used by xelatex seems to be "Latin Modern". Unfortunately,
+# it does not support the Unicode angle character U+2220, producing a warning
+# message: "Missing character: There is no ∠ (U+2220) (U+2220) in font
+# [lmmono12-regular]".
+#
+# I tested various fonts which were installed on my Linux Mint 21.1 system.
+# Some font families (e.g. "Nimbus Roman") supports the U+2220 (angle) symbol
+# in the regular font, but not the mono font. Eventually, I discovered that the
+# "FreeSerif" and the "FreeMono" fonts support U+2220 in both proportional and
+# monospaced fonts.
+#
+# Proportional fonts tried:
+#	- "FreeSans" - supports U+2220, but looks ugly w/o serif
+#	- "FreeSerif" - supports U+2220
+#	- "Latin Modern Roman" - no U+2220 angle
+#	- "LiberationSerif" - no U+2220
+#	- "Nimbus Roman" - supports U+2220
+#	- "Ubuntu" - no U+2220
+#
+# Mono fonts tried:
+#	- "Courier" - triggers font errors in xelatex
+#	- "FreeMono" - supports U+2220 angle character (!)
+#	- "Latin Modern Mono" (default) - no U+2220 angle
+#	- "Liberation Mono" - no U+2220 angle
+#	- "Nimbus Mono L" - triggers font errors in xelatex
+#	- "Nimbus Mono PS" - triggers font errors in xelatex
+#	- "Ubuntu Mono" - no U+2220 angle
 PANDOC_FLAGS := \
 --pdf-engine=xelatex \
+--variable mainfont='FreeSerif' \
+--variable monofont='FreeMono' \
 --variable geometry:margin=1in \
 --variable fontsize=12pt \
 --variable colorlinks=true \
 --from gfm \
+--to pdf \
 --standalone
 
 # Name of the ImageMagick binary. My Linux Mint 21.1 (aka Ubuntu 20.04)
@@ -96,56 +133,47 @@ rpn83p.zip: $(TARGETS)
 # Convert markdown to PDF.
 README.pdf: ../README.md Makefile $(RESIZED_IMAGES)
 	sed -e 's:(docs/images/:(docs/resized/:g' < $< \
-		| (cd ..; pandoc $(PANDOC_FLAGS) -o $@)
-	mv -f ../$@ .
+		| (cd ..; pandoc $(PANDOC_FLAGS)) > $@
 
 # Convert markdown to PDF.
 USER_GUIDE.pdf: ../docs/USER_GUIDE.md Makefile $(RESIZED_IMAGES)
 	sed -e 's:(images/:(resized/:g' < $< \
-		| (cd ../docs; pandoc $(PANDOC_FLAGS) -o $@)
-	mv -f ../docs/$@ .
+		| (cd ../docs; pandoc $(PANDOC_FLAGS)) > $@
 
 # Convert markdown to PDF.
 USER_GUIDE_BASE.pdf: ../docs/USER_GUIDE_BASE.md Makefile $(RESIZED_IMAGES)
 	sed -e 's:(images/:(resized/:g' < $< \
-		| (cd ../docs; pandoc $(PANDOC_FLAGS) -o $@)
-	mv -f ../docs/$@ .
+		| (cd ../docs; pandoc $(PANDOC_FLAGS)) > $@
 
 # Convert markdown to PDF.
 USER_GUIDE_COMPLEX.pdf: ../docs/USER_GUIDE_COMPLEX.md Makefile $(RESIZED_IMAGES)
 	sed -e 's:(images/:(resized/:g' < $< \
-		| (cd ../docs; pandoc $(PANDOC_FLAGS) -o $@)
-	mv -f ../docs/$@ .
+		| (cd ../docs; pandoc $(PANDOC_FLAGS)) > $@
 
 # Convert markdown to PDF.
 USER_GUIDE_DATE.pdf: ../docs/USER_GUIDE_DATE.md Makefile $(RESIZED_IMAGES)
 	sed -e 's:(images/:(resized/:g' < $< \
-		| (cd ../docs; pandoc $(PANDOC_FLAGS) -o $@)
-	mv -f ../docs/$@ .
+		| (cd ../docs; pandoc $(PANDOC_FLAGS)) > $@
 
 # Convert markdown to PDF.
 USER_GUIDE_STAT.pdf: ../docs/USER_GUIDE_STAT.md Makefile $(RESIZED_IMAGES)
 	sed -e 's:(images/:(resized/:g' < $< \
-		| (cd ../docs; pandoc $(PANDOC_FLAGS) -o $@)
-	mv -f ../docs/$@ .
+		| (cd ../docs; pandoc $(PANDOC_FLAGS)) > $@
 
 # Convert markdown to PDF.
 USER_GUIDE_TVM.pdf: ../docs/USER_GUIDE_TVM.md Makefile $(RESIZED_IMAGES)
 	sed -e 's:(images/:(resized/:g' < $< \
-		| (cd ../docs; pandoc $(PANDOC_FLAGS) -o $@)
-	mv -f ../docs/$@ .
+		| (cd ../docs; pandoc $(PANDOC_FLAGS)) > $@
 
 # Convert markdown to PDF.
 TVM.pdf: ../docs/TVM.md Makefile $(RESIZED_IMAGES)
 	sed -e 's:(images:(resized/:g' < $< \
-		| (cd ../docs; pandoc $(PANDOC_FLAGS) -o $@)
-	mv -f ../docs/$@ .
+		| (cd ../docs; pandoc $(PANDOC_FLAGS)) > $@
 
 # Convert markdown to PDF.
 FUTURE.pdf: ../docs/FUTURE.md Makefile $(RESIZED_IMAGES)
 	sed -e 's:(images:(resized/:g' < $< \
-		| (cd ../docs; pandoc $(PANDOC_FLAGS) -o $@)
-	mv -f ../docs/$@ .
+		| (cd ../docs; pandoc $(PANDOC_FLAGS)) > $@
 
 # Copy the CHANGELOG.md as is, without conversion to PDF. It's just a text
 # file without any embedded images.
@@ -177,6 +205,11 @@ CHANGELOG.md: ../CHANGELOG.md Makefile
 # Resize the PNG files under images/stat/ to 75% before embedding into PDF.
 ../docs/resized/stat/%.png: ../docs/images/stat/%.png
 	@mkdir -p ../docs/resized/stat
+	$(MAGICK) $< -adaptive-resize 75% $@
+
+# Resize the PNG files under images/tvm/ to 75% before embedding into PDF.
+../docs/resized/tvm/%.png: ../docs/images/tvm/%.png
+	@mkdir -p ../docs/resized/tvm
 	$(MAGICK) $< -adaptive-resize 75% $@
 
 # Just copy the GIF files, no resizing. They take too much CPU time to resize.

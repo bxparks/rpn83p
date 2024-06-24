@@ -67,24 +67,29 @@ stXCurCol equ 1
 stXPenRow equ stXCurRow*8
 
 ; Display coordinates of the TVM N counter
-tvmNCurRow equ 3
+tvmNCurRow equ 2
 tvmNCurCol equ 1
 tvmNPenRow equ tvmNCurRow*8
 
 ; Display coordinates of the TVM i0 counter
-tvmI0CurRow equ 4
+tvmI0CurRow equ 3
 tvmI0CurCol equ 1
 tvmI0PenRow equ tvmI0CurRow*8
 
 ; Display coordinates of the TVM i1 counter
-tvmI1CurRow equ 5
+tvmI1CurRow equ 4
 tvmI1CurCol equ 1
 tvmI1PenRow equ tvmI1CurRow*8
 
-; Display coordinates of the TVM extra line
-tvmExtraCurRow equ 6
-tvmExtraCurCol equ 0
-tvmExtraPenRow equ tvmExtraCurRow*8
+; Display coordinates of the TVM f0 value
+tvmF0CurRow equ 5
+tvmF0CurCol equ 1
+tvmF0PenRow equ tvmF0CurRow*8
+
+; Display coordinates of the TVM f1 value
+tvmF1CurRow equ 6
+tvmF1CurCol equ 1
+tvmF1PenRow equ tvmF1CurRow*8
 
 ; Display coordinates of the input buffer.
 inputCurRow equ stXCurRow
@@ -426,13 +431,11 @@ displayMain:
     ld a, (drawMode)
     cp drawModeNormal
     jr z, displayStack
-    cp drawModeTvmSolverI
-    jr z, displayTvmMaybe
-    cp drawModeTvmSolverF
-    jr z, displayTvmMaybe
     cp drawModeInputBuf
     jr z, displayStack
-    ; Everything else display the stack.
+    cp drawModeTvmSolver
+    jr z, displayTvmMaybe
+    ; Everything else, display the stack.
     jr displayStack
 displayTvmMaybe:
     ld a, (tvmSolverIsRunning)
@@ -678,53 +681,61 @@ displayTvm:
     ld hl, tvmNCurCol*$100 + tvmNCurRow ; $(curCol)(curRow)
     ld (CurRow), hl
     bcall(_RclTvmSolverCount)
-    ld b, displayStackFontFlagsT
+    ld b, displayStackFontFlagsA
     call printOP1
 
-    ; print TVM i0 or npmt0 label
+    ; print TVM i0 label
     ld hl, tvmI0PenRow*$100 ; $(penRow)(penCol)
     ld (PenCol), hl
     ld hl, msgTvmI0Label
     call vPutSmallS
 
-    ; print TVM i0 or npmt0 value
+    ; print TVM i0 value
     ld hl, tvmI0CurCol*$100 + tvmI0CurRow ; $(curCol)(curRow)
     ld (CurRow), hl
-    ld a, (drawMode)
-    cp a, drawModeTvmSolverI ; if drawMode==1: ZF=1
-    jr z, displayTvmI0
-    bcall(_RclTvmNPMT0)
-    jr displayTvm0
-displayTvmI0:
     bcall(_RclTvmI0)
-displayTvm0:
     ld b, displayStackFontFlagsZ
     call printOP1
 
-    ; print TVM i1 or npmt1 label
+    ; print TVM i1 label
     ld hl, tvmI1PenRow*$100 ; $(penRow)(penCol)
     ld (PenCol), hl
     ld hl, msgTvmI1Label
     call vPutSmallS
 
-    ; print TVM i1 or npmt1 value
+    ; print TVM i1 value
     ld hl, tvmI1CurCol*$100 + tvmI1CurRow ; $(curCol)(curRow)
     ld (CurRow), hl
-    ld a, (drawMode)
-    cp a, drawModeTvmSolverI ; if drawMode==1: ZF=1
-    jr z, displayTvmI1
-    bcall(_RclTvmNPMT1)
-    jr displayTvm1
-displayTvmI1:
     bcall(_RclTvmI1)
-displayTvm1:
     ld b, displayStackFontFlagsY
     call printOP1
 
-    ; print the TVM empty line
-    ld hl, tvmExtraCurCol*$100 + tvmExtraCurRow ; $(curCol)(curRow)
+    ; print TVM f0 label
+    ld hl, tvmF0PenRow*$100 ; $(penRow)(penCol)
+    ld (PenCol), hl
+    ld hl, msgTvmF0Label
+    call vPutSmallS
+
+    ; print TVM f0 value
+    ld hl, tvmF0CurCol*$100 + tvmF0CurRow ; $(curCol)(curRow)
     ld (CurRow), hl
-    bcall(_EraseEOL)
+    bcall(_RclTvmNPMT0)
+    ld b, displayStackFontFlagsZ
+    call printOP1
+
+    ; print TVM f1 label
+    ld hl, tvmF1PenRow*$100 ; $(penRow)(penCol)
+    ld (PenCol), hl
+    ld hl, msgTvmF1Label
+    call vPutSmallS
+
+    ; print TVM f1 value
+    ld hl, tvmF1CurCol*$100 + tvmF1CurRow ; $(curCol)(curRow)
+    ld (CurRow), hl
+    bcall(_RclTvmNPMT1)
+    ld b, displayStackFontFlagsX
+    call printOP1
+
     ret
 
 ;-----------------------------------------------------------------------------
@@ -1257,6 +1268,10 @@ msgTvmNLabel:
 msgTvmI0Label:
     .db "0:", 0
 msgTvmI1Label:
+    .db "1:", 0
+msgTvmF0Label:
+    .db "0:", 0
+msgTvmF1Label:
     .db "1:", 0
 
 ; ComplexMode labels

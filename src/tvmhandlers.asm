@@ -11,7 +11,7 @@
 ;
 ; - If any TVM variable or parameter is Stored, then set the
 ; rpnFlagsTvmCalculate flag, causing the next TVM button to Calculate. This
-; includes the BEG and END which set or clear the tvmIsBegin flag.
+; includes the BEG and END menu buttons.
 ;
 ; - If a `2ND` menu button is invoked, causing a recall of the specified TVM
 ; variable, then clear the rpnFlagsTvmCalculate flag, causing the next TVM
@@ -22,18 +22,6 @@
 ; rpnFlagsTvmCalculate flag set, so that another TVM menu button performs
 ; another Calculate.
 ;-----------------------------------------------------------------------------
-
-; Description: Cold initialize all of the TVM variables.
-coldInitTvm:
-    res rpnFlagsTvmCalculate, (iy + rpnFlags)
-    bcall(_TvmClear)
-    ; [[fallthrough]]
-
-; Description: Reset the TVM Solver status. This is always done at App start.
-initTvmSolver:
-    xor a
-    ld (tvmSolverIsRunning), a
-    ret
 
 ;-----------------------------------------------------------------------------
 ; TVM handlers are invoked by the menu buttons.
@@ -124,7 +112,11 @@ mTvmIYRCalculate:
     call tvmIYRCalculate ; A=handlerCode; OP1=result
     ld (handlerCode), a
     cp errorCodeTvmCalculated
-    ret nz
+    jr z, mTvmIYRCalculateFound
+    cp errorCodeTvmCalculatedMultiple
+    jr z, mTvmIYRCalculateFound
+    ret
+mTvmIYRCalculateFound:
     bcall(_StoTvmIYR)
     call pushToX
     ret
@@ -144,59 +136,83 @@ tvmIYRCalculate:
     ld (tvmSolverIsRunning), a ; set 'isRunning' flag
     bcall(_RunIndicOn)
     xor a ; A=0=tvmSolverResultContinue
-tvmIYRCalculateSolveLoop:
-    ; tvmSolve() can be called with 2 values of A:
+tvmIYRCalculateSingleStepLoop:
+    ; TvmSolve() can be called with 2 values of A:
     ; - A=tvmSolverResultSingleStep to restart from the last loop, or
-    ; - A=anything else to start the root solver from the beginning,
+    ; - A=anything else to start the root solver from the beginning.
     bcall(_TvmSolve) ; A=tvmSolverResultXxx, guaranteed non-zero
+    ; If Single Step is active, TvmSolve() yields for each iteration. It is
+    ; called it again to continue its iteration until an appropriate status
+    ; codes is returned.
+    cp tvmSolverResultSingleStep
+    jr z, tvmIYRCalculateSingleStep
+    ;
     cp tvmSolverResultFound
-    jr nz, tvmIYRCalculateCheckNoSolution
-    ; Found!
+    jr z, tvmIYRCalculateFound
+    cp tvmSolverResultNotFound
+    jr z, tvmIYRCalculateNotFound
+    cp tvmSolverResultNoSolution
+    jr z, tvmIYRCalculateNoSolution
+    cp tvmSolverResultIterMaxed
+    jr z, tvmIYRCalculateIterMaxed
+    cp tvmSolverResultBreak
+    jr z, tvmIYRCalculateBreak
+    ; anything else is a programming error
+    jr tvmIYRCalculateStatusUnknown
+    ;
+tvmIYRCalculateSingleStep:
+    call tvmIYRCalculateShowSingleStep
+    jr tvmIYRCalculateSingleStepLoop
+tvmIYRCalculateFound:
+    ; Return a slightly different error code if only one of the 2 solutions
+    ; was found.
+    ld a, (tvmSolverSolutions) ; A=numSignChanges
+    cp 2
+    jr z, tvmIYRCalculateFoundMultiple
     ld a, errorCodeTvmCalculated
     jr tvmIYRCalculateEnd
-tvmIYRCalculateCheckNoSolution:
-    cp tvmSolverResultNoSolution
-    jr nz, tvmIYRCalculateCheckNotFound
-    ; Cannot have a solution
-    ld a, errorCodeTvmNoSolution
+tvmIYRCalculateFoundMultiple:
+    ld a, errorCodeTvmCalculatedMultiple
     jr tvmIYRCalculateEnd
-tvmIYRCalculateCheckNotFound:
-    cp tvmSolverResultNotFound
-    jr nz, tvmIYRCalculateCheckIterMax
-    ; root not found
+tvmIYRCalculateNotFound:
     ld a, errorCodeTvmNotFound
     jr tvmIYRCalculateEnd
-tvmIYRCalculateCheckIterMax:
-    cp tvmSolverResultIterMaxed
-    jr nz, tvmIYRCalculateCheckBreak
-    ; root not found after max iterations
+tvmIYRCalculateNoSolution:
+    ld a, errorCodeTvmNoSolution
+    jr tvmIYRCalculateEnd
+tvmIYRCalculateIterMaxed:
     ld a, errorCodeTvmIterations
     jr tvmIYRCalculateEnd
-tvmIYRCalculateCheckBreak:
-    cp tvmSolverResultBreak
-    jr nz, tvmIYRCalculateCheckSingleStep
-    ; user hit ON/EXIT
+tvmIYRCalculateBreak:
     ld a, errorCodeBreak
     jr tvmIYRCalculateEnd
-tvmIYRCalculateCheckSingleStep:
-    cp tvmSolverResultSingleStep
-    jr nz, tvmIYRCalculateStatusUnknown
+tvmIYRCalculateStatusUnknown: ; should never happen, so return Invalid
+    ld a, errorCodeInvalid
+tvmIYRCalculateEnd:
+    ; Do final single step if debug is enabled. Clean up various flags.
+    ; If there is an exception, the exception handler needs to perform the
+    ; clean up too! See mainscanner.asm/processMainCommandsHandleException().
+    ; TODO: I think we can install a nested exception handler and perform that
+    ; clean up here.
+    push af
+    bcall(_RunIndicOff)
+    bcall(_TvmSolveCheckDebugEnabled) ; CF=1 if TVM debug enabled
+    call c, tvmIYRCalculateShowSingleStep
+    xor a
+    ld (tvmSolverIsRunning), a ; clear 'isRunning' flag
+    pop af
+    ret
+
+tvmIYRCalculateShowSingleStep:
     ; single-step debugging mode: render display and wait for key
     push af ; preserve A==tvmSolverResultSingleStep
+    bcall(_PushRealO1)
     set dirtyFlagsStack, (iy + dirtyFlags)
     call displayAll
     ; Pause and wait for button press.
     ; If QUIT or OFF then TvmSolver will be reset upon app start.
     bcall(_GetKey)
-    pop af
-    jr tvmIYRCalculateSolveLoop
-tvmIYRCalculateStatusUnknown:
-    ld a, errorCodeTvmNotFound
-tvmIYRCalculateEnd:
-    push af
-    xor a
-    ld (tvmSolverIsRunning), a ; clear 'isRunning' flag
-    bcall(_RunIndicOff)
+    bcall(_PopRealO1)
     pop af
     ret
 
@@ -302,6 +318,9 @@ mTvmFVCalculate:
 ;-----------------------------------------------------------------------------
 
 ; Description: Set or get P/YR to X.
+; If the PYR is updated, then CYR also set to the same value because that's the
+; most common case. Users can go back and change the CYR if needed. This is
+; also how the "Financial..." app on the TI-OS works.
 mTvmPYRHandler:
     call closeInput
     ; Check if '2ND PYR' pressed.
@@ -316,7 +335,9 @@ mTvmPYRHandler:
     bcall(_ErrDomain)
 mTvmPYRHandlerSet:
     bcall(_StoTvmPYR)
+    bcall(_StoTvmCYR) ; set CYR=PYR if PYR is changed
     set rpnFlagsTvmCalculate, (iy + rpnFlags)
+    set dirtyFlagsMenu, (iy + dirtyFlags)
     ld a, errorCodeTvmStored
     ld (handlerCode), a
     ret
@@ -328,21 +349,91 @@ mTvmPYRGet:
     ld (handlerCode), a
     ret
 
+; Description: Select menu name. Display a dot if the PYR is different than 12,
+; which is almost always the default.
+; Output: CF=0 for normal, CF=1 or alternate
+; Preserves: BC, DE (must be preserved)
+mTvmPYRNameSelector:
+    push bc
+    push de
+    bcall(_RclTvmPYR)
+    call op2Set12
+    bcall(_CpOP1OP2) ; ZF=1 if OP1==OP2
+    pop de
+    pop bc
+    jr nz, mTvmPYRNameSelectorAlt
+    or a ; CF=0
+    ret
+mTvmPYRNameSelectorAlt:
+    scf
+    ret
+
+;-----------------------------------------------------------------------------
+
+; Description: Set or get C/YR to X.
+mTvmCYRHandler:
+    call closeInput
+    ; Check if '2ND CYR' pressed.
+    bit rpnFlagsSecondKey, (iy + rpnFlags)
+    jr nz, mTvmCYRGet
+    ; save the inputBuf value in OP1
+    res rpnFlagsTvmCalculate, (iy + rpnFlags)
+    call rclX
+    call validateOp1Real
+    bcall(_PosNo0Int) ; if posnonzeroint(x): ZF=1
+    jr z, mTvmCYRHandlerSet
+    bcall(_ErrDomain)
+mTvmCYRHandlerSet:
+    bcall(_StoTvmCYR)
+    set rpnFlagsTvmCalculate, (iy + rpnFlags)
+    set dirtyFlagsMenu, (iy + dirtyFlags)
+    ld a, errorCodeTvmStored
+    ld (handlerCode), a
+    ret
+mTvmCYRGet:
+    bcall(_RclTvmCYR)
+    call pushToX
+    res rpnFlagsTvmCalculate, (iy + rpnFlags)
+    ld a, errorCodeTvmRecalled
+    ld (handlerCode), a
+    ret
+
+; Description: Select menu name. Display a dot if the CYR is different than 12,
+; which is almost always the default.
+; Output: CF=0 for normal, CF=1 or alternate
+; Preserves: BC, DE (must be preserved)
+mTvmCYRNameSelector:
+    push bc
+    push de
+    bcall(_RclTvmCYR)
+    call op2Set12
+    bcall(_CpOP1OP2) ; ZF=1 if OP1==OP2
+    pop de
+    pop bc
+    jr nz, mTvmCYRNameSelectorAlt
+    or a ; CF=0
+    ret
+mTvmCYRNameSelectorAlt:
+    scf
+    ret
+
 ;-----------------------------------------------------------------------------
 
 mTvmBeginHandler:
     call closeInput
     set rpnFlagsTvmCalculate, (iy + rpnFlags)
-    ld a, rpntrue
-    ld (tvmIsBegin), a
+    ld hl, tvmFlags
+    set tvmFlagsBegin, (hl)
     set dirtyFlagsMenu, (iy + dirtyFlags)
     ret
 
 ; Description: Select menu name.
 ; Output: CF=0 for normal, CF=1 or alternate
+; Preserves: BC, DE (must be preserved)
 mTvmBeginNameSelector:
-    ld a, (tvmIsBegin)
-    or a ; CF=0; ZF=1 if tvmIsBegin==0
+    or a ; CF=0
+    ld a, (tvmFlags)
+    bit tvmFlagsBegin, a
     ret z
     scf
     ret
@@ -352,16 +443,18 @@ mTvmBeginNameSelector:
 mTvmEndHandler:
     call closeInput
     set rpnFlagsTvmCalculate, (iy + rpnFlags)
-    xor a
-    ld (tvmIsBegin), a
+    ld hl, tvmFlags
+    res tvmFlagsBegin, (hl)
     set dirtyFlagsMenu, (iy + dirtyFlags)
     ret
 
 ; Description: Select menu name.
 ; Output: CF=0 for normal, CF=1 or alternate
+; Preserves: BC, DE (must be preserved)
 mTvmEndNameSelector:
-    ld a, (tvmIsBegin)
-    or a ; CF=0; ZF=1 if tvmIsBegin==0
+    or a ; CF=0
+    ld a, (tvmFlags)
+    bit tvmFlagsBegin, a
     ret nz
     scf
     ret
@@ -377,8 +470,8 @@ mTvmIYR0Handler:
     call rclX
     call validateOp1Real
     bcall(_StoTvmIYR0)
-    call tvmSolverSetOverrideFlagIYR0
     set rpnFlagsTvmCalculate, (iy + rpnFlags)
+    set dirtyFlagsMenu, (iy + dirtyFlags)
     ld a, errorCodeTvmStored
     ld (handlerCode), a
     ret
@@ -392,8 +485,16 @@ mTvmIYR0Get:
 
 ; Description: Select menu name.
 ; Output: CF=0 for normal, CF=1 or alternate
+; Preserves: BC, DE (must be preserved)
 mTvmIYR0NameSelector:
-    call tvmSolverBitOverrideFlagIYR0
+    push bc
+    push de
+    bcall(_RclTvmIYR0Default)
+    bcall(_OP1ToOP2)
+    bcall(_RclTvmIYR0)
+    bcall(_CpOP1OP2) ; ZF=1 if OP1==OP2
+    pop de
+    pop bc
     jr nz, mTvmIYR0NameSelectorAlt
     or a ; CF=0
     ret
@@ -412,8 +513,8 @@ mTvmIYR1Handler:
     call rclX
     call validateOp1Real
     bcall(_StoTvmIYR1)
-    call tvmSolverSetOverrideFlagIYR1
     set rpnFlagsTvmCalculate, (iy + rpnFlags)
+    set dirtyFlagsMenu, (iy + dirtyFlags)
     ld a, errorCodeTvmStored
     ld (handlerCode), a
     ret
@@ -427,12 +528,20 @@ mTvmIYR1Get:
 
 ; Description: Select menu name.
 ; Output: CF=0 for normal, CF=1 or alternate
+; Preserves: BC, DE (must be preserved)
 mTvmIYR1NameSelector:
-    call tvmSolverBitOverrideFlagIYR1
-    jr nz, mTvmIYR1NameSelectorC
+    push bc
+    push de
+    bcall(_RclTvmIYR1Default)
+    bcall(_OP1ToOP2)
+    bcall(_RclTvmIYR1)
+    bcall(_CpOP1OP2) ; ZF=1 if OP1==OP2
+    pop de
+    pop bc
+    jr nz, mTvmIYR1NameSelectorAlt
     or a ; CF=0
     ret
-mTvmIYR1NameSelectorC:
+mTvmIYR1NameSelectorAlt:
     scf
     ret
 
@@ -447,8 +556,8 @@ mTvmIterMaxHandler:
     call rclX
     call validateOp1Real
     bcall(_StoTvmIterMax)
-    call tvmSolverSetOverrideFlagIterMax
     set rpnFlagsTvmCalculate, (iy + rpnFlags)
+    set dirtyFlagsMenu, (iy + dirtyFlags)
     ld a, errorCodeTvmStored
     ld (handlerCode), a
     ret
@@ -462,8 +571,14 @@ mTvmIterMaxGet:
 
 ; Description: Select menu name.
 ; Output: CF=0 for normal, CF=1 or alternate
+; Preserves: BC, DE (must be preserved)
 mTvmIterMaxNameSelector:
-    call tvmSolverBitOverrideFlagIterMax
+    push bc
+    push de
+    ld a, (tvmIterMax)
+    cp tvmSolverDefaultIterMax ; ZF=1 if tmvIterMax==default
+    pop de
+    pop bc
     jr nz, mTvmIterMaxNameSelectorAlt
     or a ; CF=0
     ret
@@ -487,80 +602,4 @@ mTvmSolverResetHandler:
     bcall(_TvmSolverReset)
     ld a, errorCodeTvmSolverReset
     ld (handlerCode), a
-    ret
-
-;-----------------------------------------------------------------------------
-; More low-level helper routines, placed at the bottom to avoid clutter in the
-; main parts of the file. TODO: Many (all?) of these may be suitable to move to
-; tvm.asm in Flash Page 1, because I don't any of these are in performance
-; critical paths.
-;-----------------------------------------------------------------------------
-
-; Description: Set tvmSolverOverrideFlagIYR0.
-; Destroys: HL
-tvmSolverSetOverrideFlagIYR0:
-    ld hl, tvmSolverOverrideFlags
-    set tvmSolverOverrideFlagIYR0, (hl)
-    set dirtyFlagsMenu, (iy + dirtyFlags)
-    ret
-
-; Description: Reset tvmSolverOverrideFlagIYR0.
-; Destroys: HL
-tvmSolverResOverrideFlagIYR0:
-    ld hl, tvmSolverOverrideFlags
-    res tvmSolverOverrideFlagIYR0, (hl)
-    set dirtyFlagsMenu, (iy + dirtyFlags)
-    ret
-
-; Description: Test bit tvmSolverOverrideFlagIYR0.
-; Destroys: HL
-tvmSolverBitOverrideFlagIYR0:
-    ld hl, tvmSolverOverrideFlags
-    bit tvmSolverOverrideFlagIYR0, (hl)
-    ret
-
-; Description: Set tvmSolverOverrideFlagIYR1.
-; Destroys: HL
-tvmSolverSetOverrideFlagIYR1:
-    ld hl, tvmSolverOverrideFlags
-    set tvmSolverOverrideFlagIYR1, (hl)
-    set dirtyFlagsMenu, (iy + dirtyFlags)
-    ret
-
-; Description: Reset tvmSolverOverrideFlagIYR1.
-; Destroys: HL
-tvmSolverResOverrideFlagIYR1:
-    ld hl, tvmSolverOverrideFlags
-    res tvmSolverOverrideFlagIYR1, (hl)
-    set dirtyFlagsMenu, (iy + dirtyFlags)
-    ret
-
-; Description: Test bit tvmSolverOverrideFlagIYR1.
-; Destroys: HL
-tvmSolverBitOverrideFlagIYR1:
-    ld hl, tvmSolverOverrideFlags
-    bit tvmSolverOverrideFlagIYR1, (hl)
-    ret
-
-; Description: Set tvmSolverOverrideFlagIterMax.
-; Destroys: HL
-tvmSolverSetOverrideFlagIterMax:
-    ld hl, tvmSolverOverrideFlags
-    set tvmSolverOverrideFlagIterMax, (hl)
-    set dirtyFlagsMenu, (iy + dirtyFlags)
-    ret
-
-; Description: Reset tvmSolverOverrideFlagIterMax.
-; Destroys: HL
-tvmSolverResOverrideFlagIterMax:
-    ld hl, tvmSolverOverrideFlags
-    res tvmSolverOverrideFlagIterMax, (hl)
-    set dirtyFlagsMenu, (iy + dirtyFlags)
-    ret
-
-; Description: Test bit tvmSolverOverrideFlagIterMax.
-; Destroys: HL
-tvmSolverBitOverrideFlagIterMax:
-    ld hl, tvmSolverOverrideFlags
-    bit tvmSolverOverrideFlagIterMax, (hl)
     ret

@@ -10,7 +10,7 @@ independent of each other. For example, a complex number can be entered in
 rectangular form, even if the current display mode is polar form. Internally,
 complex numbers are *always* stored in rectangular format.
 
-**Version**: 0.11.0 (2024-05-28)
+**Version**: 0.12.0 (2024-06-24)
 
 **Parent Document**: [USER_GUIDE.md](USER_GUIDE.md)
 
@@ -127,10 +127,10 @@ To enter `2 e^(i 60deg)` in polar-degree mode, we would type:
 | `60`              | ![](images/complex/inlining-pdeg-3.png) |
 | `ENTER`           | ![](images/complex/inlining-pdeg-4.png) |
 
-Notice that the complex number separator is the combination of an Angle symbol
-and a Degree symbol, which indicates that the input is expecting the angle to be
-entered in degrees. After the `ENTER`, the input buffer is parsed and a complex
-number is pushed into the `X` register of the RPN stack.
+Notice that the complex number separator is `∠°` (angle degree) which indicates
+that the input is expecting the angle to be entered in degrees. After the
+`ENTER`, the input buffer is parsed and a complex number is pushed into the `X`
+register of the RPN stack.
 
 Note also that the number was *entered* in polar form, but the number is
 *displayed* in rectangular form. That is because the rendering of complex number
@@ -138,7 +138,7 @@ is controlled by the [Complex Display Mode](#complex-display-modes), currently
 set to `RECT`, which is independent of how the complex number is entered.
 
 We can enter complex numbers using angles in radians by typing `2ND ANGLE`
-twice. For example, to enter `2 Angle 1.047`, use the following keystrokes:
+twice. For example, to enter `2 ∠ 1.047`, use the following keystrokes:
 
 | **Keys**                  | **Display** |
 | ----------------          | --------------------- |
@@ -156,6 +156,19 @@ same angle in radians would involve a factor of `Pi` (120 deg = 2pi/3 =
 2.094395102 radians) so would be easier to enter using the `2ND LINK`
 functionality.
 
+**HP-35s Compatibility Note 1**: The HP-35s uses a Theta symbol to display
+complex numbers in polar notation. The problem with the Theta symbol is that in
+the Small Font of the TI calculators, it looks too similar to the digit `0`. The
+Angle symbol seemed like a better choice as a delimiter because it is visually
+distinct from other digit characters. It is also the symbol used by the HP-42S.
+
+**HP-35s Compatibility Note 2**: The HP-35s uses `SHIFT Theta` button to enter
+complex numbers in polar notation. The `Theta` symbol is available on a TI
+calculator as `ALPHA Theta`. However, I found switching from `2ND i` to `ALPHA
+Theta` to invoke this delimiter was too confusing for the muscle memory. The
+`2ND ANGLE` key, on the other hand, was previously unused in the RPN83P app, and
+it matches the Angle symbol used to display complex numbers in polar notation.
+
 ### Solitary 2ND i
 
 A solitary `2ND i` should be interpreted as `0 i 0` (0+0i) if the parsing rules
@@ -172,19 +185,6 @@ This makes it easier to enter the pure imaginary number `i`.
 This special rule is triggered only by a solitary `2ND i`. If there is any digit
 before or after the `2ND i`, regular parsing rules are used. For example, `1 2ND
 i` is interpreted to be `1+0i` not `1+1i`.
-
-**HP-35s Compatibility Note 1**: The HP-35s uses a Theta symbol to display
-complex numbers in polar notation. The problem with the Theta symbol is that in
-the Small Font of the TI calculators, it looks too similar to the digit `0`. The
-Angle symbol seemed like a better choice as a delimiter because it is visually
-distinct from other digit characters. It is also the symbol used by the HP-42S.
-
-**HP-35s Compatibility Note 2**: The HP-35s uses `SHIFT Theta` button to enter
-complex numbers in polar notation. The `Theta` symbol is available on a TI
-calculator as `ALPHA Theta`. However, I found switching from `2ND i` to `ALPHA
-Theta` to invoke this delimiter was too confusing for the muscle memory. The
-`2ND ANGLE` key, on the other hand, was previously unused in the RPN83P app, and
-it matches the Angle symbol used to display complex numbers in polar notation.
 
 ## Complex Display Modes
 
@@ -223,9 +223,9 @@ perform that merge. (It did not make sense for it to do anything else.)
 In other words:
 
 - if `RECT`: the resulting number is `Y+Xi`
-- if `PRAD`: the resulting number is `Y e^(i X)`
-- if `PDEG`: the resulting number is `Y e^(i * X*pi/180)`, where `X` has been
-  converted from degrees to radians
+- if `PRAD`: the resulting number is `Y e^(i X)` which is rendered as `Y ∠ X`
+- if `PDEG`: the resulting number is `Y e^(i * X*pi/180)` which is rendered as
+  `Y ∠° X` (where `X` is interpreted to be in degrees instead of radians)
 
 For example, let's set the display mode to `PDEG`, and link the numbers `1` and
 `60` into a complex number in `PDEG` mode:

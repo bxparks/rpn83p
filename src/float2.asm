@@ -3,7 +3,7 @@
 ; Copyright (c) 2023 Brian T. Park
 ;
 ; Floating point common routines, some duplicated from float.asm into Flash
-; Page 1.
+; Page 2.
 ;
 ; Labels with Capital letters are intended to be exported to other flash pages
 ; and should be placed in the branch table on Flash Page 0. Labels with
@@ -16,7 +16,7 @@
 ; Input: OP1
 ; Output: A=0 or 1
 ; Preserves: BC
-signOfOp1PageOne:
+signOfOp1PageTwo:
     ld a, (OP1) ; bit7=sign bit
     rlca
     and $01
@@ -28,7 +28,7 @@ signOfOp1PageOne:
 ; Output: ZF=0 if different, ZF=1 if same
 ; Destroys: all registers
 ; Preserves: OP1, OP2
-compareSignOP1OP2PageOne:
+compareSignOP1OP2PageTwo:
     ld a, (OP1) ; A=sign bit of OP1
     ld b, a
     ld a, (OP2) ; A=sign bit of OP2
@@ -66,7 +66,7 @@ LnOnePlus:
     ret
 lnOnePlusNotZero:
     bcall(_OP1ToOP2) ; OP2=z=1+x-1
-    call exchangeFPSOP1PageOne ; FPS=[x,1+x-1]; OP1=1+x
+    call exchangeFPSOP1PageTwo ; FPS=[x,1+x-1]; OP1=1+x
     bcall(_LnX) ; OP1=ln(1+x)
     bcall(_PopRealO2) ; FPS=[x]; OP2=1+x-1
     bcall(_FPDiv) ; OP1=ln(1+x)/(1+x-1)
@@ -94,7 +94,7 @@ lnOnePlusError:
 lnOnePlusContinue:
     bcall(_FPRecip) ; OP1=1/(1+x)
     bcall(_Plus1) ; OP1=1+1/(1+x)
-    call op1ToOp2PageOne ; OP2=1+1/(1+x)
+    call op1ToOp2PageTwo ; OP2=1+1/(1+x)
     bcall(_PopRealO1) ; FPS=[]; OP1=x
     bcall(_FPMult) ; OP1=x*(1+1/(1+x))
     bcall(_TimesPt5) ; OP1=(x/2)(1+1/(1+x))
@@ -112,7 +112,7 @@ ExpMinusOne:
     bcall(_TimesPt5) ; OP1=x/2
     bcall(_PushRealO1) ; FPS=[x/2]
     bcall(_SinH) ; OP1=sinh(x/2)
-    call exchangeFPSOP1PageOne ; FPS=[sinh(x/2)]; OP1=x/2
+    call exchangeFPSOP1PageTwo ; FPS=[sinh(x/2)]; OP1=x/2
     bcall(_EToX) ; OP1=exp(x/2)
     bcall(_PopRealO2) ; FPS=[]; OP2=sinh(x/2)
     bcall(_FPMult) ; OP1=sinh(x/2) exp(x/2)
