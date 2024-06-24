@@ -14,7 +14,7 @@ because it is faster and easier to use compared to a web app, especially for
 small features that can be described in a few sentences. Usually only the larger
 and more complicated features will get their own GitHub tickets.
 
-**Version**: 0.12.0-rc3 (2024-06-21)
+**Version**: 0.12.0 (2024-06-24)
 
 **Parent Document**: [USER_GUIDE.md](USER_GUIDE.md)
 
@@ -158,8 +158,8 @@ and more complicated features will get their own GitHub tickets.
     - If a TI-BASIC program can be called from RPN83P, and a stable data conduit
       (i.e. an API) can be defined between RPN83P and TI-BASIC, then some of the
       need for keystroke programming within RPN83P may be satisfied.
-    - Single-letter variables `A` to `Z` and `Theta` are now (v0.10.0) available
-      through `STO` and `RCL`, so be conduits between RPN83P and TI-BASIC.
+    - Single-letter variables `A` to `Z` and `Theta` are available through `STO`
+      and `RCL`, so be conduits between RPN83P and TI-BASIC.
     - Other types may be useful: List, Matrix, and String types.
     - See [Issue #22](https://github.com/bxparks/rpn83p/issues/22)
 - indirect `STO` and `RCL` operators
@@ -216,15 +216,16 @@ and more complicated features will get their own GitHub tickets.
 These are features which are unlikely to be implemented for various reasons:
 
 - user-defined alphanumeric variables
-    - TI-OS supports only single-letter variables for real or complex types.
-      Access to these are provided in v0.10.0. Multi-letter user-defined names
-      are available only for real or complex Lists.
-    - The HP-42S allows multi-letter user-defined variables which are accessible
-      through the menu system.
-    - We would have to write our own symbol management and garage collection
-      subsystem to handle user-defined variables, which does not seem worth it.
-    - We would also require substantial refactoring of the current menu system
-      code.
+    - The TI-OS supports only single-letter variables for real or complex types
+      and access to these from RPN83P are provided through the `STO` and `RCL`
+      commands. The TI-OS supports multi-letter user-defined names only for real
+      or complex Lists, which are not currently (v0.12.0) supported in RPN83P.
+    - On the other hand, the HP-42S allows multi-letter user-defined variables
+      for all types, and they which are accessible through the menu system.
+    - To support multi-letter variables in RPN83P, we would have to write our
+      own symbol management and garage collection subsystems to handle these
+      user-defined variables. We would also require substantial refactoring of
+      the current menu system code.
     - Overall, it doesn't seem worth the effort.
 - matrices
     - I don't know how much matrix functionality is provided by TI-OS SDK.
