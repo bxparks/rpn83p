@@ -238,7 +238,7 @@ SubRpnOffsetDateTimeByObject:
     call getOp3RpnObjectTypePageTwo ; A=type; HL=OP3
     cp rpnObjectTypeReal
     jr z, subRpnOffsetDateTimeBySeconds
-    cp RpnObjectTypeOffsetDateTime ; ZF=1 if RpnOffsetDateTime
+    cp rpnObjectTypeOffsetDateTime ; ZF=1 if RpnOffsetDateTime
     jr z, subRpnOffsetDateTimeByRpnOffsetDateTime
     cp rpnObjectTypeDuration
     jr z, subRpnOffsetDateTimeByRpnDuration

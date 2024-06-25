@@ -18,7 +18,7 @@ processShowCommands:
     bcall(_GetKey)
     res onInterrupt, (iy + onFlags)
     ; Quit the app on QUIT.
-    cp a, KQuit
+    cp a, kQuit
     jp z, mainExit
     ; Anything else exits the SHOW mode.
     call clearShowArea

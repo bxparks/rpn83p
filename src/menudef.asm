@@ -3530,13 +3530,13 @@ mCommaEESwappedName:
 mCommaEESwappedAltName:
     .db 'E', 'E', Scomma, Sblock, 0
 mFormatRecordRawName:
-    .db SlBrace, SPeriod, SPeriod, SrBrace, 0
+    .db SlBrace, Speriod, Speriod, SrBrace, 0
 mFormatRecordRawAltName:
-    .db SlBrace, SPeriod, SPeriod, SrBrace, Sblock, 0
+    .db SlBrace, Speriod, Speriod, SrBrace, Sblock, 0
 mFormatRecordStringName:
-    .db Squote, SPeriod, SPeriod, Squote, 0
+    .db Squote, Speriod, Speriod, Squote, 0
 mFormatRecordStringAltName:
-    .db Squote, SPeriod, SPeriod, Squote, Sblock, 0
+    .db Squote, Speriod, Speriod, Squote, Sblock, 0
 mStackDupName:
     .db "DUP", 0
 mStackRollUpName:

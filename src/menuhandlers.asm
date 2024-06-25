@@ -630,7 +630,7 @@ mPToRHandler:
 ; Output:
 ;   - Y: theta
 ;   - X: r
-mRtoPHandler:
+mRToPHandler:
     call closeInputAndRecallXY ; OP1=Y; OP2=X
     call op1ExOp2  ; OP1=x; OP2=y
     call rectToPolar ; OP1=r; OP2=theta

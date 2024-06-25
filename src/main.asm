@@ -71,7 +71,7 @@ mainExit:
     set appAutoScroll, (iy + appFlags)
     ld (iy + textFlags), 0 ; reset text flags
     bcall(_ClrLCDFull)
-    bcall(_HomeUp)
+    bcall(_homeup)
 
     ; Restore various OS states.
     bcall(_RestoreOSState)

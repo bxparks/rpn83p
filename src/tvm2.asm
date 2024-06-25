@@ -748,7 +748,7 @@ calculateNextSecantInterest:
     call op1ToOp2PageTwo
     call RclTvmNPMT1
     bcall(_FPSub) ; OP1=npmt1-npmt0
-    bcall(_CkOp1FP0) ; ZF=1 if OP1==0
+    bcall(_CkOP1FP0) ; ZF=1 if OP1==0
     jr z, calculateNextSecantInterestDenomZero
     call pushRaw9Op1 ; FPS=[npmt1-npmt0]
     ; calculate i0*npmt1

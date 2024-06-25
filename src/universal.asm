@@ -696,7 +696,7 @@ universalCubeReal:
     ret
 universalCubeComplex:
     call cp1ToCp5 ; CP5=CP1
-    bcall(_Csquare) ; CP1=CP1^2
+    bcall(_CSquare) ; CP1=CP1^2
     bcall(_PushOP1) ; FPS=[CP1^2]
     call cp5ToCp1 ; CP1=CP5
     bcall(_CMult) ; CP1=CP1^3; FPS=[]
@@ -723,7 +723,7 @@ universalCubeRootComplex:
     bcall(_OP1Set3) ; OP1=3
     call convertOp1ToCp1 ; CP1=(3i0)
     bcall(_PushOP1) ; FPS=[3i0]
-    call cp3Tocp1 ; CP1=CP3
+    call cp3ToCp1 ; CP1=CP3
     bcall(_CXrootY) ; CP1=CP1^(1/3); FPS=[]
     ret
 
@@ -836,7 +836,7 @@ universalXRootYComplexByReal:
     call convertOp3ToCp3
     ; [[fallthrough]]
 universalXRootYComplexByComplex:
-    bcall(_PushOp3) ; FPS=[X]
+    bcall(_PushOP3) ; FPS=[X]
     bcall(_CXrootY) ; CP1=CP1^(1/FPS)=Y^(1/X); FPS=[]
     ret
 
@@ -937,7 +937,7 @@ universalExp:
 universlExpErr:
     bcall(_ErrDataType)
 universalExpReal:
-    bcall(_EtoX)
+    bcall(_EToX)
     ret
 universalExpComplex:
     bcall(_CEtoX)
@@ -961,7 +961,7 @@ universalTwoPowReal:
 universalTwoPowComplex:
     bcall(_OP3Set2) ; OP3=2
     call convertOp3ToCp3 ; CP3=2i0
-    bcall(_PushOp3) ; FPS=[2i0]
+    bcall(_PushOP3) ; FPS=[2i0]
     bcall(_CYtoX) ; CP1=FPS^CP1=2^(X); FPS=[]
     ret
 

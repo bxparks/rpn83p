@@ -17,7 +17,7 @@
 ;   - HL:(const void* const*)=pointer to a list of pointers to subroutines
 ; Output: depends on the routine called
 ; Destroys: DE, HL, and others depending on the routine called
-jumpAofHL:
+jumpAOfHL:
     call getString
     ; [[fallthrough]]
 
