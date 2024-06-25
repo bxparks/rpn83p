@@ -76,7 +76,8 @@ Summary of features:
     - carry flag and bit masks: `CCF`, `SCF`, `CF?`, `CB`, `SB`, `B?`
     - word sizes: `WSIZ`, `WSZ?`: 8, 16, 24, 32 bits
 - time value of money (TVM), inspired by HP-12C, HP-17B, and HP-30b
-    - `N`, `I%YR`, `PV`, `PMT`, `FV`, `P/YR`, `BEG`, `END`, `CLTV` (clear TVM)
+    - `N`, `I%YR`, `PV`, `PMT`, `FV`
+    - `P/YR`, `C/YR`, `BEG`, `END`, `CLTV` (clear TVM)
 - complex numbers, inspired by HP-42S and HP-35s
     - stored in RPN stack registers (`X`, `Y`, `Z`, `T`, `LASTX`) and storage
       registers `R00-R99`
