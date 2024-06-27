@@ -611,12 +611,12 @@ inverseCompoundingFactorZero:
 ; Output: OP1=NPMT(i)
 ; Destroys: OP1-OP5
 nominalPMT:
-    ; Check if N*i <~ tol; tol=1e-10
+    ; Check if (N^2-1)*i^2/12 <~ tol; tol=1e-10. In other words, N*i <~ 3e-5.
     call op1ToOp2PageTwo ; OP2=i
     call RclTvmN ; OP1=N
     bcall(_FPMult) ; OP1=i*N; OP2=i
     call pushRaw9Op2 ; FPS=[i]
-    call op2Set1EM10PageTwo ; OP2=1e-10
+    call op2Set3EM5PageTwo ; OP2=3e-5
     bcall(_AbsO1O2Cp) ; CF=1 if OP1<OP2
     push af ; stack=[CF]
     call popRaw9Op1  ; FPS=[]; OP1=i
