@@ -1,6 +1,8 @@
 # Changelog
 
 - Unreleased
+    - Change the criteria for using the small-i approximation to the following:
+      N*i <~ 6e-5.
 - 0.12.0 (2024-06-24)
     - **Bug Fix**: update logic that determines when the comma `,` character can
       be inserted into the input buffer

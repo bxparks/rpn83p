@@ -29,10 +29,10 @@ op2Set1EM10PageTwo:
 
 ;-----------------------------------------------------------------------------
 
-; Description: Set OP2 to 3e-5
+; Description: Set OP2 to 6e-5
 ; Destroys: all, HL
-op2Set3EM5PageTwo:
-    ld hl, const3EM5PageTwo
+op2Set6EM5PageTwo:
+    ld hl, const6EM5PageTwo
     jp move9ToOp2PageTwo
 
 ;-----------------------------------------------------------------------------
@@ -126,8 +126,8 @@ const0PageTwo: ; 0.0
 const1EM10PageTwo: ; 1E-10
     .db $00, $76, $10, $00, $00, $00, $00, $00, $00
 
-const3EM5PageTwo: ; 3E-5
-    .db $00, $7B, $30, $00, $00, $00, $00, $00, $00
+const6EM5PageTwo: ; 6E-5
+    .db $00, $7B, $60, $00, $00, $00, $00, $00, $00
 
 const1PageTwo: ; 1
     .db $00, $80, $10, $00, $00, $00, $00, $00, $00
