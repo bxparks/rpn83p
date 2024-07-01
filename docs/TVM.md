@@ -12,7 +12,8 @@ Money (TVM) variables in the RPN83P calculator app.
 - [TVM Basics](#tvm-algorithms)
 - [Interest Rate Conversions](#interest-rate-conversions)
 - [TVM Formulas](#tvm-formulas)
-- [Small Interest Limits](#small-interest-limits)
+- [Small Interest Accuracy](#small-interest-accuracy)
+    - [expm1() and log1p() Functions](#expm1-and-log1p-functions)
     - [CF1 and CF2](#cf1-and-cf2)
     - [N and N0](#n-and-n0)
 - [TVM Solver](#tvm-solver)
@@ -24,6 +25,7 @@ Money (TVM) variables in the RPN83P calculator app.
     - [Terminating Conditions](#terminating-conditions)
     - [Maximum Iterations](#maximum-iterations)
     - [Convergence](#convergence)
+- [TVM Puzzles](#tvm-puzzles)
 - [References](#references)
 
 Notes about the equations and algorithms used by the TVM functions.
@@ -171,13 +173,17 @@ later. Also, the `(1+ip)` term is always associated with `CF2(i)`, so the
 `compoundingFactors()` routine in the code calculates both `CF1(i)` and
 `CF3(i)=(1+ip)CF2(i)` at once.
 
-## Small Interest Limits
+## Small Interest Accuracy
 
 When the interest rate `i` is small (say, smaller than 1e-6), special
 precautions are needed to ensure that numerical cancellation errors are reduced
-so that the correct answers are returned. To accomplish this, we need to take a
-side trip to define 2 new functions. These functions are designed to return
-accurate values when `x` is very small:
+so that the correct answers are returned.
+
+### expm1() and log1p() Functions
+
+To obtain the most accuracy results when when `i` is small, we need to take a
+side trip to define 2 new functions which are designed to return accurate values
+when `x` is very small:
 
 ```
 expm1(x) = e^x-1
@@ -672,6 +678,16 @@ using the Secant method. It is possible that Albert Chan has proven this in one
 of his posts, for example [TVM solve for interest rate,
 revisited](https://www.hpmuseum.org/forum/thread-18359.html) (2022), but I have
 not yet digested these posts.
+
+## TVM Puzzles
+
+Duncan Murray has evaluated the performance and accuracy of TVM solvers on
+various calculators (including RPN83P) using a number of TVM puzzles. The
+puzzles and the results are available here:
+
+- [Looking for financial/TVM
+  solutions](https://forum.swissmicros.com/viewtopic.php?f=2&t=3987)
+- [TVM puzzles 1:12 in 5 minutes](https://www.youtube.com/watch?v=7ragp9pMR3w)
 
 ## References
 
