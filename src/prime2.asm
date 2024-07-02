@@ -349,7 +349,8 @@ primeFactorModCheckDiv:
 ;   - OP1:u32=dividend
 ;   - BC:u16=divisor
 ; Output:
-;   - DE:u16=dividend
+;   - DE:u16=remainder
+; Destroys: A, HL
 modOP1ByBC:
     ; push the dividend (x) to a combination of HL and the stack
     ld hl, (OP1+2) ; HL=high16
@@ -358,7 +359,7 @@ modOP1ByBC:
     ;
     ld de, 0 ; DE=remainder
     ld a, 32
-primeFactorModCheckDivLoop:
+modOP1ByBCCheckDivLoop:
     ; shift x by one bit to the left
     add hl, hl
     ex (sp), hl ; stack=[low16]; HL=high16
@@ -368,19 +369,19 @@ primeFactorModCheckDivLoop:
     rl e
     rl d ; DE=remainder
     ex de, hl ; HL=remainder; DE=dividend
-    jp c, primeFactorModCheckDivOverflow ; remainder overflowed, so substract
+    jp c, modOP1ByBCCheckDivOverflow ; remainder overflowed, so substract
     or a ; CF=0
     sbc hl, bc ; HL(remainder) -= divisor
-    jp nc, primeFactorModCheckDivNextBit
+    jp nc, modOP1ByBCCheckDivNextBit
     add hl, bc ; revert the subtraction
-    jp primeFactorModCheckDivNextBit
-primeFactorModCheckDivOverflow:
+    jp modOP1ByBCCheckDivNextBit
+modOP1ByBCCheckDivOverflow:
     or a ; reset CF
     sbc hl, bc ; HL(remainder) -= divisor
-primeFactorModCheckDivNextBit:
+modOP1ByBCCheckDivNextBit:
     ex de, hl ; DE=remainder; HL=dividend
     dec a
-    jp nz, primeFactorModCheckDivLoop
+    jp nz, modOP1ByBCCheckDivLoop
     pop hl ; stack=[]; HL=high16
     ret
 
