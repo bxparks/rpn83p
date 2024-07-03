@@ -244,12 +244,12 @@ primeFactorIntCheckDiv:
 ;   - 65521*65521: 9.0 seconds
 ;   - About 7280 effective-candidates / second.
 ;
-; Benchmarks (15 MHz, modOP1ByBC using IX):
-;   - 4001*4001: 0.75 seconds
-;   - 10007*10007: 1.3 seconds
-;   - 19997*19997: 2.4 seconds
-;   - 65521*65521: 7.2 seconds
-;   - About 9000 effective-candidates / second.
+; Benchmarks (15 MHz, modHLIXByBC):
+;   - 4001*4001: 0.67 seconds
+;   - 10007*10007: 1.2 seconds
+;   - 19997*19997: 2.3 seconds
+;   - 65521*65521: 7.0 seconds
+;   - About 9360 effective-candidates / second.
 ;
 ; Input: OP1: an integer in the range of [2, 2^32-1].
 ; Output: OP1: 1 if prime, smallest prime factor if not
@@ -340,51 +340,55 @@ primeFactorModCheckDiv:
     ex de, hl ; HL=OP3
     call modU32ByBC ; DE:u16=remainder; destroys (*HL); preserves BC=candidate
 #else
-    call modOP1ByBC
+    ld ix, (OP1) ; IX=low16
+    ld hl, (OP1+2) ; HL=high16
+    call modHLIXByBC
 #endif
     ld a, d
     or e ; if remainder==0: ZF=1
     ret
 
 ; Decription: Highly specialized version of modU32ByBC() to get the highest
-; performance. For example, uses 'jp' instead 'jr' because 'jp' is faster. I
-; tried to use IX instead of the stack (SP), but the Z80 does not support 'add
-; ix,ix' or 'adc ix,ix' which forced the use of the stack anyway. The benchmark
-; says that this is about 45% faster than modU32ByBC().
+; performance. For example, uses 'jp' instead 'jr' because 'jp' is faster.
+;   - The first version of this used (SP) to store the high16 bits. This makes
+;   PRIM about 45% faster than modU32ByBC().
+;   - The next version uses the IX register instead of (SP) to store the high16
+;   bits. This improves PRIM by another 25%. (I was using a Z80 instruction
+;   cheatsheet which incorrectly said that the `add ix, ix` instruction did not
+;   exist. But it does.)
+;   - Another 3-4% came from replacing `rl e; rl d; ex de, hl` with `ex
+;   de, hl; adc hl, hl`.
 ;
 ; Input:
-;   - OP1:u32=dividend
+;   - HL:u16=high 16 bits of u32 dividend
+;   - IX:u16=low 16 bits of u32 dividend
 ;   - BC:u16=divisor
 ; Output:
 ;   - DE:u16=remainder
-; Destroys: A, HL
-modOP1ByBC:
-    ; push the dividend (x) to a combination of HL and the stack
-    ld ix, (OP1) ; IX=low16
-    ld hl, (OP1+2) ; HL=high16
+; Destroys: A, HL, IX
+modHLIXByBC:
     ld de, 0 ; DE=remainder
     ld a, 32
-modOP1ByBCCheckDivLoop:
+modHLIXByBCCheckDivLoop:
     ; shift dividend by one bit to the left
     add ix, ix
     adc hl, hl
     ; shift bit into remainder
-    rl e
-    rl d ; DE=remainder
     ex de, hl ; HL=remainder; DE=dividend
-    jp c, modOP1ByBCCheckDivOverflow ; remainder overflowed, so substract
+    adc hl, hl
+    jp c, modHLIXByBCCheckDivOverflow ; remainder overflowed, so substract
     or a ; CF=0
     sbc hl, bc ; HL(remainder) -= divisor
-    jp nc, modOP1ByBCCheckDivNextBit
+    jp nc, modHLIXByBCCheckDivNextBit
     add hl, bc ; revert the subtraction
-    jp modOP1ByBCCheckDivNextBit
-modOP1ByBCCheckDivOverflow:
+    jp modHLIXByBCCheckDivNextBit
+modHLIXByBCCheckDivOverflow:
     or a ; reset CF
     sbc hl, bc ; HL(remainder) -= divisor
-modOP1ByBCCheckDivNextBit:
+modHLIXByBCCheckDivNextBit:
     ex de, hl ; DE=remainder; HL=dividend
     dec a
-    jp nz, modOP1ByBCCheckDivLoop
+    jp nz, modHLIXByBCCheckDivLoop
     ret
 
 ;-----------------------------------------------------------------------------
