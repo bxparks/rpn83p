@@ -251,6 +251,18 @@ primeFactorIntCheckDiv:
 ;   - 65521*65521: 7.0 seconds
 ;   - About 9360 effective-candidates / second.
 ;
+; Benchmarks (15 MHz, modHLIXByBC, rearrange code assuming rare overflow):
+;   - 65521*65521: 6.7 seconds
+;   - About 9880 effective-candidates / second.
+;
+; Benchmarks (15 MHz, modHLIXByBC, use JR instead of JP on rare branch):
+;   - 65521*65521: 6.6 seconds
+;   - About 9927 effective-candidates / second
+;
+; Benchmarks (15 MHz, modHLIXByBC, remove unnecessary 'or a')
+;   - 65521*65521: 6.3 seconds
+;   - About 10400 effective-candidates / second
+;
 ; Input: OP1: an integer in the range of [2, 2^32-1].
 ; Output: OP1: 1 if prime, smallest prime factor if not
 ; Destroys: all registers, OP1-OP3
@@ -376,20 +388,33 @@ modHLIXByBCCheckDivLoop:
     ; shift bit into remainder
     ex de, hl ; HL=remainder; DE=dividend
     adc hl, hl
-    jp c, modHLIXByBCCheckDivOverflow ; remainder overflowed, so substract
-    or a ; CF=0
+    ; Use 'jr c' instead of 'jp c' because the common case is expected to be
+    ; CF=0, so the branch is not taken, which means only 7 T cycles in the
+    ; common case.
+    jr c, modHLIXByBCCheckDivOverflow ; remainder overflowed, so substract
     sbc hl, bc ; HL(remainder) -= divisor
+    ; I *think* CF=0 and CF=1 will occur in equal probability, so it makes
+    ; almost no difference whether we use 'jr nc' or 'jp nc'. The 'jr nc'
+    ; instruction takes 7 T cycles if the branch is not taken, and 12 cycles if
+    ; the branch is taken, for an average of 9.5 cycles. The 'jp nc'
+    ; instruction takes 10 cycles whether or not the branch is taken. The
+    ; difference is so small, I prefer the predictability of 'jp nc' always
+    ; taking 10 cycles.
     jp nc, modHLIXByBCCheckDivNextBit
     add hl, bc ; revert the subtraction
-    jp modHLIXByBCCheckDivNextBit
-modHLIXByBCCheckDivOverflow:
-    or a ; reset CF
-    sbc hl, bc ; HL(remainder) -= divisor
 modHLIXByBCCheckDivNextBit:
     ex de, hl ; DE=remainder; HL=dividend
     dec a
+    ; Use 'jp nz' instead of 'jr nz' because 'jp nz' is faster in the common
+    ; case of ZF=0 when the branch is taken 32 times.
     jp nz, modHLIXByBCCheckDivLoop
     ret
+modHLIXByBCCheckDivOverflow:
+    ; This branch (CF=1) is more rare than (CF=0) because it will happen only
+    ; after the 16th iteration.
+    or a ; reset CF
+    sbc hl, bc ; HL(remainder) -= divisor
+    jp modHLIXByBCCheckDivNextBit
 
 ;-----------------------------------------------------------------------------
 
