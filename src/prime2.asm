@@ -237,12 +237,19 @@ primeFactorIntCheckDiv:
 ;   - 65521*65521: 12.9 seconds
 ;   - About 5000 effective-candidates / second.
 ;
-; Benchmarks (15 MHz, modOP1ByBC):
+; Benchmarks (15 MHz, modOP1ByBC using (SP)):
 ;   - 4001*4001: 0.85 seconds
 ;   - 10007*10007: 1.6 seconds
 ;   - 19997*19997: 2.9 seconds
 ;   - 65521*65521: 9.0 seconds
 ;   - About 7280 effective-candidates / second.
+;
+; Benchmarks (15 MHz, modOP1ByBC using IX):
+;   - 4001*4001: 0.75 seconds
+;   - 10007*10007: 1.3 seconds
+;   - 19997*19997: 2.4 seconds
+;   - 65521*65521: 7.2 seconds
+;   - About 9000 effective-candidates / second.
 ;
 ; Input: OP1: an integer in the range of [2, 2^32-1].
 ; Output: OP1: 1 if prime, smallest prime factor if not
@@ -353,18 +360,14 @@ primeFactorModCheckDiv:
 ; Destroys: A, HL
 modOP1ByBC:
     ; push the dividend (x) to a combination of HL and the stack
+    ld ix, (OP1) ; IX=low16
     ld hl, (OP1+2) ; HL=high16
-    push hl ; stack=[high16]
-    ld hl, (OP1) ; HL=low16
-    ;
     ld de, 0 ; DE=remainder
     ld a, 32
 modOP1ByBCCheckDivLoop:
-    ; shift x by one bit to the left
-    add hl, hl
-    ex (sp), hl ; stack=[low16]; HL=high16
+    ; shift dividend by one bit to the left
+    add ix, ix
     adc hl, hl
-    ex (sp), hl ; stack=[high16]; HL=low16
     ; shift bit into remainder
     rl e
     rl d ; DE=remainder
@@ -382,7 +385,6 @@ modOP1ByBCCheckDivNextBit:
     ex de, hl ; DE=remainder; HL=dividend
     dec a
     jp nz, modOP1ByBCCheckDivLoop
-    pop hl ; stack=[]; HL=high16
     ret
 
 ;-----------------------------------------------------------------------------
