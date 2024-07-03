@@ -1997,7 +1997,7 @@ For example, let's find the prime factors of `2_122_438_477 = 53 * 4001 *
 
 For computational efficiency, `PRIM` supports only integers between `2` and
 `2^32-1` (4 294 967 295). This allows `PRIM` to use integer arithmetic, making
-it about 10X faster than the equivalent algorithm using floating point routines.
+it about 13X faster than the equivalent algorithm using floating point routines.
 Any number outside of this range produces an `Err: Domain` message. (The number
 `1` is not considered a prime number.)
 
@@ -2008,10 +2008,10 @@ times of the `PRIM` function for this number for various TI models that I own:
 
 | **Model**                     | **PRIM Running Time** |
 | ---                           | ---                   |
-| TI-83+ (6 MHz)                | 20 s                  |
-| TI-83+SE (15 MHz)             | 7.7 s                 |
-| TI-84+SE (15 MHz)             | 9.5 s                 |
-| TI-Nspire w/ TI-84+ keypad    | 8.2 s                 |
+| TI-83+ (6 MHz)                | 15.7 s                |
+| TI-83+SE (15 MHz)             | 6.0 s                 |
+| TI-84+SE (15 MHz)             | 7.4 s                 |
+| TI-Nspire w/ TI-84+ keypad    | 5.4 s                 |
 
 During the calculation, the "run indicator" on the upper-right corner will be
 active. You can press the `ON` key to break from the `PRIM` loop with an `Err:

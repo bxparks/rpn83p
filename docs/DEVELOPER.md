@@ -149,6 +149,13 @@ Here are some notes about how the `PRIM` algorithm works:
       `ex (sp), hl` instruction of the Z80 to swap the 2 halves back and forth.
       This made the `mod(u32,u16)` function about 40-50% faster compared to
       v0.9.0.
+- In v0.13, the inner loop `mod(u32,u16)` was made another 28% faster.
+    - I discovered that my Z80 instruction cheatsheet incorrectly stated that
+      the `add ix, ix` did not exist. It does.
+    - Replacing the `ex (sp), hl; add hl, hl` combo with a `add ix, ix` gave us
+      a 25% speed improvement.
+    - Another 3-4% was gained by replacing a `rl e; rl d` combo with an `adc hl,
+      hl` instruction.
 
 I can think of one additional optimization that *may* give us a 10-20% speed
 increase, but it would come at the cost of code that would be significantly
