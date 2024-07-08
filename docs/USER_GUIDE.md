@@ -830,7 +830,7 @@ others were not.
       the number.
     - Since the `ON/EXIT` button is used to navigate the menu hierarchy, it
       cannot cause input termination, unlike the HP-42S.
-    - The only exceptions are menus which changes the rendering of the values on
+    - The only exceptions are menus which change the rendering of the values on
       the RPN stack, for example:
         - `BASE` menu folder, which interprets the values on the RPN stack as
           integers not floating point numbers
