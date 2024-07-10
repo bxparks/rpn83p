@@ -3,13 +3,106 @@
 ; Copyright (c) 2023 Brian T. Park
 ;
 ; Various implementations of the primeFactor() function which calculates
-; the smallest prime factor, or 1 if the number is a prime.
+; the smallest prime factor, or returns 1 if the number is a prime.
+;
+; There are at least 4 versions. Each can be selected passing the appropriate
+; `-D` flag to `spasm` in the Makefile:
+;
+; - USE_PRIME_FACTOR_FLOAT
+;   - uses TI-OS _FPDiv() and _Frac() routines to determine if `candidate` is a
+;   factor of `input`
+;   - Benchmarks (15 MHz, TilEm):
+;       - 19997*19997: 28.6 seconds
+;       - 65521*65521: 94.5 seconds
+;       - About 693 effective-candidates / second.
+; - USE_PRIME_FACTOR_INT
+;   - uses divU32U32() to determine if `candidate` is a factor of `input`
+;   - Benchmarks (15 MHz, TilEm, divU32U32):
+;       - 19997*19997: 10.7 seconds
+;       - 65521*65521: 34.4 seconds
+;       - About 1905 effective-candidates / second
+; - USE_PRIME_FACTOR_MOD_U32_BY_BC
+;   - uses modU32ByBC() to determine if `candidate` is a factor of `input`
+;   - Benchmarks (15 MHz, TilEm, modU32ByBC):
+;       - 19997*19997: 4.2 seconds
+;       - 65521*65521: 12.9 seconds
+;       - About 5079 effective-candidates / second.
+; - USE_PRIME_FACTOR_MOD_HLSP_BY_BC
+;   - uses modHLSPByBC() to determine if `candidate` is a factor of `input`
+;   - Benchmarks (15 MHz, TilEm, modOP1ByBC using (SP)):
+;       - 19997*19997: 2.9 seconds
+;       - 65521*65521: 9.0 seconds
+;       - About 7280 effective-candidates / second.
+; - USE_PRIME_FACTOR_MOD_HLIX_BY_BC (default)
+;   - uses modHLIXByBC() to determine if `candidate` is a factor of `input`
+;   - Benchmarks (15 MHz, TilEm, modHLIXByBC):
+;       - 65521*65521: 7.0 seconds
+;       - About 9360 effective-candidates / second.
+;   - Benchmarks (15 MHz, TilEm, modHLIXByBC, rearrange code assuming rare
+;   overflow):
+;       - 65521*65521: 6.7 seconds
+;       - About 9880 effective-candidates / second.
+;   - Benchmarks (15 MHz, modHLIXByBC, use JR instead of JP on rare branch):
+;       - 65521*65521: 6.6 seconds
+;       - About 9927 effective-candidates / second
+;   - Benchmarks (15 MHz, modHLIXByBC, remove unnecessary 'or a')
+;       - 65521*65521: 6.3 seconds
+;       - About 10400 effective-candidates / second
+;
+; The modHLIXByBC() version is now 15X faster than the floating point version.
 ;
 ; All of these take advantage of the fact that every prime above 3 is of the
 ; form (6n-1) or (6n+1), where n=1,2,3,... It checks candidate divisors from 5
 ; to sqrt(X), in steps of 6, checking whether (6n-1) or (6n+1) divides into X.
 ; If the candidate divides into X, X is *not* a prime. If the loop reaches the
 ; end of the iteration, then no prime factor was found, so X is a prime.
+;-----------------------------------------------------------------------------
+
+; Description: Choose one of the various primeFactorXXX() routines.
+; Input:
+;   - OP1:real=input
+; Output:
+;   - OP1=1 if prime, or its smallest prime factor (>1) otherwise
+; Throws: Err:Domain if OP1 is not an integer in the interval [2,2^32-1].
+PrimeFactor:
+    ; TODO: Replace the following validation with convertOP1ToU32(). I think we
+    ; just need to check for 0 and 1. Oh, and create a sqrtU32() replacement
+    ; for the floating point function _SqRoot().
+    ;
+    ; Check 0
+    bcall(_CkOP1FP0)
+    jr z, primeFactorError
+    ; Check 1
+    bcall(_OP2Set1) ; OP2 = 1
+    bcall(_CpOP1OP2) ; if OP1==1: ZF=1
+    jr z, primeFactorError
+    bcall(_OP1ToOP4) ; save OP4 = X
+    ; Check integer >= 0
+    bcall(_CkPosInt) ; if OP1 >= 0: ZF=1
+    jr nz, primeFactorError
+    ; Check unsigned 32-bit integer, i.e. < 2^32.
+    call op2Set2Pow32PageTwo ; if OP1 >= 2^32: CF=0
+    bcall(_CpOP1OP2)
+    jr nc, primeFactorError
+
+#ifdef USE_PRIME_FACTOR_FLOAT
+    jp primeFactorFloat
+#else
+    #ifdef USE_PRIME_FACTOR_INT
+        jp primeFactorInt
+    #else
+        jp primeFactorMod
+    #endif
+#endif
+
+primeFactorError:
+    bcall(_ErrDomain) ; throw exception
+
+primeFactorBreak:
+    bcall(_RunIndicOff) ; disable run indicator
+    res onInterrupt, (iy + onFlags)
+    bcall(_ErrBreak) ; throw exception
+
 ;-----------------------------------------------------------------------------
 
 #ifdef USE_PRIME_FACTOR_FLOAT
@@ -21,11 +114,6 @@
 ; Output: OP1: 1 if prime, smallest prime factor if not
 ; Destroys: all registers, OP2, OP4, OP5, OP6
 ;
-; Benchmarks (6 MHz):
-;   - 4001*4001: 15 seconds
-;   - 10007*10007: 36 seconds
-;   - 19997*19997: 72 seconds
-;   - About 280 effective-candidates / second.
 primeFactorFloat:
     ; Check 2
     bcall(_OP2Set2) ; OP2 = 2
@@ -104,13 +192,6 @@ primeFactorFloatCheckDiv:
 
 ;-----------------------------------------------------------------------------
 
-primeFactorBreak:
-    bcall(_RunIndicOff) ; disable run indicator
-    res onInterrupt, (iy + onFlags)
-    bcall(_ErrBreak) ; throw exception
-
-;-----------------------------------------------------------------------------
-
 #ifdef USE_PRIME_FACTOR_INT
 
 ; Description determine if OP1 is a prime using divU32U32() routine. This is
@@ -119,30 +200,24 @@ primeFactorBreak:
 ; Input: OP1: an integer in the range of [2, 2^32-1].
 ; Output: OP1: 1 if prime, smallest prime factor if not
 ; Destroys: all registers, OP1, OP2, OP3, OP4, OP5, OP6
-;
-; Benchmarks (6 MHz):
-;
-; Using divU32U32():
-;   - 4001*4001: 5 seconds
-;   - 10007*10007: 14 seconds
-;   - 19997*19997: 27 seconds
-;   - About 750-800 effective-candidates / second.
+; Throws: if OP1 not an integer
 primeFactorInt:
-    ld hl, OP4
-    call convertOP1ToU32 ; OP4=X
-    ; Calc root(X) to OP5, to get it out of the way. The sqrt() function could
-    ; be done using integer operations, but it's done only once in the routine,
-    ; so we don't gain much speed improvement.
-    bcall(_SqRoot) ; OP1 = sqrt(OP1), uses OP1-OP3
+    bcall(_OP1ToOP4) ; OP4=X
+    call convertOP1ToU32 ; OP1=int(X); throws if not integer
+    ; Calc limit=sqrt(X). The sqrt() function could be done using integer
+    ; operations, but it's done only once in the routine, so we don't gain much
+    ; speed improvement.
+    bcall(_OP1ExOP4) ; OP1=X; OP4=int(X)
+    bcall(_SqRoot) ; OP1=sqrt(X), uses OP1-OP3
     bcall(_RndGuard)
-    bcall(_Trunc) ; OP1 = trunc(sqrt(X)), uses OP1,OP2
-    ld hl, OP5
-    call convertOP1ToU32 ; OP5=limit=sqrt(X)
+    bcall(_Trunc) ; OP1=trunc(sqrt(X)), uses OP1,OP2
+    call convertOP1ToU32 ; OP1=limit=int(trunc(sqrt(X)))
+    bcall(_OP1ToOP5) ; OP5=limit
     ; Check 2
     ld a, 2
     ld hl, OP6
     call setU32ToA ; OP6=candidate=2
-    ld de, OP4
+    ld de, OP4 ; OP4=int(X)
     call cmpU32U32 ; if X==2: ZF=1
     jr z, primeFactorIntYes
     ; Check divisible by 2
@@ -190,15 +265,16 @@ primeFactorIntLoop:
     call addU32ByA
     jr primeFactorIntLoop
 primeFactorIntNo:
-    ld hl, OP6
-    call convertU32ToOP1
+    bcall(_OP6ToOP1) ; OP1=candidate
+    call convertU32ToOP1 ; OP1=float(candidate)
     ret
 primeFactorIntYes:
     bcall(_OP1Set1)
     ret
 
+; Description: Check if `candidate` (OP6) is an integer factor of `input` (OP4).
 ; Input:
-;   - OP4=X
+;   - OP4=input
 ;   - OP6=candidate
 ; Output:
 ;   - OP1=quotient
@@ -222,46 +298,6 @@ primeFactorIntCheckDiv:
 
 ; Description determine if OP1 is a prime using the modU32ByBC() routine. This
 ; is 7X faster than primeFactorFloat(), and 2.5X faster than primeFactorInt().
-;
-; Benchmarks (6 MHz, modU32ByBC):
-;   - 4001*4001: 2.4 seconds
-;   - 10007*10007: 5.5 seconds
-;   - 19997*19997: 10.5 seconds
-;   - 65521*65521: 33 seconds
-;   - About 2000 effective-candidates / second.
-;
-; Benchmarks (15 MHz, modU32ByBC):
-;   - 4001*4001: 1.0 seconds
-;   - 10007*10007: 2.3 seconds
-;   - 19997*19997: 4.2 seconds
-;   - 65521*65521: 12.9 seconds
-;   - About 5000 effective-candidates / second.
-;
-; Benchmarks (15 MHz, modOP1ByBC using (SP)):
-;   - 4001*4001: 0.85 seconds
-;   - 10007*10007: 1.6 seconds
-;   - 19997*19997: 2.9 seconds
-;   - 65521*65521: 9.0 seconds
-;   - About 7280 effective-candidates / second.
-;
-; Benchmarks (15 MHz, modHLIXByBC):
-;   - 4001*4001: 0.67 seconds
-;   - 10007*10007: 1.2 seconds
-;   - 19997*19997: 2.3 seconds
-;   - 65521*65521: 7.0 seconds
-;   - About 9360 effective-candidates / second.
-;
-; Benchmarks (15 MHz, modHLIXByBC, rearrange code assuming rare overflow):
-;   - 65521*65521: 6.7 seconds
-;   - About 9880 effective-candidates / second.
-;
-; Benchmarks (15 MHz, modHLIXByBC, use JR instead of JP on rare branch):
-;   - 65521*65521: 6.6 seconds
-;   - About 9927 effective-candidates / second
-;
-; Benchmarks (15 MHz, modHLIXByBC, remove unnecessary 'or a')
-;   - 65521*65521: 6.3 seconds
-;   - About 10400 effective-candidates / second
 ;
 ; Input: OP1: an integer in the range of [2, 2^32-1].
 ; Output: OP1: 1 if prime, smallest prime factor if not
@@ -310,7 +346,7 @@ primeFactorModLoop:
     jr c, primeFactorModYes
     ; Check for ON/Break
     bit onInterrupt, (iy + onFlags)
-    jr nz, primeFactorBreak
+    jp nz, primeFactorBreak
     ; Check (6n-1)
     call primeFactorModCheckDiv ; ZF=1 if remainder==0
     jr z, primeFactorModNo
@@ -336,6 +372,7 @@ primeFactorModYes:
     bcall(_OP1Set1)
     ret
 
+; Description: Check if `candidate` (BC) is an integer factor of `input` (OP1).
 ; Input:
 ;   - OP1:u32=x
 ;   - BC:u16=candidate
@@ -345,7 +382,7 @@ primeFactorModYes:
 ; Destroys: A, DE, HL, OP3
 ; Preserves: BC, OP1
 primeFactorModCheckDiv:
-#ifdef USE_PRIME_FACTOR_U32_BY_BC
+#ifdef USE_PRIME_FACTOR_MOD_U32_BY_BC
     ld hl, OP1
     ld de, OP3
     call copyU32HLToDE ; OP3=x; preserves BC
@@ -359,6 +396,8 @@ primeFactorModCheckDiv:
     ld a, d
     or e ; if remainder==0: ZF=1
     ret
+
+;-----------------------------------------------------------------------------
 
 ; Decription: Highly specialized version of modU32ByBC() to get the highest
 ; performance. For example, uses 'jp' instead 'jr' because 'jp' is faster.
@@ -415,45 +454,3 @@ modHLIXByBCCheckDivOverflow:
     or a ; reset CF
     sbc hl, bc ; HL(remainder) -= divisor
     jp modHLIXByBCCheckDivNextBit
-
-;-----------------------------------------------------------------------------
-
-; Description: Choose one of the various primeFactorXXX() routines.
-; Input:
-;   - OP1:real=input
-; Output:
-;   - OP1=1 if prime, or its smallest prime factor (>1) otherwise
-; Throws: Err:Domain if OP1 is not an integer in the interval [2,2^32-1].
-PrimeFactor:
-    ; TODO: Replace the following validation with convertOP1ToU32(). I think we
-    ; just need to check for 0 and 1. Oh, and create a sqrtU32() replacement
-    ; for the floating point function _SqRoot().
-    ;
-    ; Check 0
-    bcall(_CkOP1FP0)
-    jr z, primeFactorError
-    ; Check 1
-    bcall(_OP2Set1) ; OP2 = 1
-    bcall(_CpOP1OP2) ; if OP1==1: ZF=1
-    jr z, primeFactorError
-    bcall(_OP1ToOP4) ; save OP4 = X
-    ; Check integer >= 0
-    bcall(_CkPosInt) ; if OP1 >= 0: ZF=1
-    jr nz, primeFactorError
-    ; Check unsigned 32-bit integer, i.e. < 2^32.
-    call op2Set2Pow32PageTwo ; if OP1 >= 2^32: CF=0
-    bcall(_CpOP1OP2)
-    jr nc, primeFactorError
-
-#ifdef USE_PRIME_FACTOR_FLOAT
-    jp primeFactorFloat
-#else
-    #ifdef USE_PRIME_FACTOR_INT
-        jp primeFactorInt
-    #else
-        jp primeFactorMod
-    #endif
-#endif
-
-primeFactorError:
-    bcall(_ErrDomain) ; throw exception
