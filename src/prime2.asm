@@ -426,7 +426,7 @@ modHLSPByBC:
     ;
     ld de, 0 ; DE=remainder
     ld a, 32
-modHLSPByBCCheckDivLoop:
+modHLSPByBCLoop:
     ; shift x by one bit to the left
     add hl, hl
     ex (sp), hl ; stack=[low16]; HL=high16
@@ -436,19 +436,19 @@ modHLSPByBCCheckDivLoop:
     rl e
     rl d ; DE=remainder
     ex de, hl ; HL=remainder; DE=dividend
-    jp c, modHLSPByBCCheckDivOverflow ; remainder overflowed, so substract
+    jp c, modHLSPByBCOverflow ; remainder overflowed, so substract
     or a ; CF=0
     sbc hl, bc ; HL(remainder) -= divisor
-    jp nc, modHLSPByBCCheckDivNextBit
+    jp nc, modHLSPByBCNextBit
     add hl, bc ; revert the subtraction
-    jp modHLSPByBCCheckDivNextBit
-modHLSPByBCCheckDivOverflow:
+    jp modHLSPByBCNextBit
+modHLSPByBCOverflow:
     or a ; reset CF
     sbc hl, bc ; HL(remainder) -= divisor
-modHLSPByBCCheckDivNextBit:
+modHLSPByBCNextBit:
     ex de, hl ; DE=remainder; HL=dividend
     dec a
-    jp nz, modHLSPByBCCheckDivLoop
+    jp nz, modHLSPByBCLoop
     pop hl ; stack=[]; HL=high16
     ret
 
@@ -456,7 +456,7 @@ modHLSPByBCCheckDivNextBit:
 
 ;-----------------------------------------------------------------------------
 
-; Decription: An improved version of modHLSPByBC() which uses IX instead of
+; Description: An improved version of modHLSPByBC() which uses IX instead of
 ; 2 bytes on the stack (SP). This means that the entire computation can be
 ; performed using just the Z80 registers, without touching RAM. This improves
 ; PRIM by another 25%. Another 3-4% comes from replacing the sequence of `rl e;
@@ -476,7 +476,7 @@ modHLSPByBCCheckDivNextBit:
 modHLIXByBC:
     ld de, 0 ; DE=remainder
     ld a, 32
-modHLIXByBCCheckDivLoop:
+modHLIXByBCLoop:
     ; shift dividend by one bit to the left
     add ix, ix
     adc hl, hl
@@ -486,7 +486,7 @@ modHLIXByBCCheckDivLoop:
     ; Use 'jr c' instead of 'jp c' because the common case is expected to be
     ; CF=0, so the branch is not taken, which means only 7 T cycles in the
     ; common case.
-    jr c, modHLIXByBCCheckDivOverflow ; remainder overflowed, so substract
+    jr c, modHLIXByBCOverflow ; remainder overflowed, so subtract
     sbc hl, bc ; HL(remainder) -= divisor
     ; I *think* CF=0 and CF=1 will occur in equal probability, so it makes
     ; almost no difference whether we use 'jr nc' or 'jp nc'. The 'jr nc'
@@ -495,18 +495,18 @@ modHLIXByBCCheckDivLoop:
     ; instruction takes 10 cycles whether or not the branch is taken. The
     ; difference is so small, I prefer the predictability of 'jp nc' always
     ; taking 10 cycles.
-    jp nc, modHLIXByBCCheckDivNextBit
+    jp nc, modHLIXByBCNextBit
     add hl, bc ; revert the subtraction
-modHLIXByBCCheckDivNextBit:
+modHLIXByBCNextBit:
     ex de, hl ; DE=remainder; HL=dividend
     dec a
     ; Use 'jp nz' instead of 'jr nz' because 'jp nz' is faster in the common
     ; case of ZF=0 when the branch is taken 32 times.
-    jp nz, modHLIXByBCCheckDivLoop
+    jp nz, modHLIXByBCLoop
     ret
-modHLIXByBCCheckDivOverflow:
+modHLIXByBCOverflow:
     ; This branch (CF=1) is more rare than (CF=0) because it will happen only
     ; after the 16th iteration.
     or a ; reset CF
     sbc hl, bc ; HL(remainder) -= divisor
-    jp modHLIXByBCCheckDivNextBit
+    jp modHLIXByBCNextBit
