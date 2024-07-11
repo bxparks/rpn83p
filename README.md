@@ -332,8 +332,8 @@ the 4 ways that complex numbers can be entered into RPN83P:
 
 - `100 - i/(2*pi*60*(1e-5))` using `2ND LINK`
 - `100 + 250i` using `2ND i`
-- `200 e^(i 10deg)` using `2ND ANGLE`
-- `300 e^(i 0.1)` using `2ND ANGLE 2ND ANGLE`
+- `200 ∠ 10°` using `2ND ANGLE`
+- `300 ∠ 0.1` using `2ND ANGLE 2ND ANGLE`
 
 The keystrokes are:
 
@@ -341,17 +341,17 @@ The keystrokes are:
 - Press `MODE` button, `downarrow`,  `RECT`:
   ![MODE MenuRow 2](docs/images/menu-root-mode-2.png)
 - Press `100` `ENTER`
-- Press `2` `PI` `*` `60` `*` `1 EE 5` `(-)` `*` `1/X` `(-)` (-265.26)
-- Press `2ND LINK` (100-265.26i)
-- Press `100` `2ND i` `250` `+` (200-15.26i)
-- Press `200` `2ND ANGLE` `10` `+` (396.96+19.47i)
-- Press `300` `2ND ANGLE` `2ND ANGLE` `0.1` `+` (695.46+49.42i)
-- Press `4` `/` (173.89+12.35i)
-- Press `PRAD` (174.30 e^(i 0.07)
-- Press `PDEG` (174.30 e^(i 4.04deg))
+- Press `2` `PI` `*` `60` `*` `1 EE 5` `(-)` `*` `1/X` `(-)` (X: -265.26)
+- Press `2ND LINK` (X: 100 i -265.26)
+- Press `100` `2ND i` `250` `+` (X: 200 i -15.26)
+- Press `200` `2ND ANGLE` `10` `+` (X: 396.96 i 19.47)
+- Press `300` `2ND ANGLE` `2ND ANGLE` `0.1` `+` (X: 695.46 i 49.42)
+- Press `4` `/` (X: 173.89 i 12.35)
+- Press `PRAD` (X: 174.30 ∠ 0.07)
+- Press `PDEG` (X: 174.30 ∠° 4.04)
 - Press `MATH` button `CPLX`:
   ![CPLX MenuRow 1](docs/images/menu-root-cplx-1.png)
-- Press `CABS` (174.30)
+- Press `CABS` (X: 174.30)
 
 ![RPN83P Example 4 GIF](docs/images/rpn83p-example4.gif)
 
