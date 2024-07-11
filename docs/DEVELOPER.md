@@ -134,7 +134,7 @@ Here are some notes about how the `PRIM` algorithm works:
   implement a custom `mod(u32, u16)` function which is about 25% faster than the
   full `div(u32, u16)` function.
 - In v0.10, the inner loop of the `mod(u32,u16)` function was made 40-50% faster
-  using the following observations:
+  through the `modHLSPByBC()` function using the following observations:
     - The Z80 has only 16-bit registers, so the `u32` type must typically be
       stored in 4 bytes of RAM, and the `u32` operations must work against the 4
       bytes of RAM.
@@ -149,17 +149,20 @@ Here are some notes about how the `PRIM` algorithm works:
       `ex (sp), hl` instruction of the Z80 to swap the 2 halves back and forth.
       This made the `mod(u32,u16)` function about 40-50% faster compared to
       v0.9.0.
-- In v0.13, the inner loop `mod(u32,u16)` was made another 28% faster.
+- In v0.13, the inner loop `mod(u32,u16)` became another ~42% faster using the
+  `modHLIXByBC()` function:
     - I discovered that my Z80 instruction cheatsheet incorrectly stated that
       the `add ix, ix` did not exist. It does.
-    - Replacing the `ex (sp), hl; add hl, hl` combo with a `add ix, ix` gave us
-      a 25% speed improvement.
-    - Another 3-4% was gained by replacing a `rl e; rl d` combo with an `adc hl,
+    - Replacing the `ex (sp), hl; add hl, hl` combo with an `add ix, ix`
+      instruction gave us a ~29% speed improvement.
+    - Another ~4% was gained by replacing a `rl e; rl d` combo with an `adc hl,
       hl` instruction.
+    - Another ~5% was gained by deleting an unnecessary `or a` instruction.
+    - About 1-2% was gained through rearranging some code to eliminate a branch
+      in the common case, and selecting `jr` or `jp` judiciously.
 
-I can think of one additional optimization that *may* give us a 10-20% speed
-increase, but it would come at the cost of code that would be significantly
-harder to maintain, so I don't think it's worth it.
+Looking at the `modHLIXByBC()` routine, I cannot think of any additional
+performance improvements. But who knows, I may have overlooked something.
 
 ### Prime Factor Improvements
 

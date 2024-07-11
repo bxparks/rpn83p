@@ -29,7 +29,7 @@
 ;       - About 5079 effective-candidates / second.
 ; - USE_PRIME_FACTOR_MOD_HLSP_BY_BC
 ;   - uses modHLSPByBC() to determine if `candidate` is a factor of `input`
-;   - Benchmarks (15 MHz, TilEm, modOP1ByBC using (SP)):
+;   - Benchmarks (15 MHz, TilEm, modHLSPByBC using (SP)):
 ;       - 19997*19997: 2.9 seconds
 ;       - 65521*65521: 9.0 seconds
 ;       - About 7280 effective-candidates / second.
@@ -110,10 +110,9 @@ primeFactorBreak:
 ; Description determine if OP1 is a prime using floating point routines
 ; provided by the TI-OS. This is the slowest.
 ;
-; Input: OP1: an integer in the range of [2, 2^32-1].
-; Output: OP1: 1 if prime, smallest prime factor if not
+; Input: OP1:real=input, an integer in the range of [2, 2^32-1].
+; Output: OP1:real=1 if prime, or the smallest prime factor if not
 ; Destroys: all registers, OP2, OP4, OP5, OP6
-;
 primeFactorFloat:
     ; Check 2
     bcall(_OP2Set2) ; OP2 = 2
@@ -197,8 +196,8 @@ primeFactorFloatCheckDiv:
 ; Description determine if OP1 is a prime using divU32U32() routine. This is
 ; almost 3X fastger than primeFactorFloat() but I think we can better.
 ;
-; Input: OP1: an integer in the range of [2, 2^32-1].
-; Output: OP1: 1 if prime, smallest prime factor if not
+; Input: OP1:real=an integer in the range of [2, 2^32-1].
+; Output: OP1:real=1 if prime, or the smallest prime factor if not
 ; Destroys: all registers, OP1, OP2, OP3, OP4, OP5, OP6
 ; Throws: if OP1 not an integer
 primeFactorInt:
@@ -274,11 +273,11 @@ primeFactorIntYes:
 
 ; Description: Check if `candidate` (OP6) is an integer factor of `input` (OP4).
 ; Input:
-;   - OP4=input
-;   - OP6=candidate
+;   - OP4:u32=input
+;   - OP6:u32=candidate
 ; Output:
-;   - OP1=quotient
-;   - OP2=remainder
+;   - OP1:u32=quotient
+;   - OP2:u32=remainder
 ;   - ZF=1 if remainder==0
 ; Destroys: A, BC, DE, HL
 primeFactorIntCheckDiv:
@@ -299,8 +298,8 @@ primeFactorIntCheckDiv:
 ; Description determine if OP1 is a prime using the modU32ByBC() routine. This
 ; is 7X faster than primeFactorFloat(), and 2.5X faster than primeFactorInt().
 ;
-; Input: OP1: an integer in the range of [2, 2^32-1].
-; Output: OP1: 1 if prime, smallest prime factor if not
+; Input: OP1:real=an integer in the range of [2, 2^32-1].
+; Output: OP1:real=1 if prime, or the smallest prime factor if not
 ; Destroys: all registers, OP1-OP3
 primeFactorMod:
     call pushRaw9Op1 ; FPS=[X]; HL=X
@@ -389,9 +388,13 @@ primeFactorModCheckDiv:
     ex de, hl ; HL=OP3
     call modU32ByBC ; DE:u16=remainder; destroys (*HL); preserves BC=candidate
 #else
-    ld ix, (OP1) ; IX=low16
-    ld hl, (OP1+2) ; HL=high16
-    call modHLIXByBC
+    #ifdef USE_PRIME_FACTOR_MOD_HLSP_BY_BC
+        call modHLSPByBC
+    #else
+        ld ix, (OP1) ; IX=low16
+        ld hl, (OP1+2) ; HL=high16
+        call modHLIXByBC
+    #endif
 #endif
     ld a, d
     or e ; if remainder==0: ZF=1
@@ -399,16 +402,69 @@ primeFactorModCheckDiv:
 
 ;-----------------------------------------------------------------------------
 
-; Decription: Highly specialized version of modU32ByBC() to get the highest
-; performance. For example, uses 'jp' instead 'jr' because 'jp' is faster.
-;   - The first version of this used (SP) to store the high16 bits. This makes
-;   PRIM about 45% faster than modU32ByBC().
-;   - The next version uses the IX register instead of (SP) to store the high16
-;   bits. This improves PRIM by another 25%. (I was using a Z80 instruction
-;   cheatsheet which incorrectly said that the `add ix, ix` instruction did not
-;   exist. But it does.)
-;   - Another 3-4% came from replacing `rl e; rl d; ex de, hl` with `ex
-;   de, hl; adc hl, hl`.
+#ifdef USE_PRIME_FACTOR_MOD_HLSP_BY_BC
+
+; Decription: A specialized version of modU32ByBC() which is faster by storing
+; 16-bits of the u32 in HL and the other 16-bits on the stack (SP). I
+; implemented this version because my Z80 cheatsheet said (incorrectly) that
+; the `add ix, ix` instruction did not exist. Once I realized that `add ix, ix`
+; is available, I implemented modHLIXByBC() below.
+;
+; The benchmark says that this is about 45% faster than modU32ByBC().
+;
+; Input:
+;   - OP1:u32=dividend
+;   - BC:u16=divisor
+; Output:
+;   - DE:u16=remainder
+; Destroys: A, HL
+modHLSPByBC:
+    ; push the dividend (x) to a combination of HL and the stack
+    ld hl, (OP1+2) ; HL=high16
+    push hl ; stack=[high16]
+    ld hl, (OP1) ; HL=low16
+    ;
+    ld de, 0 ; DE=remainder
+    ld a, 32
+modHLSPByBCCheckDivLoop:
+    ; shift x by one bit to the left
+    add hl, hl
+    ex (sp), hl ; stack=[low16]; HL=high16
+    adc hl, hl
+    ex (sp), hl ; stack=[high16]; HL=low16
+    ; shift bit into remainder
+    rl e
+    rl d ; DE=remainder
+    ex de, hl ; HL=remainder; DE=dividend
+    jp c, modHLSPByBCCheckDivOverflow ; remainder overflowed, so substract
+    or a ; CF=0
+    sbc hl, bc ; HL(remainder) -= divisor
+    jp nc, modHLSPByBCCheckDivNextBit
+    add hl, bc ; revert the subtraction
+    jp modHLSPByBCCheckDivNextBit
+modHLSPByBCCheckDivOverflow:
+    or a ; reset CF
+    sbc hl, bc ; HL(remainder) -= divisor
+modHLSPByBCCheckDivNextBit:
+    ex de, hl ; DE=remainder; HL=dividend
+    dec a
+    jp nz, modHLSPByBCCheckDivLoop
+    pop hl ; stack=[]; HL=high16
+    ret
+
+#endif
+
+;-----------------------------------------------------------------------------
+
+; Decription: An improved version of modHLSPByBC() which uses IX instead of
+; 2 bytes on the stack (SP). This means that the entire computation can be
+; performed using just the Z80 registers, without touching RAM. This improves
+; PRIM by another 25%. Another 3-4% comes from replacing the sequence of `rl e;
+; rl d; ex de, hl` with `ex de, hl; adc hl, hl`. We get a few extra percent
+; improvement from selecting a 'jr' or 'jp' instruction judiciously. And
+; another 5 percent comes from from deleting an unnecessary 'or a' instruction
+; in one of the branches. Overall, this version is a surprising 43% faster than
+; modHLSPByBC(). See benchmarks above.
 ;
 ; Input:
 ;   - HL:u16=high 16 bits of u32 dividend
