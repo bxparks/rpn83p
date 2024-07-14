@@ -4,13 +4,13 @@ SPASM_DIR := ../../spasm
 SPASM_INC := $(SPASM_DIR)/inc
 SPASM := $(SPASM_DIR)/spasm
 SPASM_FLAGS := -A -I $(SPASM_INC) -N
+#SPASM_FLAGS := -A -I $(SPASM_INC) -N -DDEBUG
 
 SRCS := $(wildcard *.asm)
 
 # TI Flash app. Use -DDEBUG to activate functions in debug1.asm.
 rpn83p.8xk: $(SRCS) Makefile
 	$(SPASM) $(SPASM_FLAGS) rpn83p.asm $@
-	@#$(SPASM) $(SPASM_FLAGS) -DDEBUG rpn83p.asm $@
 
 # TI assembly program. No longer works because the program is > 8 kiB.
 #rpn83p.8xp: $(SRCS) Makefile

@@ -339,13 +339,9 @@ primeFactorModSetup:
     ; OP2:u16=limit
     ; BC:u16=candidate
 primeFactorModLoop:
-    ld hl, (OP2) ; HL=limit
-    or a ; clear CF
-    sbc hl, bc ; CF=1 if candidate>limit
-    jr c, primeFactorModYes
     ; Check for ON/Break
     bit onInterrupt, (iy + onFlags)
-    jp nz, primeFactorBreak
+    jr nz, primeFactorBreak
     ; Check (6n-1)
     call primeFactorModCheckDiv ; ZF=1 if remainder==0
     jr z, primeFactorModNo
@@ -360,15 +356,44 @@ primeFactorModLoop:
     inc bc
     inc bc
     inc bc
-    jr primeFactorModLoop
+    ; Terminate if all candidates have been checked.
+    ; NOTE 1: At first glance, the 'sbc' instruction that checks for the
+    ; terminating (candidate>limit) will fail if `limit=sqrt(input)=65535`
+    ; because no 16-bit candiate value will satisfy the terminating condition.
+    ; It actually looks worse than that. The candidate prime factor increments
+    ; in steps of 6 (first by 2, then by 4) through each iteration of the loop,
+    ; so at the upper end, the candidate goes from 65531, to 65533, then to
+    ; 65537, which wraps to 1 since BC is an unsigned 16-bit integer. So it
+    ; looks like this terminating condition will fail for `limit>=65531`.
+    ; However, through pure luck, when the candidate wraps around to 1 (i.e.
+    ; 65537), the mod(u32,u16) function returns 0 (since 1 divides into any
+    ; number), so the primeFactorModCheckDiv() function will return ZF=1, which
+    ; then branches to 'primeFactorModNo', but returns the prime factor as *1*,
+    ; which then correctly identifies the dividend as a prime number. This is a
+    ; dirty hack, but the end result is that we don't need any additional code
+    ; to correctly  handle `dividend>=65531^2`, which makes this loop faster.
+    ; If the size of the dividend is changed from u32 to a larger integer type,
+    ; the terminating condition *must* be reexamined.
+    ; NOTE 2: We can place the check for the terminating condition at the end
+    ; of the 'primeFactorModLoop' (i.e. a do-while-loop) instead of at the
+    ; beginning (i.e. a while-loop) without affecting correctness. The loop
+    ; will perform a handful of unnecessary iterations for `dividend<=121=11^2`
+    ; because the candidate must reach 11 before the loop terminates. But on
+    ; the flip side, moving the terminating condition to the end allows us to
+    ; eliminate an extra 'jp' instruction for each loop, which makes the PRIM
+    ; function faster for large input values.
+    ld hl, (OP2) ; HL=limit
+    or a ; clear CF
+    sbc hl, bc ; CF=1 if candidate>limit
+    jp nc, primeFactorModLoop
+primeFactorModYes:
+    bcall(_OP1Set1)
+    ret
 primeFactorModNo:
     ld (OP1), bc ; OP1=candidate
     ld hl, 0
     ld (OP1+2), hl
     call convertU32ToOP1 ; OP1=real(candidate)
-    ret
-primeFactorModYes:
-    bcall(_OP1Set1)
     ret
 
 ; Description: Check if `candidate` (BC) is an integer factor of `input` (OP1).
