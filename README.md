@@ -23,7 +23,7 @@ bytes), `RPN83SAV` (140 byte), `RPN83STA` (272 bytes), and `RPN83STK` (120 to
 Summary of features:
 
 - traditional RPN stack (`X`, `Y`, `Z`, `T`), with `LASTX` register
-    - configurable stack levels between 4 and 8: `SSIZ`, `SIZ?`
+    - configurable stack levels between 4 and 8: `SSIZ`, `SSZ?`
 - input edit line with scrollable cursor using arrow keys
     - `LEFT`, `RIGHT`, `2ND LEFT`, `2ND RIGHT`
 - 8-line display showing 4 stack registers
