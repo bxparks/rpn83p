@@ -89,8 +89,8 @@ For example, the number `1-2i` would be entered like this:
 
 Notice that the RPN83P follows the convention used by the HP-35s in rendering
 the complex number with an imaginary `i` delimiter between the two components.
-The negative sign on the `-2` appears *after* the `i`, because it is a delimiter
-not a multiplier of the number `-2`.
+The negative sign on the `-2` appears *after* the `i`, because `i`  is a
+delimiter not a multiplier of the number `-2`.
 
 Pressing `2ND LINK` on a complex number performs the *reverse* operation. The
 complex number is broken up into its real components, with the real part going
