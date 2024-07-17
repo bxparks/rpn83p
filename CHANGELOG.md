@@ -3,13 +3,17 @@
 - Unreleased
     - Change the criteria for using the small-i approximation to the following:
       N*i <~ 6e-5.
-    - Improve performance of `PRIM` by 43-67%
-        - convert `modOP1ByBC()` using the `(SP)` stack to `modHLIXByBC()` which
-          uses only the CPU registers without touching RAM
-        - speed increases ~43% on the TI-83+, TI-83+SE, TI-84+SE
-        - speed increases ~67% on the TI-Nspire w/ TI-84 keypad (my guess is
-          that the Z80 emulator cannot access the emulated RAM as fast as it can
-          access the emulated CPU registers)
+    - Improve performance of `PRIM` by 2.4X
+        - convert `modOP1ByBC()` to use the `IX` register instead of the stack
+          `(SP)`: 43-67% faster
+        - use DEIX instead of HLIX: ~12% faster
+        - process using in 8-bit chunks instead of 1-bit: ~18% faster
+        - use `A` register instead of `D` register for chunks: ~5% faster
+        - use nonrestoring division algorithm: ~11% faster
+        - unroll the 8-bit division loop 8 times: ~11% faster
+        - thanks go to the responders of [this Cemetech
+          thread](https://www.cemetech.net/forum/viewtopic.php?p=307636) for
+          improving the `modHLIXByBC()` algorithm
 - 0.12.0 (2024-06-24)
     - **Bug Fix**: update logic that determines when the comma `,` character can
       be inserted into the input buffer

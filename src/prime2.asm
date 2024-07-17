@@ -33,7 +33,7 @@
 ;       - 19997*19997: 2.9 seconds
 ;       - 65521*65521: 9.0 seconds
 ;       - About 7280 effective-candidates / second.
-; - USE_PRIME_FACTOR_MOD_HLIX_BY_BC (default)
+; - USE_PRIME_FACTOR_MOD_HLIX_BY_BC
 ;   - uses modHLIXByBC() to determine if `candidate` is a factor of `input`
 ;   - Benchmarks (15 MHz, TilEm, modHLIXByBC):
 ;       - 65521*65521: 7.0 seconds
@@ -48,8 +48,16 @@
 ;   - Benchmarks (15 MHz, modHLIXByBC, remove unnecessary 'or a')
 ;       - 65521*65521: 6.3 seconds
 ;       - About 10400 effective-candidates / second
+; - USE_PRIME_FACTOR_MOD_DEIX_BY_BC (default)
+;   - Benchmarks (15 MHz, modDEIXByBC)
+;       - 65521*65521: 3.8 seconds
+;       - About 17242 effective-candidates / second
+;   - thankss goes to the responders of the
+;   https://www.cemetech.net/forum/viewtopic.php?p=307636 thread for various
+;   ideas on improving this algorithm
 ;
-; The modHLIXByBC() version is now 15X faster than the floating point version.
+; The USE_PRIME_FACTOR_MOD_DEIX_BY_BC version is now 25X faster than the
+; floating point version.
 ;
 ; All of these take advantage of the fact that every prime above 3 is of the
 ; form (6n-1) or (6n+1), where n=1,2,3,... It checks candidate divisors from 5
@@ -401,7 +409,6 @@ primeFactorModNo:
 ;   - OP1:u32=x
 ;   - BC:u16=candidate
 ; Output:
-;   - DE:u16=remainder
 ;   - ZF=1 if remainder==0
 ; Destroys: A, DE, HL, OP3
 ; Preserves: BC, OP1
@@ -412,17 +419,29 @@ primeFactorModCheckDiv:
     call copyU32HLToDE ; OP3=x; preserves BC
     ex de, hl ; HL=OP3
     call modU32ByBC ; DE:u16=remainder; destroys (*HL); preserves BC=candidate
-#else
-    #ifdef USE_PRIME_FACTOR_MOD_HLSP_BY_BC
-        call modHLSPByBC
-    #else
-        ld ix, (OP1) ; IX=low16
-        ld hl, (OP1+2) ; HL=high16
-        call modHLIXByBC
-    #endif
-#endif
     ld a, d
     or e ; if remainder==0: ZF=1
+#endif
+
+#ifdef USE_PRIME_FACTOR_MOD_HLSP_BY_BC
+    call modHLSPByBC
+    ld a, d
+    or e ; if remainder==0: ZF=1
+#endif
+
+#ifdef USE_PRIME_FACTOR_MOD_HLIX_BY_BC
+    call modHLIXByBC
+    ld a, d
+    or e ; if remainder==0: ZF=1
+#endif
+
+; #ifdef USE_PRIME_FACTOR_MOD_DEIX_BY_BC
+    ld ix, (OP1) ; low16
+    ld de, (OP1+2) ; high16
+    call modDEIXByBC
+    ld a, h
+    or l ; if remainder==0: ZF=1
+; #endif
     ret
 
 ;-----------------------------------------------------------------------------
@@ -481,6 +500,8 @@ modHLSPByBCNextBit:
 
 ;-----------------------------------------------------------------------------
 
+#ifdef USE_PRIME_FACTOR_MOD_HLIX_BY_BC
+
 ; Description: An improved version of modHLSPByBC() which uses IX instead of
 ; 2 bytes on the stack (SP). This means that the entire computation can be
 ; performed using just the Z80 registers, without touching RAM. This improves
@@ -535,3 +556,231 @@ modHLIXByBCOverflow:
     or a ; reset CF
     sbc hl, bc ; HL(remainder) -= divisor
     jp modHLIXByBCNextBit
+
+#endif
+
+;-----------------------------------------------------------------------------
+
+; #ifdef USE_PRIME_FACTOR_MOD_DEIX_BY_BC
+
+; Description: Calculate mod(u32,u16), i.e. the remainder when a u32 dividend
+; is divided by a u16 divisor.
+;
+; This is an improved version of modHLIXByBC() which uses a nonrestoring
+; division algorith, with various tricks for a 1.75X speed increase: chunking
+; into 8 bit registers, using register A instead of A for chunking, using DEIX
+; instead of HLIX for the dividend, unrolling the 8-bit loop.
+;
+; Input:
+;   - DE:u16=high 16 bits of u32 dividend
+;   - IX:u16=low 16 bits of u32 dividend
+;   - BC:u16=divisor
+; Output:
+;   - HL:u16=remainder
+; Destroys: AF
+; Preserves: BC, DE, IX
+modDEIXByBC:
+    ld hl, 0 ; HL=remainder
+    or a ; CF=0
+    ld a, d
+    call modDEIXByBC8
+    ld a, e
+    call modDEIXByBC8
+    push ix
+    pop de
+    ld a, d
+    call modDEIXByBC8
+    ld a, e
+    call modDEIXByBC8
+    ; if the remainder is negative, restore it
+    ret nc
+    add hl, bc
+    ret
+; Description: Process an 8-bit chunk of the dividend with the 8 loop
+; iterations unrolled for performance.
+; Input:
+;   - A:u8=8-bit chunks of the dividend
+; Output:
+;   - HL:u16=remainder
+modDEIXByBC8:
+modDEIXByBC8Bit0:
+    jp c, modDEIXByBC8Bit0Neg
+modDEIXByBC8Bit0Pos:
+    rla
+    adc hl, hl
+    jp c, modDEIXByBC8Bit0PosOverflow
+    sbc hl, bc ; remainder -= divisor
+    jp modDEIXByBC8Bit1
+modDEIXByBC8Bit0PosOverflow:
+    or a
+    sbc hl, bc ; remainder -= divisor
+    jp modDEIXByBC8Bit1Pos
+modDEIXByBC8Bit0Neg:
+    rla
+    adc hl, hl
+    jp c, modDEIXByBC8Bit0NegOverflow
+    add hl, bc ; remainder += divisor
+    jp modDEIXByBC8Bit1Neg
+modDEIXByBC8Bit0NegOverflow:
+    add hl, bc ; remainder += divisor
+    ccf
+;
+modDEIXByBC8Bit1:
+    jp c, modDEIXByBC8Bit1Neg
+modDEIXByBC8Bit1Pos:
+    rla
+    adc hl, hl
+    jp c, modDEIXByBC8Bit1PosOverflow
+    sbc hl, bc ; remainder -= divisor
+    jp modDEIXByBC8Bit2
+modDEIXByBC8Bit1PosOverflow:
+    or a
+    sbc hl, bc ; remainder -= divisor
+    jp modDEIXByBC8Bit2Pos
+modDEIXByBC8Bit1Neg:
+    rla
+    adc hl, hl
+    jp c, modDEIXByBC8Bit1NegOverflow
+    add hl, bc ; remainder += divisor
+    jp modDEIXByBC8Bit2Neg
+modDEIXByBC8Bit1NegOverflow:
+    add hl, bc ; remainder += divisor
+    ccf
+;
+modDEIXByBC8Bit2:
+    jp c, modDEIXByBC8Bit2Neg
+modDEIXByBC8Bit2Pos:
+    rla
+    adc hl, hl
+    jp c, modDEIXByBC8Bit2PosOverflow
+    sbc hl, bc ; remainder -= divisor
+    jp modDEIXByBC8Bit3
+modDEIXByBC8Bit2PosOverflow:
+    or a
+    sbc hl, bc ; remainder -= divisor
+    jp modDEIXByBC8Bit3Pos
+modDEIXByBC8Bit2Neg:
+    rla
+    adc hl, hl
+    jp c, modDEIXByBC8Bit2NegOverflow
+    add hl, bc ; remainder += divisor
+    jp modDEIXByBC8Bit3Neg
+modDEIXByBC8Bit2NegOverflow:
+    add hl, bc ; remainder += divisor
+    ccf
+;
+modDEIXByBC8Bit3:
+    jp c, modDEIXByBC8Bit3Neg
+modDEIXByBC8Bit3Pos:
+    rla
+    adc hl, hl
+    jp c, modDEIXByBC8Bit3PosOverflow
+    sbc hl, bc ; remainder -= divisor
+    jp modDEIXByBC8Bit4
+modDEIXByBC8Bit3PosOverflow:
+    or a
+    sbc hl, bc ; remainder -= divisor
+    jp modDEIXByBC8Bit4Pos
+modDEIXByBC8Bit3Neg:
+    rla
+    adc hl, hl
+    jp c, modDEIXByBC8Bit3NegOverflow
+    add hl, bc ; remainder += divisor
+    jp modDEIXByBC8Bit4Neg
+modDEIXByBC8Bit3NegOverflow:
+    add hl, bc ; remainder += divisor
+    ccf
+;
+modDEIXByBC8Bit4:
+    jp c, modDEIXByBC8Bit4Neg
+modDEIXByBC8Bit4Pos:
+    rla
+    adc hl, hl
+    jp c, modDEIXByBC8Bit4PosOverflow
+    sbc hl, bc ; remainder -= divisor
+    jp modDEIXByBC8Bit5
+modDEIXByBC8Bit4PosOverflow:
+    or a
+    sbc hl, bc ; remainder -= divisor
+    jp modDEIXByBC8Bit5Pos
+modDEIXByBC8Bit4Neg:
+    rla
+    adc hl, hl
+    jp c, modDEIXByBC8Bit4NegOverflow
+    add hl, bc ; remainder += divisor
+    jp modDEIXByBC8Bit5Neg
+modDEIXByBC8Bit4NegOverflow:
+    add hl, bc ; remainder += divisor
+    ccf
+;
+modDEIXByBC8Bit5:
+    jp c, modDEIXByBC8Bit5Neg
+modDEIXByBC8Bit5Pos:
+    rla
+    adc hl, hl
+    jp c, modDEIXByBC8Bit5PosOverflow
+    sbc hl, bc ; remainder -= divisor
+    jp modDEIXByBC8Bit6
+modDEIXByBC8Bit5PosOverflow:
+    or a
+    sbc hl, bc ; remainder -= divisor
+    jp modDEIXByBC8Bit6Pos
+modDEIXByBC8Bit5Neg:
+    rla
+    adc hl, hl
+    jp c, modDEIXByBC8Bit5NegOverflow
+    add hl, bc ; remainder += divisor
+    jp modDEIXByBC8Bit6Neg
+modDEIXByBC8Bit5NegOverflow:
+    add hl, bc ; remainder += divisor
+    ccf
+;
+modDEIXByBC8Bit6:
+    jp c, modDEIXByBC8Bit6Neg
+modDEIXByBC8Bit6Pos:
+    rla
+    adc hl, hl
+    jp c, modDEIXByBC8Bit6PosOverflow
+    sbc hl, bc ; remainder -= divisor
+    jp modDEIXByBC8Bit7
+modDEIXByBC8Bit6PosOverflow:
+    or a
+    sbc hl, bc ; remainder -= divisor
+    jp modDEIXByBC8Bit7Pos
+modDEIXByBC8Bit6Neg:
+    rla
+    adc hl, hl
+    jp c, modDEIXByBC8Bit6NegOverflow
+    add hl, bc ; remainder += divisor
+    jp modDEIXByBC8Bit7Neg
+modDEIXByBC8Bit6NegOverflow:
+    add hl, bc ; remainder += divisor
+    ccf
+;
+modDEIXByBC8Bit7:
+    jp c, modDEIXByBC8Bit7Neg
+modDEIXByBC8Bit7Pos:
+    rla
+    adc hl, hl
+    jp c, modDEIXByBC8Bit7PosOverflow
+    sbc hl, bc ; remainder -= divisor
+    ret
+modDEIXByBC8Bit7PosOverflow:
+    or a
+    sbc hl, bc ; remainder -= divisor
+    or a ; always clear CF
+    ret
+modDEIXByBC8Bit7Neg:
+    rla
+    adc hl, hl
+    jp c, modDEIXByBC8Bit7NegOverflow
+    add hl, bc ; remainder += divisor
+    scf
+    ret
+modDEIXByBC8Bit7NegOverflow:
+    add hl, bc ; remainder += divisor
+    ccf
+;
+    ret
+
+; #endif

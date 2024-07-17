@@ -2008,10 +2008,10 @@ times of the `PRIM` function for this number for various TI models that I own:
 
 | **Model**                     | **PRIM Running Time** |
 | ---                           | ---                   |
-| TI-83+ (6 MHz)                | 14.0 s                |
-| TI-83+SE (15 MHz)             | 5.4 s                 |
-| TI-84+SE (15 MHz)             | 6.7 s                 |
-| TI-Nspire w/ TI-84+ keypad    | 4.9 s                 |
+| TI-83+ (6 MHz)                | 8.3 s                 |
+| TI-83+SE (15 MHz)             | 3.3 s                 |
+| TI-84+SE (15 MHz)             | 3.9 s                 |
+| TI-Nspire w/ TI-84+ keypad    | 3.1 s                 |
 
 During the calculation, the "run indicator" on the upper-right corner will be
 active. You can press the `ON` key to break from the `PRIM` loop with an `Err:
