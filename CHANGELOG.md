@@ -1,6 +1,14 @@
 # Changelog
 
 - Unreleased
+    - User Interface
+        - `CLEAR` button clears only to the end of the line if the cursor is in
+          the interior of the input buffer
+            - if the cursor is at the beginning or the end of the input buffer,
+              the entire buffer is cleared
+            - identical to the CLEAR button on the TI-89/92+/Voyage 200
+            - similar to 2ND CLEAR on HP-50g in Algebraic mode (but not in RPN
+              mode)
     - TVM
         - Change the criteria for using the small-i approximation to the
           following: N*i <~ 6e-5.
