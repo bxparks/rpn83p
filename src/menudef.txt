@@ -311,6 +311,9 @@ MenuGroup root mRoot [
         MenuItem CL<ScapSigma> mClearStat
         MenuItem CLTV mClearTvm
       ]
+      MenuRow [
+        MenuItem CLD mClearDisplay
+      ]
     ]
     MenuGroup MODE mMode [
       MenuRow [
@@ -338,8 +341,8 @@ MenuGroup root mRoot [
         MenuItemAlt <Scomma>EE <Scomma>EE<Sblock> mCommaEENormal
         MenuItemAlt EE<Scomma> EE<Scomma><Sblock> mCommaEESwapped
         MenuItem * *
-        MenuItemAlt <SlBrace><SPeriod><SPeriod><SrBrace> <SlBrace><SPeriod><SPeriod><SrBrace><Sblock> mFormatRecordRaw
-        MenuItemAlt <Squote><SPeriod><SPeriod><Squote> <Squote><SPeriod><SPeriod><Squote><Sblock> mFormatRecordString
+        MenuItemAlt <SlBrace><Speriod><Speriod><SrBrace> <SlBrace><Speriod><Speriod><SrBrace><Sblock> mFormatRecordRaw
+        MenuItemAlt <Squote><Speriod><Speriod><Squote> <Squote><Speriod><Speriod><Squote><Sblock> mFormatRecordString
       ]
     ]
     MenuGroup STK mStack [

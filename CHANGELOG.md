@@ -22,6 +22,11 @@
             - trig mode: RAD
             - floating display: FIX
             - display digits: floating
+    - CLR
+        - add `CLD` (clear display) menu under the `CLR` menu folder
+            - clear the display and re-render everything
+            - should almost never be needed, except during debugging
+            - analogous to the `CLD` command on the HP-42S
 - 0.12.0 (2024-06-24)
     - **Bug Fix**: update logic that determines when the comma `,` character can
       be inserted into the input buffer

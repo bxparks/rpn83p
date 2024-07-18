@@ -1030,3 +1030,9 @@ mClearStatHandler:
 
 mClearTvmHandler:
     jp mTvmClearHandler
+
+mClearDisplayHandler:
+    bcall(_ClrLCDFull)
+    bcall(_ColdInitDisplay)
+    bcall(_InitDisplay)
+    ret
