@@ -676,23 +676,49 @@ If the `X` line is *not* in edit mode (i.e. the cursor is not shown), then the
 
 #### CLEAR Key
 
-The `CLEAR` key either clears the `X` register or clears the current input line.
-If `CLEAR` is pressed when the input buffer is already empty , then it performs
-the `CLST` (Clear Stack) operation. This condition will always happen if CLEAR
-is pressed 3 times consecutively. Here is an example where we fill up the RPN
-stack first, then hit `CLEAR` a few times:
+The `CLEAR` key performs slightly different functions depending on the context:
 
-| **Keys**                                  | **Display**|
-| ---------------------                     | ---------- |
-| `1` `ENTER` `2` `ENTER` `3` `ENTER` `4`   | ![Input Clear](images/input-clear-1.png) |
-| `CLEAR`                                   | ![Input Clear](images/input-clear-2.png) |
-| `CLEAR`                                   | ![Input Clear](images/input-clear-3.png) |
-| `CLEAR`                                   | ![Input Clear](images/input-clear-4.png) |
+- If the input has been terminated (i.e. not in edit mode), `CLEAR` clears the
+  `X` register, similar to the `CLX` (Clear X Register) menu function.
+- If the input is in edit mode, then:
+    - If the cursor is at the end of the input line, `CLEAR` erases the entire
+      line.
+    - If the cursor is at the beginning of the input line, `CLEAR` also erases
+      the entire line.
+    - If the cursor is in the middle of the input line, then `CLEAR` erases
+      *only* to the end of the line.
+    - If the input line is already empty when `CLEAR` is pressed, then it
+      interprets that as a `CLST` (Clear Stack) operation, and warns the user
+      with a message.
+    - If the `CLEAR` is pressed again after the warning, then the `CLST`
+      operation is performed, clearing the RPN stack.
 
-Hitting `CLEAR` 3 times is a convenient alternative to navigating the menu
-system to the `CLST` menu function nested under the `ROOT > CLR` menu folder.
-(Another alternative could have been `2ND CLEAR` but the TI-OS does not support
-that keystroke because it returns the same key code as `CLEAR`.)
+The `CLEAR` button erases only to the end of line if the cursor is in the middle
+of the input buffer, which is convenient when the input line becomes lengthy. I
+borrowed this behavior from the `CLEAR` button on the TI-89, TI-89 Titanium,
+TI-92+, and TI Voyage 200 calculators. (The `2ND CLEAR` on the HP-50g works in a
+similar way, but only in Algebraic mode, not in RPN mode.)
+
+I hope the following example illustrates the different behaviors of `CLEAR`
+clearly:
+
+| **Keys**                              | **Display**   |
+| ---------------------                 | ----------    |
+| `1` `ENTER` `2` `ENTER` `3` `ENTER`   | ![Input Clear](images/input-clear-1.png) |
+| `CLEAR` (invokes `CLX`)               | ![Input Clear](images/input-clear-2.png) |
+| `4.5678`                              | ![Input Clear](images/input-clear-3.png) |
+| `CLEAR` (clears entire line)          | ![Input Clear](images/input-clear-4.png) |
+| `4.5678` `LEFT` `LEFT` `LEFT`         | ![Input Clear](images/input-clear-5.png) |
+| `CLEAR` (clears to end of line)       | ![Input Clear](images/input-clear-6.png) |
+| `CLEAR` (clears entire line)          | ![Input Clear](images/input-clear-7.png) |
+| `CLEAR` (requests `CLST`)             | ![Input Clear](images/input-clear-8.png) |
+| `CLEAR` (invokes `CLST`)              | ![Input Clear](images/input-clear-9.png) |
+
+In most cases, pressing `CLEAR` 3 times will invoke the `CLST` function.
+This is often far more convenient than navigating to the `CLST` menu function
+nested under the `ROOT > CLR` menu folder. (Another alternative could have been
+`2ND CLEAR` but the TI-OS does not support that keystroke because it returns the
+same key code as `CLEAR`.)
 
 An empty string will be interpreted as a `0` if the `ENTER` key or a function
 key is pressed.
