@@ -708,7 +708,7 @@ saveFormatDigits:
     ld a, (argValue)
     cp 10
     jr c, saveFormatDigitsContinue
-    ld a, $FF ; variable number of digits, not fixed
+    ld a, fmtDigitsFloating ; "floating" number of digits, i.e. not fixed
 saveFormatDigitsContinue:
     ld (fmtDigits), a
     ret

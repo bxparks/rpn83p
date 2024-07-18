@@ -317,9 +317,16 @@ appStateInputBufFlags equ appStateRpnFlags + 1 ; u8
 ; Copy of the trigFlags, fmtFlags, and fmtDigits as used by this app. When the
 ; app starts, these values will be used to configure the corresponding OS
 ; settings. When the app quits, the OS settings are copied here.
+;
+; The `numMode` flags (fmtReal, fmtRect, fmtPolar) are stored in the same
+; location as the `fmtFlags`, so we don't have to save the `numMode flags
+; separately.
 appStateTrigFlags equ appStateInputBufFlags + 1 ; u8
 appStateFmtFlags equ appStateTrigFlags + 1 ; u8
 appStateFmtDigits equ appStateFmtFlags + 1 ; u8
+
+; fmtDigits value that indicates "floating" number of digits
+fmtDigitsFloating equ $ff
 
 ; The result code after the execution of each handler. Success is code 0. If a
 ; TI-OS exception is thrown (through a `bcall(ErrXxx)`), the exception handler

@@ -1,8 +1,9 @@
 # Changelog
 
 - Unreleased
-    - Change the criteria for using the small-i approximation to the following:
-      N*i <~ 6e-5.
+    - TVM
+        - Change the criteria for using the small-i approximation to the
+          following: N*i <~ 6e-5.
     - Improve performance of `PRIM` by 2.4X
         - convert `modOP1ByBC()` to use the `IX` register instead of the stack
           `(SP)`: 43-67% faster
@@ -14,6 +15,13 @@
         - thanks go to the responders of [this Cemetech
           thread](https://www.cemetech.net/forum/viewtopic.php?p=307636) for
           improving the `modHLIXByBC()` algorithm
+    - MODE
+        - set Trig, Floating Display, and Display Digits settings to a known
+          state if the restoration of RPN83SAV fails, instead of inheriting the
+          modes from the TI-OS
+            - trig mode: RAD
+            - floating display: FIX
+            - display digits: floating
 - 0.12.0 (2024-06-24)
     - **Bug Fix**: update logic that determines when the comma `,` character can
       be inserted into the input buffer
