@@ -72,6 +72,10 @@ RPN calculator app for the TI-83 Plus and TI-84 Plus inspired by the HP-42S.
     - [Complex Numbers](#complex-numbers)
     - [DATE Functions](#date-functions)
 - [TI-OS Interaction](#ti-os-interaction)
+- [Troubleshooting](#troubleshooting)
+    - [Clear Display](#clear-display)
+    - [Reset MODE to Factory Defaults](#reset-mode-to-factory-defaults)
+    - [Wipe to Factory State](#wipe-to-factory-state)
 - [Future Enhancements](#future-enhancements)
 
 ## Introduction
@@ -1431,11 +1435,13 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
     - `RSTV`: reset TVM Solver parameters to factory defaults
 - ![ROOT > CLR](images/menu-root-clr.png) (`ROOT > CLR`)
     - ![ROOT > CLR > Row1](images/menu-root-clr-1.png)
+    - ![ROOT > CLR > Row2](images/menu-root-clr-2.png)
     - `CLX`: clear `X` stack register (stack lift disabled)
     - `CLST`: clear all RPN stack registers
     - `CLRG`: clear all storage registers `R00` to `R99`
     - `CLΣ`: clear STAT storage registers [`R11`, `R16`] or [`R11`, `R23`]
     - `CLTV`: clear TVM variables and parameters
+    - `CLD`: clear display and rerender everything
 - ![ROOT > MODE](images/menu-root-mode.png) (`ROOT > MODE`)
     - ![ROOT > MODE > Row1](images/menu-root-mode-1.png)
     - ![ROOT > MODE > Row2](images/menu-root-mode-2.png)
@@ -2176,6 +2182,59 @@ The RPN83P app interacts with the underlying TI-OS in the following ways.
     - An interesting consequence of sharing these variables with the TI-OS
       Finance app is that these are the only RPN83P variables which are *not*
       saved in the `RPN83SAV` appVar.
+
+## Troubleshooting
+
+### Clear Display
+
+It is possible for the display to contain leftover pixels or line segments that
+did not get properly cleared or overwritten due to some bug. When this happens,
+clearing the display using the `CLD` (Clear Display) function under the `CLR`
+menu folder will probably fix the problem. This function is modeled after the
+`CLD` function on the HP-42S.
+
+I have rarely seen display rendering bugs. In all cases that I can remember, I
+was doing some internal debugging which would not be performed by normal users.
+
+### Reset MODE to Factory Defaults
+
+The RPN83P currently has only a handful of settings, and they can be reset
+relatively easily through the `MODE` menu (or through the `MODE` button). There
+is no explicit `CLxx` menu function under the `CLR` menu folder to reset the
+MODE settings to their factory defaults.
+
+If for some reason the factory defaults must be explicitly set, the current
+workaround is to use the TI-OS:
+
+- `2ND MEM`
+- `2` (Mem Mgmt/Del)
+- `B` (AppVars)
+- scroll down to the `RPN83SAV` variable
+- delete it using the `DEL` button
+
+Upon restarting RPN83P, the various MODE parameters will be set to their factory
+defaults.
+
+### Wipe to Factory State
+
+I have resisted the temptation to add a `CLAL` (Clear All) menu function because
+it seems too dangerous, and because I'm not sure that everyone has the same
+idea about what "all" means.
+
+If RPN83P gets into a state where everything must be reset, a complete wipe
+can be performed through the TI-OS:
+
+- `2ND MEM`
+- `2` (Mem Mgmt/Del)
+- `B` (AppVars)
+- delete all variables with the pattern `RPN83***` using the `DEL` button:
+    - `RPN83REG` (storage registers)
+    - `RPN83SAV` (MODE settings)
+    - `RPN83STA` (STAT registers)
+    - `RPN83STK` (RPN stack)
+
+When RPN83P restarts, those appVars will be recreated with a completely clean
+slate.
 
 ## Future Enhancements
 
