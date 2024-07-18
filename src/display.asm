@@ -799,21 +799,6 @@ displayShow:
     call putS
     ret
 
-; Clear the display area used by the SHOW feature (errorCode, T, Z, Y, X).
-; Input: none
-; Destroys: A, B, HL
-clearShowArea:
-    ld hl, errorCurCol*$100 + errorCurRow ; $(curCol)(curRow)
-    ld (curRow), hl
-    ld b, 5
-clearShowAreaLoop:
-    bcall(_EraseEOL) ; saves all registers
-    ld hl, (curRow)
-    inc l
-    ld (curRow), hl
-    djnz clearShowAreaLoop
-    ret
-
 ;-----------------------------------------------------------------------------
 ; Low-level helper routines.
 ;-----------------------------------------------------------------------------

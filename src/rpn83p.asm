@@ -1856,6 +1856,10 @@ _FormatAToString equ _FormatAToStringLabel-branchTableBase
     .db 2
 
 ; show2.asm
+_ClearShowAreaLabel:
+_ClearShowArea equ _ClearShowAreaLabel-branchTableBase
+    .dw ClearShowArea
+    .db 2
 _FormShowableLabel:
 _FormShowable equ _FormShowableLabel-branchTableBase
     .dw FormShowable

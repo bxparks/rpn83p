@@ -9,7 +9,7 @@
 
 ; Description: Read loop for the SHOW mode.
 processShowCommands:
-    call clearShowArea
+    bcall(_ClearShowArea)
     set rpnFlagsShowModeEnabled, (iy + rpnFlags)
     set dirtyFlagsStack, (iy + dirtyFlags)
     ; Show the new display.
@@ -21,7 +21,7 @@ processShowCommands:
     cp a, kQuit
     jp z, mainExit
     ; Anything else exits the SHOW mode.
-    call clearShowArea
+    bcall(_ClearShowArea)
     res rpnFlagsShowModeEnabled, (iy + rpnFlags)
     set dirtyFlagsStack, (iy + dirtyFlags)
     set dirtyFlagsErrorCode, (iy + dirtyFlags) ; errorCode displays "SHOW"
