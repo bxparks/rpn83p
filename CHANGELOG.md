@@ -9,6 +9,9 @@
             - identical to the CLEAR button on the TI-89/92+/Voyage 200
             - similar to 2ND CLEAR on HP-50g in Algebraic mode (but not in RPN
               mode)
+    - Variables
+        - print 'Err: Archived' error message if `STO` or `RCL` act on
+          a variable (A-Z,Theta) that's been archived
     - TVM
         - Change the criteria for using the small-i approximation to the
           following: N*i <~ 6e-5.
