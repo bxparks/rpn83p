@@ -1,6 +1,7 @@
 # Changelog
 
 - Unreleased
+- 1.0.0 (2024-07-19)
     - User Interface
         - `CLEAR` button clears only to the end of the line if the cursor is in
           the interior of the input buffer
@@ -10,8 +11,8 @@
             - similar to 2ND CLEAR on HP-50g in Algebraic mode (but not in RPN
               mode)
     - Variables
-        - print 'Err: Archived' error message if `STO` or `RCL` act on
-          a variable (A-Z,Theta) that's been archived
+        - print 'Err: Archived' error message if `STO` or `RCL` acts on
+          a variable (A-Z,Theta) that is archived
     - TVM
         - Change the criteria for using the small-i approximation to the
           following: N*i <~ 6e-5.
