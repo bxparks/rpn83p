@@ -397,13 +397,13 @@ MenuGroup root mRoot [
         MenuItem <Sconvert>kW mHpToKw
         MenuItem <Sconvert>hp mKwToHp
       ]
-      # MenuRow [
-      #   MenuItem <Sconvert>Lkm mL100kmToMpg
-      #   MenuItem <Sconvert>mpg mMpgToL100km
-      #   MenuItem * *
-      #   MenuItem <Sconvert>kPa mPsiToKpa
-      #   MenuItem <Sconvert>psi mKpaToPsi
-      # ]
+      MenuRow [
+        MenuItem <Sconvert>Lkm mMpgToLkm
+        MenuItem <Sconvert>mpg mLkmToMpg
+        MenuItem * *
+        MenuItem <Sconvert>kPa mPsiToKpa
+        MenuItem <Sconvert>psi mKpaToPsi
+      ]
       # MenuRow [
       #   MenuItem <Sconvert>ha mAcreToHectare
       #   MenuItem <Sconvert>acr mHectareToAcre

@@ -38,6 +38,12 @@
             - clear the display and re-render everything
             - should almost never be needed, except during debugging
             - analogous to the `CLD` command on the HP-42S
+    - UNIT
+        - add `>Lkm`: convert mpg (miles per US gallon) to L/100km (liters per
+          100 km)
+        - add `>mpg`: convert L/100km to mpg
+        - add `>kPa`: convert psi (pounds per square inch) to kPa (kiloPascal)
+        - add `>psi`: convert kPa to psi
 - 0.12.0 (2024-06-24)
     - **Bug Fix**: update logic that determines when the comma `,` character can
       be inserted into the input buffer

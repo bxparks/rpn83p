@@ -116,17 +116,11 @@ op1SetMaxFloat:
 
 ;-----------------------------------------------------------------------------
 
-; Description: Set OP1 to StandardGravity.
-; Destroys: all, HL
-; op1SetStandardGravity:
-;     ld hl, constStandardGravity
-;     jp move9ToOp1
-
 ; Description: Set OP2 to StandardGravity.
 ; Destroys: all, HL
-; op2SetStandardGravity:
-;     ld hl, constStandardGravity
-;     jp move9ToOp2
+op2SetStandardGravity:
+    ld hl, constStandardGravity
+    jp move9ToOp2
 
 ;-----------------------------------------------------------------------------
 
@@ -241,8 +235,8 @@ constEuler: ; 2.7182818284594(0452)
 constMaxFloat: ; 9.9999999999999E99
     .db $00, $E3, $99, $99, $99, $99, $99, $99, $99
 
-; constStandardGravity: ; g_0 = 9.806 65 m/s^2, exact
-;     .db $00, $80, $98, $06, $65, $00, $00, $00, $00
+constStandardGravity: ; g_0 = 9.806 65 m/s^2, exact
+     .db $00, $80, $98, $06, $65, $00, $00, $00, $00
 
 constKmPerMi: ; 1.609344 km/mi, exact
     .db $00, $80, $16, $09, $34, $40, $00, $00, $00
