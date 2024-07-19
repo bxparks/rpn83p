@@ -2,6 +2,7 @@
 
 - Unreleased
 - 1.0.0 (2024-07-19)
+    - RPN83P is now out of beta!
     - Documentation
         - add "Troubleshooting" section to `USER_GUIDE.md`
     - User Interface
