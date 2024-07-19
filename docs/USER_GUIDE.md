@@ -2038,7 +2038,7 @@ For example, let's find the prime factors of `2_122_438_477 = 53 * 4001 *
 
 For computational efficiency, `PRIM` supports only integers between `2` and
 `2^32-1` (4 294 967 295). This allows `PRIM` to use integer arithmetic, making
-it about 15X faster than the equivalent algorithm using floating point routines.
+it about 25X faster than the equivalent algorithm using floating point routines.
 Any number outside of this range produces an `Err: Domain` message. (The number
 `1` is not considered a prime number.)
 
