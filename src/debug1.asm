@@ -21,11 +21,11 @@ DebugInputBuf:
     push bc
     push de
     push hl
-    ld hl, (CurRow)
+    ld hl, (curRow)
     push hl
 
     ld hl, debugCurCol*$100+debugCurRow ; $(curCol)(curRow)
-    ld (CurRow), hl
+    ld (curRow), hl
     ld hl, inputBuf
     call putPSPageOne
     ld a, cursorCharAlt
@@ -33,7 +33,7 @@ DebugInputBuf:
     bcall(_EraseEOL)
 
     pop hl
-    ld (CurRow), hl
+    ld (curRow), hl
     pop hl
     pop de
     pop bc
@@ -51,11 +51,11 @@ DebugParseBuf:
     push bc
     push de
     push hl
-    ld hl, (CurRow)
+    ld hl, (curRow)
     push hl
 
     ld hl, debugCurCol*$100+debugCurRow ; $(curCol)(curRow)
-    ld (CurRow), hl
+    ld (curRow), hl
     ld hl, parseBuf
     call putPSPageOne
     ld a, cursorCharAlt
@@ -63,7 +63,7 @@ DebugParseBuf:
     bcall(_EraseEOL)
 
     pop hl
-    ld (CurRow), hl
+    ld (curRow), hl
     pop hl
     pop de
     pop bc
@@ -81,16 +81,16 @@ DebugString:
     push bc
     push de
     push hl
-    ld de, (CurRow)
+    ld de, (curRow)
     push de
 
     ld de, debugCurCol*$100+debugCurRow ; $(curCol)(curRow)
-    ld (CurRow), de
+    ld (curRow), de
     call putSPageOne
     bcall(_EraseEOL)
 
     pop de
-    ld (CurRow), de
+    ld (curRow), de
     pop hl
     pop de
     pop bc
@@ -106,16 +106,16 @@ DebugPString:
     push bc
     push de
     push hl
-    ld de, (CurRow)
+    ld de, (curRow)
     push de
 
     ld de, debugCurCol*$100+debugCurRow ; $(curCol)(curRow)
-    ld (CurRow), de
+    ld (curRow), de
     call putPSPageOne
     bcall(_EraseEOL)
 
     pop de
-    ld (CurRow), de
+    ld (curRow), de
     pop hl
     pop de
     pop bc
@@ -128,15 +128,15 @@ DebugPString:
 ; Destroys: none
 DebugClear:
     push hl
-    ld hl, (CurRow)
+    ld hl, (curRow)
     push hl
 
     ld hl, debugCurCol*$100+debugCurRow ; $(curCol)(curRow)
-    ld (CurRow), hl
+    ld (curRow), hl
     bcall(_EraseEOL)
 
     pop hl
-    ld (CurRow), hl
+    ld (curRow), hl
     pop hl
     ret
 
@@ -151,11 +151,11 @@ DebugOP1:
     push bc
     push de
     push hl
-    ld hl, (CurRow)
+    ld hl, (curRow)
     push hl
 
     ld hl, debugCurCol*$100+debugCurRow ; $(curCol)(curRow)
-    ld (CurRow), hl
+    ld (curRow), hl
     ld a, 15 ; width of output
     bcall(_FormReal)
     ld hl, OP3
@@ -163,7 +163,7 @@ DebugOP1:
     bcall(_EraseEOL)
 
     pop hl
-    ld (CurRow), hl
+    ld (curRow), hl
     pop hl
     pop de
     pop bc
@@ -184,11 +184,11 @@ DebugUnsignedA:
     push de
     push hl
     push ix
-    ; Save CurRow/CurCol
-    ld hl, (CurRow)
+    ; Save curRow/CurCol
+    ld hl, (curRow)
     push hl
     ld hl, debugCurCol*$100+debugCurRow ; $(curCol)(curRow)
-    ld (CurRow), hl
+    ld (curRow), hl
     ; Create 4-byte buffer on the stack
     push hl
     push hl
@@ -206,9 +206,9 @@ DebugUnsignedA:
     ; Clean up stack buffer
     pop hl
     pop hl
-    ; Restore CurRow/CurCol
+    ; Restore curRow/CurCol
     pop hl
-    ld (CurRow), hl
+    ld (curRow), hl
     ; Restore all registers.
     pop ix
     pop hl
@@ -231,11 +231,11 @@ DebugSignedA:
     push de
     push hl
     push ix
-    ; Save CurRow/CurCol
-    ld hl, (CurRow)
+    ; Save curRow/CurCol
+    ld hl, (curRow)
     push hl
     ld hl, debugCurCol*$100+debugCurRow ; $(curCol)(curRow)
-    ld (CurRow), hl
+    ld (curRow), hl
     ; Create 4-byte buffer on the stack
     push hl
     push hl
@@ -263,9 +263,9 @@ debugSignedAPrint:
     ; Clean up stack buffer
     pop hl
     pop hl
-    ; Restore CurRow/CurCol
+    ; Restore curRow/CurCol
     pop hl
-    ld (CurRow), hl
+    ld (curRow), hl
     ; Restore all registers.
     pop ix
     pop hl
@@ -289,11 +289,11 @@ DebugFlags:
     push bc
     push de
     push hl
-    ld hl, (CurRow)
+    ld hl, (curRow)
     push hl
 
     ld hl, debugCurCol*$100+debugCurRow ; $(curCol)(curRow)
-    ld (CurRow), hl
+    ld (curRow), hl
 
     ; Print Input dirty flag
     bit dirtyFlagsInput, (iy + dirtyFlags)
@@ -326,7 +326,7 @@ DebugFlags:
     bcall(_EraseEOL)
 
     pop hl
-    ld (CurRow), hl
+    ld (curRow), hl
     pop hl
     pop de
     pop bc
@@ -364,10 +364,10 @@ DebugU32AsHex:
     push de
     push hl
     ; Set cursor position, saving the previous on the stack.
-    ld de, (CurRow)
+    ld de, (curRow)
     push de
     ld de, debugCurCol*$100+debugCurRow ; $(curCol)(curRow)
-    ld (CurRow), de
+    ld (curRow), de
     ; Prep loop
     ld b, 4
 debugU32AsHexLoop:
@@ -379,7 +379,7 @@ debugU32AsHexLoop:
     djnz debugU32AsHexLoop
     ;
     pop de
-    ld (CurRow), de
+    ld (curRow), de
     pop hl
     pop de
     pop bc
@@ -423,10 +423,10 @@ DebugU40AsHex:
     push de
     push hl
     ; Set cursor position, saving the previous on the stack.
-    ld de, (CurRow)
+    ld de, (curRow)
     push de
     ld de, debugCurCol*$100+debugCurRow ; $(curCol)(curRow)
-    ld (CurRow), de
+    ld (curRow), de
     ; Prep loop
     ld b, 5
 debugU40AsHexLoop:
@@ -438,7 +438,7 @@ debugU40AsHexLoop:
     djnz debugU40AsHexLoop
     ;
     pop de
-    ld (CurRow), de
+    ld (curRow), de
     pop hl
     pop de
     pop bc
@@ -460,11 +460,11 @@ DebugHL:
     bcall(_PushRealO4) ; up to 16 bytes starting at OP3, which spills into OP4
     pop hl
     push hl
-    ld de, (CurRow)
+    ld de, (curRow)
     push de
     ;
     ld de, debugCurCol*$100+debugCurRow ; $(curCol)(curRow)
-    ld (CurRow), de
+    ld (curRow), de
     ; Converting to float is not efficient, but ok for debugging.
     bcall(_SetXXXXOP2) ; OP2=float(HL)
     bcall(_OP2ToOP1) ; OP1=float(HL)
@@ -475,7 +475,7 @@ DebugHL:
     bcall(_EraseEOL)
     ;
     pop de
-    ld (CurRow), de
+    ld (curRow), de
     bcall(_PopRealO4)
     bcall(_PopRealO3)
     bcall(_PopRealO2)
@@ -494,11 +494,11 @@ DebugHLAsHex:
     push bc
     push de
     push hl
-    ld de, (CurRow)
+    ld de, (curRow)
     push de
     ;
     ld de, debugCurCol*$100+debugCurRow ; $(curCol)(curRow)
-    ld (CurRow), de
+    ld (curRow), de
     ;
     ld a, h
     call debugUnsignedAAsHex
@@ -507,7 +507,7 @@ DebugHLAsHex:
     bcall(_EraseEOL)
     ;
     pop de
-    ld (CurRow), de
+    ld (curRow), de
     pop hl
     pop de
     pop bc
@@ -522,11 +522,11 @@ DebugDEHLAsHex:
     push bc
     push de
     push hl
-    ld bc, (CurRow)
+    ld bc, (curRow)
     push bc
     ;
     ld bc, debugCurCol*$100+debugCurRow ; $(curCol)(curRow)
-    ld (CurRow), bc
+    ld (curRow), bc
     ;
     ld a, d
     call debugUnsignedAAsHex
@@ -541,7 +541,7 @@ DebugDEHLAsHex:
     bcall(_EraseEOL)
     ;
     pop bc
-    ld (CurRow), bc
+    ld (curRow), bc
     pop hl
     pop de
     pop bc

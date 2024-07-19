@@ -234,7 +234,7 @@ keyCodeHandlerTable:
     ; `Rollup` soft menu key in the `STK` menufolder.
     ; 2) The `u` can be a mnemonic for the "Rollup" name of the command.
     .db kunA
-    .dw handleKeyRollup
+    .dw handleKeyRollUp
 
     ; bind ANS to lastX.
     .db kAns ; ANS

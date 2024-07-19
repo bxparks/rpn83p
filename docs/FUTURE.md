@@ -14,7 +14,7 @@ because it is faster and easier to use compared to a web app, especially for
 small features that can be described in a few sentences. Usually only the larger
 and more complicated features will get their own GitHub tickets.
 
-**Version**: 0.12.0 (2024-06-24)
+**Version**: 1.0.0 (2024-07-19)
 
 **Parent Document**: [USER_GUIDE.md](USER_GUIDE.md)
 
@@ -219,7 +219,7 @@ These are features which are unlikely to be implemented for various reasons:
     - The TI-OS supports only single-letter variables for real or complex types
       and access to these from RPN83P are provided through the `STO` and `RCL`
       commands. The TI-OS supports multi-letter user-defined names only for real
-      or complex Lists, which are not currently (v0.12.0) supported in RPN83P.
+      or complex Lists, which are not currently supported in RPN83P.
     - On the other hand, the HP-42S allows multi-letter user-defined variables
       for all types, and they which are accessible through the menu system.
     - To support multi-letter variables in RPN83P, we would have to write our

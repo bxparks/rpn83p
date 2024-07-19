@@ -581,11 +581,27 @@ handleKeyClearNormal:
     ; mode with an empty inputBuf.
     bit rpnFlagsEditing, (iy + rpnFlags)
     jr z, handleKeyClearToEmptyInput
-    ; We are here if clearing the inputBuf.
+handleKeyClearInEditMode:
+    ; We are here if CLEAR was pressed in edit mode.
     ld a, (inputBuf)
     or a
-    ; If the inputBuf has stuff, then clear the inputBuf.
-    jr nz, handleKeyClearToEmptyInput
+    jr z, handleKeyClearWhileClear
+handleKeyClearInputBufNotEmpty:
+    ; We are here if the inputBuf is not empty. There are 3 cases:
+    ; 1) If cursor is at the beginning, clear the entire inputBuf.
+    ; 2) If cursor is at the end, clear the entire inputBuf.
+    ; 3) If cursor is in the middle, clear only to the end of line.
+    ld b, a ; B=inputBufLen
+    ld a, (cursorInputPos) ; A=cursorInputPos
+    or a
+    jr z, handleKeyClearToEmptyInput
+    cp b
+    jr z, handleKeyClearToEmptyInput
+handleKeyClearToEndOfLine:
+    ; We are here if the cursor is in middle of inputBuf. Clear to end of line.
+    ld (inputBuf), a
+    set dirtyFlagsInput, (iy + dirtyFlags)
+    ret
 handleKeyClearWhileClear:
     ; We are here if CLEAR was pressed while the inputBuffer was already empty.
     ; Go into ClearAgain mode, where the next CLEAR invokes CLST.

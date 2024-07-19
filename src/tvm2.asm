@@ -611,12 +611,17 @@ inverseCompoundingFactorZero:
 ; Output: OP1=NPMT(i)
 ; Destroys: OP1-OP5
 nominalPMT:
-    ; Check if N*i <~ tol; tol=1e-10
+    ; Check if if the 3rd order term of the Ni/((1+i)^N-1) term is less than
+    ; the last digit that can be represented by the TI-OS floating point
+    ; (14-digits). So we need to check if (N^2-1)*i^3/24 <~ tol; tol=1e-14.
+    ; This is equivalent to N*i <~ N^(1/3)*6e-5. But N can be assumed to be
+    ; greater than 1. So we can use N*i <~ 6e-5, and still satify the original
+    ; constraint.
     call op1ToOp2PageTwo ; OP2=i
     call RclTvmN ; OP1=N
     bcall(_FPMult) ; OP1=i*N; OP2=i
     call pushRaw9Op2 ; FPS=[i]
-    call op2Set1EM10PageTwo ; OP2=1e-10
+    call op2Set6EM5PageTwo ; OP2=6e-5
     bcall(_AbsO1O2Cp) ; CF=1 if OP1<OP2
     push af ; stack=[CF]
     call popRaw9Op1  ; FPS=[]; OP1=i
@@ -748,7 +753,7 @@ calculateNextSecantInterest:
     call op1ToOp2PageTwo
     call RclTvmNPMT1
     bcall(_FPSub) ; OP1=npmt1-npmt0
-    bcall(_CkOp1FP0) ; ZF=1 if OP1==0
+    bcall(_CkOP1FP0) ; ZF=1 if OP1==0
     jr z, calculateNextSecantInterestDenomZero
     call pushRaw9Op1 ; FPS=[npmt1-npmt0]
     ; calculate i0*npmt1

@@ -2,7 +2,7 @@
 
 RPN calculator app for the TI-83 Plus and TI-84 Plus inspired by the HP-42S.
 
-**Version**: 0.12.0 (2024-06-24)
+**Version**: 1.0.0 (2024-07-19)
 
 **Project Home**: https://github.com/bxparks/rpn83p
 
@@ -72,6 +72,10 @@ RPN calculator app for the TI-83 Plus and TI-84 Plus inspired by the HP-42S.
     - [Complex Numbers](#complex-numbers)
     - [DATE Functions](#date-functions)
 - [TI-OS Interaction](#ti-os-interaction)
+- [Troubleshooting](#troubleshooting)
+    - [Clear Display](#clear-display)
+    - [Reset MODE to Factory Defaults](#reset-mode-to-factory-defaults)
+    - [Wipe to Factory State](#wipe-to-factory-state)
 - [Future Enhancements](#future-enhancements)
 
 ## Introduction
@@ -130,7 +134,8 @@ Summary of features:
     - angle conversions: `>DEG`, `>RAD`, `>HR`, `>HMS`, `>REC`, `>POL`
     - unit conversions: `>C`, `>F`, `>hPa`, `>inHg`, `>km`, `>mi`, `>m`, `>ft`,
       `>cm`, `>in`, `>um`, `>mil`, `>kg`, `>lbs`, `>g`, `>oz`, `>L`, `>gal`,
-      `>mL`, `>floz`, `>kJ`, `>cal`, `>kW`, `>hp`
+      `>mL`, `>floz`, `>kJ`, `>cal`, `>kW`, `>hp`, `>Lkm`, `>mpg`, `>kPa`,
+      `>psi`, `>ha`, `>acr`
 - statistics and curve fitting, inspired by HP-42S
     - statistics: `Σ+`, `Σ-`, `SUM`, `MEAN`, `WMN` (weighted mean),
       `SDEV` (sample standard deviation), `SCOV` (sample covariance),
@@ -672,23 +677,49 @@ If the `X` line is *not* in edit mode (i.e. the cursor is not shown), then the
 
 #### CLEAR Key
 
-The `CLEAR` key either clears the `X` register or clears the current input line.
-If `CLEAR` is pressed when the input buffer is already empty , then it performs
-the `CLST` (Clear Stack) operation. This condition will always happen if CLEAR
-is pressed 3 times consecutively. Here is an example where we fill up the RPN
-stack first, then hit `CLEAR` a few times:
+The `CLEAR` key performs slightly different functions depending on the context:
 
-| **Keys**                                  | **Display**|
-| ---------------------                     | ---------- |
-| `1` `ENTER` `2` `ENTER` `3` `ENTER` `4`   | ![Input Clear](images/input-clear-1.png) |
-| `CLEAR`                                   | ![Input Clear](images/input-clear-2.png) |
-| `CLEAR`                                   | ![Input Clear](images/input-clear-3.png) |
-| `CLEAR`                                   | ![Input Clear](images/input-clear-4.png) |
+- If the input has been terminated (i.e. not in edit mode), `CLEAR` clears the
+  `X` register, similar to the `CLX` (Clear X Register) menu function.
+- If the input is in edit mode, then:
+    - If the cursor is at the end of the input line, `CLEAR` erases the entire
+      line.
+    - If the cursor is at the beginning of the input line, `CLEAR` also erases
+      the entire line.
+    - If the cursor is in the middle of the input line, then `CLEAR` erases
+      *only* to the end of the line.
+    - If the input line is already empty when `CLEAR` is pressed, then it
+      interprets that as a `CLST` (Clear Stack) operation, and warns the user
+      with a message.
+    - If the `CLEAR` is pressed again after the warning, then the `CLST`
+      operation is performed, clearing the RPN stack.
 
-Hitting `CLEAR` 3 times is a convenient alternative to navigating the menu
-system to the `CLST` menu function nested under the `ROOT > CLR` menu folder.
-(Another alternative could have been `2ND CLEAR` but the TI-OS does not support
-that keystroke because it returns the same key code as `CLEAR`.)
+The `CLEAR` button erases only to the end of line if the cursor is in the middle
+of the input buffer, which is convenient when the input line becomes lengthy. I
+borrowed this behavior from the `CLEAR` button on the TI-89, TI-89 Titanium,
+TI-92+, and TI Voyage 200 calculators. (The `2ND CLEAR` on the HP-50g works in a
+similar way, but only in Algebraic mode, not in RPN mode.)
+
+I hope the following example illustrates the different behaviors of `CLEAR`
+clearly:
+
+| **Keys**                              | **Display**   |
+| ---------------------                 | ----------    |
+| `1` `ENTER` `2` `ENTER` `3` `ENTER`   | ![Input Clear](images/input-clear-1.png) |
+| `CLEAR` (invokes `CLX`)               | ![Input Clear](images/input-clear-2.png) |
+| `4.5678`                              | ![Input Clear](images/input-clear-3.png) |
+| `CLEAR` (clears entire line)          | ![Input Clear](images/input-clear-4.png) |
+| `4.5678` `LEFT` `LEFT` `LEFT`         | ![Input Clear](images/input-clear-5.png) |
+| `CLEAR` (clears to end of line)       | ![Input Clear](images/input-clear-6.png) |
+| `CLEAR` (clears entire line)          | ![Input Clear](images/input-clear-7.png) |
+| `CLEAR` (requests `CLST`)             | ![Input Clear](images/input-clear-8.png) |
+| `CLEAR` (invokes `CLST`)              | ![Input Clear](images/input-clear-9.png) |
+
+In most cases, pressing `CLEAR` 3 times will invoke the `CLST` function.
+This is often far more convenient than navigating to the `CLST` menu function
+nested under the `ROOT > CLR` menu folder. (Another alternative could have been
+`2ND CLEAR` but the TI-OS does not support that keystroke because it returns the
+same key code as `CLEAR`.)
 
 An empty string will be interpreted as a `0` if the `ENTER` key or a function
 key is pressed.
@@ -830,7 +861,7 @@ others were not.
       the number.
     - Since the `ON/EXIT` button is used to navigate the menu hierarchy, it
       cannot cause input termination, unlike the HP-42S.
-    - The only exceptions are menus which changes the rendering of the values on
+    - The only exceptions are menus which change the rendering of the values on
       the RPN stack, for example:
         - `BASE` menu folder, which interprets the values on the RPN stack as
           integers not floating point numbers
@@ -1125,7 +1156,7 @@ The Help pages are intended to capture some of the more obscure tidbits about
 the RPN83P app which may be hard to remember. Hopefully it reduces the number of
 times that this User Guide needs to be consulted.
 
-The message at the bottom of each page is not completely honest. A number of
+The message at the bottom of each page is not completely honest. A few
 navigational keys are recognized by the Help system:
 
 - `UP`, `LEFT`: previous page with wraparound
@@ -1140,6 +1171,7 @@ listed in the TI-83 SDK. The SDK unfortunately does not describe how these
 errors are actually triggered. By trial-and-error, I could reverse engineer only
 a few of them as described below:
 
+- `Err: Archived`: storage variable (A-Z,Theta) is archived
 - `Err: Argument`: incorrect number of arguments
 - `Err: Bad Guess`
 - `Err: Break`
@@ -1431,11 +1463,13 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
     - `RSTV`: reset TVM Solver parameters to factory defaults
 - ![ROOT > CLR](images/menu-root-clr.png) (`ROOT > CLR`)
     - ![ROOT > CLR > Row1](images/menu-root-clr-1.png)
+    - ![ROOT > CLR > Row2](images/menu-root-clr-2.png)
     - `CLX`: clear `X` stack register (stack lift disabled)
     - `CLST`: clear all RPN stack registers
     - `CLRG`: clear all storage registers `R00` to `R99`
     - `CLΣ`: clear STAT storage registers [`R11`, `R16`] or [`R11`, `R23`]
     - `CLTV`: clear TVM variables and parameters
+    - `CLD`: clear display and rerender everything
 - ![ROOT > MODE](images/menu-root-mode.png) (`ROOT > MODE`)
     - ![ROOT > MODE > Row1](images/menu-root-mode-1.png)
     - ![ROOT > MODE > Row2](images/menu-root-mode-2.png)
@@ -1481,6 +1515,8 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
     - ![ROOT > UNIT > Row4](images/menu-root-unit-4.png)
     - ![ROOT > UNIT > Row5](images/menu-root-unit-5.png)
     - ![ROOT > UNIT > Row6](images/menu-root-unit-6.png)
+    - ![ROOT > UNIT > Row7](images/menu-root-unit-7.png)
+    - ![ROOT > UNIT > Row8](images/menu-root-unit-8.png)
     - `>C`: Fahrenheit to Celsius
     - `>F`: Celsius to Fahrenheit
     - `>hPa`: hectopascals (i.e. millibars) to inches of mercury (Hg)
@@ -1505,6 +1541,12 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
     - `>cal`: kilo Joules to kilo calories
     - `>kW`: horsepowers (mechanical) to kilo Watts
     - `>hp`: kilo Watts to horsepowers (mechanical)
+    - `>Lkm`: miles per US gallon to liters per 100 km
+    - `>mpg`: liters per 100 km to miles per US gallon
+    - `>kPa`: pounds per square inch to kilo Pascals
+    - `>psi`: kilo Pascals to pounds per square inch
+    - `>ha`: acres to hectares
+    - `>acr`: hectares to acres
 - ![ROOT > DATE](images/menu-root-date.png) (`ROOT > DATE`)
     - ![ROOT > DATE > Row1](images/date/menu-root-date-1.png)
     - ![ROOT > DATE > Row2](images/date/menu-root-date-2.png)
@@ -1997,7 +2039,7 @@ For example, let's find the prime factors of `2_122_438_477 = 53 * 4001 *
 
 For computational efficiency, `PRIM` supports only integers between `2` and
 `2^32-1` (4 294 967 295). This allows `PRIM` to use integer arithmetic, making
-it about 10X faster than the equivalent algorithm using floating point routines.
+it about 25X faster than the equivalent algorithm using floating point routines.
 Any number outside of this range produces an `Err: Domain` message. (The number
 `1` is not considered a prime number.)
 
@@ -2008,10 +2050,10 @@ times of the `PRIM` function for this number for various TI models that I own:
 
 | **Model**                     | **PRIM Running Time** |
 | ---                           | ---                   |
-| TI-83+ (6 MHz)                | 20 s                  |
-| TI-83+SE (15 MHz)             | 7.7 s                 |
-| TI-84+SE (15 MHz)             | 9.5 s                 |
-| TI-Nspire w/ TI-84+ keypad    | 8.2 s                 |
+| TI-83+ (6 MHz)                | 8.3 s                 |
+| TI-83+SE (15 MHz)             | 3.2 s                 |
+| TI-84+SE (15 MHz)             | 3.9 s                 |
+| TI-Nspire w/ TI-84+ keypad    | 3.0 s                 |
 
 During the calculation, the "run indicator" on the upper-right corner will be
 active. You can press the `ON` key to break from the `PRIM` loop with an `Err:
@@ -2176,6 +2218,59 @@ The RPN83P app interacts with the underlying TI-OS in the following ways.
     - An interesting consequence of sharing these variables with the TI-OS
       Finance app is that these are the only RPN83P variables which are *not*
       saved in the `RPN83SAV` appVar.
+
+## Troubleshooting
+
+### Clear Display
+
+It is possible for the display to contain leftover pixels or line segments that
+did not get properly cleared or overwritten due to some bug. When this happens,
+clearing the display using the `CLD` (Clear Display) function under the `CLR`
+menu folder will probably fix the problem. This function is modeled after the
+`CLD` function on the HP-42S.
+
+I have rarely seen display rendering bugs. In all cases that I can remember, I
+was doing some internal debugging which would not be performed by normal users.
+
+### Reset MODE to Factory Defaults
+
+The RPN83P currently has only a handful of settings, and they can be reset
+relatively easily through the `MODE` menu (or through the `MODE` button). There
+is no explicit `CLxx` menu function under the `CLR` menu folder to reset the
+MODE settings to their factory defaults.
+
+If for some reason the factory defaults must be explicitly set, the current
+workaround is to use the TI-OS:
+
+- `2ND MEM`
+- `2` (Mem Mgmt/Del)
+- `B` (AppVars)
+- scroll down to the `RPN83SAV` variable
+- delete it using the `DEL` button
+
+Upon restarting RPN83P, the various MODE parameters will be set to their factory
+defaults.
+
+### Wipe to Factory State
+
+I have resisted the temptation to add a `CLAL` (Clear All) menu function because
+it seems too dangerous, and because I'm not sure that everyone has the same
+idea about what "all" means.
+
+If RPN83P gets into a state where everything must be reset, a complete wipe
+can be performed through the TI-OS:
+
+- `2ND MEM`
+- `2` (Mem Mgmt/Del)
+- `B` (AppVars)
+- delete all variables with the pattern `RPN83***` using the `DEL` button:
+    - `RPN83REG` (storage registers)
+    - `RPN83SAV` (MODE settings)
+    - `RPN83STA` (STAT registers)
+    - `RPN83STK` (RPN stack)
+
+When RPN83P restarts, those appVars will be recreated with a completely clean
+slate.
 
 ## Future Enhancements
 

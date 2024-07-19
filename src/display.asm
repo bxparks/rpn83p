@@ -207,7 +207,7 @@ displayStatusArrow:
     bit dirtyFlagsMenu, (iy + dirtyFlags)
     ret z
     ld hl, statusPenRow*$100 + statusMenuPenCol; $(penRow)(penCol)
-    ld (PenCol), hl
+    ld (penCol), hl
     ; check arrow status
     bcall(_GetCurrentMenuArrowStatus) ; B=menuArrowStatus
     call displayStatusArrowLeft
@@ -268,7 +268,7 @@ displayStatusFloatMode:
     bit dirtyFlagsStatus, (iy + dirtyFlags)
     ret z
     ld hl, statusPenRow*$100 + statusFloatModePenCol; $(penRow)(penCol)
-    ld (PenCol), hl
+    ld (penCol), hl
     ; check float mode
     bit fmtExponent, (iy + fmtFlags)
     jr nz, displayStatusFloatModeSciOrEng
@@ -305,7 +305,7 @@ displayStatusTrig:
     bit dirtyFlagsStatus, (iy + dirtyFlags)
     ret z
     ld hl, statusPenRow*$100 + statusTrigPenCol; $(penRow)(penCol)
-    ld (PenCol), hl
+    ld (penCol), hl
     bit trigDeg, (iy + trigFlags)
     jr z, displayStatusTrigRad
 displayStatusTrigDeg:
@@ -324,7 +324,7 @@ displayStatusBase:
     bit dirtyFlagsStatus, (iy + dirtyFlags)
     ret z
     ld hl, statusPenRow*$100 + statusBasePenCol; $(penRow)(penCol)
-    ld (PenCol), hl
+    ld (penCol), hl
     ; Determine state of Carry Flag.
     ld a, (baseCarryFlag)
     or a
@@ -345,7 +345,7 @@ displayStatusComplexMode:
     bit dirtyFlagsStatus, (iy + dirtyFlags)
     ret z
     ld hl, statusPenRow*$100 + statusComplexModePenCol; $(penRow)(penCol)
-    ld (PenCol), hl
+    ld (penCol), hl
     ; Determine state of complexMode
     ld a, (complexMode)
     ; Check complexModeRad
@@ -381,7 +381,7 @@ displayStatusStackMode:
     bit dirtyFlagsStatus, (iy + dirtyFlags)
     ret z
     ld hl, statusPenRow*$100 + statusStackModePenCol; $(penRow)(penCol)
-    ld (PenCol), hl
+    ld (penCol), hl
     ; print the stackSize variable first
     ld a, (stackSize)
     add a, '0'
@@ -407,7 +407,7 @@ displayErrorCode:
     ; Display nothing if errorCode == OK (0)
     res fracDrawLFont, (iy + fontFlags) ; use small font
     ld hl, errorPenRow*$100 ; $(penRow)(penCol)
-    ld (PenCol), hl
+    ld (penCol), hl
     ld a, (errorCode)
     or a
     jr z, displayErrorCodeEnd
@@ -468,39 +468,39 @@ displayStack:
 displayStackYZT:
     ; print T label
     ld hl, stTPenRow*$100 ; $(penRow)(penCol)
-    ld (PenCol), hl
+    ld (penCol), hl
     ld hl, msgTLabel
     call vPutSmallS
 
     ; print T value
     ld hl, stTCurCol*$100 + stTCurRow ; $(curCol)(curRow)
-    ld (CurRow), hl
+    ld (curRow), hl
     call rclT
     ld b, displayStackFontFlagsT
     call printOP1
 
     ; print Z label
     ld hl, stZPenRow*$100 ; $(penRow)(penCol)
-    ld (PenCol), hl
+    ld (penCol), hl
     ld hl, msgZLabel
     call vPutSmallS
 
     ; print Z value
     ld hl, stZCurCol*$100 + stZCurRow ; $(curCol)(curRow)
-    ld (CurRow), hl
+    ld (curRow), hl
     call rclZ
     ld b, displayStackFontFlagsZ
     call printOP1
 
     ; print Y label
     ld hl, stYPenRow*$100 ; $(penRow)(penCol)
-    ld (PenCol), hl
+    ld (penCol), hl
     ld hl, msgYLabel
     call vPutSmallS
 
     ; print Y value
     ld hl, stYCurCol*$100 + stYCurRow ; $(curCol)(curRow)
-    ld (CurRow), hl
+    ld (curRow), hl
     call rclY
     ld b, displayStackFontFlagsY
     call printOP1
@@ -542,7 +542,7 @@ displayStackXNormal:
     call displayStackXLabel
     ; print the X register
     ld hl, stXCurCol*$100 + stXCurRow ; $(curCol)(curRow)
-    ld (CurRow), hl
+    ld (curRow), hl
     call rclX
     ld b, displayStackFontFlagsX
     jp printOP1
@@ -551,7 +551,7 @@ displayStackXInput:
     call displayStackXLabel
     ; print the inputBuf
     ld hl, inputCurCol*$100 + inputCurRow ; $(curCol)(curRow)
-    ld (CurRow), hl
+    ld (curRow), hl
     ld b, displayStackFontFlagsX
     call displayStackSetLargeFont
     bcall(_PrintInputBuf)
@@ -560,7 +560,7 @@ displayStackXInput:
 ; Display the inputBuf in the debug line. Used for DRAW mode 3.
 displayStackXInputAtDebug:
     ld hl, debugCurCol*$100+debugCurRow ; $(curCol)(curRow)
-    ld (CurRow), hl
+    ld (curRow), hl
     bcall(_PrintInputBuf)
     ret
 
@@ -570,14 +570,14 @@ displayStackXLabel:
     bit dirtyFlagsXLabel, (iy + dirtyFlags)
     jr nz, displayStackXLabelContinue
     ld hl, 0*$100 + stXCurRow ; $(curCol)(curRow)
-    ld (CurRow), hl
+    ld (curRow), hl
     ld a, Lspace
     bcall(_PutC)
     res dirtyFlagsXLabel, (iy + dirtyFlags)
 displayStackXLabelContinue:
     ; print X label
     ld hl, inputPenRow*$100 ; $(penRow)(penCol)
-    ld (PenCol), hl
+    ld (penCol), hl
     ld hl, msgXLabel
     call vPutSmallS
     ret
@@ -586,23 +586,23 @@ displayStackXLabelContinue:
 
 ; Display the argBuf in the X register line.
 ; Input: (argBuf)
-; Output: (CurCol) updated
+; Output: (curCol) updated
 displayStackXArg:
     ; Set commandArg cursor position.
     ld hl, argCurCol*$100 + argCurRow ; $(curCol)(curRow)
-    ld (CurRow), hl
+    ld (curRow), hl
     ld b, displayStackFontFlagsX
     ; [[fallthrough]]
 
-; Description: Print the arg buffer at the (CurRow) and (CurCol).
+; Description: Print the arg buffer at the (curRow) and (curCol).
 ; Input:
 ;   - B=displayFontMask
 ;   - argBuf (same as inputBuf)
 ;   - argPrompt
 ;   - argModifier
-;   - (CurCol) cursor position
+;   - (curCol) cursor position
 ; Output:
-;   - (CurCol) is updated
+;   - (curCol) is updated
 ;   - (displayStackFontFlagsX) cleared to indicate large font
 ; Destroys: A, HL; BC destroyed by PutPS()
 printArgBuf:
@@ -673,65 +673,65 @@ msgArgModifierIndirect:
 displayTvm:
     ; print TVM n label
     ld hl, tvmNPenRow*$100 ; $(penRow)(penCol)
-    ld (PenCol), hl
+    ld (penCol), hl
     ld hl, msgTvmNLabel
     call vPutSmallS
 
     ; print TVM n value
     ld hl, tvmNCurCol*$100 + tvmNCurRow ; $(curCol)(curRow)
-    ld (CurRow), hl
+    ld (curRow), hl
     bcall(_RclTvmSolverCount)
     ld b, displayStackFontFlagsA
     call printOP1
 
     ; print TVM i0 label
     ld hl, tvmI0PenRow*$100 ; $(penRow)(penCol)
-    ld (PenCol), hl
+    ld (penCol), hl
     ld hl, msgTvmI0Label
     call vPutSmallS
 
     ; print TVM i0 value
     ld hl, tvmI0CurCol*$100 + tvmI0CurRow ; $(curCol)(curRow)
-    ld (CurRow), hl
+    ld (curRow), hl
     bcall(_RclTvmI0)
     ld b, displayStackFontFlagsZ
     call printOP1
 
     ; print TVM i1 label
     ld hl, tvmI1PenRow*$100 ; $(penRow)(penCol)
-    ld (PenCol), hl
+    ld (penCol), hl
     ld hl, msgTvmI1Label
     call vPutSmallS
 
     ; print TVM i1 value
     ld hl, tvmI1CurCol*$100 + tvmI1CurRow ; $(curCol)(curRow)
-    ld (CurRow), hl
+    ld (curRow), hl
     bcall(_RclTvmI1)
     ld b, displayStackFontFlagsY
     call printOP1
 
     ; print TVM f0 label
     ld hl, tvmF0PenRow*$100 ; $(penRow)(penCol)
-    ld (PenCol), hl
+    ld (penCol), hl
     ld hl, msgTvmF0Label
     call vPutSmallS
 
     ; print TVM f0 value
     ld hl, tvmF0CurCol*$100 + tvmF0CurRow ; $(curCol)(curRow)
-    ld (CurRow), hl
+    ld (curRow), hl
     bcall(_RclTvmNPMT0)
     ld b, displayStackFontFlagsZ
     call printOP1
 
     ; print TVM f1 label
     ld hl, tvmF1PenRow*$100 ; $(penRow)(penCol)
-    ld (PenCol), hl
+    ld (penCol), hl
     ld hl, msgTvmF1Label
     call vPutSmallS
 
     ; print TVM f1 value
     ld hl, tvmF1CurCol*$100 + tvmF1CurRow ; $(curCol)(curRow)
-    ld (CurRow), hl
+    ld (curRow), hl
     bcall(_RclTvmNPMT1)
     ld b, displayStackFontFlagsX
     call printOP1
@@ -784,12 +784,12 @@ msgShowLabel:
 displayShow:
     ; Print 'SHOW' label on Error Code line
     ld hl, errorPenRow*$100 ; $(penRow)(penCol)
-    ld (PenCol), hl
+    ld (penCol), hl
     ld hl, msgShowLabel
     call printSmallHLString
     ; Call special FormShowable() function to show all digits of OP1.
     ld hl, showCurCol*$100 + showCurRow ; $(curCol)(curRow)
-    ld (CurRow), hl
+    ld (curRow), hl
     call rclX
     ; fmtString is a buffer of 65 bytes used by FormDCplx(). There should be no
     ; problems using it as our string buffer.
@@ -797,21 +797,6 @@ displayShow:
     bcall(_FormShowable)
     ld hl, fmtString
     call putS
-    ret
-
-; Clear the display area used by the SHOW feature (errorCode, T, Z, Y, X).
-; Input: none
-; Destroys: A, B, HL
-clearShowArea:
-    ld hl, errorCurCol*$100 + errorCurRow ; $(curCol)(curRow)
-    ld (CurRow), hl
-    ld b, 5
-clearShowAreaLoop:
-    bcall(_EraseEOL) ; saves all registers
-    ld hl, (CurRow)
-    inc l
-    ld (CurRow), hl
-    djnz clearShowAreaLoop
     ret
 
 ;-----------------------------------------------------------------------------
@@ -1005,7 +990,7 @@ printOP1AsFloat:
 ; Destroys: A, HL
 printHLString:
     call putS
-    ld a, (CurCol)
+    ld a, (curCol)
     or a
     ret z ; if spilled to next line, don't call EraseEOL
     bcall(_EraseEOL)

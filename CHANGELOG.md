@@ -1,6 +1,58 @@
 # Changelog
 
 - Unreleased
+- 1.0.0 (2024-07-19)
+    - Documentation
+        - add "Troubleshooting" section to `USER_GUIDE.md`
+    - User Interface
+        - `CLEAR` button clears only to the end of the line if the cursor is in
+          the interior of the input buffer
+            - if the cursor is at the beginning or the end of the input buffer,
+              the entire buffer is cleared
+            - identical to the CLEAR button on the TI-89/92+/Voyage 200
+            - similar to 2ND CLEAR on HP-50g in Algebraic mode (but not in RPN
+              mode)
+    - Variables
+        - print 'Err: Archived' error message if `STO` or `RCL` acts on
+          a variable (A-Z,Theta) that is archived
+    - TVM
+        - Change the criteria for using the small-i approximation to the
+          following: N*i <~ 6e-5.
+    - Improve performance of `PRIM` by 2.4X
+        - convert `modOP1ByBC()` to use the `IX` register instead of the stack
+          `(SP)`: 43-67% faster
+        - use DEIX instead of HLIX: ~12% faster
+        - process using in 8-bit chunks instead of 1-bit: ~18% faster
+        - use `A` register instead of `D` register for chunks: ~5% faster
+        - use nonrestoring division algorithm: ~11% faster
+        - unroll the 8-bit division loop 8 times: ~11% faster
+        - thanks go to the responders of [this Cemetech
+          thread](https://www.cemetech.net/forum/viewtopic.php?p=307636) for
+          improving the `modHLIXByBC()` algorithm
+    - MODE
+        - set Trig, Floating Display, and Display Digits settings to a known
+          state if the restoration of RPN83SAV fails, instead of inheriting the
+          modes from the TI-OS
+            - trig mode: RAD
+            - floating display: FIX
+            - display digits: floating
+    - CLR folder
+        - add `CLD` (clear display) menu item
+            - clear the display and re-render everything
+            - should almost never be needed, except during debugging
+            - analogous to the `CLD` command on the HP-42S
+    - UNIT
+        - car fuel consumption
+            - add `>Lkm`: convert mpg (miles per US gallon) to L/100km (liters
+              per 100 km)
+            - add `>mpg`: convert L/100km to mpg
+        - car tire pressure
+            - add `>kPa`: convert psi (pounds per square inch) to kPa
+              (kiloPascal)
+            - add `>psi`: convert kPa to psi
+        - land area
+            - add `>ha`: convert acre to hectare
+            - add `>acr`: convert hectare to acre
 - 0.12.0 (2024-06-24)
     - **Bug Fix**: update logic that determines when the comma `,` character can
       be inserted into the input buffer

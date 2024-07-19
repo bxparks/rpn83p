@@ -3,7 +3,7 @@
 Notes for the developers of the RPN83P app, likely myself in 6 months when I
 cannot remember how the code works.
 
-**Version**: 0.12.0 (2024-06-24)
+**Version**: 1.0.0 (2024-07-19)
 
 **Project Home**: https://github.com/bxparks/rpn83p
 
@@ -134,7 +134,7 @@ Here are some notes about how the `PRIM` algorithm works:
   implement a custom `mod(u32, u16)` function which is about 25% faster than the
   full `div(u32, u16)` function.
 - In v0.10, the inner loop of the `mod(u32,u16)` function was made 40-50% faster
-  using the following observations:
+  through the `modHLSPByBC()` function using the following observations:
     - The Z80 has only 16-bit registers, so the `u32` type must typically be
       stored in 4 bytes of RAM, and the `u32` operations must work against the 4
       bytes of RAM.
@@ -149,10 +149,25 @@ Here are some notes about how the `PRIM` algorithm works:
       `ex (sp), hl` instruction of the Z80 to swap the 2 halves back and forth.
       This made the `mod(u32,u16)` function about 40-50% faster compared to
       v0.9.0.
-
-I can think of one additional optimization that *may* give us a 10-20% speed
-increase, but it would come at the cost of code that would be significantly
-harder to maintain, so I don't think it's worth it.
+- In v0.13.0-dev, the inner loop `mod(u32,u16)` became another ~42% faster:
+    - discovered that the Z80 supports `add ix, ix` instruction
+    - replacing `ex (sp), hl; add hl, hl` combo with `add ix, ix`: ~29% faster
+    - replacing `rl e; rl d` combo with `adc hl, hl`: ~4% faster
+    - deleting an unnecessary `or a` instruction: ~5% faster
+    - rearranging some code to eliminate a branch in the common case, and
+      selecting `jr` or `jp` judiciously: 1-2% faster
+- In v1.0.0, the `mod(u32,u16)` became another 140-160% (i.e. 2.4X to 2.6X)
+  faster, based on the ideas from [this Cemetech
+  thread](https://www.cemetech.net/forum/viewtopic.php?t=19790):
+    - initial benchmark: 20.5 s
+    - chunking using 8-bit registers, instead of shifting the entire 32-bit
+      dividend: 18% faster
+    - using DEIX instead of HLIX, eliminating a bunch of 'ex de, hl': 12% faster
+    - using a nonrestoring division: 9-13% faster
+    - using register A instead of register D for each 8-bit chunk: 5% faster
+    - unrolling the 8-bit division loop eight times: 11-15% faster
+    - end result: 11.8 s or 74% faster, i.e. 1.74X faster
+    - total improvement from v0.12: 2.4X (83+/84+) to 2.6X (Nspire) faster
 
 ### Prime Factor Improvements
 

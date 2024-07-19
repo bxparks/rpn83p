@@ -191,7 +191,8 @@ errorCodeLinkXmit equ           31
     .dw errorStrUnknown         ; 44
     .dw errorStrUnknown         ; 45
     .dw errorStrUnknown         ; 46
-    .dw errorStrUnknown         ; 47
+errorCodeArchived equ           47
+    .dw errorStrArchived
     .dw errorStrUnknown         ; 48
     .dw errorStrUnknown         ; 49
     .dw errorStrUnknown         ; 50
@@ -311,6 +312,11 @@ errorStrTolTooSmall:
     .db "Err: Tol Not Met", 0
 errorStrUndefined:
     .db "Err: Undefined", 0 ; indicates the system error "Undefined"
+
+; Additional errors that RPN83P has encountered, verified by
+; https://learn.cemetech.net/index.php?title=Z80:Error_Codes
+errorStrArchived:
+    .db "Err: Archived", 0
 
 ; Start of RPN83P custom messages, which map to a specific custom handler code.
 ; This part of the application feels clunky, but I have not figure out an

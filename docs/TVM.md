@@ -3,7 +3,7 @@
 Equations, algorithms, and other tricks used to calculate the Time Value of
 Money (TVM) variables in the RPN83P calculator app.
 
-**Version**: 0.12.0 (2024-06-24)
+**Version**: 1.0.0 (2024-07-19)
 
 **Project Home**: https://github.com/bxparks/rpn83p
 
@@ -12,17 +12,20 @@ Money (TVM) variables in the RPN83P calculator app.
 - [TVM Basics](#tvm-algorithms)
 - [Interest Rate Conversions](#interest-rate-conversions)
 - [TVM Formulas](#tvm-formulas)
-- [Small Interest Limits](#small-interest-limits)
+- [Small Interest Accuracy](#small-interest-accuracy)
+    - [expm1() and log1p() Functions](#expm1-and-log1p-functions)
     - [CF1 and CF2](#cf1-and-cf2)
     - [N and N0](#n-and-n0)
 - [TVM Solver](#tvm-solver)
     - [Number of Solutions](#number-of-solutions)
     - [Taming Overflows](#taming-overflows)
+    - [Small i Approximation](#small-i-approximation)
     - [Secant Method](#secant-method)
     - [Initial Guesses](#initial-guesses)
     - [Terminating Conditions](#terminating-conditions)
     - [Maximum Iterations](#maximum-iterations)
     - [Convergence](#convergence)
+- [TVM Puzzles](#tvm-puzzles)
 - [References](#references)
 
 Notes about the equations and algorithms used by the TVM functions.
@@ -170,13 +173,17 @@ later. Also, the `(1+ip)` term is always associated with `CF2(i)`, so the
 `compoundingFactors()` routine in the code calculates both `CF1(i)` and
 `CF3(i)=(1+ip)CF2(i)` at once.
 
-## Small Interest Limits
+## Small Interest Accuracy
 
 When the interest rate `i` is small (say, smaller than 1e-6), special
 precautions are needed to ensure that numerical cancellation errors are reduced
-so that the correct answers are returned. To accomplish this, we need to take a
-side trip to define 2 new functions. These functions are designed to return
-accurate values when `x` is very small:
+so that the correct answers are returned.
+
+### expm1() and log1p() Functions
+
+To obtain the most accuracy results when when `i` is small, we need to take a
+side trip to define 2 new functions which are designed to return accurate values
+when `x` is very small:
 
 ```
 expm1(x) = e^x-1
@@ -381,7 +388,9 @@ the `1e-99` limit of the TI-OS.
 The solution provided by Albert Chan is brilliant. It uses the fact that when we
 are solving for the zeros of an equation, we can divide the equation by an
 arbitrary function whose values are `> 0` everywhere, and the roots of the
-equation are *unchanged*. Let's define a new term `CFN(i,N)`:
+equation are *unchanged*.
+
+Let's define a new term `CFN(i,N)`:
 
 ```
 CFN(i,N) = CF2(i)/N = [(1+i)^N-1]/Ni
@@ -395,7 +404,7 @@ CFN(i,N) = CF2(i)/N = [(1+i)^N-1]/Ni
 
 (Note that this is slightly different than the `C(i,N)` function defined by
 Albert Chan in [TVM formula error in programming
-manual?](https://www.hpmuseum.org/forum/thread-20739.html) (2023)) The
+manual?](https://www.hpmuseum.org/forum/thread-20739.html) (2023)) Our
 `CFN(i,N)` function normalized by `N` compared to `CF2(i)` so that it evaluates
 to `1` at `i=0` for all `N`.
 
@@ -415,6 +424,30 @@ same as the `FV` term but with the `N` replaced with `-N`. In other words:
 
 ```
 CFN(i,-N) = CFN(i,N)/(1+i)^N
+```
+
+For implementation purposes, it is convenient to define the `ICFN(i,N)`
+function which is the reciprocal of `CFN(i,N)` which allows us to avoid at
+least 2 floating point division operations (which are expensive relative to
+multiplication):
+
+```
+ICFN(i,N) = 1/CFN(i,N) = Ni/((1+i)^N-1)
+```
+
+This function is computed in the `inverseCompoundingFactor()` routine in the
+code.
+
+(The `ICFN(i,N)` function is similar to the `C(n)` function given by Albert Chan
+in [TVM formula error in programming
+manual?](https://www.hpmuseum.org/forum/thread-20739-post-179371.html#pid179371)
+(2023), within a factor of `(1+i)^N`, or equivalently, a substitution of `-N`
+for `N`.)
+
+Combining all these, the equation solved by the TVM Solver is:
+
+```
+NPMT(i,n) = PV * ICFN(i,-N) + (1+ip)N*PMT + FV * ICFN(i,N) = 0
 ```
 
 Solving the roots of `NPMT(i)=0` will yield that exactly the same roots as
@@ -463,21 +496,65 @@ beginning or end of the cash flow. The `NPMT(i)` function essentially averages
 all 3 terms over the entire duration of the `N` payment periods, instead of
 pulling everything to the present or pushing everything to the future.
 
-**Implementation Note**:
+### Small i Approximation
 
-The `inverseCompoundingFactor()` routine calculates the reciprocal of
-`CFN(i,N)`. In other words, it calculates
+When `i` is large enough, we can compute `ICFN(i,N)` using the usual conversion
+to `expm1()` and `log1p()` functions:
 
 ```
-ICFN(i,N) = 1/CFN(i,N) = Ni/((1+i)^N-1)
+ICFN(i,N) = 1/CFN(i,N)
+          = Ni/((1+i)^N-1)
+          = Ni / expm1(N*log1p(i))
 ```
 
-for a slight gain in efficiency by avoiding a division or two. This makes
-`ICFN(i,N)` similar to the `C(n)` function given by Albert Chan in [TVM formula
-error in programming
-manual?](https://www.hpmuseum.org/forum/thread-20739-post-179371.html#pid179371)
-(2023), within a factor of `(1+i)^N`, or equivalently, a substitution of `-N`
-for `N`.
+But when `i` becomes very close to 0, even the `expm1()` and `log1p()` functions
+cannot prevent significant rounding errors. In this region of very small `i`, we
+can use the Taylor series expansion of `ICFN(i,N)`:
+
+```
+ICFN(i,N) = 1 - ((N-1)/2) i + ((N^2-1)/12) i^2 - ((N^2-1)/24) i^3 + O(i^4)
+```
+
+When `i` becomes very small, we want to use the quadratic truncation of the
+Taylor series. Ideally, the transition to the quadratic approximation should
+happen when the error relative to the full equation is less than the limit of
+the floating point format of the TI-83+/84+ calculator (14 digits). My guess is
+that error in the quadratic equation is roughly equal to the 3rd order term of
+the Taylor series, in other words:
+
+```
+err =~ ((N^2-1)/24) i^3
+```
+
+So that means we want to use the small-i quadratic approximation when:
+
+```
+err <~ 1e-14
+
+=> (N^2-1)/24) i^3 <~ 1e-14
+
+=> N*i <~ N^(1/3) * 6.2e-5
+```
+
+Let's assume that `N>1` for all real-life problems. Then it is reasonable to
+replace the above with a more conservative (and easier to calculate) constraint:
+
+```
+N*i <~ 6e-5
+```
+
+which satisfies the original constraint for `N>1`.
+
+Finally, we get the formula that the `inverseCompoundingFactor()` routine uses
+to calculate the `ICFN(i,n)` function:
+
+```
+             Ni / expm1(N*log1p(i))                 (when N*i >= 6e-5)
+           /
+ICFN(i,N) =
+           \
+             1 - ((N-1)/2) i + ((N^2-1)/12) i^2     (when N*i < 6e-5)
+```
 
 ### Secant Method
 
@@ -504,8 +581,8 @@ tedious to translate to Z80 assembly.
 convergence characteristics of the Newton's method (quadratic convergence) or
 Halley's method (cubic convergence).
 
-The convergence of the Secant method seems to be fast enough for get a tolerance
-of about 1e-8 within 7-8 iterations.
+The convergence of the Secant method seems to be fast enough to get answers to
+within a tolerance of about 1e-10 within 7-8 iterations.
 
 ### Initial Guesses
 
@@ -601,6 +678,16 @@ using the Secant method. It is possible that Albert Chan has proven this in one
 of his posts, for example [TVM solve for interest rate,
 revisited](https://www.hpmuseum.org/forum/thread-18359.html) (2022), but I have
 not yet digested these posts.
+
+## TVM Puzzles
+
+Duncan Murray has evaluated the performance and accuracy of TVM solvers on
+various calculators (including RPN83P) using a number of TVM puzzles. The
+puzzles and the results are available here:
+
+- [Looking for financial/TVM
+  solutions](https://forum.swissmicros.com/viewtopic.php?f=2&t=3987)
+- [TVM puzzles 1:12 in 5 minutes](https://www.youtube.com/watch?v=7ragp9pMR3w)
 
 ## References
 

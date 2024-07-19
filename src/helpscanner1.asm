@@ -96,7 +96,7 @@ displayHelpPage:
 
     bcall(_ClrLCDFull)
     ld hl, 0
-    ld (PenCol), hl
+    ld (penCol), hl
 
     ; Get the string for page A, and display it.
     ld hl, helpPages ; HL = (char**)

@@ -61,9 +61,9 @@ eVPutSEnter:
     ; move to the next line
     push af
     push hl
-    ld hl, PenCol
+    ld hl, penCol
     xor a
-    ld (hl), a ; PenCol = 0
+    ld (hl), a ; penCol = 0
     inc hl ; PenRow
     ld a, (hl) ; A = PenRow
     add a, c ; A += C (font height)
@@ -136,10 +136,10 @@ putSPageOneEnd:
 putSPageOneEnter:
     ; Handle newline
     push hl
-    ld hl, (CurRow)
-    inc l ; CurRow++
+    ld hl, (curRow)
+    inc l ; curRow++
     ld h, 0 ; CurCol=0
-    ld (CurRow), hl
+    ld (curRow), hl
     pop hl
     jr putSPageOneCheck
 

@@ -4,7 +4,7 @@ This document describes the `TVM` functions of the RPN83P application which
 solves the Time Value of Money equation. It has been extracted from
 [USER_GUIDE.md](USER_GUIDE.md) due to its length.
 
-**Version**: 0.12.0 (2024-06-24)
+**Version**: 1.0.0 (2024-07-19)
 
 **Parent Document**: [USER_GUIDE.md](USER_GUIDE.md)
 
@@ -301,8 +301,8 @@ original menu with the addition of a question mark (e.g. `WSIZ` and `WSZ?`).
 This helps with discovery because each function is directly shown through the
 menu system, with no hidden features. But there are so many TVM variables and
 parameters, that adding the `?` variant of all those menu buttons would have
-made the menu rows too cluttered and hard to navigate. Currently (v0.12.0), the
-TVM submenu is the only place where the `2ND` button is used for hidden menu
+made the menu rows too cluttered and hard to navigate. Currently, the TVM
+submenu is the only place where the `2ND` button is used for hidden menu
 functionality.)
 
 ## TVM Examples

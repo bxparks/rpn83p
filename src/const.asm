@@ -116,17 +116,11 @@ op1SetMaxFloat:
 
 ;-----------------------------------------------------------------------------
 
-; Description: Set OP1 to StandardGravity.
-; Destroys: all, HL
-; op1SetStandardGravity:
-;     ld hl, constStandardGravity
-;     jp move9ToOp1
-
 ; Description: Set OP2 to StandardGravity.
 ; Destroys: all, HL
-; op2SetStandardGravity:
-;     ld hl, constStandardGravity
-;     jp move9ToOp2
+op2SetStandardGravity:
+    ld hl, constStandardGravity
+    jp move9ToOp2
 
 ;-----------------------------------------------------------------------------
 
@@ -202,10 +196,18 @@ op2SetKwPerHp:
 
 ;-----------------------------------------------------------------------------
 
-; Description: Set OP2 to KwPerHp
+; Description: Set OP2 to HpaPerInHg
 ; Destroys: all, HL
 op2SetHpaPerInhg:
     ld hl, constHpaPerInhg
+    jp move9ToOp2
+
+;-----------------------------------------------------------------------------
+
+; Description: Set OP2 to SqFtPerAcre
+; Destroys: all, HL
+op2SetSqFtPerAcre:
+    ld hl, constSqFtPerAcre
     jp move9ToOp2
 
 ;-----------------------------------------------------------------------------
@@ -241,8 +243,8 @@ constEuler: ; 2.7182818284594(0452)
 constMaxFloat: ; 9.9999999999999E99
     .db $00, $E3, $99, $99, $99, $99, $99, $99, $99
 
-; constStandardGravity: ; g_0 = 9.806 65 m/s^2, exact
-;     .db $00, $80, $98, $06, $65, $00, $00, $00, $00
+constStandardGravity: ; g_0 = 9.806 65 m/s^2, exact
+     .db $00, $80, $98, $06, $65, $00, $00, $00, $00
 
 constKmPerMi: ; 1.609344 km/mi, exact
     .db $00, $80, $16, $09, $34, $40, $00, $00, $00
@@ -283,3 +285,8 @@ constKwPerHp: ; 0.745 699 871 582 270 22 kW/hp, approx
 ;        = 33.863 886 403 41 hPa (exact)
 constHpaPerInhg:
     .db $00, $81, $33, $86, $38, $86, $40, $34, $10
+
+; Number of square feet in one acre = 66*660 = 43560, see
+; https://en.wikipedia.org/wiki/Acre.
+constSqFtPerAcre:
+    .db $00, $84, $43, $56, $00, $00, $00, $00, $00

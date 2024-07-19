@@ -50,11 +50,11 @@ PrintMenuNameAtC:
     push af ; stack=[numRows]
     push bc ; stack=[numRows, loopCounter/penCol]
     push de ; stack=[numRows, loopCounter/penCol,menuIndex]
-    ; Set (PenCol,PenRow), preserving HL
+    ; Set (penCol,penRow), preserving HL
     ld a, c ; A=penCol
-    ld (PenCol), a
+    ld (penCol), a
     ld a, menuPenRow
-    ld (PenRow), a
+    ld (penRow), a
     ; Predict the width of menu name.
     ld de, menuName
     ld c, menuNameBufMax
@@ -186,10 +186,10 @@ displayMenuFolderEnd:
 ; Description: Print the input buffer.
 ; Input:
 ;   - inputBuf
-;   - (CurRow) cursor row
-;   - (CurCol) cursor column
+;   - (curRow) cursor row
+;   - (curCol) cursor column
 ; Output:
-;   - (CurCol) updated
+;   - (curCol) updated
 ;   - (renderWindowStart) updated
 ;   - (renderWindowEnd) updated
 ;   - (cursorRenderPos) updated
@@ -437,7 +437,7 @@ printRenderWindowPutC:
 ; Skip EraseEOL() if the PutC() above wrapped to next line.
 ; Destroys: A
 clearEndOfRenderLine:
-    ld a, (CurCol)
+    ld a, (curCol)
     or a
     ret z
     bcall(_EraseEOL)
@@ -449,8 +449,8 @@ clearEndOfRenderLine:
 ;   - cursorRenderPos
 ; Output:
 ;   - cursorScreenPos updated
-;   - CurCol updated
-;   - CurRow updated
+;   - curCol updated
+;   - curRow updated
 setInputCursor:
     ; update cursor screen logical position
     ld a, (renderWindowStart)
@@ -463,9 +463,9 @@ setInputCursor:
     ; beginning of th line. Also update physical row, because the TI-OS cursor
     ; could have wrapped to the next row
     add a, inputCurCol
-    ld (CurCol), a
+    ld (curCol), a
     ld a, inputCurRow
-    ld (CurRow), a
+    ld (curRow), a
     ; update cursor-under character
     ld hl, renderBuf
     inc hl

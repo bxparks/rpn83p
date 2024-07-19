@@ -23,7 +23,7 @@ bytes), `RPN83SAV` (140 byte), `RPN83STA` (272 bytes), and `RPN83STK` (120 to
 Summary of features:
 
 - traditional RPN stack (`X`, `Y`, `Z`, `T`), with `LASTX` register
-    - configurable stack levels between 4 and 8: `SSIZ`, `SIZ?`
+    - configurable stack levels between 4 and 8: `SSIZ`, `SSZ?`
 - input edit line with scrollable cursor using arrow keys
     - `LEFT`, `RIGHT`, `2ND LEFT`, `2ND RIGHT`
 - 8-line display showing 4 stack registers
@@ -56,7 +56,8 @@ Summary of features:
     - angle conversions: `>DEG`, `>RAD`, `>HR`, `>HMS`, `>REC`, `>POL`
     - unit conversions: `>C`, `>F`, `>hPa`, `>inHg`, `>km`, `>mi`, `>m`, `>ft`,
       `>cm`, `>in`, `>um`, `>mil`, `>kg`, `>lbs`, `>g`, `>oz`, `>L`, `>gal`,
-      `>mL`, `>floz`, `>kJ`, `>cal`, `>kW`, `>hp`
+      `>mL`, `>floz`, `>kJ`, `>cal`, `>kW`, `>hp`, `>Lkm`, `>mpg`, `>kPa`,
+      `>psi`, `>ha`, `>acr`
 - statistics and curve fitting, inspired by HP-42S
     - statistics: `Σ+`, `Σ-`, `SUM`, `MEAN`, `WMN` (weighted mean),
       `SDEV` (sample standard deviation), `SCOV` (sample covariance),
@@ -76,7 +77,8 @@ Summary of features:
     - carry flag and bit masks: `CCF`, `SCF`, `CF?`, `CB`, `SB`, `B?`
     - word sizes: `WSIZ`, `WSZ?`: 8, 16, 24, 32 bits
 - time value of money (TVM), inspired by HP-12C, HP-17B, and HP-30b
-    - `N`, `I%YR`, `PV`, `PMT`, `FV`, `P/YR`, `BEG`, `END`, `CLTV` (clear TVM)
+    - `N`, `I%YR`, `PV`, `PMT`, `FV`
+    - `P/YR`, `C/YR`, `BEG`, `END`, `CLTV` (clear TVM)
 - complex numbers, inspired by HP-42S and HP-35s
     - stored in RPN stack registers (`X`, `Y`, `Z`, `T`, `LASTX`) and storage
       registers `R00-R99`
@@ -113,7 +115,7 @@ Missing features (partial list):
 - vectors and matrices
 - keystroke programming
 
-**Version**: 0.12.0 (2024-06-24)
+**Version**: 1.0.0 (2024-07-19)
 
 **Changelog**: [CHANGELOG.md](CHANGELOG.md)
 
@@ -331,8 +333,8 @@ the 4 ways that complex numbers can be entered into RPN83P:
 
 - `100 - i/(2*pi*60*(1e-5))` using `2ND LINK`
 - `100 + 250i` using `2ND i`
-- `200 e^(i 10deg)` using `2ND ANGLE`
-- `300 e^(i 0.1)` using `2ND ANGLE 2ND ANGLE`
+- `200 ∠ 10°` using `2ND ANGLE`
+- `300 ∠ 0.1` using `2ND ANGLE 2ND ANGLE`
 
 The keystrokes are:
 
@@ -340,17 +342,17 @@ The keystrokes are:
 - Press `MODE` button, `downarrow`,  `RECT`:
   ![MODE MenuRow 2](docs/images/menu-root-mode-2.png)
 - Press `100` `ENTER`
-- Press `2` `PI` `*` `60` `*` `1 EE 5` `(-)` `*` `1/X` `(-)` (-265.26)
-- Press `2ND LINK` (100-265.26i)
-- Press `100` `2ND i` `250` `+` (200-15.26i)
-- Press `200` `2ND ANGLE` `10` `+` (396.96+19.47i)
-- Press `300` `2ND ANGLE` `2ND ANGLE` `0.1` `+` (695.46+49.42i)
-- Press `4` `/` (173.89+12.35i)
-- Press `PRAD` (174.30 e^(i 0.07)
-- Press `PDEG` (174.30 e^(i 4.04deg))
+- Press `2` `PI` `*` `60` `*` `1 EE 5` `(-)` `*` `1/X` `(-)` (X: -265.26)
+- Press `2ND LINK` (X: 100 i -265.26)
+- Press `100` `2ND i` `250` `+` (X: 200 i -15.26)
+- Press `200` `2ND ANGLE` `10` `+` (X: 396.96 i 19.47)
+- Press `300` `2ND ANGLE` `2ND ANGLE` `0.1` `+` (X: 695.46 i 49.42)
+- Press `4` `/` (X: 173.89 i 12.35)
+- Press `PRAD` (X: 174.30 ∠ 0.07)
+- Press `PDEG` (X: 174.30 ∠° 4.04)
 - Press `MATH` button `CPLX`:
   ![CPLX MenuRow 1](docs/images/menu-root-cplx-1.png)
-- Press `CABS` (174.30)
+- Press `CABS` (X: 174.30)
 
 ![RPN83P Example 4 GIF](docs/images/rpn83p-example4.gif)
 

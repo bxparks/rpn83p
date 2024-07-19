@@ -118,15 +118,15 @@ vEraseEOLLoop2:
 ; string is too long to fit into the current line, we print 2 dots (4 pixels
 ; wide) are printed at the end to indicate truncation.
 ;
-; I would have thought that checking for PenCol>=92 would have been sufficient,
+; I would have thought that checking for penCol>=92 would have been sufficient,
 ; since the display is 96 pixels wide, and a dot is only 2 pixels wide. But it
 ; turns out that VPutMap() function has some strange, undocumented behavior, so
-; PenCol>=89 seems to work a lot better.
+; penCol>=89 seems to work a lot better.
 ;
 ; It has been hard to characterize the exact behavior of VPutMap() at the end
 ; of the line. Even if there are 4 pixels available at the end of the line, it
 ; does not want to write a 4-pixel wide character. Furthermore, if the
-; character does not fit, it is simply ignored, PenCol is not updated, and a
+; character does not fit, it is simply ignored, penCol is not updated, and a
 ; subsequent call to VPutMap() with a narrow enough character will print that
 ; narrow character into that space. So sometimes, some random character at the
 ; end seems to have been lost.
@@ -150,7 +150,7 @@ vPutSmallSLoop:
     ; funny business with vPutMap() that I cannot quite characterize. With 8
     ; spaces, we get more flexibility.
     ld b, a ; B=saved A
-    ld a, (PenCol)
+    ld a, (penCol)
     cp 88
     jr nc, vPutSmallSMaybeTruncate
     ld a, b ; A=restored A
@@ -237,10 +237,10 @@ putSEnd:
 putSEnter:
     ; Handle newline
     push hl
-    ld hl, (CurRow)
-    inc l ; CurRow++
+    ld hl, (curRow)
+    inc l ; curRow++
     ld h, 0 ; CurCol=0
-    ld (CurRow), hl
+    ld (curRow), hl
     pop hl
     jr putSCheck
 

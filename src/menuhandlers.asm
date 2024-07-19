@@ -592,6 +592,105 @@ mKwToHpHandler:
     jp replaceX
 
 ;-----------------------------------------------------------------------------
+
+; Description: Convert mpg (miles per US gallon) to lkm (Liters per 100 km):
+; lkm = 100/[mpg * (km/mile) / (litre/gal)]
+mMpgToLkmHandler:
+    call closeInputAndRecallX
+    call op2SetKmPerMi
+    bcall(_FPMult)
+    call op2SetLPerGal
+    bcall(_FPDiv)
+    call op1ToOp2
+    call op1Set100
+    bcall(_FPDiv)
+    jp replaceX
+
+; Description: Convert lkm to mpg: mpg = 100/lkm * (litre/gal) / (km/mile).
+mLkmToMpgHandler:
+    call closeInputAndRecallX
+    call op1ToOp2
+    call op1Set100
+    bcall(_FPDiv)
+    call op2SetLPerGal
+    bcall(_FPMult)
+    call op2SetKmPerMi
+    bcall(_FPDiv)
+    jp replaceX
+
+; Description: Convert PSI (pounds per square inch) to kiloPascal.
+; P(Pa) = P(psi) * 0.45359237 kg/lbf * (9.80665 m/s^2) / (0.0254 m/in)^2
+; P(Pa) = P(psi) * 0.45359237 kg/lbf * (9.80665 m/s^2) / (2.54 cm/in)^2 * 10000
+; P(kPa) = P(psi) * 0.45359237 kg/lbf * (9.80665 m/s^2) / (2.54 cm/in)^2 * 10
+; See https://en.wikipedia.org/wiki/Pound_per_square_inch.
+mPsiToKpaHandler:
+    call closeInputAndRecallX
+    call op2SetKgPerLbs
+    bcall(_FPMult)
+    call op2SetStandardGravity
+    bcall(_FPMult)
+    call op2SetCmPerIn
+    bcall(_FPDiv)
+    call op2SetCmPerIn
+    bcall(_FPDiv)
+    call op2Set10
+    bcall(_FPMult)
+    jp replaceX
+
+; Description: Convert PSI (pounds per square inch) to kiloPascal.
+; P(psi) = P(kPa) / 10 * (2.54m/in)^2 / (0.45359237 kg/lbf) / (9.80665 m/s^2)
+; See https://en.wikipedia.org/wiki/Pound_per_square_inch.
+mKpaToPsiHandler:
+    call closeInputAndRecallX
+    call op2Set10
+    bcall(_FPDiv)
+    call op2SetCmPerIn
+    bcall(_FPMult)
+    call op2SetCmPerIn
+    bcall(_FPMult)
+    call op2SetStandardGravity
+    bcall(_FPDiv)
+    call op2SetKgPerLbs
+    bcall(_FPDiv)
+    jp replaceX
+
+;-----------------------------------------------------------------------------
+
+; Description: Convert US acre (66 ft x 660 ft) to hectare (100 m)^2. See
+; https://en.wikipedia.org/wiki/Acre, and
+; https://en.wikipedia.org/wiki/Hectare.
+; Area(ha) = Area(acre) * 43560 * (0.3048 m/ft)^2 / (100 m)^2
+mAcreToHectareHandler:
+    call closeInputAndRecallX
+    call op2SetSqFtPerAcre
+    bcall(_FPMult)
+    call op2SetMPerFt
+    bcall(_FPMult)
+    call op2SetMPerFt
+    bcall(_FPMult)
+    call op2Set100
+    bcall(_FPDiv)
+    call op2Set100
+    bcall(_FPDiv)
+    jp replaceX
+
+; Description: Convert hectare to US acre.
+; Area(acre) = Area(ha) * (100 m)^2 / 43560 / (0.3048 m/ft)^2
+mHectareToAcreHandler:
+    call closeInputAndRecallX
+    call op2Set100
+    bcall(_FPMult)
+    call op2Set100
+    bcall(_FPMult)
+    call op2SetMPerFt
+    bcall(_FPDiv)
+    call op2SetMPerFt
+    bcall(_FPDiv)
+    call op2SetSqFtPerAcre
+    bcall(_FPDiv)
+    jp replaceX
+
+;-----------------------------------------------------------------------------
 ; Children nodes of CONV menu.
 ;-----------------------------------------------------------------------------
 
@@ -630,7 +729,7 @@ mPToRHandler:
 ; Output:
 ;   - Y: theta
 ;   - X: r
-mRtoPHandler:
+mRToPHandler:
     call closeInputAndRecallXY ; OP1=Y; OP2=X
     call op1ExOp2  ; OP1=x; OP2=y
     call rectToPolar ; OP1=r; OP2=theta
@@ -708,7 +807,7 @@ saveFormatDigits:
     ld a, (argValue)
     cp 10
     jr c, saveFormatDigitsContinue
-    ld a, $FF ; variable number of digits, not fixed
+    ld a, fmtDigitsFloating ; "floating" number of digits, i.e. not fixed
 saveFormatDigitsContinue:
     ld (fmtDigits), a
     ret
@@ -1030,3 +1129,13 @@ mClearStatHandler:
 
 mClearTvmHandler:
     jp mTvmClearHandler
+
+mClearDisplayHandler:
+    bcall(_ClrLCDFull)
+    bcall(_ColdInitDisplay)
+    bcall(_InitDisplay)
+    ret
+
+; mClearVarsHandler:
+;    bcall(_ClearVars)
+;    ret
