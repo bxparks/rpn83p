@@ -1156,7 +1156,7 @@ The Help pages are intended to capture some of the more obscure tidbits about
 the RPN83P app which may be hard to remember. Hopefully it reduces the number of
 times that this User Guide needs to be consulted.
 
-The message at the bottom of each page is not completely honest. A number of
+The message at the bottom of each page is not completely honest. A few
 navigational keys are recognized by the Help system:
 
 - `UP`, `LEFT`: previous page with wraparound
@@ -1171,6 +1171,7 @@ listed in the TI-83 SDK. The SDK unfortunately does not describe how these
 errors are actually triggered. By trial-and-error, I could reverse engineer only
 a few of them as described below:
 
+- `Err: Archived`: storage variable (A-Z,Theta) is archived
 - `Err: Argument`: incorrect number of arguments
 - `Err: Bad Guess`
 - `Err: Break`
