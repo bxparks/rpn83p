@@ -2,6 +2,8 @@
 
 - Unreleased
 - 1.0.0 (2024-07-19)
+    - Documentation
+        - add "Troubleshooting" section to `USER_GUIDE.md`
     - User Interface
         - `CLEAR` button clears only to the end of the line if the cursor is in
           the interior of the input buffer
