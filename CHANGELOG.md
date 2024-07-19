@@ -39,11 +39,17 @@
             - should almost never be needed, except during debugging
             - analogous to the `CLD` command on the HP-42S
     - UNIT
-        - add `>Lkm`: convert mpg (miles per US gallon) to L/100km (liters per
-          100 km)
-        - add `>mpg`: convert L/100km to mpg
-        - add `>kPa`: convert psi (pounds per square inch) to kPa (kiloPascal)
-        - add `>psi`: convert kPa to psi
+        - car fuel consumption
+            - add `>Lkm`: convert mpg (miles per US gallon) to L/100km (liters
+              per 100 km)
+            - add `>mpg`: convert L/100km to mpg
+        - car tire pressure
+            - add `>kPa`: convert psi (pounds per square inch) to kPa
+              (kiloPascal)
+            - add `>psi`: convert kPa to psi
+        - land area
+            - add `>ha`: convert acre to hectare
+            - add `>acr`: convert hectare to acre
 - 0.12.0 (2024-06-24)
     - **Bug Fix**: update logic that determines when the comma `,` character can
       be inserted into the input buffer

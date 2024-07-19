@@ -404,13 +404,13 @@ MenuGroup root mRoot [
         MenuItem <Sconvert>kPa mPsiToKpa
         MenuItem <Sconvert>psi mKpaToPsi
       ]
-      # MenuRow [
-      #   MenuItem <Sconvert>ha mAcreToHectare
-      #   MenuItem <Sconvert>acr mHectareToAcre
-      #   MenuItem * *
-      #   MenuItem * *
-      #   MenuItem * *
-      # ]
+      MenuRow [
+        MenuItem <Sconvert>ha mAcreToHectare
+        MenuItem <Sconvert>acr mHectareToAcre
+        MenuItem * *
+        MenuItem * *
+        MenuItem * *
+      ]
     ]
     MenuGroup DATE mDate [
       MenuRow [

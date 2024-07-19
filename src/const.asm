@@ -196,10 +196,18 @@ op2SetKwPerHp:
 
 ;-----------------------------------------------------------------------------
 
-; Description: Set OP2 to KwPerHp
+; Description: Set OP2 to HpaPerInHg
 ; Destroys: all, HL
 op2SetHpaPerInhg:
     ld hl, constHpaPerInhg
+    jp move9ToOp2
+
+;-----------------------------------------------------------------------------
+
+; Description: Set OP2 to SqFtPerAcre
+; Destroys: all, HL
+op2SetSqFtPerAcre:
+    ld hl, constSqFtPerAcre
     jp move9ToOp2
 
 ;-----------------------------------------------------------------------------
@@ -277,3 +285,8 @@ constKwPerHp: ; 0.745 699 871 582 270 22 kW/hp, approx
 ;        = 33.863 886 403 41 hPa (exact)
 constHpaPerInhg:
     .db $00, $81, $33, $86, $38, $86, $40, $34, $10
+
+; Number of square feet in one acre = 66*660 = 43560, see
+; https://en.wikipedia.org/wiki/Acre.
+constSqFtPerAcre:
+    .db $00, $84, $43, $56, $00, $00, $00, $00, $00

@@ -655,6 +655,42 @@ mKpaToPsiHandler:
     jp replaceX
 
 ;-----------------------------------------------------------------------------
+
+; Description: Convert US acre (66 ft x 660 ft) to hectare (100 m)^2. See
+; https://en.wikipedia.org/wiki/Acre, and
+; https://en.wikipedia.org/wiki/Hectare.
+; Area(ha) = Area(acre) * 43560 * (0.3048 m/ft)^2 / (100 m)^2
+mAcreToHectareHandler:
+    call closeInputAndRecallX
+    call op2SetSqFtPerAcre
+    bcall(_FPMult)
+    call op2SetMPerFt
+    bcall(_FPMult)
+    call op2SetMPerFt
+    bcall(_FPMult)
+    call op2Set100
+    bcall(_FPDiv)
+    call op2Set100
+    bcall(_FPDiv)
+    jp replaceX
+
+; Description: Convert hectare to US acre.
+; Area(acre) = Area(ha) * (100 m)^2 / 43560 / (0.3048 m/ft)^2
+mHectareToAcreHandler:
+    call closeInputAndRecallX
+    call op2Set100
+    bcall(_FPMult)
+    call op2Set100
+    bcall(_FPMult)
+    call op2SetMPerFt
+    bcall(_FPDiv)
+    call op2SetMPerFt
+    bcall(_FPDiv)
+    call op2SetSqFtPerAcre
+    bcall(_FPDiv)
+    jp replaceX
+
+;-----------------------------------------------------------------------------
 ; Children nodes of CONV menu.
 ;-----------------------------------------------------------------------------
 
