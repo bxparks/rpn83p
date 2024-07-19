@@ -134,7 +134,8 @@ Summary of features:
     - angle conversions: `>DEG`, `>RAD`, `>HR`, `>HMS`, `>REC`, `>POL`
     - unit conversions: `>C`, `>F`, `>hPa`, `>inHg`, `>km`, `>mi`, `>m`, `>ft`,
       `>cm`, `>in`, `>um`, `>mil`, `>kg`, `>lbs`, `>g`, `>oz`, `>L`, `>gal`,
-      `>mL`, `>floz`, `>kJ`, `>cal`, `>kW`, `>hp`
+      `>mL`, `>floz`, `>kJ`, `>cal`, `>kW`, `>hp`, `>Lkm`, `>mpg`, `>kPa`,
+      `>psi`, `>ha`, `>acr`
 - statistics and curve fitting, inspired by HP-42S
     - statistics: `Σ+`, `Σ-`, `SUM`, `MEAN`, `WMN` (weighted mean),
       `SDEV` (sample standard deviation), `SCOV` (sample covariance),
@@ -1513,6 +1514,8 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
     - ![ROOT > UNIT > Row4](images/menu-root-unit-4.png)
     - ![ROOT > UNIT > Row5](images/menu-root-unit-5.png)
     - ![ROOT > UNIT > Row6](images/menu-root-unit-6.png)
+    - ![ROOT > UNIT > Row7](images/menu-root-unit-7.png)
+    - ![ROOT > UNIT > Row8](images/menu-root-unit-8.png)
     - `>C`: Fahrenheit to Celsius
     - `>F`: Celsius to Fahrenheit
     - `>hPa`: hectopascals (i.e. millibars) to inches of mercury (Hg)
@@ -1537,6 +1540,12 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
     - `>cal`: kilo Joules to kilo calories
     - `>kW`: horsepowers (mechanical) to kilo Watts
     - `>hp`: kilo Watts to horsepowers (mechanical)
+    - `>Lkm`: miles per US gallon to liters per 100 km
+    - `>mpg`: liters per 100 km to miles per US gallon
+    - `>kPa`: pounds per square inch to kilo Pascals
+    - `>psi`: kilo Pascals to pounds per square inch
+    - `>ha`: acres to hectares
+    - `>acr`: hectares to acres
 - ![ROOT > DATE](images/menu-root-date.png) (`ROOT > DATE`)
     - ![ROOT > DATE > Row1](images/date/menu-root-date-1.png)
     - ![ROOT > DATE > Row2](images/date/menu-root-date-2.png)
