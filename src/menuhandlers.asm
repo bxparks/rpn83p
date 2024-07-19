@@ -1036,3 +1036,7 @@ mClearDisplayHandler:
     bcall(_ColdInitDisplay)
     bcall(_InitDisplay)
     ret
+
+; mClearVarsHandler:
+;    bcall(_ClearVars)
+;    ret
