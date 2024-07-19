@@ -56,7 +56,8 @@ Summary of features:
     - angle conversions: `>DEG`, `>RAD`, `>HR`, `>HMS`, `>REC`, `>POL`
     - unit conversions: `>C`, `>F`, `>hPa`, `>inHg`, `>km`, `>mi`, `>m`, `>ft`,
       `>cm`, `>in`, `>um`, `>mil`, `>kg`, `>lbs`, `>g`, `>oz`, `>L`, `>gal`,
-      `>mL`, `>floz`, `>kJ`, `>cal`, `>kW`, `>hp`
+      `>mL`, `>floz`, `>kJ`, `>cal`, `>kW`, `>hp`, `>Lkm`, `>mpg`, `>kPa`,
+      `>psi`, `>ha`, `>acr`
 - statistics and curve fitting, inspired by HP-42S
     - statistics: `Σ+`, `Σ-`, `SUM`, `MEAN`, `WMN` (weighted mean),
       `SDEV` (sample standard deviation), `SCOV` (sample covariance),
