@@ -429,7 +429,8 @@ least 2 ways to obtain this:
     - go to the latest release
     - click and download the `rpn83p.8xk` file
 - Compile the binary locally
-    - See [Compiling from Source](#Compiling) section below
+    - See the *Compiling from Source* section in the [README.md](../README.md)
+      file.
 
 ### Uploading
 
