@@ -1372,8 +1372,8 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
     - `Σ-`: remove `Y` and `X` data point from STAT registers
     - `ALLΣ`: collect statistical sums for all curve fit models
     - `LINΣ`: collect statistical sums for the linear curve fit model
-    - `CLΣ`: clear STAT registers `[R11,R16]` (if `LINΣ` selected) or
-      `[R11,R23]` (if `ALLΣ` selected)
+    - `CLΣ`: clear STAT registers (storage registers `R00`-`R99` are not
+      affected)
     - `SUM`: return Sum of `Y` and Sum of `X` in the `Y` and `X` registers
     - `MEAN`: return average `<Y>` and `<X>` in the `Y` and `X` registers
     - `WMN`: return the weighted mean of `Y` and weighted mean of `X` in the `Y`
@@ -1468,7 +1468,8 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
     - `CLX`: clear `X` stack register (stack lift disabled)
     - `CLST`: clear all RPN stack registers
     - `CLRG`: clear all storage registers `R00` to `R99`
-    - `CLΣ`: clear STAT storage registers [`R11`, `R16`] or [`R11`, `R23`]
+    - `CLΣ`: clear STAT registers (storage registers `R00`-`R99` are not
+      affected)
     - `CLTV`: clear TVM variables and parameters
     - `CLD`: clear display and rerender everything
 - ![ROOT > MODE](images/menu-root-mode.png) (`ROOT > MODE`)
