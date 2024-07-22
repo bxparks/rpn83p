@@ -338,7 +338,7 @@ a calculator on a smartphone has some drawbacks:
 
 - the touchscreen of a phone does not give tactile feedback,
 - the smartphone can impose some friction in usage, because we have to take the
-  phone out from a pocket, unlocking the phone, then find and fire up the
+  phone out from a pocket, unlock the phone, then find and fire up the
   calculator app,
 - the battery life of a smartphone is relatively short compared to a calculator
   which is measured in weeks or months.
