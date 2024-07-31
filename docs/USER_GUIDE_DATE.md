@@ -337,7 +337,7 @@ types, composed of fields of more primitive integer types.
 
 If you are familiar with the C++ language, you may think of these Record
 specifications as class constructors using brace-initialization, with the class
-names being `D`, `T`, `DT`, `DR`, `TZ`, `DZ`, and `DW`.
+names being `D`, `T`, `DT`, `TZ`, `DZ`, `DW`, and `DR`.
 
 The primitive integer types are:
 
@@ -464,7 +464,7 @@ invalid date `2024-02-30`, we get:
 | `ENTER`           | ![](images/date/invalid-raw-2.png)    | ![](images/date/invalid-str-2.png) |
 
 Notice that for input validation errors like this, the input is not terminated
-and the prompt continues to be shown. You can pressed the `DEL` to delete the
+and the prompt continues to be shown. You can press the `DEL` to delete the
 input characters and fix the error.
 
 Here is an incomplete list of validation rules:
