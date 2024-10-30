@@ -210,6 +210,13 @@ and more complicated features will get their own GitHub tickets.
       new integer types are on the RPN stack
     - if SHOW uses small font for base-2 numbers, it can display 64 digits using
       the 4 lines that are available
+- add second menu row
+    - the TI-OS supports separate keycodes for the `2ND` versions of `F1` to
+      `F5`
+    - we could bind those keycodes to a second row of menu items, just above the
+      current row
+    - this would improve the usability of some menu folders (e.g. `BASE`,
+      `DATE`) by reducing the number of menu pages that the user needs to scroll
 
 ## Highly Unlikely
 
