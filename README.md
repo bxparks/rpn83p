@@ -371,6 +371,7 @@ Press:
 - [RPN83P User Guide](docs/USER_GUIDE.md)
 - [TVM Algorithms](docs/TVM.md)
 - [Developer Notes](docs/DEVELOPER.md)
+- [Future Enhancements](docs/FUTURE.md)
 
 ## Compiling from Source
 
