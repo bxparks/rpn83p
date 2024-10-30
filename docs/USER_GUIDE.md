@@ -107,6 +107,7 @@ Summary of features:
 - 8-line display showing 4 stack registers
 - hierarchical menu system similar to HP-42S
 - quick reference `HELP` menu
+- auto-start capability using the Start-Up app
 - storage registers and variables
     - store and recall:`STO nn`, `RCL nn`
     - storage arithmetics: `STO+ nn`, `STO- nn`, `STO* nn`, `STO/ nn`, `RCL+
