@@ -1215,7 +1215,7 @@ The boolean expression for this function in the `C` language is:
 
 ## Epoch Date
 
-Many computer systems keep track of time by counting the number of sections from
+Many computer systems keep track of time by counting the number of seconds from
 a specific date, called the
 [epoch](https://en.wikipedia.org/wiki/Epoch_%28computing%29). RPN83P supports
 different Epoch dates under the `EPCH` menu:
