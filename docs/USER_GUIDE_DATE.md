@@ -248,9 +248,10 @@ supported in the `DATE` functions of RPN83P:
 
 ## DATE Menus
 
-The following menus items are located under the `DATE` menu. A short synopsis of
-each menu function is listed here. More detailed descriptions are given in later
-subsections below.
+The following menus items are located under the `DATE` menu folder (which can be
+found in the 3rd row of the ROOT menu folder: `HOME` (i.e. `MATH`), `DOWN`,
+`DOWN`). A short synopsis of each menu function is listed here. More detailed
+descriptions are given in later subsections below.
 
 - ![ROOT > DATE](images/date/menu-root-date.png)
     - ![ROOT > DATE > Row1](images/date/menu-root-date-1.png)
