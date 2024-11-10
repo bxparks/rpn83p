@@ -1614,7 +1614,7 @@ alpha letter (A-Z), digit (0-9), and comma keys are easily accessible.
 
 On an actual TI-83/84 calculator, the letter tags (e.g. `D`, `TZ`) require the
 use of the `ALPHA` key. The button corresponding to a specific letter can be
-difficult to located quickly because they are not organized in the familiar
+difficult to locate quickly because they are not organized in the familiar
 QWERTY layout. Furthermore, the left and right curly braces require the use of
 the `2ND` key instead of the `ALPHA` key, which can cause confusion in the
 fingers. Entering something like the timezone `UTC+05:30`, which is entered as
