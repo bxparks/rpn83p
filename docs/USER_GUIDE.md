@@ -433,6 +433,12 @@ least 2 ways to obtain this:
     - See the *Compiling from Source* section in the [README.md](../README.md)
       file.
 
+Each release in the GitHub Releases section also contains an `rpn83p.zip`
+release artifact file that holds the same `rpn83p.8xk` binary file and a copy of
+the various user-facing Markdown files converted to PDF format. The zip file is
+intended for third party software archive sites such as ticalc.org or
+cemetech.net.
+
 ### Uploading
 
 The `rpn83p.8xk` file must be uploaded to the calculator using a "link" program
