@@ -105,7 +105,7 @@ into `Y` and the imaginary part going into `X`.
 
 The inlined entry method borrows from the HP-35s which allows a complex number
 to be entered in its entirety on a single line. The `2ND i` button (above the
-`.` button), and the `2ND LINK` button (above the `x,t,theta,n` button) are used
+`.` button), and the `2ND ANGLE` button (above the `APPS` button) are used
 to delimit the 2 components of a complex number.
 
 To enter `1-2i` in rectangular mode, we would type:
