@@ -386,7 +386,7 @@ been verified only on my dev machine.
     - I use the static binary zip file, because the `.deb` file would not
       resolve dependencies.
     - Unpack the zip file so that the `spasm` directory is a *sibling* to the
-      `rpn83` directory. (See the `SPASM_DIR` variable inside the `Makefile`).
+      `rpn83p` directory. (See the `SPASM_DIR` variable inside the `Makefile`).
 - `$ cd src`
 - `$ make`
 - Should produce a file named `rpn83p.8xk`.
