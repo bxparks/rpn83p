@@ -13,6 +13,10 @@ calculator, with some significant features from the
 easiest and cheapest gateway app that introduces new users to the beauty and
 power of RPN calculators.
 
+Your calculator will look like this when using RPN83P:
+
+![RPN83P Teaser](docs/images/fullshot-teaser.png)
+
 RPN83P is a flash application written in Z80 assembly language that consumes 3
 pages (48 kiB) of flash memory. Since it is stored in flash, it is preserved if
 the RAM is cleared. It consumes about 1025 to 2535 bytes of TI-OS RAM through 4
