@@ -685,11 +685,11 @@ even numbers, and the physical 84+ OS uses odd numbers, so the 2.56MP version is
 functionally identical to the latest 2.55MP version on the actual TI-84+
 calculators.
 
-Both the 1st and 2nd Nspire calculators seem to have 2 sleep modes: a
-light-sleep mode and a deep-sleep mode. When the calculator is turned off, it
-seems to go into the light-sleep mode, and pressing the ON button brings the
-calculator back instantly. If the calculator is left in light-sleep mode for a
-long time (24-48 hours is my guess), the calculator goes into deep-sleep mode.
+Both the 1st and 2nd generations of Nspire calculators seem to have 2 sleep
+modes: a light-sleep mode and a deep-sleep mode. When the calculator is turned
+off, it seems to go into the light-sleep mode, and pressing the ON button brings
+the calculator back instantly. If the calculator is left in light-sleep mode for
+a long time (24-48 hours is my guess), the calculator goes into deep-sleep mode.
 If the ON button is pressed in deep-sleep mode, the calculator seems to
 reinitialize itself and takes maybe 25-30 seconds to reload the Nspire OS, then
 another 5-8 seconds to load the TI-84+ emulator. The total wait time from
