@@ -553,13 +553,21 @@ RPN83P but not too much more.
 
 The calculator supports only a 2.5mm I/O port, and installing RPN83P requires a
 special 2.5mm to USB cable. In the United States, it can be as cheap as
-$10-$15, but it can difficult and expensive to obtain in other parts of the
+$10-$15, but it can be difficult and expensive to obtain in other parts of the
 world.
 
 These calculators tend to be the oldest by age. Many on the used market suffer
 from defective vertical and horizontal lines on the screen caused by the
-degradation of conductive glue that connects the electrical traces between the
-LCD module and the main motherboard. There is no easy fix for this defect.
+degradation of conductive glue that connects the ribbon cable between the LCD
+module and the main motherboard. Sometimes the ribbon cable can be fixed,
+sometimes not. You can read this long thread [On the Repair of TI-83+
+LCDs](https://www.cemetech.net/forum/viewtopic.php?t=5161) to see if you want to
+embark on that adventure.
+
+Having said all that, one of the first calculators I bought was a TI-83+ for $10
+cash locally. The LCD screen on that thing is perfect, I think it is actually
+better than all my other TI-83+ or TI-84+ calculators. You may get lucky too, or
+not.
 
 **TI-83 Plus Silver Edition**
 
@@ -571,8 +579,8 @@ installing RPN83P requires a special 2.5mm to USB cable.
 
 The TI-83+SE has 1.5 MB of flash memory, 9 times the capacity of the regular
 TI-83+. It can also run at 15 MHz, instead of 6 MHz. Basically, this means that
-the TI-83+SE has almost same specs as the newer and more expensive TI-84+SE (see
-below).
+the TI-83+SE has almost the same specs as the newer and more expensive TI-84+SE
+(see below).
 
 The most common version of the TI-83+SE comes in a translucent case that is the
 same size as the regular TI-83+. The function labels are yellow and the ALPHA
@@ -584,6 +592,31 @@ regular 83+ in my opinion.
 The buttons on the 83+SE are slightly more rounded than the regular 83+, and
 they seem slightly more mushy than the regular 83+. In other words, I think I
 prefer the regular 83+ buttons.
+
+**TI-83 Plus Silver Edition VSC**
+
+There is another variation of the TI-83+SE calculator called the TI-83+SE
+ViewScreen Calculator (VSC). This version is relatively rare compared to the
+normal TI-83+SE with its translucent case, and is intended to allow teachers to
+project the calculator screen on a screen for the classroom.
+
+The internal technical specs of the TI-83+SE VSC are identical to its normal
+TI-83+SE. But there are physical differences.
+
+The top half of the VSC calculator matches the regular TI-83+ instead of the
+TI-83+SE. In other words, the VSC edition uses black plastic instead of
+translucent plastic, and it uses more square-ish buttons of the regular 83+
+instead of the more rounded buttons of the 83+SE.
+
+The bottom half of the VSC calculator is replaced with a slightly thicker
+version that contains a special connector to a [TI
+ViewScreen](http://www.datamath.org/Graphing/TI-VSP82.htm) panel. The ViewScreen
+is used with an overhead projector to display the calculator display.
+
+The thicker bottom half of the VSC version prevents the hard-shell cover from
+sliding under the calculator. This means that the cover is floating around
+somewhere else while it is being used, which makes it more inconvenient and
+easier to lose the cover.
 
 **TI-84 Plus**
 
@@ -706,14 +739,16 @@ sleep, and it looks a lot better in my opinion.
 
 A note about batteries. All TI-83+, 84+, and Nspire calculators mentioned above
 can be powered by four (4) AAA batteries. Although calculator manufacturers
-usually specify alkaline batteries, I always recommend using low-self discharge
-(LSD) rechargeable NiMH batteries instead. Alkaline batteries often leak when
-they are discharged completely, potentially destroying the calculator; NiMH
-almost never leak. Alkaline batteries likely cause more environment damage than
-rechargeable NiMH batteries in the long run. NiMH batteries are now so cheap, it
-takes only a few recharge cycles to break even compared to most brands of
-alkaline batteries. For most people, in most situations, using NiMH makes more
-sense than using alkalines.
+usually specify alkaline batteries, I always recommend using low self-discharge
+(LSD) rechargeable NiMH batteries instead.
+
+Alkaline batteries often leak when they are discharged completely, potentially
+destroying the calculator; NiMH almost never leak. Alkaline batteries likely
+cause more environment damage than rechargeable NiMH batteries in the long run.
+
+NiMH batteries are now so cheap, it takes only a few recharge cycles to break
+even compared to most brands of alkaline batteries. For most people, in most
+situations, using NiMH makes more sense than using alkalines.
 
 ## Basic Usage
 
