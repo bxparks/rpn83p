@@ -589,9 +589,10 @@ difficult to read on the translucent plastic, but after purchasing one of these,
 it was not as bad as I had feared, but it was still slightly worse than a
 regular 83+ in my opinion.
 
-The buttons on the 83+SE are slightly more rounded than the regular 83+, and
-they seem slightly more mushy than the regular 83+. In other words, I think I
-prefer the regular 83+ buttons.
+The buttons on the 83+SE seem slightly more mushy than the regular 83+ but that
+could be just my calculator. The 83+SE buttons also *look* slightly more rounded
+than the regular 83+ but I think that's because some of the 83+SE buttons are
+slightly translucent as well. Overall, I think I prefer the regular 83+ buttons.
 
 **TI-83 Plus Silver Edition VSC**
 
@@ -604,9 +605,9 @@ The internal technical specs of the TI-83+SE VSC are identical to its normal
 TI-83+SE. But there are physical differences.
 
 The top half of the VSC calculator matches the regular TI-83+ instead of the
-TI-83+SE. In other words, the VSC edition uses black plastic instead of
-translucent plastic, and it uses more square-ish buttons of the regular 83+
-instead of the more rounded buttons of the 83+SE.
+TI-83+SE. In other words, the VSC edition uses the black plastic case of the
+regular 83+ instead of translucent plastic, and the same buttons as the regular
+TI-83+.
 
 The bottom half of the VSC calculator is replaced with a slightly thicker
 version that contains a special connector to a [TI
@@ -615,8 +616,8 @@ is used with an overhead projector to display the calculator display.
 
 The thicker bottom half of the VSC version prevents the hard-shell cover from
 sliding under the calculator. This means that the cover is floating around
-somewhere else while it is being used, which makes it more inconvenient and
-easier to lose the cover.
+somewhere else while the caculator is being used, which makes it more
+inconvenient and easier to lose the cover.
 
 **TI-84 Plus**
 
