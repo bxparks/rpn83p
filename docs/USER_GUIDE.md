@@ -543,10 +543,7 @@ and firmware are too different:
 ### Recommended Hardware
 
 After testing RPN83P on various TI calculator models, I have formed some
-opinions. Maybe my observations will help you decide which model to get. Or you
-may wish to buy all of them and decide for yourself which one you like best.
-They are so cheap on the used market, it's possible to buy multiple models
-without breaking the bank.
+opinions. Maybe my observations will help you decide which model to get.
 
 **TI-83 Plus**
 
@@ -555,8 +552,8 @@ run only at 6 MHz. It has only 160 kB of flash memory, which is enough to hold
 RPN83P but not too much more.
 
 The calculator supports only a 2.5mm I/O port, and installing RPN83P requires a
-special 2.5mm to USB cable. Where I live, I can often get them as cheap as
-USD$10-$15, but it can difficult and expensive to obtain in other parts of the
+special 2.5mm to USB cable. In the United States, it can be as cheap as
+$10-$15, but it can difficult and expensive to obtain in other parts of the
 world.
 
 These calculators tend to be the oldest by age. Many on the used market suffer
@@ -566,7 +563,8 @@ LCD module and the main motherboard. There is no easy fix for this defect.
 
 **TI-83 Plus Silver Edition**
 
-The TI-83+SE will be slightly more expensive than the regular TI-83+.
+The TI-83+SE will be slightly more expensive than the regular TI-83+ on the used
+market.
 
 Just like the regular 83+, the 83+SE supports only a 2.5mm I/O port, and
 installing RPN83P requires a special 2.5mm to USB cable.
@@ -580,8 +578,8 @@ The most common version of the TI-83+SE comes in a translucent case that is the
 same size as the regular TI-83+. The function labels are yellow and the ALPHA
 letters are bluish-green. I had initially thought that the labels would be too
 difficult to read on the translucent plastic, but after purchasing one of these,
-it was not as bad as I had feared. But the readability of labels on the regular
-83+ is slightly better in my opinion.
+it was not as bad as I had feared, but it was still slightly worse than a
+regular 83+ in my opinion.
 
 The buttons on the 83+SE are slightly more rounded than the regular 83+, and
 they seem slightly more mushy than the regular 83+. In other words, I think I
@@ -590,18 +588,15 @@ prefer the regular 83+ buttons.
 **TI-84 Plus**
 
 I don't own a regular TI-84+, but it looks physically identical to the TI-84
-Plus Silver Edition (see next).
-
-The difference is that the TI-84+ comes only 480 kB of flash memory versus the
-1.5 MB of the Silver Edition.
-
-As of 2025, I believe Texas Instruments still manufactures the 84+ model, but
-not the 84+SE model.
+Plus Silver Edition (see next). The difference is that the TI-84+ comes only 480
+kB of flash memory versus the 1.5 MB of the Silver Edition. As of 2025, I
+believe Texas Instruments still manufactures the 84+ model, but not the 84+SE
+model.
 
 **TI-84 Plus Silver Edition**
 
 The TI-84+SE is the most powerful model in the family, and will usually be the
-most expensive on the used market.
+most expensive model on the used market.
 
 It comes with 1.5 MB of flash and can run at 15 MHz, just like the TI-83+SE.
 Both the 84+ and 84+SE models contain a real-time clock. The RPN83P will detect
@@ -611,19 +606,13 @@ menu.
 The 84+ and 84+SE support both the 2.5mm port (for backwards compatibility) and
 a mini-USB-B port. The RPN83P app can be installed using either port. This means
 that only a mini-USB-B cable is required, instead of the special 2.5mm cable. In
-some parts of the world, the cost of the cable is so expensive that it may be
-cheaper to buy the more expensive TI-84+ or TI-84+SE over their TI-83+
-counterparts.
+some parts of the world, the cost of the cable may be more than the difference
+in price between the TI-84+/84+SE over their cheaper TI-83+/83+SE counterparts.
 
-The TI-84+ models are physical larger than the TI-83+ models. I did not notice
-that initially, but once it was mentioned to me, I was surprised that I did not
-notice it. The buttons are slightly bigger to take advantage of the larger case.
-Some people may prefer that. But personally, the smaller TI-83+ form factor
-feels better in my hands than the larger TI-84+ models.
-
-Some people may not like the placement and aesthetics of the buttons on the 84+
-models, compared to the more rectangular arrangement of the buttons on the older
-83+ models. Personally, I am somewhat neutral on this topic.
+The TI-84+ models are physical larger than the TI-83+ models. The buttons are
+slightly bigger to take advantage of the larger case. Some people may prefer
+that, but personally, the smaller TI-83+ form factor feels better in my hands
+than the larger TI-84+ form factor.
 
 **Nspire Clickpad and Nspire Touchpad**
 
@@ -633,35 +622,42 @@ previous section:
 - the 1st generation Nspire Clickpad in blue/white color and
 - the 2nd generation Nspire Touchpad in black/white color.
 
-The 1st generation Clickpad keyboard (blue/white) is powered by 4xAAA batteries.
-It also has probably the worst calculator keyboard that I have ever used.
-Pressing the large button will often accidentally press the smaller ALPHA
-buttons which are placed in the interstitial spaces between the large buttons.
+Both generations use a mini-USB-B port for communication with the host computer
+to load applications and upgrade the OS.
 
-The 2nd generation Touchpad keyboard (black/white) is somewhat unique among
-calculators for being triple-powered: it supports power through the USB cable, a
-Li-Ion battery pack, or 4xAAA batteries. In addition, it comes with a much
-better keyboard, with the ALPHA buttons separated and moved down to the lower
-part of the keyboard.
+The 1st generation Clickpad is powered by 4xAAA batteries. The 2nd generation
+Touchpad is triple-powered: it can operate through the USB cable, a Li-Ion
+battery pack, or 4xAAA batteries.
+
+The 1st generation Clickpad model has probably the worst calculator keyboard
+that I have ever used. Pressing the large button will often accidentally press
+the smaller ALPHA buttons which are placed in the interstitial spaces between
+the large buttons. The 2nd generation Touchpad model comes with a much better
+keyboard.
 
 For RPN83P to work, both the Clickpad and the Touchpad models require the
 original keypad to be removed and replaced with the "TI-84 Plus Keypad". This
 activates the TI-84+SE emulation mode. The 84+ keypad also provides a 2.5mm jack
 for backwards compatible connection between 2 TI calculators.
 
-There are 2 different models of the TI-84+ keypad:
+As noted in the previous section, when uploading the `rpn83p.8xk` file from the
+PC to the Nspire, you need to select "TI-84 Plus" as the calculator model on the
+PC instead of "TI-Nspire". That's because the Nspire is emulating a TI-84+ and
+the PC cannot tell the difference.
+
+There are 2 different versions of the TI-84+ keypad:
 
 - the 1st generation in blue/white, and
 - the 2nd generation in black/white.
 
-Both versions of the 84+ keypad should work on both versions of Nspire
-calculator. But it looks better to match the color scheme of the 84+ keypad with
-the color scheme of the calculator.
+Both versions should work on both versions of Nspire calculator. But it looks
+better to match the color scheme of the 84+ keypad with the color scheme of the
+calculator.
 
 The native resolution of the LCD screen on the Nspire is relatively high,
 320x240 pixels. But the screen resolution of the TI-83+/84+ calculators is much
 lower, 96x64 pixels. In emulation mode, the Nspire uses a 3x3 native pixel block
-to represent every pixel of the TI-84+. This consumes 288x192 pixels of the
+to represent each pixel of the TI-84+. This consumes 288x192 pixels of the
 Nspire LCD screen. The remaining pixels form a border around the TI-84+ screen.
 Early Nspire OS versions painted the border in black (maybe greyish) color. But
 later Nspire OS versions changed the border to be white, which makes the border
@@ -669,12 +665,12 @@ less noticeable.
 
 If you are using the Nspire Clickpad (blue/white) with a very early OS version
 (e.g. 1.4.11653 2008-07-09), there is another reason to upgrade to the latest
-OS, other than the appearance of the border. There seems to be a bug in the OS
-with regards to keyboard handling: If you press a key repeatedly and rapidly,
-some of the presses may not register. Every few seconds, there seems to be
-something that interrupts the keyboard handler, and causes a button press to be
-missed. If the Nspire Clickpad is upgraded to the latest OS (e.g. 3.9.0.463
-2014-06-25), the problem seems to disappear.
+OS, other than the appearance of the border on the LCD screen. There seems to be
+a bug in the early OS with regards to keyboard handling: If you press a key
+repeatedly and rapidly, some of the presses may not register. Every few seconds,
+there seems to be something that interrupts the keyboard handler, and causes a
+button press to be missed. If the Nspire Clickpad is upgraded to the latest OS
+(e.g. 3.9.0.463 2014-06-25), the problem seems to disappear.
 
 The physical size of the emulated TI-84+ display on the Nspire LCD is slightly
 larger than a real TI-84+. This makes the letters and numbers appear larger than
@@ -694,30 +690,30 @@ light-sleep mode and a deep-sleep mode. When the calculator is turned off, it
 seems to go into the light-sleep mode, and pressing the ON button brings the
 calculator back instantly. If the calculator is left in light-sleep mode for a
 long time (24-48 hours is my guess), the calculator goes into deep-sleep mode.
-If the ON button is pressed in the deep-sleep mode, the calculator seems to
+If the ON button is pressed in deep-sleep mode, the calculator seems to
 reinitialize itself and takes maybe 25-30 seconds to reload the Nspire OS, then
-another 5-8 seconds to load the TI-84+ emulator. The total wait time to RPN83P
-can be 30-40 seconds, depending whether it is the Clickpad or the Touchpad
-model. This lengthy wake time from deep-sleep mode can be annoying if you want
+another 5-8 seconds to load the TI-84+ emulator. The total wait time from
+pressing the ON button to getting the prompt in the RPN83P app can be 30-40
+seconds. This lengthy wake time from deep-sleep mode can be annoying if you want
 to use the calculator for some quick calculations.
 
 All else being equal, I recommend the Nspire Touchpad (black/white) model over
 the Nspire Clickpad (blue/white) model. The Touchpad supports 3 power sources
-including 4xAAA batteries, is slightly faster waking up from deep sleep, and
-looks a lot better.
+including 4xAAA batteries, it takes slightly less time waking up from deep
+sleep, and it looks a lot better in my opinion.
 
 **Batteries**
 
-A note about batteries. All TI-83+, 84+, and Nspire calculators can be powered
-by four (4) AAA batteries. Although calculator manufacturers usually specify
-alkaline batteries, I always recommend using low-self discharge (LSD)
-rechargeable NiMH batteries instead. Alkaline batteries often leak when they are
-discharged completely, potentially destroying the calculator; NiMH almost never
-leak. Alkaline batteries likely cause more environment damage than rechargeable
-NiMH batteries in the long run. NiMH batteries are now so cheap, it takes only a
-few recharge cycles to break even compared to most brands of alkaline batteries.
-For most people, in most situations, using NiMH makes far more sense than using
-alkalines.
+A note about batteries. All TI-83+, 84+, and Nspire calculators mentioned above
+can be powered by four (4) AAA batteries. Although calculator manufacturers
+usually specify alkaline batteries, I always recommend using low-self discharge
+(LSD) rechargeable NiMH batteries instead. Alkaline batteries often leak when
+they are discharged completely, potentially destroying the calculator; NiMH
+almost never leak. Alkaline batteries likely cause more environment damage than
+rechargeable NiMH batteries in the long run. NiMH batteries are now so cheap, it
+takes only a few recharge cycles to break even compared to most brands of
+alkaline batteries. For most people, in most situations, using NiMH makes more
+sense than using alkalines.
 
 ## Basic Usage
 
