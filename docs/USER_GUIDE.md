@@ -1997,7 +1997,7 @@ Prior to v0.10, the `Comma-EE` button invoked the `EE` function for *both* comma
 without having to press the `2ND` button.
 
 However, in v0.10 when record objects were added to support DATE functions (see
-[USER_GUIDE_MODE.md](USER_GUIDE_DATE.md)), the comma symbol was selected to be
+[USER_GUIDE_DATE.md](USER_GUIDE_DATE.md)), the comma symbol was selected to be
 the separator between the components of those objects. But that meant that
 entering numbers in scientific notation would require the `2ND` key again. For
 users who rarely or never use the DATE functions, the `EE,` option can be used
