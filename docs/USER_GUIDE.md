@@ -734,7 +734,8 @@ to use the calculator for some quick calculations.
 All else being equal, I recommend the Nspire Touchpad (black/white) model over
 the Nspire Clickpad (blue/white) model. The Touchpad supports 3 power sources
 including 4xAAA batteries, it takes slightly less time waking up from deep
-sleep, and it looks a lot better in my opinion.
+sleep, the Touchpad keyboard is actually usable if you want to use it in
+TI-Nspire mode, and it looks a lot better in my opinion.
 
 **Batteries**
 
