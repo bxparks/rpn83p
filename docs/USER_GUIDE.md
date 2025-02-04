@@ -643,7 +643,7 @@ that only a mini-USB-B cable is required, instead of the special 2.5mm cable. In
 some parts of the world, the cost of the cable may be more than the difference
 in price between the TI-84+/84+SE over their cheaper TI-83+/83+SE counterparts.
 
-The TI-84+ models are physical larger than the TI-83+ models. The buttons are
+The TI-84+ models are physically larger than the TI-83+ models. The buttons are
 slightly bigger to take advantage of the larger case. Some people may prefer
 that, but personally, the smaller TI-83+ form factor feels better in my hands
 than the larger TI-84+ form factor.
