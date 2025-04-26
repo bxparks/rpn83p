@@ -194,12 +194,13 @@ I have tested it on the following calculators that I own:
 
 - TI-83 Plus (OS v1.19)
 - TI-83 Plus Silver Edition (OS v1.19)
+- TI-84 Plus (OS v2.55MP)
 - TI-84 Plus Silver Edition (OS v2.55MP)
-- TI-Nspire with TI-84 Plus Keypad (OS v2.46)
+- TI-Nspire Clickpad with TI-84 Plus Keypad (OS v2.46)
+- TI-Nspire Touchpad with TI-84 Plus Keypad (OS v2.56MP)
 
 Community members have verified that it works on the following variants:
 
-- TI-84 Plus
 - TI-84 Plus Pocket SE
 - TI-84 Pocket.fr (French version of the Pocket SE?)
 

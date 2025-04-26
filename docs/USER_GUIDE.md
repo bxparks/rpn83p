@@ -519,13 +519,13 @@ I have tested it on the following calculators that I own:
 
 - TI-83 Plus (OS v1.19)
 - TI-83 Plus Silver Edition (OS v1.19)
+- TI-84 Plus (OS v2.55MP)
 - TI-84 Plus Silver Edition (OS v2.55MP)
 - TI-Nspire Clickpad with TI-84 Plus Keypad (OS v2.46)
 - TI-Nspire Touchpad with TI-84 Plus Keypad (OS v2.56MP)
 
 Community members have verified that it works on the following variants:
 
-- TI-84 Plus
 - TI-84 Plus Pocket SE
 - TI-84 Pocket.fr (French version of the Pocket SE?)
 
@@ -621,11 +621,11 @@ inconvenient and easier to lose the cover.
 
 **TI-84 Plus**
 
-I don't own a regular TI-84+, but it looks physically identical to the TI-84
-Plus Silver Edition (see next). The difference is that the TI-84+ comes only 480
-kB of flash memory versus the 1.5 MB of the Silver Edition. As of 2025, I
-believe Texas Instruments still manufactures the 84+ model, but not the 84+SE
-model.
+The TI-84 Plus looks physically identical to the TI-84 Plus Silver Edition (see
+next). There seems to be no functional difference, except that the TI-84+
+supports only 480 kB of flash memory versus the 1.5 MB of the Silver Edition. As
+of 2025, I believe Texas Instruments still manufactures the 84+ model, but not
+the 84+SE model.
 
 **TI-84 Plus Silver Edition**
 
@@ -736,6 +736,16 @@ the Nspire Clickpad (blue/white) model. The Touchpad supports 3 power sources
 including 4xAAA batteries, it takes slightly less time waking up from deep
 sleep, the Touchpad keyboard is actually usable if you want to use it in
 TI-Nspire mode, and it looks a lot better in my opinion.
+
+There is one additional difference between an Nspire and a regular TI-83+/84+.
+When the Nspire is turned off and in deep-sleep mode, it seems to consume
+battery power at a much higher rate than a regular TI-83+ or TI-84+. An Nspire
+in the off-state can completely deplete a set of freshly-charged AAA batteries
+in only 2-3 months (I use 750 mAh NiMH batteries, see section below). In
+contrast, the same set of batteries will work fine after being in an 83+/84+ in
+the off-state for 5-6 months. (I don't have the equipment to measure the exact
+amount of microamps consumed by each calculator model. But my guess is that the
+Nspire consumes 3-5X the idle current of an 83+/84+.)
 
 **Batteries**
 
