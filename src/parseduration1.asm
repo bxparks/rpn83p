@@ -3,7 +3,14 @@
 ; Copyright (c) 2025 Brian T. Park
 ;
 ; Functions related to parsing a compact Duration object of the form
-; '[-][{i16}D][{i8}H][{i8}M][{i8}S]'.
+; '[-][{i16}D][{i16}H][{i16}M][{i16}S]'. All fields (days, hours, minutes,
+; seconds) support values as large as 9999 (4 digits) when parsed. They are
+; normalized when the Duration object is created:
+;
+;   days:[0,65535]
+;   hours: [0,23]
+;   minutes: [0,59]
+;   seconds: [0,59]
 ;
 ; Labels with Capital letters are intended to be exported to other flash pages
 ; and should be placed in the branch table on Flash Page 0. Labels with
@@ -62,10 +69,12 @@ parseCompactDurationLoop:
     pop de
     ; Look for modifier
     call parseCompactDurationDelimiter ; A=modifier
-    ; Update parseDurationBufXxx
+    ; Update parseDurationBufXxx field
     call updateCompactDurationComponent
     djnz parseCompactDurationLoop
 parseCompactDurationLoopBreak:
+    ; Normalize parseDurationBuf
+    call normalizeCompactDurationBuf
     ; Copy parseDurationBuf into DE=Duration
     call copyCompactDurationBufIntoDuration
     ; Check for negative sign '-'
@@ -76,6 +85,65 @@ parseCompactDurationLoopBreak:
     ex de, hl ; HL=Duration
     call chsDurationPageOne
     ret
+
+; Description: Normalize the days, hours, minutes, seconds fields which are u16
+; in the parseDurationBuf structure into days:u16, hours:u8, minutes:u8,
+; seconds:u8.
+; Input:
+;   - (parseDurationBuf): contains parsed Duration fields
+; Output:
+;   - (parseDurationBuf): normalized
+; Destroys: A
+; Preserves: DE, BC, HL
+; Throws: Err:Invalid if any bits overflow
+normalizeCompactDurationBuf:
+    push hl
+    push de
+    push bc
+
+    ; normalize 'seconds'
+    ld hl, (parseDurationBufSeconds)
+    ld c, 60
+    call divHLByCPageOne ; HL=quotient; A=remainder
+    ld (parseDurationBufSeconds), a
+    xor a
+    ld (parseDurationBufSeconds + 1), a
+    ; overflow to 'minutes'
+    ex de, hl ; DE=quotient
+    ld hl, (parseDurationBufMinutes)
+    add hl, de ; new minutes
+    jr c, normalizeCompactDurationBufInvalid
+    ; normalize 'minutes'
+    ld c, 60
+    call divHLByCPageOne ; HL=quotient; A=remainder
+    ld (parseDurationBufMinutes), a
+    xor a
+    ld (parseDurationBufMinutes + 1), a
+    ; overflow to 'hours'
+    ex de, hl ; DE=quotient
+    ld hl, (parseDurationBufHours)
+    add hl, de ; new hours
+    jr c, normalizeCompactDurationBufInvalid
+    ; normalize 'hours'
+    ld c, 24
+    call divHLByCPageOne ; HL=quotient; A=remainder
+    ld (parseDurationBufHours), a
+    xor a
+    ld (parseDurationBufHours + 1), a
+    ; overflow to 'days'
+    ex de, hl ; DE=quotient
+    ld hl, (parseDurationBufDays)
+    add hl, de
+    jr c, normalizeCompactDurationBufInvalid
+    ld (parseDurationBufDays), hl
+
+    pop bc
+    pop de
+    pop hl
+    ret
+
+normalizeCompactDurationBufInvalid:
+    bcall(_ErrInvalid)
 
 ; Description: Copy the fields in parseDurationBuf into the Duration
 ; pointed by DE.
@@ -161,7 +229,6 @@ updateCompactDurationComponentH:
     set parseDurationBufFlagHours, (hl)
     ; Move the u8 into appropriate field
     ld hl, (parseDurationBufCurrent)
-    call checkHLIsU8
     ld (parseDurationBufHours), hl
     pop hl ; stack=[]
     ret
@@ -172,7 +239,6 @@ updateCompactDurationComponentM:
     set parseDurationBufFlagMinutes, (hl)
     ; Move the u8 into appropriate field
     ld hl, (parseDurationBufCurrent)
-    call checkHLIsU8
     ld (parseDurationBufMinutes), hl
     pop hl ; stack=[]
     ret
@@ -183,25 +249,9 @@ updateCompactDurationComponentS:
     set parseDurationBufFlagSeconds, (hl)
     ; Move the u8 into appropriate field
     ld hl, (parseDurationBufCurrent)
-    call checkHLIsU8
     ld (parseDurationBufSeconds), hl
     pop hl ; stack=[]
     ret
-
-; Description: Check that (HL) is a u8 number, not a u16 number.
-; Input: HL:u16 or u8
-; Destroys: none
-; Throws: Err:Syntax if u16
-checkHLIsU8:
-    push af
-    ld a, h
-    or a
-    jr nz, parseCompactDurationInvalidErr
-    pop af
-    ret
-
-parseCompactDurationInvalidErr:
-    bcall(_ErrInvalid)
 
 ; Description: Read the modifier suffix in the string, which must be 'D', 'H',
 ; 'M', or 'S'.

@@ -71,3 +71,28 @@ multABy10:
     add a, c ; A=10*A
     pop bc
     ret
+
+;------------------------------------------------------------------------------
+
+; Description: Divide HL by C
+; Input: HL=dividend; C=divisor
+; Output: HL=quotient; A=remainder
+; Destroys: A, HL
+; Preserves: BC, DE
+divHLByCPageOne:
+    push bc
+    xor a ; A=remainder
+    ld b, 16
+divHLByCLoopPageOne:
+    add hl, hl
+    rla
+    jr c, divHLByCOnePageOne ; remainder overflowed, so must substract
+    cp c ; if remainder(A) < divisor(C): CF=1
+    jr c, divHLByCZeroPageOne
+divHLByCOnePageOne:
+    sub c
+    inc l ; set bit 0 of quotient
+divHLByCZeroPageOne:
+    djnz divHLByCLoopPageOne
+    pop bc
+    ret
