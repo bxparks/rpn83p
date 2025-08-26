@@ -63,6 +63,9 @@ parseAndClearInputBufNonEmpty:
     ld a, ':' ; A=':'
     call findChar ; CF=1 if found; HL preserved
     jr c, parseAndClearInputBufTaggedNumber
+    ; Check for DHMS which identifies a compact Duration.
+    call checkCompactDuration ; CF=1 if compact Duration
+    jr c, parseAndClearInputBufCompactDuration
     ; Everything else should be a Real or a Complex number.
     call parseInputBufNumber ; OP1/OP2=real or complex
     jp ClearInputBuf ; see note above
@@ -71,6 +74,9 @@ parseAndClearInputBufRecord:
     jp ClearInputBuf ; see note above
 parseAndClearInputBufTaggedNumber:
     call parseInputBufTaggedNumber ; OP1/OP2:real
+    jp ClearInputBuf ; see note above
+parseAndClearInputBufCompactDuration:
+    call parseInputBufCompactDuration ; OP1/OP2:real
     jp ClearInputBuf ; see note above
 
 ;------------------------------------------------------------------------------
@@ -366,7 +372,8 @@ parseInputBufDuration:
     ret
 
 ;-----------------------------------------------------------------------------
-; Parse integers with ':' modifiers. Accepted values are:
+; Parse integers with ':' modifiers into RpnDuration object.
+; Accepted values are:
 ;   - nn:D - Duration.days
 ;   - nn:H - Duration.hours
 ;   - nn:M - Duration.minutes
@@ -378,7 +385,7 @@ parseInputBufDuration:
 ; Input:
 ;   - HL:(PascalString*)=inputBuf
 ; Output:
-;   - OP1:Duration=duration
+;   - OP1:RpnDuration=duration
 ; Destroys: all
 parseInputBufTaggedNumber:
     inc hl ; skip len byte
@@ -501,4 +508,32 @@ clearDuration:
     pop hl
     pop de
     pop bc
+    ret
+
+;-----------------------------------------------------------------------------
+; Parse Compact Duration string into an RpnDuration object.
+;-----------------------------------------------------------------------------
+
+; Description: Parse a compact Duration string.
+; terminator. Then check for 'D', 'H', 'M', 'S', and move the integer into the
+; correct position in the Duration object.
+; Input:
+;   - HL:(PascalString*)=inputBuf
+; Output:
+;   - OP1:RpnDuration=duration
+; Destroys: all
+parseInputBufCompactDuration:
+    inc hl ; skip len byte
+    ; set up target RpnDuration object
+    ex de, hl ; DE=inputBuf
+    ld hl, OP1 ; HL:RpnDuration
+    ld a, rpnObjectTypeDuration
+    call setOp1RpnObjectTypePageOne ; HL=OP1+sizeof(type)=duration
+    ; Parse the Duration string in compact form
+    push hl ; stack=[duration]
+    ex de, hl ; DE=Duration; HL=inputBuf
+    call parseCompactDuration
+    pop hl ; stack=[]; HL=duration
+    ; Validate Duration object
+    bcall(_ValidateDuration)
     ret

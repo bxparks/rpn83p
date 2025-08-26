@@ -629,6 +629,30 @@ parseBufFlagMantissaNeg equ 0 ; set if mantissa has a negative sign
 ; mantissa and the exponent digits. This value does not include the $80 offset.
 parseBufExponent equ parseBufFlags + 1 ; i8
 
+; Temporary variables used for parsing Compact Duration objects. Overlaps 9
+; bytes with the 'parseBuf' used by floating point parsing.
+;   struct CompactDurationBuf {
+;     uint8_t flags;
+;     uint16_t days;
+;     uint16_t hours;
+;     uint16_t minutes;
+;     uint16_t seconds;
+;     uint16_t current;
+;   }
+compactDurationBuf equ parseBuf
+compactDurationBufFlags equ compactDurationBuf
+compactDurationBufFlagSign equ 0
+compactDurationBufFlagDays equ 1
+compactDurationBufFlagHours equ 2
+compactDurationBufFlagMinutes equ 3
+compactDurationBufFlagSeconds equ 4
+compactDurationBufDays equ compactDurationBufFlags + 1
+compactDurationBufHours equ compactDurationBufDays + 2
+compactDurationBufMinutes equ compactDurationBufHours + 2
+compactDurationBufSeconds equ compactDurationBufMinutes + 2
+compactDurationBufCurrent equ compactDurationBufSeconds + 2
+compactDurationBufSizeOf equ 11
+
 ; Various OS flags and parameters are copied to these variables upon start of
 ; the app, then restored when the app quits.
 savedTrigFlags equ parseBufExponent + 1 ; u8
@@ -2009,6 +2033,7 @@ defpage(1)
 #include "parse1.asm"
 #include "parsefloat1.asm"
 #include "parsedate1.asm"
+#include "parseduration1.asm"
 #include "parseclassifiers1.asm"
 #include "arg1.asm"
 #include "base1.asm"
@@ -2024,6 +2049,7 @@ defpage(1)
 #include "hms1.asm"
 #include "prob1.asm"
 #include "format1.asm"
+#include "duration1.asm"
 #ifdef DEBUG
 #include "debug1.asm"
 #endif
