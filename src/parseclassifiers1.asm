@@ -74,3 +74,22 @@ isVariableLetter:
 isVariableLetterFalse:
     or a ; CF=0
     ret
+
+;-----------------------------------------------------------------------------
+
+; Description: Check if the character in A is a Duration object short-hand
+; character, i.e. 'D', 'H', 'M', 'S'.
+; Input: A: char
+; Output: CF=1 if valid
+; Preserves: all
+isDurationLetter:
+    cp 'D'
+    jr z, isValidDigitTrue
+    cp 'H'
+    jr z, isValidDigitTrue
+    cp 'M'
+    jr z, isValidDigitTrue
+    cp 'S'
+    jr z, isValidDigitTrue
+    or a ; CF=0
+    ret
