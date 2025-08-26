@@ -48,7 +48,7 @@ checkCompactDurationFound:
 ; Destroys: all
 parseCompactDuration:
     call clearCompactDurationBuf
-    call parseCompactDurationSign ; updates compactDurationBufSign, HL
+    call parseCompactDurationSign ; updates parseDurationBufSign, HL
     ld b, 4
 parseCompactDurationLoop:
     ; Check for end of string
@@ -57,39 +57,39 @@ parseCompactDurationLoop:
     jr z, parseCompactDurationLoopBreak
     ; Check for up to 4 unique components of the form "{u16}{letter}"
     push de
-    ld de, compactDurationBufCurrent
+    ld de, parseDurationBufCurrent
     call parseU16D4 ; (DE)=u16; HL=next char; preserves BC
     pop de
     ; Look for modifier
     call parseCompactDurationDelimiter ; A=modifier
-    ; Update compactDurationBufXxx
+    ; Update parseDurationBufXxx
     call updateCompactDurationComponent
     djnz parseCompactDurationLoop
 parseCompactDurationLoopBreak:
-    ; Copy compactDurationBuf into DE=Duration
+    ; Copy parseDurationBuf into DE=Duration
     call copyCompactDurationBufIntoDuration
     ; Check for negative sign '-'
-    ld a, (compactDurationBufFlags)
-    bit compactDurationBufFlagSign, a
+    ld a, (parseDurationBufFlags)
+    bit parseDurationBufFlagSign, a
     ret z
     ; Invert the Duration object
     ex de, hl ; HL=Duration
     call chsDurationPageOne
     ret
 
-; Description: Copy the fields in compactDurationBuf into the Duration
+; Description: Copy the fields in parseDurationBuf into the Duration
 ; pointed by DE.
 ; Input:
 ;   - DE:Duration
-;   - (compactDurationBuf): contains parsed Duration fields
+;   - (parseDurationBuf): contains parsed Duration fields
 ; Output:
-;   - DE:Duration filled in from compactDurationBuf
+;   - DE:Duration filled in from parseDurationBuf
 ; Destroys: A
 ; Preserves: DE, BC, HL
 copyCompactDurationBufIntoDuration:
     push de
     push hl
-    ld hl, compactDurationBufDays
+    ld hl, parseDurationBufDays
     ; daysLow
     ld a, (hl)
     ld (de), a
@@ -123,18 +123,18 @@ copyCompactDurationBufIntoDuration:
     pop de
     ret
 
-; Description: Update the u16 in (compactDurationBufCurrent) to the appropriate
-; 'compactDurationBuf' field, depending on the modifier value in register A.
+; Description: Update the u16 in (parseDurationBufCurrent) to the appropriate
+; 'parseDurationBuf' field, depending on the modifier value in register A.
 ; Input:
 ;   - A:char=modifier
-;   - (compactDurationBufCurrent):u16=value
+;   - (parseDurationBufCurrent):u16=value
 ; Output:
-;   - (compactDurationBufXXX) updated
+;   - (parseDurationBufXXX) updated
 ; Preserves:
 ;   - all
 updateCompactDurationComponent:
     push hl ; stack=[HL]
-    ld hl, compactDurationBufFlags
+    ld hl, parseDurationBufFlags
     cp 'D'
     jr z, updateCompactDurationComponentD
     cp 'H'
@@ -146,45 +146,45 @@ updateCompactDurationComponent:
     jr parseCompactDurationSyntaxErr ; should never happen unless buggy
 updateCompactDurationComponentD:
     ; Check for duplicate 'D'
-    bit compactDurationBufFlagDays, (hl)
+    bit parseDurationBufFlagDays, (hl)
     jr nz, parseCompactDurationSyntaxErr
-    set compactDurationBufFlagDays, (hl)
+    set parseDurationBufFlagDays, (hl)
     ; Move the u16 into appropriate field
-    ld hl, (compactDurationBufCurrent)
-    ld (compactDurationBufDays), hl
+    ld hl, (parseDurationBufCurrent)
+    ld (parseDurationBufDays), hl
     pop hl ; stack=[]
     ret
 updateCompactDurationComponentH:
     ; Check for duplicate 'H'
-    bit compactDurationBufFlagHours, (hl)
+    bit parseDurationBufFlagHours, (hl)
     jr nz, parseCompactDurationSyntaxErr
-    set compactDurationBufFlagHours, (hl)
+    set parseDurationBufFlagHours, (hl)
     ; Move the u8 into appropriate field
-    ld hl, (compactDurationBufCurrent)
+    ld hl, (parseDurationBufCurrent)
     call checkHLIsU8
-    ld (compactDurationBufHours), hl
+    ld (parseDurationBufHours), hl
     pop hl ; stack=[]
     ret
 updateCompactDurationComponentM:
     ; Check for duplicate 'M'
-    bit compactDurationBufFlagMinutes, (hl)
+    bit parseDurationBufFlagMinutes, (hl)
     jr nz, parseCompactDurationSyntaxErr
-    set compactDurationBufFlagMinutes, (hl)
+    set parseDurationBufFlagMinutes, (hl)
     ; Move the u8 into appropriate field
-    ld hl, (compactDurationBufCurrent)
+    ld hl, (parseDurationBufCurrent)
     call checkHLIsU8
-    ld (compactDurationBufMinutes), hl
+    ld (parseDurationBufMinutes), hl
     pop hl ; stack=[]
     ret
 updateCompactDurationComponentS:
     ; Check for duplicate 'S'
-    bit compactDurationBufFlagSeconds, (hl)
+    bit parseDurationBufFlagSeconds, (hl)
     jr nz, parseCompactDurationSyntaxErr
-    set compactDurationBufFlagSeconds, (hl)
+    set parseDurationBufFlagSeconds, (hl)
     ; Move the u8 into appropriate field
-    ld hl, (compactDurationBufCurrent)
+    ld hl, (parseDurationBufCurrent)
     call checkHLIsU8
-    ld (compactDurationBufSeconds), hl
+    ld (parseDurationBufSeconds), hl
     pop hl ; stack=[]
     ret
 
@@ -232,7 +232,7 @@ parseCompactDurationSyntaxErr:
 ;   - HL:(const char*)=inputBuf
 ; Output:
 ;   - HL=point to char after optional sign
-;   - (compactDurationBufFlagSign) = 1 if '-' exists, otherwise 0
+;   - (parseDurationBufFlagSign) = 1 if '-' exists, otherwise 0
 ; Destroys: A, HL
 ; Preserves: BC, DE
 parseCompactDurationSign:
@@ -243,21 +243,21 @@ parseCompactDurationSign:
     ret nz ; No '-' sign.
     ; Contains '-' so set the sign bit.
     inc hl
-    ld a, (compactDurationBufFlags)
-    set compactDurationBufFlagSign, a
-    ld (compactDurationBufFlags), a
+    ld a, (parseDurationBufFlags)
+    set parseDurationBufFlagSign, a
+    ld (parseDurationBufFlags), a
     ret
 
-; Description: Clear the compactDurationBuf structure.
+; Description: Clear the parseDurationBuf structure.
 ; Input: none
 ; Output:
-;   - compactDurationBuf cleared
+;   - parseDurationBuf cleared
 ; Destroys: A, B
 clearCompactDurationBuf:
     push hl
-    ld b, compactDurationBufSizeOf
+    ld b, parseDurationBufSizeOf
     xor a
-    ld hl, compactDurationBufFlags
+    ld hl, parseDurationBufFlags
 clearCompactDurationBufLoop:
     ld (hl), a
     inc hl

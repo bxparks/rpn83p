@@ -597,6 +597,8 @@ appBufferStart equ appStateEnd
 isRtcAvailable equ appBufferStart ; u8
 
 ; Temporary buffer for parsing keyboard input into a floating point number.
+; (TODO: Rename this to parseFloatBuf, for consistency with parseDurationBuf).
+;
 ; When the app is in BASE mode, the inputBuf is parsed directly, and this
 ; buffer is not used. In normal floating point mode, each mantissa digit is
 ; converted into this data structure, one byte per digit, before being
@@ -629,9 +631,9 @@ parseBufFlagMantissaNeg equ 0 ; set if mantissa has a negative sign
 ; mantissa and the exponent digits. This value does not include the $80 offset.
 parseBufExponent equ parseBufFlags + 1 ; i8
 
-; Temporary variables used for parsing Compact Duration objects. Overlaps 9
+; Temporary variables used for parsing Compact Duration objects. Overlaps 11
 ; bytes with the 'parseBuf' used by floating point parsing.
-;   struct CompactDurationBuf {
+;   struct ParseDurationBuf {
 ;     uint8_t flags;
 ;     uint16_t days;
 ;     uint16_t hours;
@@ -639,19 +641,19 @@ parseBufExponent equ parseBufFlags + 1 ; i8
 ;     uint16_t seconds;
 ;     uint16_t current;
 ;   }
-compactDurationBuf equ parseBuf
-compactDurationBufFlags equ compactDurationBuf
-compactDurationBufFlagSign equ 0
-compactDurationBufFlagDays equ 1
-compactDurationBufFlagHours equ 2
-compactDurationBufFlagMinutes equ 3
-compactDurationBufFlagSeconds equ 4
-compactDurationBufDays equ compactDurationBufFlags + 1
-compactDurationBufHours equ compactDurationBufDays + 2
-compactDurationBufMinutes equ compactDurationBufHours + 2
-compactDurationBufSeconds equ compactDurationBufMinutes + 2
-compactDurationBufCurrent equ compactDurationBufSeconds + 2
-compactDurationBufSizeOf equ 11
+parseDurationBuf equ parseBuf
+parseDurationBufFlags equ parseDurationBuf
+parseDurationBufFlagSign equ 0
+parseDurationBufFlagDays equ 1 ; 'D' modifier detected
+parseDurationBufFlagHours equ 2 ; 'H' modifier detected
+parseDurationBufFlagMinutes equ 3 ; 'M' modifier detected
+parseDurationBufFlagSeconds equ 4 ; 'S' modifier detected
+parseDurationBufDays equ parseDurationBufFlags + 1
+parseDurationBufHours equ parseDurationBufDays + 2
+parseDurationBufMinutes equ parseDurationBufHours + 2
+parseDurationBufSeconds equ parseDurationBufMinutes + 2
+parseDurationBufCurrent equ parseDurationBufSeconds + 2
+parseDurationBufSizeOf equ 11
 
 ; Various OS flags and parameters are copied to these variables upon start of
 ; the app, then restored when the app quits.
