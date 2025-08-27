@@ -757,14 +757,14 @@ mHrToHmsHandler:
 mHmsPlusHandler:
     call closeInputAndRecallXY ; OP1=Y; OP2=X
     bcall(_HmsPlus)
-    jp replaceX
+    jp replaceXY
 
 ; Description: Apply 'HMS-' operation.
 ; Destroys: OP1, OP2, OP2, OP4 (temp)
 mHmsMinusHandler:
     call closeInputAndRecallXY ; OP1=Y; OP2=X
     bcall(_HmsMinus)
-    jp replaceX
+    jp replaceXY
 
 ;-----------------------------------------------------------------------------
 ; Children nodes of MODE menu.
