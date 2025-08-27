@@ -1,6 +1,12 @@
 # Changelog
 
 - Unreleased
+    - Support entry of Duration objects in compact string form,
+      `{dd}D{hh}H{mm}M{ss}S`. For example, `1D30M2S` for `DR{1,0,30,2}`.
+        - Obsoletes the "Duration Colon Modifier" entry form `{nn}:{modifier}`.
+          Currently retained for backwards compatibility, but will probably be
+          removed in the future. It is more difficult to enter, and is less
+          flexibile (only a single modifier allowed).
 - 1.0.0 (2024-07-19)
     - RPN83P is now out of beta!
     - Documentation
