@@ -7,9 +7,12 @@
           Currently retained for backwards compatibility, but will probably be
           removed in the future. It is more difficult to enter, and is less
           flexibile (only a single modifier allowed).
-    - Add `HMS+` and `HMS-` menu functions.
-    - Add normalization to `>HMS` conversion function to prevent bug that caused
-      `[1.32] [1.32] [HMS+]` to return `3.0360` instead of `3.04`.
+    - HMS functions
+        - Add `HMS+` and `HMS-` menu functions.
+        - Add normalization to `>HMS` conversion function to prevent bug that
+          caused `[1.32] [1.32] [HMS+]` to return `3.0360` instead of `3.04`.
+        - Validate `mm` and `ss` fields of `hh.mmss` and throw `Err:Invalid` if
+          greater than than 60.
 - 1.0.0 (2024-07-19)
     - RPN83P is now out of beta!
     - Documentation

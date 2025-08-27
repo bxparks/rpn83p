@@ -39,12 +39,20 @@ HmsToHr:
     bcall(_OP1ToOP4) ; OP4 = mm.ss
     bcall(_Trunc) ; OP1 = mm
     bcall(_PushRealO1) ; FPS=[hh, mm]
+    ; Validate
+    bcall(_OP2Set60) ; OP2 = 60
+    bcall(_CpOP1OP2) ; if mm >= 60: CF=0
+    jr nc, HmsToHrInvalid
 
     ; Extract the 'ss.nnn' part
     bcall(_OP4ToOP1) ; OP1 = mm.ssnnn
     bcall(_Frac) ; OP1 = .ssnnn
     call op2Set100PageOne
     bcall(_FPMult) ; OP1 = ss.nnn
+    ; Validate
+    bcall(_OP2Set60) ; OP2 = 60
+    bcall(_CpOP1OP2) ; if mm >= 60: CF=0
+    jr nc, HmsToHrInvalid
 
     ; Reassemble in the form of `hh.nnn`.
     ; Extract ss.nnn/60
@@ -59,6 +67,9 @@ HmsToHr:
     bcall(_PopRealO2) ; FPS=[]; OP1 = hh
     bcall(_FPAdd) ; OP1 = hh + (mm + ss.nnn/60) / 60
     ret
+
+HmsToHrInvalid:
+    bcall(_ErrInvalid)
 
 ; Description: Convert "hh.rrrr" to "hh.mmss". The formula is:
 ;   hh.mmss = int(hh + (mm + ss.nnn/100)/100
