@@ -1006,6 +1006,14 @@ _HmsFromHrLabel:
 _HmsFromHr equ _HmsFromHrLabel-branchTableBase
     .dw HmsFromHr
     .db 1
+_HmsPlusLabel:
+_HmsPlus equ _HmsPlusLabel-branchTableBase
+    .dw HmsPlus
+    .db 1
+_HmsMinusLabel:
+_HmsMinus equ _HmsMinusLabel-branchTableBase
+    .dw HmsMinus
+    .db 1
 
 ; prob1.asm
 _ProbPermLabel:

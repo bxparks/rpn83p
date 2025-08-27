@@ -101,3 +101,33 @@ HmsFromHr:
     bcall(_PopRealO2) ; FPS=[]; OP1 = hh
     bcall(_FPAdd) ; OP1 = hh + (mm + ss.nnn/100) / 100
     ret
+
+; Description: Add OP2(hh.mmss) to OP1(hh.mmss).
+; Input: OP1:hh.mmssY; OP2:hh.mmssX
+; Output: OP1 = hh.mmssY + hh.mmssX
+; Destroys: OP1, OP2, OP3, OP4 (temp)
+HmsPlus:
+    bcall(_PushRealO1) ; FPS=[hh.mmssY]
+    call op2ToOp1PageOne ; OP1=hh.mmssX
+    call HmsToHr ; OP1=hh.ddX
+    call exchangeFPSOP1PageOne ; FPS=[hh.ddX]; OP1=hh.mmssY
+    call HmsToHr ; OP1=hh.ddY
+    bcall(_PopRealO2) ; FPS=[]; OP2=hh.ddX
+    bcall(_FPAdd) ; OP1=hh.ddX+h.ddY
+    call HmsFromHr ; OP1=hh.mmss(X+Y)
+    ret
+
+; Description: Substract OP2(hh.mmss) from OP1(hh.mmss).
+; Input: OP1:hh.mmssY; OP2:hh.mmssX
+; Output: OP1 = hh.mmssY - hh.mmssX
+; Destroys: OP1, OP2, OP3, OP4 (temp)
+HmsMinus:
+    bcall(_PushRealO1) ; FPS=[hh.mmssY]
+    call op2ToOp1PageOne ; OP1=hh.mmssX
+    call HmsToHr ; OP1=hh.ddX
+    call exchangeFPSOP1PageOne ; FPS=[hh.ddX]; OP1=hh.mmssY
+    call HmsToHr ; OP1=hh.ddY
+    bcall(_PopRealO2) ; FPS=[]; OP2=hh.ddX
+    bcall(_FPSub) ; OP1=hh.ddY-hh.ddX
+    call HmsFromHr ; OP1=hh.mmss(Y-X)
+    ret

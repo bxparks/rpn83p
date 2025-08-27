@@ -271,6 +271,8 @@ MenuGroup root mRoot [
       MenuRow [
         MenuItem <Sconvert>HR mHmsToHr
         MenuItem <Sconvert>HMS mHrToHms
+        MenuItem HMS<SplusSign> mHmsPlus
+        MenuItem HMS<Sdash> mHmsMinus
       ]
     ]
     MenuGroup TVM mTvm [
