@@ -259,13 +259,13 @@ rpnObjectTypeDuration equ $26
 rpnObjectTypeDurationSizeOf equ 7
 
 ; Denominate number (i.e. a number with units):
-; - struct Denominate{unitType:u8, unitTag:u8, value:float}, 11 bytes
-; - struct RpnDenominate{type:u8[2], denominate:Denominate}, 13 bytes
+; - struct Denominate{unit:u8, value:float}, 10 bytes
+; - struct RpnDenominate{type:u8[2], denominate:Denominate}, 12 bytes
 rpnObjectTypeDenominate equ $27
-rpnObjectTypeDenominateSizeOf equ 13
+rpnObjectTypeDenominateSizeOf equ 12
 
-#define skipDenominateTypeHL inc hl \ inc hl
-#define skipDenominateTypeDE inc de \ inc de
+#define skipDenominateUnitHL inc hl
+#define skipDenominateUnitDE inc de
 
 ; An RpnObject is the union of all Rpn objects: RpnReal, RpnComplex, and so on.
 ; See the definition of 'struct RpnObject' in vars.asm. Its size is the
@@ -2024,6 +2024,7 @@ _DebugU32DEAsHex equ _DebugU32DEAsHexLabel-branchTableBase
 #include "tvmmenuhandlers.asm"
 #include "complexmenuhandlers.asm"
 #include "datemenuhandlers.asm"
+#include "unitmenuhandlers.asm"
 #include "common.asm"
 #include "memory.asm"
 #include "cstring.asm"

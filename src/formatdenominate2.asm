@@ -21,9 +21,9 @@
 ; Destroys: all, OP1-OP6
 FormatDenominate:
     skipRpnObjectTypeHL
-    skipDenominateTypeHL ; HL=value
+    skipDenominateUnitHL ; HL=value
     push de ; stack=[dest]
-    call move9ToOp1PageTwo ; OP1=value, works even if HL=OP1+4
+    call move9ToOp1PageTwo ; OP1=value, works even if HL was in OP1
     bcall(_FormReal) ; OP3=formatted string
     pop de ; stack=[]; DE=dest
     ; Create display string for a denominate number.
