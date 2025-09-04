@@ -239,7 +239,7 @@ rpnObjectTypeOffsetSizeOf equ 4
 ; - struct OffsetDateTime{datetime:DateTime, offset:Offset}, 9 bytes
 ; - struct RpnOffsetDateTime{type:u8[2], offsetDateTime:OffsetDateTime},
 ;   11 bytes
-; The sizeof(RpnOffsetDateTime) is 10, which is greater than the 9 bytes of a
+; The sizeof(RpnOffsetDateTime) is 11, which is greater than the 9 bytes of a
 ; TI-OS floating point number. But OPx registers are 11 bytes long. We have
 ; to careful and use expandOp1ToOp2() and shrinkOp2ToOp1() when parsing or
 ; manipulating this object.
@@ -257,6 +257,15 @@ rpnObjectTypeDayOfWeekSizeOf equ 3
 ; - struct RpnDuration{type:u8[2], duration:Duration}, 7 bytes
 rpnObjectTypeDuration equ $26
 rpnObjectTypeDurationSizeOf equ 7
+
+; Denominate number (i.e. a number with units):
+; - struct Denominate{unitType:u8, unitTag:u8, value:float}, 11 bytes
+; - struct RpnDenominate{type:u8[2], denominate:Denominate}, 13 bytes
+rpnObjectTypeDenominate equ $27
+rpnObjectTypeDenominateSizeOf equ 13
+
+#define skipDenominateTypeHL inc hl \ inc hl
+#define skipDenominateTypeDE inc de \ inc de
 
 ; An RpnObject is the union of all Rpn objects: RpnReal, RpnComplex, and so on.
 ; See the definition of 'struct RpnObject' in vars.asm. Its size is the
@@ -1387,6 +1396,12 @@ _FormatDuration equ _FormatDurationLabel-branchTableBase
     .dw FormatDuration
     .db 2
 
+; formatdenominate2.asm
+_FormatDenominateLabel:
+_FormatDenominate equ _FormatDenominateLabel-branchTableBase
+    .dw FormatDenominate
+    .db 2
+
 ; datevalidation2.asm
 _ValidateDateLabel:
 _ValidateDate equ _ValidateDateLabel-branchTableBase
@@ -2088,6 +2103,7 @@ defpage(2)
 #include "zone2.asm"
 #include "rtc2.asm"
 #include "formatdate2.asm"
+#include "formatdenominate2.asm"
 #include "integer40.asm"
 #include "integerconv40.asm"
 #include "fps2.asm"
