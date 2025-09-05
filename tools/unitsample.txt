@@ -1,0 +1,31 @@
+# This file defines the list of units supported by the UNIT conversion menu
+# functions.
+#
+# To preserve backwards compatibility with Denominate numbers (values with
+# units) stored in persistent memory (e.g. stack, registers, variables), this
+# file must be treated as *append* only. Previously defined units must never
+# be removed, modified, or reordered.
+#
+# Classes [
+#   {list of classes}
+# ]
+#
+# UnitTable [
+#   {list of units}
+# ]
+#
+# unit = 'Unit' {name} {displayName} {unitClass} {baseUnit} {scale}
+# unitclass = 'UnitClass' {className}
+
+UnitClasses [
+  UnitClass Length
+  UnitClass Area
+  UnitClass Volume
+]
+
+Units [
+  Unit Meter meter Length Meter 1.0
+  Unit Feet feet Length Meter 0.3048
+  Unit SqMeter sq<Sspace>meter Area SqMeter 1.0
+  Unit SqFeet sq<Sspace>feet Area SqMeter 0.09290304 # 0.3048*0.3048
+]
