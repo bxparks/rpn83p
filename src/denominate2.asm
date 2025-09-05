@@ -105,21 +105,6 @@ checkCompatibleUnitClass:
 
 ;-----------------------------------------------------------------------------
 
-; Description: Derive the value of the RpnDenominate object in OP1 in terms of
-; the target unit in register C. This is the value that will be displayed to
-; the user.
-; Input:
-;   - OP1/OP2:Real|RpnDenominate
-;   - A:u8=rpnObjectType
-;   - B:u8=srcUnitId
-;   - C:u8=targetUnitId
-; Output:
-;   - OP3:Real=targetValue
-; Destroys: all
-CalcTargetUnitValue:
-
-;-----------------------------------------------------------------------------
-
 ; Description: Shift real value of OP1 into the 'value' position of a
 ; RpnDenominate in-situ in OP1.
 ; Input:
