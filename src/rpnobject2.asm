@@ -208,3 +208,35 @@ checkOp3DurationPageTwo:
     call getOp3RpnObjectTypePageTwo
     cp rpnObjectTypeDuration
     ret
+
+;-----------------------------------------------------------------------------
+; Denominate numbers
+;-----------------------------------------------------------------------------
+
+checkOp1DenominatePageTwo:
+    call getOp1RpnObjectTypePageTwo
+    cp rpnObjectTypeDenominate
+    ret
+
+checkOp3DenominatePageTwo:
+    call getOp3RpnObjectTypePageTwo
+    cp rpnObjectTypeDenominate
+    ret
+
+; Description: Set the object in HL to an RpnDenominate.
+; Input:
+;   - A:u8=unit
+; Output:
+;   - HL[objectType]=rpnObjectTypeDenominate
+;   - HL[unit]:u8=A
+;   - HL=HL+rpnObjectTypeSizeOf+rpnDenominateUnitSizeOf
+; Destroys: HL
+; Preserves: A, BC, DE
+setOp1RpnDenominatePageTwo:
+    push af
+    ld a, rpnObjectTypeDenominate
+    call setOp1RpnObjectTypePageTwo
+    pop af
+    ld (hl), a
+    inc hl
+    ret

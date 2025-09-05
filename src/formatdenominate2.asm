@@ -20,19 +20,24 @@
 ;   - DE: points to NUL char at end of string
 ; Destroys: all, OP1-OP6
 FormatDenominate:
+    ; Print the target unit name.
     skipRpnObjectTypeHL
+    ld a, (hl) ; A=unit
     skipDenominateUnitHL ; HL=value
-    push de ; stack=[dest]
+    push hl ; stack=[value]
+    bcall(_GetUnitName) ; HL=name
+    call copyCStringPageTwo ; copy HL to DE
+    ; Print '='
+    ld a, '='
+    ld (de), a
+    inc de
+    ; Extract value into OP1 and format the value.
+    ex de, hl ; HL=dest
+    ex (sp), hl ; stack=[dest]; HL=value
     call move9ToOp1PageTwo ; OP1=value, works even if HL was in OP1
     bcall(_FormReal) ; OP3=formatted string
     pop de ; stack=[]; DE=dest
-    ; Create display string for a denominate number.
-    ; TODO: print real unit here
-    ld hl, unitPrefix
-    call copyCStringPageTwo ; copy HL to DE
+    ; Print value.
     ld hl, OP3
     call copyCStringPageTwo ; copy HL to DE
     ret
-
-unitPrefix:
-    .db "unit=", 0

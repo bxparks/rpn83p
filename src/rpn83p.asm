@@ -259,10 +259,13 @@ rpnObjectTypeDuration equ $26
 rpnObjectTypeDurationSizeOf equ 7
 
 ; Denominate number (i.e. a number with units):
-; - struct Denominate{unit:u8, value:float}, 10 bytes
+; - struct Denominate{targetUnit:u8, value:float}, 10 bytes
 ; - struct RpnDenominate{type:u8[2], denominate:Denominate}, 12 bytes
 rpnObjectTypeDenominate equ $27
 rpnObjectTypeDenominateSizeOf equ 12
+rpnDenominatedFieldType equ 0
+rpnDenominatedFieldTargetUnit equ 2
+rpnDenominatedFieldValue equ 3
 
 #define skipDenominateUnitHL inc hl
 #define skipDenominateUnitDE inc de
@@ -1396,12 +1399,6 @@ _FormatDuration equ _FormatDurationLabel-branchTableBase
     .dw FormatDuration
     .db 2
 
-; formatdenominate2.asm
-_FormatDenominateLabel:
-_FormatDenominate equ _FormatDenominateLabel-branchTableBase
-    .dw FormatDenominate
-    .db 2
-
 ; datevalidation2.asm
 _ValidateDateLabel:
 _ValidateDate equ _ValidateDateLabel-branchTableBase
@@ -1709,6 +1706,24 @@ _RtcSetTimeZone equ _RtcSetTimeZoneLabel-branchTableBase
 _RtcGetTimeZoneLabel:
 _RtcGetTimeZone equ _RtcGetTimeZoneLabel-branchTableBase
     .dw RtcGetTimeZone
+    .db 2
+
+; denominate2.asm
+_ConvertUnitLabel:
+_ConvertUnit equ _ConvertUnitLabel-branchTableBase
+    .dw ConvertUnit
+    .db 2
+
+; formatdenominate2.asm
+_FormatDenominateLabel:
+_FormatDenominate equ _FormatDenominateLabel-branchTableBase
+    .dw FormatDenominate
+    .db 2
+
+; unit2.asm
+_GetUnitNameLabel:
+_GetUnitName equ _GetUnitNameLabel-branchTableBase
+    .dw GetUnitName
     .db 2
 
 ; base2.asm
@@ -2104,7 +2119,12 @@ defpage(2)
 #include "zone2.asm"
 #include "rtc2.asm"
 #include "formatdate2.asm"
+;
+#include "denominate2.asm"
 #include "formatdenominate2.asm"
+#include "unitdef.asm"
+#include "unit2.asm"
+;
 #include "integer40.asm"
 #include "integerconv40.asm"
 #include "fps2.asm"

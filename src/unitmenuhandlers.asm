@@ -9,6 +9,34 @@
 ; UNIT > Row 1
 ;-----------------------------------------------------------------------------
 
+mUnitMeterHandler:
+    call closeInputAndRecallDenominateX ; A=rpnObjectType; B=objectUnit
+    ld c, unitMeterId
+    bcall(_ConvertUnit)
+    jp replaceX
+
+mUnitFeetHandler:
+    call closeInputAndRecallDenominateX ; A=rpnObjectType; B=objectUnit
+    ld c, unitFeetId
+    bcall(_ConvertUnit)
+    jp replaceX
+
+mUnitSqMeterHandler:
+    call closeInputAndRecallDenominateX ; A=rpnObjectType; B=objectUnit
+    ld c, unitSqMeterId
+    bcall(_ConvertUnit)
+    jp replaceX
+
+mUnitSqFeetHandler:
+    call closeInputAndRecallDenominateX ; A=rpnObjectType; B=objectUnit
+    ld c, unitSqFeetId
+    bcall(_ConvertUnit)
+    jp replaceX
+
+;-----------------------------------------------------------------------------
+; UNIT > Row 1
+;-----------------------------------------------------------------------------
+
 mFToCHandler:
     call closeInputAndRecallX
     ld a, 32

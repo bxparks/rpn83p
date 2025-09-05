@@ -371,6 +371,8 @@ checkValidRpnObjectCP1:
     ret z
     cp rpnObjectTypeDuration
     ret z
+    cp rpnObjectTypeDenominate
+    ret z
     bcall(_ErrDataType)
 checkValidNumber:
     bcall(_CkValidNum) ; destroys AF, HL

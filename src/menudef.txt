@@ -358,6 +358,13 @@ MenuGroup root mRoot [
     ]
     MenuGroup UNIT mUnit [
       MenuRow [
+        MenuItem m mUnitMeter
+        MenuItem ft mUnitFeet
+        MenuItem * *
+        MenuItem m<Scaret>2 mUnitSqMeter
+        MenuItem ft<Scaret>2 mUnitSqFeet
+      ]
+      MenuRow [
         MenuItem <Sconvert><Stemp>C mFToC
         MenuItem <Sconvert><Stemp>F mCToF
         MenuItem * *
