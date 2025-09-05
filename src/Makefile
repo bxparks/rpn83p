@@ -3,8 +3,8 @@ TARGETS := rpn83p.8xk rpn83p.8xp rpn83p.lst
 SPASM_DIR := ../../spasm
 SPASM_INC := $(SPASM_DIR)/inc
 SPASM := $(SPASM_DIR)/spasm
-#SPASM_FLAGS := -A -I $(SPASM_INC) -N
-SPASM_FLAGS := -A -I $(SPASM_INC) -N -DDEBUG
+SPASM_FLAGS := -A -I $(SPASM_INC) -N
+#SPASM_FLAGS := -A -I $(SPASM_INC) -N -DDEBUG
 
 SRCS := $(wildcard *.asm)
 

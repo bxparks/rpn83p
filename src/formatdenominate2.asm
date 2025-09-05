@@ -42,6 +42,7 @@ FormatDenominate:
     push de ; stack=[dest]
     call getDenominateDisplayValue ; OP1=displayValue
     ;
+    ld a, 10 ; maximum width of output
     bcall(_FormReal) ; OP3=formatted string
     pop de ; stack=[]; DE=dest
     ; Print value.
