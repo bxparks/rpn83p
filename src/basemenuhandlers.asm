@@ -3,6 +3,12 @@
 ; Copyright (c) 2023 Brian T. Park
 ;
 ; BASE menu handlers.
+;
+; Every handler is given the following input parameters:
+;   - HL:(MenuNode*)=currentMenuNode
+;   - CF:bool
+;       - 0 indicates 'onEnter' event into group
+;       - 1 indicates 'onExit' event from group
 ;-----------------------------------------------------------------------------
 
 ; Description: Group handler for BASE menu group.

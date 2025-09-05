@@ -3,6 +3,12 @@
 ; Copyright (c) 2023 Brian T. Park
 ;
 ; Handlers for menu items.
+;
+; Every handler is given the following input parameters:
+;   - HL:(MenuNode*)=currentMenuNode
+;   - CF:bool
+;       - 0 indicates 'onEnter' event into group
+;       - 1 indicates 'onExit' event from group
 ;-----------------------------------------------------------------------------
 
 ;-----------------------------------------------------------------------------
@@ -10,15 +16,11 @@
 ;-----------------------------------------------------------------------------
 
 ; Description: Null item handler. Does nothing.
-; Input:
-;   HL: pointer to MenuNode that was activated (ignored)
 mNullHandler:
     ret
 
 ; Description: Handler for menu item which has not been implemented. Prints an
 ; "Err: Not Yet" error message.
-; Input:
-;   HL: pointer to MenuNode that was activated (ignored)
 mNotYetHandler:
     ld a, errorCodeNotYet
     ld (handlerCode), a
@@ -28,10 +30,6 @@ mNotYetHandler:
 ; nothing. The 'chdir' functionality is now handled by dispatchMenuNode()
 ; because it needs to send an 'onExit' to the current node, and an 'onEnter'
 ; event to the selected node.
-; Input:
-;   HL: pointer to MenuNode that was activated (ignored)
-;   CF: 0 indicates on 'onEnter' event into group; 1 indicates onExit event
-;   from group
 mGroupHandler:
     ret
 

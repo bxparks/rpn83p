@@ -2,7 +2,13 @@
 ; MIT License
 ; Copyright (c) 2023 Brian T. Park
 ;
-; Handlers for the CPLX (complex) menu items.
+; CPLX (complex) menu handlers.
+;
+; Every handler is given the following input parameters:
+;   - HL:(MenuNode*)=currentMenuNode
+;   - CF:bool
+;       - 0 indicates 'onEnter' event into group
+;       - 1 indicates 'onExit' event from group
 ;-----------------------------------------------------------------------------
 
 mComplexRealHandler:

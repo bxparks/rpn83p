@@ -2,7 +2,13 @@
 ; MIT License
 ; Copyright (c) 2023 Brian T. Park
 ;
-; CFIT menu handlers, as well as lower level curve fitting routines.
+; CFIT menu handlers.
+;
+; Every handler is given the following input parameters:
+;   - HL:(MenuNode*)=currentMenuNode
+;   - CF:bool
+;       - 0 indicates 'onEnter' event into group
+;       - 1 indicates 'onExit' event from group
 ;
 ; TODO: Consider spliting the lower level routines into a cfit.asm file.
 ;

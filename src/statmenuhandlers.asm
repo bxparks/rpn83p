@@ -2,7 +2,13 @@
 ; MIT License
 ; Copyright (c) 2023 Brian T. Park
 ;
-; Basic STAT handlers and lower level routines.
+; STAT menu handlers and lower level routines.
+;
+; Every handler is given the following input parameters:
+;   - HL:(MenuNode*)=currentMenuNode
+;   - CF:bool
+;       - 0 indicates 'onEnter' event into group
+;       - 1 indicates 'onExit' event from group
 ;
 ; TODO: Consider extracting the lower level routines into a separate stat.asm
 ; file.
