@@ -99,7 +99,7 @@ def main() -> None:
 
 
 class UnitClass(TypedDict, total=False):
-    """A UnitClass inside a Classes."""
+    """A UnitClass inside a UnitClasses list"""
     label: str  # source code label of unit class
     # derived fields
     id: int  # integer id of class
@@ -110,13 +110,13 @@ class Unit(TypedDict, total=False):
     label: str  # source code label of unit
     name: str  # display name used with its value
     unit_class: str  # unit class
-    base_unit: str  # label of the base unit
-    scale: str  # optional group handler
+    scale: str  # size of unit measured in base_unit
+    base_unit: str  # base unit
     # derived fields
     id: int  # integer id of unit
     scale_float: float  # optional group handler
-    scale_bytes: bytes  # scale converted into 9 hex bytes
-    scale_db_string: str  # bytes converted into 7 hex digits
+    scale_bytes: bytes  # scale converted into 9 bytes
+    scale_db_string: str  # bytes converted into 9 hex digits
     exploded_name: str  # exploded version of name
     name_contains_special: bool  # name contains special characters
 
@@ -260,10 +260,10 @@ class UnitDefParser:
                 unit['unit_class'] = token
 
                 token = self.lexer.get_token()
-                unit['base_unit'] = token
+                unit['scale'] = token
 
                 token = self.lexer.get_token()
-                unit['scale'] = token
+                unit['base_unit'] = token
 
                 units.append(unit)
             elif token == ']':

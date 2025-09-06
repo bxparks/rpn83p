@@ -1,24 +1,4 @@
-# This file defines the list of units supported by the UNIT conversion menu
-# functions.
-#
-# To preserve backwards compatibility with Denominate numbers (values with
-# units) stored in persistent memory (e.g. stack, registers, variables), this
-# file must be treated as *append* only. Previously defined units must never
-# be removed, modified, or reordered.
-#
-# Classes [
-#   {list of classes}
-# ]
-#
-# UnitTable [
-#   {list of units}
-# ]
-#
-# unitclass = 'UnitClass' {label}
-# unit = 'Unit' {label} {name} {unitClass} {baseUnit} {scale}
-#
-# - 'label' is the identifier used in the assembly language program
-# - 'name' is the user-visible name of the object
+# A small sample of src/unitdef.txt for development and testing purposes.
 
 UnitClasses [
   UnitClass Length
@@ -27,8 +7,8 @@ UnitClasses [
 ]
 
 Units [
-  Unit Meter meter Length Meter 1.0
-  Unit Feet feet Length Meter 0.3048
-  Unit SqMeter sq<Sspace>meter Area SqMeter 1.0
-  Unit SqFeet sq<Sspace>feet Area SqMeter 0.09290304 # 0.3048*0.3048
+  Unit Meter meter Length 1.0 Meter
+  Unit Feet feet Length 0.3048 Meter
+  Unit SqMeter sq<Sspace>meter Area 1.0 SqMeter
+  Unit SqFeet sq<Sspace>feet Area 0.09290304 SqMeter # 0.3048*0.3048
 ]
