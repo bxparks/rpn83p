@@ -25,6 +25,12 @@ UnitClasses [
   UnitClass Length
   UnitClass Area
   UnitClass Volume
+  UnitClass Mass
+  UnitClass Temperature
+  UnitClass Pressure
+  UnitClass Energy
+  UnitClass Power
+  UnitClass Misc # gas mileage
 ]
 
 Units [
@@ -33,7 +39,7 @@ Units [
   Unit MicroMeter <Smu>m Length 1e-6 Meter
   Unit MilliMeter mm Length 1e-3 Meter
   Unit CentiMeter cm Length 1e-2 Meter
-  Unit Meter m Length 1.0 Meter
+  Unit Meter m Length 1 Meter
   Unit KiloMeter km Length 1e3 Meter
   Unit MegaMeter Mm Length 1e6 Meter
 
@@ -46,6 +52,14 @@ Units [
   Unit NauticalMile nmi Length 1852 Meter # exact
 
   # Area
-  Unit SqMeter m<Scaret>2 Area 1.0 SqMeter
-  Unit SqFeet ft<Scaret>2 Area 0.09290304 SqMeter # 0.3048*0.3048
+  Unit SqMilliMeter mm<Scaret>2 Area 1e-6 SqMeter
+  Unit SqCentiMeter cm<Scaret>2 Area 1e-4 SqMeter
+  Unit SqMeter m<Scaret>2 Area 1 SqMeter
+  Unit SqKiloMeter m<Scaret>2 Area 1e6 SqMeter
+
+  Unit SqInch in<Scaret>2 Area 6.4516e-4 SqMeter # exact, 0.0254^2
+  Unit SqFoot ft<Scaret>2 Area 0.09290304 SqMeter # exact, 0.3048^2
+  Unit SqYard yd<Scaret>2 Area 0.83393424 SqMeter # exact
+  Unit SqMile mi<Scaret>2 Area 2.589988110336e6 SqMeter # exact
+  Unit SqNauticalMile nmi<Scaret>2 Area 3429904 SqMeter # exact
 ]

@@ -127,12 +127,44 @@ mUnitNauticalMileHandler:
 ; UNIT > AREA > Row 1
 ;-----------------------------------------------------------------------------
 
+mUnitSqMilliMeterHandler:
+    ld a, unitSqMilliMeterId
+    jr commonUnitHandler
+
+mUnitSqCentiMeterHandler:
+    ld a, unitSqCentiMeterId
+    jr commonUnitHandler
+
 mUnitSqMeterHandler:
     ld a, unitSqMeterId
     jr commonUnitHandler
 
-mUnitSqFeetHandler:
-    ld a, unitSqFeetId
+mUnitSqKiloMeterHandler:
+    ld a, unitSqKiloMeterId
+    jr commonUnitHandler
+
+;-----------------------------------------------------------------------------
+; UNIT > AREA > Row 2
+;-----------------------------------------------------------------------------
+
+mUnitSqInchHandler:
+    ld a, unitSqInchId
+    jr commonUnitHandler
+
+mUnitSqFootHandler:
+    ld a, unitSqFootId
+    jr commonUnitHandler
+
+mUnitSqYardHandler:
+    ld a, unitSqYardId
+    jr commonUnitHandler
+
+mUnitSqMileHandler:
+    ld a, unitSqMileId
+    jr commonUnitHandler
+
+mUnitSqNauticalMileHandler:
+    ld a, unitSqNauticalMileId
     jr commonUnitHandler
 
 ;-----------------------------------------------------------------------------

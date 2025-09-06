@@ -17,13 +17,19 @@
 unitClassLength equ 0
 unitClassArea equ 1
 unitClassVolume equ 2
+unitClassMass equ 3
+unitClassTemperature equ 4
+unitClassPressure equ 5
+unitClassEnergy equ 6
+unitClassPower equ 7
+unitClassMisc equ 8
 
 ;-----------------------------------------------------------------------------
 ; List of Units
 ;-----------------------------------------------------------------------------
 
 unitInfoTable:
-unitInfoTableSize equ 16
+unitInfoTableSize equ 23
 
 unitNanoMeterInfo:
 unitNanoMeterId equ 0
@@ -54,7 +60,7 @@ unitMeterId equ 4
     .dw unitMeterName ; name
     .db unitClassLength ; unitClass
     .db unitMeterId ; baseUnitId
-    .db $00, $80, $10, $00, $00, $00, $00, $00, $00 ; scale=1.0
+    .db $00, $80, $10, $00, $00, $00, $00, $00, $00 ; scale=1
 unitKiloMeterInfo:
 unitKiloMeterId equ 5
     .dw unitKiloMeterName ; name
@@ -109,18 +115,60 @@ unitNauticalMileId equ 13
     .db unitClassLength ; unitClass
     .db unitMeterId ; baseUnitId
     .db $00, $83, $18, $52, $00, $00, $00, $00, $00 ; scale=1852
+unitSqMilliMeterInfo:
+unitSqMilliMeterId equ 14
+    .dw unitSqMilliMeterName ; name
+    .db unitClassArea ; unitClass
+    .db unitSqMeterId ; baseUnitId
+    .db $00, $7A, $10, $00, $00, $00, $00, $00, $00 ; scale=1e-6
+unitSqCentiMeterInfo:
+unitSqCentiMeterId equ 15
+    .dw unitSqCentiMeterName ; name
+    .db unitClassArea ; unitClass
+    .db unitSqMeterId ; baseUnitId
+    .db $00, $7C, $10, $00, $00, $00, $00, $00, $00 ; scale=1e-4
 unitSqMeterInfo:
-unitSqMeterId equ 14
+unitSqMeterId equ 16
     .dw unitSqMeterName ; name
     .db unitClassArea ; unitClass
     .db unitSqMeterId ; baseUnitId
-    .db $00, $80, $10, $00, $00, $00, $00, $00, $00 ; scale=1.0
-unitSqFeetInfo:
-unitSqFeetId equ 15
-    .dw unitSqFeetName ; name
+    .db $00, $80, $10, $00, $00, $00, $00, $00, $00 ; scale=1
+unitSqKiloMeterInfo:
+unitSqKiloMeterId equ 17
+    .dw unitSqKiloMeterName ; name
+    .db unitClassArea ; unitClass
+    .db unitSqMeterId ; baseUnitId
+    .db $00, $86, $10, $00, $00, $00, $00, $00, $00 ; scale=1e6
+unitSqInchInfo:
+unitSqInchId equ 18
+    .dw unitSqInchName ; name
+    .db unitClassArea ; unitClass
+    .db unitSqMeterId ; baseUnitId
+    .db $00, $7C, $64, $51, $60, $00, $00, $00, $00 ; scale=6.4516e-4
+unitSqFootInfo:
+unitSqFootId equ 19
+    .dw unitSqFootName ; name
     .db unitClassArea ; unitClass
     .db unitSqMeterId ; baseUnitId
     .db $00, $7E, $92, $90, $30, $40, $00, $00, $00 ; scale=0.09290304
+unitSqYardInfo:
+unitSqYardId equ 20
+    .dw unitSqYardName ; name
+    .db unitClassArea ; unitClass
+    .db unitSqMeterId ; baseUnitId
+    .db $00, $7F, $83, $39, $34, $24, $00, $00, $00 ; scale=0.83393424
+unitSqMileInfo:
+unitSqMileId equ 21
+    .dw unitSqMileName ; name
+    .db unitClassArea ; unitClass
+    .db unitSqMeterId ; baseUnitId
+    .db $00, $86, $25, $89, $98, $81, $10, $33, $60 ; scale=2.589988110336e6
+unitSqNauticalMileInfo:
+unitSqNauticalMileId equ 22
+    .dw unitSqNauticalMileName ; name
+    .db unitClassArea ; unitClass
+    .db unitSqMeterId ; baseUnitId
+    .db $00, $86, $34, $29, $90, $40, $00, $00, $00 ; scale=3429904
 
 ;-----------------------------------------------------------------------------
 ; Unit names.
@@ -154,7 +202,21 @@ unitMileName:
     .db "mi", 0
 unitNauticalMileName:
     .db "nmi", 0
+unitSqMilliMeterName:
+    .db 'm', 'm', Scaret, '2', 0
+unitSqCentiMeterName:
+    .db 'c', 'm', Scaret, '2', 0
 unitSqMeterName:
     .db 'm', Scaret, '2', 0
-unitSqFeetName:
+unitSqKiloMeterName:
+    .db 'm', Scaret, '2', 0
+unitSqInchName:
+    .db 'i', 'n', Scaret, '2', 0
+unitSqFootName:
     .db 'f', 't', Scaret, '2', 0
+unitSqYardName:
+    .db 'y', 'd', Scaret, '2', 0
+unitSqMileName:
+    .db 'm', 'i', Scaret, '2', 0
+unitSqNauticalMileName:
+    .db 'n', 'm', 'i', Scaret, '2', 0
