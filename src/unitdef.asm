@@ -461,25 +461,25 @@ unitParsecName:
 unitMegaParsecName:
     .db "Mpc", 0
 unitSqMicroMeterName:
-    .db Smu, 'm', Scaret, '2', 0
+    .db Smu, 'm', Sarea, 0
 unitSqMilliMeterName:
-    .db 'm', 'm', Scaret, '2', 0
+    .db 'm', 'm', Sarea, 0
 unitSqCentiMeterName:
-    .db 'c', 'm', Scaret, '2', 0
+    .db 'c', 'm', Sarea, 0
 unitSqMeterName:
-    .db 'm', Scaret, '2', 0
+    .db 'm', Sarea, 0
 unitSqKiloMeterName:
-    .db 'm', Scaret, '2', 0
+    .db 'm', Sarea, 0
 unitSqInchName:
-    .db 'i', 'n', Scaret, '2', 0
+    .db 'i', 'n', Sarea, 0
 unitSqFootName:
-    .db 'f', 't', Scaret, '2', 0
+    .db 'f', 't', Sarea, 0
 unitSqYardName:
-    .db 'y', 'd', Scaret, '2', 0
+    .db 'y', 'd', Sarea, 0
 unitSqMileName:
-    .db 'm', 'i', Scaret, '2', 0
+    .db 'm', 'i', Sarea, 0
 unitSqNauticalMileName:
-    .db 'n', 'm', 'i', Scaret, '2', 0
+    .db 'n', 'm', 'i', Sarea, 0
 unitAcreName:
     .db "acre", 0
 unitHectareName:
@@ -489,25 +489,25 @@ unitUSFootballName:
 unitCAFootballName:
     .db "caftball", 0
 unitCuMicroMeterName:
-    .db Smu, 'm', Scaret, '3', 0
+    .db Smu, 'm', Scube, 0
 unitCuMilliMeterName:
-    .db 'm', 'm', Scaret, '3', 0
+    .db 'm', 'm', Scube, 0
 unitCuCentiMeterName:
-    .db 'c', 'm', Scaret, '3', 0
+    .db 'c', 'm', Scube, 0
 unitCuMeterName:
-    .db 'm', Scaret, '3', 0
+    .db 'm', Scube, 0
 unitCuKiloMeterName:
-    .db 'k', 'm', Scaret, '3', 0
+    .db 'k', 'm', Scube, 0
 unitCuInchName:
-    .db 'i', 'n', Scaret, '3', 0
+    .db 'i', 'n', Scube, 0
 unitCuFootName:
-    .db 'f', 't', Scaret, '3', 0
+    .db 'f', 't', Scube, 0
 unitCuYardName:
-    .db 'y', 'd', Scaret, '3', 0
+    .db 'y', 'd', Scube, 0
 unitCuMileName:
-    .db 'm', 'i', Scaret, '3', 0
+    .db 'm', 'i', Scube, 0
 unitCuNauticalMileName:
-    .db 'n', 'm', 'i', Scaret, '3', 0
+    .db 'n', 'm', 'i', Scube, 0
 unitMicroLiterName:
     .db Smu, 'L', 0
 unitMilliLiterName:

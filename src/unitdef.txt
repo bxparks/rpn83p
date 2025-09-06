@@ -59,17 +59,17 @@ Units [
   Unit MegaParsec Mpc Length 30856775814913673e6 Meter # 1e6*pc
 
   # Area
-  Unit SqMicroMeter <Smu>m<Scaret>2 Area 1e-12 SqMeter
-  Unit SqMilliMeter mm<Scaret>2 Area 1e-6 SqMeter
-  Unit SqCentiMeter cm<Scaret>2 Area 1e-4 SqMeter
-  Unit SqMeter m<Scaret>2 Area 1 SqMeter
-  Unit SqKiloMeter m<Scaret>2 Area 1e6 SqMeter
+  Unit SqMicroMeter <Smu>m<Sarea> Area 1e-12 SqMeter
+  Unit SqMilliMeter mm<Sarea> Area 1e-6 SqMeter
+  Unit SqCentiMeter cm<Sarea> Area 1e-4 SqMeter
+  Unit SqMeter m<Sarea> Area 1 SqMeter
+  Unit SqKiloMeter m<Sarea> Area 1e6 SqMeter
 
-  Unit SqInch in<Scaret>2 Area 6.4516e-4 SqMeter # 0.0254^2
-  Unit SqFoot ft<Scaret>2 Area 0.09290304 SqMeter # 0.3048^2
-  Unit SqYard yd<Scaret>2 Area 0.83393424 SqMeter # 0.9144^2
-  Unit SqMile mi<Scaret>2 Area 2.589988110336e6 SqMeter # 1609.344^2
-  Unit SqNauticalMile nmi<Scaret>2 Area 3429904 SqMeter # 1852^2
+  Unit SqInch in<Sarea> Area 6.4516e-4 SqMeter # 0.0254^2
+  Unit SqFoot ft<Sarea> Area 0.09290304 SqMeter # 0.3048^2
+  Unit SqYard yd<Sarea> Area 0.83393424 SqMeter # 0.9144^2
+  Unit SqMile mi<Sarea> Area 2.589988110336e6 SqMeter # 1609.344^2
+  Unit SqNauticalMile nmi<Sarea> Area 3429904 SqMeter # 1852^2
 
   Unit Acre acre Area 4.0468564224e3 SqMeter # 66ft*660ft=43560sqft
   Unit Hectare hectare Area 1e4 SqMeter # 100m*100m
@@ -77,17 +77,17 @@ Units [
   Unit CAFootball caftball Area 5.978310624e3 SqMeter # 110yd*65yd=64350sqft
 
   # Volume
-  Unit CuMicroMeter <Smu>m<Scaret>3 Volume 1e-18 CuMeter
-  Unit CuMilliMeter mm<Scaret>3 Volume 1e-9 CuMeter
-  Unit CuCentiMeter cm<Scaret>3 Volume 1e-6 CuMeter
-  Unit CuMeter m<Scaret>3 Volume 1 CuMeter
-  Unit CuKiloMeter km<Scaret>3 Volume 1e9 CuMeter
+  Unit CuMicroMeter <Smu>m<Scube> Volume 1e-18 CuMeter
+  Unit CuMilliMeter mm<Scube> Volume 1e-9 CuMeter
+  Unit CuCentiMeter cm<Scube> Volume 1e-6 CuMeter
+  Unit CuMeter m<Scube> Volume 1 CuMeter
+  Unit CuKiloMeter km<Scube> Volume 1e9 CuMeter
 
-  Unit CuInch in<Scaret>3 Volume 1.6387064e-5 CuMeter # 0.0254^3
-  Unit CuFoot ft<Scaret>3 Volume 2.8316846592e-2 CuMeter # 0.3048^3
-  Unit CuYard yd<Scaret>3 Volume 7.64554857984e-1 CuMeter # 0.9144^3
-  Unit CuMile mi<Scaret>3 Volume 4.1681818254406e9 CuMeter # 1609.344^3
-  Unit CuNauticalMile nmi<Scaret>3 Volume 6352182208 CuMeter # 1852^3 defn
+  Unit CuInch in<Scube> Volume 1.6387064e-5 CuMeter # 0.0254^3
+  Unit CuFoot ft<Scube> Volume 2.8316846592e-2 CuMeter # 0.3048^3
+  Unit CuYard yd<Scube> Volume 7.64554857984e-1 CuMeter # 0.9144^3
+  Unit CuMile mi<Scube> Volume 4.1681818254406e9 CuMeter # 1609.344^3
+  Unit CuNauticalMile nmi<Scube> Volume 6352182208 CuMeter # 1852^3
 
   Unit MicroLiter <Smu>L Volume 1e-9 CuMeter
   Unit MilliLiter mL Volume 1e-6 CuMeter
@@ -101,15 +101,15 @@ Units [
   Unit Cup cup Volume 2.365882365e-4 CuMeter # 1/2 pint
   Unit Pint pint Volume 4.73176473e-4 CuMeter # 1/2 quart; pt
   Unit Quart quart Volume 9.46352946e-4 CuMeter # 1/4 gal; qt
-  Unit Gallon gal Volume 3.785411784e-3 CuMeter # 231 in^3 defn
-  Unit OilBarrel barrel Volume 1.58987294928e-1 CuMeter # 42 USgal defn; bbl
+  Unit Gallon gal Volume 3.785411784e-3 CuMeter # 231 in^3 by defn
+  Unit OilBarrel barrel Volume 1.58987294928e-1 CuMeter # 42USgal by defn; bbl
 
   Unit ImpFluidOunce impfloz Volume 2.84130625e-5 CuMeter # *1/5* impgill
   Unit ImpGill impgill Volume 1.420653125e-4 CuMeter # 1/2 impcup
   Unit ImpCup impcup Volume 2.84130625e-4 CuMeter # 1/2 imppint
   Unit ImpPint imppint Volume 5.6826125e-4 CuMeter # 1/2 impquart
   Unit ImpQuart impquart Volume 1.1365225e-3 CuMeter # 1/4 impgal
-  Unit ImpGallon impgal Volume 4.54609e-3 CuMeter # 4.54609L defn
+  Unit ImpGallon impgal Volume 4.54609e-3 CuMeter # 4.54609L by defn
 
   Unit OlympicPool olympool Volume 3750 CuMeter # 50m*25m*3m
 ]
