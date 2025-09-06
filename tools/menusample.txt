@@ -21,8 +21,8 @@ MenuGroup root mRoot [
     ]
     MenuGroup NUM mNum [
       MenuRow [
-        MenuItem ABS mAbs 1 # optional 'param'
-        MenuItem SIGN mSign mSignId # optional 'param'
+        MenuItem ABS mAbs
+        MenuItem SIGN mSign
         MenuItem MOD mMod
         MenuItem LCM mLcm
         MenuItem GCD mGcd

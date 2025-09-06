@@ -23,7 +23,6 @@
 ;   uint16_t parentId; // 0 indicates NONE
 ;   uint16_t nameId; // index into NameTable
 ;   uint8_t numRows; // 0 if MenuItem; >=1 if MenuGroup
-;   uint8_t param; // numerical parameter to menuHandler (used by UNIT)
 ;   union {
 ;       uint16_t rowBeginId; // nodeId of the first node of first menu row
 ;       uint16_t altNameId; // alternate name string (if nameSelector!=NULL)
@@ -32,12 +31,9 @@
 ;   void *nameSelector; // function that selects between 2 menu names
 ; };
 ;
-; sizeof(MenuNode) == 14
+; sizeof(MenuNode) == 13
 ;
 ;-----------------------------------------------------------------------------
-
-; Size of MenuNode.
-menuNodeSizeOf equ 14
 
 ; Offsets into the MenuNode struct. Intended to be used as offset to the IX
 ; register after calling findMenuNodeIX().
@@ -45,11 +41,10 @@ menuNodeFieldId equ 0
 menuNodeFieldParentId equ 2
 menuNodeFieldNameId equ 4
 menuNodeFieldNumRows equ 6
-menuNodeFieldParam equ 7
-menuNodeFieldRowBeginId equ 8
-menuNodeFieldAltNameId equ 8
-menuNodeFieldHandler equ 10
-menuNodeFieldNameSelector equ 12
+menuNodeFieldRowBeginId equ 7
+menuNodeFieldAltNameId equ 7
+menuNodeFieldHandler equ 9
+menuNodeFieldNameSelector equ 11
 
 ;-----------------------------------------------------------------------------
 ; These routines cannot be moved into menu1.asm because they invoke callback

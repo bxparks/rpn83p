@@ -135,16 +135,14 @@ class MenuNode(TypedDict, total=False):
     id: int  # TBD, except for Root which is always 1
     parent_id: int
     name: str
-    label: str
-    altname: str
-    group_handler: str  # optional group handler
-    param: str  # optional 'param' field
-    rows: List[MenuRow]  # List of MenuNodes in groups of 5
-    # derived fields below
     name_contains_special: bool  # name contains special characters
+    altname: str
     altname_contains_special: bool  # altname contains special characters
     exploded_name: str  # name as a list of single characters
     exploded_altname: str  # altname as a list of single characters
+    label: str
+    rows: List[MenuRow]  # List of MenuNodes in groups of 5
+    group_handler: str  # optional group handler
 
 
 class MenuConfig(TypedDict, total=False):
@@ -160,7 +158,7 @@ class MenuConfig(TypedDict, total=False):
 
 class Lexer:
     """Read the sys.stdin and tokenize by spliting on white spaces. Comments
-    begin with '#'. Supports a one-token push back.
+    begin with '#'.
     """
     def __init__(self, input: TextIO):
         self.input = input
@@ -169,21 +167,12 @@ class Lexer:
         self.line_number = 0
         # Internal buffer to hold batches of tokens from each line.
         self.current_tokens: List[str] = []
-        # Support one-token push_back().
-        self.push_back_token: Optional[str] = None
 
     def get_token(self) -> str:
-        if self.push_back_token is None:
-            token = self.get_token_or_none()
-            if token is None:
-                raise ValueError("Unexpected EOF")
-        else:
-            token = self.push_back_token
-            self.push_back_token = None
+        token = self.get_token_or_none()
+        if token is None:
+            raise ValueError("Unexpected EOF")
         return token
-
-    def push_token(self, token: str) -> None:
-        self.push_back_token = token
 
     def get_token_or_none(self) -> Optional[str]:
         """Read the next token. Return None if EOF."""
@@ -362,14 +351,6 @@ class MenuParser:
         item["mtype"] = MENU_TYPE_ITEM
         item["name"] = self.lexer.get_token()
         item["label"] = self.lexer.get_token()
-
-        # Optional 'param' field.
-        token = self.lexer.get_token()
-        if token in ['MenuItem', 'MenuItemAlt', 'MenuGroup', ']']:
-            self.lexer.push_token(token)
-        else:
-            item["param"] = token
-
         return item
 
     def process_menuitemalt(self) -> MenuNode:
@@ -378,14 +359,6 @@ class MenuParser:
         item["name"] = self.lexer.get_token()
         item["altname"] = self.lexer.get_token()
         item["label"] = self.lexer.get_token()
-
-        # Optional 'param' field.
-        token = self.lexer.get_token()
-        if token in ['MenuItem', 'MenuItemAlt', 'MenuGroup', ']']:
-            self.lexer.push_token(token)
-        else:
-            item["param"] = token
-
         return item
 
 
@@ -764,7 +737,6 @@ mNullId equ 0
     .dw mNullId ; parentId
     .dw mNullNameId ; nameId
     .db 0 ; numRows
-    .db 0 ; param
     .dw 0 ; rowBeginId
     .dw mNullHandler
     .dw 0
@@ -779,7 +751,6 @@ mNullId equ 0
         label = node["label"]
         id = node["id"]
         parent_id = node["parent_id"]
-        param = node.get("param", 0)
 
         if parent_id == 0:
             parent_node = None
@@ -834,7 +805,6 @@ mNullId equ 0
     .dw {parent_node_label}Id ; parentId
     .dw {name_id} ; nameId
     .db {num_rows} ; numRows
-    .db {param} ; param
     .dw {row_begin_id} ; rowBeginId or altNameId
     .dw {handler} ; handler ({handler_comment})
     .dw {name_selector} ; nameSelector
