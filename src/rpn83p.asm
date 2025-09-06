@@ -881,10 +881,6 @@ _GetMenuNodeParentLabel:
 _GetMenuNodeParent equ _GetMenuNodeParentLabel-branchTableBase
     .dw GetMenuNodeParent
     .db 1
-_GetMenuNodeParamLabel:
-_GetMenuNodeParam equ _GetMenuNodeParamLabel-branchTableBase
-    .dw GetMenuNodeParam
-    .db 1
 _GetMenuNodeRowBeginIdLabel:
 _GetMenuNodeRowBeginId equ _GetMenuNodeRowBeginIdLabel-branchTableBase
     .dw GetMenuNodeRowBeginId
