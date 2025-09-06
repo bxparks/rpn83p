@@ -97,24 +97,24 @@ def main() -> None:
 
 class UnitClass(TypedDict, total=False):
     """A UnitClass inside a Classes."""
-    name: str  # name of class
+    label: str  # source code label of unit class
     # derived fields
     id: int  # integer id of class
 
 
 class Unit(TypedDict, total=False):
     """A Unit inside a Units list. """
-    name: str  # symbolic identifier
-    display_name: str  # display name used with its value
+    label: str  # source code label of unit
+    name: str  # display name used with its value
     unit_class: str  # unit class
-    base_unit: str  # name of the base unit
+    base_unit: str  # label of the base unit
     scale: str  # optional group handler
     # derived fields
     id: int  # integer id of unit
     scale_float: float  # optional group handler
     scale_bytes: bytes  # scale converted into 9 hex bytes
     scale_db_string: str  # bytes converted into 7 hex digits
-    exploded_display_name: str  # exploded version of display_name
+    exploded_name: str  # exploded version of name
     name_contains_special: bool  # name contains special characters
 
 
@@ -217,7 +217,7 @@ class UnitDefParser:
             if token == 'UnitClass':
                 unit_class: UnitClass = {}
                 token = self.lexer.get_token()
-                unit_class['name'] = token
+                unit_class['label'] = token
                 classes.append(unit_class)
             elif token == ']':
                 break
@@ -248,10 +248,10 @@ class UnitDefParser:
                 unit: Unit = {}
 
                 token = self.lexer.get_token()
-                unit['name'] = token
+                unit['label'] = token
 
                 token = self.lexer.get_token()
-                unit['display_name'] = token
+                unit['name'] = token
 
                 token = self.lexer.get_token()
                 unit['unit_class'] = token
@@ -308,7 +308,7 @@ class SymbolGenerator:
 
 
 class StringExploder:
-    """Determine if the unit 'display_name' contains special characters, and
+    """Determine if the unit 'name' contains special characters, and
     explode the name string into a list of single characters.
 
     1) If the string contains only simple letters ([a-zA-Z0-9]), then the
@@ -334,18 +334,17 @@ class StringExploder:
             self.explode_unit(unit)
 
     def explode_unit(self, unit: Unit) -> None:
-        # display_name
-        name = unit["display_name"]
+        # name
+        label = unit["label"]
+        name = unit["name"]
         unit["name_contains_special"] = (
             name.find('<') >= 0 or name.find('>') >= 0
         )
-        if name == '*':
-            return
         try:
-            unit["exploded_display_name"] = self.explode_str(name)
+            unit["exploded_name"] = self.explode_str(name)
         except ValueError as e:
             raise ValueError(
-                f"Invalid syntax in unit '{name}': {str(e)}"
+                f"Invalid syntax in unit '{label}': {str(e)}"
             )
 
     @staticmethod
@@ -494,9 +493,9 @@ class CodeGenerator:
 """, file=self.output, end='')
 
         for unit_class in self.unit_classes:
-            name = unit_class['name']
+            label = unit_class['label']
             id = unit_class['id']
-            print(f"unitClass{name} equ {id}", file=self.output)
+            print(f"unitClass{label} equ {id}", file=self.output)
 
     def generate_units(self) -> None:
         unit_list_len = len(self.units)
@@ -512,7 +511,7 @@ unitInfoTableSize equ {unit_list_len}
 """, file=self.output, end='')
 
         for unit in self.units:
-            name = unit['name']
+            label = unit['label']
             id = unit['id']
             unit_class = unit['unit_class']
             base_unit = unit['base_unit']
@@ -520,9 +519,9 @@ unitInfoTableSize equ {unit_list_len}
             scale_db_string = unit['scale_db_string']
 
             print(f"""\
-unit{name}Info:
-unit{name}Id equ {id}
-    .dw unit{name}Name ; name
+unit{label}Info:
+unit{label}Id equ {id}
+    .dw unit{label}Name ; name
     .db unitClass{unit_class} ; unitClass
     .db unit{base_unit}Id ; baseUnitId
     .db {scale_db_string} ; scale={scale}
@@ -538,17 +537,17 @@ unit{name}Id equ {id}
 """, file=self.output, end='')
 
         for unit in self.units:
-            name = unit['name']
+            label = unit['label']
             name_contains_special = unit["name_contains_special"]
             if name_contains_special:
-                display_name = unit['exploded_display_name']
+                name = unit['exploded_name']
             else:
-                display_name = unit['display_name']
-                display_name = f'"{display_name}"'
+                name = unit['name']
+                name = f'"{name}"'
 
             print(f"""\
-unit{name}Name:
-    .db {display_name}, 0
+unit{label}Name:
+    .db {name}, 0
 """, file=self.output, end='')
 
 

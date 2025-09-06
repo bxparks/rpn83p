@@ -14,8 +14,11 @@
 #   {list of units}
 # ]
 #
-# unit = 'Unit' {name} {displayName} {unitClass} {baseUnit} {scale}
-# unitclass = 'UnitClass' {className}
+# unitclass = 'UnitClass' {label}
+# unit = 'Unit' {label} {name} {unitClass} {baseUnit} {scale}
+#
+# - 'label' is the identifier used in the assembly language program
+# - 'name' is the user-visible name of the object
 
 UnitClasses [
   UnitClass Length
