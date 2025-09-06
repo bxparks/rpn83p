@@ -474,13 +474,6 @@ MenuGroup root mRoot [
         MenuItem <Sconvert>iHg mHpaToInhg
       ]
       MenuRow [
-        MenuItem <Sconvert>kg mLbsToKg
-        MenuItem <Sconvert>lbs mKgToLbs
-        MenuItem * *
-        MenuItem <Sconvert>g mOzToG
-        MenuItem <Sconvert>oz mGToOz
-      ]
-      MenuRow [
         MenuItem <Sconvert>kJ mCalToKj
         MenuItem <Sconvert>cal mKjToCal
         MenuItem * *

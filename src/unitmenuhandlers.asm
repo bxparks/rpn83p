@@ -402,34 +402,6 @@ mHpaToInhgHandler:
     jp replaceX
 
 ;-----------------------------------------------------------------------------
-; UNIT > Row 4
-;-----------------------------------------------------------------------------
-
-mLbsToKgHandler:
-    call closeInputAndRecallX
-    call op2SetKgPerLbs
-    bcall(_FPMult)
-    jp replaceX
-
-mKgToLbsHandler:
-    call closeInputAndRecallX
-    call op2SetKgPerLbs
-    bcall(_FPDiv)
-    jp replaceX
-
-mOzToGHandler:
-    call closeInputAndRecallX
-    call op2SetGPerOz
-    bcall(_FPMult)
-    jp replaceX
-
-mGToOzHandler:
-    call closeInputAndRecallX
-    call op2SetGPerOz
-    bcall(_FPDiv)
-    jp replaceX
-
-;-----------------------------------------------------------------------------
 ; UNIT > Row 6
 ;-----------------------------------------------------------------------------
 

@@ -148,14 +148,6 @@ op2SetKgPerLbs:
 
 ;-----------------------------------------------------------------------------
 
-; Description: Set OP2 to GPerOz.
-; Destroys: all, HL
-op2SetGPerOz:
-    ld hl, constGPerOz
-    jp move9ToOp2
-
-;-----------------------------------------------------------------------------
-
 ; Description: Set OP2 to LPerGal.
 ; Destroys: all, HL
 op2SetLPerGal:
@@ -230,9 +222,6 @@ constCmPerIn: ; 2.54 cm/in, exact
 
 constKgPerLbs: ; 0.453 592 37 kg/lbs, exact
     .db $00, $7F, $45, $35, $92, $37, $00, $00, $00
-
-constGPerOz: ; 28.349 523 125 g/oz, exact
-    .db $00, $81, $28, $34, $95, $23, $12, $50, $00
 
 constLPerGal: ; 3.785 411 784 L/gal, exact, gallon == 231 in^3
     .db $00, $80, $37, $85, $41, $17, $84, $00, $00
