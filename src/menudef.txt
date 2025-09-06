@@ -359,11 +359,11 @@ MenuGroup root mRoot [
     ]
     MenuGroup UNIT mUnit [
       MenuRow [
-        MenuItem m mUnitMeter
-        MenuItem ft mUnitFeet
+        MenuItem m mUnitMeter unitMeterId
+        MenuItem ft mUnitFeet unitFeetId
         MenuItem * *
-        MenuItem m<Scaret>2 mUnitSqMeter
-        MenuItem ft<Scaret>2 mUnitSqFeet
+        MenuItem m<Scaret>2 mUnitSqMeter unitSqMeterId
+        MenuItem ft<Scaret>2 mUnitSqFeet unitSqFeetId
       ]
       MenuRow [
         MenuItem <Sconvert><Stemp>C mFToC

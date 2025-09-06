@@ -155,7 +155,7 @@ dispatchMenuNode:
 ; Destroys: B
 dispatchMenuNodeWithJumpBack:
     push hl ; stack=[targetNodeId]
-    bcall(_GetMenuNodeHandler) ; A=numRows; DE=handler; HL=menuNode
+    bcall(_GetMenuNodeHandler) ; A=numRows; DE=handler
     ; Invoke a MenuItem.
     or a ; if numRows == 0: ZF=1 (i.e. a MenuItem)
     pop hl ; stack=[]; HL=targetNodeId

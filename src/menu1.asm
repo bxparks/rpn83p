@@ -236,13 +236,13 @@ GetMenuNodeRowBeginId:
 
 ;-----------------------------------------------------------------------------
 
-; Description: Retrieve the mXxxHandler of the given MenuNode.
+; Description: Retrieve the mXxxHandler of the given MenuNodeId.
 ; Input:
 ;   - HL=menuNodeId
 ; Output:
 ;   - A=numRows (0 indicates MenuItem; >0 indicates MenuGroup)
-;   - DE=handler
-;   - IX=menuNode
+;   - DE=handler (page 0)
+;   - IX=menuNode (page 1)
 ; Destroys: A, BC, DE, HL, IX
 GetMenuNodeHandler:
     call findMenuNodeIX ; IX:(MenuNode*)=menuNode
@@ -253,7 +253,7 @@ GetMenuNodeHandler:
 
 ;-----------------------------------------------------------------------------
 
-; Description: Retrieve the parentId of the given MenuNode.
+; Description: Retrieve the parentId of the given MenuNodeId.
 ; Input:
 ;   - HL=menuNodeId
 ; Output:
@@ -266,6 +266,20 @@ GetMenuNodeParent:
     ld a, (ix + menuNodeFieldNumRows) ; A=numRows
     ld e, (ix + menuNodeFieldParentId)
     ld d, (ix + menuNodeFieldParentId + 1) ; DE=parentId
+    ret
+
+;-----------------------------------------------------------------------------
+
+; Description: Retrieve the 'param' of the given MenuNodeId.
+; Input:
+;   - HL=menuNodeId
+; Output:
+;   - A=param
+;   - IX=menuNode
+; Destroys: A, BC, DE, HL, IX
+GetMenuNodeParam:
+    call findMenuNodeIX ; IX:(MenuNode*)=menuNode
+    ld a, (ix + menuNodeFieldParam) ; A=param
     ret
 
 ;-----------------------------------------------------------------------------

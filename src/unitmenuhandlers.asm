@@ -5,37 +5,26 @@
 ; UNIT menu items.
 ;
 ; Every handler is given the following input parameters:
-;   - HL:(MenuNode*)=currentMenuNode
+;   - HL:u16=targetNodeId
 ;   - CF:bool
 ;       - 0 indicates 'onEnter' event into group
 ;       - 1 indicates 'onExit' event from group
 ;-----------------------------------------------------------------------------
 
 ;-----------------------------------------------------------------------------
-; UNIT > Row 1
+; Handler for all UNIT functions, except for temperature (C, F, R, K).
 ;-----------------------------------------------------------------------------
 
 mUnitMeterHandler:
-    call closeInputAndRecallDenominateX ; A=rpnObjectType; B=objectUnit
-    ld c, unitMeterId
-    bcall(_ConvertUnit)
-    jp replaceX
-
 mUnitFeetHandler:
-    call closeInputAndRecallDenominateX ; A=rpnObjectType; B=objectUnit
-    ld c, unitFeetId
-    bcall(_ConvertUnit)
-    jp replaceX
-
 mUnitSqMeterHandler:
-    call closeInputAndRecallDenominateX ; A=rpnObjectType; B=objectUnit
-    ld c, unitSqMeterId
-    bcall(_ConvertUnit)
-    jp replaceX
-
 mUnitSqFeetHandler:
+    bcall(_GetMenuNodeParam) ; A=param
+    ld d, a
+    push de
     call closeInputAndRecallDenominateX ; A=rpnObjectType; B=objectUnit
-    ld c, unitSqFeetId
+    pop de
+    ld c, d ; C=targetUnit
     bcall(_ConvertUnit)
     jp replaceX
 

@@ -2165,7 +2165,7 @@ mUnitMeterId equ 207
     .dw mUnitId ; parentId
     .dw mUnitMeterNameId ; nameId
     .db 0 ; numRows
-    .db 0 ; param
+    .db unitMeterId ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mUnitMeterHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -2175,7 +2175,7 @@ mUnitFeetId equ 208
     .dw mUnitId ; parentId
     .dw mUnitFeetNameId ; nameId
     .db 0 ; numRows
-    .db 0 ; param
+    .db unitFeetId ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mUnitFeetHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -2195,7 +2195,7 @@ mUnitSqMeterId equ 210
     .dw mUnitId ; parentId
     .dw mUnitSqMeterNameId ; nameId
     .db 0 ; numRows
-    .db 0 ; param
+    .db unitSqMeterId ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mUnitSqMeterHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -2205,7 +2205,7 @@ mUnitSqFeetId equ 211
     .dw mUnitId ; parentId
     .dw mUnitSqFeetNameId ; nameId
     .db 0 ; numRows
-    .db 0 ; param
+    .db unitSqFeetId ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mUnitSqFeetHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
