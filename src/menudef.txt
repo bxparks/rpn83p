@@ -381,17 +381,17 @@ MenuGroup root mRoot [
         ]
         MenuGroup AREA mUnitArea [
           MenuRow [
-            MenuItem mm2 mUnitSqMilliMeter
-            MenuItem cm2 mUnitSqCentiMeter
-            MenuItem m2 mUnitSqMeter
-            MenuItem km2 mUnitSqKiloMeter
+            MenuItem mm<Sarea> mUnitSqMilliMeter
+            MenuItem cm<Sarea> mUnitSqCentiMeter
+            MenuItem m<Sarea> mUnitSqMeter
+            MenuItem km<Sarea> mUnitSqKiloMeter
           ]
           MenuRow [
-            MenuItem in2 mUnitSqInch
-            MenuItem ft2 mUnitSqFoot
-            MenuItem yd2 mUnitSqYard
-            MenuItem mi2 mUnitSqMile
-            MenuItem nmi2 mUnitSqNauticalMile
+            MenuItem in<Sarea> mUnitSqInch
+            MenuItem ft<Sarea> mUnitSqFoot
+            MenuItem yd<Sarea> mUnitSqYard
+            MenuItem mi<Sarea> mUnitSqMile
+            MenuItem nmi<Sarea> mUnitSqNauticalMile
           ]
         ]
       ]

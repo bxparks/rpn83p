@@ -4126,23 +4126,23 @@ mUnitMileName:
 mUnitNauticalMileName:
     .db "nmi", 0
 mUnitSqMilliMeterName:
-    .db "mm2", 0
+    .db 'm', 'm', Sarea, 0
 mUnitSqCentiMeterName:
-    .db "cm2", 0
+    .db 'c', 'm', Sarea, 0
 mUnitSqMeterName:
-    .db "m2", 0
+    .db 'm', Sarea, 0
 mUnitSqKiloMeterName:
-    .db "km2", 0
+    .db 'k', 'm', Sarea, 0
 mUnitSqInchName:
-    .db "in2", 0
+    .db 'i', 'n', Sarea, 0
 mUnitSqFootName:
-    .db "ft2", 0
+    .db 'f', 't', Sarea, 0
 mUnitSqYardName:
-    .db "yd2", 0
+    .db 'y', 'd', Sarea, 0
 mUnitSqMileName:
-    .db "mi2", 0
+    .db 'm', 'i', Sarea, 0
 mUnitSqNauticalMileName:
-    .db "nmi2", 0
+    .db 'n', 'm', 'i', Sarea, 0
 mLeapYearName:
     .db "LEAP", 0
 mDayOfWeekName:
