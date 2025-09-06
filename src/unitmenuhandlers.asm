@@ -9,6 +9,38 @@
 ;   - CF:bool
 ;       - 0 indicates 'onEnter' event into group
 ;       - 1 indicates 'onExit' event from group
+;
+; The following design invokes a separate unit handler for each UNIT menu, and
+; the sole purpose of each unit handler is to assign the unitId into register
+; A, then forward the call to a common handler. The uintId corresponds to the
+; specific unit conversion requested by the menu function.
+;
+; An alternative design involves adding a generic 'param:u8' field inside the
+; MenuNode struct, then defining the corresponding unitId in the menudef.txt
+; file which compiles into the menudef.asm. Every menuHandler already gets
+; passed the menuId which triggered the handler. Using this menuId, we could
+; look up the 'param' parameter from MenuNode.
+;
+; Although this design seems more "data-driven" and more aesthetically pleasing
+; in some sense (because all UNIT menu items could be sent to a single menu
+; handler), it has a number of problems:
+;
+;   1) It requires the 'MenuItem' directive in menudef.asm to support an
+;   optional 'param' parameter, which requires extensions to the `Lexer` in
+;   `compilemenu.py` to support a one-token pushback.
+;   2) It increases the size of MenuNode by 1 byte, which increases the total
+;   size of menuTable by 300 bytes, where most of the additional space is
+;   wasted because the 'param' field is used only by UNIT menu items. In the
+;   above "brute-force" design, each unit handler consumes 4 bytes. So the
+;   breakeven point is about 75 units, which is more than the number
+;   of units under the UNIT menu that I expect to support.
+;   3) It couples the menudef.txt/menudef.asm to the unitdef.txt/asm.
+;   4) The important consequence of the coupling (3) is that a unit menu
+;   handler cannot be invoked independently with no external state. In other
+;   words, we must invoke it with the HL register filled with the menuId that
+;   would have trigger the unit conversion. Being able to invoke the unit
+;   conversion function without additional state make it easier to support
+;   keystroke programming in the future.
 ;-----------------------------------------------------------------------------
 
 ;-----------------------------------------------------------------------------
@@ -16,26 +48,31 @@
 ;-----------------------------------------------------------------------------
 
 mUnitMeterHandler:
-    call closeInputAndRecallDenominateX ; A=rpnObjectType; B=objectUnit
-    ld c, unitMeterId
-    bcall(_ConvertUnit)
-    jp replaceX
+    ld a, unitMeterId
+    jr commonUnitHandler
 
 mUnitFeetHandler:
-    call closeInputAndRecallDenominateX ; A=rpnObjectType; B=objectUnit
-    ld c, unitFeetId
-    bcall(_ConvertUnit)
-    jp replaceX
+    ld a, unitFeetId
+    jr commonUnitHandler
 
 mUnitSqMeterHandler:
-    call closeInputAndRecallDenominateX ; A=rpnObjectType; B=objectUnit
-    ld c, unitSqMeterId
-    bcall(_ConvertUnit)
-    jp replaceX
+    ld a, unitSqMeterId
+    jr commonUnitHandler
 
 mUnitSqFeetHandler:
+    ld a, unitSqFeetId
+    jr commonUnitHandler
+
+; Description: Common handler for all UNIT menus.
+;
+; Input:
+;   - A:u8=targetUnitId
+commonUnitHandler:
+    ld e, a
+    push de
     call closeInputAndRecallDenominateX ; A=rpnObjectType; B=objectUnit
-    ld c, unitSqFeetId
+    pop de
+    ld c, e ; C=targetUnitId
     bcall(_ConvertUnit)
     jp replaceX
 
