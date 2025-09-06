@@ -153,7 +153,7 @@ getCurrentMenuArrowStatusCheckUp:
 ;   - (currentMenuRowIndex)
 ; Output:
 ;   - HL=u16=menuId
-; Destroys: DE, HL
+; Destroys: A, BC, DE, HL, IX
 GetMenuIdOfButton:
     ld e, a
     ld d, 0
@@ -172,8 +172,7 @@ GetMenuIdOfButton:
 ; Output:
 ;   - DE=rowBeginId=menuId of first item of row 0
 ;   - HL=rowMenuId=menuId of the first item of row 'rowIndex'
-; Destroys: A, DE, HL
-; Preserves: BC
+; Destroys: A, BC, DE, HL, IX
 GetCurrentMenuRowBeginId:
     ld hl, (currentMenuGroupId)
     ld a, (currentMenuRowIndex)
@@ -202,8 +201,7 @@ GetCurrentMenuGroupNumRows:
 ; Output:
 ;   - DE=rowBeginId=menuId of first item of row 0
 ;   - HL=rowMenuId=menuId of the first item of row 'rowIndex'
-; Destroys: A, DE, HL
-; Preserves: BC
+; Destroys: A, BC, DE, HL, IX
 getMenuRowBeginId:
     call findMenuNodeIX ; IX=menuNode
     ld e, (ix + menuNodeFieldRowBeginId)
@@ -243,12 +241,15 @@ GetMenuNodeRowBeginId:
 ;   - A=numRows (0 indicates MenuItem; >0 indicates MenuGroup)
 ;   - DE=handler
 ;   - IX=menuNode
-; Destroys: A, BC, DE, HL, IX
+; Destroys: A, BC, DE, IX
+; Preserves: HL
 GetMenuNodeHandler:
+    push hl
     call findMenuNodeIX ; IX:(MenuNode*)=menuNode
     ld a, (ix + menuNodeFieldNumRows) ; A=numRows
     ld e, (ix + menuNodeFieldHandler)
     ld d, (ix + menuNodeFieldHandler + 1) ; DE=handler
+    pop hl
     ret
 
 ;-----------------------------------------------------------------------------

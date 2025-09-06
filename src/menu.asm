@@ -125,11 +125,9 @@ getMenuNameFind:
 ;   - (jumpBackMenuRowIndex) cleared
 ; Destroys: A, B, C, DE, HL, IX
 dispatchMenuNode:
-    push hl ; stack=[targetNodeId]
-    bcall(_GetMenuNodeHandler) ; A=numRows; DE=handler; HL=menuNode
+    bcall(_GetMenuNodeHandler) ; A=numRows; DE=handler; IX=menuNode; HL=HL
     ; Invoke a MenuItem.
     or a ; if numRows == 0: ZF=1 (i.e. a MenuItem)
-    pop hl ; stack=[]; HL=targetNodeId
     jp z, jumpDE ; Invoke menuHandler().
     ; Item was a menuGroup, so change into the target menu group. First clear
     ; the jumpBack registers. Then invoke changeMenuGroup().
@@ -149,11 +147,9 @@ dispatchMenuNode:
 ;   - (jumpBackMenuRowIndex) set to currentMenuRowIndex
 ; Destroys: B
 dispatchMenuNodeWithJumpBack:
-    push hl ; stack=[targetNodeId]
-    bcall(_GetMenuNodeHandler) ; A=numRows; DE=handler; HL=menuNode
+    bcall(_GetMenuNodeHandler) ; A=numRows; DE=handler; IX=menuNode; HL=HL
     ; Invoke a MenuItem.
     or a ; if numRows == 0: ZF=1 (i.e. a MenuItem)
-    pop hl ; stack=[]; HL=targetNodeId
     jp z, jumpDE ; Invoke menuHandler().
     ; Item was a menuGroup, so change into the target menu group. First, update
     ; the jumpBack registers if target is different than current. Then invoke
@@ -278,19 +274,19 @@ deduceRowIndexEnd:
 ;   - dirtyFlagsMenu set
 ; Destroys: A, DE, HL, IX
 changeMenuGroup:
-    push hl ; stack=[targetMenuGroupId]
-    push af ; stack=[targetMenuGroupId,targetRowIndex]
+    push af ; stack=[targetRowIndex]
+    push hl ; stack=[targetRowIndex,targetMenuGroupId]
     ; 1) Invoke the onExit() handler of the previous MenuGroup by setting CF=1.
     ld hl, (currentMenuGroupId)
-    bcall(_GetMenuNodeHandler) ; A=numRows; DE=handler; IX=menuNode
+    bcall(_GetMenuNodeHandler) ; A=numRows; DE=handler; IX=menuNode; HL=HL
     scf ; CF=1 means "onExit()" event
     call jumpDE
     ; 2) Invoke the onEnter() handler of the target MenuGroup by setting CF=0.
-    pop af ; stack=[targetMenuGroupId]; A=targetRowIndex
-    pop hl ; stack=[]; HL=targeMenuGroupId
+    pop hl ; stack=[targetRowIndex]; HL=targeMenuGroupId
+    pop af ; stack=[]; A=targetRowIndex
     ld (currentMenuRowIndex), a
     ld (currentMenuGroupId), hl
-    bcall(_GetMenuNodeHandler) ; A=numRows; DE=handler; IX=menuNode
+    bcall(_GetMenuNodeHandler) ; A=numRows; DE=handler; IX=menuNode; HL=HL
     or a ; set CF=0
     set dirtyFlagsMenu, (iy + dirtyFlags)
     jp jumpDE
