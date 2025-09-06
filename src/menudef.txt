@@ -17,8 +17,8 @@
 #   menugroup =  'MenuGroup' groupname grouplabel [handler] '[' menurow* ']'
 #   menurow = 'MenuRow' '[' menunode*5 ']'
 #   menunode = menuitem | menuitemalt | menugroup
-#   menuitem = 'MenuItem' itemname itemlabel
-#   menuitemalt = 'MenuItemAlt' itemname itemaltname itemlabel
+#   menuitem = 'MenuItem' itemname itemlabel [param]
+#   menuitemalt = 'MenuItemAlt' itemname itemaltname itemlabel [param]
 #   handler = printableASCII+
 #   nameHandler = printableASCII+
 #   backHandler = printableASCII+
@@ -29,6 +29,7 @@
 #   altName = alpha+
 #   grouplabel = alpha+
 #   itemlabel = alpha+ | '*'
+#   param = digit+
 #   alpha =  printableASCII | fonttag
 #   fonttag = '<' printableASCII+ '>'
 #

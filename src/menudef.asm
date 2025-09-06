@@ -37,6 +37,7 @@ mNullId equ 0
     .dw mNullId ; parentId
     .dw mNullNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId
     .dw mNullHandler
     .dw 0
@@ -46,6 +47,7 @@ mRootId equ 1
     .dw mNullId ; parentId
     .dw mRootNameId ; nameId
     .db 3 ; numRows
+    .db 0 ; param
     .dw mMathId ; rowBeginId or altNameId
     .dw mGroupHandler ; handler (predefined)
     .dw 0 ; nameSelector
@@ -57,6 +59,7 @@ mMathId equ 2
     .dw mRootId ; parentId
     .dw mMathNameId ; nameId
     .db 2 ; numRows
+    .db 0 ; param
     .dw mCubeId ; rowBeginId or altNameId
     .dw mGroupHandler ; handler (predefined)
     .dw 0 ; nameSelector
@@ -66,6 +69,7 @@ mNumId equ 3
     .dw mRootId ; parentId
     .dw mNumNameId ; nameId
     .db 4 ; numRows
+    .db 0 ; param
     .dw mPercentId ; rowBeginId or altNameId
     .dw mGroupHandler ; handler (predefined)
     .dw 0 ; nameSelector
@@ -75,6 +79,7 @@ mProbId equ 4
     .dw mRootId ; parentId
     .dw mProbNameId ; nameId
     .db 1 ; numRows
+    .db 0 ; param
     .dw mCombId ; rowBeginId or altNameId
     .dw mGroupHandler ; handler (predefined)
     .dw 0 ; nameSelector
@@ -84,6 +89,7 @@ mComplexId equ 5
     .dw mRootId ; parentId
     .dw mComplexNameId ; nameId
     .db 1 ; numRows
+    .db 0 ; param
     .dw mComplexRealId ; rowBeginId or altNameId
     .dw mGroupHandler ; handler (predefined)
     .dw 0 ; nameSelector
@@ -93,6 +99,7 @@ mHelpId equ 6
     .dw mRootId ; parentId
     .dw mHelpNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mHelpHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -103,6 +110,7 @@ mBaseId equ 7
     .dw mRootId ; parentId
     .dw mBaseNameId ; nameId
     .db 8 ; numRows
+    .db 0 ; param
     .dw mDecId ; rowBeginId or altNameId
     .dw mBaseHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -112,6 +120,7 @@ mHyperbolicId equ 8
     .dw mRootId ; parentId
     .dw mHyperbolicNameId ; nameId
     .db 2 ; numRows
+    .db 0 ; param
     .dw mBlank097Id ; rowBeginId or altNameId
     .dw mGroupHandler ; handler (predefined)
     .dw 0 ; nameSelector
@@ -121,6 +130,7 @@ mStatId equ 9
     .dw mRootId ; parentId
     .dw mStatNameId ; nameId
     .db 3 ; numRows
+    .db 0 ; param
     .dw mStatPlusId ; rowBeginId or altNameId
     .dw mGroupHandler ; handler (predefined)
     .dw 0 ; nameSelector
@@ -130,6 +140,7 @@ mConvId equ 10
     .dw mRootId ; parentId
     .dw mConvNameId ; nameId
     .db 2 ; numRows
+    .db 0 ; param
     .dw mRToDId ; rowBeginId or altNameId
     .dw mGroupHandler ; handler (predefined)
     .dw 0 ; nameSelector
@@ -139,6 +150,7 @@ mTvmId equ 11
     .dw mRootId ; parentId
     .dw mTvmNameId ; nameId
     .db 3 ; numRows
+    .db 0 ; param
     .dw mTvmNId ; rowBeginId or altNameId
     .dw mGroupHandler ; handler (predefined)
     .dw 0 ; nameSelector
@@ -149,6 +161,7 @@ mClearId equ 12
     .dw mRootId ; parentId
     .dw mClearNameId ; nameId
     .db 2 ; numRows
+    .db 0 ; param
     .dw mClearXId ; rowBeginId or altNameId
     .dw mGroupHandler ; handler (predefined)
     .dw 0 ; nameSelector
@@ -158,6 +171,7 @@ mModeId equ 13
     .dw mRootId ; parentId
     .dw mModeNameId ; nameId
     .db 4 ; numRows
+    .db 0 ; param
     .dw mFixId ; rowBeginId or altNameId
     .dw mGroupHandler ; handler (predefined)
     .dw 0 ; nameSelector
@@ -167,6 +181,7 @@ mStackId equ 14
     .dw mRootId ; parentId
     .dw mStackNameId ; nameId
     .db 1 ; numRows
+    .db 0 ; param
     .dw mStackDupId ; rowBeginId or altNameId
     .dw mGroupHandler ; handler (predefined)
     .dw 0 ; nameSelector
@@ -176,6 +191,7 @@ mUnitId equ 15
     .dw mRootId ; parentId
     .dw mUnitNameId ; nameId
     .db 9 ; numRows
+    .db 0 ; param
     .dw mUnitMeterId ; rowBeginId or altNameId
     .dw mGroupHandler ; handler (predefined)
     .dw 0 ; nameSelector
@@ -185,6 +201,7 @@ mDateId equ 16
     .dw mRootId ; parentId
     .dw mDateNameId ; nameId
     .db 3 ; numRows
+    .db 0 ; param
     .dw mLeapYearId ; rowBeginId or altNameId
     .dw mGroupHandler ; handler (predefined)
     .dw 0 ; nameSelector
@@ -196,6 +213,7 @@ mCubeId equ 17
     .dw mMathId ; parentId
     .dw mCubeNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mCubeHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -205,6 +223,7 @@ mCubeRootId equ 18
     .dw mMathId ; parentId
     .dw mCubeRootNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mCubeRootHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -214,6 +233,7 @@ mXRootYId equ 19
     .dw mMathId ; parentId
     .dw mXRootYNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mXRootYHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -223,6 +243,7 @@ mAtan2Id equ 20
     .dw mMathId ; parentId
     .dw mAtan2NameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mAtan2Handler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -232,6 +253,7 @@ mBlank021Id equ 21
     .dw mMathId ; parentId
     .dw mNullNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mNullHandler ; handler (predefined)
     .dw 0 ; nameSelector
@@ -242,6 +264,7 @@ mTwoPowId equ 22
     .dw mMathId ; parentId
     .dw mTwoPowNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mTwoPowHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -251,6 +274,7 @@ mLog2Id equ 23
     .dw mMathId ; parentId
     .dw mLog2NameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mLog2Handler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -260,6 +284,7 @@ mLogBaseId equ 24
     .dw mMathId ; parentId
     .dw mLogBaseNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mLogBaseHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -269,6 +294,7 @@ mExpMinusOneId equ 25
     .dw mMathId ; parentId
     .dw mExpMinusOneNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mExpMinusOneHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -278,6 +304,7 @@ mLnOnePlusId equ 26
     .dw mMathId ; parentId
     .dw mLnOnePlusNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mLnOnePlusHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -289,6 +316,7 @@ mPercentId equ 27
     .dw mNumId ; parentId
     .dw mPercentNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mPercentHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -298,6 +326,7 @@ mPercentChangeId equ 28
     .dw mNumId ; parentId
     .dw mPercentChangeNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mPercentChangeHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -307,6 +336,7 @@ mGcdId equ 29
     .dw mNumId ; parentId
     .dw mGcdNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mGcdHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -316,6 +346,7 @@ mLcmId equ 30
     .dw mNumId ; parentId
     .dw mLcmNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mLcmHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -325,6 +356,7 @@ mPrimeId equ 31
     .dw mNumId ; parentId
     .dw mPrimeNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mPrimeHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -335,6 +367,7 @@ mIntPartId equ 32
     .dw mNumId ; parentId
     .dw mIntPartNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mIntPartHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -344,6 +377,7 @@ mFracPartId equ 33
     .dw mNumId ; parentId
     .dw mFracPartNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mFracPartHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -353,6 +387,7 @@ mFloorId equ 34
     .dw mNumId ; parentId
     .dw mFloorNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mFloorHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -362,6 +397,7 @@ mCeilId equ 35
     .dw mNumId ; parentId
     .dw mCeilNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mCeilHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -371,6 +407,7 @@ mNearId equ 36
     .dw mNumId ; parentId
     .dw mNearNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mNearHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -381,6 +418,7 @@ mAbsId equ 37
     .dw mNumId ; parentId
     .dw mAbsNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mAbsHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -390,6 +428,7 @@ mSignId equ 38
     .dw mNumId ; parentId
     .dw mSignNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mSignHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -399,6 +438,7 @@ mModId equ 39
     .dw mNumId ; parentId
     .dw mModNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mModHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -408,6 +448,7 @@ mMinId equ 40
     .dw mNumId ; parentId
     .dw mMinNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mMinHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -417,6 +458,7 @@ mMaxId equ 41
     .dw mNumId ; parentId
     .dw mMaxNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mMaxHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -427,6 +469,7 @@ mRoundToFixId equ 42
     .dw mNumId ; parentId
     .dw mRoundToFixNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mRoundToFixHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -436,6 +479,7 @@ mRoundToNId equ 43
     .dw mNumId ; parentId
     .dw mRoundToNNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mRoundToNHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -445,6 +489,7 @@ mRoundToGuardId equ 44
     .dw mNumId ; parentId
     .dw mRoundToGuardNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mRoundToGuardHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -454,6 +499,7 @@ mBlank045Id equ 45
     .dw mNumId ; parentId
     .dw mNullNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mNullHandler ; handler (predefined)
     .dw 0 ; nameSelector
@@ -463,6 +509,7 @@ mBlank046Id equ 46
     .dw mNumId ; parentId
     .dw mNullNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mNullHandler ; handler (predefined)
     .dw 0 ; nameSelector
@@ -474,6 +521,7 @@ mCombId equ 47
     .dw mProbId ; parentId
     .dw mCombNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mCombHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -483,6 +531,7 @@ mPermId equ 48
     .dw mProbId ; parentId
     .dw mPermNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mPermHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -492,6 +541,7 @@ mFactorialId equ 49
     .dw mProbId ; parentId
     .dw mFactorialNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mFactorialHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -501,6 +551,7 @@ mRandomId equ 50
     .dw mProbId ; parentId
     .dw mRandomNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mRandomHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -510,6 +561,7 @@ mRandomSeedId equ 51
     .dw mProbId ; parentId
     .dw mRandomSeedNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mRandomSeedHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -521,6 +573,7 @@ mComplexRealId equ 52
     .dw mComplexId ; parentId
     .dw mComplexRealNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mComplexRealHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -530,6 +583,7 @@ mComplexImagId equ 53
     .dw mComplexId ; parentId
     .dw mComplexImagNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mComplexImagHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -539,6 +593,7 @@ mComplexConjId equ 54
     .dw mComplexId ; parentId
     .dw mComplexConjNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mComplexConjHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -548,6 +603,7 @@ mComplexAbsId equ 55
     .dw mComplexId ; parentId
     .dw mComplexAbsNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mComplexAbsHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -557,6 +613,7 @@ mComplexAngleId equ 56
     .dw mComplexId ; parentId
     .dw mComplexAngleNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mComplexAngleHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -568,6 +625,7 @@ mDecId equ 57
     .dw mBaseId ; parentId
     .dw mDecNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw mDecAltNameId ; rowBeginId or altNameId
     .dw mDecHandler ; handler (to be implemented)
     .dw mDecNameSelector ; nameSelector
@@ -577,6 +635,7 @@ mHexId equ 58
     .dw mBaseId ; parentId
     .dw mHexNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw mHexAltNameId ; rowBeginId or altNameId
     .dw mHexHandler ; handler (to be implemented)
     .dw mHexNameSelector ; nameSelector
@@ -586,6 +645,7 @@ mOctId equ 59
     .dw mBaseId ; parentId
     .dw mOctNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw mOctAltNameId ; rowBeginId or altNameId
     .dw mOctHandler ; handler (to be implemented)
     .dw mOctNameSelector ; nameSelector
@@ -595,6 +655,7 @@ mBinId equ 60
     .dw mBaseId ; parentId
     .dw mBinNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw mBinAltNameId ; rowBeginId or altNameId
     .dw mBinHandler ; handler (to be implemented)
     .dw mBinNameSelector ; nameSelector
@@ -604,6 +665,7 @@ mBlank061Id equ 61
     .dw mBaseId ; parentId
     .dw mNullNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mNullHandler ; handler (predefined)
     .dw 0 ; nameSelector
@@ -614,6 +676,7 @@ mBitwiseAndId equ 62
     .dw mBaseId ; parentId
     .dw mBitwiseAndNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mBitwiseAndHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -623,6 +686,7 @@ mBitwiseOrId equ 63
     .dw mBaseId ; parentId
     .dw mBitwiseOrNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mBitwiseOrHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -632,6 +696,7 @@ mBitwiseXorId equ 64
     .dw mBaseId ; parentId
     .dw mBitwiseXorNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mBitwiseXorHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -641,6 +706,7 @@ mBitwiseNotId equ 65
     .dw mBaseId ; parentId
     .dw mBitwiseNotNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mBitwiseNotHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -650,6 +716,7 @@ mBitwiseNegId equ 66
     .dw mBaseId ; parentId
     .dw mBitwiseNegNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mBitwiseNegHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -660,6 +727,7 @@ mShiftLeftLogicalId equ 67
     .dw mBaseId ; parentId
     .dw mShiftLeftLogicalNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mShiftLeftLogicalHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -669,6 +737,7 @@ mShiftRightLogicalId equ 68
     .dw mBaseId ; parentId
     .dw mShiftRightLogicalNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mShiftRightLogicalHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -678,6 +747,7 @@ mShiftRightArithmeticId equ 69
     .dw mBaseId ; parentId
     .dw mShiftRightArithmeticNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mShiftRightArithmeticHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -687,6 +757,7 @@ mShiftLeftLogicalNId equ 70
     .dw mBaseId ; parentId
     .dw mShiftLeftLogicalNNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mShiftLeftLogicalNHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -696,6 +767,7 @@ mShiftRightLogicalNId equ 71
     .dw mBaseId ; parentId
     .dw mShiftRightLogicalNNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mShiftRightLogicalNHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -706,6 +778,7 @@ mRotateLeftCircularId equ 72
     .dw mBaseId ; parentId
     .dw mRotateLeftCircularNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mRotateLeftCircularHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -715,6 +788,7 @@ mRotateRightCircularId equ 73
     .dw mBaseId ; parentId
     .dw mRotateRightCircularNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mRotateRightCircularHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -724,6 +798,7 @@ mRotateLeftCarryId equ 74
     .dw mBaseId ; parentId
     .dw mRotateLeftCarryNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mRotateLeftCarryHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -733,6 +808,7 @@ mRotateRightCarryId equ 75
     .dw mBaseId ; parentId
     .dw mRotateRightCarryNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mRotateRightCarryHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -742,6 +818,7 @@ mBlank076Id equ 76
     .dw mBaseId ; parentId
     .dw mNullNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mNullHandler ; handler (predefined)
     .dw 0 ; nameSelector
@@ -752,6 +829,7 @@ mRotateLeftCircularNId equ 77
     .dw mBaseId ; parentId
     .dw mRotateLeftCircularNNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mRotateLeftCircularNHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -761,6 +839,7 @@ mRotateRightCircularNId equ 78
     .dw mBaseId ; parentId
     .dw mRotateRightCircularNNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mRotateRightCircularNHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -770,6 +849,7 @@ mRotateLeftCarryNId equ 79
     .dw mBaseId ; parentId
     .dw mRotateLeftCarryNNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mRotateLeftCarryNHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -779,6 +859,7 @@ mRotateRightCarryNId equ 80
     .dw mBaseId ; parentId
     .dw mRotateRightCarryNNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mRotateRightCarryNHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -788,6 +869,7 @@ mBlank081Id equ 81
     .dw mBaseId ; parentId
     .dw mNullNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mNullHandler ; handler (predefined)
     .dw 0 ; nameSelector
@@ -798,6 +880,7 @@ mClearBitId equ 82
     .dw mBaseId ; parentId
     .dw mClearBitNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mClearBitHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -807,6 +890,7 @@ mSetBitId equ 83
     .dw mBaseId ; parentId
     .dw mSetBitNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mSetBitHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -816,6 +900,7 @@ mGetBitId equ 84
     .dw mBaseId ; parentId
     .dw mGetBitNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mGetBitHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -825,6 +910,7 @@ mReverseBitId equ 85
     .dw mBaseId ; parentId
     .dw mReverseBitNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mReverseBitHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -834,6 +920,7 @@ mCountBitId equ 86
     .dw mBaseId ; parentId
     .dw mCountBitNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mCountBitHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -844,6 +931,7 @@ mBaseAddId equ 87
     .dw mBaseId ; parentId
     .dw mBaseAddNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mBaseAddHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -853,6 +941,7 @@ mBaseSubtId equ 88
     .dw mBaseId ; parentId
     .dw mBaseSubtNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mBaseSubtHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -862,6 +951,7 @@ mBaseMultId equ 89
     .dw mBaseId ; parentId
     .dw mBaseMultNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mBaseMultHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -871,6 +961,7 @@ mBaseDivId equ 90
     .dw mBaseId ; parentId
     .dw mBaseDivNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mBaseDivHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -880,6 +971,7 @@ mBaseDiv2Id equ 91
     .dw mBaseId ; parentId
     .dw mBaseDiv2NameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mBaseDiv2Handler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -890,6 +982,7 @@ mClearCarryFlagId equ 92
     .dw mBaseId ; parentId
     .dw mClearCarryFlagNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mClearCarryFlagHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -899,6 +992,7 @@ mSetCarryFlagId equ 93
     .dw mBaseId ; parentId
     .dw mSetCarryFlagNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mSetCarryFlagHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -908,6 +1002,7 @@ mGetCarryFlagId equ 94
     .dw mBaseId ; parentId
     .dw mGetCarryFlagNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mGetCarryFlagHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -917,6 +1012,7 @@ mSetWordSizeId equ 95
     .dw mBaseId ; parentId
     .dw mSetWordSizeNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mSetWordSizeHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -926,6 +1022,7 @@ mGetWordSizeId equ 96
     .dw mBaseId ; parentId
     .dw mGetWordSizeNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mGetWordSizeHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -937,6 +1034,7 @@ mBlank097Id equ 97
     .dw mHyperbolicId ; parentId
     .dw mNullNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mNullHandler ; handler (predefined)
     .dw 0 ; nameSelector
@@ -946,6 +1044,7 @@ mSinhId equ 98
     .dw mHyperbolicId ; parentId
     .dw mSinhNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mSinhHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -955,6 +1054,7 @@ mCoshId equ 99
     .dw mHyperbolicId ; parentId
     .dw mCoshNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mCoshHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -964,6 +1064,7 @@ mTanhId equ 100
     .dw mHyperbolicId ; parentId
     .dw mTanhNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mTanhHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -973,6 +1074,7 @@ mBlank101Id equ 101
     .dw mHyperbolicId ; parentId
     .dw mNullNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mNullHandler ; handler (predefined)
     .dw 0 ; nameSelector
@@ -983,6 +1085,7 @@ mBlank102Id equ 102
     .dw mHyperbolicId ; parentId
     .dw mNullNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mNullHandler ; handler (predefined)
     .dw 0 ; nameSelector
@@ -992,6 +1095,7 @@ mAsinhId equ 103
     .dw mHyperbolicId ; parentId
     .dw mAsinhNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mAsinhHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -1001,6 +1105,7 @@ mAcoshId equ 104
     .dw mHyperbolicId ; parentId
     .dw mAcoshNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mAcoshHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -1010,6 +1115,7 @@ mAtanhId equ 105
     .dw mHyperbolicId ; parentId
     .dw mAtanhNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mAtanhHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -1019,6 +1125,7 @@ mBlank106Id equ 106
     .dw mHyperbolicId ; parentId
     .dw mNullNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mNullHandler ; handler (predefined)
     .dw 0 ; nameSelector
@@ -1030,6 +1137,7 @@ mStatPlusId equ 107
     .dw mStatId ; parentId
     .dw mStatPlusNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mStatPlusHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -1039,6 +1147,7 @@ mStatMinusId equ 108
     .dw mStatId ; parentId
     .dw mStatMinusNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mStatMinusHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -1048,6 +1157,7 @@ mStatAllModeId equ 109
     .dw mStatId ; parentId
     .dw mStatAllModeNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw mStatAllModeAltNameId ; rowBeginId or altNameId
     .dw mStatAllModeHandler ; handler (to be implemented)
     .dw mStatAllModeNameSelector ; nameSelector
@@ -1057,6 +1167,7 @@ mStatLinearModeId equ 110
     .dw mStatId ; parentId
     .dw mStatLinearModeNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw mStatLinearModeAltNameId ; rowBeginId or altNameId
     .dw mStatLinearModeHandler ; handler (to be implemented)
     .dw mStatLinearModeNameSelector ; nameSelector
@@ -1066,6 +1177,7 @@ mStatClearId equ 111
     .dw mStatId ; parentId
     .dw mStatClearNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mStatClearHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -1076,6 +1188,7 @@ mStatSumId equ 112
     .dw mStatId ; parentId
     .dw mStatSumNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mStatSumHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -1085,6 +1198,7 @@ mStatMeanId equ 113
     .dw mStatId ; parentId
     .dw mStatMeanNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mStatMeanHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -1094,6 +1208,7 @@ mStatWeightedMeanId equ 114
     .dw mStatId ; parentId
     .dw mStatWeightedMeanNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mStatWeightedMeanHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -1103,6 +1218,7 @@ mStatNId equ 115
     .dw mStatId ; parentId
     .dw mStatNNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mStatNHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -1112,6 +1228,7 @@ mStatRegsId equ 116
     .dw mStatId ; parentId
     .dw mStatRegsNameId ; nameId
     .db 3 ; numRows
+    .db 0 ; param
     .dw mStatRegXId ; rowBeginId or altNameId
     .dw mGroupHandler ; handler (predefined)
     .dw 0 ; nameSelector
@@ -1122,6 +1239,7 @@ mStatSampleSdevId equ 117
     .dw mStatId ; parentId
     .dw mStatSampleSdevNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mStatSampleSdevHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -1131,6 +1249,7 @@ mStatSampleCovId equ 118
     .dw mStatId ; parentId
     .dw mStatSampleCovNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mStatSampleCovHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -1140,6 +1259,7 @@ mStatPopSdevId equ 119
     .dw mStatId ; parentId
     .dw mStatPopSdevNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mStatPopSdevHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -1149,6 +1269,7 @@ mStatPopCovId equ 120
     .dw mStatId ; parentId
     .dw mStatPopCovNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mStatPopCovHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -1158,6 +1279,7 @@ mCfitId equ 121
     .dw mStatId ; parentId
     .dw mCfitNameId ; nameId
     .db 2 ; numRows
+    .db 0 ; param
     .dw mCfitForcastXId ; rowBeginId or altNameId
     .dw mGroupHandler ; handler (predefined)
     .dw 0 ; nameSelector
@@ -1169,6 +1291,7 @@ mStatRegXId equ 122
     .dw mStatRegsId ; parentId
     .dw mStatRegXNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mStatRegXHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -1178,6 +1301,7 @@ mStatRegX2Id equ 123
     .dw mStatRegsId ; parentId
     .dw mStatRegX2NameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mStatRegX2Handler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -1187,6 +1311,7 @@ mStatRegYId equ 124
     .dw mStatRegsId ; parentId
     .dw mStatRegYNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mStatRegYHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -1196,6 +1321,7 @@ mStatRegY2Id equ 125
     .dw mStatRegsId ; parentId
     .dw mStatRegY2NameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mStatRegY2Handler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -1205,6 +1331,7 @@ mStatRegXYId equ 126
     .dw mStatRegsId ; parentId
     .dw mStatRegXYNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mStatRegXYHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -1215,6 +1342,7 @@ mStatRegNId equ 127
     .dw mStatRegsId ; parentId
     .dw mStatRegNNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mStatRegNHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -1224,6 +1352,7 @@ mStatRegLnXId equ 128
     .dw mStatRegsId ; parentId
     .dw mStatRegLnXNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mStatRegLnXHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -1233,6 +1362,7 @@ mStatRegLnX2Id equ 129
     .dw mStatRegsId ; parentId
     .dw mStatRegLnX2NameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mStatRegLnX2Handler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -1242,6 +1372,7 @@ mStatRegLnYId equ 130
     .dw mStatRegsId ; parentId
     .dw mStatRegLnYNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mStatRegLnYHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -1251,6 +1382,7 @@ mStatRegLnY2Id equ 131
     .dw mStatRegsId ; parentId
     .dw mStatRegLnY2NameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mStatRegLnY2Handler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -1261,6 +1393,7 @@ mStatRegLnXLnYId equ 132
     .dw mStatRegsId ; parentId
     .dw mStatRegLnXLnYNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mStatRegLnXLnYHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -1270,6 +1403,7 @@ mStatRegXLnYId equ 133
     .dw mStatRegsId ; parentId
     .dw mStatRegXLnYNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mStatRegXLnYHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -1279,6 +1413,7 @@ mStatRegYLnXId equ 134
     .dw mStatRegsId ; parentId
     .dw mStatRegYLnXNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mStatRegYLnXHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -1288,6 +1423,7 @@ mBlank135Id equ 135
     .dw mStatRegsId ; parentId
     .dw mNullNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mNullHandler ; handler (predefined)
     .dw 0 ; nameSelector
@@ -1297,6 +1433,7 @@ mBlank136Id equ 136
     .dw mStatRegsId ; parentId
     .dw mNullNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mNullHandler ; handler (predefined)
     .dw 0 ; nameSelector
@@ -1308,6 +1445,7 @@ mCfitForcastXId equ 137
     .dw mCfitId ; parentId
     .dw mCfitForcastXNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mCfitForcastXHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -1317,6 +1455,7 @@ mCfitForcastYId equ 138
     .dw mCfitId ; parentId
     .dw mCfitForcastYNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mCfitForcastYHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -1326,6 +1465,7 @@ mCfitSlopeId equ 139
     .dw mCfitId ; parentId
     .dw mCfitSlopeNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mCfitSlopeHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -1335,6 +1475,7 @@ mCfitInterceptId equ 140
     .dw mCfitId ; parentId
     .dw mCfitInterceptNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mCfitInterceptHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -1344,6 +1485,7 @@ mCfitCorrelationId equ 141
     .dw mCfitId ; parentId
     .dw mCfitCorrelationNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mCfitCorrelationHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -1354,6 +1496,7 @@ mCfitLinearId equ 142
     .dw mCfitId ; parentId
     .dw mCfitLinearNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw mCfitLinearAltNameId ; rowBeginId or altNameId
     .dw mCfitLinearHandler ; handler (to be implemented)
     .dw mCfitLinearNameSelector ; nameSelector
@@ -1363,6 +1506,7 @@ mCfitLogId equ 143
     .dw mCfitId ; parentId
     .dw mCfitLogNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw mCfitLogAltNameId ; rowBeginId or altNameId
     .dw mCfitLogHandler ; handler (to be implemented)
     .dw mCfitLogNameSelector ; nameSelector
@@ -1372,6 +1516,7 @@ mCfitExpId equ 144
     .dw mCfitId ; parentId
     .dw mCfitExpNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw mCfitExpAltNameId ; rowBeginId or altNameId
     .dw mCfitExpHandler ; handler (to be implemented)
     .dw mCfitExpNameSelector ; nameSelector
@@ -1381,6 +1526,7 @@ mCfitPowerId equ 145
     .dw mCfitId ; parentId
     .dw mCfitPowerNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw mCfitPowerAltNameId ; rowBeginId or altNameId
     .dw mCfitPowerHandler ; handler (to be implemented)
     .dw mCfitPowerNameSelector ; nameSelector
@@ -1390,6 +1536,7 @@ mCfitBestId equ 146
     .dw mCfitId ; parentId
     .dw mCfitBestNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mCfitBestHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -1401,6 +1548,7 @@ mRToDId equ 147
     .dw mConvId ; parentId
     .dw mRToDNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mRToDHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -1410,6 +1558,7 @@ mDToRId equ 148
     .dw mConvId ; parentId
     .dw mDToRNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mDToRHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -1419,6 +1568,7 @@ mBlank149Id equ 149
     .dw mConvId ; parentId
     .dw mNullNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mNullHandler ; handler (predefined)
     .dw 0 ; nameSelector
@@ -1428,6 +1578,7 @@ mPToRId equ 150
     .dw mConvId ; parentId
     .dw mPToRNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mPToRHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -1437,6 +1588,7 @@ mRToPId equ 151
     .dw mConvId ; parentId
     .dw mRToPNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mRToPHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -1447,6 +1599,7 @@ mHmsToHrId equ 152
     .dw mConvId ; parentId
     .dw mHmsToHrNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mHmsToHrHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -1456,6 +1609,7 @@ mHrToHmsId equ 153
     .dw mConvId ; parentId
     .dw mHrToHmsNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mHrToHmsHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -1465,6 +1619,7 @@ mHmsPlusId equ 154
     .dw mConvId ; parentId
     .dw mHmsPlusNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mHmsPlusHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -1474,6 +1629,7 @@ mHmsMinusId equ 155
     .dw mConvId ; parentId
     .dw mHmsMinusNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mHmsMinusHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -1483,6 +1639,7 @@ mBlank156Id equ 156
     .dw mConvId ; parentId
     .dw mNullNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mNullHandler ; handler (predefined)
     .dw 0 ; nameSelector
@@ -1494,6 +1651,7 @@ mTvmNId equ 157
     .dw mTvmId ; parentId
     .dw mTvmNNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mTvmNHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -1503,6 +1661,7 @@ mTvmIYRId equ 158
     .dw mTvmId ; parentId
     .dw mTvmIYRNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mTvmIYRHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -1512,6 +1671,7 @@ mTvmPVId equ 159
     .dw mTvmId ; parentId
     .dw mTvmPVNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mTvmPVHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -1521,6 +1681,7 @@ mTvmPMTId equ 160
     .dw mTvmId ; parentId
     .dw mTvmPMTNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mTvmPMTHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -1530,6 +1691,7 @@ mTvmFVId equ 161
     .dw mTvmId ; parentId
     .dw mTvmFVNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mTvmFVHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -1540,6 +1702,7 @@ mTvmPYRId equ 162
     .dw mTvmId ; parentId
     .dw mTvmPYRNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw mTvmPYRAltNameId ; rowBeginId or altNameId
     .dw mTvmPYRHandler ; handler (to be implemented)
     .dw mTvmPYRNameSelector ; nameSelector
@@ -1549,6 +1712,7 @@ mTvmCYRId equ 163
     .dw mTvmId ; parentId
     .dw mTvmCYRNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw mTvmCYRAltNameId ; rowBeginId or altNameId
     .dw mTvmCYRHandler ; handler (to be implemented)
     .dw mTvmCYRNameSelector ; nameSelector
@@ -1558,6 +1722,7 @@ mTvmBeginId equ 164
     .dw mTvmId ; parentId
     .dw mTvmBeginNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw mTvmBeginAltNameId ; rowBeginId or altNameId
     .dw mTvmBeginHandler ; handler (to be implemented)
     .dw mTvmBeginNameSelector ; nameSelector
@@ -1567,6 +1732,7 @@ mTvmEndId equ 165
     .dw mTvmId ; parentId
     .dw mTvmEndNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw mTvmEndAltNameId ; rowBeginId or altNameId
     .dw mTvmEndHandler ; handler (to be implemented)
     .dw mTvmEndNameSelector ; nameSelector
@@ -1576,6 +1742,7 @@ mTvmClearId equ 166
     .dw mTvmId ; parentId
     .dw mTvmClearNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mTvmClearHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -1586,6 +1753,7 @@ mTvmIYR0Id equ 167
     .dw mTvmId ; parentId
     .dw mTvmIYR0NameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw mTvmIYR0AltNameId ; rowBeginId or altNameId
     .dw mTvmIYR0Handler ; handler (to be implemented)
     .dw mTvmIYR0NameSelector ; nameSelector
@@ -1595,6 +1763,7 @@ mTvmIYR1Id equ 168
     .dw mTvmId ; parentId
     .dw mTvmIYR1NameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw mTvmIYR1AltNameId ; rowBeginId or altNameId
     .dw mTvmIYR1Handler ; handler (to be implemented)
     .dw mTvmIYR1NameSelector ; nameSelector
@@ -1604,6 +1773,7 @@ mTvmIterMaxId equ 169
     .dw mTvmId ; parentId
     .dw mTvmIterMaxNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw mTvmIterMaxAltNameId ; rowBeginId or altNameId
     .dw mTvmIterMaxHandler ; handler (to be implemented)
     .dw mTvmIterMaxNameSelector ; nameSelector
@@ -1613,6 +1783,7 @@ mBlank170Id equ 170
     .dw mTvmId ; parentId
     .dw mNullNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mNullHandler ; handler (predefined)
     .dw 0 ; nameSelector
@@ -1622,6 +1793,7 @@ mTvmSolverResetId equ 171
     .dw mTvmId ; parentId
     .dw mTvmSolverResetNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mTvmSolverResetHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -1633,6 +1805,7 @@ mClearXId equ 172
     .dw mClearId ; parentId
     .dw mClearXNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mClearXHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -1642,6 +1815,7 @@ mClearStackId equ 173
     .dw mClearId ; parentId
     .dw mClearStackNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mClearStackHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -1651,6 +1825,7 @@ mClearRegsId equ 174
     .dw mClearId ; parentId
     .dw mClearRegsNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mClearRegsHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -1660,6 +1835,7 @@ mClearStatId equ 175
     .dw mClearId ; parentId
     .dw mClearStatNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mClearStatHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -1669,6 +1845,7 @@ mClearTvmId equ 176
     .dw mClearId ; parentId
     .dw mClearTvmNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mClearTvmHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -1679,6 +1856,7 @@ mClearDisplayId equ 177
     .dw mClearId ; parentId
     .dw mClearDisplayNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mClearDisplayHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -1688,6 +1866,7 @@ mBlank178Id equ 178
     .dw mClearId ; parentId
     .dw mNullNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mNullHandler ; handler (predefined)
     .dw 0 ; nameSelector
@@ -1697,6 +1876,7 @@ mBlank179Id equ 179
     .dw mClearId ; parentId
     .dw mNullNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mNullHandler ; handler (predefined)
     .dw 0 ; nameSelector
@@ -1706,6 +1886,7 @@ mBlank180Id equ 180
     .dw mClearId ; parentId
     .dw mNullNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mNullHandler ; handler (predefined)
     .dw 0 ; nameSelector
@@ -1715,6 +1896,7 @@ mBlank181Id equ 181
     .dw mClearId ; parentId
     .dw mNullNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mNullHandler ; handler (predefined)
     .dw 0 ; nameSelector
@@ -1726,6 +1908,7 @@ mFixId equ 182
     .dw mModeId ; parentId
     .dw mFixNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw mFixAltNameId ; rowBeginId or altNameId
     .dw mFixHandler ; handler (to be implemented)
     .dw mFixNameSelector ; nameSelector
@@ -1735,6 +1918,7 @@ mSciId equ 183
     .dw mModeId ; parentId
     .dw mSciNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw mSciAltNameId ; rowBeginId or altNameId
     .dw mSciHandler ; handler (to be implemented)
     .dw mSciNameSelector ; nameSelector
@@ -1744,6 +1928,7 @@ mEngId equ 184
     .dw mModeId ; parentId
     .dw mEngNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw mEngAltNameId ; rowBeginId or altNameId
     .dw mEngHandler ; handler (to be implemented)
     .dw mEngNameSelector ; nameSelector
@@ -1753,6 +1938,7 @@ mRadId equ 185
     .dw mModeId ; parentId
     .dw mRadNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw mRadAltNameId ; rowBeginId or altNameId
     .dw mRadHandler ; handler (to be implemented)
     .dw mRadNameSelector ; nameSelector
@@ -1762,6 +1948,7 @@ mDegId equ 186
     .dw mModeId ; parentId
     .dw mDegNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw mDegAltNameId ; rowBeginId or altNameId
     .dw mDegHandler ; handler (to be implemented)
     .dw mDegNameSelector ; nameSelector
@@ -1772,6 +1959,7 @@ mNumResultModeRealId equ 187
     .dw mModeId ; parentId
     .dw mNumResultModeRealNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw mNumResultModeRealAltNameId ; rowBeginId or altNameId
     .dw mNumResultModeRealHandler ; handler (to be implemented)
     .dw mNumResultModeRealNameSelector ; nameSelector
@@ -1781,6 +1969,7 @@ mNumResultModeComplexId equ 188
     .dw mModeId ; parentId
     .dw mNumResultModeComplexNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw mNumResultModeComplexAltNameId ; rowBeginId or altNameId
     .dw mNumResultModeComplexHandler ; handler (to be implemented)
     .dw mNumResultModeComplexNameSelector ; nameSelector
@@ -1790,6 +1979,7 @@ mComplexModeRectId equ 189
     .dw mModeId ; parentId
     .dw mComplexModeRectNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw mComplexModeRectAltNameId ; rowBeginId or altNameId
     .dw mComplexModeRectHandler ; handler (to be implemented)
     .dw mComplexModeRectNameSelector ; nameSelector
@@ -1799,6 +1989,7 @@ mComplexModeRadId equ 190
     .dw mModeId ; parentId
     .dw mComplexModeRadNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw mComplexModeRadAltNameId ; rowBeginId or altNameId
     .dw mComplexModeRadHandler ; handler (to be implemented)
     .dw mComplexModeRadNameSelector ; nameSelector
@@ -1808,6 +1999,7 @@ mComplexModeDegId equ 191
     .dw mModeId ; parentId
     .dw mComplexModeDegNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw mComplexModeDegAltNameId ; rowBeginId or altNameId
     .dw mComplexModeDegHandler ; handler (to be implemented)
     .dw mComplexModeDegNameSelector ; nameSelector
@@ -1818,6 +2010,7 @@ mSetRegSizeId equ 192
     .dw mModeId ; parentId
     .dw mSetRegSizeNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mSetRegSizeHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -1827,6 +2020,7 @@ mGetRegSizeId equ 193
     .dw mModeId ; parentId
     .dw mGetRegSizeNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mGetRegSizeHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -1836,6 +2030,7 @@ mBlank194Id equ 194
     .dw mModeId ; parentId
     .dw mNullNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mNullHandler ; handler (predefined)
     .dw 0 ; nameSelector
@@ -1845,6 +2040,7 @@ mSetStackSizeId equ 195
     .dw mModeId ; parentId
     .dw mSetStackSizeNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mSetStackSizeHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -1854,6 +2050,7 @@ mGetStackSizeId equ 196
     .dw mModeId ; parentId
     .dw mGetStackSizeNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mGetStackSizeHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -1864,6 +2061,7 @@ mCommaEENormalId equ 197
     .dw mModeId ; parentId
     .dw mCommaEENormalNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw mCommaEENormalAltNameId ; rowBeginId or altNameId
     .dw mCommaEENormalHandler ; handler (to be implemented)
     .dw mCommaEENormalNameSelector ; nameSelector
@@ -1873,6 +2071,7 @@ mCommaEESwappedId equ 198
     .dw mModeId ; parentId
     .dw mCommaEESwappedNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw mCommaEESwappedAltNameId ; rowBeginId or altNameId
     .dw mCommaEESwappedHandler ; handler (to be implemented)
     .dw mCommaEESwappedNameSelector ; nameSelector
@@ -1882,6 +2081,7 @@ mBlank199Id equ 199
     .dw mModeId ; parentId
     .dw mNullNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mNullHandler ; handler (predefined)
     .dw 0 ; nameSelector
@@ -1891,6 +2091,7 @@ mFormatRecordRawId equ 200
     .dw mModeId ; parentId
     .dw mFormatRecordRawNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw mFormatRecordRawAltNameId ; rowBeginId or altNameId
     .dw mFormatRecordRawHandler ; handler (to be implemented)
     .dw mFormatRecordRawNameSelector ; nameSelector
@@ -1900,6 +2101,7 @@ mFormatRecordStringId equ 201
     .dw mModeId ; parentId
     .dw mFormatRecordStringNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw mFormatRecordStringAltNameId ; rowBeginId or altNameId
     .dw mFormatRecordStringHandler ; handler (to be implemented)
     .dw mFormatRecordStringNameSelector ; nameSelector
@@ -1911,6 +2113,7 @@ mStackDupId equ 202
     .dw mStackId ; parentId
     .dw mStackDupNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mStackDupHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -1920,6 +2123,7 @@ mStackRollUpId equ 203
     .dw mStackId ; parentId
     .dw mStackRollUpNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mStackRollUpHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -1929,6 +2133,7 @@ mStackRollDownId equ 204
     .dw mStackId ; parentId
     .dw mStackRollDownNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mStackRollDownHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -1938,6 +2143,7 @@ mStackDropId equ 205
     .dw mStackId ; parentId
     .dw mStackDropNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mStackDropHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -1947,6 +2153,7 @@ mStackExchangeXYId equ 206
     .dw mStackId ; parentId
     .dw mStackExchangeXYNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mStackExchangeXYHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -1958,6 +2165,7 @@ mUnitMeterId equ 207
     .dw mUnitId ; parentId
     .dw mUnitMeterNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mUnitMeterHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -1967,6 +2175,7 @@ mUnitFeetId equ 208
     .dw mUnitId ; parentId
     .dw mUnitFeetNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mUnitFeetHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -1976,6 +2185,7 @@ mBlank209Id equ 209
     .dw mUnitId ; parentId
     .dw mNullNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mNullHandler ; handler (predefined)
     .dw 0 ; nameSelector
@@ -1985,6 +2195,7 @@ mUnitSqMeterId equ 210
     .dw mUnitId ; parentId
     .dw mUnitSqMeterNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mUnitSqMeterHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -1994,6 +2205,7 @@ mUnitSqFeetId equ 211
     .dw mUnitId ; parentId
     .dw mUnitSqFeetNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mUnitSqFeetHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -2004,6 +2216,7 @@ mFToCId equ 212
     .dw mUnitId ; parentId
     .dw mFToCNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mFToCHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -2013,6 +2226,7 @@ mCToFId equ 213
     .dw mUnitId ; parentId
     .dw mCToFNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mCToFHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -2022,6 +2236,7 @@ mBlank214Id equ 214
     .dw mUnitId ; parentId
     .dw mNullNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mNullHandler ; handler (predefined)
     .dw 0 ; nameSelector
@@ -2031,6 +2246,7 @@ mInhgToHpaId equ 215
     .dw mUnitId ; parentId
     .dw mInhgToHpaNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mInhgToHpaHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -2040,6 +2256,7 @@ mHpaToInhgId equ 216
     .dw mUnitId ; parentId
     .dw mHpaToInhgNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mHpaToInhgHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -2050,6 +2267,7 @@ mMiToKmId equ 217
     .dw mUnitId ; parentId
     .dw mMiToKmNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mMiToKmHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -2059,6 +2277,7 @@ mKmToMiId equ 218
     .dw mUnitId ; parentId
     .dw mKmToMiNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mKmToMiHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -2068,6 +2287,7 @@ mBlank219Id equ 219
     .dw mUnitId ; parentId
     .dw mNullNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mNullHandler ; handler (predefined)
     .dw 0 ; nameSelector
@@ -2077,6 +2297,7 @@ mFtToMId equ 220
     .dw mUnitId ; parentId
     .dw mFtToMNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mFtToMHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -2086,6 +2307,7 @@ mMToFtId equ 221
     .dw mUnitId ; parentId
     .dw mMToFtNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mMToFtHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -2096,6 +2318,7 @@ mInToCmId equ 222
     .dw mUnitId ; parentId
     .dw mInToCmNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mInToCmHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -2105,6 +2328,7 @@ mCmToInId equ 223
     .dw mUnitId ; parentId
     .dw mCmToInNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mCmToInHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -2114,6 +2338,7 @@ mBlank224Id equ 224
     .dw mUnitId ; parentId
     .dw mNullNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mNullHandler ; handler (predefined)
     .dw 0 ; nameSelector
@@ -2123,6 +2348,7 @@ mMilToMicronId equ 225
     .dw mUnitId ; parentId
     .dw mMilToMicronNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mMilToMicronHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -2132,6 +2358,7 @@ mMicronToMilId equ 226
     .dw mUnitId ; parentId
     .dw mMicronToMilNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mMicronToMilHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -2142,6 +2369,7 @@ mLbsToKgId equ 227
     .dw mUnitId ; parentId
     .dw mLbsToKgNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mLbsToKgHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -2151,6 +2379,7 @@ mKgToLbsId equ 228
     .dw mUnitId ; parentId
     .dw mKgToLbsNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mKgToLbsHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -2160,6 +2389,7 @@ mBlank229Id equ 229
     .dw mUnitId ; parentId
     .dw mNullNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mNullHandler ; handler (predefined)
     .dw 0 ; nameSelector
@@ -2169,6 +2399,7 @@ mOzToGId equ 230
     .dw mUnitId ; parentId
     .dw mOzToGNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mOzToGHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -2178,6 +2409,7 @@ mGToOzId equ 231
     .dw mUnitId ; parentId
     .dw mGToOzNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mGToOzHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -2188,6 +2420,7 @@ mGalToLId equ 232
     .dw mUnitId ; parentId
     .dw mGalToLNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mGalToLHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -2197,6 +2430,7 @@ mLToGalId equ 233
     .dw mUnitId ; parentId
     .dw mLToGalNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mLToGalHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -2206,6 +2440,7 @@ mBlank234Id equ 234
     .dw mUnitId ; parentId
     .dw mNullNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mNullHandler ; handler (predefined)
     .dw 0 ; nameSelector
@@ -2215,6 +2450,7 @@ mFlozToMlId equ 235
     .dw mUnitId ; parentId
     .dw mFlozToMlNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mFlozToMlHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -2224,6 +2460,7 @@ mMlToFlozId equ 236
     .dw mUnitId ; parentId
     .dw mMlToFlozNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mMlToFlozHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -2234,6 +2471,7 @@ mCalToKjId equ 237
     .dw mUnitId ; parentId
     .dw mCalToKjNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mCalToKjHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -2243,6 +2481,7 @@ mKjToCalId equ 238
     .dw mUnitId ; parentId
     .dw mKjToCalNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mKjToCalHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -2252,6 +2491,7 @@ mBlank239Id equ 239
     .dw mUnitId ; parentId
     .dw mNullNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mNullHandler ; handler (predefined)
     .dw 0 ; nameSelector
@@ -2261,6 +2501,7 @@ mHpToKwId equ 240
     .dw mUnitId ; parentId
     .dw mHpToKwNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mHpToKwHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -2270,6 +2511,7 @@ mKwToHpId equ 241
     .dw mUnitId ; parentId
     .dw mKwToHpNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mKwToHpHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -2280,6 +2522,7 @@ mMpgToLkmId equ 242
     .dw mUnitId ; parentId
     .dw mMpgToLkmNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mMpgToLkmHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -2289,6 +2532,7 @@ mLkmToMpgId equ 243
     .dw mUnitId ; parentId
     .dw mLkmToMpgNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mLkmToMpgHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -2298,6 +2542,7 @@ mBlank244Id equ 244
     .dw mUnitId ; parentId
     .dw mNullNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mNullHandler ; handler (predefined)
     .dw 0 ; nameSelector
@@ -2307,6 +2552,7 @@ mPsiToKpaId equ 245
     .dw mUnitId ; parentId
     .dw mPsiToKpaNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mPsiToKpaHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -2316,6 +2562,7 @@ mKpaToPsiId equ 246
     .dw mUnitId ; parentId
     .dw mKpaToPsiNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mKpaToPsiHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -2326,6 +2573,7 @@ mAcreToHectareId equ 247
     .dw mUnitId ; parentId
     .dw mAcreToHectareNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mAcreToHectareHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -2335,6 +2583,7 @@ mHectareToAcreId equ 248
     .dw mUnitId ; parentId
     .dw mHectareToAcreNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mHectareToAcreHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -2344,6 +2593,7 @@ mBlank249Id equ 249
     .dw mUnitId ; parentId
     .dw mNullNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mNullHandler ; handler (predefined)
     .dw 0 ; nameSelector
@@ -2353,6 +2603,7 @@ mBlank250Id equ 250
     .dw mUnitId ; parentId
     .dw mNullNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mNullHandler ; handler (predefined)
     .dw 0 ; nameSelector
@@ -2362,6 +2613,7 @@ mBlank251Id equ 251
     .dw mUnitId ; parentId
     .dw mNullNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mNullHandler ; handler (predefined)
     .dw 0 ; nameSelector
@@ -2373,6 +2625,7 @@ mLeapYearId equ 252
     .dw mDateId ; parentId
     .dw mLeapYearNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mLeapYearHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -2382,6 +2635,7 @@ mDayOfWeekId equ 253
     .dw mDateId ; parentId
     .dw mDayOfWeekNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mDayOfWeekHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -2391,6 +2645,7 @@ mBlank254Id equ 254
     .dw mDateId ; parentId
     .dw mNullNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mNullHandler ; handler (predefined)
     .dw 0 ; nameSelector
@@ -2400,6 +2655,7 @@ mDateToEpochDaysId equ 255
     .dw mDateId ; parentId
     .dw mDateToEpochDaysNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mDateToEpochDaysHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -2409,6 +2665,7 @@ mEpochDaysToDateId equ 256
     .dw mDateId ; parentId
     .dw mEpochDaysToDateNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mEpochDaysToDateHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -2419,6 +2676,7 @@ mDateRelatedToSecondsId equ 257
     .dw mDateId ; parentId
     .dw mDateRelatedToSecondsNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mDateRelatedToSecondsHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -2428,6 +2686,7 @@ mSecondsToDurationId equ 258
     .dw mDateId ; parentId
     .dw mSecondsToDurationNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mSecondsToDurationHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -2437,6 +2696,7 @@ mSecondsToTimeId equ 259
     .dw mDateId ; parentId
     .dw mSecondsToTimeNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mSecondsToTimeHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -2446,6 +2706,7 @@ mEpochSecondsToAppDateTimeId equ 260
     .dw mDateId ; parentId
     .dw mEpochSecondsToAppDateTimeNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mEpochSecondsToAppDateTimeHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -2455,6 +2716,7 @@ mEpochSecondsToUTCDateTimeId equ 261
     .dw mDateId ; parentId
     .dw mEpochSecondsToUTCDateTimeNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mEpochSecondsToUTCDateTimeHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -2465,6 +2727,7 @@ mTimeZoneToHoursId equ 262
     .dw mDateId ; parentId
     .dw mTimeZoneToHoursNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mTimeZoneToHoursHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -2474,6 +2737,7 @@ mHoursToTimeZoneId equ 263
     .dw mDateId ; parentId
     .dw mHoursToTimeZoneNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mHoursToTimeZoneHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -2483,6 +2747,7 @@ mDopsId equ 264
     .dw mDateId ; parentId
     .dw mDopsNameId ; nameId
     .db 1 ; numRows
+    .db 0 ; param
     .dw mDateShrinkId ; rowBeginId or altNameId
     .dw mGroupHandler ; handler (predefined)
     .dw 0 ; nameSelector
@@ -2492,6 +2757,7 @@ mEpochId equ 265
     .dw mDateId ; parentId
     .dw mEpochNameId ; nameId
     .db 2 ; numRows
+    .db 0 ; param
     .dw mEpochUnixId ; rowBeginId or altNameId
     .dw mGroupHandler ; handler (predefined)
     .dw 0 ; nameSelector
@@ -2501,6 +2767,7 @@ mClkId equ 266
     .dw mDateId ; parentId
     .dw mClkNameId ; nameId
     .db 2 ; numRows
+    .db 0 ; param
     .dw mGetNowId ; rowBeginId or altNameId
     .dw mGroupHandler ; handler (predefined)
     .dw 0 ; nameSelector
@@ -2512,6 +2779,7 @@ mDateShrinkId equ 267
     .dw mDopsId ; parentId
     .dw mDateShrinkNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mDateShrinkHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -2521,6 +2789,7 @@ mDateExtendId equ 268
     .dw mDopsId ; parentId
     .dw mDateExtendNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mDateExtendHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -2530,6 +2799,7 @@ mDateCutId equ 269
     .dw mDopsId ; parentId
     .dw mDateCutNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mDateCutHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -2539,6 +2809,7 @@ mDateLinkId equ 270
     .dw mDopsId ; parentId
     .dw mDateLinkNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mDateLinkHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -2548,6 +2819,7 @@ mBlank271Id equ 271
     .dw mDopsId ; parentId
     .dw mNullNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mNullHandler ; handler (predefined)
     .dw 0 ; nameSelector
@@ -2559,6 +2831,7 @@ mEpochUnixId equ 272
     .dw mEpochId ; parentId
     .dw mEpochUnixNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw mEpochUnixAltNameId ; rowBeginId or altNameId
     .dw mEpochUnixHandler ; handler (to be implemented)
     .dw mEpochUnixNameSelector ; nameSelector
@@ -2568,6 +2841,7 @@ mEpochNtpId equ 273
     .dw mEpochId ; parentId
     .dw mEpochNtpNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw mEpochNtpAltNameId ; rowBeginId or altNameId
     .dw mEpochNtpHandler ; handler (to be implemented)
     .dw mEpochNtpNameSelector ; nameSelector
@@ -2577,6 +2851,7 @@ mEpochGpsId equ 274
     .dw mEpochId ; parentId
     .dw mEpochGpsNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw mEpochGpsAltNameId ; rowBeginId or altNameId
     .dw mEpochGpsHandler ; handler (to be implemented)
     .dw mEpochGpsNameSelector ; nameSelector
@@ -2586,6 +2861,7 @@ mEpochTiosId equ 275
     .dw mEpochId ; parentId
     .dw mEpochTiosNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw mEpochTiosAltNameId ; rowBeginId or altNameId
     .dw mEpochTiosHandler ; handler (to be implemented)
     .dw mEpochTiosNameSelector ; nameSelector
@@ -2595,6 +2871,7 @@ mEpochY2kId equ 276
     .dw mEpochId ; parentId
     .dw mEpochY2kNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw mEpochY2kAltNameId ; rowBeginId or altNameId
     .dw mEpochY2kHandler ; handler (to be implemented)
     .dw mEpochY2kNameSelector ; nameSelector
@@ -2605,6 +2882,7 @@ mEpochCustomId equ 277
     .dw mEpochId ; parentId
     .dw mEpochCustomNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw mEpochCustomAltNameId ; rowBeginId or altNameId
     .dw mEpochCustomHandler ; handler (to be implemented)
     .dw mEpochCustomNameSelector ; nameSelector
@@ -2614,6 +2892,7 @@ mBlank278Id equ 278
     .dw mEpochId ; parentId
     .dw mNullNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mNullHandler ; handler (predefined)
     .dw 0 ; nameSelector
@@ -2623,6 +2902,7 @@ mBlank279Id equ 279
     .dw mEpochId ; parentId
     .dw mNullNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mNullHandler ; handler (predefined)
     .dw 0 ; nameSelector
@@ -2632,6 +2912,7 @@ mEpochSetCustomId equ 280
     .dw mEpochId ; parentId
     .dw mEpochSetCustomNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mEpochSetCustomHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -2641,6 +2922,7 @@ mEpochGetCustomId equ 281
     .dw mEpochId ; parentId
     .dw mEpochGetCustomNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mEpochGetCustomHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -2652,6 +2934,7 @@ mGetNowId equ 282
     .dw mClkId ; parentId
     .dw mGetNowNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mGetNowHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -2661,6 +2944,7 @@ mGetNowDateId equ 283
     .dw mClkId ; parentId
     .dw mGetNowDateNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mGetNowDateHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -2670,6 +2954,7 @@ mGetNowTimeId equ 284
     .dw mClkId ; parentId
     .dw mGetNowTimeNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mGetNowTimeHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -2679,6 +2964,7 @@ mGetNowAppDateTimeId equ 285
     .dw mClkId ; parentId
     .dw mGetNowAppDateTimeNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mGetNowAppDateTimeHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -2688,6 +2974,7 @@ mGetNowUTCDateTimeId equ 286
     .dw mClkId ; parentId
     .dw mGetNowUTCDateTimeNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mGetNowUTCDateTimeHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -2698,6 +2985,7 @@ mSetTimeZoneId equ 287
     .dw mClkId ; parentId
     .dw mSetTimeZoneNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mSetTimeZoneHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -2707,6 +2995,7 @@ mGetTimeZoneId equ 288
     .dw mClkId ; parentId
     .dw mGetTimeZoneNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mGetTimeZoneHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -2716,6 +3005,7 @@ mSetClockTimeZoneId equ 289
     .dw mClkId ; parentId
     .dw mSetClockTimeZoneNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mSetClockTimeZoneHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -2725,6 +3015,7 @@ mGetClockTimeZoneId equ 290
     .dw mClkId ; parentId
     .dw mGetClockTimeZoneNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mGetClockTimeZoneHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
@@ -2734,6 +3025,7 @@ mSetClockId equ 291
     .dw mClkId ; parentId
     .dw mSetClockNameId ; nameId
     .db 0 ; numRows
+    .db 0 ; param
     .dw 0 ; rowBeginId or altNameId
     .dw mSetClockHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
