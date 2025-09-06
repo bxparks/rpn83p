@@ -41,19 +41,91 @@
 ;   would have trigger the unit conversion. Being able to invoke the unit
 ;   conversion function without additional state make it easier to support
 ;   keystroke programming in the future.
+;   5) Temperature conversions must be done in a special way. It's easier to
+;   handle temperatures using explicit menu handlers, instead of driving it
+;   through the 'param' field in a table.
 ;-----------------------------------------------------------------------------
 
+; Description: Common handler for all UNIT menus.
+;
+; Input:
+;   - A:u8=targetUnit
+commonUnitHandler:
+    ld e, a
+    push de
+    call closeInputAndRecallDenominateX ; A=rpnObjectType; B=objectUnit
+    pop de
+    ld c, e ; C=targetUnit
+    bcall(_ConvertUnit)
+    jp replaceX
+
 ;-----------------------------------------------------------------------------
-; UNIT > Row 1
+; UNIT > LEN > Row 1
 ;-----------------------------------------------------------------------------
+
+mUnitNanoMeterHandler:
+    ld a, unitNanoMeterId
+    jr commonUnitHandler
+
+mUnitMicroMeterHandler:
+    ld a, unitMicroMeterId
+    jr commonUnitHandler
+
+mUnitMilliMeterHandler:
+    ld a, unitMilliMeterId
+    jr commonUnitHandler
+
+mUnitCentiMeterHandler:
+    ld a, unitCentiMeterId
+    jr commonUnitHandler
 
 mUnitMeterHandler:
     ld a, unitMeterId
     jr commonUnitHandler
 
-mUnitFeetHandler:
-    ld a, unitFeetId
+;-----------------------------------------------------------------------------
+; UNIT > LEN > Row 2
+;-----------------------------------------------------------------------------
+
+mUnitMilHandler:
+    ld a, unitMilId
     jr commonUnitHandler
+
+mUnitInchHandler:
+    ld a, unitInchId
+    jr commonUnitHandler
+
+mUnitFootHandler:
+    ld a, unitFootId
+    jr commonUnitHandler
+
+mUnitYardHandler:
+    ld a, unitYardId
+    jr commonUnitHandler
+
+mUnitFanthomHandler:
+    ld a, unitFanthomId
+    jr commonUnitHandler
+
+;-----------------------------------------------------------------------------
+; UNIT > LEN > Row 3
+;-----------------------------------------------------------------------------
+
+mUnitKiloMeterHandler:
+    ld a, unitKiloMeterId
+    jr commonUnitHandler
+
+mUnitMileHandler:
+    ld a, unitMileId
+    jr commonUnitHandler
+
+mUnitNauticalMileHandler:
+    ld a, unitNauticalMileId
+    jr commonUnitHandler
+
+;-----------------------------------------------------------------------------
+; UNIT > AREA > Row 1
+;-----------------------------------------------------------------------------
 
 mUnitSqMeterHandler:
     ld a, unitSqMeterId
@@ -62,19 +134,6 @@ mUnitSqMeterHandler:
 mUnitSqFeetHandler:
     ld a, unitSqFeetId
     jr commonUnitHandler
-
-; Description: Common handler for all UNIT menus.
-;
-; Input:
-;   - A:u8=targetUnitId
-commonUnitHandler:
-    ld e, a
-    push de
-    call closeInputAndRecallDenominateX ; A=rpnObjectType; B=objectUnit
-    pop de
-    ld c, e ; C=targetUnitId
-    bcall(_ConvertUnit)
-    jp replaceX
 
 ;-----------------------------------------------------------------------------
 ; UNIT > Row 1

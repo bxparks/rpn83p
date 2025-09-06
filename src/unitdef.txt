@@ -27,8 +27,24 @@ UnitClasses [
 ]
 
 Units [
-  Unit Meter meter Length Meter 1.0
-  Unit Feet feet Length Meter 0.3048
-  Unit SqMeter sq<Sspace>meter Area SqMeter 1.0
-  Unit SqFeet sq<Sspace>feet Area SqMeter 0.09290304 # 0.3048*0.3048
+  # Length
+  Unit NanoMeter nm Length Meter 1e-9
+  Unit MicroMeter <Smu>m Length Meter 1e-6
+  Unit MilliMeter mm Length Meter 1e-3
+  Unit CentiMeter cm Length Meter 1e-2
+  Unit Meter m Length Meter 1.0
+  Unit KiloMeter km Length Meter 1e3
+  Unit MegaMeter Mm Length Meter 1e6
+
+  Unit Mil mil Length Meter 0.0254e-3 # exact
+  Unit Inch in Length Meter 0.0254 # exact
+  Unit Foot ft Length Meter 0.3048 # exact
+  Unit Yard yd Length Meter 0.9144 # 3 feet
+  Unit Fanthom fanthom Length Meter 1.8288 # 6 feet
+  Unit Mile mi Length Meter 1609.344 # exact
+  Unit NauticalMile nmi Length Meter 1852 # exact
+
+  # Area
+  Unit SqMeter m<Scaret>2 Area SqMeter 1.0
+  Unit SqFeet ft<Scaret>2 Area SqMeter 0.09290304 # 0.3048*0.3048
 ]
