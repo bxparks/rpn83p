@@ -212,6 +212,104 @@ mUnitCuNauticalMileHandler:
     jp commonUnitHandler
 
 ;-----------------------------------------------------------------------------
+; UNIT > VOL > SI > Row 1
+;-----------------------------------------------------------------------------
+
+mUnitMicroLiterHandler:
+    ld a, unitMicroLiterId
+    jp commonUnitHandler
+
+mUnitMilliLiterHandler:
+    ld a, unitMilliLiterId
+    jp commonUnitHandler
+
+mUnitLiterHandler:
+    ld a, unitLiterId
+    jp commonUnitHandler
+
+mUnitKiloLiterHandler:
+    ld a, unitKiloLiterId
+    jp commonUnitHandler
+
+;-----------------------------------------------------------------------------
+; UNIT > VOL > US > Row 1
+;-----------------------------------------------------------------------------
+
+mUnitTeaspoonHandler:
+    ld a, unitTeaspoonId
+    jp commonUnitHandler
+
+mUnitTablespoonHandler:
+    ld a, unitTablespoonId
+    jp commonUnitHandler
+
+mUnitFluidOunceHandler:
+    ld a, unitFluidOunceId
+    jp commonUnitHandler
+
+mUnitGillHandler:
+    ld a, unitGillId
+    jp commonUnitHandler
+
+mUnitCupHandler:
+    ld a, unitCupId
+    jp commonUnitHandler
+
+;-----------------------------------------------------------------------------
+; UNIT > VOL > US > Row 2
+;-----------------------------------------------------------------------------
+
+mUnitPintHandler:
+    ld a, unitPintId
+    jp commonUnitHandler
+
+mUnitQuartHandler:
+    ld a, unitQuartId
+    jp commonUnitHandler
+
+mUnitGallonHandler:
+    ld a, unitGallonId
+    jp commonUnitHandler
+
+mUnitOilBarrelHandler:
+    ld a, unitOilBarrelId
+    jp commonUnitHandler
+
+;-----------------------------------------------------------------------------
+; UNIT > VOL > Imp > Row 1
+;-----------------------------------------------------------------------------
+
+mUnitImpFluidOunceHandler:
+    ld a, unitImpFluidOunceId
+    jp commonUnitHandler
+
+mUnitImpGillHandler:
+    ld a, unitImpGillId
+    jp commonUnitHandler
+
+mUnitImpCupHandler:
+    ld a, unitImpCupId
+    jp commonUnitHandler
+
+;-----------------------------------------------------------------------------
+; UNIT > VOL > Imp > Row 2
+;-----------------------------------------------------------------------------
+
+mUnitImpPintHandler:
+    ld a, unitImpPintId
+    jp commonUnitHandler
+
+mUnitImpQuartHandler:
+    ld a, unitImpQuartId
+    jp commonUnitHandler
+
+mUnitImpGallonHandler:
+    ld a, unitImpGallonId
+    jp commonUnitHandler
+
+;-----------------------------------------------------------------------------
+;-----------------------------------------------------------------------------
+;-----------------------------------------------------------------------------
 ; UNIT > Row 1
 ;-----------------------------------------------------------------------------
 
