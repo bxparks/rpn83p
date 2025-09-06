@@ -168,6 +168,26 @@ mUnitSqNauticalMileHandler:
     jp commonUnitHandler
 
 ;-----------------------------------------------------------------------------
+; UNIT > AREA > Row 3
+;-----------------------------------------------------------------------------
+
+mUnitAcreHandler:
+    ld a, unitAcreId
+    jp commonUnitHandler
+
+mUnitHectareHandler:
+    ld a, unitHectareId
+    jp commonUnitHandler
+
+mUnitUSFootballHandler:
+    ld a, unitUSFootballId
+    jp commonUnitHandler
+
+mUnitCAFootballHandler:
+    ld a, unitCAFootballId
+    jp commonUnitHandler
+
+;-----------------------------------------------------------------------------
 ; UNIT > VOL > Row 1
 ;-----------------------------------------------------------------------------
 

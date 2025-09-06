@@ -393,6 +393,12 @@ MenuGroup root mRoot [
             MenuItem mi<Sarea> mUnitSqMile
             MenuItem nmi<Sarea> mUnitSqNauticalMile
           ]
+          MenuRow [
+            MenuItem acre mUnitAcre
+            MenuItem ha mUnitHectare
+            MenuItem usfb mUnitUSFootball
+            MenuItem cafb mUnitCAFootball
+          ]
         ]
         MenuGroup VOL mUnitVol [
           MenuRow [
