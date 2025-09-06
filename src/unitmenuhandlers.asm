@@ -328,6 +328,42 @@ mUnitImpGallonHandler:
     jp commonUnitHandler
 
 ;-----------------------------------------------------------------------------
+; UNIT > MASS > Row 1
+;-----------------------------------------------------------------------------
+
+mUnitMicroGramHandler:
+    ld a, unitMicroGramId
+    jp commonUnitHandler
+
+mUnitMilliGramHandler:
+    ld a, unitMilliGramId
+    jp commonUnitHandler
+
+mUnitGramHandler:
+    ld a, unitGramId
+    jp commonUnitHandler
+
+mUnitKiloGramHandler:
+    ld a, unitKiloGramId
+    jp commonUnitHandler
+
+;-----------------------------------------------------------------------------
+; UNIT > MASS > Row 2
+;-----------------------------------------------------------------------------
+
+mUnitOunceHandler:
+    ld a, unitOunceId
+    jp commonUnitHandler
+
+mUnitPoundHandler:
+    ld a, unitPoundId
+    jp commonUnitHandler
+
+mUnitTonHandler:
+    ld a, unitTonId
+    jp commonUnitHandler
+
+;-----------------------------------------------------------------------------
 ;-----------------------------------------------------------------------------
 ;-----------------------------------------------------------------------------
 ; UNIT > Row 1

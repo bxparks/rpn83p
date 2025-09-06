@@ -452,6 +452,19 @@ MenuGroup root mRoot [
             ]
           ]
         ]
+        MenuGroup MASS mUnitMass [
+          MenuRow [
+            MenuItem <Smu>g mUnitMicroGram
+            MenuItem mg mUnitMilliGram
+            MenuItem g mUnitGram
+            MenuItem kg mUnitKiloGram
+          ]
+          MenuRow [
+            MenuItem oz mUnitOunce
+            MenuItem lbs mUnitPound
+            MenuItem ton mUnitTon
+          ]
+        ]
       ]
       MenuRow [
         MenuItem <Sconvert><Stemp>C mFToC

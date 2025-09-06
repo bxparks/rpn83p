@@ -112,4 +112,16 @@ Units [
   Unit ImpGallon impgal Volume 4.54609e-3 CuMeter # 4.54609L by defn
 
   Unit OlympicPool olympool Volume 3750 CuMeter # 50m*25m*3m
+
+  # Mass
+  Unit MicroGram <Smu>g Mass 1e-6 Gram
+  Unit MilliGram <Smu>g Mass 1e-3 Gram
+  Unit Gram g Mass 1 Gram
+  Unit KiloGram kg Mass 1e3 Gram
+  Unit MegaGram Mg Mass 1e6 Gram
+
+  Unit Ounce oz Mass 28.349523125 Gram # 1/16 lbs
+  Unit Pound lbs Mass 453.59237 Gram # by defn
+  Unit Ton ton Mass 907.18474e3 Gram # 2000 lbs
+
 ]

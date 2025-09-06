@@ -29,7 +29,7 @@ unitClassMisc equ 8
 ;-----------------------------------------------------------------------------
 
 unitInfoTable:
-unitInfoTableSize equ 64
+unitInfoTableSize equ 72
 
 unitAngstromInfo:
 unitAngstromId equ 0
@@ -415,6 +415,54 @@ unitOlympicPoolId equ 63
     .db unitClassVolume ; unitClass
     .db unitCuMeterId ; baseUnitId
     .db $00, $83, $37, $50, $00, $00, $00, $00, $00 ; scale=3750
+unitMicroGramInfo:
+unitMicroGramId equ 64
+    .dw unitMicroGramName ; name
+    .db unitClassMass ; unitClass
+    .db unitGramId ; baseUnitId
+    .db $00, $7A, $10, $00, $00, $00, $00, $00, $00 ; scale=1e-6
+unitMilliGramInfo:
+unitMilliGramId equ 65
+    .dw unitMilliGramName ; name
+    .db unitClassMass ; unitClass
+    .db unitGramId ; baseUnitId
+    .db $00, $7D, $10, $00, $00, $00, $00, $00, $00 ; scale=1e-3
+unitGramInfo:
+unitGramId equ 66
+    .dw unitGramName ; name
+    .db unitClassMass ; unitClass
+    .db unitGramId ; baseUnitId
+    .db $00, $80, $10, $00, $00, $00, $00, $00, $00 ; scale=1
+unitKiloGramInfo:
+unitKiloGramId equ 67
+    .dw unitKiloGramName ; name
+    .db unitClassMass ; unitClass
+    .db unitGramId ; baseUnitId
+    .db $00, $83, $10, $00, $00, $00, $00, $00, $00 ; scale=1e3
+unitMegaGramInfo:
+unitMegaGramId equ 68
+    .dw unitMegaGramName ; name
+    .db unitClassMass ; unitClass
+    .db unitGramId ; baseUnitId
+    .db $00, $86, $10, $00, $00, $00, $00, $00, $00 ; scale=1e6
+unitOunceInfo:
+unitOunceId equ 69
+    .dw unitOunceName ; name
+    .db unitClassMass ; unitClass
+    .db unitGramId ; baseUnitId
+    .db $00, $81, $28, $34, $95, $23, $12, $50, $00 ; scale=28.349523125
+unitPoundInfo:
+unitPoundId equ 70
+    .dw unitPoundName ; name
+    .db unitClassMass ; unitClass
+    .db unitGramId ; baseUnitId
+    .db $00, $82, $45, $35, $92, $37, $00, $00, $00 ; scale=453.59237
+unitTonInfo:
+unitTonId equ 71
+    .dw unitTonName ; name
+    .db unitClassMass ; unitClass
+    .db unitGramId ; baseUnitId
+    .db $00, $85, $90, $71, $84, $74, $00, $00, $00 ; scale=907.18474e3
 
 ;-----------------------------------------------------------------------------
 ; Unit names.
@@ -548,3 +596,19 @@ unitImpGallonName:
     .db "impgal", 0
 unitOlympicPoolName:
     .db "olympool", 0
+unitMicroGramName:
+    .db Smu, 'g', 0
+unitMilliGramName:
+    .db Smu, 'g', 0
+unitGramName:
+    .db "g", 0
+unitKiloGramName:
+    .db "kg", 0
+unitMegaGramName:
+    .db "Mg", 0
+unitOunceName:
+    .db "oz", 0
+unitPoundName:
+    .db "lbs", 0
+unitTonName:
+    .db "ton", 0
