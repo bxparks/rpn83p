@@ -394,6 +394,21 @@ MenuGroup root mRoot [
             MenuItem nmi<Sarea> mUnitSqNauticalMile
           ]
         ]
+        MenuGroup VOL mUnitVol [
+          MenuRow [
+            MenuItem mm<Scube> mUnitCuMilliMeter
+            MenuItem cm<Scube> mUnitCuCentiMeter
+            MenuItem m<Scube> mUnitCuMeter
+            MenuItem km<Scube> mUnitCuKiloMeter
+          ]
+          MenuRow [
+            MenuItem in<Scube> mUnitCuInch
+            MenuItem ft<Scube> mUnitCuFoot
+            MenuItem yd<Scube> mUnitCuYard
+            MenuItem mi<Scube> mUnitCuMile
+            MenuItem nmi<Scube> mUnitCuNauticalMile
+          ]
+        ]
       ]
       MenuRow [
         MenuItem <Sconvert><Stemp>C mFToC

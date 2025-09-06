@@ -43,13 +43,13 @@ Units [
   Unit KiloMeter km Length 1e3 Meter
   Unit MegaMeter Mm Length 1e6 Meter
 
-  Unit Mil mil Length 0.0254e-3 Meter # exact
-  Unit Inch in Length 0.0254 Meter # exact
-  Unit Foot ft Length 0.3048 Meter # exact
+  Unit Mil mil Length 0.0254e-3 Meter
+  Unit Inch in Length 0.0254 Meter
+  Unit Foot ft Length 0.3048 Meter
   Unit Yard yd Length 0.9144 Meter # 3 feet
   Unit Fanthom fanthom Length 1.8288 Meter # 6 feet
-  Unit Mile mi Length 1609.344 Meter # exact
-  Unit NauticalMile nmi Length 1852 Meter # exact
+  Unit Mile mi Length 1609.344 Meter
+  Unit NauticalMile nmi Length 1852 Meter
 
   # Area
   Unit SqMilliMeter mm<Scaret>2 Area 1e-6 SqMeter
@@ -57,9 +57,22 @@ Units [
   Unit SqMeter m<Scaret>2 Area 1 SqMeter
   Unit SqKiloMeter m<Scaret>2 Area 1e6 SqMeter
 
-  Unit SqInch in<Scaret>2 Area 6.4516e-4 SqMeter # exact, 0.0254^2
-  Unit SqFoot ft<Scaret>2 Area 0.09290304 SqMeter # exact, 0.3048^2
-  Unit SqYard yd<Scaret>2 Area 0.83393424 SqMeter # exact
-  Unit SqMile mi<Scaret>2 Area 2.589988110336e6 SqMeter # exact
-  Unit SqNauticalMile nmi<Scaret>2 Area 3429904 SqMeter # exact
+  Unit SqInch in<Scaret>2 Area 6.4516e-4 SqMeter # 0.0254^2
+  Unit SqFoot ft<Scaret>2 Area 0.09290304 SqMeter # 0.3048^2
+  Unit SqYard yd<Scaret>2 Area 0.83393424 SqMeter # 0.9144^2
+  Unit SqMile mi<Scaret>2 Area 2.589988110336e6 SqMeter # 1609.344^2
+  Unit SqNauticalMile nmi<Scaret>2 Area 3429904 SqMeter # 1852^2
+
+  # Volume
+  Unit CuMilliMeter mm<Scaret>3 Volume 1e-9 CuMeter
+  Unit CuCentiMeter cm<Scaret>3 Volume 1e-6 CuMeter
+  Unit CuMeter m<Scaret>3 Volume 1 CuMeter
+  Unit CuKiloMeter km<Scaret>3 Volume 1e9 CuMeter
+
+  Unit CuInch in<Scaret>3 Volume 1.6387064e-5 CuMeter # 0.0254^3
+  Unit CuFoot ft<Scaret>3 Volume 2.8316846592e-2 CuMeter # 0.3048^3
+  Unit CuYard yd<Scaret>3 Volume 7.64554857984e-1 CuMeter # 0.9144^3
+  Unit CuMile mi<Scaret>3 Volume 4.1681818254406e9 CuMeter # 1609.344^3
+  Unit CuNauticalMile nmi<Scaret>3 Volume 6352182208 CuMeter # 1852^3
+
 ]

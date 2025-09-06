@@ -65,23 +65,23 @@ commonUnitHandler:
 
 mUnitNanoMeterHandler:
     ld a, unitNanoMeterId
-    jr commonUnitHandler
+    jp commonUnitHandler
 
 mUnitMicroMeterHandler:
     ld a, unitMicroMeterId
-    jr commonUnitHandler
+    jp commonUnitHandler
 
 mUnitMilliMeterHandler:
     ld a, unitMilliMeterId
-    jr commonUnitHandler
+    jp commonUnitHandler
 
 mUnitCentiMeterHandler:
     ld a, unitCentiMeterId
-    jr commonUnitHandler
+    jp commonUnitHandler
 
 mUnitMeterHandler:
     ld a, unitMeterId
-    jr commonUnitHandler
+    jp commonUnitHandler
 
 ;-----------------------------------------------------------------------------
 ; UNIT > LEN > Row 2
@@ -89,23 +89,23 @@ mUnitMeterHandler:
 
 mUnitMilHandler:
     ld a, unitMilId
-    jr commonUnitHandler
+    jp commonUnitHandler
 
 mUnitInchHandler:
     ld a, unitInchId
-    jr commonUnitHandler
+    jp commonUnitHandler
 
 mUnitFootHandler:
     ld a, unitFootId
-    jr commonUnitHandler
+    jp commonUnitHandler
 
 mUnitYardHandler:
     ld a, unitYardId
-    jr commonUnitHandler
+    jp commonUnitHandler
 
 mUnitFanthomHandler:
     ld a, unitFanthomId
-    jr commonUnitHandler
+    jp commonUnitHandler
 
 ;-----------------------------------------------------------------------------
 ; UNIT > LEN > Row 3
@@ -113,15 +113,15 @@ mUnitFanthomHandler:
 
 mUnitKiloMeterHandler:
     ld a, unitKiloMeterId
-    jr commonUnitHandler
+    jp commonUnitHandler
 
 mUnitMileHandler:
     ld a, unitMileId
-    jr commonUnitHandler
+    jp commonUnitHandler
 
 mUnitNauticalMileHandler:
     ld a, unitNauticalMileId
-    jr commonUnitHandler
+    jp commonUnitHandler
 
 ;-----------------------------------------------------------------------------
 ; UNIT > AREA > Row 1
@@ -129,19 +129,19 @@ mUnitNauticalMileHandler:
 
 mUnitSqMilliMeterHandler:
     ld a, unitSqMilliMeterId
-    jr commonUnitHandler
+    jp commonUnitHandler
 
 mUnitSqCentiMeterHandler:
     ld a, unitSqCentiMeterId
-    jr commonUnitHandler
+    jp commonUnitHandler
 
 mUnitSqMeterHandler:
     ld a, unitSqMeterId
-    jr commonUnitHandler
+    jp commonUnitHandler
 
 mUnitSqKiloMeterHandler:
     ld a, unitSqKiloMeterId
-    jr commonUnitHandler
+    jp commonUnitHandler
 
 ;-----------------------------------------------------------------------------
 ; UNIT > AREA > Row 2
@@ -149,23 +149,67 @@ mUnitSqKiloMeterHandler:
 
 mUnitSqInchHandler:
     ld a, unitSqInchId
-    jr commonUnitHandler
+    jp commonUnitHandler
 
 mUnitSqFootHandler:
     ld a, unitSqFootId
-    jr commonUnitHandler
+    jp commonUnitHandler
 
 mUnitSqYardHandler:
     ld a, unitSqYardId
-    jr commonUnitHandler
+    jp commonUnitHandler
 
 mUnitSqMileHandler:
     ld a, unitSqMileId
-    jr commonUnitHandler
+    jp commonUnitHandler
 
 mUnitSqNauticalMileHandler:
     ld a, unitSqNauticalMileId
-    jr commonUnitHandler
+    jp commonUnitHandler
+
+;-----------------------------------------------------------------------------
+; UNIT > VOL > Row 1
+;-----------------------------------------------------------------------------
+
+mUnitCuMilliMeterHandler:
+    ld a, unitCuMilliMeterId
+    jp commonUnitHandler
+
+mUnitCuCentiMeterHandler:
+    ld a, unitCuCentiMeterId
+    jp commonUnitHandler
+
+mUnitCuMeterHandler:
+    ld a, unitCuMeterId
+    jp commonUnitHandler
+
+mUnitCuKiloMeterHandler:
+    ld a, unitCuKiloMeterId
+    jp commonUnitHandler
+
+;-----------------------------------------------------------------------------
+; UNIT > VOL > Row 2
+;-----------------------------------------------------------------------------
+
+mUnitCuInchHandler:
+    ld a, unitCuInchId
+    jp commonUnitHandler
+
+mUnitCuFootHandler:
+    ld a, unitCuFootId
+    jp commonUnitHandler
+
+mUnitCuYardHandler:
+    ld a, unitCuYardId
+    jp commonUnitHandler
+
+mUnitCuMileHandler:
+    ld a, unitCuMileId
+    jp commonUnitHandler
+
+mUnitCuNauticalMileHandler:
+    ld a, unitCuNauticalMileId
+    jp commonUnitHandler
 
 ;-----------------------------------------------------------------------------
 ; UNIT > Row 1

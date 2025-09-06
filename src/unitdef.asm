@@ -29,7 +29,7 @@ unitClassMisc equ 8
 ;-----------------------------------------------------------------------------
 
 unitInfoTable:
-unitInfoTableSize equ 23
+unitInfoTableSize equ 32
 
 unitNanoMeterInfo:
 unitNanoMeterId equ 0
@@ -169,6 +169,60 @@ unitSqNauticalMileId equ 22
     .db unitClassArea ; unitClass
     .db unitSqMeterId ; baseUnitId
     .db $00, $86, $34, $29, $90, $40, $00, $00, $00 ; scale=3429904
+unitCuMilliMeterInfo:
+unitCuMilliMeterId equ 23
+    .dw unitCuMilliMeterName ; name
+    .db unitClassVolume ; unitClass
+    .db unitCuMeterId ; baseUnitId
+    .db $00, $77, $10, $00, $00, $00, $00, $00, $00 ; scale=1e-9
+unitCuCentiMeterInfo:
+unitCuCentiMeterId equ 24
+    .dw unitCuCentiMeterName ; name
+    .db unitClassVolume ; unitClass
+    .db unitCuMeterId ; baseUnitId
+    .db $00, $7A, $10, $00, $00, $00, $00, $00, $00 ; scale=1e-6
+unitCuMeterInfo:
+unitCuMeterId equ 25
+    .dw unitCuMeterName ; name
+    .db unitClassVolume ; unitClass
+    .db unitCuMeterId ; baseUnitId
+    .db $00, $80, $10, $00, $00, $00, $00, $00, $00 ; scale=1
+unitCuKiloMeterInfo:
+unitCuKiloMeterId equ 26
+    .dw unitCuKiloMeterName ; name
+    .db unitClassVolume ; unitClass
+    .db unitCuMeterId ; baseUnitId
+    .db $00, $89, $10, $00, $00, $00, $00, $00, $00 ; scale=1e9
+unitCuInchInfo:
+unitCuInchId equ 27
+    .dw unitCuInchName ; name
+    .db unitClassVolume ; unitClass
+    .db unitCuMeterId ; baseUnitId
+    .db $00, $7B, $16, $38, $70, $64, $00, $00, $00 ; scale=1.6387064e-5
+unitCuFootInfo:
+unitCuFootId equ 28
+    .dw unitCuFootName ; name
+    .db unitClassVolume ; unitClass
+    .db unitCuMeterId ; baseUnitId
+    .db $00, $7E, $28, $31, $68, $46, $59, $20, $00 ; scale=2.8316846592e-2
+unitCuYardInfo:
+unitCuYardId equ 29
+    .dw unitCuYardName ; name
+    .db unitClassVolume ; unitClass
+    .db unitCuMeterId ; baseUnitId
+    .db $00, $7F, $76, $45, $54, $85, $79, $84, $00 ; scale=7.64554857984e-1
+unitCuMileInfo:
+unitCuMileId equ 30
+    .dw unitCuMileName ; name
+    .db unitClassVolume ; unitClass
+    .db unitCuMeterId ; baseUnitId
+    .db $00, $89, $41, $68, $18, $18, $25, $44, $06 ; scale=4.1681818254406e9
+unitCuNauticalMileInfo:
+unitCuNauticalMileId equ 31
+    .dw unitCuNauticalMileName ; name
+    .db unitClassVolume ; unitClass
+    .db unitCuMeterId ; baseUnitId
+    .db $00, $89, $63, $52, $18, $22, $08, $00, $00 ; scale=6352182208
 
 ;-----------------------------------------------------------------------------
 ; Unit names.
@@ -220,3 +274,21 @@ unitSqMileName:
     .db 'm', 'i', Scaret, '2', 0
 unitSqNauticalMileName:
     .db 'n', 'm', 'i', Scaret, '2', 0
+unitCuMilliMeterName:
+    .db 'm', 'm', Scaret, '3', 0
+unitCuCentiMeterName:
+    .db 'c', 'm', Scaret, '3', 0
+unitCuMeterName:
+    .db 'm', Scaret, '3', 0
+unitCuKiloMeterName:
+    .db 'k', 'm', Scaret, '3', 0
+unitCuInchName:
+    .db 'i', 'n', Scaret, '3', 0
+unitCuFootName:
+    .db 'f', 't', Scaret, '3', 0
+unitCuYardName:
+    .db 'y', 'd', Scaret, '3', 0
+unitCuMileName:
+    .db 'm', 'i', Scaret, '3', 0
+unitCuNauticalMileName:
+    .db 'n', 'm', 'i', Scaret, '3', 0
