@@ -65,6 +65,9 @@ def main() -> None:
         pp(unit_classes, stream=sys.stderr)
         pp(units, stream=sys.stderr)
 
+    validator = Validator(unit_classes, units)
+    validator.validate()
+
     sym_generator = SymbolGenerator(unit_classes, units)
     sym_generator.generate()
 
@@ -303,6 +306,40 @@ class SymbolGenerator:
             self.unit_class_map[id_counter] = unit_class
             unit_class['id'] = id_counter
             id_counter += 1
+
+
+# -----------------------------------------------------------------------------
+
+
+class Validator:
+    """Validate the unit_classes and units."""
+
+    def __init__(self, unit_classes: List[UnitClass], units: List[Unit]):
+        self.unit_classes = unit_classes
+        self.units = units
+
+    def validate(self) -> None:
+        self.validate_unit_classes()
+        self.validate_units()
+
+    def validate_unit_classes(self) -> None:
+        """Check for duplicate labels."""
+        labels: Dict[str, UnitClass] = {}
+        for unit_class in self.unit_classes:
+            label = unit_class['label']
+            if label in labels:
+                raise ValueError(f"Duplicate UnitClass label {label}")
+            labels[label] = unit_class
+
+    def validate_units(self) -> None:
+        """Check for duplicate labels."""
+        labels: Dict[str, Unit] = {}
+        for unit in self.units:
+            label = unit['label']
+            if label in labels:
+                raise ValueError(f"Duplicate Unit label {label}")
+            labels[label] = unit
+
 
 # -----------------------------------------------------------------------------
 
