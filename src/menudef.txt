@@ -461,32 +461,11 @@ MenuGroup root mRoot [
         MenuItem <Sconvert>iHg mHpaToInhg
       ]
       MenuRow [
-        MenuItem <Sconvert>km mMiToKm
-        MenuItem <Sconvert>mi mKmToMi
-        MenuItem * *
-        MenuItem <Sconvert>m mFtToM
-        MenuItem <Sconvert>ft mMToFt
-      ]
-      MenuRow [
-        MenuItem <Sconvert>cm mInToCm
-        MenuItem <Sconvert>in mCmToIn
-        MenuItem * *
-        MenuItem <Sconvert><Smu>m mMilToMicron
-        MenuItem <Sconvert>mil mMicronToMil
-      ]
-      MenuRow [
         MenuItem <Sconvert>kg mLbsToKg
         MenuItem <Sconvert>lbs mKgToLbs
         MenuItem * *
         MenuItem <Sconvert>g mOzToG
         MenuItem <Sconvert>oz mGToOz
-      ]
-      MenuRow [
-        MenuItem <Sconvert>L mGalToL
-        MenuItem <Sconvert>gal mLToGal
-        MenuItem * *
-        MenuItem <Sconvert>mL mFlozToMl
-        MenuItem <Sconvert>foz mMlToFloz
       ]
       MenuRow [
         MenuItem <Sconvert>kJ mCalToKj
@@ -501,13 +480,6 @@ MenuGroup root mRoot [
         MenuItem * *
         MenuItem <Sconvert>kPa mPsiToKpa
         MenuItem <Sconvert>psi mKpaToPsi
-      ]
-      MenuRow [
-        MenuItem <Sconvert>ha mAcreToHectare
-        MenuItem <Sconvert>acr mHectareToAcre
-        MenuItem * *
-        MenuItem * *
-        MenuItem * *
       ]
     ]
     MenuGroup DATE mDate [

@@ -132,14 +132,6 @@ op2SetKmPerMi:
 
 ;-----------------------------------------------------------------------------
 
-; Description: Set OP2 to MPerFt
-; Destroys: all, HL
-op2SetMPerFt:
-    ld hl, constMPerFt
-    jp move9ToOp2
-
-;-----------------------------------------------------------------------------
-
 ; Description: Set OP2 to CmPerIn
 ; Destroys: all, HL
 op2SetCmPerIn:
@@ -172,14 +164,6 @@ op2SetLPerGal:
 
 ;-----------------------------------------------------------------------------
 
-; Description: Set OP2 to MlPerFloz.
-; Destroys: all, HL
-op2SetMlPerFloz:
-    ld hl, constMlPerFloz
-    jp move9ToOp2
-
-;-----------------------------------------------------------------------------
-
 ; Description: Set OP2 to KjPerKcal.
 ; Destroys: all, HL
 op2SetKjPerKcal:
@@ -200,14 +184,6 @@ op2SetKwPerHp:
 ; Destroys: all, HL
 op2SetHpaPerInhg:
     ld hl, constHpaPerInhg
-    jp move9ToOp2
-
-;-----------------------------------------------------------------------------
-
-; Description: Set OP2 to SqFtPerAcre
-; Destroys: all, HL
-op2SetSqFtPerAcre:
-    ld hl, constSqFtPerAcre
     jp move9ToOp2
 
 ;-----------------------------------------------------------------------------
@@ -249,9 +225,6 @@ constStandardGravity: ; g_0 = 9.806 65 m/s^2, exact
 constKmPerMi: ; 1.609344 km/mi, exact
     .db $00, $80, $16, $09, $34, $40, $00, $00, $00
 
-constMPerFt: ; 0.3048 m/ft, exact
-    .db $00, $7F, $30, $48, $00, $00, $00, $00, $00
-
 constCmPerIn: ; 2.54 cm/in, exact
     .db $00, $80, $25, $40, $00, $00, $00, $00, $00
 
@@ -285,8 +258,3 @@ constKwPerHp: ; 0.745 699 871 582 270 22 kW/hp, approx
 ;        = 33.863 886 403 41 hPa (exact)
 constHpaPerInhg:
     .db $00, $81, $33, $86, $38, $86, $40, $34, $10
-
-; Number of square feet in one acre = 66*660 = 43560, see
-; https://en.wikipedia.org/wiki/Acre.
-constSqFtPerAcre:
-    .db $00, $84, $43, $56, $00, $00, $00, $00, $00
