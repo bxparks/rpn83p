@@ -79,7 +79,7 @@ convertUnitToUnit:
     ret z ; source and target are same unit, do nothing
     call checkCompatibleUnitClass
     ; Clobber the new targetUnit
-    ld hl, OP1 + rpnDenominatedFieldTargetUnit
+    ld hl, OP1 + rpnDenominateFieldTargetUnit
     ld (hl), c ; rpnDenominate[unit]=targetUnitId
     ret
 
@@ -117,7 +117,7 @@ checkCompatibleUnitClass:
 shiftOp1ToRpnDenominateValue:
     push bc
     ld hl, OP1+rpnRealSizeOf-1
-    ld de, OP1+rpnRealSizeOf-1+rpnDenominatedFieldValue
+    ld de, OP1+rpnRealSizeOf-1+rpnDenominateFieldValue
     ld bc, rpnRealSizeOf
     lddr
     ex de, hl
@@ -133,7 +133,7 @@ shiftOp1ToRpnDenominateValue:
 ; Destroys: BC, DE, HL
 ; Preserves: A
 extractRpnDenominateValueToOp3:
-    ld hl, OP1 + rpnDenominatedFieldValue
+    ld hl, OP1 + rpnDenominateFieldValue
     ld de, OP3
     ld bc, rpnRealSizeOf
     ldir

@@ -258,15 +258,18 @@ rpnObjectTypeDayOfWeekSizeOf equ 3
 rpnObjectTypeDuration equ $26
 rpnObjectTypeDurationSizeOf equ 7
 
-; Denominate number (i.e. a number with units):
+; Denominate number (i.e. a number with units). The 'value' is represented
+; in terms of the 'baseUnit' of the 'targetUnit', which makes unit conversion
+; easy because we just need to update the 'targetUnit' field without changing
+; the 'value'. However, this means that the 'value' needs to be converted into
+; the 'targetUnit' for display purposes.
 ; - struct Denominate{targetUnit:u8, value:float}, 10 bytes
 ; - struct RpnDenominate{type:u8[2], denominate:Denominate}, 12 bytes
 rpnObjectTypeDenominate equ $27
 rpnObjectTypeDenominateSizeOf equ 12
-rpnDenominatedFieldType equ 0
-rpnDenominatedFieldTargetUnit equ 2
-rpnDenominatedFieldValue equ 3
-
+rpnDenominateFieldType equ 0
+rpnDenominateFieldTargetUnit equ 2
+rpnDenominateFieldValue equ 3
 #define skipDenominateUnitHL inc hl
 #define skipDenominateUnitDE inc de
 
