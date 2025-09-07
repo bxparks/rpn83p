@@ -18,50 +18,28 @@
 ; Output:
 ;   - HL: incremented past end of denominate object
 ;   - DE: points to NUL char at end of string
-; Destroys: all, OP1-OP6
+; Destroys: all, OP1-OP3
 FormatDenominate:
     ; Print the target unit name.
-    skipRpnObjectTypeHL
+    skipRpnObjectTypeHL ; HL=denominate
     ld a, (hl) ; A=unit
-    push af ; stack=[unit]
-    skipDenominateUnitHL ; HL=value
-    push hl ; stack=[unit, value]
-    bcall(_GetUnitName) ; HL=name
+    push hl ; stack=[denominate]
+    call GetUnitName ; HL=name
     call copyCStringPageTwo ; copy HL to DE
     ; Print '='
     ld a, '='
     ld (de), a
     inc de
-    ; Extract value into OP1 and format the value.
-    ex de, hl ; HL=dest
-    ex (sp), hl ; stack=[unit, dest]; HL=value
-    call move9ToOp1PageTwo ; OP1=value, works even if HL was in OP1
-    ; Convert the normalize value to the target unit.
-    pop de ; stack=[unit] ; DE=dest
-    pop af ; stack=[]; A=unit
+    ; Convert denominate into its display value
+    pop hl ; stack=[]; HL=denominate
     push de ; stack=[dest]
-    call getDenominateDisplayValue ; OP1=displayValue
-    ;
+    call shrinkOp2ToOp1PageTwo ; close the 2-byte gap between OP1 and OP2
+    call denominateToDisplayValue ; OP1=displayValue
+    ; Format OP1
     ld a, 10 ; maximum width of output
     bcall(_FormReal) ; OP3=formatted string
+    ; Copy the formatted string to dest
     pop de ; stack=[]; DE=dest
-    ; Print value.
     ld hl, OP3
     call copyCStringPageTwo ; copy HL to DE
-    ret
-
-; Description: Convert the normalizedValue of the RpnDenominate object in terms
-; of its unit to get the displayValue shown to the user.
-; Input:
-;   - OP1:Real=normalizedValue
-;   - A:u8=targetUnit
-; Output:
-;   - OP1:Real=displayValue
-; Destroys: all
-getDenominateDisplayValue:
-    call op1ToOp3PageTwo ; OP3=normalizedValue; preserves A
-    call GetUnitScale ; OP1=scale
-    call op1ToOp2PageTwo ; OP2=scale
-    call op3ToOp1PageTwo ; OP1=normalizedValue
-    bcall(_FPDiv) ; OP1=displayvalue=normalizedValue/scale
     ret

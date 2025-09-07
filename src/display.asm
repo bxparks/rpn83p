@@ -1224,13 +1224,11 @@ printOP1DurationRecord:
 ; Input:
 ;   - OP1/OP2:RpnDenominate
 ;   - B=displayFontMask
-; Destroys: all, OP1-OP6
+; Destroys: all, OP1-OP3, OP4-OP6 depending on length of string
 printOP1Denominate:
     call eraseEOLIfNeeded ; uses B
     call displayStackSetSmallFont
     ; format OP1/OP2
-    call shrinkOp2ToOp1
-    ld hl, OP1
     ld de, fmtString
     bcall(_FormatDenominate)
     ; print string stored in OP3

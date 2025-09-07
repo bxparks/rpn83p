@@ -16,16 +16,18 @@
 ;   - A:u8=rpnObjectType
 ;   - B:u8=srcUnitId
 ;   - C:u8=targetUnitId
-; Destroys: all, OP1
+; Output:
+;   - OP1/OP2:RpnDenominate
+; Destroys: all, OP1-OP3
 ConvertUnit:
     cp rpnObjectTypeReal
-    jr z, convertRealToUnit
+    jr z, convertRealToRpnDenominate
     cp rpnObjectTypeDenominate
-    jr z, convertUnitToUnit
+    jr z, changeRpnDenominateUnit
     bcall(_ErrDataType)
 
-; Description: Convert a Real to the target unit, converting the value into
-; its base unit, then attaching the target unit.
+; Description: Convert a Real to an RpnDenominate object, converting the value
+; into its base unit, then attaching the target unit.
 ; Input:
 ;   - OP1:Real=value
 ;   - A:u8=rpnObjectType
@@ -33,71 +35,74 @@ ConvertUnit:
 ; Output:
 ;   - OP1/OP2:RpnDenominate
 ; Destroys: all
-convertRealToUnit:
+convertRealToRpnDenominate:
+    call reserveRpnObject; FPS=[rpnDenominate]; HL=rpnDenominate
     ld a, c ; A=targetUnitId
-    call GetUnitBase ; A=baseUnitId; preserves BC
-    call normalizeRealToBaseUnit ; OP1=baseValue; preserves BC
-    call shiftOp1ToRpnDenominateValue ; HL=OP1; preserves BC
-    ld a, c ; A=targetUnitId
-    call setOp1RpnDenominatePageTwo
-    call expandOp1ToOp2PageTwo
+    call setHLRpnDenominatePageTwo; HL:(*Real)=value; preserves A
+    call normalizeRealToBaseUnit ; OP1=baseValue; preserves HL
+    ; move the result into the 'value' of the rpnDenominate
+    ex de, hl ; DE=value
+    call move9FromOp1PageTwo ; (DE)=value
+    call PopRpnObject1 ; FPS=[]; OP1=rpnDenominate
     ret
 
-; Description: Normalize the given value in OP1 to the baseUnit in register A.
+; Description: Normalize the value in OP1 to the baseUnit of the unit in
+; register A.
 ; Input:
 ;   - OP1:Real=value
-;   - A:u8=baseUnitId
-;   - C:u8=targetUnitId
+;   - A:u8=targetUnitId
 ; Output:
 ;   -OP1:Real=baseValue
-; Preserves: BC
-; Destroys: A, DE, HL, OP1, OP2, OP3
+; Preserves: HL
+; Destroys: A, BC, DE, OP1, OP2, OP3
 normalizeRealToBaseUnit:
-    cp c ; if targetUnitId==baseUnitId: ZF=1
-    ret z
-    push bc
-    call op1ToOp2PageTwo ; OP2=targetValue
-    pop bc
-    push bc
-    ld a, c ; A=targetUnitId
-    call GetUnitScale ; OP1=scale, thisUnit=scale*baseUnit
+    push hl ; stack=[HL]
+    push af ; stack=[HL, targetUnitId]
+    call pushRaw9Op1 ; FPS=[value]
+    pop af ; stack=[HL]; A=targetUnitId
+    call GetUnitScale ; OP1=scale
+    call popRaw9Op2 ; FPS=[]; OP2=value
     bcall(_FPMult) ; OP1=baseValue=scale*value
-    pop bc
+    pop hl ; stack=[]; HL=HL
     ret
 
-; Description: Convert an RpnDenominate from its source unit to its target
-; unit.
+; Description: Set the unit of an RpnDenominate to the given target unit.
 ; Input:
 ;   - OP1/OP2:RpnDenominate
 ;   - A:u8=rpnObjectType
 ;   - B:u8=srcUnitId
 ;   - C:u8=targetUnitId
-; Destroys: all, OP1
-convertUnitToUnit:
+; Output:
+;   - OP1/OP2:RpnDenominate=converted
+; Destroys: A, OP1
+; Preserves: BC, DE, HL
+changeRpnDenominateUnit:
     ld a, b
     cp c
     ret z ; source and target are same unit, do nothing
+    ; Check that the unit conversion is allowed
     call checkCompatibleUnitClass
     ; Clobber the new targetUnit
-    ld hl, OP1 + rpnDenominateFieldTargetUnit
-    ld (hl), c ; rpnDenominate[unit]=targetUnitId
+    ld a, c ; A=targetUnitId
+    ld (OP1 + rpnDenominateFieldTargetUnit), a ; unit=targetUnitId
     ret
 
-; Description: Check that the unitClass of units in registers B and C are
+; Description: Check that the unitClasses of units in registers B and C are
 ; identical.
 ; Input:
 ;   - B=srcUnitId
 ;   - C=targetUnitId
 ; Destroys: A, IX
+; Preserves, BC, DE, HL
 ; Throws:
 ;   - Err:Invalid if unit classes don't match
 checkCompatibleUnitClass:
     ld a, b
-    call GetUnitClass ; A=unitClass
+    call GetUnitClass ; A=unitClass; preserves BC, DE, HL
     ld b, a
     ;
     ld a, c
-    call GetUnitClass ; A=unitClass
+    call GetUnitClass ; A=unitClass; preserves BC, DE, HL
     ;
     cp b
     ret z
@@ -105,36 +110,17 @@ checkCompatibleUnitClass:
 
 ;-----------------------------------------------------------------------------
 
-; Description: Shift real value of OP1 into the 'value' position of a
-; RpnDenominate in-situ in OP1.
-; Input:
-;   - OP1/OP2:RpnDenominate
-; Output:
-;   - OP1:Real=value
-;   - HL=OP1
-; Destroys: DE, HL
-; Preserves: A, BC
-shiftOp1ToRpnDenominateValue:
-    push bc
-    ld hl, OP1+rpnRealSizeOf-1
-    ld de, OP1+rpnRealSizeOf-1+rpnDenominateFieldValue
-    ld bc, rpnRealSizeOf
-    lddr
-    ex de, hl
-    inc hl ; HL=OP1
-    pop bc
-    ret
-
-; Description: Extract the value of RpnDenominate in OP1 to OP3.
-; Input:
-;   - OP1/OP2:RpnDenominate
-; Output:
-;   - OP3:Real=value
-; Destroys: BC, DE, HL
-; Preserves: A
-extractRpnDenominateValueToOp3:
-    ld hl, OP1 + rpnDenominateFieldValue
-    ld de, OP3
-    ld bc, rpnRealSizeOf
-    ldir
+; Description: Convert the Denominate object pointed by HL to a Real at DE
+; which is represented in terms of its 'targetUnit' instead of the normalized
+; 'baseUnit'.
+; Input: HL:Denominate=denominate
+; Output: OP1:Real=displayValue
+; Destroys: all, OP1-OP4
+denominateToDisplayValue:
+    ld a, (hl) ; A=targetUnitId
+    inc hl ; HL=value
+    call move9ToOp2PageTwo ; OP2=value; preserves A
+    call GetUnitScale ; OP1=scale
+    call op1ExOp2PageTwo ; OP1=value; OP2=scale
+    bcall(_FPDiv) ; OP1=displayValue=normalizedValue/scale
     ret
