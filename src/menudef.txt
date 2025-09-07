@@ -488,10 +488,13 @@ MenuGroup root mRoot [
             MenuItem dbar mUnitDeciBar
             MenuItem bar mUnitBar
             MenuItem atm mUnitAtmosphere
+            MenuItem psi mUnitPoundSquareInch
           ]
           MenuRow [
             MenuItem mmH mUnitMilliMeterMercury
             MenuItem inHg mUnitInchMercury
+            MenuItem mTor mUnitMilliTorr
+            MenuItem Torr mUnitTorr
           ]
         ]
         MenuItem * *

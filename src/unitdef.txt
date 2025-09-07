@@ -149,4 +149,15 @@ Units [
   # 1 inHg = 25.4 * (above) = 3386.388640341 Pa (exact)
   Unit MilliMeterMercury mmHg Pressure  133.322387415 Pascal
   Unit InchMercury inHg Pressure  3386.388640341 Pascal
+
+  # See https://en.wikipedia.org/wiki/Pound_per_square_inch.
+  # 1 psi = 0.45359237 kg/lbf * (9.80665 m/s^2) / (0.0254 m/in)^2
+  #       = 6894.7572931684 Pa
+  # See https://en.wikipedia.org/wiki/Pound_per_square_inch.
+  Unit PoundSquareInch psi Pressure 6894.7572931684 Pascal
+
+  # See https://en.wikipedia.org/wiki/Torr
+  # 1 Torr = 1/760 atm = 133.32236842105 Pa
+  Unit MilliTorr mTorr Pressure 133.32236842105e-3 Pascal
+  Unit Torr Torr Pressure 133.32236842105 Pascal
 ]

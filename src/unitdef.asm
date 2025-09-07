@@ -29,7 +29,7 @@ unitClassMisc equ 8
 ;-----------------------------------------------------------------------------
 
 unitInfoTable:
-unitInfoTableSize equ 88
+unitInfoTableSize equ 91
 
 unitAngstromInfo:
 unitAngstromId equ 0
@@ -559,6 +559,24 @@ unitInchMercuryId equ 87
     .db unitClassPressure ; unitClass
     .db unitPascalId ; baseUnitId
     .db $00, $83, $33, $86, $38, $86, $40, $34, $10 ; scale=3386.388640341
+unitPoundSquareInchInfo:
+unitPoundSquareInchId equ 88
+    .dw unitPoundSquareInchName ; name
+    .db unitClassPressure ; unitClass
+    .db unitPascalId ; baseUnitId
+    .db $00, $83, $68, $94, $75, $72, $93, $16, $84 ; scale=6894.7572931684
+unitMilliTorrInfo:
+unitMilliTorrId equ 89
+    .dw unitMilliTorrName ; name
+    .db unitClassPressure ; unitClass
+    .db unitPascalId ; baseUnitId
+    .db $00, $7F, $13, $33, $22, $36, $84, $21, $05 ; scale=133.32236842105e-3
+unitTorrInfo:
+unitTorrId equ 90
+    .dw unitTorrName ; name
+    .db unitClassPressure ; unitClass
+    .db unitPascalId ; baseUnitId
+    .db $00, $82, $13, $33, $22, $36, $84, $21, $05 ; scale=133.32236842105
 
 ;-----------------------------------------------------------------------------
 ; Unit names.
@@ -740,3 +758,9 @@ unitMilliMeterMercuryName:
     .db "mmHg", 0
 unitInchMercuryName:
     .db "inHg", 0
+unitPoundSquareInchName:
+    .db "psi", 0
+unitMilliTorrName:
+    .db "mTorr", 0
+unitTorrName:
+    .db "Torr", 0

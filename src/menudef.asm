@@ -3009,14 +3009,14 @@ mUnitAtmosphereId equ 320
     .dw 0 ; rowBeginId or altNameId
     .dw mUnitAtmosphereHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
-mBlank321:
-mBlank321Id equ 321
-    .dw mBlank321Id ; id
+mUnitPoundSquareInch:
+mUnitPoundSquareInchId equ 321
+    .dw mUnitPoundSquareInchId ; id
     .dw mUnitPressureId ; parentId
-    .dw mNullNameId ; nameId
+    .dw mUnitPoundSquareInchNameId ; nameId
     .db 0 ; numRows
     .dw 0 ; rowBeginId or altNameId
-    .dw mNullHandler ; handler (predefined)
+    .dw mUnitPoundSquareInchHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
 ; MenuGroup PRES: children: row 2
 mUnitMilliMeterMercury:
@@ -3037,23 +3037,23 @@ mUnitInchMercuryId equ 323
     .dw 0 ; rowBeginId or altNameId
     .dw mUnitInchMercuryHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
-mBlank324:
-mBlank324Id equ 324
-    .dw mBlank324Id ; id
+mUnitMilliTorr:
+mUnitMilliTorrId equ 324
+    .dw mUnitMilliTorrId ; id
     .dw mUnitPressureId ; parentId
-    .dw mNullNameId ; nameId
+    .dw mUnitMilliTorrNameId ; nameId
     .db 0 ; numRows
     .dw 0 ; rowBeginId or altNameId
-    .dw mNullHandler ; handler (predefined)
+    .dw mUnitMilliTorrHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
-mBlank325:
-mBlank325Id equ 325
-    .dw mBlank325Id ; id
+mUnitTorr:
+mUnitTorrId equ 325
+    .dw mUnitTorrId ; id
     .dw mUnitPressureId ; parentId
-    .dw mNullNameId ; nameId
+    .dw mUnitTorrNameId ; nameId
     .db 0 ; numRows
     .dw 0 ; rowBeginId or altNameId
-    .dw mNullHandler ; handler (predefined)
+    .dw mUnitTorrHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
 mBlank326:
 mBlank326Id equ 326
@@ -3438,7 +3438,7 @@ mSetClockId equ 366
     .dw 0 ; nameSelector
 
 ; Table of 2-byte pointers to names in the pool of strings below.
-mMenuNameTableSize equ 354
+mMenuNameTableSize equ 357
 mMenuNameTable:
 mNullNameId equ 0
     .dw mNullName
@@ -4060,93 +4060,99 @@ mUnitBarNameId equ 308
     .dw mUnitBarName
 mUnitAtmosphereNameId equ 309
     .dw mUnitAtmosphereName
-mUnitMilliMeterMercuryNameId equ 310
+mUnitPoundSquareInchNameId equ 310
+    .dw mUnitPoundSquareInchName
+mUnitMilliMeterMercuryNameId equ 311
     .dw mUnitMilliMeterMercuryName
-mUnitInchMercuryNameId equ 311
+mUnitInchMercuryNameId equ 312
     .dw mUnitInchMercuryName
-mLeapYearNameId equ 312
+mUnitMilliTorrNameId equ 313
+    .dw mUnitMilliTorrName
+mUnitTorrNameId equ 314
+    .dw mUnitTorrName
+mLeapYearNameId equ 315
     .dw mLeapYearName
-mDayOfWeekNameId equ 313
+mDayOfWeekNameId equ 316
     .dw mDayOfWeekName
-mDateToEpochDaysNameId equ 314
+mDateToEpochDaysNameId equ 317
     .dw mDateToEpochDaysName
-mEpochDaysToDateNameId equ 315
+mEpochDaysToDateNameId equ 318
     .dw mEpochDaysToDateName
-mDateRelatedToSecondsNameId equ 316
+mDateRelatedToSecondsNameId equ 319
     .dw mDateRelatedToSecondsName
-mSecondsToDurationNameId equ 317
+mSecondsToDurationNameId equ 320
     .dw mSecondsToDurationName
-mSecondsToTimeNameId equ 318
+mSecondsToTimeNameId equ 321
     .dw mSecondsToTimeName
-mEpochSecondsToAppDateTimeNameId equ 319
+mEpochSecondsToAppDateTimeNameId equ 322
     .dw mEpochSecondsToAppDateTimeName
-mEpochSecondsToUTCDateTimeNameId equ 320
+mEpochSecondsToUTCDateTimeNameId equ 323
     .dw mEpochSecondsToUTCDateTimeName
-mTimeZoneToHoursNameId equ 321
+mTimeZoneToHoursNameId equ 324
     .dw mTimeZoneToHoursName
-mHoursToTimeZoneNameId equ 322
+mHoursToTimeZoneNameId equ 325
     .dw mHoursToTimeZoneName
-mDopsNameId equ 323
+mDopsNameId equ 326
     .dw mDopsName
-mEpochNameId equ 324
+mEpochNameId equ 327
     .dw mEpochName
-mClkNameId equ 325
+mClkNameId equ 328
     .dw mClkName
-mDateShrinkNameId equ 326
+mDateShrinkNameId equ 329
     .dw mDateShrinkName
-mDateExtendNameId equ 327
+mDateExtendNameId equ 330
     .dw mDateExtendName
-mDateCutNameId equ 328
+mDateCutNameId equ 331
     .dw mDateCutName
-mDateLinkNameId equ 329
+mDateLinkNameId equ 332
     .dw mDateLinkName
-mEpochUnixNameId equ 330
+mEpochUnixNameId equ 333
     .dw mEpochUnixName
-mEpochUnixAltNameId equ 331
+mEpochUnixAltNameId equ 334
     .dw mEpochUnixAltName
-mEpochNtpNameId equ 332
+mEpochNtpNameId equ 335
     .dw mEpochNtpName
-mEpochNtpAltNameId equ 333
+mEpochNtpAltNameId equ 336
     .dw mEpochNtpAltName
-mEpochGpsNameId equ 334
+mEpochGpsNameId equ 337
     .dw mEpochGpsName
-mEpochGpsAltNameId equ 335
+mEpochGpsAltNameId equ 338
     .dw mEpochGpsAltName
-mEpochTiosNameId equ 336
+mEpochTiosNameId equ 339
     .dw mEpochTiosName
-mEpochTiosAltNameId equ 337
+mEpochTiosAltNameId equ 340
     .dw mEpochTiosAltName
-mEpochY2kNameId equ 338
+mEpochY2kNameId equ 341
     .dw mEpochY2kName
-mEpochY2kAltNameId equ 339
+mEpochY2kAltNameId equ 342
     .dw mEpochY2kAltName
-mEpochCustomNameId equ 340
+mEpochCustomNameId equ 343
     .dw mEpochCustomName
-mEpochCustomAltNameId equ 341
+mEpochCustomAltNameId equ 344
     .dw mEpochCustomAltName
-mEpochSetCustomNameId equ 342
+mEpochSetCustomNameId equ 345
     .dw mEpochSetCustomName
-mEpochGetCustomNameId equ 343
+mEpochGetCustomNameId equ 346
     .dw mEpochGetCustomName
-mGetNowNameId equ 344
+mGetNowNameId equ 347
     .dw mGetNowName
-mGetNowDateNameId equ 345
+mGetNowDateNameId equ 348
     .dw mGetNowDateName
-mGetNowTimeNameId equ 346
+mGetNowTimeNameId equ 349
     .dw mGetNowTimeName
-mGetNowAppDateTimeNameId equ 347
+mGetNowAppDateTimeNameId equ 350
     .dw mGetNowAppDateTimeName
-mGetNowUTCDateTimeNameId equ 348
+mGetNowUTCDateTimeNameId equ 351
     .dw mGetNowUTCDateTimeName
-mSetTimeZoneNameId equ 349
+mSetTimeZoneNameId equ 352
     .dw mSetTimeZoneName
-mGetTimeZoneNameId equ 350
+mGetTimeZoneNameId equ 353
     .dw mGetTimeZoneName
-mSetClockTimeZoneNameId equ 351
+mSetClockTimeZoneNameId equ 354
     .dw mSetClockTimeZoneName
-mGetClockTimeZoneNameId equ 352
+mGetClockTimeZoneNameId equ 355
     .dw mGetClockTimeZoneName
-mSetClockNameId equ 353
+mSetClockNameId equ 356
     .dw mSetClockName
 
 ; Table of names as NUL terminated C strings.
@@ -4770,10 +4776,16 @@ mUnitBarName:
     .db "bar", 0
 mUnitAtmosphereName:
     .db "atm", 0
+mUnitPoundSquareInchName:
+    .db "psi", 0
 mUnitMilliMeterMercuryName:
     .db "mmH", 0
 mUnitInchMercuryName:
     .db "inHg", 0
+mUnitMilliTorrName:
+    .db "mTor", 0
+mUnitTorrName:
+    .db "Torr", 0
 mLeapYearName:
     .db "LEAP", 0
 mDayOfWeekName:

@@ -427,6 +427,10 @@ mUnitAtmosphereHandler:
     ld a, unitAtmosphereId
     jp commonUnitHandler
 
+mUnitPoundSquareInchHandler:
+    ld a, unitPoundSquareInchId
+    jp commonUnitHandler
+
 ;-----------------------------------------------------------------------------
 ; UNIT > PRES > Row 3
 ;-----------------------------------------------------------------------------
@@ -437,6 +441,14 @@ mUnitMilliMeterMercuryHandler:
 
 mUnitInchMercuryHandler:
     ld a, unitInchMercuryId
+    jp commonUnitHandler
+
+mUnitMilliTorrHandler:
+    ld a, unitMilliTorrId
+    jp commonUnitHandler
+
+mUnitTorrHandler:
+    ld a, unitTorrId
     jp commonUnitHandler
 
 ;-----------------------------------------------------------------------------
