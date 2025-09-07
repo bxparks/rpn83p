@@ -403,10 +403,6 @@ mUnitMegaPascalHandler:
     ld a, unitMegaPascalId
     jp commonUnitHandler
 
-mUnitGigaPascalHandler:
-    ld a, unitGigaPascalId
-    jp commonUnitHandler
-
 ;-----------------------------------------------------------------------------
 ; UNIT > PRES > Row 2
 ;-----------------------------------------------------------------------------
@@ -449,6 +445,46 @@ mUnitMilliTorrHandler:
 
 mUnitTorrHandler:
     ld a, unitTorrId
+    jp commonUnitHandler
+
+;-----------------------------------------------------------------------------
+; UNIT > ENER > Row 1
+;-----------------------------------------------------------------------------
+
+mUnitJouleHandler:
+    ld a, unitJouleId
+    jp commonUnitHandler
+
+mUnitWattHourHandler:
+    ld a, unitWattHourId
+    jp commonUnitHandler
+
+mUnitKiloWattHourHandler:
+    ld a, unitKiloWattHourId
+    jp commonUnitHandler
+
+mUnitCalorieHandler:
+    ld a, unitCalorieId
+    jp commonUnitHandler
+
+mUnitKiloCalorieHandler:
+    ld a, unitKiloCalorieId
+    jp commonUnitHandler
+
+;-----------------------------------------------------------------------------
+; UNIT > ENER > Row 2
+;-----------------------------------------------------------------------------
+
+mUnitElectronVoltHandler:
+    ld a, unitElectronVoltId
+    jp commonUnitHandler
+
+mUnitBritishThermalUnitHandler:
+    ld a, unitBritishThermalUnitId
+    jp commonUnitHandler
+
+mUnitTonTNTHandler:
+    ld a, unitTonTNTId
     jp commonUnitHandler
 
 ;-----------------------------------------------------------------------------

@@ -481,7 +481,6 @@ MenuGroup root mRoot [
             MenuItem hPa mUnitHectoPascal
             MenuItem kPa mUnitKiloPascal
             MenuItem MPa mUnitMegaPascal
-            MenuItem GPa mUnitGigaPascal
           ]
           MenuRow [
             MenuItem mbar mUnitMilliBar
@@ -495,6 +494,20 @@ MenuGroup root mRoot [
             MenuItem inHg mUnitInchMercury
             MenuItem mTor mUnitMilliTorr
             MenuItem Torr mUnitTorr
+          ]
+        ]
+        MenuGroup ENER mUnitEnergy [
+          MenuRow [
+            MenuItem J mUnitJoule
+            MenuItem Wh mUnitWattHour
+            MenuItem kWh mUnitKiloWattHour
+            MenuItem cal mUnitCalorie
+            MenuItem kcal mUnitKiloCalorie
+          ]
+          MenuRow [
+            MenuItem eV mUnitElectronVolt
+            MenuItem Btu mUnitBritishThermalUnit
+            MenuItem tTNT mUnitTonTNT
           ]
         ]
       ]

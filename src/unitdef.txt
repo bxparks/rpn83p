@@ -34,7 +34,10 @@ UnitClasses [
 ]
 
 Units [
+  #----------------------------------------------------------------------------
   # Length
+  #----------------------------------------------------------------------------
+  Unit PicoMeter nm Length 1e-12 Meter
   Unit Angstrom angst Length 1e-10 Meter
   Unit NanoMeter nm Length 1e-9 Meter
   Unit MicroMeter <Smu>m Length 1e-6 Meter
@@ -44,6 +47,7 @@ Units [
   Unit KiloMeter km Length 1e3 Meter
   Unit MegaMeter Mm Length 1e6 Meter
   Unit GigaMeter Gm Length 1e9 Meter
+  Unit TeraMeter Tm Length 1e12 Meter
 
   Unit Mil mil Length 0.0254e-3 Meter
   Unit Inch in Length 0.0254 Meter # by defn
@@ -56,9 +60,13 @@ Units [
   Unit AstronomicalUnit AU Length 149597870700 Meter # by defn
   Unit LightYear ltyr Length 9460730472580.8e3 Meter # exact, 365.25days*c
   Unit Parsec pc Length 30856775814913673 Meter # 648000/pi AU
-  Unit MegaParsec Mpc Length 30856775814913673e6 Meter # 1e6*pc
+  Unit KiloParsec kpc Length 30856775814913673e3 Meter
+  Unit MegaParsec Mpc Length 30856775814913673e6 Meter
+  Unit GigaParsec Gpc Length 30856775814913673e9 Meter
 
+  #----------------------------------------------------------------------------
   # Area
+  #----------------------------------------------------------------------------
   Unit SqMicroMeter <Smu>m<Sarea> Area 1e-12 SqMeter
   Unit SqMilliMeter mm<Sarea> Area 1e-6 SqMeter
   Unit SqCentiMeter cm<Sarea> Area 1e-4 SqMeter
@@ -76,7 +84,9 @@ Units [
   Unit USFootball usftball Area 4.45934592e3 SqMeter # 100yd*160ft=48000sqft
   Unit CAFootball caftball Area 5.978310624e3 SqMeter # 110yd*65yd=64350sqft
 
+  #----------------------------------------------------------------------------
   # Volume
+  #----------------------------------------------------------------------------
   Unit CuMicroMeter <Smu>m<Scube> Volume 1e-18 CuMeter
   Unit CuMilliMeter mm<Scube> Volume 1e-9 CuMeter
   Unit CuCentiMeter cm<Scube> Volume 1e-6 CuMeter
@@ -113,7 +123,9 @@ Units [
 
   Unit OlympicPool olympool Volume 3750 CuMeter # 50m*25m*3m
 
+  #----------------------------------------------------------------------------
   # Mass
+  #----------------------------------------------------------------------------
   Unit MicroGram <Smu>g Mass 1e-6 Gram
   Unit MilliGram <Smu>g Mass 1e-3 Gram
   Unit Gram g Mass 1 Gram
@@ -124,20 +136,23 @@ Units [
   Unit Pound lbs Mass 453.59237 Gram # by defn
   Unit Ton ton Mass 907.18474e3 Gram # 2000 lbs
 
+  #----------------------------------------------------------------------------
   # Temperature, requires special handlers
+  #----------------------------------------------------------------------------
   Unit Celsius <Stemp>C Temperature 1 Kelvin # C = 273.15 + K
   Unit Fahrenheit <Stemp>F Temperature 1 Kelvin # F = C*9/5 + 32
   Unit Rankine <Stemp>R Temperature 1 Kelvin # R = K*9/5 = (C-273.15)*9/5
   Unit Kelvin K Temperature 1 Kelvin
 
+  #----------------------------------------------------------------------------
   # Pressure
-  # https://en.wikipedia.org/wiki/Pressure
+  # See https://en.wikipedia.org/wiki/Pressure
+  #----------------------------------------------------------------------------
   Unit MilliPascal mPa Pressure 1e-3 Pascal
   Unit Pascal Pa Pressure 1 Pascal
   Unit HectoPascal hPa Pressure 1e2 Pascal
   Unit KiloPascal kPa Pressure 1e3 Pascal
   Unit MegaPascal MPa Pressure 1e6 Pascal
-  Unit GigaPascal GPa Pressure 1e9 Pascal
 
   Unit MilliBar mbar Pressure 1e2 Pascal
   Unit DeciBar dbar Pressure 1e4 Pascal
@@ -160,4 +175,29 @@ Units [
   # 1 Torr = 1/760 atm = 133.32236842105 Pa
   Unit MilliTorr mTorr Pressure 133.32236842105e-3 Pascal
   Unit Torr Torr Pressure 133.32236842105 Pascal
+
+  #----------------------------------------------------------------------------
+  # Energy
+  # https://en.wikipedia.org/wiki/Units_of_energy
+  #----------------------------------------------------------------------------
+  Unit Joule J Energy 1 Joule
+
+  Unit WattHour Wh Energy 3.6e3 Joule
+  Unit KiloWattHour kWh Energy 3.6e6 Joule
+
+  # https://en.wikipedia.org/wiki/Calorie
+  Unit Calorie cal Energy 4.184 Joule # by defn
+  Unit KiloCalorie kCal Energy 4.184e3 Joule
+
+  # https://en.wikipedia.org/wiki/Electronvolt
+  Unit ElectronVolt eV Energy 1.602176634e-19 Joule # by defn
+
+  # https://en.wikipedia.org/wiki/British_thermal_unit
+  # The Btu has Several different definitions. Pick one that is somewhere in
+  # the middle.
+  Unit BritishThermalUnit Btu Energy 1055 Joule # (approximate)
+
+  # https://en.wikipedia.org/wiki/TNT_equivalent
+  Unit GramTNT gramTNT Energy 4184 Joule # by defn
+  Unit TonTNT tonTNT Energy 4.184e9 Joule
 ]
