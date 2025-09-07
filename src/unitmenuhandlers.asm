@@ -488,6 +488,18 @@ mUnitTonTNTHandler:
     jp commonUnitHandler
 
 ;-----------------------------------------------------------------------------
+; UNIT > PWR > Row 1
+;-----------------------------------------------------------------------------
+
+mUnitWattHandler:
+    ld a, unitWattId
+    jp commonUnitHandler
+
+mUnitHorsepowerHandler:
+    ld a, unitHorsepowerId
+    jp commonUnitHandler
+
+;-----------------------------------------------------------------------------
 ;-----------------------------------------------------------------------------
 
 mHpToKwHandler:
@@ -501,10 +513,6 @@ mKwToHpHandler:
     call op2SetKwPerHp
     bcall(_FPDiv)
     jp replaceX
-
-;-----------------------------------------------------------------------------
-; UNIT > Row 7
-;-----------------------------------------------------------------------------
 
 ; Description: Convert mpg (miles per US gallon) to lkm (Liters per 100 km):
 ; lkm = 100/[mpg * (km/mile) / (litre/gal)]

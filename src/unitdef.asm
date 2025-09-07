@@ -29,7 +29,7 @@ unitClassMisc equ 8
 ;-----------------------------------------------------------------------------
 
 unitInfoTable:
-unitInfoTableSize equ 103
+unitInfoTableSize equ 105
 
 unitPicoMeterInfo:
 unitPicoMeterId equ 0
@@ -649,6 +649,18 @@ unitTonTNTId equ 102
     .db unitClassEnergy ; unitClass
     .db unitJouleId ; baseUnitId
     .db $00, $89, $41, $84, $00, $00, $00, $00, $00 ; scale=4.184e9
+unitWattInfo:
+unitWattId equ 103
+    .dw unitWattName ; name
+    .db unitClassPower ; unitClass
+    .db unitWattId ; baseUnitId
+    .db $00, $80, $10, $00, $00, $00, $00, $00, $00 ; scale=1
+unitHorsepowerInfo:
+unitHorsepowerId equ 104
+    .dw unitHorsepowerName ; name
+    .db unitClassPower ; unitClass
+    .db unitWattId ; baseUnitId
+    .db $00, $82, $74, $56, $99, $87, $15, $82, $27 ; scale=745.69987158227022
 
 ;-----------------------------------------------------------------------------
 ; Unit names.
@@ -860,3 +872,7 @@ unitGramTNTName:
     .db "gramTNT", 0
 unitTonTNTName:
     .db "tonTNT", 0
+unitWattName:
+    .db "W", 0
+unitHorsepowerName:
+    .db "hp", 0

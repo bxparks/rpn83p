@@ -510,7 +510,12 @@ MenuGroup root mRoot [
             MenuItem tTNT mUnitTonTNT
           ]
         ]
-        MenuItem * *
+        MenuGroup PWR mUnitPower [
+          MenuRow [
+            MenuItem W mUnitWatt
+            MenuItem hp mUnitHorsepower
+          ]
+        ]
         MenuItem <Sconvert>kW mHpToKw
         MenuItem <Sconvert>hp mKwToHp
       ]
