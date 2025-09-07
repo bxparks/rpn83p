@@ -475,7 +475,25 @@ MenuGroup root mRoot [
         ]
       ]
       MenuRow [
-        MenuItem * *
+        MenuGroup PRES mUnitPressure [
+          MenuRow [
+            MenuItem Pa mUnitPascal
+            MenuItem hPa mUnitHectoPascal
+            MenuItem kPa mUnitKiloPascal
+            MenuItem MPa mUnitMegaPascal
+            MenuItem GPa mUnitGigaPascal
+          ]
+          MenuRow [
+            MenuItem mbar mUnitMilliBar
+            MenuItem dbar mUnitDeciBar
+            MenuItem bar mUnitBar
+            MenuItem atm mUnitAtmosphere
+          ]
+          MenuRow [
+            MenuItem mmH mUnitMilliMeterMercury
+            MenuItem inHg mUnitInchMercury
+          ]
+        ]
         MenuItem * *
         MenuItem * *
         MenuItem <Sconvert>hPa mInhgToHpa

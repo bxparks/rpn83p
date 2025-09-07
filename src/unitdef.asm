@@ -29,7 +29,7 @@ unitClassMisc equ 8
 ;-----------------------------------------------------------------------------
 
 unitInfoTable:
-unitInfoTableSize equ 76
+unitInfoTableSize equ 88
 
 unitAngstromInfo:
 unitAngstromId equ 0
@@ -487,6 +487,78 @@ unitKelvinId equ 75
     .db unitClassTemperature ; unitClass
     .db unitKelvinId ; baseUnitId
     .db $00, $80, $10, $00, $00, $00, $00, $00, $00 ; scale=1
+unitMilliPascalInfo:
+unitMilliPascalId equ 76
+    .dw unitMilliPascalName ; name
+    .db unitClassPressure ; unitClass
+    .db unitPascalId ; baseUnitId
+    .db $00, $7D, $10, $00, $00, $00, $00, $00, $00 ; scale=1e-3
+unitPascalInfo:
+unitPascalId equ 77
+    .dw unitPascalName ; name
+    .db unitClassPressure ; unitClass
+    .db unitPascalId ; baseUnitId
+    .db $00, $80, $10, $00, $00, $00, $00, $00, $00 ; scale=1
+unitHectoPascalInfo:
+unitHectoPascalId equ 78
+    .dw unitHectoPascalName ; name
+    .db unitClassPressure ; unitClass
+    .db unitPascalId ; baseUnitId
+    .db $00, $82, $10, $00, $00, $00, $00, $00, $00 ; scale=1e2
+unitKiloPascalInfo:
+unitKiloPascalId equ 79
+    .dw unitKiloPascalName ; name
+    .db unitClassPressure ; unitClass
+    .db unitPascalId ; baseUnitId
+    .db $00, $83, $10, $00, $00, $00, $00, $00, $00 ; scale=1e3
+unitMegaPascalInfo:
+unitMegaPascalId equ 80
+    .dw unitMegaPascalName ; name
+    .db unitClassPressure ; unitClass
+    .db unitPascalId ; baseUnitId
+    .db $00, $86, $10, $00, $00, $00, $00, $00, $00 ; scale=1e6
+unitGigaPascalInfo:
+unitGigaPascalId equ 81
+    .dw unitGigaPascalName ; name
+    .db unitClassPressure ; unitClass
+    .db unitPascalId ; baseUnitId
+    .db $00, $89, $10, $00, $00, $00, $00, $00, $00 ; scale=1e9
+unitMilliBarInfo:
+unitMilliBarId equ 82
+    .dw unitMilliBarName ; name
+    .db unitClassPressure ; unitClass
+    .db unitPascalId ; baseUnitId
+    .db $00, $82, $10, $00, $00, $00, $00, $00, $00 ; scale=1e2
+unitDeciBarInfo:
+unitDeciBarId equ 83
+    .dw unitDeciBarName ; name
+    .db unitClassPressure ; unitClass
+    .db unitPascalId ; baseUnitId
+    .db $00, $84, $10, $00, $00, $00, $00, $00, $00 ; scale=1e4
+unitBarInfo:
+unitBarId equ 84
+    .dw unitBarName ; name
+    .db unitClassPressure ; unitClass
+    .db unitPascalId ; baseUnitId
+    .db $00, $85, $10, $00, $00, $00, $00, $00, $00 ; scale=1e5
+unitAtmosphereInfo:
+unitAtmosphereId equ 85
+    .dw unitAtmosphereName ; name
+    .db unitClassPressure ; unitClass
+    .db unitPascalId ; baseUnitId
+    .db $00, $85, $10, $13, $25, $00, $00, $00, $00 ; scale=101325
+unitMilliMeterMercuryInfo:
+unitMilliMeterMercuryId equ 86
+    .dw unitMilliMeterMercuryName ; name
+    .db unitClassPressure ; unitClass
+    .db unitPascalId ; baseUnitId
+    .db $00, $82, $13, $33, $22, $38, $74, $15, $00 ; scale=133.322387415
+unitInchMercuryInfo:
+unitInchMercuryId equ 87
+    .dw unitInchMercuryName ; name
+    .db unitClassPressure ; unitClass
+    .db unitPascalId ; baseUnitId
+    .db $00, $83, $33, $86, $38, $86, $40, $34, $10 ; scale=3386.388640341
 
 ;-----------------------------------------------------------------------------
 ; Unit names.
@@ -644,3 +716,27 @@ unitRankineName:
     .db Stemp, 'R', 0
 unitKelvinName:
     .db "K", 0
+unitMilliPascalName:
+    .db "mPa", 0
+unitPascalName:
+    .db "Pa", 0
+unitHectoPascalName:
+    .db "hPa", 0
+unitKiloPascalName:
+    .db "kPa", 0
+unitMegaPascalName:
+    .db "MPa", 0
+unitGigaPascalName:
+    .db "GPa", 0
+unitMilliBarName:
+    .db "mbar", 0
+unitDeciBarName:
+    .db "dbar", 0
+unitBarName:
+    .db "bar", 0
+unitAtmosphereName:
+    .db "atm", 0
+unitMilliMeterMercuryName:
+    .db "mmHg", 0
+unitInchMercuryName:
+    .db "inHg", 0

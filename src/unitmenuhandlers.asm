@@ -384,6 +384,62 @@ mUnitKelvinHandler:
     jp commonUnitHandler
 
 ;-----------------------------------------------------------------------------
+; UNIT > PRES > Row 1
+;-----------------------------------------------------------------------------
+
+mUnitPascalHandler:
+    ld a, unitPascalId
+    jp commonUnitHandler
+
+mUnitHectoPascalHandler:
+    ld a, unitHectoPascalId
+    jp commonUnitHandler
+
+mUnitKiloPascalHandler:
+    ld a, unitKiloPascalId
+    jp commonUnitHandler
+
+mUnitMegaPascalHandler:
+    ld a, unitMegaPascalId
+    jp commonUnitHandler
+
+mUnitGigaPascalHandler:
+    ld a, unitGigaPascalId
+    jp commonUnitHandler
+
+;-----------------------------------------------------------------------------
+; UNIT > PRES > Row 2
+;-----------------------------------------------------------------------------
+
+mUnitMilliBarHandler:
+    ld a, unitMilliBarId
+    jp commonUnitHandler
+
+mUnitDeciBarHandler:
+    ld a, unitDeciBarId
+    jp commonUnitHandler
+
+mUnitBarHandler:
+    ld a, unitBarId
+    jp commonUnitHandler
+
+mUnitAtmosphereHandler:
+    ld a, unitAtmosphereId
+    jp commonUnitHandler
+
+;-----------------------------------------------------------------------------
+; UNIT > PRES > Row 3
+;-----------------------------------------------------------------------------
+
+mUnitMilliMeterMercuryHandler:
+    ld a, unitMilliMeterMercuryId
+    jp commonUnitHandler
+
+mUnitInchMercuryHandler:
+    ld a, unitInchMercuryId
+    jp commonUnitHandler
+
+;-----------------------------------------------------------------------------
 ;-----------------------------------------------------------------------------
 
 mInhgToHpaHandler:

@@ -129,4 +129,24 @@ Units [
   Unit Fahrenheit <Stemp>F Temperature 1 Kelvin # F = C*9/5 + 32
   Unit Rankine <Stemp>R Temperature 1 Kelvin # R = K*9/5 = (C-273.15)*9/5
   Unit Kelvin K Temperature 1 Kelvin
+
+  # Pressure
+  # https://en.wikipedia.org/wiki/Pressure
+  Unit MilliPascal mPa Pressure 1e-3 Pascal
+  Unit Pascal Pa Pressure 1 Pascal
+  Unit HectoPascal hPa Pressure 1e2 Pascal
+  Unit KiloPascal kPa Pressure 1e3 Pascal
+  Unit MegaPascal MPa Pressure 1e6 Pascal
+  Unit GigaPascal GPa Pressure 1e9 Pascal
+
+  Unit MilliBar mbar Pressure 1e2 Pascal
+  Unit DeciBar dbar Pressure 1e4 Pascal
+  Unit Bar bar Pressure 1e5 Pascal
+  Unit Atmosphere atm Pressure 101325 Pascal # by defn
+
+  # According to https://en.wikipedia.org/wiki/Millimetre_of_mercury:
+  # 1 mmHg = 133.322 387 415 pascals (exact)
+  # 1 inHg = 25.4 * (above) = 3386.388640341 Pa (exact)
+  Unit MilliMeterMercury mmHg Pressure  133.322387415 Pascal
+  Unit InchMercury inHg Pressure  3386.388640341 Pascal
 ]
