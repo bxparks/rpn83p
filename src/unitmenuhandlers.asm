@@ -383,26 +383,6 @@ mUnitKelvinHandler:
     ld a, unitKelvinId
     jp commonUnitHandler
 
-mFToCHandler:
-    call closeInputAndRecallX
-    ld a, 32
-    bcall(_SetXXOP2) ; OP2 = 32
-    bcall(_FPSub) ; OP1 = X - 32
-    ld a, $18
-    bcall(_OP2SetA) ; OP2 = 1.8
-    bcall(_FPDiv) ; OP1 = (X - 32) / 1.8
-    jp replaceX
-
-mCToFHandler:
-    call closeInputAndRecallX
-    ld a, $18
-    bcall(_OP2SetA) ; OP2 = 1.8
-    bcall(_FPMult) ; OP1 = X * 1.8
-    ld a, 32
-    bcall(_SetXXOP2) ; OP2 = 32
-    bcall(_FPAdd) ; OP1 = 1.8*X + 32
-    jp replaceX
-
 ;-----------------------------------------------------------------------------
 ;-----------------------------------------------------------------------------
 

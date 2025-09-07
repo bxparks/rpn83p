@@ -475,8 +475,8 @@ MenuGroup root mRoot [
         ]
       ]
       MenuRow [
-        MenuItem <Sconvert><Stemp>C mFToC
-        MenuItem <Sconvert><Stemp>F mCToF
+        MenuItem * *
+        MenuItem * *
         MenuItem * *
         MenuItem <Sconvert>hPa mInhgToHpa
         MenuItem <Sconvert>iHg mHpaToInhg
