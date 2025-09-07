@@ -323,23 +323,32 @@ class Validator:
         self.validate_units()
 
     def validate_unit_classes(self) -> None:
-        """Check for duplicate labels."""
-        labels: Dict[str, UnitClass] = {}
+        # Check for duplicate labels.
+        self.unit_class_labels: Dict[str, UnitClass] = {}
         for unit_class in self.unit_classes:
             label = unit_class['label']
-            if label in labels:
-                raise ValueError(f"Duplicate UnitClass label {label}")
-            labels[label] = unit_class
+            if label in self.unit_class_labels:
+                raise ValueError(f"Duplicate UnitClass label '{label}'")
+            self.unit_class_labels[label] = unit_class
 
     def validate_units(self) -> None:
-        """Check for duplicate labels."""
-        labels: Dict[str, Unit] = {}
+        # Check for duplicate labels.
+        self.unit_labels: Dict[str, Unit] = {}
         for unit in self.units:
             label = unit['label']
-            if label in labels:
-                raise ValueError(f"Duplicate Unit label {label}")
-            labels[label] = unit
+            if label in self.unit_labels:
+                raise ValueError(f"Duplicate Unit label '{label}'")
+            self.unit_labels[label] = unit
 
+        # Check Unit.unit_class references a valid UnitClass
+        for unit in self.units:
+            label = unit['label']
+            unit_class_label = unit['unit_class']
+            if unit_class_label not in self.unit_class_labels:
+                raise ValueError(
+                    f"Unknown UnitClass '{unit_class_label}' "
+                    + f"for Unit '{label}'"
+                )
 
 # -----------------------------------------------------------------------------
 
@@ -441,7 +450,7 @@ class FloatExploder:
         # Exponent
         exponent = math.floor(math.log10(x))
         if exponent < -99 or exponent > 99:
-            raise ValueError(f"Exponent too large: {tios_str}")
+            raise ValueError(f"Exponent too large: '{tios_str}'")
         ti_exponent = exponent + 128
 
         # Mantissa
