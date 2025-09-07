@@ -116,34 +116,10 @@ op1SetMaxFloat:
 
 ;-----------------------------------------------------------------------------
 
-; Description: Set OP2 to StandardGravity.
-; Destroys: all, HL
-op2SetStandardGravity:
-    ld hl, constStandardGravity
-    jp move9ToOp2
-
-;-----------------------------------------------------------------------------
-
 ; Description: Set OP2 to KmPerMi.
 ; Destroys: all, HL
 op2SetKmPerMi:
     ld hl, constKmPerMi
-    jp move9ToOp2
-
-;-----------------------------------------------------------------------------
-
-; Description: Set OP2 to CmPerIn
-; Destroys: all, HL
-op2SetCmPerIn:
-    ld hl, constCmPerIn
-    jp move9ToOp2
-
-;-----------------------------------------------------------------------------
-
-; Description: Set OP2 to KgPerLbs
-; Destroys: all, HL
-op2SetKgPerLbs:
-    ld hl, constKgPerLbs
     jp move9ToOp2
 
 ;-----------------------------------------------------------------------------
@@ -168,14 +144,6 @@ op2SetKjPerKcal:
 ; Destroys: all, HL
 op2SetKwPerHp:
     ld hl, constKwPerHp
-    jp move9ToOp2
-
-;-----------------------------------------------------------------------------
-
-; Description: Set OP2 to HpaPerInHg
-; Destroys: all, HL
-op2SetHpaPerInhg:
-    ld hl, constHpaPerInhg
     jp move9ToOp2
 
 ;-----------------------------------------------------------------------------
@@ -211,23 +179,11 @@ constEuler: ; 2.7182818284594(0452)
 constMaxFloat: ; 9.9999999999999E99
     .db $00, $E3, $99, $99, $99, $99, $99, $99, $99
 
-constStandardGravity: ; g_0 = 9.806 65 m/s^2, exact
-     .db $00, $80, $98, $06, $65, $00, $00, $00, $00
-
 constKmPerMi: ; 1.609344 km/mi, exact
     .db $00, $80, $16, $09, $34, $40, $00, $00, $00
 
-constCmPerIn: ; 2.54 cm/in, exact
-    .db $00, $80, $25, $40, $00, $00, $00, $00, $00
-
-constKgPerLbs: ; 0.453 592 37 kg/lbs, exact
-    .db $00, $7F, $45, $35, $92, $37, $00, $00, $00
-
 constLPerGal: ; 3.785 411 784 L/gal, exact, gallon == 231 in^3
     .db $00, $80, $37, $85, $41, $17, $84, $00, $00
-
-constMlPerFloz: ; 29.573 529 562 5 mL/floz, exact, gal = 128 floz
-    .db $00, $81, $29, $57, $35, $29, $56, $25, $00
 
 constKjPerKcal: ; 4.184 J/cal or kJ/kcal, exact
     .db $00, $80, $41, $84, $00, $00, $00, $00, $00
@@ -240,10 +196,3 @@ constKjPerKcal: ; 4.184 J/cal or kJ/kcal, exact
 ;   ~ 0.745 699 871 582 270 22 kW
 constKwPerHp: ; 0.745 699 871 582 270 22 kW/hp, approx
     .db $00, $7F, $74, $56, $99, $87, $15, $82, $27
-
-; According to https://en.wikipedia.org/wiki/Millimetre_of_mercury:
-; 1 mmHg = 133.322 387 415 pascals (exact)
-; 1 inHg = 25.4 * (above) = 3386.388640341 Pa (exact)
-;        = 33.863 886 403 41 hPa (exact)
-constHpaPerInhg:
-    .db $00, $81, $33, $86, $38, $86, $40, $34, $10

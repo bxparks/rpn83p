@@ -2025,23 +2025,23 @@ mBlank214Id equ 214
     .dw 0 ; rowBeginId or altNameId
     .dw mNullHandler ; handler (predefined)
     .dw 0 ; nameSelector
-mInhgToHpa:
-mInhgToHpaId equ 215
-    .dw mInhgToHpaId ; id
+mBlank215:
+mBlank215Id equ 215
+    .dw mBlank215Id ; id
     .dw mUnitId ; parentId
-    .dw mInhgToHpaNameId ; nameId
+    .dw mNullNameId ; nameId
     .db 0 ; numRows
     .dw 0 ; rowBeginId or altNameId
-    .dw mInhgToHpaHandler ; handler (to be implemented)
+    .dw mNullHandler ; handler (predefined)
     .dw 0 ; nameSelector
-mHpaToInhg:
-mHpaToInhgId equ 216
-    .dw mHpaToInhgId ; id
+mBlank216:
+mBlank216Id equ 216
+    .dw mBlank216Id ; id
     .dw mUnitId ; parentId
-    .dw mHpaToInhgNameId ; nameId
+    .dw mNullNameId ; nameId
     .db 0 ; numRows
     .dw 0 ; rowBeginId or altNameId
-    .dw mHpaToInhgHandler ; handler (to be implemented)
+    .dw mNullHandler ; handler (predefined)
     .dw 0 ; nameSelector
 ; MenuGroup UNIT: children: row 2
 mCalToKj:
@@ -2117,23 +2117,23 @@ mBlank224Id equ 224
     .dw 0 ; rowBeginId or altNameId
     .dw mNullHandler ; handler (predefined)
     .dw 0 ; nameSelector
-mPsiToKpa:
-mPsiToKpaId equ 225
-    .dw mPsiToKpaId ; id
+mBlank225:
+mBlank225Id equ 225
+    .dw mBlank225Id ; id
     .dw mUnitId ; parentId
-    .dw mPsiToKpaNameId ; nameId
+    .dw mNullNameId ; nameId
     .db 0 ; numRows
     .dw 0 ; rowBeginId or altNameId
-    .dw mPsiToKpaHandler ; handler (to be implemented)
+    .dw mNullHandler ; handler (predefined)
     .dw 0 ; nameSelector
-mKpaToPsi:
-mKpaToPsiId equ 226
-    .dw mKpaToPsiId ; id
+mBlank226:
+mBlank226Id equ 226
+    .dw mBlank226Id ; id
     .dw mUnitId ; parentId
-    .dw mKpaToPsiNameId ; nameId
+    .dw mNullNameId ; nameId
     .db 0 ; numRows
     .dw 0 ; rowBeginId or altNameId
-    .dw mKpaToPsiHandler ; handler (to be implemented)
+    .dw mNullHandler ; handler (predefined)
     .dw 0 ; nameSelector
 ; MenuGroup LENG: children
 ; MenuGroup LENG: children: row 0
@@ -3438,7 +3438,7 @@ mSetClockId equ 366
     .dw 0 ; nameSelector
 
 ; Table of 2-byte pointers to names in the pool of strings below.
-mMenuNameTableSize equ 357
+mMenuNameTableSize equ 353
 mMenuNameTable:
 mNullNameId equ 0
     .dw mNullName
@@ -3886,273 +3886,265 @@ mUnitTempNameId equ 221
     .dw mUnitTempName
 mUnitPressureNameId equ 222
     .dw mUnitPressureName
-mInhgToHpaNameId equ 223
-    .dw mInhgToHpaName
-mHpaToInhgNameId equ 224
-    .dw mHpaToInhgName
-mCalToKjNameId equ 225
+mCalToKjNameId equ 223
     .dw mCalToKjName
-mKjToCalNameId equ 226
+mKjToCalNameId equ 224
     .dw mKjToCalName
-mHpToKwNameId equ 227
+mHpToKwNameId equ 225
     .dw mHpToKwName
-mKwToHpNameId equ 228
+mKwToHpNameId equ 226
     .dw mKwToHpName
-mMpgToLkmNameId equ 229
+mMpgToLkmNameId equ 227
     .dw mMpgToLkmName
-mLkmToMpgNameId equ 230
+mLkmToMpgNameId equ 228
     .dw mLkmToMpgName
-mPsiToKpaNameId equ 231
-    .dw mPsiToKpaName
-mKpaToPsiNameId equ 232
-    .dw mKpaToPsiName
-mUnitNanoMeterNameId equ 233
+mUnitNanoMeterNameId equ 229
     .dw mUnitNanoMeterName
-mUnitMicroMeterNameId equ 234
+mUnitMicroMeterNameId equ 230
     .dw mUnitMicroMeterName
-mUnitMilliMeterNameId equ 235
+mUnitMilliMeterNameId equ 231
     .dw mUnitMilliMeterName
-mUnitCentiMeterNameId equ 236
+mUnitCentiMeterNameId equ 232
     .dw mUnitCentiMeterName
-mUnitMeterNameId equ 237
+mUnitMeterNameId equ 233
     .dw mUnitMeterName
-mUnitMilNameId equ 238
+mUnitMilNameId equ 234
     .dw mUnitMilName
-mUnitInchNameId equ 239
+mUnitInchNameId equ 235
     .dw mUnitInchName
-mUnitFootNameId equ 240
+mUnitFootNameId equ 236
     .dw mUnitFootName
-mUnitYardNameId equ 241
+mUnitYardNameId equ 237
     .dw mUnitYardName
-mUnitFanthomNameId equ 242
+mUnitFanthomNameId equ 238
     .dw mUnitFanthomName
-mUnitKiloMeterNameId equ 243
+mUnitKiloMeterNameId equ 239
     .dw mUnitKiloMeterName
-mUnitMileNameId equ 244
+mUnitMileNameId equ 240
     .dw mUnitMileName
-mUnitNauticalMileNameId equ 245
+mUnitNauticalMileNameId equ 241
     .dw mUnitNauticalMileName
-mUnitSqMilliMeterNameId equ 246
+mUnitSqMilliMeterNameId equ 242
     .dw mUnitSqMilliMeterName
-mUnitSqCentiMeterNameId equ 247
+mUnitSqCentiMeterNameId equ 243
     .dw mUnitSqCentiMeterName
-mUnitSqMeterNameId equ 248
+mUnitSqMeterNameId equ 244
     .dw mUnitSqMeterName
-mUnitSqKiloMeterNameId equ 249
+mUnitSqKiloMeterNameId equ 245
     .dw mUnitSqKiloMeterName
-mUnitSqInchNameId equ 250
+mUnitSqInchNameId equ 246
     .dw mUnitSqInchName
-mUnitSqFootNameId equ 251
+mUnitSqFootNameId equ 247
     .dw mUnitSqFootName
-mUnitSqYardNameId equ 252
+mUnitSqYardNameId equ 248
     .dw mUnitSqYardName
-mUnitSqMileNameId equ 253
+mUnitSqMileNameId equ 249
     .dw mUnitSqMileName
-mUnitSqNauticalMileNameId equ 254
+mUnitSqNauticalMileNameId equ 250
     .dw mUnitSqNauticalMileName
-mUnitAcreNameId equ 255
+mUnitAcreNameId equ 251
     .dw mUnitAcreName
-mUnitHectareNameId equ 256
+mUnitHectareNameId equ 252
     .dw mUnitHectareName
-mUnitUSFootballNameId equ 257
+mUnitUSFootballNameId equ 253
     .dw mUnitUSFootballName
-mUnitCAFootballNameId equ 258
+mUnitCAFootballNameId equ 254
     .dw mUnitCAFootballName
-mUnitCuMilliMeterNameId equ 259
+mUnitCuMilliMeterNameId equ 255
     .dw mUnitCuMilliMeterName
-mUnitCuCentiMeterNameId equ 260
+mUnitCuCentiMeterNameId equ 256
     .dw mUnitCuCentiMeterName
-mUnitCuMeterNameId equ 261
+mUnitCuMeterNameId equ 257
     .dw mUnitCuMeterName
-mUnitCuKiloMeterNameId equ 262
+mUnitCuKiloMeterNameId equ 258
     .dw mUnitCuKiloMeterName
-mUnitCuInchNameId equ 263
+mUnitCuInchNameId equ 259
     .dw mUnitCuInchName
-mUnitCuFootNameId equ 264
+mUnitCuFootNameId equ 260
     .dw mUnitCuFootName
-mUnitCuYardNameId equ 265
+mUnitCuYardNameId equ 261
     .dw mUnitCuYardName
-mUnitCuMileNameId equ 266
+mUnitCuMileNameId equ 262
     .dw mUnitCuMileName
-mUnitCuNauticalMileNameId equ 267
+mUnitCuNauticalMileNameId equ 263
     .dw mUnitCuNauticalMileName
-mUnitVolSINameId equ 268
+mUnitVolSINameId equ 264
     .dw mUnitVolSIName
-mUnitVolUSNameId equ 269
+mUnitVolUSNameId equ 265
     .dw mUnitVolUSName
-mUnitVolImpNameId equ 270
+mUnitVolImpNameId equ 266
     .dw mUnitVolImpName
-mUnitMicroLiterNameId equ 271
+mUnitMicroLiterNameId equ 267
     .dw mUnitMicroLiterName
-mUnitMilliLiterNameId equ 272
+mUnitMilliLiterNameId equ 268
     .dw mUnitMilliLiterName
-mUnitLiterNameId equ 273
+mUnitLiterNameId equ 269
     .dw mUnitLiterName
-mUnitKiloLiterNameId equ 274
+mUnitKiloLiterNameId equ 270
     .dw mUnitKiloLiterName
-mUnitTeaspoonNameId equ 275
+mUnitTeaspoonNameId equ 271
     .dw mUnitTeaspoonName
-mUnitTablespoonNameId equ 276
+mUnitTablespoonNameId equ 272
     .dw mUnitTablespoonName
-mUnitFluidOunceNameId equ 277
+mUnitFluidOunceNameId equ 273
     .dw mUnitFluidOunceName
-mUnitGillNameId equ 278
+mUnitGillNameId equ 274
     .dw mUnitGillName
-mUnitCupNameId equ 279
+mUnitCupNameId equ 275
     .dw mUnitCupName
-mUnitPintNameId equ 280
+mUnitPintNameId equ 276
     .dw mUnitPintName
-mUnitQuartNameId equ 281
+mUnitQuartNameId equ 277
     .dw mUnitQuartName
-mUnitGallonNameId equ 282
+mUnitGallonNameId equ 278
     .dw mUnitGallonName
-mUnitOilBarrelNameId equ 283
+mUnitOilBarrelNameId equ 279
     .dw mUnitOilBarrelName
-mUnitImpFluidOunceNameId equ 284
+mUnitImpFluidOunceNameId equ 280
     .dw mUnitImpFluidOunceName
-mUnitImpGillNameId equ 285
+mUnitImpGillNameId equ 281
     .dw mUnitImpGillName
-mUnitImpCupNameId equ 286
+mUnitImpCupNameId equ 282
     .dw mUnitImpCupName
-mUnitImpPintNameId equ 287
+mUnitImpPintNameId equ 283
     .dw mUnitImpPintName
-mUnitImpQuartNameId equ 288
+mUnitImpQuartNameId equ 284
     .dw mUnitImpQuartName
-mUnitImpGallonNameId equ 289
+mUnitImpGallonNameId equ 285
     .dw mUnitImpGallonName
-mUnitMicroGramNameId equ 290
+mUnitMicroGramNameId equ 286
     .dw mUnitMicroGramName
-mUnitMilliGramNameId equ 291
+mUnitMilliGramNameId equ 287
     .dw mUnitMilliGramName
-mUnitGramNameId equ 292
+mUnitGramNameId equ 288
     .dw mUnitGramName
-mUnitKiloGramNameId equ 293
+mUnitKiloGramNameId equ 289
     .dw mUnitKiloGramName
-mUnitOunceNameId equ 294
+mUnitOunceNameId equ 290
     .dw mUnitOunceName
-mUnitPoundNameId equ 295
+mUnitPoundNameId equ 291
     .dw mUnitPoundName
-mUnitTonNameId equ 296
+mUnitTonNameId equ 292
     .dw mUnitTonName
-mUnitCelsiusNameId equ 297
+mUnitCelsiusNameId equ 293
     .dw mUnitCelsiusName
-mUnitFahrenheitNameId equ 298
+mUnitFahrenheitNameId equ 294
     .dw mUnitFahrenheitName
-mUnitRankineNameId equ 299
+mUnitRankineNameId equ 295
     .dw mUnitRankineName
-mUnitKelvinNameId equ 300
+mUnitKelvinNameId equ 296
     .dw mUnitKelvinName
-mUnitPascalNameId equ 301
+mUnitPascalNameId equ 297
     .dw mUnitPascalName
-mUnitHectoPascalNameId equ 302
+mUnitHectoPascalNameId equ 298
     .dw mUnitHectoPascalName
-mUnitKiloPascalNameId equ 303
+mUnitKiloPascalNameId equ 299
     .dw mUnitKiloPascalName
-mUnitMegaPascalNameId equ 304
+mUnitMegaPascalNameId equ 300
     .dw mUnitMegaPascalName
-mUnitGigaPascalNameId equ 305
+mUnitGigaPascalNameId equ 301
     .dw mUnitGigaPascalName
-mUnitMilliBarNameId equ 306
+mUnitMilliBarNameId equ 302
     .dw mUnitMilliBarName
-mUnitDeciBarNameId equ 307
+mUnitDeciBarNameId equ 303
     .dw mUnitDeciBarName
-mUnitBarNameId equ 308
+mUnitBarNameId equ 304
     .dw mUnitBarName
-mUnitAtmosphereNameId equ 309
+mUnitAtmosphereNameId equ 305
     .dw mUnitAtmosphereName
-mUnitPoundSquareInchNameId equ 310
+mUnitPoundSquareInchNameId equ 306
     .dw mUnitPoundSquareInchName
-mUnitMilliMeterMercuryNameId equ 311
+mUnitMilliMeterMercuryNameId equ 307
     .dw mUnitMilliMeterMercuryName
-mUnitInchMercuryNameId equ 312
+mUnitInchMercuryNameId equ 308
     .dw mUnitInchMercuryName
-mUnitMilliTorrNameId equ 313
+mUnitMilliTorrNameId equ 309
     .dw mUnitMilliTorrName
-mUnitTorrNameId equ 314
+mUnitTorrNameId equ 310
     .dw mUnitTorrName
-mLeapYearNameId equ 315
+mLeapYearNameId equ 311
     .dw mLeapYearName
-mDayOfWeekNameId equ 316
+mDayOfWeekNameId equ 312
     .dw mDayOfWeekName
-mDateToEpochDaysNameId equ 317
+mDateToEpochDaysNameId equ 313
     .dw mDateToEpochDaysName
-mEpochDaysToDateNameId equ 318
+mEpochDaysToDateNameId equ 314
     .dw mEpochDaysToDateName
-mDateRelatedToSecondsNameId equ 319
+mDateRelatedToSecondsNameId equ 315
     .dw mDateRelatedToSecondsName
-mSecondsToDurationNameId equ 320
+mSecondsToDurationNameId equ 316
     .dw mSecondsToDurationName
-mSecondsToTimeNameId equ 321
+mSecondsToTimeNameId equ 317
     .dw mSecondsToTimeName
-mEpochSecondsToAppDateTimeNameId equ 322
+mEpochSecondsToAppDateTimeNameId equ 318
     .dw mEpochSecondsToAppDateTimeName
-mEpochSecondsToUTCDateTimeNameId equ 323
+mEpochSecondsToUTCDateTimeNameId equ 319
     .dw mEpochSecondsToUTCDateTimeName
-mTimeZoneToHoursNameId equ 324
+mTimeZoneToHoursNameId equ 320
     .dw mTimeZoneToHoursName
-mHoursToTimeZoneNameId equ 325
+mHoursToTimeZoneNameId equ 321
     .dw mHoursToTimeZoneName
-mDopsNameId equ 326
+mDopsNameId equ 322
     .dw mDopsName
-mEpochNameId equ 327
+mEpochNameId equ 323
     .dw mEpochName
-mClkNameId equ 328
+mClkNameId equ 324
     .dw mClkName
-mDateShrinkNameId equ 329
+mDateShrinkNameId equ 325
     .dw mDateShrinkName
-mDateExtendNameId equ 330
+mDateExtendNameId equ 326
     .dw mDateExtendName
-mDateCutNameId equ 331
+mDateCutNameId equ 327
     .dw mDateCutName
-mDateLinkNameId equ 332
+mDateLinkNameId equ 328
     .dw mDateLinkName
-mEpochUnixNameId equ 333
+mEpochUnixNameId equ 329
     .dw mEpochUnixName
-mEpochUnixAltNameId equ 334
+mEpochUnixAltNameId equ 330
     .dw mEpochUnixAltName
-mEpochNtpNameId equ 335
+mEpochNtpNameId equ 331
     .dw mEpochNtpName
-mEpochNtpAltNameId equ 336
+mEpochNtpAltNameId equ 332
     .dw mEpochNtpAltName
-mEpochGpsNameId equ 337
+mEpochGpsNameId equ 333
     .dw mEpochGpsName
-mEpochGpsAltNameId equ 338
+mEpochGpsAltNameId equ 334
     .dw mEpochGpsAltName
-mEpochTiosNameId equ 339
+mEpochTiosNameId equ 335
     .dw mEpochTiosName
-mEpochTiosAltNameId equ 340
+mEpochTiosAltNameId equ 336
     .dw mEpochTiosAltName
-mEpochY2kNameId equ 341
+mEpochY2kNameId equ 337
     .dw mEpochY2kName
-mEpochY2kAltNameId equ 342
+mEpochY2kAltNameId equ 338
     .dw mEpochY2kAltName
-mEpochCustomNameId equ 343
+mEpochCustomNameId equ 339
     .dw mEpochCustomName
-mEpochCustomAltNameId equ 344
+mEpochCustomAltNameId equ 340
     .dw mEpochCustomAltName
-mEpochSetCustomNameId equ 345
+mEpochSetCustomNameId equ 341
     .dw mEpochSetCustomName
-mEpochGetCustomNameId equ 346
+mEpochGetCustomNameId equ 342
     .dw mEpochGetCustomName
-mGetNowNameId equ 347
+mGetNowNameId equ 343
     .dw mGetNowName
-mGetNowDateNameId equ 348
+mGetNowDateNameId equ 344
     .dw mGetNowDateName
-mGetNowTimeNameId equ 349
+mGetNowTimeNameId equ 345
     .dw mGetNowTimeName
-mGetNowAppDateTimeNameId equ 350
+mGetNowAppDateTimeNameId equ 346
     .dw mGetNowAppDateTimeName
-mGetNowUTCDateTimeNameId equ 351
+mGetNowUTCDateTimeNameId equ 347
     .dw mGetNowUTCDateTimeName
-mSetTimeZoneNameId equ 352
+mSetTimeZoneNameId equ 348
     .dw mSetTimeZoneName
-mGetTimeZoneNameId equ 353
+mGetTimeZoneNameId equ 349
     .dw mGetTimeZoneName
-mSetClockTimeZoneNameId equ 354
+mSetClockTimeZoneNameId equ 350
     .dw mSetClockTimeZoneName
-mGetClockTimeZoneNameId equ 355
+mGetClockTimeZoneNameId equ 351
     .dw mGetClockTimeZoneName
-mSetClockNameId equ 356
+mSetClockNameId equ 352
     .dw mSetClockName
 
 ; Table of names as NUL terminated C strings.
@@ -4602,10 +4594,6 @@ mUnitTempName:
     .db "TEMP", 0
 mUnitPressureName:
     .db "PRES", 0
-mInhgToHpaName:
-    .db Sconvert, 'h', 'P', 'a', 0
-mHpaToInhgName:
-    .db Sconvert, 'i', 'H', 'g', 0
 mCalToKjName:
     .db Sconvert, 'k', 'J', 0
 mKjToCalName:
@@ -4618,10 +4606,6 @@ mMpgToLkmName:
     .db Sconvert, 'L', 'k', 'm', 0
 mLkmToMpgName:
     .db Sconvert, 'm', 'p', 'g', 0
-mPsiToKpaName:
-    .db Sconvert, 'k', 'P', 'a', 0
-mKpaToPsiName:
-    .db Sconvert, 'p', 's', 'i', 0
 mUnitNanoMeterName:
     .db "nm", 0
 mUnitMicroMeterName:

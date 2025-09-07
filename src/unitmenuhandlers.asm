@@ -454,18 +454,6 @@ mUnitTorrHandler:
 ;-----------------------------------------------------------------------------
 ;-----------------------------------------------------------------------------
 
-mInhgToHpaHandler:
-    call closeInputAndRecallX
-    call op2SetHpaPerInhg
-    bcall(_FPMult)
-    jp replaceX
-
-mHpaToInhgHandler:
-    call closeInputAndRecallX
-    call op2SetHpaPerInhg
-    bcall(_FPDiv)
-    jp replaceX
-
 ;-----------------------------------------------------------------------------
 ; UNIT > Row 6
 ;-----------------------------------------------------------------------------
@@ -520,41 +508,5 @@ mLkmToMpgHandler:
     call op2SetLPerGal
     bcall(_FPMult)
     call op2SetKmPerMi
-    bcall(_FPDiv)
-    jp replaceX
-
-; Description: Convert PSI (pounds per square inch) to kiloPascal.
-; P(Pa) = P(psi) * 0.45359237 kg/lbf * (9.80665 m/s^2) / (0.0254 m/in)^2
-; P(Pa) = P(psi) * 0.45359237 kg/lbf * (9.80665 m/s^2) / (2.54 cm/in)^2 * 10000
-; P(kPa) = P(psi) * 0.45359237 kg/lbf * (9.80665 m/s^2) / (2.54 cm/in)^2 * 10
-; See https://en.wikipedia.org/wiki/Pound_per_square_inch.
-mPsiToKpaHandler:
-    call closeInputAndRecallX
-    call op2SetKgPerLbs
-    bcall(_FPMult)
-    call op2SetStandardGravity
-    bcall(_FPMult)
-    call op2SetCmPerIn
-    bcall(_FPDiv)
-    call op2SetCmPerIn
-    bcall(_FPDiv)
-    call op2Set10
-    bcall(_FPMult)
-    jp replaceX
-
-; Description: Convert PSI (pounds per square inch) to kiloPascal.
-; P(psi) = P(kPa) / 10 * (2.54m/in)^2 / (0.45359237 kg/lbf) / (9.80665 m/s^2)
-; See https://en.wikipedia.org/wiki/Pound_per_square_inch.
-mKpaToPsiHandler:
-    call closeInputAndRecallX
-    call op2Set10
-    bcall(_FPDiv)
-    call op2SetCmPerIn
-    bcall(_FPMult)
-    call op2SetCmPerIn
-    bcall(_FPMult)
-    call op2SetStandardGravity
-    bcall(_FPDiv)
-    call op2SetKgPerLbs
     bcall(_FPDiv)
     jp replaceX

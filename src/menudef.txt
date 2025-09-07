@@ -497,10 +497,6 @@ MenuGroup root mRoot [
             MenuItem Torr mUnitTorr
           ]
         ]
-        MenuItem * *
-        MenuItem * *
-        MenuItem <Sconvert>hPa mInhgToHpa
-        MenuItem <Sconvert>iHg mHpaToInhg
       ]
       MenuRow [
         MenuItem <Sconvert>kJ mCalToKj
@@ -512,9 +508,6 @@ MenuGroup root mRoot [
       MenuRow [
         MenuItem <Sconvert>Lkm mMpgToLkm
         MenuItem <Sconvert>mpg mLkmToMpg
-        MenuItem * *
-        MenuItem <Sconvert>kPa mPsiToKpa
-        MenuItem <Sconvert>psi mKpaToPsi
       ]
     ]
     MenuGroup DATE mDate [
