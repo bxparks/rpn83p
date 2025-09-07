@@ -364,10 +364,24 @@ mUnitTonHandler:
     jp commonUnitHandler
 
 ;-----------------------------------------------------------------------------
+; UNIT > TEMP > Row 1
 ;-----------------------------------------------------------------------------
-;-----------------------------------------------------------------------------
-; UNIT > Row 1
-;-----------------------------------------------------------------------------
+
+mUnitCelsiusHandler:
+    ld a, unitCelsiusId
+    jp commonUnitHandler
+
+mUnitFahrenheitHandler:
+    ld a, unitFahrenheitId
+    jp commonUnitHandler
+
+mUnitRankineHandler:
+    ld a, unitRankineId
+    jp commonUnitHandler
+
+mUnitKelvinHandler:
+    ld a, unitKelvinId
+    jp commonUnitHandler
 
 mFToCHandler:
     call closeInputAndRecallX
@@ -388,6 +402,9 @@ mCToFHandler:
     bcall(_SetXXOP2) ; OP2 = 32
     bcall(_FPAdd) ; OP1 = 1.8*X + 32
     jp replaceX
+
+;-----------------------------------------------------------------------------
+;-----------------------------------------------------------------------------
 
 mInhgToHpaHandler:
     call closeInputAndRecallX

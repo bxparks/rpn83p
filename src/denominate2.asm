@@ -26,6 +26,8 @@ ConvertUnit:
     jr z, changeRpnDenominateUnit
     bcall(_ErrDataType)
 
+;-----------------------------------------------------------------------------
+
 ; Description: Convert a Real to an RpnDenominate object, converting the value
 ; into its base unit, then attaching the target unit.
 ; Input:
@@ -36,12 +38,14 @@ ConvertUnit:
 ;   - OP1/OP2:RpnDenominate
 ; Destroys: all
 convertRealToRpnDenominate:
-    call reserveRpnObject; FPS=[rpnDenominate]; HL=rpnDenominate
+    call reserveRpnObject; FPS=[rpnDenominate]; HL=rpnDenominate; BC=BC
     ld a, c ; A=targetUnitId
-    call setHLRpnDenominatePageTwo; HL:(*Real)=value; preserves A
-    call normalizeRealToBaseUnit ; OP1=baseValue; preserves HL
+    call setHLRpnDenominatePageTwo; HL:(*Real)=value; A=A; BC=BC
+    ; normalize to the base unit
+    push hl
+    call normalizeRealToBaseUnit ; OP1=baseValue
+    pop de ; DE=value
     ; move the result into the 'value' of the rpnDenominate
-    ex de, hl ; DE=value
     call move9FromOp1PageTwo ; (DE)=value
     call PopRpnObject1 ; FPS=[]; OP1=rpnDenominate
     ret
@@ -53,18 +57,24 @@ convertRealToRpnDenominate:
 ;   - A:u8=targetUnitId
 ; Output:
 ;   -OP1:Real=baseValue
-; Preserves: HL
-; Destroys: A, BC, DE, OP1, OP2, OP3
+; Destroys: all, OP1, OP2, OP3
 normalizeRealToBaseUnit:
-    push hl ; stack=[HL]
-    push af ; stack=[HL, targetUnitId]
-    call pushRaw9Op1 ; FPS=[value]
-    pop af ; stack=[HL]; A=targetUnitId
+    ; Special cases for Temperature.
+    cp unitKelvinId
+    ret z
+    cp unitCelsiusId
+    jr z, temperatureCToK
+    cp unitFahrenheitId
+    jr z, temperatureFToK
+    cp unitRankineId
+    jr z, temperatureRToK
+    ; All other units can be normalized with a simple scaling factor.
+    call op1ToOp2PageTwo ; OP2=value; A=A
     call GetUnitScale ; OP1=scale
-    call popRaw9Op2 ; FPS=[]; OP2=value
     bcall(_FPMult) ; OP1=baseValue=scale*value
-    pop hl ; stack=[]; HL=HL
     ret
+
+;-----------------------------------------------------------------------------
 
 ; Description: Set the unit of an RpnDenominate to the given target unit.
 ; Input:
@@ -119,8 +129,96 @@ checkCompatibleUnitClass:
 denominateToDisplayValue:
     ld a, (hl) ; A=targetUnitId
     inc hl ; HL=value
-    call move9ToOp2PageTwo ; OP2=value; preserves A
+    call move9ToOp1PageTwo ; OP1=value; preserves A
+    ; Special cases for Temperature.
+    cp unitKelvinId
+    ret z
+    cp unitCelsiusId
+    jr z, temperatureKToC
+    cp unitFahrenheitId
+    jr z, temperatureKToF
+    cp unitRankineId
+    jr z, temperatureKToR
+    ; All other units can be converted with a simple scaling factor.
+    call op1ToOp2PageTwo ; OP2=value; preserves A
     call GetUnitScale ; OP1=scale
     call op1ExOp2PageTwo ; OP1=value; OP2=scale
     bcall(_FPDiv) ; OP1=displayValue=normalizedValue/scale
+    ret
+
+;-----------------------------------------------------------------------------
+
+; Description: Convert OP1 from Celsius to Kelvin.
+; K = C + 273.15
+temperatureCToK:
+    ld hl, constCelsiusOffset
+    call move9ToOp2PageTwo
+    bcall(_FPAdd)
+    ret
+
+; Description: Convert OP1 from Kelvin to Celsius.
+; C = K - 273.15
+temperatureKToC:
+    ld hl, constCelsiusOffset
+    call move9ToOp2PageTwo
+    bcall(_FPSub)
+    ret
+
+constCelsiusOffset: ; 273.15 K = 0 C
+    .db $00, $82, $27, $31, $50, $00, $00, $00, $00
+
+;-----------------------------------------------------------------------------
+
+; Description: Convert OP1 from Fahrenheit to Kelvin.
+; K = C + 273.15
+temperatureFToK:
+    call temperatureFToC
+    jr temperatureCToK
+
+; Description: Convert OP1 from Kelvin to Fahrenheit.
+; C = K - 273.15
+temperatureKToF:
+    call temperatureKToC
+    jr temperatureCToF
+
+;-----------------------------------------------------------------------------
+
+; Description: Convert OP1 from Rankine to Kelvin.
+; K = R * 5/9
+temperatureRToK:
+    ld a, $18
+    bcall(_OP2SetA) ; OP2 = 1.8
+    bcall(_FPDiv)
+    ret
+
+; Description: Convert OP1 from Kelvin to Rankine.
+; R = K * 9/5
+temperatureKToR:
+    ld a, $18
+    bcall(_OP2SetA) ; OP2 = 1.8
+    bcall(_FPMult)
+    ret
+
+;-----------------------------------------------------------------------------
+
+; Description: Convert OP1 from Celsius to Fahrenheit.
+; F = C*9/5 + 32
+temperatureCToF:
+    ld a, $18
+    bcall(_OP2SetA) ; OP2 = 1.8
+    bcall(_FPMult) ; OP1 = X * 1.8
+    ld a, 32
+    bcall(_SetXXOP2) ; OP2 = 32
+    bcall(_FPAdd) ; OP1 = 1.8*X + 32
+    ret
+
+; Description: Convert OP1 from Fahrenheit to Celsius.
+; C = (F - 32) * 5/9
+temperatureFToC:
+    ld a, 32
+    bcall(_SetXXOP2) ; OP2 = 32
+    bcall(_FPSub) ; OP1 = X - 32
+    ld a, $18
+    bcall(_OP2SetA) ; OP2 = 1.8
+    bcall(_FPDiv) ; OP1 = (X - 32) / 1.8
     ret

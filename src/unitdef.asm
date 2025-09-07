@@ -29,7 +29,7 @@ unitClassMisc equ 8
 ;-----------------------------------------------------------------------------
 
 unitInfoTable:
-unitInfoTableSize equ 72
+unitInfoTableSize equ 76
 
 unitAngstromInfo:
 unitAngstromId equ 0
@@ -463,6 +463,30 @@ unitTonId equ 71
     .db unitClassMass ; unitClass
     .db unitGramId ; baseUnitId
     .db $00, $85, $90, $71, $84, $74, $00, $00, $00 ; scale=907.18474e3
+unitCelsiusInfo:
+unitCelsiusId equ 72
+    .dw unitCelsiusName ; name
+    .db unitClassTemperature ; unitClass
+    .db unitKelvinId ; baseUnitId
+    .db $00, $80, $10, $00, $00, $00, $00, $00, $00 ; scale=1
+unitFahrenheitInfo:
+unitFahrenheitId equ 73
+    .dw unitFahrenheitName ; name
+    .db unitClassTemperature ; unitClass
+    .db unitKelvinId ; baseUnitId
+    .db $00, $80, $10, $00, $00, $00, $00, $00, $00 ; scale=1
+unitRankineInfo:
+unitRankineId equ 74
+    .dw unitRankineName ; name
+    .db unitClassTemperature ; unitClass
+    .db unitKelvinId ; baseUnitId
+    .db $00, $80, $10, $00, $00, $00, $00, $00, $00 ; scale=1
+unitKelvinInfo:
+unitKelvinId equ 75
+    .dw unitKelvinName ; name
+    .db unitClassTemperature ; unitClass
+    .db unitKelvinId ; baseUnitId
+    .db $00, $80, $10, $00, $00, $00, $00, $00, $00 ; scale=1
 
 ;-----------------------------------------------------------------------------
 ; Unit names.
@@ -612,3 +636,11 @@ unitPoundName:
     .db "lbs", 0
 unitTonName:
     .db "ton", 0
+unitCelsiusName:
+    .db Stemp, 'C', 0
+unitFahrenheitName:
+    .db Stemp, 'F', 0
+unitRankineName:
+    .db Stemp, 'R', 0
+unitKelvinName:
+    .db "K", 0

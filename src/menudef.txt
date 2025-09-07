@@ -465,6 +465,14 @@ MenuGroup root mRoot [
             MenuItem ton mUnitTon
           ]
         ]
+        MenuGroup TEMP mUnitTemp [
+          MenuRow [
+            MenuItem <Stemp>C mUnitCelsius
+            MenuItem <Stemp>F mUnitFahrenheit
+            MenuItem <Stemp>R mUnitRankine
+            MenuItem K mUnitKelvin
+          ]
+        ]
       ]
       MenuRow [
         MenuItem <Sconvert><Stemp>C mFToC

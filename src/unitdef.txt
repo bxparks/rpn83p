@@ -124,4 +124,9 @@ Units [
   Unit Pound lbs Mass 453.59237 Gram # by defn
   Unit Ton ton Mass 907.18474e3 Gram # 2000 lbs
 
+  # Temperature, requires special handlers
+  Unit Celsius <Stemp>C Temperature 1 Kelvin # C = 273.15 + K
+  Unit Fahrenheit <Stemp>F Temperature 1 Kelvin # F = C*9/5 + 32
+  Unit Rankine <Stemp>R Temperature 1 Kelvin # R = K*9/5 = (C-273.15)*9/5
+  Unit Kelvin K Temperature 1 Kelvin
 ]
