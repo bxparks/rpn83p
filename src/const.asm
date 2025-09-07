@@ -132,14 +132,6 @@ op2SetLPerGal:
 
 ;-----------------------------------------------------------------------------
 
-; Description: Set OP2 to KjPerKcal.
-; Destroys: all, HL
-op2SetKjPerKcal:
-    ld hl, constKjPerKcal
-    jp move9ToOp2
-
-;-----------------------------------------------------------------------------
-
 ; Description: Set OP2 to KwPerHp
 ; Destroys: all, HL
 op2SetKwPerHp:
@@ -184,9 +176,6 @@ constKmPerMi: ; 1.609344 km/mi, exact
 
 constLPerGal: ; 3.785 411 784 L/gal, exact, gallon == 231 in^3
     .db $00, $80, $37, $85, $41, $17, $84, $00, $00
-
-constKjPerKcal: ; 4.184 J/cal or kJ/kcal, exact
-    .db $00, $80, $41, $84, $00, $00, $00, $00, $00
 
 ; According to https://en.wikipedia.org/wiki/Horsepower:
 ; 1 hp (mechanical)

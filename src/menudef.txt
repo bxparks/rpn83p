@@ -510,10 +510,6 @@ MenuGroup root mRoot [
             MenuItem tTNT mUnitTonTNT
           ]
         ]
-      ]
-      MenuRow [
-        MenuItem <Sconvert>kJ mCalToKj
-        MenuItem <Sconvert>cal mKjToCal
         MenuItem * *
         MenuItem <Sconvert>kW mHpToKw
         MenuItem <Sconvert>hp mKwToHp

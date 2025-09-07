@@ -490,22 +490,6 @@ mUnitTonTNTHandler:
 ;-----------------------------------------------------------------------------
 ;-----------------------------------------------------------------------------
 
-;-----------------------------------------------------------------------------
-; UNIT > Row 6
-;-----------------------------------------------------------------------------
-
-mCalToKjHandler:
-    call closeInputAndRecallX
-    call op2SetKjPerKcal
-    bcall(_FPMult)
-    jp replaceX
-
-mKjToCalHandler:
-    call closeInputAndRecallX
-    call op2SetKjPerKcal
-    bcall(_FPDiv)
-    jp replaceX
-
 mHpToKwHandler:
     call closeInputAndRecallX
     call op2SetKwPerHp
