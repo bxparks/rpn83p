@@ -516,8 +516,6 @@ MenuGroup root mRoot [
             MenuItem hp mUnitHorsepower
           ]
         ]
-        MenuItem <Sconvert>kW mHpToKw
-        MenuItem <Sconvert>hp mKwToHp
       ]
       MenuRow [
         MenuItem <Sconvert>Lkm mMpgToLkm

@@ -502,18 +502,6 @@ mUnitHorsepowerHandler:
 ;-----------------------------------------------------------------------------
 ;-----------------------------------------------------------------------------
 
-mHpToKwHandler:
-    call closeInputAndRecallX
-    call op2SetKwPerHp
-    bcall(_FPMult)
-    jp replaceX
-
-mKwToHpHandler:
-    call closeInputAndRecallX
-    call op2SetKwPerHp
-    bcall(_FPDiv)
-    jp replaceX
-
 ; Description: Convert mpg (miles per US gallon) to lkm (Liters per 100 km):
 ; lkm = 100/[mpg * (km/mile) / (litre/gal)]
 mMpgToLkmHandler:

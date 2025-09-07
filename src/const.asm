@@ -132,14 +132,6 @@ op2SetLPerGal:
 
 ;-----------------------------------------------------------------------------
 
-; Description: Set OP2 to KwPerHp
-; Destroys: all, HL
-op2SetKwPerHp:
-    ld hl, constKwPerHp
-    jp move9ToOp2
-
-;-----------------------------------------------------------------------------
-
 constM1: ; -1
     .db $80, $80, $10, $00, $00, $00, $00, $00, $00
 
@@ -176,12 +168,3 @@ constKmPerMi: ; 1.609344 km/mi, exact
 
 constLPerGal: ; 3.785 411 784 L/gal, exact, gallon == 231 in^3
     .db $00, $80, $37, $85, $41, $17, $84, $00, $00
-
-; According to https://en.wikipedia.org/wiki/Horsepower:
-; 1 hp (mechanical)
-;   = 33 000 ft*lbf/min
-;   = 550 ft*lbf/s
-;   = 550 ft*lbf/s * 0.3048 m/ft * 9.806 65 m/s^2 * 0.453 592 37 kg/lbs
-;   ~ 0.745 699 871 582 270 22 kW
-constKwPerHp: ; 0.745 699 871 582 270 22 kW/hp, approx
-    .db $00, $7F, $74, $56, $99, $87, $15, $82, $27
