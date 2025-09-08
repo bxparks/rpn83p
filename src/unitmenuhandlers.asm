@@ -384,6 +384,38 @@ mUnitImpGallonHandler:
     jp commonUnitHandler
 
 ;-----------------------------------------------------------------------------
+; UNIT > VOL > DRY > Row 1
+;-----------------------------------------------------------------------------
+
+mUnitDryPintHandler:
+    ld a, unitDryPintId
+    jp commonUnitHandler
+
+mUnitDryQuartHandler:
+    ld a, unitDryQuartId
+    jp commonUnitHandler
+
+mUnitDryGallonHandler:
+    ld a, unitDryGallonId
+    jp commonUnitHandler
+
+mUnitPeckHandler:
+    ld a, unitPeckId
+    jp commonUnitHandler
+
+mUnitBushelHandler:
+    ld a, unitBushelId
+    jp commonUnitHandler
+
+;-----------------------------------------------------------------------------
+; UNIT > VOL > DRY > Row 2
+;-----------------------------------------------------------------------------
+
+mUnitDryBarrelHandler:
+    ld a, unitDryBarrelId
+    jp commonUnitHandler
+
+;-----------------------------------------------------------------------------
 ; UNIT > MASS > Row 1
 ;-----------------------------------------------------------------------------
 

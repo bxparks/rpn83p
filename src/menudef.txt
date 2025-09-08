@@ -469,6 +469,18 @@ MenuGroup root mRoot [
                 MenuItem gal mUnitImpGallon
               ]
             ]
+            MenuGroup DRY mUnitVolDry [
+              MenuRow [
+                MenuItem drpt mUnitDryPint
+                MenuItem drqt mUnitDryQuart
+                MenuItem dgal mUnitDryGallon
+                MenuItem peck mUnitPeck
+                MenuItem bush mUnitBushel
+              ]
+              MenuRow [
+                MenuItem dbbl mUnitDryBarrel
+              ]
+            ]
             MenuGroup MISC mUnitVolMisc [
               MenuRow [
                 MenuItem bbl mUnitOilBarrel

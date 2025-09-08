@@ -144,6 +144,16 @@ Units [
   Unit ImpQuart impquart Volume 1.1365225e-3 CuMeter # 1/4 impgal
   Unit ImpGallon impgal Volume 4.54609e-3 CuMeter # 4.54609L by defn
 
+  # Dry: https://en.wikipedia.org/wiki/United_States_customary_units
+  Unit DryPint drypt Volume 0.5506104713575e-3 CuMeter # 33.6003125 in^3 by defn
+  Unit DryQuart dryqt Volume 1.101220942715e-3 CuMeter # 2 drypt
+  Unit DryGallon drygal Volume 4.40488377086e-3 CuMeter # 4 dryqt
+  Unit Peck peck Volume 8.80976754172e-3 CuMeter # 2 drygal
+  Unit Bushel bushel Volume 35.23907016688e-3 CuMeter # 4 peck
+  Unit DryBarrel drybbl Volume 0.115627123584 CuMeter # 7056 in^3
+
+  # Other weird measures
+
   # https://en.wikipedia.org/wiki/Barrel_(unit)
   Unit OilBarrel barrel Volume 1.58987294928e-1 CuMeter # 42USgal by defn; bbl
 
@@ -153,6 +163,8 @@ Units [
 
   # https://en.wikipedia.org/wiki/Acre-foot
   Unit AcreFoot acft Volume 1233.4818375475 CuMeter # 66ft*660ft*1ft=43560cuft
+
+  # TODO: Add board-foot: https://en.wikipedia.org/wiki/Board_foot
 
   #----------------------------------------------------------------------------
   # Mass
