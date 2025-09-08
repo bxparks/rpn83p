@@ -130,6 +130,9 @@ Units [
   # "at least 2m deep"
   Unit OlympicPool olympool Volume 2500 CuMeter # 50m*25m*2m
 
+  # https://en.wikipedia.org/wiki/Acre-foot
+  Unit AcreFoot acft Volume 1233.4818375475 CuMeter # 66ft*660ft*1ft=43560cuft
+
   #----------------------------------------------------------------------------
   # Mass
   #----------------------------------------------------------------------------

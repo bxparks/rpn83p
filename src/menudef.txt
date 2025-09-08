@@ -442,8 +442,10 @@ MenuGroup root mRoot [
                 MenuItem pint mUnitPint
                 MenuItem qt mUnitQuart
                 MenuItem gal mUnitGallon
-                MenuItem * *
+              ]
+              MenuRow [
                 MenuItem bbl mUnitOilBarrel
+                MenuItem acft mUnitAcreFoot
               ]
             ]
             MenuGroup Imp mUnitVolImp [

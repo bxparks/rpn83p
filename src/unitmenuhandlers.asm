@@ -303,8 +303,16 @@ mUnitGallonHandler:
     ld a, unitGallonId
     jp commonUnitHandler
 
+;-----------------------------------------------------------------------------
+; UNIT > VOL > US > Row 3
+;-----------------------------------------------------------------------------
+
 mUnitOilBarrelHandler:
     ld a, unitOilBarrelId
+    jp commonUnitHandler
+
+mUnitAcreFootHandler:
+    ld a, unitAcreFootId
     jp commonUnitHandler
 
 ;-----------------------------------------------------------------------------
