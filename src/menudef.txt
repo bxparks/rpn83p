@@ -423,13 +423,11 @@ MenuGroup root mRoot [
             MenuItem nmi<Scube> mUnitCuNauticalMile
           ]
           MenuRow [
-            MenuGroup SI mUnitVolSI [
-              MenuRow [
-                MenuItem <Smu>L mUnitMicroLiter
-                MenuItem mL mUnitMilliLiter
-                MenuItem L mUnitLiter
-              ]
-            ]
+            MenuItem <Smu>L mUnitMicroLiter
+            MenuItem mL mUnitMilliLiter
+            MenuItem L mUnitLiter
+          ]
+          MenuRow [
             MenuGroup US mUnitVolUS [
               MenuRow [
                 MenuItem tsp mUnitTeaspoon
