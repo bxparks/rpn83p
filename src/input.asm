@@ -203,7 +203,6 @@ closeInputAndRecallRpnDateRelatedX:
 ;   - OP1=X
 ;   - rpnFlagsTvmCalculate: cleared
 ;   - A=rpnObjectType
-;   - B=unit (if rpnObjectTypeDenominate)
 ; Destroys: all, OP1, OP2, OP3, OP4, OP5
 closeInputAndRecallDenominateX:
     call closeInput
@@ -214,8 +213,6 @@ closeInputAndRecallDenominateX:
     ret z
     ; Allow RpnDenominate
     cp rpnObjectTypeDenominate
-    ld hl, OP1 + rpnDenominateFieldTargetUnit
-    ld b, (hl) ; B=unit
     ret z
     ; Unexpected type
     bcall(_ErrDataType)

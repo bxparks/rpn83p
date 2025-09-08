@@ -29,7 +29,6 @@ ValidateDenominate:
 ; Input:
 ;   - OP1/OP2:Real|RpnDenominate
 ;   - A:u8=rpnObjectType
-;   - B:u8=srcUnitId
 ;   - C:u8=targetUnitId
 ; Output:
 ;   - OP1/OP2:RpnDenominate
@@ -78,11 +77,11 @@ normalizeRealToBaseUnit:
     cp unitKelvinId
     ret z
     cp unitCelsiusId
-    jr z, temperatureCToK
+    jp z, temperatureCToK
     cp unitFahrenheitId
-    jr z, temperatureFToK
+    jp z, temperatureFToK
     cp unitRankineId
-    jr z, temperatureRToK
+    jp z, temperatureRToK
     ; Special cases for fuel consumption units.
     cp unitLitersPerHundredKiloMetersId
     ret z
@@ -100,17 +99,17 @@ normalizeRealToBaseUnit:
 ; Input:
 ;   - OP1/OP2:RpnDenominate
 ;   - A:u8=rpnObjectType
-;   - B:u8=srcUnitId
 ;   - C:u8=targetUnitId
 ; Output:
 ;   - OP1/OP2:RpnDenominate=converted
 ; Destroys: A, OP1
 ; Preserves: BC, DE, HL
 changeRpnDenominateUnit:
-    ld a, b
+    ld a, (OP1 + rpnDenominateFieldTargetUnit) ; A=unitId
     cp c
     ret z ; source and target are same unit, do nothing
     ; Check that the unit conversion is allowed
+    ld b, a ; B=srcUnitId
     call checkCompatibleUnitClass
     ; Clobber the new targetUnit
     ld a, c ; A=targetUnitId

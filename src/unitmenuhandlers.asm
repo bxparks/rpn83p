@@ -50,18 +50,16 @@
 ; Input:
 ;   - A:u8=targetUnit
 commonUnitHandler:
-    ld e, a ; E=targetUnit
-    push de
-    call closeInputAndRecallDenominateX ; A=rpnObjectType; B=objectUnit
-    pop de ; E=targetUnit
-    ld d, a ; D=rpnObjectType
+    ld c, a ; C=targetUnit
+    push bc
+    call closeInputAndRecallDenominateX ; A=rpnObjectType; OP1=X
+    pop bc ; C=targetUnit
     ; Check for valid Denominate
     ld hl, OP1+rpnObjectTypeSizeOf ; HL=denominate
     bcall(_ValidateDenominate) ; CF=1 if valid
     ret nc ; do nothing if invalid
     ; Set up registers for ApplyUnit()
-    ld a, d ; A=rpnObjectType
-    ld c, e ; C=targetUnit
+    call getOp1RpnObjectType ; A=rpnObjectType
     bcall(_ApplyUnit)
     jp replaceX
 
