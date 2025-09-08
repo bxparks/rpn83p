@@ -377,6 +377,14 @@ MenuGroup root mRoot [
             MenuItem km mUnitKiloMeter
             MenuItem mi mUnitMile
             MenuItem nmi mUnitNauticalMile
+            MenuItem * *
+            MenuGroup ASTR mAstronomy [
+              MenuRow [
+                MenuItem AU mUnitAstronomicalUnit
+                MenuItem ly mUnitLightYear
+                MenuItem pc mUnitParsec
+              ]
+            ]
           ]
         ]
         MenuGroup AREA mUnitArea [

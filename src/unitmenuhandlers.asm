@@ -60,7 +60,7 @@ commonUnitHandler:
     jp replaceX
 
 ;-----------------------------------------------------------------------------
-; UNIT > LEN > Row 1
+; UNIT > LENG > Row 1
 ;-----------------------------------------------------------------------------
 
 mUnitNanoMeterHandler:
@@ -84,7 +84,7 @@ mUnitMeterHandler:
     jp commonUnitHandler
 
 ;-----------------------------------------------------------------------------
-; UNIT > LEN > Row 2
+; UNIT > LENG > Row 2
 ;-----------------------------------------------------------------------------
 
 mUnitMilHandler:
@@ -108,7 +108,7 @@ mUnitFanthomHandler:
     jp commonUnitHandler
 
 ;-----------------------------------------------------------------------------
-; UNIT > LEN > Row 3
+; UNIT > LENG > Row 3
 ;-----------------------------------------------------------------------------
 
 mUnitKiloMeterHandler:
@@ -121,6 +121,22 @@ mUnitMileHandler:
 
 mUnitNauticalMileHandler:
     ld a, unitNauticalMileId
+    jp commonUnitHandler
+
+;-----------------------------------------------------------------------------
+; UNIT > LENG > ASTR > Row 1
+;-----------------------------------------------------------------------------
+
+mUnitAstronomicalUnitHandler:
+    ld a, unitAstronomicalUnitId
+    jp commonUnitHandler
+
+mUnitLightYearHandler:
+    ld a, unitLightYearId
+    jp commonUnitHandler
+
+mUnitParsecHandler:
+    ld a, unitParsecId
     jp commonUnitHandler
 
 ;-----------------------------------------------------------------------------

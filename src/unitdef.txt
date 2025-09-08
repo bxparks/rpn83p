@@ -53,12 +53,12 @@ Units [
   Unit Mile mi Length 1609.344 Meter
   Unit NauticalMile nmi Length 1852 Meter
 
+  # https://en.wikipedia.org/wiki/Astronomical_unit
   Unit AstronomicalUnit AU Length 149597870700 Meter # by defn
-  Unit LightYear ltyr Length 9460730472580.8e3 Meter # exact, 365.25days*c
+  # https://en.wikipedia.org/wiki/Light-year
+  Unit LightYear ly Length 9460730472580.8e3 Meter # exact, 365.25days*c
+  # https://en.wikipedia.org/wiki/Parsec
   Unit Parsec pc Length 30856775814913673 Meter # 648000/pi AU
-  Unit KiloParsec kpc Length 30856775814913673e3 Meter
-  Unit MegaParsec Mpc Length 30856775814913673e6 Meter
-  Unit GigaParsec Gpc Length 30856775814913673e9 Meter
 
   #----------------------------------------------------------------------------
   # Area
