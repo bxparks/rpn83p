@@ -336,22 +336,6 @@ mUnitGallonHandler:
     jp commonUnitHandler
 
 ;-----------------------------------------------------------------------------
-; UNIT > VOL > US > Row 3
-;-----------------------------------------------------------------------------
-
-mUnitOilBarrelHandler:
-    ld a, unitOilBarrelId
-    jp commonUnitHandler
-
-mUnitAcreFootHandler:
-    ld a, unitAcreFootId
-    jp commonUnitHandler
-
-mUnitOlympicPoolHandler:
-    ld a, unitOlympicPoolId
-    jp commonUnitHandler
-
-;-----------------------------------------------------------------------------
 ; UNIT > VOL > IMP > Row 1
 ;-----------------------------------------------------------------------------
 
@@ -413,6 +397,26 @@ mUnitBushelHandler:
 
 mUnitDryBarrelHandler:
     ld a, unitDryBarrelId
+    jp commonUnitHandler
+
+;-----------------------------------------------------------------------------
+; UNIT > VOL > MISC > Row 1
+;-----------------------------------------------------------------------------
+
+mUnitBoardFootHandler:
+    ld a, unitBoardFootId
+    jp commonUnitHandler
+
+mUnitOilBarrelHandler:
+    ld a, unitOilBarrelId
+    jp commonUnitHandler
+
+mUnitAcreFootHandler:
+    ld a, unitAcreFootId
+    jp commonUnitHandler
+
+mUnitOlympicPoolHandler:
+    ld a, unitOlympicPoolId
     jp commonUnitHandler
 
 ;-----------------------------------------------------------------------------

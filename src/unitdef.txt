@@ -1,10 +1,10 @@
 # This file defines the list of units supported by the UNIT conversion menu
 # functions.
 #
-# To preserve backwards compatibility with Denominate numbers (values with
-# units) stored in persistent memory (e.g. stack, registers, variables), this
-# file must be treated as *append* only. Previously defined units must never
-# be removed, modified, or reordered.
+# WARNING: To preserve backwards compatibility with Denominate numbers (values
+# with units) stored in persistent memory (e.g. stack, registers, variables),
+# this file must be treated as *append* only. Previously defined units must
+# never be removed, modified, or reordered.
 #
 # Classes [
 #   {list of classes}
@@ -154,6 +154,9 @@ Units [
 
   # Other weird measures
 
+  # https://en.wikipedia.org/wiki/Board_foot
+  Unit BoardFoot boardfoot Volume 2.359737216e-3 CuMeter # 1/12 cuft by defn
+
   # https://en.wikipedia.org/wiki/Barrel_(unit)
   Unit OilBarrel barrel Volume 1.58987294928e-1 CuMeter # 42USgal by defn; bbl
 
@@ -163,8 +166,6 @@ Units [
 
   # https://en.wikipedia.org/wiki/Acre-foot
   Unit AcreFoot acft Volume 1233.4818375475 CuMeter # 66ft*660ft*1ft=43560cuft
-
-  # TODO: Add board-foot: https://en.wikipedia.org/wiki/Board_foot
 
   #----------------------------------------------------------------------------
   # Mass

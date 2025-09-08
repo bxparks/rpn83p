@@ -483,6 +483,7 @@ MenuGroup root mRoot [
             ]
             MenuGroup MISC mUnitVolMisc [
               MenuRow [
+                MenuItem bdft mUnitBoardFoot
                 MenuItem bbl mUnitOilBarrel
                 MenuItem olmp mUnitOlympicPool
                 MenuItem acft mUnitAcreFoot

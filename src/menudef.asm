@@ -2682,7 +2682,7 @@ mUnitVolMiscId equ 285
     .dw mUnitVolId ; parentId
     .dw mUnitVolMiscName ; name
     .db 1 ; numRows
-    .dw mUnitOilBarrelId ; rowBeginId or altName
+    .dw mUnitBoardFootId ; rowBeginId or altName
     .dw mGroupHandler ; handler (predefined)
     .dw 0 ; nameSelector
 mBlank286:
@@ -2975,8 +2975,17 @@ mBlank316Id equ 316
     .dw 0 ; nameSelector
 ; MenuGroup MISC: children
 ; MenuGroup MISC: children: row 0
+mUnitBoardFoot:
+mUnitBoardFootId equ 317
+    .dw mUnitBoardFootId ; id
+    .dw mUnitVolMiscId ; parentId
+    .dw mUnitBoardFootName ; name
+    .db 0 ; numRows
+    .dw 0 ; rowBeginId or altName
+    .dw mUnitBoardFootHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
 mUnitOilBarrel:
-mUnitOilBarrelId equ 317
+mUnitOilBarrelId equ 318
     .dw mUnitOilBarrelId ; id
     .dw mUnitVolMiscId ; parentId
     .dw mUnitOilBarrelName ; name
@@ -2985,7 +2994,7 @@ mUnitOilBarrelId equ 317
     .dw mUnitOilBarrelHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
 mUnitOlympicPool:
-mUnitOlympicPoolId equ 318
+mUnitOlympicPoolId equ 319
     .dw mUnitOlympicPoolId ; id
     .dw mUnitVolMiscId ; parentId
     .dw mUnitOlympicPoolName ; name
@@ -2994,22 +3003,13 @@ mUnitOlympicPoolId equ 318
     .dw mUnitOlympicPoolHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
 mUnitAcreFoot:
-mUnitAcreFootId equ 319
+mUnitAcreFootId equ 320
     .dw mUnitAcreFootId ; id
     .dw mUnitVolMiscId ; parentId
     .dw mUnitAcreFootName ; name
     .db 0 ; numRows
     .dw 0 ; rowBeginId or altName
     .dw mUnitAcreFootHandler ; handler (to be implemented)
-    .dw 0 ; nameSelector
-mBlank320:
-mBlank320Id equ 320
-    .dw mBlank320Id ; id
-    .dw mUnitVolMiscId ; parentId
-    .dw mNullName ; name
-    .db 0 ; numRows
-    .dw 0 ; rowBeginId or altName
-    .dw mNullHandler ; handler (predefined)
     .dw 0 ; nameSelector
 mBlank321:
 mBlank321Id equ 321
@@ -3863,8 +3863,8 @@ mSetClockId equ 411
 ; Pool of menu names as NUL-terminated C strings.
 ;-----------------------------------------------------------------------------
 
-mNamesCount equ 341 ; number of names and altnames
-mNamesPoolSize equ 2853 ; size of names string pool
+mNamesCount equ 342 ; number of names and altnames
+mNamesPoolSize equ 2858 ; size of names string pool
 
 mNullName:
     .db 0
@@ -4466,6 +4466,8 @@ mUnitBushelName:
     .db "bush", 0
 mUnitDryBarrelName:
     .db "dbbl", 0
+mUnitBoardFootName:
+    .db "bdft", 0
 mUnitOilBarrelName:
     .db "bbl", 0
 mUnitOlympicPoolName:
