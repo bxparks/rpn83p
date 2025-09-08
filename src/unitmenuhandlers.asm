@@ -47,14 +47,20 @@
 ;-----------------------------------------------------------------------------
 
 ; Description: Common handler for all UNIT menus.
-;
 ; Input:
 ;   - A:u8=targetUnit
 commonUnitHandler:
-    ld e, a
+    ld e, a ; E=targetUnit
     push de
     call closeInputAndRecallDenominateX ; A=rpnObjectType; B=objectUnit
-    pop de
+    pop de ; E=targetUnit
+    ld d, a ; D=rpnObjectType
+    ; Check for valid Denominate
+    ld hl, OP1+rpnObjectTypeSizeOf ; HL=denominate
+    bcall(_ValidateDenominate) ; CF=1 if valid
+    ret nc ; do nothing if invalid
+    ; Set up registers for ApplyUnit()
+    ld a, d ; A=rpnObjectType
     ld c, e ; C=targetUnit
     bcall(_ApplyUnit)
     jp replaceX

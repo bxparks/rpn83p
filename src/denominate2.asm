@@ -10,6 +10,18 @@
 ; entry.
 ;-----------------------------------------------------------------------------
 
+; Description: Return CF=1 if Denominate is valid (unitId is within range).
+; Input: HL:Denominate=denominate
+; Output: CF=1 if valid; CF=0 if invalid
+; Destroys: A
+; Preserves: BC, DE, HL
+ValidateDenominate:
+    ld a, (hl) ; A=unitId
+    cp unitsCount ; if unitId >= unitsCount: CF=0 else: CF=1
+    ret
+
+;-----------------------------------------------------------------------------
+
 ; Description: Apply the unit "function" to the given Real or an RpnDenominate.
 ; 1) If the input is a Real, then convert it into an RpnDenominate with the
 ; given targetUnitId.
@@ -128,9 +140,8 @@ checkCompatibleUnitClass:
 
 ;-----------------------------------------------------------------------------
 
-; Description: Convert the Denominate object pointed by HL to a Real at OP1
-; which is represented in terms of its 'targetUnit' instead of the normalized
-; 'baseUnit'.
+; Description: Convert the normalized 'value' of the denominate pointed by HL
+; to the display value in units of its 'targetUnit'.
 ; Input: HL:Denominate=denominate
 ; Output: OP1:Real=displayValue
 ; Destroys: all, OP1-OP4
@@ -151,13 +162,22 @@ denominateToDisplayValue:
     cp unitLitersPerHundredKiloMetersId
     ret z
     cp unitMilesPerGallonId
-    jr z, fuelLkmToMpg
+    jp z, fuelLkmToMpg
     ; All other units can be converted with a simple scaling factor.
     call op1ToOp2PageTwo ; OP2=value; preserves A
     call GetUnitScale ; OP1=scale
     call op1ExOp2PageTwo ; OP1=value; OP2=scale
     bcall(_FPDiv) ; OP1=displayValue=normalizedValue/scale
     ret
+
+; Description: Extract the raw (normalized) 'value' of the denominate pointed
+; by HL to OP1.
+; Input: HL:Denominate=denominate
+; Output: OP1:Real=rawValue
+; Destroys: all, OP1-OP4
+denominateToRawValue:
+    inc hl ; HL=value
+    jp move9ToOp1PageTwo
 
 ;-----------------------------------------------------------------------------
 ; Converters for special units which cannot be converted by simple scaling. For

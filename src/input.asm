@@ -209,10 +209,13 @@ closeInputAndRecallDenominateX:
     call closeInput
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     call rclX ; A=objectType
+    ; Allow Real
     cp rpnObjectTypeReal
     ret z
+    ; Allow RpnDenominate
     cp rpnObjectTypeDenominate
-    ld hl, OP1 + 2
+    ld hl, OP1 + rpnDenominateFieldTargetUnit
     ld b, (hl) ; B=unit
     ret z
+    ; Unexpected type
     bcall(_ErrDataType)
