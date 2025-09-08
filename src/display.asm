@@ -1229,9 +1229,11 @@ printOP1Denominate:
     call eraseEOLIfNeeded ; uses B
     call displayStackSetSmallFont
     ; format OP1/OP2
+    bcall(_PushRpnObject1) ; FPS=[rpnDenominate]; HL=rpnDenominate
     ld de, fmtString
-    bcall(_FormatDenominate)
-    ; print string stored in OP3
+    bcall(_FormatDenominate) ; format into fmtString
+    bcall(_PopRpnObject1)
+    ; print string stored in fmtString
     ld hl, fmtString
     jp printSmallHLString
 

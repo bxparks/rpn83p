@@ -33,7 +33,6 @@ FormatDenominate:
     ; Convert denominate into its display value
     pop hl ; stack=[]; HL=denominate
     push de ; stack=[dest]
-    call shrinkOp2ToOp1PageTwo ; close the 2-byte gap between OP1 and OP2
     call denominateToDisplayValue ; OP1=displayValue
     ; Format OP1
     ld a, 10 ; maximum width of output

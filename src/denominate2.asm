@@ -128,7 +128,7 @@ checkCompatibleUnitClass:
 
 ;-----------------------------------------------------------------------------
 
-; Description: Convert the Denominate object pointed by HL to a Real at DE
+; Description: Convert the Denominate object pointed by HL to a Real at OP1
 ; which is represented in terms of its 'targetUnit' instead of the normalized
 ; 'baseUnit'.
 ; Input: HL:Denominate=denominate
