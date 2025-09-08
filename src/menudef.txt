@@ -11,7 +11,6 @@
 #   program = menuconfig menugroup
 #   menuconfig = 'MenuConfig' '[' config* ']'
 #   config = 'ItemName' value
-#     | 'ItemNameId' value
 #     | 'ItemHandler' value
 #     | 'GroupHandler' value
 #   menugroup =  'MenuGroup' groupname grouplabel [handler] '[' menurow* ']'
@@ -44,7 +43,7 @@
 #   - itemaltname: alternative name for the menu item
 #   - label: identifier for the node data in the assembly code, also used as
 #       prefix for other identifiers (e.g. if the label="mNum", there will be
-#       other identifiers such as "mNumId", "mNumNameId").
+#       other identifiers such as "mNumId", "mNumName").
 #   - fonttag: a symbol from the TI-OS Small Font table, e.g. '<Sdegree>'
 #   - MenuRow: always has 5 menu nodes
 #   - MenuGroup: supports an optional 3rd argument `handler` that overrides
@@ -53,7 +52,6 @@
 # Define the defaults for blank menu items and menu groups.
 MenuConfig [
   ItemName mNullName
-  ItemNameId mNullNameId
   ItemHandler mNullHandler
   GroupHandler mGroupHandler
 ]

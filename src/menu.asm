@@ -21,11 +21,11 @@
 ; struct MenuNode {
 ;   uint16_t id; // root begins with 1
 ;   uint16_t parentId; // 0 indicates NONE
-;   uint16_t nameId; // index into NameTable
+;   uint16_t name; // pointer to C-string in the Name string pool
 ;   uint8_t numRows; // 0 if MenuItem; >=1 if MenuGroup
 ;   union {
 ;       uint16_t rowBeginId; // nodeId of the first node of first menu row
-;       uint16_t altNameId; // alternate name string (if nameSelector!=NULL)
+;       uint16_t altName; // alternate name string (if nameSelector!=NULL)
 ;   }
 ;   void *handler; // pointer to the handler function
 ;   void *nameSelector; // function that selects between 2 menu names
@@ -39,10 +39,10 @@
 ; register after calling findMenuNodeIX().
 menuNodeFieldId equ 0
 menuNodeFieldParentId equ 2
-menuNodeFieldNameId equ 4
+menuNodeFieldName equ 4
 menuNodeFieldNumRows equ 6
 menuNodeFieldRowBeginId equ 7
-menuNodeFieldAltNameId equ 7
+menuNodeFieldAltName equ 7
 menuNodeFieldHandler equ 9
 menuNodeFieldNameSelector equ 11
 
@@ -52,19 +52,18 @@ menuNodeFieldNameSelector equ 11
 ;-----------------------------------------------------------------------------
 
 ; Description: Return the pointer to the name string of the menu node at HL.
-; If MenuNode.nameSelector is 0, then the display name is simply the nameId.
-; But if the MenuNode.nameSelector is not 0, then it is a pointer to a function
-; that returns the display name.
+; If MenuNode.nameSelector is 0, then the display name is simply the normal
+; 'name'. But if the MenuNode.nameSelector is not 0, then it is a pointer to a
+; function. Calling that function returns the result inthe  CF:
 ;
 ; The input to the nameSelector() function is:
 ;   - HL: pointer to MenuNode (in case it is needed)
 ; The output of the nameSelector() is:
-;   - CF=0 to select the normal name, CF=1 to select the alt name
+;   - CF=0 to select the normal name,
+;   - CF=1 to select the alt name
 ;
-; The name is selected according to the relevant internal state (e.g. DEG or
-; RAD). The nameSelector is allowed to modify BC, DE, since they are restored
-; before returning from this function. It is also allowed to modify HL since it
-; gets clobbered with string pointer before returning from this function.
+; The nameSelector() *must not* modify BC (altName), DE (normalName). But it
+; is allowed to modify A or HL.
 ;
 ; Input:
 ;   - HL:u16=menuId
@@ -84,7 +83,7 @@ getMenuName:
     ld a, l
     or h ; if HL==0: ZF=1
     jr z, getMenuNameSelectNormal
-    ; call nameSelector() to select the name string
+    ; Call nameSelector() to select the name string. Must NOT modify BC or DE.
     call jumpHL ; call nameSelector(); CF=1 if altName selected
     jr c, getMenuNameSelectAlt
 getMenuNameSelectNormal:
