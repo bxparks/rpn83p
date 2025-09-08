@@ -3631,7 +3631,7 @@ mSetClockId equ 386
 ;-----------------------------------------------------------------------------
 
 mNamesCount equ 326 ; number of names and altnames
-mNamesPoolSize equ 2771 ; size of names string pool
+mNamesPoolSize equ 2778 ; size of names string pool
 
 mNullName:
     .db 0
@@ -4230,7 +4230,7 @@ mUnitFahrenheitName:
 mUnitRankineName:
     .db Stemp, 'R', 0
 mUnitKelvinName:
-    .db "K", 0
+    .db Stemp, 'K', 0
 mUnitPascalName:
     .db "Pa", 0
 mUnitHectoPascalName:

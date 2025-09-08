@@ -479,7 +479,7 @@ MenuGroup root mRoot [
             MenuItem <Stemp>C mUnitCelsius
             MenuItem <Stemp>F mUnitFahrenheit
             MenuItem <Stemp>R mUnitRankine
-            MenuItem K mUnitKelvin
+            MenuItem <Stemp>K mUnitKelvin # add <Stemp> to 'K' for visual hint
           ]
         ]
       ]

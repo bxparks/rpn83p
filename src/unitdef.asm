@@ -621,7 +621,7 @@ unitLitersPerHundredKiloMetersId equ 96
 ;-----------------------------------------------------------------------------
 
 unitNamesCount equ 97 ; number of unit names
-unitNamesPoolSize equ 595 ; size of unit names string pool
+unitNamesPoolSize equ 602 ; size of unit names string pool
 
 unitAngstromName:
     .db "angst", 0
@@ -766,7 +766,7 @@ unitFahrenheitName:
 unitRankineName:
     .db Stemp, 'R', 0
 unitKelvinName:
-    .db "K", 0
+    .db Stemp, 'K', 0
 unitMilliPascalName:
     .db "mPa", 0
 unitPascalName:
