@@ -47,8 +47,8 @@ ColdInitMenu:
 SanitizeMenu:
     ; Check valid menuId.
     ld hl, (currentMenuGroupId)
-    ld de, mMenuTableSize
-    call cpHLDEPageOne ; CF=0 if currentMenuGroupId>=mMenuTableSize
+    ld de, mMenuTableCount
+    call cpHLDEPageOne ; CF=0 if currentMenuGroupId>=mMenuTableCount
     jr nc, sanitizeMenuReset
     ; Check for MenuGroup.
     call findMenuNodeIX ; IX=menuNode

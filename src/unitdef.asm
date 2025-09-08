@@ -11,8 +11,10 @@
 ;-----------------------------------------------------------------------------
 
 ;-----------------------------------------------------------------------------
-; List of UnitClasses
+; List of unit classes.
 ;-----------------------------------------------------------------------------
+
+unitClassesCount equ 9 ; number of unit classes
 
 unitClassLength equ 0
 unitClassArea equ 1
@@ -25,11 +27,11 @@ unitClassPower equ 7
 unitClassFuel equ 8
 
 ;-----------------------------------------------------------------------------
-; List of Units
+; List of units.
 ;-----------------------------------------------------------------------------
 
+unitsCount equ 97 ; number of units
 unitInfoTable:
-unitInfoTableSize equ 97
 
 unitAngstromInfo:
 unitAngstromId equ 0
@@ -615,8 +617,11 @@ unitLitersPerHundredKiloMetersId equ 96
     .db $00, $80, $10, $00, $00, $00, $00, $00, $00 ; scale=1
 
 ;-----------------------------------------------------------------------------
-; Unit names.
+; List of unit names.
 ;-----------------------------------------------------------------------------
+
+unitNamesCount equ 97 ; number of unit names
+unitNamesPoolSize equ 595 ; size of unit names string pool
 
 unitAngstromName:
     .db "angst", 0

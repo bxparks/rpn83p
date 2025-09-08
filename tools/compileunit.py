@@ -531,10 +531,13 @@ class CodeGenerator:
         self.generate_names()
 
     def generate_unit_classes(self) -> None:
-        print("""\
+        unit_classes_count = len(self.unit_classes)
+        print(f"""\
 ;-----------------------------------------------------------------------------
-; List of UnitClasses
+; List of unit classes.
 ;-----------------------------------------------------------------------------
+
+unitClassesCount equ {unit_classes_count} ; number of unit classes
 
 """, file=self.output, end='')
 
@@ -544,15 +547,15 @@ class CodeGenerator:
             print(f"unitClass{label} equ {id}", file=self.output)
 
     def generate_units(self) -> None:
-        unit_list_len = len(self.units)
+        units_count = len(self.units)
         print(f"""\
 
 ;-----------------------------------------------------------------------------
-; List of Units
+; List of units.
 ;-----------------------------------------------------------------------------
 
+unitsCount equ {units_count} ; number of units
 unitInfoTable:
-unitInfoTableSize equ {unit_list_len}
 
 """, file=self.output, end='')
 
@@ -574,11 +577,22 @@ unit{label}Id equ {id}
 """, file=self.output, end='')
 
     def generate_names(self) -> None:
-        print("""\
+        unit_names_count = len(self.units)
+
+        # Calculate total size of string pool
+        unit_names_pool_size = 0
+        for unit in self.units:
+            name = unit['name']
+            unit_names_pool_size += len(name) + 1  # include NUL
+
+        print(f"""\
 
 ;-----------------------------------------------------------------------------
-; Unit names.
+; List of unit names.
 ;-----------------------------------------------------------------------------
+
+unitNamesCount equ {unit_names_count} ; number of unit names
+unitNamesPoolSize equ {unit_names_pool_size} ; size of unit names string pool
 
 """, file=self.output, end='')
 

@@ -11,19 +11,21 @@
 ;-----------------------------------------------------------------------------
 
 ;-----------------------------------------------------------------------------
-; List of UnitClasses
+; List of unit classes.
 ;-----------------------------------------------------------------------------
+
+unitClassesCount equ 3 ; number of unit classes
 
 unitClassLength equ 0
 unitClassArea equ 1
 unitClassVolume equ 2
 
 ;-----------------------------------------------------------------------------
-; List of Units
+; List of units.
 ;-----------------------------------------------------------------------------
 
+unitsCount equ 4 ; number of units
 unitInfoTable:
-unitInfoTableSize equ 4
 
 unitMeterInfo:
 unitMeterId equ 0
@@ -51,8 +53,11 @@ unitSqFeetId equ 3
     .db $00, $7E, $92, $90, $30, $40, $00, $00, $00 ; scale=0.09290304
 
 ;-----------------------------------------------------------------------------
-; Unit names.
+; List of unit names.
 ;-----------------------------------------------------------------------------
+
+unitNamesCount equ 4 ; number of unit names
+unitNamesPoolSize equ 42 ; size of unit names string pool
 
 unitMeterName:
     .db "meter", 0
