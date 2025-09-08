@@ -54,10 +54,6 @@ commonUnitHandler:
     push bc
     call closeInputAndRecallDenominateX ; A=rpnObjectType; OP1=X
     pop bc ; C=targetUnit
-    ; Check for valid Denominate
-    ld hl, OP1+rpnObjectTypeSizeOf ; HL=denominate
-    bcall(_ValidateDenominate) ; CF=1 if valid
-    ret nc ; do nothing if invalid
     ; Set up registers for ApplyUnit()
     call getOp1RpnObjectType ; A=rpnObjectType
     bcall(_ApplyUnit)

@@ -1712,10 +1712,6 @@ _RtcGetTimeZone equ _RtcGetTimeZoneLabel-branchTableBase
     .db 2
 
 ; denominate2.asm
-_ValidateDenominateLabel:
-_ValidateDenominate equ _ValidateDenominateLabel-branchTableBase
-    .dw ValidateDenominate
-    .db 2
 _ApplyUnitLabel:
 _ApplyUnit equ _ApplyUnitLabel-branchTableBase
     .dw ApplyUnit

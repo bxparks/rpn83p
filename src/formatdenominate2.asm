@@ -24,7 +24,7 @@
 FormatDenominate:
     skipRpnObjectTypeHL ; HL=denominate
     ; Check for error state
-    call ValidateDenominate ; CF=0 if invalid
+    call validateDenominate ; CF=0 if invalid
     jr nc, formatErrorDenominate
     ; Print the target unit name.
     push hl ; stack=[denominate]

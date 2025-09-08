@@ -15,7 +15,7 @@
 ; Output: CF=1 if valid; CF=0 if invalid
 ; Destroys: A
 ; Preserves: BC, DE, HL
-ValidateDenominate:
+validateDenominate:
     ld a, (hl) ; A=unitId
     cp unitsCount ; if unitId >= unitsCount: CF=0 else: CF=1
     ret
