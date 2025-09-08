@@ -516,10 +516,12 @@ MenuGroup root mRoot [
             MenuItem hp mUnitHorsepower
           ]
         ]
-      ]
-      MenuRow [
-        MenuItem <Sconvert>Lkm mMpgToLkm
-        MenuItem <Sconvert>mpg mLkmToMpg
+        MenuGroup FUEL mUnitFuel [
+          MenuRow [
+            MenuItem Lkm mUnitLitersPerHundredKiloMeters
+            MenuItem mpg mUnitMilesPerGallon
+          ]
+        ]
       ]
     ]
     MenuGroup DATE mDate [

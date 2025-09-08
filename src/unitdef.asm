@@ -29,7 +29,7 @@ unitClassMisc equ 8
 ;-----------------------------------------------------------------------------
 
 unitInfoTable:
-unitInfoTableSize equ 105
+unitInfoTableSize equ 107
 
 unitPicoMeterInfo:
 unitPicoMeterId equ 0
@@ -661,6 +661,18 @@ unitHorsepowerId equ 104
     .db unitClassPower ; unitClass
     .db unitWattId ; baseUnitId
     .db $00, $82, $74, $56, $99, $87, $15, $82, $27 ; scale=745.69987158227022
+unitMilesPerGallonInfo:
+unitMilesPerGallonId equ 105
+    .dw unitMilesPerGallonName ; name
+    .db unitClassMisc ; unitClass
+    .db unitLitersPerHundredKiloMetersId ; baseUnitId
+    .db $00, $80, $10, $00, $00, $00, $00, $00, $00 ; scale=1
+unitLitersPerHundredKiloMetersInfo:
+unitLitersPerHundredKiloMetersId equ 106
+    .dw unitLitersPerHundredKiloMetersName ; name
+    .db unitClassMisc ; unitClass
+    .db unitLitersPerHundredKiloMetersId ; baseUnitId
+    .db $00, $80, $10, $00, $00, $00, $00, $00, $00 ; scale=1
 
 ;-----------------------------------------------------------------------------
 ; Unit names.
@@ -876,3 +888,7 @@ unitWattName:
     .db "W", 0
 unitHorsepowerName:
     .db "hp", 0
+unitMilesPerGallonName:
+    .db "mpg", 0
+unitLitersPerHundredKiloMetersName:
+    .db 'L', Sslash, '1', '0', '0', 'k', 'm', 0

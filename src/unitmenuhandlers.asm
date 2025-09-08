@@ -500,29 +500,13 @@ mUnitHorsepowerHandler:
     jp commonUnitHandler
 
 ;-----------------------------------------------------------------------------
+; UNIT > FUEL > Row 1
 ;-----------------------------------------------------------------------------
 
-; Description: Convert mpg (miles per US gallon) to lkm (Liters per 100 km):
-; lkm = 100/[mpg * (km/mile) / (litre/gal)]
-mMpgToLkmHandler:
-    call closeInputAndRecallX
-    call op2SetKmPerMi
-    bcall(_FPMult)
-    call op2SetLPerGal
-    bcall(_FPDiv)
-    call op1ToOp2
-    call op1Set100
-    bcall(_FPDiv)
-    jp replaceX
+mUnitMilesPerGallonHandler:
+    ld a, unitMilesPerGallonId
+    jp commonUnitHandler
 
-; Description: Convert lkm to mpg: mpg = 100/lkm * (litre/gal) / (km/mile).
-mLkmToMpgHandler:
-    call closeInputAndRecallX
-    call op1ToOp2
-    call op1Set100
-    bcall(_FPDiv)
-    call op2SetLPerGal
-    bcall(_FPMult)
-    call op2SetKmPerMi
-    bcall(_FPDiv)
-    jp replaceX
+mUnitLitersPerHundredKiloMetersHandler:
+    ld a, unitLitersPerHundredKiloMetersId
+    jp commonUnitHandler

@@ -214,4 +214,11 @@ Units [
   #   = 550 ft*lbf/s * 0.3048 m/ft * 9.806 65 m/s^2 * 0.453 592 37 kg/lbs
   #   ~ 0.745 699 871 582 270 22 kW
   Unit Horsepower hp Power 745.69987158227022 Watt
+
+  #----------------------------------------------------------------------------
+  # Fuel Consumption
+  # Requires special handlers.
+  #----------------------------------------------------------------------------
+  Unit MilesPerGallon mpg Misc 1 LitersPerHundredKiloMeters
+  Unit LitersPerHundredKiloMeters L<Sslash>100km Misc 1 LitersPerHundredKiloMeters
 ]

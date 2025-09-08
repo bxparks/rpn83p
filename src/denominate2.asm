@@ -59,7 +59,7 @@ convertRealToRpnDenominate:
 ;   -OP1:Real=baseValue
 ; Destroys: all, OP1, OP2, OP3
 normalizeRealToBaseUnit:
-    ; Special cases for Temperature.
+    ; Special cases for temperature units.
     cp unitKelvinId
     ret z
     cp unitCelsiusId
@@ -68,6 +68,11 @@ normalizeRealToBaseUnit:
     jr z, temperatureFToK
     cp unitRankineId
     jr z, temperatureRToK
+    ; Special cases for fuel consumption units.
+    cp unitLitersPerHundredKiloMetersId
+    ret z
+    cp unitMilesPerGallonId
+    jp z, fuelMpgToLkm
     ; All other units can be normalized with a simple scaling factor.
     call op1ToOp2PageTwo ; OP2=value; A=A
     call GetUnitScale ; OP1=scale
@@ -130,7 +135,7 @@ denominateToDisplayValue:
     ld a, (hl) ; A=targetUnitId
     inc hl ; HL=value
     call move9ToOp1PageTwo ; OP1=value; preserves A
-    ; Special cases for Temperature.
+    ; Special cases for temperature units.
     cp unitKelvinId
     ret z
     cp unitCelsiusId
@@ -139,6 +144,11 @@ denominateToDisplayValue:
     jr z, temperatureKToF
     cp unitRankineId
     jr z, temperatureKToR
+    ; Special cases for fuel consumption units.
+    cp unitLitersPerHundredKiloMetersId
+    ret z
+    cp unitMilesPerGallonId
+    jr z, fuelLkmToMpg
     ; All other units can be converted with a simple scaling factor.
     call op1ToOp2PageTwo ; OP2=value; preserves A
     call GetUnitScale ; OP1=scale
@@ -147,9 +157,14 @@ denominateToDisplayValue:
     ret
 
 ;-----------------------------------------------------------------------------
+; Converters for special units which cannot be converted by simple scaling. For
+; example temperature units (C, F, R, K) and fuel consumption units (mpg,
+; L/100km).
+;-----------------------------------------------------------------------------
 
 ; Description: Convert OP1 from Celsius to Kelvin.
 ; K = C + 273.15
+; Input: OP1:Real=celsius
 temperatureCToK:
     ld hl, constCelsiusOffset
     call move9ToOp2PageTwo
@@ -158,6 +173,7 @@ temperatureCToK:
 
 ; Description: Convert OP1 from Kelvin to Celsius.
 ; C = K - 273.15
+; Input: OP1:Real=kelvin
 temperatureKToC:
     ld hl, constCelsiusOffset
     call move9ToOp2PageTwo
@@ -171,12 +187,14 @@ constCelsiusOffset: ; 273.15 K = 0 C
 
 ; Description: Convert OP1 from Fahrenheit to Kelvin.
 ; K = C + 273.15
+; Input: OP1:Real=fahrenheit
 temperatureFToK:
     call temperatureFToC
     jr temperatureCToK
 
 ; Description: Convert OP1 from Kelvin to Fahrenheit.
 ; C = K - 273.15
+; Input: OP1:Real=kelvin
 temperatureKToF:
     call temperatureKToC
     jr temperatureCToF
@@ -185,6 +203,7 @@ temperatureKToF:
 
 ; Description: Convert OP1 from Rankine to Kelvin.
 ; K = R * 5/9
+; Input: OP1:Real=rankine
 temperatureRToK:
     ld a, $18
     bcall(_OP2SetA) ; OP2 = 1.8
@@ -193,6 +212,7 @@ temperatureRToK:
 
 ; Description: Convert OP1 from Kelvin to Rankine.
 ; R = K * 9/5
+; Input: OP1:Real=kelvin
 temperatureKToR:
     ld a, $18
     bcall(_OP2SetA) ; OP2 = 1.8
@@ -203,6 +223,7 @@ temperatureKToR:
 
 ; Description: Convert OP1 from Celsius to Fahrenheit.
 ; F = C*9/5 + 32
+; Input: OP1:Real=celsius
 temperatureCToF:
     ld a, $18
     bcall(_OP2SetA) ; OP2 = 1.8
@@ -214,6 +235,7 @@ temperatureCToF:
 
 ; Description: Convert OP1 from Fahrenheit to Celsius.
 ; C = (F - 32) * 5/9
+; Input: OP1:Real=kelvin
 temperatureFToC:
     ld a, 32
     bcall(_SetXXOP2) ; OP2 = 32
@@ -222,3 +244,46 @@ temperatureFToC:
     bcall(_OP2SetA) ; OP2 = 1.8
     bcall(_FPDiv) ; OP1 = (X - 32) / 1.8
     ret
+
+;-----------------------------------------------------------------------------
+
+; Description: Convert miles per gallon (US) to liters per 100km (everywhere
+; else).
+;   Lkm = 100/[mpg * (km/mile) / (litre/gal)]
+; Input: OP1:Real=mpg
+fuelMpgToLkm:
+    call op2SetKmPerMi
+    bcall(_FPMult)
+    call op2SetLPerGal
+    bcall(_FPDiv)
+    call op1ToOp2PageTwo
+    call op1Set100PageTwo
+    bcall(_FPDiv)
+    ret
+
+; Description: Convert liters per 100km to mpg.
+;   mpg = 100/lkm * (litre/gal) / (km/mile).
+; Input: OP1:Real=Lkm
+fuelLkmToMpg:
+    call op1ToOp2PageTwo
+    call op1Set100PageTwo
+    bcall(_FPDiv)
+    call op2SetLPerGal
+    bcall(_FPMult)
+    call op2SetKmPerMi
+    bcall(_FPDiv)
+    ret
+
+op2SetKmPerMi:
+    ld hl, constKmPerMi
+    jp move9ToOp2PageTwo
+
+op2SetLPerGal:
+    ld hl, constLPerGal
+    jp move9ToOp2PageTwo
+
+constKmPerMi: ; 1.609344 km/mi, exact
+    .db $00, $80, $16, $09, $34, $40, $00, $00, $00
+
+constLPerGal: ; 3.785 411 784 L/gal, exact, gallon == 231 in^3
+    .db $00, $80, $37, $85, $41, $17, $84, $00, $00

@@ -116,22 +116,6 @@ op1SetMaxFloat:
 
 ;-----------------------------------------------------------------------------
 
-; Description: Set OP2 to KmPerMi.
-; Destroys: all, HL
-op2SetKmPerMi:
-    ld hl, constKmPerMi
-    jp move9ToOp2
-
-;-----------------------------------------------------------------------------
-
-; Description: Set OP2 to LPerGal.
-; Destroys: all, HL
-op2SetLPerGal:
-    ld hl, constLPerGal
-    jp move9ToOp2
-
-;-----------------------------------------------------------------------------
-
 constM1: ; -1
     .db $80, $80, $10, $00, $00, $00, $00, $00, $00
 
@@ -162,9 +146,3 @@ constEuler: ; 2.7182818284594(0452)
 ; parameters can be calculated, which is not as useful in some cases.
 constMaxFloat: ; 9.9999999999999E99
     .db $00, $E3, $99, $99, $99, $99, $99, $99, $99
-
-constKmPerMi: ; 1.609344 km/mi, exact
-    .db $00, $80, $16, $09, $34, $40, $00, $00, $00
-
-constLPerGal: ; 3.785 411 784 L/gal, exact, gallon == 231 in^3
-    .db $00, $80, $37, $85, $41, $17, $84, $00, $00
