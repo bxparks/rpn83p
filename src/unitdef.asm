@@ -343,48 +343,48 @@ unitGallonId equ 51
     .db unitClassVolume ; unitClass
     .db unitCuMeterId ; baseUnitId
     .db $00, $7D, $37, $85, $41, $17, $84, $00, $00 ; scale=3.785411784e-3
-unitOilBarrelInfo:
-unitOilBarrelId equ 52
-    .dw unitOilBarrelName ; name
-    .db unitClassVolume ; unitClass
-    .db unitCuMeterId ; baseUnitId
-    .db $00, $7F, $15, $89, $87, $29, $49, $28, $00 ; scale=1.58987294928e-1
 unitImpFluidOunceInfo:
-unitImpFluidOunceId equ 53
+unitImpFluidOunceId equ 52
     .dw unitImpFluidOunceName ; name
     .db unitClassVolume ; unitClass
     .db unitCuMeterId ; baseUnitId
     .db $00, $7B, $28, $41, $30, $62, $50, $00, $00 ; scale=2.84130625e-5
 unitImpGillInfo:
-unitImpGillId equ 54
+unitImpGillId equ 53
     .dw unitImpGillName ; name
     .db unitClassVolume ; unitClass
     .db unitCuMeterId ; baseUnitId
     .db $00, $7C, $14, $20, $65, $31, $25, $00, $00 ; scale=1.420653125e-4
 unitImpCupInfo:
-unitImpCupId equ 55
+unitImpCupId equ 54
     .dw unitImpCupName ; name
     .db unitClassVolume ; unitClass
     .db unitCuMeterId ; baseUnitId
     .db $00, $7C, $28, $41, $30, $62, $50, $00, $00 ; scale=2.84130625e-4
 unitImpPintInfo:
-unitImpPintId equ 56
+unitImpPintId equ 55
     .dw unitImpPintName ; name
     .db unitClassVolume ; unitClass
     .db unitCuMeterId ; baseUnitId
     .db $00, $7C, $56, $82, $61, $25, $00, $00, $00 ; scale=5.6826125e-4
 unitImpQuartInfo:
-unitImpQuartId equ 57
+unitImpQuartId equ 56
     .dw unitImpQuartName ; name
     .db unitClassVolume ; unitClass
     .db unitCuMeterId ; baseUnitId
     .db $00, $7D, $11, $36, $52, $25, $00, $00, $00 ; scale=1.1365225e-3
 unitImpGallonInfo:
-unitImpGallonId equ 58
+unitImpGallonId equ 57
     .dw unitImpGallonName ; name
     .db unitClassVolume ; unitClass
     .db unitCuMeterId ; baseUnitId
     .db $00, $7D, $45, $46, $09, $00, $00, $00, $00 ; scale=4.54609e-3
+unitOilBarrelInfo:
+unitOilBarrelId equ 58
+    .dw unitOilBarrelName ; name
+    .db unitClassVolume ; unitClass
+    .db unitCuMeterId ; baseUnitId
+    .db $00, $7F, $15, $89, $87, $29, $49, $28, $00 ; scale=1.58987294928e-1
 unitOlympicPoolInfo:
 unitOlympicPoolId equ 59
     .dw unitOlympicPoolName ; name
@@ -722,8 +722,6 @@ unitQuartName:
     .db "quart", 0
 unitGallonName:
     .db "gal", 0
-unitOilBarrelName:
-    .db "barrel", 0
 unitImpFluidOunceName:
     .db "impfloz", 0
 unitImpGillName:
@@ -736,6 +734,8 @@ unitImpQuartName:
     .db "impquart", 0
 unitImpGallonName:
     .db "impgal", 0
+unitOilBarrelName:
+    .db "barrel", 0
 unitOlympicPoolName:
     .db "olympool", 0
 unitAcreFootName:

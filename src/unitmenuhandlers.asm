@@ -315,6 +315,10 @@ mUnitAcreFootHandler:
     ld a, unitAcreFootId
     jp commonUnitHandler
 
+mUnitOlympicPoolHandler:
+    ld a, unitOlympicPoolId
+    jp commonUnitHandler
+
 ;-----------------------------------------------------------------------------
 ; UNIT > VOL > Imp > Row 1
 ;-----------------------------------------------------------------------------

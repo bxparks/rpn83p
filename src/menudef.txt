@@ -443,12 +443,8 @@ MenuGroup root mRoot [
                 MenuItem qt mUnitQuart
                 MenuItem gal mUnitGallon
               ]
-              MenuRow [
-                MenuItem bbl mUnitOilBarrel
-                MenuItem acft mUnitAcreFoot
-              ]
             ]
-            MenuGroup Imp mUnitVolImp [
+            MenuGroup IMP mUnitVolImp [
               MenuRow [
                 MenuItem floz mUnitImpFluidOunce
                 MenuItem gill mUnitImpGill
@@ -458,6 +454,13 @@ MenuGroup root mRoot [
                 MenuItem pint mUnitImpPint
                 MenuItem qt mUnitImpQuart
                 MenuItem gal mUnitImpGallon
+              ]
+            ]
+            MenuGroup MISC mUnitVolMisc [
+              MenuRow [
+                MenuItem bbl mUnitOilBarrel
+                MenuItem olmp mUnitOlympicPool
+                MenuItem acft mUnitAcreFoot
               ]
             ]
           ]

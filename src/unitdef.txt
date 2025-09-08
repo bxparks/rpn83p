@@ -115,9 +115,6 @@ Units [
   Unit Quart quart Volume 9.46352946e-4 CuMeter # 1/4 gal; qt
   Unit Gallon gal Volume 3.785411784e-3 CuMeter # 231 in^3 by defn
 
-  # https://en.wikipedia.org/wiki/Barrel_(unit)
-  Unit OilBarrel barrel Volume 1.58987294928e-1 CuMeter # 42USgal by defn; bbl
-
   # https://en.wikipedia.org/wiki/Imperial_units
   Unit ImpFluidOunce impfloz Volume 2.84130625e-5 CuMeter # *1/5* impgill
   Unit ImpGill impgill Volume 1.420653125e-4 CuMeter # 1/2 impcup
@@ -125,6 +122,9 @@ Units [
   Unit ImpPint imppint Volume 5.6826125e-4 CuMeter # 1/2 impquart
   Unit ImpQuart impquart Volume 1.1365225e-3 CuMeter # 1/4 impgal
   Unit ImpGallon impgal Volume 4.54609e-3 CuMeter # 4.54609L by defn
+
+  # https://en.wikipedia.org/wiki/Barrel_(unit)
+  Unit OilBarrel barrel Volume 1.58987294928e-1 CuMeter # 42USgal by defn; bbl
 
   # https://en.wikipedia.org/wiki/Olympic-size_swimming_pool
   # "at least 2m deep"

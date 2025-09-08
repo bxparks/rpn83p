@@ -2476,7 +2476,7 @@ mUnitVolUSId equ 263
     .dw mUnitVolUSId ; id
     .dw mUnitVolId ; parentId
     .dw mUnitVolUSNameId ; nameId
-    .db 3 ; numRows
+    .db 2 ; numRows
     .dw mUnitTeaspoonId ; rowBeginId or altNameId
     .dw mGroupHandler ; handler (predefined)
     .dw 0 ; nameSelector
@@ -2489,14 +2489,14 @@ mUnitVolImpId equ 264
     .dw mUnitImpFluidOunceId ; rowBeginId or altNameId
     .dw mGroupHandler ; handler (predefined)
     .dw 0 ; nameSelector
-mBlank265:
-mBlank265Id equ 265
-    .dw mBlank265Id ; id
+mUnitVolMisc:
+mUnitVolMiscId equ 265
+    .dw mUnitVolMiscId ; id
     .dw mUnitVolId ; parentId
-    .dw mNullNameId ; nameId
-    .db 0 ; numRows
-    .dw 0 ; rowBeginId or altNameId
-    .dw mNullHandler ; handler (predefined)
+    .dw mUnitVolMiscNameId ; nameId
+    .db 1 ; numRows
+    .dw mUnitOilBarrelId ; rowBeginId or altNameId
+    .dw mGroupHandler ; handler (predefined)
     .dw 0 ; nameSelector
 mBlank266:
 mBlank266Id equ 266
@@ -2647,56 +2647,10 @@ mBlank281Id equ 281
     .dw 0 ; rowBeginId or altNameId
     .dw mNullHandler ; handler (predefined)
     .dw 0 ; nameSelector
-; MenuGroup US: children: row 2
-mUnitOilBarrel:
-mUnitOilBarrelId equ 282
-    .dw mUnitOilBarrelId ; id
-    .dw mUnitVolUSId ; parentId
-    .dw mUnitOilBarrelNameId ; nameId
-    .db 0 ; numRows
-    .dw 0 ; rowBeginId or altNameId
-    .dw mUnitOilBarrelHandler ; handler (to be implemented)
-    .dw 0 ; nameSelector
-mUnitAcreFoot:
-mUnitAcreFootId equ 283
-    .dw mUnitAcreFootId ; id
-    .dw mUnitVolUSId ; parentId
-    .dw mUnitAcreFootNameId ; nameId
-    .db 0 ; numRows
-    .dw 0 ; rowBeginId or altNameId
-    .dw mUnitAcreFootHandler ; handler (to be implemented)
-    .dw 0 ; nameSelector
-mBlank284:
-mBlank284Id equ 284
-    .dw mBlank284Id ; id
-    .dw mUnitVolUSId ; parentId
-    .dw mNullNameId ; nameId
-    .db 0 ; numRows
-    .dw 0 ; rowBeginId or altNameId
-    .dw mNullHandler ; handler (predefined)
-    .dw 0 ; nameSelector
-mBlank285:
-mBlank285Id equ 285
-    .dw mBlank285Id ; id
-    .dw mUnitVolUSId ; parentId
-    .dw mNullNameId ; nameId
-    .db 0 ; numRows
-    .dw 0 ; rowBeginId or altNameId
-    .dw mNullHandler ; handler (predefined)
-    .dw 0 ; nameSelector
-mBlank286:
-mBlank286Id equ 286
-    .dw mBlank286Id ; id
-    .dw mUnitVolUSId ; parentId
-    .dw mNullNameId ; nameId
-    .db 0 ; numRows
-    .dw 0 ; rowBeginId or altNameId
-    .dw mNullHandler ; handler (predefined)
-    .dw 0 ; nameSelector
-; MenuGroup Imp: children
-; MenuGroup Imp: children: row 0
+; MenuGroup IMP: children
+; MenuGroup IMP: children: row 0
 mUnitImpFluidOunce:
-mUnitImpFluidOunceId equ 287
+mUnitImpFluidOunceId equ 282
     .dw mUnitImpFluidOunceId ; id
     .dw mUnitVolImpId ; parentId
     .dw mUnitImpFluidOunceNameId ; nameId
@@ -2705,7 +2659,7 @@ mUnitImpFluidOunceId equ 287
     .dw mUnitImpFluidOunceHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
 mUnitImpGill:
-mUnitImpGillId equ 288
+mUnitImpGillId equ 283
     .dw mUnitImpGillId ; id
     .dw mUnitVolImpId ; parentId
     .dw mUnitImpGillNameId ; nameId
@@ -2714,13 +2668,59 @@ mUnitImpGillId equ 288
     .dw mUnitImpGillHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
 mUnitImpCup:
-mUnitImpCupId equ 289
+mUnitImpCupId equ 284
     .dw mUnitImpCupId ; id
     .dw mUnitVolImpId ; parentId
     .dw mUnitImpCupNameId ; nameId
     .db 0 ; numRows
     .dw 0 ; rowBeginId or altNameId
     .dw mUnitImpCupHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
+mBlank285:
+mBlank285Id equ 285
+    .dw mBlank285Id ; id
+    .dw mUnitVolImpId ; parentId
+    .dw mNullNameId ; nameId
+    .db 0 ; numRows
+    .dw 0 ; rowBeginId or altNameId
+    .dw mNullHandler ; handler (predefined)
+    .dw 0 ; nameSelector
+mBlank286:
+mBlank286Id equ 286
+    .dw mBlank286Id ; id
+    .dw mUnitVolImpId ; parentId
+    .dw mNullNameId ; nameId
+    .db 0 ; numRows
+    .dw 0 ; rowBeginId or altNameId
+    .dw mNullHandler ; handler (predefined)
+    .dw 0 ; nameSelector
+; MenuGroup IMP: children: row 1
+mUnitImpPint:
+mUnitImpPintId equ 287
+    .dw mUnitImpPintId ; id
+    .dw mUnitVolImpId ; parentId
+    .dw mUnitImpPintNameId ; nameId
+    .db 0 ; numRows
+    .dw 0 ; rowBeginId or altNameId
+    .dw mUnitImpPintHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
+mUnitImpQuart:
+mUnitImpQuartId equ 288
+    .dw mUnitImpQuartId ; id
+    .dw mUnitVolImpId ; parentId
+    .dw mUnitImpQuartNameId ; nameId
+    .db 0 ; numRows
+    .dw 0 ; rowBeginId or altNameId
+    .dw mUnitImpQuartHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
+mUnitImpGallon:
+mUnitImpGallonId equ 289
+    .dw mUnitImpGallonId ; id
+    .dw mUnitVolImpId ; parentId
+    .dw mUnitImpGallonNameId ; nameId
+    .db 0 ; numRows
+    .dw 0 ; rowBeginId or altNameId
+    .dw mUnitImpGallonHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
 mBlank290:
 mBlank290Id equ 290
@@ -2740,38 +2740,39 @@ mBlank291Id equ 291
     .dw 0 ; rowBeginId or altNameId
     .dw mNullHandler ; handler (predefined)
     .dw 0 ; nameSelector
-; MenuGroup Imp: children: row 1
-mUnitImpPint:
-mUnitImpPintId equ 292
-    .dw mUnitImpPintId ; id
-    .dw mUnitVolImpId ; parentId
-    .dw mUnitImpPintNameId ; nameId
+; MenuGroup MISC: children
+; MenuGroup MISC: children: row 0
+mUnitOilBarrel:
+mUnitOilBarrelId equ 292
+    .dw mUnitOilBarrelId ; id
+    .dw mUnitVolMiscId ; parentId
+    .dw mUnitOilBarrelNameId ; nameId
     .db 0 ; numRows
     .dw 0 ; rowBeginId or altNameId
-    .dw mUnitImpPintHandler ; handler (to be implemented)
+    .dw mUnitOilBarrelHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
-mUnitImpQuart:
-mUnitImpQuartId equ 293
-    .dw mUnitImpQuartId ; id
-    .dw mUnitVolImpId ; parentId
-    .dw mUnitImpQuartNameId ; nameId
+mUnitOlympicPool:
+mUnitOlympicPoolId equ 293
+    .dw mUnitOlympicPoolId ; id
+    .dw mUnitVolMiscId ; parentId
+    .dw mUnitOlympicPoolNameId ; nameId
     .db 0 ; numRows
     .dw 0 ; rowBeginId or altNameId
-    .dw mUnitImpQuartHandler ; handler (to be implemented)
+    .dw mUnitOlympicPoolHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
-mUnitImpGallon:
-mUnitImpGallonId equ 294
-    .dw mUnitImpGallonId ; id
-    .dw mUnitVolImpId ; parentId
-    .dw mUnitImpGallonNameId ; nameId
+mUnitAcreFoot:
+mUnitAcreFootId equ 294
+    .dw mUnitAcreFootId ; id
+    .dw mUnitVolMiscId ; parentId
+    .dw mUnitAcreFootNameId ; nameId
     .db 0 ; numRows
     .dw 0 ; rowBeginId or altNameId
-    .dw mUnitImpGallonHandler ; handler (to be implemented)
+    .dw mUnitAcreFootHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
 mBlank295:
 mBlank295Id equ 295
     .dw mBlank295Id ; id
-    .dw mUnitVolImpId ; parentId
+    .dw mUnitVolMiscId ; parentId
     .dw mNullNameId ; nameId
     .db 0 ; numRows
     .dw 0 ; rowBeginId or altNameId
@@ -2780,7 +2781,7 @@ mBlank295Id equ 295
 mBlank296:
 mBlank296Id equ 296
     .dw mBlank296Id ; id
-    .dw mUnitVolImpId ; parentId
+    .dw mUnitVolMiscId ; parentId
     .dw mNullNameId ; nameId
     .db 0 ; numRows
     .dw 0 ; rowBeginId or altNameId
@@ -3626,7 +3627,7 @@ mSetClockId equ 386
     .dw 0 ; nameSelector
 
 ; Table of 2-byte pointers to names in the pool of strings below.
-mMenuNameTableSize equ 363
+mMenuNameTableSize equ 365
 mMenuNameTable:
 mNullNameId equ 0
     .dw mNullName
@@ -4164,195 +4165,199 @@ mUnitVolUSNameId equ 266
     .dw mUnitVolUSName
 mUnitVolImpNameId equ 267
     .dw mUnitVolImpName
-mUnitMicroLiterNameId equ 268
+mUnitVolMiscNameId equ 268
+    .dw mUnitVolMiscName
+mUnitMicroLiterNameId equ 269
     .dw mUnitMicroLiterName
-mUnitMilliLiterNameId equ 269
+mUnitMilliLiterNameId equ 270
     .dw mUnitMilliLiterName
-mUnitLiterNameId equ 270
+mUnitLiterNameId equ 271
     .dw mUnitLiterName
-mUnitTeaspoonNameId equ 271
+mUnitTeaspoonNameId equ 272
     .dw mUnitTeaspoonName
-mUnitTablespoonNameId equ 272
+mUnitTablespoonNameId equ 273
     .dw mUnitTablespoonName
-mUnitFluidOunceNameId equ 273
+mUnitFluidOunceNameId equ 274
     .dw mUnitFluidOunceName
-mUnitGillNameId equ 274
+mUnitGillNameId equ 275
     .dw mUnitGillName
-mUnitCupNameId equ 275
+mUnitCupNameId equ 276
     .dw mUnitCupName
-mUnitPintNameId equ 276
+mUnitPintNameId equ 277
     .dw mUnitPintName
-mUnitQuartNameId equ 277
+mUnitQuartNameId equ 278
     .dw mUnitQuartName
-mUnitGallonNameId equ 278
+mUnitGallonNameId equ 279
     .dw mUnitGallonName
-mUnitOilBarrelNameId equ 279
-    .dw mUnitOilBarrelName
-mUnitAcreFootNameId equ 280
-    .dw mUnitAcreFootName
-mUnitImpFluidOunceNameId equ 281
+mUnitImpFluidOunceNameId equ 280
     .dw mUnitImpFluidOunceName
-mUnitImpGillNameId equ 282
+mUnitImpGillNameId equ 281
     .dw mUnitImpGillName
-mUnitImpCupNameId equ 283
+mUnitImpCupNameId equ 282
     .dw mUnitImpCupName
-mUnitImpPintNameId equ 284
+mUnitImpPintNameId equ 283
     .dw mUnitImpPintName
-mUnitImpQuartNameId equ 285
+mUnitImpQuartNameId equ 284
     .dw mUnitImpQuartName
-mUnitImpGallonNameId equ 286
+mUnitImpGallonNameId equ 285
     .dw mUnitImpGallonName
-mUnitMicroGramNameId equ 287
+mUnitOilBarrelNameId equ 286
+    .dw mUnitOilBarrelName
+mUnitOlympicPoolNameId equ 287
+    .dw mUnitOlympicPoolName
+mUnitAcreFootNameId equ 288
+    .dw mUnitAcreFootName
+mUnitMicroGramNameId equ 289
     .dw mUnitMicroGramName
-mUnitMilliGramNameId equ 288
+mUnitMilliGramNameId equ 290
     .dw mUnitMilliGramName
-mUnitGramNameId equ 289
+mUnitGramNameId equ 291
     .dw mUnitGramName
-mUnitKiloGramNameId equ 290
+mUnitKiloGramNameId equ 292
     .dw mUnitKiloGramName
-mUnitOunceNameId equ 291
+mUnitOunceNameId equ 293
     .dw mUnitOunceName
-mUnitPoundNameId equ 292
+mUnitPoundNameId equ 294
     .dw mUnitPoundName
-mUnitTonNameId equ 293
+mUnitTonNameId equ 295
     .dw mUnitTonName
-mUnitCelsiusNameId equ 294
+mUnitCelsiusNameId equ 296
     .dw mUnitCelsiusName
-mUnitFahrenheitNameId equ 295
+mUnitFahrenheitNameId equ 297
     .dw mUnitFahrenheitName
-mUnitRankineNameId equ 296
+mUnitRankineNameId equ 298
     .dw mUnitRankineName
-mUnitKelvinNameId equ 297
+mUnitKelvinNameId equ 299
     .dw mUnitKelvinName
-mUnitPascalNameId equ 298
+mUnitPascalNameId equ 300
     .dw mUnitPascalName
-mUnitHectoPascalNameId equ 299
+mUnitHectoPascalNameId equ 301
     .dw mUnitHectoPascalName
-mUnitKiloPascalNameId equ 300
+mUnitKiloPascalNameId equ 302
     .dw mUnitKiloPascalName
-mUnitAtmosphereNameId equ 301
+mUnitAtmosphereNameId equ 303
     .dw mUnitAtmosphereName
-mUnitMilliBarNameId equ 302
+mUnitMilliBarNameId equ 304
     .dw mUnitMilliBarName
-mUnitDeciBarNameId equ 303
+mUnitDeciBarNameId equ 305
     .dw mUnitDeciBarName
-mUnitBarNameId equ 304
+mUnitBarNameId equ 306
     .dw mUnitBarName
-mUnitPoundSquareInchNameId equ 305
+mUnitPoundSquareInchNameId equ 307
     .dw mUnitPoundSquareInchName
-mUnitMilliMeterMercuryNameId equ 306
+mUnitMilliMeterMercuryNameId equ 308
     .dw mUnitMilliMeterMercuryName
-mUnitInchMercuryNameId equ 307
+mUnitInchMercuryNameId equ 309
     .dw mUnitInchMercuryName
-mUnitTorrNameId equ 308
+mUnitTorrNameId equ 310
     .dw mUnitTorrName
-mUnitJouleNameId equ 309
+mUnitJouleNameId equ 311
     .dw mUnitJouleName
-mUnitWattHourNameId equ 310
+mUnitWattHourNameId equ 312
     .dw mUnitWattHourName
-mUnitKiloWattHourNameId equ 311
+mUnitKiloWattHourNameId equ 313
     .dw mUnitKiloWattHourName
-mUnitCalorieNameId equ 312
+mUnitCalorieNameId equ 314
     .dw mUnitCalorieName
-mUnitKiloCalorieNameId equ 313
+mUnitKiloCalorieNameId equ 315
     .dw mUnitKiloCalorieName
-mUnitElectronVoltNameId equ 314
+mUnitElectronVoltNameId equ 316
     .dw mUnitElectronVoltName
-mUnitBritishThermalUnitNameId equ 315
+mUnitBritishThermalUnitNameId equ 317
     .dw mUnitBritishThermalUnitName
-mUnitTonTNTNameId equ 316
+mUnitTonTNTNameId equ 318
     .dw mUnitTonTNTName
-mUnitWattNameId equ 317
+mUnitWattNameId equ 319
     .dw mUnitWattName
-mUnitHorsepowerNameId equ 318
+mUnitHorsepowerNameId equ 320
     .dw mUnitHorsepowerName
-mUnitLitersPerHundredKiloMetersNameId equ 319
+mUnitLitersPerHundredKiloMetersNameId equ 321
     .dw mUnitLitersPerHundredKiloMetersName
-mUnitMilesPerGallonNameId equ 320
+mUnitMilesPerGallonNameId equ 322
     .dw mUnitMilesPerGallonName
-mLeapYearNameId equ 321
+mLeapYearNameId equ 323
     .dw mLeapYearName
-mDayOfWeekNameId equ 322
+mDayOfWeekNameId equ 324
     .dw mDayOfWeekName
-mDateToEpochDaysNameId equ 323
+mDateToEpochDaysNameId equ 325
     .dw mDateToEpochDaysName
-mEpochDaysToDateNameId equ 324
+mEpochDaysToDateNameId equ 326
     .dw mEpochDaysToDateName
-mDateRelatedToSecondsNameId equ 325
+mDateRelatedToSecondsNameId equ 327
     .dw mDateRelatedToSecondsName
-mSecondsToDurationNameId equ 326
+mSecondsToDurationNameId equ 328
     .dw mSecondsToDurationName
-mSecondsToTimeNameId equ 327
+mSecondsToTimeNameId equ 329
     .dw mSecondsToTimeName
-mEpochSecondsToAppDateTimeNameId equ 328
+mEpochSecondsToAppDateTimeNameId equ 330
     .dw mEpochSecondsToAppDateTimeName
-mEpochSecondsToUTCDateTimeNameId equ 329
+mEpochSecondsToUTCDateTimeNameId equ 331
     .dw mEpochSecondsToUTCDateTimeName
-mTimeZoneToHoursNameId equ 330
+mTimeZoneToHoursNameId equ 332
     .dw mTimeZoneToHoursName
-mHoursToTimeZoneNameId equ 331
+mHoursToTimeZoneNameId equ 333
     .dw mHoursToTimeZoneName
-mDopsNameId equ 332
+mDopsNameId equ 334
     .dw mDopsName
-mEpochNameId equ 333
+mEpochNameId equ 335
     .dw mEpochName
-mClkNameId equ 334
+mClkNameId equ 336
     .dw mClkName
-mDateShrinkNameId equ 335
+mDateShrinkNameId equ 337
     .dw mDateShrinkName
-mDateExtendNameId equ 336
+mDateExtendNameId equ 338
     .dw mDateExtendName
-mDateCutNameId equ 337
+mDateCutNameId equ 339
     .dw mDateCutName
-mDateLinkNameId equ 338
+mDateLinkNameId equ 340
     .dw mDateLinkName
-mEpochUnixNameId equ 339
+mEpochUnixNameId equ 341
     .dw mEpochUnixName
-mEpochUnixAltNameId equ 340
+mEpochUnixAltNameId equ 342
     .dw mEpochUnixAltName
-mEpochNtpNameId equ 341
+mEpochNtpNameId equ 343
     .dw mEpochNtpName
-mEpochNtpAltNameId equ 342
+mEpochNtpAltNameId equ 344
     .dw mEpochNtpAltName
-mEpochGpsNameId equ 343
+mEpochGpsNameId equ 345
     .dw mEpochGpsName
-mEpochGpsAltNameId equ 344
+mEpochGpsAltNameId equ 346
     .dw mEpochGpsAltName
-mEpochTiosNameId equ 345
+mEpochTiosNameId equ 347
     .dw mEpochTiosName
-mEpochTiosAltNameId equ 346
+mEpochTiosAltNameId equ 348
     .dw mEpochTiosAltName
-mEpochY2kNameId equ 347
+mEpochY2kNameId equ 349
     .dw mEpochY2kName
-mEpochY2kAltNameId equ 348
+mEpochY2kAltNameId equ 350
     .dw mEpochY2kAltName
-mEpochCustomNameId equ 349
+mEpochCustomNameId equ 351
     .dw mEpochCustomName
-mEpochCustomAltNameId equ 350
+mEpochCustomAltNameId equ 352
     .dw mEpochCustomAltName
-mEpochSetCustomNameId equ 351
+mEpochSetCustomNameId equ 353
     .dw mEpochSetCustomName
-mEpochGetCustomNameId equ 352
+mEpochGetCustomNameId equ 354
     .dw mEpochGetCustomName
-mGetNowNameId equ 353
+mGetNowNameId equ 355
     .dw mGetNowName
-mGetNowDateNameId equ 354
+mGetNowDateNameId equ 356
     .dw mGetNowDateName
-mGetNowTimeNameId equ 355
+mGetNowTimeNameId equ 357
     .dw mGetNowTimeName
-mGetNowAppDateTimeNameId equ 356
+mGetNowAppDateTimeNameId equ 358
     .dw mGetNowAppDateTimeName
-mGetNowUTCDateTimeNameId equ 357
+mGetNowUTCDateTimeNameId equ 359
     .dw mGetNowUTCDateTimeName
-mSetTimeZoneNameId equ 358
+mSetTimeZoneNameId equ 360
     .dw mSetTimeZoneName
-mGetTimeZoneNameId equ 359
+mGetTimeZoneNameId equ 361
     .dw mGetTimeZoneName
-mSetClockTimeZoneNameId equ 360
+mSetClockTimeZoneNameId equ 362
     .dw mSetClockTimeZoneName
-mGetClockTimeZoneNameId equ 361
+mGetClockTimeZoneNameId equ 363
     .dw mGetClockTimeZoneName
-mSetClockNameId equ 362
+mSetClockNameId equ 364
     .dw mSetClockName
 
 ; Table of names as NUL terminated C strings.
@@ -4891,7 +4896,9 @@ mUnitVolSIName:
 mUnitVolUSName:
     .db "US", 0
 mUnitVolImpName:
-    .db "Imp", 0
+    .db "IMP", 0
+mUnitVolMiscName:
+    .db "MISC", 0
 mUnitMicroLiterName:
     .db Smu, 'L', 0
 mUnitMilliLiterName:
@@ -4914,10 +4921,6 @@ mUnitQuartName:
     .db "qt", 0
 mUnitGallonName:
     .db "gal", 0
-mUnitOilBarrelName:
-    .db "bbl", 0
-mUnitAcreFootName:
-    .db "acft", 0
 mUnitImpFluidOunceName:
     .db "floz", 0
 mUnitImpGillName:
@@ -4930,6 +4933,12 @@ mUnitImpQuartName:
     .db "qt", 0
 mUnitImpGallonName:
     .db "gal", 0
+mUnitOilBarrelName:
+    .db "bbl", 0
+mUnitOlympicPoolName:
+    .db "olmp", 0
+mUnitAcreFootName:
+    .db "acft", 0
 mUnitMicroGramName:
     .db Smu, 'g', 0
 mUnitMilliGramName:
