@@ -22,7 +22,7 @@ unitClassTemperature equ 4
 unitClassPressure equ 5
 unitClassEnergy equ 6
 unitClassPower equ 7
-unitClassMisc equ 8
+unitClassFuel equ 8
 
 ;-----------------------------------------------------------------------------
 ; List of Units
@@ -598,13 +598,13 @@ unitHorsepowerId equ 93
 unitMilesPerGallonInfo:
 unitMilesPerGallonId equ 94
     .dw unitMilesPerGallonName ; name
-    .db unitClassMisc ; unitClass
+    .db unitClassFuel ; unitClass
     .db unitLitersPerHundredKiloMetersId ; baseUnitId
     .db $00, $80, $10, $00, $00, $00, $00, $00, $00 ; scale=1
 unitLitersPerHundredKiloMetersInfo:
 unitLitersPerHundredKiloMetersId equ 95
     .dw unitLitersPerHundredKiloMetersName ; name
-    .db unitClassMisc ; unitClass
+    .db unitClassFuel ; unitClass
     .db unitLitersPerHundredKiloMetersId ; baseUnitId
     .db $00, $80, $10, $00, $00, $00, $00, $00, $00 ; scale=1
 

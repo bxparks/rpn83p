@@ -30,13 +30,14 @@ UnitClasses [
   UnitClass Pressure
   UnitClass Energy
   UnitClass Power
-  UnitClass Misc # gas mileage
+  UnitClass Fuel # gas mileage
 ]
 
 Units [
   #----------------------------------------------------------------------------
   # Length
   #----------------------------------------------------------------------------
+
   Unit Angstrom angst Length 1e-10 Meter
   Unit NanoMeter nm Length 1e-9 Meter
   Unit MicroMeter <Smu>m Length 1e-6 Meter
