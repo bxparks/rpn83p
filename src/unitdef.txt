@@ -37,7 +37,6 @@ Units [
   #----------------------------------------------------------------------------
   # Length
   #----------------------------------------------------------------------------
-  Unit PicoMeter nm Length 1e-12 Meter
   Unit Angstrom angst Length 1e-10 Meter
   Unit NanoMeter nm Length 1e-9 Meter
   Unit MicroMeter <Smu>m Length 1e-6 Meter
@@ -45,9 +44,6 @@ Units [
   Unit CentiMeter cm Length 1e-2 Meter
   Unit Meter m Length 1 Meter
   Unit KiloMeter km Length 1e3 Meter
-  Unit MegaMeter Mm Length 1e6 Meter
-  Unit GigaMeter Gm Length 1e9 Meter
-  Unit TeraMeter Tm Length 1e12 Meter
 
   Unit Mil mil Length 0.0254e-3 Meter
   Unit Inch in Length 0.0254 Meter # by defn
@@ -102,7 +98,6 @@ Units [
   Unit MicroLiter <Smu>L Volume 1e-9 CuMeter
   Unit MilliLiter mL Volume 1e-6 CuMeter
   Unit Liter L Volume 1e-3 CuMeter
-  Unit KiloLiter kL Volume 1 CuMeter
 
   Unit Teaspoon tsp Volume 4.92892159375e-6 CuMeter # 1/3 tbsp
   Unit Tablespoon tbsp Volume 1.478676478125e-5 CuMeter # 1/2 floz
@@ -121,7 +116,9 @@ Units [
   Unit ImpQuart impquart Volume 1.1365225e-3 CuMeter # 1/4 impgal
   Unit ImpGallon impgal Volume 4.54609e-3 CuMeter # 4.54609L by defn
 
-  Unit OlympicPool olympool Volume 3750 CuMeter # 50m*25m*3m
+  # https://en.wikipedia.org/wiki/Olympic-size_swimming_pool
+  # "at least 2m deep"
+  Unit OlympicPool olympool Volume 2500 CuMeter # 50m*25m*2m
 
   #----------------------------------------------------------------------------
   # Mass
@@ -130,7 +127,6 @@ Units [
   Unit MilliGram <Smu>g Mass 1e-3 Gram
   Unit Gram g Mass 1 Gram
   Unit KiloGram kg Mass 1e3 Gram
-  Unit MegaGram Mg Mass 1e6 Gram
 
   Unit Ounce oz Mass 28.349523125 Gram # 1/16 lbs
   Unit Pound lbs Mass 453.59237 Gram # by defn
@@ -152,7 +148,6 @@ Units [
   Unit Pascal Pa Pressure 1 Pascal
   Unit HectoPascal hPa Pressure 1e2 Pascal
   Unit KiloPascal kPa Pressure 1e3 Pascal
-  Unit MegaPascal MPa Pressure 1e6 Pascal
 
   Unit MilliBar mbar Pressure 1e2 Pascal
   Unit DeciBar dbar Pressure 1e4 Pascal
@@ -173,7 +168,6 @@ Units [
 
   # See https://en.wikipedia.org/wiki/Torr
   # 1 Torr = 1/760 atm = 133.32236842105 Pa
-  Unit MilliTorr mTorr Pressure 133.32236842105e-3 Pascal
   Unit Torr Torr Pressure 133.32236842105 Pascal
 
   #----------------------------------------------------------------------------

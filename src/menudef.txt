@@ -420,7 +420,6 @@ MenuGroup root mRoot [
                 MenuItem <Smu>L mUnitMicroLiter
                 MenuItem mL mUnitMilliLiter
                 MenuItem L mUnitLiter
-                MenuItem kL mUnitKiloLiter
               ]
             ]
             MenuGroup US mUnitVolUS [
@@ -435,6 +434,7 @@ MenuGroup root mRoot [
                 MenuItem pint mUnitPint
                 MenuItem qt mUnitQuart
                 MenuItem gal mUnitGallon
+                MenuItem * *
                 MenuItem bbl mUnitOilBarrel
               ]
             ]
@@ -480,19 +480,17 @@ MenuGroup root mRoot [
             MenuItem Pa mUnitPascal
             MenuItem hPa mUnitHectoPascal
             MenuItem kPa mUnitKiloPascal
-            MenuItem MPa mUnitMegaPascal
+            MenuItem atm mUnitAtmosphere
           ]
           MenuRow [
             MenuItem mbar mUnitMilliBar
             MenuItem dbar mUnitDeciBar
             MenuItem bar mUnitBar
-            MenuItem atm mUnitAtmosphere
             MenuItem psi mUnitPoundSquareInch
           ]
           MenuRow [
             MenuItem mmH mUnitMilliMeterMercury
             MenuItem inHg mUnitInchMercury
-            MenuItem mTor mUnitMilliTorr
             MenuItem Torr mUnitTorr
           ]
         ]

@@ -247,10 +247,6 @@ mUnitLiterHandler:
     ld a, unitLiterId
     jp commonUnitHandler
 
-mUnitKiloLiterHandler:
-    ld a, unitKiloLiterId
-    jp commonUnitHandler
-
 ;-----------------------------------------------------------------------------
 ; UNIT > VOL > US > Row 1
 ;-----------------------------------------------------------------------------
@@ -399,8 +395,8 @@ mUnitKiloPascalHandler:
     ld a, unitKiloPascalId
     jp commonUnitHandler
 
-mUnitMegaPascalHandler:
-    ld a, unitMegaPascalId
+mUnitAtmosphereHandler:
+    ld a, unitAtmosphereId
     jp commonUnitHandler
 
 ;-----------------------------------------------------------------------------
@@ -419,10 +415,6 @@ mUnitBarHandler:
     ld a, unitBarId
     jp commonUnitHandler
 
-mUnitAtmosphereHandler:
-    ld a, unitAtmosphereId
-    jp commonUnitHandler
-
 mUnitPoundSquareInchHandler:
     ld a, unitPoundSquareInchId
     jp commonUnitHandler
@@ -437,10 +429,6 @@ mUnitMilliMeterMercuryHandler:
 
 mUnitInchMercuryHandler:
     ld a, unitInchMercuryId
-    jp commonUnitHandler
-
-mUnitMilliTorrHandler:
-    ld a, unitMilliTorrId
     jp commonUnitHandler
 
 mUnitTorrHandler:
