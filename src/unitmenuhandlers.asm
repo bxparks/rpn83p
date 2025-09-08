@@ -56,7 +56,7 @@ commonUnitHandler:
     call closeInputAndRecallDenominateX ; A=rpnObjectType; B=objectUnit
     pop de
     ld c, e ; C=targetUnit
-    bcall(_ConvertUnit)
+    bcall(_ApplyUnit)
     jp replaceX
 
 ;-----------------------------------------------------------------------------
@@ -248,7 +248,7 @@ mUnitCuNauticalMileHandler:
     jp commonUnitHandler
 
 ;-----------------------------------------------------------------------------
-; UNIT > VOL > SI > Row 1
+; UNIT > VOL > Row 3
 ;-----------------------------------------------------------------------------
 
 mUnitMicroLiterHandler:
@@ -320,7 +320,7 @@ mUnitOlympicPoolHandler:
     jp commonUnitHandler
 
 ;-----------------------------------------------------------------------------
-; UNIT > VOL > Imp > Row 1
+; UNIT > VOL > IMP > Row 1
 ;-----------------------------------------------------------------------------
 
 mUnitImpFluidOunceHandler:
@@ -336,7 +336,7 @@ mUnitImpCupHandler:
     jp commonUnitHandler
 
 ;-----------------------------------------------------------------------------
-; UNIT > VOL > Imp > Row 2
+; UNIT > VOL > IMP > Row 2
 ;-----------------------------------------------------------------------------
 
 mUnitImpPintHandler:

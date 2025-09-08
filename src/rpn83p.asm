@@ -1712,9 +1712,9 @@ _RtcGetTimeZone equ _RtcGetTimeZoneLabel-branchTableBase
     .db 2
 
 ; denominate2.asm
-_ConvertUnitLabel:
-_ConvertUnit equ _ConvertUnitLabel-branchTableBase
-    .dw ConvertUnit
+_ApplyUnitLabel:
+_ApplyUnit equ _ApplyUnitLabel-branchTableBase
+    .dw ApplyUnit
     .db 2
 
 ; formatdenominate2.asm

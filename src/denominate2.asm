@@ -10,7 +10,10 @@
 ; entry.
 ;-----------------------------------------------------------------------------
 
-; Description: Convert a Real or an RpnDenominate to the target unit.
+; Description: Apply the unit "function" to the given Real or an RpnDenominate.
+; 1) If the input is a Real, then convert it into an RpnDenominate with the
+; given targetUnitId.
+; 2) If the input is an RpnDenominate, then change its unit to the targetUnitId.
 ; Input:
 ;   - OP1/OP2:Real|RpnDenominate
 ;   - A:u8=rpnObjectType
@@ -19,7 +22,7 @@
 ; Output:
 ;   - OP1/OP2:RpnDenominate
 ; Destroys: all, OP1-OP3
-ConvertUnit:
+ApplyUnit:
     cp rpnObjectTypeReal
     jr z, convertRealToRpnDenominate
     cp rpnObjectTypeDenominate
