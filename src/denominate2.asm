@@ -105,15 +105,15 @@ normalizeRealToBaseUnit:
 ; Destroys: A, OP1
 ; Preserves: BC, DE, HL
 changeRpnDenominateUnit:
-    ld a, (OP1 + rpnDenominateFieldTargetUnit) ; A=unitId
+    ld a, (OP1 + rpnDenominateFieldDisplayUnit) ; A=oldDisplayUnitId
     cp c
     ret z ; source and target are same unit, do nothing
     ; Check that the unit conversion is allowed
-    ld b, a ; B=srcUnitId
+    ld b, a ; B=oldDisplayUnitId
     call checkCompatibleUnitClass
-    ; Clobber the new targetUnit
+    ; Clobber the oldDisplayUnitId with new targetUnitId
     ld a, c ; A=targetUnitId
-    ld (OP1 + rpnDenominateFieldTargetUnit), a ; unit=targetUnitId
+    ld (OP1 + rpnDenominateFieldDisplayUnit), a ; displayUnitId=targetUnitId
     ret
 
 ; Description: Check that the unitClasses of units in registers B and C are
@@ -140,12 +140,12 @@ checkCompatibleUnitClass:
 ;-----------------------------------------------------------------------------
 
 ; Description: Convert the normalized 'value' of the denominate pointed by HL
-; to the display value in units of its 'targetUnit'.
+; to the display value in units of its 'displayUnitId'.
 ; Input: HL:Denominate=denominate
 ; Output: OP1:Real=displayValue
 ; Destroys: all, OP1-OP4
 denominateToDisplayValue:
-    ld a, (hl) ; A=targetUnitId
+    ld a, (hl) ; A=displayUnitId
     inc hl ; HL=value
     call move9ToOp1PageTwo ; OP1=value; preserves A
     ; Special cases for temperature units.

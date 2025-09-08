@@ -48,12 +48,12 @@
 
 ; Description: Common handler for all UNIT menus.
 ; Input:
-;   - A:u8=targetUnit
+;   - A:u8=targetUnitId (identifying unit of the soft menu key)
 commonUnitHandler:
-    ld c, a ; C=targetUnit
+    ld c, a ; C=targetUnitId
     push bc
     call closeInputAndRecallDenominateX ; A=rpnObjectType; OP1=X
-    pop bc ; C=targetUnit
+    pop bc ; C=targetUnitId
     ; Set up registers for ApplyUnit()
     call getOp1RpnObjectType ; A=rpnObjectType
     bcall(_ApplyUnit)
