@@ -63,10 +63,6 @@ commonUnitHandler:
 ; UNIT > LENG > Row 1
 ;-----------------------------------------------------------------------------
 
-mUnitNanoMeterHandler:
-    ld a, unitNanoMeterId
-    jp commonUnitHandler
-
 mUnitMicroMeterHandler:
     ld a, unitMicroMeterId
     jp commonUnitHandler
@@ -81,6 +77,10 @@ mUnitCentiMeterHandler:
 
 mUnitMeterHandler:
     ld a, unitMeterId
+    jp commonUnitHandler
+
+mUnitKiloMeterHandler:
+    ld a, unitKiloMeterId
     jp commonUnitHandler
 
 ;-----------------------------------------------------------------------------
@@ -103,24 +103,8 @@ mUnitYardHandler:
     ld a, unitYardId
     jp commonUnitHandler
 
-mUnitFanthomHandler:
-    ld a, unitFanthomId
-    jp commonUnitHandler
-
-;-----------------------------------------------------------------------------
-; UNIT > LENG > Row 3
-;-----------------------------------------------------------------------------
-
-mUnitKiloMeterHandler:
-    ld a, unitKiloMeterId
-    jp commonUnitHandler
-
 mUnitMileHandler:
     ld a, unitMileId
-    jp commonUnitHandler
-
-mUnitNauticalMileHandler:
-    ld a, unitNauticalMileId
     jp commonUnitHandler
 
 ;-----------------------------------------------------------------------------
@@ -137,6 +121,54 @@ mUnitLightYearHandler:
 
 mUnitParsecHandler:
     ld a, unitParsecId
+    jp commonUnitHandler
+
+;-----------------------------------------------------------------------------
+; UNIT > LENG > NAUT > Row 1
+;-----------------------------------------------------------------------------
+
+mUnitFanthomHandler:
+    ld a, unitFanthomId
+    jp commonUnitHandler
+
+mUnitCableHandler:
+    ld a, unitCableId
+    jp commonUnitHandler
+
+mUnitNauticalMileHandler:
+    ld a, unitNauticalMileId
+    jp commonUnitHandler
+
+;-----------------------------------------------------------------------------
+; UNIT > LENG > SURV > Row 1
+;-----------------------------------------------------------------------------
+
+mUnitSurveyFootHandler:
+    ld a, unitSurveyFootId
+    jp commonUnitHandler
+
+mUnitRodHandler:
+    ld a, unitRodId
+    jp commonUnitHandler
+
+mUnitChainHandler:
+    ld a, unitChainId
+    jp commonUnitHandler
+
+mUnitFurlongHandler:
+    ld a, unitFurlongId
+    jp commonUnitHandler
+
+;-----------------------------------------------------------------------------
+; UNIT > LENG > SURV > Row 2
+;-----------------------------------------------------------------------------
+
+mUnitSurveyMileHandler:
+    ld a, unitSurveyMileId
+    jp commonUnitHandler
+
+mUnitLeagueHandler:
+    ld a, unitLeagueId
     jp commonUnitHandler
 
 ;-----------------------------------------------------------------------------

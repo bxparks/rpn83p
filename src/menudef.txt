@@ -358,29 +358,46 @@ MenuGroup root mRoot [
       MenuRow [
         MenuGroup LENG mUnitLengh [
           MenuRow [
-            MenuItem nm mUnitNanoMeter
+            # MenuItem nm mUnitNanoMeter
             MenuItem <Smu>m mUnitMicroMeter
             MenuItem mm mUnitMilliMeter
             MenuItem cm mUnitCentiMeter
             MenuItem m mUnitMeter
+            MenuItem km mUnitKiloMeter
           ]
           MenuRow [
             MenuItem mil mUnitMil
             MenuItem in mUnitInch
             MenuItem ft mUnitFoot
             MenuItem yd mUnitYard
-            MenuItem fthm mUnitFanthom
-          ]
-          MenuRow [
-            MenuItem km mUnitKiloMeter
             MenuItem mi mUnitMile
-            MenuItem nmi mUnitNauticalMile
-            MenuItem * *
+          ]
+          # More obscure length units in subfolders here
+          MenuRow [
             MenuGroup ASTR mAstronomy [
               MenuRow [
                 MenuItem AU mUnitAstronomicalUnit
                 MenuItem ly mUnitLightYear
                 MenuItem pc mUnitParsec
+              ]
+            ]
+            MenuGroup NAUT mNautical [
+              MenuRow [
+                MenuItem fthm mUnitFanthom
+                MenuItem cabl mUnitCable
+                MenuItem nmi mUnitNauticalMile
+              ]
+            ]
+            MenuGroup SURV mSurvey [
+              MenuRow [
+                MenuItem svft mUnitSurveyFoot
+                MenuItem rod mUnitRod
+                MenuItem chai mUnitChain
+                MenuItem frlg mUnitFurlong
+              ]
+              MenuRow [
+                MenuItem svmi mUnitSurveyMile
+                MenuItem leag mUnitLeague
               ]
             ]
           ]
