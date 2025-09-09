@@ -13,6 +13,16 @@
           caused `[1.32] [1.32] [HMS+]` to return `3.0360` instead of `3.04`.
         - Validate `mm` and `ss` fields of `hh.mmss` and throw `Err:Invalid` if
           greater than than 60.
+    - UNIT menu
+        - Reimplement the underlying architecture using a workflow similar to
+          the UNITS menu of the HP-19BII.
+            - Pressing a UNIT menu converts a Real number to a Denominate number
+              (a number with units).
+            - Pressing a subsequent UNIT menu converts that Denominate number
+              into the unit requested by the menu key.
+        - Increase number of supported units from 30 to 111.
+        - Reorganize UNIT menus across 9 sub MenuFolders : LENG, AREA, VOL,
+          MASS, TEMP, PRES, ENER, PWR, FUEL.
 - 1.0.0 (2024-07-19)
     - RPN83P is now out of beta!
     - Documentation

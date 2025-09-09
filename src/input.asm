@@ -195,3 +195,24 @@ closeInputAndRecallRpnDateRelatedX:
     cp rpnObjectTypeDuration
     ret z
     bcall(_ErrDataType)
+
+;-----------------------------------------------------------------------------
+
+; Close the input buffer, and recall real X or denominate X into OP1.
+; Output:
+;   - OP1=X
+;   - rpnFlagsTvmCalculate: cleared
+;   - A=rpnObjectType
+; Destroys: all, OP1, OP2, OP3, OP4, OP5
+closeInputAndRecallDenominateX:
+    call closeInput
+    res rpnFlagsTvmCalculate, (iy + rpnFlags)
+    call rclX ; A=objectType
+    ; Allow Real
+    cp rpnObjectTypeReal
+    ret z
+    ; Allow RpnDenominate
+    cp rpnObjectTypeDenominate
+    ret z
+    ; Unexpected type
+    bcall(_ErrDataType)

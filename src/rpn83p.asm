@@ -239,7 +239,7 @@ rpnObjectTypeOffsetSizeOf equ 4
 ; - struct OffsetDateTime{datetime:DateTime, offset:Offset}, 9 bytes
 ; - struct RpnOffsetDateTime{type:u8[2], offsetDateTime:OffsetDateTime},
 ;   11 bytes
-; The sizeof(RpnOffsetDateTime) is 10, which is greater than the 9 bytes of a
+; The sizeof(RpnOffsetDateTime) is 11, which is greater than the 9 bytes of a
 ; TI-OS floating point number. But OPx registers are 11 bytes long. We have
 ; to careful and use expandOp1ToOp2() and shrinkOp2ToOp1() when parsing or
 ; manipulating this object.
@@ -257,6 +257,21 @@ rpnObjectTypeDayOfWeekSizeOf equ 3
 ; - struct RpnDuration{type:u8[2], duration:Duration}, 7 bytes
 rpnObjectTypeDuration equ $26
 rpnObjectTypeDurationSizeOf equ 7
+
+; Denominate number (i.e. a number with units). The 'value' is represented
+; in terms of the 'baseUnit' of the 'displayUnit', which makes unit conversion
+; easy because we just need to update the 'displayUnit' field without changing
+; the 'value'. However, this means that the 'value' needs to be converted into
+; the 'displayUnit' for display purposes.
+; - struct Denominate{displayUnit:u8, value:float}, 10 bytes
+; - struct RpnDenominate{type:u8[2], denominate:Denominate}, 12 bytes
+rpnObjectTypeDenominate equ $27
+rpnObjectTypeDenominateSizeOf equ 12
+rpnDenominateFieldType equ 0
+rpnDenominateFieldDisplayUnit equ 2
+rpnDenominateFieldValue equ 3
+#define skipDenominateUnitHL inc hl
+#define skipDenominateUnitDE inc de
 
 ; An RpnObject is the union of all Rpn objects: RpnReal, RpnComplex, and so on.
 ; See the definition of 'struct RpnObject' in vars.asm. Its size is the
@@ -1696,6 +1711,24 @@ _RtcGetTimeZone equ _RtcGetTimeZoneLabel-branchTableBase
     .dw RtcGetTimeZone
     .db 2
 
+; denominate2.asm
+_ApplyUnitLabel:
+_ApplyUnit equ _ApplyUnitLabel-branchTableBase
+    .dw ApplyUnit
+    .db 2
+
+; formatdenominate2.asm
+_FormatDenominateLabel:
+_FormatDenominate equ _FormatDenominateLabel-branchTableBase
+    .dw FormatDenominate
+    .db 2
+
+; unit2.asm
+_GetUnitNameLabel:
+_GetUnitName equ _GetUnitNameLabel-branchTableBase
+    .dw GetUnitName
+    .db 2
+
 ; base2.asm
 _ColdInitBaseLabel:
 _ColdInitBase equ _ColdInitBaseLabel-branchTableBase
@@ -2009,6 +2042,7 @@ _DebugU32DEAsHex equ _DebugU32DEAsHexLabel-branchTableBase
 #include "tvmmenuhandlers.asm"
 #include "complexmenuhandlers.asm"
 #include "datemenuhandlers.asm"
+#include "unitmenuhandlers.asm"
 #include "common.asm"
 #include "memory.asm"
 #include "cstring.asm"
@@ -2088,6 +2122,12 @@ defpage(2)
 #include "zone2.asm"
 #include "rtc2.asm"
 #include "formatdate2.asm"
+;
+#include "denominate2.asm"
+#include "formatdenominate2.asm"
+#include "unitdef.asm"
+#include "unit2.asm"
+;
 #include "integer40.asm"
 #include "integerconv40.asm"
 #include "fps2.asm"

@@ -842,6 +842,9 @@ printOP1:
     cp rpnObjectTypeDuration
     jp z, printOP1DurationRecord
     ;
+    cp rpnObjectTypeDenominate
+    jp z, printOP1Denominate
+    ;
     ld hl, msgRpnObjectTypeUnknown
     jp printHLString
 
@@ -1211,6 +1214,27 @@ printOP1DurationRecord:
     bcall(_FormatDuration)
     ; print string stored in OP3
     pop hl ; HL=OP3
+    jp printSmallHLString
+
+;-----------------------------------------------------------------------------
+; RpnDenominate objects
+;-----------------------------------------------------------------------------
+
+; Description: Print the RpnDenominate object in OP1 using small font.
+; Input:
+;   - OP1/OP2:RpnDenominate
+;   - B=displayFontMask
+; Destroys: all, OP1-OP3, OP4-OP6 depending on length of string
+printOP1Denominate:
+    call eraseEOLIfNeeded ; uses B
+    call displayStackSetSmallFont
+    ; format OP1/OP2
+    bcall(_PushRpnObject1) ; FPS=[rpnDenominate]; HL=rpnDenominate
+    ld de, fmtString
+    bcall(_FormatDenominate) ; format into fmtString
+    bcall(_PopRpnObject1)
+    ; print string stored in fmtString
+    ld hl, fmtString
     jp printSmallHLString
 
 ;-----------------------------------------------------------------------------

@@ -22,5 +22,8 @@ rpn83p.lst: $(SRCS) Makefile rpn83p.8xk
 menudef.asm: menudef.txt ../tools/compilemenu.py
 	../tools/compilemenu.py -o $@ $<
 
+unitdef.asm: unitdef.txt ../tools/compileunit.py
+	../tools/compileunit.py -o $@ $<
+
 clean:
 	rm -f $(TARGETS)

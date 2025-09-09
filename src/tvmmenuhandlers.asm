@@ -2,9 +2,16 @@
 ; MIT License
 ; Copyright (c) 2023 Brian T. Park
 ;
-; TVM menu handlers. The equations and algorithms to calculate N, i, PV, PMT,
-; and FV as a function of the other 4 variables are described in detail in the
-; TVM.md document.
+; TVM menu handlers.
+;
+; Every handler is given the following input parameters:
+;   - HL:u16=menuId
+;   - CF:bool
+;       - 0 indicates 'onEnter' event into group
+;       - 1 indicates 'onExit' event from group
+;
+; The equations and algorithms to calculate N, i, PV, PMT, and FV as a function
+; of the other 4 variables are described in detail in the TVM.md document.
 ;
 ; The handling of rpnFlagsTvmCalculate is a bit tricky so let's write it down
 ; for posterity:

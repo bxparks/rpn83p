@@ -208,3 +208,36 @@ checkOp3DurationPageTwo:
     call getOp3RpnObjectTypePageTwo
     cp rpnObjectTypeDuration
     ret
+
+;-----------------------------------------------------------------------------
+; Denominate numbers
+;-----------------------------------------------------------------------------
+
+checkOp1DenominatePageTwo:
+    call getOp1RpnObjectTypePageTwo
+    cp rpnObjectTypeDenominate
+    ret
+
+checkOp3DenominatePageTwo:
+    call getOp3RpnObjectTypePageTwo
+    cp rpnObjectTypeDenominate
+    ret
+
+; Description: Set the memory in HL to be an RpnDenominate whose unit is given
+; by register A.
+; Input:
+;   - A:u8=unit
+; Output:
+;   - HL[objectType]=rpnObjectTypeDenominate
+;   - HL[unit]:u8=A
+;   - HL=HL+rpnObjectTypeSizeOf+rpnDenominateUnitSizeOf=value
+; Destroys: HL
+; Preserves: A, BC, DE
+setHLRpnDenominatePageTwo:
+    push af
+    ld a, rpnObjectTypeDenominate
+    call setHLRpnObjectTypePageTwo
+    pop af ; A=unit
+    ld (hl), a
+    inc hl
+    ret

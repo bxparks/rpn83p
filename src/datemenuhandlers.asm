@@ -2,7 +2,13 @@
 ; MIT License
 ; Copyright (c) 2024 Brian T. Park
 ;
-; Handlers for the DATE menus.
+; DATE menu handlers.
+;
+; Every handler is given the following input parameters:
+;   - HL:u16=menuId
+;   - CF:bool
+;       - 0 indicates 'onEnter' event into group
+;       - 1 indicates 'onExit' event from group
 ;-----------------------------------------------------------------------------
 
 ;-----------------------------------------------------------------------------

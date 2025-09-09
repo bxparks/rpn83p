@@ -11,7 +11,6 @@
 #   program = menuconfig menugroup
 #   menuconfig = 'MenuConfig' '[' config* ']'
 #   config = 'ItemName' value
-#     | 'ItemNameId' value
 #     | 'ItemHandler' value
 #     | 'GroupHandler' value
 #   menugroup =  'MenuGroup' groupname grouplabel [handler] '[' menurow* ']'
@@ -44,7 +43,7 @@
 #   - itemaltname: alternative name for the menu item
 #   - label: identifier for the node data in the assembly code, also used as
 #       prefix for other identifiers (e.g. if the label="mNum", there will be
-#       other identifiers such as "mNumId", "mNumNameId").
+#       other identifiers such as "mNumId", "mNumName").
 #   - fonttag: a symbol from the TI-OS Small Font table, e.g. '<Sdegree>'
 #   - MenuRow: always has 5 menu nodes
 #   - MenuGroup: supports an optional 3rd argument `handler` that overrides
@@ -53,7 +52,6 @@
 # Define the defaults for blank menu items and menu groups.
 MenuConfig [
   ItemName mNullName
-  ItemNameId mNullNameId
   ItemHandler mNullHandler
   GroupHandler mGroupHandler
 ]
@@ -358,60 +356,209 @@ MenuGroup root mRoot [
     ]
     MenuGroup UNIT mUnit [
       MenuRow [
-        MenuItem <Sconvert><Stemp>C mFToC
-        MenuItem <Sconvert><Stemp>F mCToF
-        MenuItem * *
-        MenuItem <Sconvert>hPa mInhgToHpa
-        MenuItem <Sconvert>iHg mHpaToInhg
+        MenuGroup LENG mUnitLengh [
+          MenuRow [
+            # MenuItem nm mUnitNanoMeter
+            MenuItem <Smu>m mUnitMicroMeter
+            MenuItem mm mUnitMilliMeter
+            MenuItem cm mUnitCentiMeter
+            MenuItem m mUnitMeter
+            MenuItem km mUnitKiloMeter
+          ]
+          MenuRow [
+            MenuItem mil mUnitMil
+            MenuItem in mUnitInch
+            MenuItem ft mUnitFoot
+            MenuItem yd mUnitYard
+            MenuItem mi mUnitMile
+          ]
+          # More obscure length units in subfolders here
+          MenuRow [
+            MenuGroup ASTR mAstronomy [
+              MenuRow [
+                MenuItem AU mUnitAstronomicalUnit
+                MenuItem ly mUnitLightYear
+                MenuItem pc mUnitParsec
+              ]
+            ]
+            MenuGroup NAUT mNautical [
+              MenuRow [
+                MenuItem fthm mUnitFanthom
+                MenuItem cabl mUnitCable
+                MenuItem nmi mUnitNauticalMile
+              ]
+            ]
+            MenuGroup SURV mSurvey [
+              MenuRow [
+                MenuItem svft mUnitSurveyFoot
+                MenuItem rod mUnitRod
+                MenuItem chai mUnitChain
+                MenuItem frlg mUnitFurlong
+              ]
+              MenuRow [
+                MenuItem svmi mUnitSurveyMile
+                MenuItem leag mUnitLeague
+              ]
+            ]
+          ]
+        ]
+        MenuGroup AREA mUnitArea [
+          MenuRow [
+            MenuItem mm<Sarea> mUnitSqMilliMeter
+            MenuItem cm<Sarea> mUnitSqCentiMeter
+            MenuItem m<Sarea> mUnitSqMeter
+            MenuItem km<Sarea> mUnitSqKiloMeter
+          ]
+          MenuRow [
+            MenuItem in<Sarea> mUnitSqInch
+            MenuItem ft<Sarea> mUnitSqFoot
+            MenuItem yd<Sarea> mUnitSqYard
+            MenuItem mi<Sarea> mUnitSqMile
+            MenuItem nmi<Sarea> mUnitSqNauticalMile
+          ]
+          MenuRow [
+            MenuItem acre mUnitAcre
+            MenuItem ha mUnitHectare
+            MenuItem usfb mUnitUSFootball
+            MenuItem cafb mUnitCAFootball
+          ]
+        ]
+        MenuGroup VOL mUnitVol [
+          MenuRow [
+            MenuItem mm<Scube> mUnitCuMilliMeter
+            MenuItem cm<Scube> mUnitCuCentiMeter
+            MenuItem m<Scube> mUnitCuMeter
+            MenuItem km<Scube> mUnitCuKiloMeter
+          ]
+          MenuRow [
+            MenuItem in<Scube> mUnitCuInch
+            MenuItem ft<Scube> mUnitCuFoot
+            MenuItem yd<Scube> mUnitCuYard
+            MenuItem mi<Scube> mUnitCuMile
+            MenuItem nmi<Scube> mUnitCuNauticalMile
+          ]
+          MenuRow [
+            MenuItem <Smu>L mUnitMicroLiter
+            MenuItem mL mUnitMilliLiter
+            MenuItem L mUnitLiter
+          ]
+          MenuRow [
+            MenuGroup US mUnitVolUS [
+              MenuRow [
+                MenuItem tsp mUnitTeaspoon
+                MenuItem tbsp mUnitTablespoon
+                MenuItem floz mUnitFluidOunce
+                MenuItem gill mUnitGill
+                MenuItem cup mUnitCup
+              ]
+              MenuRow [
+                MenuItem pint mUnitPint
+                MenuItem qt mUnitQuart
+                MenuItem gal mUnitGallon
+              ]
+            ]
+            MenuGroup IMP mUnitVolImp [
+              MenuRow [
+                MenuItem floz mUnitImpFluidOunce
+                MenuItem gill mUnitImpGill
+                MenuItem cup mUnitImpCup
+                MenuItem pint mUnitImpPint
+                MenuItem qt mUnitImpQuart
+              ]
+              MenuRow [
+                MenuItem gal mUnitImpGallon
+              ]
+            ]
+            MenuGroup DRY mUnitVolDry [
+              MenuRow [
+                MenuItem drpt mUnitDryPint
+                MenuItem drqt mUnitDryQuart
+                MenuItem dgal mUnitDryGallon
+                MenuItem peck mUnitPeck
+                MenuItem bush mUnitBushel
+              ]
+              MenuRow [
+                MenuItem dbbl mUnitDryBarrel
+              ]
+            ]
+            MenuGroup MISC mUnitVolMisc [
+              MenuRow [
+                MenuItem bdft mUnitBoardFoot
+                MenuItem bbl mUnitOilBarrel
+                MenuItem olmp mUnitOlympicPool
+                MenuItem acft mUnitAcreFoot
+              ]
+            ]
+          ]
+        ]
+        MenuGroup MASS mUnitMass [
+          MenuRow [
+            MenuItem <Smu>g mUnitMicroGram
+            MenuItem mg mUnitMilliGram
+            MenuItem g mUnitGram
+            MenuItem kg mUnitKiloGram
+          ]
+          MenuRow [
+            MenuItem oz mUnitOunce
+            MenuItem lbs mUnitPound
+            MenuItem ton mUnitTon
+          ]
+        ]
+        MenuGroup TEMP mUnitTemp [
+          MenuRow [
+            MenuItem <Stemp>C mUnitCelsius
+            MenuItem <Stemp>F mUnitFahrenheit
+            MenuItem <Stemp>R mUnitRankine
+            MenuItem <Stemp>K mUnitKelvin # add <Stemp> to 'K' for visual hint
+          ]
+        ]
       ]
       MenuRow [
-        MenuItem <Sconvert>km mMiToKm
-        MenuItem <Sconvert>mi mKmToMi
-        MenuItem * *
-        MenuItem <Sconvert>m mFtToM
-        MenuItem <Sconvert>ft mMToFt
-      ]
-      MenuRow [
-        MenuItem <Sconvert>cm mInToCm
-        MenuItem <Sconvert>in mCmToIn
-        MenuItem * *
-        MenuItem <Sconvert><Smu>m mMilToMicron
-        MenuItem <Sconvert>mil mMicronToMil
-      ]
-      MenuRow [
-        MenuItem <Sconvert>kg mLbsToKg
-        MenuItem <Sconvert>lbs mKgToLbs
-        MenuItem * *
-        MenuItem <Sconvert>g mOzToG
-        MenuItem <Sconvert>oz mGToOz
-      ]
-      MenuRow [
-        MenuItem <Sconvert>L mGalToL
-        MenuItem <Sconvert>gal mLToGal
-        MenuItem * *
-        MenuItem <Sconvert>mL mFlozToMl
-        MenuItem <Sconvert>foz mMlToFloz
-      ]
-      MenuRow [
-        MenuItem <Sconvert>kJ mCalToKj
-        MenuItem <Sconvert>cal mKjToCal
-        MenuItem * *
-        MenuItem <Sconvert>kW mHpToKw
-        MenuItem <Sconvert>hp mKwToHp
-      ]
-      MenuRow [
-        MenuItem <Sconvert>Lkm mMpgToLkm
-        MenuItem <Sconvert>mpg mLkmToMpg
-        MenuItem * *
-        MenuItem <Sconvert>kPa mPsiToKpa
-        MenuItem <Sconvert>psi mKpaToPsi
-      ]
-      MenuRow [
-        MenuItem <Sconvert>ha mAcreToHectare
-        MenuItem <Sconvert>acr mHectareToAcre
-        MenuItem * *
-        MenuItem * *
-        MenuItem * *
+        MenuGroup PRES mUnitPressure [
+          MenuRow [
+            MenuItem Pa mUnitPascal
+            MenuItem hPa mUnitHectoPascal
+            MenuItem kPa mUnitKiloPascal
+            MenuItem atm mUnitAtmosphere
+          ]
+          MenuRow [
+            MenuItem mbar mUnitMilliBar
+            MenuItem dbar mUnitDeciBar
+            MenuItem bar mUnitBar
+            MenuItem psi mUnitPoundSquareInch
+          ]
+          MenuRow [
+            MenuItem mmH mUnitMilliMeterMercury
+            MenuItem inHg mUnitInchMercury
+            MenuItem Torr mUnitTorr
+          ]
+        ]
+        MenuGroup ENER mUnitEnergy [
+          MenuRow [
+            MenuItem J mUnitJoule
+            MenuItem Wh mUnitWattHour
+            MenuItem kWh mUnitKiloWattHour
+            MenuItem cal mUnitCalorie
+            MenuItem kcal mUnitKiloCalorie
+          ]
+          MenuRow [
+            MenuItem eV mUnitElectronVolt
+            MenuItem Btu mUnitBritishThermalUnit
+            MenuItem tTNT mUnitTonTNT
+          ]
+        ]
+        MenuGroup PWR mUnitPower [
+          MenuRow [
+            MenuItem W mUnitWatt
+            MenuItem hp mUnitHorsepower
+          ]
+        ]
+        MenuGroup FUEL mUnitFuel [
+          MenuRow [
+            MenuItem Lkm mUnitLitersPerHundredKiloMeters
+            MenuItem mpg mUnitMilesPerGallon
+          ]
+        ]
       ]
     ]
     MenuGroup DATE mDate [

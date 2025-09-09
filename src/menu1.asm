@@ -47,8 +47,8 @@ ColdInitMenu:
 SanitizeMenu:
     ; Check valid menuId.
     ld hl, (currentMenuGroupId)
-    ld de, mMenuTableSize
-    call cpHLDEPageOne ; CF=0 if currentMenuGroupId>=mMenuTableSize
+    ld de, mMenuTableCount
+    call cpHLDEPageOne ; CF=0 if currentMenuGroupId>=mMenuTableCount
     jr nc, sanitizeMenuReset
     ; Check for MenuGroup.
     call findMenuNodeIX ; IX=menuNode
@@ -153,7 +153,7 @@ getCurrentMenuArrowStatusCheckUp:
 ;   - (currentMenuRowIndex)
 ; Output:
 ;   - HL=u16=menuId
-; Destroys: DE, HL
+; Destroys: A, BC, DE, HL, IX
 GetMenuIdOfButton:
     ld e, a
     ld d, 0
@@ -172,8 +172,7 @@ GetMenuIdOfButton:
 ; Output:
 ;   - DE=rowBeginId=menuId of first item of row 0
 ;   - HL=rowMenuId=menuId of the first item of row 'rowIndex'
-; Destroys: A, DE, HL
-; Preserves: BC
+; Destroys: A, BC, DE, HL, IX
 GetCurrentMenuRowBeginId:
     ld hl, (currentMenuGroupId)
     ld a, (currentMenuRowIndex)
@@ -202,8 +201,7 @@ GetCurrentMenuGroupNumRows:
 ; Output:
 ;   - DE=rowBeginId=menuId of first item of row 0
 ;   - HL=rowMenuId=menuId of the first item of row 'rowIndex'
-; Destroys: A, DE, HL
-; Preserves: BC
+; Destroys: A, BC, DE, HL, IX
 getMenuRowBeginId:
     call findMenuNodeIX ; IX=menuNode
     ld e, (ix + menuNodeFieldRowBeginId)
@@ -243,12 +241,15 @@ GetMenuNodeRowBeginId:
 ;   - A=numRows (0 indicates MenuItem; >0 indicates MenuGroup)
 ;   - DE=handler
 ;   - IX=menuNode
-; Destroys: A, BC, DE, HL, IX
+; Destroys: A, BC, DE, IX
+; Preserves: HL
 GetMenuNodeHandler:
+    push hl
     call findMenuNodeIX ; IX:(MenuNode*)=menuNode
     ld a, (ix + menuNodeFieldNumRows) ; A=numRows
     ld e, (ix + menuNodeFieldHandler)
     ld d, (ix + menuNodeFieldHandler + 1) ; DE=handler
+    pop hl
     ret
 
 ;-----------------------------------------------------------------------------
@@ -334,16 +335,16 @@ ExtractMenuNames:
     push bc ; stack=[normalName,altName]
     call findMenuNodeIX ; IX=(MenuNode*)
     ; extract alt name
-    ld l, (ix + menuNodeFieldAltNameId)
-    ld h, (ix + menuNodeFieldAltNameId + 1)
-    pop de ; [normalName] ; DE=altName
+    ld l, (ix + menuNodeFieldAltName)
+    ld h, (ix + menuNodeFieldAltName + 1) ; *HL=altName
+    pop de ; stack=[normalName] ; DE=altName
     call extractMenuString ; (*DE)=altName
     ; select normal name
     ex de, hl ; HL=altName
-    ex (sp), hl ; stack=[altName] ; HL=normalName
+    ex (sp), hl ; stack=[altName] ; *HL=normalName
     ex de, hl ; DE=normalName
-    ld l, (ix + menuNodeFieldNameId)
-    ld h, (ix + menuNodeFieldNameId + 1)
+    ld l, (ix + menuNodeFieldName)
+    ld h, (ix + menuNodeFieldName + 1) ; HL=normalName
     call extractMenuString ; (*DE)=normalName
     ; nameSelector
     ld l, (ix + menuNodeFieldNameSelector)
@@ -355,9 +356,10 @@ ExtractMenuNames:
     ret
 
 ; Description: Copy the menu name identified by HL into the C-string buffer at
-; DE.
+; DE. Copy at most 6 bytes include NUL (NOTE: Why? I think it's because the
+; menu bar on the screen has space for only 5 characters in the small font.)
 ; Input:
-;   - HL=menuNameId
+;   - HL:(const char*)=menuName
 ;   - DE:(char*)=dest
 ; Output:
 ;   - (*DE)=destString updated
@@ -365,14 +367,8 @@ ExtractMenuNames:
 ; Preserves: BC, DE, HL
 extractMenuString:
     push bc ; stack=[BC]
-    push hl ; stack=[BC,menuNameId]
-    push de ; stack=[BC,menuNameId,dest]
-    ex de, hl ; DE=menuNameId
-    ld hl, mMenuNameTable
-    call getDEStringPageOne ; HL:(const char*)=name
-    ; Copy the name to DE
-    pop de ; stack=[BC,menuNameId]; DE=dest
-    push de ; stack=[BC,menuNameId,dest]
+    push hl ; stack=[BC,menuName]
+    push de ; stack=[BC,menuName,dest]
     ld b, 6 ; at most 6 bytes, including NUL terminator
 extractMenuStringLoop:
     ld a, (hl)
@@ -387,7 +383,7 @@ extractMenuStringLoop:
     xor a
     ld (de), a
 extractMenuStringEnd:
-    pop de ; stack=]BC,menunameId]; DE=dest restored
-    pop hl ; stack=[BC]; HL=menuNameId restored
+    pop de ; stack=]BC,menuName]; DE=dest restored
+    pop hl ; stack=[BC]; HL=menuName restored
     pop bc ; stack=[]; BC=restored
     ret

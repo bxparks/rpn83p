@@ -3,7 +3,6 @@
 # Define the defaults for blank menu items and menu groups.
 MenuConfig [
   ItemName mNullName
-  ItemNameId mNullNameId
   ItemHandler mNullHandler
   GroupHandler mGroupHandler
 ]

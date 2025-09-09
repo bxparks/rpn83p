@@ -1,0 +1,14 @@
+# A small sample of src/unitdef.txt for development and testing purposes.
+
+UnitClasses [
+  UnitClass Length
+  UnitClass Area
+  UnitClass Volume
+]
+
+Units [
+  Unit Meter meter Length 1.0 Meter
+  Unit Feet feet Length 0.3048 Meter
+  Unit SqMeter sq<Sspace>meter Area 1.0 SqMeter
+  Unit SqFeet sq<Sspace>feet Area 0.09290304 SqMeter # 0.3048*0.3048
+]
