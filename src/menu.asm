@@ -47,7 +47,7 @@ menuNodeFieldHandler equ 9
 menuNodeFieldNameSelector equ 11
 
 ;-----------------------------------------------------------------------------
-; These routines cannot be moved into menu1.asm because they invoke callback
+; These routines cannot be moved into menu3.asm because they invoke callback
 ; functions which are defined on Flash Page 0.
 ;-----------------------------------------------------------------------------
 

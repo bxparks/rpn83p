@@ -843,57 +843,6 @@ _ProcessHelpCommands equ _ProcessHelpCommandsLabel-branchTableBase
     .dw ProcessHelpCommands
     .db 1
 
-; menu1.asm
-_ColdInitMenuLabel:
-_ColdInitMenu equ _ColdInitMenuLabel-branchTableBase
-    .dw ColdInitMenu
-    .db 1
-_SanitizeMenuLabel:
-_SanitizeMenu equ _SanitizeMenuLabel-branchTableBase
-    .dw SanitizeMenu
-    .db 1
-_ClearJumpBackLabel:
-_ClearJumpBack equ _ClearJumpBackLabel-branchTableBase
-    .dw ClearJumpBack
-    .db 1
-_SaveJumpBackLabel:
-_SaveJumpBack equ _SaveJumpBackLabel-branchTableBase
-    .dw SaveJumpBack
-    .db 1
-_GetCurrentMenuArrowStatusLabel:
-_GetCurrentMenuArrowStatus equ _GetCurrentMenuArrowStatusLabel-branchTableBase
-    .dw GetCurrentMenuArrowStatus
-    .db 1
-_GetMenuIdOfButtonLabel:
-_GetMenuIdOfButton equ _GetMenuIdOfButtonLabel-branchTableBase
-    .dw GetMenuIdOfButton
-    .db 1
-_GetCurrentMenuRowBeginIdLabel:
-_GetCurrentMenuRowBeginId equ _GetCurrentMenuRowBeginIdLabel-branchTableBase
-    .dw GetCurrentMenuRowBeginId
-    .db 1
-_GetCurrentMenuGroupNumRowsLabel:
-_GetCurrentMenuGroupNumRows equ _GetCurrentMenuGroupNumRowsLabel-branchTableBase
-    .dw GetCurrentMenuGroupNumRows
-    .db 1
-;
-_ExtractMenuNamesLabel:
-_ExtractMenuNames equ _ExtractMenuNamesLabel-branchTableBase
-    .dw ExtractMenuNames
-    .db 1
-_GetMenuNodeHandlerLabel:
-_GetMenuNodeHandler equ _GetMenuNodeHandlerLabel-branchTableBase
-    .dw GetMenuNodeHandler
-    .db 1
-_GetMenuNodeParentLabel:
-_GetMenuNodeParent equ _GetMenuNodeParentLabel-branchTableBase
-    .dw GetMenuNodeParent
-    .db 1
-_GetMenuNodeRowBeginIdLabel:
-_GetMenuNodeRowBeginId equ _GetMenuNodeRowBeginIdLabel-branchTableBase
-    .dw GetMenuNodeRowBeginId
-    .db 1
-
 ; crc1.asm
 _Crc16ccittLabel:
 _Crc16ccitt equ _Crc16ccittLabel-branchTableBase
@@ -2031,6 +1980,57 @@ _PrintInputBuf equ _PrintInputBufLabel-branchTableBase
 ; Branch table entries on Flash Page 0 for routines on Flash Page 3.
 ;-----------------------------------------------------------------------------
 
+; menu3.asm
+_ColdInitMenuLabel:
+_ColdInitMenu equ _ColdInitMenuLabel-branchTableBase
+    .dw ColdInitMenu
+    .db 3
+_SanitizeMenuLabel:
+_SanitizeMenu equ _SanitizeMenuLabel-branchTableBase
+    .dw SanitizeMenu
+    .db 3
+_ClearJumpBackLabel:
+_ClearJumpBack equ _ClearJumpBackLabel-branchTableBase
+    .dw ClearJumpBack
+    .db 3
+_SaveJumpBackLabel:
+_SaveJumpBack equ _SaveJumpBackLabel-branchTableBase
+    .dw SaveJumpBack
+    .db 3
+_GetCurrentMenuArrowStatusLabel:
+_GetCurrentMenuArrowStatus equ _GetCurrentMenuArrowStatusLabel-branchTableBase
+    .dw GetCurrentMenuArrowStatus
+    .db 3
+_GetMenuIdOfButtonLabel:
+_GetMenuIdOfButton equ _GetMenuIdOfButtonLabel-branchTableBase
+    .dw GetMenuIdOfButton
+    .db 3
+_GetCurrentMenuRowBeginIdLabel:
+_GetCurrentMenuRowBeginId equ _GetCurrentMenuRowBeginIdLabel-branchTableBase
+    .dw GetCurrentMenuRowBeginId
+    .db 3
+_GetCurrentMenuGroupNumRowsLabel:
+_GetCurrentMenuGroupNumRows equ _GetCurrentMenuGroupNumRowsLabel-branchTableBase
+    .dw GetCurrentMenuGroupNumRows
+    .db 3
+;
+_ExtractMenuNamesLabel:
+_ExtractMenuNames equ _ExtractMenuNamesLabel-branchTableBase
+    .dw ExtractMenuNames
+    .db 3
+_GetMenuNodeHandlerLabel:
+_GetMenuNodeHandler equ _GetMenuNodeHandlerLabel-branchTableBase
+    .dw GetMenuNodeHandler
+    .db 3
+_GetMenuNodeParentLabel:
+_GetMenuNodeParent equ _GetMenuNodeParentLabel-branchTableBase
+    .dw GetMenuNodeParent
+    .db 3
+_GetMenuNodeRowBeginIdLabel:
+_GetMenuNodeRowBeginId equ _GetMenuNodeRowBeginIdLabel-branchTableBase
+    .dw GetMenuNodeRowBeginId
+    .db 3
+
 ;-----------------------------------------------------------------------------
 ; Source code for Flash Page 0
 ;-----------------------------------------------------------------------------
@@ -2081,8 +2081,6 @@ defpage(1)
 #include "osstate1.asm"
 #include "help1.asm"
 #include "helpscanner1.asm"
-#include "menu1.asm"
-#include "menudef.asm"
 #include "crc1.asm"
 #include "errorcode1.asm"
 #include "print1.asm"
@@ -2161,9 +2159,18 @@ defpage(2)
 #include "formatinteger32.asm"
 #include "integer32.asm"
 
-.end
+;-----------------------------------------------------------------------------
+; Source Code for Flash Page 3
+;-----------------------------------------------------------------------------
+
+defpage(3)
+
+#include "menu3.asm"
+#include "menudef.asm"
 
 ;-----------------------------------------------------------------------------
+
+.end
 
 ; Not sure if this needs to go before or after the `.end`.
 validate()

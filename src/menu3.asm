@@ -2,7 +2,8 @@
 ; MIT License
 ; Copyright (c) 2023 Brian T. Park
 ;
-; Routines to access the menudef.asm data structure in flash page 1.
+; Routines to access the menudef.asm data structure in flash page 3 (previously
+; on flash page 1).
 ;
 ; Capitalized labels are intended to be exported to the branch table on flash
 ; page 0. Lowercased labels are intended to be local to the current flash page.
