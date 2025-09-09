@@ -812,6 +812,11 @@ defpage(0, "RPN83P")
 ; statements, so we have to define the bcall() label *after* the XxxLabel
 ; label.
 branchTableBase equ $4000
+
+;-----------------------------------------------------------------------------
+; Branch table entries in Flash Page 0 for routines on Flash Page 1.
+;-----------------------------------------------------------------------------
+
 ; appstate1.asm
 _StoreAppStateLabel:
 _StoreAppState equ _StoreAppStateLabel-branchTableBase
@@ -836,57 +841,6 @@ _RestoreOSState equ _RestoreOSStateLabel-branchTableBase
 _ProcessHelpCommandsLabel:
 _ProcessHelpCommands equ _ProcessHelpCommandsLabel-branchTableBase
     .dw ProcessHelpCommands
-    .db 1
-
-; menu1.asm
-_ColdInitMenuLabel:
-_ColdInitMenu equ _ColdInitMenuLabel-branchTableBase
-    .dw ColdInitMenu
-    .db 1
-_SanitizeMenuLabel:
-_SanitizeMenu equ _SanitizeMenuLabel-branchTableBase
-    .dw SanitizeMenu
-    .db 1
-_ClearJumpBackLabel:
-_ClearJumpBack equ _ClearJumpBackLabel-branchTableBase
-    .dw ClearJumpBack
-    .db 1
-_SaveJumpBackLabel:
-_SaveJumpBack equ _SaveJumpBackLabel-branchTableBase
-    .dw SaveJumpBack
-    .db 1
-_GetCurrentMenuArrowStatusLabel:
-_GetCurrentMenuArrowStatus equ _GetCurrentMenuArrowStatusLabel-branchTableBase
-    .dw GetCurrentMenuArrowStatus
-    .db 1
-_GetMenuIdOfButtonLabel:
-_GetMenuIdOfButton equ _GetMenuIdOfButtonLabel-branchTableBase
-    .dw GetMenuIdOfButton
-    .db 1
-_GetCurrentMenuRowBeginIdLabel:
-_GetCurrentMenuRowBeginId equ _GetCurrentMenuRowBeginIdLabel-branchTableBase
-    .dw GetCurrentMenuRowBeginId
-    .db 1
-_GetCurrentMenuGroupNumRowsLabel:
-_GetCurrentMenuGroupNumRows equ _GetCurrentMenuGroupNumRowsLabel-branchTableBase
-    .dw GetCurrentMenuGroupNumRows
-    .db 1
-;
-_ExtractMenuNamesLabel:
-_ExtractMenuNames equ _ExtractMenuNamesLabel-branchTableBase
-    .dw ExtractMenuNames
-    .db 1
-_GetMenuNodeHandlerLabel:
-_GetMenuNodeHandler equ _GetMenuNodeHandlerLabel-branchTableBase
-    .dw GetMenuNodeHandler
-    .db 1
-_GetMenuNodeParentLabel:
-_GetMenuNodeParent equ _GetMenuNodeParentLabel-branchTableBase
-    .dw GetMenuNodeParent
-    .db 1
-_GetMenuNodeRowBeginIdLabel:
-_GetMenuNodeRowBeginId equ _GetMenuNodeRowBeginIdLabel-branchTableBase
-    .dw GetMenuNodeRowBeginId
     .db 1
 
 ; crc1.asm
@@ -1121,6 +1075,74 @@ _FormatComplexPolarDeg equ _FormatComplexPolarDegLabel-branchTableBase
     .dw FormatComplexPolarDeg
     .db 1
 
+;-----------------------------------------------------------------------------
+
+#ifdef DEBUG
+; debug1.asm
+_DebugInputBufLabel:
+_DebugInputBuf equ _DebugInputBufLabel-branchTableBase
+    .dw DebugInputBuf
+    .db 1
+_DebugParseBufLabel:
+_DebugParseBuf equ _DebugParseBufLabel-branchTableBase
+    .dw DebugParseBuf
+    .db 1
+_DebugStringLabel:
+_DebugString equ _DebugStringLabel-branchTableBase
+    .dw DebugString
+    .db 1
+_DebugPStringLabel:
+_DebugPString equ _DebugPStringLabel-branchTableBase
+    .dw DebugPString
+    .db 1
+_DebugClearLabel:
+_DebugClear equ _DebugClearLabel-branchTableBase
+    .dw DebugClear
+    .db 1
+_DebugOP1Label:
+_DebugOP1 equ _DebugOP1Label-branchTableBase
+    .dw DebugOP1
+    .db 1
+_DebugUnsignedALabel:
+_DebugUnsignedA equ _DebugUnsignedALabel-branchTableBase
+    .dw DebugUnsignedA
+    .db 1
+_DebugSignedALabel:
+_DebugSignedA equ _DebugSignedALabel-branchTableBase
+    .dw DebugSignedA
+    .db 1
+_DebugFlagsLabel:
+_DebugFlags equ _DebugFlagsLabel-branchTableBase
+    .dw DebugFlags
+    .db 1
+_DebugU32AsHexLabel:
+_DebugU32AsHex equ _DebugU32AsHexLabel-branchTableBase
+    .dw DebugU32AsHex
+    .db 1
+_DebugU40AsHexLabel:
+_DebugU40AsHex equ _DebugU40AsHexLabel-branchTableBase
+    .dw DebugU40AsHex
+    .db 1
+_DebugHLLabel:
+_DebugHL equ _DebugHLLabel-branchTableBase
+    .dw DebugHL
+    .db 1
+_DebugHLAsHexLabel:
+_DebugHLAsHex equ _DebugHLAsHexLabel-branchTableBase
+    .dw DebugHLAsHex
+    .db 1
+_DebugPauseLabel:
+_DebugPause equ _DebugPauseLabel-branchTableBase
+    .dw DebugPause
+    .db 1
+_DebugU32DEAsHexLabel:
+_DebugU32DEAsHex equ _DebugU32DEAsHexLabel-branchTableBase
+    .dw DebugU32DEAsHex
+    .db 1
+#endif
+
+;-----------------------------------------------------------------------------
+; Branch table entries on Flash Page 0 for routines on Flash Page 2.
 ;-----------------------------------------------------------------------------
 
 ; modes2.asm
@@ -1955,71 +1977,62 @@ _PrintInputBuf equ _PrintInputBufLabel-branchTableBase
     .db 2
 
 ;-----------------------------------------------------------------------------
+; Branch table entries on Flash Page 0 for routines on Flash Page 3.
+;-----------------------------------------------------------------------------
 
-#ifdef DEBUG
-; debug1.asm
-_DebugInputBufLabel:
-_DebugInputBuf equ _DebugInputBufLabel-branchTableBase
-    .dw DebugInputBuf
-    .db 1
-_DebugParseBufLabel:
-_DebugParseBuf equ _DebugParseBufLabel-branchTableBase
-    .dw DebugParseBuf
-    .db 1
-_DebugStringLabel:
-_DebugString equ _DebugStringLabel-branchTableBase
-    .dw DebugString
-    .db 1
-_DebugPStringLabel:
-_DebugPString equ _DebugPStringLabel-branchTableBase
-    .dw DebugPString
-    .db 1
-_DebugClearLabel:
-_DebugClear equ _DebugClearLabel-branchTableBase
-    .dw DebugClear
-    .db 1
-_DebugOP1Label:
-_DebugOP1 equ _DebugOP1Label-branchTableBase
-    .dw DebugOP1
-    .db 1
-_DebugUnsignedALabel:
-_DebugUnsignedA equ _DebugUnsignedALabel-branchTableBase
-    .dw DebugUnsignedA
-    .db 1
-_DebugSignedALabel:
-_DebugSignedA equ _DebugSignedALabel-branchTableBase
-    .dw DebugSignedA
-    .db 1
-_DebugFlagsLabel:
-_DebugFlags equ _DebugFlagsLabel-branchTableBase
-    .dw DebugFlags
-    .db 1
-_DebugU32AsHexLabel:
-_DebugU32AsHex equ _DebugU32AsHexLabel-branchTableBase
-    .dw DebugU32AsHex
-    .db 1
-_DebugU40AsHexLabel:
-_DebugU40AsHex equ _DebugU40AsHexLabel-branchTableBase
-    .dw DebugU40AsHex
-    .db 1
-_DebugHLLabel:
-_DebugHL equ _DebugHLLabel-branchTableBase
-    .dw DebugHL
-    .db 1
-_DebugHLAsHexLabel:
-_DebugHLAsHex equ _DebugHLAsHexLabel-branchTableBase
-    .dw DebugHLAsHex
-    .db 1
-_DebugPauseLabel:
-_DebugPause equ _DebugPauseLabel-branchTableBase
-    .dw DebugPause
-    .db 1
-_DebugU32DEAsHexLabel:
-_DebugU32DEAsHex equ _DebugU32DEAsHexLabel-branchTableBase
-    .dw DebugU32DEAsHex
-    .db 1
-#endif
+; menu3.asm
+_ColdInitMenuLabel:
+_ColdInitMenu equ _ColdInitMenuLabel-branchTableBase
+    .dw ColdInitMenu
+    .db 3
+_SanitizeMenuLabel:
+_SanitizeMenu equ _SanitizeMenuLabel-branchTableBase
+    .dw SanitizeMenu
+    .db 3
+_ClearJumpBackLabel:
+_ClearJumpBack equ _ClearJumpBackLabel-branchTableBase
+    .dw ClearJumpBack
+    .db 3
+_SaveJumpBackLabel:
+_SaveJumpBack equ _SaveJumpBackLabel-branchTableBase
+    .dw SaveJumpBack
+    .db 3
+_GetCurrentMenuArrowStatusLabel:
+_GetCurrentMenuArrowStatus equ _GetCurrentMenuArrowStatusLabel-branchTableBase
+    .dw GetCurrentMenuArrowStatus
+    .db 3
+_GetMenuIdOfButtonLabel:
+_GetMenuIdOfButton equ _GetMenuIdOfButtonLabel-branchTableBase
+    .dw GetMenuIdOfButton
+    .db 3
+_GetCurrentMenuRowBeginIdLabel:
+_GetCurrentMenuRowBeginId equ _GetCurrentMenuRowBeginIdLabel-branchTableBase
+    .dw GetCurrentMenuRowBeginId
+    .db 3
+_GetCurrentMenuGroupNumRowsLabel:
+_GetCurrentMenuGroupNumRows equ _GetCurrentMenuGroupNumRowsLabel-branchTableBase
+    .dw GetCurrentMenuGroupNumRows
+    .db 3
+;
+_ExtractMenuNamesLabel:
+_ExtractMenuNames equ _ExtractMenuNamesLabel-branchTableBase
+    .dw ExtractMenuNames
+    .db 3
+_GetMenuNodeHandlerLabel:
+_GetMenuNodeHandler equ _GetMenuNodeHandlerLabel-branchTableBase
+    .dw GetMenuNodeHandler
+    .db 3
+_GetMenuNodeParentLabel:
+_GetMenuNodeParent equ _GetMenuNodeParentLabel-branchTableBase
+    .dw GetMenuNodeParent
+    .db 3
+_GetMenuNodeRowBeginIdLabel:
+_GetMenuNodeRowBeginId equ _GetMenuNodeRowBeginIdLabel-branchTableBase
+    .dw GetMenuNodeRowBeginId
+    .db 3
 
+;-----------------------------------------------------------------------------
+; Source code for Flash Page 0
 ;-----------------------------------------------------------------------------
 
 #include "main.asm"
@@ -2059,7 +2072,7 @@ _DebugU32DEAsHex equ _DebugU32DEAsHexLabel-branchTableBase
 #include "format.asm"
 
 ;-----------------------------------------------------------------------------
-; Flash Page 1
+; Source code for Flash Page 1
 ;-----------------------------------------------------------------------------
 
 defpage(1)
@@ -2068,8 +2081,6 @@ defpage(1)
 #include "osstate1.asm"
 #include "help1.asm"
 #include "helpscanner1.asm"
-#include "menu1.asm"
-#include "menudef.asm"
 #include "crc1.asm"
 #include "errorcode1.asm"
 #include "print1.asm"
@@ -2099,7 +2110,7 @@ defpage(1)
 #endif
 
 ;-----------------------------------------------------------------------------
-; Flash Page 2
+; Source Code for Flash Page 2
 ;-----------------------------------------------------------------------------
 
 defpage(2)
@@ -2148,9 +2159,19 @@ defpage(2)
 #include "formatinteger32.asm"
 #include "integer32.asm"
 
-.end
+;-----------------------------------------------------------------------------
+; Source Code for Flash Page 3
+;-----------------------------------------------------------------------------
+
+defpage(3)
+
+#include "menu3.asm"
+#include "menudef.asm"
+#include "integer3.asm"
 
 ;-----------------------------------------------------------------------------
+
+.end
 
 ; Not sure if this needs to go before or after the `.end`.
 validate()

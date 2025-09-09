@@ -2,7 +2,8 @@
 ; MIT License
 ; Copyright (c) 2023 Brian T. Park
 ;
-; Routines to access the menudef.asm data structure in flash page 1.
+; Routines to access the menudef.asm data structure in flash page 3 (previously
+; on flash page 1).
 ;
 ; Capitalized labels are intended to be exported to the branch table on flash
 ; page 0. Lowercased labels are intended to be local to the current flash page.
@@ -48,7 +49,7 @@ SanitizeMenu:
     ; Check valid menuId.
     ld hl, (currentMenuGroupId)
     ld de, mMenuTableCount
-    call cpHLDEPageOne ; CF=0 if currentMenuGroupId>=mMenuTableCount
+    call cpHLDEPageThree ; CF=0 if currentMenuGroupId>=mMenuTableCount
     jr nc, sanitizeMenuReset
     ; Check for MenuGroup.
     call findMenuNodeIX ; IX=menuNode
