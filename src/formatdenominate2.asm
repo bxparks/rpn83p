@@ -64,9 +64,7 @@ formatErrorDenominate:
     ld (de), a
     inc de
     ; Extract the raw value without scaling.
-    push de
-    call denominateToRawValue ; OP1=rawValue
-    pop de
+    call denominateValueToOp1 ; OP1=rawValue
     jr formatDenominateFormatOP1
 
 unitErrorName:

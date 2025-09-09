@@ -21,6 +21,9 @@ validateDenominate:
     ret
 
 ;-----------------------------------------------------------------------------
+; Apply a Denominate Unit, converting a Real to an RpnDenominate to changing
+; the unit of an existing Denominate.
+;-----------------------------------------------------------------------------
 
 ; Description: Apply the unit "function" to the given Real or an RpnDenominate.
 ; 1) If the input is a Real, then convert it into an RpnDenominate with the
@@ -33,7 +36,7 @@ validateDenominate:
 ; Output:
 ;   - OP1/OP2:RpnDenominate
 ; Destroys: all, OP1-OP3
-ApplyUnit:
+ApplyUnit: ; TODO: Rename to ApplyRpnDenominateUnit
     cp rpnObjectTypeReal
     jr z, convertRealToRpnDenominate
     cp rpnObjectTypeDenominate
@@ -110,7 +113,7 @@ changeRpnDenominateUnit:
     ret z ; source and target are same unit, do nothing
     ; Check that the unit conversion is allowed
     ld b, a ; B=oldDisplayUnitId
-    call checkCompatibleUnitClass
+    call checkCompatibleUnitClass ; throws Err:Invalid if different unitClass
     ; Clobber the oldDisplayUnitId with new targetUnitId
     ld a, c ; A=targetUnitId
     ld (OP1 + rpnDenominateFieldDisplayUnit), a ; displayUnitId=targetUnitId
@@ -138,6 +141,8 @@ checkCompatibleUnitClass:
     bcall(_ErrInvalid)
 
 ;-----------------------------------------------------------------------------
+; Extracting the Denominate value in different ways.
+;-----------------------------------------------------------------------------
 
 ; Description: Convert the normalized 'value' of the denominate pointed by HL
 ; to the display value in units of its 'displayUnitId'.
@@ -152,11 +157,11 @@ denominateToDisplayValue:
     cp unitKelvinId
     ret z
     cp unitCelsiusId
-    jr z, temperatureKToC
+    jp z, temperatureKToC
     cp unitFahrenheitId
-    jr z, temperatureKToF
+    jp z, temperatureKToF
     cp unitRankineId
-    jr z, temperatureKToR
+    jp z, temperatureKToR
     ; Special cases for fuel consumption units.
     cp unitLitersPerHundredKiloMetersId
     ret z
@@ -169,14 +174,91 @@ denominateToDisplayValue:
     bcall(_FPDiv) ; OP1=displayValue=normalizedValue/scale
     ret
 
-; Description: Extract the raw (normalized) 'value' of the denominate pointed
-; by HL to OP1.
+;-----------------------------------------------------------------------------
+
+; Description: Extract the denominate 'value' of HL to OP1.
 ; Input: HL:Denominate=denominate
 ; Output: OP1:Real=rawValue
-; Destroys: all, OP1-OP4
-denominateToRawValue:
+; Preserves: all
+denominateValueToOp1:
+    push hl
+    push de
+    push bc
     inc hl ; HL=value
-    jp move9ToOp1PageTwo
+    call move9ToOp1PageTwo
+    pop bc
+    pop de
+    pop hl
+    ret
+
+; Description: Extract the denominate 'value' of HL to OP1.
+; Input:
+;   - OP1:Real=rawValue
+;   - HL:Denominate=denominate
+; Output:
+;   - (HL)=denominateValue filled
+; Preserves: all
+op1ToDenominateValue:
+    push hl
+    push de
+    push bc
+    inc hl ; *HL=value
+    ex de, hl ; *DE=value
+    call move9FromOp1PageTwo
+    pop bc
+    pop de
+    pop hl
+    ret
+
+;-----------------------------------------------------------------------------
+; Arithematic operations.
+;-----------------------------------------------------------------------------
+
+; Description: Add Denominte+Denominate, keeping the displayUnit of OP1 (the
+; first) argument.
+; Input:
+;   - OP1/OP2:RpnDenominate=den1
+;   - OP3/OP4:RpnDenominate=den2
+; Output:
+;   - OP1/OP2:RpnDenominate=den1+den2
+; Destroys: all
+AddRpnDenominateByDenominate:
+    ld a, (OP1 + rpnDenominateFieldDisplayUnit) ; A=op1dDisplayUnitId
+    ld b, a ; unit1
+    ld a, (OP3 + rpnDenominateFieldDisplayUnit) ; A=op3dDisplayUnitId
+    ld c, a ; unit2
+    call checkCompatibleUnitClass ; throws Err:Invalid if different unitClass
+    ;
+    call PushRpnObject1 ; FPS=[CP1]; HL=rpnDenominate(OP1)
+    skipRpnObjectTypeHL
+    ex de, hl ; DE=OP1
+    call PushRpnObject3 ; FPS=[CP3]; HL=rpnDenominate(OP3)
+    skipRpnObjectTypeHL
+    ex de, hl ; HL=FPS(OP1); DE=FPS(OP3)
+    call addDenominateByDenominate; value(HL)+=value(DE)
+    call dropRpnObject ; FPS=[CP1]
+    call PopRpnObject1 ; FPS=[]; OP1=RpnObject
+    ret
+
+; Description: Add Denominate(DE) to Denominate(HL).
+; Input:
+;   - HL:Denominate=denHL
+;   - DE:Denominate=denDE
+; Output:
+;   - value(HL)+=value(DE)
+addDenominateByDenominate:
+    push hl ; stack=[denHL]
+    call denominateValueToOp1 ; OP1=valueHL
+    ;
+    push de ; stack=[denHL,denDE]
+    call op1ToOp2PageTwo ; OP2=valueHL
+    pop hl ; stack=[denHL]; HL=denDE
+    call denominateValueToOp1 ; OP1=valueDE
+    bcall(_FPAdd)
+    ;
+    pop hl ; stack=[]; HL=denHL
+    call op1ToDenominateValue ; value(HL)+=value(DE)
+    ret
 
 ;-----------------------------------------------------------------------------
 ; Converters for special units which cannot be converted by simple scaling. For

@@ -10,7 +10,7 @@
 ; Arithmetic operations.
 ;-----------------------------------------------------------------------------
 
-; Description: Addition for real, complex, Date, and DateTime objects.
+; Description: Addition for real, complex, and RpnObject.
 ; Input:
 ;   - OP1/OP2: Y
 ;   - OP3/OP4: X
@@ -46,6 +46,9 @@ universalAdd:
     ; OP1=Duration
     cp rpnObjectTypeDuration ; ZF=1 if Duration
     jp z, universalAddDurationPlusObject
+    ; OP1=Denominate
+    cp rpnObjectTypeDenominate ; ZF=1 if Duration
+    jp z, universalAddDenominatePlusObject
     jp universalAddErr
 ; Real+object
 universalAddRealPlusObject:
@@ -68,6 +71,7 @@ universalAddRealPlusObject:
     jr z, universalAddRealPlusDayOfWeek
     cp rpnObjectTypeDuration
     jr z, universalAddRealPlusDuration
+    ; Real+Denominate not supported
     jr universalAddErr
 universalAddRealPlusReal:
     call op3ToOp2
@@ -228,6 +232,16 @@ universalAddDurationPlusOffset:
     jr universalAddOffsetPlusDuration
 universalAddDurationPlusOffsetDateTime:
     jr universalAddOffsetDateTimePlusDuration
+; Denominate + object
+universalAddDenominatePlusObject:
+    call getOp3RpnObjectType ; A=type; HL=OP3
+    cp rpnObjectTypeDenominate
+    jr z, universalAddDenominatePlusDenominate
+    ; Denominate+Real not supported
+    jp universalAddErr
+universalAddDenominatePlusDenominate:
+    bcall(_AddRpnDenominateByDenominate) ; OP1=Denominate(OP1)+Denominate(OP3)
+    ret
 
 ; Description: Subtractions for real, complex, and Date objects.
 ; Input:

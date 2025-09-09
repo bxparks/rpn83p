@@ -1738,6 +1738,14 @@ _ApplyUnitLabel:
 _ApplyUnit equ _ApplyUnitLabel-branchTableBase
     .dw ApplyUnit
     .db 2
+_AddRpnDenominateByDenominateLabel:
+_AddRpnDenominateByDenominate equ _AddRpnDenominateByDenominateLabel-branchTableBase
+    .dw AddRpnDenominateByDenominate
+    .db 2
+_MultRpnDenominateByRealLabel:
+_MultRpnDenominateByReal equ _MultRpnDenominateByRealLabel-branchTableBase
+    .dw ApplyUnit
+    .db 2
 
 ; formatdenominate2.asm
 _FormatDenominateLabel:
