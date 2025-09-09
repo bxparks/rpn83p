@@ -2167,6 +2167,7 @@ defpage(3)
 
 #include "menu3.asm"
 #include "menudef.asm"
+#include "integer3.asm"
 
 ;-----------------------------------------------------------------------------
 

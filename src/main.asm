@@ -35,6 +35,7 @@ main:
 warmInit:
     ; Alway perform warm initialization.
     bcall(_SanitizeMenu) ; Sanitize currentMenuGroupId and currentMenuRowIndex
+    bcall(_ClearJumpBack) ; Cannot assume that the jumpback is valid.
     bcall(_InitArgBuf) ; Start with command ArgScanner off.
     bcall(_InitDisplay)
     bcall(_InitTvmSolver)
