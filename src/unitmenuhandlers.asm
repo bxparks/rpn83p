@@ -351,10 +351,6 @@ mUnitImpCupHandler:
     ld a, unitImpCupId
     jp commonUnitHandler
 
-;-----------------------------------------------------------------------------
-; UNIT > VOL > IMP > Row 2
-;-----------------------------------------------------------------------------
-
 mUnitImpPintHandler:
     ld a, unitImpPintId
     jp commonUnitHandler
@@ -362,6 +358,10 @@ mUnitImpPintHandler:
 mUnitImpQuartHandler:
     ld a, unitImpQuartId
     jp commonUnitHandler
+
+;-----------------------------------------------------------------------------
+; UNIT > VOL > IMP > Row 2
+;-----------------------------------------------------------------------------
 
 mUnitImpGallonHandler:
     ld a, unitImpGallonId

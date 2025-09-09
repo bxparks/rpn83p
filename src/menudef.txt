@@ -462,10 +462,10 @@ MenuGroup root mRoot [
                 MenuItem floz mUnitImpFluidOunce
                 MenuItem gill mUnitImpGill
                 MenuItem cup mUnitImpCup
-              ]
-              MenuRow [
                 MenuItem pint mUnitImpPint
                 MenuItem qt mUnitImpQuart
+              ]
+              MenuRow [
                 MenuItem gal mUnitImpGallon
               ]
             ]

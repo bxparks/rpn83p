@@ -2816,27 +2816,8 @@ mUnitImpCupId equ 299
     .dw 0 ; rowBeginId or altName
     .dw mUnitImpCupHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
-mBlank300:
-mBlank300Id equ 300
-    .dw mBlank300Id ; id
-    .dw mUnitVolImpId ; parentId
-    .dw mNullName ; name
-    .db 0 ; numRows
-    .dw 0 ; rowBeginId or altName
-    .dw mNullHandler ; handler (predefined)
-    .dw 0 ; nameSelector
-mBlank301:
-mBlank301Id equ 301
-    .dw mBlank301Id ; id
-    .dw mUnitVolImpId ; parentId
-    .dw mNullName ; name
-    .db 0 ; numRows
-    .dw 0 ; rowBeginId or altName
-    .dw mNullHandler ; handler (predefined)
-    .dw 0 ; nameSelector
-; MenuGroup IMP: children: row 1
 mUnitImpPint:
-mUnitImpPintId equ 302
+mUnitImpPintId equ 300
     .dw mUnitImpPintId ; id
     .dw mUnitVolImpId ; parentId
     .dw mUnitImpPintName ; name
@@ -2845,7 +2826,7 @@ mUnitImpPintId equ 302
     .dw mUnitImpPintHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
 mUnitImpQuart:
-mUnitImpQuartId equ 303
+mUnitImpQuartId equ 301
     .dw mUnitImpQuartId ; id
     .dw mUnitVolImpId ; parentId
     .dw mUnitImpQuartName ; name
@@ -2853,14 +2834,33 @@ mUnitImpQuartId equ 303
     .dw 0 ; rowBeginId or altName
     .dw mUnitImpQuartHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
+; MenuGroup IMP: children: row 1
 mUnitImpGallon:
-mUnitImpGallonId equ 304
+mUnitImpGallonId equ 302
     .dw mUnitImpGallonId ; id
     .dw mUnitVolImpId ; parentId
     .dw mUnitImpGallonName ; name
     .db 0 ; numRows
     .dw 0 ; rowBeginId or altName
     .dw mUnitImpGallonHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
+mBlank303:
+mBlank303Id equ 303
+    .dw mBlank303Id ; id
+    .dw mUnitVolImpId ; parentId
+    .dw mNullName ; name
+    .db 0 ; numRows
+    .dw 0 ; rowBeginId or altName
+    .dw mNullHandler ; handler (predefined)
+    .dw 0 ; nameSelector
+mBlank304:
+mBlank304Id equ 304
+    .dw mBlank304Id ; id
+    .dw mUnitVolImpId ; parentId
+    .dw mNullName ; name
+    .db 0 ; numRows
+    .dw 0 ; rowBeginId or altName
+    .dw mNullHandler ; handler (predefined)
     .dw 0 ; nameSelector
 mBlank305:
 mBlank305Id equ 305
