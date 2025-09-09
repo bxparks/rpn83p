@@ -812,6 +812,11 @@ defpage(0, "RPN83P")
 ; statements, so we have to define the bcall() label *after* the XxxLabel
 ; label.
 branchTableBase equ $4000
+
+;-----------------------------------------------------------------------------
+; Branch table entries in Flash Page 0 for routines on Flash Page 1.
+;-----------------------------------------------------------------------------
+
 ; appstate1.asm
 _StoreAppStateLabel:
 _StoreAppState equ _StoreAppStateLabel-branchTableBase
@@ -1121,6 +1126,74 @@ _FormatComplexPolarDeg equ _FormatComplexPolarDegLabel-branchTableBase
     .dw FormatComplexPolarDeg
     .db 1
 
+;-----------------------------------------------------------------------------
+
+#ifdef DEBUG
+; debug1.asm
+_DebugInputBufLabel:
+_DebugInputBuf equ _DebugInputBufLabel-branchTableBase
+    .dw DebugInputBuf
+    .db 1
+_DebugParseBufLabel:
+_DebugParseBuf equ _DebugParseBufLabel-branchTableBase
+    .dw DebugParseBuf
+    .db 1
+_DebugStringLabel:
+_DebugString equ _DebugStringLabel-branchTableBase
+    .dw DebugString
+    .db 1
+_DebugPStringLabel:
+_DebugPString equ _DebugPStringLabel-branchTableBase
+    .dw DebugPString
+    .db 1
+_DebugClearLabel:
+_DebugClear equ _DebugClearLabel-branchTableBase
+    .dw DebugClear
+    .db 1
+_DebugOP1Label:
+_DebugOP1 equ _DebugOP1Label-branchTableBase
+    .dw DebugOP1
+    .db 1
+_DebugUnsignedALabel:
+_DebugUnsignedA equ _DebugUnsignedALabel-branchTableBase
+    .dw DebugUnsignedA
+    .db 1
+_DebugSignedALabel:
+_DebugSignedA equ _DebugSignedALabel-branchTableBase
+    .dw DebugSignedA
+    .db 1
+_DebugFlagsLabel:
+_DebugFlags equ _DebugFlagsLabel-branchTableBase
+    .dw DebugFlags
+    .db 1
+_DebugU32AsHexLabel:
+_DebugU32AsHex equ _DebugU32AsHexLabel-branchTableBase
+    .dw DebugU32AsHex
+    .db 1
+_DebugU40AsHexLabel:
+_DebugU40AsHex equ _DebugU40AsHexLabel-branchTableBase
+    .dw DebugU40AsHex
+    .db 1
+_DebugHLLabel:
+_DebugHL equ _DebugHLLabel-branchTableBase
+    .dw DebugHL
+    .db 1
+_DebugHLAsHexLabel:
+_DebugHLAsHex equ _DebugHLAsHexLabel-branchTableBase
+    .dw DebugHLAsHex
+    .db 1
+_DebugPauseLabel:
+_DebugPause equ _DebugPauseLabel-branchTableBase
+    .dw DebugPause
+    .db 1
+_DebugU32DEAsHexLabel:
+_DebugU32DEAsHex equ _DebugU32DEAsHexLabel-branchTableBase
+    .dw DebugU32DEAsHex
+    .db 1
+#endif
+
+;-----------------------------------------------------------------------------
+; Branch table entries on Flash Page 0 for routines on Flash Page 2.
 ;-----------------------------------------------------------------------------
 
 ; modes2.asm
@@ -1955,71 +2028,11 @@ _PrintInputBuf equ _PrintInputBufLabel-branchTableBase
     .db 2
 
 ;-----------------------------------------------------------------------------
+; Branch table entries on Flash Page 0 for routines on Flash Page 3.
+;-----------------------------------------------------------------------------
 
-#ifdef DEBUG
-; debug1.asm
-_DebugInputBufLabel:
-_DebugInputBuf equ _DebugInputBufLabel-branchTableBase
-    .dw DebugInputBuf
-    .db 1
-_DebugParseBufLabel:
-_DebugParseBuf equ _DebugParseBufLabel-branchTableBase
-    .dw DebugParseBuf
-    .db 1
-_DebugStringLabel:
-_DebugString equ _DebugStringLabel-branchTableBase
-    .dw DebugString
-    .db 1
-_DebugPStringLabel:
-_DebugPString equ _DebugPStringLabel-branchTableBase
-    .dw DebugPString
-    .db 1
-_DebugClearLabel:
-_DebugClear equ _DebugClearLabel-branchTableBase
-    .dw DebugClear
-    .db 1
-_DebugOP1Label:
-_DebugOP1 equ _DebugOP1Label-branchTableBase
-    .dw DebugOP1
-    .db 1
-_DebugUnsignedALabel:
-_DebugUnsignedA equ _DebugUnsignedALabel-branchTableBase
-    .dw DebugUnsignedA
-    .db 1
-_DebugSignedALabel:
-_DebugSignedA equ _DebugSignedALabel-branchTableBase
-    .dw DebugSignedA
-    .db 1
-_DebugFlagsLabel:
-_DebugFlags equ _DebugFlagsLabel-branchTableBase
-    .dw DebugFlags
-    .db 1
-_DebugU32AsHexLabel:
-_DebugU32AsHex equ _DebugU32AsHexLabel-branchTableBase
-    .dw DebugU32AsHex
-    .db 1
-_DebugU40AsHexLabel:
-_DebugU40AsHex equ _DebugU40AsHexLabel-branchTableBase
-    .dw DebugU40AsHex
-    .db 1
-_DebugHLLabel:
-_DebugHL equ _DebugHLLabel-branchTableBase
-    .dw DebugHL
-    .db 1
-_DebugHLAsHexLabel:
-_DebugHLAsHex equ _DebugHLAsHexLabel-branchTableBase
-    .dw DebugHLAsHex
-    .db 1
-_DebugPauseLabel:
-_DebugPause equ _DebugPauseLabel-branchTableBase
-    .dw DebugPause
-    .db 1
-_DebugU32DEAsHexLabel:
-_DebugU32DEAsHex equ _DebugU32DEAsHexLabel-branchTableBase
-    .dw DebugU32DEAsHex
-    .db 1
-#endif
-
+;-----------------------------------------------------------------------------
+; Source code for Flash Page 0
 ;-----------------------------------------------------------------------------
 
 #include "main.asm"
@@ -2059,7 +2072,7 @@ _DebugU32DEAsHex equ _DebugU32DEAsHexLabel-branchTableBase
 #include "format.asm"
 
 ;-----------------------------------------------------------------------------
-; Flash Page 1
+; Source code for Flash Page 1
 ;-----------------------------------------------------------------------------
 
 defpage(1)
@@ -2099,7 +2112,7 @@ defpage(1)
 #endif
 
 ;-----------------------------------------------------------------------------
-; Flash Page 2
+; Source Code for Flash Page 2
 ;-----------------------------------------------------------------------------
 
 defpage(2)
