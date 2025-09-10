@@ -503,11 +503,13 @@ MenuGroup root mRoot [
             MenuItem mg mUnitMilliGram
             MenuItem g mUnitGram
             MenuItem kg mUnitKiloGram
+            MenuItem t mUnitTonne
           ]
           MenuRow [
             MenuItem oz mUnitOunce
             MenuItem lbs mUnitPound
             MenuItem ton mUnitTon
+            MenuItem lton mUnitLongTon
           ]
         ]
       ]

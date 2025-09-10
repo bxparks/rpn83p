@@ -3151,14 +3151,14 @@ mUnitKiloGramId equ 335
     .dw 0 ; rowBeginId or altName
     .dw mUnitKiloGramHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
-mBlank336:
-mBlank336Id equ 336
-    .dw mBlank336Id ; id
+mUnitTonne:
+mUnitTonneId equ 336
+    .dw mUnitTonneId ; id
     .dw mUnitMassId ; parentId
-    .dw mNullName ; name
+    .dw mUnitTonneName ; name
     .db 0 ; numRows
     .dw 0 ; rowBeginId or altName
-    .dw mNullHandler ; handler (predefined)
+    .dw mUnitTonneHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
 ; MenuGroup MASS: children: row 1
 mUnitOunce:
@@ -3188,14 +3188,14 @@ mUnitTonId equ 339
     .dw 0 ; rowBeginId or altName
     .dw mUnitTonHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
-mBlank340:
-mBlank340Id equ 340
-    .dw mBlank340Id ; id
+mUnitLongTon:
+mUnitLongTonId equ 340
+    .dw mUnitLongTonId ; id
     .dw mUnitMassId ; parentId
-    .dw mNullName ; name
+    .dw mUnitLongTonName ; name
     .db 0 ; numRows
     .dw 0 ; rowBeginId or altName
-    .dw mNullHandler ; handler (predefined)
+    .dw mUnitLongTonHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
 mBlank341:
 mBlank341Id equ 341
@@ -4003,8 +4003,8 @@ mSetClockId equ 426
 ; Pool of menu names as NUL-terminated C strings.
 ;-----------------------------------------------------------------------------
 
-mNamesCount equ 350 ; number of names and altnames
-mNamesPoolSize equ 2909 ; size of names string pool
+mNamesCount equ 352 ; number of names and altnames
+mNamesPoolSize equ 2916 ; size of names string pool
 
 mNullName:
     .db 0
@@ -4630,12 +4630,16 @@ mUnitGramName:
     .db "g", 0
 mUnitKiloGramName:
     .db "kg", 0
+mUnitTonneName:
+    .db "t", 0
 mUnitOunceName:
     .db "oz", 0
 mUnitPoundName:
     .db "lbs", 0
 mUnitTonName:
     .db "ton", 0
+mUnitLongTonName:
+    .db "lton", 0
 mUnitCelsiusName:
     .db Stemp, 'C', 0
 mUnitFahrenheitName:

@@ -456,6 +456,10 @@ mUnitKiloGramHandler:
     ld a, unitKiloGramId
     jp commonUnitHandler
 
+mUnitTonneHandler:
+    ld a, unitTonneId
+    jp commonUnitHandler
+
 ;-----------------------------------------------------------------------------
 ; UNIT > MASS > Row 2
 ;-----------------------------------------------------------------------------
@@ -470,6 +474,10 @@ mUnitPoundHandler:
 
 mUnitTonHandler:
     ld a, unitTonId
+    jp commonUnitHandler
+
+mUnitLongTonHandler:
+    ld a, unitLongTonId
     jp commonUnitHandler
 
 ;-----------------------------------------------------------------------------
