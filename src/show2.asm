@@ -37,7 +37,7 @@ clearShowAreaLoop:
 ;   - DE:(char*)=bufPointer
 ; Output:
 ;   - (DE): string buffer updated and NUL terminated
-;   - DE: points to NUL at the end of string, to allow chaining
+;   - DE=points to NUL at the end of string
 ; Destroys: all, OP1-OP6
 FormShowable:
     call getOp1RpnObjectTypePageTwo ; A=type; HL=OP1
@@ -241,7 +241,7 @@ groupBinDigitsForShowLoop:
 ;   - OP1/OP2:Complex
 ;   - DE:(char*)=cstringPointer
 ; Output:
-;   - (DE): C string buffer updated, *not* NUL terminated
+;   - (DE):formatted string
 ;   - DE=pointer to NUL after string
 ; Destroys: all, OP1-OP6
 formComplexString:
@@ -328,13 +328,14 @@ msgShowComplexDegSpacer:
 ;------------------------------------------------------------------------------
 
 ; Format the real floating value in OP1 into the string buffer pointed by DE.
-;   - formFloatString()
+; Calls
+;   - formSciString()
 ;   - formIntString()
 ; Input:
 ;   - OP1:Real
-;   - DE:(*char)=pointer to NUL after formatted string
+;   - DE:(*char)=bufPointer
 ; Output:
-;   - DE:(*char)=string buffer updated, points to the next character
+;   - DE:(*char)=pointer to NUL after string
 ; Destroys: A, BC, HL, OP1, OP2
 formRealString:
     push de
@@ -381,8 +382,7 @@ formRealStringInt:
 ;   - OP1:Real
 ;   - DE:(char*)=bufPointer
 ; Output:
-;   - (DE)=pointer to terminating NUL
-;   - DE: updated
+;   - DE=pointer to NUL after string
 ; Destroys: A, B, C, DE, HL
 formSciString:
     ld hl, OP1
@@ -474,11 +474,8 @@ formSciStringExp:
     neg ; A=-EXP
 formSciStringPosExp:
     ex de, hl
-    call FormatAToString ; HL string updated, no NUL
+    call FormatAToString ; HL string updated
     ex de, hl
-    ; NUL terminate NUL
-    xor a
-    ld (de), a
     ret
 
 ;------------------------------------------------------------------------------
@@ -495,8 +492,8 @@ formSciStringPosExp:
 ;   - OP1:Real=an integer represented as a floating point number
 ;   - DE:(char*)=bufPointer
 ; Output:
-;   - (DE): floating point rendered in scientific notation, no NUL terminator
-;   - DE: updated
+;   - (DE)=floating point rendered in scientific notation
+;   - DE=pointer to NUL after string
 ; Destroys: A, B, C, DE, HL
 formIntString:
     ld hl, OP1
@@ -534,6 +531,7 @@ formIntStringLoop:
     inc de
     djnz formIntStringLoop
 formIntStringLoopEnd:
+    ; NUL terminate
     xor a
     ld (de), a
     ret
