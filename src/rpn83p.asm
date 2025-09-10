@@ -1776,6 +1776,10 @@ _DivRpnDenominateByRealLabel:
 _DivRpnDenominateByReal equ _DivRpnDenominateByRealLabel-branchTableBase
     .dw DivRpnDenominateByReal
     .db 2
+_DivRpnDenominateByDenominateLabel:
+_DivRpnDenominateByDenominate equ _DivRpnDenominateByDenominateLabel-branchTableBase
+    .dw DivRpnDenominateByDenominate
+    .db 2
 
 ; formatdenominate2.asm
 _FormatDenominateLabel:

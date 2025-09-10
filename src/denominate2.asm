@@ -398,12 +398,43 @@ MultRpnDenominateByReal:
 
 ;-----------------------------------------------------------------------------
 
-; Description: Multiply Denominte*Real or Real*Denominate.
+; Description: Divide Denominte/Denominate to get a Real number.
 ; Input:
-;   - OP1/OP2:RpnDenominate|Real=denominate
-;   - OP3/OP4:Real=real
+;   - OP1/OP2:RpnDenominate=dividend
+;   - OP3/OP4:RpnDenominate=divisor
 ; Output:
-;   - OP1/OP2:Denominate=den/value
+;   - OP1/OP2:Real=dividend/divisor
+DivRpnDenominateByDenominate:
+    call checkArithmeticUnitClassOp1 ; throws Err:Invalid
+    call checkArithmeticUnitClassOp3 ; throws Err:Invalid
+    ;
+    call PushRpnObject1 ; FPS=[divisor,dividend]; HL=FPS(dividend)
+    skipRpnObjectTypeHL ; HL=dividend
+    push hl ; stack=[dividend]
+    ;
+    call PushRpnObject3 ; FPS=[divisor]; HL=FPS(divisor)
+    skipRpnObjectTypeHL ; HL=divisor
+    ;
+    call denominateValueToOp1 ; OP1=divisor
+    call op1ToOp2PageTwo ; OP2=divisor
+    ;
+    pop hl ; stack=[]; HL=dividend
+    call denominateValueToOp1 ; OP1=dividend
+    ;
+    bcall(_FPDiv) ; OP1=dividend/divisor
+    ;
+    call dropRpnObject
+    call dropRpnObject ; FPS=[]
+    ret
+
+;-----------------------------------------------------------------------------
+
+; Description: Divide Denominte/Real.
+; Input:
+;   - OP1/OP2:RpnDenominate=den
+;   - OP3/OP4:Real=divisor
+; Output:
+;   - OP1/OP2:Denominate=den/divisor
 DivRpnDenominateByReal:
     call checkArithmeticUnitClassOp1 ; throws Err:Invalid
     call checkArithmeticUnitClassOp3 ; throws Err:Invalid

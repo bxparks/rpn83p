@@ -616,9 +616,14 @@ universalDivDenominateByObject:
     call getOp3RpnObjectType ; A=type; HL=OP3
     cp rpnObjectTypeReal
     jr z, universalDivDenominateByReal
+    cp rpnObjectTypeDenominate
+    jr z, universalDivDenominateByDenominate
     jr universalDivErr
 universalDivDenominateByReal:
     bcall(_DivRpnDenominateByReal)
+    ret
+universalDivDenominateByDenominate:
+    bcall(_DivRpnDenominateByDenominate)
     ret
 
 ;-----------------------------------------------------------------------------
