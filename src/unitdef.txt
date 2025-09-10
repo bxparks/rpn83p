@@ -27,6 +27,7 @@ UnitClasses [
   UnitClass Volume
   UnitClass Mass
   UnitClass Temperature
+  UnitClass Velocity
   UnitClass Pressure
   UnitClass Energy
   UnitClass Power
@@ -190,6 +191,15 @@ Units [
   Unit Fahrenheit <Stemp>F Temperature 1 Kelvin # F = C*9/5 + 32
   Unit Rankine <Stemp>R Temperature 1 Kelvin # R = K*9/5 = (C-273.15)*9/5
   Unit Kelvin <Stemp>K Temperature 1 Kelvin # add <Stemp> to 'K' for visual hint
+
+  #----------------------------------------------------------------------------
+  # Velocity
+  #----------------------------------------------------------------------------
+
+  Unit MeterPerSecond m<Sslash>s Velocity 1 MeterPerSecond
+  Unit FootPerSecond ft<Sslash>s Velocity 0.3048 MeterPerSecond
+  Unit KiloMeterPerHour km<Sslash>hr Velocity 0.27777777777778 MeterPerSecond
+  Unit MilePerHour mi<Sslash>hr Velocity 0.44704 MeterPerSecond
 
   #----------------------------------------------------------------------------
   # Pressure

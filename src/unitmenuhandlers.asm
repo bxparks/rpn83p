@@ -493,6 +493,26 @@ mUnitKelvinHandler:
     jp commonUnitHandler
 
 ;-----------------------------------------------------------------------------
+; UNIT > VELO > Row 1
+;-----------------------------------------------------------------------------
+
+mUnitMeterPerSecondHandler:
+    ld a, unitMeterPerSecondId
+    jp commonUnitHandler
+
+mUnitFootPerSecondHandler:
+    ld a, unitFootPerSecondId
+    jp commonUnitHandler
+
+mUnitKiloMeterPerHourHandler:
+    ld a, unitKiloMeterPerHourId
+    jp commonUnitHandler
+
+mUnitMilePerHourHandler:
+    ld a, unitMilePerHourId
+    jp commonUnitHandler
+
+;-----------------------------------------------------------------------------
 ; UNIT > PRES > Row 1
 ;-----------------------------------------------------------------------------
 

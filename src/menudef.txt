@@ -520,6 +520,14 @@ MenuGroup root mRoot [
             MenuItem <Stemp>K mUnitKelvin # add <Stemp> to 'K' for visual hint
           ]
         ]
+        MenuGroup VELO mUnitVelocity [
+          MenuRow [
+            MenuItem m<Sslash>s mUnitMeterPerSecond
+            MenuItem ft<Sslash>s mUnitFootPerSecond
+            MenuItem kph mUnitKiloMeterPerHour
+            MenuItem mph mUnitMilePerHour
+          ]
+        ]
         MenuGroup PRES mUnitPressure [
           MenuRow [
             MenuItem Pa mUnitPascal
@@ -559,6 +567,8 @@ MenuGroup root mRoot [
             MenuItem hp mUnitHorsepower
           ]
         ]
+      ]
+      MenuRow [
         MenuGroup FUEL mUnitFuel [
           MenuRow [
             MenuItem Lkm mUnitLitersPerHundredKiloMeters
