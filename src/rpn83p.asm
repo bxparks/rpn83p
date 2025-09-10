@@ -1738,6 +1738,10 @@ _ApplyUnitLabel:
 _ApplyUnit equ _ApplyUnitLabel-branchTableBase
     .dw ApplyUnit
     .db 2
+_ChsRpnDenominateLabel:
+_ChsRpnDenominate equ _ChsRpnDenominateLabel-branchTableBase
+    .dw ChsRpnDenominate
+    .db 2
 _AddRpnDenominateByDenominateLabel:
 _AddRpnDenominateByDenominate equ _AddRpnDenominateByDenominateLabel-branchTableBase
     .dw AddRpnDenominateByDenominate

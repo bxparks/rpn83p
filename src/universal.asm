@@ -611,6 +611,8 @@ universalChs:
     jr z, universalChsComplex
     cp rpnObjectTypeDuration ; ZF=1 if RpnDuration
     jr z, universalChsDuration
+    cp rpnObjectTypeDenominate ; ZF=1 if RpnDenominate
+    jr z, universalChsDenominate
 universalChsErr:
     bcall(_ErrDataType)
 universalChsReal:
@@ -621,6 +623,9 @@ universalChsComplex:
     ret
 universalChsDuration:
     bcall(_ChsRpnDuration)
+    ret
+universalChsDenominate:
+    bcall(_ChsRpnDenominate)
     ret
 
 ;-----------------------------------------------------------------------------

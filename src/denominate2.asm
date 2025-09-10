@@ -214,6 +214,31 @@ op1ToDenominateValue:
 ; Arithematic operations.
 ;-----------------------------------------------------------------------------
 
+; Description: Implement CHS (+/-) function on an RpnDenominate.
+; Input: OP1/OP2:RpnDenominate=den
+; Output: OP1/OP2:RpnDenominate=-den
+; Destroys: all
+ChsRpnDenominate:
+    call PushRpnObject1 ; FPS=[CP1]; HL=rpnDenominate(OP1)
+    skipRpnObjectTypeHL ; HL=denominate
+    call chsDenominate
+    call PopRpnObject1
+    ret
+
+; Description: Implement CHS (+/-) function on a Denominate.
+; Input: HL:Denominate=den
+; Output: HL:Denominate=-den
+; Destroys: all
+chsDenominate:
+    call denominateValueToOp1 ; OP1=value
+    push hl
+    bcall(_InvOP1S)
+    pop hl
+    call op1ToDenominateValue ; (*HL)=-value
+    ret
+
+;-----------------------------------------------------------------------------
+
 ; Description: Add Denominte+Denominate, keeping the displayUnit of OP1 (the
 ; first) argument.
 ; Input:
