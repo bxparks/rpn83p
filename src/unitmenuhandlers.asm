@@ -581,6 +581,22 @@ mUnitMilePerHourHandler:
     jp commonUnitHandler
 
 ;-----------------------------------------------------------------------------
+; UNIT > FORC > Row 1
+;-----------------------------------------------------------------------------
+
+mUnitDyneHandler:
+    ld a, unitDyneId
+    jp commonUnitHandler
+
+mUnitNewtonHandler:
+    ld a, unitNewtonId
+    jp commonUnitHandler
+
+mUnitPoundForceHandler:
+    ld a, unitPoundForceId
+    jp commonUnitHandler
+
+;-----------------------------------------------------------------------------
 ; UNIT > PRES > Row 1
 ;-----------------------------------------------------------------------------
 

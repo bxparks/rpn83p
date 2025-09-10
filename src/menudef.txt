@@ -556,6 +556,13 @@ MenuGroup root mRoot [
             MenuItem mph mUnitMilePerHour
           ]
         ]
+        MenuGroup FORC mUnitForce [
+          MenuRow [
+            MenuItem dyne mUnitDyne
+            MenuItem N mUnitNewton
+            MenuItem lbf mUnitPoundForce
+          ]
+        ]
         MenuGroup PRES mUnitPressure [
           MenuRow [
             MenuItem Pa mUnitPascal
@@ -589,14 +596,14 @@ MenuGroup root mRoot [
             MenuItem tTNT mUnitTonTNT
           ]
         ]
+      ]
+      MenuRow [
         MenuGroup PWR mUnitPower [
           MenuRow [
             MenuItem W mUnitWatt
             MenuItem hp mUnitHorsepower
           ]
         ]
-      ]
-      MenuRow [
         MenuGroup FUEL mUnitFuel [
           MenuRow [
             MenuItem Lkm mUnitLitersPerHundredKiloMeters

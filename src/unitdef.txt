@@ -28,6 +28,7 @@ UnitClasses [
   UnitClass Mass
   UnitClass Temperature
   UnitClass Velocity
+  UnitClass Force
   UnitClass Pressure
   UnitClass Energy
   UnitClass Power
@@ -231,6 +232,17 @@ Units [
   Unit FootPerSecond ft<Sslash>s Velocity 0.3048 MeterPerSecond
   Unit KiloMeterPerHour km<Sslash>hr Velocity 0.27777777777778 MeterPerSecond
   Unit MilePerHour mi<Sslash>hr Velocity 0.44704 MeterPerSecond
+
+  #----------------------------------------------------------------------------
+  # Force
+  #----------------------------------------------------------------------------
+
+  Unit Dyne dyne Force 1e-5 Newton
+  Unit Newton newton Force 1 Newton
+  # https://en.wikipedia.org/wiki/Pound_(force)
+  # 1 lbf := (1 lbs) * (0.45359237 kg/lb) * (9.80665 m/s^2)
+  #        = 4.4482216152605 N
+  Unit PoundForce lbf Force 4.4482216152605 Newton
 
   #----------------------------------------------------------------------------
   # Pressure
