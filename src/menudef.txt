@@ -506,10 +506,35 @@ MenuGroup root mRoot [
             MenuItem t mUnitTonne
           ]
           MenuRow [
-            MenuItem oz mUnitOunce
-            MenuItem lbs mUnitPound
-            MenuItem ton mUnitTon
-            MenuItem lton mUnitLongTon
+            MenuGroup US mUnitMassUS [
+              MenuRow [
+                MenuItem grai mUnitGrain
+                MenuItem dram mUnitDram
+                MenuItem oz mUnitOunce
+                MenuItem lbs mUnitPound
+                MenuItem cwt mUnitHundredWeight
+              ]
+              MenuRow [
+                MenuItem ton mUnitTon
+              ]
+            ]
+            MenuGroup IMP mUnitMassImp [
+              MenuRow [
+                MenuItem lbs mUnitImpPound # same as normal 'lbs'
+                MenuItem stne mUnitStone
+                MenuItem quar mUnitQuarter
+                MenuItem lcwt mUnitLongHundredWeight
+                MenuItem lton mUnitLongTon
+              ]
+            ]
+            MenuGroup TROY mUnitMassTroy [
+              MenuRow [
+                MenuItem grai mUnitTroyGrain # same as normal 'grain'
+                MenuItem dwt mUnitTroyPennyWeight
+                MenuItem ozt mUnitTroyOunce
+                MenuItem lbt mUnitTroyPound
+              ]
+            ]
           ]
         ]
       ]

@@ -461,8 +461,16 @@ mUnitTonneHandler:
     jp commonUnitHandler
 
 ;-----------------------------------------------------------------------------
-; UNIT > MASS > Row 2
+; UNIT > MASS > US > Row 1
 ;-----------------------------------------------------------------------------
+
+mUnitGrainHandler:
+    ld a, unitGrainId
+    jp commonUnitHandler
+
+mUnitDramHandler:
+    ld a, unitDramId
+    jp commonUnitHandler
 
 mUnitOunceHandler:
     ld a, unitOunceId
@@ -472,12 +480,60 @@ mUnitPoundHandler:
     ld a, unitPoundId
     jp commonUnitHandler
 
+mUnitHundredWeightHandler:
+    ld a, unitHundredWeightId
+    jp commonUnitHandler
+
+;-----------------------------------------------------------------------------
+; UNIT > MASS > US > Row 2
+;-----------------------------------------------------------------------------
+
 mUnitTonHandler:
     ld a, unitTonId
     jp commonUnitHandler
 
+;-----------------------------------------------------------------------------
+; UNIT > MASS > IMP > Row 1
+;-----------------------------------------------------------------------------
+
+mUnitImpPoundHandler:
+    ld a, unitPoundId ; same as normal pound
+    jp commonUnitHandler
+
+mUnitStoneHandler:
+    ld a, unitStoneId
+    jp commonUnitHandler
+
+mUnitQuarterHandler:
+    ld a, unitQuarterId
+    jp commonUnitHandler
+
+mUnitLongHundredWeightHandler:
+    ld a, unitLongHundredWeightId
+    jp commonUnitHandler
+
 mUnitLongTonHandler:
     ld a, unitLongTonId
+    jp commonUnitHandler
+
+;-----------------------------------------------------------------------------
+; UNIT > MASS > TROY > Row 1
+;-----------------------------------------------------------------------------
+
+mUnitTroyGrainHandler: ; same as normal grain
+    ld a, unitGrainId
+    jp commonUnitHandler
+
+mUnitTroyPennyWeightHandler:
+    ld a, unitTroyPennyWeightId
+    jp commonUnitHandler
+
+mUnitTroyOunceHandler:
+    ld a, unitTroyOunceId
+    jp commonUnitHandler
+
+mUnitTroyPoundHandler:
+    ld a, unitTroyPoundId
     jp commonUnitHandler
 
 ;-----------------------------------------------------------------------------
