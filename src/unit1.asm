@@ -37,21 +37,20 @@ unitInfoFieldScale equ 4
 ;   - A:u8=unitId
 ;   - HL:(const char*)=namebuf
 ; Output:
-;   - HL:(const char*)=namebuf=name
+;   - HL:(const char*)=next char in namebuf
 ; Destroys: A, IX
 ; Preserves: BC, DE, HL
 ExtractUnitName:
-    push hl
     push de
     push bc
     call findUnitInfoIX ; IX=unitInfo
     ex de, hl ; DE=namebuf
     ld l, (ix + unitInfoFieldName)
     ld h, (ix + unitInfoFieldName + 1)
-    call copyCStringPageOne
+    call copyCStringPageOne ; DE+=sizeof(name)
+    ex de, hl ; HL=nameBuf+sizeof(name)
     pop bc
     pop de
-    pop hl
     ret
 
 ; Description: Return the unitClass of the unit given in register A.

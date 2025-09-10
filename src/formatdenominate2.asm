@@ -16,57 +16,80 @@
 ; print "ERROR={value}" instead.
 ; Input:
 ;   - HL:(const RpnDenominate*)=rpnDenominate
-;   - DE:(char*)=dest
+;   - DE:(char*)=stringBuf
 ; Output:
 ;   - HL: incremented past end of denominate object
 ;   - DE: points to NUL char at end of string
 ; Destroys: all, OP1-OP3
 FormatDenominate:
     skipRpnObjectTypeHL ; HL=denominate
-    ; Check for error state
-    call validateDenominate ; CF=0 if invalid; A=unitId
-    jr nc, formatErrorDenominate
-    ; Print the target unit name.
-    push hl ; stack=[denominate]
-    ld hl, OP3 ; buffer for unitName
-    bcall(_ExtractUnitName) ; HL=name
-    call copyCStringPageTwo ; copy HL to DE
+    ; Print 'name'
+    call formatDenominateName
     ; Print '='
     ld a, '='
     ld (de), a
     inc de
-    ; Convert denominate into its display value
-    pop hl ; stack=[]; HL=denominate
-    push de ; stack=[dest]
-    call denominateToDisplayValue ; OP1=displayValue
-    pop de ; stack=[]; DE=dest
-    ; Format OP1
-formatDenominateFormatOP1:
-    push de ; stack=[dest]
-    ld a, 10 ; maximum width of output
-    bcall(_FormReal) ; OP3=formatted string
-    ; Copy the formatted string to dest
-    pop de ; stack=[]; DE=dest
-    ld hl, OP3
-    call copyCStringPageTwo ; copy HL to DE
+    ; Print 'value'
+    call formatDenominateValue
     ret
 
-; Description: Format the denominate object in HL to DE.
+; Description: Format the name of denominate object in HL to DE.
 ; Input:
 ;   - HL:(const Denominate*)=denominate
-;   - DE:(char*)=dest
-formatErrorDenominate:
+;   - DE:(char*)=stringBuf
+; Output:
+;   - DE=points to next character
+; Preserves: BC, HL
+; Destroys: A
+formatDenominateName:
+    ld a, (hl) ; A=unitId
+    call validateDenominate ; CF=0 if invalid; A=unitId
+    jr nc, formatDenominateNameForInvalid
+    ; extract real name
+    ex de, hl ; HL=stringBuf; DE=denominate
+    bcall(_ExtractUnitName) ; HL=name
+    ex de, hl ; DE=stringBuf; HL=denominate
+    ret
+formatDenominateNameForInvalid:
+    ; extract "INVALID"
     push hl ; stack=[denominate]
-    ld hl, unitErrorName
+    ld hl, unitInvalidName
     call copyCStringPageTwo
     pop hl ; stack=[]; HL=denominate
-    ; Print '='
-    ld a, '='
-    ld (de), a
-    inc de
-    ; Extract the raw value without scaling.
-    call denominateValueToOp1 ; OP1=rawValue
-    jr formatDenominateFormatOP1
+    ret
 
-unitErrorName:
-    .db "ERROR", 0
+unitInvalidName:
+    .db "INVALID", 0
+
+; Description: Format the value of the denominate object in HL to DE. Convert
+; the 'value' into its 'displayUnit', except if the denominate is invalid, in
+; which case just print the raw 'value'.
+; Input:
+;   - HL:(const Denominate*)=denominate
+;   - DE:(char*)=stringBuf
+; Output:
+;   - DE=points to next character
+; Preserves: HL
+; Destroys: BC, A
+formatDenominateValue:
+    ld a, (hl) ; A=unitId
+    call validateDenominate ; CF=0 if invalid; A=unitId
+    jr nc, formatDenominateValueForInvalid
+    call denominateToDisplayValue ; OP1=displayValue
+    jr formatDenominateValueOP1
+formatDenominateValueForInvalid:
+    call denominateValueToOp1
+    ; [[fallthrough]]
+formatDenominateValueOP1:
+    push hl ; stack=[denominate]
+    ; Format OP1
+    push de ; stack=[denominate,stringBuf]
+    ld a, 10 ; maximum width of output
+    bcall(_FormReal) ; OP3=formatted string
+    pop de ; stack=[denominate]; DE=stringBuf
+    ; Copy the formatted string to dest
+    ld hl, OP3
+    call copyCStringPageTwo ; copy HL to DE
+    ; Restore stack
+    pop hl ; stack=[]; HL=denominate
+    ret

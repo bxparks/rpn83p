@@ -202,8 +202,22 @@ checkUnitClassForAddInvalid:
 ; to the display value in units of its 'displayUnitId'.
 ; Input: HL:Denominate=denominate
 ; Output: OP1:Real=displayValue
-; Destroys: all, OP1-OP4
+; Preserves: BC, DE, HL
+; Destroys: A, OP1-OP4
 denominateToDisplayValue:
+    push bc
+    push de
+    push hl
+    call denominateToDisplayValueInternal
+    pop hl
+    pop de
+    pop bc
+    ret
+
+; Description: Version of denominateToDisplayValue() that does not care about
+; destroying all the registers. This version is much simpler when we don't have
+; to worry about cleaning up the stack, because we can return early.
+denominateToDisplayValueInternal:
     ld a, (hl) ; A=displayUnitId
     inc hl ; HL=value
     call move9ToOp1PageTwo ; OP1=value; preserves A
