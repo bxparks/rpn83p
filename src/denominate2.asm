@@ -119,6 +119,21 @@ changeRpnDenominateUnit:
     ld (OP1 + rpnDenominateFieldDisplayUnit), a ; displayUnitId=targetUnitId
     ret
 
+;-----------------------------------------------------------------------------
+
+; Description: Check that CP1=rpnDen1 and CP3=rpnDen3 have compatible unit
+; classes.
+; Input: CP1, CP3
+; Destroys: A, IX
+; Preserves, BC, DE, HL
+; Throws: Err:Invalid if unit classes don't match
+checkCompatibleUnitClassOp1Op3:
+    ld a, (OP1 + rpnDenominateFieldDisplayUnit) ; A=op1dDisplayUnitId
+    ld b, a ; unit1
+    ld a, (OP3 + rpnDenominateFieldDisplayUnit) ; A=op3dDisplayUnitId
+    ld c, a ; unit3
+    ; [[fallthrough]]
+
 ; Description: Check that the unitClasses of units in registers B and C are
 ; identical.
 ; Input:
@@ -126,8 +141,7 @@ changeRpnDenominateUnit:
 ;   - C=targetUnitId
 ; Destroys: A, IX
 ; Preserves, BC, DE, HL
-; Throws:
-;   - Err:Invalid if unit classes don't match
+; Throws: Err:Invalid if unit classes don't match
 checkCompatibleUnitClass:
     ld a, b
     call GetUnitClass ; A=unitClass; preserves BC, DE, HL
@@ -185,7 +199,7 @@ denominateValueToOp1:
     push de
     push bc
     inc hl ; HL=value
-    call move9ToOp1PageTwo
+    call move9ToOp1PageTwo ; preserves A
     pop bc
     pop de
     pop hl
@@ -204,7 +218,7 @@ op1ToDenominateValue:
     push bc
     inc hl ; *HL=value
     ex de, hl ; *DE=value
-    call move9FromOp1PageTwo
+    call move9FromOp1PageTwo ; preserves A
     pop bc
     pop de
     pop hl
@@ -228,7 +242,7 @@ ChsRpnDenominate:
 ; Description: Implement CHS (+/-) function on a Denominate.
 ; Input: HL:Denominate=den
 ; Output: HL:Denominate=-den
-; Destroys: all
+; Preserves: all
 chsDenominate:
     call denominateValueToOp1 ; OP1=value
     push hl
@@ -243,17 +257,12 @@ chsDenominate:
 ; first) argument.
 ; Input:
 ;   - OP1/OP2:RpnDenominate=den1
-;   - OP3/OP4:RpnDenominate=den2
+;   - OP3/OP4:RpnDenominate=den3
 ; Output:
-;   - OP1/OP2:RpnDenominate=den1+den2
+;   - OP1/OP2:RpnDenominate=den1+den3
 ; Destroys: all
 AddRpnDenominateByDenominate:
-    ld a, (OP1 + rpnDenominateFieldDisplayUnit) ; A=op1dDisplayUnitId
-    ld b, a ; unit1
-    ld a, (OP3 + rpnDenominateFieldDisplayUnit) ; A=op3dDisplayUnitId
-    ld c, a ; unit2
-    call checkCompatibleUnitClass ; throws Err:Invalid if different unitClass
-    ;
+    call checkCompatibleUnitClassOp1Op3 ; throws Err:Invalid
     call PushRpnObject1 ; FPS=[CP1]; HL=rpnDenominate(OP1)
     skipRpnObjectTypeHL
     ex de, hl ; DE=OP1
@@ -283,6 +292,33 @@ addDenominateByDenominate:
     ;
     pop hl ; stack=[]; HL=denHL
     call op1ToDenominateValue ; value(HL)+=value(DE)
+    ret
+
+;-----------------------------------------------------------------------------
+
+; Description: Subtract Denominate-Denominate, keeping the displayUnit of OP1
+; (the first) argument.
+;   - OP1/OP2:RpnDenominate=den1
+;   - OP3/OP4:RpnDenominate=den3
+; Output:
+;   - OP1/OP2:RpnDenominate=den1-den3
+; Destroys: all
+SubRpnDenominateByDenominate:
+    call checkCompatibleUnitClassOp1Op3 ; throws Err:Invalid
+    ;
+    call PushRpnObject1 ; FPS=[CP1]; HL=rpnDenominate(OP1)
+    skipRpnObjectTypeHL
+    ;
+    ex de, hl ; DE=OP1
+    call PushRpnObject3 ; FPS=[CP3]; HL=rpnDenominate(OP3)
+    skipRpnObjectTypeHL
+    ;
+    call chsDenominate ; den3=-den3; preserves DE, HL
+    ex de, hl ; HL=FPS(OP1); DE=FPS(OP3)
+    ;
+    call addDenominateByDenominate; value(HL)+=value(DE)
+    call dropRpnObject ; FPS=[CP1]
+    call PopRpnObject1 ; FPS=[]; OP1=RpnObject
     ret
 
 ;-----------------------------------------------------------------------------

@@ -1746,6 +1746,10 @@ _AddRpnDenominateByDenominateLabel:
 _AddRpnDenominateByDenominate equ _AddRpnDenominateByDenominateLabel-branchTableBase
     .dw AddRpnDenominateByDenominate
     .db 2
+_SubRpnDenominateByDenominateLabel:
+_SubRpnDenominateByDenominate equ _SubRpnDenominateByDenominateLabel-branchTableBase
+    .dw SubRpnDenominateByDenominate
+    .db 2
 _MultRpnDenominateByRealLabel:
 _MultRpnDenominateByReal equ _MultRpnDenominateByRealLabel-branchTableBase
     .dw MultRpnDenominateByReal

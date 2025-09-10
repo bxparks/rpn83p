@@ -266,7 +266,7 @@ universalSub:
     jr z, universalSubTimeMinusObject
     ; OP1=DateTime
     cp rpnObjectTypeDateTime ; ZF=1 if DateTime
-    jr z, universalSubDateTimeMinusObject
+    jp z, universalSubDateTimeMinusObject
     ; OP1=Offset
     cp rpnObjectTypeOffset ; ZF=1 if Offset
     jp z, universalSubOffsetMinusObject
@@ -279,6 +279,9 @@ universalSub:
     ; OP1=Duration
     cp rpnObjectTypeDuration ; ZF=1 if Duration
     jp z, universalSubDurationMinusObject
+    ; OP1=Denominate
+    cp rpnObjectTypeDenominate ; ZF=1 if Denominate
+    jp z, universalSubDenominateMinusObject
     jr universalSubErr
 ; Real - object
 universalSubRealMinusObject:
@@ -416,6 +419,15 @@ universalSubDurationMinusObject:
 universalSubDurationMinusReal:
 universalSubDurationMinusDuration:
     bcall(_SubRpnDurationByRpnDurationOrSeconds)
+    ret
+; Denominate - object
+universalSubDenominateMinusObject:
+    call getOp3RpnObjectType ; A=type; HL=OP3
+    cp rpnObjectTypeDenominate
+    jr z, universalSubDenominateMinusDenominate
+    jp universalSubErr
+universalSubDenominateMinusDenominate:
+    bcall(_SubRpnDenominateByDenominate) ; OP1-=OP3
     ret
 
 ; Description: Multiplication for real and complex numbers.
