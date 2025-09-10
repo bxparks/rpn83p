@@ -34,7 +34,7 @@ helpPageCount equ (helpPagesEnd-helpPages)/2
 
 msgHelpPage1:
     .db escapeLargeFont, "RPN83P", Lenter
-    .db escapeSmallFont, "v1.1.0", Shyphen, "dev (2025", Shyphen, "09", Shyphen, "09)", Senter
+    .db escapeSmallFont, "v1.1.0", Shyphen, "dev (2025", Shyphen, "09", Shyphen, "10)", Senter
     ;.db escapeSmallFont, "v1.0.0 (2024", Shyphen, "07", Shyphen, "19)", Senter
     .db "(c) 2023", Shyphen, "2025 Brian T. Park", Senter
     .db Senter

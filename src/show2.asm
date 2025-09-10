@@ -33,8 +33,8 @@ clearShowAreaLoop:
 ; Description: Format the number in OP1 to a NUL terminated string that shows
 ; all significant digits, suitable for a SHOW function.
 ; Input:
-;   - OP1/OP2: real, complex, or record (e.g. RpnDate{}, RpnDateTime{})
-;   - DE:(char*)=output string buffer
+;   - OP1/OP2:Real|Complex|RpnObject
+;   - DE:(char*)=bufPointer
 ; Output:
 ;   - (DE): string buffer updated and NUL terminated
 ;   - DE: points to NUL at the end of string, to allow chaining
@@ -68,6 +68,9 @@ FormShowable:
     ; RpnDuration
     cp rpnObjectTypeDuration
     jr z, formShowableDuration
+    ; RpnDenominate
+    cp rpnObjectTypeDenominate
+    jr z, formShowableDenominate
 formShowableUnknown:
     ; Print "{unknown}" if object not known
     ld hl, msgRpnObjectTypeUnknownPageTwo
@@ -100,7 +103,7 @@ formShowableOffset:
     call formatRpnOffsetRaw
     jr formShowableEnd
 formShowableOffsetDateTime:
-    call shrinkOp2ToOp1PageTwo
+    call shrinkOp2ToOp1PageTwo ; TODO: use PushRpnObject1(), PopRpnObject2()
     ld hl, OP1
     call formatRpnOffsetDateTimeRaw
     call expandOp1ToOp2PageTwo
@@ -112,6 +115,11 @@ formShowableDayOfWeek:
 formShowableDuration:
     ld hl, OP1
     call formatRpnDurationRaw
+    jr formShowableEnd
+formShowableDenominate:
+    call PushRpnObject1 ; FPS=[rpnDenominate]; HL=rpnDenominate
+    call showRpnDenominate
+    call PopRpnObject1 ; FPS=[]
     jr formShowableEnd
 formShowableEnd:
     xor a
@@ -131,7 +139,7 @@ msgRpnObjectTypeUnknownPageTwo:
 ; is 32.
 ;
 ; Input:
-;   - OP1: an integer represented as a floating point number
+;   - OP1:Real=an integer represented as a floating point number
 ;   - DE:(char*)=bufPointer (cannot be OPx)
 ; Output:
 ;   - (DE): contains the integer rendered as an integer string
@@ -230,11 +238,11 @@ groupBinDigitsForShowLoop:
 
 ; Format the complex number in OP1/OP2 into the C string buffer pointed by DE.
 ; Input:
-;   - OP1/OP2=Z, complex number
+;   - OP1/OP2:Complex
 ;   - DE:(char*)=cstringPointer
 ; Output:
 ;   - (DE): C string buffer updated, *not* NUL terminated
-;   - DE: points to the next character
+;   - DE=pointer to NUL after string
 ; Destroys: all, OP1-OP6
 formComplexString:
     ; Determine the complex display mode.
@@ -249,7 +257,7 @@ formComplexString:
 
 ; Description: Format the complex number in rectangular form.
 ; Input: DE:(char*)=cstringPointer
-; Output: DE: updated
+; Output: DE=pointer to NUL after string
 formComplexRectString:
     bcall(_ComplexToRect) ; OP1=Re(Z); OP2=Im(Z)
     ; Format real part
@@ -271,7 +279,7 @@ msgShowComplexRectSpacer:
 
 ; Description: Format the complex number in polar radian form.
 ; Input: DE:(char*)=cstringPointer
-; Output: DE: updated
+; Output: DE=pointer to NUL after string
 formComplexRadString:
     push de
     bcall(_ComplexToPolarRad) ; OP1=r; OP2=radians
@@ -295,7 +303,7 @@ msgShowComplexRadSpacer:
 
 ; Description: Format the complex number in polar degree form.
 ; Input: DE:(char*)=cstringPointer
-; Output: DE: updated
+; Output: DE=pointer to NUL after string
 formComplexDegString:
     push de
     bcall(_ComplexToPolarDeg) ; OP1=r; OP2=degrees
@@ -320,16 +328,14 @@ msgShowComplexDegSpacer:
 ;------------------------------------------------------------------------------
 
 ; Format the real floating value in OP1 into the string buffer pointed by DE.
-; The string is *not* terminated with NUL, allowing additional characters to be
-; rendered into the buffer. Calls various helper routines:
 ;   - formFloatString()
 ;   - formIntString()
 ; Input:
-;   - OP1: floating point number
-;   - DE: pointer to output string buffer
+;   - OP1:Real
+;   - DE:(*char)=pointer to NUL after formatted string
 ; Output:
-;   - DE: string buffer updated, points to the next character
-; Destroys: OP1, OP2
+;   - DE:(*char)=string buffer updated, points to the next character
+; Destroys: A, BC, HL, OP1, OP2
 formRealString:
     push de
     bcall(_CkOP1FP0) ; if OP1==0: ZF=1
@@ -339,6 +345,9 @@ formRealString:
     ld a, '0'
     ld (de), a
     inc de
+    ; NUL terminate
+    xor a
+    ld (de), a
     ret
 formRealStringNonZero:
     push de ; stack=[bufPointer]
@@ -369,10 +378,10 @@ formRealStringInt:
 ; this routine produces if OP1==0.0).
 ;
 ; Input:
-;   - OP1: floating point number
+;   - OP1:Real
 ;   - DE:(char*)=bufPointer
 ; Output:
-;   - (DE): floating point rendered in scientific notation, *not* NUL terminated
+;   - (DE)=pointer to terminating NUL
 ;   - DE: updated
 ; Destroys: A, B, C, DE, HL
 formSciString:
@@ -467,6 +476,9 @@ formSciStringPosExp:
     ex de, hl
     call FormatAToString ; HL string updated, no NUL
     ex de, hl
+    ; NUL terminate NUL
+    xor a
+    ld (de), a
     ret
 
 ;------------------------------------------------------------------------------
@@ -480,7 +492,7 @@ formSciStringPosExp:
 ; No validation of the EXP parameter is performed.
 ;
 ; Input:
-;   - OP1: an integer represented as a floating point number
+;   - OP1:Real=an integer represented as a floating point number
 ;   - DE:(char*)=bufPointer
 ; Output:
 ;   - (DE): floating point rendered in scientific notation, no NUL terminator
@@ -513,7 +525,7 @@ formIntStringLoop:
     ld (de), a
     inc de
     dec b
-    ret z
+    jr z, formIntStringLoopEnd
     ; print the second digit
     ld a, c ; A=BCD digit
     and $0F
@@ -521,4 +533,30 @@ formIntStringLoop:
     ld (de), a
     inc de
     djnz formIntStringLoop
+formIntStringLoopEnd:
+    xor a
+    ld (de), a
     ret
+
+;------------------------------------------------------------------------------
+
+; Description: Format an RpnDenominate for SHOW function. Similar to
+; FormatDenomiante() except show all digits.
+; Input:
+;   - HL:RpnDenominate=rpnDenominate
+;   - DE:(char*)=bufPointer
+; Output:
+;   - DE=pointer to NUL after string
+; Destroys: A, BC, HL, OP1-OP3
+showRpnDenominate:
+    skipRpnObjectTypeHL ; HL=denominate
+    ; Print 'name'
+    call formatDenominateName
+    ; Print '='
+    ld a, '='
+    ld (de), a
+    inc de
+    ; Extract 'value'
+    call extractDenominateValue ; OP1='value'
+    ; Format 'value'
+    jp formRealString
