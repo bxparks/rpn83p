@@ -55,7 +55,8 @@ ExtractUnitName:
     ret
 
 ; Description: Return the unitClass of the unit given in register A.
-; Input: A:u8=unitId
+; Input:
+;   - A:u8=unitId
 ; Output:
 ;   - A:u8=unitClass
 ; Destroys: A, IX

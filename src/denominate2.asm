@@ -157,6 +157,44 @@ checkCompatibleUnitClass:
     bcall(_ErrInvalid)
 
 ;-----------------------------------------------------------------------------
+
+; Description: Throw Err:Invalid if OP1 is TEMP or FUEL units.
+; Input:
+;   - OP1/OP2:RpnDenominate=den1
+; Throws: Err:Invalid
+; Destroys: A, HL
+checkArithmeticUnitClassOp1:
+    ld hl, OP1
+    jp checkArithmeticUnitClass
+
+; Description: Throw Err:Invalid if OP3 is TEMP or FUEL units.
+checkArithmeticUnitClassOp3:
+    ld hl, OP3
+    jp checkArithmeticUnitClass
+
+; Description: Throw Err:Invalid if HL is TEMP or FUEL units.
+; Input:
+;   - HL:RpnDenominate=den
+; Throws: Err:Invalid
+; Destroys: A, HL
+checkArithmeticUnitClass:
+    call getHLRpnObjectTypePageTwo ; A=rpnObjectType; preserves HL
+    cp rpnObjectTypeDenominate
+    ret nz
+    ;
+    skipRpnObjectTypeHL
+    ld a, (HL) ; A=displayUnitId
+    ;
+    bcall(_GetUnitClass) ; A=unitClass
+    cp unitClassTemperature
+    jr z, checkUnitClassForAddInvalid
+    cp unitClassFuel
+    jr z, checkUnitClassForAddInvalid
+    ret
+checkUnitClassForAddInvalid:
+    bcall(_ErrInvalid)
+
+;-----------------------------------------------------------------------------
 ; Extracting the Denominate value in different ways.
 ;-----------------------------------------------------------------------------
 
@@ -227,7 +265,7 @@ op1ToDenominateValue:
     ret
 
 ;-----------------------------------------------------------------------------
-; Arithematic operations.
+; Arithmetic operations.
 ;-----------------------------------------------------------------------------
 
 ; Description: Implement CHS (+/-) function on an RpnDenominate.
@@ -235,6 +273,7 @@ op1ToDenominateValue:
 ; Output: OP1/OP2:RpnDenominate=-den
 ; Destroys: all
 ChsRpnDenominate:
+    call checkArithmeticUnitClassOp1 ; throws Err:Invalid
     call PushRpnObject1 ; FPS=[CP1]; HL=rpnDenominate(OP1)
     skipRpnObjectTypeHL ; HL=denominate
     call chsDenominate
@@ -264,7 +303,10 @@ chsDenominate:
 ;   - OP1/OP2:RpnDenominate=den1+den3
 ; Destroys: all
 AddRpnDenominateByDenominate:
+    call checkArithmeticUnitClassOp1 ; throws Err:Invalid
+    call checkArithmeticUnitClassOp3 ; throws Err:Invalid
     call checkCompatibleUnitClassOp1Op3 ; throws Err:Invalid
+    ;
     call PushRpnObject1 ; FPS=[CP1]; HL=rpnDenominate(OP1)
     skipRpnObjectTypeHL
     ex de, hl ; DE=OP1
@@ -306,6 +348,8 @@ addDenominateByDenominate:
 ;   - OP1/OP2:RpnDenominate=den1-den3
 ; Destroys: all
 SubRpnDenominateByDenominate:
+    call checkArithmeticUnitClassOp1 ; throws Err:Invalid
+    call checkArithmeticUnitClassOp3 ; throws Err:Invalid
     call checkCompatibleUnitClassOp1Op3 ; throws Err:Invalid
     ;
     call PushRpnObject1 ; FPS=[CP1]; HL=rpnDenominate(OP1)
@@ -327,11 +371,14 @@ SubRpnDenominateByDenominate:
 
 ; Description: Multiply Denominte*Real or Real*Denominate.
 ; Input:
-;   - OP1/OP2:RpnDenominate|Real=denominate
-;   - OP3/OP4:RpnDenominate|Real=real
+;   - OP1/OP2:RpnDenominate|Real=obj1
+;   - OP3/OP4:RpnDenominate|Real=obj3
 ; Output:
 ;   - OP1/OP2:Denominate=den*value
 MultRpnDenominateByReal:
+    call checkArithmeticUnitClassOp1 ; throws Err:Invalid
+    call checkArithmeticUnitClassOp3 ; throws Err:Invalid
+    ;
     call getOp1RpnObjectTypePageTwo ; A=type; HL=OP1
     cp rpnObjectTypeReal
     call z, cp1ExCp3PageTwo ; CP1=rpnDenominate; CP3=real
@@ -358,6 +405,9 @@ MultRpnDenominateByReal:
 ; Output:
 ;   - OP1/OP2:Denominate=den/value
 DivRpnDenominateByReal:
+    call checkArithmeticUnitClassOp1 ; throws Err:Invalid
+    call checkArithmeticUnitClassOp3 ; throws Err:Invalid
+    ;
     call PushRpnObject1 ; FPS=[rpnDenominate]; HL=FPS(rpnDenominate)
     skipRpnObjectTypeHL ; HL=denominate
     push hl ; stack=[denominate]
