@@ -15,14 +15,25 @@
           greater than than 60.
     - UNIT menu
         - Reimplement the underlying architecture using a workflow similar to
-          the UNITS menu of the HP-19BII.
+          the UNITS menu of the HP-19BII and TI-85
             - Pressing a UNIT menu converts a Real number to a Denominate number
               (a number with units).
             - Pressing a subsequent UNIT menu converts that Denominate number
               into the unit requested by the menu key.
-        - Increase number of supported units from 30 to 111.
-        - Reorganize UNIT menus across 9 sub MenuFolders : LENG, AREA, VOL,
-          MASS, TEMP, PRES, ENER, PWR, FUEL.
+            - Support basic arithmetic operations on Denominate numbers: CHS, +,
+              -, *, /
+            - Support misc Unit Functions (UFCN)
+                - UVAL: return display value without units
+                - UBAS: convert to its "base unit"
+        - Increase number of supported units from 30 to 130.
+        - Reorganize UNIT menus across 12 sub MenuFolders: UFCN, LENG, AREA,
+          VOL, MASS, TEMP, VELO, FORC, PRES, ENER, PWR, FUEL.
+    - BASE
+        - move most menu items under 5 new subfolders: LOGI, ROTS, BITS, BFCN,
+          BFLG
+        - no functional change
+    - RPN83P application size
+        - increase to 64kiB (4 flash pages) from 48kiB
 - 1.0.0 (2024-07-19)
     - RPN83P is now out of beta!
     - Documentation
