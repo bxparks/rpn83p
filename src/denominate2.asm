@@ -11,9 +11,11 @@
 ;-----------------------------------------------------------------------------
 
 ; Description: Return CF=1 if Denominate is valid (unitId is within range).
-; Input: HL:Denominate=denominate
-; Output: CF=1 if valid; CF=0 if invalid
-; Destroys: A
+; Input:
+;   - HL:Denominate=denominate
+; Output:
+;   - A=unitId
+;   - CF=1 if valid; CF=0 if invalid
 ; Preserves: BC, DE, HL
 validateDenominate:
     ld a, (hl) ; A=unitId
@@ -92,7 +94,7 @@ normalizeRealToBaseUnit:
     jp z, fuelMpgToLkm
     ; All other units can be normalized with a simple scaling factor.
     call op1ToOp2PageTwo ; OP2=value; A=A
-    call GetUnitScale ; OP1=scale
+    bcall(_GetUnitScale) ; OP1=scale
     bcall(_FPMult) ; OP1=baseValue=scale*value
     ret
 
@@ -144,11 +146,11 @@ checkCompatibleUnitClassOp1Op3:
 ; Throws: Err:Invalid if unit classes don't match
 checkCompatibleUnitClass:
     ld a, b
-    call GetUnitClass ; A=unitClass; preserves BC, DE, HL
+    bcall(_GetUnitClass) ; A=unitClass; preserves BC, DE, HL
     ld b, a
     ;
     ld a, c
-    call GetUnitClass ; A=unitClass; preserves BC, DE, HL
+    bcall(_GetUnitClass) ; A=unitClass; preserves BC, DE, HL
     ;
     cp b
     ret z
@@ -183,7 +185,7 @@ denominateToDisplayValue:
     jp z, fuelLkmToMpg
     ; All other units can be converted with a simple scaling factor.
     call op1ToOp2PageTwo ; OP2=value; preserves A
-    call GetUnitScale ; OP1=scale
+    bcall(_GetUnitScale) ; OP1=scale
     call op1ExOp2PageTwo ; OP1=value; OP2=scale
     bcall(_FPDiv) ; OP1=displayValue=normalizedValue/scale
     ret

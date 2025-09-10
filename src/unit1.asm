@@ -14,6 +14,11 @@
 ; }
 ;
 ; sizeof(UnitInfo) = 13
+;
+; Labels with Capital letters are intended to be exported to other flash pages
+; and should be placed in the branch table on Flash Page 0. Labels with
+; lowercase letters are intended to be private so do not need a branch table
+; entry.
 ;-----------------------------------------------------------------------------
 
 unitInfoFieldName equ 0
@@ -21,24 +26,39 @@ unitInfoFieldUnitClass equ 2
 unitInfoFieldBaseUnitId equ 3
 unitInfoFieldScale equ 4
 
-; Description: Return the name of the unit given in register A.
-; Input: A:u8=unitId
+; Description: Extract the name of the unit given in register A, and copy it
+; into the buffer given by HL.
+;
+; The calling code is required to pass a string buffer large enough to hold the
+; name of the unit (e.g. OP3 or OP4). We cannot simply return the pointer to
+; the string to the caller because the caller may be on a different flash page
+; than the unitInfoTable.
+; Input:
+;   - A:u8=unitId
+;   - HL:(const char*)=namebuf
 ; Output:
-;   - HL:(const char*)=name
-;   - IX:(UnitInfo*)=unitInfo
-; Destroys: IX
-; Preserves: A, BC, DE
-GetUnitName:
+;   - HL:(const char*)=namebuf=name
+; Destroys: A, IX
+; Preserves: BC, DE, HL
+ExtractUnitName:
+    push hl
+    push de
+    push bc
     call findUnitInfoIX ; IX=unitInfo
+    ex de, hl ; DE=namebuf
     ld l, (ix + unitInfoFieldName)
     ld h, (ix + unitInfoFieldName + 1)
+    call copyCStringPageOne
+    pop bc
+    pop de
+    pop hl
     ret
 
 ; Description: Return the unitClass of the unit given in register A.
 ; Input: A:u8=unitId
 ; Output:
 ;   - A:u8=unitClass
-;   - IX:(UnitInfo*)=unitInfo
+; Destroys: A, IX
 ; Preserves: BC, DE, HL
 GetUnitClass:
     call findUnitInfoIX ; IX=unitInfo
@@ -49,7 +69,6 @@ GetUnitClass:
 ; Input: A:u8=unitId
 ; Output:
 ;   - A:u8=baseUnitId
-;   - IX:(UnitInfo*)=unitInfo
 ; Preserves: BC, DE, HL
 GetUnitBase:
     call findUnitInfoIX ; IX=unitInfo
@@ -60,7 +79,6 @@ GetUnitBase:
 ; Input: A:u8=unitId
 ; Output:
 ;   - OP1:Real=scale
-;   - IX:(UnitInfo*)=unitInfo
 ; Destroys: all
 GetUnitScale:
     call findUnitInfoIX ; IX=unitInfo

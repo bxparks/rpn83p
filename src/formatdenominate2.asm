@@ -24,11 +24,12 @@
 FormatDenominate:
     skipRpnObjectTypeHL ; HL=denominate
     ; Check for error state
-    call validateDenominate ; CF=0 if invalid
+    call validateDenominate ; CF=0 if invalid; A=unitId
     jr nc, formatErrorDenominate
     ; Print the target unit name.
     push hl ; stack=[denominate]
-    call GetUnitName ; HL=name
+    ld hl, OP3 ; buffer for unitName
+    bcall(_ExtractUnitName) ; HL=name
     call copyCStringPageTwo ; copy HL to DE
     ; Print '='
     ld a, '='

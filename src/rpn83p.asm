@@ -1075,6 +1075,24 @@ _FormatComplexPolarDeg equ _FormatComplexPolarDegLabel-branchTableBase
     .dw FormatComplexPolarDeg
     .db 1
 
+; unit1.asm
+_ExtractUnitNameLabel:
+_ExtractUnitName equ _ExtractUnitNameLabel-branchTableBase
+    .dw ExtractUnitName
+    .db 1
+_GetUnitClassLabel:
+_GetUnitClass equ _GetUnitClassLabel-branchTableBase
+    .dw GetUnitClass
+    .db 1
+_GetUnitBaseLabel:
+_GetUnitBase equ _GetUnitBaseLabel-branchTableBase
+    .dw GetUnitBase
+    .db 1
+_GetUnitScaleLabel:
+_GetUnitScale equ _GetUnitScaleLabel-branchTableBase
+    .dw GetUnitScale
+    .db 1
+
 ;-----------------------------------------------------------------------------
 
 #ifdef DEBUG
@@ -1765,12 +1783,6 @@ _FormatDenominate equ _FormatDenominateLabel-branchTableBase
     .dw FormatDenominate
     .db 2
 
-; unit2.asm
-_GetUnitNameLabel:
-_GetUnitName equ _GetUnitNameLabel-branchTableBase
-    .dw GetUnitName
-    .db 2
-
 ; base2.asm
 _ColdInitBaseLabel:
 _ColdInitBase equ _ColdInitBaseLabel-branchTableBase
@@ -2125,6 +2137,10 @@ defpage(1)
 #include "prob1.asm"
 #include "format1.asm"
 #include "duration1.asm"
+;
+#include "unitdef.asm"
+#include "unit1.asm"
+;
 #ifdef DEBUG
 #include "debug1.asm"
 #endif
@@ -2156,8 +2172,6 @@ defpage(2)
 ;
 #include "denominate2.asm"
 #include "formatdenominate2.asm"
-#include "unitdef.asm"
-#include "unit2.asm"
 ;
 #include "integer40.asm"
 #include "integerconv40.asm"
