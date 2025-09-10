@@ -480,13 +480,17 @@ mUnitPoundHandler:
     ld a, unitPoundId
     jp commonUnitHandler
 
-mUnitHundredWeightHandler:
-    ld a, unitHundredWeightId
+mUnitSlugHandler:
+    ld a, unitSlugId
     jp commonUnitHandler
 
 ;-----------------------------------------------------------------------------
 ; UNIT > MASS > US > Row 2
 ;-----------------------------------------------------------------------------
+
+mUnitHundredWeightHandler:
+    ld a, unitHundredWeightId
+    jp commonUnitHandler
 
 mUnitTonHandler:
     ld a, unitTonId

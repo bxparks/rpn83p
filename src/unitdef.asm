@@ -31,7 +31,7 @@ unitClassFuel equ 9
 ; List of units.
 ;-----------------------------------------------------------------------------
 
-unitsCount equ 126 ; number of units
+unitsCount equ 127 ; number of units
 unitInfoTable:
 
 unitAngstromInfo:
@@ -538,254 +538,260 @@ unitPoundId equ 83
     .db unitClassMass ; unitClass
     .db unitGramId ; baseUnitId
     .db $00, $82, $45, $35, $92, $37, $00, $00, $00 ; scale=453.59237
+unitSlugInfo:
+unitSlugId equ 84
+    .dw unitSlugName ; name
+    .db unitClassMass ; unitClass
+    .db unitGramId ; baseUnitId
+    .db $00, $84, $14, $59, $39, $02, $93, $72, $07 ; scale=14.593902937207e3
 unitHundredWeightInfo:
-unitHundredWeightId equ 84
+unitHundredWeightId equ 85
     .dw unitHundredWeightName ; name
     .db unitClassMass ; unitClass
     .db unitGramId ; baseUnitId
     .db $00, $84, $45, $35, $92, $37, $00, $00, $00 ; scale=453.59237e2
 unitTonInfo:
-unitTonId equ 85
+unitTonId equ 86
     .dw unitTonName ; name
     .db unitClassMass ; unitClass
     .db unitGramId ; baseUnitId
     .db $00, $85, $90, $71, $84, $74, $00, $00, $00 ; scale=907.18474e3
 unitStoneInfo:
-unitStoneId equ 86
+unitStoneId equ 87
     .dw unitStoneName ; name
     .db unitClassMass ; unitClass
     .db unitGramId ; baseUnitId
     .db $00, $83, $63, $50, $29, $31, $80, $00, $00 ; scale=6.35029318e3
 unitQuarterInfo:
-unitQuarterId equ 87
+unitQuarterId equ 88
     .dw unitQuarterName ; name
     .db unitClassMass ; unitClass
     .db unitGramId ; baseUnitId
     .db $00, $84, $12, $70, $05, $86, $36, $00, $00 ; scale=12.70058636e3
 unitLongHundredWeightInfo:
-unitLongHundredWeightId equ 88
+unitLongHundredWeightId equ 89
     .dw unitLongHundredWeightName ; name
     .db unitClassMass ; unitClass
     .db unitGramId ; baseUnitId
     .db $00, $84, $50, $80, $23, $45, $44, $00, $00 ; scale=50.80234544e3
 unitLongTonInfo:
-unitLongTonId equ 89
+unitLongTonId equ 90
     .dw unitLongTonName ; name
     .db unitClassMass ; unitClass
     .db unitGramId ; baseUnitId
     .db $00, $86, $10, $16, $04, $69, $08, $80, $00 ; scale=1016.0469088e3
 unitTroyPennyWeightInfo:
-unitTroyPennyWeightId equ 90
+unitTroyPennyWeightId equ 91
     .dw unitTroyPennyWeightName ; name
     .db unitClassMass ; unitClass
     .db unitGramId ; baseUnitId
     .db $00, $80, $15, $55, $17, $38, $40, $00, $00 ; scale=1.55517384
 unitTroyOunceInfo:
-unitTroyOunceId equ 91
+unitTroyOunceId equ 92
     .dw unitTroyOunceName ; name
     .db unitClassMass ; unitClass
     .db unitGramId ; baseUnitId
     .db $00, $81, $31, $10, $34, $76, $80, $00, $00 ; scale=31.1034768
 unitTroyPoundInfo:
-unitTroyPoundId equ 92
+unitTroyPoundId equ 93
     .dw unitTroyPoundName ; name
     .db unitClassMass ; unitClass
     .db unitGramId ; baseUnitId
     .db $00, $82, $37, $32, $41, $72, $16, $00, $00 ; scale=373.2417216
 unitCelsiusInfo:
-unitCelsiusId equ 93
+unitCelsiusId equ 94
     .dw unitCelsiusName ; name
     .db unitClassTemperature ; unitClass
     .db unitKelvinId ; baseUnitId
     .db $00, $80, $10, $00, $00, $00, $00, $00, $00 ; scale=1
 unitFahrenheitInfo:
-unitFahrenheitId equ 94
+unitFahrenheitId equ 95
     .dw unitFahrenheitName ; name
     .db unitClassTemperature ; unitClass
     .db unitKelvinId ; baseUnitId
     .db $00, $80, $10, $00, $00, $00, $00, $00, $00 ; scale=1
 unitRankineInfo:
-unitRankineId equ 95
+unitRankineId equ 96
     .dw unitRankineName ; name
     .db unitClassTemperature ; unitClass
     .db unitKelvinId ; baseUnitId
     .db $00, $80, $10, $00, $00, $00, $00, $00, $00 ; scale=1
 unitKelvinInfo:
-unitKelvinId equ 96
+unitKelvinId equ 97
     .dw unitKelvinName ; name
     .db unitClassTemperature ; unitClass
     .db unitKelvinId ; baseUnitId
     .db $00, $80, $10, $00, $00, $00, $00, $00, $00 ; scale=1
 unitMeterPerSecondInfo:
-unitMeterPerSecondId equ 97
+unitMeterPerSecondId equ 98
     .dw unitMeterPerSecondName ; name
     .db unitClassVelocity ; unitClass
     .db unitMeterPerSecondId ; baseUnitId
     .db $00, $80, $10, $00, $00, $00, $00, $00, $00 ; scale=1
 unitFootPerSecondInfo:
-unitFootPerSecondId equ 98
+unitFootPerSecondId equ 99
     .dw unitFootPerSecondName ; name
     .db unitClassVelocity ; unitClass
     .db unitMeterPerSecondId ; baseUnitId
     .db $00, $7F, $30, $48, $00, $00, $00, $00, $00 ; scale=0.3048
 unitKiloMeterPerHourInfo:
-unitKiloMeterPerHourId equ 99
+unitKiloMeterPerHourId equ 100
     .dw unitKiloMeterPerHourName ; name
     .db unitClassVelocity ; unitClass
     .db unitMeterPerSecondId ; baseUnitId
     .db $00, $7F, $27, $77, $77, $77, $77, $77, $78 ; scale=0.27777777777778
 unitMilePerHourInfo:
-unitMilePerHourId equ 100
+unitMilePerHourId equ 101
     .dw unitMilePerHourName ; name
     .db unitClassVelocity ; unitClass
     .db unitMeterPerSecondId ; baseUnitId
     .db $00, $7F, $44, $70, $40, $00, $00, $00, $00 ; scale=0.44704
 unitMilliPascalInfo:
-unitMilliPascalId equ 101
+unitMilliPascalId equ 102
     .dw unitMilliPascalName ; name
     .db unitClassPressure ; unitClass
     .db unitPascalId ; baseUnitId
     .db $00, $7D, $10, $00, $00, $00, $00, $00, $00 ; scale=1e-3
 unitPascalInfo:
-unitPascalId equ 102
+unitPascalId equ 103
     .dw unitPascalName ; name
     .db unitClassPressure ; unitClass
     .db unitPascalId ; baseUnitId
     .db $00, $80, $10, $00, $00, $00, $00, $00, $00 ; scale=1
 unitHectoPascalInfo:
-unitHectoPascalId equ 103
+unitHectoPascalId equ 104
     .dw unitHectoPascalName ; name
     .db unitClassPressure ; unitClass
     .db unitPascalId ; baseUnitId
     .db $00, $82, $10, $00, $00, $00, $00, $00, $00 ; scale=1e2
 unitKiloPascalInfo:
-unitKiloPascalId equ 104
+unitKiloPascalId equ 105
     .dw unitKiloPascalName ; name
     .db unitClassPressure ; unitClass
     .db unitPascalId ; baseUnitId
     .db $00, $83, $10, $00, $00, $00, $00, $00, $00 ; scale=1e3
 unitMilliBarInfo:
-unitMilliBarId equ 105
+unitMilliBarId equ 106
     .dw unitMilliBarName ; name
     .db unitClassPressure ; unitClass
     .db unitPascalId ; baseUnitId
     .db $00, $82, $10, $00, $00, $00, $00, $00, $00 ; scale=1e2
 unitDeciBarInfo:
-unitDeciBarId equ 106
+unitDeciBarId equ 107
     .dw unitDeciBarName ; name
     .db unitClassPressure ; unitClass
     .db unitPascalId ; baseUnitId
     .db $00, $84, $10, $00, $00, $00, $00, $00, $00 ; scale=1e4
 unitBarInfo:
-unitBarId equ 107
+unitBarId equ 108
     .dw unitBarName ; name
     .db unitClassPressure ; unitClass
     .db unitPascalId ; baseUnitId
     .db $00, $85, $10, $00, $00, $00, $00, $00, $00 ; scale=1e5
 unitAtmosphereInfo:
-unitAtmosphereId equ 108
+unitAtmosphereId equ 109
     .dw unitAtmosphereName ; name
     .db unitClassPressure ; unitClass
     .db unitPascalId ; baseUnitId
     .db $00, $85, $10, $13, $25, $00, $00, $00, $00 ; scale=101325
 unitMilliMeterMercuryInfo:
-unitMilliMeterMercuryId equ 109
+unitMilliMeterMercuryId equ 110
     .dw unitMilliMeterMercuryName ; name
     .db unitClassPressure ; unitClass
     .db unitPascalId ; baseUnitId
     .db $00, $82, $13, $33, $22, $38, $74, $15, $00 ; scale=133.322387415
 unitInchMercuryInfo:
-unitInchMercuryId equ 110
+unitInchMercuryId equ 111
     .dw unitInchMercuryName ; name
     .db unitClassPressure ; unitClass
     .db unitPascalId ; baseUnitId
     .db $00, $83, $33, $86, $38, $86, $40, $34, $10 ; scale=3386.388640341
 unitPoundSquareInchInfo:
-unitPoundSquareInchId equ 111
+unitPoundSquareInchId equ 112
     .dw unitPoundSquareInchName ; name
     .db unitClassPressure ; unitClass
     .db unitPascalId ; baseUnitId
     .db $00, $83, $68, $94, $75, $72, $93, $16, $84 ; scale=6894.7572931684
 unitTorrInfo:
-unitTorrId equ 112
+unitTorrId equ 113
     .dw unitTorrName ; name
     .db unitClassPressure ; unitClass
     .db unitPascalId ; baseUnitId
     .db $00, $82, $13, $33, $22, $36, $84, $21, $05 ; scale=133.32236842105
 unitJouleInfo:
-unitJouleId equ 113
+unitJouleId equ 114
     .dw unitJouleName ; name
     .db unitClassEnergy ; unitClass
     .db unitJouleId ; baseUnitId
     .db $00, $80, $10, $00, $00, $00, $00, $00, $00 ; scale=1
 unitWattHourInfo:
-unitWattHourId equ 114
+unitWattHourId equ 115
     .dw unitWattHourName ; name
     .db unitClassEnergy ; unitClass
     .db unitJouleId ; baseUnitId
     .db $00, $83, $36, $00, $00, $00, $00, $00, $00 ; scale=3.6e3
 unitKiloWattHourInfo:
-unitKiloWattHourId equ 115
+unitKiloWattHourId equ 116
     .dw unitKiloWattHourName ; name
     .db unitClassEnergy ; unitClass
     .db unitJouleId ; baseUnitId
     .db $00, $86, $36, $00, $00, $00, $00, $00, $00 ; scale=3.6e6
 unitCalorieInfo:
-unitCalorieId equ 116
+unitCalorieId equ 117
     .dw unitCalorieName ; name
     .db unitClassEnergy ; unitClass
     .db unitJouleId ; baseUnitId
     .db $00, $80, $41, $84, $00, $00, $00, $00, $00 ; scale=4.184
 unitKiloCalorieInfo:
-unitKiloCalorieId equ 117
+unitKiloCalorieId equ 118
     .dw unitKiloCalorieName ; name
     .db unitClassEnergy ; unitClass
     .db unitJouleId ; baseUnitId
     .db $00, $83, $41, $84, $00, $00, $00, $00, $00 ; scale=4.184e3
 unitElectronVoltInfo:
-unitElectronVoltId equ 118
+unitElectronVoltId equ 119
     .dw unitElectronVoltName ; name
     .db unitClassEnergy ; unitClass
     .db unitJouleId ; baseUnitId
     .db $00, $6D, $16, $02, $17, $66, $34, $00, $00 ; scale=1.602176634e-19
 unitBritishThermalUnitInfo:
-unitBritishThermalUnitId equ 119
+unitBritishThermalUnitId equ 120
     .dw unitBritishThermalUnitName ; name
     .db unitClassEnergy ; unitClass
     .db unitJouleId ; baseUnitId
     .db $00, $83, $10, $55, $00, $00, $00, $00, $00 ; scale=1055
 unitGramTNTInfo:
-unitGramTNTId equ 120
+unitGramTNTId equ 121
     .dw unitGramTNTName ; name
     .db unitClassEnergy ; unitClass
     .db unitJouleId ; baseUnitId
     .db $00, $83, $41, $84, $00, $00, $00, $00, $00 ; scale=4184
 unitTonTNTInfo:
-unitTonTNTId equ 121
+unitTonTNTId equ 122
     .dw unitTonTNTName ; name
     .db unitClassEnergy ; unitClass
     .db unitJouleId ; baseUnitId
     .db $00, $89, $41, $84, $00, $00, $00, $00, $00 ; scale=4.184e9
 unitWattInfo:
-unitWattId equ 122
+unitWattId equ 123
     .dw unitWattName ; name
     .db unitClassPower ; unitClass
     .db unitWattId ; baseUnitId
     .db $00, $80, $10, $00, $00, $00, $00, $00, $00 ; scale=1
 unitHorsepowerInfo:
-unitHorsepowerId equ 123
+unitHorsepowerId equ 124
     .dw unitHorsepowerName ; name
     .db unitClassPower ; unitClass
     .db unitWattId ; baseUnitId
     .db $00, $82, $74, $56, $99, $87, $15, $82, $27 ; scale=745.69987158227022
 unitMilesPerGallonInfo:
-unitMilesPerGallonId equ 124
+unitMilesPerGallonId equ 125
     .dw unitMilesPerGallonName ; name
     .db unitClassFuel ; unitClass
     .db unitLitersPerHundredKiloMetersId ; baseUnitId
     .db $00, $80, $10, $00, $00, $00, $00, $00, $00 ; scale=1
 unitLitersPerHundredKiloMetersInfo:
-unitLitersPerHundredKiloMetersId equ 125
+unitLitersPerHundredKiloMetersId equ 126
     .dw unitLitersPerHundredKiloMetersName ; name
     .db unitClassFuel ; unitClass
     .db unitLitersPerHundredKiloMetersId ; baseUnitId
@@ -795,8 +801,8 @@ unitLitersPerHundredKiloMetersId equ 125
 ; List of unit names.
 ;-----------------------------------------------------------------------------
 
-unitNamesCount equ 126 ; number of unit names
-unitNamesPoolSize equ 839 ; size of unit names string pool
+unitNamesCount equ 127 ; number of unit names
+unitNamesPoolSize equ 844 ; size of unit names string pool
 
 unitAngstromName:
     .db "angst", 0
@@ -966,6 +972,8 @@ unitOunceName:
     .db "oz", 0
 unitPoundName:
     .db "lbs", 0
+unitSlugName:
+    .db "slug", 0
 unitHundredWeightName:
     .db "cwt", 0
 unitTonName:

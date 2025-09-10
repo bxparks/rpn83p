@@ -512,9 +512,10 @@ MenuGroup root mRoot [
                 MenuItem dram mUnitDram
                 MenuItem oz mUnitOunce
                 MenuItem lbs mUnitPound
-                MenuItem cwt mUnitHundredWeight
+                MenuItem slug mUnitSlug
               ]
               MenuRow [
+                MenuItem cwt mUnitHundredWeight
                 MenuItem ton mUnitTon
               ]
             ]
