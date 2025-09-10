@@ -442,6 +442,10 @@ universalMult:
     ; OP1=OffsetDateTime
     cp rpnObjectTypeOffsetDateTime ; ZF=1 if OffsetDateTime
     jr z, universalMultOffsetDateTimeByObject
+    ; TODO: Implement Duration*Real and Real*Duration
+    ; OP1=Denominate
+    cp rpnObjectTypeDenominate ; ZF=1 if Denominate
+    jp z, universalMultDenominateByObject
     jr universalMultErr
 ; Real * object
 universalMultRealByObject:
@@ -454,6 +458,8 @@ universalMultRealByObject:
     jr z, universalMultRealByDateTime
     cp rpnObjectTypeOffsetDateTime
     jr z, universalMultRealByOffsetDateTime
+    cp rpnObjectTypeDenominate
+    jr z, universalMultRealByDenominate
     jr universalMultErr
 universalMultRealByReal:
     call op3ToOp2
@@ -467,6 +473,9 @@ universalMultRealByDateTime:
     ret
 universalMultRealByOffsetDateTime:
     bcall(_ConvertRpnOffsetDateTimeToTimeZoneAsReal)
+    ret
+universalMultRealByDenominate:
+    bcall(_MultRpnDenominateByReal)
     ret
 ; Complex * object
 universalMultComplexByObject:
@@ -524,6 +533,15 @@ universalMultOffsetDateTimeByReal:
     ret
 universalMultOffsetDateTimeByOffset:
     bcall(_ConvertRpnOffsetDateTimeToOffset)
+    ret
+; Denominate * object
+universalMultDenominateByObject:
+    call getOp3RpnObjectType ; A=type; HL=OP3
+    cp rpnObjectTypeReal
+    jr z, universalMultDenominateByReal
+    jr universalMultErr
+universalMultDenominateByReal:
+    bcall(_MultRpnDenominateByReal)
     ret
 
 ; Description: Division for real and complex numbers.

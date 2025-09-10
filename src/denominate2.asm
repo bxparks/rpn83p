@@ -261,6 +261,32 @@ addDenominateByDenominate:
     ret
 
 ;-----------------------------------------------------------------------------
+
+; Description: Multiply Denominte*Real or Real*Denominate.
+; Input:
+;   - OP1/OP2:RpnDenominate|Real=denominate
+;   - OP3/OP4:RpnDenominate|Real=real
+; Output:
+;   - OP1/OP2:Denominate=den*value
+MultRpnDenominateByReal:
+    call getOp1RpnObjectTypePageTwo ; A=type; HL=OP1
+    cp rpnObjectTypeReal
+    call z, cp1ExCp3PageTwo ; CP1=rpnDenominate; CP3=real
+    ;
+    call PushRpnObject1 ; FPS=[rpnDenominate]; HL=FPS(rpnDenominate)
+    skipRpnObjectTypeHL ; HL=denominate
+    push hl ; stack=[denominate]
+    call denominateValueToOp1 ; OP1=value
+    call op3ToOp2PageTwo ; OP2=real
+    bcall(_FPMult) ; OP1=real*value
+    ;
+    pop hl ; stack=[]; HL=denominate
+    call op1ToDenominateValue ; value(denominate)*=real*value
+    ;
+    call PopRpnObject1 ; FPS=[]; OP1=result
+    ret
+
+;-----------------------------------------------------------------------------
 ; Converters for special units which cannot be converted by simple scaling. For
 ; example temperature units (C, F, R, K) and fuel consumption units (mpg,
 ; L/100km).

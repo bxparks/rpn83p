@@ -1744,7 +1744,7 @@ _AddRpnDenominateByDenominate equ _AddRpnDenominateByDenominateLabel-branchTable
     .db 2
 _MultRpnDenominateByRealLabel:
 _MultRpnDenominateByReal equ _MultRpnDenominateByRealLabel-branchTableBase
-    .dw ApplyUnit
+    .dw MultRpnDenominateByReal
     .db 2
 
 ; formatdenominate2.asm
