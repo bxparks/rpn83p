@@ -60,6 +60,23 @@ commonUnitHandler:
     jp replaceX
 
 ;-----------------------------------------------------------------------------
+; UNIT > UFCN > Row 1
+;-----------------------------------------------------------------------------
+
+; Extract the display value.
+mUnitValueHandler:
+    call closeInputAndRecallDenominateX ; A=rpnObjectType; OP1=X
+    bcall(_GetRpnDenominateDisplayValue) ; OP1=displayValue
+    jp replaceX
+
+; Convert to its base unit.
+mUnitBaseHandler:
+    call closeInputAndRecallDenominateX ; A=rpnObjectType; OP1=X
+    bcall(_ConvertRpnDenominateToBaseUnit) ; OP1=rpnObject
+    jp replaceX
+    ret
+
+;-----------------------------------------------------------------------------
 ; UNIT > LENG > Row 1
 ;-----------------------------------------------------------------------------
 

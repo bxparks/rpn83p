@@ -195,8 +195,47 @@ checkUnitClassForAddInvalid:
     bcall(_ErrInvalid)
 
 ;-----------------------------------------------------------------------------
+; Convert RpnDenominate to its base unit.
+;-----------------------------------------------------------------------------
+
+; Description: Convert the RpnDenominate object to its 'baseUnit'.
+; Input:
+;   - A:u8=rpnObjectType
+;   - OP1/OP2:RpnDenominate=rpnDenominate
+; Output:
+;   - OP1/OP2:RpnDenominate=rpnDenominate
+; Destroys: all, OP1-OP3
+ConvertRpnDenominateToBaseUnit:
+    cp rpnObjectTypeDenominate
+    jr nz, convertRpnDenominateToBaseUnitErr
+    ;
+    call PushRpnObject1 ; FPS=[rpnDenominate]; HL=rpnDenominate
+    skipRpnObjectTypeHL ; HL=denominate
+    ld a, (hl); A=unitId
+    bcall(_GetUnitBase) ; A=baseUnitId
+    ld (hl), a ; denominate.displayUnit=baseUnit
+    call PopRpnObject1 ; FPS=[]; OP1=rpnDenominate
+    ret
+convertRpnDenominateToBaseUnitErr:
+    bcall(_ErrDataType)
+
+;-----------------------------------------------------------------------------
 ; Extracting the Denominate value in different ways.
 ;-----------------------------------------------------------------------------
+
+; Description: Extract the display value of RpnDenominate as a Real number,
+; removing the unit from the RpnObject.
+; Input:
+;   - OP1/OP2:RpnDenominate=rpnDenominate
+; Output:
+;   - OP1:Real=displayValue
+; Destroys: all, OP1-OP3
+GetRpnDenominateDisplayValue:
+    call PushRpnObject1 ; FPS=[rpnDenominate]; HL=rpnDenominate
+    skipRpnObjectTypeHL ; HL=denominate
+    call denominateToDisplayValue ; OP1=displayValue
+    call dropRpnObject ; FPS=[];
+    ret
 
 ; Description: Convert the normalized 'value' of the denominate pointed by HL
 ; to the display value in units of its 'displayUnitId'.

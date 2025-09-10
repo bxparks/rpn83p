@@ -1756,6 +1756,14 @@ _ApplyUnitLabel:
 _ApplyUnit equ _ApplyUnitLabel-branchTableBase
     .dw ApplyUnit
     .db 2
+_GetRpnDenominateDisplayValueLabel:
+_GetRpnDenominateDisplayValue equ _GetRpnDenominateDisplayValueLabel-branchTableBase
+    .dw GetRpnDenominateDisplayValue
+    .db 2
+_ConvertRpnDenominateToBaseUnitLabel:
+_ConvertRpnDenominateToBaseUnit equ _ConvertRpnDenominateToBaseUnitLabel-branchTableBase
+    .dw ConvertRpnDenominateToBaseUnit
+    .db 2
 _ChsRpnDenominateLabel:
 _ChsRpnDenominate equ _ChsRpnDenominateLabel-branchTableBase
     .dw ChsRpnDenominate

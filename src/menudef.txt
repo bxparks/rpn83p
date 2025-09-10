@@ -356,6 +356,12 @@ MenuGroup root mRoot [
     ]
     MenuGroup UNIT mUnit [
       MenuRow [
+        MenuGroup UFCN mUnitFunctions [
+          MenuRow [
+            MenuItem UVAL mUnitValue # extract the display value
+            MenuItem UBAS mUnitBase # convert to denominate in base unit
+          ]
+        ]
         MenuGroup LENG mUnitLengh [
           MenuRow [
             # MenuItem nm mUnitNanoMeter
@@ -504,6 +510,8 @@ MenuGroup root mRoot [
             MenuItem ton mUnitTon
           ]
         ]
+      ]
+      MenuRow [
         MenuGroup TEMP mUnitTemp [
           MenuRow [
             MenuItem <Stemp>C mUnitCelsius
@@ -512,8 +520,6 @@ MenuGroup root mRoot [
             MenuItem <Stemp>K mUnitKelvin # add <Stemp> to 'K' for visual hint
           ]
         ]
-      ]
-      MenuRow [
         MenuGroup PRES mUnitPressure [
           MenuRow [
             MenuItem Pa mUnitPascal
