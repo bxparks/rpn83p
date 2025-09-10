@@ -587,7 +587,6 @@ class SymbolGenerator:
     def __init__(self, root: MenuNode):
         self.root = root
         self.id_map: Dict[int, MenuNode] = {}  # {node_id -> MenuNode}
-        self.name_map: Dict[str, MenuNode] = {}  # {node_name -> MenuNode}
         self.label_map: Dict[str, MenuNode] = {}  # {node_label -> MenuNode}
         self.id_counter = 1  # Null node is id=0, so Root node starts at id=1
 
@@ -615,26 +614,12 @@ class SymbolGenerator:
 
     def generate_node(self, node: MenuNode, parent_id: int) -> None:
         """Process the given node, no recursion."""
-        # Add menu name to the name_map table. And label to label_map table.
-        # Check for duplicates.
+        # Check for duplicates labels. Duplicate (display) names allowed.
         name = node["name"]
-        if name != "*":
-            entry = self.name_map.get(name)
-            # Check for duplicates.
-            if entry is not None:
-                # Cannot have duplicate MenuGroup, ever.
-                if entry["mtype"] == MENU_TYPE_GROUP or \
-                        node["mtype"] == MENU_TYPE_GROUP:
-                    raise ValueError(f"Duplicate MenuGroup.name '{name}'")
-                # Allow dupes for MenuItem or MenuItemAlt.
-                if entry["mtype"] != node["mtype"]:
-                    raise ValueError(
-                        f"Duplicate MenuItem or MenuItemAlt '{name}'")
-            self.name_map[name] = node
-
+        label = node["label"]
+        if label != "*":
             # Labels must always be unique, because they are used prefixes for
             # various internal assembly language labels.
-            label = node["label"]
             entry = self.label_map.get(label)
             if entry is not None:
                 raise ValueError(f"Duplicate MenuItem.label '{label}'")
@@ -650,7 +635,7 @@ class SymbolGenerator:
             raise ValueError(f"Overflow: id_counter >= {MENU_ID_LIMIT}")
 
         # Set label='mBlankXXX' for blank menus
-        if name == "*":
+        if name == "*" or label == "*":
             label = f"mBlank{id:03}"
             node["label"] = label
 
@@ -679,7 +664,6 @@ class CodeGenerator:
         self.menu_table_count = symbols.id_counter
 
         self.id_map = symbols.id_map  # {node_id -> MenuNode}
-        self.name_map = symbols.name_map  # {node_name -> MenuNode}
         self.flat_names: List[MenuNode] = []
 
     def generate(self, output: TextIO) -> None:

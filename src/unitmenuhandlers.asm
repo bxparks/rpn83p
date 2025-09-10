@@ -60,6 +60,23 @@ commonUnitHandler:
     jp replaceX
 
 ;-----------------------------------------------------------------------------
+; UNIT > UFCN > Row 1
+;-----------------------------------------------------------------------------
+
+; Extract the display value.
+mUnitValueHandler:
+    call closeInputAndRecallDenominateX ; A=rpnObjectType; OP1=X
+    bcall(_GetRpnDenominateDisplayValue) ; OP1=displayValue
+    jp replaceX
+
+; Convert to its base unit.
+mUnitBaseHandler:
+    call closeInputAndRecallDenominateX ; A=rpnObjectType; OP1=X
+    bcall(_ConvertRpnDenominateToBaseUnit) ; OP1=rpnObject
+    jp replaceX
+    ret
+
+;-----------------------------------------------------------------------------
 ; UNIT > LENG > Row 1
 ;-----------------------------------------------------------------------------
 
@@ -439,9 +456,21 @@ mUnitKiloGramHandler:
     ld a, unitKiloGramId
     jp commonUnitHandler
 
+mUnitTonneHandler:
+    ld a, unitTonneId
+    jp commonUnitHandler
+
 ;-----------------------------------------------------------------------------
-; UNIT > MASS > Row 2
+; UNIT > MASS > US > Row 1
 ;-----------------------------------------------------------------------------
+
+mUnitGrainHandler:
+    ld a, unitGrainId
+    jp commonUnitHandler
+
+mUnitDramHandler:
+    ld a, unitDramId
+    jp commonUnitHandler
 
 mUnitOunceHandler:
     ld a, unitOunceId
@@ -451,8 +480,64 @@ mUnitPoundHandler:
     ld a, unitPoundId
     jp commonUnitHandler
 
+mUnitSlugHandler:
+    ld a, unitSlugId
+    jp commonUnitHandler
+
+;-----------------------------------------------------------------------------
+; UNIT > MASS > US > Row 2
+;-----------------------------------------------------------------------------
+
+mUnitHundredWeightHandler:
+    ld a, unitHundredWeightId
+    jp commonUnitHandler
+
 mUnitTonHandler:
     ld a, unitTonId
+    jp commonUnitHandler
+
+;-----------------------------------------------------------------------------
+; UNIT > MASS > IMP > Row 1
+;-----------------------------------------------------------------------------
+
+mUnitImpPoundHandler:
+    ld a, unitPoundId ; same as normal pound
+    jp commonUnitHandler
+
+mUnitStoneHandler:
+    ld a, unitStoneId
+    jp commonUnitHandler
+
+mUnitQuarterHandler:
+    ld a, unitQuarterId
+    jp commonUnitHandler
+
+mUnitLongHundredWeightHandler:
+    ld a, unitLongHundredWeightId
+    jp commonUnitHandler
+
+mUnitLongTonHandler:
+    ld a, unitLongTonId
+    jp commonUnitHandler
+
+;-----------------------------------------------------------------------------
+; UNIT > MASS > TROY > Row 1
+;-----------------------------------------------------------------------------
+
+mUnitTroyGrainHandler: ; same as normal grain
+    ld a, unitGrainId
+    jp commonUnitHandler
+
+mUnitTroyPennyWeightHandler:
+    ld a, unitTroyPennyWeightId
+    jp commonUnitHandler
+
+mUnitTroyOunceHandler:
+    ld a, unitTroyOunceId
+    jp commonUnitHandler
+
+mUnitTroyPoundHandler:
+    ld a, unitTroyPoundId
     jp commonUnitHandler
 
 ;-----------------------------------------------------------------------------
@@ -473,6 +558,42 @@ mUnitRankineHandler:
 
 mUnitKelvinHandler:
     ld a, unitKelvinId
+    jp commonUnitHandler
+
+;-----------------------------------------------------------------------------
+; UNIT > VELO > Row 1
+;-----------------------------------------------------------------------------
+
+mUnitMeterPerSecondHandler:
+    ld a, unitMeterPerSecondId
+    jp commonUnitHandler
+
+mUnitFootPerSecondHandler:
+    ld a, unitFootPerSecondId
+    jp commonUnitHandler
+
+mUnitKiloMeterPerHourHandler:
+    ld a, unitKiloMeterPerHourId
+    jp commonUnitHandler
+
+mUnitMilePerHourHandler:
+    ld a, unitMilePerHourId
+    jp commonUnitHandler
+
+;-----------------------------------------------------------------------------
+; UNIT > FORC > Row 1
+;-----------------------------------------------------------------------------
+
+mUnitDyneHandler:
+    ld a, unitDyneId
+    jp commonUnitHandler
+
+mUnitNewtonHandler:
+    ld a, unitNewtonId
+    jp commonUnitHandler
+
+mUnitPoundForceHandler:
+    ld a, unitPoundForceId
     jp commonUnitHandler
 
 ;-----------------------------------------------------------------------------

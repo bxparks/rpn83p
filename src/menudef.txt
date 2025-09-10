@@ -356,6 +356,12 @@ MenuGroup root mRoot [
     ]
     MenuGroup UNIT mUnit [
       MenuRow [
+        MenuGroup UFCN mUnitFunctions [
+          MenuRow [
+            MenuItem UVAL mUnitValue # extract the display value
+            MenuItem UBAS mUnitBase # convert to denominate in base unit
+          ]
+        ]
         MenuGroup LENG mUnitLengh [
           MenuRow [
             # MenuItem nm mUnitNanoMeter
@@ -497,13 +503,43 @@ MenuGroup root mRoot [
             MenuItem mg mUnitMilliGram
             MenuItem g mUnitGram
             MenuItem kg mUnitKiloGram
+            MenuItem t mUnitTonne
           ]
           MenuRow [
-            MenuItem oz mUnitOunce
-            MenuItem lbs mUnitPound
-            MenuItem ton mUnitTon
+            MenuGroup US mUnitMassUS [
+              MenuRow [
+                MenuItem grai mUnitGrain
+                MenuItem dram mUnitDram
+                MenuItem oz mUnitOunce
+                MenuItem lbs mUnitPound
+                MenuItem slug mUnitSlug
+              ]
+              MenuRow [
+                MenuItem cwt mUnitHundredWeight
+                MenuItem ton mUnitTon
+              ]
+            ]
+            MenuGroup IMP mUnitMassImp [
+              MenuRow [
+                MenuItem lbs mUnitImpPound # same as normal 'lbs'
+                MenuItem stne mUnitStone
+                MenuItem quar mUnitQuarter
+                MenuItem lcwt mUnitLongHundredWeight
+                MenuItem lton mUnitLongTon
+              ]
+            ]
+            MenuGroup TROY mUnitMassTroy [
+              MenuRow [
+                MenuItem grai mUnitTroyGrain # same as normal 'grain'
+                MenuItem dwt mUnitTroyPennyWeight
+                MenuItem ozt mUnitTroyOunce
+                MenuItem lbt mUnitTroyPound
+              ]
+            ]
           ]
         ]
+      ]
+      MenuRow [
         MenuGroup TEMP mUnitTemp [
           MenuRow [
             MenuItem <Stemp>C mUnitCelsius
@@ -512,8 +548,21 @@ MenuGroup root mRoot [
             MenuItem <Stemp>K mUnitKelvin # add <Stemp> to 'K' for visual hint
           ]
         ]
-      ]
-      MenuRow [
+        MenuGroup VELO mUnitVelocity [
+          MenuRow [
+            MenuItem m<Sslash>s mUnitMeterPerSecond
+            MenuItem ft<Sslash>s mUnitFootPerSecond
+            MenuItem kph mUnitKiloMeterPerHour
+            MenuItem mph mUnitMilePerHour
+          ]
+        ]
+        MenuGroup FORC mUnitForce [
+          MenuRow [
+            MenuItem dyne mUnitDyne
+            MenuItem N mUnitNewton
+            MenuItem lbf mUnitPoundForce
+          ]
+        ]
         MenuGroup PRES mUnitPressure [
           MenuRow [
             MenuItem Pa mUnitPascal
@@ -547,6 +596,8 @@ MenuGroup root mRoot [
             MenuItem tTNT mUnitTonTNT
           ]
         ]
+      ]
+      MenuRow [
         MenuGroup PWR mUnitPower [
           MenuRow [
             MenuItem W mUnitWatt

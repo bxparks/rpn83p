@@ -222,6 +222,8 @@ op1ExOp2PageTwo:
     jp exchange9PageTwo
 
 ; Description: Exchange CP1=OP1/OP2 with CP3=OP3/OP4.
+; Output: CP1, CP3 exchanged
+; Destroys: all
 cp1ExCp3PageTwo:
     ld de, OP1
     ld hl, OP3

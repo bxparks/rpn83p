@@ -27,6 +27,8 @@ UnitClasses [
   UnitClass Volume
   UnitClass Mass
   UnitClass Temperature
+  UnitClass Velocity
+  UnitClass Force
   UnitClass Pressure
   UnitClass Energy
   UnitClass Power
@@ -175,11 +177,42 @@ Units [
   Unit MilliGram <Smu>g Mass 1e-3 Gram
   Unit Gram g Mass 1 Gram
   Unit KiloGram kg Mass 1e3 Gram
+  Unit Tonne tonne Mass 1e6 Gram # metric tonne = 1000kg
 
+  # US System
+  # https://en.wikipedia.org/wiki/United_States_customary_units
+  Unit Grain grain Mass 6.479891e-3 Gram # 1/7000 lbs by defn
+  # https://en.wikipedia.org/wiki/Dram_(unit)
+  Unit Dram dram Mass 1.7718451953125 Gram # 1/16 oz by defn
   # https://en.wikipedia.org/wiki/Ounce
   Unit Ounce oz Mass 28.349523125 Gram # 1/16 lbs
   Unit Pound lbs Mass 453.59237 Gram # by defn
+  # Slug:
+  # https://en.wikipedia.org/wiki/Pound_(force), and
+  # https://en.wikipedia.org/wiki/Slug_(unit)
+  # slug := 1 lbf * 1 s^2/ft
+  # lbf := 1 lbs * (9.80665 m/s^2) / (0.3048 m/ft) * 453.59237 g/lbs
+  # slug = 14.593902937207e3 g
+  Unit Slug slug Mass 14.593902937207e3 Gram
+  # https://en.wikipedia.org/wiki/Hundredweight
+  Unit HundredWeight cwt Mass 453.59237e2 Gram # 100 lbs by defn
+  # https://en.wikipedia.org/wiki/Short_ton
   Unit Ton ton Mass 907.18474e3 Gram # 2000 lbs
+
+  # Imperial System
+  # https://en.wikipedia.org/wiki/Imperial_units
+  Unit Stone stone Mass 6.35029318e3 Gram # 14 lbs by defn
+  Unit Quarter quarter Mass 12.70058636e3 Gram # 2 stones by defn
+  # https://en.wikipedia.org/wiki/Hundredweight
+  Unit LongHundredWeight long<Sspace>cwt Mass 50.80234544e3 Gram # 8 stones (112 lbs) by defn
+  Unit LongTon long<Sspace>ton Mass 1016.0469088e3 Gram # 2240 lbs by defn
+
+  # Troy System
+  # https://en.wikipedia.org/wiki/Troy_weight
+  # https://en.wikipedia.org/wiki/Pennyweight
+  Unit TroyPennyWeight troydwt Mass 1.55517384 Gram # 24 grains by defn
+  Unit TroyOunce troyozt Mass 31.1034768 Gram # 20 pennyweights by defn
+  Unit TroyPound troylbt Mass 373.2417216 Gram # 12 troy oz by defn
 
   #----------------------------------------------------------------------------
   # Temperature, requires special handlers
@@ -190,6 +223,26 @@ Units [
   Unit Fahrenheit <Stemp>F Temperature 1 Kelvin # F = C*9/5 + 32
   Unit Rankine <Stemp>R Temperature 1 Kelvin # R = K*9/5 = (C-273.15)*9/5
   Unit Kelvin <Stemp>K Temperature 1 Kelvin # add <Stemp> to 'K' for visual hint
+
+  #----------------------------------------------------------------------------
+  # Velocity
+  #----------------------------------------------------------------------------
+
+  Unit MeterPerSecond m<Sslash>s Velocity 1 MeterPerSecond
+  Unit FootPerSecond ft<Sslash>s Velocity 0.3048 MeterPerSecond
+  Unit KiloMeterPerHour km<Sslash>hr Velocity 0.27777777777778 MeterPerSecond
+  Unit MilePerHour mi<Sslash>hr Velocity 0.44704 MeterPerSecond
+
+  #----------------------------------------------------------------------------
+  # Force
+  #----------------------------------------------------------------------------
+
+  Unit Dyne dyne Force 1e-5 Newton
+  Unit Newton newton Force 1 Newton
+  # https://en.wikipedia.org/wiki/Pound_(force)
+  # 1 lbf := (1 lbs) * (0.45359237 kg/lb) * (9.80665 m/s^2)
+  #        = 4.4482216152605 N
+  Unit PoundForce lbf Force 4.4482216152605 Newton
 
   #----------------------------------------------------------------------------
   # Pressure

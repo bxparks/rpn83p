@@ -1232,7 +1232,7 @@ printOP1Denominate:
     bcall(_PushRpnObject1) ; FPS=[rpnDenominate]; HL=rpnDenominate
     ld de, fmtString
     bcall(_FormatDenominate) ; format into fmtString
-    bcall(_PopRpnObject1)
+    bcall(_PopRpnObject1) ; FPS=[]
     ; print string stored in fmtString
     ld hl, fmtString
     jp printSmallHLString

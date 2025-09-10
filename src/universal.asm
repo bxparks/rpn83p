@@ -10,7 +10,7 @@
 ; Arithmetic operations.
 ;-----------------------------------------------------------------------------
 
-; Description: Addition for real, complex, Date, and DateTime objects.
+; Description: Addition for real, complex, and RpnObject.
 ; Input:
 ;   - OP1/OP2: Y
 ;   - OP3/OP4: X
@@ -46,6 +46,9 @@ universalAdd:
     ; OP1=Duration
     cp rpnObjectTypeDuration ; ZF=1 if Duration
     jp z, universalAddDurationPlusObject
+    ; OP1=Denominate
+    cp rpnObjectTypeDenominate ; ZF=1 if Duration
+    jp z, universalAddDenominatePlusObject
     jp universalAddErr
 ; Real+object
 universalAddRealPlusObject:
@@ -68,6 +71,7 @@ universalAddRealPlusObject:
     jr z, universalAddRealPlusDayOfWeek
     cp rpnObjectTypeDuration
     jr z, universalAddRealPlusDuration
+    ; Real+Denominate not supported
     jr universalAddErr
 universalAddRealPlusReal:
     call op3ToOp2
@@ -228,6 +232,16 @@ universalAddDurationPlusOffset:
     jr universalAddOffsetPlusDuration
 universalAddDurationPlusOffsetDateTime:
     jr universalAddOffsetDateTimePlusDuration
+; Denominate + object
+universalAddDenominatePlusObject:
+    call getOp3RpnObjectType ; A=type; HL=OP3
+    cp rpnObjectTypeDenominate
+    jr z, universalAddDenominatePlusDenominate
+    ; Denominate+Real not supported
+    jp universalAddErr
+universalAddDenominatePlusDenominate:
+    bcall(_AddRpnDenominateByDenominate) ; OP1=Denominate(OP1)+Denominate(OP3)
+    ret
 
 ; Description: Subtractions for real, complex, and Date objects.
 ; Input:
@@ -252,7 +266,7 @@ universalSub:
     jr z, universalSubTimeMinusObject
     ; OP1=DateTime
     cp rpnObjectTypeDateTime ; ZF=1 if DateTime
-    jr z, universalSubDateTimeMinusObject
+    jp z, universalSubDateTimeMinusObject
     ; OP1=Offset
     cp rpnObjectTypeOffset ; ZF=1 if Offset
     jp z, universalSubOffsetMinusObject
@@ -265,6 +279,9 @@ universalSub:
     ; OP1=Duration
     cp rpnObjectTypeDuration ; ZF=1 if Duration
     jp z, universalSubDurationMinusObject
+    ; OP1=Denominate
+    cp rpnObjectTypeDenominate ; ZF=1 if Denominate
+    jp z, universalSubDenominateMinusObject
     jr universalSubErr
 ; Real - object
 universalSubRealMinusObject:
@@ -403,6 +420,15 @@ universalSubDurationMinusReal:
 universalSubDurationMinusDuration:
     bcall(_SubRpnDurationByRpnDurationOrSeconds)
     ret
+; Denominate - object
+universalSubDenominateMinusObject:
+    call getOp3RpnObjectType ; A=type; HL=OP3
+    cp rpnObjectTypeDenominate
+    jr z, universalSubDenominateMinusDenominate
+    jp universalSubErr
+universalSubDenominateMinusDenominate:
+    bcall(_SubRpnDenominateByDenominate) ; OP1-=OP3
+    ret
 
 ; Description: Multiplication for real and complex numbers.
 ; Input:
@@ -428,6 +454,10 @@ universalMult:
     ; OP1=OffsetDateTime
     cp rpnObjectTypeOffsetDateTime ; ZF=1 if OffsetDateTime
     jr z, universalMultOffsetDateTimeByObject
+    ; TODO: Implement Duration*Real and Real*Duration
+    ; OP1=Denominate
+    cp rpnObjectTypeDenominate ; ZF=1 if Denominate
+    jp z, universalMultDenominateByObject
     jr universalMultErr
 ; Real * object
 universalMultRealByObject:
@@ -440,6 +470,8 @@ universalMultRealByObject:
     jr z, universalMultRealByDateTime
     cp rpnObjectTypeOffsetDateTime
     jr z, universalMultRealByOffsetDateTime
+    cp rpnObjectTypeDenominate
+    jr z, universalMultRealByDenominate
     jr universalMultErr
 universalMultRealByReal:
     call op3ToOp2
@@ -453,6 +485,9 @@ universalMultRealByDateTime:
     ret
 universalMultRealByOffsetDateTime:
     bcall(_ConvertRpnOffsetDateTimeToTimeZoneAsReal)
+    ret
+universalMultRealByDenominate:
+    bcall(_MultRpnDenominateByReal)
     ret
 ; Complex * object
 universalMultComplexByObject:
@@ -511,6 +546,15 @@ universalMultOffsetDateTimeByReal:
 universalMultOffsetDateTimeByOffset:
     bcall(_ConvertRpnOffsetDateTimeToOffset)
     ret
+; Denominate * object
+universalMultDenominateByObject:
+    call getOp3RpnObjectType ; A=type; HL=OP3
+    cp rpnObjectTypeReal
+    jr z, universalMultDenominateByReal
+    jr universalMultErr
+universalMultDenominateByReal:
+    bcall(_MultRpnDenominateByReal)
+    ret
 
 ; Description: Division for real and complex numbers.
 ; Input:
@@ -525,6 +569,10 @@ universalDiv:
     jr z, universalDivRealByObject
     cp rpnObjectTypeComplex ; ZF=1 if complex
     jr z, universalDivComplexByObject
+    ; TODO: Implement Duration/Real
+    ; OP1=Denominate
+    cp rpnObjectTypeDenominate ; ZF=1 if Denominate
+    jp z, universalDivDenominateByObject
     jr universalDivErr
 ; real / object
 universalDivRealByObject:
@@ -563,6 +611,20 @@ universalDivComplexByComplex:
     call cp3ToCp1 ; OP1/OP2=OP3/OP4
     bcall(_CDiv) ; OP1/OP2 = FPS[OP1/OP2] / OP1/OP2; FPS=[]
     ret
+; Denominate / object
+universalDivDenominateByObject:
+    call getOp3RpnObjectType ; A=type; HL=OP3
+    cp rpnObjectTypeReal
+    jr z, universalDivDenominateByReal
+    cp rpnObjectTypeDenominate
+    jr z, universalDivDenominateByDenominate
+    jr universalDivErr
+universalDivDenominateByReal:
+    bcall(_DivRpnDenominateByReal)
+    ret
+universalDivDenominateByDenominate:
+    bcall(_DivRpnDenominateByDenominate)
+    ret
 
 ;-----------------------------------------------------------------------------
 
@@ -579,6 +641,8 @@ universalChs:
     jr z, universalChsComplex
     cp rpnObjectTypeDuration ; ZF=1 if RpnDuration
     jr z, universalChsDuration
+    cp rpnObjectTypeDenominate ; ZF=1 if RpnDenominate
+    jr z, universalChsDenominate
 universalChsErr:
     bcall(_ErrDataType)
 universalChsReal:
@@ -589,6 +653,9 @@ universalChsComplex:
     ret
 universalChsDuration:
     bcall(_ChsRpnDuration)
+    ret
+universalChsDenominate:
+    bcall(_ChsRpnDenominate)
     ret
 
 ;-----------------------------------------------------------------------------

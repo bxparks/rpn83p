@@ -1075,6 +1075,24 @@ _FormatComplexPolarDeg equ _FormatComplexPolarDegLabel-branchTableBase
     .dw FormatComplexPolarDeg
     .db 1
 
+; unit1.asm
+_ExtractUnitNameLabel:
+_ExtractUnitName equ _ExtractUnitNameLabel-branchTableBase
+    .dw ExtractUnitName
+    .db 1
+_GetUnitClassLabel:
+_GetUnitClass equ _GetUnitClassLabel-branchTableBase
+    .dw GetUnitClass
+    .db 1
+_GetUnitBaseLabel:
+_GetUnitBase equ _GetUnitBaseLabel-branchTableBase
+    .dw GetUnitBase
+    .db 1
+_GetUnitScaleLabel:
+_GetUnitScale equ _GetUnitScaleLabel-branchTableBase
+    .dw GetUnitScale
+    .db 1
+
 ;-----------------------------------------------------------------------------
 
 #ifdef DEBUG
@@ -1738,17 +1756,43 @@ _ApplyUnitLabel:
 _ApplyUnit equ _ApplyUnitLabel-branchTableBase
     .dw ApplyUnit
     .db 2
+_GetRpnDenominateDisplayValueLabel:
+_GetRpnDenominateDisplayValue equ _GetRpnDenominateDisplayValueLabel-branchTableBase
+    .dw GetRpnDenominateDisplayValue
+    .db 2
+_ConvertRpnDenominateToBaseUnitLabel:
+_ConvertRpnDenominateToBaseUnit equ _ConvertRpnDenominateToBaseUnitLabel-branchTableBase
+    .dw ConvertRpnDenominateToBaseUnit
+    .db 2
+_ChsRpnDenominateLabel:
+_ChsRpnDenominate equ _ChsRpnDenominateLabel-branchTableBase
+    .dw ChsRpnDenominate
+    .db 2
+_AddRpnDenominateByDenominateLabel:
+_AddRpnDenominateByDenominate equ _AddRpnDenominateByDenominateLabel-branchTableBase
+    .dw AddRpnDenominateByDenominate
+    .db 2
+_SubRpnDenominateByDenominateLabel:
+_SubRpnDenominateByDenominate equ _SubRpnDenominateByDenominateLabel-branchTableBase
+    .dw SubRpnDenominateByDenominate
+    .db 2
+_MultRpnDenominateByRealLabel:
+_MultRpnDenominateByReal equ _MultRpnDenominateByRealLabel-branchTableBase
+    .dw MultRpnDenominateByReal
+    .db 2
+_DivRpnDenominateByRealLabel:
+_DivRpnDenominateByReal equ _DivRpnDenominateByRealLabel-branchTableBase
+    .dw DivRpnDenominateByReal
+    .db 2
+_DivRpnDenominateByDenominateLabel:
+_DivRpnDenominateByDenominate equ _DivRpnDenominateByDenominateLabel-branchTableBase
+    .dw DivRpnDenominateByDenominate
+    .db 2
 
 ; formatdenominate2.asm
 _FormatDenominateLabel:
 _FormatDenominate equ _FormatDenominateLabel-branchTableBase
     .dw FormatDenominate
-    .db 2
-
-; unit2.asm
-_GetUnitNameLabel:
-_GetUnitName equ _GetUnitNameLabel-branchTableBase
-    .dw GetUnitName
     .db 2
 
 ; base2.asm
@@ -2105,6 +2149,10 @@ defpage(1)
 #include "prob1.asm"
 #include "format1.asm"
 #include "duration1.asm"
+;
+#include "unitdef.asm"
+#include "unit1.asm"
+;
 #ifdef DEBUG
 #include "debug1.asm"
 #endif
@@ -2136,8 +2184,6 @@ defpage(2)
 ;
 #include "denominate2.asm"
 #include "formatdenominate2.asm"
-#include "unitdef.asm"
-#include "unit2.asm"
 ;
 #include "integer40.asm"
 #include "integerconv40.asm"

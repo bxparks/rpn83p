@@ -509,7 +509,7 @@ class CodeGenerator:
         print(f"""\
 ;-----------------------------------------------------------------------------
 ; Unit definitions, generated from {self.inputfile}.
-; See unit2.asm for the equivalent C struct declaration.
+; See unit1.asm for the equivalent C struct declaration.
 ;
 ; There are 3 sections:
 ;   - list of unit classes

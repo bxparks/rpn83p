@@ -60,9 +60,9 @@ reverseStringPageTwoLoop:
 ; '0' suppressed, and append at the string buffer pointed by HL.
 ; Input:
 ;   - A:u8=input
-;   - HL:(char*)
+;   - HL:(char*)=stringBuf
 ; Output:
-;   - HL=points to char after string, no NUL termination
+;   - HL=points to NUL at end of string
 ; Destroys: A, B, C, HL
 ; Preserves: DE
 suppressLeadingZero equ 0 ; bit 0 of D
@@ -100,6 +100,9 @@ formatAToStringOne:
     ; always print the last digit regardless of suppressLeadingZero
     ld (hl), a
     inc hl
+    ; NUL terminate
+    xor a
+    ld (hl), a
     pop de
     ret
 

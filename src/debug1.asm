@@ -198,7 +198,6 @@ DebugUnsignedA:
     ; Convert A into string
     push hl
     bcall(_FormatAToString)
-    ld (hl), 0
     pop hl
     call putSPageOne
     bcall(_EraseEOL)
@@ -255,7 +254,6 @@ debugSignedAPrint:
     ; Convert A into string
     push hl
     bcall(_FormatAToString)
-    ld (hl), 0
     pop hl
     call putSPageOne
     bcall(_EraseEOL)
