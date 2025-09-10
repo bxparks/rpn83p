@@ -137,51 +137,63 @@ MenuGroup root mRoot [
         MenuItemAlt BIN BIN<Sblock> mBin # binary
       ]
       MenuRow [
-        MenuItem AND mBitwiseAnd
-        MenuItem OR mBitwiseOr
-        MenuItem XOR mBitwiseXor
-        MenuItem NOT mBitwiseNot # 1's complement
-        MenuItem NEG mBitwiseNeg # 2's complement
-      ]
-      MenuRow [
-        MenuItem SL mShiftLeftLogical # shift left logical
-        MenuItem SR mShiftRightLogical # shift right logical
-        MenuItem ASR mShiftRightArithmetic # shift right arithmetic
-        MenuItem SLn mShiftLeftLogicalN # shift left logical by N
-        MenuItem SRn mShiftRightLogicalN # shift right logical by N
-      ]
-      MenuRow [
-        MenuItem RL mRotateLeftCircular # rotate left circular
-        MenuItem RR mRotateRightCircular # rotate right circular
-        MenuItem RLC mRotateLeftCarry # rotate left carry
-        MenuItem RRC mRotateRightCarry # rotate right carry
-      ]
-      MenuRow [
-        MenuItem RLn mRotateLeftCircularN # rotate left circular by N
-        MenuItem RRn mRotateRightCircularN # rotate right circular by N
-        MenuItem RLCn mRotateLeftCarryN # rotate left carry by N
-        MenuItem RRCn mRotateRightCarryN # rotate right carry by N
-      ]
-      MenuRow [
-        MenuItem CB mClearBit
-        MenuItem SB mSetBit
-        MenuItem B<Squestion> mGetBit
-        MenuItem REVB mReverseBit
-        MenuItem CNTB mCountBit
-      ]
-      MenuRow [
-        MenuItem B<SplusSign> mBaseAdd
-        MenuItem B<Sdash> mBaseSubt
-        MenuItem B<Scross> mBaseMult
-        MenuItem B<Sslash> mBaseDiv
-        MenuItem BDIV mBaseDiv2
-      ]
-      MenuRow [
-        MenuItem CCF mClearCarryFlag
-        MenuItem SCF mSetCarryFlag
-        MenuItem CF<Squestion> mGetCarryFlag
-        MenuItem WSIZ mSetWordSize # 8, 16, 24, 32
-        MenuItem WSZ<Squestion> mGetWordSize
+        MenuGroup LOGI mBaseLogic mBaseLogicHandler [
+          MenuRow [
+            MenuItem AND mBitwiseAnd
+            MenuItem OR mBitwiseOr
+            MenuItem XOR mBitwiseXor
+            MenuItem NOT mBitwiseNot # 1's complement
+            MenuItem NEG mBitwiseNeg # 2's complement
+          ]
+        ]
+        MenuGroup ROTS mBaseRotate mBaseRotateHandler [
+          MenuRow [
+            MenuItem SL mShiftLeftLogical # shift left logical
+            MenuItem SR mShiftRightLogical # shift right logical
+            MenuItem ASR mShiftRightArithmetic # shift right arithmetic
+            MenuItem SLn mShiftLeftLogicalN # shift left logical by N
+            MenuItem SRn mShiftRightLogicalN # shift right logical by N
+          ]
+          MenuRow [
+            MenuItem RL mRotateLeftCircular # rotate left circular
+            MenuItem RR mRotateRightCircular # rotate right circular
+            MenuItem RLC mRotateLeftCarry # rotate left carry
+            MenuItem RRC mRotateRightCarry # rotate right carry
+          ]
+          MenuRow [
+            MenuItem RLn mRotateLeftCircularN # rotate left circular by N
+            MenuItem RRn mRotateRightCircularN # rotate right circular by N
+            MenuItem RLCn mRotateLeftCarryN # rotate left carry by N
+            MenuItem RRCn mRotateRightCarryN # rotate right carry by N
+          ]
+        ]
+        MenuGroup BITS mBaseBits mBaseBitsHandler [
+          MenuRow [
+            MenuItem CB mClearBit
+            MenuItem SB mSetBit
+            MenuItem B<Squestion> mGetBit
+            MenuItem REVB mReverseBit
+            MenuItem CNTB mCountBit
+          ]
+        ]
+        MenuGroup BFCN mBaseFunctions mBaseFunctionsHandler [
+          MenuRow [
+            MenuItem B<SplusSign> mBaseAdd
+            MenuItem B<Sdash> mBaseSubt
+            MenuItem B<Scross> mBaseMult
+            MenuItem B<Sslash> mBaseDiv
+            MenuItem BDIV mBaseDiv2
+          ]
+        ]
+        MenuGroup BFLG mBaseFlags mBaseFlagsHandler [
+          MenuRow [
+            MenuItem CCF mClearCarryFlag
+            MenuItem SCF mSetCarryFlag
+            MenuItem CF<Squestion> mGetCarryFlag
+            MenuItem WSIZ mSetWordSize # 8, 16, 24, 32
+            MenuItem WSZ<Squestion> mGetWordSize
+          ]
+        ]
       ]
     ]
     MenuGroup HYP mHyperbolic [

@@ -11,11 +11,23 @@
 ;       - 1 indicates 'onExit' event from group
 ;-----------------------------------------------------------------------------
 
-; Description: Group handler for BASE menu group.
+; Description: Group handler for BASE menu group and its subgroups.
+;
+; OnEnter, it enables the 'rpnFlagsBaseModeEnabled' flag so that the display
+; is rendered in the appropriate DEC, BIN, OCT, or HEX modes.
+;
+; OnExit, it disables the 'rpnFlagsBaseModeEnabled' so that the display is
+; rendered normally.
+;
 ; Input:
 ;   - CF=1: handle onExit() event
 ;   - CF=0: handle onEnter() event
 mBaseHandler:
+mBaseLogicHandler:
+mBaseRotateHandler:
+mBaseBitsHandler:
+mBaseFunctionsHandler:
+mBaseFlagsHandler:
     push af ; preserve the C flag
     ; must call closeInputXxx() before modifying rpnFlagsBaseModeEnabled
     call closeInputAndRecallNone
