@@ -30,15 +30,42 @@ and more complicated features will get their own GitHub tickets.
 
 ## Near Future
 
+- polynomial solvers
+    - Quadratic has an relatively easy, well-understood analytical solutions.
+    - Cubic and quartic have analytic solutions but they are quite complex
+      (particularly the quartic) and their numerical stability behaviors
+      are not straightforward. It may be easier to use iterative methods for
+      cubic and quartic equations.
+    - Anything higher than 4th degree requires numerical solutions.
+- UNIT
+    - support conversions between compound unit classes related by simple powers
+      of units (e.g. LENG, AREA,and VOL)
+    - e.g. type `[3] [ft] [2] [m] [*]` to convert into an AREA unit
+- Julian Date functions
+    - support [ISO weekdate](https://en.wikipedia.org/wiki/ISO_week_date)
+    - support at least one of the
+      [Julian dates](https://en.wikipedia.org/wiki/Julian_day)
 - add a `ROOT > CLR > CLAL` (Clear All) menu function
     - becomes useful as more features and configuration options are added
-- allow numbers in any base to be entered regardless of the BASE mode
-    - see [Issue#17](https://github.com/bxparks/rpn83p/issues/17)
 - implement a simple "undo" functionality after a `CLX` function
     - we can probably use `2ND INS`, currently unused
 
 ## Medium Future
 
+- implement RPL-style stack handling
+    - traditional RPN has some quirks
+        - a small number of stack slots
+        - duplication of the top of the stack upon `DROP`
+        - convoluted behavior of `ENTER` and its "disabling of stack lift"
+    - the RPL stack is closer to normal computer stack
+        - theoretically "infinite" stack, but in practice, limited by memory
+        - conceptually simpler (no duplication of top of stack, no "disabling of
+          stack lift")
+        - better for programming
+    - implement something simple, like a fixed-sized RPL stack whose size is
+      configurable (e.g. 64 levels, or 100 levels)
+- allow numbers in any base to be entered regardless of the BASE mode
+    - see [Issue#17](https://github.com/bxparks/rpn83p/issues/17)
 - bulk view registers and variables
     - see [Issue#24](https://github.com/bxparks/rpn83p/issues/24)
 - custom button bindings
@@ -80,25 +107,6 @@ and more complicated features will get their own GitHub tickets.
           maybe structured statement, like `IF`, `WHILE`, `FOR`, etc.)
     - I estimate that this feature will take about 1000-2000 hours of
       programming.
-- polynomial solvers
-    - Quadratic has an relatively easy, well-understood analytical solutions.
-    - Cubic and quartic have analytic solutions but they are quite complex
-      (particularly the quartic) and their numerical stability behaviors
-      are not straightforward. It may be easier to use iterative methods for
-      cubic and quartic equations.
-    - Anything higher than 4th degree requires numerical solutions.
-- `UNIT` conversions
-    - support imperial (not just US) units
-        - several places assume US customary units (e.g. US gallons) instead of
-          British or Canadian imperial units
-        - it'd be nice to support both types, if we can make the menu labels
-          self-documenting and distinctive
-    - more flexible workflow
-        - something like the one used by HP-19BII and the TI-85 seems appealing
-          (enter number, press *from unit*, then press *to unit* to get the
-          result)
-        - see [this discussion fragment on the
-          MoHPC](https://www.hpmuseum.org/forum/thread-20867-post-184997.html#pid184997)
 - auto-insert an implied `1` when `EE` is pressed in certain conditions
     - on the HP-42S, if the `E` is pressed when the input buffer contains
       digits that can semantically parsed to a `0`, a `1` or `1.` or `-1` or
@@ -123,15 +131,6 @@ and more complicated features will get their own GitHub tickets.
     - Could be made significantly faster using integer operations, instead of
       floating point operations.
     - But not a high priority.
-- additional DATE functions
-    - support [ISO weekdate](https://en.wikipedia.org/wiki/ISO_week_date)
-    - support at least one of the
-      [Julian dates](https://en.wikipedia.org/wiki/Julian_day)
-    - support rule-based DST transitions
-        - current only timezones with fixed offsets are supported UTC
-        - it may be possible to support the [IANA Timezone
-          Database](https://www.iana.org/time-zones) with only about 32-48 kB of
-          additional flash memory (i.e. 2-3 flash pages)
 - save and restore state files
     - save the entire state of the app to a single appVar (archived to
       flash memory to save RAM and to be resilient across crashes and power
@@ -180,6 +179,17 @@ and more complicated features will get their own GitHub tickets.
       storage registers, storage variables, and potentially other stack
       registers
     - for non-programming use, I don't think this function is essential
+- add a String type
+    - this becomes most useful if RPN83P becomes programmable
+- TZDB rule based DST transitions for DATE objects
+    - current only timezones with fixed offsets from UTC are supported
+    - can probably implement the
+    [IANA Timezone Database](https://www.iana.org/time-zones) with only about
+    32-48 kB of additional flash memory (i.e. 2-3 flash pages)
+        - probably requires writing some custom development tools which is
+          daunting
+        - not sure if it's worth implementing the algorithms in Z80 assembly
+          language (it's tricky enough in the C language)
 - local RPN stack and local storage registers
     - After keystroke programming is added, it may be useful to support local
       RPN and storage registers, on a per-program basis.
