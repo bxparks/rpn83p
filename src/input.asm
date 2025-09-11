@@ -198,12 +198,13 @@ closeInputAndRecallRpnDateRelatedX:
 
 ;-----------------------------------------------------------------------------
 
-; Close the input buffer, and recall real X or denominate X into OP1.
+; Close the input buffer, and recall X (Real or RpnDenominate) into OP1.
 ; Output:
-;   - OP1=X
+;   - OP1:Real|RpnDenominate=X
 ;   - rpnFlagsTvmCalculate: cleared
 ;   - A=rpnObjectType
 ; Destroys: all, OP1, OP2, OP3, OP4, OP5
+; Throws: Err:DataType
 closeInputAndRecallDenominateX:
     call closeInput
     res rpnFlagsTvmCalculate, (iy + rpnFlags)

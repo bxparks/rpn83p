@@ -231,11 +231,16 @@ convertRpnDenominateToBaseUnitErr:
 ;   - OP1:Real=displayValue
 ; Destroys: all, OP1-OP3
 GetRpnDenominateDisplayValue:
+    cp rpnObjectTypeDenominate
+    jr nz, getRpnDenominateDisplayValueErr
+    ;
     call PushRpnObject1 ; FPS=[rpnDenominate]; HL=rpnDenominate
     skipRpnObjectTypeHL ; HL=denominate
     call denominateToDisplayValue ; OP1=displayValue
     call dropRpnObject ; FPS=[];
     ret
+getRpnDenominateDisplayValueErr:
+    bcall(_ErrDataType)
 
 ; Description: Convert the normalized 'value' of the denominate pointed by HL
 ; to the display value in units of its 'displayUnitId'.
