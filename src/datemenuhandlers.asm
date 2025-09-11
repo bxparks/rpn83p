@@ -24,6 +24,9 @@ mLeapYearHandler:
 ; DATE > D (Date) > Row 1
 ;-----------------------------------------------------------------------------
 
+mDateErr:
+    bcall(_ErrDataType)
+
 mDateCreateHandler:
     ret
 
@@ -35,11 +38,7 @@ mDateToDayOfWeekHandler:
 mDateToEpochDaysHandler:
     call closeInputAndRecallRpnDateLikeX ; OP1=X=RpnDateLike{}
     cp rpnObjectTypeDate ; ZF=1 if RpnDateTime
-    jr nz, mDateToEpochDaysHandlerErr
-    bcall(_RpnDateToEpochDays) ; OP1=float(days)
-    jp replaceX
-mDateToEpochDaysHandlerErr:
-    bcall(_ErrDataType)
+    jr nz, mDateErr
 
 mEpochDaysToDateHandler:
     call closeInputAndRecallX ; OP1=X=epochDays
@@ -49,11 +48,9 @@ mEpochDaysToDateHandler:
 mDateToEpochSecondsHandler:
     call closeInputAndRecallRpnDateLikeX ; OP1=X=RpnDateLike{}
     cp rpnObjectTypeDate ; ZF=1 if RpnDateTime
-    jr nz, mDateToSecondsHandlerErr
+    jr nz, mDateErr
     bcall(_RpnDateToEpochSeconds) ; OP1=epochSeconds
     jp replaceX
-mDateToSecondsHandlerErr:
-    bcall(_ErrDataType)
 
 mEpochSecondsToDateHandler:
     call closeInputAndRecallX ; OP1=X=epochSeconds
@@ -64,17 +61,18 @@ mEpochSecondsToDateHandler:
 ; DATE > T (Time) > Row 1
 ;-----------------------------------------------------------------------------
 
+mTimeErr:
+    bcall(_ErrDataType)
+
 mTimeCreateHandler:
     ret
 
 mTimeToSecondsHandler:
     call closeInputAndRecallRpnDateRelatedX ; OP1==dateRelatedObject; A=type
     cp rpnObjectTypeTime ; ZF=1 if RpnDateTime
-    jr nz, mTimeToSecondsHandlerTimeErr
+    jr nz, mTimeErr
     bcall(_RpnTimeToSeconds) ; OP1=epochSeconds
     jp replaceX
-mTimeToSecondsHandlerTimeErr:
-    bcall(_ErrDataType)
 
 mSecondsToTimeHandler:
     call closeInputAndRecallX ; OP1=X=seconds
@@ -85,20 +83,39 @@ mSecondsToTimeHandler:
 ; DATE > DT (DateTimne) > Row 1
 ;-----------------------------------------------------------------------------
 
+mDateTimeErr:
+    bcall(_ErrDataType)
+
 mDateTimeCreateHandler:
     ret
 
-mDateTimeToSecondsHandler:
+mDateTimeToEpochDaysHandler:
+    call closeInputAndRecallRpnDateLikeX ; OP1==dateLikeObject; A=type
+    cp rpnObjectTypeDateTime ; ZF=1 if RpnDateTime
+    jr nz, mDateTimeErr
+    bcall(_RpnDateTimeToEpochDays) ; OP1=epochDays
+    jp replaceX
+
+mEpochDaysToDateTimeHandler:
+    call closeInputAndRecallX ; OP1=X=epochDays
+    bcall(_EpochDaysToRpnDateTime) ; OP1=DateTime(epochDays)
+    jp replaceX
+
+mDateTimeToEpochSecondsHandler:
     call closeInputAndRecallRpnDateLikeX ; OP1==dateLikeObject; A=type
     cp rpnObjectTypeDateTime ; ZF=1 if RpnDateTime
     jr nz, mDateTimeErr
     bcall(_RpnDateTimeToEpochSeconds) ; OP1=epochSeconds
     jp replaceX
 
-mSecondsToDateTimeHandler:
-    call closeInputAndRecallX ; OP1=X=seconds
-    bcall(_EpochSecondsToRpnDateTime) ; OP1=DateTime(seconds)
+mEpochSecondsToDateTimeHandler:
+    call closeInputAndRecallX ; OP1=X=epochSeconds
+    bcall(_EpochSecondsToRpnDateTime) ; OP1=DateTime(epochSeconds)
     jp replaceX
+
+;-----------------------------------------------------------------------------
+; DATE > DT (DateTimne) > Row 2
+;-----------------------------------------------------------------------------
 
 mDateTimeExtractDateHandler:
     call closeInputAndRecallRpnDateLikeX ; OP1==dateLikeObject; A=type
@@ -114,12 +131,12 @@ mDateTimeExtractTimeHandler:
     bcall(_RpnDateTimeExtractTime) ; OP1=RpnTime
     jp replaceX
 
-mDateTimeErr:
-    bcall(_ErrDataType)
-
 ;-----------------------------------------------------------------------------
 ; DATE > TZ (Offset) > Row 1
 ;-----------------------------------------------------------------------------
+
+mOffsetErr:
+    bcall(_ErrDataType)
 
 mOffsetCreateHandler:
     ret
@@ -127,11 +144,9 @@ mOffsetCreateHandler:
 mOffsetToSecondsHandler:
     call closeInputAndRecallRpnDateRelatedX ; OP1==dateRelatedObject; A=type
     cp rpnObjectTypeOffset ; ZF=1 if RpnDateTime
-    jr nz, mOffsetToSecondsHandlerErr
+    jr nz, mOffsetErr
     bcall(_RpnOffsetToSeconds) ; OP1=seconds
     jp replaceX
-mOffsetToSecondsHandlerErr:
-    bcall(_ErrDataType)
 
 mOffsetToHoursHandler:
     call closeInputAndRecallRpnOffsetX ; A=rpnObjectType; OP1=X
@@ -147,16 +162,18 @@ mHoursToOffsetHandler:
 ; DATE > DZ (OffsetDateTime) > Row 1
 ;-----------------------------------------------------------------------------
 
+mOffsetDateTimeErr:
+    bcall(_ErrDataType)
+
 mOffsetDateTimeCreateHandler:
     ret
 
 mOffsetDateTimeToEpochSecondsHandler:
+    call closeInputAndRecallRpnDateLikeX ; OP1==dateLikeObject; A=type
     cp rpnObjectTypeOffsetDateTime ; ZF=1 if RpnOffsetDateTime
-    jr z, mOffsetDateTimeToEpochSecondsHandlerErr
+    jr nz, mOffsetDateTimeErr
     bcall(_RpnOffsetDateTimeToEpochSeconds) ; OP1=epochSeconds
     jp replaceX
-mOffsetDateTimeToEpochSecondsHandlerErr:
-    bcall(_ErrDataType)
 
 mEpochSecondsToAppDateTimeHandler:
     call closeInputAndRecallX ; OP1=X=epochSeconds
@@ -167,6 +184,38 @@ mEpochSecondsToAppDateTimeHandler:
 mEpochSecondsToUTCDateTimeHandler:
     call closeInputAndRecallX ; OP1=X=epochSeconds
     bcall(_EpochSecondsToRpnOffsetDateTimeUTC) ; OP1=UTCDateTime(epochSeconds)
+    jp replaceX
+
+;-----------------------------------------------------------------------------
+; DATE > DZ (OffsetDateTime) > Row 2
+;-----------------------------------------------------------------------------
+
+mOffsetDateTimeExtractDateHandler:
+    call closeInputAndRecallRpnDateLikeX ; OP1==dateLikeObject; A=type
+    cp rpnObjectTypeOffsetDateTime ; ZF=1 if RpnOffsetDateTime
+    jr nz, mOffsetDateTimeErr
+    bcall(_RpnOffsetDateTimeExtractDate) ; OP1=RpnDate
+    jp replaceX
+
+mOffsetDateTimeExtractTimeHandler:
+    call closeInputAndRecallRpnDateLikeX ; OP1==dateLikeObject; A=type
+    cp rpnObjectTypeOffsetDateTime ; ZF=1 if RpnOffsetDateTime
+    jr nz, mOffsetDateTimeErr
+    bcall(_RpnOffsetDateTimeExtractTime) ; OP1=RpnDate
+    jp replaceX
+
+mOffsetDateTimeExtractDateTimeHandler:
+    call closeInputAndRecallRpnDateLikeX ; OP1==dateLikeObject; A=type
+    cp rpnObjectTypeOffsetDateTime ; ZF=1 if RpnOffsetDateTime
+    jr nz, mOffsetDateTimeErr
+    bcall(_RpnOffsetDateTimeExtractDateTime) ; OP1=RpnDate
+    jp replaceX
+
+mOffsetDateTimeExtractOffsetHandler:
+    call closeInputAndRecallRpnDateLikeX ; OP1==dateLikeObject; A=type
+    cp rpnObjectTypeOffsetDateTime ; ZF=1 if RpnOffsetDateTime
+    jr nz, mOffsetDateTimeErr
+    bcall(_RpnOffsetDateTimeExtractOffset) ; OP1=RpnOffset
     jp replaceX
 
 ;-----------------------------------------------------------------------------

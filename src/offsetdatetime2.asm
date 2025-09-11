@@ -416,3 +416,62 @@ TruncateRpnOffsetDateTime:
     ld a, rpnObjectTypeDateTime
     call setOp1RpnObjectTypePageTwo
     ret
+
+;-----------------------------------------------------------------------------
+; Extractors
+;-----------------------------------------------------------------------------
+
+; Description: Extract RpnDate from RpnOffsetDateTime.
+; Input:
+;   - OP1:RpnOffsetDateTime
+; Output:
+;   - OP1:RpnDate
+; Destroys: all, OP1
+RpnOffsetDateTimeExtractDate:
+    ld a, rpnObjectTypeDate
+    call setOp1RpnObjectTypePageTwo
+    ret
+
+; Description: Extract RpnDateTime from RpnOffsetDateTime.
+; Input:
+;   - OP1:RpnOffsetDateTime
+; Output:
+;   - OP1:RpnDateTime
+; Destroys: all, OP1
+RpnOffsetDateTimeExtractDateTime:
+    ld a, rpnObjectTypeDateTime
+    call setOp1RpnObjectTypePageTwo
+    ret
+
+; Description: Extract RpnTime from RpnOffsetDateTime.
+; Input:
+;   - OP1:RpnOffsetDateTime
+; Output:
+;   - OP1:RpnTime
+; Destroys: all, OP1
+RpnOffsetDateTimeExtractTime:
+    ld a, rpnObjectTypeTime
+    call setOp1RpnObjectTypePageTwo
+    ; move Time components up into OP1
+    ld de, OP1 + rpnObjectTypeSizeOf
+    ld hl, OP1 + rpnObjectTypeDateSizeOf
+    ld bc, rpnObjectTypeTimeSizeOf - rpnObjectTypeSizeOf
+    ldir
+    ret
+
+; Description: Extract RpnOffset from RpnOffsetDateTime.
+; Input:
+;   - OP1:RpnOffsetDateTime
+; Output:
+;   - OP1:RpnOffset
+; Destroys: all, OP1
+RpnOffsetDateTimeExtractOffset:
+    call shrinkOp2ToOp1PageTwo ; remove 2-byte gap between OP1 and OP2
+    ld a, rpnObjectTypeOffset
+    call setOp1RpnObjectTypePageTwo
+    ; move Offset components up into OP1
+    ld de, OP1 + rpnObjectTypeSizeOf
+    ld hl, OP1 + rpnObjectTypeDateTimeSizeOf
+    ld bc, rpnObjectTypeOffsetSizeOf - rpnObjectTypeSizeOf
+    ldir
+    ret

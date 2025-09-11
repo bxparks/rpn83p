@@ -653,10 +653,14 @@ MenuGroup root mRoot [
         MenuGroup DT mDateFolderDateTime [
           MenuRow [
             MenuItem DT<SlBrace><SrBrace> mDateTimeCreate
-            MenuItem <Sconvert>S mDateTimeToSeconds
-            MenuItem S<Sconvert> mSecondsToDateTime
-            MenuItem <Speriod>D mDateTimeExtractDate
-            MenuItem <Speriod>T mDateTimeExtractTime
+            MenuItem <Sconvert>DY mDateTimeToEpochDays
+            MenuItem DY<Sconvert> mEpochDaysToDateTime
+            MenuItem <Sconvert>S mDateTimeToEpochSeconds
+            MenuItem S<Sconvert> mEpochSecondsToDateTime
+          ]
+          MenuRow [
+            MenuItem <Speriod>D<SlBrace><SrBrace> mDateTimeExtractDate
+            MenuItem <Speriod>T<SlBrace><SrBrace> mDateTimeExtractTime
           ]
         ]
         MenuGroup TZ mDateFolderOffset [
@@ -674,6 +678,12 @@ MenuGroup root mRoot [
             MenuItem <Sconvert>S mOffsetDateTimeToEpochSeconds
             MenuItem S<Sconvert>DZ mEpochSecondsToAppDateTime
             MenuItem S<Sconvert>UT mEpochSecondsToUTCDateTime
+          ]
+          MenuRow [
+            MenuItem <Speriod>D<SlBrace><SrBrace> mOffsetDateTimeExtractDate
+            MenuItem <Speriod>T<SlBrace><SrBrace> mOffsetDateTimeExtractTime
+            MenuItem <Speriod>DT<SlBrace> mOffsetDateTimeExtractDateTime
+            MenuItem <Speriod>TZ<SlBrace> mOffsetDateTimeExtractOffset
           ]
         ]
         MenuGroup DR mDateFolderDuration [

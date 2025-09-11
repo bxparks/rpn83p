@@ -1557,6 +1557,14 @@ _EpochSecondsToRpnDateTimeLabel:
 _EpochSecondsToRpnDateTime equ _EpochSecondsToRpnDateTimeLabel-branchTableBase
     .dw EpochSecondsToRpnDateTime
     .db 2
+_RpnDateTimeToEpochDaysLabel:
+_RpnDateTimeToEpochDays equ _RpnDateTimeToEpochDaysLabel-branchTableBase
+    .dw RpnDateTimeToEpochDays
+    .db 2
+_EpochDaysToRpnDateTimeLabel:
+_EpochDaysToRpnDateTime equ _EpochDaysToRpnDateTimeLabel-branchTableBase
+    .dw EpochDaysToRpnDateTime
+    .db 2
 _AddRpnDateTimeBySecondsLabel:
 _AddRpnDateTimeBySeconds equ _AddRpnDateTimeBySecondsLabel-branchTableBase
     .dw AddRpnDateTimeBySeconds
@@ -1585,7 +1593,7 @@ _TruncateRpnDateTimeLabel:
 _TruncateRpnDateTime equ _TruncateRpnDateTimeLabel-branchTableBase
     .dw TruncateRpnDateTime
     .db 2
-;
+; extractors
 _RpnDateTimeExtractDateLabel:
 _RpnDateTimeExtractDate equ _RpnDateTimeExtractDateLabel-branchTableBase
     .dw RpnDateTimeExtractDate
@@ -1661,6 +1669,23 @@ _ExtendRpnDateTimeToOffsetDateTime equ _ExtendRpnDateTimeToOffsetDateTimeLabel-b
 _TruncateRpnOffsetDateTimeLabel:
 _TruncateRpnOffsetDateTime equ _TruncateRpnOffsetDateTimeLabel-branchTableBase
     .dw TruncateRpnOffsetDateTime
+    .db 2
+; extractors
+_RpnOffsetDateTimeExtractDateLabel:
+_RpnOffsetDateTimeExtractDate equ _RpnOffsetDateTimeExtractDateLabel-branchTableBase
+    .dw RpnOffsetDateTimeExtractDate
+    .db 2
+_RpnOffsetDateTimeExtractDateTimeLabel:
+_RpnOffsetDateTimeExtractDateTime equ _RpnOffsetDateTimeExtractDateTimeLabel-branchTableBase
+    .dw RpnOffsetDateTimeExtractDateTime
+    .db 2
+_RpnOffsetDateTimeExtractTimeLabel:
+_RpnOffsetDateTimeExtractTime equ _RpnOffsetDateTimeExtractTimeLabel-branchTableBase
+    .dw RpnOffsetDateTimeExtractTime
+    .db 2
+_RpnOffsetDateTimeExtractOffsetLabel:
+_RpnOffsetDateTimeExtractOffset equ _RpnOffsetDateTimeExtractOffsetLabel-branchTableBase
+    .dw RpnOffsetDateTimeExtractOffset
     .db 2
 
 ; duration2.asm

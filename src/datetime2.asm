@@ -104,6 +104,57 @@ epochSecondsToDateTime:
 
 ;-----------------------------------------------------------------------------
 
+; Description: Convert the RpnDateTime{} record in OP1 to epochSeconds,
+; assuming UTC timezone.
+; Input: OP1:RpnDateTime=input
+; Output: OP1:real
+; Destroys: all, OP1-OP6
+RpnDateTimeToEpochDays:
+    ; reserve 2 slots on FPS
+    call pushRaw9Op1 ; FPS=[rpnDateTime]; HL=rpnDateTime
+    ex de, hl ; DE=rpnDateTime
+    call reserveRaw9 ; FPS=[rpnDateTime,epochDays]; HL=epochDays
+    ; convert to epochDays
+    skipRpnObjectTypeDE ; DE=dateTime, skip type byte
+    call dateToEpochDays ; ignore the Time component; HL=epochDays
+    ; copy back to OP1
+    call popRaw9Op1 ; FPS=[rpnDateTime]; OP1=epochDays
+    call dropRaw9 ; FPS=[]
+    jp convertI40ToOP1 ; OP1=float(epochDays)
+
+;-----------------------------------------------------------------------------
+
+; Description: Convert the relative epochDays to an RpnDateTime{} record
+; that assumes a UTC timezone.
+; Input: OP1:Real=epochDays
+; Output: OP1:RpnDateTime
+; Destroys: all, OP1-OP6
+EpochDaysToRpnDateTime:
+    ; get relative epochDays
+    call convertOP1ToI40 ; OP1=i40(epochDays)
+epochDaysToRpnDateTimeAlt:
+    ; reserve 2 slots on the FPS
+    call reserveRaw9 ; FPS=[rpnDateTime]; HL=rpnDateTime
+    ex de, hl ; DE=rpnDateTime
+    call pushRaw9Op1 ; FPS=[rpnDateTime,epochDays]; HL=epochDays
+    ; convert to RpnDateTime
+    ex de, hl ; DE=epochDays; HL=rpnDateTime
+    ld a, rpnObjectTypeDateTime
+    call setHLRpnObjectTypePageTwo ; HL+=rpnObjectTypeSizeOf
+    call epochDaysToDate ; HL=HL+sizeof(DateTime)
+    ; fill the Time{} with 0
+    xor a
+    ld (hl), a
+    inc hl
+    ld (hl), a
+    inc hl
+    ld (hl), a
+    ; clean up FPS
+    call dropRaw9
+    jp popRaw9Op1
+
+;-----------------------------------------------------------------------------
+
 ; Description: Add (RpnDateTime plus seconds) or (seconds plus RpnDateTime).
 ; Input:
 ;   - OP1:(RpnDateTime|RpnReal)=rpnDateTime or seconds
