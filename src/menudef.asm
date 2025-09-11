@@ -4803,7 +4803,7 @@ mSetClockId equ 511
 ;-----------------------------------------------------------------------------
 
 mNamesCount equ 409 ; number of names and altnames
-mNamesPoolSize equ 3523 ; size of names string pool
+mNamesPoolSize equ 3487 ; size of names string pool
 
 mNullName:
     .db 0
@@ -5586,7 +5586,7 @@ mEpochSecondsToDateName:
 mDateToDayOfWeekName:
     .db Sconvert, 'D', 'W', SlBrace, 0
 mDateToDateTimeName:
-    .db SplusSign, 'D', 'T', SlBrace, 0
+    .db "DEXD", 0
 mTimeCreateName:
     .db 'T', SlBrace, SrBrace, 0
 mTimeToSecondsName:
@@ -5608,7 +5608,7 @@ mDateTimeExtractDateName:
 mDateTimeExtractTimeName:
     .db Speriod, 'T', SlBrace, SrBrace, 0
 mDateTimeToOffsetDateTimeName:
-    .db SplusSign, 'D', 'Z', SlBrace, 0
+    .db "DEXD", 0
 mOffsetCreateName:
     .db 'T', 'Z', SlBrace, SrBrace, 0
 mOffsetToHoursName:

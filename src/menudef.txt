@@ -641,7 +641,7 @@ MenuGroup root mRoot [
           ]
           MenuRow [
             MenuItem <Sconvert>DW<SlBrace> mDateToDayOfWeek
-            MenuItem <SplusSign>DT<SlBrace> mDateToDateTime
+            MenuItem DEXD mDateToDateTime
           ]
         ]
         MenuGroup T mDateFolderTime [
@@ -662,7 +662,7 @@ MenuGroup root mRoot [
           MenuRow [
             MenuItem <Speriod>D<SlBrace><SrBrace> mDateTimeExtractDate
             MenuItem <Speriod>T<SlBrace><SrBrace> mDateTimeExtractTime
-            MenuItem <SplusSign>DZ<SlBrace> mDateTimeToOffsetDateTime
+            MenuItem DEXD mDateTimeToOffsetDateTime
           ]
         ]
         MenuGroup TZ mDateFolderOffset [
