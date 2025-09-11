@@ -633,7 +633,7 @@ MenuGroup root mRoot [
         ]
         MenuGroup D mDateFolderDate [
           MenuRow [
-            MenuItem D<SlBrace> mDateCreate # create a Date object
+            MenuItem D<SlBrace><SrBrace> mDateCreate # create a Date object
             MenuItem <Sconvert>DY mDateToEpochDays
             MenuItem DY<Sconvert> mEpochDaysToDate
             MenuItem <Sconvert>S mDateToEpochSeconds
@@ -645,14 +645,14 @@ MenuGroup root mRoot [
         ]
         MenuGroup T mDateFolderTime [
           MenuRow [
-            MenuItem T<SlBrace> mTimeCreate
+            MenuItem T<SlBrace><SrBrace> mTimeCreate
             MenuItem <Sconvert>S mTimeToSeconds
             MenuItem S<Sconvert> mSecondsToTime
           ]
         ]
         MenuGroup DT mDateFolderDateTime [
           MenuRow [
-            MenuItem DT<SlBrace> mDateTimeCreate
+            MenuItem DT<SlBrace><SrBrace> mDateTimeCreate
             MenuItem <Sconvert>S mDateTimeToSeconds
             MenuItem S<Sconvert> mSecondsToDateTime
             MenuItem <Speriod>D mDateTimeGetDate
@@ -661,7 +661,7 @@ MenuGroup root mRoot [
         ]
         MenuGroup TZ mDateFolderOffset [
           MenuRow [
-            MenuItem TZ<SlBrace> mOffsetCreate
+            MenuItem TZ<SlBrace><SrBrace> mOffsetCreate
             MenuItem <Sconvert>H mOffsetToHours
             MenuItem H<Sconvert> mHoursToOffset
           ]
@@ -670,7 +670,7 @@ MenuGroup root mRoot [
       MenuRow [
         MenuGroup DZ mDateFolderOffsetDateTime [
           MenuRow [
-            MenuItem DZ<SlBrace> mOffsetDateTimeCreate
+            MenuItem DZ<SlBrace><SrBrace> mOffsetDateTimeCreate
             MenuItem <Sconvert>S mOffsetDateTimeToEpochSeconds
             MenuItem S<Sconvert>DZ mEpochSecondsToAppDateTime
             MenuItem S<Sconvert>UT mEpochSecondsToUTCDateTime
@@ -678,14 +678,14 @@ MenuGroup root mRoot [
         ]
         MenuGroup DR mDateFolderDuration [
           MenuRow [
-            MenuItem DR<SlBrace> mDurationCreate
+            MenuItem DR<SlBrace><SrBrace> mDurationCreate
             MenuItem <Sconvert>S mDurationToSeconds
             MenuItem S<Sconvert> mSecondsToDuration
           ]
         ]
         MenuGroup DW mDateFolderDayOfWeek [
           MenuRow [
-            MenuItem DW<SlBrace> mDayOfWeekCreate
+            MenuItem DW<SlBrace><SrBrace> mDayOfWeekCreate
             MenuItem <Sconvert>ISO mDayOfWeekToIsoNumber
             MenuItem ISO<Sconvert> mIsoNumberToDayOfWeek
           ]

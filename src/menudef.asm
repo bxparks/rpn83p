@@ -4711,7 +4711,7 @@ mSetClockId equ 501
 ;-----------------------------------------------------------------------------
 
 mNamesCount equ 401 ; number of names and altnames
-mNamesPoolSize equ 3243 ; size of names string pool
+mNamesPoolSize equ 3306 ; size of names string pool
 
 mNullName:
     .db 0
@@ -5482,7 +5482,7 @@ mClkName:
 mLeapYearName:
     .db "LEAP", 0
 mDateCreateName:
-    .db 'D', SlBrace, 0
+    .db 'D', SlBrace, SrBrace, 0
 mDateToEpochDaysName:
     .db Sconvert, 'D', 'Y', 0
 mEpochDaysToDateName:
@@ -5494,13 +5494,13 @@ mEpochSecondsToDateName:
 mDateToDayOfWeekName:
     .db Sconvert, 'D', 'W', 0
 mTimeCreateName:
-    .db 'T', SlBrace, 0
+    .db 'T', SlBrace, SrBrace, 0
 mTimeToSecondsName:
     .db Sconvert, 'S', 0
 mSecondsToTimeName:
     .db 'S', Sconvert, 0
 mDateTimeCreateName:
-    .db 'D', 'T', SlBrace, 0
+    .db 'D', 'T', SlBrace, SrBrace, 0
 mDateTimeToSecondsName:
     .db Sconvert, 'S', 0
 mSecondsToDateTimeName:
@@ -5510,13 +5510,13 @@ mDateTimeGetDateName:
 mDateTimeGetTimeName:
     .db Speriod, 'T', 0
 mOffsetCreateName:
-    .db 'T', 'Z', SlBrace, 0
+    .db 'T', 'Z', SlBrace, SrBrace, 0
 mOffsetToHoursName:
     .db Sconvert, 'H', 0
 mHoursToOffsetName:
     .db 'H', Sconvert, 0
 mOffsetDateTimeCreateName:
-    .db 'D', 'Z', SlBrace, 0
+    .db 'D', 'Z', SlBrace, SrBrace, 0
 mOffsetDateTimeToEpochSecondsName:
     .db Sconvert, 'S', 0
 mEpochSecondsToAppDateTimeName:
@@ -5524,13 +5524,13 @@ mEpochSecondsToAppDateTimeName:
 mEpochSecondsToUTCDateTimeName:
     .db 'S', Sconvert, 'U', 'T', 0
 mDurationCreateName:
-    .db 'D', 'R', SlBrace, 0
+    .db 'D', 'R', SlBrace, SrBrace, 0
 mDurationToSecondsName:
     .db Sconvert, 'S', 0
 mSecondsToDurationName:
     .db 'S', Sconvert, 0
 mDayOfWeekCreateName:
-    .db 'D', 'W', SlBrace, 0
+    .db 'D', 'W', SlBrace, SrBrace, 0
 mDayOfWeekToIsoNumberName:
     .db Sconvert, 'I', 'S', 'O', 0
 mIsoNumberToDayOfWeekName:
