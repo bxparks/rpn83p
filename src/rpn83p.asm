@@ -1585,6 +1585,15 @@ _TruncateRpnDateTimeLabel:
 _TruncateRpnDateTime equ _TruncateRpnDateTimeLabel-branchTableBase
     .dw TruncateRpnDateTime
     .db 2
+;
+_RpnDateTimeGetDateLabel:
+_RpnDateTimeGetDate equ _RpnDateTimeGetDateLabel-branchTableBase
+    .dw RpnDateTimeGetDate
+    .db 2
+_RpnDateTimeGetTimeLabel:
+_RpnDateTimeGetTime equ _RpnDateTimeGetTimeLabel-branchTableBase
+    .dw RpnDateTimeGetTime
+    .db 2
 
 ; offset2.asm
 _RpnOffsetToSecondsLabel:

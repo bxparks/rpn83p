@@ -327,3 +327,34 @@ TruncateRpnDateTime:
     ld a, rpnObjectTypeDate
     call setOp1RpnObjectTypePageTwo
     ret
+
+;-----------------------------------------------------------------------------
+; Getters
+;-----------------------------------------------------------------------------
+
+; Description: Extract RpnDate from RpnDateTime.
+; Input:
+;   - OP1:RpnDateTime
+; Output:
+;   - OP1:RpnDate
+; Destroys: all, OP1
+RpnDateTimeGetDate:
+    ld a, rpnObjectTypeDate
+    call setOp1RpnObjectTypePageTwo
+    ret
+
+; Description: Extract RpnTime from RpnDateTime.
+; Input:
+;   - OP1:RpnDateTime
+; Output:
+;   - OP1:RpnTime
+; Destroys: all, OP1
+RpnDateTimeGetTime:
+    ld a, rpnObjectTypeTime
+    call setOp1RpnObjectTypePageTwo
+    ; move Time components up into OP1
+    ld de, OP1 + rpnObjectTypeSizeOf
+    ld hl, OP1 + rpnObjectTypeDateSizeOf
+    ld bc, rpnObjectTypeTimeSizeOf - rpnObjectTypeSizeOf
+    ldir
+    ret

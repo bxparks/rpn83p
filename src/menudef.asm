@@ -4266,23 +4266,23 @@ mSecondsToDateTimeId equ 454
     .dw 0 ; rowBeginId or altName
     .dw mSecondsToDateTimeHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
-mBlank455:
-mBlank455Id equ 455
-    .dw mBlank455Id ; id
+mDateTimeGetDate:
+mDateTimeGetDateId equ 455
+    .dw mDateTimeGetDateId ; id
     .dw mDateFolderDateTimeId ; parentId
-    .dw mNullName ; name
+    .dw mDateTimeGetDateName ; name
     .db 0 ; numRows
     .dw 0 ; rowBeginId or altName
-    .dw mNullHandler ; handler (predefined)
+    .dw mDateTimeGetDateHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
-mBlank456:
-mBlank456Id equ 456
-    .dw mBlank456Id ; id
+mDateTimeGetTime:
+mDateTimeGetTimeId equ 456
+    .dw mDateTimeGetTimeId ; id
     .dw mDateFolderDateTimeId ; parentId
-    .dw mNullName ; name
+    .dw mDateTimeGetTimeName ; name
     .db 0 ; numRows
     .dw 0 ; rowBeginId or altName
-    .dw mNullHandler ; handler (predefined)
+    .dw mDateTimeGetTimeHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
 ; MenuGroup TZ: children
 ; MenuGroup TZ: children: row 0
@@ -4710,8 +4710,8 @@ mSetClockId equ 501
 ; Pool of menu names as NUL-terminated C strings.
 ;-----------------------------------------------------------------------------
 
-mNamesCount equ 399 ; number of names and altnames
-mNamesPoolSize equ 3221 ; size of names string pool
+mNamesCount equ 401 ; number of names and altnames
+mNamesPoolSize equ 3243 ; size of names string pool
 
 mNullName:
     .db 0
@@ -5505,6 +5505,10 @@ mDateTimeToSecondsName:
     .db Sconvert, 'S', 0
 mSecondsToDateTimeName:
     .db 'S', Sconvert, 0
+mDateTimeGetDateName:
+    .db Speriod, 'D', 0
+mDateTimeGetTimeName:
+    .db Speriod, 'T', 0
 mOffsetCreateName:
     .db 'T', 'Z', SlBrace, 0
 mOffsetToHoursName:

@@ -102,6 +102,24 @@ mSecondsToDateTimeHandler:
     bcall(_EpochSecondsToRpnDateTime) ; OP1=DateTime(seconds)
     jp replaceX
 
+mDateTimeGetDateHandler:
+    call closeInputAndRecallRpnDateLikeX ; OP1==dateLikeObject; A=type
+    cp rpnObjectTypeDateTime ; ZF=1 if RpnDateTime
+    jr nz, mDateTimeGetTimeHandlerErr
+    bcall(_RpnDateTimeGetDate) ; OP1=RpnDate
+    jp replaceX
+mDateTimeGetDateHandlerErr:
+    bcall(_ErrDataType)
+
+mDateTimeGetTimeHandler:
+    call closeInputAndRecallRpnDateLikeX ; OP1==dateLikeObject; A=type
+    cp rpnObjectTypeDateTime ; ZF=1 if RpnDateTime
+    jr nz, mDateTimeGetTimeHandlerErr
+    bcall(_RpnDateTimeGetTime) ; OP1=RpnTime
+    jp replaceX
+mDateTimeGetTimeHandlerErr:
+    bcall(_ErrDataType)
+
 ;-----------------------------------------------------------------------------
 ; DATE > TZ (Offset) > Row 1
 ;-----------------------------------------------------------------------------
@@ -311,7 +329,7 @@ mEpochGetCustomHandler:
     jp pushToX
 
 ;-----------------------------------------------------------------------------
-; DATE > Row 4 (conversions)
+; DATE > DOPS > Row 1
 ;-----------------------------------------------------------------------------
 
 mDateShrinkHandler:
@@ -422,7 +440,7 @@ dateLinkDateTime:
     jp replaceXY
 
 ;-----------------------------------------------------------------------------
-; DATE > Row 5 (RTC related)
+; DATE > CLK > Row 1
 ;-----------------------------------------------------------------------------
 
 mGetNowHandler:
@@ -476,7 +494,7 @@ noClockErr:
     ret
 
 ;-----------------------------------------------------------------------------
-; DATE > Row 6 (Various Settings)
+; DATE > CLK > Row 2
 ;-----------------------------------------------------------------------------
 
 mSetTimeZoneHandler:
