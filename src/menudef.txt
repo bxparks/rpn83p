@@ -655,8 +655,8 @@ MenuGroup root mRoot [
             MenuItem DT<SlBrace><SrBrace> mDateTimeCreate
             MenuItem <Sconvert>S mDateTimeToSeconds
             MenuItem S<Sconvert> mSecondsToDateTime
-            MenuItem <Speriod>D mDateTimeGetDate
-            MenuItem <Speriod>T mDateTimeGetTime
+            MenuItem <Speriod>D mDateTimeExtractDate
+            MenuItem <Speriod>T mDateTimeExtractTime
           ]
         ]
         MenuGroup TZ mDateFolderOffset [

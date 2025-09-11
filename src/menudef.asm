@@ -4266,23 +4266,23 @@ mSecondsToDateTimeId equ 454
     .dw 0 ; rowBeginId or altName
     .dw mSecondsToDateTimeHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
-mDateTimeGetDate:
-mDateTimeGetDateId equ 455
-    .dw mDateTimeGetDateId ; id
+mDateTimeExtractDate:
+mDateTimeExtractDateId equ 455
+    .dw mDateTimeExtractDateId ; id
     .dw mDateFolderDateTimeId ; parentId
-    .dw mDateTimeGetDateName ; name
+    .dw mDateTimeExtractDateName ; name
     .db 0 ; numRows
     .dw 0 ; rowBeginId or altName
-    .dw mDateTimeGetDateHandler ; handler (to be implemented)
+    .dw mDateTimeExtractDateHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
-mDateTimeGetTime:
-mDateTimeGetTimeId equ 456
-    .dw mDateTimeGetTimeId ; id
+mDateTimeExtractTime:
+mDateTimeExtractTimeId equ 456
+    .dw mDateTimeExtractTimeId ; id
     .dw mDateFolderDateTimeId ; parentId
-    .dw mDateTimeGetTimeName ; name
+    .dw mDateTimeExtractTimeName ; name
     .db 0 ; numRows
     .dw 0 ; rowBeginId or altName
-    .dw mDateTimeGetTimeHandler ; handler (to be implemented)
+    .dw mDateTimeExtractTimeHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
 ; MenuGroup TZ: children
 ; MenuGroup TZ: children: row 0
@@ -5505,9 +5505,9 @@ mDateTimeToSecondsName:
     .db Sconvert, 'S', 0
 mSecondsToDateTimeName:
     .db 'S', Sconvert, 0
-mDateTimeGetDateName:
+mDateTimeExtractDateName:
     .db Speriod, 'D', 0
-mDateTimeGetTimeName:
+mDateTimeExtractTimeName:
     .db Speriod, 'T', 0
 mOffsetCreateName:
     .db 'T', 'Z', SlBrace, SrBrace, 0

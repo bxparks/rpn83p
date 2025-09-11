@@ -91,33 +91,30 @@ mDateTimeCreateHandler:
 mDateTimeToSecondsHandler:
     call closeInputAndRecallRpnDateLikeX ; OP1==dateLikeObject; A=type
     cp rpnObjectTypeDateTime ; ZF=1 if RpnDateTime
-    jr nz, mDateTimeToSecondsHandlerErr
+    jr nz, mDateTimeErr
     bcall(_RpnDateTimeToEpochSeconds) ; OP1=epochSeconds
     jp replaceX
-mDateTimeToSecondsHandlerErr:
-    bcall(_ErrDataType)
 
 mSecondsToDateTimeHandler:
     call closeInputAndRecallX ; OP1=X=seconds
     bcall(_EpochSecondsToRpnDateTime) ; OP1=DateTime(seconds)
     jp replaceX
 
-mDateTimeGetDateHandler:
+mDateTimeExtractDateHandler:
     call closeInputAndRecallRpnDateLikeX ; OP1==dateLikeObject; A=type
     cp rpnObjectTypeDateTime ; ZF=1 if RpnDateTime
-    jr nz, mDateTimeGetTimeHandlerErr
-    bcall(_RpnDateTimeGetDate) ; OP1=RpnDate
+    jr nz, mDateTimeErr
+    bcall(_RpnDateTimeExtractDate) ; OP1=RpnDate
     jp replaceX
-mDateTimeGetDateHandlerErr:
-    bcall(_ErrDataType)
 
-mDateTimeGetTimeHandler:
+mDateTimeExtractTimeHandler:
     call closeInputAndRecallRpnDateLikeX ; OP1==dateLikeObject; A=type
     cp rpnObjectTypeDateTime ; ZF=1 if RpnDateTime
-    jr nz, mDateTimeGetTimeHandlerErr
-    bcall(_RpnDateTimeGetTime) ; OP1=RpnTime
+    jr nz, mDateTimeErr
+    bcall(_RpnDateTimeExtractTime) ; OP1=RpnTime
     jp replaceX
-mDateTimeGetTimeHandlerErr:
+
+mDateTimeErr:
     bcall(_ErrDataType)
 
 ;-----------------------------------------------------------------------------

@@ -329,7 +329,7 @@ TruncateRpnDateTime:
     ret
 
 ;-----------------------------------------------------------------------------
-; Getters
+; Extractors
 ;-----------------------------------------------------------------------------
 
 ; Description: Extract RpnDate from RpnDateTime.
@@ -338,7 +338,7 @@ TruncateRpnDateTime:
 ; Output:
 ;   - OP1:RpnDate
 ; Destroys: all, OP1
-RpnDateTimeGetDate:
+RpnDateTimeExtractDate:
     ld a, rpnObjectTypeDate
     call setOp1RpnObjectTypePageTwo
     ret
@@ -349,7 +349,7 @@ RpnDateTimeGetDate:
 ; Output:
 ;   - OP1:RpnTime
 ; Destroys: all, OP1
-RpnDateTimeGetTime:
+RpnDateTimeExtractTime:
     ld a, rpnObjectTypeTime
     call setOp1RpnObjectTypePageTwo
     ; move Time components up into OP1

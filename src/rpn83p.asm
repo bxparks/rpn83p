@@ -1586,13 +1586,13 @@ _TruncateRpnDateTime equ _TruncateRpnDateTimeLabel-branchTableBase
     .dw TruncateRpnDateTime
     .db 2
 ;
-_RpnDateTimeGetDateLabel:
-_RpnDateTimeGetDate equ _RpnDateTimeGetDateLabel-branchTableBase
-    .dw RpnDateTimeGetDate
+_RpnDateTimeExtractDateLabel:
+_RpnDateTimeExtractDate equ _RpnDateTimeExtractDateLabel-branchTableBase
+    .dw RpnDateTimeExtractDate
     .db 2
-_RpnDateTimeGetTimeLabel:
-_RpnDateTimeGetTime equ _RpnDateTimeGetTimeLabel-branchTableBase
-    .dw RpnDateTimeGetTime
+_RpnDateTimeExtractTimeLabel:
+_RpnDateTimeExtractTime equ _RpnDateTimeExtractTimeLabel-branchTableBase
+    .dw RpnDateTimeExtractTime
     .db 2
 
 ; offset2.asm
