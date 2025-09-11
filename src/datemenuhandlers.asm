@@ -12,7 +12,7 @@
 ;-----------------------------------------------------------------------------
 
 ;-----------------------------------------------------------------------------
-; DATE > Row 1
+; DATE > MISC > Row 1
 ;-----------------------------------------------------------------------------
 
 mLeapYearHandler:
@@ -20,75 +20,129 @@ mLeapYearHandler:
     bcall(_IsLeap) ; OP1=0 or 1
     jp replaceX
 
-mDayOfWeekHandler:
+;-----------------------------------------------------------------------------
+; DATE > D (Date) > Row 1
+;-----------------------------------------------------------------------------
+
+mDateCreateHandler:
+    ret
+
+mDateToDayOfWeekHandler:
     call closeInputAndRecallRpnDateLikeX ; OP1=X=RpnDateLike{}
     bcall(_RpnDateToDayOfWeek) ; OP1:RpnDayOfWeek
     jp replaceX
 
 mDateToEpochDaysHandler:
     call closeInputAndRecallRpnDateLikeX ; OP1=X=RpnDateLike{}
+    cp rpnObjectTypeDate ; ZF=1 if RpnDateTime
+    jr nz, mDateToEpochDaysHandlerErr
     bcall(_RpnDateToEpochDays) ; OP1=float(days)
     jp replaceX
+mDateToEpochDaysHandlerErr:
+    bcall(_ErrDataType)
 
 mEpochDaysToDateHandler:
     call closeInputAndRecallX ; OP1=X=epochDays
     bcall(_EpochDaysToRpnDate) ; OP1=Date(epochDays)
     jp replaceX
 
-;-----------------------------------------------------------------------------
-; DATE > Row 2
-;-----------------------------------------------------------------------------
-
-mDateRelatedToSecondsHandler:
-    call closeInputAndRecallRpnDateRelatedX ; OP1==dateRelatedObject; A=type
-    cp rpnObjectTypeDate ; ZF=1 if RpnDate
-    jr z, mDateRelatedToSecondsHandlerDate
-    cp rpnObjectTypeTime ; ZF=1 if RpnDateTime
-    jr z, mDateRelatedToSecondsHandlerTime
-    ; Conversion from DateTime -> epochSeconds is disabled because the meaning
-    ; of a DateTime is ambiguous. It could be a appDateTime (using the
-    ; appTimeZone), or it could be the UTC dateTime (using UTC timezone). We
-    ; force the user to always convert the DateTime to an OffsetDateTime with a
-    ; timezone Offset.
-    ; cp rpnObjectTypeDateTime ; ZF=1 if RpnDateTime
-    ; jr z, mDateRelatedToSecondsHandlerDateTime
-    cp rpnObjectTypeOffset ; ZF=1 if RpnOffset
-    jr z, mDateRelatedToSecondsHandlerOffset
-    cp rpnObjectTypeOffsetDateTime ; ZF=1 if RpnOffsetDateTime
-    jr z, mDateRelatedToSecondsHandlerOffsetDateTime
-    cp rpnObjectTypeDuration ; ZF=1 if RpnDuration
-    jr z, mDateRelatedToSecondsHandlerDuration
-    bcall(_ErrDataType)
-mDateRelatedToSecondsHandlerDate:
+mDateToEpochSecondsHandler:
+    call closeInputAndRecallRpnDateLikeX ; OP1=X=RpnDateLike{}
+    cp rpnObjectTypeDate ; ZF=1 if RpnDateTime
+    jr nz, mDateToSecondsHandlerErr
     bcall(_RpnDateToEpochSeconds) ; OP1=epochSeconds
-    jr mDateRelatedToSecondsHandlerEnd
-mDateRelatedToSecondsHandlerTime:
-    bcall(_RpnTimeToSeconds) ; OP1=epochSeconds
-    jr mDateRelatedToSecondsHandlerEnd
-;mDateRelatedToSecondsHandlerDateTime:
-;    bcall(_RpnDateTimeToEpochSeconds) ; OP1=epochSeconds
-;    jr mDateRelatedToSecondsHandlerEnd
-mDateRelatedToSecondsHandlerOffset:
-    bcall(_RpnOffsetToSeconds) ; OP1=seconds
-    jr mDateRelatedToSecondsHandlerEnd
-mDateRelatedToSecondsHandlerOffsetDateTime:
-    bcall(_RpnOffsetDateTimeToEpochSeconds) ; OP1=epochSeconds
-    jr mDateRelatedToSecondsHandlerEnd
-mDateRelatedToSecondsHandlerDuration:
-    bcall(_RpnDurationToSeconds) ; OP1=seconds
-    ; [[fallthrough]]
-mDateRelatedToSecondsHandlerEnd:
+    jp replaceX
+mDateToSecondsHandlerErr:
+    bcall(_ErrDataType)
+
+mEpochSecondsToDateHandler:
+    call closeInputAndRecallX ; OP1=X=epochSeconds
+    bcall(_EpochSecondsToRpnDate) ; OP1=Date(epochSeconds)
     jp replaceX
 
-mSecondsToDurationHandler:
-    call closeInputAndRecallX ; OP1=X=seconds
-    bcall(_SecondsToRpnDuration) ; OP1=Duration(seconds)
+;-----------------------------------------------------------------------------
+; DATE > T (Time) > Row 1
+;-----------------------------------------------------------------------------
+
+mTimeCreateHandler:
+    ret
+
+mTimeToSecondsHandler:
+    call closeInputAndRecallRpnDateRelatedX ; OP1==dateRelatedObject; A=type
+    cp rpnObjectTypeTime ; ZF=1 if RpnDateTime
+    jr nz, mTimeToSecondsHandlerTimeErr
+    bcall(_RpnTimeToSeconds) ; OP1=epochSeconds
     jp replaceX
+mTimeToSecondsHandlerTimeErr:
+    bcall(_ErrDataType)
 
 mSecondsToTimeHandler:
     call closeInputAndRecallX ; OP1=X=seconds
     bcall(_SecondsToRpnTime) ; OP1=Time(seconds)
     jp replaceX
+
+;-----------------------------------------------------------------------------
+; DATE > DT (DateTimne) > Row 1
+;-----------------------------------------------------------------------------
+
+mDateTimeCreateHandler:
+    ret
+
+mDateTimeToSecondsHandler:
+    ; Conversion from DateTime -> epochSeconds is disabled because the meaning
+    ; of a DateTime is ambiguous. It could be a appDateTime (using the
+    ; appTimeZone), or it could be the UTC dateTime (using UTC timezone). We
+    ; force the user to always convert the DateTime to an OffsetDateTime with a
+    ; timezone Offset.
+    ;
+    ; cp rpnObjectTypeDateTime ; ZF=1 if RpnDateTime
+    ; jr z, mDateTimeToSecondsHandlerErr
+    ; bcall(_RpnDateTimeToEpochSeconds) ; OP1=epochSeconds
+    ; jp replaceX
+    ret
+mDateTimeToSecondsHandlerErr:
+    bcall(_ErrDataType)
+
+;-----------------------------------------------------------------------------
+; DATE > TZ (Offset) > Row 1
+;-----------------------------------------------------------------------------
+
+mOffsetCreateHandler:
+    ret
+
+mOffsetToSecondsHandler:
+    call closeInputAndRecallRpnDateRelatedX ; OP1==dateRelatedObject; A=type
+    cp rpnObjectTypeOffset ; ZF=1 if RpnDateTime
+    jr nz, mOffsetToSecondsHandlerErr
+    bcall(_RpnOffsetToSeconds) ; OP1=seconds
+    jp replaceX
+mOffsetToSecondsHandlerErr:
+    bcall(_ErrDataType)
+
+mOffsetToHoursHandler:
+    call closeInputAndRecallRpnOffsetX ; A=rpnObjectType; OP1=X
+    bcall(_RpnOffsetToHours) ; OP1=hours
+    jp replaceX
+
+mHoursToOffsetHandler:
+    call closeInputAndRecallX ; OP1=X=hours
+    bcall(_HoursToRpnOffset) ; OP1=RpnOffset(hours)
+    jp replaceX
+
+;-----------------------------------------------------------------------------
+; DATE > DZ (OffsetDateTime) > Row 1
+;-----------------------------------------------------------------------------
+
+mOffsetDateTimeCreateHandler:
+    ret
+
+mOffsetDateTimeToEpochSecondsHandler:
+    cp rpnObjectTypeOffsetDateTime ; ZF=1 if RpnOffsetDateTime
+    jr z, mOffsetDateTimeToEpochSecondsHandlerErr
+    bcall(_RpnOffsetDateTimeToEpochSeconds) ; OP1=epochSeconds
+    jp replaceX
+mOffsetDateTimeToEpochSecondsHandlerErr:
+    bcall(_ErrDataType)
 
 mEpochSecondsToAppDateTimeHandler:
     call closeInputAndRecallX ; OP1=X=epochSeconds
@@ -102,21 +156,37 @@ mEpochSecondsToUTCDateTimeHandler:
     jp replaceX
 
 ;-----------------------------------------------------------------------------
-; DATE > Row 3
+; DATE > DR (Duration) > Row 1
 ;-----------------------------------------------------------------------------
 
-mHoursToTimeZoneHandler:
-    call closeInputAndRecallX ; OP1=X=hours
-    bcall(_HoursToRpnOffset) ; OP1=RpnOffset(hours)
+mDurationCreateHandler:
+    ret
+
+mDurationToSecondsHandler:
+    call closeInputAndRecallRpnDateRelatedX ; OP1==dateRelatedObject; A=type
+    bcall(_RpnDurationToSeconds) ; OP1=seconds
     jp replaceX
 
-mTimeZoneToHoursHandler:
-    call closeInputAndRecallRpnOffsetX ; A=rpnObjectType; OP1=X
-    bcall(_RpnOffsetToHours) ; OP1=hours
+mSecondsToDurationHandler:
+    call closeInputAndRecallX ; OP1=X=seconds
+    bcall(_SecondsToRpnDuration) ; OP1=Duration(seconds)
     jp replaceX
 
 ;-----------------------------------------------------------------------------
-; DATE > Row 3 > EPCH > Row 1
+; DATE > DW (DayOfWeek) > Row 1
+;-----------------------------------------------------------------------------
+
+mDayOfWeekCreateHandler:
+    ret
+
+mDayOfWeekToIsoNumberHandler:
+    ret
+
+mIsoNumberToDayOfWeekHandler:
+    ret
+
+;-----------------------------------------------------------------------------
+; DATE > EPCH > Row 1
 ;-----------------------------------------------------------------------------
 
 mEpochUnixHandler:
@@ -226,7 +296,7 @@ mEpochCustomNameSelectorAlt:
     ret
 
 ;-----------------------------------------------------------------------------
-; DATE > Row 3 > EPCH > Row 2
+; DATE > EPCH > Row 2
 ;-----------------------------------------------------------------------------
 
 mEpochSetCustomHandler:

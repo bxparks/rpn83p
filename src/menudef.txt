@@ -626,22 +626,69 @@ MenuGroup root mRoot [
     ]
     MenuGroup DATE mDate [
       MenuRow [
-        MenuItem LEAP mLeapYear # operates on year
-        MenuItem DOW mDayOfWeek # operates on Date
-        MenuItem * *
-        MenuItem D<Sconvert>DY mDateToEpochDays
-        MenuItem DY<Sconvert>D mEpochDaysToDate
+        MenuGroup MISC mDateMisc [
+          MenuRow [
+            MenuItem LEAP mLeapYear # operates on year
+          ]
+        ]
+        MenuGroup D mDateFolderDate [
+          MenuRow [
+            MenuItem D<SlBrace> mDateCreate # create a Date object
+            MenuItem <Sconvert>DY mDateToEpochDays
+            MenuItem DY<Sconvert> mEpochDaysToDate
+            MenuItem <Sconvert>S mDateToEpochSeconds
+            MenuItem S<Sconvert> mEpochSecondsToDate
+          ]
+          MenuRow [
+            MenuItem <Sconvert>DW mDateToDayOfWeek
+          ]
+        ]
+        MenuGroup T mDateFolderTime [
+          MenuRow [
+            MenuItem T<SlBrace> mTimeCreate
+            MenuItem <Sconvert>S mTimeToSeconds
+            MenuItem S<Sconvert> mSecondsToTime
+          ]
+        ]
+        MenuGroup DT mDateFolderDateTime [
+          MenuRow [
+            MenuItem DT<SlBrace> mDateTimeCreate
+            MenuItem <Sconvert>S mDateTimeToSeconds
+          ]
+        ]
+        MenuGroup TZ mDateFolderOffset [
+          MenuRow [
+            MenuItem TZ<SlBrace> mOffsetCreate
+            MenuItem <Sconvert>H mOffsetToHours
+            MenuItem H<Sconvert> mHoursToOffset
+          ]
+        ]
       ]
       MenuRow [
-        MenuItem D<Scross><Sconvert>S mDateRelatedToSeconds
-        MenuItem S<Sconvert>DR mSecondsToDuration
-        MenuItem S<Sconvert>T mSecondsToTime
-        MenuItem S<Sconvert>DZ mEpochSecondsToAppDateTime
-        MenuItem S<Sconvert>UT mEpochSecondsToUTCDateTime
+        MenuGroup DZ mDateFolderOffsetDateTime [
+          MenuRow [
+            MenuItem DZ<SlBrace> mOffsetDateTimeCreate
+            MenuItem <Sconvert>S mOffsetDateTimeToEpochSeconds
+            MenuItem S<Sconvert>DZ mEpochSecondsToAppDateTime
+            MenuItem S<Sconvert>UT mEpochSecondsToUTCDateTime
+          ]
+        ]
+        MenuGroup DR mDateFolderDuration [
+          MenuRow [
+            MenuItem DR<SlBrace> mDurationCreate
+            MenuItem <Sconvert>S mDurationToSeconds
+            MenuItem S<Sconvert> mSecondsToDuration
+          ]
+        ]
+        MenuGroup DW mDateFolderDayOfWeek [
+          MenuRow [
+            MenuItem DW<SlBrace> mDayOfWeekCreate
+            MenuItem <Sconvert>ISO mDayOfWeekToIsoNumber
+            MenuItem ISO<Sconvert> mIsoNumberToDayOfWeek
+          ]
+        ]
       ]
       MenuRow [
-        MenuItem TZ<Sconvert>H mTimeZoneToHours
-        MenuItem H<Sconvert>TZ mHoursToTimeZone
         MenuGroup DOPS mDops [
           MenuRow [
             MenuItem DSHK mDateShrink # shrink DZ to DT, DT to D
