@@ -89,19 +89,18 @@ mDateTimeCreateHandler:
     ret
 
 mDateTimeToSecondsHandler:
-    ; Conversion from DateTime -> epochSeconds is disabled because the meaning
-    ; of a DateTime is ambiguous. It could be a appDateTime (using the
-    ; appTimeZone), or it could be the UTC dateTime (using UTC timezone). We
-    ; force the user to always convert the DateTime to an OffsetDateTime with a
-    ; timezone Offset.
-    ;
-    ; cp rpnObjectTypeDateTime ; ZF=1 if RpnDateTime
-    ; jr z, mDateTimeToSecondsHandlerErr
-    ; bcall(_RpnDateTimeToEpochSeconds) ; OP1=epochSeconds
-    ; jp replaceX
-    ret
+    call closeInputAndRecallRpnDateLikeX ; OP1==dateLikeObject; A=type
+    cp rpnObjectTypeDateTime ; ZF=1 if RpnDateTime
+    jr nz, mDateTimeToSecondsHandlerErr
+    bcall(_RpnDateTimeToEpochSeconds) ; OP1=epochSeconds
+    jp replaceX
 mDateTimeToSecondsHandlerErr:
     bcall(_ErrDataType)
+
+mSecondsToDateTimeHandler:
+    call closeInputAndRecallX ; OP1=X=seconds
+    bcall(_EpochSecondsToRpnDateTime) ; OP1=DateTime(seconds)
+    jp replaceX
 
 ;-----------------------------------------------------------------------------
 ; DATE > TZ (Offset) > Row 1
