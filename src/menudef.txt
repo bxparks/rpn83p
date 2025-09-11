@@ -626,11 +626,6 @@ MenuGroup root mRoot [
     ]
     MenuGroup DATE mDate [
       MenuRow [
-        MenuGroup MISC mDateMisc [
-          MenuRow [
-            MenuItem LEAP mLeapYear # operates on year
-          ]
-        ]
         MenuGroup D mDateFolderDate [
           MenuRow [
             MenuItem D<SlBrace><SrBrace> mDateCreate # create a Date object
@@ -672,8 +667,6 @@ MenuGroup root mRoot [
             MenuItem H<Sconvert> mHoursToOffset
           ]
         ]
-      ]
-      MenuRow [
         MenuGroup DZ mDateFolderOffsetDateTime [
           MenuRow [
             MenuItem DZ<SlBrace><SrBrace> mOffsetDateTimeCreate
@@ -688,6 +681,8 @@ MenuGroup root mRoot [
             MenuItem <Speriod>TZ<SlBrace> mOffsetDateTimeExtractOffset
           ]
         ]
+      ]
+      MenuRow [
         MenuGroup DR mDateFolderDuration [
           MenuRow [
             MenuItem DR<SlBrace><SrBrace> mDurationCreate
@@ -702,15 +697,13 @@ MenuGroup root mRoot [
             MenuItem ISO<Sconvert> mIsoNumberToDayOfWeek
           ]
         ]
-      ]
-      MenuRow [
         MenuGroup DOPS mDops [
           MenuRow [
+            MenuItem LEAP mLeapYear # operates on year
             MenuItem DSHK mDateShrink # shrink DZ to DT, DT to D
             MenuItem DEXD mDateExtend # extend D to DT, DT to DZ
             MenuItem DCUT mDateCut # cut DZ to (DT,TZ), DT to (D,T)
             MenuItem DLNK mDateLink # link (DT,TZ) to DZ, (D,T) to DT
-            MenuItem * *
           ]
         ]
         MenuGroup EPCH mEpoch [
