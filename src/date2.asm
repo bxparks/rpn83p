@@ -386,3 +386,26 @@ subRpnDateByRpnDuration:
     ld hl, OP3+rpnObjectTypeSizeOf
     call chsDuration
     jr addRpnDateByDurationAdd
+
+;-----------------------------------------------------------------------------
+
+; Description: Convert RpnDate into RpnDateTime by appending a Time field of
+; "00:00:00", i.e. T{0,0,0}.
+; Input:
+;   - OP1:RpnDate
+; Output:
+;   - OP1:RpnDateTime
+; Destroys: OP1
+ExtendRpnDateToDateTime:
+    ld a, rpnObjectTypeDateTime
+    call setOp1RpnObjectTypePageTwo ; HL=OP1+rpnObjectTypeSizeOf
+    ; clear the Time fields
+    ld de, rpnObjectTypeDateSizeOf-rpnObjectTypeSizeOf
+    add hl, de ; HL=timePointer
+    xor a
+    ld (hl), a
+    inc hl
+    ld (hl), a
+    inc hl
+    ld (hl), a
+    ret

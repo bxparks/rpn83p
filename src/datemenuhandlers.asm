@@ -30,15 +30,12 @@ mDateErr:
 mDateCreateHandler:
     ret
 
-mDateToDayOfWeekHandler:
-    call closeInputAndRecallRpnDateLikeX ; OP1=X=RpnDateLike{}
-    bcall(_RpnDateToDayOfWeek) ; OP1:RpnDayOfWeek
-    jp replaceX
-
 mDateToEpochDaysHandler:
     call closeInputAndRecallRpnDateLikeX ; OP1=X=RpnDateLike{}
     cp rpnObjectTypeDate ; ZF=1 if RpnDateTime
     jr nz, mDateErr
+    bcall(_RpnDateToEpochDays) ; OP1=epochDays
+    jp replaceX
 
 mEpochDaysToDateHandler:
     call closeInputAndRecallX ; OP1=X=epochDays
@@ -55,6 +52,24 @@ mDateToEpochSecondsHandler:
 mEpochSecondsToDateHandler:
     call closeInputAndRecallX ; OP1=X=epochSeconds
     bcall(_EpochSecondsToRpnDate) ; OP1=Date(epochSeconds)
+    jp replaceX
+
+;-----------------------------------------------------------------------------
+; DATE > D (Date) > Row 2
+;-----------------------------------------------------------------------------
+
+mDateToDayOfWeekHandler:
+    call closeInputAndRecallRpnDateLikeX ; OP1=X=RpnDateLike{}
+    cp rpnObjectTypeDate ; ZF=1 if RpnDateTime
+    jr nz, mDateErr
+    bcall(_RpnDateToDayOfWeek) ; OP1:RpnDayOfWeek
+    jp replaceX
+
+mDateToDateTimeHandler:
+    call closeInputAndRecallRpnDateLikeX ; OP1=X=RpnDateLike{}
+    cp rpnObjectTypeDate ; ZF=1 if RpnDateTime
+    jr nz, mDateErr
+    bcall(_ExtendRpnDateToDateTime)
     jp replaceX
 
 ;-----------------------------------------------------------------------------
@@ -129,6 +144,14 @@ mDateTimeExtractTimeHandler:
     cp rpnObjectTypeDateTime ; ZF=1 if RpnDateTime
     jr nz, mDateTimeErr
     bcall(_RpnDateTimeExtractTime) ; OP1=RpnTime
+    jp replaceX
+
+
+mDateTimeToOffsetDateTimeHandler:
+    call closeInputAndRecallRpnDateLikeX ; OP1==dateLikeObject; A=type
+    cp rpnObjectTypeDateTime ; ZF=1 if RpnDateTime
+    jr nz, mDateTimeErr
+    bcall(_ExtendRpnDateTimeToOffsetDateTime)
     jp replaceX
 
 ;-----------------------------------------------------------------------------

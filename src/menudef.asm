@@ -4154,14 +4154,14 @@ mDateToDayOfWeekId equ 442
     .dw 0 ; rowBeginId or altName
     .dw mDateToDayOfWeekHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
-mBlank443:
-mBlank443Id equ 443
-    .dw mBlank443Id ; id
+mDateToDateTime:
+mDateToDateTimeId equ 443
+    .dw mDateToDateTimeId ; id
     .dw mDateFolderDateId ; parentId
-    .dw mNullName ; name
+    .dw mDateToDateTimeName ; name
     .db 0 ; numRows
     .dw 0 ; rowBeginId or altName
-    .dw mNullHandler ; handler (predefined)
+    .dw mDateToDateTimeHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
 mBlank444:
 mBlank444Id equ 444
@@ -4303,14 +4303,14 @@ mDateTimeExtractTimeId equ 458
     .dw 0 ; rowBeginId or altName
     .dw mDateTimeExtractTimeHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
-mBlank459:
-mBlank459Id equ 459
-    .dw mBlank459Id ; id
+mDateTimeToOffsetDateTime:
+mDateTimeToOffsetDateTimeId equ 459
+    .dw mDateTimeToOffsetDateTimeId ; id
     .dw mDateFolderDateTimeId ; parentId
-    .dw mNullName ; name
+    .dw mDateTimeToOffsetDateTimeName ; name
     .db 0 ; numRows
     .dw 0 ; rowBeginId or altName
-    .dw mNullHandler ; handler (predefined)
+    .dw mDateTimeToOffsetDateTimeHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
 mBlank460:
 mBlank460Id equ 460
@@ -4802,8 +4802,8 @@ mSetClockId equ 511
 ; Pool of menu names as NUL-terminated C strings.
 ;-----------------------------------------------------------------------------
 
-mNamesCount equ 407 ; number of names and altnames
-mNamesPoolSize equ 3468 ; size of names string pool
+mNamesCount equ 409 ; number of names and altnames
+mNamesPoolSize equ 3523 ; size of names string pool
 
 mNullName:
     .db 0
@@ -5584,7 +5584,9 @@ mDateToEpochSecondsName:
 mEpochSecondsToDateName:
     .db 'S', Sconvert, 0
 mDateToDayOfWeekName:
-    .db Sconvert, 'D', 'W', 0
+    .db Sconvert, 'D', 'W', SlBrace, 0
+mDateToDateTimeName:
+    .db SplusSign, 'D', 'T', SlBrace, 0
 mTimeCreateName:
     .db 'T', SlBrace, SrBrace, 0
 mTimeToSecondsName:
@@ -5605,6 +5607,8 @@ mDateTimeExtractDateName:
     .db Speriod, 'D', SlBrace, SrBrace, 0
 mDateTimeExtractTimeName:
     .db Speriod, 'T', SlBrace, SrBrace, 0
+mDateTimeToOffsetDateTimeName:
+    .db SplusSign, 'D', 'Z', SlBrace, 0
 mOffsetCreateName:
     .db 'T', 'Z', SlBrace, SrBrace, 0
 mOffsetToHoursName:

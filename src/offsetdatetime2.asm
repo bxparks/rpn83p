@@ -383,28 +383,6 @@ MergeRpnDateTimeWithRpnOffset:
 
 ;-----------------------------------------------------------------------------
 
-; Description: Convert RpnDateTime into RpnOffsetDateTime by appending an
-; TimeZone offset of "+00:00", i.e. TZ{0,0}.
-; Input:
-;   - OP1:RpnDateTime
-; Output:
-;   - OP1:RpnOffsetDateTime
-; Destroys: A, DE, HL, OP1
-ExtendRpnDateTimeToOffsetDateTime:
-    ld a, rpnObjectTypeOffsetDateTime
-    call setOp1RpnObjectTypePageTwo ; HL=OP1+rpnObjectTypeSizeOf
-    ; clear the Offset fields
-    ld de, rpnObjectTypeDateTimeSizeOf-rpnObjectTypeSizeOf
-    add hl, de ; HL=offsetPointer
-    xor a
-    ld (hl), a
-    inc hl
-    ld (hl), a
-    call expandOp1ToOp2PageTwo
-    ret
-
-;-----------------------------------------------------------------------------
-
 ; Description: Convert RpnOffsetDateTime into RpnDateTime by truncating the
 ; TimeZone offset.
 ; Input:
