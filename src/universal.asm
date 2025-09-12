@@ -486,13 +486,13 @@ universalMultRealByComplex:
     call cp1ExCp3 ; CP1=complex; CP3=real
     jr universalMultComplexByReal
 universalMultRealByDate: ; Real * Date
-    bcall(_ConvertRpnDateToTimeZone)
+    bcall(_ConvertRpnDateLikeToTimeZone)
     ret
 universalMultRealByDateTime: ; Real * DateTime
-    bcall(_ConvertRpnDateTimeToTimeZone)
+    bcall(_ConvertRpnDateLikeToTimeZone)
     ret
 universalMultRealByOffsetDateTime: ; Real * OffsetDateTime
-    bcall(_ConvertRpnOffsetDateTimeToTimeZone)
+    bcall(_ConvertRpnDateLikeToTimeZone)
     ret
 universalMultRealByDenominate:
     bcall(_MultRpnDenominateByReal)
@@ -519,11 +519,11 @@ universalMultErr:
     bcall(_ErrDataType)
 ; Date * object
 universalMultDateByObject:
-    bcall(_ConvertRpnDateToTimeZone)
+    bcall(_ConvertRpnDateLikeToTimeZone)
     ret
 ; DateTime * object
 universalMultDateTimeByObject:
-    bcall(_ConvertRpnDateTimeToTimeZone)
+    bcall(_ConvertRpnDateLikeToTimeZone)
     ret
 ; Offset * object
 universalMultOffsetByObject:
@@ -534,17 +534,17 @@ universalMultOffsetByObject:
     jr z, universalMultOffsetByOffsetDateTime
     jr universalMultErr
 universalMultOffsetByDate: ; Offset * RpnDate
-    bcall(_ConvertRpnDateToTimeZone)
+    bcall(_ConvertRpnDateLikeToTimeZone)
     ret
 universalMultOffsetByDateTime: ; Offset * RpnDateTime
-    bcall(_ConvertRpnDateTimeToTimeZone)
+    bcall(_ConvertRpnDateLikeToTimeZone)
     ret
 universalMultOffsetByOffsetDateTime: ; Offset * RpnOffsetDateTime
-    bcall(_ConvertRpnOffsetDateTimeToTimeZone)
+    bcall(_ConvertRpnDateLikeToTimeZone)
     ret
 ; OffsetDateTime * object
 universalMultOffsetDateTimeByObject:
-    bcall(_ConvertRpnOffsetDateTimeToTimeZone)
+    bcall(_ConvertRpnDateLikeToTimeZone)
     ret
 ; Denominate * object
 universalMultDenominateByObject:
