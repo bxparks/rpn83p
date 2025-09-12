@@ -218,6 +218,12 @@ mOffsetDateTimeExtractOffsetHandler:
     jp replaceX
 
 ;-----------------------------------------------------------------------------
+; DATE > DZ (OffsetDateTime) > Row 3
+;-----------------------------------------------------------------------------
+
+; See Generic Date handlers.
+
+;-----------------------------------------------------------------------------
 ; DATE > DR (Duration) > Row 1
 ;-----------------------------------------------------------------------------
 
@@ -409,10 +415,20 @@ mEpochGetCustomHandler:
     jp pushToX
 
 ;-----------------------------------------------------------------------------
-; DATE > generic ops
+; DATE > Generic Date handlers
 ;-----------------------------------------------------------------------------
 
-; Handles Real, Date, DateTime, and OffsetDateTime.
+; Handle CVTZ (Convert TimeZone) function for D, DT, and DZ menus.
+mDateConvertToTimeZoneHandler:
+mDateTimeConvertToTimeZoneHandler:
+mOffsetDateTimeConvertToTimeZoneHandler:
+    call closeInputAndRecallUniversalXY ; CP1=Y; CP3=X
+    bcall(_ConvertRpnDateLikeToTimeZone) ; OP1=DateLike*TZ
+    jp replaceX
+
+;-----------------------------------------------------------------------------
+
+; Handle LEAP function for Real, Date, DateTime, and OffsetDateTime.
 mIsDateLeapHandler:
 mIsDateTimeLeapHandler:
 mIsOffsetDateTimeLeapHandler:
@@ -435,7 +451,9 @@ isObjectLeap:
     bcall(_IsDateLeap)
     jp replaceX
 
-; Handles DateTime and OffsetDateTime.
+;-----------------------------------------------------------------------------
+
+; Handle DSHK for DateTime and OffsetDateTime.
 mDateShrinkToNothingHandler:
 mDateTimeShrinkToDateHandler:
 mOffsetDateTimeShrinkToDateTimeHandler:
@@ -454,11 +472,9 @@ dateShrinkRpnOffsetDateTime:
     bcall(_TruncateRpnOffsetDateTime)
     jp replaceX
 
-; Description: Convert Date->DateTime, or DateTime->OffsetDateTime.
-; Input:
-;   - OP1/OP2:(RpnDate|RpnDateTime)=X
-; Output:
-;   - OP1/OP2:(RpnDateTime|RpnOffsetDateTime)=dateTime|offsetDateTime
+;-----------------------------------------------------------------------------
+
+; Handle DEXD for Date and DateTime.
 mDateExtendToDateTimeHandler:
 mDateTimeExtendToOffsetDateTimeHandler:
 mOffsetDateTimeExtendToNothingHandler:
@@ -477,13 +493,9 @@ dateExtendRpnDateTime:
     bcall(_ExtendRpnDateTimeToOffsetDateTime)
     jp replaceX
 
-; Description: Split/cut an RpnDateTime into a (RpnDate, RpnTime) pair, or an
-; RpnOffsetDateTime into a (RpnOffset, RpnDateTime) pair.
-; Input:
-;   - OP1/OP2:(RpnOffsetDateTime|RpnDateTime)=X
-; Output:
-;   - OP1/OP2:(RpnOffset|RpnTime)=Split(X)[0]
-;   - OP3/OP4:(RpnDateTime|RpnDate)=Split(X)[1]
+;-----------------------------------------------------------------------------
+
+; Handle DCUT for DateTime and OffsetDateTime.
 mDateCutToNothingHandler:
 mDateTimeCutToDateHandler:
 mOffsetDateTimeCutToDateTimeHandler:
@@ -502,14 +514,13 @@ dateCutRpnOffsetDateTime:
     bcall(_SplitRpnOffsetDateTime) ; CP1=RpnOffset; CP3=RpnDateTime
     jp replaceXWithCP1CP3
 
-; Description: Same as handleKeyLink (2ND LINK) but accepts only date-related
-; objects. Complex and Real objects not allowed.
-; Input:
-;   - X:(RpnDate|RpnDateTime)
-;   - Y:(RpnDate|RpnDateTime)
-; Output:
-;   - X:(RpnDateTime|RpnOffsetDateTime)
-;   - Y:(RpnDateTime|RpnOffsetDateTime)
+;-----------------------------------------------------------------------------
+
+; Handle DLNK for Date, DateTime. Same as handleKeyLink (2ND LINK) but accepts
+; only date-related objects. Complex and Real objects not allowed.
+;
+; TODO: I think we could move this into a file on Flash Page 2 (e.g.
+; dateops2.asm) to save space on Flash Page 1.
 mDateLinkToDateTimeHandler:
 mDateTimeLinkToOffsetDateTimeHandler:
 mOffsetDateTimeLinkToNothingHandler:

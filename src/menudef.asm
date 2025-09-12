@@ -4052,23 +4052,23 @@ mEpochSecondsToDateId equ 431
     .dw mEpochSecondsToDateHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
 ; MenuGroup D: children: row 1
+mDateConvertToTimeZone:
+mDateConvertToTimeZoneId equ 432
+    .dw mDateConvertToTimeZoneId ; id
+    .dw mDateFolderDateId ; parentId
+    .dw mDateConvertToTimeZoneName ; name
+    .db 0 ; numRows
+    .dw 0 ; rowBeginId or altName
+    .dw mDateConvertToTimeZoneHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
 mDateToDayOfWeek:
-mDateToDayOfWeekId equ 432
+mDateToDayOfWeekId equ 433
     .dw mDateToDayOfWeekId ; id
     .dw mDateFolderDateId ; parentId
     .dw mDateToDayOfWeekName ; name
     .db 0 ; numRows
     .dw 0 ; rowBeginId or altName
     .dw mDateToDayOfWeekHandler ; handler (to be implemented)
-    .dw 0 ; nameSelector
-mBlank433:
-mBlank433Id equ 433
-    .dw mBlank433Id ; id
-    .dw mDateFolderDateId ; parentId
-    .dw mNullName ; name
-    .db 0 ; numRows
-    .dw 0 ; rowBeginId or altName
-    .dw mNullHandler ; handler (predefined)
     .dw 0 ; nameSelector
 mBlank434:
 mBlank434Id equ 434
@@ -4238,8 +4238,17 @@ mEpochSecondsToDateTimeId equ 451
     .dw mEpochSecondsToDateTimeHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
 ; MenuGroup DT: children: row 1
+mDateTimeConvertToTimeZone:
+mDateTimeConvertToTimeZoneId equ 452
+    .dw mDateTimeConvertToTimeZoneId ; id
+    .dw mDateFolderDateTimeId ; parentId
+    .dw mDateTimeConvertToTimeZoneName ; name
+    .db 0 ; numRows
+    .dw 0 ; rowBeginId or altName
+    .dw mDateTimeConvertToTimeZoneHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
 mDateTimeExtractDate:
-mDateTimeExtractDateId equ 452
+mDateTimeExtractDateId equ 453
     .dw mDateTimeExtractDateId ; id
     .dw mDateFolderDateTimeId ; parentId
     .dw mDateTimeExtractDateName ; name
@@ -4248,22 +4257,13 @@ mDateTimeExtractDateId equ 452
     .dw mDateTimeExtractDateHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
 mDateTimeExtractTime:
-mDateTimeExtractTimeId equ 453
+mDateTimeExtractTimeId equ 454
     .dw mDateTimeExtractTimeId ; id
     .dw mDateFolderDateTimeId ; parentId
     .dw mDateTimeExtractTimeName ; name
     .db 0 ; numRows
     .dw 0 ; rowBeginId or altName
     .dw mDateTimeExtractTimeHandler ; handler (to be implemented)
-    .dw 0 ; nameSelector
-mBlank454:
-mBlank454Id equ 454
-    .dw mBlank454Id ; id
-    .dw mDateFolderDateTimeId ; parentId
-    .dw mNullName ; name
-    .db 0 ; numRows
-    .dw 0 ; rowBeginId or altName
-    .dw mNullHandler ; handler (predefined)
     .dw 0 ; nameSelector
 mBlank455:
 mBlank455Id equ 455
@@ -4405,23 +4405,23 @@ mEpochSecondsToOffsetDateTimeUTCId equ 469
     .dw 0 ; rowBeginId or altName
     .dw mEpochSecondsToOffsetDateTimeUTCHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
-mBlank470:
-mBlank470Id equ 470
-    .dw mBlank470Id ; id
-    .dw mDateFolderOffsetDateTimeId ; parentId
-    .dw mNullName ; name
-    .db 0 ; numRows
-    .dw 0 ; rowBeginId or altName
-    .dw mNullHandler ; handler (predefined)
-    .dw 0 ; nameSelector
 mEpochSecondsToOffsetDateTimeApp:
-mEpochSecondsToOffsetDateTimeAppId equ 471
+mEpochSecondsToOffsetDateTimeAppId equ 470
     .dw mEpochSecondsToOffsetDateTimeAppId ; id
     .dw mDateFolderOffsetDateTimeId ; parentId
     .dw mEpochSecondsToOffsetDateTimeAppName ; name
     .db 0 ; numRows
     .dw 0 ; rowBeginId or altName
     .dw mEpochSecondsToOffsetDateTimeAppHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
+mOffsetDateTimeConvertToTimeZone:
+mOffsetDateTimeConvertToTimeZoneId equ 471
+    .dw mOffsetDateTimeConvertToTimeZoneId ; id
+    .dw mDateFolderOffsetDateTimeId ; parentId
+    .dw mOffsetDateTimeConvertToTimeZoneName ; name
+    .db 0 ; numRows
+    .dw 0 ; rowBeginId or altName
+    .dw mOffsetDateTimeConvertToTimeZoneHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
 ; MenuGroup DZ: children: row 1
 mOffsetDateTimeExtractDate:
@@ -4846,8 +4846,8 @@ mSetClockId equ 516
 ; Pool of menu names as NUL-terminated C strings.
 ;-----------------------------------------------------------------------------
 
-mNamesCount equ 418 ; number of names and altnames
-mNamesPoolSize equ 3558 ; size of names string pool
+mNamesCount equ 421 ; number of names and altnames
+mNamesPoolSize equ 3573 ; size of names string pool
 
 mNullName:
     .db 0
@@ -5621,6 +5621,8 @@ mDateToEpochSecondsName:
     .db Sconvert, 'S', 0
 mEpochSecondsToDateName:
     .db 'S', Sconvert, 0
+mDateConvertToTimeZoneName:
+    .db "CVTZ", 0
 mDateToDayOfWeekName:
     .db Sconvert, 'D', 'W', SlBrace, 0
 mIsDateLeapName:
@@ -5649,6 +5651,8 @@ mDateTimeToEpochSecondsName:
     .db Sconvert, 'S', 0
 mEpochSecondsToDateTimeName:
     .db 'S', Sconvert, 0
+mDateTimeConvertToTimeZoneName:
+    .db "CVTZ", 0
 mDateTimeExtractDateName:
     .db Speriod, 'D', SlBrace, SrBrace, 0
 mDateTimeExtractTimeName:
@@ -5677,6 +5681,8 @@ mEpochSecondsToOffsetDateTimeUTCName:
     .db 'S', Sconvert, 0
 mEpochSecondsToOffsetDateTimeAppName:
     .db 'S', Sconvert, SatSign, 0
+mOffsetDateTimeConvertToTimeZoneName:
+    .db "CVTZ", 0
 mOffsetDateTimeExtractDateName:
     .db Speriod, 'D', SlBrace, SrBrace, 0
 mOffsetDateTimeExtractTimeName:

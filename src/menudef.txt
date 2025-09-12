@@ -635,6 +635,7 @@ MenuGroup root mRoot [
             MenuItem S<Sconvert> mEpochSecondsToDate
           ]
           MenuRow [
+            MenuItem CVTZ mDateConvertToTimeZone
             MenuItem <Sconvert>DW<SlBrace> mDateToDayOfWeek
           ]
           MenuRow [
@@ -661,6 +662,7 @@ MenuGroup root mRoot [
             MenuItem S<Sconvert> mEpochSecondsToDateTime
           ]
           MenuRow [
+            MenuItem CVTZ mDateTimeConvertToTimeZone
             MenuItem <Speriod>D<SlBrace><SrBrace> mDateTimeExtractDate
             MenuItem <Speriod>T<SlBrace><SrBrace> mDateTimeExtractTime
           ]
@@ -684,8 +686,8 @@ MenuGroup root mRoot [
             MenuItem DZ<SlBrace><SrBrace> mOffsetDateTimeCreate
             MenuItem <Sconvert>S mOffsetDateTimeToEpochSeconds
             MenuItem S<Sconvert> mEpochSecondsToOffsetDateTimeUTC
-            MenuItem * *
             MenuItem S<Sconvert><SatSign> mEpochSecondsToOffsetDateTimeApp
+            MenuItem CVTZ mOffsetDateTimeConvertToTimeZone
           ]
           MenuRow [
             MenuItem <Speriod>D<SlBrace><SrBrace> mOffsetDateTimeExtractDate
