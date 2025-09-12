@@ -686,8 +686,13 @@ MenuGroup root mRoot [
         MenuGroup DR mDateFolderDuration [
           MenuRow [
             MenuItem DR<SlBrace><SrBrace> mDurationCreate
-            MenuItem <Sconvert>S mDurationToSeconds
+            MenuItem D<Sconvert> mDaysToDuration
+            MenuItem H<Sconvert> mHoursToDuration
+            MenuItem M<Sconvert> mMinutesToDuration
             MenuItem S<Sconvert> mSecondsToDuration
+          ]
+          MenuRow [
+            MenuItem <Sconvert>S mDurationToSeconds
           ]
         ]
         MenuGroup DW mDateFolderDayOfWeek [

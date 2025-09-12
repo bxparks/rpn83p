@@ -245,18 +245,44 @@ mOffsetDateTimeExtractOffsetHandler:
 ; DATE > DR (Duration) > Row 1
 ;-----------------------------------------------------------------------------
 
+mDurationErr:
+    bcall(_ErrDataType)
+
 mDurationCreateHandler:
     ret
 
 mDurationToSecondsHandler:
     call closeInputAndRecallRpnDateRelatedX ; OP1==dateRelatedObject; A=type
+    cp rpnObjectTypeDuration
+    jr nz, mDurationErr
     bcall(_RpnDurationToSeconds) ; OP1=seconds
     jp replaceX
 
 mSecondsToDurationHandler:
     call closeInputAndRecallX ; OP1=X=seconds
+mSecondsToDurationHandlerAlt:
     bcall(_SecondsToRpnDuration) ; OP1=Duration(seconds)
     jp replaceX
+
+mMinutesToDurationHandler:
+    call closeInputAndRecallX ; OP1=X=seconds
+mMinutesToDurationHandlerAlt:
+    bcall(_OP2Set60) ; OP2=60
+    bcall(_FPMult)
+    jr mSecondsToDurationHandlerAlt
+
+mHoursToDurationHandler:
+    call closeInputAndRecallX ; OP1=X=seconds
+mHoursToDurationHandlerAlt:
+    bcall(_OP2Set60) ; OP2=60
+    bcall(_FPMult)
+    jr mMinutesToDurationHandlerAlt
+
+mDaysToDurationHandler:
+    call closeInputAndRecallX ; OP1=X=seconds
+    call op2Set24 ; OP2=24
+    bcall(_FPMult)
+    jr mHoursToDurationHandlerAlt
 
 ;-----------------------------------------------------------------------------
 ; DATE > DW (DayOfWeek) > Row 1
