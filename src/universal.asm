@@ -544,7 +544,7 @@ universalMultOffsetDateTimeByReal:
     bcall(_ConvertRpnOffsetDateTimeToTimeZoneAsReal)
     ret
 universalMultOffsetDateTimeByOffset:
-    bcall(_ConvertRpnOffsetDateTimeToOffset)
+    bcall(_ConvertRpnOffsetDateTimeToTimeZoneAsOffset)
     ret
 ; Denominate * object
 universalMultDenominateByObject:

@@ -79,11 +79,11 @@ convertRpnDateTimeToTimeZoneAsRealConvert:
 ; Output:
 ;   - OP1; RpnOffsetDatetime
 ; Destroys: all, OP3-OP6
-ConvertRpnOffsetDateTimeToOffset:
+ConvertRpnOffsetDateTimeToTimeZoneAsOffset:
     call checkOp1OffsetDateTimePageTwo ; ZF=1 if CP1 is an RpnOffsetDateTime
-    jr z, convertRpnOffsetDateTimeToOffsetConvert
+    jr z, convertRpnOffsetDateTimeToTimeZoneAsOffsetConvert
     call cp1ExCp3PageTwo ; CP1=rpnOffsetDateTime; CP3=rpnOffset
-convertRpnOffsetDateTimeToOffsetConvert:
+convertRpnOffsetDateTimeToTimeZoneAsOffsetConvert:
     ; CP1=rpnOffsetDateTime; CP3=rpnOffset
     call PushRpnObject1 ; FPS=[rpnOffsetDateTime]; HL=rpnOffsetDateTime
     skipRpnObjectTypeHL ; HL=offsetDateTime
@@ -128,5 +128,5 @@ convertRpnOffsetDateTimeToTimeZoneAsRealConvert:
     call offsetHourToOffset ; (HL)=offset
     ; clean up FPS
     call PopRpnObject1 ; FPS=[]; OP1=rpnOffsetDateTime
-    jr convertRpnOffsetDateTimeToOffsetConvert
+    jr convertRpnOffsetDateTimeToTimeZoneAsOffsetConvert
 

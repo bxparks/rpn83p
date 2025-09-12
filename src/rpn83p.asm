@@ -1745,9 +1745,9 @@ _ConvertRpnDateTimeToTimeZoneAsRealLabel:
 _ConvertRpnDateTimeToTimeZoneAsReal equ _ConvertRpnDateTimeToTimeZoneAsRealLabel-branchTableBase
     .dw ConvertRpnDateTimeToTimeZoneAsReal
     .db 2
-_ConvertRpnOffsetDateTimeToOffsetLabel:
-_ConvertRpnOffsetDateTimeToOffset equ _ConvertRpnOffsetDateTimeToOffsetLabel-branchTableBase
-    .dw ConvertRpnOffsetDateTimeToOffset
+_ConvertRpnOffsetDateTimeToTimeZoneAsOffsetLabel:
+_ConvertRpnOffsetDateTimeToTimeZoneAsOffset equ _ConvertRpnOffsetDateTimeToTimeZoneAsOffsetLabel-branchTableBase
+    .dw ConvertRpnOffsetDateTimeToTimeZoneAsOffset
     .db 2
 _ConvertRpnOffsetDateTimeToTimeZoneAsRealLabel:
 _ConvertRpnOffsetDateTimeToTimeZoneAsReal equ _ConvertRpnOffsetDateTimeToTimeZoneAsRealLabel-branchTableBase
