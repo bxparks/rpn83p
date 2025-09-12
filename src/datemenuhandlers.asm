@@ -288,14 +288,23 @@ mDaysToDurationHandler:
 ; DATE > DW (DayOfWeek) > Row 1
 ;-----------------------------------------------------------------------------
 
+mDayOfWeekErr:
+    bcall(_ErrDataType)
+
 mDayOfWeekCreateHandler:
     ret
 
 mDayOfWeekToIsoNumberHandler:
-    ret
+    call closeInputAndRecallRpnDateRelatedX ; OP1=rpnDayOfWeek; A=rpnObjectType
+    cp rpnObjectTypeDayOfWeek
+    jr nz, mDayOfWeekErr
+    bcall(_RpnDayOfWeekToIsoNumber) ; OP1=iso dayofweek
+    jp replaceX
 
 mIsoNumberToDayOfWeekHandler:
-    ret
+    call closeInputAndRecallX ; OP1=X=isoNumber
+    bcall(_IsoNumberToRpnDayOfWeek) ; OP1=rpnDayOfWeek
+    jp replaceX
 
 ;-----------------------------------------------------------------------------
 ; DATE > EPCH > Row 1

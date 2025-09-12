@@ -175,7 +175,7 @@ closeInputAndRecallRpnDateLikeX:
 
 ; Close and parse the input buffer, place the value into OP1, and return
 ; successfully if the input was a date-related object: RpnDate, RpnTime,
-; RpnDateTime, RpnOffset, RpnOffsetDateTime.
+; RpnDateTime, RpnOffset, RpnOffsetDateTime, RpnDayOfWeek.
 ; Output: A=rpnObjectType
 ; Destroys: all, OP1, OP2, OP3, OP4, OP5
 closeInputAndRecallRpnDateRelatedX:
@@ -193,6 +193,8 @@ closeInputAndRecallRpnDateRelatedX:
     cp rpnObjectTypeOffsetDateTime
     ret z
     cp rpnObjectTypeDuration
+    ret z
+    cp rpnObjectTypeDayOfWeek
     ret z
     bcall(_ErrDataType)
 

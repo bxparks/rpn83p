@@ -37,8 +37,8 @@ isLeapTrue:
     bcall(_OP1Set1)
     ret
 
-; Description: Convert real number in OP1 to a u16 year in BC. Throws
-; Err:Domain if year is outside the range of[1,9999].
+; Description: Convert real number in OP1 to a u16 year in BC.
+; Throws: Err:Domain if year is outside the range of[1,9999].
 ; Input: OP1:Real=year
 ; Output: BC:u16=year in the range of [1,9999]
 ; Destroys: A, BC, DE, HL
