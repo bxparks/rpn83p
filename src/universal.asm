@@ -448,6 +448,9 @@ universalMult:
     ; OP1=Offset
     cp rpnObjectTypeOffset ; ZF=1 if Offset
     jr z, universalMultOffsetByObject
+    ; OP1=Date
+    cp rpnObjectTypeDate ; ZF=1 if Date
+    jr z, universalMultDateByObject
     ; OP1=DateTime
     cp rpnObjectTypeDateTime ; ZF=1 if DateTime
     jr z, universalMultDateTimeByObject
@@ -466,6 +469,8 @@ universalMultRealByObject:
     jr z, universalMultRealByReal
     cp rpnObjectTypeComplex
     jr z, universalMultRealByComplex
+    cp rpnObjectTypeDate
+    jr z, universalMultRealByDate
     cp rpnObjectTypeDateTime
     jr z, universalMultRealByDateTime
     cp rpnObjectTypeOffsetDateTime
@@ -480,6 +485,9 @@ universalMultRealByReal:
 universalMultRealByComplex:
     call cp1ExCp3 ; CP1=complex; CP3=real
     jr universalMultComplexByReal
+universalMultRealByDate: ; Real * Date
+    bcall(_ConvertRpnDateToTimeZone)
+    ret
 universalMultRealByDateTime: ; Real * DateTime
     bcall(_ConvertRpnDateTimeToTimeZone)
     ret
@@ -509,6 +517,10 @@ universalMultComplexByReal:
 ; Placed in the middle, so that 'jr' can be used instead of 'jp'.
 universalMultErr:
     bcall(_ErrDataType)
+; Date * object
+universalMultDateByObject:
+    bcall(_ConvertRpnDateToTimeZone)
+    ret
 ; DateTime * object
 universalMultDateTimeByObject:
     bcall(_ConvertRpnDateTimeToTimeZone)
@@ -521,6 +533,9 @@ universalMultOffsetByObject:
     cp rpnObjectTypeOffsetDateTime
     jr z, universalMultOffsetByOffsetDateTime
     jr universalMultErr
+universalMultOffsetByDate: ; Offset * RpnDate
+    bcall(_ConvertRpnDateToTimeZone)
+    ret
 universalMultOffsetByDateTime: ; Offset * RpnDateTime
     bcall(_ConvertRpnDateTimeToTimeZone)
     ret

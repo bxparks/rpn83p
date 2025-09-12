@@ -10,8 +10,34 @@
 ; entry.
 ;-----------------------------------------------------------------------------
 
-; Description: Convert the RpnDateTime to the timeZone specified by
+; Description: Convert the RpnDate (assuming UTC) to the timeZone specified by
 ; RpnOffset or Real.
+; Input:
+;   - OP1:(RpnDate|RpnOffset|Real)
+;   - OP3:(RpnDate|RpnOffset|Real)
+;   - one of OP1 or OP3 must be the RpnDateTime
+; Output:
+;   - OP1:RpnOffsetDatetime
+; Throws: ErrDateType if the other is not a Real or RpnOffset
+; Destroys: all, OP3-OP6
+ConvertRpnDateToTimeZone:
+    call checkOp1DatePageTwo ; ZF=1 if CP1 is an RpnDate
+    jr z, convertRpnDateToObject
+    call cp1ExCp3PageTwo ; CP1=rpnDate; CP3=rpnObject
+    call checkOp1DatePageTwo ; ZF=1 if CP1 is an RpnDate
+    jr z, convertRpnDateToObject
+    ; neither of OP1 nor OP3 is an RpnDate
+    bcall(_ErrDataType)
+convertRpnDateToObject:
+    ; Here CP1=rpnDate; CP3=rpnObject
+    call ExtendRpnDateToDateTime ; OP1=RpnDateTime
+    call ExtendRpnDateTimeToOffsetDateTime ; OP1=RpnOffsetDateTime
+    jp convertRpnOffsetDateTimeToTimeZoneAltEntry
+
+;-----------------------------------------------------------------------------
+
+; Description: Convert the RpnDateTime t(assuming UTC) o the timeZone specified
+; by RpnOffset or Real.
 ; Input:
 ;   - OP1:(RpnDateTime|RpnOffset|Real)
 ;   - OP3:(RpnDateTime|RpnOffset|Real)

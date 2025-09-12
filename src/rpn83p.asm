@@ -1737,6 +1737,10 @@ _SubSecondsByRpnDuration equ _SubSecondsByRpnDurationLabel-branchTableBase
     .db 2
 
 ; zoneconversion2.asm
+_ConvertRpnDateToTimeZoneLabel:
+_ConvertRpnDateToTimeZone equ _ConvertRpnDateToTimeZoneLabel-branchTableBase
+    .dw ConvertRpnDateToTimeZone
+    .db 2
 _ConvertRpnDateTimeToTimeZoneLabel:
 _ConvertRpnDateTimeToTimeZone equ _ConvertRpnDateTimeToTimeZoneLabel-branchTableBase
     .dw ConvertRpnDateTimeToTimeZone
