@@ -4396,14 +4396,14 @@ mOffsetDateTimeToEpochSecondsId equ 468
     .dw 0 ; rowBeginId or altName
     .dw mOffsetDateTimeToEpochSecondsHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
-mEpochSecondsToUTCDateTime:
-mEpochSecondsToUTCDateTimeId equ 469
-    .dw mEpochSecondsToUTCDateTimeId ; id
+mEpochSecondsToOffsetDateTimeUTC:
+mEpochSecondsToOffsetDateTimeUTCId equ 469
+    .dw mEpochSecondsToOffsetDateTimeUTCId ; id
     .dw mDateFolderOffsetDateTimeId ; parentId
-    .dw mEpochSecondsToUTCDateTimeName ; name
+    .dw mEpochSecondsToOffsetDateTimeUTCName ; name
     .db 0 ; numRows
     .dw 0 ; rowBeginId or altName
-    .dw mEpochSecondsToUTCDateTimeHandler ; handler (to be implemented)
+    .dw mEpochSecondsToOffsetDateTimeUTCHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
 mBlank470:
 mBlank470Id equ 470
@@ -4414,14 +4414,14 @@ mBlank470Id equ 470
     .dw 0 ; rowBeginId or altName
     .dw mNullHandler ; handler (predefined)
     .dw 0 ; nameSelector
-mEpochSecondsToAppDateTime:
-mEpochSecondsToAppDateTimeId equ 471
-    .dw mEpochSecondsToAppDateTimeId ; id
+mEpochSecondsToOffsetDateTimeApp:
+mEpochSecondsToOffsetDateTimeAppId equ 471
+    .dw mEpochSecondsToOffsetDateTimeAppId ; id
     .dw mDateFolderOffsetDateTimeId ; parentId
-    .dw mEpochSecondsToAppDateTimeName ; name
+    .dw mEpochSecondsToOffsetDateTimeAppName ; name
     .db 0 ; numRows
     .dw 0 ; rowBeginId or altName
-    .dw mEpochSecondsToAppDateTimeHandler ; handler (to be implemented)
+    .dw mEpochSecondsToOffsetDateTimeAppHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
 ; MenuGroup DZ: children: row 1
 mOffsetDateTimeExtractDate:
@@ -5673,9 +5673,9 @@ mOffsetDateTimeCreateName:
     .db 'D', 'Z', SlBrace, SrBrace, 0
 mOffsetDateTimeToEpochSecondsName:
     .db Sconvert, 'S', 0
-mEpochSecondsToUTCDateTimeName:
+mEpochSecondsToOffsetDateTimeUTCName:
     .db 'S', Sconvert, 0
-mEpochSecondsToAppDateTimeName:
+mEpochSecondsToOffsetDateTimeAppName:
     .db 'S', Sconvert, SatSign, 0
 mOffsetDateTimeExtractDateName:
     .db Speriod, 'D', SlBrace, SrBrace, 0
