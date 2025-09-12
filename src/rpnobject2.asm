@@ -83,6 +83,19 @@ setHLRpnObjectTypePageTwo:
     ret
 
 ;-----------------------------------------------------------------------------
+; Real numbers.
+;-----------------------------------------------------------------------------
+
+; Description: Check that OP3 is a Real number.
+; Input: OP3
+; Output: ZF=1 if real
+; Destroys: A
+checkOp3RealPageTwo:
+    call getOp3RpnObjectTypePageTwo
+    cp rpnObjectTypeReal
+    ret
+
+;-----------------------------------------------------------------------------
 ; Complex numbers.
 ;-----------------------------------------------------------------------------
 

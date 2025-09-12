@@ -409,7 +409,7 @@ mEpochGetCustomHandler:
     jp pushToX
 
 ;-----------------------------------------------------------------------------
-; DATE > DOPS > Row 1
+; DATE > generic ops
 ;-----------------------------------------------------------------------------
 
 ; Handles Real, Date, DateTime, and OffsetDateTime.

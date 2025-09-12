@@ -480,11 +480,11 @@ universalMultRealByReal:
 universalMultRealByComplex:
     call cp1ExCp3 ; CP1=complex; CP3=real
     jr universalMultComplexByReal
-universalMultRealByDateTime:
-    bcall(_ConvertRpnDateTimeToTimeZoneAsReal)
+universalMultRealByDateTime: ; Real * DateTime
+    bcall(_ConvertRpnDateTimeToTimeZone)
     ret
-universalMultRealByOffsetDateTime:
-    bcall(_ConvertRpnOffsetDateTimeToTimeZoneAsReal)
+universalMultRealByOffsetDateTime: ; Real * OffsetDateTime
+    bcall(_ConvertRpnOffsetDateTimeToTimeZone)
     ret
 universalMultRealByDenominate:
     bcall(_MultRpnDenominateByReal)
@@ -511,40 +511,25 @@ universalMultErr:
     bcall(_ErrDataType)
 ; DateTime * object
 universalMultDateTimeByObject:
-    call getOp3RpnObjectType ; A=type; HL=OP3
-    cp rpnObjectTypeReal
-    jr z, universalMultDateTimeByReal
-    cp rpnObjectTypeOffset
-    jr z, universalMultDateTimeByOffset
-    jr universalMultErr
-universalMultDateTimeByReal:
-    bcall(_ConvertRpnDateTimeToTimeZoneAsReal)
-    ret
-universalMultDateTimeByOffset:
-    bcall(_ConvertRpnDateTimeToTimeZoneAsOffset)
+    bcall(_ConvertRpnDateTimeToTimeZone)
     ret
 ; Offset * object
 universalMultOffsetByObject:
     call getOp3RpnObjectType ; A=type; HL=OP3
-    cp rpnObjectTypeOffset
+    cp rpnObjectTypeDateTime
     jr z, universalMultOffsetByDateTime
+    cp rpnObjectTypeOffsetDateTime
+    jr z, universalMultOffsetByOffsetDateTime
     jr universalMultErr
-universalMultOffsetByDateTime:
-    bcall(_ConvertRpnDateTimeToTimeZoneAsOffset)
+universalMultOffsetByDateTime: ; Offset * RpnDateTime
+    bcall(_ConvertRpnDateTimeToTimeZone)
+    ret
+universalMultOffsetByOffsetDateTime: ; Offset * RpnOffsetDateTime
+    bcall(_ConvertRpnOffsetDateTimeToTimeZone)
     ret
 ; OffsetDateTime * object
 universalMultOffsetDateTimeByObject:
-    call getOp3RpnObjectType ; A=type; HL=OP3
-    cp rpnObjectTypeReal
-    jr z, universalMultOffsetDateTimeByReal
-    cp rpnObjectTypeOffset
-    jr z, universalMultOffsetDateTimeByOffset
-    jr universalMultErr
-universalMultOffsetDateTimeByReal:
-    bcall(_ConvertRpnOffsetDateTimeToTimeZoneAsReal)
-    ret
-universalMultOffsetDateTimeByOffset:
-    bcall(_ConvertRpnOffsetDateTimeToTimeZoneAsOffset)
+    bcall(_ConvertRpnOffsetDateTimeToTimeZone)
     ret
 ; Denominate * object
 universalMultDenominateByObject:
