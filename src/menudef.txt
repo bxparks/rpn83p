@@ -637,6 +637,7 @@ MenuGroup root mRoot [
           MenuRow [
             MenuItem <Sconvert>DW<SlBrace> mDateToDayOfWeek
             MenuItem DEXD mDateToDateTime
+            MenuItem LEAP mIsDateLeap
           ]
         ]
         MenuGroup T mDateFolderTime [
@@ -658,6 +659,7 @@ MenuGroup root mRoot [
             MenuItem <Speriod>D<SlBrace><SrBrace> mDateTimeExtractDate
             MenuItem <Speriod>T<SlBrace><SrBrace> mDateTimeExtractTime
             MenuItem DEXD mDateTimeToOffsetDateTime
+            MenuItem LEAP mIsDateTimeLeap
           ]
         ]
         MenuGroup TZ mDateFolderOffset [
@@ -679,6 +681,7 @@ MenuGroup root mRoot [
             MenuItem <Speriod>T<SlBrace><SrBrace> mOffsetDateTimeExtractTime
             MenuItem <Speriod>DT<SlBrace> mOffsetDateTimeExtractDateTime
             MenuItem <Speriod>TZ<SlBrace> mOffsetDateTimeExtractOffset
+            MenuItem LEAP mIsOffsetDateTimeLeap
           ]
         ]
       ]
@@ -704,7 +707,7 @@ MenuGroup root mRoot [
         ]
         MenuGroup DOPS mDops [
           MenuRow [
-            MenuItem LEAP mLeapYear # operates on year
+            MenuItem LEAP mIsYearLeap # operates on integer year
             MenuItem DSHK mDateShrink # shrink DZ to DT, DT to D
             MenuItem DEXD mDateExtend # extend D to DT, DT to DZ
             MenuItem DCUT mDateCut # cut DZ to (DT,TZ), DT to (D,T)

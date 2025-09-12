@@ -3983,7 +3983,7 @@ mDopsId equ 424
     .dw mDateId ; parentId
     .dw mDopsName ; name
     .db 1 ; numRows
-    .dw mLeapYearId ; rowBeginId or altName
+    .dw mIsYearLeapId ; rowBeginId or altName
     .dw mGroupHandler ; handler (predefined)
     .dw 0 ; nameSelector
 mEpoch:
@@ -4070,14 +4070,14 @@ mDateToDateTimeId equ 433
     .dw 0 ; rowBeginId or altName
     .dw mDateToDateTimeHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
-mBlank434:
-mBlank434Id equ 434
-    .dw mBlank434Id ; id
+mIsDateLeap:
+mIsDateLeapId equ 434
+    .dw mIsDateLeapId ; id
     .dw mDateFolderDateId ; parentId
-    .dw mNullName ; name
+    .dw mIsDateLeapName ; name
     .db 0 ; numRows
     .dw 0 ; rowBeginId or altName
-    .dw mNullHandler ; handler (predefined)
+    .dw mIsDateLeapHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
 mBlank435:
 mBlank435Id equ 435
@@ -4219,14 +4219,14 @@ mDateTimeToOffsetDateTimeId equ 449
     .dw 0 ; rowBeginId or altName
     .dw mDateTimeToOffsetDateTimeHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
-mBlank450:
-mBlank450Id equ 450
-    .dw mBlank450Id ; id
+mIsDateTimeLeap:
+mIsDateTimeLeapId equ 450
+    .dw mIsDateTimeLeapId ; id
     .dw mDateFolderDateTimeId ; parentId
-    .dw mNullName ; name
+    .dw mIsDateTimeLeapName ; name
     .db 0 ; numRows
     .dw 0 ; rowBeginId or altName
-    .dw mNullHandler ; handler (predefined)
+    .dw mIsDateTimeLeapHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
 mBlank451:
 mBlank451Id equ 451
@@ -4368,14 +4368,14 @@ mOffsetDateTimeExtractOffsetId equ 465
     .dw 0 ; rowBeginId or altName
     .dw mOffsetDateTimeExtractOffsetHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
-mBlank466:
-mBlank466Id equ 466
-    .dw mBlank466Id ; id
+mIsOffsetDateTimeLeap:
+mIsOffsetDateTimeLeapId equ 466
+    .dw mIsOffsetDateTimeLeapId ; id
     .dw mDateFolderOffsetDateTimeId ; parentId
-    .dw mNullName ; name
+    .dw mIsOffsetDateTimeLeapName ; name
     .db 0 ; numRows
     .dw 0 ; rowBeginId or altName
-    .dw mNullHandler ; handler (predefined)
+    .dw mIsOffsetDateTimeLeapHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
 ; MenuGroup DR: children
 ; MenuGroup DR: children: row 0
@@ -4519,14 +4519,14 @@ mBlank481Id equ 481
     .dw 0 ; nameSelector
 ; MenuGroup DOPS: children
 ; MenuGroup DOPS: children: row 0
-mLeapYear:
-mLeapYearId equ 482
-    .dw mLeapYearId ; id
+mIsYearLeap:
+mIsYearLeapId equ 482
+    .dw mIsYearLeapId ; id
     .dw mDopsId ; parentId
-    .dw mLeapYearName ; name
+    .dw mIsYearLeapName ; name
     .db 0 ; numRows
     .dw 0 ; rowBeginId or altName
-    .dw mLeapYearHandler ; handler (to be implemented)
+    .dw mIsYearLeapHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
 mDateShrink:
 mDateShrinkId equ 483
@@ -4755,8 +4755,8 @@ mSetClockId equ 506
 ; Pool of menu names as NUL-terminated C strings.
 ;-----------------------------------------------------------------------------
 
-mNamesCount equ 411 ; number of names and altnames
-mNamesPoolSize equ 3518 ; size of names string pool
+mNamesCount equ 414 ; number of names and altnames
+mNamesPoolSize equ 3533 ; size of names string pool
 
 mNullName:
     .db 0
@@ -5536,6 +5536,8 @@ mDateToDayOfWeekName:
     .db Sconvert, 'D', 'W', SlBrace, 0
 mDateToDateTimeName:
     .db "DEXD", 0
+mIsDateLeapName:
+    .db "LEAP", 0
 mTimeCreateName:
     .db 'T', SlBrace, SrBrace, 0
 mTimeToSecondsName:
@@ -5558,6 +5560,8 @@ mDateTimeExtractTimeName:
     .db Speriod, 'T', SlBrace, SrBrace, 0
 mDateTimeToOffsetDateTimeName:
     .db "DEXD", 0
+mIsDateTimeLeapName:
+    .db "LEAP", 0
 mOffsetCreateName:
     .db 'T', 'Z', SlBrace, SrBrace, 0
 mOffsetToHoursName:
@@ -5580,6 +5584,8 @@ mOffsetDateTimeExtractDateTimeName:
     .db Speriod, 'D', 'T', SlBrace, 0
 mOffsetDateTimeExtractOffsetName:
     .db Speriod, 'T', 'Z', SlBrace, 0
+mIsOffsetDateTimeLeapName:
+    .db "LEAP", 0
 mDurationCreateName:
     .db 'D', 'R', SlBrace, SrBrace, 0
 mDaysToDurationName:
@@ -5598,7 +5604,7 @@ mDayOfWeekToIsoNumberName:
     .db Sconvert, 'I', 'S', 'O', 0
 mIsoNumberToDayOfWeekName:
     .db 'I', 'S', 'O', Sconvert, 0
-mLeapYearName:
+mIsYearLeapName:
     .db "LEAP", 0
 mDateShrinkName:
     .db "DSHK", 0

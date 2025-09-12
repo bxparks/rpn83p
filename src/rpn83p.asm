@@ -1477,10 +1477,14 @@ _ColdInitDateLabel:
 _ColdInitDate equ _ColdInitDateLabel-branchTableBase
     .dw ColdInitDate
     .db 2
-; Year functions
-_IsLeapLabel:
-_IsLeap equ _IsLeapLabel-branchTableBase
-    .dw IsLeap
+; Leap year functions
+_IsYearLeapLabel:
+_IsYearLeap equ _IsYearLeapLabel-branchTableBase
+    .dw IsYearLeap
+    .db 2
+_IsDateLeapLabel:
+_IsDateLeap equ _IsDateLeapLabel-branchTableBase
+    .dw IsDateLeap
     .db 2
 ; RpnDate and days functions
 _RpnDateToEpochDaysLabel:

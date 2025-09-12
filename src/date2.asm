@@ -20,20 +20,34 @@ ColdInitDate:
     ret
 
 ;-----------------------------------------------------------------------------
-; Simple date functions.
+; Leap year algorithms.
+;-----------------------------------------------------------------------------
+
+; Description: Determine if a Date, DateTime, or OffsetDateTime is leap.
+; Input: OP1:(Date|DateTime|OffsetDateTime)=date
+; Output: OP1:Real=1 if leap, 0 otherwise
+; Destroys: all
+IsDateLeap:
+    ld hl, OP1+rpnObjectTypeSizeOf
+    ld c, (hl)
+    inc hl
+    ld b, (hl) ; BC=year
+    jr isYearLeapAlt
+
 ;-----------------------------------------------------------------------------
 
 ; Description: Determine if OP1 is leap year.
 ; Input: OP1:Real=year
 ; Output: OP1:Real=1 or 0
 ; Destroys: all
-IsLeap:
+IsYearLeap:
     call convertOP1ToYear ; BC=year, [1,9999]
+isYearLeapAlt:
     call isLeapYear ; CF=1 if leap
-    jr c, isLeapTrue
+    jr c, isYearLeapTrue
     bcall(_OP1Set0)
     ret
-isLeapTrue:
+isYearLeapTrue:
     bcall(_OP1Set1)
     ret
 

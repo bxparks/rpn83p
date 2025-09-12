@@ -12,15 +12,6 @@
 ;-----------------------------------------------------------------------------
 
 ;-----------------------------------------------------------------------------
-; DATE > MISC > Row 1
-;-----------------------------------------------------------------------------
-
-mLeapYearHandler:
-    call closeInputAndRecallX ; OP1=X=year
-    bcall(_IsLeap) ; OP1=0 or 1
-    jp replaceX
-
-;-----------------------------------------------------------------------------
 ; DATE > D (Date) > Row 1
 ;-----------------------------------------------------------------------------
 
@@ -72,6 +63,9 @@ mDateToDateTimeHandler:
     bcall(_ExtendRpnDateToDateTime)
     jp replaceX
 
+mIsDateLeapHandler:
+    jp mIsYearLeapHandler
+
 ;-----------------------------------------------------------------------------
 ; DATE > T (Time) > Row 1
 ;-----------------------------------------------------------------------------
@@ -95,7 +89,7 @@ mSecondsToTimeHandler:
     jp replaceX
 
 ;-----------------------------------------------------------------------------
-; DATE > DT (DateTimne) > Row 1
+; DATE > DT (DateTime) > Row 1
 ;-----------------------------------------------------------------------------
 
 mDateTimeErr:
@@ -146,13 +140,15 @@ mDateTimeExtractTimeHandler:
     bcall(_RpnDateTimeExtractTime) ; OP1=RpnTime
     jp replaceX
 
-
 mDateTimeToOffsetDateTimeHandler:
     call closeInputAndRecallRpnDateLikeX ; OP1==dateLikeObject; A=type
     cp rpnObjectTypeDateTime ; ZF=1 if RpnDateTime
     jr nz, mDateTimeErr
     bcall(_ExtendRpnDateTimeToOffsetDateTime)
     jp replaceX
+
+mIsDateTimeLeapHandler:
+    jp mIsYearLeapHandler
 
 ;-----------------------------------------------------------------------------
 ; DATE > TZ (Offset) > Row 1
@@ -240,6 +236,9 @@ mOffsetDateTimeExtractOffsetHandler:
     jr nz, mOffsetDateTimeErr
     bcall(_RpnOffsetDateTimeExtractOffset) ; OP1=RpnOffset
     jp replaceX
+
+mIsOffsetDateTimeLeapHandler:
+    jp mIsYearLeapHandler
 
 ;-----------------------------------------------------------------------------
 ; DATE > DR (Duration) > Row 1
@@ -435,6 +434,26 @@ mEpochGetCustomHandler:
 ;-----------------------------------------------------------------------------
 ; DATE > DOPS > Row 1
 ;-----------------------------------------------------------------------------
+
+; Handles Real, Date, DateTime, and OffsetDateTime.
+mIsYearLeapHandler:
+    call closeInputAndRecallUniversalX ; OP1=X=Real|Date-like
+    cp rpnObjectTypeReal
+    jr z, mIsRealLeap
+    cp rpnObjectTypeDate
+    jr z, mIsObjectLeap
+    cp rpnObjectTypeDateTime
+    jr z, mIsObjectLeap
+    cp rpnObjectTypeOffsetDateTime
+    jr z, mIsObjectLeap
+mIsYearLeapHandlerErr:
+    bcall(_ErrDataType)
+mIsRealLeap:
+    bcall(_IsYearLeap)
+    jp replaceX
+mIsObjectLeap:
+    bcall(_IsDateLeap)
+    jp replaceX
 
 mDateShrinkHandler:
     call closeInputAndRecallRpnDateLikeX ; A=rpnObjectType
