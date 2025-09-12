@@ -174,15 +174,15 @@ mOffsetDateTimeToEpochSecondsHandler:
     bcall(_RpnOffsetDateTimeToEpochSeconds) ; OP1=epochSeconds
     jp replaceX
 
+mEpochSecondsToUTCDateTimeHandler:
+    call closeInputAndRecallX ; OP1=X=epochSeconds
+    bcall(_EpochSecondsToRpnOffsetDateTimeUTC) ; OP1=UTCDateTime(epochSeconds)
+    jp replaceX
+
 mEpochSecondsToAppDateTimeHandler:
     call closeInputAndRecallX ; OP1=X=epochSeconds
     ld bc, appTimeZone
     bcall(_EpochSecondsToRpnOffsetDateTime) ; OP1=OffsetDateTime(epochSeconds)
-    jp replaceX
-
-mEpochSecondsToUTCDateTimeHandler:
-    call closeInputAndRecallX ; OP1=X=epochSeconds
-    bcall(_EpochSecondsToRpnOffsetDateTimeUTC) ; OP1=UTCDateTime(epochSeconds)
     jp replaceX
 
 ;-----------------------------------------------------------------------------

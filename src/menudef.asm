@@ -4396,17 +4396,8 @@ mOffsetDateTimeToEpochSecondsId equ 468
     .dw 0 ; rowBeginId or altName
     .dw mOffsetDateTimeToEpochSecondsHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
-mEpochSecondsToAppDateTime:
-mEpochSecondsToAppDateTimeId equ 469
-    .dw mEpochSecondsToAppDateTimeId ; id
-    .dw mDateFolderOffsetDateTimeId ; parentId
-    .dw mEpochSecondsToAppDateTimeName ; name
-    .db 0 ; numRows
-    .dw 0 ; rowBeginId or altName
-    .dw mEpochSecondsToAppDateTimeHandler ; handler (to be implemented)
-    .dw 0 ; nameSelector
 mEpochSecondsToUTCDateTime:
-mEpochSecondsToUTCDateTimeId equ 470
+mEpochSecondsToUTCDateTimeId equ 469
     .dw mEpochSecondsToUTCDateTimeId ; id
     .dw mDateFolderOffsetDateTimeId ; parentId
     .dw mEpochSecondsToUTCDateTimeName ; name
@@ -4414,14 +4405,23 @@ mEpochSecondsToUTCDateTimeId equ 470
     .dw 0 ; rowBeginId or altName
     .dw mEpochSecondsToUTCDateTimeHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
-mBlank471:
-mBlank471Id equ 471
-    .dw mBlank471Id ; id
+mBlank470:
+mBlank470Id equ 470
+    .dw mBlank470Id ; id
     .dw mDateFolderOffsetDateTimeId ; parentId
     .dw mNullName ; name
     .db 0 ; numRows
     .dw 0 ; rowBeginId or altName
     .dw mNullHandler ; handler (predefined)
+    .dw 0 ; nameSelector
+mEpochSecondsToAppDateTime:
+mEpochSecondsToAppDateTimeId equ 471
+    .dw mEpochSecondsToAppDateTimeId ; id
+    .dw mDateFolderOffsetDateTimeId ; parentId
+    .dw mEpochSecondsToAppDateTimeName ; name
+    .db 0 ; numRows
+    .dw 0 ; rowBeginId or altName
+    .dw mEpochSecondsToAppDateTimeHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
 ; MenuGroup DZ: children: row 1
 mOffsetDateTimeExtractDate:
@@ -4847,7 +4847,7 @@ mSetClockId equ 516
 ;-----------------------------------------------------------------------------
 
 mNamesCount equ 418 ; number of names and altnames
-mNamesPoolSize equ 3553 ; size of names string pool
+mNamesPoolSize equ 3558 ; size of names string pool
 
 mNullName:
     .db 0
@@ -5673,10 +5673,10 @@ mOffsetDateTimeCreateName:
     .db 'D', 'Z', SlBrace, SrBrace, 0
 mOffsetDateTimeToEpochSecondsName:
     .db Sconvert, 'S', 0
-mEpochSecondsToAppDateTimeName:
-    .db 'S', Sconvert, 'D', 'Z', 0
 mEpochSecondsToUTCDateTimeName:
-    .db 'S', Sconvert, 'U', 'T', 0
+    .db 'S', Sconvert, 0
+mEpochSecondsToAppDateTimeName:
+    .db 'S', Sconvert, SatSign, 0
 mOffsetDateTimeExtractDateName:
     .db Speriod, 'D', SlBrace, SrBrace, 0
 mOffsetDateTimeExtractTimeName:

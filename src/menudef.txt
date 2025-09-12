@@ -683,8 +683,9 @@ MenuGroup root mRoot [
           MenuRow [
             MenuItem DZ<SlBrace><SrBrace> mOffsetDateTimeCreate
             MenuItem <Sconvert>S mOffsetDateTimeToEpochSeconds
-            MenuItem S<Sconvert>DZ mEpochSecondsToAppDateTime
-            MenuItem S<Sconvert>UT mEpochSecondsToUTCDateTime
+            MenuItem S<Sconvert> mEpochSecondsToUTCDateTime
+            MenuItem * *
+            MenuItem S<Sconvert><SatSign> mEpochSecondsToAppDateTime
           ]
           MenuRow [
             MenuItem <Speriod>D<SlBrace><SrBrace> mOffsetDateTimeExtractDate
