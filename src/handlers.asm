@@ -396,7 +396,7 @@ handleKeyEE:
     ; Check if Comma and EE are swapped.
     ld a, (commaEEMode)
     cp commaEEModeSwapped
-    jr z, handleKeyCommaAlt
+    jr z, handleKeyCommaAltEntry
 handleKeyEEAlt:
     ; Check prior characters in the inputBuf.
     bcall(_CheckInputBufEE) ; CF=1 if E exists; A=eeLen
@@ -485,7 +485,7 @@ handleKeyComma:
     ld a, (commaEEMode)
     cp commaEEModeSwapped
     jr z, handleKeyEEAlt
-handleKeyCommaAlt:
+handleKeyCommaAltEntry:
     ; Check if in data record mode.
     bcall(_CheckInputBufRecord) ; CF=1 if inputBuf is a Record
     ret nc ; return if not in data structure mode
@@ -949,9 +949,9 @@ handleKeyExpon:
 handleKeyInv:
     call closeInputAndRecallUniversalX ; A=rpnObjectType
     cp rpnObjectTypeDateTime
-    jp z, mDateCutHandlerAlt
+    jp z, mGenericDateCutHandlerAltEntry
     cp rpnObjectTypeOffsetDateTime
-    jp z, mDateCutHandlerAlt
+    jp z, mGenericDateCutHandlerAltEntry
     call universalRecip
     jp replaceX
 
@@ -961,9 +961,9 @@ handleKeyInv:
 handleKeySquare:
     call closeInputAndRecallUniversalX ; A=rpnObjectType
     cp rpnObjectTypeDate
-    jp z, mDateExtendHandlerAlt
+    jp z, mGenericDateExtendHandlerAltEntry
     cp rpnObjectTypeDateTime
-    jp z, mDateExtendHandlerAlt
+    jp z, mGenericDateExtendHandlerAltEntry
     call universalSquare
     jp replaceX
 
@@ -973,9 +973,9 @@ handleKeySquare:
 handleKeySqrt:
     call closeInputAndRecallUniversalX ; A=rpnObjectType
     cp rpnObjectTypeDateTime
-    jp z, mDateShrinkHandlerAlt
+    jp z, mGenericDateShrinkHandlerAltEntry
     cp rpnObjectTypeOffsetDateTime
-    jp z, mDateShrinkHandlerAlt
+    jp z, mGenericDateShrinkHandlerAltEntry
     call universalSqRoot
     jp replaceX
 
@@ -1203,13 +1203,13 @@ handleKeyLink:
     jr z, handleKeyLinkComplexToReals
     ;
     cp rpnObjectTypeTime ; ZF=1 if RpnTime
-    jp z, mDateLinkHandlerAlt
+    jp z, mGenericDateLinkHandlerAltEntry
     cp rpnObjectTypeDate ; ZF=1 if RpnDate
-    jp z, mDateLinkHandlerAlt
+    jp z, mGenericDateLinkHandlerAltEntry
     cp rpnObjectTypeOffset ; ZF=1 if RpnOffset
-    jp z, mDateLinkHandlerAlt
+    jp z, mGenericDateLinkHandlerAltEntry
     cp rpnObjectTypeDateTime ; ZF=1 if RpnDateTime
-    jp z, mDateLinkHandlerAlt
+    jp z, mGenericDateLinkHandlerAltEntry
 handleKeyLinkErrDataType:
     bcall(_ErrDataType)
 handleKeyLinkComplexToReals:

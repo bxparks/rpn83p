@@ -56,16 +56,6 @@ mDateToDayOfWeekHandler:
     bcall(_RpnDateToDayOfWeek) ; OP1:RpnDayOfWeek
     jp replaceX
 
-mDateToDateTimeHandler:
-    call closeInputAndRecallRpnDateLikeX ; OP1=X=RpnDateLike{}
-    cp rpnObjectTypeDate ; ZF=1 if RpnDateTime
-    jr nz, mDateErr
-    bcall(_ExtendRpnDateToDateTime)
-    jp replaceX
-
-mIsDateLeapHandler:
-    jp mIsYearLeapHandler
-
 ;-----------------------------------------------------------------------------
 ; DATE > T (Time) > Row 1
 ;-----------------------------------------------------------------------------
@@ -123,7 +113,7 @@ mEpochSecondsToDateTimeHandler:
     jp replaceX
 
 ;-----------------------------------------------------------------------------
-; DATE > DT (DateTimne) > Row 2
+; DATE > DT (DateTime) > Row 2
 ;-----------------------------------------------------------------------------
 
 mDateTimeExtractDateHandler:
@@ -139,16 +129,6 @@ mDateTimeExtractTimeHandler:
     jr nz, mDateTimeErr
     bcall(_RpnDateTimeExtractTime) ; OP1=RpnTime
     jp replaceX
-
-mDateTimeToOffsetDateTimeHandler:
-    call closeInputAndRecallRpnDateLikeX ; OP1==dateLikeObject; A=type
-    cp rpnObjectTypeDateTime ; ZF=1 if RpnDateTime
-    jr nz, mDateTimeErr
-    bcall(_ExtendRpnDateTimeToOffsetDateTime)
-    jp replaceX
-
-mIsDateTimeLeapHandler:
-    jp mIsYearLeapHandler
 
 ;-----------------------------------------------------------------------------
 ; DATE > TZ (Offset) > Row 1
@@ -237,9 +217,6 @@ mOffsetDateTimeExtractOffsetHandler:
     bcall(_RpnOffsetDateTimeExtractOffset) ; OP1=RpnOffset
     jp replaceX
 
-mIsOffsetDateTimeLeapHandler:
-    jp mIsYearLeapHandler
-
 ;-----------------------------------------------------------------------------
 ; DATE > DR (Duration) > Row 1
 ;-----------------------------------------------------------------------------
@@ -259,29 +236,29 @@ mDurationToSecondsHandler:
 
 mSecondsToDurationHandler:
     call closeInputAndRecallX ; OP1=X=seconds
-mSecondsToDurationHandlerAlt:
+mSecondsToDurationHandlerAltEntry:
     bcall(_SecondsToRpnDuration) ; OP1=Duration(seconds)
     jp replaceX
 
 mMinutesToDurationHandler:
     call closeInputAndRecallX ; OP1=X=seconds
-mMinutesToDurationHandlerAlt:
+mMinutesToDurationHandlerAltEntry:
     bcall(_OP2Set60) ; OP2=60
     bcall(_FPMult)
-    jr mSecondsToDurationHandlerAlt
+    jr mSecondsToDurationHandlerAltEntry
 
 mHoursToDurationHandler:
     call closeInputAndRecallX ; OP1=X=seconds
-mHoursToDurationHandlerAlt:
+mHoursToDurationHandlerAltEntry:
     bcall(_OP2Set60) ; OP2=60
     bcall(_FPMult)
-    jr mMinutesToDurationHandlerAlt
+    jr mMinutesToDurationHandlerAltEntry
 
 mDaysToDurationHandler:
     call closeInputAndRecallX ; OP1=X=seconds
     call op2Set24 ; OP2=24
     bcall(_FPMult)
-    jr mHoursToDurationHandlerAlt
+    jr mHoursToDurationHandlerAltEntry
 
 ;-----------------------------------------------------------------------------
 ; DATE > DW (DayOfWeek) > Row 1
@@ -436,28 +413,35 @@ mEpochGetCustomHandler:
 ;-----------------------------------------------------------------------------
 
 ; Handles Real, Date, DateTime, and OffsetDateTime.
-mIsYearLeapHandler:
+mIsDateLeapHandler:
+mIsDateTimeLeapHandler:
+mIsOffsetDateTimeLeapHandler:
+mGenericDateIsLeapHandler:
     call closeInputAndRecallUniversalX ; OP1=X=Real|Date-like
+mGenericDateIsYearLeapHandlerAltEntry:
     cp rpnObjectTypeReal
-    jr z, mIsRealLeap
+    jr z, isRealLeap
     cp rpnObjectTypeDate
-    jr z, mIsObjectLeap
+    jr z, isObjectLeap
     cp rpnObjectTypeDateTime
-    jr z, mIsObjectLeap
+    jr z, isObjectLeap
     cp rpnObjectTypeOffsetDateTime
-    jr z, mIsObjectLeap
-mIsYearLeapHandlerErr:
+    jr z, isObjectLeap
     bcall(_ErrDataType)
-mIsRealLeap:
+isRealLeap:
     bcall(_IsYearLeap)
     jp replaceX
-mIsObjectLeap:
+isObjectLeap:
     bcall(_IsDateLeap)
     jp replaceX
 
-mDateShrinkHandler:
+; Handles DateTime and OffsetDateTime.
+mDateShrinkToNothingHandler:
+mDateTimeShrinkToDateHandler:
+mOffsetDateTimeShrinkToDateTimeHandler:
+mGenericDateShrinkHandler:
     call closeInputAndRecallRpnDateLikeX ; A=rpnObjectType
-mDateShrinkHandlerAlt:
+mGenericDateShrinkHandlerAltEntry:
     cp rpnObjectTypeDateTime ; ZF=1 if RpnDateTime
     jr z, dateShrinkRpnDateTime
     cp rpnObjectTypeOffsetDateTime ; ZF=1 if RpnOffsetDateTime
@@ -475,9 +459,12 @@ dateShrinkRpnOffsetDateTime:
 ;   - OP1/OP2:(RpnDate|RpnDateTime)=X
 ; Output:
 ;   - OP1/OP2:(RpnDateTime|RpnOffsetDateTime)=dateTime|offsetDateTime
-mDateExtendHandler:
+mDateExtendToDateTimeHandler:
+mDateTimeExtendToOffsetDateTimeHandler:
+mOffsetDateTimeExtendToNothingHandler:
+mGenericDateExtendHandler:
     call closeInputAndRecallRpnDateLikeX ; A=rpnObjectType
-mDateExtendHandlerAlt:
+mGenericDateExtendHandlerAltEntry:
     cp rpnObjectTypeDate ; ZF=1 if RpnDate
     jr z, dateExtendRpnDate
     cp rpnObjectTypeDateTime ; ZF=1 if RpnDateTime
@@ -497,9 +484,12 @@ dateExtendRpnDateTime:
 ; Output:
 ;   - OP1/OP2:(RpnOffset|RpnTime)=Split(X)[0]
 ;   - OP3/OP4:(RpnDateTime|RpnDate)=Split(X)[1]
-mDateCutHandler:
+mDateCutToNothingHandler:
+mDateTimeCutToDateHandler:
+mOffsetDateTimeCutToDateTimeHandler:
+mGenericDateCutHandler:
     call closeInputAndRecallRpnDateLikeX ; A=rpnObjectType
-mDateCutHandlerAlt:
+mGenericDateCutHandlerAltEntry:
     cp rpnObjectTypeDateTime ; ZF=1 if RpnDateTime
     jr z, dateCutRpnDateTime
     cp rpnObjectTypeOffsetDateTime ; ZF=1 if RpnOffsetDateTime
@@ -520,9 +510,12 @@ dateCutRpnOffsetDateTime:
 ; Output:
 ;   - X:(RpnDateTime|RpnOffsetDateTime)
 ;   - Y:(RpnDateTime|RpnOffsetDateTime)
-mDateLinkHandler:
+mDateLinkToDateTimeHandler:
+mDateTimeLinkToOffsetDateTimeHandler:
+mOffsetDateTimeLinkToNothingHandler:
+mGenericDateLinkHandler:
     call closeInputAndRecallRpnDateRelatedX ; A=rpnObjectType
-mDateLinkHandlerAlt:
+mGenericDateLinkHandlerAltEntry:
     cp rpnObjectTypeTime ; ZF=1 if RpnTime
     jp z, dateLinkTime
     cp rpnObjectTypeDate ; ZF=1 if RpnDate

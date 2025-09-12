@@ -636,8 +636,13 @@ MenuGroup root mRoot [
           ]
           MenuRow [
             MenuItem <Sconvert>DW<SlBrace> mDateToDayOfWeek
-            MenuItem DEXD mDateToDateTime
+          ]
+          MenuRow [
             MenuItem LEAP mIsDateLeap
+            MenuItem DSHK mDateShrinkToNothing
+            MenuItem DEXD mDateExtendToDateTime
+            MenuItem DCUT mDateCutToNothing
+            MenuItem DLNK mDateLinkToDateTime
           ]
         ]
         MenuGroup T mDateFolderTime [
@@ -658,8 +663,13 @@ MenuGroup root mRoot [
           MenuRow [
             MenuItem <Speriod>D<SlBrace><SrBrace> mDateTimeExtractDate
             MenuItem <Speriod>T<SlBrace><SrBrace> mDateTimeExtractTime
-            MenuItem DEXD mDateTimeToOffsetDateTime
+          ]
+          MenuRow [
             MenuItem LEAP mIsDateTimeLeap
+            MenuItem DSHK mDateTimeShrinkToDate
+            MenuItem DEXD mDateTimeExtendToOffsetDateTime
+            MenuItem DCUT mDateTimeCutToDate
+            MenuItem DLNK mDateTimeLinkToOffsetDateTime
           ]
         ]
         MenuGroup TZ mDateFolderOffset [
@@ -681,7 +691,13 @@ MenuGroup root mRoot [
             MenuItem <Speriod>T<SlBrace><SrBrace> mOffsetDateTimeExtractTime
             MenuItem <Speriod>DT<SlBrace> mOffsetDateTimeExtractDateTime
             MenuItem <Speriod>TZ<SlBrace> mOffsetDateTimeExtractOffset
+          ]
+          MenuRow [
             MenuItem LEAP mIsOffsetDateTimeLeap
+            MenuItem DSHK mOffsetDateTimeShrinkToDateTime
+            MenuItem DEXD mOffsetDateTimeExtendToNothing
+            MenuItem DCUT mOffsetDateTimeCutToDateTime
+            MenuItem DLNK mOffsetDateTimeLinkToNothing
           ]
         ]
       ]
@@ -705,15 +721,15 @@ MenuGroup root mRoot [
             MenuItem ISO<Sconvert> mIsoNumberToDayOfWeek
           ]
         ]
-        MenuGroup DOPS mDops [
-          MenuRow [
-            MenuItem LEAP mIsYearLeap # operates on integer year
-            MenuItem DSHK mDateShrink # shrink DZ to DT, DT to D
-            MenuItem DEXD mDateExtend # extend D to DT, DT to DZ
-            MenuItem DCUT mDateCut # cut DZ to (DT,TZ), DT to (D,T)
-            MenuItem DLNK mDateLink # link (DT,TZ) to DZ, (D,T) to DT
-          ]
-        ]
+        #MenuGroup DOPS mDops [
+        #  MenuRow [
+        #    MenuItem LEAP mGenericDateIsLeap # operates on Real, D, DT, DZ
+        #    MenuItem DSHK mGenericDateShrink # shrink DZ to DT, DT to D
+        #    MenuItem DEXD mGenericDateExtend # extend D to DT, DT to DZ
+        #    MenuItem DCUT mGenericDateCut # cut DZ to (DT,TZ), DT to (D,T)
+        #    MenuItem DLNK mGenericDateLink # link (DT,TZ) to DZ, (D,T) to DT
+        #  ]
+        #]
         MenuGroup EPCH mEpoch [
           MenuRow [
             MenuItemAlt UNIX UNI<Sblock> mEpochUnix # 1970-01-01T00:00:00
