@@ -4847,7 +4847,7 @@ mSetClockId equ 516
 ;-----------------------------------------------------------------------------
 
 mNamesCount equ 421 ; number of names and altnames
-mNamesPoolSize equ 3573 ; size of names string pool
+mNamesPoolSize equ 3575 ; size of names string pool
 
 mNullName:
     .db 0
@@ -5670,9 +5670,9 @@ mDateTimeLinkToOffsetDateTimeName:
 mOffsetCreateName:
     .db 'T', 'Z', SlBrace, SrBrace, 0
 mOffsetToHoursName:
-    .db Sconvert, 'H', 0
+    .db Sconvert, 'H', 'R', 0
 mHoursToOffsetName:
-    .db 'H', Sconvert, 0
+    .db 'H', 'R', Sconvert, 0
 mOffsetDateTimeCreateName:
     .db 'D', 'Z', SlBrace, SrBrace, 0
 mOffsetDateTimeToEpochSecondsName:

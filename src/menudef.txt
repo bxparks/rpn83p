@@ -677,8 +677,8 @@ MenuGroup root mRoot [
         MenuGroup TZ mDateFolderOffset [
           MenuRow [
             MenuItem TZ<SlBrace><SrBrace> mOffsetCreate
-            MenuItem <Sconvert>H mOffsetToHours
-            MenuItem H<Sconvert> mHoursToOffset
+            MenuItem <Sconvert>HR mOffsetToHours
+            MenuItem HR<Sconvert> mHoursToOffset
           ]
         ]
         MenuGroup DZ mDateFolderOffsetDateTime [
