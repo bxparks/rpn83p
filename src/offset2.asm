@@ -595,8 +595,8 @@ checkValidOffsetHourMinuteErr:
 RpnOffsetExtractHour:
     ld a, (OP1+rpnObjectTypeSizeOf+0) ; A=hour
     ld hl, OP1
-    call setU40ToA ; OP1:U40=hour
-    jp convertU40ToOP1 ; OP1:Real=hour
+    call setI40ToA ; OP1:I40=hour
+    jp convertI40ToOP1 ; OP1:Real=hour
 
 ;-----------------------------------------------------------------------------
 
@@ -606,5 +606,5 @@ RpnOffsetExtractHour:
 RpnOffsetExtractMinute:
     ld a, (OP1+rpnObjectTypeSizeOf+1) ; A=minute
     ld hl, OP1
-    call setU40ToA ; OP1:U40=minute
-    jp convertU40ToOP1 ; OP1:Real=minute
+    call setI40ToA ; OP1:I40=minute
+    jp convertI40ToOP1 ; OP1:Real=minute

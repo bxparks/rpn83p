@@ -447,8 +447,8 @@ RpnDurationExtractDay:
     inc hl
     ld b, (hl) ; BC=day
     ld hl, OP1
-    call setU40ToBC ; OP1:U40=day
-    jp convertU40ToOP1 ; OP1:Real=day
+    call setI40ToBC ; OP1:I40=day
+    jp convertI40ToOP1 ; OP1:Real=day
 
 ;-----------------------------------------------------------------------------
 
@@ -458,8 +458,8 @@ RpnDurationExtractDay:
 RpnDurationExtractHour:
     ld a, (OP1+rpnObjectTypeSizeOf+2) ; A=hour
     ld hl, OP1
-    call setU40ToA ; OP1:U40=hour
-    jp convertU40ToOP1 ; OP1:Real=hour
+    call setI40ToA ; OP1:I40=hour
+    jp convertI40ToOP1 ; OP1:Real=hour
 
 ;-----------------------------------------------------------------------------
 
@@ -469,8 +469,8 @@ RpnDurationExtractHour:
 RpnDurationExtractMinute:
     ld a, (OP1+rpnObjectTypeSizeOf+3) ; A=minute
     ld hl, OP1
-    call setU40ToA ; OP1:U40=minute
-    jp convertU40ToOP1 ; OP1:Real=minute
+    call setI40ToA ; OP1:I40=minute
+    jp convertI40ToOP1 ; OP1:Real=minute
 
 ;-----------------------------------------------------------------------------
 
@@ -480,5 +480,5 @@ RpnDurationExtractMinute:
 RpnDurationExtractSecond:
     ld a, (OP1+rpnObjectTypeSizeOf+4) ; A=second
     ld hl, OP1
-    call setU40ToA ; OP1:U40=second
-    jp convertU40ToOP1 ; OP1:Real=second
+    call setI40ToA ; OP1:I40=second
+    jp convertI40ToOP1 ; OP1:Real=second
