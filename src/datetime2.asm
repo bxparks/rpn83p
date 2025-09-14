@@ -104,6 +104,57 @@ epochSecondsToDateTime:
 
 ;-----------------------------------------------------------------------------
 
+; Description: Convert the RpnDateTime{} record in OP1 to epochSeconds,
+; assuming UTC timezone.
+; Input: OP1:RpnDateTime=input
+; Output: OP1:real
+; Destroys: all, OP1-OP6
+RpnDateTimeToEpochDays:
+    ; reserve 2 slots on FPS
+    call pushRaw9Op1 ; FPS=[rpnDateTime]; HL=rpnDateTime
+    ex de, hl ; DE=rpnDateTime
+    call reserveRaw9 ; FPS=[rpnDateTime,epochDays]; HL=epochDays
+    ; convert to epochDays
+    skipRpnObjectTypeDE ; DE=dateTime, skip type byte
+    call dateToEpochDays ; ignore the Time component; HL=epochDays
+    ; copy back to OP1
+    call popRaw9Op1 ; FPS=[rpnDateTime]; OP1=epochDays
+    call dropRaw9 ; FPS=[]
+    jp convertI40ToOP1 ; OP1=float(epochDays)
+
+;-----------------------------------------------------------------------------
+
+; Description: Convert the relative epochDays to an RpnDateTime{} record
+; that assumes a UTC timezone.
+; Input: OP1:Real=epochDays
+; Output: OP1:RpnDateTime
+; Destroys: all, OP1-OP6
+EpochDaysToRpnDateTime:
+    ; get relative epochDays
+    call convertOP1ToI40 ; OP1=i40(epochDays)
+epochDaysToRpnDateTimeAlt:
+    ; reserve 2 slots on the FPS
+    call reserveRaw9 ; FPS=[rpnDateTime]; HL=rpnDateTime
+    ex de, hl ; DE=rpnDateTime
+    call pushRaw9Op1 ; FPS=[rpnDateTime,epochDays]; HL=epochDays
+    ; convert to RpnDateTime
+    ex de, hl ; DE=epochDays; HL=rpnDateTime
+    ld a, rpnObjectTypeDateTime
+    call setHLRpnObjectTypePageTwo ; HL+=rpnObjectTypeSizeOf
+    call epochDaysToDate ; HL=HL+sizeof(DateTime)
+    ; fill the Time{} with 0
+    xor a
+    ld (hl), a
+    inc hl
+    ld (hl), a
+    inc hl
+    ld (hl), a
+    ; clean up FPS
+    call dropRaw9
+    jp popRaw9Op1
+
+;-----------------------------------------------------------------------------
+
 ; Description: Add (RpnDateTime plus seconds) or (seconds plus RpnDateTime).
 ; Input:
 ;   - OP1:(RpnDateTime|RpnReal)=rpnDateTime or seconds
@@ -294,29 +345,6 @@ MergeRpnDateWithRpnTime:
 
 ;-----------------------------------------------------------------------------
 
-; Description: Convert RpnDate into RpnDateTime by appending a Time field of
-; "00:00:00", i.e. T{0,0,0}.
-; Input:
-;   - OP1:RpnDate
-; Output:
-;   - OP1:RpnDateTime
-; Destroys: OP1
-ExtendRpnDateToDateTime:
-    ld a, rpnObjectTypeDateTime
-    call setOp1RpnObjectTypePageTwo ; HL=OP1+rpnObjectTypeSizeOf
-    ; clear the Time fields
-    ld de, rpnObjectTypeDateSizeOf-rpnObjectTypeSizeOf
-    add hl, de ; HL=timePointer
-    xor a
-    ld (hl), a
-    inc hl
-    ld (hl), a
-    inc hl
-    ld (hl), a
-    ret
-
-;-----------------------------------------------------------------------------
-
 ; Description: Convert RpnDateTime into RpnDate by truncating the Time field.
 ; Input:
 ;   - OP1:RpnDateTime
@@ -326,4 +354,57 @@ ExtendRpnDateToDateTime:
 TruncateRpnDateTime:
     ld a, rpnObjectTypeDate
     call setOp1RpnObjectTypePageTwo
+    ret
+
+;-----------------------------------------------------------------------------
+
+; Description: Convert RpnDateTime into RpnOffsetDateTime by appending an
+; TimeZone offset of "+00:00", i.e. TZ{0,0}.
+; Input:
+;   - OP1:RpnDateTime
+; Output:
+;   - OP1:RpnOffsetDateTime
+; Destroys: A, DE, HL, OP1
+ExtendRpnDateTimeToOffsetDateTime:
+    ld a, rpnObjectTypeOffsetDateTime
+    call setOp1RpnObjectTypePageTwo ; HL=OP1+rpnObjectTypeSizeOf
+    ; clear the Offset fields
+    ld de, rpnObjectTypeDateTimeSizeOf-rpnObjectTypeSizeOf
+    add hl, de ; HL=offsetPointer
+    xor a
+    ld (hl), a
+    inc hl
+    ld (hl), a
+    call expandOp1ToOp2PageTwo
+    ret
+
+;-----------------------------------------------------------------------------
+; Extractors
+;-----------------------------------------------------------------------------
+
+; Description: Extract RpnDate from RpnDateTime.
+; Input:
+;   - OP1:RpnDateTime
+; Output:
+;   - OP1:RpnDate
+; Destroys: all, OP1
+RpnDateTimeExtractDate:
+    ld a, rpnObjectTypeDate
+    call setOp1RpnObjectTypePageTwo
+    ret
+
+; Description: Extract RpnTime from RpnDateTime.
+; Input:
+;   - OP1:RpnDateTime
+; Output:
+;   - OP1:RpnTime
+; Destroys: all, OP1
+RpnDateTimeExtractTime:
+    ld a, rpnObjectTypeTime
+    call setOp1RpnObjectTypePageTwo
+    ; move Time components up into OP1
+    ld de, OP1 + rpnObjectTypeSizeOf
+    ld hl, OP1 + rpnObjectTypeDateSizeOf
+    ld bc, rpnObjectTypeTimeSizeOf - rpnObjectTypeSizeOf
+    ldir
     ret

@@ -18,6 +18,12 @@
 RpnDateToDayOfWeek:
     ld hl, OP1+rpnObjectTypeSizeOf ; skip type byte
     call dateToDayOfWeekNumber ; A=[1,7]
+    ; [[fallthrough]]
+
+; Description: Convert dayOfWeekNumber in A to RpnDayOfWeek.
+; Input: A:u8=iso
+; Output: OP1:RpnDayOfWeek=DW{iso}
+convertAToRpnDayOfWeek:
     ld b, a ; B=dayOfWeek
     ; convert to RpnDayOfWeek
     ld a, rpnObjectTypeDayOfWeek
@@ -51,6 +57,49 @@ dateToDayOfWeekNumber:
 dateToDayOfWeekNumberEnd:
     inc a
     ret
+
+;-----------------------------------------------------------------------------
+
+; Description: Convert RpnDayOfWeek to ISO DayOfWeek number.
+; Input: OP1:RpnDayOfWeek=DR{dow}
+; Output: OP1:Real=dow
+RpnDayOfWeekToIsoNumber:
+    ld hl, OP1
+    skipRpnObjectTypeHL
+    ld a, (hl) ; A=iso
+    bcall(_SetXXOP1) ; OP1=iso
+    ret
+
+; Description: Convert ISO DayOfWeek number to RpnDayOfWeek.
+; Input: OP1:Real=iso
+; Output: OP1:RpnDayOfWeek
+IsoNumberToRpnDayOfWeek:
+    call convertOP1ToIsoDayOfWeek ; A=iso
+    jp convertAToRpnDayOfWeek ; OP1=RpnDayOfWeek
+
+; Description: Convert real number in OP1 to a u8 dow number in A.
+; Throws: Err:Domain
+convertOP1ToIsoDayOfWeek:
+    call convertOP1ToI40 ; HL=OP1=iso
+    ; Check iso>=1
+    ex de, hl ; DE=iso
+    ld hl, OP2
+    ld a, 1
+    call setU40ToA ; HL=OP2=1
+    ex de, hl ; DE=OP2=1; HL=iso
+    call cmpU40U40 ; CF=1 if HL(iso)<DE(1)
+    jr c, convertOP1ToIsoDayOfWeekErr
+    ; Check iso<8
+    ex de, hl ; HL=OP2
+    ld a, 8
+    call setU40ToA ; HL=OP2=7
+    ex de, hl ; DE=OP2=8; HL=OP1=iso
+    call cmpU40U40 ; CF=0 if HL(iso)>=DE(8)
+    jr nc, convertOP1ToIsoDayOfWeekErr
+    ld a, (hl) ; A=iso
+    ret
+convertOP1ToIsoDayOfWeekErr:
+    bcall(_ErrDomain)
 
 ;-----------------------------------------------------------------------------
 

@@ -56,6 +56,15 @@ op2Set12:
 
 ;-----------------------------------------------------------------------------
 
+; Description: Set OP2 to 24. The TI-OS Provides OP2Set60() but not
+; OP2Set24().
+; Destroys: all, HL
+op2Set24:
+    ld hl, const24
+    jp move9ToOp2
+
+;-----------------------------------------------------------------------------
+
 ; Description: Set OP1 to 100. The TI-OS Provides OP2Set60() but not
 ; OP2Set100().
 ; Destroys: all, HL
@@ -127,6 +136,9 @@ const10: ; 10
 
 const12: ; 12
     .db $00, $81, $12, $00, $00, $00, $00, $00, $00
+
+const24: ; 24
+    .db $00, $81, $24, $00, $00, $00, $00, $00, $00
 
 const100: ; 100
     .db $00, $82, $10, $00, $00, $00, $00, $00, $00

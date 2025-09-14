@@ -123,8 +123,8 @@ MENU_TYPE_ITEM_ALT = 2  # MenuItem with alternate display name
 # nodes must fit into a single flash page which is 16 kiB. The sizeof(MenuNode)
 # is 13, so the number of menu nodes is limited to 1260. With the overhead of
 # other code that must fit into that flash page, the actual limit will be lower
-# than 1260. Let's set the limit to 512 as an early warning.
-MENU_ID_LIMIT = 512
+# than 1260. Let's set the limit to 768 as an early warning.
+MENU_ID_LIMIT = 768
 
 MenuRow = List["MenuNode"]
 

@@ -626,31 +626,113 @@ MenuGroup root mRoot [
     ]
     MenuGroup DATE mDate [
       MenuRow [
-        MenuItem LEAP mLeapYear # operates on year
-        MenuItem DOW mDayOfWeek # operates on Date
-        MenuItem * *
-        MenuItem D<Sconvert>DY mDateToEpochDays
-        MenuItem DY<Sconvert>D mEpochDaysToDate
-      ]
-      MenuRow [
-        MenuItem D<Scross><Sconvert>S mDateRelatedToSeconds
-        MenuItem S<Sconvert>DR mSecondsToDuration
-        MenuItem S<Sconvert>T mSecondsToTime
-        MenuItem S<Sconvert>DZ mEpochSecondsToAppDateTime
-        MenuItem S<Sconvert>UT mEpochSecondsToUTCDateTime
-      ]
-      MenuRow [
-        MenuItem TZ<Sconvert>H mTimeZoneToHours
-        MenuItem H<Sconvert>TZ mHoursToTimeZone
-        MenuGroup DOPS mDops [
+        MenuGroup D mDateFolderDate [
           MenuRow [
-            MenuItem DSHK mDateShrink # shrink DZ to DT, DT to D
-            MenuItem DEXD mDateExtend # extend D to DT, DT to DZ
-            MenuItem DCUT mDateCut # cut DZ to (DT,TZ), DT to (D,T)
-            MenuItem DLNK mDateLink # link (DT,TZ) to DZ, (D,T) to DT
-            MenuItem * *
+            MenuItem D<SlBrace><SrBrace> mDateCreate # create a Date object
+            MenuItem <Sconvert>DY mDateToEpochDays
+            MenuItem DY<Sconvert> mEpochDaysToDate
+            MenuItem <Sconvert>S mDateToEpochSeconds
+            MenuItem S<Sconvert> mEpochSecondsToDate
+          ]
+          MenuRow [
+            MenuItem CVTZ mDateConvertToTimeZone
+            MenuItem <Sconvert>DW<SlBrace> mDateToDayOfWeek
+          ]
+          MenuRow [
+            MenuItem LEAP mIsDateLeap
+            MenuItem DSHK mDateShrinkToNothing
+            MenuItem DEXD mDateExtendToDateTime
+            MenuItem DCUT mDateCutToNothing
+            MenuItem DLNK mDateLinkToDateTime
           ]
         ]
+        MenuGroup T mDateFolderTime [
+          MenuRow [
+            MenuItem T<SlBrace><SrBrace> mTimeCreate
+            MenuItem <Sconvert>S mTimeToSeconds
+            MenuItem S<Sconvert> mSecondsToTime
+          ]
+        ]
+        MenuGroup DT mDateFolderDateTime [
+          MenuRow [
+            MenuItem DT<SlBrace><SrBrace> mDateTimeCreate
+            MenuItem <Sconvert>DY mDateTimeToEpochDays
+            MenuItem DY<Sconvert> mEpochDaysToDateTime
+            MenuItem <Sconvert>S mDateTimeToEpochSeconds
+            MenuItem S<Sconvert> mEpochSecondsToDateTime
+          ]
+          MenuRow [
+            MenuItem CVTZ mDateTimeConvertToTimeZone
+            MenuItem <Speriod>D<SlBrace><SrBrace> mDateTimeExtractDate
+            MenuItem <Speriod>T<SlBrace><SrBrace> mDateTimeExtractTime
+          ]
+          MenuRow [
+            MenuItem LEAP mIsDateTimeLeap
+            MenuItem DSHK mDateTimeShrinkToDate
+            MenuItem DEXD mDateTimeExtendToOffsetDateTime
+            MenuItem DCUT mDateTimeCutToDate
+            MenuItem DLNK mDateTimeLinkToOffsetDateTime
+          ]
+        ]
+        MenuGroup TZ mDateFolderOffset [
+          MenuRow [
+            MenuItem TZ<SlBrace><SrBrace> mOffsetCreate
+            MenuItem <Sconvert>HR mOffsetToHours
+            MenuItem HR<Sconvert> mHoursToOffset
+          ]
+        ]
+        MenuGroup DZ mDateFolderOffsetDateTime [
+          MenuRow [
+            MenuItem DZ<SlBrace><SrBrace> mOffsetDateTimeCreate
+            MenuItem <Sconvert>S mOffsetDateTimeToEpochSeconds
+            MenuItem S<Sconvert> mEpochSecondsToOffsetDateTimeUTC
+            MenuItem S<Sconvert><SatSign> mEpochSecondsToOffsetDateTimeApp
+            MenuItem CVTZ mOffsetDateTimeConvertToTimeZone
+          ]
+          MenuRow [
+            MenuItem <Speriod>D<SlBrace><SrBrace> mOffsetDateTimeExtractDate
+            MenuItem <Speriod>T<SlBrace><SrBrace> mOffsetDateTimeExtractTime
+            MenuItem <Speriod>DT<SlBrace> mOffsetDateTimeExtractDateTime
+            MenuItem <Speriod>TZ<SlBrace> mOffsetDateTimeExtractOffset
+          ]
+          MenuRow [
+            MenuItem LEAP mIsOffsetDateTimeLeap
+            MenuItem DSHK mOffsetDateTimeShrinkToDateTime
+            MenuItem DEXD mOffsetDateTimeExtendToNothing
+            MenuItem DCUT mOffsetDateTimeCutToDateTime
+            MenuItem DLNK mOffsetDateTimeLinkToNothing
+          ]
+        ]
+      ]
+      MenuRow [
+        MenuGroup DR mDateFolderDuration [
+          MenuRow [
+            MenuItem DR<SlBrace><SrBrace> mDurationCreate
+            MenuItem D<Sconvert> mDaysToDuration
+            MenuItem H<Sconvert> mHoursToDuration
+            MenuItem M<Sconvert> mMinutesToDuration
+            MenuItem S<Sconvert> mSecondsToDuration
+          ]
+          MenuRow [
+            MenuItem <Sconvert>S mDurationToSeconds
+          ]
+        ]
+        MenuGroup DW mDateFolderDayOfWeek [
+          MenuRow [
+            MenuItem DW<SlBrace><SrBrace> mDayOfWeekCreate
+            MenuItem <Sconvert>ISO mDayOfWeekToIsoNumber
+            MenuItem ISO<Sconvert> mIsoNumberToDayOfWeek
+          ]
+        ]
+        #MenuGroup DOPS mDops [
+        #  MenuRow [
+        #    MenuItem LEAP mGenericDateIsLeap # operates on Real, D, DT, DZ
+        #    MenuItem DSHK mGenericDateShrink # shrink DZ to DT, DT to D
+        #    MenuItem DEXD mGenericDateExtend # extend D to DT, DT to DZ
+        #    MenuItem DCUT mGenericDateCut # cut DZ to (DT,TZ), DT to (D,T)
+        #    MenuItem DLNK mGenericDateLink # link (DT,TZ) to DZ, (D,T) to DT
+        #  ]
+        #]
         MenuGroup EPCH mEpoch [
           MenuRow [
             MenuItemAlt UNIX UNI<Sblock> mEpochUnix # 1970-01-01T00:00:00

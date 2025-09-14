@@ -880,10 +880,6 @@ _InsertCharInputBufLabel:
 _InsertCharInputBuf equ _InsertCharInputBufLabel-branchTableBase
     .dw InsertCharInputBuf
     .db 1
-_InsertCharAtInputBufLabel:
-_InsertCharAtInputBuf equ _InsertCharAtInputBufLabel-branchTableBase
-    .dw InsertCharAtInputBuf
-    .db 1
 _DeleteCharInputBufLabel:
 _DeleteCharInputBuf equ _DeleteCharInputBufLabel-branchTableBase
     .dw DeleteCharInputBuf
@@ -1477,10 +1473,14 @@ _ColdInitDateLabel:
 _ColdInitDate equ _ColdInitDateLabel-branchTableBase
     .dw ColdInitDate
     .db 2
-; Year functions
-_IsLeapLabel:
-_IsLeap equ _IsLeapLabel-branchTableBase
-    .dw IsLeap
+; Leap year functions
+_IsYearLeapLabel:
+_IsYearLeap equ _IsYearLeapLabel-branchTableBase
+    .dw IsYearLeap
+    .db 2
+_IsDateLeapLabel:
+_IsDateLeap equ _IsDateLeapLabel-branchTableBase
+    .dw IsDateLeap
     .db 2
 ; RpnDate and days functions
 _RpnDateToEpochDaysLabel:
@@ -1499,6 +1499,7 @@ _EpochSecondsToRpnDateLabel:
 _EpochSecondsToRpnDate equ _EpochSecondsToRpnDateLabel-branchTableBase
     .dw EpochSecondsToRpnDate
     .db 2
+; arithmetics
 _AddRpnDateByDaysLabel:
 _AddRpnDateByDays equ _AddRpnDateByDaysLabel-branchTableBase
     .dw AddRpnDateByDays
@@ -1511,6 +1512,11 @@ _SubRpnDateByObjectLabel:
 _SubRpnDateByObject equ _SubRpnDateByObjectLabel-branchTableBase
     .dw SubRpnDateByObject
     .db 2
+; extenders
+_ExtendRpnDateToDateTimeLabel:
+_ExtendRpnDateToDateTime equ _ExtendRpnDateToDateTimeLabel-branchTableBase
+    .dw ExtendRpnDateToDateTime
+    .db 2
 
 ; time2.asm
 _RpnTimeToSecondsLabel:
@@ -1521,6 +1527,7 @@ _SecondsToRpnTimeLabel:
 _SecondsToRpnTime equ _SecondsToRpnTimeLabel-branchTableBase
     .dw SecondsToRpnTime
     .db 2
+; arithmetics
 _AddRpnTimeBySecondsLabel:
 _AddRpnTimeBySeconds equ _AddRpnTimeBySecondsLabel-branchTableBase
     .dw AddRpnTimeBySeconds
@@ -1539,6 +1546,15 @@ _RpnDateToDayOfWeekLabel:
 _RpnDateToDayOfWeek equ _RpnDateToDayOfWeekLabel-branchTableBase
     .dw RpnDateToDayOfWeek
     .db 2
+_RpnDayOfWeekToIsoNumberLabel:
+_RpnDayOfWeekToIsoNumber equ _RpnDayOfWeekToIsoNumberLabel-branchTableBase
+    .dw RpnDayOfWeekToIsoNumber
+    .db 2
+_IsoNumberToRpnDayOfWeekLabel:
+_IsoNumberToRpnDayOfWeek equ _IsoNumberToRpnDayOfWeekLabel-branchTableBase
+    .dw IsoNumberToRpnDayOfWeek
+    .db 2
+; arithmetics
 _AddRpnDayOfWeekByDaysLabel:
 _AddRpnDayOfWeekByDays equ _AddRpnDayOfWeekByDaysLabel-branchTableBase
     .dw AddRpnDayOfWeekByDays
@@ -1557,6 +1573,15 @@ _EpochSecondsToRpnDateTimeLabel:
 _EpochSecondsToRpnDateTime equ _EpochSecondsToRpnDateTimeLabel-branchTableBase
     .dw EpochSecondsToRpnDateTime
     .db 2
+_RpnDateTimeToEpochDaysLabel:
+_RpnDateTimeToEpochDays equ _RpnDateTimeToEpochDaysLabel-branchTableBase
+    .dw RpnDateTimeToEpochDays
+    .db 2
+_EpochDaysToRpnDateTimeLabel:
+_EpochDaysToRpnDateTime equ _EpochDaysToRpnDateTimeLabel-branchTableBase
+    .dw EpochDaysToRpnDateTime
+    .db 2
+; arithmetics
 _AddRpnDateTimeBySecondsLabel:
 _AddRpnDateTimeBySeconds equ _AddRpnDateTimeBySecondsLabel-branchTableBase
     .dw AddRpnDateTimeBySeconds
@@ -1577,13 +1602,23 @@ _MergeRpnDateWithRpnTimeLabel:
 _MergeRpnDateWithRpnTime equ _MergeRpnDateWithRpnTimeLabel-branchTableBase
     .dw MergeRpnDateWithRpnTime
     .db 2
-_ExtendRpnDateToDateTimeLabel:
-_ExtendRpnDateToDateTime equ _ExtendRpnDateToDateTimeLabel-branchTableBase
-    .dw ExtendRpnDateToDateTime
-    .db 2
 _TruncateRpnDateTimeLabel:
 _TruncateRpnDateTime equ _TruncateRpnDateTimeLabel-branchTableBase
     .dw TruncateRpnDateTime
+    .db 2
+; extenders
+_ExtendRpnDateTimeToOffsetDateTimeLabel:
+_ExtendRpnDateTimeToOffsetDateTime equ _ExtendRpnDateTimeToOffsetDateTimeLabel-branchTableBase
+    .dw ExtendRpnDateTimeToOffsetDateTime
+    .db 2
+; extractors
+_RpnDateTimeExtractDateLabel:
+_RpnDateTimeExtractDate equ _RpnDateTimeExtractDateLabel-branchTableBase
+    .dw RpnDateTimeExtractDate
+    .db 2
+_RpnDateTimeExtractTimeLabel:
+_RpnDateTimeExtractTime equ _RpnDateTimeExtractTimeLabel-branchTableBase
+    .dw RpnDateTimeExtractTime
     .db 2
 
 ; offset2.asm
@@ -1645,13 +1680,26 @@ _MergeRpnDateTimeWithRpnOffsetLabel:
 _MergeRpnDateTimeWithRpnOffset equ _MergeRpnDateTimeWithRpnOffsetLabel-branchTableBase
     .dw MergeRpnDateTimeWithRpnOffset
     .db 2
-_ExtendRpnDateTimeToOffsetDateTimeLabel:
-_ExtendRpnDateTimeToOffsetDateTime equ _ExtendRpnDateTimeToOffsetDateTimeLabel-branchTableBase
-    .dw ExtendRpnDateTimeToOffsetDateTime
-    .db 2
 _TruncateRpnOffsetDateTimeLabel:
 _TruncateRpnOffsetDateTime equ _TruncateRpnOffsetDateTimeLabel-branchTableBase
     .dw TruncateRpnOffsetDateTime
+    .db 2
+; extractors
+_RpnOffsetDateTimeExtractDateLabel:
+_RpnOffsetDateTimeExtractDate equ _RpnOffsetDateTimeExtractDateLabel-branchTableBase
+    .dw RpnOffsetDateTimeExtractDate
+    .db 2
+_RpnOffsetDateTimeExtractDateTimeLabel:
+_RpnOffsetDateTimeExtractDateTime equ _RpnOffsetDateTimeExtractDateTimeLabel-branchTableBase
+    .dw RpnOffsetDateTimeExtractDateTime
+    .db 2
+_RpnOffsetDateTimeExtractTimeLabel:
+_RpnOffsetDateTimeExtractTime equ _RpnOffsetDateTimeExtractTimeLabel-branchTableBase
+    .dw RpnOffsetDateTimeExtractTime
+    .db 2
+_RpnOffsetDateTimeExtractOffsetLabel:
+_RpnOffsetDateTimeExtractOffset equ _RpnOffsetDateTimeExtractOffsetLabel-branchTableBase
+    .dw RpnOffsetDateTimeExtractOffset
     .db 2
 
 ; duration2.asm
@@ -1685,21 +1733,9 @@ _SubSecondsByRpnDuration equ _SubSecondsByRpnDurationLabel-branchTableBase
     .db 2
 
 ; zoneconversion2.asm
-_ConvertRpnDateTimeToTimeZoneAsOffsetLabel:
-_ConvertRpnDateTimeToTimeZoneAsOffset equ _ConvertRpnDateTimeToTimeZoneAsOffsetLabel-branchTableBase
-    .dw ConvertRpnDateTimeToTimeZoneAsOffset
-    .db 2
-_ConvertRpnDateTimeToTimeZoneAsRealLabel:
-_ConvertRpnDateTimeToTimeZoneAsReal equ _ConvertRpnDateTimeToTimeZoneAsRealLabel-branchTableBase
-    .dw ConvertRpnDateTimeToTimeZoneAsReal
-    .db 2
-_ConvertRpnOffsetDateTimeToOffsetLabel:
-_ConvertRpnOffsetDateTimeToOffset equ _ConvertRpnOffsetDateTimeToOffsetLabel-branchTableBase
-    .dw ConvertRpnOffsetDateTimeToOffset
-    .db 2
-_ConvertRpnOffsetDateTimeToTimeZoneAsRealLabel:
-_ConvertRpnOffsetDateTimeToTimeZoneAsReal equ _ConvertRpnOffsetDateTimeToTimeZoneAsRealLabel-branchTableBase
-    .dw ConvertRpnOffsetDateTimeToTimeZoneAsReal
+_ConvertRpnDateLikeToTimeZoneLabel:
+_ConvertRpnDateLikeToTimeZone equ _ConvertRpnDateLikeToTimeZoneLabel-branchTableBase
+    .dw ConvertRpnDateLikeToTimeZone
     .db 2
 
 ; zone2.asm
