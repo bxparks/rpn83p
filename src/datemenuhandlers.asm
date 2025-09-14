@@ -13,8 +13,8 @@
 
 ; Description: Enter the string in HL into the input buffer at position
 ; `cursorInputPos`, updating various flags. If `cursorInputPos` is at the end
-; of the `inputBuf`, then the string is appended. Similar to handleKeyNumber()
-; which enters a single character.
+; of the `inputBuf`, then the string is appended. Similar to
+; enterNumberCharacter() which enters a single character.
 ; Input:
 ;   - HL:(const char*)=string to be inserted
 ;   - rpnFlagsEditing=whether we are already in Edit mode

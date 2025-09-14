@@ -5,12 +5,12 @@
 ; Main input key code handlers.
 ;-----------------------------------------------------------------------------
 
-; Description: Handle the button that composes into a number (0-9, A-Z, '.',
-; EE, LimagI, Langle, Ldegree, '{', '}', ':', and ','). Lift the stack as
-; needed, insert into `inputBuf` (or argBuf), at position `cursorInputPos`,
-; updating various flags (rpnFlagsEditing). If `cursorInputPos` is at the end
-; of the `inputBuf`, then the character is appended. If the inputBuf is already
-; complex, this routine must not be called with a complex delimiter.
+; Description: Enter a number character (0-9, A-Z, '.', EE, LimagI, Langle,
+; Ldegree, '{', '}', ':', and ','). Lift the stack as needed, insert into
+; `inputBuf` (or argBuf), at position `cursorInputPos`, updating various flags
+; (rpnFlagsEditing). If `cursorInputPos` is at the end of the `inputBuf`, then
+; the character is appended. If the inputBuf is already complex, this routine
+; must not be called with a complex delimiter.
 ; Input:
 ;   - A:char=button/key that was entered
 ;   - rpnFlagsEditing=whether we are already in Edit mode
@@ -20,13 +20,13 @@
 ;   - dirtyFlagsInput set
 ;   - (cursorInputPos) updated if successful
 ; Destroys: all
-handleKeyNumber:
+enterNumberCharacter:
     ; Any digit entry should cause TVM menus to go into input mode.
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     ; If not in input editing mode: lift stack and go into edit mode
     bit rpnFlagsEditing, (iy + rpnFlags)
-    jr nz, handleKeyNumberIfEditing
-handleKeyNumberIfNonEditing:
+    jr nz, enterNumberCharacterIfEditing
+enterNumberCharacterIfNonEditing:
     ; Lift the stack, unless disabled.
     push af ; preserve A=char to insert
     call liftStackIfEnabled
@@ -34,20 +34,20 @@ handleKeyNumberIfNonEditing:
     ; Go into editing mode.
     bcall(_ClearInputBuf) ; preserves A
     set rpnFlagsEditing, (iy + rpnFlags)
-handleKeyNumberIfEditing:
+enterNumberCharacterIfEditing:
     ; assumes no Complex deliminator already entered
     call isComplexDelimiter ; ZF=1 if complex delimiter
-    jr z, handleKeyNumberAppend
+    jr z, enterNumberCharacterAppend
     ; Check if EE exists and check num digits in EE.
     ld d, a ; D=saved A
     bcall(_CheckInputBufEE) ; (if 'E' exists: CF=1; A=eeLen); DE preserved
-    jr nc, handleKeyNumberRestoreAppend
+    jr nc, enterNumberCharacterRestoreAppend
     ; Check if eeLen<2.
     cp inputBufEEMaxLen
     ret nc ; prevent more than 2 exponent digits
-handleKeyNumberRestoreAppend:
+enterNumberCharacterRestoreAppend:
     ld a, d ; A=restored
-handleKeyNumberAppend:
+enterNumberCharacterAppend:
     bcall(_InsertCharInputBuf) ; CF=0 if successful
     ret
 
@@ -69,110 +69,110 @@ isComplexDelimiter:
 ; Description: Append '0' to inputBuf.
 handleKey0:
     ld a, '0'
-    jr handleKeyNumber
+    jr enterNumberCharacter
 
 ; Description: Append '1' to inputBuf.
 handleKey1:
     ld a, '1'
-    jr handleKeyNumber
+    jr enterNumberCharacter
 
 ; Description: Append '2' to inputBuf.
 handleKey2:
     call checkAllowOct ; ZF=1 if oct digits 0-7 allowed
     ret nz
     ld a, '2'
-    jr handleKeyNumber
+    jr enterNumberCharacter
 
 ; Description: Append '3' to inputBuf.
 handleKey3:
     call checkAllowOct ; ZF=1 if oct digits 0-7 allowed
     ret nz
     ld a, '3'
-    jr handleKeyNumber
+    jr enterNumberCharacter
 
 ; Description: Append '4' to inputBuf.
 handleKey4:
     call checkAllowOct ; ZF=1 if oct digits 0-7 allowed
     ret nz
     ld a, '4'
-    jr handleKeyNumber
+    jr enterNumberCharacter
 
 ; Description: Append '5' to inputBuf.
 handleKey5:
     call checkAllowOct ; ZF=1 if oct digits 0-7 allowed
     ret nz
     ld a, '5'
-    jr handleKeyNumber
+    jr enterNumberCharacter
 
 ; Description: Append '6' to inputBuf.
 handleKey6:
     call checkAllowOct ; ZF=1 if oct digits 0-7 allowed
     ret nz
     ld a, '6'
-    jr handleKeyNumber
+    jr enterNumberCharacter
 
 ; Description: Append '7' to inputBuf.
 handleKey7:
     call checkAllowOct ; ZF=1 if oct digits 0-7 allowed
     ret nz
     ld a, '7'
-    jr handleKeyNumber
+    jr enterNumberCharacter
 
 ; Description: Append '8' to inputBuf.
 handleKey8:
     call checkAllowDec ; ZF=1 if decimal digits 0-9 allowed.
     ret nz
     ld a, '8'
-    jr handleKeyNumber
+    jr enterNumberCharacter
 
 ; Description: Append '9' to inputBuf.
 handleKey9:
     call checkAllowDec ; ZF=1 if decimal digits 0-9 allowed.
     ret nz
     ld a, '9'
-    jp handleKeyNumber
+    jp enterNumberCharacter
 
 ; Description: Append 'A' to inputBuf.
 handleKeyA:
     call checkAllowHex ; ZF=1 if hex digits A-F allowed
     ret nz
     ld a, 'A'
-    jp handleKeyNumber
+    jp enterNumberCharacter
 
 ; Description: Append 'B' to inputBuf.
 handleKeyB:
     call checkAllowHex ; ZF=1 if hex digits A-F allowed
     ret nz
     ld a, 'B'
-    jp handleKeyNumber
+    jp enterNumberCharacter
 
 ; Description: Append 'C' to inputBuf.
 handleKeyC:
     call checkAllowHex ; ZF=1 if hex digits A-F allowed
     ret nz
     ld a, 'C'
-    jp handleKeyNumber
+    jp enterNumberCharacter
 
 ; Description: Append 'D' to inputBuf.
 handleKeyD:
     call checkAllowHex ; ZF=1 if hex digits A-F allowed
     ret nz
     ld a, 'D'
-    jp handleKeyNumber
+    jp enterNumberCharacter
 
 ; Description: Append 'E' to inputBuf.
 handleKeyE:
     call checkAllowHex ; ZF=1 if hex digits A-F allowed
     ret nz
     ld a, 'E'
-    jp handleKeyNumber
+    jp enterNumberCharacter
 
 ; Description: Append 'F' to inputBuf.
 handleKeyF:
     call checkAllowHex ; ZF=1 if hex digits A-F allowed
     ret nz
     ld a, 'F'
-    jp handleKeyNumber
+    jp enterNumberCharacter
 
 ; Description: Append 'G' to inputBuf.
 handleKeyG:
@@ -180,7 +180,7 @@ handleKeyG:
     bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
     ret nz
     ld a, 'G'
-    jp handleKeyNumber
+    jp enterNumberCharacter
 
 ; Description: Append 'H' to inputBuf.
 handleKeyH:
@@ -188,7 +188,7 @@ handleKeyH:
     bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
     ret nz
     ld a, 'H'
-    jp handleKeyNumber
+    jp enterNumberCharacter
 
 ; Description: Append 'I' to inputBuf.
 handleKeyI:
@@ -196,7 +196,7 @@ handleKeyI:
     bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
     ret nz
     ld a, 'I'
-    jp handleKeyNumber
+    jp enterNumberCharacter
 
 ; Description: Append 'J' to inputBuf.
 handleKeyJ:
@@ -204,7 +204,7 @@ handleKeyJ:
     bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
     ret nz
     ld a, 'J'
-    jp handleKeyNumber
+    jp enterNumberCharacter
 
 ; Description: Append 'K' to inputBuf.
 handleKeyK:
@@ -212,7 +212,7 @@ handleKeyK:
     bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
     ret nz
     ld a, 'K'
-    jp handleKeyNumber
+    jp enterNumberCharacter
 
 ; Description: Append 'L' to inputBuf.
 handleKeyL:
@@ -220,7 +220,7 @@ handleKeyL:
     bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
     ret nz
     ld a, 'L'
-    jp handleKeyNumber
+    jp enterNumberCharacter
 
 ; Description: Append 'M' to inputBuf.
 handleKeyM:
@@ -228,7 +228,7 @@ handleKeyM:
     bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
     ret nz
     ld a, 'M'
-    jp handleKeyNumber
+    jp enterNumberCharacter
 
 ; Description: Append 'N' to inputBuf.
 handleKeyN:
@@ -236,7 +236,7 @@ handleKeyN:
     bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
     ret nz
     ld a, 'N'
-    jp handleKeyNumber
+    jp enterNumberCharacter
 
 ; Description: Append 'O' to inputBuf.
 handleKeyO:
@@ -244,7 +244,7 @@ handleKeyO:
     bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
     ret nz
     ld a, 'O'
-    jp handleKeyNumber
+    jp enterNumberCharacter
 
 ; Description: Append 'P' to inputBuf.
 handleKeyP:
@@ -252,7 +252,7 @@ handleKeyP:
     bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
     ret nz
     ld a, 'P'
-    jp handleKeyNumber
+    jp enterNumberCharacter
 
 ; Description: Append 'Q' to inputBuf.
 handleKeyQ:
@@ -260,7 +260,7 @@ handleKeyQ:
     bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
     ret nz
     ld a, 'Q'
-    jp handleKeyNumber
+    jp enterNumberCharacter
 
 ; Description: Append 'R' to inputBuf.
 handleKeyR:
@@ -268,7 +268,7 @@ handleKeyR:
     bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
     ret nz
     ld a, 'R'
-    jp handleKeyNumber
+    jp enterNumberCharacter
 
 ; Description: Append 'S' to inputBuf.
 handleKeyS:
@@ -276,7 +276,7 @@ handleKeyS:
     bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
     ret nz
     ld a, 'S'
-    jp handleKeyNumber
+    jp enterNumberCharacter
 
 ; Description: Append 'T' to inputBuf.
 handleKeyT:
@@ -284,7 +284,7 @@ handleKeyT:
     bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
     ret nz
     ld a, 'T'
-    jp handleKeyNumber
+    jp enterNumberCharacter
 
 ; Description: Append 'U' to inputBuf.
 handleKeyU:
@@ -292,7 +292,7 @@ handleKeyU:
     bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
     ret nz
     ld a, 'U'
-    jp handleKeyNumber
+    jp enterNumberCharacter
 
 ; Description: Append 'V' to inputBuf.
 handleKeyV:
@@ -300,7 +300,7 @@ handleKeyV:
     bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
     ret nz
     ld a, 'V'
-    jp handleKeyNumber
+    jp enterNumberCharacter
 
 ; Description: Append 'W' to inputBuf.
 handleKeyW:
@@ -308,7 +308,7 @@ handleKeyW:
     bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
     ret nz
     ld a, 'W'
-    jp handleKeyNumber
+    jp enterNumberCharacter
 
 ; Description: Append 'X' to inputBuf.
 handleKeyX:
@@ -316,7 +316,7 @@ handleKeyX:
     bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
     ret nz
     ld a, 'X'
-    jp handleKeyNumber
+    jp enterNumberCharacter
 
 ; Description: Append 'Y' to inputBuf.
 handleKeyY:
@@ -324,7 +324,7 @@ handleKeyY:
     bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
     ret nz
     ld a, 'Y'
-    jp handleKeyNumber
+    jp enterNumberCharacter
 
 ; Description: Append 'Z' to inputBuf.
 handleKeyZ:
@@ -332,7 +332,7 @@ handleKeyZ:
     bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
     ret nz
     ld a, 'Z'
-    jp handleKeyNumber
+    jp enterNumberCharacter
 
 ; Description: Return ZF=1 if octal digits (0-7) are allowed.
 checkAllowOct:
@@ -382,7 +382,7 @@ handleKeyDecPnt:
     ret c
     ; try insert '.'
     ld a, '.'
-    call handleKeyNumber
+    call enterNumberCharacter
     ret
 
 ; Description: Handle the EE for scientific notation. The 'EE' is mapped to
@@ -405,7 +405,7 @@ handleKeyEEAlt:
     ret c
     ; Append 'E'
     ld a, Lexponent
-    jp handleKeyNumber
+    jp enterNumberCharacter
 
 ; Description: Handle the (ALPHA :) button which defines a number with a
 ; modifier, for example "2:D" (2 days), "2:H" (2 hours), "2:M" (2 minutes),
@@ -416,7 +416,7 @@ handleKeyColon:
     ret nz
     ; Append ':'
     ld a, ':'
-    jp handleKeyNumber
+    jp enterNumberCharacter
 
 ; Description: Add imaginary-i into the input buffer.
 handleKeyImagI:
@@ -430,7 +430,7 @@ handleKeyImagI:
     ret c
     ; Try inserting imaginary-i
     ld a, LimagI
-    call handleKeyNumber
+    call enterNumberCharacter
     ret
 
 ; Description: Add Angle symbol into the input buffer for angle in degrees.
@@ -445,7 +445,7 @@ handleKeyAngle:
     ret c
     ; Insert Ldegree delimiter for initial default.
     ld a, Ldegree
-    call handleKeyNumber
+    call enterNumberCharacter
     ret
 
 ;-----------------------------------------------------------------------------
@@ -457,7 +457,7 @@ handleKeyLBrace:
     bcall(_CheckInputBufRecord) ; CF=1 if inputBuf is a data record
     ret c ; return if already in data structure mode.
     ld a, LlBrace
-    jp handleKeyNumber
+    jp enterNumberCharacter
 
 handleKeyRBrace:
     ; Do nothing in BASE mode.
@@ -473,7 +473,7 @@ handleKeyRBrace:
     ret nz ; return if braceLevel<0
     ; RBrace allowed.
     ld a, LrBrace
-    jp handleKeyNumber
+    jp enterNumberCharacter
 
 ; Description: Handle the Comma button.
 ; Input: (commaEEMode)
@@ -500,7 +500,7 @@ handleKeyCommaAltEntry:
     ret nc
     ; Append the comma
     ld a, ','
-    jp handleKeyNumber
+    jp enterNumberCharacter
 
 ;-----------------------------------------------------------------------------
 
@@ -618,7 +618,7 @@ handleKeyClearToEmptyInput:
     ; We also disable stack lift. Testing seems to show that this is not seem
     ; strictly necessary because handleNumber() handles the edit mode properly
     ; even if the stack lift is enabled. But I think it is safer to disable it
-    ; in case handleKeyNumber() is refactored in the future to use a different
+    ; in case enterNumberCharacter() is refactored in the future to use a different
     ; algorithm.
     res rpnFlagsLiftEnabled, (iy + rpnFlags)
     ret
