@@ -86,8 +86,6 @@ mEpochSecondsToDateHandler:
 
 mDateToDayOfWeekHandler:
     call closeInputAndRecallRpnDateLikeX ; OP1=X=RpnDateLike{}
-    cp rpnObjectTypeDate ; ZF=1 if RpnDateTime
-    jr nz, mDateErr
     bcall(_RpnDateToDayOfWeek) ; OP1:RpnDayOfWeek
     jp replaceX
 
