@@ -636,7 +636,7 @@ MenuGroup root mRoot [
           ]
           MenuRow [
             MenuItem CVTZ mDateConvertToTimeZone
-            MenuItem <Sconvert>DW<SlBrace> mDateToDayOfWeek
+            MenuItem <Speriod>DW<SlBrace> mDateToDayOfWeek
             MenuItem <Speriod>YR mDateExtractYear
             MenuItem <Speriod>MON mDateExtractMonth
             MenuItem <Speriod>DAY mDateExtractDay
@@ -724,7 +724,7 @@ MenuGroup root mRoot [
             MenuItem SEC<Sconvert> mSecondsToDuration
           ]
           MenuRow [
-            MenuItem <Sconvert>S mDurationToSeconds
+            MenuItem <Sconvert>SEC mDurationToSeconds
             MenuItem <Speriod>DAY mDurationExtractDay
             MenuItem <Speriod>HR mDurationExtractHour
             MenuItem <Speriod>MIN mDurationExtractMinute

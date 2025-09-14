@@ -12,7 +12,7 @@
 
 ; Description: Return the RpnDayOfWeek object of the given a date-like object
 ; (RpnDate, RpnDateTime, RpnOffsetDateTime).
-; Input: OP1:RpnDate=date
+; Input: OP1:RpnDate|RpnDateTime|RpnOffsetDateTime=date
 ; Output: OP1:RpnDayOfWeek=dow
 ; Destroys: all, OP3-OP5
 RpnDateToDayOfWeek:
