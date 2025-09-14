@@ -637,6 +637,9 @@ MenuGroup root mRoot [
           MenuRow [
             MenuItem CVTZ mDateConvertToTimeZone
             MenuItem <Sconvert>DW<SlBrace> mDateToDayOfWeek
+            MenuItem <Speriod>YR mDateExtractYear
+            MenuItem <Speriod>MON mDateExtractMonth
+            MenuItem <Speriod>DAY mDateExtractDay
           ]
           MenuRow [
             MenuItem LEAP mIsDateLeap
@@ -651,6 +654,11 @@ MenuGroup root mRoot [
             MenuItem T<SlBrace><SrBrace> mTimeCreate
             MenuItem <Sconvert>S mTimeToSeconds
             MenuItem S<Sconvert> mSecondsToTime
+          ]
+          MenuRow [
+            MenuItem <Speriod>HR mTimeExtractHour
+            MenuItem <Speriod>MIN mTimeExtractMinute
+            MenuItem <Speriod>SEC mTimeExtractSecond
           ]
         ]
         MenuGroup DT mDateFolderDateTime [
@@ -679,6 +687,8 @@ MenuGroup root mRoot [
             MenuItem TZ<SlBrace><SrBrace> mOffsetCreate
             MenuItem <Sconvert>HR mOffsetToHours
             MenuItem HR<Sconvert> mHoursToOffset
+            MenuItem <Speriod>HR mOffsetExtractHour
+            MenuItem <Speriod>MIN mOffsetExtractMinute
           ]
         ]
         MenuGroup DZ mDateFolderOffsetDateTime [
@@ -708,13 +718,17 @@ MenuGroup root mRoot [
         MenuGroup DR mDateFolderDuration [
           MenuRow [
             MenuItem DR<SlBrace><SrBrace> mDurationCreate
-            MenuItem D<Sconvert> mDaysToDuration
-            MenuItem H<Sconvert> mHoursToDuration
-            MenuItem M<Sconvert> mMinutesToDuration
-            MenuItem S<Sconvert> mSecondsToDuration
+            MenuItem DAY<Sconvert> mDaysToDuration
+            MenuItem HR<Sconvert> mHoursToDuration
+            MenuItem MIN<Sconvert> mMinutesToDuration
+            MenuItem SEC<Sconvert> mSecondsToDuration
           ]
           MenuRow [
             MenuItem <Sconvert>S mDurationToSeconds
+            MenuItem <Speriod>DAY mDurationExtractDay
+            MenuItem <Speriod>HR mDurationExtractHour
+            MenuItem <Speriod>MIN mDurationExtractMinute
+            MenuItem <Speriod>SEC mDurationExtractSecond
           ]
         ]
         MenuGroup DW mDateFolderDayOfWeek [

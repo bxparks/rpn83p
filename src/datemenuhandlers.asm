@@ -91,6 +91,27 @@ mDateToDayOfWeekHandler:
     bcall(_RpnDateToDayOfWeek) ; OP1:RpnDayOfWeek
     jp replaceX
 
+mDateExtractYearHandler:
+    call closeInputAndRecallRpnDateLikeX ; OP1=X=RpnDateLike{}
+    bcall(_RpnDateExtractYear)
+    jp replaceX
+
+mDateExtractMonthHandler:
+    call closeInputAndRecallRpnDateLikeX ; OP1=X=RpnDateLike{}
+    bcall(_RpnDateExtractMonth)
+    jp replaceX
+
+mDateExtractDayHandler:
+    call closeInputAndRecallRpnDateLikeX ; OP1=X=RpnDateLike{}
+    bcall(_RpnDateExtractDay)
+    jp replaceX
+
+;-----------------------------------------------------------------------------
+; DATE > D (Date) > Row 3
+;-----------------------------------------------------------------------------
+
+; See Generic Date handlers.
+
 ;-----------------------------------------------------------------------------
 ; DATE > T (Time) > Row 1
 ;-----------------------------------------------------------------------------
@@ -115,6 +136,61 @@ mTimeToSecondsHandler:
 mSecondsToTimeHandler:
     call closeInputAndRecallX ; OP1=X=seconds
     bcall(_SecondsToRpnTime) ; OP1=Time(seconds)
+    jp replaceX
+
+;-----------------------------------------------------------------------------
+; DATE > T (Time) > Row 2
+;-----------------------------------------------------------------------------
+
+mTimeExtractHourHandler:
+    call closeInputAndRecallRpnDateRelatedX ; OP1=X=RpnDateRelated{}
+    cp rpnObjectTypeTime
+    jr z, mTimeExtractHourHandlerDoTime
+    cp rpnObjectTypeDateTime
+    jr z, mTimeExtractHourHandlerDoDateTime
+    cp rpnObjectTypeOffsetDateTime
+    jr z, mTimeExtractHourHandlerDoOffsetDateTime
+    jr mTimeErr
+mTimeExtractHourHandlerDoOffsetDateTime:
+    bcall(_RpnOffsetDateTimeExtractDateTime) ; OP1=datetime
+mTimeExtractHourHandlerDoDateTime:
+    bcall(_RpnDateTimeExtractTime) ; OP1=time
+mTimeExtractHourHandlerDoTime:
+    bcall(_RpnTimeExtractHour) ; OP1=time.hour()
+    jp replaceX
+
+mTimeExtractMinuteHandler:
+    call closeInputAndRecallRpnDateRelatedX ; OP1=X=RpnDateRelated{}
+    cp rpnObjectTypeTime
+    jr z, mTimeExtractMinuteHandlerDoTime
+    cp rpnObjectTypeDateTime
+    jr z, mTimeExtractMinuteHandlerDoDateTime
+    cp rpnObjectTypeOffsetDateTime
+    jr z, mTimeExtractMinuteHandlerDoOffsetDateTime
+    jr mTimeErr
+mTimeExtractMinuteHandlerDoOffsetDateTime:
+    bcall(_RpnOffsetDateTimeExtractDateTime) ; OP1=datetime
+mTimeExtractMinuteHandlerDoDateTime:
+    bcall(_RpnDateTimeExtractTime) ; OP1=time
+mTimeExtractMinuteHandlerDoTime:
+    bcall(_RpnTimeExtractMinute) ; OP1=time.minute()
+    jp replaceX
+
+mTimeExtractSecondHandler:
+    call closeInputAndRecallRpnDateRelatedX ; OP1=X=RpnDateRelated{}
+    cp rpnObjectTypeTime
+    jr z, mTimeExtractSecondHandlerDoTime
+    cp rpnObjectTypeDateTime
+    jr z, mTimeExtractSecondHandlerDoDateTime
+    cp rpnObjectTypeOffsetDateTime
+    jr z, mTimeExtractSecondHandlerDoOffsetDateTime
+    jr mTimeErr
+mTimeExtractSecondHandlerDoOffsetDateTime:
+    bcall(_RpnOffsetDateTimeExtractDateTime) ; OP1=datetime
+mTimeExtractSecondHandlerDoDateTime:
+    bcall(_RpnDateTimeExtractTime) ; OP1=time
+mTimeExtractSecondHandlerDoTime:
+    bcall(_RpnTimeExtractSecond) ; OP1=time.minute()
     jp replaceX
 
 ;-----------------------------------------------------------------------------
@@ -204,6 +280,32 @@ mHoursToOffsetHandler:
     bcall(_HoursToRpnOffset) ; OP1=RpnOffset(hours)
     jp replaceX
 
+mOffsetExtractHourHandler:
+    call closeInputAndRecallRpnDateRelatedX ; OP1=X=RpnDateRelated{}
+    cp rpnObjectTypeOffset
+    jr z, mOffsetExtractHourHandlerDoOffset
+    cp rpnObjectTypeOffsetDateTime
+    jr z, mOffsetExtractHourHandlerDoOffsetDateTime
+    jr mOffsetErr
+mOffsetExtractHourHandlerDoOffsetDateTime:
+    bcall(_RpnOffsetDateTimeExtractOffset) ; OP1=offset
+mOffsetExtractHourHandlerDoOffset:
+    bcall(_RpnOffsetExtractHour) ; OP1=hour
+    jp replaceX
+
+mOffsetExtractMinuteHandler:
+    call closeInputAndRecallRpnDateRelatedX ; OP1=X=RpnDateRelated{}
+    cp rpnObjectTypeOffset
+    jr z, mOffsetExtractMinuteHandlerDoOffset
+    cp rpnObjectTypeOffsetDateTime
+    jr z, mOffsetExtractMinuteHandlerDoOffsetDateTime
+    jr mOffsetErr
+mOffsetExtractMinuteHandlerDoOffsetDateTime:
+    bcall(_RpnOffsetDateTimeExtractOffset) ; OP1=offset
+mOffsetExtractMinuteHandlerDoOffset:
+    bcall(_RpnOffsetExtractMinute) ; OP1=offset.time
+    jp replaceX
+
 ;-----------------------------------------------------------------------------
 ; DATE > DZ (OffsetDateTime) > Row 1
 ;-----------------------------------------------------------------------------
@@ -288,13 +390,6 @@ mDurationCreateHandler:
 strDurationPrefix:
     .db "DR{", 0
 
-mDurationToSecondsHandler:
-    call closeInputAndRecallRpnDateRelatedX ; OP1==dateRelatedObject; A=type
-    cp rpnObjectTypeDuration
-    jr nz, mDurationErr
-    bcall(_RpnDurationToSeconds) ; OP1=seconds
-    jp replaceX
-
 mSecondsToDurationHandler:
     call closeInputAndRecallX ; OP1=X=seconds
 mSecondsToDurationHandlerAltEntry:
@@ -320,6 +415,45 @@ mDaysToDurationHandler:
     call op2Set24 ; OP2=24
     bcall(_FPMult)
     jr mHoursToDurationHandlerAltEntry
+
+;-----------------------------------------------------------------------------
+; DATE > DR (Duration) > Row 2
+;-----------------------------------------------------------------------------
+
+mDurationToSecondsHandler:
+    call closeInputAndRecallRpnDateRelatedX ; OP1==dateRelatedObject; A=type
+    cp rpnObjectTypeDuration
+    jr nz, mDurationErr
+    bcall(_RpnDurationToSeconds) ; OP1=seconds
+    jp replaceX
+
+mDurationExtractDayHandler:
+    call closeInputAndRecallRpnDateRelatedX ; OP1==dateRelatedObject; A=type
+    cp rpnObjectTypeDuration
+    jr nz, mDurationErr
+    bcall(_RpnDurationExtractDay) ; OP1=day
+    jp replaceX
+
+mDurationExtractHourHandler:
+    call closeInputAndRecallRpnDateRelatedX ; OP1==dateRelatedObject; A=type
+    cp rpnObjectTypeDuration
+    jr nz, mDurationErr
+    bcall(_RpnDurationExtractHour) ; OP1=hour
+    jp replaceX
+
+mDurationExtractMinuteHandler:
+    call closeInputAndRecallRpnDateRelatedX ; OP1==dateRelatedObject; A=type
+    cp rpnObjectTypeDuration
+    jr nz, mDurationErr
+    bcall(_RpnDurationExtractMinute) ; OP1=minute
+    jp replaceX
+
+mDurationExtractSecondHandler:
+    call closeInputAndRecallRpnDateRelatedX ; OP1==dateRelatedObject; A=type
+    cp rpnObjectTypeDuration
+    jr nz, mDurationErr
+    bcall(_RpnDurationExtractSecond) ; OP1=second
+    jp replaceX
 
 ;-----------------------------------------------------------------------------
 ; DATE > DW (DayOfWeek) > Row 1

@@ -1517,6 +1517,19 @@ _ExtendRpnDateToDateTimeLabel:
 _ExtendRpnDateToDateTime equ _ExtendRpnDateToDateTimeLabel-branchTableBase
     .dw ExtendRpnDateToDateTime
     .db 2
+; extractors
+_RpnDateExtractYearLabel:
+_RpnDateExtractYear equ _RpnDateExtractYearLabel-branchTableBase
+    .dw RpnDateExtractYear
+    .db 2
+_RpnDateExtractMonthLabel:
+_RpnDateExtractMonth equ _RpnDateExtractMonthLabel-branchTableBase
+    .dw RpnDateExtractMonth
+    .db 2
+_RpnDateExtractDayLabel:
+_RpnDateExtractDay equ _RpnDateExtractDayLabel-branchTableBase
+    .dw RpnDateExtractDay
+    .db 2
 
 ; time2.asm
 _RpnTimeToSecondsLabel:
@@ -1539,6 +1552,19 @@ _AddRpnTimeByDuration equ _AddRpnTimeByDurationLabel-branchTableBase
 _SubRpnTimeByObjectLabel:
 _SubRpnTimeByObject equ _SubRpnTimeByObjectLabel-branchTableBase
     .dw SubRpnTimeByObject
+    .db 2
+; extractors
+_RpnTimeExtractHourLabel:
+_RpnTimeExtractHour equ _RpnTimeExtractHourLabel-branchTableBase
+    .dw RpnTimeExtractHour
+    .db 2
+_RpnTimeExtractMinuteLabel:
+_RpnTimeExtractMinute equ _RpnTimeExtractMinuteLabel-branchTableBase
+    .dw RpnTimeExtractMinute
+    .db 2
+_RpnTimeExtractSecondLabel:
+_RpnTimeExtractSecond equ _RpnTimeExtractSecondLabel-branchTableBase
+    .dw RpnTimeExtractSecond
     .db 2
 
 ; dayofweek2.asm
@@ -1646,6 +1672,15 @@ _SubRpnOffsetByObjectLabel:
 _SubRpnOffsetByObject equ _SubRpnOffsetByObjectLabel-branchTableBase
     .dw SubRpnOffsetByObject
     .db 2
+; extractors
+_RpnOffsetExtractHourLabel:
+_RpnOffsetExtractHour equ _RpnOffsetExtractHourLabel-branchTableBase
+    .dw RpnOffsetExtractHour
+    .db 2
+_RpnOffsetExtractMinuteLabel:
+_RpnOffsetExtractMinute equ _RpnOffsetExtractMinuteLabel-branchTableBase
+    .dw RpnOffsetExtractMinute
+    .db 2
 
 ; offsetdatetime2.asm
 _RpnOffsetDateTimeToEpochSecondsLabel:
@@ -1730,6 +1765,23 @@ _SubRpnDurationByRpnDurationOrSeconds equ _SubRpnDurationByRpnDurationOrSecondsL
 _SubSecondsByRpnDurationLabel:
 _SubSecondsByRpnDuration equ _SubSecondsByRpnDurationLabel-branchTableBase
     .dw SubSecondsByRpnDuration
+    .db 2
+; extracors
+_RpnDurationExtractDayLabel:
+_RpnDurationExtractDay equ _RpnDurationExtractDayLabel-branchTableBase
+    .dw RpnDurationExtractDay
+    .db 2
+_RpnDurationExtractHourLabel:
+_RpnDurationExtractHour equ _RpnDurationExtractHourLabel-branchTableBase
+    .dw RpnDurationExtractHour
+    .db 2
+_RpnDurationExtractMinuteLabel:
+_RpnDurationExtractMinute equ _RpnDurationExtractMinuteLabel-branchTableBase
+    .dw RpnDurationExtractMinute
+    .db 2
+_RpnDurationExtractSecondLabel:
+_RpnDurationExtractSecond equ _RpnDurationExtractSecondLabel-branchTableBase
+    .dw RpnDurationExtractSecond
     .db 2
 
 ; zoneconversion2.asm

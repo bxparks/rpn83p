@@ -433,3 +433,52 @@ SubSecondsByRpnDuration:
     call SubRpnDurationByRpnDurationOrSeconds
     call ChsRpnDuration
     ret
+
+;-----------------------------------------------------------------------------
+; Extractors
+;-----------------------------------------------------------------------------
+
+; Description: Extract the day component.
+; Input: OP1:RpnDuration=duration
+; Output: OP1:Real=duration.minute()
+RpnDurationExtractDay:
+    ld hl, OP1+rpnObjectTypeSizeOf
+    ld c, (hl)
+    inc hl
+    ld b, (hl) ; BC=day
+    ld hl, OP1
+    call setU40ToBC ; OP1:U40=day
+    jp convertU40ToOP1 ; OP1:Real=day
+
+;-----------------------------------------------------------------------------
+
+; Description: Extract the hour component.
+; Input: OP1:RpnDuration=duration
+; Output: OP1:Real=duration.second()
+RpnDurationExtractHour:
+    ld a, (OP1+rpnObjectTypeSizeOf+2) ; A=hour
+    ld hl, OP1
+    call setU40ToA ; OP1:U40=hour
+    jp convertU40ToOP1 ; OP1:Real=hour
+
+;-----------------------------------------------------------------------------
+
+; Description: Extract the minute component.
+; Input: OP1:RpnDuration=duration
+; Output: OP1:Real=duration.minute()
+RpnDurationExtractMinute:
+    ld a, (OP1+rpnObjectTypeSizeOf+3) ; A=minute
+    ld hl, OP1
+    call setU40ToA ; OP1:U40=minute
+    jp convertU40ToOP1 ; OP1:Real=minute
+
+;-----------------------------------------------------------------------------
+
+; Description: Extract the second component.
+; Input: OP1:RpnDuration=duration
+; Output: OP1:Real=duration.second()
+RpnDurationExtractSecond:
+    ld a, (OP1+rpnObjectTypeSizeOf+4) ; A=second
+    ld hl, OP1
+    call setU40ToA ; OP1:U40=second
+    jp convertU40ToOP1 ; OP1:Real=second

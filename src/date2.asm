@@ -401,8 +401,6 @@ subRpnDateByRpnDuration:
     call chsDuration
     jr addRpnDateByDurationAdd
 
-;-----------------------------------------------------------------------------
-
 ; Description: Convert RpnDate into RpnDateTime by appending a Time field of
 ; "00:00:00", i.e. T{0,0,0}.
 ; Input:
@@ -423,3 +421,41 @@ ExtendRpnDateToDateTime:
     inc hl
     ld (hl), a
     ret
+
+;-----------------------------------------------------------------------------
+; Extractors
+;-----------------------------------------------------------------------------
+
+; Description: Extract the year component.
+; Input: OP1:RpnDate|RpnDateTime|RpnOffsetDateTime=date
+; Output: OP1:Real=date.year()
+RpnDateExtractYear:
+    ld hl, OP1+rpnObjectTypeSizeOf
+    ld c, (hl)
+    inc hl
+    ld b, (hl) ; BC=year
+    ld hl, OP1
+    call setU40ToBC ; OP1=year
+    jp convertU40ToOP1
+
+;-----------------------------------------------------------------------------
+
+; Description: Extract the month component.
+; Input: OP1:RpnDate|RpnDateTime|RpnOffsetDateTime=date
+; Output: OP1:Real=date.month()
+RpnDateExtractMonth:
+    ld a, (OP1+rpnObjectTypeSizeOf+2) ; A=month
+    ld hl, OP1
+    call setU40ToA ; OP1:U40=year
+    jp convertU40ToOP1 ; OP1:Real=year
+
+;-----------------------------------------------------------------------------
+
+; Description: Extract the day component.
+; Input: OP1:RpnDate|RpnDateTime|RpnOffsetDateTime=date
+; Output: OP1:Real=date.day()
+RpnDateExtractDay:
+    ld a, (OP1+rpnObjectTypeSizeOf+3) ; A=day
+    ld hl, OP1
+    call setU40ToA ; OP1:U40=day
+    jp convertU40ToOP1 ; OP1:Real=day

@@ -584,3 +584,27 @@ checkValidOffsetHourMinute:
     ; [[fallthrough]]
 checkValidOffsetHourMinuteErr:
     bcall(_ErrDomain)
+
+;-----------------------------------------------------------------------------
+; Extractors
+;-----------------------------------------------------------------------------
+
+; Description: Extract the hour component.
+; Input: OP1:RpnOffset=offset
+; Output: OP1:Real=offset.hour()
+RpnOffsetExtractHour:
+    ld a, (OP1+rpnObjectTypeSizeOf+0) ; A=hour
+    ld hl, OP1
+    call setU40ToA ; OP1:U40=hour
+    jp convertU40ToOP1 ; OP1:Real=hour
+
+;-----------------------------------------------------------------------------
+
+; Description: Extract the minute component.
+; Input: OP1:RpnOffset=offset
+; Output: OP1:Real=offset.minute()
+RpnOffsetExtractMinute:
+    ld a, (OP1+rpnObjectTypeSizeOf+1) ; A=minute
+    ld hl, OP1
+    call setU40ToA ; OP1:U40=minute
+    jp convertU40ToOP1 ; OP1:Real=minute
