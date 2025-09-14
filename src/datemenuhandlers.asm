@@ -233,6 +233,9 @@ mEpochSecondsToDateTimeHandler:
 ; DATE > DT (DateTime) > Row 2
 ;-----------------------------------------------------------------------------
 
+mDateTimeToDayOfWeekHandler:
+    jp mDateToDayOfWeekHandler
+
 mDateTimeExtractDateHandler:
     call closeInputAndRecallRpnDateLikeX ; OP1==dateLikeObject; A=type
     cp rpnObjectTypeDateTime ; ZF=1 if RpnDateTime
@@ -339,6 +342,9 @@ mEpochSecondsToOffsetDateTimeAppHandler:
 ;-----------------------------------------------------------------------------
 ; DATE > DZ (OffsetDateTime) > Row 2
 ;-----------------------------------------------------------------------------
+
+mOffsetDateTimeToDayOfWeekHandler:
+    jp mDateToDayOfWeekHandler
 
 mOffsetDateTimeExtractDateHandler:
     call closeInputAndRecallRpnDateLikeX ; OP1==dateLikeObject; A=type
