@@ -1,12 +1,23 @@
 # Changelog
 
 - Unreleased
-    - Support entry of Duration objects in compact string form,
-      `{dd}D{hh}H{mm}M{ss}S`. For example, `1D30M2S` for `DR{1,0,30,2}`.
-        - Obsoletes the "Duration Colon Modifier" entry form `{nn}:{modifier}`.
-          Currently retained for backwards compatibility, but will probably be
-          removed in the future. It is more difficult to enter, and is less
-          flexibile (only a single modifier allowed).
+    - DATE
+        - Support entry of Duration objects in compact string form,
+          `{dd}D{hh}H{mm}M{ss}S`. For example, `1D30M2S` for `DR{1,0,30,2}`.
+            - Obsoletes the "Duration Colon Modifier" entry form
+              `{nn}:{modifier}`. Currently retained for backwards compatibility.
+        - Add MenuFolder for the 7 Date types: `D`, `T`, `DT`, `TZ`, `DZ`, `DR`,
+          `DW`
+            - add convenience menu function that inserts the Date-type prefix
+              (i.e. "D{", "T{", "DT{", "TZ{", "DZ{", "DR{", "DW{"), to make
+              entering Date-objects much easier
+            - add complete list of polymorphic functions that apply to each
+              Date-object under each menu folder
+        - Remove `DOPS` folder, and scatter its functions (`LEAP`, `DSHK`,
+          `DEXD`, `DCUT`, `DLNK`) under the 3 Date-object folders which support
+          them: `D`, `DT`, `DZ`
+        - Assume that `DT` (DateTime) is always in UTC timezone whenever its
+          timezone is needed in a calculation
     - HMS functions
         - Add `HMS+` and `HMS-` menu functions.
         - Add normalization to `>HMS` conversion function to prevent bug that
