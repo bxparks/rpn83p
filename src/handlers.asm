@@ -5,13 +5,14 @@
 ; Main input key code handlers.
 ;-----------------------------------------------------------------------------
 
-; Description: Insert the character in `A` into `inputBuf` (or argBuf), at
-; position `cursorInputPos`, updating various flags. If `cursorInputPos` is at
-; the end of the `inputBuf`, then the character is appended. If the inputBuf is
-; already complex, this routine must not be called with a complex delimiter
-; (defined by isComplexDelimiter(), i.e. LimagI, Langle, Ldegree).
+; Description: Handle the button that composes into a number (0-9, A-Z, '.',
+; EE, LimagI, Langle, Ldegree, '{', '}', ':', and ','). Lift the stack as
+; needed, insert into `inputBuf` (or argBuf), at position `cursorInputPos`,
+; updating various flags (rpnFlagsEditing). If `cursorInputPos` is at the end
+; of the `inputBuf`, then the character is appended. If the inputBuf is already
+; complex, this routine must not be called with a complex delimiter.
 ; Input:
-;   - A:char=character to be inserted
+;   - A:char=button/key that was entered
 ;   - rpnFlagsEditing=whether we are already in Edit mode
 ; Output:
 ;   - CF=0 if successful
@@ -24,8 +25,8 @@ handleKeyNumber:
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     ; If not in input editing mode: lift stack and go into edit mode
     bit rpnFlagsEditing, (iy + rpnFlags)
-    jr nz, handleKeyNumberCheckAppend
-handleKeyNumberFirstDigit:
+    jr nz, handleKeyNumberIfEditing
+handleKeyNumberIfNonEditing:
     ; Lift the stack, unless disabled.
     push af ; preserve A=char to insert
     call liftStackIfEnabled
@@ -33,7 +34,8 @@ handleKeyNumberFirstDigit:
     ; Go into editing mode.
     bcall(_ClearInputBuf) ; preserves A
     set rpnFlagsEditing, (iy + rpnFlags)
-handleKeyNumberCheckAppend:
+handleKeyNumberIfEditing:
+    ; assumes no Complex deliminator already entered
     call isComplexDelimiter ; ZF=1 if complex delimiter
     jr z, handleKeyNumberAppend
     ; Check if EE exists and check num digits in EE.

@@ -219,3 +219,28 @@ closeInputAndRecallDenominateX:
     ret z
     ; Unexpected type
     bcall(_ErrDataType)
+
+;------------------------------------------------------------------------------
+
+; Description: Insert string at HL into inputBuf. If the string is too long,
+; characters that do fit are inserted, and the rest of the string is ignore.
+; This function cannot be in input1.asm (Flash Page 1) because HL points
+; to strings on Flash Page 0.
+; Input:
+;   - HL:(const char*)=string
+;   - cursorInputPos:u8=insertPosition
+; Output:
+;   - dirtyFlagsInput always set
+;   - CF=0 if successful
+;   - (cursorInputPos)+=len(string) if successful
+; Destroys: all
+insertStringInputBuf:
+    ld a, (hl)
+    or a
+    ret z ; NUL terminator
+    inc hl
+    push hl
+    bcall(_InsertCharInputBuf) ; CF=1 if error; destroys HL
+    pop hl
+    ret c ; return on error (e.g. reached end of inputBuf)
+    jr insertStringInputBuf

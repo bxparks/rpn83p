@@ -11,6 +11,37 @@
 ;       - 1 indicates 'onExit' event from group
 ;-----------------------------------------------------------------------------
 
+; Description: Enter the string in HL into the input buffer at position
+; `cursorInputPos`, updating various flags. If `cursorInputPos` is at the end
+; of the `inputBuf`, then the string is appended. Similar to handleKeyNumber()
+; which enters a single character.
+; Input:
+;   - HL:(const char*)=string to be inserted
+;   - rpnFlagsEditing=whether we are already in Edit mode
+; Output:
+;   - CF=0 if successful
+;   - rpnFlagsEditing set
+;   - dirtyFlagsInput set
+;   - (cursorInputPos) updated if successful
+; Destroys: all
+enterString:
+    ; TVM menus goes into input mode.
+    res rpnFlagsTvmCalculate, (iy + rpnFlags)
+    ; If not in input editing mode: lift stack and go into edit mode
+    bit rpnFlagsEditing, (iy + rpnFlags)
+    jr nz, enterStringIfEditing
+enterStringIfNonEditing: ; not in Editing mode
+    ; Lift the stack, unless disabled.
+    push hl ; preserve HL
+    call liftStackIfEnabled
+    pop hl
+    ; Go into editing mode.
+    bcall(_ClearInputBuf) ; preserves HL
+    set rpnFlagsEditing, (iy + rpnFlags)
+enterStringIfEditing: ; in Editing mode
+    call insertStringInputBuf ; CF=0 if successful
+    ret
+
 ;-----------------------------------------------------------------------------
 ; DATE > D (Date) > Row 1
 ;-----------------------------------------------------------------------------
@@ -19,7 +50,11 @@ mDateErr:
     bcall(_ErrDataType)
 
 mDateCreateHandler:
-    ret
+    ld hl, strDatePrefix
+    jp enterString
+
+strDatePrefix:
+    .db "D{", 0
 
 mDateToEpochDaysHandler:
     call closeInputAndRecallRpnDateLikeX ; OP1=X=RpnDateLike{}
@@ -64,7 +99,11 @@ mTimeErr:
     bcall(_ErrDataType)
 
 mTimeCreateHandler:
-    ret
+    ld hl, strTimePrefix
+    jp enterString
+
+strTimePrefix:
+    .db "T{", 0
 
 mTimeToSecondsHandler:
     call closeInputAndRecallRpnDateRelatedX ; OP1==dateRelatedObject; A=type
@@ -86,7 +125,11 @@ mDateTimeErr:
     bcall(_ErrDataType)
 
 mDateTimeCreateHandler:
-    ret
+    ld hl, strDateTimePrefix
+    jp enterString
+
+strDateTimePrefix:
+    .db "DT{", 0
 
 mDateTimeToEpochDaysHandler:
     call closeInputAndRecallRpnDateLikeX ; OP1==dateLikeObject; A=type
@@ -138,7 +181,11 @@ mOffsetErr:
     bcall(_ErrDataType)
 
 mOffsetCreateHandler:
-    ret
+    ld hl, strOffsetPrefix
+    jp enterString
+
+strOffsetPrefix:
+    .db "TZ{", 0
 
 mOffsetToSecondsHandler:
     call closeInputAndRecallRpnDateRelatedX ; OP1==dateRelatedObject; A=type
@@ -165,7 +212,11 @@ mOffsetDateTimeErr:
     bcall(_ErrDataType)
 
 mOffsetDateTimeCreateHandler:
-    ret
+    ld hl, strOffsetDateTimePrefix
+    jp enterString
+
+strOffsetDateTimePrefix:
+    .db "DZ{", 0
 
 mOffsetDateTimeToEpochSecondsHandler:
     call closeInputAndRecallRpnDateLikeX ; OP1==dateLikeObject; A=type
@@ -231,7 +282,11 @@ mDurationErr:
     bcall(_ErrDataType)
 
 mDurationCreateHandler:
-    ret
+    ld hl, strDurationPrefix
+    jp enterString
+
+strDurationPrefix:
+    .db "DR{", 0
 
 mDurationToSecondsHandler:
     call closeInputAndRecallRpnDateRelatedX ; OP1==dateRelatedObject; A=type
@@ -274,7 +329,11 @@ mDayOfWeekErr:
     bcall(_ErrDataType)
 
 mDayOfWeekCreateHandler:
-    ret
+    ld hl, strDayOfWeekPrefix
+    jp enterString
+
+strDayOfWeekPrefix:
+    .db "DW{", 0
 
 mDayOfWeekToIsoNumberHandler:
     call closeInputAndRecallRpnDateRelatedX ; OP1=rpnDayOfWeek; A=rpnObjectType

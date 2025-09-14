@@ -37,6 +37,8 @@ ClearInputBuf:
     pop af
     ret
 
+;------------------------------------------------------------------------------
+
 ; Description: Insert character at cursorInputPos into inputBuf.
 ; Input:
 ;   - A:char=insertChar
@@ -61,7 +63,7 @@ InsertCharInputBuf:
 ;   - CF=0 if successful
 ;   - (cursorInputPos) updated as necessary
 ; Destroys: all
-InsertCharAtInputBuf:
+insertCharAtInputBuf:
     ld d, a ; B=insertChar
     ; calc min(inputMaxLen, inputBufCapacity)
     call getInputMaxLen ; A=inputMaxLen; BC,DE,HL preserved
@@ -88,6 +90,8 @@ insertCharAtInputBufContinue:
 insertCharAtInputBufUpdateCursor:
     inc (hl)
     ret
+
+;------------------------------------------------------------------------------
 
 ; Description: Delete one character to the left of cursorInputPos from inputBuf
 ; if possible. If already empty, do nothing.
@@ -140,6 +144,8 @@ deleteCharInputBufUpdate:
     dec (hl) ; cursorInputPos-=1
     ret
 
+;------------------------------------------------------------------------------
+
 ; Description: Handle the CHS (+/-) request for the inputBuf in editMode. The
 ; sign of the component on or immediately to the left of the cursor is flipped,
 ; adding a `-` if it does not already exist, or removing the existing `-`
@@ -183,7 +189,7 @@ changeSignInputBufRemove:
 changeSignInputBufAdd:
     ; Add '-' sign.
     ld a, signChar
-    call InsertCharAtInputBuf
+    call insertCharAtInputBuf
     ret
 
 ;------------------------------------------------------------------------------

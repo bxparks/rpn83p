@@ -880,10 +880,6 @@ _InsertCharInputBufLabel:
 _InsertCharInputBuf equ _InsertCharInputBufLabel-branchTableBase
     .dw InsertCharInputBuf
     .db 1
-_InsertCharAtInputBufLabel:
-_InsertCharAtInputBuf equ _InsertCharAtInputBufLabel-branchTableBase
-    .dw InsertCharAtInputBuf
-    .db 1
 _DeleteCharInputBufLabel:
 _DeleteCharInputBuf equ _DeleteCharInputBufLabel-branchTableBase
     .dw DeleteCharInputBuf
