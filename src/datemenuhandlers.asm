@@ -59,17 +59,18 @@ strDatePrefix:
 mDateToEpochDaysHandler:
     call closeInputAndRecallRpnDateLikeX ; OP1=X=RpnDateLike{}
     cp rpnObjectTypeDate ; ZF=1 if RpnDate
-    jr z, dateToEpochDaysHandlerDoDateTime
+    jr z, mDateToEpochDaysHandlerDoDateTime
     cp rpnObjectTypeDate ; ZF=1 if RpnDateTime
-    jr z, dateToEpochDaysHandlerDoDateTime
+    jr z, mDateToEpochDaysHandlerDoDateTime
     cp rpnObjectTypeOffsetDateTime ; ZF=1 if RpnOffsetDateTime
-    jr z, dateToEpochDaysHandlerDoOffsetDateTime
+    jr z, mDateToEpochDaysHandlerDoOffsetDateTime
     jr mDateErr
-dateToEpochDaysHandlerDoOffsetDateTime:
-    ; Convert OffsetDateTime to UTC time zone, before calculating EpochDays
+mDateToEpochDaysHandlerDoOffsetDateTime:
     bcall(_ConvertRpnOffsetDateTimeToUtc)
-dateToEpochDaysHandlerDoDateTime:
-dateToEpochDaysHandlerDoDate:
+    ; [[fallthrough]]
+mDateToEpochDaysHandlerDoDateTime:
+    ; [[fallthrough]]
+mDateToEpochDaysHandlerDoDate:
     bcall(_RpnDateToEpochDays) ; OP1=epochDays
     jp replaceX
 
@@ -161,8 +162,10 @@ mTimeExtractHourHandler:
     jr mTimeErr
 mTimeExtractHourHandlerDoOffsetDateTime:
     bcall(_RpnOffsetDateTimeExtractDateTime) ; OP1=datetime
+    ; [[fallthrough]]
 mTimeExtractHourHandlerDoDateTime:
     bcall(_RpnDateTimeExtractTime) ; OP1=time
+    ; [[fallthrough]]
 mTimeExtractHourHandlerDoTime:
     bcall(_RpnTimeExtractHour) ; OP1=time.hour()
     jp replaceX
@@ -178,8 +181,10 @@ mTimeExtractMinuteHandler:
     jr mTimeErr
 mTimeExtractMinuteHandlerDoOffsetDateTime:
     bcall(_RpnOffsetDateTimeExtractDateTime) ; OP1=datetime
+    ; [[fallthrough]]
 mTimeExtractMinuteHandlerDoDateTime:
     bcall(_RpnDateTimeExtractTime) ; OP1=time
+    ; [[fallthrough]]
 mTimeExtractMinuteHandlerDoTime:
     bcall(_RpnTimeExtractMinute) ; OP1=time.minute()
     jp replaceX
@@ -195,8 +200,10 @@ mTimeExtractSecondHandler:
     jr mTimeErr
 mTimeExtractSecondHandlerDoOffsetDateTime:
     bcall(_RpnOffsetDateTimeExtractDateTime) ; OP1=datetime
+    ; [[fallthrough]]
 mTimeExtractSecondHandlerDoDateTime:
     bcall(_RpnDateTimeExtractTime) ; OP1=time
+    ; [[fallthrough]]
 mTimeExtractSecondHandlerDoTime:
     bcall(_RpnTimeExtractSecond) ; OP1=time.minute()
     jp replaceX
@@ -217,8 +224,19 @@ strDateTimePrefix:
 
 mDateTimeToEpochDaysHandler:
     call closeInputAndRecallRpnDateLikeX ; OP1==dateLikeObject; A=type
+    cp rpnObjectTypeDate ; ZF=1 if RpnDate
+    jr z, mDateTimeToEpochDaysHandlerDoDate
     cp rpnObjectTypeDateTime ; ZF=1 if RpnDateTime
-    jr nz, mDateTimeErr
+    jr z, mDateTimeToEpochDaysHandlerDoDateTime
+    cp rpnObjectTypeOffsetDateTime ; ZF=1 if RpnOffsetDateTime
+    jr z, mDateTimeToEpochDaysHandlerDoOffsetDateTime
+    jr mDateTimeErr
+mDateTimeToEpochDaysHandlerDoOffsetDateTime:
+    bcall(_ConvertRpnOffsetDateTimeToUtc)
+    ; [[fallthrough]]
+mDateTimeToEpochDaysHandlerDoDateTime:
+    ; [[fallthrough]]
+mDateTimeToEpochDaysHandlerDoDate:
     bcall(_RpnDateTimeToEpochDays) ; OP1=epochDays
     jp replaceX
 
@@ -321,9 +339,6 @@ mOffsetExtractMinuteHandlerDoOffset:
 ; DATE > DZ (OffsetDateTime) > Row 1
 ;-----------------------------------------------------------------------------
 
-mOffsetDateTimeErr:
-    bcall(_ErrDataType)
-
 mOffsetDateTimeCreateHandler:
     ld hl, strOffsetDateTimePrefix
     jp enterString
@@ -349,6 +364,9 @@ mEpochSecondsToOffsetDateTimeAppHandler:
     bcall(_EpochSecondsToRpnOffsetDateTime) ; OP1=OffsetDateTime(epochSeconds)
     jp replaceX
 
+mOffsetDateTimeErr:
+    bcall(_ErrDataType)
+
 ;-----------------------------------------------------------------------------
 ; DATE > DZ (OffsetDateTime) > Row 2
 ;-----------------------------------------------------------------------------
@@ -370,6 +388,33 @@ mOffsetDateTimeExtractTimeHandler:
     bcall(_RpnOffsetDateTimeExtractTime) ; OP1=RpnDate
     jp replaceX
 
+mOffsetDateTimeToEpochDaysHandler:
+    call closeInputAndRecallRpnDateLikeX ; OP1==dateLikeObject; A=type
+    cp rpnObjectTypeDate ; ZF=1 if RpnDate
+    jr z, mOffsetDateTimeToEpochDaysHandlerDoDate
+    cp rpnObjectTypeDateTime ; ZF=1 if RpnDateTime
+    jr z, mOffsetDateTimeToEpochDaysHandlerDoDateTime
+    cp rpnObjectTypeOffsetDateTime ; ZF=1 if RpnOffsetDateTime
+    jr z, mOffsetDateTimeToEpochDaysHandlerDoOffsetDateTime
+    jr mOffsetDateTimeErr
+mOffsetDateTimeToEpochDaysHandlerDoOffsetDateTime:
+    bcall(_ConvertRpnOffsetDateTimeToUtc)
+    ; [[fallthrough]]
+mOffsetDateTimeToEpochDaysHandlerDoDateTime:
+    ; [[fallthrough]]
+mOffsetDateTimeToEpochDaysHandlerDoDate:
+    bcall(_RpnDateToEpochDays) ; OP1=epochDays
+    jp replaceX
+
+mEpochDaysToOffsetDateTimeHandler:
+    call closeInputAndRecallX ; OP1=X=epochDays
+    bcall(_EpochDaysToRpnDateTime) ; OP1=DateTime(epochDays)
+    jp replaceX
+
+;-----------------------------------------------------------------------------
+; DATE > DZ (OffsetDateTime) > Row 3
+;-----------------------------------------------------------------------------
+
 mOffsetDateTimeExtractDateTimeHandler:
     call closeInputAndRecallRpnDateLikeX ; OP1==dateLikeObject; A=type
     cp rpnObjectTypeOffsetDateTime ; ZF=1 if RpnOffsetDateTime
@@ -385,7 +430,7 @@ mOffsetDateTimeExtractOffsetHandler:
     jp replaceX
 
 ;-----------------------------------------------------------------------------
-; DATE > DZ (OffsetDateTime) > Row 3
+; DATE > DZ (OffsetDateTime) > Row 4
 ;-----------------------------------------------------------------------------
 
 ; See Generic Date handlers.

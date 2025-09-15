@@ -697,6 +697,10 @@ MenuGroup root mRoot [
             MenuItem DZ<SlBrace><SrBrace> mOffsetDateTimeCreate
             MenuItem <Sconvert>ES mOffsetDateTimeToEpochSeconds
             MenuItem ES<Sconvert> mEpochSecondsToOffsetDateTimeUTC
+            MenuItem <Sconvert>ED mOffsetDateTimeToEpochDays
+            MenuItem ED<Sconvert> mEpochDaysToOffsetDateTime
+          ]
+          MenuRow [
             MenuItem ES<Sconvert><SatSign> mEpochSecondsToOffsetDateTimeApp
             MenuItem CVTZ mOffsetDateTimeConvertToTimeZone
           ]
@@ -726,7 +730,7 @@ MenuGroup root mRoot [
             MenuItem SEC<Sconvert> mSecondsToDuration
           ]
           MenuRow [
-            MenuItem <Sconvert>SEC mDurationToSeconds
+            MenuItem <Sconvert>S mDurationToSeconds
             MenuItem <Speriod>DAY mDurationExtractDay
             MenuItem <Speriod>HR mDurationExtractHour
             MenuItem <Speriod>MIN mDurationExtractMinute
@@ -740,15 +744,6 @@ MenuGroup root mRoot [
             MenuItem ISO<Sconvert> mIsoNumberToDayOfWeek
           ]
         ]
-        #MenuGroup DOPS mDops [
-        #  MenuRow [
-        #    MenuItem LEAP mGenericDateIsLeap # operates on Real, D, DT, DZ
-        #    MenuItem DSHK mGenericDateShrink # shrink DZ to DT, DT to D
-        #    MenuItem DEXD mGenericDateExtend # extend D to DT, DT to DZ
-        #    MenuItem DCUT mGenericDateCut # cut DZ to (DT,TZ), DT to (D,T)
-        #    MenuItem DLNK mGenericDateLink # link (DT,TZ) to DZ, (D,T) to DT
-        #  ]
-        #]
         MenuGroup EPCH mEpoch [
           MenuRow [
             MenuItemAlt UNIX UNI<Sblock> mEpochUnix # 1970-01-01T00:00:00
