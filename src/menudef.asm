@@ -4869,23 +4869,23 @@ mGetNowTimeId equ 519
     .dw 0 ; rowBeginId or altName
     .dw mGetNowTimeHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
-mGetNowAppDateTime:
-mGetNowAppDateTimeId equ 520
-    .dw mGetNowAppDateTimeId ; id
+mGetNowOffsetDateTime:
+mGetNowOffsetDateTimeId equ 520
+    .dw mGetNowOffsetDateTimeId ; id
     .dw mClkId ; parentId
-    .dw mGetNowAppDateTimeName ; name
+    .dw mGetNowOffsetDateTimeName ; name
     .db 0 ; numRows
     .dw 0 ; rowBeginId or altName
-    .dw mGetNowAppDateTimeHandler ; handler (to be implemented)
+    .dw mGetNowOffsetDateTimeHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
-mGetNowUTCDateTime:
-mGetNowUTCDateTimeId equ 521
-    .dw mGetNowUTCDateTimeId ; id
+mGetNowOffsetDateTimeUtc:
+mGetNowOffsetDateTimeUtcId equ 521
+    .dw mGetNowOffsetDateTimeUtcId ; id
     .dw mClkId ; parentId
-    .dw mGetNowUTCDateTimeName ; name
+    .dw mGetNowOffsetDateTimeUtcName ; name
     .db 0 ; numRows
     .dw 0 ; rowBeginId or altName
-    .dw mGetNowUTCDateTimeHandler ; handler (to be implemented)
+    .dw mGetNowOffsetDateTimeUtcHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
 ; MenuGroup CLK: children: row 1
 mSetTimeZone:
@@ -5877,9 +5877,9 @@ mGetNowDateName:
     .db "NOWD", 0
 mGetNowTimeName:
     .db "NOWT", 0
-mGetNowAppDateTimeName:
+mGetNowOffsetDateTimeName:
     .db "NWDZ", 0
-mGetNowUTCDateTimeName:
+mGetNowOffsetDateTimeUtcName:
     .db "NWUT", 0
 mSetTimeZoneName:
     .db "TZ", 0

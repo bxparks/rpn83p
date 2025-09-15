@@ -849,22 +849,22 @@ mGetNowDateHandler:
     bcall(_RtcGetDate)
     jp pushToX
 
-mGetNowAppDateTimeHandler:
+mGetNowOffsetDateTimeHandler:
     ld a, (isRtcAvailable)
     or a
     jr z, noClockErr
     ;
     call closeInputAndRecallNone
-    bcall(_RtcGetAppDateTime)
+    bcall(_RtcGetOffsetDateTime)
     jp pushToX
 
-mGetNowUTCDateTimeHandler:
+mGetNowOffsetDateTimeUtcHandler:
     ld a, (isRtcAvailable)
     or a
     jr z, noClockErr
     ;
     call closeInputAndRecallNone
-    bcall(_RtcGetUTCDateTime)
+    bcall(_RtcGetOffsetDateTimeForUtc)
     jp pushToX
 
 noClockErr:

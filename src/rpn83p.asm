@@ -1821,13 +1821,13 @@ _RtcGetTimeLabel:
 _RtcGetTime equ _RtcGetTimeLabel-branchTableBase
     .dw RtcGetTime
     .db 2
-_RtcGetAppDateTimeLabel:
-_RtcGetAppDateTime equ _RtcGetAppDateTimeLabel-branchTableBase
-    .dw RtcGetAppDateTime
+_RtcGetOffsetDateTimeLabel:
+_RtcGetOffsetDateTime equ _RtcGetOffsetDateTimeLabel-branchTableBase
+    .dw RtcGetOffsetDateTime
     .db 2
-_RtcGetUTCDateTimeLabel:
-_RtcGetUTCDateTime equ _RtcGetUTCDateTimeLabel-branchTableBase
-    .dw RtcGetUTCDateTime
+_RtcGetOffsetDateTimeForUtcLabel:
+_RtcGetOffsetDateTimeForUtc equ _RtcGetOffsetDateTimeForUtcLabel-branchTableBase
+    .dw RtcGetOffsetDateTimeForUtc
     .db 2
 ;
 _RtcSetClockLabel:
