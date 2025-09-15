@@ -60,7 +60,7 @@ EpochSecondsToRpnOffsetDateTime:
     push bc
     call convertOP1ToI40 ; OP1=i40(epochSeconds)
     pop bc
-epochSecondsToRpnOffsetDateTimeAlt:
+epochSecondsToRpnOffsetDateTimeAltEntry:
     push bc ; stack=[targetTimeZone]
     ; reserve RpnObject on FPS
     call reserveRpnObject ; FPS=[rpnOffsetDateTime]; HL=rpnOffsetDateTime

@@ -37,28 +37,16 @@ RtcGetNow:
 ; Input: none
 ; Output: OP1:Time=currentTime
 RtcGetTime:
-    ld hl, OP1
-    call getRtcNowAsEpochSeconds ; HL=OP1=epochSeconds
-    ; Convert to RpnOffsetDateTime using current offset
-    ld bc, appTimeZone
-    call epochSecondsToRpnOffsetDateTimeAlt ; OP1=RpnOffsetDateTime
-    ; Transform to RpnTime
-    ld hl, OP1
-    call transformToTime ; HL=(RpnTime*)=rpnTime
+    call RtcGetAppDateTime ; OP1=rpnOffsetDateTime@appTZ
+    call RpnOffsetDateTimeExtractTime ; OP1=rpnTime
     ret
 
 ; Description: Retrieve the current RTC as a Date object.
 ; Input: none
 ; Output: OP1:RpnDate=currentDate
 RtcGetDate:
-    ld hl, OP1
-    call getRtcNowAsEpochSeconds ; HL=OP1=epochSeconds
-    ; Convert to RpnOffsetDateTime using current offset
-    ld bc, appTimeZone
-    call epochSecondsToRpnOffsetDateTimeAlt ; OP1=RpnOffsetDateTime
-    ; Transform RpnOffsetDateTime to RpnDate.
-    ld hl, OP1
-    call transformToDate ; HL=(RpnDate*)=rpnDate
+    call RtcGetAppDateTime ; OP1=rpnOffsetDateTime@appTZ
+    call RpnOffsetDateTimeExtractDate ; OP1=rpnDate
     ret
 
 ; Description: Retrieve the current RTC as an OffsetDateTime using the
@@ -70,22 +58,15 @@ RtcGetAppDateTime:
     call getRtcNowAsEpochSeconds ; HL=OP1=epochSeconds
     ; Convert to RpnOffsetDateTime using current appTimeZone
     ld bc, appTimeZone
-    jp epochSecondsToRpnOffsetDateTimeAlt ; OP1=RpnOffsetDateTime
+    jp epochSecondsToRpnOffsetDateTimeAltEntry ; OP1=RpnOffsetDateTime
 
 ; Description: Retrieve the current RTC as an OffsetDateTime using UTC
 ; timezone.
 ; Input: none
 ; Output: OP1:OffsetDateTime=utcDateTime
 RtcGetUTCDateTime:
-    ld hl, OP1
-    call getRtcNowAsEpochSeconds ; HL=OP1=epochSeconds
-    ; Convert to RpnDateTime using UTC timezone
-    call epochSecondsToRpnDateTimeAlt ; OP1=RpnDateTime
-    ; Transform RpnDateTime to RpnOffsetDateTime w/ UTC timezone
-    ld hl, OP1
-    call transformToOffsetDateTime ; HL=(RpnOffsetDateTime*)=utcDateTime
-    call expandOp1ToOp2PageTwo ; handle 2-byte gap between OP1 and OP2
-    ret
+    call RtcGetAppDateTime ; OP1=rpnOffsetDateTime@appTZ
+    jp ConvertRpnOffsetDateTimeToUtc
 
 ;-----------------------------------------------------------------------------
 
@@ -153,8 +134,8 @@ RtcSetClock:
 ;-----------------------------------------------------------------------------
 
 ; Description: Retrieve current RTC date/time as relative epochSeconds.
-; Input: HL:(i40*)=rtcSeconds
-; Output: (*HL) updated
+; Input: HL:(i40*)=rtcSeconds pointer
+; Output: HL:(i40*)=rtcSeconds
 ; Destroys: A, BC, DE
 ; Preserves: HL
 getRtcNowAsEpochSeconds:
