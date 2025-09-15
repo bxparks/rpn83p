@@ -58,8 +58,18 @@ strDatePrefix:
 
 mDateToEpochDaysHandler:
     call closeInputAndRecallRpnDateLikeX ; OP1=X=RpnDateLike{}
+    cp rpnObjectTypeDate ; ZF=1 if RpnDate
+    jr z, dateToEpochDaysHandlerDoDateTime
     cp rpnObjectTypeDate ; ZF=1 if RpnDateTime
-    jr nz, mDateErr
+    jr z, dateToEpochDaysHandlerDoDateTime
+    cp rpnObjectTypeOffsetDateTime ; ZF=1 if RpnOffsetDateTime
+    jr z, dateToEpochDaysHandlerDoOffsetDateTime
+    jr mDateErr
+dateToEpochDaysHandlerDoOffsetDateTime:
+    ; Convert OffsetDateTime to UTC time zone, before calculating EpochDays
+    bcall(_ConvertRpnOffsetDateTimeToUtc)
+dateToEpochDaysHandlerDoDateTime:
+dateToEpochDaysHandlerDoDate:
     bcall(_RpnDateToEpochDays) ; OP1=epochDays
     jp replaceX
 

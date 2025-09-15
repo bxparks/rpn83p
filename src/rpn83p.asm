@@ -1789,6 +1789,10 @@ _ConvertRpnDateLikeToTimeZoneLabel:
 _ConvertRpnDateLikeToTimeZone equ _ConvertRpnDateLikeToTimeZoneLabel-branchTableBase
     .dw ConvertRpnDateLikeToTimeZone
     .db 2
+_ConvertRpnOffsetDateTimeToUtcLabel:
+_ConvertRpnOffsetDateTimeToUtc equ _ConvertRpnOffsetDateTimeToUtcLabel-branchTableBase
+    .dw ConvertRpnOffsetDateTimeToUtc
+    .db 2
 
 ; zone2.asm
 _SetAppTimeZoneLabel:

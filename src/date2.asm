@@ -124,7 +124,7 @@ isLeapYearTrue:
 
 ; Description: Convert RpnDate{} to epochDays relative to the currentEpochDate.
 ; Input:
-;   - OP1:(RpnDate*)=rpnDate
+;   - OP1:RpnDate=rpnDate
 ;   - (currentEpochDate):Date{}=reference epoch date
 ; Output:
 ;   - OP1:(i40*)=epochDays

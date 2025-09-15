@@ -45,6 +45,22 @@ HoursToRpnOffset:
     call popRaw9Op1 ; FPS=[]; OP1=rpnOffset
     ret
 
+; Description: Set OP1 to UTC timezone offset.
+; Input: none
+; Output: OP1:RpnOffset=utcOffset
+; Destroys: A, HL
+RpnOffsetUtc:
+    ld hl, OP1
+    ld a, rpnObjectTypeOffset
+    call setHLRpnObjectTypePageTwo
+    xor a
+    ld (hl), a
+    inc hl
+    ld (hl), a
+    ret
+
+;-----------------------------------------------------------------------------
+; Arithmetic
 ;-----------------------------------------------------------------------------
 
 ; Description: Add RpnOffset by real(hours).

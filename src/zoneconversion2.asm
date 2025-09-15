@@ -102,3 +102,18 @@ convertRpnOffsetDateTimeToOffset:
     call dropRaw9 ; FPS=[rpnOffsetDateTime,rpnOffset]
     call dropRaw9 ; FPS=[rpnOffsetDateTime]
     jp dropRpnObject ; FPS=[]
+
+;-----------------------------------------------------------------------------
+
+; Description: Convert the RpnOffsetDateTime (OP1) to UTC. This is a
+; convenience function for convertRpnOffsetDateTimeToOffset() if UTC is
+; desired.
+; Input: OP1:RpnOffsetDateTime=offsetDateTime
+; Output: OP1:RpnOffsetDateTime=utcDateTime
+; Dstroys: all, OP1-OP6
+ConvertRpnOffsetDateTimeToUtc:
+    call PushRpnObject1 ; FPS=[rpnOffsetDateTime]; HL=rpnOffsetDateTime
+    call RpnOffsetUtc ; CP1:RpnOffset=UTC
+    call PopRpnObject3 ; FPS=[]; CP3=rpnOffsetDateTime
+    call cp1ExCp3PageTwo ; CP1=rpnOffsetDateTime; CP3=UTC
+    jp convertRpnOffsetDateTimeToOffset
