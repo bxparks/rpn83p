@@ -695,10 +695,10 @@ MenuGroup root mRoot [
         MenuGroup DZ mDateFolderOffsetDateTime [
           MenuRow [
             MenuItem DZ<SlBrace><SrBrace> mOffsetDateTimeCreate
-            MenuItem <Sconvert>ES mOffsetDateTimeToEpochSeconds
-            MenuItem ES<Sconvert> mEpochSecondsToOffsetDateTimeUTC
             MenuItem <Sconvert>ED mOffsetDateTimeToEpochDays
             MenuItem ED<Sconvert> mEpochDaysToOffsetDateTime
+            MenuItem <Sconvert>ES mOffsetDateTimeToEpochSeconds
+            MenuItem ES<Sconvert> mEpochSecondsToOffsetDateTimeUTC
           ]
           MenuRow [
             MenuItem ES<Sconvert><SatSign> mEpochSecondsToOffsetDateTimeApp

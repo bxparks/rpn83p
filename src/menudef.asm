@@ -4433,26 +4433,8 @@ mOffsetDateTimeCreateId equ 472
     .dw 0 ; rowBeginId or altName
     .dw mOffsetDateTimeCreateHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
-mOffsetDateTimeToEpochSeconds:
-mOffsetDateTimeToEpochSecondsId equ 473
-    .dw mOffsetDateTimeToEpochSecondsId ; id
-    .dw mDateFolderOffsetDateTimeId ; parentId
-    .dw mOffsetDateTimeToEpochSecondsName ; name
-    .db 0 ; numRows
-    .dw 0 ; rowBeginId or altName
-    .dw mOffsetDateTimeToEpochSecondsHandler ; handler (to be implemented)
-    .dw 0 ; nameSelector
-mEpochSecondsToOffsetDateTimeUTC:
-mEpochSecondsToOffsetDateTimeUTCId equ 474
-    .dw mEpochSecondsToOffsetDateTimeUTCId ; id
-    .dw mDateFolderOffsetDateTimeId ; parentId
-    .dw mEpochSecondsToOffsetDateTimeUTCName ; name
-    .db 0 ; numRows
-    .dw 0 ; rowBeginId or altName
-    .dw mEpochSecondsToOffsetDateTimeUTCHandler ; handler (to be implemented)
-    .dw 0 ; nameSelector
 mOffsetDateTimeToEpochDays:
-mOffsetDateTimeToEpochDaysId equ 475
+mOffsetDateTimeToEpochDaysId equ 473
     .dw mOffsetDateTimeToEpochDaysId ; id
     .dw mDateFolderOffsetDateTimeId ; parentId
     .dw mOffsetDateTimeToEpochDaysName ; name
@@ -4461,13 +4443,31 @@ mOffsetDateTimeToEpochDaysId equ 475
     .dw mOffsetDateTimeToEpochDaysHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
 mEpochDaysToOffsetDateTime:
-mEpochDaysToOffsetDateTimeId equ 476
+mEpochDaysToOffsetDateTimeId equ 474
     .dw mEpochDaysToOffsetDateTimeId ; id
     .dw mDateFolderOffsetDateTimeId ; parentId
     .dw mEpochDaysToOffsetDateTimeName ; name
     .db 0 ; numRows
     .dw 0 ; rowBeginId or altName
     .dw mEpochDaysToOffsetDateTimeHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
+mOffsetDateTimeToEpochSeconds:
+mOffsetDateTimeToEpochSecondsId equ 475
+    .dw mOffsetDateTimeToEpochSecondsId ; id
+    .dw mDateFolderOffsetDateTimeId ; parentId
+    .dw mOffsetDateTimeToEpochSecondsName ; name
+    .db 0 ; numRows
+    .dw 0 ; rowBeginId or altName
+    .dw mOffsetDateTimeToEpochSecondsHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
+mEpochSecondsToOffsetDateTimeUTC:
+mEpochSecondsToOffsetDateTimeUTCId equ 476
+    .dw mEpochSecondsToOffsetDateTimeUTCId ; id
+    .dw mDateFolderOffsetDateTimeId ; parentId
+    .dw mEpochSecondsToOffsetDateTimeUTCName ; name
+    .db 0 ; numRows
+    .dw 0 ; rowBeginId or altName
+    .dw mEpochSecondsToOffsetDateTimeUTCHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
 ; MenuGroup DZ: children: row 1
 mEpochSecondsToOffsetDateTimeApp:
@@ -5785,14 +5785,14 @@ mOffsetExtractMinuteName:
     .db Speriod, 'M', 'I', 'N', 0
 mOffsetDateTimeCreateName:
     .db 'D', 'Z', SlBrace, SrBrace, 0
-mOffsetDateTimeToEpochSecondsName:
-    .db Sconvert, 'E', 'S', 0
-mEpochSecondsToOffsetDateTimeUTCName:
-    .db 'E', 'S', Sconvert, 0
 mOffsetDateTimeToEpochDaysName:
     .db Sconvert, 'E', 'D', 0
 mEpochDaysToOffsetDateTimeName:
     .db 'E', 'D', Sconvert, 0
+mOffsetDateTimeToEpochSecondsName:
+    .db Sconvert, 'E', 'S', 0
+mEpochSecondsToOffsetDateTimeUTCName:
+    .db 'E', 'S', Sconvert, 0
 mEpochSecondsToOffsetDateTimeAppName:
     .db 'E', 'S', Sconvert, SatSign, 0
 mOffsetDateTimeConvertToTimeZoneName:
