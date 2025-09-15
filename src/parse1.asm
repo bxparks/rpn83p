@@ -20,8 +20,8 @@
 ; registers (e.g. PI, E, or various TVM functions, various STAT functions). If
 ; the user had pressed CLEAR, to clear the input buffer, then it doesn't make
 ; sense for these functions to lift the empty string (i.e. 0) up when pushing
-; the new values. These functions call pushToX() or pushToXY() which checks if
-; the inputBuf was closed when empty. If empty, pushToX() or pushToXY() will
+; the new values. These functions call pushToStackX() or pushToStackXY() which checks if
+; the inputBuf was closed when empty. If empty, pushToStackX() or pushToStackXY() will
 ; *not* lift the stack, but simply replace the "0" in the X register with the
 ; new value. This flag is cleared if the inputBuf was not in edit mode, with
 ; the assumption that new X or Y values should lift the stack.

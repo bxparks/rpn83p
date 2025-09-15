@@ -95,7 +95,7 @@ appTurningOff:
 
 ; Description: Store OP1 to Ans, but only if OP1 is Real or Complex.
 storeAns:
-    call rclX ; OP1=X
+    call rclStackX ; OP1=X
     call checkOp1RealOrComplex ; ZF=1 if real or complex
     ret nz
     bcall(_StoAns) ; transfer to TI-OS 'ANS' (supports complex numbers)

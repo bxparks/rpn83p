@@ -57,7 +57,7 @@ commonUnitHandler:
     ; Set up registers for ApplyUnit()
     call getOp1RpnObjectType ; A=rpnObjectType
     bcall(_ApplyUnit)
-    jp replaceX
+    jp replaceStackX
 
 ;-----------------------------------------------------------------------------
 ; UNIT > UFCN > Row 1
@@ -67,13 +67,13 @@ commonUnitHandler:
 mUnitValueHandler:
     call closeInputAndRecallDenominateX ; A=rpnObjectType; OP1=X
     bcall(_GetRpnDenominateDisplayValue) ; OP1=displayValue
-    jp replaceX
+    jp replaceStackX
 
 ; Convert to its base unit.
 mUnitBaseHandler:
     call closeInputAndRecallDenominateX ; A=rpnObjectType; OP1=X
     bcall(_ConvertRpnDenominateToBaseUnit) ; OP1=rpnObject
-    jp replaceX
+    jp replaceStackX
     ret
 
 ;-----------------------------------------------------------------------------

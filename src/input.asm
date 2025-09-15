@@ -43,7 +43,7 @@ closeInput:
     ret
 closeInputEditing:
     bcall(_ParseAndClearInputBuf) ; OP1/OP2:RpnObject
-    call stoX
+    call stoStackX
     res rpnFlagsEditing, (iy + rpnFlags)
     ret
 
@@ -65,7 +65,7 @@ closeInputAndRecallNone:
 closeInputAndRecallX:
     call closeInput
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
-    call rclX ; A=objectType
+    call rclStackX ; A=objectType
     cp rpnObjectTypeReal
     ret z
     bcall(_ErrDataType)
@@ -79,11 +79,11 @@ closeInputAndRecallX:
 closeInputAndRecallXY:
     call closeInput
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
-    call rclX ; A=objectType; OP1/OP2=X
+    call rclStackX ; A=objectType; OP1/OP2=X
     cp rpnObjectTypeReal
     jr nz, closeInputAndRecallXYErr
     call cp1ToCp3 ; OP3/OP4=X
-    call rclY ; A=objectType; OP1/OP2=Y
+    call rclStackY ; A=objectType; OP1/OP2=Y
     cp rpnObjectTypeReal
     jr nz, closeInputAndRecallXYErr
     jp op3ToOp2 ; OP2=Real(X)
@@ -98,7 +98,7 @@ closeInputAndRecallXYErr:
 closeInputAndRecallUniversalX:
     call closeInput
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
-    jp rclX
+    jp rclStackX
 
 ; Close the input buffer, and recall the real or complex values X, Y into
 ; OP1/OP2=Y and OP3/OP4=X.
@@ -110,9 +110,9 @@ closeInputAndRecallUniversalX:
 closeInputAndRecallUniversalXY:
     call closeInput
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
-    call rclX ; A=objectType
+    call rclStackX ; A=objectType
     call cp1ToCp3
-    jp rclY
+    jp rclStackY
 
 ;-----------------------------------------------------------------------------
 
@@ -121,7 +121,7 @@ closeInputAndRecallUniversalXY:
 closeInputAndRecallRpnDateX:
     call closeInput
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
-    call rclX ; A=objectType
+    call rclStackX ; A=objectType
     cp rpnObjectTypeDate
     ret z
     bcall(_ErrDataType)
@@ -131,7 +131,7 @@ closeInputAndRecallRpnDateX:
 closeInputAndRecallRpnOffsetX:
     call closeInput
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
-    call rclX ; A=objectType
+    call rclStackX ; A=objectType
     cp rpnObjectTypeOffset
     ret z
     bcall(_ErrDataType)
@@ -141,7 +141,7 @@ closeInputAndRecallRpnOffsetX:
 closeInputAndRecallRpnOffsetOrRealX:
     call closeInput
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
-    call rclX ; A=objectType
+    call rclStackX ; A=objectType
     cp rpnObjectTypeOffset
     ret z
     cp rpnObjectTypeReal
@@ -153,7 +153,7 @@ closeInputAndRecallRpnOffsetOrRealX:
 closeInputAndRecallRpnOffsetDateTimeX:
     call closeInput
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
-    call rclX ; A=objectType
+    call rclStackX ; A=objectType
     cp rpnObjectTypeOffsetDateTime
     ret z
     bcall(_ErrDataType)
@@ -164,7 +164,7 @@ closeInputAndRecallRpnOffsetDateTimeX:
 closeInputAndRecallRpnDateLikeX:
     call closeInput
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
-    call rclX ; A=objectType
+    call rclStackX ; A=objectType
     cp rpnObjectTypeDate
     ret z
     cp rpnObjectTypeDateTime
@@ -181,7 +181,7 @@ closeInputAndRecallRpnDateLikeX:
 closeInputAndRecallRpnDateRelatedX:
     call closeInput
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
-    call rclX ; A=objectType
+    call rclStackX ; A=objectType
     cp rpnObjectTypeDate
     ret z
     cp rpnObjectTypeTime
@@ -210,7 +210,7 @@ closeInputAndRecallRpnDateRelatedX:
 closeInputAndRecallDenominateX:
     call closeInput
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
-    call rclX ; A=objectType
+    call rclStackX ; A=objectType
     ; Allow Real
     cp rpnObjectTypeReal
     ret z

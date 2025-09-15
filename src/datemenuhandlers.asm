@@ -72,12 +72,12 @@ mDateToEpochDaysHandlerDoDateTime:
     ; [[fallthrough]]
 mDateToEpochDaysHandlerDoDate:
     bcall(_RpnDateToEpochDays) ; OP1=epochDays
-    jp replaceX
+    jp replaceStackX
 
 mEpochDaysToDateHandler:
     call closeInputAndRecallX ; OP1=X=epochDays
     bcall(_EpochDaysToRpnDate) ; OP1=Date(epochDays)
-    jp replaceX
+    jp replaceStackX
 
 mDateToEpochSecondsHandler:
     call closeInputAndRecallRpnDateLikeX ; OP1=X=RpnDateLike{}
@@ -90,18 +90,18 @@ mDateToEpochSecondsHandler:
     jr mDateErr
 mDateToEpochSecondsHandlerDoOffsetDateTime:
     bcall(_RpnOffsetDateTimeToEpochSeconds) ; OP1=epochSeconds
-    jp replaceX
+    jp replaceStackX
 mDateToEpochSecondsHandlerDoDateTime:
     bcall(_RpnDateTimeToEpochSeconds) ; OP1=epochSeconds
-    jp replaceX
+    jp replaceStackX
 mDateToEpochSecondsHandlerDoDate:
     bcall(_RpnDateToEpochSeconds) ; OP1=epochSeconds
-    jp replaceX
+    jp replaceStackX
 
 mEpochSecondsToDateHandler:
     call closeInputAndRecallX ; OP1=X=epochSeconds
     bcall(_EpochSecondsToRpnDate) ; OP1=Date(epochSeconds)
-    jp replaceX
+    jp replaceStackX
 
 ;-----------------------------------------------------------------------------
 ; DATE > D (Date) > Row 2
@@ -111,27 +111,27 @@ mEpochSecondsToDateHandler:
 mDateConvertToTimeZoneHandler:
     call closeInputAndRecallUniversalXY ; CP1=Y; CP3=X
     bcall(_ConvertRpnDateLikeToTimeZone) ; OP1=DateLike*TZ
-    jp replaceX
+    jp replaceStackX
 
 mDateToDayOfWeekHandler:
     call closeInputAndRecallRpnDateLikeX ; OP1=X=RpnDateLike{}
     bcall(_RpnDateToDayOfWeek) ; OP1:RpnDayOfWeek
-    jp replaceX
+    jp replaceStackX
 
 mDateExtractYearHandler:
     call closeInputAndRecallRpnDateLikeX ; OP1=X=RpnDateLike{}
     bcall(_RpnDateExtractYear)
-    jp replaceX
+    jp replaceStackX
 
 mDateExtractMonthHandler:
     call closeInputAndRecallRpnDateLikeX ; OP1=X=RpnDateLike{}
     bcall(_RpnDateExtractMonth)
-    jp replaceX
+    jp replaceStackX
 
 mDateExtractDayHandler:
     call closeInputAndRecallRpnDateLikeX ; OP1=X=RpnDateLike{}
     bcall(_RpnDateExtractDay)
-    jp replaceX
+    jp replaceStackX
 
 ;-----------------------------------------------------------------------------
 ; DATE > D (Date) > Row 3
@@ -158,12 +158,12 @@ mTimeToSecondsHandler:
     cp rpnObjectTypeTime ; ZF=1 if RpnDateTime
     jr nz, mTimeErr
     bcall(_RpnTimeToSeconds) ; OP1=epochSeconds
-    jp replaceX
+    jp replaceStackX
 
 mSecondsToTimeHandler:
     call closeInputAndRecallX ; OP1=X=seconds
     bcall(_SecondsToRpnTime) ; OP1=Time(seconds)
-    jp replaceX
+    jp replaceStackX
 
 ;-----------------------------------------------------------------------------
 ; DATE > T (Time) > Row 2
@@ -186,7 +186,7 @@ mTimeExtractHourHandlerDoDateTime:
     ; [[fallthrough]]
 mTimeExtractHourHandlerDoTime:
     bcall(_RpnTimeExtractHour) ; OP1=time.hour()
-    jp replaceX
+    jp replaceStackX
 
 mTimeExtractMinuteHandler:
     call closeInputAndRecallRpnDateRelatedX ; OP1=X=RpnDateRelated{}
@@ -205,7 +205,7 @@ mTimeExtractMinuteHandlerDoDateTime:
     ; [[fallthrough]]
 mTimeExtractMinuteHandlerDoTime:
     bcall(_RpnTimeExtractMinute) ; OP1=time.minute()
-    jp replaceX
+    jp replaceStackX
 
 mTimeExtractSecondHandler:
     call closeInputAndRecallRpnDateRelatedX ; OP1=X=RpnDateRelated{}
@@ -224,7 +224,7 @@ mTimeExtractSecondHandlerDoDateTime:
     ; [[fallthrough]]
 mTimeExtractSecondHandlerDoTime:
     bcall(_RpnTimeExtractSecond) ; OP1=time.minute()
-    jp replaceX
+    jp replaceStackX
 
 ;-----------------------------------------------------------------------------
 ; DATE > DT (DateTime) > Row 1
@@ -246,7 +246,7 @@ mDateTimeToEpochDaysHandler:
 mEpochDaysToDateTimeHandler:
     call closeInputAndRecallX ; OP1=X=epochDays
     bcall(_EpochDaysToRpnDateTime) ; OP1=DateTime(epochDays)
-    jp replaceX
+    jp replaceStackX
 
 mDateTimeToEpochSecondsHandler:
     jp mDateToEpochSecondsHandler
@@ -254,7 +254,7 @@ mDateTimeToEpochSecondsHandler:
 mEpochSecondsToDateTimeHandler:
     call closeInputAndRecallX ; OP1=X=epochSeconds
     bcall(_EpochSecondsToRpnDateTime) ; OP1=DateTime(epochSeconds)
-    jp replaceX
+    jp replaceStackX
 
 ;-----------------------------------------------------------------------------
 ; DATE > DT (DateTime) > Row 2
@@ -271,14 +271,14 @@ mDateTimeExtractDateHandler:
     cp rpnObjectTypeDateTime ; ZF=1 if RpnDateTime
     jr nz, mDateTimeErr
     bcall(_RpnDateTimeExtractDate) ; OP1=RpnDate
-    jp replaceX
+    jp replaceStackX
 
 mDateTimeExtractTimeHandler:
     call closeInputAndRecallRpnDateLikeX ; OP1==dateLikeObject; A=type
     cp rpnObjectTypeDateTime ; ZF=1 if RpnDateTime
     jr nz, mDateTimeErr
     bcall(_RpnDateTimeExtractTime) ; OP1=RpnTime
-    jp replaceX
+    jp replaceStackX
 
 ;-----------------------------------------------------------------------------
 ; DATE > TZ (Offset) > Row 1
@@ -299,17 +299,17 @@ mOffsetToSecondsHandler:
     cp rpnObjectTypeOffset ; ZF=1 if RpnDateTime
     jr nz, mOffsetErr
     bcall(_RpnOffsetToSeconds) ; OP1=seconds
-    jp replaceX
+    jp replaceStackX
 
 mOffsetToHoursHandler:
     call closeInputAndRecallRpnOffsetX ; A=rpnObjectType; OP1=X
     bcall(_RpnOffsetToHours) ; OP1=hours
-    jp replaceX
+    jp replaceStackX
 
 mHoursToOffsetHandler:
     call closeInputAndRecallX ; OP1=X=hours
     bcall(_HoursToRpnOffset) ; OP1=RpnOffset(hours)
-    jp replaceX
+    jp replaceStackX
 
 mOffsetExtractHourHandler:
     call closeInputAndRecallRpnDateRelatedX ; OP1=X=RpnDateRelated{}
@@ -322,7 +322,7 @@ mOffsetExtractHourHandlerDoOffsetDateTime:
     bcall(_RpnOffsetDateTimeExtractOffset) ; OP1=offset
 mOffsetExtractHourHandlerDoOffset:
     bcall(_RpnOffsetExtractHour) ; OP1=hour
-    jp replaceX
+    jp replaceStackX
 
 mOffsetExtractMinuteHandler:
     call closeInputAndRecallRpnDateRelatedX ; OP1=X=RpnDateRelated{}
@@ -335,7 +335,7 @@ mOffsetExtractMinuteHandlerDoOffsetDateTime:
     bcall(_RpnOffsetDateTimeExtractOffset) ; OP1=offset
 mOffsetExtractMinuteHandlerDoOffset:
     bcall(_RpnOffsetExtractMinute) ; OP1=offset.time
-    jp replaceX
+    jp replaceStackX
 
 ;-----------------------------------------------------------------------------
 ; DATE > DZ (OffsetDateTime) > Row 1
@@ -354,7 +354,7 @@ mOffsetDateTimeToEpochDaysHandler:
 mEpochDaysToOffsetDateTimeHandler:
     call closeInputAndRecallX ; OP1=X=epochDays
     bcall(_EpochDaysToRpnDateTime) ; OP1=DateTime(epochDays)
-    jp replaceX
+    jp replaceStackX
 
 mOffsetDateTimeToEpochSecondsHandler:
     jp mDateToEpochSecondsHandler
@@ -362,7 +362,7 @@ mOffsetDateTimeToEpochSecondsHandler:
 mEpochSecondsToOffsetDateTimeUTCHandler:
     call closeInputAndRecallX ; OP1=X=epochSeconds
     bcall(_EpochSecondsToRpnOffsetDateTimeUTC) ; OP1=UTCDateTime(epochSeconds)
-    jp replaceX
+    jp replaceStackX
 
 mOffsetDateTimeErr:
     bcall(_ErrDataType)
@@ -375,7 +375,7 @@ mEpochSecondsToOffsetDateTimeAppHandler:
     call closeInputAndRecallX ; OP1=X=epochSeconds
     ld bc, appTimeZone
     bcall(_EpochSecondsToRpnOffsetDateTime) ; OP1=OffsetDateTime(epochSeconds)
-    jp replaceX
+    jp replaceStackX
 
 mOffsetDateTimeConvertToTimeZoneHandler:
     jp mDateConvertToTimeZoneHandler
@@ -392,28 +392,28 @@ mOffsetDateTimeExtractDateHandler:
     cp rpnObjectTypeOffsetDateTime ; ZF=1 if RpnOffsetDateTime
     jr nz, mOffsetDateTimeErr
     bcall(_RpnOffsetDateTimeExtractDate) ; OP1=RpnDate
-    jp replaceX
+    jp replaceStackX
 
 mOffsetDateTimeExtractTimeHandler:
     call closeInputAndRecallRpnDateLikeX ; OP1==dateLikeObject; A=type
     cp rpnObjectTypeOffsetDateTime ; ZF=1 if RpnOffsetDateTime
     jr nz, mOffsetDateTimeErr
     bcall(_RpnOffsetDateTimeExtractTime) ; OP1=RpnDate
-    jp replaceX
+    jp replaceStackX
 
 mOffsetDateTimeExtractDateTimeHandler:
     call closeInputAndRecallRpnDateLikeX ; OP1==dateLikeObject; A=type
     cp rpnObjectTypeOffsetDateTime ; ZF=1 if RpnOffsetDateTime
     jr nz, mOffsetDateTimeErr
     bcall(_RpnOffsetDateTimeExtractDateTime) ; OP1=RpnDate
-    jp replaceX
+    jp replaceStackX
 
 mOffsetDateTimeExtractOffsetHandler:
     call closeInputAndRecallRpnDateLikeX ; OP1==dateLikeObject; A=type
     cp rpnObjectTypeOffsetDateTime ; ZF=1 if RpnOffsetDateTime
     jr nz, mOffsetDateTimeErr
     bcall(_RpnOffsetDateTimeExtractOffset) ; OP1=RpnOffset
-    jp replaceX
+    jp replaceStackX
 
 ;-----------------------------------------------------------------------------
 ; DATE > DZ (OffsetDateTime) > Row 4
@@ -439,7 +439,7 @@ mSecondsToDurationHandler:
     call closeInputAndRecallX ; OP1=X=seconds
 mSecondsToDurationHandlerAltEntry:
     bcall(_SecondsToRpnDuration) ; OP1=Duration(seconds)
-    jp replaceX
+    jp replaceStackX
 
 mMinutesToDurationHandler:
     call closeInputAndRecallX ; OP1=X=seconds
@@ -470,35 +470,35 @@ mDurationToSecondsHandler:
     cp rpnObjectTypeDuration
     jr nz, mDurationErr
     bcall(_RpnDurationToSeconds) ; OP1=seconds
-    jp replaceX
+    jp replaceStackX
 
 mDurationExtractDayHandler:
     call closeInputAndRecallRpnDateRelatedX ; OP1==dateRelatedObject; A=type
     cp rpnObjectTypeDuration
     jr nz, mDurationErr
     bcall(_RpnDurationExtractDay) ; OP1=day
-    jp replaceX
+    jp replaceStackX
 
 mDurationExtractHourHandler:
     call closeInputAndRecallRpnDateRelatedX ; OP1==dateRelatedObject; A=type
     cp rpnObjectTypeDuration
     jr nz, mDurationErr
     bcall(_RpnDurationExtractHour) ; OP1=hour
-    jp replaceX
+    jp replaceStackX
 
 mDurationExtractMinuteHandler:
     call closeInputAndRecallRpnDateRelatedX ; OP1==dateRelatedObject; A=type
     cp rpnObjectTypeDuration
     jr nz, mDurationErr
     bcall(_RpnDurationExtractMinute) ; OP1=minute
-    jp replaceX
+    jp replaceStackX
 
 mDurationExtractSecondHandler:
     call closeInputAndRecallRpnDateRelatedX ; OP1==dateRelatedObject; A=type
     cp rpnObjectTypeDuration
     jr nz, mDurationErr
     bcall(_RpnDurationExtractSecond) ; OP1=second
-    jp replaceX
+    jp replaceStackX
 
 ;-----------------------------------------------------------------------------
 ; DATE > DW (DayOfWeek) > Row 1
@@ -519,12 +519,12 @@ mDayOfWeekToIsoNumberHandler:
     cp rpnObjectTypeDayOfWeek
     jr nz, mDayOfWeekErr
     bcall(_RpnDayOfWeekToIsoNumber) ; OP1=iso dayofweek
-    jp replaceX
+    jp replaceStackX
 
 mIsoNumberToDayOfWeekHandler:
     call closeInputAndRecallX ; OP1=X=isoNumber
     bcall(_IsoNumberToRpnDayOfWeek) ; OP1=rpnDayOfWeek
-    jp replaceX
+    jp replaceStackX
 
 ;-----------------------------------------------------------------------------
 ; DATE > EPCH > Row 1
@@ -650,7 +650,7 @@ mEpochSetCustomHandler:
 mEpochGetCustomHandler:
     call closeInputAndRecallNone
     bcall(_GetCustomEpochDate)
-    jp pushToX
+    jp pushToStackX
 
 ;-----------------------------------------------------------------------------
 ; DATE > Generic Date handlers
@@ -674,10 +674,10 @@ mGenericDateIsYearLeapHandlerAltEntry:
     bcall(_ErrDataType)
 isRealLeap:
     bcall(_IsYearLeap)
-    jp replaceX
+    jp replaceStackX
 isObjectLeap:
     bcall(_IsDateLeap)
-    jp replaceX
+    jp replaceStackX
 
 ;-----------------------------------------------------------------------------
 
@@ -695,10 +695,10 @@ mGenericDateShrinkHandlerAltEntry:
     bcall(_ErrDataType)
 dateShrinkRpnDateTime:
     bcall(_TruncateRpnDateTime)
-    jp replaceX
+    jp replaceStackX
 dateShrinkRpnOffsetDateTime:
     bcall(_TruncateRpnOffsetDateTime)
-    jp replaceX
+    jp replaceStackX
 
 ;-----------------------------------------------------------------------------
 
@@ -716,10 +716,10 @@ mGenericDateExtendHandlerAltEntry:
     bcall(_ErrDataType)
 dateExtendRpnDate:
     bcall(_ExtendRpnDateToDateTime)
-    jp replaceX
+    jp replaceStackX
 dateExtendRpnDateTime:
     bcall(_ExtendRpnDateTimeToOffsetDateTime)
-    jp replaceX
+    jp replaceStackX
 
 ;-----------------------------------------------------------------------------
 
@@ -737,10 +737,10 @@ mGenericDateCutHandlerAltEntry:
     bcall(_ErrDataType)
 dateCutRpnDateTime:
     bcall(_SplitRpnDateTime) ; CP1=RpnTime; CP3=RpnDate
-    jp replaceXWithCP1CP3
+    jp replaceStackXWithCP1CP3
 dateCutRpnOffsetDateTime:
     bcall(_SplitRpnOffsetDateTime) ; CP1=RpnOffset; CP3=RpnDateTime
-    jp replaceXWithCP1CP3
+    jp replaceStackXWithCP1CP3
 
 ;-----------------------------------------------------------------------------
 
@@ -767,32 +767,32 @@ dateLinkErrDataType:
     bcall(_ErrDataType)
 dateLinkTime:
     call cp1ToCp3 ; CP3=X
-    call rclY ; CP1=Y; A=rpnObjectType
+    call rclStackY ; CP1=Y; A=rpnObjectType
     cp rpnObjectTypeDate ; ZF=1 if OP3=RpnDate
     jr nz, dateLinkErrDataType
     bcall(_MergeRpnDateWithRpnTime) ; OP1=rpnDateTime
-    jp replaceXY
+    jp replaceStackXY
 dateLinkDate:
     call cp1ToCp3 ; CP3=X
-    call rclY ; CP1=Y; A=rpnObjectType
+    call rclStackY ; CP1=Y; A=rpnObjectType
     cp rpnObjectTypeTime ; ZF=1 if OP3=RpnTime
     jr nz, dateLinkErrDataType
     bcall(_MergeRpnDateWithRpnTime) ; OP1=rpnDateTime
-    jp replaceXY
+    jp replaceStackXY
 dateLinkOffset:
     call cp1ToCp3 ; CP3=X
-    call rclY ; CP1=Y; A=rpnObjectType
+    call rclStackY ; CP1=Y; A=rpnObjectType
     cp rpnObjectTypeDateTime ; ZF=1 if OP3=RpnDateTime
     jr nz, dateLinkErrDataType
     bcall(_MergeRpnDateTimeWithRpnOffset) ; OP1=rpnOffsetDateOffset
-    jp replaceXY
+    jp replaceStackXY
 dateLinkDateTime:
     call cp1ToCp3 ; CP3=X
-    call rclY ; CP1=Y; A=rpnObjectType
+    call rclStackY ; CP1=Y; A=rpnObjectType
     cp rpnObjectTypeOffset ; ZF=1 if OP3=RpnOffset
     jr nz, dateLinkErrDataType
     bcall(_MergeRpnDateTimeWithRpnOffset) ; OP1=rpnOffsetDateTime
-    jp replaceXY
+    jp replaceStackXY
 
 ;-----------------------------------------------------------------------------
 ; DATE > CLK > Row 1
@@ -805,7 +805,7 @@ mGetNowHandler:
     ;
     call closeInputAndRecallNone
     bcall(_RtcGetNow)
-    jp pushToX
+    jp pushToStackX
 
 mGetNowTimeHandler:
     ld a, (isRtcAvailable)
@@ -814,7 +814,7 @@ mGetNowTimeHandler:
     ;
     call closeInputAndRecallNone
     bcall(_RtcGetTime)
-    jp pushToX
+    jp pushToStackX
 
 mGetNowDateHandler:
     ld a, (isRtcAvailable)
@@ -823,7 +823,7 @@ mGetNowDateHandler:
     ;
     call closeInputAndRecallNone
     bcall(_RtcGetDate)
-    jp pushToX
+    jp pushToStackX
 
 mGetNowOffsetDateTimeHandler:
     ld a, (isRtcAvailable)
@@ -832,7 +832,7 @@ mGetNowOffsetDateTimeHandler:
     ;
     call closeInputAndRecallNone
     bcall(_RtcGetOffsetDateTime)
-    jp pushToX
+    jp pushToStackX
 
 mGetNowOffsetDateTimeUtcHandler:
     ld a, (isRtcAvailable)
@@ -841,7 +841,7 @@ mGetNowOffsetDateTimeUtcHandler:
     ;
     call closeInputAndRecallNone
     bcall(_RtcGetOffsetDateTimeForUtc)
-    jp pushToX
+    jp pushToStackX
 
 noClockErr:
     ld a, errorCodeNoClock
@@ -862,7 +862,7 @@ mSetTimeZoneHandler:
 mGetTimeZoneHandler:
     call closeInputAndRecallNone
     bcall(_GetAppTimeZone)
-    jp pushToX
+    jp pushToStackX
 
 mSetClockTimeZoneHandler:
     ld a, (isRtcAvailable)
@@ -882,7 +882,7 @@ mGetClockTimeZoneHandler:
     ;
     call closeInputAndRecallNone
     bcall(_RtcGetTimeZone)
-    jp pushToX
+    jp pushToStackX
 
 mSetClockHandler:
     ld a, (isRtcAvailable)

@@ -46,9 +46,9 @@ initStack:
 initLastX:
     bcall(_RclAns)
     bcall(_CkOP1Real) ; if OP1 real: ZF=1
-    jp z, stoL
+    jp z, stoStackL
     bcall(_CkOP1Cplx) ; if OP complex: ZF=1
-    jp z, stoL
+    jp z, stoStackL
     ret
 
 ; Description: Clear the RPN stack.
@@ -126,14 +126,14 @@ rclStackNN:
 
 ; Description: Store OP1/OP2 to X.
 ; Destroys: all
-stoX:
+stoStackX:
     ld c, stackXIndex
     jr stoStackNN
 
 ; Description: Recall X to OP1/OP2.
 ; Output: A=objectType
 ; Destroys: all
-rclX:
+rclStackX:
     ld c, stackXIndex
     jr rclStackNN
 
@@ -141,14 +141,14 @@ rclX:
 
 ; Description: Store OP1/OP2 to Y.
 ; Destroys: all
-stoY:
+stoStackY:
     ld c, stackYIndex
     jr stoStackNN
 
 ; Description: Recall Y to OP1/OP2.
 ; Output: A=objectType
 ; Destroys: all
-rclY:
+rclStackY:
     ld c, stackYIndex
     jr rclStackNN
 
@@ -156,14 +156,14 @@ rclY:
 
 ; Description: Store OP1/OP2 to Z.
 ; Destroys: all
-stoZ:
+stoStackZ:
     ld c, stackZIndex
     jr stoStackNN
 
 ; Description: Recall Z to OP1/OP2.
 ; Output: A=objectType
 ; Destroys: all
-rclZ:
+rclStackZ:
     ld c, stackZIndex
     jr rclStackNN
 
@@ -171,14 +171,14 @@ rclZ:
 
 ; Description: Store OP1/OP2 to T.
 ; Destroys: all
-stoT:
+stoStackT:
     ld c, stackTIndex
     jr stoStackNN
 
 ; Description: Recall T to OP1/OP2.
 ; Output: A=objectType
 ; Destroys: all
-rclT:
+rclStackT:
     ld c, stackTIndex
     jr rclStackNN
 
@@ -186,14 +186,14 @@ rclT:
 
 ; Description: Store OP1/OP2 to L.
 ; Destroys: all
-stoL:
+stoStackL:
     ld c, stackLIndex
     jr stoStackNN
 
 ; Description: Recall L to OP1/OP2.
 ; Output: A=objectType
 ; Destroys: all
-rclL:
+rclStackL:
     ld c, stackLIndex
     jr rclStackNN
 
@@ -201,8 +201,8 @@ rclL:
 ; Preserves: OP1/OP2
 saveLastX:
     bcall(_PushRpnObject1) ; FPS=[OP1/OP2]
-    call rclX
-    call stoL
+    call rclStackX
+    call stoStackL
     bcall(_PopRpnObject1) ; FPS=[]; OP1/OP2=OP1/OP2
     ret
 
@@ -215,21 +215,21 @@ saveLastX:
 ; and setting dirty flag. Works for all RpnObject types.
 ; Input: CP1=OP1/OP2:RpnObject
 ; Preserves: OP1, OP2
-replaceX:
+replaceStackX:
     call checkValidRpnObjectCP1
     call saveLastX
-    call stoX
+    call stoStackX
     ret
 
 ; Description: Replace X and Y with RpnObject in OP1/OP2, saving previous X to
 ; LastX, and setting dirty flag. Works for all RpnObject types.
 ; Input: CP1=OP1/OP2:RpnObject
 ; Preserves: OP1, OP2
-replaceXY:
+replaceStackXY:
     call checkValidRpnObjectCP1
     call saveLastX
     call dropStack
-    call stoX
+    call stoStackX
     ret
 
 ; Description: Replace X and Y with Real numbers OP1 and OP2, in that order.
@@ -243,7 +243,7 @@ replaceXY:
 ;   - X=OP2
 ;   - LastX=X
 ; Preserves: OP1, OP2
-replaceXYWithOP1OP2:
+replaceStackXYWithOP1OP2:
     ; validate OP1 and OP2 before modifying X and Y
     call checkValidRealOP1
     call op1ExOp2
@@ -251,9 +251,9 @@ replaceXYWithOP1OP2:
     call op1ExOp2
     ;
     call saveLastX
-    call stoY ; Y = OP1
+    call stoStackY ; Y = OP1
     call op1ExOp2
-    call stoX ; X = OP2
+    call stoStackX ; X = OP2
     call op1ExOp2
     ret
 
@@ -264,7 +264,7 @@ replaceXYWithOP1OP2:
 ;   - X=OP2
 ;   - LastX=X
 ; Preserves: OP1, OP2
-replaceXWithOP1OP2:
+replaceStackXWithOP1OP2:
     ; validate OP1 and OP2 before modifying X and Y
     call checkValidRealOP1
     call op1ExOp2
@@ -272,10 +272,10 @@ replaceXWithOP1OP2:
     call op1ExOp2
     ;
     call saveLastX
-    call stoX
+    call stoStackX
     call liftStack
     call op1ExOp2
-    call stoX
+    call stoStackX
     call op1ExOp2
     ret
 
@@ -288,7 +288,7 @@ replaceXWithOP1OP2:
 ;   - X=CP3
 ;   - LastX=X
 ; Preserves: CP1, CP3
-replaceXWithCP1CP3:
+replaceStackXWithCP1CP3:
     ; validate CP1 and CP2 before modifying X and Y
     call checkValidRpnObjectCP1
     call cp1ExCp3
@@ -296,10 +296,10 @@ replaceXWithCP1CP3:
     call cp1ExCp3
     ;
     call saveLastX
-    call stoX
+    call stoStackX
     call liftStack
     call cp1ExCp3
-    call stoX
+    call stoStackX
     call cp1ExCp3
     ret
 
@@ -314,10 +314,10 @@ replaceXWithCP1CP3:
 ;   - X=OP1/OP2
 ; Destroys: all
 ; Preserves: OP1, OP2, LastX
-pushToX:
+pushToStackX:
     call checkValidRpnObjectCP1
     call liftStackIfNonEmpty
-    call stoX
+    call stoStackX
     ret
 
 ; Description: Push Real numbers OP1 then OP2 onto the stack. LastX is not
@@ -330,17 +330,17 @@ pushToX:
 ;   - X=OP2
 ; Destroys: all
 ; Preserves: OP1, OP2, LastX
-pushToXY:
+pushToStackXY:
     call checkValidRealOP1
     call op1ExOp2
     call checkValidRealOP1
     call op1ExOp2
     ;
     call liftStackIfNonEmpty
-    call stoX
+    call stoStackX
     call liftStack
     call op1ExOp2
-    call stoX
+    call stoStackX
     call op1ExOp2
     ret
 
@@ -563,7 +563,7 @@ moveRpnElementFromOp1:
 ; Input: none
 ; Output: X=Y; Y=X
 ; Destroys: all, OP1, OP2
-exchangeXYStack:
+exchangeStackXY:
     ld b, stackXIndex
     ld c, stackYIndex
     ld hl, stackVarName

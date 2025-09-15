@@ -159,7 +159,7 @@ mCfitForcastYHandler:
     bcall(_PopRealO2) ; FPS=[]; OP2=intercept
     bcall(_FPAdd) ; OP1=yprime=slope*xprime + intercept
     call convertYPrimeToY ; OP1=y
-    jp replaceX
+    jp replaceStackX
 
 ; Description: Forecast X from Y.
 mCfitForcastXHandler:
@@ -174,7 +174,7 @@ mCfitForcastXHandler:
     bcall(_PopRealO2) ; FPS=[]; OP2=slope
     bcall(_FPDiv) ; OP1=xprime=(y-intercept) / slope
     call convertXPrimeToX ; OP1=x
-    jp replaceX
+    jp replaceStackX
 
 ; Description: Calculate the least square fit slope into X register.
 mCfitSlopeHandler:
@@ -184,7 +184,7 @@ mCfitSlopeHandler:
     call fitLeastSquare ; OP1=intercept,OP2=slope
     bcall(_OP1ExOP2)
     call convertMPrimeToM
-    jp pushToX
+    jp pushToStackX
 
 ; Description: Calculate the least square fit intercept into X register.
 mCfitInterceptHandler:
@@ -193,7 +193,7 @@ mCfitInterceptHandler:
     call selectCfitModel
     call fitLeastSquare ; OP1=intercept,OP2=slope
     call convertBPrimeToB
-    jp pushToX
+    jp pushToStackX
 
 ; Description: Calculate the correlation coefficient into X register.
 mCfitCorrelationHandler:
@@ -201,7 +201,7 @@ mCfitCorrelationHandler:
     ld a, (curveFitModel)
     call selectCfitModel
     call statCorrelation
-    jp pushToX
+    jp pushToStackX
 
 ;-----------------------------------------------------------------------------
 
@@ -346,7 +346,7 @@ mCfitBestSelect:
     ld (curveFitModel), a
     set dirtyFlagsMenu, (iy + dirtyFlags)
     bcall(_OP5ToOP1) ; OP1=abs(corr(best))
-    jp pushToX ; push the |corr| to the stack to notify the user
+    jp pushToStackX ; push the |corr| to the stack to notify the user
 
 ;-----------------------------------------------------------------------------
 

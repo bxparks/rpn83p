@@ -14,27 +14,27 @@
 mComplexRealHandler:
     call closeInputAndRecallUniversalX
     bcall(_ComplexReal)
-    jp replaceX ; X=Re(X)
+    jp replaceStackX ; X=Re(X)
 
 mComplexImagHandler:
     call closeInputAndRecallUniversalX
     bcall(_ComplexImag)
-    jp replaceX ; X=Im(X)
+    jp replaceStackX ; X=Im(X)
 
 mComplexConjHandler:
     call closeInputAndRecallUniversalX ; OP1/OP2=X
     bcall(_ComplexConj)
-    jp replaceX
+    jp replaceStackX
 
 mComplexAbsHandler:
     call closeInputAndRecallUniversalX
     bcall(_ComplexAbs)
-    jp replaceX ; X=cabs(X) or abs(X)
+    jp replaceStackX ; X=cabs(X) or abs(X)
 
 mComplexAngleHandler:
     call closeInputAndRecallUniversalX
     bcall(_ComplexAngle)
-    jp replaceX ; X=Cangle(X)
+    jp replaceStackX ; X=Cangle(X)
 
 ;-----------------------------------------------------------------------------
 
