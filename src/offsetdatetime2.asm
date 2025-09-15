@@ -122,12 +122,8 @@ epochSecondsToOffsetDateTime:
 ;   - OP1:RpnOffsetDateTime
 ; Destroys: all, OP1-OP6
 EpochSecondsToRpnOffsetDateTimeUTC:
-    call EpochSecondsToRpnDateTime ; OP1=RpnDateTime
-    ; Transform RpnDateTime to RpnOffsetDateTime w/ UTC timezone
-    ld hl, OP1
-    call transformToOffsetDateTime ; HL=(RpnOffsetDateTime*)=utcDateTime
-    call expandOp1ToOp2PageTwo ; handle 2-byte gap between OP1 and OP2
-    ret
+    call EpochSecondsToRpnDateTime ; OP1=rpnDateTime
+    jp ExtendRpnDateTimeToOffsetDateTime ; OP1=rpnOffsetDateTime for UTC
 
 ;-----------------------------------------------------------------------------
 
