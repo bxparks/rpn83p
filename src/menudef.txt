@@ -628,11 +628,11 @@ MenuGroup root mRoot [
       MenuRow [
         MenuGroup D mDateFolderDate [
           MenuRow [
-            MenuItem D<SlBrace><SrBrace> mDateCreate # create a Date object
-            MenuItem <Sconvert>DY mDateToEpochDays
-            MenuItem DY<Sconvert> mEpochDaysToDate
-            MenuItem <Sconvert>S mDateToEpochSeconds
-            MenuItem S<Sconvert> mEpochSecondsToDate
+            MenuItem D<SlBrace><SrBrace> mDateCreate
+            MenuItem <Sconvert>ED mDateToEpochDays
+            MenuItem ED<Sconvert> mEpochDaysToDate
+            MenuItem <Sconvert>ES mDateToEpochSeconds
+            MenuItem ES<Sconvert> mEpochSecondsToDate
           ]
           MenuRow [
             MenuItem CVTZ mDateConvertToTimeZone
@@ -664,10 +664,10 @@ MenuGroup root mRoot [
         MenuGroup DT mDateFolderDateTime [
           MenuRow [
             MenuItem DT<SlBrace><SrBrace> mDateTimeCreate
-            MenuItem <Sconvert>DY mDateTimeToEpochDays
-            MenuItem DY<Sconvert> mEpochDaysToDateTime
-            MenuItem <Sconvert>S mDateTimeToEpochSeconds
-            MenuItem S<Sconvert> mEpochSecondsToDateTime
+            MenuItem <Sconvert>ED mDateTimeToEpochDays
+            MenuItem ED<Sconvert> mEpochDaysToDateTime
+            MenuItem <Sconvert>ES mDateTimeToEpochSeconds
+            MenuItem ES<Sconvert> mEpochSecondsToDateTime
           ]
           MenuRow [
             MenuItem CVTZ mDateTimeConvertToTimeZone
@@ -695,9 +695,9 @@ MenuGroup root mRoot [
         MenuGroup DZ mDateFolderOffsetDateTime [
           MenuRow [
             MenuItem DZ<SlBrace><SrBrace> mOffsetDateTimeCreate
-            MenuItem <Sconvert>S mOffsetDateTimeToEpochSeconds
-            MenuItem S<Sconvert> mEpochSecondsToOffsetDateTimeUTC
-            MenuItem S<Sconvert><SatSign> mEpochSecondsToOffsetDateTimeApp
+            MenuItem <Sconvert>ES mOffsetDateTimeToEpochSeconds
+            MenuItem ES<Sconvert> mEpochSecondsToOffsetDateTimeUTC
+            MenuItem ES<Sconvert><SatSign> mEpochSecondsToOffsetDateTimeApp
             MenuItem CVTZ mOffsetDateTimeConvertToTimeZone
           ]
           MenuRow [

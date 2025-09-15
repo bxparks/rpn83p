@@ -4893,7 +4893,7 @@ mSetClockId equ 521
 ;-----------------------------------------------------------------------------
 
 mNamesCount equ 435 ; number of names and altnames
-mNamesPoolSize equ 3777 ; size of names string pool
+mNamesPoolSize equ 3784 ; size of names string pool
 
 mNullName:
     .db 0
@@ -5660,13 +5660,13 @@ mClkName:
 mDateCreateName:
     .db 'D', SlBrace, SrBrace, 0
 mDateToEpochDaysName:
-    .db Sconvert, 'D', 'Y', 0
+    .db Sconvert, 'E', 'D', 0
 mEpochDaysToDateName:
-    .db 'D', 'Y', Sconvert, 0
+    .db 'E', 'D', Sconvert, 0
 mDateToEpochSecondsName:
-    .db Sconvert, 'S', 0
+    .db Sconvert, 'E', 'S', 0
 mEpochSecondsToDateName:
-    .db 'S', Sconvert, 0
+    .db 'E', 'S', Sconvert, 0
 mDateConvertToTimeZoneName:
     .db "CVTZ", 0
 mDateToDayOfWeekName:
@@ -5702,13 +5702,13 @@ mTimeExtractSecondName:
 mDateTimeCreateName:
     .db 'D', 'T', SlBrace, SrBrace, 0
 mDateTimeToEpochDaysName:
-    .db Sconvert, 'D', 'Y', 0
+    .db Sconvert, 'E', 'D', 0
 mEpochDaysToDateTimeName:
-    .db 'D', 'Y', Sconvert, 0
+    .db 'E', 'D', Sconvert, 0
 mDateTimeToEpochSecondsName:
-    .db Sconvert, 'S', 0
+    .db Sconvert, 'E', 'S', 0
 mEpochSecondsToDateTimeName:
-    .db 'S', Sconvert, 0
+    .db 'E', 'S', Sconvert, 0
 mDateTimeConvertToTimeZoneName:
     .db "CVTZ", 0
 mDateTimeToDayOfWeekName:
@@ -5740,11 +5740,11 @@ mOffsetExtractMinuteName:
 mOffsetDateTimeCreateName:
     .db 'D', 'Z', SlBrace, SrBrace, 0
 mOffsetDateTimeToEpochSecondsName:
-    .db Sconvert, 'S', 0
+    .db Sconvert, 'E', 'S', 0
 mEpochSecondsToOffsetDateTimeUTCName:
-    .db 'S', Sconvert, 0
+    .db 'E', 'S', Sconvert, 0
 mEpochSecondsToOffsetDateTimeAppName:
-    .db 'S', Sconvert, SatSign, 0
+    .db 'E', 'S', Sconvert, SatSign, 0
 mOffsetDateTimeConvertToTimeZoneName:
     .db "CVTZ", 0
 mOffsetDateTimeToDayOfWeekName:
