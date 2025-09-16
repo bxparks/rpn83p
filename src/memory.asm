@@ -5,44 +5,11 @@
 ; Memory routines for floating point (real and complex) numbers.
 ;-----------------------------------------------------------------------------
 
-;-----------------------------------------------------------------------------
-; Floating point stack (FPS).
-;-----------------------------------------------------------------------------
-
-; Description: Exchange OP2 and FPS.
-; Destroys: all registers
-exchangeFPSOP2:
-    ld hl, OP2
-    jr exchangeFPSHL
-
-; Description: Exchange OP1 and FPS.
-; Destroys: all registers
-exchangeFPSOP1:
-    ld hl, OP1
-    ; [[fallthrough]]
-
-; Description: Exchange the floating point at HL with the top of the FPS.
-; This is useful when both OP1 and OP2 contain values that need further
-; numerical computation, but those floating point ops will destory OP2 (and
-; often OP3). With this helper routine, we can push OP2 to the stack, operate
-; on OP1, then exchange OP1 and FPS, operate on OP2, then pop the FPS back to
-; OP1.
-; Input: HL=floating point value
-; Destroys: all registers
-; Preserves: all OPx registers
-exchangeFPSHL:
-    ex de, hl ; DE=saved
-    ld hl, (FPS)
-    ld bc, 9
-    or a ; clear CF
-    sbc hl, bc ; HL=(FPS)-9
-    ; [[fallthrough]]
-
 ; Description: Implement bcall(_Exch9) without the overhead of a bcall().
 ; Input: DE, HL: pointers to floating point values
 ; Output: 9-byte contents of DE, HL exchanged
 ; Destroys: all registers
-exchangeFloat:
+exchange9:
     ld b, 9
     ; [[fallthrough]]
 
@@ -60,19 +27,6 @@ exchangeLoop:
     inc hl
     djnz exchangeLoop
     ret
-
-; Description: Exchange the top 2 floating point numbers on the FPS.
-; Destroys: all
-; Preserves: OP1, OP2
-exchangeFPSFPS:
-    ld hl, (FPS)
-    ld bc, 9
-    or a ; clear CF
-    sbc hl, bc ; HL=(FPS)-9
-    ld e, l
-    ld d, h
-    sbc hl, bc ; HL=(FPS)-18
-    jr exchangeFloat
 
 ;-----------------------------------------------------------------------------
 ; Floating point registers OP1-OP6.
@@ -257,7 +211,7 @@ op5ToOp4:
 op1ExOp2:
     ld hl, OP1
     ld de, OP2
-    jp exchangeFloat
+    jp exchange9
 
 ;-----------------------------------------------------------------------------
 

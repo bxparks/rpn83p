@@ -11,6 +11,10 @@
 ; entry.
 ;-----------------------------------------------------------------------------
 
+;-----------------------------------------------------------------------------
+; Exchange FPS operations.
+;-----------------------------------------------------------------------------
+
 ; Description: Exchange OP2 and FPS.
 ; Destroys: all registers
 exchangeFPSOP2PageTwo:
@@ -79,33 +83,7 @@ exchangeFPSFPSPageTwo:
     jr exchange9PageTwo
 
 ;-----------------------------------------------------------------------------
-
-; Description: Exchange CP3=OP3/OP4 with top of FPS.
-; Destroys: all
-exchangeFPSCP3PageTwo:
-    ld hl, OP3
-    jr exchangeFPS18HLPageTwo
-
-; Description: Exchange CP1=OP1/OP2 with top of FPS.
-; Destroys: all
-exchangeFPSCP1PageTwo:
-    ld hl, OP1
-    ; [[fallthrough]]
-
-; Description: Exchange the 18 bytes from the top of the FPS with HL.
-; Input: HL=rpnObjectPointer
-; Destroys: all
-exchangeFPS18HLPageTwo:
-    ex de, hl ; DE=pointer to OPx
-    ld hl, (FPS)
-    ld bc, 18
-    or a ; CF=0
-    sbc hl, bc
-    call exchange9PageTwo
-    inc de
-    inc de ; skip past extra 2 bytes in OPx
-    jr exchange9PageTwo
-
+; Floating point registers OP1-OP6.
 ;-----------------------------------------------------------------------------
 
 ; Description: Move 9 bytes (size of TI-OS floating point number) from HL to

@@ -11,11 +11,9 @@
 ; entry.
 ;-----------------------------------------------------------------------------
 
-; Description: Exchange OP2 and FPS.
-; Destroys: all registers
-exchangeFPSOP2PageOne:
-    ld hl, OP2
-    jr exchangeFPSHLPageOne
+;-----------------------------------------------------------------------------
+; Exchange FPS operations.
+;-----------------------------------------------------------------------------
 
 ; Description: Exchange OP1 and FPS.
 ; Destroys: all registers
@@ -49,6 +47,8 @@ exchange9PageOne:
     ; [[fallthrough]]
 
 ; Description: Exchange 'B' bytes between DE and HL.
+; Input: DE, HL: pointers; B=numBytes
+; Output: contents of DE, HL exchanged
 ; Destroys: all registers
 exchangeLoopPageOne:
     ld a, (de)
@@ -61,47 +61,8 @@ exchangeLoopPageOne:
     djnz exchangeLoopPageOne
     ret
 
-; Description: Exchange the top 2 floating point numbers on the FPS.
-; Destroys: all
-; Preserves: OP1, OP2
-exchangeFPSFPSPageOne:
-    ld hl, (FPS)
-    ld bc, 9
-    or a ; clear CF
-    sbc hl, bc ; HL=(FPS)-9
-    ld e, l
-    ld d, h
-    sbc hl, bc ; HL=(FPS)-18
-    jr exchange9PageOne
-
 ;-----------------------------------------------------------------------------
-
-; Description: Exchange CP3=OP3/OP4 with top of FPS.
-; Destroys: all
-exchangeFPSCP3PageOne:
-    ld hl, OP3
-    jr exchangeFPS18HLPageOne
-
-; Description: Exchange CP1=OP1/OP2 with top of FPS.
-; Destroys: all
-exchangeFPSCP1PageOne:
-    ld hl, OP1
-    ; [[fallthrough]]
-
-; Description: Exchange the 18 bytes from the top of the FPS with HL.
-; Input: HL=rpnObjectPointer
-; Destroys: all
-exchangeFPS18HLPageOne:
-    ex de, hl ; DE=pointer to OPx
-    ld hl, (FPS)
-    ld bc, 18
-    or a ; CF=0
-    sbc hl, bc
-    call exchange9PageOne
-    inc de
-    inc de ; skip past extra 2 bytes in OPx
-    jr exchange9PageOne
-
+; Floating point registers OP1-OP6.
 ;-----------------------------------------------------------------------------
 
 ; Description: Move 9 bytes (size of TI-OS floating point number) from HL to
