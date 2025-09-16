@@ -6,7 +6,7 @@ SPASM := $(SPASM_DIR)/spasm
 SPASM_FLAGS := -A -I $(SPASM_INC) -N
 #SPASM_FLAGS := -A -I $(SPASM_INC) -N -DDEBUG
 
-SRCS := $(wildcard *.asm)
+SRCS := $(wildcard *.asm) menudef.asm unitdef.asm
 
 # TI Flash app. Use -DDEBUG to activate functions in debug1.asm.
 rpn83p.8xk: $(SRCS) Makefile
@@ -26,4 +26,4 @@ unitdef.asm: unitdef.txt ../tools/compileunit.py
 	../tools/compileunit.py -o $@ $<
 
 clean:
-	rm -f $(TARGETS)
+	rm -f $(TARGETS) menudef.asm unitdef.asm
