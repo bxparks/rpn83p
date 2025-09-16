@@ -254,8 +254,8 @@ MenuGroup root mRoot [
         MenuItem PCOV mStatPopCov
         MenuGroup CFIT mCfit [
           MenuRow [
-            MenuItem Y<Sconvert>X mCfitForcastX
-            MenuItem X<Sconvert>Y mCfitForcastY
+            MenuItem Y<Sconvert>X mCfitForecastX
+            MenuItem X<Sconvert>Y mCfitForecastY
             MenuItem SLOP mCfitSlope
             MenuItem YINT mCfitIntercept
             MenuItem CORR mCfitCorrelation

@@ -649,6 +649,74 @@ _ColdInitModes equ _ColdInitModesLabel-branchTableBase
     .dw ColdInitModes
     .db 2
 
+; stats2.asm
+_StatSigmaPlusLabel:
+_StatSigmaPlus equ _StatSigmaPlusLabel-branchTableBase
+    .dw StatSigmaPlus
+    .db 2
+_StatSigmaMinusLabel:
+_StatSigmaMinus equ _StatSigmaMinusLabel-branchTableBase
+    .dw StatSigmaMinus
+    .db 2
+_StatSumLabel:
+_StatSum equ _StatSumLabel-branchTableBase
+    .dw StatSum
+    .db 2
+_StatMeanLabel:
+_StatMean equ _StatMeanLabel-branchTableBase
+    .dw StatMean
+    .db 2
+_StatWeightedMeanLabel:
+_StatWeightedMean equ _StatWeightedMeanLabel-branchTableBase
+    .dw StatWeightedMean
+    .db 2
+_StatStdDevLabel:
+_StatStdDev equ _StatStdDevLabel-branchTableBase
+    .dw StatStdDev
+    .db 2
+_StatSampleStdDevLabel:
+_StatSampleStdDev equ _StatSampleStdDevLabel-branchTableBase
+    .dw StatSampleStdDev
+    .db 2
+_StatCovarianceLabel:
+_StatCovariance equ _StatCovarianceLabel-branchTableBase
+    .dw StatCovariance
+    .db 2
+_StatSampleCovarianceLabel:
+_StatSampleCovariance equ _StatSampleCovarianceLabel-branchTableBase
+    .dw StatSampleCovariance
+    .db 2
+_StatCorrelationLabel:
+_StatCorrelation equ _StatCorrelationLabel-branchTableBase
+    .dw StatCorrelation
+    .db 2
+
+; cfit2.asm
+_CfitForecastYLabel:
+_CfitForecastY equ _CfitForecastYLabel-branchTableBase
+    .dw CfitForecastY
+    .db 2
+_CfitForecastXLabel:
+_CfitForecastX equ _CfitForecastXLabel-branchTableBase
+    .dw CfitForecastX
+    .db 2
+_CfitSlopeLabel:
+_CfitSlope equ _CfitSlopeLabel-branchTableBase
+    .dw CfitSlope
+    .db 2
+_CfitInterceptLabel:
+_CfitIntercept equ _CfitInterceptLabel-branchTableBase
+    .dw CfitIntercept
+    .db 2
+_CfitCorrelationLabel:
+_CfitCorrelation equ _CfitCorrelationLabel-branchTableBase
+    .dw CfitCorrelation
+    .db 2
+_CfitBestFitLabel:
+_CfitBestFit equ _CfitBestFitLabel-branchTableBase
+    .dw CfitBestFit
+    .db 2
+
 ; tvm2.asm
 _ColdInitTvmLabel:
 _ColdInitTvm equ _ColdInitTvmLabel-branchTableBase
