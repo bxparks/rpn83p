@@ -413,9 +413,9 @@ MenuGroup root mRoot [
                 MenuItem rod mUnitRod
                 MenuItem chai mUnitChain
                 MenuItem frlg mUnitFurlong
+                MenuItem svmi mUnitSurveyMile
               ]
               MenuRow [
-                MenuItem svmi mUnitSurveyMile
                 MenuItem leag mUnitLeague
               ]
             ]

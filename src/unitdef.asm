@@ -107,78 +107,78 @@ unitMileId equ 11
     .db unitClassLength ; unitClass
     .db unitMeterId ; baseUnitId
     .db $00, $83, $16, $09, $34, $40, $00, $00, $00 ; scale=1609.344
-unitSurveyFootInfo:
-unitSurveyFootId equ 12
-    .dw unitSurveyFootName ; name
-    .db unitClassLength ; unitClass
-    .db unitMeterId ; baseUnitId
-    .db $00, $7F, $30, $48, $00, $60, $96, $01, $22 ; scale=0.30480060960122
-unitRodInfo:
-unitRodId equ 13
-    .dw unitRodName ; name
-    .db unitClassLength ; unitClass
-    .db unitMeterId ; baseUnitId
-    .db $00, $80, $50, $29, $20, $00, $00, $00, $00 ; scale=5.0292
-unitChainInfo:
-unitChainId equ 14
-    .dw unitChainName ; name
-    .db unitClassLength ; unitClass
-    .db unitMeterId ; baseUnitId
-    .db $00, $81, $20, $11, $68, $00, $00, $00, $00 ; scale=20.1168
-unitFurlongInfo:
-unitFurlongId equ 15
-    .dw unitFurlongName ; name
-    .db unitClassLength ; unitClass
-    .db unitMeterId ; baseUnitId
-    .db $00, $82, $20, $11, $68, $00, $00, $00, $00 ; scale=201.168
-unitSurveyMileInfo:
-unitSurveyMileId equ 16
-    .dw unitSurveyMileName ; name
-    .db unitClassLength ; unitClass
-    .db unitMeterId ; baseUnitId
-    .db $00, $83, $16, $09, $34, $72, $18, $69, $44 ; scale=1609.3472186944
-unitLeagueInfo:
-unitLeagueId equ 17
-    .dw unitLeagueName ; name
-    .db unitClassLength ; unitClass
-    .db unitMeterId ; baseUnitId
-    .db $00, $83, $48, $28, $03, $20, $00, $00, $00 ; scale=4828.032
-unitFanthomInfo:
-unitFanthomId equ 18
-    .dw unitFanthomName ; name
-    .db unitClassLength ; unitClass
-    .db unitMeterId ; baseUnitId
-    .db $00, $80, $18, $28, $80, $00, $00, $00, $00 ; scale=1.8288
-unitCableInfo:
-unitCableId equ 19
-    .dw unitCableName ; name
-    .db unitClassLength ; unitClass
-    .db unitMeterId ; baseUnitId
-    .db $00, $82, $21, $94, $56, $00, $00, $00, $00 ; scale=219.456
-unitNauticalMileInfo:
-unitNauticalMileId equ 20
-    .dw unitNauticalMileName ; name
-    .db unitClassLength ; unitClass
-    .db unitMeterId ; baseUnitId
-    .db $00, $83, $18, $52, $00, $00, $00, $00, $00 ; scale=1852
 unitAstronomicalUnitInfo:
-unitAstronomicalUnitId equ 21
+unitAstronomicalUnitId equ 12
     .dw unitAstronomicalUnitName ; name
     .db unitClassLength ; unitClass
     .db unitMeterId ; baseUnitId
     .db $00, $8B, $14, $95, $97, $87, $07, $00, $00 ; scale=149597870700
 unitLightYearInfo:
-unitLightYearId equ 22
+unitLightYearId equ 13
     .dw unitLightYearName ; name
     .db unitClassLength ; unitClass
     .db unitMeterId ; baseUnitId
     .db $00, $8F, $94, $60, $73, $04, $72, $58, $08 ; scale=9460730472580.8e3
 unitParsecInfo:
-unitParsecId equ 23
+unitParsecId equ 14
     .dw unitParsecName ; name
     .db unitClassLength ; unitClass
     .db unitMeterId ; baseUnitId
     .db $00, $90, $30, $85, $67, $75, $81, $49, $13 ; scale=30856775814913673
+unitFanthomInfo:
+unitFanthomId equ 15
+    .dw unitFanthomName ; name
+    .db unitClassLength ; unitClass
+    .db unitMeterId ; baseUnitId
+    .db $00, $80, $18, $28, $80, $00, $00, $00, $00 ; scale=1.8288
+unitCableInfo:
+unitCableId equ 16
+    .dw unitCableName ; name
+    .db unitClassLength ; unitClass
+    .db unitMeterId ; baseUnitId
+    .db $00, $82, $21, $94, $56, $00, $00, $00, $00 ; scale=219.456
+unitNauticalMileInfo:
+unitNauticalMileId equ 17
+    .dw unitNauticalMileName ; name
+    .db unitClassLength ; unitClass
+    .db unitMeterId ; baseUnitId
+    .db $00, $83, $18, $52, $00, $00, $00, $00, $00 ; scale=1852
+unitSurveyFootInfo:
+unitSurveyFootId equ 18
+    .dw unitSurveyFootName ; name
+    .db unitClassLength ; unitClass
+    .db unitMeterId ; baseUnitId
+    .db $00, $7F, $30, $48, $00, $60, $96, $01, $22 ; scale=0.30480060960122
+unitRodInfo:
+unitRodId equ 19
+    .dw unitRodName ; name
+    .db unitClassLength ; unitClass
+    .db unitMeterId ; baseUnitId
+    .db $00, $80, $50, $29, $20, $00, $00, $00, $00 ; scale=5.0292
+unitChainInfo:
+unitChainId equ 20
+    .dw unitChainName ; name
+    .db unitClassLength ; unitClass
+    .db unitMeterId ; baseUnitId
+    .db $00, $81, $20, $11, $68, $00, $00, $00, $00 ; scale=20.1168
+unitFurlongInfo:
+unitFurlongId equ 21
+    .dw unitFurlongName ; name
+    .db unitClassLength ; unitClass
+    .db unitMeterId ; baseUnitId
+    .db $00, $82, $20, $11, $68, $00, $00, $00, $00 ; scale=201.168
+unitSurveyMileInfo:
+unitSurveyMileId equ 22
+    .dw unitSurveyMileName ; name
+    .db unitClassLength ; unitClass
+    .db unitMeterId ; baseUnitId
+    .db $00, $83, $16, $09, $34, $72, $18, $69, $44 ; scale=1609.3472186944
+unitLeagueInfo:
+unitLeagueId equ 23
+    .dw unitLeagueName ; name
+    .db unitClassLength ; unitClass
+    .db unitMeterId ; baseUnitId
+    .db $00, $83, $48, $28, $03, $20, $00, $00, $00 ; scale=4828.032
 unitSqMicroMeterInfo:
 unitSqMicroMeterId equ 24
     .dw unitSqMicroMeterName ; name
@@ -859,6 +859,18 @@ unitYardName:
     .db "yd", 0
 unitMileName:
     .db "mi", 0
+unitAstronomicalUnitName:
+    .db "AU", 0
+unitLightYearName:
+    .db "ly", 0
+unitParsecName:
+    .db "pc", 0
+unitFanthomName:
+    .db "fanthom", 0
+unitCableName:
+    .db "cable", 0
+unitNauticalMileName:
+    .db "nmi", 0
 unitSurveyFootName:
     .db "surveyft", 0
 unitRodName:
@@ -871,18 +883,6 @@ unitSurveyMileName:
     .db "surveymi", 0
 unitLeagueName:
     .db "league", 0
-unitFanthomName:
-    .db "fanthom", 0
-unitCableName:
-    .db "cable", 0
-unitNauticalMileName:
-    .db "nmi", 0
-unitAstronomicalUnitName:
-    .db "AU", 0
-unitLightYearName:
-    .db "ly", 0
-unitParsecName:
-    .db "pc", 0
 unitSqMicroMeterName:
     .db Smu, 'm', Sarea, 0
 unitSqMilliMeterName:

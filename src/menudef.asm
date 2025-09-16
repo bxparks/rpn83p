@@ -2459,18 +2459,8 @@ mUnitFurlongId equ 260
     .dw 0 ; rowBeginId or altName
     .dw mUnitFurlongHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
-mBlank261:
-mBlank261Id equ 261
-    .dw mBlank261Id ; id
-    .dw mSurveyId ; parentId
-    .dw mNullName ; name
-    .db 0 ; numRows
-    .dw 0 ; rowBeginId or altName
-    .dw mNullHandler ; handler (predefined)
-    .dw 0 ; nameSelector
-; MenuGroup SURV: children: row 1
 mUnitSurveyMile:
-mUnitSurveyMileId equ 262
+mUnitSurveyMileId equ 261
     .dw mUnitSurveyMileId ; id
     .dw mSurveyId ; parentId
     .dw mUnitSurveyMileName ; name
@@ -2478,14 +2468,24 @@ mUnitSurveyMileId equ 262
     .dw 0 ; rowBeginId or altName
     .dw mUnitSurveyMileHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
+; MenuGroup SURV: children: row 1
 mUnitLeague:
-mUnitLeagueId equ 263
+mUnitLeagueId equ 262
     .dw mUnitLeagueId ; id
     .dw mSurveyId ; parentId
     .dw mUnitLeagueName ; name
     .db 0 ; numRows
     .dw 0 ; rowBeginId or altName
     .dw mUnitLeagueHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
+mBlank263:
+mBlank263Id equ 263
+    .dw mBlank263Id ; id
+    .dw mSurveyId ; parentId
+    .dw mNullName ; name
+    .db 0 ; numRows
+    .dw 0 ; rowBeginId or altName
+    .dw mNullHandler ; handler (predefined)
     .dw 0 ; nameSelector
 mBlank264:
 mBlank264Id equ 264

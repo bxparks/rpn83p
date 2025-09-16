@@ -55,6 +55,19 @@ Units [
   Unit Yard yd Length 0.9144 Meter # 3 feet
   Unit Mile mi Length 1609.344 Meter
 
+  # Astronomical
+  # https://en.wikipedia.org/wiki/Astronomical_unit
+  Unit AstronomicalUnit AU Length 149597870700 Meter # by defn
+  # https://en.wikipedia.org/wiki/Light-year
+  Unit LightYear ly Length 9460730472580.8e3 Meter # exact, 365.25days*c
+  # https://en.wikipedia.org/wiki/Parsec
+  Unit Parsec pc Length 30856775814913673 Meter # 648000/pi AU
+
+  # Nautical: https://en.wikipedia.org/wiki/United_States_customary_units
+  Unit Fanthom fanthom Length 1.8288 Meter # 6 feet
+  Unit Cable cable Length 219.456 Meter # 3429/15625 km by defn
+  Unit NauticalMile nmi Length 1852 Meter # by defn
+
   # Survey: https://en.wikipedia.org/wiki/United_States_customary_units
   # After 2023, most of these were standardizedon the SI units. However,
   # the following units starting with "Survey" uses the pre-2023 definition
@@ -70,19 +83,6 @@ Units [
   # the pre-2023 definition of 6336/3937km.
   Unit SurveyMile surveymi Length 1609.3472186944 Meter
   Unit League league Length 4828.032 Meter # 3mi by defn after 2023
-
-  # Nautical: https://en.wikipedia.org/wiki/United_States_customary_units
-  Unit Fanthom fanthom Length 1.8288 Meter # 6 feet
-  Unit Cable cable Length 219.456 Meter # 3429/15625 km by defn
-  Unit NauticalMile nmi Length 1852 Meter # by defn
-
-  # Astronomical
-  # https://en.wikipedia.org/wiki/Astronomical_unit
-  Unit AstronomicalUnit AU Length 149597870700 Meter # by defn
-  # https://en.wikipedia.org/wiki/Light-year
-  Unit LightYear ly Length 9460730472580.8e3 Meter # exact, 365.25days*c
-  # https://en.wikipedia.org/wiki/Parsec
-  Unit Parsec pc Length 30856775814913673 Meter # 648000/pi AU
 
   #----------------------------------------------------------------------------
   # Area
