@@ -216,7 +216,7 @@ PrintInputBuf:
 ;   - indexes updated
 ;   - HL=renderBuf
 ; Destroys: A, BC, DE, HL, IX
-renderInputBuf: ; TODO: Move to display2.asm
+renderInputBuf:
     ld ix, renderIndexes
     ld de, renderBuf
     inc de ; skip past len byte
