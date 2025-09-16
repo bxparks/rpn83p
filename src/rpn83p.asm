@@ -819,6 +819,7 @@ defpage(0, "RPN83P")
 #include "input.asm"
 #include "display.asm"
 #include "menu.asm"
+
 #include "menuhandlers.asm"
 #include "basemenuhandlers.asm"
 #include "statmenuhandlers.asm"
@@ -827,6 +828,7 @@ defpage(0, "RPN83P")
 #include "complexmenuhandlers.asm"
 #include "datemenuhandlers.asm"
 #include "unitmenuhandlers.asm"
+
 #include "common.asm"
 #include "memory.asm"
 #include "cstring.asm"
@@ -850,7 +852,7 @@ defpage(1)
 #include "varsreg1.asm"
 #include "varsstack1.asm"
 #include "varsstat1.asm"
-;
+
 #include "appstate1.asm"
 #include "osstate1.asm"
 #include "help1.asm"
@@ -859,12 +861,16 @@ defpage(1)
 #include "errorcode1.asm"
 #include "print1.asm"
 #include "input1.asm"
+#include "arg1.asm"
+
 #include "parse1.asm"
 #include "parsefloat1.asm"
 #include "parsedate1.asm"
 #include "parseduration1.asm"
+#include "duration1.asm"
 #include "parseclassifiers1.asm"
-#include "arg1.asm"
+
+#include "common1.asm"
 #include "base1.asm"
 #include "cstring1.asm"
 #include "pstring1.asm"
@@ -879,13 +885,10 @@ defpage(1)
 #include "hms1.asm"
 #include "prob1.asm"
 #include "format1.asm"
-#include "duration1.asm"
-;
-#include "common1.asm"
-;
+
 #include "unitdef.asm"
 #include "unit1.asm"
-;
+
 #ifdef DEBUG
 #include "debug1.asm"
 #endif
