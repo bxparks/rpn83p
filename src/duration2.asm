@@ -122,7 +122,7 @@ durationToSecondsPos:
 
 ; Description: Convert seconds to RpnDuration.
 ; Input:
-;   - OP1:(i40*)=seconds
+;   - OP1:Real=seconds
 ; Output:
 ;   - OP1:(RpnDuration*)=resultDuration
 ; Destroys: all, OP1-OP4
@@ -432,6 +432,29 @@ SubSecondsByRpnDuration:
     call cp1ExCp3PageTwo
     call SubRpnDurationByRpnDurationOrSeconds
     call ChsRpnDuration
+    ret
+
+;-----------------------------------------------------------------------------
+
+; Description: Multiply RpnDuration * scalar.
+; Input:
+;   - OP1:RpnDuration|Real=Y
+;   - OP3:RpnDuration|Real=X
+;   - at least one of OP1 or OP3 should be an RpnDuration
+; Output:
+;   - OP1:RpnDuration=RpnDuration(Y*X)
+; Destroys: OP1, OP2
+MultRpnDurationByReal:
+    call getOp3RpnObjectTypePageTwo ; A=type; HL=OP1
+    cp rpnObjectTypeDuration
+    call z, cp1ExCp3PageTwo ; OP1:RpnDuration; OP3:Real
+    ; Convert RpnDuration to Real
+    call RpnDurationToSeconds ; OP1:Real=Duration
+    call op3ToOp2PageTwo
+    bcall(_FPMult) ; OP1=Duration*Real
+    ; Convert Real back to RpnDuration
+    bcall(_Trunc) ; OP1:Real=integer part
+    call SecondsToRpnDuration ; OP1:RpnDuration
     ret
 
 ;-----------------------------------------------------------------------------

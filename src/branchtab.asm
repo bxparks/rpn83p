@@ -1318,6 +1318,10 @@ _SubSecondsByRpnDurationLabel:
 _SubSecondsByRpnDuration equ _SubSecondsByRpnDurationLabel-branchTableBase
     .dw SubSecondsByRpnDuration
     .db 2
+_MultRpnDurationByRealLabel:
+_MultRpnDurationByReal equ _MultRpnDurationByRealLabel-branchTableBase
+    .dw MultRpnDurationByReal
+    .db 2
 ; extracors
 _RpnDurationExtractDayLabel:
 _RpnDurationExtractDay equ _RpnDurationExtractDayLabel-branchTableBase

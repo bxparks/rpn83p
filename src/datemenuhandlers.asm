@@ -470,7 +470,7 @@ strDurationPrefix:
 mSecondsToDurationHandler:
     call closeInputAndRecallX ; OP1=X=seconds
 mSecondsToDurationHandlerAltEntry:
-    bcall(_SecondsToRpnDuration) ; OP1=Duration(seconds)
+    bcall(_SecondsToRpnDuration) ; OP1=RpnDuration(seconds)
     bcall(_ReplaceStackX)
     ret
 

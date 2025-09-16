@@ -447,7 +447,7 @@ UniversalMult:
     jr z, universalMultComplexByObject
     ; OP1=Offset
     cp rpnObjectTypeOffset ; ZF=1 if Offset
-    jr z, universalMultOffsetByObject
+    jp z, universalMultOffsetByObject
     ; OP1=Date
     cp rpnObjectTypeDate ; ZF=1 if Date
     jr z, universalMultDateByObject
@@ -456,8 +456,10 @@ UniversalMult:
     jr z, universalMultDateTimeByObject
     ; OP1=OffsetDateTime
     cp rpnObjectTypeOffsetDateTime ; ZF=1 if OffsetDateTime
-    jr z, universalMultOffsetDateTimeByObject
-    ; TODO: Implement Duration*Real and Real*Duration
+    jp z, universalMultOffsetDateTimeByObject
+    ; OP1=Duration
+    cp rpnObjectTypeDuration ; ZF=1 if Duration
+    jp z, universalMultDurationByObject
     ; OP1=Denominate
     cp rpnObjectTypeDenominate ; ZF=1 if Denominate
     jp z, universalMultDenominateByObject
@@ -475,6 +477,8 @@ universalMultRealByObject:
     jr z, universalMultRealByDateTime
     cp rpnObjectTypeOffsetDateTime
     jr z, universalMultRealByOffsetDateTime
+    cp rpnObjectTypeDuration
+    jr z, universalMultRealByDuration
     cp rpnObjectTypeDenominate
     jr z, universalMultRealByDenominate
     jr universalMultErr
@@ -493,6 +497,9 @@ universalMultRealByDateTime: ; Real * DateTime
     ret
 universalMultRealByOffsetDateTime: ; Real * OffsetDateTime
     bcall(_ConvertRpnDateLikeToTimeZone)
+    ret
+universalMultRealByDuration:
+    bcall(_MultRpnDurationByReal) ; Real * Duration
     ret
 universalMultRealByDenominate:
     bcall(_MultRpnDenominateByReal)
@@ -545,6 +552,13 @@ universalMultOffsetByOffsetDateTime: ; Offset * RpnOffsetDateTime
 ; OffsetDateTime * object
 universalMultOffsetDateTimeByObject:
     bcall(_ConvertRpnDateLikeToTimeZone)
+    ret
+; Duration * object
+universalMultDurationByObject:
+    call getOp3RpnObjectTypePageOne ; A=type; HL=OP3
+    cp rpnObjectTypeReal
+    jr nz, universalMultErr
+    bcall(_MultRpnDurationByReal) ; OP1=RpnDuration*Real
     ret
 ; Denominate * object
 universalMultDenominateByObject:
