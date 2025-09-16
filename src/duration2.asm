@@ -449,10 +449,27 @@ MultRpnDurationByReal:
     cp rpnObjectTypeDuration
     call z, cp1ExCp3PageTwo ; OP1:RpnDuration; OP3:Real
     ; Convert RpnDuration to Real
-    call RpnDurationToSeconds ; OP1:Real=Duration
+    call RpnDurationToSeconds ; OP1:Real=seconds
     call op3ToOp2PageTwo
-    bcall(_FPMult) ; OP1=Duration*Real
+    bcall(_FPMult) ; OP1=seconds*Real
     ; Convert Real back to RpnDuration
+    bcall(_Trunc) ; OP1:Real=integer part
+    call SecondsToRpnDuration ; OP1:RpnDuration
+    ret
+
+;-----------------------------------------------------------------------------
+
+; Description: Divide RpnDuration / scalar.
+; Input:
+;   - OP1:RpnDuration=Y
+;   - OP3:Real=X
+; Output:
+;   - OP1:RpnDuration=RpnDuration(Y/X)
+; Destroys: OP1, OP2
+DivRpnDurationByReal:
+    call RpnDurationToSeconds ; OP1:Real=seconds
+    call op3ToOp2PageTwo ; OP2:Real=seconds
+    bcall(_FPDiv) ; OP1=seconds/Real
     bcall(_Trunc) ; OP1:Real=integer part
     call SecondsToRpnDuration ; OP1:RpnDuration
     ret

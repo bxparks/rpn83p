@@ -583,7 +583,8 @@ UniversalDiv:
     jr z, universalDivRealByObject
     cp rpnObjectTypeComplex ; ZF=1 if complex
     jr z, universalDivComplexByObject
-    ; TODO: Implement Duration/Real
+    cp rpnObjectTypeDuration ; ZF=1 if RpnDuration
+    jr z, universalDivDurationByObject
     ; OP1=Denominate
     cp rpnObjectTypeDenominate ; ZF=1 if Denominate
     jp z, universalDivDenominateByObject
@@ -624,6 +625,13 @@ universalDivComplexByComplex:
     bcall(_PushOP1) ; FPS=[Y]
     call cp3ToCp1PageOne ; OP1/OP2=OP3/OP4
     bcall(_CDiv) ; OP1/OP2 = FPS[OP1/OP2] / OP1/OP2; FPS=[]
+    ret
+; Duration / object
+universalDivDurationByObject:
+    call getOp3RpnObjectTypePageOne ; A=type; HL=OP3
+    cp rpnObjectTypeReal
+    jr nz, universalDivErr
+    bcall(_DivRpnDurationByReal) ; OP1=OP1/OP3
     ret
 ; Denominate / object
 universalDivDenominateByObject:

@@ -1322,6 +1322,10 @@ _MultRpnDurationByRealLabel:
 _MultRpnDurationByReal equ _MultRpnDurationByRealLabel-branchTableBase
     .dw MultRpnDurationByReal
     .db 2
+_DivRpnDurationByRealLabel:
+_DivRpnDurationByReal equ _DivRpnDurationByRealLabel-branchTableBase
+    .dw DivRpnDurationByReal
+    .db 2
 ; extracors
 _RpnDurationExtractDayLabel:
 _RpnDurationExtractDay equ _RpnDurationExtractDayLabel-branchTableBase
