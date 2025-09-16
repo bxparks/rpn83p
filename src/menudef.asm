@@ -4939,7 +4939,7 @@ mSetClockId equ 526
 ;-----------------------------------------------------------------------------
 
 mNamesCount equ 437 ; number of names and altnames
-mNamesPoolSize equ 3808 ; size of names string pool
+mNamesPoolSize equ 3816 ; size of names string pool
 
 mNullName:
     .db 0
@@ -5122,13 +5122,13 @@ mReverseBitName:
 mCountBitName:
     .db "CNTB", 0
 mBaseAddName:
-    .db 'B', SplusSign, 0
+    .db 'B', 'A', 'S', SplusSign, 0
 mBaseSubtName:
-    .db 'B', Sdash, 0
+    .db 'B', 'A', 'S', Sdash, 0
 mBaseMultName:
-    .db 'B', Scross, 0
+    .db 'B', 'A', 'S', Scross, 0
 mBaseDivName:
-    .db 'B', Sslash, 0
+    .db 'B', 'A', 'S', Sslash, 0
 mBaseDiv2Name:
     .db "BDIV", 0
 mClearCarryFlagName:

@@ -42,6 +42,8 @@
     - BASE
         - move most menu functions under 5 new subfolders: LOGI, ROTS, BITS,
           BFCN, BCFS ("Configs" or "Carry Flag and Word Size")
+        - rename (B+ B- B* B/) to (BAS+ BAS- BAS* BAS/) for better
+          self-documentation
         - no functional change
     - RPN83P application size
         - increase to 64kiB (4 flash pages) from 48kiB

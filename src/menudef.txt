@@ -178,10 +178,10 @@ MenuGroup root mRoot [
         ]
         MenuGroup BFCN mBaseFunctions mBaseFunctionsHandler [
           MenuRow [
-            MenuItem B<SplusSign> mBaseAdd
-            MenuItem B<Sdash> mBaseSubt
-            MenuItem B<Scross> mBaseMult
-            MenuItem B<Sslash> mBaseDiv
+            MenuItem BAS<SplusSign> mBaseAdd
+            MenuItem BAS<Sdash> mBaseSubt
+            MenuItem BAS<Scross> mBaseMult
+            MenuItem BAS<Sslash> mBaseDiv
             MenuItem BDIV mBaseDiv2
           ]
         ]
