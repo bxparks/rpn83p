@@ -1210,7 +1210,7 @@ mCfitId equ 126
     .dw mStatId ; parentId
     .dw mCfitName ; name
     .db 2 ; numRows
-    .dw mCfitForcastXId ; rowBeginId or altName
+    .dw mCfitForecastXId ; rowBeginId or altName
     .dw mGroupHandler ; handler (predefined)
     .dw 0 ; nameSelector
 ; MenuGroup <ScapSigma>: children
@@ -1354,23 +1354,23 @@ mBlank141Id equ 141
     .dw 0 ; nameSelector
 ; MenuGroup CFIT: children
 ; MenuGroup CFIT: children: row 0
-mCfitForcastX:
-mCfitForcastXId equ 142
-    .dw mCfitForcastXId ; id
+mCfitForecastX:
+mCfitForecastXId equ 142
+    .dw mCfitForecastXId ; id
     .dw mCfitId ; parentId
-    .dw mCfitForcastXName ; name
+    .dw mCfitForecastXName ; name
     .db 0 ; numRows
     .dw 0 ; rowBeginId or altName
-    .dw mCfitForcastXHandler ; handler (to be implemented)
+    .dw mCfitForecastXHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
-mCfitForcastY:
-mCfitForcastYId equ 143
-    .dw mCfitForcastYId ; id
+mCfitForecastY:
+mCfitForecastYId equ 143
+    .dw mCfitForecastYId ; id
     .dw mCfitId ; parentId
-    .dw mCfitForcastYName ; name
+    .dw mCfitForecastYName ; name
     .db 0 ; numRows
     .dw 0 ; rowBeginId or altName
-    .dw mCfitForcastYHandler ; handler (to be implemented)
+    .dw mCfitForecastYHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
 mCfitSlope:
 mCfitSlopeId equ 144
@@ -5213,9 +5213,9 @@ mStatRegXLnYName:
     .db ScapSigma, 'X', 'L', 'Y', 0
 mStatRegYLnXName:
     .db ScapSigma, 'Y', 'L', 'X', 0
-mCfitForcastXName:
+mCfitForecastXName:
     .db 'Y', Sconvert, 'X', 0
-mCfitForcastYName:
+mCfitForecastYName:
     .db 'X', Sconvert, 'Y', 0
 mCfitSlopeName:
     .db "SLOP", 0

@@ -307,7 +307,7 @@ selectCfitModel:
 ;   - statRegXxx
 ; Output:
 ;   - OP1=forecastY
-CfitForcastY:
+CfitForecastY:
     ld a, (curveFitModel)
     call selectCfitModel
     call convertXToXPrime ; OP1=xprime
@@ -326,7 +326,7 @@ CfitForcastY:
 ;   - statRegXxx
 ; Output:
 ;   - OP1=forecastX
-CfitForcastX:
+CfitForecastX:
     ld a, (curveFitModel)
     call selectCfitModel
     call convertYToYPrime ; OP1=yprime

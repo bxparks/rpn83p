@@ -20,16 +20,16 @@ coldInitCfit:
     jp mCfitLinearHandler ; default Linear curve fit
 
 ; Description: Forecast Y from X.
-mCfitForcastYHandler:
+mCfitForecastYHandler:
     call closeInputAndRecallX ; OP1=x
-    bcall(_CfitForcastY)
+    bcall(_CfitForecastY)
     bcall(_ReplaceStackX)
     ret
 
 ; Description: Forecast X from Y.
-mCfitForcastXHandler:
+mCfitForecastXHandler:
     call closeInputAndRecallX ; OP1=y
-    bcall(_CfitForcastX)
+    bcall(_CfitForecastX)
     bcall(_ReplaceStackX)
     ret
 

@@ -692,13 +692,13 @@ _StatCorrelation equ _StatCorrelationLabel-branchTableBase
     .db 2
 
 ; cfit2.asm
-_CfitForcastYLabel:
-_CfitForcastY equ _CfitForcastYLabel-branchTableBase
-    .dw CfitForcastY
+_CfitForecastYLabel:
+_CfitForecastY equ _CfitForecastYLabel-branchTableBase
+    .dw CfitForecastY
     .db 2
-_CfitForcastXLabel:
-_CfitForcastX equ _CfitForcastXLabel-branchTableBase
-    .dw CfitForcastX
+_CfitForecastXLabel:
+_CfitForecastX equ _CfitForecastXLabel-branchTableBase
+    .dw CfitForecastX
     .db 2
 _CfitSlopeLabel:
 _CfitSlope equ _CfitSlopeLabel-branchTableBase
