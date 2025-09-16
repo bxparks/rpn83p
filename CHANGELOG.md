@@ -40,8 +40,8 @@
         - Reorganize UNIT menus across 12 sub MenuFolders: UFCN, LENG, AREA,
           VOL, MASS, TEMP, VELO, FORC, PRES, ENER, PWR, FUEL.
     - BASE
-        - move most menu items under 5 new subfolders: LOGI, ROTS, BITS, BFCN,
-          BFLG
+        - move most menu functions under 5 new subfolders: LOGI, ROTS, BITS,
+          BFCN, BCFS ("Configs" or "Carry Flag and Word Size")
         - no functional change
     - RPN83P application size
         - increase to 64kiB (4 flash pages) from 48kiB

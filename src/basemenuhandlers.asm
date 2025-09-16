@@ -27,7 +27,7 @@ mBaseLogicHandler:
 mBaseRotateHandler:
 mBaseBitsHandler:
 mBaseFunctionsHandler:
-mBaseFlagsHandler:
+mBaseConfigsHandler: ; BCFS could also mean "Base Carry Flag and Word Size"
     push af ; preserve the C flag
     ; must call closeInputXxx() before modifying rpnFlagsBaseModeEnabled
     call closeInputAndRecallNone

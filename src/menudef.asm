@@ -645,14 +645,14 @@ mBaseFunctionsId equ 65
     .dw mBaseAddId ; rowBeginId or altName
     .dw mBaseFunctionsHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
-mBaseFlags:
-mBaseFlagsId equ 66
-    .dw mBaseFlagsId ; id
+mBaseConfigs:
+mBaseConfigsId equ 66
+    .dw mBaseConfigsId ; id
     .dw mBaseId ; parentId
-    .dw mBaseFlagsName ; name
+    .dw mBaseConfigsName ; name
     .db 1 ; numRows
     .dw mClearCarryFlagId ; rowBeginId or altName
-    .dw mBaseFlagsHandler ; handler (to be implemented)
+    .dw mBaseConfigsHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
 ; MenuGroup LOGI: children
 ; MenuGroup LOGI: children: row 0
@@ -934,12 +934,12 @@ mBaseDiv2Id equ 96
     .dw 0 ; rowBeginId or altName
     .dw mBaseDiv2Handler ; handler (to be implemented)
     .dw 0 ; nameSelector
-; MenuGroup BFLG: children
-; MenuGroup BFLG: children: row 0
+; MenuGroup BCFS: children
+; MenuGroup BCFS: children: row 0
 mClearCarryFlag:
 mClearCarryFlagId equ 97
     .dw mClearCarryFlagId ; id
-    .dw mBaseFlagsId ; parentId
+    .dw mBaseConfigsId ; parentId
     .dw mClearCarryFlagName ; name
     .db 0 ; numRows
     .dw 0 ; rowBeginId or altName
@@ -948,7 +948,7 @@ mClearCarryFlagId equ 97
 mSetCarryFlag:
 mSetCarryFlagId equ 98
     .dw mSetCarryFlagId ; id
-    .dw mBaseFlagsId ; parentId
+    .dw mBaseConfigsId ; parentId
     .dw mSetCarryFlagName ; name
     .db 0 ; numRows
     .dw 0 ; rowBeginId or altName
@@ -957,7 +957,7 @@ mSetCarryFlagId equ 98
 mGetCarryFlag:
 mGetCarryFlagId equ 99
     .dw mGetCarryFlagId ; id
-    .dw mBaseFlagsId ; parentId
+    .dw mBaseConfigsId ; parentId
     .dw mGetCarryFlagName ; name
     .db 0 ; numRows
     .dw 0 ; rowBeginId or altName
@@ -966,7 +966,7 @@ mGetCarryFlagId equ 99
 mSetWordSize:
 mSetWordSizeId equ 100
     .dw mSetWordSizeId ; id
-    .dw mBaseFlagsId ; parentId
+    .dw mBaseConfigsId ; parentId
     .dw mSetWordSizeName ; name
     .db 0 ; numRows
     .dw 0 ; rowBeginId or altName
@@ -975,7 +975,7 @@ mSetWordSizeId equ 100
 mGetWordSize:
 mGetWordSizeId equ 101
     .dw mGetWordSizeId ; id
-    .dw mBaseFlagsId ; parentId
+    .dw mBaseConfigsId ; parentId
     .dw mGetWordSizeName ; name
     .db 0 ; numRows
     .dw 0 ; rowBeginId or altName
@@ -5073,8 +5073,8 @@ mBaseBitsName:
     .db "BITS", 0
 mBaseFunctionsName:
     .db "BFCN", 0
-mBaseFlagsName:
-    .db "BFLG", 0
+mBaseConfigsName:
+    .db "BCFS", 0
 mBitwiseAndName:
     .db "AND", 0
 mBitwiseOrName:

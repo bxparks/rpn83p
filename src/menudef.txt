@@ -185,7 +185,8 @@ MenuGroup root mRoot [
             MenuItem BDIV mBaseDiv2
           ]
         ]
-        MenuGroup BFLG mBaseFlags mBaseFlagsHandler [
+        # BCFS means "Base Configs" or "Base Carry Flag and Word Size"
+        MenuGroup BCFS mBaseConfigs mBaseConfigsHandler [
           MenuRow [
             MenuItem CCF mClearCarryFlag
             MenuItem SCF mSetCarryFlag
