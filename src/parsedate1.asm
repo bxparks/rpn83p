@@ -13,7 +13,7 @@
 ; Description: Parse a string of the form "{yyyy,mm,dd}" into a Date{} record.
 ; Input:
 ;   - HL:(char*)=charPointer
-;   - DE:(Date*) or (Datetime*)=dateOrDateTimePointer
+;   - DE:(Date*) or (DateTime*)=dateOrDateTimePointer
 ; Output:
 ;   - (*DE):Date filled
 ;   - DE=DE+4

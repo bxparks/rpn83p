@@ -14,11 +14,11 @@
 ; timeZone specified by RpnOffset or Real. The RpnDate and RpnDateTime are
 ; assumed to be in UTC timezone.
 ; Input:
-;   - OP1:(RpnDate|RpnDatetime|RpnOffsetDateTime|RpnOffset|Real)
-;   - OP3:(RpnDate|RpnDatetime|RpnOffsetDateTime|RpnOffset|Real)
+;   - OP1:(RpnDate|RpnDateTime|RpnOffsetDateTime|RpnOffset|Real)
+;   - OP3:(RpnDate|RpnDateTime|RpnOffsetDateTime|RpnOffset|Real)
 ;   - one of OP1 or OP3 must be the RpnDateTime
 ; Output:
-;   - OP1:RpnOffsetDatetime
+;   - OP1:RpnOffsetDateTime
 ; Throws: ErrDateType if the other is not a Real or RpnOffset
 ; Destroys: all, OP3-OP6
 ConvertRpnDateLikeToTimeZone:
@@ -77,7 +77,7 @@ convertRpnOffsetDateTimeToReal:
 ;   - OP1:RpnOffsetDateTime
 ;   - OP3:RpnOffset
 ; Output:
-;   - OP1; RpnOffsetDatetime
+;   - OP1; RpnOffsetDateTime
 ; Destroys: all, OP3-OP6
 convertRpnOffsetDateTimeToOffset:
     ; CP1=rpnOffsetDateTime; CP3=rpnOffset

@@ -150,7 +150,7 @@ closeInputAndRecallRpnOffsetOrRealX:
     ret z
     bcall(_ErrDataType)
 
-; Close the input buffer, parse RpnOffsetDatetime{} record, place it into OP1.
+; Close the input buffer, parse RpnOffsetDateTime{} record, place it into OP1.
 ; Destroys: all, OP1, OP2, OP3, OP4, OP5
 closeInputAndRecallRpnOffsetDateTimeX:
     call closeInput
