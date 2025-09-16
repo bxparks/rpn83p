@@ -274,7 +274,7 @@ rpnDenominateFieldValue equ 3
 #define skipDenominateUnitDE inc de
 
 ; An RpnObject is the union of all Rpn objects: RpnReal, RpnComplex, and so on.
-; See the definition of 'struct RpnObject' in vars.asm. Its size is the
+; See the definition of 'struct RpnObject' in vars1.asm. Its size is the
 ; max(sizeof(RpnReal), sizeof(RpnComplex), sizeof(RpnDate), ...).
 rpnObjectSizeOf equ rpnComplexSizeOf ; type + sizeof(complex)
 
@@ -492,7 +492,7 @@ menuNameSizeOf equ 6
 ;       uint8_t argValue;
 ;   }
 ; The argModifierXxx (0-4) MUST match the corresponding operation in the
-; 'floatOps' array in vars.asm.
+; 'floatOps' array in vars1.asm.
 argPrompt equ menuName + menuNameSizeOf ; (char*)
 argLenLimit equ argPrompt + 2 ; u8
 argModifier equ argLenLimit + 1 ; char
@@ -847,10 +847,10 @@ defpage(0, "RPN83P")
 
 defpage(1)
 
-#include "vars.asm"
-#include "varsreg.asm"
-#include "varsstack.asm"
-#include "varsstat.asm"
+#include "vars1.asm"
+#include "varsreg1.asm"
+#include "varsstack1.asm"
+#include "varsstat1.asm"
 ;
 #include "appstate1.asm"
 #include "osstate1.asm"
@@ -874,7 +874,7 @@ defpage(1)
 #include "rpnobject1.asm"
 #include "integerconv1.asm"
 #include "const1.asm"
-#include "universal.asm"
+#include "universal1.asm"
 #include "complex1.asm"
 #include "formatcomplex1.asm"
 #include "hms1.asm"

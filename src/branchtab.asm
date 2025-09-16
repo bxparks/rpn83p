@@ -29,7 +29,7 @@ branchTableBase equ $4000
 ; Branch table entries for routines on Flash Page 1.
 ;-----------------------------------------------------------------------------
 
-; varsstack.asm
+; varsstack1.asm
 _InitStackLabel:
 _InitStack equ _InitStackLabel-branchTableBase
     .dw InitStack
@@ -147,7 +147,7 @@ _ExchangeStackXY equ _ExchangeStackXYLabel-branchTableBase
     .dw ExchangeStackXY
     .db 1
 
-; varsregs.asm
+; varsregs1.asm
 _InitRegsLabel:
 _InitRegs equ _InitRegsLabel-branchTableBase
     .dw InitRegs
@@ -181,7 +181,7 @@ _RclOpGeneric equ _RclOpGenericLabel-branchTableBase
     .dw RclOpGeneric
     .db 1
 
-; varsstat.asm
+; varsstat1.asm
 _InitStatRegsLabel:
 _InitStatRegs equ _InitStatRegsLabel-branchTableBase
     .dw InitStatRegs
