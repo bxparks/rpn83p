@@ -737,12 +737,6 @@ UniversalSqRoot:
     jr z, universalSqRootReal
     cp rpnObjectTypeComplex ; ZF=1 if complex
     jr z, universalSqRootComplex
-    ; TODO: Remove DateTime and OffsetDateTime. This is intercepted at the
-    ; handleKeySqRoot() function.
-    cp rpnObjectTypeDateTime ; ZF=1 if RpnDateTime
-    jr z, universalSqRootDateTime
-    cp rpnObjectTypeOffsetDateTime ; ZF=1 if RpnOffsetDateTime
-    jr z, universalSqRootOffsetDateTime
 universalSqRootErr:
     bcall(_ErrDataType)
 universalSqRootReal:
@@ -761,10 +755,6 @@ universalSqRootNumResultModeReal:
     ret
 universalSqRootComplex:
     bcall(_CSqRoot)
-    ret
-universalSqRootDateTime:
-universalSqRootOffsetDateTime:
-    bcall(_GenericDateShrink)
     ret
 
 ; Description: Calculate X^3 for real and complex numbers. For some reason, the
