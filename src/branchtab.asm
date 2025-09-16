@@ -1064,11 +1064,6 @@ _SubRpnDateByObjectLabel:
 _SubRpnDateByObject equ _SubRpnDateByObjectLabel-branchTableBase
     .dw SubRpnDateByObject
     .db 2
-; extenders
-_ExtendRpnDateToDateTimeLabel:
-_ExtendRpnDateToDateTime equ _ExtendRpnDateToDateTimeLabel-branchTableBase
-    .dw ExtendRpnDateToDateTime
-    .db 2
 ; extractors
 _RpnDateExtractYearLabel:
 _RpnDateExtractYear equ _RpnDateExtractYearLabel-branchTableBase
@@ -1172,23 +1167,6 @@ _SubRpnDateTimeByObjectLabel:
 _SubRpnDateTimeByObject equ _SubRpnDateTimeByObjectLabel-branchTableBase
     .dw SubRpnDateTimeByObject
     .db 2
-_SplitRpnDateTimeLabel:
-_SplitRpnDateTime equ _SplitRpnDateTimeLabel-branchTableBase
-    .dw SplitRpnDateTime
-    .db 2
-_MergeRpnDateWithRpnTimeLabel:
-_MergeRpnDateWithRpnTime equ _MergeRpnDateWithRpnTimeLabel-branchTableBase
-    .dw MergeRpnDateWithRpnTime
-    .db 2
-_TruncateRpnDateTimeLabel:
-_TruncateRpnDateTime equ _TruncateRpnDateTimeLabel-branchTableBase
-    .dw TruncateRpnDateTime
-    .db 2
-; extenders
-_ExtendRpnDateTimeToOffsetDateTimeLabel:
-_ExtendRpnDateTimeToOffsetDateTime equ _ExtendRpnDateTimeToOffsetDateTimeLabel-branchTableBase
-    .dw ExtendRpnDateTimeToOffsetDateTime
-    .db 2
 ; extractors
 _RpnDateTimeExtractDateLabel:
 _RpnDateTimeExtractDate equ _RpnDateTimeExtractDateLabel-branchTableBase
@@ -1258,18 +1236,6 @@ _AddRpnOffsetDateTimeByDuration equ _AddRpnOffsetDateTimeByDurationLabel-branchT
 _SubRpnOffsetDateTimeByObjectLabel:
 _SubRpnOffsetDateTimeByObject equ _SubRpnOffsetDateTimeByObjectLabel-branchTableBase
     .dw SubRpnOffsetDateTimeByObject
-    .db 2
-_SplitRpnOffsetDateTimeLabel:
-_SplitRpnOffsetDateTime equ _SplitRpnOffsetDateTimeLabel-branchTableBase
-    .dw SplitRpnOffsetDateTime
-    .db 2
-_MergeRpnDateTimeWithRpnOffsetLabel:
-_MergeRpnDateTimeWithRpnOffset equ _MergeRpnDateTimeWithRpnOffsetLabel-branchTableBase
-    .dw MergeRpnDateTimeWithRpnOffset
-    .db 2
-_TruncateRpnOffsetDateTimeLabel:
-_TruncateRpnOffsetDateTime equ _TruncateRpnOffsetDateTimeLabel-branchTableBase
-    .dw TruncateRpnOffsetDateTime
     .db 2
 ; extractors
 _RpnOffsetDateTimeExtractDateLabel:
@@ -1362,6 +1328,28 @@ _SetAppTimeZone equ _SetAppTimeZoneLabel-branchTableBase
 _GetAppTimeZoneLabel:
 _GetAppTimeZone equ _GetAppTimeZoneLabel-branchTableBase
     .dw GetAppTimeZone
+    .db 2
+
+; genericdate2.asm
+_GenericDateIsLeapLabel:
+_GenericDateIsLeap equ _GenericDateIsLeapLabel-branchTableBase
+    .dw GenericDateIsLeap
+    .db 2
+_GenericDateShrinkLabel:
+_GenericDateShrink equ _GenericDateShrinkLabel-branchTableBase
+    .dw GenericDateShrink
+    .db 2
+_GenericDateExtendLabel:
+_GenericDateExtend equ _GenericDateExtendLabel-branchTableBase
+    .dw GenericDateExtend
+    .db 2
+_GenericDateCutLabel:
+_GenericDateCut equ _GenericDateCutLabel-branchTableBase
+    .dw GenericDateCut
+    .db 2
+_GenericDateLinkLabel:
+_GenericDateLink equ _GenericDateLinkLabel-branchTableBase
+    .dw GenericDateLink
     .db 2
 
 ; rtc2.asm

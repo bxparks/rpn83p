@@ -111,7 +111,7 @@ closeInputAndRecallUniversalX:
 closeInputAndRecallUniversalXY:
     call closeInput
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
-    bcall(_RclStackX) ; A=objectType
+    bcall(_RclStackX) ; A=objectType; TODO: replace with RclStackXY()
     call cp1ToCp3
     bcall(_RclStackY)
     ret

@@ -703,24 +703,8 @@ mIsDateTimeLeapHandler:
 mIsOffsetDateTimeLeapHandler:
 mGenericDateIsLeapHandler:
     call closeInputAndRecallUniversalX ; OP1=X=Real|Date-like
-mGenericDateIsYearLeapHandlerAltEntry:
-    cp rpnObjectTypeReal
-    jr z, isRealLeap
-    cp rpnObjectTypeDate
-    jr z, isObjectLeap
-    cp rpnObjectTypeDateTime
-    jr z, isObjectLeap
-    cp rpnObjectTypeOffsetDateTime
-    jr z, isObjectLeap
-    bcall(_ErrDataType)
-isRealLeap:
-    bcall(_IsYearLeap)
+    bcall(_GenericDateIsLeap) ; OP1:Real=0 or 1
     bcall(_ReplaceStackX)
-    ret
-isObjectLeap:
-    bcall(_IsDateLeap)
-    bcall(_ReplaceStackX)
-    ret
 
 ;-----------------------------------------------------------------------------
 
@@ -731,17 +715,7 @@ mOffsetDateTimeShrinkToDateTimeHandler:
 mGenericDateShrinkHandler:
     call closeInputAndRecallRpnDateLikeX ; A=rpnObjectType
 mGenericDateShrinkHandlerAltEntry:
-    cp rpnObjectTypeDateTime ; ZF=1 if RpnDateTime
-    jr z, dateShrinkRpnDateTime
-    cp rpnObjectTypeOffsetDateTime ; ZF=1 if RpnOffsetDateTime
-    jr z, dateShrinkRpnOffsetDateTime
-    bcall(_ErrDataType)
-dateShrinkRpnDateTime:
-    bcall(_TruncateRpnDateTime)
-    bcall(_ReplaceStackX)
-    ret
-dateShrinkRpnOffsetDateTime:
-    bcall(_TruncateRpnOffsetDateTime)
+    bcall(_GenericDateShrink)
     bcall(_ReplaceStackX)
     ret
 
@@ -754,17 +728,7 @@ mOffsetDateTimeExtendToNothingHandler:
 mGenericDateExtendHandler:
     call closeInputAndRecallRpnDateLikeX ; A=rpnObjectType
 mGenericDateExtendHandlerAltEntry:
-    cp rpnObjectTypeDate ; ZF=1 if RpnDate
-    jr z, dateExtendRpnDate
-    cp rpnObjectTypeDateTime ; ZF=1 if RpnDateTime
-    jr z, dateExtendRpnDateTime
-    bcall(_ErrDataType)
-dateExtendRpnDate:
-    bcall(_ExtendRpnDateToDateTime)
-    bcall(_ReplaceStackX)
-    ret
-dateExtendRpnDateTime:
-    bcall(_ExtendRpnDateTimeToOffsetDateTime)
+    bcall(_GenericDateExtend)
     bcall(_ReplaceStackX)
     ret
 
@@ -777,17 +741,8 @@ mOffsetDateTimeCutToDateTimeHandler:
 mGenericDateCutHandler:
     call closeInputAndRecallRpnDateLikeX ; A=rpnObjectType
 mGenericDateCutHandlerAltEntry:
-    cp rpnObjectTypeDateTime ; ZF=1 if RpnDateTime
-    jr z, dateCutRpnDateTime
-    cp rpnObjectTypeOffsetDateTime ; ZF=1 if RpnOffsetDateTime
-    jr z, dateCutRpnOffsetDateTime
-    bcall(_ErrDataType)
-dateCutRpnDateTime:
-    bcall(_SplitRpnDateTime) ; CP1=RpnTime; CP3=RpnDate
-    bcall(_ReplaceStackXWithCP1CP3)
-    ret
-dateCutRpnOffsetDateTime:
-    bcall(_SplitRpnOffsetDateTime) ; CP1=RpnOffset; CP3=RpnDateTime
+    bcall(_GenericDateCut)
+    ; CP1=X=RpnTime|RpnDateTime; CP3=Y=RpnDateTime|RpnOffset
     bcall(_ReplaceStackXWithCP1CP3)
     ret
 
@@ -795,55 +750,13 @@ dateCutRpnOffsetDateTime:
 
 ; Handle DLNK for Date, DateTime. Same as handleKeyLink (2ND LINK) but accepts
 ; only date-related objects. Complex and Real objects not allowed.
-;
-; TODO: I think we could move this into a file on Flash Page 2 (e.g.
-; dateops2.asm) to save space on Flash Page 1.
 mDateLinkToDateTimeHandler:
 mDateTimeLinkToOffsetDateTimeHandler:
 mOffsetDateTimeLinkToNothingHandler:
 mGenericDateLinkHandler:
-    call closeInputAndRecallRpnDateRelatedX ; A=rpnObjectType
+    call closeInputAndRecallUniversalXY ; A=rpnObjectType; CP1=Y; CP3=X
 mGenericDateLinkHandlerAltEntry:
-    cp rpnObjectTypeTime ; ZF=1 if RpnTime
-    jp z, dateLinkTime
-    cp rpnObjectTypeDate ; ZF=1 if RpnDate
-    jp z, dateLinkDate
-    cp rpnObjectTypeOffset ; ZF=1 if RpnOffset
-    jp z, dateLinkOffset
-    cp rpnObjectTypeDateTime ; ZF=1 if RpnDateTime
-    jp z, dateLinkDateTime
-dateLinkErrDataType:
-    bcall(_ErrDataType)
-dateLinkTime:
-    call cp1ToCp3 ; CP3=X
-    bcall(_RclStackY) ; CP1=Y; A=rpnObjectType
-    cp rpnObjectTypeDate ; ZF=1 if OP3=RpnDate
-    jr nz, dateLinkErrDataType
-    bcall(_MergeRpnDateWithRpnTime) ; OP1=rpnDateTime
-    bcall(_ReplaceStackXY)
-    ret
-dateLinkDate:
-    call cp1ToCp3 ; CP3=X
-    bcall(_RclStackY) ; CP1=Y; A=rpnObjectType
-    cp rpnObjectTypeTime ; ZF=1 if OP3=RpnTime
-    jr nz, dateLinkErrDataType
-    bcall(_MergeRpnDateWithRpnTime) ; OP1=rpnDateTime
-    bcall(_ReplaceStackXY)
-    ret
-dateLinkOffset:
-    call cp1ToCp3 ; CP3=X
-    bcall(_RclStackY) ; CP1=Y; A=rpnObjectType
-    cp rpnObjectTypeDateTime ; ZF=1 if OP3=RpnDateTime
-    jr nz, dateLinkErrDataType
-    bcall(_MergeRpnDateTimeWithRpnOffset) ; OP1=rpnOffsetDateOffset
-    bcall(_ReplaceStackXY)
-    ret
-dateLinkDateTime:
-    call cp1ToCp3 ; CP3=X
-    bcall(_RclStackY) ; CP1=Y; A=rpnObjectType
-    cp rpnObjectTypeOffset ; ZF=1 if OP3=RpnOffset
-    jr nz, dateLinkErrDataType
-    bcall(_MergeRpnDateTimeWithRpnOffset) ; OP1=rpnOffsetDateTime
+    bcall(_GenericDateLink) ; CP1=RpnDateTime|RpnOffsetDateTime
     bcall(_ReplaceStackXY)
     ret
 

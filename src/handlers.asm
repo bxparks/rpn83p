@@ -1225,11 +1225,11 @@ msgDrawPrompt:
 ;   - X:(Real|Complex|RpnDateTime|RpnOffsetDateTime)
 ;   - Y:(Real|Complex|RpnDateTime|RpnOffsetDateTime)
 handleKeyLink:
-    call closeInputAndRecallNone
-    bcall(_RclStackX) ; CP1=X; A=objectType
-    cp a, rpnObjectTypeReal
+    call closeInputAndRecallUniversalXY ; CP1=Y; CP3=X; A=rpnObjectTypeY
+    call getOp3RpnObjectType ; A=rpnObjectTypeX
+    cp rpnObjectTypeReal
     jr z, handleKeyLinkRealsToComplex
-    cp a, rpnObjectTypeComplex
+    cp rpnObjectTypeComplex
     jr z, handleKeyLinkComplexToReals
     ;
     cp rpnObjectTypeTime ; ZF=1 if RpnTime
@@ -1244,17 +1244,16 @@ handleKeyLinkErrDataType:
     bcall(_ErrDataType)
 handleKeyLinkComplexToReals:
     ; Convert complex into 2 reals
+    call cp3ToCp1 ; CP1=X
     bcall(_ComplexToReals) ; OP1=Re(X), OP2=Im(X)
     bcall(_ReplaceStackXWithOP1OP2) ; replace X with OP1,OP2
     ret
 handleKeyLinkRealsToComplex:
-    bcall(_PushRealO1) ; FPS=[Im]
-    ; Verify that Y is also real.
-    bcall(_RclStackY) ; CP1=Y; A=objectType
-    cp a, rpnObjectTypeReal
+    call getOp1RpnObjectType ; A=rpnObjectTypeY
+    cp rpnObjectTypeReal
     jr nz, handleKeyLinkErrDataType
-    ; Convert 2 reals to complex
-    bcall(_PopRealO2) ; FPS=[]; OP2=X=Im; OP1=Y=Re
+    ; Link 2 reals in CP1 and CP3
+    call op3ToOp2 ; OP1=Y, OP2=X
     bcall(_RealsToComplex) ; CP1=complex(OP1,OP2)
     bcall(_ReplaceStackXY) ; replace X, Y with CP1
     ret

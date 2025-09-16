@@ -917,6 +917,7 @@ defpage(2)
 #include "duration2.asm"
 #include "zoneconversion2.asm"
 #include "zone2.asm"
+#include "genericdate2.asm"
 #include "rtc2.asm"
 #include "formatdate2.asm"
 
