@@ -817,6 +817,192 @@ branchTableBase equ $4000
 ; Branch table entries in Flash Page 0 for routines on Flash Page 1.
 ;-----------------------------------------------------------------------------
 
+; varsstack.asm
+_InitStackLabel:
+_InitStack equ _InitStackLabel-branchTableBase
+    .dw InitStack
+    .db 1
+_InitLastXLabel:
+_InitLastX equ _InitLastXLabel-branchTableBase
+    .dw InitLastX
+    .db 1
+_ClearStackLabel:
+_ClearStack equ _ClearStackLabel-branchTableBase
+    .dw ClearStack
+    .db 1
+_CloseStackLabel:
+_CloseStack equ _CloseStackLabel-branchTableBase
+    .dw CloseStack
+    .db 1
+_LenStackLabel:
+_LenStack equ _LenStackLabel-branchTableBase
+    .dw LenStack
+    .db 1
+_ResizeStackLabel:
+_ResizeStack equ _ResizeStackLabel-branchTableBase
+    .dw ResizeStack
+    .db 1
+_StoStackXLabel:
+_StoStackX equ _StoStackXLabel-branchTableBase
+    .dw StoStackX
+    .db 1
+_RclStackXLabel:
+_RclStackX equ _RclStackXLabel-branchTableBase
+    .dw RclStackX
+    .db 1
+_StoStackYLabel:
+_StoStackY equ _StoStackYLabel-branchTableBase
+    .dw StoStackY
+    .db 1
+_RclStackYLabel:
+_RclStackY equ _RclStackYLabel-branchTableBase
+    .dw RclStackY
+    .db 1
+_StoStackZLabel:
+_StoStackZ equ _StoStackZLabel-branchTableBase
+    .dw StoStackZ
+    .db 1
+_RclStackZLabel:
+_RclStackZ equ _RclStackZLabel-branchTableBase
+    .dw RclStackZ
+    .db 1
+_StoStackTLabel:
+_StoStackT equ _StoStackTLabel-branchTableBase
+    .dw StoStackT
+    .db 1
+_RclStackTLabel:
+_RclStackT equ _RclStackTLabel-branchTableBase
+    .dw RclStackT
+    .db 1
+_StoStackLLabel:
+_StoStackL equ _StoStackLLabel-branchLableBase
+    .dw StoStackL
+    .db 1
+_RclStackLLabel:
+_RclStackL equ _RclStackLLabel-branchLableBase
+    .dw RclStackL
+    .db 1
+_ReplaceStackXLabel:
+_ReplaceStackX equ _ReplaceStackXLabel-branchTableBase
+    .dw ReplaceStackX
+    .db 1
+_ReplaceStackXYLabel:
+_ReplaceStackXY equ _ReplaceStackXYLabel-branchTableBase
+    .dw ReplaceStackXY
+    .db 1
+_ReplaceStackXYWithOP1OP2Label:
+_ReplaceStackXYWithOP1OP2 equ _ReplaceStackXYWithOP1OP2Label-branchTableBase
+    .dw ReplaceStackXYWithOP1OP2
+    .db 1
+_ReplaceStackXWithOP1OP2Label:
+_ReplaceStackXWithOP1OP2 equ _ReplaceStackXWithOP1OP2Label-branchTableBase
+    .dw ReplaceStackXWithOP1OP2
+    .db 1
+_ReplaceStackXWithCP1CP3Label:
+_ReplaceStackXWithCP1CP3 equ _ReplaceStackXWithCP1CP3Label-branchTableBase
+    .dw ReplaceStackXWithCP1CP3
+    .db 1
+_PushToStackXLabel:
+_PushToStackX equ _PushToStackXLabel-branchTableBase
+    .dw PushToStackX
+    .db 1
+_PushToStackXYLabel:
+_PushToStackXY equ _PushToStackXYLabel-branchTableBase
+    .dw PushToStackXY
+    .db 1
+_LiftStackIfEnabledLabel:
+_LiftStackIfEnabled equ _LiftStackIfEnabledLabel-branchTableBase
+    .dw LiftStackIfEnabled
+    .db 1
+_LiftStackLabel:
+_LiftStack equ _LiftStackLabel-branchTableBase
+    .dw LiftStack
+    .db 1
+_RollUpStackLabel:
+_RollUpStack equ _RollUpStackLabel-branchTableBase
+    .dw RollUpStack
+    .db 1
+_DropStackLabel:
+_DropStack equ _DropStackLabel-branchTableBase
+    .dw DropStack
+    .db 1
+_RollDownStackLabel:
+_RollDownStack equ _RollDownStackLabel-branchTableBase
+    .dw RollDownStack
+    .db 1
+_ExchangeStackXYLabel:
+_ExchangeStackXY equ _ExchangeStackXYLabel-branchTableBase
+    .dw ExchangeStackXY
+    .db 1
+
+; varsregs.asm
+_InitRegsLabel:
+_InitRegs equ _InitRegsLabel-branchTableBase
+    .dw InitRegs
+    .db 1
+_ClearRegsLabel:
+_ClearRegs equ _ClearRegsLabel-branchTableBase
+    .dw ClearRegs
+    .db 1
+_CloseRegsLabel:
+_CloseRegs equ _CloseRegsLabel-branchTableBase
+    .dw CloseRegs
+    .db 1
+_LenRegsLabel:
+_LenRegs equ _LenRegsLabel-branchTableBase
+    .dw LenRegs
+    .db 1
+_ResizeRegsLabel:
+_ResizeRegs equ _ResizeRegsLabel-branchTableBase
+    .dw ResizeRegs
+    .db 1
+_RclGenericLabel:
+_RclGeneric equ _RclGenericLabel-branchTableBase
+    .dw RclGeneric
+    .db 1
+_StoOpGenericLabel:
+_StoOpGeneric equ _StoOpGenericLabel-branchTableBase
+    .dw StoOpGeneric
+    .db 1
+_RclOpGenericLabel:
+_RclOpGeneric equ _RclOpGenericLabel-branchTableBase
+    .dw RclOpGeneric
+    .db 1
+
+; varsstat.asm
+_InitStatRegsLabel:
+_InitStatRegs equ _InitStatRegsLabel-branchTableBase
+    .dw InitStatRegs
+    .db 1
+_ClearStatRegsLabel:
+_ClearStatRegs equ _ClearStatRegsLabel-branchTableBase
+    .dw ClearStatRegs
+    .db 1
+_CloseStatRegsLabel:
+_CloseStatRegs equ _CloseStatRegsLabel-branchTableBase
+    .dw CloseStatRegs
+    .db 1
+_StoStatRegNNLabel:
+_StoStatRegNN equ _StoStatRegNNLabel-branchTableBase
+    .dw StoStatRegNN
+    .db 1
+_RclStatRegNNLabel:
+_RclStatRegNN equ _RclStatRegNNLabel-branchTableBase
+    .dw RclStatRegNN
+    .db 1
+_RclStatRegNNToOP2Label:
+_RclStatRegNNToOP2 equ _RclStatRegNNToOP2Label-branchTableBase
+    .dw RclStatRegNNToOP2
+    .db 1
+_StoAddStatRegNNLabel:
+_StoAddStatRegNN equ _StoAddStatRegNNLabel-branchTableBase
+    .dw StoAddStatRegNN
+    .db 1
+_StoSubStatRegNNLabel:
+_StoSubStatRegNN equ _StoSubStatRegNNLabel-branchTableBase
+    .dw StoSubStatRegNN
+    .db 1
+
 ; appstate1.asm
 _StoreAppStateLabel:
 _StoreAppState equ _StoreAppStateLabel-branchTableBase
@@ -2177,10 +2363,6 @@ _GetMenuNodeRowBeginId equ _GetMenuNodeRowBeginIdLabel-branchTableBase
 #include "argscanner.asm"
 #include "arghandlers.asm"
 #include "showscanner.asm"
-#include "vars.asm"
-#include "varsreg.asm"
-#include "varsstack.asm"
-#include "varsstat.asm"
 #include "input.asm"
 #include "display.asm"
 #include "menu.asm"
@@ -2213,6 +2395,11 @@ _GetMenuNodeRowBeginId equ _GetMenuNodeRowBeginIdLabel-branchTableBase
 
 defpage(1)
 
+#include "vars.asm"
+#include "varsreg.asm"
+#include "varsstack.asm"
+#include "varsstat.asm"
+;
 #include "appstate1.asm"
 #include "osstate1.asm"
 #include "help1.asm"
@@ -2241,6 +2428,8 @@ defpage(1)
 #include "prob1.asm"
 #include "format1.asm"
 #include "duration1.asm"
+;
+#include "common1.asm"
 ;
 #include "unitdef.asm"
 #include "unit1.asm"

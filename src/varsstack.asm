@@ -3,6 +3,9 @@
 ; Copyright (c) 2023 Brian T. Park
 ;
 ; RPN Stack implemented using an appVar named RPN83STK.
+;
+; Capitalized labels are intended to be exported to the branch table on flash
+; page 0. Lowercased labels are intended to be local to the current flash page.
 ;-----------------------------------------------------------------------------
 
 ; RPN stack using an RpnElementList which has the following structure:
@@ -28,13 +31,13 @@ stackVarName:
 ;   - stack lift enabled
 ;   - (stackSize)=len(RPN83PSTK)-1
 ; Destroys: all
-initStack:
+InitStack:
     set rpnFlagsLiftEnabled, (iy + rpnFlags)
     ld hl, stackVarName
     ld c, stackSizeDefault+1 ; add 1 for LastX register
     call initRpnElementList
     ; cache the stack size
-    call lenStack ; A=stackLen
+    call LenStack ; A=stackLen
     dec a ; ignore LastX register in element 0
     ld (stackSize), a
     ret
@@ -43,28 +46,28 @@ initStack:
 ; if ANS is real or complex. Otherwise, do nothing.
 ; Input: ANS
 ; Output: LastX=ANS
-initLastX:
+InitLastX:
     bcall(_RclAns)
     bcall(_CkOP1Real) ; if OP1 real: ZF=1
-    jp z, stoStackL
+    jp z, StoStackL
     bcall(_CkOP1Cplx) ; if OP complex: ZF=1
-    jp z, stoStackL
+    jp z, StoStackL
     ret
 
 ; Description: Clear the RPN stack.
 ; Input: none
 ; Output: stack registers all set to 0.0
 ; Destroys: all, OP1
-clearStack:
+ClearStack:
     set dirtyFlagsStack, (iy + dirtyFlags) ; force redraw
     set rpnFlagsLiftEnabled, (iy + rpnFlags) ; TODO: I think this can be removed
-    call lenStack ; A=len; DE=dataPointer
+    call LenStack ; A=len; DE=dataPointer
     ld c, a ; C=len
     ld b, 0 ; B=begin=0
     jp clearRpnElementList
 
 ; Description: Should be called just before existing the app.
-closeStack:
+CloseStack:
     ld hl, stackVarName
     jp closeRpnElementList
 
@@ -73,7 +76,7 @@ closeStack:
 ;   - A=length of RPN stack variable
 ;   - DE:(u8*)=dataPointer
 ; Destroys: BC, HL
-lenStack:
+LenStack:
     ld hl, stackVarName
     jp lenRpnElementList
 
@@ -83,11 +86,11 @@ lenStack:
 ;   - ZF=1 if newLen==oldLen
 ;   - CF=0 if newLen>oldLen
 ;   - CF=1 if newLen<oldLen
-resizeStack:
+ResizeStack:
     ld hl, stackVarName
     call resizeRpnElementList
     push af
-    call lenStack
+    call LenStack
     dec a ; ignore LastX register
     ld (stackSize), a
     pop af
@@ -126,14 +129,14 @@ rclStackNN:
 
 ; Description: Store OP1/OP2 to X.
 ; Destroys: all
-stoStackX:
+StoStackX:
     ld c, stackXIndex
     jr stoStackNN
 
 ; Description: Recall X to OP1/OP2.
 ; Output: A=objectType
 ; Destroys: all
-rclStackX:
+RclStackX:
     ld c, stackXIndex
     jr rclStackNN
 
@@ -141,14 +144,14 @@ rclStackX:
 
 ; Description: Store OP1/OP2 to Y.
 ; Destroys: all
-stoStackY:
+StoStackY:
     ld c, stackYIndex
     jr stoStackNN
 
 ; Description: Recall Y to OP1/OP2.
 ; Output: A=objectType
 ; Destroys: all
-rclStackY:
+RclStackY:
     ld c, stackYIndex
     jr rclStackNN
 
@@ -156,14 +159,14 @@ rclStackY:
 
 ; Description: Store OP1/OP2 to Z.
 ; Destroys: all
-stoStackZ:
+StoStackZ:
     ld c, stackZIndex
     jr stoStackNN
 
 ; Description: Recall Z to OP1/OP2.
 ; Output: A=objectType
 ; Destroys: all
-rclStackZ:
+RclStackZ:
     ld c, stackZIndex
     jr rclStackNN
 
@@ -171,14 +174,14 @@ rclStackZ:
 
 ; Description: Store OP1/OP2 to T.
 ; Destroys: all
-stoStackT:
+StoStackT:
     ld c, stackTIndex
     jr stoStackNN
 
 ; Description: Recall T to OP1/OP2.
 ; Output: A=objectType
 ; Destroys: all
-rclStackT:
+RclStackT:
     ld c, stackTIndex
     jr rclStackNN
 
@@ -186,23 +189,23 @@ rclStackT:
 
 ; Description: Store OP1/OP2 to L.
 ; Destroys: all
-stoStackL:
+StoStackL:
     ld c, stackLIndex
     jr stoStackNN
 
 ; Description: Recall L to OP1/OP2.
 ; Output: A=objectType
 ; Destroys: all
-rclStackL:
+RclStackL:
     ld c, stackLIndex
     jr rclStackNN
 
 ; Description: Save X to L, directly, without mutating OP1/OP2.
 ; Preserves: OP1/OP2
-saveLastX:
+SaveLastX:
     bcall(_PushRpnObject1) ; FPS=[OP1/OP2]
-    call rclStackX
-    call stoStackL
+    call RclStackX
+    call StoStackL
     bcall(_PopRpnObject1) ; FPS=[]; OP1/OP2=OP1/OP2
     ret
 
@@ -215,21 +218,21 @@ saveLastX:
 ; and setting dirty flag. Works for all RpnObject types.
 ; Input: CP1=OP1/OP2:RpnObject
 ; Preserves: OP1, OP2
-replaceStackX:
+ReplaceStackX:
     call checkValidRpnObjectCP1
-    call saveLastX
-    call stoStackX
+    call SaveLastX
+    call StoStackX
     ret
 
 ; Description: Replace X and Y with RpnObject in OP1/OP2, saving previous X to
 ; LastX, and setting dirty flag. Works for all RpnObject types.
 ; Input: CP1=OP1/OP2:RpnObject
 ; Preserves: OP1, OP2
-replaceStackXY:
+ReplaceStackXY:
     call checkValidRpnObjectCP1
-    call saveLastX
-    call dropStack
-    call stoStackX
+    call SaveLastX
+    call DropStack
+    call StoStackX
     ret
 
 ; Description: Replace X and Y with Real numbers OP1 and OP2, in that order.
@@ -243,18 +246,18 @@ replaceStackXY:
 ;   - X=OP2
 ;   - LastX=X
 ; Preserves: OP1, OP2
-replaceStackXYWithOP1OP2:
+ReplaceStackXYWithOP1OP2:
     ; validate OP1 and OP2 before modifying X and Y
     call checkValidRealOP1
-    call op1ExOp2
+    call op1ExOp2PageOne
     call checkValidRealOP1
-    call op1ExOp2
+    call op1ExOp2PageOne
     ;
-    call saveLastX
-    call stoStackY ; Y = OP1
-    call op1ExOp2
-    call stoStackX ; X = OP2
-    call op1ExOp2
+    call SaveLastX
+    call StoStackY ; Y = OP1
+    call op1ExOp2PageOne
+    call StoStackX ; X = OP2
+    call op1ExOp2PageOne
     ret
 
 ; Description: Replace X with Real numbers OP1 and OP2 in that order.
@@ -264,19 +267,19 @@ replaceStackXYWithOP1OP2:
 ;   - X=OP2
 ;   - LastX=X
 ; Preserves: OP1, OP2
-replaceStackXWithOP1OP2:
+ReplaceStackXWithOP1OP2:
     ; validate OP1 and OP2 before modifying X and Y
     call checkValidRealOP1
-    call op1ExOp2
+    call op1ExOp2PageOne
     call checkValidRealOP1
-    call op1ExOp2
+    call op1ExOp2PageOne
     ;
-    call saveLastX
-    call stoStackX
-    call liftStack
-    call op1ExOp2
-    call stoStackX
-    call op1ExOp2
+    call SaveLastX
+    call StoStackX
+    call LiftStack
+    call op1ExOp2PageOne
+    call StoStackX
+    call op1ExOp2PageOne
     ret
 
 ; Description: Replace X with objects in CP1 and CP3 in that order.
@@ -288,19 +291,19 @@ replaceStackXWithOP1OP2:
 ;   - X=CP3
 ;   - LastX=X
 ; Preserves: CP1, CP3
-replaceStackXWithCP1CP3:
+ReplaceStackXWithCP1CP3:
     ; validate CP1 and CP2 before modifying X and Y
     call checkValidRpnObjectCP1
-    call cp1ExCp3
+    call cp1ExCp3PageOne
     call checkValidRpnObjectCP1
-    call cp1ExCp3
+    call cp1ExCp3PageOne
     ;
-    call saveLastX
-    call stoStackX
-    call liftStack
-    call cp1ExCp3
-    call stoStackX
-    call cp1ExCp3
+    call SaveLastX
+    call StoStackX
+    call LiftStack
+    call cp1ExCp3PageOne
+    call StoStackX
+    call cp1ExCp3PageOne
     ret
 
 ;-----------------------------------------------------------------------------
@@ -314,10 +317,10 @@ replaceStackXWithCP1CP3:
 ;   - X=OP1/OP2
 ; Destroys: all
 ; Preserves: OP1, OP2, LastX
-pushToStackX:
+PushToStackX:
     call checkValidRpnObjectCP1
     call liftStackIfNonEmpty
-    call stoStackX
+    call StoStackX
     ret
 
 ; Description: Push Real numbers OP1 then OP2 onto the stack. LastX is not
@@ -330,18 +333,18 @@ pushToStackX:
 ;   - X=OP2
 ; Destroys: all
 ; Preserves: OP1, OP2, LastX
-pushToStackXY:
+PushToStackXY:
     call checkValidRealOP1
-    call op1ExOp2
+    call op1ExOp2PageOne
     call checkValidRealOP1
-    call op1ExOp2
+    call op1ExOp2PageOne
     ;
     call liftStackIfNonEmpty
-    call stoStackX
-    call liftStack
-    call op1ExOp2
-    call stoStackX
-    call op1ExOp2
+    call StoStackX
+    call LiftStack
+    call op1ExOp2PageOne
+    call StoStackX
+    call op1ExOp2PageOne
     ret
 
 ;-----------------------------------------------------------------------------
@@ -352,7 +355,7 @@ pushToStackXY:
 ; Input: OP1/OP2:RpnObject
 ; Destroys: A, HL
 checkValidRpnObjectCP1:
-    call getOp1RpnObjectType ; A=type; HL=OP1
+    call getOp1RpnObjectTypePageOne ; A=type; HL=OP1
     cp rpnObjectTypeReal
     jr z, checkValidNumber
     cp rpnObjectTypeComplex
@@ -382,7 +385,7 @@ checkValidNumber:
 ; Input: OP1/OP2:RpnObject
 ; Destroys: A, HL
 checkValidRealOP1:
-    call getOp1RpnObjectType ; A=type; HL=OP1
+    call getOp1RpnObjectTypePageOne ; A=type; HL=OP1
     cp rpnObjectTypeReal
     jr nz, checkValidRealErr
     bcall(_CkValidNum) ; dstroys AF, HL
@@ -407,7 +410,7 @@ liftStackIfNonEmpty:
 ; Output: T=Z; Z=Y; Y=X; X=X; OP1 preserved
 ; Destroys: all
 ; Preserves: OP1, OP2
-liftStackIfEnabled:
+LiftStackIfEnabled:
     bit rpnFlagsLiftEnabled, (iy + rpnFlags)
     ret z
     ; [[fallthrough]]
@@ -417,7 +420,7 @@ liftStackIfEnabled:
 ; Output: stack lifted
 ; Destroys: all
 ; Preserves: OP1, OP2
-liftStack:
+LiftStack:
     bcall(_PushRpnObject1) ; FPS=[OP1/OP2]
     call liftStackIntoOp1 ; OP1=lastElement, thrown away
     bcall(_PopRpnObject1) ; FPS=[]; OP1/OP2=OP1/OP2
@@ -432,7 +435,7 @@ liftStack:
 ; Destroys: all, OP1
 liftStackIntoOp1:
     ; Calculate moveSize=(numElements-2)*rpnElementSizeOf
-    call lenStack ; A=stackLen
+    call LenStack ; A=stackLen
     ld l, a
     dec l
     dec l
@@ -475,7 +478,7 @@ liftStackIntoOp1:
 ; Output: stack rolled up
 ; Destroys: all, OP1, OP2
 ; Preserves: none
-rollUpStack:
+RollUpStack:
     call liftStackIntoOp1 ; OP1=lastElement; DE=pointer to first element
     call moveRpnElementFromOp1 ; X=lastElement
     ret
@@ -487,7 +490,7 @@ rollUpStack:
 ; Output: stack dropped; OP1 preserved
 ; Destroys: all
 ; Preserves: OP1, OP2
-dropStack:
+DropStack:
     bcall(_PushRpnObject1) ; FPS=[OP1/OP2]
     call dropStackIntoOp1 ; OP1=X, thrown away
     bcall(_PopRpnObject1) ; FPS=[]; OP1/OP2=OP1/OP2
@@ -500,7 +503,7 @@ dropStack:
 ;   - DE=pointer to last element (to which OP1 can be copied to)
 dropStackIntoOp1:
     ; Calculate moveSize=(numElements-2)*rpnElementSizeOf
-    call lenStack ; A=stackLen
+    call LenStack ; A=stackLen
     ld l, a
     dec l
     dec l
@@ -532,7 +535,7 @@ dropStackIntoOp1:
 ; Output: X=Y; Y=Z; Z=T; T=X
 ; Destroys: all, OP1, OP2
 ; Preserves: none
-rollDownStack:
+RollDownStack:
     call dropStackIntoOp1 ; DE=pointer to last element; OP1=X
     call moveRpnElementFromOp1 ; lastElement=X
     ret
@@ -563,12 +566,12 @@ moveRpnElementFromOp1:
 ; Input: none
 ; Output: X=Y; Y=X
 ; Destroys: all, OP1, OP2
-exchangeStackXY:
+ExchangeStackXY:
     ld b, stackXIndex
     ld c, stackYIndex
     ld hl, stackVarName
     call rpnObjectIndexesToPointers ; DE=pointerX; HL=pointerY; destroys OP1
     ld b, rpnElementSizeOf
-    call exchangeLoop
+    call exchangeLoopPageOne
     set dirtyFlagsStack, (iy + dirtyFlags)
     ret

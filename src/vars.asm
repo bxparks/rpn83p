@@ -155,7 +155,7 @@
 ; Destroys: A, BC, DE, HL, OP1
 initRpnElementList:
     push bc ; stack=[len]
-    call move9ToOp1 ; OP1=varName
+    call move9ToOp1PageOne ; OP1=varName
     bcall(_ChkFindSym) ; DE=dataPointer; CF=1 if not found
     ld a, b ; A=romPage (0 if RAM)
     pop bc ; stack=[]; C=len
@@ -227,7 +227,7 @@ initRpnElementListHeader:
 clearRpnElementList:
     push de ; stack=[dataPointer]
     push bc ; stack=[dataPointer,begin/len]
-    call op1Set0 ; OP1=0.0
+    call op1Set0PageOne ; OP1=0.0
     ; calc the begin offset into appVar
     pop bc ; stack=[dataPointer]; B=begin; C=len
     ld a, c ; A=len
@@ -245,7 +245,7 @@ clearRpnElementListLoop:
     ld (de), a ; rpnObjectType
     inc de ; single type byte in RpnElementList
     push bc ; stack=[len]
-    call move9FromOp1 ; updates DE to the next element
+    call move9FromOp1PageOne ; updates DE to the next element
     ; Set the trailing bytes of the slot to binary 0.
     xor a
     ld b, rpnElementSizeOf-rpnRealSizeOf-1 ; 9 bytes
@@ -342,7 +342,7 @@ validateHLField:
 ;   - HL:(char*)=appVarName
 ; Destroys: A, BC, DE, HL, OP1
 closeRpnElementList:
-    call move9ToOp1 ; OP1=varName
+    call move9ToOp1PageOne ; OP1=varName
     bcall(_ChkFindSym) ; DE=dataPointer; CF=1 if not found
     ret c ; nothing we can do if the appVar isn't found
     ; Update the CRC checksum.
@@ -379,7 +379,7 @@ closeRpnElementList:
 ;   - Err:Undefined if appVarName does not exist
 ; Destroys: A, BC, DE, HL, OP1
 lenRpnElementList:
-    call move9ToOp1 ; OP1=varName
+    call move9ToOp1PageOne ; OP1=varName
     bcall(_ChkFindSym) ; DE=dataPointer; CF=1 if not found
     jr c, lenRpnElementListNotFound
     call calcLenRpnElementList ; ZF=1 if valid
@@ -412,7 +412,7 @@ calcLenRpnElementList:
     sbc hl, bc ; HL=appVarSize-rpnVarHeaderSize
     ; divide rpnElementListSize/sizeof(RpnElement)
     ld c, rpnElementSizeOf
-    call divHLByC ; HL=quotient; A=remainder; preserves DE
+    call divHLByCPageOne ; HL=quotient; A=remainder; preserves DE
     or a ; ZF=1 if no remainder (i.e valid)
     ld a, l ; A=numElements
     ret
@@ -626,7 +626,7 @@ rpnElementLenToSize:
 rpnObjectIndexesToPointers:
     ; find varName
     push bc ; stack=[BC]
-    call move9ToOp1 ; OP1=varName
+    call move9ToOp1PageOne ; OP1=varName
     bcall(_ChkFindSym) ; DE=dataPointer; CF=1 if not found
     jr c, rpnElementListUndefined ; Not found, this should never happen.
     ; translate index2 into elementPointer
@@ -660,7 +660,7 @@ stoRpnObject:
     ; get objectType of OP1/OP2, this is one of the few (perhaps only) case
     ; where HL must be saved before calling getOp1RpnObjectType().
     push hl ; stack=[varName]
-    call getOp1RpnObjectType ; A=type; HL=OP1
+    call getOp1RpnObjectTypePageOne ; A=type; HL=OP1
     pop hl ; stack=[]; HL=varName
     ld b, a ; B=rpnObjectType
     push bc ; stack=[index/objectType]
@@ -669,7 +669,7 @@ stoRpnObject:
     bcall(_PushRpnObject1) ; FPS=[OP1/OP2]
     pop hl ; stack=[index/objectType]; HL=varName
     ; find varName
-    call move9ToOp1 ; OP1=varName
+    call move9ToOp1PageOne ; OP1=varName
     bcall(_ChkFindSym) ; DE=dataPointer; CF=1 if not found
     jr c, rpnElementListUndefined ; Not found, this should never happen.
     ; find elementPointer of index
@@ -720,7 +720,7 @@ rpnElementListUndefined:
 rclRpnObject:
     ; find varName
     push bc ; stack=[index]
-    call move9ToOp1 ; OP1=varName
+    call move9ToOp1PageOne ; OP1=varName
     bcall(_ChkFindSym) ; DE=dataPointer; CF=1 if not found
     pop bc ; C=[index]
     jr c, rpnElementListUndefined

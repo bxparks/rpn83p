@@ -115,7 +115,7 @@ checkOp1AndOp3Real:
 ; Throws: Err:DateType if not
 ; Destroys: OP1/OP2
 validateOp1Real:
-    call checkOp1Real
+    call checkOp1RealPageOne
     ret z
     bcall(_ErrDataType)
 
@@ -137,7 +137,7 @@ checkOp1Complex:
 ; Output: ZF=1 if either parameter is complex
 ; Destroys: A
 checkOp1OrOp3Complex:
-    call checkOp1Complex ; ZF=1 if complex
+    call checkOp1ComplexPageOne ; ZF=1 if complex
     ret z
     ; [[fallthrough]]
 

@@ -11,6 +11,41 @@
 ;-----------------------------------------------------------------------------
 
 ;-----------------------------------------------------------------------------
+; Real numbers.
+;-----------------------------------------------------------------------------
+
+; Description: Check that OP1 is a Real number.
+; Input: OP1
+; Output: ZF=1 if real
+; Destroys: A
+checkOp1RealPageOne:
+    call getOp1RpnObjectType
+    cp rpnObjectTypeReal
+    ret
+
+; Description: Check that OP3 is a Real number.
+; Input: OP3
+; Output: ZF=1 if real
+; Destroys: A
+checkOp3RealPageOne:
+    call getOp3RpnObjectType
+    cp rpnObjectTypeReal
+    ret
+
+;-----------------------------------------------------------------------------
+; Complex numbers.
+;-----------------------------------------------------------------------------
+
+; Description: Same as CkOP1Cplx() OS routine without the bcall() overhead.
+; Input: OP1
+; Output: ZF=1 if complex
+; Destroys: A
+checkOp1ComplexPageOne:
+    call getOp1RpnObjectType
+    cp rpnObjectTypeComplex
+    ret
+
+;-----------------------------------------------------------------------------
 ; Get rpnObjectType.
 ;-----------------------------------------------------------------------------
 

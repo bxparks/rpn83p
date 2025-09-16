@@ -50,7 +50,7 @@ exchange9PageOne:
 
 ; Description: Exchange 'B' bytes between DE and HL.
 ; Destroys: all registers
-exchangePageOneLoop:
+exchangeLoopPageOne:
     ld a, (de)
     ld c, (hl)
     ld (hl), a
@@ -58,7 +58,7 @@ exchangePageOneLoop:
     ld (de), a
     inc de
     inc hl
-    djnz exchangePageOneLoop
+    djnz exchangeLoopPageOne
     ret
 
 ; Description: Exchange the top 2 floating point numbers on the FPS.
@@ -207,6 +207,40 @@ op4ToOp1PageOne:
     jr move9ToOp1PageOne
 
 ;-----------------------------------------------------------------------------
+; Complex numbers in OPx registers. Complex numbers are stored in consecutive
+; registers (e.g. OP1/OP2), but each OPx register is 11 bytes wide not 9 bytes,
+; which explains the 22 bytes that we move below.
+;-----------------------------------------------------------------------------
+
+; Input: HL=pointer to 2 floats in OPx registers.
+; Destroys: BC, DE, HL
+; Preserves: A
+move22ToOp1PageOne:
+    ld de, OP1
+    ld bc, 22
+    ldir
+    ret
+
+; Input: HL=pointer to 2 floats in OPx registers.
+; Destroys: BC, DE, HL
+; Preserves: A
+move22ToOp3PageOne:
+    ld de, OP3
+    ld bc, 22
+    ldir
+    ret
+
+; Description: Move complex number in OP1/OP2 to OP3/OP4.
+; Preserves: A
+cp1ToCp3PageOne:
+    ld hl, OP1
+    jr move22ToOp3PageOne
+
+; Description: Move complex number in OP3/OP4 to OP1/OP2.
+; Preserves: A
+cp3ToCp1PageOne:
+    ld hl, OP3
+    jr move22ToOp1PageOne
 
 ; Description: Exchange OP1 with OP2. Inlined version of bcall(_OP1ExOP2) to
 ; avoid the overhead of bcall().
@@ -222,7 +256,7 @@ cp1ExCp3PageOne:
     ld de, OP1
     ld hl, OP3
     ld b, 22 ; each OP register is 11 bytes
-    jp exchangePageOneLoop
+    jp exchangeLoopPageOne
 
 ;-----------------------------------------------------------------------------
 

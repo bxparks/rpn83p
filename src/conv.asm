@@ -15,7 +15,7 @@
 ;
 ; It looks like CAbs() does *not* throw an Err:Overflow exception when the
 ; exponent becomes >=100. But when the OP1 is saved into the Stack X register
-; through replaceStackXY(), the bcall(_CkValidNum) will be called, and it will
+; through ReplaceStackXY(), the bcall(_CkValidNum) will be called, and it will
 ; detect an overflow and throw an Err:Overflow exception.
 ;
 ; Input:

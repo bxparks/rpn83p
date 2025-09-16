@@ -29,7 +29,7 @@ enterNumberCharacter:
 enterNumberCharacterIfNonEditing:
     ; Lift the stack, unless disabled.
     push af ; preserve A=char to insert
-    call liftStackIfEnabled
+    bcall(_LiftStackIfEnabled)
     pop af
     ; Go into editing mode.
     bcall(_ClearInputBuf) ; preserves A
@@ -575,7 +575,8 @@ handleKeyClear:
 #ifdef DEBUG
     bcall(_DebugClear)
 #endif
-    jp clearStack
+    bcall(_ClearStack)
+    ret
 handleKeyClearNormal:
     ; We are here if CLEAR was pressed when there are no other error conditions
     ; previously. If we are already in edit mode, then we clear the inputBuf.
@@ -659,9 +660,9 @@ handleKeyChs:
     jr nz, handleKeyChsInputBuf
 handleKeyChsX:
     ; Not in edit mode, so change sign of X register
-    call rclStackX
+    bcall(_RclStackX)
     call universalChs
-    call stoStackX
+    bcall(_StoStackX)
     ret
 handleKeyChsInputBuf:
     ; In edit mode, so change sign of the component identified by the cursor
@@ -676,7 +677,7 @@ handleKeyChsInputBuf:
 ; Destroys: all, OP1, OP2, OP4
 handleKeyEnter:
     call closeInputAndRecallNone
-    call liftStack ; always lift the stack
+    bcall(_LiftStack) ; always lift the stack
     res rpnFlagsLiftEnabled, (iy + rpnFlags)
     ret
 
@@ -881,7 +882,8 @@ handleKeyAdd:
     jp nz, mBaseAddHandler
     call closeInputAndRecallUniversalXY ; CP1=Y; CP3=X
     call universalAdd
-    jp replaceStackXY
+    bcall(_ReplaceStackXY)
+    ret
 
 ; Description: Handle the Sub key.
 ; Input: inputBuf
@@ -892,7 +894,8 @@ handleKeySub:
     jp nz, mBaseSubtHandler
     call closeInputAndRecallUniversalXY ; CP1=X; CP3=Y
     call universalSub
-    jp replaceStackXY
+    bcall(_ReplaceStackXY)
+    ret
 
 ; Description: Handle the Mul key.
 ; Input: inputBuf
@@ -903,7 +906,8 @@ handleKeyMul:
     jp nz, mBaseMultHandler
     call closeInputAndRecallUniversalXY ; CP1=Y; CP3=X
     call universalMult
-    jp replaceStackXY
+    bcall(_ReplaceStackXY)
+    ret
 
 ; Description: Handle the Div key.
 ; Input: inputBuf
@@ -914,7 +918,8 @@ handleKeyDiv:
     jp nz, mBaseDivHandler
     call closeInputAndRecallUniversalXY ; CP1=Y; CP3=X
     call universalDiv
-    jp replaceStackXY
+    bcall(_ReplaceStackXY)
+    ret
 
 ;-----------------------------------------------------------------------------
 ; Constants: pi and e. There does not seem to be an existing bcall() that loads
@@ -927,12 +932,14 @@ handleKeyDiv:
 handleKeyPi:
     call closeInputAndRecallNone
     call op1SetPi
-    jp pushToStackX
+    bcall(_PushToStackX)
+    ret
 
 handleKeyEuler:
     call closeInputAndRecallNone
     call op1SetEuler
-    jp pushToStackX
+    bcall(_PushToStackX)
+    ret
 
 ;-----------------------------------------------------------------------------
 ; Alegbraic functions.
@@ -942,7 +949,8 @@ handleKeyEuler:
 handleKeyExpon:
     call closeInputAndRecallUniversalXY ; CP1=Y; CP3=X
     call universalPow
-    jp replaceStackXY
+    bcall(_ReplaceStackXY)
+    ret
 
 ; Description: Handle the 1/x button. For Real and Complex, this is the
 ; reciprocal function. But for RpnDateTime and RpnOffsetDateTime, this button
@@ -955,7 +963,8 @@ handleKeyInv:
     cp rpnObjectTypeOffsetDateTime
     jp z, mGenericDateCutHandlerAltEntry
     call universalRecip
-    jp replaceStackX
+    bcall(_ReplaceStackX)
+    ret
 
 ; Description: Handle the x^2 button. For Real and Complex, this performs the
 ; X^2 function. But for RpnDate, RpnDateTime, this invokes the DEXT
@@ -967,7 +976,8 @@ handleKeySquare:
     cp rpnObjectTypeDateTime
     jp z, mGenericDateExtendHandlerAltEntry
     call universalSquare
-    jp replaceStackX
+    bcall(_ReplaceStackX)
+    ret
 
 ; Description: Handle the sqrt(x) button. For Real and Complex, this performs
 ; the sqrt(x) function. But for RpnDateTime and RpnOffsetDateTime, this invokes
@@ -979,7 +989,8 @@ handleKeySqrt:
     cp rpnObjectTypeOffsetDateTime
     jp z, mGenericDateShrinkHandlerAltEntry
     call universalSqRoot
-    jp replaceStackX
+    bcall(_ReplaceStackX)
+    ret
 
 ;-----------------------------------------------------------------------------
 ; Stack operations
@@ -987,20 +998,24 @@ handleKeySqrt:
 
 handleKeyRollUp:
     call closeInputAndRecallNone
-    jp rollUpStack
+    bcall(_RollUpStack)
+    ret
 
 handleKeyRollDown:
     call closeInputAndRecallNone
-    jp rollDownStack
+    bcall(_RollDownStack)
+    ret
 
 handleKeyExchangeXY:
     call closeInputAndRecallNone
-    jp exchangeStackXY
+    bcall(_ExchangeStackXY)
+    ret
 
 handleKeyAns:
     call closeInputAndRecallNone
-    call rclStackL
-    jp pushToStackX
+    bcall(_RclStackL)
+    bcall(_PushToStackX)
+    ret
 
 ;-----------------------------------------------------------------------------
 ; Transcendentals
@@ -1009,22 +1024,26 @@ handleKeyAns:
 handleKeyLog:
     call closeInputAndRecallUniversalX
     call universalLog ; A=numReturnValues
-    jp replaceStackX
+    bcall(_ReplaceStackX)
+    ret
 
 handleKeyALog:
     call closeInputAndRecallUniversalX
     call universalTenPow
-    jp replaceStackX
+    bcall(_ReplaceStackX)
+    ret
 
 handleKeyLn:
     call closeInputAndRecallUniversalX
     call universalLn
-    jp replaceStackX
+    bcall(_ReplaceStackX)
+    ret
 
 handleKeyExp:
     call closeInputAndRecallUniversalX
     call universalExp
-    jp replaceStackX
+    bcall(_ReplaceStackX)
+    ret
 
 ;-----------------------------------------------------------------------------
 ; Trignometric
@@ -1033,32 +1052,38 @@ handleKeyExp:
 handleKeySin:
     call closeInputAndRecallX
     bcall(_Sin)
-    jp replaceStackX
+    bcall(_ReplaceStackX)
+    ret
 
 handleKeyCos:
     call closeInputAndRecallX
     bcall(_Cos)
-    jp replaceStackX
+    bcall(_ReplaceStackX)
+    ret
 
 handleKeyTan:
     call closeInputAndRecallX
     bcall(_Tan)
-    jp replaceStackX
+    bcall(_ReplaceStackX)
+    ret
 
 handleKeyASin:
     call closeInputAndRecallX
     bcall(_ASin)
-    jp replaceStackX
+    bcall(_ReplaceStackX)
+    ret
 
 handleKeyACos:
     call closeInputAndRecallX
     bcall(_ACos)
-    jp replaceStackX
+    bcall(_ReplaceStackX)
+    ret
 
 handleKeyATan:
     call closeInputAndRecallX
     bcall(_ATan)
-    jp replaceStackX
+    bcall(_ReplaceStackX)
+    ret
 
 ;-----------------------------------------------------------------------------
 ; User registers, accessed through RCL nn and STO nn.
@@ -1074,22 +1099,23 @@ handleKeySto:
     ret nz ; do nothing if cancelled
     cp argModifierIndirect
     ret nc ; TODO: implement this
-    call rclStackX ; OP1/OP2=X
+    bcall(_RclStackX) ; OP1/OP2=X
     ; Set up Sto parameters
     ld a, (argValue) ; A=indexOrLetter
     ld c, a ; C=index or letter
     ld a, (argModifier)
     ld b, a ; B=op
     ld a, (argType) ; A=argType
-    jp stoOpGeneric
+    bcall(_StoOpGeneric)
+    ret
 handleKeyStoInvalid:
     bcall(_ErrInvalid)
 
 ; Description: Handle the RCL button. There are 2 cases:
-; 1) If {op} is empty, it's a simple assignment, so we call rclGeneric() and
+; 1) If {op} is empty, it's a simple assignment, so we call RclGeneric() and
 ; push the value on to the RPN stack.
 ; 2) If the {op} is not empty, it is an arithmetic operator, we call
-; rclOpGeneric() and *replace* the current X with the new X.
+; RclOpGeneric() and *replace* the current X with the new X.
 handleKeyRcl:
     call closeInputAndRecallNone
     ld hl, msgRclPrompt
@@ -1106,19 +1132,21 @@ handleKeyRcl:
     ld b, a ; B=modifier
     or a
     jr nz, handleKeyRclOp
-    ; No modifier, so call rclGeneric() and *push* value onto the RPN stack.
+    ; No modifier, so call RclGeneric() and *push* value onto the RPN stack.
     ld a, (argType) ; A=argType
-    call rclGeneric
-    jp pushToStackX
+    bcall(_RclGeneric)
+    bcall(_PushToStackX)
+    ret
 handleKeyRclOp:
-    ; Modifier provided, so call rclOpGeneric() and *replace* the X register
+    ; Modifier provided, so call RclOpGeneric() and *replace* the X register
     ; with (OP1 {op} registerOrVariable).
     push bc ; stack=[BC saved]
-    call rclStackX ; OP1=X
+    bcall(_RclStackX) ; OP1=X
     pop bc ; BC=restored
     ld a, (argType) ; A=argType
-    call rclOpGeneric
-    jp replaceStackX ; updates LastX
+    bcall(_RclOpGeneric)
+    bcall(_ReplaceStackX) ; updates LastX
+    ret
 
 msgStoPrompt:
     .db "STO", 0
@@ -1198,7 +1226,7 @@ msgDrawPrompt:
 ;   - Y:(Real|Complex|RpnDateTime|RpnOffsetDateTime)
 handleKeyLink:
     call closeInputAndRecallNone
-    call rclStackX ; CP1=X; A=objectType
+    bcall(_RclStackX) ; CP1=X; A=objectType
     cp a, rpnObjectTypeReal
     jr z, handleKeyLinkRealsToComplex
     cp a, rpnObjectTypeComplex
@@ -1217,14 +1245,16 @@ handleKeyLinkErrDataType:
 handleKeyLinkComplexToReals:
     ; Convert complex into 2 reals
     bcall(_ComplexToReals) ; OP1=Re(X), OP2=Im(X)
-    jp replaceStackXWithOP1OP2 ; replace X with OP1,OP2
+    bcall(_ReplaceStackXWithOP1OP2) ; replace X with OP1,OP2
+    ret
 handleKeyLinkRealsToComplex:
     bcall(_PushRealO1) ; FPS=[Im]
     ; Verify that Y is also real.
-    call rclStackY ; CP1=Y; A=objectType
+    bcall(_RclStackY) ; CP1=Y; A=objectType
     cp a, rpnObjectTypeReal
     jr nz, handleKeyLinkErrDataType
     ; Convert 2 reals to complex
     bcall(_PopRealO2) ; FPS=[]; OP2=X=Im; OP1=Y=Re
     bcall(_RealsToComplex) ; CP1=complex(OP1,OP2)
-    jp replaceStackXY ; replace X, Y with CP1
+    bcall(_ReplaceStackXY) ; replace X, Y with CP1
+    ret

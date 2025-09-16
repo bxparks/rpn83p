@@ -121,115 +121,136 @@ mBaseNameSelectorAlt:
 mBitwiseAndHandler:
     call closeInputAndRecallXY ; OP1=Y; OP2=X
     bcall(_BitwiseAnd) ; OP1=X AND Y
-    jp replaceStackXY
+    bcall(_ReplaceStackXY)
+    ret
 
 mBitwiseOrHandler:
     call closeInputAndRecallXY ; OP1=Y; OP2=X
     bcall(_BitwiseOr) ; OP1=X OR Y
-    jp replaceStackXY
+    bcall(_ReplaceStackXY)
+    ret
 
 mBitwiseXorHandler:
     call closeInputAndRecallXY ; OP1=Y; OP2=X
     bcall(_BitwiseXor) ; OP1=X XOR Y
-    jp replaceStackXY
+    bcall(_ReplaceStackXY)
+    ret
 
 mBitwiseNotHandler:
     call closeInputAndRecallX ; OP1=X
     bcall(_BitwiseNot) ; OP1=NOT(X)
-    jp replaceStackX
+    bcall(_ReplaceStackX)
+    ret
 
 mBitwiseNegHandler:
     call closeInputAndRecallX ; OP1=X
     bcall(_BitwiseNeg) ; OP1=NEG(X)
-    jp replaceStackX
+    bcall(_ReplaceStackX)
+    ret
 
 ;-----------------------------------------------------------------------------
 
 mShiftLeftLogicalHandler:
     call closeInputAndRecallX ; OP1=X
     bcall(_BaseShiftLeftLogical) ; OP1=shiftLeftLogical(OP1)
-    jp replaceStackX
+    bcall(_ReplaceStackX)
+    ret
 
 mShiftRightLogicalHandler:
     call closeInputAndRecallX ; OP1=X
     bcall(_BaseShiftRightLogical) ; OP1=shiftRightLogical(OP1)
-    jp replaceStackX
+    bcall(_ReplaceStackX)
+    ret
 
 mShiftRightArithmeticHandler:
     call closeInputAndRecallX ; OP1=X
     bcall(_BaseShiftRightArithmetic) ; OP1=shiftRightArithmetic(OP1)
-    jp replaceStackX
+    bcall(_ReplaceStackX)
+    ret
 
 mShiftLeftLogicalNHandler:
     call closeInputAndRecallXY ; OP1=Y; OP2=X
     bcall(_BaseShiftLeftLogicalN) ; OP1=shiftLeftLogicalN(OP1,OP2)
-    jp replaceStackXY
+    bcall(_ReplaceStackXY)
+    ret
 
 mShiftRightLogicalNHandler:
     call closeInputAndRecallXY ; OP1=Y; OP2=X
     bcall(_BaseShiftRightLogicalN) ; OP1=shiftRightLogicalN(OP1,OP2)
-    jp replaceStackXY
+    bcall(_ReplaceStackXY)
+    ret
 
 ;-----------------------------------------------------------------------------
 
 mRotateLeftCircularHandler:
     call closeInputAndRecallX ; OP1=X
     bcall(_BaseRotateLeftCircular) ; OP3=rotateLeftCircular(OP3)
-    jp replaceStackX
+    bcall(_ReplaceStackX)
+    ret
 
 mRotateRightCircularHandler:
     call closeInputAndRecallX ; OP1=X
     bcall(_BaseRotateRightCircular) ; OP1=rotateRightCircular(OP1)
-    jp replaceStackX
+    bcall(_ReplaceStackX)
+    ret
 
 mRotateLeftCarryHandler:
     call closeInputAndRecallX ; OP1=X
     bcall(_BaseRotateLeftCarry) ; OP1=rotateLeftCarry(OP1)
-    jp replaceStackX
+    bcall(_ReplaceStackX)
+    ret
 
 mRotateRightCarryHandler:
     call closeInputAndRecallX ; OP1=X
     bcall(_BaseRotateRightCarry) ; OP1=rotateRightCarry(OP1)
-    jp replaceStackX
+    bcall(_ReplaceStackX)
+    ret
 
 ;-----------------------------------------------------------------------------
 
 mRotateLeftCircularNHandler:
     call closeInputAndRecallXY ; OP1=Y; OP2=X
     bcall(_BaseRotateLeftCircularN)
-    jp replaceStackXY
+    bcall(_ReplaceStackXY)
+    ret
 
 mRotateRightCircularNHandler:
     call closeInputAndRecallXY ; OP1=Y; OP2=X
     bcall(_BaseRotateRightCircularN)
-    jp replaceStackXY
+    bcall(_ReplaceStackXY)
+    ret
 
 mRotateLeftCarryNHandler:
     call closeInputAndRecallXY ; OP1=Y; OP2=X
     bcall(_BaseRotateLeftCarryN)
-    jp replaceStackXY
+    bcall(_ReplaceStackXY)
+    ret
 
 mRotateRightCarryNHandler:
     call closeInputAndRecallXY ; OP1=Y; OP2=X
     bcall(_BaseRotateRightCarryN)
-    jp replaceStackXY
+    bcall(_ReplaceStackXY)
+    ret
 
 ;-----------------------------------------------------------------------------
 
 mBaseAddHandler:
     call closeInputAndRecallXY ; OP1=Y; OP2=X
     bcall(_BaseAdd) ; OP1+=OP2
-    jp replaceStackXY
+    bcall(_ReplaceStackXY)
+    ret
 
 mBaseSubtHandler:
     call closeInputAndRecallXY ; OP1=Y; OP2=X
     bcall(_BaseSub) ; OP1-=OP2
-    jp replaceStackXY
+    bcall(_ReplaceStackXY)
+    ret
 
 mBaseMultHandler:
     call closeInputAndRecallXY ; OP1=Y; OP2=X
     bcall(_BaseMult) ; OP1*=OP2
-    jp replaceStackXY
+    bcall(_ReplaceStackXY)
+    ret
 
 ; Description: Calculate base x/y.
 ; Output:
@@ -238,7 +259,8 @@ mBaseMultHandler:
 mBaseDivHandler:
     call closeInputAndRecallXY ; OP1=Y; OP2=X
     bcall(_BaseDiv) ; OP1=OP1/OP2
-    jp replaceStackXY
+    bcall(_ReplaceStackXY)
+    ret
 
 ; Description: Calculate base div(x, y) -> (y/x, y % x).
 ; Output:
@@ -247,34 +269,40 @@ mBaseDivHandler:
 mBaseDiv2Handler:
     call closeInputAndRecallXY ; OP1=Y; OP2=X
     bcall(_BaseDiv2) ; OP1=remainder; OP2=quotient
-    jp replaceStackXYWithOP1OP2 ; Y=remainder, X=quotient
+    bcall(_ReplaceStackXYWithOP1OP2) ; Y=remainder, X=quotient
+    ret
 
 ;-----------------------------------------------------------------------------
 
 mReverseBitHandler:
     call closeInputAndRecallX ; OP1=X
     bcall(_BaseReverseBits) ; OP1=reverseBits(OP1)
-    jp replaceStackX
+    bcall(_ReplaceStackX)
+    ret
 
 mCountBitHandler:
     call closeInputAndRecallX ; OP1=X
     bcall(_BaseCountBits) ; OP1=countBits(OP1)
-    jp replaceStackX
+    bcall(_ReplaceStackX)
+    ret
 
 mClearBitHandler:
     call closeInputAndRecallXY ; OP1=Y; OP2=X
     bcall(_BaseClearBit) ; OP1=clearBit(OP1,OP2)
-    jp replaceStackXY
+    bcall(_ReplaceStackXY)
+    ret
 
 mSetBitHandler:
     call closeInputAndRecallXY ; OP1=Y; OP2=X
     bcall(_BaseSetBit) ; OP1=setBit(OP1,OP2)
-    jp replaceStackXY
+    bcall(_ReplaceStackXY)
+    ret
 
 mGetBitHandler:
     call closeInputAndRecallXY ; OP1=Y; OP2=X
     bcall(_BaseGetBit) ; OP1=bit(OP1,OP2)
-    jp replaceStackXY
+    bcall(_ReplaceStackXY)
+    ret
 
 ;-----------------------------------------------------------------------------
 
@@ -293,7 +321,8 @@ mSetCarryFlagHandler:
 mGetCarryFlagHandler:
     call closeInputAndRecallNone
     bcall(_BaseGetCarryFlag) ; OP1=float(baseCarryFlag)
-    jp pushToStackX
+    bcall(_PushToStackX)
+    ret
 
 ;-----------------------------------------------------------------------------
 
@@ -315,4 +344,5 @@ msgWordSizePrompt:
 mGetWordSizeHandler:
     call closeInputAndRecallNone
     bcall(_BaseGetWordSize)
-    jp pushToStackX
+    bcall(_PushToStackX)
+    ret
