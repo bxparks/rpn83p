@@ -563,7 +563,7 @@ mUnitKelvinHandler:
     jp commonUnitHandler
 
 ;-----------------------------------------------------------------------------
-; UNIT > VELO > Row 1
+; UNIT > SPD > Row 1
 ;-----------------------------------------------------------------------------
 
 mUnitMeterPerSecondHandler:
@@ -580,6 +580,18 @@ mUnitKiloMeterPerHourHandler:
 
 mUnitMilePerHourHandler:
     ld a, unitMilePerHourId
+    jp commonUnitHandler
+
+mUnitKnotHandler:
+    ld a, unitKnotId
+    jp commonUnitHandler
+
+;-----------------------------------------------------------------------------
+; UNIT > SPD > Row 2
+;-----------------------------------------------------------------------------
+
+mUnitLightSpeedHandler:
+    ld a, unitLightSpeedId
     jp commonUnitHandler
 
 ;-----------------------------------------------------------------------------

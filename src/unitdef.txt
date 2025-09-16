@@ -27,7 +27,7 @@ UnitClasses [
   UnitClass Volume
   UnitClass Mass
   UnitClass Temperature
-  UnitClass Velocity
+  UnitClass Speed
   UnitClass Force
   UnitClass Pressure
   UnitClass Energy
@@ -225,13 +225,16 @@ Units [
   Unit Kelvin <Stemp>K Temperature 1 Kelvin # add <Stemp> to 'K' for visual hint
 
   #----------------------------------------------------------------------------
-  # Velocity
+  # Speed
   #----------------------------------------------------------------------------
 
-  Unit MeterPerSecond m<Sslash>s Velocity 1 MeterPerSecond
-  Unit FootPerSecond ft<Sslash>s Velocity 0.3048 MeterPerSecond
-  Unit KiloMeterPerHour km<Sslash>hr Velocity 0.27777777777778 MeterPerSecond
-  Unit MilePerHour mi<Sslash>hr Velocity 0.44704 MeterPerSecond
+  Unit MeterPerSecond m<Sslash>s Speed 1 MeterPerSecond
+  Unit FootPerSecond ft<Sslash>s Speed 0.3048 MeterPerSecond
+  Unit KiloMeterPerHour km<Sslash>hr Speed 0.27777777777778 MeterPerSecond
+  Unit MilePerHour mi<Sslash>hr Speed 0.44704 MeterPerSecond
+  # https://en.wikipedia.org/wiki/Knot_(unit)
+  Unit Knot knot Speed 0.51444444444444 MeterPerSecond # 1852m/h by defn
+  Unit LightSpeed lightc Speed 299792458 MeterPerSecond # by defn
 
   #----------------------------------------------------------------------------
   # Force

@@ -561,12 +561,16 @@ MenuGroup root mRoot [
             MenuItem <Stemp>K mUnitKelvin # add <Stemp> to 'K' for visual hint
           ]
         ]
-        MenuGroup VELO mUnitVelocity [
+        MenuGroup SPD mUnitSpeed [
           MenuRow [
             MenuItem m<Sslash>s mUnitMeterPerSecond
             MenuItem ft<Sslash>s mUnitFootPerSecond
             MenuItem kph mUnitKiloMeterPerHour
             MenuItem mph mUnitMilePerHour
+            MenuItem knot mUnitKnot
+          ]
+          MenuRow [
+            MenuItem c mUnitLightSpeed
           ]
         ]
         MenuGroup FORC mUnitForce [
