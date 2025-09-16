@@ -140,6 +140,18 @@ move9ToOp3PageOne:
     ldir
     ret
 
+; Description: Move 9 bytes (size of TI-OS floating point number) from HL to
+; OP4. Implements bcall(_Mov9ToOP3) without the overhead of a bcall().
+; Input: HL=pointer to float
+; Output: (OP2)=contains float
+; Destroys: BC, DE, HL
+; Preserves: A
+move9ToOp4PageOne:
+    ld de, OP3
+    ld bc, 9
+    ldir
+    ret
+
 ; Description: Move 9 bytes (size of TI-OS floating point number) from OP1 to
 ; DE. Implements bcall(_MovFrOP1) without the overhead of a bcall().
 ; Input:
@@ -230,6 +242,17 @@ move22ToOp3PageOne:
     ldir
     ret
 
+; Input: HL=pointer to 2 floats in OPx registers.
+; Destroys: BC, DE, HL
+; Preserves: A
+move22ToOp5PageOne:
+    ld de, OP5
+    ld bc, 22
+    ldir
+    ret
+
+;-----------------------------------------------------------------------------
+
 ; Description: Move complex number in OP1/OP2 to OP3/OP4.
 ; Preserves: A
 cp1ToCp3PageOne:
@@ -240,6 +263,18 @@ cp1ToCp3PageOne:
 ; Preserves: A
 cp3ToCp1PageOne:
     ld hl, OP3
+    jr move22ToOp1PageOne
+
+; Description: Move complex number in OP1/OP2 to OP5/OP6.
+; Preserves: A
+cp1ToCp5PageOne:
+    ld hl, OP1
+    jr move22ToOp5PageOne
+
+; Description: Move complex number in OP5/OP6 to OP1/OP2.
+; Preserves: A
+cp5ToCp1PageOne:
+    ld hl, OP5
     jr move22ToOp1PageOne
 
 ; Description: Exchange OP1 with OP2. Inlined version of bcall(_OP1ExOP2) to

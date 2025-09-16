@@ -47,7 +47,7 @@ mNumResultModeRealHandler:
     call closeInputAndRecallNone
     ld a, numResultModeReal
     ld (numResultMode), a
-    call updateNumResultMode
+    bcall(_UpdateNumResultMode)
     set dirtyFlagsMenu, (iy + dirtyFlags)
     ret
 
@@ -67,7 +67,7 @@ mNumResultModeComplexHandler:
     call closeInputAndRecallNone
     ld a, numResultModeComplex
     ld (numResultMode), a
-    call updateNumResultMode
+    bcall(_UpdateNumResultMode)
     set dirtyFlagsMenu, (iy + dirtyFlags)
     ret
 

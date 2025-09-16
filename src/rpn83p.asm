@@ -1181,6 +1181,14 @@ _ColdInitComplexLabel:
 _ColdInitComplex equ _ColdInitComplexLabel-branchTableBase
     .dw ColdInitComplex
     .db 1
+_UpdateNumResultModeLabel:
+_UpdateNumResultMode equ _UpdateNumResultModeLabel-branchTableBase
+    .dw UpdateNumResultMode
+    .db 1
+_UpdateComplexModeLabel:
+_UpdateComplexMode equ _UpdateComplexModeLabel-branchTableBase
+    .dw UpdateComplexMode
+    .db 1
 _RectToComplexLabel:
 _RectToComplex equ _RectToComplexLabel-branchTableBase
     .dw RectToComplex
@@ -1273,6 +1281,84 @@ _GetUnitBase equ _GetUnitBaseLabel-branchTableBase
 _GetUnitScaleLabel:
 _GetUnitScale equ _GetUnitScaleLabel-branchTableBase
     .dw GetUnitScale
+    .db 1
+
+; universal.asm
+_UniversalAddLabel:
+_UniversalAdd equ _UniversalAddLabel-branchTableBase
+    .dw UniversalAdd
+    .db 1
+_UniversalSubLabel:
+_UniversalSub equ _UniversalSubLabel-branchTableBase
+    .dw UniversalSub
+    .db 1
+_UniversalMultLabel:
+_UniversalMult equ _UniversalMultLabel-branchTableBase
+    .dw UniversalMult
+    .db 1
+_UniversalDivLabel:
+_UniversalDiv equ _UniversalDivLabel-branchTableBase
+    .dw UniversalDiv
+    .db 1
+_UniversalChsLabel:
+_UniversalChs equ _UniversalChsLabel-branchTableBase
+    .dw UniversalChs
+    .db 1
+_UniversalRecipLabel:
+_UniversalRecip equ _UniversalRecipLabel-branchTableBase
+    .dw UniversalRecip
+    .db 1
+_UniversalSquareLabel:
+_UniversalSquare equ _UniversalSquareLabel-branchTableBase
+    .dw UniversalSquare
+    .db 1
+_UniversalSqRootLabel:
+_UniversalSqRoot equ _UniversalSqRootLabel-branchTableBase
+    .dw UniversalSqRoot
+    .db 1
+_UniversalCubeLabel:
+_UniversalCube equ _UniversalCubeLabel-branchTableBase
+    .dw UniversalCube
+    .db 1
+_UniversalCubeRootLabel:
+_UniversalCubeRoot equ _UniversalCubeRootLabel-branchTableBase
+    .dw UniversalCubeRoot
+    .db 1
+_UniversalPowLabel:
+_UniversalPow equ _UniversalPowLabel-branchTableBase
+    .dw UniversalPow
+    .db 1
+_UniversalXRootYLabel:
+_UniversalXRootY equ _UniversalXRootYLabel-branchTableBase
+    .dw UniversalXRootY
+    .db 1
+_UniversalLogLabel:
+_UniversalLog equ _UniversalLogLabel-branchTableBase
+    .dw UniversalLog
+    .db 1
+_UniversalTenPowLabel:
+_UniversalTenPow equ _UniversalTenPowLabel-branchTableBase
+    .dw UniversalTenPow
+    .db 1
+_UniversalLnLabel:
+_UniversalLn equ _UniversalLnLabel-branchTableBase
+    .dw UniversalLn
+    .db 1
+_UniversalExpLabel:
+_UniversalExp equ _UniversalExpLabel-branchTableBase
+    .dw UniversalExp
+    .db 1
+_UniversalTwoPowLabel:
+_UniversalTwoPow equ _UniversalTwoPowLabel-branchTableBase
+    .dw UniversalTwoPow
+    .db 1
+_UniversalLog2Label:
+_UniversalLog2 equ _UniversalLog2Label-branchTableBase
+    .dw UniversalLog2
+    .db 1
+_UniversalLogBaseLabel:
+_UniversalLogBase equ _UniversalLogBaseLabel-branchTableBase
+    .dw UniversalLogBase
     .db 1
 
 ;-----------------------------------------------------------------------------
@@ -2380,7 +2466,6 @@ _GetMenuNodeRowBeginId equ _GetMenuNodeRowBeginIdLabel-branchTableBase
 #include "integer.asm"
 #include "float.asm"
 #include "complex.asm"
-#include "universal.asm"
 #include "rpnobject.asm"
 #include "conv.asm"
 #include "print.asm"
@@ -2422,6 +2507,7 @@ defpage(1)
 #include "rpnobject1.asm"
 #include "integerconv1.asm"
 #include "const1.asm"
+#include "universal.asm"
 #include "complex1.asm"
 #include "formatcomplex1.asm"
 #include "hms1.asm"

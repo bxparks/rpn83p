@@ -661,7 +661,7 @@ handleKeyChs:
 handleKeyChsX:
     ; Not in edit mode, so change sign of X register
     bcall(_RclStackX)
-    call universalChs
+    bcall(_UniversalChs)
     bcall(_StoStackX)
     ret
 handleKeyChsInputBuf:
@@ -881,7 +881,7 @@ handleKeyAdd:
     bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
     jp nz, mBaseAddHandler
     call closeInputAndRecallUniversalXY ; CP1=Y; CP3=X
-    call universalAdd
+    bcall(_UniversalAdd)
     bcall(_ReplaceStackXY)
     ret
 
@@ -893,7 +893,7 @@ handleKeySub:
     bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
     jp nz, mBaseSubtHandler
     call closeInputAndRecallUniversalXY ; CP1=X; CP3=Y
-    call universalSub
+    bcall(_UniversalSub)
     bcall(_ReplaceStackXY)
     ret
 
@@ -905,7 +905,7 @@ handleKeyMul:
     bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
     jp nz, mBaseMultHandler
     call closeInputAndRecallUniversalXY ; CP1=Y; CP3=X
-    call universalMult
+    bcall(_UniversalMult)
     bcall(_ReplaceStackXY)
     ret
 
@@ -917,7 +917,7 @@ handleKeyDiv:
     bit rpnFlagsBaseModeEnabled, (iy + rpnFlags)
     jp nz, mBaseDivHandler
     call closeInputAndRecallUniversalXY ; CP1=Y; CP3=X
-    call universalDiv
+    bcall(_UniversalDiv)
     bcall(_ReplaceStackXY)
     ret
 
@@ -948,7 +948,7 @@ handleKeyEuler:
 ; Description: y^x
 handleKeyExpon:
     call closeInputAndRecallUniversalXY ; CP1=Y; CP3=X
-    call universalPow
+    bcall(_UniversalPow)
     bcall(_ReplaceStackXY)
     ret
 
@@ -962,7 +962,7 @@ handleKeyInv:
     jp z, mGenericDateCutHandlerAltEntry
     cp rpnObjectTypeOffsetDateTime
     jp z, mGenericDateCutHandlerAltEntry
-    call universalRecip
+    bcall(_UniversalRecip)
     bcall(_ReplaceStackX)
     ret
 
@@ -975,7 +975,7 @@ handleKeySquare:
     jp z, mGenericDateExtendHandlerAltEntry
     cp rpnObjectTypeDateTime
     jp z, mGenericDateExtendHandlerAltEntry
-    call universalSquare
+    bcall(_UniversalSquare)
     bcall(_ReplaceStackX)
     ret
 
@@ -988,7 +988,7 @@ handleKeySqrt:
     jp z, mGenericDateShrinkHandlerAltEntry
     cp rpnObjectTypeOffsetDateTime
     jp z, mGenericDateShrinkHandlerAltEntry
-    call universalSqRoot
+    bcall(_UniversalSqRoot)
     bcall(_ReplaceStackX)
     ret
 
@@ -1023,25 +1023,25 @@ handleKeyAns:
 
 handleKeyLog:
     call closeInputAndRecallUniversalX
-    call universalLog ; A=numReturnValues
+    bcall(_UniversalLog) ; A=numReturnValues
     bcall(_ReplaceStackX)
     ret
 
 handleKeyALog:
     call closeInputAndRecallUniversalX
-    call universalTenPow
+    bcall(_UniversalTenPow)
     bcall(_ReplaceStackX)
     ret
 
 handleKeyLn:
     call closeInputAndRecallUniversalX
-    call universalLn
+    bcall(_UniversalLn)
     bcall(_ReplaceStackX)
     ret
 
 handleKeyExp:
     call closeInputAndRecallUniversalX
-    call universalExp
+    bcall(_UniversalExp)
     bcall(_ReplaceStackX)
     ret
 

@@ -2,7 +2,7 @@
 ; MIT License
 ; Copyright (c) 2023 Brian T. Park
 ;
-; Routines related to complex numbers.
+; Routines related to complex numbers. TODO: No longer used, can be removed.
 ;-----------------------------------------------------------------------------
 
 ;-----------------------------------------------------------------------------
@@ -52,48 +52,3 @@ convertOp3ToCp3:
 ; Description: Throw an Err:DataType exception.
 convertErr:
     bcall(_ErrDataType)
-
-;-----------------------------------------------------------------------------
-; Complex result modes.
-;-----------------------------------------------------------------------------
-
-; Description: Update the TI-OS 'fmtFlags' from the 'numResult' variable in
-; RPN83P.
-updateNumResultMode:
-    ld a, (numResultMode)
-    cp numResultModeComplex
-    jr z, updateNumResultModeComplex
-    set fmtReal, (iy + fmtFlags)
-    res fmtRect, (iy + fmtFlags)
-    res fmtPolar, (iy + fmtFlags)
-    ret
-updateNumResultModeComplex:
-    res fmtReal, (iy + fmtFlags)
-    set fmtRect, (iy + fmtFlags)
-    res fmtPolar, (iy + fmtFlags)
-    ret
-
-; Description: Check if numResultMode is complex.
-; Output: ZF=1 if numResultMode==numResultModeComplex
-checkNumResultModeComplex:
-    ld a, (numResultMode)
-    cp numResultModeComplex
-    ret
-
-;-----------------------------------------------------------------------------
-; Complex display modes.
-;-----------------------------------------------------------------------------
-
-; Description: Sanitize the current complex display mode.
-updateComplexMode:
-    ld a, (complexMode)
-    cp a, complexModeRect
-    ret z
-    cp a, complexModeRad
-    ret z
-    cp a, complexModeDeg
-    ret z
-    ; Should not happen, but default RECT mode if it does.
-    ld a, complexModeRect
-    ld (complexMode), a
-    ret

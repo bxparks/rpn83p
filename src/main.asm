@@ -39,8 +39,8 @@ warmInit:
     bcall(_InitArgBuf) ; Start with command ArgScanner off.
     bcall(_InitDisplay)
     bcall(_InitTvmSolver)
-    call updateNumResultMode
-    call updateComplexMode
+    bcall(_UpdateNumResultMode)
+    bcall(_UpdateComplexMode)
     bcall(_InitStack)
     bcall(_InitRegs)
     bcall(_InitStatRegs)

@@ -19,7 +19,7 @@
 ; Output: ZF=1 if real
 ; Destroys: A
 checkOp1RealPageOne:
-    call getOp1RpnObjectType
+    call getOp1RpnObjectTypePageOne
     cp rpnObjectTypeReal
     ret
 
@@ -28,7 +28,7 @@ checkOp1RealPageOne:
 ; Output: ZF=1 if real
 ; Destroys: A
 checkOp3RealPageOne:
-    call getOp3RpnObjectType
+    call getOp3RpnObjectTypePageOne
     cp rpnObjectTypeReal
     ret
 
@@ -41,7 +41,16 @@ checkOp3RealPageOne:
 ; Output: ZF=1 if complex
 ; Destroys: A
 checkOp1ComplexPageOne:
-    call getOp1RpnObjectType
+    call getOp1RpnObjectTypePageOne
+    cp rpnObjectTypeComplex
+    ret
+
+; Description: Same as checkOp1Complex() for OP3.
+; Input: OP1
+; Output: ZF=1 if complex
+; Destroys: A
+checkOp3ComplexPageOne:
+    call getOp3RpnObjectTypePageOne
     cp rpnObjectTypeComplex
     ret
 

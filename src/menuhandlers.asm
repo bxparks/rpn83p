@@ -49,21 +49,21 @@ mHelpHandler:
 ; Description: Calculate X^3.
 mCubeHandler:
     call closeInputAndRecallUniversalX
-    call universalCube
+    bcall(_UniversalCube)
     bcall(_ReplaceStackX)
     ret
 
 ; Description: Calculate the cubic root of X, X^(1/3).
 mCubeRootHandler:
     call closeInputAndRecallUniversalX
-    call universalCubeRoot
+    bcall(_UniversalCubeRoot)
     bcall(_ReplaceStackX)
     ret
 
 ; Description: Calculate the X root of Y, Y^(1/X).
 mXRootYHandler:
     call closeInputAndRecallUniversalXY ; CP1=Y; CP3=X
-    call universalXRootY
+    bcall(_UniversalXRootY)
     bcall(_ReplaceStackXY)
     ret
 
@@ -95,21 +95,21 @@ mAtan2Handler:
 ; Description: TwoPow(X) = 2^X
 mTwoPowHandler:
     call closeInputAndRecallUniversalX
-    call universalTwoPow
+    bcall(_UniversalTwoPow)
     bcall(_ReplaceStackX)
     ret
 
 ; Description: Log2(X)=log(X)/log(2)
 mLog2Handler:
     call closeInputAndRecallUniversalX
-    call universalLog2
+    bcall(_UniversalLog2)
     bcall(_ReplaceStackX)
     ret
 
 ; Description: LogBase(Y,X)=log(Y)/log(X)
 mLogBaseHandler:
     call closeInputAndRecallUniversalXY ; CP1=Y; CP3=X
-    call universalLogBase
+    bcall(_UniversalLogBase)
     bcall(_ReplaceStackXY)
     ret
 

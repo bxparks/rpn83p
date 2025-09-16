@@ -179,13 +179,13 @@ floatOps:
 floatOpAssign:
     jp cp3ToCp1PageOne
 floatOpAdd:
-    jp universalAdd
+    jp UniversalAdd
 floatOpSub:
-    jp universalSub
+    jp UniversalSub
 floatOpMul:
-    jp universalMult
+    jp UniversalMult
 floatOpDiv:
-    jp universalDiv
+    jp UniversalDiv
 
 ;-----------------------------------------------------------------------------
 ; Predefined single-letter Real or Complex variables.
