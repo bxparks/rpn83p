@@ -117,6 +117,14 @@ op2Set1E14PageTwo:
 
 ;-----------------------------------------------------------------------------
 
+; Description: Set OP1 to the maximum floating point number.
+; Destroys: all, HL
+op1SetMaxFloatPageTwo:
+    ld hl, constMaxFloatPageTwo
+    jp move9ToOp1PageTwo
+
+;-----------------------------------------------------------------------------
+
 constM50PageTwo: ; -50
     .db $80, $81, $50, $00, $00, $00, $00, $00, $00
 
@@ -155,3 +163,10 @@ const2Pow40PageTwo: ; 2^40 = 1 099 511 627 776
 
 const1E14PageTwo: ; 10^14, EXP=$80+14=$8E
     .db $00, $8E, $10, $00, $00, $00, $00, $00, $00
+
+; Useful to indicate an error condition in some parameters, while allowing
+; other parameters to be calculated. If an exception is thrown instead (e.g.
+; Err: Domain), then the entire calculation will be aborted, and none of the
+; parameters can be calculated, which is not as useful in some cases.
+constMaxFloatPageTwo: ; 9.9999999999999E99
+    .db $00, $E3, $99, $99, $99, $99, $99, $99, $99

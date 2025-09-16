@@ -898,8 +898,11 @@ defpage(1)
 defpage(2)
 
 #include "modes2.asm"
+#include "stats2.asm"
+#include "cfit2.asm"
+
 #include "tvm2.asm"
-#include "float2.asm"
+
 #include "selectepoch2.asm"
 #include "epoch2.asm"
 #include "datevalidation2.asm"
@@ -914,10 +917,11 @@ defpage(2)
 #include "zone2.asm"
 #include "rtc2.asm"
 #include "formatdate2.asm"
-;
+
 #include "denominate2.asm"
 #include "formatdenominate2.asm"
-;
+
+#include "float2.asm"
 #include "integer40.asm"
 #include "integerconv40.asm"
 #include "fps2.asm"
@@ -931,7 +935,7 @@ defpage(2)
 #include "rpnobject2.asm"
 #include "cstring2.asm"
 #include "common2.asm"
-;
+
 #include "prime2.asm"
 #include "base2.asm"
 #include "integerconv32.asm"

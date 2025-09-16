@@ -50,7 +50,7 @@ exchange9PageTwo:
 
 ; Description: Exchange 'B' bytes between DE and HL.
 ; Destroys: all registers
-exchangePageTwoLoop:
+exchangeLoopPageTwo:
     ld a, (de)
     ld c, (hl)
     ld (hl), a
@@ -58,12 +58,12 @@ exchangePageTwoLoop:
     ld (de), a
     inc de
     inc hl
-    djnz exchangePageTwoLoop
+    djnz exchangeLoopPageTwo
     ret
 
 exchange18PageTwo:
     ld b, 18
-    jp exchangePageTwoLoop
+    jp exchangeLoopPageTwo
 
 ; Description: Exchange the top 2 floating point numbers on the FPS.
 ; Destroys: all
@@ -228,7 +228,7 @@ cp1ExCp3PageTwo:
     ld de, OP1
     ld hl, OP3
     ld b, 22 ; each OP register is 11 bytes
-    jp exchangePageTwoLoop
+    jp exchangeLoopPageTwo
 
 ;-----------------------------------------------------------------------------
 
