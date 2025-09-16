@@ -87,11 +87,11 @@ _RclStackT equ _RclStackTLabel-branchTableBase
     .dw RclStackT
     .db 1
 _StoStackLLabel:
-_StoStackL equ _StoStackLLabel-branchLableBase
+_StoStackL equ _StoStackLLabel-branchTableBase
     .dw StoStackL
     .db 1
 _RclStackLLabel:
-_RclStackL equ _RclStackLLabel-branchLableBase
+_RclStackL equ _RclStackLLabel-branchTableBase
     .dw RclStackL
     .db 1
 _ReplaceStackXLabel:
