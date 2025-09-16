@@ -832,7 +832,6 @@ defpage(0, "RPN83P")
 #include "cstring.asm"
 #include "integer.asm"
 #include "float.asm"
-#include "complex.asm"
 #include "rpnobject.asm"
 #include "conv.asm"
 #include "print.asm"
