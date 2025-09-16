@@ -43,7 +43,7 @@ mTvmNHandler:
     bit rpnFlagsTvmCalculate, (iy + rpnFlags)
     jr nz, mTvmNCalculate
     ; save the inputBuf value
-    call rclX
+    bcall(_RclStackX)
     call validateOp1Real
     bcall(_StoTvmN)
     set rpnFlagsTvmCalculate, (iy + rpnFlags)
@@ -52,7 +52,7 @@ mTvmNHandler:
     ret
 mTvmNGet:
     bcall(_RclTvmN)
-    call pushToX
+    bcall(_PushToStackX)
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld a, errorCodeTvmRecalled
     ld (handlerCode), a
@@ -60,7 +60,7 @@ mTvmNGet:
 mTvmNCalculate:
     bcall(_TvmCalculateN)
     bcall(_StoTvmN)
-    call pushToX
+    bcall(_PushToStackX)
     ld a, errorCodeTvmCalculated
     ld (handlerCode), a
     ret
@@ -94,14 +94,14 @@ mTvmIYRHandler:
     bit rpnFlagsTvmCalculate, (iy + rpnFlags)
     jr nz, mTvmIYRCalculate
     ; save the inputBuf value
-    call rclX
+    bcall(_RclStackX)
     call validateOp1Real
     bcall(_TvmCalcIPPFromIYR)
     call op1ToOp2 ; OP2=IYR/N=i
     call op1SetM1 ; OP1=-1
     bcall(_CpOP1OP2) ; if -1<i: CF=1 (valid)
     jr nc, mTvmIYRErr
-    call rclX
+    bcall(_RclStackX)
     bcall(_StoTvmIYR)
     set rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld a, errorCodeTvmStored
@@ -109,7 +109,7 @@ mTvmIYRHandler:
     ret
 mTvmIYRGet:
     bcall(_RclTvmIYR)
-    call pushToX
+    bcall(_PushToStackX)
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld a, errorCodeTvmRecalled
     ld (handlerCode), a
@@ -125,7 +125,7 @@ mTvmIYRCalculate:
     ret
 mTvmIYRCalculateFound:
     bcall(_StoTvmIYR)
-    call pushToX
+    bcall(_PushToStackX)
     ret
 mTvmIYRErr:
     bcall(_ErrDomain)
@@ -234,7 +234,7 @@ mTvmPVHandler:
     bit rpnFlagsTvmCalculate, (iy + rpnFlags)
     jr nz, mTvmPVCalculate
     ; save the inputBuf value
-    call rclX
+    bcall(_RclStackX)
     call validateOp1Real
     bcall(_StoTvmPV)
     set rpnFlagsTvmCalculate, (iy + rpnFlags)
@@ -243,7 +243,7 @@ mTvmPVHandler:
     ret
 mTvmPVGet:
     bcall(_RclTvmPV)
-    call pushToX
+    bcall(_PushToStackX)
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld a, errorCodeTvmRecalled
     ld (handlerCode), a
@@ -251,7 +251,7 @@ mTvmPVGet:
 mTvmPVCalculate:
     bcall(_TvmCalculatePV)
     bcall(_StoTvmPV)
-    call pushToX
+    bcall(_PushToStackX)
     ld a, errorCodeTvmCalculated
     ld (handlerCode), a
     ret
@@ -267,7 +267,7 @@ mTvmPMTHandler:
     bit rpnFlagsTvmCalculate, (iy + rpnFlags)
     jr nz, mTvmPMTCalculate
     ; save the inputBuf value
-    call rclX
+    bcall(_RclStackX)
     call validateOp1Real
     bcall(_StoTvmPMT)
     set rpnFlagsTvmCalculate, (iy + rpnFlags)
@@ -276,7 +276,7 @@ mTvmPMTHandler:
     ret
 mTvmPMTGet:
     bcall(_RclTvmPMT)
-    call pushToX
+    bcall(_PushToStackX)
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld a, errorCodeTvmRecalled
     ld (handlerCode), a
@@ -284,7 +284,7 @@ mTvmPMTGet:
 mTvmPMTCalculate:
     bcall(_TvmCalculatePMT)
     bcall(_StoTvmPMT)
-    call pushToX
+    bcall(_PushToStackX)
     ld a, errorCodeTvmCalculated
     ld (handlerCode), a
     ret
@@ -300,7 +300,7 @@ mTvmFVHandler:
     bit rpnFlagsTvmCalculate, (iy + rpnFlags)
     jr nz, mTvmFVCalculate
     ; save the inputBuf value
-    call rclX
+    bcall(_RclStackX)
     call validateOp1Real
     bcall(_StoTvmFV)
     set rpnFlagsTvmCalculate, (iy + rpnFlags)
@@ -309,7 +309,7 @@ mTvmFVHandler:
     ret
 mTvmFVGet:
     bcall(_RclTvmFV)
-    call pushToX
+    bcall(_PushToStackX)
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld a, errorCodeTvmRecalled
     ld (handlerCode), a
@@ -317,7 +317,7 @@ mTvmFVGet:
 mTvmFVCalculate:
     bcall(_TvmCalculateFV)
     bcall(_StoTvmFV)
-    call pushToX
+    bcall(_PushToStackX)
     ld a, errorCodeTvmCalculated
     ld (handlerCode), a
     ret
@@ -335,7 +335,7 @@ mTvmPYRHandler:
     jr nz, mTvmPYRGet
     ; save the inputBuf value in OP1
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
-    call rclX
+    bcall(_RclStackX)
     call validateOp1Real
     bcall(_PosNo0Int) ; if posnonzeroint(x): ZF=1
     jr z, mTvmPYRHandlerSet
@@ -350,7 +350,7 @@ mTvmPYRHandlerSet:
     ret
 mTvmPYRGet:
     bcall(_RclTvmPYR)
-    call pushToX
+    bcall(_PushToStackX)
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld a, errorCodeTvmRecalled
     ld (handlerCode), a
@@ -385,7 +385,7 @@ mTvmCYRHandler:
     jr nz, mTvmCYRGet
     ; save the inputBuf value in OP1
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
-    call rclX
+    bcall(_RclStackX)
     call validateOp1Real
     bcall(_PosNo0Int) ; if posnonzeroint(x): ZF=1
     jr z, mTvmCYRHandlerSet
@@ -399,7 +399,7 @@ mTvmCYRHandlerSet:
     ret
 mTvmCYRGet:
     bcall(_RclTvmCYR)
-    call pushToX
+    bcall(_PushToStackX)
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld a, errorCodeTvmRecalled
     ld (handlerCode), a
@@ -474,7 +474,7 @@ mTvmIYR0Handler:
     bit rpnFlagsSecondKey, (iy + rpnFlags)
     jr nz, mTvmIYR0Get
     ; save the inputBuf value in OP1
-    call rclX
+    bcall(_RclStackX)
     call validateOp1Real
     bcall(_StoTvmIYR0)
     set rpnFlagsTvmCalculate, (iy + rpnFlags)
@@ -484,7 +484,7 @@ mTvmIYR0Handler:
     ret
 mTvmIYR0Get:
     bcall(_RclTvmIYR0)
-    call pushToX
+    bcall(_PushToStackX)
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld a, errorCodeTvmRecalled
     ld (handlerCode), a
@@ -517,7 +517,7 @@ mTvmIYR1Handler:
     bit rpnFlagsSecondKey, (iy + rpnFlags)
     jr nz, mTvmIYR1Get
     ; save the inputBuf value in OP1
-    call rclX
+    bcall(_RclStackX)
     call validateOp1Real
     bcall(_StoTvmIYR1)
     set rpnFlagsTvmCalculate, (iy + rpnFlags)
@@ -527,7 +527,7 @@ mTvmIYR1Handler:
     ret
 mTvmIYR1Get:
     bcall(_RclTvmIYR1)
-    call pushToX
+    bcall(_PushToStackX)
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld a, errorCodeTvmRecalled
     ld (handlerCode), a
@@ -560,7 +560,7 @@ mTvmIterMaxHandler:
     bit rpnFlagsSecondKey, (iy + rpnFlags)
     jr nz, mTvmIterMaxGet
     ; save the inputBuf value in OP1
-    call rclX
+    bcall(_RclStackX)
     call validateOp1Real
     bcall(_StoTvmIterMax)
     set rpnFlagsTvmCalculate, (iy + rpnFlags)
@@ -570,7 +570,7 @@ mTvmIterMaxHandler:
     ret
 mTvmIterMaxGet:
     bcall(_RclTvmIterMax)
-    call pushToX
+    bcall(_PushToStackX)
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     ld a, errorCodeTvmRecalled
     ld (handlerCode), a

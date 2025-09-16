@@ -49,20 +49,23 @@ mHelpHandler:
 ; Description: Calculate X^3.
 mCubeHandler:
     call closeInputAndRecallUniversalX
-    call universalCube
-    jp replaceX
+    bcall(_UniversalCube)
+    bcall(_ReplaceStackX)
+    ret
 
 ; Description: Calculate the cubic root of X, X^(1/3).
 mCubeRootHandler:
     call closeInputAndRecallUniversalX
-    call universalCubeRoot
-    jp replaceX
+    bcall(_UniversalCubeRoot)
+    bcall(_ReplaceStackX)
+    ret
 
 ; Description: Calculate the X root of Y, Y^(1/X).
 mXRootYHandler:
     call closeInputAndRecallUniversalXY ; CP1=Y; CP3=X
-    call universalXRootY
-    jp replaceXY
+    bcall(_UniversalXRootY)
+    bcall(_ReplaceStackXY)
+    ret
 
 ; Description: Calculate the angle of the (X, Y) in x-y plane. The y-axis must
 ; be pushed into the RPN stack first, then the x-axis. This order is consistent
@@ -84,39 +87,45 @@ mAtan2Handler:
     call closeInputAndRecallXY ; OP1=Y; OP2=X
     ld d, 0 ; set undocumented parameter for ATan2()
     bcall(_ATan2) ; OP1=angle
-    jp replaceXY
+    bcall(_ReplaceStackXY)
+    ret
 
 ;-----------------------------------------------------------------------------
 
 ; Description: TwoPow(X) = 2^X
 mTwoPowHandler:
     call closeInputAndRecallUniversalX
-    call universalTwoPow
-    jp replaceX
+    bcall(_UniversalTwoPow)
+    bcall(_ReplaceStackX)
+    ret
 
 ; Description: Log2(X)=log(X)/log(2)
 mLog2Handler:
     call closeInputAndRecallUniversalX
-    call universalLog2
-    jp replaceX
+    bcall(_UniversalLog2)
+    bcall(_ReplaceStackX)
+    ret
 
 ; Description: LogBase(Y,X)=log(Y)/log(X)
 mLogBaseHandler:
     call closeInputAndRecallUniversalXY ; CP1=Y; CP3=X
-    call universalLogBase
-    jp replaceXY
+    bcall(_UniversalLogBase)
+    bcall(_ReplaceStackXY)
+    ret
 
 ; Description: Calculate e^x-1 without round off errors around x=0.
 mExpMinusOneHandler:
     call closeInputAndRecallX
     bcall(_ExpMinusOne)
-    jp replaceX
+    bcall(_ReplaceStackX)
+    ret
 
 ; Description: Calculate ln(1+x) without round off errors around x=0.
 mLnOnePlusHandler:
     call closeInputAndRecallX
     bcall(_LnOnePlus)
-    jp replaceX
+    bcall(_ReplaceStackX)
+    ret
 
 ;-----------------------------------------------------------------------------
 ; Children nodes of NUM menu.
@@ -129,7 +138,8 @@ mPercentHandler:
     bcall(_FPMult) ; OP1=OP1*OP2=X*Y
     call op2Set100
     bcall(_FPDiv) ; OP1=X*Y/100
-    jp replaceX
+    bcall(_ReplaceStackX)
+    ret
 
 ; mPercentChangeHandler(Y, X) -> (Y, 100*(X-Y)/Y)
 ; Description: Calculate the change from Y to X as a percentage of Y. The
@@ -143,7 +153,8 @@ mPercentChangeHandler:
     bcall(_FPDiv) ; OP1=(X-Y)/Y
     call op2Set100
     bcall(_FPMult) ; OP1=100*(X-Y)/Y
-    jp replaceX
+    bcall(_ReplaceStackX)
+    ret
 
 ;-----------------------------------------------------------------------------
 
@@ -161,7 +172,8 @@ mGcdHandler:
     call closeInputAndRecallXY
     call validatePosIntGcdLcm
     call gcdOp1Op2 ; OP1=gcd(OP1,OP2)
-    jp replaceXY
+    bcall(_ReplaceStackXY)
+    ret
 
 ; Description: Validate that X and Y are positive (> 0) integers. Calls
 ; ErrDomain exception upon failure.
@@ -209,7 +221,8 @@ mLcmHandler:
     call closeInputAndRecallXY
     call validatePosIntGcdLcm
     call lcdOp1Op2 ; OP1=lcd(OP1,OP2)
-    jp replaceXY ; X = lcm(X, Y)
+    bcall(_ReplaceStackXY) ; X = lcm(X, Y)
+    ret
 
 lcdOp1Op2:
     bcall(_PushRealO1) ; FPS=[Y]
@@ -244,7 +257,8 @@ mPrimeHandler:
     ; factor, which can be processed through 'PRIM` again. Running through this
     ; multiple times until a '1' is returns allows all prime factors to be
     ; discovered.
-    jp pushToX
+    bcall(_PushToStackX)
+    ret
 
 ;-----------------------------------------------------------------------------
 
@@ -252,7 +266,8 @@ mPrimeHandler:
 mAbsHandler:
     call closeInputAndRecallX
     bcall(_ClrOP1S) ; clear sign bit of OP1
-    jp replaceX
+    bcall(_ReplaceStackX)
+    ret
 
 ; mSignHandler(X) -> Sign(X)
 mSignHandler:
@@ -271,7 +286,8 @@ mSignHandlerSetOne:
 mSignHandlerSetZero:
     bcall(_OP1Set0)
 mSignHandlerStoX:
-    jp replaceX
+    bcall(_ReplaceStackX)
+    ret
 
 ; Description: Calculate (Y mod X), where Y and X could be floating point
 ; numbers. There does not seem to be a built-in function to calculator this, so
@@ -280,7 +296,8 @@ mSignHandlerStoX:
 mModHandler:
     call closeInputAndRecallXY ; OP2 = X; OP1 = Y
     call modOp1Op2 ; OP1 = (OP1 mod OP2)
-    jp replaceXY
+    bcall(_ReplaceStackXY)
+    ret
 
 ; Description: Internal helper routine to calculate OP1 = (OP1 mod OP2) = OP1 -
 ; OP2 * floor(OP1/OP2). Used by mModHandler and mGcdHandler. There does not
@@ -302,53 +319,62 @@ modOp1Op2:
 mMinHandler:
     call closeInputAndRecallXY
     bcall(_Min)
-    jp replaceXY
+    bcall(_ReplaceStackXY)
+    ret
 
 mMaxHandler:
     call closeInputAndRecallXY
     bcall(_Max)
-    jp replaceXY
+    bcall(_ReplaceStackXY)
+    ret
 
 ;-----------------------------------------------------------------------------
 
 mIntPartHandler:
     call closeInputAndRecallX
     bcall(_Trunc) ; convert to int part, truncating towards 0.0, preserving sign
-    jp replaceX
+    bcall(_ReplaceStackX)
+    ret
 
 mFracPartHandler:
     call closeInputAndRecallX
     bcall(_Frac) ; convert to frac part, preserving sign
-    jp replaceX
+    bcall(_ReplaceStackX)
+    ret
 
 mFloorHandler:
     call closeInputAndRecallX
     bcall(_Intgr) ; convert to integer towards -Infinity
-    jp replaceX
+    bcall(_ReplaceStackX)
+    ret
 
 mCeilHandler:
     call closeInputAndRecallX
     bcall(_InvOP1S) ; invert sign
     bcall(_Intgr) ; convert to integer towards -Infinity
     bcall(_InvOP1S) ; invert sign
-    jp replaceX
+    bcall(_ReplaceStackX)
+    ret
 
 mNearHandler:
     call closeInputAndRecallX
     bcall(_Int) ; round to nearest integer, irrespective of sign
-    jp replaceX
+    bcall(_ReplaceStackX)
+    ret
 
 ;-----------------------------------------------------------------------------
 
 mRoundToFixHandler:
     call closeInputAndRecallX ; OP1=X
     bcall(_RnFx) ; round to FIX/SCI/ENG digits, do nothing if digits==floating
-    jp replaceX
+    bcall(_ReplaceStackX)
+    ret
 
 mRoundToGuardHandler:
     call closeInputAndRecallX ; OP1=X
     bcall(_RndGuard) ; round to 10 digits, removing guard digits
-    jp replaceX
+    bcall(_ReplaceStackX)
+    ret
 
 mRoundToNHandler:
     call closeInputAndRecallX ; OP1=X
@@ -367,7 +393,8 @@ mRoundToNHandler:
     ret nc ; return if argValue>=10 (should never happen with argLenLimit==1)
     ld d, a
     bcall(_Round) ; round to D digits, allowed values: 0-9
-    jp replaceX
+    bcall(_ReplaceStackX)
+    ret
 
 msgRoundPrompt:
     .db "ROUND", 0
@@ -381,7 +408,8 @@ msgRoundPrompt:
 mPermHandler:
     call closeInputAndRecallXY ; OP1=Y=n; OP2=X=r
     bcall(_ProbPerm)
-    jp replaceXY
+    bcall(_ReplaceStackXY)
+    ret
 
 ;-----------------------------------------------------------------------------
 
@@ -390,7 +418,8 @@ mPermHandler:
 mCombHandler:
     call closeInputAndRecallXY ; OP1=Y=n; OP2=X=r
     bcall(_ProbComb)
-    jp replaceXY
+    bcall(_ReplaceStackXY)
+    ret
 
 ;-----------------------------------------------------------------------------
 
@@ -399,7 +428,8 @@ mCombHandler:
 mFactorialHandler:
     call closeInputAndRecallX
     bcall(_Factorial)
-    jp replaceX
+    bcall(_ReplaceStackX)
+    ret
 
 ;-----------------------------------------------------------------------------
 
@@ -408,7 +438,8 @@ mFactorialHandler:
 mRandomHandler:
     call closeInputAndRecallNone
     bcall(_Random)
-    jp pushToX
+    bcall(_PushToStackX)
+    ret
 
 ;-----------------------------------------------------------------------------
 
@@ -426,12 +457,14 @@ mRandomSeedHandler:
 mRToDHandler:
     call closeInputAndRecallX
     bcall(_RToD) ; RAD to DEG
-    jp replaceX
+    bcall(_ReplaceStackX)
+    ret
 
 mDToRHandler:
     call closeInputAndRecallX
     bcall(_DToR) ; DEG to RAD
-    jp replaceX
+    bcall(_ReplaceStackX)
+    ret
 
 ; Polar to Rectangular. The order of arguments is intended to be consistent
 ; with the HP-42S.
@@ -446,7 +479,8 @@ mPToRHandler:
     call op1ExOp2  ; OP1=r; OP2=theta
     bcall(_PToR) ; OP1=x; OP2=y
     call op1ExOp2  ; OP1=y; OP2=x
-    jp replaceXYWithOP1OP2 ; Y=OP2=y; X=OP1=x
+    bcall(_ReplaceStackXYWithOP1OP2) ; Y=OP2=y; X=OP1=x
+    ret
 
 ; Rectangular to Polar. The order of arguments is intended to be consistent
 ; with the HP-42S. Early version used the RToP() TI-OS function, but it has an
@@ -463,7 +497,8 @@ mRToPHandler:
     call op1ExOp2  ; OP1=x; OP2=y
     call rectToPolar ; OP1=r; OP2=theta
     call op1ExOp2  ; OP1=theta; OP2=r
-    jp replaceXYWithOP1OP2 ; Y=OP1=theta; X=OP2=r
+    bcall(_ReplaceStackXYWithOP1OP2) ; Y=OP1=theta; X=OP2=r
+    ret
 
 ;-----------------------------------------------------------------------------
 
@@ -472,28 +507,32 @@ mRToPHandler:
 mHmsToHrHandler:
     call closeInputAndRecallX
     bcall(_HmsToHr)
-    jp replaceX
+    bcall(_ReplaceStackX)
+    ret
 
 ; Description: Convert "hh.dddd" to "hh.mmss".
 ; Destroys: OP1, OP2, OP3, OP4 (temp)
 mHrToHmsHandler:
     call closeInputAndRecallX
     bcall(_HmsFromHr)
-    jp replaceX
+    bcall(_ReplaceStackX)
+    ret
 
 ; Description: Apply 'HMS+' operation.
 ; Destroys: OP1, OP2, OP3, OP4 (temp)
 mHmsPlusHandler:
     call closeInputAndRecallXY ; OP1=Y; OP2=X
     bcall(_HmsPlus)
-    jp replaceXY
+    bcall(_ReplaceStackXY)
+    ret
 
 ; Description: Apply 'HMS-' operation.
 ; Destroys: OP1, OP2, OP2, OP4 (temp)
 mHmsMinusHandler:
     call closeInputAndRecallXY ; OP1=Y; OP2=X
     bcall(_HmsMinus)
-    jp replaceXY
+    bcall(_ReplaceStackXY)
+    ret
 
 ;-----------------------------------------------------------------------------
 ; Children nodes of MODE menu.
@@ -636,7 +675,7 @@ mSetRegSizeHandler:
     jr nc, setRegSizeHandlerErr
     cp regsSizeMin ; CF=1 if argValue<25
     jr c, setRegSizeHandlerErr
-    call resizeRegs ; test (newLen-oldLen) -> ZF,CF flags set
+    bcall(_ResizeRegs) ; test (newLen-oldLen) -> ZF,CF flags set
     ; Determine the handler code
     jr z, setRegSizeHandlerUnchanged
     jr nc, setRegSizeHandlerExpanded
@@ -657,9 +696,10 @@ setRegSizeHandlerErr:
 
 mGetRegSizeHandler:
     call closeInputAndRecallNone
-    call lenRegs
+    bcall(_LenRegs)
     bcall(_ConvertAToOP1) ; OP1=float(A)
-    jp pushToX
+    bcall(_PushToStackX)
+    ret
 
 msgRegSizePrompt:
     .db "RSIZ", 0
@@ -682,7 +722,7 @@ mSetStackSizeHandler:
     jr c, setStackSizeHandlerErr
     ; perform the resize
     inc a ; add LastX register
-    call resizeStack ; test (newLen-oldLen) -> ZF,CF flags set
+    bcall(_ResizeStack) ; test (newLen-oldLen) -> ZF,CF flags set
     set dirtyFlagsStatus, (iy + dirtyFlags)
     ; Determine the handler code
     jr z, setStackSizeHandlerUnchanged
@@ -704,10 +744,11 @@ setStackSizeHandlerErr:
 
 mGetStackSizeHandler:
     call closeInputAndRecallNone
-    call lenStack
+    bcall(_LenStack)
     dec a ; remove LastX register
     bcall(_ConvertAToOP1) ; OP1=float(A)
-    jp pushToX
+    bcall(_PushToStackX)
+    ret
 
 msgStackSizePrompt:
     .db "SSIZ", 0
@@ -797,32 +838,38 @@ mFormatRecordStringNameSelectorAlt:
 mSinhHandler:
     call closeInputAndRecallX
     bcall(_SinH)
-    jp replaceX
+    bcall(_ReplaceStackX)
+    ret
 
 mCoshHandler:
     call closeInputAndRecallX
     bcall(_CosH)
-    jp replaceX
+    bcall(_ReplaceStackX)
+    ret
 
 mTanhHandler:
     call closeInputAndRecallX
     bcall(_TanH)
-    jp replaceX
+    bcall(_ReplaceStackX)
+    ret
 
 mAsinhHandler:
     call closeInputAndRecallX
     bcall(_ASinH)
-    jp replaceX
+    bcall(_ReplaceStackX)
+    ret
 
 mAcoshHandler:
     call closeInputAndRecallX
     bcall(_ACosH)
-    jp replaceX
+    bcall(_ReplaceStackX)
+    ret
 
 mAtanhHandler:
     call closeInputAndRecallX
     bcall(_ATanH)
-    jp replaceX
+    bcall(_ReplaceStackX)
+    ret
 
 ;-----------------------------------------------------------------------------
 ; Children nodes of STK menu group (stack functions).
@@ -830,11 +877,13 @@ mAtanhHandler:
 
 mStackDupHandler:
     call closeInputAndRecallNone
-    jp liftStack
+    bcall(_LiftStack)
+    ret
 
 mStackRollUpHandler:
     call closeInputAndRecallNone
-    jp rollUpStack
+    bcall(_RollUpStack)
+    ret
 
 mStackRollDownHandler:
     jp handleKeyRollDown
@@ -844,7 +893,8 @@ mStackExchangeXYHandler:
 
 mStackDropHandler:
     call closeInputAndRecallNone
-    jp dropStack
+    bcall(_DropStack)
+    ret
 
 ;-----------------------------------------------------------------------------
 ; Children nodes of CLR menu group (clear functions).
@@ -852,20 +902,22 @@ mStackDropHandler:
 
 mClearRegsHandler:
     call closeInputAndRecallNone
-    call clearRegs
+    bcall(_ClearRegs)
     ld a, errorCodeRegsCleared
     ld (handlerCode), a
     ret
 
 mClearStackHandler:
     call closeInputAndRecallNone
-    jp clearStack
+    bcall(_ClearStack)
+    ret
 
 mClearXHandler:
     call closeInputAndRecallNone
     res rpnFlagsLiftEnabled, (iy + rpnFlags) ; disable stack lift
     bcall(_OP1Set0)
-    jp stoX
+    bcall(_StoStackX)
+    ret
 
 mClearStatHandler:
     jp mStatClearHandler

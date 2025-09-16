@@ -30,7 +30,7 @@ statVarName:
 ; Input: none
 ; Output: RPN83STA created if it doesn't exist
 ; Destroys: all
-initStatRegs:
+InitStatRegs:
     ld hl, statVarName
     ld c, statRegSize
     jp initRpnElementList
@@ -39,14 +39,14 @@ initStatRegs:
 ; Input: none
 ; Output: RPN83STA elements set to 0.0
 ; Destroys: all, OP1
-clearStatRegs:
+ClearStatRegs:
     call lenStatRegs ; A=len; DE=dataPointer
     ld c, a ; C=len
     ld b, 0 ; B=begin=0
     jp clearRpnElementList
 
 ; Description: Should be called just before existing the app.
-closeStatRegs:
+CloseStatRegs:
     ld hl, statVarName
     jp closeRpnElementList
 
@@ -69,7 +69,7 @@ lenStatRegs:
 ;   - RPN83STA[NN] = OP1
 ; Destroys: all
 ; Preserves: OP1/OP2
-stoStatRegNN:
+StoStatRegNN:
     ld hl, statVarName
     jp stoRpnObject
 
@@ -81,7 +81,7 @@ stoStatRegNN:
 ;   - OP1/OP2:RpnObject=output
 ;   - A:u8=objectType
 ; Destroys: all
-rclStatRegNN:
+RclStatRegNN:
     ld hl, statVarName
     jp rclRpnObject ; OP1/OP2=STK[C]
 
@@ -93,12 +93,12 @@ rclStatRegNN:
 ;   - OP2:(real|complex)=float value
 ; Destroys: all
 ; Preserves: OP1
-rclStatRegNNToOP2:
+RclStatRegNNToOP2:
     push bc ; stack=[NN]
     bcall(_PushRealO1) ; FPS=[OP1]
     pop bc ; C=NN
-    call rclStatRegNN
-    call op1ToOp2
+    call RclStatRegNN
+    call op1ToOp2PageOne
     bcall(_PopRealO1) ; FPS=[]; OP1=OP1
     ret
 
@@ -113,17 +113,17 @@ rclStatRegNNToOP2:
 ;   - RPN83STA[NN] += OP1
 ; Destroys: all
 ; Preserves: OP1, OP2
-stoAddStatRegNN:
+StoAddStatRegNN:
     push bc ; stack=[NN]
     bcall(_PushRealO1) ; FPS=[OP1]
     bcall(_PushRealO2) ; FPS=[OP1,OP2]
-    call op1ToOp2
+    call op1ToOp2PageOne
     pop bc ; C=NN
     push bc ; stack=[NN]
-    call rclStatRegNN
+    call RclStatRegNN
     bcall(_FPAdd) ; OP1 += OP2
     pop bc ; C=NN
-    call stoStatRegNN
+    bcall(_StoStatRegNN)
     bcall(_PopRealO2) ; FPS=[OP1]
     bcall(_PopRealO1) ; FPS=[]; OP1=OP1
     ret
@@ -137,17 +137,17 @@ stoAddStatRegNN:
 ;   - RPN83STA[NN] -= OP1
 ; Destroys: all
 ; Preserves: OP1, OP2
-stoSubStatRegNN:
+StoSubStatRegNN:
     push bc ; stack=[NN]
     bcall(_PushRealO1) ; FPS=[OP1]
     bcall(_PushRealO2) ; FPS=[OP1,OP2]
-    call op1ToOp2
+    call op1ToOp2PageOne
     pop bc ; C=NN
     push bc
-    call rclStatRegNN
+    call RclStatRegNN
     bcall(_FPSub) ; OP1 -= OP2
     pop bc ; C=NN
-    call stoStatRegNN
+    bcall(_StoStatRegNN)
     bcall(_PopRealO2) ; FPS=[OP1]
     bcall(_PopRealO1) ; FPS=[]; OP1=OP1
     ret

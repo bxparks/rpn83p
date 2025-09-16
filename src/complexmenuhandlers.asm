@@ -14,27 +14,32 @@
 mComplexRealHandler:
     call closeInputAndRecallUniversalX
     bcall(_ComplexReal)
-    jp replaceX ; X=Re(X)
+    bcall(_ReplaceStackX) ; X=Re(X)
+    ret
 
 mComplexImagHandler:
     call closeInputAndRecallUniversalX
     bcall(_ComplexImag)
-    jp replaceX ; X=Im(X)
+    bcall(_ReplaceStackX) ; X=Im(X)
+    ret
 
 mComplexConjHandler:
     call closeInputAndRecallUniversalX ; OP1/OP2=X
     bcall(_ComplexConj)
-    jp replaceX
+    bcall(_ReplaceStackX)
+    ret
 
 mComplexAbsHandler:
     call closeInputAndRecallUniversalX
     bcall(_ComplexAbs)
-    jp replaceX ; X=cabs(X) or abs(X)
+    bcall(_ReplaceStackX) ; X=cabs(X) or abs(X)
+    ret
 
 mComplexAngleHandler:
     call closeInputAndRecallUniversalX
     bcall(_ComplexAngle)
-    jp replaceX ; X=Cangle(X)
+    bcall(_ReplaceStackX) ; X=Cangle(X)
+    ret
 
 ;-----------------------------------------------------------------------------
 
@@ -42,7 +47,7 @@ mNumResultModeRealHandler:
     call closeInputAndRecallNone
     ld a, numResultModeReal
     ld (numResultMode), a
-    call updateNumResultMode
+    bcall(_UpdateNumResultMode)
     set dirtyFlagsMenu, (iy + dirtyFlags)
     ret
 
@@ -62,7 +67,7 @@ mNumResultModeComplexHandler:
     call closeInputAndRecallNone
     ld a, numResultModeComplex
     ld (numResultMode), a
-    call updateNumResultMode
+    bcall(_UpdateNumResultMode)
     set dirtyFlagsMenu, (iy + dirtyFlags)
     ret
 

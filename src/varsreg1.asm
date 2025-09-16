@@ -20,7 +20,7 @@ regsVarName:
 ; Output:
 ;   - REGS created if it doesn't exist
 ; Destroys: all
-initRegs:
+InitRegs:
     ld hl, regsVarName
     ld c, regsSizeDefault
     jp initRpnElementList
@@ -29,14 +29,14 @@ initRegs:
 ; Input: none
 ; Output: REGS elements set to 0.0
 ; Destroys: all, OP1
-clearRegs:
-    call lenRegs ; A=len; DE=dataPointer
+ClearRegs:
+    call LenRegs ; A=len; DE=dataPointer
     ld c, a ; C=len
     ld b, 0 ; B=begin=0
     jp clearRpnElementList
 
 ; Description: Should be called just before existing the app.
-closeRegs:
+CloseRegs:
     ld hl, regsVarName
     jp closeRpnElementList
 
@@ -45,7 +45,7 @@ closeRegs:
 ;   - A=length of REGS variable
 ;   - DE:(u8*)=dataPointer
 ; Destroys: BC, HL
-lenRegs:
+LenRegs:
     ld hl, regsVarName
     jp lenRpnElementList
 
@@ -55,7 +55,7 @@ lenRegs:
 ;   - ZF=1 if newLen==oldLen
 ;   - CF=0 if newLen>oldLen
 ;   - CF=1 if newLen<oldLen
-resizeRegs:
+ResizeRegs:
     ld hl, regsVarName
     jp resizeRpnElementList
 
@@ -93,14 +93,14 @@ rclRegNN:
 ;   - OP2:(real|complex)=float value
 ; Destroys: all
 ; Preserves: OP1
-rclRegNNToOP2:
-    push bc ; stack=[NN]
-    bcall(_PushRealO1) ; FPS=[OP1]
-    pop bc ; C=NN
-    call rclRegNN
-    call op1ToOp2
-    bcall(_PopRealO1) ; FPS=[]; OP1=OP1
-    ret
+;rclRegNNToOP2:
+;    push bc ; stack=[NN]
+;    bcall(_PushRealO1) ; FPS=[OP1]
+;    pop bc ; C=NN
+;    call rclRegNN
+;    call op1ToOp2PageOne
+;    bcall(_PopRealO1) ; FPS=[]; OP1=OP1
+;    ret
 
 ;-----------------------------------------------------------------------------
 
@@ -117,7 +117,7 @@ rclRegNNToOP2:
 stoOpRegNN:
     push bc ; stack=[op,NN]
     bcall(_PushRpnObject1) ; FPS=[OP1/OP2]
-    call cp1ToCp3 ; OP3/OP4=OP1/OP2
+    call cp1ToCp3PageOne ; OP3/OP4=OP1/OP2
     ; Recall REGS[NN]
     pop bc ; stack=[]; B=op; C=NN
     push bc ; stack=[op,NN]
@@ -127,7 +127,7 @@ stoOpRegNN:
     push bc ; stack=[op,NN]
     ld a, b ; A=op
     ld hl, floatOps
-    call jumpAOfHL
+    call jumpAOfHLPageOne
     ; Save REGS[C]
     pop bc ; stack=[]; B=op; C=NN
     call stoRegNN
@@ -151,13 +151,13 @@ rclOpRegNN:
     pop bc ; stack=[]; B=op; C=NN
     push bc ; stack=[op,NN]
     call rclRegNN ; OP1/OP2=REGS[NN]
-    call cp1ToCp3 ; OP3/OP4=OP1/OP2
+    call cp1ToCp3PageOne ; OP3/OP4=OP1/OP2
     bcall(_PopRpnObject1) ; FPS=[]; OP1/OP2=OP1/OP2
     ; Invoke op B
     pop bc ; stack=[]; B=op; C=NN
     ld a, b ; A=op
     ld hl, floatOps
-    jp jumpAOfHL ; OP1/OP2=OP1/OP2{op}OP3/OP4
+    jp jumpAOfHLPageOne ; OP1/OP2=OP1/OP2{op}OP3/OP4
 
 ;-----------------------------------------------------------------------------
 
@@ -177,15 +177,15 @@ floatOps:
 ; indirection will make that refactoring easier. Also, this provides slightly
 ; better self-documentation.
 floatOpAssign:
-    jp cp3ToCp1
+    jp cp3ToCp1PageOne
 floatOpAdd:
-    jp universalAdd
+    jp UniversalAdd
 floatOpSub:
-    jp universalSub
+    jp UniversalSub
 floatOpMul:
-    jp universalMult
+    jp UniversalMult
 floatOpDiv:
-    jp universalDiv
+    jp UniversalDiv
 
 ;-----------------------------------------------------------------------------
 ; Predefined single-letter Real or Complex variables.
@@ -212,9 +212,9 @@ stoVar:
     bcall(_PushOP1) ; FPS=[OP1/OP2]
     pop bc
     ;
-    call checkOp1Complex ; ZF=1 if complex
+    call checkOp1ComplexPageOne ; ZF=1 if complex
     jr z, stoVarComplex
-    call checkOp1Real ; ZF=1 if real
+    call checkOp1RealPageOne ; ZF=1 if real
     jr z, stoVarReal
     bcall(_ErrDataType)
 stoVarReal:
@@ -278,7 +278,7 @@ stoOpVar:
     ;
     push bc ; stack=[op,LETTER]
     bcall(_PushRpnObject1) ; FPS=[OP1/OP2]
-    call cp1ToCp3 ; OP3/OP4=OP1/OP2
+    call cp1ToCp3PageOne ; OP3/OP4=OP1/OP2
     ; Recall VARS[LETTER]
     pop bc ; stack=[]; B=op; C=LETTER
     push bc ; stack=[op,LETTER]
@@ -288,7 +288,7 @@ stoOpVar:
     push bc ; stack=[op,LETTER]
     ld a, b ; A=op
     ld hl, floatOps
-    call jumpAOfHL
+    call jumpAOfHLPageOne
     ; Save VARS[LETTER]
     pop bc ; stack=[]; B=op; C=LETTER
     call stoVar
@@ -313,13 +313,13 @@ rclOpVar:
     pop bc ; stack=[]; B=op; C=LETTER
     push bc ; stack=[op,LETTER]
     call rclVar ; OP1/OP2=VARS[LETTER]
-    call cp1ToCp3 ; OP3/OP4=OP1/OP2
+    call cp1ToCp3PageOne ; OP3/OP4=OP1/OP2
     bcall(_PopRpnObject1) ; FPS=[]; OP1/OP2=OP1/OP2
     ; Invoke op B
     pop bc ; stack=[]; B=op; C=LETTER
     ld a, b ; A=op
     ld hl, floatOps
-    jp jumpAOfHL ; OP1/OP2=OP1/OP2{op}OP3/OP4
+    jp jumpAOfHLPageOne ; OP1/OP2=OP1/OP2{op}OP3/OP4
 
 ;-----------------------------------------------------------------------------
 ; Universal Sto, Rcl, Sto{op}, Rcl{op} which work for both numeric storage
@@ -337,7 +337,7 @@ stoGeneric:
 ; Description: Implement rclVar() or rclRegNN() depending on the argType in A.
 ; Input: A=varType; C=indexOrLetter
 ; Output: none
-rclGeneric:
+RclGeneric:
     cp a, argTypeLetter
     jp z, rclVar
     jp rclRegNN
@@ -346,7 +346,7 @@ rclGeneric:
 ; A.
 ; Input: A=varType; B=op; C=indexOrLetter
 ; Output: OP1/OP2: updated
-stoOpGeneric:
+StoOpGeneric:
     cp a, argTypeLetter
     jp z, stoOpVar
     jp stoOpRegNN
@@ -354,7 +354,7 @@ stoOpGeneric:
 ; Description: Implement rclVar() or rclRegNN() depending on the argType in A.
 ; Input: A=varType; B=op; C=indexOrLetter
 ; Output: OP1/OP2: updated
-rclOpGeneric:
+RclOpGeneric:
     cp a, argTypeLetter
     jp z, rclOpVar
     jp rclOpRegNN

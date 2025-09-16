@@ -11,6 +11,18 @@ op1Set0PageOne:
     ld hl, const0PageOne
     jp move9ToOp1PageOne
 
+; Description: Set OP1 to 0.0. Faster version of bcall(_OP1Set0).
+; Destroys: all, HL
+op2Set0PageOne:
+    ld hl, const0PageOne
+    jp move9ToOp2PageOne
+
+; Description: Set OP1 to 0.0. Faster version of bcall(_OP1Set0).
+; Destroys: all, HL
+op4Set0PageOne:
+    ld hl, const0
+    jp move9ToOp4PageOne
+
 ;-----------------------------------------------------------------------------
 
 ; Description: Set OP2 to 100. The TI-OS Provides OP2Set60() but not

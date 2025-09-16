@@ -16,9 +16,9 @@
 ;   - OP3/OP4: X
 ; Output:
 ;   - OP1/OP2: Y+X
-universalAdd:
+UniversalAdd:
     ; perform double-dispatch based on type of OP1 and OP3
-    call getOp1RpnObjectType ; A=type; HL=OP1
+    call getOp1RpnObjectTypePageOne ; A=type; HL=OP1
     ; OP1=real
     cp rpnObjectTypeReal ; ZF=1 if Real
     jr z, universalAddRealPlusObject
@@ -52,7 +52,7 @@ universalAdd:
     jp universalAddErr
 ; Real+object
 universalAddRealPlusObject:
-    call getOp3RpnObjectType ; A=type; HL=OP3
+    call getOp3RpnObjectTypePageOne ; A=type; HL=OP3
     cp rpnObjectTypeReal
     jr z, universalAddRealPlusReal
     cp rpnObjectTypeComplex
@@ -74,14 +74,14 @@ universalAddRealPlusObject:
     ; Real+Denominate not supported
     jr universalAddErr
 universalAddRealPlusReal:
-    call op3ToOp2
+    call op3ToOp2PageOne
     bcall(_FPAdd) ; OP1=Y+X
     ret
 universalAddRealPlusComplex:
-    call convertOp1ToCp1
+    call convertOp1ToCp1PageOne
     bcall(_PushOP1) ; FPS=[Y]
-    call cp3ToCp1 ; OP1/OP2=OP3/OP4
-    call convertOp1ToCp1
+    call cp3ToCp1PageOne ; OP1/OP2=OP3/OP4
+    call convertOp1ToCp1PageOne
     bcall(_CAdd) ; OP1/OP2 += FPS[OP1/OP2]; FPS=[]
     ret
 universalAddRealPlusDate:
@@ -107,7 +107,7 @@ universalAddRealPlusDuration:
     ret
 ; Complex + object
 universalAddComplexPlusObject:
-    call getOp3RpnObjectType ; A=type; HL=OP3
+    call getOp3RpnObjectTypePageOne ; A=type; HL=OP3
     cp rpnObjectTypeReal
     jr z, universalAddComplexPlusReal
     cp rpnObjectTypeComplex
@@ -118,7 +118,7 @@ universalAddComplexPlusComplex:
     jr universalAddRealPlusComplex
 ; Date + object
 universalAddDatePlusObject:
-    call getOp3RpnObjectType ; A=type; HL=OP3
+    call getOp3RpnObjectTypePageOne ; A=type; HL=OP3
     cp rpnObjectTypeReal
     jr z, universalAddDatePlusReal
     cp rpnObjectTypeDuration
@@ -135,7 +135,7 @@ universalAddErr:
     bcall(_ErrDataType)
 ; Time + object
 universalAddTimePlusObject:
-    call getOp3RpnObjectType ; A=type; HL=OP3
+    call getOp3RpnObjectTypePageOne ; A=type; HL=OP3
     cp rpnObjectTypeReal
     jr z, universalAddTimePlusReal
     cp rpnObjectTypeDuration
@@ -149,7 +149,7 @@ universalAddTimePlusDuration:
     ret
 ; DateTime + object
 universalAddDateTimePlusObject:
-    call getOp3RpnObjectType ; A=type; HL=OP3
+    call getOp3RpnObjectTypePageOne ; A=type; HL=OP3
     cp rpnObjectTypeReal
     jr z, universalAddDateTimePlusReal
     cp rpnObjectTypeDuration
@@ -163,7 +163,7 @@ universalAddDateTimePlusDuration:
     ret
 ; Offset + object
 universalAddOffsetPlusObject:
-    call getOp3RpnObjectType ; A=type; HL=OP3
+    call getOp3RpnObjectTypePageOne ; A=type; HL=OP3
     cp rpnObjectTypeReal
     jr z, universalAddOffsetPlusReal
     cp rpnObjectTypeDuration
@@ -177,7 +177,7 @@ universalAddOffsetPlusDuration:
     ret
 ; OffsetDateTime + object
 universalAddOffsetDateTimePlusObject:
-    call getOp3RpnObjectType ; A=type; HL=OP3
+    call getOp3RpnObjectTypePageOne ; A=type; HL=OP3
     cp rpnObjectTypeReal
     jr z, universalAddOffsetDateTimePlusReal
     cp rpnObjectTypeDuration
@@ -191,7 +191,7 @@ universalAddOffsetDateTimePlusDuration:
     ret
 ; DayOfWeek + object
 universalAddDayOfWeekPlusObject:
-    call getOp3RpnObjectType ; A=type; HL=OP3
+    call getOp3RpnObjectTypePageOne ; A=type; HL=OP3
     cp rpnObjectTypeReal
     jr z, universalAddDayOfWeekPlusReal
     jr universalAddErr
@@ -200,7 +200,7 @@ universalAddDayOfWeekPlusReal:
     ret
 ; Duration + object
 universalAddDurationPlusObject:
-    call getOp3RpnObjectType ; A=type; HL=OP3
+    call getOp3RpnObjectTypePageOne ; A=type; HL=OP3
     cp rpnObjectTypeReal
     jr z, universalAddDurationPlusReal
     cp rpnObjectTypeTime
@@ -234,7 +234,7 @@ universalAddDurationPlusOffsetDateTime:
     jr universalAddOffsetDateTimePlusDuration
 ; Denominate + object
 universalAddDenominatePlusObject:
-    call getOp3RpnObjectType ; A=type; HL=OP3
+    call getOp3RpnObjectTypePageOne ; A=type; HL=OP3
     cp rpnObjectTypeDenominate
     jr z, universalAddDenominatePlusDenominate
     ; Denominate+Real not supported
@@ -249,9 +249,9 @@ universalAddDenominatePlusDenominate:
 ;   - OP3/OP4: X
 ; Output:
 ;   - OP1/OP2: Y-X
-universalSub:
+UniversalSub:
     ; perform double-dispatch based on type of OP1 and OP3
-    call getOp1RpnObjectType ; A=type; HL=OP1
+    call getOp1RpnObjectTypePageOne ; A=type; HL=OP1
     ; OP1=real
     cp rpnObjectTypeReal ; ZF=1 if Real
     jr z, universalSubRealMinusObject
@@ -285,7 +285,7 @@ universalSub:
     jr universalSubErr
 ; Real - object
 universalSubRealMinusObject:
-    call getOp3RpnObjectType ; A=type; HL=OP3
+    call getOp3RpnObjectTypePageOne ; A=type; HL=OP3
     cp rpnObjectTypeReal
     jr z, universalSubRealMinusReal
     cp rpnObjectTypeComplex
@@ -294,7 +294,7 @@ universalSubRealMinusObject:
     jr z, universalSubRealMinusDuration
     jr universalSubErr
 universalSubRealMinusReal:
-    call op3ToOp2
+    call op3ToOp2PageOne
     bcall(_FPSub) ; OP1=Y-X
     ret
 universalSubRealMinusComplex:
@@ -304,7 +304,7 @@ universalSubRealMinusDuration:
     ret
 ; Complex - object
 universalSubComplexMinusObject:
-    call getOp3RpnObjectType ; A=type; HL=OP3
+    call getOp3RpnObjectTypePageOne ; A=type; HL=OP3
     cp rpnObjectTypeReal
     jr z, universalSubComplexMinusReal
     cp rpnObjectTypeComplex
@@ -312,15 +312,15 @@ universalSubComplexMinusObject:
     jr universalSubErr
 universalSubComplexMinusReal:
 universalSubComplexMinusComplex:
-    call convertOp1ToCp1
+    call convertOp1ToCp1PageOne
     bcall(_PushOP1) ; FPS=[Y]
-    call cp3ToCp1 ; OP1/OP2=OP3/OP4
-    call convertOp1ToCp1
+    call cp3ToCp1PageOne ; OP1/OP2=OP3/OP4
+    call convertOp1ToCp1PageOne
     bcall(_CSub) ; OP1/OP2 = FPS[OP1/OP2] - OP1/OP2; FPS=[]
     ret
 ; Date - object
 universalSubDateMinusObject:
-    call getOp3RpnObjectType ; A=type; HL=OP3
+    call getOp3RpnObjectTypePageOne ; A=type; HL=OP3
     cp rpnObjectTypeReal
     jr z, universalSubDateMinusDays
     cp rpnObjectTypeDate
@@ -338,7 +338,7 @@ universalSubErr:
     bcall(_ErrDataType)
 ; Time - object
 universalSubTimeMinusObject:
-    call getOp3RpnObjectType ; A=type; HL=OP3
+    call getOp3RpnObjectTypePageOne ; A=type; HL=OP3
     cp rpnObjectTypeReal
     jr z, universalSubTimeMinusReal
     cp rpnObjectTypeTime
@@ -353,7 +353,7 @@ universalSubTimeMinusDuration:
     ret
 ; DateTime - object
 universalSubDateTimeMinusObject:
-    call getOp3RpnObjectType ; A=type; HL=OP3
+    call getOp3RpnObjectTypePageOne ; A=type; HL=OP3
     cp rpnObjectTypeReal
     jr z, universalSubDateTimeMinusReal
     cp rpnObjectTypeDateTime
@@ -368,7 +368,7 @@ universalSubDateTimeMinusDuration:
     ret
 ; Offset - object
 universalSubOffsetMinusObject:
-    call getOp3RpnObjectType ; A=type; HL=OP3
+    call getOp3RpnObjectTypePageOne ; A=type; HL=OP3
     cp rpnObjectTypeReal
     jr z, universalSubOffsetMinusReal
     cp rpnObjectTypeOffset
@@ -383,7 +383,7 @@ universalSubOffsetMinusDuration:
     ret
 ; OffsetDateTime - object
 universalSubOffsetDateTimeMinusObject:
-    call getOp3RpnObjectType ; A=type; HL=OP3
+    call getOp3RpnObjectTypePageOne ; A=type; HL=OP3
     cp rpnObjectTypeReal
     jr z, universalSubOffsetDateTimeMinusReal
     cp rpnObjectTypeOffsetDateTime
@@ -398,7 +398,7 @@ universalSubOffsetDateTimeMinusDuration:
     ret
 ; DayOfWeek - object
 universalSubDayOfWeekMinusObject:
-    call getOp3RpnObjectType ; A=type; HL=OP3
+    call getOp3RpnObjectTypePageOne ; A=type; HL=OP3
     cp rpnObjectTypeReal
     jr z, universalSubDayOfWeekMinusReal
     cp rpnObjectTypeDayOfWeek
@@ -410,7 +410,7 @@ universalSubDayOfWeekMinusDayOfWeek:
     ret
 ; Duration - object
 universalSubDurationMinusObject:
-    call getOp3RpnObjectType ; A=type; HL=OP3
+    call getOp3RpnObjectTypePageOne ; A=type; HL=OP3
     cp rpnObjectTypeReal
     jr z, universalSubDurationMinusReal
     cp rpnObjectTypeDuration
@@ -422,7 +422,7 @@ universalSubDurationMinusDuration:
     ret
 ; Denominate - object
 universalSubDenominateMinusObject:
-    call getOp3RpnObjectType ; A=type; HL=OP3
+    call getOp3RpnObjectTypePageOne ; A=type; HL=OP3
     cp rpnObjectTypeDenominate
     jr z, universalSubDenominateMinusDenominate
     jp universalSubErr
@@ -436,9 +436,9 @@ universalSubDenominateMinusDenominate:
 ;   - OP3/OP4: X
 ; Output:
 ;   - OP1/OP2: Y*X
-universalMult:
+UniversalMult:
     ; perform double-dispatch based on type of OP1 and OP3
-    call getOp1RpnObjectType ; A=type; HL=OP1
+    call getOp1RpnObjectTypePageOne ; A=type; HL=OP1
     ; OP1=real
     cp rpnObjectTypeReal ; ZF=1 if real
     jr z, universalMultRealByObject
@@ -464,7 +464,7 @@ universalMult:
     jr universalMultErr
 ; Real * object
 universalMultRealByObject:
-    call getOp3RpnObjectType ; A=type; HL=OP3
+    call getOp3RpnObjectTypePageOne ; A=type; HL=OP3
     cp rpnObjectTypeReal
     jr z, universalMultRealByReal
     cp rpnObjectTypeComplex
@@ -479,11 +479,11 @@ universalMultRealByObject:
     jr z, universalMultRealByDenominate
     jr universalMultErr
 universalMultRealByReal:
-    call op3ToOp2
+    call op3ToOp2PageOne
     bcall(_FPMult) ; OP1=Y*X
     ret
 universalMultRealByComplex:
-    call cp1ExCp3 ; CP1=complex; CP3=real
+    call cp1ExCp3PageOne ; CP1=complex; CP3=real
     jr universalMultComplexByReal
 universalMultRealByDate: ; Real * Date
     bcall(_ConvertRpnDateLikeToTimeZone)
@@ -499,7 +499,7 @@ universalMultRealByDenominate:
     ret
 ; Complex * object
 universalMultComplexByObject:
-    call getOp3RpnObjectType ; A=type; HL=OP3
+    call getOp3RpnObjectTypePageOne ; A=type; HL=OP3
     cp rpnObjectTypeReal
     jr z, universalMultComplexByReal
     cp rpnObjectTypeComplex
@@ -508,7 +508,7 @@ universalMultComplexByObject:
 universalMultComplexByComplex:
     ; Complex*Complex
     bcall(_PushOP1) ; FPS=[Y]
-    call cp3ToCp1 ; OP1/OP2=OP3/OP4
+    call cp3ToCp1PageOne ; OP1/OP2=OP3/OP4
     bcall(_CMult) ; OP1/OP2 = FPS[OP1/OP2] * OP1/OP2; FPS=[]
     ret
 universalMultComplexByReal:
@@ -527,7 +527,7 @@ universalMultDateTimeByObject:
     ret
 ; Offset * object
 universalMultOffsetByObject:
-    call getOp3RpnObjectType ; A=type; HL=OP3
+    call getOp3RpnObjectTypePageOne ; A=type; HL=OP3
     cp rpnObjectTypeDateTime
     jr z, universalMultOffsetByDateTime
     cp rpnObjectTypeOffsetDateTime
@@ -548,7 +548,7 @@ universalMultOffsetDateTimeByObject:
     ret
 ; Denominate * object
 universalMultDenominateByObject:
-    call getOp3RpnObjectType ; A=type; HL=OP3
+    call getOp3RpnObjectTypePageOne ; A=type; HL=OP3
     cp rpnObjectTypeReal
     jr z, universalMultDenominateByReal
     jr universalMultErr
@@ -562,9 +562,9 @@ universalMultDenominateByReal:
 ;   - OP3/OP4: X
 ; Output:
 ;   - OP1/OP2: Y/X
-universalDiv:
+UniversalDiv:
     ; perform double-dispatch based on type of OP1 and OP3
-    call getOp1RpnObjectType ; A=type; HL=OP1
+    call getOp1RpnObjectTypePageOne ; A=type; HL=OP1
     cp rpnObjectTypeReal ; ZF=1 if real
     jr z, universalDivRealByObject
     cp rpnObjectTypeComplex ; ZF=1 if complex
@@ -576,20 +576,20 @@ universalDiv:
     jr universalDivErr
 ; real / object
 universalDivRealByObject:
-    call getOp3RpnObjectType ; A=type; HL=OP3
+    call getOp3RpnObjectTypePageOne ; A=type; HL=OP3
     cp rpnObjectTypeReal ; ZF=1 if real
     jr z, universalDivRealByReal
     cp rpnObjectTypeComplex ; ZF=1 if complex
     jr z, universalDivRealByComplex
     jr universalDivErr
 universalDivRealByReal:
-    call op3ToOp2
+    call op3ToOp2PageOne
     bcall(_FPDiv) ; OP1=Y/X
     ret
 universalDivRealByComplex:
-    call convertOp1ToCp1
+    call convertOp1ToCp1PageOne
     bcall(_PushOP1)
-    call cp3ToCp1
+    call cp3ToCp1PageOne
     bcall(_CDiv)
     ret
 ; Placed in the middle to support 'jr' instead of 'jp'.
@@ -597,7 +597,7 @@ universalDivErr:
     bcall(_ErrDataType)
 ; complex / object
 universalDivComplexByObject:
-    call getOp3RpnObjectType ; A=type; HL=OP3
+    call getOp3RpnObjectTypePageOne ; A=type; HL=OP3
     cp rpnObjectTypeReal
     jr z, universalDivComplexByReal
     cp rpnObjectTypeComplex
@@ -608,12 +608,12 @@ universalDivComplexByReal:
     ret
 universalDivComplexByComplex:
     bcall(_PushOP1) ; FPS=[Y]
-    call cp3ToCp1 ; OP1/OP2=OP3/OP4
+    call cp3ToCp1PageOne ; OP1/OP2=OP3/OP4
     bcall(_CDiv) ; OP1/OP2 = FPS[OP1/OP2] / OP1/OP2; FPS=[]
     ret
 ; Denominate / object
 universalDivDenominateByObject:
-    call getOp3RpnObjectType ; A=type; HL=OP3
+    call getOp3RpnObjectTypePageOne ; A=type; HL=OP3
     cp rpnObjectTypeReal
     jr z, universalDivDenominateByReal
     cp rpnObjectTypeDenominate
@@ -633,8 +633,8 @@ universalDivDenominateByDenominate:
 ;   - CP1:(Real|Complex|RpnDuration)=X
 ; Output:
 ;   - CP1:(Real|Complex|RpnDuration)=-X
-universalChs:
-    call getOp1RpnObjectType ; A=type; HL=OP1
+UniversalChs:
+    call getOp1RpnObjectTypePageOne ; A=type; HL=OP1
     cp rpnObjectTypeReal ; ZF=1 if real
     jr z, universalChsReal
     cp rpnObjectTypeComplex ; ZF=1 if complex
@@ -667,8 +667,8 @@ universalChsDenominate:
 ;   - OP1/OP2:(Real|Complex)=X
 ; Output:
 ;   - OP1/OP2:(Real|Complex)=1/X
-universalRecip:
-    call getOp1RpnObjectType ; A=type; HL=OP1
+UniversalRecip:
+    call getOp1RpnObjectTypePageOne ; A=type; HL=OP1
     cp rpnObjectTypeReal ; ZF=1 if real
     jr z, universalRecipReal
     cp rpnObjectTypeComplex ; ZF=1 if complex
@@ -687,8 +687,8 @@ universalRecipComplex:
 ;   - OP1/OP2:(Real|Complex)=X
 ; Output:
 ;   - OP1/OP2:(Real|Complex)=X^2
-universalSquare:
-    call getOp1RpnObjectType ; A=type; HL=OP1
+UniversalSquare:
+    call getOp1RpnObjectTypePageOne ; A=type; HL=OP1
     cp rpnObjectTypeReal ; ZF=1 if real
     jr z, universalSquareReal
     cp rpnObjectTypeComplex ; ZF=1 if complex
@@ -709,8 +709,8 @@ universalSquareComplex:
 ;   - numResultMode
 ; Output:
 ;   - OP1/OP2:(Real|Complex|RpnDate|RpnDateTime)=sqrt(X)|date|dateTime
-universalSqRoot:
-    call getOp1RpnObjectType ; A=type; HL=OP1
+UniversalSqRoot:
+    call getOp1RpnObjectTypePageOne ; A=type; HL=OP1
     cp rpnObjectTypeReal ; ZF=1 if complex
     jr z, universalSqRootReal
     cp rpnObjectTypeComplex ; ZF=1 if complex
@@ -729,9 +729,9 @@ universalSqRootReal:
     ; hack would be unnecessary if we had access to the UnOPExec() function of
     ; the OS, but spasm-ng does not provide the list of constants for the
     ; various functions, so we can't use UnOPExec().
-    call convertOp1ToCp1
+    call convertOp1ToCp1PageOne
     bcall(_CSqRoot)
-    jp convertCp1ToOp1 ; chop off the imaginary part if zero
+    jp convertCp1ToOp1PageOne ; chop off the imaginary part if zero
 universalSqRootNumResultModeReal:
     bcall(_SqRoot)
     ret
@@ -751,10 +751,10 @@ universalSqRootOffsetDateTime:
 ; Input: OP1/OP2: X
 ; Output: OP1/OP2: X^3
 ; Destroys: all, OP1-OP6
-universalCube:
-    call checkOp1Real ; ZF=1 if real
+UniversalCube:
+    call checkOp1RealPageOne ; ZF=1 if real
     jr z, universalCubeReal
-    call checkOp1Complex ; ZF=1 if complex
+    call checkOp1ComplexPageOne ; ZF=1 if complex
     jr z, universalCubeComplex
 universalCubeErr:
     bcall(_ErrDataType)
@@ -762,20 +762,20 @@ universalCubeReal:
     bcall(_Cube)
     ret
 universalCubeComplex:
-    call cp1ToCp5 ; CP5=CP1
+    call cp1ToCp5PageOne ; CP5=CP1
     bcall(_CSquare) ; CP1=CP1^2
     bcall(_PushOP1) ; FPS=[CP1^2]
-    call cp5ToCp1 ; CP1=CP5
+    call cp5ToCp1PageOne ; CP1=CP5
     bcall(_CMult) ; CP1=CP1^3; FPS=[]
     ret
 
 ; Description: Calculate CBRT(X)=X^(1/3) for real and complex numbers.
 ; Input: OP1/OP2: X
 ; Output: OP1/OP2: X^(1/3)
-universalCubeRoot:
-    call checkOp1Real ; ZF=1 if real
+UniversalCubeRoot:
+    call checkOp1RealPageOne ; ZF=1 if real
     jr z, universalCubeRootReal
-    call checkOp1Complex ; ZF=1 if complex
+    call checkOp1ComplexPageOne ; ZF=1 if complex
     jr z, universalCubeRootComplex
 universalCubeRootErr:
     bcall(_ErrDataType)
@@ -786,11 +786,11 @@ universalCubeRootReal:
     bcall(_XRootY) ; OP2^(1/OP1), SDK documentation is incorrect
     ret
 universalCubeRootComplex:
-    call cp1ToCp3 ; CP3=CP1
+    call cp1ToCp3PageOne ; CP3=CP1
     bcall(_OP1Set3) ; OP1=3
-    call convertOp1ToCp1 ; CP1=(3i0)
+    call convertOp1ToCp1PageOne ; CP1=(3i0)
     bcall(_PushOP1) ; FPS=[3i0]
-    call cp3ToCp1 ; CP1=CP3
+    call cp3ToCp1PageOne ; CP1=CP3
     bcall(_CXrootY) ; CP1=CP1^(1/3); FPS=[]
     ret
 
@@ -803,8 +803,8 @@ universalCubeRootComplex:
 ;   - numResultMode
 ; Output:
 ;   - OP1/OP2:RpnObject=Y^X (for real or complex)
-universalPow:
-    call getOp1RpnObjectType ; A=type; HL=OP1
+UniversalPow:
+    call getOp1RpnObjectTypePageOne ; A=type; HL=OP1
     cp rpnObjectTypeReal ; ZF=1 if real
     jr z, universalPowRealToObject
     cp rpnObjectTypeComplex ; ZF=1 if complex
@@ -813,7 +813,7 @@ universalPowErr:
     bcall(_ErrDataType)
 ; pow(real,object)=real^object
 universalPowRealToObject:
-    call getOp3RpnObjectType ; A=type; HL=OP3
+    call getOp3RpnObjectTypePageOne ; A=type; HL=OP3
     cp rpnObjectTypeReal
     jr z, universalPowRealToReal
     cp rpnObjectTypeComplex
@@ -825,30 +825,30 @@ universalPowRealToReal:
     jr nz, universalPowNumResultModeReal
     ; Both are real, but the result could be complex, so we calculate the
     ; complex result, and chop off the imaginary part if it's zero.
-    call convertOp1ToCp1
+    call convertOp1ToCp1PageOne
     call universalPowComplexToReal
-    jp convertCp1ToOp1
+    jp convertCp1ToOp1PageOne
 universalPowNumResultModeReal:
-    call op3ToOp2 ; OP2=X
+    call op3ToOp2PageOne ; OP2=X
     bcall(_YToX) ; OP1=OP1^OP2=Y^X
     ret
 universalPowRealToComplex:
-    call convertOp1ToCp1
+    call convertOp1ToCp1PageOne
     jr universalPowComplexToComplex
 ; pow(complex,object)=complex^object
 universalPowComplexToObject:
-    call getOp3RpnObjectType ; A=type; HL=OP3
+    call getOp3RpnObjectTypePageOne ; A=type; HL=OP3
     cp rpnObjectTypeReal
     jr z, universalPowComplexToReal
     cp rpnObjectTypeComplex
     jr z, universalPowComplexToComplex
     jr universalPowErr
 universalPowComplexToReal:
-    call convertOp3ToCp3 ; CP3=complex(X)
+    call convertOp3ToCp3PageOne ; CP3=complex(X)
     ; [[fallthrough]]
 universalPowComplexToComplex:
     bcall(_PushOP1) ; FPS=[Y]
-    call cp3ToCp1 ; CP1=OP3/OP4=X
+    call cp3ToCp1PageOne ; CP1=OP3/OP4=X
     bcall(_CYtoX) ; CP1=(FPS)^(CP1)=Y^X; FPS=[]
     ret
 
@@ -858,8 +858,8 @@ universalPowComplexToComplex:
 ;   - OP3/OP4: X
 ;   - numResultMode
 ; Output: OP1/OP2: Y^(1/X)
-universalXRootY:
-    call getOp1RpnObjectType ; A=type; HL=OP1
+UniversalXRootY:
+    call getOp1RpnObjectTypePageOne ; A=type; HL=OP1
     cp rpnObjectTypeReal ; ZF=1 if real
     jr z, universalXRootYRealByObject
     cp rpnObjectTypeComplex ; ZF=1 if complex
@@ -868,7 +868,7 @@ universalXRootYErr:
     bcall(_ErrDataType)
 ; xrooty(real,object)=real^(1/object)
 universalXRootYRealByObject:
-    call getOp3RpnObjectType ; A=type; HL=OP3
+    call getOp3RpnObjectTypePageOne ; A=type; HL=OP3
     cp rpnObjectTypeReal ; ZF=1 if real
     jr z, universalXRootYRealByReal
     cp rpnObjectTypeComplex ; ZF1=1 if complex
@@ -880,27 +880,27 @@ universalXRootYRealByReal:
     jr nz, universalXRootYNumResultModeReal
     ; Both are real, but the result could be complex, so we calculate the
     ; complex result, and chop off the imaginary part if it's zero.
-    call convertOp1ToCp1
+    call convertOp1ToCp1PageOne
     call universalXRootYComplexByReal
-    jp convertCp1ToOp1 ; chop off the imaginary part if zero
+    jp convertCp1ToOp1PageOne ; chop off the imaginary part if zero
 universalXRootYNumResultModeReal:
-    call op1ToOp2 ; OP2=Y
-    call op3ToOp1 ; OP1=X
+    call op1ToOp2PageOne ; OP2=Y
+    call op3ToOp1PageOne ; OP1=X
     bcall(_XRootY) ; OP1=OP2^(1/OP1), SDK documentation is incorrect
     ret
 universalXRootYRealByComplex:
-    call convertOp1ToCp1
+    call convertOp1ToCp1PageOne
     jr universalXRootYComplexByComplex
 ; xrooty(complex,object)=complex^(1/object)
 universalXRootYComplexByObject:
-    call getOp3RpnObjectType ; A=type; HL=OP3
+    call getOp3RpnObjectTypePageOne ; A=type; HL=OP3
     cp rpnObjectTypeReal
     jr z, universalXRootYComplexByReal
     cp rpnObjectTypeComplex
     jr z, universalXRootYComplexByComplex
     jr universalXRootYErr
 universalXRootYComplexByReal:
-    call convertOp3ToCp3
+    call convertOp3ToCp3PageOne
     ; [[fallthrough]]
 universalXRootYComplexByComplex:
     bcall(_PushOP3) ; FPS=[X]
@@ -920,8 +920,8 @@ universalXRootYComplexByComplex:
 ; Output:
 ;   - OP1/OP2:(Real|Complex|RpnDate|RpnDateTime)=Log(X) (base 10) or Split(X)
 ;   - A:u8=numRetValues (1 for Real,Complex; 2 for DateTime,OffsetDateTime)
-universalLog:
-    call getOp1RpnObjectType ; A=type; HL=OP1
+UniversalLog:
+    call getOp1RpnObjectTypePageOne ; A=type; HL=OP1
     cp rpnObjectTypeReal ; ZF=1 if real
     jr z, universalLogReal
     cp rpnObjectTypeComplex ; ZF=1 if complex
@@ -936,9 +936,9 @@ universalLogReal:
     ; hack would be unnecessary if we had access to the UnOPExec() function of
     ; the OS, but spasm-ng does not provide the list of constants for the
     ; various functions, so we can't use UnOPExec().
-    call convertOp1ToCp1
+    call convertOp1ToCp1PageOne
     bcall(_CLog)
-    call convertCp1ToOp1 ; chop off the imaginary part if zero
+    call convertCp1ToOp1PageOne ; chop off the imaginary part if zero
     ret
 universalLogNumResultModeReal:
     bcall(_LogX)
@@ -950,10 +950,10 @@ universalLogComplex:
 ; Description: TenPow(X)=10^X for real and complex numbers.
 ; Input: OP1/OP2: X
 ; Output: OP1/OP2: 10^X
-universalTenPow:
-    call checkOp1Real ; ZF=1 if real
+UniversalTenPow:
+    call checkOp1RealPageOne ; ZF=1 if real
     jr z, universalTenPowReal
-    call checkOp1Complex ; ZF=1 if complex
+    call checkOp1ComplexPageOne ; ZF=1 if complex
     jr z, universalTenPowComplex
 universalTenPowErr:
     bcall(_ErrDataType)
@@ -967,10 +967,10 @@ universalTenPowComplex:
 ; Description: Ln for real and complex numbers.
 ; Input: OP1/OP2: X; numResultMode
 ; Output: OP1/OP2: Ln(X)
-universalLn:
-    call checkOp1Real ; ZF=1 if real
+UniversalLn:
+    call checkOp1RealPageOne ; ZF=1 if real
     jr z, universalLnReal
-    call checkOp1Complex ; ZF=1 if complex
+    call checkOp1ComplexPageOne ; ZF=1 if complex
     jr z, universalLnComplex
 universlLnErr:
     bcall(_ErrDataType)
@@ -983,9 +983,9 @@ universalLnReal:
     ; hack would be unnecessary if we had access to the UnOPExec() function of
     ; the OS, but spasm-ng does not provide the list of constants for the
     ; various functions, so we can't use UnOPExec().
-    call convertOp1ToCp1
+    call convertOp1ToCp1PageOne
     bcall(_CLN)
-    jp convertCp1ToOp1 ; chop off the imaginary part if zero
+    jp convertCp1ToOp1PageOne ; chop off the imaginary part if zero
 universalLnNumResultModeReal:
     bcall(_LnX)
     ret
@@ -996,10 +996,10 @@ universalLnComplex:
 ; Description: Exp for real and complex numbers.
 ; Input: OP1/OP2: X
 ; Output: OP1/OP2: e^X
-universalExp:
-    call checkOp1Real ; ZF=1 if real
+UniversalExp:
+    call checkOp1RealPageOne ; ZF=1 if real
     jr z, universalExpReal
-    call checkOp1Complex ; ZF=1 if complex
+    call checkOp1ComplexPageOne ; ZF=1 if complex
     jr z, universalExpComplex
 universlExpErr:
     bcall(_ErrDataType)
@@ -1013,21 +1013,21 @@ universalExpComplex:
 ; Description: TwoPow(X)=2^X for real and complex numbers.
 ; Input: OP1/OP2: X
 ; Output: OP1/OP2: 2^X
-universalTwoPow:
-    call checkOp1Real ; ZF=1 if real
+UniversalTwoPow:
+    call checkOp1RealPageOne ; ZF=1 if real
     jr z, universalTwoPowReal
-    call checkOp1Complex ; ZF=1 if complex
+    call checkOp1ComplexPageOne ; ZF=1 if complex
     jr z, universalTwoPowComplex
 universlTwoPowErr:
     bcall(_ErrDataType)
 universalTwoPowReal:
-    call op1ToOp2 ; OP2 = X
+    call op1ToOp2PageOne ; OP2 = X
     bcall(_OP1Set2) ; OP1 = 2
     bcall(_YToX) ; OP1=OP1^OP2=2^X
     ret
 universalTwoPowComplex:
     bcall(_OP3Set2) ; OP3=2
-    call convertOp3ToCp3 ; CP3=2i0
+    call convertOp3ToCp3PageOne ; CP3=2i0
     bcall(_PushOP3) ; FPS=[2i0]
     bcall(_CYtoX) ; CP1=FPS^CP1=2^(X); FPS=[]
     ret
@@ -1035,27 +1035,27 @@ universalTwoPowComplex:
 ; Description: Log2(X) = log_base_2(X) = log(X)/log(2)
 ; Input: OP1/OP2: X; numResultMode
 ; Output: OP1/OP2: log2(X)
-universalLog2:
-    call universalLn ; CP1=ln(X)
+UniversalLog2:
+    call UniversalLn ; CP1=ln(X)
     bcall(_PushOP1) ; FPS=[ln(X)]
     bcall(_OP1Set2) ; OP1=2.0
     bcall(_LnX) ; OP1=ln(2.0) ; TODO: Precalculate ln(2)
-    call op1ToOp3 ; OP3=ln(2.0)
+    call op1ToOp3PageOne ; OP3=ln(2.0)
     bcall(_PopOP1) ; FPS=[]; CP1=ln(x)
-    jp universalDiv ; CP1=CP1/ln(2)
+    jp UniversalDiv ; CP1=CP1/ln(2)
 
 ; Description: LogB(X) = log(X)/log(B).
 ; Input:
 ;   - OP1/OP2: X
 ;   - OP3/OP4: B
 ; Output: OP1/OP2: LogB(X)
-universalLogBase:
+UniversalLogBase:
     bcall(_PushOP3) ; FPS=[B]
-    call universalLn ; CP1=ln(X)
+    call UniversalLn ; CP1=ln(X)
     bcall(_PopOP3) ; FPS=[]; CP3=B
     bcall(_PushOP1) ; FPS=[ln(X)]
-    call cp3ToCp1 ; CP1=B
-    call universalLn ; CP1=ln(B)
-    call cp1ToCp3 ; CP3=ln(B)
+    call cp3ToCp1PageOne ; CP1=B
+    call UniversalLn ; CP1=ln(B)
+    call cp1ToCp3PageOne ; CP3=ln(B)
     bcall(_PopOP1) ; FPS=[]; CP1=ln(X)
-    jp universalDiv ; CP1=CP1/CP3
+    jp UniversalDiv ; CP1=CP1/CP3

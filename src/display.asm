@@ -475,7 +475,7 @@ displayStackYZT:
     ; print T value
     ld hl, stTCurCol*$100 + stTCurRow ; $(curCol)(curRow)
     ld (curRow), hl
-    call rclT
+    bcall(_RclStackT)
     ld b, displayStackFontFlagsT
     call printOP1
 
@@ -488,7 +488,7 @@ displayStackYZT:
     ; print Z value
     ld hl, stZCurCol*$100 + stZCurRow ; $(curCol)(curRow)
     ld (curRow), hl
-    call rclZ
+    bcall(_RclStackZ)
     ld b, displayStackFontFlagsZ
     call printOP1
 
@@ -501,7 +501,7 @@ displayStackYZT:
     ; print Y value
     ld hl, stYCurCol*$100 + stYCurRow ; $(curCol)(curRow)
     ld (curRow), hl
-    call rclY
+    bcall(_RclStackY)
     ld b, displayStackFontFlagsY
     call printOP1
 
@@ -543,7 +543,7 @@ displayStackXNormal:
     ; print the X register
     ld hl, stXCurCol*$100 + stXCurRow ; $(curCol)(curRow)
     ld (curRow), hl
-    call rclX
+    bcall(_RclStackX)
     ld b, displayStackFontFlagsX
     jp printOP1
 
@@ -790,7 +790,7 @@ displayShow:
     ; Call special FormShowable() function to show all digits of OP1.
     ld hl, showCurCol*$100 + showCurRow ; $(curCol)(curRow)
     ld (curRow), hl
-    call rclX
+    bcall(_RclStackX)
     ; fmtString is a buffer of 65 bytes used by FormDCplx(). There should be no
     ; problems using it as our string buffer.
     ld de, fmtString
