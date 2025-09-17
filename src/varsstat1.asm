@@ -123,7 +123,7 @@ StoAddStatRegNN:
     call RclStatRegNN
     bcall(_FPAdd) ; OP1 += OP2
     pop bc ; C=NN
-    bcall(_StoStatRegNN)
+    call StoStatRegNN
     bcall(_PopRealO2) ; FPS=[OP1]
     bcall(_PopRealO1) ; FPS=[]; OP1=OP1
     ret
@@ -147,7 +147,7 @@ StoSubStatRegNN:
     call RclStatRegNN
     bcall(_FPSub) ; OP1 -= OP2
     pop bc ; C=NN
-    bcall(_StoStatRegNN)
+    call StoStatRegNN
     bcall(_PopRealO2) ; FPS=[OP1]
     bcall(_PopRealO1) ; FPS=[]; OP1=OP1
     ret
