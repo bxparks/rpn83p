@@ -26,7 +26,7 @@ coldInitStat:
 ;-----------------------------------------------------------------------------
 
 mStatPlusHandler:
-    call closeInputAndRecallXY ; validates X,Y are Real, OP1,OP2 not used
+    call closeInputAndRecallXY ; validates X,Y are Real
     bcall(_StatSigmaPlus)
     ld c, statRegN
     bcall(_RclStatRegNN) ; OP1=R[sigmaN]
@@ -35,7 +35,7 @@ mStatPlusHandler:
     ret
 
 mStatMinusHandler:
-    call closeInputAndRecallXY ; validates X is Real, OP1 not used
+    call closeInputAndRecallXY ; validates X,Y are Real
     bcall(_StatSigmaMinus)
     ld c, statRegN
     bcall(_RclStatRegNN) ; OP1=R[sigmaN]

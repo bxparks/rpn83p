@@ -11,36 +11,44 @@
 ;-----------------------------------------------------------------------------
 
 ; Description: Add the X and Y data point to the stat registers.
-; TODO: Use OP1 and OP2 as input parameters, instead of RclStackX and
-; RclStackY. This would decouple this routine from the RPN stack, which allows
-; easier migration to Flash Page 1 if necessary. But we would still have a
-; dependency to the stat registers through StoStatRegNN() and RclStatRegNN().
-; Destroys: OP1, OP2, OP4
+; Input:
+;   - OP1:Real=Y
+;   - OP2:Real=X
+; Output:
+;   - StatRegNN updated
+; Destroys: all, OP1-OP5
 StatSigmaPlus:
-    bcall(_RclStackX)
-    bcall(_PushRealO1) ; FPS=[X]
+    bcall(_PushRealO2) ; FPS=[X]
+    bcall(_PushRealO1) ; FPS=[X,Y]
+
+    ; Process X
+    bcall(_CpyTo1FPS1) ; FPS=[X,Y]; OP1=X
     ld c, statRegX
     bcall(_StoAddStatRegNN)
 
+    ; Process X^2
     bcall(_FPSquare) ; OP1=X^2
     ld c, statRegX2
     bcall(_StoAddStatRegNN)
 
-    bcall(_RclStackY)
-    bcall(_PushRealO1) ; FPS=[X,Y]
+    ; Process Y
+    bcall(_CpyTo1FPST) ; FPS=[X,Y]; OP1=Y
     ld c, statRegY
     bcall(_StoAddStatRegNN)
 
+    ; Process Y^2
     bcall(_FPSquare) ; OP1=Y^2
     ld c, statRegY2
     bcall(_StoAddStatRegNN)
 
-    bcall(_PopRealO2) ; FPS=[X]; OP2=Y
-    bcall(_PopRealO1) ; FPS=[]; OP1=X
+    ; Process X*Y
+    bcall(_CpyTo1FPST) ; FPS=[X,Y]; OP1=Y
+    bcall(_CpyTo2FPS1) ; FPS=[X,Y]; OP2=X
     bcall(_FPMult)
     ld c, statRegXY
     bcall(_StoAddStatRegNN)
 
+    ; N=N+1
     ld c, statRegN
     bcall(_RclStatRegNN)
     bcall(_Plus1)
@@ -50,13 +58,10 @@ StatSigmaPlus:
     ; Check if we need to update the extended STAT registers.
     ld a, (statAllEnabled)
     or a
-    ret z
-    ; [[fallthrough]]
+    jr z, statSigmaPlusEnd
 
-statSigmaPlusLogX:
-    ; Update lnX registers.
-    bcall(_RclStackX)
-    bcall(_PushRealO1) ; FPS=[X]
+    ; Process lnX
+    bcall(_CpyTo1FPS1) ; FPS=[X,Y]; OP1=X
     bcall(_CkOP1Pos) ; if OP1 >= 0: ZF=1
     jr nz, statSigmaPlusLogXZero
     bcall(_CkOP1FP0) ; if OP1 == 0: ZF=1
@@ -67,19 +72,17 @@ statSigmaPlusLogXZero:
 statSigmaPlusLogXNormal:
     bcall(_LnX) ; OP1=lnX
 statSigmaPlusLogXContinue:
-    bcall(_PushRealO1) ; FPS=[X,lnX]
+    bcall(_PushRealO1) ; FPS=[X,Y,lnX]
     ld c, statRegLnX
     bcall(_StoAddStatRegNN)
-    ;
+
+    ; Process (lnX)^2
     bcall(_FPSquare) ; OP1=(lnX)^2
     ld c, statRegLnX2
     bcall(_StoAddStatRegNN)
-    ; [[fallthrough]]
 
-statSigmaPlusLogY:
-    ; Update lnY registers
-    bcall(_RclStackY)
-    bcall(_PushRealO1) ; FPS=[X,lnX,Y]
+    ; Process lnY
+    bcall(_CpyTo1FPS1) ; FPS=[X,Y,lnX]; OP1=Y
     bcall(_CkOP1Pos) ; if OP1 >= 0: ZF=1
     jr nz, statSigmaPlusLogYZero
     bcall(_CkOP1FP0) ; if OP1 == 0: ZF=1
@@ -90,67 +93,83 @@ statSigmaPlusLogYZero:
 statSigmaPlusLogYNormal:
     bcall(_LnX) ; OP1=lnY
 statSigmaPlusLogYContinue:
-    bcall(_PushRealO1) ; FPS=[X,lnX,Y,lnY]
+    bcall(_PushRealO1) ; FPS=[X,Y,lnX,lnY]
     ld c, statRegLnY
     bcall(_StoAddStatRegNN)
-    ;
+
+    ; Process (lnY)^2
     bcall(_FPSquare) ; OP1=(lnY)^2
     ld c, statRegLnY2
     bcall(_StoAddStatRegNN)
 
-    ; Update XlnY, YlnY, lnXlnY
-    bcall(_PopRealO4) ; FPS=[X,lnX,Y]; OP4=lnY
-    bcall(_PopRealO1) ; FPS=[X,lnX]; OP1=Y
-    bcall(_PopRealO2) ; FPS=[X]; OP2=lnX
+    ; Process YlnX
+    bcall(_CpyTo1FPS1) ; FPS=[X,Y,lnX,lnY]; OP1=lnX
+    bcall(_CpyTo2FPS2) ; FPS=[X,Y,lnX,lnY]; OP2=Y
     bcall(_FPMult) ; OP1=YlnX
     ld c, statRegYLnX
     bcall(_StoAddStatRegNN)
-    ;
-    bcall(_PopRealO1) ; FPS=[]; OP1=X
-    bcall(_OP2ExOP4) ; OP2=lnY, OP4=lnX
+
+    ; Process XlnY
+    bcall(_CpyTo1FPST) ; FPS=[X,Y,lnX,lnY]; OP1=lnY
+    bcall(_CpyTo2FPS3) ; FPS=[X,Y,lnX,lnY]; OP2=X
     bcall(_FPMult) ; OP1=XlnY
     ld c, statRegXLnY
     bcall(_StoAddStatRegNN)
-    ;
-    bcall(_OP4ToOP1) ; OP1=lnX, OP2=lnY
+
+    ; Process lnXlnY
+    bcall(_PopRealO1) ; FPS=[X,Y,lnX]; OP1=lnY
+    bcall(_PopRealO2) ; FPS=[X,Y]; OP2=lnX
     bcall(_FPMult) ; OP1=lnXlnY
     ld c, statRegLnXLnY
     bcall(_StoAddStatRegNN)
+    ; [[fallthrough]]
+
+statSigmaPlusEnd:
+    bcall(_PopRealO1) ; FPS=[X]
+    bcall(_PopRealO2) ; FPS=[]
     ret
 
 ;-----------------------------------------------------------------------------
 
 ; Description: Subtract the X and Y data point from the stat registers.
-; TODO: Use OP1 and OP2 as input parameters, instead of RclStackX and
-; RclStackY. This would decouple this routine from the RPN stack, which allows
-; easier migration to Flash Page 1 if necessary. But we would still have a
-; dependency to the stat registers through StoStatRegNN() and RclStatRegNN().
-; Destroys: OP1, OP2, OP4
+; Input:
+;   - OP1:Real=Y
+;   - OP2:Real=X
+; Output:
+;   - StatRegNN updated
+; Destroys: all, OP1-OP5
 StatSigmaMinus:
-    bcall(_RclStackX)
-    bcall(_PushRealO1) ; FPS=[X]
+    bcall(_PushRealO2) ; FPS=[X]
+    bcall(_PushRealO1) ; FPS=[X,Y]
+
+    ; Process X
+    bcall(_CpyTo1FPS1) ; FPS=[X,Y]; OP1=X
     ld c, statRegX
     bcall(_StoSubStatRegNN)
 
+    ; Process X^2
     bcall(_FPSquare) ; OP1=X^2
     ld c, statRegX2
     bcall(_StoSubStatRegNN)
 
-    bcall(_RclStackY)
-    bcall(_PushRealO1) ; FPS=[X,Y]
+    ; Process Y
+    bcall(_CpyTo1FPST) ; FPS=[X,Y]; OP1=Y
     ld c, statRegY
     bcall(_StoSubStatRegNN)
 
+    ; Process Y^2
     bcall(_FPSquare) ; OP1=Y^2
     ld c, statRegY2
     bcall(_StoSubStatRegNN)
 
-    bcall(_PopRealO2) ; FPS=[X]; OP2=Y
-    bcall(_PopRealO1) ; FPS=[]; OP1=X
+    ; Process X*Y
+    bcall(_CpyTo1FPST) ; FPS=[X,Y]; OP1=Y
+    bcall(_CpyTo2FPS1) ; FPS=[X,Y]; OP2=X
     bcall(_FPMult)
     ld c, statRegXY
     bcall(_StoSubStatRegNN)
 
+    ; N=N-1
     ld c, statRegN
     bcall(_RclStatRegNN)
     bcall(_Minus1)
@@ -160,13 +179,10 @@ StatSigmaMinus:
     ; Check if we need to update the extended STAT registers.
     ld a, (statAllEnabled)
     or a
-    ret z
-    ; [[fallthrough]]
+    jr z, statSigmaMinusEnd
 
-statSigmaMinusLogX:
-    ; Update lnX registers.
-    bcall(_RclStackX)
-    bcall(_PushRealO1) ; FPS=[X]
+    ; Process lnX
+    bcall(_CpyTo1FPS1) ; FPS=[X,Y]; OP1=X
     bcall(_CkOP1Pos) ; if OP1 >= 0: ZF=1
     jr nz, statSigmaMinusLogXZero
     bcall(_CkOP1FP0) ; if OP1 == 0: ZF=1
@@ -177,19 +193,17 @@ statSigmaMinusLogXZero:
 statSigmaMinusLogXNormal:
     bcall(_LnX) ; OP1=lnX
 statSigmaMinusLogXContinue:
-    bcall(_PushRealO1) ; FPS=[X,lnX]
+    bcall(_PushRealO1) ; FPS=[X,Y,lnX]
     ld c, statRegLnX
     bcall(_StoSubStatRegNN)
-    ;
+
+    ; Process (lnX)^2
     bcall(_FPSquare) ; OP1=(lnX)^2
     ld c, statRegLnX2
     bcall(_StoSubStatRegNN)
-    ; [[fallthrough]]
 
-statSigmaMinusLogY:
-    ; Update lnY registers
-    bcall(_RclStackY)
-    bcall(_PushRealO1) ; FPS=[X,lnX,Y]
+    ; Process lnY
+    bcall(_CpyTo1FPS1) ; FPS=[X,Y,lnX]; OP1=Y
     bcall(_CkOP1Pos) ; if OP1 >= 0: ZF=1
     jr nz, statSigmaMinusLogYZero
     bcall(_CkOP1FP0) ; if OP1 == 0: ZF=1
@@ -200,50 +214,58 @@ statSigmaMinusLogYZero:
 statSigmaMinusLogYNormal:
     bcall(_LnX) ; OP1=lnY
 statSigmaMinusLogYContinue:
-    bcall(_PushRealO1) ; FPS=[X,lnX,Y,lnY]
+    bcall(_PushRealO1) ; FPS=[X,Y,lnX,lnY]
     ld c, statRegLnY
     bcall(_StoSubStatRegNN)
-    ;
+
+    ; Process (lnY)^2
     bcall(_FPSquare) ; OP1=(lnY)^2
     ld c, statRegLnY2
     bcall(_StoSubStatRegNN)
 
-    ; Update XlnY, YlnY, lnXlnY
-    bcall(_PopRealO4) ; FPS=[X,lnX,Y]; OP4=lnY
-    bcall(_PopRealO1) ; FPS=[X,lnX]; OP1=Y
-    bcall(_PopRealO2) ; FPS=[X]; OP2=lnX
+    ; Process YlnX
+    bcall(_CpyTo1FPS1) ; FPS=[X,Y,lnX,lnY]; OP1=lnY
+    bcall(_CpyTo2FPS2) ; FPS=[X,Y,lnX,lnY]; OP2=Y
     bcall(_FPMult) ; OP1=YlnX
     ld c, statRegYLnX
     bcall(_StoSubStatRegNN)
-    ;
-    bcall(_PopRealO1) ; FPS=[]; OP1=X
-    bcall(_OP2ExOP4) ; OP2=lnY, OP4=lnX
+
+    ; Process XlnY
+    bcall(_CpyTo1FPST) ; FPS=[X,Y,lnX,lnY]; OP1=lnY
+    bcall(_CpyTo2FPS3) ; FPS=[X,Y,lnX,lnY]; OP2=X
     bcall(_FPMult) ; OP1=XlnY
     ld c, statRegXLnY
     bcall(_StoSubStatRegNN)
-    ;
-    bcall(_OP4ToOP1) ; OP1=lnX, OP2=lnY
+
+    ; Process lnXlnY
+    bcall(_PopRealO1) ; FPS=[X,Y,lnX]; OP1=lnY
+    bcall(_PopRealO2) ; FPS=[X,Y]; OP2=lnX
     bcall(_FPMult) ; OP1=lnXlnY
     ld c, statRegLnXLnY
     bcall(_StoSubStatRegNN)
+    ; [[fallthrough]]
+
+statSigmaMinusEnd:
+    bcall(_PopRealO1) ; FPS=[X]
+    bcall(_PopRealO2) ; FPS=[]
     ret
 
 ;-----------------------------------------------------------------------------
 
-; Description: Calculate the Sum of X and Y into X and Y registers.
+; Description: Calculate the Sum(X) and Sum(Y) into OP1 and OP2.
 ; Output:
-;   - OP1=Ysum
-;   - OP2=Xsum
+;   - OP1=Sum(Y)
+;   - OP2=Sum(X)
 StatSum:
     ld c, statRegY
-    bcall(_RclStatRegNN) ; OP1=Ysum
+    bcall(_RclStatRegNN) ; OP1=Sum(Y)
     ld c, statRegX
-    bcall(_RclStatRegNNToOP2) ; OP2=Xsum
+    bcall(_RclStatRegNNToOP2) ; OP2=Sum(X)
     ret
 
 ;-----------------------------------------------------------------------------
 
-; Description: Calculate the average of X and Y into OP1 and OP2 registers.
+; Description: Calculate the average of X and Y into OP1 and OP2.
 ; Input:
 ;   - IX=pointer to list of stat registers (e.g. cfitModelLinear, cfitModelExp)
 ; Output:
