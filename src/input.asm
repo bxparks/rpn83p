@@ -65,7 +65,7 @@ closeInputAndRecallNone:
 closeInputAndRecallX:
     call closeInput
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
-    bcall(_RclStackX) ; A=objectType
+    bcall(_RclStackX) ; A=objectType; OP1=X
     cp rpnObjectTypeReal
     ret z
     bcall(_ErrDataType)
@@ -79,16 +79,10 @@ closeInputAndRecallX:
 closeInputAndRecallXY:
     call closeInput
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
-    bcall(_RclStackX) ; A=objectType; OP1/OP2=X
-    cp rpnObjectTypeReal
-    jr nz, closeInputAndRecallXYErr
-    call cp1ToCp3 ; OP3/OP4=X
-    bcall(_RclStackY) ; A=objectType; OP1/OP2=Y
-    cp rpnObjectTypeReal
-    jr nz, closeInputAndRecallXYErr
+    bcall(_RclStackXY) ; CP1=Y; CP3=X
+    call validateOp1Real ; throws Err:DataType if not
+    call validateOp3Real ; throws Err:DataType if not
     jp op3ToOp2 ; OP2=Real(X)
-closeInputAndRecallXYErr:
-    bcall(_ErrDataType)
 
 ; Close the input buffer, and recall the real or complex X to OP1/OP2.
 ; Output:
