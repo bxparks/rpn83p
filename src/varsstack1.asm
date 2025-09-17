@@ -327,9 +327,10 @@ ReplaceStackXWithCP1CP3:
 ;-----------------------------------------------------------------------------
 
 ; Description: Push RpnOjbect in CP1 to the X register. LastX is not
-; updated because the previous X is not consumed, and is availabe as the Y
+; updated because the previous X is not consumed, and is available as the Y
 ; register. Works for all RpnObject types.
-; Input: CP1:RpnObject
+; Input:
+;   - CP1:RpnObject
 ; Output:
 ;   - Stack lifted (if the inputBuf was not an empty string)
 ;   - X=CP1
@@ -337,7 +338,7 @@ ReplaceStackXWithCP1CP3:
 ; Preserves: OP1, OP2, LastX
 PushToStackX:
     call checkValidRpnObjectCP1
-    call liftStackIfNonEmpty
+    call LiftStackIfNonEmpty
     call StoStackX
     ret
 
@@ -359,7 +360,7 @@ PushOp1Op2ToStackXY:
     call checkValidRealOP1
     call op1ExOp2PageOne
     ;
-    call liftStackIfNonEmpty
+    call LiftStackIfNonEmpty
     call StoStackX
     call LiftStack
     call op1ExOp2PageOne
@@ -420,7 +421,7 @@ checkValidRealErr:
 ; Output: T=Z; Z=Y; Y=X; X=X; OP1 preserved
 ; Destroys: all
 ; Preserves: OP1, OP2
-liftStackIfNonEmpty:
+LiftStackIfNonEmpty:
     bit inputBufFlagsClosedEmpty, (iy + inputBufFlags)
     ret nz ; return doing nothing if closed empty
     ; [[fallthrough]]
