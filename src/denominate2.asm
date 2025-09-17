@@ -113,9 +113,9 @@ changeRpnDenominateUnit:
     ld a, (OP1 + rpnDenominateFieldDisplayUnit) ; A=oldDisplayUnitId
     cp c
     ret z ; source and target are same unit, do nothing
-    ; Check that the unit conversion is allowed
+    ; Validate that the unit conversion is allowed
     ld b, a ; B=oldDisplayUnitId
-    call checkCompatibleUnitClass ; throws Err:Invalid if different unitClass
+    call validateCompatibleUnitClass ; throws Err:Invalid if different unitClass
     ; Clobber the oldDisplayUnitId with new targetUnitId
     ld a, c ; A=targetUnitId
     ld (OP1 + rpnDenominateFieldDisplayUnit), a ; displayUnitId=targetUnitId
@@ -123,20 +123,20 @@ changeRpnDenominateUnit:
 
 ;-----------------------------------------------------------------------------
 
-; Description: Check that CP1=rpnDen1 and CP3=rpnDen3 have compatible unit
+; Description: Validate that CP1=rpnDen1 and CP3=rpnDen3 have compatible unit
 ; classes.
 ; Input: CP1, CP3
 ; Destroys: A, IX
 ; Preserves, BC, DE, HL
 ; Throws: Err:Invalid if unit classes don't match
-checkCompatibleUnitClassOp1Op3:
+validateCompatibleUnitClassOp1Op3:
     ld a, (OP1 + rpnDenominateFieldDisplayUnit) ; A=op1dDisplayUnitId
     ld b, a ; unit1
     ld a, (OP3 + rpnDenominateFieldDisplayUnit) ; A=op3dDisplayUnitId
     ld c, a ; unit3
     ; [[fallthrough]]
 
-; Description: Check that the unitClasses of units in registers B and C are
+; Description: Validate that the unitClasses of units in registers B and C are
 ; identical.
 ; Input:
 ;   - B=srcUnitId
@@ -144,7 +144,7 @@ checkCompatibleUnitClassOp1Op3:
 ; Destroys: A, IX
 ; Preserves, BC, DE, HL
 ; Throws: Err:Invalid if unit classes don't match
-checkCompatibleUnitClass:
+validateCompatibleUnitClass:
     ld a, b
     bcall(_GetUnitClass) ; A=unitClass; preserves BC, DE, HL
     ld b, a
@@ -163,21 +163,21 @@ checkCompatibleUnitClass:
 ;   - OP1/OP2:RpnDenominate=den1
 ; Throws: Err:Invalid
 ; Destroys: A, HL
-checkArithmeticUnitClassOp1:
+validateArithmeticUnitClassOp1:
     ld hl, OP1
-    jp checkArithmeticUnitClass
+    jp validateArithmeticUnitClass
 
 ; Description: Throw Err:Invalid if OP3 is TEMP or FUEL units.
-checkArithmeticUnitClassOp3:
+validateArithmeticUnitClassOp3:
     ld hl, OP3
-    jp checkArithmeticUnitClass
+    jp validateArithmeticUnitClass
 
 ; Description: Throw Err:Invalid if HL is TEMP or FUEL units.
 ; Input:
 ;   - HL:RpnDenominate=den
 ; Throws: Err:Invalid
 ; Destroys: A, HL
-checkArithmeticUnitClass:
+validateArithmeticUnitClass:
     call getHLRpnObjectTypePageTwo ; A=rpnObjectType; preserves HL
     cp rpnObjectTypeDenominate
     ret nz
@@ -187,11 +187,11 @@ checkArithmeticUnitClass:
     ;
     bcall(_GetUnitClass) ; A=unitClass
     cp unitClassTemperature
-    jr z, checkUnitClassForAddInvalid
+    jr z, validateUnitClassForAddInvalid
     cp unitClassFuel
-    jr z, checkUnitClassForAddInvalid
+    jr z, validateUnitClassForAddInvalid
     ret
-checkUnitClassForAddInvalid:
+validateUnitClassForAddInvalid:
     bcall(_ErrInvalid)
 
 ;-----------------------------------------------------------------------------
@@ -331,7 +331,7 @@ op1ToDenominateValue:
 ; Output: OP1/OP2:RpnDenominate=-den
 ; Destroys: all
 ChsRpnDenominate:
-    call checkArithmeticUnitClassOp1 ; throws Err:Invalid
+    call validateArithmeticUnitClassOp1 ; throws Err:Invalid
     call PushRpnObject1 ; FPS=[CP1]; HL=rpnDenominate(OP1)
     skipRpnObjectTypeHL ; HL=denominate
     call chsDenominate
@@ -361,9 +361,9 @@ chsDenominate:
 ;   - OP1/OP2:RpnDenominate=den1+den3
 ; Destroys: all
 AddRpnDenominateByDenominate:
-    call checkArithmeticUnitClassOp1 ; throws Err:Invalid
-    call checkArithmeticUnitClassOp3 ; throws Err:Invalid
-    call checkCompatibleUnitClassOp1Op3 ; throws Err:Invalid
+    call validateArithmeticUnitClassOp1 ; throws Err:Invalid
+    call validateArithmeticUnitClassOp3 ; throws Err:Invalid
+    call validateCompatibleUnitClassOp1Op3 ; throws Err:Invalid
     ;
     call PushRpnObject1 ; FPS=[CP1]; HL=rpnDenominate(OP1)
     skipRpnObjectTypeHL
@@ -406,9 +406,9 @@ addDenominateByDenominate:
 ;   - OP1/OP2:RpnDenominate=den1-den3
 ; Destroys: all
 SubRpnDenominateByDenominate:
-    call checkArithmeticUnitClassOp1 ; throws Err:Invalid
-    call checkArithmeticUnitClassOp3 ; throws Err:Invalid
-    call checkCompatibleUnitClassOp1Op3 ; throws Err:Invalid
+    call validateArithmeticUnitClassOp1 ; throws Err:Invalid
+    call validateArithmeticUnitClassOp3 ; throws Err:Invalid
+    call validateCompatibleUnitClassOp1Op3 ; throws Err:Invalid
     ;
     call PushRpnObject1 ; FPS=[CP1]; HL=rpnDenominate(OP1)
     skipRpnObjectTypeHL
@@ -434,8 +434,8 @@ SubRpnDenominateByDenominate:
 ; Output:
 ;   - OP1/OP2:Denominate=den*value
 MultRpnDenominateByReal:
-    call checkArithmeticUnitClassOp1 ; throws Err:Invalid
-    call checkArithmeticUnitClassOp3 ; throws Err:Invalid
+    call validateArithmeticUnitClassOp1 ; throws Err:Invalid
+    call validateArithmeticUnitClassOp3 ; throws Err:Invalid
     ;
     call getOp1RpnObjectTypePageTwo ; A=type; HL=OP1
     cp rpnObjectTypeReal
@@ -463,8 +463,8 @@ MultRpnDenominateByReal:
 ; Output:
 ;   - OP1/OP2:Real=dividend/divisor
 DivRpnDenominateByDenominate:
-    call checkArithmeticUnitClassOp1 ; throws Err:Invalid
-    call checkArithmeticUnitClassOp3 ; throws Err:Invalid
+    call validateArithmeticUnitClassOp1 ; throws Err:Invalid
+    call validateArithmeticUnitClassOp3 ; throws Err:Invalid
     ;
     call PushRpnObject1 ; FPS=[divisor,dividend]; HL=FPS(dividend)
     skipRpnObjectTypeHL ; HL=dividend
@@ -494,8 +494,8 @@ DivRpnDenominateByDenominate:
 ; Output:
 ;   - OP1/OP2:Denominate=den/divisor
 DivRpnDenominateByReal:
-    call checkArithmeticUnitClassOp1 ; throws Err:Invalid
-    call checkArithmeticUnitClassOp3 ; throws Err:Invalid
+    call validateArithmeticUnitClassOp1 ; throws Err:Invalid
+    call validateArithmeticUnitClassOp3 ; throws Err:Invalid
     ;
     call PushRpnObject1 ; FPS=[rpnDenominate]; HL=FPS(rpnDenominate)
     skipRpnObjectTypeHL ; HL=denominate
