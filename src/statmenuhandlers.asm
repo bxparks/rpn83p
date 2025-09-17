@@ -88,7 +88,7 @@ mStatClearHandler:
 mStatSumHandler:
     call closeInputAndRecallNone
     bcall(_StatSum) ; OP1=Ysum; OP2=Xsum
-    bcall(_PushToStackXY)
+    bcall(_PushOp1Op2ToStackXY)
     ret
 
 ; Description: Calculate the average of X and Y into X and Y registers.
@@ -96,7 +96,7 @@ mStatMeanHandler:
     call closeInputAndRecallNone
     ld ix, cfitModelLinear ; use linear model for simple statistics
     bcall(_StatMean)
-    bcall(_PushToStackXY)
+    bcall(_PushOp1Op2ToStackXY)
     ret
 
 ; Description: Calculate the weighted mean of X and Y.
@@ -107,7 +107,7 @@ mStatWeightedMeanHandler:
     call closeInputAndRecallNone
     ld ix, cfitModelLinear ; use linear model for simple statistics
     bcall(_StatWeightedMean) ; OP1=WeightedY, OP2=WeightedX
-    bcall(_PushToStackXY)
+    bcall(_PushOp1Op2ToStackXY)
     ret
 
 ; Description: Return the number of items entered. Mostly for convenience.
@@ -203,7 +203,7 @@ mStatPopSdevHandler:
     call closeInputAndRecallNone
     ld ix, cfitModelLinear ; use linear model for simple statistics
     bcall(_StatStdDev)
-    bcall(_PushToStackXY)
+    bcall(_PushOp1Op2ToStackXY)
     ret
 
 ; Description: Calculate the sample standard deviation.
@@ -215,7 +215,7 @@ mStatSampleSdevHandler:
     call closeInputAndRecallNone
     ld ix, cfitModelLinear ; use linear model for simple statistics
     bcall(_StatSampleStdDev)
-    bcall(_PushToStackXY)
+    bcall(_PushOp1Op2ToStackXY)
     ret
 
 ; Description: Calculate the population covariance. PCOV<X,Y> = <XY> - <X><Y>.

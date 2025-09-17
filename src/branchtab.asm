@@ -118,9 +118,9 @@ _PushToStackXLabel:
 _PushToStackX equ _PushToStackXLabel-branchTableBase
     .dw PushToStackX
     .db 1
-_PushToStackXYLabel:
-_PushToStackXY equ _PushToStackXYLabel-branchTableBase
-    .dw PushToStackXY
+_PushOp1Op2ToStackXYLabel:
+_PushOp1Op2ToStackXY equ _PushOp1Op2ToStackXYLabel-branchTableBase
+    .dw PushOp1Op2ToStackXY
     .db 1
 _LiftStackIfEnabledLabel:
 _LiftStackIfEnabled equ _LiftStackIfEnabledLabel-branchTableBase

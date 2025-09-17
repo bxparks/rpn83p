@@ -341,7 +341,7 @@ PushToStackX:
 ;   - X=OP2
 ; Destroys: all
 ; Preserves: OP1, OP2, LastX
-PushToStackXY: ; TODO: Rename this to PushOp1Op2ToStackXY()
+PushOp1Op2ToStackXY:
     call checkValidRealOP1
     call op1ExOp2PageOne
     call checkValidRealOP1
