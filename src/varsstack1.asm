@@ -103,7 +103,7 @@ ResizeStack:
     ret
 
 ;-----------------------------------------------------------------------------
-; Stack registers to and from CP1.
+; Stack registers to and from CP1 and CP3.
 ;-----------------------------------------------------------------------------
 
 ; Description: Store CP1 to STK[nn], setting dirty flag.
@@ -205,6 +205,18 @@ StoStackL:
 RclStackL:
     ld c, stackLIndex
     jr rclStackNN
+
+;-----------------------------------------------------------------------------
+
+; Description: Save Y to CP1, X to CP3.
+; Destroys: all
+RclStackXY:
+    call RclStackX
+    call cp1ToCp3PageOne
+    call RclStackY
+    ret
+
+;-----------------------------------------------------------------------------
 
 ; Description: Save X to L, directly, without mutating CP1.
 ; Preserves: CP1

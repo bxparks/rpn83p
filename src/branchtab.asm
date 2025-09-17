@@ -54,6 +54,7 @@ _ResizeStackLabel:
 _ResizeStack equ _ResizeStackLabel-branchTableBase
     .dw ResizeStack
     .db 1
+;
 _StoStackXLabel:
 _StoStackX equ _StoStackXLabel-branchTableBase
     .dw StoStackX
@@ -94,6 +95,12 @@ _RclStackLLabel:
 _RclStackL equ _RclStackLLabel-branchTableBase
     .dw RclStackL
     .db 1
+;
+_RclStackXYLabel:
+_RclStackXY equ _RclStackXYLabel-branchTableBase
+    .dw RclStackXY
+    .db 1
+;
 _ReplaceStackXLabel:
 _ReplaceStackX equ _ReplaceStackXLabel-branchTableBase
     .dw ReplaceStackX
@@ -114,6 +121,7 @@ _ReplaceStackXWithCP1CP3Label:
 _ReplaceStackXWithCP1CP3 equ _ReplaceStackXWithCP1CP3Label-branchTableBase
     .dw ReplaceStackXWithCP1CP3
     .db 1
+;
 _PushToStackXLabel:
 _PushToStackX equ _PushToStackXLabel-branchTableBase
     .dw PushToStackX
@@ -122,6 +130,7 @@ _PushOp1Op2ToStackXYLabel:
 _PushOp1Op2ToStackXY equ _PushOp1Op2ToStackXYLabel-branchTableBase
     .dw PushOp1Op2ToStackXY
     .db 1
+;
 _LiftStackIfEnabledLabel:
 _LiftStackIfEnabled equ _LiftStackIfEnabledLabel-branchTableBase
     .dw LiftStackIfEnabled
