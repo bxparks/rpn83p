@@ -8,8 +8,14 @@
 ; page 0. Lowercased labels are intended to be local to the current flash page.
 ;-----------------------------------------------------------------------------
 
-; RPN stack using an RpnElementList which has the following structure:
-; LastX, X, Y, Z, T.
+; RPN stack using an RpnElementList (see vars1.asm) inside a TI-OS AppVar.
+; An RpnElementList is composed of objectType byte, and 18 bytes. When an
+; RpnElement is copied to the OPx floating point registers, it occupies 2
+; slots. They are named CP1 (OP1/OP2), CP3 (OP3/OP4), and CP5 (OP5/OP6).
+;
+; The RPN stack can be as large as 9 elements (RSIZ + 1). Each stack register
+; is indexed by an integer, with the common RPN stack registers (LastX, X, Y,
+; Z, T) assigned as follows:
 stackLIndex equ 0 ; LastX
 stackXIndex equ 1 ; X
 stackYIndex equ 2 ; Y
@@ -97,15 +103,15 @@ ResizeStack:
     ret
 
 ;-----------------------------------------------------------------------------
-; Stack registers to and from OP1/OP2
+; Stack registers to and from CP1.
 ;-----------------------------------------------------------------------------
 
-; Description: Store OP1/OP2 to STK[nn], setting dirty flag.
+; Description: Store CP1 to STK[nn], setting dirty flag.
 ; Input:
 ;   - C:u8=stack register index, 0-based
-;   - OP1/OP2: float value
+;   - CP1: float value
 ; Output:
-;   - STK[nn] = OP1/OP2
+;   - STK[nn] = CP1
 ; Destroys: all
 ; Preserves: OP1, OP2
 stoStackNN:
@@ -113,27 +119,27 @@ stoStackNN:
     ld hl, stackVarName
     jp stoRpnObject
 
-; Description: Copy STK[nn] to OP1/OP2.
+; Description: Copy STK[nn] to CP1.
 ; Input:
 ;   - C: stack register index, 0-based
 ;   - 'STK' app variable
 ; Output:
-;   - OP1/OP2: float value
+;   - CP1: float value
 ;   - A: rpnObjectType
 ; Destroys: all
 rclStackNN:
     ld hl, stackVarName
-    jp rclRpnObject ; OP1/OP2=STK[A]
+    jp rclRpnObject ; CP1=STK[A]
 
 ;-----------------------------------------------------------------------------
 
-; Description: Store OP1/OP2 to X.
+; Description: Store CP1 to X.
 ; Destroys: all
 StoStackX:
     ld c, stackXIndex
     jr stoStackNN
 
-; Description: Recall X to OP1/OP2.
+; Description: Recall X to CP1.
 ; Output: A=objectType
 ; Destroys: all
 RclStackX:
@@ -142,13 +148,13 @@ RclStackX:
 
 ;-----------------------------------------------------------------------------
 
-; Description: Store OP1/OP2 to Y.
+; Description: Store CP1 to Y.
 ; Destroys: all
 StoStackY:
     ld c, stackYIndex
     jr stoStackNN
 
-; Description: Recall Y to OP1/OP2.
+; Description: Recall Y to CP1.
 ; Output: A=objectType
 ; Destroys: all
 RclStackY:
@@ -157,13 +163,13 @@ RclStackY:
 
 ;-----------------------------------------------------------------------------
 
-; Description: Store OP1/OP2 to Z.
+; Description: Store CP1 to Z.
 ; Destroys: all
 StoStackZ:
     ld c, stackZIndex
     jr stoStackNN
 
-; Description: Recall Z to OP1/OP2.
+; Description: Recall Z to CP1.
 ; Output: A=objectType
 ; Destroys: all
 RclStackZ:
@@ -172,13 +178,13 @@ RclStackZ:
 
 ;-----------------------------------------------------------------------------
 
-; Description: Store OP1/OP2 to T.
+; Description: Store CP1 to T.
 ; Destroys: all
 StoStackT:
     ld c, stackTIndex
     jr stoStackNN
 
-; Description: Recall T to OP1/OP2.
+; Description: Recall T to CP1.
 ; Output: A=objectType
 ; Destroys: all
 RclStackT:
@@ -187,26 +193,26 @@ RclStackT:
 
 ;-----------------------------------------------------------------------------
 
-; Description: Store OP1/OP2 to L.
+; Description: Store CP1 to L.
 ; Destroys: all
 StoStackL:
     ld c, stackLIndex
     jr stoStackNN
 
-; Description: Recall L to OP1/OP2.
+; Description: Recall L to CP1.
 ; Output: A=objectType
 ; Destroys: all
 RclStackL:
     ld c, stackLIndex
     jr rclStackNN
 
-; Description: Save X to L, directly, without mutating OP1/OP2.
-; Preserves: OP1/OP2
+; Description: Save X to L, directly, without mutating CP1.
+; Preserves: CP1
 SaveLastX:
-    bcall(_PushRpnObject1) ; FPS=[OP1/OP2]
+    bcall(_PushRpnObject1) ; FPS=[CP1]
     call RclStackX
     call StoStackL
-    bcall(_PopRpnObject1) ; FPS=[]; OP1/OP2=OP1/OP2
+    bcall(_PopRpnObject1) ; FPS=[]; CP1=CP1
     ret
 
 ;-----------------------------------------------------------------------------
@@ -214,9 +220,9 @@ SaveLastX:
 ; OP2 to the RPN stack.
 ;-----------------------------------------------------------------------------
 
-; Description: Replace X with RpnObject in OP1/OP2, saving previous X to LastX,
+; Description: Replace X with RpnObject in CP1, saving previous X to LastX,
 ; and setting dirty flag. Works for all RpnObject types.
-; Input: CP1=OP1/OP2:RpnObject
+; Input: CP1:RpnObject
 ; Preserves: OP1, OP2
 ReplaceStackX:
     call checkValidRpnObjectCP1
@@ -224,9 +230,9 @@ ReplaceStackX:
     call StoStackX
     ret
 
-; Description: Replace X and Y with RpnObject in OP1/OP2, saving previous X to
+; Description: Replace X and Y with RpnObject in CP1, saving previous X to
 ; LastX, and setting dirty flag. Works for all RpnObject types.
-; Input: CP1=OP1/OP2:RpnObject
+; Input: CP1:RpnObject
 ; Preserves: OP1, OP2
 ReplaceStackXY:
     call checkValidRpnObjectCP1
@@ -308,13 +314,13 @@ ReplaceStackXWithCP1CP3:
 
 ;-----------------------------------------------------------------------------
 
-; Description: Push RpnOjbect in OP1/OP2 to the X register. LastX is not
+; Description: Push RpnOjbect in CP1 to the X register. LastX is not
 ; updated because the previous X is not consumed, and is availabe as the Y
 ; register. Works for all RpnObject types.
-; Input: CP1=OP1/OP2:RpnObject
+; Input: CP1:RpnObject
 ; Output:
 ;   - Stack lifted (if the inputBuf was not an empty string)
-;   - X=OP1/OP2
+;   - X=CP1
 ; Destroys: all
 ; Preserves: OP1, OP2, LastX
 PushToStackX:
@@ -326,14 +332,16 @@ PushToStackX:
 ; Description: Push Real numbers OP1 then OP2 onto the stack. LastX is not
 ; updated because the previous X is not consumed, and is available as the Z
 ; register.
-; Input: OP1:Real, OP2:Real
+; Input:
+;   - OP1:Real
+;   - OP2:Real
 ; Output:
 ;   - Stack lifted (if the inputBuf was not an empty string)
 ;   - Y=OP1
 ;   - X=OP2
 ; Destroys: all
 ; Preserves: OP1, OP2, LastX
-PushToStackXY:
+PushToStackXY: ; TODO: Rename this to PushOp1Op2ToStackXY()
     call checkValidRealOP1
     call op1ExOp2PageOne
     call checkValidRealOP1
@@ -349,10 +357,10 @@ PushToStackXY:
 
 ;-----------------------------------------------------------------------------
 
-; Description: Check that OP1/OP2 is a valid RpnObject type (e.g. Real,
+; Description: Check that CP1 is a valid RpnObject type (e.g. Real,
 ; Complex, Date-related objects). If real or complex, verify validity of number
 ; using CkValidNum().
-; Input: OP1/OP2:RpnObject
+; Input: CP1:RpnObject
 ; Destroys: A, HL
 checkValidRpnObjectCP1:
     call getOp1RpnObjectTypePageOne ; A=type; HL=OP1
@@ -382,7 +390,7 @@ checkValidNumber:
     ret
 
 ; Description: Check that OP1 is real. Throws Err:NonReal if not real.
-; Input: OP1/OP2:RpnObject
+; Input: CP1:RpnObject
 ; Destroys: A, HL
 checkValidRealOP1:
     call getOp1RpnObjectTypePageOne ; A=type; HL=OP1
@@ -421,9 +429,9 @@ LiftStackIfEnabled:
 ; Destroys: all
 ; Preserves: OP1, OP2
 LiftStack:
-    bcall(_PushRpnObject1) ; FPS=[OP1/OP2]
+    bcall(_PushRpnObject1) ; FPS=[CP1]
     call liftStackIntoOp1 ; OP1=lastElement, thrown away
-    bcall(_PopRpnObject1) ; FPS=[]; OP1/OP2=OP1/OP2
+    bcall(_PopRpnObject1) ; FPS=[]; CP1=CP1
     ret
 
 ; Description: Lift the RPN stack with last element pushed into OP1.
@@ -491,9 +499,9 @@ RollUpStack:
 ; Destroys: all
 ; Preserves: OP1, OP2
 DropStack:
-    bcall(_PushRpnObject1) ; FPS=[OP1/OP2]
+    bcall(_PushRpnObject1) ; FPS=[CP1]
     call dropStackIntoOp1 ; OP1=X, thrown away
-    bcall(_PopRpnObject1) ; FPS=[]; OP1/OP2=OP1/OP2
+    bcall(_PopRpnObject1) ; FPS=[]; CP1=CP1
     ret
 
 ; Description: Drop the RPN stack, shifting the X register into OP1.
