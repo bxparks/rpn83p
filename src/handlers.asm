@@ -619,8 +619,8 @@ handleKeyClearToEmptyInput:
     ; We also disable stack lift. Testing seems to show that this is not seem
     ; strictly necessary because handleNumber() handles the edit mode properly
     ; even if the stack lift is enabled. But I think it is safer to disable it
-    ; in case enterNumberCharacter() is refactored in the future to use a different
-    ; algorithm.
+    ; in case enterNumberCharacter() is refactored in the future to use a
+    ; different algorithm.
     res rpnFlagsLiftEnabled, (iy + rpnFlags)
     ret
 
