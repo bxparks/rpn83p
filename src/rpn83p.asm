@@ -807,7 +807,24 @@ defpage(0, "RPN83P")
 #include "branchtab.asm"
 
 ;-----------------------------------------------------------------------------
-; Source code for Flash Page 0
+; Flash Page 0.
+;
+; Many critical application code must reside on flash page 0:
+;
+;   - main entry and exit code (main.asm)
+;   - branch tables (branchtab.asm)
+;   - button handlers (handlers.asm)
+;   - menu handlers (*menuhandlers.asm)
+;   - menu name selector callbacks (menu.asm, *menuhandlers.asm)
+;   - terminate input (input.asm)
+;
+; The following might be movable to other flash pages:
+;
+;   - main scanner (mainscanner.asm)
+;   - command argument scanner (argscanner.asm)
+;   - SHOW mode scanner (showscanner.asm)
+;   - display rendering code (display.asm)
+;   - low-level printing routines (print.asm, goes with display.asm)
 ;-----------------------------------------------------------------------------
 
 #include "main.asm"
@@ -843,7 +860,27 @@ defpage(0, "RPN83P")
 #include "format.asm"
 
 ;-----------------------------------------------------------------------------
-; Source code for Flash Page 1
+; Flash Page 1. General application code which are not required to be on Flash
+; Page 0:
+;
+;   - store and restore application state (appstate1.asm)
+;   - store and restore OS state (osstate1.asm)
+;   - HELP screens (help1.asm)
+;   - HELP key scanner (helpscanner1.asm)
+;   - storage registers (varsreg1.asm)
+;   - storage variables
+;   - RPN stack (varsstack1.asm)
+;   - STAT registers (varsstat1.asm)
+;   - exception error codes and strings (errors1.asm)
+;   - crc16 generator (crc1.asm)
+;   - inputBuf editing (input1.asm)
+;   - inputBuf parsing (parse*.asm)
+;   - command argument parsing (arg1.asm)
+;   - Real and Complex math functions (universal1.asm)
+;   - Complex number formatting (formatcomplex1.asm)
+;   - HMS routines (hms1.asm, move to Flash Page 2?)
+;   - PROB routines (prob1.asm, move to Flash Page 2?)
+;   - UNIT definitions generated from unitdef.as (unitdef.asm)
 ;-----------------------------------------------------------------------------
 
 defpage(1)
@@ -894,7 +931,20 @@ defpage(1)
 #endif
 
 ;-----------------------------------------------------------------------------
-; Source Code for Flash Page 2
+; Flash Page 2:
+;
+;   - MODE functions (mode2.asm)
+;   - 32-bit integer functions (integer32.asm) required by BASE
+;   - 40-bit integer functions (integer40.asm) required by DATE
+;   - STAT funtions (stats2.asm)
+;   - CFIT functions (cfit2.asm)
+;   - TVM functions (tvm2.asm)
+;   - DATE functions (*date*.asm)
+;   - DATE object formatting (formatdate2.asm)
+;   - EPCH functions (*epoch*.asm)
+;   - CLK functions (rtc2.asm)
+;   - UNIT functions (denominate2.asm)
+;   - SHOW formatting (show2.asm)
 ;-----------------------------------------------------------------------------
 
 defpage(2)
@@ -946,7 +996,10 @@ defpage(2)
 #include "integer32.asm"
 
 ;-----------------------------------------------------------------------------
-; Source Code for Flash Page 3
+; Flash Page 3.
+;
+;   - menu hierarchy definitions from menudef.txt (menudef.asm)
+;   - menu table traversal functions (menu3.asm)
 ;-----------------------------------------------------------------------------
 
 defpage(3)
