@@ -126,8 +126,8 @@ changeRpnDenominateUnit:
 ; Description: Validate that CP1=rpnDen1 and CP3=rpnDen3 have compatible unit
 ; classes.
 ; Input: CP1, CP3
-; Destroys: A, IX
-; Preserves, BC, DE, HL
+; Destroys: A, BC, IX
+; Preserves, DE, HL
 ; Throws: Err:Invalid if unit classes don't match
 validateCompatibleUnitClassOp1Op3:
     ld a, (OP1 + rpnDenominateFieldDisplayUnit) ; A=op1dDisplayUnitId
@@ -141,8 +141,8 @@ validateCompatibleUnitClassOp1Op3:
 ; Input:
 ;   - B=srcUnitId
 ;   - C=targetUnitId
-; Destroys: A, IX
-; Preserves, BC, DE, HL
+; Destroys: A, BC, IX
+; Preserves, DE, HL
 ; Throws: Err:Invalid if unit classes don't match
 validateCompatibleUnitClass:
     ld a, b
@@ -465,6 +465,7 @@ MultRpnDenominateByReal:
 DivRpnDenominateByDenominate:
     call validateArithmeticUnitClassOp1 ; throws Err:Invalid
     call validateArithmeticUnitClassOp3 ; throws Err:Invalid
+    call validateCompatibleUnitClassOp1Op3 ; throws Err:Invalid
     ;
     call PushRpnObject1 ; FPS=[divisor,dividend]; HL=FPS(dividend)
     skipRpnObjectTypeHL ; HL=dividend
@@ -495,7 +496,6 @@ DivRpnDenominateByDenominate:
 ;   - OP1/OP2:Denominate=den/divisor
 DivRpnDenominateByReal:
     call validateArithmeticUnitClassOp1 ; throws Err:Invalid
-    call validateArithmeticUnitClassOp3 ; throws Err:Invalid
     ;
     call PushRpnObject1 ; FPS=[rpnDenominate]; HL=FPS(rpnDenominate)
     skipRpnObjectTypeHL ; HL=denominate
