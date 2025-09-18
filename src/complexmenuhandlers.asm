@@ -44,7 +44,6 @@ mComplexAngleHandler:
 ;-----------------------------------------------------------------------------
 
 mNumResultModeRealHandler:
-    call closeInputAndRecallNone
     ld a, numResultModeReal
     ld (numResultMode), a
     bcall(_UpdateNumResultMode)
@@ -64,7 +63,6 @@ mNumResultModeRealNameSelectorAlt:
     ret
 
 mNumResultModeComplexHandler:
-    call closeInputAndRecallNone
     ld a, numResultModeComplex
     ld (numResultMode), a
     bcall(_UpdateNumResultMode)
