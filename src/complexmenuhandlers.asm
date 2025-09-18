@@ -84,7 +84,6 @@ mNumResultModeComplexNameSelectorAlt:
 ;-----------------------------------------------------------------------------
 
 mComplexModeRectHandler:
-    call closeInputAndRecallNone
     ld a, complexModeRect
     ld (complexMode), a
     set dirtyFlagsMenu, (iy + dirtyFlags)
@@ -105,7 +104,6 @@ mComplexModeRectNameSelectorAlt:
     ret
 
 mComplexModeRadHandler:
-    call closeInputAndRecallNone
     ld a, complexModeRad
     ld (complexMode), a
     set dirtyFlagsMenu, (iy + dirtyFlags)
@@ -126,7 +124,6 @@ mComplexModeRadNameSelectorAlt:
     ret
 
 mComplexModeDegHandler:
-    call closeInputAndRecallNone
     ld a, complexModeDeg
     ld (complexMode), a
     set dirtyFlagsMenu, (iy + dirtyFlags)
