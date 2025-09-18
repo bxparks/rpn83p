@@ -139,7 +139,7 @@ AddRpnOffsetByDuration:
 addRpnOffsetByDurationAdd:
     ; if here: CP1=rpnOffset, CP3=rpnDuration
     ld hl, OP3+rpnObjectTypeSizeOf ; HE=duration
-    call checkDurationToOffset ; throws Err:Domain if Duration is invalid
+    call validateDurationToOffset ; throws Err:Domain if Duration is invalid
     ex de, hl ; DE=duration
     inc de
     inc de ; DE=offset=duration+2 (skip over the 'days' field)
@@ -154,7 +154,7 @@ addRpnOffsetByDurationAdd:
 ;   - none
 ; Preserves: HL
 ; Throws: Err:Domain if Duration has a non-zero 'day' or 'seconds' component.
-checkDurationToOffset:
+validateDurationToOffset:
     push hl
     ld a, (hl)
     inc hl
@@ -505,7 +505,7 @@ offsetQuarterToOffsetSave:
 ; Preserves: HL
 ; Throws: Err:Domain if invalid
 offsetQuarterToHourMinutePos:
-    call checkValidOffsetQuarter
+    call validateOffsetQuarter
     ;
     ld a, c
     and $03 ; A=remainderQuarter=offsetQuarter%4
@@ -533,15 +533,15 @@ offsetQuarterToHourMinutePos:
 ; Destroys: A
 ; Preserves: BC, DE, HL
 ; Throws: Err:Domain if invalid
-checkValidOffsetQuarter:
+validateOffsetQuarter:
     ld a, b
     or a
-    jr nz, checkValidOffsetQuarterErr
+    jr nz, validateOffsetQuarterErr
     ld a, c
     cp 96
-    jr nc, checkValidOffsetQuarterErr
+    jr nc, validateOffsetQuarterErr
     ret
-checkValidOffsetQuarterErr:
+validateOffsetQuarterErr:
     bcall(_ErrDomain)
 
 ; Description: Convert positive (hour, minute) to positive offsetQuarter
@@ -555,7 +555,7 @@ checkValidOffsetQuarterErr:
 ; Preserves: HL, DE
 ; Throws: Err:Domain if invalid
 hourMinuteToOffsetQuarterPos:
-    call checkValidOffsetHourMinute
+    call validateOffsetHourMinute
     ;
     ld b, 0
     ld c, d
@@ -584,10 +584,10 @@ hourMinuteToOffsetQuarterPos:
 ; Destroys: A
 ; Preserves: BC, DE, HL
 ; Throws: Err:Domain if invalid
-checkValidOffsetHourMinute:
+validateOffsetHourMinute:
     ld a, d
     cp 24
-    jr nc, checkValidOffsetHourMinuteErr
+    jr nc, validateOffsetHourMinuteErr
     ld a, e
     cp 0
     ret z
@@ -598,7 +598,7 @@ checkValidOffsetHourMinute:
     cp 45
     ret z
     ; [[fallthrough]]
-checkValidOffsetHourMinuteErr:
+validateOffsetHourMinuteErr:
     bcall(_ErrDomain)
 
 ;-----------------------------------------------------------------------------
