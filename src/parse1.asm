@@ -37,8 +37,9 @@
 ;   - inputBuf:PascalString
 ; Output:
 ;   - OP1/OP2:RpnObject
-;   - inputBufFlagsClosedEmpty: set if inputBuf was an empty string when closed
 ;   - inputBuf cleared to empty string if successful
+;   - inputBufFlagsClosedEmpty: set if inputBuf was an empty string when closed
+;   - rpnFlagsLiftEnabled: 0 if inputBuf was empty, 1 otherwise
 ; Throws:
 ;   - Err:Syntax if there is a syntax error
 ; Destroys: all, OP1, OP2, OP4
@@ -49,10 +50,12 @@ ParseAndClearInputBuf:
     jr nz, parseAndClearInputBufNonEmpty
 parseAndClearInputBufEmpty:
     set inputBufFlagsClosedEmpty, (iy + inputBufFlags)
+    res rpnFlagsLiftEnabled, (iy + rpnFlags)
     call op1Set0PageOne
     jp ClearInputBuf
 parseAndClearInputBufNonEmpty:
     res inputBufFlagsClosedEmpty, (iy + inputBufFlags)
+    set rpnFlagsLiftEnabled, (iy + rpnFlags)
     ; add NUL terminator to inputBuf to simplify parsing
     ld hl, inputBuf
     call preparePascalStringForParsing ; preserves HL

@@ -98,6 +98,8 @@ rpnFlagsSecondKey equ 5
 rpnFlagsTvmCalculate equ 6 ; set if the next TVM function should calculate
 
 ; Flags for the inputBuf. Offset from IY register.
+; TODO: remove inputBufFlagsClosedEmpty, I don't think it's used anymore,
+; replaced by rpnFlagsLiftEnabled as appropriate
 inputBufFlags equ asm_Flag3
 inputBufFlagsClosedEmpty equ 0 ; inputBuf empty when closeInput() called
 inputBufFlagsArgAllowModifier equ 1 ; allow */-+ modifier in CommandArg mode

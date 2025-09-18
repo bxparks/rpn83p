@@ -28,21 +28,21 @@
 ;   - inputBuf: input buffer
 ; Output:
 ;   - X register: set to inputBuf if edited, otherwise unchanged
-;   - rpnFlagsLiftEnabled: always set
+;   - OP1=X if edited, otherwise unchanged
+;   - inputBuf cleared to empty string
 ;   - inputBufFlagsClosedEmpty: set if inputBuf was in edit mode AND was an
 ;   empty string when closed
+;   - rpnFlagsLiftEnabled: cleared if inputBuf was empty, set otherwise
 ;   - rpnFlagsEditing: always cleared
-;   - inputBuf cleared to empty string
 ; Destroys: all, OP1, OP2, OP3, OP4, OP5
 closeInput:
-    set rpnFlagsLiftEnabled, (iy + rpnFlags)
     bit rpnFlagsEditing, (iy + rpnFlags)
     jr nz, closeInputEditing
-    ; Not editing, so must clear inputBufFlagsClosedEmpty.
+    ; Not editing, so clear inputBufFlagsClosedEmpty.
     res inputBufFlagsClosedEmpty, (iy + inputBufFlags)
     ret
 closeInputEditing:
-    bcall(_ParseAndClearInputBuf) ; OP1/OP2:RpnObject
+    bcall(_ParseAndClearInputBuf) ; CP1=rpnObject; rpnFlagsLiftEnabled updated
     bcall(_StoStackX)
     res rpnFlagsEditing, (iy + rpnFlags)
     ret

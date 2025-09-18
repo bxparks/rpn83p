@@ -240,6 +240,7 @@ ReplaceStackX:
     call validateValidRpnObjectCP1
     call SaveLastX
     call StoStackX
+    set rpnFlagsLiftEnabled, (iy + rpnFlags)
     ret
 
 ; Description: Replace X and Y with RpnObject in CP1, saving previous X to
@@ -251,6 +252,7 @@ ReplaceStackXY:
     call SaveLastX
     call DropStack
     call StoStackX
+    set rpnFlagsLiftEnabled, (iy + rpnFlags)
     ret
 
 ; Description: Replace X and Y with Real numbers OP1 and OP2, in that order.
@@ -276,6 +278,7 @@ ReplaceStackXYWithOP1OP2:
     call op1ExOp2PageOne
     call StoStackX ; X = OP2
     call op1ExOp2PageOne
+    set rpnFlagsLiftEnabled, (iy + rpnFlags)
     ret
 
 ; Description: Replace X with Real numbers OP1 and OP2 in that order.
@@ -293,11 +296,14 @@ ReplaceStackXWithOP1OP2:
     call op1ExOp2PageOne
     ;
     call SaveLastX
+    call LiftStackIfEnabled
     call StoStackX
+    call op1ExOp2PageOne
+    ;
     call LiftStack
-    call op1ExOp2PageOne
     call StoStackX
     call op1ExOp2PageOne
+    set rpnFlagsLiftEnabled, (iy + rpnFlags)
     ret
 
 ; Description: Replace X with objects in CP1 and CP3 in that order.
@@ -318,10 +324,12 @@ ReplaceStackXWithCP1CP3:
     ;
     call SaveLastX
     call StoStackX
-    call LiftStack
     call cp1ExCp3PageOne
+    ;
+    call LiftStack
     call StoStackX
     call cp1ExCp3PageOne
+    set rpnFlagsLiftEnabled, (iy + rpnFlags)
     ret
 
 ;-----------------------------------------------------------------------------
@@ -332,14 +340,15 @@ ReplaceStackXWithCP1CP3:
 ; Input:
 ;   - CP1:RpnObject
 ; Output:
-;   - Stack lifted (if the inputBuf was not an empty string)
+;   - Stack lifted (if the stackLift is enabled)
 ;   - X=CP1
 ; Destroys: all
 ; Preserves: OP1, OP2, LastX
 PushToStackX:
     call validateValidRpnObjectCP1
-    call LiftStackIfNonEmpty
+    call LiftStackIfEnabled
     call StoStackX
+    set rpnFlagsLiftEnabled, (iy + rpnFlags)
     ret
 
 ; Description: Push Real numbers OP1 then OP2 onto the stack. LastX is not
@@ -360,13 +369,42 @@ PushOp1Op2ToStackXY:
     call validateValidRealOP1
     call op1ExOp2PageOne
     ;
-    call LiftStackIfNonEmpty
+    call LiftStackIfEnabled
     call StoStackX
+    call op1ExOp2PageOne
+    ;
     call LiftStack
-    call op1ExOp2PageOne
     call StoStackX
     call op1ExOp2PageOne
+    set rpnFlagsLiftEnabled, (iy + rpnFlags)
     ret
+
+;-----------------------------------------------------------------------------
+
+; Description: Recall StackX register to CP1. StackX is consumed, so always
+; set rpnFlagsLiftEnabled to enable stack lift. Also save X to LastX.
+; Output:
+;   - rpnFlagsLiftEnabled=1
+;   - CP1=StackX
+;   - LastX=StackX
+;
+; Although this function is conceptually the core mechanism to get the X value
+; form the stack into OP1, it is not actually used because the various
+; ReplaceXxx() and PushXxx() optimize this away to minimize stack movement.
+;
+; There are 2 important side effects of this function which must be implemented
+; by the various ReplaceXxx() and PushXxx() precisely to emulate the Classi RPN
+; system of HP calculators:
+;
+;   1) the consumption of X causes "stack lift" to be enabled again for
+;   subsequent push into X, and
+;   2) the consumption of X saves the value into LastX.
+;
+; PopStackX:
+;     call SaveLastX
+;     call DropStack
+;     set rpnFlagsLiftEnabled, (iy + rpnFlags)
+;     ret
 
 ;-----------------------------------------------------------------------------
 
@@ -421,16 +459,8 @@ validateValidRealErr:
     bcall(_ErrNonReal)
 
 ;-----------------------------------------------------------------------------
-
-; Description: Lift the RPN stack, if inputBuf was not empty when closed.
-; Input: none
-; Output: T=Z; Z=Y; Y=X; X=X; OP1 preserved
-; Destroys: all
-; Preserves: OP1, OP2
-LiftStackIfNonEmpty:
-    bit inputBufFlagsClosedEmpty, (iy + inputBufFlags)
-    ret nz ; return doing nothing if closed empty
-    ; [[fallthrough]]
+; Stack movement functions.
+;-----------------------------------------------------------------------------
 
 ; Description: Lift the RPN stack, if rpnFlagsLiftEnabled is set.
 ; Input: rpnFlagsLiftEnabled
@@ -439,7 +469,7 @@ LiftStackIfNonEmpty:
 ; Preserves: OP1, OP2
 LiftStackIfEnabled:
     bit rpnFlagsLiftEnabled, (iy + rpnFlags)
-    ret z
+    jr z, LiftStackEnd
     ; [[fallthrough]]
 
 ; Description: Lift the RPN stack unconditionally, copying X to Y.
@@ -451,6 +481,10 @@ LiftStack:
     bcall(_PushRpnObject1) ; FPS=[CP1]
     call liftStackIntoOp1 ; OP1=lastElement, thrown away
     bcall(_PopRpnObject1) ; FPS=[]; CP1=CP1
+LiftStackEnd:
+    ; The "disable stack lift" lasts for one attempt. Subsequent stack lifts
+    ; should go ahead.
+    set rpnFlagsLiftEnabled, (iy + rpnFlags)
     ret
 
 ; Description: Lift the RPN stack with last element pushed into OP1.
