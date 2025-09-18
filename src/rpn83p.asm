@@ -421,11 +421,27 @@ inputBufBuf equ inputBuf + 1
 inputBufCapacity equ inputBufComplexMaxLen ; excludes trailing cursor
 inputBufSizeOf equ inputBufCapacity + 1 + 1 ; +1(len), +1(NUL)
 
-; argBuf can reuse inputBuf because argBuf is activated only after inputBuf is
-; closed.  The maximum number of characters in the buffer is 2.
-argBuf equ inputBuf ; struct InputBuf
-argBufLen equ inputBufLen
-argBufCapacity equ inputBufCapacity
+; The argBuf holds the command argument characters, such as the nn in the 'STO
+; nn' command. Previously it reused the inputBuf because the inputBuf was
+; always closed before calling a command argument. But we now allow argBuf to
+; overlay on top of a pending input without closing the input, so argBuf must
+; be a separate buffer. The maximum number of characters in the buffer is
+; currently 3 (i.e. RSIZ 100), but let's make it something like 8 for future
+; expansion. I'm not sure if this buffer will contain namespace modifiers (e.g.
+; 'ST', 'TVM', 'STAT') or access modifiers (e.g. 'IND').
+;
+; This is a Pascal-style with a single size byte at the start. It does not
+; include the cursor displayed at the end of the string. The equilvalent C
+; struct is:
+;
+;   struct ArgBuf {
+;       uint8_t len;
+;       char buf[argBufCapacity];
+;   };
+argBuf equ inputBuf + inputBufSizeOf ; u8
+argBufLen equ argBuf ; len byte of the pascal string
+argBufCapacity equ 8 ; max argument length
+argBufSizeOf equ argBufCapacity + 1 + 1 ; +1(len) +1(NUL)
 argBufSizeMax equ 4 ; max number of digits accepted on input
 
 ; Maximum number of characters that can be displayed during input/editing mode.
@@ -442,7 +458,7 @@ renderWindowSize equ 15
 ; the `ld a, (nn)` instruction which only supports the A register. We use
 ; little-endian order (end defined first) so that the high registers (B, D, H)
 ; are `start`, and the low registers (C, E, L) are `end`.
-renderWindowEnd equ inputBuf + inputBufSizeOf ; u8
+renderWindowEnd equ argBuf + argBufSizeOf ; u8
 renderWindowStart equ renderWindowEnd + 1; u8
 
 ; Cursor position inside inputBuf[]. Valid values are from [0, inputBufLen]
