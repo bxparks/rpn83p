@@ -66,7 +66,8 @@ InitLastX:
 ; Destroys: all, OP1
 ClearStack:
     set dirtyFlagsStack, (iy + dirtyFlags) ; force redraw
-    set rpnFlagsLiftEnabled, (iy + rpnFlags) ; TODO: I think this can be removed
+    set rpnFlagsLiftEnabled, (iy + rpnFlags)
+    ;
     call LenStack ; A=len; DE=dataPointer
     ld c, a ; C=len
     ld b, 0 ; B=begin=0
@@ -493,6 +494,7 @@ LiftStackEnd:
 ;   - stack lifted
 ;   - last element shifted into OP1
 ;   - DE=pointer to first element (to which OP1 can be copied to)
+;   - stack lift enabled
 ; Destroys: all, OP1
 liftStackIntoOp1:
     ; Calculate moveSize=(numElements-2)*rpnElementSizeOf
@@ -529,14 +531,19 @@ liftStackIntoOp1:
     ;
     ex de, hl
     inc de ; pointer to first element
+    ; Mark stack as dirty
     set dirtyFlagsStack, (iy + dirtyFlags)
+    ; RPN stack movement cancels existing 'disable stack lift' request.
+    set rpnFlagsLiftEnabled, (iy + rpnFlags)
     ret
 
 ;-----------------------------------------------------------------------------
 
 ; Description: Roll the RPN stack up, rotating last element into X.
 ; Input: none
-; Output: stack rolled up
+; Output:
+;   - stack rolled up
+;   - stack lift enabled
 ; Destroys: all, OP1, OP2
 ; Preserves: none
 RollUpStack:
@@ -548,7 +555,10 @@ RollUpStack:
 
 ; Description: Drop the RPN stack, duplicating the top-most element.
 ; Input: none
-; Output: stack dropped; OP1 preserved
+; Output:
+;   - stack dropped
+;   - OP1 preserved
+;   - stack lift enabled
 ; Destroys: all
 ; Preserves: OP1, OP2
 DropStack:
@@ -562,6 +572,7 @@ DropStack:
 ;   - stack dropped (shifted left)
 ;   - OP1=X
 ;   - DE=pointer to last element (to which OP1 can be copied to)
+;   - stack lift enabled
 dropStackIntoOp1:
     ; Calculate moveSize=(numElements-2)*rpnElementSizeOf
     call LenStack ; A=stackLen
@@ -586,14 +597,19 @@ dropStackIntoOp1:
     ;
     pop bc ; stack=[]; BC=moveSize
     ldir ; DE=pointer to last element
+    ; Mark stack as dirty
     set dirtyFlagsStack, (iy + dirtyFlags)
+    ; RPN stack movement cancels existing 'disable stack lift' request.
+    set rpnFlagsLiftEnabled, (iy + rpnFlags)
     ret
 
 ;-----------------------------------------------------------------------------
 
 ; Description: Roll the RPN stack *down*, rotating X into T.
 ; Input: none
-; Output: X=Y; Y=Z; Z=T; T=X
+; Output:
+;   - stack rolled down
+;   - stack lift enabled
 ; Destroys: all, OP1, OP2
 ; Preserves: none
 RollDownStack:
@@ -625,7 +641,9 @@ moveRpnElementFromOp1:
 
 ; Description: Exchange X<->Y.
 ; Input: none
-; Output: X=Y; Y=X
+; Output:
+;   - X=Y; Y=X
+;   - stack lift enabled
 ; Destroys: all, OP1, OP2
 ExchangeStackXY:
     ld b, stackXIndex
@@ -634,5 +652,7 @@ ExchangeStackXY:
     call rpnObjectIndexesToPointers ; DE=pointerX; HL=pointerY; destroys OP1
     ld b, rpnElementSizeOf
     call exchangeLoopPageOne
+    ; Movement of RPN stack cancels existing 'disable stack lift' request.
     set dirtyFlagsStack, (iy + dirtyFlags)
+    set rpnFlagsLiftEnabled, (iy + rpnFlags)
     ret
