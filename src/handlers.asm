@@ -1090,13 +1090,14 @@ handleKeyATan:
 ;-----------------------------------------------------------------------------
 
 handleKeySto:
-    call closeInputAndRecallNone
     ld hl, msgStoPrompt
     call startArgScanner
     set inputBufFlagsArgAllowModifier, (iy + inputBufFlags)
     set inputBufFlagsArgAllowLetter, (iy + inputBufFlags)
     call processArgCommands ; ZF=0 if cancelled
     ret nz ; do nothing if cancelled
+    ; close inputBuf only if STO is actually requested
+    call closeInputAndRecallNone
     cp argModifierIndirect
     ret nc ; TODO: implement this
     bcall(_RclStackX) ; OP1/OP2=X
@@ -1117,13 +1118,14 @@ handleKeyStoInvalid:
 ; 2) If the {op} is not empty, it is an arithmetic operator, we call
 ; RclOpGeneric() and *replace* the current X with the new X.
 handleKeyRcl:
-    call closeInputAndRecallNone
     ld hl, msgRclPrompt
     call startArgScanner
     set inputBufFlagsArgAllowModifier, (iy + inputBufFlags)
     set inputBufFlagsArgAllowLetter, (iy + inputBufFlags)
     call processArgCommands ; ZF=0 if cancelled
     ret nz ; do nothing if cancelled
+    ; close inputBuf only if RCL is actually requested
+    call closeInputAndRecallNone
     cp argModifierIndirect
     ret nc ; TODO: implement this
     ld a, (argValue) ; A=varLetter
