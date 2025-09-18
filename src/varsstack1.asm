@@ -237,7 +237,7 @@ SaveLastX:
 ; Input: CP1:RpnObject
 ; Preserves: OP1, OP2
 ReplaceStackX:
-    call checkValidRpnObjectCP1
+    call validateValidRpnObjectCP1
     call SaveLastX
     call StoStackX
     ret
@@ -247,7 +247,7 @@ ReplaceStackX:
 ; Input: CP1:RpnObject
 ; Preserves: OP1, OP2
 ReplaceStackXY:
-    call checkValidRpnObjectCP1
+    call validateValidRpnObjectCP1
     call SaveLastX
     call DropStack
     call StoStackX
@@ -266,9 +266,9 @@ ReplaceStackXY:
 ; Preserves: OP1, OP2
 ReplaceStackXYWithOP1OP2:
     ; validate OP1 and OP2 before modifying X and Y
-    call checkValidRealOP1
+    call validateValidRealOP1
     call op1ExOp2PageOne
-    call checkValidRealOP1
+    call validateValidRealOP1
     call op1ExOp2PageOne
     ;
     call SaveLastX
@@ -287,9 +287,9 @@ ReplaceStackXYWithOP1OP2:
 ; Preserves: OP1, OP2
 ReplaceStackXWithOP1OP2:
     ; validate OP1 and OP2 before modifying X and Y
-    call checkValidRealOP1
+    call validateValidRealOP1
     call op1ExOp2PageOne
-    call checkValidRealOP1
+    call validateValidRealOP1
     call op1ExOp2PageOne
     ;
     call SaveLastX
@@ -311,9 +311,9 @@ ReplaceStackXWithOP1OP2:
 ; Preserves: CP1, CP3
 ReplaceStackXWithCP1CP3:
     ; validate CP1 and CP2 before modifying X and Y
-    call checkValidRpnObjectCP1
+    call validateValidRpnObjectCP1
     call cp1ExCp3PageOne
-    call checkValidRpnObjectCP1
+    call validateValidRpnObjectCP1
     call cp1ExCp3PageOne
     ;
     call SaveLastX
@@ -337,7 +337,7 @@ ReplaceStackXWithCP1CP3:
 ; Destroys: all
 ; Preserves: OP1, OP2, LastX
 PushToStackX:
-    call checkValidRpnObjectCP1
+    call validateValidRpnObjectCP1
     call LiftStackIfNonEmpty
     call StoStackX
     ret
@@ -355,9 +355,9 @@ PushToStackX:
 ; Destroys: all
 ; Preserves: OP1, OP2, LastX
 PushOp1Op2ToStackXY:
-    call checkValidRealOP1
+    call validateValidRealOP1
     call op1ExOp2PageOne
-    call checkValidRealOP1
+    call validateValidRealOP1
     call op1ExOp2PageOne
     ;
     call LiftStackIfNonEmpty
@@ -375,12 +375,15 @@ PushOp1Op2ToStackXY:
 ; using CkValidNum().
 ; Input: CP1:RpnObject
 ; Destroys: A, HL
-checkValidRpnObjectCP1:
+; Throws:
+;   - Err:Overflow if exponent overflows
+;   - Err:DateType if not an RpnObject
+validateValidRpnObjectCP1:
     call getOp1RpnObjectTypePageOne ; A=type; HL=OP1
     cp rpnObjectTypeReal
-    jr z, checkValidNumber
+    jr z, validateValidNumber
     cp rpnObjectTypeComplex
-    jr z, checkValidNumber
+    jr z, validateValidNumber
     cp rpnObjectTypeDate
     ret z
     cp rpnObjectTypeTime
@@ -398,20 +401,23 @@ checkValidRpnObjectCP1:
     cp rpnObjectTypeDenominate
     ret z
     bcall(_ErrDataType)
-checkValidNumber:
+validateValidNumber:
     bcall(_CkValidNum) ; destroys AF, HL
     ret
 
-; Description: Check that OP1 is real. Throws Err:NonReal if not real.
+; Description: Check that OP1 is real.
 ; Input: CP1:RpnObject
 ; Destroys: A, HL
-checkValidRealOP1:
+; Throws:
+;   - Err:NonReal if not real.
+;   - Err:Overflow if out of range
+validateValidRealOP1:
     call getOp1RpnObjectTypePageOne ; A=type; HL=OP1
     cp rpnObjectTypeReal
-    jr nz, checkValidRealErr
+    jr nz, validateValidRealErr
     bcall(_CkValidNum) ; dstroys AF, HL
     ret
-checkValidRealErr:
+validateValidRealErr:
     bcall(_ErrNonReal)
 
 ;-----------------------------------------------------------------------------
