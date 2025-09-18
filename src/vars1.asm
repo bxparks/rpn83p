@@ -296,19 +296,19 @@ validateRpnElementList:
     ; Compare CRC
     ld c, e
     ld b, d ; BC=CRC16
-    call validateHLField
+    call checkHLField
     jr nz, validateRpnElementListEnd
     ; Verify appId.
     ld bc, rpn83pAppId
-    call validateHLField
+    call checkHLField
     jr nz, validateRpnElementListEnd
     ; Verify varType.
     ld bc, rpnVarTypeElementList
-    call validateHLField
+    call checkHLField
     jr nz, validateRpnElementListEnd
     ; Verify schemaVersion.
     ld bc, rpnElementListSchemaVersion
-    call validateHLField
+    call checkHLField
     ; [[fallthrough]]
 validateRpnElementListEnd:
     pop bc ; stack=[]; BC=restored
@@ -323,7 +323,7 @@ validateRpnElementListEnd:
 ;   - ZF=1 if same, 0 if different
 ;   - HL+=2
 ; Destroys: DE
-validateHLField:
+checkHLField:
     ld e, (hl)
     inc hl
     ld d, (hl)
