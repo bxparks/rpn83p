@@ -45,7 +45,7 @@ FormatDenominate:
 ; Destroys: A
 formatDenominateName:
     ld a, (hl) ; A=unitId
-    call validateDenominate ; CF=0 if invalid; A=unitId
+    call checkDenominate ; CF=0 if invalid; A=unitId
     jr nc, formatDenominateNameForInvalid
     ; extract real name
     ex de, hl ; HL=stringBuf; DE=denominate
@@ -73,7 +73,7 @@ unitInvalidName:
 ; Preserves: DE
 extractDenominateValue:
     ld a, (hl) ; A=unitId
-    call validateDenominate ; CF=0 if invalid; A=unitId
+    call checkDenominate ; CF=0 if invalid; A=unitId
     jp nc, denominateValueToOp1 ; OP1=raw(value)
     jp denominateToDisplayValue ; OP1=scaled(value)
 
