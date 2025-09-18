@@ -14,18 +14,13 @@
 ; subroutines will throw Err:Syntax or Err:Invalid when it detects something
 ; wrong.
 ;
-; The `inputBufFlagsClosedEmpty` flag is set if the inputBuf was an empty string
+; The `rpnFlagsLiftEnabled` flag is 0 if the inputBuf was an empty string
 ; before being closed. The flag is used by functions which do not consume any
 ; value from the RPN stack, but simply push a value or two onto the X or Y
 ; registers (e.g. PI, E, or various TVM functions, various STAT functions). If
 ; the user had pressed CLEAR, to clear the input buffer, then it doesn't make
 ; sense for these functions to lift the empty string (i.e. 0) up when pushing
-; the new values. These functions call PushToStackX() or PushOp1Op2ToStackXY()
-; which checks if the inputBuf was closed when empty. If empty, PushToStackX()
-; or PushOp1Op2ToStackXY() will *not* lift the stack, but simply replace the
-; "0" in the X register with the new value. This flag is cleared if the
-; inputBuf was not in edit mode, with the assumption that new X or Y values
-; should lift the stack.
+; the new values.
 ;
 ; This routine calls ClearInputBuf() before returning to the closeInput()
 ; routine. It would be cleaner to move the ClearInputBuf() to closeInput() to
@@ -38,7 +33,6 @@
 ; Output:
 ;   - OP1/OP2:RpnObject
 ;   - inputBuf cleared to empty string if successful
-;   - inputBufFlagsClosedEmpty: set if inputBuf was an empty string when closed
 ;   - rpnFlagsLiftEnabled: 0 if inputBuf was empty, 1 otherwise
 ; Throws:
 ;   - Err:Syntax if there is a syntax error
@@ -49,12 +43,10 @@ ParseAndClearInputBuf:
     or a
     jr nz, parseAndClearInputBufNonEmpty
 parseAndClearInputBufEmpty:
-    set inputBufFlagsClosedEmpty, (iy + inputBufFlags)
     res rpnFlagsLiftEnabled, (iy + rpnFlags)
     call op1Set0PageOne
     jp ClearInputBuf
 parseAndClearInputBufNonEmpty:
-    res inputBufFlagsClosedEmpty, (iy + inputBufFlags)
     set rpnFlagsLiftEnabled, (iy + rpnFlags)
     ; add NUL terminator to inputBuf to simplify parsing
     ld hl, inputBuf
