@@ -1108,6 +1108,9 @@ handleKeySto:
     ld b, a ; B=op
     ld a, (argType) ; A=argType
     bcall(_StoOpGeneric)
+    ; Pretend that STO consumed X, then returned the same value. Therefore,
+    ; enable stack lift.
+    set rpnFlagsLiftEnabled, (iy + rpnFlags)
     ret
 handleKeyStoInvalid:
     bcall(_ErrInvalid)
