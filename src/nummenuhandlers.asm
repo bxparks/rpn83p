@@ -51,24 +51,15 @@ mPercentHandlerDoDenominate:
 ;   - X:Real=100*(X-Y)/Y
 mPercentChangeHandler:
     call closeInputAndRecallUniversalXY ; CP1=Y; CP2=X
-    call checkOp1Real
-    jr z, mPercentChangeHandlerYIsReal
-    cp rpnObjectTypeDenominate
-    jr z, mPercentChangeHandlerYIsDenominate
-    jr mPercentChangeHandlerErr
-mPercentChangeHandlerYIsReal:
-    call checkOp3Real
-    jr z, mPercentChangeHandlerBothReal
-    jr mPercentChangeHandlerErr
+    call checkOp1Op3BothRealOrBothDenominate ; ZF=1 if true
+    jr nz, mPercentChangeHandlerErr
+    call checkOp1Real ; ZF=1 if true
+    jr nz, mPercentChangeHandlerBothDenominate
 mPercentChangeHandlerBothReal:
     call op3ToOp2
     bcall(_PercentChangeFunction) ; OP1:Real=100*(X-Y)/Y
     bcall(_ReplaceStackX)
     ret
-mPercentChangeHandlerYIsDenominate:
-    call checkOp3Denominate
-    jr z, mPercentChangeHandlerBothDenominate
-    jr mPercentChangeHandlerErr
 mPercentChangeHandlerBothDenominate:
     bcall(_RpnDenominatePercentChange) ; OP1:Real=100*(X-Y)/Y
     bcall(_ReplaceStackX)
