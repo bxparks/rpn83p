@@ -31,14 +31,16 @@
               (a number with units).
             - Pressing a subsequent UNIT menu converts that Denominate number
               into the unit requested by the menu key.
-            - Support basic arithmetic operations on Denominate numbers: CHS, +,
-              -, *, /
             - Support misc Unit Functions (UFCN)
                 - UVAL: return display value without units
                 - UBAS: convert to its "base unit"
         - Increase number of supported units from 30 to 130.
         - Reorganize UNIT menus across 12 sub MenuFolders: UFCN, LENG, AREA,
           VOL, MASS, TEMP, VELO, FORC, PRES, ENER, PWR, FUEL.
+        - Support basic arithmetic operations on units: `CHS`, `+`, `-`, `*`,
+          `/`
+        - Support NUM operations on units: `%`, `%CH`, `IP`, `FP`, `FLR`,`CEIL`,
+          `NEAR`, `ABS`, `SIGN`, `MIN`, `MAX`, `RNDF`, `RNDN`, `RNDG`
     - BASE
         - move most menu functions under 5 new subfolders: LOGI, ROTS, BITS,
           BFCN, BCFS ("Configs" or "Carry Flag and Word Size")
