@@ -282,20 +282,7 @@ mAbsHandlerDoDenominate:
 ; mSignHandler(X) -> Sign(X)
 mSignHandler:
     call closeInputAndRecallX
-    bcall(_CkOP1FP0) ; check OP1 is float 0
-    jr z, mSignHandlerSetZero
-    bcall(_CkOP1Pos) ; check OP1 > 0
-    jr z, mSignHandlerSetOne
-mSignHandlerSetNegOne:
-    bcall(_OP1Set1)
-    bcall(_InvOP1S)
-    jr mSignHandlerStoX
-mSignHandlerSetOne:
-    bcall(_OP1Set1)
-    jr mSignHandlerStoX
-mSignHandlerSetZero:
-    bcall(_OP1Set0)
-mSignHandlerStoX:
+    bcall(_SignFunction)
     bcall(_ReplaceStackX)
     ret
 

@@ -369,6 +369,12 @@ _AddAToOP1 equ _AddAToOP1Label-branchTableBase
     .dw AddAToOP1
     .db 1
 
+; num1.asm
+_SignFunctionLabel:
+_SignFunction equ _SignFunctionLabel-branchTableBase
+    .dw SignFunction
+    .db 1
+
 ; hms1.asm
 _HmsToHrLabel:
 _HmsToHr equ _HmsToHrLabel-branchTableBase

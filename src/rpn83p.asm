@@ -894,8 +894,9 @@ defpage(0, "RPN83P")
 ;   - command argument parsing (arg1.asm)
 ;   - Real and Complex math functions (universal1.asm)
 ;   - Complex number formatting (formatcomplex1.asm)
-;   - HMS routines (hms1.asm, move to Flash Page 2?)
-;   - PROB routines (prob1.asm, move to Flash Page 2?)
+;   - NUM routines (num1.asm)
+;   - HMS routines (hms1.asm)
+;   - PROB routines (prob1.asm)
 ;   - UNIT definitions generated from unitdef.as (unitdef.asm)
 ;-----------------------------------------------------------------------------
 
@@ -935,9 +936,11 @@ defpage(1)
 #include "universal1.asm"
 #include "complex1.asm"
 #include "formatcomplex1.asm"
+#include "format1.asm"
+
+#include "num1.asm"
 #include "hms1.asm"
 #include "prob1.asm"
-#include "format1.asm"
 
 #include "unitdef.asm"
 #include "unit1.asm"
