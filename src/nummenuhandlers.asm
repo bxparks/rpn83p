@@ -55,7 +55,7 @@ mPercentChangeHandler:
     jr nz, mPercentChangeHandlerErr
     call checkOp1Real ; ZF=1 if true
     jr nz, mPercentChangeHandlerBothDenominate
-mPercentChangeHandlerBothReal:
+    ; both Real
     call op3ToOp2
     bcall(_PercentChangeFunction) ; OP1:Real=100*(X-Y)/Y
     bcall(_ReplaceStackX)
@@ -181,10 +181,22 @@ mModHandler:
 ;-----------------------------------------------------------------------------
 
 mMinHandler:
-    call closeInputAndRecallXY
+    call closeInputAndRecallUniversalXY
+    call checkOp1Op3BothRealOrBothDenominate ; ZF=1 if true
+    jr nz, mMinHandlerErr
+    call checkOp1Real ; ZF=1 if true
+    jr nz, mMinHandlerBothDenominate
+    ; both Real
+    call op3ToOp2
     bcall(_Min)
     bcall(_ReplaceStackXY)
     ret
+mMinHandlerBothDenominate:
+    bcall(_RpnDenominateMin)
+    bcall(_ReplaceStackXY)
+    ret
+mMinHandlerErr:
+    bcall(_ErrDataType)
 
 ;-----------------------------------------------------------------------------
 
