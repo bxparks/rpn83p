@@ -1488,6 +1488,10 @@ _RpnDenominateMaxLabel:
 _RpnDenominateMax equ _RpnDenominateMaxLabel-branchTableBase
     .dw RpnDenominateMax
     .db 2
+_RpnDenominateIntPartLabel:
+_RpnDenominateIntPart equ _RpnDenominateIntPartLabel-branchTableBase
+    .dw RpnDenominateIntPart
+    .db 2
 
 ; formatdenominate2.asm
 _FormatDenominateLabel:

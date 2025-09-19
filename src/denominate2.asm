@@ -665,6 +665,20 @@ rpnDenominateMaxSelectY:
     call PopRpnObject1 ; FPS=[]; OP1=rpnDenY
     ret
 
+; Description: Return the IntPart(x).
+; Input: CP1:RpnDenominate=rpnDen
+; Output: CP1:RpnDenominate=IntPart(rpnDen)
+RpnDenominateIntPart:
+    call PushRpnObject1 ; FPS=[rpnDen]; HL=rpnDen
+    skipRpnObjectTypeHL ; HL=den
+    call denominateToDisplayValue ; OP1:Real=rawValue
+    push hl ; stack=[den]
+    bcall(_Trunc) ; integer part, truncating towards 0.0, preserving sign
+    pop hl ; stack=[]; HL=den
+    call assignDisplayValueToDenominate ; den.baseValue=displayValue(result)
+    call PopRpnObject1 ; FPS=[]; OP1=rpnDen
+    ret
+
 ;-----------------------------------------------------------------------------
 ; Converters for special units which cannot be converted by simple scaling. For
 ; example temperature units (C, F, R, K) and fuel consumption units (mpg,

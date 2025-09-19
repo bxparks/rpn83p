@@ -221,8 +221,18 @@ mMaxHandlerErr:
 ;-----------------------------------------------------------------------------
 
 mIntPartHandler:
-    call closeInputAndRecallX
+    call closeInputAndRecallUniversalX
+    cp rpnObjectTypeReal
+    jr z, mIntPartHandlerDoReal
+    cp rpnObjectTypeDenominate
+    jr z, mIntPartHandlerDoDenominate
+    bcall(_ErrDataType)
+mIntPartHandlerDoReal:
     bcall(_Trunc) ; convert to int part, truncating towards 0.0, preserving sign
+    bcall(_ReplaceStackX)
+    ret
+mIntPartHandlerDoDenominate:
+    bcall(_RpnDenominateIntPart)
     bcall(_ReplaceStackX)
     ret
 
