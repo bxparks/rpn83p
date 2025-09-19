@@ -67,6 +67,11 @@ signFunctionSetZero:
 ; Description: Calculate OP1 = (OP1 mod OP2) = OP1 - OP2 * floor(OP1/OP2). Used
 ; by mModHandler and mGcdHandler. There does not seem to be a built-in function
 ; to calculate this.
+; Input:
+;   - OP1:Real=Y
+;   - OP2:Real=X
+; Output:
+;   - OP1:Real=Y mod X
 ; Destroys: OP1, OP2, OP3
 ModFunction:
     bcall(_PushRealO1) ; FPS=[OP1]
