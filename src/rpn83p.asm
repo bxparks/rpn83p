@@ -854,6 +854,7 @@ defpage(0, "RPN83P")
 #include "menu.asm"
 
 #include "menuhandlers.asm"
+#include "nummenuhandlers.asm"
 #include "basemenuhandlers.asm"
 #include "statmenuhandlers.asm"
 #include "cfitmenuhandlers.asm"
