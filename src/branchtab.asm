@@ -369,6 +369,36 @@ _AddAToOP1 equ _AddAToOP1Label-branchTableBase
     .dw AddAToOP1
     .db 1
 
+; num1.asm
+_SignFunctionLabel:
+_SignFunction equ _SignFunctionLabel-branchTableBase
+    .dw SignFunction
+    .db 1
+_ModFunctionLabel:
+_ModFunction equ _ModFunctionLabel-branchTableBase
+    .dw ModFunction
+    .db 1
+_GcdFunctionLabel:
+_GcdFunction equ _GcdFunctionLabel-branchTableBase
+    .dw GcdFunction
+    .db 1
+_LcdFunctionLabel:
+_LcdFunction equ _LcdFunctionLabel-branchTableBase
+    .dw LcdFunction
+    .db 1
+_PercentFunctionLabel:
+_PercentFunction equ _PercentFunctionLabel-branchTableBase
+    .dw PercentFunction
+    .db 1
+_PercentChangeFunctionLabel:
+_PercentChangeFunction equ _PercentChangeFunctionLabel-branchTableBase
+    .dw PercentChangeFunction
+    .db 1
+_CeilFunctionLabel:
+_CeilFunction equ _CeilFunctionLabel-branchTableBase
+    .dw CeilFunction
+    .db 1
+
 ; hms1.asm
 _HmsToHrLabel:
 _HmsToHr equ _HmsToHrLabel-branchTableBase
@@ -1401,9 +1431,9 @@ _RtcGetTimeZone equ _RtcGetTimeZoneLabel-branchTableBase
     .db 2
 
 ; denominate2.asm
-_ApplyUnitLabel:
-_ApplyUnit equ _ApplyUnitLabel-branchTableBase
-    .dw ApplyUnit
+_ApplyRpnDenominateUnitLabel:
+_ApplyRpnDenominateUnit equ _ApplyRpnDenominateUnitLabel-branchTableBase
+    .dw ApplyRpnDenominateUnit
     .db 2
 _GetRpnDenominateDisplayValueLabel:
 _GetRpnDenominateDisplayValue equ _GetRpnDenominateDisplayValueLabel-branchTableBase
@@ -1436,6 +1466,65 @@ _DivRpnDenominateByReal equ _DivRpnDenominateByRealLabel-branchTableBase
 _DivRpnDenominateByDenominateLabel:
 _DivRpnDenominateByDenominate equ _DivRpnDenominateByDenominateLabel-branchTableBase
     .dw DivRpnDenominateByDenominate
+    .db 2
+;
+_RpnDenominatePercentLabel:
+_RpnDenominatePercent equ _RpnDenominatePercentLabel-branchTableBase
+    .dw RpnDenominatePercent
+    .db 2
+_RpnDenominatePercentChangeLabel:
+_RpnDenominatePercentChange equ _RpnDenominatePercentChangeLabel-branchTableBase
+    .dw RpnDenominatePercentChange
+    .db 2
+_RpnDenominateAbsLabel:
+_RpnDenominateAbs equ _RpnDenominateAbsLabel-branchTableBase
+    .dw RpnDenominateAbs
+    .db 2
+_RpnDenominateSignLabel:
+_RpnDenominateSign equ _RpnDenominateSignLabel-branchTableBase
+    .dw RpnDenominateSign
+    .db 2
+_RpnDenominateMinLabel:
+_RpnDenominateMin equ _RpnDenominateMinLabel-branchTableBase
+    .dw RpnDenominateMin
+    .db 2
+_RpnDenominateMaxLabel:
+_RpnDenominateMax equ _RpnDenominateMaxLabel-branchTableBase
+    .dw RpnDenominateMax
+    .db 2
+;
+_RpnDenominateIntPartLabel:
+_RpnDenominateIntPart equ _RpnDenominateIntPartLabel-branchTableBase
+    .dw RpnDenominateIntPart
+    .db 2
+_RpnDenominateFracPartLabel:
+_RpnDenominateFracPart equ _RpnDenominateFracPartLabel-branchTableBase
+    .dw RpnDenominateFracPart
+    .db 2
+_RpnDenominateFloorLabel:
+_RpnDenominateFloor equ _RpnDenominateFloorLabel-branchTableBase
+    .dw RpnDenominateFloor
+    .db 2
+_RpnDenominateCeilLabel:
+_RpnDenominateCeil equ _RpnDenominateCeilLabel-branchTableBase
+    .dw RpnDenominateCeil
+    .db 2
+_RpnDenominateNearLabel:
+_RpnDenominateNear equ _RpnDenominateNearLabel-branchTableBase
+    .dw RpnDenominateNear
+    .db 2
+;
+_RpnDenominateRoundToFixLabel:
+_RpnDenominateRoundToFix equ _RpnDenominateRoundToFixLabel-branchTableBase
+    .dw RpnDenominateRoundToFix
+    .db 2
+_RpnDenominateRoundToGuardLabel:
+_RpnDenominateRoundToGuard equ _RpnDenominateRoundToGuardLabel-branchTableBase
+    .dw RpnDenominateRoundToGuard
+    .db 2
+_RpnDenominateRoundToNLabel:
+_RpnDenominateRoundToN equ _RpnDenominateRoundToNLabel-branchTableBase
+    .dw RpnDenominateRoundToN
     .db 2
 
 ; formatdenominate2.asm

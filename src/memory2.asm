@@ -65,6 +65,10 @@ exchangeLoopPageTwo:
     djnz exchangeLoopPageTwo
     ret
 
+; Description: Exchange 18 bytes between DE and HL pointers.
+; Input: DE, HL: pointers to complex values
+; Output: 18-byte contents of DE, HL exchanged
+; Destroys: all registers
 exchange18PageTwo:
     ld b, 18
     jp exchangeLoopPageTwo

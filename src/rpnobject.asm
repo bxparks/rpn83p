@@ -270,3 +270,28 @@ checkOp3Duration:
     call getOp3RpnObjectType
     cp rpnObjectTypeDuration
     ret
+
+;-----------------------------------------------------------------------------
+
+; Description: Check if OP1 is an RpnDenominate.
+; Output: ZF=1 if RpnDenominate
+checkOp1Denominate:
+    call getOp1RpnObjectType
+    cp rpnObjectTypeDenominate
+    ret
+
+; Description: Check if OP3 is an RpnDenominate.
+; Output: ZF=1 if RpnDenominate
+checkOp3Denominate:
+    call getOp3RpnObjectType
+    cp rpnObjectTypeDenominate
+    ret
+
+; Description: Check if OP1 and OP3 are both Real or both Denominate.
+; Output: ZF=1 if true, 0 false
+checkOp1Op3BothRealOrBothDenominate:
+    call checkOp1Real
+    jp z, checkOp3Real
+    cp rpnObjectTypeDenominate
+    jr z, checkOp3Denominate
+    ret

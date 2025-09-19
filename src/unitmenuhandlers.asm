@@ -54,9 +54,9 @@ commonUnitHandler:
     push bc
     call closeInputAndRecallDenominateX ; A=rpnObjectType; OP1=X
     pop bc ; C=targetUnitId
-    ; Set up registers for ApplyUnit()
+    ; Set up registers for ApplyRpnDenominateUnit()
     call getOp1RpnObjectType ; A=rpnObjectType
-    bcall(_ApplyUnit)
+    bcall(_ApplyRpnDenominateUnit)
     bcall(_ReplaceStackX)
     ret
 

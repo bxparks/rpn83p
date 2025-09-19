@@ -46,18 +46,25 @@ closeInputEditing:
 
 ;-----------------------------------------------------------------------------
 
-; Close the input buffer, and don't set OP1 to anything.
+; Description: Close the input buffer, and don't set OP1 to anything.
 ; Output:
 ;   - rpnFlagsTvmCalculate: cleared
+;   - inputBuf cleared to empty string
+;   - rpnFlagsLiftEnabled: cleared if inputBuf was empty, set otherwise
+;   - rpnFlagsEditing: always cleared
 ; Destroys: all, OP1, OP2, OP3, OP4, OP5
 closeInputAndRecallNone:
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     jr closeInput
 
-; Close the input buffer, and recall real X into OP1.
+; Description: Close the input buffer, and recall real X into OP1.
 ; Output:
-;   - OP1=X
+;   - OP1:Real=X
+;   - A:u8=rpnObjectType
 ;   - rpnFlagsTvmCalculate: cleared
+;   - inputBuf cleared to empty string
+;   - rpnFlagsLiftEnabled: cleared if inputBuf was empty, set otherwise
+;   - rpnFlagsEditing: always cleared
 ; Destroys: all, OP1, OP2, OP3, OP4, OP5
 closeInputAndRecallX:
     call closeInput
@@ -67,24 +74,33 @@ closeInputAndRecallX:
     ret z
     bcall(_ErrDataType)
 
-; Close the input buffer, and recall real values into OP1=Y and OP2=X.
+; Description: Close the input buffer, and recall real values into OP1=Y and
+; OP2=X.
 ; Output:
-;   - OP1=Y
-;   - OP2=X
+;   - OP1:Real=Y
+;   - OP2:Real=X
+;   - A:u8=rpnObjectTypeY
 ;   - rpnFlagsTvmCalculate: cleared
+;   - inputBuf cleared to empty string
+;   - rpnFlagsLiftEnabled: cleared if inputBuf was empty, set otherwise
+;   - rpnFlagsEditing: always cleared
 ; Destroys: all, OP1, OP2, OP3, OP4, OP5
 closeInputAndRecallXY:
     call closeInput
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     bcall(_RclStackXY) ; CP1=Y; CP3=X
-    call validateOp1Real ; throws Err:DataType if not
     call validateOp3Real ; throws Err:DataType if not
+    call validateOp1Real ; throws Err:DataType if not
     jp op3ToOp2 ; OP2=Real(X)
 
-; Close the input buffer, and recall the real or complex X to OP1/OP2.
+; Description: Close the input buffer, and recall the RpnObject X to CP1.
 ; Output:
-;   - OP1=X
+;   - CP1:RpnObject=X
+;   - A:u8=rpnObjectType
 ;   - rpnFlagsTvmCalculate: cleared
+;   - inputBuf cleared to empty string
+;   - rpnFlagsLiftEnabled: cleared if inputBuf was empty, set otherwise
+;   - rpnFlagsEditing: always cleared
 ; Destroys: all, OP1, OP2, OP3, OP4, OP5
 closeInputAndRecallUniversalX:
     call closeInput
@@ -92,12 +108,16 @@ closeInputAndRecallUniversalX:
     bcall(_RclStackX)
     ret
 
-; Close the input buffer, and recall the real or complex values X, Y into
-; OP1/OP2=Y and OP3/OP4=X.
+; Description: Close the input buffer, and recall the RpnObject X and Y into
+; CP1=Y and CP3=X.
 ; Output:
-;   - OP1/OP2=Y
-;   - OP3/OP4=X
+;   - CP1:RpnObject=Y
+;   - CP3:RpnObject=X
+;   - A:u8=rpnObjectTypeY
 ;   - rpnFlagsTvmCalculate: cleared
+;   - inputBuf cleared to empty string
+;   - rpnFlagsLiftEnabled: cleared if inputBuf was empty, set otherwise
+;   - rpnFlagsEditing: always cleared
 ; Destroys: all, OP1, OP2, OP3, OP4, OP5
 closeInputAndRecallUniversalXY:
     call closeInput
@@ -107,7 +127,15 @@ closeInputAndRecallUniversalXY:
 
 ;-----------------------------------------------------------------------------
 
-; Close the input buffer, parse RpnDate{} record, place it into OP1.
+; Description: Close the input buffer, parse RpnDate{} record, place it into
+; CP1.
+; Output:
+;   - CP1:RpnDate=rpnDate
+;   - A:u8=rpnObjectType
+;   - rpnFlagsTvmCalculate: cleared
+;   - inputBuf cleared to empty string
+;   - rpnFlagsLiftEnabled: cleared if inputBuf was empty, set otherwise
+;   - rpnFlagsEditing: always cleared
 ; Destroys: all, OP1, OP2, OP3, OP4, OP5
 closeInputAndRecallRpnDateX:
     call closeInput
@@ -117,7 +145,14 @@ closeInputAndRecallRpnDateX:
     ret z
     bcall(_ErrDataType)
 
-; Close the input buffer, validate RpnOffset{}, and place it into OP1.
+; Description: Close the input buffer, validate RpnOffset{}, and place it into
+; CP1.
+;   - CP1:RpnOffset=rpnOffset
+;   - A:u8=rpnObjectType
+;   - rpnFlagsTvmCalculate: cleared
+;   - inputBuf cleared to empty string
+;   - rpnFlagsLiftEnabled: cleared if inputBuf was empty, set otherwise
+;   - rpnFlagsEditing: always cleared
 ; Destroys: all, OP1, OP2, OP3, OP4, OP5
 closeInputAndRecallRpnOffsetX:
     call closeInput
@@ -127,7 +162,15 @@ closeInputAndRecallRpnOffsetX:
     ret z
     bcall(_ErrDataType)
 
-; Close the input buffer, validate RpnOffset{} or Real, and place it into OP1.
+; Description: Close the input buffer, validate RpnOffset{} or Real, and place
+; it into CP1.
+; Output:
+;   - CP1:RpnOffset|Real=rpnOffset
+;   - A:u8=rpnObjectType
+;   - rpnFlagsTvmCalculate: cleared
+;   - inputBuf cleared to empty string
+;   - rpnFlagsLiftEnabled: cleared if inputBuf was empty, set otherwise
+;   - rpnFlagsEditing: always cleared
 ; Destroys: all, OP1, OP2, OP3, OP4, OP5
 closeInputAndRecallRpnOffsetOrRealX:
     call closeInput
@@ -139,7 +182,15 @@ closeInputAndRecallRpnOffsetOrRealX:
     ret z
     bcall(_ErrDataType)
 
-; Close the input buffer, parse RpnOffsetDateTime{} record, place it into OP1.
+; Description: Close the input buffer, parse RpnOffsetDateTime{} record, place
+; it into CP1.
+; Output:
+;   - CP1:RpnOffsetDateTime=rpnOffsetDateTime
+;   - A:u8=rpnObjectType
+;   - rpnFlagsTvmCalculate: cleared
+;   - inputBuf cleared to empty string
+;   - rpnFlagsLiftEnabled: cleared if inputBuf was empty, set otherwise
+;   - rpnFlagsEditing: always cleared
 ; Destroys: all, OP1, OP2, OP3, OP4, OP5
 closeInputAndRecallRpnOffsetDateTimeX:
     call closeInput
@@ -149,8 +200,15 @@ closeInputAndRecallRpnOffsetDateTimeX:
     ret z
     bcall(_ErrDataType)
 
-; Close the input buffer, parse a date-like object (RpnDate, RpnDateTime, or
-; RpnOffsetDateTime), place it into OP1.
+; Description: Close the input buffer, parse a date-like object (RpnDate,
+; RpnDateTime, or RpnOffsetDateTime), place it into CP1.
+; Output:
+;   - CP1:Rpn{Date-like}=rpnDateLike
+;   - A:u8=rpnObjectType
+;   - rpnFlagsTvmCalculate: cleared
+;   - inputBuf cleared to empty string
+;   - rpnFlagsLiftEnabled: cleared if inputBuf was empty, set otherwise
+;   - rpnFlagsEditing: always cleared
 ; Destroys: all, OP1, OP2, OP3, OP4, OP5
 closeInputAndRecallRpnDateLikeX:
     call closeInput
@@ -164,10 +222,16 @@ closeInputAndRecallRpnDateLikeX:
     ret z
     bcall(_ErrDataType)
 
-; Close and parse the input buffer, place the value into OP1, and return
-; successfully if the input was a date-related object: RpnDate, RpnTime,
+; Description: Close and parse the input buffer, place the value into OP1, and
+; return successfully if the input was a date-related object: RpnDate, RpnTime,
 ; RpnDateTime, RpnOffset, RpnOffsetDateTime, RpnDayOfWeek.
-; Output: A=rpnObjectType
+; Output:
+;   - CP1:Rpn{Date-related}=rpnDateRelated
+;   - A:u8=rpnObjectType
+;   - rpnFlagsTvmCalculate: cleared
+;   - inputBuf cleared to empty string
+;   - rpnFlagsLiftEnabled: cleared if inputBuf was empty, set otherwise
+;   - rpnFlagsEditing: always cleared
 ; Destroys: all, OP1, OP2, OP3, OP4, OP5
 closeInputAndRecallRpnDateRelatedX:
     call closeInput
@@ -191,11 +255,15 @@ closeInputAndRecallRpnDateRelatedX:
 
 ;-----------------------------------------------------------------------------
 
-; Close the input buffer, and recall X (Real or RpnDenominate) into OP1.
+; Description: Close the input buffer, and recall X (Real or RpnDenominate)
+; into CP1.
 ; Output:
-;   - OP1:Real|RpnDenominate=X
-;   - rpnFlagsTvmCalculate: cleared
+;   - CP1:Real|RpnDenominate=X
 ;   - A=rpnObjectType
+;   - rpnFlagsTvmCalculate: cleared
+;   - inputBuf cleared to empty string
+;   - rpnFlagsLiftEnabled: cleared if inputBuf was empty, set otherwise
+;   - rpnFlagsEditing: always cleared
 ; Destroys: all, OP1, OP2, OP3, OP4, OP5
 ; Throws: Err:DataType
 closeInputAndRecallDenominateX:
@@ -211,6 +279,8 @@ closeInputAndRecallDenominateX:
     ; Unexpected type
     bcall(_ErrDataType)
 
+;------------------------------------------------------------------------------
+; Low-level helpers.
 ;------------------------------------------------------------------------------
 
 ; Description: Insert string at HL into inputBuf. If the string is too long,

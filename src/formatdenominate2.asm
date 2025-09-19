@@ -45,7 +45,7 @@ FormatDenominate:
 ; Destroys: A
 formatDenominateName:
     ld a, (hl) ; A=unitId
-    call checkDenominate ; CF=0 if invalid; A=unitId
+    call checkValidDenominate ; CF=0 if invalid; A=unitId
     jr nc, formatDenominateNameForInvalid
     ; extract real name
     ex de, hl ; HL=stringBuf; DE=denominate
@@ -63,9 +63,9 @@ formatDenominateNameForInvalid:
 unitInvalidName:
     .db "INVALID", 0
 
-; Description: Extract the value of the denominate object in HL to OP1. Convert
-; the 'value' into its 'displayUnit', except if the denominate is invalid, in
-; which case just print the raw 'value'.
+; Description: Extract the displayable value of the denominate object in HL to
+; OP1. In most cases, we want the displayUnit. If the denominate is invalid
+; (i.e. its unitId is invalid), the best we can do is print its baseValue.
 ; Input:
 ;   - HL:Denominate=denominate
 ; Output:
@@ -73,9 +73,9 @@ unitInvalidName:
 ; Preserves: DE
 extractDenominateValue:
     ld a, (hl) ; A=unitId
-    call checkDenominate ; CF=0 if invalid; A=unitId
-    jp nc, denominateValueToOp1 ; OP1=raw(value)
-    jp denominateToDisplayValue ; OP1=scaled(value)
+    call checkValidDenominate ; CF=0 if invalid; A=unitId
+    jp nc, denominateBaseValueToOp1 ; OP1=baseValue
+    jp denominateGetDisplayValue ; OP1=displayValue
 
 ; Description: Format the value of the denominate object in OP1 to DE.
 ; Input:
