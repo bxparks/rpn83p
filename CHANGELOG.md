@@ -45,6 +45,27 @@
         - rename (B+ B- B* B/) to (BAS+ BAS- BAS* BAS/) for better
           self-documentation
         - no functional change
+    - RPN Stack
+        - Fix incorrect stack lift behavior for functions that produce a value
+          without consuming the X register (e.g. PI, E, MEAN). Previously, these
+          functions would ignore the 'disable stack lift' setting. Now, they
+          will correctly interpret that flag and overwrite the existing X
+          register.
+        - Handle an empty string input buffer correctly for all commands
+          including the 'disable stack lift' behavior.
+        - Avoid terminating the input buffer when a command that take an
+          argument (e.g. `RCL`, `STO`, `FIX`, `SCI`, `ENG`, `SSIZ`, `RSIZ`,
+          `WSIZ`) is canceled using `ON/EXIT`. The user can continue to edit the
+          input buffer.
+        - Avoid terminating the input buffer for all commands which do not
+          consume the `X` register, but simply cause an internal state change:
+          all menu navigation commands (Up, Down, Home, menu folders), DEG, RAD,
+          RRES, CRES, FIX, SCI, ENG, SSIZ, RSIZ, WSIZ, CCF, SCF).
+        - Handle edge case of `STO`: does not consume `X` but requires input
+          termination to get the value to be stored. Stack lift must always be
+          enabled after `STO`.
+        - Terminate input buffer and correctly enable stack lift for all stack
+          manipulation commands: `DUP`, `Rollup`, `Rolldown`, `DROP`, `X<>Y`.
     - RPN83P application size
         - increase to 64kiB (4 flash pages) from 48kiB
 - 1.0.0 (2024-07-19)
