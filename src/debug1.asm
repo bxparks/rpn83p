@@ -303,11 +303,6 @@ DebugFlags:
     ld a, 'E'
     call debugPrintFlag
 
-    ; Print ClosedEmpty flag
-    bit inputBufFlagsClosedEmpty, (iy + inputBufFlags)
-    ld a, 'Z'
-    call debugPrintFlag
-
     ld a, ' '
     bcall(_PutC)
 

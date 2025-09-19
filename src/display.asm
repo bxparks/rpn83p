@@ -133,20 +133,17 @@ menuFolderIconLineRow equ 7 ; pixel row of the menu folder icon line
 
 ; Description: Update the display, including the title, RPN stack variables,
 ; and the menu.
-;
-; We must turn off the cursor at the very beginning of the drawing code, then
-; reenable it at the end (if needed). Otherwise, there seems to be a
-; race-condition in the blinking code of TIOS where the cursor is shown
-; (probably through an interrupt handler), then the cursor position is changed
-; by our code, but the blinking code does not remember the prior location where
-; the cursor was enabled, so does not unblink the cursor properly, leaving an
-; artifact of the cursor in the wrong location.
-;
 ; Input: none
 ; Output:
 ; Destroys: all
 displayAll:
-    ; Disable blinking cursor
+    ; Disable blinking cursor at the very beginning of the drawing code, then
+    ; reenable it at the end (if needed). Otherwise, there seems to be a
+    ; race-condition in the blinking code of TIOS where the cursor is shown
+    ; (probably through an interrupt handler), then the cursor position is
+    ; changed by our code, but the blinking code does not remember the prior
+    ; location where the cursor was enabled, so does not unblink the cursor
+    ; properly, leaving an artifact of the cursor in the wrong location.
     res curAble, (iy + curFlags)
     res curOn, (iy + curFlags)
     ;
@@ -154,6 +151,7 @@ displayAll:
     call displayErrorCode
     call displayMain
     call displayMenu
+    ; Reenable cursor if needed.
     call setCursorState
     ; Reset all dirty flags
     xor a
@@ -168,6 +166,11 @@ displayAll:
 ; inputBuf. However setting `curOn=true` and `curAble=false` seems to just
 ; disable the cursor instead of showing a non-blinking cursor.
 setCursorState:
+    ; If Command arg mode, no cursor. Command mode takes precedence over Input
+    ; editing mode.
+    bit rpnFlagsArgMode, (iy + rpnFlags)
+    ret nz
+    ; If not editing, no cursor.
     bit rpnFlagsEditing, (iy + rpnFlags)
     ret z
     ; enable a blinking cursor

@@ -307,13 +307,11 @@ mGetBitHandler:
 ;-----------------------------------------------------------------------------
 
 mClearCarryFlagHandler:
-    call closeInputAndRecallNone
     or a ; CF=0
     bcall(_BaseStoreCarryFlag)
     ret
 
 mSetCarryFlagHandler:
-    call closeInputAndRecallNone
     scf ; CF=1
     bcall(_BaseStoreCarryFlag)
     ret
@@ -327,9 +325,9 @@ mGetCarryFlagHandler:
 ;-----------------------------------------------------------------------------
 
 ; Description: Prompt for the new base word size, like FIX or STO. Allowed
-; values are 8, 16, 24, 32. Throw Err:Argument if outside of that list.
+; values are 8, 16, 24, 32.
+; Throws: Err:Argument if outside of that list.
 mSetWordSizeHandler:
-    call closeInputAndRecallNone
     ld hl, msgWordSizePrompt
     call startArgScanner
     call processArgCommands ; CF=0 if cancelled; (argModifier), (argValue)

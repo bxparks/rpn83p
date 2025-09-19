@@ -539,7 +539,6 @@ mHmsMinusHandler:
 ;-----------------------------------------------------------------------------
 
 mFixHandler:
-    call closeInputAndRecallNone
     ld hl, msgFixPrompt
     call startArgScanner
     call processArgCommands ; ZF=0 if cancelled
@@ -549,7 +548,6 @@ mFixHandler:
     jr saveFormatDigits
 
 mSciHandler:
-    call closeInputAndRecallNone
     ld hl, msgSciPrompt
     call startArgScanner
     call processArgCommands ; ZF=0 if cancelled
@@ -559,7 +557,6 @@ mSciHandler:
     jr saveFormatDigits
 
 mEngHandler:
-    call closeInputAndRecallNone
     ld hl, msgEngPrompt
     call startArgScanner
     call processArgCommands ; ZF=0 if cancelled
@@ -586,6 +583,7 @@ saveFormatDigits:
     set dirtyFlagsStack, (iy + dirtyFlags)
     set dirtyFlagsStatus, (iy + dirtyFlags)
     set dirtyFlagsMenu, (iy + dirtyFlags)
+    set dirtyFlagsInput, (iy + dirtyFlags)
     ld a, (argValue)
     cp 10
     jr c, saveFormatDigitsContinue
@@ -661,8 +659,8 @@ mDegNameSelector:
 
 ;-----------------------------------------------------------------------------
 
+; Description: Handle 'RSIZ' command. Does not terminate inputBuf.
 mSetRegSizeHandler:
-    call closeInputAndRecallNone
     ld hl, msgRegSizePrompt
     call startArgScanner
     ld a, 3
@@ -694,6 +692,7 @@ setRegSizeHandlerUnchanged:
 setRegSizeHandlerErr:
     bcall(_ErrInvalid)
 
+; Description: Handle 'RSZ?' command.
 mGetRegSizeHandler:
     call closeInputAndRecallNone
     bcall(_LenRegs)
@@ -706,8 +705,8 @@ msgRegSizePrompt:
 
 ;-----------------------------------------------------------------------------
 
+; Description: Handle 'SSIZ' command. Does not terminate inputBuf.
 mSetStackSizeHandler:
-    call closeInputAndRecallNone
     ld hl, msgStackSizePrompt
     call startArgScanner
     ld a, 1
@@ -742,6 +741,7 @@ setStackSizeHandlerUnchanged:
 setStackSizeHandlerErr:
     bcall(_ErrInvalid)
 
+; Description: Handle 'SSZ?' command.
 mGetStackSizeHandler:
     call closeInputAndRecallNone
     bcall(_LenStack)

@@ -194,7 +194,6 @@ handleArgKeyDel:
 handleArgKeyClear:
 handleArgKeyExit:
     bcall(_ClearArgBuf)
-    res rpnFlagsEditing, (iy + rpnFlags)
     set dirtyFlagsStack, (iy + dirtyFlags)
     set inputBufFlagsArgExit, (iy + inputBufFlags)
     set inputBufFlagsArgCancel, (iy + inputBufFlags)

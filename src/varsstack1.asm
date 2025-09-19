@@ -66,7 +66,8 @@ InitLastX:
 ; Destroys: all, OP1
 ClearStack:
     set dirtyFlagsStack, (iy + dirtyFlags) ; force redraw
-    set rpnFlagsLiftEnabled, (iy + rpnFlags) ; TODO: I think this can be removed
+    set rpnFlagsLiftEnabled, (iy + rpnFlags)
+    ;
     call LenStack ; A=len; DE=dataPointer
     ld c, a ; C=len
     ld b, 0 ; B=begin=0
@@ -240,6 +241,7 @@ ReplaceStackX:
     call validateValidRpnObjectCP1
     call SaveLastX
     call StoStackX
+    set rpnFlagsLiftEnabled, (iy + rpnFlags)
     ret
 
 ; Description: Replace X and Y with RpnObject in CP1, saving previous X to
@@ -251,6 +253,7 @@ ReplaceStackXY:
     call SaveLastX
     call DropStack
     call StoStackX
+    set rpnFlagsLiftEnabled, (iy + rpnFlags)
     ret
 
 ; Description: Replace X and Y with Real numbers OP1 and OP2, in that order.
@@ -276,6 +279,7 @@ ReplaceStackXYWithOP1OP2:
     call op1ExOp2PageOne
     call StoStackX ; X = OP2
     call op1ExOp2PageOne
+    set rpnFlagsLiftEnabled, (iy + rpnFlags)
     ret
 
 ; Description: Replace X with Real numbers OP1 and OP2 in that order.
@@ -293,11 +297,14 @@ ReplaceStackXWithOP1OP2:
     call op1ExOp2PageOne
     ;
     call SaveLastX
+    call LiftStackIfEnabled
     call StoStackX
+    call op1ExOp2PageOne
+    ;
     call LiftStack
-    call op1ExOp2PageOne
     call StoStackX
     call op1ExOp2PageOne
+    set rpnFlagsLiftEnabled, (iy + rpnFlags)
     ret
 
 ; Description: Replace X with objects in CP1 and CP3 in that order.
@@ -318,10 +325,12 @@ ReplaceStackXWithCP1CP3:
     ;
     call SaveLastX
     call StoStackX
-    call LiftStack
     call cp1ExCp3PageOne
+    ;
+    call LiftStack
     call StoStackX
     call cp1ExCp3PageOne
+    set rpnFlagsLiftEnabled, (iy + rpnFlags)
     ret
 
 ;-----------------------------------------------------------------------------
@@ -332,14 +341,15 @@ ReplaceStackXWithCP1CP3:
 ; Input:
 ;   - CP1:RpnObject
 ; Output:
-;   - Stack lifted (if the inputBuf was not an empty string)
+;   - Stack lifted (if the stackLift is enabled)
 ;   - X=CP1
 ; Destroys: all
 ; Preserves: OP1, OP2, LastX
 PushToStackX:
     call validateValidRpnObjectCP1
-    call LiftStackIfNonEmpty
+    call LiftStackIfEnabled
     call StoStackX
+    set rpnFlagsLiftEnabled, (iy + rpnFlags)
     ret
 
 ; Description: Push Real numbers OP1 then OP2 onto the stack. LastX is not
@@ -360,13 +370,42 @@ PushOp1Op2ToStackXY:
     call validateValidRealOP1
     call op1ExOp2PageOne
     ;
-    call LiftStackIfNonEmpty
+    call LiftStackIfEnabled
     call StoStackX
+    call op1ExOp2PageOne
+    ;
     call LiftStack
-    call op1ExOp2PageOne
     call StoStackX
     call op1ExOp2PageOne
+    set rpnFlagsLiftEnabled, (iy + rpnFlags)
     ret
+
+;-----------------------------------------------------------------------------
+
+; Description: Recall StackX register to CP1. StackX is consumed, so always
+; set rpnFlagsLiftEnabled to enable stack lift. Also save X to LastX.
+; Output:
+;   - rpnFlagsLiftEnabled=1
+;   - CP1=StackX
+;   - LastX=StackX
+;
+; Although this function is conceptually the core mechanism to get the X value
+; form the stack into OP1, it is not actually used because the various
+; ReplaceXxx() and PushXxx() optimize this away to minimize stack movement.
+;
+; There are 2 important side effects of this function which must be implemented
+; by the various ReplaceXxx() and PushXxx() precisely to emulate the Classi RPN
+; system of HP calculators:
+;
+;   1) the consumption of X causes "stack lift" to be enabled again for
+;   subsequent push into X, and
+;   2) the consumption of X saves the value into LastX.
+;
+; PopStackX:
+;     call SaveLastX
+;     call DropStack
+;     set rpnFlagsLiftEnabled, (iy + rpnFlags)
+;     ret
 
 ;-----------------------------------------------------------------------------
 
@@ -421,16 +460,8 @@ validateValidRealErr:
     bcall(_ErrNonReal)
 
 ;-----------------------------------------------------------------------------
-
-; Description: Lift the RPN stack, if inputBuf was not empty when closed.
-; Input: none
-; Output: T=Z; Z=Y; Y=X; X=X; OP1 preserved
-; Destroys: all
-; Preserves: OP1, OP2
-LiftStackIfNonEmpty:
-    bit inputBufFlagsClosedEmpty, (iy + inputBufFlags)
-    ret nz ; return doing nothing if closed empty
-    ; [[fallthrough]]
+; Stack movement functions.
+;-----------------------------------------------------------------------------
 
 ; Description: Lift the RPN stack, if rpnFlagsLiftEnabled is set.
 ; Input: rpnFlagsLiftEnabled
@@ -439,7 +470,7 @@ LiftStackIfNonEmpty:
 ; Preserves: OP1, OP2
 LiftStackIfEnabled:
     bit rpnFlagsLiftEnabled, (iy + rpnFlags)
-    ret z
+    jr z, LiftStackEnd
     ; [[fallthrough]]
 
 ; Description: Lift the RPN stack unconditionally, copying X to Y.
@@ -451,6 +482,10 @@ LiftStack:
     bcall(_PushRpnObject1) ; FPS=[CP1]
     call liftStackIntoOp1 ; OP1=lastElement, thrown away
     bcall(_PopRpnObject1) ; FPS=[]; CP1=CP1
+LiftStackEnd:
+    ; The "disable stack lift" lasts for one attempt. Subsequent stack lifts
+    ; should go ahead.
+    set rpnFlagsLiftEnabled, (iy + rpnFlags)
     ret
 
 ; Description: Lift the RPN stack with last element pushed into OP1.
@@ -459,6 +494,7 @@ LiftStack:
 ;   - stack lifted
 ;   - last element shifted into OP1
 ;   - DE=pointer to first element (to which OP1 can be copied to)
+;   - stack lift enabled
 ; Destroys: all, OP1
 liftStackIntoOp1:
     ; Calculate moveSize=(numElements-2)*rpnElementSizeOf
@@ -495,14 +531,19 @@ liftStackIntoOp1:
     ;
     ex de, hl
     inc de ; pointer to first element
+    ; Mark stack as dirty
     set dirtyFlagsStack, (iy + dirtyFlags)
+    ; RPN stack movement cancels existing 'disable stack lift' request.
+    set rpnFlagsLiftEnabled, (iy + rpnFlags)
     ret
 
 ;-----------------------------------------------------------------------------
 
 ; Description: Roll the RPN stack up, rotating last element into X.
 ; Input: none
-; Output: stack rolled up
+; Output:
+;   - stack rolled up
+;   - stack lift enabled
 ; Destroys: all, OP1, OP2
 ; Preserves: none
 RollUpStack:
@@ -514,7 +555,10 @@ RollUpStack:
 
 ; Description: Drop the RPN stack, duplicating the top-most element.
 ; Input: none
-; Output: stack dropped; OP1 preserved
+; Output:
+;   - stack dropped
+;   - OP1 preserved
+;   - stack lift enabled
 ; Destroys: all
 ; Preserves: OP1, OP2
 DropStack:
@@ -528,6 +572,7 @@ DropStack:
 ;   - stack dropped (shifted left)
 ;   - OP1=X
 ;   - DE=pointer to last element (to which OP1 can be copied to)
+;   - stack lift enabled
 dropStackIntoOp1:
     ; Calculate moveSize=(numElements-2)*rpnElementSizeOf
     call LenStack ; A=stackLen
@@ -552,14 +597,19 @@ dropStackIntoOp1:
     ;
     pop bc ; stack=[]; BC=moveSize
     ldir ; DE=pointer to last element
+    ; Mark stack as dirty
     set dirtyFlagsStack, (iy + dirtyFlags)
+    ; RPN stack movement cancels existing 'disable stack lift' request.
+    set rpnFlagsLiftEnabled, (iy + rpnFlags)
     ret
 
 ;-----------------------------------------------------------------------------
 
 ; Description: Roll the RPN stack *down*, rotating X into T.
 ; Input: none
-; Output: X=Y; Y=Z; Z=T; T=X
+; Output:
+;   - stack rolled down
+;   - stack lift enabled
 ; Destroys: all, OP1, OP2
 ; Preserves: none
 RollDownStack:
@@ -591,7 +641,9 @@ moveRpnElementFromOp1:
 
 ; Description: Exchange X<->Y.
 ; Input: none
-; Output: X=Y; Y=X
+; Output:
+;   - X=Y; Y=X
+;   - stack lift enabled
 ; Destroys: all, OP1, OP2
 ExchangeStackXY:
     ld b, stackXIndex
@@ -600,5 +652,7 @@ ExchangeStackXY:
     call rpnObjectIndexesToPointers ; DE=pointerX; HL=pointerY; destroys OP1
     ld b, rpnElementSizeOf
     call exchangeLoopPageOne
+    ; Movement of RPN stack cancels existing 'disable stack lift' request.
     set dirtyFlagsStack, (iy + dirtyFlags)
+    set rpnFlagsLiftEnabled, (iy + rpnFlags)
     ret

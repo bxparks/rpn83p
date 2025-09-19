@@ -5,44 +5,41 @@
 ; Functions related to parsing the inputBuf into a floating point number.
 ;------------------------------------------------------------------------------
 
-; Description: Close the inputBuf by parsing its content into OP1, then
-; transfer OP1 into the X register. If the app is *not* in edit mode, do
-; nothing (except to reset the 'inputBufFlagsClosedEmpty' flag which should
-; only be set if it was in editMode and the inputBuf was empty).
+; Description: Close the inputBuf by parsing its content into the X register.
+; If the app is *not* in edit mode, do nothing.
 ;
-; The 'rpnFlagsLiftEnabled' flag is always* set after this call. It is up to
-; the calling handler to override this default and disable it if necessary
-; (e.g. ENTER, or Sigma+). The rpnFlagsLiftEnabled is used by the next manual
-; entry of a number (digits 0-9 usualy, sometimes A-F in hexadecimal mode).
-; Usually, the next manual number entry lifts the stack, but this flag can be
-; used to disable that. (e.g. ENTER will disable the lift of the next number).
+; The 'rpnFlagsLiftEnabled' flag is set if the inputBuf was filled with
+; characters when closed. It is cleared if the inputBuf was an empty string
+; when it was closed. This turns out to the behavior of Classic HP RPN
+; calculators, where the user expects a function like PI to *replace* the "0"
+; that was parsed from an empty string, but expects the stack to lift if the
+; "0" was parsed from an explicitly entered "0" character.
 ;
-; Most button and menu handlers should probably use closeInputAndRecallX() and
-; closeInputAndRecallXY() instead, to transfer the X and Y parameters into the
-; OP1 and OP2 variables. This decouples the implementations of those handlers
+; The calling handler can override the rpnFlagsLiftEnabled flag as necessary.
+; For example, ENTER or Sigma+ will disable stack lift so that the next number
+; entry will clobber the X value.
+;
+; Most button and menu handlers should probably use the various
+; closeInputAndRecallXxx() instead, to transfer the X or Y parameters into the
+; CP1 or CP2 variables. This decouples the implementations of those handlers
 ; from the RPN stack, and making them easier move to different Flash Pages if
 ; needed.
 ;
 ; Input:
-;   - rpnFlagsEditing: indicates if inputBuf is valid
+;   - rpnFlagsEditing: indicates if inputBuf needs to be parsed
 ;   - inputBuf: input buffer
 ; Output:
 ;   - X register: set to inputBuf if edited, otherwise unchanged
-;   - rpnFlagsLiftEnabled: always set
-;   - inputBufFlagsClosedEmpty: set if inputBuf was in edit mode AND was an
-;   empty string when closed
-;   - rpnFlagsEditing: always cleared
+;   - OP1=X if edited, otherwise unchanged (use X register instead)
 ;   - inputBuf cleared to empty string
+;   - rpnFlagsLiftEnabled: cleared if inputBuf was empty, set otherwise
+;   - rpnFlagsEditing: always cleared
 ; Destroys: all, OP1, OP2, OP3, OP4, OP5
 closeInput:
-    set rpnFlagsLiftEnabled, (iy + rpnFlags)
     bit rpnFlagsEditing, (iy + rpnFlags)
-    jr nz, closeInputEditing
-    ; Not editing, so must clear inputBufFlagsClosedEmpty.
-    res inputBufFlagsClosedEmpty, (iy + inputBufFlags)
-    ret
+    ret z
 closeInputEditing:
-    bcall(_ParseAndClearInputBuf) ; OP1/OP2:RpnObject
+    bcall(_ParseAndClearInputBuf) ; CP1=rpnObject; rpnFlagsLiftEnabled updated
     bcall(_StoStackX)
     res rpnFlagsEditing, (iy + rpnFlags)
     ret
