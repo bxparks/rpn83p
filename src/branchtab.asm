@@ -244,6 +244,12 @@ _RestoreOSState equ _RestoreOSStateLabel-branchTableBase
     .dw RestoreOSState
     .db 1
 
+; modes2.asm
+_ColdInitModesLabel:
+_ColdInitModes equ _ColdInitModesLabel-branchTableBase
+    .dw ColdInitModes
+    .db 1
+
 ; helpscanner1.asm
 _ProcessHelpCommandsLabel:
 _ProcessHelpCommands equ _ProcessHelpCommandsLabel-branchTableBase
@@ -681,12 +687,6 @@ _DebugU32DEAsHex equ _DebugU32DEAsHexLabel-branchTableBase
 ;-----------------------------------------------------------------------------
 ; Branch table entries for routines on Flash Page 2.
 ;-----------------------------------------------------------------------------
-
-; modes2.asm
-_ColdInitModesLabel:
-_ColdInitModes equ _ColdInitModesLabel-branchTableBase
-    .dw ColdInitModes
-    .db 2
 
 ; stats2.asm
 _StatSigmaPlusLabel:

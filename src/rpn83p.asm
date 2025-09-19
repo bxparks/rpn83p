@@ -882,6 +882,7 @@ defpage(0, "RPN83P")
 ;
 ;   - store and restore application state (appstate1.asm)
 ;   - store and restore OS state (osstate1.asm)
+;   - MODE initialization (mode1.asm)
 ;   - HELP screens (help1.asm)
 ;   - HELP key scanner (helpscanner1.asm)
 ;   - storage registers (varsreg1.asm)
@@ -899,6 +900,7 @@ defpage(0, "RPN83P")
 ;   - HMS routines (hms1.asm)
 ;   - PROB routines (prob1.asm)
 ;   - UNIT definitions generated from unitdef.as (unitdef.asm)
+;   - Debug print functions (included only if DEBUG defined)
 ;-----------------------------------------------------------------------------
 
 defpage(1)
@@ -910,6 +912,7 @@ defpage(1)
 
 #include "appstate1.asm"
 #include "osstate1.asm"
+#include "modes1.asm"
 #include "help1.asm"
 #include "helpscanner1.asm"
 #include "crc1.asm"
@@ -953,7 +956,6 @@ defpage(1)
 ;-----------------------------------------------------------------------------
 ; Flash Page 2:
 ;
-;   - MODE functions (mode2.asm)
 ;   - 32-bit integer functions (integer32.asm) required by BASE
 ;   - 40-bit integer functions (integer40.asm) required by DATE
 ;   - STAT funtions (stats2.asm)
@@ -969,7 +971,6 @@ defpage(1)
 
 defpage(2)
 
-#include "modes2.asm"
 #include "stats2.asm"
 #include "cfit2.asm"
 
