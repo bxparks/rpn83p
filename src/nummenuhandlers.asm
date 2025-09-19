@@ -257,8 +257,18 @@ mFracPartHandlerDoDenominate:
 ;-----------------------------------------------------------------------------
 
 mFloorHandler:
-    call closeInputAndRecallX
+    call closeInputAndRecallUniversalX
+    cp rpnObjectTypeReal
+    jr z, mFloorHandlerDoReal
+    cp rpnObjectTypeDenominate
+    jr z, mFloorHandlerDoDenominate
+    bcall(_ErrDataType)
+mFloorHandlerDoReal:
     bcall(_Intgr) ; convert to integer towards -Infinity
+    bcall(_ReplaceStackX)
+    ret
+mFloorHandlerDoDenominate:
+    bcall(_RpnDenominateFloor)
     bcall(_ReplaceStackX)
     ret
 
