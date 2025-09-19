@@ -1476,6 +1476,10 @@ _RpnDenominateAbsLabel:
 _RpnDenominateAbs equ _RpnDenominateAbsLabel-branchTableBase
     .dw RpnDenominateAbs
     .db 2
+_RpnDenominateSignLabel:
+_RpnDenominateSign equ _RpnDenominateSignLabel-branchTableBase
+    .dw RpnDenominateSign
+    .db 2
 
 ; formatdenominate2.asm
 _FormatDenominateLabel:

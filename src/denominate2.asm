@@ -572,6 +572,17 @@ RpnDenominateAbs:
     call PopRpnObject1
     ret
 
+; Description: Return the sign(x).
+; Input: CP1:RpnDenominate=rpnDen
+; Output: OP1:Real=sign(x)
+RpnDenominateSign:
+    call PushRpnObject1 ; FPS=[rpnDen]; HL=rpnDen
+    skipRpnObjectTypeHL ; HL=den
+    call denominateValueToOp1 ; OP1:Real=rawValue
+    bcall(_SignFunction) ; sign(rawValue)
+    call dropRpnObject ; FPS=[]
+    ret
+
 ;-----------------------------------------------------------------------------
 ; Converters for special units which cannot be converted by simple scaling. For
 ; example temperature units (C, F, R, K) and fuel consumption units (mpg,

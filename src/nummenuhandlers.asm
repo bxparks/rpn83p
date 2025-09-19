@@ -160,8 +160,18 @@ mAbsHandlerDoDenominate:
 
 ; mSignHandler(X) -> Sign(X)
 mSignHandler:
-    call closeInputAndRecallX
+    call closeInputAndRecallUniversalX
+    cp rpnObjectTypeReal
+    jr z, mSignHandlerDoReal
+    cp rpnObjectTypeDenominate
+    jr z, mSignHandlerDoDenominate
+    bcall(_ErrDataType)
+mSignHandlerDoReal:
     bcall(_SignFunction)
+    bcall(_ReplaceStackX)
+    ret
+mSignHandlerDoDenominate:
+    bcall(_RpnDenominateSign)
     bcall(_ReplaceStackX)
     ret
 
