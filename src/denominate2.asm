@@ -45,16 +45,31 @@ ApplyRpnDenominateUnit:
 ;   - OP1/OP2:RpnDenominate
 ; Destroys: all
 convertDisplayValueToRpnDenominate:
-    call reserveRpnObject; FPS=[rpnDenominate]; HL=rpnDenominate; BC=BC
+    call reserveRpnObject; FPS=[rpnDenominate]; (HL)=rpnDenominate; BC=BC
     ld a, c ; A=displayUnitId
-    call setHLRpnDenominatePageTwo; HL:(*Real)=value; A=A; BC=BC
-    ; normalize to the base unit
-    push hl
-    call convertDisplayValueToBaseValue ; OP1=baseValue
-    pop de ; DE=value
-    ; move the result into the 'value' of the rpnDenominate
-    call move9FromOp1PageTwo ; (DE)=value
+    call setHLRpnDenominatePageTwo; (HL):Denominate=den; A=A; BC=BC
+    call assignDisplayValueToDenominate ; den.baseValue=baseValue(OP1)
     call PopRpnObject1 ; FPS=[]; OP1=rpnDenominate
+    ret
+
+; Description: Set the baseValue of the given Denominate after converting the
+; displayValue given in OP1 to the baseValue in the baseUnit of
+; Denominate.displayUnit.
+; Input:
+;   - (HL):Denominate=den
+;   - OP1:Real=displayValue
+; Output:
+;   - (HL):Denominate=denominate with new baseValue
+; Destroys: all
+assignDisplayValueToDenominate:
+    ; convert displayValue to the baseValue in the baseUnit
+    ld a, (hl) ; A=displayUnit
+    inc hl ; (HL):Real=baseValue
+    push hl ; stack=[&den.baseValue]
+    call convertDisplayValueToBaseValue ; OP1=baseValue
+    pop de ; stack=[]; DE=&den.baseValue
+    ; move the result into the 'value' of the rpnDenominate
+    call move9FromOp1PageTwo ; (DE)=den.basValue=OP1=baseValue
     ret
 
 ; Description: Convert the given displayValue given in displayUnit in OP1 to

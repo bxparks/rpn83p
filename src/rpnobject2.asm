@@ -239,12 +239,12 @@ checkOp3DenominatePageTwo:
 ; Description: Set the memory in HL to be an RpnDenominate whose unit is given
 ; by register A.
 ; Input:
-;   - A:u8=unit
+;   - A:u8=displayUnit
+;   - (HL):RpnObject
 ; Output:
-;   - HL[objectType]=rpnObjectTypeDenominate
-;   - HL[unit]:u8=A
-;   - HL=HL+rpnObjectTypeSizeOf+rpnDenominateUnitSizeOf=value
-; Destroys: HL
+;   - (HL).objectType=rpnObjectTypeDenominate
+;   - (HL).displayUnit:u8=A
+;   - HL=HL+rpnObjectTypeSizeOf=denominate
 ; Preserves: A, BC, DE
 setHLRpnDenominatePageTwo:
     push af
@@ -252,5 +252,4 @@ setHLRpnDenominatePageTwo:
     call setHLRpnObjectTypePageTwo
     pop af ; A=unit
     ld (hl), a
-    inc hl
     ret
