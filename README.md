@@ -255,40 +255,26 @@ and `65`, then see the result as an octal number (base-8), a binary number
 (base-2), then right shift the result 3 bits which sets the Carry Flag, then
 view the final result as a decimal number:
 
-- Press the `MATH` button to reset the menu to the home row.
-- Navigate the menu with the `DownArrow` to get to
-  ![ROOT MenuRow BASE](docs/images/menu-root-2.png)
-- Press `BASE` menu to get to
-  ![BASE Menu DEC](docs/images/base/menu-root-base-dec.png)
-- Press `HEX` menu to get to
-  ![BASE Menu HEX](docs/images/base/menu-root-base-hex.png)
-- Press `ALPHA` `B` buttons
-- Press `6` button
-- Press `ENTER` button (`X` shows `00 00 00 B6`)
-- Press `6` button
-- Press `5` button
-- Press `DownArrow` to get to the subfolders of `BASE`:
-  ![BASE MenuRow Subfolders](docs/images/menu-root-base-2.png)
-- Press `LOGI` (Logic) menu folder to see the menu row with the `AND` menu item
-  ![LOGI MenuRow AND](docs/images/menu-root-base-logi-1.png)
-- Press `AND` menu, the `X` register should show `00 00 00 24`
-- Press `ON/EXIT` key then `UpArrow` to go back to the first row of BASE
-  ![BASE Menu HEX](docs/images/base/menu-root-base-hex.png)
-- Press `OCT` menu, the `X` register should show `00 000 000 044` with the menu
-  showing ![BASE Menu OCT](docs/images/base/menu-root-base-oct.png)
-- Press `BIN` menu, the `X` register should show `0000 0000 0010 0100` with the
-  menu showing ![BASE Menu BIN](docs/images/base/menu-root-base-bin.png)
-- Press `DownArrow` to get to the subfolders of `BASE`:
-  ![BASE MenuRow Subfolders](docs/images/menu-root-base-2.png)
-- Press `ROTS` (Rotate and Shift) menu folder to see the menu row with the `SR`
-  (shift right) menu item
-  ![BASE MenuRow SR](docs/images/menu-root-base-rots-1.png)
-- Press `SR` `SR` `SR` (three times) to show `0000 0000 0000 0100` and the Carry
-  Flag `C` set
-- Press `ON/EXIT` then `UpArrow` to go back to the first row of `BASE`
-  ![BASE Menu BIN](docs/images/base/menu-root-base-bin.png)
-- Press `DEC` menu, the `X` register should show `4` with the menu showing
-  ![BASE Menu DEC](docs/images/base/menu-root-base-dec.png)
+| **Keys**              | **Display**                           |
+| ---------             | ----------                            |
+| `MATH`                | ![HOME](docs/images/menu-root-1.png)  |
+| `DownArrow`           | ![HOME Row BASE](docs/images/menu-root-2.png) |
+| `BASE`                | ![BASE Row DEC](docs/images/base/menu-root-base-dec.png)   |
+| `HEX`                 | ![BASE Row HEX](docs/images/base/menu-root-base-hex.png)   |
+| `ALPHA` `B` `6`       | `X:B6` |
+| `ENTER`               | `X:00 00 00 B6` |
+| `6` `5`               | `X:65` |
+| `DownArrow`           | ![BASE Row Subfolders](docs/images/menu-root-base-2.png) |
+| `LOGI`                | ![LOGI Row AND](docs/images/menu-root-base-logi-1.png) |
+| `AND`                 | `X: 00 00 00 24` |
+| `ON/EXIT` `UpArrow`   | ![BASE Row HEX](docs/images/base/menu-root-base-hex.png) |
+| `OCT`                 | `X: 00 000 000 044` ![BASE Row OCT](docs/images/base/menu-root-base-oct.png) |
+| `BIN`                 | `X: 0000 0000 0010 0100` ![BASE Row BIN](docs/images/base/menu-root-base-bin.png) |
+| `DownArrow`           | ![BASE Row Subfolders](docs/images/menu-root-base-2.png) |
+| `ROTS`                | ![ROTS Row SR](docs/images/menu-root-base-rots-1.png) |
+| `SR` `SR` `SR` (3X)   | `X:0000 0000 0000 0100`, Carry Flag `C` set |
+| `ON/EXIT` `UpArrow`   | ![BASE Row BIN](docs/images/base/menu-root-base-bin.png) |
+| `DEC`                 | `X:4` ![BASE Row DEC](docs/images/base/menu-root-base-dec.png) |
 
 Here is the animated GIF that shows this calculation:
 
