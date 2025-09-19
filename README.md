@@ -259,9 +259,9 @@ view the final result as a decimal number:
 - Navigate the menu with the DOWN arrow to get to
   ![ROOT MenuRow 2](docs/images/menu-root-2.png)
 - Press `BASE` menu to get to
-  ![BASE Menu DEC](docs/images/menu-root-base-dec.png)
+  ![BASE Menu DEC](docs/images/base/menu-root-base-dec.png)
 - Press `HEX` menu to get to
-  ![BASE Menu HEX](docs/images/menu-root-base-hex.png)
+  ![BASE Menu HEX](docs/images/base/menu-root-base-hex.png)
 - Press `ALPHA` `B` buttons
 - Press `6` button
 - Press `ENTER` button (`X` shows `00 00 00 B6`)
@@ -271,19 +271,19 @@ view the final result as a decimal number:
   ![BASE MenuRow AND](docs/images/menu-root-base-2.png)
 - Press `AND` menu, the `X` register should show `00 00 00 24`
 - Press UP arrow to go back to
-  ![BASE Menu HEX](docs/images/menu-root-base-hex.png)
+  ![BASE Menu HEX](docs/images/base/menu-root-base-hex.png)
 - Press `OCT` menu, the `X` register should show `00 000 000 044` with the menu
-  showing ![BASE Menu OCT](docs/images/menu-root-base-oct.png)
+  showing ![BASE Menu OCT](docs/images/base/menu-root-base-oct.png)
 - Press `BIN` menu, the `X` register should show `0000 0000 0010 0100` with the
-  menu showing ![BASE Menu BIN](docs/images/menu-root-base-bin.png)
+  menu showing ![BASE Menu BIN](docs/images/base/menu-root-base-bin.png)
 - Press DOWN DOWN (twice) to the menu row with the shift right `SR` item
   ![BASE MenuRow SR](docs/images/menu-root-base-3.png)
 - Press `SR` `SR` `SR` (three times) to show `0000 0000 0000 0100` and the Carry
   Flag `C` set
 - Press UP UP (twice) to reach the base conversion menu row
-  ![BASE Menu BIN](docs/images/menu-root-base-bin.png)
+  ![BASE Menu BIN](docs/images/base/menu-root-base-bin.png)
 - Press `DEC` menu, the `X` register should show `4` with the menu showing
-  ![BASE Menu DEC](docs/images/menu-root-base-dec.png)
+  ![BASE Menu DEC](docs/images/base/menu-root-base-dec.png)
 
 Here is the animated GIF that shows this calculation:
 
