@@ -25,6 +25,24 @@ PercentFunction:
 
 ;-----------------------------------------------------------------------------
 
+; Description: Calculate the change from Y to X as a percentage of Y.
+;   - PercentChangeFunction(Y, X) -> 100*(X-Y)/Y
+; Input:
+;   - OP1:Real=Y
+;   - OP2:Real=X
+; Output:
+;   - OP1:Real=100*(X-Y)/Y
+PercentChangeFunction:
+    bcall(_PushRealO1) ; FPS=[Y]
+    bcall(_InvSub) ; OP1=X-Y
+    bcall(_PopRealO2) ; FPS=[]; OP2=Y
+    bcall(_FPDiv) ; OP1=(X-Y)/Y
+    call op2Set100PageOne
+    bcall(_FPMult) ; OP1=100*(X-Y)/Y
+    ret
+
+;-----------------------------------------------------------------------------
+
 ; Description: Return the sign(x) function: -1 if x<0, 0 if x==0, 1 if x>0.
 ; Input: OP1:Real=x
 ; Output: OP1:Real=sign(x)

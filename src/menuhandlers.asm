@@ -144,15 +144,9 @@ mPercentHandler:
 ; Description: Calculate the change from Y to X as a percentage of Y. The
 ; resulting percentage can be given to the '%' menu key to get the delta
 ; change, then the '+' command will retrieve the original X.
-; mPercentChangeHandler(Y, X) -> (Y, 100*(X-Y)/Y)
 mPercentChangeHandler:
     call closeInputAndRecallXY ; OP1=Y; OP2=X
-    bcall(_PushRealO1) ; FPS=[Y]
-    bcall(_InvSub) ; OP1=X-Y
-    bcall(_PopRealO2) ; FPS=[]; OP2=Y
-    bcall(_FPDiv) ; OP1=(X-Y)/Y
-    call op2Set100
-    bcall(_FPMult) ; OP1=100*(X-Y)/Y
+    bcall(_PercentChangeFunction) ; OP1=100*(X-Y)/Y
     bcall(_ReplaceStackX)
     ret
 

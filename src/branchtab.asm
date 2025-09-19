@@ -390,6 +390,10 @@ _PercentFunctionLabel:
 _PercentFunction equ _PercentFunctionLabel-branchTableBase
     .dw PercentFunction
     .db 1
+_PercentChangeFunctionLabel:
+_PercentChangeFunction equ _PercentChangeFunctionLabel-branchTableBase
+    .dw PercentChangeFunction
+    .db 1
 
 ; hms1.asm
 _HmsToHrLabel:
