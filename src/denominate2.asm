@@ -410,6 +410,7 @@ addDenominateByDenominate:
     call op1ToOp2PageTwo ; OP2=valueHL
     pop hl ; stack=[denHL]; HL=denDE
     call denominateBaseValueToOp1 ; OP1=valueDE
+    ;
     bcall(_FPAdd)
     ;
     pop hl ; stack=[]; HL=denHL
@@ -612,6 +613,61 @@ RpnDenominateSign:
     bcall(_SignFunction) ; sign(baseValue)
     call dropRpnObject ; FPS=[]
     ret
+
+;-----------------------------------------------------------------------------
+
+; Description: Return the (Y mod X) in units of Y.
+; Input:
+;   - CP1:RpnDenominate=rpnDenY
+;   - CP3:RpnDenominate=rpnDenX
+; Output:
+;   - CP1:RpnDenominateSign=(Y mode X) in unit of Y
+;   - if equal, prefer Y unit over X unit
+RpnDenominateMod:
+    call validateArithmeticUnitClassOp1 ; throws Err:Invalid
+    call validateArithmeticUnitClassOp3 ; throws Err:Invalid
+    call validateCompatibleUnitClassOp1Op3 ; throws Err:Invalid
+    ;
+    call PushRpnObject1 ; FPS=[rpnDenY]; HL=rpnDenY
+    skipRpnObjectTypeHL ; HL=denY
+    ex de, hl ; DE=denY
+    ;
+    call PushRpnObject3 ; FPS=[rpnDenY,rpnDenX]; HL=rpnDenX
+    skipRpnObjectTypeHL ; HL=denX
+    ex de, hl ; HL=denY; DE=denX
+    ;
+    call modDenominateByDenominate ; denY.baseValue=(Y mod X)
+    call dropRpnObject ; FPS=[rpnDenY]
+    call PopRpnObject1 ; FPS=[]; OP1=rpnDenY
+    ret
+
+; Description: Calculate Denominate(HL) mod Denominate(DE).
+; Input:
+;   - HL:Denominate=denHL
+;   - DE:Denominate=denDE
+; Output:
+;   - denHL.baseValue = denHL.baseValue % denDE.baseValue
+modDenominateByDenominate:
+    ex de, hl ; HL=denDE
+    call denominateBaseValueToOp1 ; OP1:Real=baseValueDE
+    ex de, hl ; HL=denHL
+    ;
+    push de ; stack=[denDE]
+    push hl ; stack=[denDE,denHL]
+    call op1ToOp2PageTwo ; OP2:Real=baseValueDE
+    pop hl ; stack=[denDE]; HL=denHL
+    pop de ; stack=[]; DE=denDE,HL=denHL
+    ;
+    call denominateBaseValueToOp1 ; OP1:Real=baseValueHL
+    ;
+    push hl ; stack=[denHL]
+    bcall(_ModFunction) ; OP1:Real=(baseValueHL mod baseValueDE)
+    pop hl ; stack=[]; HL=denHL
+    ;
+    call op1ToDenominateBaseValue ; denHL.baseValue=result
+    ret
+
+;-----------------------------------------------------------------------------
 
 ; Description: Return the min(X, Y).
 ; Input:

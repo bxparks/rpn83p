@@ -36,11 +36,12 @@
                 - UBAS: convert to its "base unit"
         - Increase number of supported units from 30 to 130.
         - Reorganize UNIT menus across 12 sub MenuFolders: UFCN, LENG, AREA,
-          VOL, MASS, TEMP, VELO, FORC, PRES, ENER, PWR, FUEL.
+          VOL, MASS, TEMP, SPD, FORC, PRES, ENER, PWR, FUEL.
         - Support basic arithmetic operations on units: `CHS`, `+`, `-`, `*`,
           `/`
         - Support NUM operations on units: `%`, `%CH`, `IP`, `FP`, `FLR`,`CEIL`,
-          `NEAR`, `ABS`, `SIGN`, `MIN`, `MAX`, `RNDF`, `RNDN`, `RNDG`
+          `NEAR`, `ABS`, `SIGN`, `MOD`, `MIN`, `MAX`, `RNDF`, `RNDN`, `RNDG`
+          (i.e. all NUM functions except GCD, LCM, and PRIM)
     - BASE
         - move most menu functions under 5 new subfolders: LOGI, ROTS, BITS,
           BFCN, BCFS ("Configs" or "Carry Flag and Word Size")

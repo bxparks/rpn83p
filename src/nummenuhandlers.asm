@@ -171,12 +171,29 @@ mSignHandlerDoDenominate:
 ; Description: Calculate (Y mod X), where Y and X could be floating point
 ; numbers. There does not seem to be a built-in function to calculator this, so
 ; it is implemented as (Y mod X) = Y - X*floor(Y/X).
+; Input:
+;   - Y:Real|RpnDenominate
+;   - X:Real|RpnDenominate
+; Output:
+;   - X:Real|RpnDenominate=(Y mod X)
 ; Destroys: OP1, OP2, OP3
 mModHandler:
-    call closeInputAndRecallXY ; OP2 = X; OP1 = Y
+    call closeInputAndRecallUniversalXY ; CP1=Y; CP3=X
+    call checkOp1Op3BothRealOrBothDenominate ; ZF=1 if true
+    jr nz, mModHandlerErr
+    call checkOp1Real ; ZF=1 if true
+    jr nz, mModHandlerBothDenominate
+    ; both Real
+    call op3ToOp2
     bcall(_ModFunction) ; OP1 = (OP1 mod OP2)
     bcall(_ReplaceStackXY)
     ret
+mModHandlerBothDenominate:
+    bcall(_RpnDenominateMod) ; CP1=(Y mod X)
+    bcall(_ReplaceStackXY)
+    ret
+mModHandlerErr:
+    bcall(_ErrDataType)
 
 ;-----------------------------------------------------------------------------
 

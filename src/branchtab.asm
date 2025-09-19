@@ -1484,6 +1484,10 @@ _RpnDenominateSignLabel:
 _RpnDenominateSign equ _RpnDenominateSignLabel-branchTableBase
     .dw RpnDenominateSign
     .db 2
+_RpnDenominateModLabel:
+_RpnDenominateMod equ _RpnDenominateModLabel-branchTableBase
+    .dw RpnDenominateMod
+    .db 2
 _RpnDenominateMinLabel:
 _RpnDenominateMin equ _RpnDenominateMinLabel-branchTableBase
     .dw RpnDenominateMin
