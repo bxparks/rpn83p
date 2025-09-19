@@ -394,6 +394,10 @@ _PercentChangeFunctionLabel:
 _PercentChangeFunction equ _PercentChangeFunctionLabel-branchTableBase
     .dw PercentChangeFunction
     .db 1
+_CeilFunctionLabel:
+_CeilFunction equ _CeilFunctionLabel-branchTableBase
+    .dw CeilFunction
+    .db 1
 
 ; hms1.asm
 _HmsToHrLabel:
@@ -1499,6 +1503,10 @@ _RpnDenominateFracPart equ _RpnDenominateFracPartLabel-branchTableBase
 _RpnDenominateFloorLabel:
 _RpnDenominateFloor equ _RpnDenominateFloorLabel-branchTableBase
     .dw RpnDenominateFloor
+    .db 2
+_RpnDenominateCeilLabel:
+_RpnDenominateCeil equ _RpnDenominateCeilLabel-branchTableBase
+    .dw RpnDenominateCeil
     .db 2
 
 ; formatdenominate2.asm

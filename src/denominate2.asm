@@ -728,6 +728,20 @@ RpnDenominateFloor:
     call PopRpnObject1 ; FPS=[]; OP1=rpnDen
     ret
 
+; Description: Return the Ceil(x).
+; Input: CP1:RpnDenominate=rpnDen
+; Output: CP1:RpnDenominate=Ceil(rpnDen)
+RpnDenominateCeil:
+    call PushRpnObject1 ; FPS=[rpnDen]; HL=rpnDen
+    skipRpnObjectTypeHL ; HL=den
+    call denominateGetDisplayValue ; OP1:Real=displayValue
+    push hl ; stack=[den]
+    bcall(_CeilFunction)
+    pop hl ; stack=[]; HL=den
+    call denominateSetDisplayValue ; den.baseValue=displayValue(result)
+    call PopRpnObject1 ; FPS=[]; OP1=rpnDen
+    ret
+
 ;-----------------------------------------------------------------------------
 ; Converters for special units which cannot be converted by simple scaling. For
 ; example temperature units (C, F, R, K) and fuel consumption units (mpg,

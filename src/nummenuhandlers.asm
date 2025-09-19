@@ -275,10 +275,18 @@ mFloorHandlerDoDenominate:
 ;-----------------------------------------------------------------------------
 
 mCeilHandler:
-    call closeInputAndRecallX
-    bcall(_InvOP1S) ; invert sign
-    bcall(_Intgr) ; convert to integer towards -Infinity
-    bcall(_InvOP1S) ; invert sign
+    call closeInputAndRecallUniversalX
+    cp rpnObjectTypeReal
+    jr z, mCeilHandlerDoReal
+    cp rpnObjectTypeDenominate
+    jr z, mCeilHandlerDoDenominate
+    bcall(_ErrDataType)
+mCeilHandlerDoReal:
+    bcall(_CeilFunction)
+    bcall(_ReplaceStackX)
+    ret
+mCeilHandlerDoDenominate:
+    bcall(_RpnDenominateCeil)
     bcall(_ReplaceStackX)
     ret
 

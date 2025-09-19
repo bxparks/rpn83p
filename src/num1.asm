@@ -130,3 +130,12 @@ LcdFunction:
     bcall(_PopRealO2) ; FPS=[]; OP2 = Y
     bcall(_FPMult) ; OP1 = Y * (X / gcd)
     ret
+
+;-----------------------------------------------------------------------------
+
+; Description: Calculate the ceil(x) function.
+CeilFunction:
+    bcall(_InvOP1S) ; invert sign
+    bcall(_Intgr) ; convert to integer towards -Infinity
+    bcall(_InvOP1S) ; invert sign
+    ret
