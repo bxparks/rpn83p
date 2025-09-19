@@ -209,7 +209,7 @@ gcdOp1Op2:
     bcall(_CkOP2FP0) ; while b != 0
     ret z
     bcall(_PushRealO2) ; FPS=[b]; (t = b)
-    call modOp1Op2 ; (a mod b)
+    bcall(_ModFunction) ; (a mod b)
     bcall(_OP1ToOP2) ; b = (a mod b)
     bcall(_PopRealO1) ; FPS=[]; (a = t)
     jr gcdOp1Op2
@@ -292,25 +292,8 @@ mSignHandler:
 ; Destroys: OP1, OP2, OP3
 mModHandler:
     call closeInputAndRecallXY ; OP2 = X; OP1 = Y
-    call modOp1Op2 ; OP1 = (OP1 mod OP2)
+    bcall(_ModFunction) ; OP1 = (OP1 mod OP2)
     bcall(_ReplaceStackXY)
-    ret
-
-; Description: Internal helper routine to calculate OP1 = (OP1 mod OP2) = OP1 -
-; OP2 * floor(OP1/OP2). Used by mModHandler and mGcdHandler. There does not
-; seem to be a built-in function to calculate this.
-; Destroys: OP1, OP2, OP3
-modOp1Op2:
-    bcall(_PushRealO1) ; FPS=[OP1]
-    bcall(_PushRealO2) ; FPS=[OP1,OP2]
-    bcall(_FPDiv) ; OP1 = OP1/OP2
-    bcall(_Intgr) ; OP1 = floor(OP1/OP2)
-    bcall(_PopRealO2) ; FPS=[OP1]; OP2 = OP2
-    bcall(_FPMult) ; OP1 = floor(OP1/OP2) * OP2
-    bcall(_OP1ToOP2) ; OP2 = floor(OP1/OP2) * OP2
-    bcall(_PopRealO1) ; FPS=[]; OP1 = OP1
-    bcall(_FPSub) ; OP1 = OP1 - floor(OP1/OP2) * OP2
-    bcall(_RndGuard) ; force integer results if OP1 and OP2 were integers
     ret
 
 mMinHandler:

@@ -374,6 +374,10 @@ _SignFunctionLabel:
 _SignFunction equ _SignFunctionLabel-branchTableBase
     .dw SignFunction
     .db 1
+_ModFunctionLabel:
+_ModFunction equ _ModFunctionLabel-branchTableBase
+    .dw ModFunction
+    .db 1
 
 ; hms1.asm
 _HmsToHrLabel:
