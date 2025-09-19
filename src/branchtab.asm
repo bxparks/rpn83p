@@ -1468,6 +1468,10 @@ _RpnDenominatePercentLabel:
 _RpnDenominatePercent equ _RpnDenominatePercentLabel-branchTableBase
     .dw RpnDenominatePercent
     .db 2
+_RpnDenominatePercentChangeLabel:
+_RpnDenominatePercentChange equ _RpnDenominatePercentChangeLabel-branchTableBase
+    .dw RpnDenominatePercentChange
+    .db 2
 _RpnDenominateAbsLabel:
 _RpnDenominateAbs equ _RpnDenominateAbsLabel-branchTableBase
     .dw RpnDenominateAbs

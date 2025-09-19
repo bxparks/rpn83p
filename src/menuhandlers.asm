@@ -132,16 +132,17 @@ mLnOnePlusHandler:
 ;-----------------------------------------------------------------------------
 
 ; Description: Calculate the X percent of Y.
+; Input:
+;   - Y:Real|RpnDenominate
+;   - X:Real
 ; Output:
-;   - Y=unchanged
-;   - X=Y*(X%)
+;   - Y:Real|RpnDenominate=unchanged
+;   - X:Real|RpnDenominate=Y*(X%)
 mPercentHandler:
     call closeInputAndRecallUniversalXY ; CP1=Y; CP3=X
-    call getOp3RpnObjectType ; A=rpnObjectX
-    cp rpnObjectTypeReal
+    call checkOp3Real ; ZF=1 if real
     jr nz, mPercentHandlerErr
-    call getOp1RpnObjectType ; A=rpnObjectTypeY
-    cp rpnObjectTypeDenominate
+    call checkOp1Denominate ; ZF=1 if denominate
     jr z, mPercentHandlerDoDenominate
     cp rpnObjectTypeReal
     jr z, mPercentHandlerDoReal
@@ -160,11 +161,38 @@ mPercentHandlerDoDenominate:
 ; Description: Calculate the change from Y to X as a percentage of Y. The
 ; resulting percentage can be given to the '%' menu key to get the delta
 ; change, then the '+' command will retrieve the original X.
+; Input:
+;   - Y:Real|RpnDenominate
+;   - X:Real|RpnDenominate
+; Output:
+;   - Y:Real|RpnDenominate=unchanged
+;   - X:Real=100*(X-Y)/Y
 mPercentChangeHandler:
-    call closeInputAndRecallXY ; OP1=Y; OP2=X
-    bcall(_PercentChangeFunction) ; OP1=100*(X-Y)/Y
+    call closeInputAndRecallUniversalXY ; CP1=Y; CP2=X
+    call checkOp1Real
+    jr z, mPercentChangeHandlerYIsReal
+    cp rpnObjectTypeDenominate
+    jr z, mPercentChangeHandlerYIsDenominate
+    jr mPercentChangeHandlerErr
+mPercentChangeHandlerYIsReal:
+    call checkOp3Real
+    jr z, mPercentChangeHandlerBothReal
+    jr mPercentChangeHandlerErr
+mPercentChangeHandlerBothReal:
+    call op3ToOp2
+    bcall(_PercentChangeFunction) ; OP1:Real=100*(X-Y)/Y
     bcall(_ReplaceStackX)
     ret
+mPercentChangeHandlerYIsDenominate:
+    call checkOp3Denominate
+    jr z, mPercentChangeHandlerBothDenominate
+    jr mPercentChangeHandlerErr
+mPercentChangeHandlerBothDenominate:
+    bcall(_RpnDenominatePercentChange) ; OP1:Real=100*(X-Y)/Y
+    bcall(_ReplaceStackX)
+    ret
+mPercentChangeHandlerErr:
+    bcall(_ErrDataType)
 
 ;-----------------------------------------------------------------------------
 

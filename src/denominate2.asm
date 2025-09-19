@@ -517,9 +517,10 @@ DivRpnDenominateByReal:
 
 ; Description: Return the X% of Y.
 ; Input:
-;   - CP1:RpnDenominate=Y=rpnDen
-;   - CP3:Real=X=percent
-; Output: CP1:RpnDenominate=Y*X/100
+;   - CP1:RpnDenominate=Y
+;   - CP3:Real=X (percent)
+; Output:
+;    - CP1:RpnDenominate=Y*X/100
 RpnDenominatePercent:
     call PushRpnObject1 ; FPS=[rpnDen]; HL=rpnDen
     skipRpnObjectTypeHL ; HL=den
@@ -530,6 +531,31 @@ RpnDenominatePercent:
     pop hl
     call op1ToDenominateValue ; rpnDen=abs(rawValue)
     call PopRpnObject1 ; CP1:RpnDenominate
+    ret
+
+; Description: Return the percentage change from Y to X.
+; Input:
+;   - CP1:RpnDenominate=Y
+;   - CP3:RpnDenominate=X
+; Output:
+;    - CP1:Real=100*(X-Y)/Y
+RpnDenominatePercentChange:
+    call PushRpnObject1 ; FPS=[rpnDenY]; HL=rpnDenY
+    push hl ; stack=[rpnDenY]
+    call PushRpnObject3 ; FPS=[valueY,rpnDenX]; HL=rpnDenX
+    ;
+    skipRpnObjectTypeHL ; HL=denX
+    call denominateValueToOp1 ; OP1:Real=valueX
+    call op1ToOp2PageTwo ; OP2=valueX
+    ;
+    pop hl ; stack=[]; HL=rpnDenY
+    skipRpnObjectTypeHL ; HL=denY
+    call denominateValueToOp1 ; OP1:Real=valueY
+
+    call dropRpnObject ; FPS=[valueY]
+    call dropRpnObject ; FPS=[]
+    ;
+    bcall(_PercentChangeFunction) ; OP1=100*(X-Y)/Y
     ret
 
 ; Description: Return the abs(x).
