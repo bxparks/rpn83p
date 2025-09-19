@@ -1508,6 +1508,10 @@ _RpnDenominateCeilLabel:
 _RpnDenominateCeil equ _RpnDenominateCeilLabel-branchTableBase
     .dw RpnDenominateCeil
     .db 2
+_RpnDenominateNearLabel:
+_RpnDenominateNear equ _RpnDenominateNearLabel-branchTableBase
+    .dw RpnDenominateNear
+    .db 2
 
 ; formatdenominate2.asm
 _FormatDenominateLabel:

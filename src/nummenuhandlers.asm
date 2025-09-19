@@ -293,8 +293,18 @@ mCeilHandlerDoDenominate:
 ;-----------------------------------------------------------------------------
 
 mNearHandler:
-    call closeInputAndRecallX
-    bcall(_Int) ; round to nearest integer, irrespective of sign
+    call closeInputAndRecallUniversalX
+    cp rpnObjectTypeReal
+    jr z, mNearHandlerDoReal
+    cp rpnObjectTypeDenominate
+    jr z, mNearHandlerDoDenominate
+    bcall(_ErrDataType)
+mNearHandlerDoReal:
+    bcall(_Int)
+    bcall(_ReplaceStackX)
+    ret
+mNearHandlerDoDenominate:
+    bcall(_RpnDenominateNear)
     bcall(_ReplaceStackX)
     ret
 
