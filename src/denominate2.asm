@@ -48,20 +48,20 @@ convertDisplayValueToRpnDenominate:
     call reserveRpnObject; FPS=[rpnDenominate]; (HL)=rpnDenominate; BC=BC
     ld a, c ; A=displayUnitId
     call setHLRpnDenominatePageTwo; (HL):Denominate=den; A=A; BC=BC
-    call assignDisplayValueToDenominate ; den.baseValue=baseValue(OP1)
+    call denominateSetDisplayValue ; den.baseValue=baseValue(OP1)
     call PopRpnObject1 ; FPS=[]; OP1=rpnDenominate
     ret
 
-; Description: Set the baseValue of the given Denominate after converting the
+; Description: Set the baseValue of the given Denominate by converting the
 ; displayValue given in OP1 to the baseValue in the baseUnit of
-; Denominate.displayUnit.
+; Denominate.displayUnit. This is the inverse of denominateGetDisplayValue().
 ; Input:
 ;   - (HL):Denominate=den
 ;   - OP1:Real=displayValue
 ; Output:
 ;   - (HL):Denominate=denominate with new baseValue
 ; Destroys: all
-assignDisplayValueToDenominate:
+denominateSetDisplayValue:
     ; convert displayValue to the baseValue in the baseUnit
     ld a, (hl) ; A=displayUnit
     inc hl ; (HL):Real=baseValue
@@ -255,32 +255,33 @@ GetRpnDenominateDisplayValue:
     ;
     call PushRpnObject1 ; FPS=[rpnDenominate]; HL=rpnDenominate
     skipRpnObjectTypeHL ; HL=denominate
-    call denominateToDisplayValue ; OP1=displayValue
+    call denominateGetDisplayValue ; OP1=displayValue
     call dropRpnObject ; FPS=[];
     ret
 getRpnDenominateDisplayValueErr:
     bcall(_ErrDataType)
 
-; Description: Convert the baseValue of the denominate pointed by HL to the
-; displayValue in units of its 'displayUnitId'.
+; Description: Get the displayValue of the denominate pointed by HL by
+; converting its internval baseValue to the unit of its 'displayUnitId'. This
+; is the inverse of denominateSetDisplayValue().
 ; Input: HL:Denominate=denominate
 ; Output: OP1:Real=displayValue
 ; Preserves: BC, DE, HL
 ; Destroys: A, OP1-OP4
-denominateToDisplayValue:
+denominateGetDisplayValue:
     push bc
     push de
     push hl
-    call denominateToDisplayValueInternal
+    call denominateGetDisplayValueInternal
     pop hl
     pop de
     pop bc
     ret
 
-; Description: Version of denominateToDisplayValue() that does not care about
+; Description: Version of denominateGetDisplayValue() that does not care about
 ; destroying all the registers. This version is much simpler when we don't have
 ; to worry about cleaning up the stack, because we can return early.
-denominateToDisplayValueInternal:
+denominateGetDisplayValueInternal:
     ld a, (hl) ; A=displayUnitId
     inc hl ; HL=value
     call move9ToOp1PageTwo ; OP1=value; preserves A
@@ -671,11 +672,11 @@ rpnDenominateMaxSelectY:
 RpnDenominateIntPart:
     call PushRpnObject1 ; FPS=[rpnDen]; HL=rpnDen
     skipRpnObjectTypeHL ; HL=den
-    call denominateToDisplayValue ; OP1:Real=rawValue
+    call denominateGetDisplayValue ; OP1:Real=displayValue
     push hl ; stack=[den]
     bcall(_Trunc) ; integer part, truncating towards 0.0, preserving sign
     pop hl ; stack=[]; HL=den
-    call assignDisplayValueToDenominate ; den.baseValue=displayValue(result)
+    call denominateSetDisplayValue ; den.baseValue=displayValue(result)
     call PopRpnObject1 ; FPS=[]; OP1=rpnDen
     ret
 

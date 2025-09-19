@@ -75,7 +75,7 @@ extractDenominateValue:
     ld a, (hl) ; A=unitId
     call checkValidDenominate ; CF=0 if invalid; A=unitId
     jp nc, denominateBaseValueToOp1 ; OP1=baseValue
-    jp denominateToDisplayValue ; OP1=displayValue
+    jp denominateGetDisplayValue ; OP1=displayValue
 
 ; Description: Format the value of the denominate object in OP1 to DE.
 ; Input:
