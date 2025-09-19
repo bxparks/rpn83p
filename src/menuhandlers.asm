@@ -377,7 +377,6 @@ mRoundToGuardHandler:
     ret
 
 mRoundToNHandler:
-    call closeInputAndRecallX ; OP1=X
     ld hl, msgRoundPrompt
     call startArgScanner
     ld a, 1
@@ -388,6 +387,8 @@ mRoundToNHandler:
     bcall(_PopRealO1)
     pop af
     ret nz ; do nothing if cancelled
+    ; terminate input only when the command is well-formed
+    call closeInputAndRecallX ; OP1=X
     ld a, (argValue)
     cp 10
     ret nc ; return if argValue>=10 (should never happen with argLenLimit==1)
