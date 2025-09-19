@@ -136,8 +136,24 @@ mLnOnePlusHandler:
 ;   - Y=unchanged
 ;   - X=Y*(X%)
 mPercentHandler:
-    call closeInputAndRecallXY ; OP1=Y; OP2=X
+    call closeInputAndRecallUniversalXY ; CP1=Y; CP3=X
+    call getOp3RpnObjectType ; A=rpnObjectX
+    cp rpnObjectTypeReal
+    jr nz, mPercentHandlerErr
+    call getOp1RpnObjectType ; A=rpnObjectTypeY
+    cp rpnObjectTypeDenominate
+    jr z, mPercentHandlerDoDenominate
+    cp rpnObjectTypeReal
+    jr z, mPercentHandlerDoReal
+mPercentHandlerErr:
+    bcall(_ErrDataType)
+mPercentHandlerDoReal:
+    call op3ToOp2
     bcall(_PercentFunction) ; OP1=Y*X/100
+    bcall(_ReplaceStackX)
+    ret
+mPercentHandlerDoDenominate:
+    bcall(_RpnDenominatePercent)
     bcall(_ReplaceStackX)
     ret
 

@@ -511,8 +511,26 @@ DivRpnDenominateByReal:
     ret
 
 ;-----------------------------------------------------------------------------
-; Numerical operations: ABS, %, %CH, IP, FP, FLR, CEIL, NEAR, RND, RNDN, RNDG
+; Numerical operations: %, %CH, IP, FP, FLR, CEIL, NEAR, ABS, SIGN, MIN, MAX,
+; RND, RNDN, RNDG
 ;-----------------------------------------------------------------------------
+
+; Description: Return the X% of Y.
+; Input:
+;   - CP1:RpnDenominate=Y=rpnDen
+;   - CP3:Real=X=percent
+; Output: CP1:RpnDenominate=Y*X/100
+RpnDenominatePercent:
+    call PushRpnObject1 ; FPS=[rpnDen]; HL=rpnDen
+    skipRpnObjectTypeHL ; HL=den
+    call denominateValueToOp1 ; OP1:Real=rawValue
+    push hl
+    call op3ToOp2PageTwo
+    bcall(_PercentFunction) ; OP1=Y*X/100
+    pop hl
+    call op1ToDenominateValue ; rpnDen=abs(rawValue)
+    call PopRpnObject1 ; CP1:RpnDenominate
+    ret
 
 ; Description: Return the abs(x).
 ; Input: CP1:RpnDenominate=rpnDen
