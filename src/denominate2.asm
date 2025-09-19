@@ -29,55 +29,55 @@ checkDenominate:
 
 ; Description: Apply the unit "function" to the given Real or an RpnDenominate.
 ; 1) If the input is a Real, then convert it into an RpnDenominate with the
-; given targetUnitId.
-; 2) If the input is an RpnDenominate, then change its unit to the targetUnitId.
+; given displayUnitId.
+; 2) If the input is an RpnDenominate, then change its unit to the
+; displayUnitId.
 ; Input:
 ;   - OP1/OP2:Real|RpnDenominate
 ;   - A:u8=rpnObjectType
-;   - C:u8=targetUnitId
+;   - C:u8=displayUnitId
 ; Output:
 ;   - OP1/OP2:RpnDenominate
 ; Destroys: all, OP1-OP3
 ApplyUnit: ; TODO: Rename to ApplyRpnDenominateUnit
     cp rpnObjectTypeReal
-    jr z, convertRealToRpnDenominate
+    jr z, convertDisplayValueToRpnDenominate
     cp rpnObjectTypeDenominate
     jr z, changeRpnDenominateUnit
     bcall(_ErrDataType)
 
 ;-----------------------------------------------------------------------------
 
-; Description: Convert a Real to an RpnDenominate object, converting the value
-; into its base unit, then attaching the target unit.
+; Description: Convert the given displayValue to an RpnDenominate object which
+; holds its equilvalent baseValue in the baseUnit of the displayUnit.
 ; Input:
-;   - OP1:Real=value
-;   - A:u8=rpnObjectType
-;   - C:u8=targetUnitId
+;   - OP1:Real=displayValue
+;   - C:u8=displayUnitId
 ; Output:
 ;   - OP1/OP2:RpnDenominate
 ; Destroys: all
-convertRealToRpnDenominate:
+convertDisplayValueToRpnDenominate:
     call reserveRpnObject; FPS=[rpnDenominate]; HL=rpnDenominate; BC=BC
-    ld a, c ; A=targetUnitId
+    ld a, c ; A=displayUnitId
     call setHLRpnDenominatePageTwo; HL:(*Real)=value; A=A; BC=BC
     ; normalize to the base unit
     push hl
-    call normalizeRealToBaseUnit ; OP1=baseValue
+    call convertDisplayValueToBaseValue ; OP1=baseValue
     pop de ; DE=value
     ; move the result into the 'value' of the rpnDenominate
     call move9FromOp1PageTwo ; (DE)=value
     call PopRpnObject1 ; FPS=[]; OP1=rpnDenominate
     ret
 
-; Description: Normalize the value in OP1 to the baseUnit of the unit in
-; register A.
+; Description: Convert the given displayValue given in displayUnit in OP1 to
+; the baseValue in the baseUnit of the displayUnit.
 ; Input:
-;   - OP1:Real=value
-;   - A:u8=targetUnitId
+;   - OP1:Real=displayValue
+;   - A:u8=displayUnitId
 ; Output:
 ;   -OP1:Real=baseValue
 ; Destroys: all, OP1, OP2, OP3
-normalizeRealToBaseUnit:
+convertDisplayValueToBaseValue:
     ; Special cases for temperature units.
     cp unitKelvinId
     ret z
@@ -100,7 +100,7 @@ normalizeRealToBaseUnit:
 
 ;-----------------------------------------------------------------------------
 
-; Description: Set the unit of an RpnDenominate to the given target unit.
+; Description: Set the unit of an RpnDenominate to the given target displayUnit.
 ; Input:
 ;   - OP1/OP2:RpnDenominate
 ;   - A:u8=rpnObjectType
@@ -242,8 +242,8 @@ GetRpnDenominateDisplayValue:
 getRpnDenominateDisplayValueErr:
     bcall(_ErrDataType)
 
-; Description: Convert the normalized 'value' of the denominate pointed by HL
-; to the display value in units of its 'displayUnitId'.
+; Description: Convert the baseValue of the denominate pointed by HL to the
+; displayValue in units of its 'displayUnitId'.
 ; Input: HL:Denominate=denominate
 ; Output: OP1:Real=displayValue
 ; Preserves: BC, DE, HL
@@ -288,11 +288,11 @@ denominateToDisplayValueInternal:
 
 ;-----------------------------------------------------------------------------
 
-; Description: Extract the denominate 'value' of HL to OP1.
+; Description: Extract the baseValue of the denominate given by HL to OP1.
 ; Input: HL:Denominate=denominate
-; Output: OP1:Real=rawValue
+; Output: OP1:Real=baseValue
 ; Preserves: all
-denominateValueToOp1:
+denominateBaseValueToOp1:
     push hl
     push de
     push bc
@@ -303,14 +303,14 @@ denominateValueToOp1:
     pop hl
     ret
 
-; Description: Extract the denominate 'value' of HL to OP1.
+; Description: Set the baseValue of the denominate in HL to OP1.
 ; Input:
-;   - OP1:Real=rawValue
+;   - OP1:Real=baseValue
 ;   - HL:Denominate=denominate
 ; Output:
-;   - (HL)=denominateValue filled
+;   - (HL).baseValue=baseValue
 ; Preserves: all
-op1ToDenominateValue:
+op1ToDenominateBaseValue:
     push hl
     push de
     push bc
@@ -343,11 +343,11 @@ ChsRpnDenominate:
 ; Output: HL:Denominate=-den
 ; Preserves: all
 chsDenominate:
-    call denominateValueToOp1 ; OP1=value
+    call denominateBaseValueToOp1 ; OP1=value
     push hl
     bcall(_InvOP1S)
     pop hl
-    call op1ToDenominateValue ; (*HL)=-value
+    call op1ToDenominateBaseValue ; (*HL)=-value
     ret
 
 ;-----------------------------------------------------------------------------
@@ -384,16 +384,16 @@ AddRpnDenominateByDenominate:
 ;   - value(HL)+=value(DE)
 addDenominateByDenominate:
     push hl ; stack=[denHL]
-    call denominateValueToOp1 ; OP1=valueHL
+    call denominateBaseValueToOp1 ; OP1=valueHL
     ;
     push de ; stack=[denHL,denDE]
     call op1ToOp2PageTwo ; OP2=valueHL
     pop hl ; stack=[denHL]; HL=denDE
-    call denominateValueToOp1 ; OP1=valueDE
+    call denominateBaseValueToOp1 ; OP1=valueDE
     bcall(_FPAdd)
     ;
     pop hl ; stack=[]; HL=denHL
-    call op1ToDenominateValue ; value(HL)+=value(DE)
+    call op1ToDenominateBaseValue ; value(HL)+=value(DE)
     ret
 
 ;-----------------------------------------------------------------------------
@@ -444,12 +444,12 @@ MultRpnDenominateByReal:
     call PushRpnObject1 ; FPS=[rpnDenominate]; HL=FPS(rpnDenominate)
     skipRpnObjectTypeHL ; HL=denominate
     push hl ; stack=[denominate]
-    call denominateValueToOp1 ; OP1=value
+    call denominateBaseValueToOp1 ; OP1=value
     call op3ToOp2PageTwo ; OP2=real
     bcall(_FPMult) ; OP1=real*value
     ;
     pop hl ; stack=[]; HL=denominate
-    call op1ToDenominateValue ; value(denominate)*=real*value
+    call op1ToDenominateBaseValue ; value(denominate)*=real*value
     ;
     call PopRpnObject1 ; FPS=[]; OP1=result
     ret
@@ -474,11 +474,11 @@ DivRpnDenominateByDenominate:
     call PushRpnObject3 ; FPS=[divisor]; HL=FPS(divisor)
     skipRpnObjectTypeHL ; HL=divisor
     ;
-    call denominateValueToOp1 ; OP1=divisor
+    call denominateBaseValueToOp1 ; OP1=divisor
     call op1ToOp2PageTwo ; OP2=divisor
     ;
     pop hl ; stack=[]; HL=dividend
-    call denominateValueToOp1 ; OP1=dividend
+    call denominateBaseValueToOp1 ; OP1=dividend
     ;
     bcall(_FPDiv) ; OP1=dividend/divisor
     ;
@@ -500,12 +500,12 @@ DivRpnDenominateByReal:
     call PushRpnObject1 ; FPS=[rpnDenominate]; HL=FPS(rpnDenominate)
     skipRpnObjectTypeHL ; HL=denominate
     push hl ; stack=[denominate]
-    call denominateValueToOp1 ; OP1=value
+    call denominateBaseValueToOp1 ; OP1=value
     call op3ToOp2PageTwo ; OP2=real
     bcall(_FPDiv) ; OP1=real/value
     ;
     pop hl ; stack=[]; HL=denominate
-    call op1ToDenominateValue ; value(denominate)*=real*value
+    call op1ToDenominateBaseValue ; value(denominate)*=real*value
     ;
     call PopRpnObject1 ; FPS=[]; OP1=result
     ret
@@ -524,12 +524,12 @@ DivRpnDenominateByReal:
 RpnDenominatePercent:
     call PushRpnObject1 ; FPS=[rpnDen]; HL=rpnDen
     skipRpnObjectTypeHL ; HL=den
-    call denominateValueToOp1 ; OP1:Real=rawValue
+    call denominateBaseValueToOp1 ; OP1:Real=baseValue
     push hl
     call op3ToOp2PageTwo
     bcall(_PercentFunction) ; OP1=Y*X/100
     pop hl
-    call op1ToDenominateValue ; rpnDen=abs(rawValue)
+    call op1ToDenominateBaseValue ; rpnDen=abs(baseValue)
     call PopRpnObject1 ; CP1:RpnDenominate
     ret
 
@@ -545,12 +545,12 @@ RpnDenominatePercentChange:
     call PushRpnObject3 ; FPS=[valueY,rpnDenX]; HL=rpnDenX
     ;
     skipRpnObjectTypeHL ; HL=denX
-    call denominateValueToOp1 ; OP1:Real=valueX
+    call denominateBaseValueToOp1 ; OP1:Real=valueX
     call op1ToOp2PageTwo ; OP2=valueX
     ;
     pop hl ; stack=[]; HL=rpnDenY
     skipRpnObjectTypeHL ; HL=denY
-    call denominateValueToOp1 ; OP1:Real=valueY
+    call denominateBaseValueToOp1 ; OP1:Real=valueY
 
     call dropRpnObject ; FPS=[valueY]
     call dropRpnObject ; FPS=[]
@@ -564,11 +564,11 @@ RpnDenominatePercentChange:
 RpnDenominateAbs:
     call PushRpnObject1 ; FPS=[rpnDen]; HL=rpnDen
     skipRpnObjectTypeHL ; HL=den
-    call denominateValueToOp1 ; OP1:Real=rawValue
+    call denominateBaseValueToOp1 ; OP1:Real=baseValue
     push hl
     bcall(_ClrOP1S) ; clear sign bit of OP1
     pop hl
-    call op1ToDenominateValue ; rpnDen=abs(rawValue)
+    call op1ToDenominateBaseValue ; rpnDen=abs(baseValue)
     call PopRpnObject1
     ret
 
@@ -578,8 +578,8 @@ RpnDenominateAbs:
 RpnDenominateSign:
     call PushRpnObject1 ; FPS=[rpnDen]; HL=rpnDen
     skipRpnObjectTypeHL ; HL=den
-    call denominateValueToOp1 ; OP1:Real=rawValue
-    bcall(_SignFunction) ; sign(rawValue)
+    call denominateBaseValueToOp1 ; OP1:Real=baseValue
+    bcall(_SignFunction) ; sign(baseValue)
     call dropRpnObject ; FPS=[]
     ret
 
@@ -596,12 +596,12 @@ RpnDenominateMin:
     call PushRpnObject3 ; FPS=[rpnDenY,rpnDenX]; HL=rpnDenX
     ;
     skipRpnObjectTypeHL ; HL=denX
-    call denominateValueToOp1 ; OP1:Real=baseValueX
+    call denominateBaseValueToOp1 ; OP1:Real=baseValueX
     call op1ToOp2PageTwo ; OP2=baseValueX
     ;
     pop hl ; stack=[]; HL=rpnDenY
     skipRpnObjectTypeHL ; HL=denY
-    call denominateValueToOp1 ; OP1=baseValueY
+    call denominateBaseValueToOp1 ; OP1=baseValueY
     ;
     bcall(_CpOP1OP2) ; OP1-OP2 => ZF, CF flags
     jr c, rpnDenominateMinSelectY
@@ -628,12 +628,12 @@ RpnDenominateMax:
     call PushRpnObject3 ; FPS=[rpnDenY,rpnDenX]; HL=rpnDenX
     ;
     skipRpnObjectTypeHL ; HL=denX
-    call denominateValueToOp1 ; OP1:Real=baseValueX
+    call denominateBaseValueToOp1 ; OP1:Real=baseValueX
     call op1ToOp2PageTwo ; OP2=baseValueX
     ;
     pop hl ; stack=[]; HL=rpnDenY
     skipRpnObjectTypeHL ; HL=denY
-    call denominateValueToOp1 ; OP1=baseValueY
+    call denominateBaseValueToOp1 ; OP1=baseValueY
     ;
     bcall(_CpOP1OP2) ; OP1-OP2 => ZF, CF flags
     jr nc, rpnDenominateMaxSelectY
