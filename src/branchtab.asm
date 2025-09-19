@@ -386,6 +386,10 @@ _LcdFunctionLabel:
 _LcdFunction equ _LcdFunctionLabel-branchTableBase
     .dw LcdFunction
     .db 1
+_PercentFunctionLabel:
+_PercentFunction equ _PercentFunctionLabel-branchTableBase
+    .dw PercentFunction
+    .db 1
 
 ; hms1.asm
 _HmsToHrLabel:

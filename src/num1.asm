@@ -10,6 +10,21 @@
 ; entry.
 ;-----------------------------------------------------------------------------
 
+; Description: Calculate the X percent of Y.
+;   - PercentFunction(Y, X) -> Y*(X/100)
+; Input:
+;   - OP1:Real=Y
+;   - OP2:Real=X
+; Output:
+;   - OP1:Real=Y*(X/100)
+PercentFunction:
+    bcall(_FPMult) ; OP1=OP1*OP2=X*Y
+    call op2Set100PageOne
+    bcall(_FPDiv) ; OP1=X*Y/100
+    ret
+
+;-----------------------------------------------------------------------------
+
 ; Description: Return the sign(x) function: -1 if x<0, 0 if x==0, 1 if x>0.
 ; Input: OP1:Real=x
 ; Output: OP1:Real=sign(x)
