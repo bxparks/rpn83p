@@ -511,6 +511,24 @@ DivRpnDenominateByReal:
     ret
 
 ;-----------------------------------------------------------------------------
+; Numerical operations: ABS, %, %CH, IP, FP, FLR, CEIL, NEAR, RND, RNDN, RNDG
+;-----------------------------------------------------------------------------
+
+; Description: Return the abs(x).
+; Input: CP1:RpnDenominate=rpnDen
+; Output: CP1:RpnDenominate=abs(rpnDen)
+RpnDenominateAbs:
+    call PushRpnObject1 ; FPS=[rpnDen]; HL=rpnDen
+    skipRpnObjectTypeHL ; HL=den
+    call denominateValueToOp1 ; OP1:Real=rawValue
+    push hl
+    bcall(_ClrOP1S) ; clear sign bit of OP1
+    pop hl
+    call op1ToDenominateValue ; rpnDen=abs(rawValue)
+    call PopRpnObject1
+    ret
+
+;-----------------------------------------------------------------------------
 ; Converters for special units which cannot be converted by simple scaling. For
 ; example temperature units (C, F, R, K) and fuel consumption units (mpg,
 ; L/100km).

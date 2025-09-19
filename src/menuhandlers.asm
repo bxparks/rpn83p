@@ -264,8 +264,18 @@ mPrimeHandler:
 
 ; mAbsHandler(X) -> Abs(X)
 mAbsHandler:
-    call closeInputAndRecallX
+    call closeInputAndRecallUniversalX
+    cp rpnObjectTypeReal
+    jr z, mAbsHandlerDoReal
+    cp rpnObjectTypeDenominate
+    jr z, mAbsHandlerDoDenominate
+    bcall(_ErrDataType)
+mAbsHandlerDoReal:
     bcall(_ClrOP1S) ; clear sign bit of OP1
+    bcall(_ReplaceStackX)
+    ret
+mAbsHandlerDoDenominate:
+    bcall(_RpnDenominateAbs)
     bcall(_ReplaceStackX)
     ret
 
