@@ -772,8 +772,6 @@ RpnDenominateRoundToFix:
     call PopRpnObject1 ; FPS=[]; OP1=rpnDen
     ret
 
-;-----------------------------------------------------------------------------
-
 ; Description: Return the RoundToGuard(x).
 ; Input: CP1:RpnDenominate=rpnDen
 ; Output: CP1:RpnDenominate=RoundToGuard(rpnDen)
@@ -783,6 +781,24 @@ RpnDenominateRoundToGuard:
     call denominateGetDisplayValue ; OP1:Real=displayValue
     push hl ; stack=[den]
     bcall(_RndGuard) ; round to 10 digits, removing guard digits
+    pop hl ; stack=[]; HL=den
+    call denominateSetDisplayValue ; den.baseValue=displayValue(result)
+    call PopRpnObject1 ; FPS=[]; OP1=rpnDen
+    ret
+
+; Description: Return the RoundToN(x).
+; Input:
+;   - CP1:RpnDenominate=rpnDen
+;   - A:u8=numDigits
+; Output: CP1:RpnDenominate=RoundToN(rpnDen)
+RpnDenominateRoundToN:
+    push af ; stack=[numDigits]
+    call PushRpnObject1 ; FPS=[rpnDen]; HL=rpnDen
+    skipRpnObjectTypeHL ; HL=den
+    call denominateGetDisplayValue ; OP1:Real=displayValue
+    pop af ; stack=[]; A=numDigits
+    push hl ; stack=[den]
+    bcall(_Round) ; round to 10 digits, removing guard digits
     pop hl ; stack=[]; HL=den
     call denominateSetDisplayValue ; den.baseValue=displayValue(result)
     call PopRpnObject1 ; FPS=[]; OP1=rpnDen

@@ -351,19 +351,34 @@ mRoundToNHandler:
     call startArgScanner
     ld a, 1
     ld (argLenLimit), a ; accept only a single digit
-    bcall(_PushRealO1)
-    call processArgCommands ; ZF=0 if cancelled; destroys OP1-OP6
-    push af
-    bcall(_PopRealO1)
-    pop af
+    ; process args
+    bcall(_PushRealO1) ; FPS=[OP1]
+    call processArgCommands ; ZF=0 if cancelled; destroys OP1-OP6; A=argModifier
+    push af ; stack=[ZF]
+    bcall(_PopRealO1) ; FPS=[]; OP1=restored
+    pop af ; stack=[]; ZF=restored
     ret nz ; do nothing if cancelled
-    ; terminate input only when the command is well-formed
-    call closeInputAndRecallX ; OP1=X
+    ; check the command argument
     ld a, (argValue)
     cp 10
     ret nc ; return if argValue>=10 (should never happen with argLenLimit==1)
+    ; terminate input only when the command is well-formed
+    call closeInputAndRecallUniversalX ; A=rpnObjectType
+    cp rpnObjectTypeReal
+    jr z, mRoundToNHandlerDoReal
+    cp rpnObjectTypeDenominate
+    jr z, mRoundToNHandlerDoDenominate
+    bcall(_ErrDataType)
+mRoundToNHandlerDoReal:
+    ld a, (argValue)
     ld d, a
     bcall(_Round) ; round to D digits, allowed values: 0-9
+    bcall(_ReplaceStackX)
+    ret
+mRoundToNHandlerDoDenominate:
+    ld a, (argValue)
+    ld d, a
+    bcall(_RpnDenominateRoundToN)
     bcall(_ReplaceStackX)
     ret
 

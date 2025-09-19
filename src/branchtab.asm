@@ -1522,6 +1522,10 @@ _RpnDenominateRoundToGuardLabel:
 _RpnDenominateRoundToGuard equ _RpnDenominateRoundToGuardLabel-branchTableBase
     .dw RpnDenominateRoundToGuard
     .db 2
+_RpnDenominateRoundToNLabel:
+_RpnDenominateRoundToN equ _RpnDenominateRoundToNLabel-branchTableBase
+    .dw RpnDenominateRoundToN
+    .db 2
 
 ; formatdenominate2.asm
 _FormatDenominateLabel:
