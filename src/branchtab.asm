@@ -1484,6 +1484,10 @@ _RpnDenominateMinLabel:
 _RpnDenominateMin equ _RpnDenominateMinLabel-branchTableBase
     .dw RpnDenominateMin
     .db 2
+_RpnDenominateMaxLabel:
+_RpnDenominateMax equ _RpnDenominateMaxLabel-branchTableBase
+    .dw RpnDenominateMax
+    .db 2
 
 ; formatdenominate2.asm
 _FormatDenominateLabel:

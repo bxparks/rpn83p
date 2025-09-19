@@ -615,6 +615,37 @@ rpnDenominateMinSelectY:
     call PopRpnObject1 ; FPS=[]; OP1=rpnDenY
     ret
 
+; Description: Return the max(X, Y).
+; Input:
+;   - CP1:RpnDenominate=rpnDenY
+;   - CP3:RpnDenominate=rpnDenX
+; Output:
+;   - CP1:RpnDenominateSign=max(X,Y) using unit of the winning denominate
+;   - if equal, prefer Y unit over X unit
+RpnDenominateMax:
+    call PushRpnObject1 ; FPS=[rpnDenY]; HL=rpnDenY
+    push hl ; stack=[rpnDenY]
+    call PushRpnObject3 ; FPS=[rpnDenY,rpnDenX]; HL=rpnDenX
+    ;
+    skipRpnObjectTypeHL ; HL=denX
+    call denominateValueToOp1 ; OP1:Real=baseValueX
+    call op1ToOp2PageTwo ; OP2=baseValueX
+    ;
+    pop hl ; stack=[]; HL=rpnDenY
+    skipRpnObjectTypeHL ; HL=denY
+    call denominateValueToOp1 ; OP1=baseValueY
+    ;
+    bcall(_CpOP1OP2) ; OP1-OP2 => ZF, CF flags
+    jr nc, rpnDenominateMaxSelectY
+rpnDenominateMaxSelectX:
+    call PopRpnObject1 ; FPS=[rpnDenY]; OP1=rpnDenX
+    call dropRpnObject ; FPS=[]
+    ret
+rpnDenominateMaxSelectY:
+    call dropRpnObject ; FPS=[rpnDenY]
+    call PopRpnObject1 ; FPS=[]; OP1=rpnDenY
+    ret
+
 ;-----------------------------------------------------------------------------
 ; Converters for special units which cannot be converted by simple scaling. For
 ; example temperature units (C, F, R, K) and fuel consumption units (mpg,

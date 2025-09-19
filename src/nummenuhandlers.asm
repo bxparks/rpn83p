@@ -201,10 +201,22 @@ mMinHandlerErr:
 ;-----------------------------------------------------------------------------
 
 mMaxHandler:
-    call closeInputAndRecallXY
+    call closeInputAndRecallUniversalXY
+    call checkOp1Op3BothRealOrBothDenominate ; ZF=1 if true
+    jr nz, mMaxHandlerErr
+    call checkOp1Real ; ZF=1 if true
+    jr nz, mMaxHandlerBothDenominate
+    ; both Real
+    call op3ToOp2
     bcall(_Max)
     bcall(_ReplaceStackXY)
     ret
+mMaxHandlerBothDenominate:
+    bcall(_RpnDenominateMax)
+    bcall(_ReplaceStackXY)
+    ret
+mMaxHandlerErr:
+    bcall(_ErrDataType)
 
 ;-----------------------------------------------------------------------------
 
