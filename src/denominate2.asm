@@ -10,18 +10,6 @@
 ; entry.
 ;-----------------------------------------------------------------------------
 
-; Description: Return CF=1 if Denominate is valid (unitId is within range).
-; Input:
-;   - HL:Denominate=denominate
-; Output:
-;   - A=unitId
-;   - CF=1 if valid; CF=0 if invalid
-; Preserves: BC, DE, HL
-checkDenominate:
-    ld a, (hl) ; A=unitId
-    cp unitsCount ; if unitId >= unitsCount: CF=0 else: CF=1
-    ret
-
 ;-----------------------------------------------------------------------------
 ; Apply a Denominate Unit, converting a Real to an RpnDenominate to changing
 ; the unit of an existing Denominate.
@@ -119,6 +107,22 @@ changeRpnDenominateUnit:
     ; Clobber the oldDisplayUnitId with new targetUnitId
     ld a, c ; A=targetUnitId
     ld (OP1 + rpnDenominateFieldDisplayUnit), a ; displayUnitId=targetUnitId
+    ret
+
+;-----------------------------------------------------------------------------
+; Validation functions, often looking at the unitClass.
+;-----------------------------------------------------------------------------
+
+; Description: Return CF=1 if Denominate is valid (unitId is within range).
+; Input:
+;   - HL:Denominate=denominate
+; Output:
+;   - A=unitId
+;   - CF=1 if valid; CF=0 if invalid
+; Preserves: BC, DE, HL
+checkValidDenominate:
+    ld a, (hl) ; A=unitId
+    cp unitsCount ; if unitId >= unitsCount: CF=0 else: CF=1
     ret
 
 ;-----------------------------------------------------------------------------
