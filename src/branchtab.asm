@@ -378,6 +378,14 @@ _ModFunctionLabel:
 _ModFunction equ _ModFunctionLabel-branchTableBase
     .dw ModFunction
     .db 1
+_GcdFunctionLabel:
+_GcdFunction equ _GcdFunctionLabel-branchTableBase
+    .dw GcdFunction
+    .db 1
+_LcdFunctionLabel:
+_LcdFunction equ _LcdFunctionLabel-branchTableBase
+    .dw LcdFunction
+    .db 1
 
 ; hms1.asm
 _HmsToHrLabel:

@@ -131,8 +131,8 @@ mLnOnePlusHandler:
 ; Children nodes of NUM menu.
 ;-----------------------------------------------------------------------------
 
-; mPercentHandler(Y, X) -> (Y, Y*(X/100))
 ; Description: Calculate the X percent of Y.
+; mPercentHandler(Y, X) -> (Y, Y*(X/100))
 mPercentHandler:
     call closeInputAndRecallXY ; OP1=Y; OP2=X
     bcall(_FPMult) ; OP1=OP1*OP2=X*Y
@@ -141,10 +141,10 @@ mPercentHandler:
     bcall(_ReplaceStackX)
     ret
 
-; mPercentChangeHandler(Y, X) -> (Y, 100*(X-Y)/Y)
 ; Description: Calculate the change from Y to X as a percentage of Y. The
 ; resulting percentage can be given to the '%' menu key to get the delta
 ; change, then the '+' command will retrieve the original X.
+; mPercentChangeHandler(Y, X) -> (Y, 100*(X-Y)/Y)
 mPercentChangeHandler:
     call closeInputAndRecallXY ; OP1=Y; OP2=X
     bcall(_PushRealO1) ; FPS=[Y]
@@ -158,20 +158,11 @@ mPercentChangeHandler:
 
 ;-----------------------------------------------------------------------------
 
-; Description: Implement the Euclidean algorithm for the Greatest Common
-; Divisor (GCD) as described in
-; https://en.wikipedia.org/wiki/Euclidean_algorithm:
-;
-; function gcd(a, b)
-;    while b != 0
-;        t := b
-;        b := a mod b
-;        a := t
-;    return a
+; Description: Calculate the Great Common Divisor.
 mGcdHandler:
     call closeInputAndRecallXY
     call validatePosIntGcdLcm
-    call gcdOp1Op2 ; OP1=gcd(OP1,OP2)
+    bcall(_GcdFunction) ; OP1=gcd(OP1,OP2)
     bcall(_ReplaceStackXY)
     ret
 
@@ -191,48 +182,12 @@ validatePosIntGcdLcmCommon:
 validatePosIntGcdLcmError:
     bcall(_ErrDomain) ; throw exception
 
-; Description: Calculate the Great Common Divisor.
-;
-; TODO: To reduce code size and programming time, this uses the TI-OS floating
-; point operations to calculate (a mod b). It would probably be a LOT faster to
-; use native Z-80 assembly to implement the (a mod b). At the time that I wrote
-; this, the integer32.asm or the integer40.asm routines had not been written
-; yet. I could probably use those integer routines to make this a LOT faster.
-; However, the GCD algorithm is very efficient and does not take too many
-; iterations. So I'm not sure it's worth changing this over to the integer
-; routines.
-;
-; Input: OP1, OP2
-; Output: OP1 = GCD(OP1, OP2)
-; Destroys: OP1, OP2, OP3
-gcdOp1Op2:
-    bcall(_CkOP2FP0) ; while b != 0
-    ret z
-    bcall(_PushRealO2) ; FPS=[b]; (t = b)
-    bcall(_ModFunction) ; (a mod b)
-    bcall(_OP1ToOP2) ; b = (a mod b)
-    bcall(_PopRealO1) ; FPS=[]; (a = t)
-    jr gcdOp1Op2
-
-; Description: Calculate the Lowest Common Multiple using the following:
-; LCM(Y, X) = Y * X / GCD(Y, X)
-;           = Y * (X / GCD(Y,X))
+; Description: Calculate the Lowest Common Multiple.
 mLcmHandler:
     call closeInputAndRecallXY
     call validatePosIntGcdLcm
-    call lcdOp1Op2 ; OP1=lcd(OP1,OP2)
+    bcall(_LcdFunction) ; OP1=lcd(OP1,OP2)
     bcall(_ReplaceStackXY) ; X = lcm(X, Y)
-    ret
-
-lcdOp1Op2:
-    bcall(_PushRealO1) ; FPS=[Y]
-    bcall(_PushRealO2) ; FPS=[Y,X]
-    call gcdOp1Op2 ; OP1 = gcd()
-    bcall(_OP1ToOP2) ; OP2 = gcd()
-    bcall(_PopRealO1) ; FPS=[Y]; OP1 = X
-    bcall(_FPDiv) ; OP1 = X / gcd
-    bcall(_PopRealO2) ; FPS=[]; OP2 = Y
-    bcall(_FPMult) ; OP1 = Y * (X / gcd)
     ret
 
 ;-----------------------------------------------------------------------------
