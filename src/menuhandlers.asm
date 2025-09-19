@@ -160,10 +160,10 @@ mGcdHandler:
     bcall(_ReplaceStackXY)
     ret
 
-; Description: Validate that X and Y are positive (> 0) integers. Calls
-; ErrDomain exception upon failure.
+; Description: Validate that X and Y are positive (> 0) integers.
 ; Input: OP1=Y; OP2=X
 ; Output: OP1=Y; OP2=X
+; Throws: ErrDomain exception upon failure.
 validatePosIntGcdLcm:
     call op1ExOp2
     call validatePosIntGcdLcmCommon ; neat trick, calls the tail of itself
@@ -196,7 +196,7 @@ mLcmHandler:
 ;   - Y=original X
 ;   - X=1 if prime
 ;   - X=prime factor, if not a prime
-;   - "Err: Domain" if X is not an integer in the range of [2, 2^32).
+; Throws: Err: Domain if X is not an integer in the range of [2, 2^32)
 mPrimeHandler:
     call closeInputAndRecallX
     bcall(_PrimeFactor)
