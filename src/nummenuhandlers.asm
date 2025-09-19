@@ -311,8 +311,18 @@ mNearHandlerDoDenominate:
 ;-----------------------------------------------------------------------------
 
 mRoundToFixHandler:
-    call closeInputAndRecallX ; OP1=X
+    call closeInputAndRecallUniversalX
+    cp rpnObjectTypeReal
+    jr z, mRoundToFixHandlerDoReal
+    cp rpnObjectTypeDenominate
+    jr z, mRoundToFixHandlerDoDenominate
+    bcall(_ErrDataType)
+mRoundToFixHandlerDoReal:
     bcall(_RnFx) ; round to FIX/SCI/ENG digits, do nothing if digits==floating
+    bcall(_ReplaceStackX)
+    ret
+mRoundToFixHandlerDoDenominate:
+    bcall(_RpnDenominateRoundToFix)
     bcall(_ReplaceStackX)
     ret
 

@@ -1492,6 +1492,7 @@ _RpnDenominateMaxLabel:
 _RpnDenominateMax equ _RpnDenominateMaxLabel-branchTableBase
     .dw RpnDenominateMax
     .db 2
+;
 _RpnDenominateIntPartLabel:
 _RpnDenominateIntPart equ _RpnDenominateIntPartLabel-branchTableBase
     .dw RpnDenominateIntPart
@@ -1511,6 +1512,11 @@ _RpnDenominateCeil equ _RpnDenominateCeilLabel-branchTableBase
 _RpnDenominateNearLabel:
 _RpnDenominateNear equ _RpnDenominateNearLabel-branchTableBase
     .dw RpnDenominateNear
+    .db 2
+;
+_RpnDenominateRoundToFixLabel:
+_RpnDenominateRoundToFix equ _RpnDenominateRoundToFixLabel-branchTableBase
+    .dw RpnDenominateRoundToFix
     .db 2
 
 ; formatdenominate2.asm
