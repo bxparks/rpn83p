@@ -239,8 +239,18 @@ mIntPartHandlerDoDenominate:
 ;-----------------------------------------------------------------------------
 
 mFracPartHandler:
-    call closeInputAndRecallX
+    call closeInputAndRecallUniversalX
+    cp rpnObjectTypeReal
+    jr z, mFracPartHandlerDoReal
+    cp rpnObjectTypeDenominate
+    jr z, mFracPartHandlerDoDenominate
+    bcall(_ErrDataType)
+mFracPartHandlerDoReal:
     bcall(_Frac) ; convert to frac part, preserving sign
+    bcall(_ReplaceStackX)
+    ret
+mFracPartHandlerDoDenominate:
+    bcall(_RpnDenominateFracPart)
     bcall(_ReplaceStackX)
     ret
 

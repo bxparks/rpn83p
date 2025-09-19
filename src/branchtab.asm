@@ -1492,6 +1492,10 @@ _RpnDenominateIntPartLabel:
 _RpnDenominateIntPart equ _RpnDenominateIntPartLabel-branchTableBase
     .dw RpnDenominateIntPart
     .db 2
+_RpnDenominateFracPartLabel:
+_RpnDenominateFracPart equ _RpnDenominateFracPartLabel-branchTableBase
+    .dw RpnDenominateFracPart
+    .db 2
 
 ; formatdenominate2.asm
 _FormatDenominateLabel:
