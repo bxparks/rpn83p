@@ -256,8 +256,8 @@ and `65`, then see the result as an octal number (base-8), a binary number
 view the final result as a decimal number:
 
 - Press the `MATH` button to reset the menu to the home row.
-- Navigate the menu with the DOWN arrow to get to
-  ![ROOT MenuRow 2](docs/images/menu-root-2.png)
+- Navigate the menu with the DownArrow to get to
+  ![ROOT MenuRow BASE](docs/images/menu-root-2.png)
 - Press `BASE` menu to get to
   ![BASE Menu DEC](docs/images/base/menu-root-base-dec.png)
 - Press `HEX` menu to get to
@@ -267,20 +267,25 @@ view the final result as a decimal number:
 - Press `ENTER` button (`X` shows `00 00 00 B6`)
 - Press `6` button
 - Press `5` button
-- Press DOWN arrow to get to the menu row with the `AND` menu item
-  ![BASE MenuRow AND](docs/images/menu-root-base-logi-1.png)
+- Press DownArrow to get to the subfolders of `BASE`:
+  ![BASE MenuRow Subfolders](docs/images/menu-root-base-2.png)
+- Press `LOGI` (Logic) menu folder to see the menu row with the `AND` menu item
+  ![LOGI MenuRow AND](docs/images/menu-root-base-logi-1.png)
 - Press `AND` menu, the `X` register should show `00 00 00 24`
-- Press UP arrow to go back to
+- Press `ON/EXIT` key then UpArrow to go back to the first row of BASE
   ![BASE Menu HEX](docs/images/base/menu-root-base-hex.png)
 - Press `OCT` menu, the `X` register should show `00 000 000 044` with the menu
   showing ![BASE Menu OCT](docs/images/base/menu-root-base-oct.png)
 - Press `BIN` menu, the `X` register should show `0000 0000 0010 0100` with the
   menu showing ![BASE Menu BIN](docs/images/base/menu-root-base-bin.png)
-- Press DOWN DOWN (twice) to the menu row with the shift right `SR` item
+- Press DownArrow to get to the subfolders of `BASE`:
+  ![BASE MenuRow Subfolders](docs/images/menu-root-base-2.png)
+- Press `ROTS` (Rotate and Shift) menu folder to see the menu row with the `SR`
+  (shift right) menu item
   ![BASE MenuRow SR](docs/images/menu-root-base-rots-1.png)
 - Press `SR` `SR` `SR` (three times) to show `0000 0000 0000 0100` and the Carry
   Flag `C` set
-- Press UP UP (twice) to reach the base conversion menu row
+- Press `ON/EXIT` then UpArrow to go back to the first row of `BASE`
   ![BASE Menu BIN](docs/images/base/menu-root-base-bin.png)
 - Press `DEC` menu, the `X` register should show `4` with the menu showing
   ![BASE Menu DEC](docs/images/base/menu-root-base-dec.png)
@@ -304,14 +309,14 @@ In this example:
 Here are the steps:
 
 - Press the `MATH` button to reset the menu to the home row.
-- Navigate the menu with the DOWN arrow to get to
+- Navigate the menu with the DownArrow to get to
   ![ROOT MenuRow 2](docs/images/menu-root-2.png)
 - Press the `TVM` menu to get to
   ![TVM MenuRow 1](docs/images/menu-root-tvm-1.png)
-- Press the DOWN arrow to get to
+- Press the DownArrow to get to
   ![TVM MenuRow 2](docs/images/menu-root-tvm-2.png)
 - Press the `CLTV` button to clear the TVM variables.
-- Press the UP arrow to get back to
+- Press the UpArrow to get back to
   ![TVM MenuRow 1](docs/images/menu-root-tvm-1.png)
 - Press `360` `N` (30 years * 12 months = 360 payments)
 - Press `8` `I%YR` (interest percent per year)
@@ -345,7 +350,7 @@ the 4 ways that complex numbers can be entered into RPN83P:
 The keystrokes are:
 
 - (optional) Press `CLEAR CLEAR CLEAR` to clear the RPN stack.
-- Press `MODE` button, `downarrow`,  `RECT`:
+- Press `MODE` button, DownArrow,  `RECT`:
   ![MODE MenuRow 2](docs/images/menu-root-mode-2.png)
 - Press `100` `ENTER`
 - Press `2` `PI` `*` `60` `*` `1 EE 5` `(-)` `*` `1/X` `(-)` (X: -265.26)
