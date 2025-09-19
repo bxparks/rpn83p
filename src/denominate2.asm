@@ -542,6 +542,8 @@ DivRpnDenominateByReal:
 ; Output:
 ;    - CP1:RpnDenominate=Y*X/100
 RpnDenominatePercent:
+    call validateArithmeticUnitClassOp1 ; throws Err:Invalid
+    ;
     call PushRpnObject1 ; FPS=[rpnDen]; HL=rpnDen
     skipRpnObjectTypeHL ; HL=den
     call denominateBaseValueToOp1 ; OP1:Real=baseValue
@@ -560,6 +562,10 @@ RpnDenominatePercent:
 ; Output:
 ;    - CP1:Real=100*(X-Y)/Y
 RpnDenominatePercentChange:
+    call validateArithmeticUnitClassOp1 ; throws Err:Invalid
+    call validateArithmeticUnitClassOp3 ; throws Err:Invalid
+    call validateCompatibleUnitClassOp1Op3 ; throws Err:Invalid
+    ;
     call PushRpnObject1 ; FPS=[rpnDenY]; HL=rpnDenY
     push hl ; stack=[rpnDenY]
     call PushRpnObject3 ; FPS=[valueY,rpnDenX]; HL=rpnDenX
@@ -582,6 +588,8 @@ RpnDenominatePercentChange:
 ; Input: CP1:RpnDenominate=rpnDen
 ; Output: CP1:RpnDenominate=abs(rpnDen)
 RpnDenominateAbs:
+    call validateArithmeticUnitClassOp1 ; throws Err:Invalid
+    ;
     call PushRpnObject1 ; FPS=[rpnDen]; HL=rpnDen
     skipRpnObjectTypeHL ; HL=den
     call denominateBaseValueToOp1 ; OP1:Real=baseValue
@@ -596,6 +604,8 @@ RpnDenominateAbs:
 ; Input: CP1:RpnDenominate=rpnDen
 ; Output: OP1:Real=sign(x)
 RpnDenominateSign:
+    call validateArithmeticUnitClassOp1 ; throws Err:Invalid
+    ;
     call PushRpnObject1 ; FPS=[rpnDen]; HL=rpnDen
     skipRpnObjectTypeHL ; HL=den
     call denominateBaseValueToOp1 ; OP1:Real=baseValue
@@ -611,6 +621,10 @@ RpnDenominateSign:
 ;   - CP1:RpnDenominateSign=min(X,Y) using unit of the winning denominate
 ;   - if equal, prefer Y unit over X unit
 RpnDenominateMin:
+    call validateArithmeticUnitClassOp1 ; throws Err:Invalid
+    call validateArithmeticUnitClassOp3 ; throws Err:Invalid
+    call validateCompatibleUnitClassOp1Op3 ; throws Err:Invalid
+    ;
     call PushRpnObject1 ; FPS=[rpnDenY]; HL=rpnDenY
     push hl ; stack=[rpnDenY]
     call PushRpnObject3 ; FPS=[rpnDenY,rpnDenX]; HL=rpnDenX
@@ -643,6 +657,10 @@ rpnDenominateMinSelectY:
 ;   - CP1:RpnDenominateSign=max(X,Y) using unit of the winning denominate
 ;   - if equal, prefer Y unit over X unit
 RpnDenominateMax:
+    call validateArithmeticUnitClassOp1 ; throws Err:Invalid
+    call validateArithmeticUnitClassOp3 ; throws Err:Invalid
+    call validateCompatibleUnitClassOp1Op3 ; throws Err:Invalid
+    ;
     call PushRpnObject1 ; FPS=[rpnDenY]; HL=rpnDenY
     push hl ; stack=[rpnDenY]
     call PushRpnObject3 ; FPS=[rpnDenY,rpnDenX]; HL=rpnDenX
@@ -665,6 +683,8 @@ rpnDenominateMaxSelectY:
     call dropRpnObject ; FPS=[rpnDenY]
     call PopRpnObject1 ; FPS=[]; OP1=rpnDenY
     ret
+
+;-----------------------------------------------------------------------------
 
 ; Description: Return the IntPart(x).
 ; Input: CP1:RpnDenominate=rpnDen
