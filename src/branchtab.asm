@@ -1518,6 +1518,10 @@ _RpnDenominateRoundToFixLabel:
 _RpnDenominateRoundToFix equ _RpnDenominateRoundToFixLabel-branchTableBase
     .dw RpnDenominateRoundToFix
     .db 2
+_RpnDenominateRoundToGuardLabel:
+_RpnDenominateRoundToGuard equ _RpnDenominateRoundToGuardLabel-branchTableBase
+    .dw RpnDenominateRoundToGuard
+    .db 2
 
 ; formatdenominate2.asm
 _FormatDenominateLabel:

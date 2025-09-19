@@ -329,8 +329,18 @@ mRoundToFixHandlerDoDenominate:
 ;-----------------------------------------------------------------------------
 
 mRoundToGuardHandler:
-    call closeInputAndRecallX ; OP1=X
+    call closeInputAndRecallUniversalX
+    cp rpnObjectTypeReal
+    jr z, mRoundToGuardHandlerDoReal
+    cp rpnObjectTypeDenominate
+    jr z, mRoundToGuardHandlerDoDenominate
+    bcall(_ErrDataType)
+mRoundToGuardHandlerDoReal:
     bcall(_RndGuard) ; round to 10 digits, removing guard digits
+    bcall(_ReplaceStackX)
+    ret
+mRoundToGuardHandlerDoDenominate:
+    bcall(_RpnDenominateRoundToGuard)
     bcall(_ReplaceStackX)
     ret
 
