@@ -1427,9 +1427,9 @@ _RtcGetTimeZone equ _RtcGetTimeZoneLabel-branchTableBase
     .db 2
 
 ; denominate2.asm
-_ApplyUnitLabel:
-_ApplyUnit equ _ApplyUnitLabel-branchTableBase
-    .dw ApplyUnit
+_ApplyRpnDenominateUnitLabel:
+_ApplyRpnDenominateUnit equ _ApplyRpnDenominateUnitLabel-branchTableBase
+    .dw ApplyRpnDenominateUnit
     .db 2
 _GetRpnDenominateDisplayValueLabel:
 _GetRpnDenominateDisplayValue equ _GetRpnDenominateDisplayValueLabel-branchTableBase

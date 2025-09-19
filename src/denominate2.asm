@@ -28,8 +28,8 @@ checkDenominate:
 ;-----------------------------------------------------------------------------
 
 ; Description: Apply the unit "function" to the given Real or an RpnDenominate.
-; 1) If the input is a Real, then convert it into an RpnDenominate with the
-; given displayUnitId.
+; 1) If the input is a Real, then convert the displayValue into an
+; RpnDenominate with the given displayUnitId.
 ; 2) If the input is an RpnDenominate, then change its unit to the
 ; displayUnitId.
 ; Input:
@@ -39,7 +39,7 @@ checkDenominate:
 ; Output:
 ;   - OP1/OP2:RpnDenominate
 ; Destroys: all, OP1-OP3
-ApplyUnit: ; TODO: Rename to ApplyRpnDenominateUnit
+ApplyRpnDenominateUnit:
     cp rpnObjectTypeReal
     jr z, convertDisplayValueToRpnDenominate
     cp rpnObjectTypeDenominate
