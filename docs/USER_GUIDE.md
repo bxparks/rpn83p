@@ -1542,12 +1542,6 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
 - ![ROOT > BASE](images/menu-root-base.png) (`ROOT > BASE`)
     - ![ROOT > BASE > Row1](images/menu-root-base-1.png)
     - ![ROOT > BASE > Row2](images/menu-root-base-2.png)
-    - ![ROOT > BASE > Row3](images/menu-root-base-3.png)
-    - ![ROOT > BASE > Row4](images/menu-root-base-4.png)
-    - ![ROOT > BASE > Row5](images/menu-root-base-5.png)
-    - ![ROOT > BASE > Row6](images/menu-root-base-6.png)
-    - ![ROOT > BASE > Row7](images/menu-root-base-7.png)
-    - ![ROOT > BASE > Row8](images/menu-root-base-8.png)
     - `DEC`: use decimal base 10
     - `HEX`: use hexadecimal base 16
         - display register values as 32-bit unsigned integer
@@ -1555,40 +1549,52 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
         - display register values as 32-bit unsigned integer
     - `BIN`: use binary base 2
         - display register values as 32-bit unsigned integer
-    - `AND`: `X` `bit-and` `Y`
-    - `OR`: `X` `bit-or` `Y`
-    - `XOR`: `X` `bit-xor` `Y`
-    - `NOT`: one's complement of `X`
-    - `NEG`: two's complement of `X`
-    - `SL`: shift left logical one bit
-    - `SR`: shift right logical one bit
-    - `ASR`: arithmetic shift right one bit
-    - `SLn`: shift left logical `Y` by `X` bits
-    - `SRn`: shift right logical `Y` by `X` bits
-    - `RL`: rotate left circular one bit
-    - `RR`: rotate right circular one bit
-    - `RLC`: rotate left through carry flag one bit
-    - `RRC`: rotate right through carry flag one bit
-    - `RLn`: rotate left circular `Y` by `X` bits
-    - `RRn`: rotate right circular `Y` by `X` bits
-    - `RLCn`: rotate left through carry flag `Y` by `X` bits
-    - `RRCn`: rotate right through carry flag `Y` by `X` bits
-    - `CB`: clear bit `X` of `Y`
-    - `SB`: set bit `X` of `Y`
-    - `B?`: get bit `X` of `Y` as 0 or 1
-    - `REVB`: reverse bits of `X`
-    - `CNTB`: count number of 1 bits of `X` (same as `#B` on HP-16C)
-    - `B+`: add `X` and `Y` using unsigned 32-bit integer math
-    - `B-`: subtract `X` from `Y` using unsigned 32-bit integer math
-    - `B*`: multiply `X` and `Y` using unsigned 32-bit integer math
-    - `B/`: divide `X` into `Y` using unsigned 32-bit integer math
-    - `BDIV`: divide `X` into `Y` with remainder, placing the quotient in `X`
-      and the remainder in `Y`
-    - `CCF`: clear carry flag
-    - `SCF`: set carry flag
-    - `CF?`: return carry flag state as 0 or 1
-    - `WSIZ`: set integer word size (supported values: 8, 16, 24, 32)
-    - `WSZ?`: return current integer word size (default: 32)
+    - ![ROOT > BASE > LOGI](images/menu-root-base-logi.png)
+        - ![ROOT > BASE > LOGI > Row1](images/menu-root-base-logi-1.png)
+        - `AND`: `X` `bit-and` `Y`
+        - `OR`: `X` `bit-or` `Y`
+        - `XOR`: `X` `bit-xor` `Y`
+        - `NOT`: one's complement of `X`
+        - `NEG`: two's complement of `X`
+    - ![ROOT > BASE > ROTS](images/menu-root-base-rots.png)
+        - ![ROOT > BASE > ROTS > Row1](images/menu-root-base-rots-1.png)
+        - ![ROOT > BASE > ROTS > Row2](images/menu-root-base-rots-2.png)
+        - ![ROOT > BASE > ROTS > Row3](images/menu-root-base-rots-3.png)
+        - `SL`: shift left logical one bit
+        - `SR`: shift right logical one bit
+        - `ASR`: arithmetic shift right one bit
+        - `SLn`: shift left logical `Y` by `X` bits
+        - `SRn`: shift right logical `Y` by `X` bits
+        - `RL`: rotate left circular one bit
+        - `RR`: rotate right circular one bit
+        - `RLC`: rotate left through carry flag one bit
+        - `RRC`: rotate right through carry flag one bit
+        - `RLn`: rotate left circular `Y` by `X` bits
+        - `RRn`: rotate right circular `Y` by `X` bits
+        - `RLCn`: rotate left through carry flag `Y` by `X` bits
+        - `RRCn`: rotate right through carry flag `Y` by `X` bits
+    - ![ROOT > BASE > BITS](images/menu-root-base-bits.png)
+        - ![ROOT > BASE > BITS > Row1](images/menu-root-base-bits-1.png)
+        - `CB`: clear bit `X` of `Y`
+        - `SB`: set bit `X` of `Y`
+        - `B?`: get bit `X` of `Y` as 0 or 1
+        - `REVB`: reverse bits of `X`
+        - `CNTB`: count number of 1 bits of `X` (same as `#B` on HP-16C)
+    - ![ROOT > BASE > BFCN](images/menu-root-base-bfcn.png)
+        - ![ROOT > BASE > BFCN > Row1](images/menu-root-base-bfcn-1.png)
+        - `B+`: add `X` and `Y` using unsigned 32-bit integer math
+        - `B-`: subtract `X` from `Y` using unsigned 32-bit integer math
+        - `B*`: multiply `X` and `Y` using unsigned 32-bit integer math
+        - `B/`: divide `X` into `Y` using unsigned 32-bit integer math
+        - `BDIV`: divide `X` into `Y` with remainder, placing the quotient in
+          `X` and the remainder in `Y`
+    - ![ROOT > BASE > BCFS](images/menu-root-base-bcfs.png)
+        - ![ROOT > BASE > BCFS > Row1](images/menu-root-base-bcfs-1.png)
+        - `CCF`: clear carry flag
+        - `SCF`: set carry flag
+        - `CF?`: return carry flag state as 0 or 1
+        - `WSIZ`: set integer word size (supported values: 8, 16, 24, 32)
+        - `WSZ?`: return current integer word size (default: 32)
 - ![ROOT > HYP](images/menu-root-hyp.png) (`ROOT > HYP`)
     - ![ROOT > HYP > Row1](images/menu-root-hyp-1.png)
     - ![ROOT > HYP > Row2](images/menu-root-hyp-2.png)
