@@ -34,10 +34,10 @@ The Time Value of Money (TVM) functionality is inspired by RPN financial
 calculators such as the HP-12C, HP-17B, HP-17bii+, and the HP-30b. They are
 available through the `ROOT > TVM` menu:
 
-- ![ROOT > TVM](images/menu-root-tvm.png)
-    - ![ROOT > TVM > Row1](images/menu-root-tvm-1.png)
-    - ![ROOT > TVM > Row2](images/menu-root-tvm-2.png)
-    - ![ROOT > TVM > Row3](images/menu-root-tvm-3.png)
+- ![ROOT > TVM](images/menu/root-tvm.png)
+    - ![ROOT > TVM > Row1](images/menu/root-tvm-1.png)
+    - ![ROOT > TVM > Row2](images/menu/root-tvm-2.png)
+    - ![ROOT > TVM > Row3](images/menu/root-tvm-3.png)
 
 This User Guide assumes that you are already know the theory of the Time Value
 of Money, and that you are familiar with TVM functions of RPN financial
@@ -224,7 +224,7 @@ values by entering a value and pressing the appropriate menu button. A small dot
 will be appended to the menu name to indicate that the default value has been
 overridden:
 
-![TVM Solver Overridden](images/menu-root-tvm-solver.png)
+![TVM Solver Overridden](images/menu/root-tvm-solver.png)
 
 We might choose to override `IYR1` and `IYR2` when 2 solutions are known to
 exist, but the TVM Solver is unable to find either of them due to the default

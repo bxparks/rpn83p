@@ -368,8 +368,8 @@ the entry of the Date objects requires the use of the comma `,` key, so the app
 now contains an option to control the behavior of this button under the `MODE`
 menu:
 
-- ![ROOT > MODE](images/menu-root-mode.png)
-    - ![ROOT > MODE > CommaEE](images/menu-root-mode-commaee.png)
+- ![ROOT > MODE](images/menu/root-mode.png)
+    - ![ROOT > MODE > CommaEE](images/menu/root-mode-commaee.png)
 
 If the `,EE` option is selected (factory default), the button behaves as labeled
 on the keyboard: the `,` button invokes the comma function, and `2ND EE` invokes
@@ -412,8 +412,8 @@ Experts](#data-entry-for-experts) section at the end of this document.
 In the `MODE` menu, there are 2 settings that affect how date objects are
 displayed:
 
-- ![ROOT > MODE](images/menu-root-mode.png)
-    - ![ROOT > MODE > ObjectFormatting](images/menu-root-mode-object-formatting.png)
+- ![ROOT > MODE](images/menu/root-mode.png)
+    - ![ROOT > MODE > ObjectFormatting](images/menu/root-mode-object-formatting.png)
 
 If the `{..}` (Raw Formatting) option is selected (factory default), the date
 objects will be displayed in their raw form using curly braces. This will be

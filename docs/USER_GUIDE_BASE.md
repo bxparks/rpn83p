@@ -32,20 +32,20 @@ to its length.
 
 The `BASE` functions are available through the `ROOT > BASE` hierarchy:
 
-- ![ROOT > BASE](images/menu-root-base.png)
-    - ![ROOT > BASE > Row1](images/menu-root-base-1.png)
-    - ![ROOT > BASE > LOGI](images/menu-root-base-logi.png)
-        - ![ROOT > BASE > LOGI > Row1](images/menu-root-base-logi-1.png)
-    - ![ROOT > BASE > ROTS](images/menu-root-base-rots.png)
-        - ![ROOT > BASE > ROTS > Row1](images/menu-root-base-rots-1.png)
-        - ![ROOT > BASE > ROTS > Row2](images/menu-root-base-rots-2.png)
-        - ![ROOT > BASE > ROTS > Row3](images/menu-root-base-rots-3.png)
-    - ![ROOT > BASE > Row2](images/menu-root-base-bits.png)
-        - ![ROOT > BASE > BITS > BITS](images/menu-root-base-bits-1.png)
-    - ![ROOT > BASE > BFCN](images/menu-root-base-bfcn.png)
-        - ![ROOT > BASE > BFCN > Row1](images/menu-root-base-bfcn-1.png)
-    - ![ROOT > BASE > BCFS](images/menu-root-base-bcfs.png)
-        - ![ROOT > BASE > BCFS > Row1](images/menu-root-base-bcfs-1.png)
+- ![ROOT > BASE](images/menu/root-base.png)
+    - ![ROOT > BASE > Row1](images/menu/root-base-1.png)
+    - ![ROOT > BASE > LOGI](images/menu/root-base-logi.png)
+        - ![ROOT > BASE > LOGI > Row1](images/menu/root-base-logi-1.png)
+    - ![ROOT > BASE > ROTS](images/menu/root-base-rots.png)
+        - ![ROOT > BASE > ROTS > Row1](images/menu/root-base-rots-1.png)
+        - ![ROOT > BASE > ROTS > Row2](images/menu/root-base-rots-2.png)
+        - ![ROOT > BASE > ROTS > Row3](images/menu/root-base-rots-3.png)
+    - ![ROOT > BASE > Row2](images/menu/root-base-bits.png)
+        - ![ROOT > BASE > BITS > BITS](images/menu/root-base-bits-1.png)
+    - ![ROOT > BASE > BFCN](images/menu/root-base-bfcn.png)
+        - ![ROOT > BASE > BFCN > Row1](images/menu/root-base-bfcn-1.png)
+    - ![ROOT > BASE > BCFS](images/menu/root-base-bcfs.png)
+        - ![ROOT > BASE > BCFS > Row1](images/menu/root-base-bcfs-1.png)
 
 These functions allow conversion of integers into different bases (10, 16, 8,
 2), as well as performing bitwise functions on those integers (bit-and, bit-or,

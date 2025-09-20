@@ -194,8 +194,8 @@ that complex numbers can be displayed. The complex display modes are: `RECT`,
 `ROOT > MODE`, but the fastest way to reach this menu row is to use the `MODE`
 button shortcut on keyboard:
 
-- ![ROOT > MODE](images/menu-root-mode.png)
-    - ![ROOT > MODE > ComplexDisplayModes](images/menu-root-mode-complexdisplaymodes.png)
+- ![ROOT > MODE](images/menu/root-mode.png)
+    - ![ROOT > MODE > ComplexDisplayModes](images/menu/root-mode-complexdisplaymodes.png)
 
 When a complex number is on the stack, the `RECT`, `PRAD`, and `PDEG` menu
 buttons will display the number in different forms, and the status line
@@ -311,8 +311,8 @@ the underlying TI-OS functions do not support them.
 Additional functions specific to complex numbers are under the `ROOT > CPLX`
 menu:
 
-- ![ROOT > CPLX](images/menu-root-cplx.png)
-    - ![ROOT > CPLX > Row1](images/menu-root-cplx-1.png)
+- ![ROOT > CPLX](images/menu/root-cplx.png)
+    - ![ROOT > CPLX > Row1](images/menu/root-cplx-1.png)
 
 They are:
 
@@ -425,8 +425,8 @@ functions are real:
 These are available on row 2 of the `MODE` menu group, under `ROOT > MODE`, but
 the fastest way to reach this menu row is to use the `MODE` button shortcut:
 
-- ![ROOT > MODE](images/menu-root-mode.png)
-    - ![ROOT > MODE > ComplexResultModes](images/menu-root-mode-complexresultmodes.png)
+- ![ROOT > MODE](images/menu/root-mode.png)
+    - ![ROOT > MODE > ComplexResultModes](images/menu/root-mode-complexresultmodes.png)
 
 Note that these settings do not affect how functions evaluate *complex*
 arguments. If the argument is complex, all functions that support complex
@@ -467,12 +467,12 @@ The trigonometric modes (`RAD`, `DEG`) affect the computation of trigonometric
 functions. They determine the unit of the angles consumed or returned by
 trigonometric functions. Complex functions (with the sole exception of `CANG`,
 see above) are not affected by the trigonometric modes: ![ROOT > MODE >
-TrigModes](images/menu-root-mode-trigmodes.png)
+TrigModes](images/menu/root-mode-trigmodes.png)
 
 The complex display modes (`RECT`, `PRAD`, `PDEG`) control how complex numbers
 are rendered on the screen. These modes do not affect the behavior of any
 complex functions (with the sole exception of `2ND LINK`, see above): ![ROOT >
-MODE > ComplexDisplayModes](images/menu-root-mode-complexdisplaymodes.png)
+MODE > ComplexDisplayModes](images/menu/root-mode-complexdisplaymodes.png)
 
 ## Complex Numbers in Storage Registers
 

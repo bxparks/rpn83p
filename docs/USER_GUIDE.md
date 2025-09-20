@@ -1211,8 +1211,8 @@ calculators. However, RPN83P allows the RPN stack size to be changed between 4
 and 8, using the `SSIZ` command under the `MODE` menu (which can be quickly
 accessed through the `MODE` button):
 
-- ![ROOT > MODE](images/menu-root-mode.png)
-    - ![ROOT > MODE > SSIZ](images/menu-root-mode-ssiz.png)
+- ![ROOT > MODE](images/menu/root-mode.png)
+    - ![ROOT > MODE > SSIZ](images/menu/root-mode-ssiz.png)
 
 The current stack size can be recalled using the `SSZ?` command. It is also
 shown in the top status line using the annunciators `4STK`, `5STK`, `6STK`,
@@ -1378,7 +1378,7 @@ bar was, and unlikely to want to go back there using the `ON/EXIT/ESC` key.
 
 Pressing the `HELP` menu button at the root menu activates the Help pages:
 
-![ROOT > HELP](images/menu-root-help.png)
+![ROOT > HELP](images/menu/root-help.png)
 
 The contents of these pages are updated frequently so the screenshots below may
 not be identical to the current version:
@@ -1481,11 +1481,11 @@ RPN83P application.
 The `MODE` menu folder contains a number of menu items which control the
 operating modes or the display modes of the calculator.
 
-- ![ROOT > MODE](images/menu-root-mode.png)
-    - ![ROOT > MODE > Row1](images/menu-root-mode-1.png)
-    - ![ROOT > MODE > Row2](images/menu-root-mode-2.png)
-    - ![ROOT > MODE > Row3](images/menu-root-mode-3.png)
-    - ![ROOT > MODE > Row4](images/menu-root-mode-4.png)
+- ![ROOT > MODE](images/menu/root-mode.png)
+    - ![ROOT > MODE > Row1](images/menu/root-mode-1.png)
+    - ![ROOT > MODE > Row2](images/menu/root-mode-2.png)
+    - ![ROOT > MODE > Row3](images/menu/root-mode-3.png)
+    - ![ROOT > MODE > Row4](images/menu/root-mode-4.png)
 
 The quickest way to reach this menu folder is to use the `MODE` button on the
 keypad, instead of navigating the menu hierarchy. Using the `MODE` button allows
@@ -1612,8 +1612,8 @@ explained above in [RPN Stack Size](#rpn-stack-size).
 The `,EE` and `EE,` selectors under `ROOT > MODE` configure the behavior of the
 `Comma-EE` button:
 
-- ![ROOT > MODE](images/menu-root-mode.png) (`ROOT > MODE`)
-    - ![ROOT > MODE > CommaEE](images/menu-root-mode-commaee.png)
+- ![ROOT > MODE](images/menu/root-mode.png) (`ROOT > MODE`)
+    - ![ROOT > MODE > CommaEE](images/menu/root-mode-commaee.png)
     - `,EE`: the `Comma-EE` button behaves as labeled on the keyboard (factory
       default)
     - `EE,`: the `Comma-EE` button is inverted
@@ -1715,8 +1715,8 @@ To recall register `R00`, press:
 To clear the all storage registers, use the `CLRG` soft menu function under the
 `CLR` menu folder:
 
-- ![ROOT > CLR](images/menu-root-clr.png)
-    - ![ROOT > CLR > CLRG](images/menu-root-clr-clrg.png)
+- ![ROOT > CLR](images/menu/root-clr.png)
+    - ![ROOT > CLR > CLRG](images/menu/root-clr-clrg.png)
 
 The message `REGS cleared` will be displayed on the screen.
 
@@ -1748,8 +1748,8 @@ The total number of registers is 25 by default (the minimum allowed), but can be
 increased up to a maximum of 100 using the `RSIZ` menu function under `MODE`
 menu folder (which can be accessed quickly using the `MODE` button):
 
-- ![ROOT > MODE](images/menu-root-mode.png)
-    - ![ROOT > MODE > RSIZ](images/menu-root-mode-rsiz.png)
+- ![ROOT > MODE](images/menu/root-mode.png)
+    - ![ROOT > MODE > RSIZ](images/menu/root-mode-rsiz.png)
 
 **HP-42S Compatibility Note**: The `RSIZ` command is named `SIZE` on the HP-42S.
 On RPN83P, there are 3 different "size" commands (`RSIZ`, `SSIZ`, `WSIZ`) and it
@@ -1847,11 +1847,11 @@ record objects (e.g. Date, Time, DateTime) defined in
 The functions under the `NUM` menu folder are arithmetic functions which don't
 quite fit into one of the other major categories:
 
-- ![ROOT > NUM](images/menu-root-num.png)
-    - ![ROOT > NUM > Row1](images/menu-root-num-1.png)
-    - ![ROOT > NUM > Row2](images/menu-root-num-2.png)
-    - ![ROOT > NUM > Row3](images/menu-root-num-3.png)
-    - ![ROOT > NUM > Row4](images/menu-root-num-4.png)
+- ![ROOT > NUM](images/menu/root-num.png)
+    - ![ROOT > NUM > Row1](images/menu/root-num-1.png)
+    - ![ROOT > NUM > Row2](images/menu/root-num-2.png)
+    - ![ROOT > NUM > Row3](images/menu/root-num-3.png)
+    - ![ROOT > NUM > Row4](images/menu/root-num-4.png)
 
 I hope that most of these are self-explanatory. The names roughly follow the
 convention used by the HP-42S or other HP calculators, and their placement in
