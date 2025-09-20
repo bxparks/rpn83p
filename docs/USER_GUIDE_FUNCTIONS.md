@@ -342,17 +342,17 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
     - `>ha`: acres to hectares
     - `>acr`: hectares to acres
 - ![ROOT > DATE](images/menu/root-date.png) (`ROOT > DATE`)
-    - ![ROOT > DATE > Row1](images/date/menu-root-date-1.png)
-    - ![ROOT > DATE > Row2](images/date/menu-root-date-2.png)
-    - ![ROOT > DATE > Row3](images/date/menu-root-date-3.png)
+    - ![ROOT > DATE > Row1](images/menu/root-date-1.png)
+    - ![ROOT > DATE > Row2](images/menu/root-date-2.png)
+    - ![ROOT > DATE > Row3](images/menu/root-date-3.png)
         - `DOPS`
-            - ![ROOT > DATE > DOPS > Row1](images/date/menu-root-date-dops-1.png)
+            - ![ROOT > DATE > DOPS > Row1](images/menu/root-date-dops-1.png)
         - `EPCH`
-            - ![ROOT > DATE > EPCH > Row1](images/date/menu-root-date-epch-1.png)
-            - ![ROOT > DATE > EPCH > Row2](images/date/menu-root-date-epch-2.png)
+            - ![ROOT > DATE > EPCH > Row1](images/menu/root-date-epch-1.png)
+            - ![ROOT > DATE > EPCH > Row2](images/menu/root-date-epch-2.png)
         - `CLK`
-            - ![ROOT > DATE > CLK > Row1](images/date/menu-root-date-clk-1.png)
-            - ![ROOT > DATE > CLK > Row2](images/date/menu-root-date-clk-2.png)
+            - ![ROOT > DATE > CLK > Row1](images/menu/root-date-clk-1.png)
+            - ![ROOT > DATE > CLK > Row2](images/menu/root-date-clk-2.png)
     - `LEAP`: determine if given year is a leap year
     - `DOW`: calculate the DayOfWeek of given Date, DateTime, ZonedDateTime
     - `D>DY`: convert Date to Epoch days
@@ -365,13 +365,13 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
     - `S>UT`: convert Epoch seconds to ZonedDateTime using UTC timezone
     - `TZ>H`: convert TimeZone to floating point hours
     - `H>TZ`: convert hours to TimeZone
-    - ![ROOT > DATE > DOPS](images/date/menu-root-date-dops.png)
+    - ![ROOT > DATE > DOPS](images/menu/root-date-dops.png)
       (`ROOT > DATE > DOPS`)
         - `DSHK`: shrink a ZonedDateTime or DateTime by truncating
         - `DEXD`: extend Date or DateTime into DateTime or ZonedDateTime
         - `DCUT`: cut (split) a ZonedDateTime or DateTime into smaller objects
         - `DLNK`: link (merge) smaller objects into DateTime or ZonedDateTime
-    - ![ROOT > DATE > EPCH](images/date/menu-root-date-epch.png)
+    - ![ROOT > DATE > EPCH](images/menu/root-date-epch.png)
       (`ROOT > DATE > EPCH`)
         - `UNIX`: select Unix Epoch date of 1970-01-01
         - `NTP`: select NTP Epoch date of 1900-01-01
@@ -381,7 +381,7 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
         - `CEPC`: select custom Epoch date
         - `EPC`: set custom Epoch date
         - `EPC?`: get current custom Epoch date
-    - ![ROOT > DATE > CLK](images/date/menu-root-date-clk.png)
+    - ![ROOT > DATE > CLK](images/menu/root-date-clk.png)
       (`ROOT > DATE > CLK`)
         - `NOW`: get the current hardware clock as Epoch seconds
         - `NOWD`: get the current hardware clock as a Date

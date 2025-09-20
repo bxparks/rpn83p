@@ -5,7 +5,7 @@ been extracted from [USER_GUIDE.md](USER_GUIDE.md) due to its length. The `DATE`
 features are available under the `ROOT > DATE` menu folder in the 3rd row. Press
 `HOME` (i.e. `MATH`), `DOWN`, then `DOWN` again to get to:
 
-![ROOT > DATE menu](images/date/menu-root-date.png)
+![ROOT > DATE menu](images/menu/root-date.png)
 
 Here is a quick summary of the features:
 
@@ -253,18 +253,18 @@ found in the 3rd row of the ROOT menu folder: `HOME` (i.e. `MATH`), `DOWN`,
 `DOWN`). A short synopsis of each menu function is listed here. More detailed
 descriptions are given in later subsections below.
 
-- ![ROOT > DATE](images/date/menu-root-date.png)
-    - ![ROOT > DATE > Row1](images/date/menu-root-date-1.png)
-    - ![ROOT > DATE > Row2](images/date/menu-root-date-2.png)
-    - ![ROOT > DATE > Row3](images/date/menu-root-date-3.png)
+- ![ROOT > DATE](images/menu/root-date.png)
+    - ![ROOT > DATE > Row1](images/menu/root-date-1.png)
+    - ![ROOT > DATE > Row2](images/menu/root-date-2.png)
+    - ![ROOT > DATE > Row3](images/menu/root-date-3.png)
         - `DOPS`
-            - ![ROOT > DATE > DOPS > Row1](images/date/menu-root-date-dops-1.png)
+            - ![ROOT > DATE > DOPS > Row1](images/menu/root-date-dops-1.png)
         - `EPCH`
-            - ![ROOT > DATE > EPCH > Row1](images/date/menu-root-date-epch-1.png)
-            - ![ROOT > DATE > EPCH > Row2](images/date/menu-root-date-epch-2.png)
+            - ![ROOT > DATE > EPCH > Row1](images/menu/root-date-epch-1.png)
+            - ![ROOT > DATE > EPCH > Row2](images/menu/root-date-epch-2.png)
         - `CLK`
-            - ![ROOT > DATE > CLK > Row1](images/date/menu-root-date-clk-1.png)
-            - ![ROOT > DATE > CLK > Row2](images/date/menu-root-date-clk-2.png)
+            - ![ROOT > DATE > CLK > Row1](images/menu/root-date-clk-1.png)
+            - ![ROOT > DATE > CLK > Row2](images/menu/root-date-clk-2.png)
     - `LEAP`: determine if given year is a leap year
     - `DOW`: calculate the DayOfWeek of given Date, DateTime, ZonedDateTime
     - `D>DY`: convert Date to Epoch days
@@ -277,13 +277,13 @@ descriptions are given in later subsections below.
     - `S>UT`: convert Epoch seconds to ZonedDateTime using UTC timezone
     - `TZ>H`: convert TimeZone to floating point hours
     - `H>TZ`: convert hours to TimeZone
-    - ![ROOT > DATE > DOPS](images/date/menu-root-date-dops.png)
+    - ![ROOT > DATE > DOPS](images/menu/root-date-dops.png)
       (`ROOT > DATE > DOPS`)
         - `DSHK`: shrink a ZonedDateTime or DateTime by truncating
         - `DEXD`: extend Date or DateTime into DateTime or ZonedDateTime
         - `DCUT`: cut (split) a ZonedDateTime or DateTime into smaller objects
         - `DLNK`: link (merge) smaller objects into DateTime or ZonedDateTime
-    - ![ROOT > DATE > EPCH](images/date/menu-root-date-epch.png)
+    - ![ROOT > DATE > EPCH](images/menu/root-date-epch.png)
       (`ROOT > DATE > EPCH`)
         - `UNIX`: select Unix Epoch date of 1970-01-01
         - `NTP`: select NTP Epoch date of 1900-01-01
@@ -293,7 +293,7 @@ descriptions are given in later subsections below.
         - `CEPC`: select custom Epoch date
         - `EPC`: set custom Epoch date
         - `EPC?`: get current custom Epoch date
-    - ![ROOT > DATE > CLK](images/date/menu-root-date-clk.png)
+    - ![ROOT > DATE > CLK](images/menu/root-date-clk.png)
       (`ROOT > DATE > CLK`)
         - `NOW`: get the current hardware clock as Epoch seconds
         - `NOWD`: get the current hardware clock as a Date
@@ -521,7 +521,7 @@ Epoch Date, and the `DY>D` menu function performs the reverse operation. The
 Epoch date is configurable as explained in the [Epoch Date](#epoch-date) section
 below but by default, it is set to `UNIX` which is `1970-01-01`.
 
-![ROOT > DATE > DateToDays](images/date/menu-root-date-epochdays.png)
+![ROOT > DATE > DateToDays](images/menu/root-date-epochdays.png)
 
 For example, let's calculate the epochdays of 2024-03-14:
 
@@ -605,7 +605,7 @@ The `D*>S` and `S>T` menu functions convert between a Time object and the
 integer number of seconds since midnight `00:00:00`. This will will always be a
 non-negative number:
 
-![ROOT > DATE > TimeToSeconds](images/date/menu-root-date-timeseconds.png)
+![ROOT > DATE > TimeToSeconds](images/menu/root-date-timeseconds.png)
 
 For example, let's convert `15:35:01` to an integer, then back to a Time object:
 
@@ -779,7 +779,7 @@ The TimeZone object can be converted to and from a floating point number
 representing the number of hours shifted from UTC. These are exposed using the
 `TZ>H` and `H>TZ` menu items:
 
-![ROOT > DATE > TimeZoneToHours](images/date/menu-root-date-timezonehours.png)
+![ROOT > DATE > TimeZoneToHours](images/menu/root-date-timezonehours.png)
 
 To convert `TZ{-4,-30}` to hours then back to a TimeZone object:
 
@@ -876,7 +876,7 @@ but it can be changed using the `EPCH` menu items described in the [Epoch
 Date](#epoch-date) section below. The menu functions for conversion are the
 `D*>S`, `S>DZ`, and `S>UT` functions:
 
-![ROOT > DATE > ZonedDateTimeToSeconds](images/date/menu-root-date-epochseconds.png)
+![ROOT > DATE > ZonedDateTimeToSeconds](images/menu/root-date-epochseconds.png)
 
 - `D*>S`: convert ZonedDateTime to epochseconds
 - `S>UT`: convert the epochseconds to the ZonedDateTime using UTC timezone
@@ -954,7 +954,7 @@ We can also subtract 2 DayOfWeek objects to get the number of days between them:
 The `DOW` menu function returns the DayOfWeek of a given Date, DateTime, or
 ZonedDateTime:
 
-![ROOT > DATE > DOW](images/date/menu-root-date-dow.png)
+![ROOT > DATE > DOW](images/menu/root-date-dow.png)
 
 | **Keys**                      | **MODE `{..}`**                           | **MODE `".."`**               |
 | -------------------------     | ---------------------                     | -----------------             |
@@ -1128,7 +1128,7 @@ Another example, let's add 30 days to the DateTime `2024-03-14 12:58:32`:
 A Duration object can be converted to its equivalent integer in unit of seconds.
 The menu functions are `D*>S` and `S>DR`:
 
-![ROOT > DATE > DurationToSeconds](images/date/menu-root-date-durationseconds.png)
+![ROOT > DATE > DurationToSeconds](images/menu/root-date-durationseconds.png)
 
 Here are some examples:
 
@@ -1194,7 +1194,7 @@ to enter on a calculator keypad:
 
 The `LEAP` menu function does not quite fit into any of the above categories:
 
-![ROOT > DATE > LEAP](images/date/menu-root-date-leap.png)
+![ROOT > DATE > LEAP](images/menu/root-date-leap.png)
 
 It determines if the given year is a [leap
 year](https://simple.wikipedia.org/wiki/Leap_year), returning a `1` if true or
@@ -1222,30 +1222,30 @@ a specific date, called the
 [epoch](https://en.wikipedia.org/wiki/Epoch_%28computing%29). RPN83P supports
 different Epoch dates under the `EPCH` menu:
 
-- ![ROOT > DATE > EPCH group](images/date/menu-root-date-epch.png)
-    - ![EPCH row 1](images/date/menu-root-date-epch-1.png)
-    - ![EPCH row 2](images/date/menu-root-date-epch-2.png)
+- ![ROOT > DATE > EPCH group](images/menu/root-date-epch.png)
+    - ![EPCH row 1](images/menu/root-date-epch-1.png)
+    - ![EPCH row 2](images/menu/root-date-epch-2.png)
 
 The following predefined epoch dates can be selected:
 
-- `UNIX`: ![EPCH UNIX](images/date/menu-root-date-epch-unix.png)
+- `UNIX`: ![EPCH UNIX](images/menu/root-date-epch-unix.png)
     - 1970-01-01 00:00:00 UTC (default)
     - [Unix epoch](https://en.wikipedia.org/wiki/Unix_time)
-- `NTP`:![EPCH NTP](images/date/menu-root-date-epch-ntp.png)
+- `NTP`:![EPCH NTP](images/menu/root-date-epch-ntp.png)
     - 1900-01-01 00:00:00 UTC
     - [NTP epoch](https://en.wikipedia.org/wiki/Network_Time_Protocol)
-- `GPS`:![EPCH GPS](images/date/menu-root-date-epch-gps.png)
+- `GPS`:![EPCH GPS](images/menu/root-date-epch-gps.png)
     - 1980-01-06 00:00:00 UTC
     - [GPS epoch](https://en.wikipedia.org/wiki/Global_Positioning_System)
-- `TIOS`:![EPCH TIOS](images/date/menu-root-date-epch-tios.png)
+- `TIOS`:![EPCH TIOS](images/menu/root-date-epch-tios.png)
     - 1997-01-01 00:00:00 UTC
     - [TIOS epoch](https://wikiti.brandonw.net/index.php?title=83Plus:Ports:45)
       used by the TI calculators
-- `Y2K`:![EPCH Y2K](images/date/menu-root-date-epch-y2k.png)
+- `Y2K`:![EPCH Y2K](images/menu/root-date-epch-y2k.png)
     - 2000-01-01 00:00:00 UTC
     - An epoch date used by some 32-bit systems to avoid the
     [Year 2038 problem](https://en.wikipedia.org/wiki/Year_2038_problem)
-- `CEPC`:![EPCH CEPC](images/date/menu-root-date-epch-cepc.png)
+- `CEPC`:![EPCH CEPC](images/menu/root-date-epch-cepc.png)
     - select the custom epoch date (factory default: `2050-01-01`)
     - the custom epoch date can be changed using the `EPC` menu item (see below)
 
@@ -1271,8 +1271,8 @@ to the `CEPC` menu appears.
 
 The Epoch date affects the following menu fuctions:
 
-- ![ROOT > DATE > EpochDays](images/date/menu-root-date-epochdays.png)
-- ![ROOT > DATE > EpochSeconds](images/date/menu-root-date-epochseconds.png)
+- ![ROOT > DATE > EpochDays](images/menu/root-date-epochdays.png)
+- ![ROOT > DATE > EpochSeconds](images/menu/root-date-epochseconds.png)
 
 The first 2 involve Epoch days:
 
@@ -1333,8 +1333,8 @@ current date and time.
 
 The menu items which related to the RTC are under the `CLK` menu folder:
 
-- ![ROOT > DATE > CLK](images/date/menu-root-date-clk.png)
-    - ![ROOT > DATE > CLK > Row1](images/date/menu-root-date-clk-1.png)
+- ![ROOT > DATE > CLK](images/menu/root-date-clk.png)
+    - ![ROOT > DATE > CLK > Row1](images/menu/root-date-clk-1.png)
         - `NOW`: return the current date-time as epochseconds from the current
           Epoch date
         - `NOWD`: return the current date-time as a `Date` object
@@ -1343,7 +1343,7 @@ The menu items which related to the RTC are under the `CLK` menu folder:
           the Application Timezone
         - `NWUT`: return the current date-time as a `ZonedDateTime` object using
           the UTC timezone
-    - ![ROOT > DATE > CLK > Row2](images/date/menu-root-date-clk-2.png)
+    - ![ROOT > DATE > CLK > Row2](images/menu/root-date-clk-2.png)
         - `TZ`: set the Application Timezone
         - `TZ?`: retrieve the Application Timezone
         - `CTZ`: set the Clock Timezone
@@ -1361,7 +1361,7 @@ Before we can set the hardware clock's datetime with the `SETC` command,
 we must set its timezone using the `CTZ` menu command. The `CTZ?` command
 retrieves the current timezone:
 
-![ROOT > DATE > CLK > CTZ](images/date/menu-root-date-clk-ctz.png)
+![ROOT > DATE > CLK > CTZ](images/menu/root-date-clk-ctz.png)
 
 There are 2 options which seem useful:
 
@@ -1407,7 +1407,7 @@ like TI-OS (i.e. Windows) through the `CTZ` configuration.
 Once the timezone of the hardware clock is set, the actual date-time of the
 clock can be configured using the `SETC` (set clock) command:
 
-![ROOT > DATE > CLK > SETC](images/date/menu-root-date-clk-setc.png)
+![ROOT > DATE > CLK > SETC](images/menu/root-date-clk-setc.png)
 
 The `SETC` command takes a ZonedDateTime value as the argument, like this:
 
@@ -1427,7 +1427,7 @@ converted into an epochseconds before being handed over to the hardware clock.
 In addition to the timezone of the RTC, RPN83P also allows the **Application**
 Timezone to be set using the `TZ` and `TZ?` commands:
 
-![ROOT > DATE > CLK > TZ](images/date/menu-root-date-clk-tz.png)
+![ROOT > DATE > CLK > TZ](images/menu/root-date-clk-tz.png)
 
 The Application Timezone is the timezone inserted into a ZonedDateTime object
 when a particular function returns a ZonedDateTime. Currently, the 2 commands
@@ -1478,8 +1478,8 @@ Sometimes we want to combined the Date and Time and TimeZone objects into bigger
 objects, or take apart bigger objects into smaller components. The `DOPS` menu
 folder contains menu items to support those operations:
 
-- ![ROOT > DATE > DOPS](images/date/menu-root-date-dops.png)
-    - ![ROOT > DATE > DOPS > Row1](images/date/menu-root-date-dops-1.png)
+- ![ROOT > DATE > DOPS](images/menu/root-date-dops.png)
+    - ![ROOT > DATE > DOPS > Row1](images/menu/root-date-dops-1.png)
 
 For ease of use, these menu functions are also available on the keyboard, by
 overloading some button functions:
