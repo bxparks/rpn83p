@@ -261,22 +261,22 @@ view the final result as a decimal number:
 | ---------             | ----------                            |
 | `MATH`                | ![HOME](docs/images/menu/root-1.png)  |
 | `DownArrow`           | ![HOME Row BASE](docs/images/menu/root-2.png) |
-| `BASE`                | ![BASE Row DEC](docs/images/base/menu-root-base-dec.png)   |
-| `HEX`                 | ![BASE Row HEX](docs/images/base/menu-root-base-hex.png)   |
+| `BASE`                | ![BASE Row DEC](docs/images/menu/root-base-dec.png)   |
+| `HEX`                 | ![BASE Row HEX](docs/images/menu/root-base-hex.png)   |
 | `ALPHA` `B` `6`       | `X:B6` |
 | `ENTER`               | `X:00 00 00 B6` |
 | `6` `5`               | `X:65` |
 | `DownArrow`           | ![BASE Row Subfolders](docs/images/menu/root-base-2.png) |
 | `LOGI`                | ![LOGI Row AND](docs/images/menu/root-base-logi-1.png) |
 | `AND`                 | `X: 00 00 00 24` |
-| `ON/EXIT` `UpArrow`   | ![BASE Row HEX](docs/images/base/menu-root-base-hex.png) |
-| `OCT`                 | `X: 00 000 000 044` ![BASE Row OCT](docs/images/base/menu-root-base-oct.png) |
-| `BIN`                 | `X: 0000 0000 0010 0100` ![BASE Row BIN](docs/images/base/menu-root-base-bin.png) |
+| `ON/EXIT` `UpArrow`   | ![BASE Row HEX](docs/images/menu/root-base-hex.png) |
+| `OCT`                 | `X: 00 000 000 044` ![BASE Row OCT](docs/images/menu/root-base-oct.png) |
+| `BIN`                 | `X: 0000 0000 0010 0100` ![BASE Row BIN](docs/images/menu/root-base-bin.png) |
 | `DownArrow`           | ![BASE Row Subfolders](docs/images/menu/root-base-2.png) |
 | `ROTS`                | ![ROTS Row SR](docs/images/menu/root-base-rots-1.png) |
 | `SR` `SR` `SR` (3X)   | `X:0000 0000 0000 0100`, Carry Flag `C` set |
-| `ON/EXIT` `UpArrow`   | ![BASE Row BIN](docs/images/base/menu-root-base-bin.png) |
-| `DEC`                 | `X:4` ![BASE Row DEC](docs/images/base/menu-root-base-dec.png) |
+| `ON/EXIT` `UpArrow`   | ![BASE Row BIN](docs/images/menu/root-base-bin.png) |
+| `DEC`                 | `X:4` ![BASE Row DEC](docs/images/menu/root-base-dec.png) |
 
 Here is the animated GIF that shows this calculation:
 
