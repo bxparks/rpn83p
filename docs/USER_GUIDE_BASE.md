@@ -34,13 +34,18 @@ The `BASE` functions are available through the `ROOT > BASE` hierarchy:
 
 - ![ROOT > BASE](images/menu-root-base.png)
     - ![BASE > Row1](images/menu-root-base-1.png)
-    - ![BASE > Row2](images/menu-root-base-2.png)
-    - ![BASE > Row3](images/menu-root-base-3.png)
-    - ![BASE > Row4](images/menu-root-base-4.png)
-    - ![BASE > Row5](images/menu-root-base-5.png)
-    - ![BASE > Row6](images/menu-root-base-6.png)
-    - ![BASE > Row7](images/menu-root-base-7.png)
-    - ![BASE > Row8](images/menu-root-base-8.png)
+    - ![BASE > LOGI](images/menu-root-base-logi.png)
+        - ![LOGI > Row1](images/menu-root-base-logi-1.png)
+    - ![BASE > ROTS](images/menu-root-base-rots.png)
+        - ![ROTS > Row1](images/menu-root-base-rots-1.png)
+        - ![ROTS > Row2](images/menu-root-base-rots-2.png)
+        - ![ROTS > Row3](images/menu-root-base-rots-3.png)
+    - ![BASE > Row2](images/menu-root-base-bits.png)
+        - ![BITS > BITS](images/menu-root-base-bits-1.png)
+    - ![BASE > BFCN](images/menu-root-base-bfcn.png)
+        - ![BFCN > Row1](images/menu-root-base-bfcn-1.png)
+    - ![BASE > BCFS](images/menu-root-base-bcfs.png)
+        - ![BCFS > Row1](images/menu-root-base-bcfs-1.png)
 
 These functions allow conversion of integers into different bases (10, 16, 8,
 2), as well as performing bitwise functions on those integers (bit-and, bit-or,
