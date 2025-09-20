@@ -234,6 +234,8 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
         - (consistent with HP-42S)
     - `>HR`: convert `HH.MMSSssss` to `HH.hhhh`
     - `>HMS`: convert `HH.hhhh` to `HH.MMSSssss`
+    - `HMS+`: add `X` and `Y` assuming HMS format
+    - `HMS-`: subtract `X` from `Y` assuming HMS format
 - ![ROOT > TVM](images/menu-root-tvm.png) (`ROOT > TVM`)
     - ![ROOT > TVM > Row1](images/menu-root-tvm-1.png)
     - ![ROOT > TVM > Row2](images/menu-root-tvm-2.png)

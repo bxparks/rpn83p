@@ -131,7 +131,8 @@ Summary of features:
     - trigonometric: `ATN2`
     - hyperbolic: `SINH`, `COSH`, `TANH`, `ASNH`, `ACSH`, `ATNH`
     - probability: `PERM`, `COMB`, `N!`, `RAND`, `SEED`
-    - angle conversions: `>DEG`, `>RAD`, `>HR`, `>HMS`, `>REC`, `>POL`
+    - angle conversions: `>DEG`, `>RAD`, `>REC`, `>POL`, `>HR`, `>HMS`, `HMS+`,
+      `HMS-`
     - unit conversions: `>C`, `>F`, `>hPa`, `>inHg`, `>km`, `>mi`, `>m`, `>ft`,
       `>cm`, `>in`, `>um`, `>mil`, `>kg`, `>lbs`, `>g`, `>oz`, `>L`, `>gal`,
       `>mL`, `>floz`, `>kJ`, `>cal`, `>kW`, `>hp`, `>Lkm`, `>mpg`, `>kPa`,
