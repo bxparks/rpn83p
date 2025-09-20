@@ -148,13 +148,14 @@ Summary of features:
       (exponential), `PWRF` (power)
 - base conversion and bitwise operations, inspired by HP-16C and HP-42S
     - base conversions: `DEC`, `HEX`, `OCT`, `BIN`
-    - bitwise operations: `AND`, `OR`, `XOR`, `NOT`, `NEG`, `REVB` (reverse
-      bits), `CNTB` (count bits)
-    - integer arithmetics: `B+`, `B-`, `B*`, `B/`, `BDIV` (divide with
-      remainder)
-    - shift and rotate: `SL`, `SR`, `ASR`, `RL`, `RR`, `RLC`, `RRC`,
+    - logical operations: `AND`, `OR`, `XOR`, `NOT`, `NEG`
+    - rotate and shift: `SL`, `SR`, `ASR`, `RL`, `RR`, `RLC`, `RRC`,
       `SLn`, `SRn`, `RLn`, `RRn`, `RLCn`, `RRCn`
-    - carry flag and bit masks: `CCF`, `SCF`, `CF?`, `CB`, `SB`, `B?`
+    - bit operations: `CB`, `SB`, `B?`, `REVB` (reverse bits), `CNTB` (count
+      bits)
+    - arithmetic functions: `BAS+`, `BAS-`, `BAS*`, `BAS/`, `BDIV` (divide with
+      remainder)
+    - carry flag: `CCF`, `SCF`, `CF?`
     - word sizes: `WSIZ`, `WSZ?`: 8, 16, 24, 32 bits
 - time value of money (TVM), inspired by HP-12C, HP-17B, and HP-30b
     - `N`, `I%YR`, `PV`, `PMT`, `FV`
@@ -1582,10 +1583,10 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
         - `CNTB`: count number of 1 bits of `X` (same as `#B` on HP-16C)
     - ![ROOT > BASE > BFCN](images/menu-root-base-bfcn.png)
         - ![ROOT > BASE > BFCN > Row1](images/menu-root-base-bfcn-1.png)
-        - `B+`: add `X` and `Y` using unsigned 32-bit integer math
-        - `B-`: subtract `X` from `Y` using unsigned 32-bit integer math
-        - `B*`: multiply `X` and `Y` using unsigned 32-bit integer math
-        - `B/`: divide `X` into `Y` using unsigned 32-bit integer math
+        - `BAS+`: add `X` and `Y` using unsigned 32-bit integer math
+        - `BAS-`: subtract `X` from `Y` using unsigned 32-bit integer math
+        - `BAS*`: multiply `X` and `Y` using unsigned 32-bit integer math
+        - `BAS/`: divide `X` into `Y` using unsigned 32-bit integer math
         - `BDIV`: divide `X` into `Y` with remainder, placing the quotient in
           `X` and the remainder in `Y`
     - ![ROOT > BASE > BCFS](images/menu-root-base-bcfs.png)

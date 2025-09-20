@@ -73,13 +73,14 @@ Summary of features:
       (exponential), `PWRF` (power)
 - base conversion and bitwise operations, inspired by HP-16C and HP-42S
     - base conversions: `DEC`, `HEX`, `OCT`, `BIN`
-    - bitwise operations: `AND`, `OR`, `XOR`, `NOT`, `NEG`, `REVB` (reverse
-      bits), `CNTB` (count bits)
-    - integer arithmetics: `B+`, `B-`, `B*`, `B/`, `BDIV` (divide with
-      remainder)
-    - shift and rotate: `SL`, `SR`, `ASR`, `RL`, `RR`, `RLC`, `RRC`,
+    - logical: `AND`, `OR`, `XOR`, `NOT`, `NEG`
+    - rotate and shift: `SL`, `SR`, `ASR`, `RL`, `RR`, `RLC`, `RRC`,
       `SLn`, `SRn`, `RLn`, `RRn`, `RLCn`, `RRCn`
-    - carry flag and bit masks: `CCF`, `SCF`, `CF?`, `CB`, `SB`, `B?`
+    - bit operations: `CB`, `SB`, `B?`, `REVB` (reverse bits), `CNTB` (count
+      bits)
+    - arithmetic functions: `BAS+`, `BAS-`, `BAS*`, `BAS/`, `BDIV` (divide with
+      remainder)
+    - carry flag: `CCF`, `SCF`, `CF?`
     - word sizes: `WSIZ`, `WSZ?`: 8, 16, 24, 32 bits
 - time value of money (TVM), inspired by HP-12C, HP-17B, and HP-30b
     - `N`, `I%YR`, `PV`, `PMT`, `FV`

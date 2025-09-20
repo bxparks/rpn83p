@@ -244,12 +244,12 @@ to the meaning that I would have expected.
 
 Similar to the HP-42S, activating the `BASE` menu folder changes the
 behavior of keyboard arithmetic functions. Specifically, the buttons `+`, `-`,
-`*`, `/` are re-bound to their integer counterparts `B+`, `B-`, `B*`, `B/` which
-perform 32-bit unsigned arithmetic operations instead of floating point
-operations. The numbers in the `X` and `Y` registers are converted into 32-bit
-unsigned integers before the integer subroutines are called.
+`*`, `/` are re-bound to their integer counterparts `BAS+`, `BAS-`, `BAS*`,
+`BAS/` which perform 32-bit unsigned arithmetic operations instead of floating
+point operations. The numbers in the `X` and `Y` registers are converted into
+32-bit unsigned integers before the integer subroutines are called.
 
-The `BDIV` menu function performs the same integer division operation as `B/`
+The `BDIV` menu function performs the same integer division operation as `BAS/`
 but returns both the quotient (in `X`) and the remainder (in `Y`). With the
 quotient in `X`, it becomes easy to recover the original `X` value by using the
 `LASTX` function (`2ND` `ANS`), then pressing the `*` button, then the `+`
@@ -276,7 +276,7 @@ entering the `BASE` menu, and then perform an arithmetic `+` operation:
 | `+`       | ![Base Arithmetic Part 4](images/base/arithmetic-4-plus.png)  |
 | `DEC`     | ![Base Arithmetic Part 5](images/base/arithmetic-5-dec.png)   |
 
-We can see that the `+` key activated the `B+` function in `BASE` mode, which
+We can see that the `+` key activated the `BAS+` function in `BASE` mode, which
 truncated the fraction part of the operands, performed an unsigned integer
 addition, then produced an integer result.
 
@@ -316,10 +316,10 @@ affect the CF:
 
 All integer arithmetic functions affect the CF:
 
-- `B+`: CF set on overflow
-- `B-`: CF set on borrow
-- `B*`: CF set on overflow
-- `B/`: CF always set to 0
+- `BAS+`: CF set on overflow
+- `BAS-`: CF set on borrow
+- `BAS*`: CF set on overflow
+- `BAS/`: CF always set to 0
 - `BDIV`: CF always set to 0
 
 On most microprocessors, the bitwise operations clear the Carry Flag to zero.
