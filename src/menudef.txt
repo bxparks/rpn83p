@@ -745,8 +745,10 @@ MenuGroup root mRoot [
         MenuGroup DW mDateFolderDayOfWeek [
           MenuRow [
             MenuItem DW<SlBrace><SrBrace> mDayOfWeekCreate
-            MenuItem <Sconvert>ISO mDayOfWeekToIsoNumber
-            MenuItem ISO<Sconvert> mIsoNumberToDayOfWeek
+            MenuItem <Sconvert>ISO mDayOfWeekToIsoDowNumber # Mon=1, Sun=7
+            MenuItem ISO<Sconvert> mIsoDowNumberToDayOfWeek # Mon=1, Sun=7
+            MenuItem <Sconvert>UNX mDayOfWeekToUnixDowNumber # Sun=0, Sat=6
+            MenuItem UNX<Sconvert> mUnixDowNumberToDayOfWeek # Sun=0, Sat=6
           ]
         ]
         MenuGroup EPCH mEpoch [

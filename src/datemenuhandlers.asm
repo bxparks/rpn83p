@@ -552,17 +552,35 @@ mDayOfWeekCreateHandler:
 strDayOfWeekPrefix:
     .db "DW{", 0
 
-mDayOfWeekToIsoNumberHandler:
+; Mon=1, Sun=7
+mDayOfWeekToIsoDowNumberHandler:
     call closeInputAndRecallRpnDateRelatedX ; OP1=rpnDayOfWeek; A=rpnObjectType
     cp rpnObjectTypeDayOfWeek
     jr nz, mDayOfWeekErr
-    bcall(_RpnDayOfWeekToIsoNumber) ; OP1=iso dayofweek
+    bcall(_RpnDayOfWeekToIsoDowNumber) ; OP1=isoDowNumber
     bcall(_ReplaceStackX)
     ret
 
-mIsoNumberToDayOfWeekHandler:
-    call closeInputAndRecallX ; OP1=X=isoNumber
-    bcall(_IsoNumberToRpnDayOfWeek) ; OP1=rpnDayOfWeek
+; Mon=1, Sun=7
+mIsoDowNumberToDayOfWeekHandler:
+    call closeInputAndRecallX ; OP1=X=isoDowNumber
+    bcall(_IsoDowNumberToRpnDayOfWeek) ; OP1=rpnDayOfWeek
+    bcall(_ReplaceStackX)
+    ret
+
+; Sun=0, Sat=6
+mDayOfWeekToUnixDowNumberHandler:
+    call closeInputAndRecallRpnDateRelatedX ; OP1=rpnDayOfWeek; A=rpnObjectType
+    cp rpnObjectTypeDayOfWeek
+    jr nz, mDayOfWeekErr
+    bcall(_RpnDayOfWeekToUnixDowNumber) ; OP1=unixDowNumber
+    bcall(_ReplaceStackX)
+    ret
+
+; Sun=0, Sat=6
+mUnixDowNumberToDayOfWeekHandler:
+    call closeInputAndRecallX ; OP1=X=unixDowNumber
+    bcall(_UnixDowNumberToRpnDayOfWeek) ; OP1=rpnDayOfWeek
     bcall(_ReplaceStackX)
     ret
 

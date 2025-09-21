@@ -4757,41 +4757,41 @@ mDayOfWeekCreateId equ 507
     .dw 0 ; rowBeginId or altName
     .dw mDayOfWeekCreateHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
-mDayOfWeekToIsoNumber:
-mDayOfWeekToIsoNumberId equ 508
-    .dw mDayOfWeekToIsoNumberId ; id
+mDayOfWeekToIsoDowNumber:
+mDayOfWeekToIsoDowNumberId equ 508
+    .dw mDayOfWeekToIsoDowNumberId ; id
     .dw mDateFolderDayOfWeekId ; parentId
-    .dw mDayOfWeekToIsoNumberName ; name
+    .dw mDayOfWeekToIsoDowNumberName ; name
     .db 0 ; numRows
     .dw 0 ; rowBeginId or altName
-    .dw mDayOfWeekToIsoNumberHandler ; handler (to be implemented)
+    .dw mDayOfWeekToIsoDowNumberHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
-mIsoNumberToDayOfWeek:
-mIsoNumberToDayOfWeekId equ 509
-    .dw mIsoNumberToDayOfWeekId ; id
+mIsoDowNumberToDayOfWeek:
+mIsoDowNumberToDayOfWeekId equ 509
+    .dw mIsoDowNumberToDayOfWeekId ; id
     .dw mDateFolderDayOfWeekId ; parentId
-    .dw mIsoNumberToDayOfWeekName ; name
+    .dw mIsoDowNumberToDayOfWeekName ; name
     .db 0 ; numRows
     .dw 0 ; rowBeginId or altName
-    .dw mIsoNumberToDayOfWeekHandler ; handler (to be implemented)
+    .dw mIsoDowNumberToDayOfWeekHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
-mBlank510:
-mBlank510Id equ 510
-    .dw mBlank510Id ; id
+mDayOfWeekToUnixDowNumber:
+mDayOfWeekToUnixDowNumberId equ 510
+    .dw mDayOfWeekToUnixDowNumberId ; id
     .dw mDateFolderDayOfWeekId ; parentId
-    .dw mNullName ; name
+    .dw mDayOfWeekToUnixDowNumberName ; name
     .db 0 ; numRows
     .dw 0 ; rowBeginId or altName
-    .dw mNullHandler ; handler (predefined)
+    .dw mDayOfWeekToUnixDowNumberHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
-mBlank511:
-mBlank511Id equ 511
-    .dw mBlank511Id ; id
+mUnixDowNumberToDayOfWeek:
+mUnixDowNumberToDayOfWeekId equ 511
+    .dw mUnixDowNumberToDayOfWeekId ; id
     .dw mDateFolderDayOfWeekId ; parentId
-    .dw mNullName ; name
+    .dw mUnixDowNumberToDayOfWeekName ; name
     .db 0 ; numRows
     .dw 0 ; rowBeginId or altName
-    .dw mNullHandler ; handler (predefined)
+    .dw mUnixDowNumberToDayOfWeekHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
 ; MenuGroup EPCH: children
 ; MenuGroup EPCH: children: row 0
@@ -4984,8 +4984,8 @@ mSetClockId equ 531
 ; Pool of menu names as NUL-terminated C strings.
 ;-----------------------------------------------------------------------------
 
-mNamesCount equ 439 ; number of names and altnames
-mNamesPoolSize equ 3769 ; size of names string pool
+mNamesCount equ 441 ; number of names and altnames
+mNamesPoolSize equ 3797 ; size of names string pool
 
 mNullName:
     .db 0
@@ -5889,10 +5889,14 @@ mDurationExtractSecondName:
     .db Speriod, 'S', 'E', 'C', 0
 mDayOfWeekCreateName:
     .db 'D', 'W', SlBrace, SrBrace, 0
-mDayOfWeekToIsoNumberName:
+mDayOfWeekToIsoDowNumberName:
     .db Sconvert, 'I', 'S', 'O', 0
-mIsoNumberToDayOfWeekName:
+mIsoDowNumberToDayOfWeekName:
     .db 'I', 'S', 'O', Sconvert, 0
+mDayOfWeekToUnixDowNumberName:
+    .db Sconvert, 'U', 'N', 'X', 0
+mUnixDowNumberToDayOfWeekName:
+    .db 'U', 'N', 'X', Sconvert, 0
 mEpochUnixName:
     .db "UNIX", 0
 mEpochUnixAltName:

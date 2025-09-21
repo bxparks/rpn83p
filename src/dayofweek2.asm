@@ -59,28 +59,34 @@ dateToDayOfWeekNumberEnd:
     ret
 
 ;-----------------------------------------------------------------------------
+; Conversion between DayOfWeek to ISO dayOfWeek or Unix dayOfWeek.
+;-----------------------------------------------------------------------------
 
-; Description: Convert RpnDayOfWeek to ISO DayOfWeek number.
+; Description: Convert RpnDayOfWeek to ISO DayOfWeek number (Mon=1,Sun=7).
 ; Input: OP1:RpnDayOfWeek=DR{dow}
-; Output: OP1:Real=dow
-RpnDayOfWeekToIsoNumber:
+; Output: OP1:Real=isoDow
+RpnDayOfWeekToIsoDowNumber:
     ld hl, OP1
     skipRpnObjectTypeHL
     ld a, (hl) ; A=iso
     bcall(_SetXXOP1) ; OP1=iso
     ret
 
-; Description: Convert ISO DayOfWeek number to RpnDayOfWeek.
-; Input: OP1:Real=iso
-; Output: OP1:RpnDayOfWeek
-IsoNumberToRpnDayOfWeek:
-    call convertOP1ToIsoDayOfWeek ; A=iso
-    jp convertAToRpnDayOfWeek ; OP1=RpnDayOfWeek
+;-----------------------------------------------------------------------------
 
-; Description: Convert real number in OP1 to a u8 dow number in A.
-; Throws: Err:Domain
-convertOP1ToIsoDayOfWeek:
+; Description: Convert ISO DayOfWeek number (Mon=1,Sun=7) to RpnDayOfWeek.
+; Input: OP1:Real=isoDow
+; Output: OP1:RpnDayOfWeek
+IsoDowNumberToRpnDayOfWeek:
     call convertOP1ToI40 ; HL=OP1=iso
+    call convertI40ToIsoDowNumber ; A=iso
+    jr convertAToRpnDayOfWeek ; OP1=RpnDayOfWeek
+
+; Description: Convert I40 in OP1 to an ISO dow number in A.
+; Input: OP1:i40=isoDowNumber
+; Output: A:u8=isoDowNumber
+; Throws: Err:Domain
+convertI40ToIsoDowNumber:
     ; Check iso>=1
     ex de, hl ; DE=iso
     ld hl, OP2
@@ -101,6 +107,45 @@ convertOP1ToIsoDayOfWeek:
 convertOP1ToIsoDayOfWeekErr:
     bcall(_ErrDomain)
 
+;-----------------------------------------------------------------------------
+
+; Description: Convert RpnDayOfWeek to Unix DayOfWeek number (Sun=0,Sat=6).
+; Input: OP1:RpnDayOfWeek=DR{dow}
+; Output: OP1:Real=unixDow
+RpnDayOfWeekToUnixDowNumber:
+    ld hl, OP1
+    skipRpnObjectTypeHL
+    ld a, (hl) ; A=iso
+    cp 7 ; if Sun=7: set to 0
+    jr nz, rpnDayOfWeekToUnixDowNumberContinue
+    xor a
+rpnDayOfWeekToUnixDowNumberContinue:
+    bcall(_SetXXOP1) ; OP1=iso
+    ret
+
+;-----------------------------------------------------------------------------
+
+; Description: Convert Unix DayOfWeek number (Sun=0,Sat=6) to RpnDayOfWeek.
+; Input: OP1:Real=unixDow
+; Output: OP1:RpnDayOfWeek
+UnixDowNumberToRpnDayOfWeek:
+    ; Check for 0
+    bcall(_CkOP1FP0) ; if unix is Sun=0: set to 7
+    jr z, unixDowNumberToRpnDayOfWeekDoZero
+    ; check for 7
+    call op2Set7PageTwo ; OP2=7
+    bcall(_CpOP1OP2)
+    jr z, unixDowNumberToRpnDayOfWeekDoSeven
+    ; all other validations will be done by IsoDowNumberToRpnDayOfWeek()
+    jr IsoDowNumberToRpnDayOfWeek
+unixDowNumberToRpnDayOfWeekDoZero:
+    call op1Set7PageTwo ; OP1=7
+    jr IsoDowNumberToRpnDayOfWeek
+unixDowNumberToRpnDayOfWeekDoSeven:
+    bcall(_ErrDomain)
+
+;-----------------------------------------------------------------------------
+; DayOfWeek arithmetic.
 ;-----------------------------------------------------------------------------
 
 ; Description: Add (RpnDayOfWeek plus days) or (days plus RpnDayOfWeek).

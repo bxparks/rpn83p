@@ -1158,13 +1158,23 @@ _RpnDateToDayOfWeekLabel:
 _RpnDateToDayOfWeek equ _RpnDateToDayOfWeekLabel-branchTableBase
     .dw RpnDateToDayOfWeek
     .db 2
-_RpnDayOfWeekToIsoNumberLabel:
-_RpnDayOfWeekToIsoNumber equ _RpnDayOfWeekToIsoNumberLabel-branchTableBase
-    .dw RpnDayOfWeekToIsoNumber
+;
+_RpnDayOfWeekToIsoDowNumberLabel:
+_RpnDayOfWeekToIsoDowNumber equ _RpnDayOfWeekToIsoDowNumberLabel-branchTableBase
+    .dw RpnDayOfWeekToIsoDowNumber
     .db 2
-_IsoNumberToRpnDayOfWeekLabel:
-_IsoNumberToRpnDayOfWeek equ _IsoNumberToRpnDayOfWeekLabel-branchTableBase
-    .dw IsoNumberToRpnDayOfWeek
+_IsoDowNumberToRpnDayOfWeekLabel:
+_IsoDowNumberToRpnDayOfWeek equ _IsoDowNumberToRpnDayOfWeekLabel-branchTableBase
+    .dw IsoDowNumberToRpnDayOfWeek
+    .db 2
+;
+_RpnDayOfWeekToUnixDowNumberLabel:
+_RpnDayOfWeekToUnixDowNumber equ _RpnDayOfWeekToUnixDowNumberLabel-branchTableBase
+    .dw RpnDayOfWeekToUnixDowNumber
+    .db 2
+_UnixDowNumberToRpnDayOfWeekLabel:
+_UnixDowNumberToRpnDayOfWeek equ _UnixDowNumberToRpnDayOfWeekLabel-branchTableBase
+    .dw UnixDowNumberToRpnDayOfWeek
     .db 2
 ; arithmetics
 _AddRpnDayOfWeekByDaysLabel:
