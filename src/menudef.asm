@@ -4534,14 +4534,14 @@ mOffsetDateTimeConvertToTimeZoneId equ 483
     .dw 0 ; rowBeginId or altName
     .dw mOffsetDateTimeConvertToTimeZoneHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
-mBlank484:
-mBlank484Id equ 484
-    .dw mBlank484Id ; id
+mOffsetDateTimeToDayOfWeek:
+mOffsetDateTimeToDayOfWeekId equ 484
+    .dw mOffsetDateTimeToDayOfWeekId ; id
     .dw mDateFolderOffsetDateTimeId ; parentId
-    .dw mNullName ; name
+    .dw mOffsetDateTimeToDayOfWeekName ; name
     .db 0 ; numRows
     .dw 0 ; rowBeginId or altName
-    .dw mNullHandler ; handler (predefined)
+    .dw mOffsetDateTimeToDayOfWeekHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
 mBlank485:
 mBlank485Id equ 485
@@ -4562,17 +4562,8 @@ mBlank486Id equ 486
     .dw mNullHandler ; handler (predefined)
     .dw 0 ; nameSelector
 ; MenuGroup DZ: children: row 2
-mOffsetDateTimeToDayOfWeek:
-mOffsetDateTimeToDayOfWeekId equ 487
-    .dw mOffsetDateTimeToDayOfWeekId ; id
-    .dw mDateFolderOffsetDateTimeId ; parentId
-    .dw mOffsetDateTimeToDayOfWeekName ; name
-    .db 0 ; numRows
-    .dw 0 ; rowBeginId or altName
-    .dw mOffsetDateTimeToDayOfWeekHandler ; handler (to be implemented)
-    .dw 0 ; nameSelector
 mOffsetDateTimeExtractDate:
-mOffsetDateTimeExtractDateId equ 488
+mOffsetDateTimeExtractDateId equ 487
     .dw mOffsetDateTimeExtractDateId ; id
     .dw mDateFolderOffsetDateTimeId ; parentId
     .dw mOffsetDateTimeExtractDateName ; name
@@ -4581,7 +4572,7 @@ mOffsetDateTimeExtractDateId equ 488
     .dw mOffsetDateTimeExtractDateHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
 mOffsetDateTimeExtractTime:
-mOffsetDateTimeExtractTimeId equ 489
+mOffsetDateTimeExtractTimeId equ 488
     .dw mOffsetDateTimeExtractTimeId ; id
     .dw mDateFolderOffsetDateTimeId ; parentId
     .dw mOffsetDateTimeExtractTimeName ; name
@@ -4590,7 +4581,7 @@ mOffsetDateTimeExtractTimeId equ 489
     .dw mOffsetDateTimeExtractTimeHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
 mOffsetDateTimeExtractDateTime:
-mOffsetDateTimeExtractDateTimeId equ 490
+mOffsetDateTimeExtractDateTimeId equ 489
     .dw mOffsetDateTimeExtractDateTimeId ; id
     .dw mDateFolderOffsetDateTimeId ; parentId
     .dw mOffsetDateTimeExtractDateTimeName ; name
@@ -4599,13 +4590,22 @@ mOffsetDateTimeExtractDateTimeId equ 490
     .dw mOffsetDateTimeExtractDateTimeHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
 mOffsetDateTimeExtractOffset:
-mOffsetDateTimeExtractOffsetId equ 491
+mOffsetDateTimeExtractOffsetId equ 490
     .dw mOffsetDateTimeExtractOffsetId ; id
     .dw mDateFolderOffsetDateTimeId ; parentId
     .dw mOffsetDateTimeExtractOffsetName ; name
     .db 0 ; numRows
     .dw 0 ; rowBeginId or altName
     .dw mOffsetDateTimeExtractOffsetHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
+mBlank491:
+mBlank491Id equ 491
+    .dw mBlank491Id ; id
+    .dw mDateFolderOffsetDateTimeId ; parentId
+    .dw mNullName ; name
+    .db 0 ; numRows
+    .dw 0 ; rowBeginId or altName
+    .dw mNullHandler ; handler (predefined)
     .dw 0 ; nameSelector
 ; MenuGroup DZ: children: row 3
 mIsOffsetDateTimeLeap:

@@ -708,9 +708,9 @@ MenuGroup root mRoot [
           MenuRow [
             MenuItem ES<Sconvert><SatSign> mEpochSecondsToOffsetDateTimeApp
             MenuItem CVTZ mOffsetDateTimeConvertToTimeZone
+            MenuItem DOW mOffsetDateTimeToDayOfWeek
           ]
           MenuRow [
-            MenuItem DOW mOffsetDateTimeToDayOfWeek
             MenuItem <Speriod>D<SlBrace><SrBrace> mOffsetDateTimeExtractDate
             MenuItem <Speriod>T<SlBrace><SrBrace> mOffsetDateTimeExtractTime
             MenuItem <Speriod>DT<SlBrace> mOffsetDateTimeExtractDateTime
