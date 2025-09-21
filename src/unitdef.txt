@@ -50,10 +50,10 @@ Units [
 
   # https://en.wikipedia.org/wiki/United_States_customary_units
   Unit Mil mil Length 0.0254e-3 Meter
-  Unit Inch in Length 0.0254 Meter # by defn
-  Unit Foot ft Length 0.3048 Meter
-  Unit Yard yd Length 0.9144 Meter # 3 feet
-  Unit Mile mi Length 1609.344 Meter
+  Unit Inch inch Length 0.0254 Meter # by defn
+  Unit Foot foot Length 0.3048 Meter
+  Unit Yard yard Length 0.9144 Meter # 3 feet
+  Unit Mile mile Length 1609.344 Meter
 
   # Astronomical
   # https://en.wikipedia.org/wiki/Astronomical_unit
@@ -75,13 +75,13 @@ Units [
   #
   # SurveyFoot is deprecated after 2023. Use the pre-2023 definition of
   # 1200/3937 km.
-  Unit SurveyFoot surveyft Length 0.30480060960122 Meter
+  Unit SurveyFoot survey<Sspace>ft Length 0.30480060960122 Meter
   Unit Rod rod Length 5.0292 Meter # 16.5ft by defn after 2023
   Unit Chain chain Length 20.1168 Meter # 66ft by defn after 2023
   Unit Furlong furlong Length 201.168 Meter # 10 chains by defn after 2023
   # SurveyMile after 2023 is identical to a regular Mile. So this version uses
   # the pre-2023 definition of 6336/3937km.
-  Unit SurveyMile surveymi Length 1609.3472186944 Meter
+  Unit SurveyMile survey<Sspace>mi Length 1609.3472186944 Meter
   Unit League league Length 4828.032 Meter # 3mi by defn after 2023
 
   #----------------------------------------------------------------------------
@@ -94,10 +94,10 @@ Units [
   Unit SqMeter m<Sarea> Area 1 SqMeter
   Unit SqKiloMeter m<Sarea> Area 1e6 SqMeter
 
-  Unit SqInch in<Sarea> Area 6.4516e-4 SqMeter # 0.0254^2
-  Unit SqFoot ft<Sarea> Area 0.09290304 SqMeter # 0.3048^2
-  Unit SqYard yd<Sarea> Area 0.83393424 SqMeter # 0.9144^2
-  Unit SqMile mi<Sarea> Area 2.589988110336e6 SqMeter # 1609.344^2
+  Unit SqInch inch<Sarea> Area 6.4516e-4 SqMeter # 0.0254^2
+  Unit SqFoot foot<Sarea> Area 0.09290304 SqMeter # 0.3048^2
+  Unit SqYard yard<Sarea> Area 0.83393424 SqMeter # 0.9144^2
+  Unit SqMile mile<Sarea> Area 2.589988110336e6 SqMeter # 1609.344^2
   Unit SqNauticalMile nmi<Sarea> Area 3429904 SqMeter # 1852^2
 
   Unit Acre acre Area 4.0468564224e3 SqMeter # 66ft*660ft=43560sqft
@@ -118,10 +118,10 @@ Units [
   Unit CuMeter m<Scube> Volume 1 CuMeter
   Unit CuKiloMeter km<Scube> Volume 1e9 CuMeter
 
-  Unit CuInch in<Scube> Volume 1.6387064e-5 CuMeter # 0.0254^3
-  Unit CuFoot ft<Scube> Volume 2.8316846592e-2 CuMeter # 0.3048^3
-  Unit CuYard yd<Scube> Volume 7.64554857984e-1 CuMeter # 0.9144^3
-  Unit CuMile mi<Scube> Volume 4.1681818254406e9 CuMeter # 1609.344^3
+  Unit CuInch inch<Scube> Volume 1.6387064e-5 CuMeter # 0.0254^3
+  Unit CuFoot foot<Scube> Volume 2.8316846592e-2 CuMeter # 0.3048^3
+  Unit CuYard yard<Scube> Volume 7.64554857984e-1 CuMeter # 0.9144^3
+  Unit CuMile mile<Scube> Volume 4.1681818254406e9 CuMeter # 1609.344^3
   Unit CuNauticalMile nmi<Scube> Volume 6352182208 CuMeter # 1852^3
 
   Unit MicroLiter <Smu>L Volume 1e-9 CuMeter
@@ -136,45 +136,45 @@ Units [
   Unit Cup cup Volume 2.365882365e-4 CuMeter # 1/2 pint
   Unit Pint pint Volume 4.73176473e-4 CuMeter # 1/2 quart; pt
   Unit Quart quart Volume 9.46352946e-4 CuMeter # 1/4 gal; qt
-  Unit Gallon gal Volume 3.785411784e-3 CuMeter # 231 in^3 by defn
+  Unit Gallon gallon Volume 3.785411784e-3 CuMeter # 231 in^3 by defn
 
   # https://en.wikipedia.org/wiki/Imperial_units
-  Unit ImpFluidOunce impfloz Volume 2.84130625e-5 CuMeter # *1/5* impgill
-  Unit ImpGill impgill Volume 1.420653125e-4 CuMeter # 1/2 impcup
-  Unit ImpCup impcup Volume 2.84130625e-4 CuMeter # 1/2 imppint
-  Unit ImpPint imppint Volume 5.6826125e-4 CuMeter # 1/2 impquart
-  Unit ImpQuart impquart Volume 1.1365225e-3 CuMeter # 1/4 impgal
-  Unit ImpGallon impgal Volume 4.54609e-3 CuMeter # 4.54609L by defn
+  Unit ImpFluidOunce imp<Sspace>floz Volume 2.84130625e-5 CuMeter # *1/5* imp gill
+  Unit ImpGill imp<Sspace>gill Volume 1.420653125e-4 CuMeter # 1/2 imp cup
+  Unit ImpCup imp<Sspace>cup Volume 2.84130625e-4 CuMeter # 1/2 imp pint
+  Unit ImpPint imp<Sspace>pint Volume 5.6826125e-4 CuMeter # 1/2 imp quart
+  Unit ImpQuart imp<Sspace>quart Volume 1.1365225e-3 CuMeter # 1/4 imp gal
+  Unit ImpGallon imp<Sspace>gal Volume 4.54609e-3 CuMeter # 4.54609L by defn
 
   # Dry: https://en.wikipedia.org/wiki/United_States_customary_units
-  Unit DryPint drypt Volume 0.5506104713575e-3 CuMeter # 33.6003125 in^3 by defn
-  Unit DryQuart dryqt Volume 1.101220942715e-3 CuMeter # 2 drypt
-  Unit DryGallon drygal Volume 4.40488377086e-3 CuMeter # 4 dryqt
-  Unit Peck peck Volume 8.80976754172e-3 CuMeter # 2 drygal
+  Unit DryPint dry<Sspace>pt Volume 0.5506104713575e-3 CuMeter # 33.6003125 in^3 by defn
+  Unit DryQuart dry<Sspace>qt Volume 1.101220942715e-3 CuMeter # 2 dry pt
+  Unit DryGallon dry<Sspace>gal Volume 4.40488377086e-3 CuMeter # 4 dry qt
+  Unit Peck peck Volume 8.80976754172e-3 CuMeter # 2 dry gal
   Unit Bushel bushel Volume 35.23907016688e-3 CuMeter # 4 peck
-  Unit DryBarrel drybbl Volume 0.115627123584 CuMeter # 7056 in^3
+  Unit DryBarrel dry<Sspace>bbl Volume 0.115627123584 CuMeter # 7056 in^3
 
   # Other weird measures
 
   # https://en.wikipedia.org/wiki/Board_foot
-  Unit BoardFoot boardfoot Volume 2.359737216e-3 CuMeter # 1/12 cuft by defn
+  Unit BoardFoot board<Sspace>foot Volume 2.359737216e-3 CuMeter # 1/12 cuft by defn
 
   # https://en.wikipedia.org/wiki/Barrel_(unit)
   Unit OilBarrel barrel Volume 1.58987294928e-1 CuMeter # 42USgal by defn; bbl
 
   # https://en.wikipedia.org/wiki/Olympic-size_swimming_pool
   # "at least 2m deep"
-  Unit OlympicPool olympool Volume 2500 CuMeter # 50m*25m*2m
+  Unit OlympicPool olym<Sspace>pool Volume 2500 CuMeter # 50m*25m*2m
 
   # https://en.wikipedia.org/wiki/Acre-foot
-  Unit AcreFoot acft Volume 1233.4818375475 CuMeter # 66ft*660ft*1ft=43560cuft
+  Unit AcreFoot acre<Sspace>foot Volume 1233.4818375475 CuMeter # 66ft*660ft*1ft=43560cuft
 
   #----------------------------------------------------------------------------
   # Mass
   #----------------------------------------------------------------------------
 
   Unit MicroGram <Smu>g Mass 1e-6 Gram
-  Unit MilliGram <Smu>g Mass 1e-3 Gram
+  Unit MilliGram mg Mass 1e-3 Gram
   Unit Gram g Mass 1 Gram
   Unit KiloGram kg Mass 1e3 Gram
   Unit Tonne tonne Mass 1e6 Gram # metric tonne = 1000kg
@@ -210,9 +210,9 @@ Units [
   # Troy System
   # https://en.wikipedia.org/wiki/Troy_weight
   # https://en.wikipedia.org/wiki/Pennyweight
-  Unit TroyPennyWeight troydwt Mass 1.55517384 Gram # 24 grains by defn
-  Unit TroyOunce troyozt Mass 31.1034768 Gram # 20 pennyweights by defn
-  Unit TroyPound troylbt Mass 373.2417216 Gram # 12 troy oz by defn
+  Unit TroyPennyWeight troy<Sspace>dwt Mass 1.55517384 Gram # 24 grains by defn
+  Unit TroyOunce troy<Sspace>ozt Mass 31.1034768 Gram # 20 pennyweights by defn
+  Unit TroyPound troy<Sspace>lbt Mass 373.2417216 Gram # 12 troy oz by defn
 
   #----------------------------------------------------------------------------
   # Temperature, requires special handlers

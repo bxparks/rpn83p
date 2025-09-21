@@ -833,7 +833,7 @@ unitLitersPerHundredKiloMetersId equ 131
 ;-----------------------------------------------------------------------------
 
 unitNamesCount equ 132 ; number of unit names
-unitNamesPoolSize equ 877 ; size of unit names string pool
+unitNamesPoolSize equ 1048 ; size of unit names string pool
 
 unitAngstromName:
     .db "angst", 0
@@ -852,13 +852,13 @@ unitKiloMeterName:
 unitMilName:
     .db "mil", 0
 unitInchName:
-    .db "in", 0
+    .db "inch", 0
 unitFootName:
-    .db "ft", 0
+    .db "foot", 0
 unitYardName:
-    .db "yd", 0
+    .db "yard", 0
 unitMileName:
-    .db "mi", 0
+    .db "mile", 0
 unitAstronomicalUnitName:
     .db "AU", 0
 unitLightYearName:
@@ -872,7 +872,7 @@ unitCableName:
 unitNauticalMileName:
     .db "nmi", 0
 unitSurveyFootName:
-    .db "surveyft", 0
+    .db 's', 'u', 'r', 'v', 'e', 'y', Sspace, 'f', 't', 0
 unitRodName:
     .db "rod", 0
 unitChainName:
@@ -880,7 +880,7 @@ unitChainName:
 unitFurlongName:
     .db "furlong", 0
 unitSurveyMileName:
-    .db "surveymi", 0
+    .db 's', 'u', 'r', 'v', 'e', 'y', Sspace, 'm', 'i', 0
 unitLeagueName:
     .db "league", 0
 unitSqMicroMeterName:
@@ -894,13 +894,13 @@ unitSqMeterName:
 unitSqKiloMeterName:
     .db 'm', Sarea, 0
 unitSqInchName:
-    .db 'i', 'n', Sarea, 0
+    .db 'i', 'n', 'c', 'h', Sarea, 0
 unitSqFootName:
-    .db 'f', 't', Sarea, 0
+    .db 'f', 'o', 'o', 't', Sarea, 0
 unitSqYardName:
-    .db 'y', 'd', Sarea, 0
+    .db 'y', 'a', 'r', 'd', Sarea, 0
 unitSqMileName:
-    .db 'm', 'i', Sarea, 0
+    .db 'm', 'i', 'l', 'e', Sarea, 0
 unitSqNauticalMileName:
     .db 'n', 'm', 'i', Sarea, 0
 unitAcreName:
@@ -922,13 +922,13 @@ unitCuMeterName:
 unitCuKiloMeterName:
     .db 'k', 'm', Scube, 0
 unitCuInchName:
-    .db 'i', 'n', Scube, 0
+    .db 'i', 'n', 'c', 'h', Scube, 0
 unitCuFootName:
-    .db 'f', 't', Scube, 0
+    .db 'f', 'o', 'o', 't', Scube, 0
 unitCuYardName:
-    .db 'y', 'd', Scube, 0
+    .db 'y', 'a', 'r', 'd', Scube, 0
 unitCuMileName:
-    .db 'm', 'i', Scube, 0
+    .db 'm', 'i', 'l', 'e', Scube, 0
 unitCuNauticalMileName:
     .db 'n', 'm', 'i', Scube, 0
 unitMicroLiterName:
@@ -952,43 +952,43 @@ unitPintName:
 unitQuartName:
     .db "quart", 0
 unitGallonName:
-    .db "gal", 0
+    .db "gallon", 0
 unitImpFluidOunceName:
-    .db "impfloz", 0
+    .db 'i', 'm', 'p', Sspace, 'f', 'l', 'o', 'z', 0
 unitImpGillName:
-    .db "impgill", 0
+    .db 'i', 'm', 'p', Sspace, 'g', 'i', 'l', 'l', 0
 unitImpCupName:
-    .db "impcup", 0
+    .db 'i', 'm', 'p', Sspace, 'c', 'u', 'p', 0
 unitImpPintName:
-    .db "imppint", 0
+    .db 'i', 'm', 'p', Sspace, 'p', 'i', 'n', 't', 0
 unitImpQuartName:
-    .db "impquart", 0
+    .db 'i', 'm', 'p', Sspace, 'q', 'u', 'a', 'r', 't', 0
 unitImpGallonName:
-    .db "impgal", 0
+    .db 'i', 'm', 'p', Sspace, 'g', 'a', 'l', 0
 unitDryPintName:
-    .db "drypt", 0
+    .db 'd', 'r', 'y', Sspace, 'p', 't', 0
 unitDryQuartName:
-    .db "dryqt", 0
+    .db 'd', 'r', 'y', Sspace, 'q', 't', 0
 unitDryGallonName:
-    .db "drygal", 0
+    .db 'd', 'r', 'y', Sspace, 'g', 'a', 'l', 0
 unitPeckName:
     .db "peck", 0
 unitBushelName:
     .db "bushel", 0
 unitDryBarrelName:
-    .db "drybbl", 0
+    .db 'd', 'r', 'y', Sspace, 'b', 'b', 'l', 0
 unitBoardFootName:
-    .db "boardfoot", 0
+    .db 'b', 'o', 'a', 'r', 'd', Sspace, 'f', 'o', 'o', 't', 0
 unitOilBarrelName:
     .db "barrel", 0
 unitOlympicPoolName:
-    .db "olympool", 0
+    .db 'o', 'l', 'y', 'm', Sspace, 'p', 'o', 'o', 'l', 0
 unitAcreFootName:
-    .db "acft", 0
+    .db 'a', 'c', 'r', 'e', Sspace, 'f', 'o', 'o', 't', 0
 unitMicroGramName:
     .db Smu, 'g', 0
 unitMilliGramName:
-    .db Smu, 'g', 0
+    .db "mg", 0
 unitGramName:
     .db "g", 0
 unitKiloGramName:
@@ -1018,11 +1018,11 @@ unitLongHundredWeightName:
 unitLongTonName:
     .db 'l', 'o', 'n', 'g', Sspace, 't', 'o', 'n', 0
 unitTroyPennyWeightName:
-    .db "troydwt", 0
+    .db 't', 'r', 'o', 'y', Sspace, 'd', 'w', 't', 0
 unitTroyOunceName:
-    .db "troyozt", 0
+    .db 't', 'r', 'o', 'y', Sspace, 'o', 'z', 't', 0
 unitTroyPoundName:
-    .db "troylbt", 0
+    .db 't', 'r', 'o', 'y', Sspace, 'l', 'b', 't', 0
 unitCelsiusName:
     .db Stemp, 'C', 0
 unitFahrenheitName:
