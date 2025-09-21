@@ -344,35 +344,114 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
 - ![ROOT > DATE](images/menu/root-date.png) (`ROOT > DATE`)
     - ![ROOT > DATE > Row1](images/menu/root-date-1.png)
     - ![ROOT > DATE > Row2](images/menu/root-date-2.png)
-    - ![ROOT > DATE > Row3](images/menu/root-date-3.png)
-        - `DOPS`
-            - ![ROOT > DATE > DOPS > Row1](images/menu/root-date-dops-1.png)
-        - `EPCH`
-            - ![ROOT > DATE > EPCH > Row1](images/menu/root-date-epch-1.png)
-            - ![ROOT > DATE > EPCH > Row2](images/menu/root-date-epch-2.png)
-        - `CLK`
-            - ![ROOT > DATE > CLK > Row1](images/menu/root-date-clk-1.png)
-            - ![ROOT > DATE > CLK > Row2](images/menu/root-date-clk-2.png)
-    - `LEAP`: determine if given year is a leap year
-    - `DOW`: calculate the DayOfWeek of given Date, DateTime, ZonedDateTime
-    - `D>DY`: convert Date to Epoch days
-    - `DY>D`: convert Epoch days to Date
-    - `D*>S`: convert Date-related object to seconds
-    - `S>DR`: convert seconds to Duration
-    - `S>T`: convert seconds to Time
-    - `S>DZ`: convert Epoch seconds to ZonedDateTime using the Application
-      timezone
-    - `S>UT`: convert Epoch seconds to ZonedDateTime using UTC timezone
-    - `TZ>H`: convert TimeZone to floating point hours
-    - `H>TZ`: convert hours to TimeZone
-    - ![ROOT > DATE > DOPS](images/menu/root-date-dops.png)
-      (`ROOT > DATE > DOPS`)
-        - `DSHK`: shrink a ZonedDateTime or DateTime by truncating
-        - `DEXD`: extend Date or DateTime into DateTime or ZonedDateTime
-        - `DCUT`: cut (split) a ZonedDateTime or DateTime into smaller objects
-        - `DLNK`: link (merge) smaller objects into DateTime or ZonedDateTime
+    - `D`: `Date` folder
+    - `T`: `Time` folder
+    - `DT`: `DateTime` folder
+    - `TZ`: `TimeZone` folder
+    - `DZ`: `ZonedDateTime` folder
+    - `DR`: `Duration` folder
+    - `DW`: `DayOfWeek` folder
+    - `EPCH`: Epoch folder
+    - `CLK`: Clock folder
+    - ![ROOT > DATE > Date](images/menu/root-date-d.png)
+        - ![ROOT > DATE > Date > Row1](images/menu/root-date-d-1.png)
+        - ![ROOT > DATE > Date > Row2](images/menu/root-date-d-2.png)
+        - ![ROOT > DATE > Date > Row3](images/menu/root-date-d-3.png)
+        - `D{}`: insert initialization string for `Date` object
+        - `>ED`: convert Date to epoch days (assuming UTC)
+        - `ED>`: epoch days to Date (assuming UTC)
+        - `>ES`: convert Date to epoch seconds (assuming UTC)
+        - `ES>`: epoch seconds to Date (assuming UTC)
+        - `CVTZ`: convert Date (Y) to TimeZone (X)
+        - `.DW{`: calculate the DayOfWeek of given Date, DateTime, ZonedDateTime
+        - `.YR`: extract `year` component of Date
+        - `.MON`: extract `month` component of Date
+        - `.DAY`: extract `day` component of Date
+        - `LEAP`: determine if year of Date is a leap year
+        - `DSHK`: (not defined)
+        - `DEXD`: extend Date to DateTime
+        - `DCUT`: (not defined)
+        - `DLNK`: link Date and Time into DateTime
+    - ![ROOT > DATE > Time](images/menu/root-date-t.png)
+        - ![ROOT > DATE > Time > Row1](images/menu/root-date-t-1.png)
+        - ![ROOT > DATE > Time > Row2](images/menu/root-date-t-2.png)
+        - `T{}`: insert initialization string for `Time` object
+        - `>S`: convert Time to seconds after midnight
+        - `S>`: convert seconds after midnight to Time
+        - `.HR`: extract `hour` component of Time
+        - `.MIN`: extract `minute` component of Time
+        - `.SEC`: extract `second` component of Time
+    - ![ROOT > DATE > DateTime](images/menu/root-date-dt.png)
+        - ![ROOT > DATE > DateTime > Row1](images/menu/root-date-dt-1.png)
+        - ![ROOT > DATE > DateTime > Row2](images/menu/root-date-dt-2.png)
+        - ![ROOT > DATE > DateTime > Row3](images/menu/root-date-dt-3.png)
+        - `DT{}`: insert initialization string for `DateTime` object
+        - `>ED`: convert DateTime to epoch days (assuming UTC)
+        - `ED>`: epoch days to DateTime (assuming UTC)
+        - `>ES`: convert DateTime to epoch seconds (assuming UTC)
+        - `ES>`: epoch seconds to DateTime (assuming UTC)
+        - `CVTZ`: convert DateTime (in Y) to the TimeZone (in X)
+        - `.DW{`: calculate the DayOfWeek of given DateTime
+        - `.D{}`: extract the Date from the DateTime
+        - `.T{}`: extract the Time from the DateTime
+        - `LEAP`: determine if given year is a leap year
+        - `DSHK`: shrink a DateTime to a Date by truncating the TimeZone
+        - `DEXD`: extend DateTime into ZonedDateTime by adding a UTC TimeZone
+        - `DCUT`: cut (split) a DateTime into a Date and Time
+        - `DLNK`: link (merge) Date and Time into a DateTime
+    - ![ROOT > DATE > TimeZone](images/menu/root-date-tz.png)
+        - ![ROOT > DATE > TimeZone > Row1](images/menu/root-date-tz-1.png)
+        - ![ROOT > DATE > TimeZone > Row2](images/menu/root-date-tz-2.png)
+        - `TZ{}`: insert initialization string for `TimeZone` object
+        - `>HR`: convert TimeZone to floating point hours
+        - `HR>`: convert floating point hours into TimeZone
+        - `.HR`: extract `hour` component of TimeZone
+        - `.MIN`: extract `minute` component of TimeZone
+    - ![ROOT > DATE > ZonedDateTime](images/menu/root-date-dz.png)
+        - ![ROOT > DATE > ZonedDateTime > Row1](images/menu/root-date-dz-1.png)
+        - ![ROOT > DATE > ZonedDateTime > Row2](images/menu/root-date-dz-2.png)
+        - ![ROOT > DATE > ZonedDateTime > Row3](images/menu/root-date-dz-3.png)
+        - ![ROOT > DATE > ZonedDateTime > Row4](images/menu/root-date-dz-4.png)
+        - `DZ{}`: insert initialization string for `ZonedDateTime` object
+        - `>ED`: convert ZonedDateTime to epoch days (assuming UTC)
+        - `ED>`: epoch days to ZonedDateTime (assuming UTC)
+        - `>ES`: convert ZonedDateTime to epoch seconds (assuming UTC)
+        - `ES>`: epoch seconds to ZonedDateTime (assuming UTC)
+        - `ES>@`: epoch seconds to ZonedDateTime (assuming UTC)
+        - `CVTZ`: convert ZonedDateTime (in Y) to the TimeZone (in X)
+        - `.DW{`: calculate the DayOfWeek of given ZonedZonedDateTime
+        - `.D{}`: extract the Date from the ZonedDateTime
+        - `.T{}`: extract the Time from the ZonedDateTime
+        - `.DT{}`: extract the DateTime from the ZonedDateTime
+        - `.TZ{}`: extract the Time from the ZonedDateTime
+        - `LEAP`: determine if given year is a leap year
+        - `DSHK`: shrink a ZonedDateTime into a DateTime by truncating the
+          TimeZone
+        - `DEXD`: (not defined)
+        - `DCUT`: cut (split) a ZonedDateTime into a DateTime and TimeZone
+        - `DLNK`: (not defined)
+    - ![ROOT > DATE > Duration](images/menu/root-date-dr.png)
+        - ![ROOT > DATE > Duration > Row1](images/menu/root-date-dr-1.png)
+        - ![ROOT > DATE > Duration > Row2](images/menu/root-date-dr-2.png)
+        - `DR{}`: insert initialization string for `Duration` object
+        - `DAY>`: convert days into Duration
+        - `HR>`: convert hours into Duration
+        - `MIN>`: convert minutes into Duration
+        - `SEC>`: convert seconds into Duration
+        - `>S`: convert Duration into seconds
+        - `.DAY`: extract `day` component of Duration
+        - `.HR`: extract `hour` component of Duration
+        - `.MIN`: extract `minute` component of Duration
+        - `.SEC`: extract `second` component of Duration
+    - ![ROOT > DATE > DayOfWeek](images/menu/root-date-dw.png)
+        - ![ROOT > DATE > TimeZone > Row1](images/menu/root-date-dw-1.png)
+        - `DW{}`: insert initialization string for `DayOfWeek` object
+        - `>ISO`: convert DayOfWeek into ISO day of week number (Monday=1)
+        - `ISO>`: convert ISO day of week number into DayOfWeek (Monday=1)
     - ![ROOT > DATE > EPCH](images/menu/root-date-epch.png)
       (`ROOT > DATE > EPCH`)
+        - ![ROOT > DATE > EPCH > Row1](images/menu/root-date-epch-1.png)
+        - ![ROOT > DATE > EPCH > Row2](images/menu/root-date-epch-2.png)
         - `UNIX`: select Unix Epoch date of 1970-01-01
         - `NTP`: select NTP Epoch date of 1900-01-01
         - `GPS`: select GPS Epoch date of 1980-01-06
@@ -381,11 +460,14 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
         - `CEPC`: select custom Epoch date
         - `EPC`: set custom Epoch date
         - `EPC?`: get current custom Epoch date
-    - ![ROOT > DATE > CLK](images/menu/root-date-clk.png)
-      (`ROOT > DATE > CLK`)
+    - ![ROOT > DATE > CLK](images/menu/root-date-clk.png) (`ROOT > DATE > CLK`)
+        - ![ROOT > DATE > CLK > Row1](images/menu/root-date-clk-1.png)
+        - ![ROOT > DATE > CLK > Row2](images/menu/root-date-clk-2.png)
         - `NOW`: get the current hardware clock as Epoch seconds
-        - `NOWD`: get the current hardware clock as a Date
-        - `NOWT`: get the current hardware clock as a Time
+        - `NOWD`: get the current hardware clock as a Date using the Application
+          timezone
+        - `NOWT`: get the current hardware clock as a Time using the Application
+          timezone
         - `NWDZ`: get the current hardware clock as a ZonedDateTime using the
         Application timezone
         - `NWUT`: get the current hardware clock as a ZonedDateTime using UTC
