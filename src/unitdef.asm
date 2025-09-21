@@ -833,7 +833,7 @@ unitLitersPerHundredKiloMetersId equ 131
 ;-----------------------------------------------------------------------------
 
 unitNamesCount equ 132 ; number of unit names
-unitNamesPoolSize equ 872 ; size of unit names string pool
+unitNamesPoolSize equ 877 ; size of unit names string pool
 
 unitAngstromName:
     .db "angst", 0
@@ -1000,9 +1000,9 @@ unitGrainName:
 unitDramName:
     .db "dram", 0
 unitOunceName:
-    .db "oz", 0
+    .db "ounce", 0
 unitPoundName:
-    .db "lbs", 0
+    .db "pound", 0
 unitSlugName:
     .db "slug", 0
 unitHundredWeightName:

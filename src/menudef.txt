@@ -524,7 +524,7 @@ MenuGroup root mRoot [
                 MenuItem grai mUnitGrain
                 MenuItem dram mUnitDram
                 MenuItem oz mUnitOunce
-                MenuItem lbs mUnitPound
+                MenuItem lb mUnitPound
                 MenuItem slug mUnitSlug
               ]
               MenuRow [
@@ -534,7 +534,7 @@ MenuGroup root mRoot [
             ]
             MenuGroup IMP mUnitMassImp [
               MenuRow [
-                MenuItem lbs mUnitImpPound # same as normal 'lbs'
+                MenuItem lb mUnitImpPound # same as normal 'lb'
                 MenuItem stne mUnitStone
                 MenuItem quar mUnitQuarter
                 MenuItem lcwt mUnitLongHundredWeight

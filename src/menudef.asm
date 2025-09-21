@@ -4985,7 +4985,7 @@ mSetClockId equ 531
 ;-----------------------------------------------------------------------------
 
 mNamesCount equ 439 ; number of names and altnames
-mNamesPoolSize equ 3771 ; size of names string pool
+mNamesPoolSize equ 3769 ; size of names string pool
 
 mNullName:
     .db 0
@@ -5638,7 +5638,7 @@ mUnitDramName:
 mUnitOunceName:
     .db "oz", 0
 mUnitPoundName:
-    .db "lbs", 0
+    .db "lb", 0
 mUnitSlugName:
     .db "slug", 0
 mUnitHundredWeightName:
@@ -5646,7 +5646,7 @@ mUnitHundredWeightName:
 mUnitTonName:
     .db "ton", 0
 mUnitImpPoundName:
-    .db "lbs", 0
+    .db "lb", 0
 mUnitStoneName:
     .db "stne", 0
 mUnitQuarterName:
