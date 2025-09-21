@@ -4985,7 +4985,7 @@ mSetClockId equ 531
 ;-----------------------------------------------------------------------------
 
 mNamesCount equ 439 ; number of names and altnames
-mNamesPoolSize equ 3822 ; size of names string pool
+mNamesPoolSize equ 3771 ; size of names string pool
 
 mNullName:
     .db 0
@@ -5766,7 +5766,7 @@ mEpochSecondsToDateName:
 mDateConvertToTimeZoneName:
     .db "CVTZ", 0
 mDateToDayOfWeekName:
-    .db Speriod, 'D', 'W', SlBrace, 0
+    .db "DOW", 0
 mDateExtractYearName:
     .db Speriod, 'Y', 'R', 0
 mDateExtractMonthName:
@@ -5808,7 +5808,7 @@ mEpochSecondsToDateTimeName:
 mDateTimeConvertToTimeZoneName:
     .db "CVTZ", 0
 mDateTimeToDayOfWeekName:
-    .db Speriod, 'D', 'W', SlBrace, 0
+    .db "DOW", 0
 mDateTimeExtractDateName:
     .db Speriod, 'D', SlBrace, SrBrace, 0
 mDateTimeExtractTimeName:
@@ -5848,7 +5848,7 @@ mEpochSecondsToOffsetDateTimeAppName:
 mOffsetDateTimeConvertToTimeZoneName:
     .db "CVTZ", 0
 mOffsetDateTimeToDayOfWeekName:
-    .db Speriod, 'D', 'W', SlBrace, 0
+    .db "DOW", 0
 mOffsetDateTimeExtractDateName:
     .db Speriod, 'D', SlBrace, SrBrace, 0
 mOffsetDateTimeExtractTimeName:

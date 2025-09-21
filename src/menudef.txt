@@ -641,7 +641,7 @@ MenuGroup root mRoot [
           ]
           MenuRow [
             MenuItem CVTZ mDateConvertToTimeZone
-            MenuItem <Speriod>DW<SlBrace> mDateToDayOfWeek
+            MenuItem DOW mDateToDayOfWeek
             MenuItem <Speriod>YR mDateExtractYear
             MenuItem <Speriod>MON mDateExtractMonth
             MenuItem <Speriod>DAY mDateExtractDay
@@ -676,7 +676,7 @@ MenuGroup root mRoot [
           ]
           MenuRow [
             MenuItem CVTZ mDateTimeConvertToTimeZone
-            MenuItem <Speriod>DW<SlBrace> mDateTimeToDayOfWeek
+            MenuItem DOW mDateTimeToDayOfWeek
             MenuItem <Speriod>D<SlBrace><SrBrace> mDateTimeExtractDate
             MenuItem <Speriod>T<SlBrace><SrBrace> mDateTimeExtractTime
           ]
@@ -710,7 +710,7 @@ MenuGroup root mRoot [
             MenuItem CVTZ mOffsetDateTimeConvertToTimeZone
           ]
           MenuRow [
-            MenuItem <Speriod>DW<SlBrace> mOffsetDateTimeToDayOfWeek
+            MenuItem DOW mOffsetDateTimeToDayOfWeek
             MenuItem <Speriod>D<SlBrace><SrBrace> mOffsetDateTimeExtractDate
             MenuItem <Speriod>T<SlBrace><SrBrace> mOffsetDateTimeExtractTime
             MenuItem <Speriod>DT<SlBrace> mOffsetDateTimeExtractDateTime
