@@ -640,14 +640,16 @@ MenuGroup root mRoot [
             MenuItem ES<Sconvert> mEpochSecondsToDate
           ]
           MenuRow [
-            MenuItem CVTZ mDateConvertToTimeZone
+            MenuItem LEAP mIsDateLeap
             MenuItem DOW mDateToDayOfWeek
+            MenuItem CVTZ mDateConvertToTimeZone
+          ]
+          MenuRow [
             MenuItem <Speriod>YR mDateExtractYear
             MenuItem <Speriod>MON mDateExtractMonth
             MenuItem <Speriod>DAY mDateExtractDay
           ]
           MenuRow [
-            MenuItem LEAP mIsDateLeap
             MenuItem DSHK mDateShrinkToNothing
             MenuItem DEXD mDateExtendToDateTime
             MenuItem DCUT mDateCutToNothing
@@ -675,13 +677,13 @@ MenuGroup root mRoot [
             MenuItem ES<Sconvert> mEpochSecondsToDateTime
           ]
           MenuRow [
-            MenuItem CVTZ mDateTimeConvertToTimeZone
+            MenuItem LEAP mIsDateTimeLeap
             MenuItem DOW mDateTimeToDayOfWeek
+            MenuItem CVTZ mDateTimeConvertToTimeZone
             MenuItem <Speriod>D<SlBrace><SrBrace> mDateTimeExtractDate
             MenuItem <Speriod>T<SlBrace><SrBrace> mDateTimeExtractTime
           ]
           MenuRow [
-            MenuItem LEAP mIsDateTimeLeap
             MenuItem DSHK mDateTimeShrinkToDate
             MenuItem DEXD mDateTimeExtendToOffsetDateTime
             MenuItem DCUT mDateTimeCutToDate
@@ -707,8 +709,9 @@ MenuGroup root mRoot [
           ]
           MenuRow [
             MenuItem ES<Sconvert><SatSign> mEpochSecondsToOffsetDateTimeApp
-            MenuItem CVTZ mOffsetDateTimeConvertToTimeZone
+            MenuItem LEAP mIsOffsetDateTimeLeap
             MenuItem DOW mOffsetDateTimeToDayOfWeek
+            MenuItem CVTZ mOffsetDateTimeConvertToTimeZone
           ]
           MenuRow [
             MenuItem <Speriod>D<SlBrace><SrBrace> mOffsetDateTimeExtractDate
@@ -717,7 +720,6 @@ MenuGroup root mRoot [
             MenuItem <Speriod>TZ<SlBrace> mOffsetDateTimeExtractOffset
           ]
           MenuRow [
-            MenuItem LEAP mIsOffsetDateTimeLeap
             MenuItem DSHK mOffsetDateTimeShrinkToDateTime
             MenuItem DEXD mOffsetDateTimeExtendToNothing
             MenuItem DCUT mOffsetDateTimeCutToDateTime
