@@ -306,41 +306,219 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
     - ![ROOT > UNIT > Row1](images/menu/root-unit-1.png)
     - ![ROOT > UNIT > Row2](images/menu/root-unit-2.png)
     - ![ROOT > UNIT > Row3](images/menu/root-unit-3.png)
-    - ![ROOT > UNIT > Row4](images/menu/root-unit-4.png)
-    - ![ROOT > UNIT > Row5](images/menu/root-unit-5.png)
-    - ![ROOT > UNIT > Row6](images/menu/root-unit-6.png)
-    - ![ROOT > UNIT > Row7](images/menu/root-unit-7.png)
-    - ![ROOT > UNIT > Row8](images/menu/root-unit-8.png)
-    - `>C`: Fahrenheit to Celsius
-    - `>F`: Celsius to Fahrenheit
-    - `>hPa`: hectopascals (i.e. millibars) to inches of mercury (Hg)
-    - `>iHg`: inches of mercury (Hg) to hectopascals (i.e. millibars)
-    - `>km`: miles to kilometers
-    - `>mi`: kilometers to miles
-    - `>m`: feet to meters
-    - `>ft`: meters to feet
-    - `>cm`: inches to centimeters
-    - `>in`: centimeters to inches
-    - `>um`: mils (1/1000 of inch) to micrometers
-    - `>mil`: micrometers to mils (1/1000 of inch)
-    - `>kg`: pounds to kilograms
-    - `>lbs`: kilograms to pounds
-    - `>g`: ounces to grams
-    - `>oz`: grams to ounces
-    - `>L`: US gallons to liters
-    - `>gal`: liters to US gallons
-    - `>mL`: fluid ounces to milliliters
-    - `>foz`: milliliters to fluid ounces
-    - `>kJ`: kilo calories to kilo Joules
-    - `>cal`: kilo Joules to kilo calories
-    - `>kW`: horsepowers (mechanical) to kilo Watts
-    - `>hp`: kilo Watts to horsepowers (mechanical)
-    - `>Lkm`: miles per US gallon to liters per 100 km
-    - `>mpg`: liters per 100 km to miles per US gallon
-    - `>kPa`: pounds per square inch to kilo Pascals
-    - `>psi`: kilo Pascals to pounds per square inch
-    - `>ha`: acres to hectares
-    - `>acr`: hectares to acres
+    - `UFCN` - UNIT functions
+    - `LENG` - Length units
+    - `AREA` - Area units
+    - `VOL` - Volume units
+    - `MASS` - Mass units
+    - `TEMP` - Temperature units
+    - `SPD` - Speed units
+    - `FORC` - Force units
+    - `PRES` - Pressure units
+    - `ENER` - Energy units
+    - `PWR` - Power units
+    - `FUEL` - Fuel consumption units
+    - ![ROOT > UNIT > UFCN](images/menu/root-unit-ufcn.png) (ROOT > UNIT > UFCN)
+        - ![ROOT > UNIT > UFCN > Row1](images/menu/root-unit-ufcn-1.png)
+        - `UVAL`: extract unit display value
+        - `UBAS`: extract the equilvaent base unit
+    - ![ROOT > UNIT > LENG](images/menu/root-unit-leng.png) (ROOT > UNIT > LENG)
+        - ![ROOT > UNIT > LENG > Row1](images/menu/root-unit-leng-1.png)
+        - ![ROOT > UNIT > LENG > Row2](images/menu/root-unit-leng-2.png)
+        - ![ROOT > UNIT > LENG > Row3](images/menu/root-unit-leng-3.png)
+        - `um`: micrometer
+        - `mm`: millimeter
+        - `cm`: centimeters
+        - `m`: meter
+        - `km`: kilometer
+        - `mil`: mil (1/1000 of inch)
+        - `in`: inch
+        - `ft`: foot
+        - `yd`: yard
+        - `mi`: mile
+        - `ASTR`: Astronomy units
+        - `NAUT`: Nautical units
+        - `SURV`: Survey units
+        - ![ROOT > UNIT > LENG > ASTR](images/menu/root-unit-leng.png) (ROOT > UNIT > LENG > ASTR)
+            - ![ROOT > UNIT > LENG > ASTR > Row1](images/menu/root-unit-leng-astr-1.png)
+            - `AU`: Astronomical Unit
+            - `ly`: light year
+            - `pc`: parsec
+        - ![ROOT > UNIT > LENG > NAUT](images/menu/root-unit-leng.png) (ROOT > UNIT > LENG > NAUT)
+            - ![ROOT > UNIT > LENG > NAUT > Row1](images/menu/root-unit-leng-naut-1.png)
+            - `fthm`: fanthom
+            - `cabl`: cable
+            - `nmi`: nautical mile
+        - ![ROOT > UNIT > LENG > SURV](images/menu/root-unit-leng.png) (ROOT > UNIT > LENG > SURV)
+            - ![ROOT > UNIT > LENG > SURV > Row1](images/menu/root-unit-leng-surv-1.png)
+            - ![ROOT > UNIT > LENG > SURV > Row2](images/menu/root-unit-leng-surv-2.png)
+            - `svft`: survey foot (pre-2023)
+            - `rod`: rod
+            - `chai`: chain
+            - `frlg`: furlong
+            - `svmi`: survey mile (pre-2023)
+            - `league`: league
+    - ![ROOT > UNIT > AREA](images/menu/root-unit-area.png) (ROOT > UNIT > AREA)
+        - ![ROOT > UNIT > AREA > Row1](images/menu/root-unit-area-1.png)
+        - ![ROOT > UNIT > AREA > Row2](images/menu/root-unit-area-2.png)
+        - ![ROOT > UNIT > AREA > Row3](images/menu/root-unit-area-3.png)
+        - `mm^2`: square millimeter
+        - `cm^2`: square centimeter
+        - `m^2`: square meter
+        - `km^2`: square kilometer
+        - `in^2`: square inch
+        - `ft^2`: square foot
+        - `yd^2`: square yard
+        - `mi^2`: square mile
+        - `nmi^2`: square nautical mile
+    - ![ROOT > UNIT > VOL](images/menu/root-unit-vol.png) (ROOT > UNIT > VOL)
+        - ![ROOT > UNIT > VOL > Row1](images/menu/root-unit-vol-1.png)
+        - ![ROOT > UNIT > VOL > Row2](images/menu/root-unit-vol-2.png)
+        - ![ROOT > UNIT > VOL > Row3](images/menu/root-unit-vol-3.png)
+        - `mm^3`: cubic millimeter
+        - `cm^3`: cubic centimeter
+        - `m^3`: cubic meter
+        - `km^3`: cubic kilometer
+        - `in^3`: cubic inch
+        - `ft^3`: cubic foot
+        - `yd^3`: cubic yard
+        - `mi^3`: cubic mile
+        - `nmi^3`: cubic nautical mile
+        - `uL`: microliter
+        - `mL`: milliliter
+        - `L`: liter
+        - (TODO: add metric teaspoon, metric tablespoon)
+        - `US`: US volume units
+        - `IMP`: Imperial volume units
+        - `DRY`: Dry volume units
+        - `MISC`: Miscallaneous volume units
+        - ![ROOT > UNIT > VOL > US](images/menu/root-unit-vol-us.png) (ROOT > UNIT > VOL > US)
+            - ![ROOT > UNIT > VOL > US > Row1](images/menu/root-unit-vol-us-1.png)
+            - ![ROOT > UNIT > VOL > US > Row2](images/menu/root-unit-vol-us-2.png)
+            - `tsp`: teaspoon
+            - `tbsp`: tablespoon
+            - `floz`: fluid ounce
+            - `gill`: gill
+            - `cpu`: cup
+            - `pint`: pint
+            - `qt`: quart
+            - `gal`: gallon
+        - ![ROOT > UNIT > VOL > IMP](images/menu/root-unit-vol-imp.png) (ROOT > UNIT > VOL > IMP)
+            - ![ROOT > UNIT > VOL > IMP > Row1](images/menu/root-unit-vol-imp-1.png)
+            - ![ROOT > UNIT > VOL > IMP > Row2](images/menu/root-unit-vol-imp-2.png)
+            - (TODO: Add imperial teaspoon and imperial tablespoon)
+            - `floz`: imperial fluid ounce
+            - `gill`: imperial gill
+            - `cpu`: imperial cup
+            - `pint`: imperial pint
+            - `qt`: imperial quart
+            - `gal`: imperial gallon
+        - ![ROOT > UNIT > VOL > DRY](images/menu/root-unit-vol-dry.png) (ROOT > UNIT > VOL > DRY)
+            - ![ROOT > UNIT > VOL > DRY > Row1](images/menu/root-unit-vol-dry-1.png)
+            - ![ROOT > UNIT > VOL > DRY > Row2](images/menu/root-unit-vol-dry-2.png)
+            - `drpt`: dry pint
+            - `drqt`: dry quart
+            - `dgal`: dry gallon
+            - `peck`: peck
+            - `bush`: bushel
+            - `dbbl`: dry barrel
+        - ![ROOT > UNIT > VOL > MISC](images/menu/root-unit-vol-misc.png) (ROOT > UNIT > VOL > MISC)
+            - ![ROOT > UNIT > VOL > MISC > Row1](images/menu/root-unit-vol-misc-1.png)
+            - `bdft`: board foot
+            - `bbl`: oil barrel (42 US gallons)
+            - `olmp`: olympic swimming pool (2m deep)
+            - `acft`: acre foot
+    - ![ROOT > UNIT > MASS](images/menu/root-unit-mass.png) (ROOT > UNIT > MASS)
+        - ![ROOT > UNIT > MASS > Row1](images/menu/root-unit-mass-1.png)
+        - ![ROOT > UNIT > MASS > Row2](images/menu/root-unit-mass-2.png)
+        - `ug`: microgram
+        - `mg`: milligram
+        - `g`: gram
+        - `kg`: kilogram
+        - `t`: tonne (1000 kg)
+        - `US`: US units
+        - `IMP`: Imperial units
+        - `TROY`: Troy units
+        - ![ROOT > UNIT > MASS > US](images/menu/root-unit-mass-us.png) (ROOT > UNIT > MASS > US)
+            - ![ROOT > UNIT > MASS > US > Row1](images/menu/root-unit-mass-us-1.png)
+            - ![ROOT > UNIT > MASS > US > Row2](images/menu/root-unit-mass-us-2.png)
+            - `grai`: grain (1/7000 lbs)
+            - `dram`: dram (1/16 ounce)
+            - `oz`: ounce
+            - `lb`: pound
+            - `slug`: slug
+            - `cwt`: hundred weight (100 lbs)
+            - `ton`: ton (20 cwt, 2000 lbs)
+        - ![ROOT > UNIT > MASS > IMP](images/menu/root-unit-mass-imp.png) (ROOT > UNIT > MASS > IMP)
+            - ![ROOT > UNIT > MASS > IMP > Row1](images/menu/root-unit-mass-imp-1.png)
+            - `lb`: pound
+            - `stne`: stone (14 pounds) TODO: rename menu to 'ston'
+            - `quat`: quarter (2 stones) TODO: rename menu to 'qtr`
+            - `lcwt`: long hundred weight (8 stones, 112 lbs)
+            - `lton`: long ton (20 lcwt, 2240 lbs)
+        - ![ROOT > UNIT > MASS > TROY](images/menu/root-unit-mass-troy.png) (ROOT > UNIT > MASS > TROY)
+            - ![ROOT > UNIT > MASS > TROY > Row1](images/menu/root-unit-mass-troy-1.png)
+            - `grai`: grain(1/7000 lbs)
+            - `dwt`: troy pennyweight (24 grains)
+            - `ozt`: troy ounce (20 troy pennyweights)
+            - `lbt`: troy pound (12 troy ounces)
+    - ![ROOT > UNIT > TEMP](images/menu/root-unit-temp.png) (ROOT > UNIT > TEMP)
+        - ![ROOT > UNIT > TEMP > Row1](images/menu/root-unit-temp-1.png)
+        - `°C`: Celsius
+        - `°F`: Fahrenheit
+        - `°R`: Rankine
+        - `°K`: Kelvin (The official SI symbol for Kelvin is just `K` without the degree
+          symbol. RPN83P uses the degree symbol for UI consistency with other
+          temperature units.)
+    - ![ROOT > UNIT > SPD](images/menu/root-unit-spd.png) (ROOT > UNIT > SPD)
+        - ![ROOT > UNIT > SPD > Row1](images/menu/root-unit-spd-1.png)
+        - ![ROOT > UNIT > SPD > Row2](images/menu/root-unit-spd-2.png)
+        - `m/s`: meters per second
+        - `ft/s`: feet per second
+        - `kph`: kilometers per hour
+        - `mph`: miles per hour
+        - `knot`: nautical miles per hour
+        - `c`: speed of light
+    - ![ROOT > UNIT > FORC](images/menu/root-unit-forc.png) (ROOT > UNIT > FORC)
+        - ![ROOT > UNIT > FORC > Row1](images/menu/root-unit-forc-1.png)
+        - `dyne`: dyne
+        - `N`: newton
+        - `lbf`: pound force
+    - ![ROOT > UNIT > PRES](images/menu/root-unit-pres.png) (ROOT > UNIT > PRES)
+        - ![ROOT > UNIT > PRES > Row1](images/menu/root-unit-pres-1.png)
+        - ![ROOT > UNIT > PRES > Row2](images/menu/root-unit-pres-2.png)
+        - ![ROOT > UNIT > PRES > Row3](images/menu/root-unit-pres-3.png)
+        - `Pa`: pascal
+        - `hPa`: hectopascal
+        - `kPa`: kilopascal
+        - `atm`: atmosphere
+        - `mbar`: millibar
+        - `dbar`: decibar
+        - `bar`: bar
+        - `psi`: pounds per square inch
+        - `mmH`: millimeter of mercury
+        - `inHg`: inch of mercury
+        - `Torr`: torr
+    - ![ROOT > UNIT > ENER](images/menu/root-unit-ener.png) (ROOT > UNIT > ENER)
+        - ![ROOT > UNIT > ENER > Row1](images/menu/root-unit-ener-1.png)
+        - ![ROOT > UNIT > ENER > Row2](images/menu/root-unit-ener-2.png)
+        - `J`: joule
+        - `Wh`: watthour
+        - `kWh`: kilowatthour
+        - `cal`: calorie
+        - `kcal`: kilocalorie
+        - `eV`: elctron-volt
+        - `Btu`: British thermal units (1055 joules)
+        - `tTNT`: tonne (1000 kg) of TNT (4.184e9 joules)
+    - ![ROOT > UNIT > PWR](images/menu/root-unit-pwr.png) (ROOT > UNIT > PWR)
+        - ![ROOT > UNIT > PWR > Row1](images/menu/root-unit-pwr-1.png)
+        - `W`: watt
+        - `hp`: horsepower
+        - TODO: add `Btu/hr`
+    - ![ROOT > UNIT > FUEL](images/menu/root-unit-fuel.png) (ROOT > UNIT > FUEL)
+        - ![ROOT > UNIT > FUEL > Row1](images/menu/root-unit-fuel-1.png)
+        - `Lkm`: liters per 100 km
+        - `mpg`: miles per US gallon
 - ![ROOT > DATE](images/menu/root-date.png) (`ROOT > DATE`)
     - ![ROOT > DATE > Row1](images/menu/root-date-1.png)
     - ![ROOT > DATE > Row2](images/menu/root-date-2.png)
