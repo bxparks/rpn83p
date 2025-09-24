@@ -545,7 +545,7 @@ MenuGroup root mRoot [
               MenuRow [
                 MenuItem lb mUnitImpPound # same as normal 'lb'
                 MenuItem stne mUnitStone
-                MenuItem quar mUnitQuarter
+                MenuItem qrtr mUnitQuarter
                 MenuItem lcwt mUnitLongHundredWeight
                 MenuItem lton mUnitLongTon
               ]

@@ -5850,7 +5850,7 @@ mUnitImpPoundName:
 mUnitStoneName:
     .db "stne", 0
 mUnitQuarterName:
-    .db "quar", 0
+    .db "qrtr", 0
 mUnitLongHundredWeightName:
     .db "lcwt", 0
 mUnitLongTonName:
