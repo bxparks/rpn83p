@@ -283,11 +283,12 @@ class SymbolGenerator:
     """Generate the internal ids and symbols."""
 
     def __init__(self, unit_classes: List[UnitClass], units: List[Unit]):
-        self.unit_classes = unit_classes
+        self.unit_classes = unit_classes  # unit_classes by id
+        self.units = units
         self.units = units
 
-        self.unit_map: Dict[int, Unit] = {}  # {id-> Unit}
-        self.unit_class_map: Dict[int, UnitClass] = {}  # {id-> Unit}
+        self.unit_by_id: Dict[int, Unit] = {}  # {id -> Unit}
+        self.unit_class_by_id: Dict[int, UnitClass] = {}  # {id -> UnitClass}
 
     def generate(self) -> None:
         self.generate_unit_class_ids()
@@ -295,16 +296,16 @@ class SymbolGenerator:
 
     def generate_unit_class_ids(self) -> None:
         id_counter = 0
-        for unit in self.units:
-            self.unit_map[id_counter] = unit
-            unit['id'] = id_counter
+        for unit_class in self.unit_classes:
+            self.unit_class_by_id[id_counter] = unit_class
+            unit_class['id'] = id_counter
             id_counter += 1
 
     def generate_unit_ids(self) -> None:
         id_counter = 0
-        for unit_class in self.unit_classes:
-            self.unit_class_map[id_counter] = unit_class
-            unit_class['id'] = id_counter
+        for unit in self.units:
+            self.unit_by_id[id_counter] = unit
+            unit['id'] = id_counter
             id_counter += 1
 
 
@@ -324,31 +325,45 @@ class Validator:
 
     def validate_unit_classes(self) -> None:
         # Check for duplicate labels.
-        self.unit_class_labels: Dict[str, UnitClass] = {}
+        self.unit_class_by_label: Dict[str, UnitClass] = {}
         for unit_class in self.unit_classes:
             label = unit_class['label']
-            if label in self.unit_class_labels:
+            if label in self.unit_class_by_label:
                 raise ValueError(f"Duplicate UnitClass label '{label}'")
-            self.unit_class_labels[label] = unit_class
+            self.unit_class_by_label[label] = unit_class
 
     def validate_units(self) -> None:
         # Check for duplicate labels.
-        self.unit_labels: Dict[str, Unit] = {}
+        self.unit_by_label: Dict[str, Unit] = {}
         for unit in self.units:
             label = unit['label']
-            if label in self.unit_labels:
+            if label in self.unit_by_label:
                 raise ValueError(f"Duplicate Unit label '{label}'")
-            self.unit_labels[label] = unit
+            self.unit_by_label[label] = unit
 
-        # Check Unit.unit_class references a valid UnitClass
+        # Check Unit.unit_class points to a valid UnitClass
         for unit in self.units:
             label = unit['label']
             unit_class_label = unit['unit_class']
-            if unit_class_label not in self.unit_class_labels:
+            if unit_class_label not in self.unit_class_by_label:
                 raise ValueError(
                     f"Unknown UnitClass '{unit_class_label}' "
                     + f"for Unit '{label}'"
                 )
+
+        # Check that the baseUnit of the unit is in the same class as the unit
+        # itself. Otherwise, the base Unit doesn't make sense.
+        for unit in self.units:
+            label = unit['label']
+            unit_class_label = unit['unit_class']
+            base_unit_label = unit['base_unit']
+            base_unit = self.unit_by_label[base_unit_label]
+            base_unit_class_label = base_unit['unit_class']
+            if unit_class_label != base_unit_class_label:
+                raise ValueError(
+                    f"Invalid baseUnit '{base_unit_label}' for unit '{label}': "
+                    f"baseUnitClass is '{base_unit_class_label}' "
+                    f"but should be '{unit_class_label}'")
 
 # -----------------------------------------------------------------------------
 
