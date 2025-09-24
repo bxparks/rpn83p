@@ -527,6 +527,7 @@ MenuGroup root mRoot [
             MenuItem t mUnitTonne
           ]
           MenuRow [
+            MenuItem amu mUnitAtomicMassUnit
             MenuGroup US mUnitMassUS [
               MenuRow [
                 MenuItem grai mUnitGrain

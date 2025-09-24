@@ -3258,8 +3258,17 @@ mUnitTonneId equ 346
     .dw mUnitTonneHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
 ; MenuGroup MASS: children: row 1
+mUnitAtomicMassUnit:
+mUnitAtomicMassUnitId equ 347
+    .dw mUnitAtomicMassUnitId ; id
+    .dw mUnitMassId ; parentId
+    .dw mUnitAtomicMassUnitName ; name
+    .db 0 ; numRows
+    .dw 0 ; rowBeginId or altName
+    .dw mUnitAtomicMassUnitHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
 mUnitMassUS:
-mUnitMassUSId equ 347
+mUnitMassUSId equ 348
     .dw mUnitMassUSId ; id
     .dw mUnitMassId ; parentId
     .dw mUnitMassUSName ; name
@@ -3268,7 +3277,7 @@ mUnitMassUSId equ 347
     .dw mGroupHandler ; handler (predefined)
     .dw 0 ; nameSelector
 mUnitMassImp:
-mUnitMassImpId equ 348
+mUnitMassImpId equ 349
     .dw mUnitMassImpId ; id
     .dw mUnitMassId ; parentId
     .dw mUnitMassImpName ; name
@@ -3277,22 +3286,13 @@ mUnitMassImpId equ 348
     .dw mGroupHandler ; handler (predefined)
     .dw 0 ; nameSelector
 mUnitMassTroy:
-mUnitMassTroyId equ 349
+mUnitMassTroyId equ 350
     .dw mUnitMassTroyId ; id
     .dw mUnitMassId ; parentId
     .dw mUnitMassTroyName ; name
     .db 1 ; numRows
     .dw mUnitTroyGrainId ; rowBeginId or altName
     .dw mGroupHandler ; handler (predefined)
-    .dw 0 ; nameSelector
-mBlank350:
-mBlank350Id equ 350
-    .dw mBlank350Id ; id
-    .dw mUnitMassId ; parentId
-    .dw mNullName ; name
-    .db 0 ; numRows
-    .dw 0 ; rowBeginId or altName
-    .dw mNullHandler ; handler (predefined)
     .dw 0 ; nameSelector
 mBlank351:
 mBlank351Id equ 351
@@ -5076,8 +5076,8 @@ mSetClockId equ 541
 ; Pool of menu names as NUL-terminated C strings.
 ;-----------------------------------------------------------------------------
 
-mNamesCount equ 448 ; number of names and altnames
-mNamesPoolSize equ 3829 ; size of names string pool
+mNamesCount equ 449 ; number of names and altnames
+mNamesPoolSize equ 3833 ; size of names string pool
 
 mNullName:
     .db 0
@@ -5731,6 +5731,8 @@ mUnitKiloGramName:
     .db "kg", 0
 mUnitTonneName:
     .db "t", 0
+mUnitAtomicMassUnitName:
+    .db "amu", 0
 mUnitMassUSName:
     .db "US", 0
 mUnitMassImpName:

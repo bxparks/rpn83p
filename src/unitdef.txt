@@ -194,6 +194,9 @@ Units [
   # Mass
   #----------------------------------------------------------------------------
 
+  # https://en.wikipedia.org/wiki/Dalton_(unit)
+  Unit AtomicMassUnit amu Mass 1.66053906892e-24 Gram
+
   Unit MicroGram <Smu>g Mass 1e-6 Gram
   Unit MilliGram mg Mass 1e-3 Gram
   Unit Gram g Mass 1 Gram
