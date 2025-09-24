@@ -1,10 +1,14 @@
 # This file defines the list of units supported by the UNIT conversion menu
 # functions.
 #
-# WARNING: To preserve backwards compatibility with Denominate numbers (values
-# with units) stored in persistent memory (e.g. stack, registers, variables),
-# this file must be treated as *append* only. Previously defined units must
-# never be removed, modified, or reordered.
+# **WARNING**: To preserve backwards compatibility with Denominate numbers
+# (values with units) stored in persistent memory (e.g. stack, registers,
+# variables), this file must be treated as *append* only. Previously defined
+# units must never be removed or reordered because that would change the the
+# internal unit identifiers which must remain stable. If a unit must be
+# removed, the NullUnit and NullUnitClass are have been reserved so that they
+# can be used to indicate an obsolete unit. The ability to obsolete a unit has
+# not been implemented in code.
 #
 # Classes [
 #   {list of classes}
@@ -22,6 +26,7 @@
 # - {scale} {baseUnit} is the size of the unit measured in {baseUnit}
 
 UnitClasses [
+  UnitClass NullClass # unitClass=0, sentinel for a unit that does not exist
   UnitClass Length
   UnitClass Area
   UnitClass Volume
@@ -36,6 +41,13 @@ UnitClasses [
 ]
 
 Units [
+  #----------------------------------------------------------------------------
+  # A sentinel unit that does not exist. If a unit is ever deprecated, we can
+  # set its unitClass to NullClass, and set its baseUnit to NullUnit. The Id of
+  # the NullUnit is 0.
+  #----------------------------------------------------------------------------
+  Unit NullUnit nullunit NullClass 1 NullUnit
+
   #----------------------------------------------------------------------------
   # Length
   #----------------------------------------------------------------------------
