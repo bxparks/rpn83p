@@ -52,7 +52,8 @@ Units [
   # Length
   #----------------------------------------------------------------------------
 
-  Unit Angstrom angst Length 1e-10 Meter
+  Unit Fermi fermi Length 1e-15 Meter
+  Unit Angstrom angstrom Length 1e-10 Meter
   Unit NanoMeter nm Length 1e-9 Meter
   Unit MicroMeter <Smu>m Length 1e-6 Meter
   Unit MilliMeter mm Length 1e-3 Meter
@@ -81,9 +82,9 @@ Units [
   Unit NauticalMile nmi Length 1852 Meter # by defn
 
   # Survey: https://en.wikipedia.org/wiki/United_States_customary_units
-  # After 2023, most of these were standardizedon the SI units. However,
-  # the following units starting with "Survey" uses the pre-2023 definition
-  # for historical purposes.
+  # After 2023, most of these were standardized on the SI units. However, the
+  # following units starting with "Survey" uses the pre-2023 definition for
+  # historical purposes.
   #
   # SurveyFoot is deprecated after 2023. Use the pre-2023 definition of
   # 1200/3937 km.

@@ -82,9 +82,25 @@ mUnitBaseHandler:
 ; UNIT > LENG > Row 1
 ;-----------------------------------------------------------------------------
 
+mUnitFermiHandler:
+    ld a, unitFermiId
+    jp commonUnitHandler
+
+mUnitAngstromHandler:
+    ld a, unitAngstromId
+    jp commonUnitHandler
+
+mUnitNanoMeterHandler:
+    ld a, unitNanoMeterId
+    jp commonUnitHandler
+
 mUnitMicroMeterHandler:
     ld a, unitMicroMeterId
     jp commonUnitHandler
+
+;-----------------------------------------------------------------------------
+; UNIT > LENG > Row 2
+;-----------------------------------------------------------------------------
 
 mUnitMilliMeterHandler:
     ld a, unitMilliMeterId
@@ -103,7 +119,7 @@ mUnitKiloMeterHandler:
     jp commonUnitHandler
 
 ;-----------------------------------------------------------------------------
-; UNIT > LENG > Row 2
+; UNIT > LENG > Row 3
 ;-----------------------------------------------------------------------------
 
 mUnitMilHandler:

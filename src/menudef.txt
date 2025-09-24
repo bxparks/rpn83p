@@ -377,8 +377,12 @@ MenuGroup root mRoot [
         ]
         MenuGroup LENG mUnitLengh [
           MenuRow [
-            # MenuItem nm mUnitNanoMeter
+            MenuItem ferm mUnitFermi
+            MenuItem angs mUnitAngstrom
+            MenuItem nm mUnitNanoMeter
             MenuItem <Smu>m mUnitMicroMeter
+          ]
+          MenuRow [
             MenuItem mm mUnitMilliMeter
             MenuItem cm mUnitCentiMeter
             MenuItem m mUnitMeter
