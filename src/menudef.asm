@@ -2854,7 +2854,7 @@ mUnitVolImpId equ 303
     .dw mUnitVolId ; parentId
     .dw mUnitVolImpName ; name
     .db 2 ; numRows
-    .dw mUnitImpFluidOunceId ; rowBeginId or altName
+    .dw mUnitImpTeaspoonId ; rowBeginId or altName
     .dw mGroupHandler ; handler (predefined)
     .dw 0 ; nameSelector
 mUnitVolDry:
@@ -2979,8 +2979,26 @@ mBlank316Id equ 316
     .dw 0 ; nameSelector
 ; MenuGroup IMP: children
 ; MenuGroup IMP: children: row 0
+mUnitImpTeaspoon:
+mUnitImpTeaspoonId equ 317
+    .dw mUnitImpTeaspoonId ; id
+    .dw mUnitVolImpId ; parentId
+    .dw mUnitImpTeaspoonName ; name
+    .db 0 ; numRows
+    .dw 0 ; rowBeginId or altName
+    .dw mUnitImpTeaspoonHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
+mUnitImpTablespoon:
+mUnitImpTablespoonId equ 318
+    .dw mUnitImpTablespoonId ; id
+    .dw mUnitVolImpId ; parentId
+    .dw mUnitImpTablespoonName ; name
+    .db 0 ; numRows
+    .dw 0 ; rowBeginId or altName
+    .dw mUnitImpTablespoonHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
 mUnitImpFluidOunce:
-mUnitImpFluidOunceId equ 317
+mUnitImpFluidOunceId equ 319
     .dw mUnitImpFluidOunceId ; id
     .dw mUnitVolImpId ; parentId
     .dw mUnitImpFluidOunceName ; name
@@ -2989,7 +3007,7 @@ mUnitImpFluidOunceId equ 317
     .dw mUnitImpFluidOunceHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
 mUnitImpGill:
-mUnitImpGillId equ 318
+mUnitImpGillId equ 320
     .dw mUnitImpGillId ; id
     .dw mUnitVolImpId ; parentId
     .dw mUnitImpGillName ; name
@@ -2998,7 +3016,7 @@ mUnitImpGillId equ 318
     .dw mUnitImpGillHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
 mUnitImpCup:
-mUnitImpCupId equ 319
+mUnitImpCupId equ 321
     .dw mUnitImpCupId ; id
     .dw mUnitVolImpId ; parentId
     .dw mUnitImpCupName ; name
@@ -3006,8 +3024,9 @@ mUnitImpCupId equ 319
     .dw 0 ; rowBeginId or altName
     .dw mUnitImpCupHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
+; MenuGroup IMP: children: row 1
 mUnitImpPint:
-mUnitImpPintId equ 320
+mUnitImpPintId equ 322
     .dw mUnitImpPintId ; id
     .dw mUnitVolImpId ; parentId
     .dw mUnitImpPintName ; name
@@ -3016,7 +3035,7 @@ mUnitImpPintId equ 320
     .dw mUnitImpPintHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
 mUnitImpQuart:
-mUnitImpQuartId equ 321
+mUnitImpQuartId equ 323
     .dw mUnitImpQuartId ; id
     .dw mUnitVolImpId ; parentId
     .dw mUnitImpQuartName ; name
@@ -3024,33 +3043,14 @@ mUnitImpQuartId equ 321
     .dw 0 ; rowBeginId or altName
     .dw mUnitImpQuartHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
-; MenuGroup IMP: children: row 1
 mUnitImpGallon:
-mUnitImpGallonId equ 322
+mUnitImpGallonId equ 324
     .dw mUnitImpGallonId ; id
     .dw mUnitVolImpId ; parentId
     .dw mUnitImpGallonName ; name
     .db 0 ; numRows
     .dw 0 ; rowBeginId or altName
     .dw mUnitImpGallonHandler ; handler (to be implemented)
-    .dw 0 ; nameSelector
-mBlank323:
-mBlank323Id equ 323
-    .dw mBlank323Id ; id
-    .dw mUnitVolImpId ; parentId
-    .dw mNullName ; name
-    .db 0 ; numRows
-    .dw 0 ; rowBeginId or altName
-    .dw mNullHandler ; handler (predefined)
-    .dw 0 ; nameSelector
-mBlank324:
-mBlank324Id equ 324
-    .dw mBlank324Id ; id
-    .dw mUnitVolImpId ; parentId
-    .dw mNullName ; name
-    .db 0 ; numRows
-    .dw 0 ; rowBeginId or altName
-    .dw mNullHandler ; handler (predefined)
     .dw 0 ; nameSelector
 mBlank325:
 mBlank325Id equ 325
@@ -5076,8 +5076,8 @@ mSetClockId equ 541
 ; Pool of menu names as NUL-terminated C strings.
 ;-----------------------------------------------------------------------------
 
-mNamesCount equ 444 ; number of names and altnames
-mNamesPoolSize equ 3810 ; size of names string pool
+mNamesCount equ 446 ; number of names and altnames
+mNamesPoolSize equ 3819 ; size of names string pool
 
 mNullName:
     .db 0
@@ -5681,6 +5681,10 @@ mUnitQuartName:
     .db "qt", 0
 mUnitGallonName:
     .db "gal", 0
+mUnitImpTeaspoonName:
+    .db "tsp", 0
+mUnitImpTablespoonName:
+    .db "tbsp", 0
 mUnitImpFluidOunceName:
     .db "floz", 0
 mUnitImpGillName:

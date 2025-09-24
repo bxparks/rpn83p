@@ -152,6 +152,10 @@ Units [
   Unit Gallon gallon Volume 3.785411784e-3 CuMeter # 231 in^3 by defn
 
   # https://en.wikipedia.org/wiki/Imperial_units
+  # https://en.wikipedia.org/wiki/Teaspoon
+  Unit ImpTeaspoon imp<Sspace>tsp Volume 3.5516328125e-6 CuMeter # 1/4 imp tbsp
+  # https://en.wikipedia.org/wiki/Tablespoon
+  Unit ImpTablespoon imp<Sspace>tbsp Volume 1.420653125e-5 CuMeter # 1/2 imp floz
   Unit ImpFluidOunce imp<Sspace>floz Volume 2.84130625e-5 CuMeter # *1/5* imp gill
   Unit ImpGill imp<Sspace>gill Volume 1.420653125e-4 CuMeter # 1/2 imp cup
   Unit ImpCup imp<Sspace>cup Volume 2.84130625e-4 CuMeter # 1/2 imp pint

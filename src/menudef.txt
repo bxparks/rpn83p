@@ -482,13 +482,15 @@ MenuGroup root mRoot [
             ]
             MenuGroup IMP mUnitVolImp [
               MenuRow [
+                MenuItem tsp mUnitImpTeaspoon
+                MenuItem tbsp mUnitImpTablespoon
                 MenuItem floz mUnitImpFluidOunce
                 MenuItem gill mUnitImpGill
                 MenuItem cup mUnitImpCup
-                MenuItem pint mUnitImpPint
-                MenuItem qt mUnitImpQuart
               ]
               MenuRow [
+                MenuItem pint mUnitImpPint
+                MenuItem qt mUnitImpQuart
                 MenuItem gal mUnitImpGallon
               ]
             ]

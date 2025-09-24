@@ -374,6 +374,14 @@ mUnitGallonHandler:
 ; UNIT > VOL > IMP > Row 1
 ;-----------------------------------------------------------------------------
 
+mUnitImpTeaspoonHandler:
+    ld a, unitImpTeaspoonId
+    jp commonUnitHandler
+
+mUnitImpTablespoonHandler:
+    ld a, unitImpTablespoonId
+    jp commonUnitHandler
+
 mUnitImpFluidOunceHandler:
     ld a, unitImpFluidOunceId
     jp commonUnitHandler
@@ -386,6 +394,10 @@ mUnitImpCupHandler:
     ld a, unitImpCupId
     jp commonUnitHandler
 
+;-----------------------------------------------------------------------------
+; UNIT > VOL > IMP > Row 2
+;-----------------------------------------------------------------------------
+
 mUnitImpPintHandler:
     ld a, unitImpPintId
     jp commonUnitHandler
@@ -393,10 +405,6 @@ mUnitImpPintHandler:
 mUnitImpQuartHandler:
     ld a, unitImpQuartId
     jp commonUnitHandler
-
-;-----------------------------------------------------------------------------
-; UNIT > VOL > IMP > Row 2
-;-----------------------------------------------------------------------------
 
 mUnitImpGallonHandler:
     ld a, unitImpGallonId
