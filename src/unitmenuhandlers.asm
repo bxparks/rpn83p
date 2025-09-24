@@ -774,6 +774,18 @@ mUnitWattHandler:
     ld a, unitWattId
     jp commonUnitHandler
 
+mUnitKiloWattHandler:
+    ld a, unitKiloWattId
+    jp commonUnitHandler
+
+mUnitBtuPerHourHandler:
+    ld a, unitBtuPerHourId
+    jp commonUnitHandler
+
+mUnitBtuPerMinuteHandler:
+    ld a, unitBtuPerMinuteId
+    jp commonUnitHandler
+
 mUnitHorsepowerHandler:
     ld a, unitHorsepowerId
     jp commonUnitHandler

@@ -633,6 +633,11 @@ MenuGroup root mRoot [
         MenuGroup PWR mUnitPower [
           MenuRow [
             MenuItem W mUnitWatt
+            MenuItem kW mUnitKiloWatt
+            MenuItem Bt<Sslash>h mUnitBtuPerHour
+            MenuItem Bt<Sslash>m mUnitBtuPerMinute
+          ]
+          MenuRow [
             MenuItem hp mUnitHorsepower
           ]
         ]

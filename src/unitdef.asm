@@ -33,7 +33,7 @@ unitTypeFuel equ 11
 ; List of units.
 ;-----------------------------------------------------------------------------
 
-unitsCount equ 143 ; number of units
+unitsCount equ 146 ; number of units
 unitInfoTable:
 
 unitNullUnitInfo:
@@ -876,20 +876,38 @@ unitWattId equ 139
     .db unitTypePower ; unitType
     .db unitWattId ; baseUnitId
     .db $00, $80, $10, $00, $00, $00, $00, $00, $00 ; scale=1
+unitKiloWattInfo:
+unitKiloWattId equ 140
+    .dw unitKiloWattName ; name
+    .db unitTypePower ; unitType
+    .db unitWattId ; baseUnitId
+    .db $00, $83, $10, $00, $00, $00, $00, $00, $00 ; scale=1000
+unitBtuPerHourInfo:
+unitBtuPerHourId equ 141
+    .dw unitBtuPerHourName ; name
+    .db unitTypePower ; unitType
+    .db unitWattId ; baseUnitId
+    .db $00, $7F, $29, $30, $55, $55, $55, $55, $56 ; scale=.29305555555556
+unitBtuPerMinuteInfo:
+unitBtuPerMinuteId equ 142
+    .dw unitBtuPerMinuteName ; name
+    .db unitTypePower ; unitType
+    .db unitWattId ; baseUnitId
+    .db $00, $81, $17, $58, $33, $33, $33, $33, $33 ; scale=17.583333333333
 unitHorsepowerInfo:
-unitHorsepowerId equ 140
+unitHorsepowerId equ 143
     .dw unitHorsepowerName ; name
     .db unitTypePower ; unitType
     .db unitWattId ; baseUnitId
     .db $00, $82, $74, $56, $99, $87, $15, $82, $27 ; scale=745.69987158227022
 unitMilesPerGallonInfo:
-unitMilesPerGallonId equ 141
+unitMilesPerGallonId equ 144
     .dw unitMilesPerGallonName ; name
     .db unitTypeFuel ; unitType
     .db unitLitersPerHundredKiloMetersId ; baseUnitId
     .db $00, $80, $10, $00, $00, $00, $00, $00, $00 ; scale=1
 unitLitersPerHundredKiloMetersInfo:
-unitLitersPerHundredKiloMetersId equ 142
+unitLitersPerHundredKiloMetersId equ 145
     .dw unitLitersPerHundredKiloMetersName ; name
     .db unitTypeFuel ; unitType
     .db unitLitersPerHundredKiloMetersId ; baseUnitId
@@ -899,8 +917,8 @@ unitLitersPerHundredKiloMetersId equ 142
 ; List of unit names.
 ;-----------------------------------------------------------------------------
 
-unitNamesCount equ 143 ; number of unit names
-unitNamesPoolSize equ 1153 ; size of unit names string pool
+unitNamesCount equ 146 ; number of unit names
+unitNamesPoolSize equ 1185 ; size of unit names string pool
 
 unitNullUnitName:
     .db "nullunit", 0
@@ -1182,6 +1200,12 @@ unitTonTNTName:
     .db "tonTNT", 0
 unitWattName:
     .db "W", 0
+unitKiloWattName:
+    .db "kW", 0
+unitBtuPerHourName:
+    .db 'B', 't', 'u', Sslash, 'h', 'r', 0
+unitBtuPerMinuteName:
+    .db 'B', 't', 'u', Sslash, 'm', 'i', 'n', 0
 unitHorsepowerName:
     .db "hp", 0
 unitMilesPerGallonName:

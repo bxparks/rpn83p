@@ -350,6 +350,15 @@ Units [
   #----------------------------------------------------------------------------
 
   Unit Watt W Power 1 Watt
+  Unit KiloWatt kW Power 1000 Watt
+
+  # https://en.wikipedia.org/wiki/British_thermal_unit
+  # Btu/hour = 1055J/(3600s) = .29305555555556 W (used frequently in AC and
+  # heating systems for homes)
+  Unit BtuPerHour Btu<Sslash>hr Power .29305555555556 Watt
+  # Btu/min = 1055J/(60s) = 17.583333333333 W (added for compatibility with
+  # TI-85)
+  Unit BtuPerMinute Btu<Sslash>min Power 17.583333333333 Watt
 
   # According to https://en.wikipedia.org/wiki/Horsepower:
   # 1 hp (mechanical)
