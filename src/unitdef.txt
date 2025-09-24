@@ -6,38 +6,38 @@
 # variables), this file must be treated as *append* only. Previously defined
 # units must never be removed or reordered because that would change the the
 # internal unit identifiers which must remain stable. If a unit must be
-# removed, the NullUnit and NullUnitClass are have been reserved so that they
+# removed, the NullUnit and NullUnitType are have been reserved so that they
 # can be used to indicate an obsolete unit. The ability to obsolete a unit has
 # not been implemented in code.
 #
-# Classes [
-#   {list of classes}
+# UnitTypes [
+#   {list of unittypes}
 # ]
 #
-# UnitTable [
+# Units [
 #   {list of units}
 # ]
 #
-# unitclass = 'UnitClass' {label}
-# unit = 'Unit' {label} {name} {unitClass} {scale} {baseUnit}
+# unittype = 'UnitType' {label}
+# unit = 'Unit' {label} {name} {unitType} {scale} {baseUnit}
 #
 # - {label} is the identifier used in the assembly language program
 # - {name} is the user-visible name of the object
 # - {scale} {baseUnit} is the size of the unit measured in {baseUnit}
 
-UnitClasses [
-  UnitClass NullClass # unit type of NullUnit
-  UnitClass Length
-  UnitClass Area
-  UnitClass Volume
-  UnitClass Mass
-  UnitClass Temperature
-  UnitClass Speed
-  UnitClass Force
-  UnitClass Pressure
-  UnitClass Energy
-  UnitClass Power
-  UnitClass Fuel # gas mileage
+UnitTypes [
+  UnitType NullType # unit type of NullUnit
+  UnitType Length
+  UnitType Area
+  UnitType Volume
+  UnitType Mass
+  UnitType Temperature
+  UnitType Speed
+  UnitType Force
+  UnitType Pressure
+  UnitType Energy
+  UnitType Power
+  UnitType Fuel # gas mileage
 ]
 
 Units [
@@ -46,7 +46,8 @@ Units [
   # used to deprecate an existing unit, for example, by setting its baseUnit to
   # be the NullUnit. The Id of the NullUnit is 0.
   #----------------------------------------------------------------------------
-  Unit NullUnit nullunit NullClass 1 NullUnit
+
+  Unit NullUnit nullunit NullType 1 NullUnit
 
   #----------------------------------------------------------------------------
   # Length

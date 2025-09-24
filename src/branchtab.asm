@@ -527,9 +527,9 @@ _ExtractUnitNameLabel:
 _ExtractUnitName equ _ExtractUnitNameLabel-branchTableBase
     .dw ExtractUnitName
     .db 1
-_GetUnitClassLabel:
-_GetUnitClass equ _GetUnitClassLabel-branchTableBase
-    .dw GetUnitClass
+_GetUnitTypeLabel:
+_GetUnitType equ _GetUnitTypeLabel-branchTableBase
+    .dw GetUnitType
     .db 1
 _GetUnitBaseLabel:
 _GetUnitBase equ _GetUnitBaseLabel-branchTableBase
