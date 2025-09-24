@@ -310,9 +310,13 @@ Units [
   # See https://en.wikipedia.org/wiki/Pound_per_square_inch.
   Unit PoundSquareInch psi Pressure 6894.7572931684 Pascal
 
-  # See https://en.wikipedia.org/wiki/Torr
+  # See https://en.wikipedia.org/wiki/Torr. Per SI conventions, the symbol is
+  # 'Torr', but the unit name is 'torr'. This is too confusing, so let's use
+  # the full unit name 'torr' in the UI, since 4 letters will fit in the soft
+  # menu name. Within RPN83P, the internal label of a unit starts with a
+  # capital, so this becomes 'Torr'. Sigh.
   # 1 Torr = 1/760 atm = 133.32236842105 Pa
-  Unit Torr Torr Pressure 133.32236842105 Pascal
+  Unit Torr torr Pressure 133.32236842105 Pascal
 
   #----------------------------------------------------------------------------
   # Energy

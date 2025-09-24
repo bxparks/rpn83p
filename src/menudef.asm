@@ -5872,7 +5872,7 @@ mUnitMilliMeterMercuryName:
 mUnitInchMercuryName:
     .db "inHg", 0
 mUnitTorrName:
-    .db "Torr", 0
+    .db "torr", 0
 mUnitJouleName:
     .db "J", 0
 mUnitWattHourName:

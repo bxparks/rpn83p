@@ -611,7 +611,7 @@ MenuGroup root mRoot [
           MenuRow [
             MenuItem mmH mUnitMilliMeterMercury
             MenuItem inHg mUnitInchMercury
-            MenuItem Torr mUnitTorr
+            MenuItem torr mUnitTorr
           ]
         ]
         MenuGroup ENER mUnitEnergy [

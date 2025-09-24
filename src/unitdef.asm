@@ -1161,7 +1161,7 @@ unitInchMercuryName:
 unitPoundSquareInchName:
     .db "psi", 0
 unitTorrName:
-    .db "Torr", 0
+    .db "torr", 0
 unitJouleName:
     .db "J", 0
 unitWattHourName:
