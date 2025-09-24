@@ -1,12 +1,19 @@
 # A small sample of src/unitdef.txt for development and testing purposes.
 
 UnitClasses [
+  UnitClass NullClass # unit type of NullUnit
   UnitClass Length
   UnitClass Area
   UnitClass Volume
 ]
 
 Units [
+  #----------------------------------------------------------------------------
+  # A sentinel unit that represents a unit that does not exist. This could be
+  # used to deprecate an existing unit, for example, by setting its baseUnit to
+  # be the NullUnit. The Id of the NullUnit is 0.
+  #----------------------------------------------------------------------------
+  Unit NullUnit nullunit NullClass 1 NullUnit
   Unit Meter meter Length 1.0 Meter
   Unit Feet feet Length 0.3048 Meter
   Unit SqMeter sq<Sspace>meter Area 1.0 SqMeter

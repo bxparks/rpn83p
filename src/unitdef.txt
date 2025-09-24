@@ -26,7 +26,7 @@
 # - {scale} {baseUnit} is the size of the unit measured in {baseUnit}
 
 UnitClasses [
-  UnitClass NullClass # unitClass=0, sentinel for a unit that does not exist
+  UnitClass NullClass # unit type of NullUnit
   UnitClass Length
   UnitClass Area
   UnitClass Volume
@@ -42,9 +42,9 @@ UnitClasses [
 
 Units [
   #----------------------------------------------------------------------------
-  # A sentinel unit that does not exist. If a unit is ever deprecated, we can
-  # set its unitClass to NullClass, and set its baseUnit to NullUnit. The Id of
-  # the NullUnit is 0.
+  # A sentinel unit that represents a unit that does not exist. This could be
+  # used to deprecate an existing unit, for example, by setting its baseUnit to
+  # be the NullUnit. The Id of the NullUnit is 0.
   #----------------------------------------------------------------------------
   Unit NullUnit nullunit NullClass 1 NullUnit
 
