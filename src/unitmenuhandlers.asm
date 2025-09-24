@@ -646,8 +646,28 @@ mUnitNewtonHandler:
     ld a, unitNewtonId
     jp commonUnitHandler
 
+mUnitKilogramForceHandler:
+    ld a, unitKilogramForceId
+    jp commonUnitHandler
+
+mUnitMetricTonForceHandler:
+    ld a, unitMetricTonForceId
+    jp commonUnitHandler
+
+;-----------------------------------------------------------------------------
+; UNIT > FORC > Row 2
+;-----------------------------------------------------------------------------
+
 mUnitPoundForceHandler:
     ld a, unitPoundForceId
+    jp commonUnitHandler
+
+mUnitShortTonForceHandler:
+    ld a, unitShortTonForceId
+    jp commonUnitHandler
+
+mUnitLongTonForceHandler:
+    ld a, unitLongTonForceId
     jp commonUnitHandler
 
 ;-----------------------------------------------------------------------------

@@ -586,7 +586,13 @@ MenuGroup root mRoot [
           MenuRow [
             MenuItem dyne mUnitDyne
             MenuItem N mUnitNewton
+            MenuItem kgf mUnitKilogramForce
+            MenuItem tonf mUnitMetricTonForce
+          ]
+          MenuRow [
             MenuItem lbf mUnitPoundForce
+            MenuItem stnf mUnitShortTonForce
+            MenuItem ltnf mUnitLongTonForce
           ]
         ]
         MenuGroup PRES mUnitPressure [
