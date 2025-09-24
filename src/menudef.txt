@@ -524,7 +524,7 @@ MenuGroup root mRoot [
             MenuItem mg mUnitMilliGram
             MenuItem g mUnitGram
             MenuItem kg mUnitKiloGram
-            MenuItem t mUnitTonne
+            MenuItem t mUnitMetricTon
           ]
           MenuRow [
             MenuItem amu mUnitAtomicMassUnit
@@ -538,7 +538,7 @@ MenuGroup root mRoot [
               ]
               MenuRow [
                 MenuItem cwt mUnitHundredWeight
-                MenuItem ton mUnitTon
+                MenuItem ston mUnitShortTon
               ]
             ]
             MenuGroup IMP mUnitMassImp [
@@ -625,7 +625,7 @@ MenuGroup root mRoot [
           MenuRow [
             MenuItem eV mUnitElectronVolt
             MenuItem Btu mUnitBritishThermalUnit
-            MenuItem tTNT mUnitTonTNT
+            MenuItem tTNT mUnitTonTNT # metric ton
           ]
         ]
       ]

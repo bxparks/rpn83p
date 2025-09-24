@@ -552,9 +552,9 @@ unitKiloGramId equ 85
     .db unitTypeMass ; unitType
     .db unitGramId ; baseUnitId
     .db $00, $83, $10, $00, $00, $00, $00, $00, $00 ; scale=1e3
-unitTonneInfo:
-unitTonneId equ 86
-    .dw unitTonneName ; name
+unitMetricTonInfo:
+unitMetricTonId equ 86
+    .dw unitMetricTonName ; name
     .db unitTypeMass ; unitType
     .db unitGramId ; baseUnitId
     .db $00, $86, $10, $00, $00, $00, $00, $00, $00 ; scale=1e6
@@ -594,9 +594,9 @@ unitHundredWeightId equ 92
     .db unitTypeMass ; unitType
     .db unitGramId ; baseUnitId
     .db $00, $84, $45, $35, $92, $37, $00, $00, $00 ; scale=453.59237e2
-unitTonInfo:
-unitTonId equ 93
-    .dw unitTonName ; name
+unitShortTonInfo:
+unitShortTonId equ 93
+    .dw unitShortTonName ; name
     .db unitTypeMass ; unitType
     .db unitGramId ; baseUnitId
     .db $00, $85, $90, $71, $84, $74, $00, $00, $00 ; scale=907.18474e3
@@ -918,7 +918,7 @@ unitLitersPerHundredKiloMetersId equ 145
 ;-----------------------------------------------------------------------------
 
 unitNamesCount equ 146 ; number of unit names
-unitNamesPoolSize equ 1185 ; size of unit names string pool
+unitNamesPoolSize equ 1207 ; size of unit names string pool
 
 unitNullUnitName:
     .db "nullunit", 0
@@ -1092,8 +1092,8 @@ unitGramName:
     .db "g", 0
 unitKiloGramName:
     .db "kg", 0
-unitTonneName:
-    .db "tonne", 0
+unitMetricTonName:
+    .db 'm', 'e', 't', Sspace, 't', 'o', 'n', 0
 unitGrainName:
     .db "grain", 0
 unitDramName:
@@ -1106,8 +1106,8 @@ unitSlugName:
     .db "slug", 0
 unitHundredWeightName:
     .db "cwt", 0
-unitTonName:
-    .db "ton", 0
+unitShortTonName:
+    .db 's', 'h', 'o', 'r', 't', Sspace, 't', 'o', 'n', 0
 unitStoneName:
     .db "stone", 0
 unitQuarterName:

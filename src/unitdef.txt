@@ -202,7 +202,7 @@ Units [
   Unit MilliGram mg Mass 1e-3 Gram
   Unit Gram g Mass 1 Gram
   Unit KiloGram kg Mass 1e3 Gram
-  Unit Tonne tonne Mass 1e6 Gram # metric tonne = 1000kg
+  Unit MetricTon met<Sspace>ton Mass 1e6 Gram # metric ton = 1000kg
 
   # US System
   # https://en.wikipedia.org/wiki/United_States_customary_units
@@ -222,7 +222,7 @@ Units [
   # https://en.wikipedia.org/wiki/Hundredweight
   Unit HundredWeight cwt Mass 453.59237e2 Gram # 100 lbs by defn
   # https://en.wikipedia.org/wiki/Short_ton
-  Unit Ton ton Mass 907.18474e3 Gram # 2000 lbs
+  Unit ShortTon short<Sspace>ton Mass 907.18474e3 Gram # 2000 lbs
 
   # Imperial System
   # https://en.wikipedia.org/wiki/Imperial_units

@@ -3248,14 +3248,14 @@ mUnitKiloGramId equ 345
     .dw 0 ; rowBeginId or altName
     .dw mUnitKiloGramHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
-mUnitTonne:
-mUnitTonneId equ 346
-    .dw mUnitTonneId ; id
+mUnitMetricTon:
+mUnitMetricTonId equ 346
+    .dw mUnitMetricTonId ; id
     .dw mUnitMassId ; parentId
-    .dw mUnitTonneName ; name
+    .dw mUnitMetricTonName ; name
     .db 0 ; numRows
     .dw 0 ; rowBeginId or altName
-    .dw mUnitTonneHandler ; handler (to be implemented)
+    .dw mUnitMetricTonHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
 ; MenuGroup MASS: children: row 1
 mUnitAtomicMassUnit:
@@ -3360,14 +3360,14 @@ mUnitHundredWeightId equ 357
     .dw 0 ; rowBeginId or altName
     .dw mUnitHundredWeightHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
-mUnitTon:
-mUnitTonId equ 358
-    .dw mUnitTonId ; id
+mUnitShortTon:
+mUnitShortTonId equ 358
+    .dw mUnitShortTonId ; id
     .dw mUnitMassUSId ; parentId
-    .dw mUnitTonName ; name
+    .dw mUnitShortTonName ; name
     .db 0 ; numRows
     .dw 0 ; rowBeginId or altName
-    .dw mUnitTonHandler ; handler (to be implemented)
+    .dw mUnitShortTonHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
 mBlank359:
 mBlank359Id equ 359
@@ -5169,7 +5169,7 @@ mSetClockId equ 551
 ;-----------------------------------------------------------------------------
 
 mNamesCount equ 456 ; number of names and altnames
-mNamesPoolSize equ 3879 ; size of names string pool
+mNamesPoolSize equ 3880 ; size of names string pool
 
 mNullName:
     .db 0
@@ -5821,7 +5821,7 @@ mUnitGramName:
     .db "g", 0
 mUnitKiloGramName:
     .db "kg", 0
-mUnitTonneName:
+mUnitMetricTonName:
     .db "t", 0
 mUnitAtomicMassUnitName:
     .db "amu", 0
@@ -5843,8 +5843,8 @@ mUnitSlugName:
     .db "slug", 0
 mUnitHundredWeightName:
     .db "cwt", 0
-mUnitTonName:
-    .db "ton", 0
+mUnitShortTonName:
+    .db "ston", 0
 mUnitImpPoundName:
     .db "lb", 0
 mUnitStoneName:

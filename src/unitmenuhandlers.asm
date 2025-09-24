@@ -490,8 +490,8 @@ mUnitKiloGramHandler:
     ld a, unitKiloGramId
     jp commonUnitHandler
 
-mUnitTonneHandler:
-    ld a, unitTonneId
+mUnitMetricTonHandler:
+    ld a, unitMetricTonId
     jp commonUnitHandler
 
 ;-----------------------------------------------------------------------------
@@ -534,8 +534,8 @@ mUnitHundredWeightHandler:
     ld a, unitHundredWeightId
     jp commonUnitHandler
 
-mUnitTonHandler:
-    ld a, unitTonId
+mUnitShortTonHandler:
+    ld a, unitShortTonId
     jp commonUnitHandler
 
 ;-----------------------------------------------------------------------------
