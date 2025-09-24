@@ -2820,23 +2820,23 @@ mUnitLiterId equ 299
     .dw 0 ; rowBeginId or altName
     .dw mUnitLiterHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
-mBlank300:
-mBlank300Id equ 300
-    .dw mBlank300Id ; id
+mUnitMetricTeaspoon:
+mUnitMetricTeaspoonId equ 300
+    .dw mUnitMetricTeaspoonId ; id
     .dw mUnitVolId ; parentId
-    .dw mNullName ; name
+    .dw mUnitMetricTeaspoonName ; name
     .db 0 ; numRows
     .dw 0 ; rowBeginId or altName
-    .dw mNullHandler ; handler (predefined)
+    .dw mUnitMetricTeaspoonHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
-mBlank301:
-mBlank301Id equ 301
-    .dw mBlank301Id ; id
+mUnitMetricTablespoon:
+mUnitMetricTablespoonId equ 301
+    .dw mUnitMetricTablespoonId ; id
     .dw mUnitVolId ; parentId
-    .dw mNullName ; name
+    .dw mUnitMetricTablespoonName ; name
     .db 0 ; numRows
     .dw 0 ; rowBeginId or altName
-    .dw mNullHandler ; handler (predefined)
+    .dw mUnitMetricTablespoonHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
 ; MenuGroup VOL: children: row 3
 mUnitVolUS:
@@ -5076,8 +5076,8 @@ mSetClockId equ 541
 ; Pool of menu names as NUL-terminated C strings.
 ;-----------------------------------------------------------------------------
 
-mNamesCount equ 446 ; number of names and altnames
-mNamesPoolSize equ 3819 ; size of names string pool
+mNamesCount equ 448 ; number of names and altnames
+mNamesPoolSize equ 3829 ; size of names string pool
 
 mNullName:
     .db 0
@@ -5657,6 +5657,10 @@ mUnitMilliLiterName:
     .db "mL", 0
 mUnitLiterName:
     .db "L", 0
+mUnitMetricTeaspoonName:
+    .db "mtsp", 0
+mUnitMetricTablespoonName:
+    .db "mtbs", 0
 mUnitVolUSName:
     .db "US", 0
 mUnitVolImpName:

@@ -464,6 +464,8 @@ MenuGroup root mRoot [
             MenuItem <Smu>L mUnitMicroLiter
             MenuItem mL mUnitMilliLiter
             MenuItem L mUnitLiter
+            MenuItem mtsp mUnitMetricTeaspoon
+            MenuItem mtbs mUnitMetricTablespoon
           ]
           MenuRow [
             MenuGroup US mUnitVolUS [

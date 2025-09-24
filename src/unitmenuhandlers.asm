@@ -330,6 +330,14 @@ mUnitLiterHandler:
     ld a, unitLiterId
     jp commonUnitHandler
 
+mUnitMetricTeaspoonHandler:
+    ld a, unitMetricTeaspoonId
+    jp commonUnitHandler
+
+mUnitMetricTablespoonHandler:
+    ld a, unitMetricTablespoonId
+    jp commonUnitHandler
+
 ;-----------------------------------------------------------------------------
 ; UNIT > VOL > US > Row 1
 ;-----------------------------------------------------------------------------

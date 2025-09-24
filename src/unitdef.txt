@@ -140,6 +140,10 @@ Units [
   Unit MicroLiter <Smu>L Volume 1e-9 CuMeter
   Unit MilliLiter mL Volume 1e-6 CuMeter
   Unit Liter L Volume 1e-3 CuMeter
+  # https://en.wikipedia.org/wiki/Teaspoon
+  Unit MetricTeaspoon met<Sspace>tsp Volume 5e-6 CuMeter
+  # https://en.wikipedia.org/wiki/Tablespoon
+  Unit MetricTablespoon met<Sspace>tbsp Volume 15e-6 CuMeter
 
   # https://en.wikipedia.org/wiki/United_States_customary_units
   Unit Teaspoon tsp Volume 4.92892159375e-6 CuMeter # 1/3 tbsp
