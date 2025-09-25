@@ -507,6 +507,18 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
         - `W`: watt
         - `hp`: horsepower
         - TODO: add `Btu/hr`
+    - ![ROOT > UNIT > TIME](images/menu/root-unit-time.png) (ROOT > UNIT > TIME)
+        - ![ROOT > UNIT > TIME > Row1](images/menu/root-unit-time-1.png)
+        - ![ROOT > UNIT > TIME > Row2](images/menu/root-unit-time-2.png)
+        - `ns`: nanosecond
+        - `us`: microsecond
+        - `ms`: millisecond
+        - `sec`: second
+        - `min`: minute
+        - `hour`: hour
+        - `day`: day
+        - `week`: week
+        - `year`: Julian year (365.25 days exactly)
     - ![ROOT > UNIT > SPD](images/menu/root-unit-spd.png) (ROOT > UNIT > SPD)
         - ![ROOT > UNIT > SPD > Row1](images/menu/root-unit-spd-1.png)
         - ![ROOT > UNIT > SPD > Row2](images/menu/root-unit-spd-2.png)
