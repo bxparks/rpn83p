@@ -179,7 +179,7 @@ Units [
   # Other weird measures
 
   # https://en.wikipedia.org/wiki/Board_foot
-  Unit BoardFoot board<Sspace>foot Volume 2.359737216e-3 CuMeter # 1/12 cuft by defn
+  Unit BoardFoot board<SdotIcon>foot Volume 2.359737216e-3 CuMeter # 1/12 cuft by defn
 
   # https://en.wikipedia.org/wiki/Barrel_(unit)
   Unit OilBarrel barrel Volume 1.58987294928e-1 CuMeter # 42USgal by defn; bbl
@@ -189,7 +189,7 @@ Units [
   Unit OlympicPool olym<Sspace>pool Volume 2500 CuMeter # 50m*25m*2m
 
   # https://en.wikipedia.org/wiki/Acre-foot
-  Unit AcreFoot acre<Sspace>foot Volume 1233.4818375475 CuMeter # 66ft*660ft*1ft=43560cuft
+  Unit AcreFoot acre<SdotIcon>foot Volume 1233.4818375475 CuMeter # 66ft*660ft*1ft=43560cuft
 
   #----------------------------------------------------------------------------
   # Mass
@@ -360,7 +360,7 @@ Units [
 
   # liter-atm = 1e-3 m^3 * 101325 Pa = 101.325 Joules (added for compatibility
   # with TI-85).
-  Unit LiterAtmosphere liter<Sspace>atm Energy 101.325 Joule
+  Unit LiterAtmosphere liter<SdotIcon>atm Energy 101.325 Joule
 
   #----------------------------------------------------------------------------
   # Power
