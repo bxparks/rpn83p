@@ -518,6 +518,16 @@ MenuGroup root mRoot [
             ]
           ]
         ]
+        MenuGroup TEMP mUnitTemp [
+          MenuRow [
+            MenuItem <Stemp>C mUnitCelsius
+            MenuItem <Stemp>F mUnitFahrenheit
+            MenuItem <Stemp>R mUnitRankine
+            MenuItem <Stemp>K mUnitKelvin # add <Stemp> to 'K' for visual hint
+          ]
+        ]
+      ]
+      MenuRow [
         MenuGroup MASS mUnitMass [
           MenuRow [
             MenuItem <Smu>g mUnitMicroGram
@@ -558,28 +568,6 @@ MenuGroup root mRoot [
                 MenuItem lbt mUnitTroyPound
               ]
             ]
-          ]
-        ]
-      ]
-      MenuRow [
-        MenuGroup TEMP mUnitTemp [
-          MenuRow [
-            MenuItem <Stemp>C mUnitCelsius
-            MenuItem <Stemp>F mUnitFahrenheit
-            MenuItem <Stemp>R mUnitRankine
-            MenuItem <Stemp>K mUnitKelvin # add <Stemp> to 'K' for visual hint
-          ]
-        ]
-        MenuGroup SPD mUnitSpeed [
-          MenuRow [
-            MenuItem m<Sslash>s mUnitMeterPerSecond
-            MenuItem ft<Sslash>s mUnitFootPerSecond
-            MenuItem kph mUnitKiloMeterPerHour
-            MenuItem mph mUnitMilePerHour
-            MenuItem knot mUnitKnot
-          ]
-          MenuRow [
-            MenuItem c mUnitLightSpeed
           ]
         ]
         MenuGroup FORC mUnitForce [
@@ -635,8 +623,6 @@ MenuGroup root mRoot [
             MenuItem Latm mUnitLiterAtmosphere
           ]
         ]
-      ]
-      MenuRow [
         MenuGroup PWR mUnitPower [
           MenuRow [
             MenuItem W mUnitWatt
@@ -648,6 +634,35 @@ MenuGroup root mRoot [
           MenuRow [
             MenuItem ca<Sslash>s mUnitCaloriePerSecond
             MenuItem hp mUnitHorsepower
+          ]
+        ]
+      ]
+      MenuRow [
+        MenuGroup TIME mUnitTime [
+          MenuRow [
+            MenuItem ns mUnitNanoSecond
+            MenuItem <Smu>s mUnitMicroSecond
+            MenuItem ms mUnitMilliSecond
+            MenuItem sec mUnitSecond
+            MenuItem min mUnitMinute
+          ]
+          MenuRow [
+            MenuItem hour mUnitHour
+            MenuItem day mUnitDay
+            MenuItem week mUnitWeek
+            MenuItem year mUnitJulianYear
+          ]
+        ]
+        MenuGroup SPD mUnitSpeed [
+          MenuRow [
+            MenuItem m<Sslash>s mUnitMeterPerSecond
+            MenuItem ft<Sslash>s mUnitFootPerSecond
+            MenuItem kph mUnitKiloMeterPerHour
+            MenuItem mph mUnitMilePerHour
+            MenuItem knot mUnitKnot
+          ]
+          MenuRow [
+            MenuItem c mUnitLightSpeed
           ]
         ]
         MenuGroup FUEL mUnitFuel [

@@ -603,6 +603,50 @@ mUnitKelvinHandler:
     jp commonUnitHandler
 
 ;-----------------------------------------------------------------------------
+; UNIT > TIME > Row 1
+;-----------------------------------------------------------------------------
+
+mUnitNanoSecondHandler:
+    ld a, unitNanoSecondId
+    jp commonUnitHandler
+
+mUnitMicroSecondHandler:
+    ld a, unitMicroSecondId
+    jp commonUnitHandler
+
+mUnitMilliSecondHandler:
+    ld a, unitMilliSecondId
+    jp commonUnitHandler
+
+mUnitSecondHandler:
+    ld a, unitSecondId
+    jp commonUnitHandler
+
+mUnitMinuteHandler:
+    ld a, unitMinuteId
+    jp commonUnitHandler
+
+;-----------------------------------------------------------------------------
+; UNIT > TIME > Row 2
+;-----------------------------------------------------------------------------
+
+mUnitHourHandler:
+    ld a, unitHourId
+    jp commonUnitHandler
+
+mUnitDayHandler:
+    ld a, unitDayId
+    jp commonUnitHandler
+
+mUnitWeekHandler:
+    ld a, unitWeekId
+    jp commonUnitHandler
+
+mUnitJulianYearHandler:
+    ld a, unitJulianYearId
+    jp commonUnitHandler
+
+;-----------------------------------------------------------------------------
 ; UNIT > SPD > Row 1
 ;-----------------------------------------------------------------------------
 

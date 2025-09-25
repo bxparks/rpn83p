@@ -30,13 +30,16 @@ UnitTypes [
   UnitType Length
   UnitType Area
   UnitType Volume
-  UnitType Mass
   UnitType Temperature
-  UnitType Speed
+  #
+  UnitType Mass
   UnitType Force
   UnitType Pressure
   UnitType Energy
   UnitType Power
+  #
+  UnitType Time
+  UnitType Speed
   UnitType Fuel # gas mileage
 ]
 
@@ -250,18 +253,6 @@ Units [
   Unit Kelvin <Stemp>K Temperature 1 Kelvin # add <Stemp> to 'K' for visual hint
 
   #----------------------------------------------------------------------------
-  # Speed
-  #----------------------------------------------------------------------------
-
-  Unit MeterPerSecond m<Sslash>s Speed 1 MeterPerSecond
-  Unit FootPerSecond ft<Sslash>s Speed 0.3048 MeterPerSecond
-  Unit KiloMeterPerHour km<Sslash>hr Speed 0.27777777777778 MeterPerSecond
-  Unit MilePerHour mi<Sslash>hr Speed 0.44704 MeterPerSecond
-  # https://en.wikipedia.org/wiki/Knot_(unit)
-  Unit Knot knot Speed 0.51444444444444 MeterPerSecond # 1852m/h by defn
-  Unit LightSpeed lightc Speed 299792458 MeterPerSecond # by defn
-
-  #----------------------------------------------------------------------------
   # Force
   #----------------------------------------------------------------------------
 
@@ -401,6 +392,36 @@ Units [
   #   = 550 ft*lbf/s * 0.3048 m/ft * 9.806 65 m/s^2 * 0.453 592 37 kg/lbs
   #   ~ 0.745 699 871 582 270 22 kW
   Unit Horsepower hp Power 745.69987158227022 Watt
+
+  #----------------------------------------------------------------------------
+  # Time
+  # Mostly for TI-85 compatibility.
+  #----------------------------------------------------------------------------
+
+  Unit NanoSecond ns Time 1e-9 Second
+  Unit MicroSecond <Smu>s Time 1e-6 Second
+  Unit MilliSecond ms Time 1e-3 Second
+  Unit Second second Time 1 Second
+  Unit Minute minute Time 60 Second
+  Unit Hour hour Time 3600 Second
+  Unit Day day Time 86400 Second
+  Unit Week week Time 604800 Second
+
+  # https://en.wikipedia.org/wiki/Julian_year_%28astronomy%29
+  # Julian year = 365.25 days
+  Unit JulianYear year Time 31557600 Second
+
+  #----------------------------------------------------------------------------
+  # Speed
+  #----------------------------------------------------------------------------
+
+  Unit MeterPerSecond m<Sslash>s Speed 1 MeterPerSecond
+  Unit FootPerSecond ft<Sslash>s Speed 0.3048 MeterPerSecond
+  Unit KiloMeterPerHour km<Sslash>hr Speed 0.27777777777778 MeterPerSecond
+  Unit MilePerHour mi<Sslash>hr Speed 0.44704 MeterPerSecond
+  # https://en.wikipedia.org/wiki/Knot_(unit)
+  Unit Knot knot Speed 0.51444444444444 MeterPerSecond # 1852m/h by defn
+  Unit LightSpeed lightc Speed 299792458 MeterPerSecond # by defn
 
   #----------------------------------------------------------------------------
   # Fuel Consumption
