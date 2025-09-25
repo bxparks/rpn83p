@@ -513,14 +513,18 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
     - ![ROOT > UNIT > ENER](images/menu/root-unit-ener.png) (ROOT > UNIT > ENER)
         - ![ROOT > UNIT > ENER > Row1](images/menu/root-unit-ener-1.png)
         - ![ROOT > UNIT > ENER > Row2](images/menu/root-unit-ener-2.png)
+        - ![ROOT > UNIT > ENER > Row2](images/menu/root-unit-ener-3.png)
+        - `eV`: elctron-volt
+        - `erg`: erg
         - `J`: joule
         - `Wh`: watthour
         - `kWh`: kilowatthour
         - `cal`: calorie
         - `kcal`: kilocalorie
-        - `eV`: elctron-volt
+        - `ftlb`: foot-pound energy
         - `Btu`: British thermal units (1055 joules)
         - `tTNT`: metric ton of TNT (4.184e9 joules)
+        - `Latm`: liter-atmosphere
     - ![ROOT > UNIT > PWR](images/menu/root-unit-pwr.png) (ROOT > UNIT > PWR)
         - ![ROOT > UNIT > PWR > Row1](images/menu/root-unit-pwr-1.png)
         - `W`: watt
