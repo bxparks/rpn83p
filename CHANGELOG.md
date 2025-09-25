@@ -73,6 +73,9 @@
           value. Input termination must occur and stack lift must be enabled.
         - Terminate input buffer and correctly enable stack lift for stack
           manipulation commands: `DUP`, `Rollup`, `Rolldown`, `DROP`, `X<>Y`.
+    - Key bindings
+        - Add `2ND v` as a shortcut to `UVAL` menu function under `UNIT`. Allows
+          quick extraction of the value part of a Denominate object.
     - RPN83P application size
         - increase to 64kiB (4 flash pages) from 48kiB
 - 1.0.0 (2024-07-19)

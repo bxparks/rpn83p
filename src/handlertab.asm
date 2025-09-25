@@ -228,8 +228,8 @@ keyCodeHandlerTable:
     ; ROOT>STK>Rup soft menu button. But it is more convenient to bind a key to
     ; this function. The `2ND {` button (above the left-parens `(`) would have
     ; been a good candidate, but it is used to input Record objects (e.g. Date
-    ; such as `{2024,5,13}`). No other button above the `(` button seemed
-    ; appropriate. The best alternative seemed to be the `2ND u` button.
+    ; such as `{2024,5,13}`). No other button above the row with the `(` button
+    ; seemed appropriate. The best alternative seemed to be the `2ND u` button.
     ; 1) It is to the left of the `(`, which is similar to the location of the
     ; `Rollup` soft menu key in the `STK` menufolder.
     ; 2) The `u` can be a mnemonic for the "Rollup" name of the command.
@@ -328,11 +328,18 @@ keyCodeHandlerTable:
 
 ;-----------------------------------------------------------------------------
 
-    ; 2ND LINK. Merge (link) reals to complex, or split complex into reals. When
-    ; date-like objects are given, perform Merge(RpnOffset,RpnDateTime) or
-    ; Merge(RpnTime, RpnDate).
+    ; 2ND LINK. Merge (link) reals to complex, or split complex into reals.
+    ; This is similar to the COMPLEX function on the HP-42S. When date-like
+    ; objects are given, 2ND LINK performs DLNK(RpnOffset, RpnDateTime) or
+    ; DLNK(RpnTime, RpnDate).
     .db kLinkIO
     .dw handleKeyLink
+
+    ; 2ND v. Convert Denominate into Real by calling the UVAL menu function. In
+    ; the future, this could also replace the 1/x button used for DCUT menu
+    ; function ("Cleave"?).
+    .db kvnA
+    .dw handleKeySecondV
 
 ;-----------------------------------------------------------------------------
 

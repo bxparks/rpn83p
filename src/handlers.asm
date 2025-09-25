@@ -1262,3 +1262,10 @@ handleKeyLinkRealsToComplex:
     bcall(_RealsToComplex) ; CP1=complex(OP1,OP2)
     bcall(_ReplaceStackXY) ; replace X, Y with CP1
     ret
+
+;-----------------------------------------------------------------------------
+
+; Description: Invoke the UVAL function upon '2ND v'. In the future, this could
+; also replace the [1/x] button currently used as 'DCUT' for Date-like types.
+handleKeySecondV:
+    jp mUnitValueHandler
