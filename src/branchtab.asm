@@ -29,6 +29,20 @@ branchTableBase equ $4000
 ; Branch table entries for routines on Flash Page 1.
 ;-----------------------------------------------------------------------------
 
+; getkey1.asm
+_GetRpnKeyCodeLabel:
+_GetRpnKeyCode equ _GetRpnKeyCodeLabel-branchTableBase
+    .dw GetRpnKeyCode
+    .db 1
+_PushRpnKeyCodeLabel:
+_PushRpnKeyCode equ _PushRpnKeyCodeLabel-branchTableBase
+    .dw PushRpnKeyCode
+    .db 1
+_ClearRpnKeyCodeLabel:
+_ClearRpnKeyCode equ _ClearRpnKeyCodeLabel-branchTableBase
+    .dw ClearRpnKeyCode
+    .db 1
+
 ; varsstack1.asm
 _InitStackLabel:
 _InitStack equ _InitStackLabel-branchTableBase

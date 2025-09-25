@@ -14,9 +14,8 @@ processShowCommands:
     set dirtyFlagsStack, (iy + dirtyFlags)
     ; Show the new display.
     call displayAll
-    ; Pause and wait for use rinput
-    bcall(_GetKey)
-    res onInterrupt, (iy + onFlags)
+    ; Pause and wait for user input
+    bcall(_GetRpnKeyCode)
     ; Quit the app on QUIT.
     cp a, kQuit
     jp z, mainExit

@@ -15,12 +15,9 @@ processHelpCommandsLoop:
     ld a, b ; A = pageNumber
     call displayHelpPage
 processHelpCommandsGetKey:
-    ; The SDK docs say that GetKey() destroys only A, DE, HL. But it looks like
-    ; BC also gets destroyed if 2ND QUIT is pressed.
     push bc
-    bcall(_GetKey) ; pause for key
+    call GetRpnKeyCode ; A=keyCode
     pop bc
-    res onInterrupt, (iy + onFlags) ; reset flag set by ON button
 
     ; Handle HELP keys
     or a ; A == ON

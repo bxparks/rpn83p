@@ -100,8 +100,7 @@ processArgCommands:
     call displayAll
 
     ; Get key code, and reset the ON flag.
-    bcall(_GetKey)
-    res onInterrupt, (iy + onFlags)
+    bcall(_GetRpnKeyCode) ; A=keyCode
 
     ; Handle the button press.
     ld hl, argKeyCodeHandlerTable

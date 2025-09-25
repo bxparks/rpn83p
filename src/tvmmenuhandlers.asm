@@ -218,7 +218,8 @@ tvmIYRCalculateShowSingleStep:
     call displayAll
     ; Pause and wait for button press.
     ; If QUIT or OFF then TvmSolver will be reset upon app start.
-    bcall(_GetKey)
+    bcall(_GetKey) ; pause for user input
+    res onInterrupt, (iy + onFlags)
     bcall(_PopRealO1)
     pop af
     ret
