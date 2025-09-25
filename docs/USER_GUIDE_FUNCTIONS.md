@@ -500,6 +500,7 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
         - `Pa`: pascal
         - `hPa`: hectopascal
         - `kPa`: kilopascal
+        - `torr`: torr
         - `atm`: atmosphere
         - `mbar`: millibar
         - `dbar`: decibar
@@ -507,7 +508,8 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
         - `psi`: pounds per square inch
         - `mmH`: millimeter of mercury
         - `inHg`: inch of mercury
-        - `Torr`: torr
+        - `mmw`: millimeter of water gauge
+        - `inwg`: inch of water gauge
     - ![ROOT > UNIT > ENER](images/menu/root-unit-ener.png) (ROOT > UNIT > ENER)
         - ![ROOT > UNIT > ENER > Row1](images/menu/root-unit-ener-1.png)
         - ![ROOT > UNIT > ENER > Row2](images/menu/root-unit-ener-2.png)
