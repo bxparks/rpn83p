@@ -4049,23 +4049,23 @@ mUnitBtuPerMinuteId equ 431
     .dw mUnitBtuPerMinuteHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
 ; MenuGroup PWR: children: row 1
+mUnitCaloriePerSecond:
+mUnitCaloriePerSecondId equ 432
+    .dw mUnitCaloriePerSecondId ; id
+    .dw mUnitPowerId ; parentId
+    .dw mUnitCaloriePerSecondName ; name
+    .db 0 ; numRows
+    .dw 0 ; rowBeginId or altName
+    .dw mUnitCaloriePerSecondHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
 mUnitHorsepower:
-mUnitHorsepowerId equ 432
+mUnitHorsepowerId equ 433
     .dw mUnitHorsepowerId ; id
     .dw mUnitPowerId ; parentId
     .dw mUnitHorsepowerName ; name
     .db 0 ; numRows
     .dw 0 ; rowBeginId or altName
     .dw mUnitHorsepowerHandler ; handler (to be implemented)
-    .dw 0 ; nameSelector
-mBlank433:
-mBlank433Id equ 433
-    .dw mBlank433Id ; id
-    .dw mUnitPowerId ; parentId
-    .dw mNullName ; name
-    .db 0 ; numRows
-    .dw 0 ; rowBeginId or altName
-    .dw mNullHandler ; handler (predefined)
     .dw 0 ; nameSelector
 mBlank434:
 mBlank434Id equ 434
@@ -5214,8 +5214,8 @@ mSetClockId equ 556
 ; Pool of menu names as NUL-terminated C strings.
 ;-----------------------------------------------------------------------------
 
-mNamesCount equ 460 ; number of names and altnames
-mNamesPoolSize equ 3906 ; size of names string pool
+mNamesCount equ 461 ; number of names and altnames
+mNamesPoolSize equ 3918 ; size of names string pool
 
 mNullName:
     .db 0
@@ -5997,6 +5997,8 @@ mUnitBtuPerHourName:
     .db 'B', 't', Sslash, 'h', 0
 mUnitBtuPerMinuteName:
     .db 'B', 't', Sslash, 'm', 0
+mUnitCaloriePerSecondName:
+    .db 'c', 'a', Sslash, 's', 0
 mUnitHorsepowerName:
     .db "hp", 0
 mUnitLitersPerHundredKiloMetersName:

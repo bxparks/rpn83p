@@ -373,6 +373,9 @@ Units [
   # https://en.wikipedia.org/wiki/Foot-pound_(energy)
   Unit FootPoundEnergyPerSecond ft<SdotIcon>lbf<Sslash>s Power 1.3558179483314 Watt
 
+  # https://en.wikipedia.org/wiki/Calorie
+  Unit CaloriePerSecond cal<Sslash>s Power 4.184 Watt
+
   # https://en.wikipedia.org/wiki/British_thermal_unit
   # Btu/hour = 1055J/(3600s) = .29305555555556 W (used frequently in AC and
   # heating systems for homes)

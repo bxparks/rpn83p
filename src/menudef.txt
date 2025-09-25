@@ -644,6 +644,7 @@ MenuGroup root mRoot [
             MenuItem Bt<Sslash>m mUnitBtuPerMinute
           ]
           MenuRow [
+            MenuItem ca<Sslash>s mUnitCaloriePerSecond
             MenuItem hp mUnitHorsepower
           ]
         ]

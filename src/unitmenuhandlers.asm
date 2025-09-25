@@ -810,6 +810,10 @@ mUnitBtuPerMinuteHandler:
 ; UNIT > PWR > Row 2
 ;-----------------------------------------------------------------------------
 
+mUnitCaloriePerSecondHandler:
+    ld a, unitCaloriePerSecondId
+    jp commonUnitHandler
+
 mUnitHorsepowerHandler:
     ld a, unitHorsepowerId
     jp commonUnitHandler
