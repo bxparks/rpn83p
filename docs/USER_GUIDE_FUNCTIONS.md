@@ -310,13 +310,14 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
     - `LENG` - Length units
     - `AREA` - Area units
     - `VOL` - Volume units
-    - `MASS` - Mass units
     - `TEMP` - Temperature units
-    - `SPD` - Speed units
+    - `MASS` - Mass units
     - `FORC` - Force units
     - `PRES` - Pressure units
     - `ENER` - Energy units
     - `PWR` - Power units
+    - `TIME` - Time units
+    - `SPD` - Speed units
     - `FUEL` - Fuel consumption units
     - ![ROOT > UNIT > UFCN](images/menu/root-unit-ufcn.png) (ROOT > UNIT > UFCN)
         - ![ROOT > UNIT > UFCN > Row1](images/menu/root-unit-ufcn-1.png)
@@ -428,6 +429,14 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
             - `bbl`: oil barrel (42 US gallons)
             - `olmp`: olympic swimming pool (2m deep)
             - `acft`: acre foot
+    - ![ROOT > UNIT > TEMP](images/menu/root-unit-temp.png) (ROOT > UNIT > TEMP)
+        - ![ROOT > UNIT > TEMP > Row1](images/menu/root-unit-temp-1.png)
+        - `°C`: Celsius
+        - `°F`: Fahrenheit
+        - `°R`: Rankine
+        - `°K`: Kelvin (The official SI symbol for Kelvin is just `K` without the degree
+          symbol. RPN83P uses the degree symbol for UI consistency with other
+          temperature units.)
     - ![ROOT > UNIT > MASS](images/menu/root-unit-mass.png) (ROOT > UNIT > MASS)
         - ![ROOT > UNIT > MASS > Row1](images/menu/root-unit-mass-1.png)
         - ![ROOT > UNIT > MASS > Row2](images/menu/root-unit-mass-2.png)
@@ -462,23 +471,6 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
             - `dwt`: troy pennyweight (24 grains)
             - `ozt`: troy ounce (20 troy pennyweights)
             - `lbt`: troy pound (12 troy ounces)
-    - ![ROOT > UNIT > TEMP](images/menu/root-unit-temp.png) (ROOT > UNIT > TEMP)
-        - ![ROOT > UNIT > TEMP > Row1](images/menu/root-unit-temp-1.png)
-        - `°C`: Celsius
-        - `°F`: Fahrenheit
-        - `°R`: Rankine
-        - `°K`: Kelvin (The official SI symbol for Kelvin is just `K` without the degree
-          symbol. RPN83P uses the degree symbol for UI consistency with other
-          temperature units.)
-    - ![ROOT > UNIT > SPD](images/menu/root-unit-spd.png) (ROOT > UNIT > SPD)
-        - ![ROOT > UNIT > SPD > Row1](images/menu/root-unit-spd-1.png)
-        - ![ROOT > UNIT > SPD > Row2](images/menu/root-unit-spd-2.png)
-        - `m/s`: meters per second
-        - `ft/s`: feet per second
-        - `kph`: kilometers per hour
-        - `mph`: miles per hour
-        - `knot`: nautical miles per hour
-        - `c`: speed of light
     - ![ROOT > UNIT > FORC](images/menu/root-unit-forc.png) (ROOT > UNIT > FORC)
         - ![ROOT > UNIT > FORC > Row1](images/menu/root-unit-forc-1.png)
         - `dyne`: dyne
@@ -515,6 +507,15 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
         - `W`: watt
         - `hp`: horsepower
         - TODO: add `Btu/hr`
+    - ![ROOT > UNIT > SPD](images/menu/root-unit-spd.png) (ROOT > UNIT > SPD)
+        - ![ROOT > UNIT > SPD > Row1](images/menu/root-unit-spd-1.png)
+        - ![ROOT > UNIT > SPD > Row2](images/menu/root-unit-spd-2.png)
+        - `m/s`: meters per second
+        - `ft/s`: feet per second
+        - `kph`: kilometers per hour
+        - `mph`: miles per hour
+        - `knot`: nautical miles per hour
+        - `c`: speed of light
     - ![ROOT > UNIT > FUEL](images/menu/root-unit-fuel.png) (ROOT > UNIT > FUEL)
         - ![ROOT > UNIT > FUEL > Row1](images/menu/root-unit-fuel-1.png)
         - `Lkm`: liters per 100 km
