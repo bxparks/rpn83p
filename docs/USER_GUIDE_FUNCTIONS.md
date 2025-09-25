@@ -456,6 +456,7 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
         - `g`: gram
         - `kg`: kilogram
         - `t`: metric ton (1000 kg)
+        - `amu`: atomic mass unit
         - `US`: US units
         - `IMP`: Imperial units
         - `TROY`: Troy units
