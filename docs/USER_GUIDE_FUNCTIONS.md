@@ -550,11 +550,11 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
     - ![ROOT > UNIT > SPD](images/menu/root-unit-spd.png) (ROOT > UNIT > SPD)
         - ![ROOT > UNIT > SPD > Row1](images/menu/root-unit-spd-1.png)
         - ![ROOT > UNIT > SPD > Row2](images/menu/root-unit-spd-2.png)
-        - `m/s`: meters per second
-        - `ft/s`: feet per second
-        - `kph`: kilometers per hour
-        - `mph`: miles per hour
-        - `knot`: nautical miles per hour
+        - `m/s`: meter per second
+        - `ft/s`: foot per second
+        - `kph`: kilometer per hour
+        - `mph`: mile per hour
+        - `knot`: nautical mile per hour
         - `c`: speed of light
     - ![ROOT > UNIT > FUEL](images/menu/root-unit-fuel.png) (ROOT > UNIT > FUEL)
         - ![ROOT > UNIT > FUEL > Row1](images/menu/root-unit-fuel-1.png)
