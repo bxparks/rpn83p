@@ -327,6 +327,10 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
         - ![ROOT > UNIT > LENG > Row1](images/menu/root-unit-leng-1.png)
         - ![ROOT > UNIT > LENG > Row2](images/menu/root-unit-leng-2.png)
         - ![ROOT > UNIT > LENG > Row3](images/menu/root-unit-leng-3.png)
+        - ![ROOT > UNIT > LENG > Row4](images/menu/root-unit-leng-4.png)
+        - `ferm`: fermi
+        - `angs`: angstrom
+        - `nm`: nanometer
         - `um`: micrometer
         - `mm`: millimeter
         - `cm`: centimeters
