@@ -323,9 +323,12 @@ Units [
   # https://en.wikipedia.org/wiki/Units_of_energy
   #----------------------------------------------------------------------------
 
+  # https://en.wikipedia.org/wiki/Erg
+  Unit Erg erg Energy 1e-7 Joule
   Unit Joule J Energy 1 Joule
 
   Unit WattHour Wh Energy 3.6e3 Joule
+  # https://en.wikipedia.org/wiki/Kilowatt-hour
   Unit KiloWattHour kWh Energy 3.6e6 Joule
 
   # https://en.wikipedia.org/wiki/Calorie

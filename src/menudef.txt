@@ -616,14 +616,15 @@ MenuGroup root mRoot [
         ]
         MenuGroup ENER mUnitEnergy [
           MenuRow [
+            MenuItem eV mUnitElectronVolt
+            MenuItem erg mUnitErg
             MenuItem J mUnitJoule
             MenuItem Wh mUnitWattHour
             MenuItem kWh mUnitKiloWattHour
-            MenuItem cal mUnitCalorie
-            MenuItem kcal mUnitKiloCalorie
           ]
           MenuRow [
-            MenuItem eV mUnitElectronVolt
+            MenuItem cal mUnitCalorie
+            MenuItem kcal mUnitKiloCalorie
             MenuItem Btu mUnitBritishThermalUnit
             MenuItem tTNT mUnitTonTNT # metric ton
             MenuItem Latm mUnitLiterAtmosphere

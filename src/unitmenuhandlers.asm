@@ -730,6 +730,10 @@ mUnitTorrHandler:
 ; UNIT > ENER > Row 1
 ;-----------------------------------------------------------------------------
 
+mUnitErgHandler:
+    ld a, unitErgId
+    jp commonUnitHandler
+
 mUnitJouleHandler:
     ld a, unitJouleId
     jp commonUnitHandler
