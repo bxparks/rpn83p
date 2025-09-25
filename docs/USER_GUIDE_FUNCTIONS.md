@@ -513,7 +513,7 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
     - ![ROOT > UNIT > ENER](images/menu/root-unit-ener.png) (ROOT > UNIT > ENER)
         - ![ROOT > UNIT > ENER > Row1](images/menu/root-unit-ener-1.png)
         - ![ROOT > UNIT > ENER > Row2](images/menu/root-unit-ener-2.png)
-        - ![ROOT > UNIT > ENER > Row2](images/menu/root-unit-ener-3.png)
+        - ![ROOT > UNIT > ENER > Row3](images/menu/root-unit-ener-3.png)
         - `eV`: elctron-volt
         - `erg`: erg
         - `J`: joule
@@ -527,9 +527,14 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
         - `Latm`: liter-atmosphere
     - ![ROOT > UNIT > PWR](images/menu/root-unit-pwr.png) (ROOT > UNIT > PWR)
         - ![ROOT > UNIT > PWR > Row1](images/menu/root-unit-pwr-1.png)
+        - ![ROOT > UNIT > PWR > Row2](images/menu/root-unit-pwr-2.png)
         - `W`: watt
+        - `kW`: kilowatt
+        - `fl/s`: foot-pound per second
+        - `Bt/h`: Btu per hour
+        - `Bt/m`: Btu per minute
+        - `ca/s`: calorie per second
         - `hp`: horsepower
-        - TODO: add `Btu/hr`
     - ![ROOT > UNIT > TIME](images/menu/root-unit-time.png) (ROOT > UNIT > TIME)
         - ![ROOT > UNIT > TIME > Row1](images/menu/root-unit-time-1.png)
         - ![ROOT > UNIT > TIME > Row2](images/menu/root-unit-time-2.png)
