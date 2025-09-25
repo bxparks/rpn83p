@@ -417,7 +417,8 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
         - ![ROOT > UNIT > VOL > IMP](images/menu/root-unit-vol-imp.png) (ROOT > UNIT > VOL > IMP)
             - ![ROOT > UNIT > VOL > IMP > Row1](images/menu/root-unit-vol-imp-1.png)
             - ![ROOT > UNIT > VOL > IMP > Row2](images/menu/root-unit-vol-imp-2.png)
-            - (TODO: Add imperial teaspoon and imperial tablespoon)
+            - `tsp`: imperial teaspoon
+            - `tbsp`: imperial tablespoon
             - `floz`: imperial fluid ounce
             - `gill`: imperial gill
             - `cpu`: imperial cup
