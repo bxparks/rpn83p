@@ -76,6 +76,16 @@
     - Key bindings
         - Add `2ND v` as a shortcut to `UVAL` menu function under `UNIT`. Allows
           quick extraction of the value part of a Denominate object.
+    - SHOW
+        - Pass along most button keys to the main command processor so that
+          their normal function are directly invoked from SHOW mode. Previously,
+          all button presses were consumed by the SHOW mode. So to enter a new
+          number from SHOW mode, the digit key (0-9) had to be pressed twice.
+        - Preserve previous behavior for 4 buttons: `DEL`, `CLEAR`, `ENTER`,
+          `ON/EXIT`. These buttons are consumed by the SHOW mode, and simply
+          cause the SHOW mode to exit back to the normal mode. The user must
+          press these buttons again in normal mode to invoke their normal
+          function.
     - RPN83P application size
         - increase to 64kiB (4 flash pages) from 48kiB
 - 1.0.0 (2024-07-19)
