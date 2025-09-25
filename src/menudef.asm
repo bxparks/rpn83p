@@ -3659,23 +3659,23 @@ mUnitKiloPascalId equ 389
     .dw 0 ; rowBeginId or altName
     .dw mUnitKiloPascalHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
-mUnitPoundSquareInch:
-mUnitPoundSquareInchId equ 390
-    .dw mUnitPoundSquareInchId ; id
+mUnitTorr:
+mUnitTorrId equ 390
+    .dw mUnitTorrId ; id
     .dw mUnitPressureId ; parentId
-    .dw mUnitPoundSquareInchName ; name
+    .dw mUnitTorrName ; name
     .db 0 ; numRows
     .dw 0 ; rowBeginId or altName
-    .dw mUnitPoundSquareInchHandler ; handler (to be implemented)
+    .dw mUnitTorrHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
-mBlank391:
-mBlank391Id equ 391
-    .dw mBlank391Id ; id
+mUnitAtmosphere:
+mUnitAtmosphereId equ 391
+    .dw mUnitAtmosphereId ; id
     .dw mUnitPressureId ; parentId
-    .dw mNullName ; name
+    .dw mUnitAtmosphereName ; name
     .db 0 ; numRows
     .dw 0 ; rowBeginId or altName
-    .dw mNullHandler ; handler (predefined)
+    .dw mUnitAtmosphereHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
 ; MenuGroup PRES: children: row 1
 mUnitMilliBar:
@@ -3705,23 +3705,23 @@ mUnitBarId equ 394
     .dw 0 ; rowBeginId or altName
     .dw mUnitBarHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
-mUnitTorr:
-mUnitTorrId equ 395
-    .dw mUnitTorrId ; id
+mUnitPoundSquareInch:
+mUnitPoundSquareInchId equ 395
+    .dw mUnitPoundSquareInchId ; id
     .dw mUnitPressureId ; parentId
-    .dw mUnitTorrName ; name
+    .dw mUnitPoundSquareInchName ; name
     .db 0 ; numRows
     .dw 0 ; rowBeginId or altName
-    .dw mUnitTorrHandler ; handler (to be implemented)
+    .dw mUnitPoundSquareInchHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
-mUnitAtmosphere:
-mUnitAtmosphereId equ 396
-    .dw mUnitAtmosphereId ; id
+mBlank396:
+mBlank396Id equ 396
+    .dw mBlank396Id ; id
     .dw mUnitPressureId ; parentId
-    .dw mUnitAtmosphereName ; name
+    .dw mNullName ; name
     .db 0 ; numRows
     .dw 0 ; rowBeginId or altName
-    .dw mUnitAtmosphereHandler ; handler (to be implemented)
+    .dw mNullHandler ; handler (predefined)
     .dw 0 ; nameSelector
 ; MenuGroup PRES: children: row 2
 mUnitMilliMeterMercury:
@@ -6032,18 +6032,18 @@ mUnitHectoPascalName:
     .db "hPa", 0
 mUnitKiloPascalName:
     .db "kPa", 0
-mUnitPoundSquareInchName:
-    .db "psi", 0
+mUnitTorrName:
+    .db "torr", 0
+mUnitAtmosphereName:
+    .db "atm", 0
 mUnitMilliBarName:
     .db "mbar", 0
 mUnitDeciBarName:
     .db "dbar", 0
 mUnitBarName:
     .db "bar", 0
-mUnitTorrName:
-    .db "torr", 0
-mUnitAtmosphereName:
-    .db "atm", 0
+mUnitPoundSquareInchName:
+    .db "psi", 0
 mUnitMilliMeterMercuryName:
     .db "mmH", 0
 mUnitInchMercuryName:

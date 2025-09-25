@@ -588,14 +588,14 @@ MenuGroup root mRoot [
             MenuItem Pa mUnitPascal
             MenuItem hPa mUnitHectoPascal
             MenuItem kPa mUnitKiloPascal
-            MenuItem psi mUnitPoundSquareInch
+            MenuItem torr mUnitTorr
+            MenuItem atm mUnitAtmosphere
           ]
           MenuRow [
             MenuItem mbar mUnitMilliBar
             MenuItem dbar mUnitDeciBar
             MenuItem bar mUnitBar
-            MenuItem torr mUnitTorr
-            MenuItem atm mUnitAtmosphere
+            MenuItem psi mUnitPoundSquareInch
           ]
           MenuRow [
             MenuItem mmH mUnitMilliMeterMercury
