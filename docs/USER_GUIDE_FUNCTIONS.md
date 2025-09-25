@@ -376,6 +376,10 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
         - `yd^2`: square yard
         - `mi^2`: square mile
         - `nmi^2`: square nautical mile
+        - `acre`: acre
+        - `ha`: hectare
+        - `usfb`: US football field
+        - `cafb`: Canadian football field
     - ![ROOT > UNIT > VOL](images/menu/root-unit-vol.png) (ROOT > UNIT > VOL)
         - ![ROOT > UNIT > VOL > Row1](images/menu/root-unit-vol-1.png)
         - ![ROOT > UNIT > VOL > Row2](images/menu/root-unit-vol-2.png)
