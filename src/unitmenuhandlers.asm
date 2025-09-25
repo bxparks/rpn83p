@@ -730,6 +730,10 @@ mUnitTorrHandler:
 ; UNIT > ENER > Row 1
 ;-----------------------------------------------------------------------------
 
+mUnitElectronVoltHandler:
+    ld a, unitElectronVoltId
+    jp commonUnitHandler
+
 mUnitErgHandler:
     ld a, unitErgId
     jp commonUnitHandler
@@ -746,6 +750,10 @@ mUnitKiloWattHourHandler:
     ld a, unitKiloWattHourId
     jp commonUnitHandler
 
+;-----------------------------------------------------------------------------
+; UNIT > ENER > Row 2
+;-----------------------------------------------------------------------------
+
 mUnitCalorieHandler:
     ld a, unitCalorieId
     jp commonUnitHandler
@@ -754,12 +762,8 @@ mUnitKiloCalorieHandler:
     ld a, unitKiloCalorieId
     jp commonUnitHandler
 
-;-----------------------------------------------------------------------------
-; UNIT > ENER > Row 2
-;-----------------------------------------------------------------------------
-
-mUnitElectronVoltHandler:
-    ld a, unitElectronVoltId
+mUnitFootPoundEnergyHandler:
+    ld a, unitFootPoundEnergyId
     jp commonUnitHandler
 
 mUnitBritishThermalUnitHandler:
@@ -769,6 +773,10 @@ mUnitBritishThermalUnitHandler:
 mUnitTonTNTHandler:
     ld a, unitTonTNTId
     jp commonUnitHandler
+
+;-----------------------------------------------------------------------------
+; UNIT > ENER > Row 3
+;-----------------------------------------------------------------------------
 
 mUnitLiterAtmosphereHandler:
     ld a, unitLiterAtmosphereId

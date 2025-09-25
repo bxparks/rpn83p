@@ -625,8 +625,11 @@ MenuGroup root mRoot [
           MenuRow [
             MenuItem cal mUnitCalorie
             MenuItem kcal mUnitKiloCalorie
+            MenuItem ftlb mUnitFootPoundEnergy
             MenuItem Btu mUnitBritishThermalUnit
             MenuItem tTNT mUnitTonTNT # metric ton
+          ]
+          MenuRow [
             MenuItem Latm mUnitLiterAtmosphere
           ]
         ]
