@@ -384,6 +384,7 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
         - ![ROOT > UNIT > VOL > Row1](images/menu/root-unit-vol-1.png)
         - ![ROOT > UNIT > VOL > Row2](images/menu/root-unit-vol-2.png)
         - ![ROOT > UNIT > VOL > Row3](images/menu/root-unit-vol-3.png)
+        - ![ROOT > UNIT > VOL > Row4](images/menu/root-unit-vol-4.png)
         - `mm^3`: cubic millimeter
         - `cm^3`: cubic centimeter
         - `m^3`: cubic meter
@@ -396,11 +397,12 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
         - `uL`: microliter
         - `mL`: milliliter
         - `L`: liter
-        - (TODO: add metric teaspoon, metric tablespoon)
+        - `mtsp`: metric teaspoon
+        - `mtbs`: metric tablespoon
         - `US`: US volume units
         - `IMP`: Imperial volume units
         - `DRY`: Dry volume units
-        - `MISC`: Miscallaneous volume units
+        - `MISC`: Miscellaneous volume units
         - ![ROOT > UNIT > VOL > US](images/menu/root-unit-vol-us.png) (ROOT > UNIT > VOL > US)
             - ![ROOT > UNIT > VOL > US > Row1](images/menu/root-unit-vol-us-1.png)
             - ![ROOT > UNIT > VOL > US > Row2](images/menu/root-unit-vol-us-2.png)
