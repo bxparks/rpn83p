@@ -552,7 +552,7 @@ DebugPause:
     push bc
     push de
     push hl
-    bcall(_GetKey)
+    bcall(_GetKey) ; pause for user input
     bit onInterrupt, (iy + onFlags)
     jr nz, debugPauseBreak
     res onInterrupt, (iy + onFlags) ; reset flag set by ON button

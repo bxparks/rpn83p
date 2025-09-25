@@ -343,6 +343,12 @@ appStateFmtDigits equ appStateFmtFlags + 1 ; u8
 ; fmtDigits value that indicates "floating" number of digits
 fmtDigitsFloating equ $ff
 
+; Push-back buffer for a bcall(_GetKey). If value is >= 0 (i.e. bit 7 of the
+; second byte is 0), then the lower 8-bits is the keycode. To use this, do a
+; `ld bc, (keyCodeBuf)`, then do a `bit 7, b`. If `ZF=1`, then the keyCode in
+; the buffer is invalid.
+rpnKeyCodeBuf equ appStateFmtDigits + 1 ; i16
+
 ; The result code after the execution of each handler. Success is code 0. If a
 ; TI-OS exception is thrown (through a `bcall(ErrXxx)`), the exception handler
 ; places a system error code into here. Before calling a handler, set this to 0
@@ -350,7 +356,7 @@ fmtDigitsFloating equ $ff
 ; upon success. (This makes coding easier because a successful handler can
 ; simply do a `ret` or a conditional `ret`.) A few handlers will set a custom,
 ; non-zero code to indicate an error.
-handlerCode equ appStateFmtDigits + 1 ; u8
+handlerCode equ rpnKeyCodeBuf + 2 ; u8
 
 ; The errorCode is displayed on the LCD screen if non-zero. This is set to the
 ; value of handlerCode after every execution of a handler. Inside a handler,
@@ -904,6 +910,8 @@ defpage(0, "RPN83P")
 ;-----------------------------------------------------------------------------
 
 defpage(1)
+
+#include "getkey1.asm"
 
 #include "vars1.asm"
 #include "varsreg1.asm"
