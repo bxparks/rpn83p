@@ -490,8 +490,8 @@ mUnitKiloGramHandler:
     ld a, unitKiloGramId
     jp commonUnitHandler
 
-mUnitTonneHandler:
-    ld a, unitTonneId
+mUnitMetricTonHandler:
+    ld a, unitMetricTonId
     jp commonUnitHandler
 
 ;-----------------------------------------------------------------------------
@@ -534,8 +534,8 @@ mUnitHundredWeightHandler:
     ld a, unitHundredWeightId
     jp commonUnitHandler
 
-mUnitTonHandler:
-    ld a, unitTonId
+mUnitShortTonHandler:
+    ld a, unitShortTonId
     jp commonUnitHandler
 
 ;-----------------------------------------------------------------------------
@@ -600,6 +600,50 @@ mUnitRankineHandler:
 
 mUnitKelvinHandler:
     ld a, unitKelvinId
+    jp commonUnitHandler
+
+;-----------------------------------------------------------------------------
+; UNIT > TIME > Row 1
+;-----------------------------------------------------------------------------
+
+mUnitNanoSecondHandler:
+    ld a, unitNanoSecondId
+    jp commonUnitHandler
+
+mUnitMicroSecondHandler:
+    ld a, unitMicroSecondId
+    jp commonUnitHandler
+
+mUnitMilliSecondHandler:
+    ld a, unitMilliSecondId
+    jp commonUnitHandler
+
+mUnitSecondHandler:
+    ld a, unitSecondId
+    jp commonUnitHandler
+
+mUnitMinuteHandler:
+    ld a, unitMinuteId
+    jp commonUnitHandler
+
+;-----------------------------------------------------------------------------
+; UNIT > TIME > Row 2
+;-----------------------------------------------------------------------------
+
+mUnitHourHandler:
+    ld a, unitHourId
+    jp commonUnitHandler
+
+mUnitDayHandler:
+    ld a, unitDayId
+    jp commonUnitHandler
+
+mUnitWeekHandler:
+    ld a, unitWeekId
+    jp commonUnitHandler
+
+mUnitJulianYearHandler:
+    ld a, unitJulianYearId
     jp commonUnitHandler
 
 ;-----------------------------------------------------------------------------
@@ -686,8 +730,8 @@ mUnitKiloPascalHandler:
     ld a, unitKiloPascalId
     jp commonUnitHandler
 
-mUnitAtmosphereHandler:
-    ld a, unitAtmosphereId
+mUnitPoundSquareInchHandler:
+    ld a, unitPoundSquareInchId
     jp commonUnitHandler
 
 ;-----------------------------------------------------------------------------
@@ -706,8 +750,12 @@ mUnitBarHandler:
     ld a, unitBarId
     jp commonUnitHandler
 
-mUnitPoundSquareInchHandler:
-    ld a, unitPoundSquareInchId
+mUnitTorrHandler:
+    ld a, unitTorrId
+    jp commonUnitHandler
+
+mUnitAtmosphereHandler:
+    ld a, unitAtmosphereId
     jp commonUnitHandler
 
 ;-----------------------------------------------------------------------------
@@ -722,13 +770,25 @@ mUnitInchMercuryHandler:
     ld a, unitInchMercuryId
     jp commonUnitHandler
 
-mUnitTorrHandler:
-    ld a, unitTorrId
+mUnitMilliMeterWaterHandler:
+    ld a, unitMilliMeterWaterId
+    jp commonUnitHandler
+
+mUnitInchWaterHandler:
+    ld a, unitInchWaterId
     jp commonUnitHandler
 
 ;-----------------------------------------------------------------------------
 ; UNIT > ENER > Row 1
 ;-----------------------------------------------------------------------------
+
+mUnitElectronVoltHandler:
+    ld a, unitElectronVoltId
+    jp commonUnitHandler
+
+mUnitErgHandler:
+    ld a, unitErgId
+    jp commonUnitHandler
 
 mUnitJouleHandler:
     ld a, unitJouleId
@@ -742,6 +802,10 @@ mUnitKiloWattHourHandler:
     ld a, unitKiloWattHourId
     jp commonUnitHandler
 
+;-----------------------------------------------------------------------------
+; UNIT > ENER > Row 2
+;-----------------------------------------------------------------------------
+
 mUnitCalorieHandler:
     ld a, unitCalorieId
     jp commonUnitHandler
@@ -750,12 +814,8 @@ mUnitKiloCalorieHandler:
     ld a, unitKiloCalorieId
     jp commonUnitHandler
 
-;-----------------------------------------------------------------------------
-; UNIT > ENER > Row 2
-;-----------------------------------------------------------------------------
-
-mUnitElectronVoltHandler:
-    ld a, unitElectronVoltId
+mUnitFootPoundEnergyHandler:
+    ld a, unitFootPoundEnergyId
     jp commonUnitHandler
 
 mUnitBritishThermalUnitHandler:
@@ -767,11 +827,43 @@ mUnitTonTNTHandler:
     jp commonUnitHandler
 
 ;-----------------------------------------------------------------------------
+; UNIT > ENER > Row 3
+;-----------------------------------------------------------------------------
+
+mUnitLiterAtmosphereHandler:
+    ld a, unitLiterAtmosphereId
+    jp commonUnitHandler
+
+;-----------------------------------------------------------------------------
 ; UNIT > PWR > Row 1
 ;-----------------------------------------------------------------------------
 
 mUnitWattHandler:
     ld a, unitWattId
+    jp commonUnitHandler
+
+mUnitKiloWattHandler:
+    ld a, unitKiloWattId
+    jp commonUnitHandler
+
+mUnitFootPoundEnergyPerSecondHandler:
+    ld a, unitFootPoundEnergyPerSecondId
+    jp commonUnitHandler
+
+mUnitBtuPerHourHandler:
+    ld a, unitBtuPerHourId
+    jp commonUnitHandler
+
+mUnitBtuPerMinuteHandler:
+    ld a, unitBtuPerMinuteId
+    jp commonUnitHandler
+
+;-----------------------------------------------------------------------------
+; UNIT > PWR > Row 2
+;-----------------------------------------------------------------------------
+
+mUnitCaloriePerSecondHandler:
+    ld a, unitCaloriePerSecondId
     jp commonUnitHandler
 
 mUnitHorsepowerHandler:

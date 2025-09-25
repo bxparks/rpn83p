@@ -59,16 +59,16 @@ def main() -> None:
     with open(args.filename) as file:
         lexer = Lexer(file)
         unitdef_parser = UnitDefParser(lexer)
-        unit_classes, units = unitdef_parser.parse()
+        unit_types, units = unitdef_parser.parse()
 
     if args.debug:
-        pp(unit_classes, stream=sys.stderr)
+        pp(unit_types, stream=sys.stderr)
         pp(units, stream=sys.stderr)
 
-    validator = Validator(unit_classes, units)
+    validator = Validator(unit_types, units)
     validator.validate()
 
-    sym_generator = SymbolGenerator(unit_classes, units)
+    sym_generator = SymbolGenerator(unit_types, units)
     sym_generator.generate()
 
     s_exploder = StringExploder(units)
@@ -81,7 +81,7 @@ def main() -> None:
         pp(units, stream=sys.stderr)
 
     code_generator = CodeGenerator(
-        args.filename, sym_generator, unit_classes, units)
+        args.filename, sym_generator, unit_types, units)
 
     # Determine the output file name.
     if args.output:
@@ -98,9 +98,9 @@ def main() -> None:
 # -----------------------------------------------------------------------------
 
 
-class UnitClass(TypedDict, total=False):
-    """A UnitClass inside a UnitClasses list"""
-    label: str  # source code label of unit class
+class UnitType(TypedDict, total=False):
+    """A UnitType inside a UnitTypes list"""
+    label: str  # source code label of unit type
     # derived fields
     id: int  # integer id of class
 
@@ -109,7 +109,7 @@ class Unit(TypedDict, total=False):
     """A Unit inside a Units list. """
     label: str  # source code label of unit
     name: str  # display name used with its value
-    unit_class: str  # unit class
+    unit_type: str  # unit type
     scale: str  # size of unit measured in base_unit
     base_unit: str  # base unit
     # derived fields
@@ -190,23 +190,23 @@ class Lexer:
 
 
 class UnitDefParser:
-    """Create an abstract syntax tree (AST) of UnitClasses and Units in the
+    """Create an abstract syntax tree (AST) of UnitTypes and Units in the
     unit definition file.
     """
     def __init__(self, lexer: Lexer):
         self.lexer = lexer
 
-    def parse(self) -> Tuple[List[UnitClass], List[Unit]]:
-        unit_classes = self.process_unit_classes()
+    def parse(self) -> Tuple[List[UnitType], List[Unit]]:
+        unit_types = self.process_unit_types()
         units = self.process_units()
-        return unit_classes, units
+        return unit_types, units
 
-    def process_unit_classes(self) -> List[UnitClass]:
+    def process_unit_types(self) -> List[UnitType]:
         token = self.lexer.get_token()
-        if token != 'UnitClasses':
+        if token != 'UnitTypes':
             raise ValueError(
                 f"Unexpected '{token}' "
-                f"at line {self.lexer.line_number}, expected 'UnitClasses'"
+                f"at line {self.lexer.line_number}, expected 'UnitTypes'"
             )
         token = self.lexer.get_token()
         if token != '[':
@@ -214,14 +214,14 @@ class UnitDefParser:
                 f"Unexpected '{token}' "
                 f"at line {self.lexer.line_number}, expected '['"
             )
-        classes: List[UnitClass] = []
+        classes: List[UnitType] = []
         while True:
             token = self.lexer.get_token()
-            if token == 'UnitClass':
-                unit_class: UnitClass = {}
+            if token == 'UnitType':
+                unit_type: UnitType = {}
                 token = self.lexer.get_token()
-                unit_class['label'] = token
-                classes.append(unit_class)
+                unit_type['label'] = token
+                classes.append(unit_type)
             elif token == ']':
                 break
             else:
@@ -257,7 +257,7 @@ class UnitDefParser:
                 unit['name'] = token
 
                 token = self.lexer.get_token()
-                unit['unit_class'] = token
+                unit['unit_type'] = token
 
                 token = self.lexer.get_token()
                 unit['scale'] = token
@@ -282,23 +282,23 @@ class UnitDefParser:
 class SymbolGenerator:
     """Generate the internal ids and symbols."""
 
-    def __init__(self, unit_classes: List[UnitClass], units: List[Unit]):
-        self.unit_classes = unit_classes  # unit_classes by id
+    def __init__(self, unit_types: List[UnitType], units: List[Unit]):
+        self.unit_types = unit_types  # unit_types by id
         self.units = units
         self.units = units
 
         self.unit_by_id: Dict[int, Unit] = {}  # {id -> Unit}
-        self.unit_class_by_id: Dict[int, UnitClass] = {}  # {id -> UnitClass}
+        self.unit_type_by_id: Dict[int, UnitType] = {}  # {id -> UnitType}
 
     def generate(self) -> None:
-        self.generate_unit_class_ids()
+        self.generate_unit_type_ids()
         self.generate_unit_ids()
 
-    def generate_unit_class_ids(self) -> None:
+    def generate_unit_type_ids(self) -> None:
         id_counter = 0
-        for unit_class in self.unit_classes:
-            self.unit_class_by_id[id_counter] = unit_class
-            unit_class['id'] = id_counter
+        for unit_type in self.unit_types:
+            self.unit_type_by_id[id_counter] = unit_type
+            unit_type['id'] = id_counter
             id_counter += 1
 
     def generate_unit_ids(self) -> None:
@@ -313,24 +313,24 @@ class SymbolGenerator:
 
 
 class Validator:
-    """Validate the unit_classes and units."""
+    """Validate the unit_types and units."""
 
-    def __init__(self, unit_classes: List[UnitClass], units: List[Unit]):
-        self.unit_classes = unit_classes
+    def __init__(self, unit_types: List[UnitType], units: List[Unit]):
+        self.unit_types = unit_types
         self.units = units
 
     def validate(self) -> None:
-        self.validate_unit_classes()
+        self.validate_unit_types()
         self.validate_units()
 
-    def validate_unit_classes(self) -> None:
+    def validate_unit_types(self) -> None:
         # Check for duplicate labels.
-        self.unit_class_by_label: Dict[str, UnitClass] = {}
-        for unit_class in self.unit_classes:
-            label = unit_class['label']
-            if label in self.unit_class_by_label:
-                raise ValueError(f"Duplicate UnitClass label '{label}'")
-            self.unit_class_by_label[label] = unit_class
+        self.unit_type_by_label: Dict[str, UnitType] = {}
+        for unit_type in self.unit_types:
+            label = unit_type['label']
+            if label in self.unit_type_by_label:
+                raise ValueError(f"Duplicate UnitType label '{label}'")
+            self.unit_type_by_label[label] = unit_type
 
     def validate_units(self) -> None:
         # Check for duplicate labels.
@@ -341,29 +341,29 @@ class Validator:
                 raise ValueError(f"Duplicate Unit label '{label}'")
             self.unit_by_label[label] = unit
 
-        # Check Unit.unit_class points to a valid UnitClass
+        # Check Unit.unit_type points to a valid UnitType
         for unit in self.units:
             label = unit['label']
-            unit_class_label = unit['unit_class']
-            if unit_class_label not in self.unit_class_by_label:
+            unit_type_label = unit['unit_type']
+            if unit_type_label not in self.unit_type_by_label:
                 raise ValueError(
-                    f"Unknown UnitClass '{unit_class_label}' "
+                    f"Unknown UnitType '{unit_type_label}' "
                     + f"for Unit '{label}'"
                 )
 
-        # Check that the baseUnit of the unit is in the same class as the unit
-        # itself. Otherwise, the base Unit doesn't make sense.
+        # Check that the baseUnit of the unit is the same type as the unit
+        # itself. Otherwise, the baseUnit doesn't make sense.
         for unit in self.units:
             label = unit['label']
-            unit_class_label = unit['unit_class']
+            unit_type_label = unit['unit_type']
             base_unit_label = unit['base_unit']
             base_unit = self.unit_by_label[base_unit_label]
-            base_unit_class_label = base_unit['unit_class']
-            if unit_class_label != base_unit_class_label:
+            base_unit_type_label = base_unit['unit_type']
+            if unit_type_label != base_unit_type_label:
                 raise ValueError(
                     f"Invalid baseUnit '{base_unit_label}' for unit '{label}': "
-                    f"baseUnitClass is '{base_unit_class_label}' "
-                    f"but should be '{unit_class_label}'")
+                    f"baseUnitType is '{base_unit_type_label}' "
+                    f"but should be '{unit_type_label}'")
 
 # -----------------------------------------------------------------------------
 
@@ -501,7 +501,7 @@ class FloatExploder:
 
 class CodeGenerator:
     """Generate the Z80 assembly statements. There are 3 sections:
-    1) the list of unit classes
+    1) the list of unit types
     2) 'unitTable' with the list of units
     3) the C-strings used by the units, composed of the pool of c-strings
     concatenated together.
@@ -510,11 +510,11 @@ class CodeGenerator:
         self,
         inputfile: str,
         symbols: SymbolGenerator,
-        unit_classes: List[UnitClass],
+        unit_types: List[UnitType],
         units: List[Unit],
     ):
         self.inputfile = inputfile
-        self.unit_classes = unit_classes
+        self.unit_types = unit_types
         self.units = units
         self.symbols = symbols
 
@@ -527,7 +527,7 @@ class CodeGenerator:
 ; See unit1.asm for the equivalent C struct declaration.
 ;
 ; There are 3 sections:
-;   - list of unit classes
+;   - list of unit types
 ;   - list of units
 ;   - list of unit names
 ;
@@ -536,8 +536,8 @@ class CodeGenerator:
 
 """, file=self.output, end='')
 
-        logging.info("  Generating unit classes")
-        self.generate_unit_classes()
+        logging.info("  Generating unit types")
+        self.generate_unit_types()
         #
         logging.info("  Generating units")
         self.generate_units()
@@ -545,21 +545,21 @@ class CodeGenerator:
         logging.info("  Generating names")
         self.generate_names()
 
-    def generate_unit_classes(self) -> None:
-        unit_classes_count = len(self.unit_classes)
+    def generate_unit_types(self) -> None:
+        unit_types_count = len(self.unit_types)
         print(f"""\
 ;-----------------------------------------------------------------------------
-; List of unit classes.
+; List of unit types.
 ;-----------------------------------------------------------------------------
 
-unitClassesCount equ {unit_classes_count} ; number of unit classes
+unitTypesCount equ {unit_types_count} ; number of unit types
 
 """, file=self.output, end='')
 
-        for unit_class in self.unit_classes:
-            label = unit_class['label']
-            id = unit_class['id']
-            print(f"unitClass{label} equ {id}", file=self.output)
+        for unit_type in self.unit_types:
+            label = unit_type['label']
+            id = unit_type['id']
+            print(f"unitType{label} equ {id}", file=self.output)
 
     def generate_units(self) -> None:
         units_count = len(self.units)
@@ -577,7 +577,7 @@ unitInfoTable:
         for unit in self.units:
             label = unit['label']
             id = unit['id']
-            unit_class = unit['unit_class']
+            unit_type = unit['unit_type']
             base_unit = unit['base_unit']
             scale = unit['scale']
             scale_db_string = unit['scale_db_string']
@@ -586,7 +586,7 @@ unitInfoTable:
 unit{label}Info:
 unit{label}Id equ {id}
     .dw unit{label}Name ; name
-    .db unitClass{unit_class} ; unitClass
+    .db unitType{unit_type} ; unitType
     .db unit{base_unit}Id ; baseUnitId
     .db {scale_db_string} ; scale={scale}
 """, file=self.output, end='')

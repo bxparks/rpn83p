@@ -8,8 +8,8 @@
 ;
 ; struct UnitInfo {
 ;    const char* name; // pointer to name, 2 bytes
-;    uint8_t unitClass; // Length, Area, Volume, Mass, etc
-;    uint8_t baseUnitId; // base unit for this unitClass
+;    uint8_t unitType; // Length, Area, Volume, Mass, etc
+;    uint8_t baseUnitId; // base unit for this unitType
 ;    float scale; // thisUnit = scale * baseUnit
 ; }
 ;
@@ -22,7 +22,7 @@
 ;-----------------------------------------------------------------------------
 
 unitInfoFieldName equ 0
-unitInfoFieldUnitClass equ 2
+unitInfoFieldUnitType equ 2
 unitInfoFieldBaseUnitId equ 3
 unitInfoFieldScale equ 4
 
@@ -53,16 +53,16 @@ ExtractUnitName:
     pop de
     ret
 
-; Description: Return the unitClass of the unit given in register A.
+; Description: Return the unitType of the unit given in register A.
 ; Input:
 ;   - A:u8=unitId
 ; Output:
-;   - A:u8=unitClass
+;   - A:u8=unitType
 ; Destroys: A, IX
 ; Preserves: BC, DE, HL
-GetUnitClass:
+GetUnitType:
     call findUnitInfoIX ; IX=unitInfo
-    ld a, (ix + unitInfoFieldUnitClass)
+    ld a, (ix + unitInfoFieldUnitType)
     ret
 
 ; Description: Return the baseUnit of the unit given in register A.

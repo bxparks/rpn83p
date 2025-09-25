@@ -3,7 +3,7 @@
 ; See unit1.asm for the equivalent C struct declaration.
 ;
 ; There are 3 sections:
-;   - list of unit classes
+;   - list of unit types
 ;   - list of units
 ;   - list of unit names
 ;
@@ -11,44 +11,51 @@
 ;-----------------------------------------------------------------------------
 
 ;-----------------------------------------------------------------------------
-; List of unit classes.
+; List of unit types.
 ;-----------------------------------------------------------------------------
 
-unitClassesCount equ 3 ; number of unit classes
+unitTypesCount equ 4 ; number of unit types
 
-unitClassLength equ 0
-unitClassArea equ 1
-unitClassVolume equ 2
+unitTypeNullType equ 0
+unitTypeLength equ 1
+unitTypeArea equ 2
+unitTypeVolume equ 3
 
 ;-----------------------------------------------------------------------------
 ; List of units.
 ;-----------------------------------------------------------------------------
 
-unitsCount equ 4 ; number of units
+unitsCount equ 5 ; number of units
 unitInfoTable:
 
+unitNullUnitInfo:
+unitNullUnitId equ 0
+    .dw unitNullUnitName ; name
+    .db unitTypeNullType ; unitType
+    .db unitNullUnitId ; baseUnitId
+    .db $00, $80, $10, $00, $00, $00, $00, $00, $00 ; scale=1
 unitMeterInfo:
-unitMeterId equ 0
+unitMeterId equ 1
     .dw unitMeterName ; name
-    .db unitClassLength ; unitClass
+    .db unitTypeLength ; unitType
     .db unitMeterId ; baseUnitId
     .db $00, $80, $10, $00, $00, $00, $00, $00, $00 ; scale=1.0
 unitFeetInfo:
-unitFeetId equ 1
+unitFeetId equ 2
     .dw unitFeetName ; name
-    .db unitClassLength ; unitClass
+    .db unitTypeLength ; unitType
     .db unitMeterId ; baseUnitId
     .db $00, $7F, $30, $48, $00, $00, $00, $00, $00 ; scale=0.3048
 unitSqMeterInfo:
-unitSqMeterId equ 2
+unitSqMeterId equ 3
     .dw unitSqMeterName ; name
-    .db unitClassArea ; unitClass
+    .db unitTypeArea ; unitType
     .db unitSqMeterId ; baseUnitId
     .db $00, $80, $10, $00, $00, $00, $00, $00, $00 ; scale=1.0
 unitSqFeetInfo:
-unitSqFeetId equ 3
+unitSqFeetId equ 4
     .dw unitSqFeetName ; name
-    .db unitClassArea ; unitClass
+    .db unitTypeArea ; unitType
     .db unitSqMeterId ; baseUnitId
     .db $00, $7E, $92, $90, $30, $40, $00, $00, $00 ; scale=0.09290304
 
@@ -56,9 +63,11 @@ unitSqFeetId equ 3
 ; List of unit names.
 ;-----------------------------------------------------------------------------
 
-unitNamesCount equ 4 ; number of unit names
-unitNamesPoolSize equ 42 ; size of unit names string pool
+unitNamesCount equ 5 ; number of unit names
+unitNamesPoolSize equ 51 ; size of unit names string pool
 
+unitNullUnitName:
+    .db "nullunit", 0
 unitMeterName:
     .db "meter", 0
 unitFeetName:

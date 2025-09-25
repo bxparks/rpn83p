@@ -6,47 +6,51 @@
 # variables), this file must be treated as *append* only. Previously defined
 # units must never be removed or reordered because that would change the the
 # internal unit identifiers which must remain stable. If a unit must be
-# removed, the NullUnit and NullUnitClass are have been reserved so that they
+# removed, the NullUnit and NullUnitType are have been reserved so that they
 # can be used to indicate an obsolete unit. The ability to obsolete a unit has
 # not been implemented in code.
 #
-# Classes [
-#   {list of classes}
+# UnitTypes [
+#   {list of unittypes}
 # ]
 #
-# UnitTable [
+# Units [
 #   {list of units}
 # ]
 #
-# unitclass = 'UnitClass' {label}
-# unit = 'Unit' {label} {name} {unitClass} {scale} {baseUnit}
+# unittype = 'UnitType' {label}
+# unit = 'Unit' {label} {name} {unitType} {scale} {baseUnit}
 #
 # - {label} is the identifier used in the assembly language program
 # - {name} is the user-visible name of the object
 # - {scale} {baseUnit} is the size of the unit measured in {baseUnit}
 
-UnitClasses [
-  UnitClass NullClass # unitClass=0, sentinel for a unit that does not exist
-  UnitClass Length
-  UnitClass Area
-  UnitClass Volume
-  UnitClass Mass
-  UnitClass Temperature
-  UnitClass Speed
-  UnitClass Force
-  UnitClass Pressure
-  UnitClass Energy
-  UnitClass Power
-  UnitClass Fuel # gas mileage
+UnitTypes [
+  UnitType NullType # unit type of NullUnit
+  UnitType Length
+  UnitType Area
+  UnitType Volume
+  UnitType Temperature
+  #
+  UnitType Mass
+  UnitType Force
+  UnitType Pressure
+  UnitType Energy
+  UnitType Power
+  #
+  UnitType Time
+  UnitType Speed
+  UnitType Fuel # gas mileage
 ]
 
 Units [
   #----------------------------------------------------------------------------
-  # A sentinel unit that does not exist. If a unit is ever deprecated, we can
-  # set its unitClass to NullClass, and set its baseUnit to NullUnit. The Id of
-  # the NullUnit is 0.
+  # A sentinel unit that represents a unit that does not exist. This could be
+  # used to deprecate an existing unit, for example, by setting its baseUnit to
+  # be the NullUnit. The Id of the NullUnit is 0.
   #----------------------------------------------------------------------------
-  Unit NullUnit nullunit NullClass 1 NullUnit
+
+  Unit NullUnit nullunit NullType 1 NullUnit
 
   #----------------------------------------------------------------------------
   # Length
@@ -178,7 +182,7 @@ Units [
   # Other weird measures
 
   # https://en.wikipedia.org/wiki/Board_foot
-  Unit BoardFoot board<Sspace>foot Volume 2.359737216e-3 CuMeter # 1/12 cuft by defn
+  Unit BoardFoot board<SdotIcon>foot Volume 2.359737216e-3 CuMeter # 1/12 cuft by defn
 
   # https://en.wikipedia.org/wiki/Barrel_(unit)
   Unit OilBarrel barrel Volume 1.58987294928e-1 CuMeter # 42USgal by defn; bbl
@@ -188,7 +192,7 @@ Units [
   Unit OlympicPool olym<Sspace>pool Volume 2500 CuMeter # 50m*25m*2m
 
   # https://en.wikipedia.org/wiki/Acre-foot
-  Unit AcreFoot acre<Sspace>foot Volume 1233.4818375475 CuMeter # 66ft*660ft*1ft=43560cuft
+  Unit AcreFoot acre<SdotIcon>foot Volume 1233.4818375475 CuMeter # 66ft*660ft*1ft=43560cuft
 
   #----------------------------------------------------------------------------
   # Mass
@@ -201,7 +205,7 @@ Units [
   Unit MilliGram mg Mass 1e-3 Gram
   Unit Gram g Mass 1 Gram
   Unit KiloGram kg Mass 1e3 Gram
-  Unit Tonne tonne Mass 1e6 Gram # metric tonne = 1000kg
+  Unit MetricTon met<Sspace>ton Mass 1e6 Gram # metric ton = 1000kg
 
   # US System
   # https://en.wikipedia.org/wiki/United_States_customary_units
@@ -221,7 +225,7 @@ Units [
   # https://en.wikipedia.org/wiki/Hundredweight
   Unit HundredWeight cwt Mass 453.59237e2 Gram # 100 lbs by defn
   # https://en.wikipedia.org/wiki/Short_ton
-  Unit Ton ton Mass 907.18474e3 Gram # 2000 lbs
+  Unit ShortTon short<Sspace>ton Mass 907.18474e3 Gram # 2000 lbs
 
   # Imperial System
   # https://en.wikipedia.org/wiki/Imperial_units
@@ -249,27 +253,17 @@ Units [
   Unit Kelvin <Stemp>K Temperature 1 Kelvin # add <Stemp> to 'K' for visual hint
 
   #----------------------------------------------------------------------------
-  # Speed
-  #----------------------------------------------------------------------------
-
-  Unit MeterPerSecond m<Sslash>s Speed 1 MeterPerSecond
-  Unit FootPerSecond ft<Sslash>s Speed 0.3048 MeterPerSecond
-  Unit KiloMeterPerHour km<Sslash>hr Speed 0.27777777777778 MeterPerSecond
-  Unit MilePerHour mi<Sslash>hr Speed 0.44704 MeterPerSecond
-  # https://en.wikipedia.org/wiki/Knot_(unit)
-  Unit Knot knot Speed 0.51444444444444 MeterPerSecond # 1852m/h by defn
-  Unit LightSpeed lightc Speed 299792458 MeterPerSecond # by defn
-
-  #----------------------------------------------------------------------------
   # Force
   #----------------------------------------------------------------------------
 
   Unit Dyne dyne Force 1e-5 Newton
   Unit Newton newton Force 1 Newton
+
   # https://en.wikipedia.org/wiki/Pound_(force)
   # 1 lbf := (1 lbs) * (0.45359237 kg/lb) * (9.80665 m/s^2)
   #        = 4.4482216152605 N
   Unit PoundForce lbf Force 4.4482216152605 Newton
+
   # https://en.wikipedia.org/wiki/Kilogram-force
   Unit KilogramForce kgf Force 9.80665 Newton # by defn
 
@@ -290,45 +284,70 @@ Units [
   Unit HectoPascal hPa Pressure 1e2 Pascal
   Unit KiloPascal kPa Pressure 1e3 Pascal
 
+  # https://en.wikipedia.org/wiki/Bar_(unit)
   Unit MilliBar mbar Pressure 1e2 Pascal
   Unit DeciBar dbar Pressure 1e4 Pascal
   Unit Bar bar Pressure 1e5 Pascal
 
+  # See https://en.wikipedia.org/wiki/Pound_per_square_inch.
+  # 1 psi = 0.45359237 kg/lbf * (9.80665 m/s^2) / (0.0254 m/in)^2
+  #       = 6894.7572931684 Pa (rounded to 14 digits)
+  # See https://en.wikipedia.org/wiki/Pound_per_square_inch.
+  Unit PoundSquareInch psi Pressure 6894.7572931684 Pascal
+
   # https://en.wikipedia.org/wiki/Atmospheric_pressure
   Unit Atmosphere atm Pressure 101325 Pascal # by defn
+
+  # See https://en.wikipedia.org/wiki/Torr. Per SI conventions, the symbol is
+  # 'Torr', but the unit name is 'torr'. This is too confusing, so let's use
+  # the full unit name 'torr' in the UI, since 4 letters will fit in the soft
+  # menu name. Within RPN83P, the internal label of a unit starts with a
+  # capital, so this becomes 'Torr'. Sigh.
+  # 1 Torr = 1/760 atm = 133.32236842105 Pa (rounded to 14-digits)
+  Unit Torr torr Pressure 133.32236842105 Pascal
 
   # According to https://en.wikipedia.org/wiki/Millimetre_of_mercury:
   # 1 mmHg = 133.322 387 415 pascals (exact)
   # 1 inHg = 25.4 * (above) = 3386.388640341 Pa (exact)
-  Unit MilliMeterMercury mmHg Pressure  133.322387415 Pascal
-  Unit InchMercury inHg Pressure  3386.388640341 Pascal
+  Unit MilliMeterMercury mmHg Pressure 133.322387415 Pascal
+  Unit InchMercury inHg Pressure 3386.388640341 Pascal
 
-  # See https://en.wikipedia.org/wiki/Pound_per_square_inch.
-  # 1 psi = 0.45359237 kg/lbf * (9.80665 m/s^2) / (0.0254 m/in)^2
-  #       = 6894.7572931684 Pa
-  # See https://en.wikipedia.org/wiki/Pound_per_square_inch.
-  Unit PoundSquareInch psi Pressure 6894.7572931684 Pascal
+  # https://en.wikipedia.org/wiki/Centimetre_or_millimetre_of_water
+  Unit MilliMeterWater mmH2O Pressure 9.80665 Pascal # (by defn)
 
-  # See https://en.wikipedia.org/wiki/Torr
-  # 1 Torr = 1/760 atm = 133.32236842105 Pa
-  Unit Torr Torr Pressure 133.32236842105 Pascal
+  # https://en.wikipedia.org/wiki/Inch_of_water
+  # inH2O = mmH2O * (1 inch) = 9.80665 Pa * (1 in) * (25.4mm/in)
+  #       = 249.08891 Pa (exact)
+  Unit InchWater inH2O Pressure 249.08891 Pascal
 
   #----------------------------------------------------------------------------
   # Energy
   # https://en.wikipedia.org/wiki/Units_of_energy
   #----------------------------------------------------------------------------
 
+  # https://en.wikipedia.org/wiki/Electronvolt
+  Unit ElectronVolt eV Energy 1.602176634e-19 Joule # by defn
+
+  # https://en.wikipedia.org/wiki/Erg
+  Unit Erg erg Energy 1e-7 Joule
+
   Unit Joule J Energy 1 Joule
 
   Unit WattHour Wh Energy 3.6e3 Joule
+
+  # https://en.wikipedia.org/wiki/Kilowatt-hour
   Unit KiloWattHour kWh Energy 3.6e6 Joule
 
   # https://en.wikipedia.org/wiki/Calorie
   Unit Calorie cal Energy 4.184 Joule # by defn
   Unit KiloCalorie kCal Energy 4.184e3 Joule
 
-  # https://en.wikipedia.org/wiki/Electronvolt
-  Unit ElectronVolt eV Energy 1.602176634e-19 Joule # by defn
+  # https://en.wikipedia.org/wiki/Foot-pound_(energy)
+  # ftlbf = 1 lbf * 1 ft = (1 lb) * (0.45359237 kg/lb) * (9.80665 m/s^2)
+  #        * (1 ft) * (0.3048 m/ft)
+  #       = 1.3558179483314(004) J (exact if 3-digits in parens are included,
+  #         rounded to 14-digits below)
+  Unit FootPoundEnergy ft<SdotIcon>lbf Energy 1.3558179483314 Joule
 
   # https://en.wikipedia.org/wiki/British_thermal_unit
   # The Btu has Several different definitions. Pick one that is somewhere in
@@ -339,12 +358,32 @@ Units [
   Unit GramTNT gramTNT Energy 4184 Joule # by defn
   Unit TonTNT tonTNT Energy 4.184e9 Joule
 
+  # liter-atm = 1e-3 m^3 * 101325 Pa = 101.325 Joules (added for compatibility
+  # with TI-85).
+  Unit LiterAtmosphere liter<SdotIcon>atm Energy 101.325 Joule
+
   #----------------------------------------------------------------------------
   # Power
   # https://en.wikipedia.org/wiki/Power_(physics)
   #----------------------------------------------------------------------------
 
   Unit Watt W Power 1 Watt
+  Unit KiloWatt kW Power 1000 Watt
+
+  # https://en.wikipedia.org/wiki/Foot-pound_(energy)
+  Unit FootPoundEnergyPerSecond ft<SdotIcon>lbf<Sslash>s Power 1.3558179483314 Watt
+
+  # https://en.wikipedia.org/wiki/Calorie
+  Unit CaloriePerSecond cal<Sslash>s Power 4.184 Watt
+
+  # https://en.wikipedia.org/wiki/British_thermal_unit
+  # Btu/hour = 1055J/(3600s) = .29305555555556 W (used frequently in AC and
+  # heating systems for homes)
+  Unit BtuPerHour Btu<Sslash>hr Power .29305555555556 Watt
+
+  # Btu/min = 1055J/(60s) = 17.583333333333 W (added for compatibility with
+  # TI-85)
+  Unit BtuPerMinute Btu<Sslash>min Power 17.583333333333 Watt
 
   # According to https://en.wikipedia.org/wiki/Horsepower:
   # 1 hp (mechanical)
@@ -353,6 +392,36 @@ Units [
   #   = 550 ft*lbf/s * 0.3048 m/ft * 9.806 65 m/s^2 * 0.453 592 37 kg/lbs
   #   ~ 0.745 699 871 582 270 22 kW
   Unit Horsepower hp Power 745.69987158227022 Watt
+
+  #----------------------------------------------------------------------------
+  # Time
+  # Mostly for TI-85 compatibility.
+  #----------------------------------------------------------------------------
+
+  Unit NanoSecond ns Time 1e-9 Second
+  Unit MicroSecond <Smu>s Time 1e-6 Second
+  Unit MilliSecond ms Time 1e-3 Second
+  Unit Second second Time 1 Second
+  Unit Minute minute Time 60 Second
+  Unit Hour hour Time 3600 Second
+  Unit Day day Time 86400 Second
+  Unit Week week Time 604800 Second
+
+  # https://en.wikipedia.org/wiki/Julian_year_%28astronomy%29
+  # Julian year = 365.25 days
+  Unit JulianYear year Time 31557600 Second
+
+  #----------------------------------------------------------------------------
+  # Speed
+  #----------------------------------------------------------------------------
+
+  Unit MeterPerSecond m<Sslash>s Speed 1 MeterPerSecond
+  Unit FootPerSecond ft<Sslash>s Speed 0.3048 MeterPerSecond
+  Unit KiloMeterPerHour km<Sslash>hr Speed 0.27777777777778 MeterPerSecond
+  Unit MilePerHour mi<Sslash>hr Speed 0.44704 MeterPerSecond
+  # https://en.wikipedia.org/wiki/Knot_(unit)
+  Unit Knot knot Speed 0.51444444444444 MeterPerSecond # 1852m/h by defn
+  Unit LightSpeed lightc Speed 299792458 MeterPerSecond # by defn
 
   #----------------------------------------------------------------------------
   # Fuel Consumption
