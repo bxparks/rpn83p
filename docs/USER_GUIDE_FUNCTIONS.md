@@ -473,8 +473,8 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
         - ![ROOT > UNIT > MASS > IMP](images/menu/root-unit-mass-imp.png) (ROOT > UNIT > MASS > IMP)
             - ![ROOT > UNIT > MASS > IMP > Row1](images/menu/root-unit-mass-imp-1.png)
             - `lb`: pound
-            - `stne`: stone (14 pounds) TODO: rename menu to 'ston'
-            - `quat`: quarter (2 stones) TODO: rename menu to 'qtr`
+            - `stne`: stone (14 pounds)
+            - `qrtr`: quarter (2 stones)
             - `lcwt`: long hundred weight (8 stones, 112 lbs)
             - `lton`: long ton (20 lcwt, 2240 lbs)
         - ![ROOT > UNIT > MASS > TROY](images/menu/root-unit-mass-troy.png) (ROOT > UNIT > MASS > TROY)
