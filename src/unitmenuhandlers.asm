@@ -766,6 +766,10 @@ mUnitTonTNTHandler:
     ld a, unitTonTNTId
     jp commonUnitHandler
 
+mUnitLiterAtmosphereHandler:
+    ld a, unitLiterAtmosphereId
+    jp commonUnitHandler
+
 ;-----------------------------------------------------------------------------
 ; UNIT > PWR > Row 1
 ;-----------------------------------------------------------------------------

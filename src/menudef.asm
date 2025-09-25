@@ -3937,14 +3937,14 @@ mUnitTonTNTId equ 419
     .dw 0 ; rowBeginId or altName
     .dw mUnitTonTNTHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
-mBlank420:
-mBlank420Id equ 420
-    .dw mBlank420Id ; id
+mUnitLiterAtmosphere:
+mUnitLiterAtmosphereId equ 420
+    .dw mUnitLiterAtmosphereId ; id
     .dw mUnitEnergyId ; parentId
-    .dw mNullName ; name
+    .dw mUnitLiterAtmosphereName ; name
     .db 0 ; numRows
     .dw 0 ; rowBeginId or altName
-    .dw mNullHandler ; handler (predefined)
+    .dw mUnitLiterAtmosphereHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
 mBlank421:
 mBlank421Id equ 421
@@ -5168,8 +5168,8 @@ mSetClockId equ 551
 ; Pool of menu names as NUL-terminated C strings.
 ;-----------------------------------------------------------------------------
 
-mNamesCount equ 456 ; number of names and altnames
-mNamesPoolSize equ 3880 ; size of names string pool
+mNamesCount equ 457 ; number of names and altnames
+mNamesPoolSize equ 3885 ; size of names string pool
 
 mNullName:
     .db 0
@@ -5935,6 +5935,8 @@ mUnitBritishThermalUnitName:
     .db "Btu", 0
 mUnitTonTNTName:
     .db "tTNT", 0
+mUnitLiterAtmosphereName:
+    .db "Latm", 0
 mUnitWattName:
     .db "W", 0
 mUnitKiloWattName:

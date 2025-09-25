@@ -33,7 +33,7 @@ unitTypeFuel equ 11
 ; List of units.
 ;-----------------------------------------------------------------------------
 
-unitsCount equ 146 ; number of units
+unitsCount equ 147 ; number of units
 unitInfoTable:
 
 unitNullUnitInfo:
@@ -870,44 +870,50 @@ unitTonTNTId equ 138
     .db unitTypeEnergy ; unitType
     .db unitJouleId ; baseUnitId
     .db $00, $89, $41, $84, $00, $00, $00, $00, $00 ; scale=4.184e9
+unitLiterAtmosphereInfo:
+unitLiterAtmosphereId equ 139
+    .dw unitLiterAtmosphereName ; name
+    .db unitTypeEnergy ; unitType
+    .db unitJouleId ; baseUnitId
+    .db $00, $82, $10, $13, $25, $00, $00, $00, $00 ; scale=101.325
 unitWattInfo:
-unitWattId equ 139
+unitWattId equ 140
     .dw unitWattName ; name
     .db unitTypePower ; unitType
     .db unitWattId ; baseUnitId
     .db $00, $80, $10, $00, $00, $00, $00, $00, $00 ; scale=1
 unitKiloWattInfo:
-unitKiloWattId equ 140
+unitKiloWattId equ 141
     .dw unitKiloWattName ; name
     .db unitTypePower ; unitType
     .db unitWattId ; baseUnitId
     .db $00, $83, $10, $00, $00, $00, $00, $00, $00 ; scale=1000
 unitBtuPerHourInfo:
-unitBtuPerHourId equ 141
+unitBtuPerHourId equ 142
     .dw unitBtuPerHourName ; name
     .db unitTypePower ; unitType
     .db unitWattId ; baseUnitId
     .db $00, $7F, $29, $30, $55, $55, $55, $55, $56 ; scale=.29305555555556
 unitBtuPerMinuteInfo:
-unitBtuPerMinuteId equ 142
+unitBtuPerMinuteId equ 143
     .dw unitBtuPerMinuteName ; name
     .db unitTypePower ; unitType
     .db unitWattId ; baseUnitId
     .db $00, $81, $17, $58, $33, $33, $33, $33, $33 ; scale=17.583333333333
 unitHorsepowerInfo:
-unitHorsepowerId equ 143
+unitHorsepowerId equ 144
     .dw unitHorsepowerName ; name
     .db unitTypePower ; unitType
     .db unitWattId ; baseUnitId
     .db $00, $82, $74, $56, $99, $87, $15, $82, $27 ; scale=745.69987158227022
 unitMilesPerGallonInfo:
-unitMilesPerGallonId equ 144
+unitMilesPerGallonId equ 145
     .dw unitMilesPerGallonName ; name
     .db unitTypeFuel ; unitType
     .db unitLitersPerHundredKiloMetersId ; baseUnitId
     .db $00, $80, $10, $00, $00, $00, $00, $00, $00 ; scale=1
 unitLitersPerHundredKiloMetersInfo:
-unitLitersPerHundredKiloMetersId equ 145
+unitLitersPerHundredKiloMetersId equ 146
     .dw unitLitersPerHundredKiloMetersName ; name
     .db unitTypeFuel ; unitType
     .db unitLitersPerHundredKiloMetersId ; baseUnitId
@@ -917,8 +923,8 @@ unitLitersPerHundredKiloMetersId equ 145
 ; List of unit names.
 ;-----------------------------------------------------------------------------
 
-unitNamesCount equ 146 ; number of unit names
-unitNamesPoolSize equ 1207 ; size of unit names string pool
+unitNamesCount equ 147 ; number of unit names
+unitNamesPoolSize equ 1224 ; size of unit names string pool
 
 unitNullUnitName:
     .db "nullunit", 0
@@ -1198,6 +1204,8 @@ unitGramTNTName:
     .db "gramTNT", 0
 unitTonTNTName:
     .db "tonTNT", 0
+unitLiterAtmosphereName:
+    .db 'l', 'i', 't', 'e', 'r', Sspace, 'a', 't', 'm', 0
 unitWattName:
     .db "W", 0
 unitKiloWattName:

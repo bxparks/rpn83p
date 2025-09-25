@@ -344,6 +344,10 @@ Units [
   Unit GramTNT gramTNT Energy 4184 Joule # by defn
   Unit TonTNT tonTNT Energy 4.184e9 Joule
 
+  # liter-atm = 1e-3 m^3 * 101325 Pa = 101.325 Joules (added for compatibility
+  # with TI-85).
+  Unit LiterAtmosphere liter<Sspace>atm Energy 101.325 Joule
+
   #----------------------------------------------------------------------------
   # Power
   # https://en.wikipedia.org/wiki/Power_(physics)

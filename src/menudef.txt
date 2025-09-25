@@ -626,6 +626,7 @@ MenuGroup root mRoot [
             MenuItem eV mUnitElectronVolt
             MenuItem Btu mUnitBritishThermalUnit
             MenuItem tTNT mUnitTonTNT # metric ton
+            MenuItem Latm mUnitLiterAtmosphere
           ]
         ]
       ]
