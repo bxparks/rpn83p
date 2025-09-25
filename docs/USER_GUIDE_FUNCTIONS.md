@@ -455,7 +455,7 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
         - `mg`: milligram
         - `g`: gram
         - `kg`: kilogram
-        - `t`: tonne (1000 kg)
+        - `t`: metric ton (1000 kg)
         - `US`: US units
         - `IMP`: Imperial units
         - `TROY`: Troy units
@@ -468,7 +468,7 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
             - `lb`: pound
             - `slug`: slug
             - `cwt`: hundred weight (100 lbs)
-            - `ton`: ton (20 cwt, 2000 lbs)
+            - `ton`: short ton (20 cwt, 2000 lbs)
         - ![ROOT > UNIT > MASS > IMP](images/menu/root-unit-mass-imp.png) (ROOT > UNIT > MASS > IMP)
             - ![ROOT > UNIT > MASS > IMP > Row1](images/menu/root-unit-mass-imp-1.png)
             - `lb`: pound
@@ -512,7 +512,7 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
         - `kcal`: kilocalorie
         - `eV`: elctron-volt
         - `Btu`: British thermal units (1055 joules)
-        - `tTNT`: tonne (1000 kg) of TNT (4.184e9 joules)
+        - `tTNT`: metric ton of TNT (4.184e9 joules)
     - ![ROOT > UNIT > PWR](images/menu/root-unit-pwr.png) (ROOT > UNIT > PWR)
         - ![ROOT > UNIT > PWR > Row1](images/menu/root-unit-pwr-1.png)
         - `W`: watt
