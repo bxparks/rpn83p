@@ -293,32 +293,41 @@ Units [
   Unit HectoPascal hPa Pressure 1e2 Pascal
   Unit KiloPascal kPa Pressure 1e3 Pascal
 
+  # https://en.wikipedia.org/wiki/Bar_(unit)
   Unit MilliBar mbar Pressure 1e2 Pascal
   Unit DeciBar dbar Pressure 1e4 Pascal
   Unit Bar bar Pressure 1e5 Pascal
 
-  # https://en.wikipedia.org/wiki/Atmospheric_pressure
-  Unit Atmosphere atm Pressure 101325 Pascal # by defn
-
-  # According to https://en.wikipedia.org/wiki/Millimetre_of_mercury:
-  # 1 mmHg = 133.322 387 415 pascals (exact)
-  # 1 inHg = 25.4 * (above) = 3386.388640341 Pa (exact)
-  Unit MilliMeterMercury mmHg Pressure  133.322387415 Pascal
-  Unit InchMercury inHg Pressure  3386.388640341 Pascal
-
   # See https://en.wikipedia.org/wiki/Pound_per_square_inch.
   # 1 psi = 0.45359237 kg/lbf * (9.80665 m/s^2) / (0.0254 m/in)^2
-  #       = 6894.7572931684 Pa
+  #       = 6894.7572931684 Pa (rounded to 14 digits)
   # See https://en.wikipedia.org/wiki/Pound_per_square_inch.
   Unit PoundSquareInch psi Pressure 6894.7572931684 Pascal
+
+  # https://en.wikipedia.org/wiki/Atmospheric_pressure
+  Unit Atmosphere atm Pressure 101325 Pascal # by defn
 
   # See https://en.wikipedia.org/wiki/Torr. Per SI conventions, the symbol is
   # 'Torr', but the unit name is 'torr'. This is too confusing, so let's use
   # the full unit name 'torr' in the UI, since 4 letters will fit in the soft
   # menu name. Within RPN83P, the internal label of a unit starts with a
   # capital, so this becomes 'Torr'. Sigh.
-  # 1 Torr = 1/760 atm = 133.32236842105 Pa
+  # 1 Torr = 1/760 atm = 133.32236842105 Pa (rounded to 14-digits)
   Unit Torr torr Pressure 133.32236842105 Pascal
+
+  # According to https://en.wikipedia.org/wiki/Millimetre_of_mercury:
+  # 1 mmHg = 133.322 387 415 pascals (exact)
+  # 1 inHg = 25.4 * (above) = 3386.388640341 Pa (exact)
+  Unit MilliMeterMercury mmHg Pressure 133.322387415 Pascal
+  Unit InchMercury inHg Pressure 3386.388640341 Pascal
+
+  # https://en.wikipedia.org/wiki/Centimetre_or_millimetre_of_water
+  Unit MilliMeterWater mmH2O Pressure 9.80665 Pascal # (by defn)
+
+  # https://en.wikipedia.org/wiki/Inch_of_water
+  # inH2O = mmH2O * (1 inch) = 9.80665 Pa * (1 in) * (25.4mm/in)
+  #       = 249.08891 Pa (exact)
+  Unit InchWater inH2O Pressure 249.08891 Pascal
 
   #----------------------------------------------------------------------------
   # Energy

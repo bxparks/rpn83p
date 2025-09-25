@@ -600,18 +600,20 @@ MenuGroup root mRoot [
             MenuItem Pa mUnitPascal
             MenuItem hPa mUnitHectoPascal
             MenuItem kPa mUnitKiloPascal
-            MenuItem atm mUnitAtmosphere
+            MenuItem psi mUnitPoundSquareInch
           ]
           MenuRow [
             MenuItem mbar mUnitMilliBar
             MenuItem dbar mUnitDeciBar
             MenuItem bar mUnitBar
-            MenuItem psi mUnitPoundSquareInch
+            MenuItem torr mUnitTorr
+            MenuItem atm mUnitAtmosphere
           ]
           MenuRow [
             MenuItem mmH mUnitMilliMeterMercury
             MenuItem inHg mUnitInchMercury
-            MenuItem torr mUnitTorr
+            MenuItem mmw mUnitMilliMeterWater
+            MenuItem inwg mUnitInchWater
           ]
         ]
         MenuGroup ENER mUnitEnergy [

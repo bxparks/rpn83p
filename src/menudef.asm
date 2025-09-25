@@ -3752,14 +3752,14 @@ mUnitKiloPascalId equ 399
     .dw 0 ; rowBeginId or altName
     .dw mUnitKiloPascalHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
-mUnitAtmosphere:
-mUnitAtmosphereId equ 400
-    .dw mUnitAtmosphereId ; id
+mUnitPoundSquareInch:
+mUnitPoundSquareInchId equ 400
+    .dw mUnitPoundSquareInchId ; id
     .dw mUnitPressureId ; parentId
-    .dw mUnitAtmosphereName ; name
+    .dw mUnitPoundSquareInchName ; name
     .db 0 ; numRows
     .dw 0 ; rowBeginId or altName
-    .dw mUnitAtmosphereHandler ; handler (to be implemented)
+    .dw mUnitPoundSquareInchHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
 mBlank401:
 mBlank401Id equ 401
@@ -3798,23 +3798,23 @@ mUnitBarId equ 404
     .dw 0 ; rowBeginId or altName
     .dw mUnitBarHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
-mUnitPoundSquareInch:
-mUnitPoundSquareInchId equ 405
-    .dw mUnitPoundSquareInchId ; id
+mUnitTorr:
+mUnitTorrId equ 405
+    .dw mUnitTorrId ; id
     .dw mUnitPressureId ; parentId
-    .dw mUnitPoundSquareInchName ; name
+    .dw mUnitTorrName ; name
     .db 0 ; numRows
     .dw 0 ; rowBeginId or altName
-    .dw mUnitPoundSquareInchHandler ; handler (to be implemented)
+    .dw mUnitTorrHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
-mBlank406:
-mBlank406Id equ 406
-    .dw mBlank406Id ; id
+mUnitAtmosphere:
+mUnitAtmosphereId equ 406
+    .dw mUnitAtmosphereId ; id
     .dw mUnitPressureId ; parentId
-    .dw mNullName ; name
+    .dw mUnitAtmosphereName ; name
     .db 0 ; numRows
     .dw 0 ; rowBeginId or altName
-    .dw mNullHandler ; handler (predefined)
+    .dw mUnitAtmosphereHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
 ; MenuGroup PRES: children: row 2
 mUnitMilliMeterMercury:
@@ -3835,23 +3835,23 @@ mUnitInchMercuryId equ 408
     .dw 0 ; rowBeginId or altName
     .dw mUnitInchMercuryHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
-mUnitTorr:
-mUnitTorrId equ 409
-    .dw mUnitTorrId ; id
+mUnitMilliMeterWater:
+mUnitMilliMeterWaterId equ 409
+    .dw mUnitMilliMeterWaterId ; id
     .dw mUnitPressureId ; parentId
-    .dw mUnitTorrName ; name
+    .dw mUnitMilliMeterWaterName ; name
     .db 0 ; numRows
     .dw 0 ; rowBeginId or altName
-    .dw mUnitTorrHandler ; handler (to be implemented)
+    .dw mUnitMilliMeterWaterHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
-mBlank410:
-mBlank410Id equ 410
-    .dw mBlank410Id ; id
+mUnitInchWater:
+mUnitInchWaterId equ 410
+    .dw mUnitInchWaterId ; id
     .dw mUnitPressureId ; parentId
-    .dw mNullName ; name
+    .dw mUnitInchWaterName ; name
     .db 0 ; numRows
     .dw 0 ; rowBeginId or altName
-    .dw mNullHandler ; handler (predefined)
+    .dw mUnitInchWaterHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
 mBlank411:
 mBlank411Id equ 411
@@ -5214,8 +5214,8 @@ mSetClockId equ 556
 ; Pool of menu names as NUL-terminated C strings.
 ;-----------------------------------------------------------------------------
 
-mNamesCount equ 461 ; number of names and altnames
-mNamesPoolSize equ 3918 ; size of names string pool
+mNamesCount equ 463 ; number of names and altnames
+mNamesPoolSize equ 3927 ; size of names string pool
 
 mNullName:
     .db 0
@@ -5949,22 +5949,26 @@ mUnitHectoPascalName:
     .db "hPa", 0
 mUnitKiloPascalName:
     .db "kPa", 0
-mUnitAtmosphereName:
-    .db "atm", 0
+mUnitPoundSquareInchName:
+    .db "psi", 0
 mUnitMilliBarName:
     .db "mbar", 0
 mUnitDeciBarName:
     .db "dbar", 0
 mUnitBarName:
     .db "bar", 0
-mUnitPoundSquareInchName:
-    .db "psi", 0
+mUnitTorrName:
+    .db "torr", 0
+mUnitAtmosphereName:
+    .db "atm", 0
 mUnitMilliMeterMercuryName:
     .db "mmH", 0
 mUnitInchMercuryName:
     .db "inHg", 0
-mUnitTorrName:
-    .db "torr", 0
+mUnitMilliMeterWaterName:
+    .db "mmw", 0
+mUnitInchWaterName:
+    .db "inwg", 0
 mUnitElectronVoltName:
     .db "eV", 0
 mUnitErgName:

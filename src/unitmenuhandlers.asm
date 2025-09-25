@@ -686,8 +686,8 @@ mUnitKiloPascalHandler:
     ld a, unitKiloPascalId
     jp commonUnitHandler
 
-mUnitAtmosphereHandler:
-    ld a, unitAtmosphereId
+mUnitPoundSquareInchHandler:
+    ld a, unitPoundSquareInchId
     jp commonUnitHandler
 
 ;-----------------------------------------------------------------------------
@@ -706,8 +706,12 @@ mUnitBarHandler:
     ld a, unitBarId
     jp commonUnitHandler
 
-mUnitPoundSquareInchHandler:
-    ld a, unitPoundSquareInchId
+mUnitTorrHandler:
+    ld a, unitTorrId
+    jp commonUnitHandler
+
+mUnitAtmosphereHandler:
+    ld a, unitAtmosphereId
     jp commonUnitHandler
 
 ;-----------------------------------------------------------------------------
@@ -722,8 +726,12 @@ mUnitInchMercuryHandler:
     ld a, unitInchMercuryId
     jp commonUnitHandler
 
-mUnitTorrHandler:
-    ld a, unitTorrId
+mUnitMilliMeterWaterHandler:
+    ld a, unitMilliMeterWaterId
+    jp commonUnitHandler
+
+mUnitInchWaterHandler:
+    ld a, unitInchWaterId
     jp commonUnitHandler
 
 ;-----------------------------------------------------------------------------
