@@ -485,9 +485,14 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
             - `lbt`: troy pound (12 troy ounces)
     - ![ROOT > UNIT > FORC](images/menu/root-unit-forc.png) (ROOT > UNIT > FORC)
         - ![ROOT > UNIT > FORC > Row1](images/menu/root-unit-forc-1.png)
+        - ![ROOT > UNIT > FORC > Row2](images/menu/root-unit-forc-2.png)
         - `dyne`: dyne
         - `N`: newton
+        - `kgf`: kilogram force
+        - `tonf`: metric ton force
         - `lbf`: pound force
+        - `stnf`: short ton force
+        - `ltnf`: long ton force
     - ![ROOT > UNIT > PRES](images/menu/root-unit-pres.png) (ROOT > UNIT > PRES)
         - ![ROOT > UNIT > PRES > Row1](images/menu/root-unit-pres-1.png)
         - ![ROOT > UNIT > PRES > Row2](images/menu/root-unit-pres-2.png)
