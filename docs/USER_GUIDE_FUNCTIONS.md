@@ -436,10 +436,10 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
             - `dbbl`: dry barrel
         - ![ROOT > UNIT > VOL > MISC](images/menu/root-unit-vol-misc.png) (ROOT > UNIT > VOL > MISC)
             - ![ROOT > UNIT > VOL > MISC > Row1](images/menu/root-unit-vol-misc-1.png)
-            - `bdft`: board foot
+            - `bdft`: board-foot
             - `bbl`: oil barrel (42 US gallons)
             - `olmp`: olympic swimming pool (2m deep)
-            - `acft`: acre foot
+            - `acft`: acre-foot
     - ![ROOT > UNIT > TEMP](images/menu/root-unit-temp.png) (ROOT > UNIT > TEMP)
         - ![ROOT > UNIT > TEMP > Row1](images/menu/root-unit-temp-1.png)
         - `°C`: Celsius
@@ -517,8 +517,8 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
         - `eV`: elctron-volt
         - `erg`: erg
         - `J`: joule
-        - `Wh`: watthour
-        - `kWh`: kilowatthour
+        - `Wh`: watt-hour
+        - `kWh`: kilowatt-hour
         - `cal`: calorie
         - `kcal`: kilocalorie
         - `ftlb`: foot-pound energy
