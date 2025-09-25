@@ -344,17 +344,17 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
         - `ASTR`: Astronomy units
         - `NAUT`: Nautical units
         - `SURV`: Survey units
-        - ![ROOT > UNIT > LENG > ASTR](images/menu/root-unit-leng.png) (ROOT > UNIT > LENG > ASTR)
+        - ![ROOT > UNIT > LENG > ASTR](images/menu/root-unit-astr.png) (ROOT > UNIT > LENG > ASTR)
             - ![ROOT > UNIT > LENG > ASTR > Row1](images/menu/root-unit-leng-astr-1.png)
             - `AU`: Astronomical Unit
             - `ly`: light year
             - `pc`: parsec
-        - ![ROOT > UNIT > LENG > NAUT](images/menu/root-unit-leng.png) (ROOT > UNIT > LENG > NAUT)
+        - ![ROOT > UNIT > LENG > NAUT](images/menu/root-unit-naut.png) (ROOT > UNIT > LENG > NAUT)
             - ![ROOT > UNIT > LENG > NAUT > Row1](images/menu/root-unit-leng-naut-1.png)
             - `fthm`: fanthom
             - `cabl`: cable
             - `nmi`: nautical mile
-        - ![ROOT > UNIT > LENG > SURV](images/menu/root-unit-leng.png) (ROOT > UNIT > LENG > SURV)
+        - ![ROOT > UNIT > LENG > SURV](images/menu/root-unit-surv.png) (ROOT > UNIT > LENG > SURV)
             - ![ROOT > UNIT > LENG > SURV > Row1](images/menu/root-unit-leng-surv-1.png)
             - ![ROOT > UNIT > LENG > SURV > Row2](images/menu/root-unit-leng-surv-2.png)
             - `svft`: survey foot (pre-2023)
