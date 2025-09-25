@@ -639,6 +639,7 @@ MenuGroup root mRoot [
           MenuRow [
             MenuItem W mUnitWatt
             MenuItem kW mUnitKiloWatt
+            MenuItem fl<Sslash>s mUnitFootPoundEnergyPerSecond
             MenuItem Bt<Sslash>h mUnitBtuPerHour
             MenuItem Bt<Sslash>m mUnitBtuPerMinute
           ]

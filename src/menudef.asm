@@ -4021,8 +4021,17 @@ mUnitKiloWattId equ 428
     .dw 0 ; rowBeginId or altName
     .dw mUnitKiloWattHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
+mUnitFootPoundEnergyPerSecond:
+mUnitFootPoundEnergyPerSecondId equ 429
+    .dw mUnitFootPoundEnergyPerSecondId ; id
+    .dw mUnitPowerId ; parentId
+    .dw mUnitFootPoundEnergyPerSecondName ; name
+    .db 0 ; numRows
+    .dw 0 ; rowBeginId or altName
+    .dw mUnitFootPoundEnergyPerSecondHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
 mUnitBtuPerHour:
-mUnitBtuPerHourId equ 429
+mUnitBtuPerHourId equ 430
     .dw mUnitBtuPerHourId ; id
     .dw mUnitPowerId ; parentId
     .dw mUnitBtuPerHourName ; name
@@ -4031,22 +4040,13 @@ mUnitBtuPerHourId equ 429
     .dw mUnitBtuPerHourHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
 mUnitBtuPerMinute:
-mUnitBtuPerMinuteId equ 430
+mUnitBtuPerMinuteId equ 431
     .dw mUnitBtuPerMinuteId ; id
     .dw mUnitPowerId ; parentId
     .dw mUnitBtuPerMinuteName ; name
     .db 0 ; numRows
     .dw 0 ; rowBeginId or altName
     .dw mUnitBtuPerMinuteHandler ; handler (to be implemented)
-    .dw 0 ; nameSelector
-mBlank431:
-mBlank431Id equ 431
-    .dw mBlank431Id ; id
-    .dw mUnitPowerId ; parentId
-    .dw mNullName ; name
-    .db 0 ; numRows
-    .dw 0 ; rowBeginId or altName
-    .dw mNullHandler ; handler (predefined)
     .dw 0 ; nameSelector
 ; MenuGroup PWR: children: row 1
 mUnitHorsepower:
@@ -5214,8 +5214,8 @@ mSetClockId equ 556
 ; Pool of menu names as NUL-terminated C strings.
 ;-----------------------------------------------------------------------------
 
-mNamesCount equ 459 ; number of names and altnames
-mNamesPoolSize equ 3894 ; size of names string pool
+mNamesCount equ 460 ; number of names and altnames
+mNamesPoolSize equ 3906 ; size of names string pool
 
 mNullName:
     .db 0
@@ -5991,6 +5991,8 @@ mUnitWattName:
     .db "W", 0
 mUnitKiloWattName:
     .db "kW", 0
+mUnitFootPoundEnergyPerSecondName:
+    .db 'f', 'l', Sslash, 's', 0
 mUnitBtuPerHourName:
     .db 'B', 't', Sslash, 'h', 0
 mUnitBtuPerMinuteName:

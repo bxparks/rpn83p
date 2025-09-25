@@ -794,6 +794,10 @@ mUnitKiloWattHandler:
     ld a, unitKiloWattId
     jp commonUnitHandler
 
+mUnitFootPoundEnergyPerSecondHandler:
+    ld a, unitFootPoundEnergyPerSecondId
+    jp commonUnitHandler
+
 mUnitBtuPerHourHandler:
     ld a, unitBtuPerHourId
     jp commonUnitHandler
@@ -801,6 +805,10 @@ mUnitBtuPerHourHandler:
 mUnitBtuPerMinuteHandler:
     ld a, unitBtuPerMinuteId
     jp commonUnitHandler
+
+;-----------------------------------------------------------------------------
+; UNIT > PWR > Row 2
+;-----------------------------------------------------------------------------
 
 mUnitHorsepowerHandler:
     ld a, unitHorsepowerId
