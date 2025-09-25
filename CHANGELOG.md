@@ -2,10 +2,14 @@
 
 - Unreleased
     - DATE
-        - Support entry of Duration objects in compact string form,
-          `{dd}D{hh}H{mm}M{ss}S`. For example, `1D30M2S` for `DR{1,0,30,2}`.
-            - Obsoletes the "Duration Colon Modifier" entry form
-              `{nn}:{modifier}`. Currently retained for backwards compatibility.
+        - Support additional method of entry of Duration objects:
+            - compact string form, `{dd}D{hh}H{mm}M{ss}S`, e.g. `1D30M2S` for
+              `DR{1,0,30,2}`.
+                - Obsoletes the "Duration Colon Modifier" entry form
+                  `{nn}:{modifier}`. Currently retained for backwards
+                  compatibility.
+            - incremental building of Duration components using the `DAY>`,
+              `HR>`, `MIN>`, and `SEC>` menu functions
         - Add MenuFolder for the 7 Date types: `D`, `T`, `DT`, `TZ`, `DZ`, `DR`,
           `DW`
             - add convenience menu function that inserts the Date-type prefix
@@ -28,20 +32,21 @@
         - Reimplement the underlying architecture using a workflow similar to
           the UNITS menu of the HP-19BII and TI-85
             - Pressing a UNIT menu converts a Real number to a Denominate number
-              (a number with units).
+              (i.e. a number with units).
             - Pressing a subsequent UNIT menu converts that Denominate number
               into the unit requested by the menu key.
-            - Support misc Unit Functions (UFCN)
-                - UVAL: return display value without units
-                - UBAS: convert to its "base unit"
-        - Increase number of supported units from 30 to 130.
-        - Reorganize UNIT menus across 12 sub MenuFolders: UFCN, LENG, AREA,
-          VOL, MASS, TEMP, SPD, FORC, PRES, ENER, PWR, FUEL.
+        - Support misc Unit Functions (UFCN)
+            - UVAL: return display value without units
+            - UBAS: convert to its "base unit"
+        - Increase number of supported units from 30 to 161.
+            - Support *all* units in the HP-19BII and the TI-85.
+        - Reorganize UNIT menus across 13 sub MenuFolders: UFCN, LENG, AREA,
+          VOL, TEMP, MASS, FORC, PRES, ENER, TIME, SPD, PWR, FUEL.
         - Support basic arithmetic operations on units: `CHS`, `+`, `-`, `*`,
           `/`
-        - Support NUM operations on units: `%`, `%CH`, `IP`, `FP`, `FLR`,`CEIL`,
-          `NEAR`, `ABS`, `SIGN`, `MOD`, `MIN`, `MAX`, `RNDF`, `RNDN`, `RNDG`
-          (i.e. all NUM functions except GCD, LCM, and PRIM)
+        - Support most NUM operations on units: `%`, `%CH`, `IP`, `FP`,
+          `FLR`,`CEIL`, `NEAR`, `ABS`, `SIGN`, `MOD`, `MIN`, `MAX`, `RNDF`,
+          `RNDN`, `RNDG` (i.e. all NUM functions except GCD, LCM, and PRIM)
     - BASE
         - move most menu functions under 5 new subfolders: LOGI, ROTS, BITS,
           BFCN, BCFS ("Configs" or "Carry Flag and Word Size")
