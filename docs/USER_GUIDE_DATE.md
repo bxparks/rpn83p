@@ -1001,11 +1001,11 @@ number](https://en.wikipedia.org/wiki/ISO_8601), where Monday is represented by
 1 and Sunday is represented by 7. For example, Thursday has an ISO weekday value
 of 4 and can be entered as:
 
-| **Keys**              | **MODE `{..}`**                       | **MODE `".."`**   |
-| -----------           | ---------------------                 | ----------------- |
-| `DW{4}`               | ![](images/date/dayofweek-raw-1.png)  | ![](images/date/dayofweek-str-1.png) |
-| `ENTER`               | ![](images/date/dayofweek-raw-2.png)  | ![](images/date/dayofweek-str-2.png) |
-| `2ND ENTER` (SHOW)    | ![](images/date/dayofweek-show.png)   | ![](images/date/dayofweek-show.png) |
+| **Keys**              | **MODE `{..}`**                          | **MODE `".."`**   |
+| -----------           | ---------------------                    | ----------------- |
+| `DW{4}`               | ![](images/date/dw/dayofweek-raw-1.png)  | ![](images/date/dw/dayofweek-str-1.png) |
+| `ENTER`               | ![](images/date/dw/dayofweek-raw-2.png)  | ![](images/date/dw/dayofweek-str-2.png) |
+| `2ND ENTER` (SHOW)    | ![](images/date/dw/dayofweek-show.png)   | ![](images/date/dw/dayofweek-show.png) |
 
 #### DayOfWeek Validation
 
@@ -1013,10 +1013,10 @@ Upon input termination, the `dow` component is validated and if the component is
 invalid, an `Err:Invalid` error message is displayed. For example, if we try to
 enter the invalid DayOfWeek value of `DW{0}`, an error is shown:
 
-| **Keys**   | **MODE `{..}`**                              | **MODE `".."`**   |
-| -----------| ---------------------                        | ----------------- |
-| `DW{0}`    | ![](images/date/dayofweek-invalid-raw-1.png) | ![](images/date/dayofweek-invalid-str-1.png) |
-| `ENTER`    | ![](images/date/dayofweek-invalid-raw-2.png) | ![](images/date/dayofweek-invalid-str-2.png) |
+| **Keys**   | **MODE `{..}`**                                 | **MODE `".."`**   |
+| -----------| ---------------------                           | ----------------- |
+| `DW{0}`    | ![](images/date/dw/dayofweek-invalid-raw-1.png) | ![](images/date/dw/dayofweek-invalid-str-1.png) |
+| `ENTER`    | ![](images/date/dw/dayofweek-invalid-raw-2.png) | ![](images/date/dw/dayofweek-invalid-str-2.png) |
 
 #### DayOfWeek Functions
 
@@ -1025,14 +1025,14 @@ ZonedDateTime:
 
 ![ROOT > DATE > DOW](images/menu/root-date-dow.png)
 
-| **Keys**                      | **MODE `{..}`**                           | **MODE `".."`**               |
-| -------------------------     | ---------------------                     | -----------------             |
-| `D{2024,3,14}`                | ![](images/date/dayofweek-dow-raw-1.png)  | ![](images/date/dayofweek-dow-str-1.png) |
-| `DOW`                         | ![](images/date/dayofweek-dow-raw-2.png)  | ![](images/date/dayofweek-dow-str-2.png) |
-| `DT{2024,3,14,15,36,1}`       | ![](images/date/dayofweek-dow-raw-3.png)  | ![](images/date/dayofweek-dow-str-3.png) |
-| `DOW`                         | ![](images/date/dayofweek-dow-raw-4.png)  | ![](images/date/dayofweek-dow-str-4.png) |
-| `DZ{2024,3,14,15,36,1,-7,0}`  | ![](images/date/dayofweek-dow-raw-5.png)  | ![](images/date/dayofweek-dow-str-5.png) |
-| `DOW`                         | ![](images/date/dayofweek-dow-raw-6.png)  | ![](images/date/dayofweek-dow-str-6.png) |
+| **Keys**                      | **MODE `{..}`**                              | **MODE `".."`**               |
+| -------------------------     | ---------------------                        | -----------------             |
+| `D{2024,3,14}`                | ![](images/date/dw/dayofweek-dow-raw-1.png)  | ![](images/date/dw/dayofweek-dow-str-1.png) |
+| `DOW`                         | ![](images/date/dw/dayofweek-dow-raw-2.png)  | ![](images/date/dw/dayofweek-dow-str-2.png) |
+| `DT{2024,3,14,15,36,1}`       | ![](images/date/dw/dayofweek-dow-raw-3.png)  | ![](images/date/dw/dayofweek-dow-str-3.png) |
+| `DOW`                         | ![](images/date/dw/dayofweek-dow-raw-4.png)  | ![](images/date/dw/dayofweek-dow-str-4.png) |
+| `DZ{2024,3,14,15,36,1,-7,0}`  | ![](images/date/dw/dayofweek-dow-raw-5.png)  | ![](images/date/dw/dayofweek-dow-str-5.png) |
+| `DOW`                         | ![](images/date/dw/dayofweek-dow-raw-6.png)  | ![](images/date/dw/dayofweek-dow-str-6.png) |
 
 #### DayOfWeek Arithmetic
 
@@ -1040,21 +1040,21 @@ Although addition and subtraction operations are not likely to be used often,
 they have been implemented for the DayOfWeek object for consistency. For
 example, to add 6 days to Thursday, we can enter:
 
-| **Keys**   | **MODE `{..}`**                          | **MODE `".."`**   |
-| -----------| ---------------------                    | ----------------- |
-| `DW{4}`    | ![](images/date/dayofweek-add-raw-1.png) | ![](images/date/dayofweek-add-str-1.png) |
-| `ENTER`    | ![](images/date/dayofweek-add-raw-2.png) | ![](images/date/dayofweek-add-str-2.png) |
-| `6`        | ![](images/date/dayofweek-add-raw-3.png) | ![](images/date/dayofweek-add-str-3.png) |
-| `+`        | ![](images/date/dayofweek-add-raw-4.png) | ![](images/date/dayofweek-add-str-4.png) |
+| **Keys**   | **MODE `{..}`**                             | **MODE `".."`**   |
+| -----------| ---------------------                       | ----------------- |
+| `DW{4}`    | ![](images/date/dw/dayofweek-add-raw-1.png) | ![](images/date/dw/dayofweek-add-str-1.png) |
+| `ENTER`    | ![](images/date/dw/dayofweek-add-raw-2.png) | ![](images/date/dw/dayofweek-add-str-2.png) |
+| `6`        | ![](images/date/dw/dayofweek-add-raw-3.png) | ![](images/date/dw/dayofweek-add-str-3.png) |
+| `+`        | ![](images/date/dw/dayofweek-add-raw-4.png) | ![](images/date/dw/dayofweek-add-str-4.png) |
 
 We can also subtract 2 DayOfWeek objects to get the number of days between them:
 
-| **Keys**   | **MODE `{..}`**                          | **MODE `".."`**   |
-| -----------| ---------------------                    | ----------------- |
-| `DW{4}`    | ![](images/date/dayofweek-sub-raw-1.png) | ![](images/date/dayofweek-sub-str-1.png) |
-| `ENTER`    | ![](images/date/dayofweek-sub-raw-2.png) | ![](images/date/dayofweek-sub-str-2.png) |
-| `DW{5}`    | ![](images/date/dayofweek-sub-raw-3.png) | ![](images/date/dayofweek-sub-str-3.png) |
-| `-`        | ![](images/date/dayofweek-sub-raw-4.png) | ![](images/date/dayofweek-sub-str-4.png) |
+| **Keys**   | **MODE `{..}`**                             | **MODE `".."`**   |
+| -----------| ---------------------                       | ----------------- |
+| `DW{4}`    | ![](images/date/dw/dayofweek-sub-raw-1.png) | ![](images/date/dw/dayofweek-sub-str-1.png) |
+| `ENTER`    | ![](images/date/dw/dayofweek-sub-raw-2.png) | ![](images/date/dw/dayofweek-sub-str-2.png) |
+| `DW{5}`    | ![](images/date/dw/dayofweek-sub-raw-3.png) | ![](images/date/dw/dayofweek-sub-str-3.png) |
+| `-`        | ![](images/date/dw/dayofweek-sub-raw-4.png) | ![](images/date/dw/dayofweek-sub-str-4.png) |
 
 ### Duration (DR)
 
