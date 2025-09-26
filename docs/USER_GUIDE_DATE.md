@@ -767,14 +767,15 @@ There are 24654239 seconds from March 13, 2024 15:39:55 to Christmas Dec 25,
 We can convert the 24654239 seconds quantity into something that is easier to
 understand for humans by converting it into a `Duration` object. (The
 `Duration` object is described in more detail in the [Duration
-Object](#duration-object) below.) Scroll down the `DATE` menu rows until the
-`S>DR` menu item appears, as shown in the table below. Press that menu item to
-convert 24654239 seconds into a `Duration` object:
+Object](#duration-object) below.)
+
+Go to `DATE` menu folder, then press the `DR` folder. The `SEC>` menu function
+converts the number of seconds to a `Duration` object:
 
 |  **Keys**     |  **MODE `{..}`**                                      |  **MODE `".."`**        |
 | ----------    | ---------------------                                 | -----------------       |
-| (from above)  | ![](images/date/dt/datetime-sub-raw-4.png)            | ![](images/date/dt/datetime-sub-str-4.png) |
-| `S>DR`        | ![](images/date/dt/datetime-sub-duration-raw-1.png)   | ![](images/date/dt/datetime-sub-duration-str-1.png) |
+| `DATE` `DR`   | ![](images/date/dt/datetime-sub-duration-raw-1.png)   | ![](images/date/dt/datetime-sub-duration-str-1.png) |
+| `SEC>`        | ![](images/date/dt/datetime-sub-duration-raw-2.png)   | ![](images/date/dt/datetime-sub-duration-str-2.png) |
 
 We can now see that there are 285 days, 8 hours, 23 minutes, and 59 seconds
 between March 13, 2024 15:39:55 to Christmas Dec 25, 2024 00:00:00.
