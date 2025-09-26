@@ -1695,26 +1695,26 @@ Here are some selected examples:
 
 | **Keys**                      | **MODE `{..}`**                           | **MODE `".."`**   |
 | ----------                    | ---------------------                     | ----------------- |
-| `D{2024,12,25}`               | ![](images/date/regs-addsub-raw-1.png)    | ![](images/date/regs-addsub-str-1.png) |
-| `STO 00`                      | ![](images/date/regs-addsub-raw-2.png)    | ![](images/date/regs-addsub-str-2.png) |
-| `D{2024,3,14}`                | ![](images/date/regs-addsub-raw-3.png)    | ![](images/date/regs-addsub-str-3.png) |
-| `STO 01`                      | ![](images/date/regs-addsub-raw-4.png)    | ![](images/date/regs-addsub-str-4.png) |
-| `42`                          | ![](images/date/regs-addsub-raw-5.png)    | ![](images/date/regs-addsub-str-5.png) |
-| `STO+ 01`                     | ![](images/date/regs-addsub-raw-6.png)    | ![](images/date/regs-addsub-str-6.png) |
-| `2ND RCL 01`                  | ![](images/date/regs-addsub-raw-7.png)    | ![](images/date/regs-addsub-str-7.png) |
-| `2ND RCL- 00`                 | ![](images/date/regs-addsub-raw-8.png)    | ![](images/date/regs-addsub-str-8.png) |
+| `D{2024,12,25}`               | ![](images/date/regs/regs-addsub-raw-1.png)    | ![](images/date/regs/regs-addsub-str-1.png) |
+| `STO 00`                      | ![](images/date/regs/regs-addsub-raw-2.png)    | ![](images/date/regs/regs-addsub-str-2.png) |
+| `D{2024,3,14}`                | ![](images/date/regs/regs-addsub-raw-3.png)    | ![](images/date/regs/regs-addsub-str-3.png) |
+| `STO 01`                      | ![](images/date/regs/regs-addsub-raw-4.png)    | ![](images/date/regs/regs-addsub-str-4.png) |
+| `42`                          | ![](images/date/regs/regs-addsub-raw-5.png)    | ![](images/date/regs/regs-addsub-str-5.png) |
+| `STO+ 01`                     | ![](images/date/regs/regs-addsub-raw-6.png)    | ![](images/date/regs/regs-addsub-str-6.png) |
+| `2ND RCL 01`                  | ![](images/date/regs/regs-addsub-raw-7.png)    | ![](images/date/regs/regs-addsub-str-7.png) |
+| `2ND RCL- 00`                 | ![](images/date/regs/regs-addsub-raw-8.png)    | ![](images/date/regs/regs-addsub-str-8.png) |
 
 **Multiply Register (Timezone Conversion)**
 
 | **Keys**                      | **MODE `{..}`**                           | **MODE `".."`**   |
 | ----------                    | ---------------------                     | ----------------- |
-| `TZ{-4,0}` (EDT)              | ![](images/date/regs-mult-raw-1.png)      | ![](images/date/regs-mult-str-1.png) |
-| `STO 00`                      | ![](images/date/regs-mult-raw-2.png)      | ![](images/date/regs-mult-str-2.png) |
-| `TZ{5,30}` (India)            | ![](images/date/regs-mult-raw-3.png)      | ![](images/date/regs-mult-str-3.png) |
-| `STO 01`                      | ![](images/date/regs-mult-raw-4.png)      | ![](images/date/regs-mult-str-4.png) |
-| `DZ{2024,3,14,15,36,1,-7,0}`  | ![](images/date/regs-mult-raw-5.png)      | ![](images/date/regs-mult-str-5.png) |
-| `2ND RCL* 00`                 | ![](images/date/regs-mult-raw-6.png)      | ![](images/date/regs-mult-str-6.png) |
-| `2ND RCL* 01`                 | ![](images/date/regs-mult-raw-7.png)      | ![](images/date/regs-mult-str-7.png) |
+| `TZ{-4,0}` (EDT)              | ![](images/date/regs/regs-mult-raw-1.png)      | ![](images/date/regs/regs-mult-str-1.png) |
+| `STO 00`                      | ![](images/date/regs/regs-mult-raw-2.png)      | ![](images/date/regs/regs-mult-str-2.png) |
+| `TZ{5,30}` (India)            | ![](images/date/regs/regs-mult-raw-3.png)      | ![](images/date/regs/regs-mult-str-3.png) |
+| `STO 01`                      | ![](images/date/regs/regs-mult-raw-4.png)      | ![](images/date/regs/regs-mult-str-4.png) |
+| `DZ{2024,3,14,15,36,1,-7,0}`  | ![](images/date/regs/regs-mult-raw-5.png)      | ![](images/date/regs/regs-mult-str-5.png) |
+| `2ND RCL* 00`                 | ![](images/date/regs/regs-mult-raw-6.png)      | ![](images/date/regs/regs-mult-str-6.png) |
+| `2ND RCL* 01`                 | ![](images/date/regs/regs-mult-raw-7.png)      | ![](images/date/regs/regs-mult-str-7.png) |
 
 **WARNING**: Date objects *cannot* be stored in storage variables (A-Z,Theta)
 because storage variables can hold only native TI-OS objects. Date objects are
