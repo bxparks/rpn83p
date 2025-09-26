@@ -382,7 +382,7 @@ equivalents:
 It is possible to enter all DATE objects using just the soft menu initializers
 and completely avoid the `ALPHA` key.
 
-### Type Inferred
+### Type Inferred Entry
 
 TODO: Move "Data Entry for Experts" to here.
 
@@ -451,6 +451,8 @@ The DATE menu functions are grouped under the subfolders of `DATE`.
 
 ### Date (D)
 
+#### Date Entry
+
 The `Date` object has the form `D{year:u16, month:u8, day:u8}` and represents a
 Gregorian calendar date. For example, the date `2024-03-14` is entered into the
 calculator as follows, and is displayed in 2 different ways depending on the
@@ -461,6 +463,12 @@ MODE setting of `{..}` or `".."`:
 | `D{2024,3,14}`        | ![](images/date/d/date-raw-1.png)   | ![](images/date/d/date-str-1.png) |
 | `ENTER`               | ![](images/date/d/date-raw-2.png)   | ![](images/date/d/date-str-2.png) |
 | `2ND ENTER` (SHOW)    | ![](images/date/d/date-show.png)    | ![](images/date/d/date-show.png) |
+
+**Note**: The Date object `D{2024,3,14}` can be entered in 3 ways:
+
+- Alpha keys: `ALPHA D 2ND {` ...
+- Menu keys: `DATE` `D` `D{}` ...
+- Inferred: `2ND {` ...
 
 #### Date Validation
 
@@ -562,6 +570,8 @@ There are 286 days from March 14 to Dec 25, 2024.
 
 ### Time (T)
 
+#### Time Entry
+
 The `Time` object has the form `T{hour:u8, minute:u8, second:u8}`. For example,
 the time `15:36:01` is entered into the calculator like this:
 
@@ -570,6 +580,12 @@ the time `15:36:01` is entered into the calculator like this:
 | `T{15,36,1}`          | ![](images/date/t/time-raw-1.png)   | ![](images/date/t/time-str-1.png) |
 | `ENTER`               | ![](images/date/t/time-raw-2.png)   | ![](images/date/t/time-str-2.png) |
 | `2ND ENTER` (SHOW)    | ![](images/date/t/time-show.png)    | ![](images/date/t/time-show.png) |
+
+**Note**: The Time object `T{15,36,1}` can be entered in 2 ways:
+
+- Alpha keys: `ALPHA T 2ND {` ...
+- Menu keys: `DATE` `T` `T{}` ...
+- Inferred: (not allowed due to conflict with Date objects)
 
 #### Time Validation
 
@@ -656,6 +672,8 @@ There are 5039 seconds between `15:36:01` and `17:00:00`.
 
 ### DateTime (DT)
 
+#### DateTime Entry
+
 A DateTime record is a concatenation of the Date record and a Time record. It
 has the format `DT{year:u16, month:u8, day:u8, hour:u8, minute:u8, second:u8}`.
 
@@ -666,6 +684,12 @@ For example, the date `2024-03-14 15:36:01` would be entered like this:
 | `DT{2024,3,14,15,36,1}`   | ![](images/date/dt/datetime-raw-1.png)    | ![](images/date/dt/datetime-str-1.png) |
 | `ENTER`                   | ![](images/date/dt/datetime-raw-2.png)    | ![](images/date/dt/datetime-str-2.png) |
 | `2ND ENTER` (SHOW)        | ![](images/date/dt/datetime-show.png)     | ![](images/date/dt/datetime-show.png) |
+
+**Note**: The DateTime object `DT{2024,3,14,15,36,1}` can be entered in 3 ways:
+
+- Alpha keys: `ALPHA D ALPHA T 2ND {` ...
+- Menu keys: `DATE` `DT` `DT{}` ...
+- Inferred: `2ND {` ...
 
 #### DateTime Validation
 
