@@ -458,9 +458,9 @@ MODE setting of `{..}` or `".."`:
 
 | **Keys**              | **MODE `{..}`**                   | **MODE `".."`** |
 | ----------------      | ---------------------             | --------------- |
-| `D{2024,3,14}`        | ![](images/date/date-raw-1.png)   | ![](images/date/date-str-1.png) |
-| `ENTER`               | ![](images/date/date-raw-2.png)   | ![](images/date/date-str-2.png) |
-| `2ND ENTER` (SHOW)    | ![](images/date/date-show.png)    | ![](images/date/date-show.png) |
+| `D{2024,3,14}`        | ![](images/date/d/date-raw-1.png)   | ![](images/date/d/date-str-1.png) |
+| `ENTER`               | ![](images/date/d/date-raw-2.png)   | ![](images/date/d/date-str-2.png) |
+| `2ND ENTER` (SHOW)    | ![](images/date/d/date-show.png)    | ![](images/date/d/date-show.png) |
 
 #### Date Validation
 
@@ -471,8 +471,8 @@ invalid date `2024-02-30`, we get:
 
 | **Keys**          | **MODE `{..}`**                       | **MODE `".."`**   |
 | ------------------| ---------------------                 | ----------------- |
-| `D{2024,2,30}`    | ![](images/date/invalid-raw-1.png)    | ![](images/date/invalid-str-1.png) |
-| `ENTER`           | ![](images/date/invalid-raw-2.png)    | ![](images/date/invalid-str-2.png) |
+| `D{2024,2,30}`    | ![](images/date/d/invalid-raw-1.png)    | ![](images/date/d/invalid-str-1.png) |
+| `ENTER`           | ![](images/date/d/invalid-raw-2.png)    | ![](images/date/d/invalid-str-2.png) |
 
 Notice that for input validation errors like this, the input is not terminated
 and the prompt continues to be shown. You can press the `DEL` to delete the
@@ -513,9 +513,9 @@ epochdays of 2024-03-14:
 
 | **Keys**          | **MODE `{..}`**                               | **MODE `".."`**   |
 | -----------       | ---------------------                         | ----------------- |
-| `D{2024,3,14}`    | ![](images/date/date-to-epochdays-raw-1.png)  | ![](images/date/date-to-epochdays-str-1.png) |
-| `>ED`             | ![](images/date/date-to-epochdays-raw-2.png)  | ![](images/date/date-to-epochdays-str-2.png) |
-| `ED>`             | ![](images/date/date-to-epochdays-raw-3.png)  | ![](images/date/date-to-epochdays-str-3.png) |
+| `D{2024,3,14}`    | ![](images/date/d/date-to-epochdays-raw-1.png)  | ![](images/date/d/date-to-epochdays-str-1.png) |
+| `>ED`             | ![](images/date/d/date-to-epochdays-raw-2.png)  | ![](images/date/d/date-to-epochdays-str-2.png) |
+| `ED>`             | ![](images/date/d/date-to-epochdays-raw-3.png)  | ![](images/date/d/date-to-epochdays-str-3.png) |
 
 The Epoch date is configurable as explained in the [Epoch Date](#epoch-date)
 section below but by default, it is set to `UNIX` which is `1970-01-01`.
@@ -541,22 +541,22 @@ subtract 30 days from that result:
 
 | **Keys**          | **MODE `{..}`**                       | **MODE `".."`**   |
 | ------------------| ---------------------                 | ----------------- |
-| `D{2024,3,14}`    | ![](images/date/date-add-raw-1.png)   | ![](images/date/date-add-str-1.png) |
-| `ENTER`           | ![](images/date/date-add-raw-2.png)   | ![](images/date/date-add-str-2.png) |
-| `20`              | ![](images/date/date-add-raw-3.png)   | ![](images/date/date-add-str-3.png) |
-| `+`               | ![](images/date/date-add-raw-4.png)   | ![](images/date/date-add-str-4.png) |
-| `30`              | ![](images/date/date-add-raw-5.png)   | ![](images/date/date-add-str-5.png) |
-| `-`               | ![](images/date/date-add-raw-6.png)   | ![](images/date/date-add-str-6.png) |
+| `D{2024,3,14}`    | ![](images/date/d/date-add-raw-1.png)   | ![](images/date/d/date-add-str-1.png) |
+| `ENTER`           | ![](images/date/d/date-add-raw-2.png)   | ![](images/date/d/date-add-str-2.png) |
+| `20`              | ![](images/date/d/date-add-raw-3.png)   | ![](images/date/d/date-add-str-3.png) |
+| `+`               | ![](images/date/d/date-add-raw-4.png)   | ![](images/date/d/date-add-str-4.png) |
+| `30`              | ![](images/date/d/date-add-raw-5.png)   | ![](images/date/d/date-add-str-5.png) |
+| `-`               | ![](images/date/d/date-add-raw-6.png)   | ![](images/date/d/date-add-str-6.png) |
 
 We can subtract 2 Date records to obtain the number of whole days between the 2
 dates:
 
 | **Keys**          | **MODE `{..}`**                       | **MODE `".."`**   |
 | ------------------| ---------------------                 | ----------------- |
-| `D{2024,12,25}`   | ![](images/date/date-sub-raw-1.png)   | ![](images/date/date-sub-str-1.png) |
-| `ENTER`           | ![](images/date/date-sub-raw-2.png)   | ![](images/date/date-sub-str-2.png) |
-| `D{2024,3,14}`    | ![](images/date/date-sub-raw-3.png)   | ![](images/date/date-sub-str-3.png) |
-| `-`               | ![](images/date/date-sub-raw-4.png)   | ![](images/date/date-sub-str-4.png) |
+| `D{2024,12,25}`   | ![](images/date/d/date-sub-raw-1.png)   | ![](images/date/d/date-sub-str-1.png) |
+| `ENTER`           | ![](images/date/d/date-sub-raw-2.png)   | ![](images/date/d/date-sub-str-2.png) |
+| `D{2024,3,14}`    | ![](images/date/d/date-sub-raw-3.png)   | ![](images/date/d/date-sub-str-3.png) |
+| `-`               | ![](images/date/d/date-sub-raw-4.png)   | ![](images/date/d/date-sub-str-4.png) |
 
 There are 286 days from March 14 to Dec 25, 2024.
 
