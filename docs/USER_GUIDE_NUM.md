@@ -67,13 +67,13 @@ For example, let's find the prime factors of `2_122_438_477 = 53 * 4001 *
 
 | **Keys**              | **Display** |
 | ----------------      | --------------------- |
-| `NUM`                 | ![](images/prime-1.png) |
-| `2122438477`          | ![](images/prime-2.png) |
-|  `PRIM`               | ![](images/prime-3.png) |
-| `/`                   | ![](images/prime-4.png) |
-| `PRIM`                | ![](images/prime-5.png) |
-| `/`                   | ![](images/prime-6.png) |
-| `PRIM`                | ![](images/prime-7.png) |
+| `NUM`                 | ![](images/num/prime-1.png) |
+| `2122438477`          | ![](images/num/prime-2.png) |
+|  `PRIM`               | ![](images/num/prime-3.png) |
+| `/`                   | ![](images/num/prime-4.png) |
+| `PRIM`                | ![](images/num/prime-5.png) |
+| `/`                   | ![](images/num/prime-6.png) |
+| `PRIM`                | ![](images/num/prime-7.png) |
 
 For computational efficiency, `PRIM` supports only integers between `2` and
 `2^32-1` (4 294 967 295). This allows `PRIM` to use integer arithmetic, making
@@ -129,10 +129,10 @@ Round to the number of digits specified by the current `FIX/SCI/ENG` mode:
 
 | **Keys**              | **Display** |
 | ----------------      | --------------------- |
-| `PI` `1000` `*`       | ![](images/rounding-01.png) |
-| `MODE` `FIX 04`       | ![](images/rounding-02.png) |
-| `MATH` `NUM` `RNDF`   | ![](images/rounding-03.png) |
-| `2ND ENTRY` (SHOW)    | ![](images/rounding-04.png) |
+| `PI` `1000` `*`       | ![](images/num/rounding-01.png) |
+| `MODE` `FIX 04`       | ![](images/num/rounding-02.png) |
+| `MATH` `NUM` `RNDF`   | ![](images/num/rounding-03.png) |
+| `2ND ENTRY` (SHOW)    | ![](images/num/rounding-04.png) |
 
 **RNDN**
 
@@ -140,10 +140,10 @@ Round to the number of digits specified by the user:
 
 | **Keys**              | **Display** |
 | ----------------      | --------------------- |
-| `PI` `1000` `*`       | ![](images/rounding-05.png) |
-| `MODE` `FIX 04`       | ![](images/rounding-06.png) |
-| `MATH` `NUM` `RNDN 2` | ![](images/rounding-07.png) |
-| `2ND ENTRY` (SHOW)    | ![](images/rounding-08.png) |
+| `PI` `1000` `*`       | ![](images/num/rounding-05.png) |
+| `MODE` `FIX 04`       | ![](images/num/rounding-06.png) |
+| `MATH` `NUM` `RNDN 2` | ![](images/num/rounding-07.png) |
+| `2ND ENTRY` (SHOW)    | ![](images/num/rounding-08.png) |
 
 **RNDG**
 
@@ -151,8 +151,7 @@ Round to remove the hidden guard digits:
 
 | **Keys**              | **Display** |
 | ----------------      | --------------------- |
-| `PI` `1000` `*`       | ![](images/rounding-09.png) |
-| `MODE` `FIX 04`       | ![](images/rounding-10.png) |
-| `MATH` `NUM` `RNDG`   | ![](images/rounding-11.png) |
-| `2ND ENTRY` (SHOW)    | ![](images/rounding-12.png) |
-
+| `PI` `1000` `*`       | ![](images/num/rounding-09.png) |
+| `MODE` `FIX 04`       | ![](images/num/rounding-10.png) |
+| `MATH` `NUM` `RNDG`   | ![](images/num/rounding-11.png) |
+| `2ND ENTRY` (SHOW)    | ![](images/num/rounding-12.png) |
