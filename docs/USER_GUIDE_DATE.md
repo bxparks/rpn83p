@@ -872,21 +872,21 @@ Here is an example of entering the date `2024-03-14 15:36:01-07:00` which
 occurred in `America/Los_Angeles` timezone after the DST shift on March 10,
 2024:
 
-| **Keys**                      | **MODE `{..}`**                           | **MODE `".."`**                   |
-| -------------------------     | ---------------------                     | -----------------                 |
-| `DZ{2024,3,14,15,36,1,-7,0}`  | ![](images/date/zoneddatetime-raw-1.png)  | ![](images/date/zoneddatetime-str-1.png) |
-| `ENTER`                       | ![](images/date/zoneddatetime-raw-2.png)  | ![](images/date/zoneddatetime-str-2.png) |
-| `2ND ENTER` (SHOW)            | ![](images/date/zoneddatetime-raw-3.png)  | ![](images/date/zoneddatetime-str-3.png) |
+| **Keys**                      | **MODE `{..}`**                              | **MODE `".."`**                   |
+| -------------------------     | ---------------------                        | -----------------                 |
+| `DZ{2024,3,14,15,36,1,-7,0}`  | ![](images/date/dz/zoneddatetime-raw-1.png)  | ![](images/date/dz/zoneddatetime-str-1.png) |
+| `ENTER`                       | ![](images/date/dz/zoneddatetime-raw-2.png)  | ![](images/date/dz/zoneddatetime-str-2.png) |
+| `2ND ENTER` (SHOW)            | ![](images/date/dz/zoneddatetime-raw-3.png)  | ![](images/date/dz/zoneddatetime-str-3.png) |
 
 ZonedDateTime objects with a UTC offset of +00:00 are special, and it is useful
 to display them slightly differently. Here is how the date 2024-03-14 22:36:00
 UTC is entered and displayed:
 
-| **Keys**                      | **MODE `{..}`**                               | **MODE `".."`**                   |
-| -------------------------     | ---------------------                         | -----------------                 |
-| `DZ{2024,3,14,22,36,1,0,0}`   | ![](images/date/zoneddatetime-utc-raw-1.png)  | ![](images/date/zoneddatetime-utc-str-1.png) |
-| `ENTER`                       | ![](images/date/zoneddatetime-utc-raw-2.png)  | ![](images/date/zoneddatetime-utc-str-2.png) |
-| `2ND ENTER` (SHOW)            | ![](images/date/zoneddatetime-utc-raw-3.png)  | ![](images/date/zoneddatetime-utc-str-3.png) |
+| **Keys**                      | **MODE `{..}`**                                  | **MODE `".."`**                   |
+| -------------------------     | ---------------------                            | -----------------                 |
+| `DZ{2024,3,14,22,36,1,0,0}`   | ![](images/date/dz/zoneddatetime-utc-raw-1.png)  | ![](images/date/dz/zoneddatetime-utc-str-1.png) |
+| `ENTER`                       | ![](images/date/dz/zoneddatetime-utc-raw-2.png)  | ![](images/date/dz/zoneddatetime-utc-str-2.png) |
+| `2ND ENTER` (SHOW)            | ![](images/date/dz/zoneddatetime-utc-raw-3.png)  | ![](images/date/dz/zoneddatetime-utc-str-3.png) |
 
 #### ZonedDateTime Validation
 
@@ -939,13 +939,13 @@ Date](#epoch-date) section below. The menu functions for conversion are the
 For example, let's `2024-03-14 15:36:01-07:00` to epochseconds, then back to
 ZonedDateTime, then to UTC DateTime:
 
-| **Keys**                      | **MODE `{..}`**                                       | **MODE `".."`**                   |
-| -------------------------     | ---------------------                                 | -----------------                 |
-| `DZ{2024,3,14,15,36,1,-7,0}`  | ![](images/date/zoneddatetime-to-seconds-raw-1.png)   | ![](images/date/zoneddatetime-to-seconds-str-1.png) |
-| `D*>S`                        | ![](images/date/zoneddatetime-to-seconds-raw-2.png)   | ![](images/date/zoneddatetime-to-seconds-str-2.png) |
-| `S>UT`                        | ![](images/date/zoneddatetime-to-seconds-raw-3.png)   | ![](images/date/zoneddatetime-to-seconds-str-3.png) |
-| `D*>S`                        | ![](images/date/zoneddatetime-to-seconds-raw-4.png)   | ![](images/date/zoneddatetime-to-seconds-str-4.png) |
-| `S>DZ`                        | ![](images/date/zoneddatetime-to-seconds-raw-5.png)   | ![](images/date/zoneddatetime-to-seconds-str-5.png) |
+| **Keys**                      | **MODE `{..}`**                                          | **MODE `".."`**                   |
+| -------------------------     | ---------------------                                    | -----------------                 |
+| `DZ{2024,3,14,15,36,1,-7,0}`  | ![](images/date/dz/zoneddatetime-to-seconds-raw-1.png)   | ![](images/date/dz/zoneddatetime-to-seconds-str-1.png) |
+| `D*>S`                        | ![](images/date/dz/zoneddatetime-to-seconds-raw-2.png)   | ![](images/date/dz/zoneddatetime-to-seconds-str-2.png) |
+| `S>UT`                        | ![](images/date/dz/zoneddatetime-to-seconds-raw-3.png)   | ![](images/date/dz/zoneddatetime-to-seconds-str-3.png) |
+| `D*>S`                        | ![](images/date/dz/zoneddatetime-to-seconds-raw-4.png)   | ![](images/date/dz/zoneddatetime-to-seconds-str-4.png) |
+| `S>DZ`                        | ![](images/date/dz/zoneddatetime-to-seconds-raw-5.png)   | ![](images/date/dz/zoneddatetime-to-seconds-str-5.png) |
 
 The final conversion from epochseconds to ZonedDateTime returns the original
 `2024-03-14 15:36:01-07:00` because I had set my Application Timezone to
@@ -970,25 +970,25 @@ ZonedDateTime.
 
 For example, let's add 100_000 seconds to `2024-03-14 15:36:01-07:00`:
 
-| **Keys**                      | **MODE `{..}`**                               | **MODE `".."`**                   |
-| -------------------------     | ---------------------                         | -----------------                 |
-| `DZ{2024,3,14,15,36,1,-7,0}`  | ![](images/date/zoneddatetime-add-raw-1.png)  | ![](images/date/zoneddatetime-add-str-1.png) |
-| `ENTER`                       | ![](images/date/zoneddatetime-add-raw-2.png)  | ![](images/date/zoneddatetime-add-str-2.png) |
-| `100000`                      | ![](images/date/zoneddatetime-add-raw-3.png)  | ![](images/date/zoneddatetime-add-str-3.png) |
-| `+`                           | ![](images/date/zoneddatetime-add-raw-4.png)  | ![](images/date/zoneddatetime-add-str-4.png) |
+| **Keys**                      | **MODE `{..}`**                                  | **MODE `".."`**                   |
+| -------------------------     | ---------------------                            | -----------------                 |
+| `DZ{2024,3,14,15,36,1,-7,0}`  | ![](images/date/dz/zoneddatetime-add-raw-1.png)  | ![](images/date/dz/zoneddatetime-add-str-1.png) |
+| `ENTER`                       | ![](images/date/dz/zoneddatetime-add-raw-2.png)  | ![](images/date/dz/zoneddatetime-add-str-2.png) |
+| `100000`                      | ![](images/date/dz/zoneddatetime-add-raw-3.png)  | ![](images/date/dz/zoneddatetime-add-str-3.png) |
+| `+`                           | ![](images/date/dz/zoneddatetime-add-raw-4.png)  | ![](images/date/dz/zoneddatetime-add-str-4.png) |
 
 We can subtract 2 `ZonedDateTime` objects to obtain the number of seconds
 between them. Their TimeZone components are not required to be same. For
 example, let's determine the number of seconds from March 14, 2024 UTC-07:00 to
 December 25, 2024 UTC:
 
-| **Keys**                      | **MODE `{..}`**                               | **MODE `".."`**                   |
-| -------------------------     | ---------------------                         | -----------------                 |
-| `DZ{2024,12,25,0,0,0,0,0}`    | ![](images/date/zoneddatetime-sub-raw-1.png)  | ![](images/date/zoneddatetime-sub-str-1.png) |
-| `ENTER`                       | ![](images/date/zoneddatetime-sub-raw-2.png)  | ![](images/date/zoneddatetime-sub-str-2.png) |
-| `DZ{2024,3,14,15,36,1,-7,0}`  | ![](images/date/zoneddatetime-sub-raw-3.png)  | ![](images/date/zoneddatetime-sub-str-3.png) |
-| `-`                           | ![](images/date/zoneddatetime-sub-raw-4.png)  | ![](images/date/zoneddatetime-sub-str-4.png) |
-| `S>DR`                        | ![](images/date/zoneddatetime-sub-raw-5.png)  | ![](images/date/zoneddatetime-sub-str-5.png) |
+| **Keys**                      | **MODE `{..}`**                                  | **MODE `".."`**                   |
+| -------------------------     | ---------------------                            | -----------------                 |
+| `DZ{2024,12,25,0,0,0,0,0}`    | ![](images/date/dz/zoneddatetime-sub-raw-1.png)  | ![](images/date/dz/zoneddatetime-sub-str-1.png) |
+| `ENTER`                       | ![](images/date/dz/zoneddatetime-sub-raw-2.png)  | ![](images/date/dz/zoneddatetime-sub-str-2.png) |
+| `DZ{2024,3,14,15,36,1,-7,0}`  | ![](images/date/dz/zoneddatetime-sub-raw-3.png)  | ![](images/date/dz/zoneddatetime-sub-str-3.png) |
+| `-`                           | ![](images/date/dz/zoneddatetime-sub-raw-4.png)  | ![](images/date/dz/zoneddatetime-sub-str-4.png) |
+| `S>DR`                        | ![](images/date/dz/zoneddatetime-sub-raw-5.png)  | ![](images/date/dz/zoneddatetime-sub-str-5.png) |
 
 As before, we have used the `S>DR` menu function to convert `seconds` to
 a `Duration` object which can be more useful in some situations.
