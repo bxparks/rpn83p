@@ -12,8 +12,10 @@ It has been extracted from [USER_GUIDE.md](USER_GUIDE.md) due to its length.
 ## Table of Contents
 
 - [NUM Functions](#num-functions)
+- [Percent](#percent)
+- [Percent Change](#percent-change)
 - [Prime Factors](#prime-factors)
-- [Floating Point Rounding](#floating-point-rounding)
+- [Rounding](#rounding)
 
 ## NUM Functions
 
@@ -25,6 +27,31 @@ quite fit into one of the other major categories:
     - ![ROOT > NUM > Row2](images/menu/root-num-2.png)
     - ![ROOT > NUM > Row3](images/menu/root-num-3.png)
     - ![ROOT > NUM > Row4](images/menu/root-num-4.png)
+
+The functions are:
+
+- `%`: `X` percent of `Y`, leaving `Y` unchanged
+- `%CH`: percent change from `Y` to `X`, leaving `Y` unchanged
+- `GCD`: greatest common divisor of `X` and `Y`
+- `LCM`: lowest common multiple of `X` and `Y`
+- `PRIM`: prime factor of `X`
+    - returns 1 if prime
+    - returns the smallest prime factor otherwise
+    - See [Prime Factors](#prime-factors) section below.
+- `IP`: integer part of `X`, truncating towards 0, preserving sign
+- `FP`: fractional part of `X`, preserving sign
+- `FLR`: the floor of `X`, the largest integer <= `X`
+- `CEIL`: the ceiling of `X`, the smallest integer >= `X`
+- `NEAR`: the nearest integer to `X`
+- `ABS`: absolute value of `X`
+- `SIGN`: return -1, 0, 1 depending on whether `X` is less than, equal, or
+    greater than 0, respectively
+- `MOD`: `Y` mod `X` (remainder of `Y` after dividing by `X`)
+- `MIN`: minimum of `X` and `Y`
+- `MAX`: maximum of `X` and `Y`
+- `RNDF`: round to `FIX/SCI/ENG` digits after the decimal point
+- `RNDN`: round to user-specified `n` digits (0-9) after the decimal point
+- `RNDG`: round to remove guard digits, leaving 10 mantissa digits
 
 I hope that most of these are self-explanatory. The names roughly follow the
 convention used by the HP-42S or other HP calculators, and their placement in
@@ -40,7 +67,7 @@ the `Y` unchanged. In other words:
 
 ```
     Y := Y
-    X := Y * X / 100
+    X := Y*X/100
 ```
 
 **Example:**
@@ -53,6 +80,16 @@ Calculate the total price of an item listed as $125 with an 8.625% sales tax:
 | `125` `ENTER`         | ![](images/num/percent-2.png) |
 | `8.625` `%`           | ![](images/num/percent-3.png) |
 | `+`                   | ![](images/num/percent-4.png) |
+
+## Percent Change
+
+The `%CH` function calculates the percent change from `Y` to `X`, leaving `Y`
+unchanged:
+
+```
+    Y := Y
+    X := 100*(X-Y)/Y
+```
 
 ## Prime Factors
 
@@ -104,7 +141,7 @@ During the calculation, the "run indicator" on the upper-right corner will be
 active. You can press the `ON` key to break from the `PRIM` loop with an `Err:
 Break` message.
 
-## Floating Point Rounding
+## Rounding
 
 There are 3 rounding functions under the `ROOT > NUM` menu folder that provide
 access to the corresponding rounding functions implemented by the underlying
