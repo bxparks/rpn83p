@@ -764,11 +764,11 @@ database. Daylight saving time changes must be handled manually. For example,
 the standard offset for `America/Los_Angeles` is UTC-08:00 during the winter
 months, and changes to UTC-07:00 during the summer months.
 
-| **Keys**              | **MODE `{..}`**                       | **MODE `".."`**   |
-| -----------           | ---------------------                 | ----------------- |
-| `TZ{-8,0}`            | ![](images/date/timezone-raw-1.png)   | ![](images/date/timezone-str-1.png) |
-| `ENTER`               | ![](images/date/timezone-raw-2.png)   | ![](images/date/timezone-str-2.png) |
-| `2ND ENTER` (SHOW)    | ![](images/date/timezone-show.png)    | ![](images/date/timezone-show.png) |
+| **Keys**              | **MODE `{..}`**                          | **MODE `".."`**   |
+| -----------           | ---------------------                    | ----------------- |
+| `TZ{-8,0}`            | ![](images/date/tz/timezone-raw-1.png)   | ![](images/date/tz/timezone-str-1.png) |
+| `ENTER`               | ![](images/date/tz/timezone-raw-2.png)   | ![](images/date/tz/timezone-str-2.png) |
+| `2ND ENTER` (SHOW)    | ![](images/date/tz/timezone-show.png)    | ![](images/date/tz/timezone-show.png) |
 
 #### TimeZone Validation
 
@@ -782,10 +782,10 @@ The validation rules for a TimeZone object are:
 
 Here is an example of an invalid timezone whose `hour` and `minute` have the opposite sign:
 
-| **Keys**    | **MODE `{..}`**                             | **MODE `".."`**   |
-| ----------- | ---------------------                       | ----------------- |
-| `TZ{-4,30}` | ![](images/date/timezone-invalid-raw-1.png) | ![](images/date/timezone-invalid-str-1.png) |
-| `ENTER`     | ![](images/date/timezone-invalid-raw-2.png) | ![](images/date/timezone-invalid-str-2.png) |
+| **Keys**    | **MODE `{..}`**                                | **MODE `".."`**   |
+| ----------- | ---------------------                          | ----------------- |
+| `TZ{-4,30}` | ![](images/date/tz/timezone-invalid-raw-1.png) | ![](images/date/tz/timezone-invalid-str-1.png) |
+| `ENTER`     | ![](images/date/tz/timezone-invalid-raw-2.png) | ![](images/date/tz/timezone-invalid-str-2.png) |
 
 #### TimeZone Functions
 
@@ -806,11 +806,11 @@ representing the number of hours shifted from UTC. These are exposed using the
 
 To convert `TZ{-4,-30}` to hours then back to a TimeZone object:
 
-| **Keys**     | **MODE `{..}`**                                | **MODE `".."`**   |
-| -------------| ---------------------                          | ----------------- |
-| `TZ{-4,-30}` | ![](images/date/timezone-to-hours-raw-1.png)   | ![](images/date/timezone-to-hours-str-1.png) |
-| `TZ>H`       | ![](images/date/timezone-to-hours-raw-2.png)   | ![](images/date/timezone-to-hours-str-2.png) |
-| `H>TZ`       | ![](images/date/timezone-to-hours-raw-3.png)   | ![](images/date/timezone-to-hours-str-3.png) |
+| **Keys**     | **MODE `{..}`**                                   | **MODE `".."`**   |
+| -------------| ---------------------                             | ----------------- |
+| `TZ{-4,-30}` | ![](images/date/tz/timezone-to-hours-raw-1.png)   | ![](images/date/tz/timezone-to-hours-str-1.png) |
+| `TZ>H`       | ![](images/date/tz/timezone-to-hours-raw-2.png)   | ![](images/date/tz/timezone-to-hours-str-2.png) |
+| `H>TZ`       | ![](images/date/tz/timezone-to-hours-raw-3.png)   | ![](images/date/tz/timezone-to-hours-str-3.png) |
 
 All current timezones in the world are at multiples of 0:15 minutes. So the
 `H>TZ` function will accept only floating values which are multiples of 0.25.
@@ -842,22 +842,22 @@ must be in multiples of 0.25 hours because UTC offsets must be in multiples of
 
 For example, let's add 1 hour to UTC-08:00 to get to UTC-07:00:
 
-| **Keys**          | **MODE `{..}`**                           | **MODE `".."`**   |
-| ------------------| ---------------------                     | ----------------- |
-| `TZ{-8,0}`        | ![](images/date/timezone-add-raw-1.png)   | ![](images/date/timezone-add-str-1.png) |
-| `ENTER`           | ![](images/date/timezone-add-raw-2.png)   | ![](images/date/timezone-add-str-2.png) |
-| `1`               | ![](images/date/timezone-add-raw-3.png)   | ![](images/date/timezone-add-str-3.png) |
-| `+`               | ![](images/date/timezone-add-raw-4.png)   | ![](images/date/timezone-add-str-4.png) |
+| **Keys**          | **MODE `{..}`**                              | **MODE `".."`**   |
+| ------------------| ---------------------                        | ----------------- |
+| `TZ{-8,0}`        | ![](images/date/tz/timezone-add-raw-1.png)   | ![](images/date/tz/timezone-add-str-1.png) |
+| `ENTER`           | ![](images/date/tz/timezone-add-raw-2.png)   | ![](images/date/tz/timezone-add-str-2.png) |
+| `1`               | ![](images/date/tz/timezone-add-raw-3.png)   | ![](images/date/tz/timezone-add-str-3.png) |
+| `+`               | ![](images/date/tz/timezone-add-raw-4.png)   | ![](images/date/tz/timezone-add-str-4.png) |
 
 We can subtract 2 TimeZone objects to obtain the number of hours between the 2
 timezones:
 
-| **Keys**          | **MODE `{..}`**                           | **MODE `".."`**   |
-| ------------------| ---------------------                     | ----------------- |
-| `TZ{1,0}`         | ![](images/date/timezone-sub-raw-1.png)   | ![](images/date/timezone-sub-str-1.png) |
-| `ENTER`           | ![](images/date/timezone-sub-raw-2.png)   | ![](images/date/timezone-sub-str-2.png) |
-| `TZ{-8,0}`        | ![](images/date/timezone-sub-raw-3.png)   | ![](images/date/timezone-sub-str-3.png) |
-| `-`               | ![](images/date/timezone-sub-raw-4.png)   | ![](images/date/timezone-sub-str-4.png) |
+| **Keys**          | **MODE `{..}`**                              | **MODE `".."`**   |
+| ------------------| ---------------------                        | ----------------- |
+| `TZ{1,0}`         | ![](images/date/tz/timezone-sub-raw-1.png)   | ![](images/date/tz/timezone-sub-str-1.png) |
+| `ENTER`           | ![](images/date/tz/timezone-sub-raw-2.png)   | ![](images/date/tz/timezone-sub-str-2.png) |
+| `TZ{-8,0}`        | ![](images/date/tz/timezone-sub-raw-3.png)   | ![](images/date/tz/timezone-sub-str-3.png) |
+| `-`               | ![](images/date/tz/timezone-sub-raw-4.png)   | ![](images/date/tz/timezone-sub-str-4.png) |
 
 There is a 9-hour difference from UTC+01:00 and UTC-08:00.
 
