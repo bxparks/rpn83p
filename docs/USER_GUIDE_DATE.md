@@ -1481,22 +1481,22 @@ There are 2 options which seem useful:
 can be translated to any timezone, without having to worry about DST
 transitions:
 
-| **Keys**   | **MODE `{..}`**                                      | **MODE `".."`**   |
-| -----------| ---------------------                                | ----------------- |
-| `0`        | ![](images/date/set-clock-timezone-utc-raw-1.png)    | ![](images/date/set-clock-timezone-utc-str-1.png) |
-| `CTZ`      | ![](images/date/set-clock-timezone-utc-raw-2.png)    | ![](images/date/set-clock-timezone-utc-str-2.png) |
-| `CTZ?`     | ![](images/date/set-clock-timezone-utc-raw-3.png)    | ![](images/date/set-clock-timezone-utc-str-3.png) |
+| **Keys**   | **MODE `{..}`**                                          | **MODE `".."`**   |
+| -----------| ---------------------                                    | ----------------- |
+| `0`        | ![](images/date/clk/set-clock-timezone-utc-raw-1.png)    | ![](images/date/clk/set-clock-timezone-utc-str-1.png) |
+| `CTZ`      | ![](images/date/clk/set-clock-timezone-utc-raw-2.png)    | ![](images/date/clk/set-clock-timezone-utc-str-2.png) |
+| `CTZ?`     | ![](images/date/clk/set-clock-timezone-utc-raw-3.png)    | ![](images/date/clk/set-clock-timezone-utc-str-3.png) |
 
 (We could have used `TZ{0,0}` instead of just `0` here).
 
 **Option 2**: Set the hardware clock timezone to the local timezone (e.g.
 UTC-08:00 or UTC-07:00, Pacific Time in the US):
 
-| **Keys**   | **MODE `{..}`**                                      | **MODE `".."`**   |
-| -----------| ---------------------                                | ----------------- |
-| `TZ{-7,0}` | ![](images/date/set-clock-timezone-pdt-raw-1.png)    | ![](images/date/set-clock-timezone-pdt-str-1.png) |
-| `CTZ`      | ![](images/date/set-clock-timezone-pdt-raw-2.png)    | ![](images/date/set-clock-timezone-pdt-str-2.png) |
-| `CTZ?`     | ![](images/date/set-clock-timezone-pdt-raw-3.png)    | ![](images/date/set-clock-timezone-pdt-str-3.png) |
+| **Keys**   | **MODE `{..}`**                                          | **MODE `".."`**   |
+| -----------| ---------------------                                    | ----------------- |
+| `TZ{-7,0}` | ![](images/date/clk/set-clock-timezone-pdt-raw-1.png)    | ![](images/date/clk/set-clock-timezone-pdt-str-1.png) |
+| `CTZ`      | ![](images/date/clk/set-clock-timezone-pdt-raw-2.png)    | ![](images/date/clk/set-clock-timezone-pdt-str-2.png) |
+| `CTZ?`     | ![](images/date/clk/set-clock-timezone-pdt-raw-3.png)    | ![](images/date/clk/set-clock-timezone-pdt-str-3.png) |
 
 (We could have used just `-7` instead of `TZ{-7,0}` here).
 
@@ -1524,10 +1524,10 @@ clock can be configured using the `SETC` (set clock) command:
 The `SETC` command takes a ZonedDateTime value as the argument, like this:
 
 
-| **Keys**                      | **MODE `{..}`**                               | **MODE `".."`**   |
-| -----------                   | ---------------------                         | ----------------- |
-| `DZ{2024,3,14,15,36,1,-7,0}`  | ![](images/date/set-clock-datetime-raw-1.png) | ![](images/date/set-clock-datetime-str-1.png) |
-| `SETC`                        | ![](images/date/set-clock-datetime-raw-2.png) | ![](images/date/set-clock-datetime-str-2.png) |
+| **Keys**                      | **MODE `{..}`**                                   | **MODE `".."`**   |
+| -----------                   | ---------------------                             | ----------------- |
+| `DZ{2024,3,14,15,36,1,-7,0}`  | ![](images/date/clk/set-clock-datetime-raw-1.png) | ![](images/date/clk/set-clock-datetime-str-1.png) |
+| `SETC`                        | ![](images/date/clk/set-clock-datetime-raw-2.png) | ![](images/date/clk/set-clock-datetime-str-2.png) |
 
 Internally, the TI-84+/84+SE hardware clock keeps track of time as a 32-bit
 integer counting the number of seconds from the TI-OS epoch date, which is
