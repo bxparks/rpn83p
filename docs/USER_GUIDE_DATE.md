@@ -1065,17 +1065,17 @@ For example, a positive `Duration` object would be:
 
 | **Keys**              | **MODE `{..}`**                           | **MODE `".."`**   |
 | -----------           | ---------------------                     | ----------------- |
-| `DR{1,2,3,4}`         | ![](images/date/duration-pos-raw-1.png)   | ![](images/date/duration-pos-str-1.png) |
-| `ENTER`               | ![](images/date/duration-pos-raw-2.png)   | ![](images/date/duration-pos-str-2.png) |
-| `2ND ENTER` (SHOW)    | ![](images/date/duration-pos-show.png)    | ![](images/date/duration-pos-show.png) |
+| `DR{1,2,3,4}`         | ![](images/date/dr/duration-pos-raw-1.png)   | ![](images/date/dr/duration-pos-str-1.png) |
+| `ENTER`               | ![](images/date/dr/duration-pos-raw-2.png)   | ![](images/date/dr/duration-pos-str-2.png) |
+| `2ND ENTER` (SHOW)    | ![](images/date/dr/duration-pos-show.png)    | ![](images/date/dr/duration-pos-show.png) |
 
 A negative duration would be:
 
 | **Keys**              | **MODE `{..}`**                           | **MODE `".."`**   |
 | -----------           | ---------------------                     | ----------------- |
-| `DR{-4,0,-2,0}`       | ![](images/date/duration-neg-raw-1.png)   | ![](images/date/duration-neg-str-1.png) |
-| `ENTER`               | ![](images/date/duration-neg-raw-2.png)   | ![](images/date/duration-neg-str-2.png) |
-| `2ND ENTER` (SHOW)    | ![](images/date/duration-neg-show.png)    | ![](images/date/duration-neg-show.png) |
+| `DR{-4,0,-2,0}`       | ![](images/date/dr/duration-neg-raw-1.png)   | ![](images/date/dr/duration-neg-str-1.png) |
+| `ENTER`               | ![](images/date/dr/duration-neg-raw-2.png)   | ![](images/date/dr/duration-neg-str-2.png) |
+| `2ND ENTER` (SHOW)    | ![](images/date/dr/duration-neg-show.png)    | ![](images/date/dr/duration-neg-show.png) |
 
 Notice that for negative durations, all the components must be negative (or
 zero). Also notice that when a Duration component is exactly 0, that component
@@ -1105,14 +1105,14 @@ and 4 seconds) using the colon-shortcut notation:
 
 | **Keys**  | **MODE `{..}`**                               | **MODE `".."`**   |
 | --------- | ---------------------                         | ----------------- |
-| `1:D`     | ![](images/date/duration-colon-day-raw-1.png)       | ![](images/date/duration-colon-day-str-1.png) |
-| `ENTER`   | ![](images/date/duration-colon-day-raw-2.png)       | ![](images/date/duration-colon-day-str-2.png) |
-| `2:H`     | ![](images/date/duration-colon-hour-raw-1.png)      | ![](images/date/duration-colon-hour-str-1.png) |
-| `ENTER`   | ![](images/date/duration-colon-hour-raw-2.png)      | ![](images/date/duration-colon-hour-str-2.png) |
-| `3:M`     | ![](images/date/duration-colon-minute-raw-1.png)    | ![](images/date/duration-colon-minute-str-1.png) |
-| `ENTER`   | ![](images/date/duration-colon-minute-raw-2.png)    | ![](images/date/duration-colon-minute-str-2.png) |
-| `4:S`     | ![](images/date/duration-colon-second-raw-1.png)    | ![](images/date/duration-colon-second-str-1.png) |
-| `ENTER`   | ![](images/date/duration-colon-second-raw-2.png)    | ![](images/date/duration-colon-second-str-2.png) |
+| `1:D`     | ![](images/date/dr/duration-colon-day-raw-1.png)       | ![](images/date/dr/duration-colon-day-str-1.png) |
+| `ENTER`   | ![](images/date/dr/duration-colon-day-raw-2.png)       | ![](images/date/dr/duration-colon-day-str-2.png) |
+| `2:H`     | ![](images/date/dr/duration-colon-hour-raw-1.png)      | ![](images/date/dr/duration-colon-hour-str-1.png) |
+| `ENTER`   | ![](images/date/dr/duration-colon-hour-raw-2.png)      | ![](images/date/dr/duration-colon-hour-str-2.png) |
+| `3:M`     | ![](images/date/dr/duration-colon-minute-raw-1.png)    | ![](images/date/dr/duration-colon-minute-str-1.png) |
+| `ENTER`   | ![](images/date/dr/duration-colon-minute-raw-2.png)    | ![](images/date/dr/duration-colon-minute-str-2.png) |
+| `4:S`     | ![](images/date/dr/duration-colon-second-raw-1.png)    | ![](images/date/dr/duration-colon-second-str-1.png) |
+| `ENTER`   | ![](images/date/dr/duration-colon-second-raw-2.png)    | ![](images/date/dr/duration-colon-second-str-2.png) |
 
 **Note**: Only a single colon-modifier can be entered on a single line. Multiple
 colon-modifiers separated by spaces (e.g. `2:H 4:M`) are not supported. This
@@ -1155,15 +1155,15 @@ Here are some examples:
 
 | **Keys**          | **MODE `{..}`**                                   | **MODE `".."`**   |
 | -----------       | ---------------------                             | ----------------- |
-| `DR{1,2,3,4}`     | ![](images/date/duration-to-seconds-raw-1.png)    | ![](images/date/duration-to-seconds-str-1.png) |
-| `D*>S`            | ![](images/date/duration-to-seconds-raw-2.png)    | ![](images/date/duration-to-seconds-str-2.png) |
-| `S>DR`            | ![](images/date/duration-to-seconds-raw-3.png)    | ![](images/date/duration-to-seconds-str-3.png) |
-| `DR{-4,0,-2,0}`   | ![](images/date/duration-to-seconds-raw-4.png)    | ![](images/date/duration-to-seconds-str-4.png) |
-| `D*>S`            | ![](images/date/duration-to-seconds-raw-5.png)    | ![](images/date/duration-to-seconds-str-5.png) |
-| `S>DR`            | ![](images/date/duration-to-seconds-raw-6.png)    | ![](images/date/duration-to-seconds-str-6.png) |
-| `2:H`             | ![](images/date/duration-to-seconds-raw-7.png)    | ![](images/date/duration-to-seconds-str-7.png) |
-| `D*>S`            | ![](images/date/duration-to-seconds-raw-8.png)    | ![](images/date/duration-to-seconds-str-8.png) |
-| `S>DR`            | ![](images/date/duration-to-seconds-raw-9.png)    | ![](images/date/duration-to-seconds-str-9.png) |
+| `DR{1,2,3,4}`     | ![](images/date/dr/duration-to-seconds-raw-1.png)    | ![](images/date/dr/duration-to-seconds-str-1.png) |
+| `D*>S`            | ![](images/date/dr/duration-to-seconds-raw-2.png)    | ![](images/date/dr/duration-to-seconds-str-2.png) |
+| `S>DR`            | ![](images/date/dr/duration-to-seconds-raw-3.png)    | ![](images/date/dr/duration-to-seconds-str-3.png) |
+| `DR{-4,0,-2,0}`   | ![](images/date/dr/duration-to-seconds-raw-4.png)    | ![](images/date/dr/duration-to-seconds-str-4.png) |
+| `D*>S`            | ![](images/date/dr/duration-to-seconds-raw-5.png)    | ![](images/date/dr/duration-to-seconds-str-5.png) |
+| `S>DR`            | ![](images/date/dr/duration-to-seconds-raw-6.png)    | ![](images/date/dr/duration-to-seconds-str-6.png) |
+| `2:H`             | ![](images/date/dr/duration-to-seconds-raw-7.png)    | ![](images/date/dr/duration-to-seconds-str-7.png) |
+| `D*>S`            | ![](images/date/dr/duration-to-seconds-raw-8.png)    | ![](images/date/dr/duration-to-seconds-str-8.png) |
+| `S>DR`            | ![](images/date/dr/duration-to-seconds-raw-9.png)    | ![](images/date/dr/duration-to-seconds-str-9.png) |
 
 #### Duration Arithmetic
 
@@ -1190,15 +1190,15 @@ objects:
 
 | **Keys**          | **MODE `{..}`**                           | **MODE `".."`**   |
 | -----------       | ---------------------                     | ----------------- |
-| `DR{1,2,0,1}`     | ![](images/date/duration-add-raw-1.png)   | ![](images/date/duration-add-str-1.png) |
-| `ENTER`           | ![](images/date/duration-add-raw-2.png)   | ![](images/date/duration-add-str-2.png) |
-| `60` (seconds)    | ![](images/date/duration-add-raw-3.png)   | ![](images/date/duration-add-str-3.png) |
-| `+`               | ![](images/date/duration-add-raw-4.png)   | ![](images/date/duration-add-str-4.png) |
-| `DR{-4,0,-2,0}`   | ![](images/date/duration-add-raw-5.png)   | ![](images/date/duration-add-str-5.png) |
-| `-`               | ![](images/date/duration-add-raw-6.png)   | ![](images/date/duration-add-str-6.png) |
-| `-2:H`            | ![](images/date/duration-add-raw-7.png)   | ![](images/date/duration-add-str-7.png) |
-| `+`               | ![](images/date/duration-add-raw-8.png)   | ![](images/date/duration-add-str-8.png) |
-| `+/-` (-)         | ![](images/date/duration-add-raw-9.png)   | ![](images/date/duration-add-str-9.png) |
+| `DR{1,2,0,1}`     | ![](images/date/dr/duration-add-raw-1.png)   | ![](images/date/dr/duration-add-str-1.png) |
+| `ENTER`           | ![](images/date/dr/duration-add-raw-2.png)   | ![](images/date/dr/duration-add-str-2.png) |
+| `60` (seconds)    | ![](images/date/dr/duration-add-raw-3.png)   | ![](images/date/dr/duration-add-str-3.png) |
+| `+`               | ![](images/date/dr/duration-add-raw-4.png)   | ![](images/date/dr/duration-add-str-4.png) |
+| `DR{-4,0,-2,0}`   | ![](images/date/dr/duration-add-raw-5.png)   | ![](images/date/dr/duration-add-str-5.png) |
+| `-`               | ![](images/date/dr/duration-add-raw-6.png)   | ![](images/date/dr/duration-add-str-6.png) |
+| `-2:H`            | ![](images/date/dr/duration-add-raw-7.png)   | ![](images/date/dr/duration-add-str-7.png) |
+| `+`               | ![](images/date/dr/duration-add-raw-8.png)   | ![](images/date/dr/duration-add-str-8.png) |
+| `+/-` (-)         | ![](images/date/dr/duration-add-raw-9.png)   | ![](images/date/dr/duration-add-str-9.png) |
 
 The Duration object is even more useful when it is used with other date-time
 objects like Date, Time, DateTime, and ZonedDateTime. As a rule of thumb, it can
@@ -1235,19 +1235,19 @@ For example, let's add the Duration `2h 33m` to the Time `12:58:32`:
 
 | **Keys**          | **MODE `{..}`**                               | **MODE `".."`**   |
 | -----------       | ---------------------                         | ----------------- |
-| `T{12,58,32}`     | ![](images/date/duration-add-time-raw-1.png)  | ![](images/date/duration-add-time-str-1.png) |
-| `ENTER`           | ![](images/date/duration-add-time-raw-2.png)  | ![](images/date/duration-add-time-str-2.png) |
-| `DR{0,2,33,0}`    | ![](images/date/duration-add-time-raw-3.png)  | ![](images/date/duration-add-time-str-3.png) |
-| `+`               | ![](images/date/duration-add-time-raw-4.png)  | ![](images/date/duration-add-time-str-4.png) |
+| `T{12,58,32}`     | ![](images/date/dr/duration-add-time-raw-1.png)  | ![](images/date/dr/duration-add-time-str-1.png) |
+| `ENTER`           | ![](images/date/dr/duration-add-time-raw-2.png)  | ![](images/date/dr/duration-add-time-str-2.png) |
+| `DR{0,2,33,0}`    | ![](images/date/dr/duration-add-time-raw-3.png)  | ![](images/date/dr/duration-add-time-str-3.png) |
+| `+`               | ![](images/date/dr/duration-add-time-raw-4.png)  | ![](images/date/dr/duration-add-time-str-4.png) |
 
 Another example, let's add 30 days to the DateTime `2024-03-14 12:58:32`:
 
 | **Keys**                  | **MODE `{..}`**                                   | **MODE `".."`**   |
 | -----------               | ---------------------                             | ----------------- |
-| `DT{2024,3,14,12,58,32}`  | ![](images/date/duration-add-datetime-raw-1.png)  | ![](images/date/duration-add-datetime-str-1.png) |
-| `ENTER`                   | ![](images/date/duration-add-datetime-raw-2.png)  | ![](images/date/duration-add-datetime-str-2.png) |
-| `30:D`                    | ![](images/date/duration-add-datetime-raw-3.png)  | ![](images/date/duration-add-datetime-str-3.png) |
-| `+`                       | ![](images/date/duration-add-datetime-raw-4.png)  | ![](images/date/duration-add-datetime-str-4.png) |
+| `DT{2024,3,14,12,58,32}`  | ![](images/date/dr/duration-add-datetime-raw-1.png)  | ![](images/date/dr/duration-add-datetime-str-1.png) |
+| `ENTER`                   | ![](images/date/dr/duration-add-datetime-raw-2.png)  | ![](images/date/dr/duration-add-datetime-str-2.png) |
+| `30:D`                    | ![](images/date/dr/duration-add-datetime-raw-3.png)  | ![](images/date/dr/duration-add-datetime-str-3.png) |
+| `+`                       | ![](images/date/dr/duration-add-datetime-raw-4.png)  | ![](images/date/dr/duration-add-datetime-str-4.png) |
 
 ## Timezone Conversions
 
