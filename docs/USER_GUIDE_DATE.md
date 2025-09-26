@@ -48,6 +48,7 @@ These features were inspired by various datetime libraries:
     - [ALPHA Entry](#alpha-entry)
     - [Menu Aided Entry](#menu-aided-entry)
     - [Type Inferred Entry](#type-inferred-entry)
+- [Comma-EE Modes](#comma-ee-modes)
 - [Formatting Modes](#formatting-modes)
 - [DATE Menu Functions](#date-menu-functions)
     - [Date (D)](#date--d-)
@@ -332,26 +333,6 @@ following keys have been activated:
 - `,` (comma)
 - `:` (colon)
 
-Prior to v0.10, both the `,` and `2ND EE` keystrokes were mapped to the `EE`
-function to allow numbers in scientific notation to be entered easily. However
-the entry of the Date objects requires the use of the comma `,` key, so the app
-now contains an option to control the behavior of this button under the `MODE`
-menu:
-
-- ![ROOT > MODE](images/menu/root-mode.png)
-    - ![ROOT > MODE > CommaEE](images/menu/root-mode-commaee.png)
-
-If the `,EE` option is selected (factory default), the button behaves as labeled
-on the keyboard: the `,` button invokes the comma function, and `2ND EE` invokes
-the exponent function. This option is useful to have fast access to the comma
-button which is essential for entering the components of the date objects.
-
-If the `EE,` option is selected, the button behavior is inverted: the `,` button
-invokes the exponent function, and `2ND EE` button invokes the comma function.
-This is option is useful for people who will rarely (or never) use the `DATE`
-functions, and want to enter scientific notation numbers easily without going
-through an extra `2ND` keystroke.
-
 The date objects are entered using the `ALPHA` key to enter the object name tag,
 the left brace `{` and right brace `}` keys to delimit the components of the
 objects, and the comma key `,` between each component. For example, to enter the
@@ -408,6 +389,28 @@ TODO: Move "Data Entry for Experts" to here.
 **Pro Tip**: After learning how to enter Date objects using their canonical
 forms, you can learn about various shortcuts in the [Data Entry for
 Experts](#data-entry-for-experts) section at the end of this document.
+
+## Comma-EE Modes
+
+The TI-83+/84+ keyboard has a comma `,` key as an unshifted primary key. Prior
+to v0.10, both the `,` and `2ND EE` keystrokes were mapped to the `EE` function
+to allow numbers in scientific notation to be entered easily. However the entry
+of the Date objects requires the use of the comma `,` key, so the app now
+contains an option to control the behavior of this button under the `MODE` menu:
+
+- ![ROOT > MODE](images/menu/root-mode.png)
+    - ![ROOT > MODE > CommaEE](images/menu/root-mode-commaee.png)
+
+If the `,EE` option is selected (factory default), the button behaves as labeled
+on the keyboard: the `,` button invokes the comma function, and `2ND EE` invokes
+the exponent function. This option is useful to have fast access to the comma
+button which is essential for entering the components of the date objects.
+
+If the `EE,` option is selected, the button behavior is inverted: the `,` button
+invokes the exponent function, and `2ND EE` button invokes the comma function.
+This is option is useful for people who will rarely (or never) use the `DATE`
+functions, and want to enter scientific notation numbers easily without going
+through an extra `2ND` keystroke.
 
 ## Formatting Modes
 
