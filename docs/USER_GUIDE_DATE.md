@@ -1369,12 +1369,12 @@ function. The current custom Epoch date value can be retrieved using the `EPC?`
 (get epoch date) menu function. For example, let's view the current custom Epoch
 date, then set it to `2100-01-01`:
 
-| **Keys**          | **MODE `{..}`**                           | **MODE `".."`**   |
-| -----------       | ---------------------                     | ----------------- |
-| `EPC?`            | ![](images/date/customepoch-raw-1.png)    | ![](images/date/customepoch-str-1.png) |
-| `D{2100,1,1}`     | ![](images/date/customepoch-raw-2.png)    | ![](images/date/customepoch-str-2.png) |
-| `EPC`             | ![](images/date/customepoch-raw-3.png)    | ![](images/date/customepoch-str-3.png) |
-| `EPC?`            | ![](images/date/customepoch-raw-4.png)    | ![](images/date/customepoch-str-4.png) |
+| **Keys**          | **MODE `{..}`**                                | **MODE `".."`**   |
+| -----------       | ---------------------                          | ----------------- |
+| `EPC?`            | ![](images/date/epch/customepoch-raw-1.png)    | ![](images/date/epch/customepoch-str-1.png) |
+| `D{2100,1,1}`     | ![](images/date/epch/customepoch-raw-2.png)    | ![](images/date/epch/customepoch-str-2.png) |
+| `EPC`             | ![](images/date/epch/customepoch-raw-3.png)    | ![](images/date/epch/customepoch-str-3.png) |
+| `EPC?`            | ![](images/date/epch/customepoch-raw-4.png)    | ![](images/date/epch/customepoch-str-4.png) |
 
 Notice that when the `EPC` (set epoch date) command is invoked, the epoch
 selection automatically changes to `CEPC` (custom epoch date) and the dot next
@@ -1415,17 +1415,17 @@ The example begins with the `MATH` (Home) button to start at a known menu
 location, but if you are already within the DATE menu folder, then you can skip
 that step:
 
-| **Keys**                          | **MODE `{..}`**                           | **MODE `".."`**   |
-| -----------                       | ---------------------                     | ----------------- |
-| `MATH` `UP` `DATE` `DOWN` `DOWN`  | ![](images/date/epochseconds-raw-1.png)   | ![](images/date/epochseconds-str-1.png) |
-| `EPCH` `UNIX`                     | ![](images/date/epochseconds-raw-2.png)   | ![](images/date/epochseconds-str-2.png) |
-| `ON/EXIT` `UP`                    | ![](images/date/epochseconds-raw-3.png)   | ![](images/date/epochseconds-str-3.png) |
-| `DZ{2024,3,14,15,36,1,-7,0}`      | ![](images/date/epochseconds-raw-4.png)   | ![](images/date/epochseconds-str-4.png) |
-| `D*>S`                            | ![](images/date/epochseconds-raw-5.png)   | ![](images/date/epochseconds-str-5.png) |
-| `DOWN` `EPCH` `NTP`               | ![](images/date/epochseconds-raw-6.png)   | ![](images/date/epochseconds-str-6.png) |
-| `ON/EXIT` `UP`                    | ![](images/date/epochseconds-raw-7.png)   | ![](images/date/epochseconds-str-7.png) |
-| `2ND ANS` (LASTX)                 | ![](images/date/epochseconds-raw-8.png)   | ![](images/date/epochseconds-str-8.png) |
-| `D*>S`                            | ![](images/date/epochseconds-raw-9.png)   | ![](images/date/epochseconds-str-9.png) |
+| **Keys**                          | **MODE `{..}`**                                | **MODE `".."`**   |
+| -----------                       | ---------------------                          | ----------------- |
+| `MATH` `UP` `DATE` `DOWN` `DOWN`  | ![](images/date/epch/epochseconds-raw-1.png)   | ![](images/date/epch/epochseconds-str-1.png) |
+| `EPCH` `UNIX`                     | ![](images/date/epch/epochseconds-raw-2.png)   | ![](images/date/epch/epochseconds-str-2.png) |
+| `ON/EXIT` `UP`                    | ![](images/date/epch/epochseconds-raw-3.png)   | ![](images/date/epch/epochseconds-str-3.png) |
+| `DZ{2024,3,14,15,36,1,-7,0}`      | ![](images/date/epch/epochseconds-raw-4.png)   | ![](images/date/epch/epochseconds-str-4.png) |
+| `D*>S`                            | ![](images/date/epch/epochseconds-raw-5.png)   | ![](images/date/epch/epochseconds-str-5.png) |
+| `DOWN` `EPCH` `NTP`               | ![](images/date/epch/epochseconds-raw-6.png)   | ![](images/date/epch/epochseconds-str-6.png) |
+| `ON/EXIT` `UP`                    | ![](images/date/epch/epochseconds-raw-7.png)   | ![](images/date/epch/epochseconds-str-7.png) |
+| `2ND ANS` (LASTX)                 | ![](images/date/epch/epochseconds-raw-8.png)   | ![](images/date/epch/epochseconds-str-8.png) |
+| `D*>S`                            | ![](images/date/epch/epochseconds-raw-9.png)   | ![](images/date/epch/epochseconds-str-9.png) |
 
 ### Epoch Seconds Range
 
