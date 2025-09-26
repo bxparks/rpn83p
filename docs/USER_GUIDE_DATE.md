@@ -577,9 +577,9 @@ the time `15:36:01` is entered into the calculator like this:
 
 | **Keys**              | **MODE `{..}`**                   | **MODE `".."`**   |
 | ------------------    | ---------------------             | ----------------- |
-| `T{15,36,1}`          | ![](images/date/time-raw-1.png)   | ![](images/date/time-str-1.png) |
-| `ENTER`               | ![](images/date/time-raw-2.png)   | ![](images/date/time-str-2.png) |
-| `2ND ENTER` (SHOW)    | ![](images/date/time-show.png)    | ![](images/date/time-show.png) |
+| `T{15,36,1}`          | ![](images/date/t/time-raw-1.png)   | ![](images/date/t/time-str-1.png) |
+| `ENTER`               | ![](images/date/t/time-raw-2.png)   | ![](images/date/t/time-str-2.png) |
+| `2ND ENTER` (SHOW)    | ![](images/date/t/time-show.png)    | ![](images/date/t/time-show.png) |
 
 #### Time Validation
 
@@ -617,12 +617,12 @@ seconds, then subtract 100,000 seconds:
 
 | **Keys**          | **MODE `{..}`**                       | **MODE `".."`**   |
 | ------------------| ---------------------                 | ----------------- |
-| `T{15,36,1}`      | ![](images/date/time-add-raw-1.png)   | ![](images/date/time-add-str-1.png) |
-| `ENTER`           | ![](images/date/time-add-raw-2.png)   | ![](images/date/time-add-str-2.png) |
-| `234`             | ![](images/date/time-add-raw-3.png)   | ![](images/date/time-add-str-3.png) |
-| `+`               | ![](images/date/time-add-raw-4.png)   | ![](images/date/time-add-str-4.png) |
-| `100000`          | ![](images/date/time-add-raw-5.png)   | ![](images/date/time-add-str-5.png) |
-| `-`               | ![](images/date/time-add-raw-6.png)   | ![](images/date/time-add-str-6.png) |
+| `T{15,36,1}`      | ![](images/date/t/time-add-raw-1.png)   | ![](images/date/t/time-add-str-1.png) |
+| `ENTER`           | ![](images/date/t/time-add-raw-2.png)   | ![](images/date/t/time-add-str-2.png) |
+| `234`             | ![](images/date/t/time-add-raw-3.png)   | ![](images/date/t/time-add-str-3.png) |
+| `+`               | ![](images/date/t/time-add-raw-4.png)   | ![](images/date/t/time-add-str-4.png) |
+| `100000`          | ![](images/date/t/time-add-raw-5.png)   | ![](images/date/t/time-add-str-5.png) |
+| `-`               | ![](images/date/t/time-add-raw-6.png)   | ![](images/date/t/time-add-str-6.png) |
 
 Since 100,000 seconds is more than 1 day, the Time object wraps around.
 
@@ -631,10 +631,10 @@ of seconds between the 2 objects:
 
 | **Keys**          | **MODE `{..}`**       | **MODE `".."`**   |
 | ------------------| --------------------- | ----------------- |
-| `T{15,36,1}`      | ![](images/date/time-sub-raw-1.png)   | ![](images/date/time-sub-str-1.png) |
-| `ENTER`           | ![](images/date/time-sub-raw-2.png)   | ![](images/date/time-sub-str-2.png) |
-| `T{17,0,0}`       | ![](images/date/time-sub-raw-3.png)   | ![](images/date/time-sub-str-3.png) |
-| `-`               | ![](images/date/time-sub-raw-4.png)   | ![](images/date/time-sub-str-4.png) |
+| `T{15,36,1}`      | ![](images/date/t/time-sub-raw-1.png)   | ![](images/date/t/time-sub-str-1.png) |
+| `ENTER`           | ![](images/date/t/time-sub-raw-2.png)   | ![](images/date/t/time-sub-str-2.png) |
+| `T{17,0,0}`       | ![](images/date/t/time-sub-raw-3.png)   | ![](images/date/t/time-sub-str-3.png) |
+| `-`               | ![](images/date/t/time-sub-raw-4.png)   | ![](images/date/t/time-sub-str-4.png) |
 
 There are 5039 seconds between `15:36:01` and `17:00:00`.
 
@@ -650,9 +650,9 @@ For example, let's convert `15:35:01` to an integer, then back to a Time object:
 
 | **Keys**          | **MODE `{..}`**                           | **MODE `".."`**   |
 | ------------------| ---------------------                     | ----------------- |
-| `T{15,36,1}`      | ![](images/date/time-to-seconds-raw-1.png)   | ![](images/date/time-to-seconds-str-1.png) |
-| `D*>S`            | ![](images/date/time-to-seconds-raw-2.png)   | ![](images/date/time-to-seconds-str-2.png) |
-| `S>T`             | ![](images/date/time-to-seconds-raw-3.png)   | ![](images/date/time-to-seconds-str-3.png) |
+| `T{15,36,1}`      | ![](images/date/t/time-to-seconds-raw-1.png)   | ![](images/date/t/time-to-seconds-str-1.png) |
+| `D*>S`            | ![](images/date/t/time-to-seconds-raw-2.png)   | ![](images/date/t/time-to-seconds-str-2.png) |
+| `S>T`             | ![](images/date/t/time-to-seconds-raw-3.png)   | ![](images/date/t/time-to-seconds-str-3.png) |
 
 ### DateTime Object
 
