@@ -40,12 +40,19 @@ the `Y` unchanged. In other words:
 
 ```
     Y := Y
-    X := Y * X / 100 -> X
+    X := Y * X / 100
 ```
 
-The total can be calculated using the `+` button.
+**Example:**
 
-TODO: Add screenshots.
+Calculate the total price of an item listed as $125 with an 8.625% sales tax:
+
+| **Keys**              | **Display** |
+| ----------------      | --------------------- |
+| `NUM`                 | ![](images/num/percent-1.png) |
+| `125` `ENTER`         | ![](images/num/percent-2.png) |
+| `8.625` `%`           | ![](images/num/percent-3.png) |
+| `+`                   | ![](images/num/percent-4.png) |
 
 ## Prime Factors
 
