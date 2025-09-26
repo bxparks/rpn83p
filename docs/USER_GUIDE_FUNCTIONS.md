@@ -57,7 +57,7 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
     - `PRIM`: prime factor of `X`
         - returns 1 if prime
         - returns the smallest prime factor otherwise
-        - See [Prime Factors](#prime-factors) section below.
+        - See [USER_GUIDE_NUM.md](USER_GUIDE_NUM.md#prime-factors)
     - `IP`: integer part of `X`, truncating towards 0, preserving sign
     - `FP`: fractional part of `X`, preserving sign
     - `FLR`: the floor of `X`, the largest integer <= `X`
