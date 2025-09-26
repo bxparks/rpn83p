@@ -43,21 +43,21 @@ These features were inspired by various datetime libraries:
     - [Date and Time Formats](#date-and-time-formats)
 - [Date-related Objects](#date-related-objects)
 - [DATE Menus](#date-menus)
-- [Date Buttons](#date-buttons)
+- [DATE Buttons](#date-buttons)
 - [Data Entry](#data-entry)
     - [ALPHA Entry](#alpha-entry)
     - [Menu Aided Entry](#menu-aided-entry)
     - [Type Inferred Entry](#type-inferred-entry)
 - [Comma-EE Modes](#comma-ee-modes)
 - [Formatting Modes](#formatting-modes)
-- [DATE Menu Functions](#date-menu-functions)
-    - [Date (D)](#date--d-)
-    - [Time (T)](#time--t-)
-    - [DateTime (DT)](#datetime--dt-)
-    - [TimeZone (TZ)](#timezone--tz-)
-    - [ZonedDateTime (DZ)](#zoneddatetime--dz-)
-    - [DayOfWeek (DW)](#dayofweek--dw-)
-    - [Duration (DR)](#duration--dr-)
+- [Menu Functions](#date-menu-functions)
+    - [Date (D)](#date-d)
+    - [Time (T)](#time-t)
+    - [DateTime (DT)](#datetime-dt)
+    - [TimeZone (TZ)](#timezone-tz)
+    - [ZonedDateTime (DZ)](#zoneddatetime-dz)
+    - [DayOfWeek (DW)](#dayofweek-dw)
+    - [Duration (DR)](#duration-dr)
 - [Timezone Conversions](#timezone-conversions)
 - [Leap Year Determination](#leap-year-determination)
 - [Epoch Date](#epoch-date)
@@ -560,17 +560,7 @@ dates:
 
 There are 286 days from March 14 to Dec 25, 2024.
 
-### Time Object
-
-- ![ROOT > DATE > T](images/menu/root-date-t.png) (ROOT > DATE > T)
-    - ![ROOT > DATE > Time > Row1](images/menu/root-date-t-1.png)
-    - ![ROOT > DATE > Time > Row2](images/menu/root-date-t-2.png)
-    - `T{}`: insert initialization string for `Time` object
-    - `>S`: convert Time to seconds after midnight
-    - `S>`: convert seconds after midnight to Time
-    - `.HR`: extract `hour` component of Time
-    - `.MIN`: extract `minute` component of Time
-    - `.SEC`: extract `second` component of Time
+### Time (T)
 
 The `Time` object has the form `T{hour:u8, minute:u8, second:u8}`. For example,
 the time `15:36:01` is entered into the calculator like this:
@@ -591,7 +581,33 @@ record:
 - the `second` component must be in the interval [0, 59], leap seconds not
   supported
 
-#### Time Operations
+#### Time Functions
+
+- ![ROOT > DATE > T](images/menu/root-date-t.png) (ROOT > DATE > T)
+    - ![ROOT > DATE > Time > Row1](images/menu/root-date-t-1.png)
+    - ![ROOT > DATE > Time > Row2](images/menu/root-date-t-2.png)
+    - `T{}`: insert initialization string for `Time` object
+    - `>S`: convert Time to seconds after midnight
+    - `S>`: convert seconds after midnight to Time
+    - `.HR`: extract `hour` component of Time
+    - `.MIN`: extract `minute` component of Time
+    - `.SEC`: extract `second` component of Time
+
+The `D*>S` and `S>T` menu functions convert between a Time object and the
+integer number of seconds since midnight `00:00:00`. This will will always be a
+non-negative number:
+
+![ROOT > DATE > TimeToSeconds](images/menu/root-date-timeseconds.png)
+
+For example, let's convert `15:35:01` to an integer, then back to a Time object:
+
+| **Keys**          | **MODE `{..}`**                           | **MODE `".."`**   |
+| ------------------| ---------------------                     | ----------------- |
+| `T{15,36,1}`      | ![](images/date/t/time-to-seconds-raw-1.png)   | ![](images/date/t/time-to-seconds-str-1.png) |
+| `D*>S`            | ![](images/date/t/time-to-seconds-raw-2.png)   | ![](images/date/t/time-to-seconds-str-2.png) |
+| `S>T`             | ![](images/date/t/time-to-seconds-raw-3.png)   | ![](images/date/t/time-to-seconds-str-3.png) |
+
+#### Time Arithmetic
 
 Just like `Date` records, addition and subtraction operations are supported as
 summarized in the following table:
@@ -638,23 +654,7 @@ of seconds between the 2 objects:
 
 There are 5039 seconds between `15:36:01` and `17:00:00`.
 
-#### Time to Seconds Conversion
-
-The `D*>S` and `S>T` menu functions convert between a Time object and the
-integer number of seconds since midnight `00:00:00`. This will will always be a
-non-negative number:
-
-![ROOT > DATE > TimeToSeconds](images/menu/root-date-timeseconds.png)
-
-For example, let's convert `15:35:01` to an integer, then back to a Time object:
-
-| **Keys**          | **MODE `{..}`**                           | **MODE `".."`**   |
-| ------------------| ---------------------                     | ----------------- |
-| `T{15,36,1}`      | ![](images/date/t/time-to-seconds-raw-1.png)   | ![](images/date/t/time-to-seconds-str-1.png) |
-| `D*>S`            | ![](images/date/t/time-to-seconds-raw-2.png)   | ![](images/date/t/time-to-seconds-str-2.png) |
-| `S>T`             | ![](images/date/t/time-to-seconds-raw-3.png)   | ![](images/date/t/time-to-seconds-str-3.png) |
-
-### DateTime Object
+### DateTime (DT)
 
 A DateTime record is a concatenation of the Date record and a Time record. It
 has the format `DT{year:u16, month:u8, day:u8, hour:u8, minute:u8, second:u8}`.
@@ -672,7 +672,41 @@ For example, the date `2024-03-14 15:36:01` would be entered like this:
 The validation rules of the `DateTime` is the union of the validation rules
 for the `Date` record and the rules for the `Time` record.
 
-#### DateTime Operations
+#### DateTime Functions
+
+- ![ROOT > DATE > DT](images/menu/root-date-dt.png) (ROOT > DATE > DT)
+    - ![ROOT > DATE > DateTime > Row1](images/menu/root-date-dt-1.png)
+    - ![ROOT > DATE > DateTime > Row2](images/menu/root-date-dt-2.png)
+    - ![ROOT > DATE > DateTime > Row3](images/menu/root-date-dt-3.png)
+    - `DT{}`: insert initialization string for `DateTime` object
+    - `>ED`: convert DateTime to epoch days (assuming UTC)
+    - `ED>`: epoch days to DateTime (assuming UTC)
+    - `>ES`: convert DateTime to epoch seconds (assuming UTC)
+    - `ES>`: epoch seconds to DateTime (assuming UTC)
+    - `LEAP`: determine if given year is a leap year
+    - `DOW`: calculate the DayOfWeek of given DateTime
+    - `CVTZ`: convert DateTime (in Y) to the TimeZone (in X)
+    - `.D{}`: extract the Date from the DateTime
+    - `.T{}`: extract the Time from the DateTime
+    - `DSHK`: shrink a DateTime to a Date by truncating the TimeZone
+    - `DEXD`: extend DateTime into ZonedDateTime by adding a UTC TimeZone
+    - `DCUT`: cut (split) a DateTime into a Date and Time
+    - `DLNK`: link (merge) Date and Time into a DateTime
+
+A DateTime object can represent 2 slightly different things depending on the
+context:
+
+- a local date-time, using an implicit timezone (i.e. offset from UTC)
+- a UTC date-time, with a timezone offset of UTC+00:00
+
+The conversion of a DateTime to seconds will depend on which of the 2 concepts
+is represented by the DateTime. Unfortunately, there is no provision in the
+RPN83P app to specify the representation, so the conversion to seconds through
+`D*>S` is deliberately **not** supported for a DateTime object. A DateTime
+object *must* be converted into a ZonedDateTime object before it can be
+converted into an integer number of seconds.
+
+#### DateTime Arithmetic
 
 The addition and subtraction operations are available on the `DateTime` object,
 just like `Date` and `Time`. The integer numbers are in unit of *second*.
@@ -721,22 +755,7 @@ convert 24654239 seconds into a `Duration` object:
 We can now see that there are 285 days, 8 hours, 23 minutes, and 59 seconds
 between March 13, 2024 15:39:55 to Christmas Dec 25, 2024 00:00:00.
 
-#### DateTime to Seconds Conversion
-
-A DateTime object can represent 2 slightly different things depending on the
-context:
-
-- a local date-time, using an implicit timezone (i.e. offset from UTC)
-- a UTC date-time, with a timezone offset of UTC+00:00
-
-The conversion of a DateTime to seconds will depend on which of the 2 concepts
-is represented by the DateTime. Unfortunately, there is no provision in the
-RPN83P app to specify the representation, so the conversion to seconds through
-`D*>S` is deliberately **not** supported for a DateTime object. A DateTime
-object *must* be converted into a ZonedDateTime object before it can be
-converted into an integer number of seconds.
-
-### TimeZone Object
+### TimeZone (TZ)
 
 The TimeZone object has the form `TZ{hour:i8, minute:i8}`. It represents a fixed
 offset from UTC. As noted earlier, the RPN83P does not currently support
@@ -768,7 +787,37 @@ Here is an example of an invalid timezone whose `hour` and `minute` have the opp
 | `TZ{-4,30}` | ![](images/date/timezone-invalid-raw-1.png) | ![](images/date/timezone-invalid-str-1.png) |
 | `ENTER`     | ![](images/date/timezone-invalid-raw-2.png) | ![](images/date/timezone-invalid-str-2.png) |
 
-#### TimeZone Operations
+#### TimeZone Functions
+
+- ![ROOT > DATE > TZ](images/menu/root-date-tz.png) (ROOT > DATE > TZ)
+    - ![ROOT > DATE > TimeZone > Row1](images/menu/root-date-tz-1.png)
+    - ![ROOT > DATE > TimeZone > Row2](images/menu/root-date-tz-2.png)
+    - `TZ{}`: insert initialization string for `TimeZone` object
+    - `>HR`: convert TimeZone to floating point hours
+    - `HR>`: convert floating point hours into TimeZone
+    - `.HR`: extract `hour` component of TimeZone
+    - `.MIN`: extract `minute` component of TimeZone
+
+The TimeZone object can be converted to and from a floating point number
+representing the number of hours shifted from UTC. These are exposed using the
+`TZ>H` and `H>TZ` menu items:
+
+![ROOT > DATE > TimeZoneToHours](images/menu/root-date-timezonehours.png)
+
+To convert `TZ{-4,-30}` to hours then back to a TimeZone object:
+
+| **Keys**     | **MODE `{..}`**                                | **MODE `".."`**   |
+| -------------| ---------------------                          | ----------------- |
+| `TZ{-4,-30}` | ![](images/date/timezone-to-hours-raw-1.png)   | ![](images/date/timezone-to-hours-str-1.png) |
+| `TZ>H`       | ![](images/date/timezone-to-hours-raw-2.png)   | ![](images/date/timezone-to-hours-str-2.png) |
+| `H>TZ`       | ![](images/date/timezone-to-hours-raw-3.png)   | ![](images/date/timezone-to-hours-str-3.png) |
+
+All current timezones in the world are at multiples of 0:15 minutes. So the
+`H>TZ` function will accept only floating values which are multiples of 0.25.
+For example, `8.75` for `TZ{8,45}`, and `-2.5` for `TZ{-2,-30}`. Otherwise, an
+`Err:Domain` will be shown.
+
+#### TimeZone Arithmetic
 
 Arithmetic operations (addition, subtraction) on TimeZone objects are defined
 mostly for consistency, and are not expected to be used often. They can be used
@@ -812,28 +861,7 @@ timezones:
 
 There is a 9-hour difference from UTC+01:00 and UTC-08:00.
 
-#### TimeZone to Hours Conversion
-
-The TimeZone object can be converted to and from a floating point number
-representing the number of hours shifted from UTC. These are exposed using the
-`TZ>H` and `H>TZ` menu items:
-
-![ROOT > DATE > TimeZoneToHours](images/menu/root-date-timezonehours.png)
-
-To convert `TZ{-4,-30}` to hours then back to a TimeZone object:
-
-| **Keys**     | **MODE `{..}`**                                | **MODE `".."`**   |
-| -------------| ---------------------                          | ----------------- |
-| `TZ{-4,-30}` | ![](images/date/timezone-to-hours-raw-1.png)   | ![](images/date/timezone-to-hours-str-1.png) |
-| `TZ>H`       | ![](images/date/timezone-to-hours-raw-2.png)   | ![](images/date/timezone-to-hours-str-2.png) |
-| `H>TZ`       | ![](images/date/timezone-to-hours-raw-3.png)   | ![](images/date/timezone-to-hours-str-3.png) |
-
-All current timezones in the world are at multiples of 0:15 minutes. So the
-`H>TZ` function will accept only floating values which are multiples of 0.25.
-For example, `8.75` for `TZ{8,45}`, and `-2.5` for `TZ{-2,-30}`. Otherwise, an
-`Err:Domain` will be shown.
-
-### ZonedDateTime Object
+### ZonedDateTime (DZ)
 
 The ZonedDateTime is a combination of Date, Time, and TimeZone. It has the form
 `DZ{year:u16, month:u8, day:u8, hour:u8, minute:u8, second:u8, tzhour:i8,
@@ -865,7 +893,65 @@ UTC is entered and displayed:
 The validation rules of the `ZonedDateTime` is the union of the validation rules
 for the `Date`, `Time`, and `TimeZone` objects.
 
-#### ZonedDateTime Operations
+#### ZonedDateTime Functions
+
+- ![ROOT > DATE > DZ](images/menu/root-date-dz.png) (ROOT > DATE > DZ)
+    - ![ROOT > DATE > ZonedDateTime > Row1](images/menu/root-date-dz-1.png)
+    - ![ROOT > DATE > ZonedDateTime > Row2](images/menu/root-date-dz-2.png)
+    - ![ROOT > DATE > ZonedDateTime > Row3](images/menu/root-date-dz-3.png)
+    - ![ROOT > DATE > ZonedDateTime > Row4](images/menu/root-date-dz-4.png)
+    - `DZ{}`: insert initialization string for `ZonedDateTime` object
+    - `>ED`: convert ZonedDateTime to epoch days (assuming UTC)
+    - `ED>`: epoch days to ZonedDateTime (assuming UTC)
+    - `>ES`: convert ZonedDateTime to epoch seconds (assuming UTC)
+    - `ES>`: epoch seconds to ZonedDateTime (assuming UTC)
+    - `ES>@`: epoch seconds to ZonedDateTime (assuming UTC)
+    - `LEAP`: determine if given year is a leap year
+    - `DOW`: calculate the DayOfWeek of given ZonedZonedDateTime
+    - `CVTZ`: convert ZonedDateTime (in Y) to the TimeZone (in X)
+    - `.D{}`: extract the Date from the ZonedDateTime
+    - `.T{}`: extract the Time from the ZonedDateTime
+    - `.DT{}`: extract the DateTime from the ZonedDateTime
+    - `.TZ{}`: extract the Time from the ZonedDateTime
+    - `DSHK`: shrink a ZonedDateTime into a DateTime by truncating the
+        TimeZone
+    - `DEXD`: (not defined)
+    - `DCUT`: cut (split) a ZonedDateTime into a DateTime and TimeZone
+    - `DLNK`: (not defined)
+
+A ZonedDateTime object can be converted into an integer that represents the
+number of seconds from the Epoch date. By default, the Epoch date is 1970-01-01
+but it can be changed using the `EPCH` menu items described in the [Epoch
+Date](#epoch-date) section below. The menu functions for conversion are the
+`D*>S`, `S>DZ`, and `S>UT` functions:
+
+![ROOT > DATE > ZonedDateTimeToSeconds](images/menu/root-date-epochseconds.png)
+
+- `D*>S`: convert ZonedDateTime to epochseconds
+- `S>UT`: convert the epochseconds to the ZonedDateTime using UTC timezone
+- `S>DZ`: convert the epochseconds to the ZonedDateTime using the current
+  Application Timezone. The result of this function depends on 2 configurable
+  context variables:
+    - the [Application Timezone](#setting-the-application-timezone), defined by
+      the `TZ` menu function
+    - the [Epoch Date](#epoch-date), defined by the `EPCH` menu group
+
+For example, let's `2024-03-14 15:36:01-07:00` to epochseconds, then back to
+ZonedDateTime, then to UTC DateTime:
+
+| **Keys**                      | **MODE `{..}`**                                       | **MODE `".."`**                   |
+| -------------------------     | ---------------------                                 | -----------------                 |
+| `DZ{2024,3,14,15,36,1,-7,0}`  | ![](images/date/zoneddatetime-to-seconds-raw-1.png)   | ![](images/date/zoneddatetime-to-seconds-str-1.png) |
+| `D*>S`                        | ![](images/date/zoneddatetime-to-seconds-raw-2.png)   | ![](images/date/zoneddatetime-to-seconds-str-2.png) |
+| `S>UT`                        | ![](images/date/zoneddatetime-to-seconds-raw-3.png)   | ![](images/date/zoneddatetime-to-seconds-str-3.png) |
+| `D*>S`                        | ![](images/date/zoneddatetime-to-seconds-raw-4.png)   | ![](images/date/zoneddatetime-to-seconds-str-4.png) |
+| `S>DZ`                        | ![](images/date/zoneddatetime-to-seconds-raw-5.png)   | ![](images/date/zoneddatetime-to-seconds-str-5.png) |
+
+The final conversion from epochseconds to ZonedDateTime returns the original
+`2024-03-14 15:36:01-07:00` because I had set my Application Timezone to
+`UTC-07:00`.
+
+#### ZonedDateTime Arithmetic
 
 The addition and subtraction operations are available on the `ZonedDateTime`
 object, just like the `DateTime` object. The integer numbers are in unit of
@@ -907,41 +993,7 @@ December 25, 2024 UTC:
 As before, we have used the `S>DR` menu function to convert `seconds` to
 a `Duration` object which can be more useful in some situations.
 
-#### ZonedDateTime to Seconds Conversion
-
-A ZonedDateTime object can be converted into an integer that represents the
-number of seconds from the Epoch date. By default, the Epoch date is 1970-01-01
-but it can be changed using the `EPCH` menu items described in the [Epoch
-Date](#epoch-date) section below. The menu functions for conversion are the
-`D*>S`, `S>DZ`, and `S>UT` functions:
-
-![ROOT > DATE > ZonedDateTimeToSeconds](images/menu/root-date-epochseconds.png)
-
-- `D*>S`: convert ZonedDateTime to epochseconds
-- `S>UT`: convert the epochseconds to the ZonedDateTime using UTC timezone
-- `S>DZ`: convert the epochseconds to the ZonedDateTime using the current
-  Application Timezone. The result of this function depends on 2 configurable
-  context variables:
-    - the [Application Timezone](#setting-the-application-timezone), defined by
-      the `TZ` menu function
-    - the [Epoch Date](#epoch-date), defined by the `EPCH` menu group
-
-For example, let's `2024-03-14 15:36:01-07:00` to epochseconds, then back to
-ZonedDateTime, then to UTC DateTime:
-
-| **Keys**                      | **MODE `{..}`**                                       | **MODE `".."`**                   |
-| -------------------------     | ---------------------                                 | -----------------                 |
-| `DZ{2024,3,14,15,36,1,-7,0}`  | ![](images/date/zoneddatetime-to-seconds-raw-1.png)   | ![](images/date/zoneddatetime-to-seconds-str-1.png) |
-| `D*>S`                        | ![](images/date/zoneddatetime-to-seconds-raw-2.png)   | ![](images/date/zoneddatetime-to-seconds-str-2.png) |
-| `S>UT`                        | ![](images/date/zoneddatetime-to-seconds-raw-3.png)   | ![](images/date/zoneddatetime-to-seconds-str-3.png) |
-| `D*>S`                        | ![](images/date/zoneddatetime-to-seconds-raw-4.png)   | ![](images/date/zoneddatetime-to-seconds-str-4.png) |
-| `S>DZ`                        | ![](images/date/zoneddatetime-to-seconds-raw-5.png)   | ![](images/date/zoneddatetime-to-seconds-str-5.png) |
-
-The final conversion from epochseconds to ZonedDateTime returns the original
-`2024-03-14 15:36:01-07:00` because I had set my Application Timezone to
-`UTC-07:00`.
-
-### DayOfWeek Object
+### DayOfWeek (DW)
 
 The `DayOfWeek` object has the form `DW{dow:u8}`, where the `dow` field is a
 single integer containing the [ISO Weekday
@@ -966,7 +1018,23 @@ enter the invalid DayOfWeek value of `DW{0}`, an error is shown:
 | `DW{0}`    | ![](images/date/dayofweek-invalid-raw-1.png) | ![](images/date/dayofweek-invalid-str-1.png) |
 | `ENTER`    | ![](images/date/dayofweek-invalid-raw-2.png) | ![](images/date/dayofweek-invalid-str-2.png) |
 
-#### DayOfWeek Operations
+#### DayOfWeek Functions
+
+The `DOW` menu function returns the DayOfWeek of a given Date, DateTime, or
+ZonedDateTime:
+
+![ROOT > DATE > DOW](images/menu/root-date-dow.png)
+
+| **Keys**                      | **MODE `{..}`**                           | **MODE `".."`**               |
+| -------------------------     | ---------------------                     | -----------------             |
+| `D{2024,3,14}`                | ![](images/date/dayofweek-dow-raw-1.png)  | ![](images/date/dayofweek-dow-str-1.png) |
+| `DOW`                         | ![](images/date/dayofweek-dow-raw-2.png)  | ![](images/date/dayofweek-dow-str-2.png) |
+| `DT{2024,3,14,15,36,1}`       | ![](images/date/dayofweek-dow-raw-3.png)  | ![](images/date/dayofweek-dow-str-3.png) |
+| `DOW`                         | ![](images/date/dayofweek-dow-raw-4.png)  | ![](images/date/dayofweek-dow-str-4.png) |
+| `DZ{2024,3,14,15,36,1,-7,0}`  | ![](images/date/dayofweek-dow-raw-5.png)  | ![](images/date/dayofweek-dow-str-5.png) |
+| `DOW`                         | ![](images/date/dayofweek-dow-raw-6.png)  | ![](images/date/dayofweek-dow-str-6.png) |
+
+#### DayOfWeek Arithmetic
 
 Although addition and subtraction operations are not likely to be used often,
 they have been implemented for the DayOfWeek object for consistency. For
@@ -988,23 +1056,7 @@ We can also subtract 2 DayOfWeek objects to get the number of days between them:
 | `DW{5}`    | ![](images/date/dayofweek-sub-raw-3.png) | ![](images/date/dayofweek-sub-str-3.png) |
 | `-`        | ![](images/date/dayofweek-sub-raw-4.png) | ![](images/date/dayofweek-sub-str-4.png) |
 
-#### DayOfWeek from Dates
-
-The `DOW` menu function returns the DayOfWeek of a given Date, DateTime, or
-ZonedDateTime:
-
-![ROOT > DATE > DOW](images/menu/root-date-dow.png)
-
-| **Keys**                      | **MODE `{..}`**                           | **MODE `".."`**               |
-| -------------------------     | ---------------------                     | -----------------             |
-| `D{2024,3,14}`                | ![](images/date/dayofweek-dow-raw-1.png)  | ![](images/date/dayofweek-dow-str-1.png) |
-| `DOW`                         | ![](images/date/dayofweek-dow-raw-2.png)  | ![](images/date/dayofweek-dow-str-2.png) |
-| `DT{2024,3,14,15,36,1}`       | ![](images/date/dayofweek-dow-raw-3.png)  | ![](images/date/dayofweek-dow-str-3.png) |
-| `DOW`                         | ![](images/date/dayofweek-dow-raw-4.png)  | ![](images/date/dayofweek-dow-str-4.png) |
-| `DZ{2024,3,14,15,36,1,-7,0}`  | ![](images/date/dayofweek-dow-raw-5.png)  | ![](images/date/dayofweek-dow-str-5.png) |
-| `DOW`                         | ![](images/date/dayofweek-dow-raw-6.png)  | ![](images/date/dayofweek-dow-str-6.png) |
-
-### Duration Object
+### Duration (DR)
 
 The `Duration` object has the form `DR{days:i16, hours:i8, minutes:i8,
 seconds:i8}`. It can be a positive or a negative quantity.
@@ -1078,7 +1130,42 @@ The components of the Duration object has the following validation rules:
 - `seconds` must be in the interval [-59,59]
 - all components must have the same sign (or zero)
 
-#### Duration Operations
+#### Duration Functions
+
+- ![ROOT > DATE > DR](images/menu/root-date-dr.png) (ROOT > DATE > DR)
+    - ![ROOT > DATE > Duration > Row1](images/menu/root-date-dr-1.png)
+    - ![ROOT > DATE > Duration > Row2](images/menu/root-date-dr-2.png)
+    - `DR{}`: insert initialization string for `Duration` object
+    - `DAY>`: convert days into Duration
+    - `HR>`: convert hours into Duration
+    - `MIN>`: convert minutes into Duration
+    - `SEC>`: convert seconds into Duration
+    - `>S`: convert Duration into seconds
+    - `.DAY`: extract `day` component of Duration
+    - `.HR`: extract `hour` component of Duration
+    - `.MIN`: extract `minute` component of Duration
+    - `.SEC`: extract `second` component of Duration
+
+A Duration object can be converted to its equivalent integer in unit of seconds.
+The menu functions are `D*>S` and `S>DR`:
+
+![ROOT > DATE > DurationToSeconds](images/menu/root-date-durationseconds.png)
+
+Here are some examples:
+
+| **Keys**          | **MODE `{..}`**                                   | **MODE `".."`**   |
+| -----------       | ---------------------                             | ----------------- |
+| `DR{1,2,3,4}`     | ![](images/date/duration-to-seconds-raw-1.png)    | ![](images/date/duration-to-seconds-str-1.png) |
+| `D*>S`            | ![](images/date/duration-to-seconds-raw-2.png)    | ![](images/date/duration-to-seconds-str-2.png) |
+| `S>DR`            | ![](images/date/duration-to-seconds-raw-3.png)    | ![](images/date/duration-to-seconds-str-3.png) |
+| `DR{-4,0,-2,0}`   | ![](images/date/duration-to-seconds-raw-4.png)    | ![](images/date/duration-to-seconds-str-4.png) |
+| `D*>S`            | ![](images/date/duration-to-seconds-raw-5.png)    | ![](images/date/duration-to-seconds-str-5.png) |
+| `S>DR`            | ![](images/date/duration-to-seconds-raw-6.png)    | ![](images/date/duration-to-seconds-str-6.png) |
+| `2:H`             | ![](images/date/duration-to-seconds-raw-7.png)    | ![](images/date/duration-to-seconds-str-7.png) |
+| `D*>S`            | ![](images/date/duration-to-seconds-raw-8.png)    | ![](images/date/duration-to-seconds-str-8.png) |
+| `S>DR`            | ![](images/date/duration-to-seconds-raw-9.png)    | ![](images/date/duration-to-seconds-str-9.png) |
+
+#### Duration Arithmetic
 
 Basic addition and subtraction operations are defined on Duration objects:
 
@@ -1161,27 +1248,6 @@ Another example, let's add 30 days to the DateTime `2024-03-14 12:58:32`:
 | `ENTER`                   | ![](images/date/duration-add-datetime-raw-2.png)  | ![](images/date/duration-add-datetime-str-2.png) |
 | `30:D`                    | ![](images/date/duration-add-datetime-raw-3.png)  | ![](images/date/duration-add-datetime-str-3.png) |
 | `+`                       | ![](images/date/duration-add-datetime-raw-4.png)  | ![](images/date/duration-add-datetime-str-4.png) |
-
-#### Duration to Seconds Conversion
-
-A Duration object can be converted to its equivalent integer in unit of seconds.
-The menu functions are `D*>S` and `S>DR`:
-
-![ROOT > DATE > DurationToSeconds](images/menu/root-date-durationseconds.png)
-
-Here are some examples:
-
-| **Keys**          | **MODE `{..}`**                                   | **MODE `".."`**   |
-| -----------       | ---------------------                             | ----------------- |
-| `DR{1,2,3,4}`     | ![](images/date/duration-to-seconds-raw-1.png)    | ![](images/date/duration-to-seconds-str-1.png) |
-| `D*>S`            | ![](images/date/duration-to-seconds-raw-2.png)    | ![](images/date/duration-to-seconds-str-2.png) |
-| `S>DR`            | ![](images/date/duration-to-seconds-raw-3.png)    | ![](images/date/duration-to-seconds-str-3.png) |
-| `DR{-4,0,-2,0}`   | ![](images/date/duration-to-seconds-raw-4.png)    | ![](images/date/duration-to-seconds-str-4.png) |
-| `D*>S`            | ![](images/date/duration-to-seconds-raw-5.png)    | ![](images/date/duration-to-seconds-str-5.png) |
-| `S>DR`            | ![](images/date/duration-to-seconds-raw-6.png)    | ![](images/date/duration-to-seconds-str-6.png) |
-| `2:H`             | ![](images/date/duration-to-seconds-raw-7.png)    | ![](images/date/duration-to-seconds-str-7.png) |
-| `D*>S`            | ![](images/date/duration-to-seconds-raw-8.png)    | ![](images/date/duration-to-seconds-str-8.png) |
-| `S>DR`            | ![](images/date/duration-to-seconds-raw-9.png)    | ![](images/date/duration-to-seconds-str-9.png) |
 
 ## Timezone Conversions
 
