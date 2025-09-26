@@ -41,18 +41,22 @@ These features were inspired by various datetime libraries:
     - [POSIX time](#posix-time)
     - [Timezones](#timezones)
     - [Date and Time Formats](#date-and-time-formats)
-- [Date Menus](#date-menus)
-- [Date Buttons](#date-buttons)
 - [Date-related Objects](#date-related-objects)
-    - [Data Entry](#data-entry)
-    - [Formatting Modes](#formatting-modes)
-    - [Date Object](#date-object)
-    - [Time Object](#time-object)
-    - [DateTime Object](#datetime-object)
-    - [TimeZone Object](#timezone-object)
-    - [ZonedDateTime Object](#zoneddatetime-object)
-    - [DayOfWeek Object](#dayofweek-object)
-    - [Duration Object](#duration-object)
+- [DATE Menus](#date-menus)
+- [Date Buttons](#date-buttons)
+- [Data Entry](#data-entry)
+    - [ALPHA Entry](#alpha-entry)
+    - [Menu Aided Entry](#menu-aided-entry)
+    - [Type Inferred Entry](#type-inferred-entry)
+- [Formatting Modes](#formatting-modes)
+- [DATE Menu Functions](#date-menu-functions)
+    - [Date (D)](#date--d-)
+    - [Time (T)](#time--t-)
+    - [DateTime (DT)](#datetime--dt-)
+    - [TimeZone (TZ)](#timezone--tz-)
+    - [ZonedDateTime (DZ)](#zoneddatetime--dz-)
+    - [DayOfWeek (DW)](#dayofweek--dw-)
+    - [Duration (DR)](#duration--dr-)
 - [Timezone Conversions](#timezone-conversions)
 - [Leap Year Determination](#leap-year-determination)
 - [Epoch Date](#epoch-date)
@@ -246,17 +250,48 @@ supported in the `DATE` functions of RPN83P:
 - 2-digit years, absolutely not supported
 - 12-hour format `hh:mm:ss AM/PM`, not supported
 
+## Date-related Objects
+
+Prior to the addition of DATE functions, the RPN83P supported 2 data types: real
+and complex numbers. The DATE functions add 7 new data types which are *record*
+types, composed of fields of more primitive integer types:
+
+![Date Object Collection](images/date/date-object-collection.png)
+
+The data types have the following specifications:
+
+- Date `D{year:u16, month:u8, day:u8}`
+- Time `T{hour:u8, minute:u8, second:u8}`
+- DateTime `DT{year:u16, month:u8, day:u8, hour:u8, minute:u8, second:u8}`
+- TimeZone `TZ{hour:i8, minute:i8}`
+- ZonedDateTime `DZ{year:u16, month:u8, day:u8, hour:u8, minute:u8, second:u8,
+  tzhour:i8, tzminute:i8}`
+- DayOfWeek `DW{dow:u8}`
+- Duration `DR{days:i16, hours:i8, minutes:i8, seconds:i8}`
+
+The primitive integer types are:
+
+- `u16`: unsigned 16-bit integer, [0, 65535]
+- `u8`: unsigned 8-bit integer, [0, 255]
+- `i16`: signed 32-bit integer, [-32768, 32767]
+- `i8`: signed 8-bit integer, [-128, 127]
+
+If you are familiar with the C++ language, you may think of these Record
+specifications as class constructors using brace-initialization, with the class
+names being `D`, `T`, `DT`, `TZ`, `DZ`, `DW`, and `DR`.
+
+The RPN stack registers and storage registers have been upgraded to hold these
+additional data types.
+
 ## DATE Menus
 
 The following menus items are located under the `DATE` menu folder (which can be
 found in the 3rd row of the ROOT menu folder: `HOME` (i.e. `MATH`), `DOWN`,
-`DOWN`). A short synopsis of each menu function is listed here. More detailed
-descriptions are given in later subsections below.
+`DOWN`). The subfolders under `DATE` are:
 
 - ![ROOT > DATE](images/menu/root-date.png) (ROOT > DATE)
     - ![ROOT > DATE > Row1](images/menu/root-date-1.png)
     - ![ROOT > DATE > Row2](images/menu/root-date-2.png)
-    - ![ROOT > DATE > DOPS](images/menu/root-date-dops.png)
     - `D`: `Date` folder
     - `T`: `Time` folder
     - `DT`: `DateTime` folder
@@ -266,60 +301,9 @@ descriptions are given in later subsections below.
     - `DW`: `DayOfWeek` folder
     - `EPCH`: Epoch folder
     - `CLK`: Clock folder
-    - ![ROOT > DATE > D](images/menu/root-date-d.png) (ROOT > DATE > D)
-        - ![ROOT > DATE > Date > Row1](images/menu/root-date-d-1.png)
-        - ![ROOT > DATE > Date > Row2](images/menu/root-date-d-2.png)
-        - ![ROOT > DATE > Date > Row3](images/menu/root-date-d-3.png)
-        - `D{}`: insert initialization string for `Date` object
-        - `>ED`: convert Date to epoch days (assuming UTC)
-        - `ED>`: epoch days to Date (assuming UTC)
-        - `>ES`: convert Date to epoch seconds (assuming UTC)
-        - `ES>`: epoch seconds to Date (assuming UTC)
-        - `LEAP`: determine if year of Date is a leap year
-        - `DOW`: calculate the DayOfWeek of given Date, DateTime, ZonedDateTime
-        - `CVTZ`: convert Date (Y) to TimeZone (X)
-        - `.YR`: extract `year` component of Date
-        - `.MON`: extract `month` component of Date
-        - `.DAY`: extract `day` component of Date
-        - `DSHK`: (not defined)
-        - `DEXD`: extend Date to DateTime
-        - `DCUT`: (not defined)
-        - `DLNK`: link Date and Time into DateTime
-    - ![ROOT > DATE > T](images/menu/root-date-t.png) (ROOT > DATE > T)
-        - ![ROOT > DATE > Time > Row1](images/menu/root-date-t-1.png)
-        - ![ROOT > DATE > Time > Row2](images/menu/root-date-t-2.png)
-        - `T{}`: insert initialization string for `Time` object
-        - `>S`: convert Time to seconds after midnight
-        - `S>`: convert seconds after midnight to Time
-        - `.HR`: extract `hour` component of Time
-        - `.MIN`: extract `minute` component of Time
-        - `.SEC`: extract `second` component of Time
-    - ![ROOT > DATE > EPCH](images/menu/root-date-epch.png) (ROOT > DATE > EPCH)
-        - ![ROOT > DATE > EPCH > Row1](images/menu/root-date-epch-1.png)
-        - ![ROOT > DATE > EPCH > Row2](images/menu/root-date-epch-2.png)
-        - `UNIX`: select Unix Epoch date of 1970-01-01
-        - `NTP`: select NTP Epoch date of 1900-01-01
-        - `GPS`: select GPS Epoch date of 1980-01-06
-        - `TIOS`: select TI-OS Epoch date of 1997-01-01
-        - `Y2K`: select Epoch date of 2000-01-01
-        - `CEPC`: select custom Epoch date
-        - `EPC`: set custom Epoch date
-        - `EPC?`: get current custom Epoch date
-    - ![ROOT > DATE > CLK](images/menu/root-date-clk.png) (ROOT > DATE > CLK)
-        - ![ROOT > DATE > CLK > Row1](images/menu/root-date-clk-1.png)
-        - ![ROOT > DATE > CLK > Row2](images/menu/root-date-clk-2.png)
-        - `NOW`: get the current hardware clock as Epoch seconds
-        - `NOWD`: get the current hardware clock as a Date
-        - `NOWT`: get the current hardware clock as a Time
-        - `NWDZ`: get the current hardware clock as a ZonedDateTime using the
-        Application timezone
-        - `NWUT`: get the current hardware clock as a ZonedDateTime using UTC
-        timezone
-        - `TZ`: set the Application timezone
-        - `TZ?`: get the current Application timezone
-        - `CTZ`: set the hardware clock timezone
-        - `CTZ?`: get the hardware clock timezone
-        - `SETC`: set the datetime of the hardware clock
+
+The DATE functions are organized according to the object type that they are
+related to.
 
 ## DATE Buttons
 
@@ -335,36 +319,9 @@ functions when operating on Date-related objects. Similarly, the `1/x`, `SQRT`
 and `x^2` buttons act normally on Real and Complex objects but are bound to the
 `DCUT`, `DSHK`, and `DEXD` functions when they operate on Date-related objects.
 
-## Date-related Objects
+## Data Entry
 
-Prior to the addition of DATE functions, the RPN83P supported 2 data types: real
-and complex numbers. The DATE functions add 7 new data types which are *record*
-types, composed of fields of more primitive integer types.
-
-- Date `D{year:u16, month:u8, day:u8}`
-- Time `T{hour:u8, minute:u8, second:u8}`
-- DateTime `DT{year:u16, month:u8, day:u8, hour:u8, minute:u8, second:u8}`
-- TimeZone `TZ{hour:i8, minute:i8}`
-- ZonedDateTime `DZ{year:u16, month:u8, day:u8, hour:u8, minute:u8, second:u8,
-  tzhour:i8, tzminute:i8}`
-- DayOfWeek `DW{dow:u8}`
-- Duration `DR{days:i16, hours:i8, minutes:i8, seconds:i8}`
-
-If you are familiar with the C++ language, you may think of these Record
-specifications as class constructors using brace-initialization, with the class
-names being `D`, `T`, `DT`, `TZ`, `DZ`, `DW`, and `DR`.
-
-The primitive integer types are:
-
-- `u16`: unsigned 16-bit integer, [0, 65535]
-- `u8`: unsigned 8-bit integer, [0, 255]
-- `i16`: signed 32-bit integer, [-32768, 32767]
-- `i8`: signed 8-bit integer, [-128, 127]
-
-The RPN stack registers and storage registers have been upgraded to hold these
-additional data types.
-
-### Data Entry
+### ALPHA Sequence
 
 To allow these Record types to be entered using the calculator buttons, the
 following keys have been activated:
@@ -416,11 +373,43 @@ ALPHA D
 For brevity and readability, this long sequence of keystrokes will be shortened
 to something like `D{2024,3,14}` in the subsequent sections.
 
+### Menu Aided Entry
+
+The key sequence `ALPHA D 2ND {` is cumbersome to type on a calculator keyboard.
+For v1.1, a menu shortcut is available for each of the leading object definition
+sequence.
+
+For example, under the `DATE > D` menu folder, the first menu button (F1) is
+labeled `D{}`.
+
+![DATE > D > D{}](images/menu/root-date-d-1.png)
+
+Pressing the `D{}` is exactly equivalent to typing in the keyboard sequence
+`ALPHA D 2ND {`.
+
+Here is the complete list of object initializers and their ALPHA keystroke
+equivalents:
+
+- `DATE > D > D{}`: `ALPHA D 2ND {`
+- `DATE > T > T{}`: `ALPHA T 2ND {`
+- `DATE > DT > DT{}`: `ALPHA D ALPHA T 2ND {`
+- `DATE > TZ > TZ{}`: `ALPHA T ALPHA Z 2ND {`
+- `DATE > DZ > DZ{}`: `ALPHA D ALPHA Z 2ND {`
+- `DATE > DR > DR{}`: `ALPHA D ALPHA R 2ND {`
+- `DATE > DW > DW{}`: `ALPHA D ALPHA W 2ND {`
+
+It is possible to enter all DATE objects using just the soft menu initializers
+and completely avoid the `ALPHA` key.
+
+### Type Inferred
+
+TODO: Move "Data Entry for Experts" to here.
+
 **Pro Tip**: After learning how to enter Date objects using their canonical
 forms, you can learn about various shortcuts in the [Data Entry for
 Experts](#data-entry-for-experts) section at the end of this document.
 
-### Formatting Modes
+## Formatting Modes
 
 In the `MODE` menu, there are 2 settings that affect how date objects are
 displayed:
@@ -453,7 +442,11 @@ modes will be shown.
 menu location. This makes it easy to quickly change the `{..}` or `".."`
 formatting modes.
 
-### Date Object
+## Menu Functions
+
+The DATE menu functions are grouped under the subfolders of `DATE`.
+
+### Date (D)
 
 The `Date` object has the form `D{year:u16, month:u8, day:u8}` and represents a
 Gregorian calendar date. For example, the date `2024-03-14` is entered into the
@@ -489,7 +482,44 @@ Here is an incomplete list of validation rules:
 - `day` component must be between 1 and 31, and must be valid for the given
   month
 
-#### Date Operations
+#### Date Functions
+
+- ![ROOT > DATE > D](images/menu/root-date-d.png) (ROOT > DATE > D)
+    - ![ROOT > DATE > Date > Row1](images/menu/root-date-d-1.png)
+    - ![ROOT > DATE > Date > Row2](images/menu/root-date-d-2.png)
+    - ![ROOT > DATE > Date > Row3](images/menu/root-date-d-3.png)
+    - `D{}`: insert initialization string for `Date` object
+    - `>ED`: convert Date to epoch days (assuming UTC)
+    - `ED>`: epoch days to Date (assuming UTC)
+    - `>ES`: convert Date to epoch seconds (assuming UTC)
+    - `ES>`: epoch seconds to Date (assuming UTC)
+    - `LEAP`: determine if year of Date is a leap year
+    - `DOW`: calculate the DayOfWeek of given Date, DateTime, ZonedDateTime
+    - `CVTZ`: convert Date (Y) to TimeZone (X)
+    - `.YR`: extract `year` component of Date
+    - `.MON`: extract `month` component of Date
+    - `.DAY`: extract `day` component of Date
+    - `DSHK`: (not defined)
+    - `DEXD`: extend Date to DateTime
+    - `DCUT`: (not defined)
+    - `DLNK`: link Date and Time into DateTime
+
+The `>ED`, `ED>`, `>ES`, and `>ES` functions convert a `Date` object to/from the
+EpochDays and EpochSeconds respectively. For example, let's calculate the
+epochdays of 2024-03-14:
+
+| **Keys**          | **MODE `{..}`**                               | **MODE `".."`**   |
+| -----------       | ---------------------                         | ----------------- |
+| `D{2024,3,14}`    | ![](images/date/date-to-epochdays-raw-1.png)  | ![](images/date/date-to-epochdays-str-1.png) |
+| `>ED`             | ![](images/date/date-to-epochdays-raw-2.png)  | ![](images/date/date-to-epochdays-str-2.png) |
+| `ED>`             | ![](images/date/date-to-epochdays-raw-3.png)  | ![](images/date/date-to-epochdays-str-3.png) |
+
+The Epoch date is configurable as explained in the [Epoch Date](#epoch-date)
+section below but by default, it is set to `UNIX` which is `1970-01-01`.
+
+TODO: Add screenshots of the rest of `DATE > D` menu functions.
+
+#### Date Arithmetic
 
 Addition and subtraction operations are supported as shown in the following
 table:
@@ -527,24 +557,17 @@ dates:
 
 There are 286 days from March 14 to Dec 25, 2024.
 
-#### Date to Days Conversion
-
-The `D>DY` menu function converts the Date object to the number days since the
-Epoch Date, and the `DY>D` menu function performs the reverse operation. The
-Epoch date is configurable as explained in the [Epoch Date](#epoch-date) section
-below but by default, it is set to `UNIX` which is `1970-01-01`.
-
-![ROOT > DATE > DateToDays](images/menu/root-date-epochdays.png)
-
-For example, let's calculate the epochdays of 2024-03-14:
-
-| **Keys**          | **MODE `{..}`**                           | **MODE `".."`**   |
-| -----------       | ---------------------                     | ----------------- |
-| `D{2024,3,14}`    | ![](images/date/date-to-days-raw-1.png)   | ![](images/date/date-to-days-str-1.png) |
-| `D>DY`            | ![](images/date/date-to-days-raw-2.png)   | ![](images/date/date-to-days-str-2.png) |
-| `DY>D`            | ![](images/date/date-to-days-raw-3.png)   | ![](images/date/date-to-days-str-3.png) |
-
 ### Time Object
+
+- ![ROOT > DATE > T](images/menu/root-date-t.png) (ROOT > DATE > T)
+    - ![ROOT > DATE > Time > Row1](images/menu/root-date-t-1.png)
+    - ![ROOT > DATE > Time > Row2](images/menu/root-date-t-2.png)
+    - `T{}`: insert initialization string for `Time` object
+    - `>S`: convert Time to seconds after midnight
+    - `S>`: convert seconds after midnight to Time
+    - `.HR`: extract `hour` component of Time
+    - `.MIN`: extract `minute` component of Time
+    - `.SEC`: extract `second` component of Time
 
 The `Time` object has the form `T{hour:u8, minute:u8, second:u8}`. For example,
 the time `15:36:01` is entered into the calculator like this:
@@ -1235,9 +1258,17 @@ a specific date, called the
 [epoch](https://en.wikipedia.org/wiki/Epoch_%28computing%29). RPN83P supports
 different Epoch dates under the `EPCH` menu:
 
-- ![ROOT > DATE > EPCH group](images/menu/root-date-epch.png)
-    - ![EPCH row 1](images/menu/root-date-epch-1.png)
-    - ![EPCH row 2](images/menu/root-date-epch-2.png)
+- ![ROOT > DATE > EPCH](images/menu/root-date-epch.png) (ROOT > DATE > EPCH)
+    - ![ROOT > DATE > EPCH > Row1](images/menu/root-date-epch-1.png)
+    - ![ROOT > DATE > EPCH > Row2](images/menu/root-date-epch-2.png)
+    - `UNIX`: select Unix Epoch date of 1970-01-01
+    - `NTP`: select NTP Epoch date of 1900-01-01
+    - `GPS`: select GPS Epoch date of 1980-01-06
+    - `TIOS`: select TI-OS Epoch date of 1997-01-01
+    - `Y2K`: select Epoch date of 2000-01-01
+    - `CEPC`: select custom Epoch date
+    - `EPC`: set custom Epoch date
+    - `EPC?`: get current custom Epoch date
 
 The following predefined epoch dates can be selected:
 
@@ -1346,22 +1377,21 @@ current date and time.
 
 The menu items which related to the RTC are under the `CLK` menu folder:
 
-- ![ROOT > DATE > CLK](images/menu/root-date-clk.png)
+- ![ROOT > DATE > CLK](images/menu/root-date-clk.png) (ROOT > DATE > CLK)
     - ![ROOT > DATE > CLK > Row1](images/menu/root-date-clk-1.png)
-        - `NOW`: return the current date-time as epochseconds from the current
-          Epoch date
-        - `NOWD`: return the current date-time as a `Date` object
-        - `NOWT`: return the current date-time as a `Time` object
-        - `NWDZ`: return the current date-time as a `ZonedDateTime` object using
-          the Application Timezone
-        - `NWUT`: return the current date-time as a `ZonedDateTime` object using
-          the UTC timezone
     - ![ROOT > DATE > CLK > Row2](images/menu/root-date-clk-2.png)
-        - `TZ`: set the Application Timezone
-        - `TZ?`: retrieve the Application Timezone
-        - `CTZ`: set the Clock Timezone
-        - `CTZ?`: retrieve the Clock Timezone
-        - `SETC`: set the date and time of the Clock
+    - `NOW`: get the current hardware clock as Epoch seconds
+    - `NOWD`: get the current hardware clock as a Date
+    - `NOWT`: get the current hardware clock as a Time
+    - `NWDZ`: get the current hardware clock as a ZonedDateTime using the
+    Application timezone
+    - `NWUT`: get the current hardware clock as a ZonedDateTime using UTC
+    timezone
+    - `TZ`: set the Application timezone
+    - `TZ?`: get the current Application timezone
+    - `CTZ`: set the hardware clock timezone
+    - `CTZ?`: get the hardware clock timezone
+    - `SETC`: set the datetime of the hardware clock
 
 Before we can use retrieve the current date and time from the hardware
 clock (RTC) using the various `NOW` and `NWxx` menu commands, we must configure
