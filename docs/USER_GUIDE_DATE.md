@@ -456,8 +456,8 @@ Gregorian calendar date. For example, the date `2024-03-14` is entered into the
 calculator as follows, and is displayed in 2 different ways depending on the
 MODE setting of `{..}` or `".."`:
 
-| **Keys**              | **MODE `{..}`**                   | **MODE `".."`** |
-| ----------------      | ---------------------             | --------------- |
+| **Keys**              | **MODE `{..}`**                     | **MODE `".."`** |
+| ----------------      | ---------------------               | --------------- |
 | `D{2024,3,14}`        | ![](images/date/d/date-raw-1.png)   | ![](images/date/d/date-str-1.png) |
 | `ENTER`               | ![](images/date/d/date-raw-2.png)   | ![](images/date/d/date-str-2.png) |
 | `2ND ENTER` (SHOW)    | ![](images/date/d/date-show.png)    | ![](images/date/d/date-show.png) |
@@ -469,8 +469,8 @@ represents a proper Gregorian calendar date. If the component is invalid, an
 `Err:Invalid` error message is displayed. For example, if we try to enter the
 invalid date `2024-02-30`, we get:
 
-| **Keys**          | **MODE `{..}`**                       | **MODE `".."`**   |
-| ------------------| ---------------------                 | ----------------- |
+| **Keys**          | **MODE `{..}`**                         | **MODE `".."`**   |
+| ------------------| ---------------------                   | ----------------- |
 | `D{2024,2,30}`    | ![](images/date/d/invalid-raw-1.png)    | ![](images/date/d/invalid-str-1.png) |
 | `ENTER`           | ![](images/date/d/invalid-raw-2.png)    | ![](images/date/d/invalid-str-2.png) |
 
@@ -511,8 +511,8 @@ The `>ED`, `ED>`, `>ES`, and `>ES` functions convert a `Date` object to/from the
 EpochDays and EpochSeconds respectively. For example, let's calculate the
 epochdays of 2024-03-14:
 
-| **Keys**          | **MODE `{..}`**                               | **MODE `".."`**   |
-| -----------       | ---------------------                         | ----------------- |
+| **Keys**          | **MODE `{..}`**                                 | **MODE `".."`**   |
+| -----------       | ---------------------                           | ----------------- |
 | `D{2024,3,14}`    | ![](images/date/d/date-to-epochdays-raw-1.png)  | ![](images/date/d/date-to-epochdays-str-1.png) |
 | `>ED`             | ![](images/date/d/date-to-epochdays-raw-2.png)  | ![](images/date/d/date-to-epochdays-str-2.png) |
 | `ED>`             | ![](images/date/d/date-to-epochdays-raw-3.png)  | ![](images/date/d/date-to-epochdays-str-3.png) |
@@ -539,8 +539,8 @@ When operating on `Date` objects, integer values are assumed to be in units of
 `days`. For example, let's add 20 days to the date of 2024-03-14, then
 subtract 30 days from that result:
 
-| **Keys**          | **MODE `{..}`**                       | **MODE `".."`**   |
-| ------------------| ---------------------                 | ----------------- |
+| **Keys**          | **MODE `{..}`**                         | **MODE `".."`**   |
+| ------------------| ---------------------                   | ----------------- |
 | `D{2024,3,14}`    | ![](images/date/d/date-add-raw-1.png)   | ![](images/date/d/date-add-str-1.png) |
 | `ENTER`           | ![](images/date/d/date-add-raw-2.png)   | ![](images/date/d/date-add-str-2.png) |
 | `20`              | ![](images/date/d/date-add-raw-3.png)   | ![](images/date/d/date-add-str-3.png) |
@@ -551,8 +551,8 @@ subtract 30 days from that result:
 We can subtract 2 Date records to obtain the number of whole days between the 2
 dates:
 
-| **Keys**          | **MODE `{..}`**                       | **MODE `".."`**   |
-| ------------------| ---------------------                 | ----------------- |
+| **Keys**          | **MODE `{..}`**                         | **MODE `".."`**   |
+| ------------------| ---------------------                   | ----------------- |
 | `D{2024,12,25}`   | ![](images/date/d/date-sub-raw-1.png)   | ![](images/date/d/date-sub-str-1.png) |
 | `ENTER`           | ![](images/date/d/date-sub-raw-2.png)   | ![](images/date/d/date-sub-str-2.png) |
 | `D{2024,3,14}`    | ![](images/date/d/date-sub-raw-3.png)   | ![](images/date/d/date-sub-str-3.png) |
@@ -565,8 +565,8 @@ There are 286 days from March 14 to Dec 25, 2024.
 The `Time` object has the form `T{hour:u8, minute:u8, second:u8}`. For example,
 the time `15:36:01` is entered into the calculator like this:
 
-| **Keys**              | **MODE `{..}`**                   | **MODE `".."`**   |
-| ------------------    | ---------------------             | ----------------- |
+| **Keys**              | **MODE `{..}`**                     | **MODE `".."`**   |
+| ------------------    | ---------------------               | ----------------- |
 | `T{15,36,1}`          | ![](images/date/t/time-raw-1.png)   | ![](images/date/t/time-str-1.png) |
 | `ENTER`               | ![](images/date/t/time-raw-2.png)   | ![](images/date/t/time-str-2.png) |
 | `2ND ENTER` (SHOW)    | ![](images/date/t/time-show.png)    | ![](images/date/t/time-show.png) |
@@ -601,8 +601,8 @@ non-negative number:
 
 For example, let's convert `15:35:01` to an integer, then back to a Time object:
 
-| **Keys**          | **MODE `{..}`**                           | **MODE `".."`**   |
-| ------------------| ---------------------                     | ----------------- |
+| **Keys**          | **MODE `{..}`**                                | **MODE `".."`**   |
+| ------------------| ---------------------                          | ----------------- |
 | `T{15,36,1}`      | ![](images/date/t/time-to-seconds-raw-1.png)   | ![](images/date/t/time-to-seconds-str-1.png) |
 | `D*>S`            | ![](images/date/t/time-to-seconds-raw-2.png)   | ![](images/date/t/time-to-seconds-str-2.png) |
 | `S>T`             | ![](images/date/t/time-to-seconds-raw-3.png)   | ![](images/date/t/time-to-seconds-str-3.png) |
@@ -631,8 +631,8 @@ seconds.
 Let's perform some arithmetic operations on the Time value, for example, add 234
 seconds, then subtract 100,000 seconds:
 
-| **Keys**          | **MODE `{..}`**                       | **MODE `".."`**   |
-| ------------------| ---------------------                 | ----------------- |
+| **Keys**          | **MODE `{..}`**                         | **MODE `".."`**   |
+| ------------------| ---------------------                   | ----------------- |
 | `T{15,36,1}`      | ![](images/date/t/time-add-raw-1.png)   | ![](images/date/t/time-add-str-1.png) |
 | `ENTER`           | ![](images/date/t/time-add-raw-2.png)   | ![](images/date/t/time-add-str-2.png) |
 | `234`             | ![](images/date/t/time-add-raw-3.png)   | ![](images/date/t/time-add-str-3.png) |
@@ -645,8 +645,8 @@ Since 100,000 seconds is more than 1 day, the Time object wraps around.
 Just like the Date object, we can subtract 2 Time objects to obtain the number
 of seconds between the 2 objects:
 
-| **Keys**          | **MODE `{..}`**       | **MODE `".."`**   |
-| ------------------| --------------------- | ----------------- |
+| **Keys**          | **MODE `{..}`**                         | **MODE `".."`**   |
+| ------------------| ---------------------                   | ----------------- |
 | `T{15,36,1}`      | ![](images/date/t/time-sub-raw-1.png)   | ![](images/date/t/time-sub-str-1.png) |
 | `ENTER`           | ![](images/date/t/time-sub-raw-2.png)   | ![](images/date/t/time-sub-str-2.png) |
 | `T{17,0,0}`       | ![](images/date/t/time-sub-raw-3.png)   | ![](images/date/t/time-sub-str-3.png) |
@@ -661,11 +661,11 @@ has the format `DT{year:u16, month:u8, day:u8, hour:u8, minute:u8, second:u8}`.
 
 For example, the date `2024-03-14 15:36:01` would be entered like this:
 
-| **Keys**                  | **MODE `{..}`**                       | **MODE `".."`**               |
-| ------------------------- | ---------------------                 | -----------------             |
-| `DT{2024,3,14,15,36,1}`   | ![](images/date/datetime-raw-1.png)   | ![](images/date/datetime-str-1.png) |
-| `ENTER`                   | ![](images/date/datetime-raw-2.png)   | ![](images/date/datetime-str-2.png) |
-| `2ND ENTER` (SHOW)        | ![](images/date/datetime-show.png)    | ![](images/date/datetime-show.png) |
+| **Keys**                  | **MODE `{..}`**                           | **MODE `".."`**               |
+| ------------------------- | ---------------------                     | -----------------             |
+| `DT{2024,3,14,15,36,1}`   | ![](images/date/dt/datetime-raw-1.png)    | ![](images/date/dt/datetime-str-1.png) |
+| `ENTER`                   | ![](images/date/dt/datetime-raw-2.png)    | ![](images/date/dt/datetime-str-2.png) |
+| `2ND ENTER` (SHOW)        | ![](images/date/dt/datetime-show.png)     | ![](images/date/dt/datetime-show.png) |
 
 #### DateTime Validation
 
@@ -721,21 +721,21 @@ just like `Date` and `Time`. The integer numbers are in unit of *second*.
 
 For example, let's subtract 100,000 seconds from `2024-03-14 15:39:55`:
 
-| **Keys**                  | **MODE `{..}`**                           | **MODE `".."`**               |
-| ------------------------- | ---------------------                     | -----------------             |
-| `DT{2024,3,14,15,36,1}`   | ![](images/date/datetime-add-raw-1.png)   | ![](images/date/datetime-add-str-1.png) |
-| `ENTER`                   | ![](images/date/datetime-add-raw-2.png)   | ![](images/date/datetime-add-str-2.png) |
-| `100000`                  | ![](images/date/datetime-add-raw-3.png)   | ![](images/date/datetime-add-str-3.png) |
-| `-`                       | ![](images/date/datetime-add-raw-4.png)   | ![](images/date/datetime-add-str-4.png) |
+| **Keys**                  | **MODE `{..}`**                               | **MODE `".."`**               |
+| ------------------------- | ---------------------                         | -----------------             |
+| `DT{2024,3,14,15,36,1}`   | ![](images/date/dt/datetime-add-raw-1.png)    | ![](images/date/dt/datetime-add-str-1.png) |
+| `ENTER`                   | ![](images/date/dt/datetime-add-raw-2.png)    | ![](images/date/dt/datetime-add-str-2.png) |
+| `100000`                  | ![](images/date/dt/datetime-add-raw-3.png)    | ![](images/date/dt/datetime-add-str-3.png) |
+| `-`                       | ![](images/date/dt/datetime-add-raw-4.png)    | ![](images/date/dt/datetime-add-str-4.png) |
 
 We can subtract 2 `DateTime` objects:
 
-|  **Keys**                 |  **MODE `{..}`**                          |  **MODE `".."`**              |
-| ------------------------- | ---------------------                     | -----------------             |
-| `DT{2024,12,25,0,0,0}`    | ![](images/date/datetime-sub-raw-1.png)   | ![](images/date/datetime-sub-str-1.png) |
-| `ENTER`                   | ![](images/date/datetime-sub-raw-2.png)   | ![](images/date/datetime-sub-str-2.png) |
-| `DT{2024,3,14,15,36,1}`   | ![](images/date/datetime-sub-raw-3.png)   | ![](images/date/datetime-sub-str-3.png) |
-| `-`                       | ![](images/date/datetime-sub-raw-4.png)   | ![](images/date/datetime-sub-str-4.png) |
+|  **Keys**                 |  **MODE `{..}`**                              |  **MODE `".."`**              |
+| ------------------------- | ---------------------                         | -----------------             |
+| `DT{2024,12,25,0,0,0}`    | ![](images/date/dt/datetime-sub-raw-1.png)    | ![](images/date/dt/datetime-sub-str-1.png) |
+| `ENTER`                   | ![](images/date/dt/datetime-sub-raw-2.png)    | ![](images/date/dt/datetime-sub-str-2.png) |
+| `DT{2024,3,14,15,36,1}`   | ![](images/date/dt/datetime-sub-raw-3.png)    | ![](images/date/dt/datetime-sub-str-3.png) |
+| `-`                       | ![](images/date/dt/datetime-sub-raw-4.png)    | ![](images/date/dt/datetime-sub-str-4.png) |
 
 There are 24654239 seconds from March 13, 2024 15:39:55 to Christmas Dec 25,
 2024 00:00:00.
@@ -747,10 +747,10 @@ Object](#duration-object) below.) Scroll down the `DATE` menu rows until the
 `S>DR` menu item appears, as shown in the table below. Press that menu item to
 convert 24654239 seconds into a `Duration` object:
 
-|  **Keys**     |  **MODE `{..}`**                                  |  **MODE `".."`**        |
-| ----------    | ---------------------                             | -----------------       |
-| (from above)  | ![](images/date/datetime-sub-raw-4.png)           | ![](images/date/datetime-sub-str-4.png) |
-| `S>DR`        | ![](images/date/datetime-sub-duration-raw-1.png)  | ![](images/date/datetime-sub-duration-str-1.png) |
+|  **Keys**     |  **MODE `{..}`**                                      |  **MODE `".."`**        |
+| ----------    | ---------------------                                 | -----------------       |
+| (from above)  | ![](images/date/dt/datetime-sub-raw-4.png)            | ![](images/date/dt/datetime-sub-str-4.png) |
+| `S>DR`        | ![](images/date/dt/datetime-sub-duration-raw-1.png)   | ![](images/date/dt/datetime-sub-duration-str-1.png) |
 
 We can now see that there are 285 days, 8 hours, 23 minutes, and 59 seconds
 between March 13, 2024 15:39:55 to Christmas Dec 25, 2024 00:00:00.
@@ -842,8 +842,8 @@ must be in multiples of 0.25 hours because UTC offsets must be in multiples of
 
 For example, let's add 1 hour to UTC-08:00 to get to UTC-07:00:
 
-| **Keys**          | **MODE `{..}`**                       | **MODE `".."`**   |
-| ------------------| ---------------------                 | ----------------- |
+| **Keys**          | **MODE `{..}`**                           | **MODE `".."`**   |
+| ------------------| ---------------------                     | ----------------- |
 | `TZ{-8,0}`        | ![](images/date/timezone-add-raw-1.png)   | ![](images/date/timezone-add-str-1.png) |
 | `ENTER`           | ![](images/date/timezone-add-raw-2.png)   | ![](images/date/timezone-add-str-2.png) |
 | `1`               | ![](images/date/timezone-add-raw-3.png)   | ![](images/date/timezone-add-str-3.png) |
@@ -852,8 +852,8 @@ For example, let's add 1 hour to UTC-08:00 to get to UTC-07:00:
 We can subtract 2 TimeZone objects to obtain the number of hours between the 2
 timezones:
 
-| **Keys**          | **MODE `{..}`**                       | **MODE `".."`**   |
-| ------------------| ---------------------                 | ----------------- |
+| **Keys**          | **MODE `{..}`**                           | **MODE `".."`**   |
+| ------------------| ---------------------                     | ----------------- |
 | `TZ{1,0}`         | ![](images/date/timezone-sub-raw-1.png)   | ![](images/date/timezone-sub-str-1.png) |
 | `ENTER`           | ![](images/date/timezone-sub-raw-2.png)   | ![](images/date/timezone-sub-str-2.png) |
 | `TZ{-8,0}`        | ![](images/date/timezone-sub-raw-3.png)   | ![](images/date/timezone-sub-str-3.png) |
