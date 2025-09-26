@@ -765,9 +765,9 @@ There are 24654239 seconds from March 13, 2024 15:39:55 to Christmas Dec 25,
 2024 00:00:00.
 
 We can convert the 24654239 seconds quantity into something that is easier to
-understand for humans by converting it into a `Duration` object. (The
-`Duration` object is described in more detail in the [Duration
-Object](#duration-object) below.)
+understand for humans by converting it into a `Duration` object. (The `Duration`
+object is described in more detail in the [Duration (DR)](#duration-dr) section
+below.)
 
 Go to `DATE` menu folder, then press the `DR` folder. The `SEC>` menu function
 converts the number of seconds to a `Duration` object:
