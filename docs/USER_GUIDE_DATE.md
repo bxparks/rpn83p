@@ -795,6 +795,12 @@ months, and changes to UTC-07:00 during the summer months.
 | `ENTER`               | ![](images/date/tz/timezone-raw-2.png)   | ![](images/date/tz/timezone-str-2.png) |
 | `2ND ENTER` (SHOW)    | ![](images/date/tz/timezone-show.png)    | ![](images/date/tz/timezone-show.png) |
 
+**Note**: The Time object `TZ(-8,0}` can be entered in 3 ways:
+
+- Alpha keys: `ALPHA T ALPHA Z 2ND {` ...
+- Menu keys: `DATE` `TZ` `TZ{}` ...
+- Inferred: `2ND {` ...
+
 #### TimeZone Validation
 
 The validation rules for a TimeZone object are:
@@ -888,6 +894,8 @@ There is a 9-hour difference from UTC+01:00 and UTC-08:00.
 
 ### ZonedDateTime (DZ)
 
+#### ZonedDateTime Entry
+
 The ZonedDateTime is a combination of Date, Time, and TimeZone. It has the form
 `DZ{year:u16, month:u8, day:u8, hour:u8, minute:u8, second:u8, tzhour:i8,
 tzminute:i8}`. It describes the local time of a specific place that uses a
@@ -912,6 +920,13 @@ UTC is entered and displayed:
 | `DZ{2024,3,14,22,36,1,0,0}`   | ![](images/date/dz/zoneddatetime-utc-raw-1.png)  | ![](images/date/dz/zoneddatetime-utc-str-1.png) |
 | `ENTER`                       | ![](images/date/dz/zoneddatetime-utc-raw-2.png)  | ![](images/date/dz/zoneddatetime-utc-str-2.png) |
 | `2ND ENTER` (SHOW)            | ![](images/date/dz/zoneddatetime-utc-raw-3.png)  | ![](images/date/dz/zoneddatetime-utc-str-3.png) |
+
+**Note**: The ZonedDateTime object `DZ{2024,3,14,15,36,1,-7,0}` can be entered
+in 3 ways:
+
+- Alpha keys: `ALPHA D ALPHA Z 2ND {` ...
+- Menu keys: `DATE` `DZ` `DZ{}` ...
+- Inferred: `2ND {` ...
 
 #### ZonedDateTime Validation
 
@@ -1020,6 +1035,8 @@ a `Duration` object which can be more useful in some situations.
 
 ### DayOfWeek (DW)
 
+#### DayOfWeek Entry
+
 The `DayOfWeek` object has the form `DW{dow:u8}`, where the `dow` field is a
 single integer containing the [ISO Weekday
 number](https://en.wikipedia.org/wiki/ISO_8601), where Monday is represented by
@@ -1031,6 +1048,12 @@ of 4 and can be entered as:
 | `DW{4}`               | ![](images/date/dw/dayofweek-raw-1.png)  | ![](images/date/dw/dayofweek-str-1.png) |
 | `ENTER`               | ![](images/date/dw/dayofweek-raw-2.png)  | ![](images/date/dw/dayofweek-str-2.png) |
 | `2ND ENTER` (SHOW)    | ![](images/date/dw/dayofweek-show.png)   | ![](images/date/dw/dayofweek-show.png) |
+
+**Note**: The DayOfWeek object `DW{4}` can be entered in 2 ways:
+
+- Alpha keys: `ALPHA D ALPHA W 2ND {` ...
+- Menu keys: `DATE` `DW` `DW{}` ...
+- Inferred: (not available)
 
 #### DayOfWeek Validation
 
@@ -1083,6 +1106,8 @@ We can also subtract 2 DayOfWeek objects to get the number of days between them:
 
 ### Duration (DR)
 
+#### Duration Entry
+
 The `Duration` object has the form `DR{days:i16, hours:i8, minutes:i8,
 seconds:i8}`. It can be a positive or a negative quantity.
 
@@ -1111,39 +1136,40 @@ The `days` component is restricted to 4 digits, so the largest magnitude is
 `9999`. Therefore, the largest duration that can be represented by the
 Duration object is `9999d 23h 59m 59s` or about 24.3 years.
 
-#### Duration Colon Modifier Entry
+**Note**: The Duration object `DR{1,2,3,4}` can be entered in 4 ways:
+
+- Alpha keys: `ALPHA D ALPHA R 2ND {` ...
+- Menu keys: `DATE` `DR` `DR{}` ...
+- Inferred: `2ND {` ...
+- Compact string: `1` `ALPHA D` `2` `ALPHA H` `3` `ALPHA M` `4` `ALPHA S` (see
+  next)
+
+#### Duration Compact Entry
 
 We sometimes want to quickly enter a single component of a Duration object
 without having to enter the `0` values for the other components. For example, to
 enter "2 minutes", we would have to enter `DR{0,0,2,0}`, and for "12 hours", we
-would need to enter `DR{0,12,0,0}`. The RPN83P app provides a shortcut to make
-entering these simple Durations easier. The Duration object can be entered using
-the colon character `:` and a letter (`S`, `M`, `H`, `D`) in the following way:
+would need to enter `DR{0,12,0,0}`.
 
-- `dddd:D` - shortcut for `DR{dddd,0,0,0}`, i.e. "dddd days"
-- `hh:H` - shortcut for `DR{0,hh,0,0}`, i.e. "hh hours"
-- `mm:M` - shortcut for `DR{0,0,mm,0}`, i.e. "mm minutes"
-- `ss:S` - shortcut for `DR{0,0,0,ss}`, i.e. "ss seconds"
+The RPN83P app provides a shortcut using compact strings using digits
+and one or more of the letters (`S`, `M`, `H`, `D`) in the following way:
 
-For example, here is how to enter 4 Duration objects (1 day, 2 hours, 3 minutes,
-and 4 seconds) using the colon-shortcut notation:
+- `ddddD` - shortcut for `DR{dddd,0,0,0}`, i.e. "dddd days"
+- `hhH` - shortcut for `DR{0,hh,0,0}`, i.e. "hh hours"
+- `mmM` - shortcut for `DR{0,0,mm,0}`, i.e. "mm minutes"
+- `ssS` - shortcut for `DR{0,0,0,ss}`, i.e. "ss seconds"
 
-| **Keys**  | **MODE `{..}`**                               | **MODE `".."`**   |
-| --------- | ---------------------                         | ----------------- |
-| `1:D`     | ![](images/date/dr/duration-colon-day-raw-1.png)       | ![](images/date/dr/duration-colon-day-str-1.png) |
-| `ENTER`   | ![](images/date/dr/duration-colon-day-raw-2.png)       | ![](images/date/dr/duration-colon-day-str-2.png) |
-| `2:H`     | ![](images/date/dr/duration-colon-hour-raw-1.png)      | ![](images/date/dr/duration-colon-hour-str-1.png) |
-| `ENTER`   | ![](images/date/dr/duration-colon-hour-raw-2.png)      | ![](images/date/dr/duration-colon-hour-str-2.png) |
-| `3:M`     | ![](images/date/dr/duration-colon-minute-raw-1.png)    | ![](images/date/dr/duration-colon-minute-str-1.png) |
-| `ENTER`   | ![](images/date/dr/duration-colon-minute-raw-2.png)    | ![](images/date/dr/duration-colon-minute-str-2.png) |
-| `4:S`     | ![](images/date/dr/duration-colon-second-raw-1.png)    | ![](images/date/dr/duration-colon-second-str-1.png) |
-| `ENTER`   | ![](images/date/dr/duration-colon-second-raw-2.png)    | ![](images/date/dr/duration-colon-second-str-2.png) |
+The letter modifiers can be strung together in any combination.
 
-**Note**: Only a single colon-modifier can be entered on a single line. Multiple
-colon-modifiers separated by spaces (e.g. `2:H 4:M`) are not supported. This
-feature may be implemented in the future. As a workaround, one can enter colon
-modifiers separately, then add them together using the `+` button, e.g. `2:H
-ENTER 4:M +`.
+For example, here is how to enter the Duration objects (1d 3m) and (2h 4s) using
+the compact string notation:
+
+| **Keys**                      | **MODE `{..}`**                                   | **MODE `".."`**   |
+| ---------                     | ---------------------                             | ----------------- |
+| `1` `ALPHA D` `3` `ALPHA M`   | ![](images/date/dr/duration-compact-raw-1.png)    | ![](images/date/dr/duration-compact-str-1.png) |
+| `ENTER`                       | ![](images/date/dr/duration-compact-raw-2.png)    | ![](images/date/dr/duration-compact-str-2.png) |
+| `2` `ALPHA H` `4` `ALPHA S`   | ![](images/date/dr/duration-compact-raw-3.png)    | ![](images/date/dr/duration-compact-str-3.png) |
+| `ENTER`                       | ![](images/date/dr/duration-compact-raw-4.png)    | ![](images/date/dr/duration-compact-str-4.png) |
 
 #### Duration Validation
 
@@ -1807,7 +1833,7 @@ Here are examples for each supported data type:
 In addition to these shortcuts, there are 2 additional shortcuts described in
 earlier sections:
 
-- [Duration Colon Modifier Entry](#duration-colon-modifier-entry) allows
+- [Duration Compact Entry](#duration-compact-entry) allows
   Duration objects to be entered using the colon `:` modifier. For example, "2
   hours" would be entered as `DR{0,2,0,0}` in the full record form, but can be
   entered as `2:H` using the colon modifier.
