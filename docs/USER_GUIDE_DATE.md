@@ -1552,9 +1552,9 @@ To set the Application Timezone to UTC-07:00 for example, use the following:
 
 | **Keys**  | **MODE `{..}`**                                   | **MODE `".."`**   |
 | ----------| ---------------------                             | ----------------- |
-| `TZ{-7,0}`| ![](images/date/set-app-timezone-pdt-raw-1.png)   | ![](images/date/set-app-timezone-pdt-str-1.png) |
-| `TZ`      | ![](images/date/set-app-timezone-pdt-raw-2.png)   | ![](images/date/set-app-timezone-pdt-str-2.png) |
-| `TZ?`     | ![](images/date/set-app-timezone-pdt-raw-3.png)   | ![](images/date/set-app-timezone-pdt-str-3.png) |
+| `TZ{-7,0}`| ![](images/date/clk/set-app-timezone-pdt-raw-1.png)   | ![](images/date/clk/set-app-timezone-pdt-str-1.png) |
+| `TZ`      | ![](images/date/clk/set-app-timezone-pdt-raw-2.png)   | ![](images/date/clk/set-app-timezone-pdt-str-2.png) |
+| `TZ?`     | ![](images/date/clk/set-app-timezone-pdt-raw-3.png)   | ![](images/date/clk/set-app-timezone-pdt-str-3.png) |
 
 ### Get Current DateTime Now
 
@@ -1564,11 +1564,11 @@ Now that we have configured the hardware clock, we can use the various `NOW` and
 
 | **Keys**  | **MODE `{..}`**                   | **MODE `".."`**   |
 | ----------| ---------------------             | ----------------- |
-| `NOW`     | ![](images/date/get-now-raw.png)  | ![](images/date/get-now-form.png) |
-| `NOWD`    | ![](images/date/get-nowd-raw.png) | ![](images/date/get-nowd-form.png) |
-| `NOWT`    | ![](images/date/get-nowt-raw.png) | ![](images/date/get-nowt-form.png) |
-| `NWDZ`    | ![](images/date/get-nwdz-raw.png) | ![](images/date/get-nwdz-form.png) |
-| `NWUT`    | ![](images/date/get-nwut-raw.png) | ![](images/date/get-nwut-form.png) |
+| `NOW`     | ![](images/date/clk/get-now-raw.png)  | ![](images/date/clk/get-now-form.png) |
+| `NOWD`    | ![](images/date/clk/get-nowd-raw.png) | ![](images/date/clk/get-nowd-form.png) |
+| `NOWT`    | ![](images/date/clk/get-nowt-raw.png) | ![](images/date/clk/get-nowt-form.png) |
+| `NWDZ`    | ![](images/date/clk/get-nwdz-raw.png) | ![](images/date/clk/get-nwdz-form.png) |
+| `NWUT`    | ![](images/date/clk/get-nwut-raw.png) | ![](images/date/clk/get-nwut-form.png) |
 
 ### TI-OS Clock
 
@@ -1576,7 +1576,7 @@ The same hardware clock can be accessed and configured in the TI-OS using the
 `MODE` screen on the first or second page (depending on the OS version), like
 this:
 
-![TIOS Mode Set Clock](images/date/tios-mode-setclock.png)
+![TIOS Mode Set Clock](images/date/clk/tios-mode-setclock.png)
 
 The TI-OS does *not* know about timezones. The date-time displayed here will be
 in the timezone configured by the `CTZ` command in RPN83P. For example, if `CTZ`
