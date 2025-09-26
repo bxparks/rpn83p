@@ -11,12 +11,13 @@ supported by the RPN83P app.
 - arithmetic
     - `/`, `*`, `-`, `+`
 - algebraic
-    - `X^-1`, `X^2`, `sqrt`, `^` (i.e. `Y^X`)
+    - `X^-1`, `X^2`, `2ND SQRT`, `^` (i.e. `Y^X`)
 - trigonometric
     - `SIN`, `COS`, `TAN`
-    - `2ND` `SIN^-1`, `2ND` `COS^-1`, `2ND` `TAN^-1`
+    - `2ND SIN^-1`, `2ND COS^-1`, `2ND TAN^-1`
 - transcendental
-    - `LOG`, `10^X`, `LN`, `E^X`
+    - `LOG`, `LN`
+    - `2ND 10^X`, `2ND E^X`
 - constants
     - `PI`, `E`
 
@@ -30,7 +31,7 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
     - ![ROOT > Row1](images/menu/root-1.png)
     - ![ROOT > Row2](images/menu/root-2.png)
     - ![ROOT > Row3](images/menu/root-3.png)
-- ![ROOT > MATH](images/menu/root-math.png) (`ROOT > MATH`)
+- ![ROOT > MATH](images/menu/root-math.png) (ROOT > MATH)
     - ![ROOT > MATH > Row1](images/menu/root-math-1.png)
     - ![ROOT > MATH > Row2](images/menu/root-math-2.png)
     - `X^3`: cube of `X`
@@ -45,7 +46,7 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
     - `LOGB`: log base `X` of `Y`
     - `E^X-`: `e^x-1` accurate for small `x`
     - `LN1+`: `log(1+x)` accurate for small `x`
-- ![ROOT > NUM](images/menu/root-num.png) (`ROOT > NUM`)
+- ![ROOT > NUM](images/menu/root-num.png) (ROOT > NUM)
     - ![ROOT > NUM > Row1](images/menu/root-num-1.png)
     - ![ROOT > NUM > Row2](images/menu/root-num-2.png)
     - ![ROOT > NUM > Row3](images/menu/root-num-3.png)
@@ -72,24 +73,24 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
     - `RNDF`: round to `FIX/SCI/ENG` digits after the decimal point
     - `RNDN`: round to user-specified `n` digits (0-9) after the decimal point
     - `RNDG`: round to remove guard digits, leaving 10 mantissa digits
-- ![ROOT > PROB](images/menu/root-prob.png) (`ROOT > PROB`)
+- ![ROOT > PROB](images/menu/root-prob.png) (ROOT > PROB)
     - ![ROOT > PROB > Row1](images/menu/root-prob-1.png)
     - `COMB`: combination `C(n,r)` = `C(Y, X)`
     - `PERM`: permutation `P(n,r)` = `P(Y, X)`
     - `N!`: factorial of `X`
     - `RAND`: random number in the range `[0,1)`
     - `SEED`: set the random number generator seed to `X`
-- ![ROOT > CPLX](images/menu/root-cplx.png) (`ROOT > CPLX`)
+- ![ROOT > CPLX](images/menu/root-cplx.png) (ROOT > CPLX)
     - ![ROOT > CPLX > Row1](images/menu/root-cplx-1.png)
     - `REAL`: extract the real component of the complex number
     - `IMAG`: extract the imaginary component of the complex number
     - `CONJ`: calculate the complex conjugate
     - `CABS`: calculate the magnitude of the complex number
     - `CANG`: calculate the angle (i.e. argument) of the complex number
-- ![ROOT > HELP](images/menu/root-help.png) (`ROOT > HELP`)
+- ![ROOT > HELP](images/menu/root-help.png) (ROOT > HELP)
     - display the Help pages
     - use arrow keys to view each Help page
-- ![ROOT > BASE](images/menu/root-base.png) (`ROOT > BASE`)
+- ![ROOT > BASE](images/menu/root-base.png) (ROOT > BASE)
     - ![ROOT > BASE > Row1](images/menu/root-base-1.png)
     - ![ROOT > BASE > Row2](images/menu/root-base-2.png)
     - `DEC`: use decimal base 10
@@ -145,7 +146,7 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
         - `CF?`: return carry flag state as 0 or 1
         - `WSIZ`: set integer word size (supported values: 8, 16, 24, 32)
         - `WSZ?`: return current integer word size (default: 32)
-- ![ROOT > HYP](images/menu/root-hyp.png) (`ROOT > HYP`)
+- ![ROOT > HYP](images/menu/root-hyp.png) (ROOT > HYP)
     - ![ROOT > HYP > Row1](images/menu/root-hyp-1.png)
     - ![ROOT > HYP > Row2](images/menu/root-hyp-2.png)
     - `SINH`: hyperbolic `sin()`
@@ -154,7 +155,7 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
     - `ASNH`: hyperbolic `asin()`
     - `ACSH`: hyperbolic `acos()`
     - `ATNH`: hyperbolic `atan()`
-- ![ROOT > STAT](images/menu/root-stat.png) (`ROOT > STAT`)
+- ![ROOT > STAT](images/menu/root-stat.png) (ROOT > STAT)
     - ![ROOT > STAT > Row1](images/menu/root-stat-1.png)
     - ![ROOT > STAT > Row2](images/menu/root-stat-2.png)
     - ![ROOT > STAT > Row3](images/menu/root-stat-3.png)
@@ -181,8 +182,7 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
         - `pdev(Y) = <Y^2> - <Y>^2`
     - `PCOV`: population covariance
         - `pcov(X,Y) = <XY> - <X><Y>`
-    - ![ROOT > STAT > SIGMA](images/menu/root-stat-sigma.png) (`ROOT > STAT` >
-      `SIGMA`)
+    - ![ROOT > STAT > SIGMA](images/menu/root-stat-sigma.png) (ROOT > STAT > SIGMA)
         - ![ROOT > STAT > SIGMA > Row1](images/menu/root-stat-sigma-1.png)
         - ![ROOT > STAT > SIGMA > Row2](images/menu/root-stat-sigma-2.png)
         - ![ROOT > STAT > SIGMA > Row3](images/menu/root-stat-sigma-3.png)
@@ -202,8 +202,8 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
         - `ΣLXL` - sum of `Ln(X) Ln(Y)`
         - `ΣXLY` - sum of `X Ln(Y)`
         - `ΣYLX` - sum of `Y Ln(X)`
-    - ![ROOT > STAT > CFIT](images/menu/root-stat-cfit.png) (`ROOT > STAT` >
-      `CFIT`)
+    - ![ROOT > STAT > CFIT](images/menu/root-stat-cfit.png) (ROOT > STAT >
+      CFIT)
         - See Chapter 15 of the _HP-42S User's Manual_
         - ![ROOT > STAT > CFIT > Row1](images/menu/root-stat-cfit-1.png)
         - ![ROOT > STAT > CFIT > Row2](images/menu/root-stat-cfit-2.png)
@@ -219,7 +219,7 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
         - `BEST`: automatically select the best model, i.e. the one with the
           largest absolute value of the correlation coefficient. The `CORR`
           value is returned in the `X` register for reference.
-- ![ROOT > CONV](images/menu/root-conv.png) (`ROOT > CONV`)
+- ![ROOT > CONV](images/menu/root-conv.png) (ROOT > CONV)
     - ![ROOT > CONV > Row1](images/menu/root-conv-1.png)
     - ![ROOT > CONV > Row2](images/menu/root-conv-2.png)
     - `>DEG`: convert radians to degrees
@@ -236,7 +236,7 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
     - `>HMS`: convert `HH.hhhh` to `HH.MMSSssss`
     - `HMS+`: add `X` and `Y` assuming HMS format
     - `HMS-`: subtract `X` from `Y` assuming HMS format
-- ![ROOT > TVM](images/menu/root-tvm.png) (`ROOT > TVM`)
+- ![ROOT > TVM](images/menu/root-tvm.png) (ROOT > TVM)
     - ![ROOT > TVM > Row1](images/menu/root-tvm-1.png)
     - ![ROOT > TVM > Row2](images/menu/root-tvm-2.png)
     - ![ROOT > TVM > Row3](images/menu/root-tvm-3.png)
@@ -254,7 +254,7 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
     - `IYR2`: set `I%YR` guess 2 for TVM Solver
     - `TMAX`: set iteration max for TVM Solver
     - `RSTV`: reset TVM Solver parameters to factory defaults
-- ![ROOT > CLR](images/menu/root-clr.png) (`ROOT > CLR`)
+- ![ROOT > CLR](images/menu/root-clr.png) (ROOT > CLR)
     - ![ROOT > CLR > Row1](images/menu/root-clr-1.png)
     - ![ROOT > CLR > Row2](images/menu/root-clr-2.png)
     - `CLX`: clear `X` stack register (stack lift disabled)
@@ -264,7 +264,7 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
       affected)
     - `CLTV`: clear TVM variables and parameters
     - `CLD`: clear display and rerender everything
-- ![ROOT > MODE](images/menu/root-mode.png) (`ROOT > MODE`)
+- ![ROOT > MODE](images/menu/root-mode.png) (ROOT > MODE)
     - ![ROOT > MODE > Row1](images/menu/root-mode-1.png)
     - ![ROOT > MODE > Row2](images/menu/root-mode-2.png)
     - ![ROOT > MODE > Row3](images/menu/root-mode-3.png)
@@ -295,14 +295,14 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
       (see [USER_GUIDE_DATE.md](USER_GUIDE_DATE.md))
     - `".."`: display record objects in string format
       (see [USER_GUIDE_DATE.md](USER_GUIDE_DATE.md))
-- ![ROOT > STK](images/menu/root-stk.png) (`ROOT > STK`)
+- ![ROOT > STK](images/menu/root-stk.png) (ROOT > STK)
     - ![ROOT > STK > Row1](images/menu/root-stk-1.png)
     - `DUP`: duplicate `X` value and lift stack values up
     - `R(up)`: roll stack up, also bound to `2ND u` button
     - `R(down)`: roll stack down, also bound to `(` button
     - `DROP`: delete the `X` value and drop stack values down
     - `X<>Y`: exchange `X` and `Y`, also bound to `)` button
-- ![ROOT > UNIT](images/menu/root-unit.png) (`ROOT > UNIT`)
+- ![ROOT > UNIT](images/menu/root-unit.png) (ROOT > UNIT)
     - ![ROOT > UNIT > Row1](images/menu/root-unit-1.png)
     - ![ROOT > UNIT > Row2](images/menu/root-unit-2.png)
     - ![ROOT > UNIT > Row3](images/menu/root-unit-3.png)
@@ -344,17 +344,17 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
         - `ASTR`: Astronomy units
         - `NAUT`: Nautical units
         - `SURV`: Survey units
-        - ![ROOT > UNIT > LENG > ASTR](images/menu/root-unit-astr.png) (ROOT > UNIT > LENG > ASTR)
+        - ![ROOT > UNIT > LENG > ASTR](images/menu/root-unit-leng-astr.png) (ROOT > UNIT > LENG > ASTR)
             - ![ROOT > UNIT > LENG > ASTR > Row1](images/menu/root-unit-leng-astr-1.png)
             - `AU`: Astronomical Unit
             - `ly`: light year
             - `pc`: parsec
-        - ![ROOT > UNIT > LENG > NAUT](images/menu/root-unit-naut.png) (ROOT > UNIT > LENG > NAUT)
+        - ![ROOT > UNIT > LENG > NAUT](images/menu/root-unit-leng-naut.png) (ROOT > UNIT > LENG > NAUT)
             - ![ROOT > UNIT > LENG > NAUT > Row1](images/menu/root-unit-leng-naut-1.png)
             - `fthm`: fanthom
             - `cabl`: cable
             - `nmi`: nautical mile
-        - ![ROOT > UNIT > LENG > SURV](images/menu/root-unit-surv.png) (ROOT > UNIT > LENG > SURV)
+        - ![ROOT > UNIT > LENG > SURV](images/menu/root-unit-leng-surv.png) (ROOT > UNIT > LENG > SURV)
             - ![ROOT > UNIT > LENG > SURV > Row1](images/menu/root-unit-leng-surv-1.png)
             - ![ROOT > UNIT > LENG > SURV > Row2](images/menu/root-unit-leng-surv-2.png)
             - `svft`: survey foot (pre-2023)
@@ -560,7 +560,7 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
         - ![ROOT > UNIT > FUEL > Row1](images/menu/root-unit-fuel-1.png)
         - `Lkm`: liters per 100 km
         - `mpg`: miles per US gallon
-- ![ROOT > DATE](images/menu/root-date.png) (`ROOT > DATE`)
+- ![ROOT > DATE](images/menu/root-date.png) (ROOT > DATE)
     - ![ROOT > DATE > Row1](images/menu/root-date-1.png)
     - ![ROOT > DATE > Row2](images/menu/root-date-2.png)
     - `D`: `Date` folder
@@ -572,7 +572,7 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
     - `DW`: `DayOfWeek` folder
     - `EPCH`: Epoch folder
     - `CLK`: Clock folder
-    - ![ROOT > DATE > D](images/menu/root-date-d.png)
+    - ![ROOT > DATE > D](images/menu/root-date-d.png) (ROOT > DATE > D)
         - ![ROOT > DATE > Date > Row1](images/menu/root-date-d-1.png)
         - ![ROOT > DATE > Date > Row2](images/menu/root-date-d-2.png)
         - ![ROOT > DATE > Date > Row3](images/menu/root-date-d-3.png)
@@ -591,7 +591,7 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
         - `DEXD`: extend Date to DateTime
         - `DCUT`: (not defined)
         - `DLNK`: link Date and Time into DateTime
-    - ![ROOT > DATE > T](images/menu/root-date-t.png)
+    - ![ROOT > DATE > T](images/menu/root-date-t.png) (ROOT > DATE > T)
         - ![ROOT > DATE > Time > Row1](images/menu/root-date-t-1.png)
         - ![ROOT > DATE > Time > Row2](images/menu/root-date-t-2.png)
         - `T{}`: insert initialization string for `Time` object
@@ -600,7 +600,7 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
         - `.HR`: extract `hour` component of Time
         - `.MIN`: extract `minute` component of Time
         - `.SEC`: extract `second` component of Time
-    - ![ROOT > DATE > DT](images/menu/root-date-dt.png)
+    - ![ROOT > DATE > DT](images/menu/root-date-dt.png) (ROOT > DATE > DT)
         - ![ROOT > DATE > DateTime > Row1](images/menu/root-date-dt-1.png)
         - ![ROOT > DATE > DateTime > Row2](images/menu/root-date-dt-2.png)
         - ![ROOT > DATE > DateTime > Row3](images/menu/root-date-dt-3.png)
@@ -618,7 +618,7 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
         - `DEXD`: extend DateTime into ZonedDateTime by adding a UTC TimeZone
         - `DCUT`: cut (split) a DateTime into a Date and Time
         - `DLNK`: link (merge) Date and Time into a DateTime
-    - ![ROOT > DATE > DZ](images/menu/root-date-tz.png)
+    - ![ROOT > DATE > TZ](images/menu/root-date-tz.png) (ROOT > DATE > TZ)
         - ![ROOT > DATE > TimeZone > Row1](images/menu/root-date-tz-1.png)
         - ![ROOT > DATE > TimeZone > Row2](images/menu/root-date-tz-2.png)
         - `TZ{}`: insert initialization string for `TimeZone` object
@@ -626,7 +626,7 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
         - `HR>`: convert floating point hours into TimeZone
         - `.HR`: extract `hour` component of TimeZone
         - `.MIN`: extract `minute` component of TimeZone
-    - ![ROOT > DATE > DZ](images/menu/root-date-dz.png)
+    - ![ROOT > DATE > DZ](images/menu/root-date-dz.png) (ROOT > DATE > DZ)
         - ![ROOT > DATE > ZonedDateTime > Row1](images/menu/root-date-dz-1.png)
         - ![ROOT > DATE > ZonedDateTime > Row2](images/menu/root-date-dz-2.png)
         - ![ROOT > DATE > ZonedDateTime > Row3](images/menu/root-date-dz-3.png)
@@ -649,7 +649,7 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
         - `DEXD`: (not defined)
         - `DCUT`: cut (split) a ZonedDateTime into a DateTime and TimeZone
         - `DLNK`: (not defined)
-    - ![ROOT > DATE > DR](images/menu/root-date-dr.png)
+    - ![ROOT > DATE > DR](images/menu/root-date-dr.png) (ROOT > DATE > DR)
         - ![ROOT > DATE > Duration > Row1](images/menu/root-date-dr-1.png)
         - ![ROOT > DATE > Duration > Row2](images/menu/root-date-dr-2.png)
         - `DR{}`: insert initialization string for `Duration` object
@@ -662,7 +662,7 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
         - `.HR`: extract `hour` component of Duration
         - `.MIN`: extract `minute` component of Duration
         - `.SEC`: extract `second` component of Duration
-    - ![ROOT > DATE > DW](images/menu/root-date-dw.png)
+    - ![ROOT > DATE > DW](images/menu/root-date-dw.png) (ROOT > DATE > DW)
         - ![ROOT > DATE > TimeZone > Row1](images/menu/root-date-dw-1.png)
         - `DW{}`: insert initialization string for `DayOfWeek` object
         - `>ISO`: convert DayOfWeek into ISO day of week number (Mon=1,Sun=7)
@@ -670,7 +670,7 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
         - `>UNX`: convert DayOfWeek into Unix day of week number (Sun=0,Sat=6)
         - `UNX>`: convert Unix day of week number into DayOfWeek (Sun=0,Sat=6)
     - ![ROOT > DATE > EPCH](images/menu/root-date-epch.png)
-      (`ROOT > DATE > EPCH`)
+      (ROOT > DATE > EPCH)
         - ![ROOT > DATE > EPCH > Row1](images/menu/root-date-epch-1.png)
         - ![ROOT > DATE > EPCH > Row2](images/menu/root-date-epch-2.png)
         - `UNIX`: select Unix Epoch date of 1970-01-01
@@ -681,7 +681,7 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
         - `CEPC`: select custom Epoch date
         - `EPC`: set custom Epoch date
         - `EPC?`: get current custom Epoch date
-    - ![ROOT > DATE > CLK](images/menu/root-date-clk.png) (`ROOT > DATE > CLK`)
+    - ![ROOT > DATE > CLK](images/menu/root-date-clk.png) (ROOT > DATE > CLK)
         - ![ROOT > DATE > CLK > Row1](images/menu/root-date-clk-1.png)
         - ![ROOT > DATE > CLK > Row2](images/menu/root-date-clk-2.png)
         - `NOW`: get the current hardware clock as Epoch seconds
