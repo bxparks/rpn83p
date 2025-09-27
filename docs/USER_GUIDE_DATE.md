@@ -46,7 +46,7 @@ These features were inspired by various datetime libraries:
 - [DATE Buttons](#date-buttons)
 - [Data Entry](#data-entry)
     - [ALPHA Entry](#alpha-entry)
-    - [Menu Aided Entry](#menu-aided-entry)
+    - [Menu Initializer Entry](#menu-initializer-entry)
     - [Type Inferred Entry](#type-inferred-entry)
 - [Comma-EE Modes](#comma-ee-modes)
 - [Formatting Modes](#formatting-modes)
@@ -58,25 +58,24 @@ These features were inspired by various datetime libraries:
     - [ZonedDateTime (DZ)](#zoneddatetime-dz)
     - [DayOfWeek (DW)](#dayofweek-dw)
     - [Duration (DR)](#duration-dr)
+    - [Epoch Date](#epoch-date)
+        - [Custom Epoch Date](#custom-epoch-date)
+        - [Epoch Conversions](#epoch-conversions)
+        - [Epoch Seconds Range](#epoch-seconds-range)
+    - [Real Time Clock](#real-time-clock)
+        - [Setting the Clock Timezone](#setting-the-clock-timezone)
+        - [Setting the Clock DateTime](#setting-the-clock-datetime)
+        - [Setting the Application Timezone](#setting-the-application-timezone)
+        - [Get Current DateTime Now](#get-current-datetime-now)
+        - [TI-OS Clock](#ti-os-clock)
 - [Timezone Conversions](#timezone-conversions)
 - [Leap Year Determination](#leap-year-determination)
-- [Epoch Date](#epoch-date)
-    - [Custom Epoch Date](#custom-epoch-date)
-    - [Epoch Conversions](#epoch-conversions)
-    - [Epoch Seconds Range](#epoch-seconds-range)
-- [Real Time Clock](#real-time-clock)
-    - [Setting the Clock Timezone](#setting-the-clock-timezone)
-    - [Setting the Clock DateTime](#setting-the-clock-datetime)
-    - [Setting the Application Timezone](#setting-the-application-timezone)
-    - [Get Current DateTime Now](#get-current-datetime-now)
-    - [TI-OS Clock](#ti-os-clock)
 - [Date Type Conversions](#date-type-conversions)
     - [DSHK - Shrink](#dshk---shrink)
     - [DEXD - Extend](#dexd---extend)
     - [DCUT - Cut](#dcut---cut)
     - [DLNK - Link](#dlnk---link)
 - [Storage Registers](#storage-registers)
-- [Data Entry for Experts](#data-entry-for-experts)
 
 ## Calendar, Time, and Timezones
 
@@ -351,17 +350,17 @@ that into the RFC 3339 format `2024-03-14`, which corresponds to the Date object
 | `14`              | ![](images/date/d/date-alpha-entry-7.png) |
 | `2ND }`           | ![](images/date/d/date-alpha-entry-8.png) |
 
-### Menu Aided Entry
+### Menu Initializer Entry
 
-The key sequence `ALPHA D 2ND {` is cumbersome to type on the TI-83+/84+ keyboard
-because the letters are arranged alphabetically instead of a QWERTY layout.
-Also, the color of the ALPHA letters can be difficult to read on some of the
-TI-83+/84+ models under low light conditions.
+The key sequence `ALPHA D 2ND {` is cumbersome to type on the TI-83+/84+
+keyboard because the letters are arranged alphabetically instead of a QWERTY
+layout. Also, the color of the ALPHA letters can be difficult to read on some of
+the TI-83+/84+ models under low light conditions.
 
-For v1.1, I created a method of entering these DATE objects without using the
-`ALPHA` key at all. Under each DATE object menu folder, the first menu key is
-the initializer sequence of that particular object. It sends the appropriate
-character sequence to the input buffer, without using the `ALPHA` key.
+The Menu Initializer Entry method allows entry of DATE objects without using the
+`ALPHA` key at all. Under each DATE object menu folder, the first menu key
+causes the initializer sequence of that particular object to be sent into the to
+the input buffer, without using the `ALPHA` key.
 
 For example, under the `DATE > D` menu folder, the first menu button is labeled
 `D{}`. Pressing the `D{}` button is exactly equivalent to typing in the keyboard
@@ -391,11 +390,63 @@ equivalents:
 
 ### Type Inferred Entry
 
-TODO: Move "Data Entry for Experts" to here.
+The Menu Initializer entry method alleviates the need to use the `ALPHA` key.
+But one disadvantage of that entry method is that we have to navigate to the
+appropriate menu folder under the `DATE` menu.
 
-**Pro Tip**: After learning how to enter Date objects using their canonical
-forms, you can learn about various shortcuts in the [Data Entry for
-Experts](#data-entry-for-experts) section at the end of this document.
+To allow `DATE` objects to be entered from any context, RPN83P supports **type
+inference** using the **arity** of **naked records** whose right-curly-brace
+terminator is **optional**. Let's unpack that:
+
+- **naked record**: A record object with just curly braces `{` and `}` without a
+  type tag (e.g. `D` or `DT`).
+- **[arity](https://en.wikipedia.org/wiki/Arity)**: A fancy word for "the number
+  of arguments in a function".
+- **type inference**: The program infers the type of the object using the number
+  of arguments in the record:
+    - 2 arguments: TimeZone `T{..}`
+    - 3 arguments: Date `D{..}`
+    - 4 arguments: Duration `DR{..}`
+    - 6 arguments: DateTime `DT{..}`
+    - 8 arguments: ZonedDateTime `DZ{..}`
+    - DayOfWeek: not supported, arity of 1 is reserved for future use
+    - Time: not supported because arity of 3 conflicts with Date which has the
+      same arity
+- **optional right brace**: The right curly brace `}` always appears at the end
+  of a record so we can make it optional. An `ENTER` key, a function key (e.g.
+  `+`, `-`), or a menu function can be pressed without the terminating curly
+  brace.
+
+In other words, instead of requiring the object name prefix (e.g. `D` or `DZ`),
+only the left curly brace `{` is required, and the right curly brace `}` can be
+omitted. For example, the `Date` object `D{2024,3,14}` can be entered as:
+
+| **Keys**          | **Display**                               |
+| ----------------  | ---------------------                     |
+| `2ND {`           | ![](images/date/d/date-inferred-entry-1.png) |
+| `2024`            | ![](images/date/d/date-inferred-entry-2.png) |
+| `,`               | ![](images/date/d/date-inferred-entry-3.png) |
+| `3`               | ![](images/date/d/date-inferred-entry-4.png) |
+| `,`               | ![](images/date/d/date-inferred-entry-5.png) |
+| `14`              | ![](images/date/d/date-inferred-entry-6.png) |
+
+Only 5 of the 7 DATE objects support type-inferred entry:
+- The DayOfWeek object contains only a single parameter, and would interfere
+  with other single-component objects in the future.
+- The Time object has 3 parameters which unfortunately interfere with the 3
+  parameters of the `Date` object.
+
+Here are examples of this entry method for each supported DATE object type:
+
+| **Type**      | **Full Record Entry**         | **Naked Record Entry**    |
+| --------------| ----------                    | ----------                |
+| DayOfWeek     | `DW{1}`                       | (not supported, reserved) |
+| TimeZone      | `TZ{5,30}`                    | `{5,30`                   |
+| Date          | `D{2024,3,14}`                | `{2024,3,14`              |
+| Time          | `T{15,36,1}`                  | (conflicts with Date)     |
+| Duration      | `DR{1,2,3,4}`                 | `{1,2,3,4`                |
+| DateTime      | `DT{2024,3,14,15,36,1}`       | `{2024,3,14,15,36,1`      |
+| ZonedDateTime | `DT{2024,3,14,15,36,1,-7,0}`  | `{2024,3,14,15,36,1,-7,0` |
 
 ## Comma-EE Modes
 
@@ -1378,7 +1429,7 @@ The boolean expression for this function in the `C` language is:
 (year%4 == 0) && (year%100 != 0 || year%400 == 0)
 ```
 
-## Epoch Date
+### Epoch Date
 
 Many computer systems keep track of time by counting the number of seconds from
 a specific date, called the
@@ -1420,7 +1471,7 @@ The following predefined epoch dates can be selected:
     - select the custom epoch date (factory default: `2050-01-01`)
     - the custom epoch date can be changed using the `EPC` menu item (see below)
 
-### Custom Epoch Date
+#### Custom Epoch Date
 
 The custom Epoch date can be changed using the `EPC` (set epoch date) menu
 function. The current custom Epoch date value can be retrieved using the `EPC?`
@@ -1438,7 +1489,7 @@ Notice that when the `EPC` (set epoch date) command is invoked, the epoch
 selection automatically changes to `CEPC` (custom epoch date) and the dot next
 to the `CEPC` menu appears.
 
-### Epoch Conversions
+#### Epoch Conversions
 
 The Epoch date affects the following menu fuctions:
 
@@ -1485,7 +1536,7 @@ that step:
 | `2ND ANS` (LASTX)                 | ![](images/date/epch/epochseconds-raw-8.png)   | ![](images/date/epch/epochseconds-str-8.png) |
 | `D*>S`                            | ![](images/date/epch/epochseconds-raw-9.png)   | ![](images/date/epch/epochseconds-str-9.png) |
 
-### Epoch Seconds Range
+#### Epoch Seconds Range
 
 Internally, all date/time calculations are performed using 40-bit signed
 integers whose range is `[-549_755_813_888, +549_755_813_887]` seconds. This is
@@ -1496,7 +1547,7 @@ signed integers allows RPN83P to avoid the [Year
 many older Unix systems which use a 32-bit signed integer to hold the
 epochseconds quantity.
 
-## Real Time Clock
+### Real Time Clock
 
 The TI-84+ and TI-84+SE models include a real time clock (RTC) chip, unlike the
 earlier 83+ and 83+SE models. This allows the 84+ models to set and display the
@@ -1525,7 +1576,7 @@ clock (RTC) using the various `NOW` and `NWxx` menu commands, we must configure
 the hardware clock using the `CTZ` and `SETC` commands, and we must configure
 the Application Timezone using the `TZ` command.
 
-### Setting the Clock Timezone
+#### Setting the Clock Timezone
 
 Before we can set the hardware clock's datetime with the `SETC` command,
 we must set its timezone using the `CTZ` menu command. The `CTZ?` command
@@ -1572,7 +1623,7 @@ the RPN83P application is the equivalent of Linux, and the underlying TI-OS is
 the equivalent of Windows. The difference is that RPN83P has the ability to act
 like TI-OS (i.e. Windows) through the `CTZ` configuration.
 
-### Setting the Clock DateTime
+#### Setting the Clock DateTime
 
 Once the timezone of the hardware clock is set, the actual date-time of the
 clock can be configured using the `SETC` (set clock) command:
@@ -1592,7 +1643,7 @@ integer counting the number of seconds from the TI-OS epoch date, which is
 1997-01-01 00:00:00 UTC. The ZonedDateTime given to the `SETC` command is
 converted into an epochseconds before being handed over to the hardware clock.
 
-### Setting the Application Timezone
+#### Setting the Application Timezone
 
 In addition to the timezone of the RTC, RPN83P also allows the **Application**
 Timezone to be set using the `TZ` and `TZ?` commands:
@@ -1614,7 +1665,7 @@ To set the Application Timezone to UTC-07:00 for example, use the following:
 | `TZ`      | ![](images/date/clk/set-app-timezone-pdt-raw-2.png)   | ![](images/date/clk/set-app-timezone-pdt-str-2.png) |
 | `TZ?`     | ![](images/date/clk/set-app-timezone-pdt-raw-3.png)   | ![](images/date/clk/set-app-timezone-pdt-str-3.png) |
 
-### Get Current DateTime Now
+#### Get Current DateTime Now
 
 Now that we have configured the hardware clock, we can use the various `NOW` and
 `NWxx` commands to retrieve the current date and time from the RTC:
@@ -1628,7 +1679,7 @@ Now that we have configured the hardware clock, we can use the various `NOW` and
 | `NWDZ`    | ![](images/date/clk/get-nwdz-raw.png) | ![](images/date/clk/get-nwdz-form.png) |
 | `NWUT`    | ![](images/date/clk/get-nwut-raw.png) | ![](images/date/clk/get-nwut-form.png) |
 
-### TI-OS Clock
+#### TI-OS Clock
 
 The same hardware clock can be accessed and configured in the TI-OS using the
 `MODE` screen on the first or second page (depending on the OS version), like
@@ -1777,74 +1828,3 @@ Here are some selected examples:
 **WARNING**: Date objects *cannot* be stored in storage variables (A-Z,Theta)
 because storage variables can hold only native TI-OS objects. Date objects are
 extensions of the RPN83P application which cannot escape the RPN83P environment.
-
-## Data Entry for Experts
-
-If the RPN83P is executed in a TI-83/84 emulator on a desktop or laptop computer
-with a full-sized keyboard, it is easy to enter date-related objects because the
-alpha letter (A-Z), digit (0-9), and comma keys are easily accessible.
-
-On an actual TI-83/84 calculator, the letter tags (e.g. `D`, `TZ`) require the
-use of the `ALPHA` key. The button corresponding to a specific letter can be
-difficult to locate quickly because they are not organized in the familiar
-QWERTY layout. Furthermore, the left and right curly braces require the use of
-the `2ND` key instead of the `ALPHA` key, which can cause confusion in the
-fingers. Entering something like the timezone `UTC+05:30`, which is entered as
-`TZ{5,30}`, can take a surprising number of keystrokes:
-
-```
-ALPHA T
-ALPHZ Z
-2ND {
-5
-,
-30
-2ND }
-```
-
-To make data entry of date objects easier, the RPN83P supports **type
-inference** using the **arity** of **naked records** whose right-curly-brace
-terminator is **optional**. Let's unpack that:
-
-- **naked record**: A record object with just curly braces `{` and `}` without a
-  type tag (e.g. `D` or `DT`).
-- **[arity](https://en.wikipedia.org/wiki/Arity)**: A fancy word for "the number
-  of arguments in a function".
-- **type inference**: The program infers the type of the object using the number
-  of arguments in the record:
-    - 2 arguments: TimeZone `T{..}`
-    - 3 arguments: Date `D{..}`
-    - 4 arguments: Duration `DR{..}`
-    - 6 arguments: DateTime `DT{..}`
-    - 8 arguments: ZonedDateTime `DZ{..}`
-    - DayOfWeek: not supported, arity of 1 is reserved for future use
-    - Time: not supported because arity of 3 conflicts with Date which has the
-      same arity
-- **optional right brace**: The right curly brace `}` always appears at the end
-  of a record so we can make it optional. An `ENTER` key, a function key (e.g.
-  `+`, `-`), or a menu function can be pressed without the terminating curly
-  brace.
-
-Here are examples for each supported data type:
-
-| **Type**      | **Full Record Entry**         | **Naked Record Entry**    |
-| --------------| ----------                    | ----------                |
-| DayOfWeek     | `DW{1}`                       | (not supported, reserved) |
-| TimeZone      | `TZ{5,30}`                    | `{5,30`                   |
-| Date          | `D{2024,3,14}`                | `{2024,3,14`              |
-| Time          | `T{15,36,1}`                  | (conflicts with Date)     |
-| Duration      | `DR{1,2,3,4}`                 | `{1,2,3,4`                |
-| DateTime      | `DT{2024,3,14,15,36,1}`       | `{2024,3,14,15,36,1`      |
-| ZonedDateTime | `DT{2024,3,14,15,36,1,-7,0}`  | `{2024,3,14,15,36,1,-7,0` |
-
-In addition to these shortcuts, there are 2 additional shortcuts described in
-earlier sections:
-
-- [Duration Compact Entry](#duration-compact-entry) allows
-  Duration objects to be entered using the colon `:` modifier. For example, "2
-  hours" would be entered as `DR{0,2,0,0}` in the full record form, but can be
-  entered as `2:H` using the colon modifier.
-- Functions which require a TimeZone object will usually accept a floating point
-  number as an alternative, representing the number of offset hours from UTC, in
-  increments of 0.25 hours (15 minutes). This is particularly useful when
-  performing [Timezone Conversions](#timezone-conversions).
