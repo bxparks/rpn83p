@@ -56,8 +56,8 @@ These features were inspired by various datetime libraries:
     - [DateTime (DT)](#datetime-dt)
     - [TimeZone (TZ)](#timezone-tz)
     - [ZonedDateTime (DZ)](#zoneddatetime-dz)
-    - [DayOfWeek (DW)](#dayofweek-dw)
     - [Duration (DR)](#duration-dr)
+    - [DayOfWeek (DW)](#dayofweek-dw)
     - [Epoch Date](#epoch-date)
         - [Custom Epoch Date](#custom-epoch-date)
         - [Epoch Conversions](#epoch-conversions)
@@ -1186,20 +1186,6 @@ The components of the Duration object has the following validation rules:
 
 #### Duration Functions
 
-- ![ROOT > DATE > DR](images/menu/root-date-dr.png) (ROOT > DATE > DR)
-    - ![ROOT > DATE > Duration > Row1](images/menu/root-date-dr-1.png)
-    - ![ROOT > DATE > Duration > Row2](images/menu/root-date-dr-2.png)
-    - `DR{}`: insert initialization string for `Duration` object
-    - `DAY>`: convert days into Duration
-    - `HR>`: convert hours into Duration
-    - `MIN>`: convert minutes into Duration
-    - `SEC>`: convert seconds into Duration
-    - `>S`: convert Duration into seconds
-    - `.DAY`: extract `day` component of Duration
-    - `.HR`: extract `hour` component of Duration
-    - `.MIN`: extract `minute` component of Duration
-    - `.SEC`: extract `second` component of Duration
-
 A Duration object can be converted to its equivalent integer in unit of seconds.
 The menu functions are `D*>S` and `S>DR`:
 
@@ -1207,8 +1193,8 @@ The menu functions are `D*>S` and `S>DR`:
 
 Here are some examples:
 
-| **Keys**          | **MODE `{..}`**                                   | **MODE `".."`**   |
-| -----------       | ---------------------                             | ----------------- |
+| **Keys**          | **MODE `{..}`**                                      | **MODE `".."`**   |
+| -----------       | ---------------------                                | ----------------- |
 | `DR{1,2,3,4}`     | ![](images/date/dr/duration-to-seconds-raw-1.png)    | ![](images/date/dr/duration-to-seconds-str-1.png) |
 | `D*>S`            | ![](images/date/dr/duration-to-seconds-raw-2.png)    | ![](images/date/dr/duration-to-seconds-str-2.png) |
 | `S>DR`            | ![](images/date/dr/duration-to-seconds-raw-3.png)    | ![](images/date/dr/duration-to-seconds-str-3.png) |
