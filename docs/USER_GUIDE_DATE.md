@@ -359,8 +359,8 @@ the TI-83+/84+ models under low light conditions.
 
 The Menu Initializer Entry method allows entry of DATE objects without using the
 `ALPHA` key at all. Under each DATE object menu folder, the first menu key
-causes the initializer sequence of that particular object to be sent into the to
-the input buffer, without using the `ALPHA` key.
+causes the initializer sequence of that particular object to be sent directly
+into the input buffer.
 
 For example, under the `DATE > D` menu folder, the first menu button is labeled
 `D{}`. Pressing the `D{}` button is exactly equivalent to typing in the keyboard
@@ -433,8 +433,8 @@ omitted. For example, the `Date` object `D{2024,3,14}` can be entered as:
 Only 5 of the 7 DATE objects support type-inferred entry:
 - The DayOfWeek object contains only a single parameter, and would interfere
   with other single-component objects in the future.
-- The Time object has 3 parameters which unfortunately interfere with the 3
-  parameters of the `Date` object.
+- The Time object has 3 parameters which unfortunately interferes with the
+  `Date` object which also has 3 parameters.
 
 Here are examples of this entry method for each supported DATE object type:
 
@@ -509,6 +509,26 @@ The DATE menu functions are grouped under the subfolders of `DATE`.
 
 ### Date (D)
 
+- ![ROOT > DATE > D](images/menu/root-date-d.png) (ROOT > DATE > D)
+    - ![ROOT > DATE > Date > Row1](images/menu/root-date-d-1.png)
+    - ![ROOT > DATE > Date > Row2](images/menu/root-date-d-2.png)
+    - ![ROOT > DATE > Date > Row3](images/menu/root-date-d-3.png)
+    - `D{}`: insert initialization string for `Date` object
+    - `>ED`: convert Date to epoch days (assuming UTC)
+    - `ED>`: epoch days to Date (assuming UTC)
+    - `>ES`: convert Date to epoch seconds (assuming UTC)
+    - `ES>`: epoch seconds to Date (assuming UTC)
+    - `LEAP`: determine if year of Date is a leap year
+    - `DOW`: calculate the DayOfWeek of given Date, DateTime, ZonedDateTime
+    - `CVTZ`: convert Date (Y) to TimeZone (X)
+    - `.YR`: extract `year` component of Date
+    - `.MON`: extract `month` component of Date
+    - `.DAY`: extract `day` component of Date
+    - `DSHK`: (not defined)
+    - `DEXD`: extend Date to DateTime
+    - `DCUT`: (not defined)
+    - `DLNK`: link Date and Time into DateTime
+
 #### Date Entry
 
 The `Date` object has the form `D{year:u16, month:u8, day:u8}` and represents a
@@ -524,9 +544,9 @@ MODE setting of `{..}` or `".."`:
 
 **Note**: The Date object `D{2024,3,14}` can be entered in 3 ways:
 
-- Alpha keys: `ALPHA D 2ND {` ...
-- Menu keys: `DATE` `D` `D{}` ...
-- Inferred: `2ND {` ...
+- ALPHA Entry: `ALPHA D 2ND {` ...
+- Menu Initializer: `DATE` `D` `D{}` ...
+- Type Inferred: `2ND {` ...
 
 #### Date Validation
 
@@ -552,26 +572,6 @@ Here is an incomplete list of validation rules:
   month
 
 #### Date Functions
-
-- ![ROOT > DATE > D](images/menu/root-date-d.png) (ROOT > DATE > D)
-    - ![ROOT > DATE > Date > Row1](images/menu/root-date-d-1.png)
-    - ![ROOT > DATE > Date > Row2](images/menu/root-date-d-2.png)
-    - ![ROOT > DATE > Date > Row3](images/menu/root-date-d-3.png)
-    - `D{}`: insert initialization string for `Date` object
-    - `>ED`: convert Date to epoch days (assuming UTC)
-    - `ED>`: epoch days to Date (assuming UTC)
-    - `>ES`: convert Date to epoch seconds (assuming UTC)
-    - `ES>`: epoch seconds to Date (assuming UTC)
-    - `LEAP`: determine if year of Date is a leap year
-    - `DOW`: calculate the DayOfWeek of given Date, DateTime, ZonedDateTime
-    - `CVTZ`: convert Date (Y) to TimeZone (X)
-    - `.YR`: extract `year` component of Date
-    - `.MON`: extract `month` component of Date
-    - `.DAY`: extract `day` component of Date
-    - `DSHK`: (not defined)
-    - `DEXD`: extend Date to DateTime
-    - `DCUT`: (not defined)
-    - `DLNK`: link Date and Time into DateTime
 
 The `>ED`, `ED>`, `>ES`, and `>ES` functions convert a `Date` object to/from the
 EpochDays and EpochSeconds respectively. For example, let's calculate the
@@ -628,6 +628,16 @@ There are 286 days from March 14 to Dec 25, 2024.
 
 ### Time (T)
 
+- ![ROOT > DATE > T](images/menu/root-date-t.png) (ROOT > DATE > T)
+    - ![ROOT > DATE > Time > Row1](images/menu/root-date-t-1.png)
+    - ![ROOT > DATE > Time > Row2](images/menu/root-date-t-2.png)
+    - `T{}`: insert initialization string for `Time` object
+    - `>S`: convert Time to seconds after midnight
+    - `S>`: convert seconds after midnight to Time
+    - `.HR`: extract `hour` component of Time
+    - `.MIN`: extract `minute` component of Time
+    - `.SEC`: extract `second` component of Time
+
 #### Time Entry
 
 The `Time` object has the form `T{hour:u8, minute:u8, second:u8}`. For example,
@@ -641,9 +651,9 @@ the time `15:36:01` is entered into the calculator like this:
 
 **Note**: The Time object `T{15,36,1}` can be entered in 2 ways:
 
-- Alpha keys: `ALPHA T 2ND {` ...
-- Menu keys: `DATE` `T` `T{}` ...
-- Inferred: (not allowed due to conflict with Date objects)
+- ALPHA Entry: `ALPHA T 2ND {` ...
+- Menu Initializer: `DATE` `T` `T{}` ...
+- Type Inferred: (not allowed due to conflict with Date objects)
 
 #### Time Validation
 
@@ -656,16 +666,6 @@ record:
   supported
 
 #### Time Functions
-
-- ![ROOT > DATE > T](images/menu/root-date-t.png) (ROOT > DATE > T)
-    - ![ROOT > DATE > Time > Row1](images/menu/root-date-t-1.png)
-    - ![ROOT > DATE > Time > Row2](images/menu/root-date-t-2.png)
-    - `T{}`: insert initialization string for `Time` object
-    - `>S`: convert Time to seconds after midnight
-    - `S>`: convert seconds after midnight to Time
-    - `.HR`: extract `hour` component of Time
-    - `.MIN`: extract `minute` component of Time
-    - `.SEC`: extract `second` component of Time
 
 The `D*>S` and `S>T` menu functions convert between a Time object and the
 integer number of seconds since midnight `00:00:00`. This will will always be a
@@ -730,32 +730,6 @@ There are 5039 seconds between `15:36:01` and `17:00:00`.
 
 ### DateTime (DT)
 
-#### DateTime Entry
-
-A DateTime record is a concatenation of the Date record and a Time record. It
-has the format `DT{year:u16, month:u8, day:u8, hour:u8, minute:u8, second:u8}`.
-
-For example, the date `2024-03-14 15:36:01` would be entered like this:
-
-| **Keys**                  | **MODE `{..}`**                           | **MODE `".."`**               |
-| ------------------------- | ---------------------                     | -----------------             |
-| `DT{2024,3,14,15,36,1}`   | ![](images/date/dt/datetime-raw-1.png)    | ![](images/date/dt/datetime-str-1.png) |
-| `ENTER`                   | ![](images/date/dt/datetime-raw-2.png)    | ![](images/date/dt/datetime-str-2.png) |
-| `2ND ENTER` (SHOW)        | ![](images/date/dt/datetime-show.png)     | ![](images/date/dt/datetime-show.png) |
-
-**Note**: The DateTime object `DT{2024,3,14,15,36,1}` can be entered in 3 ways:
-
-- Alpha keys: `ALPHA D ALPHA T 2ND {` ...
-- Menu keys: `DATE` `DT` `DT{}` ...
-- Inferred: `2ND {` ...
-
-#### DateTime Validation
-
-The validation rules of the `DateTime` is the union of the validation rules
-for the `Date` record and the rules for the `Time` record.
-
-#### DateTime Functions
-
 - ![ROOT > DATE > DT](images/menu/root-date-dt.png) (ROOT > DATE > DT)
     - ![ROOT > DATE > DateTime > Row1](images/menu/root-date-dt-1.png)
     - ![ROOT > DATE > DateTime > Row2](images/menu/root-date-dt-2.png)
@@ -774,6 +748,32 @@ for the `Date` record and the rules for the `Time` record.
     - `DEXD`: extend DateTime into ZonedDateTime by adding a UTC TimeZone
     - `DCUT`: cut (split) a DateTime into a Date and Time
     - `DLNK`: link (merge) Date and Time into a DateTime
+
+#### DateTime Entry
+
+A DateTime record is a concatenation of the Date record and a Time record. It
+has the format `DT{year:u16, month:u8, day:u8, hour:u8, minute:u8, second:u8}`.
+
+For example, the date `2024-03-14 15:36:01` would be entered like this:
+
+| **Keys**                  | **MODE `{..}`**                           | **MODE `".."`**               |
+| ------------------------- | ---------------------                     | -----------------             |
+| `DT{2024,3,14,15,36,1}`   | ![](images/date/dt/datetime-raw-1.png)    | ![](images/date/dt/datetime-str-1.png) |
+| `ENTER`                   | ![](images/date/dt/datetime-raw-2.png)    | ![](images/date/dt/datetime-str-2.png) |
+| `2ND ENTER` (SHOW)        | ![](images/date/dt/datetime-show.png)     | ![](images/date/dt/datetime-show.png) |
+
+**Note**: The DateTime object `DT{2024,3,14,15,36,1}` can be entered in 3 ways:
+
+- ALPHA Entry: `ALPHA D ALPHA T 2ND {` ...
+- Menu Initializer: `DATE` `DT` `DT{}` ...
+- Type Inferred: `2ND {` ...
+
+#### DateTime Validation
+
+The validation rules of the `DateTime` is the union of the validation rules
+for the `Date` record and the rules for the `Time` record.
+
+#### DateTime Functions
 
 A DateTime object can represent 2 slightly different things depending on the
 context:
@@ -840,6 +840,17 @@ between March 13, 2024 15:39:55 to Christmas Dec 25, 2024 00:00:00.
 
 ### TimeZone (TZ)
 
+- ![ROOT > DATE > TZ](images/menu/root-date-tz.png) (ROOT > DATE > TZ)
+    - ![ROOT > DATE > TimeZone > Row1](images/menu/root-date-tz-1.png)
+    - ![ROOT > DATE > TimeZone > Row2](images/menu/root-date-tz-2.png)
+    - `TZ{}`: insert initialization string for `TimeZone` object
+    - `>HR`: convert TimeZone to floating point hours
+    - `HR>`: convert floating point hours into TimeZone
+    - `.HR`: extract `hour` component of TimeZone
+    - `.MIN`: extract `minute` component of TimeZone
+
+### TimeZone Entry
+
 The TimeZone object has the form `TZ{hour:i8, minute:i8}`. It represents a fixed
 offset from UTC. As noted earlier, the RPN83P does not currently support
 timezones with automatic DST transitions, such as those defined by the IANA TZ
@@ -855,9 +866,9 @@ months, and changes to UTC-07:00 during the summer months.
 
 **Note**: The Time object `TZ(-8,0}` can be entered in 3 ways:
 
-- Alpha keys: `ALPHA T ALPHA Z 2ND {` ...
-- Menu keys: `DATE` `TZ` `TZ{}` ...
-- Inferred: `2ND {` ...
+- ALPHA Entry: `ALPHA T ALPHA Z 2ND {` ...
+- Menu Initializer: `DATE` `TZ` `TZ{}` ...
+- Type Inferred: `2ND {` ...
 
 #### TimeZone Validation
 
@@ -877,15 +888,6 @@ Here is an example of an invalid timezone whose `hour` and `minute` have the opp
 | `ENTER`     | ![](images/date/tz/timezone-invalid-raw-2.png) | ![](images/date/tz/timezone-invalid-str-2.png) |
 
 #### TimeZone Functions
-
-- ![ROOT > DATE > TZ](images/menu/root-date-tz.png) (ROOT > DATE > TZ)
-    - ![ROOT > DATE > TimeZone > Row1](images/menu/root-date-tz-1.png)
-    - ![ROOT > DATE > TimeZone > Row2](images/menu/root-date-tz-2.png)
-    - `TZ{}`: insert initialization string for `TimeZone` object
-    - `>HR`: convert TimeZone to floating point hours
-    - `HR>`: convert floating point hours into TimeZone
-    - `.HR`: extract `hour` component of TimeZone
-    - `.MIN`: extract `minute` component of TimeZone
 
 The TimeZone object can be converted to and from a floating point number
 representing the number of hours shifted from UTC. These are exposed using the
@@ -952,6 +954,30 @@ There is a 9-hour difference from UTC+01:00 and UTC-08:00.
 
 ### ZonedDateTime (DZ)
 
+- ![ROOT > DATE > DZ](images/menu/root-date-dz.png) (ROOT > DATE > DZ)
+    - ![ROOT > DATE > ZonedDateTime > Row1](images/menu/root-date-dz-1.png)
+    - ![ROOT > DATE > ZonedDateTime > Row2](images/menu/root-date-dz-2.png)
+    - ![ROOT > DATE > ZonedDateTime > Row3](images/menu/root-date-dz-3.png)
+    - ![ROOT > DATE > ZonedDateTime > Row4](images/menu/root-date-dz-4.png)
+    - `DZ{}`: insert initialization string for `ZonedDateTime` object
+    - `>ED`: convert ZonedDateTime to epoch days (assuming UTC)
+    - `ED>`: epoch days to ZonedDateTime (assuming UTC)
+    - `>ES`: convert ZonedDateTime to epoch seconds (assuming UTC)
+    - `ES>`: epoch seconds to ZonedDateTime (assuming UTC)
+    - `ES>@`: epoch seconds to ZonedDateTime (assuming UTC)
+    - `LEAP`: determine if given year is a leap year
+    - `DOW`: calculate the DayOfWeek of given ZonedZonedDateTime
+    - `CVTZ`: convert ZonedDateTime (in Y) to the TimeZone (in X)
+    - `.D{}`: extract the Date from the ZonedDateTime
+    - `.T{}`: extract the Time from the ZonedDateTime
+    - `.DT{}`: extract the DateTime from the ZonedDateTime
+    - `.TZ{}`: extract the Time from the ZonedDateTime
+    - `DSHK`: shrink a ZonedDateTime into a DateTime by truncating the
+        TimeZone
+    - `DEXD`: (not defined)
+    - `DCUT`: cut (split) a ZonedDateTime into a DateTime and TimeZone
+    - `DLNK`: (not defined)
+
 #### ZonedDateTime Entry
 
 The ZonedDateTime is a combination of Date, Time, and TimeZone. It has the form
@@ -982,9 +1008,9 @@ UTC is entered and displayed:
 **Note**: The ZonedDateTime object `DZ{2024,3,14,15,36,1,-7,0}` can be entered
 in 3 ways:
 
-- Alpha keys: `ALPHA D ALPHA Z 2ND {` ...
-- Menu keys: `DATE` `DZ` `DZ{}` ...
-- Inferred: `2ND {` ...
+- ALPHA Entry: `ALPHA D ALPHA Z 2ND {` ...
+- Menu Initializer: `DATE` `DZ` `DZ{}` ...
+- Type Inferred: `2ND {` ...
 
 #### ZonedDateTime Validation
 
@@ -992,30 +1018,6 @@ The validation rules of the `ZonedDateTime` is the union of the validation rules
 for the `Date`, `Time`, and `TimeZone` objects.
 
 #### ZonedDateTime Functions
-
-- ![ROOT > DATE > DZ](images/menu/root-date-dz.png) (ROOT > DATE > DZ)
-    - ![ROOT > DATE > ZonedDateTime > Row1](images/menu/root-date-dz-1.png)
-    - ![ROOT > DATE > ZonedDateTime > Row2](images/menu/root-date-dz-2.png)
-    - ![ROOT > DATE > ZonedDateTime > Row3](images/menu/root-date-dz-3.png)
-    - ![ROOT > DATE > ZonedDateTime > Row4](images/menu/root-date-dz-4.png)
-    - `DZ{}`: insert initialization string for `ZonedDateTime` object
-    - `>ED`: convert ZonedDateTime to epoch days (assuming UTC)
-    - `ED>`: epoch days to ZonedDateTime (assuming UTC)
-    - `>ES`: convert ZonedDateTime to epoch seconds (assuming UTC)
-    - `ES>`: epoch seconds to ZonedDateTime (assuming UTC)
-    - `ES>@`: epoch seconds to ZonedDateTime (assuming UTC)
-    - `LEAP`: determine if given year is a leap year
-    - `DOW`: calculate the DayOfWeek of given ZonedZonedDateTime
-    - `CVTZ`: convert ZonedDateTime (in Y) to the TimeZone (in X)
-    - `.D{}`: extract the Date from the ZonedDateTime
-    - `.T{}`: extract the Time from the ZonedDateTime
-    - `.DT{}`: extract the DateTime from the ZonedDateTime
-    - `.TZ{}`: extract the Time from the ZonedDateTime
-    - `DSHK`: shrink a ZonedDateTime into a DateTime by truncating the
-        TimeZone
-    - `DEXD`: (not defined)
-    - `DCUT`: cut (split) a ZonedDateTime into a DateTime and TimeZone
-    - `DLNK`: (not defined)
 
 A ZonedDateTime object can be converted into an integer that represents the
 number of seconds from the Epoch date. By default, the Epoch date is 1970-01-01
@@ -1091,78 +1093,21 @@ December 25, 2024 UTC:
 As before, we have used the `S>DR` menu function to convert `seconds` to
 a `Duration` object which can be more useful in some situations.
 
-### DayOfWeek (DW)
-
-#### DayOfWeek Entry
-
-The `DayOfWeek` object has the form `DW{dow:u8}`, where the `dow` field is a
-single integer containing the [ISO Weekday
-number](https://en.wikipedia.org/wiki/ISO_8601), where Monday is represented by
-1 and Sunday is represented by 7. For example, Thursday has an ISO weekday value
-of 4 and can be entered as:
-
-| **Keys**              | **MODE `{..}`**                          | **MODE `".."`**   |
-| -----------           | ---------------------                    | ----------------- |
-| `DW{4}`               | ![](images/date/dw/dayofweek-raw-1.png)  | ![](images/date/dw/dayofweek-str-1.png) |
-| `ENTER`               | ![](images/date/dw/dayofweek-raw-2.png)  | ![](images/date/dw/dayofweek-str-2.png) |
-| `2ND ENTER` (SHOW)    | ![](images/date/dw/dayofweek-show.png)   | ![](images/date/dw/dayofweek-show.png) |
-
-**Note**: The DayOfWeek object `DW{4}` can be entered in 2 ways:
-
-- Alpha keys: `ALPHA D ALPHA W 2ND {` ...
-- Menu keys: `DATE` `DW` `DW{}` ...
-- Inferred: (not available)
-
-#### DayOfWeek Validation
-
-Upon input termination, the `dow` component is validated and if the component is
-invalid, an `Err:Invalid` error message is displayed. For example, if we try to
-enter the invalid DayOfWeek value of `DW{0}`, an error is shown:
-
-| **Keys**   | **MODE `{..}`**                                 | **MODE `".."`**   |
-| -----------| ---------------------                           | ----------------- |
-| `DW{0}`    | ![](images/date/dw/dayofweek-invalid-raw-1.png) | ![](images/date/dw/dayofweek-invalid-str-1.png) |
-| `ENTER`    | ![](images/date/dw/dayofweek-invalid-raw-2.png) | ![](images/date/dw/dayofweek-invalid-str-2.png) |
-
-#### DayOfWeek Functions
-
-The `DOW` menu function returns the DayOfWeek of a given Date, DateTime, or
-ZonedDateTime:
-
-![ROOT > DATE > DOW](images/menu/root-date-dow.png)
-
-| **Keys**                      | **MODE `{..}`**                              | **MODE `".."`**               |
-| -------------------------     | ---------------------                        | -----------------             |
-| `D{2024,3,14}`                | ![](images/date/dw/dayofweek-dow-raw-1.png)  | ![](images/date/dw/dayofweek-dow-str-1.png) |
-| `DOW`                         | ![](images/date/dw/dayofweek-dow-raw-2.png)  | ![](images/date/dw/dayofweek-dow-str-2.png) |
-| `DT{2024,3,14,15,36,1}`       | ![](images/date/dw/dayofweek-dow-raw-3.png)  | ![](images/date/dw/dayofweek-dow-str-3.png) |
-| `DOW`                         | ![](images/date/dw/dayofweek-dow-raw-4.png)  | ![](images/date/dw/dayofweek-dow-str-4.png) |
-| `DZ{2024,3,14,15,36,1,-7,0}`  | ![](images/date/dw/dayofweek-dow-raw-5.png)  | ![](images/date/dw/dayofweek-dow-str-5.png) |
-| `DOW`                         | ![](images/date/dw/dayofweek-dow-raw-6.png)  | ![](images/date/dw/dayofweek-dow-str-6.png) |
-
-#### DayOfWeek Arithmetic
-
-Although addition and subtraction operations are not likely to be used often,
-they have been implemented for the DayOfWeek object for consistency. For
-example, to add 6 days to Thursday, we can enter:
-
-| **Keys**   | **MODE `{..}`**                             | **MODE `".."`**   |
-| -----------| ---------------------                       | ----------------- |
-| `DW{4}`    | ![](images/date/dw/dayofweek-add-raw-1.png) | ![](images/date/dw/dayofweek-add-str-1.png) |
-| `ENTER`    | ![](images/date/dw/dayofweek-add-raw-2.png) | ![](images/date/dw/dayofweek-add-str-2.png) |
-| `6`        | ![](images/date/dw/dayofweek-add-raw-3.png) | ![](images/date/dw/dayofweek-add-str-3.png) |
-| `+`        | ![](images/date/dw/dayofweek-add-raw-4.png) | ![](images/date/dw/dayofweek-add-str-4.png) |
-
-We can also subtract 2 DayOfWeek objects to get the number of days between them:
-
-| **Keys**   | **MODE `{..}`**                             | **MODE `".."`**   |
-| -----------| ---------------------                       | ----------------- |
-| `DW{4}`    | ![](images/date/dw/dayofweek-sub-raw-1.png) | ![](images/date/dw/dayofweek-sub-str-1.png) |
-| `ENTER`    | ![](images/date/dw/dayofweek-sub-raw-2.png) | ![](images/date/dw/dayofweek-sub-str-2.png) |
-| `DW{5}`    | ![](images/date/dw/dayofweek-sub-raw-3.png) | ![](images/date/dw/dayofweek-sub-str-3.png) |
-| `-`        | ![](images/date/dw/dayofweek-sub-raw-4.png) | ![](images/date/dw/dayofweek-sub-str-4.png) |
-
 ### Duration (DR)
+
+- ![ROOT > DATE > DR](images/menu/root-date-dr.png) (ROOT > DATE > DR)
+    - ![ROOT > DATE > Duration > Row1](images/menu/root-date-dr-1.png)
+    - ![ROOT > DATE > Duration > Row2](images/menu/root-date-dr-2.png)
+    - `DR{}`: insert initialization string for `Duration` object
+    - `DAY>`: convert days into Duration
+    - `HR>`: convert hours into Duration
+    - `MIN>`: convert minutes into Duration
+    - `SEC>`: convert seconds into Duration
+    - `>S`: convert Duration into seconds
+    - `.DAY`: extract `day` component of Duration
+    - `.HR`: extract `hour` component of Duration
+    - `.MIN`: extract `minute` component of Duration
+    - `.SEC`: extract `second` component of Duration
 
 #### Duration Entry
 
@@ -1196,9 +1141,9 @@ Duration object is `9999d 23h 59m 59s` or about 24.3 years.
 
 **Note**: The Duration object `DR{1,2,3,4}` can be entered in 4 ways:
 
-- Alpha keys: `ALPHA D ALPHA R 2ND {` ...
-- Menu keys: `DATE` `DR` `DR{}` ...
-- Inferred: `2ND {` ...
+- ALPHA Entry: `ALPHA D ALPHA R 2ND {` ...
+- Menu Initializer: `DATE` `DR` `DR{}` ...
+- Type Inferred: `2ND {` ...
 - Compact string: `1` `ALPHA D` `2` `ALPHA H` `3` `ALPHA M` `4` `ALPHA S` (see
   next)
 
@@ -1357,6 +1302,85 @@ Another example, let's add 30 days to the DateTime `2024-03-14 12:58:32`:
 | `ENTER`                   | ![](images/date/dr/duration-add-datetime-raw-2.png)  | ![](images/date/dr/duration-add-datetime-str-2.png) |
 | `30:D`                    | ![](images/date/dr/duration-add-datetime-raw-3.png)  | ![](images/date/dr/duration-add-datetime-str-3.png) |
 | `+`                       | ![](images/date/dr/duration-add-datetime-raw-4.png)  | ![](images/date/dr/duration-add-datetime-str-4.png) |
+
+### DayOfWeek (DW)
+
+- ![ROOT > DATE > DW](images/menu/root-date-dw.png) (ROOT > DATE > DW)
+    - ![ROOT > DATE > TimeZone > Row1](images/menu/root-date-dw-1.png)
+    - `DW{}`: insert initialization string for `DayOfWeek` object
+    - `>ISO`: convert DayOfWeek into ISO day of week number (Mon=1,Sun=7)
+    - `ISO>`: convert ISO day of week number into DayOfWeek (Mon=1,Sun=7)
+    - `>UNX`: convert DayOfWeek into Unix day of week number (Sun=0,Sat=6)
+    - `UNX>`: convert Unix day of week number into DayOfWeek (Sun=0,Sat=6)
+
+#### DayOfWeek Entry
+
+The `DayOfWeek` object has the form `DW{dow:u8}`, where the `dow` field is a
+single integer containing the [ISO Weekday
+number](https://en.wikipedia.org/wiki/ISO_8601), where Monday is represented by
+1 and Sunday is represented by 7. For example, Thursday has an ISO weekday value
+of 4 and can be entered as:
+
+| **Keys**              | **MODE `{..}`**                          | **MODE `".."`**   |
+| -----------           | ---------------------                    | ----------------- |
+| `DW{4}`               | ![](images/date/dw/dayofweek-raw-1.png)  | ![](images/date/dw/dayofweek-str-1.png) |
+| `ENTER`               | ![](images/date/dw/dayofweek-raw-2.png)  | ![](images/date/dw/dayofweek-str-2.png) |
+| `2ND ENTER` (SHOW)    | ![](images/date/dw/dayofweek-show.png)   | ![](images/date/dw/dayofweek-show.png) |
+
+**Note**: The DayOfWeek object `DW{4}` can be entered in 2 ways:
+
+- ALPHA Entry: `ALPHA D ALPHA W 2ND {` ...
+- Menu Initializer: `DATE` `DW` `DW{}` ...
+- Type Inferred: (not available)
+
+#### DayOfWeek Validation
+
+Upon input termination, the `dow` component is validated and if the component is
+invalid, an `Err:Invalid` error message is displayed. For example, if we try to
+enter the invalid DayOfWeek value of `DW{0}`, an error is shown:
+
+| **Keys**   | **MODE `{..}`**                                 | **MODE `".."`**   |
+| -----------| ---------------------                           | ----------------- |
+| `DW{0}`    | ![](images/date/dw/dayofweek-invalid-raw-1.png) | ![](images/date/dw/dayofweek-invalid-str-1.png) |
+| `ENTER`    | ![](images/date/dw/dayofweek-invalid-raw-2.png) | ![](images/date/dw/dayofweek-invalid-str-2.png) |
+
+#### DayOfWeek Functions
+
+The `DOW` menu function returns the DayOfWeek of a given Date, DateTime, or
+ZonedDateTime:
+
+![ROOT > DATE > DOW](images/menu/root-date-dow.png)
+
+| **Keys**                      | **MODE `{..}`**                              | **MODE `".."`**               |
+| -------------------------     | ---------------------                        | -----------------             |
+| `D{2024,3,14}`                | ![](images/date/dw/dayofweek-dow-raw-1.png)  | ![](images/date/dw/dayofweek-dow-str-1.png) |
+| `DOW`                         | ![](images/date/dw/dayofweek-dow-raw-2.png)  | ![](images/date/dw/dayofweek-dow-str-2.png) |
+| `DT{2024,3,14,15,36,1}`       | ![](images/date/dw/dayofweek-dow-raw-3.png)  | ![](images/date/dw/dayofweek-dow-str-3.png) |
+| `DOW`                         | ![](images/date/dw/dayofweek-dow-raw-4.png)  | ![](images/date/dw/dayofweek-dow-str-4.png) |
+| `DZ{2024,3,14,15,36,1,-7,0}`  | ![](images/date/dw/dayofweek-dow-raw-5.png)  | ![](images/date/dw/dayofweek-dow-str-5.png) |
+| `DOW`                         | ![](images/date/dw/dayofweek-dow-raw-6.png)  | ![](images/date/dw/dayofweek-dow-str-6.png) |
+
+#### DayOfWeek Arithmetic
+
+Although addition and subtraction operations are not likely to be used often,
+they have been implemented for the DayOfWeek object for consistency. For
+example, to add 6 days to Thursday, we can enter:
+
+| **Keys**   | **MODE `{..}`**                             | **MODE `".."`**   |
+| -----------| ---------------------                       | ----------------- |
+| `DW{4}`    | ![](images/date/dw/dayofweek-add-raw-1.png) | ![](images/date/dw/dayofweek-add-str-1.png) |
+| `ENTER`    | ![](images/date/dw/dayofweek-add-raw-2.png) | ![](images/date/dw/dayofweek-add-str-2.png) |
+| `6`        | ![](images/date/dw/dayofweek-add-raw-3.png) | ![](images/date/dw/dayofweek-add-str-3.png) |
+| `+`        | ![](images/date/dw/dayofweek-add-raw-4.png) | ![](images/date/dw/dayofweek-add-str-4.png) |
+
+We can also subtract 2 DayOfWeek objects to get the number of days between them:
+
+| **Keys**   | **MODE `{..}`**                             | **MODE `".."`**   |
+| -----------| ---------------------                       | ----------------- |
+| `DW{4}`    | ![](images/date/dw/dayofweek-sub-raw-1.png) | ![](images/date/dw/dayofweek-sub-str-1.png) |
+| `ENTER`    | ![](images/date/dw/dayofweek-sub-raw-2.png) | ![](images/date/dw/dayofweek-sub-str-2.png) |
+| `DW{5}`    | ![](images/date/dw/dayofweek-sub-raw-3.png) | ![](images/date/dw/dayofweek-sub-str-3.png) |
+| `-`        | ![](images/date/dw/dayofweek-sub-raw-4.png) | ![](images/date/dw/dayofweek-sub-str-4.png) |
 
 ## Timezone Conversions
 
