@@ -577,20 +577,27 @@ Here is an incomplete list of validation rules:
 
 #### Date Functions
 
-The `>ED`, `ED>`, `>ES`, and `>ES` functions convert a `Date` object to/from the
-EpochDays and EpochSeconds respectively. For example, let's calculate the
-epochdays of 2024-03-14:
+The `>ED` function returns the number of days since the Epoch date.
+The `ED>` function performs the reverse operation.
+
+The `>ES` function returns the number of seconds since the Epoch date. The `>ES`
+function performs the reverse operation. For the purposes of calculating the
+epochseconds, the Date object is assumed to be at 00:00:00 (midnight) of that
+date in UTC time zone.
+
+The Epoch date is configurable as explained in the [Epoch Date
+(EPCH)](#epoch-date-epch) section below but by default, it is set to `UNIX`
+which is `1970-01-01`.
+
+For example, let's calculate the those quantities for 2024-03-14:
 
 | **Keys**          | **MODE `{..}`**                                 | **MODE `".."`**   |
 | -----------       | ---------------------                           | ----------------- |
-| `D{2024,3,14}`    | ![](images/date/d/date-to-epochdays-raw-1.png)  | ![](images/date/d/date-to-epochdays-str-1.png) |
-| `>ED`             | ![](images/date/d/date-to-epochdays-raw-2.png)  | ![](images/date/d/date-to-epochdays-str-2.png) |
-| `ED>`             | ![](images/date/d/date-to-epochdays-raw-3.png)  | ![](images/date/d/date-to-epochdays-str-3.png) |
-
-The Epoch date is configurable as explained in the [Epoch Date](#epoch-date)
-section below but by default, it is set to `UNIX` which is `1970-01-01`.
-
-TODO: Add screenshots of the rest of `DATE > D` menu functions.
+| `D{2024,3,14}`    | ![](images/date/d/date-ed-es-raw-1.png)  | ![](images/date/d/date-ed-es-str-1.png) |
+| `>ED`             | ![](images/date/d/date-ed-es-raw-2.png)  | ![](images/date/d/date-ed-es-str-2.png) |
+| `ED>`             | ![](images/date/d/date-ed-es-raw-3.png)  | ![](images/date/d/date-ed-es-str-3.png) |
+| `>ES`             | ![](images/date/d/date-ed-es-raw-4.png)  | ![](images/date/d/date-ed-es-str-4.png) |
+| `ES>`             | ![](images/date/d/date-ed-es-raw-5.png)  | ![](images/date/d/date-ed-es-str-5.png) |
 
 #### Date Arithmetic
 
