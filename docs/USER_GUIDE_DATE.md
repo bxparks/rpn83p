@@ -58,11 +58,11 @@ These features were inspired by various datetime libraries:
     - [ZonedDateTime (DZ)](#zoneddatetime-dz)
     - [Duration (DR)](#duration-dr)
     - [DayOfWeek (DW)](#dayofweek-dw)
-    - [Epoch Date](#epoch-date)
+    - [Epoch Date (EPCH)](#epoch-date-epch)
         - [Custom Epoch Date](#custom-epoch-date)
         - [Epoch Conversions](#epoch-conversions)
         - [Epoch Seconds Range](#epoch-seconds-range)
-    - [Real Time Clock](#real-time-clock)
+    - [Real Time Clock (CLK)](#real-time-clock-clk)
         - [Setting the Clock Timezone](#setting-the-clock-timezone)
         - [Setting the Clock DateTime](#setting-the-clock-datetime)
         - [Setting the Application Timezone](#setting-the-application-timezone)
@@ -1439,7 +1439,7 @@ The boolean expression for this function in the `C` language is:
 (year%4 == 0) && (year%100 != 0 || year%400 == 0)
 ```
 
-### Epoch Date
+### Epoch Date (EPCH)
 
 Many computer systems keep track of time by counting the number of seconds from
 a specific date, called the
@@ -1557,7 +1557,7 @@ signed integers allows RPN83P to avoid the [Year
 many older Unix systems which use a 32-bit signed integer to hold the
 epochseconds quantity.
 
-### Real Time Clock
+### Real Time Clock (CLK)
 
 The TI-84+ and TI-84+SE models include a real time clock (RTC) chip, unlike the
 earlier 83+ and 83+SE models. This allows the 84+ models to set and display the
