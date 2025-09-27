@@ -322,7 +322,7 @@ and `x^2` buttons act normally on Real and Complex objects but are bound to the
 
 ## Data Entry
 
-### ALPHA Sequence
+### ALPHA Entry
 
 To allow these Record types to be entered using the calculator buttons, the
 following keys have been activated:
@@ -331,42 +331,52 @@ following keys have been activated:
 - `2ND }` (right brace)
 - `ALPHA A` to `ALPHA Z`
 - `,` (comma)
-- `:` (colon)
 
-The date objects are entered using the `ALPHA` key to enter the object name tag,
-the left brace `{` and right brace `}` keys to delimit the components of the
-objects, and the comma key `,` between each component. For example, to enter the
-date `March 14, 2024`, we would mentally translate that into the RFC 3339 format
-`2024-03-14`, which corresponds to the Date object `D{2024,3,14}`, which would
-be entered using the following keystrokes:
+The date objects can be entered using the `ALPHA` key to enter the object name
+tag, the left brace `{` and right brace `}` keys to delimit the components of
+the objects, and the comma key `,` between each component.
 
-```
-ALPHA D
-2ND {
-2024
-,
-3
-,
-14
-2ND }
-```
+For example, to enter the date `March 14, 2024`, we would mentally translate
+that into the RFC 3339 format `2024-03-14`, which corresponds to the Date object
+`D{2024,3,14}`, which would be entered using the following keystrokes:
 
-For brevity and readability, this long sequence of keystrokes will be shortened
-to something like `D{2024,3,14}` in the subsequent sections.
+| **Keys**          | **Display**                               |
+| ----------------  | ---------------------                     |
+| `ALPHA D`         | ![](images/date/d/date-alpha-entry-1.png) |
+| `2ND {`           | ![](images/date/d/date-alpha-entry-2.png) |
+| `2024`            | ![](images/date/d/date-alpha-entry-3.png) |
+| `,`               | ![](images/date/d/date-alpha-entry-4.png) |
+| `3`               | ![](images/date/d/date-alpha-entry-5.png) |
+| `,`               | ![](images/date/d/date-alpha-entry-6.png) |
+| `14`              | ![](images/date/d/date-alpha-entry-7.png) |
+| `2ND }`           | ![](images/date/d/date-alpha-entry-8.png) |
 
 ### Menu Aided Entry
 
-The key sequence `ALPHA D 2ND {` is cumbersome to type on a calculator keyboard.
-For v1.1, a menu shortcut is available for each of the leading object definition
-sequence.
+The key sequence `ALPHA D 2ND {` is cumbersome to type on the TI-83+/84+ keyboard
+because the letters are arranged alphabetically instead of a QWERTY layout.
+Also, the color of the ALPHA letters can be difficult to read on some of the
+TI-83+/84+ models under low light conditions.
 
-For example, under the `DATE > D` menu folder, the first menu button (F1) is
-labeled `D{}`.
+For v1.1, I created a method of entering these DATE objects without using the
+`ALPHA` key at all. Under each DATE object menu folder, the first menu key is
+the initializer sequence of that particular object. It sends the appropriate
+character sequence to the input buffer, without using the `ALPHA` key.
 
-![DATE > D > D{}](images/menu/root-date-d-1.png)
+For example, under the `DATE > D` menu folder, the first menu button is labeled
+`D{}`. Pressing the `D{}` button is exactly equivalent to typing in the keyboard
+sequence `ALPHA D 2ND {`:
 
-Pressing the `D{}` is exactly equivalent to typing in the keyboard sequence
-`ALPHA D 2ND {`.
+| **Keys**          | **Display**                               |
+| ----------------  | ---------------------                     |
+| `DATE` `D`        | ![](images/date/d/date-menu-entry-1.png) |
+| `D{}`             | ![](images/date/d/date-menu-entry-2.png) |
+| `2024`            | ![](images/date/d/date-alpha-entry-3.png) |
+| `,`               | ![](images/date/d/date-alpha-entry-4.png) |
+| `3`               | ![](images/date/d/date-alpha-entry-5.png) |
+| `,`               | ![](images/date/d/date-alpha-entry-6.png) |
+| `14`              | ![](images/date/d/date-alpha-entry-7.png) |
+| `2ND }`           | ![](images/date/d/date-alpha-entry-8.png) |
 
 Here is the complete list of object initializers and their ALPHA keystroke
 equivalents:
@@ -378,9 +388,6 @@ equivalents:
 - `DATE > DZ > DZ{}`: `ALPHA D ALPHA Z 2ND {`
 - `DATE > DR > DR{}`: `ALPHA D ALPHA R 2ND {`
 - `DATE > DW > DW{}`: `ALPHA D ALPHA W 2ND {`
-
-It is possible to enter all DATE objects using just the soft menu initializers
-and completely avoid the `ALPHA` key.
 
 ### Type Inferred Entry
 
