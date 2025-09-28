@@ -591,13 +591,26 @@ which is `1970-01-01`.
 
 For example, let's calculate the those quantities for 2024-03-14:
 
-| **Keys**          | **MODE `{..}`**                                 | **MODE `".."`**   |
-| -----------       | ---------------------                           | ----------------- |
+| **Keys**          | **MODE `{..}`**                          | **MODE `".."`**   |
+| -----------       | ---------------------                    | ----------------- |
 | `D{2024,3,14}`    | ![](images/date/d/date-ed-es-raw-1.png)  | ![](images/date/d/date-ed-es-str-1.png) |
 | `>ED`             | ![](images/date/d/date-ed-es-raw-2.png)  | ![](images/date/d/date-ed-es-str-2.png) |
 | `ED>`             | ![](images/date/d/date-ed-es-raw-3.png)  | ![](images/date/d/date-ed-es-str-3.png) |
 | `>ES`             | ![](images/date/d/date-ed-es-raw-4.png)  | ![](images/date/d/date-ed-es-str-4.png) |
 | `ES>`             | ![](images/date/d/date-ed-es-raw-5.png)  | ![](images/date/d/date-ed-es-str-5.png) |
+
+The `LEAP` function determines if the year of the given `Date` object is
+a leap year. It returns 1 if true, 0 otherwise.
+
+The `DOW` function returns the `DayOfWeek` object from the given `Date`. The
+[DayOfWeek](#dayofweek-dw) object is described in more detail below.
+
+| **Keys**          | **MODE `{..}`**                             | **MODE `".."`**   |
+| -----------       | ---------------------                       | ----------------- |
+| `D{2024,3,14}`    | ![](images/date/d/date-leap-dow-raw-1.png)  | ![](images/date/d/date-leap-dow-str-1.png) |
+| `LEAP`            | ![](images/date/d/date-leap-dow-raw-2.png)  | ![](images/date/d/date-leap-dow-str-2.png) |
+| `2ND ANS` (LASTX) | ![](images/date/d/date-leap-dow-raw-3.png)  | ![](images/date/d/date-leap-dow-str-3.png) |
+| `DOW`             | ![](images/date/d/date-leap-dow-raw-4.png)  | ![](images/date/d/date-leap-dow-str-4.png) |
 
 #### Date Arithmetic
 
