@@ -490,6 +490,7 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
         - `N`: newton
         - `kgf`: kilogram force
         - `tonf`: metric ton force
+        - `pdl`: poundal
         - `lbf`: pound force
         - `stnf`: short ton force
         - `ltnf`: long ton force
