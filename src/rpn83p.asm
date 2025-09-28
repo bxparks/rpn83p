@@ -905,7 +905,7 @@ defpage(0, "RPN83P")
 ;   - NUM routines (num1.asm)
 ;   - HMS routines (hms1.asm)
 ;   - PROB routines (prob1.asm)
-;   - UNIT definitions generated from unitdef.as (unitdef.asm)
+;   - UNIT definitions generated from unitdef.txt (unitdef.asm)
 ;   - Debug print functions (included only if DEBUG defined)
 ;-----------------------------------------------------------------------------
 

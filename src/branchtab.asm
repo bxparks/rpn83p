@@ -541,13 +541,13 @@ _ExtractUnitNameLabel:
 _ExtractUnitName equ _ExtractUnitNameLabel-branchTableBase
     .dw ExtractUnitName
     .db 1
-_GetUnitTypeLabel:
-_GetUnitType equ _GetUnitTypeLabel-branchTableBase
-    .dw GetUnitType
+_GetUnitTypeIdLabel:
+_GetUnitTypeId equ _GetUnitTypeIdLabel-branchTableBase
+    .dw GetUnitTypeId
     .db 1
-_GetUnitBaseLabel:
-_GetUnitBase equ _GetUnitBaseLabel-branchTableBase
-    .dw GetUnitBase
+_GetUnitBaseIdLabel:
+_GetUnitBaseId equ _GetUnitBaseIdLabel-branchTableBase
+    .dw GetUnitBaseId
     .db 1
 _GetUnitScaleLabel:
 _GetUnitScale equ _GetUnitScaleLabel-branchTableBase
