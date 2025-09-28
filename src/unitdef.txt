@@ -34,7 +34,7 @@ UnitTypes [
   UnitType Volume volume CuMeter
   UnitType Temperature temp Kelvin
 
-  UnitType Mass mass Gram
+  UnitType Mass mass KiloGram
   UnitType Force force Newton
   UnitType Pressure pressure Pascal
   UnitType Energy energy Joule
@@ -199,51 +199,54 @@ Units [
 
   #----------------------------------------------------------------------------
   # Mass
+  # We use kg as the baseUnit because the mks system is based on the kilogram,
+  # so it makes some conversions between UnitTypes easier (e.g. E=mc^2).
   #----------------------------------------------------------------------------
 
   # https://en.wikipedia.org/wiki/Dalton_(unit)
-  Unit AtomicMassUnit amu Mass 1.66053906892e-24
+  Unit AtomicMassUnit amu Mass 1.66053906892e-27
 
-  Unit MicroGram <Smu>g Mass 1e-6
-  Unit MilliGram mg Mass 1e-3
-  Unit Gram g Mass 1
-  Unit KiloGram kg Mass 1e3
-  Unit MetricTon met<Sspace>ton Mass 1e6 # metric ton = 1000kg
+  Unit MicroGram <Smu>g Mass 1e-9
+  Unit MilliGram mg Mass 1e-6
+  Unit Gram g Mass 1e-3
+  Unit KiloGram kg Mass 1
+  Unit MetricTon met<Sspace>ton Mass 1000
 
   # US System
   # https://en.wikipedia.org/wiki/United_States_customary_units
-  Unit Grain grain Mass 6.479891e-3 # 1/7000 lbs by defn
+  Unit Grain grain Mass 6.479891e-6 # 1/7000 lbs by defn
   # https://en.wikipedia.org/wiki/Dram_(unit)
-  Unit Dram dram Mass 1.7718451953125 # 1/16 oz by defn
+  Unit Dram dram Mass 1.7718451953125e-3 # 1/16 oz by defn
   # https://en.wikipedia.org/wiki/Ounce
-  Unit Ounce ounce Mass 28.349523125 # 1/16 lbs
-  Unit Pound pound Mass 453.59237 # by defn
+  Unit Ounce ounce Mass 28.349523125e-3 # 1/16 lbs
+  Unit Pound pound Mass 0.45359237 # by defn
   # Slug:
   # https://en.wikipedia.org/wiki/Pound_(force), and
   # https://en.wikipedia.org/wiki/Slug_(unit)
   # slug := 1 lbf * 1 s^2/ft
-  # lbf := 1 lbs * (9.80665 m/s^2) / (0.3048 m/ft) * 453.59237 g/lbs
-  # slug = 14.593902937207e3 g
-  Unit Slug slug Mass 14.593902937207e3
+  # lbf := 1 lbs * (9.80665 m/s^2) / (0.3048 m/ft) * 0.45359237 kg/lbs
+  # slug = 14.593902937207 kg
+  Unit Slug slug Mass 14.593902937207
   # https://en.wikipedia.org/wiki/Hundredweight
-  Unit HundredWeight cwt Mass 453.59237e2 # 100 lbs by defn
+  Unit HundredWeight cwt Mass 45.359237 # 100 lbs by defn
   # https://en.wikipedia.org/wiki/Short_ton
-  Unit ShortTon short<Sspace>ton Mass 907.18474e3 # 2000 lbs
+  Unit ShortTon short<Sspace>ton Mass 907.18474 # 2000 lbs
 
   # Imperial System
   # https://en.wikipedia.org/wiki/Imperial_units
-  Unit Stone stone Mass 6.35029318e3 # 14 lbs by defn
-  Unit Quarter quarter Mass 12.70058636e3 # 2 stones by defn
+  Unit Stone stone Mass 6.35029318 # 14 lbs by defn
+  Unit Quarter quarter Mass 12.70058636 # 2 stones by defn
   # https://en.wikipedia.org/wiki/Hundredweight
-  Unit LongHundredWeight long<Sspace>cwt Mass 50.80234544e3 # 8 stones (112 lbs) by defn
-  Unit LongTon long<Sspace>ton Mass 1016.0469088e3 # 2240 lbs by defn
+  # 8 stones (112 lbs) by defn
+  Unit LongHundredWeight long<Sspace>cwt Mass 50.80234544
+  Unit LongTon long<Sspace>ton Mass 1016.0469088 # 2240 lbs by defn
 
   # Troy System
   # https://en.wikipedia.org/wiki/Troy_weight
   # https://en.wikipedia.org/wiki/Pennyweight
-  Unit TroyPennyWeight troy<Sspace>dwt Mass 1.55517384 # 24 grains by defn
-  Unit TroyOunce troy<Sspace>ozt Mass 31.1034768 # 20 pennyweights by defn
-  Unit TroyPound troy<Sspace>lbt Mass 373.2417216 # 12 troy oz by defn
+  Unit TroyPennyWeight troy<Sspace>dwt Mass 1.55517384e-3 # 24 grains by defn
+  Unit TroyOunce troy<Sspace>ozt Mass 31.1034768e-3 # 20 pennyweights by defn
+  Unit TroyPound troy<Sspace>lbt Mass 373.2417216e-3 # 12 troy oz by defn
 
   #----------------------------------------------------------------------------
   # Temperature, requires special handlers

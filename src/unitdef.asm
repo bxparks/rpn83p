@@ -41,7 +41,7 @@ unitTypeTemperatureId equ 4
 unitTypeMassInfo:
 unitTypeMassId equ 5
     .dw unitTypeMassName ; name
-    .db unitGramId ; baseUnit
+    .db unitKiloGramId ; baseUnit
 unitTypeForceInfo:
 unitTypeForceId equ 6
     .dw unitTypeForceName ; name
@@ -521,102 +521,102 @@ unitAtomicMassUnitInfo:
 unitAtomicMassUnitId equ 81
     .dw unitAtomicMassUnitName ; name
     .db unitTypeMassId ; unitTypeId
-    .db $00, $68, $16, $60, $53, $90, $68, $92, $00 ; scale=1.66053906892e-24
+    .db $00, $65, $16, $60, $53, $90, $68, $92, $00 ; scale=1.66053906892e-27
 unitMicroGramInfo:
 unitMicroGramId equ 82
     .dw unitMicroGramName ; name
     .db unitTypeMassId ; unitTypeId
-    .db $00, $7A, $10, $00, $00, $00, $00, $00, $00 ; scale=1e-6
+    .db $00, $77, $10, $00, $00, $00, $00, $00, $00 ; scale=1e-9
 unitMilliGramInfo:
 unitMilliGramId equ 83
     .dw unitMilliGramName ; name
     .db unitTypeMassId ; unitTypeId
-    .db $00, $7D, $10, $00, $00, $00, $00, $00, $00 ; scale=1e-3
+    .db $00, $7A, $10, $00, $00, $00, $00, $00, $00 ; scale=1e-6
 unitGramInfo:
 unitGramId equ 84
     .dw unitGramName ; name
     .db unitTypeMassId ; unitTypeId
-    .db $00, $80, $10, $00, $00, $00, $00, $00, $00 ; scale=1
+    .db $00, $7D, $10, $00, $00, $00, $00, $00, $00 ; scale=1e-3
 unitKiloGramInfo:
 unitKiloGramId equ 85
     .dw unitKiloGramName ; name
     .db unitTypeMassId ; unitTypeId
-    .db $00, $83, $10, $00, $00, $00, $00, $00, $00 ; scale=1e3
+    .db $00, $80, $10, $00, $00, $00, $00, $00, $00 ; scale=1
 unitMetricTonInfo:
 unitMetricTonId equ 86
     .dw unitMetricTonName ; name
     .db unitTypeMassId ; unitTypeId
-    .db $00, $86, $10, $00, $00, $00, $00, $00, $00 ; scale=1e6
+    .db $00, $83, $10, $00, $00, $00, $00, $00, $00 ; scale=1000
 unitGrainInfo:
 unitGrainId equ 87
     .dw unitGrainName ; name
     .db unitTypeMassId ; unitTypeId
-    .db $00, $7D, $64, $79, $89, $10, $00, $00, $00 ; scale=6.479891e-3
+    .db $00, $7A, $64, $79, $89, $10, $00, $00, $00 ; scale=6.479891e-6
 unitDramInfo:
 unitDramId equ 88
     .dw unitDramName ; name
     .db unitTypeMassId ; unitTypeId
-    .db $00, $80, $17, $71, $84, $51, $95, $31, $25 ; scale=1.7718451953125
+    .db $00, $7D, $17, $71, $84, $51, $95, $31, $25 ; scale=1.7718451953125e-3
 unitOunceInfo:
 unitOunceId equ 89
     .dw unitOunceName ; name
     .db unitTypeMassId ; unitTypeId
-    .db $00, $81, $28, $34, $95, $23, $12, $50, $00 ; scale=28.349523125
+    .db $00, $7E, $28, $34, $95, $23, $12, $50, $00 ; scale=28.349523125e-3
 unitPoundInfo:
 unitPoundId equ 90
     .dw unitPoundName ; name
     .db unitTypeMassId ; unitTypeId
-    .db $00, $82, $45, $35, $92, $37, $00, $00, $00 ; scale=453.59237
+    .db $00, $7F, $45, $35, $92, $37, $00, $00, $00 ; scale=0.45359237
 unitSlugInfo:
 unitSlugId equ 91
     .dw unitSlugName ; name
     .db unitTypeMassId ; unitTypeId
-    .db $00, $84, $14, $59, $39, $02, $93, $72, $07 ; scale=14.593902937207e3
+    .db $00, $81, $14, $59, $39, $02, $93, $72, $07 ; scale=14.593902937207
 unitHundredWeightInfo:
 unitHundredWeightId equ 92
     .dw unitHundredWeightName ; name
     .db unitTypeMassId ; unitTypeId
-    .db $00, $84, $45, $35, $92, $37, $00, $00, $00 ; scale=453.59237e2
+    .db $00, $81, $45, $35, $92, $37, $00, $00, $00 ; scale=45.359237
 unitShortTonInfo:
 unitShortTonId equ 93
     .dw unitShortTonName ; name
     .db unitTypeMassId ; unitTypeId
-    .db $00, $85, $90, $71, $84, $74, $00, $00, $00 ; scale=907.18474e3
+    .db $00, $82, $90, $71, $84, $74, $00, $00, $00 ; scale=907.18474
 unitStoneInfo:
 unitStoneId equ 94
     .dw unitStoneName ; name
     .db unitTypeMassId ; unitTypeId
-    .db $00, $83, $63, $50, $29, $31, $80, $00, $00 ; scale=6.35029318e3
+    .db $00, $80, $63, $50, $29, $31, $80, $00, $00 ; scale=6.35029318
 unitQuarterInfo:
 unitQuarterId equ 95
     .dw unitQuarterName ; name
     .db unitTypeMassId ; unitTypeId
-    .db $00, $84, $12, $70, $05, $86, $36, $00, $00 ; scale=12.70058636e3
+    .db $00, $81, $12, $70, $05, $86, $36, $00, $00 ; scale=12.70058636
 unitLongHundredWeightInfo:
 unitLongHundredWeightId equ 96
     .dw unitLongHundredWeightName ; name
     .db unitTypeMassId ; unitTypeId
-    .db $00, $84, $50, $80, $23, $45, $44, $00, $00 ; scale=50.80234544e3
+    .db $00, $81, $50, $80, $23, $45, $44, $00, $00 ; scale=50.80234544
 unitLongTonInfo:
 unitLongTonId equ 97
     .dw unitLongTonName ; name
     .db unitTypeMassId ; unitTypeId
-    .db $00, $86, $10, $16, $04, $69, $08, $80, $00 ; scale=1016.0469088e3
+    .db $00, $83, $10, $16, $04, $69, $08, $80, $00 ; scale=1016.0469088
 unitTroyPennyWeightInfo:
 unitTroyPennyWeightId equ 98
     .dw unitTroyPennyWeightName ; name
     .db unitTypeMassId ; unitTypeId
-    .db $00, $80, $15, $55, $17, $38, $40, $00, $00 ; scale=1.55517384
+    .db $00, $7D, $15, $55, $17, $38, $40, $00, $00 ; scale=1.55517384e-3
 unitTroyOunceInfo:
 unitTroyOunceId equ 99
     .dw unitTroyOunceName ; name
     .db unitTypeMassId ; unitTypeId
-    .db $00, $81, $31, $10, $34, $76, $80, $00, $00 ; scale=31.1034768
+    .db $00, $7E, $31, $10, $34, $76, $80, $00, $00 ; scale=31.1034768e-3
 unitTroyPoundInfo:
 unitTroyPoundId equ 100
     .dw unitTroyPoundName ; name
     .db unitTypeMassId ; unitTypeId
-    .db $00, $82, $37, $32, $41, $72, $16, $00, $00 ; scale=373.2417216
+    .db $00, $7F, $37, $32, $41, $72, $16, $00, $00 ; scale=373.2417216e-3
 unitCelsiusInfo:
 unitCelsiusId equ 101
     .dw unitCelsiusName ; name
