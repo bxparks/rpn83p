@@ -1,10 +1,10 @@
 # A small sample of src/unitdef.txt for development and testing purposes.
 
 UnitTypes [
-  UnitType NullType # unit type of NullUnit
-  UnitType Length
-  UnitType Area
-  UnitType Volume
+  UnitType NullType nulltype NullUnit
+  UnitType Length length Meter
+  UnitType Area area SqMeter
+  UnitType Volume volume CuMeter
 ]
 
 Units [
@@ -14,14 +14,18 @@ Units [
   # be the NullUnit. The Id of the NullUnit is 0.
   #----------------------------------------------------------------------------
 
-  Unit NullUnit nullunit NullType 1 NullUnit
+  Unit NullUnit nullunit NullType 1
 
   #----------------------------------------------------------------------------
   # Real units go here.
   #----------------------------------------------------------------------------
 
-  Unit Meter meter Length 1.0 Meter
-  Unit Feet feet Length 0.3048 Meter
-  Unit SqMeter sq<Sspace>meter Area 1.0 SqMeter
-  Unit SqFeet sq<Sspace>feet Area 0.09290304 SqMeter # 0.3048*0.3048
+  Unit Meter meter Length 1.0
+  Unit Feet feet Length 0.3048
+
+  Unit SqMeter sq<Sspace>meter Area 1.0
+  Unit SqFeet sq<Sspace>feet Area 0.09290304 # 0.3048^2 m^2
+
+  Unit CuMeter cu<Sspace>meter Area 1.0
+  Unit CuFeet cu<Sspace>feet Area 0.028316846592 # 0.3048^3 m^3
 ]
