@@ -288,21 +288,19 @@ findMenuNodeIX:
     ret
 
 ; Description: Return the byte offset of menuId into the the mMenuTable.
-; The formula is: offset=menuId*sizeof(MenuNode)=menuId*13=menuId*(8+4+1)
+; The formula is: offset=menuId*sizeof(MenuNode)=menuId*13=menuId*0b1101
 ; Input: HL=menuId
 ; Output: HL=offset
-; Destroys: BC, DE, HL
-; Preserves: A, IX
+; Destroys: DE, HL
+; Preserves: A, BC, IX
 calcMenuNodeOffset:
-    ld c, l
-    ld b, h ; BC=menuId
-    add hl, hl
-    add hl, hl ; HL=4*menuId
     ld e, l
-    ld d, h ; DE=4*menuId
-    add hl, hl ; 8*menuId
-    add hl, de ; 12*menuId
-    add hl, bc ; 13*menuId
+    ld d, h ; DE=HL
+    add hl, hl ; HL*0b0010
+    add hl, de ; HL*0b0011
+    add hl, hl ; HL*0b0110
+    add hl, hl ; HL*0b1100
+    add hl, de ; HL*0b1101
     ret
 
 ;-----------------------------------------------------------------------------
