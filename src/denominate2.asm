@@ -165,11 +165,11 @@ validateCompatibleUnitTypeOp1Op3:
 ; Throws: Err:Invalid if unit types don't match
 validateCompatibleUnitType:
     ld a, b
-    bcall(_GetUnitType) ; A=unitType; preserves BC, DE, HL
+    bcall(_GetUnitTypeId) ; A=unitTypeId; preserves BC, DE, HL
     ld b, a
     ;
     ld a, c
-    bcall(_GetUnitType) ; A=unitType; preserves BC, DE, HL
+    bcall(_GetUnitTypeId) ; A=unitTypeId; preserves BC, DE, HL
     ;
     cp b
     ret z
@@ -204,10 +204,10 @@ validateArithmeticUnitType:
     skipRpnObjectTypeHL
     ld a, (HL) ; A=displayUnitId
     ;
-    bcall(_GetUnitType) ; A=unitType
-    cp unitTypeTemperature
+    bcall(_GetUnitTypeId) ; A=unitTypeId
+    cp unitTypeTemperatureId
     jr z, validateUnitTypeForAddInvalid
-    cp unitTypeFuel
+    cp unitTypeFuelId
     jr z, validateUnitTypeForAddInvalid
     ret
 validateUnitTypeForAddInvalid:
@@ -231,7 +231,7 @@ ConvertRpnDenominateToBaseUnit:
     call PushRpnObject1 ; FPS=[rpnDen]; HL=rpnDen
     skipRpnObjectTypeHL ; HL=denominate
     ld a, (hl); A=unitId
-    bcall(_GetUnitBase) ; A=baseUnitId
+    bcall(_GetUnitBaseId) ; A=baseUnitId
     ld (hl), a ; denominate.displayUnit=baseUnit
     call PopRpnObject1 ; FPS=[]; OP1=rpnDen
     ret

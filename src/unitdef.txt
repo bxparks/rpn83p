@@ -18,29 +18,31 @@
 #   {list of units}
 # ]
 #
-# unittype = 'UnitType' {label}
-# unit = 'Unit' {label} {name} {unitType} {scale} {baseUnit}
+# unittype = 'UnitType' {label} {name} {baseUnit}
+# unit = 'Unit' {label} {name} {unitType} {scale}
 #
 # - {label} is the identifier used in the assembly language program
 # - {name} is the user-visible name of the object
-# - {scale} {baseUnit} is the size of the unit measured in {baseUnit}
+# - {scale} is the size of the given unit, in terms of the {baseUnit} of the
+#   {unitType}
+# - {baseUnit} is the common base unit of all units of a particular type
 
 UnitTypes [
-  UnitType NullType # unit type of NullUnit
-  UnitType Length
-  UnitType Area
-  UnitType Volume
-  UnitType Temperature
-  #
-  UnitType Mass
-  UnitType Force
-  UnitType Pressure
-  UnitType Energy
-  UnitType Power
-  #
-  UnitType Time
-  UnitType Speed
-  UnitType Fuel # gas mileage
+  UnitType NullType nulltype NullUnit
+  UnitType Length length Meter
+  UnitType Area area SqMeter
+  UnitType Volume volume CuMeter
+  UnitType Temperature temp Kelvin
+
+  UnitType Mass mass KiloGram
+  UnitType Force force Newton
+  UnitType Pressure pressure Pascal
+  UnitType Energy energy Joule
+  UnitType Power power Watt
+
+  UnitType Time time Second
+  UnitType Speed speed MeterPerSecond
+  UnitType Fuel fuel LitersPerHundredKiloMeters # gas mileage
 ]
 
 Units [
@@ -50,40 +52,40 @@ Units [
   # be the NullUnit. The Id of the NullUnit is 0.
   #----------------------------------------------------------------------------
 
-  Unit NullUnit nullunit NullType 1 NullUnit
+  Unit NullUnit nullunit NullType 1
 
   #----------------------------------------------------------------------------
   # Length
   #----------------------------------------------------------------------------
 
-  Unit Fermi fermi Length 1e-15 Meter
-  Unit Angstrom angstrom Length 1e-10 Meter
-  Unit NanoMeter nm Length 1e-9 Meter
-  Unit MicroMeter <Smu>m Length 1e-6 Meter
-  Unit MilliMeter mm Length 1e-3 Meter
-  Unit CentiMeter cm Length 1e-2 Meter
-  Unit Meter m Length 1 Meter
-  Unit KiloMeter km Length 1e3 Meter
+  Unit Fermi fermi Length 1e-15
+  Unit Angstrom angstrom Length 1e-10
+  Unit NanoMeter nm Length 1e-9
+  Unit MicroMeter <Smu>m Length 1e-6
+  Unit MilliMeter mm Length 1e-3
+  Unit CentiMeter cm Length 1e-2
+  Unit Meter m Length 1
+  Unit KiloMeter km Length 1e3
 
   # https://en.wikipedia.org/wiki/United_States_customary_units
-  Unit Mil mil Length 0.0254e-3 Meter
-  Unit Inch inch Length 0.0254 Meter # by defn
-  Unit Foot foot Length 0.3048 Meter
-  Unit Yard yard Length 0.9144 Meter # 3 feet
-  Unit Mile mile Length 1609.344 Meter
+  Unit Mil mil Length 0.0254e-3
+  Unit Inch inch Length 0.0254 # by defn
+  Unit Foot foot Length 0.3048
+  Unit Yard yard Length 0.9144 # 3 feet
+  Unit Mile mile Length 1609.344
 
   # Astronomical
   # https://en.wikipedia.org/wiki/Astronomical_unit
-  Unit AstronomicalUnit AU Length 149597870700 Meter # by defn
+  Unit AstronomicalUnit AU Length 149597870700 # by defn
   # https://en.wikipedia.org/wiki/Light-year
-  Unit LightYear ly Length 9460730472580.8e3 Meter # exact, 365.25days*c
+  Unit LightYear ly Length 9460730472580.8e3 # exact, 365.25days*c
   # https://en.wikipedia.org/wiki/Parsec
-  Unit Parsec pc Length 30856775814913673 Meter # 648000/pi AU
+  Unit Parsec pc Length 30856775814913673 # 648000/pi AU
 
   # Nautical: https://en.wikipedia.org/wiki/United_States_customary_units
-  Unit Fanthom fanthom Length 1.8288 Meter # 6 feet
-  Unit Cable cable Length 219.456 Meter # 3429/15625 km by defn
-  Unit NauticalMile nmi Length 1852 Meter # by defn
+  Unit Fanthom fanthom Length 1.8288 # 6 feet
+  Unit Cable cable Length 219.456 # 3429/15625 km by defn
+  Unit NauticalMile nmi Length 1852 # by defn
 
   # Survey: https://en.wikipedia.org/wiki/United_States_customary_units
   # After 2023, most of these were standardized on the SI units. However, the
@@ -92,211 +94,215 @@ Units [
   #
   # SurveyFoot is deprecated after 2023. Use the pre-2023 definition of
   # 1200/3937 km.
-  Unit SurveyFoot survey<Sspace>ft Length 0.30480060960122 Meter
-  Unit Rod rod Length 5.0292 Meter # 16.5ft by defn after 2023
-  Unit Chain chain Length 20.1168 Meter # 66ft by defn after 2023
-  Unit Furlong furlong Length 201.168 Meter # 10 chains by defn after 2023
+  Unit SurveyFoot survey<Sspace>ft Length 0.30480060960122
+  Unit Rod rod Length 5.0292 # 16.5ft by defn after 2023
+  Unit Chain chain Length 20.1168 # 66ft by defn after 2023
+  Unit Furlong furlong Length 201.168 # 10 chains by defn after 2023
   # SurveyMile after 2023 is identical to a regular Mile. So this version uses
   # the pre-2023 definition of 6336/3937km.
-  Unit SurveyMile survey<Sspace>mi Length 1609.3472186944 Meter
-  Unit League league Length 4828.032 Meter # 3mi by defn after 2023
+  Unit SurveyMile survey<Sspace>mi Length 1609.3472186944
+  Unit League league Length 4828.032 # 3mi by defn after 2023
 
   #----------------------------------------------------------------------------
   # Area
   #----------------------------------------------------------------------------
 
-  Unit SqMicroMeter <Smu>m<Sarea> Area 1e-12 SqMeter
-  Unit SqMilliMeter mm<Sarea> Area 1e-6 SqMeter
-  Unit SqCentiMeter cm<Sarea> Area 1e-4 SqMeter
-  Unit SqMeter m<Sarea> Area 1 SqMeter
-  Unit SqKiloMeter m<Sarea> Area 1e6 SqMeter
+  Unit SqMicroMeter <Smu>m<Sarea> Area 1e-12
+  Unit SqMilliMeter mm<Sarea> Area 1e-6
+  Unit SqCentiMeter cm<Sarea> Area 1e-4
+  Unit SqMeter m<Sarea> Area 1
+  Unit SqKiloMeter km<Sarea> Area 1e6
 
-  Unit SqInch inch<Sarea> Area 6.4516e-4 SqMeter # 0.0254^2
-  Unit SqFoot foot<Sarea> Area 0.09290304 SqMeter # 0.3048^2
-  Unit SqYard yard<Sarea> Area 0.83393424 SqMeter # 0.9144^2
-  Unit SqMile mile<Sarea> Area 2.589988110336e6 SqMeter # 1609.344^2
-  Unit SqNauticalMile nmi<Sarea> Area 3429904 SqMeter # 1852^2
+  Unit SqInch inch<Sarea> Area 6.4516e-4 # 0.0254^2
+  Unit SqFoot foot<Sarea> Area 0.09290304 # 0.3048^2
+  Unit SqYard yard<Sarea> Area 0.83393424 # 0.9144^2
+  Unit SqMile mile<Sarea> Area 2.589988110336e6 # 1609.344^2
+  Unit SqNauticalMile nmi<Sarea> Area 3429904 # 1852^2
 
-  Unit Acre acre Area 4.0468564224e3 SqMeter # 66ft*660ft=43560sqft
-  Unit Hectare hectare Area 1e4 SqMeter # 100m*100m
+  Unit Acre acre Area 4.0468564224e3 # 66ft*660ft=43560sqft
+  Unit Hectare hectare Area 1e4 # 100m*100m
 
   # https://en.wikipedia.org/wiki/American_football_field
-  Unit USFootball usftball Area 4.45934592e3 SqMeter # 100yd*160ft=48000sqft
+  Unit USFootball usftball Area 4.45934592e3 # 100yd*160ft=48000sqft
   # https://en.wikipedia.org/wiki/Comparison_of_American_and_Canadian_football
-  Unit CAFootball caftball Area 5.978310624e3 SqMeter # 110yd*65yd=64350sqft
+  Unit CAFootball caftball Area 5.978310624e3 # 110yd*65yd=64350sqft
 
   #----------------------------------------------------------------------------
   # Volume
   #----------------------------------------------------------------------------
 
-  Unit CuMicroMeter <Smu>m<Scube> Volume 1e-18 CuMeter
-  Unit CuMilliMeter mm<Scube> Volume 1e-9 CuMeter
-  Unit CuCentiMeter cm<Scube> Volume 1e-6 CuMeter
-  Unit CuMeter m<Scube> Volume 1 CuMeter
-  Unit CuKiloMeter km<Scube> Volume 1e9 CuMeter
+  Unit CuMicroMeter <Smu>m<Scube> Volume 1e-18
+  Unit CuMilliMeter mm<Scube> Volume 1e-9
+  Unit CuCentiMeter cm<Scube> Volume 1e-6
+  Unit CuMeter m<Scube> Volume 1
+  Unit CuKiloMeter km<Scube> Volume 1e9
 
-  Unit CuInch inch<Scube> Volume 1.6387064e-5 CuMeter # 0.0254^3
-  Unit CuFoot foot<Scube> Volume 2.8316846592e-2 CuMeter # 0.3048^3
-  Unit CuYard yard<Scube> Volume 7.64554857984e-1 CuMeter # 0.9144^3
-  Unit CuMile mile<Scube> Volume 4.1681818254406e9 CuMeter # 1609.344^3
-  Unit CuNauticalMile nmi<Scube> Volume 6352182208 CuMeter # 1852^3
+  Unit CuInch inch<Scube> Volume 1.6387064e-5 # 0.0254^3
+  Unit CuFoot foot<Scube> Volume 2.8316846592e-2 # 0.3048^3
+  Unit CuYard yard<Scube> Volume 7.64554857984e-1 # 0.9144^3
+  Unit CuMile mile<Scube> Volume 4.1681818254406e9 # 1609.344^3
+  Unit CuNauticalMile nmi<Scube> Volume 6352182208 # 1852^3
 
-  Unit MicroLiter <Smu>L Volume 1e-9 CuMeter
-  Unit MilliLiter mL Volume 1e-6 CuMeter
-  Unit Liter L Volume 1e-3 CuMeter
+  Unit MicroLiter <Smu>L Volume 1e-9
+  Unit MilliLiter mL Volume 1e-6
+  Unit Liter L Volume 1e-3
   # https://en.wikipedia.org/wiki/Teaspoon
-  Unit MetricTeaspoon met<Sspace>tsp Volume 5e-6 CuMeter
+  Unit MetricTeaspoon met<Sspace>tsp Volume 5e-6
   # https://en.wikipedia.org/wiki/Tablespoon
-  Unit MetricTablespoon met<Sspace>tbsp Volume 15e-6 CuMeter
+  Unit MetricTablespoon met<Sspace>tbsp Volume 15e-6
 
   # https://en.wikipedia.org/wiki/United_States_customary_units
-  Unit Teaspoon tsp Volume 4.92892159375e-6 CuMeter # 1/3 tbsp
-  Unit Tablespoon tbsp Volume 1.478676478125e-5 CuMeter # 1/2 floz
-  Unit FluidOunce floz Volume 2.95735295625e-5 CuMeter # 1/4 gill
-  Unit Gill gill Volume 1.1829411825e-4 CuMeter # 1/2 cup
-  Unit Cup cup Volume 2.365882365e-4 CuMeter # 1/2 pint
-  Unit Pint pint Volume 4.73176473e-4 CuMeter # 1/2 quart; pt
-  Unit Quart quart Volume 9.46352946e-4 CuMeter # 1/4 gal; qt
-  Unit Gallon gallon Volume 3.785411784e-3 CuMeter # 231 in^3 by defn
+  Unit Teaspoon tsp Volume 4.92892159375e-6 # 1/3 tbsp
+  Unit Tablespoon tbsp Volume 1.478676478125e-5 # 1/2 floz
+  Unit FluidOunce floz Volume 2.95735295625e-5 # 1/4 gill
+  Unit Gill gill Volume 1.1829411825e-4 # 1/2 cup
+  Unit Cup cup Volume 2.365882365e-4 # 1/2 pint
+  Unit Pint pint Volume 4.73176473e-4 # 1/2 quart; pt
+  Unit Quart quart Volume 9.46352946e-4 # 1/4 gal; qt
+  Unit Gallon gallon Volume 3.785411784e-3 # 231 in^3 by defn
 
   # https://en.wikipedia.org/wiki/Imperial_units
   # https://en.wikipedia.org/wiki/Teaspoon
-  Unit ImpTeaspoon imp<Sspace>tsp Volume 3.5516328125e-6 CuMeter # 1/4 imp tbsp
+  Unit ImpTeaspoon imp<Sspace>tsp Volume 3.5516328125e-6 # 1/4 imp tbsp
   # https://en.wikipedia.org/wiki/Tablespoon
-  Unit ImpTablespoon imp<Sspace>tbsp Volume 1.420653125e-5 CuMeter # 1/2 imp floz
-  Unit ImpFluidOunce imp<Sspace>floz Volume 2.84130625e-5 CuMeter # *1/5* imp gill
-  Unit ImpGill imp<Sspace>gill Volume 1.420653125e-4 CuMeter # 1/2 imp cup
-  Unit ImpCup imp<Sspace>cup Volume 2.84130625e-4 CuMeter # 1/2 imp pint
-  Unit ImpPint imp<Sspace>pint Volume 5.6826125e-4 CuMeter # 1/2 imp quart
-  Unit ImpQuart imp<Sspace>quart Volume 1.1365225e-3 CuMeter # 1/4 imp gal
-  Unit ImpGallon imp<Sspace>gal Volume 4.54609e-3 CuMeter # 4.54609L by defn
+  Unit ImpTablespoon imp<Sspace>tbsp Volume 1.420653125e-5 # 1/2 imp floz
+  Unit ImpFluidOunce imp<Sspace>floz Volume 2.84130625e-5 # *1/5* imp gill
+  Unit ImpGill imp<Sspace>gill Volume 1.420653125e-4 # 1/2 imp cup
+  Unit ImpCup imp<Sspace>cup Volume 2.84130625e-4 # 1/2 imp pint
+  Unit ImpPint imp<Sspace>pint Volume 5.6826125e-4 # 1/2 imp quart
+  Unit ImpQuart imp<Sspace>quart Volume 1.1365225e-3 # 1/4 imp gal
+  Unit ImpGallon imp<Sspace>gal Volume 4.54609e-3 # 4.54609L by defn
 
   # Dry: https://en.wikipedia.org/wiki/United_States_customary_units
-  Unit DryPint dry<Sspace>pt Volume 0.5506104713575e-3 CuMeter # 33.6003125 in^3 by defn
-  Unit DryQuart dry<Sspace>qt Volume 1.101220942715e-3 CuMeter # 2 dry pt
-  Unit DryGallon dry<Sspace>gal Volume 4.40488377086e-3 CuMeter # 4 dry qt
-  Unit Peck peck Volume 8.80976754172e-3 CuMeter # 2 dry gal
-  Unit Bushel bushel Volume 35.23907016688e-3 CuMeter # 4 peck
-  Unit DryBarrel dry<Sspace>bbl Volume 0.115627123584 CuMeter # 7056 in^3
+  Unit DryPint dry<Sspace>pt Volume 0.5506104713575e-3 # 33.6003125 in^3 by defn
+  Unit DryQuart dry<Sspace>qt Volume 1.101220942715e-3 # 2 dry pt
+  Unit DryGallon dry<Sspace>gal Volume 4.40488377086e-3 # 4 dry qt
+  Unit Peck peck Volume 8.80976754172e-3 # 2 dry gal
+  Unit Bushel bushel Volume 35.23907016688e-3 # 4 peck
+  Unit DryBarrel dry<Sspace>bbl Volume 0.115627123584 # 7056 in^3
 
   # Other weird measures
 
   # https://en.wikipedia.org/wiki/Board_foot
-  Unit BoardFoot board<SdotIcon>foot Volume 2.359737216e-3 CuMeter # 1/12 cuft by defn
+  Unit BoardFoot board<SdotIcon>foot Volume 2.359737216e-3 # 1/12 cuft by defn
 
   # https://en.wikipedia.org/wiki/Barrel_(unit)
-  Unit OilBarrel barrel Volume 1.58987294928e-1 CuMeter # 42USgal by defn; bbl
+  Unit OilBarrel barrel Volume 1.58987294928e-1 # 42USgal by defn; bbl
 
   # https://en.wikipedia.org/wiki/Olympic-size_swimming_pool
   # "at least 2m deep"
-  Unit OlympicPool olym<Sspace>pool Volume 2500 CuMeter # 50m*25m*2m
+  Unit OlympicPool olym<Sspace>pool Volume 2500 # 50m*25m*2m
 
   # https://en.wikipedia.org/wiki/Acre-foot
-  Unit AcreFoot acre<SdotIcon>foot Volume 1233.4818375475 CuMeter # 66ft*660ft*1ft=43560cuft
+  # 66ft*660ft*1ft=43560cuft
+  Unit AcreFoot acre<SdotIcon>foot Volume 1233.4818375475
 
   #----------------------------------------------------------------------------
   # Mass
+  # We use kg as the baseUnit because the mks system is based on the kilogram,
+  # so it makes some conversions between UnitTypes easier (e.g. E=mc^2).
   #----------------------------------------------------------------------------
 
   # https://en.wikipedia.org/wiki/Dalton_(unit)
-  Unit AtomicMassUnit amu Mass 1.66053906892e-24 Gram
+  Unit AtomicMassUnit amu Mass 1.66053906892e-27
 
-  Unit MicroGram <Smu>g Mass 1e-6 Gram
-  Unit MilliGram mg Mass 1e-3 Gram
-  Unit Gram g Mass 1 Gram
-  Unit KiloGram kg Mass 1e3 Gram
-  Unit MetricTon met<Sspace>ton Mass 1e6 Gram # metric ton = 1000kg
+  Unit MicroGram <Smu>g Mass 1e-9
+  Unit MilliGram mg Mass 1e-6
+  Unit Gram g Mass 1e-3
+  Unit KiloGram kg Mass 1
+  Unit MetricTon met<Sspace>ton Mass 1000
 
   # US System
   # https://en.wikipedia.org/wiki/United_States_customary_units
-  Unit Grain grain Mass 6.479891e-3 Gram # 1/7000 lbs by defn
+  Unit Grain grain Mass 6.479891e-6 # 1/7000 lbs by defn
   # https://en.wikipedia.org/wiki/Dram_(unit)
-  Unit Dram dram Mass 1.7718451953125 Gram # 1/16 oz by defn
+  Unit Dram dram Mass 1.7718451953125e-3 # 1/16 oz by defn
   # https://en.wikipedia.org/wiki/Ounce
-  Unit Ounce ounce Mass 28.349523125 Gram # 1/16 lbs
-  Unit Pound pound Mass 453.59237 Gram # by defn
+  Unit Ounce ounce Mass 28.349523125e-3 # 1/16 lbs
+  Unit Pound pound Mass 0.45359237 # by defn
   # Slug:
   # https://en.wikipedia.org/wiki/Pound_(force), and
   # https://en.wikipedia.org/wiki/Slug_(unit)
   # slug := 1 lbf * 1 s^2/ft
-  # lbf := 1 lbs * (9.80665 m/s^2) / (0.3048 m/ft) * 453.59237 g/lbs
-  # slug = 14.593902937207e3 g
-  Unit Slug slug Mass 14.593902937207e3 Gram
+  # lbf := 1 lbs * (9.80665 m/s^2) / (0.3048 m/ft) * 0.45359237 kg/lbs
+  # slug = 14.593902937207 kg
+  Unit Slug slug Mass 14.593902937207
   # https://en.wikipedia.org/wiki/Hundredweight
-  Unit HundredWeight cwt Mass 453.59237e2 Gram # 100 lbs by defn
+  Unit HundredWeight cwt Mass 45.359237 # 100 lbs by defn
   # https://en.wikipedia.org/wiki/Short_ton
-  Unit ShortTon short<Sspace>ton Mass 907.18474e3 Gram # 2000 lbs
+  Unit ShortTon short<Sspace>ton Mass 907.18474 # 2000 lbs
 
   # Imperial System
   # https://en.wikipedia.org/wiki/Imperial_units
-  Unit Stone stone Mass 6.35029318e3 Gram # 14 lbs by defn
-  Unit Quarter quarter Mass 12.70058636e3 Gram # 2 stones by defn
+  Unit Stone stone Mass 6.35029318 # 14 lbs by defn
+  Unit Quarter quarter Mass 12.70058636 # 2 stones by defn
   # https://en.wikipedia.org/wiki/Hundredweight
-  Unit LongHundredWeight long<Sspace>cwt Mass 50.80234544e3 Gram # 8 stones (112 lbs) by defn
-  Unit LongTon long<Sspace>ton Mass 1016.0469088e3 Gram # 2240 lbs by defn
+  # 8 stones (112 lbs) by defn
+  Unit LongHundredWeight long<Sspace>cwt Mass 50.80234544
+  Unit LongTon long<Sspace>ton Mass 1016.0469088 # 2240 lbs by defn
 
   # Troy System
   # https://en.wikipedia.org/wiki/Troy_weight
   # https://en.wikipedia.org/wiki/Pennyweight
-  Unit TroyPennyWeight troy<Sspace>dwt Mass 1.55517384 Gram # 24 grains by defn
-  Unit TroyOunce troy<Sspace>ozt Mass 31.1034768 Gram # 20 pennyweights by defn
-  Unit TroyPound troy<Sspace>lbt Mass 373.2417216 Gram # 12 troy oz by defn
+  Unit TroyPennyWeight troy<Sspace>dwt Mass 1.55517384e-3 # 24 grains by defn
+  Unit TroyOunce troy<Sspace>ozt Mass 31.1034768e-3 # 20 pennyweights by defn
+  Unit TroyPound troy<Sspace>lbt Mass 373.2417216e-3 # 12 troy oz by defn
 
   #----------------------------------------------------------------------------
   # Temperature, requires special handlers
   # https://en.wikipedia.org/wiki/Conversion_of_scales_of_temperature
   #----------------------------------------------------------------------------
 
-  Unit Celsius <Stemp>C Temperature 1 Kelvin # C = 273.15 + K
-  Unit Fahrenheit <Stemp>F Temperature 1 Kelvin # F = C*9/5 + 32
-  Unit Rankine <Stemp>R Temperature 1 Kelvin # R = K*9/5 = (C-273.15)*9/5
-  Unit Kelvin <Stemp>K Temperature 1 Kelvin # add <Stemp> to 'K' for visual hint
+  Unit Celsius <Stemp>C Temperature 1 # C = 273.15 + K
+  Unit Fahrenheit <Stemp>F Temperature 1 # F = C*9/5 + 32
+  Unit Rankine <Stemp>R Temperature 1 # R = K*9/5 = (C-273.15)*9/5
+  Unit Kelvin <Stemp>K Temperature 1 # add <Stemp> to 'K' for visual hint
 
   #----------------------------------------------------------------------------
   # Force
   #----------------------------------------------------------------------------
 
-  Unit Dyne dyne Force 1e-5 Newton
-  Unit Newton newton Force 1 Newton
+  Unit Dyne dyne Force 1e-5
+  Unit Newton newton Force 1
 
   # https://en.wikipedia.org/wiki/Pound_(force)
   # 1 lbf := (1 lbs) * (0.45359237 kg/lb) * (9.80665 m/s^2)
   #        = 4.4482216152605 N
-  Unit PoundForce lbf Force 4.4482216152605 Newton
+  Unit PoundForce lbf Force 4.4482216152605
 
   # https://en.wikipedia.org/wiki/Kilogram-force
-  Unit KilogramForce kgf Force 9.80665 Newton # by defn
+  Unit KilogramForce kgf Force 9.80665 # by defn
 
   # https://en.wikipedia.org/wiki/Ton-force#Tonne-force
-  Unit MetricTonForce tonf Force 9.80665e3 Newton # by defn
+  Unit MetricTonForce tonf Force 9.80665e3 # by defn
   # stonf = 2000 lbs*(0.45359237 kg/lb)*9.80665 = 8.896443230521e3 N
-  Unit ShortTonForce stonf Force 8.896443230521e3 Newton # by defn
+  Unit ShortTonForce stonf Force 8.896443230521e3 # by defn
   # ltonf = 2240 lbs*(0.45359237 kg/lb)*9.80665 = 9.96401641818352e3 N
-  Unit LongTonForce ltonf Force 9.96401641818352e3 Newton
+  Unit LongTonForce ltonf Force 9.96401641818352e3
 
   #----------------------------------------------------------------------------
   # Pressure
   # https://en.wikipedia.org/wiki/Pressure
   #----------------------------------------------------------------------------
 
-  Unit MilliPascal mPa Pressure 1e-3 Pascal
-  Unit Pascal Pa Pressure 1 Pascal
-  Unit HectoPascal hPa Pressure 1e2 Pascal
-  Unit KiloPascal kPa Pressure 1e3 Pascal
+  Unit MilliPascal mPa Pressure 1e-3
+  Unit Pascal Pa Pressure 1
+  Unit HectoPascal hPa Pressure 1e2
+  Unit KiloPascal kPa Pressure 1e3
 
   # https://en.wikipedia.org/wiki/Bar_(unit)
-  Unit MilliBar mbar Pressure 1e2 Pascal
-  Unit DeciBar dbar Pressure 1e4 Pascal
-  Unit Bar bar Pressure 1e5 Pascal
+  Unit MilliBar mbar Pressure 1e2
+  Unit DeciBar dbar Pressure 1e4
+  Unit Bar bar Pressure 1e5
 
   # See https://en.wikipedia.org/wiki/Pound_per_square_inch.
   # 1 psi = 0.45359237 kg/lbf * (9.80665 m/s^2) / (0.0254 m/in)^2
   #       = 6894.7572931684 Pa (rounded to 14 digits)
   # See https://en.wikipedia.org/wiki/Pound_per_square_inch.
-  Unit PoundSquareInch psi Pressure 6894.7572931684 Pascal
+  Unit PoundSquareInch psi Pressure 6894.7572931684
 
   # https://en.wikipedia.org/wiki/Atmospheric_pressure
-  Unit Atmosphere atm Pressure 101325 Pascal # by defn
+  Unit Atmosphere atm Pressure 101325 # by defn
 
   # See https://en.wikipedia.org/wiki/Torr. Per SI conventions, the symbol is
   # 'Torr', but the unit name is 'torr'. This is too confusing, so let's use
@@ -304,21 +310,21 @@ Units [
   # menu name. Within RPN83P, the internal label of a unit starts with a
   # capital, so this becomes 'Torr'. Sigh.
   # 1 Torr = 1/760 atm = 133.32236842105 Pa (rounded to 14-digits)
-  Unit Torr torr Pressure 133.32236842105 Pascal
+  Unit Torr torr Pressure 133.32236842105
 
   # According to https://en.wikipedia.org/wiki/Millimetre_of_mercury:
   # 1 mmHg = 133.322 387 415 pascals (exact)
   # 1 inHg = 25.4 * (above) = 3386.388640341 Pa (exact)
-  Unit MilliMeterMercury mmHg Pressure 133.322387415 Pascal
-  Unit InchMercury inHg Pressure 3386.388640341 Pascal
+  Unit MilliMeterMercury mmHg Pressure 133.322387415
+  Unit InchMercury inHg Pressure 3386.388640341
 
   # https://en.wikipedia.org/wiki/Centimetre_or_millimetre_of_water
-  Unit MilliMeterWater mmH2O Pressure 9.80665 Pascal # (by defn)
+  Unit MilliMeterWater mmH2O Pressure 9.80665 # (by defn)
 
   # https://en.wikipedia.org/wiki/Inch_of_water
   # inH2O = mmH2O * (1 inch) = 9.80665 Pa * (1 in) * (25.4mm/in)
   #       = 249.08891 Pa (exact)
-  Unit InchWater inH2O Pressure 249.08891 Pascal
+  Unit InchWater inH2O Pressure 249.08891
 
   #----------------------------------------------------------------------------
   # Energy
@@ -326,64 +332,64 @@ Units [
   #----------------------------------------------------------------------------
 
   # https://en.wikipedia.org/wiki/Electronvolt
-  Unit ElectronVolt eV Energy 1.602176634e-19 Joule # by defn
+  Unit ElectronVolt eV Energy 1.602176634e-19 # by defn
 
   # https://en.wikipedia.org/wiki/Erg
-  Unit Erg erg Energy 1e-7 Joule
+  Unit Erg erg Energy 1e-7
 
-  Unit Joule J Energy 1 Joule
+  Unit Joule J Energy 1
 
-  Unit WattHour Wh Energy 3.6e3 Joule
+  Unit WattHour Wh Energy 3.6e3
 
   # https://en.wikipedia.org/wiki/Kilowatt-hour
-  Unit KiloWattHour kWh Energy 3.6e6 Joule
+  Unit KiloWattHour kWh Energy 3.6e6
 
   # https://en.wikipedia.org/wiki/Calorie
-  Unit Calorie cal Energy 4.184 Joule # by defn
-  Unit KiloCalorie kCal Energy 4.184e3 Joule
+  Unit Calorie cal Energy 4.184 # by defn
+  Unit KiloCalorie kCal Energy 4.184e3
 
   # https://en.wikipedia.org/wiki/Foot-pound_(energy)
   # ftlbf = 1 lbf * 1 ft = (1 lb) * (0.45359237 kg/lb) * (9.80665 m/s^2)
   #        * (1 ft) * (0.3048 m/ft)
   #       = 1.3558179483314(004) J (exact if 3-digits in parens are included,
   #         rounded to 14-digits below)
-  Unit FootPoundEnergy ft<SdotIcon>lbf Energy 1.3558179483314 Joule
+  Unit FootPoundEnergy ft<SdotIcon>lbf Energy 1.3558179483314
 
   # https://en.wikipedia.org/wiki/British_thermal_unit
   # The Btu has Several different definitions. Pick one that is somewhere in
   # the middle.
-  Unit BritishThermalUnit Btu Energy 1055 Joule # (approximate)
+  Unit BritishThermalUnit Btu Energy 1055 # (approximate)
 
   # https://en.wikipedia.org/wiki/TNT_equivalent
-  Unit GramTNT gramTNT Energy 4184 Joule # by defn
-  Unit TonTNT tonTNT Energy 4.184e9 Joule
+  Unit GramTNT gramTNT Energy 4184 # by defn
+  Unit TonTNT tonTNT Energy 4.184e9
 
   # liter-atm = 1e-3 m^3 * 101325 Pa = 101.325 Joules (added for compatibility
   # with TI-85).
-  Unit LiterAtmosphere liter<SdotIcon>atm Energy 101.325 Joule
+  Unit LiterAtmosphere liter<SdotIcon>atm Energy 101.325
 
   #----------------------------------------------------------------------------
   # Power
   # https://en.wikipedia.org/wiki/Power_(physics)
   #----------------------------------------------------------------------------
 
-  Unit Watt W Power 1 Watt
-  Unit KiloWatt kW Power 1000 Watt
+  Unit Watt W Power 1
+  Unit KiloWatt kW Power 1000
 
   # https://en.wikipedia.org/wiki/Foot-pound_(energy)
-  Unit FootPoundEnergyPerSecond ft<SdotIcon>lbf<Sslash>s Power 1.3558179483314 Watt
+  Unit FootPoundEnergyPerSecond ft<SdotIcon>lbf<Sslash>s Power 1.3558179483314
 
   # https://en.wikipedia.org/wiki/Calorie
-  Unit CaloriePerSecond cal<Sslash>s Power 4.184 Watt
+  Unit CaloriePerSecond cal<Sslash>s Power 4.184
 
   # https://en.wikipedia.org/wiki/British_thermal_unit
   # Btu/hour = 1055J/(3600s) = .29305555555556 W (used frequently in AC and
   # heating systems for homes)
-  Unit BtuPerHour Btu<Sslash>hr Power .29305555555556 Watt
+  Unit BtuPerHour Btu<Sslash>hr Power .29305555555556
 
   # Btu/min = 1055J/(60s) = 17.583333333333 W (added for compatibility with
   # TI-85)
-  Unit BtuPerMinute Btu<Sslash>min Power 17.583333333333 Watt
+  Unit BtuPerMinute Btu<Sslash>min Power 17.583333333333
 
   # According to https://en.wikipedia.org/wiki/Horsepower:
   # 1 hp (mechanical)
@@ -391,45 +397,46 @@ Units [
   #   = 550 ft*lbf/s
   #   = 550 ft*lbf/s * 0.3048 m/ft * 9.806 65 m/s^2 * 0.453 592 37 kg/lbs
   #   ~ 0.745 699 871 582 270 22 kW
-  Unit Horsepower hp Power 745.69987158227022 Watt
+  Unit Horsepower hp Power 745.69987158227022
 
   #----------------------------------------------------------------------------
   # Time
   # Mostly for TI-85 compatibility.
   #----------------------------------------------------------------------------
 
-  Unit NanoSecond ns Time 1e-9 Second
-  Unit MicroSecond <Smu>s Time 1e-6 Second
-  Unit MilliSecond ms Time 1e-3 Second
-  Unit Second second Time 1 Second
-  Unit Minute minute Time 60 Second
-  Unit Hour hour Time 3600 Second
-  Unit Day day Time 86400 Second
-  Unit Week week Time 604800 Second
+  Unit NanoSecond ns Time 1e-9
+  Unit MicroSecond <Smu>s Time 1e-6
+  Unit MilliSecond ms Time 1e-3
+  Unit Second second Time 1
+  Unit Minute minute Time 60
+  Unit Hour hour Time 3600
+  Unit Day day Time 86400
+  Unit Week week Time 604800
 
   # https://en.wikipedia.org/wiki/Julian_year_%28astronomy%29
   # Julian year = 365.25 days
-  Unit JulianYear year Time 31557600 Second
+  Unit JulianYear year Time 31557600
 
   #----------------------------------------------------------------------------
   # Speed
   #----------------------------------------------------------------------------
 
-  Unit MeterPerSecond m<Sslash>s Speed 1 MeterPerSecond
-  Unit FootPerSecond ft<Sslash>s Speed 0.3048 MeterPerSecond
-  Unit KiloMeterPerHour km<Sslash>hr Speed 0.27777777777778 MeterPerSecond
-  Unit MilePerHour mi<Sslash>hr Speed 0.44704 MeterPerSecond
+  Unit MeterPerSecond m<Sslash>s Speed 1
+  Unit FootPerSecond ft<Sslash>s Speed 0.3048
+  Unit KiloMeterPerHour km<Sslash>hr Speed 0.27777777777778
+  Unit MilePerHour mi<Sslash>hr Speed 0.44704
   # https://en.wikipedia.org/wiki/Knot_(unit)
-  Unit Knot knot Speed 0.51444444444444 MeterPerSecond # 1852m/h by defn
-  Unit LightSpeed lightc Speed 299792458 MeterPerSecond # by defn
+  Unit Knot knot Speed 0.51444444444444 # 1852m/h by defn
+  Unit LightSpeed lightc Speed 299792458 # by defn
 
   #----------------------------------------------------------------------------
   # Fuel Consumption
-  # Requires special handlers.
+  # Requires special conversion handlers.
+  #
   #   Lkm = 100/[mpg * (km/mile) / (litre/gal)]
   #   mpg = 100/lkm * (litre/gal) / (km/mile).
   #----------------------------------------------------------------------------
 
-  Unit MilesPerGallon mpg Fuel 1 LitersPerHundredKiloMeters
-  Unit LitersPerHundredKiloMeters L<Sslash>100km Fuel 1 LitersPerHundredKiloMeters
+  Unit MilesPerGallon mpg Fuel 1
+  Unit LitersPerHundredKiloMeters L<Sslash>100km Fuel 1
 ]
