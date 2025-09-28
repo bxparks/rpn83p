@@ -702,6 +702,10 @@ mUnitMetricTonForceHandler:
 ; UNIT > FORC > Row 2
 ;-----------------------------------------------------------------------------
 
+mUnitPoundalHandler:
+    ld a, unitPoundalId
+    jp commonUnitHandler
+
 mUnitPoundForceHandler:
     ld a, unitPoundForceId
     jp commonUnitHandler

@@ -265,18 +265,26 @@ Units [
   Unit Dyne dyne Force 1e-5
   Unit Newton newton Force 1
 
-  # https://en.wikipedia.org/wiki/Pound_(force)
-  # 1 lbf := (1 lbs) * (0.45359237 kg/lb) * (9.80665 m/s^2)
-  #        = 4.4482216152605 N
-  Unit PoundForce lbf Force 4.4482216152605
-
   # https://en.wikipedia.org/wiki/Kilogram-force
   Unit KilogramForce kgf Force 9.80665 # by defn
 
   # https://en.wikipedia.org/wiki/Ton-force#Tonne-force
   Unit MetricTonForce tonf Force 9.80665e3 # by defn
+
+  # https://en.wikipedia.org/wiki/Poundal
+  # 1 pdl := (1 lb) * (1 ft/s^2)
+  #        = (1 lb) * (0.45359237 kg/lb) * (1 ft/s^2) * (0.3048 m / ft)
+  #        = 0.138254954376 N
+  Unit Poundal poundal Force 0.138254954376
+
+  # https://en.wikipedia.org/wiki/Pound_(force)
+  # 1 lbf := (1 lb) * (0.45359237 kg/lb) * (9.80665 m/s^2)
+  #        = 4.4482216152605 N
+  Unit PoundForce lbf Force 4.4482216152605
+
   # stonf = 2000 lbs*(0.45359237 kg/lb)*9.80665 = 8.896443230521e3 N
   Unit ShortTonForce stonf Force 8.896443230521e3 # by defn
+
   # ltonf = 2240 lbs*(0.45359237 kg/lb)*9.80665 = 9.96401641818352e3 N
   Unit LongTonForce ltonf Force 9.96401641818352e3
 

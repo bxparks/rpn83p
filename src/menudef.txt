@@ -578,6 +578,7 @@ MenuGroup root mRoot [
             MenuItem tonf mUnitMetricTonForce
           ]
           MenuRow [
+            MenuItem pdl mUnitPoundal
             MenuItem lbf mUnitPoundForce
             MenuItem stnf mUnitShortTonForce
             MenuItem ltnf mUnitLongTonForce

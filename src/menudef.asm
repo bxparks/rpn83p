@@ -3585,8 +3585,17 @@ mBlank381Id equ 381
     .dw mNullHandler ; handler (predefined)
     .dw 0 ; nameSelector
 ; MenuGroup FORC: children: row 1
+mUnitPoundal:
+mUnitPoundalId equ 382
+    .dw mUnitPoundalId ; id
+    .dw mUnitForceId ; parentId
+    .dw mUnitPoundalName ; name
+    .db 0 ; numRows
+    .dw 0 ; rowBeginId or altName
+    .dw mUnitPoundalHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
 mUnitPoundForce:
-mUnitPoundForceId equ 382
+mUnitPoundForceId equ 383
     .dw mUnitPoundForceId ; id
     .dw mUnitForceId ; parentId
     .dw mUnitPoundForceName ; name
@@ -3595,7 +3604,7 @@ mUnitPoundForceId equ 382
     .dw mUnitPoundForceHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
 mUnitShortTonForce:
-mUnitShortTonForceId equ 383
+mUnitShortTonForceId equ 384
     .dw mUnitShortTonForceId ; id
     .dw mUnitForceId ; parentId
     .dw mUnitShortTonForceName ; name
@@ -3604,22 +3613,13 @@ mUnitShortTonForceId equ 383
     .dw mUnitShortTonForceHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
 mUnitLongTonForce:
-mUnitLongTonForceId equ 384
+mUnitLongTonForceId equ 385
     .dw mUnitLongTonForceId ; id
     .dw mUnitForceId ; parentId
     .dw mUnitLongTonForceName ; name
     .db 0 ; numRows
     .dw 0 ; rowBeginId or altName
     .dw mUnitLongTonForceHandler ; handler (to be implemented)
-    .dw 0 ; nameSelector
-mBlank385:
-mBlank385Id equ 385
-    .dw mBlank385Id ; id
-    .dw mUnitForceId ; parentId
-    .dw mNullName ; name
-    .db 0 ; numRows
-    .dw 0 ; rowBeginId or altName
-    .dw mNullHandler ; handler (predefined)
     .dw 0 ; nameSelector
 mBlank386:
 mBlank386Id equ 386
@@ -5307,8 +5307,8 @@ mSetClockId equ 566
 ; Pool of menu names as NUL-terminated C strings.
 ;-----------------------------------------------------------------------------
 
-mNamesCount equ 473 ; number of names and altnames
-mNamesPoolSize equ 3972 ; size of names string pool
+mNamesCount equ 474 ; number of names and altnames
+mNamesPoolSize equ 3976 ; size of names string pool
 
 mNullName:
     .db 0
@@ -6020,6 +6020,8 @@ mUnitKilogramForceName:
     .db "kgf", 0
 mUnitMetricTonForceName:
     .db "tonf", 0
+mUnitPoundalName:
+    .db "pdl", 0
 mUnitPoundForceName:
     .db "lbf", 0
 mUnitShortTonForceName:
