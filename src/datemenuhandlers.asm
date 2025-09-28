@@ -723,6 +723,7 @@ mGenericDateIsLeapHandler:
     call closeInputAndRecallUniversalX ; OP1=X=Real|Date-like
     bcall(_GenericDateIsLeap) ; OP1:Real=0 or 1
     bcall(_ReplaceStackX)
+    ret
 
 ;-----------------------------------------------------------------------------
 
