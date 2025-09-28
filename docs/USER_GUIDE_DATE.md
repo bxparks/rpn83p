@@ -55,6 +55,7 @@ These features were inspired by various datetime libraries:
         - [Date Entry](#date-entry)
         - [Date Validation](#date-validation)
         - [Date Functions](#date-functions)
+        - [Date Components](#date-components)
         - [Date Arithmetic](#date-arithmetic)
     - [Time (T)](#time-t)
     - [DateTime (DT)](#datetime-dt)
@@ -611,6 +612,23 @@ The `DOW` function returns the `DayOfWeek` object from the given `Date`. The
 | `LEAP`            | ![](images/date/d/date-leap-dow-raw-2.png)  | ![](images/date/d/date-leap-dow-str-2.png) |
 | `2ND ANS` (LASTX) | ![](images/date/d/date-leap-dow-raw-3.png)  | ![](images/date/d/date-leap-dow-str-3.png) |
 | `DOW`             | ![](images/date/d/date-leap-dow-raw-4.png)  | ![](images/date/d/date-leap-dow-str-4.png) |
+
+TODO: Add screenshots of `CVTZ` function.
+
+#### Date Components
+
+There are 3 menu functions which allow the user to extract the individual
+components of the `Date` object: `.YR` (year component), `.MON` (month
+component), and `.DAY` (day component):
+
+| **Keys**          | **MODE `{..}`**                               | **MODE `".."`**   |
+| -----------       | ---------------------                         | ----------------- |
+| `D{2024,3,14}`    | ![](images/date/d/date-components-raw-1.png)  | ![](images/date/d/date-components-str-1.png) |
+| `.YR`             | ![](images/date/d/date-components-raw-2.png)  | ![](images/date/d/date-components-str-2.png) |
+| `2ND ANS` (LASTX) | ![](images/date/d/date-components-raw-3.png)  | ![](images/date/d/date-components-str-3.png) |
+| `.MON`            | ![](images/date/d/date-components-raw-4.png)  | ![](images/date/d/date-components-str-4.png) |
+| `2ND ANS` (LASTX) | ![](images/date/d/date-components-raw-5.png)  | ![](images/date/d/date-components-str-5.png) |
+| `.DAY`            | ![](images/date/d/date-components-raw-6.png)  | ![](images/date/d/date-components-str-6.png) |
 
 #### Date Arithmetic
 
