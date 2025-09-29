@@ -1235,37 +1235,33 @@ For example, if we try to enter the invalid ZonedDateTime `2024-03-14
 
 #### ZonedDateTime Functions
 
-A ZonedDateTime object can be converted into an integer that represents the
-number of seconds from the Epoch date. By default, the Epoch date is 1970-01-01
-but it can be changed using the `EPCH` menu items described in the [Epoch
-Date](#epoch-date) section below. The menu functions for conversion are the
-`D*>S`, `S>DZ`, and `S>UT` functions:
+A ZonedDateTime object support the same `>ED`, `>ED`, `>ES`, and `ES>` functions
+as the Date and DateTime objects. It also supports an extra `ES>@` function
+which converts an EpochSecond to a ZonedDateTime using the Application TimeZone,
+which is configured using the `TZ` menu function under the `CLK` folder.
 
-![ROOT > DATE > ZonedDateTimeToSeconds](images/menu/root-date-epochseconds.png)
+For example, let's calculate those quantities for 2024-03-14 15:36:01-07:00:
 
-- `D*>S`: convert ZonedDateTime to epochseconds
-- `S>UT`: convert the epochseconds to the ZonedDateTime using UTC timezone
-- `S>DZ`: convert the epochseconds to the ZonedDateTime using the current
-  Application Timezone. The result of this function depends on 2 configurable
-  context variables:
-    - the [Application Timezone](#setting-the-application-timezone), defined by
-      the `TZ` menu function
-    - the [Epoch Date](#epoch-date), defined by the `EPCH` menu group
+| **Keys**                          | **MODE `{..}`**                                   | **MODE `".."`**   |
+| -----------                       | ---------------------                             | ----------------- |
+| `DZ{2024,3,14,15,36,1,-7,0}`      | ![](images/date/dz/zoneddatetime-ed-es-raw-1.png) | ![](images/date/dz/zoneddatetime-ed-es-str-1.png) |
+| `>ED`                             | ![](images/date/dz/zoneddatetime-ed-es-raw-2.png) | ![](images/date/dz/zoneddatetime-ed-es-str-2.png) |
+| `ED>`                             | ![](images/date/dz/zoneddatetime-ed-es-raw-3.png) | ![](images/date/dz/zoneddatetime-ed-es-str-3.png) |
+| `DZ{2024,3,14,15,36,1,-7,0}`      | ![](images/date/dz/zoneddatetime-ed-es-raw-4.png) | ![](images/date/dz/zoneddatetime-ed-es-str-4.png) |
+| `>ES`                             | ![](images/date/dz/zoneddatetime-ed-es-raw-5.png) | ![](images/date/dz/zoneddatetime-ed-es-str-5.png) |
+| `ES>`                             | ![](images/date/dz/zoneddatetime-ed-es-raw-6.png) | ![](images/date/dz/zoneddatetime-ed-es-str-6.png) |
+| `2ND ANS` (LASTX)                 | ![](images/date/dz/zoneddatetime-ed-es-raw-7.png) | ![](images/date/dz/zoneddatetime-ed-es-str-7.png) |
+| `ES>@`                            | ![](images/date/dz/zoneddatetime-ed-es-raw-8.png) | ![](images/date/dz/zoneddatetime-ed-es-str-8.png) |
 
-For example, let's `2024-03-14 15:36:01-07:00` to epochseconds, then back to
-ZonedDateTime, then to UTC DateTime:
+Notes:
 
-| **Keys**                      | **MODE `{..}`**                                          | **MODE `".."`**                   |
-| -------------------------     | ---------------------                                    | -----------------                 |
-| `DZ{2024,3,14,15,36,1,-7,0}`  | ![](images/date/dz/zoneddatetime-to-seconds-raw-1.png)   | ![](images/date/dz/zoneddatetime-to-seconds-str-1.png) |
-| `D*>S`                        | ![](images/date/dz/zoneddatetime-to-seconds-raw-2.png)   | ![](images/date/dz/zoneddatetime-to-seconds-str-2.png) |
-| `S>UT`                        | ![](images/date/dz/zoneddatetime-to-seconds-raw-3.png)   | ![](images/date/dz/zoneddatetime-to-seconds-str-3.png) |
-| `D*>S`                        | ![](images/date/dz/zoneddatetime-to-seconds-raw-4.png)   | ![](images/date/dz/zoneddatetime-to-seconds-str-4.png) |
-| `S>DZ`                        | ![](images/date/dz/zoneddatetime-to-seconds-raw-5.png)   | ![](images/date/dz/zoneddatetime-to-seconds-str-5.png) |
-
-The final conversion from epochseconds to ZonedDateTime returns the original
-`2024-03-14 15:36:01-07:00` because I had set my Application Timezone to
-`UTC-07:00`.
+- When a ZonedDateTime is converted into EpochDays, the Time component becomes
+  truncated to midnight.
+- The `ES>` function always produces a ZonedDateTime object using the UTC
+  timezone.
+- The `ES>@` function converts EpochSeconds to the original `2024-03-14
+  15:36:01-07:00` because I had set my Application Timezone to `UTC-07:00` using
+  the `TZ` function of the `CLK` menu folder.
 
 #### ZonedDateTime Arithmetic
 
