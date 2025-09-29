@@ -942,6 +942,44 @@ menu functions allow the user to extract these components: `.D{}` and `.T{}`.
 | `2ND ANS` (LASTX)         | ![](images/date/dt/datetime-components-raw-3.png)  | ![](images/date/dt/datetime-components-str-3.png) |
 | `.T{}`                    | ![](images/date/dt/datetime-components-raw-4.png)  | ![](images/date/dt/datetime-components-str-4.png) |
 
+#### DateTime Casting
+
+The last 4 menu functions `DSHK`, `DEXD`, `DCUT`, and `DLNK` allow the `DateTime`
+object to be converted to other Date-related objects (known as "casting").
+
+The `DSHK` function shrinks the `DateTime` object into a `Date` object by
+truncating the `Time` component:
+
+| **Keys**                          | **MODE `{..}`**                                      | **MODE `".."`**   |
+| -----------                       | ---------------------                                | ----------------- |
+| `DT{2024,3,14,15,36,1}` `ENTER`   | ![](images/date/dt/datetime-casting-dshk-raw-1.png)  | ![](images/date/dt/datetime-casting-dshk-str-1.png) |
+| `DSHK`                            | ![](images/date/dt/datetime-casting-dshk-raw-2.png)  | ![](images/date/dt/datetime-casting-dshk-str-2.png) |
+
+The `DEXD` function extends the `DateTime` object into a `ZoneDateTime` object
+by appending a UTC `TimeZone` object:
+
+| **Keys**                          | **MODE `{..}`**                                      | **MODE `".."`**   |
+| -----------                       | ---------------------                                | ----------------- |
+| `DT{2024,3,14,15,36,1}` `ENTER`   | ![](images/date/dt/datetime-casting-dexd-raw-1.png)  | ![](images/date/dt/datetime-casting-dexd-str-1.png) |
+| `DEXD`                            | ![](images/date/dt/datetime-casting-dexd-raw-2.png)  | ![](images/date/dt/datetime-casting-dexd-str-2.png) |
+
+The `DCUT` function splits (cuts) the `DateTime` object into its component
+`Date` and `Time` objects:
+
+| **Keys**                          | **MODE `{..}`**                                      | **MODE `".."`**   |
+| -----------                       | ---------------------                                | ----------------- |
+| `DT{2024,3,14,15,36,1}` `ENTER`   | ![](images/date/dt/datetime-casting-dcut-raw-1.png)  | ![](images/date/dt/datetime-casting-dcut-str-1.png) |
+| `DCUT`                            | ![](images/date/dt/datetime-casting-dcut-raw-2.png)  | ![](images/date/dt/datetime-casting-dcut-str-2.png) |
+
+The `DLNK` function merges (links) a `DateTime` object and a `TimeZone` object
+into a `ZonedDateTime` object.
+
+| **Keys**                          | **MODE `{..}`**                                      | **MODE `".."`**   |
+| -----------                       | ---------------------                                | ----------------- |
+| `DT{2024,3,14,15,36,1}` `ENTER`   | ![](images/date/dt/datetime-casting-dlnk-raw-1.png)  | ![](images/date/dt/datetime-casting-dlnk-str-1.png) |
+| `TZ{-8,0}`                        | ![](images/date/dt/datetime-casting-dlnk-raw-2.png)  | ![](images/date/dt/datetime-casting-dlnk-str-2.png) |
+| `DLNK`                            | ![](images/date/dt/datetime-casting-dlnk-raw-3.png)  | ![](images/date/dt/datetime-casting-dlnk-str-3.png) |
+
 #### DateTime Arithmetic
 
 The addition and subtraction operations are available on the `DateTime` object,
