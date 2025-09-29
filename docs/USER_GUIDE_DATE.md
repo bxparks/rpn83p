@@ -1204,8 +1204,8 @@ occurred in `America/Los_Angeles` timezone after the DST shift on March 10,
 | `2ND ENTER` (SHOW)            | ![](images/date/dz/zoneddatetime-raw-3.png)  | ![](images/date/dz/zoneddatetime-str-3.png) |
 
 ZonedDateTime objects with a UTC offset of +00:00 are special, and it is useful
-to display them slightly differently. Here is how the date 2024-03-14 22:36:00
-UTC is entered and displayed:
+to display them using the `Z` notation for their timezone. Here is how the date
+2024-03-14 22:36:00 UTC is entered and displayed:
 
 | **Keys**                      | **MODE `{..}`**                                  | **MODE `".."`**                   |
 | -------------------------     | ---------------------                            | -----------------                 |
