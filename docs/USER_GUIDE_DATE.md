@@ -735,19 +735,33 @@ record:
 
 #### Time Functions
 
-The `D*>S` and `S>T` menu functions convert between a Time object and the
+The `>S` and `S>` menu functions convert between a Time object and the
 integer number of seconds since midnight `00:00:00`. This will will always be a
 non-negative number:
 
-![ROOT > DATE > TimeToSeconds](images/menu/root-date-timeseconds.png)
-
-For example, let's convert `15:35:01` to an integer, then back to a Time object:
+For example, let's convert `15:35:01` to the number of seconds, then back to a
+Time object:
 
 | **Keys**          | **MODE `{..}`**                                | **MODE `".."`**   |
 | ------------------| ---------------------                          | ----------------- |
 | `T{15,36,1}`      | ![](images/date/t/time-to-seconds-raw-1.png)   | ![](images/date/t/time-to-seconds-str-1.png) |
-| `D*>S`            | ![](images/date/t/time-to-seconds-raw-2.png)   | ![](images/date/t/time-to-seconds-str-2.png) |
-| `S>T`             | ![](images/date/t/time-to-seconds-raw-3.png)   | ![](images/date/t/time-to-seconds-str-3.png) |
+| `>S`              | ![](images/date/t/time-to-seconds-raw-2.png)   | ![](images/date/t/time-to-seconds-str-2.png) |
+| `S>`              | ![](images/date/t/time-to-seconds-raw-3.png)   | ![](images/date/t/time-to-seconds-str-3.png) |
+
+#### Time Components
+
+There are 3 menu functions which allow the user to extract the individual
+components of the `Time` object: `.HR` (hour component), `.MIN` (minute
+component), and `.SEC` (second component):
+
+| **Keys**          | **MODE `{..}`**                               | **MODE `".."`**   |
+| -----------       | ---------------------                         | ----------------- |
+| `T{15,36,1}`      | ![](images/date/t/time-components-raw-1.png)  | ![](images/date/t/time-components-str-1.png) |
+| `.HR`             | ![](images/date/t/time-components-raw-2.png)  | ![](images/date/t/time-components-str-2.png) |
+| `2ND ANS` (LASTX) | ![](images/date/t/time-components-raw-3.png)  | ![](images/date/t/time-components-str-3.png) |
+| `.MIN`            | ![](images/date/t/time-components-raw-4.png)  | ![](images/date/t/time-components-str-4.png) |
+| `2ND ANS` (LASTX) | ![](images/date/t/time-components-raw-5.png)  | ![](images/date/t/time-components-str-5.png) |
+| `.SEC`            | ![](images/date/t/time-components-raw-6.png)  | ![](images/date/t/time-components-str-6.png) |
 
 #### Time Arithmetic
 
