@@ -869,8 +869,16 @@ For example, the date `2024-03-14 15:36:01` would be entered like this:
 
 #### DateTime Validation
 
-The validation rules of the `DateTime` is the union of the validation rules
-for the `Date` record and the rules for the `Time` record.
+The validation rules of the `DateTime` object is the union of the validation
+rules for the `Date` record and the rules for the `Time` record.
+
+For example, if we try to enter the invalid DateTime `2024-03-14 23:59:60`, we
+get:
+
+| **Keys**                      | **MODE `{..}`**                                | **MODE `".."`**   |
+| ------------------            | ---------------------                          | ----------------- |
+| `DT{2024,3,14,23,30,60}`      | ![](images/date/dt/datetime-invalid-raw-1.png) | ![](images/datedt/date/time-invalid-str-1.png) |
+| `ENTER`                       | ![](images/date/dt/datetime-invalid-raw-2.png) | ![](images/datedt/date/time-invalid-str-2.png) |
 
 #### DateTime Functions
 
