@@ -1221,11 +1221,11 @@ decrease it to 5:
 
 | **Keys**              | **Display** |
 | ----------------      | --------------------- |
-| `MODE` `DOWN` `DOWN`  | ![SSIZ](images/ssiz-1.png) |
-| `SSIZ` `4`            | ![SSIZ](images/ssiz-2.png) |
-| `SSIZ` `8`            | ![SSIZ](images/ssiz-3.png) |
-| `SSIZ` `5`            | ![SSIZ](images/ssiz-4.png) |
-| `SSZ?`                | ![SSIZ](images/ssiz-5.png) |
+| `MODE` `DOWN` `DOWN`  | ![SSIZ](images/mode/ssiz-1.png) |
+| `SSIZ` `4`            | ![SSIZ](images/mode/ssiz-2.png) |
+| `SSIZ` `8`            | ![SSIZ](images/mode/ssiz-3.png) |
+| `SSIZ` `5`            | ![SSIZ](images/mode/ssiz-4.png) |
+| `SSZ?`                | ![SSIZ](images/mode/ssiz-5.png) |
 
 ### Menu System
 
@@ -1497,11 +1497,11 @@ The RPN83P app provides access to the same floating point display modes as the
 original TI-OS. For reference, here are the options available in the TI-OS when
 the `MODE` button is pressed:
 
-![TI-OS Display Modes](images/tios-display-modes.png)
+![TI-OS Display Modes](images/mode/tios-display-modes.png)
 
 In RPN83P, the `MODE` button presents a menu bar instead:
 
-![RPN83P Display Modes](images/rpn83p-display-modes.png)
+![RPN83P Display Modes](images/mode/rpn83p-display-modes.png)
 
 **HP-42S Compatibility Note**: The HP-42S uses the `DISP` button to access this
 functionality. For the RPN83P, it seemed to make more sense to the follow the
@@ -1515,7 +1515,7 @@ top-line indicator.
 
 Suppose the RPN stack has the following numbers:
 
-![RPN83P Display Modes](images/display-mode-start.png)
+![RPN83P Display Modes](images/mode/display-mode-start.png)
 
 Let's see how these numbers are displayed in the various floating point modes.
 
@@ -1525,9 +1525,9 @@ Here are the numbers rendered in `FIX` mode:
 
 | **Keys**              | **Display** |
 | ----------------      | --------------------- |
-| `MODE` `FIX` `4`      | ![](images/display-mode-fix-1.png) |
-| `ENTER`               | ![](images/display-mode-fix-2.png) |
-| `FIX` `99`            | ![](images/display-mode-fix-3.png) |
+| `MODE` `FIX` `4`      | ![](images/mode/display-mode-fix-1.png) |
+| `ENTER`               | ![](images/mode/display-mode-fix-2.png) |
+| `FIX` `99`            | ![](images/mode/display-mode-fix-3.png) |
 
 Setting `FIX 99` goes back to the default floating number of fractional digits
 (i.e. the equivalent of `FLOAT` option in the TI-OS `MODE` menu). Any number
@@ -1539,9 +1539,9 @@ Here are the numbers rendered in `SCI` mode:
 
 | **Keys**              | **Display** |
 | ----------------      | --------------------- |
-| `MODE` `SCI` `4`      | ![](images/display-mode-sci-1.png) |
-| `ENTER`               | ![](images/display-mode-sci-2.png) |
-| `SCI` `99`            | ![](images/display-mode-sci-3.png) |
+| `MODE` `SCI` `4`      | ![](images/mode/display-mode-sci-1.png) |
+| `ENTER`               | ![](images/mode/display-mode-sci-2.png) |
+| `SCI` `99`            | ![](images/mode/display-mode-sci-3.png) |
 
 Setting `99` as the number of digits in `SCI` mode makes the number of digits
 after the decimal point to be dynamic (i.e. the equivalent of `FLOAT` option in
@@ -1553,9 +1553,9 @@ Here are the numbers rendered in `ENG` mode:
 
 | **Keys**              | **Display** |
 | ----------------      | --------------------- |
-| `MODE` `ENG` `4`      | ![](images/display-mode-eng-1.png) |
-| `ENTER`               | ![](images/display-mode-eng-2.png) |
-| `ENG` `99`            | ![](images/display-mode-eng-3.png) |
+| `MODE` `ENG` `4`      | ![](images/mode/display-mode-eng-1.png) |
+| `ENTER`               | ![](images/mode/display-mode-eng-2.png) |
+| `ENG` `99`            | ![](images/mode/display-mode-eng-3.png) |
 
 Setting `99` as the number of digits in `ENG` mode makes the number of digits
 after the decimal point to be dynamic (i.e. the equivalent of `FLOAT` option in
@@ -1575,10 +1575,10 @@ shown on the top status line.
 
 | **Keys**              | **Display** |
 | ----------------      | --------------------- |
-| `MODE` `RAD`          | ![](images/trig-mode-1.png) |
-| `PI` `6` `/` `SIN`    | ![](images/trig-mode-2.png) |
-| `MODE` `DEG`          | ![](images/trig-mode-3.png) |
-| `30` `SIN`            | ![](images/trig-mode-4.png) |
+| `MODE` `RAD`          | ![](images/mode/trig-mode-1.png) |
+| `PI` `6` `/` `SIN`    | ![](images/mode/trig-mode-2.png) |
+| `MODE` `DEG`          | ![](images/mode/trig-mode-3.png) |
+| `30` `SIN`            | ![](images/mode/trig-mode-4.png) |
 
 **Warning**: The polar to rectangular conversion functions (`>REC` and `>POL`)
 are also affected by the current Trig Mode setting.
@@ -1757,9 +1757,9 @@ Here is an example of using `RSIZ` to change the number of registers to 50:
 
 | **Keys**              | **Display** |
 | ----------------      | --------------------- |
-| `MODE` `DOWN` `DOWN`  | ![](images/rsiz-1.png) |
-| `RSIZ` `50`           | ![](images/rsiz-2.png) |
-| `ENTER`               | ![](images/rsiz-3.png) |
+| `MODE` `DOWN` `DOWN`  | ![](images/mode/rsiz-1.png) |
+| `RSIZ` `50`           | ![](images/mode/rsiz-2.png) |
+| `ENTER`               | ![](images/mode/rsiz-3.png) |
 
 One of the following messages will be displayed, depending on how the number of
 storage registers changed:
