@@ -558,13 +558,14 @@ MODE setting of `{..}` or `".."`:
 
 Upon input termination, Date components are validated to make sure that it
 represents a proper Gregorian calendar date. If the component is invalid, an
-`Err:Invalid` error message is displayed. For example, if we try to enter the
-invalid date `2024-02-30`, we get:
+`Err:Invalid` error message is displayed.
 
-| **Keys**          | **MODE `{..}`**                         | **MODE `".."`**   |
-| ------------------| ---------------------                   | ----------------- |
-| `D{2024,2,30}`    | ![](images/date/d/invalid-raw-1.png)    | ![](images/date/d/invalid-str-1.png) |
-| `ENTER`           | ![](images/date/d/invalid-raw-2.png)    | ![](images/date/d/invalid-str-2.png) |
+For example, if we try to enter the invalid date `2024-02-30`, we get:
+
+| **Keys**          | **MODE `{..}`**                              | **MODE `".."`**   |
+| ------------------| ---------------------                        | ----------------- |
+| `D{2024,2,30}`    | ![](images/date/d/date-invalid-raw-1.png)    | ![](images/date/d/date-invalid-str-1.png) |
+| `ENTER`           | ![](images/date/d/date-invalid-raw-2.png)    | ![](images/date/d/date-invalid-str-2.png) |
 
 Notice that for input validation errors like this, the input is not terminated
 and the prompt continues to be shown. You can press the `DEL` to delete the
