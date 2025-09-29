@@ -1578,13 +1578,13 @@ For example, let's add the Duration `2h 33m` to the Time `12:58:32`:
 | `DR{0,2,33,0}`    | ![](images/date/dr/duration-add-time-raw-3.png)  | ![](images/date/dr/duration-add-time-str-3.png) |
 | `+`               | ![](images/date/dr/duration-add-time-raw-4.png)  | ![](images/date/dr/duration-add-time-str-4.png) |
 
-Another example, let's add 30 days to the DateTime `2024-03-14 12:58:32`:
+Another example, let's add `30d 37s` to the DateTime `2024-03-14 12:58:32`:
 
 | **Keys**                  | **MODE `{..}`**                                   | **MODE `".."`**   |
 | -----------               | ---------------------                             | ----------------- |
 | `DT{2024,3,14,12,58,32}`  | ![](images/date/dr/duration-add-datetime-raw-1.png)  | ![](images/date/dr/duration-add-datetime-str-1.png) |
 | `ENTER`                   | ![](images/date/dr/duration-add-datetime-raw-2.png)  | ![](images/date/dr/duration-add-datetime-str-2.png) |
-| `30:D`                    | ![](images/date/dr/duration-add-datetime-raw-3.png)  | ![](images/date/dr/duration-add-datetime-str-3.png) |
+| `30D37S`                  | ![](images/date/dr/duration-add-datetime-raw-3.png)  | ![](images/date/dr/duration-add-datetime-str-3.png) |
 | `+`                       | ![](images/date/dr/duration-add-datetime-raw-4.png)  | ![](images/date/dr/duration-add-datetime-str-4.png) |
 
 ### DayOfWeek (DW)
