@@ -734,6 +734,17 @@ record:
 - the `second` component must be in the interval [0, 59], leap seconds not
   supported
 
+For example, if we try to enter the invalid Time `23:59:60`, we get:
+
+| **Keys**          | **MODE `{..}`**                           | **MODE `".."`**   |
+| ------------------| ---------------------                     | ----------------- |
+| `T{23,30,60}`     | ![](images/date/t/time-invalid-raw-1.png) | ![](images/date/t/time-invalid-str-1.png) |
+| `ENTER`           | ![](images/date/t/time-invalid-raw-2.png) | ![](images/date/t/time-invalid-str-2.png) |
+
+Notice that for input validation errors like this, the input is not terminated
+and the prompt continues to be shown. You can press the `DEL` to delete the
+input characters and fix the error.
+
 #### Time Functions
 
 The `>S` and `S>` menu functions convert between a Time object and the
