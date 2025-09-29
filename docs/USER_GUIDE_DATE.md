@@ -930,6 +930,18 @@ functions:
 
 TODO: Add screenshots of `CVTZ` function.
 
+#### DateTime Components
+
+The `DateTime` object is a composition of the `Date` and `Time` objects. Two
+menu functions allow the user to extract these components: `.D{}` and `.T{}`.
+
+| **Keys**                  | **MODE `{..}`**                                    | **MODE `".."`**   |
+| -----------               | ---------------------                              | ----------------- |
+| `DT{2024,3,14,15,36,1}`   | ![](images/date/dt/datetime-components-raw-1.png)  | ![](images/date/dt/datetime-components-str-1.png) |
+| `.D{}`                    | ![](images/date/dt/datetime-components-raw-2.png)  | ![](images/date/dt/datetime-components-str-2.png) |
+| `2ND ANS` (LASTX)         | ![](images/date/dt/datetime-components-raw-3.png)  | ![](images/date/dt/datetime-components-str-3.png) |
+| `.T{}`                    | ![](images/date/dt/datetime-components-raw-4.png)  | ![](images/date/dt/datetime-components-str-4.png) |
+
 #### DateTime Arithmetic
 
 The addition and subtraction operations are available on the `DateTime` object,
