@@ -612,11 +612,14 @@ For example, let's calculate the those quantities for 2024-03-14:
 | `>ES`             | ![](images/date/d/date-ed-es-raw-4.png)  | ![](images/date/d/date-ed-es-str-4.png) |
 | `ES>`             | ![](images/date/d/date-ed-es-raw-5.png)  | ![](images/date/d/date-ed-es-str-5.png) |
 
-The `LEAP` function determines if the year of the given `Date` object is
-a leap year. It returns 1 if true, 0 otherwise.
+In the next row of menus, we get the following functions:
 
-The `DOW` function returns the `DayOfWeek` object from the given `Date`. The
-[DayOfWeek](#dayofweek-dw) object is described in more detail below.
+- The `LEAP` function determines if the year of the given `Date` object is a
+  leap year. It returns 1 if true, 0 otherwise.
+- The `DOW` function returns the [`DayOfWeek`](#dayofweek-dw) object from the
+  given `Date`.
+- The `CVTZ` function takes 2 arguments, converting the `Date` object to the
+  timezone specified by the [`TimeZone`](#timezone-tz) object.
 
 | **Keys**          | **MODE `{..}`**                             | **MODE `".."`**   |
 | -----------       | ---------------------                       | ----------------- |
@@ -907,6 +910,25 @@ Notes:
   the UTC timezone.
 - When a `DateTime` is converted into EpochDays, the `Time` component becomes
   truncated to midnight.
+
+Similar to the `Date` object, in the next menu row, we get the following
+functions:
+
+- The `LEAP` function determines if the year of the given `DateTime` object is a
+  leap year. It returns 1 if true, 0 otherwise.
+- The `DOW` function returns the `DayOfWeek` object from the given `DateTime`.
+  The [`DayOfWeek`](#dayofweek-dw) object is described in more detail below.
+- The `CVTZ` function takes 2 arguments, converting the `DateTime` object to the
+  timezone specified by the [`TimeZone`](#timezone-tz) object.
+
+| **Keys**                  | **MODE `{..}`**                                  | **MODE `".."`**   |
+| -----------               | ---------------------                            | ----------------- |
+| `DT{2024,3,14,15,36,1}`   | ![](images/date/dt/datetime-leap-dow-raw-1.png)  | ![](images/date/dt/datetime-leap-dow-str-1.png) |
+| `LEAP`                    | ![](images/date/dt/datetime-leap-dow-raw-2.png)  | ![](images/date/dt/datetime-leap-dow-str-2.png) |
+| `2ND ANS` (LASTX)         | ![](images/date/dt/datetime-leap-dow-raw-3.png)  | ![](images/date/dt/datetime-leap-dow-str-3.png) |
+| `DOW`                     | ![](images/date/dt/datetime-leap-dow-raw-4.png)  | ![](images/date/dt/datetime-leap-dow-str-4.png) |
+
+TODO: Add screenshots of `CVTZ` function.
 
 #### DateTime Arithmetic
 
