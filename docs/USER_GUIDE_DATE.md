@@ -1484,24 +1484,24 @@ The components of the Duration object has the following validation rules:
 
 #### Duration Functions
 
-A Duration object can be converted to its equivalent integer in unit of seconds.
-The menu functions are `D*>S` and `S>DR`:
-
-![ROOT > DATE > DurationToSeconds](images/menu/root-date-durationseconds.png)
-
-Here are some examples:
+The `DR` menu folder provides 4 functions to aid the construction of Duration
+objects: `DAY>`, `HR>`, `MIN>`, `SEC>`. Each converts an integer to a duration
+of the given time unit.
 
 | **Keys**          | **MODE `{..}`**                                      | **MODE `".."`**   |
 | -----------       | ---------------------                                | ----------------- |
-| `DR{1,2,3,4}`     | ![](images/date/dr/duration-to-seconds-raw-1.png)    | ![](images/date/dr/duration-to-seconds-str-1.png) |
-| `D*>S`            | ![](images/date/dr/duration-to-seconds-raw-2.png)    | ![](images/date/dr/duration-to-seconds-str-2.png) |
-| `S>DR`            | ![](images/date/dr/duration-to-seconds-raw-3.png)    | ![](images/date/dr/duration-to-seconds-str-3.png) |
-| `DR{-4,0,-2,0}`   | ![](images/date/dr/duration-to-seconds-raw-4.png)    | ![](images/date/dr/duration-to-seconds-str-4.png) |
-| `D*>S`            | ![](images/date/dr/duration-to-seconds-raw-5.png)    | ![](images/date/dr/duration-to-seconds-str-5.png) |
-| `S>DR`            | ![](images/date/dr/duration-to-seconds-raw-6.png)    | ![](images/date/dr/duration-to-seconds-str-6.png) |
-| `2:H`             | ![](images/date/dr/duration-to-seconds-raw-7.png)    | ![](images/date/dr/duration-to-seconds-str-7.png) |
-| `D*>S`            | ![](images/date/dr/duration-to-seconds-raw-8.png)    | ![](images/date/dr/duration-to-seconds-str-8.png) |
-| `S>DR`            | ![](images/date/dr/duration-to-seconds-raw-9.png)    | ![](images/date/dr/duration-to-seconds-str-9.png) |
+| `1` `DAY>`        | ![](images/date/dr/duration-quick-init-raw-1.png)    | ![](images/date/dr/duration-quick-init-str-1.png) |
+| `2` `HR>`         | ![](images/date/dr/duration-quick-init-raw-2.png)    | ![](images/date/dr/duration-quick-init-str-2.png) |
+| `3` `MIN>`        | ![](images/date/dr/duration-quick-init-raw-3.png)    | ![](images/date/dr/duration-quick-init-str-3.png) |
+| `4` `SEC>`        | ![](images/date/dr/duration-quick-init-raw-4.png)    | ![](images/date/dr/duration-quick-init-str-4.png) |
+
+The `>S` function converts a Duration object into the number of seconds,
+essentially the opposite of `SEC>`:
+
+| **Keys**          | **MODE `{..}`**                                      | **MODE `".."`**   |
+| -----------       | ---------------------                                | ----------------- |
+| `93784` `SEC>`    | ![](images/date/dr/duration-to-seconds-raw-1.png)    | ![](images/date/dr/duration-to-seconds-str-1.png) |
+| `S>`              | ![](images/date/dr/duration-to-seconds-raw-2.png)    | ![](images/date/dr/duration-to-seconds-str-2.png) |
 
 #### Duration Arithmetic
 
