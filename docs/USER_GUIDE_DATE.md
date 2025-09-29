@@ -1299,6 +1299,45 @@ objects. Four menu functions allow the user to extract these components: `.D{}`,
 | `2ND ANS` (LASTX)                 | ![](images/date/dz/zoneddatetime-components-raw-7.png)  | ![](images/date/dz/zoneddatetime-components-str-7.png) |
 | `.TZ{`                            | ![](images/date/dz/zoneddatetime-components-raw-8.png)  | ![](images/date/dz/zoneddatetime-components-str-8.png) |
 
+#### ZonedDateTime Casting
+
+The last 4 menu functions `DSHK`, `DEXD`, `DCUT`, and `DLNK` allow the
+`ZonedDateTime` object to be converted to other Date-related objects (known as
+"casting").
+
+The `DSHK` function shrinks the ZonedDateTime object into a DateTime object by
+truncating the TimeZone component:
+
+| **Keys**                             | **MODE `{..}`**                                          | **MODE `".."`**   |
+| -----------                          | ---------------------                                    | ----------------- |
+| `DZ{2024,3,14,15,36,1,-7,0}` `ENTER` | ![](images/date/dz/zoneddatetime-casting-dshk-raw-1.png) | ![](images/date/dz/zoneddatetime-casting-dshk-str-1.png) |
+| `DSHK`                               | ![](images/date/dz/zoneddatetime-casting-dshk-raw-2.png) | ![](images/date/dz/zoneddatetime-casting-dshk-str-2.png) |
+| `DSHK`                               | ![](images/date/dz/zoneddatetime-casting-dshk-raw-3.png) | ![](images/date/dz/zoneddatetime-casting-dshk-str-3.png) |
+
+(The second `DSHK` works even though it is invoked on a `DateTime` object. That
+is because the `DSHK` function here under the `DZ` menu is the same function as
+the `DSHK` function for DateTime under the `DT` menu.)
+
+The `DEXD` function does not apply to a ZonedDateTime because it
+cannot be extended into a larger object.
+
+The `DCUT` function splits (cuts) the ZonedDateTime object into its component
+TimeZone and DateTime objects. It can be apply a second time to further split
+apart the DateTime into a Date object and a Time object:
+
+| **Keys**                             | **MODE `{..}`**                                          | **MODE `".."`**   |
+| -----------                          | ---------------------                                    | ----------------- |
+| `DZ{2024,3,14,15,36,1,-7,0}` `ENTER` | ![](images/date/dz/zoneddatetime-casting-dcut-raw-1.png) | ![](images/date/dz/zoneddatetime-casting-dcut-str-1.png) |
+| `DCUT`                               | ![](images/date/dz/zoneddatetime-casting-dcut-raw-2.png) | ![](images/date/dz/zoneddatetime-casting-dcut-str-2.png) |
+| `DCUT`                               | ![](images/date/dz/zoneddatetime-casting-dcut-raw-3.png) | ![](images/date/dz/zoneddatetime-casting-dcut-str-3.png) |
+
+(Similar to `DSHK`, the second `DCUT` works even though it is invoked on a
+`DateTime` object, because the `DCUT` here is the same function as the `DCUT`
+for DateTime under the `DT` menu.)
+
+The `DLNK` function does not apply to a ZonedDateTime object because it
+cannot grow into a larger object.
+
 #### ZonedDateTime Arithmetic
 
 The addition and subtraction operations are available on the `ZonedDateTime`
