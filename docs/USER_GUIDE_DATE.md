@@ -1282,6 +1282,23 @@ following functions:
 
 TODO: Add screenshots of `CVTZ` function.
 
+#### ZonedDateTime Components
+
+The ZonedDateTime object is a composition of the Date, Time, and TimeZone
+objects. Four menu functions allow the user to extract these components: `.D{}`,
+`.T{}`, `DT{`, and `TZ{`.
+
+| **Keys**                          | **MODE `{..}`**                                         | **MODE `".."`**   |
+| -----------                       | ---------------------                                   | ----------------- |
+| `DZ{2024,3,14,15,36,1,-7,0}`      | ![](images/date/dz/zoneddatetime-components-raw-1.png)  | ![](images/date/dz/zoneddatetime-components-str-1.png) |
+| `.D{}`                            | ![](images/date/dz/zoneddatetime-components-raw-2.png)  | ![](images/date/dz/zoneddatetime-components-str-2.png) |
+| `2ND ANS` (LASTX)                 | ![](images/date/dz/zoneddatetime-components-raw-3.png)  | ![](images/date/dz/zoneddatetime-components-str-3.png) |
+| `.T{}`                            | ![](images/date/dz/zoneddatetime-components-raw-4.png)  | ![](images/date/dz/zoneddatetime-components-str-4.png) |
+| `2ND ANS` (LASTX)                 | ![](images/date/dz/zoneddatetime-components-raw-5.png)  | ![](images/date/dz/zoneddatetime-components-str-5.png) |
+| `.DT{`                            | ![](images/date/dz/zoneddatetime-components-raw-6.png)  | ![](images/date/dz/zoneddatetime-components-str-6.png) |
+| `2ND ANS` (LASTX)                 | ![](images/date/dz/zoneddatetime-components-raw-7.png)  | ![](images/date/dz/zoneddatetime-components-str-7.png) |
+| `.TZ{`                            | ![](images/date/dz/zoneddatetime-components-raw-8.png)  | ![](images/date/dz/zoneddatetime-components-str-8.png) |
+
 #### ZonedDateTime Arithmetic
 
 The addition and subtraction operations are available on the `ZonedDateTime`
