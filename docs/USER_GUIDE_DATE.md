@@ -518,6 +518,7 @@ The DATE menu functions are grouped under the subfolders of `DATE`.
     - ![ROOT > DATE > Date > Row1](images/menu/root-date-d-1.png)
     - ![ROOT > DATE > Date > Row2](images/menu/root-date-d-2.png)
     - ![ROOT > DATE > Date > Row3](images/menu/root-date-d-3.png)
+    - ![ROOT > DATE > Date > Row4](images/menu/root-date-d-4.png)
     - `D{}`: insert initialization string for `Date` object
     - `>ED`: convert Date to epoch days (assuming UTC)
     - `ED>`: epoch days to Date (assuming UTC)
