@@ -1630,19 +1630,19 @@ enter the invalid DayOfWeek value of `DW{0}`, an error is shown:
 
 #### DayOfWeek Functions
 
-The `DOW` menu function returns the DayOfWeek of a given Date, DateTime, or
-ZonedDateTime:
+The DayOfWeek object can be converted into a numerical number using 2 different
+conventions:
 
-![ROOT > DATE > DOW](images/menu/root-date-dow.png)
+- ISO day of week number: starts with Monday=1 and ends with Sunday=7
+- Unix day of week number: starts with Sunday=0 and ends with Saturday=6
 
-| **Keys**                      | **MODE `{..}`**                              | **MODE `".."`**               |
-| -------------------------     | ---------------------                        | -----------------             |
-| `D{2024,3,14}`                | ![](images/date/dw/dayofweek-dow-raw-1.png)  | ![](images/date/dw/dayofweek-dow-str-1.png) |
-| `DOW`                         | ![](images/date/dw/dayofweek-dow-raw-2.png)  | ![](images/date/dw/dayofweek-dow-str-2.png) |
-| `DT{2024,3,14,15,36,1}`       | ![](images/date/dw/dayofweek-dow-raw-3.png)  | ![](images/date/dw/dayofweek-dow-str-3.png) |
-| `DOW`                         | ![](images/date/dw/dayofweek-dow-raw-4.png)  | ![](images/date/dw/dayofweek-dow-str-4.png) |
-| `DZ{2024,3,14,15,36,1,-7,0}`  | ![](images/date/dw/dayofweek-dow-raw-5.png)  | ![](images/date/dw/dayofweek-dow-str-5.png) |
-| `DOW`                         | ![](images/date/dw/dayofweek-dow-raw-6.png)  | ![](images/date/dw/dayofweek-dow-str-6.png) |
+| **Keys**          | **MODE `{..}`**                                 | **MODE `".."`**   |
+| -----------       | ---------------------                           | ----------------- |
+| `DW{7}`           | ![](images/date/dw/dayofweek-number-raw-1.png)  | ![](images/date/dw/dayofweek-number-str-1.png) |
+| `>ISO`            | ![](images/date/dw/dayofweek-number-raw-2.png)  | ![](images/date/dw/dayofweek-number-str-2.png) |
+| `ISO>`            | ![](images/date/dw/dayofweek-number-raw-3.png)  | ![](images/date/dw/dayofweek-number-str-3.png) |
+| `>UNX`            | ![](images/date/dw/dayofweek-number-raw-4.png)  | ![](images/date/dw/dayofweek-number-str-4.png) |
+| `UNX>`            | ![](images/date/dw/dayofweek-number-raw-5.png)  | ![](images/date/dw/dayofweek-number-str-5.png) |
 
 #### DayOfWeek Arithmetic
 
