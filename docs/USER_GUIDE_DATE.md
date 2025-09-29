@@ -1006,7 +1006,7 @@ just like `Date` and `Time`. The integer numbers are in unit of *second*.
 | {DateTime} - {DateTime}   | {integer}     |
 | {integer} - {DateTime}    | INVALID       |
 
-For example, let's subtract 100,000 seconds from `2024-03-14 15:39:55`:
+For example, let's subtract 100,000 seconds from `2024-03-14 15:36:01`:
 
 | **Keys**                  | **MODE `{..}`**                               | **MODE `".."`**               |
 | ------------------------- | ---------------------                         | -----------------             |
@@ -1024,16 +1024,14 @@ We can subtract 2 `DateTime` objects:
 | `DT{2024,3,14,15,36,1}`   | ![](images/date/dt/datetime-sub-raw-3.png)    | ![](images/date/dt/datetime-sub-str-3.png) |
 | `-`                       | ![](images/date/dt/datetime-sub-raw-4.png)    | ![](images/date/dt/datetime-sub-str-4.png) |
 
-There are 24654239 seconds from March 13, 2024 15:39:55 to Christmas Dec 25,
+There are 24654239 seconds from March 14, 2024 15:36:01 to Christmas Dec 25,
 2024 00:00:00.
 
 We can convert the 24654239 seconds quantity into something that is easier to
 understand for humans by converting it into a `Duration` object. (The `Duration`
 object is described in more detail in the [Duration (DR)](#duration-dr) section
-below.)
-
-Go to `DATE` menu folder, then press the `DR` folder. The `SEC>` menu function
-converts the number of seconds to a `Duration` object:
+below.) Go to `DATE` menu folder, then press the `DR` folder. The `SEC>` menu
+function converts the number of seconds to a `Duration` object:
 
 |  **Keys**     |  **MODE `{..}`**                                      |  **MODE `".."`**        |
 | ----------    | ---------------------                                 | -----------------       |
@@ -1041,7 +1039,7 @@ converts the number of seconds to a `Duration` object:
 | `SEC>`        | ![](images/date/dt/datetime-sub-duration-raw-2.png)   | ![](images/date/dt/datetime-sub-duration-str-2.png) |
 
 We can now see that there are 285 days, 8 hours, 23 minutes, and 59 seconds
-between March 13, 2024 15:39:55 to Christmas Dec 25, 2024 00:00:00.
+between March 14, 2024 15:36:01 to Christmas Dec 25, 2024 00:00:00.
 
 ### TimeZone (TZ)
 
@@ -1383,10 +1381,15 @@ December 25, 2024 UTC:
 | `ENTER`                       | ![](images/date/dz/zoneddatetime-sub-raw-2.png)  | ![](images/date/dz/zoneddatetime-sub-str-2.png) |
 | `DZ{2024,3,14,15,36,1,-7,0}`  | ![](images/date/dz/zoneddatetime-sub-raw-3.png)  | ![](images/date/dz/zoneddatetime-sub-str-3.png) |
 | `-`                           | ![](images/date/dz/zoneddatetime-sub-raw-4.png)  | ![](images/date/dz/zoneddatetime-sub-str-4.png) |
-| `S>DR`                        | ![](images/date/dz/zoneddatetime-sub-raw-5.png)  | ![](images/date/dz/zoneddatetime-sub-str-5.png) |
 
-As before, we have used the `S>DR` menu function to convert `seconds` to
-a `Duration` object which can be more useful in some situations.
+As shown with the DateTime object, we can convert the number of seconds into a
+Duration object. Go to `DATE` menu folder, then press the `DR` folder and use
+the `SEC>` menu function:
+
+|  **Keys**     |  **MODE `{..}`**                                          |  **MODE `".."`**        |
+| ----------    | ---------------------                                     | -----------------       |
+| `DATE` `DR`   | ![](images/date/dz/zoneddatetime-sub-duration-raw-1.png)  | ![](images/date/dz/zoneddatetime-sub-duration-str-1.png) |
+| `SEC>`        | ![](images/date/dz/zoneddatetime-sub-duration-raw-2.png)  | ![](images/date/dz/zoneddatetime-sub-duration-str-2.png) |
 
 ### Duration (DR)
 
