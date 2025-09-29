@@ -1263,6 +1263,25 @@ Notes:
   15:36:01-07:00` because I had set my Application Timezone to `UTC-07:00` using
   the `TZ` function of the `CLK` menu folder.
 
+Similar to the Date and DateTime objects, the ZonedDateTime object supports the
+following functions:
+
+- The `LEAP` function determines if the year of the given `DateTime` object is a
+  leap year. It returns 1 if true, 0 otherwise.
+- The `DOW` function returns the `DayOfWeek` object from the given `DateTime`.
+  The [DayOfWeek](#dayofweek-dw) object is described in more detail below.
+- The `CVTZ` function takes 2 arguments, converting the `DateTime` object to the
+  timezone specified by the [TimeZone](#timezone-tz) object.
+
+| **Keys**                          | **MODE `{..}`**                                       | **MODE `".."`**   |
+| -----------                       | ---------------------                                 | ----------------- |
+| `DZ{2024,3,14,15,36,1,-7,0}`      | ![](images/date/dz/zoneddatetime-leap-dow-raw-1.png)  | ![](images/date/dz/zoneddatetime-leap-dow-str-1.png) |
+| `LEAP`                            | ![](images/date/dz/zoneddatetime-leap-dow-raw-2.png)  | ![](images/date/dz/zoneddatetime-leap-dow-str-2.png) |
+| `2ND ANS` (LASTX)                 | ![](images/date/dz/zoneddatetime-leap-dow-raw-3.png)  | ![](images/date/dz/zoneddatetime-leap-dow-str-3.png) |
+| `DOW`                             | ![](images/date/dz/zoneddatetime-leap-dow-raw-4.png)  | ![](images/date/dz/zoneddatetime-leap-dow-str-4.png) |
+
+TODO: Add screenshots of `CVTZ` function.
+
 #### ZonedDateTime Arithmetic
 
 The addition and subtraction operations are available on the `ZonedDateTime`
