@@ -64,6 +64,11 @@ These features were inspired by various datetime libraries:
         - [Time Components](#time-components)
         - [Time Arithmetic](#time-arithmetic)
     - [DateTime (DT)](#datetime-dt)
+        - [DateTime Entry](#datetime-entry)
+        - [DateTime Validation](#datetime-validation)
+        - [DateTime Functions](#datetime-functions)
+        - [DateTime Components](#datetime-components)
+        - [DateTime Arithmetic](#datetime-arithmetic)
     - [TimeZone (TZ)](#timezone-tz)
     - [ZonedDateTime (DZ)](#zoneddatetime-dz)
     - [Duration (DR)](#duration-dr)
@@ -875,25 +880,33 @@ rules for the `Date` record and the rules for the `Time` record.
 For example, if we try to enter the invalid DateTime `2024-03-14 23:59:60`, we
 get:
 
-| **Keys**                      | **MODE `{..}`**                                | **MODE `".."`**   |
-| ------------------            | ---------------------                          | ----------------- |
-| `DT{2024,3,14,23,30,60}`      | ![](images/date/dt/datetime-invalid-raw-1.png) | ![](images/datedt/date/time-invalid-str-1.png) |
-| `ENTER`                       | ![](images/date/dt/datetime-invalid-raw-2.png) | ![](images/datedt/date/time-invalid-str-2.png) |
+| **Keys**                  | **MODE `{..}`**                                | **MODE `".."`**   |
+| ------------------        | ---------------------                          | ----------------- |
+| `DT{2024,3,14,23,30,60}`  | ![](images/date/dt/datetime-invalid-raw-1.png) | ![](images/date/dt/datetime-invalid-str-1.png) |
+| `ENTER`                   | ![](images/date/dt/datetime-invalid-raw-2.png) | ![](images/date/dt/datetime-invalid-str-2.png) |
 
 #### DateTime Functions
 
-A DateTime object can represent 2 slightly different things depending on the
-context:
+A `DateTime` object support the same `>ED`, `>ED`, `>ES`, and `ES>` functions as
+the `Date` object.
 
-- a local date-time, using an implicit timezone (i.e. offset from UTC)
-- a UTC date-time, with a timezone offset of UTC+00:00
+For example, let's calculate those quantities for 2024-03-14 15:36:01:
 
-The conversion of a DateTime to seconds will depend on which of the 2 concepts
-is represented by the DateTime. Unfortunately, there is no provision in the
-RPN83P app to specify the representation, so the conversion to seconds through
-`D*>S` is deliberately **not** supported for a DateTime object. A DateTime
-object *must* be converted into a ZonedDateTime object before it can be
-converted into an integer number of seconds.
+| **Keys**                  | **MODE `{..}`**                               | **MODE `".."`**   |
+| -----------               | ---------------------                         | ----------------- |
+| `DT{2024,3,14,15,36,1}`   | ![](images/date/dt/datetime-ed-es-raw-1.png)  | ![](images/date/dt/datetime-ed-es-str-1.png) |
+| `>ED`                     | ![](images/date/dt/datetime-ed-es-raw-2.png)  | ![](images/date/dt/datetime-ed-es-str-2.png) |
+| `ED>`                     | ![](images/date/dt/datetime-ed-es-raw-3.png)  | ![](images/date/dt/datetime-ed-es-str-3.png) |
+| `DT{2024,3,14,15,36,1}`   | ![](images/date/dt/datetime-ed-es-raw-4.png)  | ![](images/date/dt/datetime-ed-es-str-4.png) |
+| `>ES`                     | ![](images/date/dt/datetime-ed-es-raw-5.png)  | ![](images/date/dt/datetime-ed-es-str-5.png) |
+| `ES>`                     | ![](images/date/dt/datetime-ed-es-raw-6.png)  | ![](images/date/dt/datetime-ed-es-str-6.png) |
+
+Notes:
+
+- When performing these calculations, the `DateTime` object is presumed to be in
+  the UTC timezone.
+- When a `DateTime` is converted into EpochDays, the `Time` component becomes
+  truncated to midnight.
 
 #### DateTime Arithmetic
 
