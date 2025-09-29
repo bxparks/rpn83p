@@ -1534,7 +1534,7 @@ objects:
 | `+`               | ![](images/date/dr/duration-add-raw-4.png)   | ![](images/date/dr/duration-add-str-4.png) |
 | `DR{-4,0,-2,0}`   | ![](images/date/dr/duration-add-raw-5.png)   | ![](images/date/dr/duration-add-str-5.png) |
 | `-`               | ![](images/date/dr/duration-add-raw-6.png)   | ![](images/date/dr/duration-add-str-6.png) |
-| `-2:H`            | ![](images/date/dr/duration-add-raw-7.png)   | ![](images/date/dr/duration-add-str-7.png) |
+| `-2H`             | ![](images/date/dr/duration-add-raw-7.png)   | ![](images/date/dr/duration-add-str-7.png) |
 | `+`               | ![](images/date/dr/duration-add-raw-8.png)   | ![](images/date/dr/duration-add-str-8.png) |
 | `+/-` (-)         | ![](images/date/dr/duration-add-raw-9.png)   | ![](images/date/dr/duration-add-str-9.png) |
 
