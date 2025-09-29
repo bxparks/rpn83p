@@ -60,7 +60,7 @@ mDateToEpochDaysHandler:
     call closeInputAndRecallRpnDateLikeX ; OP1=X=RpnDateLike{}
     cp rpnObjectTypeDate ; ZF=1 if RpnDate
     jr z, mDateToEpochDaysHandlerDoDateTime
-    cp rpnObjectTypeDate ; ZF=1 if RpnDateTime
+    cp rpnObjectTypeDateTime ; ZF=1 if RpnDateTime
     jr z, mDateToEpochDaysHandlerDoDateTime
     cp rpnObjectTypeOffsetDateTime ; ZF=1 if RpnOffsetDateTime
     jr z, mDateToEpochDaysHandlerDoOffsetDateTime
