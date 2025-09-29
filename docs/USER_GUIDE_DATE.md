@@ -1034,7 +1034,6 @@ between March 13, 2024 15:39:55 to Christmas Dec 25, 2024 00:00:00.
 
 - ![ROOT > DATE > TZ](images/menu/root-date-tz.png) (ROOT > DATE > TZ)
     - ![ROOT > DATE > TimeZone > Row1](images/menu/root-date-tz-1.png)
-    - ![ROOT > DATE > TimeZone > Row2](images/menu/root-date-tz-2.png)
     - `TZ{}`: insert initialization string for `TimeZone` object
     - `>HR`: convert TimeZone to floating point hours
     - `HR>`: convert floating point hours into TimeZone
@@ -1083,22 +1082,33 @@ Here is an example of an invalid timezone whose `hour` and `minute` have the opp
 
 The TimeZone object can be converted to and from a floating point number
 representing the number of hours shifted from UTC. These are exposed using the
-`TZ>H` and `H>TZ` menu items:
-
-![ROOT > DATE > TimeZoneToHours](images/menu/root-date-timezonehours.png)
+`>HR` and `HR>` menu itemu.
 
 To convert `TZ{-4,-30}` to hours then back to a TimeZone object:
 
 | **Keys**     | **MODE `{..}`**                                   | **MODE `".."`**   |
 | -------------| ---------------------                             | ----------------- |
 | `TZ{-4,-30}` | ![](images/date/tz/timezone-to-hours-raw-1.png)   | ![](images/date/tz/timezone-to-hours-str-1.png) |
-| `TZ>H`       | ![](images/date/tz/timezone-to-hours-raw-2.png)   | ![](images/date/tz/timezone-to-hours-str-2.png) |
-| `H>TZ`       | ![](images/date/tz/timezone-to-hours-raw-3.png)   | ![](images/date/tz/timezone-to-hours-str-3.png) |
+| `>HR`        | ![](images/date/tz/timezone-to-hours-raw-2.png)   | ![](images/date/tz/timezone-to-hours-str-2.png) |
+| `HR>`        | ![](images/date/tz/timezone-to-hours-raw-3.png)   | ![](images/date/tz/timezone-to-hours-str-3.png) |
 
 All current timezones in the world are at multiples of 0:15 minutes. So the
 `H>TZ` function will accept only floating values which are multiples of 0.25.
 For example, `8.75` for `TZ{8,45}`, and `-2.5` for `TZ{-2,-30}`. Otherwise, an
 `Err:Domain` will be shown.
+
+#### TimeZone Components
+
+There are 2 menu functions that allow the user to extract the individual
+components of the `TimeZone` object: `.HR` (hour component) and `.MIN` (minute
+component):
+
+| **Keys**                  | **MODE `{..}`**                                    | **MODE `".."`**   |
+| -----------               | ---------------------                              | ----------------- |
+| `TZ{-4,-30}`          `   | ![](images/date/tz/timezone-components-raw-1.png)  | ![](images/date/tz/timezone-components-str-1.png) |
+| `.HR`                     | ![](images/date/tz/timezone-components-raw-2.png)  | ![](images/date/tz/timezone-components-str-2.png) |
+| `2ND ANS` (LASTX)         | ![](images/date/tz/timezone-components-raw-3.png)  | ![](images/date/tz/timezone-components-str-3.png) |
+| `.MIN`                    | ![](images/date/tz/timezone-components-raw-4.png)  | ![](images/date/tz/timezone-components-str-4.png) |
 
 #### TimeZone Arithmetic
 
