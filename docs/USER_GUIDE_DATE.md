@@ -631,6 +631,31 @@ component), and `.DAY` (day component):
 | `2ND ANS` (LASTX) | ![](images/date/d/date-components-raw-5.png)  | ![](images/date/d/date-components-str-5.png) |
 | `.DAY`            | ![](images/date/d/date-components-raw-6.png)  | ![](images/date/d/date-components-str-6.png) |
 
+#### Date Casting
+
+The last 4 menu functions `DSHK`, `DEXD`, `DCUT`, and `DLNK` allow the `Date`
+object to be converted to other Date-related objects (known as "casting"). For
+the `Date` object, only the `DEXD` and `DLNK` functions are applicable but all 4
+menu functions are present in the menu for consistency with the `DateTime` and
+`ZonedDateTime` objects.
+
+The `DEXD` function extends the `Date` object into a `DateTime` object by
+appending a `Time` object of midnight `00:00:00`.
+
+| **Keys**                  | **MODE `{..}`**                                 | **MODE `".."`**   |
+| -----------               | ---------------------                           | ----------------- |
+| `D{2024,3,14}` `ENTER`    | ![](images/date/d/date-casting-dexd-raw-1.png)  | ![](images/date/d/date-casting-dexd-str-1.png) |
+| `DEXD`                    | ![](images/date/d/date-casting-dexd-raw-2.png)  | ![](images/date/d/date-casting-dexd-str-2.png) |
+
+The `DLNK` function merges a `Date` object (X or Y) and a given `Time` object in
+(X or Y) into a `DateTime` object.
+
+| **Keys**                  | **MODE `{..}`**                                 | **MODE `".."`**   |
+| -----------               | ---------------------                           | ----------------- |
+| `D{2024,3,14}` `ENTER`    | ![](images/date/d/date-casting-dlnk-raw-1.png)  | ![](images/date/d/date-casting-dlnk-str-1.png) |
+| `T{1,2,3}`                | ![](images/date/d/date-casting-dlnk-raw-2.png)  | ![](images/date/d/date-casting-dlnk-str-2.png) |
+| `DLNK`                    | ![](images/date/d/date-casting-dlnk-raw-3.png)  | ![](images/date/d/date-casting-dlnk-str-3.png) |
+
 #### Date Arithmetic
 
 Addition and subtraction operations are supported as shown in the following
