@@ -1171,14 +1171,15 @@ There is a 9-hour difference from UTC+01:00 and UTC-08:00.
     - `ED>`: epoch days to ZonedDateTime (assuming UTC)
     - `>ES`: convert ZonedDateTime to epoch seconds (assuming UTC)
     - `ES>`: epoch seconds to ZonedDateTime (assuming UTC)
-    - `ES>@`: epoch seconds to ZonedDateTime (assuming UTC)
-    - `LEAP`: determine if given year is a leap year
+    - `ES>@`: epoch seconds to ZonedDateTime of the current application timezone
+      given by the `TZ` function in [`CLK`](#real-time-clock-clk)
+    - `LEAP`: determine if the year component is a leap year
     - `DOW`: calculate the DayOfWeek of given ZonedZonedDateTime
     - `CVTZ`: convert ZonedDateTime (in Y) to the TimeZone (in X)
     - `.D{}`: extract the Date from the ZonedDateTime
     - `.T{}`: extract the Time from the ZonedDateTime
-    - `.DT{}`: extract the DateTime from the ZonedDateTime
-    - `.TZ{}`: extract the Time from the ZonedDateTime
+    - `.DT{`: extract the DateTime from the ZonedDateTime
+    - `.TZ{`: extract the Time from the ZonedDateTime
     - `DSHK`: shrink a ZonedDateTime into a DateTime by truncating the
         TimeZone
     - `DEXD`: (not defined)
@@ -1221,8 +1222,16 @@ in 3 ways:
 
 #### ZonedDateTime Validation
 
-The validation rules of the `ZonedDateTime` is the union of the validation rules
-for the `Date`, `Time`, and `TimeZone` objects.
+The validation rules of the ZonedDateTime is the union of the validation rules
+for the Date, Time, and TimeZone objects.
+
+For example, if we try to enter the invalid ZonedDateTime `2024-03-14
+23:59:60-07:00`, we get:
+
+| **Keys**                          | **MODE `{..}`**                                     | **MODE `".."`**   |
+| ------------------                | ---------------------                               | ----------------- |
+| `DZ{2024,3,14,23,30,60,-7,0}`     | ![](images/date/dz/zoneddatetime-invalid-raw-1.png) | ![](images/date/dz/zoneddatetime-invalid-str-1.png) |
+| `ENTER`                           | ![](images/date/dz/zoneddatetime-invalid-raw-2.png) | ![](images/date/dz/zoneddatetime-invalid-str-2.png) |
 
 #### ZonedDateTime Functions
 
