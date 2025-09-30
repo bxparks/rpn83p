@@ -113,6 +113,7 @@
 ;     RpnOffsetDateTime offsetDateTime;
 ;     RpnDayOfWeek dayOfWeek;
 ;     RpnDuration duration;
+;     RpnDenominate denominate;
 ;   };
 ; };
 ;

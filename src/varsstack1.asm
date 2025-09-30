@@ -9,9 +9,10 @@
 ;-----------------------------------------------------------------------------
 
 ; RPN stack using an RpnElementList (see vars1.asm) inside a TI-OS AppVar.
-; An RpnElementList is composed of objectType byte, and 18 bytes. When an
-; RpnElement is copied to the OPx floating point registers, it occupies 2
-; slots. They are named CP1 (OP1/OP2), CP3 (OP3/OP4), and CP5 (OP5/OP6).
+; An RpnElement is a `struct {uint8_t elementType; RpnObject object}` (see
+; vars1.asm). When an RpnElement is copied to the OPx floating point registers,
+; it occupies 2 slots. They are named CP1 (OP1/OP2), CP3 (OP3/OP4), and CP5
+; (OP5/OP6).
 ;
 ; The RPN stack can be as large as 9 elements (RSIZ + 1). Each stack register
 ; is indexed by an integer, with the common RPN stack registers (LastX, X, Y,
