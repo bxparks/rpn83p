@@ -587,7 +587,7 @@ rpnElementIndexToOffset:
     ld h, 0 ; HL=len
     call rpnElementLenToSize ; HL=19*HL
     ld de, rpnVarHeaderSize
-    add hl, de ; HL=sum=19*len+6
+    add hl, de ; HL=sum=19*len+rpnVarHeaderSize
     pop de
     ret
 
@@ -595,20 +595,18 @@ rpnElementIndexToOffset:
 ; RpnRpnElements. This *must* be updated if sizeof(RpnElement) changes.
 ;
 ; Input: HL:u16=len
-; Output: HL:u16=size=len*sizeof(RpnElement)=len*19
+; Output: HL:u16=size=len*sizeof(RpnElement)=len*19=len*0b10011
 ; Destroys: DE
 ; Preserves: A, BC
 rpnElementLenToSize:
     ld e, l
     ld d, h ; DE=len
-    add hl, hl ; HL=sum=2*len
-    ex de, hl ; DE=2*len; HL=sum=len
-    add hl, de ; DE=2*len; HL=sum=3*len
-    ex de, hl ; DE=sum=3*len; HL=2*len
-    add hl, hl
-    add hl, hl
-    add hl, hl ; DE=sum=3*len; HL=16*len
-    add hl, de ; HL=sum=19*len
+    add hl, hl ; len*0b10
+    add hl, hl ; len*0b100
+    add hl, hl ; len*0b1000
+    add hl, de ; len*0b1001
+    add hl, hl ; len*0b10010
+    add hl, de ; len*0b10011
     ret
 
 ;-----------------------------------------------------------------------------
