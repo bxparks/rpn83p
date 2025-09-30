@@ -1317,9 +1317,9 @@ following functions:
 #### ZonedDateTime Timezone Conversions
 
 A ZonedDateTime with a specific timezone (e.g. UTC-07:00) can be converted to
-another ZonedDateTime with a different timezone (e.g. UTC+13:00) using the the
-`CVTZ` menu function. For convenience, It also overloads the multiplication
-button `*` to perform the same operation to avoid needing to dig into the menu
+another ZonedDateTime with a different timezone (e.g. UTC+13:00) using the
+`CVTZ` menu function. For convenience, the multiplication button `*` is
+overloaded to perform the same operation, to avoid digging into the menu
 hierarchy.
 
 | **Operation**                               | **Result**        |
@@ -1335,10 +1335,10 @@ the target TimeZone object or its floating point equivalent.
 Let's convert the datetime 2024-03-14 15:36:01-07:00 (Pacific Time, USA) to the
 following timezones:
 
-- UTC+13:00 (Auckland, New Zealand), floating point equivalent `13`
-- UTC+05:30 (India), floating point equivalent `5.5`
-- UTC-02:30 (Newfoundland, Canada), floating point equivalent `-2.5`
-- UTC-00:00 (UTC), floating point equivalent `0`
+- UTC+13:00 (Auckland, New Zealand), floating point equivalent 13
+- UTC+05:30 (India), floating point equivalent 5.5
+- UTC-02:30 (Newfoundland, Canada), floating point equivalent -2.5
+- UTC-00:00 (UTC), floating point equivalent 0
 
 For illustration purposes, I use both the floating point number format and the
 `TZ` record format to specify the target timezones below. In practice, I usually
@@ -1349,10 +1349,10 @@ to enter on a calculator keypad:
 | -------------------------     | ---------------------                            | -----------------                 |
 | `DZ{2024,3,14,15,36,1,-7,0}`  | ![](images/date/dz/timezone-convert-raw-01.png)  | ![](images/date/dz/timezone-convert-str-01.png) |
 | `ENTER`                       | ![](images/date/dz/timezone-convert-raw-02.png)  | ![](images/date/dz/timezone-convert-str-02.png) |
-| `13`                          | ![](images/date/dz/timezone-convert-raw-03.png)  | ![](images/date/dz/timezone-convert-str-03.png) |
-| `*`                           | ![](images/date/dz/timezone-convert-raw-04.png)  | ![](images/date/dz/timezone-convert-str-04.png) |
-| `TZ{5,30}`                    | ![](images/date/dz/timezone-convert-raw-05.png)  | ![](images/date/dz/timezone-convert-str-05.png) |
-| `*`                           | ![](images/date/dz/timezone-convert-raw-06.png)  | ![](images/date/dz/timezone-convert-str-06.png) |
+| `TZ{13,0}`                    | ![](images/date/dz/timezone-convert-raw-03.png)  | ![](images/date/dz/timezone-convert-str-03.png) |
+| `CVTZ`                        | ![](images/date/dz/timezone-convert-raw-04.png)  | ![](images/date/dz/timezone-convert-str-04.png) |
+| `5.5`                         | ![](images/date/dz/timezone-convert-raw-05.png)  | ![](images/date/dz/timezone-convert-str-05.png) |
+| `CVTZ`                        | ![](images/date/dz/timezone-convert-raw-06.png)  | ![](images/date/dz/timezone-convert-str-06.png) |
 | `-2.5`                        | ![](images/date/dz/timezone-convert-raw-07.png)  | ![](images/date/dz/timezone-convert-str-07.png) |
 | `*`                           | ![](images/date/dz/timezone-convert-raw-08.png)  | ![](images/date/dz/timezone-convert-str-08.png) |
 | `0`                           | ![](images/date/dz/timezone-convert-raw-09.png)  | ![](images/date/dz/timezone-convert-str-09.png) |
