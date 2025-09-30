@@ -117,7 +117,7 @@ mEpochSecondsToDateHandler:
 mDateConvertToTimeZoneHandler:
     call closeInputAndRecallUniversalXY ; CP1=Y; CP3=X
     bcall(_ConvertRpnDateLikeToTimeZone) ; OP1=DateLike*TZ
-    bcall(_ReplaceStackX)
+    bcall(_ReplaceStackXY)
     ret
 
 mDateToDayOfWeekHandler:
