@@ -1345,18 +1345,18 @@ For illustration purposes, I use both the floating point number format and the
 use floating point numbers when doing this calculation because they are easier
 to enter on a calculator keypad:
 
-| **Keys**                      | **MODE `{..}`**                                  | **MODE `".."`**                   |
-| -------------------------     | ---------------------                            | -----------------                 |
-| `DZ{2024,3,14,15,36,1,-7,0}`  | ![](images/date/dz/timezone-convert-raw-01.png)  | ![](images/date/dz/timezone-convert-str-01.png) |
-| `ENTER`                       | ![](images/date/dz/timezone-convert-raw-02.png)  | ![](images/date/dz/timezone-convert-str-02.png) |
-| `TZ{13,0}`                    | ![](images/date/dz/timezone-convert-raw-03.png)  | ![](images/date/dz/timezone-convert-str-03.png) |
-| `CVTZ`                        | ![](images/date/dz/timezone-convert-raw-04.png)  | ![](images/date/dz/timezone-convert-str-04.png) |
-| `5.5`                         | ![](images/date/dz/timezone-convert-raw-05.png)  | ![](images/date/dz/timezone-convert-str-05.png) |
-| `CVTZ`                        | ![](images/date/dz/timezone-convert-raw-06.png)  | ![](images/date/dz/timezone-convert-str-06.png) |
-| `-2.5`                        | ![](images/date/dz/timezone-convert-raw-07.png)  | ![](images/date/dz/timezone-convert-str-07.png) |
-| `*`                           | ![](images/date/dz/timezone-convert-raw-08.png)  | ![](images/date/dz/timezone-convert-str-08.png) |
-| `0`                           | ![](images/date/dz/timezone-convert-raw-09.png)  | ![](images/date/dz/timezone-convert-str-09.png) |
-| `*`                           | ![](images/date/dz/timezone-convert-raw-10.png)  | ![](images/date/dz/timezone-convert-str-10.png) |
+| **Keys**                      | **MODE `{..}`**                                    | **MODE `".."`**                   |
+| -------------------------     | ---------------------                              | -----------------                 |
+| `DZ{2024,3,14,15,36,1,-7,0}`  | ![](images/date/dz/zoneddatetime-cvtz-raw-01.png)  | ![](images/date/dz/zoneddatetime-cvtz-str-01.png) |
+| `ENTER`                       | ![](images/date/dz/zoneddatetime-cvtz-raw-02.png)  | ![](images/date/dz/zoneddatetime-cvtz-str-02.png) |
+| `TZ{13,0}`                    | ![](images/date/dz/zoneddatetime-cvtz-raw-03.png)  | ![](images/date/dz/zoneddatetime-cvtz-str-03.png) |
+| `CVTZ`                        | ![](images/date/dz/zoneddatetime-cvtz-raw-04.png)  | ![](images/date/dz/zoneddatetime-cvtz-str-04.png) |
+| `5.5`                         | ![](images/date/dz/zoneddatetime-cvtz-raw-05.png)  | ![](images/date/dz/zoneddatetime-cvtz-str-05.png) |
+| `CVTZ`                        | ![](images/date/dz/zoneddatetime-cvtz-raw-06.png)  | ![](images/date/dz/zoneddatetime-cvtz-str-06.png) |
+| `-2.5`                        | ![](images/date/dz/zoneddatetime-cvtz-raw-07.png)  | ![](images/date/dz/zoneddatetime-cvtz-str-07.png) |
+| `*`                           | ![](images/date/dz/zoneddatetime-cvtz-raw-08.png)  | ![](images/date/dz/zoneddatetime-cvtz-str-08.png) |
+| `0`                           | ![](images/date/dz/zoneddatetime-cvtz-raw-09.png)  | ![](images/date/dz/zoneddatetime-cvtz-str-09.png) |
+| `*`                           | ![](images/date/dz/zoneddatetime-cvtz-raw-10.png)  | ![](images/date/dz/zoneddatetime-cvtz-str-10.png) |
 
 #### ZonedDateTime Components
 
