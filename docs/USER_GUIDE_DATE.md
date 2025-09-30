@@ -470,7 +470,7 @@ Only 5 of the 7 DATE objects support type-inferred entry:
 
 Here are examples of this entry method for each supported DATE object type:
 
-| **Type**      | **Full Record Entry**         | **Naked Record Entry**    |
+| **Type**      | **Full Record Entry**         | **Type Inferred Entry**   |
 | --------------| ----------                    | ----------                |
 | DayOfWeek     | `DW{1}`                       | (not supported, reserved) |
 | TimeZone      | `TZ{5,30}`                    | `{5,30`                   |
