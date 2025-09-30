@@ -327,13 +327,13 @@ found in the 3rd row of the ROOT menu folder: `HOME` (i.e. `MATH`), `DOWN`,
 - ![ROOT > DATE](images/menu/root-date.png) (ROOT > DATE)
     - ![ROOT > DATE > Row1](images/menu/root-date-1.png)
     - ![ROOT > DATE > Row2](images/menu/root-date-2.png)
-    - `D`: `Date` folder
-    - `T`: `Time` folder
-    - `DT`: `DateTime` folder
-    - `TZ`: `TimeZone` folder
-    - `DZ`: `ZonedDateTime` folder
-    - `DR`: `Duration` folder
-    - `DW`: `DayOfWeek` folder
+    - `D`: Date folder
+    - `T`: Time folder
+    - `DT`: DateTime folder
+    - `TZ`: TimeZone folder
+    - `DZ`: ZonedDateTime folder
+    - `DR`: Duration folder
+    - `DW`: DayOfWeek folder
     - `EPCH`: Epoch folder
     - `CLK`: Clock folder
 
@@ -454,7 +454,7 @@ terminator is **optional**. Let's unpack that:
 
 In other words, instead of requiring the object name prefix (e.g. `D` or `DZ`),
 only the left curly brace `{` is required, and the right curly brace `}` can be
-omitted. For example, the `Date` object `D{2024,3,14}` can be entered as:
+omitted. For example, the Date object `D{2024,3,14}` can be entered as:
 
 | **Keys**          | **Display**                               |
 | ----------------  | ---------------------                     |
@@ -469,7 +469,7 @@ Only 5 of the 7 DATE objects support type-inferred entry:
 - The DayOfWeek object contains only a single parameter, and would interfere
   with other single-component objects in the future.
 - The Time object has 3 parameters which unfortunately interferes with the
-  `Date` object which also has 3 parameters.
+  Date object which also has 3 parameters.
 
 Here are examples of this entry method for each supported DATE object type:
 
@@ -551,7 +551,7 @@ The DATE menu functions are grouped under the subfolders of `DATE`.
     - ![ROOT > DATE > Date > Row2](images/menu/root-date-d-2.png)
     - ![ROOT > DATE > Date > Row3](images/menu/root-date-d-3.png)
     - ![ROOT > DATE > Date > Row4](images/menu/root-date-d-4.png)
-    - `D{}`: insert initialization string for `Date` object
+    - `D{}`: insert initialization string for Date object
     - `>ED`: convert Date to epoch days (assuming UTC)
     - `ED>`: epoch days to Date (assuming UTC)
     - `>ES`: convert Date to epoch seconds (assuming UTC)
@@ -569,7 +569,7 @@ The DATE menu functions are grouped under the subfolders of `DATE`.
 
 #### Date Entry
 
-The `Date` object has the form `D{year:u16, month:u8, day:u8}` and represents a
+The Date object has the form `D{year:u16, month:u8, day:u8}` and represents a
 Gregorian calendar date. For example, the date `2024-03-14` is entered into the
 calculator as follows, and is displayed in 2 different ways depending on the
 MODE setting of `{..}` or `".."`:
@@ -636,10 +636,10 @@ For example, let's calculate those quantities for 2024-03-14:
 
 In the next row of menus, we get the following functions:
 
-- The `LEAP` function determines if the year of the given `Date` object is a
+- The `LEAP` function determines if the year of the given Date object is a
   leap year. It returns 1 if true, 0 otherwise.
-- The `DOW` function returns the [`DayOfWeek`](#dayofweek-dw) object from the
-  given `Date`.
+- The `DOW` function returns the [DayOfWeek](#dayofweek-dw) object from the
+  given Date.
 
 | **Keys**          | **MODE `{..}`**                             | **MODE `".."`**   |
 | -----------       | ---------------------                       | ----------------- |
@@ -665,7 +665,7 @@ result is a ZonedDateTime object because it is no longer in the UTC timezone.
 #### Date Components
 
 There are 3 menu functions which allow the user to extract the individual
-components of the `Date` object: `.YR` (year component), `.MON` (month
+components of the Date object: `.YR` (year component), `.MON` (month
 component), and `.DAY` (day component):
 
 | **Keys**          | **MODE `{..}`**                               | **MODE `".."`**   |
@@ -679,22 +679,22 @@ component), and `.DAY` (day component):
 
 #### Date Casting
 
-The last 4 menu functions `DSHK`, `DEXD`, `DCUT`, and `DLNK` allow the `Date`
+The last 4 menu functions `DSHK`, `DEXD`, `DCUT`, and `DLNK` allow the Date
 object to be converted to other Date-related objects (known as "casting"). For
-the `Date` object, only the `DEXD` and `DLNK` functions are applicable but all 4
-menu functions are present in the menu for consistency with the `DateTime` and
-`ZonedDateTime` objects.
+the Date object, only the `DEXD` and `DLNK` functions are applicable but all 4
+menu functions are present in the menu for consistency with the DateTime and
+ZonedDateTime objects.
 
-The `DEXD` function extends the `Date` object into a `DateTime` object by
-appending a `Time` object of midnight `00:00:00`.
+The `DEXD` function extends the Date object into a DateTime object by
+appending a Time object of midnight `00:00:00`.
 
 | **Keys**                  | **MODE `{..}`**                                 | **MODE `".."`**   |
 | -----------               | ---------------------                           | ----------------- |
 | `D{2024,3,14}` `ENTER`    | ![](images/date/d/date-casting-dexd-raw-1.png)  | ![](images/date/d/date-casting-dexd-str-1.png) |
 | `DEXD`                    | ![](images/date/d/date-casting-dexd-raw-2.png)  | ![](images/date/d/date-casting-dexd-str-2.png) |
 
-The `DLNK` function merges a `Date` object (X or Y) and a given `Time` object in
-(X or Y) into a `DateTime` object.
+The `DLNK` function merges a Date object (X or Y) and a given Time object in
+(X or Y) into a DateTime object.
 
 | **Keys**                  | **MODE `{..}`**                                 | **MODE `".."`**   |
 | -----------               | ---------------------                           | ----------------- |
@@ -715,7 +715,7 @@ table:
 | {Date} - {Date}           | {integer} |
 | {integer} - {Date}        | INVALID   |
 
-When operating on `Date` objects, integer values are assumed to be in units of
+When operating on Date objects, integer values are assumed to be in units of
 `days`. For example, let's add 20 days to the date of 2024-03-14, then
 subtract 30 days from that result:
 
@@ -745,7 +745,7 @@ There are 286 days from March 14 to Dec 25, 2024.
 - ![ROOT > DATE > T](images/menu/root-date-t.png) (ROOT > DATE > T)
     - ![ROOT > DATE > Time > Row1](images/menu/root-date-t-1.png)
     - ![ROOT > DATE > Time > Row2](images/menu/root-date-t-2.png)
-    - `T{}`: insert initialization string for `Time` object
+    - `T{}`: insert initialization string for Time object
     - `>S`: convert Time to seconds after midnight
     - `S>`: convert seconds after midnight to Time
     - `.HR`: extract `hour` component of Time
@@ -754,7 +754,7 @@ There are 286 days from March 14 to Dec 25, 2024.
 
 #### Time Entry
 
-The `Time` object has the form `T{hour:u8, minute:u8, second:u8}`. For example,
+The Time object has the form `T{hour:u8, minute:u8, second:u8}`. For example,
 the time `15:36:01` is entered into the calculator like this:
 
 | **Keys**              | **MODE `{..}`**                     | **MODE `".."`**   |
@@ -771,7 +771,7 @@ the time `15:36:01` is entered into the calculator like this:
 
 #### Time Validation
 
-The validation rules for a `Time` record is more straightforward than a `Date`
+The validation rules for a Time record is more straightforward than a Date
 record:
 
 - the `hour` component must be in the interval [0, 23]
@@ -808,7 +808,7 @@ Time object:
 #### Time Components
 
 There are 3 menu functions which allow the user to extract the individual
-components of the `Time` object: `.HR` (hour component), `.MIN` (minute
+components of the Time object: `.HR` (hour component), `.MIN` (minute
 component), and `.SEC` (second component):
 
 | **Keys**          | **MODE `{..}`**                               | **MODE `".."`**   |
@@ -822,7 +822,7 @@ component), and `.SEC` (second component):
 
 #### Time Arithmetic
 
-Just like `Date` records, addition and subtraction operations are supported as
+Just like Date records, addition and subtraction operations are supported as
 summarized in the following table:
 
 | **Operation**             | **Result**|
@@ -836,7 +836,7 @@ summarized in the following table:
 There are 2 important differences:
 
 1. The integers are in units of *seconds*, not *days*, and
-2. If the resulting `Time` is less than `00:00:00` or greater than `24:00:00`,
+2. If the resulting Time is less than `00:00:00` or greater than `24:00:00`,
 the resulting time is renormalized so that it becomes within those bounds. In
 other words, addition and subtraction operations are performed modulo 86400
 seconds.
@@ -873,7 +873,7 @@ There are 5039 seconds between `15:36:01` and `17:00:00`.
     - ![ROOT > DATE > DateTime > Row1](images/menu/root-date-dt-1.png)
     - ![ROOT > DATE > DateTime > Row2](images/menu/root-date-dt-2.png)
     - ![ROOT > DATE > DateTime > Row3](images/menu/root-date-dt-3.png)
-    - `DT{}`: insert initialization string for `DateTime` object
+    - `DT{}`: insert initialization string for DateTime object
     - `>ED`: convert DateTime to epoch days (assuming UTC)
     - `ED>`: epoch days to DateTime (assuming UTC)
     - `>ES`: convert DateTime to epoch seconds (assuming UTC)
@@ -909,8 +909,8 @@ For example, the date `2024-03-14 15:36:01` would be entered like this:
 
 #### DateTime Validation
 
-The validation rules of the `DateTime` object is the union of the validation
-rules for the `Date` record and the rules for the `Time` record.
+The validation rules of the DateTime object is the union of the validation
+rules for the Date record and the rules for the Time record.
 
 For example, if we try to enter the invalid DateTime `2024-03-14 23:59:60`, we
 get:
@@ -922,8 +922,8 @@ get:
 
 #### DateTime Functions
 
-A `DateTime` object support the same `>ED`, `>ED`, `>ES`, and `ES>` functions as
-the `Date` object.
+A DateTime object support the same `>ED`, `>ED`, `>ES`, and `ES>` functions as
+the Date object.
 
 For example, let's calculate those quantities for 2024-03-14 15:36:01:
 
@@ -938,18 +938,18 @@ For example, let's calculate those quantities for 2024-03-14 15:36:01:
 
 Notes:
 
-- When performing these calculations, the `DateTime` object is presumed to be in
+- When performing these calculations, the DateTime object is presumed to be in
   the UTC timezone.
-- When a `DateTime` is converted into EpochDays, the `Time` component becomes
+- When a DateTime is converted into EpochDays, the Time component becomes
   truncated to midnight.
 
-Similar to the `Date` object, in the next menu row, we get the following
+Similar to the Date object, in the next menu row, we get the following
 functions:
 
-- The `LEAP` function determines if the year of the given `DateTime` object is a
+- The `LEAP` function determines if the year of the given DateTime object is a
   leap year. It returns 1 if true, 0 otherwise.
-- The `DOW` function returns the `DayOfWeek` object from the given `DateTime`.
-  The [`DayOfWeek`](#dayofweek-dw) object is described in more detail below.
+- The `DOW` function returns the DayOfWeek object from the given DateTime.
+  The [DayOfWeek](#dayofweek-dw) object is described in more detail below.
 
 | **Keys**                  | **MODE `{..}`**                                  | **MODE `".."`**   |
 | -----------               | ---------------------                            | ----------------- |
@@ -974,7 +974,7 @@ result is a ZonedDateTime object because it is no longer in the UTC timezone.
 
 #### DateTime Components
 
-The `DateTime` object is a composition of the `Date` and `Time` objects. Two
+The DateTime object is a composition of the Date and Time objects. Two
 menu functions allow the user to extract these components: `.D{}` and `.T{}`.
 
 | **Keys**                  | **MODE `{..}`**                                    | **MODE `".."`**   |
@@ -986,35 +986,35 @@ menu functions allow the user to extract these components: `.D{}` and `.T{}`.
 
 #### DateTime Casting
 
-The last 4 menu functions `DSHK`, `DEXD`, `DCUT`, and `DLNK` allow the `DateTime`
+The last 4 menu functions `DSHK`, `DEXD`, `DCUT`, and `DLNK` allow the DateTime
 object to be converted to other Date-related objects (known as "casting").
 
-The `DSHK` function shrinks the `DateTime` object into a `Date` object by
-truncating the `Time` component:
+The `DSHK` function shrinks the DateTime object into a Date object by
+truncating the Time component:
 
 | **Keys**                          | **MODE `{..}`**                                      | **MODE `".."`**   |
 | -----------                       | ---------------------                                | ----------------- |
 | `DT{2024,3,14,15,36,1}` `ENTER`   | ![](images/date/dt/datetime-casting-dshk-raw-1.png)  | ![](images/date/dt/datetime-casting-dshk-str-1.png) |
 | `DSHK`                            | ![](images/date/dt/datetime-casting-dshk-raw-2.png)  | ![](images/date/dt/datetime-casting-dshk-str-2.png) |
 
-The `DEXD` function extends the `DateTime` object into a `ZoneDateTime` object
-by appending a UTC `TimeZone` object:
+The `DEXD` function extends the DateTime object into a `ZoneDateTime` object
+by appending a UTC TimeZone object:
 
 | **Keys**                          | **MODE `{..}`**                                      | **MODE `".."`**   |
 | -----------                       | ---------------------                                | ----------------- |
 | `DT{2024,3,14,15,36,1}` `ENTER`   | ![](images/date/dt/datetime-casting-dexd-raw-1.png)  | ![](images/date/dt/datetime-casting-dexd-str-1.png) |
 | `DEXD`                            | ![](images/date/dt/datetime-casting-dexd-raw-2.png)  | ![](images/date/dt/datetime-casting-dexd-str-2.png) |
 
-The `DCUT` function splits (cuts) the `DateTime` object into its component
-`Date` and `Time` objects:
+The `DCUT` function splits (cuts) the DateTime object into its component
+Date and Time objects:
 
 | **Keys**                          | **MODE `{..}`**                                      | **MODE `".."`**   |
 | -----------                       | ---------------------                                | ----------------- |
 | `DT{2024,3,14,15,36,1}` `ENTER`   | ![](images/date/dt/datetime-casting-dcut-raw-1.png)  | ![](images/date/dt/datetime-casting-dcut-str-1.png) |
 | `DCUT`                            | ![](images/date/dt/datetime-casting-dcut-raw-2.png)  | ![](images/date/dt/datetime-casting-dcut-str-2.png) |
 
-The `DLNK` function merges (links) a `DateTime` object and a `TimeZone` object
-into a `ZonedDateTime` object.
+The `DLNK` function merges (links) a DateTime object and a TimeZone object
+into a ZonedDateTime object.
 
 | **Keys**                          | **MODE `{..}`**                                      | **MODE `".."`**   |
 | -----------                       | ---------------------                                | ----------------- |
@@ -1024,8 +1024,8 @@ into a `ZonedDateTime` object.
 
 #### DateTime Arithmetic
 
-The addition and subtraction operations are available on the `DateTime` object,
-just like `Date` and `Time`. The integer numbers are in unit of *second*.
+The addition and subtraction operations are available on the DateTime object,
+just like Date and Time. The integer numbers are in unit of *second*.
 
 | **Operation**             | **Result**    |
 | --------------------------| ------------- |
@@ -1044,7 +1044,7 @@ For example, let's subtract 100,000 seconds from `2024-03-14 15:36:01`:
 | `100000`                  | ![](images/date/dt/datetime-add-raw-3.png)    | ![](images/date/dt/datetime-add-str-3.png) |
 | `-`                       | ![](images/date/dt/datetime-add-raw-4.png)    | ![](images/date/dt/datetime-add-str-4.png) |
 
-We can subtract 2 `DateTime` objects:
+We can subtract 2 DateTime objects:
 
 |  **Keys**                 |  **MODE `{..}`**                              |  **MODE `".."`**              |
 | ------------------------- | ---------------------                         | -----------------             |
@@ -1057,10 +1057,10 @@ There are 24654239 seconds from March 14, 2024 15:36:01 to Christmas Dec 25,
 2024 00:00:00.
 
 We can convert the 24654239 seconds quantity into something that is easier to
-understand for humans by converting it into a `Duration` object. (The `Duration`
+understand for humans by converting it into a Duration object. (The Duration
 object is described in more detail in the [Duration (DR)](#duration-dr) section
 below.) Go to `DATE` menu folder, then press the `DR` folder. The `SEC>` menu
-function converts the number of seconds to a `Duration` object:
+function converts the number of seconds to a Duration object:
 
 |  **Keys**     |  **MODE `{..}`**                                      |  **MODE `".."`**        |
 | ----------    | ---------------------                                 | -----------------       |
@@ -1074,7 +1074,7 @@ between March 14, 2024 15:36:01 to Christmas Dec 25, 2024 00:00:00.
 
 - ![ROOT > DATE > TZ](images/menu/root-date-tz.png) (ROOT > DATE > TZ)
     - ![ROOT > DATE > TimeZone > Row1](images/menu/root-date-tz-1.png)
-    - `TZ{}`: insert initialization string for `TimeZone` object
+    - `TZ{}`: insert initialization string for TimeZone object
     - `>HR`: convert TimeZone to floating point hours
     - `HR>`: convert floating point hours into TimeZone
     - `.HR`: extract `hour` component of TimeZone
@@ -1140,7 +1140,7 @@ For example, `8.75` for `TZ{8,45}`, and `-2.5` for `TZ{-2,-30}`. Otherwise, an
 #### TimeZone Components
 
 There are 2 menu functions that allow the user to extract the individual
-components of the `TimeZone` object: `.HR` (hour component) and `.MIN` (minute
+components of the TimeZone object: `.HR` (hour component) and `.MIN` (minute
 component):
 
 | **Keys**                  | **MODE `{..}`**                                    | **MODE `".."`**   |
@@ -1169,7 +1169,7 @@ table:
 | {TimeZone} - {TimeZone}   | {float}    |
 | {float} - {TimeZone}      | INVALID    |
 
-When operating on `TimeZone` objects, float values are in units of `hours` and
+When operating on TimeZone objects, float values are in units of `hours` and
 must be in multiples of 0.25 hours because UTC offsets must be in multiples of
 15 minutes.
 
@@ -1201,7 +1201,7 @@ There is a 9-hour difference from UTC+01:00 and UTC-08:00.
     - ![ROOT > DATE > ZonedDateTime > Row2](images/menu/root-date-dz-2.png)
     - ![ROOT > DATE > ZonedDateTime > Row3](images/menu/root-date-dz-3.png)
     - ![ROOT > DATE > ZonedDateTime > Row4](images/menu/root-date-dz-4.png)
-    - `DZ{}`: insert initialization string for `ZonedDateTime` object
+    - `DZ{}`: insert initialization string for ZonedDateTime object
     - `>ED`: convert ZonedDateTime to epoch days (assuming UTC)
     - `ED>`: epoch days to ZonedDateTime (assuming UTC)
     - `>ES`: convert ZonedDateTime to epoch seconds (assuming UTC)
@@ -1302,9 +1302,9 @@ Notes:
 Similar to the Date and DateTime objects, the ZonedDateTime object supports the
 following functions:
 
-- The `LEAP` function determines if the year of the given `DateTime` object is a
+- The `LEAP` function determines if the year of the given DateTime object is a
   leap year. It returns 1 if true, 0 otherwise.
-- The `DOW` function returns the `DayOfWeek` object from the given `DateTime`.
+- The `DOW` function returns the DayOfWeek object from the given DateTime.
   The [DayOfWeek](#dayofweek-dw) object is described in more detail below.
 
 | **Keys**                          | **MODE `{..}`**                                       | **MODE `".."`**   |
@@ -1378,7 +1378,7 @@ objects. Four menu functions allow the user to extract these components: `.D{}`,
 #### ZonedDateTime Casting
 
 The last 4 menu functions `DSHK`, `DEXD`, `DCUT`, and `DLNK` allow the
-`ZonedDateTime` object to be converted to other Date-related objects (known as
+ZonedDateTime object to be converted to other Date-related objects (known as
 "casting").
 
 The `DSHK` function shrinks the ZonedDateTime object into a DateTime object by
@@ -1390,7 +1390,7 @@ truncating the TimeZone component:
 | `DSHK`                               | ![](images/date/dz/zoneddatetime-casting-dshk-raw-2.png) | ![](images/date/dz/zoneddatetime-casting-dshk-str-2.png) |
 | `DSHK`                               | ![](images/date/dz/zoneddatetime-casting-dshk-raw-3.png) | ![](images/date/dz/zoneddatetime-casting-dshk-str-3.png) |
 
-(The second `DSHK` works even though it is invoked on a `DateTime` object. That
+(The second `DSHK` works even though it is invoked on a DateTime object. That
 is because the `DSHK` function here under the `DZ` menu is the same function as
 the `DSHK` function for DateTime under the `DT` menu.)
 
@@ -1408,7 +1408,7 @@ apart the DateTime into a Date object and a Time object:
 | `DCUT`                               | ![](images/date/dz/zoneddatetime-casting-dcut-raw-3.png) | ![](images/date/dz/zoneddatetime-casting-dcut-str-3.png) |
 
 (Similar to `DSHK`, the second `DCUT` works even though it is invoked on a
-`DateTime` object, because the `DCUT` here is the same function as the `DCUT`
+DateTime object, because the `DCUT` here is the same function as the `DCUT`
 for DateTime under the `DT` menu.)
 
 The `DLNK` function does not apply to a ZonedDateTime object because it
@@ -1416,8 +1416,8 @@ cannot grow into a larger object.
 
 #### ZonedDateTime Arithmetic
 
-The addition and subtraction operations are available on the `ZonedDateTime`
-object, just like the `DateTime` object. The integer numbers are in unit of
+The addition and subtraction operations are available on the ZonedDateTime
+object, just like the DateTime object. The integer numbers are in unit of
 *second*.
 
 | **Operation**                     | **Result**        |
@@ -1440,7 +1440,7 @@ For example, let's add 100_000 seconds to `2024-03-14 15:36:01-07:00`:
 | `100000`                      | ![](images/date/dz/zoneddatetime-add-raw-3.png)  | ![](images/date/dz/zoneddatetime-add-str-3.png) |
 | `+`                           | ![](images/date/dz/zoneddatetime-add-raw-4.png)  | ![](images/date/dz/zoneddatetime-add-str-4.png) |
 
-We can subtract 2 `ZonedDateTime` objects to obtain the number of seconds
+We can subtract 2 ZonedDateTime objects to obtain the number of seconds
 between them. Their TimeZone components are not required to be same. For
 example, let's determine the number of seconds from March 14, 2024 UTC-07:00 to
 December 25, 2024 UTC:
@@ -1466,7 +1466,7 @@ the `SEC>` menu function:
 - ![ROOT > DATE > DR](images/menu/root-date-dr.png) (ROOT > DATE > DR)
     - ![ROOT > DATE > Duration > Row1](images/menu/root-date-dr-1.png)
     - ![ROOT > DATE > Duration > Row2](images/menu/root-date-dr-2.png)
-    - `DR{}`: insert initialization string for `Duration` object
+    - `DR{}`: insert initialization string for Duration object
     - `DAY>`: convert days into Duration
     - `HR>`: convert hours into Duration
     - `MIN>`: convert minutes into Duration
@@ -1479,10 +1479,10 @@ the `SEC>` menu function:
 
 #### Duration Entry
 
-The `Duration` object has the form `DR{days:i16, hours:i8, minutes:i8,
+The Duration object has the form `DR{days:i16, hours:i8, minutes:i8,
 seconds:i8}`. It can be a positive or a negative quantity.
 
-For example, a positive `Duration` object would be:
+For example, a positive Duration object would be:
 
 | **Keys**              | **MODE `{..}`**                           | **MODE `".."`**   |
 | -----------           | ---------------------                     | ----------------- |
@@ -1684,7 +1684,7 @@ Another example, let's add `30d 37s` to the DateTime `2024-03-14 12:58:32`:
 
 - ![ROOT > DATE > DW](images/menu/root-date-dw.png) (ROOT > DATE > DW)
     - ![ROOT > DATE > TimeZone > Row1](images/menu/root-date-dw-1.png)
-    - `DW{}`: insert initialization string for `DayOfWeek` object
+    - `DW{}`: insert initialization string for DayOfWeek object
     - `>ISO`: convert DayOfWeek into ISO day of week number (Mon=1,Sun=7)
     - `ISO>`: convert ISO day of week number into DayOfWeek (Mon=1,Sun=7)
     - `>UNX`: convert DayOfWeek into Unix day of week number (Sun=0,Sat=6)
@@ -1692,7 +1692,7 @@ Another example, let's add `30d 37s` to the DateTime `2024-03-14 12:58:32`:
 
 #### DayOfWeek Entry
 
-The `DayOfWeek` object has the form `DW{dow:u8}`, where the `dow` field is a
+The DayOfWeek object has the form `DW{dow:u8}`, where the `dow` field is a
 single integer containing the [ISO Weekday
 number](https://en.wikipedia.org/wiki/ISO_8601), where Monday is represented by
 1 and Sunday is represented by 7. For example, Thursday has an ISO weekday value
