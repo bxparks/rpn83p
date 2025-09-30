@@ -5257,23 +5257,23 @@ mGetNowOffsetDateTimeUtcId equ 561
     .dw mGetNowOffsetDateTimeUtcHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
 ; MenuGroup CLK: children: row 1
-mSetTimeZone:
-mSetTimeZoneId equ 562
-    .dw mSetTimeZoneId ; id
+mSetAppTimeZone:
+mSetAppTimeZoneId equ 562
+    .dw mSetAppTimeZoneId ; id
     .dw mClkId ; parentId
-    .dw mSetTimeZoneName ; name
+    .dw mSetAppTimeZoneName ; name
     .db 0 ; numRows
     .dw 0 ; rowBeginId or altName
-    .dw mSetTimeZoneHandler ; handler (to be implemented)
+    .dw mSetAppTimeZoneHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
-mGetTimeZone:
-mGetTimeZoneId equ 563
-    .dw mGetTimeZoneId ; id
+mGetAppTimeZone:
+mGetAppTimeZoneId equ 563
+    .dw mGetAppTimeZoneId ; id
     .dw mClkId ; parentId
-    .dw mGetTimeZoneName ; name
+    .dw mGetAppTimeZoneName ; name
     .db 0 ; numRows
     .dw 0 ; rowBeginId or altName
-    .dw mGetTimeZoneHandler ; handler (to be implemented)
+    .dw mGetAppTimeZoneHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
 mSetClockTimeZone:
 mSetClockTimeZoneId equ 564
@@ -5308,7 +5308,7 @@ mSetClockId equ 566
 ;-----------------------------------------------------------------------------
 
 mNamesCount equ 474 ; number of names and altnames
-mNamesPoolSize equ 3976 ; size of names string pool
+mNamesPoolSize equ 3978 ; size of names string pool
 
 mNullName:
     .db 0
@@ -6324,10 +6324,10 @@ mGetNowOffsetDateTimeName:
     .db "NWDZ", 0
 mGetNowOffsetDateTimeUtcName:
     .db "NWUT", 0
-mSetTimeZoneName:
-    .db "TZ", 0
-mGetTimeZoneName:
-    .db 'T', 'Z', Squestion, 0
+mSetAppTimeZoneName:
+    .db "ATZ", 0
+mGetAppTimeZoneName:
+    .db 'A', 'T', 'Z', Squestion, 0
 mSetClockTimeZoneName:
     .db "CTZ", 0
 mGetClockTimeZoneName:

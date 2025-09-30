@@ -823,8 +823,8 @@ MenuGroup root mRoot [
             MenuItem NWUT mGetNowOffsetDateTimeUtc # RTC OffsetDateTime using UTC
           ]
           MenuRow [
-            MenuItem TZ mSetTimeZone
-            MenuItem TZ<Squestion> mGetTimeZone
+            MenuItem ATZ mSetAppTimeZone
+            MenuItem ATZ<Squestion> mGetAppTimeZone
             MenuItem CTZ mSetClockTimeZone
             MenuItem CTZ<Squestion> mGetClockTimeZone
             MenuItem SETC mSetClock # set current clock

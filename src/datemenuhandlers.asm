@@ -842,14 +842,14 @@ noClockErr:
 ; DATE > CLK > Row 2
 ;-----------------------------------------------------------------------------
 
-mSetTimeZoneHandler:
+mSetAppTimeZoneHandler:
     call closeInputAndRecallRpnOffsetOrRealX ; A=rpnObjectType; OP1=X
     bcall(_SetAppTimeZone)
     ld a, errorCodeTzStored
     ld (handlerCode), a
     ret
 
-mGetTimeZoneHandler:
+mGetAppTimeZoneHandler:
     call closeInputAndRecallNone
     bcall(_GetAppTimeZone)
     bcall(_PushToStackX)
