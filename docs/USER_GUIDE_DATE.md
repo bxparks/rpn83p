@@ -107,7 +107,6 @@ These features were inspired by various datetime libraries:
         - [Get Current DateTime Now](#get-current-datetime-now)
         - [TI-OS Clock](#ti-os-clock)
 - [Timezone Conversions](#timezone-conversions)
-- [Leap Year Determination](#leap-year-determination)
 - [Storage Registers](#storage-registers)
 
 ## Calendar, Time, and Timezones
@@ -1739,31 +1738,6 @@ to enter on a calculator keypad:
 | `*`                           | ![](images/date/timezone-convert-raw-08.png)  | ![](images/date/timezone-convert-str-08.png) |
 | `0`                           | ![](images/date/timezone-convert-raw-09.png)  | ![](images/date/timezone-convert-str-09.png) |
 | `*`                           | ![](images/date/timezone-convert-raw-10.png)  | ![](images/date/timezone-convert-str-10.png) |
-
-## Leap Year Determination
-
-The `LEAP` menu function does not quite fit into any of the above categories:
-
-![ROOT > DATE > LEAP](images/menu/root-date-leap.png)
-
-It determines if the given year is a [leap
-year](https://simple.wikipedia.org/wiki/Leap_year), returning a `1` if true or
-`0` if false. For example:
-
-| **Keys**          | **Display**                    |
-| -----------       | ---------------------          |
-| `2024` `LEAP`     | ![](images/date/leap-1.png)    |
-| `2025` `LEAP`     | ![](images/date/leap-2.png)    |
-| `2100` `LEAP`     | ![](images/date/leap-3.png)    |
-| `2200` `LEAP`     | ![](images/date/leap-4.png)    |
-| `2300` `LEAP`     | ![](images/date/leap-5.png)    |
-| `2400` `LEAP`     | ![](images/date/leap-6.png)    |
-
-The boolean expression for this function in the `C` language is:
-
-```
-(year%4 == 0) && (year%100 != 0 || year%400 == 0)
-```
 
 ### Epoch Date (EPCH)
 
