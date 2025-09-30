@@ -70,6 +70,7 @@ These features were inspired by various datetime libraries:
         - [DateTime Entry](#datetime-entry)
         - [DateTime Validation](#datetime-validation)
         - [DateTime Functions](#datetime-functions)
+        - [DateTime Timezone Conversions](#datetime-timezone-conversions)
         - [DateTime Components](#datetime-components)
         - [DateTime Casting](#datetime-casting)
         - [DateTime Arithmetic](#datetime-arithmetic)
@@ -950,8 +951,6 @@ functions:
   leap year. It returns 1 if true, 0 otherwise.
 - The `DOW` function returns the `DayOfWeek` object from the given `DateTime`.
   The [`DayOfWeek`](#dayofweek-dw) object is described in more detail below.
-- The `CVTZ` function takes 2 arguments, converting the `DateTime` object to the
-  timezone specified by the [`TimeZone`](#timezone-tz) object.
 
 | **Keys**                  | **MODE `{..}`**                                  | **MODE `".."`**   |
 | -----------               | ---------------------                            | ----------------- |
@@ -960,7 +959,19 @@ functions:
 | `2ND ANS` (LASTX)         | ![](images/date/dt/datetime-leap-dow-raw-3.png)  | ![](images/date/dt/datetime-leap-dow-str-3.png) |
 | `DOW`                     | ![](images/date/dt/datetime-leap-dow-raw-4.png)  | ![](images/date/dt/datetime-leap-dow-str-4.png) |
 
-TODO: Add screenshots of `CVTZ` function.
+#### DateTime Timezone Conversions
+
+The `CVTZ` function is the same function described in full detail at
+[ZonedDateTime Timezone Conversions](#zoneddatetime-timezone-conversions). It
+converts the DateTime object (assumed to be UTC) into a different timezone. The
+result is a ZonedDateTime object because it is no longer in the UTC timezone.
+
+| **Keys**                  | **MODE `{..}`**                              | **MODE `".."`**   |
+| -----------               | ---------------------                        | ----------------- |
+| `DT{2024,3,14,15,36,1}`   | ![](images/date/dt/datetime-cvtz-raw-1.png)  | ![](images/date/dt/datetime-cvtz-str-1.png) |
+| `ENTER`                   | ![](images/date/dt/datetime-cvtz-raw-2.png)  | ![](images/date/dt/datetime-cvtz-str-2.png) |
+| `TZ{-7,0}`                | ![](images/date/dt/datetime-cvtz-raw-3.png)  | ![](images/date/dt/datetime-cvtz-str-3.png) |
+| `CVTZ`                    | ![](images/date/dt/datetime-cvtz-raw-4.png)  | ![](images/date/dt/datetime-cvtz-str-4.png) |
 
 #### DateTime Components
 
