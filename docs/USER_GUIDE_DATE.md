@@ -85,6 +85,12 @@ These features were inspired by various datetime libraries:
         - [ZonedDateTime Casting](#zoneddatetime-casting)
         - [ZonedDateTime Arithmetic](#zoneddatetime-arithmetic)
     - [Duration (DR)](#duration-dr)
+        - [Duration Entry](#duration-entry)
+        - [Duration Compact Entry](#duration-compact-entry)
+        - [Duration Validation](#duration-validation)
+        - [Duration Functions](#duration-functions)
+        - [Duration Components](#duration-components)
+        - [Duration Arithmetic](#duration-arithmetic)
     - [DayOfWeek (DW)](#dayofweek-dw)
     - [Epoch Date (EPCH)](#epoch-date-epch)
         - [Custom Epoch Date](#custom-epoch-date)
@@ -1502,6 +1508,22 @@ essentially the opposite of `SEC>`:
 | -----------       | ---------------------                                | ----------------- |
 | `93784` `SEC>`    | ![](images/date/dr/duration-to-seconds-raw-1.png)    | ![](images/date/dr/duration-to-seconds-str-1.png) |
 | `S>`              | ![](images/date/dr/duration-to-seconds-raw-2.png)    | ![](images/date/dr/duration-to-seconds-str-2.png) |
+
+#### Duration Components
+
+The individual components of the Duration object can be extracted using
+4 menu functions: `.DAY`, `.HR`, `.MIN`, `.SEC`.
+
+| **Keys**              | **MODE `{..}`**                                   | **MODE `".."`**   |
+| -----------           | ---------------------                             | ----------------- |
+| `DR{1,2,3,4}`         | ![](images/date/dr/duration-components-raw-1.png) | ![](images/date/dr/duration-components-str-1.png) |
+| `.DAY`                | ![](images/date/dr/duration-components-raw-2.png) | ![](images/date/dr/duration-components-str-2.png) |
+| `2ND ANS` (LASTX)     | ![](images/date/dr/duration-components-raw-3.png) | ![](images/date/dr/duration-components-str-3.png) |
+| `.HR`                 | ![](images/date/dr/duration-components-raw-4.png) | ![](images/date/dr/duration-components-str-4.png) |
+| `2ND ANS` (LASTX)     | ![](images/date/dr/duration-components-raw-5.png) | ![](images/date/dr/duration-components-str-5.png) |
+| `.MIN`                | ![](images/date/dr/duration-components-raw-6.png) | ![](images/date/dr/duration-components-str-6.png) |
+| `2ND ANS` (LASTX)     | ![](images/date/dr/duration-components-raw-7.png) | ![](images/date/dr/duration-components-str-7.png) |
+| `.SEC`                | ![](images/date/dr/duration-components-raw-8.png) | ![](images/date/dr/duration-components-str-8.png) |
 
 #### Duration Arithmetic
 
