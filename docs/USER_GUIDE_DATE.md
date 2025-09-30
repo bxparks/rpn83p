@@ -1488,6 +1488,13 @@ The components of the Duration object has the following validation rules:
 - `seconds` must be in the interval [-59,59]
 - all components must have the same sign (or zero)
 
+For example, if we try to enter the invalid Duration `-1h +3s`, we get:
+
+| **Keys**              | **MODE `{..}`**                                | **MODE `".."`**   |
+| ------------------    | ---------------------                          | ----------------- |
+| `DR{0,-1,0,3}`        | ![](images/date/dr/duration-invalid-raw-1.png) | ![](images/date/dr/duration-invalid-str-1.png) |
+| `ENTER`               | ![](images/date/dr/duration-invalid-raw-2.png) | ![](images/date/dr/duration-invalid-str-2.png) |
+
 #### Duration Functions
 
 The `DR` menu folder provides 4 functions to aid the construction of Duration
