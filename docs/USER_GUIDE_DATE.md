@@ -82,6 +82,7 @@ These features were inspired by various datetime libraries:
         - [ZonedDateTime Entry](#zoneddatetime-entry)
         - [ZonedDateTime Validation](#zoneddatetime-validation)
         - [ZonedDateTime Functions](#zoneddatetime-functions)
+        - [ZonedDateTime Timezone Conversions](#zoneddatetime-timezone-conversions)
         - [ZonedDateTime Components](#zoneddatetime-components)
         - [ZonedDateTime Casting](#zoneddatetime-casting)
         - [ZonedDateTime Arithmetic](#zoneddatetime-arithmetic)
@@ -622,7 +623,7 @@ The Epoch date is configurable as explained in the [Epoch Date
 (EPCH)](#epoch-date-epch) section below but by default, it is set to `UNIX`
 which is `1970-01-01`.
 
-For example, let's calculate the those quantities for 2024-03-14:
+For example, let's calculate those quantities for 2024-03-14:
 
 | **Keys**          | **MODE `{..}`**                          | **MODE `".."`**   |
 | -----------       | ---------------------                    | ----------------- |
@@ -638,8 +639,6 @@ In the next row of menus, we get the following functions:
   leap year. It returns 1 if true, 0 otherwise.
 - The `DOW` function returns the [`DayOfWeek`](#dayofweek-dw) object from the
   given `Date`.
-- The `CVTZ` function takes 2 arguments, converting the `Date` object to the
-  timezone specified by the [`TimeZone`](#timezone-tz) object.
 
 | **Keys**          | **MODE `{..}`**                             | **MODE `".."`**   |
 | -----------       | ---------------------                       | ----------------- |
@@ -648,7 +647,10 @@ In the next row of menus, we get the following functions:
 | `2ND ANS` (LASTX) | ![](images/date/d/date-leap-dow-raw-3.png)  | ![](images/date/d/date-leap-dow-str-3.png) |
 | `DOW`             | ![](images/date/d/date-leap-dow-raw-4.png)  | ![](images/date/d/date-leap-dow-str-4.png) |
 
-TODO: Add screenshots of `CVTZ` function.
+The `CVTZ` function appears under the `D` ([Date]) menu, the `DT` (DateTime)
+menu, and the `DZ` (ZonedDateTime) menu. It takes 2 arguments, converting the
+`Date` object to the timezone specified by the [`TimeZone`](#timezone-tz)
+object.
 
 #### Date Components
 
@@ -1283,8 +1285,6 @@ following functions:
   leap year. It returns 1 if true, 0 otherwise.
 - The `DOW` function returns the `DayOfWeek` object from the given `DateTime`.
   The [DayOfWeek](#dayofweek-dw) object is described in more detail below.
-- The `CVTZ` function takes 2 arguments, converting the `DateTime` object to the
-  timezone specified by the [TimeZone](#timezone-tz) object.
 
 | **Keys**                          | **MODE `{..}`**                                       | **MODE `".."`**   |
 | -----------                       | ---------------------                                 | ----------------- |
@@ -1293,7 +1293,49 @@ following functions:
 | `2ND ANS` (LASTX)                 | ![](images/date/dz/zoneddatetime-leap-dow-raw-3.png)  | ![](images/date/dz/zoneddatetime-leap-dow-str-3.png) |
 | `DOW`                             | ![](images/date/dz/zoneddatetime-leap-dow-raw-4.png)  | ![](images/date/dz/zoneddatetime-leap-dow-str-4.png) |
 
-TODO: Add screenshots of `CVTZ` function.
+#### ZonedDateTime Timezone Conversions
+
+A ZonedDateTime with a specific timezone (e.g. UTC-07:00) can be converted to
+another ZonedDateTime with a different timezone (e.g. UTC+13:00) using the the
+`CVTZ` menu function. For convenience, It also overloads the multiplication
+button `*` to perform the same operation to avoid needing to dig into the menu
+hierarchy.
+
+| **Operation**                               | **Result**        |
+|-------------------------------              |-------------------|
+| {ZonedDateTime} {`CVTZ` or `*`} {float}     | {ZonedDateTime}   |
+| {ZonedDateTime} {`CVTZ` or `*`} {TimeZone}  | {ZonedDateTime}   |
+| {float} {`CVTZ` or `*`} {ZonedDateTime}     | {ZonedDateTime}   |
+| {TimeZone} {`CVTZ` or `*`} {ZonedDateTime}  | {ZonedDateTime}   |
+
+The `CVTZ` function takes 2 arguments in the RPN stack: the ZonedDateTime, and
+the target TimeZone object or its floating point equivalent.
+
+Let's convert the datetime 2024-03-14 15:36:01-07:00 (Pacific Time, USA) to the
+following timezones:
+
+- UTC+13:00 (Auckland, New Zealand), floating point equivalent `13`
+- UTC+05:30 (India), floating point equivalent `5.5`
+- UTC-02:30 (Newfoundland, Canada), floating point equivalent `-2.5`
+- UTC-00:00 (UTC), floating point equivalent `0`
+
+For illustration purposes, I use both the floating point number format and the
+`TZ` record format to specify the target timezones below. In practice, I usually
+use floating point numbers when doing this calculation because they are easier
+to enter on a calculator keypad:
+
+| **Keys**                      | **MODE `{..}`**                                  | **MODE `".."`**                   |
+| -------------------------     | ---------------------                            | -----------------                 |
+| `DZ{2024,3,14,15,36,1,-7,0}`  | ![](images/date/dz/timezone-convert-raw-01.png)  | ![](images/date/dz/timezone-convert-str-01.png) |
+| `ENTER`                       | ![](images/date/dz/timezone-convert-raw-02.png)  | ![](images/date/dz/timezone-convert-str-02.png) |
+| `13`                          | ![](images/date/dz/timezone-convert-raw-03.png)  | ![](images/date/dz/timezone-convert-str-03.png) |
+| `*`                           | ![](images/date/dz/timezone-convert-raw-04.png)  | ![](images/date/dz/timezone-convert-str-04.png) |
+| `TZ{5,30}`                    | ![](images/date/dz/timezone-convert-raw-05.png)  | ![](images/date/dz/timezone-convert-str-05.png) |
+| `*`                           | ![](images/date/dz/timezone-convert-raw-06.png)  | ![](images/date/dz/timezone-convert-str-06.png) |
+| `-2.5`                        | ![](images/date/dz/timezone-convert-raw-07.png)  | ![](images/date/dz/timezone-convert-str-07.png) |
+| `*`                           | ![](images/date/dz/timezone-convert-raw-08.png)  | ![](images/date/dz/timezone-convert-str-08.png) |
+| `0`                           | ![](images/date/dz/timezone-convert-raw-09.png)  | ![](images/date/dz/timezone-convert-str-09.png) |
+| `*`                           | ![](images/date/dz/timezone-convert-raw-10.png)  | ![](images/date/dz/timezone-convert-str-10.png) |
 
 #### ZonedDateTime Components
 
@@ -1695,52 +1737,6 @@ We can also subtract 2 DayOfWeek objects to get the number of days between them:
 | `ENTER`    | ![](images/date/dw/dayofweek-sub-raw-2.png) | ![](images/date/dw/dayofweek-sub-str-2.png) |
 | `DW{5}`    | ![](images/date/dw/dayofweek-sub-raw-3.png) | ![](images/date/dw/dayofweek-sub-str-3.png) |
 | `-`        | ![](images/date/dw/dayofweek-sub-raw-4.png) | ![](images/date/dw/dayofweek-sub-str-4.png) |
-
-## Timezone Conversions
-
-A ZonedDateTime with a specific timezone (e.g. UTC-07:00) can be converted to
-another ZonedDateTime with a different timezone (e.g. UTC+13:00). To allow this
-conversion to be performed quickly, the RPN83P app uses the multiplication
-button `*` to perform the conversion:
-
-| **Operation**                 | **Result**        |
-|-------------------------------|-------------------|
-| {ZonedDateTime} * {float}     | {ZonedDateTime}   |
-| {ZonedDateTime} * {TimeZone}  | {ZonedDateTime}   |
-| {float} * {ZonedDateTime}     | {ZonedDateTime}   |
-| {TimeZone} * {ZonedDateTime}  | {ZonedDateTime}   |
-
-The `*` operator takes 2 arguments and extracts the timezones as follows:
-
-- the *source* timezone is contained in the ZoneDateTime object
-- the *target* timezone is given as a TimeZone object or a floating point
-  equivalent of the timezone (e.g. `UTC-02:30` can be given as `-2.5`)
-
-Let's convert the datetime 2024-03-14 15:36:01-07:00 (Pacific Time, USA) to the
-following timezones:
-
-- UTC+13:00 (Auckland, New Zealand)
-- UTC+05:30 (India)
-- UTC-02:30 (Newfoundland, Canada)
-- UTC-00:00 (UTC)
-
-For illustration purposes, I use both the floating point number format and the
-`TZ` record format to specify the target timezones below. In practice, I usually
-use floating point numbers when doing this calculation because they are easier
-to enter on a calculator keypad:
-
-| **Keys**                      | **MODE `{..}`**                               | **MODE `".."`**                   |
-| -------------------------     | ---------------------                         | -----------------                 |
-| `DZ{2024,3,14,15,36,1,-7,0}`  | ![](images/date/timezone-convert-raw-01.png)  | ![](images/date/timezone-convert-str-01.png) |
-| `ENTER`                       | ![](images/date/timezone-convert-raw-02.png)  | ![](images/date/timezone-convert-str-02.png) |
-| `13`                          | ![](images/date/timezone-convert-raw-03.png)  | ![](images/date/timezone-convert-str-03.png) |
-| `*`                           | ![](images/date/timezone-convert-raw-04.png)  | ![](images/date/timezone-convert-str-04.png) |
-| `TZ{5,30}`                    | ![](images/date/timezone-convert-raw-05.png)  | ![](images/date/timezone-convert-str-05.png) |
-| `*`                           | ![](images/date/timezone-convert-raw-06.png)  | ![](images/date/timezone-convert-str-06.png) |
-| `-2.5`                        | ![](images/date/timezone-convert-raw-07.png)  | ![](images/date/timezone-convert-str-07.png) |
-| `*`                           | ![](images/date/timezone-convert-raw-08.png)  | ![](images/date/timezone-convert-str-08.png) |
-| `0`                           | ![](images/date/timezone-convert-raw-09.png)  | ![](images/date/timezone-convert-str-09.png) |
-| `*`                           | ![](images/date/timezone-convert-raw-10.png)  | ![](images/date/timezone-convert-str-10.png) |
 
 ### Epoch Date (EPCH)
 
