@@ -56,6 +56,7 @@ These features were inspired by various datetime libraries:
         - [Date Entry](#date-entry)
         - [Date Validation](#date-validation)
         - [Date Functions](#date-functions)
+        - [Date Timezone Conversions](#date-timezone-conversions)
         - [Date Components](#date-components)
         - [Date Casting](#date-casting)
         - [Date Arithmetic](#date-arithmetic)
@@ -647,10 +648,19 @@ In the next row of menus, we get the following functions:
 | `2ND ANS` (LASTX) | ![](images/date/d/date-leap-dow-raw-3.png)  | ![](images/date/d/date-leap-dow-str-3.png) |
 | `DOW`             | ![](images/date/d/date-leap-dow-raw-4.png)  | ![](images/date/d/date-leap-dow-str-4.png) |
 
-The `CVTZ` function appears under the `D` ([Date]) menu, the `DT` (DateTime)
-menu, and the `DZ` (ZonedDateTime) menu. It takes 2 arguments, converting the
-`Date` object to the timezone specified by the [`TimeZone`](#timezone-tz)
-object.
+#### Date Timezone Conversions
+
+The `CVTZ` function is the same function described in full detail at
+[ZonedDateTime Timezone Conversions](#zoneddatetime-timezone-conversions). It
+converts the Date object (assumed to be UTC) into a different timezone. The
+result is a ZonedDateTime object because it is no longer in the UTC timezone.
+
+| **Keys**          | **MODE `{..}`**                         | **MODE `".."`**   |
+| -----------       | ---------------------                   | ----------------- |
+| `D{2024,3,14}`    | ![](images/date/d/date-cvtz-raw-1.png)  | ![](images/date/d/date-cvtz-str-1.png) |
+| `ENTER`           | ![](images/date/d/date-cvtz-raw-2.png)  | ![](images/date/d/date-cvtz-str-2.png) |
+| `TZ{-7,0}`        | ![](images/date/d/date-cvtz-raw-3.png)  | ![](images/date/d/date-cvtz-str-3.png) |
+| `CVTZ`            | ![](images/date/d/date-cvtz-raw-4.png)  | ![](images/date/d/date-cvtz-str-4.png) |
 
 #### Date Components
 
