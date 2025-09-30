@@ -1893,13 +1893,9 @@ the Application Timezone using the `TZ` command.
 
 #### Setting the Clock Timezone
 
-Before we can set the hardware clock's datetime with the `SETC` command,
-we must set its timezone using the `CTZ` menu command. The `CTZ?` command
-retrieves the current timezone:
-
-![ROOT > DATE > CLK > CTZ](images/menu/root-date-clk-ctz.png)
-
-There are 2 options which seem useful:
+Before we can set the hardware clock's datetime with the `SETC` command, we must
+set its timezone using the `CTZ` menu command. The `CTZ?` command retrieves the
+current timezone. There are 2 options which seem useful:
 
 **Option 1** (recommended): Set the hardware clock timezone to UTC so that it
 can be translated to any timezone, without having to worry about DST
@@ -1941,12 +1937,8 @@ like TI-OS (i.e. Windows) through the `CTZ` configuration.
 #### Setting the Clock DateTime
 
 Once the timezone of the hardware clock is set, the actual date-time of the
-clock can be configured using the `SETC` (set clock) command:
-
-![ROOT > DATE > CLK > SETC](images/menu/root-date-clk-setc.png)
-
-The `SETC` command takes a ZonedDateTime value as the argument, like this:
-
+clock can be configured using the `SETC` (set clock) command. The `SETC` command
+takes a ZonedDateTime value as the argument, like this:
 
 | **Keys**                      | **MODE `{..}`**                                   | **MODE `".."`**   |
 | -----------                   | ---------------------                             | ----------------- |
@@ -1961,30 +1953,26 @@ converted into an epochseconds before being handed over to the hardware clock.
 #### Setting the Application Timezone
 
 In addition to the timezone of the RTC, RPN83P also allows the **Application**
-Timezone to be set using the `TZ` and `TZ?` commands:
+Timezone to be set and retrieved using the `TZ` and `TZ?` commands. To set the
+Application Timezone to UTC-07:00 for example, use the following:
 
-![ROOT > DATE > CLK > TZ](images/menu/root-date-clk-tz.png)
-
-The Application Timezone is the timezone inserted into a ZonedDateTime object
-when a particular function returns a ZonedDateTime. Currently, the 2 commands
-which are affected are:
-
-- `NWDZ` (Get NOW as ZonedDateTime) and
-- `S>DZ` (EpochSeconds to ZonedDatetime)
-
-To set the Application Timezone to UTC-07:00 for example, use the following:
-
-| **Keys**  | **MODE `{..}`**                                   | **MODE `".."`**   |
-| ----------| ---------------------                             | ----------------- |
+| **Keys**  | **MODE `{..}`**                                       | **MODE `".."`**   |
+| ----------| ---------------------                                 | ----------------- |
 | `TZ{-7,0}`| ![](images/date/clk/set-app-timezone-pdt-raw-1.png)   | ![](images/date/clk/set-app-timezone-pdt-str-1.png) |
 | `TZ`      | ![](images/date/clk/set-app-timezone-pdt-raw-2.png)   | ![](images/date/clk/set-app-timezone-pdt-str-2.png) |
 | `TZ?`     | ![](images/date/clk/set-app-timezone-pdt-raw-3.png)   | ![](images/date/clk/set-app-timezone-pdt-str-3.png) |
+
+Currently, 4 commands are affected by the Application Timezone:
+
+- `DATE > CLK > NOWD`: Get NOW as a Date (using the current App Timezone),
+- `DATE > CLK > NWDT`: Get NOW as a DateTime (using the current App Timezone),
+- `DATE > CLK > NWDZ`: Get NOW as a ZonedDateTime (using the current App Timezone),
+- `DATE > DZ > ES>@`: Convert EpochSeconds to ZonedDateTime (using the current App Timezone).
 
 #### Get Current DateTime Now
 
 Now that we have configured the hardware clock, we can use the various `NOW` and
 `NWxx` commands to retrieve the current date and time from the RTC:
-
 
 | **Keys**  | **MODE `{..}`**                   | **MODE `".."`**   |
 | ----------| ---------------------             | ----------------- |
