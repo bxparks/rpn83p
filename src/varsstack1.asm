@@ -60,7 +60,7 @@ InitLastX:
     jp z, StoStackL
     ret
 
-; Description: Clear the RPN stack.
+; Description: Clear the RPN stack. Don't clear LASTX.
 ; Input: none
 ; Output: stack registers all set to 0.0
 ; Destroys: all, OP1
@@ -70,7 +70,8 @@ ClearStack:
     ;
     call LenStack ; A=len; DE=dataPointer
     ld c, a ; C=len
-    ld b, 0 ; B=begin=0
+    dec c ; C=len-1
+    ld b, 1 ; B=begin=1; preserve LASTX
     jp clearRpnElementList
 
 ; Description: Should be called just before existing the app.

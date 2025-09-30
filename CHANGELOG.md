@@ -73,6 +73,8 @@
           value. Input termination must occur and stack lift must be enabled.
         - Terminate input buffer and correctly enable stack lift for stack
           manipulation commands: `DUP`, `Rollup`, `Rolldown`, `DROP`, `X<>Y`.
+        - **Bug Fix**: Preserve `LASTX` during `CLST` (Clear Stack), consistent
+          with HP-42S.
     - Key bindings
         - Add `2ND v` as a shortcut to `UVAL` menu function under `UNIT`. Allows
           quick extraction of the value part of a Denominate object.
