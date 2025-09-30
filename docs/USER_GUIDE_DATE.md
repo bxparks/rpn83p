@@ -41,15 +41,16 @@ These features were inspired by various datetime libraries:
     - [POSIX time](#posix-time)
     - [Timezones](#timezones)
     - [Date and Time Formats](#date-and-time-formats)
-- [Date-related Objects](#date-related-objects)
+- [Date Objects](#date-related-objects)
 - [DATE Menus](#date-menus)
 - [DATE Buttons](#date-buttons)
 - [Data Entry](#data-entry)
     - [ALPHA Entry](#alpha-entry)
     - [Menu Initializer Entry](#menu-initializer-entry)
     - [Type Inferred Entry](#type-inferred-entry)
-- [Comma-EE Modes](#comma-ee-modes)
-- [Formatting Modes](#formatting-modes)
+- [Modes](#modes)
+    - [Comma-EE Modes](#comma-ee-modes)
+    - [Formatting Modes](#formatting-modes)
 - [Menu Functions](#date-menu-functions)
     - [Date (D)](#date-d)
         - [Date Entry](#date-entry)
@@ -282,7 +283,7 @@ supported in the `DATE` functions of RPN83P:
 - 2-digit years, absolutely not supported
 - 12-hour format `hh:mm:ss AM/PM`, not supported
 
-## Date-related Objects
+## Date Objects
 
 Prior to the addition of DATE functions, the RPN83P supported 2 data types: real
 and complex numbers. The DATE functions add 7 new data types which are *record*
@@ -480,7 +481,9 @@ Here are examples of this entry method for each supported DATE object type:
 | DateTime      | `DT{2024,3,14,15,36,1}`       | `{2024,3,14,15,36,1`      |
 | ZonedDateTime | `DT{2024,3,14,15,36,1,-7,0}`  | `{2024,3,14,15,36,1,-7,0` |
 
-## Comma-EE Modes
+## Modes
+
+### Comma-EE Modes
 
 The TI-83+/84+ keyboard has a comma `,` key as an unshifted primary key. Prior
 to v0.10, both the `,` and `2ND EE` keystrokes were mapped to the `EE` function
@@ -502,7 +505,7 @@ This is option is useful for people who will rarely (or never) use the `DATE`
 functions, and want to enter scientific notation numbers easily without going
 through an extra `2ND` keystroke.
 
-## Formatting Modes
+### Formatting Modes
 
 In the `MODE` menu, there are 2 settings that affect how date objects are
 displayed:
