@@ -41,12 +41,12 @@ These features were inspired by various datetime libraries:
     - [POSIX time](#posix-time)
     - [Timezones](#timezones)
     - [Date and Time Formats](#date-and-time-formats)
-- [Date Objects](#date-related-objects)
+- [Date Objects](#date-objects)
 - [DATE Menus](#date-menus)
 - [DATE Buttons](#date-buttons)
 - [Data Entry](#data-entry)
     - [ALPHA Entry](#alpha-entry)
-    - [Menu Initializer Entry](#menu-initializer-entry)
+    - [Menu Assisted Entry](#menu-assisted-entry)
     - [Type Inferred Entry](#type-inferred-entry)
 - [Modes](#modes)
     - [Comma-EE Modes](#comma-ee-modes)
@@ -383,14 +383,14 @@ that into the RFC 3339 format `2024-03-14`, which corresponds to the Date object
 | `14`              | ![](images/date/d/date-alpha-entry-7.png) |
 | `2ND }`           | ![](images/date/d/date-alpha-entry-8.png) |
 
-### Menu Initializer Entry
+### Menu Assisted Entry
 
 The key sequence `ALPHA D 2ND {` is cumbersome to type on the TI-83+/84+
 keyboard because the letters are arranged alphabetically instead of a QWERTY
 layout. Also, the color of the ALPHA letters can be difficult to read on some of
 the TI-83+/84+ models under low light conditions.
 
-The Menu Initializer Entry method allows entry of DATE objects without using the
+The Menu Assisted Entry method allows entry of DATE objects without using the
 `ALPHA` key at all. Under each DATE object menu folder, the first menu key
 causes the initializer sequence of that particular object to be sent directly
 into the input buffer.
@@ -423,7 +423,7 @@ equivalents:
 
 ### Type Inferred Entry
 
-The Menu Initializer entry method alleviates the need to use the `ALPHA` key.
+The Menu Assisted Entry method alleviates the need to use the `ALPHA` key.
 But one disadvantage of that entry method is that we have to navigate to the
 appropriate menu folder under the `DATE` menu.
 
@@ -581,7 +581,7 @@ MODE setting of `{..}` or `".."`:
 **Note**: The Date object `D{2024,3,14}` can be entered in 3 ways:
 
 - ALPHA Entry: `ALPHA D 2ND {` ...
-- Menu Initializer: `DATE` `D` `D{}` ...
+- Menu Assisted Entry: `DATE` `D` `D{}` ...
 - Type Inferred: `2ND {` ...
 
 #### Date Validation
@@ -754,7 +754,7 @@ the time `15:36:01` is entered into the calculator like this:
 **Note**: The Time object `T{15,36,1}` can be entered in 2 ways:
 
 - ALPHA Entry: `ALPHA T 2ND {` ...
-- Menu Initializer: `DATE` `T` `T{}` ...
+- Menu Assisted Entry: `DATE` `T` `T{}` ...
 - Type Inferred: (not allowed due to conflict with Date objects)
 
 #### Time Validation
@@ -892,7 +892,7 @@ For example, the date `2024-03-14 15:36:01` would be entered like this:
 **Note**: The DateTime object `DT{2024,3,14,15,36,1}` can be entered in 3 ways:
 
 - ALPHA Entry: `ALPHA D ALPHA T 2ND {` ...
-- Menu Initializer: `DATE` `DT` `DT{}` ...
+- Menu Assisted Entry: `DATE` `DT` `DT{}` ...
 - Type Inferred: `2ND {` ...
 
 #### DateTime Validation
@@ -1076,7 +1076,7 @@ months, and changes to UTC-07:00 during the summer months.
 **Note**: The Time object `TZ(-8,0}` can be entered in 3 ways:
 
 - ALPHA Entry: `ALPHA T ALPHA Z 2ND {` ...
-- Menu Initializer: `DATE` `TZ` `TZ{}` ...
+- Menu Assisted Entry: `DATE` `TZ` `TZ{}` ...
 - Type Inferred: `2ND {` ...
 
 #### TimeZone Validation
@@ -1230,7 +1230,7 @@ to display them using the `Z` notation for their timezone. Here is how the date
 in 3 ways:
 
 - ALPHA Entry: `ALPHA D ALPHA Z 2ND {` ...
-- Menu Initializer: `DATE` `DZ` `DZ{}` ...
+- Menu Assisted Entry: `DATE` `DZ` `DZ{}` ...
 - Type Inferred: `2ND {` ...
 
 #### ZonedDateTime Validation
@@ -1447,7 +1447,7 @@ Duration object is `9999d 23h 59m 59s` or about 24.3 years.
 **Note**: The Duration object `DR{1,2,3,4}` can be entered in 4 ways:
 
 - ALPHA Entry: `ALPHA D ALPHA R 2ND {` ...
-- Menu Initializer: `DATE` `DR` `DR{}` ...
+- Menu Assisted Entry: `DATE` `DR` `DR{}` ...
 - Type Inferred: `2ND {` ...
 - Compact string: `1` `ALPHA D` `2` `ALPHA H` `3` `ALPHA M` `4` `ALPHA S` (see
   next)
@@ -1644,7 +1644,7 @@ of 4 and can be entered as:
 **Note**: The DayOfWeek object `DW{4}` can be entered in 2 ways:
 
 - ALPHA Entry: `ALPHA D ALPHA W 2ND {` ...
-- Menu Initializer: `DATE` `DW` `DW{}` ...
+- Menu Assisted Entry: `DATE` `DW` `DW{}` ...
 - Type Inferred: (not available)
 
 #### DayOfWeek Validation
